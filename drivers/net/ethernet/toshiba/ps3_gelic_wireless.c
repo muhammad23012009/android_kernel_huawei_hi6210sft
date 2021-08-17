@@ -723,13 +723,19 @@ static int gelic_wl_get_scan(struct net_device *netdev,
 		/* If a scan in progress, caller should call me again */
 		ret = -EAGAIN;
 		goto out;
+<<<<<<< HEAD
 		break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case GELIC_WL_SCAN_STAT_INIT:
 		/* last scan request failed or never issued */
 		ret = -ENODEV;
 		goto out;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case GELIC_WL_SCAN_STAT_GOT_LIST:
 		/* ok, use current list */
 		break;
@@ -1170,7 +1176,11 @@ static int gelic_wl_set_ap(struct net_device *netdev,
 	} else {
 		pr_debug("%s: clear bssid\n", __func__);
 		clear_bit(GELIC_WL_STAT_BSSID_SET, &wl->stat);
+<<<<<<< HEAD
 		memset(wl->bssid, 0, ETH_ALEN);
+=======
+		eth_zero_addr(wl->bssid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock_irqrestore(&wl->lock, irqflag);
 	pr_debug("%s: ->\n", __func__);
@@ -1192,7 +1202,11 @@ static int gelic_wl_get_ap(struct net_device *netdev,
 		memcpy(data->ap_addr.sa_data, wl->active_bssid,
 		       ETH_ALEN);
 	} else
+<<<<<<< HEAD
 		memset(data->ap_addr.sa_data, 0, ETH_ALEN);
+=======
+		eth_zero_addr(data->ap_addr.sa_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_unlock_irqrestore(&wl->lock, irqflag);
 	mutex_unlock(&wl->assoc_stat_lock);
@@ -1619,13 +1633,21 @@ static void gelic_wl_scan_complete_event(struct gelic_wl_info *wl)
 		target->valid = 1;
 		target->eurus_index = i;
 		kfree(target->hwinfo);
+<<<<<<< HEAD
 		target->hwinfo = kzalloc(be16_to_cpu(scan_info->size),
+=======
+		target->hwinfo = kmemdup(scan_info,
+					 be16_to_cpu(scan_info->size),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 GFP_KERNEL);
 		if (!target->hwinfo)
 			continue;
 
 		/* copy hw scan info */
+<<<<<<< HEAD
 		memcpy(target->hwinfo, scan_info, scan_info->size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		target->essid_len = strnlen(scan_info->essid,
 					    sizeof(scan_info->essid));
 		target->rate_len = 0;
@@ -1697,7 +1719,11 @@ struct gelic_wl_scan_info *gelic_wl_find_best_bss(struct gelic_wl_info *wl)
 				pr_debug("%s: bssid matched\n", __func__);
 				break;
 			} else {
+<<<<<<< HEAD
 				pr_debug("%s: bssid unmached\n", __func__);
+=======
+				pr_debug("%s: bssid unmatched\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 			}
 		}
@@ -1831,6 +1857,7 @@ static const char *wpasecstr(enum gelic_eurus_wpa_security sec)
 	switch (sec) {
 	case GELIC_EURUS_WPA_SEC_NONE:
 		return "NONE";
+<<<<<<< HEAD
 		break;
 	case GELIC_EURUS_WPA_SEC_WPA_TKIP_TKIP:
 		return "WPA_TKIP_TKIP";
@@ -1850,6 +1877,20 @@ static const char *wpasecstr(enum gelic_eurus_wpa_security sec)
 	case GELIC_EURUS_WPA_SEC_WPA2_AES_AES:
 		return "WPA2_AES_AES";
 		break;
+=======
+	case GELIC_EURUS_WPA_SEC_WPA_TKIP_TKIP:
+		return "WPA_TKIP_TKIP";
+	case GELIC_EURUS_WPA_SEC_WPA_TKIP_AES:
+		return "WPA_TKIP_AES";
+	case GELIC_EURUS_WPA_SEC_WPA_AES_AES:
+		return "WPA_AES_AES";
+	case GELIC_EURUS_WPA_SEC_WPA2_TKIP_TKIP:
+		return "WPA2_TKIP_TKIP";
+	case GELIC_EURUS_WPA_SEC_WPA2_TKIP_AES:
+		return "WPA2_TKIP_AES";
+	case GELIC_EURUS_WPA_SEC_WPA2_AES_AES:
+		return "WPA2_AES_AES";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return "";
 };

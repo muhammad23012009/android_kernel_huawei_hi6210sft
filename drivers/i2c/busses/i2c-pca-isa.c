@@ -12,10 +12,13 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -197,6 +200,7 @@ static struct isa_driver pca_isa_driver = {
 	}
 };
 
+<<<<<<< HEAD
 static int __init pca_isa_init(void)
 {
 	return isa_register_driver(&pca_isa_driver, 1);
@@ -207,13 +211,18 @@ static void __exit pca_isa_exit(void)
 	isa_unregister_driver(&pca_isa_driver);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Ian Campbell <icampbell@arcom.com>");
 MODULE_DESCRIPTION("ISA base PCA9564/PCA9665 driver");
 MODULE_LICENSE("GPL");
 
 module_param(base, ulong, 0);
 MODULE_PARM_DESC(base, "I/O base address");
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(irq, int, 0);
 MODULE_PARM_DESC(irq, "IRQ");
 module_param(clock, int, 0);
@@ -224,6 +233,10 @@ MODULE_PARM_DESC(clock, "Clock rate in hertz.\n\t\t"
 		"\t\t\t\tFast: 100100 - 400099\n"
 		"\t\t\t\tFast+: 400100 - 10000099\n"
 		"\t\t\t\tTurbo: Up to 1265800");
+<<<<<<< HEAD
 
 module_init(pca_isa_init);
 module_exit(pca_isa_exit);
+=======
+module_isa_driver(pca_isa_driver, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

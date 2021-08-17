@@ -1,6 +1,7 @@
 #ifndef _ASM_S390_SPARSEMEM_H
 #define _ASM_S390_SPARSEMEM_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 
 #define SECTION_SIZE_BITS	28
@@ -13,4 +14,9 @@
 
 #endif /* CONFIG_64BIT */
 
+=======
+#define SECTION_SIZE_BITS	28
+#define MAX_PHYSMEM_BITS	46
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_S390_SPARSEMEM_H */

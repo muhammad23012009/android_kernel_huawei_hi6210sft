@@ -15,7 +15,11 @@
 #include <linux/export.h>
 #include <linux/stringify.h>
 
+<<<<<<< HEAD
 #if !defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_MIPS_MT_SMTC)
+=======
+#if !defined(CONFIG_CPU_MIPSR2) && !defined(CONFIG_CPU_MIPSR6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * For cli() we have to insert nops to make sure that the new value
@@ -37,11 +41,16 @@
  */
 notrace void arch_local_irq_disable(void)
 {
+<<<<<<< HEAD
 	preempt_disable();
+=======
+	preempt_disable_notrace();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__asm__ __volatile__(
 	"	.set	push						\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	"	mfc0	$1, $2, 1					\n"
 	"	ori	$1, 0x400					\n"
@@ -50,33 +59,50 @@ notrace void arch_local_irq_disable(void)
 #elif defined(CONFIG_CPU_MIPSR2)
 	/* see irqflags.h for inline function */
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	mfc0	$1,$12						\n"
 	"	ori	$1,0x1f						\n"
 	"	xori	$1,0x1f						\n"
 	"	.set	noreorder					\n"
 	"	mtc0	$1,$12						\n"
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	" __stringify(__irq_disable_hazard) "			\n"
 	"	.set	pop						\n"
 	: /* no outputs */
 	: /* no inputs */
 	: "memory");
 
+<<<<<<< HEAD
 	preempt_enable();
 }
 EXPORT_SYMBOL(arch_local_irq_disable);
 
 
+=======
+	preempt_enable_notrace();
+}
+EXPORT_SYMBOL(arch_local_irq_disable);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 notrace unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	preempt_disable();
+=======
+	preempt_disable_notrace();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__asm__ __volatile__(
 	"	.set	push						\n"
 	"	.set	reorder						\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	"	mfc0	%[flags], $2, 1				\n"
 	"	ori	$1, %[flags], 0x400				\n"
@@ -86,19 +112,28 @@ notrace unsigned long arch_local_irq_save(void)
 #elif defined(CONFIG_CPU_MIPSR2)
 	/* see irqflags.h for inline function */
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	mfc0	%[flags], $12					\n"
 	"	ori	$1, %[flags], 0x1f				\n"
 	"	xori	$1, 0x1f					\n"
 	"	.set	noreorder					\n"
 	"	mtc0	$1, $12						\n"
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	" __stringify(__irq_disable_hazard) "			\n"
 	"	.set	pop						\n"
 	: [flags] "=r" (flags)
 	: /* no inputs */
 	: "memory");
 
+<<<<<<< HEAD
 	preempt_enable();
+=======
+	preempt_enable_notrace();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return flags;
 }
@@ -108,6 +143,7 @@ notrace void arch_local_irq_restore(unsigned long flags)
 {
 	unsigned long __tmp1;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	/*
 	 * SMTC kernel needs to do a software replay of queued
@@ -118,11 +154,15 @@ notrace void arch_local_irq_restore(unsigned long flags)
 		smtc_ipi_replay();
 #endif
 	preempt_disable();
+=======
+	preempt_disable_notrace();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__asm__ __volatile__(
 	"	.set	push						\n"
 	"	.set	noreorder					\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	"	mfc0	$1, $2, 1					\n"
 	"	andi	%[flags], 0x400					\n"
@@ -135,19 +175,25 @@ notrace void arch_local_irq_restore(unsigned long flags)
 #elif defined(CONFIG_CPU_MIPSR2)
 	/* see irqflags.h for inline function */
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	mfc0	$1, $12						\n"
 	"	andi	%[flags], 1					\n"
 	"	ori	$1, 0x1f					\n"
 	"	xori	$1, 0x1f					\n"
 	"	or	%[flags], $1					\n"
 	"	mtc0	%[flags], $12					\n"
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	" __stringify(__irq_disable_hazard) "			\n"
 	"	.set	pop						\n"
 	: [flags] "=r" (__tmp1)
 	: "0" (flags)
 	: "memory");
 
+<<<<<<< HEAD
 	preempt_enable();
 }
 EXPORT_SYMBOL(arch_local_irq_restore);
@@ -193,3 +239,10 @@ notrace void __arch_local_irq_restore(unsigned long flags)
 EXPORT_SYMBOL(__arch_local_irq_restore);
 
 #endif /* !defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_MIPS_MT_SMTC) */
+=======
+	preempt_enable_notrace();
+}
+EXPORT_SYMBOL(arch_local_irq_restore);
+
+#endif /* !CONFIG_CPU_MIPSR2 && !CONFIG_CPU_MIPSR6 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

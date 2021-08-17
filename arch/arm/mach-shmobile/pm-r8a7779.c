@@ -9,6 +9,7 @@
  * for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/pm.h>
 #include <linux/suspend.h>
 #include <linux/err.h>
@@ -146,6 +147,23 @@ static void __init r8a7779_sysc_init(void)
 	/* enable all interrupt sources, but do not use interrupt handler */
 	iowrite32(0x0131000e, r8a7779_sysc_base + SYSCIER);
 	iowrite32(0, r8a7779_sysc_base + SYSCIMR);
+=======
+#include <linux/soc/renesas/rcar-sysc.h>
+
+#include <asm/io.h>
+
+#include "r8a7779.h"
+
+/* SYSC */
+#define SYSCIER 0x0c
+#define SYSCIMR 0x10
+
+#if defined(CONFIG_PM) || defined(CONFIG_SMP)
+
+static void __init r8a7779_sysc_init(void)
+{
+	rcar_sysc_init(0xffd85000, 0x0131000e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #else /* CONFIG_PM || CONFIG_SMP */
@@ -154,6 +172,7 @@ static inline void r8a7779_sysc_init(void) {}
 
 #endif /* CONFIG_PM || CONFIG_SMP */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int pd_power_down(struct generic_pm_domain *genpd)
@@ -240,6 +259,8 @@ void __init r8a7779_init_pm_domains(void)
 
 #endif /* CONFIG_PM */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init r8a7779_pm_init(void)
 {
 	static int once;

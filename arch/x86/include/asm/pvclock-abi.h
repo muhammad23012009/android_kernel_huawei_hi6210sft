@@ -41,5 +41,10 @@ struct pvclock_wall_clock {
 
 #define PVCLOCK_TSC_STABLE_BIT	(1 << 0)
 #define PVCLOCK_GUEST_STOPPED	(1 << 1)
+<<<<<<< HEAD
+=======
+/* PVCLOCK_COUNTS_FROM_ZERO broke ABI and can't be used anymore. */
+#define PVCLOCK_COUNTS_FROM_ZERO (1 << 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASSEMBLY__ */
 #endif /* _ASM_X86_PVCLOCK_ABI_H */

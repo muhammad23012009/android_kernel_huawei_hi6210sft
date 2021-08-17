@@ -34,6 +34,10 @@
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/usb.h>
 #include <linux/usb/input.h>
 #include <media/rc-core.h>
@@ -42,12 +46,15 @@
 #define DRIVER_NAME	"streamzap"
 #define DRIVER_DESC	"Streamzap Remote Control driver"
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_DEBUG
 static bool debug = 1;
 #else
 static bool debug;
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define USB_STREAMZAP_VENDOR_ID		0x0e9c
 #define USB_STREAMZAP_PRODUCT_ID	0x0000
 
@@ -69,6 +76,7 @@ MODULE_DEVICE_TABLE(usb, streamzap_table);
 /* number of samples buffered */
 #define SZ_BUF_LEN 128
 
+<<<<<<< HEAD
 /* from ir-rc5-sz-decoder.c */
 #ifdef CONFIG_IR_RC5_SZ_DECODER_MODULE
 #define load_rc5_sz_decode()    request_module("ir-rc5-sz-decoder")
@@ -76,6 +84,8 @@ MODULE_DEVICE_TABLE(usb, streamzap_table);
 #define load_rc5_sz_decode()    {}
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum StreamzapDecoderState {
 	PulseSpace,
 	FullPulse,
@@ -109,8 +119,13 @@ struct streamzap_ir {
 	/* sum of signal lengths received since signal start */
 	unsigned long		sum;
 	/* start time of signal; necessary for gap tracking */
+<<<<<<< HEAD
 	struct timeval		signal_last;
 	struct timeval		signal_start;
+=======
+	ktime_t			signal_last;
+	ktime_t			signal_start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool			timeout_enabled;
 
 	char			name[128];
@@ -149,6 +164,7 @@ static void sz_push_full_pulse(struct streamzap_ir *sz,
 	DEFINE_IR_RAW_EVENT(rawir);
 
 	if (sz->idle) {
+<<<<<<< HEAD
 		long deltv;
 
 		sz->signal_last = sz->signal_start;
@@ -166,6 +182,24 @@ static void sz_push_full_pulse(struct streamzap_ir *sz,
 			rawir.duration -= sz->sum;
 			rawir.duration = US_TO_NS(rawir.duration);
 			rawir.duration &= IR_MAX_DURATION;
+=======
+		int delta;
+
+		sz->signal_last = sz->signal_start;
+		sz->signal_start = ktime_get_real();
+
+		delta = ktime_us_delta(sz->signal_start, sz->signal_last);
+		rawir.pulse = false;
+		if (delta > (15 * USEC_PER_SEC)) {
+			/* really long time */
+			rawir.duration = IR_MAX_DURATION;
+		} else {
+			rawir.duration = delta;
+			rawir.duration -= sz->sum;
+			rawir.duration = US_TO_NS(rawir.duration);
+			rawir.duration = (rawir.duration > IR_MAX_DURATION) ?
+					 IR_MAX_DURATION : rawir.duration;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		sz_push(sz, rawir);
 
@@ -178,7 +212,12 @@ static void sz_push_full_pulse(struct streamzap_ir *sz,
 	rawir.duration += SZ_RESOLUTION / 2;
 	sz->sum += rawir.duration;
 	rawir.duration = US_TO_NS(rawir.duration);
+<<<<<<< HEAD
 	rawir.duration &= IR_MAX_DURATION;
+=======
+	rawir.duration = (rawir.duration > IR_MAX_DURATION) ?
+			 IR_MAX_DURATION : rawir.duration;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sz_push(sz, rawir);
 }
 
@@ -322,7 +361,11 @@ static struct rc_dev *streamzap_init_rc_dev(struct streamzap_ir *sz)
 	rdev->dev.parent = dev;
 	rdev->priv = sz;
 	rdev->driver_type = RC_DRIVER_IR_RAW;
+<<<<<<< HEAD
 	rdev->allowed_protos = RC_BIT_ALL;
+=======
+	rdev->allowed_protocols = RC_BIT_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rdev->driver_name = DRIVER_NAME;
 	rdev->map_name = RC_MAP_STREAMZAP;
 
@@ -375,16 +418,24 @@ static int streamzap_probe(struct usb_interface *intf,
 	}
 
 	sz->endpoint = &(iface_host->endpoint[0].desc);
+<<<<<<< HEAD
 	if ((sz->endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
 	    != USB_DIR_IN) {
+=======
+	if (!usb_endpoint_dir_in(sz->endpoint)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&intf->dev, "%s: endpoint doesn't match input device "
 			"02%02x\n", __func__, sz->endpoint->bEndpointAddress);
 		retval = -ENODEV;
 		goto free_sz;
 	}
 
+<<<<<<< HEAD
 	if ((sz->endpoint->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
 	    != USB_ENDPOINT_XFER_INT) {
+=======
+	if (!usb_endpoint_xfer_int(sz->endpoint)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&intf->dev, "%s: endpoint attributes don't match xfer "
 			"02%02x\n", __func__, sz->endpoint->bmAttributes);
 		retval = -ENODEV;
@@ -441,7 +492,11 @@ static int streamzap_probe(struct usb_interface *intf,
 	sz->max_timeout = US_TO_NS(SZ_TIMEOUT * SZ_RESOLUTION);
 	#endif
 
+<<<<<<< HEAD
 	do_gettimeofday(&sz->signal_start);
+=======
+	sz->signal_start = ktime_get_real();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Complete final initialisations */
 	usb_fill_int_urb(sz->urb_in, usbdev, pipe, sz->buf_in,
@@ -458,9 +513,12 @@ static int streamzap_probe(struct usb_interface *intf,
 	dev_info(sz->dev, "Registered %s on usb%d:%d\n", name,
 		 usbdev->bus->busnum, usbdev->devnum);
 
+<<<<<<< HEAD
 	/* Load the streamzap not-quite-rc5 decoder too */
 	load_rc5_sz_decode();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 rc_dev_fail:
@@ -516,7 +574,11 @@ static int streamzap_resume(struct usb_interface *intf)
 	struct streamzap_ir *sz = usb_get_intfdata(intf);
 
 	if (usb_submit_urb(sz->urb_in, GFP_ATOMIC)) {
+<<<<<<< HEAD
 		dev_err(sz->dev, "Error sumbiting urb\n");
+=======
+		dev_err(sz->dev, "Error submitting urb\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 
@@ -528,6 +590,9 @@ module_usb_driver(streamzap_driver);
 MODULE_AUTHOR("Jarod Wilson <jarod@wilsonet.com>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Enable debugging messages");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

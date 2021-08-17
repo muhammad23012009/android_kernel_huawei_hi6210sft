@@ -1,9 +1,13 @@
 /*******************************************************************************
  * This file contains the iSCSI Target specific Task Management functions.
  *
+<<<<<<< HEAD
  * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
  *
  * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
+=======
+ * (c) Copyright 2007-2013 Datera, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
  *
@@ -19,13 +23,21 @@
  ******************************************************************************/
 
 #include <asm/unaligned.h>
+<<<<<<< HEAD
 #include <scsi/scsi_device.h>
+=======
+#include <scsi/scsi_proto.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 #include <target/iscsi/iscsi_transport.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_datain_values.h"
 #include "iscsi_target_device.h"
@@ -52,7 +64,11 @@ u8 iscsit_tmr_abort_task(
 		pr_err("Unable to locate RefTaskTag: 0x%08x on CID:"
 			" %hu.\n", hdr->rtt, conn->cid);
 		return (iscsi_sna_gte(be32_to_cpu(hdr->refcmdsn), conn->sess->exp_cmd_sn) &&
+<<<<<<< HEAD
 			iscsi_sna_lte(be32_to_cpu(hdr->refcmdsn), conn->sess->max_cmd_sn)) ?
+=======
+			iscsi_sna_lte(be32_to_cpu(hdr->refcmdsn), (u32) atomic_read(&conn->sess->max_cmd_sn))) ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ISCSI_TMF_RSP_COMPLETE : ISCSI_TMF_RSP_NO_TASK;
 	}
 	if (ref_cmd->cmd_sn != be32_to_cpu(hdr->refcmdsn)) {
@@ -84,7 +100,11 @@ int iscsit_tmr_task_warm_reset(
 		pr_err("TMR Opcode TARGET_WARM_RESET authorization"
 			" failed for Initiator Node: %s\n",
 			sess->se_sess->se_node_acl->initiatorname);
+<<<<<<< HEAD
 		 return -1;
+=======
+		return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/*
 	 * Do the real work in transport_generic_do_tmr().
@@ -122,7 +142,11 @@ u8 iscsit_tmr_task_reassign(
 	struct iscsi_tmr_req *tmr_req = cmd->tmr_req;
 	struct se_tmr_req *se_tmr = cmd->se_cmd.se_tmr_req;
 	struct iscsi_tm *hdr = (struct iscsi_tm *) buf;
+<<<<<<< HEAD
 	int ret, ref_lun;
+=======
+	u64 ret, ref_lun;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("Got TASK_REASSIGN TMR ITT: 0x%08x,"
 		" RefTaskTag: 0x%08x, ExpDataSN: 0x%08x, CID: %hu\n",
@@ -166,7 +190,11 @@ u8 iscsit_tmr_task_reassign(
 	ref_lun = scsilun_to_int(&hdr->lun);
 	if (ref_lun != ref_cmd->se_cmd.orig_fe_lun) {
 		pr_err("Unable to perform connection recovery for"
+<<<<<<< HEAD
 			" differing ref_lun: %d ref_cmd orig_fe_lun: %u\n",
+=======
+			" differing ref_lun: %llu ref_cmd orig_fe_lun: %llu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ref_lun, ref_cmd->se_cmd.orig_fe_lun);
 		return ISCSI_TMF_RSP_REJECTED;
 	}

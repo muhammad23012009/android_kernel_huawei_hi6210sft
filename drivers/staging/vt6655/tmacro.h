@@ -29,8 +29,11 @@
 #ifndef __TMACRO_H__
 #define __TMACRO_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /****** Common helper macros ***********************************************/
 
 #if !defined(LOBYTE)
@@ -57,4 +60,8 @@
 #define MAKEDWORD(lw, hw)   ((unsigned long)(((unsigned short)(lw)) | (((unsigned long)((unsigned short)(hw))) << 16)))
 #endif
 
+<<<<<<< HEAD
 #endif // __TMACRO_H__
+=======
+#endif /* __TMACRO_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

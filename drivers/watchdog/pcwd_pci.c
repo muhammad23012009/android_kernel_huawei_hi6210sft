@@ -40,7 +40,11 @@
 #include <linux/errno.h>	/* For the -ENODEV/... values */
 #include <linux/kernel.h>	/* For printk/panic/... */
 #include <linux/delay.h>	/* For mdelay function */
+<<<<<<< HEAD
 #include <linux/miscdevice.h>	/* For MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR) */
+=======
+#include <linux/miscdevice.h>	/* For struct miscdevice */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/watchdog.h>	/* For the watchdog specific items */
 #include <linux/notifier.h>	/* For notifier support */
 #include <linux/reboot.h>	/* For reboot_notifier stuff */
@@ -801,7 +805,11 @@ static void pcipcwd_card_exit(struct pci_dev *pdev)
 	cards_found--;
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pcipcwd_pci_tbl) = {
+=======
+static const struct pci_device_id pcipcwd_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_QUICKLOGIC, PCI_DEVICE_ID_WATCHDOG_PCIPCWD,
 		PCI_ANY_ID, PCI_ANY_ID, },
 	{ 0 },			/* End of list */
@@ -820,5 +828,8 @@ module_pci_driver(pcipcwd_driver);
 MODULE_AUTHOR("Wim Van Sebroeck <wim@iguana.be>");
 MODULE_DESCRIPTION("Berkshire PCI-PC Watchdog driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 MODULE_ALIAS_MISCDEV(TEMP_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

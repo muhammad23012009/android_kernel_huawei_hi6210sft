@@ -9,15 +9,21 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 	__CPUINIT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * SIRFSOC specific entry point for secondary CPUs.  This provides
  * a "holding pen" into which all secondary cores are held until we're
  * ready for them to initialise.
  */
 ENTRY(sirfsoc_secondary_startup)
+<<<<<<< HEAD
 	bl v7_invalidate_l1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         mrc     p15, 0, r0, c0, c0, 5
         and     r0, r0, #15
         adr     r4, 1f

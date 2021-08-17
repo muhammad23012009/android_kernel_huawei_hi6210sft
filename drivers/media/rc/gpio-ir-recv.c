@@ -16,11 +16,19 @@
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_gpio.h>
 #include <linux/platform_device.h>
 #include <linux/irq.h>
 #include <media/rc-core.h>
+<<<<<<< HEAD
 #include <media/gpio-ir-recv.h>
+=======
+#include <linux/platform_data/media/gpio-ir-recv.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define GPIO_IR_DRIVER_NAME	"gpio-rc-recv"
 #define GPIO_IR_DEVICE_NAME	"gpio_ir_recv"
@@ -29,6 +37,10 @@ struct gpio_rc_dev {
 	struct rc_dev *rcdev;
 	int gpio_nr;
 	bool active_low;
+<<<<<<< HEAD
+=======
+	struct timer_list flush_timer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #ifdef CONFIG_OF
@@ -58,7 +70,11 @@ static int gpio_ir_recv_get_devtree_pdata(struct device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id gpio_ir_recv_of_match[] = {
+=======
+static const struct of_device_id gpio_ir_recv_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "gpio-ir-receiver", },
 	{ },
 };
@@ -77,7 +93,11 @@ static irqreturn_t gpio_ir_recv_irq(int irq, void *dev_id)
 	int rc = 0;
 	enum raw_event_type type = IR_SPACE;
 
+<<<<<<< HEAD
 	gval = gpio_get_value_cansleep(gpio_dev->gpio_nr);
+=======
+	gval = gpio_get_value(gpio_dev->gpio_nr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (gval < 0)
 		goto err_get_value;
@@ -92,12 +112,32 @@ static irqreturn_t gpio_ir_recv_irq(int irq, void *dev_id)
 	if (rc < 0)
 		goto err_get_value;
 
+<<<<<<< HEAD
+=======
+	mod_timer(&gpio_dev->flush_timer,
+		  jiffies + nsecs_to_jiffies(gpio_dev->rcdev->timeout));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ir_raw_event_handle(gpio_dev->rcdev);
 
 err_get_value:
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
+=======
+static void flush_timer(unsigned long arg)
+{
+	struct gpio_rc_dev *gpio_dev = (struct gpio_rc_dev *)arg;
+	DEFINE_IR_RAW_EVENT(ev);
+
+	ev.timeout = true;
+	ev.duration = gpio_dev->rcdev->timeout;
+	ir_raw_event_store(gpio_dev->rcdev, &ev);
+	ir_raw_event_handle(gpio_dev->rcdev);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int gpio_ir_recv_probe(struct platform_device *pdev)
 {
 	struct gpio_rc_dev *gpio_dev;
@@ -143,16 +183,32 @@ static int gpio_ir_recv_probe(struct platform_device *pdev)
 	rcdev->input_id.version = 0x0100;
 	rcdev->dev.parent = &pdev->dev;
 	rcdev->driver_name = GPIO_IR_DRIVER_NAME;
+<<<<<<< HEAD
 	if (pdata->allowed_protos)
 		rcdev->allowed_protos = pdata->allowed_protos;
 	else
 		rcdev->allowed_protos = RC_BIT_ALL;
+=======
+	rcdev->min_timeout = 0;
+	rcdev->timeout = IR_DEFAULT_TIMEOUT;
+	rcdev->max_timeout = 10 * IR_DEFAULT_TIMEOUT;
+	if (pdata->allowed_protos)
+		rcdev->allowed_protocols = pdata->allowed_protos;
+	else
+		rcdev->allowed_protocols = RC_BIT_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcdev->map_name = pdata->map_name ?: RC_MAP_EMPTY;
 
 	gpio_dev->rcdev = rcdev;
 	gpio_dev->gpio_nr = pdata->gpio_nr;
 	gpio_dev->active_low = pdata->active_low;
 
+<<<<<<< HEAD
+=======
+	setup_timer(&gpio_dev->flush_timer, flush_timer,
+		    (unsigned long)gpio_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = gpio_request(pdata->gpio_nr, "gpio-ir-recv");
 	if (rc < 0)
 		goto err_gpio_request;
@@ -178,7 +234,10 @@ static int gpio_ir_recv_probe(struct platform_device *pdev)
 	return 0;
 
 err_request_irq:
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc_unregister_device(rcdev);
 	rcdev = NULL;
 err_register_rc_device:
@@ -196,7 +255,11 @@ static int gpio_ir_recv_remove(struct platform_device *pdev)
 	struct gpio_rc_dev *gpio_dev = platform_get_drvdata(pdev);
 
 	free_irq(gpio_to_irq(gpio_dev->gpio_nr), gpio_dev);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+	del_timer_sync(&gpio_dev->flush_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc_unregister_device(gpio_dev->rcdev);
 	gpio_free(gpio_dev->gpio_nr);
 	kfree(gpio_dev);
@@ -241,7 +304,10 @@ static struct platform_driver gpio_ir_recv_driver = {
 	.remove = gpio_ir_recv_remove,
 	.driver = {
 		.name   = GPIO_IR_DRIVER_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_match_ptr(gpio_ir_recv_of_match),
 #ifdef CONFIG_PM
 		.pm	= &gpio_ir_recv_pm_ops,

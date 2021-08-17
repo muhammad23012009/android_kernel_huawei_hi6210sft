@@ -127,6 +127,10 @@ Version 0.0.6    2.1.110   07-aug-98   Eduardo Marcelo Serrat
 #include <linux/stat.h>
 #include <linux/init.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/net_namespace.h>
 #include <net/neighbour.h>
 #include <net/dst.h>
@@ -467,10 +471,17 @@ static struct proto dn_proto = {
 	.obj_size		= sizeof(struct dn_sock),
 };
 
+<<<<<<< HEAD
 static struct sock *dn_alloc_sock(struct net *net, struct socket *sock, gfp_t gfp)
 {
 	struct dn_scp *scp;
 	struct sock *sk = sk_alloc(net, PF_DECnet, gfp, &dn_proto);
+=======
+static struct sock *dn_alloc_sock(struct net *net, struct socket *sock, gfp_t gfp, int kern)
+{
+	struct dn_scp *scp;
+	struct sock *sk = sk_alloc(net, PF_DECnet, gfp, &dn_proto, kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if  (!sk)
 		goto out;
@@ -481,7 +492,11 @@ static struct sock *dn_alloc_sock(struct net *net, struct socket *sock, gfp_t gf
 
 	sk->sk_backlog_rcv = dn_nsp_backlog_rcv;
 	sk->sk_destruct    = dn_destruct;
+<<<<<<< HEAD
 	sk->sk_no_check    = 1;
+=======
+	sk->sk_no_check_tx = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sk->sk_family      = PF_DECnet;
 	sk->sk_protocol    = 0;
 	sk->sk_allocation  = gfp;
@@ -598,7 +613,11 @@ int dn_destroy_timer(struct sock *sk)
 	if (sk->sk_socket)
 		return 0;
 
+<<<<<<< HEAD
 	if ((jiffies - scp->stamp) >= (HZ * decnet_time_wait)) {
+=======
+	if (time_after_eq(jiffies, scp->stamp + HZ * decnet_time_wait)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dn_unhash_sock(sk);
 		sock_put(sk);
 		return 1;
@@ -695,7 +714,11 @@ static int dn_create(struct net *net, struct socket *sock, int protocol,
 	}
 
 
+<<<<<<< HEAD
 	if ((sk = dn_alloc_sock(net, sock, GFP_KERNEL)) == NULL)
+=======
+	if ((sk = dn_alloc_sock(net, sock, GFP_KERNEL, kern)) == NULL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOBUFS;
 
 	sk->sk_protocol = protocol;
@@ -822,7 +845,11 @@ static int dn_auto_bind(struct socket *sock)
 static int dn_confirm_accept(struct sock *sk, long *timeo, gfp_t allocation)
 {
 	struct dn_scp *scp = DN_SK(sk);
+<<<<<<< HEAD
 	DEFINE_WAIT(wait);
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	if (scp->state != DN_CR)
@@ -832,11 +859,19 @@ static int dn_confirm_accept(struct sock *sk, long *timeo, gfp_t allocation)
 	scp->segsize_loc = dst_metric_advmss(__sk_dst_get(sk));
 	dn_send_conn_conf(sk, allocation);
 
+<<<<<<< HEAD
 	prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 	for(;;) {
 		release_sock(sk);
 		if (scp->state == DN_CC)
 			*timeo = schedule_timeout(*timeo);
+=======
+	add_wait_queue(sk_sleep(sk), &wait);
+	for(;;) {
+		release_sock(sk);
+		if (scp->state == DN_CC)
+			*timeo = wait_woken(&wait, TASK_INTERRUPTIBLE, *timeo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lock_sock(sk);
 		err = 0;
 		if (scp->state == DN_RUN)
@@ -850,9 +885,14 @@ static int dn_confirm_accept(struct sock *sk, long *timeo, gfp_t allocation)
 		err = -EAGAIN;
 		if (!*timeo)
 			break;
+<<<<<<< HEAD
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 	}
 	finish_wait(sk_sleep(sk), &wait);
+=======
+	}
+	remove_wait_queue(sk_sleep(sk), &wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err == 0) {
 		sk->sk_socket->state = SS_CONNECTED;
 	} else if (scp->state != DN_CC) {
@@ -864,7 +904,11 @@ static int dn_confirm_accept(struct sock *sk, long *timeo, gfp_t allocation)
 static int dn_wait_run(struct sock *sk, long *timeo)
 {
 	struct dn_scp *scp = DN_SK(sk);
+<<<<<<< HEAD
 	DEFINE_WAIT(wait);
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err = 0;
 
 	if (scp->state == DN_RUN)
@@ -873,11 +917,19 @@ static int dn_wait_run(struct sock *sk, long *timeo)
 	if (!*timeo)
 		return -EALREADY;
 
+<<<<<<< HEAD
 	prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 	for(;;) {
 		release_sock(sk);
 		if (scp->state == DN_CI || scp->state == DN_CC)
 			*timeo = schedule_timeout(*timeo);
+=======
+	add_wait_queue(sk_sleep(sk), &wait);
+	for(;;) {
+		release_sock(sk);
+		if (scp->state == DN_CI || scp->state == DN_CC)
+			*timeo = wait_woken(&wait, TASK_INTERRUPTIBLE, *timeo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lock_sock(sk);
 		err = 0;
 		if (scp->state == DN_RUN)
@@ -891,9 +943,14 @@ static int dn_wait_run(struct sock *sk, long *timeo)
 		err = -ETIMEDOUT;
 		if (!*timeo)
 			break;
+<<<<<<< HEAD
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 	}
 	finish_wait(sk_sleep(sk), &wait);
+=======
+	}
+	remove_wait_queue(sk_sleep(sk), &wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	if (err == 0) {
 		sk->sk_socket->state = SS_CONNECTED;
@@ -1038,16 +1095,28 @@ static void dn_user_copy(struct sk_buff *skb, struct optdata_dn *opt)
 
 static struct sk_buff *dn_wait_for_connect(struct sock *sk, long *timeo)
 {
+<<<<<<< HEAD
 	DEFINE_WAIT(wait);
 	struct sk_buff *skb = NULL;
 	int err = 0;
 
 	prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+	struct sk_buff *skb = NULL;
+	int err = 0;
+
+	add_wait_queue(sk_sleep(sk), &wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for(;;) {
 		release_sock(sk);
 		skb = skb_dequeue(&sk->sk_receive_queue);
 		if (skb == NULL) {
+<<<<<<< HEAD
 			*timeo = schedule_timeout(*timeo);
+=======
+			*timeo = wait_woken(&wait, TASK_INTERRUPTIBLE, *timeo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			skb = skb_dequeue(&sk->sk_receive_queue);
 		}
 		lock_sock(sk);
@@ -1062,9 +1131,14 @@ static struct sk_buff *dn_wait_for_connect(struct sock *sk, long *timeo)
 		err = -EAGAIN;
 		if (!*timeo)
 			break;
+<<<<<<< HEAD
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 	}
 	finish_wait(sk_sleep(sk), &wait);
+=======
+	}
+	remove_wait_queue(sk_sleep(sk), &wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return skb == NULL ? ERR_PTR(err) : skb;
 }
@@ -1098,7 +1172,11 @@ static int dn_accept(struct socket *sock, struct socket *newsock, int flags)
 
 	cb = DN_SKB_CB(skb);
 	sk->sk_ack_backlog--;
+<<<<<<< HEAD
 	newsk = dn_alloc_sock(sock_net(sk), newsock, sk->sk_allocation);
+=======
+	newsk = dn_alloc_sock(sock_net(sk), newsock, sk->sk_allocation, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (newsk == NULL) {
 		release_sock(sk);
 		kfree_skb(skb);
@@ -1336,6 +1414,15 @@ static int dn_setsockopt(struct socket *sock, int level, int optname, char __use
 	lock_sock(sk);
 	err = __dn_setsockopt(sock, level, optname, optval, optlen, 0);
 	release_sock(sk);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NETFILTER
+	/* we need to exclude all possible ENOPROTOOPTs except default case */
+	if (err == -ENOPROTOOPT && optname != DSO_LINKINFO &&
+	    optname != DSO_STREAM && optname != DSO_SEQPACKET)
+		err = nf_setsockopt(sk, PF_DECnet, optname, optval, optlen);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -1443,6 +1530,7 @@ static int __dn_setsockopt(struct socket *sock, int level,int optname, char __us
 		dn_nsp_send_disc(sk, 0x38, 0, sk->sk_allocation);
 		break;
 
+<<<<<<< HEAD
 	default:
 #ifdef CONFIG_NETFILTER
 		return nf_setsockopt(sk, PF_DECnet, optname, optval, optlen);
@@ -1452,6 +1540,8 @@ static int __dn_setsockopt(struct socket *sock, int level,int optname, char __us
 	case DSO_SEQPACKET:
 		return -ENOPROTOOPT;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case DSO_MAXWINDOW:
 		if (optlen != sizeof(unsigned long))
 			return -EINVAL;
@@ -1499,6 +1589,15 @@ static int __dn_setsockopt(struct socket *sock, int level,int optname, char __us
 			return -EINVAL;
 		scp->info_loc = u.info;
 		break;
+<<<<<<< HEAD
+=======
+
+	case DSO_LINKINFO:
+	case DSO_STREAM:
+	case DSO_SEQPACKET:
+	default:
+		return -ENOPROTOOPT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -1512,6 +1611,23 @@ static int dn_getsockopt(struct socket *sock, int level, int optname, char __use
 	lock_sock(sk);
 	err = __dn_getsockopt(sock, level, optname, optval, optlen, 0);
 	release_sock(sk);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NETFILTER
+	if (err == -ENOPROTOOPT && optname != DSO_STREAM &&
+	    optname != DSO_SEQPACKET && optname != DSO_CONACCEPT &&
+	    optname != DSO_CONREJECT) {
+		int len;
+
+		if (get_user(len, optlen))
+			return -EFAULT;
+
+		err = nf_getsockopt(sk, PF_DECnet, optname, optval, &len);
+		if (err >= 0)
+			err = put_user(len, optlen);
+	}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -1577,6 +1693,7 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
 		r_data = &link;
 		break;
 
+<<<<<<< HEAD
 	default:
 #ifdef CONFIG_NETFILTER
 	{
@@ -1597,6 +1714,8 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
 	case DSO_CONREJECT:
 		return -ENOPROTOOPT;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case DSO_MAXWINDOW:
 		if (r_len > sizeof(unsigned long))
 			r_len = sizeof(unsigned long);
@@ -1628,6 +1747,16 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
 			r_len = sizeof(unsigned char);
 		r_data = &scp->info_rem;
 		break;
+<<<<<<< HEAD
+=======
+
+	case DSO_STREAM:
+	case DSO_SEQPACKET:
+	case DSO_CONACCEPT:
+	case DSO_CONREJECT:
+	default:
+		return -ENOPROTOOPT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (r_data) {
@@ -1671,8 +1800,13 @@ static int dn_data_ready(struct sock *sk, struct sk_buff_head *q, int flags, int
 }
 
 
+<<<<<<< HEAD
 static int dn_recvmsg(struct kiocb *iocb, struct socket *sock,
 	struct msghdr *msg, size_t size, int flags)
+=======
+static int dn_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+		      int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sock *sk = sock->sk;
 	struct dn_scp *scp = DN_SK(sk);
@@ -1749,9 +1883,15 @@ static int dn_recvmsg(struct kiocb *iocb, struct socket *sock,
 		}
 
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		set_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
 		sk_wait_event(sk, &timeo, dn_data_ready(sk, queue, flags, target));
 		clear_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
+=======
+		sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+		sk_wait_event(sk, &timeo, dn_data_ready(sk, queue, flags, target));
+		sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		finish_wait(sk_sleep(sk), &wait);
 	}
 
@@ -1762,7 +1902,11 @@ static int dn_recvmsg(struct kiocb *iocb, struct socket *sock,
 		if ((chunk + copied) > size)
 			chunk = size - copied;
 
+<<<<<<< HEAD
 		if (memcpy_toiovec(msg->msg_iov, skb->data, chunk)) {
+=======
+		if (memcpy_to_msg(msg, skb->data, chunk)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rv = -EFAULT;
 			break;
 		}
@@ -1811,6 +1955,10 @@ out:
 		rv = (flags & MSG_PEEK) ? -sk->sk_err : sock_error(sk);
 
 	if ((rv >= 0) && msg->msg_name) {
+<<<<<<< HEAD
+=======
+		__sockaddr_check_size(sizeof(struct sockaddr_dn));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(msg->msg_name, &scp->peer, sizeof(struct sockaddr_dn));
 		msg->msg_namelen = sizeof(struct sockaddr_dn);
 	}
@@ -1906,8 +2054,12 @@ static inline struct sk_buff *dn_alloc_send_pskb(struct sock *sk,
 	return skb;
 }
 
+<<<<<<< HEAD
 static int dn_sendmsg(struct kiocb *iocb, struct socket *sock,
 		      struct msghdr *msg, size_t size)
+=======
+static int dn_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sock *sk = sock->sk;
 	struct dn_scp *scp = DN_SK(sk);
@@ -1917,7 +2069,11 @@ static int dn_sendmsg(struct kiocb *iocb, struct socket *sock,
 	int err = 0;
 	size_t sent = 0;
 	int addr_len = msg->msg_namelen;
+<<<<<<< HEAD
 	struct sockaddr_dn *addr = (struct sockaddr_dn *)msg->msg_name;
+=======
+	DECLARE_SOCKADDR(struct sockaddr_dn *, addr, msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *skb = NULL;
 	struct dn_skb_cb *cb;
 	size_t len;
@@ -2006,10 +2162,17 @@ static int dn_sendmsg(struct kiocb *iocb, struct socket *sock,
 			}
 
 			prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 			set_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
 			sk_wait_event(sk, &timeo,
 				      !dn_queue_too_long(scp, queue, flags));
 			clear_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
+=======
+			sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+			sk_wait_event(sk, &timeo,
+				      !dn_queue_too_long(scp, queue, flags));
+			sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			finish_wait(sk_sleep(sk), &wait);
 			continue;
 		}
@@ -2033,7 +2196,11 @@ static int dn_sendmsg(struct kiocb *iocb, struct socket *sock,
 
 		skb_reserve(skb, 64 + DN_MAX_NSP_DATA_HEADER);
 
+<<<<<<< HEAD
 		if (memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len)) {
+=======
+		if (memcpy_from_msg(skb_put(skb, len), msg, len)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EFAULT;
 			goto out;
 		}
@@ -2081,9 +2248,15 @@ out_err:
 }
 
 static int dn_device_event(struct notifier_block *this, unsigned long event,
+<<<<<<< HEAD
 			void *ptr)
 {
 	struct net_device *dev = (struct net_device *)ptr;
+=======
+			   void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
@@ -2106,8 +2279,11 @@ static struct notifier_block dn_dev_notifier = {
 	.notifier_call = dn_device_event,
 };
 
+<<<<<<< HEAD
 extern int dn_route_rcv(struct sk_buff *, struct net_device *, struct packet_type *, struct net_device *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct packet_type dn_dix_packet_type __read_mostly = {
 	.type =		cpu_to_be16(ETH_P_DNA_RT),
 	.func =		dn_route_rcv,
@@ -2355,9 +2531,12 @@ static const struct proto_ops dn_proto_ops = {
 	.sendpage =	sock_no_sendpage,
 };
 
+<<<<<<< HEAD
 void dn_register_sysctl(void);
 void dn_unregister_sysctl(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("The Linux DECnet Network Protocol");
 MODULE_AUTHOR("Linux DECnet Project Team");
 MODULE_LICENSE("GPL");

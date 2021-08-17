@@ -75,6 +75,7 @@ static inline void copy_to_user_page(struct vm_area_struct *vma,
 #define copy_from_user_page(vma, page, vaddr, dst, src, len) \
 	memcpy((dst), (src), (len))
 
+<<<<<<< HEAD
 /*
  * Invalidate a VA range; pads to L2 cacheline boundaries.
  *
@@ -92,6 +93,8 @@ static inline void __inv_buffer(void *buffer, size_t size)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Flush a VA range; pads to L2 cacheline boundaries. */
 static inline void __flush_buffer(void *buffer, size_t size)
 {
@@ -115,6 +118,7 @@ static inline void __finv_buffer(void *buffer, size_t size)
 }
 
 
+<<<<<<< HEAD
 /* Invalidate a VA range and wait for it to be complete. */
 static inline void inv_buffer(void *buffer, size_t size)
 {
@@ -122,6 +126,8 @@ static inline void inv_buffer(void *buffer, size_t size)
 	mb();
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Flush a locally-homecached VA range and wait for the evicted
  * cachelines to hit memory.
@@ -142,6 +148,29 @@ static inline void finv_buffer_local(void *buffer, size_t size)
 	mb_incoherent();
 }
 
+<<<<<<< HEAD
+=======
+#ifdef __tilepro__
+/* Invalidate a VA range; pads to L2 cacheline boundaries. */
+static inline void __inv_buffer(void *buffer, size_t size)
+{
+	char *next = (char *)((long)buffer & -L2_CACHE_BYTES);
+	char *finish = (char *)L2_CACHE_ALIGN((long)buffer + size);
+	while (next < finish) {
+		__insn_inv(next);
+		next += CHIP_INV_STRIDE();
+	}
+}
+
+/* Invalidate a VA range and wait for it to be complete. */
+static inline void inv_buffer(void *buffer, size_t size)
+{
+	__inv_buffer(buffer, size);
+	mb();
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Flush and invalidate a VA range that is homed remotely, waiting
  * until the memory controller holds the flushed values.  If "hfh" is

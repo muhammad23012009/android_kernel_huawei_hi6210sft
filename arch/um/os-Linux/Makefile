@@ -3,6 +3,12 @@
 # Licensed under the GPL
 #
 
+<<<<<<< HEAD
+=======
+# Don't instrument UML-specific code
+KCOV_INSTRUMENT                := n
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-y = aio.o execvp.o file.o helper.o irq.o main.o mem.o process.o \
 	registers.o sigio.o signal.o start_up.o time.o tty.o \
 	umid.o user_syms.o util.o drivers/ skas/

@@ -6,6 +6,11 @@
 #include <asm/elf.h>
 #include <uapi/linux/elfcore.h>
 
+<<<<<<< HEAD
+=======
+struct coredump_params;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void elf_core_copy_regs(elf_gregset_t *elfregs, struct pt_regs *regs)
 {
 #ifdef ELF_CORE_COPY_REGS
@@ -53,6 +58,10 @@ static inline int elf_core_copy_task_xfpregs(struct task_struct *t, elf_fpxregse
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_UM) || defined(CONFIG_IA64)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * These functions parameterize elf_core_dump in fs/binfmt_elf.c to write out
  * extra segments containing the gate DSO contents.  Dumping its
@@ -63,10 +72,38 @@ static inline int elf_core_copy_task_xfpregs(struct task_struct *t, elf_fpxregse
  */
 extern Elf_Half elf_core_extra_phdrs(void);
 extern int
+<<<<<<< HEAD
 elf_core_write_extra_phdrs(struct file *file, loff_t offset, size_t *size,
 			   unsigned long limit);
 extern int
 elf_core_write_extra_data(struct file *file, size_t *size, unsigned long limit);
 extern size_t elf_core_extra_data_size(void);
+=======
+elf_core_write_extra_phdrs(struct coredump_params *cprm, loff_t offset);
+extern int
+elf_core_write_extra_data(struct coredump_params *cprm);
+extern size_t elf_core_extra_data_size(void);
+#else
+static inline Elf_Half elf_core_extra_phdrs(void)
+{
+	return 0;
+}
+
+static inline int elf_core_write_extra_phdrs(struct coredump_params *cprm, loff_t offset)
+{
+	return 1;
+}
+
+static inline int elf_core_write_extra_data(struct coredump_params *cprm)
+{
+	return 1;
+}
+
+static inline size_t elf_core_extra_data_size(void)
+{
+	return 0;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _LINUX_ELFCORE_H */

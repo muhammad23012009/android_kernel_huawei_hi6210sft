@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config DEFCONFIG_LIST
 	string
 	option defconfig_list
@@ -9,10 +10,25 @@ config UML
 	select HAVE_GENERIC_HARDIRQS
 	select HAVE_UID16
 	select HAVE_FUTEX_CMPXCHG if FUTEX
+=======
+config UML
+	bool
+	default y
+	select ARCH_HAS_KCOV
+	select HAVE_ARCH_AUDITSYSCALL
+	select HAVE_ARCH_SECCOMP_FILTER
+	select HAVE_UID16
+	select HAVE_FUTEX_CMPXCHG if FUTEX
+	select HAVE_DEBUG_KMEMLEAK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select GENERIC_IRQ_SHOW
 	select GENERIC_CPU_DEVICES
 	select GENERIC_IO
 	select GENERIC_CLOCKEVENTS
+<<<<<<< HEAD
+=======
+	select HAVE_GCC_PLUGINS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select TTY # Needed for line.c
 
 config MMU
@@ -34,10 +50,16 @@ config PCI
 config PCMCIA
 	bool
 
+<<<<<<< HEAD
 # Yet to do!
 config TRACE_IRQFLAGS_SUPPORT
 	bool
 	default n
+=======
+config TRACE_IRQFLAGS_SUPPORT
+	bool
+	default y
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config LOCKDEP_SUPPORT
 	bool
@@ -45,7 +67,12 @@ config LOCKDEP_SUPPORT
 
 config STACKTRACE_SUPPORT
 	bool
+<<<<<<< HEAD
 	default n
+=======
+	default y
+	select STACKTRACE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config GENERIC_CALIBRATE_DELAY
 	bool

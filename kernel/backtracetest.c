@@ -19,8 +19,13 @@
 
 static void backtrace_test_normal(void)
 {
+<<<<<<< HEAD
 	printk("Testing a backtrace from process context.\n");
 	printk("The following trace is a kernel self test and not a bug!\n");
+=======
+	pr_info("Testing a backtrace from process context.\n");
+	pr_info("The following trace is a kernel self test and not a bug!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dump_stack();
 }
@@ -37,8 +42,13 @@ static DECLARE_TASKLET(backtrace_tasklet, &backtrace_test_irq_callback, 0);
 
 static void backtrace_test_irq(void)
 {
+<<<<<<< HEAD
 	printk("Testing a backtrace from irq context.\n");
 	printk("The following trace is a kernel self test and not a bug!\n");
+=======
+	pr_info("Testing a backtrace from irq context.\n");
+	pr_info("The following trace is a kernel self test and not a bug!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	init_completion(&backtrace_work);
 	tasklet_schedule(&backtrace_tasklet);
@@ -51,8 +61,13 @@ static void backtrace_test_saved(void)
 	struct stack_trace trace;
 	unsigned long entries[8];
 
+<<<<<<< HEAD
 	printk("Testing a saved backtrace.\n");
 	printk("The following trace is a kernel self test and not a bug!\n");
+=======
+	pr_info("Testing a saved backtrace.\n");
+	pr_info("The following trace is a kernel self test and not a bug!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	trace.nr_entries = 0;
 	trace.max_entries = ARRAY_SIZE(entries);
@@ -65,19 +80,31 @@ static void backtrace_test_saved(void)
 #else
 static void backtrace_test_saved(void)
 {
+<<<<<<< HEAD
 	printk("Saved backtrace test skipped.\n");
+=======
+	pr_info("Saved backtrace test skipped.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
 static int backtrace_regression_test(void)
 {
+<<<<<<< HEAD
 	printk("====[ backtrace testing ]===========\n");
+=======
+	pr_info("====[ backtrace testing ]===========\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	backtrace_test_normal();
 	backtrace_test_irq();
 	backtrace_test_saved();
 
+<<<<<<< HEAD
 	printk("====[ end of backtrace testing ]====\n");
+=======
+	pr_info("====[ end of backtrace testing ]====\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -34,6 +34,7 @@ static void dp_detach_port_notify(struct vport *vport)
 					  OVS_VPORT_CMD_DEL);
 	ovs_dp_detach_port(vport);
 	if (IS_ERR(notify)) {
+<<<<<<< HEAD
 		netlink_set_err(ovs_dp_get_net(dp)->genl_sock, 0,
 				ovs_dp_vport_multicast_group.id,
 				PTR_ERR(notify));
@@ -43,6 +44,16 @@ static void dp_detach_port_notify(struct vport *vport)
 	genlmsg_multicast_netns(ovs_dp_get_net(dp), notify, 0,
 				ovs_dp_vport_multicast_group.id,
 				GFP_KERNEL);
+=======
+		genl_set_err(&dp_vport_genl_family, ovs_dp_get_net(dp), 0,
+			     0, PTR_ERR(notify));
+		return;
+	}
+
+	genlmsg_multicast_netns(&dp_vport_genl_family,
+				ovs_dp_get_net(dp), notify, 0,
+				0, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void ovs_dp_notify_wq(struct work_struct *work)
@@ -59,6 +70,7 @@ void ovs_dp_notify_wq(struct work_struct *work)
 			struct hlist_node *n;
 
 			hlist_for_each_entry_safe(vport, n, &dp->ports[i], dp_hash_node) {
+<<<<<<< HEAD
 				struct netdev_vport *netdev_vport;
 
 				if (vport->ops->type != OVS_VPORT_TYPE_NETDEV)
@@ -67,6 +79,12 @@ void ovs_dp_notify_wq(struct work_struct *work)
 				netdev_vport = netdev_vport_priv(vport);
 				if (netdev_vport->dev->reg_state == NETREG_UNREGISTERED ||
 				    netdev_vport->dev->reg_state == NETREG_UNREGISTERING)
+=======
+				if (vport->ops->type == OVS_VPORT_TYPE_INTERNAL)
+					continue;
+
+				if (!(vport->dev->priv_flags & IFF_OVS_DATAPATH))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					dp_detach_port_notify(vport);
 			}
 		}
@@ -78,7 +96,11 @@ static int dp_device_event(struct notifier_block *unused, unsigned long event,
 			   void *ptr)
 {
 	struct ovs_net *ovs_net;
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct vport *vport = NULL;
 
 	if (!ovs_is_internal_dev(dev))
@@ -88,6 +110,13 @@ static int dp_device_event(struct notifier_block *unused, unsigned long event,
 		return NOTIFY_DONE;
 
 	if (event == NETDEV_UNREGISTER) {
+<<<<<<< HEAD
+=======
+		/* upper_dev_unlink and decrement promisc immediately */
+		ovs_netdev_detach_dev(vport);
+
+		/* schedule vport destroy, dev_put and genl notification */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ovs_net = net_generic(dev_net(dev), ovs_net_id);
 		queue_work(system_wq, &ovs_net->dp_notify_work);
 	}

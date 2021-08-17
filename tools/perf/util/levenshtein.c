@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 #include "cache.h"
 #include "levenshtein.h"
+=======
+#include "levenshtein.h"
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This function implements the Damerau-Levenshtein algorithm to

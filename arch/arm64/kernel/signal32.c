@@ -23,6 +23,10 @@
 #include <linux/syscalls.h>
 #include <linux/ratelimit.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/esr.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/fpsimd.h>
 #include <asm/signal32.h>
 #include <asm/uaccess.h>
@@ -81,6 +85,11 @@ struct compat_vfp_sigframe {
 #define VFP_MAGIC		0x56465001
 #define VFP_STORAGE_SIZE	sizeof(struct compat_vfp_sigframe)
 
+<<<<<<< HEAD
+=======
+#define FSR_WRITE_SHIFT		(11)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct compat_aux_sigframe {
 	struct compat_vfp_sigframe	vfp;
 
@@ -122,7 +131,11 @@ static inline int get_sigset_t(sigset_t *set,
 	return 0;
 }
 
+<<<<<<< HEAD
 int copy_siginfo_to_user32(compat_siginfo_t __user *to, siginfo_t *from)
+=======
+int copy_siginfo_to_user32(compat_siginfo_t __user *to, const siginfo_t *from)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 
@@ -163,7 +176,11 @@ int copy_siginfo_to_user32(compat_siginfo_t __user *to, siginfo_t *from)
 #ifdef BUS_MCEERR_AO
 		/*
 		 * Other callers might not initialize the si_lsb field,
+<<<<<<< HEAD
 		 * so check explicitely for the right codes here.
+=======
+		 * so check explicitly for the right codes here.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		if (from->si_signo == SIGBUS &&
 		    (from->si_code == BUS_MCEERR_AR || from->si_code == BUS_MCEERR_AO))
@@ -183,14 +200,20 @@ int copy_siginfo_to_user32(compat_siginfo_t __user *to, siginfo_t *from)
 		err |= __put_user(from->si_uid, &to->si_uid);
 		err |= __put_user(from->si_int, &to->si_int);
 		break;
+<<<<<<< HEAD
 #ifdef __ARCH_SIGSYS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case __SI_SYS:
 		err |= __put_user((compat_uptr_t)(unsigned long)
 				from->si_call_addr, &to->si_call_addr);
 		err |= __put_user(from->si_syscall, &to->si_syscall);
 		err |= __put_user(from->si_arch, &to->si_arch);
 		break;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default: /* this is just in case for now ... */
 		err |= __put_user(from->si_pid, &to->si_pid);
 		err |= __put_user(from->si_uid, &to->si_uid);
@@ -355,7 +378,11 @@ static int compat_restore_sigframe(struct pt_regs *regs,
 	 */
 	regs->syscallno = ~0UL;
 
+<<<<<<< HEAD
 	err |= !valid_user_regs(&regs->user_regs);
+=======
+	err |= !valid_user_regs(&regs->user_regs, current);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	aux = (struct compat_aux_sigframe __user *) sf->uc.uc_regspace;
 	if (err == 0)
@@ -369,7 +396,11 @@ asmlinkage int compat_sys_sigreturn(struct pt_regs *regs)
 	struct compat_sigframe __user *frame;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Since we stacked the signal on a 64-bit boundary,
@@ -393,7 +424,11 @@ badframe:
 	if (show_unhandled_signals)
 		pr_info_ratelimited("%s[%d]: bad frame in %s: pc=%08llx sp=%08llx\n",
 				    current->comm, task_pid_nr(current), __func__,
+<<<<<<< HEAD
 				    regs->pc, regs->sp);
+=======
+				    regs->pc, regs->compat_sp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	force_sig(SIGSEGV, current);
 	return 0;
 }
@@ -403,7 +438,11 @@ asmlinkage int compat_sys_rt_sigreturn(struct pt_regs *regs)
 	struct compat_rt_sigframe __user *frame;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Since we stacked the signal on a 64-bit boundary,
@@ -430,11 +469,16 @@ badframe:
 	if (show_unhandled_signals)
 		pr_info_ratelimited("%s[%d]: bad frame in %s: pc=%08llx sp=%08llx\n",
 				    current->comm, task_pid_nr(current), __func__,
+<<<<<<< HEAD
 				    regs->pc, regs->sp);
+=======
+				    regs->pc, regs->compat_sp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	force_sig(SIGSEGV, current);
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __user *compat_get_sigframe(struct k_sigaction *ka,
 					struct pt_regs *regs,
 					int framesize)
@@ -449,6 +493,16 @@ static void __user *compat_get_sigframe(struct k_sigaction *ka,
 		sp = current->sas_ss_sp + current->sas_ss_size;
 
 	/*
+=======
+static void __user *compat_get_sigframe(struct ksignal *ksig,
+					struct pt_regs *regs,
+					int framesize)
+{
+	compat_ulong_t sp = sigsp(regs->compat_sp, ksig);
+	void __user *frame;
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * ATPCS B01 mandates 8-byte alignment
 	 */
 	frame = compat_ptr((compat_uptr_t)((sp - framesize) & ~7));
@@ -468,7 +522,11 @@ static void compat_setup_return(struct pt_regs *regs, struct k_sigaction *ka,
 {
 	compat_ulong_t handler = ptr_to_compat(ka->sa.sa_handler);
 	compat_ulong_t retcode;
+<<<<<<< HEAD
 	compat_ulong_t spsr = regs->pstate & ~PSR_f;
+=======
+	compat_ulong_t spsr = regs->pstate & ~(PSR_f | COMPAT_PSR_E_BIT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int thumb;
 
 	/* Check if the handler is written for ARM or Thumb */
@@ -482,6 +540,12 @@ static void compat_setup_return(struct pt_regs *regs, struct k_sigaction *ka,
 	/* The IT state must be cleared for both ARM and Thumb-2 */
 	spsr &= ~COMPAT_PSR_IT_MASK;
 
+<<<<<<< HEAD
+=======
+	/* Restore the original endianness */
+	spsr |= COMPAT_PSR_ENDSTATE;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ka->sa.sa_flags & SA_RESTORER) {
 		retcode = ptr_to_compat(ka->sa.sa_restorer);
 	} else {
@@ -528,7 +592,13 @@ static int compat_setup_sigframe(struct compat_sigframe __user *sf,
 	__put_user_error(regs->pstate, &sf->uc.uc_mcontext.arm_cpsr, err);
 
 	__put_user_error((compat_ulong_t)0, &sf->uc.uc_mcontext.trap_no, err);
+<<<<<<< HEAD
 	__put_user_error((compat_ulong_t)0, &sf->uc.uc_mcontext.error_code, err);
+=======
+	/* set the compat FSR WnR */
+	__put_user_error(!!(current->thread.fault_code & ESR_ELx_WNR) <<
+			 FSR_WRITE_SHIFT, &sf->uc.uc_mcontext.error_code, err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__put_user_error(current->thread.fault_address, &sf->uc.uc_mcontext.fault_address, err);
 	__put_user_error(set->sig[0], &sf->uc.uc_mcontext.oldmask, err);
 
@@ -546,18 +616,30 @@ static int compat_setup_sigframe(struct compat_sigframe __user *sf,
 /*
  * 32-bit signal handling routines called from signal.c
  */
+<<<<<<< HEAD
 int compat_setup_rt_frame(int usig, struct k_sigaction *ka, siginfo_t *info,
+=======
+int compat_setup_rt_frame(int usig, struct ksignal *ksig,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  sigset_t *set, struct pt_regs *regs)
 {
 	struct compat_rt_sigframe __user *frame;
 	int err = 0;
 
+<<<<<<< HEAD
 	frame = compat_get_sigframe(ka, regs, sizeof(*frame));
+=======
+	frame = compat_get_sigframe(ksig, regs, sizeof(*frame));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!frame)
 		return 1;
 
+<<<<<<< HEAD
 	err |= copy_siginfo_to_user32(&frame->info, info);
+=======
+	err |= copy_siginfo_to_user32(&frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__put_user_error(0, &frame->sig.uc.uc_flags, err);
 	__put_user_error(0, &frame->sig.uc.uc_link, err);
@@ -567,7 +649,11 @@ int compat_setup_rt_frame(int usig, struct k_sigaction *ka, siginfo_t *info,
 	err |= compat_setup_sigframe(&frame->sig, regs, set);
 
 	if (err == 0) {
+<<<<<<< HEAD
 		compat_setup_return(regs, ka, frame->sig.retcode, frame, usig);
+=======
+		compat_setup_return(regs, &ksig->ka, frame->sig.retcode, frame, usig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		regs->regs[1] = (compat_ulong_t)(unsigned long)&frame->info;
 		regs->regs[2] = (compat_ulong_t)(unsigned long)&frame->sig.uc;
 	}
@@ -575,13 +661,21 @@ int compat_setup_rt_frame(int usig, struct k_sigaction *ka, siginfo_t *info,
 	return err;
 }
 
+<<<<<<< HEAD
 int compat_setup_frame(int usig, struct k_sigaction *ka, sigset_t *set,
+=======
+int compat_setup_frame(int usig, struct ksignal *ksig, sigset_t *set,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       struct pt_regs *regs)
 {
 	struct compat_sigframe __user *frame;
 	int err = 0;
 
+<<<<<<< HEAD
 	frame = compat_get_sigframe(ka, regs, sizeof(*frame));
+=======
+	frame = compat_get_sigframe(ksig, regs, sizeof(*frame));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!frame)
 		return 1;
@@ -590,7 +684,11 @@ int compat_setup_frame(int usig, struct k_sigaction *ka, sigset_t *set,
 
 	err |= compat_setup_sigframe(frame, regs, set);
 	if (err == 0)
+<<<<<<< HEAD
 		compat_setup_return(regs, ka, frame->retcode, frame, usig);
+=======
+		compat_setup_return(regs, &ksig->ka, frame->retcode, frame, usig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }

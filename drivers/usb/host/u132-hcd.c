@@ -73,7 +73,11 @@ MODULE_LICENSE("GPL");
 #define INT_MODULE_PARM(n, v) static int n = v;module_param(n, int, 0444)
 INT_MODULE_PARM(testing, 0);
 /* Some boards misreport power switching/overcurrent*/
+<<<<<<< HEAD
 static bool distrust_firmware = 1;
+=======
+static bool distrust_firmware = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(distrust_firmware, bool, 0);
 MODULE_PARM_DESC(distrust_firmware, "true to distrust firmware power/overcurren"
 	"t setup");
@@ -1309,6 +1313,7 @@ static void u132_hcd_ring_work_scheduler(struct work_struct *work)
 		u132_ring_put_kref(u132, ring);
 		return;
 	} else if (ring->curr_endp) {
+<<<<<<< HEAD
 		struct u132_endp *last_endp = ring->curr_endp;
 		struct list_head *scan;
 		struct list_head *head = &last_endp->endp_ring;
@@ -1316,6 +1321,11 @@ static void u132_hcd_ring_work_scheduler(struct work_struct *work)
 		list_for_each(scan, head) {
 			struct u132_endp *endp = list_entry(scan,
 				struct u132_endp, endp_ring);
+=======
+		struct u132_endp *endp, *last_endp = ring->curr_endp;
+		unsigned long wakeup = 0;
+		list_for_each_entry(endp, &last_endp->endp_ring, endp_ring) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (endp->queue_next == endp->queue_last) {
 			} else if ((endp->delayed == 0)
 				|| time_after_eq(jiffies, endp->jiffies)) {
@@ -1542,11 +1552,16 @@ static int u132_periodic_reinit(struct u132 *u132)
 		(fit ^ FIT) | u132->hc_fminterval);
 	if (retval)
 		return retval;
+<<<<<<< HEAD
 	retval = u132_write_pcimem(u132, periodicstart,
 		((9 * fi) / 10) & 0x3fff);
 	if (retval)
 		return retval;
 	return 0;
+=======
+	return u132_write_pcimem(u132, periodicstart,
+	       ((9 * fi) / 10) & 0x3fff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static char *hcfs2string(int state)
@@ -1809,9 +1824,15 @@ static int u132_hcd_start(struct usb_hcd *hcd)
 		struct platform_device *pdev =
 			to_platform_device(hcd->self.controller);
 		u16 vendor = ((struct u132_platform_data *)
+<<<<<<< HEAD
 			(pdev->dev.platform_data))->vendor;
 		u16 device = ((struct u132_platform_data *)
 			(pdev->dev.platform_data))->device;
+=======
+			dev_get_platdata(&pdev->dev))->vendor;
+		u16 device = ((struct u132_platform_data *)
+			dev_get_platdata(&pdev->dev))->device;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_lock(&u132->sw_lock);
 		msleep(10);
 		if (vendor == PCI_VENDOR_ID_AMD && device == 0x740c) {
@@ -2247,9 +2268,14 @@ static int u132_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 {
 	struct u132 *u132 = hcd_to_u132(hcd);
 	if (irqs_disabled()) {
+<<<<<<< HEAD
 		if (__GFP_WAIT & mem_flags) {
 			printk(KERN_ERR "invalid context for function that migh"
 				"t sleep\n");
+=======
+		if (gfpflags_allow_blocking(mem_flags)) {
+			printk(KERN_ERR "invalid context for function that might sleep\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 		}
 	}
@@ -2397,6 +2423,7 @@ static int u132_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 static int dequeue_from_overflow_chain(struct u132 *u132,
 	struct u132_endp *endp, struct urb *urb)
 {
+<<<<<<< HEAD
 	struct list_head *scan;
 	struct list_head *head = &endp->urb_more;
 	list_for_each(scan, head) {
@@ -2405,6 +2432,14 @@ static int dequeue_from_overflow_chain(struct u132 *u132,
 		if (urbq->urb == urb) {
 			struct usb_hcd *hcd = u132_to_hcd(u132);
 			list_del(scan);
+=======
+	struct u132_urbq *urbq;
+
+	list_for_each_entry(urbq, &endp->urb_more, urb_more) {
+		if (urbq->urb == urb) {
+			struct usb_hcd *hcd = u132_to_hcd(u132);
+			list_del(&urbq->urb_more);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			endp->queue_size -= 1;
 			urb->error_count = 0;
 			usb_hcd_giveback_urb(hcd, urb, 0);
@@ -2569,7 +2604,11 @@ static int u132_get_frame(struct usb_hcd *hcd)
 	} else {
 		int frame = 0;
 		dev_err(&u132->platform_dev->dev, "TODO: u132_get_frame\n");
+<<<<<<< HEAD
 		msleep(100);
+=======
+		mdelay(100);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return frame;
 	}
 }
@@ -2584,12 +2623,17 @@ static int u132_roothub_descriptor(struct u132 *u132,
 	retval = u132_read_pcimem(u132, roothub.a, &rh_a);
 	if (retval)
 		return retval;
+<<<<<<< HEAD
 	desc->bDescriptorType = 0x29;
+=======
+	desc->bDescriptorType = USB_DT_HUB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc->bPwrOn2PwrGood = (rh_a & RH_A_POTPGT) >> 24;
 	desc->bHubContrCurrent = 0;
 	desc->bNbrPorts = u132->num_ports;
 	temp = 1 + (u132->num_ports / 8);
 	desc->bDescLength = 7 + 2 * temp;
+<<<<<<< HEAD
 	temp = 0;
 	if (rh_a & RH_A_NPS)
 		temp |= 0x0002;
@@ -2599,6 +2643,17 @@ static int u132_roothub_descriptor(struct u132 *u132,
 		temp |= 0x0010;
 	else if (rh_a & RH_A_OCPM)
 		temp |= 0x0008;
+=======
+	temp = HUB_CHAR_COMMON_LPSM | HUB_CHAR_COMMON_OCPM;
+	if (rh_a & RH_A_NPS)
+		temp |= HUB_CHAR_NO_LPSM;
+	if (rh_a & RH_A_PSM)
+		temp |= HUB_CHAR_INDV_PORT_LPSM;
+	if (rh_a & RH_A_NOCP)
+		temp |= HUB_CHAR_NO_OCPM;
+	else if (rh_a & RH_A_OCPM)
+		temp |= HUB_CHAR_INDV_PORT_OCPM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc->wHubCharacteristics = cpu_to_le16(temp);
 	retval = u132_read_pcimem(u132, roothub.b, &rh_b);
 	if (retval)
@@ -2701,12 +2756,16 @@ static int u132_roothub_setportfeature(struct u132 *u132, u16 wValue,
 	if (wIndex == 0 || wIndex > u132->num_ports) {
 		return -EINVAL;
 	} else {
+<<<<<<< HEAD
 		int retval;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int port_index = wIndex - 1;
 		struct u132_port *port = &u132->port[port_index];
 		port->Status &= ~(1 << wValue);
 		switch (wValue) {
 		case USB_PORT_FEAT_SUSPEND:
+<<<<<<< HEAD
 			retval = u132_write_pcimem(u132,
 				roothub.portstatus[port_index], RH_PS_PSS);
 			if (retval)
@@ -2723,6 +2782,15 @@ static int u132_roothub_setportfeature(struct u132 *u132, u16 wValue,
 			if (retval)
 				return retval;
 			return 0;
+=======
+			return u132_write_pcimem(u132,
+			       roothub.portstatus[port_index], RH_PS_PSS);
+		case USB_PORT_FEAT_POWER:
+			return u132_write_pcimem(u132,
+			       roothub.portstatus[port_index], RH_PS_PPS);
+		case USB_PORT_FEAT_RESET:
+			return u132_roothub_portreset(u132, port_index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			return -EPIPE;
 		}
@@ -2737,7 +2805,10 @@ static int u132_roothub_clearportfeature(struct u132 *u132, u16 wValue,
 	} else {
 		int port_index = wIndex - 1;
 		u32 temp;
+<<<<<<< HEAD
 		int retval;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct u132_port *port = &u132->port[port_index];
 		port->Status &= ~(1 << wValue);
 		switch (wValue) {
@@ -2773,11 +2844,16 @@ static int u132_roothub_clearportfeature(struct u132 *u132, u16 wValue,
 		default:
 			return -EPIPE;
 		}
+<<<<<<< HEAD
 		retval = u132_write_pcimem(u132, roothub.portstatus[port_index],
 			 temp);
 		if (retval)
 			return retval;
 		return 0;
+=======
+		return u132_write_pcimem(u132, roothub.portstatus[port_index],
+		       temp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -3034,7 +3110,11 @@ static void u132_initialise(struct u132 *u132, struct platform_device *pdev)
 	int addrs = MAX_U132_ADDRS;
 	int udevs = MAX_U132_UDEVS;
 	int endps = MAX_U132_ENDPS;
+<<<<<<< HEAD
 	u132->board = pdev->dev.platform_data;
+=======
+	u132->board = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u132->platform_dev = pdev;
 	u132->power = 0;
 	u132->reset = 0;
@@ -3133,6 +3213,10 @@ static int u132_probe(struct platform_device *pdev)
 			u132_u132_put_kref(u132);
 			return retval;
 		} else {
+<<<<<<< HEAD
+=======
+			device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			u132_monitor_queue_work(u132, 100);
 			return 0;
 		}
@@ -3143,8 +3227,12 @@ static int u132_probe(struct platform_device *pdev)
 #ifdef CONFIG_PM
 /*
  * for this device there's no useful distinction between the controller
+<<<<<<< HEAD
  * and its root hub, except that the root hub only gets direct PM calls
  * when CONFIG_PM_RUNTIME is enabled.
+=======
+ * and its root hub.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int u132_suspend(struct platform_device *pdev, pm_message_t state)
 {
@@ -3217,8 +3305,12 @@ static struct platform_driver u132_platform_driver = {
 	.suspend = u132_suspend,
 	.resume = u132_resume,
 	.driver = {
+<<<<<<< HEAD
 		   .name = (char *)hcd_name,
 		   .owner = THIS_MODULE,
+=======
+		   .name = hcd_name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   },
 };
 static int __init u132_hcd_init(void)
@@ -3233,6 +3325,12 @@ static int __init u132_hcd_init(void)
 	printk(KERN_INFO "driver %s\n", hcd_name);
 	workqueue = create_singlethread_workqueue("u132");
 	retval = platform_driver_register(&u132_platform_driver);
+<<<<<<< HEAD
+=======
+	if (retval)
+		destroy_workqueue(workqueue);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 

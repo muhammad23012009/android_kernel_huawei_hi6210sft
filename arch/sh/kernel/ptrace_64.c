@@ -504,6 +504,7 @@ asmlinkage int sh64_ptrace(long request, long pid,
 	return sys_ptrace(request, pid, addr, data);
 }
 
+<<<<<<< HEAD
 static inline int audit_arch(void)
 {
 	int arch = EM_SH;
@@ -518,6 +519,8 @@ static inline int audit_arch(void)
 	return arch;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 asmlinkage long long do_syscall_trace_enter(struct pt_regs *regs)
 {
 	long long ret = 0;
@@ -536,8 +539,12 @@ asmlinkage long long do_syscall_trace_enter(struct pt_regs *regs)
 	if (unlikely(test_thread_flag(TIF_SYSCALL_TRACEPOINT)))
 		trace_sys_enter(regs, regs->regs[9]);
 
+<<<<<<< HEAD
 	audit_syscall_entry(audit_arch(), regs->regs[1],
 			    regs->regs[2], regs->regs[3],
+=======
+	audit_syscall_entry(regs->regs[1], regs->regs[2], regs->regs[3],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    regs->regs[4], regs->regs[5]);
 
 	return ret ?: regs->regs[9];

@@ -32,7 +32,11 @@ extern void ia64_load_extra (struct task_struct *task);
 
 #ifdef CONFIG_PERFMON
   DECLARE_PER_CPU(unsigned long, pfm_syst_info);
+<<<<<<< HEAD
 # define PERFMON_IS_SYSWIDE() (__get_cpu_var(pfm_syst_info) & 0x1)
+=======
+# define PERFMON_IS_SYSWIDE() (__this_cpu_read(pfm_syst_info) & 0x1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 # define PERFMON_IS_SYSWIDE() (0)
 #endif

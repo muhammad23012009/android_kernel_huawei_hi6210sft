@@ -60,6 +60,11 @@ struct technisat_usb2_state {
 	u8 power_state;
 
 	u16 last_scan_code;
+<<<<<<< HEAD
+=======
+
+	u8 buf[64];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* debug print helpers */
@@ -87,9 +92,19 @@ struct technisat_usb2_state {
 static int technisat_usb2_i2c_access(struct usb_device *udev,
 		u8 device_addr, u8 *tx, u8 txlen, u8 *rx, u8 rxlen)
 {
+<<<<<<< HEAD
 	u8 b[64];
 	int ret, actual_length;
 
+=======
+	u8 *b;
+	int ret, actual_length;
+
+	b = kmalloc(64, GFP_KERNEL);
+	if (!b)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	deb_i2c("i2c-access: %02x, tx: ", device_addr);
 	debug_dump(tx, txlen, deb_i2c);
 	deb_i2c(" ");
@@ -102,7 +117,11 @@ static int technisat_usb2_i2c_access(struct usb_device *udev,
 	if (rxlen > 62) {
 		err("i2c RX buffer can't exceed 62 bytes (dev 0x%02x)",
 				device_addr);
+<<<<<<< HEAD
 		txlen = 62;
+=======
+		rxlen = 62;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	b[0] = I2C_SPEED_100KHZ_BIT;
@@ -121,7 +140,11 @@ static int technisat_usb2_i2c_access(struct usb_device *udev,
 
 	if (ret < 0) {
 		err("i2c-error: out failed %02x = %d", device_addr, ret);
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = usb_bulk_msg(udev,
@@ -129,7 +152,11 @@ static int technisat_usb2_i2c_access(struct usb_device *udev,
 			b, 64, &actual_length, 1000);
 	if (ret < 0) {
 		err("i2c-error: in failed %02x = %d", device_addr, ret);
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (b[0] != I2C_STATUS_OK) {
@@ -138,7 +165,11 @@ static int technisat_usb2_i2c_access(struct usb_device *udev,
 		if (!(b[0] == I2C_STATUS_NAK &&
 				device_addr == 0x60
 				/* && device_is_technisat_usb2 */))
+<<<<<<< HEAD
 			return -ENODEV;
+=======
+			goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	deb_i2c("status: %d, ", b[0]);
@@ -152,7 +183,13 @@ static int technisat_usb2_i2c_access(struct usb_device *udev,
 
 	deb_i2c("\n");
 
+<<<<<<< HEAD
 	return 0;
+=======
+err:
+	kfree(b);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int technisat_usb2_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msg,
@@ -214,6 +251,7 @@ static void technisat_usb2_frontend_reset(struct usb_device *udev)
 
 /* LED control */
 enum technisat_usb2_led_state {
+<<<<<<< HEAD
 	LED_OFF,
 	LED_BLINK,
 	LED_ON,
@@ -237,6 +275,31 @@ static int technisat_usb2_set_led(struct dvb_usb_device *d, int red, enum techni
 		led[1] = 0x82;
 		break;
 	case LED_BLINK:
+=======
+	TECH_LED_OFF,
+	TECH_LED_BLINK,
+	TECH_LED_ON,
+	TECH_LED_UNDEFINED
+};
+
+static int technisat_usb2_set_led(struct dvb_usb_device *d, int red,
+				  enum technisat_usb2_led_state st)
+{
+	struct technisat_usb2_state *state = d->priv;
+	u8 *led = state->buf;
+	int ret;
+
+	led[0] = red ? SET_RED_LED_VENDOR_REQUEST : SET_GREEN_LED_VENDOR_REQUEST;
+
+	if (disable_led_control && st != TECH_LED_OFF)
+		return 0;
+
+	switch (st) {
+	case TECH_LED_ON:
+		led[1] = 0x82;
+		break;
+	case TECH_LED_BLINK:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		led[1] = 0x82;
 		if (red) {
 			led[2] = 0x02;
@@ -251,7 +314,11 @@ static int technisat_usb2_set_led(struct dvb_usb_device *d, int red, enum techni
 		break;
 
 	default:
+<<<<<<< HEAD
 	case LED_OFF:
+=======
+	case TECH_LED_OFF:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		led[1] = 0x80;
 		break;
 	}
@@ -263,7 +330,11 @@ static int technisat_usb2_set_led(struct dvb_usb_device *d, int red, enum techni
 		red ? SET_RED_LED_VENDOR_REQUEST : SET_GREEN_LED_VENDOR_REQUEST,
 		USB_TYPE_VENDOR | USB_DIR_OUT,
 		0, 0,
+<<<<<<< HEAD
 		led, sizeof(led), 500);
+=======
+		led, 8, 500);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&d->i2c_mutex);
 	return ret;
@@ -271,8 +342,16 @@ static int technisat_usb2_set_led(struct dvb_usb_device *d, int red, enum techni
 
 static int technisat_usb2_set_led_timer(struct dvb_usb_device *d, u8 red, u8 green)
 {
+<<<<<<< HEAD
 	int ret;
 	u8 b = 0;
+=======
+	struct technisat_usb2_state *state = d->priv;
+	u8 *b = state->buf;
+	int ret;
+
+	b[0] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mutex_lock_interruptible(&d->i2c_mutex) < 0)
 		return -EAGAIN;
@@ -281,7 +360,11 @@ static int technisat_usb2_set_led_timer(struct dvb_usb_device *d, u8 red, u8 gre
 		SET_LED_TIMER_DIVIDER_VENDOR_REQUEST,
 		USB_TYPE_VENDOR | USB_DIR_OUT,
 		(red << 8) | green, 0,
+<<<<<<< HEAD
 		&b, 1, 500);
+=======
+		b, 1, 500);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&d->i2c_mutex);
 
@@ -310,11 +393,19 @@ static void technisat_usb2_green_led_control(struct work_struct *work)
 				goto schedule;
 
 			if (ber > 1000)
+<<<<<<< HEAD
 				technisat_usb2_set_led(state->dev, 0, LED_BLINK);
 			else
 				technisat_usb2_set_led(state->dev, 0, LED_ON);
 		} else
 			technisat_usb2_set_led(state->dev, 0, LED_OFF);
+=======
+				technisat_usb2_set_led(state->dev, 0, TECH_LED_BLINK);
+			else
+				technisat_usb2_set_led(state->dev, 0, TECH_LED_ON);
+		} else
+			technisat_usb2_set_led(state->dev, 0, TECH_LED_OFF);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 schedule:
@@ -328,7 +419,15 @@ static int technisat_usb2_identify_state(struct usb_device *udev,
 		struct dvb_usb_device_description **desc, int *cold)
 {
 	int ret;
+<<<<<<< HEAD
 	u8 version[3];
+=======
+	u8 *version;
+
+	version = kmalloc(3, GFP_KERNEL);
+	if (!version)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* first select the interface */
 	if (usb_set_interface(udev, 0, 1) != 0)
@@ -342,7 +441,11 @@ static int technisat_usb2_identify_state(struct usb_device *udev,
 		GET_VERSION_INFO_VENDOR_REQUEST,
 		USB_TYPE_VENDOR | USB_DIR_IN,
 		0, 0,
+<<<<<<< HEAD
 		version, sizeof(version), 500);
+=======
+		version, 3, 500);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret < 0)
 		*cold = 1;
@@ -351,6 +454,11 @@ static int technisat_usb2_identify_state(struct usb_device *udev,
 		*cold = 0;
 	}
 
+<<<<<<< HEAD
+=======
+	kfree(version);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -365,9 +473,15 @@ static int technisat_usb2_power_ctrl(struct dvb_usb_device *d, int level)
 		return 0;
 
 	/* green led is turned off in any case - will be turned on when tuning */
+<<<<<<< HEAD
 	technisat_usb2_set_led(d, 0, LED_OFF);
 	/* red led is turned on all the time */
 	technisat_usb2_set_led(d, 1, LED_ON);
+=======
+	technisat_usb2_set_led(d, 0, TECH_LED_OFF);
+	/* red led is turned on all the time */
+	technisat_usb2_set_led(d, 1, TECH_LED_ON);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -449,9 +563,17 @@ static int technisat_usb2_read_mac_address(struct dvb_usb_device *d,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* frontend attach */
 static int technisat_usb2_set_voltage(struct dvb_frontend *fe,
 		fe_sec_voltage_t voltage)
+=======
+static struct stv090x_config technisat_usb2_stv090x_config;
+
+/* frontend attach */
+static int technisat_usb2_set_voltage(struct dvb_frontend *fe,
+				      enum fe_sec_voltage voltage)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	u8 gpio[3] = { 0 }; /* 0 = 2, 1 = 3, 2 = 4 */
@@ -472,7 +594,12 @@ static int technisat_usb2_set_voltage(struct dvb_frontend *fe,
 	}
 
 	for (i = 0; i < 3; i++)
+<<<<<<< HEAD
 		if (stv090x_set_gpio(fe, i+2, 0, gpio[i], 0) != 0)
+=======
+		if (technisat_usb2_stv090x_config.set_gpio(fe, i+2, 0,
+							   gpio[i], 0) != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EREMOTEIO;
 	return 0;
 }
@@ -509,7 +636,11 @@ static int technisat_usb2_frontend_attach(struct dvb_usb_adapter *a)
 			&a->dev->i2c_adap, STV090x_DEMODULATOR_0);
 
 	if (a->fe_adap[0].fe) {
+<<<<<<< HEAD
 		struct stv6110x_devctl *ctl;
+=======
+		const struct stv6110x_devctl *ctl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ctl = dvb_attach(stv6110x_attach,
 				a->fe_adap[0].fe,
@@ -591,9 +722,16 @@ static int technisat_usb2_frontend_attach(struct dvb_usb_adapter *a)
 
 static int technisat_usb2_get_ir(struct dvb_usb_device *d)
 {
+<<<<<<< HEAD
 	u8 buf[62], *b;
 	int ret;
 	struct ir_raw_event ev;
+=======
+	struct technisat_usb2_state *state = d->priv;
+	struct ir_raw_event ev;
+	u8 *buf = state->buf;
+	int i, ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf[0] = GET_IR_DATA_VENDOR_REQUEST;
 	buf[1] = 0x08;
@@ -617,7 +755,11 @@ static int technisat_usb2_get_ir(struct dvb_usb_device *d)
 			GET_IR_DATA_VENDOR_REQUEST,
 			USB_TYPE_VENDOR | USB_DIR_IN,
 			0x8080, 0,
+<<<<<<< HEAD
 			buf, sizeof(buf), 500);
+=======
+			buf, 62, 500);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unlock:
 	mutex_unlock(&d->i2c_mutex);
@@ -629,6 +771,7 @@ unlock:
 		return 0; /* no key pressed */
 
 	/* decoding */
+<<<<<<< HEAD
 	b = buf+1;
 
 #if 0
@@ -644,11 +787,30 @@ unlock:
 
 		b++;
 		if (*b == 0xff) {
+=======
+
+#if 0
+	deb_rc("RC: %d ", ret);
+	debug_dump(buf + 1, ret, deb_rc);
+#endif
+
+	ev.pulse = 0;
+	for (i = 1; i < ARRAY_SIZE(state->buf); i++) {
+		if (buf[i] == 0xff) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ev.pulse = 0;
 			ev.duration = 888888*2;
 			ir_raw_event_store(d->rc_dev, &ev);
 			break;
 		}
+<<<<<<< HEAD
+=======
+
+		ev.pulse = !ev.pulse;
+		ev.duration = (buf[i] * FIRMWARE_CLOCK_DIVISOR *
+			       FIRMWARE_CLOCK_TICK) / 1000;
+		ir_raw_event_store(d->rc_dev, &ev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ir_raw_event_handle(d->rc_dev);
@@ -667,7 +829,11 @@ static int technisat_usb2_rc_query(struct dvb_usb_device *d)
 		return 0;
 
 	if (!disable_led_control)
+<<<<<<< HEAD
 		technisat_usb2_set_led(d, 1, LED_BLINK);
+=======
+		technisat_usb2_set_led(d, 1, TECH_LED_BLINK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -704,13 +870,21 @@ static struct dvb_usb_device_properties technisat_usb2_devices = {
 
 			.stream = {
 				.type = USB_ISOC,
+<<<<<<< HEAD
 				.count = 8,
+=======
+				.count = 4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				.endpoint = 0x2,
 				.u = {
 					.isoc = {
 						.framesperurb = 32,
 						.framesize = 2048,
+<<<<<<< HEAD
 						.interval = 3,
+=======
+						.interval = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					}
 				}
 			},

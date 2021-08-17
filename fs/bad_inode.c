@@ -15,6 +15,7 @@
 #include <linux/namei.h>
 #include <linux/poll.h>
 
+<<<<<<< HEAD
 
 static loff_t bad_file_llseek(struct file *file, loff_t offset, int whence)
 {
@@ -72,11 +73,14 @@ static int bad_file_mmap(struct file *file, struct vm_area_struct *vma)
 	return -EIO;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int bad_file_open(struct inode *inode, struct file *filp)
 {
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_file_flush(struct file *file, fl_owner_t id)
 {
 	return -EIO;
@@ -170,6 +174,11 @@ static const struct file_operations bad_file_ops =
 	.flock		= bad_file_flock,
 	.splice_write	= bad_file_splice_write,
 	.splice_read	= bad_file_splice_read,
+=======
+static const struct file_operations bad_file_ops =
+{
+	.open		= bad_file_open,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int bad_inode_create (struct inode *dir, struct dentry *dentry,
@@ -218,8 +227,14 @@ static int bad_inode_mknod (struct inode *dir, struct dentry *dentry,
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_rename (struct inode *old_dir, struct dentry *old_dentry,
 		struct inode *new_dir, struct dentry *new_dentry)
+=======
+static int bad_inode_rename2(struct inode *old_dir, struct dentry *old_dentry,
+			     struct inode *new_dir, struct dentry *new_dentry,
+			     unsigned int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -EIO;
 }
@@ -246,25 +261,71 @@ static int bad_inode_setattr(struct dentry *direntry, struct iattr *attrs)
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_setxattr(struct dentry *dentry, const char *name,
 		const void *value, size_t size, int flags)
-{
-	return -EIO;
-}
-
-static ssize_t bad_inode_getxattr(struct dentry *dentry, const char *name,
-			void *buffer, size_t size)
-{
-	return -EIO;
-}
-
+=======
 static ssize_t bad_inode_listxattr(struct dentry *dentry, char *buffer,
 			size_t buffer_size)
 {
 	return -EIO;
 }
 
+static const char *bad_inode_get_link(struct dentry *dentry,
+				      struct inode *inode,
+				      struct delayed_call *done)
+{
+	return ERR_PTR(-EIO);
+}
+
+static struct posix_acl *bad_inode_get_acl(struct inode *inode, int type)
+{
+	return ERR_PTR(-EIO);
+}
+
+static int bad_inode_fiemap(struct inode *inode,
+			    struct fiemap_extent_info *fieinfo, u64 start,
+			    u64 len)
+{
+	return -EIO;
+}
+
+static int bad_inode_update_time(struct inode *inode, struct timespec *time,
+				 int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+{
+	return -EIO;
+}
+
+<<<<<<< HEAD
+static ssize_t bad_inode_getxattr(struct dentry *dentry, const char *name,
+			void *buffer, size_t size)
+=======
+static int bad_inode_atomic_open(struct inode *inode, struct dentry *dentry,
+				 struct file *file, unsigned int open_flag,
+				 umode_t create_mode, int *opened)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+{
+	return -EIO;
+}
+
+<<<<<<< HEAD
+static ssize_t bad_inode_listxattr(struct dentry *dentry, char *buffer,
+			size_t buffer_size)
+=======
+static int bad_inode_tmpfile(struct inode *inode, struct dentry *dentry,
+			     umode_t mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+{
+	return -EIO;
+}
+
+<<<<<<< HEAD
 static int bad_inode_removexattr(struct dentry *dentry, const char *name)
+=======
+static int bad_inode_set_acl(struct inode *inode, struct posix_acl *acl,
+			     int type)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -EIO;
 }
@@ -279,6 +340,7 @@ static const struct inode_operations bad_inode_ops =
 	.mkdir		= bad_inode_mkdir,
 	.rmdir		= bad_inode_rmdir,
 	.mknod		= bad_inode_mknod,
+<<<<<<< HEAD
 	.rename		= bad_inode_rename,
 	.readlink	= bad_inode_readlink,
 	/* follow_link must be no-op, otherwise unmounting this inode
@@ -292,6 +354,21 @@ static const struct inode_operations bad_inode_ops =
 	.getxattr	= bad_inode_getxattr,
 	.listxattr	= bad_inode_listxattr,
 	.removexattr	= bad_inode_removexattr,
+=======
+	.rename		= bad_inode_rename2,
+	.readlink	= bad_inode_readlink,
+	.permission	= bad_inode_permission,
+	.getattr	= bad_inode_getattr,
+	.setattr	= bad_inode_setattr,
+	.listxattr	= bad_inode_listxattr,
+	.get_link	= bad_inode_get_link,
+	.get_acl	= bad_inode_get_acl,
+	.fiemap		= bad_inode_fiemap,
+	.update_time	= bad_inode_update_time,
+	.atomic_open	= bad_inode_atomic_open,
+	.tmpfile	= bad_inode_tmpfile,
+	.set_acl	= bad_inode_set_acl,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -319,8 +396,14 @@ void make_bad_inode(struct inode *inode)
 
 	inode->i_mode = S_IFREG;
 	inode->i_atime = inode->i_mtime = inode->i_ctime =
+<<<<<<< HEAD
 		current_fs_time(inode->i_sb);
 	inode->i_op = &bad_inode_ops;	
+=======
+		current_time(inode);
+	inode->i_op = &bad_inode_ops;	
+	inode->i_opflags &= ~IOP_XATTR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	inode->i_fop = &bad_file_ops;	
 }
 EXPORT_SYMBOL(make_bad_inode);
@@ -338,7 +421,11 @@ EXPORT_SYMBOL(make_bad_inode);
  *	Returns true if the inode in question has been marked as bad.
  */
  
+<<<<<<< HEAD
 int is_bad_inode(struct inode *inode)
+=======
+bool is_bad_inode(struct inode *inode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return (inode->i_op == &bad_inode_ops);	
 }

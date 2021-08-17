@@ -18,9 +18,15 @@
 #error only <linux/bitops.h> can be included directly
 #endif
 
+<<<<<<< HEAD
 extern unsigned long ___set_bit(unsigned long *addr, unsigned long mask);
 extern unsigned long ___clear_bit(unsigned long *addr, unsigned long mask);
 extern unsigned long ___change_bit(unsigned long *addr, unsigned long mask);
+=======
+unsigned long ___set_bit(unsigned long *addr, unsigned long mask);
+unsigned long ___clear_bit(unsigned long *addr, unsigned long mask);
+unsigned long ___change_bit(unsigned long *addr, unsigned long mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Set bit 'nr' in 32-bit quantity at address 'addr' where bit '0'
@@ -90,9 +96,12 @@ static inline void change_bit(unsigned long nr, volatile unsigned long *addr)
 
 #include <asm-generic/bitops/non-atomic.h>
 
+<<<<<<< HEAD
 #define smp_mb__before_clear_bit()	do { } while(0)
 #define smp_mb__after_clear_bit()	do { } while(0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/bitops/ffz.h>
 #include <asm-generic/bitops/__ffs.h>
 #include <asm-generic/bitops/sched.h>

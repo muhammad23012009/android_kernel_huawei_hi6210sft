@@ -2,6 +2,10 @@
  * Realtek RTL2832 DVB-T demodulator driver
  *
  * Copyright (C) 2012 Thomas Mair <thomas.mair86@gmail.com>
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2012-2014 Antti Palosaari <crope@iki.fi>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,6 +25,7 @@
 #ifndef RTL2832_PRIV_H
 #define RTL2832_PRIV_H
 
+<<<<<<< HEAD
 #include "dvb_frontend.h"
 #include "rtl2832.h"
 
@@ -39,6 +44,35 @@ struct rtl2832_priv {
 struct rtl2832_reg_entry {
 	u8 page;
 	u8 start_address;
+=======
+#include <linux/regmap.h>
+#include <linux/math64.h>
+#include <linux/bitops.h>
+
+#include "dvb_frontend.h"
+#include "dvb_math.h"
+#include "rtl2832.h"
+
+struct rtl2832_dev {
+	struct rtl2832_platform_data *pdata;
+	struct i2c_client *client;
+	struct regmap_config regmap_config;
+	struct regmap *regmap;
+	struct i2c_mux_core *muxc;
+	struct dvb_frontend fe;
+	enum fe_status fe_status;
+	u64 post_bit_error_prev; /* for old DVBv3 read_ber() calculation */
+	u64 post_bit_error;
+	u64 post_bit_count;
+	bool sleeping;
+	struct delayed_work i2c_gate_work;
+	unsigned long filters; /* PID filter */
+	bool slave_ts;
+};
+
+struct rtl2832_reg_entry {
+	u16 start_address;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 msb;
 	u8 lsb;
 };
@@ -48,7 +82,10 @@ struct rtl2832_reg_value {
 	u32 value;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Demod register bit names */
 enum DVBT_REG_BIT_NAME {
 	DVBT_SOFT_RST,
@@ -242,6 +279,33 @@ enum DVBT_REG_BIT_NAME {
 	DVBT_REG_BIT_NAME_ITEM_TERMINATOR,
 };
 
+<<<<<<< HEAD
+=======
+static const struct rtl2832_reg_value rtl2832_tuner_init_fc2580[] = {
+	{DVBT_DAGC_TRG_VAL,             0x39},
+	{DVBT_AGC_TARG_VAL_0,            0x0},
+	{DVBT_AGC_TARG_VAL_8_1,         0x5a},
+	{DVBT_AAGC_LOOP_GAIN,           0x16},
+	{DVBT_LOOP_GAIN2_3_0,            0x6},
+	{DVBT_LOOP_GAIN2_4,              0x1},
+	{DVBT_LOOP_GAIN3,               0x16},
+	{DVBT_VTOP1,                    0x35},
+	{DVBT_VTOP2,                    0x21},
+	{DVBT_VTOP3,                    0x21},
+	{DVBT_KRF1,                      0x0},
+	{DVBT_KRF2,                     0x40},
+	{DVBT_KRF3,                     0x10},
+	{DVBT_KRF4,                     0x10},
+	{DVBT_IF_AGC_MIN,               0x80},
+	{DVBT_IF_AGC_MAX,               0x7f},
+	{DVBT_RF_AGC_MIN,               0x9c},
+	{DVBT_RF_AGC_MAX,               0x7f},
+	{DVBT_POLAR_RF_AGC,              0x0},
+	{DVBT_POLAR_IF_AGC,              0x0},
+	{DVBT_AD7_SETTING,            0xe9f4},
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct rtl2832_reg_value rtl2832_tuner_init_tua9001[] = {
 	{DVBT_DAGC_TRG_VAL,             0x39},
 	{DVBT_AGC_TARG_VAL_0,            0x0},
@@ -267,7 +331,11 @@ static const struct rtl2832_reg_value rtl2832_tuner_init_tua9001[] = {
 	{DVBT_OPT_ADC_IQ,                0x1},
 	{DVBT_AD_AVI,                    0x0},
 	{DVBT_AD_AVQ,                    0x0},
+<<<<<<< HEAD
 	{DVBT_SPEC_INV,			 0x0},
+=======
+	{DVBT_SPEC_INV,                  0x0},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct rtl2832_reg_value rtl2832_tuner_init_fc0012[] = {
@@ -301,7 +369,11 @@ static const struct rtl2832_reg_value rtl2832_tuner_init_fc0012[] = {
 	{DVBT_GI_PGA_STATE,              0x0},
 	{DVBT_EN_AGC_PGA,                0x1},
 	{DVBT_IF_AGC_MAN,                0x0},
+<<<<<<< HEAD
 	{DVBT_SPEC_INV,			 0x0},
+=======
+	{DVBT_SPEC_INV,                  0x0},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct rtl2832_reg_value rtl2832_tuner_init_e4000[] = {
@@ -339,6 +411,7 @@ static const struct rtl2832_reg_value rtl2832_tuner_init_e4000[] = {
 	{DVBT_REG_MONSEL,                0x1},
 	{DVBT_REG_MON,                   0x1},
 	{DVBT_REG_4MSEL,                 0x0},
+<<<<<<< HEAD
 	{DVBT_SPEC_INV,			 0x0},
 };
 
@@ -365,6 +438,59 @@ static const struct rtl2832_reg_value rtl2832_tuner_init_r820t[] = {
 	{DVBT_POLAR_IF_AGC,		0x0},
 	{DVBT_AD7_SETTING,		0xe9f4},
 	{DVBT_SPEC_INV,			0x1},
+=======
+	{DVBT_SPEC_INV,                  0x0},
+};
+
+static const struct rtl2832_reg_value rtl2832_tuner_init_r820t[] = {
+	{DVBT_DAGC_TRG_VAL,             0x39},
+	{DVBT_AGC_TARG_VAL_0,            0x0},
+	{DVBT_AGC_TARG_VAL_8_1,         0x40},
+	{DVBT_AAGC_LOOP_GAIN,           0x16},
+	{DVBT_LOOP_GAIN2_3_0,            0x8},
+	{DVBT_LOOP_GAIN2_4,              0x1},
+	{DVBT_LOOP_GAIN3,               0x18},
+	{DVBT_VTOP1,                    0x35},
+	{DVBT_VTOP2,                    0x21},
+	{DVBT_VTOP3,                    0x21},
+	{DVBT_KRF1,                      0x0},
+	{DVBT_KRF2,                     0x40},
+	{DVBT_KRF3,                     0x10},
+	{DVBT_KRF4,                     0x10},
+	{DVBT_IF_AGC_MIN,               0x80},
+	{DVBT_IF_AGC_MAX,               0x7f},
+	{DVBT_RF_AGC_MIN,               0x80},
+	{DVBT_RF_AGC_MAX,               0x7f},
+	{DVBT_POLAR_RF_AGC,              0x0},
+	{DVBT_POLAR_IF_AGC,              0x0},
+	{DVBT_AD7_SETTING,            0xe9f4},
+	{DVBT_SPEC_INV,                  0x1},
+};
+
+static const struct rtl2832_reg_value rtl2832_tuner_init_si2157[] = {
+	{DVBT_DAGC_TRG_VAL,             0x39},
+	{DVBT_AGC_TARG_VAL_0,            0x0},
+	{DVBT_AGC_TARG_VAL_8_1,         0x40},
+	{DVBT_AAGC_LOOP_GAIN,           0x16},
+	{DVBT_LOOP_GAIN2_3_0,            0x8},
+	{DVBT_LOOP_GAIN2_4,              0x1},
+	{DVBT_LOOP_GAIN3,               0x18},
+	{DVBT_VTOP1,                    0x35},
+	{DVBT_VTOP2,                    0x21},
+	{DVBT_VTOP3,                    0x21},
+	{DVBT_KRF1,                      0x0},
+	{DVBT_KRF2,                     0x40},
+	{DVBT_KRF3,                     0x10},
+	{DVBT_KRF4,                     0x10},
+	{DVBT_IF_AGC_MIN,               0x80},
+	{DVBT_IF_AGC_MAX,               0x7f},
+	{DVBT_RF_AGC_MIN,               0x80},
+	{DVBT_RF_AGC_MAX,               0x7f},
+	{DVBT_POLAR_RF_AGC,              0x0},
+	{DVBT_POLAR_IF_AGC,              0x0},
+	{DVBT_AD7_SETTING,            0xe9f4},
+	{DVBT_SPEC_INV,                  0x0},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* RTL2832_PRIV_H */

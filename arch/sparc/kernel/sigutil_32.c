@@ -48,6 +48,13 @@ int save_fpu_state(struct pt_regs *regs, __siginfo_fpu_t __user *fpu)
 int restore_fpu_state(struct pt_regs *regs, __siginfo_fpu_t __user *fpu)
 {
 	int err;
+<<<<<<< HEAD
+=======
+
+	if (((unsigned long) fpu) & 3)
+		return -EFAULT;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 	if (test_tsk_thread_flag(current, TIF_USEDFPU))
 		regs->psr &= ~PSR_EF;
@@ -97,7 +104,14 @@ int restore_rwin_state(__siginfo_rwin_t __user *rp)
 	struct thread_info *t = current_thread_info();
 	int i, wsaved, err;
 
+<<<<<<< HEAD
 	__get_user(wsaved, &rp->wsaved);
+=======
+	if (((unsigned long) rp) & 3)
+		return -EFAULT;
+
+	get_user(wsaved, &rp->wsaved);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (wsaved > NSWINS)
 		return -EFAULT;
 

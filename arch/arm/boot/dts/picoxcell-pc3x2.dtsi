@@ -18,6 +18,7 @@
 	#size-cells = <1>;
 
 	cpus {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -25,6 +26,15 @@
 			compatible = "arm,1176jz-s";
 			clock-frequency = <400000000>;
 			reg = <0>;
+=======
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		cpu {
+			compatible = "arm,arm1176jz-s";
+			device_type = "cpu";
+			clock-frequency = <400000000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			d-cache-line-size = <32>;
 			d-cache-size = <32768>;
 			i-cache-line-size = <32>;
@@ -54,18 +64,30 @@
 		emac: gem@30000 {
 			compatible = "cadence,gem";
 			reg = <0x30000 0x10000>;
+<<<<<<< HEAD
+=======
+			interrupt-parent = <&vic0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <31>;
 		};
 
 		dmac1: dmac@40000 {
 			compatible = "snps,dw-dmac";
 			reg = <0x40000 0x10000>;
+<<<<<<< HEAD
+=======
+			interrupt-parent = <&vic0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <25>;
 		};
 
 		dmac2: dmac@50000 {
 			compatible = "snps,dw-dmac";
 			reg = <0x50000 0x10000>;
+<<<<<<< HEAD
+=======
+			interrupt-parent = <&vic0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <26>;
 		};
 
@@ -243,6 +265,10 @@
 		axi2pico@c0000000 {
 			compatible = "picochip,axi2pico-pc3x2";
 			reg = <0xc0000000 0x10000>;
+<<<<<<< HEAD
+=======
+			interrupt-parent = <&vic0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <13 14 15 16 17 18 19 20 21>;
 		};
 	};

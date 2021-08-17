@@ -17,7 +17,11 @@
  *
  *   \Sum_{j} p_{j} = 1,
  *
+<<<<<<< HEAD
  * This formula can be straightforwardly computed by maintaing denominator
+=======
+ * This formula can be straightforwardly computed by maintaining denominator
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * (let's call it 'd') and for each event type its numerator (let's call it
  * 'n_j'). When an event of type 'j' happens, we simply need to do:
  *   n_j++; d++;
@@ -34,13 +38,21 @@
  */
 #include <linux/flex_proportions.h>
 
+<<<<<<< HEAD
 int fprop_global_init(struct fprop_global *p)
+=======
+int fprop_global_init(struct fprop_global *p, gfp_t gfp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 
 	p->period = 0;
 	/* Use 1 to avoid dealing with periods with 0 events... */
+<<<<<<< HEAD
 	err = percpu_counter_init(&p->events, 1);
+=======
+	err = percpu_counter_init(&p->events, 1, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 	seqcount_init(&p->sequence);
@@ -168,11 +180,19 @@ void fprop_fraction_single(struct fprop_global *p,
  */
 #define PROP_BATCH (8*(1+ilog2(nr_cpu_ids)))
 
+<<<<<<< HEAD
 int fprop_local_init_percpu(struct fprop_local_percpu *pl)
 {
 	int err;
 
 	err = percpu_counter_init(&pl->events, 0);
+=======
+int fprop_local_init_percpu(struct fprop_local_percpu *pl, gfp_t gfp)
+{
+	int err;
+
+	err = percpu_counter_init(&pl->events, 0, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 	pl->period = 0;

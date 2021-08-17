@@ -17,7 +17,11 @@
 
 #ifdef CONFIG_PROC_SYSCTL
 
+<<<<<<< HEAD
 static void *get_uts(ctl_table *table, int write)
+=======
+static void *get_uts(struct ctl_table *table)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *which = table->data;
 	struct uts_namespace *uts_ns;
@@ -25,6 +29,7 @@ static void *get_uts(ctl_table *table, int write)
 	uts_ns = current->nsproxy->uts_ns;
 	which = (which - (char *)&init_uts_ns) + (char *)uts_ns;
 
+<<<<<<< HEAD
 	if (!write)
 		down_read(&uts_sem);
 	else
@@ -40,15 +45,25 @@ static void put_uts(ctl_table *table, int write, void *which)
 		up_write(&uts_sem);
 }
 
+=======
+	return which;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	Special case of dostring for the UTS structure. This has locks
  *	to observe. Should this be in kernel/sys.c ????
  */
+<<<<<<< HEAD
 static int proc_do_uts_string(ctl_table *table, int write,
+=======
+static int proc_do_uts_string(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	struct ctl_table uts_table;
 	int r;
+<<<<<<< HEAD
 	memcpy(&uts_table, table, sizeof(uts_table));
 	uts_table.data = get_uts(table, write);
 	r = proc_dostring(&uts_table,write,buffer,lenp, ppos);
@@ -56,6 +71,36 @@ static int proc_do_uts_string(ctl_table *table, int write,
 
 	if (write)
 		proc_sys_poll_notify(table->poll);
+=======
+	char tmp_data[__NEW_UTS_LEN + 1];
+
+	memcpy(&uts_table, table, sizeof(uts_table));
+	uts_table.data = tmp_data;
+
+	/*
+	 * Buffer the value in tmp_data so that proc_dostring() can be called
+	 * without holding any locks.
+	 * We also need to read the original value in the write==1 case to
+	 * support partial writes.
+	 */
+	down_read(&uts_sem);
+	memcpy(tmp_data, get_uts(table), sizeof(tmp_data));
+	up_read(&uts_sem);
+	r = proc_dostring(&uts_table, write, buffer, lenp, ppos);
+
+	if (write) {
+		/*
+		 * Write back the new value.
+		 * Note that, since we dropped uts_sem, the result can
+		 * theoretically be incorrect if there are two parallel writes
+		 * at non-zero offsets to the same sysctl.
+		 */
+		down_write(&uts_sem);
+		memcpy(get_uts(table), tmp_data, sizeof(tmp_data));
+		up_write(&uts_sem);
+		proc_sys_poll_notify(table->poll);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return r;
 }
@@ -135,4 +180,8 @@ static int __init utsname_sysctl_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 __initcall(utsname_sysctl_init);
+=======
+device_initcall(utsname_sysctl_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

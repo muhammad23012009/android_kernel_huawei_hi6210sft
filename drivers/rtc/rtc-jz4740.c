@@ -14,6 +14,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -37,7 +41,10 @@
 #define JZ_RTC_CTRL_ENABLE	BIT(0)
 
 struct jz4740_rtc {
+<<<<<<< HEAD
 	struct resource *mem;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *base;
 
 	struct rtc_device *rtc;
@@ -174,7 +181,11 @@ static int jz4740_rtc_alarm_irq_enable(struct device *dev, unsigned int enable)
 	return jz4740_rtc_ctrl_set_bits(rtc, JZ_RTC_CTRL_AF_IRQ, enable);
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops jz4740_rtc_ops = {
+=======
+static const struct rtc_class_ops jz4740_rtc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read_time	= jz4740_rtc_read_time,
 	.set_mmss	= jz4740_rtc_set_mmss,
 	.read_alarm	= jz4740_rtc_read_alarm,
@@ -215,13 +226,20 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
 	int ret;
 	struct jz4740_rtc *rtc;
 	uint32_t scratchpad;
+<<<<<<< HEAD
 
 	rtc = kzalloc(sizeof(*rtc), GFP_KERNEL);
+=======
+	struct resource *mem;
+
+	rtc = devm_kzalloc(&pdev->dev, sizeof(*rtc), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rtc)
 		return -ENOMEM;
 
 	rtc->irq = platform_get_irq(pdev, 0);
 	if (rtc->irq < 0) {
+<<<<<<< HEAD
 		ret = -ENOENT;
 		dev_err(&pdev->dev, "Failed to get platform irq\n");
 		goto err_free;
@@ -248,6 +266,16 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to ioremap mmio memory\n");
 		goto err_release_mem_region;
 	}
+=======
+		dev_err(&pdev->dev, "Failed to get platform irq\n");
+		return -ENOENT;
+	}
+
+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	rtc->base = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(rtc->base))
+		return PTR_ERR(rtc->base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&rtc->lock);
 
@@ -255,6 +283,7 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
 
 	device_init_wakeup(&pdev->dev, 1);
 
+<<<<<<< HEAD
 	rtc->rtc = rtc_device_register(pdev->name, &pdev->dev, &jz4740_rtc_ops,
 					THIS_MODULE);
 	if (IS_ERR(rtc->rtc)) {
@@ -268,6 +297,21 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to request rtc irq: %d\n", ret);
 		goto err_unregister_rtc;
+=======
+	rtc->rtc = devm_rtc_device_register(&pdev->dev, pdev->name,
+					&jz4740_rtc_ops, THIS_MODULE);
+	if (IS_ERR(rtc->rtc)) {
+		ret = PTR_ERR(rtc->rtc);
+		dev_err(&pdev->dev, "Failed to register rtc device: %d\n", ret);
+		return ret;
+	}
+
+	ret = devm_request_irq(&pdev->dev, rtc->irq, jz4740_rtc_irq, 0,
+				pdev->name, rtc);
+	if (ret) {
+		dev_err(&pdev->dev, "Failed to request rtc irq: %d\n", ret);
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	scratchpad = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD);
@@ -276,11 +320,16 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
 		ret = jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SEC, 0);
 		if (ret) {
 			dev_err(&pdev->dev, "Could not write write to RTC registers\n");
+<<<<<<< HEAD
 			goto err_free_irq;
+=======
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 err_free_irq:
 	free_irq(rtc->irq, rtc);
@@ -316,6 +365,10 @@ static int jz4740_rtc_remove(struct platform_device *pdev)
 }
 
 
+=======
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM
 static int jz4740_rtc_suspend(struct device *dev)
 {
@@ -347,10 +400,15 @@ static const struct dev_pm_ops jz4740_pm_ops = {
 
 static struct platform_driver jz4740_rtc_driver = {
 	.probe	 = jz4740_rtc_probe,
+<<<<<<< HEAD
 	.remove	 = jz4740_rtc_remove,
 	.driver	 = {
 		.name  = "jz4740-rtc",
 		.owner = THIS_MODULE,
+=======
+	.driver	 = {
+		.name  = "jz4740-rtc",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm    = JZ4740_RTC_PM_OPS,
 	},
 };

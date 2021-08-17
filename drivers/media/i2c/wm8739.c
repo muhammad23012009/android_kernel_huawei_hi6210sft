@@ -29,7 +29,10 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-ctrls.h>
 
 MODULE_DESCRIPTION("wm8739 driver");
@@ -160,6 +163,7 @@ static int wm8739_s_clock_freq(struct v4l2_subdev *sd, u32 audiofreq)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8739_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -167,6 +171,8 @@ static int wm8739_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_iden
 	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_WM8739, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm8739_log_status(struct v4l2_subdev *sd)
 {
 	struct wm8739_state *state = to_state(sd);
@@ -184,6 +190,7 @@ static const struct v4l2_ctrl_ops wm8739_ctrl_ops = {
 
 static const struct v4l2_subdev_core_ops wm8739_core_ops = {
 	.log_status = wm8739_log_status,
+<<<<<<< HEAD
 	.g_chip_ident = wm8739_g_chip_ident,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
@@ -192,6 +199,8 @@ static const struct v4l2_subdev_core_ops wm8739_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_subdev_audio_ops wm8739_audio_ops = {
@@ -220,7 +229,11 @@ static int wm8739_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	state = kzalloc(sizeof(struct wm8739_state), GFP_KERNEL);
+=======
+	state = devm_kzalloc(&client->dev, sizeof(*state), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (state == NULL)
 		return -ENOMEM;
 	sd = &state->sd;
@@ -237,7 +250,10 @@ static int wm8739_probe(struct i2c_client *client,
 		int err = state->hdl.error;
 
 		v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 		kfree(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 	v4l2_ctrl_cluster(3, &state->volume);
@@ -271,7 +287,10 @@ static int wm8739_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 	kfree(to_state(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -283,7 +302,10 @@ MODULE_DEVICE_TABLE(i2c, wm8739_id);
 
 static struct i2c_driver wm8739_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "wm8739",
 	},
 	.probe		= wm8739_probe,

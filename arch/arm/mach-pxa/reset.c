@@ -90,7 +90,11 @@ static void do_hw_reset(void)
 		writel_relaxed(MDREFR_SLFRSH, MDREFR);
 }
 
+<<<<<<< HEAD
 void pxa_restart(char mode, const char *cmd)
+=======
+void pxa_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	local_irq_disable();
 	local_fiq_disable();
@@ -98,6 +102,7 @@ void pxa_restart(char mode, const char *cmd)
 	clear_reset_status(RESET_STATUS_ALL);
 
 	switch (mode) {
+<<<<<<< HEAD
 	case 's':
 		/* Jump into ROM at address 0 */
 		soft_restart(0);
@@ -106,6 +111,16 @@ void pxa_restart(char mode, const char *cmd)
 		do_gpio_reset();
 		break;
 	case 'h':
+=======
+	case REBOOT_SOFT:
+		/* Jump into ROM at address 0 */
+		soft_restart(0);
+		break;
+	case REBOOT_GPIO:
+		do_gpio_reset();
+		break;
+	case REBOOT_HARD:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		do_hw_reset();
 		break;

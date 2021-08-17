@@ -10,11 +10,14 @@
 #include <asm/sizes.h>
 
 /*
+<<<<<<< HEAD
  * Physical DRAM offset is 0xc0000000 on the SA1100
  */
 #define PLAT_PHYS_OFFSET	UL(0xc0000000)
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Because of the wide memory address space between physical RAM banks on the
  * SA1100, it's much convenient to use Linux's SparseMEM support to implement
  * our memory map representation.  Assuming all memory nodes have equal access

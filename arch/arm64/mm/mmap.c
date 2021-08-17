@@ -18,6 +18,10 @@
 
 #include <linux/elf.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mm.h>
 #include <linux/mman.h>
 #include <linux/export.h>
@@ -47,6 +51,7 @@ static int mmap_is_legacy(void)
 	return sysctl_legacy_va_layout;
 }
 
+<<<<<<< HEAD
 static unsigned long mmap_rnd(void)
 {
 	unsigned long rnd = 0;
@@ -63,6 +68,22 @@ static unsigned long mmap_rnd(void)
 }
 
 static unsigned long mmap_base(void)
+=======
+unsigned long arch_mmap_rnd(void)
+{
+	unsigned long rnd;
+
+#ifdef CONFIG_COMPAT
+	if (test_thread_flag(TIF_32BIT))
+		rnd = get_random_long() & ((1UL << mmap_rnd_compat_bits) - 1);
+	else
+#endif
+		rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
+	return rnd << PAGE_SHIFT;
+}
+
+static unsigned long mmap_base(unsigned long rnd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long gap = rlimit(RLIMIT_STACK);
 
@@ -71,7 +92,11 @@ static unsigned long mmap_base(void)
 	else if (gap > MAX_GAP)
 		gap = MAX_GAP;
 
+<<<<<<< HEAD
 	return PAGE_ALIGN(STACK_TOP - gap - mmap_rnd());
+=======
+	return PAGE_ALIGN(STACK_TOP - gap - rnd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -80,11 +105,20 @@ static unsigned long mmap_base(void)
  */
 void arch_pick_mmap_layout(struct mm_struct *mm)
 {
+<<<<<<< HEAD
+=======
+	unsigned long random_factor = 0UL;
+
+	if (current->flags & PF_RANDOMIZE)
+		random_factor = arch_mmap_rnd();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Fall back to the standard layout if the personality bit is set, or
 	 * if the expected stack growth is unlimited:
 	 */
 	if (mmap_is_legacy()) {
+<<<<<<< HEAD
 		mm->mmap_base = TASK_UNMAPPED_BASE;
 		mm->get_unmapped_area = arch_get_unmapped_area;
 		mm->unmap_area = arch_unmap_area;
@@ -96,6 +130,15 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 }
 EXPORT_SYMBOL_GPL(arch_pick_mmap_layout);
 
+=======
+		mm->mmap_base = TASK_UNMAPPED_BASE + random_factor;
+		mm->get_unmapped_area = arch_get_unmapped_area;
+	} else {
+		mm->mmap_base = mmap_base(random_factor);
+		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
+	}
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * You really shouldn't be using read() or write() on /dev/mem.  This might go
@@ -103,12 +146,27 @@ EXPORT_SYMBOL_GPL(arch_pick_mmap_layout);
  */
 int valid_phys_addr_range(phys_addr_t addr, size_t size)
 {
+<<<<<<< HEAD
 	if (addr < PHYS_OFFSET)
 		return 0;
 	if (addr + size > __pa(high_memory - 1) + 1)
 		return 0;
 
 	return 1;
+=======
+	/*
+	 * Check whether addr is covered by a memory region without the
+	 * MEMBLOCK_NOMAP attribute, and whether that region covers the
+	 * entire range. In theory, this could lead to false negatives
+	 * if the range is covered by distinct but adjacent memory regions
+	 * that only differ in other attributes. However, few of such
+	 * attributes have been defined, and it is debatable whether it
+	 * follows that /dev/mem read() calls should be able traverse
+	 * such boundaries.
+	 */
+	return memblock_is_region_memory(addr, size) &&
+	       memblock_is_map_memory(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

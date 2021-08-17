@@ -33,7 +33,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
 #include <linux/input.h>
@@ -181,12 +184,20 @@ static int max11801_ts_probe(struct i2c_client *client,
 	struct input_dev *input_dev;
 	int error;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct max11801_data), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!data || !input_dev) {
 		dev_err(&client->dev, "Failed to allocate memory\n");
 		error = -ENOMEM;
 		goto err_free_mem;
+=======
+	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
+	input_dev = devm_input_allocate_device(&client->dev);
+	if (!data || !input_dev) {
+		dev_err(&client->dev, "Failed to allocate memory\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	data->client = client;
@@ -205,16 +216,27 @@ static int max11801_ts_probe(struct i2c_client *client,
 
 	max11801_ts_phy_init(data);
 
+<<<<<<< HEAD
 	error = request_threaded_irq(client->irq, NULL, max11801_ts_interrupt,
 				     IRQF_TRIGGER_LOW | IRQF_ONESHOT,
 				     "max11801_ts", data);
 	if (error) {
 		dev_err(&client->dev, "Failed to register interrupt\n");
 		goto err_free_mem;
+=======
+	error = devm_request_threaded_irq(&client->dev, client->irq, NULL,
+					  max11801_ts_interrupt,
+					  IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+					  "max11801_ts", data);
+	if (error) {
+		dev_err(&client->dev, "Failed to register interrupt\n");
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	error = input_register_device(data->input_dev);
 	if (error)
+<<<<<<< HEAD
 		goto err_free_irq;
 
 	i2c_set_clientdata(client, data);
@@ -237,6 +259,12 @@ static int max11801_ts_remove(struct i2c_client *client)
 	kfree(data);
 
 	return 0;
+=======
+		return error;
+
+	i2c_set_clientdata(client, data);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id max11801_ts_id[] = {
@@ -248,11 +276,17 @@ MODULE_DEVICE_TABLE(i2c, max11801_ts_id);
 static struct i2c_driver max11801_ts_driver = {
 	.driver = {
 		.name	= "max11801_ts",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.id_table	= max11801_ts_id,
 	.probe		= max11801_ts_probe,
 	.remove		= max11801_ts_remove,
+=======
+	},
+	.id_table	= max11801_ts_id,
+	.probe		= max11801_ts_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_i2c_driver(max11801_ts_driver);

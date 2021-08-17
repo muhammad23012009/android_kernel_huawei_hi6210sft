@@ -10,6 +10,11 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_fdt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 
 #include <asm/machdep.h>
@@ -141,11 +146,18 @@ static void __init ep88xc_setup_arch(void)
 
 static int __init ep88xc_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 	return of_flat_dt_is_compatible(root, "fsl,ep88xc");
 }
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+	return of_machine_is_compatible("fsl,ep88xc");
+}
+
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name = "soc", },
 	{ .name = "cpm", },
 	{ .name = "localbus", },

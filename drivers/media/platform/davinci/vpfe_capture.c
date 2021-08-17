@@ -125,7 +125,11 @@ static DEFINE_MUTEX(ccdc_lock);
 /* ccdc configuration */
 static struct ccdc_config *ccdc_cfg;
 
+<<<<<<< HEAD
 const struct vpfe_standard vpfe_standards[] = {
+=======
+static const struct vpfe_standard vpfe_standards[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{V4L2_STD_525_60, 720, 480, {11, 10}, 1},
 	{V4L2_STD_625_50, 720, 576, {54, 59}, 1},
 };
@@ -370,7 +374,11 @@ static int vpfe_config_ccdc_image_format(struct vpfe_device *vpfe_dev)
  * For a given standard, this functions sets up the default
  * pix format & crop values in the vpfe device and ccdc.  It first
  * starts with defaults based values from the standard table.
+<<<<<<< HEAD
  * It then checks if sub device support g_mbus_fmt and then override the
+=======
+ * It then checks if sub device supports get_fmt and then override the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * values based on that.Sets crop values to match with scan resolution
  * starting at 0,0. It calls vpfe_config_ccdc_image_format() set the
  * values in ccdc
@@ -379,7 +387,14 @@ static int vpfe_config_image_format(struct vpfe_device *vpfe_dev,
 				    v4l2_std_id std_id)
 {
 	struct vpfe_subdev_info *sdinfo = vpfe_dev->current_subdev;
+<<<<<<< HEAD
 	struct v4l2_mbus_framefmt mbus_fmt;
+=======
+	struct v4l2_subdev_format fmt = {
+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+	};
+	struct v4l2_mbus_framefmt *mbus_fmt = &fmt.format;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct v4l2_pix_format *pix = &vpfe_dev->fmt.fmt.pix;
 	int i, ret = 0;
 
@@ -413,12 +428,18 @@ static int vpfe_config_image_format(struct vpfe_device *vpfe_dev,
 		pix->field = V4L2_FIELD_INTERLACED;
 		/* assume V4L2_PIX_FMT_UYVY as default */
 		pix->pixelformat = V4L2_PIX_FMT_UYVY;
+<<<<<<< HEAD
 		v4l2_fill_mbus_format(&mbus_fmt, pix,
 				V4L2_MBUS_FMT_YUYV10_2X10);
+=======
+		v4l2_fill_mbus_format(mbus_fmt, pix,
+				MEDIA_BUS_FMT_YUYV10_2X10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		pix->field = V4L2_FIELD_NONE;
 		/* assume V4L2_PIX_FMT_SBGGR8 */
 		pix->pixelformat = V4L2_PIX_FMT_SBGGR8;
+<<<<<<< HEAD
 		v4l2_fill_mbus_format(&mbus_fmt, pix,
 				V4L2_MBUS_FMT_SBGGR8_1X8);
 	}
@@ -433,6 +454,22 @@ static int vpfe_config_image_format(struct vpfe_device *vpfe_dev,
 		return ret;
 	}
 	v4l2_fill_pix_format(pix, &mbus_fmt);
+=======
+		v4l2_fill_mbus_format(mbus_fmt, pix,
+				MEDIA_BUS_FMT_SBGGR8_1X8);
+	}
+
+	/* if sub device supports get_fmt, override the defaults */
+	ret = v4l2_device_call_until_err(&vpfe_dev->v4l2_dev,
+			sdinfo->grp_id, pad, get_fmt, NULL, &fmt);
+
+	if (ret && ret != -ENOIOCTLCMD) {
+		v4l2_err(&vpfe_dev->v4l2_dev,
+			"error in getting get_fmt from sub device\n");
+		return ret;
+	}
+	v4l2_fill_pix_format(pix, mbus_fmt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pix->bytesperline = pix->width * 2;
 	pix->sizeimage = pix->bytesperline * pix->height;
 
@@ -442,11 +479,18 @@ static int vpfe_config_image_format(struct vpfe_device *vpfe_dev,
 		return ret;
 
 	/* Update the values of sizeimage and bytesperline */
+<<<<<<< HEAD
 	if (!ret) {
 		pix->bytesperline = ccdc_dev->hw_ops.get_line_length();
 		pix->sizeimage = pix->bytesperline * pix->height;
 	}
 	return ret;
+=======
+	pix->bytesperline = ccdc_dev->hw_ops.get_line_length();
+	pix->sizeimage = pix->bytesperline * pix->height;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vpfe_initialize_device(struct vpfe_device *vpfe_dev)
@@ -498,6 +542,10 @@ unlock:
 static int vpfe_open(struct file *file)
 {
 	struct vpfe_device *vpfe_dev = video_drvdata(file);
+<<<<<<< HEAD
+=======
+	struct video_device *vdev = video_devdata(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct vpfe_fh *fh;
 
 	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev, "vpfe_open\n");
@@ -517,6 +565,10 @@ static int vpfe_open(struct file *file)
 	/* store pointer to fh in private_data member of file */
 	file->private_data = fh;
 	fh->vpfe_dev = vpfe_dev;
+<<<<<<< HEAD
+=======
+	v4l2_fh_init(&fh->fh, vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&vpfe_dev->lock);
 	/* If decoder is not initialized. initialize it */
 	if (!vpfe_dev->initialized) {
@@ -529,9 +581,13 @@ static int vpfe_open(struct file *file)
 	vpfe_dev->usrs++;
 	/* Set io_allowed member to false */
 	fh->io_allowed = 0;
+<<<<<<< HEAD
 	/* Initialize priority of this instance to default priority */
 	fh->prio = V4L2_PRIORITY_UNSET;
 	v4l2_prio_open(&vpfe_dev->prio, &fh->prio);
+=======
+	v4l2_fh_add(&fh->fh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&vpfe_dev->lock);
 	return 0;
 }
@@ -688,7 +744,11 @@ static int vpfe_attach_irq(struct vpfe_device *vpfe_dev)
 	frame_format = ccdc_dev->hw_ops.get_frame_format();
 	if (frame_format == CCDC_FRMFMT_PROGRESSIVE) {
 		return request_irq(vpfe_dev->ccdc_irq1, vdint1_isr,
+<<<<<<< HEAD
 				    IRQF_DISABLED, "vpfe_capture1",
+=======
+				    0, "vpfe_capture1",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    vpfe_dev);
 	}
 	return 0;
@@ -734,12 +794,22 @@ static int vpfe_release(struct file *file)
 		}
 		vpfe_dev->io_usrs = 0;
 		vpfe_dev->numbuffers = config_params.numbuffers;
+<<<<<<< HEAD
+=======
+		videobuf_stop(&vpfe_dev->buffer_queue);
+		videobuf_mmap_free(&vpfe_dev->buffer_queue);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Decrement device usrs counter */
 	vpfe_dev->usrs--;
+<<<<<<< HEAD
 	/* Close the priority */
 	v4l2_prio_close(&vpfe_dev->prio, fh->prio);
+=======
+	v4l2_fh_del(&fh->fh);
+	v4l2_fh_exit(&fh->fh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* If this is the last file handle */
 	if (!vpfe_dev->usrs) {
 		vpfe_dev->initialized = 0;
@@ -929,8 +999,13 @@ static int vpfe_querycap(struct file *file, void  *priv,
 
 	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev, "vpfe_querycap\n");
 
+<<<<<<< HEAD
 	cap->version = VPFE_CAPTURE_VERSION_CODE;
 	cap->capabilities = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
+=======
+	cap->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
+	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	strlcpy(cap->driver, CAPTURE_DRV_NAME, sizeof(cap->driver));
 	strlcpy(cap->bus_info, "VPFE", sizeof(cap->bus_info));
 	strlcpy(cap->card, vpfe_dev->cfg->card_name, sizeof(cap->card));
@@ -941,12 +1016,19 @@ static int vpfe_g_fmt_vid_cap(struct file *file, void *priv,
 				struct v4l2_format *fmt)
 {
 	struct vpfe_device *vpfe_dev = video_drvdata(file);
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev, "vpfe_g_fmt_vid_cap\n");
 	/* Fill in the information about format */
 	*fmt = vpfe_dev->fmt;
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vpfe_enum_fmt_vid_cap(struct file *file, void  *priv,
@@ -1215,7 +1297,11 @@ static int vpfe_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 	}
 
 	ret = v4l2_device_call_until_err(&vpfe_dev->v4l2_dev, sdinfo->grp_id,
+<<<<<<< HEAD
 					 core, s_std, std_id);
+=======
+					 video, s_std, std_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		v4l2_err(&vpfe_dev->v4l2_dev, "Failed to set standard\n");
 		goto unlock_out;
@@ -1607,6 +1693,7 @@ static int vpfe_cropcap(struct file *file, void *priv,
 
 	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev, "vpfe_cropcap\n");
 
+<<<<<<< HEAD
 	if (vpfe_dev->std_index >= ARRAY_SIZE(vpfe_standards))
 		return -EINVAL;
 
@@ -1616,10 +1703,19 @@ static int vpfe_cropcap(struct file *file, void *priv,
 		vpfe_standards[vpfe_dev->std_index].width;
 	crop->bounds.height = crop->defrect.height =
 		vpfe_standards[vpfe_dev->std_index].height;
+=======
+	if (crop->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
+		return -EINVAL;
+	/* If std_index is invalid, then just return (== 1:1 aspect) */
+	if (vpfe_dev->std_index >= ARRAY_SIZE(vpfe_standards))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	crop->pixelaspect = vpfe_standards[vpfe_dev->std_index].pixelaspect;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vpfe_g_crop(struct file *file, void *priv,
 			     struct v4l2_crop *crop)
 {
@@ -1639,6 +1735,45 @@ static int vpfe_s_crop(struct file *file, void *priv,
 	int ret = 0;
 
 	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev, "vpfe_s_crop\n");
+=======
+static int vpfe_g_selection(struct file *file, void *priv,
+			    struct v4l2_selection *sel)
+{
+	struct vpfe_device *vpfe_dev = video_drvdata(file);
+
+	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev, "vpfe_g_selection\n");
+
+	if (sel->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
+		return -EINVAL;
+
+	switch (sel->target) {
+	case V4L2_SEL_TGT_CROP:
+		sel->r = vpfe_dev->crop;
+		break;
+	case V4L2_SEL_TGT_CROP_DEFAULT:
+	case V4L2_SEL_TGT_CROP_BOUNDS:
+		sel->r.width = vpfe_standards[vpfe_dev->std_index].width;
+		sel->r.height = vpfe_standards[vpfe_dev->std_index].height;
+		break;
+	default:
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static int vpfe_s_selection(struct file *file, void *priv,
+			    struct v4l2_selection *sel)
+{
+	struct vpfe_device *vpfe_dev = video_drvdata(file);
+	struct v4l2_rect rect = sel->r;
+	int ret = 0;
+
+	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev, "vpfe_s_selection\n");
+
+	if (sel->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
+	    sel->target != V4L2_SEL_TGT_CROP)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (vpfe_dev->started) {
 		/* make sure streaming is not started */
@@ -1666,7 +1801,11 @@ static int vpfe_s_crop(struct file *file, void *priv,
 		vpfe_dev->std_info.active_pixels) ||
 	    (rect.top + rect.height >
 		vpfe_dev->std_info.active_lines)) {
+<<<<<<< HEAD
 		v4l2_err(&vpfe_dev->v4l2_dev, "Error in S_CROP params\n");
+=======
+		v4l2_err(&vpfe_dev->v4l2_dev, "Error in S_SELECTION params\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 		goto unlock_out;
 	}
@@ -1679,6 +1818,10 @@ static int vpfe_s_crop(struct file *file, void *priv,
 		vpfe_dev->fmt.fmt.pix.bytesperline *
 		vpfe_dev->fmt.fmt.pix.height;
 	vpfe_dev->crop = rect;
+<<<<<<< HEAD
+=======
+	sel->r = rect;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unlock_out:
 	mutex_unlock(&vpfe_dev->lock);
 	return ret;
@@ -1739,8 +1882,13 @@ static const struct v4l2_ioctl_ops vpfe_ioctl_ops = {
 	.vidioc_streamon	 = vpfe_streamon,
 	.vidioc_streamoff	 = vpfe_streamoff,
 	.vidioc_cropcap		 = vpfe_cropcap,
+<<<<<<< HEAD
 	.vidioc_g_crop		 = vpfe_g_crop,
 	.vidioc_s_crop		 = vpfe_s_crop,
+=======
+	.vidioc_g_selection	 = vpfe_g_selection,
+	.vidioc_s_selection	 = vpfe_s_selection,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.vidioc_default		 = vpfe_param_handler,
 };
 
@@ -1845,7 +1993,11 @@ static int vpfe_probe(struct platform_device *pdev)
 	}
 	vpfe_dev->ccdc_irq1 = res1->start;
 
+<<<<<<< HEAD
 	ret = request_irq(vpfe_dev->ccdc_irq0, vpfe_isr, IRQF_DISABLED,
+=======
+	ret = request_irq(vpfe_dev->ccdc_irq0, vpfe_isr, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  "vpfe_capture0", vpfe_dev);
 
 	if (0 != ret) {
@@ -1853,6 +2005,7 @@ static int vpfe_probe(struct platform_device *pdev)
 		goto probe_free_ccdc_cfg_mem;
 	}
 
+<<<<<<< HEAD
 	/* Allocate memory for video device */
 	vfd = video_device_alloc();
 	if (NULL == vfd) {
@@ -1863,6 +2016,11 @@ static int vpfe_probe(struct platform_device *pdev)
 
 	/* Initialize field of video device */
 	vfd->release		= video_device_release;
+=======
+	vfd = &vpfe_dev->video_dev;
+	/* Initialize field of video device */
+	vfd->release		= video_device_release_empty;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vfd->fops		= &vpfe_fops;
 	vfd->ioctl_ops		= &vpfe_ioctl_ops;
 	vfd->tvnorms		= 0;
@@ -1873,14 +2031,21 @@ static int vpfe_probe(struct platform_device *pdev)
 		 (VPFE_CAPTURE_VERSION_CODE >> 16) & 0xff,
 		 (VPFE_CAPTURE_VERSION_CODE >> 8) & 0xff,
 		 (VPFE_CAPTURE_VERSION_CODE) & 0xff);
+<<<<<<< HEAD
 	/* Set video_dev to the video device */
 	vpfe_dev->video_dev	= vfd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = v4l2_device_register(&pdev->dev, &vpfe_dev->v4l2_dev);
 	if (ret) {
 		v4l2_err(pdev->dev.driver,
 			"Unable to register v4l2 device.\n");
+<<<<<<< HEAD
 		goto probe_out_video_release;
+=======
+		goto probe_out_release_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	v4l2_info(&vpfe_dev->v4l2_dev, "v4l2 device registered\n");
 	spin_lock_init(&vpfe_dev->irqlock);
@@ -1890,15 +2055,24 @@ static int vpfe_probe(struct platform_device *pdev)
 	/* Initialize field of the device objects */
 	vpfe_dev->numbuffers = config_params.numbuffers;
 
+<<<<<<< HEAD
 	/* Initialize prio member of device object */
 	v4l2_prio_init(&vpfe_dev->prio);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* register video device */
 	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev,
 		"trying to register vpfe device.\n");
 	v4l2_dbg(1, debug, &vpfe_dev->v4l2_dev,
+<<<<<<< HEAD
 		"video_dev=%x\n", (int)&vpfe_dev->video_dev);
 	vpfe_dev->fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	ret = video_register_device(vpfe_dev->video_dev,
+=======
+		"video_dev=%p\n", &vpfe_dev->video_dev);
+	vpfe_dev->fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	ret = video_register_device(&vpfe_dev->video_dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    VFL_TYPE_GRABBER, -1);
 
 	if (ret) {
@@ -1911,7 +2085,11 @@ static int vpfe_probe(struct platform_device *pdev)
 	/* set the driver data in platform device */
 	platform_set_drvdata(pdev, vpfe_dev);
 	/* set driver private data */
+<<<<<<< HEAD
 	video_set_drvdata(vpfe_dev->video_dev, vpfe_dev);
+=======
+	video_set_drvdata(&vpfe_dev->video_dev, vpfe_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i2c_adap = i2c_get_adapter(vpfe_cfg->i2c_adapter_id);
 	num_subdevs = vpfe_cfg->num_subdevs;
 	vpfe_dev->sd = kmalloc(sizeof(struct v4l2_subdev *) * num_subdevs,
@@ -1963,12 +2141,18 @@ static int vpfe_probe(struct platform_device *pdev)
 probe_sd_out:
 	kfree(vpfe_dev->sd);
 probe_out_video_unregister:
+<<<<<<< HEAD
 	video_unregister_device(vpfe_dev->video_dev);
 probe_out_v4l2_unregister:
 	v4l2_device_unregister(&vpfe_dev->v4l2_dev);
 probe_out_video_release:
 	if (!video_is_registered(vpfe_dev->video_dev))
 		video_device_release(vpfe_dev->video_dev);
+=======
+	video_unregister_device(&vpfe_dev->video_dev);
+probe_out_v4l2_unregister:
+	v4l2_device_unregister(&vpfe_dev->v4l2_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 probe_out_release_irq:
 	free_irq(vpfe_dev->ccdc_irq0, vpfe_dev);
 probe_free_ccdc_cfg_mem:
@@ -1991,7 +2175,11 @@ static int vpfe_remove(struct platform_device *pdev)
 	free_irq(vpfe_dev->ccdc_irq0, vpfe_dev);
 	kfree(vpfe_dev->sd);
 	v4l2_device_unregister(&vpfe_dev->v4l2_dev);
+<<<<<<< HEAD
 	video_unregister_device(vpfe_dev->video_dev);
+=======
+	video_unregister_device(&vpfe_dev->video_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(vpfe_dev);
 	kfree(ccdc_cfg);
 	return 0;
@@ -2015,7 +2203,10 @@ static const struct dev_pm_ops vpfe_dev_pm_ops = {
 static struct platform_driver vpfe_driver = {
 	.driver = {
 		.name = CAPTURE_DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &vpfe_dev_pm_ops,
 	},
 	.probe = vpfe_probe,

@@ -74,7 +74,11 @@ int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
 
 static void _fdt_nop_region(void *start, int len)
 {
+<<<<<<< HEAD
 	uint32_t *p;
+=======
+	fdt32_t *p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (p = start; (char *)p < ((char *)start + len); p++)
 		*p = cpu_to_fdt32(FDT_NOP);

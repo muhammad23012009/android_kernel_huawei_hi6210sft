@@ -127,6 +127,10 @@ static const struct team_mode ab_mode = {
 	.owner		= THIS_MODULE,
 	.priv_size	= sizeof(struct ab_priv),
 	.ops		= &ab_mode_ops,
+<<<<<<< HEAD
+=======
+	.lag_tx_type	= NETDEV_LAG_TX_TYPE_ACTIVEBACKUP,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init ab_init_module(void)

@@ -22,7 +22,12 @@ extern int kmalloc_ok;
 extern unsigned long alloc_stack(int order, int atomic);
 extern void free_stack(unsigned long stack, int order);
 
+<<<<<<< HEAD
 extern int do_signal(void);
+=======
+struct pt_regs;
+extern void do_signal(struct pt_regs *regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void interrupt_end(void);
 extern void relay_signal(int sig, struct siginfo *si, struct uml_pt_regs *regs);
 

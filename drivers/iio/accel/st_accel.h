@@ -14,16 +14,39 @@
 #include <linux/types.h>
 #include <linux/iio/common/st_sensors.h>
 
+<<<<<<< HEAD
+=======
+#define H3LIS331DL_DRIVER_NAME		"h3lis331dl_accel"
+#define LIS3LV02DL_ACCEL_DEV_NAME	"lis3lv02dl_accel"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc_accel"
 #define LIS3DH_ACCEL_DEV_NAME		"lis3dh"
 #define LSM330D_ACCEL_DEV_NAME		"lsm330d_accel"
 #define LSM330DL_ACCEL_DEV_NAME		"lsm330dl_accel"
 #define LSM330DLC_ACCEL_DEV_NAME	"lsm330dlc_accel"
+<<<<<<< HEAD
+=======
+#define LIS331DL_ACCEL_DEV_NAME		"lis331dl_accel"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define LIS331DLH_ACCEL_DEV_NAME	"lis331dlh"
 #define LSM303DL_ACCEL_DEV_NAME		"lsm303dl_accel"
 #define LSM303DLH_ACCEL_DEV_NAME	"lsm303dlh_accel"
 #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
 #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
+<<<<<<< HEAD
+=======
+#define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr_accel"
+#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
+#define LIS3L02DQ_ACCEL_DEV_NAME	"lis3l02dq"
+
+/**
+* struct st_sensors_platform_data - default accel platform data
+* @drdy_int_pin: default accel DRDY is available on INT1 pin.
+*/
+static const struct st_sensors_platform_data default_accel_pdata = {
+	.drdy_int_pin = 1,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int st_accel_common_probe(struct iio_dev *indio_dev);
 void st_accel_common_remove(struct iio_dev *indio_dev);

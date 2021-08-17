@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/perl
+=======
+#!/usr/bin/env perl
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # Takes a (sorted) output of readprofile and turns it into a list suitable for

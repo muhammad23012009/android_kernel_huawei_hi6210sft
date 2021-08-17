@@ -1,6 +1,7 @@
 #ifndef __UM_SMP_H
 #define __UM_SMP_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 
 #include <linux/bitops.h>
@@ -30,3 +31,8 @@ extern struct task_struct *idle_threads[NR_CPUS];
 #endif
 
 #endif
+=======
+#define hard_smp_processor_id()		0
+
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

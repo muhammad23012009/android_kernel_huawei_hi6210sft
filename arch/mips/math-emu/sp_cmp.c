@@ -5,8 +5,11 @@
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
  *
+<<<<<<< HEAD
  * ########################################################################
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  This program is free software; you can distribute it and/or modify it
  *  under the terms of the GNU General Public License (Version 2) as
  *  published by the Free Software Foundation.
@@ -18,6 +21,7 @@
  *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
+<<<<<<< HEAD
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
  * ########################################################################
@@ -28,6 +32,18 @@
 
 int ieee754sp_cmp(ieee754sp x, ieee754sp y, int cmp, int sig)
 {
+=======
+ *  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
+ */
+
+#include "ieee754sp.h"
+
+int ieee754sp_cmp(union ieee754sp x, union ieee754sp y, int cmp, int sig)
+{
+	int vx;
+	int vy;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	COMPXSP;
 	COMPYSP;
 
@@ -35,6 +51,7 @@ int ieee754sp_cmp(ieee754sp x, ieee754sp y, int cmp, int sig)
 	EXPLODEYSP;
 	FLUSHXSP;
 	FLUSHYSP;
+<<<<<<< HEAD
 	CLEARCX;	/* Even clear inexact flag here */
 
 	if (ieee754sp_isnan(x) || ieee754sp_isnan(y)) {
@@ -50,6 +67,18 @@ int ieee754sp_cmp(ieee754sp x, ieee754sp y, int cmp, int sig)
 	} else {
 		int vx = x.bits;
 		int vy = y.bits;
+=======
+	ieee754_clearcx();	/* Even clear inexact flag here */
+
+	if (ieee754_class_nan(xc) || ieee754_class_nan(yc)) {
+		if (sig ||
+		    xc == IEEE754_CLASS_SNAN || yc == IEEE754_CLASS_SNAN)
+			ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return (cmp & IEEE754_CUN) != 0;
+	} else {
+		vx = x.bits;
+		vy = y.bits;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (vx < 0)
 			vx = -vx ^ SP_SIGN_BIT;

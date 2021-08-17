@@ -61,7 +61,11 @@ struct ts72xx_wdt {
 	struct platform_device *pdev;
 };
 
+<<<<<<< HEAD
 struct platform_device *ts72xx_wdt_pdev;
+=======
+static struct platform_device *ts72xx_wdt_pdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * TS-72xx Watchdog supports following timeouts (value written
@@ -192,7 +196,11 @@ static int ts72xx_wdt_open(struct inode *inode, struct file *file)
 		dev_err(&wdt->pdev->dev,
 			"failed to convert timeout (%d) to register value\n",
 			timeout);
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return regval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (mutex_lock_interruptible(&wdt->lock))
@@ -305,7 +313,12 @@ static long ts72xx_wdt_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case WDIOC_GETSUPPORT:
+<<<<<<< HEAD
 		error = copy_to_user(argp, &winfo, sizeof(winfo));
+=======
+		if (copy_to_user(argp, &winfo, sizeof(winfo)))
+			error = -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case WDIOC_GETSTATUS:
@@ -320,10 +333,16 @@ static long ts72xx_wdt_ioctl(struct file *file, unsigned int cmd,
 	case WDIOC_SETOPTIONS: {
 		int options;
 
+<<<<<<< HEAD
 		if (get_user(options, p)) {
 			error = -EFAULT;
 			break;
 		}
+=======
+		error = get_user(options, p);
+		if (error)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		error = -EINVAL;
 
@@ -341,6 +360,7 @@ static long ts72xx_wdt_ioctl(struct file *file, unsigned int cmd,
 
 	case WDIOC_SETTIMEOUT: {
 		int new_timeout;
+<<<<<<< HEAD
 
 		if (get_user(new_timeout, p)) {
 			error = -EFAULT;
@@ -359,12 +379,33 @@ static long ts72xx_wdt_ioctl(struct file *file, unsigned int cmd,
 		if (error)
 			break;
 
+=======
+		int regval;
+
+		error = get_user(new_timeout, p);
+		if (error)
+			break;
+
+		regval = timeout_to_regval(new_timeout);
+		if (regval < 0) {
+			error = regval;
+			break;
+		}
+		ts72xx_wdt_stop(wdt);
+		wdt->regval = regval;
+		ts72xx_wdt_start(wdt);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*FALLTHROUGH*/
 	}
 
 	case WDIOC_GETTIMEOUT:
+<<<<<<< HEAD
 		if (put_user(regval_to_timeout(wdt->regval), p))
 			error = -EFAULT;
+=======
+		error = put_user(regval_to_timeout(wdt->regval), p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:
@@ -397,6 +438,7 @@ static int ts72xx_wdt_probe(struct platform_device *pdev)
 	struct resource *r1, *r2;
 	int error = 0;
 
+<<<<<<< HEAD
 	wdt = kzalloc(sizeof(struct ts72xx_wdt), GFP_KERNEL);
 	if (!wdt) {
 		dev_err(&pdev->dev, "failed to allocate memory\n");
@@ -444,6 +486,21 @@ static int ts72xx_wdt_probe(struct platform_device *pdev)
 		error = -ENODEV;
 		goto fail_free_feed;
 	}
+=======
+	wdt = devm_kzalloc(&pdev->dev, sizeof(struct ts72xx_wdt), GFP_KERNEL);
+	if (!wdt)
+		return -ENOMEM;
+
+	r1 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	wdt->control_reg = devm_ioremap_resource(&pdev->dev, r1);
+	if (IS_ERR(wdt->control_reg))
+		return PTR_ERR(wdt->control_reg);
+
+	r2 = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	wdt->feed_reg = devm_ioremap_resource(&pdev->dev, r2);
+	if (IS_ERR(wdt->feed_reg))
+		return PTR_ERR(wdt->feed_reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, wdt);
 	ts72xx_wdt_pdev = pdev;
@@ -456,12 +513,17 @@ static int ts72xx_wdt_probe(struct platform_device *pdev)
 	error = misc_register(&ts72xx_wdt_miscdev);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register miscdev\n");
+<<<<<<< HEAD
 		goto fail_unmap_feed;
+=======
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dev_info(&pdev->dev, "TS-72xx Watchdog driver\n");
 
 	return 0;
+<<<<<<< HEAD
 
 fail_unmap_feed:
 	platform_set_drvdata(pdev, NULL);
@@ -475,10 +537,13 @@ fail_free_control:
 fail:
 	kfree(wdt);
 	return error;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ts72xx_wdt_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct ts72xx_wdt *wdt = platform_get_drvdata(pdev);
 	struct resource *res;
 	int error;
@@ -496,6 +561,10 @@ static int ts72xx_wdt_remove(struct platform_device *pdev)
 
 	kfree(wdt);
 	return error;
+=======
+	misc_deregister(&ts72xx_wdt_miscdev);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver ts72xx_wdt_driver = {
@@ -503,7 +572,10 @@ static struct platform_driver ts72xx_wdt_driver = {
 	.remove		= ts72xx_wdt_remove,
 	.driver		= {
 		.name	= "ts72xx-wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

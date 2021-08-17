@@ -5,6 +5,7 @@
 #include <linux/module.h>
 #include <linux/bio.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <scsi/sg.h>		/* for struct sg_iovec */
 
 #include "blk.h"
@@ -24,6 +25,32 @@ int blk_rq_append_bio(struct request_queue *q, struct request *rq,
 	}
 	return 0;
 }
+=======
+#include <linux/uio.h>
+
+#include "blk.h"
+
+/*
+ * Append a bio to a passthrough request.  Only works can be merged into
+ * the request based on the driver constraints.
+ */
+int blk_rq_append_bio(struct request *rq, struct bio *bio)
+{
+	if (!rq->bio) {
+		blk_rq_bio_prep(rq->q, rq, bio);
+	} else {
+		if (!ll_back_merge_fn(rq->q, rq, bio))
+			return -EINVAL;
+
+		rq->biotail->bi_next = bio;
+		rq->biotail = bio;
+		rq->__data_len += bio->bi_iter.bi_size;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL(blk_rq_append_bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __blk_rq_unmap_user(struct bio *bio)
 {
@@ -39,6 +66,7 @@ static int __blk_rq_unmap_user(struct bio *bio)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __blk_rq_map_user(struct request_queue *q, struct request *rq,
 			     struct rq_map_data *map_data, void __user *ubuf,
 			     unsigned int len, gfp_t gfp_mask)
@@ -58,12 +86,34 @@ static int __blk_rq_map_user(struct request_queue *q, struct request *rq,
 		bio = bio_map_user(q, NULL, uaddr, len, reading, gfp_mask);
 	else
 		bio = bio_copy_user(q, map_data, uaddr, len, reading, gfp_mask);
+=======
+static int __blk_rq_map_user_iov(struct request *rq,
+		struct rq_map_data *map_data, struct iov_iter *iter,
+		gfp_t gfp_mask, bool copy)
+{
+	struct request_queue *q = rq->q;
+	struct bio *bio, *orig_bio;
+	int ret;
+
+	if (copy)
+		bio = bio_copy_user_iov(q, map_data, iter, gfp_mask);
+	else
+		bio = bio_map_user_iov(q, iter, gfp_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (IS_ERR(bio))
 		return PTR_ERR(bio);
 
 	if (map_data && map_data->null_mapped)
+<<<<<<< HEAD
 		bio->bi_flags |= (1 << BIO_NULL_MAPPED);
+=======
+		bio_set_flag(bio, BIO_NULL_MAPPED);
+
+	iov_iter_advance(iter, bio->bi_iter.bi_size);
+	if (map_data)
+		map_data->offset += bio->bi_iter.bi_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	orig_bio = bio;
 	blk_queue_bounce(q, &bio);
@@ -74,6 +124,7 @@ static int __blk_rq_map_user(struct request_queue *q, struct request *rq,
 	 */
 	bio_get(bio);
 
+<<<<<<< HEAD
 	ret = blk_rq_append_bio(q, rq, bio);
 	if (!ret)
 		return bio->bi_size;
@@ -92,6 +143,25 @@ static int __blk_rq_map_user(struct request_queue *q, struct request *rq,
  * @map_data:   pointer to the rq_map_data holding pages (if necessary)
  * @ubuf:	the user buffer
  * @len:	length of user data
+=======
+	ret = blk_rq_append_bio(rq, bio);
+	if (ret) {
+		bio_endio(bio);
+		__blk_rq_unmap_user(orig_bio);
+		bio_put(bio);
+		return ret;
+	}
+
+	return 0;
+}
+
+/**
+ * blk_rq_map_user_iov - map user data to a request, for REQ_TYPE_BLOCK_PC usage
+ * @q:		request queue where request should be inserted
+ * @rq:		request to map data to
+ * @map_data:   pointer to the rq_map_data holding pages (if necessary)
+ * @iter:	iovec iterator
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @gfp_mask:	memory allocation flags
  *
  * Description:
@@ -107,6 +177,7 @@ static int __blk_rq_map_user(struct request_queue *q, struct request *rq,
  *    original bio must be passed back in to blk_rq_unmap_user() for proper
  *    unmapping.
  */
+<<<<<<< HEAD
 int blk_rq_map_user(struct request_queue *q, struct request *rq,
 		    struct rq_map_data *map_data, void __user *ubuf,
 		    unsigned long len, gfp_t gfp_mask)
@@ -242,6 +313,63 @@ int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
 	return 0;
 }
 EXPORT_SYMBOL(blk_rq_map_user_iov);
+=======
+int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
+			struct rq_map_data *map_data,
+			const struct iov_iter *iter, gfp_t gfp_mask)
+{
+	bool copy = false;
+	unsigned long align = q->dma_pad_mask | queue_dma_alignment(q);
+	struct bio *bio = NULL;
+	struct iov_iter i;
+	int ret = -EINVAL;
+
+	if (!iter_is_iovec(iter))
+		goto fail;
+
+	if (map_data)
+		copy = true;
+	else if (iov_iter_alignment(iter) & align)
+		copy = true;
+	else if (queue_virt_boundary(q))
+		copy = queue_virt_boundary(q) & iov_iter_gap_alignment(iter);
+
+	i = *iter;
+	do {
+		ret =__blk_rq_map_user_iov(rq, map_data, &i, gfp_mask, copy);
+		if (ret)
+			goto unmap_rq;
+		if (!bio)
+			bio = rq->bio;
+	} while (iov_iter_count(&i));
+
+	if (!bio_flagged(bio, BIO_USER_MAPPED))
+		rq->cmd_flags |= REQ_COPY_USER;
+	return 0;
+
+unmap_rq:
+	blk_rq_unmap_user(bio);
+fail:
+	rq->bio = NULL;
+	return ret;
+}
+EXPORT_SYMBOL(blk_rq_map_user_iov);
+
+int blk_rq_map_user(struct request_queue *q, struct request *rq,
+		    struct rq_map_data *map_data, void __user *ubuf,
+		    unsigned long len, gfp_t gfp_mask)
+{
+	struct iovec iov;
+	struct iov_iter i;
+	int ret = import_single_range(rq_data_dir(rq), ubuf, len, &iov, &i);
+
+	if (unlikely(ret < 0))
+		return ret;
+
+	return blk_rq_map_user_iov(q, rq, map_data, &i, gfp_mask);
+}
+EXPORT_SYMBOL(blk_rq_map_user);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * blk_rq_unmap_user - unmap a request with user data
@@ -285,7 +413,11 @@ EXPORT_SYMBOL(blk_rq_unmap_user);
  *
  * Description:
  *    Data will be mapped directly if possible. Otherwise a bounce
+<<<<<<< HEAD
  *    buffer is used. Can be called multple times to append multple
+=======
+ *    buffer is used. Can be called multiple times to append multiple
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *    buffers.
  */
 int blk_rq_map_kern(struct request_queue *q, struct request *rq, void *kbuf,
@@ -312,12 +444,20 @@ int blk_rq_map_kern(struct request_queue *q, struct request *rq, void *kbuf,
 		return PTR_ERR(bio);
 
 	if (!reading)
+<<<<<<< HEAD
 		bio->bi_rw |= REQ_WRITE;
+=======
+		bio_set_op_attrs(bio, REQ_OP_WRITE, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (do_copy)
 		rq->cmd_flags |= REQ_COPY_USER;
 
+<<<<<<< HEAD
 	ret = blk_rq_append_bio(q, rq, bio);
+=======
+	ret = blk_rq_append_bio(rq, bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(ret)) {
 		/* request is too big */
 		bio_put(bio);
@@ -325,7 +465,10 @@ int blk_rq_map_kern(struct request_queue *q, struct request *rq, void *kbuf,
 	}
 
 	blk_queue_bounce(q, &rq->bio);
+<<<<<<< HEAD
 	rq->buffer = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL(blk_rq_map_kern);

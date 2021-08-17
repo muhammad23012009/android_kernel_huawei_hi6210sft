@@ -9,9 +9,13 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
+=======
+#include <linux/spinlock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -38,7 +42,13 @@
 /* usi register bit */
 #define ENINT		(0x01 << 17)
 #define ENFLG		(0x01 << 16)
+<<<<<<< HEAD
 #define TXNUM		(0x03 << 8)
+=======
+#define SLEEP		(0x0f << 12)
+#define TXNUM		(0x03 << 8)
+#define TXBITLEN	(0x1f << 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TXNEG		(0x01 << 2)
 #define RXNEG		(0x01 << 1)
 #define LSB		(0x01 << 10)
@@ -57,6 +67,7 @@ struct nuc900_spi {
 	const unsigned char	*tx;
 	unsigned char		*rx;
 	struct clk		*clk;
+<<<<<<< HEAD
 	struct resource		*ioarea;
 	struct spi_master	*master;
 	struct spi_device	*curdev;
@@ -64,6 +75,11 @@ struct nuc900_spi {
 	struct nuc900_spi_info *pdata;
 	spinlock_t		lock;
 	struct resource		*res;
+=======
+	struct spi_master	*master;
+	struct nuc900_spi_info *pdata;
+	spinlock_t		lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct nuc900_spi *to_hw(struct spi_device *sdev)
@@ -120,19 +136,29 @@ static void nuc900_spi_chipsel(struct spi_device *spi, int value)
 	}
 }
 
+<<<<<<< HEAD
 static void nuc900_spi_setup_txnum(struct nuc900_spi *hw,
 							unsigned int txnum)
+=======
+static void nuc900_spi_setup_txnum(struct nuc900_spi *hw, unsigned int txnum)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int val;
 	unsigned long flags;
 
 	spin_lock_irqsave(&hw->lock, flags);
 
+<<<<<<< HEAD
 	val = __raw_readl(hw->regs + USI_CNT);
 
 	if (!txnum)
 		val &= ~TXNUM;
 	else
+=======
+	val = __raw_readl(hw->regs + USI_CNT) & ~TXNUM;
+
+	if (txnum)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		val |= txnum << 0x08;
 
 	__raw_writel(val, hw->regs + USI_CNT);
@@ -149,7 +175,11 @@ static void nuc900_spi_setup_txbitlen(struct nuc900_spi *hw,
 
 	spin_lock_irqsave(&hw->lock, flags);
 
+<<<<<<< HEAD
 	val = __raw_readl(hw->regs + USI_CNT);
+=======
+	val = __raw_readl(hw->regs + USI_CNT) & ~TXBITLEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	val |= (txbitlen << 0x03);
 
@@ -174,6 +204,7 @@ static void nuc900_spi_gobusy(struct nuc900_spi *hw)
 	spin_unlock_irqrestore(&hw->lock, flags);
 }
 
+<<<<<<< HEAD
 static int nuc900_spi_setupxfer(struct spi_device *spi,
 				 struct spi_transfer *t)
 {
@@ -185,6 +216,8 @@ static int nuc900_spi_setup(struct spi_device *spi)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned int hw_txbyte(struct nuc900_spi *hw, int count)
 {
 	return hw->tx ? hw->tx[count] : 0;
@@ -299,12 +332,20 @@ static void nuc900_set_sleep(struct nuc900_spi *hw, unsigned int sleep)
 
 	spin_lock_irqsave(&hw->lock, flags);
 
+<<<<<<< HEAD
 	val = __raw_readl(hw->regs + USI_CNT);
 
 	if (sleep)
 		val |= (sleep << 12);
 	else
 		val &= ~(0x0f << 12);
+=======
+	val = __raw_readl(hw->regs + USI_CNT) & ~SLEEP;
+
+	if (sleep)
+		val |= (sleep << 12);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__raw_writel(val, hw->regs + USI_CNT);
 
 	spin_unlock_irqrestore(&hw->lock, flags);
@@ -350,11 +391,16 @@ static int nuc900_spi_probe(struct platform_device *pdev)
 {
 	struct nuc900_spi *hw;
 	struct spi_master *master;
+<<<<<<< HEAD
+=======
+	struct resource *res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err = 0;
 
 	master = spi_alloc_master(&pdev->dev, sizeof(struct nuc900_spi));
 	if (master == NULL) {
 		dev_err(&pdev->dev, "No memory for spi_master\n");
+<<<<<<< HEAD
 		err = -ENOMEM;
 		goto err_nomem;
 	}
@@ -363,6 +409,14 @@ static int nuc900_spi_probe(struct platform_device *pdev)
 	hw->master = spi_master_get(master);
 	hw->pdata  = pdev->dev.platform_data;
 	hw->dev = &pdev->dev;
+=======
+		return -ENOMEM;
+	}
+
+	hw = spi_master_get_devdata(master);
+	hw->master = master;
+	hw->pdata  = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (hw->pdata == NULL) {
 		dev_err(&pdev->dev, "No platform data supplied\n");
@@ -373,6 +427,7 @@ static int nuc900_spi_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, hw);
 	init_completion(&hw->done);
 
+<<<<<<< HEAD
 	master->mode_bits          = SPI_MODE_0;
 	master->num_chipselect     = hw->pdata->num_cs;
 	master->bus_num            = hw->pdata->bus_num;
@@ -405,10 +460,29 @@ static int nuc900_spi_probe(struct platform_device *pdev)
 		goto err_iomap;
 	}
 
+=======
+	master->mode_bits          = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
+	if (hw->pdata->lsb)
+		master->mode_bits |= SPI_LSB_FIRST;
+	master->num_chipselect     = hw->pdata->num_cs;
+	master->bus_num            = hw->pdata->bus_num;
+	hw->bitbang.master         = hw->master;
+	hw->bitbang.chipselect     = nuc900_spi_chipsel;
+	hw->bitbang.txrx_bufs      = nuc900_spi_txrx;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	hw->regs = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(hw->regs)) {
+		err = PTR_ERR(hw->regs);
+		goto err_pdata;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hw->irq = platform_get_irq(pdev, 0);
 	if (hw->irq < 0) {
 		dev_err(&pdev->dev, "No IRQ specified\n");
 		err = -ENOENT;
+<<<<<<< HEAD
 		goto err_irq;
 	}
 
@@ -423,6 +497,23 @@ static int nuc900_spi_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "No clock for device\n");
 		err = PTR_ERR(hw->clk);
 		goto err_clk;
+=======
+		goto err_pdata;
+	}
+
+	err = devm_request_irq(&pdev->dev, hw->irq, nuc900_spi_irq, 0,
+				pdev->name, hw);
+	if (err) {
+		dev_err(&pdev->dev, "Cannot claim IRQ\n");
+		goto err_pdata;
+	}
+
+	hw->clk = devm_clk_get(&pdev->dev, "spi");
+	if (IS_ERR(hw->clk)) {
+		dev_err(&pdev->dev, "No clock for device\n");
+		err = PTR_ERR(hw->clk);
+		goto err_pdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mfp_set_groupg(&pdev->dev, NULL);
@@ -438,6 +529,7 @@ static int nuc900_spi_probe(struct platform_device *pdev)
 
 err_register:
 	clk_disable(hw->clk);
+<<<<<<< HEAD
 	clk_put(hw->clk);
 err_clk:
 	free_irq(hw->irq, hw);
@@ -450,6 +542,10 @@ err_pdata:
 	spi_master_put(hw->master);
 
 err_nomem:
+=======
+err_pdata:
+	spi_master_put(hw->master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -457,6 +553,7 @@ static int nuc900_spi_remove(struct platform_device *dev)
 {
 	struct nuc900_spi *hw = platform_get_drvdata(dev);
 
+<<<<<<< HEAD
 	free_irq(hw->irq, hw);
 
 	platform_set_drvdata(dev, NULL);
@@ -471,6 +568,10 @@ static int nuc900_spi_remove(struct platform_device *dev)
 	release_mem_region(hw->res->start, resource_size(hw->res));
 	kfree(hw->ioarea);
 
+=======
+	spi_bitbang_stop(&hw->bitbang);
+	clk_disable(hw->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_master_put(hw->master);
 	return 0;
 }
@@ -480,7 +581,10 @@ static struct platform_driver nuc900_spi_driver = {
 	.remove		= nuc900_spi_remove,
 	.driver		= {
 		.name	= "nuc900-spi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(nuc900_spi_driver);

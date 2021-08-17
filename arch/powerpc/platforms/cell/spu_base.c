@@ -24,7 +24,11 @@
 
 #include <linux/interrupt.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ptrace.h>
 #include <linux/slab.h>
 #include <linux/wait.h>
@@ -69,17 +73,24 @@ static DEFINE_SPINLOCK(spu_lock);
  * spu_full_list_lock and spu_full_list_mutex held, while iterating
  * through it requires either of these locks.
  *
+<<<<<<< HEAD
  * In addition spu_full_list_lock protects all assignmens to
+=======
+ * In addition spu_full_list_lock protects all assignments to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * spu->mm.
  */
 static LIST_HEAD(spu_full_list);
 static DEFINE_SPINLOCK(spu_full_list_lock);
 static DEFINE_MUTEX(spu_full_list_mutex);
 
+<<<<<<< HEAD
 struct spu_slb {
 	u64 esid, vsid;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void spu_invalidate_slbs(struct spu *spu)
 {
 	struct spu_priv2 __iomem *priv2 = spu->priv2;
@@ -149,7 +160,11 @@ static void spu_restart_dma(struct spu *spu)
 	}
 }
 
+<<<<<<< HEAD
 static inline void spu_load_slb(struct spu *spu, int slbe, struct spu_slb *slb)
+=======
+static inline void spu_load_slb(struct spu *spu, int slbe, struct copro_slb *slb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct spu_priv2 __iomem *priv2 = spu->priv2;
 
@@ -167,6 +182,7 @@ static inline void spu_load_slb(struct spu *spu, int slbe, struct spu_slb *slb)
 
 static int __spu_trap_data_seg(struct spu *spu, unsigned long ea)
 {
+<<<<<<< HEAD
 	struct mm_struct *mm = spu->mm;
 	struct spu_slb slb;
 	int psize;
@@ -206,6 +222,14 @@ static int __spu_trap_data_seg(struct spu *spu, unsigned long ea)
 		return 1;
 	}
 	slb.vsid |= mmu_psize_defs[psize].sllp;
+=======
+	struct copro_slb slb;
+	int ret;
+
+	ret = copro_calculate_slb(spu->mm, ea, &slb);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spu_load_slb(spu, spu->slb_replace, &slb);
 
@@ -218,7 +242,12 @@ static int __spu_trap_data_seg(struct spu *spu, unsigned long ea)
 	return 0;
 }
 
+<<<<<<< HEAD
 extern int hash_page(unsigned long ea, unsigned long access, unsigned long trap); //XXX
+=======
+extern int hash_page(unsigned long ea, unsigned long access,
+		     unsigned long trap, unsigned long dsisr); //XXX
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __spu_trap_data_map(struct spu *spu, unsigned long ea, u64 dsisr)
 {
 	int ret;
@@ -233,7 +262,13 @@ static int __spu_trap_data_map(struct spu *spu, unsigned long ea, u64 dsisr)
 	    (REGION_ID(ea) != USER_REGION_ID)) {
 
 		spin_unlock(&spu->register_lock);
+<<<<<<< HEAD
 		ret = hash_page(ea, _PAGE_PRESENT, 0x300);
+=======
+		ret = hash_page(ea,
+				_PAGE_PRESENT | _PAGE_READ | _PAGE_PRIVILEGED,
+				0x300, dsisr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock(&spu->register_lock);
 
 		if (!ret) {
@@ -253,7 +288,11 @@ static int __spu_trap_data_map(struct spu *spu, unsigned long ea, u64 dsisr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __spu_kernel_slb(void *addr, struct spu_slb *slb)
+=======
+static void __spu_kernel_slb(void *addr, struct copro_slb *slb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long ea = (unsigned long)addr;
 	u64 llp;
@@ -272,7 +311,11 @@ static void __spu_kernel_slb(void *addr, struct spu_slb *slb)
  * Given an array of @nr_slbs SLB entries, @slbs, return non-zero if the
  * address @new_addr is present.
  */
+<<<<<<< HEAD
 static inline int __slb_present(struct spu_slb *slbs, int nr_slbs,
+=======
+static inline int __slb_present(struct copro_slb *slbs, int nr_slbs,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		void *new_addr)
 {
 	unsigned long ea = (unsigned long)new_addr;
@@ -289,7 +332,11 @@ static inline int __slb_present(struct spu_slb *slbs, int nr_slbs,
  * Setup the SPU kernel SLBs, in preparation for a context save/restore. We
  * need to map both the context save area, and the save/restore code.
  *
+<<<<<<< HEAD
  * Because the lscsa and code may cross segment boundaires, we check to see
+=======
+ * Because the lscsa and code may cross segment boundaries, we check to see
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * if mappings are required for the start and end of each range. We currently
  * assume that the mappings are smaller that one segment - if not, something
  * is seriously wrong.
@@ -297,7 +344,11 @@ static inline int __slb_present(struct spu_slb *slbs, int nr_slbs,
 void spu_setup_kernel_slbs(struct spu *spu, struct spu_lscsa *lscsa,
 		void *code, int code_size)
 {
+<<<<<<< HEAD
 	struct spu_slb slbs[4];
+=======
+	struct copro_slb slbs[4];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, nr_slbs = 0;
 	/* start and end addresses of both mappings */
 	void *addrs[] = {
@@ -438,7 +489,11 @@ static int spu_request_irqs(struct spu *spu)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (spu->irqs[0] != NO_IRQ) {
+=======
+	if (spu->irqs[0]) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snprintf(spu->irq_c0, sizeof (spu->irq_c0), "spe%02d.0",
 			 spu->number);
 		ret = request_irq(spu->irqs[0], spu_irq_class_0,
@@ -446,7 +501,11 @@ static int spu_request_irqs(struct spu *spu)
 		if (ret)
 			goto bail0;
 	}
+<<<<<<< HEAD
 	if (spu->irqs[1] != NO_IRQ) {
+=======
+	if (spu->irqs[1]) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snprintf(spu->irq_c1, sizeof (spu->irq_c1), "spe%02d.1",
 			 spu->number);
 		ret = request_irq(spu->irqs[1], spu_irq_class_1,
@@ -454,7 +513,11 @@ static int spu_request_irqs(struct spu *spu)
 		if (ret)
 			goto bail1;
 	}
+<<<<<<< HEAD
 	if (spu->irqs[2] != NO_IRQ) {
+=======
+	if (spu->irqs[2]) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snprintf(spu->irq_c2, sizeof (spu->irq_c2), "spe%02d.2",
 			 spu->number);
 		ret = request_irq(spu->irqs[2], spu_irq_class_2,
@@ -465,10 +528,17 @@ static int spu_request_irqs(struct spu *spu)
 	return 0;
 
 bail2:
+<<<<<<< HEAD
 	if (spu->irqs[1] != NO_IRQ)
 		free_irq(spu->irqs[1], spu);
 bail1:
 	if (spu->irqs[0] != NO_IRQ)
+=======
+	if (spu->irqs[1])
+		free_irq(spu->irqs[1], spu);
+bail1:
+	if (spu->irqs[0])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		free_irq(spu->irqs[0], spu);
 bail0:
 	return ret;
@@ -476,11 +546,19 @@ bail0:
 
 static void spu_free_irqs(struct spu *spu)
 {
+<<<<<<< HEAD
 	if (spu->irqs[0] != NO_IRQ)
 		free_irq(spu->irqs[0], spu);
 	if (spu->irqs[1] != NO_IRQ)
 		free_irq(spu->irqs[1], spu);
 	if (spu->irqs[2] != NO_IRQ)
+=======
+	if (spu->irqs[0])
+		free_irq(spu->irqs[0], spu);
+	if (spu->irqs[1])
+		free_irq(spu->irqs[1], spu);
+	if (spu->irqs[2])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		free_irq(spu->irqs[2], spu);
 }
 
@@ -611,7 +689,10 @@ static int __init create_spu(void *data)
 	int ret;
 	static int number;
 	unsigned long flags;
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = -ENOMEM;
 	spu = kzalloc(sizeof (*spu), GFP_KERNEL);
@@ -652,8 +733,12 @@ static int __init create_spu(void *data)
 	mutex_unlock(&spu_full_list_mutex);
 
 	spu->stats.util_state = SPU_UTIL_IDLE_LOADED;
+<<<<<<< HEAD
 	ktime_get_ts(&ts);
 	spu->stats.tstamp = timespec_to_ns(&ts);
+=======
+	spu->stats.tstamp = ktime_get_ns();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_LIST_HEAD(&spu->aff_list);
 
@@ -676,7 +761,10 @@ static const char *spu_state_names[] = {
 static unsigned long long spu_acct_time(struct spu *spu,
 		enum spu_utilization_state state)
 {
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long long time = spu->stats.times[state];
 
 	/*
@@ -684,10 +772,15 @@ static unsigned long long spu_acct_time(struct spu *spu,
 	 * statistics are not updated.  Apply the time delta from the
 	 * last recorded state of the spu.
 	 */
+<<<<<<< HEAD
 	if (spu->stats.util_state == state) {
 		ktime_get_ts(&ts);
 		time += timespec_to_ns(&ts) - spu->stats.tstamp;
 	}
+=======
+	if (spu->stats.util_state == state)
+		time += ktime_get_ns() - spu->stats.tstamp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return time / NSEC_PER_MSEC;
 }
@@ -846,7 +939,11 @@ static int __init init_spu_base(void)
  out:
 	return ret;
 }
+<<<<<<< HEAD
 module_init(init_spu_base);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Arnd Bergmann <arndb@de.ibm.com>");
+=======
+device_initcall(init_spu_base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

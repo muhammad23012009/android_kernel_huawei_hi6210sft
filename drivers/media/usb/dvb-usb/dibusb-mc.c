@@ -1,10 +1,17 @@
 /* DVB USB compliant linux driver for mobile DVB-T USB devices based on
  * reference designs made by DiBcom (http://www.dibcom.fr/) (DiB3000M-C/P)
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
  *
  * based on GPL code from DiBcom, which has
  * Copyright (C) 2004 Amaury Demol for DiBcom (ademol@dibcom.fr)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+ *
+ * based on GPL code from DiBcom, which has
+ * Copyright (C) 2004 Amaury Demol for DiBcom
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	This program is free software; you can redistribute it and/or modify it
  *	under the terms of the GNU General Public License as published by the Free
@@ -143,7 +150,11 @@ static struct usb_driver dibusb_mc_driver = {
 
 module_usb_driver(dibusb_mc_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@desy.de>");
+=======
+MODULE_AUTHOR("Patrick Boettcher <patrick.boettcher@posteo.de>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("Driver for DiBcom USB2.0 DVB-T (DiB3000M-C/P based) devices");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");

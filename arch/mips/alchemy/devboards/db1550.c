@@ -4,6 +4,10 @@
  * (c) 2011 Manuel Lauss <manuel.lauss@googlemail.com>
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dma-mapping.h>
 #include <linux/gpio.h>
 #include <linux/i2c.h>
@@ -19,6 +23,10 @@
 #include <linux/spi/flash.h>
 #include <asm/bootinfo.h>
 #include <asm/mach-au1x00/au1000.h>
+<<<<<<< HEAD
+=======
+#include <asm/mach-au1x00/gpio-au1000.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach-au1x00/au1xxx_eth.h>
 #include <asm/mach-au1x00/au1xxx_dbdma.h>
 #include <asm/mach-au1x00/au1xxx_psc.h>
@@ -31,6 +39,7 @@
 static void __init db1550_hw_setup(void)
 {
 	void __iomem *base;
+<<<<<<< HEAD
 
 	/* complete SPI setup: link psc0_intclk to a 48MHz source,
 	 * and assign GPIO16 to PSC0_SYNC1 (SPI cs# line) as well as PSC1_SYNC
@@ -41,6 +50,15 @@ static void __init db1550_hw_setup(void)
 	base = (void __iomem *)SYS_PINFUNC;
 	__raw_writel(__raw_readl(base) | 1 | SYS_PF_PSC1_S1, base);
 	wmb();
+=======
+	unsigned long v;
+
+	/* complete pin setup: assign GPIO16 to PSC0_SYNC1 (SPI cs# line)
+	 * as well as PSC1_SYNC for AC97 on PB1550.
+	 */
+	v = alchemy_rdsys(AU1000_SYS_PINFUNC);
+	alchemy_wrsys(v | 1 | SYS_PF_PSC1_S1, AU1000_SYS_PINFUNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* reset the AC97 codec now, the reset time in the psc-ac97 driver
 	 * is apparently too short although it's ridiculous as it is.
@@ -62,10 +80,23 @@ int __init db1550_board_setup(void)
 		  DB1550_BCSR_PHYS_ADDR + DB1550_BCSR_HEXLED_OFS);
 
 	whoami = bcsr_read(BCSR_WHOAMI); /* PB1550 hexled offset differs */
+<<<<<<< HEAD
 	if ((BCSR_WHOAMI_BOARD(whoami) == BCSR_WHOAMI_PB1550_SDR) ||
 	    (BCSR_WHOAMI_BOARD(whoami) == BCSR_WHOAMI_PB1550_DDR))
 		bcsr_init(PB1550_BCSR_PHYS_ADDR,
 			  PB1550_BCSR_PHYS_ADDR + PB1550_BCSR_HEXLED_OFS);
+=======
+	switch (BCSR_WHOAMI_BOARD(whoami)) {
+	case BCSR_WHOAMI_PB1550_SDR:
+	case BCSR_WHOAMI_PB1550_DDR:
+		bcsr_init(PB1550_BCSR_PHYS_ADDR,
+			  PB1550_BCSR_PHYS_ADDR + PB1550_BCSR_HEXLED_OFS);
+	case BCSR_WHOAMI_DB1550:
+		break;
+	default:
+		return -ENODEV;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_info("Alchemy/AMD %s Board, CPLD Rev %d Board-ID %d	"	\
 		"Daughtercard ID %d\n", get_system_type(),
@@ -123,7 +154,11 @@ static struct i2c_board_info db1550_i2c_devs[] __initdata = {
 static void au1550_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 				 unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long ioaddr = (unsigned long)this->IO_ADDR_W;
 
 	ioaddr &= 0xffffff00;
@@ -145,7 +180,11 @@ static void au1550_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 
 static int au1550_nand_device_ready(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	return __raw_readl((void __iomem *)MEM_STSTAT) & 1;
+=======
+	return alchemy_rdsmem(AU1000_MEM_STSTAT) & 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct mtd_partition db1550_nand_parts[] = {
@@ -211,7 +250,11 @@ static struct platform_device pb1550_nand_dev = {
 
 static void __init pb1550_nand_setup(void)
 {
+<<<<<<< HEAD
 	int boot_swapboot = (au_readl(MEM_STSTAT) & (0x7 << 1)) |
+=======
+	int boot_swapboot = (alchemy_rdsmem(AU1000_MEM_STSTAT) & (0x7 << 1)) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    ((bcsr_read(BCSR_STATUS) >> 6) & 0x1);
 
 	gpio_direction_input(206);	/* de-assert NAND CS# */
@@ -509,7 +552,11 @@ static void __init db1550_devices(void)
 		AU1000_PCMCIA_MEM_PHYS_ADDR  + 0x000400000 - 1,
 		AU1000_PCMCIA_IO_PHYS_ADDR,
 		AU1000_PCMCIA_IO_PHYS_ADDR   + 0x000010000 - 1,
+<<<<<<< HEAD
 		AU1550_GPIO3_INT, AU1550_GPIO0_INT,
+=======
+		AU1550_GPIO3_INT, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*AU1550_GPIO21_INT*/0, 0, 0);
 
 	db1x_register_pcmcia_socket(
@@ -519,7 +566,11 @@ static void __init db1550_devices(void)
 		AU1000_PCMCIA_MEM_PHYS_ADDR  + 0x004400000 - 1,
 		AU1000_PCMCIA_IO_PHYS_ADDR   + 0x004000000,
 		AU1000_PCMCIA_IO_PHYS_ADDR   + 0x004010000 - 1,
+<<<<<<< HEAD
 		AU1550_GPIO5_INT, AU1550_GPIO1_INT,
+=======
+		AU1550_GPIO5_INT, 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*AU1550_GPIO22_INT*/0, 0, 1);
 
 	platform_device_register(&db1550_nand_dev);
@@ -568,6 +619,10 @@ static void __init pb1550_devices(void)
 int __init db1550_dev_setup(void)
 {
 	int swapped, id;
+<<<<<<< HEAD
+=======
+	struct clk *c;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	id = (BCSR_WHOAMI_BOARD(bcsr_read(BCSR_WHOAMI)) != BCSR_WHOAMI_DB1550);
 
@@ -576,6 +631,22 @@ int __init db1550_dev_setup(void)
 	spi_register_board_info(db1550_spi_devs,
 				ARRAY_SIZE(db1550_i2c_devs));
 
+<<<<<<< HEAD
+=======
+	c = clk_get(NULL, "psc0_intclk");
+	if (!IS_ERR(c)) {
+		clk_set_rate(c, 50000000);
+		clk_prepare_enable(c);
+		clk_put(c);
+	}
+	c = clk_get(NULL, "psc2_intclk");
+	if (!IS_ERR(c)) {
+		clk_set_rate(c, db1550_spi_platdata.mainclk_hz);
+		clk_prepare_enable(c);
+		clk_put(c);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Audio PSC clock is supplied by codecs (PSC1, 3) FIXME: platdata!! */
 	__raw_writel(PSC_SEL_CLK_SERCLK,
 	    (void __iomem *)KSEG1ADDR(AU1550_PSC1_PHYS_ADDR) + PSC_SEL_OFFSET);

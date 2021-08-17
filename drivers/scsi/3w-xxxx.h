@@ -195,11 +195,14 @@ static unsigned char tw_sense_table[][4] =
 #define TW_AEN_SMART_FAIL        0x000F
 #define TW_AEN_SBUF_FAIL         0x0024
 
+<<<<<<< HEAD
 /* Phase defines */
 #define TW_PHASE_INITIAL 0
 #define TW_PHASE_SINGLE 1
 #define TW_PHASE_SGLIST 2
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Misc defines */
 #define TW_ALIGNMENT_6000		      64 /* 64 bytes */
 #define TW_ALIGNMENT_7000                     4  /* 4 bytes */
@@ -392,6 +395,11 @@ typedef struct TAG_TW_Passthru
 	unsigned char padding[12];
 } TW_Passthru;
 
+<<<<<<< HEAD
+=======
+#pragma pack()
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef struct TAG_TW_Device_Extension {
 	u32			base_addr;
 	unsigned long		*alignment_virtual_address[TW_Q_LENGTH];
@@ -430,6 +438,9 @@ typedef struct TAG_TW_Device_Extension {
 	wait_queue_head_t	ioctl_wqueue;
 } TW_Device_Extension;
 
+<<<<<<< HEAD
 #pragma pack()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _3W_XXXX_H */

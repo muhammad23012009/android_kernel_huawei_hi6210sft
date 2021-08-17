@@ -36,7 +36,10 @@
 #include <linux/serio.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/completion.h>
 #include <linux/slab.h>
 #include <linux/pci_ids.h>
@@ -474,7 +477,11 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 	if (error)
 		goto bail1;
 
+<<<<<<< HEAD
 	init_completion(&dev->cmd_done);
+=======
+	reinit_completion(&dev->cmd_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	serio_write(serio, 0);
 	serio_write(serio, 0);
 	serio_write(serio, HIL_PKT_CMD >> 8);
@@ -483,7 +490,11 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 	if (error)
 		goto bail1;
 
+<<<<<<< HEAD
 	init_completion(&dev->cmd_done);
+=======
+	reinit_completion(&dev->cmd_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	serio_write(serio, 0);
 	serio_write(serio, 0);
 	serio_write(serio, HIL_PKT_CMD >> 8);
@@ -492,7 +503,11 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 	if (error)
 		goto bail1;
 
+<<<<<<< HEAD
 	init_completion(&dev->cmd_done);
+=======
+	reinit_completion(&dev->cmd_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	serio_write(serio, 0);
 	serio_write(serio, 0);
 	serio_write(serio, HIL_PKT_CMD >> 8);
@@ -513,6 +528,10 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 		    HIL_IDD_NUM_AXES_PER_SET(*idd)) {
 			printk(KERN_INFO PREFIX
 				"combo devices are not supported.\n");
+<<<<<<< HEAD
+=======
+			error = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto bail1;
 		}
 

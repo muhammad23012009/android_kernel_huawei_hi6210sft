@@ -113,6 +113,10 @@ void __init iop33x_init_irq(void)
 		irq_set_chip_and_handler(i,
 					 (i < 32) ? &iop33x_irqchip1 : &iop33x_irqchip2,
 					 handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(i, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }

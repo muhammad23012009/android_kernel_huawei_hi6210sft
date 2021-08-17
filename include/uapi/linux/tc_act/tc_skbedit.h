@@ -27,6 +27,10 @@
 #define SKBEDIT_F_PRIORITY		0x1
 #define SKBEDIT_F_QUEUE_MAPPING		0x2
 #define SKBEDIT_F_MARK			0x4
+<<<<<<< HEAD
+=======
+#define SKBEDIT_F_PTYPE			0x8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct tc_skbedit {
 	tc_gen;
@@ -39,6 +43,11 @@ enum {
 	TCA_SKBEDIT_PRIORITY,
 	TCA_SKBEDIT_QUEUE_MAPPING,
 	TCA_SKBEDIT_MARK,
+<<<<<<< HEAD
+=======
+	TCA_SKBEDIT_PAD,
+	TCA_SKBEDIT_PTYPE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__TCA_SKBEDIT_MAX
 };
 #define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)

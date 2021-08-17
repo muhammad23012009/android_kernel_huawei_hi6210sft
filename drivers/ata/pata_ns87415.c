@@ -25,7 +25,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -386,10 +389,17 @@ static const struct pci_device_id ns87415_pci_tbl[] = {
 	{ }	/* terminate list */
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int ns87415_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int ns87415_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -408,7 +418,11 @@ static struct pci_driver ns87415_pci_driver = {
 	.id_table		= ns87415_pci_tbl,
 	.probe			= ns87415_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ns87415_reinit_one,
 #endif

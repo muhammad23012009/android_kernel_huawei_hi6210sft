@@ -80,7 +80,11 @@ MODULE_PARM_DESC(gpiobase, "The GPIO number base. -1 means dynamic, which is the
 
 static int bt8xxgpio_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 {
+<<<<<<< HEAD
 	struct bt8xxgpio *bg = container_of(gpio, struct bt8xxgpio, gpio);
+=======
+	struct bt8xxgpio *bg = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 outen, data;
 
@@ -101,7 +105,11 @@ static int bt8xxgpio_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 
 static int bt8xxgpio_gpio_get(struct gpio_chip *gpio, unsigned nr)
 {
+<<<<<<< HEAD
 	struct bt8xxgpio *bg = container_of(gpio, struct bt8xxgpio, gpio);
+=======
+	struct bt8xxgpio *bg = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 val;
 
@@ -115,7 +123,11 @@ static int bt8xxgpio_gpio_get(struct gpio_chip *gpio, unsigned nr)
 static int bt8xxgpio_gpio_direction_output(struct gpio_chip *gpio,
 					unsigned nr, int val)
 {
+<<<<<<< HEAD
 	struct bt8xxgpio *bg = container_of(gpio, struct bt8xxgpio, gpio);
+=======
+	struct bt8xxgpio *bg = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 outen, data;
 
@@ -140,7 +152,11 @@ static int bt8xxgpio_gpio_direction_output(struct gpio_chip *gpio,
 static void bt8xxgpio_gpio_set(struct gpio_chip *gpio,
 			    unsigned nr, int val)
 {
+<<<<<<< HEAD
 	struct bt8xxgpio *bg = container_of(gpio, struct bt8xxgpio, gpio);
+=======
+	struct bt8xxgpio *bg = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 data;
 
@@ -169,7 +185,11 @@ static void bt8xxgpio_gpio_setup(struct bt8xxgpio *bg)
 	c->dbg_show = NULL;
 	c->base = modparam_gpiobase;
 	c->ngpio = BT8XXGPIO_NR_GPIOS;
+<<<<<<< HEAD
 	c->can_sleep = 0;
+=======
+	c->can_sleep = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int bt8xxgpio_probe(struct pci_dev *dev,
@@ -178,7 +198,11 @@ static int bt8xxgpio_probe(struct pci_dev *dev,
 	struct bt8xxgpio *bg;
 	int err;
 
+<<<<<<< HEAD
 	bg = kzalloc(sizeof(*bg), GFP_KERNEL);
+=======
+	bg = devm_kzalloc(&dev->dev, sizeof(struct bt8xxgpio), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!bg)
 		return -ENOMEM;
 
@@ -188,9 +212,15 @@ static int bt8xxgpio_probe(struct pci_dev *dev,
 	err = pci_enable_device(dev);
 	if (err) {
 		printk(KERN_ERR "bt8xxgpio: Can't enable device.\n");
+<<<<<<< HEAD
 		goto err_freebg;
 	}
 	if (!request_mem_region(pci_resource_start(dev, 0),
+=======
+		return err;
+	}
+	if (!devm_request_mem_region(&dev->dev, pci_resource_start(dev, 0),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				pci_resource_len(dev, 0),
 				"bt8xxgpio")) {
 		printk(KERN_WARNING "bt8xxgpio: Can't request iomem (0x%llx).\n",
@@ -201,11 +231,19 @@ static int bt8xxgpio_probe(struct pci_dev *dev,
 	pci_set_master(dev);
 	pci_set_drvdata(dev, bg);
 
+<<<<<<< HEAD
 	bg->mmio = ioremap(pci_resource_start(dev, 0), 0x1000);
 	if (!bg->mmio) {
 		printk(KERN_ERR "bt8xxgpio: ioremap() failed\n");
 		err = -EIO;
 		goto err_release_mem;
+=======
+	bg->mmio = devm_ioremap(&dev->dev, pci_resource_start(dev, 0), 0x1000);
+	if (!bg->mmio) {
+		printk(KERN_ERR "bt8xxgpio: ioremap() failed\n");
+		err = -EIO;
+		goto err_disable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Disable interrupts */
@@ -217,14 +255,22 @@ static int bt8xxgpio_probe(struct pci_dev *dev,
 	bgwrite(0, BT848_GPIO_OUT_EN);
 
 	bt8xxgpio_gpio_setup(bg);
+<<<<<<< HEAD
 	err = gpiochip_add(&bg->gpio);
 	if (err) {
 		printk(KERN_ERR "bt8xxgpio: Failed to register GPIOs\n");
 		goto err_release_mem;
+=======
+	err = gpiochip_add_data(&bg->gpio, bg);
+	if (err) {
+		printk(KERN_ERR "bt8xxgpio: Failed to register GPIOs\n");
+		goto err_disable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 err_release_mem:
 	release_mem_region(pci_resource_start(dev, 0),
 			   pci_resource_len(dev, 0));
@@ -233,6 +279,10 @@ err_disable:
 	pci_disable_device(dev);
 err_freebg:
 	kfree(bg);
+=======
+err_disable:
+	pci_disable_device(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -247,6 +297,7 @@ static void bt8xxgpio_remove(struct pci_dev *pdev)
 	bgwrite(~0x0, BT848_INT_STAT);
 	bgwrite(0x0, BT848_GPIO_OUT_EN);
 
+<<<<<<< HEAD
 	iounmap(bg->mmio);
 	release_mem_region(pci_resource_start(pdev, 0),
 			   pci_resource_len(pdev, 0));
@@ -254,6 +305,9 @@ static void bt8xxgpio_remove(struct pci_dev *pdev)
 
 	pci_set_drvdata(pdev, NULL);
 	kfree(bg);
+=======
+	pci_disable_device(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM
@@ -286,7 +340,11 @@ static int bt8xxgpio_resume(struct pci_dev *pdev)
 	unsigned long flags;
 	int err;
 
+<<<<<<< HEAD
 	pci_set_power_state(pdev, 0);
+=======
+	pci_set_power_state(pdev, PCI_D0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = pci_enable_device(pdev);
 	if (err)
 		return err;
@@ -310,7 +368,11 @@ static int bt8xxgpio_resume(struct pci_dev *pdev)
 #define bt8xxgpio_resume NULL
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(bt8xxgpio_pci_tbl) = {
+=======
+static const struct pci_device_id bt8xxgpio_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROOKTREE, PCI_DEVICE_ID_BT848) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROOKTREE, PCI_DEVICE_ID_BT849) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROOKTREE, PCI_DEVICE_ID_BT878) },

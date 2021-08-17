@@ -6,7 +6,11 @@
  *
  * Licensed under GPLv2 or later.
  */
+<<<<<<< HEAD
 /include/ "sama5d3xcm.dtsi"
+=======
+#include "sama5d3xcm.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	compatible = "atmel,sama5d3xmb", "atmel,sama5d3xcm", "atmel,sama5d3", "atmel,sama5";
@@ -20,11 +24,20 @@
 				slot@0 {
 					reg = <0>;
 					bus-width = <4>;
+<<<<<<< HEAD
 					cd-gpios = <&pioD 17 0>;
+=======
+					cd-gpios = <&pioD 17 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
 			spi0: spi@f0004000 {
+<<<<<<< HEAD
+=======
+				dmas = <0>, <0>;	/*  Do not use DMA for spi0 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				m25p80@0 {
 					compatible = "atmel,at25df321a";
 					spi-max-frequency = <50000000>;
@@ -32,6 +45,13 @@
 				};
 			};
 
+<<<<<<< HEAD
+=======
+			ssc0: ssc@f0008000 {
+				atmel,clk-from-rk-pin;
+			};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * i2c0 conflicts with ISI:
 			 * disable it to allow the use of ISI
@@ -39,20 +59,65 @@
 			 */
 			i2c0: i2c@f0014000 {
 				wm8904: wm8904@1a {
+<<<<<<< HEAD
 					compatible = "wm8904";
 					reg = <0x1a>;
+=======
+					compatible = "wlf,wm8904";
+					reg = <0x1a>;
+					clocks = <&pck0>;
+					clock-names = "mclk";
+				};
+			};
+
+			i2c1: i2c@f0018000 {
+				ov2640: camera@0x30 {
+					compatible = "ovti,ov2640";
+					reg = <0x30>;
+					pinctrl-names = "default";
+					pinctrl-0 = <&pinctrl_pck1_as_isi_mck &pinctrl_sensor_power &pinctrl_sensor_reset>;
+					resetb-gpios = <&pioE 24 GPIO_ACTIVE_LOW>;
+					pwdn-gpios = <&pioE 29 GPIO_ACTIVE_HIGH>;
+					/* use pck1 for the master clock of ov2640 */
+					clocks = <&pck1>;
+					clock-names = "xvclk";
+					assigned-clocks = <&pck1>;
+					assigned-clock-rates = <25000000>;
+
+					port {
+						ov2640_0: endpoint {
+							remote-endpoint = <&isi_0>;
+							bus-width = <8>;
+						};
+					};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
 			usart1: serial@f0020000 {
+<<<<<<< HEAD
+=======
+				dmas = <0>, <0>;	/*  Do not use DMA for usart1 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				pinctrl-names = "default";
 				pinctrl-0 = <&pinctrl_usart1 &pinctrl_usart1_rts_cts>;
 				status = "okay";
 			};
 
 			isi: isi@f0034000 {
+<<<<<<< HEAD
 				pinctrl-names = "default";
 				pinctrl-0 = <&pinctrl_isi &pinctrl_isi_pck_as_mck &pinctrl_isi_power &pinctrl_isi_reset>;
+=======
+				port {
+					isi_0: endpoint {
+						remote-endpoint = <&ov2640_0>;
+						bus-width = <8>;
+						vsync-active = <1>;
+						hsync-active = <1>;
+					};
+				};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 
 			mmc1: mmc@f8000000 {
@@ -62,7 +127,11 @@
 				slot@0 {
 					reg = <0>;
 					bus-width = <4>;
+<<<<<<< HEAD
 					cd-gpios = <&pioD 18 0>;
+=======
+					cd-gpios = <&pioD 18 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -79,24 +148,36 @@
 				status = "okay";
 			};
 
+<<<<<<< HEAD
 			macb1: ethernet@f802c000 {
 				phy-mode = "rmii";
 			};
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pinctrl@fffff200 {
 				board {
 					pinctrl_mmc0_cd: mmc0_cd {
 						atmel,pins =
+<<<<<<< HEAD
 							<3 17 0x0 0x5>; /* PD17 GPIO with pullup deglitch */
+=======
+							<AT91_PIOD 17 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>; /* PD17 GPIO with pullup deglitch */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					};
 
 					pinctrl_mmc1_cd: mmc1_cd {
 						atmel,pins =
+<<<<<<< HEAD
 							<3 18 0x0 0x5>; /* PD18 GPIO with pullup deglitch */
+=======
+							<AT91_PIOD 18 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>; /* PD18 GPIO with pullup deglitch */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					};
 
 					pinctrl_pck0_as_audio_mck: pck0_as_audio_mck {
 						atmel,pins =
+<<<<<<< HEAD
 							<3 30 0x2 0x0>;	/* PD30 periph B */
 					};
 
@@ -108,16 +189,42 @@
 					pinctrl_isi_power: isi_power-0 {
 						atmel,pins =
 							<4 29 0x0 0x0>; /* PE29 gpio */
+=======
+							<AT91_PIOD 30 AT91_PERIPH_B AT91_PINCTRL_NONE>;	/* PD30 periph B */
+					};
+
+					pinctrl_pck1_as_isi_mck: pck1_as_isi_mck-0 {
+						atmel,pins =
+							<AT91_PIOD 31 AT91_PERIPH_B AT91_PINCTRL_NONE>;	/* PD31 periph B ISI_MCK */
+					};
+
+					pinctrl_sensor_reset: sensor_reset-0 {
+						atmel,pins =
+							<AT91_PIOE 24 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;   /* PE24 gpio */
+					};
+
+					pinctrl_sensor_power: sensor_power-0 {
+						atmel,pins =
+							<AT91_PIOE 29 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>; /* PE29 gpio */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					};
 
 					pinctrl_usba_vbus: usba_vbus {
 						atmel,pins =
+<<<<<<< HEAD
 							<3 29 0x0 0x4>; /* PD29 GPIO with deglitch */
+=======
+							<AT91_PIOD 29 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>; /* PD29 GPIO with deglitch */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					};
 				};
 			};
 
 			dbgu: serial@ffffee00 {
+<<<<<<< HEAD
+=======
+				dmas = <0>, <0>;	/*  Do not use DMA for dbgu */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "okay";
 			};
 
@@ -127,7 +234,11 @@
 		};
 
 		usb0: gadget@00500000 {
+<<<<<<< HEAD
 			atmel,vbus-gpio = <&pioD 29 0>;
+=======
+			atmel,vbus-gpio = <&pioD 29 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_usba_vbus>;
 			status = "okay";
@@ -135,9 +246,15 @@
 
 		usb1: ohci@00600000 {
 			num-ports = <3>;
+<<<<<<< HEAD
 			atmel,vbus-gpio = <&pioD 25 0
 					   &pioD 26 1
 					   &pioD 27 1
+=======
+			atmel,vbus-gpio = <&pioD 25 GPIO_ACTIVE_HIGH
+					   &pioD 26 GPIO_ACTIVE_LOW
+					   &pioD 27 GPIO_ACTIVE_LOW
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  >;
 			status = "okay";
 		};
@@ -148,7 +265,11 @@
 	};
 
 	sound {
+<<<<<<< HEAD
 		compatible = "atmel,sama5d3ek-wm8904";
+=======
+		compatible = "atmel,asoc-wm8904";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_pck0_as_audio_mck>;
 
@@ -158,9 +279,18 @@
 			"Headphone Jack", "HPOUTR",
 			"IN2L", "Line In Jack",
 			"IN2R", "Line In Jack",
+<<<<<<< HEAD
+=======
+			"Mic", "MICBIAS",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"IN1L", "Mic";
 
 		atmel,ssc-controller = <&ssc0>;
 		atmel,audio-codec = <&wm8904>;
+<<<<<<< HEAD
+=======
+
+		status = "disabled";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

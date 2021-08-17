@@ -21,10 +21,13 @@
 
 #include "pas2.h"
 
+<<<<<<< HEAD
 #ifndef DEB
 #define DEB(what)		/* (what) */
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int      pas_translate_code;
 extern char     pas_model;
 extern int     *pas_osp;
@@ -120,8 +123,11 @@ pas_mixer_set(int whichDev, unsigned int level)
 {
 	int             left, right, devmask, changed, i, mixer = 0;
 
+<<<<<<< HEAD
 	DEB(printk("static int pas_mixer_set(int whichDev = %d, unsigned int level = %X)\n", whichDev, level));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	left = level & 0x7f;
 	right = (level & 0x7f00) >> 8;
 
@@ -207,8 +213,11 @@ pas_mixer_reset(void)
 {
 	int             foo;
 
+<<<<<<< HEAD
 	DEB(printk("pas2_mixer.c: void pas_mixer_reset(void)\n"));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (foo = 0; foo < SOUND_MIXER_NRDEVICES; foo++)
 		pas_mixer_set(foo, levels[foo]);
 
@@ -220,7 +229,10 @@ static int pas_mixer_ioctl(int dev, unsigned int cmd, void __user *arg)
 	int level,v ;
 	int __user *p = (int __user *)arg;
 
+<<<<<<< HEAD
 	DEB(printk("pas2_mixer.c: int pas_mixer_ioctl(unsigned int cmd = %X, unsigned int arg = %X)\n", cmd, arg));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cmd == SOUND_MIXER_PRIVATE1) { /* Set loudness bit */
 		if (get_user(level, p))
 			return -EFAULT;

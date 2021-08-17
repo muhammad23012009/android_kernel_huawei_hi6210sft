@@ -16,16 +16,28 @@
 #include <getopt.h>
 
 #include "cpufreq.h"
+<<<<<<< HEAD
+=======
+#include "cpuidle.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "helpers/helpers.h"
 
 #define NORM_FREQ_LEN 32
 
 static struct option set_opts[] = {
+<<<<<<< HEAD
 	{ .name = "min",	.has_arg = required_argument,	.flag = NULL,	.val = 'd'},
 	{ .name = "max",	.has_arg = required_argument,	.flag = NULL,	.val = 'u'},
 	{ .name = "governor",	.has_arg = required_argument,	.flag = NULL,	.val = 'g'},
 	{ .name = "freq",	.has_arg = required_argument,	.flag = NULL,	.val = 'f'},
 	{ .name = "related",	.has_arg = no_argument,		.flag = NULL,	.val='r'},
+=======
+	{"min",		required_argument,	NULL, 'd'},
+	{"max",		required_argument,	NULL, 'u'},
+	{"governor",	required_argument,	NULL, 'g'},
+	{"freq",	required_argument,	NULL, 'f'},
+	{"related",	no_argument,		NULL, 'r'},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ },
 };
 
@@ -257,7 +269,11 @@ int cmd_freq_set(int argc, char **argv)
 				print_unknown_arg();
 				return -EINVAL;
 			}
+<<<<<<< HEAD
 			if ((sscanf(optarg, "%s", gov)) != 1) {
+=======
+			if ((sscanf(optarg, "%19s", gov)) != 1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				print_unknown_arg();
 				return -EINVAL;
 			}
@@ -295,7 +311,11 @@ int cmd_freq_set(int argc, char **argv)
 			struct cpufreq_affected_cpus *cpus;
 
 			if (!bitmask_isbitset(cpus_chosen, cpu) ||
+<<<<<<< HEAD
 			    cpufreq_cpu_exists(cpu))
+=======
+			    cpupower_is_cpu_online(cpu) != 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 
 			cpus = cpufreq_get_related_cpus(cpu);
@@ -305,6 +325,11 @@ int cmd_freq_set(int argc, char **argv)
 				bitmask_setbit(cpus_chosen, cpus->cpu);
 				cpus = cpus->next;
 			}
+<<<<<<< HEAD
+=======
+			/* Set the last cpu in related cpus list */
+			bitmask_setbit(cpus_chosen, cpus->cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cpufreq_put_related_cpus(cpus);
 		}
 	}
@@ -315,11 +340,16 @@ int cmd_freq_set(int argc, char **argv)
 	     cpu <= bitmask_last(cpus_chosen); cpu++) {
 
 		if (!bitmask_isbitset(cpus_chosen, cpu) ||
+<<<<<<< HEAD
 		    cpufreq_cpu_exists(cpu))
+=======
+		    cpupower_is_cpu_online(cpu) != 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		printf(_("Setting cpu: %d\n"), cpu);
 		ret = do_one_cpu(cpu, &new_pol, freq, policychange);
+<<<<<<< HEAD
 		if (ret)
 			break;
 	}
@@ -328,4 +358,13 @@ int cmd_freq_set(int argc, char **argv)
 		print_error();
 
 	return ret;
+=======
+		if (ret) {
+			print_error();
+			return ret;
+		}
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

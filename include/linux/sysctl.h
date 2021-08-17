@@ -25,17 +25,28 @@
 #include <linux/rcupdate.h>
 #include <linux/wait.h>
 #include <linux/rbtree.h>
+<<<<<<< HEAD
 #include <uapi/linux/sysctl.h>
 
 /* For the /proc/sys support */
+=======
+#include <linux/uidgid.h>
+#include <uapi/linux/sysctl.h>
+
+/* For the /proc/sys support */
+struct completion;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ctl_table;
 struct nsproxy;
 struct ctl_table_root;
 struct ctl_table_header;
 struct ctl_dir;
 
+<<<<<<< HEAD
 typedef struct ctl_table ctl_table;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef int proc_handler (struct ctl_table *ctl, int write,
 			  void __user *buffer, size_t *lenp, loff_t *ppos);
 
@@ -43,6 +54,11 @@ extern int proc_dostring(struct ctl_table *, int,
 			 void __user *, size_t *, loff_t *);
 extern int proc_dointvec(struct ctl_table *, int,
 			 void __user *, size_t *, loff_t *);
+<<<<<<< HEAD
+=======
+extern int proc_douintvec(struct ctl_table *, int,
+			 void __user *, size_t *, loff_t *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int proc_dointvec_minmax(struct ctl_table *, int,
 				void __user *, size_t *, loff_t *);
 extern int proc_dointvec_jiffies(struct ctl_table *, int,
@@ -141,6 +157,10 @@ struct ctl_table_header
 	struct ctl_table_set *set;
 	struct ctl_dir *parent;
 	struct ctl_node *node;
+<<<<<<< HEAD
+=======
+	struct hlist_head inodes; /* head for proc_inode->sysctl_inodes */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ctl_dir {
@@ -156,8 +176,15 @@ struct ctl_table_set {
 
 struct ctl_table_root {
 	struct ctl_table_set default_set;
+<<<<<<< HEAD
 	struct ctl_table_set *(*lookup)(struct ctl_table_root *root,
 					   struct nsproxy *namespaces);
+=======
+	struct ctl_table_set *(*lookup)(struct ctl_table_root *root);
+	void (*set_ownership)(struct ctl_table_header *head,
+			      struct ctl_table *table,
+			      kuid_t *uid, kgid_t *gid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*permissions)(struct ctl_table_header *head, struct ctl_table *table);
 };
 
@@ -190,6 +217,12 @@ struct ctl_table_header *register_sysctl_paths(const struct ctl_path *path,
 void unregister_sysctl_table(struct ctl_table_header * table);
 
 extern int sysctl_init(void);
+<<<<<<< HEAD
+=======
+
+extern struct ctl_table sysctl_mount_point[];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_SYSCTL */
 static inline struct ctl_table_header *register_sysctl_table(struct ctl_table * table)
 {
@@ -214,4 +247,10 @@ static inline void setup_sysctl_set(struct ctl_table_set *p,
 
 #endif /* CONFIG_SYSCTL */
 
+<<<<<<< HEAD
+=======
+int sysctl_max_threads(struct ctl_table *table, int write,
+		       void __user *buffer, size_t *lenp, loff_t *ppos);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_SYSCTL_H */

@@ -17,10 +17,13 @@
   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
   more details.
 
+<<<<<<< HEAD
   You should have received a copy of the GNU General Public License along with
   this program; if not, write to the Free Software Foundation, Inc., 59
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   The full GNU General Public License is included in this distribution in the
   file called LICENSE.
 
@@ -49,6 +52,7 @@
 #include <linux/etherdevice.h>
 #include <linux/uaccess.h>
 #include <net/arp.h>
+<<<<<<< HEAD
 
 #include "rtllib.h"
 
@@ -64,11 +68,19 @@ void _setup_timer(struct timer_list *ptimer, void *fun, unsigned long data)
 	init_timer(ptimer);
 }
 
+=======
+#include "rtllib.h"
+
+u32 rt_global_debug_component = COMP_ERR;
+EXPORT_SYMBOL(rt_global_debug_component);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int rtllib_networks_allocate(struct rtllib_device *ieee)
 {
 	if (ieee->networks)
 		return 0;
 
+<<<<<<< HEAD
 	ieee->networks = kzalloc(
 		MAX_NETWORK_COUNT * sizeof(struct rtllib_network),
 		GFP_KERNEL);
@@ -77,6 +89,12 @@ static inline int rtllib_networks_allocate(struct rtllib_device *ieee)
 		       ieee->dev->name);
 		return -ENOMEM;
 	}
+=======
+	ieee->networks = kcalloc(MAX_NETWORK_COUNT,
+				 sizeof(struct rtllib_network), GFP_KERNEL);
+	if (!ieee->networks)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -106,12 +124,21 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	struct net_device *dev;
 	int i, err;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_INFO("Initializing...\n");
 
 	dev = alloc_etherdev(sizeof(struct rtllib_device) + sizeof_priv);
 	if (!dev) {
 		RTLLIB_ERROR("Unable to network device.\n");
 		goto failed;
+=======
+	pr_debug("rtllib: Initializing...\n");
+
+	dev = alloc_etherdev(sizeof(struct rtllib_device) + sizeof_priv);
+	if (!dev) {
+		pr_err("Unable to allocate net_device.\n");
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	ieee = (struct rtllib_device *)netdev_priv_rsl(dev);
 	memset(ieee, 0, sizeof(struct rtllib_device)+sizeof_priv);
@@ -119,13 +146,20 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 
 	err = rtllib_networks_allocate(ieee);
 	if (err) {
+<<<<<<< HEAD
 		RTLLIB_ERROR("Unable to allocate beacon storage: %d\n",
 				err);
+=======
+		pr_err("Unable to allocate beacon storage: %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto failed;
 	}
 	rtllib_networks_initialize(ieee);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Default fragmentation threshold is maximum payload size */
 	ieee->fts = DEFAULT_FTS;
 	ieee->scan_age = DEFAULT_MAX_SCAN_AGE;
@@ -140,15 +174,22 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 
 	spin_lock_init(&ieee->lock);
 	spin_lock_init(&ieee->wpax_suitlist_lock);
+<<<<<<< HEAD
 	spin_lock_init(&ieee->bw_spinlock);
 	spin_lock_init(&ieee->reorder_spinlock);
 	atomic_set(&(ieee->atm_chnlop), 0);
+=======
+	spin_lock_init(&ieee->reorder_spinlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_set(&(ieee->atm_swbw), 0);
 
 	/* SAM FIXME */
 	lib80211_crypt_info_init(&ieee->crypt_info, "RTLLIB", &ieee->lock);
 
+<<<<<<< HEAD
 	ieee->bHalfNMode = false;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ieee->wpa_enabled = 0;
 	ieee->tkip_countermeasures = 0;
 	ieee->drop_unencrypted = 0;
@@ -161,10 +202,16 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	rtllib_softmac_init(ieee);
 
 	ieee->pHTInfo = kzalloc(sizeof(struct rt_hi_throughput), GFP_KERNEL);
+<<<<<<< HEAD
 	if (ieee->pHTInfo == NULL) {
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "can't alloc memory for HTInfo\n");
 		return NULL;
 	}
+=======
+	if (!ieee->pHTInfo)
+		return NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HTUpdateDefaultSetting(ieee);
 	HTInitializeHTInfo(ieee);
 	TSInitialize(ieee);
@@ -180,8 +227,12 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	return dev;
 
  failed:
+<<<<<<< HEAD
 	if (dev)
 		free_netdev(dev);
+=======
+	free_netdev(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NULL;
 }
 EXPORT_SYMBOL(alloc_rtllib);
@@ -202,6 +253,7 @@ void free_rtllib(struct net_device *dev)
 }
 EXPORT_SYMBOL(free_rtllib);
 
+<<<<<<< HEAD
 u32 rtllib_debug_level;
 static int debug = \
 			    RTLLIB_DL_ERR
@@ -263,6 +315,15 @@ void __exit rtllib_exit(void)
 		remove_proc_entry(DRV_NAME, init_net.proc_net);
 		rtllib_proc = NULL;
 	}
+=======
+static int __init rtllib_init(void)
+{
+	return 0;
+}
+
+static void __exit rtllib_exit(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(rtllib_init);

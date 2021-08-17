@@ -2,6 +2,7 @@
 #define _ASM_CRIS_IO_H
 
 #include <asm/page.h>   /* for __va, __pa */
+<<<<<<< HEAD
 #include <arch/io.h>
 #include <asm-generic/iomap.h>
 #include <linux/kernel.h>
@@ -34,6 +35,14 @@ static inline void * phys_to_virt(unsigned long address)
 	return __va(address);
 }
 
+=======
+#ifdef CONFIG_ETRAX_ARCH_V10
+#include <arch/io.h>
+#endif
+#include <asm-generic/iomap.h>
+#include <linux/kernel.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void __iomem * __ioremap(unsigned long offset, unsigned long size, unsigned long flags);
 extern void __iomem * __ioremap_prot(unsigned long phys_addr, unsigned long size, pgprot_t prot);
 
@@ -46,6 +55,7 @@ extern void iounmap(volatile void * __iomem addr);
 
 extern void __iomem * ioremap_nocache(unsigned long offset, unsigned long size);
 
+<<<<<<< HEAD
 /*
  * IO bus memory addresses are also 1:1 with the physical address
  */
@@ -178,5 +188,8 @@ static inline void outsl(unsigned int port, const void *addr,
  * Convert a virtual cached pointer to an uncached pointer
  */
 #define xlate_dev_kmem_ptr(p)	p
+=======
+#include <asm-generic/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

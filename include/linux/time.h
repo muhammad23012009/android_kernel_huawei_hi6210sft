@@ -4,6 +4,7 @@
 # include <linux/cache.h>
 # include <linux/seqlock.h>
 # include <linux/math64.h>
+<<<<<<< HEAD
 #include <uapi/linux/time.h>
 
 extern struct timezone sys_tz;
@@ -17,6 +18,12 @@ extern struct timezone sys_tz;
 #define NSEC_PER_SEC	1000000000L
 #define FSEC_PER_SEC	1000000000000000LL
 
+=======
+# include <linux/time64.h>
+
+extern struct timezone sys_tz;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TIME_T_MAX	(time_t)((1UL << ((sizeof(time_t) << 3) - 1)) - 1)
 
 static inline int timespec_equal(const struct timespec *a,
@@ -48,9 +55,26 @@ static inline int timeval_compare(const struct timeval *lhs, const struct timeva
 	return lhs->tv_usec - rhs->tv_usec;
 }
 
+<<<<<<< HEAD
 extern unsigned long mktime(const unsigned int year, const unsigned int mon,
 			    const unsigned int day, const unsigned int hour,
 			    const unsigned int min, const unsigned int sec);
+=======
+extern time64_t mktime64(const unsigned int year, const unsigned int mon,
+			const unsigned int day, const unsigned int hour,
+			const unsigned int min, const unsigned int sec);
+
+/**
+ * Deprecated. Use mktime64().
+ */
+static inline unsigned long mktime(const unsigned int year,
+			const unsigned int mon, const unsigned int day,
+			const unsigned int hour, const unsigned int min,
+			const unsigned int sec)
+{
+	return mktime64(year, mon, day, hour, min, sec);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void set_normalized_timespec(struct timespec *ts, time_t sec, s64 nsec);
 
@@ -84,6 +108,7 @@ static inline struct timespec timespec_sub(struct timespec lhs,
 	return ts_delta;
 }
 
+<<<<<<< HEAD
 #define KTIME_MAX			((s64)~((u64)1 << 63))
 #if (BITS_PER_LONG == 64)
 # define KTIME_SEC_MAX			(KTIME_MAX / NSEC_PER_SEC)
@@ -91,6 +116,8 @@ static inline struct timespec timespec_sub(struct timespec lhs,
 # define KTIME_SEC_MAX			LONG_MAX
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Returns true if the timespec is norm, false if denorm:
  */
@@ -115,6 +142,7 @@ static inline bool timespec_valid_strict(const struct timespec *ts)
 	return true;
 }
 
+<<<<<<< HEAD
 extern bool persistent_clock_exist;
 
 static inline bool has_persistent_clock(void)
@@ -136,6 +164,48 @@ struct timespec get_monotonic_coarse(void);
 void get_xtime_and_monotonic_and_sleep_offset(struct timespec *xtim,
 				struct timespec *wtom, struct timespec *sleep);
 void timekeeping_inject_sleeptime(struct timespec *delta);
+=======
+static inline bool timeval_valid(const struct timeval *tv)
+{
+	/* Dates before 1970 are bogus */
+	if (tv->tv_sec < 0)
+		return false;
+
+	/* Can't have more microseconds then a second */
+	if (tv->tv_usec < 0 || tv->tv_usec >= USEC_PER_SEC)
+		return false;
+
+	return true;
+}
+
+extern struct timespec timespec_trunc(struct timespec t, unsigned gran);
+
+/*
+ * Validates if a timespec/timeval used to inject a time offset is valid.
+ * Offsets can be postive or negative. The value of the timeval/timespec
+ * is the sum of its fields, but *NOTE*: the field tv_usec/tv_nsec must
+ * always be non-negative.
+ */
+static inline bool timeval_inject_offset_valid(const struct timeval *tv)
+{
+	/* We don't check the tv_sec as it can be positive or negative */
+
+	/* Can't have more microseconds then a second */
+	if (tv->tv_usec < 0 || tv->tv_usec >= USEC_PER_SEC)
+		return false;
+	return true;
+}
+
+static inline bool timespec_inject_offset_valid(const struct timespec *ts)
+{
+	/* We don't check the tv_sec as it can be positive or negative */
+
+	/* Can't have more nanoseconds then a second */
+	if (ts->tv_nsec < 0 || ts->tv_nsec >= NSEC_PER_SEC)
+		return false;
+	return true;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CURRENT_TIME		(current_kernel_time())
 #define CURRENT_TIME_SEC	((struct timespec) { get_seconds(), 0 })
@@ -153,6 +223,7 @@ void timekeeping_inject_sleeptime(struct timespec *delta);
 extern u32 (*arch_gettimeoffset)(void);
 #endif
 
+<<<<<<< HEAD
 extern void do_gettimeofday(struct timeval *tv);
 extern int do_settimeofday(const struct timespec *tv);
 extern int do_sys_settimeofday(const struct timespec *tv,
@@ -193,6 +264,16 @@ extern int timekeeping_inject_offset(struct timespec *ts);
 extern s32 timekeeping_get_tai_offset(void);
 extern void timekeeping_set_tai_offset(s32 tai_offset);
 extern void timekeeping_clocktai(struct timespec *ts);
+=======
+struct itimerval;
+extern int do_setitimer(int which, struct itimerval *value,
+			struct itimerval *ovalue);
+extern int do_getitimer(int which, struct itimerval *value);
+
+extern unsigned int alarm_setitimer(unsigned int seconds);
+
+extern long do_utimes(int dfd, const char __user *filename, struct timespec *times, int flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct tms;
 extern void do_sys_times(struct tms *);
@@ -223,7 +304,24 @@ struct tm {
 	int tm_yday;
 };
 
+<<<<<<< HEAD
 void time_to_tm(time_t totalsecs, int offset, struct tm *result);
+=======
+void time64_to_tm(time64_t totalsecs, int offset, struct tm *result);
+
+/**
+ * time_to_tm - converts the calendar time to local broken-down time
+ *
+ * @totalsecs	the number of seconds elapsed since 00:00:00 on January 1, 1970,
+ *		Coordinated Universal Time (UTC).
+ * @offset	offset seconds adding to totalsecs.
+ * @result	pointer to struct tm variable to receive broken-down time
+ */
+static inline void time_to_tm(time_t totalsecs, int offset, struct tm *result)
+{
+	time64_to_tm(totalsecs, offset, result);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * timespec_to_ns - Convert timespec to nanoseconds
@@ -280,4 +378,19 @@ static __always_inline void timespec_add_ns(struct timespec *a, u64 ns)
 	a->tv_nsec = ns;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * time_between32 - check if a 32-bit timestamp is within a given time range
+ * @t:	the time which may be within [l,h]
+ * @l:	the lower bound of the range
+ * @h:	the higher bound of the range
+ *
+ * time_before32(t, l, h) returns true if @l <= @t <= @h. All operands are
+ * treated as 32-bit integers.
+ *
+ * Equivalent to !(time_before32(@t, @l) || time_after32(@t, @h)).
+ */
+#define time_between32(t, l, h) ((u32)(h) - (u32)(l) >= (u32)(t) - (u32)(l))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

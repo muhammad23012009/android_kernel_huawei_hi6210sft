@@ -221,6 +221,24 @@ static void dma_intr_coal_auto_tune(struct rsxx_cardinfo *card)
 }
 
 /*----------------- RSXX DMA Handling -------------------*/
+<<<<<<< HEAD
+=======
+static void rsxx_free_dma(struct rsxx_dma_ctrl *ctrl, struct rsxx_dma *dma)
+{
+	if (dma->cmd != HW_CMD_BLK_DISCARD) {
+		if (!pci_dma_mapping_error(ctrl->card->dev, dma->dma_addr)) {
+			pci_unmap_page(ctrl->card->dev, dma->dma_addr,
+				       get_dma_size(dma),
+				       dma->cmd == HW_CMD_BLK_WRITE ?
+						   PCI_DMA_TODEVICE :
+						   PCI_DMA_FROMDEVICE);
+		}
+	}
+
+	kmem_cache_free(rsxx_dma_pool, dma);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void rsxx_complete_dma(struct rsxx_dma_ctrl *ctrl,
 				  struct rsxx_dma *dma,
 				  unsigned int status)
@@ -232,6 +250,7 @@ static void rsxx_complete_dma(struct rsxx_dma_ctrl *ctrl,
 	if (status & DMA_CANCELLED)
 		ctrl->stats.dma_cancelled++;
 
+<<<<<<< HEAD
 	if (dma->dma_addr)
 		pci_unmap_page(ctrl->card->dev, dma->dma_addr,
 			       get_dma_size(dma),
@@ -243,6 +262,31 @@ static void rsxx_complete_dma(struct rsxx_dma_ctrl *ctrl,
 		dma->cb(ctrl->card, dma->cb_data, status ? 1 : 0);
 
 	kmem_cache_free(rsxx_dma_pool, dma);
+=======
+	if (dma->cb)
+		dma->cb(ctrl->card, dma->cb_data, status ? 1 : 0);
+
+	rsxx_free_dma(ctrl, dma);
+}
+
+int rsxx_cleanup_dma_queue(struct rsxx_dma_ctrl *ctrl,
+			   struct list_head *q, unsigned int done)
+{
+	struct rsxx_dma *dma;
+	struct rsxx_dma *tmp;
+	int cnt = 0;
+
+	list_for_each_entry_safe(dma, tmp, q, list) {
+		list_del(&dma->list);
+		if (done & COMPLETE_DMA)
+			rsxx_complete_dma(ctrl, dma, DMA_CANCELLED);
+		else
+			rsxx_free_dma(ctrl, dma);
+		cnt++;
+	}
+
+	return cnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void rsxx_requeue_dma(struct rsxx_dma_ctrl *ctrl,
@@ -252,9 +296,16 @@ static void rsxx_requeue_dma(struct rsxx_dma_ctrl *ctrl,
 	 * Requeued DMAs go to the front of the queue so they are issued
 	 * first.
 	 */
+<<<<<<< HEAD
 	spin_lock(&ctrl->queue_lock);
 	list_add(&dma->list, &ctrl->queue);
 	spin_unlock(&ctrl->queue_lock);
+=======
+	spin_lock_bh(&ctrl->queue_lock);
+	ctrl->stats.sw_q_depth++;
+	list_add(&dma->list, &ctrl->queue);
+	spin_unlock_bh(&ctrl->queue_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void rsxx_handle_dma_error(struct rsxx_dma_ctrl *ctrl,
@@ -329,6 +380,10 @@ static void rsxx_handle_dma_error(struct rsxx_dma_ctrl *ctrl,
 static void dma_engine_stalled(unsigned long data)
 {
 	struct rsxx_dma_ctrl *ctrl = (struct rsxx_dma_ctrl *)data;
+<<<<<<< HEAD
+=======
+	int cnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (atomic_read(&ctrl->stats.hw_q_depth) == 0 ||
 	    unlikely(ctrl->card->eeh_state))
@@ -349,18 +404,43 @@ static void dma_engine_stalled(unsigned long data)
 			"DMA channel %d has stalled, faulting interface.\n",
 			ctrl->id);
 		ctrl->card->dma_fault = 1;
+<<<<<<< HEAD
 	}
 }
 
 static void rsxx_issue_dmas(struct work_struct *work)
 {
 	struct rsxx_dma_ctrl *ctrl;
+=======
+
+		/* Clean up the DMA queue */
+		spin_lock(&ctrl->queue_lock);
+		cnt = rsxx_cleanup_dma_queue(ctrl, &ctrl->queue, COMPLETE_DMA);
+		spin_unlock(&ctrl->queue_lock);
+
+		cnt += rsxx_dma_cancel(ctrl);
+
+		if (cnt)
+			dev_info(CARD_TO_DEV(ctrl->card),
+				"Freed %d queued DMAs on channel %d\n",
+				cnt, ctrl->id);
+	}
+}
+
+static void rsxx_issue_dmas(struct rsxx_dma_ctrl *ctrl)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rsxx_dma *dma;
 	int tag;
 	int cmds_pending = 0;
 	struct hw_cmd *hw_cmd_buf;
+<<<<<<< HEAD
 
 	ctrl = container_of(work, struct rsxx_dma_ctrl, issue_dma_work);
+=======
+	int dir;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hw_cmd_buf = ctrl->cmd.buf;
 
 	if (unlikely(ctrl->card->halt) ||
@@ -368,22 +448,39 @@ static void rsxx_issue_dmas(struct work_struct *work)
 		return;
 
 	while (1) {
+<<<<<<< HEAD
 		spin_lock(&ctrl->queue_lock);
 		if (list_empty(&ctrl->queue)) {
 			spin_unlock(&ctrl->queue_lock);
 			break;
 		}
 		spin_unlock(&ctrl->queue_lock);
+=======
+		spin_lock_bh(&ctrl->queue_lock);
+		if (list_empty(&ctrl->queue)) {
+			spin_unlock_bh(&ctrl->queue_lock);
+			break;
+		}
+		spin_unlock_bh(&ctrl->queue_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		tag = pop_tracker(ctrl->trackers);
 		if (tag == -1)
 			break;
 
+<<<<<<< HEAD
 		spin_lock(&ctrl->queue_lock);
 		dma = list_entry(ctrl->queue.next, struct rsxx_dma, list);
 		list_del(&dma->list);
 		ctrl->stats.sw_q_depth--;
 		spin_unlock(&ctrl->queue_lock);
+=======
+		spin_lock_bh(&ctrl->queue_lock);
+		dma = list_entry(ctrl->queue.next, struct rsxx_dma, list);
+		list_del(&dma->list);
+		ctrl->stats.sw_q_depth--;
+		spin_unlock_bh(&ctrl->queue_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * This will catch any DMAs that slipped in right before the
@@ -396,6 +493,34 @@ static void rsxx_issue_dmas(struct work_struct *work)
 			continue;
 		}
 
+<<<<<<< HEAD
+=======
+		if (dma->cmd != HW_CMD_BLK_DISCARD) {
+			if (dma->cmd == HW_CMD_BLK_WRITE)
+				dir = PCI_DMA_TODEVICE;
+			else
+				dir = PCI_DMA_FROMDEVICE;
+
+			/*
+			 * The function pci_map_page is placed here because we
+			 * can only, by design, issue up to 255 commands to the
+			 * hardware at one time per DMA channel. So the maximum
+			 * amount of mapped memory would be 255 * 4 channels *
+			 * 4096 Bytes which is less than 2GB, the limit of a x8
+			 * Non-HWWD PCIe slot. This way the pci_map_page
+			 * function should never fail because of a lack of
+			 * mappable memory.
+			 */
+			dma->dma_addr = pci_map_page(ctrl->card->dev, dma->page,
+					dma->pg_off, dma->sub_page.cnt << 9, dir);
+			if (pci_dma_mapping_error(ctrl->card->dev, dma->dma_addr)) {
+				push_tracker(ctrl->trackers, tag);
+				rsxx_complete_dma(ctrl, dma, DMA_CANCELLED);
+				continue;
+			}
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_tracker_dma(ctrl->trackers, tag, dma);
 		hw_cmd_buf[ctrl->cmd.idx].command  = dma->cmd;
 		hw_cmd_buf[ctrl->cmd.idx].tag      = tag;
@@ -440,9 +565,14 @@ static void rsxx_issue_dmas(struct work_struct *work)
 	}
 }
 
+<<<<<<< HEAD
 static void rsxx_dma_done(struct work_struct *work)
 {
 	struct rsxx_dma_ctrl *ctrl;
+=======
+static void rsxx_dma_done(struct rsxx_dma_ctrl *ctrl)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rsxx_dma *dma;
 	unsigned long flags;
 	u16 count;
@@ -450,7 +580,10 @@ static void rsxx_dma_done(struct work_struct *work)
 	u8 tag;
 	struct hw_status *hw_st_buf;
 
+<<<<<<< HEAD
 	ctrl = container_of(work, struct rsxx_dma_ctrl, dma_done_work);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hw_st_buf = ctrl->status.buf;
 
 	if (unlikely(ctrl->card->halt) ||
@@ -520,6 +653,7 @@ static void rsxx_dma_done(struct work_struct *work)
 	rsxx_enable_ier(ctrl->card, CR_INTR_DMA(ctrl->id));
 	spin_unlock_irqrestore(&ctrl->card->irq_lock, flags);
 
+<<<<<<< HEAD
 	spin_lock(&ctrl->queue_lock);
 	if (ctrl->stats.sw_q_depth)
 		queue_work(ctrl->issue_wq, &ctrl->issue_dma_work);
@@ -547,6 +681,34 @@ static int rsxx_cleanup_dma_queue(struct rsxx_cardinfo *card,
 	}
 
 	return cnt;
+=======
+	spin_lock_bh(&ctrl->queue_lock);
+	if (ctrl->stats.sw_q_depth)
+		queue_work(ctrl->issue_wq, &ctrl->issue_dma_work);
+	spin_unlock_bh(&ctrl->queue_lock);
+}
+
+static void rsxx_schedule_issue(struct work_struct *work)
+{
+	struct rsxx_dma_ctrl *ctrl;
+
+	ctrl = container_of(work, struct rsxx_dma_ctrl, issue_dma_work);
+
+	mutex_lock(&ctrl->work_lock);
+	rsxx_issue_dmas(ctrl);
+	mutex_unlock(&ctrl->work_lock);
+}
+
+static void rsxx_schedule_done(struct work_struct *work)
+{
+	struct rsxx_dma_ctrl *ctrl;
+
+	ctrl = container_of(work, struct rsxx_dma_ctrl, dma_done_work);
+
+	mutex_lock(&ctrl->work_lock);
+	rsxx_dma_done(ctrl);
+	mutex_unlock(&ctrl->work_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int rsxx_queue_discard(struct rsxx_cardinfo *card,
@@ -595,6 +757,7 @@ static int rsxx_queue_dma(struct rsxx_cardinfo *card,
 	if (!dma)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	dma->dma_addr = pci_map_page(card->dev, page, pg_off, dma_len,
 				     dir ? PCI_DMA_TODEVICE :
 				     PCI_DMA_FROMDEVICE);
@@ -603,6 +766,8 @@ static int rsxx_queue_dma(struct rsxx_cardinfo *card,
 		return -ENOMEM;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma->cmd          = dir ? HW_CMD_BLK_WRITE : HW_CMD_BLK_READ;
 	dma->laddr        = laddr;
 	dma->sub_page.off = (dma_off >> 9);
@@ -630,7 +795,12 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 			   void *cb_data)
 {
 	struct list_head dma_list[RSXX_MAX_TARGETS];
+<<<<<<< HEAD
 	struct bio_vec *bvec;
+=======
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long long addr8;
 	unsigned int laddr;
 	unsigned int bv_len;
@@ -642,7 +812,11 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 	int st;
 	int i;
 
+<<<<<<< HEAD
 	addr8 = bio->bi_sector << 9; /* sectors are 512 bytes */
+=======
+	addr8 = bio->bi_iter.bi_sector << 9; /* sectors are 512 bytes */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_set(n_dmas, 0);
 
 	for (i = 0; i < card->n_targets; i++) {
@@ -650,8 +824,13 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 		dma_cnt[i] = 0;
 	}
 
+<<<<<<< HEAD
 	if (bio->bi_rw & REQ_DISCARD) {
 		bv_len = bio->bi_size;
+=======
+	if (bio_op(bio) == REQ_OP_DISCARD) {
+		bv_len = bio->bi_iter.bi_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		while (bv_len > 0) {
 			tgt   = rsxx_get_dma_tgt(card, addr8);
@@ -668,9 +847,15 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 			bv_len -= RSXX_HW_BLK_SIZE;
 		}
 	} else {
+<<<<<<< HEAD
 		bio_for_each_segment(bvec, bio, i) {
 			bv_len = bvec->bv_len;
 			bv_off = bvec->bv_offset;
+=======
+		bio_for_each_segment(bvec, bio, iter) {
+			bv_len = bvec.bv_len;
+			bv_off = bvec.bv_offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			while (bv_len > 0) {
 				tgt   = rsxx_get_dma_tgt(card, addr8);
@@ -682,7 +867,11 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 				st = rsxx_queue_dma(card, &dma_list[tgt],
 							bio_data_dir(bio),
 							dma_off, dma_len,
+<<<<<<< HEAD
 							laddr, bvec->bv_page,
+=======
+							laddr, bvec.bv_page,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							bv_off, cb, cb_data);
 				if (st)
 					goto bvec_err;
@@ -698,10 +887,17 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 
 	for (i = 0; i < card->n_targets; i++) {
 		if (!list_empty(&dma_list[i])) {
+<<<<<<< HEAD
 			spin_lock(&card->ctrl[i].queue_lock);
 			card->ctrl[i].stats.sw_q_depth += dma_cnt[i];
 			list_splice_tail(&dma_list[i], &card->ctrl[i].queue);
 			spin_unlock(&card->ctrl[i].queue_lock);
+=======
+			spin_lock_bh(&card->ctrl[i].queue_lock);
+			card->ctrl[i].stats.sw_q_depth += dma_cnt[i];
+			list_splice_tail(&dma_list[i], &card->ctrl[i].queue);
+			spin_unlock_bh(&card->ctrl[i].queue_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			queue_work(card->ctrl[i].issue_wq,
 				   &card->ctrl[i].issue_dma_work);
@@ -712,7 +908,12 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 
 bvec_err:
 	for (i = 0; i < card->n_targets; i++)
+<<<<<<< HEAD
 		rsxx_cleanup_dma_queue(card, &dma_list[i]);
+=======
+		rsxx_cleanup_dma_queue(&card->ctrl[i], &dma_list[i],
+					FREE_DMA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return st;
 }
@@ -780,6 +981,10 @@ static int rsxx_dma_ctrl_init(struct pci_dev *dev,
 	spin_lock_init(&ctrl->trackers->lock);
 
 	spin_lock_init(&ctrl->queue_lock);
+<<<<<<< HEAD
+=======
+	mutex_init(&ctrl->work_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_LIST_HEAD(&ctrl->queue);
 
 	setup_timer(&ctrl->activity_timer, dma_engine_stalled,
@@ -793,8 +998,13 @@ static int rsxx_dma_ctrl_init(struct pci_dev *dev,
 	if (!ctrl->done_wq)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	INIT_WORK(&ctrl->issue_dma_work, rsxx_issue_dmas);
 	INIT_WORK(&ctrl->dma_done_work, rsxx_dma_done);
+=======
+	INIT_WORK(&ctrl->issue_dma_work, rsxx_schedule_issue);
+	INIT_WORK(&ctrl->dma_done_work, rsxx_schedule_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	st = rsxx_hw_buffers_init(dev, ctrl);
 	if (st)
@@ -918,13 +1128,39 @@ failed_dma_setup:
 	return st;
 }
 
+<<<<<<< HEAD
+=======
+int rsxx_dma_cancel(struct rsxx_dma_ctrl *ctrl)
+{
+	struct rsxx_dma *dma;
+	int i;
+	int cnt = 0;
+
+	/* Clean up issued DMAs */
+	for (i = 0; i < RSXX_MAX_OUTSTANDING_CMDS; i++) {
+		dma = get_tracker_dma(ctrl->trackers, i);
+		if (dma) {
+			atomic_dec(&ctrl->stats.hw_q_depth);
+			rsxx_complete_dma(ctrl, dma, DMA_CANCELLED);
+			push_tracker(ctrl->trackers, i);
+			cnt++;
+		}
+	}
+
+	return cnt;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void rsxx_dma_destroy(struct rsxx_cardinfo *card)
 {
 	struct rsxx_dma_ctrl *ctrl;
+<<<<<<< HEAD
 	struct rsxx_dma *dma;
 	int i, j;
 	int cnt = 0;
+=======
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < card->n_targets; i++) {
 		ctrl = &card->ctrl[i];
@@ -943,6 +1179,7 @@ void rsxx_dma_destroy(struct rsxx_cardinfo *card)
 			del_timer_sync(&ctrl->activity_timer);
 
 		/* Clean up the DMA queue */
+<<<<<<< HEAD
 		spin_lock(&ctrl->queue_lock);
 		cnt = rsxx_cleanup_dma_queue(card, &ctrl->queue);
 		spin_unlock(&ctrl->queue_lock);
@@ -970,6 +1207,13 @@ void rsxx_dma_destroy(struct rsxx_cardinfo *card)
 			dev_info(CARD_TO_DEV(card),
 				"Freed %d pending DMAs on channel %d\n",
 				cnt, i);
+=======
+		spin_lock_bh(&ctrl->queue_lock);
+		rsxx_cleanup_dma_queue(ctrl, &ctrl->queue, COMPLETE_DMA);
+		spin_unlock_bh(&ctrl->queue_lock);
+
+		rsxx_dma_cancel(ctrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		vfree(ctrl->trackers);
 
@@ -1008,17 +1252,33 @@ int rsxx_eeh_save_issued_dmas(struct rsxx_cardinfo *card)
 			else
 				card->ctrl[i].stats.reads_issued--;
 
+<<<<<<< HEAD
+=======
+			if (dma->cmd != HW_CMD_BLK_DISCARD) {
+				pci_unmap_page(card->dev, dma->dma_addr,
+					       get_dma_size(dma),
+					       dma->cmd == HW_CMD_BLK_WRITE ?
+					       PCI_DMA_TODEVICE :
+					       PCI_DMA_FROMDEVICE);
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			list_add_tail(&dma->list, &issued_dmas[i]);
 			push_tracker(card->ctrl[i].trackers, j);
 			cnt++;
 		}
 
+<<<<<<< HEAD
 		spin_lock(&card->ctrl[i].queue_lock);
+=======
+		spin_lock_bh(&card->ctrl[i].queue_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_splice(&issued_dmas[i], &card->ctrl[i].queue);
 
 		atomic_sub(cnt, &card->ctrl[i].stats.hw_q_depth);
 		card->ctrl[i].stats.sw_q_depth += cnt;
 		card->ctrl[i].e_cnt = 0;
+<<<<<<< HEAD
 
 		list_for_each_entry(dma, &card->ctrl[i].queue, list) {
 			if (dma->dma_addr)
@@ -1029,6 +1289,9 @@ int rsxx_eeh_save_issued_dmas(struct rsxx_cardinfo *card)
 					       PCI_DMA_FROMDEVICE);
 		}
 		spin_unlock(&card->ctrl[i].queue_lock);
+=======
+		spin_unlock_bh(&card->ctrl[i].queue_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	kfree(issued_dmas);
@@ -1036,6 +1299,7 @@ int rsxx_eeh_save_issued_dmas(struct rsxx_cardinfo *card)
 	return 0;
 }
 
+<<<<<<< HEAD
 void rsxx_eeh_cancel_dmas(struct rsxx_cardinfo *card)
 {
 	struct rsxx_dma *dma;
@@ -1078,6 +1342,8 @@ int rsxx_eeh_remap_dmas(struct rsxx_cardinfo *card)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rsxx_dma_init(void)
 {
 	rsxx_dma_pool = KMEM_CACHE(rsxx_dma, SLAB_HWCACHE_ALIGN);

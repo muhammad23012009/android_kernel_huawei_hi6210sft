@@ -227,8 +227,13 @@ static struct undef_hook arm_break_hook = {
 };
 
 static struct undef_hook thumb_break_hook = {
+<<<<<<< HEAD
 	.instr_mask	= 0xffff,
 	.instr_val	= 0xde01,
+=======
+	.instr_mask	= 0xffffffff,
+	.instr_val	= 0x0000de01,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cpsr_mask	= PSR_T_BIT,
 	.cpsr_val	= PSR_T_BIT,
 	.fn		= break_trap,
@@ -886,6 +891,7 @@ long arch_ptrace(struct task_struct *child, long request,
 
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 		case PTRACE_GETHBPREGS:
+<<<<<<< HEAD
 			if (ptrace_get_breakpoints(child) < 0)
 				return -ESRCH;
 
@@ -900,6 +906,14 @@ long arch_ptrace(struct task_struct *child, long request,
 			ret = ptrace_sethbpregs(child, addr,
 						(unsigned long __user *)data);
 			ptrace_put_breakpoints(child);
+=======
+			ret = ptrace_gethbpregs(child, addr,
+						(unsigned long __user *)data);
+			break;
+		case PTRACE_SETHBPREGS:
+			ret = ptrace_sethbpregs(child, addr,
+						(unsigned long __user *)data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 #endif
 
@@ -940,6 +954,7 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs, int scno)
 {
 	current_thread_info()->syscall = scno;
 
+<<<<<<< HEAD
 	/* Do the secure computing check first; failures should be fast. */
 	if (secure_computing(scno) == -1)
 		return -1;
@@ -947,13 +962,33 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs, int scno)
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
 		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
 
+=======
+	if (test_thread_flag(TIF_SYSCALL_TRACE))
+		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
+
+	/* Do seccomp after ptrace; syscall may have changed. */
+#ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+	if (secure_computing(NULL) == -1)
+		return -1;
+#else
+	/* XXX: remove this once OABI gets fixed */
+	secure_computing_strict(current_thread_info()->syscall);
+#endif
+
+	/* Tracer or seccomp may have changed syscall. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	scno = current_thread_info()->syscall;
 
 	if (test_thread_flag(TIF_SYSCALL_TRACEPOINT))
 		trace_sys_enter(regs, scno);
 
+<<<<<<< HEAD
 	audit_syscall_entry(AUDIT_ARCH_ARM, scno, regs->ARM_r0, regs->ARM_r1,
 			    regs->ARM_r2, regs->ARM_r3);
+=======
+	audit_syscall_entry(scno, regs->ARM_r0, regs->ARM_r1, regs->ARM_r2,
+			    regs->ARM_r3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return scno;
 }

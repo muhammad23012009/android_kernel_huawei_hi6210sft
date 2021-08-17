@@ -28,7 +28,11 @@ int snd_ac97_update_bits_nolock(struct snd_ac97 *ac97, unsigned short reg,
 				unsigned short mask, unsigned short value);
 
 /* ac97_proc.c */
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void snd_ac97_bus_proc_init(struct snd_ac97_bus * ac97);
 void snd_ac97_bus_proc_done(struct snd_ac97_bus * ac97);
 void snd_ac97_proc_init(struct snd_ac97 * ac97);

@@ -50,6 +50,7 @@ struct	__queue	{
 #define _pkt struct sk_buff
 #define _buffer unsigned char
 #define thread_exit() complete_and_exit(NULL, 0)
+<<<<<<< HEAD
 #define _workitem struct work_struct
 
 #define _init_queue(pqueue)				\
@@ -153,12 +154,26 @@ static inline u32 end_of_queue_search(struct list_head *head, struct list_head *
 		return true;
 	else
 		return false;
+=======
+
+#define _init_queue(pqueue)				\
+	do {						\
+		INIT_LIST_HEAD(&((pqueue)->queue));	\
+		spin_lock_init(&((pqueue)->lock));	\
+	} while (0)
+
+static inline u32 end_of_queue_search(struct list_head *head,
+		struct list_head *plist)
+{
+	return (head == plist);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void sleep_schedulable(int ms)
 {
 	u32 delta;
 
+<<<<<<< HEAD
 	delta = (ms * HZ) / 1000;/*(ms)*/
 	if (delta == 0)
 		delta = 1;/* 1 ms */
@@ -180,6 +195,11 @@ static inline unsigned char _cancel_timer_ex(struct timer_list *ptimer)
 static inline void thread_enter(void *context)
 {
 	allow_signal(SIGTERM);
+=======
+	delta = msecs_to_jiffies(ms);/*(ms)*/
+	set_current_state(TASK_INTERRUPTIBLE);
+	schedule_timeout(delta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void flush_signals_thread(void)
@@ -188,6 +208,7 @@ static inline void flush_signals_thread(void)
 		flush_signals(current);
 }
 
+<<<<<<< HEAD
 static inline u32 _RND8(u32 sz)
 {
 	return ((sz >> 3) + ((sz & 7) ? 1 : 0)) << 3;
@@ -208,5 +229,7 @@ static inline u32 _RND512(u32 sz)
 	return ((sz >> 9) + ((sz & 511) ? 1 : 0)) << 9;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 

@@ -50,6 +50,25 @@ OPTIONS
 --dump-raw-trace=::
         Display verbose dump of the sched data.
 
+<<<<<<< HEAD
+=======
+OPTIONS for 'perf sched map'
+----------------------------
+
+--compact::
+	Show only CPUs with activity. Helps visualizing on high core
+	count systems.
+
+--cpus::
+	Show just entries with activities for the given CPUs.
+
+--color-cpus::
+	Highlight the given cpus.
+
+--color-pids::
+	Highlight the given pids.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 SEE ALSO
 --------
 linkperf:perf-record[1]

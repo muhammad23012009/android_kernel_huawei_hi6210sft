@@ -56,6 +56,10 @@ u64 notrace trace_clock(void)
 {
 	return local_clock();
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(trace_clock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * trace_jiffy_clock(): Simply use jiffies as a clock counter.
@@ -68,6 +72,10 @@ u64 notrace trace_clock_jiffies(void)
 {
 	return jiffies_64_to_clock_t(jiffies_64 - INITIAL_JIFFIES);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(trace_clock_jiffies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * trace_clock_global(): special globally coherent trace clock
@@ -91,11 +99,16 @@ u64 notrace trace_clock_global(void)
 {
 	unsigned long flags;
 	int this_cpu;
+<<<<<<< HEAD
 	u64 now;
+=======
+	u64 now, prev_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	local_irq_save(flags);
 
 	this_cpu = raw_smp_processor_id();
+<<<<<<< HEAD
 	now = sched_clock_cpu(this_cpu);
 	/*
 	 * If in an NMI context then dont risk lockups and return the
@@ -118,11 +131,55 @@ u64 notrace trace_clock_global(void)
 
 	arch_spin_unlock(&trace_clock_struct.lock);
 
+=======
+
+	/*
+	 * The global clock "guarantees" that the events are ordered
+	 * between CPUs. But if two events on two different CPUS call
+	 * trace_clock_global at roughly the same time, it really does
+	 * not matter which one gets the earlier time. Just make sure
+	 * that the same CPU will always show a monotonic clock.
+	 *
+	 * Use a read memory barrier to get the latest written
+	 * time that was recorded.
+	 */
+	smp_rmb();
+	prev_time = READ_ONCE(trace_clock_struct.prev_time);
+	now = sched_clock_cpu(this_cpu);
+
+	/* Make sure that now is always greater than or equal to prev_time */
+	if ((s64)(now - prev_time) < 0)
+		now = prev_time;
+
+	/*
+	 * If in an NMI context then dont risk lockups and simply return
+	 * the current time.
+	 */
+	if (unlikely(in_nmi()))
+		goto out;
+
+	/* Tracing can cause strange recursion, always use a try lock */
+	if (arch_spin_trylock(&trace_clock_struct.lock)) {
+		/* Reread prev_time in case it was already updated */
+		prev_time = READ_ONCE(trace_clock_struct.prev_time);
+		if ((s64)(now - prev_time) < 0)
+			now = prev_time;
+
+		trace_clock_struct.prev_time = now;
+
+		/* The unlock acts as the wmb for the above rmb */
+		arch_spin_unlock(&trace_clock_struct.lock);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	local_irq_restore(flags);
 
 	return now;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(trace_clock_global);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static atomic64_t trace_counter;
 

@@ -38,7 +38,11 @@ SYSCALL_DEFINE3(msync, unsigned long, start, size_t, len, int, flags)
 
 	if (flags & ~(MS_ASYNC | MS_INVALIDATE | MS_SYNC))
 		goto out;
+<<<<<<< HEAD
 	if (start & ~PAGE_MASK)
+=======
+	if (offset_in_page(start))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	if ((flags & MS_ASYNC) && (flags & MS_SYNC))
 		goto out;
@@ -58,6 +62,10 @@ SYSCALL_DEFINE3(msync, unsigned long, start, size_t, len, int, flags)
 	vma = find_vma(mm, start);
 	for (;;) {
 		struct file *file;
+<<<<<<< HEAD
+=======
+		loff_t fstart, fend;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Still start < end. */
 		error = -ENOMEM;
@@ -77,12 +85,22 @@ SYSCALL_DEFINE3(msync, unsigned long, start, size_t, len, int, flags)
 			goto out_unlock;
 		}
 		file = vma->vm_file;
+<<<<<<< HEAD
+=======
+		fstart = (start - vma->vm_start) +
+			 ((loff_t)vma->vm_pgoff << PAGE_SHIFT);
+		fend = fstart + (min(end, vma->vm_end) - start) - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		start = vma->vm_end;
 		if ((flags & MS_SYNC) && file &&
 				(vma->vm_flags & VM_SHARED)) {
 			get_file(file);
 			up_read(&mm->mmap_sem);
+<<<<<<< HEAD
 			error = vfs_fsync(file, 0);
+=======
+			error = vfs_fsync_range(file, fstart, fend, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			fput(file);
 			if (error || start >= end)
 				goto out;

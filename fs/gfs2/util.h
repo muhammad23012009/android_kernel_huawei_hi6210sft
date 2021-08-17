@@ -10,10 +10,19 @@
 #ifndef __UTIL_DOT_H__
 #define __UTIL_DOT_H__
 
+<<<<<<< HEAD
+=======
+#ifdef pr_fmt
+#undef pr_fmt
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mempool.h>
 
 #include "incore.h"
 
+<<<<<<< HEAD
 #define fs_printk(level, fs, fmt, arg...) \
 	printk(level "GFS2: fsid=%s: " fmt , (fs)->sd_fsname , ## arg)
 
@@ -26,6 +35,16 @@
 #define fs_err(fs, fmt, arg...) \
 	fs_printk(KERN_ERR, fs , fmt , ## arg)
 
+=======
+#define fs_emerg(fs, fmt, ...)						\
+	pr_emerg("fsid=%s: " fmt, (fs)->sd_fsname, ##__VA_ARGS__)
+#define fs_warn(fs, fmt, ...)						\
+	pr_warn("fsid=%s: " fmt, (fs)->sd_fsname, ##__VA_ARGS__)
+#define fs_err(fs, fmt, ...)						\
+	pr_err("fsid=%s: " fmt, (fs)->sd_fsname, ##__VA_ARGS__)
+#define fs_info(fs, fmt, ...)						\
+	pr_info("fsid=%s: " fmt, (fs)->sd_fsname, ##__VA_ARGS__)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void gfs2_assert_i(struct gfs2_sbd *sdp);
 
@@ -85,7 +104,11 @@ static inline int gfs2_meta_check(struct gfs2_sbd *sdp,
 	struct gfs2_meta_header *mh = (struct gfs2_meta_header *)bh->b_data;
 	u32 magic = be32_to_cpu(mh->mh_magic);
 	if (unlikely(magic != GFS2_MAGIC)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "GFS2: Magic number missing at %llu\n",
+=======
+		pr_err("Magic number missing at %llu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       (unsigned long long)bh->b_blocknr);
 		return -EIO;
 	}
@@ -148,7 +171,11 @@ extern struct kmem_cache *gfs2_inode_cachep;
 extern struct kmem_cache *gfs2_bufdata_cachep;
 extern struct kmem_cache *gfs2_rgrpd_cachep;
 extern struct kmem_cache *gfs2_quotad_cachep;
+<<<<<<< HEAD
 extern struct kmem_cache *gfs2_rsrv_cachep;
+=======
+extern struct kmem_cache *gfs2_qadata_cachep;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern mempool_t *gfs2_page_pool;
 
 static inline unsigned int gfs2_tune_get_i(struct gfs2_tune *gt,
@@ -164,9 +191,16 @@ static inline unsigned int gfs2_tune_get_i(struct gfs2_tune *gt,
 #define gfs2_tune_get(sdp, field) \
 gfs2_tune_get_i(&(sdp)->sd_tune, &(sdp)->sd_tune.field)
 
+<<<<<<< HEAD
 void gfs2_icbit_munge(struct gfs2_sbd *sdp, unsigned char **bitmap,
 		      unsigned int bit, int new_value);
 int gfs2_lm_withdraw(struct gfs2_sbd *sdp, char *fmt, ...);
 
 #endif /* __UTIL_DOT_H__ */
 
+=======
+__printf(2, 3)
+int gfs2_lm_withdraw(struct gfs2_sbd *sdp, const char *fmt, ...);
+
+#endif /* __UTIL_DOT_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -18,7 +18,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -100,7 +103,12 @@ static int wm831x_on_probe(struct platform_device *pdev)
 	wm831x_on->dev->dev.parent = &pdev->dev;
 
 	ret = request_threaded_irq(irq, NULL, wm831x_on_irq,
+<<<<<<< HEAD
 				   IRQF_TRIGGER_RISING, "wm831x_on",
+=======
+				   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+				   "wm831x_on",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   wm831x_on);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Unable to request IRQ: %d\n", ret);
@@ -139,7 +147,10 @@ static struct platform_driver wm831x_on_driver = {
 	.remove		= wm831x_on_remove,
 	.driver		= {
 		.name	= "wm831x-on",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(wm831x_on_driver);

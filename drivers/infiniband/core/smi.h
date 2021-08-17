@@ -51,12 +51,20 @@ enum smi_forward_action {
 	IB_SMI_FORWARD	/* SMP should be forwarded (for switches only) */
 };
 
+<<<<<<< HEAD
 enum smi_action smi_handle_dr_smp_recv(struct ib_smp *smp, u8 node_type,
+=======
+enum smi_action smi_handle_dr_smp_recv(struct ib_smp *smp, bool is_switch,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       int port_num, int phys_port_cnt);
 int smi_get_fwd_port(struct ib_smp *smp);
 extern enum smi_forward_action smi_check_forward_dr_smp(struct ib_smp *smp);
 extern enum smi_action smi_handle_dr_smp_send(struct ib_smp *smp,
+<<<<<<< HEAD
 					      u8 node_type, int port_num);
+=======
+					      bool is_switch, int port_num);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Return IB_SMI_HANDLE if the SMP should be handled by the local SMA/SM

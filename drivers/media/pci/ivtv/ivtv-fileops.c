@@ -34,7 +34,11 @@
 #include "ivtv-cards.h"
 #include "ivtv-firmware.h"
 #include <media/v4l2-event.h>
+<<<<<<< HEAD
 #include <media/saa7115.h>
+=======
+#include <media/i2c/saa7115.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* This function tries to claim the stream for a specific file descriptor.
    If no one else is using this stream then the stream is claimed and
@@ -420,7 +424,11 @@ static ssize_t ivtv_read_pos(struct ivtv_stream *s, char __user *ubuf, size_t co
 
 	IVTV_DEBUG_HI_FILE("read %zd from %s, got %zd\n", count, s->name, rc);
 	if (rc > 0)
+<<<<<<< HEAD
 		pos += rc;
+=======
+		*pos += rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
@@ -894,7 +902,11 @@ int ivtv_v4l2_close(struct file *filp)
 		/* Mark that the radio is no longer in use */
 		clear_bit(IVTV_F_I_RADIO_USER, &itv->i_flags);
 		/* Switch tuner to TV */
+<<<<<<< HEAD
 		ivtv_call_all(itv, core, s_std, itv->std);
+=======
+		ivtv_call_all(itv, video, s_std, itv->std);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Select correct audio input (i.e. TV tuner or Line in) */
 		ivtv_audio_set_io(itv);
 		if (itv->hw_flags & IVTV_HW_SAA711X) {
@@ -995,7 +1007,11 @@ static int ivtv_open(struct file *filp)
 		IVTV_DEBUG_WARN("nomem on v4l2 open\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	v4l2_fh_init(&item->fh, s->vdev);
+=======
+	v4l2_fh_init(&item->fh, &s->vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	item->itv = itv;
 	item->type = s->type;
 

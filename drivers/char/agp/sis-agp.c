@@ -50,13 +50,21 @@ static void sis_tlbflush(struct agp_memory *mem)
 
 static int sis_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct aper_size_info_8 *current_size;
 
 	current_size = A_SIZE_8(agp_bridge->current_size);
 	pci_write_config_byte(agp_bridge->dev, SIS_TLBCNTRL, 0x05);
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_write_config_dword(agp_bridge->dev, SIS_ATTBASE,
 			       agp_bridge->gatt_bus_addr);
 	pci_write_config_byte(agp_bridge->dev, SIS_APSIZE,

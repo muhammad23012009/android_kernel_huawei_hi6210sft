@@ -6,7 +6,11 @@
  * Licensed under GPLv2.
  */
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "at91sam9g20ek_common.dtsi"
+=======
+#include "at91sam9g20ek_common.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Atmel at91sam9g20ek";
@@ -17,13 +21,21 @@
 
 		ds1 {
 			label = "ds1";
+<<<<<<< HEAD
 			gpios = <&pioA 9 0>;
+=======
+			gpios = <&pioA 9 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "heartbeat";
 		};
 
 		ds5 {
 			label = "ds5";
+<<<<<<< HEAD
 			gpios = <&pioA 6 1>;
+=======
+			gpios = <&pioA 6 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 };

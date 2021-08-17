@@ -10,7 +10,10 @@
  */
 
 #include <linux/oprofile.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/smp.h>
 #include <asm/firmware.h>
 #include <asm/ptrace.h>
@@ -208,7 +211,11 @@ static int power4_start(struct op_counter_config *ctr)
 	unsigned int mmcr0;
 
 	/* set the PMM bit (see comment below) */
+<<<<<<< HEAD
 	mtmsrd(mfmsr() | MSR_PMM);
+=======
+	mtmsr(mfmsr() | MSR_PMM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < cur_cpu_spec->num_pmcs; ++i) {
 		if (ctr[i].enabled) {
@@ -378,7 +385,11 @@ static void power4_handle_interrupt(struct pt_regs *regs,
 	is_kernel = get_kernel(pc, mmcra);
 
 	/* set the PMM bit (see comment below) */
+<<<<<<< HEAD
 	mtmsrd(mfmsr() | MSR_PMM);
+=======
+	mtmsr(mfmsr() | MSR_PMM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Check that the SIAR  valid bit in MMCRA is set to 1. */
 	if ((mmcra & MMCRA_SIAR_VALID_MASK) == MMCRA_SIAR_VALID_MASK)

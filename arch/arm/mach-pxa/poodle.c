@@ -30,6 +30,10 @@
 #include <linux/spi/ads7846.h>
 #include <linux/spi/pxa2xx_spi.h>
 #include <linux/mtd/sharpsl.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
@@ -40,9 +44,15 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <mach/udc.h>
+=======
+#include "pxa25x.h"
+#include <linux/platform_data/mmc-pxamci.h>
+#include "udc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/irda-pxaficp.h>
 #include <mach/poodle.h>
 #include <linux/platform_data/video-pxafb.h>
@@ -259,7 +269,11 @@ err_free_2:
 	return err;
 }
 
+<<<<<<< HEAD
 static void poodle_mci_setpower(struct device *dev, unsigned int vdd)
+=======
+static int poodle_mci_setpower(struct device *dev, unsigned int vdd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pxamci_platform_data* p_d = dev->platform_data;
 
@@ -271,6 +285,11 @@ static void poodle_mci_setpower(struct device *dev, unsigned int vdd)
 		gpio_set_value(POODLE_GPIO_SD_PWR1, 0);
 		gpio_set_value(POODLE_GPIO_SD_PWR, 0);
 	}
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void poodle_mci_exit(struct device *dev, void *data)
@@ -423,7 +442,11 @@ static struct i2c_board_info __initdata poodle_i2c_devices[] = {
 
 static void poodle_poweroff(void)
 {
+<<<<<<< HEAD
 	pxa_restart('h', NULL);
+=======
+	pxa_restart(REBOOT_HARD, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init poodle_init(void)
@@ -444,7 +467,11 @@ static void __init poodle_init(void)
 
 	ret = platform_add_devices(devices, ARRAY_SIZE(devices));
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("poodle: Unable to register LoCoMo device\n");
+=======
+		pr_warn("poodle: Unable to register LoCoMo device\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pxa_set_fb_info(&poodle_locomo_device.dev, &poodle_fb_info);
 	pxa_set_udc_info(&udc_info);
@@ -456,6 +483,7 @@ static void __init poodle_init(void)
 	regulator_has_full_constraints();
 }
 
+<<<<<<< HEAD
 static void __init fixup_poodle(struct tag *tags, char **cmdline,
 				struct meminfo *mi)
 {
@@ -463,6 +491,12 @@ static void __init fixup_poodle(struct tag *tags, char **cmdline,
 	mi->nr_banks=1;
 	mi->bank[0].start = 0xa0000000;
 	mi->bank[0].size = (32*1024*1024);
+=======
+static void __init fixup_poodle(struct tag *tags, char **cmdline)
+{
+	sharpsl_save_param();
+	memblock_add(0xa0000000, SZ_32M);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MACHINE_START(POODLE, "SHARP Poodle")

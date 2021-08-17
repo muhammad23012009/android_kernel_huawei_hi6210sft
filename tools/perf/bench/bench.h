@@ -25,12 +25,26 @@
 # endif
 #endif
 
+<<<<<<< HEAD
 extern int bench_numa(int argc, const char **argv, const char *prefix);
 extern int bench_sched_messaging(int argc, const char **argv, const char *prefix);
 extern int bench_sched_pipe(int argc, const char **argv, const char *prefix);
 extern int bench_mem_memcpy(int argc, const char **argv,
 			    const char *prefix __maybe_unused);
 extern int bench_mem_memset(int argc, const char **argv, const char *prefix);
+=======
+int bench_numa(int argc, const char **argv, const char *prefix);
+int bench_sched_messaging(int argc, const char **argv, const char *prefix);
+int bench_sched_pipe(int argc, const char **argv, const char *prefix);
+int bench_mem_memcpy(int argc, const char **argv, const char *prefix);
+int bench_mem_memset(int argc, const char **argv, const char *prefix);
+int bench_futex_hash(int argc, const char **argv, const char *prefix);
+int bench_futex_wake(int argc, const char **argv, const char *prefix);
+int bench_futex_wake_parallel(int argc, const char **argv, const char *prefix);
+int bench_futex_requeue(int argc, const char **argv, const char *prefix);
+/* pi futexes */
+int bench_futex_lock_pi(int argc, const char **argv, const char *prefix);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BENCH_FORMAT_DEFAULT_STR	"default"
 #define BENCH_FORMAT_DEFAULT		0
@@ -40,5 +54,9 @@ extern int bench_mem_memset(int argc, const char **argv, const char *prefix);
 #define BENCH_FORMAT_UNKNOWN		-1
 
 extern int bench_format;
+<<<<<<< HEAD
+=======
+extern unsigned int bench_repeat;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

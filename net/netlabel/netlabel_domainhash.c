@@ -24,8 +24,12 @@
  * the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+ * along with this program;  if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 
@@ -38,10 +42,18 @@
 #include <linux/slab.h>
 #include <net/netlabel.h>
 #include <net/cipso_ipv4.h>
+<<<<<<< HEAD
+=======
+#include <net/calipso.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/bug.h>
 
 #include "netlabel_mgmt.h"
 #include "netlabel_addrlist.h"
+<<<<<<< HEAD
+=======
+#include "netlabel_calipso.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "netlabel_domainhash.h"
 #include "netlabel_user.h"
 
@@ -56,8 +68,14 @@ struct netlbl_domhsh_tbl {
 static DEFINE_SPINLOCK(netlbl_domhsh_lock);
 #define netlbl_domhsh_rcu_deref(p) \
 	rcu_dereference_check(p, lockdep_is_held(&netlbl_domhsh_lock))
+<<<<<<< HEAD
 static struct netlbl_domhsh_tbl *netlbl_domhsh = NULL;
 static struct netlbl_dom_map *netlbl_domhsh_def = NULL;
+=======
+static struct netlbl_domhsh_tbl __rcu *netlbl_domhsh;
+static struct netlbl_dom_map __rcu *netlbl_domhsh_def_ipv4;
+static struct netlbl_dom_map __rcu *netlbl_domhsh_def_ipv6;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Domain Hash Table Helper Functions
@@ -84,19 +102,33 @@ static void netlbl_domhsh_free_entry(struct rcu_head *entry)
 #endif /* IPv6 */
 
 	ptr = container_of(entry, struct netlbl_dom_map, rcu);
+<<<<<<< HEAD
 	if (ptr->type == NETLBL_NLTYPE_ADDRSELECT) {
 		netlbl_af4list_foreach_safe(iter4, tmp4,
 					    &ptr->type_def.addrsel->list4) {
+=======
+	if (ptr->def.type == NETLBL_NLTYPE_ADDRSELECT) {
+		netlbl_af4list_foreach_safe(iter4, tmp4,
+					    &ptr->def.addrsel->list4) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			netlbl_af4list_remove_entry(iter4);
 			kfree(netlbl_domhsh_addr4_entry(iter4));
 		}
 #if IS_ENABLED(CONFIG_IPV6)
 		netlbl_af6list_foreach_safe(iter6, tmp6,
+<<<<<<< HEAD
 					    &ptr->type_def.addrsel->list6) {
+=======
+					    &ptr->def.addrsel->list6) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			netlbl_af6list_remove_entry(iter6);
 			kfree(netlbl_domhsh_addr6_entry(iter6));
 		}
 #endif /* IPv6 */
+<<<<<<< HEAD
+=======
+		kfree(ptr->def.addrsel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	kfree(ptr->domain);
 	kfree(ptr);
@@ -127,6 +159,7 @@ static u32 netlbl_domhsh_hash(const char *key)
 	return val & (netlbl_domhsh_rcu_deref(netlbl_domhsh)->size - 1);
 }
 
+<<<<<<< HEAD
 /**
  * netlbl_domhsh_search - Search for a domain entry
  * @domain: the domain
@@ -134,11 +167,32 @@ static u32 netlbl_domhsh_hash(const char *key)
  * Description:
  * Searches the domain hash table and returns a pointer to the hash table
  * entry if found, otherwise NULL is returned.  The caller is responsible for
+=======
+static bool netlbl_family_match(u16 f1, u16 f2)
+{
+	return (f1 == f2) || (f1 == AF_UNSPEC) || (f2 == AF_UNSPEC);
+}
+
+/**
+ * netlbl_domhsh_search - Search for a domain entry
+ * @domain: the domain
+ * @family: the address family
+ *
+ * Description:
+ * Searches the domain hash table and returns a pointer to the hash table
+ * entry if found, otherwise NULL is returned.  @family may be %AF_UNSPEC
+ * which matches any address family entries.  The caller is responsible for
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ensuring that the hash table is protected with either a RCU read lock or the
  * hash table lock.
  *
  */
+<<<<<<< HEAD
 static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain)
+=======
+static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain,
+						   u16 family)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 bkt;
 	struct list_head *bkt_list;
@@ -148,7 +202,13 @@ static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain)
 		bkt = netlbl_domhsh_hash(domain);
 		bkt_list = &netlbl_domhsh_rcu_deref(netlbl_domhsh)->tbl[bkt];
 		list_for_each_entry_rcu(iter, bkt_list, list)
+<<<<<<< HEAD
 			if (iter->valid && strcmp(iter->domain, domain) == 0)
+=======
+			if (iter->valid &&
+			    netlbl_family_match(iter->family, family) &&
+			    strcmp(iter->domain, domain) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return iter;
 	}
 
@@ -158,12 +218,17 @@ static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain)
 /**
  * netlbl_domhsh_search_def - Search for a domain entry
  * @domain: the domain
+<<<<<<< HEAD
  * @def: return default if no match is found
+=======
+ * @family: the address family
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Description:
  * Searches the domain hash table and returns a pointer to the hash table
  * entry if an exact match is found, if an exact match is not present in the
  * hash table then the default entry is returned if valid otherwise NULL is
+<<<<<<< HEAD
  * returned.  The caller is responsible ensuring that the hash table is
  * protected with either a RCU read lock or the hash table lock.
  *
@@ -180,6 +245,33 @@ static struct netlbl_dom_map *netlbl_domhsh_search_def(const char *domain)
 	}
 
 	return entry;
+=======
+ * returned.  @family may be %AF_UNSPEC which matches any address family
+ * entries.  The caller is responsible ensuring that the hash table is
+ * protected with either a RCU read lock or the hash table lock.
+ *
+ */
+static struct netlbl_dom_map *netlbl_domhsh_search_def(const char *domain,
+						       u16 family)
+{
+	struct netlbl_dom_map *entry;
+
+	entry = netlbl_domhsh_search(domain, family);
+	if (entry != NULL)
+		return entry;
+	if (family == AF_INET || family == AF_UNSPEC) {
+		entry = netlbl_domhsh_rcu_deref(netlbl_domhsh_def_ipv4);
+		if (entry != NULL && entry->valid)
+			return entry;
+	}
+	if (family == AF_INET6 || family == AF_UNSPEC) {
+		entry = netlbl_domhsh_rcu_deref(netlbl_domhsh_def_ipv6);
+		if (entry != NULL && entry->valid)
+			return entry;
+	}
+
+	return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -204,6 +296,10 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 {
 	struct audit_buffer *audit_buf;
 	struct cipso_v4_doi *cipsov4 = NULL;
+<<<<<<< HEAD
+=======
+	struct calipso_doi *calipso = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 type;
 
 	audit_buf = netlbl_audit_start_common(AUDIT_MAC_MAP_ADD, audit_info);
@@ -213,21 +309,37 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 		if (addr4 != NULL) {
 			struct netlbl_domaddr4_map *map4;
 			map4 = netlbl_domhsh_addr4_entry(addr4);
+<<<<<<< HEAD
 			type = map4->type;
 			cipsov4 = map4->type_def.cipsov4;
+=======
+			type = map4->def.type;
+			cipsov4 = map4->def.cipso;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			netlbl_af4list_audit_addr(audit_buf, 0, NULL,
 						  addr4->addr, addr4->mask);
 #if IS_ENABLED(CONFIG_IPV6)
 		} else if (addr6 != NULL) {
 			struct netlbl_domaddr6_map *map6;
 			map6 = netlbl_domhsh_addr6_entry(addr6);
+<<<<<<< HEAD
 			type = map6->type;
+=======
+			type = map6->def.type;
+			calipso = map6->def.calipso;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			netlbl_af6list_audit_addr(audit_buf, 0, NULL,
 						  &addr6->addr, &addr6->mask);
 #endif /* IPv6 */
 		} else {
+<<<<<<< HEAD
 			type = entry->type;
 			cipsov4 = entry->type_def.cipsov4;
+=======
+			type = entry->def.type;
+			cipsov4 = entry->def.cipso;
+			calipso = entry->def.calipso;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		switch (type) {
 		case NETLBL_NLTYPE_UNLABELED:
@@ -239,6 +351,15 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 					 " nlbl_protocol=cipsov4 cipso_doi=%u",
 					 cipsov4->doi);
 			break;
+<<<<<<< HEAD
+=======
+		case NETLBL_NLTYPE_CALIPSO:
+			BUG_ON(calipso == NULL);
+			audit_log_format(audit_buf,
+					 " nlbl_protocol=calipso calipso_doi=%u",
+					 calipso->doi);
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		audit_log_format(audit_buf, " res=%u", result == 0 ? 1 : 0);
 		audit_log_end(audit_buf);
@@ -265,6 +386,7 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 	if (entry == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	switch (entry->type) {
 	case NETLBL_NLTYPE_UNLABELED:
 		if (entry->type_def.cipsov4 != NULL ||
@@ -285,6 +407,39 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 				break;
 			case NETLBL_NLTYPE_CIPSOV4:
 				if (map4->type_def.cipsov4 == NULL)
+=======
+	if (entry->family != AF_INET && entry->family != AF_INET6 &&
+	    (entry->family != AF_UNSPEC ||
+	     entry->def.type != NETLBL_NLTYPE_UNLABELED))
+		return -EINVAL;
+
+	switch (entry->def.type) {
+	case NETLBL_NLTYPE_UNLABELED:
+		if (entry->def.cipso != NULL || entry->def.calipso != NULL ||
+		    entry->def.addrsel != NULL)
+			return -EINVAL;
+		break;
+	case NETLBL_NLTYPE_CIPSOV4:
+		if (entry->family != AF_INET ||
+		    entry->def.cipso == NULL)
+			return -EINVAL;
+		break;
+	case NETLBL_NLTYPE_CALIPSO:
+		if (entry->family != AF_INET6 ||
+		    entry->def.calipso == NULL)
+			return -EINVAL;
+		break;
+	case NETLBL_NLTYPE_ADDRSELECT:
+		netlbl_af4list_foreach(iter4, &entry->def.addrsel->list4) {
+			map4 = netlbl_domhsh_addr4_entry(iter4);
+			switch (map4->def.type) {
+			case NETLBL_NLTYPE_UNLABELED:
+				if (map4->def.cipso != NULL)
+					return -EINVAL;
+				break;
+			case NETLBL_NLTYPE_CIPSOV4:
+				if (map4->def.cipso == NULL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					return -EINVAL;
 				break;
 			default:
@@ -292,10 +447,23 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 			}
 		}
 #if IS_ENABLED(CONFIG_IPV6)
+<<<<<<< HEAD
 		netlbl_af6list_foreach(iter6, &entry->type_def.addrsel->list6) {
 			map6 = netlbl_domhsh_addr6_entry(iter6);
 			switch (map6->type) {
 			case NETLBL_NLTYPE_UNLABELED:
+=======
+		netlbl_af6list_foreach(iter6, &entry->def.addrsel->list6) {
+			map6 = netlbl_domhsh_addr6_entry(iter6);
+			switch (map6->def.type) {
+			case NETLBL_NLTYPE_UNLABELED:
+				if (map6->def.calipso != NULL)
+					return -EINVAL;
+				break;
+			case NETLBL_NLTYPE_CALIPSO:
+				if (map6->def.calipso == NULL)
+					return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			default:
 				return -EINVAL;
@@ -360,15 +528,27 @@ int __init netlbl_domhsh_init(u32 size)
  *
  * Description:
  * Adds a new entry to the domain hash table and handles any updates to the
+<<<<<<< HEAD
  * lower level protocol handler (i.e. CIPSO).  Returns zero on success,
  * negative on failure.
+=======
+ * lower level protocol handler (i.e. CIPSO).  @entry->family may be set to
+ * %AF_UNSPEC which will add an entry that matches all address families.  This
+ * is only useful for the unlabelled type and will only succeed if there is no
+ * existing entry for any address family with the same domain.  Returns zero
+ * on success, negative on failure.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		      struct netlbl_audit *audit_info)
 {
 	int ret_val = 0;
+<<<<<<< HEAD
 	struct netlbl_dom_map *entry_old;
+=======
+	struct netlbl_dom_map *entry_old, *entry_b;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct netlbl_af4list *iter4;
 	struct netlbl_af4list *tmp4;
 #if IS_ENABLED(CONFIG_IPV6)
@@ -387,9 +567,16 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 	rcu_read_lock();
 	spin_lock(&netlbl_domhsh_lock);
 	if (entry->domain != NULL)
+<<<<<<< HEAD
 		entry_old = netlbl_domhsh_search(entry->domain);
 	else
 		entry_old = netlbl_domhsh_search_def(entry->domain);
+=======
+		entry_old = netlbl_domhsh_search(entry->domain, entry->family);
+	else
+		entry_old = netlbl_domhsh_search_def(entry->domain,
+						     entry->family);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (entry_old == NULL) {
 		entry->valid = 1;
 
@@ -399,23 +586,71 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 				    &rcu_dereference(netlbl_domhsh)->tbl[bkt]);
 		} else {
 			INIT_LIST_HEAD(&entry->list);
+<<<<<<< HEAD
 			rcu_assign_pointer(netlbl_domhsh_def, entry);
 		}
 
 		if (entry->type == NETLBL_NLTYPE_ADDRSELECT) {
 			netlbl_af4list_foreach_rcu(iter4,
 					       &entry->type_def.addrsel->list4)
+=======
+			switch (entry->family) {
+			case AF_INET:
+				rcu_assign_pointer(netlbl_domhsh_def_ipv4,
+						   entry);
+				break;
+			case AF_INET6:
+				rcu_assign_pointer(netlbl_domhsh_def_ipv6,
+						   entry);
+				break;
+			case AF_UNSPEC:
+				if (entry->def.type !=
+				    NETLBL_NLTYPE_UNLABELED) {
+					ret_val = -EINVAL;
+					goto add_return;
+				}
+				entry_b = kzalloc(sizeof(*entry_b), GFP_ATOMIC);
+				if (entry_b == NULL) {
+					ret_val = -ENOMEM;
+					goto add_return;
+				}
+				entry_b->family = AF_INET6;
+				entry_b->def.type = NETLBL_NLTYPE_UNLABELED;
+				entry_b->valid = 1;
+				entry->family = AF_INET;
+				rcu_assign_pointer(netlbl_domhsh_def_ipv4,
+						   entry);
+				rcu_assign_pointer(netlbl_domhsh_def_ipv6,
+						   entry_b);
+				break;
+			default:
+				/* Already checked in
+				 * netlbl_domhsh_validate(). */
+				ret_val = -EINVAL;
+				goto add_return;
+			}
+		}
+
+		if (entry->def.type == NETLBL_NLTYPE_ADDRSELECT) {
+			netlbl_af4list_foreach_rcu(iter4,
+						   &entry->def.addrsel->list4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				netlbl_domhsh_audit_add(entry, iter4, NULL,
 							ret_val, audit_info);
 #if IS_ENABLED(CONFIG_IPV6)
 			netlbl_af6list_foreach_rcu(iter6,
+<<<<<<< HEAD
 					       &entry->type_def.addrsel->list6)
+=======
+						   &entry->def.addrsel->list6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				netlbl_domhsh_audit_add(entry, NULL, iter6,
 							ret_val, audit_info);
 #endif /* IPv6 */
 		} else
 			netlbl_domhsh_audit_add(entry, NULL, NULL,
 						ret_val, audit_info);
+<<<<<<< HEAD
 	} else if (entry_old->type == NETLBL_NLTYPE_ADDRSELECT &&
 		   entry->type == NETLBL_NLTYPE_ADDRSELECT) {
 		struct list_head *old_list4;
@@ -428,6 +663,19 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		 * the selectors do not exist in the existing domain map */
 		netlbl_af4list_foreach_rcu(iter4,
 					   &entry->type_def.addrsel->list4)
+=======
+	} else if (entry_old->def.type == NETLBL_NLTYPE_ADDRSELECT &&
+		   entry->def.type == NETLBL_NLTYPE_ADDRSELECT) {
+		struct list_head *old_list4;
+		struct list_head *old_list6;
+
+		old_list4 = &entry_old->def.addrsel->list4;
+		old_list6 = &entry_old->def.addrsel->list6;
+
+		/* we only allow the addition of address selectors if all of
+		 * the selectors do not exist in the existing domain map */
+		netlbl_af4list_foreach_rcu(iter4, &entry->def.addrsel->list4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (netlbl_af4list_search_exact(iter4->addr,
 							iter4->mask,
 							old_list4)) {
@@ -435,8 +683,12 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 				goto add_return;
 			}
 #if IS_ENABLED(CONFIG_IPV6)
+<<<<<<< HEAD
 		netlbl_af6list_foreach_rcu(iter6,
 					   &entry->type_def.addrsel->list6)
+=======
+		netlbl_af6list_foreach_rcu(iter6, &entry->def.addrsel->list6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (netlbl_af6list_search_exact(&iter6->addr,
 							&iter6->mask,
 							old_list6)) {
@@ -446,7 +698,11 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 #endif /* IPv6 */
 
 		netlbl_af4list_foreach_safe(iter4, tmp4,
+<<<<<<< HEAD
 					    &entry->type_def.addrsel->list4) {
+=======
+					    &entry->def.addrsel->list4) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			netlbl_af4list_remove_entry(iter4);
 			iter4->valid = 1;
 			ret_val = netlbl_af4list_add(iter4, old_list4);
@@ -457,7 +713,11 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		}
 #if IS_ENABLED(CONFIG_IPV6)
 		netlbl_af6list_foreach_safe(iter6, tmp6,
+<<<<<<< HEAD
 					    &entry->type_def.addrsel->list6) {
+=======
+					    &entry->def.addrsel->list6) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			netlbl_af6list_remove_entry(iter6);
 			iter6->valid = 1;
 			ret_val = netlbl_af6list_add(iter6, old_list6);
@@ -467,6 +727,11 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 				goto add_return;
 		}
 #endif /* IPv6 */
+<<<<<<< HEAD
+=======
+		/* cleanup the new entry since we've moved everything over */
+		netlbl_domhsh_free_entry(&entry->rcu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		ret_val = -EINVAL;
 
@@ -510,6 +775,15 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 {
 	int ret_val = 0;
 	struct audit_buffer *audit_buf;
+<<<<<<< HEAD
+=======
+	struct netlbl_af4list *iter4;
+	struct netlbl_domaddr4_map *map4;
+#if IS_ENABLED(CONFIG_IPV6)
+	struct netlbl_af6list *iter6;
+	struct netlbl_domaddr6_map *map6;
+#endif /* IPv6 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (entry == NULL)
 		return -ENOENT;
@@ -517,14 +791,29 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 	spin_lock(&netlbl_domhsh_lock);
 	if (entry->valid) {
 		entry->valid = 0;
+<<<<<<< HEAD
 		if (entry != rcu_dereference(netlbl_domhsh_def))
 			list_del_rcu(&entry->list);
 		else
 			RCU_INIT_POINTER(netlbl_domhsh_def, NULL);
+=======
+		if (entry == rcu_dereference(netlbl_domhsh_def_ipv4))
+			RCU_INIT_POINTER(netlbl_domhsh_def_ipv4, NULL);
+		else if (entry == rcu_dereference(netlbl_domhsh_def_ipv6))
+			RCU_INIT_POINTER(netlbl_domhsh_def_ipv6, NULL);
+		else
+			list_del_rcu(&entry->list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		ret_val = -ENOENT;
 	spin_unlock(&netlbl_domhsh_lock);
 
+<<<<<<< HEAD
+=======
+	if (ret_val)
+		return ret_val;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	audit_buf = netlbl_audit_start_common(AUDIT_MAC_MAP_DEL, audit_info);
 	if (audit_buf != NULL) {
 		audit_log_format(audit_buf,
@@ -534,6 +823,7 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 		audit_log_end(audit_buf);
 	}
 
+<<<<<<< HEAD
 	if (ret_val == 0) {
 		struct netlbl_af4list *iter4;
 		struct netlbl_domaddr4_map *map4;
@@ -554,6 +844,31 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 		}
 		call_rcu(&entry->rcu, netlbl_domhsh_free_entry);
 	}
+=======
+	switch (entry->def.type) {
+	case NETLBL_NLTYPE_ADDRSELECT:
+		netlbl_af4list_foreach_rcu(iter4, &entry->def.addrsel->list4) {
+			map4 = netlbl_domhsh_addr4_entry(iter4);
+			cipso_v4_doi_putdef(map4->def.cipso);
+		}
+#if IS_ENABLED(CONFIG_IPV6)
+		netlbl_af6list_foreach_rcu(iter6, &entry->def.addrsel->list6) {
+			map6 = netlbl_domhsh_addr6_entry(iter6);
+			calipso_doi_putdef(map6->def.calipso);
+		}
+#endif /* IPv6 */
+		break;
+	case NETLBL_NLTYPE_CIPSOV4:
+		cipso_v4_doi_putdef(entry->def.cipso);
+		break;
+#if IS_ENABLED(CONFIG_IPV6)
+	case NETLBL_NLTYPE_CALIPSO:
+		calipso_doi_putdef(entry->def.calipso);
+		break;
+#endif /* IPv6 */
+	}
+	call_rcu(&entry->rcu, netlbl_domhsh_free_entry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret_val;
 }
@@ -587,23 +902,42 @@ int netlbl_domhsh_remove_af4(const char *domain,
 	rcu_read_lock();
 
 	if (domain)
+<<<<<<< HEAD
 		entry_map = netlbl_domhsh_search(domain);
 	else
 		entry_map = netlbl_domhsh_search_def(domain);
 	if (entry_map == NULL || entry_map->type != NETLBL_NLTYPE_ADDRSELECT)
+=======
+		entry_map = netlbl_domhsh_search(domain, AF_INET);
+	else
+		entry_map = netlbl_domhsh_search_def(domain, AF_INET);
+	if (entry_map == NULL ||
+	    entry_map->def.type != NETLBL_NLTYPE_ADDRSELECT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto remove_af4_failure;
 
 	spin_lock(&netlbl_domhsh_lock);
 	entry_addr = netlbl_af4list_remove(addr->s_addr, mask->s_addr,
+<<<<<<< HEAD
 					   &entry_map->type_def.addrsel->list4);
+=======
+					   &entry_map->def.addrsel->list4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&netlbl_domhsh_lock);
 
 	if (entry_addr == NULL)
 		goto remove_af4_failure;
+<<<<<<< HEAD
 	netlbl_af4list_foreach_rcu(iter4, &entry_map->type_def.addrsel->list4)
 		goto remove_af4_single_addr;
 #if IS_ENABLED(CONFIG_IPV6)
 	netlbl_af6list_foreach_rcu(iter6, &entry_map->type_def.addrsel->list6)
+=======
+	netlbl_af4list_foreach_rcu(iter4, &entry_map->def.addrsel->list4)
+		goto remove_af4_single_addr;
+#if IS_ENABLED(CONFIG_IPV6)
+	netlbl_af6list_foreach_rcu(iter6, &entry_map->def.addrsel->list6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto remove_af4_single_addr;
 #endif /* IPv6 */
 	/* the domain mapping is empty so remove it from the mapping table */
@@ -616,7 +950,11 @@ remove_af4_single_addr:
 	 * shouldn't be a problem */
 	synchronize_rcu();
 	entry = netlbl_domhsh_addr4_entry(entry_addr);
+<<<<<<< HEAD
 	cipso_v4_doi_putdef(entry->type_def.cipsov4);
+=======
+	cipso_v4_doi_putdef(entry->def.cipso);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(entry);
 	return 0;
 
@@ -625,13 +963,87 @@ remove_af4_failure:
 	return -ENOENT;
 }
 
+<<<<<<< HEAD
 /**
  * netlbl_domhsh_remove - Removes an entry from the domain hash table
  * @domain: the domain to remove
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+/**
+ * netlbl_domhsh_remove_af6 - Removes an address selector entry
+ * @domain: the domain
+ * @addr: IPv6 address
+ * @mask: IPv6 address mask
+ * @audit_info: NetLabel audit information
+ *
+ * Description:
+ * Removes an individual address selector from a domain mapping and potentially
+ * the entire mapping if it is empty.  Returns zero on success, negative values
+ * on failure.
+ *
+ */
+int netlbl_domhsh_remove_af6(const char *domain,
+			     const struct in6_addr *addr,
+			     const struct in6_addr *mask,
+			     struct netlbl_audit *audit_info)
+{
+	struct netlbl_dom_map *entry_map;
+	struct netlbl_af6list *entry_addr;
+	struct netlbl_af4list *iter4;
+	struct netlbl_af6list *iter6;
+	struct netlbl_domaddr6_map *entry;
+
+	rcu_read_lock();
+
+	if (domain)
+		entry_map = netlbl_domhsh_search(domain, AF_INET6);
+	else
+		entry_map = netlbl_domhsh_search_def(domain, AF_INET6);
+	if (entry_map == NULL ||
+	    entry_map->def.type != NETLBL_NLTYPE_ADDRSELECT)
+		goto remove_af6_failure;
+
+	spin_lock(&netlbl_domhsh_lock);
+	entry_addr = netlbl_af6list_remove(addr, mask,
+					   &entry_map->def.addrsel->list6);
+	spin_unlock(&netlbl_domhsh_lock);
+
+	if (entry_addr == NULL)
+		goto remove_af6_failure;
+	netlbl_af4list_foreach_rcu(iter4, &entry_map->def.addrsel->list4)
+		goto remove_af6_single_addr;
+	netlbl_af6list_foreach_rcu(iter6, &entry_map->def.addrsel->list6)
+		goto remove_af6_single_addr;
+	/* the domain mapping is empty so remove it from the mapping table */
+	netlbl_domhsh_remove_entry(entry_map, audit_info);
+
+remove_af6_single_addr:
+	rcu_read_unlock();
+	/* yick, we can't use call_rcu here because we don't have a rcu head
+	 * pointer but hopefully this should be a rare case so the pause
+	 * shouldn't be a problem */
+	synchronize_rcu();
+	entry = netlbl_domhsh_addr6_entry(entry_addr);
+	calipso_doi_putdef(entry->def.calipso);
+	kfree(entry);
+	return 0;
+
+remove_af6_failure:
+	rcu_read_unlock();
+	return -ENOENT;
+}
+#endif /* IPv6 */
+
+/**
+ * netlbl_domhsh_remove - Removes an entry from the domain hash table
+ * @domain: the domain to remove
+ * @family: address family
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @audit_info: NetLabel audit information
  *
  * Description:
  * Removes an entry from the domain hash table and handles any updates to the
+<<<<<<< HEAD
  * lower level protocol handler (i.e. CIPSO).  Returns zero on success,
  * negative on failure.
  *
@@ -647,6 +1059,42 @@ int netlbl_domhsh_remove(const char *domain, struct netlbl_audit *audit_info)
 	else
 		entry = netlbl_domhsh_search_def(domain);
 	ret_val = netlbl_domhsh_remove_entry(entry, audit_info);
+=======
+ * lower level protocol handler (i.e. CIPSO).  @family may be %AF_UNSPEC which
+ * removes all address family entries.  Returns zero on success, negative on
+ * failure.
+ *
+ */
+int netlbl_domhsh_remove(const char *domain, u16 family,
+			 struct netlbl_audit *audit_info)
+{
+	int ret_val = -EINVAL;
+	struct netlbl_dom_map *entry;
+
+	rcu_read_lock();
+
+	if (family == AF_INET || family == AF_UNSPEC) {
+		if (domain)
+			entry = netlbl_domhsh_search(domain, AF_INET);
+		else
+			entry = netlbl_domhsh_search_def(domain, AF_INET);
+		ret_val = netlbl_domhsh_remove_entry(entry, audit_info);
+		if (ret_val && ret_val != -ENOENT)
+			goto done;
+	}
+	if (family == AF_INET6 || family == AF_UNSPEC) {
+		int ret_val2;
+
+		if (domain)
+			entry = netlbl_domhsh_search(domain, AF_INET6);
+		else
+			entry = netlbl_domhsh_search_def(domain, AF_INET6);
+		ret_val2 = netlbl_domhsh_remove_entry(entry, audit_info);
+		if (ret_val2 != -ENOENT)
+			ret_val = ret_val2;
+	}
+done:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_read_unlock();
 
 	return ret_val;
@@ -654,6 +1102,7 @@ int netlbl_domhsh_remove(const char *domain, struct netlbl_audit *audit_info)
 
 /**
  * netlbl_domhsh_remove_default - Removes the default entry from the table
+<<<<<<< HEAD
  * @audit_info: NetLabel audit information
  *
  * Description:
@@ -665,11 +1114,27 @@ int netlbl_domhsh_remove(const char *domain, struct netlbl_audit *audit_info)
 int netlbl_domhsh_remove_default(struct netlbl_audit *audit_info)
 {
 	return netlbl_domhsh_remove(NULL, audit_info);
+=======
+ * @family: address family
+ * @audit_info: NetLabel audit information
+ *
+ * Description:
+ * Removes/resets the default entry corresponding to @family from the domain
+ * hash table and handles any updates to the lower level protocol handler
+ * (i.e. CIPSO).  @family may be %AF_UNSPEC which removes all address family
+ * entries.  Returns zero on success, negative on failure.
+ *
+ */
+int netlbl_domhsh_remove_default(u16 family, struct netlbl_audit *audit_info)
+{
+	return netlbl_domhsh_remove(NULL, family, audit_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * netlbl_domhsh_getentry - Get an entry from the domain hash table
  * @domain: the domain name to search for
+<<<<<<< HEAD
  *
  * Description:
  * Look through the domain hash table searching for an entry to match @domain,
@@ -680,6 +1145,22 @@ int netlbl_domhsh_remove_default(struct netlbl_audit *audit_info)
 struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain)
 {
 	return netlbl_domhsh_search_def(domain);
+=======
+ * @family: address family
+ *
+ * Description:
+ * Look through the domain hash table searching for an entry to match @domain,
+ * with address family @family, return a pointer to a copy of the entry or
+ * NULL.  The caller is responsible for ensuring that rcu_read_[un]lock() is
+ * called.
+ *
+ */
+struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain, u16 family)
+{
+	if (family == AF_UNSPEC)
+		return NULL;
+	return netlbl_domhsh_search_def(domain, family);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -693,12 +1174,18 @@ struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain)
  * responsible for ensuring that rcu_read_[un]lock() is called.
  *
  */
+<<<<<<< HEAD
 struct netlbl_domaddr4_map *netlbl_domhsh_getentry_af4(const char *domain,
 						       __be32 addr)
+=======
+struct netlbl_dommap_def *netlbl_domhsh_getentry_af4(const char *domain,
+						     __be32 addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct netlbl_dom_map *dom_iter;
 	struct netlbl_af4list *addr_iter;
 
+<<<<<<< HEAD
 	dom_iter = netlbl_domhsh_search_def(domain);
 	if (dom_iter == NULL)
 		return NULL;
@@ -711,6 +1198,18 @@ struct netlbl_domaddr4_map *netlbl_domhsh_getentry_af4(const char *domain,
 		return NULL;
 
 	return netlbl_domhsh_addr4_entry(addr_iter);
+=======
+	dom_iter = netlbl_domhsh_search_def(domain, AF_INET);
+	if (dom_iter == NULL)
+		return NULL;
+
+	if (dom_iter->def.type != NETLBL_NLTYPE_ADDRSELECT)
+		return &dom_iter->def;
+	addr_iter = netlbl_af4list_search(addr, &dom_iter->def.addrsel->list4);
+	if (addr_iter == NULL)
+		return NULL;
+	return &(netlbl_domhsh_addr4_entry(addr_iter)->def);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
@@ -725,12 +1224,17 @@ struct netlbl_domaddr4_map *netlbl_domhsh_getentry_af4(const char *domain,
  * responsible for ensuring that rcu_read_[un]lock() is called.
  *
  */
+<<<<<<< HEAD
 struct netlbl_domaddr6_map *netlbl_domhsh_getentry_af6(const char *domain,
+=======
+struct netlbl_dommap_def *netlbl_domhsh_getentry_af6(const char *domain,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						   const struct in6_addr *addr)
 {
 	struct netlbl_dom_map *dom_iter;
 	struct netlbl_af6list *addr_iter;
 
+<<<<<<< HEAD
 	dom_iter = netlbl_domhsh_search_def(domain);
 	if (dom_iter == NULL)
 		return NULL;
@@ -743,6 +1247,18 @@ struct netlbl_domaddr6_map *netlbl_domhsh_getentry_af6(const char *domain,
 		return NULL;
 
 	return netlbl_domhsh_addr6_entry(addr_iter);
+=======
+	dom_iter = netlbl_domhsh_search_def(domain, AF_INET6);
+	if (dom_iter == NULL)
+		return NULL;
+
+	if (dom_iter->def.type != NETLBL_NLTYPE_ADDRSELECT)
+		return &dom_iter->def;
+	addr_iter = netlbl_af6list_search(addr, &dom_iter->def.addrsel->list6);
+	if (addr_iter == NULL)
+		return NULL;
+	return &(netlbl_domhsh_addr6_entry(addr_iter)->def);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* IPv6 */
 

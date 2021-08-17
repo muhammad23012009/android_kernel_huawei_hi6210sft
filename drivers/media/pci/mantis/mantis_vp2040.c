@@ -37,12 +37,20 @@
 #define MANTIS_MODEL_NAME	"VP-2040"
 #define MANTIS_DEV_TYPE		"DVB-C"
 
+<<<<<<< HEAD
 struct tda1002x_config vp2040_tda1002x_cu1216_config = {
+=======
+static struct tda1002x_config vp2040_tda1002x_cu1216_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.demod_address	= 0x18 >> 1,
 	.invert		= 1,
 };
 
+<<<<<<< HEAD
 struct tda10023_config vp2040_tda10023_cu1216_config = {
+=======
+static struct tda10023_config vp2040_tda10023_cu1216_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.demod_address	= 0x18 >> 1,
 	.invert		= 1,
 };

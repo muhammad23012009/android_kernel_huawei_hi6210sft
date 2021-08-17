@@ -22,7 +22,10 @@
 #include <linux/rtc.h>
 #include <linux/bcd.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/pm_runtime.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/mfd/tps65910.h>
 
@@ -259,6 +262,11 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	platform_set_drvdata(pdev, tps_rtc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq  = platform_get_irq(pdev, 0);
 	if (irq <= 0) {
 		dev_warn(&pdev->dev, "Wake up is not possible as irq = %d\n",
@@ -267,7 +275,11 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 	}
 
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+<<<<<<< HEAD
 		tps65910_rtc_interrupt, IRQF_TRIGGER_LOW | IRQF_EARLY_RESUME,
+=======
+		tps65910_rtc_interrupt, IRQF_TRIGGER_LOW,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_name(&pdev->dev), &pdev->dev);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "IRQ is not free.\n");
@@ -284,8 +296,11 @@ static int tps65910_rtc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, tps_rtc);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -327,7 +342,10 @@ static struct platform_driver tps65910_rtc_driver = {
 	.probe		= tps65910_rtc_probe,
 	.remove		= tps65910_rtc_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "tps65910-rtc",
 		.pm	= &tps65910_rtc_pm_ops,
 	},

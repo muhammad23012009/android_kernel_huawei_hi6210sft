@@ -130,7 +130,12 @@ static inline int avc_audit(u32 ssid, u32 tsid,
 			    u16 tclass, u32 requested,
 			    struct av_decision *avd,
 			    int result,
+<<<<<<< HEAD
 			    struct common_audit_data *a, unsigned flags)
+=======
+			    struct common_audit_data *a,
+			    int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 audited, denied;
 	audited = avc_audit_required(requested, avd, result, 0, &denied);
@@ -148,6 +153,7 @@ int avc_has_perm_noaudit(u32 ssid, u32 tsid,
 			 unsigned flags,
 			 struct av_decision *avd);
 
+<<<<<<< HEAD
 int avc_has_perm_flags(u32 ssid, u32 tsid,
 		       u16 tclass, u32 requested,
 		       struct common_audit_data *auditdata,
@@ -159,10 +165,23 @@ static inline int avc_has_perm(u32 ssid, u32 tsid,
 {
 	return avc_has_perm_flags(ssid, tsid, tclass, requested, auditdata, 0);
 }
+=======
+int avc_has_perm(u32 ssid, u32 tsid,
+		 u16 tclass, u32 requested,
+		 struct common_audit_data *auditdata);
+int avc_has_perm_flags(u32 ssid, u32 tsid,
+		       u16 tclass, u32 requested,
+		       struct common_audit_data *auditdata,
+		       int flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 		u8 driver, u8 perm, struct common_audit_data *ad);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u32 avc_policy_seqno(void);
 
 #define AVC_CALLBACK_GRANT		1

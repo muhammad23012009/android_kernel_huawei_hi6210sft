@@ -23,6 +23,14 @@
 #  include <asm/unistd_64.h>
 #  include <asm/unistd_64_x32.h>
 #  define __ARCH_WANT_COMPAT_SYS_TIME
+<<<<<<< HEAD
+=======
+#  define __ARCH_WANT_COMPAT_SYS_GETDENTS64
+#  define __ARCH_WANT_COMPAT_SYS_PREADV64
+#  define __ARCH_WANT_COMPAT_SYS_PWRITEV64
+#  define __ARCH_WANT_COMPAT_SYS_PREADV64V2
+#  define __ARCH_WANT_COMPAT_SYS_PWRITEV64V2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # endif
 
@@ -38,7 +46,10 @@
 # define __ARCH_WANT_SYS_OLD_GETRLIMIT
 # define __ARCH_WANT_SYS_OLD_UNAME
 # define __ARCH_WANT_SYS_PAUSE
+<<<<<<< HEAD
 # define __ARCH_WANT_SYS_SGETMASK
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define __ARCH_WANT_SYS_SIGNAL
 # define __ARCH_WANT_SYS_SIGPENDING
 # define __ARCH_WANT_SYS_SIGPROCMASK

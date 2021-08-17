@@ -24,6 +24,10 @@
 #include <linux/io.h>
 #include <asm/irq.h>
 #include <asm/sizes.h>
+<<<<<<< HEAD
+=======
+#include <mach/irqs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* assumes CONTROLLER_ONLY# is never asserted in the ESSR register */
 #define IOP13XX_TPMI_MMR(dev) 	IOP13XX_REG_ADDR32_PHYS(0x48000 + (dev << 12))
@@ -151,7 +155,11 @@ static struct resource iop13xx_tpmi_3_resources[] = {
 	}
 };
 
+<<<<<<< HEAD
 u64 iop13xx_tpmi_mask = DMA_BIT_MASK(64);
+=======
+u64 iop13xx_tpmi_mask = DMA_BIT_MASK(32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device iop13xx_tpmi_0_device = {
 	.name = "iop-tpmi",
 	.id = 0,
@@ -159,7 +167,11 @@ static struct platform_device iop13xx_tpmi_0_device = {
 	.resource = iop13xx_tpmi_0_resources,
 	.dev = {
 		.dma_mask          = &iop13xx_tpmi_mask,
+<<<<<<< HEAD
 		.coherent_dma_mask = DMA_BIT_MASK(64),
+=======
+		.coherent_dma_mask = DMA_BIT_MASK(32),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -170,7 +182,11 @@ static struct platform_device iop13xx_tpmi_1_device = {
 	.resource = iop13xx_tpmi_1_resources,
 	.dev = {
 		.dma_mask          = &iop13xx_tpmi_mask,
+<<<<<<< HEAD
 		.coherent_dma_mask = DMA_BIT_MASK(64),
+=======
+		.coherent_dma_mask = DMA_BIT_MASK(32),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -181,7 +197,11 @@ static struct platform_device iop13xx_tpmi_2_device = {
 	.resource = iop13xx_tpmi_2_resources,
 	.dev = {
 		.dma_mask          = &iop13xx_tpmi_mask,
+<<<<<<< HEAD
 		.coherent_dma_mask = DMA_BIT_MASK(64),
+=======
+		.coherent_dma_mask = DMA_BIT_MASK(32),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -192,7 +212,11 @@ static struct platform_device iop13xx_tpmi_3_device = {
 	.resource = iop13xx_tpmi_3_resources,
 	.dev = {
 		.dma_mask          = &iop13xx_tpmi_mask,
+<<<<<<< HEAD
 		.coherent_dma_mask = DMA_BIT_MASK(64),
+=======
+		.coherent_dma_mask = DMA_BIT_MASK(32),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

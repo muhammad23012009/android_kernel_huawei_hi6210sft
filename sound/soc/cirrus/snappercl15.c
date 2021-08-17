@@ -65,6 +65,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"MICIN", NULL, "Mic Jack"},
 };
 
+<<<<<<< HEAD
 static int snappercl15_tlv320aic23_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
@@ -77,15 +78,22 @@ static int snappercl15_tlv320aic23_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_dai_link snappercl15_dai = {
 	.name		= "tlv320aic23",
 	.stream_name	= "AIC23",
 	.cpu_dai_name	= "ep93xx-i2s",
 	.codec_dai_name	= "tlv320aic23-hifi",
 	.codec_name	= "tlv320aic23-codec.0-001a",
+<<<<<<< HEAD
 	.platform_name	=  "ep93xx-pcm-audio",
 	.init		= snappercl15_tlv320aic23_init,
 	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_IF |
+=======
+	.platform_name	= "ep93xx-i2s",
+	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  SND_SOC_DAIFMT_CBS_CFS,
 	.ops		= &snappercl15_ops,
 };
@@ -95,6 +103,14 @@ static struct snd_soc_card snd_soc_snappercl15 = {
 	.owner		= THIS_MODULE,
 	.dai_link	= &snappercl15_dai,
 	.num_links	= 1,
+<<<<<<< HEAD
+=======
+
+	.dapm_widgets		= tlv320aic23_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(tlv320aic23_dapm_widgets),
+	.dapm_routes		= audio_map,
+	.num_dapm_routes	= ARRAY_SIZE(audio_map),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int snappercl15_probe(struct platform_device *pdev)
@@ -131,7 +147,10 @@ static int snappercl15_remove(struct platform_device *pdev)
 static struct platform_driver snappercl15_driver = {
 	.driver		= {
 		.name	= "snappercl15-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= snappercl15_probe,
 	.remove		= snappercl15_remove,

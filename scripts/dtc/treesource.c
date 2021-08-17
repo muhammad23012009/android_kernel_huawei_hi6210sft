@@ -26,12 +26,20 @@ extern int yyparse(void);
 extern YYLTYPE yylloc;
 
 struct boot_info *the_boot_info;
+<<<<<<< HEAD
 int treesource_error;
+=======
+bool treesource_error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct boot_info *dt_from_source(const char *fname)
 {
 	the_boot_info = NULL;
+<<<<<<< HEAD
 	treesource_error = 0;
+=======
+	treesource_error = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	srcfile_push(fname);
 	yyin = current_srcfile->f;
@@ -54,9 +62,15 @@ static void write_prefix(FILE *f, int level)
 		fputc('\t', f);
 }
 
+<<<<<<< HEAD
 static int isstring(char c)
 {
 	return (isprint(c)
+=======
+static bool isstring(char c)
+{
+	return (isprint((unsigned char)c)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		|| (c == '\0')
 		|| strchr("\a\b\t\n\v\f\r", c));
 }
@@ -109,7 +123,11 @@ static void write_propval_string(FILE *f, struct data val)
 			break;
 		case '\0':
 			fprintf(f, "\", ");
+<<<<<<< HEAD
 			while (m && (m->offset < i)) {
+=======
+			while (m && (m->offset <= (i + 1))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (m->type == LABEL) {
 					assert(m->offset == (i+1));
 					fprintf(f, "%s: ", m->ref);
@@ -119,7 +137,11 @@ static void write_propval_string(FILE *f, struct data val)
 			fprintf(f, "\"");
 			break;
 		default:
+<<<<<<< HEAD
 			if (isprint(c))
+=======
+			if (isprint((unsigned char)c))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				fprintf(f, "%c", c);
 			else
 				fprintf(f, "\\x%02hhx", c);
@@ -178,7 +200,11 @@ static void write_propval_bytes(FILE *f, struct data val)
 			m = m->next;
 		}
 
+<<<<<<< HEAD
 		fprintf(f, "%02hhx", *bp++);
+=======
+		fprintf(f, "%02hhx", (unsigned char)(*bp++));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((const void *)bp >= propend)
 			break;
 		fprintf(f, " ");

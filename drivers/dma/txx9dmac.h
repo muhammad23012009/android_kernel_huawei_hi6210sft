@@ -67,7 +67,11 @@ static inline bool txx9_dma_have_SMPCHN(void)
 
 /* Hardware register definitions. */
 struct txx9dmac_cregs {
+<<<<<<< HEAD
 #if defined(CONFIG_32BIT) && !defined(CONFIG_64BIT_PHYS_ADDR)
+=======
+#if defined(CONFIG_32BIT) && !defined(CONFIG_PHYS_ADDR_T_64BIT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	TXX9_DMA_REG32(CHAR);	/* Chain Address Register */
 #else
 	u64 CHAR;		/* Chain Address Register */
@@ -201,7 +205,11 @@ static inline bool is_dmac64(const struct txx9dmac_chan *dc)
 #ifdef TXX9_DMA_USE_SIMPLE_CHAIN
 /* Hardware descriptor definition. (for simple-chain) */
 struct txx9dmac_hwdesc {
+<<<<<<< HEAD
 #if defined(CONFIG_32BIT) && !defined(CONFIG_64BIT_PHYS_ADDR)
+=======
+#if defined(CONFIG_32BIT) && !defined(CONFIG_PHYS_ADDR_T_64BIT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	TXX9_DMA_REG32(CHAR);
 #else
 	u64 CHAR;

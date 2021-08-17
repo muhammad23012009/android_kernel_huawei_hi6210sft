@@ -111,8 +111,12 @@ static struct pcc_cpu __percpu *pcc_cpu_info;
 
 static int pcc_cpufreq_verify(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	cpufreq_verify_within_limits(policy, policy->cpuinfo.min_freq,
 				     policy->cpuinfo.max_freq);
+=======
+	cpufreq_verify_within_cpu_limits(policy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -205,7 +209,10 @@ static int pcc_cpufreq_target(struct cpufreq_policy *policy,
 	u32 input_buffer;
 	int cpu;
 
+<<<<<<< HEAD
 	spin_lock(&pcc_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpu = policy->cpu;
 	pcc_cpu_data = per_cpu_ptr(pcc_cpu_info, cpu);
 
@@ -214,8 +221,15 @@ static int pcc_cpufreq_target(struct cpufreq_policy *policy,
 		cpu, target_freq,
 		(pcch_virt_addr + pcc_cpu_data->input_offset));
 
+<<<<<<< HEAD
 	freqs.new = target_freq;
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+=======
+	freqs.old = policy->cur;
+	freqs.new = target_freq;
+	cpufreq_freq_transition_begin(policy, &freqs);
+	spin_lock(&pcc_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input_buffer = 0x1 | (((target_freq * 100)
 			       / (ioread32(&pcch_hdr->nominal) * 1000)) << 8);
@@ -229,6 +243,7 @@ static int pcc_cpufreq_target(struct cpufreq_policy *policy,
 	memset_io((pcch_virt_addr + pcc_cpu_data->input_offset), 0, BUF_SZ);
 
 	status = ioread16(&pcch_hdr->status);
+<<<<<<< HEAD
 	if (status != CMD_COMPLETE) {
 		pr_debug("target: FAILED for cpu %d, with status: 0x%x\n",
 			cpu, status);
@@ -246,6 +261,22 @@ cmd_incomplete:
 	iowrite16(0, &pcch_hdr->status);
 	spin_unlock(&pcc_lock);
 	return -EINVAL;
+=======
+	iowrite16(0, &pcch_hdr->status);
+
+	cpufreq_freq_transition_end(policy, &freqs, status != CMD_COMPLETE);
+	spin_unlock(&pcc_lock);
+
+	if (status != CMD_COMPLETE) {
+		pr_debug("target: FAILED for cpu %d, with status: 0x%x\n",
+			cpu, status);
+		return -EINVAL;
+	}
+
+	pr_debug("target: was SUCCESSFUL for cpu %d\n", cpu);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pcc_get_offset(int cpu)
@@ -394,15 +425,23 @@ static int __init pcc_cpufreq_probe(void)
 	struct pcc_memory_resource *mem_resource;
 	struct pcc_register_resource *reg_resource;
 	union acpi_object *out_obj, *member;
+<<<<<<< HEAD
 	acpi_handle handle, osc_handle, pcch_handle;
+=======
+	acpi_handle handle, osc_handle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	status = acpi_get_handle(NULL, "\\_SB", &handle);
 	if (ACPI_FAILURE(status))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	status = acpi_get_handle(handle, "PCCH", &pcch_handle);
 	if (ACPI_FAILURE(status))
+=======
+	if (!acpi_has_method(handle, "PCCH"))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	status = acpi_get_handle(handle, "_OSC", &osc_handle);
@@ -491,7 +530,11 @@ static int __init pcc_cpufreq_probe(void)
 	doorbell.space_id = reg_resource->space_id;
 	doorbell.bit_width = reg_resource->bit_width;
 	doorbell.bit_offset = reg_resource->bit_offset;
+<<<<<<< HEAD
 	doorbell.access_width = 64;
+=======
+	doorbell.access_width = 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	doorbell.address = reg_resource->address;
 
 	pr_debug("probe: doorbell: space_id is %d, bit_width is %d, "
@@ -558,6 +601,7 @@ static int pcc_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		ioread32(&pcch_hdr->nominal) * 1000;
 	policy->min = policy->cpuinfo.min_freq =
 		ioread32(&pcch_hdr->minimum_frequency) * 1000;
+<<<<<<< HEAD
 	policy->cur = pcc_get_freq(cpu);
 
 	if (!policy->cur) {
@@ -565,6 +609,8 @@ static int pcc_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		result = -EINVAL;
 		goto out;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("init: policy->max is %d, policy->min is %d\n",
 		policy->max, policy->min);
@@ -585,7 +631,10 @@ static struct cpufreq_driver pcc_cpufreq_driver = {
 	.init = pcc_cpufreq_cpu_init,
 	.exit = pcc_cpufreq_cpu_exit,
 	.name = "pcc-cpufreq",
+<<<<<<< HEAD
 	.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init pcc_cpufreq_init(void)
@@ -615,6 +664,16 @@ static void __exit pcc_cpufreq_exit(void)
 	free_percpu(pcc_cpu_info);
 }
 
+<<<<<<< HEAD
+=======
+static const struct acpi_device_id processor_device_ids[] = {
+	{ACPI_PROCESSOR_OBJECT_HID, },
+	{ACPI_PROCESSOR_DEVICE_HID, },
+	{},
+};
+MODULE_DEVICE_TABLE(acpi, processor_device_ids);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Matthew Garrett, Naga Chumbalkar");
 MODULE_VERSION(PCC_VERSION);
 MODULE_DESCRIPTION("Processor Clocking Control interface driver");

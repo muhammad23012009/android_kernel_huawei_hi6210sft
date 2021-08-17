@@ -15,15 +15,19 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include "cx23885.h"
 #include "cx23885-ioctl.h"
 
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
 
 int cx23885_g_chip_ident(struct file *file, void *fh,
@@ -111,6 +115,23 @@ static int cx23885_g_host_register(struct cx23885_dev *dev,
 
 	reg->size = 4;
 	reg->val = cx_read(reg->reg);
+=======
+#ifdef CONFIG_VIDEO_ADV_DEBUG
+int cx23885_g_chip_info(struct file *file, void *fh,
+			 struct v4l2_dbg_chip_info *chip)
+{
+	struct cx23885_dev *dev = video_drvdata(file);
+
+	if (chip->match.addr > 1)
+		return -EINVAL;
+	if (chip->match.addr == 1) {
+		if (dev->v4l_device == NULL)
+			return -EINVAL;
+		strlcpy(chip->name, "cx23417", sizeof(chip->name));
+	} else {
+		strlcpy(chip->name, dev->v4l2_dev.name, sizeof(chip->name));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -136,6 +157,7 @@ static int cx23417_g_register(struct cx23885_dev *dev,
 int cx23885_g_register(struct file *file, void *fh,
 		       struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct cx23885_dev *dev = ((struct cx23885_fh *)fh)->dev;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -164,6 +186,20 @@ static int cx23885_s_host_register(struct cx23885_dev *dev,
 		return -EINVAL;
 
 	cx_write(reg->reg, reg->val);
+=======
+	struct cx23885_dev *dev = video_drvdata(file);
+
+	if (reg->match.addr > 1)
+		return -EINVAL;
+	if (reg->match.addr)
+		return cx23417_g_register(dev, reg);
+
+	if ((reg->reg & 0x3) != 0 || reg->reg >= pci_resource_len(dev->pci, 0))
+		return -EINVAL;
+
+	reg->size = 4;
+	reg->val = cx_read(reg->reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -184,6 +220,7 @@ static int cx23417_s_register(struct cx23885_dev *dev,
 int cx23885_s_register(struct file *file, void *fh,
 		       const struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct cx23885_dev *dev = ((struct cx23885_fh *)fh)->dev;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -202,6 +239,19 @@ int cx23885_s_register(struct file *file, void *fh,
 
 	/* FIXME - any error returns should not be ignored */
 	call_all(dev, core, s_register, reg);
+=======
+	struct cx23885_dev *dev = video_drvdata(file);
+
+	if (reg->match.addr > 1)
+		return -EINVAL;
+	if (reg->match.addr)
+		return cx23417_s_register(dev, reg);
+
+	if ((reg->reg & 0x3) != 0 || reg->reg >= pci_resource_len(dev->pci, 0))
+		return -EINVAL;
+
+	cx_write(reg->reg, reg->val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 #endif

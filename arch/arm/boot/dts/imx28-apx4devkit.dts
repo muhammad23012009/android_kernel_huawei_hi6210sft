@@ -1,5 +1,9 @@
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "imx28.dtsi"
+=======
+#include "imx28.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Bluegiga APX4 Development Kit";
@@ -40,6 +44,7 @@
 				hog_pins_a: hog@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x0113 /* MX28_PAD_GPMI_CE1N__GPIO_0_17 */
 						0x0153 /* MX28_PAD_GPMI_RDY1__GPIO_0_21 */
 						0x2123 /* MX28_PAD_SSP2_MISO__GPIO_2_18 */
@@ -51,11 +56,25 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX28_PAD_GPMI_CE1N__GPIO_0_17
+						MX28_PAD_GPMI_RDY1__GPIO_0_21
+						MX28_PAD_SSP2_MISO__GPIO_2_18
+						MX28_PAD_SSP2_SS0__AUART3_TX /* was: 0x2131 - MX28_PAD_SSP2_SS0__GPIO_2_19 */
+						MX28_PAD_PWM3__GPIO_3_28
+						MX28_PAD_LCD_RESET__GPIO_3_30
+						MX28_PAD_JTAG_RTCK__GPIO_4_20
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				lcdif_pins_apx4: lcdif-apx4@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x1181 /* MX28_PAD_LCD_RD_E__LCD_VSYNC */
 						0x1191 /* MX28_PAD_LCD_WR_RWN__LCD_HSYNC */
 						0x11a1 /* MX28_PAD_LCD_RS__LCD_DOTCLK */
@@ -64,11 +83,22 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX28_PAD_LCD_RD_E__LCD_VSYNC
+						MX28_PAD_LCD_WR_RWN__LCD_HSYNC
+						MX28_PAD_LCD_RS__LCD_DOTCLK
+						MX28_PAD_LCD_CS__LCD_ENABLE
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				mmc2_4bit_pins_apx4: mmc2-4bit-apx4@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x2041 /* MX28_PAD_SSP0_DATA4__SSP2_D0 */
 						0x2051 /* MX28_PAD_SSP0_DATA5__SSP2_D3 */
 						0x2061 /* MX28_PAD_SSP0_DATA6__SSP2_CMD */
@@ -79,14 +109,33 @@
 					fsl,drive-strength = <1>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <1>;
+=======
+						MX28_PAD_SSP0_DATA4__SSP2_D0
+						MX28_PAD_SSP0_DATA5__SSP2_D3
+						MX28_PAD_SSP0_DATA6__SSP2_CMD
+						MX28_PAD_SSP0_DATA7__SSP2_SCK
+						MX28_PAD_SSP2_SS1__SSP2_D1
+						MX28_PAD_SSP2_SS2__SSP2_D2
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				mmc2_sck_cfg_apx4: mmc2-sck-cfg-apx4 {
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x2071 /* MX28_PAD_SSP0_DATA7__SSP2_SCK */
 					>;
 					fsl,drive-strength = <2>;
 					fsl,pull-up = <0>;
+=======
+						MX28_PAD_SSP0_DATA7__SSP2_SCK
+					>;
+					fsl,drive-strength = <MXS_DRIVE_12mA>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -94,10 +143,17 @@
 				pinctrl-names = "default";
 				pinctrl-0 = <&lcdif_24bit_pins_a
 					     &lcdif_pins_apx4>;
+<<<<<<< HEAD
 				display = <&display>;
 				status = "okay";
 
 				display: display {
+=======
+				display = <&display0>;
+				status = "okay";
+
+				display0: display0 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					bits-per-pixel = <32>;
 					bus-width = <24>;
 
@@ -147,7 +203,11 @@
 					reg = <0x0a>;
 					VDDA-supply = <&reg_3p3v>;
 					VDDIO-supply = <&reg_3p3v>;
+<<<<<<< HEAD
 
+=======
+					clocks = <&saif0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				pcf8563: rtc@51 {
@@ -193,9 +253,18 @@
 
 	regulators {
 		compatible = "simple-bus";
+<<<<<<< HEAD
 
 		reg_3p3v: 3p3v {
 			compatible = "regulator-fixed";
+=======
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg_3p3v: regulator@0 {
+			compatible = "regulator-fixed";
+			reg = <0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "3P3V";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;

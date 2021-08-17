@@ -79,6 +79,10 @@ static void ext2_release_inode(struct super_block *sb, int group, int dir)
 	if (dir)
 		le16_add_cpu(&desc->bg_used_dirs_count, -1);
 	spin_unlock(sb_bgl_lock(EXT2_SB(sb), group));
+<<<<<<< HEAD
+=======
+	percpu_counter_inc(&EXT2_SB(sb)->s_freeinodes_counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dir)
 		percpu_counter_dec(&EXT2_SB(sb)->s_dirs_counter);
 	mark_buffer_dirty(bh);
@@ -170,7 +174,11 @@ static void ext2_preread_inode(struct inode *inode)
 	struct ext2_group_desc * gdp;
 	struct backing_dev_info *bdi;
 
+<<<<<<< HEAD
 	bdi = inode->i_mapping->backing_dev_info;
+=======
+	bdi = inode_to_bdi(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bdi_read_congested(bdi))
 		return;
 	if (bdi_write_congested(bdi))
@@ -278,13 +286,21 @@ static int find_group_orlov(struct super_block *sb, struct inode *parent)
 	avefreeb = free_blocks / ngroups;
 	ndirs = percpu_counter_read_positive(&sbi->s_dirs_counter);
 
+<<<<<<< HEAD
 	if ((parent == sb->s_root->d_inode) ||
+=======
+	if ((parent == d_inode(sb->s_root)) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    (EXT2_I(parent)->i_flags & EXT2_TOPDIR_FL)) {
 		struct ext2_group_desc *best_desc = NULL;
 		int best_ndir = inodes_per_group;
 		int best_group = -1;
 
+<<<<<<< HEAD
 		get_random_bytes(&group, sizeof(group));
+=======
+		group = prandom_u32();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		parent_group = (unsigned)group % ngroups;
 		for (i = 0; i < ngroups; i++) {
 			group = (parent_group + i) % ngroups;
@@ -465,6 +481,14 @@ struct inode *ext2_new_inode(struct inode *dir, umode_t mode,
 
 	for (i = 0; i < sbi->s_groups_count; i++) {
 		gdp = ext2_get_group_desc(sb, group, &bh2);
+<<<<<<< HEAD
+=======
+		if (!gdp) {
+			if (++group == sbi->s_groups_count)
+				group = 0;
+			continue;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		brelse(bitmap_bh);
 		bitmap_bh = read_inode_bitmap(sb, group);
 		if (!bitmap_bh) {
@@ -525,7 +549,11 @@ got:
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	percpu_counter_add(&sbi->s_freeinodes_counter, -1);
+=======
+	percpu_counter_dec(&sbi->s_freeinodes_counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (S_ISDIR(mode))
 		percpu_counter_inc(&sbi->s_dirs_counter);
 
@@ -551,7 +579,11 @@ got:
 
 	inode->i_ino = ino;
 	inode->i_blocks = 0;
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(ei->i_data, 0, sizeof(ei->i_data));
 	ei->i_flags =
 		ext2_mask_flags(mode, EXT2_I(dir)->i_flags & EXT2_FL_INHERITED);
@@ -577,7 +609,14 @@ got:
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	dquot_initialize(inode);
+=======
+	err = dquot_initialize(inode);
+	if (err)
+		goto fail_drop;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = dquot_alloc_inode(inode);
 	if (err)
 		goto fail_drop;

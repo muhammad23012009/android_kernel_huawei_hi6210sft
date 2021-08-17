@@ -25,6 +25,22 @@ struct termios {
 	speed_t c_ospeed;		/* output speed */
 };
 
+<<<<<<< HEAD
+=======
+/* Alpha has identical termios and termios2 */
+
+struct termios2 {
+	tcflag_t c_iflag;		/* input mode flags */
+	tcflag_t c_oflag;		/* output mode flags */
+	tcflag_t c_cflag;		/* control mode flags */
+	tcflag_t c_lflag;		/* local mode flags */
+	cc_t c_cc[NCCS];		/* control characters */
+	cc_t c_line;			/* line discipline (== c_cc[19]) */
+	speed_t c_ispeed;		/* input speed */
+	speed_t c_ospeed;		/* output speed */
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Alpha has matching termios and ktermios */
 
 struct ktermios {
@@ -147,6 +163,10 @@ struct ktermios {
 #define B3000000  00034
 #define B3500000  00035
 #define B4000000  00036
+<<<<<<< HEAD
+=======
+#define BOTHER    00037
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CSIZE	00001400
 #define   CS5	00000000
@@ -164,6 +184,12 @@ struct ktermios {
 #define CMSPAR	  010000000000		/* mark or space (stick) parity */
 #define CRTSCTS	  020000000000		/* flow control */
 
+<<<<<<< HEAD
+=======
+#define CIBAUD	07600000
+#define IBSHIFT	16
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* c_lflag bits */
 #define ISIG	0x00000080
 #define ICANON	0x00000100

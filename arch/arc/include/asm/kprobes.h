@@ -50,11 +50,17 @@ struct kprobe_ctlblk {
 
 int kprobe_fault_handler(struct pt_regs *regs, unsigned long cause);
 void kretprobe_trampoline(void);
+<<<<<<< HEAD
 void trap_is_kprobe(unsigned long cause, unsigned long address,
 			   struct pt_regs *regs);
 #else
 static void trap_is_kprobe(unsigned long cause, unsigned long address,
 			   struct pt_regs *regs)
+=======
+void trap_is_kprobe(unsigned long address, struct pt_regs *regs);
+#else
+static void trap_is_kprobe(unsigned long address, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 #endif

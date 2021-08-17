@@ -37,8 +37,12 @@
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -87,6 +91,7 @@
 #define PLAYBACK_BLOCK_COUNTER	0x9A
 #define RECORD_BLOCK_COUNTER	0x9B
 
+<<<<<<< HEAD
 #define DEBUG_CALLS	0
 #define DEBUG_PLAY_REC	0
 
@@ -100,6 +105,10 @@
 #define snd_als300_dbgcallleave()
 #endif
 
+=======
+#define DEBUG_PLAY_REC	0
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if DEBUG_PLAY_REC
 #define snd_als300_dbgplay(format, args...) printk(KERN_ERR format, ##args)
 #else
@@ -152,7 +161,11 @@ struct snd_als300_substream_data {
 	int block_counter_register;
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_als300_ids) = {
+=======
+static const struct pci_device_id snd_als300_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x4005, 0x0300, PCI_ANY_ID, PCI_ANY_ID, 0, 0, DEVICE_ALS300 },
 	{ 0x4005, 0x0308, PCI_ANY_ID, PCI_ANY_ID, 0, 0, DEVICE_ALS300_PLUS },
 	{ 0, }
@@ -177,7 +190,10 @@ static inline void snd_als300_gcr_write(unsigned long port,
 static void snd_als300_set_irq_flag(struct snd_als300 *chip, int cmd)
 {
 	u32 tmp = snd_als300_gcr_read(chip->port, MISC_CONTROL);
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* boolean XOR check, since old vs. new hardware have
 	   directly reversed bit setting for ENABLE and DISABLE.
@@ -188,19 +204,28 @@ static void snd_als300_set_irq_flag(struct snd_als300 *chip, int cmd)
 	else
 		tmp &= ~IRQ_SET_BIT;
 	snd_als300_gcr_write(chip->port, MISC_CONTROL, tmp);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_als300_free(struct snd_als300 *chip)
 {
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_als300_set_irq_flag(chip, IRQ_DISABLE);
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
 	pci_release_regions(chip->pci);
 	pci_disable_device(chip->pci);
 	kfree(chip);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -280,10 +305,14 @@ static irqreturn_t snd_als300plus_interrupt(int irq, void *dev_id)
 
 static void snd_als300_remove(struct pci_dev *pci)
 {
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
 	snd_card_free(pci_get_drvdata(pci));
 	pci_set_drvdata(pci, NULL);
 	snd_als300_dbgcallleave();
+=======
+	snd_card_free(pci_get_drvdata(pci));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned short snd_als300_ac97_read(struct snd_ac97 *ac97,
@@ -331,14 +360,20 @@ static int snd_als300_ac97(struct snd_als300 *chip)
 		.read = snd_als300_ac97_read,
 	};
 
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, NULL, &bus)) < 0)
 		return err;
 
 	memset(&ac97, 0, sizeof(ac97));
 	ac97.private_data = chip;
 
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return snd_ac97_mixer(bus, &ac97, &chip->ac97);
 }
 
@@ -396,13 +431,19 @@ static int snd_als300_playback_open(struct snd_pcm_substream *substream)
 
 	if (!data)
 		return -ENOMEM;
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->playback_substream = substream;
 	runtime->hw = snd_als300_playback_hw;
 	runtime->private_data = data;
 	data->control_register = PLAYBACK_CONTROL;
 	data->block_counter_register = PLAYBACK_BLOCK_COUNTER;
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -412,11 +453,17 @@ static int snd_als300_playback_close(struct snd_pcm_substream *substream)
 	struct snd_als300_substream_data *data;
 
 	data = substream->runtime->private_data;
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
 	kfree(data);
 	chip->playback_substream = NULL;
 	snd_pcm_lib_free_pages(substream);
 	snd_als300_dbgcallleave();
+=======
+	kfree(data);
+	chip->playback_substream = NULL;
+	snd_pcm_lib_free_pages(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -429,13 +476,19 @@ static int snd_als300_capture_open(struct snd_pcm_substream *substream)
 
 	if (!data)
 		return -ENOMEM;
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->capture_substream = substream;
 	runtime->hw = snd_als300_capture_hw;
 	runtime->private_data = data;
 	data->control_register = RECORD_CONTROL;
 	data->block_counter_register = RECORD_BLOCK_COUNTER;
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -445,11 +498,17 @@ static int snd_als300_capture_close(struct snd_pcm_substream *substream)
 	struct snd_als300_substream_data *data;
 
 	data = substream->runtime->private_data;
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
 	kfree(data);
 	chip->capture_substream = NULL;
 	snd_pcm_lib_free_pages(substream);
 	snd_als300_dbgcallleave();
+=======
+	kfree(data);
+	chip->capture_substream = NULL;
+	snd_pcm_lib_free_pages(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -473,7 +532,10 @@ static int snd_als300_playback_prepare(struct snd_pcm_substream *substream)
 	unsigned short period_bytes = snd_pcm_lib_period_bytes(substream);
 	unsigned short buffer_bytes = snd_pcm_lib_buffer_bytes(substream);
 	
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&chip->reg_lock);
 	tmp = snd_als300_gcr_read(chip->port, PLAYBACK_CONTROL);
 	tmp &= ~TRANSFER_START;
@@ -492,7 +554,10 @@ static int snd_als300_playback_prepare(struct snd_pcm_substream *substream)
 	snd_als300_gcr_write(chip->port, PLAYBACK_END,
 					runtime->dma_addr + buffer_bytes - 1);
 	spin_unlock_irq(&chip->reg_lock);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -504,7 +569,10 @@ static int snd_als300_capture_prepare(struct snd_pcm_substream *substream)
 	unsigned short period_bytes = snd_pcm_lib_period_bytes(substream);
 	unsigned short buffer_bytes = snd_pcm_lib_buffer_bytes(substream);
 
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&chip->reg_lock);
 	tmp = snd_als300_gcr_read(chip->port, RECORD_CONTROL);
 	tmp &= ~TRANSFER_START;
@@ -523,7 +591,10 @@ static int snd_als300_capture_prepare(struct snd_pcm_substream *substream)
 	snd_als300_gcr_write(chip->port, RECORD_END,
 					runtime->dma_addr + buffer_bytes - 1);
 	spin_unlock_irq(&chip->reg_lock);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -538,7 +609,10 @@ static int snd_als300_trigger(struct snd_pcm_substream *substream, int cmd)
 	data = substream->runtime->private_data;
 	reg = data->control_register;
 
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&chip->reg_lock);
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
@@ -569,7 +643,10 @@ static int snd_als300_trigger(struct snd_pcm_substream *substream, int cmd)
 		ret = -EINVAL;
 	}
 	spin_unlock(&chip->reg_lock);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -583,7 +660,10 @@ static snd_pcm_uframes_t snd_als300_pointer(struct snd_pcm_substream *substream)
 	data = substream->runtime->private_data;
 	period_bytes = snd_pcm_lib_period_bytes(substream);
 	
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&chip->reg_lock);
 	current_ptr = (u16) snd_als300_gcr_read(chip->port,
 					data->block_counter_register) + 4;
@@ -596,11 +676,18 @@ static snd_pcm_uframes_t snd_als300_pointer(struct snd_pcm_substream *substream)
 	if (data->period_flipflop == 0)
 		current_ptr += period_bytes;
 	snd_als300_dbgplay("Pointer (bytes): %d\n", current_ptr);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
 	return bytes_to_frames(substream->runtime, current_ptr);
 }
 
 static struct snd_pcm_ops snd_als300_playback_ops = {
+=======
+	return bytes_to_frames(substream->runtime, current_ptr);
+}
+
+static const struct snd_pcm_ops snd_als300_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_als300_playback_open,
 	.close =	snd_als300_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -611,7 +698,11 @@ static struct snd_pcm_ops snd_als300_playback_ops = {
 	.pointer =	snd_als300_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_als300_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_als300_capture_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_als300_capture_open,
 	.close =	snd_als300_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -627,7 +718,10 @@ static int snd_als300_new_pcm(struct snd_als300 *chip)
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_pcm_new(chip->card, "ALS300", 0, 1, 1, &pcm);
 	if (err < 0)
 		return err;
@@ -644,7 +738,10 @@ static int snd_als300_new_pcm(struct snd_als300 *chip)
 	/* pre-allocation of buffers */
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 	snd_dma_pci_data(chip->pci), 64*1024, 64*1024);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -653,7 +750,10 @@ static void snd_als300_init(struct snd_als300 *chip)
 	unsigned long flags;
 	u32 tmp;
 	
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	chip->revision = (snd_als300_gcr_read(chip->port, MISC_CONTROL) >> 16)
 								& 0x0000000F;
@@ -680,7 +780,10 @@ static void snd_als300_init(struct snd_als300 *chip)
 	snd_als300_gcr_write(chip->port, PLAYBACK_CONTROL,
 			tmp & ~TRANSFER_START);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
+<<<<<<< HEAD
 	snd_als300_dbgcallleave();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_als300_create(struct snd_card *card,
@@ -696,6 +799,7 @@ static int snd_als300_create(struct snd_card *card,
 	};
 	*rchip = NULL;
 
+<<<<<<< HEAD
 	snd_als300_dbgcallenter();
 	if ((err = pci_enable_device(pci)) < 0)
 		return err;
@@ -703,6 +807,14 @@ static int snd_als300_create(struct snd_card *card,
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(28)) < 0 ||
 		pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(28)) < 0) {
 		printk(KERN_ERR "error setting 28bit DMA mask\n");
+=======
+	if ((err = pci_enable_device(pci)) < 0)
+		return err;
+
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(28)) < 0 ||
+		dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(28)) < 0) {
+		dev_err(card->dev, "error setting 28bit DMA mask\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_disable_device(pci);
 		return -ENXIO;
 	}
@@ -734,7 +846,11 @@ static int snd_als300_create(struct snd_card *card,
 
 	if (request_irq(pci->irq, irq_handler, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
+=======
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_als300_free(chip);
 		return -EBUSY;
 	}
@@ -745,13 +861,21 @@ static int snd_als300_create(struct snd_card *card,
 
 	err = snd_als300_ac97(chip);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "Could not create ac97\n");
+=======
+		dev_err(card->dev, "Could not create ac97\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_als300_free(chip);
 		return err;
 	}
 
 	if ((err = snd_als300_new_pcm(chip)) < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "Could not create PCM\n");
+=======
+		dev_err(card->dev, "Could not create PCM\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_als300_free(chip);
 		return err;
 	}
@@ -762,32 +886,43 @@ static int snd_als300_create(struct snd_card *card,
 		return err;
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
 	*rchip = chip;
 	snd_als300_dbgcallleave();
+=======
+	*rchip = chip;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 #ifdef CONFIG_PM_SLEEP
 static int snd_als300_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_als300 *chip = card->private_data;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int snd_als300_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_als300 *chip = card->private_data;
@@ -802,6 +937,11 @@ static int snd_als300_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_als300 *chip = card->private_data;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_als300_init(chip);
 	snd_ac97_resume(chip->ac97);
 
@@ -830,7 +970,12 @@ static int snd_als300_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (err < 0)
 		return err;

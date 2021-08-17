@@ -32,7 +32,10 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Analog Devices ADV7175 video encoder driver");
 MODULE_AUTHOR("Dave Perks");
@@ -61,9 +64,15 @@ static inline struct adv7175 *to_adv7175(struct v4l2_subdev *sd)
 
 static char *inputs[] = { "pass_through", "play_back", "color_bar" };
 
+<<<<<<< HEAD
 static enum v4l2_mbus_pixelcode adv7175_codes[] = {
 	V4L2_MBUS_FMT_UYVY8_2X8,
 	V4L2_MBUS_FMT_UYVY8_1X16,
+=======
+static u32 adv7175_codes[] = {
+	MEDIA_BUS_FMT_UYVY8_2X8,
+	MEDIA_BUS_FMT_UYVY8_1X16,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----------------------------------------------------------------------- */
@@ -301,6 +310,7 @@ static int adv7175_s_routing(struct v4l2_subdev *sd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adv7175_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 				enum v4l2_mbus_pixelcode *code)
 {
@@ -320,6 +330,33 @@ static int adv7175_g_fmt(struct v4l2_subdev *sd,
 		mf->code = V4L2_MBUS_FMT_UYVY8_1X16;
 	else
 		mf->code = V4L2_MBUS_FMT_UYVY8_2X8;
+=======
+static int adv7175_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad || code->index >= ARRAY_SIZE(adv7175_codes))
+		return -EINVAL;
+
+	code->code = adv7175_codes[code->index];
+	return 0;
+}
+
+static int adv7175_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	u8 val = adv7175_read(sd, 0x7);
+
+	if (format->pad)
+		return -EINVAL;
+
+	if ((val & 0x40) == (1 << 6))
+		mf->code = MEDIA_BUS_FMT_UYVY8_1X16;
+	else
+		mf->code = MEDIA_BUS_FMT_UYVY8_2X8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mf->colorspace  = V4L2_COLORSPACE_SMPTE170M;
 	mf->width       = 0;
@@ -329,6 +366,7 @@ static int adv7175_g_fmt(struct v4l2_subdev *sd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adv7175_s_fmt(struct v4l2_subdev *sd,
 				struct v4l2_mbus_framefmt *mf)
 {
@@ -341,6 +379,25 @@ static int adv7175_s_fmt(struct v4l2_subdev *sd,
 		break;
 
 	case V4L2_MBUS_FMT_UYVY8_1X16:
+=======
+static int adv7175_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	u8 val = adv7175_read(sd, 0x7);
+	int ret = 0;
+
+	if (format->pad)
+		return -EINVAL;
+
+	switch (mf->code) {
+	case MEDIA_BUS_FMT_UYVY8_2X8:
+		val &= ~0x40;
+		break;
+
+	case MEDIA_BUS_FMT_UYVY8_1X16:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		val |= 0x40;
 		break;
 
@@ -350,11 +407,17 @@ static int adv7175_s_fmt(struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ret = adv7175_write(sd, 0x7, val);
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE)
+		ret = adv7175_write(sd, 0x7, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int adv7175_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -362,6 +425,8 @@ static int adv7175_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ide
 	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_ADV7175, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int adv7175_s_power(struct v4l2_subdev *sd, int on)
 {
 	if (on)
@@ -375,7 +440,10 @@ static int adv7175_s_power(struct v4l2_subdev *sd, int on)
 /* ----------------------------------------------------------------------- */
 
 static const struct v4l2_subdev_core_ops adv7175_core_ops = {
+<<<<<<< HEAD
 	.g_chip_ident = adv7175_g_chip_ident,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init = adv7175_init,
 	.s_power = adv7175_s_power,
 };
@@ -383,14 +451,27 @@ static const struct v4l2_subdev_core_ops adv7175_core_ops = {
 static const struct v4l2_subdev_video_ops adv7175_video_ops = {
 	.s_std_output = adv7175_s_std_output,
 	.s_routing = adv7175_s_routing,
+<<<<<<< HEAD
 	.s_mbus_fmt = adv7175_s_fmt,
 	.g_mbus_fmt = adv7175_g_fmt,
 	.enum_mbus_fmt  = adv7175_enum_fmt,
+=======
+};
+
+static const struct v4l2_subdev_pad_ops adv7175_pad_ops = {
+	.enum_mbus_code = adv7175_enum_mbus_code,
+	.get_fmt = adv7175_get_fmt,
+	.set_fmt = adv7175_set_fmt,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_subdev_ops adv7175_ops = {
 	.core = &adv7175_core_ops,
 	.video = &adv7175_video_ops,
+<<<<<<< HEAD
+=======
+	.pad = &adv7175_pad_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----------------------------------------------------------------------- */
@@ -409,7 +490,11 @@ static int adv7175_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	encoder = kzalloc(sizeof(struct adv7175), GFP_KERNEL);
+=======
+	encoder = devm_kzalloc(&client->dev, sizeof(*encoder), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (encoder == NULL)
 		return -ENOMEM;
 	sd = &encoder->sd;
@@ -434,7 +519,10 @@ static int adv7175_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 
 	v4l2_device_unregister_subdev(sd);
+<<<<<<< HEAD
 	kfree(to_adv7175(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -449,7 +537,10 @@ MODULE_DEVICE_TABLE(i2c, adv7175_id);
 
 static struct i2c_driver adv7175_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "adv7175",
 	},
 	.probe		= adv7175_probe,

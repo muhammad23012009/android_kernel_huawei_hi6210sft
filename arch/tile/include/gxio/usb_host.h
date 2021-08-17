@@ -53,7 +53,11 @@ typedef struct {
  * @return Zero if the context was successfully initialized, else a
  *  GXIO_ERR_xxx error code.
  */
+<<<<<<< HEAD
 extern int gxio_usb_host_init(gxio_usb_host_context_t * context, int usb_index,
+=======
+extern int gxio_usb_host_init(gxio_usb_host_context_t *context, int usb_index,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      int is_ehci);
 
 /* Destroy a USB context.
@@ -68,20 +72,32 @@ extern int gxio_usb_host_init(gxio_usb_host_context_t * context, int usb_index,
  * @return Zero if the context was successfully destroyed, else a
  *  GXIO_ERR_xxx error code.
  */
+<<<<<<< HEAD
 extern int gxio_usb_host_destroy(gxio_usb_host_context_t * context);
+=======
+extern int gxio_usb_host_destroy(gxio_usb_host_context_t *context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Retrieve the address of the shim's MMIO registers.
  *
  * @param context Pointer to a properly initialized gxio_usb_host_context_t.
  * @return The address of the shim's MMIO registers.
  */
+<<<<<<< HEAD
 extern void *gxio_usb_host_get_reg_start(gxio_usb_host_context_t * context);
+=======
+extern void *gxio_usb_host_get_reg_start(gxio_usb_host_context_t *context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Retrieve the length of the shim's MMIO registers.
  *
  * @param context Pointer to a properly initialized gxio_usb_host_context_t.
  * @return The length of the shim's MMIO registers.
  */
+<<<<<<< HEAD
 extern size_t gxio_usb_host_get_reg_len(gxio_usb_host_context_t * context);
+=======
+extern size_t gxio_usb_host_get_reg_len(gxio_usb_host_context_t *context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _GXIO_USB_H_ */

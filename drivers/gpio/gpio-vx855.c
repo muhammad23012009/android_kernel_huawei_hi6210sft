@@ -52,8 +52,11 @@ struct vx855_gpio {
 	spinlock_t lock;
 	u32 io_gpi;
 	u32 io_gpo;
+<<<<<<< HEAD
 	bool gpi_reserved;
 	bool gpo_reserved;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* resolve a GPIx into the corresponding bit position */
@@ -98,7 +101,11 @@ static inline u_int32_t gpio_o_bit(int i)
 static int vx855gpio_direction_input(struct gpio_chip *gpio,
 				     unsigned int nr)
 {
+<<<<<<< HEAD
 	struct vx855_gpio *vg = container_of(gpio, struct vx855_gpio, gpio);
+=======
+	struct vx855_gpio *vg = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u_int32_t reg_out;
 
@@ -122,7 +129,11 @@ static int vx855gpio_direction_input(struct gpio_chip *gpio,
 
 static int vx855gpio_get(struct gpio_chip *gpio, unsigned int nr)
 {
+<<<<<<< HEAD
 	struct vx855_gpio *vg = container_of(gpio, struct vx855_gpio, gpio);
+=======
+	struct vx855_gpio *vg = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u_int32_t reg_in;
 	int ret = 0;
 
@@ -148,7 +159,11 @@ static int vx855gpio_get(struct gpio_chip *gpio, unsigned int nr)
 static void vx855gpio_set(struct gpio_chip *gpio, unsigned int nr,
 			  int val)
 {
+<<<<<<< HEAD
 	struct vx855_gpio *vg = container_of(gpio, struct vx855_gpio, gpio);
+=======
+	struct vx855_gpio *vg = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u_int32_t reg_out;
 
@@ -188,6 +203,31 @@ static int vx855gpio_direction_output(struct gpio_chip *gpio,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int vx855gpio_set_single_ended(struct gpio_chip *gpio,
+				      unsigned int nr,
+				      enum single_ended_mode mode)
+{
+	/* The GPI cannot be single-ended */
+	if (nr < NR_VX855_GPI)
+		return -EINVAL;
+
+	/* The GPO's are push-pull */
+	if (nr < NR_VX855_GPInO) {
+		if (mode != LINE_MODE_PUSH_PULL)
+			return -ENOTSUPP;
+		return 0;
+	}
+
+	/* The GPIO's are open drain */
+	if (mode != LINE_MODE_OPEN_DRAIN)
+		return -ENOTSUPP;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const char *vx855gpio_names[NR_VX855_GP] = {
 	"VX855_GPI0", "VX855_GPI1", "VX855_GPI2", "VX855_GPI3", "VX855_GPI4",
 	"VX855_GPI5", "VX855_GPI6", "VX855_GPI7", "VX855_GPI8", "VX855_GPI9",
@@ -211,10 +251,18 @@ static void vx855gpio_gpio_setup(struct vx855_gpio *vg)
 	c->direction_output = vx855gpio_direction_output;
 	c->get = vx855gpio_get;
 	c->set = vx855gpio_set;
+<<<<<<< HEAD
 	c->dbg_show = NULL;
 	c->base = 0;
 	c->ngpio = NR_VX855_GP;
 	c->can_sleep = 0;
+=======
+	c->set_single_ended = vx855gpio_set_single_ended;
+	c->dbg_show = NULL;
+	c->base = 0;
+	c->ngpio = NR_VX855_GP;
+	c->can_sleep = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	c->names = vx855gpio_names;
 }
 
@@ -224,14 +272,21 @@ static int vx855gpio_probe(struct platform_device *pdev)
 	struct resource *res_gpi;
 	struct resource *res_gpo;
 	struct vx855_gpio *vg;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res_gpi = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	res_gpo = platform_get_resource(pdev, IORESOURCE_IO, 1);
 	if (!res_gpi || !res_gpo)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	vg = kzalloc(sizeof(*vg), GFP_KERNEL);
+=======
+	vg = devm_kzalloc(&pdev->dev, sizeof(*vg), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!vg)
 		return -ENOMEM;
 
@@ -250,6 +305,7 @@ static int vx855gpio_probe(struct platform_device *pdev)
 	 * succeed. Ignore and continue.
 	 */
 
+<<<<<<< HEAD
 	if (!request_region(res_gpi->start, resource_size(res_gpi),
 			MODULE_NAME "_gpi"))
 		dev_warn(&pdev->dev,
@@ -304,15 +360,35 @@ static int vx855gpio_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 	kfree(vg);
 	return 0;
+=======
+	if (!devm_request_region(&pdev->dev, res_gpi->start,
+				 resource_size(res_gpi), MODULE_NAME "_gpi"))
+		dev_warn(&pdev->dev,
+			"GPI I/O resource busy, probably claimed by ACPI\n");
+
+	if (!devm_request_region(&pdev->dev, res_gpo->start,
+				 resource_size(res_gpo), MODULE_NAME "_gpo"))
+		dev_warn(&pdev->dev,
+			"GPO I/O resource busy, probably claimed by ACPI\n");
+
+	vx855gpio_gpio_setup(vg);
+
+	return devm_gpiochip_add_data(&pdev->dev, &vg->gpio, vg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver vx855gpio_driver = {
 	.driver = {
 		.name	= MODULE_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= vx855gpio_probe,
 	.remove		= vx855gpio_remove,
+=======
+	},
+	.probe		= vx855gpio_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(vx855gpio_driver);

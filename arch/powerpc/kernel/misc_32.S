@@ -33,6 +33,7 @@
 #include <asm/kexec.h>
 #include <asm/bug.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 
 	.text
 
@@ -56,6 +57,50 @@ _GLOBAL(call_handle_irq)
 	bctrl
 	lwz	r1,0(r1)
 	lwz	r0,4(r1)
+=======
+#include <asm/export.h>
+
+	.text
+
+/*
+ * We store the saved ksp_limit in the unused part
+ * of the STACK_FRAME_OVERHEAD
+ */
+_GLOBAL(call_do_softirq)
+	mflr	r0
+	stw	r0,4(r1)
+	lwz	r10,THREAD+KSP_LIMIT(r2)
+	addi	r11,r3,THREAD_INFO_GAP
+	stwu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r3)
+	mr	r1,r3
+	stw	r10,8(r1)
+	stw	r11,THREAD+KSP_LIMIT(r2)
+	bl	__do_softirq
+	lwz	r10,8(r1)
+	lwz	r1,0(r1)
+	lwz	r0,4(r1)
+	stw	r10,THREAD+KSP_LIMIT(r2)
+	mtlr	r0
+	blr
+
+/*
+ * void call_do_irq(struct pt_regs *regs, struct thread_info *irqtp);
+ */
+_GLOBAL(call_do_irq)
+	mflr	r0
+	stw	r0,4(r1)
+	lwz	r10,THREAD+KSP_LIMIT(r2)
+	addi	r11,r4,THREAD_INFO_GAP
+	stwu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r4)
+	mr	r1,r4
+	stw	r10,8(r1)
+	stw	r11,THREAD+KSP_LIMIT(r2)
+	bl	__do_irq
+	lwz	r10,8(r1)
+	lwz	r1,0(r1)
+	lwz	r0,4(r1)
+	stw	r10,THREAD+KSP_LIMIT(r2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mtlr	r0
 	blr
 
@@ -73,6 +118,7 @@ _GLOBAL(mulhdu)
 	addc	r7,r0,r7
 	addze	r4,r4
 1:	beqlr	cr1		/* all done if high part of A is 0 */
+<<<<<<< HEAD
 	mr	r10,r3
 	mullw	r9,r3,r5
 	mulhwu	r3,r3,r5
@@ -98,6 +144,18 @@ _GLOBAL(sub_reloc_offset)
 	subf	r5,r4,r5
 	subf	r3,r5,r3
 	mtlr	r0
+=======
+	mullw	r9,r3,r5
+	mulhwu	r10,r3,r5
+	beq	2f
+	mullw	r0,r3,r6
+	mulhwu	r8,r3,r6
+	addc	r7,r0,r7
+	adde	r4,r4,r8
+	addze	r10,r10
+2:	addc	r4,r4,r9
+	addze	r3,r10
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr
 
 /*
@@ -278,12 +336,18 @@ _GLOBAL(real_writeb)
  * Flush instruction cache.
  * This is a no-op on the 601.
  */
+<<<<<<< HEAD
 _GLOBAL(flush_instruction_cache)
 #if defined(CONFIG_8xx)
 	isync
 	lis	r5, IDC_INVALL@h
 	mtspr	SPRN_IC_CST, r5
 #elif defined(CONFIG_4xx)
+=======
+#ifndef CONFIG_PPC_8xx
+_GLOBAL(flush_instruction_cache)
+#if defined(CONFIG_4xx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_403GCX
 	li      r3, 512
 	mtctr   r3
@@ -316,9 +380,17 @@ END_FTR_SECTION_IFSET(CPU_FTR_UNIFIED_ID_CACHE)
 	mfspr	r3,SPRN_HID0
 	ori	r3,r3,HID0_ICFI
 	mtspr	SPRN_HID0,r3
+<<<<<<< HEAD
 #endif /* CONFIG_8xx/4xx */
 	isync
 	blr
+=======
+#endif /* CONFIG_4xx */
+	isync
+	blr
+EXPORT_SYMBOL(flush_instruction_cache)
+#endif /* CONFIG_PPC_8xx */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Write any modified data cache blocks out to memory
@@ -327,6 +399,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_UNIFIED_ID_CACHE)
  *
  * flush_icache_range(unsigned long start, unsigned long stop)
  */
+<<<<<<< HEAD
 _KPROBE(__flush_icache_range)
 BEGIN_FTR_SECTION
 	blr				/* for 601, do nothing */
@@ -335,6 +408,16 @@ END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
 	andc	r3,r3,r5
 	subf	r4,r3,r4
 	add	r4,r4,r5
+=======
+_GLOBAL(flush_icache_range)
+BEGIN_FTR_SECTION
+	PURGE_PREFETCHED_INS
+	blr				/* for 601, do nothing */
+END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
+	rlwinm	r3,r3,0,0,31 - L1_CACHE_SHIFT
+	subf	r4,r3,r4
+	addi	r4,r4,L1_CACHE_BYTES - 1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	srwi.	r4,r4,L1_CACHE_SHIFT
 	beqlr
 	mtctr	r4
@@ -357,6 +440,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
 	sync				/* additional sync needed on g4 */
 	isync
 	blr
+<<<<<<< HEAD
 /*
  * Write any modified data cache blocks out to memory.
  * Does not invalidate the corresponding cache lines (especially for
@@ -421,6 +505,10 @@ _GLOBAL(invalidate_dcache_range)
 	bdnz	1b
 	sync				/* wait for dcbi's to get to ram */
 	blr
+=======
+_ASM_NOKPROBE_SYMBOL(flush_icache_range)
+EXPORT_SYMBOL(flush_icache_range)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Flush a particular page from the data cache to RAM.
@@ -432,6 +520,10 @@ _GLOBAL(invalidate_dcache_range)
  */
 _GLOBAL(__flush_dcache_icache)
 BEGIN_FTR_SECTION
+<<<<<<< HEAD
+=======
+	PURGE_PREFETCHED_INS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr
 END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
 	rlwinm	r3,r3,0,0,31-PAGE_SHIFT		/* Get page base address */
@@ -473,6 +565,10 @@ END_MMU_FTR_SECTION_IFSET(MMU_FTR_TYPE_44x)
  */
 _GLOBAL(__flush_dcache_icache_phys)
 BEGIN_FTR_SECTION
+<<<<<<< HEAD
+=======
+	PURGE_PREFETCHED_INS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr					/* for 601, do nothing */
 END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
 	mfmsr	r10
@@ -498,6 +594,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
 #endif /* CONFIG_BOOKE */
 
 /*
+<<<<<<< HEAD
  * Clear pages using the dcbz instruction, which doesn't cause any
  * memory traffic (except to write out any cache lines which get
  * displaced).  This only works on cacheable memory.
@@ -514,6 +611,8 @@ _GLOBAL(clear_pages)
 	blr
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copy a whole page.  We use the dcbz instruction on the destination
  * to reduce memory traffic (it eliminates the unnecessary reads of
  * the destination into cache).  This requires that the destination
@@ -573,6 +672,7 @@ _GLOBAL(copy_page)
 	li	r0,MAX_COPY_PREFETCH
 	li	r11,4
 	b	2b
+<<<<<<< HEAD
 
 /*
  * void atomic_clear_mask(atomic_t mask, atomic_t *addr)
@@ -592,6 +692,9 @@ _GLOBAL(atomic_set_mask)
 	stwcx.	r5,0,r4
 	bne-	10b
 	blr
+=======
+EXPORT_SYMBOL(copy_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Extended precision shifts.
@@ -619,6 +722,10 @@ _GLOBAL(__ashrdi3)
 	sraw	r3,r3,r5	# MSW = MSW >> count
 	or	r4,r4,r7	# LSW |= t2
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ashrdi3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 _GLOBAL(__ashldi3)
 	subfic	r6,r5,32
@@ -630,6 +737,10 @@ _GLOBAL(__ashldi3)
 	slw	r4,r4,r5	# LSW = LSW << count
 	or	r3,r3,r7	# MSW |= t2
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ashldi3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 _GLOBAL(__lshrdi3)
 	subfic	r6,r5,32
@@ -641,8 +752,29 @@ _GLOBAL(__lshrdi3)
 	srw	r3,r3,r5	# MSW = MSW >> count
 	or	r4,r4,r7	# LSW |= t2
 	blr
+<<<<<<< HEAD
 
 /*
+=======
+EXPORT_SYMBOL(__lshrdi3)
+
+/*
+ * 64-bit comparison: __cmpdi2(s64 a, s64 b)
+ * Returns 0 if a < b, 1 if a == b, 2 if a > b.
+ */
+_GLOBAL(__cmpdi2)
+	cmpw	r3,r5
+	li	r3,1
+	bne	1f
+	cmplw	r4,r6
+	beqlr
+1:	li	r3,0
+	bltlr
+	li	r3,2
+	blr
+EXPORT_SYMBOL(__cmpdi2)
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * 64-bit comparison: __ucmpdi2(u64 a, u64 b)
  * Returns 0 if a < b, 1 if a == b, 2 if a > b.
  */
@@ -656,6 +788,10 @@ _GLOBAL(__ucmpdi2)
 	bltlr
 	li	r3,2
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ucmpdi2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 _GLOBAL(__bswapdi2)
 	rotlwi  r9,r4,8
@@ -667,12 +803,16 @@ _GLOBAL(__bswapdi2)
 	mr      r3,r9
 	mr      r4,r10
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(abs)
 	srawi	r4,r3,31
 	xor	r3,r3,r4
 	sub	r3,r3,r4
 	blr
+=======
+EXPORT_SYMBOL(__bswapdi2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 _GLOBAL(start_secondary_resume)
@@ -727,6 +867,11 @@ relocate_new_kernel:
 	/* Check for 47x cores */
 	mfspr	r3,SPRN_PVR
 	srwi	r3,r3,16
+<<<<<<< HEAD
+=======
+	cmplwi	cr0,r3,PVR_476FPE@h
+	beq	setup_map_47x
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmplwi	cr0,r3,PVR_476@h
 	beq	setup_map_47x
 	cmplwi	cr0,r3,PVR_476_ISS@h

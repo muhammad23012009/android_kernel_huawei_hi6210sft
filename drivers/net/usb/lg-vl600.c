@@ -15,8 +15,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -202,7 +206,11 @@ static int vl600_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 					&buf->data[sizeof(*ethhdr) + 0x12],
 					ETH_ALEN);
 		} else {
+<<<<<<< HEAD
 			memset(ethhdr->h_source, 0, ETH_ALEN);
+=======
+			eth_zero_addr(ethhdr->h_source);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			memcpy(ethhdr->h_dest, dev->net->dev_addr, ETH_ALEN);
 
 			/* Inbound IPv6 packets have an IPv4 ethertype (0x800)
@@ -211,7 +219,11 @@ static int vl600_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			 * (0x86dd) so Linux can understand it.
 			 */
 			if ((buf->data[sizeof(*ethhdr)] & 0xf0) == 0x60)
+<<<<<<< HEAD
 				ethhdr->h_proto = __constant_htons(ETH_P_IPV6);
+=======
+				ethhdr->h_proto = htons(ETH_P_IPV6);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		if (count) {

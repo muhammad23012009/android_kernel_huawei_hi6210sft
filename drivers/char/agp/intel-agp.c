@@ -14,9 +14,12 @@
 #include "intel-agp.h"
 #include <drm/intel-gtt.h>
 
+<<<<<<< HEAD
 int intel_agp_enabled;
 EXPORT_SYMBOL(intel_agp_enabled);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int intel_fetch_size(void)
 {
 	int i;
@@ -118,7 +121,10 @@ static void intel_8xx_cleanup(void)
 
 static int intel_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 temp2;
 	struct aper_size_info_16 *current_size;
 
@@ -128,8 +134,13 @@ static int intel_configure(void)
 	pci_write_config_word(agp_bridge->dev, INTEL_APSIZE, current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture base */
 	pci_write_config_dword(agp_bridge->dev, INTEL_ATTBASE, agp_bridge->gatt_bus_addr);
@@ -148,7 +159,11 @@ static int intel_configure(void)
 
 static int intel_815_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp, addr;
+=======
+	u32 addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -167,8 +182,13 @@ static int intel_815_configure(void)
 			current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_read_config_dword(agp_bridge->dev, INTEL_ATTBASE, &addr);
 	addr &= INTEL_815_ATTBASE_MASK;
@@ -208,7 +228,10 @@ static void intel_820_cleanup(void)
 
 static int intel_820_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -218,8 +241,13 @@ static int intel_820_configure(void)
 	pci_write_config_byte(agp_bridge->dev, INTEL_APSIZE, current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture base */
 	pci_write_config_dword(agp_bridge->dev, INTEL_ATTBASE, agp_bridge->gatt_bus_addr);
@@ -239,7 +267,10 @@ static int intel_820_configure(void)
 
 static int intel_840_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -249,8 +280,13 @@ static int intel_840_configure(void)
 	pci_write_config_byte(agp_bridge->dev, INTEL_APSIZE, current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture base */
 	pci_write_config_dword(agp_bridge->dev, INTEL_ATTBASE, agp_bridge->gatt_bus_addr);
@@ -268,7 +304,10 @@ static int intel_840_configure(void)
 
 static int intel_845_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -282,9 +321,15 @@ static int intel_845_configure(void)
 				       agp_bridge->apbase_config);
 	} else {
 		/* address to map to */
+<<<<<<< HEAD
 		pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 		agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
 		agp_bridge->apbase_config = temp;
+=======
+		agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+							    AGP_APERTURE_BAR);
+		agp_bridge->apbase_config = agp_bridge->gart_bus_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* attbase - aperture base */
@@ -303,7 +348,10 @@ static int intel_845_configure(void)
 
 static int intel_850_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -313,8 +361,13 @@ static int intel_850_configure(void)
 	pci_write_config_byte(agp_bridge->dev, INTEL_APSIZE, current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture base */
 	pci_write_config_dword(agp_bridge->dev, INTEL_ATTBASE, agp_bridge->gatt_bus_addr);
@@ -332,7 +385,10 @@ static int intel_850_configure(void)
 
 static int intel_860_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -342,8 +398,13 @@ static int intel_860_configure(void)
 	pci_write_config_byte(agp_bridge->dev, INTEL_APSIZE, current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture base */
 	pci_write_config_dword(agp_bridge->dev, INTEL_ATTBASE, agp_bridge->gatt_bus_addr);
@@ -361,7 +422,10 @@ static int intel_860_configure(void)
 
 static int intel_830mp_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -371,8 +435,13 @@ static int intel_830mp_configure(void)
 	pci_write_config_byte(agp_bridge->dev, INTEL_APSIZE, current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture base */
 	pci_write_config_dword(agp_bridge->dev, INTEL_ATTBASE, agp_bridge->gatt_bus_addr);
@@ -390,7 +459,10 @@ static int intel_830mp_configure(void)
 
 static int intel_7505_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 temp2;
 	struct aper_size_info_8 *current_size;
 
@@ -400,8 +472,13 @@ static int intel_7505_configure(void)
 	pci_write_config_byte(agp_bridge->dev, INTEL_APSIZE, current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture base */
 	pci_write_config_dword(agp_bridge->dev, INTEL_ATTBASE, agp_bridge->gatt_bus_addr);
@@ -814,8 +891,11 @@ static int agp_intel_probe(struct pci_dev *pdev,
 found_gmch:
 	pci_set_drvdata(pdev, bridge);
 	err = agp_add_bridge(bridge);
+<<<<<<< HEAD
 	if (!err)
 		intel_agp_enabled = 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -933,5 +1013,9 @@ static void __exit agp_intel_cleanup(void)
 module_init(agp_intel_init);
 module_exit(agp_intel_cleanup);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones, Various @Intel");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL and additional rights");

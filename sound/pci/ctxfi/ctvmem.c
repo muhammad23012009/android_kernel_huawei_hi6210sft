@@ -16,6 +16,10 @@
  */
 
 #include "ctvmem.h"
+<<<<<<< HEAD
+=======
+#include "ctatc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/mm.h>
 #include <linux/io.h>
@@ -29,15 +33,24 @@
  * @size must be page aligned.
  * */
 static struct ct_vm_block *
+<<<<<<< HEAD
 get_vm_block(struct ct_vm *vm, unsigned int size)
+=======
+get_vm_block(struct ct_vm *vm, unsigned int size, struct ct_atc *atc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ct_vm_block *block = NULL, *entry;
 	struct list_head *pos;
 
 	size = CT_PAGE_ALIGN(size);
 	if (size > vm->size) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ctxfi: Fail! No sufficient device virtual "
 				  "memory space available!\n");
+=======
+		dev_err(atc->card->dev,
+			"Fail! No sufficient device virtual memory space available!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 
@@ -129,11 +142,20 @@ ct_vm_map(struct ct_vm *vm, struct snd_pcm_substream *substream, int size)
 	unsigned int pte_start;
 	unsigned i, pages;
 	unsigned long *ptp;
+<<<<<<< HEAD
 
 	block = get_vm_block(vm, size);
 	if (block == NULL) {
 		printk(KERN_ERR "ctxfi: No virtual memory block that is big "
 				  "enough to allocate!\n");
+=======
+	struct ct_atc *atc = snd_pcm_substream_chip(substream);
+
+	block = get_vm_block(vm, size, atc);
+	if (block == NULL) {
+		dev_err(atc->card->dev,
+			"No virtual memory block that is big enough to allocate!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 
@@ -164,11 +186,15 @@ static void ct_vm_unmap(struct ct_vm *vm, struct ct_vm_block *block)
 static dma_addr_t
 ct_get_ptp_phys(struct ct_vm *vm, int index)
 {
+<<<<<<< HEAD
 	dma_addr_t addr;
 
 	addr = (index >= CT_PTP_NUM) ? ~0UL : vm->ptp[index].addr;
 
 	return addr;
+=======
+	return (index >= CT_PTP_NUM) ? ~0UL : vm->ptp[index].addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int ct_vm_create(struct ct_vm **rvm, struct pci_dev *pci)

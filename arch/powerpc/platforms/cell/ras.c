@@ -123,7 +123,12 @@ static int __init cbe_ptcal_enable_on_node(int nid, int order)
 
 	area->nid = nid;
 	area->order = order;
+<<<<<<< HEAD
 	area->pages = alloc_pages_exact_node(area->nid, GFP_KERNEL|GFP_THISNODE,
+=======
+	area->pages = __alloc_pages_node(area->nid,
+						GFP_KERNEL|__GFP_THISNODE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						area->order);
 
 	if (!area->pages) {
@@ -297,7 +302,11 @@ int cbe_sysreset_hack(void)
 }
 #endif /* CONFIG_PPC_IBM_CELL_RESETBUTTON */
 
+<<<<<<< HEAD
 int __init cbe_ptcal_init(void)
+=======
+static int __init cbe_ptcal_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	ptcal_start_tok = rtas_token("ibm,cbe-start-ptcal");

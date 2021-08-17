@@ -24,6 +24,10 @@ struct pinctrl_dev;
 struct pinctrl_map;
 struct pinmux_ops;
 struct pinconf_ops;
+<<<<<<< HEAD
+=======
+struct pin_config_item;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct gpio_chip;
 struct device_node;
 
@@ -51,7 +55,12 @@ struct pinctrl_pin_desc {
  * @name: a name for the chip in this range
  * @id: an ID number for the chip in this range
  * @base: base offset of the GPIO range
+<<<<<<< HEAD
  * @pin_base: base pin number of the GPIO range
+=======
+ * @pin_base: base pin number of the GPIO range if pins == NULL
+ * @pins: enumeration of pins in GPIO range or NULL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @npins: number of pins in the GPIO range, including the base number
  * @gc: an optional pointer to a gpio_chip
  */
@@ -61,6 +70,10 @@ struct pinctrl_gpio_range {
 	unsigned int id;
 	unsigned int base;
 	unsigned int pin_base;
+<<<<<<< HEAD
+=======
+	unsigned const *pins;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int npins;
 	struct gpio_chip *gc;
 };
@@ -115,21 +128,51 @@ struct pinctrl_ops {
  * @confops: pin config operations vtable, if you support pin configuration in
  *	your driver
  * @owner: module providing the pin controller, used for refcounting
+<<<<<<< HEAD
  */
 struct pinctrl_desc {
 	const char *name;
 	struct pinctrl_pin_desc const *pins;
+=======
+ * @num_custom_params: Number of driver-specific custom parameters to be parsed
+ *	from the hardware description
+ * @custom_params: List of driver_specific custom parameters to be parsed from
+ *	the hardware description
+ * @custom_conf_items: Information how to print @params in debugfs, must be
+ *	the same size as the @custom_params, i.e. @num_custom_params
+ */
+struct pinctrl_desc {
+	const char *name;
+	const struct pinctrl_pin_desc *pins;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int npins;
 	const struct pinctrl_ops *pctlops;
 	const struct pinmux_ops *pmxops;
 	const struct pinconf_ops *confops;
 	struct module *owner;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_GENERIC_PINCONF
+	unsigned int num_custom_params;
+	const struct pinconf_generic_params *custom_params;
+	const struct pin_config_item *custom_conf_items;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* External interface to pin controller */
 extern struct pinctrl_dev *pinctrl_register(struct pinctrl_desc *pctldesc,
 				struct device *dev, void *driver_data);
 extern void pinctrl_unregister(struct pinctrl_dev *pctldev);
+<<<<<<< HEAD
+=======
+extern struct pinctrl_dev *devm_pinctrl_register(struct device *dev,
+				struct pinctrl_desc *pctldesc,
+				void *driver_data);
+extern void devm_pinctrl_unregister(struct device *dev,
+				struct pinctrl_dev *pctldev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern bool pin_is_valid(struct pinctrl_dev *pctldev, int pin);
 extern void pinctrl_add_gpio_range(struct pinctrl_dev *pctldev,
 				struct pinctrl_gpio_range *range);
@@ -144,6 +187,12 @@ extern struct pinctrl_dev *pinctrl_find_and_add_gpio_range(const char *devname,
 extern struct pinctrl_gpio_range *
 pinctrl_find_gpio_range_from_pin(struct pinctrl_dev *pctldev,
 				 unsigned int pin);
+<<<<<<< HEAD
+=======
+extern int pinctrl_get_group_pins(struct pinctrl_dev *pctldev,
+				const char *pin_group, const unsigned **pins,
+				unsigned *num_pins);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_OF
 extern struct pinctrl_dev *of_pinctrl_get(struct device_node *np);

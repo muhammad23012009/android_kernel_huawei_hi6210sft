@@ -395,7 +395,11 @@ static int phantom_probe(struct pci_dev *pdev,
 	iowrite32(0, pht->caddr + PHN_IRQCTL);
 	ioread32(pht->caddr + PHN_IRQCTL); /* PCI posting */
 	retval = request_irq(pdev->irq, phantom_isr,
+<<<<<<< HEAD
 			IRQF_SHARED | IRQF_DISABLED, "phantom", pht);
+=======
+			IRQF_SHARED, "phantom", pht);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval) {
 		dev_err(&pdev->dev, "can't establish ISR\n");
 		goto err_unmo;

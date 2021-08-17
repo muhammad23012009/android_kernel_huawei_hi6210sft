@@ -24,9 +24,14 @@
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/mc146818rtc.h>
 #include <linux/module.h>
+=======
+#include <linux/mc146818rtc.h>
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kallsyms.h>
 #include <linux/ptrace.h>
 #include <linux/personality.h>
@@ -40,8 +45,12 @@
 #include <asm/pgtable.h>
 #include <asm/ldt.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/i387.h>
 #include <asm/fpu-internal.h>
+=======
+#include <asm/fpu/internal.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/desc.h>
 #ifdef CONFIG_MATH_EMULATION
 #include <asm/math_emu.h>
@@ -55,6 +64,7 @@
 #include <asm/syscalls.h>
 #include <asm/debugreg.h>
 #include <asm/switch_to.h>
+<<<<<<< HEAD
 
 asmlinkage void ret_from_fork(void) __asm__("ret_from_fork");
 asmlinkage void ret_from_kernel_thread(void) __asm__("ret_from_kernel_thread");
@@ -66,6 +76,11 @@ unsigned long thread_saved_pc(struct task_struct *tsk)
 {
 	return ((unsigned long *)tsk->thread.sp)[3];
 }
+=======
+#include <asm/vm86.h>
+
+#include "process.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __show_regs(struct pt_regs *regs, int all)
 {
@@ -74,7 +89,11 @@ void __show_regs(struct pt_regs *regs, int all)
 	unsigned long sp;
 	unsigned short ss, gs;
 
+<<<<<<< HEAD
 	if (user_mode_vm(regs)) {
+=======
+	if (user_mode(regs)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sp = regs->sp;
 		ss = regs->ss & 0xffff;
 		gs = get_user_gs(regs);
@@ -102,7 +121,11 @@ void __show_regs(struct pt_regs *regs, int all)
 	cr0 = read_cr0();
 	cr2 = read_cr2();
 	cr3 = read_cr3();
+<<<<<<< HEAD
 	cr4 = read_cr4_safe();
+=======
+	cr4 = __read_cr4();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk(KERN_DEFAULT "CR0: %08lx CR2: %08lx CR3: %08lx CR4: %08lx\n",
 			cr0, cr2, cr3, cr4);
 
@@ -110,11 +133,24 @@ void __show_regs(struct pt_regs *regs, int all)
 	get_debugreg(d1, 1);
 	get_debugreg(d2, 2);
 	get_debugreg(d3, 3);
+<<<<<<< HEAD
 	printk(KERN_DEFAULT "DR0: %08lx DR1: %08lx DR2: %08lx DR3: %08lx\n",
 			d0, d1, d2, d3);
 
 	get_debugreg(d6, 6);
 	get_debugreg(d7, 7);
+=======
+	get_debugreg(d6, 6);
+	get_debugreg(d7, 7);
+
+	/* Only print out debug registers if they are in their non-default state. */
+	if ((d0 == 0) && (d1 == 0) && (d2 == 0) && (d3 == 0) &&
+	    (d6 == DR6_RESERVED) && (d7 == 0x400))
+		return;
+
+	printk(KERN_DEFAULT "DR0: %08lx DR1: %08lx DR2: %08lx DR3: %08lx\n",
+			d0, d1, d2, d3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk(KERN_DEFAULT "DR6: %08lx DR7: %08lx\n",
 			d6, d7);
 }
@@ -125,6 +161,7 @@ void release_thread(struct task_struct *dead_task)
 	release_vm86_irqs(dead_task);
 }
 
+<<<<<<< HEAD
 int copy_thread(unsigned long clone_flags, unsigned long sp,
 	unsigned long arg, struct task_struct *p)
 {
@@ -134,10 +171,34 @@ int copy_thread(unsigned long clone_flags, unsigned long sp,
 
 	p->thread.sp = (unsigned long) childregs;
 	p->thread.sp0 = (unsigned long) (childregs+1);
+=======
+int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
+	unsigned long arg, struct task_struct *p, unsigned long tls)
+{
+	struct pt_regs *childregs = task_pt_regs(p);
+	struct fork_frame *fork_frame = container_of(childregs, struct fork_frame, regs);
+	struct inactive_task_frame *frame = &fork_frame->frame;
+	struct task_struct *tsk;
+	int err;
+
+	/*
+	 * For a new task use the RESET flags value since there is no before.
+	 * All the status flags are zero; DF and all the system flags must also
+	 * be 0, specifically IF must be 0 because we context switch to the new
+	 * task with interrupts disabled.
+	 */
+	frame->flags = X86_EFLAGS_FIXED;
+	frame->bp = 0;
+	frame->ret_addr = (unsigned long) ret_from_fork;
+	p->thread.sp = (unsigned long) fork_frame;
+	p->thread.sp0 = (unsigned long) (childregs+1);
+	memset(p->thread.ptrace_bps, 0, sizeof(p->thread.ptrace_bps));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(p->flags & PF_KTHREAD)) {
 		/* kernel thread */
 		memset(childregs, 0, sizeof(struct pt_regs));
+<<<<<<< HEAD
 		p->thread.ip = (unsigned long) ret_from_kernel_thread;
 		task_user_gs(p) = __KERNEL_STACK_CANARY;
 		childregs->ds = __USER_DS;
@@ -153,21 +214,37 @@ int copy_thread(unsigned long clone_flags, unsigned long sp,
 		memset(p->thread.ptrace_bps, 0, sizeof(p->thread.ptrace_bps));
 		return 0;
 	}
+=======
+		frame->bx = sp;		/* function */
+		frame->di = arg;
+		p->thread.io_bitmap_ptr = NULL;
+		return 0;
+	}
+	frame->bx = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*childregs = *current_pt_regs();
 	childregs->ax = 0;
 	if (sp)
 		childregs->sp = sp;
 
+<<<<<<< HEAD
 	p->thread.ip = (unsigned long) ret_from_fork;
 	task_user_gs(p) = get_user_gs(current_pt_regs());
 
 	p->fpu_counter = 0;
+=======
+	task_user_gs(p) = get_user_gs(current_pt_regs());
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	p->thread.io_bitmap_ptr = NULL;
 	tsk = current;
 	err = -ENOMEM;
 
+<<<<<<< HEAD
 	memset(p->thread.ptrace_bps, 0, sizeof(p->thread.ptrace_bps));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(test_tsk_thread_flag(tsk, TIF_IO_BITMAP))) {
 		p->thread.io_bitmap_ptr = kmemdup(tsk->thread.io_bitmap_ptr,
 						IO_BITMAP_BYTES, GFP_KERNEL);
@@ -185,7 +262,11 @@ int copy_thread(unsigned long clone_flags, unsigned long sp,
 	 */
 	if (clone_flags & CLONE_SETTLS)
 		err = do_set_thread_area(p, -1,
+<<<<<<< HEAD
 			(struct user_desc __user *)childregs->si, 0);
+=======
+			(struct user_desc __user *)tls, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (err && p->thread.io_bitmap_ptr) {
 		kfree(p->thread.io_bitmap_ptr);
@@ -206,11 +287,15 @@ start_thread(struct pt_regs *regs, unsigned long new_ip, unsigned long new_sp)
 	regs->ip		= new_ip;
 	regs->sp		= new_sp;
 	regs->flags		= X86_EFLAGS_IF;
+<<<<<<< HEAD
 	/*
 	 * force it to the iret return path by making it look as if there was
 	 * some work pending.
 	 */
 	set_thread_flag(TIF_NOTIFY_RESUME);
+=======
+	force_iret();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(start_thread);
 
@@ -242,6 +327,7 @@ EXPORT_SYMBOL_GPL(start_thread);
  * the task-switch, and shows up in ret_from_fork in entry.S,
  * for example.
  */
+<<<<<<< HEAD
 __notrace_funcgraph struct task_struct *
 __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 {
@@ -259,6 +345,22 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 	 * Reload esp0.
 	 */
 	load_sp0(tss, next);
+=======
+__visible __notrace_funcgraph struct task_struct *
+__switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+{
+	struct thread_struct *prev = &prev_p->thread,
+			     *next = &next_p->thread;
+	struct fpu *prev_fpu = &prev->fpu;
+	struct fpu *next_fpu = &next->fpu;
+	int cpu = smp_processor_id();
+	struct tss_struct *tss = &per_cpu(cpu_tss, cpu);
+	fpu_switch_t fpu_switch;
+
+	/* never put a printk in __switch_to... printk() calls wake_up*() indirectly */
+
+	fpu_switch = switch_fpu_prepare(prev_fpu, next_fpu, cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Save away %gs. No need to save %fs, as it was saved on the
@@ -286,34 +388,59 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
 	if (get_kernel_rpl() && unlikely(prev->iopl != next->iopl))
 		set_iopl_mask(next->iopl);
 
+<<<<<<< HEAD
 	/*
 	 * Now maybe handle debug registers and/or IO bitmaps
 	 */
 	if (unlikely(task_thread_info(prev_p)->flags & _TIF_WORK_CTXSW_PREV ||
 		     task_thread_info(next_p)->flags & _TIF_WORK_CTXSW_NEXT))
 		__switch_to_xtra(prev_p, next_p, tss);
+=======
+	switch_to_extra(prev_p, next_p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Leave lazy mode, flushing any hypercalls made here.
 	 * This must be done before restoring TLS segments so
 	 * the GDT and LDT are properly updated, and must be
+<<<<<<< HEAD
 	 * done before math_state_restore, so the TS bit is up
+=======
+	 * done before fpu__restore(), so the TS bit is up
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * to date.
 	 */
 	arch_end_context_switch(next_p);
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Reload esp0 and cpu_current_top_of_stack.  This changes
+	 * current_thread_info().
+	 */
+	load_sp0(tss, next);
+	this_cpu_write(cpu_current_top_of_stack,
+		       (unsigned long)task_stack_page(next_p) +
+		       THREAD_SIZE);
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Restore %gs if needed (which is common)
 	 */
 	if (prev->gs | next->gs)
 		lazy_load_gs(next->gs);
 
+<<<<<<< HEAD
 	switch_fpu_finish(next_p, fpu);
+=======
+	switch_fpu_finish(next_fpu, fpu_switch);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	this_cpu_write(current_task, next_p);
 
 	return prev_p;
 }
+<<<<<<< HEAD
 
 #define top_esp                (THREAD_SIZE - sizeof(unsigned long))
 #define top_ebp                (THREAD_SIZE - 2*sizeof(unsigned long))
@@ -342,3 +469,5 @@ unsigned long get_wchan(struct task_struct *p)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

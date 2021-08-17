@@ -25,7 +25,11 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM44XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRM44XX_H
 
+<<<<<<< HEAD
 #include "prcm-common.h"
+=======
+#include "prm44xx_54xx.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "prm.h"
 
 #define OMAP4430_PRM_BASE		0x4a306000
@@ -744,6 +748,7 @@
 #define OMAP4_PRM_VC_ERRST_OFFSET			0x00f8
 #define OMAP4430_PRM_VC_ERRST				OMAP44XX_PRM_REGADDR(OMAP4430_PRM_DEVICE_INST, 0x00f8)
 
+<<<<<<< HEAD
 /* Function prototypes */
 # ifndef __ASSEMBLER__
 
@@ -776,4 +781,6 @@ extern u32 omap44xx_prm_get_reset_sources(void);
 
 # endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -87,11 +87,17 @@ static void dnrmg_send_peer(struct sk_buff *skb)
 }
 
 
+<<<<<<< HEAD
 static unsigned int dnrmg_hook(unsigned int hook,
 			struct sk_buff *skb,
 			const struct net_device *in,
 			const struct net_device *out,
 			int (*okfn)(struct sk_buff *))
+=======
+static unsigned int dnrmg_hook(void *priv,
+			struct sk_buff *skb,
+			const struct nf_hook_state *state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dnrmg_send_peer(skb);
 	return NF_ACCEPT;
@@ -104,7 +110,13 @@ static inline void dnrmg_receive_user_skb(struct sk_buff *skb)
 {
 	struct nlmsghdr *nlh = nlmsg_hdr(skb);
 
+<<<<<<< HEAD
 	if (nlh->nlmsg_len < sizeof(*nlh) || skb->len < nlh->nlmsg_len)
+=======
+	if (skb->len < sizeof(*nlh) ||
+	    nlh->nlmsg_len < sizeof(*nlh) ||
+	    skb->len < nlh->nlmsg_len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	if (!netlink_capable(skb, CAP_NET_ADMIN))

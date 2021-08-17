@@ -187,11 +187,18 @@ static int __init ab3100_otp_probe(struct platform_device *pdev)
 	int err = 0;
 	int i;
 
+<<<<<<< HEAD
 	otp = kzalloc(sizeof(struct ab3100_otp), GFP_KERNEL);
 	if (!otp) {
 		dev_err(&pdev->dev, "could not allocate AB3100 OTP device\n");
 		return -ENOMEM;
 	}
+=======
+	otp = devm_kzalloc(&pdev->dev, sizeof(struct ab3100_otp), GFP_KERNEL);
+	if (!otp)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	otp->dev = &pdev->dev;
 
 	/* Replace platform data coming in with a local struct */
@@ -199,7 +206,11 @@ static int __init ab3100_otp_probe(struct platform_device *pdev)
 
 	err = ab3100_otp_read(otp);
 	if (err)
+<<<<<<< HEAD
 		goto err_otp_read;
+=======
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&pdev->dev, "AB3100 OTP readout registered\n");
 
@@ -208,12 +219,17 @@ static int __init ab3100_otp_probe(struct platform_device *pdev)
 		err = device_create_file(&pdev->dev,
 					 &ab3100_otp_attrs[i]);
 		if (err)
+<<<<<<< HEAD
 			goto err_create_file;
+=======
+			goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* debugfs entries */
 	err = ab3100_otp_init_debugfs(&pdev->dev, otp);
 	if (err)
+<<<<<<< HEAD
 		goto err_init_debugfs;
 
 	return 0;
@@ -224,6 +240,15 @@ err_create_file:
 		device_remove_file(&pdev->dev, &ab3100_otp_attrs[i]);
 err_otp_read:
 	kfree(otp);
+=======
+		goto err;
+
+	return 0;
+
+err:
+	while (--i >= 0)
+		device_remove_file(&pdev->dev, &ab3100_otp_attrs[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -236,14 +261,20 @@ static int __exit ab3100_otp_remove(struct platform_device *pdev)
 		device_remove_file(&pdev->dev,
 				   &ab3100_otp_attrs[i]);
 	ab3100_otp_exit_debugfs(otp);
+<<<<<<< HEAD
 	kfree(otp);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver ab3100_otp_driver = {
 	.driver = {
 		.name = "ab3100-otp",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove	 = __exit_p(ab3100_otp_remove),
 };

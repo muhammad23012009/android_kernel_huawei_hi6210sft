@@ -17,6 +17,7 @@
  * Authors: Alexander Graf <agraf@suse.de>
  */
 
+<<<<<<< HEAD
 #define SHADOW_SLB_ESID(num)	(SLBSHADOW_SAVEAREA + (num * 0x10))
 #define SHADOW_SLB_VSID(num)	(SLBSHADOW_SAVEAREA + (num * 0x10) + 0x8)
 #define UNBOLT_SLB_ENTRY(num) \
@@ -37,6 +38,11 @@
 	slbmte	r9, r10; \
 	std	r10, SHADOW_SLB_ESID(num)(r11); \
 slb_exit_skip_ ## num:
+=======
+#define SHADOW_SLB_ENTRY_LEN	0x10
+#define OFFSET_ESID(x)		(SHADOW_SLB_ENTRY_LEN * x)
+#define OFFSET_VSID(x)		((SHADOW_SLB_ENTRY_LEN * x) + 8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /******************************************************************************
  *                                                                            *
@@ -60,6 +66,7 @@ slb_exit_skip_ ## num:
 	 * SVCPU[LR]  = guest LR
 	 */
 
+<<<<<<< HEAD
 	/* Remove LPAR shadow entries */
 
 #if SLB_NUM_BOLTED == 3
@@ -90,6 +97,24 @@ slb_exit_skip_ ## num:
 	or      r10, r10, r12
 	slbie	r10
 
+=======
+BEGIN_FW_FTR_SECTION
+
+	/* Declare SLB shadow as 0 entries big */
+
+	ld	r11, PACA_SLBSHADOWPTR(r13)
+	li	r8, 0
+	stb	r8, 3(r11)
+
+END_FW_FTR_SECTION_IFSET(FW_FEATURE_LPAR)
+
+	/* Flush SLB */
+
+	li	r10, 0
+	slbmte	r10, r10
+	slbia
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Fill SLB with our shadow */
 
 	lbz	r12, SVCPU_SLB_MAX(r3)
@@ -105,7 +130,11 @@ slb_loop_enter:
 
 	ld	r10, 0(r11)
 
+<<<<<<< HEAD
 	rldicl. r0, r10, 37, 63
+=======
+	andis.	r9, r10, SLB_ESID_V@h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	beq	slb_loop_enter_skip
 
 	ld	r9, 8(r11)
@@ -142,6 +171,7 @@ slb_do_enter:
 	 *
 	 */
 
+<<<<<<< HEAD
 	/* Restore bolted entries from the shadow and fix it along the way */
 
 	/* We don't store anything in entry 0, so we don't need to take care of it */
@@ -159,6 +189,44 @@ slb_do_enter:
 #else
 #error unknown number of bolted entries
 #endif
+=======
+	/* Remove all SLB entries that are in use. */
+
+	li	r0, r0
+	slbmte	r0, r0
+	slbia
+
+	/* Restore bolted entries from the shadow */
+
+	ld	r11, PACA_SLBSHADOWPTR(r13)
+
+BEGIN_FW_FTR_SECTION
+
+	/* Declare SLB shadow as SLB_NUM_BOLTED entries big */
+
+	li	r8, SLB_NUM_BOLTED
+	stb	r8, 3(r11)
+
+END_FW_FTR_SECTION_IFSET(FW_FEATURE_LPAR)
+
+	/* Manually load all entries from shadow SLB */
+
+	li	r8, SLBSHADOW_SAVEAREA
+	li	r7, SLBSHADOW_SAVEAREA + 8
+
+	.rept	SLB_NUM_BOLTED
+	LDX_BE	r10, r11, r8
+	cmpdi	r10, 0
+	beq	1f
+	LDX_BE	r9, r11, r7
+	slbmte	r9, r10
+1:	addi	r7, r7, SHADOW_SLB_ENTRY_LEN
+	addi	r8, r8, SHADOW_SLB_ENTRY_LEN
+	.endr
+
+	isync
+	sync
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 slb_do_exit:
 

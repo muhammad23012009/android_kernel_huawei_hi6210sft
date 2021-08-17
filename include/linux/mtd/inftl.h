@@ -44,7 +44,10 @@ struct INFTLrecord {
 	unsigned int nb_blocks;		/* number of physical blocks */
 	unsigned int nb_boot_blocks;	/* number of blocks used by the bios */
 	struct erase_info instr;
+<<<<<<< HEAD
 	struct nand_ecclayout oobinfo;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int INFTL_mount(struct INFTLrecord *s);

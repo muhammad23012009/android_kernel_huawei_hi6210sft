@@ -3,7 +3,10 @@
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dmar.h>
 
 #include <asm/smp.h>
@@ -22,11 +25,19 @@ early_param("x2apic_phys", set_x2apic_phys_mode);
 
 static bool x2apic_fadt_phys(void)
 {
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ACPI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((acpi_gbl_FADT.header.revision >= FADT2_REVISION_ID) &&
 		(acpi_gbl_FADT.flags & ACPI_FADT_APIC_PHYSICAL)) {
 		printk(KERN_DEBUG "System requires x2apic physical mode\n");
 		return true;
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return false;
 }
 
@@ -35,6 +46,18 @@ static int x2apic_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 	return x2apic_enabled() && (x2apic_phys || x2apic_fadt_phys());
 }
 
+<<<<<<< HEAD
+=======
+static void x2apic_send_IPI(int cpu, int vector)
+{
+	u32 dest = per_cpu(x86_cpu_to_apicid, cpu);
+
+	/* x2apic MSRs are special and need a special fence: */
+	weak_wrmsr_fence();
+	__x2apic_send_IPI_dest(dest, vector, APIC_DEST_PHYSICAL);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 __x2apic_send_IPI_mask(const struct cpumask *mask, int vector, int apic_dest)
 {
@@ -42,7 +65,12 @@ __x2apic_send_IPI_mask(const struct cpumask *mask, int vector, int apic_dest)
 	unsigned long this_cpu;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	x2apic_wrmsr_fence();
+=======
+	/* x2apic MSRs are special and need a special fence: */
+	weak_wrmsr_fence();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	local_irq_save(flags);
 
@@ -89,7 +117,11 @@ static int x2apic_phys_probe(void)
 	return apic == &apic_x2apic_phys;
 }
 
+<<<<<<< HEAD
 static struct apic apic_x2apic_phys = {
+=======
+static struct apic apic_x2apic_phys __ro_after_init = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.name				= "physical x2apic",
 	.probe				= x2apic_phys_probe,
@@ -104,13 +136,17 @@ static struct apic apic_x2apic_phys = {
 	.disable_esr			= 0,
 	.dest_logical			= 0,
 	.check_apicid_used		= NULL,
+<<<<<<< HEAD
 	.check_apicid_present		= NULL,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.vector_allocation_domain	= default_vector_allocation_domain,
 	.init_apic_ldr			= init_x2apic_ldr,
 
 	.ioapic_phys_id_map		= NULL,
 	.setup_apic_routing		= NULL,
+<<<<<<< HEAD
 	.multi_timer_check		= NULL,
 	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
 	.apicid_to_cpu_present		= NULL,
@@ -126,16 +162,32 @@ static struct apic apic_x2apic_phys = {
 
 	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
 
+=======
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+	.apicid_to_cpu_present		= NULL,
+	.check_phys_apicid_present	= default_check_phys_apicid_present,
+	.phys_pkg_id			= x2apic_phys_pkg_id,
+
+	.get_apic_id			= x2apic_get_apic_id,
+	.set_apic_id			= x2apic_set_apic_id,
+
+	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
+
+	.send_IPI			= x2apic_send_IPI,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.send_IPI_mask			= x2apic_send_IPI_mask,
 	.send_IPI_mask_allbutself	= x2apic_send_IPI_mask_allbutself,
 	.send_IPI_allbutself		= x2apic_send_IPI_allbutself,
 	.send_IPI_all			= x2apic_send_IPI_all,
 	.send_IPI_self			= x2apic_send_IPI_self,
 
+<<<<<<< HEAD
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
 	.wait_for_init_deassert		= NULL,
 	.smp_callin_clear_local_apic	= NULL,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.inquire_remote_apic		= NULL,
 
 	.read				= native_apic_msr_read,

@@ -1,4 +1,17 @@
+<<<<<<< HEAD
 
 generic-y += clkdev.h
 generic-y += rwsem.h
 generic-y += trace_clock.h
+=======
+generic-y += clkdev.h
+generic-y += div64.h
+generic-y += export.h
+generic-y += irq_regs.h
+generic-y += irq_work.h
+generic-y += local64.h
+generic-y += mcs_spinlock.h
+generic-y += preempt.h
+generic-y += rwsem.h
+generic-y += vtime.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

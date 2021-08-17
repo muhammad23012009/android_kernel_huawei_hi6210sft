@@ -18,6 +18,10 @@
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/uaccess.h>
 
@@ -92,8 +96,13 @@ struct mon_bin_hdr {
 	unsigned short busnum;	/* Bus number */
 	char flag_setup;
 	char flag_data;
+<<<<<<< HEAD
 	s64 ts_sec;		/* gettimeofday */
 	s32 ts_usec;		/* gettimeofday */
+=======
+	s64 ts_sec;		/* getnstimeofday64 */
+	s32 ts_usec;		/* getnstimeofday64 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int status;
 	unsigned int len_urb;	/* Length of data (submitted or actual) */
 	unsigned int len_cap;	/* Delivered length */
@@ -483,7 +492,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
     char ev_type, int status)
 {
 	const struct usb_endpoint_descriptor *epd = &urb->ep->desc;
+<<<<<<< HEAD
 	struct timeval ts;
+=======
+	struct timespec64 ts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned int urb_length;
 	unsigned int offset;
@@ -494,7 +507,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
 	struct mon_bin_hdr *ep;
 	char data_tag = 0;
 
+<<<<<<< HEAD
 	do_gettimeofday(&ts);
+=======
+	getnstimeofday64(&ts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&rp->b_lock, flags);
 
@@ -568,7 +585,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
 	ep->busnum = urb->dev->bus->busnum;
 	ep->id = (unsigned long) urb;
 	ep->ts_sec = ts.tv_sec;
+<<<<<<< HEAD
 	ep->ts_usec = ts.tv_usec;
+=======
+	ep->ts_usec = ts.tv_nsec / NSEC_PER_USEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ep->status = status;
 	ep->len_urb = urb_length;
 	ep->len_cap = length + lendesc;
@@ -629,12 +650,20 @@ static void mon_bin_complete(void *data, struct urb *urb, int status)
 static void mon_bin_error(void *data, struct urb *urb, int error)
 {
 	struct mon_reader_bin *rp = data;
+<<<<<<< HEAD
 	struct timeval ts;
+=======
+	struct timespec64 ts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned int offset;
 	struct mon_bin_hdr *ep;
 
+<<<<<<< HEAD
 	do_gettimeofday(&ts);
+=======
+	getnstimeofday64(&ts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&rp->b_lock, flags);
 
@@ -656,7 +685,11 @@ static void mon_bin_error(void *data, struct urb *urb, int error)
 	ep->busnum = urb->dev->bus->busnum;
 	ep->id = (unsigned long) urb;
 	ep->ts_sec = ts.tv_sec;
+<<<<<<< HEAD
 	ep->ts_usec = ts.tv_usec;
+=======
+	ep->ts_usec = ts.tv_nsec / NSEC_PER_USEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ep->status = error;
 
 	ep->flag_setup = '-';
@@ -675,7 +708,12 @@ static int mon_bin_open(struct inode *inode, struct file *file)
 	int rc;
 
 	mutex_lock(&mon_lock);
+<<<<<<< HEAD
 	if ((mbus = mon_bus_lookup(iminor(inode))) == NULL) {
+=======
+	mbus = mon_bus_lookup(iminor(inode));
+	if (mbus == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&mon_lock);
 		return -ENODEV;
 	}
@@ -1000,7 +1038,13 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		break;
 
 	case MON_IOCQ_RING_SIZE:
+<<<<<<< HEAD
 		ret = rp->b_size;
+=======
+		mutex_lock(&rp->fetch_lock);
+		ret = rp->b_size;
+		mutex_unlock(&rp->fetch_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case MON_IOCT_RING_SIZE:
@@ -1018,8 +1062,13 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 			return -EINVAL;
 
 		size = CHUNK_ALIGN(arg);
+<<<<<<< HEAD
 		if ((vec = kzalloc(sizeof(struct mon_pgmap) * (size/CHUNK_SIZE),
 		    GFP_KERNEL)) == NULL) {
+=======
+		vec = kzalloc(sizeof(struct mon_pgmap) * (size / CHUNK_SIZE), GFP_KERNEL);
+		if (vec == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -ENOMEM;
 			break;
 		}
@@ -1032,12 +1081,27 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 
 		mutex_lock(&rp->fetch_lock);
 		spin_lock_irqsave(&rp->b_lock, flags);
+<<<<<<< HEAD
 		mon_free_buff(rp->b_vec, rp->b_size/CHUNK_SIZE);
 		kfree(rp->b_vec);
 		rp->b_vec  = vec;
 		rp->b_size = size;
 		rp->b_read = rp->b_in = rp->b_out = rp->b_cnt = 0;
 		rp->cnt_lost = 0;
+=======
+		if (rp->mmap_active) {
+			mon_free_buff(vec, size/CHUNK_SIZE);
+			kfree(vec);
+			ret = -EBUSY;
+		} else {
+			mon_free_buff(rp->b_vec, rp->b_size/CHUNK_SIZE);
+			kfree(rp->b_vec);
+			rp->b_vec  = vec;
+			rp->b_size = size;
+			rp->b_read = rp->b_in = rp->b_out = rp->b_cnt = 0;
+			rp->cnt_lost = 0;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irqrestore(&rp->b_lock, flags);
 		mutex_unlock(&rp->fetch_lock);
 		}
@@ -1209,13 +1273,30 @@ mon_bin_poll(struct file *file, struct poll_table_struct *wait)
 static void mon_bin_vma_open(struct vm_area_struct *vma)
 {
 	struct mon_reader_bin *rp = vma->vm_private_data;
+<<<<<<< HEAD
 	rp->mmap_active++;
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&rp->b_lock, flags);
+	rp->mmap_active++;
+	spin_unlock_irqrestore(&rp->b_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void mon_bin_vma_close(struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	struct mon_reader_bin *rp = vma->vm_private_data;
 	rp->mmap_active--;
+=======
+	unsigned long flags;
+
+	struct mon_reader_bin *rp = vma->vm_private_data;
+	spin_lock_irqsave(&rp->b_lock, flags);
+	rp->mmap_active--;
+	spin_unlock_irqrestore(&rp->b_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

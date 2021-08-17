@@ -6,9 +6,13 @@ config NET_VENDOR_INTEL
 	bool "Intel devices"
 	default y
 	---help---
+<<<<<<< HEAD
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -20,7 +24,10 @@ if NET_VENDOR_INTEL
 config E100
 	tristate "Intel(R) PRO/100+ support"
 	depends on PCI
+<<<<<<< HEAD
 	select NET_CORE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MII
 	---help---
 	  This driver supports Intel(R) PRO/100 family of adapters.
@@ -28,6 +35,7 @@ config E100
 	  on the adapter. Look for a label that has a barcode and a number
 	  in the format 123456-001 (six digits hyphen three digits).
 
+<<<<<<< HEAD
 	  Use the above information and the Adapter & Driver ID Guide at:
 
 	  <http://support.intel.com/support/network/adapter/pro100/21397.htm>
@@ -38,6 +46,15 @@ config E100
 
 	  <http://www.intel.com/p/en_US/support/highlights/network/pro100plus>
 
+=======
+	  Use the above information and the Adapter & Driver ID Guide that
+	  can be located at:
+
+	  <http://support.intel.com>
+
+	  to identify the adapter.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  More specific information on configuring the driver is in
 	  <file:Documentation/networking/e100.txt>.
 
@@ -50,12 +67,16 @@ config E1000
 	---help---
 	  This driver supports Intel(R) PRO/1000 gigabit ethernet family of
 	  adapters.  For more information on how to identify your adapter, go
+<<<<<<< HEAD
 	  to the Adapter & Driver ID Guide at:
 
 	  <http://support.intel.com/support/network/adapter/pro100/21397.htm>
 
 	  For general information and support, go to the Intel support
 	  website at:
+=======
+	  to the Adapter & Driver ID Guide that can be located at:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  <http://support.intel.com>
 
@@ -74,18 +95,35 @@ config E1000E
 	  This driver supports the PCI-Express Intel(R) PRO/1000 gigabit
 	  ethernet family of adapters. For PCI or PCI-X e1000 adapters,
 	  use the regular e1000 driver For more information on how to
+<<<<<<< HEAD
 	  identify your adapter, go to the Adapter & Driver ID Guide at:
 
 	  <http://support.intel.com/support/network/adapter/pro100/21397.htm>
 
 	  For general information and support, go to the Intel support
 	  website at:
+=======
+	  identify your adapter, go to the Adapter & Driver ID Guide that
+	  can be located at:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  <http://support.intel.com>
 
 	  To compile this driver as a module, choose M here. The module
 	  will be called e1000e.
 
+<<<<<<< HEAD
+=======
+config E1000E_HWTS
+	bool "Support HW cross-timestamp on PCH devices"
+	default y
+	depends on E1000E && X86
+	---help---
+	 Say Y to enable hardware supported cross-timestamping on PCH
+	 devices. The cross-timestamp is available through the PTP clock
+	 driver precise cross-timestamp ioctl (PTP_SYS_OFFSET_PRECISE).
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config IGB
 	tristate "Intel(R) 82575/82576 PCI-Express Gigabit Ethernet support"
 	depends on PCI
@@ -95,12 +133,16 @@ config IGB
 	---help---
 	  This driver supports Intel(R) 82575/82576 gigabit ethernet family of
 	  adapters.  For more information on how to identify your adapter, go
+<<<<<<< HEAD
 	  to the Adapter & Driver ID Guide at:
 
 	  <http://support.intel.com/support/network/adapter/pro100/21397.htm>
 
 	  For general information and support, go to the Intel support
 	  website at:
+=======
+	  to the Adapter & Driver ID Guide that can be located at:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  <http://support.intel.com>
 
@@ -136,12 +178,16 @@ config IGBVF
 	---help---
 	  This driver supports Intel(R) 82576 virtual functions.  For more
 	  information on how to identify your adapter, go to the Adapter &
+<<<<<<< HEAD
 	  Driver ID Guide at:
 
 	  <http://support.intel.com/support/network/adapter/pro100/21397.htm>
 
 	  For general information and support, go to the Intel support
 	  website at:
+=======
+	  Driver ID Guide that can be located at:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  <http://support.intel.com>
 
@@ -158,12 +204,16 @@ config IXGB
 	  This driver supports Intel(R) PRO/10GbE family of adapters for
 	  PCI-X type cards. For PCI-E type cards, use the "ixgbe" driver
 	  instead. For more information on how to identify your adapter, go
+<<<<<<< HEAD
 	  to the Adapter & Driver ID Guide at:
 
 	  <http://support.intel.com/support/network/adapter/pro100/21397.htm>
 
 	  For general information and support, go to the Intel support
 	  website at:
+=======
+	  to the Adapter & Driver ID Guide that can be located at:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  <http://support.intel.com>
 
@@ -181,12 +231,16 @@ config IXGBE
 	---help---
 	  This driver supports Intel(R) 10GbE PCI Express family of
 	  adapters.  For more information on how to identify your adapter, go
+<<<<<<< HEAD
 	  to the Adapter & Driver ID Guide at:
 
 	  <http://support.intel.com/support/network/adapter/pro100/21397.htm>
 
 	  For general information and support, go to the Intel support
 	  website at:
+=======
+	  to the Adapter & Driver ID Guide that can be located at:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  <http://support.intel.com>
 
@@ -221,6 +275,7 @@ config IXGBE_DCB
 	  If unsure, say N.
 
 config IXGBEVF
+<<<<<<< HEAD
 	tristate "Intel(R) 82599 Virtual Function Ethernet support"
 	depends on PCI_MSI
 	---help---
@@ -232,6 +287,14 @@ config IXGBEVF
 
 	  For general information and support, go to the Intel support
 	  website at:
+=======
+	tristate "Intel(R) 10GbE PCI Express Virtual Function Ethernet support"
+	depends on PCI_MSI
+	---help---
+	  This driver supports Intel(R) PCI Express virtual functions for the
+	  Intel(R) ixgbe driver.  For more information on how to identify your
+	  adapter, go to the Adapter & Driver ID Guide that can be located at:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  <http://support.intel.com>
 
@@ -242,4 +305,71 @@ config IXGBEVF
 	  will be called ixgbevf.  MSI-X interrupt support is required
 	  for this driver to work correctly.
 
+<<<<<<< HEAD
+=======
+config I40E
+	tristate "Intel(R) Ethernet Controller XL710 Family support"
+	select PTP_1588_CLOCK
+	depends on PCI
+	---help---
+	  This driver supports Intel(R) Ethernet Controller XL710 Family of
+	  devices.  For more information on how to identify your adapter, go
+	  to the Adapter & Driver ID Guide that can be located at:
+
+	  <http://support.intel.com>
+
+	  To compile this driver as a module, choose M here. The module
+	  will be called i40e.
+
+config I40E_DCB
+	bool "Data Center Bridging (DCB) Support"
+	default n
+	depends on I40E && DCB
+	---help---
+	  Say Y here if you want to use Data Center Bridging (DCB) in the
+	  driver.
+
+	  If unsure, say N.
+
+config I40E_FCOE
+	bool "Fibre Channel over Ethernet (FCoE)"
+	default n
+	depends on I40E && DCB && FCOE
+	---help---
+	  Say Y here if you want to use Fibre Channel over Ethernet (FCoE)
+	  in the driver. This will create new netdev for exclusive FCoE
+	  use with XL710 FCoE offloads enabled.
+
+	  If unsure, say N.
+
+config I40EVF
+	tristate "Intel(R) XL710 X710 Virtual Function Ethernet support"
+	depends on PCI_MSI
+	---help---
+	  This driver supports Intel(R) XL710 and X710 virtual functions.
+	  For more information on how to identify your adapter, go to the
+	  Adapter & Driver ID Guide that can be located at:
+
+	  <http://support.intel.com>
+
+	  To compile this driver as a module, choose M here. The module
+	  will be called i40evf.  MSI-X interrupt support is required
+	  for this driver to work correctly.
+
+config FM10K
+	tristate "Intel(R) FM10000 Ethernet Switch Host Interface Support"
+	default n
+	depends on PCI_MSI
+	select PTP_1588_CLOCK
+	---help---
+	  This driver supports Intel(R) FM10000 Ethernet Switch Host
+	  Interface.  For more information on how to identify your adapter,
+	  go to the Adapter & Driver ID Guide that can be located at:
+
+	  <http://support.intel.com>
+
+	  To compile this driver as a module, choose M here. The module
+	  will be called fm10k.  MSI-X interrupt support is required
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif # NET_VENDOR_INTEL

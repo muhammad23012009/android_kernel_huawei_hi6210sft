@@ -23,11 +23,19 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/addr-map.h>
 #include <mach/mfp-pxa168.h>
 #include <mach/pxa168.h>
 #include <mach/teton_bga.h>
 #include <mach/irqs.h>
+=======
+#include "addr-map.h"
+#include "mfp-pxa168.h"
+#include "pxa168.h"
+#include "teton_bga.h"
+#include "irqs.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 
@@ -61,11 +69,23 @@ static unsigned int teton_bga_matrix_key_map[] = {
 	KEY(1, 7, KEY_RIGHT),
 };
 
+<<<<<<< HEAD
 static struct pxa27x_keypad_platform_data teton_bga_keypad_info __initdata = {
 	.matrix_key_rows        = 2,
 	.matrix_key_cols        = 8,
 	.matrix_key_map         = teton_bga_matrix_key_map,
 	.matrix_key_map_size    = ARRAY_SIZE(teton_bga_matrix_key_map),
+=======
+static struct matrix_keymap_data teton_bga_matrix_keymap_data = {
+	.keymap			= teton_bga_matrix_key_map,
+	.keymap_size		= ARRAY_SIZE(teton_bga_matrix_key_map),
+};
+
+static struct pxa27x_keypad_platform_data teton_bga_keypad_info __initdata = {
+	.matrix_key_rows        = 2,
+	.matrix_key_cols        = 8,
+	.matrix_keymap_data	= &teton_bga_matrix_keymap_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.debounce_interval      = 30,
 };
 

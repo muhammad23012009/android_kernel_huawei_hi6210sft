@@ -16,16 +16,23 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
  * Driver: das08_pci
  * Description: DAS-08 PCI compatible boards
+<<<<<<< HEAD
  * Devices: (ComputerBoards) PCI-DAS08 [pci-das08]
+=======
+ * Devices: [ComputerBoards] PCI-DAS08 (pci-das08)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Author: Warren Jasper, ds, Frank Hess
  * Updated: Fri, 31 Aug 2012 19:19:06 +0100
  * Status: works
@@ -35,6 +42,7 @@
  * Configuration Options: not applicable, uses PCI auto config
  */
 
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
@@ -43,6 +51,14 @@
 
 #define PCI_DEVICE_ID_PCIDAS08		0x0029
 
+=======
+#include <linux/module.h>
+
+#include "../comedi_pci.h"
+
+#include "das08.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct das08_board_struct das08_pci_boards[] = {
 	{
 		.name		= "pci-das08",
@@ -63,10 +79,16 @@ static int das08_pci_auto_attach(struct comedi_device *dev,
 	struct das08_private_struct *devpriv;
 	int ret;
 
+<<<<<<< HEAD
 	devpriv = kzalloc(sizeof(*devpriv), GFP_KERNEL);
 	if (!devpriv)
 		return -ENOMEM;
 	dev->private = devpriv;
+=======
+	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
+	if (!devpriv)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* The das08 driver needs the board_ptr */
 	dev->board_ptr = &das08_pci_boards[0];
@@ -79,17 +101,24 @@ static int das08_pci_auto_attach(struct comedi_device *dev,
 	return das08_common_attach(dev, dev->iobase);
 }
 
+<<<<<<< HEAD
 static void das08_pci_detach(struct comedi_device *dev)
 {
 	das08_common_detach(dev);
 	comedi_pci_disable(dev);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct comedi_driver das08_pci_comedi_driver = {
 	.driver_name	= "pci-das08",
 	.module		= THIS_MODULE,
 	.auto_attach	= das08_pci_auto_attach,
+<<<<<<< HEAD
 	.detach		= das08_pci_detach,
+=======
+	.detach		= comedi_pci_detach,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int das08_pci_probe(struct pci_dev *dev,
@@ -99,8 +128,13 @@ static int das08_pci_probe(struct pci_dev *dev,
 				      id->driver_data);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(das08_pci_table) = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CB, PCI_DEVICE_ID_PCIDAS08) },
+=======
+static const struct pci_device_id das08_pci_table[] = {
+	{ PCI_DEVICE(PCI_VENDOR_ID_CB, 0x0029) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0 }
 };
 MODULE_DEVICE_TABLE(pci, das08_pci_table);

@@ -1,7 +1,11 @@
 /*
  * OMAP hardware spinlock driver
  *
+<<<<<<< HEAD
  * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com
+=======
+ * Copyright (C) 2010-2015 Texas Instruments Incorporated - http://www.ti.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Contact: Simon Que <sque@ti.com>
  *          Hari Kanigeri <h-kanigeri2@ti.com>
@@ -27,6 +31,10 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/hwspinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 
 #include "hwspinlock_internal.h"
@@ -80,14 +88,25 @@ static const struct hwspinlock_ops omap_hwspinlock_ops = {
 
 static int omap_hwspinlock_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct hwspinlock_pdata *pdata = pdev->dev.platform_data;
+=======
+	struct device_node *node = pdev->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hwspinlock_device *bank;
 	struct hwspinlock *hwlock;
 	struct resource *res;
 	void __iomem *io_base;
 	int num_locks, i, ret;
+<<<<<<< HEAD
 
 	if (!pdata)
+=======
+	/* Only a single hwspinlock block device is supported */
+	int base_id = 0;
+
+	if (!node)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -98,10 +117,35 @@ static int omap_hwspinlock_probe(struct platform_device *pdev)
 	if (!io_base)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * make sure the module is enabled and clocked before reading
+	 * the module SYSSTATUS register
+	 */
+	pm_runtime_enable(&pdev->dev);
+	ret = pm_runtime_get_sync(&pdev->dev);
+	if (ret < 0) {
+		pm_runtime_put_noidle(&pdev->dev);
+		goto iounmap_base;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Determine number of locks */
 	i = readl(io_base + SYSSTATUS_OFFSET);
 	i >>= SPINLOCK_NUMLOCKS_BIT_OFFSET;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * runtime PM will make sure the clock of this module is
+	 * enabled again iff at least one lock is requested
+	 */
+	ret = pm_runtime_put(&pdev->dev);
+	if (ret < 0)
+		goto iounmap_base;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* one of the four lsb's must be set, and nothing else */
 	if (hweight_long(i & 0xf) != 1 || i > 8) {
 		ret = -EINVAL;
@@ -121,6 +165,7 @@ static int omap_hwspinlock_probe(struct platform_device *pdev)
 	for (i = 0, hwlock = &bank->lock[0]; i < num_locks; i++, hwlock++)
 		hwlock->priv = io_base + LOCK_BASE_OFFSET + sizeof(u32) * i;
 
+<<<<<<< HEAD
 	/*
 	 * runtime PM will make sure the clock of this module is
 	 * enabled iff at least one lock is requested
@@ -129,15 +174,25 @@ static int omap_hwspinlock_probe(struct platform_device *pdev)
 
 	ret = hwspin_lock_register(bank, &pdev->dev, &omap_hwspinlock_ops,
 						pdata->base_id, num_locks);
+=======
+	ret = hwspin_lock_register(bank, &pdev->dev, &omap_hwspinlock_ops,
+						base_id, num_locks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto reg_fail;
 
 	return 0;
 
 reg_fail:
+<<<<<<< HEAD
 	pm_runtime_disable(&pdev->dev);
 	kfree(bank);
 iounmap_base:
+=======
+	kfree(bank);
+iounmap_base:
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iounmap(io_base);
 	return ret;
 }
@@ -161,12 +216,25 @@ static int omap_hwspinlock_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id omap_hwspinlock_of_match[] = {
+	{ .compatible = "ti,omap4-hwspinlock", },
+	{ /* end */ },
+};
+MODULE_DEVICE_TABLE(of, omap_hwspinlock_of_match);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver omap_hwspinlock_driver = {
 	.probe		= omap_hwspinlock_probe,
 	.remove		= omap_hwspinlock_remove,
 	.driver		= {
 		.name	= "omap_hwspinlock",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(omap_hwspinlock_of_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

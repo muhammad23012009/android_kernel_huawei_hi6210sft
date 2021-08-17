@@ -9,8 +9,18 @@
 
 #include <linux/power_supply.h>
 
+<<<<<<< HEAD
 #define psy_to_ux500_charger(x) container_of((x), \
 		struct ux500_charger, psy)
+=======
+/*
+ * Valid only for supplies of type:
+ * - POWER_SUPPLY_TYPE_MAINS,
+ * - POWER_SUPPLY_TYPE_USB,
+ * because only them store as drv_data pointer to struct ux500_charger.
+ */
+#define psy_to_ux500_charger(x) power_supply_get_drvdata(x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Forward declaration */
 struct ux500_charger;
@@ -35,7 +45,11 @@ struct ux500_charger_ops {
  * @power_path		USB power path support
  */
 struct ux500_charger {
+<<<<<<< HEAD
 	struct power_supply psy;
+=======
+	struct power_supply *psy;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ux500_charger_ops ops;
 	int max_out_volt;
 	int max_out_curr;

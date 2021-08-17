@@ -16,10 +16,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
@@ -52,8 +55,13 @@
  * |  DATA7|  DATA6|  DATA5|  DATA4|  DATA3|  DATA2|  DATA1|  DATA0|
  * +-------+-------+-------+-------+-------+-------+-------+-------+
  */
+<<<<<<< HEAD
 #include <media/videobuf-dma-sg.h>
 #include <media/videobuf-dvb.h>
+=======
+#include <dvb_demux.h>
+#include <dvb_frontend.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "altera-ci.h"
 #include "dvb_ca_en50221.h"
 
@@ -487,7 +495,10 @@ static void altera_hw_filt_release(void *main_dev, int filt_nr)
 	}
 
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(altera_hw_filt_release);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void altera_ci_release(void *dev, int ci_nr)
 {
@@ -602,7 +613,10 @@ static int altera_pid_feed_control(void *demux_dev, int filt_nr,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(altera_pid_feed_control);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int altera_ci_start_feed(struct dvb_demux_feed *feed, int num)
 {
@@ -666,6 +680,13 @@ static int altera_hw_filt_init(struct altera_ci_config *config, int hw_filt_nr)
 		}
 
 		temp_int = append_internal(inter);
+<<<<<<< HEAD
+=======
+		if (!temp_int) {
+			ret = -ENOMEM;
+			goto err;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inter->filts_used = 1;
 		inter->dev = config->dev;
 		inter->fpga_rw = config->fpga_rw;
@@ -700,10 +721,17 @@ err:
 		     __func__, ret);
 
 	kfree(pid_filt);
+<<<<<<< HEAD
 
 	return ret;
 }
 EXPORT_SYMBOL(altera_hw_filt_init);
+=======
+	kfree(inter);
+
+	return ret;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int altera_ci_init(struct altera_ci_config *config, int ci_nr)
 {
@@ -735,6 +763,13 @@ int altera_ci_init(struct altera_ci_config *config, int ci_nr)
 		}
 
 		temp_int = append_internal(inter);
+<<<<<<< HEAD
+=======
+		if (!temp_int) {
+			ret = -ENOMEM;
+			goto err;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inter->cis_used = 1;
 		inter->dev = config->dev;
 		inter->fpga_rw = config->fpga_rw;
@@ -766,7 +801,11 @@ int altera_ci_init(struct altera_ci_config *config, int ci_nr)
 	if (0 != ret)
 		goto err;
 
+<<<<<<< HEAD
        inter->state[ci_nr - 1] = state;
+=======
+	inter->state[ci_nr - 1] = state;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	altera_hw_filt_init(config, ci_nr);
 
@@ -803,6 +842,10 @@ err:
 	ci_dbg_print("%s: Cannot initialize CI: Error %d.\n", __func__, ret);
 
 	kfree(state);
+<<<<<<< HEAD
+=======
+	kfree(inter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }

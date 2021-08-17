@@ -20,8 +20,13 @@
 #include <linux/in.h>
 #include <linux/if_ether.h>	/* For the statistics structure. */
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 
 #include <linux/inet.h>
@@ -65,6 +70,7 @@ int nr_rx_ip(struct sk_buff *skb, struct net_device *dev)
 	return 1;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_INET
 
 static int nr_rebuild_header(struct sk_buff *skb)
@@ -95,6 +101,8 @@ static int nr_rebuild_header(struct sk_buff *skb)
 
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int nr_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type,
 		     const void *daddr, const void *saddr, unsigned int len)
@@ -188,7 +196,10 @@ static netdev_tx_t nr_xmit(struct sk_buff *skb, struct net_device *dev)
 
 static const struct header_ops nr_header_ops = {
 	.create	= nr_header,
+<<<<<<< HEAD
 	.rebuild= nr_rebuild_header,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct net_device_ops nr_netdev_ops = {

@@ -100,7 +100,11 @@ typedef volatile struct au1xxx_ddma_desc {
 	u32	dscr_nxtptr;		/* Next descriptor pointer (mostly) */
 	/*
 	 * First 32 bytes are HW specific!!!
+<<<<<<< HEAD
 	 * Lets have some SW data following -- make sure it's 32 bytes.
+=======
+	 * Let's have some SW data following -- make sure it's 32 bytes.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	u32	sw_status;
 	u32	sw_context;

@@ -16,7 +16,10 @@
 
 #include <linux/fs.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct fileIdentDesc *udf_fileident_read(struct inode *dir, loff_t *nf_pos,
 					 struct udf_fileident_bh *fibh,
@@ -88,7 +91,11 @@ struct fileIdentDesc *udf_fileident_read(struct inode *dir, loff_t *nf_pos,
 					brelse(tmp);
 			}
 			if (num) {
+<<<<<<< HEAD
 				ll_rw_block(READA, num, bha);
+=======
+				ll_rw_block(REQ_OP_READ, REQ_RAHEAD, num, bha);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				for (i = 0; i < num; i++)
 					brelse(bha[i]);
 			}
@@ -151,6 +158,12 @@ struct fileIdentDesc *udf_fileident_read(struct inode *dir, loff_t *nf_pos,
 			       sizeof(struct fileIdentDesc));
 		}
 	}
+<<<<<<< HEAD
+=======
+	/* Got last entry outside of dir size - fs is corrupted! */
+	if (*nf_pos > dir->i_size)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return fi;
 }
 

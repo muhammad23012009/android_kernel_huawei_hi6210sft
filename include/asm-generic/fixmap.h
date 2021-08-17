@@ -46,6 +46,12 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 #ifndef FIXMAP_PAGE_NORMAL
 #define FIXMAP_PAGE_NORMAL PAGE_KERNEL
 #endif
+<<<<<<< HEAD
+=======
+#if !defined(FIXMAP_PAGE_RO) && defined(PAGE_KERNEL_RO)
+#define FIXMAP_PAGE_RO PAGE_KERNEL_RO
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef FIXMAP_PAGE_NOCACHE
 #define FIXMAP_PAGE_NOCACHE PAGE_KERNEL_NOCACHE
 #endif
@@ -67,12 +73,21 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 #endif
 
 /* Return a pointer with offset calculated */
+<<<<<<< HEAD
 #define __set_fixmap_offset(idx, phys, flags)		      \
 ({							      \
 	unsigned long addr;				      \
 	__set_fixmap(idx, phys, flags);			      \
 	addr = fix_to_virt(idx) + ((phys) & (PAGE_SIZE - 1)); \
 	addr;						      \
+=======
+#define __set_fixmap_offset(idx, phys, flags)				\
+({									\
+	unsigned long ________addr;					\
+	__set_fixmap(idx, phys, flags);					\
+	________addr = fix_to_virt(idx) + ((phys) & (PAGE_SIZE - 1));	\
+	________addr;							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 
 #define set_fixmap_offset(idx, phys) \
@@ -93,5 +108,11 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 #define set_fixmap_io(idx, phys) \
 	__set_fixmap(idx, phys, FIXMAP_PAGE_IO)
 
+<<<<<<< HEAD
+=======
+#define set_fixmap_offset_io(idx, phys) \
+	__set_fixmap_offset(idx, phys, FIXMAP_PAGE_IO)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASSEMBLY__ */
 #endif /* __ASM_GENERIC_FIXMAP_H */

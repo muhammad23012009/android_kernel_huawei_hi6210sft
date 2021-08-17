@@ -1,12 +1,20 @@
 # UAPI Header export list
 include include/uapi/asm-generic/Kbuild.asm
 
+<<<<<<< HEAD
+=======
+header-y += auxvec.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += byteorder.h
 header-y += fcntl.h
 header-y += hwcap.h
 header-y += ioctls.h
 header-y += kvm_para.h
 header-y += mman.h
+<<<<<<< HEAD
+=======
+header-y += perf_regs.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += posix_types.h
 header-y += ptrace.h
 header-y += setup.h

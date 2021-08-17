@@ -25,7 +25,11 @@
 #define OMAP1510_GPIO_BASE		0xFFFCE000
 
 /* gpio1 */
+<<<<<<< HEAD
 static struct __initdata resource omap15xx_mpu_gpio_resources[] = {
+=======
+static struct resource omap15xx_mpu_gpio_resources[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.start	= OMAP1_MPUIO_VBASE,
 		.end	= OMAP1_MPUIO_VBASE + SZ_2K - 1,
@@ -48,7 +52,11 @@ static struct omap_gpio_reg_offs omap15xx_mpuio_regs = {
 	.irqctrl	= OMAP_MPUIO_GPIO_INT_EDGE,
 };
 
+<<<<<<< HEAD
 static struct __initdata omap_gpio_platform_data omap15xx_mpu_gpio_config = {
+=======
+static struct omap_gpio_platform_data omap15xx_mpu_gpio_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.is_mpuio		= true,
 	.bank_width		= 16,
 	.bank_stride		= 1,
@@ -66,7 +74,11 @@ static struct platform_device omap15xx_mpu_gpio = {
 };
 
 /* gpio2 */
+<<<<<<< HEAD
 static struct __initdata resource omap15xx_gpio_resources[] = {
+=======
+static struct resource omap15xx_gpio_resources[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.start	= OMAP1510_GPIO_BASE,
 		.end	= OMAP1510_GPIO_BASE + SZ_2K - 1,
@@ -90,7 +102,11 @@ static struct omap_gpio_reg_offs omap15xx_gpio_regs = {
 	.pinctrl	= OMAP1510_GPIO_PIN_CONTROL,
 };
 
+<<<<<<< HEAD
 static struct __initdata omap_gpio_platform_data omap15xx_gpio_config = {
+=======
+static struct omap_gpio_platform_data omap15xx_gpio_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.bank_width		= 16,
 	.regs                   = &omap15xx_gpio_regs,
 };

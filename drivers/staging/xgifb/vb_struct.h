@@ -1,6 +1,10 @@
 #ifndef _VB_STRUCT_
 #define _VB_STRUCT_
+<<<<<<< HEAD
 #include "../../video/sis/vstruct.h"
+=======
+#include "../../video/fbdev/sis/vstruct.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct XGI_LVDSCRT1HDataStruct {
 	unsigned char Reg[8];
@@ -65,7 +69,10 @@ struct XGI330_TVDataTablStruct {
 	struct SiS_TVData const *DATAPTR;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct XGI_TimingHStruct {
 	unsigned char data[8];
 };
@@ -117,7 +124,10 @@ struct XGI_CRT1TableStruct {
 	unsigned char CR[16];
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct XGI301C_Tap4TimingStruct {
 	unsigned short DE;
 	unsigned char  Reg[64];   /* C0-FF */

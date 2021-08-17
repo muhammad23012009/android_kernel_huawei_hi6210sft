@@ -73,8 +73,11 @@ static void shx3_prepare_cpus(unsigned int max_cpus)
 {
 	int i;
 
+<<<<<<< HEAD
 	local_timer_setup(0);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUILD_BUG_ON(SMP_MSG_NR >= 8);
 
 	for (i = 0; i < SMP_MSG_NR; i++)
@@ -124,6 +127,7 @@ static void shx3_update_boot_vector(unsigned int cpu)
 	__raw_writel(STBCR_RESET, STBCR_REG(cpu));
 }
 
+<<<<<<< HEAD
 static int __cpuinit
 shx3_cpu_callback(struct notifier_block *nfb, unsigned long action, void *hcpu)
 {
@@ -150,6 +154,18 @@ static struct notifier_block __cpuinitdata shx3_cpu_notifier = {
 static int __cpuinit register_shx3_cpu_notifier(void)
 {
 	register_hotcpu_notifier(&shx3_cpu_notifier);
+=======
+static int shx3_cpu_prepare(unsigned int cpu)
+{
+	shx3_update_boot_vector(cpu);
+	return 0;
+}
+
+static int register_shx3_cpu_notifier(void)
+{
+	cpuhp_setup_state_nocalls(CPUHP_SH_SH3X_PREPARE, "sh/shx3:prepare",
+				  shx3_cpu_prepare, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 late_initcall(register_shx3_cpu_notifier);

@@ -14,6 +14,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -27,6 +28,23 @@
 /**
  * comedi_to_usb_interface() - comedi_device pointer to usb_interface pointer.
  * @dev: comedi_device struct
+=======
+ */
+
+#include <linux/module.h>
+
+#include "comedi_usb.h"
+
+/**
+ * comedi_to_usb_interface() - Return USB interface attached to COMEDI device
+ * @dev: COMEDI device.
+ *
+ * Assuming @dev->hw_dev is non-%NULL, it is assumed to be pointing to a
+ * a &struct device embedded in a &struct usb_interface.
+ *
+ * Return: Attached USB interface if @dev->hw_dev is non-%NULL.
+ * Return %NULL if @dev->hw_dev is %NULL.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct usb_interface *comedi_to_usb_interface(struct comedi_device *dev)
 {
@@ -35,12 +53,46 @@ struct usb_interface *comedi_to_usb_interface(struct comedi_device *dev)
 EXPORT_SYMBOL_GPL(comedi_to_usb_interface);
 
 /**
+<<<<<<< HEAD
  * comedi_usb_auto_config() - Configure/probe a comedi USB driver.
  * @intf: usb_interface struct
  * @driver: comedi_driver struct
  * @context: driver specific data, passed to comedi_auto_config()
  *
  * Typically called from the usb_driver (*probe) function.
+=======
+ * comedi_to_usb_dev() - Return USB device attached to COMEDI device
+ * @dev: COMEDI device.
+ *
+ * Assuming @dev->hw_dev is non-%NULL, it is assumed to be pointing to a
+ * a &struct device embedded in a &struct usb_interface.
+ *
+ * Return: USB device to which the USB interface belongs if @dev->hw_dev is
+ * non-%NULL.  Return %NULL if @dev->hw_dev is %NULL.
+ */
+struct usb_device *comedi_to_usb_dev(struct comedi_device *dev)
+{
+	struct usb_interface *intf = comedi_to_usb_interface(dev);
+
+	return intf ? interface_to_usbdev(intf) : NULL;
+}
+EXPORT_SYMBOL_GPL(comedi_to_usb_dev);
+
+/**
+ * comedi_usb_auto_config() - Configure/probe a USB COMEDI driver
+ * @intf: USB interface.
+ * @driver: Registered COMEDI driver.
+ * @context: Driver specific data, passed to comedi_auto_config().
+ *
+ * Typically called from the usb_driver (*probe) function.  Auto-configure a
+ * COMEDI device, using a pointer to the &struct device embedded in *@intf as
+ * the hardware device.  The @context value gets passed through to @driver's
+ * "auto_attach" handler.  The "auto_attach" handler may call
+ * comedi_to_usb_interface() on the passed in COMEDI device to recover @intf.
+ *
+ * Return: The result of calling comedi_auto_config() (%0 on success, or
+ * a negative error number on failure).
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 int comedi_usb_auto_config(struct usb_interface *intf,
 			   struct comedi_driver *driver,
@@ -51,10 +103,25 @@ int comedi_usb_auto_config(struct usb_interface *intf,
 EXPORT_SYMBOL_GPL(comedi_usb_auto_config);
 
 /**
+<<<<<<< HEAD
  * comedi_pci_auto_unconfig() - Unconfigure/disconnect a comedi USB driver.
  * @intf: usb_interface struct
  *
  * Typically called from the usb_driver (*disconnect) function.
+=======
+ * comedi_usb_auto_unconfig() - Unconfigure/disconnect a USB COMEDI device
+ * @intf: USB interface.
+ *
+ * Typically called from the usb_driver (*disconnect) function.
+ * Auto-unconfigure a COMEDI device attached to this USB interface, using a
+ * pointer to the &struct device embedded in *@intf as the hardware device.
+ * The COMEDI driver's "detach" handler will be called during unconfiguration
+ * of the COMEDI device.
+ *
+ * Note that the COMEDI device may have already been unconfigured using the
+ * %COMEDI_DEVCONFIG ioctl, in which case this attempt to unconfigure it
+ * again should be ignored.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void comedi_usb_auto_unconfig(struct usb_interface *intf)
 {
@@ -63,6 +130,7 @@ void comedi_usb_auto_unconfig(struct usb_interface *intf)
 EXPORT_SYMBOL_GPL(comedi_usb_auto_unconfig);
 
 /**
+<<<<<<< HEAD
  * comedi_usb_driver_register() - Register a comedi USB driver.
  * @comedi_driver: comedi_driver struct
  * @usb_driver: usb_driver struct
@@ -70,6 +138,17 @@ EXPORT_SYMBOL_GPL(comedi_usb_auto_unconfig);
  * This function is used for the module_init() of comedi USB drivers.
  * Do not call it directly, use the module_comedi_usb_driver() helper
  * macro instead.
+=======
+ * comedi_usb_driver_register() - Register a USB COMEDI driver
+ * @comedi_driver: COMEDI driver to be registered.
+ * @usb_driver: USB driver to be registered.
+ *
+ * This function is called from the module_init() of USB COMEDI driver modules
+ * to register the COMEDI driver and the USB driver.  Do not call it directly,
+ * use the module_comedi_usb_driver() helper macro instead.
+ *
+ * Return: %0 on success, or a negative error number on failure.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 int comedi_usb_driver_register(struct comedi_driver *comedi_driver,
 			       struct usb_driver *usb_driver)
@@ -91,6 +170,7 @@ int comedi_usb_driver_register(struct comedi_driver *comedi_driver,
 EXPORT_SYMBOL_GPL(comedi_usb_driver_register);
 
 /**
+<<<<<<< HEAD
  * comedi_usb_driver_unregister() - Unregister a comedi USB driver.
  * @comedi_driver: comedi_driver struct
  * @usb_driver: usb_driver struct
@@ -98,6 +178,15 @@ EXPORT_SYMBOL_GPL(comedi_usb_driver_register);
  * This function is used for the module_exit() of comedi USB drivers.
  * Do not call it directly, use the module_comedi_usb_driver() helper
  * macro instead.
+=======
+ * comedi_usb_driver_unregister() - Unregister a USB COMEDI driver
+ * @comedi_driver: COMEDI driver to be registered.
+ * @usb_driver: USB driver to be registered.
+ *
+ * This function is called from the module_exit() of USB COMEDI driver modules
+ * to unregister the USB driver and the COMEDI driver.  Do not call it
+ * directly, use the module_comedi_usb_driver() helper macro instead.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void comedi_usb_driver_unregister(struct comedi_driver *comedi_driver,
 				  struct usb_driver *usb_driver)
@@ -106,3 +195,21 @@ void comedi_usb_driver_unregister(struct comedi_driver *comedi_driver,
 	comedi_driver_unregister(comedi_driver);
 }
 EXPORT_SYMBOL_GPL(comedi_usb_driver_unregister);
+<<<<<<< HEAD
+=======
+
+static int __init comedi_usb_init(void)
+{
+	return 0;
+}
+module_init(comedi_usb_init);
+
+static void __exit comedi_usb_exit(void)
+{
+}
+module_exit(comedi_usb_exit);
+
+MODULE_AUTHOR("http://www.comedi.org");
+MODULE_DESCRIPTION("Comedi USB interface module");
+MODULE_LICENSE("GPL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -139,6 +139,10 @@ V_FUNCTION_BEGIN(__kernel_clock_gettime)
 	 */
 99:
 	li	r0,__NR_clock_gettime
+<<<<<<< HEAD
+=======
+  .cfi_restore lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sc
 	blr
   .cfi_endproc
@@ -159,12 +163,23 @@ V_FUNCTION_BEGIN(__kernel_clock_getres)
 	cror	cr0*4+eq,cr0*4+eq,cr1*4+eq
 	bne	cr0,99f
 
+<<<<<<< HEAD
+=======
+	mflr	r12
+  .cfi_register lr,r12
+	bl	__get_datapage@local	/* get data page */
+	lwz	r5, CLOCK_HRTIMER_RES(r3)
+	mtlr	r12
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	li	r3,0
 	cmpli	cr0,r4,0
 	crclr	cr0*4+so
 	beqlr
+<<<<<<< HEAD
 	lis	r5,CLOCK_REALTIME_RES@h
 	ori	r5,r5,CLOCK_REALTIME_RES@l
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stw	r3,TSPC32_TV_SEC(r4)
 	stw	r5,TSPC32_TV_NSEC(r4)
 	blr
@@ -232,9 +247,21 @@ __do_get_tspec:
 	lwz	r6,(CFG_TB_ORIG_STAMP+4)(r9)
 
 	/* Get a stable TB value */
+<<<<<<< HEAD
 2:	mftbu	r3
 	mftbl	r4
 	mftbu	r0
+=======
+#ifdef CONFIG_8xx
+2:	mftbu	r3
+	mftbl	r4
+	mftbu	r0
+#else
+2:	mfspr	r3, SPRN_TBRU
+	mfspr	r4, SPRN_TBRL
+	mfspr	r0, SPRN_TBRU
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmplw	cr0,r3,r0
 	bne-	2b
 

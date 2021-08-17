@@ -78,7 +78,11 @@ enum {
 };
 
 /*
+<<<<<<< HEAD
  * struct ad7152_chip_info - chip specifc information
+=======
+ * struct ad7152_chip_info - chip specific information
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 struct ad7152_chip_info {
@@ -290,7 +294,11 @@ static int ad7152_write_raw(struct iio_dev *indio_dev,
 		ret = 0;
 		break;
 	case IIO_CHAN_INFO_SCALE:
+<<<<<<< HEAD
 		if (val != 0) {
+=======
+		if (val) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -EINVAL;
 			goto out;
 		}
@@ -481,11 +489,17 @@ static int ad7152_probe(struct i2c_client *client,
 	struct ad7152_chip_info *chip;
 	struct iio_dev *indio_dev;
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*chip));
 	if (indio_dev == NULL) {
 		ret = -ENOMEM;
 		goto error_ret;
 	}
+=======
+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+	if (!indio_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip = iio_priv(indio_dev);
 	/* this is only used for device removal purposes */
 	i2c_set_clientdata(client, indio_dev);
@@ -504,13 +518,20 @@ static int ad7152_probe(struct i2c_client *client,
 	indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
+<<<<<<< HEAD
 	ret = iio_device_register(indio_dev);
 	if (ret)
 		goto error_free_dev;
+=======
+	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_err(&client->dev, "%s capacitive sensor registered\n", id->name);
 
 	return 0;
+<<<<<<< HEAD
 
 error_free_dev:
 	iio_device_free(indio_dev);
@@ -526,6 +547,8 @@ static int ad7152_remove(struct i2c_client *client)
 	iio_device_free(indio_dev);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id ad7152_id[] = {
@@ -541,7 +564,10 @@ static struct i2c_driver ad7152_driver = {
 		.name = KBUILD_MODNAME,
 	},
 	.probe = ad7152_probe,
+<<<<<<< HEAD
 	.remove = ad7152_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = ad7152_id,
 };
 module_i2c_driver(ad7152_driver);

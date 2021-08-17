@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel PRO/1000 Linux driver
@@ -25,6 +26,28 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* Intel PRO/1000 Linux driver
+ * Copyright(c) 1999 - 2015 Intel Corporation.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 2, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * The full GNU General Public License is included in this distribution in
+ * the file called "COPYING".
+ *
+ * Contact Information:
+ * Linux NICS <linux.nics@intel.com>
+ * e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
+ * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "e1000.h"
 
@@ -54,7 +77,11 @@ static u8 e1000_calculate_checksum(u8 *buffer, u32 length)
  *  e1000_mng_enable_host_if - Checks host interface is enabled
  *  @hw: pointer to the HW structure
  *
+<<<<<<< HEAD
  *  Returns E1000_success upon success, else E1000_ERR_HOST_INTERFACE_COMMAND
+=======
+ *  Returns 0 upon success, else -E1000_ERR_HOST_INTERFACE_COMMAND
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This function checks whether the HOST IF is enabled for command operation
  *  and also checks whether the previous command is completed.  It busy waits
@@ -85,7 +112,11 @@ static s32 e1000_mng_enable_host_if(struct e1000_hw *hw)
 	}
 
 	if (i == E1000_MNG_DHCP_COMMAND_TIMEOUT) {
+<<<<<<< HEAD
 		e_dbg("Previous command timeout failed .\n");
+=======
+		e_dbg("Previous command timeout failed.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -E1000_ERR_HOST_INTERFACE_COMMAND;
 	}
 
@@ -334,9 +365,18 @@ bool e1000e_enable_mng_pass_thru(struct e1000_hw *hw)
 	} else if ((hw->mac.type == e1000_82574) ||
 		   (hw->mac.type == e1000_82583)) {
 		u16 data;
+<<<<<<< HEAD
 
 		factps = er32(FACTPS);
 		e1000_read_nvm(hw, NVM_INIT_CONTROL2_REG, 1, &data);
+=======
+		s32 ret_val;
+
+		factps = er32(FACTPS);
+		ret_val = e1000_read_nvm(hw, NVM_INIT_CONTROL2_REG, 1, &data);
+		if (ret_val)
+			return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!(factps & E1000_FACTPS_MNGCG) &&
 		    ((data & E1000_NVM_INIT_CTRL2_MNGM) ==

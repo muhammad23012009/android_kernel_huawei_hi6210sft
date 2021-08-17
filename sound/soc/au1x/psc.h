@@ -27,6 +27,7 @@ struct au1xpsc_audio_data {
 };
 
 /* easy access macros */
+<<<<<<< HEAD
 #define PSC_CTRL(x)	((unsigned long)((x)->mmio) + PSC_CTRL_OFFSET)
 #define PSC_SEL(x)	((unsigned long)((x)->mmio) + PSC_SEL_OFFSET)
 #define I2S_STAT(x)	((unsigned long)((x)->mmio) + PSC_I2SSTAT_OFFSET)
@@ -38,5 +39,18 @@ struct au1xpsc_audio_data {
 #define AC97_PCR(x)	((unsigned long)((x)->mmio) + PSC_AC97PCR_OFFSET)
 #define AC97_RST(x)	((unsigned long)((x)->mmio) + PSC_AC97RST_OFFSET)
 #define AC97_STAT(x)	((unsigned long)((x)->mmio) + PSC_AC97STAT_OFFSET)
+=======
+#define PSC_CTRL(x)	((x)->mmio + PSC_CTRL_OFFSET)
+#define PSC_SEL(x)	((x)->mmio + PSC_SEL_OFFSET)
+#define I2S_STAT(x)	((x)->mmio + PSC_I2SSTAT_OFFSET)
+#define I2S_CFG(x)	((x)->mmio + PSC_I2SCFG_OFFSET)
+#define I2S_PCR(x)	((x)->mmio + PSC_I2SPCR_OFFSET)
+#define AC97_CFG(x)	((x)->mmio + PSC_AC97CFG_OFFSET)
+#define AC97_CDC(x)	((x)->mmio + PSC_AC97CDC_OFFSET)
+#define AC97_EVNT(x)	((x)->mmio + PSC_AC97EVNT_OFFSET)
+#define AC97_PCR(x)	((x)->mmio + PSC_AC97PCR_OFFSET)
+#define AC97_RST(x)	((x)->mmio + PSC_AC97RST_OFFSET)
+#define AC97_STAT(x)	((x)->mmio + PSC_AC97STAT_OFFSET)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

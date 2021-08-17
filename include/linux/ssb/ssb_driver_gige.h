@@ -108,6 +108,19 @@ static inline int ssb_gige_get_macaddr(struct pci_dev *pdev, u8 *macaddr)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* Get the device phy address */
+static inline int ssb_gige_get_phyaddr(struct pci_dev *pdev)
+{
+	struct ssb_gige *dev = pdev_to_ssb_gige(pdev);
+	if (!dev)
+		return -ENODEV;
+
+	return dev->dev->bus->sprom.et0phyaddr;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int ssb_gige_pcibios_plat_dev_init(struct ssb_device *sdev,
 					  struct pci_dev *pdev);
 extern int ssb_gige_map_irq(struct ssb_device *sdev,
@@ -174,6 +187,13 @@ static inline int ssb_gige_get_macaddr(struct pci_dev *pdev, u8 *macaddr)
 {
 	return -ENODEV;
 }
+<<<<<<< HEAD
+=======
+static inline int ssb_gige_get_phyaddr(struct pci_dev *pdev)
+{
+	return -ENODEV;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* CONFIG_SSB_DRIVER_GIGE */
 #endif /* LINUX_SSB_DRIVER_GIGE_H_ */

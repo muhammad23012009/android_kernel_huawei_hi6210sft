@@ -19,6 +19,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -60,6 +61,55 @@ Configuration Options: not applicable, uses PCI auto config
 
 #include "8255.h"
 #include "mite.h"
+=======
+ */
+
+/*
+ * Driver: 8255_pci
+ * Description: Generic PCI based 8255 Digital I/O boards
+ * Devices: [ADLink] PCI-7224 (adl_pci-7224), PCI-7248 (adl_pci-7248),
+ *   PCI-7296 (adl_pci-7296),
+ *   [Measurement Computing] PCI-DIO24 (cb_pci-dio24),
+ *   PCI-DIO24H (cb_pci-dio24h), PCI-DIO48H (cb_pci-dio48h),
+ *   PCI-DIO96H (cb_pci-dio96h),
+ *   [National Instruments] PCI-DIO-96 (ni_pci-dio-96),
+ *   PCI-DIO-96B (ni_pci-dio-96b), PXI-6508 (ni_pxi-6508),
+ *   PCI-6503 (ni_pci-6503), PCI-6503B (ni_pci-6503b),
+ *   PCI-6503X (ni_pci-6503x), PXI-6503 (ni_pxi-6503)
+ * Author: H Hartley Sweeten <hsweeten@visionengravers.com>
+ * Updated: Wed, 12 Sep 2012 11:52:01 -0700
+ * Status: untested
+ *
+ * These boards have one or more 8255 digital I/O chips, each of which
+ * is supported as a separate 24-channel DIO subdevice.
+ *
+ * Boards with 24 DIO channels (1 DIO subdevice):
+ *
+ *   PCI-7224, PCI-DIO24, PCI-DIO24H, PCI-6503, PCI-6503B, PCI-6503X,
+ *   PXI-6503
+ *
+ * Boards with 48 DIO channels (2 DIO subdevices):
+ *
+ *   PCI-7248, PCI-DIO48H
+ *
+ * Boards with 96 DIO channels (4 DIO subdevices):
+ *
+ *   PCI-7296, PCI-DIO96H, PCI-DIO-96, PCI-DIO-96B, PXI-6508
+ *
+ * Some of these boards also have an 8254 programmable timer/counter
+ * chip.  This chip is not currently supported by this driver.
+ *
+ * Interrupt support for these boards is also not currently supported.
+ *
+ * Configuration Options: not applicable, uses PCI auto config.
+ */
+
+#include <linux/module.h>
+
+#include "../comedi_pci.h"
+
+#include "8255.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum pci_8255_boardid {
 	BOARD_ADLINK_PCI7224,
@@ -171,9 +221,15 @@ static const struct pci_8255_boardinfo pci_8255_boards[] = {
 	},
 };
 
+<<<<<<< HEAD
 struct pci_8255_private {
 	void __iomem *mmio_base;
 };
+=======
+/* ripped from mite.h and mite_setup2() to avoid mite dependency */
+#define MITE_IODWBSR	0xc0	/* IO Device Window Base Size Register */
+#define WENAB		BIT(7)	/* window enable */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int pci_8255_mite_init(struct pci_dev *pcidev)
 {
@@ -194,6 +250,7 @@ static int pci_8255_mite_init(struct pci_dev *pcidev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pci_8255_mmio(int dir, int port, int data, unsigned long iobase)
 {
 	void __iomem *mmio_base = (void __iomem *)iobase;
@@ -206,14 +263,20 @@ static int pci_8255_mmio(int dir, int port, int data, unsigned long iobase)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pci_8255_auto_attach(struct comedi_device *dev,
 				unsigned long context)
 {
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
 	const struct pci_8255_boardinfo *board = NULL;
+<<<<<<< HEAD
 	struct pci_8255_private *devpriv;
 	struct comedi_subdevice *s;
 	bool is_mmio;
+=======
+	struct comedi_subdevice *s;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	int i;
 
@@ -224,11 +287,14 @@ static int pci_8255_auto_attach(struct comedi_device *dev,
 	dev->board_ptr = board;
 	dev->board_name = board->name;
 
+<<<<<<< HEAD
 	devpriv = kzalloc(sizeof(*devpriv), GFP_KERNEL);
 	if (!devpriv)
 		return -ENOMEM;
 	dev->private = devpriv;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = comedi_pci_enable(dev);
 	if (ret)
 		return ret;
@@ -239,11 +305,17 @@ static int pci_8255_auto_attach(struct comedi_device *dev,
 			return ret;
 	}
 
+<<<<<<< HEAD
 	is_mmio = (pci_resource_flags(pcidev, board->dio_badr) &
 		   IORESOURCE_MEM) != 0;
 	if (is_mmio) {
 		devpriv->mmio_base = pci_ioremap_bar(pcidev, board->dio_badr);
 		if (!devpriv->mmio_base)
+=======
+	if ((pci_resource_flags(pcidev, board->dio_badr) & IORESOURCE_MEM)) {
+		dev->mmio = pci_ioremap_bar(pcidev, board->dio_badr);
+		if (!dev->mmio)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENOMEM;
 	} else {
 		dev->iobase = pci_resource_start(pcidev, board->dio_badr);
@@ -259,6 +331,7 @@ static int pci_8255_auto_attach(struct comedi_device *dev,
 		return ret;
 
 	for (i = 0; i < board->n_8255; i++) {
+<<<<<<< HEAD
 		unsigned long iobase;
 
 		s = &dev->subdevices[i];
@@ -269,10 +342,18 @@ static int pci_8255_auto_attach(struct comedi_device *dev,
 			iobase = dev->iobase + (i * 4);
 			ret = subdev_8255_init(dev, s, NULL, iobase);
 		}
+=======
+		s = &dev->subdevices[i];
+		if (dev->mmio)
+			ret = subdev_8255_mm_init(dev, s, NULL, i * I8255_SIZE);
+		else
+			ret = subdev_8255_init(dev, s, NULL, i * I8255_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 	}
 
+<<<<<<< HEAD
 	dev_info(dev->class_dev, "%s attached (%d digital i/o channels)\n",
 		dev->board_name, board->n_8255 * 24);
 
@@ -291,11 +372,20 @@ static void pci_8255_detach(struct comedi_device *dev)
 	comedi_pci_disable(dev);
 }
 
+=======
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct comedi_driver pci_8255_driver = {
 	.driver_name	= "8255_pci",
 	.module		= THIS_MODULE,
 	.auto_attach	= pci_8255_auto_attach,
+<<<<<<< HEAD
 	.detach		= pci_8255_detach,
+=======
+	.detach		= comedi_pci_detach,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int pci_8255_pci_probe(struct pci_dev *dev,
@@ -304,7 +394,11 @@ static int pci_8255_pci_probe(struct pci_dev *dev,
 	return comedi_pci_auto_config(dev, &pci_8255_driver, id->driver_data);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pci_8255_pci_table) = {
+=======
+static const struct pci_device_id pci_8255_pci_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(ADLINK, 0x7224), BOARD_ADLINK_PCI7224 },
 	{ PCI_VDEVICE(ADLINK, 0x7248), BOARD_ADLINK_PCI7248 },
 	{ PCI_VDEVICE(ADLINK, 0x7296), BOARD_ADLINK_PCI7296 },

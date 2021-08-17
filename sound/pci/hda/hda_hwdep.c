@@ -20,24 +20,32 @@
 
 #include <linux/init.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/compat.h>
 #include <linux/mutex.h>
 #include <linux/ctype.h>
 #include <linux/string.h>
 #include <linux/export.h>
+=======
+#include <linux/compat.h>
+#include <linux/nospec.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include "hda_codec.h"
 #include "hda_local.h"
 #include <sound/hda_hwdep.h>
 #include <sound/minors.h>
 
+<<<<<<< HEAD
 /* hint string pair */
 struct hda_hint {
 	const char *key;
 	const char *val;	/* contained in the same alloc as key */
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * write/read an out-of-bound verb
  */
@@ -62,7 +70,20 @@ static int get_wcap_ioctl(struct hda_codec *codec,
 	
 	if (get_user(verb, &arg->verb))
 		return -EFAULT;
+<<<<<<< HEAD
 	res = get_wcaps(codec, verb >> 24);
+=======
+	/* open-code get_wcaps(verb>>24) with nospec */
+	verb >>= 24;
+	if (verb < codec->core.start_nid ||
+	    verb >= codec->core.start_nid + codec->core.num_nodes) {
+		res = 0;
+	} else {
+		verb -= codec->core.start_nid;
+		verb = array_index_nospec(verb, codec->core.num_nodes);
+		res = codec->wcaps[verb];
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (put_user(res, &arg->res))
 		return -EFAULT;
 	return 0;
@@ -105,6 +126,7 @@ static int hda_hwdep_open(struct snd_hwdep *hw, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void clear_hwdep_elements(struct hda_codec *codec)
 {
 	int i;
@@ -125,6 +147,8 @@ static void hwdep_free(struct snd_hwdep *hwdep)
 	clear_hwdep_elements(hwdep->private_data);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_hda_create_hwdep(struct hda_codec *codec)
 {
 	char hwname[16];
@@ -132,14 +156,21 @@ int snd_hda_create_hwdep(struct hda_codec *codec)
 	int err;
 
 	sprintf(hwname, "HDA Codec %d", codec->addr);
+<<<<<<< HEAD
 	err = snd_hwdep_new(codec->bus->card, hwname, codec->addr, &hwdep);
+=======
+	err = snd_hwdep_new(codec->card, hwname, codec->addr, &hwdep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	codec->hwdep = hwdep;
 	sprintf(hwdep->name, "HDA Codec %d", codec->addr);
 	hwdep->iface = SNDRV_HWDEP_IFACE_HDA;
 	hwdep->private_data = codec;
+<<<<<<< HEAD
 	hwdep->private_free = hwdep_free;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hwdep->exclusive = 1;
 
 	hwdep->ops.open = hda_hwdep_open;
@@ -148,6 +179,7 @@ int snd_hda_create_hwdep(struct hda_codec *codec)
 	hwdep->ops.ioctl_compat = hda_hwdep_ioctl_compat;
 #endif
 
+<<<<<<< HEAD
 	mutex_init(&codec->user_mutex);
 	snd_array_init(&codec->init_verbs, sizeof(struct hda_verb), 32);
 	snd_array_init(&codec->hints, sizeof(struct hda_hint), 32);
@@ -853,3 +885,11 @@ int snd_hda_load_patch(struct hda_bus *bus, size_t fw_size, const void *fw_buf)
 }
 EXPORT_SYMBOL_HDA(snd_hda_load_patch);
 #endif /* CONFIG_SND_HDA_PATCH_LOADER */
+=======
+	/* for sysfs */
+	hwdep->dev.groups = snd_hda_dev_attr_groups;
+	dev_set_drvdata(&hwdep->dev, codec);
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

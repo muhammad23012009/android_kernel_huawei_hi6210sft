@@ -341,7 +341,10 @@ static int ak4535_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_update_bits(codec, AK4535_PM1, 0x80, 0);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -373,6 +376,7 @@ static struct snd_soc_dai_driver ak4535_dai = {
 	.ops = &ak4535_dai_ops,
 };
 
+<<<<<<< HEAD
 static int ak4535_suspend(struct snd_soc_codec *codec)
 {
 	ak4535_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -409,6 +413,11 @@ static int ak4535_probe(struct snd_soc_codec *codec)
 static int ak4535_remove(struct snd_soc_codec *codec)
 {
 	ak4535_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+static int ak4535_resume(struct snd_soc_codec *codec)
+{
+	snd_soc_cache_sync(codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -425,6 +434,7 @@ static const struct regmap_config ak4535_regmap = {
 };
 
 static struct snd_soc_codec_driver soc_codec_dev_ak4535 = {
+<<<<<<< HEAD
 	.probe =	ak4535_probe,
 	.remove =	ak4535_remove,
 	.suspend =	ak4535_suspend,
@@ -434,6 +444,20 @@ static struct snd_soc_codec_driver soc_codec_dev_ak4535 = {
 	.num_dapm_widgets = ARRAY_SIZE(ak4535_dapm_widgets),
 	.dapm_routes = ak4535_audio_map,
 	.num_dapm_routes = ARRAY_SIZE(ak4535_audio_map),
+=======
+	.resume =	ak4535_resume,
+	.set_bias_level = ak4535_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= ak4535_snd_controls,
+		.num_controls		= ARRAY_SIZE(ak4535_snd_controls),
+		.dapm_widgets		= ak4535_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(ak4535_dapm_widgets),
+		.dapm_routes		= ak4535_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(ak4535_audio_map),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int ak4535_i2c_probe(struct i2c_client *i2c,
@@ -477,7 +501,10 @@ MODULE_DEVICE_TABLE(i2c, ak4535_i2c_id);
 static struct i2c_driver ak4535_i2c_driver = {
 	.driver = {
 		.name = "ak4535",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe =    ak4535_i2c_probe,
 	.remove =   ak4535_i2c_remove,

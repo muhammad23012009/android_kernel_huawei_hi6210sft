@@ -59,9 +59,16 @@
 #include <linux/videodev2.h>
 #include <linux/i2c.h>
 
+<<<<<<< HEAD
 #include <media/saa7115.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-ioctl.h>
+=======
+#include <media/i2c/saa7115.h>
+#include <media/v4l2-common.h>
+#include <media/v4l2-ioctl.h>
+#include <media/v4l2-event.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/tuner.h>
 
 #include <linux/workqueue.h>
@@ -122,8 +129,11 @@ static void usbvision_release(struct usb_usbvision *usbvision);
 static int isoc_mode = ISOC_MODE_COMPRESS;
 /* Set the default Debug Mode of the device driver */
 static int video_debug;
+<<<<<<< HEAD
 /* Set the default device to power on at startup */
 static int power_on_at_open = 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Sequential Number of Video Device */
 static int video_nr = -1;
 /* Sequential Number of Radio Device */
@@ -134,13 +144,19 @@ static int radio_nr = -1;
 /* Showing parameters under SYSFS */
 module_param(isoc_mode, int, 0444);
 module_param(video_debug, int, 0444);
+<<<<<<< HEAD
 module_param(power_on_at_open, int, 0444);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(video_nr, int, 0444);
 module_param(radio_nr, int, 0444);
 
 MODULE_PARM_DESC(isoc_mode, " Set the default format for ISOC endpoint.  Default: 0x60 (Compression On)");
 MODULE_PARM_DESC(video_debug, " Set the default Debug Mode of the device driver.  Default: 0 (Off)");
+<<<<<<< HEAD
 MODULE_PARM_DESC(power_on_at_open, " Set the default device to power on when device is opened.  Default: 1 (On)");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_PARM_DESC(video_nr, "Set video device number (/dev/videoX).  Default: -1 (autodetect)");
 MODULE_PARM_DESC(radio_nr, "Set radio device number (/dev/radioX).  Default: -1 (autodetect)");
 
@@ -165,8 +181,12 @@ MODULE_ALIAS(DRIVER_ALIAS);
 
 static inline struct usb_usbvision *cd_to_usbvision(struct device *cd)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
+=======
+	struct video_device *vdev = to_video_device(cd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return video_get_drvdata(vdev);
 }
 
@@ -180,8 +200,12 @@ static DEVICE_ATTR(version, S_IRUGO, show_version, NULL);
 static ssize_t show_model(struct device *cd,
 			  struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
+=======
+	struct video_device *vdev = to_video_device(cd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
 	return sprintf(buf, "%s\n",
 		       usbvision_device_data[usbvision->dev_model].model_string);
@@ -191,6 +215,7 @@ static DEVICE_ATTR(model, S_IRUGO, show_model, NULL);
 static ssize_t show_hue(struct device *cd,
 			struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
@@ -200,12 +225,21 @@ static ssize_t show_hue(struct device *cd,
 	if (usbvision->user)
 		call_all(usbvision, core, g_ctrl, &ctrl);
 	return sprintf(buf, "%d\n", ctrl.value);
+=======
+	struct video_device *vdev = to_video_device(cd);
+	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
+	s32 val = v4l2_ctrl_g_ctrl(v4l2_ctrl_find(&usbvision->hdl,
+						  V4L2_CID_HUE));
+
+	return sprintf(buf, "%d\n", val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static DEVICE_ATTR(hue, S_IRUGO, show_hue, NULL);
 
 static ssize_t show_contrast(struct device *cd,
 			     struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
@@ -215,12 +249,21 @@ static ssize_t show_contrast(struct device *cd,
 	if (usbvision->user)
 		call_all(usbvision, core, g_ctrl, &ctrl);
 	return sprintf(buf, "%d\n", ctrl.value);
+=======
+	struct video_device *vdev = to_video_device(cd);
+	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
+	s32 val = v4l2_ctrl_g_ctrl(v4l2_ctrl_find(&usbvision->hdl,
+						  V4L2_CID_CONTRAST));
+
+	return sprintf(buf, "%d\n", val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static DEVICE_ATTR(contrast, S_IRUGO, show_contrast, NULL);
 
 static ssize_t show_brightness(struct device *cd,
 			       struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
@@ -230,12 +273,21 @@ static ssize_t show_brightness(struct device *cd,
 	if (usbvision->user)
 		call_all(usbvision, core, g_ctrl, &ctrl);
 	return sprintf(buf, "%d\n", ctrl.value);
+=======
+	struct video_device *vdev = to_video_device(cd);
+	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
+	s32 val = v4l2_ctrl_g_ctrl(v4l2_ctrl_find(&usbvision->hdl,
+						  V4L2_CID_BRIGHTNESS));
+
+	return sprintf(buf, "%d\n", val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static DEVICE_ATTR(brightness, S_IRUGO, show_brightness, NULL);
 
 static ssize_t show_saturation(struct device *cd,
 			       struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
@@ -245,14 +297,26 @@ static ssize_t show_saturation(struct device *cd,
 	if (usbvision->user)
 		call_all(usbvision, core, g_ctrl, &ctrl);
 	return sprintf(buf, "%d\n", ctrl.value);
+=======
+	struct video_device *vdev = to_video_device(cd);
+	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
+	s32 val = v4l2_ctrl_g_ctrl(v4l2_ctrl_find(&usbvision->hdl,
+						  V4L2_CID_SATURATION));
+
+	return sprintf(buf, "%d\n", val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static DEVICE_ATTR(saturation, S_IRUGO, show_saturation, NULL);
 
 static ssize_t show_streaming(struct device *cd,
 			      struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
+=======
+	struct video_device *vdev = to_video_device(cd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
 	return sprintf(buf, "%s\n",
 		       YES_NO(usbvision->streaming == stream_on ? 1 : 0));
@@ -262,8 +326,12 @@ static DEVICE_ATTR(streaming, S_IRUGO, show_streaming, NULL);
 static ssize_t show_compression(struct device *cd,
 				struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
+=======
+	struct video_device *vdev = to_video_device(cd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
 	return sprintf(buf, "%s\n",
 		       YES_NO(usbvision->isoc_mode == ISOC_MODE_COMPRESS));
@@ -273,8 +341,12 @@ static DEVICE_ATTR(compression, S_IRUGO, show_compression, NULL);
 static ssize_t show_device_bridge(struct device *cd,
 				  struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct video_device *vdev =
 		container_of(cd, struct video_device, dev);
+=======
+	struct video_device *vdev = to_video_device(cd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_usbvision *usbvision = video_get_drvdata(vdev);
 	return sprintf(buf, "%d\n", usbvision->bridge_type);
 }
@@ -351,11 +423,26 @@ static int usbvision_v4l2_open(struct file *file)
 
 	if (mutex_lock_interruptible(&usbvision->v4l2_lock))
 		return -ERESTARTSYS;
+<<<<<<< HEAD
 	usbvision_reset_power_off_timer(usbvision);
 
 	if (usbvision->user)
 		err_code = -EBUSY;
 	else {
+=======
+
+	if (usbvision->remove_pending) {
+		err_code = -ENODEV;
+		goto unlock;
+	}
+	if (usbvision->user) {
+		err_code = -EBUSY;
+	} else {
+		err_code = v4l2_fh_open(file);
+		if (err_code)
+			goto unlock;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Allocate memory for the scratch ring buffer */
 		err_code = usbvision_scratch_alloc(usbvision);
 		if (isoc_mode == ISOC_MODE_COMPRESS) {
@@ -372,11 +459,14 @@ static int usbvision_v4l2_open(struct file *file)
 
 	/* If so far no errors then we shall start the camera */
 	if (!err_code) {
+<<<<<<< HEAD
 		if (usbvision->power == 0) {
 			usbvision_power_on(usbvision);
 			usbvision_i2c_register(usbvision);
 		}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Send init sequence only once, it's large! */
 		if (!usbvision->initialized) {
 			int setup_ok = 0;
@@ -392,6 +482,7 @@ static int usbvision_v4l2_open(struct file *file)
 			err_code = usbvision_init_isoc(usbvision);
 			/* device must be initialized before isoc transfer */
 			usbvision_muxsel(usbvision, 0);
+<<<<<<< HEAD
 			usbvision->user++;
 		} else {
 			if (power_on_at_open) {
@@ -404,6 +495,16 @@ static int usbvision_v4l2_open(struct file *file)
 
 	/* prepare queues */
 	usbvision_empty_framequeues(usbvision);
+=======
+
+			/* prepare queues */
+			usbvision_empty_framequeues(usbvision);
+			usbvision->user++;
+		}
+	}
+
+unlock:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&usbvision->v4l2_lock);
 
 	PDEBUG(DBG_IO, "success");
@@ -421,6 +522,10 @@ static int usbvision_v4l2_open(struct file *file)
 static int usbvision_v4l2_close(struct file *file)
 {
 	struct usb_usbvision *usbvision = video_drvdata(file);
+<<<<<<< HEAD
+=======
+	int r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	PDEBUG(DBG_IO, "close");
 
@@ -435,6 +540,7 @@ static int usbvision_v4l2_close(struct file *file)
 	usbvision_scratch_free(usbvision);
 
 	usbvision->user--;
+<<<<<<< HEAD
 
 	if (power_on_at_open) {
 		/* power off in a little while
@@ -451,6 +557,19 @@ static int usbvision_v4l2_close(struct file *file)
 
 	PDEBUG(DBG_IO, "success");
 	return 0;
+=======
+	r = usbvision->remove_pending;
+	mutex_unlock(&usbvision->v4l2_lock);
+
+	if (r) {
+		printk(KERN_INFO "%s: Final disconnect\n", __func__);
+		usbvision_release(usbvision);
+		return 0;
+	}
+
+	PDEBUG(DBG_IO, "success");
+	return v4l2_fh_release(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -467,12 +586,19 @@ static int vidioc_g_register(struct file *file, void *priv,
 	struct usb_usbvision *usbvision = video_drvdata(file);
 	int err_code;
 
+<<<<<<< HEAD
 	if (!v4l2_chip_match_host(&reg->match))
 		return -EINVAL;
 	/* NT100x has a 8-bit register space */
 	err_code = usbvision_read_reg(usbvision, reg->reg&0xff);
 	if (err_code < 0) {
 		dev_err(&usbvision->vdev->dev,
+=======
+	/* NT100x has a 8-bit register space */
+	err_code = usbvision_read_reg(usbvision, reg->reg&0xff);
+	if (err_code < 0) {
+		dev_err(&usbvision->vdev.dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"%s: VIDIOC_DBG_G_REGISTER failed: error %d\n",
 				__func__, err_code);
 		return err_code;
@@ -488,12 +614,19 @@ static int vidioc_s_register(struct file *file, void *priv,
 	struct usb_usbvision *usbvision = video_drvdata(file);
 	int err_code;
 
+<<<<<<< HEAD
 	if (!v4l2_chip_match_host(&reg->match))
 		return -EINVAL;
 	/* NT100x has a 8-bit register space */
 	err_code = usbvision_write_reg(usbvision, reg->reg & 0xff, reg->val);
 	if (err_code < 0) {
 		dev_err(&usbvision->vdev->dev,
+=======
+	/* NT100x has a 8-bit register space */
+	err_code = usbvision_write_reg(usbvision, reg->reg & 0xff, reg->val);
+	if (err_code < 0) {
+		dev_err(&usbvision->vdev.dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"%s: VIDIOC_DBG_S_REGISTER failed: error %d\n",
 				__func__, err_code);
 		return err_code;
@@ -506,17 +639,35 @@ static int vidioc_querycap(struct file *file, void  *priv,
 					struct v4l2_capability *vc)
 {
 	struct usb_usbvision *usbvision = video_drvdata(file);
+<<<<<<< HEAD
+=======
+	struct video_device *vdev = video_devdata(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	strlcpy(vc->driver, "USBVision", sizeof(vc->driver));
 	strlcpy(vc->card,
 		usbvision_device_data[usbvision->dev_model].model_string,
 		sizeof(vc->card));
 	usb_make_path(usbvision->dev, vc->bus_info, sizeof(vc->bus_info));
+<<<<<<< HEAD
 	vc->capabilities = V4L2_CAP_VIDEO_CAPTURE |
 		V4L2_CAP_AUDIO |
 		V4L2_CAP_READWRITE |
 		V4L2_CAP_STREAMING |
 		(usbvision->have_tuner ? V4L2_CAP_TUNER : 0);
+=======
+	vc->device_caps = usbvision->have_tuner ? V4L2_CAP_TUNER : 0;
+	if (vdev->vfl_type == VFL_TYPE_GRABBER)
+		vc->device_caps |= V4L2_CAP_VIDEO_CAPTURE |
+			V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
+	else
+		vc->device_caps |= V4L2_CAP_RADIO;
+
+	vc->capabilities = vc->device_caps | V4L2_CAP_VIDEO_CAPTURE |
+		V4L2_CAP_READWRITE | V4L2_CAP_STREAMING | V4L2_CAP_DEVICE_CAPS;
+	if (usbvision_device_data[usbvision->dev_model].radio)
+		vc->capabilities |= V4L2_CAP_RADIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -542,7 +693,10 @@ static int vidioc_enum_input(struct file *file, void *priv,
 		} else {
 			strcpy(vi->name, "Television");
 			vi->type = V4L2_INPUT_TYPE_TUNER;
+<<<<<<< HEAD
 			vi->audioset = 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vi->tuner = chan;
 			vi->std = USBVISION_NORMS;
 		}
@@ -553,7 +707,11 @@ static int vidioc_enum_input(struct file *file, void *priv,
 			strcpy(vi->name, "Green Video Input");
 		else
 			strcpy(vi->name, "Composite Video Input");
+<<<<<<< HEAD
 		vi->std = V4L2_STD_PAL;
+=======
+		vi->std = USBVISION_NORMS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case 2:
 		vi->type = V4L2_INPUT_TYPE_CAMERA;
@@ -561,12 +719,20 @@ static int vidioc_enum_input(struct file *file, void *priv,
 			strcpy(vi->name, "Yellow Video Input");
 		else
 			strcpy(vi->name, "S-Video Input");
+<<<<<<< HEAD
 		vi->std = V4L2_STD_PAL;
+=======
+		vi->std = USBVISION_NORMS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case 3:
 		vi->type = V4L2_INPUT_TYPE_CAMERA;
 		strcpy(vi->name, "Red Video Input");
+<<<<<<< HEAD
 		vi->std = V4L2_STD_PAL;
+=======
+		vi->std = USBVISION_NORMS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 	return 0;
@@ -601,18 +767,34 @@ static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id id)
 
 	usbvision->tvnorm_id = id;
 
+<<<<<<< HEAD
 	call_all(usbvision, core, s_std, usbvision->tvnorm_id);
+=======
+	call_all(usbvision, video, s_std, usbvision->tvnorm_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* propagate the change to the decoder */
 	usbvision_muxsel(usbvision, usbvision->ctl_input);
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int vidioc_g_std(struct file *file, void *priv, v4l2_std_id *id)
+{
+	struct usb_usbvision *usbvision = video_drvdata(file);
+
+	*id = usbvision->tvnorm_id;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int vidioc_g_tuner(struct file *file, void *priv,
 				struct v4l2_tuner *vt)
 {
 	struct usb_usbvision *usbvision = video_drvdata(file);
 
+<<<<<<< HEAD
 	if (!usbvision->have_tuner || vt->index)	/* Only tuner 0 */
 		return -EINVAL;
 	if (usbvision->radio) {
@@ -621,6 +803,15 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	} else {
 		strcpy(vt->name, "Television");
 	}
+=======
+	if (vt->index)	/* Only tuner 0 */
+		return -EINVAL;
+	if (vt->type == V4L2_TUNER_RADIO)
+		strcpy(vt->name, "Radio");
+	else
+		strcpy(vt->name, "Television");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Let clients fill in the remainder of this struct */
 	call_all(usbvision, tuner, g_tuner, vt);
 
@@ -632,8 +823,13 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 {
 	struct usb_usbvision *usbvision = video_drvdata(file);
 
+<<<<<<< HEAD
 	/* Only no or one tuner for now */
 	if (!usbvision->have_tuner || vt->index)
+=======
+	/* Only one tuner for now */
+	if (vt->index)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	/* let clients handle this */
 	call_all(usbvision, tuner, s_tuner, vt);
@@ -646,12 +842,22 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 {
 	struct usb_usbvision *usbvision = video_drvdata(file);
 
+<<<<<<< HEAD
 	freq->tuner = 0; /* Only one tuner */
 	if (usbvision->radio)
 		freq->type = V4L2_TUNER_RADIO;
 	else
 		freq->type = V4L2_TUNER_ANALOG_TV;
 	freq->frequency = usbvision->freq;
+=======
+	/* Only one tuner */
+	if (freq->tuner)
+		return -EINVAL;
+	if (freq->type == V4L2_TUNER_RADIO)
+		freq->frequency = usbvision->radio_freq;
+	else
+		freq->frequency = usbvision->tv_freq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -660,6 +866,7 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 				const struct v4l2_frequency *freq)
 {
 	struct usb_usbvision *usbvision = video_drvdata(file);
+<<<<<<< HEAD
 
 	/* Only no or one tuner for now */
 	if (!usbvision->have_tuner || freq->tuner)
@@ -719,6 +926,21 @@ static int vidioc_s_ctrl(struct file *file, void *priv,
 	struct usb_usbvision *usbvision = video_drvdata(file);
 
 	call_all(usbvision, core, s_ctrl, ctrl);
+=======
+	struct v4l2_frequency new_freq = *freq;
+
+	/* Only one tuner for now */
+	if (freq->tuner)
+		return -EINVAL;
+
+	call_all(usbvision, tuner, s_frequency, freq);
+	call_all(usbvision, tuner, g_frequency, &new_freq);
+	if (freq->type == V4L2_TUNER_RADIO)
+		usbvision->radio_freq = new_freq.frequency;
+	else
+		usbvision->tv_freq = new_freq.frequency;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -931,6 +1153,11 @@ static int vidioc_try_fmt_vid_cap(struct file *file, void *priv,
 	vf->fmt.pix.bytesperline = vf->fmt.pix.width*
 		usbvision->palette.bytes_per_pixel;
 	vf->fmt.pix.sizeimage = vf->fmt.pix.bytesperline*vf->fmt.pix.height;
+<<<<<<< HEAD
+=======
+	vf->fmt.pix.colorspace = V4L2_COLORSPACE_SMPTE170M;
+	vf->fmt.pix.field = V4L2_FIELD_NONE; /* Always progressive image */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1055,13 +1282,33 @@ static ssize_t usbvision_read(struct file *file, char __user *buf,
 	       __func__,
 	       (unsigned long)count, frame->bytes_read);
 
+<<<<<<< HEAD
 	/* For now, forget the frame if it has not been read in one shot. */
 /*	if (frame->bytes_read >= frame->scanlength) {*/ /* All data has been read */
+=======
+#if 1
+	/*
+	 * FIXME:
+	 * For now, forget the frame if it has not been read in one shot.
+	 */
+	frame->bytes_read = 0;
+
+	/* Mark it as available to be used again. */
+	frame->grabstate = frame_state_unused;
+#else
+	if (frame->bytes_read >= frame->scanlength) {
+		/* All data has been read */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		frame->bytes_read = 0;
 
 		/* Mark it as available to be used again. */
 		frame->grabstate = frame_state_unused;
+<<<<<<< HEAD
 /*	} */
+=======
+	}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }
@@ -1150,12 +1397,26 @@ static int usbvision_radio_open(struct file *file)
 
 	if (mutex_lock_interruptible(&usbvision->v4l2_lock))
 		return -ERESTARTSYS;
+<<<<<<< HEAD
 	if (usbvision->user) {
 		dev_err(&usbvision->rdev->dev,
+=======
+
+	if (usbvision->remove_pending) {
+		err_code = -ENODEV;
+		goto out;
+	}
+	err_code = v4l2_fh_open(file);
+	if (err_code)
+		goto out;
+	if (usbvision->user) {
+		dev_err(&usbvision->rdev.dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"%s: Someone tried to open an already opened USBVision Radio!\n",
 				__func__);
 		err_code = -EBUSY;
 	} else {
+<<<<<<< HEAD
 		if (power_on_at_open) {
 			usbvision_reset_power_off_timer(usbvision);
 			if (usbvision->power == 0) {
@@ -1164,6 +1425,8 @@ static int usbvision_radio_open(struct file *file)
 			}
 		}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Alternate interface 1 is is the biggest frame size */
 		err_code = usbvision_set_alternate(usbvision);
 		if (err_code < 0) {
@@ -1178,6 +1441,7 @@ static int usbvision_radio_open(struct file *file)
 		usbvision_set_audio(usbvision, USBVISION_AUDIO_RADIO);
 		usbvision->user++;
 	}
+<<<<<<< HEAD
 
 	if (err_code) {
 		if (power_on_at_open) {
@@ -1186,6 +1450,8 @@ static int usbvision_radio_open(struct file *file)
 			usbvision->initialized = 0;
 		}
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	mutex_unlock(&usbvision->v4l2_lock);
 	return err_code;
@@ -1195,19 +1461,28 @@ out:
 static int usbvision_radio_close(struct file *file)
 {
 	struct usb_usbvision *usbvision = video_drvdata(file);
+<<<<<<< HEAD
 	int err_code = 0;
+=======
+	int r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	PDEBUG(DBG_IO, "");
 
 	mutex_lock(&usbvision->v4l2_lock);
 	/* Set packet size to 0 */
 	usbvision->iface_alt = 0;
+<<<<<<< HEAD
 	err_code = usb_set_interface(usbvision->dev, usbvision->iface,
+=======
+	usb_set_interface(usbvision->dev, usbvision->iface,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    usbvision->iface_alt);
 
 	usbvision_audio_off(usbvision);
 	usbvision->radio = 0;
 	usbvision->user--;
+<<<<<<< HEAD
 
 	if (power_on_at_open) {
 		usbvision_set_power_off_timer(usbvision);
@@ -1222,6 +1497,20 @@ static int usbvision_radio_close(struct file *file)
 	mutex_unlock(&usbvision->v4l2_lock);
 	PDEBUG(DBG_IO, "success");
 	return err_code;
+=======
+	r = usbvision->remove_pending;
+	mutex_unlock(&usbvision->v4l2_lock);
+
+	if (r) {
+		printk(KERN_INFO "%s: Final disconnect\n", __func__);
+		v4l2_fh_release(file);
+		usbvision_release(usbvision);
+		return 0;
+	}
+
+	PDEBUG(DBG_IO, "success");
+	return v4l2_fh_release(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Video registration stuff */
@@ -1234,7 +1523,10 @@ static const struct v4l2_file_operations usbvision_fops = {
 	.read		= usbvision_v4l2_read,
 	.mmap		= usbvision_v4l2_mmap,
 	.unlocked_ioctl	= video_ioctl2,
+<<<<<<< HEAD
 /*	.poll		= video_poll, */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_ioctl_ops usbvision_ioctl_ops = {
@@ -1248,6 +1540,7 @@ static const struct v4l2_ioctl_ops usbvision_ioctl_ops = {
 	.vidioc_qbuf          = vidioc_qbuf,
 	.vidioc_dqbuf         = vidioc_dqbuf,
 	.vidioc_s_std         = vidioc_s_std,
+<<<<<<< HEAD
 	.vidioc_enum_input    = vidioc_enum_input,
 	.vidioc_g_input       = vidioc_g_input,
 	.vidioc_s_input       = vidioc_s_input,
@@ -1256,12 +1549,24 @@ static const struct v4l2_ioctl_ops usbvision_ioctl_ops = {
 	.vidioc_s_audio       = vidioc_s_audio,
 	.vidioc_g_ctrl        = vidioc_g_ctrl,
 	.vidioc_s_ctrl        = vidioc_s_ctrl,
+=======
+	.vidioc_g_std         = vidioc_g_std,
+	.vidioc_enum_input    = vidioc_enum_input,
+	.vidioc_g_input       = vidioc_g_input,
+	.vidioc_s_input       = vidioc_s_input,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.vidioc_streamon      = vidioc_streamon,
 	.vidioc_streamoff     = vidioc_streamoff,
 	.vidioc_g_tuner       = vidioc_g_tuner,
 	.vidioc_s_tuner       = vidioc_s_tuner,
 	.vidioc_g_frequency   = vidioc_g_frequency,
 	.vidioc_s_frequency   = vidioc_s_frequency,
+<<<<<<< HEAD
+=======
+	.vidioc_log_status    = v4l2_ctrl_log_status,
+	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
+	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.vidioc_g_register    = vidioc_g_register,
 	.vidioc_s_register    = vidioc_s_register,
@@ -1272,9 +1577,14 @@ static struct video_device usbvision_video_template = {
 	.fops		= &usbvision_fops,
 	.ioctl_ops	= &usbvision_ioctl_ops,
 	.name           = "usbvision-video",
+<<<<<<< HEAD
 	.release	= video_device_release,
 	.tvnorms        = USBVISION_NORMS,
 	.current_norm   = V4L2_STD_PAL
+=======
+	.release	= video_device_release_empty,
+	.tvnorms        = USBVISION_NORMS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -1283,11 +1593,16 @@ static const struct v4l2_file_operations usbvision_radio_fops = {
 	.owner             = THIS_MODULE,
 	.open		= usbvision_radio_open,
 	.release	= usbvision_radio_close,
+<<<<<<< HEAD
+=======
+	.poll		= v4l2_ctrl_poll,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unlocked_ioctl	= video_ioctl2,
 };
 
 static const struct v4l2_ioctl_ops usbvision_radio_ioctl_ops = {
 	.vidioc_querycap      = vidioc_querycap,
+<<<<<<< HEAD
 	.vidioc_enum_input    = vidioc_enum_input,
 	.vidioc_g_input       = vidioc_g_input,
 	.vidioc_s_input       = vidioc_s_input,
@@ -1296,15 +1611,24 @@ static const struct v4l2_ioctl_ops usbvision_radio_ioctl_ops = {
 	.vidioc_s_audio       = vidioc_s_audio,
 	.vidioc_g_ctrl        = vidioc_g_ctrl,
 	.vidioc_s_ctrl        = vidioc_s_ctrl,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.vidioc_g_tuner       = vidioc_g_tuner,
 	.vidioc_s_tuner       = vidioc_s_tuner,
 	.vidioc_g_frequency   = vidioc_g_frequency,
 	.vidioc_s_frequency   = vidioc_s_frequency,
+<<<<<<< HEAD
+=======
+	.vidioc_log_status    = v4l2_ctrl_log_status,
+	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
+	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct video_device usbvision_radio_template = {
 	.fops		= &usbvision_radio_fops,
 	.name		= "usbvision-radio",
+<<<<<<< HEAD
 	.release	= video_device_release,
 	.ioctl_ops	= &usbvision_radio_ioctl_ops,
 
@@ -1319,28 +1643,51 @@ static struct video_device *usbvision_vdev_init(struct usb_usbvision *usbvision,
 {
 	struct usb_device *usb_dev = usbvision->dev;
 	struct video_device *vdev;
+=======
+	.release	= video_device_release_empty,
+	.ioctl_ops	= &usbvision_radio_ioctl_ops,
+};
+
+
+static void usbvision_vdev_init(struct usb_usbvision *usbvision,
+				struct video_device *vdev,
+				const struct video_device *vdev_template,
+				const char *name)
+{
+	struct usb_device *usb_dev = usbvision->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (usb_dev == NULL) {
 		dev_err(&usbvision->dev->dev,
 			"%s: usbvision->dev is not set\n", __func__);
+<<<<<<< HEAD
 		return NULL;
 	}
 
 	vdev = video_device_alloc();
 	if (NULL == vdev)
 		return NULL;
+=======
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*vdev = *vdev_template;
 	vdev->lock = &usbvision->v4l2_lock;
 	vdev->v4l2_dev = &usbvision->v4l2_dev;
 	snprintf(vdev->name, sizeof(vdev->name), "%s", name);
 	video_set_drvdata(vdev, usbvision);
+<<<<<<< HEAD
 	return vdev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* unregister video4linux devices */
 static void usbvision_unregister_video(struct usb_usbvision *usbvision)
 {
 	/* Radio Device: */
+<<<<<<< HEAD
 	if (usbvision->rdev) {
 		PDEBUG(DBG_PROBE, "unregister %s [v4l2]",
 		       video_device_node_name(usbvision->rdev));
@@ -1360,12 +1707,26 @@ static void usbvision_unregister_video(struct usb_usbvision *usbvision)
 		else
 			video_device_release(usbvision->vdev);
 		usbvision->vdev = NULL;
+=======
+	if (video_is_registered(&usbvision->rdev)) {
+		PDEBUG(DBG_PROBE, "unregister %s [v4l2]",
+		       video_device_node_name(&usbvision->rdev));
+		video_unregister_device(&usbvision->rdev);
+	}
+
+	/* Video Device: */
+	if (video_is_registered(&usbvision->vdev)) {
+		PDEBUG(DBG_PROBE, "unregister %s [v4l2]",
+		       video_device_node_name(&usbvision->vdev));
+		video_unregister_device(&usbvision->vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 /* register video4linux devices */
 static int usbvision_register_video(struct usb_usbvision *usbvision)
 {
+<<<<<<< HEAD
 	/* Video Device: */
 	usbvision->vdev = usbvision_vdev_init(usbvision,
 					      &usbvision_video_template,
@@ -1376,10 +1737,28 @@ static int usbvision_register_video(struct usb_usbvision *usbvision)
 		goto err_exit;
 	printk(KERN_INFO "USBVision[%d]: registered USBVision Video device %s [v4l2]\n",
 	       usbvision->nr, video_device_node_name(usbvision->vdev));
+=======
+	int res = -ENOMEM;
+
+	/* Video Device: */
+	usbvision_vdev_init(usbvision, &usbvision->vdev,
+			      &usbvision_video_template, "USBVision Video");
+	if (!usbvision->have_tuner) {
+		v4l2_disable_ioctl(&usbvision->vdev, VIDIOC_G_FREQUENCY);
+		v4l2_disable_ioctl(&usbvision->vdev, VIDIOC_S_TUNER);
+		v4l2_disable_ioctl(&usbvision->vdev, VIDIOC_G_FREQUENCY);
+		v4l2_disable_ioctl(&usbvision->vdev, VIDIOC_S_TUNER);
+	}
+	if (video_register_device(&usbvision->vdev, VFL_TYPE_GRABBER, video_nr) < 0)
+		goto err_exit;
+	printk(KERN_INFO "USBVision[%d]: registered USBVision Video device %s [v4l2]\n",
+	       usbvision->nr, video_device_node_name(&usbvision->vdev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Radio Device: */
 	if (usbvision_device_data[usbvision->dev_model].radio) {
 		/* usbvision has radio */
+<<<<<<< HEAD
 		usbvision->rdev = usbvision_vdev_init(usbvision,
 						      &usbvision_radio_template,
 						      "USBVision Radio");
@@ -1389,6 +1768,14 @@ static int usbvision_register_video(struct usb_usbvision *usbvision)
 			goto err_exit;
 		printk(KERN_INFO "USBVision[%d]: registered USBVision Radio device %s [v4l2]\n",
 		       usbvision->nr, video_device_node_name(usbvision->rdev));
+=======
+		usbvision_vdev_init(usbvision, &usbvision->rdev,
+			      &usbvision_radio_template, "USBVision Radio");
+		if (video_register_device(&usbvision->rdev, VFL_TYPE_RADIO, radio_nr) < 0)
+			goto err_exit;
+		printk(KERN_INFO "USBVision[%d]: registered USBVision Radio device %s [v4l2]\n",
+		       usbvision->nr, video_device_node_name(&usbvision->rdev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* all done */
 	return 0;
@@ -1398,7 +1785,11 @@ static int usbvision_register_video(struct usb_usbvision *usbvision)
 		"USBVision[%d]: video_register_device() failed\n",
 			usbvision->nr);
 	usbvision_unregister_video(usbvision);
+<<<<<<< HEAD
 	return -1;
+=======
+	return res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1423,6 +1814,12 @@ static struct usb_usbvision *usbvision_alloc(struct usb_device *dev,
 	if (v4l2_device_register(&intf->dev, &usbvision->v4l2_dev))
 		goto err_free;
 
+<<<<<<< HEAD
+=======
+	if (v4l2_ctrl_handler_init(&usbvision->hdl, 4))
+		goto err_unreg;
+	usbvision->v4l2_dev.ctrl_handler = &usbvision->hdl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&usbvision->v4l2_lock);
 
 	/* prepare control urb for control messages during interrupts */
@@ -1431,11 +1828,18 @@ static struct usb_usbvision *usbvision_alloc(struct usb_device *dev,
 		goto err_unreg;
 	init_waitqueue_head(&usbvision->ctrl_urb_wq);
 
+<<<<<<< HEAD
 	usbvision_init_power_off_timer(usbvision);
 
 	return usbvision;
 
 err_unreg:
+=======
+	return usbvision;
+
+err_unreg:
+	v4l2_ctrl_handler_free(&usbvision->hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(&usbvision->v4l2_dev);
 err_free:
 	kfree(usbvision);
@@ -1453,16 +1857,26 @@ static void usbvision_release(struct usb_usbvision *usbvision)
 {
 	PDEBUG(DBG_PROBE, "");
 
+<<<<<<< HEAD
 	usbvision_reset_power_off_timer(usbvision);
 
 	usbvision->initialized = 0;
 
 	usbvision_remove_sysfs(usbvision->vdev);
+=======
+	usbvision->initialized = 0;
+
+	usbvision_remove_sysfs(&usbvision->vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usbvision_unregister_video(usbvision);
 	kfree(usbvision->alt_max_pkt_size);
 
 	usb_free_urb(usbvision->ctrl_urb);
 
+<<<<<<< HEAD
+=======
+	v4l2_ctrl_handler_free(&usbvision->hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(&usbvision->v4l2_dev);
 	kfree(usbvision);
 
@@ -1490,19 +1904,32 @@ static void usbvision_configure_video(struct usb_usbvision *usbvision)
 	}
 
 	usbvision->tvnorm_id = usbvision_device_data[model].video_norm;
+<<<<<<< HEAD
 
 	usbvision->video_inputs = usbvision_device_data[model].video_channels;
 	usbvision->ctl_input = 0;
+=======
+	usbvision->video_inputs = usbvision_device_data[model].video_channels;
+	usbvision->ctl_input = 0;
+	usbvision->radio_freq = 87.5 * 16000;
+	usbvision->tv_freq = 400 * 16;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* This should be here to make i2c clients to be able to register */
 	/* first switch off audio */
 	if (usbvision_device_data[model].audio_channels > 0)
 		usbvision_audio_off(usbvision);
+<<<<<<< HEAD
 	if (!power_on_at_open) {
 		/* and then power up the noisy tuner */
 		usbvision_power_on(usbvision);
 		usbvision_i2c_register(usbvision);
 	}
+=======
+	/* and then power up the tuner */
+	usbvision_power_on(usbvision);
+	usbvision_i2c_register(usbvision);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1598,7 +2025,18 @@ static int usbvision_probe(struct usb_interface *intf,
 	}
 
 	for (i = 0; i < usbvision->num_alt; i++) {
+<<<<<<< HEAD
 		u16 tmp = le16_to_cpu(uif->altsetting[i].endpoint[1].desc.
+=======
+		u16 tmp;
+
+		if (uif->altsetting[i].desc.bNumEndpoints < 2) {
+			ret = -ENODEV;
+			goto err_pkt;
+		}
+
+		tmp = le16_to_cpu(uif->altsetting[i].endpoint[1].desc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      wMaxPacketSize);
 		usbvision->alt_max_pkt_size[i] =
 			(tmp & 0x07ff) * (((tmp & 0x1800) >> 11) + 1);
@@ -1609,6 +2047,13 @@ static int usbvision_probe(struct usb_interface *intf,
 
 	usbvision->nr = usbvision_nr++;
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&usbvision->queue_lock);
+	init_waitqueue_head(&usbvision->wait_frame);
+	init_waitqueue_head(&usbvision->wait_stream);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usbvision->have_tuner = usbvision_device_data[model].tuner;
 	if (usbvision->have_tuner)
 		usbvision->tuner_type = usbvision_device_data[model].tuner_type;
@@ -1625,7 +2070,11 @@ static int usbvision_probe(struct usb_interface *intf,
 	usbvision_configure_video(usbvision);
 	usbvision_register_video(usbvision);
 
+<<<<<<< HEAD
 	usbvision_create_sysfs(usbvision->vdev);
+=======
+	usbvision_create_sysfs(&usbvision->vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	PDEBUG(DBG_PROBE, "success");
 	return 0;
@@ -1649,6 +2098,10 @@ err_usb:
 static void usbvision_disconnect(struct usb_interface *intf)
 {
 	struct usb_usbvision *usbvision = to_usbvision(usb_get_intfdata(intf));
+<<<<<<< HEAD
+=======
+	int u;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	PDEBUG(DBG_PROBE, "");
 
@@ -1663,19 +2116,29 @@ static void usbvision_disconnect(struct usb_interface *intf)
 	usbvision_stop_isoc(usbvision);
 
 	v4l2_device_disconnect(&usbvision->v4l2_dev);
+<<<<<<< HEAD
 
 	if (usbvision->power) {
 		usbvision_i2c_unregister(usbvision);
 		usbvision_power_off(usbvision);
 	}
 	usbvision->remove_pending = 1;	/* Now all ISO data will be ignored */
+=======
+	usbvision_i2c_unregister(usbvision);
+	usbvision->remove_pending = 1;	/* Now all ISO data will be ignored */
+	u = usbvision->user;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb_put_dev(usbvision->dev);
 	usbvision->dev = NULL;	/* USB device is no more */
 
 	mutex_unlock(&usbvision->v4l2_lock);
 
+<<<<<<< HEAD
 	if (usbvision->user) {
+=======
+	if (u) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO "%s: In use, disconnect pending\n",
 		       __func__);
 		wake_up_interruptible(&usbvision->wait_frame);
@@ -1736,6 +2199,7 @@ static void __exit usbvision_exit(void)
 
 module_init(usbvision_init);
 module_exit(usbvision_exit);
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -1744,3 +2208,5 @@ module_exit(usbvision_exit);
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

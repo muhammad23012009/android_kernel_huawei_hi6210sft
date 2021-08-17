@@ -23,6 +23,10 @@
 #define KVM_FEATURE_ASYNC_PF		4
 #define KVM_FEATURE_STEAL_TIME		5
 #define KVM_FEATURE_PV_EOI		6
+<<<<<<< HEAD
+=======
+#define KVM_FEATURE_PV_UNHALT		7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* The last 8 bits are used to indicate how to interpret the flags field
  * in pvclock structure. If no bits are set, all flags are ignored.

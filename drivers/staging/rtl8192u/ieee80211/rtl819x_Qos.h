@@ -1,6 +1,7 @@
 #ifndef __INC_QOS_TYPE_H
 #define __INC_QOS_TYPE_H
 
+<<<<<<< HEAD
 #define BIT0                    0x00000001
 #define BIT1                    0x00000002
 #define BIT2                    0x00000004
@@ -34,6 +35,8 @@
 #define BIT30                   0x40000000
 #define BIT31                   0x80000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	MAX_WMMELE_LENGTH	64
 
 //
@@ -66,7 +69,11 @@ typedef u32 QOS_MODE, *PQOS_MODE;
 typedef	enum _ACK_POLICY{
 	eAckPlc0_ACK		= 0x00,
 	eAckPlc1_NoACK		= 0x01,
+<<<<<<< HEAD
 }ACK_POLICY,*PACK_POLICY;
+=======
+} ACK_POLICY, *PACK_POLICY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define WMM_PARAM_ELEMENT_SIZE	(8+(4*AC_PARAM_SIZE))
 
@@ -276,7 +283,11 @@ typedef	union _AC_PARAM{
 typedef	enum _QOS_ELE_SUBTYPE{
 	QOSELE_TYPE_INFO	= 0x00,		// 0x00: Information element
 	QOSELE_TYPE_PARAM	= 0x01,		// 0x01: parameter element
+<<<<<<< HEAD
 }QOS_ELE_SUBTYPE,*PQOS_ELE_SUBTYPE;
+=======
+} QOS_ELE_SUBTYPE, *PQOS_ELE_SUBTYPE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 //
@@ -288,7 +299,11 @@ typedef	enum _DIRECTION_VALUE{
 	DIR_DOWN		= 1,		// 0x01	// DownLink
 	DIR_DIRECT		= 2,		// 0x10	// DirectLink
 	DIR_BI_DIR		= 3,		// 0x11	// Bi-Direction
+<<<<<<< HEAD
 }DIRECTION_VALUE,*PDIRECTION_VALUE;
+=======
+} DIRECTION_VALUE, *PDIRECTION_VALUE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 //
@@ -363,7 +378,11 @@ typedef	enum _ACM_METHOD{
 	eAcmWay0_SwAndHw		= 0,		// By SW and HW.
 	eAcmWay1_HW			= 1,		// By HW.
 	eAcmWay2_SW			= 2,		// By SW.
+<<<<<<< HEAD
 }ACM_METHOD,*PACM_METHOD;
+=======
+} ACM_METHOD, *PACM_METHOD;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 typedef struct _ACM{
@@ -375,6 +394,7 @@ typedef struct _ACM{
 
 typedef	u8		AC_UAPSD, *PAC_UAPSD;
 
+<<<<<<< HEAD
 #define	GET_VO_UAPSD(_apsd) ((_apsd) & BIT0)
 #define	SET_VO_UAPSD(_apsd) ((_apsd) |= BIT0)
 
@@ -386,6 +406,19 @@ typedef	u8		AC_UAPSD, *PAC_UAPSD;
 
 #define	GET_BE_UAPSD(_apsd) ((_apsd) & BIT3)
 #define	SET_BE_UAPSD(_apsd) ((_apsd) |= BIT3)
+=======
+#define	GET_VO_UAPSD(_apsd) ((_apsd) & BIT(0))
+#define	SET_VO_UAPSD(_apsd) ((_apsd) |= BIT(0))
+
+#define	GET_VI_UAPSD(_apsd) ((_apsd) & BIT(1))
+#define	SET_VI_UAPSD(_apsd) ((_apsd) |= BIT(1))
+
+#define	GET_BK_UAPSD(_apsd) ((_apsd) & BIT(2))
+#define	SET_BK_UAPSD(_apsd) ((_apsd) |= BIT(2))
+
+#define	GET_BE_UAPSD(_apsd) ((_apsd) & BIT(3))
+#define	SET_BE_UAPSD(_apsd) ((_apsd) |= BIT(3))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 //typedef struct _TCLASS{
@@ -483,7 +516,11 @@ typedef struct _OCTET_STRING{
 typedef struct _STA_QOS{
 	//DECLARE_RT_OBJECT(STA_QOS);
 	u8				WMMIEBuf[MAX_WMMELE_LENGTH];
+<<<<<<< HEAD
 	u8*				WMMIE;
+=======
+	u8				*WMMIE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	// Part 1. Self QoS Mode.
 	QOS_MODE			QosCapability; //QoS Capability, 2006-06-14 Isaiah
@@ -498,7 +535,11 @@ typedef struct _STA_QOS{
 	int				NumBcnBeforeTrigger;
 
 	// Part 2. EDCA Parameter (perAC)
+<<<<<<< HEAD
 	u8 *				pWMMInfoEle;
+=======
+	u8				*pWMMInfoEle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8				WMMParamEle[WMM_PARAM_ELEMENT_SIZE];
 	u8				WMMPELength;
 
@@ -537,12 +578,21 @@ typedef struct _BSS_QOS{
 	QOS_MODE		bdQoSMode;
 
 	u8			bdWMMIEBuf[MAX_WMMELE_LENGTH];
+<<<<<<< HEAD
 	u8*		bdWMMIE;
 
 	QOS_ELE_SUBTYPE		EleSubType;
 
 	u8 *			pWMMInfoEle;
 	u8 *			pWMMParamEle;
+=======
+	u8		*bdWMMIE;
+
+	QOS_ELE_SUBTYPE		EleSubType;
+
+	u8			*pWMMInfoEle;
+	u8			*pWMMParamEle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	QOS_INFO_FIELD		QosInfoField;
 	AC_PARAM		AcParameter[4];

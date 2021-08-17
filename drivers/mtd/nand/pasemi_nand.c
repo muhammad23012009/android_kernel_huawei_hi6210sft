@@ -23,11 +23,19 @@
 #undef DEBUG
 
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/nand.h>
 #include <linux/mtd/nand_ecc.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
@@ -44,7 +52,11 @@ static const char driver_name[] = "pasemi-nand";
 
 static void pasemi_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (len > 0x800) {
 		memcpy_fromio(buf, chip->IO_ADDR_R, 0x800);
@@ -56,7 +68,11 @@ static void pasemi_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 
 static void pasemi_write_buf(struct mtd_info *mtd, const u_char *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (len > 0x800) {
 		memcpy_toio(chip->IO_ADDR_R, buf, 0x800);
@@ -69,7 +85,11 @@ static void pasemi_write_buf(struct mtd_info *mtd, const u_char *buf, int len)
 static void pasemi_hwcontrol(struct mtd_info *mtd, int cmd,
 			     unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cmd == NAND_CMD_NONE)
 		return;
@@ -91,8 +111,14 @@ int pasemi_device_ready(struct mtd_info *mtd)
 
 static int pasemi_nand_probe(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev;
 	struct device_node *np = ofdev->dev.of_node;
+=======
+	struct device *dev = &ofdev->dev;
+	struct pci_dev *pdev;
+	struct device_node *np = dev->of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource res;
 	struct nand_chip *chip;
 	int err = 0;
@@ -106,6 +132,7 @@ static int pasemi_nand_probe(struct platform_device *ofdev)
 	if (pasemi_nand_mtd)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pr_debug("pasemi_nand at %pR\n", &res);
 
 	/* Allocate memory for MTD device structure and private data */
@@ -114,16 +141,30 @@ static int pasemi_nand_probe(struct platform_device *ofdev)
 	if (!pasemi_nand_mtd) {
 		printk(KERN_WARNING
 		       "Unable to allocate PASEMI NAND MTD device structure\n");
+=======
+	dev_dbg(dev, "pasemi_nand at %pR\n", &res);
+
+	/* Allocate memory for MTD device structure and private data */
+	chip = kzalloc(sizeof(struct nand_chip), GFP_KERNEL);
+	if (!chip) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* Get pointer to private data */
 	chip = (struct nand_chip *)&pasemi_nand_mtd[1];
 
 	/* Link the private data with the MTD structure */
 	pasemi_nand_mtd->priv = chip;
 	pasemi_nand_mtd->owner = THIS_MODULE;
+=======
+	pasemi_nand_mtd = nand_to_mtd(chip);
+
+	/* Link the private data with the MTD structure */
+	pasemi_nand_mtd->dev.parent = dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	chip->IO_ADDR_R = of_iomap(np, 0);
 	chip->IO_ADDR_W = chip->IO_ADDR_R;
@@ -153,6 +194,10 @@ static int pasemi_nand_probe(struct platform_device *ofdev)
 	chip->write_buf = pasemi_write_buf;
 	chip->chip_delay = 0;
 	chip->ecc.mode = NAND_ECC_SOFT;
+<<<<<<< HEAD
+=======
+	chip->ecc.algo = NAND_ECC_HAMMING;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable the following for a flash based bad block table */
 	chip->bbt_options = NAND_BBT_USE_FLASH;
@@ -164,6 +209,7 @@ static int pasemi_nand_probe(struct platform_device *ofdev)
 	}
 
 	if (mtd_device_register(pasemi_nand_mtd, NULL, 0)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "pasemi_nand: Unable to register MTD device\n");
 		err = -ENODEV;
 		goto out_lpc;
@@ -174,12 +220,30 @@ static int pasemi_nand_probe(struct platform_device *ofdev)
 
 	return 0;
 
+=======
+		dev_err(dev, "Unable to register MTD device\n");
+		err = -ENODEV;
+		goto out_cleanup_nand;
+	}
+
+	dev_info(dev, "PA Semi NAND flash at %pR, control at I/O %x\n", &res,
+		 lpcctl);
+
+	return 0;
+
+ out_cleanup_nand:
+	nand_cleanup(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out_lpc:
 	release_region(lpcctl, 4);
  out_ior:
 	iounmap(chip->IO_ADDR_R);
  out_mtd:
+<<<<<<< HEAD
 	kfree(pasemi_nand_mtd);
+=======
+	kfree(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	return err;
 }
@@ -191,17 +255,28 @@ static int pasemi_nand_remove(struct platform_device *ofdev)
 	if (!pasemi_nand_mtd)
 		return 0;
 
+<<<<<<< HEAD
 	chip = pasemi_nand_mtd->priv;
 
 	/* Release resources, unregister device */
 	nand_release(pasemi_nand_mtd);
+=======
+	chip = mtd_to_nand(pasemi_nand_mtd);
+
+	/* Release resources, unregister device */
+	nand_release(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	release_region(lpcctl, 4);
 
 	iounmap(chip->IO_ADDR_R);
 
 	/* Free the MTD device structure */
+<<<<<<< HEAD
 	kfree(pasemi_nand_mtd);
+=======
+	kfree(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pasemi_nand_mtd = NULL;
 
@@ -221,8 +296,12 @@ MODULE_DEVICE_TABLE(of, pasemi_nand_match);
 static struct platform_driver pasemi_nand_driver =
 {
 	.driver = {
+<<<<<<< HEAD
 		.name = (char*)driver_name,
 		.owner = THIS_MODULE,
+=======
+		.name = driver_name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = pasemi_nand_match,
 	},
 	.probe		= pasemi_nand_probe,

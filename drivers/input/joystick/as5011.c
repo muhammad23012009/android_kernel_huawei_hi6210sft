@@ -234,7 +234,11 @@ static int as5011_probe(struct i2c_client *client,
 	int irq;
 	int error;
 
+<<<<<<< HEAD
 	plat_data = client->dev.platform_data;
+=======
+	plat_data = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!plat_data)
 		return -EINVAL;
 
@@ -288,6 +292,10 @@ static int as5011_probe(struct i2c_client *client,
 	if (irq < 0) {
 		dev_err(&client->dev,
 			"Failed to get irq number for button gpio\n");
+<<<<<<< HEAD
+=======
+		error = irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_free_button_gpio;
 	}
 

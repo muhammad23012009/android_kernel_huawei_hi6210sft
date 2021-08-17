@@ -23,6 +23,10 @@
 #include <linux/mtd/partitions.h>
 #include <linux/platform_device.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 
 #include <asm/mach-types.h>
@@ -31,13 +35,21 @@
 
 #include <mach/map.h>
 #include <mach/regs-gpio.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+#include <mach/irqs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <plat/adc.h>
 #include <plat/cpu.h>
 #include <plat/devs.h>
 #include <plat/fb.h>
 #include <linux/platform_data/mtd-nand-s3c2410.h>
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/touchscreen-s3c2410.h>
 
 #include <video/platform_lcd.h>
@@ -201,7 +213,10 @@ static struct platform_device *real6410_devices[] __initdata = {
 	&s3c_device_fb,
 	&s3c_device_nand,
 	&s3c_device_adc,
+<<<<<<< HEAD
 	&s3c_device_ts,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&s3c_device_ohci,
 };
 
@@ -300,7 +315,11 @@ static void __init real6410_machine_init(void)
 
 	s3c_fb_set_platdata(&real6410_lcd_pdata[features.lcd_index]);
 	s3c_nand_set_platdata(&real6410_nand_info);
+<<<<<<< HEAD
 	s3c24xx_ts_set_platdata(NULL);
+=======
+	s3c64xx_ts_set_platdata(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* configure nCS1 width to 16 bits */
 
@@ -330,11 +349,18 @@ static void __init real6410_machine_init(void)
 MACHINE_START(REAL6410, "REAL6410")
 	/* Maintainer: Darius Augulis <augulis.darius@gmail.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
 
 	.init_irq	= s3c6410_init_irq,
 	.map_io		= real6410_map_io,
 	.init_machine	= real6410_machine_init,
 	.init_late	= s3c64xx_init_late,
+=======
+	.nr_irqs	= S3C64XX_NR_IRQS,
+	.init_irq	= s3c6410_init_irq,
+	.map_io		= real6410_map_io,
+	.init_machine	= real6410_machine_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_time	= samsung_timer_init,
 	.restart	= s3c64xx_restart,
 MACHINE_END

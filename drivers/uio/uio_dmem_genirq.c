@@ -135,18 +135,32 @@ static int uio_dmem_genirq_irqcontrol(struct uio_info *dev_info, s32 irq_on)
 	if (irq_on) {
 		if (test_and_clear_bit(0, &priv->flags))
 			enable_irq(dev_info->irq);
+<<<<<<< HEAD
 	} else {
 		if (!test_and_set_bit(0, &priv->flags))
 			disable_irq(dev_info->irq);
 	}
 	spin_unlock_irqrestore(&priv->lock, flags);
+=======
+		spin_unlock_irqrestore(&priv->lock, flags);
+	} else {
+		if (!test_and_set_bit(0, &priv->flags)) {
+			spin_unlock_irqrestore(&priv->lock, flags);
+			disable_irq(dev_info->irq);
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int uio_dmem_genirq_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct uio_dmem_genirq_pdata *pdata = pdev->dev.platform_data;
+=======
+	struct uio_dmem_genirq_pdata *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct uio_info *uioinfo = &pdata->uioinfo;
 	struct uio_dmem_genirq_platdata *priv;
 	struct uio_mem *uiomem;
@@ -204,7 +218,11 @@ static int uio_dmem_genirq_probe(struct platform_device *pdev)
 		ret = platform_get_irq(pdev, 0);
 		if (ret < 0) {
 			dev_err(&pdev->dev, "failed to get IRQ\n");
+<<<<<<< HEAD
 			goto bad0;
+=======
+			goto bad1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		uioinfo->irq = ret;
 	}
@@ -275,6 +293,10 @@ static int uio_dmem_genirq_probe(struct platform_device *pdev)
 	ret = uio_register_device(&pdev->dev, priv->uioinfo);
 	if (ret) {
 		dev_err(&pdev->dev, "unable to register uio device\n");
+<<<<<<< HEAD
+=======
+		pm_runtime_disable(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto bad1;
 	}
 
@@ -282,7 +304,10 @@ static int uio_dmem_genirq_probe(struct platform_device *pdev)
 	return 0;
  bad1:
 	kfree(priv);
+<<<<<<< HEAD
 	pm_runtime_disable(&pdev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  bad0:
 	/* kfree uioinfo for OF */
 	if (pdev->dev.of_node)
@@ -336,8 +361,11 @@ static const struct of_device_id uio_of_genirq_match[] = {
 	{ /* empty for now */ },
 };
 MODULE_DEVICE_TABLE(of, uio_of_genirq_match);
+<<<<<<< HEAD
 #else
 # define uio_of_genirq_match NULL
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct platform_driver uio_dmem_genirq = {
@@ -345,9 +373,14 @@ static struct platform_driver uio_dmem_genirq = {
 	.remove = uio_dmem_genirq_remove,
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.pm = &uio_dmem_genirq_dev_pm_ops,
 		.of_match_table = uio_of_genirq_match,
+=======
+		.pm = &uio_dmem_genirq_dev_pm_ops,
+		.of_match_table = of_match_ptr(uio_of_genirq_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

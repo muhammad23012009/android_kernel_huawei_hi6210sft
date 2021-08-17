@@ -9,6 +9,7 @@
 #ifndef __SPARC64_STRING_H__
 #define __SPARC64_STRING_H__
 
+<<<<<<< HEAD
 /* Really, userland/ksyms should not see any of this stuff. */
 
 #ifdef __KERNEL__
@@ -58,5 +59,12 @@ extern int strncmp(const char *, const char *, __kernel_size_t);
 #endif /* !EXPORT_SYMTAB_STROPS */
 
 #endif /* __KERNEL__ */
+=======
+#include <asm/asi.h>
+
+/* Now the str*() stuff... */
+#define __HAVE_ARCH_STRLEN
+__kernel_size_t strlen(const char *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !(__SPARC64_STRING_H__) */

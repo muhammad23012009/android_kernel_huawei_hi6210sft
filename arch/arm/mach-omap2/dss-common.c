@@ -25,13 +25,20 @@
 
 #include <linux/kernel.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 
 #include <video/omapdss.h>
+=======
+#include <linux/platform_device.h>
+
+#include <linux/platform_data/omapdss.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <video/omap-panel-data.h>
 
 #include "soc.h"
 #include "dss-common.h"
 #include "mux.h"
+<<<<<<< HEAD
 
 #define HDMI_GPIO_CT_CP_HPD 60 /* HPD mode enable/disable */
 #define HDMI_GPIO_LS_OE 41 /* Level shifter for HDMI */
@@ -249,3 +256,7 @@ void __init omap_4430sdp_display_init_of(void)
 
 	omap_display_init(&sdp4430_dss_data);
 }
+=======
+#include "display.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

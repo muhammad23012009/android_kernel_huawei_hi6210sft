@@ -290,6 +290,7 @@ sys_fw_init (const char *args, int arglen)
 	efi_runtime->hdr.signature = EFI_RUNTIME_SERVICES_SIGNATURE;
 	efi_runtime->hdr.revision = EFI_RUNTIME_SERVICES_REVISION;
 	efi_runtime->hdr.headersize = sizeof(efi_runtime->hdr);
+<<<<<<< HEAD
 	efi_runtime->get_time = __pa(&fw_efi_get_time);
 	efi_runtime->set_time = __pa(&efi_unimplemented);
 	efi_runtime->get_wakeup_time = __pa(&efi_unimplemented);
@@ -300,6 +301,18 @@ sys_fw_init (const char *args, int arglen)
 	efi_runtime->set_variable = __pa(&efi_unimplemented);
 	efi_runtime->get_next_high_mono_count = __pa(&efi_unimplemented);
 	efi_runtime->reset_system = __pa(&efi_reset_system);
+=======
+	efi_runtime->get_time = (void *)__pa(&fw_efi_get_time);
+	efi_runtime->set_time = (void *)__pa(&efi_unimplemented);
+	efi_runtime->get_wakeup_time = (void *)__pa(&efi_unimplemented);
+	efi_runtime->set_wakeup_time = (void *)__pa(&efi_unimplemented);
+	efi_runtime->set_virtual_address_map = (void *)__pa(&efi_unimplemented);
+	efi_runtime->get_variable = (void *)__pa(&efi_unimplemented);
+	efi_runtime->get_next_variable = (void *)__pa(&efi_unimplemented);
+	efi_runtime->set_variable = (void *)__pa(&efi_unimplemented);
+	efi_runtime->get_next_high_mono_count = (void *)__pa(&efi_unimplemented);
+	efi_runtime->reset_system = (void *)__pa(&efi_reset_system);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	efi_tables->guid = SAL_SYSTEM_TABLE_GUID;
 	efi_tables->table = __pa(sal_systab);

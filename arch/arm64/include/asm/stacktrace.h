@@ -16,14 +16,29 @@
 #ifndef __ASM_STACKTRACE_H
 #define __ASM_STACKTRACE_H
 
+<<<<<<< HEAD
+=======
+struct task_struct;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct stackframe {
 	unsigned long fp;
 	unsigned long sp;
 	unsigned long pc;
+<<<<<<< HEAD
 };
 
 extern int unwind_frame(struct stackframe *frame);
 extern void walk_stackframe(struct stackframe *frame,
+=======
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+	int graph;
+#endif
+};
+
+extern int unwind_frame(struct task_struct *tsk, struct stackframe *frame);
+extern void walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    int (*fn)(struct stackframe *, void *), void *data);
 
 #endif	/* __ASM_STACKTRACE_H */

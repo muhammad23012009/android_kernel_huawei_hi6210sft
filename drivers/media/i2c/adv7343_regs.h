@@ -13,7 +13,11 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #ifndef ADV7343_REG_H
+=======
+#ifndef ADV7343_REGS_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADV7343_REGS_H
 
 struct adv7343_std_info {

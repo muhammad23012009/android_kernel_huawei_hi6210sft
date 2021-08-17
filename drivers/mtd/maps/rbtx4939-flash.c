@@ -13,7 +13,10 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/device.h>
 #include <linux/platform_device.h>
@@ -34,11 +37,16 @@ static int rbtx4939_flash_remove(struct platform_device *dev)
 	info = platform_get_drvdata(dev);
 	if (!info)
 		return 0;
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 
 	if (info->mtd) {
 		struct rbtx4939_flash_data *pdata = dev->dev.platform_data;
 
+=======
+
+	if (info->mtd) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mtd_device_unregister(info->mtd);
 		map_destroy(info->mtd);
 	}
@@ -57,7 +65,11 @@ static int rbtx4939_flash_probe(struct platform_device *dev)
 	int err = 0;
 	unsigned long size;
 
+<<<<<<< HEAD
 	pdata = dev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata)
 		return -ENODEV;
 
@@ -100,7 +112,11 @@ static int rbtx4939_flash_probe(struct platform_device *dev)
 		err = -ENXIO;
 		goto err_out;
 	}
+<<<<<<< HEAD
 	info->mtd->owner = THIS_MODULE;
+=======
+	info->mtd->dev.parent = &dev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = mtd_device_parse_register(info->mtd, NULL, NULL, pdata->parts,
 					pdata->nr_parts);
 
@@ -131,7 +147,10 @@ static struct platform_driver rbtx4939_flash_driver = {
 	.shutdown	= rbtx4939_flash_shutdown,
 	.driver		= {
 		.name	= "rbtx4939-flash",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

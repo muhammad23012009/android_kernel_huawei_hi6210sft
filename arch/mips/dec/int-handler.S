@@ -5,7 +5,11 @@
  * Written by Ralf Baechle and Andreas Busse, modified for DECstation
  * support by Paul Antoine and Harald Koerfgen.
  *
+<<<<<<< HEAD
  * completly rewritten:
+=======
+ * completely rewritten:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 1998 Harald Koerfgen
  *
  * Rewritten extensively for controller-driven IRQ support
@@ -118,7 +122,11 @@
  *	       7	FPU/R4k timer
  *
  * We handle the IRQ according to _our_ priority (see setup.c),
+<<<<<<< HEAD
  * then we just return.	 If multiple IRQs are pending then we will
+=======
+ * then we just return.  If multiple IRQs are pending then we will
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * just take another exception, big deal.
  */
 		.align	5
@@ -146,7 +154,18 @@
 		/*
 		 * Find irq with highest priority
 		 */
+<<<<<<< HEAD
 		 PTR_LA t1,cpu_mask_nr_tbl
+=======
+		# open coded PTR_LA t1, cpu_mask_nr_tbl
+#if defined(CONFIG_32BIT) || defined(KBUILD_64BIT_SYM32)
+		# open coded la t1, cpu_mask_nr_tbl
+		lui	t1, %hi(cpu_mask_nr_tbl)
+		addiu	t1, %lo(cpu_mask_nr_tbl)
+#else
+#error GCC `-msym32' option required for 64-bit DECstation builds
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 1:		lw	t2,(t1)
 		nop
 		and	t2,t0
@@ -195,7 +214,18 @@
 		/*
 		 * Find irq with highest priority
 		 */
+<<<<<<< HEAD
 		 PTR_LA t1,asic_mask_nr_tbl
+=======
+		# open coded PTR_LA t1,asic_mask_nr_tbl
+#if defined(CONFIG_32BIT) || defined(KBUILD_64BIT_SYM32)
+		# open coded la t1, asic_mask_nr_tbl
+		lui	t1, %hi(asic_mask_nr_tbl)
+		addiu	t1, %lo(asic_mask_nr_tbl)
+#else
+#error GCC `-msym32' option required for 64-bit DECstation builds
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 2:		lw	t2,(t1)
 		nop
 		and	t2,t0
@@ -221,7 +251,11 @@
 		FEXPORT(cpu_all_int)		# HALT, timers, software junk
 		li	a0,DEC_CPU_IRQ_BASE
 		srl	t0,CAUSEB_IP
+<<<<<<< HEAD
 		li	t1,CAUSEF_IP>>CAUSEB_IP # mask
+=======
+		li	t1,CAUSEF_IP>>CAUSEB_IP	# mask
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		b	1f
 		 li	t2,4			# nr of bits / 2
 
@@ -267,8 +301,18 @@ handle_it:
 
 #ifdef CONFIG_32BIT
 fpu:
+<<<<<<< HEAD
 		j	handle_fpe_int
 		 nop
+=======
+		lw	t0,fpu_kstat_irq
+		nop
+		lw	t1,(t0)
+		nop
+		addu	t1,1
+		j	handle_fpe_int
+		 sw	t1,(t0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 spurious:

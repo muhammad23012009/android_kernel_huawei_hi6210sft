@@ -209,7 +209,10 @@ enum e752x_chips {
  */
 
 struct e752x_pvt {
+<<<<<<< HEAD
 	struct pci_dev *bridge_ck;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_dev *dev_d0f0;
 	struct pci_dev *dev_d0f1;
 	u32 tolm;
@@ -891,7 +894,11 @@ static void e752x_get_error_info(struct mem_ctl_info *mci,
 					info->buf_ferr);
 
 		if (info->dram_ferr)
+<<<<<<< HEAD
 			pci_write_bits16(pvt->bridge_ck, E752X_DRAM_FERR,
+=======
+			pci_write_bits16(pvt->dev_d0f1, E752X_DRAM_FERR,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 info->dram_ferr, info->dram_ferr);
 
 		pci_write_config_dword(dev, E752X_FERR_GLOBAL,
@@ -936,7 +943,11 @@ static void e752x_get_error_info(struct mem_ctl_info *mci,
 					info->buf_nerr);
 
 		if (info->dram_nerr)
+<<<<<<< HEAD
 			pci_write_bits16(pvt->bridge_ck, E752X_DRAM_NERR,
+=======
+			pci_write_bits16(pvt->dev_d0f1, E752X_DRAM_NERR,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 info->dram_nerr, info->dram_nerr);
 
 		pci_write_config_dword(dev, E752X_NERR_GLOBAL,
@@ -1177,6 +1188,7 @@ static void e752x_init_mem_map_table(struct pci_dev *pdev,
 static int e752x_get_devs(struct pci_dev *pdev, int dev_idx,
 			struct e752x_pvt *pvt)
 {
+<<<<<<< HEAD
 	struct pci_dev *dev;
 
 	pvt->bridge_ck = pci_get_device(PCI_VENDOR_ID_INTEL,
@@ -1189,12 +1201,25 @@ static int e752x_get_devs(struct pci_dev *pdev, int dev_idx,
 	}
 
 	if (pvt->bridge_ck == NULL) {
+=======
+	pvt->dev_d0f1 = pci_get_device(PCI_VENDOR_ID_INTEL,
+				pvt->dev_info->err_dev, NULL);
+
+	if (pvt->dev_d0f1 == NULL) {
+		pvt->dev_d0f1 = pci_scan_single_device(pdev->bus,
+							PCI_DEVFN(0, 1));
+		pci_dev_get(pvt->dev_d0f1);
+	}
+
+	if (pvt->dev_d0f1 == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		e752x_printk(KERN_ERR, "error reporting device not found:"
 			"vendor %x device 0x%x (broken BIOS?)\n",
 			PCI_VENDOR_ID_INTEL, e752x_devs[dev_idx].err_dev);
 		return 1;
 	}
 
+<<<<<<< HEAD
 	dev = pci_get_device(PCI_VENDOR_ID_INTEL,
 				e752x_devs[dev_idx].ctl_dev,
 				NULL);
@@ -1209,6 +1234,19 @@ static int e752x_get_devs(struct pci_dev *pdev, int dev_idx,
 
 fail:
 	pci_dev_put(pvt->bridge_ck);
+=======
+	pvt->dev_d0f0 = pci_get_device(PCI_VENDOR_ID_INTEL,
+				e752x_devs[dev_idx].ctl_dev,
+				NULL);
+
+	if (pvt->dev_d0f0 == NULL)
+		goto fail;
+
+	return 0;
+
+fail:
+	pci_dev_put(pvt->dev_d0f1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -1385,7 +1423,10 @@ static int e752x_probe1(struct pci_dev *pdev, int dev_idx)
 fail:
 	pci_dev_put(pvt->dev_d0f0);
 	pci_dev_put(pvt->dev_d0f1);
+<<<<<<< HEAD
 	pci_dev_put(pvt->bridge_ck);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	edac_mc_free(mci);
 
 	return -ENODEV;
@@ -1419,11 +1460,18 @@ static void e752x_remove_one(struct pci_dev *pdev)
 	pvt = (struct e752x_pvt *)mci->pvt_info;
 	pci_dev_put(pvt->dev_d0f0);
 	pci_dev_put(pvt->dev_d0f1);
+<<<<<<< HEAD
 	pci_dev_put(pvt->bridge_ck);
 	edac_mc_free(mci);
 }
 
 static DEFINE_PCI_DEVICE_TABLE(e752x_pci_tbl) = {
+=======
+	edac_mc_free(mci);
+}
+
+static const struct pci_device_id e752x_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 PCI_VEND_DEV(INTEL, 7520_0), PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 	 E7520},

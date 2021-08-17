@@ -24,9 +24,15 @@
 #include <linux/platform_device.h>
 
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <mach/regs-wan.h>
 #include <mach/regs-lan.h>
 #include <mach/regs-hpna.h>
+=======
+#include "regs-wan.h"
+#include "regs-lan.h"
+#include "regs-hpna.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/regs-switch.h>
 #include <mach/regs-misc.h>
 

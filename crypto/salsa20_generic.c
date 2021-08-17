@@ -186,6 +186,7 @@ static int encrypt(struct blkcipher_desc *desc,
 	blkcipher_walk_init(&walk, dst, src, nbytes);
 	err = blkcipher_walk_virt_block(desc, &walk, 64);
 
+<<<<<<< HEAD
 	salsa20_ivsetup(ctx, walk.iv);
 
 	if (likely(walk.nbytes == nbytes))
@@ -194,6 +195,9 @@ static int encrypt(struct blkcipher_desc *desc,
 				      walk.src.virt.addr, nbytes);
 		return blkcipher_walk_done(desc, &walk, 0);
 	}
+=======
+	salsa20_ivsetup(ctx, desc->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (walk.nbytes >= 64) {
 		salsa20_encrypt_bytes(ctx, walk.dst.virt.addr,

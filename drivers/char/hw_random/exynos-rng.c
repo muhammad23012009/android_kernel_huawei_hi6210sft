@@ -2,7 +2,11 @@
  * exynos-rng.c - Random Number Generator driver for the exynos
  *
  * Copyright (C) 2012 Samsung Electronics
+<<<<<<< HEAD
  * Jonghwa Lee <jonghwa3.lee@smasung.com>
+=======
+ * Jonghwa Lee <jonghwa3.lee@samsung.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +26,10 @@
 #include <linux/hw_random.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
@@ -46,11 +53,16 @@ struct exynos_rng {
 
 static u32 exynos_rng_readl(struct exynos_rng *rng, u32 offset)
 {
+<<<<<<< HEAD
 	return	__raw_readl(rng->mem + offset);
+=======
+	return	readl_relaxed(rng->mem + offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void exynos_rng_writel(struct exynos_rng *rng, u32 val, u32 offset)
 {
+<<<<<<< HEAD
 	__raw_writel(val, rng->mem + offset);
 }
 
@@ -63,6 +75,16 @@ static int exynos_init(struct hwrng *rng)
 
 	pm_runtime_get_sync(exynos_rng->dev);
 
+=======
+	writel_relaxed(val, rng->mem + offset);
+}
+
+static int exynos_rng_configure(struct exynos_rng *exynos_rng)
+{
+	int i;
+	int ret = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0 ; i < 5 ; i++)
 		exynos_rng_writel(exynos_rng, jiffies,
 				EXYNOS_PRNG_SEED_OFFSET + 4*i);
@@ -71,7 +93,23 @@ static int exynos_init(struct hwrng *rng)
 						 & SEED_SETTING_DONE))
 		ret = -EIO;
 
+<<<<<<< HEAD
 	pm_runtime_put_noidle(exynos_rng->dev);
+=======
+	return ret;
+}
+
+static int exynos_init(struct hwrng *rng)
+{
+	struct exynos_rng *exynos_rng = container_of(rng,
+						struct exynos_rng, rng);
+	int ret = 0;
+
+	pm_runtime_get_sync(exynos_rng->dev);
+	ret = exynos_rng_configure(exynos_rng);
+	pm_runtime_mark_last_busy(exynos_rng->dev);
+	pm_runtime_put_autosuspend(exynos_rng->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -82,23 +120,45 @@ static int exynos_read(struct hwrng *rng, void *buf,
 	struct exynos_rng *exynos_rng = container_of(rng,
 						struct exynos_rng, rng);
 	u32 *data = buf;
+<<<<<<< HEAD
+=======
+	int retry = 100;
+	int ret = 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pm_runtime_get_sync(exynos_rng->dev);
 
 	exynos_rng_writel(exynos_rng, PRNG_START, 0);
 
 	while (!(exynos_rng_readl(exynos_rng,
+<<<<<<< HEAD
 			EXYNOS_PRNG_STATUS_OFFSET) & PRNG_DONE))
 		cpu_relax();
+=======
+			EXYNOS_PRNG_STATUS_OFFSET) & PRNG_DONE) && --retry)
+		cpu_relax();
+	if (!retry) {
+		ret = -ETIMEDOUT;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	exynos_rng_writel(exynos_rng, PRNG_DONE, EXYNOS_PRNG_STATUS_OFFSET);
 
 	*data = exynos_rng_readl(exynos_rng, EXYNOS_PRNG_OUT1_OFFSET);
 
+<<<<<<< HEAD
 	pm_runtime_mark_last_busy(exynos_rng->dev);
 	pm_runtime_autosuspend(exynos_rng->dev);
 
 	return 4;
+=======
+out:
+	pm_runtime_mark_last_busy(exynos_rng->dev);
+	pm_runtime_put_sync_autosuspend(exynos_rng->dev);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int exynos_rng_probe(struct platform_device *pdev)
@@ -133,7 +193,11 @@ static int exynos_rng_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
+<<<<<<< HEAD
 	ret = hwrng_register(&exynos_rng->rng);
+=======
+	ret = devm_hwrng_register(&pdev->dev, &exynos_rng->rng);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		pm_runtime_dont_use_autosuspend(&pdev->dev);
 		pm_runtime_disable(&pdev->dev);
@@ -144,15 +208,24 @@ static int exynos_rng_probe(struct platform_device *pdev)
 
 static int exynos_rng_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct exynos_rng *exynos_rng = platform_get_drvdata(pdev);
 
 	hwrng_unregister(&exynos_rng->rng);
+=======
+	pm_runtime_dont_use_autosuspend(&pdev->dev);
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
 static int exynos_rng_runtime_suspend(struct device *dev)
+=======
+static int __maybe_unused exynos_rng_runtime_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct exynos_rng *exynos_rng = platform_get_drvdata(pdev);
@@ -162,23 +235,67 @@ static int exynos_rng_runtime_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int exynos_rng_runtime_resume(struct device *dev)
+=======
+static int __maybe_unused exynos_rng_runtime_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct exynos_rng *exynos_rng = platform_get_drvdata(pdev);
 
 	return clk_prepare_enable(exynos_rng->clk);
 }
+<<<<<<< HEAD
 #endif
 
 static UNIVERSAL_DEV_PM_OPS(exynos_rng_pm_ops, exynos_rng_runtime_suspend,
 					exynos_rng_runtime_resume, NULL);
+=======
+
+static int __maybe_unused exynos_rng_suspend(struct device *dev)
+{
+	return pm_runtime_force_suspend(dev);
+}
+
+static int __maybe_unused exynos_rng_resume(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct exynos_rng *exynos_rng = platform_get_drvdata(pdev);
+	int ret;
+
+	ret = pm_runtime_force_resume(dev);
+	if (ret)
+		return ret;
+
+	return exynos_rng_configure(exynos_rng);
+}
+
+static const struct dev_pm_ops exynos_rng_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(exynos_rng_suspend, exynos_rng_resume)
+	SET_RUNTIME_PM_OPS(exynos_rng_runtime_suspend,
+			   exynos_rng_runtime_resume, NULL)
+};
+
+static const struct of_device_id exynos_rng_dt_match[] = {
+	{
+		.compatible = "samsung,exynos4-rng",
+	},
+	{ },
+};
+MODULE_DEVICE_TABLE(of, exynos_rng_dt_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver exynos_rng_driver = {
 	.driver		= {
 		.name	= "exynos-rng",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &exynos_rng_pm_ops,
+=======
+		.pm	= &exynos_rng_pm_ops,
+		.of_match_table = exynos_rng_dt_match,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= exynos_rng_probe,
 	.remove		= exynos_rng_remove,

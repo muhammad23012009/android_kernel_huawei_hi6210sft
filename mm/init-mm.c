@@ -6,6 +6,10 @@
 #include <linux/cpumask.h>
 
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/user_namespace.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/pgtable.h>
 #include <asm/mmu.h>
 
@@ -21,5 +25,9 @@ struct mm_struct init_mm = {
 	.mmap_sem	= __RWSEM_INITIALIZER(init_mm.mmap_sem),
 	.page_table_lock =  __SPIN_LOCK_UNLOCKED(init_mm.page_table_lock),
 	.mmlist		= LIST_HEAD_INIT(init_mm.mmlist),
+<<<<<<< HEAD
+=======
+	.user_ns	= &init_user_ns,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_MM_CONTEXT(init_mm)
 };

@@ -5,7 +5,10 @@
  *  Support of BIGMEM added by Gerhard Wichert, Siemens AG, July 1999
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/signal.h>
 #include <linux/sched.h>
 #include <linux/kernel.h>
@@ -284,7 +287,11 @@ kernel_physical_mapping_init(unsigned long start,
 	 */
 	mapping_iter = 1;
 
+<<<<<<< HEAD
 	if (!cpu_has_pse)
+=======
+	if (!boot_cpu_has(X86_FEATURE_PSE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		use_pse = 0;
 
 repeat:
@@ -388,7 +395,10 @@ repeat:
 }
 
 pte_t *kmap_pte;
+<<<<<<< HEAD
 pgprot_t kmap_prot;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline pte_t *kmap_get_fixmap_pte(unsigned long vaddr)
 {
@@ -405,8 +415,11 @@ static void __init kmap_init(void)
 	 */
 	kmap_vstart = __fix_to_virt(FIX_KMAP_BEGIN);
 	kmap_pte = kmap_get_fixmap_pte(kmap_vstart);
+<<<<<<< HEAD
 
 	kmap_prot = PAGE_KERNEL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_HIGHMEM
@@ -434,7 +447,11 @@ void __init add_highpages_with_active_regions(int nid,
 	phys_addr_t start, end;
 	u64 i;
 
+<<<<<<< HEAD
 	for_each_free_mem_range(i, nid, &start, &end, NULL) {
+=======
+	for_each_free_mem_range(i, nid, MEMBLOCK_NONE, &start, &end, NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long pfn = clamp_t(unsigned long, PFN_UP(start),
 					    start_pfn, end_pfn);
 		unsigned long e_pfn = clamp_t(unsigned long, PFN_DOWN(end),
@@ -538,7 +555,11 @@ static void __init pagetable_init(void)
 	permanent_kmaps_init(pgd_base);
 }
 
+<<<<<<< HEAD
 pteval_t __supported_pte_mask __read_mostly = ~(_PAGE_NX | _PAGE_GLOBAL | _PAGE_IOMAP);
+=======
+pteval_t __supported_pte_mask __read_mostly = ~(_PAGE_NX | _PAGE_GLOBAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL_GPL(__supported_pte_mask);
 
 /* user-defined highmem size */
@@ -661,6 +682,7 @@ void __init initmem_init(void)
 		highstart_pfn = max_low_pfn;
 	printk(KERN_NOTICE "%ldMB HIGHMEM available.\n",
 		pages_to_mb(highend_pfn - highstart_pfn));
+<<<<<<< HEAD
 	num_physpages = highend_pfn;
 	high_memory = (void *) __va(highstart_pfn * PAGE_SIZE - 1) + 1;
 #else
@@ -673,6 +695,18 @@ void __init initmem_init(void)
 
 #ifdef CONFIG_FLATMEM
 	max_mapnr = num_physpages;
+=======
+	high_memory = (void *) __va(highstart_pfn * PAGE_SIZE - 1) + 1;
+#else
+	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE - 1) + 1;
+#endif
+
+	memblock_set_node(0, (phys_addr_t)ULLONG_MAX, &memblock.memory, 0);
+	sparse_memory_present_with_active_regions(0);
+
+#ifdef CONFIG_FLATMEM
+	max_mapnr = IS_ENABLED(CONFIG_HIGHMEM) ? highend_pfn : max_low_pfn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	__vmalloc_start_set = true;
 
@@ -740,9 +774,12 @@ static void __init test_wp_bit(void)
 
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	int codesize, reservedpages, datasize, initsize;
 	int tmp;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_iommu_alloc();
 
 #ifdef CONFIG_FLATMEM
@@ -760,6 +797,7 @@ void __init mem_init(void)
 	set_highmem_pages_init();
 
 	/* this will put all low memory onto the freelists */
+<<<<<<< HEAD
 	totalram_pages += free_all_bootmem();
 
 	reservedpages = 0;
@@ -786,6 +824,13 @@ void __init mem_init(void)
 		initsize >> 10,
 		totalhigh_pages << (PAGE_SHIFT-10));
 
+=======
+	free_all_bootmem();
+
+	after_bootmem = 1;
+
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk(KERN_INFO "virtual kernel memory layout:\n"
 		"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 #ifdef CONFIG_HIGHMEM
@@ -846,10 +891,18 @@ void __init mem_init(void)
 }
 
 #ifdef CONFIG_MEMORY_HOTPLUG
+<<<<<<< HEAD
 int arch_add_memory(int nid, u64 start, u64 size)
 {
 	struct pglist_data *pgdata = NODE_DATA(nid);
 	struct zone *zone = pgdata->node_zones + ZONE_HIGHMEM;
+=======
+int arch_add_memory(int nid, u64 start, u64 size, bool for_device)
+{
+	struct pglist_data *pgdata = NODE_DATA(nid);
+	struct zone *zone = pgdata->node_zones +
+		zone_for_memory(nid, start, size, ZONE_HIGHMEM, for_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long start_pfn = start >> PAGE_SHIFT;
 	unsigned long nr_pages = size >> PAGE_SHIFT;
 
@@ -893,7 +946,10 @@ static noinline int do_test_wp_bit(void)
 	return flag;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const int rodata_test_data = 0xC3;
 EXPORT_SYMBOL_GPL(rodata_test_data);
 
@@ -979,6 +1035,12 @@ void mark_rodata_ro(void)
 	set_pages_ro(virt_to_page(start), size >> PAGE_SHIFT);
 #endif
 	mark_nxdata_nx();
+<<<<<<< HEAD
 }
 #endif
 
+=======
+	if (__supported_pte_mask & _PAGE_NX)
+		debug_checkwx();
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

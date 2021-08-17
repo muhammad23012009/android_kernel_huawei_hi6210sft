@@ -31,7 +31,11 @@
  *		  Experimentally I found out that only a combination of
  *		  OCKS0=1, OCKS1=1 (128fs, 64fs output) and ice1724 -
  *		  VT1724_MT_I2S_MCLK_128X=0 (256fs input) yields correct
+<<<<<<< HEAD
  *		  sampling rate. That means the the FPGA doubles the
+=======
+ *		  sampling rate. That means that the FPGA doubles the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *		  MCK01 rate.
  *
  *	Copyright (c) 2003 Takashi Iwai <tiwai@suse.de>
@@ -98,7 +102,11 @@ static int stac9460_dac_mute(struct snd_ice1712 *ice, int idx,
 	new = (~mute << 7 & 0x80) | (old & ~0x80);
 	change = (new != old);
 	if (change)
+<<<<<<< HEAD
 		/*printk ("Volume register 0x%02x: 0x%02x\n", idx, new);*/
+=======
+		/* dev_dbg(ice->card->dev, "Volume register 0x%02x: 0x%02x\n", idx, new);*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		stac9460_put(ice, idx, new);
 	return change;
 }
@@ -133,7 +141,11 @@ static int stac9460_dac_mute_put(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	/* due to possible conflicts with stac9460_set_rate_val, mutexing */
 	mutex_lock(&spec->mute_mutex);
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "Mute put: reg 0x%02x, ctrl value: 0x%02x\n", idx,
+=======
+	dev_dbg(ice->card->dev, "Mute put: reg 0x%02x, ctrl value: 0x%02x\n", idx,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       ucontrol->value.integer.value[0]);
 	*/
 	change = stac9460_dac_mute(ice, idx, ucontrol->value.integer.value[0]);
@@ -187,7 +199,11 @@ static int stac9460_dac_vol_put(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 	if (change) {
 		ovol =  (0x7f - nvol) | (tmp & 0x80);
 		/*
+<<<<<<< HEAD
 		printk(KERN_DEBUG "DAC Volume: reg 0x%02x: 0x%02x\n",
+=======
+		dev_dbg(ice->card->dev, "DAC Volume: reg 0x%02x: 0x%02x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       idx, ovol);
 		*/
 		stac9460_put(ice, idx, (0x7f - nvol) | (tmp & 0x80));
@@ -284,6 +300,7 @@ static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 {
 	static const char * const texts[2] = { "Line In", "Mic" };
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -293,6 +310,9 @@ static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 
         return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -348,7 +368,11 @@ static void stac9460_set_rate_val(struct snd_ice1712 *ice, unsigned int rate)
 	for (idx = 0; idx < 7 ; ++idx)
 		changed[idx] = stac9460_dac_mute(ice,
 				STAC946X_MASTER_VOLUME + idx, 0);
+<<<<<<< HEAD
 	/*printk(KERN_DEBUG "Rate change: %d, new MC: 0x%02x\n", rate, new);*/
+=======
+	/*dev_dbg(ice->card->dev, "Rate change: %d, new MC: 0x%02x\n", rate, new);*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stac9460_put(ice, STAC946X_MASTER_CLOCKING, new);
 	udelay(10);
 	/* unmuting - only originally unmuted dacs -
@@ -563,6 +587,7 @@ static int ak4114_input_sw_info(struct snd_kcontrol *kcontrol,
 {
 	static const char * const texts[2] = { "Toslink", "Coax" };
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 2;
@@ -570,6 +595,9 @@ static int ak4114_input_sw_info(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
         return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -768,6 +796,7 @@ static int prodigy192_init(struct snd_ice1712 *ice)
 		/* from this moment if err = 0 then
 		 * spec->ak4114 should not be null
 		 */
+<<<<<<< HEAD
 		snd_printdd("AK4114 initialized with status %d\n", err);
 	} else
 		snd_printdd("AK4114 not found\n");
@@ -775,6 +804,14 @@ static int prodigy192_init(struct snd_ice1712 *ice)
 		return err;
 
 	return 0;
+=======
+		dev_dbg(ice->card->dev,
+			"AK4114 initialized with status %d\n", err);
+	} else
+		dev_dbg(ice->card->dev, "AK4114 not found\n");
+
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 

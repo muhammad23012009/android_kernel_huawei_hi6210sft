@@ -23,6 +23,14 @@ enum raster_load_mode {
 	LOAD_PALETTE,
 };
 
+<<<<<<< HEAD
+=======
+enum da8xx_frame_complete {
+	DA8XX_FRAME_WAIT,
+	DA8XX_FRAME_NOWAIT,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct da8xx_lcdc_platform_data {
 	const char manu_name[10];
 	void *controller_data;

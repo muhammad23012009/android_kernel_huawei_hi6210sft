@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -156,7 +160,10 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 		switch (ref_type) {
 		case ACPI_REFCLASS_LOCAL:
 		case ACPI_REFCLASS_ARG:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Get the local from the method's state info
 			 * Note: this increments the local's object reference count
@@ -210,7 +217,10 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 					 * (i.e., dereference the package index)
 					 * Delete the ref object, increment the returned object
 					 */
+<<<<<<< HEAD
 					acpi_ut_remove_reference(stack_desc);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					acpi_ut_add_reference(obj_desc);
 					*stack_ptr = obj_desc;
 				} else {
@@ -219,7 +229,12 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 					 * the package, can't dereference it
 					 */
 					ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 						    "Attempt to dereference an Index to NULL package element Idx=%p",
+=======
+						    "Attempt to dereference an Index to "
+						    "NULL package element Idx=%p",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						    stack_desc));
 					status = AE_AML_UNINITIALIZED_ELEMENT;
 				}
@@ -309,6 +324,10 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -334,11 +353,20 @@ acpi_ex_resolve_object_to_value(union acpi_operand_object **stack_ptr,
 acpi_status
 acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 			 union acpi_operand_object *operand,
+<<<<<<< HEAD
 			 acpi_object_type * return_type,
 			 union acpi_operand_object **return_desc)
 {
 	union acpi_operand_object *obj_desc = (void *)operand;
 	struct acpi_namespace_node *node;
+=======
+			 acpi_object_type *return_type,
+			 union acpi_operand_object **return_desc)
+{
+	union acpi_operand_object *obj_desc = ACPI_CAST_PTR(void, operand);
+	struct acpi_namespace_node *node =
+	    ACPI_CAST_PTR(struct acpi_namespace_node, operand);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_object_type type;
 	acpi_status status;
 
@@ -348,23 +376,46 @@ acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 
 	switch (ACPI_GET_DESCRIPTOR_TYPE(obj_desc)) {
 	case ACPI_DESC_TYPE_OPERAND:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		type = obj_desc->common.type;
 		break;
 
 	case ACPI_DESC_TYPE_NAMED:
+<<<<<<< HEAD
 		type = ((struct acpi_namespace_node *)obj_desc)->type;
 		obj_desc =
 		    acpi_ns_get_attached_object((struct acpi_namespace_node *)
 						obj_desc);
+=======
+
+		type = ((struct acpi_namespace_node *)obj_desc)->type;
+		obj_desc = acpi_ns_get_attached_object(node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* If we had an Alias node, use the attached object for type info */
 
 		if (type == ACPI_TYPE_LOCAL_ALIAS) {
 			type = ((struct acpi_namespace_node *)obj_desc)->type;
+<<<<<<< HEAD
 			obj_desc =
 			    acpi_ns_get_attached_object((struct
 							 acpi_namespace_node *)
 							obj_desc);
+=======
+			obj_desc = acpi_ns_get_attached_object((struct
+								acpi_namespace_node
+								*)obj_desc);
+		}
+
+		if (!obj_desc) {
+			ACPI_ERROR((AE_INFO,
+				    "[%4.4s] Node is unresolved or uninitialized",
+				    acpi_ut_get_node_name(node)));
+			return_ACPI_STATUS(AE_AML_UNINITIALIZED_NODE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
@@ -519,7 +570,11 @@ acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 	 */
 	type = obj_desc->common.type;
 
+<<<<<<< HEAD
       exit:
+=======
+exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Convert internal types to external types */
 
 	switch (type) {
@@ -538,7 +593,13 @@ acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 		break;
 
 	default:
+<<<<<<< HEAD
 		/* No change to Type required */
+=======
+
+		/* No change to Type required */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 

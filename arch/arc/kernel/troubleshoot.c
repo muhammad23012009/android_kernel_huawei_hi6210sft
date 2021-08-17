@@ -14,6 +14,10 @@
 #include <linux/proc_fs.h>
 #include <linux/file.h>
 #include <asm/arcregs.h>
+<<<<<<< HEAD
+=======
+#include <asm/irqflags.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Common routine to print scratch regs (r0-r12) or callee regs (r13-r25)
@@ -34,7 +38,14 @@ static noinline void print_reg_file(long *reg_rev, int start_num)
 			n += scnprintf(buf + n, len - n, "\n");
 
 		/* because pt_regs has regs reversed: r12..r0, r25..r13 */
+<<<<<<< HEAD
 		reg_rev--;
+=======
+		if (is_isa_arcv2() && start_num == 0)
+			reg_rev++;
+		else
+			reg_rev--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (start_num != 0)
@@ -52,9 +63,14 @@ static void show_callee_regs(struct callee_regs *cregs)
 	print_reg_file(&(cregs->r13), 13);
 }
 
+<<<<<<< HEAD
 void print_task_path_n_nm(struct task_struct *tsk, char *buf)
 {
 	struct path path;
+=======
+static void print_task_path_n_nm(struct task_struct *tsk, char *buf)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *path_nm = NULL;
 	struct mm_struct *mm;
 	struct file *exe_file;
@@ -67,6 +83,7 @@ void print_task_path_n_nm(struct task_struct *tsk, char *buf)
 	mmput(mm);
 
 	if (exe_file) {
+<<<<<<< HEAD
 		path = exe_file->f_path;
 		path_get(&exe_file->f_path);
 		fput(exe_file);
@@ -78,6 +95,15 @@ done:
 	pr_info("Path: %s\n", path_nm);
 }
 EXPORT_SYMBOL(print_task_path_n_nm);
+=======
+		path_nm = file_path(exe_file, buf, 255);
+		fput(exe_file);
+	}
+
+done:
+	pr_info("Path: %s\n", !IS_ERR(path_nm) ? path_nm : "?");
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void show_faulting_vma(unsigned long address, char *buf)
 {
@@ -86,12 +112,21 @@ static void show_faulting_vma(unsigned long address, char *buf)
 	unsigned long ino = 0;
 	dev_t dev = 0;
 	char *nm = buf;
+<<<<<<< HEAD
+=======
+	struct mm_struct *active_mm = current->active_mm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* can't use print_vma_addr() yet as it doesn't check for
 	 * non-inclusive vma
 	 */
+<<<<<<< HEAD
 
 	vma = find_vma(current->active_mm, address);
+=======
+	down_read(&active_mm->mmap_sem);
+	vma = find_vma(active_mm, address);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check against the find_vma( ) behaviour which returns the next VMA
 	 * if the container VMA is not found
@@ -99,9 +134,14 @@ static void show_faulting_vma(unsigned long address, char *buf)
 	if (vma && (vma->vm_start <= address)) {
 		struct file *file = vma->vm_file;
 		if (file) {
+<<<<<<< HEAD
 			struct path *path = &file->f_path;
 			nm = d_path(path, buf, PAGE_SIZE - 1);
 			inode = vma->vm_file->f_path.dentry->d_inode;
+=======
+			nm = file_path(file, buf, PAGE_SIZE - 1);
+			inode = file_inode(vma->vm_file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev = inode->i_sb->s_dev;
 			ino = inode->i_ino;
 		}
@@ -110,22 +150,37 @@ static void show_faulting_vma(unsigned long address, char *buf)
 			vma->vm_start < TASK_UNMAPPED_BASE ?
 				address : address - vma->vm_start,
 			nm, vma->vm_start, vma->vm_end);
+<<<<<<< HEAD
 	} else {
 		pr_info("    @No matching VMA found\n");
 	}
+=======
+	} else
+		pr_info("    @No matching VMA found\n");
+
+	up_read(&active_mm->mmap_sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void show_ecr_verbose(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	unsigned int vec, cause_code, cause_reg;
 	unsigned long address;
 
 	cause_reg = current->thread.cause_code;
 	pr_info("\n[ECR   ]: 0x%08x => ", cause_reg);
+=======
+	unsigned int vec, cause_code;
+	unsigned long address;
+
+	pr_info("\n[ECR   ]: 0x%08lx => ", regs->event);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* For Data fault, this is data address not instruction addr */
 	address = current->thread.fault_address;
 
+<<<<<<< HEAD
 	vec = cause_reg >> 16;
 	cause_code = (cause_reg >> 8) & 0xFF;
 
@@ -134,6 +189,16 @@ static void show_ecr_verbose(struct pt_regs *regs)
 		pr_cont("Invalid %s 0x%08lx by insn @ 0x%08lx\n",
 		       (cause_code == 0x01) ? "Read From" :
 		       ((cause_code == 0x02) ? "Write to" : "EX"),
+=======
+	vec = regs->ecr_vec;
+	cause_code = regs->ecr_cause;
+
+	/* For DTLB Miss or ProtV, display the memory involved too */
+	if (vec == ECR_V_DTLB_MISS) {
+		pr_cont("Invalid %s @ 0x%08lx by insn @ 0x%08lx\n",
+		       (cause_code == 0x01) ? "Read" :
+		       ((cause_code == 0x02) ? "Write" : "EX"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       address, regs->ret);
 	} else if (vec == ECR_V_ITLB_MISS) {
 		pr_cont("Insn could not be fetched\n");
@@ -144,6 +209,7 @@ static void show_ecr_verbose(struct pt_regs *regs)
 	} else if (vec == ECR_V_PROTV) {
 		if (cause_code == ECR_C_PROTV_INST_FETCH)
 			pr_cont("Execute from Non-exec Page\n");
+<<<<<<< HEAD
 		else if (cause_code == ECR_C_PROTV_LOAD)
 			pr_cont("Read from Non-readable Page\n");
 		else if (cause_code == ECR_C_PROTV_STORE)
@@ -154,6 +220,25 @@ static void show_ecr_verbose(struct pt_regs *regs)
 			pr_cont("Misaligned r/w from 0x%08lx\n", address);
 	} else if (vec == ECR_V_INSN_ERR) {
 		pr_cont("Illegal Insn\n");
+=======
+		else if (cause_code == ECR_C_PROTV_MISALIG_DATA)
+			pr_cont("Misaligned r/w from 0x%08lx\n", address);
+		else
+			pr_cont("%s access not allowed on page\n",
+				(cause_code == 0x01) ? "Read" :
+				((cause_code == 0x02) ? "Write" : "EX"));
+	} else if (vec == ECR_V_INSN_ERR) {
+		pr_cont("Illegal Insn\n");
+#ifdef CONFIG_ISA_ARCV2
+	} else if (vec == ECR_V_MEM_ERR) {
+		if (cause_code == 0x00)
+			pr_cont("Bus Error from Insn Mem\n");
+		else if (cause_code == 0x10)
+			pr_cont("Bus Error from Data Mem\n");
+		else
+			pr_cont("Bus Error, check PRM\n");
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		pr_cont("Check Programmer's Manual\n");
 	}
@@ -176,8 +261,12 @@ void show_regs(struct pt_regs *regs)
 	print_task_path_n_nm(tsk, buf);
 	show_regs_print_info(KERN_INFO);
 
+<<<<<<< HEAD
 	if (current->thread.cause_code)
 		show_ecr_verbose(regs);
+=======
+	show_ecr_verbose(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_info("[EFA   ]: 0x%08lx\n[BLINK ]: %pS\n[ERET  ]: %pS\n",
 		current->thread.fault_address,
@@ -188,12 +277,29 @@ void show_regs(struct pt_regs *regs)
 
 	pr_info("[STAT32]: 0x%08lx", regs->status32);
 
+<<<<<<< HEAD
 #define STS_BIT(r, bit)	r->status32 & STATUS_##bit##_MASK ? #bit : ""
 	if (!user_mode(regs))
 		pr_cont(" : %2s %2s %2s %2s %2s\n",
 			STS_BIT(regs, AE), STS_BIT(regs, A2), STS_BIT(regs, A1),
 			STS_BIT(regs, E2), STS_BIT(regs, E1));
 
+=======
+#define STS_BIT(r, bit)	r->status32 & STATUS_##bit##_MASK ? #bit" " : ""
+
+#ifdef CONFIG_ISA_ARCOMPACT
+	pr_cont(" : %2s%2s%2s%2s%2s%2s%2s\n",
+			(regs->status32 & STATUS_U_MASK) ? "U " : "K ",
+			STS_BIT(regs, DE), STS_BIT(regs, AE),
+			STS_BIT(regs, A2), STS_BIT(regs, A1),
+			STS_BIT(regs, E2), STS_BIT(regs, E1));
+#else
+	pr_cont(" : %2s%2s%2s%2s\n",
+			STS_BIT(regs, IE),
+			(regs->status32 & STATUS_U_MASK) ? "U " : "K ",
+			STS_BIT(regs, DE), STS_BIT(regs, AE));
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("BTA: 0x%08lx\t SP: 0x%08lx\t FP: 0x%08lx\n",
 		regs->bta, regs->sp, regs->fp);
 	pr_info("LPS: 0x%08lx\tLPE: 0x%08lx\tLPC: 0x%08lx\n",
@@ -213,10 +319,16 @@ void show_regs(struct pt_regs *regs)
 }
 
 void show_kernel_fault_diag(const char *str, struct pt_regs *regs,
+<<<<<<< HEAD
 			    unsigned long address, unsigned long cause_reg)
 {
 	current->thread.fault_address = address;
 	current->thread.cause_code = cause_reg;
+=======
+			    unsigned long address)
+{
+	current->thread.fault_address = address;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Caller and Callee regs */
 	show_regs(regs);
@@ -225,6 +337,7 @@ void show_kernel_fault_diag(const char *str, struct pt_regs *regs,
 	if (!user_mode(regs))
 		show_stacktrace(current, regs);
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_DEBUG_FS
 
@@ -335,3 +448,5 @@ static void __exit arc_debugfs_exit(void)
 module_exit(arc_debugfs_exit);
 
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

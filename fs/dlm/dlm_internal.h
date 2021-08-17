@@ -66,6 +66,19 @@ struct dlm_mhandle;
 #define log_error(ls, fmt, args...) \
 	printk(KERN_ERR "dlm: %s: " fmt "\n", (ls)->ls_name , ##args)
 
+<<<<<<< HEAD
+=======
+#define log_rinfo(ls, fmt, args...) \
+do { \
+	if (dlm_config.ci_log_info) \
+		printk(KERN_INFO "dlm: %s: " fmt "\n", \
+			(ls)->ls_name, ##args); \
+	else if (dlm_config.ci_log_debug) \
+		printk(KERN_DEBUG "dlm: %s: " fmt "\n", \
+		       (ls)->ls_name , ##args); \
+} while (0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define log_debug(ls, fmt, args...) \
 do { \
 	if (dlm_config.ci_log_debug) \
@@ -90,7 +103,10 @@ do { \
                __LINE__, __FILE__, #x, jiffies); \
     {do} \
     printk("\n"); \
+<<<<<<< HEAD
     BUG(); \
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     panic("DLM:  Record message above and reboot.\n"); \
   } \
 }

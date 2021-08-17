@@ -19,10 +19,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  */
@@ -39,7 +42,10 @@
 #include <linux/workqueue.h>
 #include <linux/nmi.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
 #include <linux/acpi_io.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/efi.h>
 #include <linux/ioport.h>
 #include <linux/list.h>
@@ -48,6 +54,7 @@
 
 #include <asm/io.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_bus.h>
@@ -56,10 +63,20 @@
 #define _COMPONENT		ACPI_OS_SERVICES
 ACPI_MODULE_NAME("osl");
 #define PREFIX		"ACPI: "
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+
+#include "internal.h"
+
+#define _COMPONENT		ACPI_OS_SERVICES
+ACPI_MODULE_NAME("osl");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct acpi_os_dpc {
 	acpi_osd_exec_callback function;
 	void *context;
 	struct work_struct work;
+<<<<<<< HEAD
 	int wait;
 };
 
@@ -67,24 +84,41 @@ struct acpi_os_dpc {
 #include CONFIG_ACPI_CUSTOM_DSDT_FILE
 #endif
 
+=======
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef ENABLE_DEBUGGER
 #include <linux/kdb.h>
 
 /* stuff for debugger support */
 int acpi_in_debugger;
 EXPORT_SYMBOL(acpi_in_debugger);
+<<<<<<< HEAD
 
 extern char line_buf[80];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/*ENABLE_DEBUGGER */
 
 static int (*__acpi_os_prepare_sleep)(u8 sleep_state, u32 pm1a_ctrl,
 				      u32 pm1b_ctrl);
+<<<<<<< HEAD
+=======
+static int (*__acpi_os_prepare_extended_sleep)(u8 sleep_state, u32 val_a,
+				      u32 val_b);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static acpi_osd_handler acpi_irq_handler;
 static void *acpi_irq_context;
 static struct workqueue_struct *kacpid_wq;
 static struct workqueue_struct *kacpi_notify_wq;
 static struct workqueue_struct *kacpi_hotplug_wq;
+<<<<<<< HEAD
+=======
+static bool acpi_os_initialized;
+unsigned int acpi_sci_irq = INVALID_ACPI_IRQ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This list of permanent mappings is for memory that may be accessed from
@@ -101,6 +135,7 @@ struct acpi_ioremap {
 static LIST_HEAD(acpi_ioremaps);
 static DEFINE_MUTEX(acpi_ioremap_lock);
 
+<<<<<<< HEAD
 static void __init acpi_osi_setup_late(void);
 
 /*
@@ -156,6 +191,8 @@ static u32 acpi_osi_handler(acpi_string interface, u32 supported)
 	return supported;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init acpi_request_region (struct acpi_generic_address *gas,
 	unsigned int length, char *desc)
 {
@@ -205,7 +242,11 @@ static int __init acpi_reserve_resources(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 device_initcall(acpi_reserve_resources);
+=======
+fs_initcall_sync(acpi_reserve_resources);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void acpi_os_printf(const char *fmt, ...)
 {
@@ -214,6 +255,10 @@ void acpi_os_printf(const char *fmt, ...)
 	acpi_os_vprintf(fmt, args);
 	va_end(args);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(acpi_os_printf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void acpi_os_vprintf(const char *fmt, va_list args)
 {
@@ -225,10 +270,25 @@ void acpi_os_vprintf(const char *fmt, va_list args)
 	if (acpi_in_debugger) {
 		kdb_printf("%s", buffer);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_CONT "%s", buffer);
 	}
 #else
 	printk(KERN_CONT "%s", buffer);
+=======
+		if (printk_get_level(buffer))
+			printk("%s", buffer);
+		else
+			printk(KERN_CONT "%s", buffer);
+	}
+#else
+	if (acpi_debugger_write_log(buffer) < 0) {
+		if (printk_get_level(buffer))
+			printk("%s", buffer);
+		else
+			printk(KERN_CONT "%s", buffer);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 }
 
@@ -236,7 +296,12 @@ void acpi_os_vprintf(const char *fmt, va_list args)
 static unsigned long acpi_rsdp;
 static int __init setup_acpi_rsdp(char *arg)
 {
+<<<<<<< HEAD
 	acpi_rsdp = simple_strtoul(arg, NULL, 16);
+=======
+	if (kstrtoul(arg, 16, &acpi_rsdp))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 early_param("acpi_rsdp", setup_acpi_rsdp);
@@ -259,12 +324,21 @@ acpi_physical_address __init acpi_os_get_root_pointer(void)
 			       "System description tables not found\n");
 			return 0;
 		}
+<<<<<<< HEAD
 	} else {
+=======
+	} else if (IS_ENABLED(CONFIG_ACPI_LEGACY_TABLES_LOOKUP)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		acpi_physical_address pa = 0;
 
 		acpi_find_root_pointer(&pa);
 		return pa;
 	}
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Must be called with 'acpi_ioremap_lock' or RCU read lock held. */
@@ -324,11 +398,19 @@ acpi_map_lookup_virt(void __iomem *virt, acpi_size size)
 	return NULL;
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_IA64
 #define should_use_kmap(pfn)   page_is_ram(pfn)
 #else
 /* ioremap will take care of cache attributes */
 #define should_use_kmap(pfn)   0
+=======
+#if defined(CONFIG_IA64) || defined(CONFIG_ARM64)
+/* ioremap will take care of cache attributes */
+#define should_use_kmap(pfn)   0
+#else
+#define should_use_kmap(pfn)   page_is_ram(pfn)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static void __iomem *acpi_map(acpi_physical_address pg_off, unsigned long pg_sz)
@@ -355,8 +437,26 @@ static void acpi_unmap(acpi_physical_address pg_off, void __iomem *vaddr)
 		iounmap(vaddr);
 }
 
+<<<<<<< HEAD
 void __iomem *__init_refok
 acpi_os_map_memory(acpi_physical_address phys, acpi_size size)
+=======
+/**
+ * acpi_os_map_iomem - Get a virtual address for a given physical address range.
+ * @phys: Start of the physical address range to map.
+ * @size: Size of the physical address range to map.
+ *
+ * Look up the given physical address range in the list of existing ACPI memory
+ * mappings.  If found, get a reference to it and return a pointer to it (its
+ * virtual address).  If not found, map it, add it to that list and return a
+ * pointer to it.
+ *
+ * During early init (when acpi_gbl_permanent_mmap has not been set yet) this
+ * routine simply calls __acpi_map_table() to get the job done.
+ */
+void __iomem *__ref
+acpi_os_map_iomem(acpi_physical_address phys, acpi_size size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_ioremap *map;
 	void __iomem *virt;
@@ -402,6 +502,7 @@ acpi_os_map_memory(acpi_physical_address phys, acpi_size size)
 
 	list_add_tail_rcu(&map->list, &acpi_ioremaps);
 
+<<<<<<< HEAD
  out:
 	mutex_unlock(&acpi_ioremap_lock);
 	return map->virt + (phys - map->phys);
@@ -412,10 +513,33 @@ static void acpi_os_drop_map_ref(struct acpi_ioremap *map)
 {
 	if (!--map->refcount)
 		list_del_rcu(&map->list);
+=======
+out:
+	mutex_unlock(&acpi_ioremap_lock);
+	return map->virt + (phys - map->phys);
+}
+EXPORT_SYMBOL_GPL(acpi_os_map_iomem);
+
+void *__ref acpi_os_map_memory(acpi_physical_address phys, acpi_size size)
+{
+	return (void *)acpi_os_map_iomem(phys, size);
+}
+EXPORT_SYMBOL_GPL(acpi_os_map_memory);
+
+/* Must be called with mutex_lock(&acpi_ioremap_lock) */
+static unsigned long acpi_os_drop_map_ref(struct acpi_ioremap *map)
+{
+	unsigned long refcount = --map->refcount;
+
+	if (!refcount)
+		list_del_rcu(&map->list);
+	return refcount;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void acpi_os_map_cleanup(struct acpi_ioremap *map)
 {
+<<<<<<< HEAD
 	if (!map->refcount) {
 		synchronize_rcu();
 		acpi_unmap(map->phys, map->virt);
@@ -426,6 +550,31 @@ static void acpi_os_map_cleanup(struct acpi_ioremap *map)
 void __ref acpi_os_unmap_memory(void __iomem *virt, acpi_size size)
 {
 	struct acpi_ioremap *map;
+=======
+	synchronize_rcu_expedited();
+	acpi_unmap(map->phys, map->virt);
+	kfree(map);
+}
+
+/**
+ * acpi_os_unmap_iomem - Drop a memory mapping reference.
+ * @virt: Start of the address range to drop a reference to.
+ * @size: Size of the address range to drop a reference to.
+ *
+ * Look up the given virtual address range in the list of existing ACPI memory
+ * mappings, drop a reference to it and unmap it if there are no more active
+ * references to it.
+ *
+ * During early init (when acpi_gbl_permanent_mmap has not been set yet) this
+ * routine simply calls __acpi_unmap_table() to get the job done.  Since
+ * __acpi_unmap_table() is an __init function, the __ref annotation is needed
+ * here.
+ */
+void __ref acpi_os_unmap_iomem(void __iomem *virt, acpi_size size)
+{
+	struct acpi_ioremap *map;
+	unsigned long refcount;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!acpi_gbl_permanent_mmap) {
 		__acpi_unmap_table(virt, size);
@@ -439,10 +588,24 @@ void __ref acpi_os_unmap_memory(void __iomem *virt, acpi_size size)
 		WARN(true, PREFIX "%s: bad address %p\n", __func__, virt);
 		return;
 	}
+<<<<<<< HEAD
 	acpi_os_drop_map_ref(map);
 	mutex_unlock(&acpi_ioremap_lock);
 
 	acpi_os_map_cleanup(map);
+=======
+	refcount = acpi_os_drop_map_ref(map);
+	mutex_unlock(&acpi_ioremap_lock);
+
+	if (!refcount)
+		acpi_os_map_cleanup(map);
+}
+EXPORT_SYMBOL_GPL(acpi_os_unmap_iomem);
+
+void __ref acpi_os_unmap_memory(void *virt, acpi_size size)
+{
+	return acpi_os_unmap_iomem((void __iomem *)virt, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(acpi_os_unmap_memory);
 
@@ -465,7 +628,11 @@ int acpi_os_map_generic_address(struct acpi_generic_address *gas)
 	if (!addr || !gas->bit_width)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	virt = acpi_os_map_memory(addr, gas->bit_width / 8);
+=======
+	virt = acpi_os_map_iomem(addr, gas->bit_width / 8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!virt)
 		return -EIO;
 
@@ -477,6 +644,10 @@ void acpi_os_unmap_generic_address(struct acpi_generic_address *gas)
 {
 	u64 addr;
 	struct acpi_ioremap *map;
+<<<<<<< HEAD
+=======
+	unsigned long refcount;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (gas->space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
 		return;
@@ -492,10 +663,18 @@ void acpi_os_unmap_generic_address(struct acpi_generic_address *gas)
 		mutex_unlock(&acpi_ioremap_lock);
 		return;
 	}
+<<<<<<< HEAD
 	acpi_os_drop_map_ref(map);
 	mutex_unlock(&acpi_ioremap_lock);
 
 	acpi_os_map_cleanup(map);
+=======
+	refcount = acpi_os_drop_map_ref(map);
+	mutex_unlock(&acpi_ioremap_lock);
+
+	if (!refcount)
+		acpi_os_map_cleanup(map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(acpi_os_unmap_generic_address);
 
@@ -512,13 +691,33 @@ acpi_os_get_physical_address(void *virt, acpi_physical_address * phys)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ACPI_REV_OVERRIDE_POSSIBLE
+static bool acpi_rev_override;
+
+int __init acpi_rev_override_setup(char *str)
+{
+	acpi_rev_override = true;
+	return 1;
+}
+__setup("acpi_rev_override", acpi_rev_override_setup);
+#else
+#define acpi_rev_override	false
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_MAX_OVERRIDE_LEN 100
 
 static char acpi_os_name[ACPI_MAX_OVERRIDE_LEN];
 
 acpi_status
 acpi_os_predefined_override(const struct acpi_predefined_names *init_val,
+<<<<<<< HEAD
 			    acpi_string * new_val)
+=======
+			    acpi_string *new_val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!init_val || !new_val)
 		return AE_BAD_PARAMETER;
@@ -530,6 +729,7 @@ acpi_os_predefined_override(const struct acpi_predefined_names *init_val,
 		*new_val = acpi_os_name;
 	}
 
+<<<<<<< HEAD
 	return AE_OK;
 }
 
@@ -745,6 +945,16 @@ acpi_os_physical_table_override(struct acpi_table_header *existing_table,
 #endif
 }
 
+=======
+	if (!memcmp(init_val->name, "_REV", 4) && acpi_rev_override) {
+		printk(KERN_INFO PREFIX "Overriding _REV return value to 5\n");
+		*new_val = (char *)5;
+	}
+
+	return AE_OK;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static irqreturn_t acpi_irq(int irq, void *dev_id)
 {
 	u32 handled;
@@ -786,15 +996,24 @@ acpi_os_install_interrupt_handler(u32 gsi, acpi_osd_handler handler,
 
 	acpi_irq_handler = handler;
 	acpi_irq_context = context;
+<<<<<<< HEAD
 	if (request_irq(irq, acpi_irq, IRQF_SHARED | IRQF_NO_SUSPEND, "acpi", acpi_irq)) {
+=======
+	if (request_irq(irq, acpi_irq, IRQF_SHARED, "acpi", acpi_irq)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR PREFIX "SCI (IRQ%d) allocation failed\n", irq);
 		acpi_irq_handler = NULL;
 		return AE_NOT_ACQUIRED;
 	}
+<<<<<<< HEAD
+=======
+	acpi_sci_irq = irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 acpi_status acpi_os_remove_interrupt_handler(u32 irq, acpi_osd_handler handler)
 {
 	if (irq != acpi_gbl_FADT.sci_interrupt)
@@ -802,6 +1021,16 @@ acpi_status acpi_os_remove_interrupt_handler(u32 irq, acpi_osd_handler handler)
 
 	free_irq(irq, acpi_irq);
 	acpi_irq_handler = NULL;
+=======
+acpi_status acpi_os_remove_interrupt_handler(u32 gsi, acpi_osd_handler handler)
+{
+	if (gsi != acpi_gbl_FADT.sci_interrupt || !acpi_sci_irq_valid())
+		return AE_BAD_PARAMETER;
+
+	free_irq(acpi_sci_irq, acpi_irq);
+	acpi_irq_handler = NULL;
+	acpi_sci_irq = INVALID_ACPI_IRQ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return AE_OK;
 }
@@ -812,7 +1041,11 @@ acpi_status acpi_os_remove_interrupt_handler(u32 irq, acpi_osd_handler handler)
 
 void acpi_os_sleep(u64 ms)
 {
+<<<<<<< HEAD
 	schedule_timeout_interruptible(msecs_to_jiffies(ms));
+=======
+	msleep(ms);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void acpi_os_stall(u32 us)
@@ -835,6 +1068,7 @@ void acpi_os_stall(u32 us)
  */
 u64 acpi_os_get_timer(void)
 {
+<<<<<<< HEAD
 	static u64 t;
 
 #ifdef	CONFIG_HPET
@@ -848,6 +1082,11 @@ u64 acpi_os_get_timer(void)
 		printk(KERN_ERR PREFIX "acpi_os_get_timer() TBD\n");
 
 	return ++t;
+=======
+	u64 time_ns = ktime_to_ns(ktime_get());
+	do_div(time_ns, 100);
+	return time_ns;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 acpi_status acpi_os_read_port(acpi_io_address port, u32 * value, u32 width)
@@ -890,6 +1129,7 @@ acpi_status acpi_os_write_port(acpi_io_address port, u32 value, u32 width)
 
 EXPORT_SYMBOL(acpi_os_write_port);
 
+<<<<<<< HEAD
 #ifdef readq
 static inline u64 read64(const volatile void __iomem *addr)
 {
@@ -905,6 +1145,8 @@ static inline u64 read64(const volatile void __iomem *addr)
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 acpi_status
 acpi_os_read_memory(acpi_physical_address phys_addr, u64 *value, u32 width)
 {
@@ -937,7 +1179,11 @@ acpi_os_read_memory(acpi_physical_address phys_addr, u64 *value, u32 width)
 		*(u32 *) value = readl(virt_addr);
 		break;
 	case 64:
+<<<<<<< HEAD
 		*(u64 *) value = read64(virt_addr);
+=======
+		*(u64 *) value = readq(virt_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		BUG();
@@ -951,6 +1197,7 @@ acpi_os_read_memory(acpi_physical_address phys_addr, u64 *value, u32 width)
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 #ifdef writeq
 static inline void write64(u64 val, volatile void __iomem *addr)
 {
@@ -964,6 +1211,8 @@ static inline void write64(u64 val, volatile void __iomem *addr)
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 acpi_status
 acpi_os_write_memory(acpi_physical_address phys_addr, u64 value, u32 width)
 {
@@ -992,7 +1241,11 @@ acpi_os_write_memory(acpi_physical_address phys_addr, u64 value, u32 width)
 		writel(value, virt_addr);
 		break;
 	case 64:
+<<<<<<< HEAD
 		write64(value, virt_addr);
+=======
+		writeq(value, virt_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		BUG();
@@ -1069,13 +1322,213 @@ static void acpi_os_execute_deferred(struct work_struct *work)
 {
 	struct acpi_os_dpc *dpc = container_of(work, struct acpi_os_dpc, work);
 
+<<<<<<< HEAD
 	if (dpc->wait)
 		acpi_os_wait_events_complete();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dpc->function(dpc->context);
 	kfree(dpc);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ACPI_DEBUGGER
+static struct acpi_debugger acpi_debugger;
+static bool acpi_debugger_initialized;
+
+int acpi_register_debugger(struct module *owner,
+			   const struct acpi_debugger_ops *ops)
+{
+	int ret = 0;
+
+	mutex_lock(&acpi_debugger.lock);
+	if (acpi_debugger.ops) {
+		ret = -EBUSY;
+		goto err_lock;
+	}
+
+	acpi_debugger.owner = owner;
+	acpi_debugger.ops = ops;
+
+err_lock:
+	mutex_unlock(&acpi_debugger.lock);
+	return ret;
+}
+EXPORT_SYMBOL(acpi_register_debugger);
+
+void acpi_unregister_debugger(const struct acpi_debugger_ops *ops)
+{
+	mutex_lock(&acpi_debugger.lock);
+	if (ops == acpi_debugger.ops) {
+		acpi_debugger.ops = NULL;
+		acpi_debugger.owner = NULL;
+	}
+	mutex_unlock(&acpi_debugger.lock);
+}
+EXPORT_SYMBOL(acpi_unregister_debugger);
+
+int acpi_debugger_create_thread(acpi_osd_exec_callback function, void *context)
+{
+	int ret;
+	int (*func)(acpi_osd_exec_callback, void *);
+	struct module *owner;
+
+	if (!acpi_debugger_initialized)
+		return -ENODEV;
+	mutex_lock(&acpi_debugger.lock);
+	if (!acpi_debugger.ops) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	if (!try_module_get(acpi_debugger.owner)) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	func = acpi_debugger.ops->create_thread;
+	owner = acpi_debugger.owner;
+	mutex_unlock(&acpi_debugger.lock);
+
+	ret = func(function, context);
+
+	mutex_lock(&acpi_debugger.lock);
+	module_put(owner);
+err_lock:
+	mutex_unlock(&acpi_debugger.lock);
+	return ret;
+}
+
+ssize_t acpi_debugger_write_log(const char *msg)
+{
+	ssize_t ret;
+	ssize_t (*func)(const char *);
+	struct module *owner;
+
+	if (!acpi_debugger_initialized)
+		return -ENODEV;
+	mutex_lock(&acpi_debugger.lock);
+	if (!acpi_debugger.ops) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	if (!try_module_get(acpi_debugger.owner)) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	func = acpi_debugger.ops->write_log;
+	owner = acpi_debugger.owner;
+	mutex_unlock(&acpi_debugger.lock);
+
+	ret = func(msg);
+
+	mutex_lock(&acpi_debugger.lock);
+	module_put(owner);
+err_lock:
+	mutex_unlock(&acpi_debugger.lock);
+	return ret;
+}
+
+ssize_t acpi_debugger_read_cmd(char *buffer, size_t buffer_length)
+{
+	ssize_t ret;
+	ssize_t (*func)(char *, size_t);
+	struct module *owner;
+
+	if (!acpi_debugger_initialized)
+		return -ENODEV;
+	mutex_lock(&acpi_debugger.lock);
+	if (!acpi_debugger.ops) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	if (!try_module_get(acpi_debugger.owner)) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	func = acpi_debugger.ops->read_cmd;
+	owner = acpi_debugger.owner;
+	mutex_unlock(&acpi_debugger.lock);
+
+	ret = func(buffer, buffer_length);
+
+	mutex_lock(&acpi_debugger.lock);
+	module_put(owner);
+err_lock:
+	mutex_unlock(&acpi_debugger.lock);
+	return ret;
+}
+
+int acpi_debugger_wait_command_ready(void)
+{
+	int ret;
+	int (*func)(bool, char *, size_t);
+	struct module *owner;
+
+	if (!acpi_debugger_initialized)
+		return -ENODEV;
+	mutex_lock(&acpi_debugger.lock);
+	if (!acpi_debugger.ops) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	if (!try_module_get(acpi_debugger.owner)) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	func = acpi_debugger.ops->wait_command_ready;
+	owner = acpi_debugger.owner;
+	mutex_unlock(&acpi_debugger.lock);
+
+	ret = func(acpi_gbl_method_executing,
+		   acpi_gbl_db_line_buf, ACPI_DB_LINE_BUFFER_SIZE);
+
+	mutex_lock(&acpi_debugger.lock);
+	module_put(owner);
+err_lock:
+	mutex_unlock(&acpi_debugger.lock);
+	return ret;
+}
+
+int acpi_debugger_notify_command_complete(void)
+{
+	int ret;
+	int (*func)(void);
+	struct module *owner;
+
+	if (!acpi_debugger_initialized)
+		return -ENODEV;
+	mutex_lock(&acpi_debugger.lock);
+	if (!acpi_debugger.ops) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	if (!try_module_get(acpi_debugger.owner)) {
+		ret = -ENODEV;
+		goto err_lock;
+	}
+	func = acpi_debugger.ops->notify_command_complete;
+	owner = acpi_debugger.owner;
+	mutex_unlock(&acpi_debugger.lock);
+
+	ret = func();
+
+	mutex_lock(&acpi_debugger.lock);
+	module_put(owner);
+err_lock:
+	mutex_unlock(&acpi_debugger.lock);
+	return ret;
+}
+
+int __init acpi_debugger_init(void)
+{
+	mutex_init(&acpi_debugger.lock);
+	acpi_debugger_initialized = true;
+	return 0;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_os_execute
@@ -1091,8 +1544,13 @@ static void acpi_os_execute_deferred(struct work_struct *work)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 static acpi_status __acpi_os_execute(acpi_execute_type type,
 	acpi_osd_exec_callback function, void *context, int hp)
+=======
+acpi_status acpi_os_execute(acpi_execute_type type,
+			    acpi_osd_exec_callback function, void *context)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status = AE_OK;
 	struct acpi_os_dpc *dpc;
@@ -1102,6 +1560,18 @@ static acpi_status __acpi_os_execute(acpi_execute_type type,
 			  "Scheduling function [%p(%p)] for deferred execution.\n",
 			  function, context));
 
+<<<<<<< HEAD
+=======
+	if (type == OSL_DEBUGGER_MAIN_THREAD) {
+		ret = acpi_debugger_create_thread(function, context);
+		if (ret) {
+			pr_err("Call to kthread_create() failed.\n");
+			status = AE_ERROR;
+		}
+		goto out_thread;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Allocate/initialize DPC structure.  Note that this memory will be
 	 * freed by the callee.  The kernel handles the work_struct list  in a
@@ -1119,15 +1589,19 @@ static acpi_status __acpi_os_execute(acpi_execute_type type,
 	dpc->context = context;
 
 	/*
+<<<<<<< HEAD
 	 * We can't run hotplug code in keventd_wq/kacpid_wq/kacpid_notify_wq
 	 * because the hotplug code may call driver .remove() functions,
 	 * which invoke flush_scheduled_work/acpi_os_wait_events_complete
 	 * to flush these workqueues.
 	 *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * To prevent lockdep from complaining unnecessarily, make sure that
 	 * there is a different static lockdep key for each workqueue by using
 	 * INIT_WORK() for each of them separately.
 	 */
+<<<<<<< HEAD
 	if (hp) {
 		queue = kacpi_hotplug_wq;
 		dpc->wait = 1;
@@ -1140,6 +1614,22 @@ static acpi_status __acpi_os_execute(acpi_execute_type type,
 		INIT_WORK(&dpc->work, acpi_os_execute_deferred);
 	}
 
+=======
+	if (type == OSL_NOTIFY_HANDLER) {
+		queue = kacpi_notify_wq;
+		INIT_WORK(&dpc->work, acpi_os_execute_deferred);
+	} else if (type == OSL_GPE_HANDLER) {
+		queue = kacpid_wq;
+		INIT_WORK(&dpc->work, acpi_os_execute_deferred);
+	} else {
+		pr_err("Unsupported os_execute type %d.\n", type);
+		status = AE_ERROR;
+	}
+
+	if (ACPI_FAILURE(status))
+		goto err_workqueue;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * On some machines, a software-initiated SMI causes corruption unless
 	 * the SMI runs on CPU 0.  An SMI can be initiated by any AML, but
@@ -1148,11 +1638,15 @@ static acpi_status __acpi_os_execute(acpi_execute_type type,
 	 * queueing on CPU 0.
 	 */
 	ret = queue_work_on(0, queue, &dpc->work);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ret) {
 		printk(KERN_ERR PREFIX
 			  "Call to queue_work() failed.\n");
 		status = AE_ERROR;
+<<<<<<< HEAD
 		kfree(dpc);
 	}
 	return status;
@@ -1179,16 +1673,93 @@ void acpi_os_wait_events_complete(void)
 }
 
 EXPORT_SYMBOL(acpi_os_wait_events_complete);
+=======
+	}
+err_workqueue:
+	if (ACPI_FAILURE(status))
+		kfree(dpc);
+out_thread:
+	return status;
+}
+EXPORT_SYMBOL(acpi_os_execute);
+
+void acpi_os_wait_events_complete(void)
+{
+	/*
+	 * Make sure the GPE handler or the fixed event handler is not used
+	 * on another CPU after removal.
+	 */
+	if (acpi_sci_irq_valid())
+		synchronize_hardirq(acpi_sci_irq);
+	flush_workqueue(kacpid_wq);
+	flush_workqueue(kacpi_notify_wq);
+}
+EXPORT_SYMBOL(acpi_os_wait_events_complete);
+
+struct acpi_hp_work {
+	struct work_struct work;
+	struct acpi_device *adev;
+	u32 src;
+};
+
+static void acpi_hotplug_work_fn(struct work_struct *work)
+{
+	struct acpi_hp_work *hpw = container_of(work, struct acpi_hp_work, work);
+
+	acpi_os_wait_events_complete();
+	acpi_device_hotplug(hpw->adev, hpw->src);
+	kfree(hpw);
+}
+
+acpi_status acpi_hotplug_schedule(struct acpi_device *adev, u32 src)
+{
+	struct acpi_hp_work *hpw;
+
+	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+		  "Scheduling hotplug event (%p, %u) for deferred execution.\n",
+		  adev, src));
+
+	hpw = kmalloc(sizeof(*hpw), GFP_KERNEL);
+	if (!hpw)
+		return AE_NO_MEMORY;
+
+	INIT_WORK(&hpw->work, acpi_hotplug_work_fn);
+	hpw->adev = adev;
+	hpw->src = src;
+	/*
+	 * We can't run hotplug code in kacpid_wq/kacpid_notify_wq etc., because
+	 * the hotplug code may call driver .remove() functions, which may
+	 * invoke flush_scheduled_work()/acpi_os_wait_events_complete() to flush
+	 * these workqueues.
+	 */
+	if (!queue_work(kacpi_hotplug_wq, &hpw->work)) {
+		kfree(hpw);
+		return AE_ERROR;
+	}
+	return AE_OK;
+}
+
+bool acpi_queue_hotplug_work(struct work_struct *work)
+{
+	return queue_work(kacpi_hotplug_wq, work);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 acpi_status
 acpi_os_create_semaphore(u32 max_units, u32 initial_units, acpi_handle * handle)
 {
 	struct semaphore *sem = NULL;
 
+<<<<<<< HEAD
 	sem = acpi_os_allocate(sizeof(struct semaphore));
 	if (!sem)
 		return AE_NO_MEMORY;
 	memset(sem, 0, sizeof(struct semaphore));
+=======
+	sem = acpi_os_allocate_zeroed(sizeof(struct semaphore));
+	if (!sem)
+		return AE_NO_MEMORY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sema_init(sem, initial_units);
 
@@ -1233,6 +1804,12 @@ acpi_status acpi_os_wait_semaphore(acpi_handle handle, u32 units, u16 timeout)
 	long jiffies;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!acpi_os_initialized)
+		return AE_OK;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sem || (units < 1))
 		return AE_BAD_PARAMETER;
 
@@ -1246,7 +1823,11 @@ acpi_status acpi_os_wait_semaphore(acpi_handle handle, u32 units, u16 timeout)
 		jiffies = MAX_SCHEDULE_TIMEOUT;
 	else
 		jiffies = msecs_to_jiffies(timeout);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = down_timeout(sem, jiffies);
 	if (ret)
 		status = AE_TIME;
@@ -1272,6 +1853,12 @@ acpi_status acpi_os_signal_semaphore(acpi_handle handle, u32 units)
 {
 	struct semaphore *sem = (struct semaphore *)handle;
 
+<<<<<<< HEAD
+=======
+	if (!acpi_os_initialized)
+		return AE_OK;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sem || (units < 1))
 		return AE_BAD_PARAMETER;
 
@@ -1286,25 +1873,70 @@ acpi_status acpi_os_signal_semaphore(acpi_handle handle, u32 units)
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 #ifdef ACPI_FUTURE_USAGE
 u32 acpi_os_get_line(char *buffer)
 {
 
+=======
+acpi_status acpi_os_get_line(char *buffer, u32 buffer_length, u32 *bytes_read)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef ENABLE_DEBUGGER
 	if (acpi_in_debugger) {
 		u32 chars;
 
+<<<<<<< HEAD
 		kdb_read(buffer, sizeof(line_buf));
+=======
+		kdb_read(buffer, buffer_length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* remove the CR kdb includes */
 		chars = strlen(buffer) - 1;
 		buffer[chars] = '\0';
 	}
+<<<<<<< HEAD
 #endif
 
 	return 0;
 }
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+#else
+	int ret;
+
+	ret = acpi_debugger_read_cmd(buffer, buffer_length);
+	if (ret < 0)
+		return AE_ERROR;
+	if (bytes_read)
+		*bytes_read = ret;
+#endif
+
+	return AE_OK;
+}
+EXPORT_SYMBOL(acpi_os_get_line);
+
+acpi_status acpi_os_wait_command_ready(void)
+{
+	int ret;
+
+	ret = acpi_debugger_wait_command_ready();
+	if (ret < 0)
+		return AE_ERROR;
+	return AE_OK;
+}
+
+acpi_status acpi_os_notify_command_complete(void)
+{
+	int ret;
+
+	ret = acpi_debugger_notify_command_complete();
+	if (ret < 0)
+		return AE_ERROR;
+	return AE_OK;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 acpi_status acpi_os_signal(u32 function, void *info)
 {
@@ -1337,7 +1969,11 @@ static int __init acpi_os_name_setup(char *str)
 	if (!str || !*str)
 		return 0;
 
+<<<<<<< HEAD
 	for (; count-- && str && *str; str++) {
+=======
+	for (; count-- && *str; str++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (isalnum(*str) || *str == ' ' || *str == ':')
 			*p++ = *str;
 		else if (*str == '\'' || *str == '"')
@@ -1353,6 +1989,7 @@ static int __init acpi_os_name_setup(char *str)
 
 __setup("acpi_os_name=", acpi_os_name_setup);
 
+<<<<<<< HEAD
 #define	OSI_STRING_LENGTH_MAX 64	/* arbitrary */
 #define	OSI_STRING_ENTRIES_MAX 16	/* arbitrary */
 
@@ -1491,11 +2128,27 @@ static int __init acpi_serialize_setup(char *str)
 	printk(KERN_INFO PREFIX "serialize enabled\n");
 
 	acpi_gbl_all_methods_serialized = TRUE;
+=======
+/*
+ * Disable the auto-serialization of named objects creation methods.
+ *
+ * This feature is enabled by default.  It marks the AML control methods
+ * that contain the opcodes to create named objects as "Serialized".
+ */
+static int __init acpi_no_auto_serialize_setup(char *str)
+{
+	acpi_gbl_auto_serialize_methods = FALSE;
+	pr_info("ACPI: auto-serialization disabled\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 1;
 }
 
+<<<<<<< HEAD
 __setup("acpi_serialize", acpi_serialize_setup);
+=======
+__setup("acpi_no_auto_serialize", acpi_no_auto_serialize_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Check of resource interference between native drivers and ACPI
  * OperationRegions (SystemIO and System Memory only).
@@ -1715,12 +2368,50 @@ acpi_status acpi_os_release_object(acpi_cache_t * cache, void *object)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+static int __init acpi_no_static_ssdt_setup(char *s)
+{
+	acpi_gbl_disable_ssdt_table_install = TRUE;
+	pr_info("ACPI: static SSDT installation disabled\n");
+
+	return 0;
+}
+
+early_param("acpi_no_static_ssdt", acpi_no_static_ssdt_setup);
+
+static int __init acpi_disable_return_repair(char *s)
+{
+	printk(KERN_NOTICE PREFIX
+	       "ACPI: Predefined validation mechanism disabled\n");
+	acpi_gbl_disable_auto_repair = TRUE;
+
+	return 1;
+}
+
+__setup("acpica_no_return_repair", acpi_disable_return_repair);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 acpi_status __init acpi_os_initialize(void)
 {
 	acpi_os_map_generic_address(&acpi_gbl_FADT.xpm1a_event_block);
 	acpi_os_map_generic_address(&acpi_gbl_FADT.xpm1b_event_block);
 	acpi_os_map_generic_address(&acpi_gbl_FADT.xgpe0_block);
 	acpi_os_map_generic_address(&acpi_gbl_FADT.xgpe1_block);
+<<<<<<< HEAD
+=======
+	if (acpi_gbl_FADT.flags & ACPI_FADT_RESET_REGISTER) {
+		/*
+		 * Use acpi_os_map_generic_address to pre-map the reset
+		 * register if it's in system memory.
+		 */
+		int rv;
+
+		rv = acpi_os_map_generic_address(&acpi_gbl_FADT.reset_register);
+		pr_debug(PREFIX "%s: map reset_reg status %d\n", __func__, rv);
+	}
+	acpi_os_initialized = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return AE_OK;
 }
@@ -1729,12 +2420,20 @@ acpi_status __init acpi_os_initialize1(void)
 {
 	kacpid_wq = alloc_workqueue("kacpid", 0, 1);
 	kacpi_notify_wq = alloc_workqueue("kacpi_notify", 0, 1);
+<<<<<<< HEAD
 	kacpi_hotplug_wq = alloc_workqueue("kacpi_hotplug", 0, 1);
 	BUG_ON(!kacpid_wq);
 	BUG_ON(!kacpi_notify_wq);
 	BUG_ON(!kacpi_hotplug_wq);
 	acpi_install_interface_handler(acpi_osi_handler);
 	acpi_osi_setup_late();
+=======
+	kacpi_hotplug_wq = alloc_ordered_workqueue("kacpi_hotplug", 0);
+	BUG_ON(!kacpid_wq);
+	BUG_ON(!kacpi_notify_wq);
+	BUG_ON(!kacpi_hotplug_wq);
+	acpi_osi_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return AE_OK;
 }
 
@@ -1749,6 +2448,11 @@ acpi_status acpi_os_terminate(void)
 	acpi_os_unmap_generic_address(&acpi_gbl_FADT.xgpe0_block);
 	acpi_os_unmap_generic_address(&acpi_gbl_FADT.xpm1b_event_block);
 	acpi_os_unmap_generic_address(&acpi_gbl_FADT.xpm1a_event_block);
+<<<<<<< HEAD
+=======
+	if (acpi_gbl_FADT.flags & ACPI_FADT_RESET_REGISTER)
+		acpi_os_unmap_generic_address(&acpi_gbl_FADT.reset_register);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	destroy_workqueue(kacpid_wq);
 	destroy_workqueue(kacpi_notify_wq);
@@ -1778,6 +2482,7 @@ void acpi_os_set_prepare_sleep(int (*func)(u8 sleep_state,
 	__acpi_os_prepare_sleep = func;
 }
 
+<<<<<<< HEAD
 void alloc_acpi_hp_work(acpi_handle handle, u32 type, void *context,
 			void (*func)(struct work_struct *work))
 {
@@ -1798,3 +2503,25 @@ void alloc_acpi_hp_work(acpi_handle handle, u32 type, void *context,
 		kfree(hp_work);
 }
 EXPORT_SYMBOL_GPL(alloc_acpi_hp_work);
+=======
+acpi_status acpi_os_prepare_extended_sleep(u8 sleep_state, u32 val_a,
+				  u32 val_b)
+{
+	int rc = 0;
+	if (__acpi_os_prepare_extended_sleep)
+		rc = __acpi_os_prepare_extended_sleep(sleep_state,
+					     val_a, val_b);
+	if (rc < 0)
+		return AE_ERROR;
+	else if (rc > 0)
+		return AE_CTRL_SKIP;
+
+	return AE_OK;
+}
+
+void acpi_os_set_prepare_extended_sleep(int (*func)(u8 sleep_state,
+			       u32 val_a, u32 val_b))
+{
+	__acpi_os_prepare_extended_sleep = func;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

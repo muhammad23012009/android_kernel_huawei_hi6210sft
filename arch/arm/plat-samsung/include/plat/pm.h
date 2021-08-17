@@ -15,11 +15,19 @@
  * management
 */
 
+<<<<<<< HEAD
 #include <linux/irq.h>
 
 struct device;
 
 #ifdef CONFIG_PM
+=======
+#include <plat/pm-common.h>
+
+struct device;
+
+#ifdef CONFIG_SAMSUNG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern __init int s3c_pm_init(void);
 extern __init int s3c64xx_pm_init(void);
@@ -41,10 +49,13 @@ static inline int s3c64xx_pm_init(void)
 extern unsigned long s3c_irqwake_intmask;
 extern unsigned long s3c_irqwake_eintmask;
 
+<<<<<<< HEAD
 /* IRQ masks for IRQs allowed to go to sleep (see irq.c) */
 extern unsigned long s3c_irqwake_intallow;
 extern unsigned long s3c_irqwake_eintallow;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* per-cpu sleep functions */
 
 extern void (*pm_cpu_prep)(void);
@@ -54,6 +65,7 @@ extern int (*pm_cpu_sleep)(unsigned long);
 
 extern unsigned long s3c_pm_flags;
 
+<<<<<<< HEAD
 extern unsigned char pm_uart_udivslot;  /* true to save UART UDIVSLOT */
 
 /* from sleep.S */
@@ -130,6 +142,24 @@ extern void s3c_pm_dbg(const char *msg, ...);
 #define S3C_PMDBG(fmt...) s3c_pm_dbg(fmt)
 #else
 #define S3C_PMDBG(fmt...) printk(KERN_DEBUG fmt)
+=======
+/* from sleep.S */
+
+extern int s3c2410_cpu_suspend(unsigned long);
+
+#ifdef CONFIG_PM_SLEEP
+extern int s3c_irq_wake(struct irq_data *data, unsigned int state);
+extern void s3c_cpu_resume(void);
+#else
+#define s3c_irq_wake NULL
+#define s3c_cpu_resume NULL
+#endif
+
+#ifdef CONFIG_SAMSUNG_PM
+extern int s3c_irqext_wake(struct irq_data *data, unsigned int state);
+#else
+#define s3c_irqext_wake NULL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_S3C_PM_DEBUG_LED_SMDK
@@ -144,6 +174,7 @@ extern void s3c_pm_debug_smdkled(u32 set, u32 clear);
 static inline void s3c_pm_debug_smdkled(u32 set, u32 clear) { }
 #endif /* CONFIG_S3C_PM_DEBUG_LED_SMDK */
 
+<<<<<<< HEAD
 /* suspend memory checking */
 
 #ifdef CONFIG_SAMSUNG_PM_CHECK
@@ -158,6 +189,8 @@ extern void s3c_pm_check_store(void);
 #define s3c_pm_check_store()   do { } while(0)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * s3c_pm_configure_extint() - ensure pins are correctly set for IRQ
  *
@@ -166,6 +199,10 @@ extern void s3c_pm_check_store(void);
  */
 extern void s3c_pm_configure_extint(void);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_GPIO_SAMSUNG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * samsung_pm_restore_gpios() - restore the state of the gpios after sleep.
  *
@@ -181,6 +218,13 @@ extern void samsung_pm_restore_gpios(void);
  * Save the GPIO states for resotration on resume. See samsung_pm_restore_gpios().
  */
 extern void samsung_pm_save_gpios(void);
+<<<<<<< HEAD
+=======
+#else
+static inline void samsung_pm_restore_gpios(void) {}
+static inline void samsung_pm_save_gpios(void) {}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void s3c_pm_save_core(void);
 extern void s3c_pm_restore_core(void);

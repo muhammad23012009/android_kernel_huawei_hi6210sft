@@ -22,7 +22,11 @@
 
 
 
+<<<<<<< HEAD
 struct workqueue_struct *cache_flush_workqueue;
+=======
+static struct workqueue_struct *cache_flush_workqueue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int cache_timeout = 1000;
 module_param(cache_timeout, int, S_IRUGO);
@@ -41,7 +45,11 @@ struct sm_sysfs_attribute {
 	int len;
 };
 
+<<<<<<< HEAD
 ssize_t sm_attr_show(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t sm_attr_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     char *buf)
 {
 	struct sm_sysfs_attribute *sm_attr =
@@ -54,7 +62,11 @@ ssize_t sm_attr_show(struct device *dev, struct device_attribute *attr,
 
 #define NUM_ATTRIBUTES 1
 #define SM_CIS_VENDOR_OFFSET 0x59
+<<<<<<< HEAD
 struct attribute_group *sm_create_sysfs_attributes(struct sm_ftl *ftl)
+=======
+static struct attribute_group *sm_create_sysfs_attributes(struct sm_ftl *ftl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct attribute_group *attr_group;
 	struct attribute **attributes;
@@ -104,7 +116,11 @@ error1:
 	return NULL;
 }
 
+<<<<<<< HEAD
 void sm_delete_sysfs_attributes(struct sm_ftl *ftl)
+=======
+static void sm_delete_sysfs_attributes(struct sm_ftl *ftl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct attribute **attributes = ftl->disk_attributes->attrs;
 	int i;
@@ -206,9 +222,16 @@ static loff_t sm_mkoffset(struct sm_ftl *ftl, int zone, int block, int boffset)
 }
 
 /* Breaks offset into parts */
+<<<<<<< HEAD
 static void sm_break_offset(struct sm_ftl *ftl, loff_t offset,
 			    int *zone, int *block, int *boffset)
 {
+=======
+static void sm_break_offset(struct sm_ftl *ftl, loff_t loffset,
+			    int *zone, int *block, int *boffset)
+{
+	u64 offset = loffset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*boffset = do_div(offset, ftl->block_size);
 	*block = do_div(offset, ftl->max_lba);
 	*zone = offset >= ftl->zone_count ? -1 : offset;
@@ -385,7 +408,11 @@ restart:
 		if (test_bit(boffset / SM_SECTOR_SIZE, &invalid_bitmap)) {
 
 			sm_printk("sector %d of block at LBA %d of zone %d"
+<<<<<<< HEAD
 				" coudn't be read, marking it as invalid",
+=======
+				" couldn't be read, marking it as invalid",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				boffset / SM_SECTOR_SIZE, lba, zone);
 
 			oob.data_status = 0;
@@ -568,7 +595,11 @@ static const uint8_t cis_signature[] = {
 };
 /* Find out media parameters.
  * This ideally has to be based on nand id, but for now device size is enough */
+<<<<<<< HEAD
 int sm_get_media_info(struct sm_ftl *ftl, struct mtd_info *mtd)
+=======
+static int sm_get_media_info(struct sm_ftl *ftl, struct mtd_info *mtd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	int size_in_megs = mtd->size / (1024 * 1024);
@@ -875,7 +906,11 @@ static int sm_init_zone(struct sm_ftl *ftl, int zone_num)
 }
 
 /* Get and automatically initialize an FTL mapping for one zone */
+<<<<<<< HEAD
 struct ftl_zone *sm_get_zone(struct sm_ftl *ftl, int zone_num)
+=======
+static struct ftl_zone *sm_get_zone(struct sm_ftl *ftl, int zone_num)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ftl_zone *zone;
 	int error;
@@ -896,7 +931,11 @@ struct ftl_zone *sm_get_zone(struct sm_ftl *ftl, int zone_num)
 /* ----------------- cache handling ------------------------------------------*/
 
 /* Initialize the one block cache */
+<<<<<<< HEAD
 void sm_cache_init(struct sm_ftl *ftl)
+=======
+static void sm_cache_init(struct sm_ftl *ftl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ftl->cache_data_invalid_bitmap = 0xFFFFFFFF;
 	ftl->cache_clean = 1;
@@ -906,7 +945,11 @@ void sm_cache_init(struct sm_ftl *ftl)
 }
 
 /* Put sector in one block cache */
+<<<<<<< HEAD
 void sm_cache_put(struct sm_ftl *ftl, char *buffer, int boffset)
+=======
+static void sm_cache_put(struct sm_ftl *ftl, char *buffer, int boffset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	memcpy(ftl->cache_data + boffset, buffer, SM_SECTOR_SIZE);
 	clear_bit(boffset / SM_SECTOR_SIZE, &ftl->cache_data_invalid_bitmap);
@@ -914,7 +957,11 @@ void sm_cache_put(struct sm_ftl *ftl, char *buffer, int boffset)
 }
 
 /* Read a sector from the cache */
+<<<<<<< HEAD
 int sm_cache_get(struct sm_ftl *ftl, char *buffer, int boffset)
+=======
+static int sm_cache_get(struct sm_ftl *ftl, char *buffer, int boffset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (test_bit(boffset / SM_SECTOR_SIZE,
 		&ftl->cache_data_invalid_bitmap))
@@ -925,7 +972,11 @@ int sm_cache_get(struct sm_ftl *ftl, char *buffer, int boffset)
 }
 
 /* Write the cache to hardware */
+<<<<<<< HEAD
 int sm_cache_flush(struct sm_ftl *ftl)
+=======
+static int sm_cache_flush(struct sm_ftl *ftl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ftl_zone *zone;
 
@@ -1058,7 +1109,11 @@ static int sm_write(struct mtd_blktrans_dev *dev,
 {
 	struct sm_ftl *ftl = dev->priv;
 	struct ftl_zone *zone;
+<<<<<<< HEAD
 	int error, zone_num, block, boffset;
+=======
+	int error = 0, zone_num, block, boffset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(ftl->readonly);
 	sm_break_offset(ftl, sec_no << 9, &zone_num, &block, &boffset);
@@ -1271,10 +1326,17 @@ static struct mtd_blktrans_ops sm_ftl_ops = {
 static __init int sm_module_init(void)
 {
 	int error = 0;
+<<<<<<< HEAD
 	cache_flush_workqueue = create_freezable_workqueue("smflush");
 
 	if (IS_ERR(cache_flush_workqueue))
 		return PTR_ERR(cache_flush_workqueue);
+=======
+
+	cache_flush_workqueue = create_freezable_workqueue("smflush");
+	if (!cache_flush_workqueue)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = register_mtd_blktrans(&sm_ftl_ops);
 	if (error)

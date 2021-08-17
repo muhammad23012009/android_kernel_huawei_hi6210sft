@@ -22,7 +22,10 @@
 #ifndef TDA10048_H
 #define TDA10048_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 #include <linux/firmware.h>
 
@@ -73,7 +76,11 @@ struct tda10048_config {
 	u8 pll_n;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_TDA10048)
+=======
+#if IS_REACHABLE(CONFIG_DVB_TDA10048)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *tda10048_attach(
 	const struct tda10048_config *config,
 	struct i2c_adapter *i2c);

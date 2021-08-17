@@ -845,13 +845,21 @@ EXPORT_SYMBOL(capi20_put_message);
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 u16 capi20_get_manufacturer(u32 contr, u8 *buf)
+=======
+u16 capi20_get_manufacturer(u32 contr, u8 buf[CAPI_MANUFACTURER_LEN])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct capi_ctr *ctr;
 	u16 ret;
 
 	if (contr == 0) {
+<<<<<<< HEAD
 		strlcpy(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+=======
+		strncpy(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return CAPI_NOERROR;
 	}
 
@@ -859,7 +867,11 @@ u16 capi20_get_manufacturer(u32 contr, u8 *buf)
 
 	ctr = get_capi_ctr_by_nr(contr);
 	if (ctr && ctr->state == CAPI_CTR_RUNNING) {
+<<<<<<< HEAD
 		strlcpy(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+=======
+		strncpy(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = CAPI_NOERROR;
 	} else
 		ret = CAPI_REGNOTINSTALLED;
@@ -915,7 +927,11 @@ EXPORT_SYMBOL(capi20_get_version);
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 u16 capi20_get_serial(u32 contr, u8 *serial)
+=======
+u16 capi20_get_serial(u32 contr, u8 serial[CAPI_SERIAL_LEN])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct capi_ctr *ctr;
 	u16 ret;
@@ -1032,6 +1048,10 @@ static int old_capi_manufacturer(unsigned int cmd, void __user *data)
 						     sizeof(avmb1_carddef))))
 				return -EFAULT;
 			cdef.cardtype = AVM_CARDTYPE_B1;
+<<<<<<< HEAD
+=======
+			cdef.cardnr = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			if ((retval = copy_from_user(&cdef, data,
 						     sizeof(avmb1_extcarddef))))
@@ -1184,7 +1204,11 @@ static int old_capi_manufacturer(unsigned int cmd, void __user *data)
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 int capi20_manufacturer(unsigned int cmd, void __user *data)
+=======
+int capi20_manufacturer(unsigned long cmd, void __user *data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct capi_ctr *ctr;
 	int retval;
@@ -1259,7 +1283,11 @@ int capi20_manufacturer(unsigned int cmd, void __user *data)
 	}
 
 	default:
+<<<<<<< HEAD
 		printk(KERN_ERR "kcapi: manufacturer command %d unknown.\n",
+=======
+		printk(KERN_ERR "kcapi: manufacturer command %lu unknown.\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       cmd);
 		break;
 

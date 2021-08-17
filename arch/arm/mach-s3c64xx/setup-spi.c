@@ -10,6 +10,10 @@
 
 #include <linux/gpio.h>
 #include <plat/gpio-cfg.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_S3C64XX_DEV_SPI0
 int s3c64xx_spi0_cfg_gpio(void)

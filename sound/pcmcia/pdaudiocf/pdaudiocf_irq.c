@@ -30,6 +30,10 @@ irqreturn_t pdacf_interrupt(int irq, void *dev)
 {
 	struct snd_pdacf *chip = dev;
 	unsigned short stat;
+<<<<<<< HEAD
+=======
+	bool wake_thread = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((chip->chip_status & (PDAUDIOCF_STAT_IS_STALE|
 				  PDAUDIOCF_STAT_IS_CONFIGURED|
@@ -41,13 +45,21 @@ irqreturn_t pdacf_interrupt(int irq, void *dev)
 		if (stat & PDAUDIOCF_IRQOVR)	/* should never happen */
 			snd_printk(KERN_ERR "PDAUDIOCF SRAM buffer overrun detected!\n");
 		if (chip->pcm_substream)
+<<<<<<< HEAD
 			tasklet_schedule(&chip->tq);
+=======
+			wake_thread = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!(stat & PDAUDIOCF_IRQAKM))
 			stat |= PDAUDIOCF_IRQAKM;	/* check rate */
 	}
 	if (get_irq_regs() != NULL)
 		snd_ak4117_check_rate_and_errors(chip->ak4117, 0);
+<<<<<<< HEAD
 	return IRQ_HANDLED;
+=======
+	return wake_thread ? IRQ_WAKE_THREAD : IRQ_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void pdacf_transfer_mono16(u16 *dst, u16 xor, unsigned int size, unsigned long rdp_port)
@@ -256,6 +268,7 @@ static void pdacf_transfer(struct snd_pdacf *chip, unsigned int size, unsigned i
 	}
 }
 
+<<<<<<< HEAD
 void pdacf_tasklet(unsigned long private_data)
 {
 	struct snd_pdacf *chip = (struct snd_pdacf *) private_data;
@@ -266,6 +279,18 @@ void pdacf_tasklet(unsigned long private_data)
 	
 	if (chip->pcm_substream == NULL || chip->pcm_substream->runtime == NULL || !snd_pcm_running(chip->pcm_substream))
 		return;
+=======
+irqreturn_t pdacf_threaded_irq(int irq, void *dev)
+{
+	struct snd_pdacf *chip = dev;
+	int size, off, cont, rdp, wdp;
+
+	if ((chip->chip_status & (PDAUDIOCF_STAT_IS_STALE|PDAUDIOCF_STAT_IS_CONFIGURED)) != PDAUDIOCF_STAT_IS_CONFIGURED)
+		return IRQ_HANDLED;
+	
+	if (chip->pcm_substream == NULL || chip->pcm_substream->runtime == NULL || !snd_pcm_running(chip->pcm_substream))
+		return IRQ_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rdp = inw(chip->port + PDAUDIOCF_REG_RDP);
 	wdp = inw(chip->port + PDAUDIOCF_REG_WDP);
@@ -311,15 +336,28 @@ void pdacf_tasklet(unsigned long private_data)
 		size -= cont;
 	}
 #endif
+<<<<<<< HEAD
 	spin_lock(&chip->reg_lock);
+=======
+	mutex_lock(&chip->reg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (chip->pcm_tdone >= chip->pcm_period) {
 		chip->pcm_hwptr += chip->pcm_period;
 		chip->pcm_hwptr %= chip->pcm_size;
 		chip->pcm_tdone -= chip->pcm_period;
+<<<<<<< HEAD
 		spin_unlock(&chip->reg_lock);
 		snd_pcm_period_elapsed(chip->pcm_substream);
 		spin_lock(&chip->reg_lock);
 	}
 	spin_unlock(&chip->reg_lock);
 	/* printk(KERN_DEBUG "TASKLET: end\n"); */
+=======
+		mutex_unlock(&chip->reg_lock);
+		snd_pcm_period_elapsed(chip->pcm_substream);
+		mutex_lock(&chip->reg_lock);
+	}
+	mutex_unlock(&chip->reg_lock);
+	return IRQ_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

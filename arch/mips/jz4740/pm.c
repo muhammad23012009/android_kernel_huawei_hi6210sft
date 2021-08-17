@@ -20,8 +20,11 @@
 
 #include <asm/mach-jz4740/clock.h>
 
+<<<<<<< HEAD
 #include "clock.h"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int jz4740_pm_enter(suspend_state_t state)
 {
 	jz4740_clock_suspend();

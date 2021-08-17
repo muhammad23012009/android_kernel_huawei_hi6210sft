@@ -27,12 +27,19 @@
 #define OMAP_WKG_ENB_E_1			0x420
 #define OMAP_AUX_CORE_BOOT_0			0x800
 #define OMAP_AUX_CORE_BOOT_1			0x804
+<<<<<<< HEAD
+=======
+#define OMAP_AMBA_IF_MODE			0x80c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define OMAP_PTMSYNCREQ_MASK			0xc00
 #define OMAP_PTMSYNCREQ_EN			0xc04
 #define OMAP_TIMESTAMPCYCLELO			0xc08
 #define OMAP_TIMESTAMPCYCLEHI			0xc0c
 
+<<<<<<< HEAD
 extern int __init omap_wakeupgen_init(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void __iomem *omap_get_wakeupgen_base(void);
 extern int omap_secure_apis_support(void);
 #endif

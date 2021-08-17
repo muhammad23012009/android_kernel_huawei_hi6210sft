@@ -37,7 +37,10 @@
 MODULE_AUTHOR("Christer Weinigel <wingel@nano-system.com>");
 MODULE_DESCRIPTION("NatSemi SCx200 Watchdog Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int margin = 60;		/* in seconds */
 module_param(margin, int, 0);

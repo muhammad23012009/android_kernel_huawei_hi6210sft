@@ -27,8 +27,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *
  * ALTERNATIVELY, this driver may be distributed under the terms of
@@ -267,7 +271,11 @@ static void xirc2ps_detach(struct pcmcia_device *p_dev);
 
 static irqreturn_t xirc2ps_interrupt(int irq, void *dev_id);
 
+<<<<<<< HEAD
 typedef struct local_info_t {
+=======
+struct local_info {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net_device	*dev;
 	struct pcmcia_device	*p_dev;
 
@@ -282,7 +290,11 @@ typedef struct local_info_t {
     unsigned last_ptr_value; /* last packets transmitted value */
     const char *manf_str;
     struct work_struct tx_timeout_task;
+<<<<<<< HEAD
 } local_info_t;
+=======
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /****************
  * Some more prototypes
@@ -476,12 +488,20 @@ static int
 xirc2ps_probe(struct pcmcia_device *link)
 {
     struct net_device *dev;
+<<<<<<< HEAD
     local_info_t *local;
+=======
+    struct local_info *local;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     dev_dbg(&link->dev, "attach()\n");
 
     /* Allocate the device structure */
+<<<<<<< HEAD
     dev = alloc_etherdev(sizeof(local_info_t));
+=======
+    dev = alloc_etherdev(sizeof(struct local_info));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if (!dev)
 	    return -ENOMEM;
     local = netdev_priv(dev);
@@ -537,7 +557,11 @@ static int
 set_card_type(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
+<<<<<<< HEAD
     local_info_t *local = netdev_priv(dev);
+=======
+    struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     u8 *buf;
     unsigned int cisrev, mediaid, prodid;
     size_t len;
@@ -691,7 +715,11 @@ static int
 xirc2ps_config(struct pcmcia_device * link)
 {
     struct net_device *dev = link->priv;
+<<<<<<< HEAD
     local_info_t *local = netdev_priv(dev);
+=======
+    struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int ioaddr;
     int err;
     u8 *buf;
@@ -932,7 +960,11 @@ xirc2ps_release(struct pcmcia_device *link)
 
 	if (link->resource[2]->end) {
 		struct net_device *dev = link->priv;
+<<<<<<< HEAD
 		local_info_t *local = netdev_priv(dev);
+=======
+		struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (local->dingo)
 			iounmap(local->dingo_ccr - 0x0800);
 	}
@@ -976,7 +1008,11 @@ static irqreturn_t
 xirc2ps_interrupt(int irq, void *dev_id)
 {
     struct net_device *dev = (struct net_device *)dev_id;
+<<<<<<< HEAD
     local_info_t *lp = netdev_priv(dev);
+=======
+    struct local_info *lp = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int ioaddr;
     u_char saved_page;
     unsigned bytes_rcvd;
@@ -1145,8 +1181,13 @@ xirc2ps_interrupt(int irq, void *dev_id)
 	    dev->stats.tx_packets += lp->last_ptr_value - n;
 	netif_wake_queue(dev);
     }
+<<<<<<< HEAD
     if (tx_status & 0x0002) {	/* Execessive collissions */
 	pr_debug("tx restarted due to execssive collissions\n");
+=======
+    if (tx_status & 0x0002) {	/* Excessive collisions */
+	pr_debug("tx restarted due to excessive collisions\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PutByte(XIRCREG_CR, RestartTx);  /* restart transmitter process */
     }
     if (tx_status & 0x0040)
@@ -1195,19 +1236,32 @@ xirc2ps_interrupt(int irq, void *dev_id)
 static void
 xirc2ps_tx_timeout_task(struct work_struct *work)
 {
+<<<<<<< HEAD
 	local_info_t *local =
 		container_of(work, local_info_t, tx_timeout_task);
 	struct net_device *dev = local->dev;
     /* reset the card */
     do_reset(dev,1);
     dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	struct local_info *local =
+		container_of(work, struct local_info, tx_timeout_task);
+	struct net_device *dev = local->dev;
+    /* reset the card */
+    do_reset(dev,1);
+    netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     netif_wake_queue(dev);
 }
 
 static void
 xirc_tx_timeout(struct net_device *dev)
 {
+<<<<<<< HEAD
     local_info_t *lp = netdev_priv(dev);
+=======
+    struct local_info *lp = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     dev->stats.tx_errors++;
     netdev_notice(dev, "transmit timed out\n");
     schedule_work(&lp->tx_timeout_task);
@@ -1216,7 +1270,11 @@ xirc_tx_timeout(struct net_device *dev)
 static netdev_tx_t
 do_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
+<<<<<<< HEAD
     local_info_t *lp = netdev_priv(dev);
+=======
+    struct local_info *lp = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int ioaddr = dev->base_addr;
     int okay;
     unsigned freespace;
@@ -1301,7 +1359,11 @@ static void set_address(struct set_address_info *sa_info, char *addr)
 static void set_addresses(struct net_device *dev)
 {
 	unsigned int ioaddr = dev->base_addr;
+<<<<<<< HEAD
 	local_info_t *lp = netdev_priv(dev);
+=======
+	struct local_info *lp = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct netdev_hw_addr *ha;
 	struct set_address_info sa_info;
 	int i;
@@ -1363,7 +1425,11 @@ set_multicast_list(struct net_device *dev)
 static int
 do_config(struct net_device *dev, struct ifmap *map)
 {
+<<<<<<< HEAD
     local_info_t *local = netdev_priv(dev);
+=======
+    struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     pr_debug("do_config(%p)\n", dev);
     if (map->port != 255 && map->port != dev->if_port) {
@@ -1388,7 +1454,11 @@ do_config(struct net_device *dev, struct ifmap *map)
 static int
 do_open(struct net_device *dev)
 {
+<<<<<<< HEAD
     local_info_t *lp = netdev_priv(dev);
+=======
+    struct local_info *lp = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     struct pcmcia_device *link = lp->p_dev;
 
     dev_dbg(&link->dev, "do_open(%p)\n", dev);
@@ -1422,7 +1492,11 @@ static const struct ethtool_ops netdev_ethtool_ops = {
 static int
 do_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
     local_info_t *local = netdev_priv(dev);
+=======
+    struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int ioaddr = dev->base_addr;
     struct mii_ioctl_data *data = if_mii(rq);
 
@@ -1454,7 +1528,11 @@ do_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 static void
 hardreset(struct net_device *dev)
 {
+<<<<<<< HEAD
     local_info_t *local = netdev_priv(dev);
+=======
+    struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int ioaddr = dev->base_addr;
 
     SelectPage(4);
@@ -1471,7 +1549,11 @@ hardreset(struct net_device *dev)
 static void
 do_reset(struct net_device *dev, int full)
 {
+<<<<<<< HEAD
     local_info_t *local = netdev_priv(dev);
+=======
+    struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int ioaddr = dev->base_addr;
     unsigned value;
 
@@ -1632,7 +1714,11 @@ do_reset(struct net_device *dev, int full)
 static int
 init_mii(struct net_device *dev)
 {
+<<<<<<< HEAD
     local_info_t *local = netdev_priv(dev);
+=======
+    struct local_info *local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int ioaddr = dev->base_addr;
     unsigned control, status, linkpartner;
     int i;
@@ -1716,7 +1802,11 @@ static int
 do_stop(struct net_device *dev)
 {
     unsigned int ioaddr = dev->base_addr;
+<<<<<<< HEAD
     local_info_t *lp = netdev_priv(dev);
+=======
+    struct local_info *lp = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     struct pcmcia_device *link = lp->p_dev;
 
     dev_dbg(&link->dev, "do_stop(%p)\n", dev);

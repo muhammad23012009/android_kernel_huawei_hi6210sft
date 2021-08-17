@@ -23,6 +23,11 @@
  *					  i-frames.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "X25: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -77,7 +82,11 @@ static int x25_queue_rx_frame(struct sock *sk, struct sk_buff *skb, int more)
 	skb_set_owner_r(skbn, sk);
 	skb_queue_tail(&sk->sk_receive_queue, skbn);
 	if (!sock_flag(sk, SOCK_DEAD))
+<<<<<<< HEAD
 		sk->sk_data_ready(sk, skbn->len);
+=======
+		sk->sk_data_ready(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -317,7 +326,11 @@ static int x25_state3_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 			break;
 
 		default:
+<<<<<<< HEAD
 			printk(KERN_WARNING "x25: unknown %02X in state 3\n", frametype);
+=======
+			pr_warn("unknown %02X in state 3\n", frametype);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 	}
 

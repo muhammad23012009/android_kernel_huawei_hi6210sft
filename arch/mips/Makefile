@@ -12,6 +12,12 @@
 # for "archclean" cleaning up for this architecture.
 #
 
+<<<<<<< HEAD
+=======
+archscripts: scripts_basic
+	$(Q)$(MAKE) $(build)=arch/mips/boot/tools relocs
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 KBUILD_DEFCONFIG := ip22_defconfig
 
 #
@@ -93,6 +99,22 @@ LDFLAGS_vmlinux			+= -G 0 -static -n -nostdlib
 KBUILD_AFLAGS_MODULE		+= -mlong-calls
 KBUILD_CFLAGS_MODULE		+= -mlong-calls
 
+<<<<<<< HEAD
+=======
+ifeq ($(CONFIG_RELOCATABLE),y)
+LDFLAGS_vmlinux			+= --emit-relocs
+endif
+
+#
+# pass -msoft-float to GAS if it supports it.  However on newer binutils
+# (specifically newer than 2.24.51.20140728) we then also need to explicitly
+# set ".set hardfloat" in all files which manipulate floating point registers.
+#
+ifneq ($(call as-option,-Wa$(comma)-msoft-float,),)
+	cflags-y		+= -DGAS_HAS_SET_HARDFLOAT -Wa,-msoft-float
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cflags-y += -ffreestanding
 
 #
@@ -113,12 +135,17 @@ predef-le += -DMIPSEL -D_MIPSEL -D__MIPSEL -D__MIPSEL__
 cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(shell $(CC) -dumpmachine |grep -q 'mips.*el-.*' && echo -EB $(undef-all) $(predef-be))
 cflags-$(CONFIG_CPU_LITTLE_ENDIAN)	+= $(shell $(CC) -dumpmachine |grep -q 'mips.*el-.*' || echo -EL $(undef-all) $(predef-le))
 
+<<<<<<< HEAD
 cflags-$(CONFIG_CPU_HAS_SMARTMIPS)	+= $(call cc-option,-msmartmips)
 cflags-$(CONFIG_CPU_MICROMIPS) += $(call cc-option,-mmicromips -mno-jals)
 
 cflags-$(CONFIG_SB1XXX_CORELIS)	+= $(call cc-option,-mno-sched-prolog) \
 				   -fno-omit-frame-pointer
 
+=======
+cflags-$(CONFIG_SB1XXX_CORELIS)	+= $(call cc-option,-mno-sched-prolog) \
+				   -fno-omit-frame-pointer
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # CPU-dependent compiler/assembler options for optimization.
 #
@@ -133,10 +160,18 @@ cflags-$(CONFIG_CPU_MIPS32_R1)	+= $(call cc-option,-march=mips32,-mips32 -U_MIPS
 			-Wa,-mips32 -Wa,--trap
 cflags-$(CONFIG_CPU_MIPS32_R2)	+= $(call cc-option,-march=mips32r2,-mips32r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS32) \
 			-Wa,-mips32r2 -Wa,--trap
+<<<<<<< HEAD
+=======
+cflags-$(CONFIG_CPU_MIPS32_R6)	+= -march=mips32r6 -Wa,--trap
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cflags-$(CONFIG_CPU_MIPS64_R1)	+= $(call cc-option,-march=mips64,-mips64 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64) \
 			-Wa,-mips64 -Wa,--trap
 cflags-$(CONFIG_CPU_MIPS64_R2)	+= $(call cc-option,-march=mips64r2,-mips64r2 -U_MIPS_ISA -D_MIPS_ISA=_MIPS_ISA_MIPS64) \
 			-Wa,-mips64r2 -Wa,--trap
+<<<<<<< HEAD
+=======
+cflags-$(CONFIG_CPU_MIPS64_R6)	+= -march=mips64r6 -Wa,--trap
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cflags-$(CONFIG_CPU_R5000)	+= -march=r5000 -Wa,--trap
 cflags-$(CONFIG_CPU_R5432)	+= $(call cc-option,-march=r5400,-march=r5000) \
 			-Wa,--trap
@@ -148,6 +183,11 @@ cflags-$(CONFIG_CPU_RM7000)	+= $(call cc-option,-march=rm7000,-march=r5000) \
 			-Wa,--trap
 cflags-$(CONFIG_CPU_SB1)	+= $(call cc-option,-march=sb1,-march=r5000) \
 			-Wa,--trap
+<<<<<<< HEAD
+=======
+cflags-$(CONFIG_CPU_SB1)	+= $(call cc-option,-mno-mdmx)
+cflags-$(CONFIG_CPU_SB1)	+= $(call cc-option,-mno-mips3d)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cflags-$(CONFIG_CPU_R8000)	+= -march=r8000 -Wa,--trap
 cflags-$(CONFIG_CPU_R10000)	+= $(call cc-option,-march=r10000,-march=r8000) \
 			-Wa,--trap
@@ -162,12 +202,39 @@ cflags-$(CONFIG_CPU_R4000_WORKAROUNDS)	+= $(call cc-option,-mfix-r4000,)
 cflags-$(CONFIG_CPU_R4400_WORKAROUNDS)	+= $(call cc-option,-mfix-r4400,)
 cflags-$(CONFIG_CPU_DADDI_WORKAROUNDS)	+= $(call cc-option,-mno-daddi,)
 
+<<<<<<< HEAD
 ifdef CONFIG_CPU_SB1
 ifdef CONFIG_SB1_PASS_1_WORKAROUNDS
 KBUILD_AFLAGS_MODULE += -msb1-pass1-workarounds
 KBUILD_CFLAGS_MODULE += -msb1-pass1-workarounds
 endif
 endif
+=======
+# For smartmips configurations, there are hundreds of warnings due to ISA overrides
+# in assembly and header files. smartmips is only supported for MIPS32r1 onwards
+# and there is no support for 64-bit. Various '.set mips2' or '.set mips3' or
+# similar directives in the kernel will spam the build logs with the following warnings:
+# Warning: the `smartmips' extension requires MIPS32 revision 1 or greater
+# or
+# Warning: the 64-bit MIPS architecture does not support the `smartmips' extension
+# Pass -Wa,--no-warn to disable all assembler warnings until the kernel code has
+# been fixed properly.
+mips-cflags				:= $(cflags-y)
+ifeq ($(CONFIG_CPU_HAS_SMARTMIPS),y)
+smartmips-ase				:= $(call cc-option-yn,$(mips-cflags) -msmartmips)
+cflags-$(smartmips-ase)			+= -msmartmips -Wa,--no-warn
+endif
+ifeq ($(CONFIG_CPU_MICROMIPS),y)
+micromips-ase				:= $(call cc-option-yn,$(mips-cflags) -mmicromips)
+cflags-$(micromips-ase)			+= -mmicromips
+endif
+ifeq ($(CONFIG_CPU_HAS_MSA),y)
+toolchain-msa				:= $(call cc-option-yn,$(mips-cflags) -mhard-float -mfp64 -Wa$(comma)-mmsa)
+cflags-$(toolchain-msa)			+= -DTOOLCHAIN_SUPPORTS_MSA
+endif
+toolchain-virt				:= $(call cc-option-yn,$(mips-cflags) -mvirt)
+cflags-$(toolchain-virt)		+= -DTOOLCHAIN_SUPPORTS_VIRT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # Firmware support
@@ -189,11 +256,20 @@ endif
 #
 # Board-dependent options and extra files
 #
+<<<<<<< HEAD
 include $(srctree)/arch/mips/Kbuild.platforms
+=======
+include arch/mips/Kbuild.platforms
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ifdef CONFIG_PHYSICAL_START
 load-y					= $(CONFIG_PHYSICAL_START)
 endif
+<<<<<<< HEAD
+=======
+entry-y				= 0x$(shell $(NM) vmlinux 2>/dev/null \
+					| grep "\bkernel_entry\b" | cut -f1 -d \ )
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 cflags-y			+= -I$(srctree)/arch/mips/include/asm/mach-generic
 drivers-$(CONFIG_PCI)		+= arch/mips/pci/
@@ -220,17 +296,51 @@ ifdef CONFIG_64BIT
   endif
 endif
 
+<<<<<<< HEAD
 KBUILD_AFLAGS	+= $(cflags-y)
 KBUILD_CFLAGS	+= $(cflags-y)
 KBUILD_CPPFLAGS += -DVMLINUX_LOAD_ADDRESS=$(load-y)
 KBUILD_CPPFLAGS += -DDATAOFFSET=$(if $(dataoffset-y),$(dataoffset-y),0)
 
+=======
+# When linking a 32-bit executable the LLVM linker cannot cope with a
+# 32-bit load address that has been sign-extended to 64 bits.  Simply
+# remove the upper 32 bits then, as it is safe to do so with other
+# linkers.
+ifdef CONFIG_64BIT
+	load-ld			= $(load-y)
+else
+	load-ld			= $(subst 0xffffffff,0x,$(load-y))
+endif
+
+KBUILD_AFLAGS	+= $(cflags-y)
+KBUILD_CFLAGS	+= $(cflags-y)
+KBUILD_CPPFLAGS += -DVMLINUX_LOAD_ADDRESS=$(load-y) -DLINKER_LOAD_ADDRESS=$(load-ld)
+KBUILD_CPPFLAGS += -DDATAOFFSET=$(if $(dataoffset-y),$(dataoffset-y),0)
+
+bootvars-y	= VMLINUX_LOAD_ADDRESS=$(load-y) \
+		  LINKER_LOAD_ADDRESS=$(load-ld) \
+		  VMLINUX_ENTRY_ADDRESS=$(entry-y) \
+		  PLATFORM="$(platform-y)"
+ifdef CONFIG_32BIT
+bootvars-y	+= ADDR_BITS=32
+endif
+ifdef CONFIG_64BIT
+bootvars-y	+= ADDR_BITS=64
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 LDFLAGS			+= -m $(ld-emul)
 
 ifdef CONFIG_MIPS
 CHECKFLAGS += $(shell $(CC) $(KBUILD_CFLAGS) -dM -E -x c /dev/null | \
+<<<<<<< HEAD
 	egrep -vw '__GNUC_(|MINOR_|PATCHLEVEL_)_' | \
 	sed -e "s/^\#define /-D'/" -e "s/ /'='/" -e "s/$$/'/")
+=======
+	egrep -vw '__GNUC_(MINOR_|PATCHLEVEL_)?_' | \
+	sed -e "s/^\#define /-D'/" -e "s/ /'='/" -e "s/$$/'/" -e 's/\$$/&&/g')
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ifdef CONFIG_64BIT
 CHECKFLAGS		+= -m64
 endif
@@ -241,6 +351,10 @@ OBJCOPYFLAGS		+= --remove-section=.reginfo
 head-y := arch/mips/kernel/head.o
 
 libs-y			+= arch/mips/lib/
+<<<<<<< HEAD
+=======
+libs-y			+= arch/mips/math-emu/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # See arch/mips/Kbuild for content of core part of the kernel
 core-y += arch/mips/
@@ -250,32 +364,89 @@ drivers-$(CONFIG_OPROFILE)	+= arch/mips/oprofile/
 # suspend and hibernation support
 drivers-$(CONFIG_PM)	+= arch/mips/power/
 
+<<<<<<< HEAD
 ifdef CONFIG_LASAT
 rom.bin rom.sw: vmlinux
 	$(Q)$(MAKE) $(build)=arch/mips/lasat/image $@
 endif
 
+=======
+# boot image targets (arch/mips/boot/)
+boot-y			:= vmlinux.bin
+boot-y			+= vmlinux.ecoff
+boot-y			+= vmlinux.srec
+ifeq ($(shell expr $(load-y) \< 0xffffffff80000000 2> /dev/null), 0)
+boot-y			+= uImage
+boot-y			+= uImage.bin
+boot-y			+= uImage.bz2
+boot-y			+= uImage.gz
+boot-y			+= uImage.lzma
+boot-y			+= uImage.lzo
+endif
+boot-y			+= vmlinux.itb
+boot-y			+= vmlinux.gz.itb
+boot-y			+= vmlinux.bz2.itb
+boot-y			+= vmlinux.lzma.itb
+boot-y			+= vmlinux.lzo.itb
+
+# compressed boot image targets (arch/mips/boot/compressed/)
+bootz-y			:= vmlinuz
+bootz-y			+= vmlinuz.bin
+bootz-y			+= vmlinuz.ecoff
+bootz-y			+= vmlinuz.srec
+
+ifdef CONFIG_LASAT
+rom.bin rom.sw: vmlinux
+	$(Q)$(MAKE) $(build)=arch/mips/lasat/image \
+		$(bootvars-y) $@
+endif
+
+CMD_RELOCS = arch/mips/boot/tools/relocs
+quiet_cmd_relocs = RELOCS  $<
+      cmd_relocs = $(CMD_RELOCS) $<
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # Some machines like the Indy need 32-bit ELF binaries for booting purposes.
 # Other need ECOFF, so we build a 32-bit ELF binary for them which we then
 # convert to ECOFF using elf2ecoff.
 #
+<<<<<<< HEAD
 vmlinux.32: vmlinux
 	$(OBJCOPY) -O $(32bit-bfd) $(OBJCOPYFLAGS) $< $@
 
 
 #obj-$(CONFIG_KPROBES)		+= kprobes.o
+=======
+quiet_cmd_32 = OBJCOPY $@
+	cmd_32 = $(OBJCOPY) -O $(32bit-bfd) $(OBJCOPYFLAGS) $< $@
+vmlinux.32: vmlinux
+ifeq ($(CONFIG_RELOCATABLE)$(CONFIG_64BIT),yy)
+# Currently, objcopy fails to handle the relocations in the elf64
+# So the relocs tool must be run here to remove them first
+	$(call cmd,relocs)
+endif
+	$(call cmd,32)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # The 64-bit ELF tools are pretty broken so at this time we generate 64-bit
 # ELF files from 32-bit files by conversion.
 #
+<<<<<<< HEAD
 vmlinux.64: vmlinux
 	$(OBJCOPY) -O $(64bit-bfd) $(OBJCOPYFLAGS) $< $@
+=======
+quiet_cmd_64 = OBJCOPY $@
+	cmd_64 = $(OBJCOPY) -O $(64bit-bfd) $(OBJCOPYFLAGS) $< $@
+vmlinux.64: vmlinux
+	$(call cmd,64)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 all:	$(all-y)
 
 # boot
+<<<<<<< HEAD
 vmlinux.bin vmlinux.ecoff vmlinux.srec: $(vmlinux-32) FORCE
 	$(Q)$(MAKE) $(build)=arch/mips/boot VMLINUX=$(vmlinux-32) arch/mips/boot/$@
 
@@ -283,10 +454,46 @@ vmlinux.bin vmlinux.ecoff vmlinux.srec: $(vmlinux-32) FORCE
 vmlinuz vmlinuz.bin vmlinuz.ecoff vmlinuz.srec: $(vmlinux-32) FORCE
 	$(Q)$(MAKE) $(build)=arch/mips/boot/compressed \
 	   VMLINUX_LOAD_ADDRESS=$(load-y) 32bit-bfd=$(32bit-bfd) $@
+=======
+$(boot-y): $(vmlinux-32) FORCE
+ifeq ($(CONFIG_RELOCATABLE)$(CONFIG_32BIT),yy)
+	$(call cmd,relocs)
+endif
+	$(Q)$(MAKE) $(build)=arch/mips/boot VMLINUX=$(vmlinux-32) \
+		$(bootvars-y) arch/mips/boot/$@
+
+ifdef CONFIG_SYS_SUPPORTS_ZBOOT
+# boot/compressed
+$(bootz-y): $(vmlinux-32) FORCE
+	$(Q)$(MAKE) $(build)=arch/mips/boot/compressed \
+		$(bootvars-y) 32bit-bfd=$(32bit-bfd) $@
+else
+vmlinuz: FORCE
+	@echo '   CONFIG_SYS_SUPPORTS_ZBOOT is not enabled'
+	/bin/false
+endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 CLEAN_FILES += vmlinux.32 vmlinux.64
 
+<<<<<<< HEAD
+=======
+# device-trees
+core-$(CONFIG_BUILTIN_DTB) += arch/mips/boot/dts/
+
+%.dtb %.dtb.S %.dtb.o: | scripts
+	$(Q)$(MAKE) $(build)=arch/mips/boot/dts arch/mips/boot/dts/$@
+
+PHONY += dtbs
+dtbs: scripts
+	$(Q)$(MAKE) $(build)=arch/mips/boot/dts
+
+PHONY += dtbs_install
+dtbs_install:
+	$(Q)$(MAKE) $(dtbinst)=arch/mips/boot/dts
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 archprepare:
 ifdef CONFIG_MIPS32_N32
 	@echo '  Checking missing-syscalls for N32'
@@ -308,6 +515,10 @@ endif
 archclean:
 	$(Q)$(MAKE) $(clean)=arch/mips/boot
 	$(Q)$(MAKE) $(clean)=arch/mips/boot/compressed
+<<<<<<< HEAD
+=======
+	$(Q)$(MAKE) $(clean)=arch/mips/boot/tools
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	$(Q)$(MAKE) $(clean)=arch/mips/lasat
 
 define archhelp
@@ -315,10 +526,91 @@ define archhelp
 	echo '  vmlinux.ecoff        - ECOFF boot image'
 	echo '  vmlinux.bin          - Raw binary boot image'
 	echo '  vmlinux.srec         - SREC boot image'
+<<<<<<< HEAD
+=======
+	echo '  vmlinux.32           - 64-bit boot image wrapped in 32bits (IP22/IP32)'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	echo '  vmlinuz              - Compressed boot(zboot) image'
 	echo '  vmlinuz.ecoff        - ECOFF zboot image'
 	echo '  vmlinuz.bin          - Raw binary zboot image'
 	echo '  vmlinuz.srec         - SREC zboot image'
+<<<<<<< HEAD
 	echo
 	echo '  These will be default as appropriate for a configured platform.'
 endef
+=======
+	echo '  uImage               - U-Boot image'
+	echo '  uImage.bin           - U-Boot image (uncompressed)'
+	echo '  uImage.bz2           - U-Boot image (bz2)'
+	echo '  uImage.gz            - U-Boot image (gzip)'
+	echo '  uImage.lzma          - U-Boot image (lzma)'
+	echo '  uImage.lzo           - U-Boot image (lzo)'
+	echo '  dtbs                 - Device-tree blobs for enabled boards'
+	echo '  dtbs_install         - Install dtbs to $(INSTALL_DTBS_PATH)'
+	echo
+	echo '  These will be default as appropriate for a configured platform.'
+	echo
+	echo '  If you are targeting a system supported by generic kernels you may'
+	echo '  configure the kernel for a given architecture target like so:'
+	echo
+	echo '  {micro32,32,64}{r1,r2,r6}{el,}_defconfig <BOARDS="list of boards">'
+	echo
+	echo '  Otherwise, the following default configurations are available:'
+endef
+
+generic_config_dir = $(srctree)/arch/$(ARCH)/configs/generic
+generic_defconfigs :=
+
+#
+# If the user generates a generic kernel configuration without specifying a
+# list of boards to include the config fragments for, default to including all
+# available board config fragments.
+#
+ifeq ($(BOARDS),)
+BOARDS = $(patsubst board-%.config,%,$(notdir $(wildcard $(generic_config_dir)/board-*.config)))
+endif
+
+#
+# Generic kernel configurations which merge generic_defconfig with the
+# appropriate config fragments from arch/mips/configs/generic/, resulting in
+# the ability to easily configure the kernel for a given architecture,
+# endianness & set of boards without duplicating the needed configuration in
+# hundreds of defconfig files.
+#
+define gen_generic_defconfigs
+$(foreach bits,$(1),$(foreach rev,$(2),$(foreach endian,$(3),
+target := $(bits)$(rev)$(filter el,$(endian))_defconfig
+generic_defconfigs += $$(target)
+$$(target): $(generic_config_dir)/$(bits)$(rev).config
+$$(target): $(generic_config_dir)/$(endian).config
+)))
+endef
+
+$(eval $(call gen_generic_defconfigs,32 64,r1 r2 r6,eb el))
+$(eval $(call gen_generic_defconfigs,micro32,r2,eb el))
+
+.PHONY: $(generic_defconfigs)
+$(generic_defconfigs):
+	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/kconfig/merge_config.sh \
+		-m -O $(objtree) $(srctree)/arch/$(ARCH)/configs/generic_defconfig $^ \
+		$(foreach board,$(BOARDS),$(generic_config_dir)/board-$(board).config)
+	$(Q)$(MAKE) olddefconfig
+
+#
+# Prevent generic merge_config rules attempting to merge single fragments
+#
+$(generic_config_dir)/%.config: ;
+
+#
+# Legacy defconfig compatibility - these targets used to be real defconfigs but
+# now that the boards have been converted to use the generic kernel they are
+# wrappers around the generic rules above.
+#
+.PHONY: sead3_defconfig
+sead3_defconfig:
+	$(Q)$(MAKE) 32r2el_defconfig BOARDS=sead-3
+
+.PHONY: sead3micro_defconfig
+sead3micro_defconfig:
+	$(Q)$(MAKE) micro32r2el_defconfig BOARDS=sead-3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -611,7 +611,20 @@ static
 int hwarc_reset(struct uwb_rc *uwb_rc)
 {
 	struct hwarc *hwarc = uwb_rc->priv;
+<<<<<<< HEAD
 	return usb_reset_device(hwarc->usb_dev);
+=======
+	int result;
+
+	/* device lock must be held when calling usb_reset_device. */
+	result = usb_lock_device_for_reset(hwarc->usb_dev, NULL);
+	if (result >= 0) {
+		result = usb_reset_device(hwarc->usb_dev);
+		usb_unlock_device(hwarc->usb_dev);
+	}
+
+	return result;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -692,10 +705,15 @@ static int hwarc_neep_init(struct uwb_rc *rc)
 		goto error_rd_buffer;
 	}
 	hwarc->neep_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (hwarc->neep_urb == NULL) {
 		dev_err(dev, "Unable to allocate notification URB\n");
 		goto error_urb_alloc;
 	}
+=======
+	if (hwarc->neep_urb == NULL)
+		goto error_urb_alloc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_fill_int_urb(hwarc->neep_urb, usb_dev,
 			 usb_rcvintpipe(usb_dev, epd->bEndpointAddress),
 			 hwarc->rd_buffer, PAGE_SIZE,
@@ -709,8 +727,15 @@ static int hwarc_neep_init(struct uwb_rc *rc)
 
 error_neep_submit:
 	usb_free_urb(hwarc->neep_urb);
+<<<<<<< HEAD
 error_urb_alloc:
 	free_page((unsigned long)hwarc->rd_buffer);
+=======
+	hwarc->neep_urb = NULL;
+error_urb_alloc:
+	free_page((unsigned long)hwarc->rd_buffer);
+	hwarc->rd_buffer = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_rd_buffer:
 	return -ENOMEM;
 }
@@ -723,7 +748,14 @@ static void hwarc_neep_release(struct uwb_rc *rc)
 
 	usb_kill_urb(hwarc->neep_urb);
 	usb_free_urb(hwarc->neep_urb);
+<<<<<<< HEAD
 	free_page((unsigned long)hwarc->rd_buffer);
+=======
+	hwarc->neep_urb = NULL;
+
+	free_page((unsigned long)hwarc->rd_buffer);
+	hwarc->rd_buffer = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -813,6 +845,11 @@ static int hwarc_probe(struct usb_interface *iface,
 
 	if (iface->cur_altsetting->desc.bNumEndpoints < 1)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (!usb_endpoint_xfer_int(&iface->cur_altsetting->endpoint[0].desc))
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	result = -ENOMEM;
 	uwb_rc = uwb_rc_alloc();
@@ -859,6 +896,10 @@ error_get_version:
 error_rc_add:
 	usb_put_intf(iface);
 	usb_put_dev(hwarc->usb_dev);
+<<<<<<< HEAD
+=======
+	kfree(hwarc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_alloc:
 	uwb_rc_put(uwb_rc);
 error_rc_alloc:
@@ -903,6 +944,15 @@ static const struct usb_device_id hwarc_id_table[] = {
 	/* Intel i1480 (using firmware 1.3PA2-20070828) */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x8086, 0x0c3b, 0xe0, 0x01, 0x02),
 	  .driver_info = WUSB_QUIRK_WHCI_CMD_EVT },
+<<<<<<< HEAD
+=======
+	/* Alereon 5310 */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x13dc, 0x5310, 0xe0, 0x01, 0x02),
+	  .driver_info = WUSB_QUIRK_WHCI_CMD_EVT },
+	/* Alereon 5611 */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x13dc, 0x5611, 0xe0, 0x01, 0x02),
+	  .driver_info = WUSB_QUIRK_WHCI_CMD_EVT },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Generic match for the Radio Control interface */
 	{ USB_INTERFACE_INFO(0xe0, 0x01, 0x02), },
 	{ },

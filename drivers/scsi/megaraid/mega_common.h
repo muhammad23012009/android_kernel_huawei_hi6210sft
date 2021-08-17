@@ -204,7 +204,11 @@ typedef struct {
 #define SCP2HOSTDATA(scp)		SCP2HOST(scp)->hostdata	// to soft state
 #define SCP2CHANNEL(scp)		(scp)->device->channel	// to channel
 #define SCP2TARGET(scp)			(scp)->device->id	// to target
+<<<<<<< HEAD
 #define SCP2LUN(scp)			(scp)->device->lun	// to LUN
+=======
+#define SCP2LUN(scp)			(u32)(scp)->device->lun	// to LUN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 // generic macro to convert scsi command and host to controller's soft state
 #define SCSIHOST2ADAP(host)	(((caddr_t *)(host->hostdata))[0])

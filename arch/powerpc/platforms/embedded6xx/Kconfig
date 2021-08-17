@@ -34,7 +34,10 @@ config MPC7448HPC2
 	select TSI108_BRIDGE
 	select DEFAULT_UIMAGE
 	select PPC_UDBG_16550
+<<<<<<< HEAD
 	select TSI108_BRIDGE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Select MPC7448HPC2 if configuring for Freescale MPC7448HPC2 (Taiga)
 	  platform
@@ -44,11 +47,15 @@ config PPC_HOLLY
 	depends on EMBEDDED6xx
 	select TSI108_BRIDGE
 	select PPC_UDBG_16550
+<<<<<<< HEAD
 	select TSI108_BRIDGE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Select PPC_HOLLY if configuring for an IBM 750GX/CL Eval
 	  Board with TSI108/9 bridge (Hickory/Holly)
 
+<<<<<<< HEAD
 config PPC_PRPMC2800
 	bool "Motorola-PrPMC2800"
 	depends on EMBEDDED6xx
@@ -57,6 +64,8 @@ config PPC_PRPMC2800
 	help
 	  This option enables support for the Motorola PrPMC2800 board
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config PPC_C2K
 	bool "SBS/GEFanuc C2K board"
 	depends on EMBEDDED6xx
@@ -67,6 +76,22 @@ config PPC_C2K
 	  This option enables support for the GE Fanuc C2K board (formerly
 	  an SBS board).
 
+<<<<<<< HEAD
+=======
+config MVME5100
+	bool "Motorola/Emerson MVME5100"
+	depends on EMBEDDED6xx
+	select MPIC
+	select PCI
+	select PPC_INDIRECT_PCI
+	select PPC_I8259
+	select PPC_NATIVE
+	select PPC_UDBG_16550
+	help
+	  This option enables support for the Motorola (now Emerson) MVME5100
+	  board.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config TSI108_BRIDGE
 	bool
 	select PCI
@@ -113,4 +138,7 @@ config WII
 	help
 	  Select WII if configuring for the Nintendo Wii.
 	  More information at: <http://gc-linux.sourceforge.net/>
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

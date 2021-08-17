@@ -9,7 +9,10 @@
 #include <linux/miscdevice.h>
 #include <linux/fcntl.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/mm.h>
@@ -208,7 +211,10 @@ MODULE_DEVICE_TABLE(of, flash_match);
 static struct platform_driver flash_driver = {
 	.driver = {
 		.name = "flash",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = flash_match,
 	},
 	.probe		= flash_probe,

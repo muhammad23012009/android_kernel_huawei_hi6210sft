@@ -8,7 +8,10 @@
 #include <linux/highmem.h>
 #include <linux/pagemap.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
@@ -47,7 +50,11 @@ void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
 		return;
 	}
 	pte = pte_offset_kernel(pmd, vaddr);
+<<<<<<< HEAD
 	if (pte_val(pteval))
+=======
+	if (!pte_none(pteval))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_pte_at(&init_mm, vaddr, pte, pteval);
 	else
 		pte_clear(&init_mm, vaddr, pte);
@@ -59,6 +66,7 @@ void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
 	__flush_tlb_one(vaddr);
 }
 
+<<<<<<< HEAD
 /*
  * Associate a large virtual page frame with a given physical page frame 
  * and protection flags for that frame. pfn is for the base of the page,
@@ -94,6 +102,8 @@ void set_pmd_pfn(unsigned long vaddr, unsigned long pfn, pgprot_t flags)
 	__flush_tlb_one(vaddr);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long __FIXADDR_TOP = 0xfffff000;
 EXPORT_SYMBOL(__FIXADDR_TOP);
 
@@ -127,7 +137,11 @@ static int __init parse_reservetop(char *arg)
 
 	address = memparse(arg, &arg);
 	reserve_top_address(address);
+<<<<<<< HEAD
 	fixup_early_ioremap();
+=======
+	early_ioremap_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 early_param("reservetop", parse_reservetop);

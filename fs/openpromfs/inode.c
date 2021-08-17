@@ -162,11 +162,19 @@ static const struct file_operations openpromfs_prop_ops = {
 	.release	= seq_release,
 };
 
+<<<<<<< HEAD
 static int openpromfs_readdir(struct file *, void *, filldir_t);
 
 static const struct file_operations openprom_operations = {
 	.read		= generic_read_dir,
 	.readdir	= openpromfs_readdir,
+=======
+static int openpromfs_readdir(struct file *, struct dir_context *);
+
+static const struct file_operations openprom_operations = {
+	.read		= generic_read_dir,
+	.iterate_shared	= openpromfs_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.llseek		= generic_file_llseek,
 };
 
@@ -260,18 +268,28 @@ found:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int openpromfs_readdir(struct file * filp, void * dirent, filldir_t filldir)
 {
 	struct inode *inode = file_inode(filp);
+=======
+static int openpromfs_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *inode = file_inode(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct op_inode_info *oi = OP_I(inode);
 	struct device_node *dp = oi->u.node;
 	struct device_node *child;
 	struct property *prop;
+<<<<<<< HEAD
 	unsigned int ino;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	mutex_lock(&op_mutex);
 	
+<<<<<<< HEAD
 	ino = inode->i_ino;
 	i = filp->f_pos;
 	switch (i) {
@@ -325,6 +343,55 @@ static int openpromfs_readdir(struct file * filp, void * dirent, filldir_t filld
 			prop = prop->next;
 		}
 	}
+=======
+	if (ctx->pos == 0) {
+		if (!dir_emit(ctx, ".", 1, inode->i_ino, DT_DIR))
+			goto out;
+		ctx->pos = 1;
+	}
+	if (ctx->pos == 1) {
+		if (!dir_emit(ctx, "..", 2,
+			    (dp->parent == NULL ?
+			     OPENPROM_ROOT_INO :
+			     dp->parent->unique_id), DT_DIR))
+			goto out;
+		ctx->pos = 2;
+	}
+	i = ctx->pos - 2;
+
+	/* First, the children nodes as directories.  */
+	child = dp->child;
+	while (i && child) {
+		child = child->sibling;
+		i--;
+	}
+	while (child) {
+		if (!dir_emit(ctx,
+			    child->path_component_name,
+			    strlen(child->path_component_name),
+			    child->unique_id, DT_DIR))
+			goto out;
+
+		ctx->pos++;
+		child = child->sibling;
+	}
+
+	/* Next, the properties as files.  */
+	prop = dp->properties;
+	while (i && prop) {
+		prop = prop->next;
+		i--;
+	}
+	while (prop) {
+		if (!dir_emit(ctx, prop->name, strlen(prop->name),
+			    prop->unique_id, DT_REG))
+			goto out;
+
+		ctx->pos++;
+		prop = prop->next;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	mutex_unlock(&op_mutex);
 	return 0;
@@ -362,7 +429,11 @@ static struct inode *openprom_iget(struct super_block *sb, ino_t ino)
 	if (!inode)
 		return ERR_PTR(-ENOMEM);
 	if (inode->i_state & I_NEW) {
+<<<<<<< HEAD
 		inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
+=======
+		inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (inode->i_ino == OPENPROM_ROOT_INO) {
 			inode->i_op = &openprom_inode_operations;
 			inode->i_fop = &openprom_operations;
@@ -450,7 +521,11 @@ static int __init init_openprom_fs(void)
 					    sizeof(struct op_inode_info),
 					    0,
 					    (SLAB_RECLAIM_ACCOUNT |
+<<<<<<< HEAD
 					     SLAB_MEM_SPREAD),
+=======
+					     SLAB_MEM_SPREAD | SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    op_inode_init_once);
 	if (!op_inode_cachep)
 		return -ENOMEM;

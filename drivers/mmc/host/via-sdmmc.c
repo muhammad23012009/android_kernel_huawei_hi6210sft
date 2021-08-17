@@ -859,6 +859,12 @@ static void via_sdc_data_isr(struct via_crdr_mmc_host *host, u16 intmask)
 {
 	BUG_ON(intmask == 0);
 
+<<<<<<< HEAD
+=======
+	if (!host->data)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (intmask & VIA_CRDR_SDSTS_DT)
 		host->data->error = -ETIMEDOUT;
 	else if (intmask & (VIA_CRDR_SDSTS_RC | VIA_CRDR_SDSTS_WC))
@@ -1269,6 +1275,7 @@ static void via_init_sdc_pm(struct via_crdr_mmc_host *host)
 static int via_sd_suspend(struct pci_dev *pcidev, pm_message_t state)
 {
 	struct via_crdr_mmc_host *host;
+<<<<<<< HEAD
 	int ret = 0;
 
 	host = pci_get_drvdata(pcidev);
@@ -1277,13 +1284,27 @@ static int via_sd_suspend(struct pci_dev *pcidev, pm_message_t state)
 	via_save_sdcreg(host);
 
 	ret = mmc_suspend_host(host->mmc);
+=======
+	unsigned long flags;
+
+	host = pci_get_drvdata(pcidev);
+
+	spin_lock_irqsave(&host->lock, flags);
+	via_save_pcictrlreg(host);
+	via_save_sdcreg(host);
+	spin_unlock_irqrestore(&host->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_save_state(pcidev);
 	pci_enable_wake(pcidev, pci_choose_state(pcidev, state), 0);
 	pci_disable_device(pcidev);
 	pci_set_power_state(pcidev, pci_choose_state(pcidev, state));
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int via_sd_resume(struct pci_dev *pcidev)
@@ -1316,8 +1337,11 @@ static int via_sd_resume(struct pci_dev *pcidev)
 	via_restore_pcictrlreg(sdhost);
 	via_init_sdc_pm(sdhost);
 
+<<<<<<< HEAD
 	ret = mmc_resume_host(sdhost->mmc);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 

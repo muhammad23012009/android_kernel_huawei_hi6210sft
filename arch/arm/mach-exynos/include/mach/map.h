@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 /* linux/arch/arm/mach-exynos/include/mach/map.h
  *
  * Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
  *		http://www.samsung.com/
  *
  * EXYNOS4 - Memory map definitions
+=======
+/*
+ * Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
+ *		http://www.samsung.com/
+ *
+ * EXYNOS - Memory map definitions
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,6 +23,7 @@
 
 #include <plat/map-base.h>
 
+<<<<<<< HEAD
 /*
  * EXYNOS4 UART offset is 0x10000 but the older S5P SoCs are 0x400.
  * So need to define it, and here is to avoid redefinition warning.
@@ -290,5 +299,12 @@
 #define EXYNOS5440_SZ_UART		SZ_256
 
 #define S3C_VA_UARTx(x)			(S3C_VA_UART + ((x) * S3C_UART_OFFSET))
+=======
+#include <plat/map-s5p.h>
+
+#define EXYNOS_PA_CHIPID		0x10000000
+
+#define EXYNOS4_PA_COREPERI		0x10500000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASM_ARCH_MAP_H */

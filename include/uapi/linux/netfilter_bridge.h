@@ -4,6 +4,10 @@
 /* bridge-specific defines for netfilter. 
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/in.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netfilter.h>
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>

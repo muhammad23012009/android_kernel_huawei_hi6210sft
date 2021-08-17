@@ -55,7 +55,11 @@ static char *number(char *str, long num, int base, int size, int precision,
 	locase = (type & SMALL);
 	if (type & LEFT)
 		type &= ~ZEROPAD;
+<<<<<<< HEAD
 	if (base < 2 || base > 36)
+=======
+	if (base < 2 || base > 16)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	c = (type & ZEROPAD) ? '0' : ' ';
 	sign = 0;

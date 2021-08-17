@@ -15,7 +15,11 @@
  */
 enum cpu_type {
 	/* SH-2 types */
+<<<<<<< HEAD
 	CPU_SH7619,
+=======
+	CPU_SH7619, CPU_J2,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* SH-2A types */
 	CPU_SH7201, CPU_SH7203, CPU_SH7206, CPU_SH7263, CPU_SH7264, CPU_SH7269,
@@ -97,6 +101,10 @@ extern struct sh_cpuinfo cpu_data[];
 
 #define cpu_sleep()	__asm__ __volatile__ ("sleep" : : : "memory")
 #define cpu_relax()	barrier()
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void default_idle(void);
 void stop_this_cpu(void *);

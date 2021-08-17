@@ -2,7 +2,11 @@
 
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/crc7.h>
+=======
+#include <linux/etherdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "wl1251.h"
 #include "reg.h"
@@ -203,11 +207,19 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int wl1251_cmd_data_path(struct wl1251 *wl, u8 channel, bool enable)
 {
 	struct cmd_enabledisable_path *cmd;
 	int ret;
 	u16 cmd_rx, cmd_tx;
+=======
+int wl1251_cmd_data_path_rx(struct wl1251 *wl, u8 channel, bool enable)
+{
+	struct cmd_enabledisable_path *cmd;
+	int ret;
+	u16 cmd_rx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wl1251_debug(DEBUG_CMD, "cmd data path");
 
@@ -219,6 +231,7 @@ int wl1251_cmd_data_path(struct wl1251 *wl, u8 channel, bool enable)
 
 	cmd->channel = channel;
 
+<<<<<<< HEAD
 	if (enable) {
 		cmd_rx = CMD_ENABLE_RX;
 		cmd_tx = CMD_ENABLE_TX;
@@ -226,6 +239,12 @@ int wl1251_cmd_data_path(struct wl1251 *wl, u8 channel, bool enable)
 		cmd_rx = CMD_DISABLE_RX;
 		cmd_tx = CMD_DISABLE_TX;
 	}
+=======
+	if (enable)
+		cmd_rx = CMD_ENABLE_RX;
+	else
+		cmd_rx = CMD_DISABLE_RX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = wl1251_cmd_send(wl, cmd_rx, cmd, sizeof(*cmd));
 	if (ret < 0) {
@@ -237,6 +256,7 @@ int wl1251_cmd_data_path(struct wl1251 *wl, u8 channel, bool enable)
 	wl1251_debug(DEBUG_BOOT, "rx %s cmd channel %d",
 		     enable ? "start" : "stop", channel);
 
+<<<<<<< HEAD
 	ret = wl1251_cmd_send(wl, cmd_tx, cmd, sizeof(*cmd));
 	if (ret < 0) {
 		wl1251_error("tx %s cmd for channel %d failed",
@@ -248,6 +268,40 @@ int wl1251_cmd_data_path(struct wl1251 *wl, u8 channel, bool enable)
 		     enable ? "start" : "stop", channel);
 
 out:
+=======
+out:
+	kfree(cmd);
+	return ret;
+}
+
+int wl1251_cmd_data_path_tx(struct wl1251 *wl, u8 channel, bool enable)
+{
+	struct cmd_enabledisable_path *cmd;
+	int ret;
+	u16 cmd_tx;
+
+	wl1251_debug(DEBUG_CMD, "cmd data path");
+
+	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+	if (!cmd)
+		return -ENOMEM;
+
+	cmd->channel = channel;
+
+	if (enable)
+		cmd_tx = CMD_ENABLE_TX;
+	else
+		cmd_tx = CMD_DISABLE_TX;
+
+	ret = wl1251_cmd_send(wl, cmd_tx, cmd, sizeof(*cmd));
+	if (ret < 0)
+		wl1251_error("tx %s cmd for channel %d failed",
+			     enable ? "start" : "stop", channel);
+	else
+		wl1251_debug(DEBUG_BOOT, "tx %s cmd channel %d",
+			     enable ? "start" : "stop", channel);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(cmd);
 	return ret;
 }
@@ -410,7 +464,13 @@ int wl1251_cmd_scan(struct wl1251 *wl, u8 *ssid, size_t ssid_len,
 	struct wl1251_cmd_scan *cmd;
 	int i, ret = 0;
 
+<<<<<<< HEAD
 	wl1251_debug(DEBUG_CMD, "cmd scan");
+=======
+	wl1251_debug(DEBUG_CMD, "cmd scan channels %d", n_channels);
+
+	WARN_ON(n_channels > SCAN_MAX_NUM_OF_CHANNELS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
 	if (!cmd)
@@ -421,6 +481,16 @@ int wl1251_cmd_scan(struct wl1251 *wl, u8 *ssid, size_t ssid_len,
 						    CFG_RX_MGMT_EN |
 						    CFG_RX_BCN_EN);
 	cmd->params.scan_options = 0;
+<<<<<<< HEAD
+=======
+	/*
+	 * Use high priority scan when not associated to prevent fw issue
+	 * causing never-ending scans (sometimes 20+ minutes).
+	 * Note: This bug may be caused by the fw's DTIM handling.
+	 */
+	if (is_zero_ether_addr(wl->bssid))
+		cmd->params.scan_options |= cpu_to_le16(WL1251_SCAN_OPT_PRIORITY_HIGH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmd->params.num_channels = n_channels;
 	cmd->params.num_probe_requests = n_probes;
 	cmd->params.tx_rate = cpu_to_le16(1 << 1); /* 2 Mbps */
@@ -438,9 +508,18 @@ int wl1251_cmd_scan(struct wl1251 *wl, u8 *ssid, size_t ssid_len,
 		cmd->channels[i].channel = channels[i]->hw_value;
 	}
 
+<<<<<<< HEAD
 	cmd->params.ssid_len = ssid_len;
 	if (ssid)
 		memcpy(cmd->params.ssid, ssid, ssid_len);
+=======
+	if (ssid) {
+		int len = clamp_val(ssid_len, 0, IEEE80211_MAX_SSID_LEN);
+
+		cmd->params.ssid_len = len;
+		memcpy(cmd->params.ssid, ssid, len);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = wl1251_cmd_send(wl, CMD_SCAN, cmd, sizeof(*cmd));
 	if (ret < 0) {

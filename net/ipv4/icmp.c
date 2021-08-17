@@ -96,6 +96,10 @@
 #include <net/xfrm.h>
 #include <net/inet_common.h>
 #include <net/ip_fib.h>
+<<<<<<< HEAD
+=======
+#include <net/l3mdev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Build xmit assembly blocks
@@ -190,7 +194,11 @@ EXPORT_SYMBOL(icmp_err_convert);
  */
 
 struct icmp_control {
+<<<<<<< HEAD
 	void (*handler)(struct sk_buff *skb);
+=======
+	bool (*handler)(struct sk_buff *skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	short   error;		/* This ICMP is classed as an error message */
 };
 
@@ -205,7 +213,11 @@ static const struct icmp_control icmp_pointers[NR_ICMP_TYPES+1];
  */
 static struct sock *icmp_sk(struct net *net)
 {
+<<<<<<< HEAD
 	return net->ipv4.icmp_sk[smp_processor_id()];
+=======
+	return *this_cpu_ptr(net->ipv4.icmp_sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline struct sock *icmp_xmit_lock(struct net *net)
@@ -231,12 +243,74 @@ static inline void icmp_xmit_unlock(struct sock *sk)
 	spin_unlock_bh(&sk->sk_lock.slock);
 }
 
+<<<<<<< HEAD
+=======
+int sysctl_icmp_msgs_per_sec __read_mostly = 1000;
+int sysctl_icmp_msgs_burst __read_mostly = 50;
+
+static struct {
+	spinlock_t	lock;
+	u32		credit;
+	u32		stamp;
+} icmp_global = {
+	.lock		= __SPIN_LOCK_UNLOCKED(icmp_global.lock),
+};
+
+/**
+ * icmp_global_allow - Are we allowed to send one more ICMP message ?
+ *
+ * Uses a token bucket to limit our ICMP messages to ~sysctl_icmp_msgs_per_sec.
+ * Returns false if we reached the limit and can not send another packet.
+ * Note: called with BH disabled
+ */
+bool icmp_global_allow(void)
+{
+	u32 credit, delta, incr = 0, now = (u32)jiffies;
+	bool rc = false;
+
+	/* Check if token bucket is empty and cannot be refilled
+	 * without taking the spinlock. The READ_ONCE() are paired
+	 * with the following WRITE_ONCE() in this same function.
+	 */
+	if (!READ_ONCE(icmp_global.credit)) {
+		delta = min_t(u32, now - READ_ONCE(icmp_global.stamp), HZ);
+		if (delta < HZ / 50)
+			return false;
+	}
+
+	spin_lock(&icmp_global.lock);
+	delta = min_t(u32, now - icmp_global.stamp, HZ);
+	if (delta >= HZ / 50) {
+		incr = sysctl_icmp_msgs_per_sec * delta / HZ ;
+		if (incr)
+			WRITE_ONCE(icmp_global.stamp, now);
+	}
+	credit = min_t(u32, icmp_global.credit + incr, sysctl_icmp_msgs_burst);
+	if (credit) {
+		/* We want to use a credit of one in average, but need to randomize
+		 * it for security reasons.
+		 */
+		credit = max_t(int, credit - prandom_u32_max(3), 0);
+		rc = true;
+	}
+	WRITE_ONCE(icmp_global.credit, credit);
+	spin_unlock(&icmp_global.lock);
+	return rc;
+}
+EXPORT_SYMBOL(icmp_global_allow);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	Send an ICMP frame.
  */
 
+<<<<<<< HEAD
 static inline bool icmpv4_xrlim_allow(struct net *net, struct rtable *rt,
 				      struct flowi4 *fl4, int type, int code)
+=======
+static bool icmpv4_xrlim_allow(struct net *net, struct rtable *rt,
+			       struct flowi4 *fl4, int type, int code)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dst_entry *dst = &rt->dst;
 	bool rc = true;
@@ -253,8 +327,20 @@ static inline bool icmpv4_xrlim_allow(struct net *net, struct rtable *rt,
 		goto out;
 
 	/* Limit if icmp type is enabled in ratemask. */
+<<<<<<< HEAD
 	if ((1 << type) & net->ipv4.sysctl_icmp_ratemask) {
 		struct inet_peer *peer = inet_getpeer_v4(net->ipv4.peers, fl4->daddr, 1);
+=======
+	if (!((1 << type) & net->ipv4.sysctl_icmp_ratemask))
+		goto out;
+
+	rc = false;
+	if (icmp_global_allow()) {
+		int vif = l3mdev_master_ifindex(dst->dev);
+		struct inet_peer *peer;
+
+		peer = inet_getpeer_v4(net->ipv4.peers, fl4->daddr, vif, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = inet_peer_xrlim_allow(peer,
 					   net->ipv4.sysctl_icmp_ratelimit);
 		if (peer)
@@ -305,7 +391,11 @@ static void icmp_push_reply(struct icmp_bxm *icmp_param,
 			   icmp_param->data_len+icmp_param->head_len,
 			   icmp_param->head_len,
 			   ipc, rt, MSG_DONTWAIT) < 0) {
+<<<<<<< HEAD
 		ICMP_INC_STATS_BH(sock_net(sk), ICMP_MIB_OUTERRORS);
+=======
+		__ICMP_INC_STATS(sock_net(sk), ICMP_MIB_OUTERRORS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ip_flush_pending_frames(sk);
 	} else if ((skb = skb_peek(&sk->sk_write_queue)) != NULL) {
 		struct icmphdr *icmph = icmp_hdr(skb);
@@ -343,7 +433,11 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
 		return;
 
 	sk = icmp_xmit_lock(net);
+<<<<<<< HEAD
 	if (sk == NULL)
+=======
+	if (!sk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	inet = inet_sk(sk);
 
@@ -355,6 +449,12 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
 	saddr = fib_compute_spec_dst(skb);
 	ipc.opt = NULL;
 	ipc.tx_flags = 0;
+<<<<<<< HEAD
+=======
+	ipc.ttl = 0;
+	ipc.tos = -1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (icmp_param->replyopts.opt.opt.optlen) {
 		ipc.opt = &icmp_param->replyopts.opt;
 		if (ipc.opt->opt.srr)
@@ -367,6 +467,10 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
 	fl4.flowi4_uid = sock_net_uid(net, NULL);
 	fl4.flowi4_tos = RT_TOS(ip_hdr(skb)->tos);
 	fl4.flowi4_proto = IPPROTO_ICMP;
+<<<<<<< HEAD
+=======
+	fl4.flowi4_oif = l3mdev_master_ifindex(skb->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	security_skb_classify_flow(skb, flowi4_to_flowi(&fl4));
 	rt = ip_route_output_key(net, &fl4);
 	if (IS_ERR(rt))
@@ -379,6 +483,25 @@ out_unlock:
 	icmp_xmit_unlock(sk);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_IP_ROUTE_MULTIPATH
+
+/* Source and destination is swapped. See ip_multipath_icmp_hash */
+static int icmp_multipath_hash_skb(const struct sk_buff *skb)
+{
+	const struct iphdr *iph = ip_hdr(skb);
+
+	return fib_multipath_hash(iph->daddr, iph->saddr);
+}
+
+#else
+
+#define icmp_multipath_hash_skb(skb) (-1)
+
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct rtable *icmp_route_lookup(struct net *net,
 					struct flowi4 *fl4,
 					struct sk_buff *skb_in,
@@ -401,8 +524,16 @@ static struct rtable *icmp_route_lookup(struct net *net,
 	fl4->flowi4_proto = IPPROTO_ICMP;
 	fl4->fl4_icmp_type = type;
 	fl4->fl4_icmp_code = code;
+<<<<<<< HEAD
 	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
 	rt = __ip_route_output_key(net, fl4);
+=======
+	fl4->flowi4_oif = l3mdev_master_ifindex(skb_dst(skb_in)->dev);
+
+	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
+	rt = __ip_route_output_key_hash(net, fl4,
+					icmp_multipath_hash_skb(skb_in));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rt))
 		return rt;
 
@@ -423,7 +554,12 @@ static struct rtable *icmp_route_lookup(struct net *net,
 	if (err)
 		goto relookup_failed;
 
+<<<<<<< HEAD
 	if (inet_addr_type(net, fl4_dec.saddr) == RTN_LOCAL) {
+=======
+	if (inet_addr_type_dev_table(net, skb_dst(skb_in)->dev,
+				     fl4_dec.saddr) == RTN_LOCAL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rt2 = __ip_route_output_key(net, &fl4_dec);
 		if (IS_ERR(rt2))
 			err = PTR_ERR(rt2);
@@ -439,6 +575,10 @@ static struct rtable *icmp_route_lookup(struct net *net,
 		}
 		/* Ugh! */
 		orefdst = skb_in->_skb_refdst; /* save old refdst */
+<<<<<<< HEAD
+=======
+		skb_dst_set(skb_in, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = ip_route_input(skb_in, fl4_dec.daddr, fl4_dec.saddr,
 				     RT_TOS(tos), rt2->dst.dev);
 
@@ -484,11 +624,20 @@ relookup_failed:
  *			MUST reply to only the first fragment.
  */
 
+<<<<<<< HEAD
 void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 {
 	struct iphdr *iph;
 	int room;
 	struct icmp_bxm icmp_param;
+=======
+void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+		 const struct ip_options *opt)
+{
+	struct iphdr *iph;
+	int room;
+	struct icmp_bxm *icmp_param;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rtable *rt = skb_rtable(skb_in);
 	struct ipcm_cookie ipc;
 	struct flowi4 fl4;
@@ -510,7 +659,12 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 	iph = ip_hdr(skb_in);
 
 	if ((u8 *)iph < skb_in->head ||
+<<<<<<< HEAD
 	    (skb_in->network_header + sizeof(*iph)) > skb_in->tail)
+=======
+	    (skb_network_header(skb_in) + sizeof(*iph)) >
+	    skb_tail_pointer(skb_in))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 
 	/*
@@ -551,7 +705,11 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 						 skb_in->data,
 						 sizeof(_inner_type),
 						 &_inner_type);
+<<<<<<< HEAD
 			if (itp == NULL)
+=======
+			if (!itp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto out;
 
 			/*
@@ -564,10 +722,21 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 		}
 	}
 
+<<<<<<< HEAD
 	sk = icmp_xmit_lock(net);
 	if (sk == NULL)
 		return;
 
+=======
+	icmp_param = kmalloc(sizeof(*icmp_param), GFP_ATOMIC);
+	if (!icmp_param)
+		return;
+
+	sk = icmp_xmit_lock(net);
+	if (!sk)
+		goto out_free;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 *	Construct source address and options.
 	 */
@@ -593,7 +762,11 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 					  iph->tos;
 	mark = IP4_REPLY_MARK(net, skb_in->mark);
 
+<<<<<<< HEAD
 	if (ip_options_echo(&icmp_param.replyopts.opt.opt, skb_in))
+=======
+	if (__ip_options_echo(&icmp_param->replyopts.opt.opt, skb_in, opt))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_unlock;
 
 
@@ -601,6 +774,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 	 *	Prepare data for ICMP header.
 	 */
 
+<<<<<<< HEAD
 	icmp_param.data.icmph.type	 = type;
 	icmp_param.data.icmph.code	 = code;
 	icmp_param.data.icmph.un.gateway = info;
@@ -615,6 +789,24 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 
 	rt = icmp_route_lookup(net, &fl4, skb_in, iph, saddr, tos, mark,
 			       type, code, &icmp_param);
+=======
+	icmp_param->data.icmph.type	 = type;
+	icmp_param->data.icmph.code	 = code;
+	icmp_param->data.icmph.un.gateway = info;
+	icmp_param->data.icmph.checksum	 = 0;
+	icmp_param->skb	  = skb_in;
+	icmp_param->offset = skb_network_offset(skb_in);
+	inet_sk(sk)->tos = tos;
+	sk->sk_mark = mark;
+	ipc.addr = iph->saddr;
+	ipc.opt = &icmp_param->replyopts.opt;
+	ipc.tx_flags = 0;
+	ipc.ttl = 0;
+	ipc.tos = -1;
+
+	rt = icmp_route_lookup(net, &fl4, skb_in, iph, saddr, tos, mark,
+			       type, code, icmp_param);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rt))
 		goto out_unlock;
 
@@ -626,6 +818,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 	room = dst_mtu(&rt->dst);
 	if (room > 576)
 		room = 576;
+<<<<<<< HEAD
 	room -= sizeof(struct iphdr) + icmp_param.replyopts.opt.opt.optlen;
 	room -= sizeof(struct icmphdr);
 
@@ -635,14 +828,68 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 	icmp_param.head_len = sizeof(struct icmphdr);
 
 	icmp_push_reply(&icmp_param, &fl4, &ipc, &rt);
+=======
+	room -= sizeof(struct iphdr) + icmp_param->replyopts.opt.opt.optlen;
+	room -= sizeof(struct icmphdr);
+
+	icmp_param->data_len = skb_in->len - icmp_param->offset;
+	if (icmp_param->data_len > room)
+		icmp_param->data_len = room;
+	icmp_param->head_len = sizeof(struct icmphdr);
+
+	icmp_push_reply(icmp_param, &fl4, &ipc, &rt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ende:
 	ip_rt_put(rt);
 out_unlock:
 	icmp_xmit_unlock(sk);
+<<<<<<< HEAD
 out:;
 }
 EXPORT_SYMBOL(icmp_send);
 
+=======
+out_free:
+	kfree(icmp_param);
+out:;
+}
+EXPORT_SYMBOL(__icmp_send);
+
+#if IS_ENABLED(CONFIG_NF_NAT)
+#include <net/netfilter/nf_conntrack.h>
+void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
+{
+	struct sk_buff *cloned_skb = NULL;
+	struct ip_options opts = { 0 };
+	enum ip_conntrack_info ctinfo;
+	struct nf_conn *ct;
+	__be32 orig_ip;
+
+	ct = nf_ct_get(skb_in, &ctinfo);
+	if (!ct || !(ct->status & IPS_SRC_NAT)) {
+		__icmp_send(skb_in, type, code, info, &opts);
+		return;
+	}
+
+	if (skb_shared(skb_in))
+		skb_in = cloned_skb = skb_clone(skb_in, GFP_ATOMIC);
+
+	if (unlikely(!skb_in || skb_network_header(skb_in) < skb_in->head ||
+	    (skb_network_header(skb_in) + sizeof(struct iphdr)) >
+	    skb_tail_pointer(skb_in) || skb_ensure_writable(skb_in,
+	    skb_network_offset(skb_in) + sizeof(struct iphdr))))
+		goto out;
+
+	orig_ip = ip_hdr(skb_in)->saddr;
+	ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
+	__icmp_send(skb_in, type, code, info, &opts);
+	ip_hdr(skb_in)->saddr = orig_ip;
+out:
+	consume_skb(cloned_skb);
+}
+EXPORT_SYMBOL(icmp_ndo_send);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
 {
@@ -653,6 +900,7 @@ static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
 	/* Checkin full IP header plus 8 bytes of protocol to
 	 * avoid additional coding at protocol handlers.
 	 */
+<<<<<<< HEAD
 	if (!pskb_may_pull(skb, iph->ihl * 4 + 8))
 		return;
 
@@ -670,6 +918,36 @@ static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
  */
 
 static void icmp_unreach(struct sk_buff *skb)
+=======
+	if (!pskb_may_pull(skb, iph->ihl * 4 + 8)) {
+		__ICMP_INC_STATS(dev_net(skb->dev), ICMP_MIB_INERRORS);
+		return;
+	}
+
+	raw_icmp_error(skb, protocol, info);
+
+	ipprot = rcu_dereference(inet_protos[protocol]);
+	if (ipprot && ipprot->err_handler)
+		ipprot->err_handler(skb, info);
+}
+
+static bool icmp_tag_validation(int proto)
+{
+	bool ok;
+
+	rcu_read_lock();
+	ok = rcu_dereference(inet_protos[proto])->icmp_strict_tag_validation;
+	rcu_read_unlock();
+	return ok;
+}
+
+/*
+ *	Handle ICMP_DEST_UNREACH, ICMP_TIME_EXCEEDED, ICMP_QUENCH, and
+ *	ICMP_PARAMETERPROB.
+ */
+
+static bool icmp_unreach(struct sk_buff *skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const struct iphdr *iph;
 	struct icmphdr *icmph;
@@ -693,7 +971,12 @@ static void icmp_unreach(struct sk_buff *skb)
 	if (iph->ihl < 5) /* Mangled header, drop. */
 		goto out_err;
 
+<<<<<<< HEAD
 	if (icmph->type == ICMP_DEST_UNREACH) {
+=======
+	switch (icmph->type) {
+	case ICMP_DEST_UNREACH:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (icmph->code & 15) {
 		case ICMP_NET_UNREACH:
 		case ICMP_HOST_UNREACH:
@@ -701,24 +984,61 @@ static void icmp_unreach(struct sk_buff *skb)
 		case ICMP_PORT_UNREACH:
 			break;
 		case ICMP_FRAG_NEEDED:
+<<<<<<< HEAD
 			if (ipv4_config.no_pmtu_disc) {
 				LIMIT_NETDEBUG(KERN_INFO pr_fmt("%pI4: fragmentation needed and DF set\n"),
 					       &iph->daddr);
 			} else {
+=======
+			/* for documentation of the ip_no_pmtu_disc
+			 * values please see
+			 * Documentation/networking/ip-sysctl.txt
+			 */
+			switch (net->ipv4.sysctl_ip_no_pmtu_disc) {
+			default:
+				net_dbg_ratelimited("%pI4: fragmentation needed and DF set\n",
+						    &iph->daddr);
+				break;
+			case 2:
+				goto out;
+			case 3:
+				if (!icmp_tag_validation(iph->protocol))
+					goto out;
+				/* fall through */
+			case 0:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				info = ntohs(icmph->un.frag.mtu);
 			}
 			break;
 		case ICMP_SR_FAILED:
+<<<<<<< HEAD
 			LIMIT_NETDEBUG(KERN_INFO pr_fmt("%pI4: Source Route Failed\n"),
 				       &iph->daddr);
+=======
+			net_dbg_ratelimited("%pI4: Source Route Failed\n",
+					    &iph->daddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		default:
 			break;
 		}
 		if (icmph->code > NR_ICMP_UNREACH)
 			goto out;
+<<<<<<< HEAD
 	} else if (icmph->type == ICMP_PARAMETERPROB)
 		info = ntohl(icmph->un.gateway) >> 24;
+=======
+		break;
+	case ICMP_PARAMETERPROB:
+		info = ntohl(icmph->un.gateway) >> 24;
+		break;
+	case ICMP_TIME_EXCEEDED:
+		__ICMP_INC_STATS(net, ICMP_MIB_INTIMEEXCDS);
+		if (icmph->code == ICMP_EXC_FRAGTIME)
+			goto out;
+		break;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *	Throw it at our lower layers
@@ -739,7 +1059,11 @@ static void icmp_unreach(struct sk_buff *skb)
 	 */
 
 	if (!net->ipv4.sysctl_icmp_ignore_bogus_error_responses &&
+<<<<<<< HEAD
 	    inet_addr_type(net, iph->daddr) == RTN_BROADCAST) {
+=======
+	    inet_addr_type_dev_table(net, skb->dev, iph->daddr) == RTN_BROADCAST) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		net_warn_ratelimited("%pI4 sent an invalid ICMP type %u, code %u error to a broadcast: %pI4 on %s\n",
 				     &ip_hdr(skb)->saddr,
 				     icmph->type, icmph->code,
@@ -750,10 +1074,17 @@ static void icmp_unreach(struct sk_buff *skb)
 	icmp_socket_deliver(skb, info);
 
 out:
+<<<<<<< HEAD
 	return;
 out_err:
 	ICMP_INC_STATS_BH(net, ICMP_MIB_INERRORS);
 	goto out;
+=======
+	return true;
+out_err:
+	__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -761,6 +1092,7 @@ out_err:
  *	Handle ICMP_REDIRECT.
  */
 
+<<<<<<< HEAD
 static void icmp_redirect(struct sk_buff *skb)
 {
 	if (skb->len < sizeof(struct iphdr)) {
@@ -772,6 +1104,22 @@ static void icmp_redirect(struct sk_buff *skb)
 		return;
 
 	icmp_socket_deliver(skb, icmp_hdr(skb)->un.gateway);
+=======
+static bool icmp_redirect(struct sk_buff *skb)
+{
+	if (skb->len < sizeof(struct iphdr)) {
+		__ICMP_INC_STATS(dev_net(skb->dev), ICMP_MIB_INERRORS);
+		return false;
+	}
+
+	if (!pskb_may_pull(skb, sizeof(struct iphdr))) {
+		/* there aught to be a stat */
+		return false;
+	}
+
+	icmp_socket_deliver(skb, icmp_hdr(skb)->un.gateway);
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -786,7 +1134,11 @@ static void icmp_redirect(struct sk_buff *skb)
  *	See also WRT handling of options once they are done and working.
  */
 
+<<<<<<< HEAD
 static void icmp_echo(struct sk_buff *skb)
+=======
+static bool icmp_echo(struct sk_buff *skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct net *net;
 
@@ -802,6 +1154,11 @@ static void icmp_echo(struct sk_buff *skb)
 		icmp_param.head_len	   = sizeof(struct icmphdr);
 		icmp_reply(&icmp_param, skb);
 	}
+<<<<<<< HEAD
+=======
+	/* should there be an ICMP stat for ignored echos? */
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -811,9 +1168,14 @@ static void icmp_echo(struct sk_buff *skb)
  *		  MUST be accurate to a few minutes.
  *		  MUST be updated at least at 15Hz.
  */
+<<<<<<< HEAD
 static void icmp_timestamp(struct sk_buff *skb)
 {
 	struct timespec tv;
+=======
+static bool icmp_timestamp(struct sk_buff *skb)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct icmp_bxm icmp_param;
 	/*
 	 *	Too short.
@@ -824,9 +1186,13 @@ static void icmp_timestamp(struct sk_buff *skb)
 	/*
 	 *	Fill in the current time as ms since midnight UT:
 	 */
+<<<<<<< HEAD
 	getnstimeofday(&tv);
 	icmp_param.data.times[1] = htonl((tv.tv_sec % 86400) * MSEC_PER_SEC +
 					 tv.tv_nsec / NSEC_PER_MSEC);
+=======
+	icmp_param.data.times[1] = inet_current_timestamp();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	icmp_param.data.times[2] = icmp_param.data.times[1];
 	if (skb_copy_bits(skb, 0, &icmp_param.data.times[0], 4))
 		BUG();
@@ -838,6 +1204,7 @@ static void icmp_timestamp(struct sk_buff *skb)
 	icmp_param.data_len	   = 0;
 	icmp_param.head_len	   = sizeof(struct icmphdr) + 12;
 	icmp_reply(&icmp_param, skb);
+<<<<<<< HEAD
 out:
 	return;
 out_err:
@@ -847,6 +1214,19 @@ out_err:
 
 static void icmp_discard(struct sk_buff *skb)
 {
+=======
+	return true;
+
+out_err:
+	__ICMP_INC_STATS(dev_net(skb_dst(skb)->dev), ICMP_MIB_INERRORS);
+	return false;
+}
+
+static bool icmp_discard(struct sk_buff *skb)
+{
+	/* pretend it was a success */
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -857,6 +1237,10 @@ int icmp_rcv(struct sk_buff *skb)
 	struct icmphdr *icmph;
 	struct rtable *rt = skb_rtable(skb);
 	struct net *net = dev_net(rt->dst.dev);
+<<<<<<< HEAD
+=======
+	bool success;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
 		struct sec_path *sp = skb_sec_path(skb);
@@ -878,6 +1262,7 @@ int icmp_rcv(struct sk_buff *skb)
 		skb_set_network_header(skb, nh);
 	}
 
+<<<<<<< HEAD
 	ICMP_INC_STATS_BH(net, ICMP_MIB_INMSGS);
 
 	switch (skb->ip_summed) {
@@ -890,13 +1275,23 @@ int icmp_rcv(struct sk_buff *skb)
 		if (__skb_checksum_complete(skb))
 			goto csum_error;
 	}
+=======
+	__ICMP_INC_STATS(net, ICMP_MIB_INMSGS);
+
+	if (skb_checksum_simple_validate(skb))
+		goto csum_error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pskb_pull(skb, sizeof(*icmph)))
 		goto error;
 
 	icmph = icmp_hdr(skb);
 
+<<<<<<< HEAD
 	ICMPMSGIN_INC_STATS_BH(net, icmph->type);
+=======
+	ICMPMSGIN_INC_STATS(net, icmph->type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 *	18 is the highest 'known' ICMP type. Anything else is a mystery
 	 *
@@ -931,15 +1326,30 @@ int icmp_rcv(struct sk_buff *skb)
 		}
 	}
 
+<<<<<<< HEAD
 	icmp_pointers[icmph->type].handler(skb);
+=======
+	success = icmp_pointers[icmph->type].handler(skb);
+
+	if (success)  {
+		consume_skb(skb);
+		return 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 drop:
 	kfree_skb(skb);
 	return 0;
 csum_error:
+<<<<<<< HEAD
 	ICMP_INC_STATS_BH(net, ICMP_MIB_CSUMERRORS);
 error:
 	ICMP_INC_STATS_BH(net, ICMP_MIB_INERRORS);
+=======
+	__ICMP_INC_STATS(net, ICMP_MIB_CSUMERRORS);
+error:
+	__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	goto drop;
 }
 
@@ -1046,8 +1456,13 @@ static void __net_exit icmp_sk_exit(struct net *net)
 	int i;
 
 	for_each_possible_cpu(i)
+<<<<<<< HEAD
 		inet_ctl_sock_destroy(net->ipv4.icmp_sk[i]);
 	kfree(net->ipv4.icmp_sk);
+=======
+		inet_ctl_sock_destroy(*per_cpu_ptr(net->ipv4.icmp_sk, i));
+	free_percpu(net->ipv4.icmp_sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	net->ipv4.icmp_sk = NULL;
 }
 
@@ -1055,9 +1470,14 @@ static int __net_init icmp_sk_init(struct net *net)
 {
 	int i, err;
 
+<<<<<<< HEAD
 	net->ipv4.icmp_sk =
 		kzalloc(nr_cpu_ids * sizeof(struct sock *), GFP_KERNEL);
 	if (net->ipv4.icmp_sk == NULL)
+=======
+	net->ipv4.icmp_sk = alloc_percpu(struct sock *);
+	if (!net->ipv4.icmp_sk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 
 	for_each_possible_cpu(i) {
@@ -1068,7 +1488,11 @@ static int __net_init icmp_sk_init(struct net *net)
 		if (err < 0)
 			goto fail;
 
+<<<<<<< HEAD
 		net->ipv4.icmp_sk[i] = sk;
+=======
+		*per_cpu_ptr(net->ipv4.icmp_sk, i) = sk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Enough space for 2 64K ICMP packets, including
 		 * sk_buff/skb_shared_info struct overhead.
@@ -1109,8 +1533,13 @@ static int __net_init icmp_sk_init(struct net *net)
 
 fail:
 	for_each_possible_cpu(i)
+<<<<<<< HEAD
 		inet_ctl_sock_destroy(net->ipv4.icmp_sk[i]);
 	kfree(net->ipv4.icmp_sk);
+=======
+		inet_ctl_sock_destroy(*per_cpu_ptr(net->ipv4.icmp_sk, i));
+	free_percpu(net->ipv4.icmp_sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 

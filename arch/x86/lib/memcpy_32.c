@@ -1,10 +1,18 @@
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #undef memcpy
 #undef memset
 
+<<<<<<< HEAD
 void *memcpy(void *to, const void *from, size_t n)
+=======
+__visible void *memcpy(void *to, const void *from, size_t n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef CONFIG_X86_USE_3DNOW
 	return __memcpy3d(to, from, n);
@@ -14,13 +22,21 @@ void *memcpy(void *to, const void *from, size_t n)
 }
 EXPORT_SYMBOL(memcpy);
 
+<<<<<<< HEAD
 void *memset(void *s, int c, size_t count)
+=======
+__visible void *memset(void *s, int c, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return __memset(s, c, count);
 }
 EXPORT_SYMBOL(memset);
 
+<<<<<<< HEAD
 void *memmove(void *dest, const void *src, size_t n)
+=======
+__visible void *memmove(void *dest, const void *src, size_t n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int d0,d1,d2,d3,d4,d5;
 	char *ret = dest;

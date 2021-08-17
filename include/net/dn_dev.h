@@ -9,7 +9,11 @@ struct dn_ifaddr {
 	struct dn_dev    *ifa_dev;
 	__le16            ifa_local;
 	__le16            ifa_address;
+<<<<<<< HEAD
 	__u8              ifa_flags;
+=======
+	__u32             ifa_flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8              ifa_scope;
 	char              ifa_label[IFNAMSIZ];
 	struct rcu_head   rcu;
@@ -148,6 +152,7 @@ struct rtnode_hello_message {
 } __packed;
 
 
+<<<<<<< HEAD
 extern void dn_dev_init(void);
 extern void dn_dev_cleanup(void);
 
@@ -169,6 +174,29 @@ extern int dn_dev_bind_default(__le16 *addr);
 
 extern int register_dnaddr_notifier(struct notifier_block *nb);
 extern int unregister_dnaddr_notifier(struct notifier_block *nb);
+=======
+void dn_dev_init(void);
+void dn_dev_cleanup(void);
+
+int dn_dev_ioctl(unsigned int cmd, void __user *arg);
+
+void dn_dev_devices_off(void);
+void dn_dev_devices_on(void);
+
+void dn_dev_init_pkt(struct sk_buff *skb);
+void dn_dev_veri_pkt(struct sk_buff *skb);
+void dn_dev_hello(struct sk_buff *skb);
+
+void dn_dev_up(struct net_device *);
+void dn_dev_down(struct net_device *);
+
+int dn_dev_set_default(struct net_device *dev, int force);
+struct net_device *dn_dev_get_default(void);
+int dn_dev_bind_default(__le16 *addr);
+
+int register_dnaddr_notifier(struct notifier_block *nb);
+int unregister_dnaddr_notifier(struct notifier_block *nb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int dn_dev_islocal(struct net_device *dev, __le16 addr)
 {

@@ -336,7 +336,11 @@ static int vsc8211_intr_handler(struct cphy *cphy)
 	return cphy_cause;
 }
 
+<<<<<<< HEAD
 static struct cphy_ops vsc8211_ops = {
+=======
+static const struct cphy_ops vsc8211_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reset = vsc8211_reset,
 	.intr_enable = vsc8211_intr_enable,
 	.intr_disable = vsc8211_intr_disable,
@@ -350,7 +354,11 @@ static struct cphy_ops vsc8211_ops = {
 	.power_down = vsc8211_power_down,
 };
 
+<<<<<<< HEAD
 static struct cphy_ops vsc8211_fiber_ops = {
+=======
+static const struct cphy_ops vsc8211_fiber_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reset = vsc8211_reset,
 	.intr_enable = vsc8211_intr_enable,
 	.intr_disable = vsc8211_intr_disable,

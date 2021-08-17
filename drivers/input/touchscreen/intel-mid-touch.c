@@ -27,7 +27,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/err.h>
@@ -37,6 +40,10 @@
 #include <linux/irq.h>
 #include <linux/delay.h>
 #include <asm/intel_scu_ipc.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* PMIC Interrupt registers */
 #define PMIC_REG_ID1		0x00 /* PMIC ID1 register */
@@ -581,12 +588,26 @@ static int mrstouch_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	tsdev = kzalloc(sizeof(struct mrstouch_dev), GFP_KERNEL);
 	input = input_allocate_device();
 	if (!tsdev || !input) {
 		dev_err(&pdev->dev, "unable to allocate memory\n");
 		err = -ENOMEM;
 		goto err_free_mem;
+=======
+	tsdev = devm_kzalloc(&pdev->dev, sizeof(struct mrstouch_dev),
+			     GFP_KERNEL);
+	if (!tsdev) {
+		dev_err(&pdev->dev, "unable to allocate memory\n");
+		return -ENOMEM;
+	}
+
+	input = devm_input_allocate_device(&pdev->dev);
+	if (!input) {
+		dev_err(&pdev->dev, "unable to allocate input device\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	tsdev->dev = &pdev->dev;
@@ -599,7 +620,11 @@ static int mrstouch_probe(struct platform_device *pdev)
 	err = mrstouch_adc_init(tsdev);
 	if (err) {
 		dev_err(&pdev->dev, "ADC initialization failed\n");
+<<<<<<< HEAD
 		goto err_free_mem;
+=======
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	input->name = "mrst_touchscreen";
@@ -619,16 +644,26 @@ static int mrstouch_probe(struct platform_device *pdev)
 	input_set_abs_params(tsdev->input, ABS_PRESSURE,
 			     MRST_PRESSURE_MIN, MRST_PRESSURE_MAX, 0, 0);
 
+<<<<<<< HEAD
 	err = request_threaded_irq(tsdev->irq, NULL, mrstouch_pendet_irq,
 				   IRQF_ONESHOT, "mrstouch", tsdev);
 	if (err) {
 		dev_err(tsdev->dev, "unable to allocate irq\n");
 		goto err_free_mem;
+=======
+	err = devm_request_threaded_irq(&pdev->dev, tsdev->irq, NULL,
+					mrstouch_pendet_irq, IRQF_ONESHOT,
+					"mrstouch", tsdev);
+	if (err) {
+		dev_err(tsdev->dev, "unable to allocate irq\n");
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	err = input_register_device(tsdev->input);
 	if (err) {
 		dev_err(tsdev->dev, "unable to register input device\n");
+<<<<<<< HEAD
 		goto err_free_irq;
 	}
 
@@ -653,16 +688,26 @@ static int mrstouch_remove(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, NULL);
 
+=======
+		return err;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver mrstouch_driver = {
 	.driver = {
 		.name	= "pmic_touch",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= mrstouch_probe,
 	.remove		= mrstouch_remove,
+=======
+	},
+	.probe		= mrstouch_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 module_platform_driver(mrstouch_driver);
 

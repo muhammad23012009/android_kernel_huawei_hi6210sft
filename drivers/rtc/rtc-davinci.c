@@ -117,10 +117,15 @@
 static DEFINE_SPINLOCK(davinci_rtc_lock);
 
 struct davinci_rtc {
+<<<<<<< HEAD
 	struct rtc_device 		*rtc;
 	void __iomem			*base;
 	resource_size_t			pbase;
 	size_t				base_size;
+=======
+	struct rtc_device		*rtc;
+	void __iomem			*base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int				irq;
 };
 
@@ -390,6 +395,11 @@ static int davinci_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	u8 day0, day1;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	alm->time.tm_sec = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&davinci_rtc_lock, flags);
 
 	davinci_rtcss_calendar_wait(davinci_rtc);
@@ -469,7 +479,11 @@ static int davinci_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops davinci_rtc_ops = {
+=======
+static const struct rtc_class_ops davinci_rtc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ioctl			= davinci_rtc_ioctl,
 	.read_time		= davinci_rtc_read_time,
 	.set_time		= davinci_rtc_set_time,
@@ -482,6 +496,7 @@ static int __init davinci_rtc_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct davinci_rtc *davinci_rtc;
+<<<<<<< HEAD
 	struct resource *res, *mem;
 	int ret = 0;
 
@@ -490,6 +505,14 @@ static int __init davinci_rtc_probe(struct platform_device *pdev)
 		dev_dbg(dev, "could not allocate memory for private data\n");
 		return -ENOMEM;
 	}
+=======
+	struct resource *res;
+	int ret = 0;
+
+	davinci_rtc = devm_kzalloc(&pdev->dev, sizeof(struct davinci_rtc), GFP_KERNEL);
+	if (!davinci_rtc)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	davinci_rtc->irq = platform_get_irq(pdev, 0);
 	if (davinci_rtc->irq < 0) {
@@ -498,6 +521,7 @@ static int __init davinci_rtc_probe(struct platform_device *pdev)
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		dev_err(dev, "no mem resource\n");
 		return -EINVAL;
@@ -520,16 +544,27 @@ static int __init davinci_rtc_probe(struct platform_device *pdev)
 		dev_err(dev, "unable to ioremap MEM resource\n");
 		return -ENOMEM;
 	}
+=======
+	davinci_rtc->base = devm_ioremap_resource(dev, res);
+	if (IS_ERR(davinci_rtc->base))
+		return PTR_ERR(davinci_rtc->base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, davinci_rtc);
 
 	davinci_rtc->rtc = devm_rtc_device_register(&pdev->dev, pdev->name,
 				    &davinci_rtc_ops, THIS_MODULE);
 	if (IS_ERR(davinci_rtc->rtc)) {
+<<<<<<< HEAD
 		ret = PTR_ERR(davinci_rtc->rtc);
 		dev_err(dev, "unable to register RTC device, err %d\n",
 				ret);
 		goto fail1;
+=======
+		dev_err(dev, "unable to register RTC device, err %d\n",
+				ret);
+		return PTR_ERR(davinci_rtc->rtc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	rtcif_write(davinci_rtc, PRTCIF_INTFLG_RTCSS, PRTCIF_INTFLG);
@@ -543,7 +578,11 @@ static int __init davinci_rtc_probe(struct platform_device *pdev)
 			  0, "davinci_rtc", davinci_rtc);
 	if (ret < 0) {
 		dev_err(dev, "unable to register davinci RTC interrupt\n");
+<<<<<<< HEAD
 		goto fail1;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Enable interrupts */
@@ -556,10 +595,13 @@ static int __init davinci_rtc_probe(struct platform_device *pdev)
 	device_init_wakeup(&pdev->dev, 0);
 
 	return 0;
+<<<<<<< HEAD
 
 fail1:
 	platform_set_drvdata(pdev, NULL);
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __exit davinci_rtc_remove(struct platform_device *pdev)
@@ -570,17 +612,26 @@ static int __exit davinci_rtc_remove(struct platform_device *pdev)
 
 	rtcif_write(davinci_rtc, 0, PRTCIF_INTEN);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver davinci_rtc_driver = {
+<<<<<<< HEAD
 	.probe		= davinci_rtc_probe,
 	.remove		= __exit_p(davinci_rtc_remove),
 	.driver		= {
 		.name = "rtc_davinci",
 		.owner = THIS_MODULE,
+=======
+	.remove		= __exit_p(davinci_rtc_remove),
+	.driver		= {
+		.name = "rtc_davinci",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

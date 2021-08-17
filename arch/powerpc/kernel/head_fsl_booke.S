@@ -42,6 +42,10 @@
 #include <asm/asm-offsets.h>
 #include <asm/cache.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "head_booke.h"
 
 /* As with the other PowerPC ports, it is expected that when code
@@ -65,6 +69,7 @@ _ENTRY(_start);
 	nop
 
 	/* Translate device tree address to physical, save in r30/r31 */
+<<<<<<< HEAD
 	mfmsr	r16
 	mfspr	r17,SPRN_PID
 	rlwinm	r17,r17,16,0x3fff0000	/* turn PID into MAS6[SPID] */
@@ -83,11 +88,83 @@ _ENTRY(_start);
 	andc	r31,r20,r18		/* r31 = page base */
 	or	r31,r31,r19		/* r31 = devtree phys addr */
 	mfspr	r30,SPRN_MAS7
+=======
+	bl	get_phys_addr
+	mr	r30,r3
+	mr	r31,r4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	li	r25,0			/* phys kernel start (low) */
 	li	r24,0			/* CPU number */
 	li	r23,0			/* phys kernel start (high) */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RELOCATABLE
+	LOAD_REG_ADDR_PIC(r3, _stext)	/* Get our current runtime base */
+
+	/* Translate _stext address to physical, save in r23/r25 */
+	bl	get_phys_addr
+	mr	r23,r3
+	mr	r25,r4
+
+	bl	0f
+0:	mflr	r8
+	addis	r3,r8,(is_second_reloc - 0b)@ha
+	lwz	r19,(is_second_reloc - 0b)@l(r3)
+
+	/* Check if this is the second relocation. */
+	cmpwi	r19,1
+	bne	1f
+
+	/*
+	 * For the second relocation, we already get the real memstart_addr
+	 * from device tree. So we will map PAGE_OFFSET to memstart_addr,
+	 * then the virtual address of start kernel should be:
+	 *          PAGE_OFFSET + (kernstart_addr - memstart_addr)
+	 * Since the offset between kernstart_addr and memstart_addr should
+	 * never be beyond 1G, so we can just use the lower 32bit of them
+	 * for the calculation.
+	 */
+	lis	r3,PAGE_OFFSET@h
+
+	addis	r4,r8,(kernstart_addr - 0b)@ha
+	addi	r4,r4,(kernstart_addr - 0b)@l
+	lwz	r5,4(r4)
+
+	addis	r6,r8,(memstart_addr - 0b)@ha
+	addi	r6,r6,(memstart_addr - 0b)@l
+	lwz	r7,4(r6)
+
+	subf	r5,r7,r5
+	add	r3,r3,r5
+	b	2f
+
+1:
+	/*
+	 * We have the runtime (virutal) address of our base.
+	 * We calculate our shift of offset from a 64M page.
+	 * We could map the 64M page we belong to at PAGE_OFFSET and
+	 * get going from there.
+	 */
+	lis	r4,KERNELBASE@h
+	ori	r4,r4,KERNELBASE@l
+	rlwinm	r6,r25,0,0x3ffffff		/* r6 = PHYS_START % 64M */
+	rlwinm	r5,r4,0,0x3ffffff		/* r5 = KERNELBASE % 64M */
+	subf	r3,r5,r6			/* r3 = r6 - r5 */
+	add	r3,r4,r3			/* Required Virtual Address */
+
+2:	bl	relocate
+
+	/*
+	 * For the second relocation, we already set the right tlb entries
+	 * for the kernel space, so skip the code in fsl_booke_entry_mapping.S
+	*/
+	cmpwi	r19,1
+	beq	set_ivor
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* We try to not make any assumptions about how the boot loader
  * setup or used the TLBs.  We invalidate all mappings from the
  * boot loader and load a single entry in TLB1[0] to map the
@@ -113,6 +190,10 @@ _ENTRY(__early_start)
 #include "fsl_booke_entry_mapping.S"
 #undef ENTRY_MAPPING_BOOT_SETUP
 
+<<<<<<< HEAD
+=======
+set_ivor:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Establish the interrupt vector offsets */
 	SET_IVOR(0,  CriticalInput);
 	SET_IVOR(1,  MachineCheck);
@@ -166,8 +247,12 @@ _ENTRY(__early_start)
 	/* Check to see if we're the second processor, and jump
 	 * to the secondary_start code if so
 	 */
+<<<<<<< HEAD
 	lis	r24, boot_cpuid@h
 	ori	r24, r24, boot_cpuid@l
+=======
+	LOAD_REG_ADDR_PIC(r24, boot_cpuid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lwz	r24, 0(r24)
 	cmpwi	r24, -1
 	mfspr   r24,SPRN_PIR
@@ -197,6 +282,21 @@ _ENTRY(__early_start)
 
 	bl	early_init
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RELOCATABLE
+	mr	r3,r30
+	mr	r4,r31
+#ifdef CONFIG_PHYS_64BIT
+	mr	r5,r23
+	mr	r6,r25
+#else
+	mr	r5,r25
+#endif
+	bl	relocate_init
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DYNAMIC_MEMSTART
 	lis	r3,kernstart_addr@ha
 	la	r3,kernstart_addr@l(r3)
@@ -390,6 +490,16 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
 	mfcr	r13
 	stw	r13, THREAD_NORMSAVE(3)(r10)
 	DO_KVM	BOOKE_INTERRUPT_DTLB_MISS SPRN_SRR1
+<<<<<<< HEAD
+=======
+START_BTB_FLUSH_SECTION
+	mfspr r11, SPRN_SRR1
+	andi. r10,r11,MSR_PR
+	beq 1f
+	BTB_FLUSH(r10)
+1:
+END_BTB_FLUSH_SECTION
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfspr	r10, SPRN_DEAR		/* Get faulting address */
 
 	/* If we are faulting a kernel address, we have to use the
@@ -484,6 +594,17 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
 	mfcr	r13
 	stw	r13, THREAD_NORMSAVE(3)(r10)
 	DO_KVM	BOOKE_INTERRUPT_ITLB_MISS SPRN_SRR1
+<<<<<<< HEAD
+=======
+START_BTB_FLUSH_SECTION
+	mfspr r11, SPRN_SRR1
+	andi. r10,r11,MSR_PR
+	beq 1f
+	BTB_FLUSH(r10)
+1:
+END_BTB_FLUSH_SECTION
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfspr	r10, SPRN_SRR0		/* Get faulting address */
 
 	/* If we are faulting a kernel address, we have to use the
@@ -552,6 +673,10 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
 	mfspr	r10, SPRN_SPRG_RSCRATCH0
 	b	InstructionStorage
 
+<<<<<<< HEAD
+=======
+/* Define SPE handlers for e200 and e500v2 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SPE
 	/* SPE Unavailable */
 	START_EXCEPTION(SPEUnavailable)
@@ -561,6 +686,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
 	b	fast_exception_return
 1:	addi	r3,r1,STACK_FRAME_OVERHEAD
 	EXC_XFER_EE_LITE(0x2010, KernelSPE)
+<<<<<<< HEAD
 #else
 	EXCEPTION(0x2020, SPE_UNAVAIL, SPEUnavailable, \
 		  unknown_exception, EXC_XFER_EE)
@@ -570,16 +696,37 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
 #ifdef CONFIG_SPE
 	EXCEPTION(0x2030, SPE_FP_DATA, SPEFloatingPointData, \
 		  SPEFloatingPointException, EXC_XFER_EE);
+=======
+#elif defined(CONFIG_SPE_POSSIBLE)
+	EXCEPTION(0x2020, SPE_UNAVAIL, SPEUnavailable, \
+		  unknown_exception, EXC_XFER_EE)
+#endif /* CONFIG_SPE_POSSIBLE */
+
+	/* SPE Floating Point Data */
+#ifdef CONFIG_SPE
+	EXCEPTION(0x2030, SPE_FP_DATA, SPEFloatingPointData,
+		  SPEFloatingPointException, EXC_XFER_EE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* SPE Floating Point Round */
 	EXCEPTION(0x2050, SPE_FP_ROUND, SPEFloatingPointRound, \
 		  SPEFloatingPointRoundException, EXC_XFER_EE)
+<<<<<<< HEAD
 #else
 	EXCEPTION(0x2040, SPE_FP_DATA, SPEFloatingPointData, \
 		  unknown_exception, EXC_XFER_EE)
 	EXCEPTION(0x2050, SPE_FP_ROUND, SPEFloatingPointRound, \
 		  unknown_exception, EXC_XFER_EE)
 #endif /* CONFIG_SPE */
+=======
+#elif defined(CONFIG_SPE_POSSIBLE)
+	EXCEPTION(0x2040, SPE_FP_DATA, SPEFloatingPointData,
+		  unknown_exception, EXC_XFER_EE)
+	EXCEPTION(0x2050, SPE_FP_ROUND, SPEFloatingPointRound, \
+		  unknown_exception, EXC_XFER_EE)
+#endif /* CONFIG_SPE_POSSIBLE */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Performance Monitor */
 	EXCEPTION(0x2060, PERFORMANCE_MONITOR, PerformanceMonitor, \
@@ -794,6 +941,7 @@ _GLOBAL(load_up_spe)
 	oris	r5,r5,MSR_SPE@h
 	mtmsr	r5			/* enable use of SPE now */
 	isync
+<<<<<<< HEAD
 /*
  * For SMP, we don't do lazy SPE switching because it just gets too
  * horrendously complex, especially when a task switches from one CPU
@@ -817,6 +965,8 @@ _GLOBAL(load_up_spe)
 	stw	r4,_MSR-STACK_FRAME_OVERHEAD(r5)
 1:
 #endif /* !CONFIG_SMP */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* enable use of SPE after return */
 	oris	r9,r9,MSR_SPE@h
 	mfspr	r5,SPRN_SPRG_THREAD	/* current task's THREAD (phys) */
@@ -826,10 +976,13 @@ _GLOBAL(load_up_spe)
 	evlddx	evr4,r10,r5
 	evmra	evr4,evr4
 	REST_32EVRS(0,r10,r5,THREAD_EVR0)
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 	subi	r4,r5,THREAD
 	stw	r4,last_task_used_spe@l(r3)
 #endif /* !CONFIG_SMP */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr
 
 /*
@@ -856,9 +1009,43 @@ KernelSPE:
 #endif /* CONFIG_SPE */
 
 /*
+<<<<<<< HEAD
  * Global functions
  */
 
+=======
+ * Translate the effec addr in r3 to phys addr. The phys addr will be put
+ * into r3(higher 32bit) and r4(lower 32bit)
+ */
+get_phys_addr:
+	mfmsr	r8
+	mfspr	r9,SPRN_PID
+	rlwinm	r9,r9,16,0x3fff0000	/* turn PID into MAS6[SPID] */
+	rlwimi	r9,r8,28,0x00000001	/* turn MSR[DS] into MAS6[SAS] */
+	mtspr	SPRN_MAS6,r9
+
+	tlbsx	0,r3			/* must succeed */
+
+	mfspr	r8,SPRN_MAS1
+	mfspr	r12,SPRN_MAS3
+	rlwinm	r9,r8,25,0x1f		/* r9 = log2(page size) */
+	li	r10,1024
+	slw	r10,r10,r9		/* r10 = page size */
+	addi	r10,r10,-1
+	and	r11,r3,r10		/* r11 = page offset */
+	andc	r4,r12,r10		/* r4 = page base */
+	or	r4,r4,r11		/* r4 = devtree phys addr */
+#ifdef CONFIG_PHYS_64BIT
+	mfspr	r3,SPRN_MAS7
+#endif
+	blr
+
+/*
+ * Global functions
+ */
+
+#ifdef CONFIG_E200
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Adjust or setup IVORs for e200 */
 _GLOBAL(__setup_e200_ivors)
 	li	r3,DebugDebug@l
@@ -871,7 +1058,14 @@ _GLOBAL(__setup_e200_ivors)
 	mtspr	SPRN_IVOR34,r3
 	sync
 	blr
+<<<<<<< HEAD
 
+=======
+#endif
+
+#ifdef CONFIG_E500
+#ifndef CONFIG_PPC_E500MC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Adjust or setup IVORs for e500v1/v2 */
 _GLOBAL(__setup_e500_ivors)
 	li	r3,DebugCrit@l
@@ -886,7 +1080,11 @@ _GLOBAL(__setup_e500_ivors)
 	mtspr	SPRN_IVOR35,r3
 	sync
 	blr
+<<<<<<< HEAD
 
+=======
+#else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Adjust or setup IVORs for e500mc */
 _GLOBAL(__setup_e500mc_ivors)
 	li	r3,DebugDebug@l
@@ -912,6 +1110,7 @@ _GLOBAL(__setup_ehv_ivors)
 	mtspr	SPRN_IVOR41,r3
 	sync
 	blr
+<<<<<<< HEAD
 
 #ifdef CONFIG_SPE
 /*
@@ -925,6 +1124,17 @@ _GLOBAL(giveup_spe)
 	isync
 	cmpi	0,r3,0
 	beqlr-				/* if no previous owner, done */
+=======
+#endif /* CONFIG_PPC_E500MC */
+#endif /* CONFIG_E500 */
+
+#ifdef CONFIG_SPE
+/*
+ * extern void __giveup_spe(struct task_struct *prev)
+ *
+ */
+_GLOBAL(__giveup_spe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	addi	r3,r3,THREAD		/* want THREAD of task */
 	lwz	r5,PT_REGS(r3)
 	cmpi	0,r5,0
@@ -939,15 +1149,19 @@ _GLOBAL(giveup_spe)
 	andc	r4,r4,r3		/* disable SPE for previous task */
 	stw	r4,_MSR-STACK_FRAME_OVERHEAD(r5)
 1:
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 	li	r5,0
 	lis	r4,last_task_used_spe@ha
 	stw	r5,last_task_used_spe@l(r4)
 #endif /* !CONFIG_SMP */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr
 #endif /* CONFIG_SPE */
 
 /*
+<<<<<<< HEAD
  * extern void giveup_fpu(struct task_struct *prev)
  *
  * Not all FSL Book-E cores have an FPU
@@ -958,6 +1172,8 @@ _GLOBAL(giveup_fpu)
 #endif
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * extern void abort(void)
  *
  * At present, this routine just applies a system reset.
@@ -989,6 +1205,7 @@ _GLOBAL(set_context)
 	isync			/* Force context change */
 	blr
 
+<<<<<<< HEAD
 _GLOBAL(flush_dcache_L1)
 	mfspr	r3,SPRN_L1CFG0
 
@@ -1063,10 +1280,13 @@ _GLOBAL(__flush_disable_L1)
 
 	blr
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 /* When we get here, r24 needs to hold the CPU # */
 	.globl __secondary_start
 __secondary_start:
+<<<<<<< HEAD
 	lis	r3,__secondary_hold_acknowledge@h
 	ori	r3,r3,__secondary_hold_acknowledge@l
 	stw	r24,0(r3)
@@ -1080,11 +1300,41 @@ __secondary_start:
 	mtctr	r3
 	li	r26,0		/* r26 safe? */
 
+=======
+	LOAD_REG_ADDR_PIC(r3, tlbcam_index)
+	lwz	r3,0(r3)
+	mtctr	r3
+	li	r26,0		/* r26 safe? */
+
+	bl	switch_to_as1
+	mr	r27,r3		/* tlb entry */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Load each CAM entry */
 1:	mr	r3,r26
 	bl	loadcam_entry
 	addi	r26,r26,1
 	bdnz	1b
+<<<<<<< HEAD
+=======
+	mr	r3,r27		/* tlb entry */
+	LOAD_REG_ADDR_PIC(r4, memstart_addr)
+	lwz	r4,0(r4)
+	mr	r5,r25		/* phys kernel start */
+	rlwinm	r5,r5,0,~0x3ffffff	/* aligned 64M */
+	subf	r4,r5,r4	/* memstart_addr - phys kernel start */
+	li	r5,0		/* no device tree */
+	li	r6,0		/* not boot cpu */
+	bl	restore_to_as0
+
+
+	lis	r3,__secondary_hold_acknowledge@h
+	ori	r3,r3,__secondary_hold_acknowledge@l
+	stw	r24,0(r3)
+
+	li	r3,0
+	mr	r4,r24		/* Why? */
+	bl	call_setup_cpu
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* get current_thread_info and current */
 	lis	r1,secondary_ti@ha
@@ -1121,6 +1371,115 @@ __secondary_hold_acknowledge:
 #endif
 
 /*
+<<<<<<< HEAD
+=======
+ * Create a tlb entry with the same effective and physical address as
+ * the tlb entry used by the current running code. But set the TS to 1.
+ * Then switch to the address space 1. It will return with the r3 set to
+ * the ESEL of the new created tlb.
+ */
+_GLOBAL(switch_to_as1)
+	mflr	r5
+
+	/* Find a entry not used */
+	mfspr	r3,SPRN_TLB1CFG
+	andi.	r3,r3,0xfff
+	mfspr	r4,SPRN_PID
+	rlwinm	r4,r4,16,0x3fff0000	/* turn PID into MAS6[SPID] */
+	mtspr	SPRN_MAS6,r4
+1:	lis	r4,0x1000		/* Set MAS0(TLBSEL) = 1 */
+	addi	r3,r3,-1
+	rlwimi	r4,r3,16,4,15		/* Setup MAS0 = TLBSEL | ESEL(r3) */
+	mtspr	SPRN_MAS0,r4
+	tlbre
+	mfspr	r4,SPRN_MAS1
+	andis.	r4,r4,MAS1_VALID@h
+	bne	1b
+
+	/* Get the tlb entry used by the current running code */
+	bl	0f
+0:	mflr	r4
+	tlbsx	0,r4
+
+	mfspr	r4,SPRN_MAS1
+	ori	r4,r4,MAS1_TS		/* Set the TS = 1 */
+	mtspr	SPRN_MAS1,r4
+
+	mfspr	r4,SPRN_MAS0
+	rlwinm	r4,r4,0,~MAS0_ESEL_MASK
+	rlwimi	r4,r3,16,4,15		/* Setup MAS0 = TLBSEL | ESEL(r3) */
+	mtspr	SPRN_MAS0,r4
+	tlbwe
+	isync
+	sync
+
+	mfmsr	r4
+	ori	r4,r4,MSR_IS | MSR_DS
+	mtspr	SPRN_SRR0,r5
+	mtspr	SPRN_SRR1,r4
+	sync
+	rfi
+
+/*
+ * Restore to the address space 0 and also invalidate the tlb entry created
+ * by switch_to_as1.
+ * r3 - the tlb entry which should be invalidated
+ * r4 - __pa(PAGE_OFFSET in AS1) - __pa(PAGE_OFFSET in AS0)
+ * r5 - device tree virtual address. If r4 is 0, r5 is ignored.
+ * r6 - boot cpu
+*/
+_GLOBAL(restore_to_as0)
+	mflr	r0
+
+	bl	0f
+0:	mflr	r9
+	addi	r9,r9,1f - 0b
+
+	/*
+	 * We may map the PAGE_OFFSET in AS0 to a different physical address,
+	 * so we need calculate the right jump and device tree address based
+	 * on the offset passed by r4.
+	 */
+	add	r9,r9,r4
+	add	r5,r5,r4
+	add	r0,r0,r4
+
+2:	mfmsr	r7
+	li	r8,(MSR_IS | MSR_DS)
+	andc	r7,r7,r8
+
+	mtspr	SPRN_SRR0,r9
+	mtspr	SPRN_SRR1,r7
+	sync
+	rfi
+
+	/* Invalidate the temporary tlb entry for AS1 */
+1:	lis	r9,0x1000		/* Set MAS0(TLBSEL) = 1 */
+	rlwimi	r9,r3,16,4,15		/* Setup MAS0 = TLBSEL | ESEL(r3) */
+	mtspr	SPRN_MAS0,r9
+	tlbre
+	mfspr	r9,SPRN_MAS1
+	rlwinm	r9,r9,0,2,31		/* Clear MAS1 Valid and IPPROT */
+	mtspr	SPRN_MAS1,r9
+	tlbwe
+	isync
+
+	cmpwi	r4,0
+	cmpwi	cr1,r6,0
+	cror	eq,4*cr1+eq,eq
+	bne	3f			/* offset != 0 && is_boot_cpu */
+	mtlr	r0
+	blr
+
+	/*
+	 * The PAGE_OFFSET will map to a different physical address,
+	 * jump to _start to do another relocation again.
+	*/
+3:	mr	r3,r5
+	bl	_start
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * We put a few things here that have to be page-aligned. This stuff
  * goes at the beginning of the data segment, which is page-aligned.
  */
@@ -1131,6 +1490,10 @@ sdata:
 	.globl	empty_zero_page
 empty_zero_page:
 	.space	4096
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(empty_zero_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.globl	swapper_pg_dir
 swapper_pg_dir:
 	.space	PGD_TABLE_SIZE

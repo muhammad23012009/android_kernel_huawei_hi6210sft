@@ -2,11 +2,16 @@
  * @file backtrace.c
  *
  * @remark Copyright 2008 Tensilica Inc.
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2015 Cadence Design Systems Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @remark Read the file COPYING
  *
  */
 
 #include <linux/oprofile.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <asm/ptrace.h>
@@ -158,12 +163,28 @@ static void xtensa_backtrace_kernel(struct pt_regs *regs, unsigned int depth)
 
 	}
 	return;
+=======
+#include <asm/ptrace.h>
+#include <asm/stacktrace.h>
+
+static int xtensa_backtrace_cb(struct stackframe *frame, void *data)
+{
+	oprofile_add_trace(frame->pc);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void xtensa_backtrace(struct pt_regs * const regs, unsigned int depth)
 {
 	if (user_mode(regs))
+<<<<<<< HEAD
 		xtensa_backtrace_user(regs, depth);
 	else
 		xtensa_backtrace_kernel(regs, depth);
+=======
+		xtensa_backtrace_user(regs, depth, xtensa_backtrace_cb, NULL);
+	else
+		xtensa_backtrace_kernel(regs, depth, xtensa_backtrace_cb,
+					xtensa_backtrace_cb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

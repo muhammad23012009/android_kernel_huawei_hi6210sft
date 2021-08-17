@@ -15,10 +15,18 @@
 #include <linux/clkdev.h>
 
 #include <mach/hardware.h>
+<<<<<<< HEAD
+=======
+#include <mach/generic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct clkops {
 	void			(*enable)(struct clk *);
 	void			(*disable)(struct clk *);
+<<<<<<< HEAD
+=======
+	unsigned long		(*get_rate)(struct clk *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct clk {
@@ -51,6 +59,22 @@ static void clk_gpio27_disable(struct clk *clk)
 	GAFR &= ~GPIO_32_768kHz;
 }
 
+<<<<<<< HEAD
+=======
+static void clk_cpu_enable(struct clk *clk)
+{
+}
+
+static void clk_cpu_disable(struct clk *clk)
+{
+}
+
+static unsigned long clk_cpu_get_rate(struct clk *clk)
+{
+	return sa11x0_getspeed(0) * 1000;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int clk_enable(struct clk *clk)
 {
 	unsigned long flags;
@@ -80,11 +104,24 @@ void clk_disable(struct clk *clk)
 }
 EXPORT_SYMBOL(clk_disable);
 
+<<<<<<< HEAD
+=======
+unsigned long clk_get_rate(struct clk *clk)
+{
+	if (clk && clk->ops && clk->ops->get_rate)
+		return clk->ops->get_rate(clk);
+
+	return 0;
+}
+EXPORT_SYMBOL(clk_get_rate);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const struct clkops clk_gpio27_ops = {
 	.enable		= clk_gpio27_enable,
 	.disable	= clk_gpio27_disable,
 };
 
+<<<<<<< HEAD
 static DEFINE_CLK(gpio27, &clk_gpio27_ops);
 
 static struct clk_lookup sa11xx_clkregs[] = {
@@ -93,8 +130,47 @@ static struct clk_lookup sa11xx_clkregs[] = {
 };
 
 static int __init sa11xx_clk_init(void)
+=======
+const struct clkops clk_cpu_ops = {
+	.enable		= clk_cpu_enable,
+	.disable	= clk_cpu_disable,
+	.get_rate	= clk_cpu_get_rate,
+};
+
+static DEFINE_CLK(gpio27, &clk_gpio27_ops);
+
+static DEFINE_CLK(cpu, &clk_cpu_ops);
+
+static unsigned long clk_36864_get_rate(struct clk *clk)
+{
+	return 3686400;
+}
+
+static struct clkops clk_36864_ops = {
+	.enable		= clk_cpu_enable,
+	.disable	= clk_cpu_disable,
+	.get_rate	= clk_36864_get_rate,
+};
+
+static DEFINE_CLK(36864, &clk_36864_ops);
+
+static struct clk_lookup sa11xx_clkregs[] = {
+	CLKDEV_INIT("sa1111.0", NULL, &clk_gpio27),
+	CLKDEV_INIT("sa1100-rtc", NULL, NULL),
+	CLKDEV_INIT("sa11x0-fb", NULL, &clk_cpu),
+	CLKDEV_INIT("sa11x0-pcmcia", NULL, &clk_cpu),
+	/* sa1111 names devices using internal offsets, PCMCIA is at 0x1800 */
+	CLKDEV_INIT("1800", NULL, &clk_cpu),
+	CLKDEV_INIT(NULL, "OSTIMER0", &clk_36864),
+};
+
+int __init sa11xx_clk_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	clkdev_add_table(sa11xx_clkregs, ARRAY_SIZE(sa11xx_clkregs));
 	return 0;
 }
+<<<<<<< HEAD
 core_initcall(sa11xx_clk_init);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

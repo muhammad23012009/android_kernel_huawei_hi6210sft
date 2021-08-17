@@ -365,7 +365,10 @@ done:
 static struct platform_driver cs5535_mfgpt_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = cs5535_mfgpt_probe,
 };

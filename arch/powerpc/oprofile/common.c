@@ -119,7 +119,11 @@ static void op_powerpc_stop(void)
                 model->global_stop();
 }
 
+<<<<<<< HEAD
 static int op_powerpc_create_files(struct super_block *sb, struct dentry *root)
+=======
+static int op_powerpc_create_files(struct dentry *root)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 
@@ -128,9 +132,15 @@ static int op_powerpc_create_files(struct super_block *sb, struct dentry *root)
 	 * There is one mmcr0, mmcr1 and mmcra for setting the events for
 	 * all of the counters.
 	 */
+<<<<<<< HEAD
 	oprofilefs_create_ulong(sb, root, "mmcr0", &sys.mmcr0);
 	oprofilefs_create_ulong(sb, root, "mmcr1", &sys.mmcr1);
 	oprofilefs_create_ulong(sb, root, "mmcra", &sys.mmcra);
+=======
+	oprofilefs_create_ulong(root, "mmcr0", &sys.mmcr0);
+	oprofilefs_create_ulong(root, "mmcr1", &sys.mmcr1);
+	oprofilefs_create_ulong(root, "mmcra", &sys.mmcra);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_OPROFILE_CELL
 	/* create a file the user tool can check to see what level of profiling
 	 * support exits with this kernel. Initialize bit mask to indicate
@@ -142,7 +152,11 @@ static int op_powerpc_create_files(struct super_block *sb, struct dentry *root)
 	 * If the file does not exist, then the kernel only supports SPU
 	 * cycle profiling, PPU event and cycle profiling.
 	 */
+<<<<<<< HEAD
 	oprofilefs_create_ulong(sb, root, "cell_support", &sys.cell_support);
+=======
+	oprofilefs_create_ulong(root, "cell_support", &sys.cell_support);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sys.cell_support = 0x1; /* Note, the user OProfile tool must check
 				 * that this bit is set before attempting to
 				 * user SPU event profiling.  Older kernels
@@ -160,11 +174,19 @@ static int op_powerpc_create_files(struct super_block *sb, struct dentry *root)
 		char buf[4];
 
 		snprintf(buf, sizeof buf, "%d", i);
+<<<<<<< HEAD
 		dir = oprofilefs_mkdir(sb, root, buf);
 
 		oprofilefs_create_ulong(sb, dir, "enabled", &ctr[i].enabled);
 		oprofilefs_create_ulong(sb, dir, "event", &ctr[i].event);
 		oprofilefs_create_ulong(sb, dir, "count", &ctr[i].count);
+=======
+		dir = oprofilefs_mkdir(root, buf);
+
+		oprofilefs_create_ulong(dir, "enabled", &ctr[i].enabled);
+		oprofilefs_create_ulong(dir, "event", &ctr[i].event);
+		oprofilefs_create_ulong(dir, "count", &ctr[i].count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Classic PowerPC doesn't support per-counter
@@ -173,6 +195,7 @@ static int op_powerpc_create_files(struct super_block *sb, struct dentry *root)
 		 * Book-E style performance monitors, we do
 		 * support them.
 		 */
+<<<<<<< HEAD
 		oprofilefs_create_ulong(sb, dir, "kernel", &ctr[i].kernel);
 		oprofilefs_create_ulong(sb, dir, "user", &ctr[i].user);
 
@@ -181,6 +204,16 @@ static int op_powerpc_create_files(struct super_block *sb, struct dentry *root)
 
 	oprofilefs_create_ulong(sb, root, "enable_kernel", &sys.enable_kernel);
 	oprofilefs_create_ulong(sb, root, "enable_user", &sys.enable_user);
+=======
+		oprofilefs_create_ulong(dir, "kernel", &ctr[i].kernel);
+		oprofilefs_create_ulong(dir, "user", &ctr[i].user);
+
+		oprofilefs_create_ulong(dir, "unit_mask", &ctr[i].unit_mask);
+	}
+
+	oprofilefs_create_ulong(root, "enable_kernel", &sys.enable_kernel);
+	oprofilefs_create_ulong(root, "enable_user", &sys.enable_user);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Default to tracing both kernel and user */
 	sys.enable_kernel = 1;
@@ -205,9 +238,12 @@ int __init oprofile_arch_init(struct oprofile_operations *ops)
 			ops->sync_stop = model->sync_stop;
 			break;
 #endif
+<<<<<<< HEAD
 		case PPC_OPROFILE_RS64:
 			model = &op_model_rs64;
 			break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case PPC_OPROFILE_POWER4:
 			model = &op_model_power4;
 			break;

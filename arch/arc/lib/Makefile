@@ -5,5 +5,12 @@
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
 
+<<<<<<< HEAD
 lib-y	:= strchr-700.o strcmp.o strcpy-700.o strlen.o
 lib-y	+= memcmp.o memcpy-700.o memset.o
+=======
+lib-y	:= strchr-700.o strcpy-700.o strlen.o memcmp.o
+
+lib-$(CONFIG_ISA_ARCOMPACT)	+= memcpy-700.o memset.o strcmp.o
+lib-$(CONFIG_ISA_ARCV2)		+= memcpy-archs.o memset-archs.o strcmp-archs.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -8,6 +8,10 @@
 
 #include <linux/coda.h>
 #include <linux/coda_psdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/pagemap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "coda_linux.h"
 
 static inline int coda_fideq(struct CodaFid *fid1, struct CodaFid *fid2)
@@ -17,8 +21,12 @@ static inline int coda_fideq(struct CodaFid *fid1, struct CodaFid *fid2)
 
 static const struct inode_operations coda_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.setattr	= coda_setattr,
 };
 
@@ -35,6 +43,10 @@ static void coda_fill_inode(struct inode *inode, struct coda_vattr *attr)
                 inode->i_fop = &coda_dir_operations;
         } else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &coda_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode->i_data.a_ops = &coda_symlink_aops;
 		inode->i_mapping = &inode->i_data;
 	} else
@@ -101,7 +113,11 @@ struct inode *coda_cnode_make(struct CodaFid *fid, struct super_block *sb)
 
 	inode = coda_iget(sb, fid, &attr);
 	if (IS_ERR(inode))
+<<<<<<< HEAD
 		printk("coda_cnode_make: coda_iget failed\n");
+=======
+		pr_warn("%s: coda_iget failed\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return inode;
 }
 
@@ -137,7 +153,11 @@ struct inode *coda_fid_to_inode(struct CodaFid *fid, struct super_block *sb)
 	unsigned long hash = coda_f2i(fid);
 
 	if ( !sb ) {
+<<<<<<< HEAD
 		printk("coda_fid_to_inode: no sb!\n");
+=======
+		pr_warn("%s: no sb!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 

@@ -7,6 +7,11 @@
  * of the License.
  */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_AS_SSSE3
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/raid/pq.h>
 #include "x86.h"
 
@@ -330,3 +335,10 @@ const struct raid6_recov_calls raid6_recov_ssse3 = {
 #endif
 	.priority = 1,
 };
+<<<<<<< HEAD
+=======
+
+#else
+#warning "your version of binutils lacks SSSE3 support"
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

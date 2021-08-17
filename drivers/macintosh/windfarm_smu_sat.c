@@ -22,6 +22,7 @@
 
 #define VERSION "1.0"
 
+<<<<<<< HEAD
 #define DEBUG
 
 #ifdef DEBUG
@@ -30,6 +31,8 @@
 #define DBG(args...)	do { } while(0)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* If the cache is older than 800ms we'll refetch it */
 #define MAX_AGE		msecs_to_jiffies(800)
 
@@ -106,6 +109,7 @@ struct smu_sdbp_header *smu_sat_get_sdb_partition(unsigned int sat_id, int id,
 		buf[i+2] = data[3];
 		buf[i+3] = data[2];
 	}
+<<<<<<< HEAD
 #ifdef DEBUG
 	DBG(KERN_DEBUG "sat %d partition %x:", sat_id, id);
 	for (i = 0; i < len; ++i)
@@ -113,6 +117,12 @@ struct smu_sdbp_header *smu_sat_get_sdb_partition(unsigned int sat_id, int id,
 	DBG("\n");
 #endif
 
+=======
+
+	printk(KERN_DEBUG "sat %d partition %x:", sat_id, id);
+	print_hex_dump(KERN_DEBUG, "  ", DUMP_PREFIX_OFFSET,
+		       16, 1, buf, len, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (size)
 		*size = len;
 	return (struct smu_sdbp_header *) buf;
@@ -132,6 +142,7 @@ static int wf_sat_read_cache(struct wf_sat *sat)
 	if (err < 0)
 		return err;
 	sat->last_read = jiffies;
+<<<<<<< HEAD
 #ifdef LOTSA_DEBUG
 	{
 		int i;
@@ -139,6 +150,15 @@ static int wf_sat_read_cache(struct wf_sat *sat)
 		for (i = 0; i < 16; ++i)
 			DBG(" %.2x", sat->cache[i]);
 		DBG("\n");
+=======
+
+#ifdef LOTSA_DEBUG
+	{
+		int i;
+		printk(KERN_DEBUG "wf_sat_get: data is");
+		print_hex_dump(KERN_DEBUG, "  ", DUMP_PREFIX_OFFSET,
+			       16, 1, sat->cache, 16, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 	return 0;
@@ -343,7 +363,10 @@ static int wf_sat_remove(struct i2c_client *client)
 		wf_unregister_sensor(&sens->sens);
 	}
 	sat->i2c = NULL;
+<<<<<<< HEAD
 	i2c_set_clientdata(client, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kref_put(&sat->ref, wf_sat_release);
 
 	return 0;

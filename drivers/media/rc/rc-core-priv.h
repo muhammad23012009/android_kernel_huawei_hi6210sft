@@ -1,7 +1,11 @@
 /*
  * Remote Controller core raw events header
  *
+<<<<<<< HEAD
  * Copyright (C) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ * Copyright (C) 2010 by Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +20,12 @@
 #ifndef _RC_CORE_PRIV
 #define _RC_CORE_PRIV
 
+<<<<<<< HEAD
+=======
+/* Define the max number of pulse/space transitions to buffer */
+#define	MAX_IR_EVENT_SIZE	512
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <media/rc-core.h>
@@ -35,7 +45,12 @@ struct ir_raw_event_ctrl {
 	struct list_head		list;		/* to keep track of raw clients */
 	struct task_struct		*thread;
 	spinlock_t			lock;
+<<<<<<< HEAD
 	struct kfifo_rec_ptr_1		kfifo;		/* fifo for the pulse/space durations */
+=======
+	/* fifo for the pulse/space durations */
+	DECLARE_KFIFO(kfifo, struct ir_raw_event, MAX_IR_EVENT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ktime_t				last_event;	/* when last event occurred */
 	enum raw_event_type		last_type;	/* last event type */
 	struct rc_dev			*dev;		/* pointer to the parent rc_dev */
@@ -54,7 +69,11 @@ struct ir_raw_event_ctrl {
 		int state;
 		u32 bits;
 		unsigned count;
+<<<<<<< HEAD
 		unsigned wanted_bits;
+=======
+		bool is_rc5x;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} rc5;
 	struct rc6_dec {
 		int state;
@@ -77,17 +96,29 @@ struct ir_raw_event_ctrl {
 		bool first;
 		bool toggle;
 	} jvc;
+<<<<<<< HEAD
 	struct rc5_sz_dec {
 		int state;
 		u32 bits;
 		unsigned count;
 		unsigned wanted_bits;
 	} rc5_sz;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sanyo_dec {
 		int state;
 		unsigned count;
 		u64 bits;
 	} sanyo;
+<<<<<<< HEAD
+=======
+	struct sharp_dec {
+		int state;
+		unsigned count;
+		u32 bits;
+		unsigned int pulse_len;
+	} sharp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mce_kbd_dec {
 		struct input_dev *idev;
 		struct timer_list rx_timeout;
@@ -110,6 +141,14 @@ struct ir_raw_event_ctrl {
 		bool send_timeout_reports;
 
 	} lirc;
+<<<<<<< HEAD
+=======
+	struct xmp_dec {
+		int state;
+		unsigned count;
+		u32 durations[16];
+	} xmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* macros for IR decoders */
@@ -162,6 +201,7 @@ void ir_raw_init(void);
  * loads the compiled decoders for their usage with IR raw events
  */
 
+<<<<<<< HEAD
 /* from ir-nec-decoder.c */
 #ifdef CONFIG_IR_NEC_DECODER_MODULE
 #define load_nec_decode()	request_module_nowait("ir-nec-decoder")
@@ -219,4 +259,6 @@ static inline void load_lirc_codec(void) { }
 #endif
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _RC_CORE_PRIV */

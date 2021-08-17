@@ -19,7 +19,10 @@
 #include <linux/ptrace.h>
 #include <linux/interrupt.h>
 #include <linux/random.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/irq.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -60,7 +63,11 @@ int irq_select_affinity(unsigned int irq)
 		cpu = (cpu < (NR_CPUS-1) ? cpu + 1 : 0);
 	last_cpu = cpu;
 
+<<<<<<< HEAD
 	cpumask_copy(data->affinity, cpumask_of(cpu));
+=======
+	cpumask_copy(irq_data_get_affinity_mask(data), cpumask_of(cpu));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->irq_set_affinity(data, cpumask_of(cpu), false);
 	return 0;
 }
@@ -118,6 +125,10 @@ handle_irq(int irq)
 	}
 
 	irq_enter();
+<<<<<<< HEAD
 	generic_handle_irq_desc(irq, desc);
+=======
+	generic_handle_irq_desc(desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq_exit();
 }

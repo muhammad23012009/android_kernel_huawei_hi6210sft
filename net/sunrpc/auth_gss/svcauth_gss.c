@@ -51,7 +51,11 @@
 #include "gss_rpc_upcall.h"
 
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
 
@@ -377,8 +381,12 @@ rsc_init(struct cache_head *cnew, struct cache_head *ctmp)
 	new->handle.data = tmp->handle.data;
 	tmp->handle.data = NULL;
 	new->mechctx = NULL;
+<<<<<<< HEAD
 	new->cred.cr_group_info = NULL;
 	new->cred.cr_principal = NULL;
+=======
+	init_svc_cred(&new->cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -392,9 +400,13 @@ update_rsc(struct cache_head *cnew, struct cache_head *ctmp)
 	memset(&new->seqdata, 0, sizeof(new->seqdata));
 	spin_lock_init(&new->seqdata.sd_lock);
 	new->cred = tmp->cred;
+<<<<<<< HEAD
 	tmp->cred.cr_group_info = NULL;
 	new->cred.cr_principal = tmp->cred.cr_principal;
 	tmp->cred.cr_principal = NULL;
+=======
+	init_svc_cred(&tmp->cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct cache_head *
@@ -466,6 +478,11 @@ static int rsc_parse(struct cache_detail *cd,
 		/* number of additional gid's */
 		if (get_int(&mesg, &N))
 			goto out;
+<<<<<<< HEAD
+=======
+		if (N < 0 || N > NGROUPS_MAX)
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = -ENOMEM;
 		rsci.cred.cr_group_info = groups_alloc(N);
 		if (rsci.cred.cr_group_info == NULL)
@@ -480,14 +497,24 @@ static int rsc_parse(struct cache_detail *cd,
 			kgid = make_kgid(&init_user_ns, id);
 			if (!gid_valid(kgid))
 				goto out;
+<<<<<<< HEAD
 			GROUP_AT(rsci.cred.cr_group_info, i) = kgid;
 		}
+=======
+			rsci.cred.cr_group_info->gid[i] = kgid;
+		}
+		groups_sort(rsci.cred.cr_group_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* mech name */
 		len = qword_get(&mesg, buf, mlen);
 		if (len < 0)
 			goto out;
+<<<<<<< HEAD
 		gm = gss_mech_get_by_name(buf);
+=======
+		gm = rsci.cred.cr_gss_mech = gss_mech_get_by_name(buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = -EOPNOTSUPP;
 		if (!gm)
 			goto out;
@@ -517,7 +544,10 @@ static int rsc_parse(struct cache_detail *cd,
 	rscp = rsc_update(cd, &rsci, rscp);
 	status = 0;
 out:
+<<<<<<< HEAD
 	gss_mech_put(gm);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rsc_free(&rsci);
 	if (rscp)
 		cache_put(&rscp->h, cd);
@@ -720,30 +750,59 @@ gss_write_null_verf(struct svc_rqst *rqstp)
 static int
 gss_write_verf(struct svc_rqst *rqstp, struct gss_ctx *ctx_id, u32 seq)
 {
+<<<<<<< HEAD
 	__be32			xdr_seq;
+=======
+	__be32			*xdr_seq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32			maj_stat;
 	struct xdr_buf		verf_data;
 	struct xdr_netobj	mic;
 	__be32			*p;
 	struct kvec		iov;
+<<<<<<< HEAD
 
 	svc_putnl(rqstp->rq_res.head, RPC_AUTH_GSS);
 	xdr_seq = htonl(seq);
 
 	iov.iov_base = &xdr_seq;
 	iov.iov_len = sizeof(xdr_seq);
+=======
+	int err = -1;
+
+	svc_putnl(rqstp->rq_res.head, RPC_AUTH_GSS);
+	xdr_seq = kmalloc(4, GFP_KERNEL);
+	if (!xdr_seq)
+		return -1;
+	*xdr_seq = htonl(seq);
+
+	iov.iov_base = xdr_seq;
+	iov.iov_len = 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xdr_buf_from_iov(&iov, &verf_data);
 	p = rqstp->rq_res.head->iov_base + rqstp->rq_res.head->iov_len;
 	mic.data = (u8 *)(p + 1);
 	maj_stat = gss_get_mic(ctx_id, &verf_data, &mic);
 	if (maj_stat != GSS_S_COMPLETE)
+<<<<<<< HEAD
 		return -1;
+=======
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*p++ = htonl(mic.len);
 	memset((u8 *)p + mic.len, 0, round_up_to_quad(mic.len) - mic.len);
 	p += XDR_QUADLEN(mic.len);
 	if (!xdr_ressize_check(rqstp, p))
+<<<<<<< HEAD
 		return -1;
 	return 0;
+=======
+		goto out;
+	err = 0;
+out:
+	kfree(xdr_seq);
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct gss_domain {
@@ -773,7 +832,11 @@ u32 svcauth_gss_flavor(struct auth_domain *dom)
 
 EXPORT_SYMBOL_GPL(svcauth_gss_flavor);
 
+<<<<<<< HEAD
 int
+=======
+struct auth_domain *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 svcauth_gss_register_pseudoflavor(u32 pseudoflavor, char * name)
 {
 	struct gss_domain	*new;
@@ -790,6 +853,7 @@ svcauth_gss_register_pseudoflavor(u32 pseudoflavor, char * name)
 	new->h.flavour = &svcauthops_gss;
 	new->pseudoflavor = pseudoflavor;
 
+<<<<<<< HEAD
 	stat = 0;
 	test = auth_domain_lookup(name, &new->h);
 	if (test != &new->h) { /* Duplicate registration */
@@ -805,6 +869,25 @@ out:
 	return stat;
 }
 
+=======
+	test = auth_domain_lookup(name, &new->h);
+	if (test != &new->h) {
+		pr_warn("svc: duplicate registration of gss pseudo flavour %s.\n",
+			name);
+		stat = -EADDRINUSE;
+		auth_domain_put(test);
+		goto out_free_name;
+	}
+	return test;
+
+out_free_name:
+	kfree(new->h.name);
+out_free_dom:
+	kfree(new);
+out:
+	return ERR_PTR(stat);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL_GPL(svcauth_gss_register_pseudoflavor);
 
 static inline int
@@ -890,7 +973,11 @@ unwrap_priv_data(struct svc_rqst *rqstp, struct xdr_buf *buf, u32 seq, struct gs
 	u32 priv_len, maj_stat;
 	int pad, saved_len, remaining_len, offset;
 
+<<<<<<< HEAD
 	rqstp->rq_splice_ok = 0;
+=======
+	clear_bit(RQ_SPLICE_OK, &rqstp->rq_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	priv_len = svc_getnl(&buf->head[0]);
 	if (rqstp->rq_deferred) {
@@ -1106,7 +1193,11 @@ static int svcauth_gss_legacy_init(struct svc_rqst *rqstp,
 	struct kvec *resv = &rqstp->rq_res.head[0];
 	struct rsi *rsip, rsikey;
 	int ret;
+<<<<<<< HEAD
 	struct sunrpc_net *sn = net_generic(rqstp->rq_xprt->xpt_net, sunrpc_net_id);
+=======
+	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(&rsikey, 0, sizeof(rsikey));
 	ret = gss_read_verf(gc, argv, authp,
@@ -1171,9 +1262,16 @@ static int gss_proxy_save_rsc(struct cache_detail *cd,
 	if (!ud->found_creds) {
 		/* userspace seem buggy, we should always get at least a
 		 * mapping to nobody */
+<<<<<<< HEAD
 		dprintk("RPC:       No creds found, marking Negative!\n");
 		set_bit(CACHE_NEGATIVE, &rsci.h.flags);
 	} else {
+=======
+		dprintk("RPC:       No creds found!\n");
+		goto out;
+	} else {
+		struct timespec64 boot;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* steal creds */
 		rsci.cred = ud->creds;
@@ -1184,6 +1282,10 @@ static int gss_proxy_save_rsc(struct cache_detail *cd,
 		gm = gss_mech_get_by_OID(&ud->mech_oid);
 		if (!gm)
 			goto out;
+<<<<<<< HEAD
+=======
+		rsci.cred.cr_gss_mech = gm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		status = -EINVAL;
 		/* mech-specific data: */
@@ -1193,13 +1295,22 @@ static int gss_proxy_save_rsc(struct cache_detail *cd,
 						&expiry, GFP_KERNEL);
 		if (status)
 			goto out;
+<<<<<<< HEAD
+=======
+
+		getboottime64(&boot);
+		expiry -= boot.tv_sec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	rsci.h.expiry_time = expiry;
 	rscp = rsc_update(cd, &rsci, rscp);
 	status = 0;
 out:
+<<<<<<< HEAD
 	gss_mech_put(gm);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rsc_free(&rsci);
 	if (rscp)
 		cache_put(&rscp->h, cd);
@@ -1217,7 +1328,11 @@ static int svcauth_gss_proxy_init(struct svc_rqst *rqstp,
 	uint64_t handle;
 	int status;
 	int ret;
+<<<<<<< HEAD
 	struct net *net = rqstp->rq_xprt->xpt_net;
+=======
+	struct net *net = SVC_NET(rqstp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
 
 	memset(&ud, 0, sizeof(ud));
@@ -1233,8 +1348,14 @@ static int svcauth_gss_proxy_init(struct svc_rqst *rqstp,
 	if (status)
 		goto out;
 
+<<<<<<< HEAD
 	dprintk("RPC:       svcauth_gss: gss major status = %d\n",
 			ud.major_status);
+=======
+	dprintk("RPC:       svcauth_gss: gss major status = %d "
+			"minor status = %d\n",
+			ud.major_status, ud.minor_status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (ud.major_status) {
 	case GSS_S_CONTINUE_NEEDED:
@@ -1267,6 +1388,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 DEFINE_SPINLOCK(use_gssp_lock);
 
 static bool use_gss_proxy(struct net *net)
@@ -1326,11 +1448,45 @@ static int wait_for_gss_proxy(struct net *net, struct file *file)
 	return wait_event_interruptible(sn->gssp_wq, gssp_ready(sn));
 }
 
+=======
+/*
+ * Try to set the sn->use_gss_proxy variable to a new value. We only allow
+ * it to be changed if it's currently undefined (-1). If it's any other value
+ * then return -EBUSY unless the type wouldn't have changed anyway.
+ */
+static int set_gss_proxy(struct net *net, int type)
+{
+	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
+	int ret;
+
+	WARN_ON_ONCE(type != 0 && type != 1);
+	ret = cmpxchg(&sn->use_gss_proxy, -1, type);
+	if (ret != -1 && ret != type)
+		return -EBUSY;
+	return 0;
+}
+
+static bool use_gss_proxy(struct net *net)
+{
+	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
+
+	/* If use_gss_proxy is still undefined, then try to disable it */
+	if (sn->use_gss_proxy == -1)
+		set_gss_proxy(net, 0);
+	return sn->use_gss_proxy;
+}
+
+#ifdef CONFIG_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t write_gssp(struct file *file, const char __user *buf,
 			 size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct net *net = PDE_DATA(file->f_path.dentry->d_inode);
+=======
+	struct net *net = PDE_DATA(file_inode(file));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char tbuf[20];
 	unsigned long i;
 	int res;
@@ -1346,10 +1502,17 @@ static ssize_t write_gssp(struct file *file, const char __user *buf,
 		return res;
 	if (i != 1)
 		return -EINVAL;
+<<<<<<< HEAD
 	res = set_gss_proxy(net, 1);
 	if (res)
 		return res;
 	res = set_gssp_clnt(net);
+=======
+	res = set_gssp_clnt(net);
+	if (res)
+		return res;
+	res = set_gss_proxy(net, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (res)
 		return res;
 	return count;
@@ -1358,6 +1521,7 @@ static ssize_t write_gssp(struct file *file, const char __user *buf,
 static ssize_t read_gssp(struct file *file, char __user *buf,
 			 size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct net *net = PDE_DATA(file->f_path.dentry->d_inode);
 	unsigned long p = *ppos;
 	char tbuf[10];
@@ -1369,6 +1533,15 @@ static ssize_t read_gssp(struct file *file, char __user *buf,
 		return ret;
 
 	snprintf(tbuf, sizeof(tbuf), "%d\n", use_gss_proxy(net));
+=======
+	struct net *net = PDE_DATA(file_inode(file));
+	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
+	unsigned long p = *ppos;
+	char tbuf[10];
+	size_t len;
+
+	snprintf(tbuf, sizeof(tbuf), "%d\n", sn->use_gss_proxy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	len = strlen(tbuf);
 	if (p >= len)
 		return 0;
@@ -1442,7 +1615,11 @@ svcauth_gss_accept(struct svc_rqst *rqstp, __be32 *authp)
 	__be32		*rpcstart;
 	__be32		*reject_stat = resv->iov_base + resv->iov_len;
 	int		ret;
+<<<<<<< HEAD
 	struct sunrpc_net *sn = net_generic(rqstp->rq_xprt->xpt_net, sunrpc_net_id);
+=======
+	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk("RPC:       svcauth_gss: argv->iov_len = %zd\n",
 			argv->iov_len);
@@ -1542,6 +1719,10 @@ svcauth_gss_accept(struct svc_rqst *rqstp, __be32 *authp)
 			if (unwrap_integ_data(rqstp, &rqstp->rq_arg,
 					gc->gc_seq, rsci->mechctx))
 				goto garbage_args;
+<<<<<<< HEAD
+=======
+			rqstp->rq_auth_slack = RPC_MAX_AUTH_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case RPC_GSS_SVC_PRIVACY:
 			/* placeholders for length and seq. number: */
@@ -1550,6 +1731,10 @@ svcauth_gss_accept(struct svc_rqst *rqstp, __be32 *authp)
 			if (unwrap_priv_data(rqstp, &rqstp->rq_arg,
 					gc->gc_seq, rsci->mechctx))
 				goto garbage_args;
+<<<<<<< HEAD
+=======
+			rqstp->rq_auth_slack = RPC_MAX_AUTH_SIZE * 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		default:
 			goto auth_err;
@@ -1575,7 +1760,11 @@ complete:
 	ret = SVC_COMPLETE;
 	goto out;
 drop:
+<<<<<<< HEAD
 	ret = SVC_DROP;
+=======
+	ret = SVC_CLOSE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	if (rsci)
 		cache_put(&rsci->h, sn->rsc_cache);
@@ -1630,8 +1819,12 @@ svcauth_gss_wrap_resp_integ(struct svc_rqst *rqstp)
 	BUG_ON(integ_len % 4);
 	*p++ = htonl(integ_len);
 	*p++ = htonl(gc->gc_seq);
+<<<<<<< HEAD
 	if (xdr_buf_subsegment(resbuf, &integ_buf, integ_offset,
 				integ_len))
+=======
+	if (xdr_buf_subsegment(resbuf, &integ_buf, integ_offset, integ_len))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		BUG();
 	if (resbuf->tail[0].iov_base == NULL) {
 		if (resbuf->head[0].iov_len + RPC_MAX_AUTH_SIZE > PAGE_SIZE)
@@ -1639,10 +1832,15 @@ svcauth_gss_wrap_resp_integ(struct svc_rqst *rqstp)
 		resbuf->tail[0].iov_base = resbuf->head[0].iov_base
 						+ resbuf->head[0].iov_len;
 		resbuf->tail[0].iov_len = 0;
+<<<<<<< HEAD
 		resv = &resbuf->tail[0];
 	} else {
 		resv = &resbuf->tail[0];
 	}
+=======
+	}
+	resv = &resbuf->tail[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mic.data = (u8 *)resv->iov_base + resv->iov_len + 4;
 	if (gss_get_mic(gsd->rsci->mechctx, &integ_buf, &mic))
 		goto out_err;
@@ -1728,11 +1926,22 @@ static int
 svcauth_gss_release(struct svc_rqst *rqstp)
 {
 	struct gss_svc_data *gsd = (struct gss_svc_data *)rqstp->rq_auth_data;
+<<<<<<< HEAD
 	struct rpc_gss_wire_cred *gc = &gsd->clcred;
 	struct xdr_buf *resbuf = &rqstp->rq_res;
 	int stat = -EINVAL;
 	struct sunrpc_net *sn = net_generic(rqstp->rq_xprt->xpt_net, sunrpc_net_id);
 
+=======
+	struct rpc_gss_wire_cred *gc;
+	struct xdr_buf *resbuf = &rqstp->rq_res;
+	int stat = -EINVAL;
+	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
+
+	if (!gsd)
+		goto out;
+	gc = &gsd->clcred;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (gc->gc_proc != RPC_GSS_PROC_DATA)
 		goto out;
 	/* Release can be called twice, but we only wrap once. */
@@ -1773,10 +1982,17 @@ out_err:
 	if (rqstp->rq_cred.cr_group_info)
 		put_group_info(rqstp->rq_cred.cr_group_info);
 	rqstp->rq_cred.cr_group_info = NULL;
+<<<<<<< HEAD
 	if (gsd->rsci)
 		cache_put(&gsd->rsci->h, sn->rsc_cache);
 	gsd->rsci = NULL;
 
+=======
+	if (gsd && gsd->rsci) {
+		cache_put(&gsd->rsci->h, sn->rsc_cache);
+		gsd->rsci = NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return stat;
 }
 

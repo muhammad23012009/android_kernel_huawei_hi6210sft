@@ -2,6 +2,12 @@
 #define _IOP13XX_HW_H_
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
+=======
+
+enum reboot_mode;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* The ATU offsets can change based on the strapping */
 extern u32 iop13xx_atux_pmmr_offset;
 extern u32 iop13xx_atue_pmmr_offset;
@@ -11,7 +17,11 @@ void iop13xx_map_io(void);
 void iop13xx_platform_init(void);
 void iop13xx_add_tpmi_devices(void);
 void iop13xx_init_irq(void);
+<<<<<<< HEAD
 void iop13xx_restart(char, const char *);
+=======
+void iop13xx_restart(enum reboot_mode, const char *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* CPUID CP6 R0 Page 0 */
 static inline int iop13xx_cpu_id(void)

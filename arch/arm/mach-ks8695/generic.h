@@ -12,5 +12,9 @@
 
 extern __init void ks8695_map_io(void);
 extern __init void ks8695_init_irq(void);
+<<<<<<< HEAD
 extern void ks8695_restart(char, const char *);
+=======
+extern void ks8695_restart(enum reboot_mode, const char *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void ks8695_timer_init(void);

@@ -26,6 +26,10 @@
 #include <linux/i2c.h>
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/mfd/core.h>
 #include <linux/mfd/tps6586x.h>
@@ -51,7 +55,11 @@
 #define TPS6586X_VERSIONCRC	0xcd
 
 /* Maximum register */
+<<<<<<< HEAD
 #define TPS6586X_MAX_REGISTER	(TPS6586X_VERSIONCRC + 1)
+=======
+#define TPS6586X_MAX_REGISTER	TPS6586X_VERSIONCRC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct tps6586x_irq_data {
 	u8	mask_reg;
@@ -102,7 +110,11 @@ static struct resource tps6586x_rtc_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell tps6586x_cell[] = {
+=======
+static const struct mfd_cell tps6586x_cell[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "tps6586x-gpio",
 	},
@@ -123,7 +135,13 @@ struct tps6586x {
 	struct device		*dev;
 	struct i2c_client	*client;
 	struct regmap		*regmap;
+<<<<<<< HEAD
 
+=======
+	int			version;
+
+	int			irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct irq_chip		irq_chip;
 	struct mutex		irq_lock;
 	int			irq_base;
@@ -206,6 +224,17 @@ int tps6586x_irq_get_virq(struct device *dev, int irq)
 }
 EXPORT_SYMBOL_GPL(tps6586x_irq_get_virq);
 
+<<<<<<< HEAD
+=======
+int tps6586x_get_version(struct device *dev)
+{
+	struct tps6586x *tps6586x = dev_get_drvdata(dev);
+
+	return tps6586x->version;
+}
+EXPORT_SYMBOL_GPL(tps6586x_get_version);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __remove_subdev(struct device *dev, void *unused)
 {
 	platform_device_unregister(to_platform_device(dev));
@@ -261,12 +290,29 @@ static void tps6586x_irq_sync_unlock(struct irq_data *data)
 	mutex_unlock(&tps6586x->irq_lock);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+static int tps6586x_irq_set_wake(struct irq_data *irq_data, unsigned int on)
+{
+	struct tps6586x *tps6586x = irq_data_get_irq_chip_data(irq_data);
+	return irq_set_irq_wake(tps6586x->irq, on);
+}
+#else
+#define tps6586x_irq_set_wake NULL
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct irq_chip tps6586x_irq_chip = {
 	.name = "tps6586x",
 	.irq_bus_lock = tps6586x_irq_lock,
 	.irq_bus_sync_unlock = tps6586x_irq_sync_unlock,
 	.irq_disable = tps6586x_irq_disable,
 	.irq_enable = tps6586x_irq_enable,
+<<<<<<< HEAD
+=======
+	.irq_set_wake = tps6586x_irq_set_wake,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int tps6586x_irq_map(struct irq_domain *h, unsigned int virq,
@@ -277,6 +323,7 @@ static int tps6586x_irq_map(struct irq_domain *h, unsigned int virq,
 	irq_set_chip_data(virq, tps6586x);
 	irq_set_chip_and_handler(virq, &tps6586x_irq_chip, handle_simple_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 
 	/* ARM needs us to explicitly flag the IRQ as valid
 	 * and will set them noprobe when we do so. */
@@ -285,11 +332,18 @@ static int tps6586x_irq_map(struct irq_domain *h, unsigned int virq,
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops tps6586x_domain_ops = {
+=======
+static const struct irq_domain_ops tps6586x_domain_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map    = tps6586x_irq_map,
 	.xlate  = irq_domain_xlate_twocell,
 };
@@ -331,6 +385,11 @@ static int tps6586x_irq_init(struct tps6586x *tps6586x, int irq,
 	int new_irq_base;
 	int irq_num = ARRAY_SIZE(tps6586x_irqs);
 
+<<<<<<< HEAD
+=======
+	tps6586x->irq = irq;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&tps6586x->irq_lock);
 	for (i = 0; i < 5; i++) {
 		tps6586x->mask_reg[i] = 0xff;
@@ -360,10 +419,15 @@ static int tps6586x_irq_init(struct tps6586x *tps6586x, int irq,
 	ret = request_threaded_irq(irq, NULL, tps6586x_irq, IRQF_ONESHOT,
 				   "tps6586x", tps6586x);
 
+<<<<<<< HEAD
 	if (!ret) {
 		device_init_wakeup(tps6586x->dev, 1);
 		enable_irq_wake(irq);
 	}
+=======
+	if (!ret)
+		device_init_wakeup(tps6586x->dev, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -422,7 +486,11 @@ static struct tps6586x_platform_data *tps6586x_parse_dt(struct i2c_client *clien
 	return pdata;
 }
 
+<<<<<<< HEAD
 static struct of_device_id tps6586x_of_match[] = {
+=======
+static const struct of_device_id tps6586x_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "ti,tps6586x", },
 	{ },
 };
@@ -445,7 +513,11 @@ static bool is_volatile_reg(struct device *dev, unsigned int reg)
 static const struct regmap_config tps6586x_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
+<<<<<<< HEAD
 	.max_register = TPS6586X_MAX_REGISTER - 1,
+=======
+	.max_register = TPS6586X_MAX_REGISTER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.volatile_reg = is_volatile_reg,
 	.cache_type = REGCACHE_RBTREE,
 };
@@ -459,12 +531,51 @@ static void tps6586x_power_off(void)
 	tps6586x_set_bits(tps6586x_dev, TPS6586X_SUPPLYENE, SLEEP_MODE_BIT);
 }
 
+<<<<<<< HEAD
 static int tps6586x_i2c_probe(struct i2c_client *client,
 					const struct i2c_device_id *id)
 {
 	struct tps6586x_platform_data *pdata = client->dev.platform_data;
 	struct tps6586x *tps6586x;
 	int ret;
+=======
+static void tps6586x_print_version(struct i2c_client *client, int version)
+{
+	const char *name;
+
+	switch (version) {
+	case TPS658621A:
+		name = "TPS658621A";
+		break;
+	case TPS658621CD:
+		name = "TPS658621C/D";
+		break;
+	case TPS658623:
+		name = "TPS658623";
+		break;
+	case TPS658640:
+	case TPS658640v2:
+		name = "TPS658640";
+		break;
+	case TPS658643:
+		name = "TPS658643";
+		break;
+	default:
+		name = "TPS6586X";
+		break;
+	}
+
+	dev_info(&client->dev, "Found %s, VERSIONCRC is %02x\n", name, version);
+}
+
+static int tps6586x_i2c_probe(struct i2c_client *client,
+					const struct i2c_device_id *id)
+{
+	struct tps6586x_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct tps6586x *tps6586x;
+	int ret;
+	int version;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pdata && client->dev.of_node)
 		pdata = tps6586x_parse_dt(client);
@@ -474,6 +585,7 @@ static int tps6586x_i2c_probe(struct i2c_client *client,
 		return -ENOTSUPP;
 	}
 
+<<<<<<< HEAD
 	ret = i2c_smbus_read_byte_data(client, TPS6586X_VERSIONCRC);
 	if (ret < 0) {
 		dev_err(&client->dev, "Chip ID read failed: %d\n", ret);
@@ -487,6 +599,20 @@ static int tps6586x_i2c_probe(struct i2c_client *client,
 		dev_err(&client->dev, "memory for tps6586x alloc failed\n");
 		return -ENOMEM;
 	}
+=======
+	version = i2c_smbus_read_byte_data(client, TPS6586X_VERSIONCRC);
+	if (version < 0) {
+		dev_err(&client->dev, "Chip ID read failed: %d\n", version);
+		return -EIO;
+	}
+
+	tps6586x = devm_kzalloc(&client->dev, sizeof(*tps6586x), GFP_KERNEL);
+	if (!tps6586x)
+		return -ENOMEM;
+
+	tps6586x->version = version;
+	tps6586x_print_version(client, tps6586x->version);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tps6586x->client = client;
 	tps6586x->dev = &client->dev;
@@ -550,6 +676,32 @@ static int tps6586x_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __maybe_unused tps6586x_i2c_suspend(struct device *dev)
+{
+	struct tps6586x *tps6586x = dev_get_drvdata(dev);
+
+	if (tps6586x->client->irq)
+		disable_irq(tps6586x->client->irq);
+
+	return 0;
+}
+
+static int __maybe_unused tps6586x_i2c_resume(struct device *dev)
+{
+	struct tps6586x *tps6586x = dev_get_drvdata(dev);
+
+	if (tps6586x->client->irq)
+		enable_irq(tps6586x->client->irq);
+
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(tps6586x_pm_ops, tps6586x_i2c_suspend,
+			 tps6586x_i2c_resume);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct i2c_device_id tps6586x_id_table[] = {
 	{ "tps6586x", 0 },
 	{ },
@@ -559,8 +711,13 @@ MODULE_DEVICE_TABLE(i2c, tps6586x_id_table);
 static struct i2c_driver tps6586x_driver = {
 	.driver	= {
 		.name	= "tps6586x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = of_match_ptr(tps6586x_of_match),
+=======
+		.of_match_table = of_match_ptr(tps6586x_of_match),
+		.pm	= &tps6586x_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= tps6586x_i2c_probe,
 	.remove		= tps6586x_i2c_remove,

@@ -53,6 +53,7 @@ else
 	LINUX_COMPILE_HOST=$KBUILD_BUILD_HOST
 fi
 
+<<<<<<< HEAD
 if [ "$OBB_PRODUCT_FINAL_RELEASE" == "true" ]; then
         LINUX_COMPILE_BY="android"
         LINUX_COMPILE_HOST="localhost"
@@ -63,6 +64,8 @@ if [ "$HIDE_PRODUCT_INFO" == "true" ]; then
 	LINUX_COMPILE_HOST="localhost"
 fi
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 UTS_VERSION="#$VERSION"
 CONFIG_FLAGS=""
 if [ -n "$SMP" ] ; then CONFIG_FLAGS="SMP"; fi
@@ -78,7 +81,11 @@ UTS_TRUNCATE="cut -b -$UTS_LEN"
 
 ( echo /\* This file is auto generated, version $VERSION \*/
   if [ -n "$CONFIG_FLAGS" ] ; then echo "/* $CONFIG_FLAGS */"; fi
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   echo \#define UTS_MACHINE \"$ARCH\"
 
   echo \#define UTS_VERSION \"`echo $UTS_VERSION | $UTS_TRUNCATE`\"
@@ -86,12 +93,17 @@ UTS_TRUNCATE="cut -b -$UTS_LEN"
   echo \#define LINUX_COMPILE_BY \"`echo $LINUX_COMPILE_BY | $UTS_TRUNCATE`\"
   echo \#define LINUX_COMPILE_HOST \"`echo $LINUX_COMPILE_HOST | $UTS_TRUNCATE`\"
 
+<<<<<<< HEAD
   echo \#define LINUX_COMPILER \"`$CC -v 2>&1 | tail -n 1`\"
+=======
+  echo \#define LINUX_COMPILER \"`$CC -v 2>&1 | grep ' version '`\"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ) > .tmpcompile
 
 # Only replace the real compile.h if the new one is different,
 # in order to preserve the timestamp and avoid unnecessary
 # recompilations.
+<<<<<<< HEAD
 # We don't consider the file changed if only the date/time changed.
 # A kernel config change will increase the generation number, thus
 # causing compile.h to be updated (including date/time) due to the 
@@ -101,6 +113,25 @@ UTS_TRUNCATE="cut -b -$UTS_LEN"
 if [ -r $TARGET ] && \
       grep -v 'UTS_VERSION' $TARGET > .tmpver.1 && \
       grep -v 'UTS_VERSION' .tmpcompile > .tmpver.2 && \
+=======
+# We don't consider the file changed if only the date/time changed,
+# unless KBUILD_BUILD_TIMESTAMP was explicitly set (e.g. for
+# reproducible builds with that value referring to a commit timestamp).
+# A kernel config change will increase the generation number, thus
+# causing compile.h to be updated (including date/time) due to the
+# changed comment in the
+# first line.
+
+if [ -z "$KBUILD_BUILD_TIMESTAMP" ]; then
+   IGNORE_PATTERN="UTS_VERSION"
+else
+   IGNORE_PATTERN="NOT_A_PATTERN_TO_BE_MATCHED"
+fi
+
+if [ -r $TARGET ] && \
+      grep -v $IGNORE_PATTERN $TARGET > .tmpver.1 && \
+      grep -v $IGNORE_PATTERN .tmpcompile > .tmpver.2 && \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
       cmp -s .tmpver.1 .tmpver.2; then
    rm -f .tmpcompile
 else

@@ -13,15 +13,22 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 // #define	DEBUG			// error path messages, extra info
 // #define	VERBOSE			// more; success messages
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -40,7 +47,11 @@
  * HEADS UP:  this handshaking isn't all that robust.  This driver
  * gets confused easily if you unplug one end of the cable then
  * try to connect it again; you'll need to restart both ends. The
+<<<<<<< HEAD
  * "naplink" software (used by some PlayStation/2 deveopers) does
+=======
+ * "naplink" software (used by some PlayStation/2 developers) does
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * the handshaking much better!   Also, sometimes this hardware
  * seems to get wedged under load.  Prolific docs are weak, and
  * don't identify differences between PL2301 and PL2302, much less
@@ -104,7 +115,11 @@ static int pl_reset(struct usbnet *dev)
 }
 
 static const struct driver_info	prolific_info = {
+<<<<<<< HEAD
 	.description =	"Prolific PL-2301/PL-2302/PL-25A1",
+=======
+	.description =	"Prolific PL-2301/PL-2302/PL-25A1/PL-27A1",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags =	FLAG_POINTTOPOINT | FLAG_NO_SETINT,
 		/* some PL-2302 versions seem to fail usb_set_interface() */
 	.reset =	pl_reset,
@@ -141,6 +156,20 @@ static const struct usb_device_id	products [] = {
 					 * Host-to-Host Cable
 					 */
 	.driver_info =  (unsigned long) &prolific_info,
+<<<<<<< HEAD
+=======
+
+},
+
+/* super speed cables */
+{
+	USB_DEVICE(0x067b, 0x27a1),     /* PL-27A1, no eeprom
+					 * also: goobay Active USB 3.0
+					 * Data Link,
+					 * Unitek Y-3501
+					 */
+	.driver_info =  (unsigned long) &prolific_info,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 },
 
 	{ },		// END
@@ -160,5 +189,9 @@ static struct usb_driver plusb_driver = {
 module_usb_driver(plusb_driver);
 
 MODULE_AUTHOR("David Brownell");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Prolific PL-2301/2302/25A1 USB Host to Host Link Driver");
+=======
+MODULE_DESCRIPTION("Prolific PL-2301/2302/25A1/27A1 USB Host to Host Link Driver");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

@@ -61,6 +61,7 @@
 /*
  * Valid machtype for Loongson family
  */
+<<<<<<< HEAD
 #define MACH_LOONGSON_UNKNOWN  0
 #define MACH_LEMOTE_FL2E       1
 #define MACH_LEMOTE_FL2F       2
@@ -70,6 +71,20 @@
 #define MACH_LEMOTE_NAS	       6
 #define MACH_LEMOTE_LL2F       7
 #define MACH_LOONGSON_END      8
+=======
+enum loongson_machine_type {
+	MACH_LOONGSON_UNKNOWN,
+	MACH_LEMOTE_FL2E,
+	MACH_LEMOTE_FL2F,
+	MACH_LEMOTE_ML2F7,
+	MACH_LEMOTE_YL2F89,
+	MACH_DEXXON_GDIUM2F10,
+	MACH_LEMOTE_NAS,
+	MACH_LEMOTE_LL2F,
+	MACH_LOONGSON_GENERIC,
+	MACH_LOONGSON_END
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Valid machtype for group INGENIC
@@ -95,16 +110,26 @@ extern unsigned long mips_machtype;
 struct boot_mem_map {
 	int nr_map;
 	struct boot_mem_map_entry {
+<<<<<<< HEAD
 		phys_t addr;	/* start of memory segment */
 		phys_t size;	/* size of memory segment */
+=======
+		phys_addr_t addr;	/* start of memory segment */
+		phys_addr_t size;	/* size of memory segment */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		long type;		/* type of memory segment */
 	} map[BOOT_MEM_MAP_MAX];
 };
 
 extern struct boot_mem_map boot_mem_map;
 
+<<<<<<< HEAD
 extern void add_memory_region(phys_t start, phys_t size, long type);
 extern void detect_memory_region(phys_t start, phys_t sz_min,  phys_t sz_max);
+=======
+extern void add_memory_region(phys_addr_t start, phys_addr_t size, long type);
+extern void detect_memory_region(phys_addr_t start, phys_addr_t sz_min,  phys_addr_t sz_max);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void prom_init(void);
 extern void prom_free_prom_memory(void);
@@ -112,6 +137,11 @@ extern void prom_free_prom_memory(void);
 extern void free_init_pages(const char *what,
 			    unsigned long begin, unsigned long end);
 
+<<<<<<< HEAD
+=======
+extern void (*free_init_pages_eva)(void *begin, void *end);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Initial kernel command line, usually setup by prom_init()
  */
@@ -122,6 +152,13 @@ extern char arcs_cmdline[COMMAND_LINE_SIZE];
  */
 extern unsigned long fw_arg0, fw_arg1, fw_arg2, fw_arg3;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_USE_OF
+extern unsigned long fw_passed_dtb;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Platform memory detection hook called by setup_arch
  */
@@ -139,4 +176,25 @@ static inline void plat_swiotlb_setup(void) {}
 
 #endif /* CONFIG_SWIOTLB */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_USE_OF
+/**
+ * plat_get_fdt() - Return a pointer to the platform's device tree blob
+ *
+ * This function provides a platform independent API to get a pointer to the
+ * flattened device tree blob. The interface between bootloader and kernel
+ * is not consistent across platforms so it is necessary to provide this
+ * API such that common startup code can locate the FDT.
+ *
+ * This is used by the KASLR code to get command line arguments and random
+ * seed from the device tree. Any platform wishing to use KASLR should
+ * provide this API and select SYS_SUPPORTS_RELOCATABLE.
+ *
+ * Return: Pointer to the flattened device tree blob.
+ */
+extern void *plat_get_fdt(void);
+#endif /* CONFIG_USE_OF */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_BOOTINFO_H */

@@ -264,7 +264,11 @@ extern unsigned int lc_put(struct lru_cache *lc, struct lc_element *e);
 extern void lc_committed(struct lru_cache *lc);
 
 struct seq_file;
+<<<<<<< HEAD
 extern size_t lc_seq_printf_stats(struct seq_file *seq, struct lru_cache *lc);
+=======
+extern void lc_seq_printf_stats(struct seq_file *seq, struct lru_cache *lc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void lc_seq_dump_details(struct seq_file *seq, struct lru_cache *lc, char *utext,
 				void (*detail) (struct seq_file *, struct lc_element *));

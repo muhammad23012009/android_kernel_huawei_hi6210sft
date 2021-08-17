@@ -22,12 +22,20 @@
 #include <mach/map.h>
 #include <mach/irqs.h>
 
+<<<<<<< HEAD
+=======
+#include <plat/cpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/devs.h>
 #include <plat/pm.h>
 #include <plat/wakeup-mask.h>
 
 #include <mach/regs-gpio.h>
 #include <mach/regs-clock.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "regs-gpio-memport.h"
 #include "regs-modem.h"
@@ -193,6 +201,7 @@ void s3c_pm_debug_smdkled(u32 set, u32 clear)
 }
 #endif
 
+<<<<<<< HEAD
 static struct sleep_save core_save[] = {
 	SAVE_ITEM(S3C_APLL_LOCK),
 	SAVE_ITEM(S3C_MPLL_LOCK),
@@ -217,6 +226,12 @@ static struct sleep_save core_save[] = {
 	SAVE_ITEM(S3C_APLL_CON),
 	SAVE_ITEM(S3C_MPLL_CON),
 #endif
+=======
+#ifdef CONFIG_PM_SLEEP
+static struct sleep_save core_save[] = {
+	SAVE_ITEM(S3C64XX_MEM0DRVCON),
+	SAVE_ITEM(S3C64XX_MEM1DRVCON),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct sleep_save misc_save[] = {
@@ -258,6 +273,10 @@ void s3c_pm_save_core(void)
 	s3c_pm_do_save(misc_save, ARRAY_SIZE(misc_save));
 	s3c_pm_do_save(core_save, ARRAY_SIZE(core_save));
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* since both s3c6400 and s3c6410 share the same sleep pm calls, we
  * put the per-cpu code in here until any new cpu comes along and changes
@@ -350,9 +369,17 @@ int __init s3c64xx_pm_init(void)
 
 static __init int s3c64xx_pm_initcall(void)
 {
+<<<<<<< HEAD
 	pm_cpu_prep = s3c64xx_pm_prepare;
 	pm_cpu_sleep = s3c64xx_cpu_suspend;
 	pm_uart_udivslot = 1;
+=======
+	if (!soc_is_s3c64xx())
+		return 0;
+
+	pm_cpu_prep = s3c64xx_pm_prepare;
+	pm_cpu_sleep = s3c64xx_cpu_suspend;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_S3C_PM_DEBUG_LED_SMDK
 	gpio_request(S3C64XX_GPN(12), "DEBUG_LED0");
@@ -368,6 +395,7 @@ static __init int s3c64xx_pm_initcall(void)
 	return 0;
 }
 arch_initcall(s3c64xx_pm_initcall);
+<<<<<<< HEAD
 
 int __init s3c64xx_pm_late_initcall(void)
 {
@@ -375,3 +403,5 @@ int __init s3c64xx_pm_late_initcall(void)
 
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -324,6 +324,11 @@ static int __init cops_probe1(struct net_device *dev, int ioaddr)
 			break;
 	}
 
+<<<<<<< HEAD
+=======
+	dev->base_addr = ioaddr;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Reserve any actual interrupt. */
 	if (dev->irq) {
 		retval = request_irq(dev->irq, cops_interrupt, 0, dev->name, dev);
@@ -331,8 +336,11 @@ static int __init cops_probe1(struct net_device *dev, int ioaddr)
 			goto err_out;
 	}
 
+<<<<<<< HEAD
 	dev->base_addr = ioaddr;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         lp = netdev_priv(dev);
         spin_lock_init(&lp->lock);
 
@@ -861,7 +869,11 @@ static void cops_timeout(struct net_device *dev)
 	}
 	printk(KERN_WARNING "%s: Transmit timed out.\n", dev->name);
 	cops_jumpstart(dev);	/* Restart the card. */
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_wake_queue(dev);
 }
 
@@ -996,7 +1008,11 @@ static int __init cops_module_init(void)
 		printk(KERN_WARNING "%s: You shouldn't autoprobe with insmod\n",
 			cardname);
 	cops_dev = cops_probe(-1);
+<<<<<<< HEAD
 	return PTR_RET(cops_dev);
+=======
+	return PTR_ERR_OR_ZERO(cops_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __exit cops_module_exit(void)

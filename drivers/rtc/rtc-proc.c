@@ -26,8 +26,13 @@ static bool is_rtc_hctosys(struct rtc_device *rtc)
 	int size;
 	char name[NAME_SIZE];
 
+<<<<<<< HEAD
 	size = scnprintf(name, NAME_SIZE, "rtc%d", rtc->id);
 	if (size > NAME_SIZE)
+=======
+	size = snprintf(name, NAME_SIZE, "rtc%d", rtc->id);
+	if (size >= NAME_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 
 	return !strncmp(name, CONFIG_RTC_HCTOSYS_DEVICE, NAME_SIZE);
@@ -112,19 +117,33 @@ static int rtc_proc_open(struct inode *inode, struct file *file)
 	int ret;
 	struct rtc_device *rtc = PDE_DATA(inode);
 
+<<<<<<< HEAD
 	if (!try_module_get(THIS_MODULE))
+=======
+	if (!try_module_get(rtc->owner))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	ret = single_open(file, rtc_proc_show, rtc);
 	if (ret)
+<<<<<<< HEAD
 		module_put(THIS_MODULE);
+=======
+		module_put(rtc->owner);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int rtc_proc_release(struct inode *inode, struct file *file)
 {
 	int res = single_release(inode, file);
+<<<<<<< HEAD
 	module_put(THIS_MODULE);
+=======
+	struct rtc_device *rtc = PDE_DATA(inode);
+
+	module_put(rtc->owner);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return res;
 }
 

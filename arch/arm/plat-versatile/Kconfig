@@ -1,5 +1,6 @@
 if PLAT_VERSATILE
 
+<<<<<<< HEAD
 config PLAT_VERSATILE_CLOCK
 	bool
 
@@ -14,5 +15,9 @@ config PLAT_VERSATILE_LEDS
 
 config PLAT_VERSATILE_SCHED_CLOCK
 	def_bool y
+=======
+config PLAT_VERSATILE_SCHED_CLOCK
+	bool
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endif

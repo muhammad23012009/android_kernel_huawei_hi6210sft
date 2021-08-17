@@ -11,6 +11,10 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <stdbool.h>
+<<<<<<< HEAD
+=======
+#include <linux/virtio_types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/vhost.h>
 #include <linux/virtio.h>
 #include <linux/virtio_ring.h>
@@ -41,13 +45,21 @@ struct vdev_info {
 	struct vhost_memory *mem;
 };
 
+<<<<<<< HEAD
 void vq_notify(struct virtqueue *vq)
+=======
+bool vq_notify(struct virtqueue *vq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct vq_info *info = vq->priv;
 	unsigned long long v = 1;
 	int r;
 	r = write(info->kick, &v, sizeof v);
 	assert(r == sizeof v);
+<<<<<<< HEAD
+=======
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void vq_callback(struct virtqueue *vq)
@@ -59,7 +71,11 @@ void vhost_vq_setup(struct vdev_info *dev, struct vq_info *info)
 {
 	struct vhost_vring_state state = { .index = info->idx };
 	struct vhost_vring_file file = { .index = info->idx };
+<<<<<<< HEAD
 	unsigned long long features = dev->vdev.features[0];
+=======
+	unsigned long long features = dev->vdev.features;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct vhost_vring_addr addr = {
 		.index = info->idx,
 		.desc_user_addr = (uint64_t)(unsigned long)info->vring.desc,
@@ -112,8 +128,12 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
 {
 	int r;
 	memset(dev, 0, sizeof *dev);
+<<<<<<< HEAD
 	dev->vdev.features[0] = features;
 	dev->vdev.features[1] = features >> 32;
+=======
+	dev->vdev.features = features;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->buf_size = 1024;
 	dev->buf = malloc(dev->buf_size);
 	assert(dev->buf);
@@ -171,7 +191,12 @@ static void run_test(struct vdev_info *dev, struct vq_info *vq,
 							 GFP_ATOMIC);
 				if (likely(r == 0)) {
 					++started;
+<<<<<<< HEAD
 					virtqueue_kick(vq->vq);
+=======
+					if (unlikely(!virtqueue_kick(vq->vq)))
+						r = -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			} else
 				r = -1;
@@ -226,6 +251,17 @@ const struct option longopts[] = {
 		.val = 'i',
 	},
 	{
+<<<<<<< HEAD
+=======
+		.name = "virtio-1",
+		.val = '1',
+	},
+	{
+		.name = "no-virtio-1",
+		.val = '0',
+	},
+	{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "delayed-interrupt",
 		.val = 'D',
 	},
@@ -242,6 +278,10 @@ static void help(void)
 	fprintf(stderr, "Usage: virtio_test [--help]"
 		" [--no-indirect]"
 		" [--no-event-idx]"
+<<<<<<< HEAD
+=======
+		" [--no-virtio-1]"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		" [--delayed-interrupt]"
 		"\n");
 }
@@ -250,7 +290,11 @@ int main(int argc, char **argv)
 {
 	struct vdev_info dev;
 	unsigned long long features = (1ULL << VIRTIO_RING_F_INDIRECT_DESC) |
+<<<<<<< HEAD
 		(1ULL << VIRTIO_RING_F_EVENT_IDX);
+=======
+		(1ULL << VIRTIO_RING_F_EVENT_IDX) | (1ULL << VIRTIO_F_VERSION_1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int o;
 	bool delayed = false;
 
@@ -271,6 +315,12 @@ int main(int argc, char **argv)
 		case 'i':
 			features &= ~(1ULL << VIRTIO_RING_F_INDIRECT_DESC);
 			break;
+<<<<<<< HEAD
+=======
+		case '0':
+			features &= ~(1ULL << VIRTIO_F_VERSION_1);
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case 'D':
 			delayed = true;
 			break;

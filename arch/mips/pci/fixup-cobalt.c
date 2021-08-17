@@ -13,7 +13,10 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 #include <asm/pci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/gt64120.h>
 

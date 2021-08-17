@@ -11,6 +11,7 @@
 
 #include "closure.h"
 
+<<<<<<< HEAD
 void closure_queue(struct closure *cl)
 {
 	struct workqueue_struct *wq = cl->wq;
@@ -46,12 +47,18 @@ static struct timer_list *closure_timer(struct closure *cl)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void closure_put_after_sub(struct closure *cl, int flags)
 {
 	int r = flags & CLOSURE_REMAINING_MASK;
 
 	BUG_ON(flags & CLOSURE_GUARD_MASK);
+<<<<<<< HEAD
 	BUG_ON(!r && (flags & ~(CLOSURE_DESTRUCTOR|CLOSURE_BLOCKING)));
+=======
+	BUG_ON(!r && (flags & ~CLOSURE_DESTRUCTOR));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Must deliver precisely one wakeup */
 	if (r == 1 && (flags & CLOSURE_SLEEPING))
@@ -59,23 +66,32 @@ static inline void closure_put_after_sub(struct closure *cl, int flags)
 
 	if (!r) {
 		if (cl->fn && !(flags & CLOSURE_DESTRUCTOR)) {
+<<<<<<< HEAD
 			/* CLOSURE_BLOCKING might be set - clear it */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			atomic_set(&cl->remaining,
 				   CLOSURE_REMAINING_INITIALIZER);
 			closure_queue(cl);
 		} else {
 			struct closure *parent = cl->parent;
+<<<<<<< HEAD
 			struct closure_waitlist *wait = closure_waitlist(cl);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			closure_fn *destructor = cl->fn;
 
 			closure_debug_destroy(cl);
 
+<<<<<<< HEAD
 			smp_mb();
 			atomic_set(&cl->remaining, -1);
 
 			if (wait)
 				closure_wake_up(wait);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (destructor)
 				destructor(cl);
 
@@ -90,12 +106,21 @@ void closure_sub(struct closure *cl, int v)
 {
 	closure_put_after_sub(cl, atomic_sub_return(v, &cl->remaining));
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(closure_sub);
 
+=======
+EXPORT_SYMBOL(closure_sub);
+
+/**
+ * closure_put - decrement a closure's refcount
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void closure_put(struct closure *cl)
 {
 	closure_put_after_sub(cl, atomic_dec_return(&cl->remaining));
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(closure_put);
 
 static void set_waiting(struct closure *cl, unsigned long f)
@@ -105,6 +130,13 @@ static void set_waiting(struct closure *cl, unsigned long f)
 #endif
 }
 
+=======
+EXPORT_SYMBOL(closure_put);
+
+/**
+ * closure_wake_up - wake up all closures on a wait list, without memory barrier
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __closure_wake_up(struct closure_waitlist *wait_list)
 {
 	struct llist_node *list;
@@ -129,6 +161,7 @@ void __closure_wake_up(struct closure_waitlist *wait_list)
 		cl = container_of(reverse, struct closure, list);
 		reverse = llist_next(reverse);
 
+<<<<<<< HEAD
 		set_waiting(cl, 0);
 		closure_sub(cl, CLOSURE_WAITING + 1);
 	}
@@ -136,10 +169,27 @@ void __closure_wake_up(struct closure_waitlist *wait_list)
 EXPORT_SYMBOL_GPL(__closure_wake_up);
 
 bool closure_wait(struct closure_waitlist *list, struct closure *cl)
+=======
+		closure_set_waiting(cl, 0);
+		closure_sub(cl, CLOSURE_WAITING + 1);
+	}
+}
+EXPORT_SYMBOL(__closure_wake_up);
+
+/**
+ * closure_wait - add a closure to a waitlist
+ *
+ * @waitlist will own a ref on @cl, which will be released when
+ * closure_wake_up() is called on @waitlist.
+ *
+ */
+bool closure_wait(struct closure_waitlist *waitlist, struct closure *cl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (atomic_read(&cl->remaining) & CLOSURE_WAITING)
 		return false;
 
+<<<<<<< HEAD
 	set_waiting(cl, _RET_IP_);
 	atomic_add(CLOSURE_WAITING + 1, &cl->remaining);
 	llist_add(&cl->list, &list->list);
@@ -150,6 +200,18 @@ EXPORT_SYMBOL_GPL(closure_wait);
 
 /**
  * closure_sync() - sleep until a closure a closure has nothing left to wait on
+=======
+	closure_set_waiting(cl, _RET_IP_);
+	atomic_add(CLOSURE_WAITING + 1, &cl->remaining);
+	llist_add(&cl->list, &waitlist->list);
+
+	return true;
+}
+EXPORT_SYMBOL(closure_wait);
+
+/**
+ * closure_sync - sleep until a closure has nothing left to wait on
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Sleeps until the refcount hits 1 - the thread that's running the closure owns
  * the last refcount.
@@ -169,6 +231,7 @@ void closure_sync(struct closure *cl)
 
 	__closure_end_sleep(cl);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(closure_sync);
 
 /**
@@ -256,6 +319,9 @@ void __closure_flush_sync(struct closure *cl, struct timer_list *timer)
 		closure_sub(cl, CLOSURE_TIMER + 1);
 }
 EXPORT_SYMBOL_GPL(__closure_flush_sync);
+=======
+EXPORT_SYMBOL(closure_sync);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_BCACHE_CLOSURES_DEBUG
 
@@ -273,7 +339,11 @@ void closure_debug_create(struct closure *cl)
 	list_add(&cl->all, &closure_list);
 	spin_unlock_irqrestore(&closure_list_lock, flags);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(closure_debug_create);
+=======
+EXPORT_SYMBOL(closure_debug_create);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void closure_debug_destroy(struct closure *cl)
 {
@@ -286,12 +356,19 @@ void closure_debug_destroy(struct closure *cl)
 	list_del(&cl->all);
 	spin_unlock_irqrestore(&closure_list_lock, flags);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(closure_debug_destroy);
 
 static struct dentry *debug;
 
 #define work_data_bits(work) ((unsigned long *)(&(work)->data))
 
+=======
+EXPORT_SYMBOL(closure_debug_destroy);
+
+static struct dentry *debug;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int debug_seq_show(struct seq_file *f, void *data)
 {
 	struct closure *cl;
@@ -304,6 +381,7 @@ static int debug_seq_show(struct seq_file *f, void *data)
 			   cl, (void *) cl->ip, cl->fn, cl->parent,
 			   r & CLOSURE_REMAINING_MASK);
 
+<<<<<<< HEAD
 		seq_printf(f, "%s%s%s%s%s%s\n",
 			   test_bit(WORK_STRUCT_PENDING,
 				    work_data_bits(&cl->work)) ? "Q" : "",
@@ -312,6 +390,14 @@ static int debug_seq_show(struct seq_file *f, void *data)
 			   r & CLOSURE_STACK	? "S" : "",
 			   r & CLOSURE_SLEEPING	? "Sl" : "",
 			   r & CLOSURE_TIMER	? "T" : "");
+=======
+		seq_printf(f, "%s%s%s%s\n",
+			   test_bit(WORK_STRUCT_PENDING_BIT,
+				    work_data_bits(&cl->work)) ? "Q" : "",
+			   r & CLOSURE_RUNNING	? "R" : "",
+			   r & CLOSURE_STACK	? "S" : "",
+			   r & CLOSURE_SLEEPING	? "Sl" : "");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (r & CLOSURE_WAITING)
 			seq_printf(f, " W %pF\n",

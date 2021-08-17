@@ -221,7 +221,11 @@ struct inbound_phy_packet_event {
 #ifdef CONFIG_COMPAT
 static void __user *u64_to_uptr(u64 value)
 {
+<<<<<<< HEAD
 	if (is_compat_task())
+=======
+	if (in_compat_syscall())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return compat_ptr(value);
 	else
 		return (void __user *)(unsigned long)value;
@@ -229,7 +233,11 @@ static void __user *u64_to_uptr(u64 value)
 
 static u64 uptr_to_u64(void __user *ptr)
 {
+<<<<<<< HEAD
 	if (is_compat_task())
+=======
+	if (in_compat_syscall())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ptr_to_compat(ptr);
 	else
 		return (u64)(unsigned long)ptr;
@@ -486,7 +494,11 @@ static int ioctl_get_info(struct client *client, union ioctl_arg *arg)
 static int add_client_resource(struct client *client,
 			       struct client_resource *resource, gfp_t gfp_mask)
 {
+<<<<<<< HEAD
 	bool preload = gfp_mask & __GFP_WAIT;
+=======
+	bool preload = gfpflags_allow_blocking(gfp_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int ret;
 
@@ -1214,9 +1226,15 @@ static int ioctl_get_cycle_timer2(struct client *client, union ioctl_arg *arg)
 	cycle_time = card->driver->read_csr(card, CSR_CYCLE_TIME);
 
 	switch (a->clk_id) {
+<<<<<<< HEAD
 	case CLOCK_REALTIME:      getnstimeofday(&ts);                   break;
 	case CLOCK_MONOTONIC:     do_posix_clock_monotonic_gettime(&ts); break;
 	case CLOCK_MONOTONIC_RAW: getrawmonotonic(&ts);                  break;
+=======
+	case CLOCK_REALTIME:      getnstimeofday(&ts);	break;
+	case CLOCK_MONOTONIC:     ktime_get_ts(&ts);	break;
+	case CLOCK_MONOTONIC_RAW: getrawmonotonic(&ts);	break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		ret = -EINVAL;
 	}

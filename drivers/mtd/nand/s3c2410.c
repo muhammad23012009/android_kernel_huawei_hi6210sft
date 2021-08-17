@@ -29,7 +29,10 @@
 
 #include <linux/module.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/io.h>
@@ -46,6 +49,7 @@
 #include <linux/mtd/nand_ecc.h>
 #include <linux/mtd/partitions.h>
 
+<<<<<<< HEAD
 #include <plat/regs-nand.h>
 #include <linux/platform_data/mtd-nand-s3c2410.h>
 
@@ -56,6 +60,74 @@ static struct nand_ecclayout nand_hw_eccoob = {
 	.eccbytes = 3,
 	.eccpos = {0, 1, 2},
 	.oobfree = {{8, 8}}
+=======
+#include <linux/platform_data/mtd-nand-s3c2410.h>
+
+#define S3C2410_NFREG(x) (x)
+
+#define S3C2410_NFCONF		S3C2410_NFREG(0x00)
+#define S3C2410_NFCMD		S3C2410_NFREG(0x04)
+#define S3C2410_NFADDR		S3C2410_NFREG(0x08)
+#define S3C2410_NFDATA		S3C2410_NFREG(0x0C)
+#define S3C2410_NFSTAT		S3C2410_NFREG(0x10)
+#define S3C2410_NFECC		S3C2410_NFREG(0x14)
+#define S3C2440_NFCONT		S3C2410_NFREG(0x04)
+#define S3C2440_NFCMD		S3C2410_NFREG(0x08)
+#define S3C2440_NFADDR		S3C2410_NFREG(0x0C)
+#define S3C2440_NFDATA		S3C2410_NFREG(0x10)
+#define S3C2440_NFSTAT		S3C2410_NFREG(0x20)
+#define S3C2440_NFMECC0		S3C2410_NFREG(0x2C)
+#define S3C2412_NFSTAT		S3C2410_NFREG(0x28)
+#define S3C2412_NFMECC0		S3C2410_NFREG(0x34)
+#define S3C2410_NFCONF_EN		(1<<15)
+#define S3C2410_NFCONF_INITECC		(1<<12)
+#define S3C2410_NFCONF_nFCE		(1<<11)
+#define S3C2410_NFCONF_TACLS(x)		((x)<<8)
+#define S3C2410_NFCONF_TWRPH0(x)	((x)<<4)
+#define S3C2410_NFCONF_TWRPH1(x)	((x)<<0)
+#define S3C2410_NFSTAT_BUSY		(1<<0)
+#define S3C2440_NFCONF_TACLS(x)		((x)<<12)
+#define S3C2440_NFCONF_TWRPH0(x)	((x)<<8)
+#define S3C2440_NFCONF_TWRPH1(x)	((x)<<4)
+#define S3C2440_NFCONT_INITECC		(1<<4)
+#define S3C2440_NFCONT_nFCE		(1<<1)
+#define S3C2440_NFCONT_ENABLE		(1<<0)
+#define S3C2440_NFSTAT_READY		(1<<0)
+#define S3C2412_NFCONF_NANDBOOT		(1<<31)
+#define S3C2412_NFCONT_INIT_MAIN_ECC	(1<<5)
+#define S3C2412_NFCONT_nFCE0		(1<<1)
+#define S3C2412_NFSTAT_READY		(1<<0)
+
+/* new oob placement block for use with hardware ecc generation
+ */
+static int s3c2410_ooblayout_ecc(struct mtd_info *mtd, int section,
+				 struct mtd_oob_region *oobregion)
+{
+	if (section)
+		return -ERANGE;
+
+	oobregion->offset = 0;
+	oobregion->length = 3;
+
+	return 0;
+}
+
+static int s3c2410_ooblayout_free(struct mtd_info *mtd, int section,
+				  struct mtd_oob_region *oobregion)
+{
+	if (section)
+		return -ERANGE;
+
+	oobregion->offset = 8;
+	oobregion->length = 8;
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops s3c2410_ooblayout_ops = {
+	.ecc = s3c2410_ooblayout_ecc,
+	.free = s3c2410_ooblayout_free,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* controller and mtd information */
@@ -71,7 +143,10 @@ struct s3c2410_nand_info;
  * @scan_res: The result from calling nand_scan_ident().
 */
 struct s3c2410_nand_mtd {
+<<<<<<< HEAD
 	struct mtd_info			mtd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nand_chip		chip;
 	struct s3c2410_nand_set		*set;
 	struct s3c2410_nand_info	*info;
@@ -126,7 +201,11 @@ struct s3c2410_nand_info {
 
 	enum s3c_cpu_type		cpu_type;
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+#ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct notifier_block	freq_transition;
 #endif
 };
@@ -135,7 +214,12 @@ struct s3c2410_nand_info {
 
 static struct s3c2410_nand_mtd *s3c2410_nand_mtd_toours(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	return container_of(mtd, struct s3c2410_nand_mtd, mtd);
+=======
+	return container_of(mtd_to_nand(mtd), struct s3c2410_nand_mtd,
+			    chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct s3c2410_nand_info *s3c2410_nand_mtd_toinfo(struct mtd_info *mtd)
@@ -150,7 +234,11 @@ static struct s3c2410_nand_info *to_nand_info(struct platform_device *dev)
 
 static struct s3c2410_platform_nand *to_nand_plat(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	return dev->dev.platform_data;
+=======
+	return dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int allow_clk_suspend(struct s3c2410_nand_info *info)
@@ -175,10 +263,17 @@ static void s3c2410_nand_clk_set_state(struct s3c2410_nand_info *info,
 
 	if (info->clk_state == CLOCK_ENABLE) {
 		if (new_state != CLOCK_ENABLE)
+<<<<<<< HEAD
 			clk_disable(info->clk);
 	} else {
 		if (new_state == CLOCK_ENABLE)
 			clk_enable(info->clk);
+=======
+			clk_disable_unprepare(info->clk);
+	} else {
+		if (new_state == CLOCK_ENABLE)
+			clk_prepare_enable(info->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	info->clk_state = new_state;
@@ -349,10 +444,17 @@ static void s3c2410_nand_select_chip(struct mtd_info *mtd, int chip)
 {
 	struct s3c2410_nand_info *info;
 	struct s3c2410_nand_mtd *nmtd;
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
 	unsigned long cur;
 
 	nmtd = this->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+	unsigned long cur;
+
+	nmtd = nand_get_controller_data(this);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info = nmtd->info;
 
 	if (chip != -1)
@@ -509,7 +611,12 @@ static int s3c2410_nand_correct_data(struct mtd_info *mtd, u_char *dat,
 	diff0 |= (diff1 << 8);
 	diff0 |= (diff2 << 16);
 
+<<<<<<< HEAD
 	if ((diff0 & ~(1<<fls(diff0))) == 0)
+=======
+	/* equal to "(diff0 & ~(1 << __ffs(diff0)))" */
+	if ((diff0 & (diff0 - 1)) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 
 	return -1;
@@ -601,7 +708,11 @@ static int s3c2440_nand_calculate_ecc(struct mtd_info *mtd, const u_char *dat,
 
 static void s3c2410_nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	readsb(this->IO_ADDR_R, buf, len);
 }
 
@@ -623,7 +734,11 @@ static void s3c2440_nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 static void s3c2410_nand_write_buf(struct mtd_info *mtd, const u_char *buf,
 				   int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writesb(this->IO_ADDR_W, buf, len);
 }
 
@@ -645,7 +760,11 @@ static void s3c2440_nand_write_buf(struct mtd_info *mtd, const u_char *buf,
 
 /* cpufreq driver support */
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+#ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int s3c2410_nand_cpufreq_transition(struct notifier_block *nb,
 					  unsigned long val, void *data)
@@ -697,8 +816,11 @@ static int s3c24xx_nand_remove(struct platform_device *pdev)
 {
 	struct s3c2410_nand_info *info = to_nand_info(pdev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info == NULL)
 		return 0;
 
@@ -714,7 +836,11 @@ static int s3c24xx_nand_remove(struct platform_device *pdev)
 
 		for (mtdno = 0; mtdno < info->mtd_count; mtdno++, ptr++) {
 			pr_debug("releasing mtd %d (%p)\n", mtdno, ptr);
+<<<<<<< HEAD
 			nand_release(&ptr->mtd);
+=======
+			nand_release(&ptr->chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -731,9 +857,17 @@ static int s3c2410_nand_add_partition(struct s3c2410_nand_info *info,
 				      struct s3c2410_nand_set *set)
 {
 	if (set) {
+<<<<<<< HEAD
 		mtd->mtd.name = set->name;
 
 		return mtd_device_parse_register(&mtd->mtd, NULL, NULL,
+=======
+		struct mtd_info *mtdinfo = nand_to_mtd(&mtd->chip);
+
+		mtdinfo->name = set->name;
+
+		return mtd_device_parse_register(mtdinfo, NULL, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 set->partitions, set->nr_partitions);
 	}
 
@@ -761,7 +895,11 @@ static void s3c2410_nand_init_chip(struct s3c2410_nand_info *info,
 	chip->read_buf     = s3c2410_nand_read_buf;
 	chip->select_chip  = s3c2410_nand_select_chip;
 	chip->chip_delay   = 50;
+<<<<<<< HEAD
 	chip->priv	   = nmtd;
+=======
+	nand_set_controller_data(chip, nmtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->options	   = set->options;
 	chip->controller   = &info->controller;
 
@@ -800,8 +938,11 @@ static void s3c2410_nand_init_chip(struct s3c2410_nand_info *info,
 	chip->IO_ADDR_R = chip->IO_ADDR_W;
 
 	nmtd->info	   = info;
+<<<<<<< HEAD
 	nmtd->mtd.priv	   = chip;
 	nmtd->mtd.owner    = THIS_MODULE;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nmtd->set	   = set;
 
 #ifdef CONFIG_MTD_NAND_S3C2410_HWECC
@@ -828,11 +969,17 @@ static void s3c2410_nand_init_chip(struct s3c2410_nand_info *info,
 	}
 #else
 	chip->ecc.mode	    = NAND_ECC_SOFT;
+<<<<<<< HEAD
 #endif
 
 	if (set->ecc_layout != NULL)
 		chip->ecc.layout = set->ecc_layout;
 
+=======
+	chip->ecc.algo	= NAND_ECC_HAMMING;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (set->disable_ecc)
 		chip->ecc.mode	= NAND_ECC_NONE;
 
@@ -891,7 +1038,11 @@ static void s3c2410_nand_update_chip(struct s3c2410_nand_info *info,
 	} else {
 		chip->ecc.size	    = 512;
 		chip->ecc.bytes	    = 3;
+<<<<<<< HEAD
 		chip->ecc.layout    = &nand_hw_eccoob;
+=======
+		mtd_set_ooblayout(nand_to_mtd(chip), &s3c2410_ooblayout_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -917,19 +1068,28 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 
 	cpu_type = platform_get_device_id(pdev)->driver_data;
 
+<<<<<<< HEAD
 	pr_debug("s3c2410_nand_probe(%p)\n", pdev);
 
 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
 	if (info == NULL) {
 		dev_err(&pdev->dev, "no memory for flash info\n");
+=======
+	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+	if (info == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -ENOMEM;
 		goto exit_error;
 	}
 
 	platform_set_drvdata(pdev, info);
 
+<<<<<<< HEAD
 	spin_lock_init(&info->controller.lock);
 	init_waitqueue_head(&info->controller.wq);
+=======
+	nand_hw_control_init(&info->controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* get the clock source and enable it */
 
@@ -976,7 +1136,10 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 	size = nr_sets * sizeof(*info->mtds);
 	info->mtds = devm_kzalloc(&pdev->dev, size, GFP_KERNEL);
 	if (info->mtds == NULL) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "failed to allocate mtd storage\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -ENOMEM;
 		goto exit_error;
 	}
@@ -986,18 +1149,34 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 	nmtd = info->mtds;
 
 	for (setno = 0; setno < nr_sets; setno++, nmtd++) {
+<<<<<<< HEAD
 		pr_debug("initialising set %d (%p, info %p)\n",
 			 setno, nmtd, info);
 
 		s3c2410_nand_init_chip(info, nmtd, sets);
 
 		nmtd->scan_res = nand_scan_ident(&nmtd->mtd,
+=======
+		struct mtd_info *mtd = nand_to_mtd(&nmtd->chip);
+
+		pr_debug("initialising set %d (%p, info %p)\n",
+			 setno, nmtd, info);
+
+		mtd->dev.parent = &pdev->dev;
+		s3c2410_nand_init_chip(info, nmtd, sets);
+
+		nmtd->scan_res = nand_scan_ident(mtd,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						 (sets) ? sets->nr_chips : 1,
 						 NULL);
 
 		if (nmtd->scan_res == 0) {
 			s3c2410_nand_update_chip(info, nmtd);
+<<<<<<< HEAD
 			nand_scan_tail(&nmtd->mtd);
+=======
+			nand_scan_tail(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			s3c2410_nand_add_partition(info, nmtd, sets);
 		}
 
@@ -1016,7 +1195,10 @@ static int s3c24xx_nand_probe(struct platform_device *pdev)
 		s3c2410_nand_clk_set_state(info, CLOCK_SUSPEND);
 	}
 
+<<<<<<< HEAD
 	pr_debug("initialised ok\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
  exit_error:
@@ -1079,7 +1261,11 @@ static int s3c24xx_nand_resume(struct platform_device *dev)
 
 /* driver device registration */
 
+<<<<<<< HEAD
 static struct platform_device_id s3c24xx_driver_ids[] = {
+=======
+static const struct platform_device_id s3c24xx_driver_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "s3c2410-nand",
 		.driver_data	= TYPE_S3C2410,
@@ -1106,7 +1292,10 @@ static struct platform_driver s3c24xx_nand_driver = {
 	.id_table	= s3c24xx_driver_ids,
 	.driver		= {
 		.name	= "s3c24xx-nand",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

@@ -24,7 +24,10 @@
 #include <linux/sched.h>
 #include <linux/string.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/pci.h>
 #include <linux/dma-mapping.h>
@@ -52,7 +55,10 @@
 #endif
 
 #ifdef CONFIG_PPC_PMAC
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/prom.h>
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
@@ -61,8 +67,12 @@
 #include <linux/sungem_phy.h>
 #include "sungem.h"
 
+<<<<<<< HEAD
 /* Stripping FCS is causing problems, disabled for now */
 #undef STRIP_FCS
+=======
+#define STRIP_FCS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DEFAULT_MSG	(NETIF_MSG_DRV		| \
 			 NETIF_MSG_PROBE	| \
@@ -86,7 +96,11 @@ MODULE_LICENSE("GPL");
 
 #define GEM_MODULE_NAME	"gem"
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(gem_pci_tbl) = {
+=======
+static const struct pci_device_id gem_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_SUN, PCI_DEVICE_ID_SUN_GEM,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0UL },
 
@@ -116,7 +130,11 @@ static DEFINE_PCI_DEVICE_TABLE(gem_pci_tbl) = {
 
 MODULE_DEVICE_TABLE(pci, gem_pci_tbl);
 
+<<<<<<< HEAD
 static u16 __phy_read(struct gem *gp, int phy_addr, int reg)
+=======
+static u16 __sungem_phy_read(struct gem *gp, int phy_addr, int reg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 cmd;
 	int limit = 10000;
@@ -142,6 +160,7 @@ static u16 __phy_read(struct gem *gp, int phy_addr, int reg)
 	return cmd & MIF_FRAME_DATA;
 }
 
+<<<<<<< HEAD
 static inline int _phy_read(struct net_device *dev, int mii_id, int reg)
 {
 	struct gem *gp = netdev_priv(dev);
@@ -154,6 +173,20 @@ static inline u16 phy_read(struct gem *gp, int reg)
 }
 
 static void __phy_write(struct gem *gp, int phy_addr, int reg, u16 val)
+=======
+static inline int _sungem_phy_read(struct net_device *dev, int mii_id, int reg)
+{
+	struct gem *gp = netdev_priv(dev);
+	return __sungem_phy_read(gp, mii_id, reg);
+}
+
+static inline u16 sungem_phy_read(struct gem *gp, int reg)
+{
+	return __sungem_phy_read(gp, gp->mii_phy_addr, reg);
+}
+
+static void __sungem_phy_write(struct gem *gp, int phy_addr, int reg, u16 val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 cmd;
 	int limit = 10000;
@@ -175,6 +208,7 @@ static void __phy_write(struct gem *gp, int phy_addr, int reg, u16 val)
 	}
 }
 
+<<<<<<< HEAD
 static inline void _phy_write(struct net_device *dev, int mii_id, int reg, int val)
 {
 	struct gem *gp = netdev_priv(dev);
@@ -184,6 +218,17 @@ static inline void _phy_write(struct net_device *dev, int mii_id, int reg, int v
 static inline void phy_write(struct gem *gp, int reg, u16 val)
 {
 	__phy_write(gp, gp->mii_phy_addr, reg, val);
+=======
+static inline void _sungem_phy_write(struct net_device *dev, int mii_id, int reg, int val)
+{
+	struct gem *gp = netdev_priv(dev);
+	__sungem_phy_write(gp, mii_id, reg, val & 0xffff);
+}
+
+static inline void sungem_phy_write(struct gem *gp, int reg, u16 val)
+{
+	__sungem_phy_write(gp, gp->mii_phy_addr, reg, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void gem_enable_ints(struct gem *gp)
@@ -228,7 +273,11 @@ static void gem_put_cell(struct gem *gp)
 
 static inline void gem_netif_stop(struct gem *gp)
 {
+<<<<<<< HEAD
 	gp->dev->trans_start = jiffies;	/* prevent tx timeout */
+=======
+	netif_trans_update(gp->dev);	/* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	napi_disable(&gp->napi);
 	netif_tx_disable(gp->dev);
 }
@@ -436,7 +485,11 @@ static int gem_rxmac_reset(struct gem *gp)
 	writel(desc_dma & 0xffffffff, gp->regs + RXDMA_DBLOW);
 	writel(RX_RING_SIZE - 4, gp->regs + RXDMA_KICK);
 	val = (RXDMA_CFG_BASE | (RX_OFFSET << 10) |
+<<<<<<< HEAD
 	       ((14 / 2) << 13) | RXDMA_CFG_FTHRESH_128);
+=======
+	       (ETH_HLEN << 13) | RXDMA_CFG_FTHRESH_128);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writel(val, gp->regs + RXDMA_CFG);
 	if (readl(gp->regs + GREG_BIFCFG) & GREG_BIFCFG_M66EN)
 		writel(((5 & RXDMA_BLANK_IPKTS) |
@@ -689,7 +742,11 @@ static __inline__ void gem_tx(struct net_device *dev, struct gem *gp, u32 gem_st
 		}
 
 		dev->stats.tx_packets++;
+<<<<<<< HEAD
 		dev_kfree_skb(skb);
+=======
+		dev_consume_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	gp->tx_old = entry;
 
@@ -719,7 +776,11 @@ static __inline__ void gem_post_rxds(struct gem *gp, int limit)
 	cluster_start = curr = (gp->rx_new & ~(4 - 1));
 	count = 0;
 	kick = -1;
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (curr != limit) {
 		curr = NEXT_RX(curr);
 		if (++count == 4) {
@@ -761,7 +822,10 @@ static int gem_rx(struct gem *gp, int work_to_do)
 	struct net_device *dev = gp->dev;
 	int entry, drops, work_done = 0;
 	u32 done;
+<<<<<<< HEAD
 	__sum16 csum;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (netif_msg_rx_status(gp))
 		printk(KERN_DEBUG "%s: rx interrupt, done: %d, rx_new: %d\n",
@@ -856,9 +920,19 @@ static int gem_rx(struct gem *gp, int work_to_do)
 			skb = copy_skb;
 		}
 
+<<<<<<< HEAD
 		csum = (__force __sum16)htons((status & RXDCTRL_TCPCSUM) ^ 0xffff);
 		skb->csum = csum_unfold(csum);
 		skb->ip_summed = CHECKSUM_COMPLETE;
+=======
+		if (likely(dev->features & NETIF_F_RXCSUM)) {
+			__sum16 csum;
+
+			csum = (__force __sum16)htons((status & RXDCTRL_TCPCSUM) ^ 0xffff);
+			skb->csum = csum_unfold(csum);
+			skb->ip_summed = CHECKSUM_COMPLETE;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb->protocol = eth_type_trans(skb, gp->dev);
 
 		napi_gro_receive(&gp->napi, skb);
@@ -1039,7 +1113,11 @@ static netdev_tx_t gem_start_xmit(struct sk_buff *skb,
 		if (gem_intme(entry))
 			ctrl |= TXDCTRL_INTME;
 		txd->buffer = cpu_to_le64(mapping);
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		txd->control_word = cpu_to_le64(ctrl);
 		entry = NEXT_TX(entry);
 	} else {
@@ -1077,7 +1155,11 @@ static netdev_tx_t gem_start_xmit(struct sk_buff *skb,
 
 			txd = &gp->init_block->txd[entry];
 			txd->buffer = cpu_to_le64(mapping);
+<<<<<<< HEAD
 			wmb();
+=======
+			dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			txd->control_word = cpu_to_le64(this_ctrl | len);
 
 			if (gem_intme(entry))
@@ -1087,7 +1169,11 @@ static netdev_tx_t gem_start_xmit(struct sk_buff *skb,
 		}
 		txd = &gp->init_block->txd[first_entry];
 		txd->buffer = cpu_to_le64(first_mapping);
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		txd->control_word =
 			cpu_to_le64(ctrl | TXDCTRL_SOF | intme | first_len);
 	}
@@ -1586,7 +1672,11 @@ static void gem_clean_rings(struct gem *gp)
 			gp->rx_skbs[i] = NULL;
 		}
 		rxd->status_word = 0;
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rxd->buffer = 0;
 	}
 
@@ -1648,7 +1738,11 @@ static void gem_init_rings(struct gem *gp)
 					RX_BUF_ALLOC_SIZE(gp),
 					PCI_DMA_FROMDEVICE);
 		rxd->buffer = cpu_to_le64(dma_addr);
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rxd->status_word = cpu_to_le64(RXDCTRL_FRESH(gp));
 		skb_reserve(skb, RX_OFFSET);
 	}
@@ -1657,7 +1751,11 @@ static void gem_init_rings(struct gem *gp)
 		struct gem_txd *txd = &gb->txd[i];
 
 		txd->control_word = 0;
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		txd->buffer = 0;
 	}
 	wmb();
@@ -1688,9 +1786,15 @@ static void gem_init_phy(struct gem *gp)
 			/* Some PHYs used by apple have problem getting back to us,
 			 * we do an additional reset here
 			 */
+<<<<<<< HEAD
 			phy_write(gp, MII_BMCR, BMCR_RESET);
 			msleep(20);
 			if (phy_read(gp, MII_BMCR) != 0xffff)
+=======
+			sungem_phy_write(gp, MII_BMCR, BMCR_RESET);
+			msleep(20);
+			if (sungem_phy_read(gp, MII_BMCR) != 0xffff)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			if (i == 2)
 				netdev_warn(gp->dev, "GMAC PHY not responding !\n");
@@ -1756,7 +1860,11 @@ static void gem_init_dma(struct gem *gp)
 	writel(0, gp->regs + TXDMA_KICK);
 
 	val = (RXDMA_CFG_BASE | (RX_OFFSET << 10) |
+<<<<<<< HEAD
 	       ((14 / 2) << 13) | RXDMA_CFG_FTHRESH_128);
+=======
+	       (ETH_HLEN << 13) | RXDMA_CFG_FTHRESH_128);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writel(val, gp->regs + RXDMA_CFG);
 
 	writel(desc_dma >> 32, gp->regs + RXDMA_DBHI);
@@ -2013,7 +2121,11 @@ static int gem_check_invariants(struct gem *gp)
 
 		for (i = 0; i < 32; i++) {
 			gp->mii_phy_addr = i;
+<<<<<<< HEAD
 			if (phy_read(gp, MII_BMCR) != 0xffff)
+=======
+			if (sungem_phy_read(gp, MII_BMCR) != 0xffff)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 		}
 		if (i == 32) {
@@ -2176,7 +2288,11 @@ static int gem_do_start(struct net_device *dev)
 	}
 
 	/* Mark us as attached again if we come from resume(), this has
+<<<<<<< HEAD
 	 * no effect if we weren't detatched and needs to be done now.
+=======
+	 * no effect if we weren't detached and needs to be done now.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	netif_device_attach(dev);
 
@@ -2697,13 +2813,21 @@ static int gem_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		/* Fallthrough... */
 
 	case SIOCGMIIREG:		/* Read MII PHY register. */
+<<<<<<< HEAD
 		data->val_out = __phy_read(gp, data->phy_id & 0x1f,
+=======
+		data->val_out = __sungem_phy_read(gp, data->phy_id & 0x1f,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   data->reg_num & 0x1f);
 		rc = 0;
 		break;
 
 	case SIOCSMIIREG:		/* Write MII PHY register. */
+<<<<<<< HEAD
 		__phy_write(gp, data->phy_id & 0x1f, data->reg_num & 0x1f,
+=======
+		__sungem_phy_write(gp, data->phy_id & 0x1f, data->reg_num & 0x1f,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    data->val_in);
 		rc = 0;
 		break;
@@ -2779,7 +2903,11 @@ static int gem_get_device_address(struct gem *gp)
 		return -1;
 #endif
 	}
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, addr, 6);
+=======
+	memcpy(dev->dev_addr, addr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	get_gem_mac_nonobp(gp->pdev, gp->dev->dev_addr);
 #endif
@@ -2795,7 +2923,11 @@ static void gem_remove_one(struct pci_dev *pdev)
 
 		unregister_netdev(dev);
 
+<<<<<<< HEAD
 		/* Ensure reset task is truely gone */
+=======
+		/* Ensure reset task is truly gone */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cancel_work_sync(&gp->reset_task);
 
 		/* Free resources */
@@ -2806,8 +2938,11 @@ static void gem_remove_one(struct pci_dev *pdev)
 		iounmap(gp->regs);
 		pci_release_regions(pdev);
 		free_netdev(dev);
+<<<<<<< HEAD
 
 		pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -2936,8 +3071,13 @@ static int gem_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* Fill up the mii_phy structure (even if we won't use it) */
 	gp->phy_mii.dev = dev;
+<<<<<<< HEAD
 	gp->phy_mii.mdio_read = _phy_read;
 	gp->phy_mii.mdio_write = _phy_write;
+=======
+	gp->phy_mii.mdio_read = _sungem_phy_read;
+	gp->phy_mii.mdio_write = _sungem_phy_write;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC_PMAC
 	gp->phy_mii.platform_data = gp->of_node;
 #endif
@@ -2976,8 +3116,13 @@ static int gem_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pci_set_drvdata(pdev, dev);
 
 	/* We can do scatter/gather and HW checksum */
+<<<<<<< HEAD
 	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM;
 	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
+=======
+	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXCSUM;
+	dev->features = dev->hw_features;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pci_using_dac)
 		dev->features |= NETIF_F_HIGHDMA;
 
@@ -3028,6 +3173,7 @@ static struct pci_driver gem_driver = {
 #endif /* CONFIG_PM */
 };
 
+<<<<<<< HEAD
 static int __init gem_init(void)
 {
 	return pci_register_driver(&gem_driver);
@@ -3040,3 +3186,6 @@ static void __exit gem_cleanup(void)
 
 module_init(gem_init);
 module_exit(gem_cleanup);
+=======
+module_pci_driver(gem_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -27,6 +27,10 @@
 #include <linux/perf_event.h>
 
 #include <asm/opcodes.h>
+<<<<<<< HEAD
+=======
+#include <asm/system_info.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/traps.h>
 #include <asm/uaccess.h>
 
@@ -35,6 +39,7 @@
  */
 #define __user_swpX_asm(data, addr, res, temp, B)		\
 	__asm__ __volatile__(					\
+<<<<<<< HEAD
 	"	mov		%2, %1\n"			\
 	"0:	ldrex"B"	%1, [%3]\n"			\
 	"1:	strex"B"	%0, %2, [%3]\n"			\
@@ -42,6 +47,15 @@
 	"	movne		%0, %4\n"			\
 	"2:\n"							\
 	"	.section	 .fixup,\"ax\"\n"		\
+=======
+	"0:	ldrex"B"	%2, [%3]\n"			\
+	"1:	strex"B"	%0, %1, [%3]\n"			\
+	"	cmp		%0, #0\n"			\
+	"	moveq		%1, %2\n"			\
+	"	movne		%0, %4\n"			\
+	"2:\n"							\
+	"	.section	 .text.fixup,\"ax\"\n"		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	.align		2\n"				\
 	"3:	mov		%0, %5\n"			\
 	"	b		2b\n"				\
@@ -140,6 +154,7 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 
 	while (1) {
 		unsigned long temp;
+<<<<<<< HEAD
 
 		/*
 		 * Barrier required between accessing protected resource and
@@ -149,10 +164,19 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 		 */
 		smp_mb();
 
+=======
+		unsigned int __ua_flags;
+
+		__ua_flags = uaccess_save_and_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (type == TYPE_SWPB)
 			__user_swpb_asm(*data, address, res, temp);
 		else
 			__user_swp_asm(*data, address, res, temp);
+<<<<<<< HEAD
+=======
+		uaccess_restore(__ua_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (likely(res != -EAGAIN) || signal_pending(current))
 			break;
@@ -161,6 +185,7 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 	}
 
 	if (res == 0) {
+<<<<<<< HEAD
 		/*
 		 * Barrier also required between acquiring a lock for a
 		 * protected resource and accessing the resource. Inserted for
@@ -168,6 +193,8 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 		 */
 		smp_mb();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (type == TYPE_SWPB)
 			swpbcounter++;
 		else
@@ -266,12 +293,22 @@ static struct undef_hook swp_hook = {
  */
 static int __init swp_emulation_init(void)
 {
+<<<<<<< HEAD
+=======
+	if (cpu_architecture() < CPU_ARCH_ARMv7)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PROC_FS
 	if (!proc_create("cpu/swp_emulation", S_IRUGO, NULL, &proc_status_fops))
 		return -ENOMEM;
 #endif /* CONFIG_PROC_FS */
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "Registering SWP/SWPB emulation handler\n");
+=======
+	pr_notice("Registering SWP/SWPB emulation handler\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	register_undef_hook(&swp_hook);
 
 	return 0;

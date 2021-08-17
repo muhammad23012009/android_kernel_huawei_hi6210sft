@@ -85,12 +85,18 @@
 
 			PHY0: ethernet-phy@0 {
 				reg = <0x0>;
+<<<<<<< HEAD
 				device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 
 			PHY1: ethernet-phy@1 {
 				reg = <0x1>;
+<<<<<<< HEAD
 				device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 		};
 

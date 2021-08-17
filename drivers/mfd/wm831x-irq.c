@@ -552,6 +552,7 @@ static int wm831x_irq_map(struct irq_domain *h, unsigned int virq,
 	irq_set_chip_data(virq, h->host_data);
 	irq_set_chip_and_handler(virq, &wm831x_irq_chip, handle_edge_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 
 	/* ARM needs us to explicitly flag the IRQ as valid
 	 * and will set them noprobe when we do so. */
@@ -560,18 +561,29 @@ static int wm831x_irq_map(struct irq_domain *h, unsigned int virq,
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	irq_set_noprobe(virq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops wm831x_irq_domain_ops = {
+=======
+static const struct irq_domain_ops wm831x_irq_domain_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map	= wm831x_irq_map,
 	.xlate	= irq_domain_xlate_twocell,
 };
 
 int wm831x_irq_init(struct wm831x *wm831x, int irq)
 {
+<<<<<<< HEAD
 	struct wm831x_pdata *pdata = wm831x->dev->platform_data;
+=======
+	struct wm831x_pdata *pdata = dev_get_platdata(wm831x->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct irq_domain *domain;
 	int i, ret, irq_base;
 

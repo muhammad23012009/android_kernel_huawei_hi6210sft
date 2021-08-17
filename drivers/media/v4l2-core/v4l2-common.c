@@ -61,7 +61,10 @@
 #include <media/v4l2-common.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/videodev2.h>
 
@@ -81,6 +84,7 @@ MODULE_LICENSE("GPL");
 
 /* Helper functions for control handling			     */
 
+<<<<<<< HEAD
 /* Check for correctness of the ctrl's value based on the data from
    struct v4l2_queryctrl and the available menu items. Note that
    menu_items may be NULL, in that case it is ignored. */
@@ -115,6 +119,16 @@ EXPORT_SYMBOL(v4l2_ctrl_check);
 int v4l2_ctrl_query_fill(struct v4l2_queryctrl *qctrl, s32 min, s32 max, s32 step, s32 def)
 {
 	const char *name;
+=======
+/* Fill in a struct v4l2_queryctrl */
+int v4l2_ctrl_query_fill(struct v4l2_queryctrl *qctrl, s32 _min, s32 _max, s32 _step, s32 _def)
+{
+	const char *name;
+	s64 min = _min;
+	s64 max = _max;
+	u64 step = _step;
+	s64 def = _def;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	v4l2_ctrl_fill(qctrl->id, &name, &qctrl->type,
 		       &min, &max, &step, &def, &qctrl->flags);
@@ -132,6 +146,7 @@ int v4l2_ctrl_query_fill(struct v4l2_queryctrl *qctrl, s32 min, s32 max, s32 ste
 }
 EXPORT_SYMBOL(v4l2_ctrl_query_fill);
 
+<<<<<<< HEAD
 /* Fill in a struct v4l2_querymenu based on the struct v4l2_queryctrl and
    the menu. The qctrl pointer may be NULL, in which case it is ignored.
    If menu_items is NULL, then the menu items are retrieved using
@@ -283,6 +298,11 @@ EXPORT_SYMBOL(v4l2_chip_ident_i2c_client);
 
 /* I2C Helper functions */
 
+=======
+/* I2C Helper functions */
+
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void v4l2_i2c_subdev_init(struct v4l2_subdev *sd, struct i2c_client *client,
 		const struct v4l2_subdev_ops *ops)
@@ -290,19 +310,31 @@ void v4l2_i2c_subdev_init(struct v4l2_subdev *sd, struct i2c_client *client,
 	v4l2_subdev_init(sd, ops);
 	sd->flags |= V4L2_SUBDEV_FL_IS_I2C;
 	/* the owner is the same as the i2c_client's driver owner */
+<<<<<<< HEAD
 	sd->owner = client->driver->driver.owner;
+=======
+	sd->owner = client->dev.driver->owner;
+	sd->dev = &client->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* i2c_client and v4l2_subdev point to one another */
 	v4l2_set_subdevdata(sd, client);
 	i2c_set_clientdata(client, sd);
 	/* initialize name */
 	snprintf(sd->name, sizeof(sd->name), "%s %d-%04x",
+<<<<<<< HEAD
 		client->driver->driver.name, i2c_adapter_id(client->adapter),
+=======
+		client->dev.driver->name, i2c_adapter_id(client->adapter),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		client->addr);
 }
 EXPORT_SYMBOL_GPL(v4l2_i2c_subdev_init);
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Load an i2c sub-device. */
 struct v4l2_subdev *v4l2_i2c_new_subdev_board(struct v4l2_device *v4l2_dev,
 		struct i2c_adapter *adapter, struct i2c_board_info *info,
@@ -329,11 +361,19 @@ struct v4l2_subdev *v4l2_i2c_new_subdev_board(struct v4l2_device *v4l2_dev,
 	   loaded. This delay-load mechanism doesn't work if other drivers
 	   want to use the i2c device, so explicitly loading the module
 	   is the best alternative. */
+<<<<<<< HEAD
 	if (client == NULL || client->driver == NULL)
 		goto error;
 
 	/* Lock the module so we can safely get the v4l2_subdev pointer */
 	if (!try_module_get(client->driver->driver.owner))
+=======
+	if (client == NULL || client->dev.driver == NULL)
+		goto error;
+
+	/* Lock the module so we can safely get the v4l2_subdev pointer */
+	if (!try_module_get(client->dev.driver->owner))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 	sd = i2c_get_clientdata(client);
 
@@ -342,7 +382,11 @@ struct v4l2_subdev *v4l2_i2c_new_subdev_board(struct v4l2_device *v4l2_dev,
 	if (v4l2_device_register_subdev(v4l2_dev, sd))
 		sd = NULL;
 	/* Decrease the module use count to match the first try_module_get. */
+<<<<<<< HEAD
 	module_put(client->driver->driver.owner);
+=======
+	module_put(client->dev.driver->owner);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 error:
 	/* If we have a client but no subdev, then something went wrong and
@@ -426,6 +470,10 @@ void v4l2_spi_subdev_init(struct v4l2_subdev *sd, struct spi_device *spi,
 	sd->flags |= V4L2_SUBDEV_FL_IS_SPI;
 	/* the owner is the same as the spi_device's driver owner */
 	sd->owner = spi->dev.driver->owner;
+<<<<<<< HEAD
+=======
+	sd->dev = &spi->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* spi_device and v4l2_subdev point to one another */
 	v4l2_set_subdevdata(sd, spi);
 	spi_set_drvdata(spi, sd);
@@ -466,7 +514,11 @@ struct v4l2_subdev *v4l2_spi_new_subdev(struct v4l2_device *v4l2_dev,
 error:
 	/* If we have a client but no subdev, then something went wrong and
 	   we must unregister the client. */
+<<<<<<< HEAD
 	if (spi && sd == NULL)
+=======
+	if (!sd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spi_unregister_device(spi);
 
 	return sd;
@@ -546,6 +598,7 @@ void v4l_bound_align_image(u32 *w, unsigned int wmin, unsigned int wmax,
 }
 EXPORT_SYMBOL_GPL(v4l_bound_align_image);
 
+<<<<<<< HEAD
 /**
  * v4l_match_dv_timings - check if two timings match
  * @t1 - compare this v4l2_dv_timings struct...
@@ -903,6 +956,8 @@ struct v4l2_fract v4l2_calc_aspect_ratio(u8 hor_landscape, u8 vert_portrait)
 }
 EXPORT_SYMBOL_GPL(v4l2_calc_aspect_ratio);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const struct v4l2_frmsize_discrete *v4l2_find_nearest_format(
 		const struct v4l2_discrete_probe *probe,
 		s32 width, s32 height)

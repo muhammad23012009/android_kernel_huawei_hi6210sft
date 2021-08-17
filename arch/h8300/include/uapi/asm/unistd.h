@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _UAPI_ASM_H8300_UNISTD_H_
 #define _UAPI_ASM_H8300_UNISTD_H_
 
@@ -328,3 +329,10 @@
 #define __NR_setns		320
 
 #endif /* _UAPI_ASM_H8300_UNISTD_H_ */
+=======
+#define __ARCH_NOMMU
+
+#define __ARCH_WANT_RENAMEAT
+
+#include <asm-generic/unistd.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

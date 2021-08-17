@@ -39,8 +39,16 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
 		return -ENOMEM;
 
 	adis->buffer = kzalloc(indio_dev->scan_bytes * 2, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!adis->buffer)
 		return -ENOMEM;
+=======
+	if (!adis->buffer) {
+		kfree(adis->xfer);
+		adis->xfer = NULL;
+		return -ENOMEM;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rx = adis->buffer;
 	tx = rx + scan_count;
@@ -80,9 +88,12 @@ static irqreturn_t adis_trigger_handler(int irq, void *p)
 	struct adis *adis = iio_device_get_drvdata(indio_dev);
 	int ret;
 
+<<<<<<< HEAD
 	if (!adis->buffer)
 		return -ENOMEM;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (adis->data->has_paging) {
 		mutex_lock(&adis->txrx_lock);
 		if (adis->current_page != 0) {
@@ -102,6 +113,7 @@ static irqreturn_t adis_trigger_handler(int irq, void *p)
 		mutex_unlock(&adis->txrx_lock);
 	}
 
+<<<<<<< HEAD
 	/* Guaranteed to be aligned with 8 byte boundary */
 	if (indio_dev->scan_timestamp) {
 		void *b = adis->buffer + indio_dev->scan_bytes - sizeof(s64);
@@ -109,6 +121,10 @@ static irqreturn_t adis_trigger_handler(int irq, void *p)
 	}
 
 	iio_push_to_buffers(indio_dev, adis->buffer);
+=======
+	iio_push_to_buffers_with_timestamp(indio_dev, adis->buffer,
+		pf->timestamp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iio_trigger_notify_done(indio_dev->trig);
 

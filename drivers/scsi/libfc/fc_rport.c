@@ -95,17 +95,36 @@ static const char *fc_rport_state_names[] = {
  * @lport:   The local port to lookup the remote port on
  * @port_id: The remote port ID to look up
  *
+<<<<<<< HEAD
  * The caller must hold either disc_mutex or rcu_read_lock().
+=======
+ * The reference count of the fc_rport_priv structure is
+ * increased by one.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static struct fc_rport_priv *fc_rport_lookup(const struct fc_lport *lport,
 					     u32 port_id)
 {
+<<<<<<< HEAD
 	struct fc_rport_priv *rdata;
 
 	list_for_each_entry_rcu(rdata, &lport->disc.rports, peers)
 		if (rdata->ids.port_id == port_id)
 			return rdata;
 	return NULL;
+=======
+	struct fc_rport_priv *rdata = NULL, *tmp_rdata;
+
+	rcu_read_lock();
+	list_for_each_entry_rcu(tmp_rdata, &lport->disc.rports, peers)
+		if (tmp_rdata->ids.port_id == port_id &&
+		    kref_get_unless_zero(&tmp_rdata->kref)) {
+			rdata = tmp_rdata;
+			break;
+		}
+	rcu_read_unlock();
+	return rdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -121,12 +140,22 @@ static struct fc_rport_priv *fc_rport_create(struct fc_lport *lport,
 					     u32 port_id)
 {
 	struct fc_rport_priv *rdata;
+<<<<<<< HEAD
+=======
+	size_t rport_priv_size = sizeof(*rdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rdata = lport->tt.rport_lookup(lport, port_id);
 	if (rdata)
 		return rdata;
 
+<<<<<<< HEAD
 	rdata = kzalloc(sizeof(*rdata) + lport->rport_priv_size, GFP_KERNEL);
+=======
+	if (lport->rport_priv_size > 0)
+		rport_priv_size = lport->rport_priv_size;
+	rdata = kzalloc(rport_priv_size, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rdata)
 		return NULL;
 
@@ -340,7 +369,10 @@ static void fc_rport_work(struct work_struct *work)
 			fc_remote_port_delete(rport);
 		}
 
+<<<<<<< HEAD
 		mutex_lock(&lport->disc.disc_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_lock(&rdata->rp_mutex);
 		if (rdata->rp_state == RPORT_ST_DELETE) {
 			if (port_id == FC_FID_DIR_SERV) {
@@ -370,7 +402,10 @@ static void fc_rport_work(struct work_struct *work)
 				fc_rport_enter_ready(rdata);
 			mutex_unlock(&rdata->rp_mutex);
 		}
+<<<<<<< HEAD
 		mutex_unlock(&lport->disc.disc_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:
@@ -453,6 +488,12 @@ static void fc_rport_enter_delete(struct fc_rport_priv *rdata,
  */
 static int fc_rport_logoff(struct fc_rport_priv *rdata)
 {
+<<<<<<< HEAD
+=======
+	struct fc_lport *lport = rdata->local_port;
+	u32 port_id = rdata->ids.port_id;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&rdata->rp_mutex);
 
 	FC_RPORT_DBG(rdata, "Remove port\n");
@@ -462,6 +503,18 @@ static int fc_rport_logoff(struct fc_rport_priv *rdata)
 		FC_RPORT_DBG(rdata, "Port in Delete state, not removing\n");
 		goto out;
 	}
+<<<<<<< HEAD
+=======
+	/*
+	 * FC-LS states:
+	 * To explicitly Logout, the initiating Nx_Port shall terminate
+	 * other open Sequences that it initiated with the destination
+	 * Nx_Port prior to performing Logout.
+	 */
+	lport->tt.exch_mgr_reset(lport, 0, port_id);
+	lport->tt.exch_mgr_reset(lport, port_id, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fc_rport_enter_logo(rdata);
 
 	/*
@@ -543,16 +596,34 @@ static void fc_rport_timeout(struct work_struct *work)
  */
 static void fc_rport_error(struct fc_rport_priv *rdata, struct fc_frame *fp)
 {
+<<<<<<< HEAD
+=======
+	struct fc_lport *lport = rdata->local_port;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	FC_RPORT_DBG(rdata, "Error %ld in state %s, retries %d\n",
 		     IS_ERR(fp) ? -PTR_ERR(fp) : 0,
 		     fc_rport_state(rdata), rdata->retries);
 
 	switch (rdata->rp_state) {
 	case RPORT_ST_FLOGI:
+<<<<<<< HEAD
 	case RPORT_ST_PLOGI:
 		rdata->flags &= ~FC_RP_STARTED;
 		fc_rport_enter_delete(rdata, RPORT_EV_FAILED);
 		break;
+=======
+		rdata->flags &= ~FC_RP_STARTED;
+		fc_rport_enter_delete(rdata, RPORT_EV_FAILED);
+		break;
+	case RPORT_ST_PLOGI:
+		if (lport->point_to_multipoint) {
+			rdata->flags &= ~FC_RP_STARTED;
+			fc_rport_enter_delete(rdata, RPORT_EV_FAILED);
+		} else
+			fc_rport_enter_logo(rdata);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case RPORT_ST_RTV:
 		fc_rport_enter_ready(rdata);
 		break;
@@ -702,7 +773,11 @@ out:
 err:
 	mutex_unlock(&rdata->rp_mutex);
 put:
+<<<<<<< HEAD
 	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+=======
+	kref_put(&rdata->kref, lport->tt.rport_destroy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 bad:
 	FC_RPORT_DBG(rdata, "Bad FLOGI response\n");
@@ -762,8 +837,11 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 	FC_RPORT_ID_DBG(lport, sid, "Received FLOGI request\n");
 
 	disc = &lport->disc;
+<<<<<<< HEAD
 	mutex_lock(&disc->disc_mutex);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!lport->point_to_multipoint) {
 		rjt_data.reason = ELS_RJT_UNSUP;
 		rjt_data.explan = ELS_EXPL_NONE;
@@ -808,7 +886,11 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 		mutex_unlock(&rdata->rp_mutex);
 		rjt_data.reason = ELS_RJT_FIP;
 		rjt_data.explan = ELS_EXPL_NOT_NEIGHBOR;
+<<<<<<< HEAD
 		goto reject;
+=======
+		goto reject_put;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case RPORT_ST_FLOGI:
 	case RPORT_ST_PLOGI_WAIT:
 	case RPORT_ST_PLOGI:
@@ -825,13 +907,21 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 		mutex_unlock(&rdata->rp_mutex);
 		rjt_data.reason = ELS_RJT_BUSY;
 		rjt_data.explan = ELS_EXPL_NONE;
+<<<<<<< HEAD
 		goto reject;
+=======
+		goto reject_put;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (fc_rport_login_complete(rdata, fp)) {
 		mutex_unlock(&rdata->rp_mutex);
 		rjt_data.reason = ELS_RJT_LOGIC;
 		rjt_data.explan = ELS_EXPL_NONE;
+<<<<<<< HEAD
 		goto reject;
+=======
+		goto reject_put;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	fp = fc_frame_alloc(lport, sizeof(*flp));
@@ -851,12 +941,22 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 		fc_rport_state_enter(rdata, RPORT_ST_PLOGI_WAIT);
 out:
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
 	mutex_unlock(&disc->disc_mutex);
 	fc_frame_free(rx_fp);
 	return;
 
 reject:
 	mutex_unlock(&disc->disc_mutex);
+=======
+	kref_put(&rdata->kref, lport->tt.rport_destroy);
+	fc_frame_free(rx_fp);
+	return;
+
+reject_put:
+	kref_put(&rdata->kref, lport->tt.rport_destroy);
+reject:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lport->tt.seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
 	fc_frame_free(rx_fp);
 }
@@ -923,7 +1023,25 @@ out:
 	fc_frame_free(fp);
 err:
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
 	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+=======
+	kref_put(&rdata->kref, lport->tt.rport_destroy);
+}
+
+static bool
+fc_rport_compatible_roles(struct fc_lport *lport, struct fc_rport_priv *rdata)
+{
+	if (rdata->ids.roles == FC_PORT_ROLE_UNKNOWN)
+		return true;
+	if ((rdata->ids.roles & FC_PORT_ROLE_FCP_TARGET) &&
+	    (lport->service_params & FCP_SPPF_INIT_FCN))
+		return true;
+	if ((rdata->ids.roles & FC_PORT_ROLE_FCP_INITIATOR) &&
+	    (lport->service_params & FCP_SPPF_TARG_FCN))
+		return true;
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -938,6 +1056,15 @@ static void fc_rport_enter_plogi(struct fc_rport_priv *rdata)
 	struct fc_lport *lport = rdata->local_port;
 	struct fc_frame *fp;
 
+<<<<<<< HEAD
+=======
+	if (!fc_rport_compatible_roles(lport, rdata)) {
+		FC_RPORT_DBG(rdata, "PLOGI suppressed for incompatible role\n");
+		fc_rport_state_enter(rdata, RPORT_ST_PLOGI_WAIT);
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	FC_RPORT_DBG(rdata, "Port entered PLOGI state from %s state\n",
 		     fc_rport_state(rdata));
 
@@ -1457,6 +1584,7 @@ static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 	struct fc_rport_priv *rdata;
 	struct fc_seq_els_data els_data;
 
+<<<<<<< HEAD
 	mutex_lock(&lport->disc.disc_mutex);
 	rdata = lport->tt.rport_lookup(lport, fc_frame_sid(fp));
 	if (!rdata) {
@@ -1465,6 +1593,13 @@ static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 	}
 	mutex_lock(&rdata->rp_mutex);
 	mutex_unlock(&lport->disc.disc_mutex);
+=======
+	rdata = lport->tt.rport_lookup(lport, fc_frame_sid(fp));
+	if (!rdata)
+		goto reject;
+
+	mutex_lock(&rdata->rp_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (rdata->rp_state) {
 	case RPORT_ST_PRLI:
@@ -1474,6 +1609,10 @@ static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 		break;
 	default:
 		mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
+=======
+		kref_put(&rdata->kref, lport->tt.rport_destroy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto reject;
 	}
 
@@ -1504,6 +1643,10 @@ static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 	}
 
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
+=======
+	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 
 reject:
@@ -1646,6 +1789,16 @@ static void fc_rport_recv_plogi_req(struct fc_lport *lport,
 		rjt_data.explan = ELS_EXPL_NONE;
 		goto reject;
 	}
+<<<<<<< HEAD
+=======
+	if (!fc_rport_compatible_roles(lport, rdata)) {
+		FC_RPORT_DBG(rdata, "Received PLOGI for incompatible role\n");
+		mutex_unlock(&rdata->rp_mutex);
+		rjt_data.reason = ELS_RJT_LOGIC;
+		rjt_data.explan = ELS_EXPL_NONE;
+		goto reject;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Get session payload size from incoming PLOGI.
@@ -1678,7 +1831,11 @@ reject:
  * @rdata: The remote port that sent the PRLI request
  * @rx_fp: The PRLI request frame
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is exected to be held before calling
+=======
+ * Locking Note: The rport lock is expected to be held before calling
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * this function.
  */
 static void fc_rport_recv_prli_req(struct fc_rport_priv *rdata,
@@ -1797,7 +1954,11 @@ drop:
  * @rdata: The remote port that sent the PRLO request
  * @rx_fp: The PRLO request frame
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is exected to be held before calling
+=======
+ * Locking Note: The rport lock is expected to be held before calling
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * this function.
  */
 static void fc_rport_recv_prlo_req(struct fc_rport_priv *rdata,
@@ -1848,7 +2009,11 @@ static void fc_rport_recv_prlo_req(struct fc_rport_priv *rdata,
 	spp->spp_type_ext = rspp->spp_type_ext;
 	spp->spp_flags = FC_SPP_RESP_ACK;
 
+<<<<<<< HEAD
 	fc_rport_enter_delete(rdata, RPORT_EV_LOGO);
+=======
+	fc_rport_enter_prli(rdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fc_fill_reply_hdr(fp, rx_fp, FC_RCTL_ELS_REP, 0);
 	lport->tt.frame_send(lport, fp);
@@ -1868,7 +2033,11 @@ drop:
  * @lport: The local port that received the LOGO request
  * @fp:	   The LOGO request frame
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is exected to be held before calling
+=======
+ * Locking Note: The rport lock is expected to be held before calling
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * this function.
  */
 static void fc_rport_recv_logo_req(struct fc_lport *lport, struct fc_frame *fp)
@@ -1880,19 +2049,31 @@ static void fc_rport_recv_logo_req(struct fc_lport *lport, struct fc_frame *fp)
 
 	sid = fc_frame_sid(fp);
 
+<<<<<<< HEAD
 	mutex_lock(&lport->disc.disc_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rdata = lport->tt.rport_lookup(lport, sid);
 	if (rdata) {
 		mutex_lock(&rdata->rp_mutex);
 		FC_RPORT_DBG(rdata, "Received LOGO request while in state %s\n",
 			     fc_rport_state(rdata));
 
+<<<<<<< HEAD
 		fc_rport_enter_delete(rdata, RPORT_EV_LOGO);
 		mutex_unlock(&rdata->rp_mutex);
 	} else
 		FC_RPORT_ID_DBG(lport, sid,
 				"Received LOGO from non-logged-in port\n");
 	mutex_unlock(&lport->disc.disc_mutex);
+=======
+		fc_rport_enter_delete(rdata, RPORT_EV_STOP);
+		mutex_unlock(&rdata->rp_mutex);
+		kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+	} else
+		FC_RPORT_ID_DBG(lport, sid,
+				"Received LOGO from non-logged-in port\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fc_frame_free(fp);
 }
 

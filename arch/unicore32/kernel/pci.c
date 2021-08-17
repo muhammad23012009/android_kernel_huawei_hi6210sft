@@ -265,6 +265,7 @@ static int __init pci_common_init(void)
 
 	pci_fixup_irqs(pci_common_swizzle, pci_puv3_map_irq);
 
+<<<<<<< HEAD
 	if (!pci_has_flag(PCI_PROBE_ONLY)) {
 		/*
 		 * Size the bridge windows.
@@ -282,6 +283,11 @@ static int __init pci_common_init(void)
 	 */
 	pci_bus_add_devices(puv3_bus);
 
+=======
+	pci_bus_size_bridges(puv3_bus);
+	pci_bus_assign_resources(puv3_bus);
+	pci_bus_add_devices(puv3_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 subsys_initcall(pci_common_init);
@@ -291,9 +297,12 @@ char * __init pcibios_setup(char *str)
 	if (!strcmp(str, "debug")) {
 		debug_pci = 1;
 		return NULL;
+<<<<<<< HEAD
 	} else if (!strcmp(str, "firmware")) {
 		pci_add_flags(PCI_PROBE_ONLY);
 		return NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return str;
 }

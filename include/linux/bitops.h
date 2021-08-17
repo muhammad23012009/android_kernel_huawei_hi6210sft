@@ -1,6 +1,7 @@
 #ifndef _LINUX_BITOPS_H
 #define _LINUX_BITOPS_H
 #include <asm/types.h>
+<<<<<<< HEAD
 
 #ifdef	__KERNEL__
 #ifndef BIT
@@ -19,6 +20,12 @@
  */
 #define GENMASK(h, l)		(((U32_C(1) << ((h) - (l) + 1)) - 1) << (l))
 #define GENMASK_ULL(h, l)	(((U64_C(1) << ((h) - (l) + 1)) - 1) << (l))
+=======
+#include <linux/bits.h>
+
+#define BITS_PER_TYPE(type) (sizeof(type) * BITS_PER_BYTE)
+#define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_TYPE(long))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern unsigned int __sw_hweight8(unsigned int w);
 extern unsigned int __sw_hweight16(unsigned int w);
@@ -53,7 +60,11 @@ extern unsigned long __sw_hweight64(__u64 w);
 	     (bit) < (size);					\
 	     (bit) = find_next_zero_bit((addr), (size), (bit) + 1))
 
+<<<<<<< HEAD
 static __inline__ int get_bitmask_order(unsigned int count)
+=======
+static inline int get_bitmask_order(unsigned int count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int order;
 
@@ -61,6 +72,7 @@ static __inline__ int get_bitmask_order(unsigned int count)
 	return order;	/* We could be slightly more clever with -1 here... */
 }
 
+<<<<<<< HEAD
 static __inline__ int get_count_order(unsigned int count)
 {
 	int order;
@@ -74,6 +86,11 @@ static __inline__ int get_count_order(unsigned int count)
 static inline unsigned long hweight_long(unsigned long w)
 {
 	return sizeof(w) == 4 ? hweight32(w) : hweight64(w);
+=======
+static __always_inline unsigned long hweight_long(unsigned long w)
+{
+	return sizeof(w) == 4 ? hweight32(w) : hweight64((__u64)w);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -83,7 +100,11 @@ static inline unsigned long hweight_long(unsigned long w)
  */
 static inline __u64 rol64(__u64 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (64 - shift));
+=======
+	return (word << (shift & 63)) | (word >> ((-shift) & 63));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -93,7 +114,11 @@ static inline __u64 rol64(__u64 word, unsigned int shift)
  */
 static inline __u64 ror64(__u64 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (64 - shift));
+=======
+	return (word >> (shift & 63)) | (word << ((-shift) & 63));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -103,7 +128,11 @@ static inline __u64 ror64(__u64 word, unsigned int shift)
  */
 static inline __u32 rol32(__u32 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (32 - shift));
+=======
+	return (word << (shift & 31)) | (word >> ((-shift) & 31));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -113,7 +142,11 @@ static inline __u32 rol32(__u32 word, unsigned int shift)
  */
 static inline __u32 ror32(__u32 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (32 - shift));
+=======
+	return (word >> (shift & 31)) | (word << ((-shift) & 31));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -123,7 +156,11 @@ static inline __u32 ror32(__u32 word, unsigned int shift)
  */
 static inline __u16 rol16(__u16 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (16 - shift));
+=======
+	return (word << (shift & 15)) | (word >> ((-shift) & 15));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -133,7 +170,11 @@ static inline __u16 rol16(__u16 word, unsigned int shift)
  */
 static inline __u16 ror16(__u16 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (16 - shift));
+=======
+	return (word >> (shift & 15)) | (word << ((-shift) & 15));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -143,7 +184,11 @@ static inline __u16 ror16(__u16 word, unsigned int shift)
  */
 static inline __u8 rol8(__u8 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (8 - shift));
+=======
+	return (word << (shift & 7)) | (word >> ((-shift) & 7));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -153,13 +198,22 @@ static inline __u8 rol8(__u8 word, unsigned int shift)
  */
 static inline __u8 ror8(__u8 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (8 - shift));
+=======
+	return (word >> (shift & 7)) | (word << ((-shift) & 7));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * sign_extend32 - sign extend a 32-bit value using specified bit as sign-bit
  * @value: value to sign extend
  * @index: 0 based bit index (0<=index<32) to sign bit
+<<<<<<< HEAD
+=======
+ *
+ * This is safe to use for 16- and 8-bit types as well.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static inline __s32 sign_extend32(__u32 value, int index)
 {
@@ -167,6 +221,20 @@ static inline __s32 sign_extend32(__u32 value, int index)
 	return (__s32)(value << shift) >> shift;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * sign_extend64 - sign extend a 64-bit value using specified bit as sign-bit
+ * @value: value to sign extend
+ * @index: 0 based bit index (0<=index<64) to sign bit
+ */
+static inline __s64 sign_extend64(__u64 value, int index)
+{
+	__u8 shift = 63 - index;
+	return (__s64)(value << shift) >> shift;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned fls_long(unsigned long l)
 {
 	if (sizeof(l) == 4)
@@ -174,6 +242,35 @@ static inline unsigned fls_long(unsigned long l)
 	return fls64(l);
 }
 
+<<<<<<< HEAD
+=======
+static inline int get_count_order(unsigned int count)
+{
+	int order;
+
+	order = fls(count) - 1;
+	if (count & (count - 1))
+		order++;
+	return order;
+}
+
+/**
+ * get_count_order_long - get order after rounding @l up to power of 2
+ * @l: parameter
+ *
+ * it is same as get_count_order() but with long type parameter
+ */
+static inline int get_count_order_long(unsigned long l)
+{
+	if (l == 0UL)
+		return -1;
+	else if (l & (l - 1UL))
+		return (int)fls_long(l);
+	else
+		return (int)fls_long(l) - 1;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * __ffs64 - find first set bit in a 64 bit word
  * @word: The 64 bit word
@@ -210,16 +307,40 @@ static inline unsigned long __ffs64(u64 word)
 })
 #endif
 
+<<<<<<< HEAD
 extern unsigned long find_last_zero_bit(const unsigned long *addr,
 				   unsigned long size);
+=======
+#ifndef bit_clear_unless
+#define bit_clear_unless(ptr, _clear, _test)	\
+({								\
+	const typeof(*ptr) clear = (_clear), test = (_test);	\
+	typeof(*ptr) old, new;					\
+								\
+	do {							\
+		old = ACCESS_ONCE(*ptr);			\
+		new = old & ~clear;				\
+	} while (!(old & test) &&				\
+		 cmpxchg(ptr, old, new) != old);		\
+								\
+	!(old & test);						\
+})
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef find_last_bit
 /**
  * find_last_bit - find the last set bit in a memory region
  * @addr: The address to start the search at
+<<<<<<< HEAD
  * @size: The maximum size to search
  *
  * Returns the bit number of the first set bit, or size.
+=======
+ * @size: The number of bits to search
+ *
+ * Returns the bit number of the last set bit, or size.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 extern unsigned long find_last_bit(const unsigned long *addr,
 				   unsigned long size);

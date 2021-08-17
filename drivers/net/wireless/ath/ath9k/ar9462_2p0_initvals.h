@@ -20,7 +20,19 @@
 
 /* AR9462 2.0 */
 
+<<<<<<< HEAD
 static const u32 ar9462_modes_fast_clock_2p0[][3] = {
+=======
+#define ar9462_2p0_mac_postamble ar9331_1p1_mac_postamble
+
+#define ar9462_2p0_common_wo_xlna_rx_gain ar9300Common_wo_xlna_rx_gain_table_2p2
+
+#define ar9462_2p0_common_5g_xlna_only_rxgain ar9462_2p0_common_mixed_rx_gain
+
+#define ar9462_2p0_baseband_core_txfir_coeff_japan_2484 ar9300_2p2_baseband_core_txfir_coeff_japan_2484
+
+static const u32 ar9462_2p0_modes_fast_clock[][3] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Addr      5G_HT20     5G_HT40   */
 	{0x00001030, 0x00000268, 0x000004d0},
 	{0x00001070, 0x0000018c, 0x00000318},
@@ -33,6 +45,7 @@ static const u32 ar9462_modes_fast_clock_2p0[][3] = {
 	{0x0000a254, 0x00000898, 0x00001130},
 };
 
+<<<<<<< HEAD
 static const u32 ar9462_pciephy_clkreq_enable_L1_2p0[][2] = {
 	/* Addr      allmodes  */
 	{0x00018c00, 0x18253ede},
@@ -40,6 +53,8 @@ static const u32 ar9462_pciephy_clkreq_enable_L1_2p0[][2] = {
 	{0x00018c08, 0x0003780c},
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 ar9462_2p0_baseband_postamble[][5] = {
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00009810, 0xd00a8005, 0xd00a8005, 0xd00a8011, 0xd00a800d},
@@ -58,7 +73,11 @@ static const u32 ar9462_2p0_baseband_postamble[][5] = {
 	{0x00009e1c, 0x0001cf9c, 0x0001cf9c, 0x00021f9c, 0x00021f9c},
 	{0x00009e20, 0x000003a5, 0x000003a5, 0x000003a5, 0x000003a5},
 	{0x00009e2c, 0x0000001c, 0x0000001c, 0x00000021, 0x00000021},
+<<<<<<< HEAD
 	{0x00009e3c, 0xcf946220, 0xcf946220, 0xcfd5c782, 0xcfd5c282},
+=======
+	{0x00009e3c, 0xcf946220, 0xcf946220, 0xcfd5c780, 0xcfd5c280},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x00009e44, 0x62321e27, 0x62321e27, 0xfe291e27, 0xfe291e27},
 	{0x00009e48, 0x5030201a, 0x5030201a, 0x50302012, 0x50302012},
 	{0x00009fc8, 0x0003f000, 0x0003f000, 0x0001a000, 0x0001a000},
@@ -99,7 +118,11 @@ static const u32 ar9462_2p0_baseband_postamble[][5] = {
 	{0x0000b284, 0x00000000, 0x00000000, 0x00000550, 0x00000550},
 };
 
+<<<<<<< HEAD
 static const u32 ar9462_common_rx_gain_table_2p0[][2] = {
+=======
+static const u32 ar9462_2p0_common_rx_gain[][2] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Addr      allmodes  */
 	{0x0000a000, 0x00010000},
 	{0x0000a004, 0x00030002},
@@ -359,13 +382,18 @@ static const u32 ar9462_common_rx_gain_table_2p0[][2] = {
 	{0x0000b1fc, 0x00000196},
 };
 
+<<<<<<< HEAD
 static const u32 ar9462_pciephy_clkreq_disable_L1_2p0[][2] = {
+=======
+static const u32 ar9462_2p0_pciephy_clkreq_disable_L1[][2] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Addr      allmodes  */
 	{0x00018c00, 0x18213ede},
 	{0x00018c04, 0x000801d8},
 	{0x00018c08, 0x0003780c},
 };
 
+<<<<<<< HEAD
 static const u32 ar9462_pciephy_pll_on_clkreq_disable_L1_2p0[][2] = {
 	/* Addr      allmodes  */
 	{0x00018c00, 0x18212ede},
@@ -373,6 +401,8 @@ static const u32 ar9462_pciephy_pll_on_clkreq_disable_L1_2p0[][2] = {
 	{0x00018c08, 0x0003780c},
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 ar9462_2p0_radio_postamble_sys2ant[][5] = {
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x000160ac, 0xa4646c08, 0xa4646c08, 0x24645808, 0x24645808},
@@ -380,6 +410,7 @@ static const u32 ar9462_2p0_radio_postamble_sys2ant[][5] = {
 	{0x00016540, 0x10804008, 0x10804008, 0x50804008, 0x50804008},
 };
 
+<<<<<<< HEAD
 static const u32 ar9462_common_wo_xlna_rx_gain_table_2p0[][2] = {
 	/* Addr      allmodes  */
 	{0x0000a000, 0x00010000},
@@ -648,6 +679,9 @@ static const u32 ar9462_2p0_baseband_core_txfir_coeff_japan_2484[][2] = {
 };
 
 static const u32 ar9462_modes_low_ob_db_tx_gain_table_2p0[][5] = {
+=======
+static const u32 ar9462_2p0_modes_low_ob_db_tx_gain[][5] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x000098bc, 0x00000002, 0x00000002, 0x00000002, 0x00000002},
 	{0x0000a2dc, 0x0380c7fc, 0x0380c7fc, 0x03aaa352, 0x03aaa352},
@@ -879,7 +913,74 @@ static const u32 ar9462_2p0_radio_postamble[][5] = {
 	{0x0001650c, 0x48000000, 0x40000000, 0x40000000, 0x40000000},
 };
 
+<<<<<<< HEAD
 static const u32 ar9462_modes_high_ob_db_tx_gain_table_2p0[][5] = {
+=======
+static const u32 ar9462_2p0_modes_mix_ob_db_tx_gain[][5] = {
+	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	{0x000098bc, 0x00000002, 0x00000002, 0x00000002, 0x00000002},
+	{0x0000a2dc, 0x01feee00, 0x01feee00, 0x03aaa352, 0x03aaa352},
+	{0x0000a2e0, 0x0000f000, 0x0000f000, 0x03ccc584, 0x03ccc584},
+	{0x0000a2e4, 0x01ff0000, 0x01ff0000, 0x03f0f800, 0x03f0f800},
+	{0x0000a2e8, 0x00000000, 0x00000000, 0x03ff0000, 0x03ff0000},
+	{0x0000a410, 0x0000d0da, 0x0000d0da, 0x0000d0de, 0x0000d0de},
+	{0x0000a458, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a500, 0x00002220, 0x00002220, 0x00000000, 0x00000000},
+	{0x0000a504, 0x06002223, 0x06002223, 0x04000002, 0x04000002},
+	{0x0000a508, 0x0a022220, 0x0a022220, 0x08000004, 0x08000004},
+	{0x0000a50c, 0x0f022223, 0x0f022223, 0x0b000200, 0x0b000200},
+	{0x0000a510, 0x14022620, 0x14022620, 0x0f000202, 0x0f000202},
+	{0x0000a514, 0x18022622, 0x18022622, 0x12000400, 0x12000400},
+	{0x0000a518, 0x1b022822, 0x1b022822, 0x16000402, 0x16000402},
+	{0x0000a51c, 0x20022842, 0x20022842, 0x19000404, 0x19000404},
+	{0x0000a520, 0x22022c41, 0x22022c41, 0x1c000603, 0x1c000603},
+	{0x0000a524, 0x28023042, 0x28023042, 0x21000a02, 0x21000a02},
+	{0x0000a528, 0x2c023044, 0x2c023044, 0x25000a04, 0x25000a04},
+	{0x0000a52c, 0x2f023644, 0x2f023644, 0x28000a20, 0x28000a20},
+	{0x0000a530, 0x34025643, 0x34025643, 0x2c000e20, 0x2c000e20},
+	{0x0000a534, 0x38025a44, 0x38025a44, 0x30000e22, 0x30000e22},
+	{0x0000a538, 0x3b025e45, 0x3b025e45, 0x34000e24, 0x34000e24},
+	{0x0000a53c, 0x41025e4a, 0x41025e4a, 0x38001640, 0x38001640},
+	{0x0000a540, 0x48025e6c, 0x48025e6c, 0x3c001660, 0x3c001660},
+	{0x0000a544, 0x4e025e8e, 0x4e025e8e, 0x3f001861, 0x3f001861},
+	{0x0000a548, 0x55025eb3, 0x55025eb3, 0x43001a81, 0x43001a81},
+	{0x0000a54c, 0x58025ef3, 0x58025ef3, 0x47001a83, 0x47001a83},
+	{0x0000a550, 0x5d025ef6, 0x5d025ef6, 0x4a001c84, 0x4a001c84},
+	{0x0000a554, 0x62025f56, 0x62025f56, 0x4e001ce3, 0x4e001ce3},
+	{0x0000a558, 0x66027f56, 0x66027f56, 0x52001ce5, 0x52001ce5},
+	{0x0000a55c, 0x6a029f56, 0x6a029f56, 0x56001ce9, 0x56001ce9},
+	{0x0000a560, 0x70049f56, 0x70049f56, 0x5a001ceb, 0x5a001ceb},
+	{0x0000a564, 0x751ffff6, 0x751ffff6, 0x5c001eec, 0x5c001eec},
+	{0x0000a568, 0x751ffff6, 0x751ffff6, 0x5e001ef0, 0x5e001ef0},
+	{0x0000a56c, 0x751ffff6, 0x751ffff6, 0x60001ef4, 0x60001ef4},
+	{0x0000a570, 0x751ffff6, 0x751ffff6, 0x62001ff6, 0x62001ff6},
+	{0x0000a574, 0x751ffff6, 0x751ffff6, 0x62001ff6, 0x62001ff6},
+	{0x0000a578, 0x751ffff6, 0x751ffff6, 0x62001ff6, 0x62001ff6},
+	{0x0000a57c, 0x751ffff6, 0x751ffff6, 0x62001ff6, 0x62001ff6},
+	{0x0000a600, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a604, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a608, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a60c, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a610, 0x00804000, 0x00804000, 0x00000000, 0x00000000},
+	{0x0000a614, 0x00804201, 0x00804201, 0x01404000, 0x01404000},
+	{0x0000a618, 0x0280c802, 0x0280c802, 0x01404501, 0x01404501},
+	{0x0000a61c, 0x0280ca03, 0x0280ca03, 0x02008501, 0x02008501},
+	{0x0000a620, 0x04c15104, 0x04c15104, 0x0280ca03, 0x0280ca03},
+	{0x0000a624, 0x04c15305, 0x04c15305, 0x03010c04, 0x03010c04},
+	{0x0000a628, 0x04c15305, 0x04c15305, 0x04014c04, 0x04014c04},
+	{0x0000a62c, 0x04c15305, 0x04c15305, 0x04015005, 0x04015005},
+	{0x0000a630, 0x04c15305, 0x04c15305, 0x04015005, 0x04015005},
+	{0x0000a634, 0x04c15305, 0x04c15305, 0x04015005, 0x04015005},
+	{0x0000a638, 0x04c15305, 0x04c15305, 0x04015005, 0x04015005},
+	{0x0000a63c, 0x04c15305, 0x04c15305, 0x04015005, 0x04015005},
+	{0x0000b2dc, 0x01feee00, 0x01feee00, 0x03aaa352, 0x03aaa352},
+	{0x0000b2e0, 0x0000f000, 0x0000f000, 0x03ccc584, 0x03ccc584},
+	{0x0000b2e4, 0x01ff0000, 0x01ff0000, 0x03f0f800, 0x03f0f800},
+	{0x0000b2e8, 0x00000000, 0x00000000, 0x03ff0000, 0x03ff0000},
+};
+
+static const u32 ar9462_2p0_modes_high_ob_db_tx_gain[][5] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x000098bc, 0x00000002, 0x00000002, 0x00000002, 0x00000002},
 	{0x0000a2dc, 0x01feee00, 0x01feee00, 0x03aaa352, 0x03aaa352},
@@ -1177,6 +1278,7 @@ static const u32 ar9462_2p0_mac_core[][2] = {
 	{0x000083d0, 0x000301ff},
 };
 
+<<<<<<< HEAD
 static const u32 ar9462_2p0_mac_postamble[][5] = {
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00001030, 0x00000230, 0x00000460, 0x000002c0, 0x00000160},
@@ -1190,6 +1292,9 @@ static const u32 ar9462_2p0_mac_postamble[][5] = {
 };
 
 static const u32 ar9462_common_mixed_rx_gain_table_2p0[][2] = {
+=======
+static const u32 ar9462_2p0_common_mixed_rx_gain[][2] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Addr      allmodes  */
 	{0x0000a000, 0x00010000},
 	{0x0000a004, 0x00030002},
@@ -1449,4 +1554,27 @@ static const u32 ar9462_common_mixed_rx_gain_table_2p0[][2] = {
 	{0x0000b1fc, 0x00000196},
 };
 
+<<<<<<< HEAD
+=======
+static const u32 ar9462_2p0_baseband_postamble_5g_xlna[][5] = {
+	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	{0x00009e3c, 0xcf946220, 0xcf946220, 0xcfd5c782, 0xcfd5c282},
+};
+
+static const u32 ar9462_2p0_baseband_core_mix_rxgain[][2] = {
+	/* Addr      allmodes  */
+	{0x00009fd0, 0x0a2d6b93},
+};
+
+static const u32 ar9462_2p0_baseband_postamble_mix_rxgain[][5] = {
+	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	{0x00009820, 0x206a022e, 0x206a022e, 0x206a01ae, 0x206a01ae},
+	{0x00009824, 0x63c640de, 0x5ac640d0, 0x63c640da, 0x63c640da},
+	{0x00009828, 0x0796be89, 0x0696b081, 0x0916be81, 0x0916be81},
+	{0x00009e0c, 0x6c4000e2, 0x6d4000e2, 0x6d4000d8, 0x6c4000d8},
+	{0x00009e10, 0x92c88d2e, 0x7ec88d2e, 0x7ec86d2e, 0x7ec86d2e},
+	{0x00009e14, 0x37b95d5e, 0x37b9605e, 0x3236605e, 0x32395c5e},
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* INITVALS_9462_2P0_H */

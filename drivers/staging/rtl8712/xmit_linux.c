@@ -31,6 +31,10 @@
 #include <linux/usb.h>
 #include <linux/ip.h>
 #include <linux/if_ether.h>
+<<<<<<< HEAD
+=======
+#include <linux/kmemleak.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "osdep_service.h"
 #include "drv_types.h"
@@ -51,7 +55,11 @@ void _r8712_open_pktfile(_pkt *pktptr, struct pkt_file *pfile)
 	pfile->pkt = pktptr;
 	pfile->cur_addr = pfile->buf_start = pktptr->data;
 	pfile->pkt_len = pfile->buf_len = pktptr->len;
+<<<<<<< HEAD
 	pfile->cur_buffer = pfile->buf_start ;
+=======
+	pfile->cur_buffer = pfile->buf_start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 uint _r8712_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
@@ -70,16 +78,23 @@ uint _r8712_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
 
 sint r8712_endofpktfile(struct pkt_file *pfile)
 {
+<<<<<<< HEAD
 	if (pfile->pkt_len == 0)
 		return true;
 	else
 		return false;
+=======
+	return (pfile->pkt_len == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
 void r8712_set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
 {
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ethhdr etherhdr;
 	struct iphdr ip_hdr;
 	u16 UserPriority = 0;
@@ -89,14 +104,23 @@ void r8712_set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
 
 	/* get UserPriority from IP hdr*/
 	if (pattrib->ether_type == 0x0800) {
+<<<<<<< HEAD
 		i = _r8712_pktfile_read(ppktfile, (u8 *)&ip_hdr,
 					sizeof(ip_hdr));
+=======
+		_r8712_pktfile_read(ppktfile, (u8 *)&ip_hdr, sizeof(ip_hdr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*UserPriority = (ntohs(ip_hdr.tos) >> 5) & 0x3 ;*/
 		UserPriority = ip_hdr.tos >> 5;
 	} else {
 		/* "When priority processing of data frames is supported,
 		 * a STA's SME should send EAPOL-Key frames at the highest
+<<<<<<< HEAD
 		 * priority." */
+=======
+		 * priority."
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (pattrib->ether_type == 0x888e)
 			UserPriority = 7;
@@ -133,10 +157,18 @@ int r8712_xmit_resource_alloc(struct _adapter *padapter,
 
 	for (i = 0; i < 8; i++) {
 		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 		if (pxmitbuf->pxmit_urb[i] == NULL) {
 			netdev_err(padapter->pnetdev, "pxmitbuf->pxmit_urb[i] == NULL\n");
 			return _FAIL;
 		}
+=======
+		if (!pxmitbuf->pxmit_urb[i]) {
+			netdev_err(padapter->pnetdev, "pxmitbuf->pxmit_urb[i] == NULL\n");
+			return _FAIL;
+		}
+		kmemleak_not_leak(pxmitbuf->pxmit_urb[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return _SUCCESS;
 }
@@ -164,6 +196,7 @@ void r8712_xmit_complete(struct _adapter *padapter, struct xmit_frame *pxframe)
 int r8712_xmit_entry(_pkt *pkt, struct  net_device *pnetdev)
 {
 	struct xmit_frame *pxmitframe = NULL;
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &(padapter->xmitpriv);
 	int ret = 0;
@@ -184,17 +217,43 @@ int r8712_xmit_entry(_pkt *pkt, struct  net_device *pnetdev)
 	padapter->ledpriv.LedControlHandler(padapter, LED_CTL_TX);
 	pxmitframe->pkt = pkt;
 	if (r8712_pre_xmit(padapter, pxmitframe) == true) {
+=======
+	struct _adapter *padapter = netdev_priv(pnetdev);
+	struct xmit_priv *pxmitpriv = &(padapter->xmitpriv);
+
+	if (!r8712_if_up(padapter))
+		goto _xmit_entry_drop;
+
+	pxmitframe = r8712_alloc_xmitframe(pxmitpriv);
+	if (!pxmitframe)
+		goto _xmit_entry_drop;
+
+	if ((!r8712_update_attrib(padapter, pkt, &pxmitframe->attrib)))
+		goto _xmit_entry_drop;
+
+	padapter->ledpriv.LedControlHandler(padapter, LED_CTL_TX);
+	pxmitframe->pkt = pkt;
+	if (r8712_pre_xmit(padapter, pxmitframe)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*dump xmitframe directly or drop xframe*/
 		dev_kfree_skb_any(pkt);
 		pxmitframe->pkt = NULL;
 	}
 	pxmitpriv->tx_pkts++;
 	pxmitpriv->tx_bytes += pxmitframe->attrib.last_txcmdsz;
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 _xmit_entry_drop:
 	if (pxmitframe)
 		r8712_free_xmitframe(pxmitpriv, pxmitframe);
 	pxmitpriv->tx_drop++;
 	dev_kfree_skb_any(pkt);
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

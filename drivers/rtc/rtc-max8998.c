@@ -16,6 +16,10 @@
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqdomain.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/rtc.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/max8998.h>
@@ -252,7 +256,11 @@ static const struct rtc_class_ops max8998_rtc_ops = {
 static int max8998_rtc_probe(struct platform_device *pdev)
 {
 	struct max8998_dev *max8998 = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	struct max8998_platform_data *pdata = dev_get_platdata(max8998->dev);
+=======
+	struct max8998_platform_data *pdata = max8998->pdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct max8998_rtc_info *info;
 	int ret;
 
@@ -264,7 +272,10 @@ static int max8998_rtc_probe(struct platform_device *pdev)
 	info->dev = &pdev->dev;
 	info->max8998 = max8998;
 	info->rtc = max8998->rtc;
+<<<<<<< HEAD
 	info->irq = max8998->irq_base + MAX8998_IRQ_ALARM0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, info);
 
@@ -274,7 +285,20 @@ static int max8998_rtc_probe(struct platform_device *pdev)
 	if (IS_ERR(info->rtc_dev)) {
 		ret = PTR_ERR(info->rtc_dev);
 		dev_err(&pdev->dev, "Failed to register RTC device: %d\n", ret);
+<<<<<<< HEAD
 		goto out_rtc;
+=======
+		return ret;
+	}
+
+	if (!max8998->irq_domain)
+		goto no_irq;
+
+	info->irq = irq_create_mapping(max8998->irq_domain, MAX8998_IRQ_ALARM0);
+	if (!info->irq) {
+		dev_warn(&pdev->dev, "Failed to map alarm IRQ\n");
+		goto no_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
@@ -284,6 +308,10 @@ static int max8998_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to request alarm IRQ: %d: %d\n",
 			info->irq, ret);
 
+<<<<<<< HEAD
+=======
+no_irq:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&pdev->dev, "RTC CHIP NAME: %s\n", pdev->id_entry->name);
 	if (pdata && pdata->rtc_delay) {
 		info->lp3974_bug_workaround = true;
@@ -292,6 +320,7 @@ static int max8998_rtc_probe(struct platform_device *pdev)
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 out_rtc:
 	platform_set_drvdata(pdev, NULL);
@@ -301,6 +330,8 @@ out_rtc:
 static int max8998_rtc_remove(struct platform_device *pdev)
 {
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct platform_device_id max8998_rtc_id[] = {
@@ -308,14 +339,23 @@ static const struct platform_device_id max8998_rtc_id[] = {
 	{ "lp3974-rtc", TYPE_LP3974 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(platform, max8998_rtc_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver max8998_rtc_driver = {
 	.driver		= {
 		.name	= "max8998-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= max8998_rtc_probe,
 	.remove		= max8998_rtc_remove,
+=======
+	},
+	.probe		= max8998_rtc_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= max8998_rtc_id,
 };
 

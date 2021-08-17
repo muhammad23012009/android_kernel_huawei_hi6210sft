@@ -1,6 +1,10 @@
 #include "util.h"
 #include "../perf.h"
+<<<<<<< HEAD
 #include "parse-options.h"
+=======
+#include <subcmd/parse-options.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "evsel.h"
 #include "cgroup.h"
 #include "evlist.h"
@@ -64,7 +68,11 @@ static int open_cgroup(char *name)
 	if (cgroupfs_find_mountpoint(mnt, PATH_MAX + 1))
 		return -1;
 
+<<<<<<< HEAD
 	snprintf(path, PATH_MAX, "%s/%s", mnt, name);
+=======
+	scnprintf(path, PATH_MAX, "%s/%s", mnt, name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fd = open(path, O_RDONLY);
 	if (fd == -1)
@@ -81,7 +89,11 @@ static int add_cgroup(struct perf_evlist *evlist, char *str)
 	/*
 	 * check if cgrp is already defined, if so we reuse it
 	 */
+<<<<<<< HEAD
 	list_for_each_entry(counter, &evlist->entries, node) {
+=======
+	evlist__for_each_entry(evlist, counter) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cgrp = counter->cgrp;
 		if (!cgrp)
 			continue;
@@ -110,23 +122,36 @@ static int add_cgroup(struct perf_evlist *evlist, char *str)
 	 * if add cgroup N, then need to find event N
 	 */
 	n = 0;
+<<<<<<< HEAD
 	list_for_each_entry(counter, &evlist->entries, node) {
+=======
+	evlist__for_each_entry(evlist, counter) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (n == nr_cgroups)
 			goto found;
 		n++;
 	}
+<<<<<<< HEAD
 	if (cgrp->refcnt == 0)
+=======
+	if (atomic_read(&cgrp->refcnt) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		free(cgrp);
 
 	return -1;
 found:
+<<<<<<< HEAD
 	cgrp->refcnt++;
+=======
+	atomic_inc(&cgrp->refcnt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	counter->cgrp = cgrp;
 	return 0;
 }
 
 void close_cgroup(struct cgroup_sel *cgrp)
 {
+<<<<<<< HEAD
 	if (!cgrp)
 		return;
 
@@ -134,6 +159,11 @@ void close_cgroup(struct cgroup_sel *cgrp)
 	if (--cgrp->refcnt == 0) {
 		close(cgrp->fd);
 		free(cgrp->name);
+=======
+	if (cgrp && atomic_dec_and_test(&cgrp->refcnt)) {
+		close(cgrp->fd);
+		zfree(&cgrp->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		free(cgrp);
 	}
 }

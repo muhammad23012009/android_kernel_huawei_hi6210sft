@@ -40,7 +40,11 @@ pgd_free(struct mm_struct *mm, pgd_t *pgd)
 static inline pmd_t *
 pmd_alloc_one(struct mm_struct *mm, unsigned long address)
 {
+<<<<<<< HEAD
 	pmd_t *ret = (pmd_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+=======
+	pmd_t *ret = (pmd_t *)__get_free_page(GFP_KERNEL|__GFP_ZERO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -53,7 +57,11 @@ pmd_free(struct mm_struct *mm, pmd_t *pmd)
 static inline pte_t *
 pte_alloc_one_kernel(struct mm_struct *mm, unsigned long address)
 {
+<<<<<<< HEAD
 	pte_t *pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+=======
+	pte_t *pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_ZERO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pte;
 }
 
@@ -72,7 +80,14 @@ pte_alloc_one(struct mm_struct *mm, unsigned long address)
 	if (!pte)
 		return NULL;
 	page = virt_to_page(pte);
+<<<<<<< HEAD
 	pgtable_page_ctor(page);
+=======
+	if (!pgtable_page_ctor(page)) {
+		__free_page(page);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return page;
 }
 

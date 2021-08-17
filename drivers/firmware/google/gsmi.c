@@ -480,11 +480,18 @@ static ssize_t eventlog_write(struct file *filp, struct kobject *kobj,
 	if (count < sizeof(u32))
 		return -EINVAL;
 	param.type = *(u32 *)buf;
+<<<<<<< HEAD
 	count -= sizeof(u32);
 	buf += sizeof(u32);
 
 	/* The remaining buffer is the data payload */
 	if (count > gsmi_dev.data_buf->length)
+=======
+	buf += sizeof(u32);
+
+	/* The remaining buffer is the data payload */
+	if ((count - sizeof(u32)) > gsmi_dev.data_buf->length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	param.data_len = count - sizeof(u32);
 
@@ -504,7 +511,11 @@ static ssize_t eventlog_write(struct file *filp, struct kobject *kobj,
 
 	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
 
+<<<<<<< HEAD
 	return rc;
+=======
+	return (rc == 0) ? count : rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 }
 
@@ -525,7 +536,11 @@ static ssize_t gsmi_clear_eventlog_store(struct kobject *kobj,
 		u32 data_type;
 	} param;
 
+<<<<<<< HEAD
 	rc = strict_strtoul(buf, 0, &val);
+=======
+	rc = kstrtoul(buf, 0, &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc)
 		return rc;
 
@@ -764,6 +779,16 @@ static __init int gsmi_system_valid(void)
 static struct kobject *gsmi_kobj;
 static struct efivars efivars;
 
+<<<<<<< HEAD
+=======
+static const struct platform_device_info gsmi_dev_info = {
+	.name		= "gsmi",
+	.id		= -1,
+	/* SMI callbacks require 32bit addresses */
+	.dma_mask	= DMA_BIT_MASK(32),
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __init int gsmi_init(void)
 {
 	unsigned long flags;
@@ -776,7 +801,11 @@ static __init int gsmi_init(void)
 	gsmi_dev.smi_cmd = acpi_gbl_FADT.smi_command;
 
 	/* register device */
+<<<<<<< HEAD
 	gsmi_dev.pdev = platform_device_register_simple("gsmi", -1, NULL, 0);
+=======
+	gsmi_dev.pdev = platform_device_register_full(&gsmi_dev_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(gsmi_dev.pdev)) {
 		printk(KERN_ERR "gsmi: unable to register platform device\n");
 		return PTR_ERR(gsmi_dev.pdev);
@@ -785,10 +814,13 @@ static __init int gsmi_init(void)
 	/* SMI access needs to be serialized */
 	spin_lock_init(&gsmi_dev.lock);
 
+<<<<<<< HEAD
 	/* SMI callbacks require 32bit addresses */
 	gsmi_dev.pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 	gsmi_dev.pdev->dev.dma_mask =
 		&gsmi_dev.pdev->dev.coherent_dma_mask;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = -ENOMEM;
 	gsmi_dev.dma_pool = dma_pool_create("gsmi", &gsmi_dev.pdev->dev,
 					     GSMI_BUF_SIZE, GSMI_BUF_ALIGN, 0);
@@ -889,6 +921,7 @@ static __init int gsmi_init(void)
 		goto out_remove_sysfs_files;
 	}
 
+<<<<<<< HEAD
 	ret = efivars_sysfs_init();
 	if (ret) {
 		printk(KERN_INFO "gsmi: Failed to create efivars files\n");
@@ -896,6 +929,8 @@ static __init int gsmi_init(void)
 		goto out_remove_sysfs_files;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	register_reboot_notifier(&gsmi_reboot_notifier);
 	register_die_notifier(&gsmi_die_notifier);
 	atomic_notifier_chain_register(&panic_notifier_list,
@@ -914,8 +949,12 @@ out_err:
 	gsmi_buf_free(gsmi_dev.param_buf);
 	gsmi_buf_free(gsmi_dev.data_buf);
 	gsmi_buf_free(gsmi_dev.name_buf);
+<<<<<<< HEAD
 	if (gsmi_dev.dma_pool)
 		dma_pool_destroy(gsmi_dev.dma_pool);
+=======
+	dma_pool_destroy(gsmi_dev.dma_pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_unregister(gsmi_dev.pdev);
 	pr_info("gsmi: failed to load: %d\n", ret);
 	return ret;

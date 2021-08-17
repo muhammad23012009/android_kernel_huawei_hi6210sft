@@ -36,6 +36,7 @@
 #define FSF_CONFIG_COMMAND			0x00000003
 #define FSF_PORT_COMMAND			0x00000004
 
+<<<<<<< HEAD
 /* FSF control file upload/download operations' subtype and options */
 #define FSF_CFDC_OPERATION_SUBTYPE		0x00020001
 #define FSF_CFDC_OPTION_NORMAL_MODE		0x00000000
@@ -43,6 +44,8 @@
 #define FSF_CFDC_OPTION_FULL_ACCESS		0x00000002
 #define FSF_CFDC_OPTION_RESTRICTED_ACCESS	0x00000004
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* FSF protocol states */
 #define FSF_PROT_GOOD				0x00000001
 #define FSF_PROT_QTCB_VERSION_ERROR		0x00000010
@@ -64,7 +67,10 @@
 #define FSF_HANDLE_MISMATCH			0x00000005
 #define FSF_SERVICE_CLASS_NOT_SUPPORTED		0x00000006
 #define FSF_FCPLUN_NOT_VALID			0x00000009
+<<<<<<< HEAD
 #define FSF_ACCESS_DENIED			0x00000010
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FSF_LUN_SHARING_VIOLATION               0x00000012
 #define FSF_FCP_COMMAND_DOES_NOT_EXIST		0x00000022
 #define FSF_DIRECTION_INDICATOR_NOT_VALID	0x00000030
@@ -131,7 +137,10 @@
 #define FSF_STATUS_READ_LINK_DOWN		0x00000005
 #define FSF_STATUS_READ_LINK_UP          	0x00000006
 #define FSF_STATUS_READ_NOTIFICATION_LOST	0x00000009
+<<<<<<< HEAD
 #define FSF_STATUS_READ_CFDC_UPDATED		0x0000000A
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FSF_STATUS_READ_FEATURE_UPDATE_ALERT	0x0000000C
 
 /* status subtypes for link down */
@@ -141,7 +150,10 @@
 
 /* status subtypes for unsolicited status notification lost */
 #define FSF_STATUS_READ_SUB_INCOMING_ELS	0x00000001
+<<<<<<< HEAD
 #define FSF_STATUS_READ_SUB_ACT_UPDATED		0x00000020
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* topologie that is detected by the adapter */
 #define FSF_TOPO_P2P				0x00000001
@@ -167,8 +179,11 @@
 #define FSF_QTCB_LOG_SIZE			1024
 
 /* channel features */
+<<<<<<< HEAD
 #define FSF_FEATURE_CFDC			0x00000002
 #define FSF_FEATURE_LUN_SHARING			0x00000004
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FSF_FEATURE_NOTIFICATION_LOST		0x00000008
 #define FSF_FEATURE_HBAAPI_MANAGEMENT           0x00000010
 #define FSF_FEATURE_ELS_CT_CHAINED_SBALS	0x00000020
@@ -183,6 +198,7 @@
 /* option */
 #define FSF_OPEN_LUN_SUPPRESS_BOXING		0x00000001
 
+<<<<<<< HEAD
 /* open LUN access flags*/
 #define FSF_UNIT_ACCESS_EXCLUSIVE		0x02000000
 #define FSF_UNIT_ACCESS_OUTBOUND_TRANSFER	0x10000000
@@ -197,6 +213,8 @@ struct zfcp_fsf_cfdc {
 	u32 option;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct fsf_queue_designator {
 	u8  cssid;
 	u8  chpid;

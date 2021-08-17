@@ -1,7 +1,11 @@
 /*
 * linux/spear_dma.h
 *
+<<<<<<< HEAD
 * Copyright (ST) 2012 Rajeev Kumar (rajeev-dlh.kumar@st.com)
+=======
+* Copyright (ST) 2012 Rajeev Kumar (rajeevkumar.linux@gmail.com)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -29,7 +33,10 @@ struct spear_dma_data {
 	dma_addr_t addr;
 	u32 max_burst;
 	enum dma_slave_buswidth addr_width;
+<<<<<<< HEAD
 	bool (*filter)(struct dma_chan *chan, void *slave);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* SPEAR_DMA_H */

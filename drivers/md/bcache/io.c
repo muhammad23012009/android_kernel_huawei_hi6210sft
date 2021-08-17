@@ -9,6 +9,7 @@
 #include "bset.h"
 #include "debug.h"
 
+<<<<<<< HEAD
 static void bch_bi_idx_hack_endio(struct bio *bio, int error)
 {
 	struct bio *p = bio->bi_private;
@@ -264,6 +265,9 @@ void bch_generic_make_request(struct bio *bio, struct bio_split_pool *p)
 submit:
 	bch_generic_make_request_hack(bio);
 }
+=======
+#include <linux/blkdev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Bios with headers */
 
@@ -279,7 +283,10 @@ struct bio *bch_bbio_alloc(struct cache_set *c)
 	struct bio *bio = &b->bio;
 
 	bio_init(bio);
+<<<<<<< HEAD
 	bio->bi_flags		|= BIO_POOL_NONE << BIO_POOL_OFFSET;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bio->bi_max_vecs	 = bucket_pages(c);
 	bio->bi_io_vec		 = bio->bi_inline_vecs;
 
@@ -290,11 +297,19 @@ void __bch_submit_bbio(struct bio *bio, struct cache_set *c)
 {
 	struct bbio *b = container_of(bio, struct bbio, bio);
 
+<<<<<<< HEAD
 	bio->bi_sector	= PTR_OFFSET(&b->key, 0);
 	bio->bi_bdev	= PTR_CACHE(c, &b->key, 0)->bdev;
 
 	b->submit_time_us = local_clock_us();
 	closure_bio_submit(bio, bio->bi_private, PTR_CACHE(c, &b->key, 0));
+=======
+	bio->bi_iter.bi_sector	= PTR_OFFSET(&b->key, 0);
+	bio->bi_bdev		= PTR_CACHE(c, &b->key, 0)->bdev;
+
+	b->submit_time_us = local_clock_us();
+	closure_bio_submit(bio, bio->bi_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void bch_submit_bbio(struct bio *bio, struct cache_set *c,
@@ -365,7 +380,11 @@ void bch_bbio_count_io_errors(struct cache_set *c, struct bio *bio,
 	struct bbio *b = container_of(bio, struct bbio, bio);
 	struct cache *ca = PTR_CACHE(c, &b->key, 0);
 
+<<<<<<< HEAD
 	unsigned threshold = bio->bi_rw & REQ_WRITE
+=======
+	unsigned threshold = op_is_write(bio_op(bio))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		? c->congested_write_threshold_us
 		: c->congested_read_threshold_us;
 

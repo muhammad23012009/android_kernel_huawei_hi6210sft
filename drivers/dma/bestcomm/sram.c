@@ -19,6 +19,10 @@
 #include <linux/string.h>
 #include <linux/ioport.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/io.h>
 #include <asm/mmu.h>

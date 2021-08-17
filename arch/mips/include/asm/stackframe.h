@@ -17,6 +17,7 @@
 #include <asm/asmmacro.h>
 #include <asm/mipsregs.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
 
 /*
  * For SMTC kernel, global IE should be left set, and interrupts
@@ -25,15 +26,23 @@
 #ifdef CONFIG_MIPS_MT_SMTC
 #define STATMASK 0x1e
 #elif defined(CONFIG_CPU_R3000) || defined(CONFIG_CPU_TX39XX)
+=======
+#include <asm/thread_info.h>
+
+#if defined(CONFIG_CPU_R3000) || defined(CONFIG_CPU_TX39XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define STATMASK 0x3f
 #else
 #define STATMASK 0x1f
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 #include <asm/mipsmtregs.h>
 #endif /* CONFIG_MIPS_MT_SMTC */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.macro	SAVE_AT
 		.set	push
 		.set	noat
@@ -49,7 +58,11 @@
 		LONG_S	v1, PT_HI(sp)
 		mflhxu	v1
 		LONG_S	v1, PT_ACX(sp)
+<<<<<<< HEAD
 #else
+=======
+#elif !defined(CONFIG_CPU_MIPSR6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mfhi	v1
 #endif
 #ifdef CONFIG_32BIT
@@ -59,7 +72,11 @@
 		LONG_S	$10, PT_R10(sp)
 		LONG_S	$11, PT_R11(sp)
 		LONG_S	$12, PT_R12(sp)
+<<<<<<< HEAD
 #ifndef CONFIG_CPU_HAS_SMARTMIPS
+=======
+#if !defined(CONFIG_CPU_HAS_SMARTMIPS) && !defined(CONFIG_CPU_MIPSR6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LONG_S	v1, PT_HI(sp)
 		mflo	v1
 #endif
@@ -67,9 +84,23 @@
 		LONG_S	$14, PT_R14(sp)
 		LONG_S	$15, PT_R15(sp)
 		LONG_S	$24, PT_R24(sp)
+<<<<<<< HEAD
 #ifndef CONFIG_CPU_HAS_SMARTMIPS
 		LONG_S	v1, PT_LO(sp)
 #endif
+=======
+#if !defined(CONFIG_CPU_HAS_SMARTMIPS) && !defined(CONFIG_CPU_MIPSR6)
+		LONG_S	v1, PT_LO(sp)
+#endif
+#ifdef CONFIG_CPU_CAVIUM_OCTEON
+		/*
+		 * The Octeon multiplier state is affected by general
+		 * multiply instructions. It must be saved before and
+		 * kernel code might corrupt it
+		 */
+		jal     octeon_mult_save
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.endm
 
 		.macro	SAVE_STATIC
@@ -85,6 +116,7 @@
 		.endm
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 #define PTEBASE_SHIFT	19	/* TCBIND */
 #define CPU_ID_REG CP0_TCBIND
@@ -100,6 +132,10 @@
 #endif
 		.macro	get_saved_sp	/* SMP variation */
 		CPU_ID_MFC0	k0, CPU_ID_REG
+=======
+		.macro	get_saved_sp	/* SMP variation */
+		ASM_CPUID_MFC0	k0, ASM_SMP_CPUID_REG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_32BIT) || defined(KBUILD_64BIT_SYM32)
 		lui	k1, %hi(kernelsp)
 #else
@@ -109,17 +145,29 @@
 		daddiu	k1, %hi(kernelsp)
 		dsll	k1, 16
 #endif
+<<<<<<< HEAD
 		LONG_SRL	k0, PTEBASE_SHIFT
+=======
+		LONG_SRL	k0, SMP_CPUID_PTRSHIFT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LONG_ADDU	k1, k0
 		LONG_L	k1, %lo(kernelsp)(k1)
 		.endm
 
 		.macro	set_saved_sp stackp temp temp2
+<<<<<<< HEAD
 		CPU_ID_MFC0	\temp, CPU_ID_REG
 		LONG_SRL	\temp, PTEBASE_SHIFT
 		LONG_S	\stackp, kernelsp(\temp)
 		.endm
 #else
+=======
+		ASM_CPUID_MFC0	\temp, ASM_SMP_CPUID_REG
+		LONG_SRL	\temp, SMP_CPUID_PTRSHIFT
+		LONG_S	\stackp, kernelsp(\temp)
+		.endm
+#else /* !CONFIG_SMP */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.macro	get_saved_sp	/* Uniprocessor variation */
 #ifdef CONFIG_CPU_JUMP_WORKAROUNDS
 		/*
@@ -166,6 +214,34 @@
 		.set	noreorder
 		bltz	k0, 8f
 		 move	k1, sp
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EVA
+		/*
+		 * Flush interAptiv's Return Prediction Stack (RPS) by writing
+		 * EntryHi. Toggling Config7.RPS is slower and less portable.
+		 *
+		 * The RPS isn't automatically flushed when exceptions are
+		 * taken, which can result in kernel mode speculative accesses
+		 * to user addresses if the RPS mispredicts. That's harmless
+		 * when user and kernel share the same address space, but with
+		 * EVA the same user segments may be unmapped to kernel mode,
+		 * even containing sensitive MMIO regions or invalid memory.
+		 *
+		 * This can happen when the kernel sets the return address to
+		 * ret_from_* and jr's to the exception handler, which looks
+		 * more like a tail call than a function call. If nested calls
+		 * don't evict the last user address in the RPS, it will
+		 * mispredict the return and fetch from a user controlled
+		 * address into the icache.
+		 *
+		 * More recent EVA-capable cores with MAAR to restrict
+		 * speculative accesses aren't affected.
+		 */
+		MFC0	k0, CP0_ENTRYHI
+		MTC0	k0, CP0_ENTRYHI
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.set	reorder
 		/* Called from user mode, new stack. */
 		get_saved_sp
@@ -190,6 +266,7 @@
 		mfc0	v1, CP0_STATUS
 		LONG_S	$2, PT_R2(sp)
 		LONG_S	v1, PT_STATUS(sp)
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 		/*
 		 * Ideally, these instructions would be shuffled in
@@ -200,6 +277,8 @@
 		.set	mips0
 		LONG_S	k0, PT_TCSTATUS(sp)
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LONG_S	$4, PT_R4(sp)
 		mfc0	v1, CP0_CAUSE
 		LONG_S	$5, PT_R5(sp)
@@ -215,6 +294,7 @@
 		LONG_S	$25, PT_R25(sp)
 		LONG_S	$28, PT_R28(sp)
 		LONG_S	$31, PT_R31(sp)
+<<<<<<< HEAD
 		ori	$28, sp, _THREAD_MASK
 		xori	$28, _THREAD_MASK
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
@@ -230,6 +310,21 @@
 		LONG_L	ra, PT_R31(sp)
 		pref	0, 0(v1)    /* Prefetch the current thread */
 #endif
+=======
+
+		/* Set thread_info if we're coming from user mode */
+		mfc0	k0, CP0_STATUS
+		sll	k0, 3		/* extract cu0 bit */
+		bltz	k0, 9f
+
+		ori	$28, sp, _THREAD_MASK
+		xori	$28, _THREAD_MASK
+#ifdef CONFIG_CPU_CAVIUM_OCTEON
+		.set    mips64
+		pref    0, 0($28)       /* Prefetch the current pointer */
+#endif
+9:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.set	pop
 		.endm
 
@@ -248,6 +343,13 @@
 		.endm
 
 		.macro	RESTORE_TEMP
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_CAVIUM_OCTEON
+		/* Restore the Octeon multiplier state */
+		jal	octeon_mult_restore
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_CPU_HAS_SMARTMIPS
 		LONG_L	$24, PT_ACX(sp)
 		mtlhx	$24
@@ -255,7 +357,11 @@
 		mtlhx	$24
 		LONG_L	$24, PT_LO(sp)
 		mtlhx	$24
+<<<<<<< HEAD
 #else
+=======
+#elif !defined(CONFIG_CPU_MIPSR6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LONG_L	$24, PT_LO(sp)
 		mtlo	$24
 		LONG_L	$24, PT_HI(sp)
@@ -293,7 +399,11 @@
 		.set	reorder
 		.set	noat
 		mfc0	a0, CP0_STATUS
+<<<<<<< HEAD
 		li	v1, 0xff00
+=======
+		li	v1, ST0_CU1 | ST0_IM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ori	a0, STATMASK
 		xori	a0, STATMASK
 		mtc0	a0, CP0_STATUS
@@ -330,6 +440,7 @@
 		.set	push
 		.set	reorder
 		.set	noat
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 		.set	mips32r2
 		/*
@@ -364,17 +475,24 @@
 		/* Restore the Octeon multiplier state */
 		jal	octeon_mult_restore
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mfc0	a0, CP0_STATUS
 		ori	a0, STATMASK
 		xori	a0, STATMASK
 		mtc0	a0, CP0_STATUS
+<<<<<<< HEAD
 		li	v1, 0xff00
+=======
+		li	v1, ST0_CU1 | ST0_FR | ST0_IM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		and	a0, v1
 		LONG_L	v0, PT_STATUS(sp)
 		nor	v1, $0, v1
 		and	v0, v1
 		or	v0, a0
 		mtc0	v0, CP0_STATUS
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 /*
  * Only after EXL/ERL have been restored to status can we
@@ -428,6 +546,8 @@
 
 		.set	mips0
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LONG_L	v1, PT_EPC(sp)
 		MTC0	v1, CP0_EPC
 		LONG_L	$31, PT_R31(sp)
@@ -448,7 +568,11 @@
 
 		.macro	RESTORE_SP_AND_RET
 		LONG_L	sp, PT_R29(sp)
+<<<<<<< HEAD
 		.set	mips3
+=======
+		.set	arch=r4000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		eret
 		.set	mips0
 		.endm
@@ -480,12 +604,16 @@
  * Set cp0 enable bit as sign that we're running on the kernel stack
  */
 		.macro	CLI
+<<<<<<< HEAD
 #if !defined(CONFIG_MIPS_MT_SMTC)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mfc0	t0, CP0_STATUS
 		li	t1, ST0_CU0 | STATMASK
 		or	t0, t1
 		xori	t0, STATMASK
 		mtc0	t0, CP0_STATUS
+<<<<<<< HEAD
 #else /* CONFIG_MIPS_MT_SMTC */
 		/*
 		 * For SMTC, we need to set privilege
@@ -507,6 +635,8 @@
 		xori	t0, ST0_EXL | ST0_ERL
 		mtc0	t0, CP0_STATUS
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		irq_disable_hazard
 		.endm
 
@@ -515,12 +645,16 @@
  * Set cp0 enable bit as sign that we're running on the kernel stack
  */
 		.macro	STI
+<<<<<<< HEAD
 #if !defined(CONFIG_MIPS_MT_SMTC)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mfc0	t0, CP0_STATUS
 		li	t1, ST0_CU0 | STATMASK
 		or	t0, t1
 		xori	t0, STATMASK & ~1
 		mtc0	t0, CP0_STATUS
+<<<<<<< HEAD
 #else /* CONFIG_MIPS_MT_SMTC */
 		/*
 		 * For SMTC, we need to set privilege
@@ -544,6 +678,8 @@
 		mtc0	t0, CP0_STATUS
 		/* irq_enable_hazard below should expand to EHB for 24K/34K cpus */
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		irq_enable_hazard
 		.endm
 
@@ -553,6 +689,7 @@
  * Set cp0 enable bit as sign that we're running on the kernel stack
  */
 		.macro	KMODE
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 		/*
 		 * This gets baroque in SMTC.  We want to
@@ -579,6 +716,8 @@
 		nop	/* delay slot */
 		move	ra, t0
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mfc0	t0, CP0_STATUS
 		li	t1, ST0_CU0 | (STATMASK & ~1)
 #if defined(CONFIG_CPU_R3000) || defined(CONFIG_CPU_TX39XX)
@@ -589,6 +728,7 @@
 		or	t0, t1
 		xori	t0, STATMASK & ~1
 		mtc0	t0, CP0_STATUS
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 		_ehb
 		andi	v0, v0, VPECONTROL_TE
@@ -608,6 +748,8 @@
 		 */
 		.set pop
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		irq_disable_hazard
 		.endm
 

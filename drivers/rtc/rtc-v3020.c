@@ -16,7 +16,11 @@
  *				- Use the generic rtc class
  *
  *  ??-???-2004: Someone at Compulab
+<<<<<<< HEAD
  *  			- Initial driver creation.
+=======
+ *			- Initial driver creation.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 #include <linux/platform_device.h>
@@ -25,7 +29,11 @@
 #include <linux/rtc.h>
 #include <linux/types.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
 #include <linux/rtc-v3020.h>
+=======
+#include <linux/platform_data/rtc-v3020.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/gpio.h>
 #include <linux/slab.h>
@@ -49,20 +57,29 @@ struct v3020_chip_ops {
 #define V3020_RD	2
 #define V3020_IO	3
 
+<<<<<<< HEAD
 struct v3020_gpio {
 	const char *name;
 	unsigned int gpio;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct v3020 {
 	/* MMIO access */
 	void __iomem *ioaddress;
 	int leftshift;
 
 	/* GPIO access */
+<<<<<<< HEAD
 	struct v3020_gpio *gpio;
 
 	struct v3020_chip_ops *ops;
+=======
+	struct gpio *gpio;
+
+	const struct v3020_chip_ops *ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct rtc_device *rtc;
 };
@@ -100,30 +117,47 @@ static unsigned char v3020_mmio_read_bit(struct v3020 *chip)
 	return !!(readl(chip->ioaddress) & (1 << chip->leftshift));
 }
 
+<<<<<<< HEAD
 static struct v3020_chip_ops v3020_mmio_ops = {
+=======
+static const struct v3020_chip_ops v3020_mmio_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map_io		= v3020_mmio_map,
 	.unmap_io	= v3020_mmio_unmap,
 	.read_bit	= v3020_mmio_read_bit,
 	.write_bit	= v3020_mmio_write_bit,
 };
 
+<<<<<<< HEAD
 static struct v3020_gpio v3020_gpio[] = {
 	{ "RTC CS", 0 },
 	{ "RTC WR", 0 },
 	{ "RTC RD", 0 },
 	{ "RTC IO", 0 },
+=======
+static struct gpio v3020_gpio[] = {
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC CS"},
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC WR"},
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC RD"},
+	{ 0, GPIOF_OUT_INIT_HIGH, "RTC IO"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int v3020_gpio_map(struct v3020 *chip, struct platform_device *pdev,
 			  struct v3020_platform_data *pdata)
 {
+<<<<<<< HEAD
 	int i, err;
+=======
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	v3020_gpio[V3020_CS].gpio = pdata->gpio_cs;
 	v3020_gpio[V3020_WR].gpio = pdata->gpio_wr;
 	v3020_gpio[V3020_RD].gpio = pdata->gpio_rd;
 	v3020_gpio[V3020_IO].gpio = pdata->gpio_io;
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(v3020_gpio); i++) {
 		err = gpio_request(v3020_gpio[i].gpio, v3020_gpio[i].name);
 		if (err)
@@ -139,16 +173,26 @@ static int v3020_gpio_map(struct v3020 *chip, struct platform_device *pdev,
 err_request:
 	while (--i >= 0)
 		gpio_free(v3020_gpio[i].gpio);
+=======
+	err = gpio_request_array(v3020_gpio, ARRAY_SIZE(v3020_gpio));
+
+	if (!err)
+		chip->gpio = v3020_gpio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
 
 static void v3020_gpio_unmap(struct v3020 *chip)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(v3020_gpio); i++)
 		gpio_free(v3020_gpio[i].gpio);
+=======
+	gpio_free_array(v3020_gpio, ARRAY_SIZE(v3020_gpio));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void v3020_gpio_write_bit(struct v3020 *chip, unsigned char bit)
@@ -177,7 +221,11 @@ static unsigned char v3020_gpio_read_bit(struct v3020 *chip)
 	return bit;
 }
 
+<<<<<<< HEAD
 static struct v3020_chip_ops v3020_gpio_ops = {
+=======
+static const struct v3020_chip_ops v3020_gpio_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map_io		= v3020_gpio_map,
 	.unmap_io	= v3020_gpio_unmap,
 	.read_bit	= v3020_gpio_read_bit,
@@ -278,6 +326,7 @@ static int v3020_set_time(struct device *dev, struct rtc_time *dt)
 	dev_dbg(dev, "tm_year: %i\n", dt->tm_year);
 
 	/* Write all the values to ram... */
+<<<<<<< HEAD
 	v3020_set_reg(chip, V3020_SECONDS, 	bin2bcd(dt->tm_sec));
 	v3020_set_reg(chip, V3020_MINUTES, 	bin2bcd(dt->tm_min));
 	v3020_set_reg(chip, V3020_HOURS, 	bin2bcd(dt->tm_hour));
@@ -285,6 +334,15 @@ static int v3020_set_time(struct device *dev, struct rtc_time *dt)
 	v3020_set_reg(chip, V3020_MONTH,     bin2bcd(dt->tm_mon + 1));
 	v3020_set_reg(chip, V3020_WEEK_DAY, 	bin2bcd(dt->tm_wday));
 	v3020_set_reg(chip, V3020_YEAR, 	bin2bcd(dt->tm_year % 100));
+=======
+	v3020_set_reg(chip, V3020_SECONDS,	bin2bcd(dt->tm_sec));
+	v3020_set_reg(chip, V3020_MINUTES,	bin2bcd(dt->tm_min));
+	v3020_set_reg(chip, V3020_HOURS,	bin2bcd(dt->tm_hour));
+	v3020_set_reg(chip, V3020_MONTH_DAY,	bin2bcd(dt->tm_mday));
+	v3020_set_reg(chip, V3020_MONTH,	bin2bcd(dt->tm_mon + 1));
+	v3020_set_reg(chip, V3020_WEEK_DAY,	bin2bcd(dt->tm_wday));
+	v3020_set_reg(chip, V3020_YEAR,		bin2bcd(dt->tm_year % 100));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* ...and set the clock. */
 	v3020_set_reg(chip, V3020_CMD_RAM2CLOCK, 0);
@@ -303,7 +361,11 @@ static const struct rtc_class_ops v3020_rtc_ops = {
 
 static int rtc_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct v3020_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct v3020_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct v3020 *chip;
 	int retval = -EBUSY;
 	int i;
@@ -320,7 +382,11 @@ static int rtc_probe(struct platform_device *pdev)
 
 	retval = chip->ops->map_io(chip, pdev, pdata);
 	if (retval)
+<<<<<<< HEAD
 		goto err_chip;
+=======
+		return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Make sure the v3020 expects a communication cycle
 	 * by reading 8 times */
@@ -364,7 +430,11 @@ static int rtc_probe(struct platform_device *pdev)
 
 err_io:
 	chip->ops->unmap_io(chip);
+<<<<<<< HEAD
 err_chip:
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
@@ -382,7 +452,10 @@ static struct platform_driver rtc_device_driver = {
 	.remove = rtc_remove,
 	.driver = {
 		.name	= "v3020",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

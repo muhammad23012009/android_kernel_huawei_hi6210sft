@@ -19,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
+<<<<<<< HEAD
 
 #include <linux/init.h>
 #include <linux/of_platform.h>
@@ -34,6 +35,11 @@ static void __init tb10x_platform_init(void)
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 }
 
+=======
+#include <linux/init.h>
+#include <asm/mach_desc.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const char *tb10x_compat[] __initdata = {
 	"abilis,arc-tb10x",
 	NULL,
@@ -41,5 +47,8 @@ static const char *tb10x_compat[] __initdata = {
 
 MACHINE_START(TB10x, "tb10x")
 	.dt_compat	= tb10x_compat,
+<<<<<<< HEAD
 	.init_machine	= tb10x_platform_init,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

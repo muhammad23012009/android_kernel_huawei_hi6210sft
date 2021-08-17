@@ -24,6 +24,11 @@
 #include <scsi/scsi_cmnd.h>
 #include <linux/libata.h>
 #include <asm/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 
 static unsigned int intr_coalescing_count;
@@ -43,7 +48,12 @@ enum {
 	SATA_FSL_MAX_PRD_DIRECT	= 16,	/* Direct PRDT entries */
 
 	SATA_FSL_HOST_FLAGS	= (ATA_FLAG_SATA | ATA_FLAG_PIO_DMA |
+<<<<<<< HEAD
 				ATA_FLAG_PMP | ATA_FLAG_NCQ | ATA_FLAG_AN),
+=======
+				   ATA_FLAG_PMP | ATA_FLAG_NCQ |
+				   ATA_FLAG_AN | ATA_FLAG_NO_LOG_PAGE),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	SATA_FSL_MAX_CMDS	= SATA_FSL_QUEUE_DEPTH,
 	SATA_FSL_CMD_HDR_SIZE	= 16,	/* 4 DWORDS */
@@ -510,7 +520,11 @@ static unsigned int sata_fsl_fill_sg(struct ata_queued_cmd *qc, void *cmd_desc,
 	return num_prde;
 }
 
+<<<<<<< HEAD
 static void sata_fsl_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors sata_fsl_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ata_port *ap = qc->ap;
 	struct sata_fsl_port_priv *pp = ap->private_data;
@@ -556,6 +570,11 @@ static void sata_fsl_qc_prep(struct ata_queued_cmd *qc)
 
 	VPRINTK("SATA FSL : xx_qc_prep, di = 0x%x, ttl = %d, num_prde = %d\n",
 		desc_info, ttl_dwords, num_prde);
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned int sata_fsl_qc_issue(struct ata_queued_cmd *qc)
@@ -732,13 +751,21 @@ static int sata_fsl_port_start(struct ata_port *ap)
 	if (!pp)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	mem = dma_alloc_coherent(dev, SATA_FSL_PORT_PRIV_DMA_SZ, &mem_dma,
 				 GFP_KERNEL);
+=======
+	mem = dma_zalloc_coherent(dev, SATA_FSL_PORT_PRIV_DMA_SZ, &mem_dma,
+				  GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!mem) {
 		kfree(pp);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	memset(mem, 0, SATA_FSL_PORT_PRIV_DMA_SZ);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pp->cmdslot = mem;
 	pp->cmdslot_paddr = mem_dma;
@@ -772,6 +799,7 @@ static int sata_fsl_port_start(struct ata_port *ap)
 	VPRINTK("HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
 	VPRINTK("CHBA  = 0x%x\n", ioread32(hcr_base + CHBA));
 
+<<<<<<< HEAD
 #ifdef CONFIG_MPC8315_DS
 	/*
 	 * Workaround for 8315DS board 3gbps link-up issue,
@@ -786,6 +814,8 @@ static int sata_fsl_port_start(struct ata_port *ap)
 	dev_warn(dev, "scr_control, speed limited to %x\n", temp);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -882,6 +912,11 @@ try_offline_again:
 	 */
 	ata_msleep(ap, 1);
 
+<<<<<<< HEAD
+=======
+	sata_set_spd(link);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Now, bring the host controller online again, this can take time
 	 * as PHY reset and communication establishment, 1st D2H FIS and
@@ -1533,7 +1568,11 @@ static int sata_fsl_probe(struct platform_device *ofdev)
 	ata_host_activate(host, irq, sata_fsl_interrupt, SATA_FSL_IRQ_FLAG,
 			  &sata_fsl_sht);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, host);
+=======
+	platform_set_drvdata(ofdev, host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host_priv->intr_coalescing.show = fsl_sata_intr_coalescing_show;
 	host_priv->intr_coalescing.store = fsl_sata_intr_coalescing_store;
@@ -1559,10 +1598,15 @@ static int sata_fsl_probe(struct platform_device *ofdev)
 
 error_exit_with_cleanup:
 
+<<<<<<< HEAD
 	if (host) {
 		dev_set_drvdata(&ofdev->dev, NULL);
 		ata_host_detach(host);
 	}
+=======
+	if (host)
+		ata_host_detach(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (hcr_base)
 		iounmap(hcr_base);
@@ -1573,7 +1617,11 @@ error_exit_with_cleanup:
 
 static int sata_fsl_remove(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&ofdev->dev);
+=======
+	struct ata_host *host = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sata_fsl_host_priv *host_priv = host->private_data;
 
 	device_remove_file(&ofdev->dev, &host_priv->intr_coalescing);
@@ -1581,8 +1629,11 @@ static int sata_fsl_remove(struct platform_device *ofdev)
 
 	ata_host_detach(host);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq_dispose_mapping(host_priv->irq);
 	iounmap(host_priv->hcr_base);
 	kfree(host_priv);
@@ -1590,16 +1641,27 @@ static int sata_fsl_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sata_fsl_suspend(struct platform_device *op, pm_message_t state)
 {
 	struct ata_host *host = dev_get_drvdata(&op->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sata_fsl_suspend(struct platform_device *op, pm_message_t state)
+{
+	struct ata_host *host = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ata_host_suspend(host, state);
 }
 
 static int sata_fsl_resume(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&op->dev);
+=======
+	struct ata_host *host = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sata_fsl_host_priv *host_priv = host->private_data;
 	int ret;
 	void __iomem *hcr_base = host_priv->hcr_base;
@@ -1641,12 +1703,19 @@ MODULE_DEVICE_TABLE(of, fsl_sata_match);
 static struct platform_driver fsl_sata_driver = {
 	.driver = {
 		.name = "fsl-sata",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = fsl_sata_match,
 	},
 	.probe		= sata_fsl_probe,
 	.remove		= sata_fsl_remove,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend	= sata_fsl_suspend,
 	.resume		= sata_fsl_resume,
 #endif

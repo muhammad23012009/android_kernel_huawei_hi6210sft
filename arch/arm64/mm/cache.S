@@ -21,6 +21,7 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <asm/assembler.h>
+<<<<<<< HEAD
 
 #include "proc-macros.S"
 
@@ -96,6 +97,11 @@ ENTRY(flush_cache_all)
 	ic	ialluis				// I+BTB cache invalidate
 	ret	x12
 ENDPROC(flush_cache_all)
+=======
+#include <asm/cpufeature.h>
+#include <asm/alternative.h>
+#include <asm/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_icache_range(start,end)
@@ -121,11 +127,19 @@ ENTRY(flush_icache_range)
  *	- end     - virtual end address of region
  */
 ENTRY(__flush_cache_user_range)
+<<<<<<< HEAD
+=======
+	uaccess_ttbr0_enable x2, x3, x4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dcache_line_size x2, x3
 	sub	x3, x2, #1
 	bic	x4, x0, x3
 1:
+<<<<<<< HEAD
 USER(9f, dc	cvau, x4	)		// clean D line to PoU
+=======
+user_alt 9f, "dc cvau, x4",  "dc civac, x4",  ARM64_WORKAROUND_CLEAN_CACHE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	add	x4, x4, x2
 	cmp	x4, x1
 	b.lo	1b
@@ -141,24 +155,40 @@ USER(9f, ic	ivau, x4	)		// invalidate I line PoU
 	b.lo	1b
 	dsb	ish
 	isb
+<<<<<<< HEAD
 	mov x0, #0
 	ret
 9:
 	mov x0, #-EFAULT
 	ret
+=======
+	mov	x0, #0
+1:
+	uaccess_ttbr0_disable x1, x2
+	ret
+9:
+	mov	x0, #-EFAULT
+	b	1b
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(flush_icache_range)
 ENDPROC(__flush_cache_user_range)
 
 /*
  *	__flush_dcache_area(kaddr, size)
  *
+<<<<<<< HEAD
  *	Ensure that the data held in the page kaddr is written back to the
  *	page in question.
+=======
+ *	Ensure that any D-cache lines for the interval [kaddr, kaddr+size)
+ *	are cleaned and invalidated to the PoC.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	- kaddr   - kernel address
  *	- size    - size in question
  */
 ENTRY(__flush_dcache_area)
+<<<<<<< HEAD
 	dcache_line_size x2, x3
 	add	x1, x0, x1
 	sub	x3, x2, #1
@@ -185,6 +215,41 @@ ENTRY(__inval_cache_range)
  *	- end     - virtual end address of region
  */
 __dma_inv_range:
+=======
+	dcache_by_line_op civac, sy, x0, x1, x2, x3
+	ret
+ENDPIPROC(__flush_dcache_area)
+
+/*
+ *	__clean_dcache_area_pou(kaddr, size)
+ *
+ * 	Ensure that any D-cache lines for the interval [kaddr, kaddr+size)
+ * 	are cleaned to the PoU.
+ *
+ *	- kaddr   - kernel address
+ *	- size    - size in question
+ */
+ENTRY(__clean_dcache_area_pou)
+	dcache_by_line_op cvau, ish, x0, x1, x2, x3
+	ret
+ENDPROC(__clean_dcache_area_pou)
+
+/*
+ *	__dma_inv_area(start, size)
+ *	- start   - virtual start address of region
+ *	- size    - size in question
+ */
+__dma_inv_area:
+	add	x1, x1, x0
+	/* FALLTHROUGH */
+
+/*
+ *	__inval_cache_range(start, end)
+ *	- start   - start address of region
+ *	- end     - end address of region
+ */
+ENTRY(__inval_cache_range)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dcache_line_size x2, x3
 	sub	x3, x2, #1
 	tst	x1, x3				// end cache line aligned?
@@ -202,6 +267,7 @@ __dma_inv_range:
 	b.lo	2b
 	dsb	sy
 	ret
+<<<<<<< HEAD
 ENDPROC(__inval_cache_range)
 ENDPROC(__dma_inv_range)
 
@@ -238,6 +304,46 @@ ENTRY(__dma_flush_range)
 	dsb	sy
 	ret
 ENDPROC(__dma_flush_range)
+=======
+ENDPIPROC(__inval_cache_range)
+ENDPROC(__dma_inv_area)
+
+/*
+ *	__clean_dcache_area_poc(kaddr, size)
+ *
+ * 	Ensure that any D-cache lines for the interval [kaddr, kaddr+size)
+ * 	are cleaned to the PoC.
+ *
+ *	- kaddr   - kernel address
+ *	- size    - size in question
+ */
+ENTRY(__clean_dcache_area_poc)
+	/* FALLTHROUGH */
+
+/*
+ *	__dma_clean_area(start, size)
+ *	- start   - virtual start address of region
+ *	- size    - size in question
+ */
+__dma_clean_area:
+	dcache_by_line_op cvac, sy, x0, x1, x2, x3
+	ret
+ENDPIPROC(__clean_dcache_area_poc)
+ENDPROC(__dma_clean_area)
+
+/*
+ *	__dma_flush_area(start, size)
+ *
+ *	clean & invalidate D / U line
+ *
+ *	- start   - virtual start address of region
+ *	- size    - size in question
+ */
+ENTRY(__dma_flush_area)
+	dcache_by_line_op civac, sy, x0, x1, x2, x3
+	ret
+ENDPIPROC(__dma_flush_area)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	__dma_map_area(start, size, dir)
@@ -246,11 +352,18 @@ ENDPROC(__dma_flush_range)
  *	- dir	- DMA direction
  */
 ENTRY(__dma_map_area)
+<<<<<<< HEAD
 	add	x1, x1, x0
 	cmp	w2, #DMA_FROM_DEVICE
 	b.eq	__dma_inv_range
 	b	__dma_clean_range
 ENDPROC(__dma_map_area)
+=======
+	cmp	w2, #DMA_FROM_DEVICE
+	b.eq	__dma_inv_area
+	b	__dma_clean_area
+ENDPIPROC(__dma_map_area)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	__dma_unmap_area(start, size, dir)
@@ -259,8 +372,15 @@ ENDPROC(__dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(__dma_unmap_area)
+<<<<<<< HEAD
 	add	x1, x1, x0
 	cmp	w2, #DMA_TO_DEVICE
 	b.ne	__dma_inv_range
 	ret
 ENDPROC(__dma_unmap_area)
+=======
+	cmp	w2, #DMA_TO_DEVICE
+	b.ne	__dma_inv_area
+	ret
+ENDPIPROC(__dma_unmap_area)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

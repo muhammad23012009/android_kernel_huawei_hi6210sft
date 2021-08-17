@@ -311,6 +311,10 @@ static ssize_t c2port_show_name(struct device *dev,
 
 	return sprintf(buf, "%s\n", c2dev->name);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(name, 0444, c2port_show_name, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t c2port_show_flash_blocks_num(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -320,6 +324,10 @@ static ssize_t c2port_show_flash_blocks_num(struct device *dev,
 
 	return sprintf(buf, "%d\n", ops->blocks_num);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(flash_blocks_num, 0444, c2port_show_flash_blocks_num, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t c2port_show_flash_block_size(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -329,6 +337,10 @@ static ssize_t c2port_show_flash_block_size(struct device *dev,
 
 	return sprintf(buf, "%d\n", ops->block_size);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(flash_block_size, 0444, c2port_show_flash_block_size, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t c2port_show_flash_size(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -338,18 +350,30 @@ static ssize_t c2port_show_flash_size(struct device *dev,
 
 	return sprintf(buf, "%d\n", ops->blocks_num * ops->block_size);
 }
+<<<<<<< HEAD
 
 static ssize_t c2port_show_access(struct device *dev,
 				struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR(flash_size, 0444, c2port_show_flash_size, NULL);
+
+static ssize_t access_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct c2port_device *c2dev = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", c2dev->access);
 }
 
+<<<<<<< HEAD
 static ssize_t c2port_store_access(struct device *dev,
 				struct device_attribute *attr,
 				const char *buf, size_t count)
+=======
+static ssize_t access_store(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct c2port_device *c2dev = dev_get_drvdata(dev);
 	struct c2port_ops *ops = c2dev->ops;
@@ -375,6 +399,10 @@ static ssize_t c2port_store_access(struct device *dev,
 
 	return count;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(access);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t c2port_store_reset(struct device *dev,
 				struct device_attribute *attr,
@@ -395,6 +423,10 @@ static ssize_t c2port_store_reset(struct device *dev,
 
 	return count;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(reset, 0200, NULL, c2port_store_reset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t __c2port_show_dev_id(struct c2port_device *dev, char *buf)
 {
@@ -431,6 +463,10 @@ static ssize_t c2port_show_dev_id(struct device *dev,
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(dev_id, 0444, c2port_show_dev_id, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t __c2port_show_rev_id(struct c2port_device *dev, char *buf)
 {
@@ -467,6 +503,10 @@ static ssize_t c2port_show_rev_id(struct device *dev,
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(rev_id, 0444, c2port_show_rev_id, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t c2port_show_flash_access(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -536,6 +576,11 @@ static ssize_t c2port_store_flash_access(struct device *dev,
 
 	return count;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(flash_access, 0644, c2port_show_flash_access,
+		   c2port_store_flash_access);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t __c2port_write_flash_erase(struct c2port_device *dev)
 {
@@ -616,6 +661,10 @@ static ssize_t c2port_store_flash_erase(struct device *dev,
 
 	return count;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(flash_erase, 0200, NULL, c2port_store_flash_erase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t __c2port_read_flash_data(struct c2port_device *dev,
 				char *buffer, loff_t offset, size_t count)
@@ -711,9 +760,13 @@ static ssize_t c2port_read_flash_data(struct file *filp, struct kobject *kobj,
 				struct bin_attribute *attr,
 				char *buffer, loff_t offset, size_t count)
 {
+<<<<<<< HEAD
 	struct c2port_device *c2dev =
 			dev_get_drvdata(container_of(kobj,
 						struct device, kobj));
+=======
+	struct c2port_device *c2dev = dev_get_drvdata(kobj_to_dev(kobj));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ssize_t ret;
 
 	/* Check the device and flash access status */
@@ -828,9 +881,13 @@ static ssize_t c2port_write_flash_data(struct file *filp, struct kobject *kobj,
 				struct bin_attribute *attr,
 				char *buffer, loff_t offset, size_t count)
 {
+<<<<<<< HEAD
 	struct c2port_device *c2dev =
 			dev_get_drvdata(container_of(kobj,
 						struct device, kobj));
+=======
+	struct c2port_device *c2dev = dev_get_drvdata(kobj_to_dev(kobj));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	/* Check the device access status */
@@ -846,10 +903,17 @@ static ssize_t c2port_write_flash_data(struct file *filp, struct kobject *kobj,
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+/* size is computed at run-time */
+static BIN_ATTR(flash_data, 0644, c2port_read_flash_data,
+		c2port_write_flash_data, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Class attributes
  */
+<<<<<<< HEAD
 
 static struct device_attribute c2port_attrs[] = {
 	__ATTR(name, 0444, c2port_show_name, NULL),
@@ -875,6 +939,35 @@ static struct bin_attribute c2port_bin_attrs = {
 	.read	= c2port_read_flash_data,
 	.write	= c2port_write_flash_data,
 	/* .size is computed at run-time */
+=======
+static struct attribute *c2port_attrs[] = {
+	&dev_attr_name.attr,
+	&dev_attr_flash_blocks_num.attr,
+	&dev_attr_flash_block_size.attr,
+	&dev_attr_flash_size.attr,
+	&dev_attr_access.attr,
+	&dev_attr_reset.attr,
+	&dev_attr_dev_id.attr,
+	&dev_attr_rev_id.attr,
+	&dev_attr_flash_access.attr,
+	&dev_attr_flash_erase.attr,
+	NULL,
+};
+
+static struct bin_attribute *c2port_bin_attrs[] = {
+	&bin_attr_flash_data,
+	NULL,
+};
+
+static const struct attribute_group c2port_group = {
+	.attrs = c2port_attrs,
+	.bin_attrs = c2port_bin_attrs,
+};
+
+static const struct attribute_group *c2port_groups[] = {
+	&c2port_group,
+	NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -907,9 +1000,17 @@ struct c2port_device *c2port_device_register(char *name,
 		goto error_idr_alloc;
 	c2dev->id = ret;
 
+<<<<<<< HEAD
 	c2dev->dev = device_create(c2port_class, NULL, 0, c2dev,
 				   "c2port%d", c2dev->id);
 	if (unlikely(IS_ERR(c2dev->dev))) {
+=======
+	bin_attr_flash_data.size = ops->blocks_num * ops->block_size;
+
+	c2dev->dev = device_create(c2port_class, NULL, 0, c2dev,
+				   "c2port%d", c2dev->id);
+	if (IS_ERR(c2dev->dev)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = PTR_ERR(c2dev->dev);
 		goto error_device_create;
 	}
@@ -919,12 +1020,15 @@ struct c2port_device *c2port_device_register(char *name,
 	c2dev->ops = ops;
 	mutex_init(&c2dev->mutex);
 
+<<<<<<< HEAD
 	/* Create binary file */
 	c2port_bin_attrs.size = ops->blocks_num * ops->block_size;
 	ret = device_create_bin_file(c2dev->dev, &c2port_bin_attrs);
 	if (unlikely(ret))
 		goto error_device_create_bin_file;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* By default C2 port access is off */
 	c2dev->access = c2dev->flash_access = 0;
 	ops->access(c2dev, 0);
@@ -937,9 +1041,12 @@ struct c2port_device *c2port_device_register(char *name,
 
 	return c2dev;
 
+<<<<<<< HEAD
 error_device_create_bin_file:
 	device_destroy(c2port_class, 0);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_device_create:
 	spin_lock_irq(&c2port_idr_lock);
 	idr_remove(&c2port_idr, c2dev->id);
@@ -959,7 +1066,10 @@ void c2port_device_unregister(struct c2port_device *c2dev)
 
 	dev_info(c2dev->dev, "C2 port %s removed\n", c2dev->name);
 
+<<<<<<< HEAD
 	device_remove_bin_file(c2dev->dev, &c2port_bin_attrs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&c2port_idr_lock);
 	idr_remove(&c2port_idr, c2dev->id);
 	spin_unlock_irq(&c2port_idr_lock);
@@ -984,7 +1094,11 @@ static int __init c2port_init(void)
 		printk(KERN_ERR "c2port: failed to allocate class\n");
 		return PTR_ERR(c2port_class);
 	}
+<<<<<<< HEAD
 	c2port_class->dev_attrs = c2port_attrs;
+=======
+	c2port_class->dev_groups = c2port_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

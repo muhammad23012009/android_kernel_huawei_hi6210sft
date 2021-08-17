@@ -26,6 +26,10 @@
 #include <linux/pm.h>
 #include <linux/pnp.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/wss.h>
 #include <sound/mpu401.h>
@@ -33,8 +37,11 @@
 #include <sound/initval.h>
 #include <sound/tlv.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Yamaha OPL3SA2+");
 MODULE_LICENSE("GPL");
@@ -627,14 +634,24 @@ static void snd_opl3sa2_free(struct snd_card *card)
 	release_and_free_resource(chip->res_port);
 }
 
+<<<<<<< HEAD
 static int snd_opl3sa2_card_new(int dev, struct snd_card **cardp)
+=======
+static int snd_opl3sa2_card_new(struct device *pdev, int dev,
+				struct snd_card **cardp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_card *card;
 	struct snd_opl3sa2 *chip;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_opl3sa2), &card);
+=======
+	err = snd_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+			   sizeof(struct snd_opl3sa2), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	strcpy(card->driver, "OPL3SA2");
@@ -683,7 +700,11 @@ static int snd_opl3sa2_probe(struct snd_card *card, int dev)
 		return err;
 	}
 	chip->wss = wss;
+<<<<<<< HEAD
 	err = snd_wss_pcm(wss, 0, NULL);
+=======
+	err = snd_wss_pcm(wss, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	err = snd_wss_mixer(wss);
@@ -692,7 +713,11 @@ static int snd_opl3sa2_probe(struct snd_card *card, int dev)
 	err = snd_opl3sa2_mixer(card);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	err = snd_wss_timer(wss, 0, NULL);
+=======
+	err = snd_wss_timer(wss, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	if (fm_port[dev] >= 0x340 && fm_port[dev] < 0x400) {
@@ -737,14 +762,21 @@ static int snd_opl3sa2_pnp_detect(struct pnp_dev *pdev,
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	err = snd_opl3sa2_card_new(dev, &card);
+=======
+	err = snd_opl3sa2_card_new(&pdev->dev, dev, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	if ((err = snd_opl3sa2_pnp(dev, card->private_data, pdev)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_opl3sa2_probe(card, dev)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -757,7 +789,10 @@ static int snd_opl3sa2_pnp_detect(struct pnp_dev *pdev,
 static void snd_opl3sa2_pnp_remove(struct pnp_dev *pdev)
 {
 	snd_card_free(pnp_get_drvdata(pdev));
+<<<<<<< HEAD
 	pnp_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM
@@ -803,14 +838,21 @@ static int snd_opl3sa2_pnp_cdetect(struct pnp_card_link *pcard,
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	err = snd_opl3sa2_card_new(dev, &card);
+=======
+	err = snd_opl3sa2_card_new(&pdev->dev, dev, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	if ((err = snd_opl3sa2_pnp(dev, card->private_data, pdev)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_opl3sa2_probe(card, dev)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -884,10 +926,16 @@ static int snd_opl3sa2_isa_probe(struct device *pdev,
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_opl3sa2_card_new(dev, &card);
 	if (err < 0)
 		return err;
 	snd_card_set_dev(card, pdev);
+=======
+	err = snd_opl3sa2_card_new(pdev, dev, &card);
+	if (err < 0)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_opl3sa2_probe(card, dev)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -900,7 +948,10 @@ static int snd_opl3sa2_isa_remove(struct device *devptr,
 				  unsigned int dev)
 {
 	snd_card_free(dev_get_drvdata(devptr));
+<<<<<<< HEAD
 	dev_set_drvdata(devptr, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

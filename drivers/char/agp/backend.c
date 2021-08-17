@@ -356,7 +356,11 @@ static __init int agp_setup(char *s)
 __setup("agp=", agp_setup);
 #endif
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones, Jeff Hartmann");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("AGP GART driver");
 MODULE_LICENSE("GPL and additional rights");
 MODULE_ALIAS_MISCDEV(AGPGART_MINOR);

@@ -432,7 +432,11 @@ static int fsp_onpad_hscr(struct psmouse *psmouse, bool enable)
 static ssize_t fsp_attr_set_setreg(struct psmouse *psmouse, void *data,
 				   const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int reg, val;
+=======
+	unsigned int reg, val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *rest;
 	ssize_t retval;
 
@@ -440,7 +444,11 @@ static ssize_t fsp_attr_set_setreg(struct psmouse *psmouse, void *data,
 	if (rest == buf || *rest != ' ' || reg > 0xff)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	retval = kstrtoint(rest + 1, 16, &val);
+=======
+	retval = kstrtouint(rest + 1, 16, &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval)
 		return retval;
 
@@ -454,7 +462,11 @@ static ssize_t fsp_attr_set_setreg(struct psmouse *psmouse, void *data,
 
 	fsp_reg_write_enable(psmouse, false);
 
+<<<<<<< HEAD
 	return count;
+=======
+	return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 PSMOUSE_DEFINE_WO_ATTR(setreg, S_IWUSR, NULL, fsp_attr_set_setreg);
@@ -476,9 +488,16 @@ static ssize_t fsp_attr_set_getreg(struct psmouse *psmouse, void *data,
 					const char *buf, size_t count)
 {
 	struct fsp_data *pad = psmouse->private;
+<<<<<<< HEAD
 	int reg, val, err;
 
 	err = kstrtoint(buf, 16, &reg);
+=======
+	unsigned int reg, val;
+	int err;
+
+	err = kstrtouint(buf, 16, &reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 
@@ -511,9 +530,16 @@ static ssize_t fsp_attr_show_pagereg(struct psmouse *psmouse,
 static ssize_t fsp_attr_set_pagereg(struct psmouse *psmouse, void *data,
 					const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int val, err;
 
 	err = kstrtoint(buf, 16, &val);
+=======
+	unsigned int val;
+	int err;
+
+	err = kstrtouint(buf, 16, &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 

@@ -76,7 +76,11 @@ extern int kgdb_fault_expected;
 
 #define KGDB_MAX_NO_CPUS	1
 #define BUFMAX			400
+<<<<<<< HEAD
 #define NUMREGBYTES		(DBG_MAX_REG_NUM << 2)
+=======
+#define NUMREGBYTES		(GDB_MAX_REGS << 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NUMCRITREGBYTES		(32 << 2)
 
 #define _R0			0

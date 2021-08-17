@@ -205,8 +205,11 @@ static void __init edb93xx_register_pwm(void)
  * EDB93xx framebuffer
  *************************************************************************/
 static struct ep93xxfb_mach_info __initdata edb93xxfb_info = {
+<<<<<<< HEAD
 	.num_modes	= EP93XXFB_USE_MODEDB,
 	.bpp		= 16,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= 0,
 };
 

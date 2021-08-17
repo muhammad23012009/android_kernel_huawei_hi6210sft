@@ -6,6 +6,15 @@ OUTPUT_ARCH(ELF_ARCH)
 ENTRY(_start)
 jiffies = jiffies_64;
 
+<<<<<<< HEAD
+=======
+VERSION {
+  {
+    local: *;
+  };
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 SECTIONS
 {
   PROVIDE (__executable_start = START);
@@ -14,8 +23,11 @@ SECTIONS
   __binary_start = .;
   . = ALIGN(4096);		/* Init code and data */
   _text = .;
+<<<<<<< HEAD
   _stext = .;
   __init_begin = .;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   INIT_TEXT_SECTION(PAGE_SIZE)
 
   . = ALIGN(PAGE_SIZE);
@@ -67,8 +79,15 @@ SECTIONS
   } =0x90909090
   .plt            : { *(.plt) }
   .text           : {
+<<<<<<< HEAD
     TEXT_TEXT
     SCHED_TEXT
+=======
+    _stext = .;
+    TEXT_TEXT
+    SCHED_TEXT
+    CPUIDLE_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     LOCK_TEXT
     *(.fixup)
     *(.stub .text.* .gnu.linkonce.t.*)
@@ -91,7 +110,13 @@ SECTIONS
 
   #include <asm/common.lds.S>
 
+<<<<<<< HEAD
   init.data : { INIT_DATA }
+=======
+  __init_begin = .;
+  init.data : { INIT_DATA }
+  __init_end = .;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
   /* Ensure the __preinit_array_start label is properly aligned.  We
      could instead move the label definition inside the section, but
@@ -155,6 +180,10 @@ SECTIONS
    . = ALIGN(32 / 8);
   . = ALIGN(32 / 8);
   }
+<<<<<<< HEAD
+=======
+   __bss_stop = .;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   _end = .;
   PROVIDE (end = .);
 

@@ -16,6 +16,7 @@
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "xfs.h"
+<<<<<<< HEAD
 #include "xfs_types.h"
 #include "xfs_log.h"
 #include "xfs_trans.h"
@@ -30,6 +31,23 @@
 #include "xfs_inode_item.h"
 #include "xfs_trace.h"
 #include "xfs_icache.h"
+=======
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+#include "xfs_mount.h"
+#include "xfs_da_format.h"
+#include "xfs_da_btree.h"
+#include "xfs_dir2.h"
+#include "xfs_export.h"
+#include "xfs_inode.h"
+#include "xfs_trans.h"
+#include "xfs_inode_item.h"
+#include "xfs_trace.h"
+#include "xfs_icache.h"
+#include "xfs_log.h"
+#include "xfs_pnfs.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Note that we only accept fileids which are long enough rather than allow
@@ -146,12 +164,21 @@ xfs_nfs_get_inode(
 		 * We don't use ESTALE directly down the chain to not
 		 * confuse applications using bulkstat that expect EINVAL.
 		 */
+<<<<<<< HEAD
 		if (error == EINVAL || error == ENOENT)
 			error = ESTALE;
 		return ERR_PTR(-error);
 	}
 
 	if (ip->i_d.di_gen != generation) {
+=======
+		if (error == -EINVAL || error == -ENOENT)
+			error = -ESTALE;
+		return ERR_PTR(error);
+	}
+
+	if (VFS_I(ip)->i_generation != generation) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		IRELE(ip);
 		return ERR_PTR(-ESTALE);
 	}
@@ -214,9 +241,15 @@ xfs_fs_get_parent(
 	int			error;
 	struct xfs_inode	*cip;
 
+<<<<<<< HEAD
 	error = xfs_lookup(XFS_I(child->d_inode), &xfs_name_dotdot, &cip, NULL);
 	if (unlikely(error))
 		return ERR_PTR(-error);
+=======
+	error = xfs_lookup(XFS_I(d_inode(child)), &xfs_name_dotdot, &cip, NULL);
+	if (unlikely(error))
+		return ERR_PTR(error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return d_obtain_alias(VFS_I(cip));
 }
@@ -245,4 +278,12 @@ const struct export_operations xfs_export_operations = {
 	.fh_to_parent		= xfs_fs_fh_to_parent,
 	.get_parent		= xfs_fs_get_parent,
 	.commit_metadata	= xfs_fs_nfs_commit_metadata,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EXPORTFS_BLOCK_OPS
+	.get_uuid		= xfs_fs_get_uuid,
+	.map_blocks		= xfs_fs_map_blocks,
+	.commit_blocks		= xfs_fs_commit_blocks,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

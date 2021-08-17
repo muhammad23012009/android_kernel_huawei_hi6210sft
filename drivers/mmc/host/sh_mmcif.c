@@ -57,10 +57,18 @@
 #include <linux/mmc/slot-gpio.h>
 #include <linux/mod_devicetable.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pagemap.h>
 #include <linux/platform_device.h>
 #include <linux/pm_qos.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/sh_dma.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock.h>
 #include <linux/module.h>
 
@@ -133,6 +141,11 @@
 				 INT_BUFWEN | INT_CMD12DRE | INT_BUFRE | \
 				 INT_DTRANE | INT_CMD12RBE | INT_CMD12CRE)
 
+<<<<<<< HEAD
+=======
+#define INT_CCS			(INT_CCSTO | INT_CCSRCV | INT_CCSDE)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* CE_INT_MASK */
 #define MASK_ALL		0x00000000
 #define MASK_MCCSDE		(1 << 29)
@@ -161,7 +174,11 @@
 
 #define MASK_START_CMD		(MASK_MCMDVIO | MASK_MBUFVIO | MASK_MWDATERR | \
 				 MASK_MRDATERR | MASK_MRIDXERR | MASK_MRSPERR | \
+<<<<<<< HEAD
 				 MASK_MCCSTO | MASK_MCRCSTO | MASK_MWDATTO | \
+=======
+				 MASK_MCRCSTO | MASK_MWDATTO | \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 MASK_MRDATTO | MASK_MRBSYTO | MASK_MRSPTO)
 
 #define MASK_CLEAN		(INT_ERR_STS | MASK_MRBSYE | MASK_MCRSPE |	\
@@ -202,14 +219,22 @@
 #define CLKDEV_MMC_DATA		20000000 /* 20MHz */
 #define CLKDEV_INIT		400000   /* 400 KHz */
 
+<<<<<<< HEAD
 enum mmcif_state {
+=======
+enum sh_mmcif_state {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	STATE_IDLE,
 	STATE_REQUEST,
 	STATE_IOS,
 	STATE_TIMEOUT,
 };
 
+<<<<<<< HEAD
 enum mmcif_wait_for {
+=======
+enum sh_mmcif_wait_for {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MMCIF_WAIT_FOR_REQUEST,
 	MMCIF_WAIT_FOR_CMD,
 	MMCIF_WAIT_FOR_MREAD,
@@ -221,12 +246,22 @@ enum mmcif_wait_for {
 	MMCIF_WAIT_FOR_STOP,
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * difference for each SoC
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct sh_mmcif_host {
 	struct mmc_host *mmc;
 	struct mmc_request *mrq;
 	struct platform_device *pd;
+<<<<<<< HEAD
 	struct clk *hclk;
 	unsigned int clk;
+=======
+	struct clk *clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int bus_width;
 	unsigned char timing;
 	bool sd_error;
@@ -235,15 +270,27 @@ struct sh_mmcif_host {
 	void __iomem *addr;
 	u32 *pio_ptr;
 	spinlock_t lock;		/* protect sh_mmcif_host::state */
+<<<<<<< HEAD
 	enum mmcif_state state;
 	enum mmcif_wait_for wait_for;
+=======
+	enum sh_mmcif_state state;
+	enum sh_mmcif_wait_for wait_for;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct delayed_work timeout_work;
 	size_t blocksize;
 	int sg_idx;
 	int sg_blkidx;
 	bool power;
+<<<<<<< HEAD
 	bool card_present;
 	struct mutex thread_lock;
+=======
+	bool ccs_enable;		/* Command Completion Signal support */
+	bool clk_ctrl2_enable;
+	struct mutex thread_lock;
+	u32 clkdiv_map;         /* see CE_CLK_CTRL::CLKDIV */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* DMA support */
 	struct dma_chan		*chan_rx;
@@ -252,6 +299,17 @@ struct sh_mmcif_host {
 	bool			dma_active;
 };
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id sh_mmcif_of_match[] = {
+	{ .compatible = "renesas,sh-mmcif" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, sh_mmcif_of_match);
+
+#define sh_mmcif_host_to_dev(host) (&host->pd->dev)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void sh_mmcif_bitset(struct sh_mmcif_host *host,
 					unsigned int reg, u32 val)
 {
@@ -264,6 +322,7 @@ static inline void sh_mmcif_bitclr(struct sh_mmcif_host *host,
 	writel(~val & readl(host->addr + reg), host->addr + reg);
 }
 
+<<<<<<< HEAD
 static void mmcif_dma_complete(void *arg)
 {
 	struct sh_mmcif_host *host = arg;
@@ -273,6 +332,18 @@ static void mmcif_dma_complete(void *arg)
 
 	if (WARN(!mrq || !mrq->data, "%s: NULL data in DMA completion!\n",
 		 dev_name(&host->pd->dev)))
+=======
+static void sh_mmcif_dma_complete(void *arg)
+{
+	struct sh_mmcif_host *host = arg;
+	struct mmc_request *mrq = host->mrq;
+	struct device *dev = sh_mmcif_host_to_dev(host);
+
+	dev_dbg(dev, "Command completed\n");
+
+	if (WARN(!mrq || !mrq->data, "%s: NULL data in DMA completion!\n",
+		 dev_name(dev)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	complete(&host->dma_complete);
@@ -284,6 +355,10 @@ static void sh_mmcif_start_dma_rx(struct sh_mmcif_host *host)
 	struct scatterlist *sg = data->sg;
 	struct dma_async_tx_descriptor *desc = NULL;
 	struct dma_chan *chan = host->chan_rx;
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_cookie_t cookie = -EINVAL;
 	int ret;
 
@@ -296,13 +371,21 @@ static void sh_mmcif_start_dma_rx(struct sh_mmcif_host *host)
 	}
 
 	if (desc) {
+<<<<<<< HEAD
 		desc->callback = mmcif_dma_complete;
+=======
+		desc->callback = sh_mmcif_dma_complete;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		desc->callback_param = host;
 		cookie = dmaengine_submit(desc);
 		sh_mmcif_bitset(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAREN);
 		dma_async_issue_pending(chan);
 	}
+<<<<<<< HEAD
 	dev_dbg(&host->pd->dev, "%s(): mapped %d -> %d, cookie %d\n",
+=======
+	dev_dbg(dev, "%s(): mapped %d -> %d, cookie %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__func__, data->sg_len, ret, cookie);
 
 	if (!desc) {
@@ -318,12 +401,20 @@ static void sh_mmcif_start_dma_rx(struct sh_mmcif_host *host)
 			host->chan_tx = NULL;
 			dma_release_channel(chan);
 		}
+<<<<<<< HEAD
 		dev_warn(&host->pd->dev,
+=======
+		dev_warn(dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 "DMA failed: %d, falling back to PIO\n", ret);
 		sh_mmcif_bitclr(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAREN | BUF_ACC_DMAWEN);
 	}
 
+<<<<<<< HEAD
 	dev_dbg(&host->pd->dev, "%s(): desc %p, cookie %d, sg[%d]\n", __func__,
+=======
+	dev_dbg(dev, "%s(): desc %p, cookie %d, sg[%d]\n", __func__,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		desc, cookie, data->sg_len);
 }
 
@@ -333,6 +424,10 @@ static void sh_mmcif_start_dma_tx(struct sh_mmcif_host *host)
 	struct scatterlist *sg = data->sg;
 	struct dma_async_tx_descriptor *desc = NULL;
 	struct dma_chan *chan = host->chan_tx;
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_cookie_t cookie = -EINVAL;
 	int ret;
 
@@ -345,13 +440,21 @@ static void sh_mmcif_start_dma_tx(struct sh_mmcif_host *host)
 	}
 
 	if (desc) {
+<<<<<<< HEAD
 		desc->callback = mmcif_dma_complete;
+=======
+		desc->callback = sh_mmcif_dma_complete;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		desc->callback_param = host;
 		cookie = dmaengine_submit(desc);
 		sh_mmcif_bitset(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAWEN);
 		dma_async_issue_pending(chan);
 	}
+<<<<<<< HEAD
 	dev_dbg(&host->pd->dev, "%s(): mapped %d -> %d, cookie %d\n",
+=======
+	dev_dbg(dev, "%s(): mapped %d -> %d, cookie %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__func__, data->sg_len, ret, cookie);
 
 	if (!desc) {
@@ -367,11 +470,16 @@ static void sh_mmcif_start_dma_tx(struct sh_mmcif_host *host)
 			host->chan_rx = NULL;
 			dma_release_channel(chan);
 		}
+<<<<<<< HEAD
 		dev_warn(&host->pd->dev,
+=======
+		dev_warn(dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 "DMA failed: %d, falling back to PIO\n", ret);
 		sh_mmcif_bitclr(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAREN | BUF_ACC_DMAWEN);
 	}
 
+<<<<<<< HEAD
 	dev_dbg(&host->pd->dev, "%s(): desc %p, cookie %d\n", __func__,
 		desc, cookie);
 }
@@ -437,6 +545,79 @@ erqrx:
 ecfgtx:
 	dma_release_channel(host->chan_tx);
 	host->chan_tx = NULL;
+=======
+	dev_dbg(dev, "%s(): desc %p, cookie %d\n", __func__,
+		desc, cookie);
+}
+
+static struct dma_chan *
+sh_mmcif_request_dma_pdata(struct sh_mmcif_host *host, uintptr_t slave_id)
+{
+	dma_cap_mask_t mask;
+
+	dma_cap_zero(mask);
+	dma_cap_set(DMA_SLAVE, mask);
+	if (slave_id <= 0)
+		return NULL;
+
+	return dma_request_channel(mask, shdma_chan_filter, (void *)slave_id);
+}
+
+static int sh_mmcif_dma_slave_config(struct sh_mmcif_host *host,
+				     struct dma_chan *chan,
+				     enum dma_transfer_direction direction)
+{
+	struct resource *res;
+	struct dma_slave_config cfg = { 0, };
+
+	res = platform_get_resource(host->pd, IORESOURCE_MEM, 0);
+	cfg.direction = direction;
+
+	if (direction == DMA_DEV_TO_MEM) {
+		cfg.src_addr = res->start + MMCIF_CE_DATA;
+		cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+	} else {
+		cfg.dst_addr = res->start + MMCIF_CE_DATA;
+		cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+	}
+
+	return dmaengine_slave_config(chan, &cfg);
+}
+
+static void sh_mmcif_request_dma(struct sh_mmcif_host *host)
+{
+	struct device *dev = sh_mmcif_host_to_dev(host);
+	host->dma_active = false;
+
+	/* We can only either use DMA for both Tx and Rx or not use it at all */
+	if (IS_ENABLED(CONFIG_SUPERH) && dev->platform_data) {
+		struct sh_mmcif_plat_data *pdata = dev->platform_data;
+
+		host->chan_tx = sh_mmcif_request_dma_pdata(host,
+							pdata->slave_id_tx);
+		host->chan_rx = sh_mmcif_request_dma_pdata(host,
+							pdata->slave_id_rx);
+	} else {
+		host->chan_tx = dma_request_slave_channel(dev, "tx");
+		host->chan_rx = dma_request_slave_channel(dev, "rx");
+	}
+	dev_dbg(dev, "%s: got channel TX %p RX %p\n", __func__, host->chan_tx,
+		host->chan_rx);
+
+	if (!host->chan_tx || !host->chan_rx ||
+	    sh_mmcif_dma_slave_config(host, host->chan_tx, DMA_MEM_TO_DEV) ||
+	    sh_mmcif_dma_slave_config(host, host->chan_rx, DMA_DEV_TO_MEM))
+		goto error;
+
+	return;
+
+error:
+	if (host->chan_tx)
+		dma_release_channel(host->chan_tx);
+	if (host->chan_rx)
+		dma_release_channel(host->chan_rx);
+	host->chan_tx = host->chan_rx = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sh_mmcif_release_dma(struct sh_mmcif_host *host)
@@ -459,14 +640,23 @@ static void sh_mmcif_release_dma(struct sh_mmcif_host *host)
 
 static void sh_mmcif_clock_control(struct sh_mmcif_host *host, unsigned int clk)
 {
+<<<<<<< HEAD
 	struct sh_mmcif_plat_data *p = host->pd->dev.platform_data;
 	bool sup_pclk = p ? p->sup_pclk : false;
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+	struct sh_mmcif_plat_data *p = dev->platform_data;
+	bool sup_pclk = p ? p->sup_pclk : false;
+	unsigned int current_clk = clk_get_rate(host->clk);
+	unsigned int clkdiv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sh_mmcif_bitclr(host, MMCIF_CE_CLK_CTRL, CLK_ENABLE);
 	sh_mmcif_bitclr(host, MMCIF_CE_CLK_CTRL, CLK_CLEAR);
 
 	if (!clk)
 		return;
+<<<<<<< HEAD
 	if (sup_pclk && clk == host->clk)
 		sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, CLK_SUP_PCLK);
 	else
@@ -474,6 +664,50 @@ static void sh_mmcif_clock_control(struct sh_mmcif_host *host, unsigned int clk)
 				((fls(DIV_ROUND_UP(host->clk,
 						   clk) - 1) - 1) << 16));
 
+=======
+
+	if (host->clkdiv_map) {
+		unsigned int freq, best_freq, myclk, div, diff_min, diff;
+		int i;
+
+		clkdiv = 0;
+		diff_min = ~0;
+		best_freq = 0;
+		for (i = 31; i >= 0; i--) {
+			if (!((1 << i) & host->clkdiv_map))
+				continue;
+
+			/*
+			 * clk = parent_freq / div
+			 * -> parent_freq = clk x div
+			 */
+
+			div = 1 << (i + 1);
+			freq = clk_round_rate(host->clk, clk * div);
+			myclk = freq / div;
+			diff = (myclk > clk) ? myclk - clk : clk - myclk;
+
+			if (diff <= diff_min) {
+				best_freq = freq;
+				clkdiv = i;
+				diff_min = diff;
+			}
+		}
+
+		dev_dbg(dev, "clk %u/%u (%u, 0x%x)\n",
+			(best_freq / (1 << (clkdiv + 1))), clk,
+			best_freq, clkdiv);
+
+		clk_set_rate(host->clk, best_freq);
+		clkdiv = clkdiv << 16;
+	} else if (sup_pclk && clk == current_clk) {
+		clkdiv = CLK_SUP_PCLK;
+	} else {
+		clkdiv = (fls(DIV_ROUND_UP(current_clk, clk) - 1) - 1) << 16;
+	}
+
+	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, CLK_CLEAR & clkdiv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, CLK_ENABLE);
 }
 
@@ -485,14 +719,27 @@ static void sh_mmcif_sync_reset(struct sh_mmcif_host *host)
 
 	sh_mmcif_writel(host->addr, MMCIF_CE_VERSION, SOFT_RST_ON);
 	sh_mmcif_writel(host->addr, MMCIF_CE_VERSION, SOFT_RST_OFF);
+<<<<<<< HEAD
 	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, tmp |
 		SRSPTO_256 | SRBSYTO_29 | SRWDTO_29 | SCCSTO_29);
+=======
+	if (host->ccs_enable)
+		tmp |= SCCSTO_29;
+	if (host->clk_ctrl2_enable)
+		sh_mmcif_writel(host->addr, MMCIF_CE_CLK_CTRL2, 0x0F0F0000);
+	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, tmp |
+		SRSPTO_256 | SRBSYTO_29 | SRWDTO_29);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* byte swap on */
 	sh_mmcif_bitset(host, MMCIF_CE_BUF_ACC, BUF_ACC_ATYP);
 }
 
 static int sh_mmcif_error_manage(struct sh_mmcif_host *host)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 state1, state2;
 	int ret, timeout;
 
@@ -500,29 +747,47 @@ static int sh_mmcif_error_manage(struct sh_mmcif_host *host)
 
 	state1 = sh_mmcif_readl(host->addr, MMCIF_CE_HOST_STS1);
 	state2 = sh_mmcif_readl(host->addr, MMCIF_CE_HOST_STS2);
+<<<<<<< HEAD
 	dev_dbg(&host->pd->dev, "ERR HOST_STS1 = %08x\n", state1);
 	dev_dbg(&host->pd->dev, "ERR HOST_STS2 = %08x\n", state2);
+=======
+	dev_dbg(dev, "ERR HOST_STS1 = %08x\n", state1);
+	dev_dbg(dev, "ERR HOST_STS2 = %08x\n", state2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (state1 & STS1_CMDSEQ) {
 		sh_mmcif_bitset(host, MMCIF_CE_CMD_CTRL, CMD_CTRL_BREAK);
 		sh_mmcif_bitset(host, MMCIF_CE_CMD_CTRL, ~CMD_CTRL_BREAK);
+<<<<<<< HEAD
 		for (timeout = 10000000; timeout; timeout--) {
+=======
+		for (timeout = 10000; timeout; timeout--) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!(sh_mmcif_readl(host->addr, MMCIF_CE_HOST_STS1)
 			      & STS1_CMDSEQ))
 				break;
 			mdelay(1);
 		}
 		if (!timeout) {
+<<<<<<< HEAD
 			dev_err(&host->pd->dev,
+=======
+			dev_err(dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				"Forced end of command sequence timeout err\n");
 			return -EIO;
 		}
 		sh_mmcif_sync_reset(host);
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "Forced end of command sequence\n");
+=======
+		dev_dbg(dev, "Forced end of command sequence\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 
 	if (state2 & STS2_CRC_ERR) {
+<<<<<<< HEAD
 		dev_err(&host->pd->dev, " CRC error: state %u, wait %u\n",
 			host->state, host->wait_for);
 		ret = -EIO;
@@ -532,6 +797,17 @@ static int sh_mmcif_error_manage(struct sh_mmcif_host *host)
 		ret = -ETIMEDOUT;
 	} else {
 		dev_dbg(&host->pd->dev, " End/Index error: state %u, wait %u\n",
+=======
+		dev_err(dev, " CRC error: state %u, wait %u\n",
+			host->state, host->wait_for);
+		ret = -EIO;
+	} else if (state2 & STS2_TIMEOUT_ERR) {
+		dev_err(dev, " Timeout: state %u, wait %u\n",
+			host->state, host->wait_for);
+		ret = -ETIMEDOUT;
+	} else {
+		dev_dbg(dev, " End/Index error: state %u, wait %u\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			host->state, host->wait_for);
 		ret = -EIO;
 	}
@@ -572,13 +848,21 @@ static void sh_mmcif_single_read(struct sh_mmcif_host *host,
 
 static bool sh_mmcif_read_block(struct sh_mmcif_host *host)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mmc_data *data = host->mrq->data;
 	u32 *p = sg_virt(data->sg);
 	int i;
 
 	if (host->sd_error) {
 		data->error = sh_mmcif_error_manage(host);
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "%s(): %d\n", __func__, data->error);
+=======
+		dev_dbg(dev, "%s(): %d\n", __func__, data->error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	}
 
@@ -613,13 +897,21 @@ static void sh_mmcif_multi_read(struct sh_mmcif_host *host,
 
 static bool sh_mmcif_mread_block(struct sh_mmcif_host *host)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mmc_data *data = host->mrq->data;
 	u32 *p = host->pio_ptr;
 	int i;
 
 	if (host->sd_error) {
 		data->error = sh_mmcif_error_manage(host);
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "%s(): %d\n", __func__, data->error);
+=======
+		dev_dbg(dev, "%s(): %d\n", __func__, data->error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	}
 
@@ -650,13 +942,21 @@ static void sh_mmcif_single_write(struct sh_mmcif_host *host,
 
 static bool sh_mmcif_write_block(struct sh_mmcif_host *host)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mmc_data *data = host->mrq->data;
 	u32 *p = sg_virt(data->sg);
 	int i;
 
 	if (host->sd_error) {
 		data->error = sh_mmcif_error_manage(host);
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "%s(): %d\n", __func__, data->error);
+=======
+		dev_dbg(dev, "%s(): %d\n", __func__, data->error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	}
 
@@ -691,13 +991,21 @@ static void sh_mmcif_multi_write(struct sh_mmcif_host *host,
 
 static bool sh_mmcif_mwrite_block(struct sh_mmcif_host *host)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mmc_data *data = host->mrq->data;
 	u32 *p = host->pio_ptr;
 	int i;
 
 	if (host->sd_error) {
 		data->error = sh_mmcif_error_manage(host);
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "%s(): %d\n", __func__, data->error);
+=======
+		dev_dbg(dev, "%s(): %d\n", __func__, data->error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	}
 
@@ -735,6 +1043,10 @@ static void sh_mmcif_get_cmd12response(struct sh_mmcif_host *host,
 static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 			    struct mmc_request *mrq)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mmc_data *data = mrq->data;
 	struct mmc_command *cmd = mrq->cmd;
 	u32 opc = cmd->opcode;
@@ -746,14 +1058,24 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 		tmp |= CMD_SET_RTYP_NO;
 		break;
 	case MMC_RSP_R1:
+<<<<<<< HEAD
 	case MMC_RSP_R1B:
 	case MMC_RSP_R3:
 		tmp |= CMD_SET_RTYP_6B;
 		break;
+=======
+	case MMC_RSP_R3:
+		tmp |= CMD_SET_RTYP_6B;
+		break;
+	case MMC_RSP_R1B:
+		tmp |= CMD_SET_RBSY | CMD_SET_RTYP_6B;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case MMC_RSP_R2:
 		tmp |= CMD_SET_RTYP_17B;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(&host->pd->dev, "Unsupported response type.\n");
 		break;
 	}
@@ -768,6 +1090,12 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 		tmp |= CMD_SET_RBSY;
 		break;
 	}
+=======
+		dev_err(dev, "Unsupported response type.\n");
+		break;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* WDAT / DATW */
 	if (data) {
 		tmp |= CMD_SET_WDAT;
@@ -782,6 +1110,7 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 			tmp |= CMD_SET_DATW_8;
 			break;
 		default:
+<<<<<<< HEAD
 			dev_err(&host->pd->dev, "Unsupported bus width.\n");
 			break;
 		}
@@ -792,6 +1121,19 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 			 * advertises the MMC_CAP_UHS_DDR50 capability. MMCIF
 			 * implementations with this capability, e.g. sh73a0,
 			 * will have to set it in their platform data.
+=======
+			dev_err(dev, "Unsupported bus width.\n");
+			break;
+		}
+		switch (host->timing) {
+		case MMC_TIMING_MMC_DDR52:
+			/*
+			 * MMC core will only set this timing, if the host
+			 * advertises the MMC_CAP_1_8V_DDR/MMC_CAP_1_2V_DDR
+			 * capability. MMCIF implementations with this
+			 * capability, e.g. sh73a0, will have to set it
+			 * in their platform data.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 */
 			tmp |= CMD_SET_DARS;
 			break;
@@ -824,6 +1166,11 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 static int sh_mmcif_data_trans(struct sh_mmcif_host *host,
 			       struct mmc_request *mrq, u32 opc)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (opc) {
 	case MMC_READ_MULTIPLE_BLOCK:
 		sh_mmcif_multi_read(host, mrq);
@@ -839,7 +1186,11 @@ static int sh_mmcif_data_trans(struct sh_mmcif_host *host,
 		sh_mmcif_single_read(host, mrq);
 		return 0;
 	default:
+<<<<<<< HEAD
 		dev_err(&host->pd->dev, "Unsupported CMD%d\n", opc);
+=======
+		dev_err(dev, "Unsupported CMD%d\n", opc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 }
@@ -849,6 +1200,7 @@ static void sh_mmcif_start_cmd(struct sh_mmcif_host *host,
 {
 	struct mmc_command *cmd = mrq->cmd;
 	u32 opc = cmd->opcode;
+<<<<<<< HEAD
 	u32 mask;
 
 	switch (opc) {
@@ -865,6 +1217,18 @@ static void sh_mmcif_start_cmd(struct sh_mmcif_host *host,
 		mask = MASK_START_CMD | MASK_MCRSPE;
 		break;
 	}
+=======
+	u32 mask = 0;
+	unsigned long flags;
+
+	if (cmd->flags & MMC_RSP_BUSY)
+		mask = MASK_START_CMD | MASK_MRBSYE;
+	else
+		mask = MASK_START_CMD | MASK_MCRSPE;
+
+	if (host->ccs_enable)
+		mask |= MASK_MCCSTO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mrq->data) {
 		sh_mmcif_writel(host->addr, MMCIF_CE_BLOCK_SET, 0);
@@ -873,20 +1237,40 @@ static void sh_mmcif_start_cmd(struct sh_mmcif_host *host,
 	}
 	opc = sh_mmcif_set_cmd(host, mrq);
 
+<<<<<<< HEAD
 	sh_mmcif_writel(host->addr, MMCIF_CE_INT, 0xD80430C0);
+=======
+	if (host->ccs_enable)
+		sh_mmcif_writel(host->addr, MMCIF_CE_INT, 0xD80430C0);
+	else
+		sh_mmcif_writel(host->addr, MMCIF_CE_INT, 0xD80430C0 | INT_CCS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, mask);
 	/* set arg */
 	sh_mmcif_writel(host->addr, MMCIF_CE_ARG, cmd->arg);
 	/* set cmd */
+<<<<<<< HEAD
+=======
+	spin_lock_irqsave(&host->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sh_mmcif_writel(host->addr, MMCIF_CE_CMD_SET, opc);
 
 	host->wait_for = MMCIF_WAIT_FOR_CMD;
 	schedule_delayed_work(&host->timeout_work, host->timeout);
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&host->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sh_mmcif_stop_cmd(struct sh_mmcif_host *host,
 			      struct mmc_request *mrq)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (mrq->cmd->opcode) {
 	case MMC_READ_MULTIPLE_BLOCK:
 		sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MCMD12DRE);
@@ -895,7 +1279,11 @@ static void sh_mmcif_stop_cmd(struct sh_mmcif_host *host,
 		sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MCMD12RBE);
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(&host->pd->dev, "unsupported stop cmd\n");
+=======
+		dev_err(dev, "unsupported stop cmd\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mrq->stop->error = sh_mmcif_error_manage(host);
 		return;
 	}
@@ -906,11 +1294,20 @@ static void sh_mmcif_stop_cmd(struct sh_mmcif_host *host,
 static void sh_mmcif_request(struct mmc_host *mmc, struct mmc_request *mrq)
 {
 	struct sh_mmcif_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	spin_lock_irqsave(&host->lock, flags);
 	if (host->state != STATE_IDLE) {
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "%s() rejected, state %u\n", __func__, host->state);
+=======
+		dev_dbg(dev, "%s() rejected, state %u\n",
+			__func__, host->state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irqrestore(&host->lock, flags);
 		mrq->cmd->error = -EAGAIN;
 		mmc_request_done(mmc, mrq);
@@ -920,6 +1317,7 @@ static void sh_mmcif_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	host->state = STATE_REQUEST;
 	spin_unlock_irqrestore(&host->lock, flags);
 
+<<<<<<< HEAD
 	switch (mrq->cmd->opcode) {
 	/* MMCIF does not support SD/SDIO command */
 	case MMC_SLEEP_AWAKE: /* = SD_IO_SEND_OP_COND (5) */
@@ -936,11 +1334,14 @@ static void sh_mmcif_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		break;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host->mrq = mrq;
 
 	sh_mmcif_start_cmd(host, mrq);
 }
 
+<<<<<<< HEAD
 static int sh_mmcif_clk_update(struct sh_mmcif_host *host)
 {
 	int ret = clk_enable(host->hclk);
@@ -965,16 +1366,58 @@ static void sh_mmcif_set_power(struct sh_mmcif_host *host, struct mmc_ios *ios)
 		/* Errors ignored... */
 		mmc_regulator_set_ocr(mmc, mmc->supply.vmmc,
 				      ios->power_mode ? ios->vdd : 0);
+=======
+static void sh_mmcif_clk_setup(struct sh_mmcif_host *host)
+{
+	struct device *dev = sh_mmcif_host_to_dev(host);
+
+	if (host->mmc->f_max) {
+		unsigned int f_max, f_min = 0, f_min_old;
+
+		f_max = host->mmc->f_max;
+		for (f_min_old = f_max; f_min_old > 2;) {
+			f_min = clk_round_rate(host->clk, f_min_old / 2);
+			if (f_min == f_min_old)
+				break;
+			f_min_old = f_min;
+		}
+
+		/*
+		 * This driver assumes this SoC is R-Car Gen2 or later
+		 */
+		host->clkdiv_map = 0x3ff;
+
+		host->mmc->f_max = f_max / (1 << ffs(host->clkdiv_map));
+		host->mmc->f_min = f_min / (1 << fls(host->clkdiv_map));
+	} else {
+		unsigned int clk = clk_get_rate(host->clk);
+
+		host->mmc->f_max = clk / 2;
+		host->mmc->f_min = clk / 512;
+	}
+
+	dev_dbg(dev, "clk max/min = %d/%d\n",
+		host->mmc->f_max, host->mmc->f_min);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct sh_mmcif_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	spin_lock_irqsave(&host->lock, flags);
 	if (host->state != STATE_IDLE) {
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "%s() rejected, state %u\n", __func__, host->state);
+=======
+		dev_dbg(dev, "%s() rejected, state %u\n",
+			__func__, host->state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irqrestore(&host->lock, flags);
 		return;
 	}
@@ -982,6 +1425,7 @@ static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	host->state = STATE_IOS;
 	spin_unlock_irqrestore(&host->lock, flags);
 
+<<<<<<< HEAD
 	if (ios->power_mode == MMC_POWER_UP) {
 		if (!host->card_present) {
 			/* See if we also get DMA */
@@ -1017,6 +1461,34 @@ static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			sh_mmcif_sync_reset(host);
 		}
 		sh_mmcif_clock_control(host, ios->clock);
+=======
+	switch (ios->power_mode) {
+	case MMC_POWER_UP:
+		if (!IS_ERR(mmc->supply.vmmc))
+			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, ios->vdd);
+		if (!host->power) {
+			clk_prepare_enable(host->clk);
+			pm_runtime_get_sync(dev);
+			sh_mmcif_sync_reset(host);
+			sh_mmcif_request_dma(host);
+			host->power = true;
+		}
+		break;
+	case MMC_POWER_OFF:
+		if (!IS_ERR(mmc->supply.vmmc))
+			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, 0);
+		if (host->power) {
+			sh_mmcif_clock_control(host, 0);
+			sh_mmcif_release_dma(host);
+			pm_runtime_put(dev);
+			clk_disable_unprepare(host->clk);
+			host->power = false;
+		}
+		break;
+	case MMC_POWER_ON:
+		sh_mmcif_clock_control(host, ios->clock);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	host->timing = ios->timing;
@@ -1027,7 +1499,12 @@ static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 static int sh_mmcif_get_cd(struct mmc_host *mmc)
 {
 	struct sh_mmcif_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
 	struct sh_mmcif_plat_data *p = host->pd->dev.platform_data;
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+	struct sh_mmcif_plat_data *p = dev->platform_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = mmc_gpio_get_cd(mmc);
 
 	if (ret >= 0)
@@ -1049,6 +1526,10 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 {
 	struct mmc_command *cmd = host->mrq->cmd;
 	struct mmc_data *data = host->mrq->data;
+<<<<<<< HEAD
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long time;
 
 	if (host->sd_error) {
@@ -1062,7 +1543,11 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 			cmd->error = sh_mmcif_error_manage(host);
 			break;
 		}
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "CMD%d error %d\n",
+=======
+		dev_dbg(dev, "CMD%d error %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cmd->opcode, cmd->error);
 		host->sd_error = false;
 		return false;
@@ -1142,7 +1627,18 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 {
 	struct sh_mmcif_host *host = dev_id;
 	struct mmc_request *mrq;
+<<<<<<< HEAD
 	bool wait = false;
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+	bool wait = false;
+	unsigned long flags;
+	int wait_work;
+
+	spin_lock_irqsave(&host->lock, flags);
+	wait_work = host->wait_for;
+	spin_unlock_irqrestore(&host->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cancel_delayed_work_sync(&host->timeout_work);
 
@@ -1150,7 +1646,11 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 
 	mrq = host->mrq;
 	if (!mrq) {
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "IRQ thread state %u, wait %u: NULL mrq!\n",
+=======
+		dev_dbg(dev, "IRQ thread state %u, wait %u: NULL mrq!\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			host->state, host->wait_for);
 		mutex_unlock(&host->thread_lock);
 		return IRQ_HANDLED;
@@ -1160,7 +1660,11 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 	 * All handlers return true, if processing continues, and false, if the
 	 * request has to be completed - successfully or not
 	 */
+<<<<<<< HEAD
 	switch (host->wait_for) {
+=======
+	switch (wait_work) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case MMCIF_WAIT_FOR_REQUEST:
 		/* We're too late, the timeout has already kicked in */
 		mutex_unlock(&host->thread_lock);
@@ -1188,7 +1692,11 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 	case MMCIF_WAIT_FOR_STOP:
 		if (host->sd_error) {
 			mrq->stop->error = sh_mmcif_error_manage(host);
+<<<<<<< HEAD
 			dev_dbg(&host->pd->dev, "%s(): %d\n", __func__, mrq->stop->error);
+=======
+			dev_dbg(dev, "%s(): %d\n", __func__, mrq->stop->error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		sh_mmcif_get_cmd12response(host, mrq->stop);
@@ -1198,7 +1706,11 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 	case MMCIF_WAIT_FOR_WRITE_END:
 		if (host->sd_error) {
 			mrq->data->error = sh_mmcif_error_manage(host);
+<<<<<<< HEAD
 			dev_dbg(&host->pd->dev, "%s(): %d\n", __func__, mrq->data->error);
+=======
+			dev_dbg(dev, "%s(): %d\n", __func__, mrq->data->error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	default:
@@ -1241,6 +1753,7 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 static irqreturn_t sh_mmcif_intr(int irq, void *dev_id)
 {
 	struct sh_mmcif_host *host = dev_id;
+<<<<<<< HEAD
 	u32 state;
 
 	state = sh_mmcif_readl(host->addr, MMCIF_CE_INT);
@@ -1249,10 +1762,26 @@ static irqreturn_t sh_mmcif_intr(int irq, void *dev_id)
 
 	if (state & ~MASK_CLEAN)
 		dev_dbg(&host->pd->dev, "IRQ state = 0x%08x incompletely cleared\n",
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+	u32 state, mask;
+
+	state = sh_mmcif_readl(host->addr, MMCIF_CE_INT);
+	mask = sh_mmcif_readl(host->addr, MMCIF_CE_INT_MASK);
+	if (host->ccs_enable)
+		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~(state & mask));
+	else
+		sh_mmcif_writel(host->addr, MMCIF_CE_INT, INT_CCS | ~(state & mask));
+	sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, state & MASK_CLEAN);
+
+	if (state & ~MASK_CLEAN)
+		dev_dbg(dev, "IRQ state = 0x%08x incompletely cleared\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			state);
 
 	if (state & INT_ERR_STS || state & ~INT_ALL) {
 		host->sd_error = true;
+<<<<<<< HEAD
 		dev_dbg(&host->pd->dev, "int err state = 0x%08x\n", state);
 	}
 	if (state & ~(INT_CMD12RBE | INT_CMD12CRE)) {
@@ -1264,31 +1793,62 @@ static irqreturn_t sh_mmcif_intr(int irq, void *dev_id)
 			mmcif_dma_complete(host);
 	} else {
 		dev_dbg(&host->pd->dev, "Unexpected IRQ 0x%x\n", state);
+=======
+		dev_dbg(dev, "int err state = 0x%08x\n", state);
+	}
+	if (state & ~(INT_CMD12RBE | INT_CMD12CRE)) {
+		if (!host->mrq)
+			dev_dbg(dev, "NULL IRQ state = 0x%08x\n", state);
+		if (!host->dma_active)
+			return IRQ_WAKE_THREAD;
+		else if (host->sd_error)
+			sh_mmcif_dma_complete(host);
+	} else {
+		dev_dbg(dev, "Unexpected IRQ 0x%x\n", state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void mmcif_timeout_work(struct work_struct *work)
 {
 	struct delayed_work *d = container_of(work, struct delayed_work, work);
 	struct sh_mmcif_host *host = container_of(d, struct sh_mmcif_host, timeout_work);
 	struct mmc_request *mrq = host->mrq;
+=======
+static void sh_mmcif_timeout_work(struct work_struct *work)
+{
+	struct delayed_work *d = to_delayed_work(work);
+	struct sh_mmcif_host *host = container_of(d, struct sh_mmcif_host, timeout_work);
+	struct mmc_request *mrq = host->mrq;
+	struct device *dev = sh_mmcif_host_to_dev(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	if (host->dying)
 		/* Don't run after mmc_remove_host() */
 		return;
 
+<<<<<<< HEAD
 	dev_err(&host->pd->dev, "Timeout waiting for %u on CMD%u\n",
 		host->wait_for, mrq->cmd->opcode);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&host->lock, flags);
 	if (host->state == STATE_IDLE) {
 		spin_unlock_irqrestore(&host->lock, flags);
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	dev_err(dev, "Timeout waiting for %u on CMD%u\n",
+		host->wait_for, mrq->cmd->opcode);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host->state = STATE_TIMEOUT;
 	spin_unlock_irqrestore(&host->lock, flags);
 
@@ -1323,7 +1883,12 @@ static void mmcif_timeout_work(struct work_struct *work)
 
 static void sh_mmcif_init_ocr(struct sh_mmcif_host *host)
 {
+<<<<<<< HEAD
 	struct sh_mmcif_plat_data *pd = host->pd->dev.platform_data;
+=======
+	struct device *dev = sh_mmcif_host_to_dev(host);
+	struct sh_mmcif_plat_data *pd = dev->platform_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mmc_host *mmc = host->mmc;
 
 	mmc_regulator_get_supply(mmc);
@@ -1342,7 +1907,12 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 	int ret = 0, irq[2];
 	struct mmc_host *mmc;
 	struct sh_mmcif_host *host;
+<<<<<<< HEAD
 	struct sh_mmcif_plat_data *pd = pdev->dev.platform_data;
+=======
+	struct device *dev = &pdev->dev;
+	struct sh_mmcif_plat_data *pd = dev->platform_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *res;
 	void __iomem *reg;
 	const char *name;
@@ -1350,6 +1920,7 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 	irq[0] = platform_get_irq(pdev, 0);
 	irq[1] = platform_get_irq(pdev, 1);
 	if (irq[0] < 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Get irq error\n");
 		return -ENXIO;
 	}
@@ -1374,6 +1945,31 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 	host->mmc	= mmc;
 	host->addr	= reg;
 	host->timeout	= msecs_to_jiffies(1000);
+=======
+		dev_err(dev, "Get irq error\n");
+		return -ENXIO;
+	}
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	reg = devm_ioremap_resource(dev, res);
+	if (IS_ERR(reg))
+		return PTR_ERR(reg);
+
+	mmc = mmc_alloc_host(sizeof(struct sh_mmcif_host), dev);
+	if (!mmc)
+		return -ENOMEM;
+
+	ret = mmc_of_parse(mmc);
+	if (ret < 0)
+		goto err_host;
+
+	host		= mmc_priv(mmc);
+	host->mmc	= mmc;
+	host->addr	= reg;
+	host->timeout	= msecs_to_jiffies(10000);
+	host->ccs_enable = !pd || !pd->ccs_unsupported;
+	host->clk_ctrl2_enable = pd && pd->clk_ctrl2_present;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host->pd = pdev;
 
@@ -1383,16 +1979,27 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 	sh_mmcif_init_ocr(host);
 
 	mmc->caps |= MMC_CAP_MMC_HIGHSPEED | MMC_CAP_WAIT_WHILE_BUSY;
+<<<<<<< HEAD
+=======
+	mmc->caps2 |= MMC_CAP2_NO_SD | MMC_CAP2_NO_SDIO;
+	mmc->max_busy_timeout = 10000;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pd && pd->caps)
 		mmc->caps |= pd->caps;
 	mmc->max_segs = 32;
 	mmc->max_blk_size = 512;
+<<<<<<< HEAD
 	mmc->max_req_size = PAGE_CACHE_SIZE * mmc->max_segs;
+=======
+	mmc->max_req_size = PAGE_SIZE * mmc->max_segs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mmc->max_blk_count = mmc->max_req_size / mmc->max_blk_size;
 	mmc->max_seg_size = mmc->max_req_size;
 
 	platform_set_drvdata(pdev, host);
 
+<<<<<<< HEAD
 	pm_runtime_enable(&pdev->dev);
 	host->power = false;
 
@@ -1411,10 +2018,34 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 		goto eresume;
 
 	INIT_DELAYED_WORK(&host->timeout_work, mmcif_timeout_work);
+=======
+	host->clk = devm_clk_get(dev, NULL);
+	if (IS_ERR(host->clk)) {
+		ret = PTR_ERR(host->clk);
+		dev_err(dev, "cannot get clock: %d\n", ret);
+		goto err_host;
+	}
+
+	ret = clk_prepare_enable(host->clk);
+	if (ret < 0)
+		goto err_host;
+
+	sh_mmcif_clk_setup(host);
+
+	pm_runtime_enable(dev);
+	host->power = false;
+
+	ret = pm_runtime_get_sync(dev);
+	if (ret < 0)
+		goto err_clk;
+
+	INIT_DELAYED_WORK(&host->timeout_work, sh_mmcif_timeout_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sh_mmcif_sync_reset(host);
 	sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
 
+<<<<<<< HEAD
 	name = irq[1] < 0 ? dev_name(&pdev->dev) : "sh_mmc:error";
 	ret = request_threaded_irq(irq[0], sh_mmcif_intr, sh_mmcif_irqt, 0, name, host);
 	if (ret) {
@@ -1427,17 +2058,40 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 		if (ret) {
 			dev_err(&pdev->dev, "request_irq error (sh_mmc:int)\n");
 			goto ereqirq1;
+=======
+	name = irq[1] < 0 ? dev_name(dev) : "sh_mmc:error";
+	ret = devm_request_threaded_irq(dev, irq[0], sh_mmcif_intr,
+					sh_mmcif_irqt, 0, name, host);
+	if (ret) {
+		dev_err(dev, "request_irq error (%s)\n", name);
+		goto err_clk;
+	}
+	if (irq[1] >= 0) {
+		ret = devm_request_threaded_irq(dev, irq[1],
+						sh_mmcif_intr, sh_mmcif_irqt,
+						0, "sh_mmc:int", host);
+		if (ret) {
+			dev_err(dev, "request_irq error (sh_mmc:int)\n");
+			goto err_clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	if (pd && pd->use_cd_gpio) {
+<<<<<<< HEAD
 		ret = mmc_gpio_request_cd(mmc, pd->cd_gpio);
 		if (ret < 0)
 			goto erqcd;
+=======
+		ret = mmc_gpio_request_cd(mmc, pd->cd_gpio, 0);
+		if (ret < 0)
+			goto err_clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_init(&host->thread_lock);
 
+<<<<<<< HEAD
 	clk_disable(host->hclk);
 	ret = mmc_add_host(mmc);
 	if (ret < 0)
@@ -1467,16 +2121,44 @@ eclkget:
 	mmc_free_host(mmc);
 ealloch:
 	iounmap(reg);
+=======
+	ret = mmc_add_host(mmc);
+	if (ret < 0)
+		goto err_clk;
+
+	dev_pm_qos_expose_latency_limit(dev, 100);
+
+	dev_info(dev, "Chip version 0x%04x, clock rate %luMHz\n",
+		 sh_mmcif_readl(host->addr, MMCIF_CE_VERSION) & 0xffff,
+		 clk_get_rate(host->clk) / 1000000UL);
+
+	pm_runtime_put(dev);
+	clk_disable_unprepare(host->clk);
+	return ret;
+
+err_clk:
+	clk_disable_unprepare(host->clk);
+	pm_runtime_put_sync(dev);
+	pm_runtime_disable(dev);
+err_host:
+	mmc_free_host(mmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int sh_mmcif_remove(struct platform_device *pdev)
 {
 	struct sh_mmcif_host *host = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	int irq[2];
 
 	host->dying = true;
 	clk_enable(host->hclk);
+=======
+
+	host->dying = true;
+	clk_prepare_enable(host->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pm_runtime_get_sync(&pdev->dev);
 
 	dev_pm_qos_hide_latency_limit(&pdev->dev);
@@ -1491,6 +2173,7 @@ static int sh_mmcif_remove(struct platform_device *pdev)
 	 */
 	cancel_delayed_work_sync(&host->timeout_work);
 
+<<<<<<< HEAD
 	if (host->addr)
 		iounmap(host->addr);
 
@@ -1504,6 +2187,9 @@ static int sh_mmcif_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 
 	clk_disable(host->hclk);
+=======
+	clk_disable_unprepare(host->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mmc_free_host(host->mmc);
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
@@ -1511,6 +2197,7 @@ static int sh_mmcif_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sh_mmcif_suspend(struct device *dev)
 {
@@ -1521,10 +2208,23 @@ static int sh_mmcif_suspend(struct device *dev)
 		sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
 
 	return ret;
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sh_mmcif_suspend(struct device *dev)
+{
+	struct sh_mmcif_host *host = dev_get_drvdata(dev);
+
+	pm_runtime_get_sync(dev);
+	sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
+	pm_runtime_put(dev);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int sh_mmcif_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct sh_mmcif_host *host = dev_get_drvdata(dev);
 
 	return mmc_resume_host(host->mmc);
@@ -1543,6 +2243,14 @@ MODULE_DEVICE_TABLE(of, mmcif_of_match);
 static const struct dev_pm_ops sh_mmcif_dev_pm_ops = {
 	.suspend = sh_mmcif_suspend,
 	.resume = sh_mmcif_resume,
+=======
+	return 0;
+}
+#endif
+
+static const struct dev_pm_ops sh_mmcif_dev_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(sh_mmcif_suspend, sh_mmcif_resume)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_driver sh_mmcif_driver = {
@@ -1551,8 +2259,12 @@ static struct platform_driver sh_mmcif_driver = {
 	.driver		= {
 		.name	= DRIVER_NAME,
 		.pm	= &sh_mmcif_dev_pm_ops,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = mmcif_of_match,
+=======
+		.of_match_table = sh_mmcif_of_match,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

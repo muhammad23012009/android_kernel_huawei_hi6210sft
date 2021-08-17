@@ -11,6 +11,11 @@
 #ifndef __CNS3XXX_CORE_H
 #define __CNS3XXX_CORE_H
 
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void cns3xxx_timer_init(void);
 
 #ifdef CONFIG_CACHE_L2X0
@@ -19,9 +24,22 @@ void __init cns3xxx_l2x0_init(void);
 static inline void cns3xxx_l2x0_init(void) {}
 #endif /* CONFIG_CACHE_L2X0 */
 
+<<<<<<< HEAD
 void __init cns3xxx_map_io(void);
 void __init cns3xxx_init_irq(void);
 void cns3xxx_power_off(void);
 void cns3xxx_restart(char, const char *);
+=======
+#ifdef CONFIG_PCI
+extern void __init cns3xxx_pcie_init_late(void);
+#else
+static inline void __init cns3xxx_pcie_init_late(void) {}
+#endif
+
+void __init cns3xxx_map_io(void);
+void __init cns3xxx_init_irq(void);
+void cns3xxx_power_off(void);
+void cns3xxx_restart(enum reboot_mode, const char *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __CNS3XXX_CORE_H */

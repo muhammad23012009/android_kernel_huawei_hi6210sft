@@ -12,7 +12,10 @@
 
 int ab8500_sysctrl_read(u16 reg, u8 *value);
 int ab8500_sysctrl_write(u16 reg, u8 mask, u8 value);
+<<<<<<< HEAD
 void ab8500_restart(char mode, const char *cmd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 
@@ -38,12 +41,15 @@ static inline int ab8500_sysctrl_clear(u16 reg, u8 bits)
 	return ab8500_sysctrl_write(reg, bits, 0);
 }
 
+<<<<<<< HEAD
 /* Configuration data for SysClkReq1RfClkBuf - SysClkReq8RfClkBuf */
 struct ab8500_sysctrl_platform_data {
 	u8 initial_req_buf_config[8];
 	u16 (*reboot_reason_code)(const char *cmd);
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Registers */
 #define AB8500_TURNONSTATUS		0x100
 #define AB8500_RESETSTATUS		0x101
@@ -278,8 +284,13 @@ struct ab8500_sysctrl_platform_data {
 
 #define AB9540_SYSCLK12CONFCTRL_PLL26TO38ENA BIT(0)
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK12USBMUXSEL BIT(1)
+<<<<<<< HEAD
 #define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL_MASK 0x0C
 #define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL_SHIFT 2
+=======
+#define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL0 BIT(2)
+#define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL1 BIT(3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK12BUFMUX BIT(4)
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK12PLLMUX BIT(5)
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK2MUXVALID BIT(6)

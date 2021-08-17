@@ -105,7 +105,12 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 	enum dlm_status status;
 	int actions = 0;
 	int in_use;
+<<<<<<< HEAD
         u8 owner;
+=======
+	u8 owner;
+	int recovery_wait = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mlog(0, "master_node = %d, valblk = %d\n", master_node,
 	     flags & LKM_VALBLK);
@@ -191,7 +196,13 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 				     DLM_UNLOCK_CLEAR_CONVERT_TYPE);
 		} else if (status == DLM_RECOVERING ||
 			   status == DLM_MIGRATING ||
+<<<<<<< HEAD
 			   status == DLM_FORWARD) {
+=======
+			   status == DLM_FORWARD ||
+			   status == DLM_NOLOCKMGR
+			   ) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* must clear the actions because this unlock
 			 * is about to be retried.  cannot free or do
 			 * any list manipulation. */
@@ -200,14 +211,28 @@ static enum dlm_status dlmunlock_common(struct dlm_ctxt *dlm,
 			     res->lockname.name,
 			     status==DLM_RECOVERING?"recovering":
 			     (status==DLM_MIGRATING?"migrating":
+<<<<<<< HEAD
 			      "forward"));
+=======
+				(status == DLM_FORWARD ? "forward" :
+						"nolockmanager")));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			actions = 0;
 		}
 		if (flags & LKM_CANCEL)
 			lock->cancel_pending = 0;
+<<<<<<< HEAD
 		else
 			lock->unlock_pending = 0;
 
+=======
+		else {
+			if (!lock->unlock_pending)
+				recovery_wait = 1;
+			else
+				lock->unlock_pending = 0;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* get an extra ref on lock.  if we are just switching
@@ -241,6 +266,20 @@ leave:
 	spin_unlock(&res->spinlock);
 	wake_up(&res->wq);
 
+<<<<<<< HEAD
+=======
+	if (recovery_wait) {
+		spin_lock(&res->spinlock);
+		/* Unlock request will directly succeed after owner dies,
+		 * and the lock is already removed from grant list. We have to
+		 * wait for RECOVERING done or we miss the chance to purge it
+		 * since the removement is much faster than RECOVERING proc.
+		 */
+		__dlm_wait_on_lockres_flags(res, DLM_LOCK_RES_RECOVERING);
+		spin_unlock(&res->spinlock);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* let the caller's final dlm_lock_put handle the actual kfree */
 	if (actions & DLM_UNLOCK_FREE_LOCK) {
 		/* this should always be coupled with list removal */
@@ -364,7 +403,14 @@ static enum dlm_status dlm_send_remote_unlock_request(struct dlm_ctxt *dlm,
 			 * updated state to the recovery master.  this thread
 			 * just needs to finish out the operation and call
 			 * the unlockast. */
+<<<<<<< HEAD
 			ret = DLM_NORMAL;
+=======
+			if (dlm_is_node_dead(dlm, owner))
+				ret = DLM_NORMAL;
+			else
+				ret = DLM_NOLOCKMGR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			/* something bad.  this will BUG in ocfs2 */
 			ret = dlm_err_to_dlm_status(tmpret);
@@ -388,7 +434,10 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	struct dlm_ctxt *dlm = data;
 	struct dlm_unlock_lock *unlock = (struct dlm_unlock_lock *)msg->buf;
 	struct dlm_lock_resource *res = NULL;
+<<<<<<< HEAD
 	struct list_head *iter;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dlm_lock *lock = NULL;
 	enum dlm_status status = DLM_NORMAL;
 	int found = 0, i;
@@ -416,7 +465,11 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	}
 
 	if (!dlm_grab(dlm))
+<<<<<<< HEAD
 		return DLM_REJECTED;
+=======
+		return DLM_FORWARD;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mlog_bug_on_msg(!dlm_domain_fully_joined(dlm),
 			"Domain %s not fully joined!\n", dlm->name);
@@ -458,8 +511,12 @@ int dlm_unlock_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	}
 
 	for (i=0; i<3; i++) {
+<<<<<<< HEAD
 		list_for_each(iter, queue) {
 			lock = list_entry(iter, struct dlm_lock, list);
+=======
+		list_for_each_entry(lock, queue, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (lock->ml.cookie == unlock->cookie &&
 		    	    lock->ml.node == unlock->node_idx) {
 				dlm_lock_get(lock);
@@ -640,7 +697,13 @@ retry:
 
 	if (status == DLM_RECOVERING ||
 	    status == DLM_MIGRATING ||
+<<<<<<< HEAD
 	    status == DLM_FORWARD) {
+=======
+	    status == DLM_FORWARD ||
+	    status == DLM_NOLOCKMGR) {
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* We want to go away for a tiny bit to allow recovery
 		 * / migration to complete on this resource. I don't
 		 * know of any wait queue we could sleep on as this
@@ -652,7 +715,11 @@ retry:
 		msleep(50);
 
 		mlog(0, "retrying unlock due to pending recovery/"
+<<<<<<< HEAD
 		     "migration/in-progress\n");
+=======
+		     "migration/in-progress/reconnect\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto retry;
 	}
 

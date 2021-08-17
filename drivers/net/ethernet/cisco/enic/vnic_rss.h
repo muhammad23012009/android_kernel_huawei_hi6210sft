@@ -20,11 +20,24 @@
 #define _VNIC_RSS_H_
 
 /* RSS key array */
+<<<<<<< HEAD
 union vnic_rss_key {
 	struct {
 		u8 b[10];
 		u8 b_pad[6];
 	} key[4];
+=======
+
+#define ENIC_RSS_BYTES_PER_KEY	10
+#define ENIC_RSS_KEYS		4
+#define ENIC_RSS_LEN		(ENIC_RSS_BYTES_PER_KEY * ENIC_RSS_KEYS)
+
+union vnic_rss_key {
+	struct {
+		u8 b[ENIC_RSS_BYTES_PER_KEY];
+		u8 b_pad[6];
+	} key[ENIC_RSS_KEYS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64 raw[8];
 };
 

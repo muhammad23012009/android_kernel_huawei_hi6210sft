@@ -33,6 +33,7 @@ ENDPROC(__mcount)
  * function will be waiting there.  mmmm pie.
  */
 ENTRY(_ftrace_caller)
+<<<<<<< HEAD
 # ifdef CONFIG_HAVE_FUNCTION_TRACE_MCOUNT_TEST
 	/* optional micro optimization: return if stopped */
 	p1.l = _function_trace_stop;
@@ -42,6 +43,8 @@ ENTRY(_ftrace_caller)
 	if ! cc jump _ftrace_stub (bp);
 # endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* save first/second/third function arg and the return register */
 	[--sp] = r2;
 	[--sp] = r0;
@@ -83,6 +86,7 @@ ENDPROC(_ftrace_caller)
 
 /* See documentation for _ftrace_caller */
 ENTRY(__mcount)
+<<<<<<< HEAD
 # ifdef CONFIG_HAVE_FUNCTION_TRACE_MCOUNT_TEST
 	/* optional micro optimization: return if stopped */
 	p1.l = _function_trace_stop;
@@ -92,6 +96,8 @@ ENTRY(__mcount)
 	if ! cc jump _ftrace_stub (bp);
 # endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* save third function arg early so we can do testing below */
 	[--sp] = r2;
 
@@ -187,7 +193,11 @@ ENTRY(_ftrace_graph_caller)
 	r0 = sp;	/* unsigned long *parent */
 	r1 = [sp];	/* unsigned long self_addr */
 # endif
+<<<<<<< HEAD
 # ifdef CONFIG_HAVE_FUNCTION_GRAPH_FP_TEST
+=======
+# ifdef HAVE_FUNCTION_GRAPH_FP_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r2 = fp;	/* unsigned long frame_pointer */
 # endif
 	r0 += 16;	/* skip the 4 local regs on stack */
@@ -208,7 +218,11 @@ ENTRY(_return_to_handler)
 	[--sp] = r1;
 
 	/* get original return address */
+<<<<<<< HEAD
 # ifdef CONFIG_HAVE_FUNCTION_GRAPH_FP_TEST
+=======
+# ifdef HAVE_FUNCTION_GRAPH_FP_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r0 = fp;	/* Blackfin is sane, so omit this */
 # endif
 	call _ftrace_return_to_handler;

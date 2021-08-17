@@ -145,7 +145,10 @@ type name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5)	\
 #define __ARCH_WANT_SYS_ALARM
 #define __ARCH_WANT_SYS_GETHOSTNAME
 #define __ARCH_WANT_SYS_PAUSE
+<<<<<<< HEAD
 #define __ARCH_WANT_SYS_SGETMASK
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __ARCH_WANT_SYS_SIGNAL
 #define __ARCH_WANT_SYS_TIME
 #define __ARCH_WANT_COMPAT_SYS_TIME

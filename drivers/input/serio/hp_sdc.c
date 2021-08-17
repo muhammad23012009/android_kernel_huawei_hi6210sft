@@ -887,8 +887,13 @@ static int __init hp_sdc_init(void)
 			"HP SDC NMI", &hp_sdc))
 		goto err2;
 
+<<<<<<< HEAD
 	printk(KERN_INFO PREFIX "HP SDC at 0x%p, IRQ %d (NMI IRQ %d)\n",
 	       (void *)hp_sdc.base_io, hp_sdc.irq, hp_sdc.nmi);
+=======
+	pr_info(PREFIX "HP SDC at 0x%08lx, IRQ %d (NMI IRQ %d)\n",
+	       hp_sdc.base_io, hp_sdc.irq, hp_sdc.nmi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hp_sdc_status_in8();
 	hp_sdc_data_in8();
@@ -984,7 +989,11 @@ static void hp_sdc_exit(void)
 	free_irq(hp_sdc.irq, &hp_sdc);
 	write_unlock_irq(&hp_sdc.lock);
 
+<<<<<<< HEAD
 	del_timer(&hp_sdc.kicker);
+=======
+	del_timer_sync(&hp_sdc.kicker);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tasklet_kill(&hp_sdc.task);
 

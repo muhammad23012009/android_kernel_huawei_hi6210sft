@@ -2,10 +2,13 @@ menu "Kernel hacking"
 
 source "lib/Kconfig.debug"
 
+<<<<<<< HEAD
 config DEBUG_STACKOVERFLOW
 	bool "Check for stack overflows"
 	depends on DEBUG_KERNEL
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config GDBSTUB
 	bool "Remote GDB kernel debugging"
 	depends on DEBUG_KERNEL

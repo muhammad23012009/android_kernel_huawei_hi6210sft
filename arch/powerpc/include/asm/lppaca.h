@@ -48,6 +48,7 @@
 struct lppaca {
 	/* cacheline 1 contains read-only data */
 
+<<<<<<< HEAD
 	u32	desc;			/* Eye catcher 0xD397D781 */
 	u16	size;			/* Size of this struct */
 	u16	reserved1;
@@ -57,6 +58,15 @@ struct lppaca {
 	u8	reserved3[14];
 	volatile u32 dyn_hw_node_id;	/* Dynamic hardware node id */
 	volatile u32 dyn_hw_proc_id;	/* Dynamic hardware proc id */
+=======
+	__be32	desc;			/* Eye catcher 0xD397D781 */
+	__be16	size;			/* Size of this struct */
+	u8	reserved1[3];
+	u8	__old_status;		/* Old status, including shared proc */
+	u8	reserved3[14];
+	volatile __be32 dyn_hw_node_id;	/* Dynamic hardware node id */
+	volatile __be32 dyn_hw_proc_id;	/* Dynamic hardware proc id */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	reserved4[56];
 	volatile u8 vphn_assoc_counts[8]; /* Virtual processor home node */
 					  /* associativity change counters */
@@ -66,15 +76,26 @@ struct lppaca {
 
 	u8	reserved6[48];
 	u8	cede_latency_hint;
+<<<<<<< HEAD
 	u8	reserved7[7];
+=======
+	u8	ebb_regs_in_use;
+	u8	reserved7[6];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	dtl_enable_mask;	/* Dispatch Trace Log mask */
 	u8	donate_dedicated_cpu;	/* Donate dedicated CPU cycles */
 	u8	fpregs_in_use;
 	u8	pmcregs_in_use;
 	u8	reserved8[28];
+<<<<<<< HEAD
 	u64	wait_state_cycles;	/* Wait cycles for this proc */
 	u8	reserved9[28];
 	u16	slb_count;		/* # of SLBs to maintain */
+=======
+	__be64	wait_state_cycles;	/* Wait cycles for this proc */
+	u8	reserved9[28];
+	__be16	slb_count;		/* # of SLBs to maintain */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	idle;			/* Indicate OS is idle */
 	u8	vmxregs_in_use;
 
@@ -85,6 +106,7 @@ struct lppaca {
 	 * the processor is yielded (either because of an OS yield or a
 	 * hypervisor preempt).  An even value implies that the processor is
 	 * currently executing.
+<<<<<<< HEAD
 	 * NOTE: This value will ALWAYS be zero for dedicated processors and
 	 * will NEVER be zero for shared processors (ie, initialized to a 1).
 	 */
@@ -92,13 +114,28 @@ struct lppaca {
 	volatile u32 dispersion_count;	/* dispatch changed physical cpu */
 	volatile u64 cmo_faults;	/* CMO page fault count */
 	volatile u64 cmo_fault_time;	/* CMO page fault time */
+=======
+	 * NOTE: Even dedicated processor partitions can yield so this
+	 * field cannot be used to determine if we are shared or dedicated.
+	 */
+	volatile __be32 yield_count;
+	volatile __be32 dispersion_count; /* dispatch changed physical cpu */
+	volatile __be64 cmo_faults;	/* CMO page fault count */
+	volatile __be64 cmo_fault_time;	/* CMO page fault time */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	reserved10[104];
 
 	/* cacheline 4-5 */
 
+<<<<<<< HEAD
 	u32	page_ins;		/* CMO Hint - # page ins by OS */
 	u8	reserved11[148];
 	volatile u64 dtl_idx;		/* Dispatch Trace Log head index */
+=======
+	__be32	page_ins;		/* CMO Hint - # page ins by OS */
+	u8	reserved11[148];
+	volatile __be64 dtl_idx;		/* Dispatch Trace Log head index */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	reserved12[96];
 } __attribute__((__aligned__(0x400)));
 
@@ -107,11 +144,27 @@ extern struct lppaca lppaca[];
 #define lppaca_of(cpu)	(*paca[cpu].lppaca_ptr)
 
 /*
+<<<<<<< HEAD
+=======
+ * We are using a non architected field to determine if a partition is
+ * shared or dedicated. This currently works on both KVM and PHYP, but
+ * we will have to transition to something better.
+ */
+#define LPPACA_OLD_SHARED_PROC		2
+
+static inline bool lppaca_shared_proc(struct lppaca *l)
+{
+	return !!(l->__old_status & LPPACA_OLD_SHARED_PROC);
+}
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SLB shadow buffer structure as defined in the PAPR.  The save_area
  * contains adjacent ESID and VSID pairs for each shadowed SLB.  The
  * ESID is stored in the lower 64bits, then the VSID.
  */
 struct slb_shadow {
+<<<<<<< HEAD
 	u32	persistent;		/* Number of persistent SLBs */
 	u32	buffer_length;		/* Total shadow buffer length */
 	u64	reserved;
@@ -123,12 +176,24 @@ struct slb_shadow {
 
 extern struct slb_shadow slb_shadow[];
 
+=======
+	__be32	persistent;		/* Number of persistent SLBs */
+	__be32	buffer_length;		/* Total shadow buffer length */
+	__be64	reserved;
+	struct	{
+		__be64     esid;
+		__be64	vsid;
+	} save_area[SLB_NUM_BOLTED];
+} ____cacheline_aligned;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Layout of entries in the hypervisor's dispatch trace log buffer.
  */
 struct dtl_entry {
 	u8	dispatch_reason;
 	u8	preempt_reason;
+<<<<<<< HEAD
 	u16	processor_id;
 	u32	enqueue_to_dispatch_time;
 	u32	ready_to_enqueue_time;
@@ -137,6 +202,16 @@ struct dtl_entry {
 	u64	fault_addr;
 	u64	srr0;
 	u64	srr1;
+=======
+	__be16	processor_id;
+	__be32	enqueue_to_dispatch_time;
+	__be32	ready_to_enqueue_time;
+	__be32	waiting_to_ready_time;
+	__be64	timebase;
+	__be64	fault_addr;
+	__be64	srr0;
+	__be64	srr1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define DISPATCH_LOG_BYTES	4096	/* bytes per cpu */

@@ -35,7 +35,11 @@ struct tda8083_config
 	u8 demod_address;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_TDA8083)
+=======
+#if IS_REACHABLE(CONFIG_DVB_TDA8083)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* tda8083_attach(const struct tda8083_config* config,
 					   struct i2c_adapter* i2c);
 #else

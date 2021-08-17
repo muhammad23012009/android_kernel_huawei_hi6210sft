@@ -20,6 +20,10 @@
 
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.section	".toc","aw"
 PPC64_CACHES:
@@ -27,7 +31,11 @@ PPC64_CACHES:
 	.section	".text"
 
 /**
+<<<<<<< HEAD
  * __clear_user: - Zero a block of memory in user space, with less checking.
+=======
+ * __arch_clear_user: - Zero a block of memory in user space, with less checking.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @to:   Destination address, in user space.
  * @n:    Number of bytes to zero.
  *
@@ -77,7 +85,11 @@ err3;	stb	r0,0(r3)
 	mr	r3,r4
 	blr
 
+<<<<<<< HEAD
 _GLOBAL(__clear_user)
+=======
+_GLOBAL_TOC(__arch_clear_user)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmpdi	r4,32
 	neg	r6,r3
 	li	r0,0
@@ -191,7 +203,11 @@ err1;	std	r0,8(r3)
 	mtctr	r6
 	mr	r8,r3
 14:
+<<<<<<< HEAD
 err1;	dcbz	r0,r3
+=======
+err1;	dcbz	0,r3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	add	r3,r3,r9
 	bdnz	14b
 
@@ -200,3 +216,7 @@ err1;	dcbz	r0,r3
 	cmpdi	r4,32
 	blt	.Lshort_clear
 	b	.Lmedium_clear
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__arch_clear_user)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

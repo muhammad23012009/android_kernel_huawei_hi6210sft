@@ -92,8 +92,13 @@ struct bunzip_data {
 	/* State for interrupting output loop */
 	int writeCopies, writePos, writeRunCountdown, writeCount, writeCurrent;
 	/* I/O tracking data (file handles, buffers, positions, etc.) */
+<<<<<<< HEAD
 	int (*fill)(void*, unsigned int);
 	int inbufCount, inbufPos /*, outbufPos*/;
+=======
+	long (*fill)(void*, unsigned long);
+	long inbufCount, inbufPos /*, outbufPos*/;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char *inbuf /*,*outbuf*/;
 	unsigned int inbufBitCount, inbufBits;
 	/* The CRC values stored in the block header and calculated from the
@@ -617,7 +622,11 @@ decode_next_byte:
 	goto decode_next_byte;
 }
 
+<<<<<<< HEAD
 static int INIT nofill(void *buf, unsigned int len)
+=======
+static long INIT nofill(void *buf, unsigned long len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -1;
 }
@@ -625,8 +634,13 @@ static int INIT nofill(void *buf, unsigned int len)
 /* Allocate the structure, read file header.  If in_fd ==-1, inbuf must contain
    a complete bunzip file (len bytes long).  If in_fd!=-1, inbuf and len are
    ignored, and data is read from file handle into temporary buffer. */
+<<<<<<< HEAD
 static int INIT start_bunzip(struct bunzip_data **bdp, void *inbuf, int len,
 			     int (*fill)(void*, unsigned int))
+=======
+static int INIT start_bunzip(struct bunzip_data **bdp, void *inbuf, long len,
+			     long (*fill)(void*, unsigned long))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct bunzip_data *bd;
 	unsigned int i, j, c;
@@ -675,11 +689,19 @@ static int INIT start_bunzip(struct bunzip_data **bdp, void *inbuf, int len,
 
 /* Example usage: decompress src_fd to dst_fd.  (Stops at end of bzip2 data,
    not end of file.) */
+<<<<<<< HEAD
 STATIC int INIT bunzip2(unsigned char *buf, int len,
 			int(*fill)(void*, unsigned int),
 			int(*flush)(void*, unsigned int),
 			unsigned char *outbuf,
 			int *pos,
+=======
+STATIC int INIT bunzip2(unsigned char *buf, long len,
+			long (*fill)(void*, unsigned long),
+			long (*flush)(void*, unsigned long),
+			unsigned char *outbuf,
+			long *pos,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			void(*error)(char *x))
 {
 	struct bunzip_data *bd;
@@ -743,12 +765,21 @@ exit_0:
 }
 
 #ifdef PREBOOT
+<<<<<<< HEAD
 STATIC int INIT decompress(unsigned char *buf, int len,
 			int(*fill)(void*, unsigned int),
 			int(*flush)(void*, unsigned int),
 			unsigned char *outbuf,
 			int *pos,
 			void(*error)(char *x))
+=======
+STATIC int INIT __decompress(unsigned char *buf, long len,
+			long (*fill)(void*, unsigned long),
+			long (*flush)(void*, unsigned long),
+			unsigned char *outbuf, long olen,
+			long *pos,
+			void (*error)(char *x))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return bunzip2(buf, len - 4, fill, flush, outbuf, pos, error);
 }

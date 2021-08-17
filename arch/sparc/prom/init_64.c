@@ -26,6 +26,7 @@ phandle prom_chosen_node;
  * It gets passed the pointer to the PROM vector.
  */
 
+<<<<<<< HEAD
 extern void prom_cif_init(void *, void *);
 
 void __init prom_init(void *cif_handler, void *cif_stack)
@@ -33,6 +34,15 @@ void __init prom_init(void *cif_handler, void *cif_stack)
 	phandle node;
 
 	prom_cif_init(cif_handler, cif_stack);
+=======
+extern void prom_cif_init(void *);
+
+void __init prom_init(void *cif_handler)
+{
+	phandle node;
+
+	prom_cif_init(cif_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	prom_chosen_node = prom_finddevice(prom_chosen_path);
 	if (!prom_chosen_node || (s32)prom_chosen_node == -1)

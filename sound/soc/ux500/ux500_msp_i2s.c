@@ -15,7 +15,10 @@
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/pinctrl/consumer.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -26,9 +29,12 @@
 
 #include "ux500_msp_i2s.h"
 
+<<<<<<< HEAD
 /* MSP1/3 Tx/Rx usage protection */
 static DEFINE_SPINLOCK(msp_rxtx_lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  /* Protocol desciptors */
 static const struct msp_protdesc prot_descs[] = {
 	{ /* I2S */
@@ -356,6 +362,7 @@ static int configure_multichannel(struct ux500_msp *msp,
 
 static int enable_msp(struct ux500_msp *msp, struct ux500_msp_config *config)
 {
+<<<<<<< HEAD
 	int status = 0, retval = 0;
 	u32 reg_val_DMACR, reg_val_GCR;
 	unsigned long flags;
@@ -374,6 +381,10 @@ static int enable_msp(struct ux500_msp *msp, struct ux500_msp_config *config)
 			msp->pinctrl_rxtx_ref++;
 		spin_unlock_irqrestore(&msp_rxtx_lock, flags);
 	}
+=======
+	int status = 0;
+	u32 reg_val_DMACR, reg_val_GCR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Configure msp with protocol dependent settings */
 	configure_protocol(msp, config);
@@ -387,12 +398,22 @@ static int enable_msp(struct ux500_msp *msp, struct ux500_msp_config *config)
 	}
 
 	/* Make sure the correct DMA-directions are configured */
+<<<<<<< HEAD
 	if ((config->direction & MSP_DIR_RX) && (!msp->dma_cfg_rx)) {
+=======
+	if ((config->direction & MSP_DIR_RX) &&
+			!msp->capture_dma_data.dma_cfg) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(msp->dev, "%s: ERROR: MSP RX-mode is not configured!",
 			__func__);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	if ((config->direction == MSP_DIR_TX) && (!msp->dma_cfg_tx)) {
+=======
+	if ((config->direction == MSP_DIR_TX) &&
+			!msp->playback_dma_data.dma_cfg) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(msp->dev, "%s: ERROR: MSP TX-mode is not configured!",
 			__func__);
 		return -EINVAL;
@@ -630,8 +651,12 @@ int ux500_msp_i2s_trigger(struct ux500_msp *msp, int cmd, int direction)
 
 int ux500_msp_i2s_close(struct ux500_msp *msp, unsigned int dir)
 {
+<<<<<<< HEAD
 	int status = 0, retval = 0;
 	unsigned long flags;
+=======
+	int status = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(msp->dev, "%s: Enter (dir = 0x%01x).\n", __func__, dir);
 
@@ -643,6 +668,7 @@ int ux500_msp_i2s_close(struct ux500_msp *msp, unsigned int dir)
 			       (~(FRAME_GEN_ENABLE | SRG_ENABLE))),
 			      msp->registers + MSP_GCR);
 
+<<<<<<< HEAD
 		spin_lock_irqsave(&msp_rxtx_lock, flags);
 		WARN_ON(!msp->pinctrl_rxtx_ref);
 		msp->pinctrl_rxtx_ref--;
@@ -655,6 +681,8 @@ int ux500_msp_i2s_close(struct ux500_msp *msp, unsigned int dir)
 		}
 		spin_unlock_irqrestore(&msp_rxtx_lock, flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		writel(0, msp->registers + MSP_GCR);
 		writel(0, msp->registers + MSP_TCF);
 		writel(0, msp->registers + MSP_RCF);
@@ -677,20 +705,58 @@ int ux500_msp_i2s_close(struct ux500_msp *msp, unsigned int dir)
 
 }
 
+<<<<<<< HEAD
+=======
+static int ux500_msp_i2s_of_init_msp(struct platform_device *pdev,
+				struct ux500_msp *msp,
+				struct msp_i2s_platform_data **platform_data)
+{
+	struct msp_i2s_platform_data *pdata;
+
+	*platform_data = devm_kzalloc(&pdev->dev,
+				     sizeof(struct msp_i2s_platform_data),
+				     GFP_KERNEL);
+	pdata = *platform_data;
+	if (!pdata)
+		return -ENOMEM;
+
+	msp->playback_dma_data.dma_cfg = devm_kzalloc(&pdev->dev,
+					sizeof(struct stedma40_chan_cfg),
+					GFP_KERNEL);
+	if (!msp->playback_dma_data.dma_cfg)
+		return -ENOMEM;
+
+	msp->capture_dma_data.dma_cfg = devm_kzalloc(&pdev->dev,
+					sizeof(struct stedma40_chan_cfg),
+					GFP_KERNEL);
+	if (!msp->capture_dma_data.dma_cfg)
+		return -ENOMEM;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ux500_msp_i2s_init_msp(struct platform_device *pdev,
 			struct ux500_msp **msp_p,
 			struct msp_i2s_platform_data *platform_data)
 {
 	struct resource *res = NULL;
+<<<<<<< HEAD
 	struct i2s_controller *i2s_cont;
 	struct device_node *np = pdev->dev.of_node;
 	struct ux500_msp *msp;
+=======
+	struct device_node *np = pdev->dev.of_node;
+	struct ux500_msp *msp;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*msp_p = devm_kzalloc(&pdev->dev, sizeof(struct ux500_msp), GFP_KERNEL);
 	msp = *msp_p;
 	if (!msp)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (np) {
 		if (!platform_data) {
 			platform_data = devm_kzalloc(&pdev->dev,
@@ -709,6 +775,23 @@ int ux500_msp_i2s_init_msp(struct platform_device *pdev,
 	msp->dev = &pdev->dev;
 	msp->dma_cfg_rx = platform_data->msp_i2s_dma_rx;
 	msp->dma_cfg_tx = platform_data->msp_i2s_dma_tx;
+=======
+	if (!platform_data) {
+		if (np) {
+			ret = ux500_msp_i2s_of_init_msp(pdev, msp,
+							&platform_data);
+			if (ret)
+				return ret;
+		} else
+			return -EINVAL;
+	} else {
+		msp->playback_dma_data.dma_cfg = platform_data->msp_i2s_dma_tx;
+		msp->capture_dma_data.dma_cfg = platform_data->msp_i2s_dma_rx;
+		msp->id = platform_data->id;
+	}
+
+	msp->dev = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
@@ -717,6 +800,12 @@ int ux500_msp_i2s_init_msp(struct platform_device *pdev,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	msp->playback_dma_data.tx_rx_addr = res->start + MSP_DR;
+	msp->capture_dma_data.tx_rx_addr = res->start + MSP_DR;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	msp->registers = devm_ioremap(&pdev->dev, res->start,
 				      resource_size(res));
 	if (msp->registers == NULL) {
@@ -727,6 +816,7 @@ int ux500_msp_i2s_init_msp(struct platform_device *pdev,
 	msp->msp_state = MSP_STATE_IDLE;
 	msp->loopback_enable = 0;
 
+<<<<<<< HEAD
 	/* I2S-controller is allocated and added in I2S controller class. */
 	i2s_cont = devm_kzalloc(&pdev->dev, sizeof(*i2s_cont), GFP_KERNEL);
 	if (!i2s_cont) {
@@ -762,6 +852,8 @@ int ux500_msp_i2s_init_msp(struct platform_device *pdev,
 				PTR_ERR(msp->pinctrl_def));
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -769,8 +861,11 @@ void ux500_msp_i2s_cleanup_msp(struct platform_device *pdev,
 			struct ux500_msp *msp)
 {
 	dev_dbg(msp->dev, "%s: Enter (id = %d).\n", __func__, msp->id);
+<<<<<<< HEAD
 
 	device_unregister(&msp->i2s_cont->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MODULE_LICENSE("GPL v2");

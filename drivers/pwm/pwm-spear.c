@@ -2,7 +2,11 @@
  * ST Microelectronics SPEAr Pulse Width Modulator driver
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Shiraz Hashim <shiraz.hashim@st.com>
+=======
+ * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -178,6 +182,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
 	int ret;
 	u32 val;
 
+<<<<<<< HEAD
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r) {
 		dev_err(&pdev->dev, "no memory resources defined\n");
@@ -190,6 +195,13 @@ static int spear_pwm_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+=======
+	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+	if (!pc)
+		return -ENOMEM;
+
+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pc->mmio_base = devm_ioremap_resource(&pdev->dev, r);
 	if (IS_ERR(pc->mmio_base))
 		return PTR_ERR(pc->mmio_base);
@@ -227,7 +239,11 @@ static int spear_pwm_probe(struct platform_device *pdev)
 	}
 
 	ret = pwmchip_add(&pc->chip);
+<<<<<<< HEAD
 	if (!ret) {
+=======
+	if (ret < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clk_unprepare(pc->clk);
 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
 	}
@@ -238,10 +254,13 @@ static int spear_pwm_probe(struct platform_device *pdev)
 static int spear_pwm_remove(struct platform_device *pdev)
 {
 	struct spear_pwm_chip *pc = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < NUM_PWM; i++)
 		pwm_disable(&pc->chip.pwms[i]);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* clk was prepared in probe, hence unprepare it here */
 	clk_unprepare(pc->clk);
@@ -268,6 +287,10 @@ static struct platform_driver spear_pwm_driver = {
 module_platform_driver(spear_pwm_driver);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Shiraz Hashim <shiraz.hashim@st.com>");
+=======
+MODULE_AUTHOR("Shiraz Hashim <shiraz.linux.kernel@gmail.com>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Viresh Kumar <viresh.kumar@linaro.com>");
 MODULE_ALIAS("platform:spear-pwm");

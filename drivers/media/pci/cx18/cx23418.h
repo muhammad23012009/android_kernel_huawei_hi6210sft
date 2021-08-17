@@ -22,7 +22,11 @@
 #ifndef CX23418_H
 #define CX23418_H
 
+<<<<<<< HEAD
 #include <media/cx2341x.h>
+=======
+#include <media/drv-intf/cx2341x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MGR_CMD_MASK            		0x40000000
 /* The MSB of the command code indicates that this is the completion of a

@@ -226,15 +226,31 @@ static inline void superio_select(int sio_cip, int ldn)
 	outb(ldn, sio_cip + 1);
 }
 
+<<<<<<< HEAD
 static inline void superio_enter(int sio_cip)
 {
 	outb(0x87, sio_cip);
 	outb(0x87, sio_cip);
+=======
+static inline int superio_enter(int sio_cip)
+{
+	if (!request_muxed_region(sio_cip, 2, DRVNAME))
+		return -EBUSY;
+
+	outb(0x87, sio_cip);
+	outb(0x87, sio_cip);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void superio_exit(int sio_cip)
 {
 	outb(0xaa, sio_cip);
+<<<<<<< HEAD
+=======
+	release_region(sio_cip, 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* ---------------------------------------------------------------------
@@ -879,6 +895,12 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	if (val > 255)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->vrm = val;
 
 	return count;
@@ -1152,10 +1174,15 @@ static int vt1211_probe(struct platform_device *pdev)
 	int i, err;
 
 	data = devm_kzalloc(dev, sizeof(struct vt1211_data), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!data) {
 		dev_err(dev, "Out of memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (!data)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (!devm_request_region(dev, res->start, resource_size(res),
@@ -1232,7 +1259,10 @@ static int vt1211_remove(struct platform_device *pdev)
 
 static struct platform_driver vt1211_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name  = DRVNAME,
 	},
 	.probe  = vt1211_probe,
@@ -1282,11 +1312,22 @@ EXIT:
 
 static int __init vt1211_find(int sio_cip, unsigned short *address)
 {
+<<<<<<< HEAD
 	int err = -ENODEV;
 	int devid;
 
 	superio_enter(sio_cip);
 
+=======
+	int err;
+	int devid;
+
+	err = superio_enter(sio_cip);
+	if (err)
+		return err;
+
+	err = -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	devid = force_id ? force_id : superio_inb(sio_cip, SIO_VT1211_DEVID);
 	if (devid != SIO_VT1211_ID)
 		goto EXIT;

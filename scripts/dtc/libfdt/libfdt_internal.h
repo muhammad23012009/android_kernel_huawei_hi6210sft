@@ -57,9 +57,15 @@
 
 #define FDT_CHECK_HEADER(fdt) \
 	{ \
+<<<<<<< HEAD
 		int err; \
 		if ((err = fdt_check_header(fdt)) != 0) \
 			return err; \
+=======
+		int __err; \
+		if ((__err = fdt_check_header(fdt)) != 0) \
+			return __err; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 int _fdt_check_node_offset(const void *fdt, int offset);

@@ -23,6 +23,10 @@ MODULE_ALIAS("ipt_mark");
 MODULE_ALIAS("ip6t_mark");
 MODULE_ALIAS("ipt_MARK");
 MODULE_ALIAS("ip6t_MARK");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("arpt_MARK");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned int
 mark_tg(struct sk_buff *skb, const struct xt_action_param *par)

@@ -14,6 +14,10 @@
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/cacheflush.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h>
 #include <asm/uaccess.h>
 #include <asm/io.h>

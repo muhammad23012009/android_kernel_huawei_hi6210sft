@@ -153,6 +153,12 @@ static int timeout = 10;
 /* The pre-timeout is disabled by default. */
 static int pretimeout;
 
+<<<<<<< HEAD
+=======
+/* Default timeout to set on panic */
+static int panic_wdt_timeout = 255;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Default action is to reset the board on a timeout. */
 static unsigned char action_val = WDOG_TIMEOUT_RESET;
 
@@ -208,7 +214,11 @@ static int set_param_timeout(const char *val, const struct kernel_param *kp)
 	return rv;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_timeout = {
+=======
+static const struct kernel_param_ops param_ops_timeout = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set = set_param_timeout,
 	.get = param_get_int,
 };
@@ -270,14 +280,22 @@ static int set_param_wdog_ifnum(const char *val, const struct kernel_param *kp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_wdog_ifnum = {
+=======
+static const struct kernel_param_ops param_ops_wdog_ifnum = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set = set_param_wdog_ifnum,
 	.get = param_get_int,
 };
 
 #define param_check_wdog_ifnum param_check_int
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_str = {
+=======
+static const struct kernel_param_ops param_ops_str = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set = set_param_str,
 	.get = get_param_str,
 };
@@ -293,6 +311,12 @@ MODULE_PARM_DESC(timeout, "Timeout value in seconds.");
 module_param(pretimeout, timeout, 0644);
 MODULE_PARM_DESC(pretimeout, "Pretimeout value in seconds.");
 
+<<<<<<< HEAD
+=======
+module_param(panic_wdt_timeout, timeout, 0644);
+MODULE_PARM_DESC(timeout, "Timeout value on kernel panic in seconds.");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param_cb(action, &param_ops_str, action_op, 0644);
 MODULE_PARM_DESC(action, "Timeout action. One of: "
 		 "reset, none, power_cycle, power_off.");
@@ -387,6 +411,7 @@ static int i_ipmi_set_timeout(struct ipmi_smi_msg  *smi_msg,
 	data[0] = 0;
 	WDOG_SET_TIMER_USE(data[0], WDOG_TIMER_USE_SMS_OS);
 
+<<<<<<< HEAD
 	if ((ipmi_version_major > 1)
 	    || ((ipmi_version_major == 1) && (ipmi_version_minor >= 5))) {
 		/* This is an IPMI 1.5-only feature. */
@@ -397,6 +422,20 @@ static int i_ipmi_set_timeout(struct ipmi_smi_msg  *smi_msg,
 		 * need to start it back up again.
 		 */
 		hbnow = 1;
+=======
+	if (ipmi_watchdog_state != WDOG_TIMEOUT_NONE) {
+		if ((ipmi_version_major > 1) ||
+		    ((ipmi_version_major == 1) && (ipmi_version_minor >= 5))) {
+			/* This is an IPMI 1.5-only feature. */
+			data[0] |= WDOG_DONT_STOP_ON_SET;
+		} else {
+			/*
+			 * In ipmi 1.0, setting the timer stops the watchdog, we
+			 * need to start it back up again.
+			 */
+			hbnow = 1;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	data[1] = 0;
@@ -509,7 +548,11 @@ static void panic_halt_ipmi_heartbeat(void)
 	msg.cmd = IPMI_WDOG_RESET_TIMER;
 	msg.data = NULL;
 	msg.data_len = 0;
+<<<<<<< HEAD
 	atomic_add(2, &panic_done_count);
+=======
+	atomic_add(1, &panic_done_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rv = ipmi_request_supply_msgs(watchdog_user,
 				      (struct ipmi_addr *) &addr,
 				      0,
@@ -519,7 +562,11 @@ static void panic_halt_ipmi_heartbeat(void)
 				      &panic_halt_heartbeat_recv_msg,
 				      1);
 	if (rv)
+<<<<<<< HEAD
 		atomic_sub(2, &panic_done_count);
+=======
+		atomic_sub(1, &panic_done_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct ipmi_smi_msg panic_halt_smi_msg = {
@@ -543,12 +590,20 @@ static void panic_halt_ipmi_set_timeout(void)
 	/* Wait for the messages to be free. */
 	while (atomic_read(&panic_done_count) != 0)
 		ipmi_poll_interface(watchdog_user);
+<<<<<<< HEAD
 	atomic_add(2, &panic_done_count);
+=======
+	atomic_add(1, &panic_done_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rv = i_ipmi_set_timeout(&panic_halt_smi_msg,
 				&panic_halt_recv_msg,
 				&send_heartbeat_now);
 	if (rv) {
+<<<<<<< HEAD
 		atomic_sub(2, &panic_done_count);
+=======
+		atomic_sub(1, &panic_done_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING PFX
 		       "Unable to extend the watchdog timeout.");
 	} else {
@@ -1134,7 +1189,11 @@ ipmi_nmi(unsigned int val, struct pt_regs *regs)
 		   the timer.   So do so. */
 		pretimeout_since_last_heartbeat = 1;
 		if (atomic_inc_and_test(&preop_panic_excl))
+<<<<<<< HEAD
 			panic(PFX "pre-timeout");
+=======
+			nmi_panic(regs, PFX "pre-timeout");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return NMI_HANDLED;
@@ -1156,10 +1215,18 @@ static int wdog_reboot_handler(struct notifier_block *this,
 			ipmi_watchdog_state = WDOG_TIMEOUT_NONE;
 			ipmi_set_timeout(IPMI_SET_TIMEOUT_NO_HB);
 		} else if (ipmi_watchdog_state != WDOG_TIMEOUT_NONE) {
+<<<<<<< HEAD
 			/* Set a long timer to let the reboot happens, but
 			   reboot if it hangs, but only if the watchdog
 			   timer was already running. */
 			timeout = 120;
+=======
+			/* Set a long timer to let the reboot happen or
+			   reset if it hangs, but only if the watchdog
+			   timer was already running. */
+			if (timeout < 120)
+				timeout = 120;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pretimeout = 0;
 			ipmi_watchdog_state = WDOG_TIMEOUT_RESET;
 			ipmi_set_timeout(IPMI_SET_TIMEOUT_NO_HB);
@@ -1189,7 +1256,11 @@ static int wdog_panic_handler(struct notifier_block *this,
 		/* Make sure we do this only once. */
 		panic_event_handled = 1;
 
+<<<<<<< HEAD
 		timeout = 255;
+=======
+		timeout = panic_wdt_timeout;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pretimeout = 0;
 		panic_halt_ipmi_set_timeout();
 	}

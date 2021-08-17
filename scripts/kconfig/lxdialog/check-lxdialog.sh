@@ -21,7 +21,15 @@ ldflags()
 # Where is ncurses.h?
 ccflags()
 {
+<<<<<<< HEAD
 	if [ -f /usr/include/ncursesw/curses.h ]; then
+=======
+	if pkg-config --cflags ncursesw 2>/dev/null; then
+		echo '-DCURSES_LOC="<ncurses.h>" -DNCURSES_WIDECHAR=1'
+	elif pkg-config --cflags ncurses 2>/dev/null; then
+		echo '-DCURSES_LOC="<ncurses.h>"'
+	elif [ -f /usr/include/ncursesw/curses.h ]; then
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		echo '-I/usr/include/ncursesw -DCURSES_LOC="<curses.h>"'
 		echo ' -DNCURSES_WIDECHAR=1'
 	elif [ -f /usr/include/ncurses/ncurses.h ]; then

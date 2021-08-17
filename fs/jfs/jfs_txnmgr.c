@@ -136,7 +136,10 @@ static inline void TXN_SLEEP_DROP_LOCK(wait_queue_head_t * event)
 	set_current_state(TASK_UNINTERRUPTIBLE);
 	TXN_UNLOCK();
 	io_schedule();
+<<<<<<< HEAD
 	__set_current_state(TASK_RUNNING);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	remove_wait_queue(event, &wait);
 }
 
@@ -1765,7 +1768,11 @@ static void xtLog(struct jfs_log * log, struct tblock * tblk, struct lrd * lrd,
 		if (lwm == next)
 			goto out;
 		if (lwm > next) {
+<<<<<<< HEAD
 			jfs_err("xtLog: lwm > next\n");
+=======
+			jfs_err("xtLog: lwm > next");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		}
 		tlck->flag |= tlckUPDATEMAP;
@@ -1799,8 +1806,13 @@ static void xtLog(struct jfs_log * log, struct tblock * tblk, struct lrd * lrd,
 			xadlock->xdlist = &p->xad[lwm];
 			tblk->xflag &= ~COMMIT_LAZY;
 		}
+<<<<<<< HEAD
 		jfs_info("xtLog: alloc ip:0x%p mp:0x%p tlck:0x%p lwm:%d "
 			 "count:%d", tlck->ip, mp, tlck, lwm, xadlock->count);
+=======
+		jfs_info("xtLog: alloc ip:0x%p mp:0x%p tlck:0x%p lwm:%d count:%d",
+			 tlck->ip, mp, tlck, lwm, xadlock->count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		maplock->index = 1;
 
@@ -1929,8 +1941,12 @@ static void xtLog(struct jfs_log * log, struct tblock * tblk, struct lrd * lrd,
 	 * header ?
 	 */
 	if (tlck->type & tlckTRUNCATE) {
+<<<<<<< HEAD
 		/* This odd declaration suppresses a bogus gcc warning */
 		pxd_t pxd = pxd;	/* truncated extent of xad */
+=======
+		pxd_t pxd;	/* truncated extent of xad */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int twm;
 
 		/*
@@ -2026,8 +2042,12 @@ static void xtLog(struct jfs_log * log, struct tblock * tblk, struct lrd * lrd,
 			xadlock->count = next - lwm;
 			xadlock->xdlist = &p->xad[lwm];
 
+<<<<<<< HEAD
 			jfs_info("xtLog: alloc ip:0x%p mp:0x%p count:%d "
 				 "lwm:%d next:%d",
+=======
+			jfs_info("xtLog: alloc ip:0x%p mp:0x%p count:%d lwm:%d next:%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 tlck->ip, mp, xadlock->count, lwm, next);
 			maplock->index++;
 			xadlock++;
@@ -2048,8 +2068,13 @@ static void xtLog(struct jfs_log * log, struct tblock * tblk, struct lrd * lrd,
 			pxdlock->count = 1;
 			pxdlock->pxd = pxd;
 
+<<<<<<< HEAD
 			jfs_info("xtLog: truncate ip:0x%p mp:0x%p count:%d "
 				 "hwm:%d", ip, mp, pxdlock->count, hwm);
+=======
+			jfs_info("xtLog: truncate ip:0x%p mp:0x%p count:%d hwm:%d",
+				 ip, mp, pxdlock->count, hwm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			maplock->index++;
 			xadlock++;
 		}
@@ -2067,8 +2092,12 @@ static void xtLog(struct jfs_log * log, struct tblock * tblk, struct lrd * lrd,
 			xadlock->count = hwm - next + 1;
 			xadlock->xdlist = &p->xad[next];
 
+<<<<<<< HEAD
 			jfs_info("xtLog: free ip:0x%p mp:0x%p count:%d "
 				 "next:%d hwm:%d",
+=======
+			jfs_info("xtLog: free ip:0x%p mp:0x%p count:%d next:%d hwm:%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 tlck->ip, mp, xadlock->count, next, hwm);
 			maplock->index++;
 		}
@@ -2524,8 +2553,12 @@ void txFreeMap(struct inode *ip,
 					xlen = lengthXAD(xad);
 					dbUpdatePMap(ipbmap, true, xaddr,
 						     (s64) xlen, tblk);
+<<<<<<< HEAD
 					jfs_info("freePMap: xaddr:0x%lx "
 						 "xlen:%d",
+=======
+					jfs_info("freePMap: xaddr:0x%lx xlen:%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						 (ulong) xaddr, xlen);
 				}
 			}
@@ -2684,7 +2717,11 @@ void txAbort(tid_t tid, int dirty)
 	 * mark filesystem dirty
 	 */
 	if (dirty)
+<<<<<<< HEAD
 		jfs_error(tblk->sb, "txAbort");
+=======
+		jfs_error(tblk->sb, "\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return;
 }
@@ -2808,7 +2845,10 @@ int jfs_lazycommit(void *arg)
 			set_current_state(TASK_INTERRUPTIBLE);
 			LAZY_UNLOCK(flags);
 			schedule();
+<<<<<<< HEAD
 			__set_current_state(TASK_RUNNING);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			remove_wait_queue(&jfs_commit_thread_wait, &wq);
 		}
 	} while (!kthread_should_stop());
@@ -2816,7 +2856,11 @@ int jfs_lazycommit(void *arg)
 	if (!list_empty(&TxAnchor.unlock_queue))
 		jfs_err("jfs_lazycommit being killed w/pending transactions!");
 	else
+<<<<<<< HEAD
 		jfs_info("jfs_lazycommit being killed\n");
+=======
+		jfs_info("jfs_lazycommit being killed");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2898,8 +2942,12 @@ restart:
 	 * on anon_list2.  Let's check.
 	 */
 	if (!list_empty(&TxAnchor.anon_list2)) {
+<<<<<<< HEAD
 		list_splice(&TxAnchor.anon_list2, &TxAnchor.anon_list);
 		INIT_LIST_HEAD(&TxAnchor.anon_list2);
+=======
+		list_splice_init(&TxAnchor.anon_list2, &TxAnchor.anon_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto restart;
 	}
 	TXN_UNLOCK();
@@ -2996,7 +3044,10 @@ int jfs_sync(void *arg)
 			set_current_state(TASK_INTERRUPTIBLE);
 			TXN_UNLOCK();
 			schedule();
+<<<<<<< HEAD
 			__set_current_state(TASK_RUNNING);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} while (!kthread_should_stop());
 
@@ -3046,7 +3097,10 @@ static int jfs_txanchor_proc_open(struct inode *inode, struct file *file)
 }
 
 const struct file_operations jfs_txanchor_proc_fops = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= jfs_txanchor_proc_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,
@@ -3087,7 +3141,10 @@ static int jfs_txstats_proc_open(struct inode *inode, struct file *file)
 }
 
 const struct file_operations jfs_txstats_proc_fops = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= jfs_txstats_proc_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,

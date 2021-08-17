@@ -25,7 +25,11 @@ cat << EOF
 #define __IGNORE_rmdir		/* unlinkat */
 #define __IGNORE_lchown		/* fchownat */
 #define __IGNORE_access		/* faccessat */
+<<<<<<< HEAD
 #define __IGNORE_rename		/* renameat */
+=======
+#define __IGNORE_rename		/* renameat2 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __IGNORE_readlink	/* readlinkat */
 #define __IGNORE_symlink	/* symlinkat */
 #define __IGNORE_utimes		/* futimesat */
@@ -37,6 +41,12 @@ cat << EOF
 #define __IGNORE_lstat64	/* fstatat64 */
 #endif
 
+<<<<<<< HEAD
+=======
+/* Missing flags argument */
+#define __IGNORE_renameat	/* renameat2 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* CLOEXEC flag */
 #define __IGNORE_pipe		/* pipe2 */
 #define __IGNORE_dup2		/* dup3 */
@@ -209,5 +219,9 @@ EOF
     )
 }
 
+<<<<<<< HEAD
 (ignore_list && syscall_list $(dirname $0)/../arch/x86/syscalls/syscall_32.tbl) | \
+=======
+(ignore_list && syscall_list $(dirname $0)/../arch/x86/entry/syscalls/syscall_32.tbl) | \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 $* -E -x c - > /dev/null

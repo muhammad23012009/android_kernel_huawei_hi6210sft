@@ -28,6 +28,11 @@
 #include <linux/interrupt.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/core.h>
 #include <sound/info.h>
@@ -37,8 +42,11 @@
 #include <sound/asoundef.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* note, two last pcis should be equal, it is not a bug */
 
 MODULE_AUTHOR("Anders Torger <torger@ludd.luth.se>");
@@ -198,6 +206,34 @@ MODULE_PARM_DESC(enable, "Enable RME Digi96 soundcard.");
 #define RME96_AD1852_VOL_BITS 14
 #define RME96_AD1855_VOL_BITS 10
 
+<<<<<<< HEAD
+=======
+/* Defines for snd_rme96_trigger */
+#define RME96_TB_START_PLAYBACK 1
+#define RME96_TB_START_CAPTURE 2
+#define RME96_TB_STOP_PLAYBACK 4
+#define RME96_TB_STOP_CAPTURE 8
+#define RME96_TB_RESET_PLAYPOS 16
+#define RME96_TB_RESET_CAPTUREPOS 32
+#define RME96_TB_CLEAR_PLAYBACK_IRQ 64
+#define RME96_TB_CLEAR_CAPTURE_IRQ 128
+#define RME96_RESUME_PLAYBACK	(RME96_TB_START_PLAYBACK)
+#define RME96_RESUME_CAPTURE	(RME96_TB_START_CAPTURE)
+#define RME96_RESUME_BOTH	(RME96_RESUME_PLAYBACK \
+				| RME96_RESUME_CAPTURE)
+#define RME96_START_PLAYBACK	(RME96_TB_START_PLAYBACK \
+				| RME96_TB_RESET_PLAYPOS)
+#define RME96_START_CAPTURE	(RME96_TB_START_CAPTURE \
+				| RME96_TB_RESET_CAPTUREPOS)
+#define RME96_START_BOTH	(RME96_START_PLAYBACK \
+				| RME96_START_CAPTURE)
+#define RME96_STOP_PLAYBACK	(RME96_TB_STOP_PLAYBACK \
+				| RME96_TB_CLEAR_PLAYBACK_IRQ)
+#define RME96_STOP_CAPTURE	(RME96_TB_STOP_CAPTURE \
+				| RME96_TB_CLEAR_CAPTURE_IRQ)
+#define RME96_STOP_BOTH		(RME96_STOP_PLAYBACK \
+				| RME96_STOP_CAPTURE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct rme96 {
 	spinlock_t    lock;
@@ -214,6 +250,16 @@ struct rme96 {
 
 	u8 rev; /* card revision number */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+	u32 playback_pointer;
+	u32 capture_pointer;
+	void *playback_suspend_buffer;
+	void *capture_suspend_buffer;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_pcm_substream *playback_substream;
 	struct snd_pcm_substream *capture_substream;
 
@@ -230,7 +276,11 @@ struct rme96 {
 	struct snd_kcontrol   *spdif_ctl;
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_rme96_ids) = {
+=======
+static const struct pci_device_id snd_rme96_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(XILINX, PCI_DEVICE_ID_RME_DIGI96), 0, },
 	{ PCI_VDEVICE(XILINX, PCI_DEVICE_ID_RME_DIGI96_8), 0, },
 	{ PCI_VDEVICE(XILINX, PCI_DEVICE_ID_RME_DIGI96_8_PRO), 0, },
@@ -317,9 +367,14 @@ snd_rme96_playback_copy(struct snd_pcm_substream *substream,
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	count <<= rme96->playback_frlog;
 	pos <<= rme96->playback_frlog;
+<<<<<<< HEAD
 	copy_from_user_toio(rme96->iobase + RME96_IO_PLAY_BUFFER + pos, src,
 			    count);
 	return 0;
+=======
+	return copy_from_user_toio(rme96->iobase + RME96_IO_PLAY_BUFFER + pos, src,
+				   count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int
@@ -332,9 +387,14 @@ snd_rme96_capture_copy(struct snd_pcm_substream *substream,
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	count <<= rme96->capture_frlog;
 	pos <<= rme96->capture_frlog;
+<<<<<<< HEAD
 	copy_to_user_fromio(dst, rme96->iobase + RME96_IO_REC_BUFFER + pos,
 			    count);
         return 0;
+=======
+	return copy_to_user_fromio(dst, rme96->iobase + RME96_IO_REC_BUFFER + pos,
+				   count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -344,6 +404,11 @@ static struct snd_pcm_hardware snd_rme96_playback_spdif_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+<<<<<<< HEAD
+=======
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -373,6 +438,11 @@ static struct snd_pcm_hardware snd_rme96_capture_spdif_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+<<<<<<< HEAD
+=======
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -402,6 +472,11 @@ static struct snd_pcm_hardware snd_rme96_playback_adat_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+<<<<<<< HEAD
+=======
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -427,6 +502,11 @@ static struct snd_pcm_hardware snd_rme96_capture_adat_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+<<<<<<< HEAD
+=======
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -884,8 +964,12 @@ snd_rme96_setframelog(struct rme96 *rme96,
 }
 
 static int
+<<<<<<< HEAD
 snd_rme96_playback_setformat(struct rme96 *rme96,
 			     int format)
+=======
+snd_rme96_playback_setformat(struct rme96 *rme96, snd_pcm_format_t format)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	switch (format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
@@ -902,8 +986,12 @@ snd_rme96_playback_setformat(struct rme96 *rme96,
 }
 
 static int
+<<<<<<< HEAD
 snd_rme96_capture_setformat(struct rme96 *rme96,
 			    int format)
+=======
+snd_rme96_capture_setformat(struct rme96 *rme96, snd_pcm_format_t format)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	switch (format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
@@ -1056,6 +1144,7 @@ snd_rme96_capture_hw_params(struct snd_pcm_substream *substream,
 }
 
 static void
+<<<<<<< HEAD
 snd_rme96_playback_start(struct rme96 *rme96,
 			 int from_pause)
 {
@@ -1104,6 +1193,37 @@ snd_rme96_capture_stop(struct rme96 *rme96)
 	rme96->wcreg &= ~RME96_WCR_START_2;
 	writel(rme96->wcreg, rme96->iobase + RME96_IO_CONTROL_REGISTER);
 }
+=======
+snd_rme96_trigger(struct rme96 *rme96,
+		  int op)
+{
+	if (op & RME96_TB_RESET_PLAYPOS)
+		writel(0, rme96->iobase + RME96_IO_RESET_PLAY_POS);
+	if (op & RME96_TB_RESET_CAPTUREPOS)
+		writel(0, rme96->iobase + RME96_IO_RESET_REC_POS);
+	if (op & RME96_TB_CLEAR_PLAYBACK_IRQ) {
+		rme96->rcreg = readl(rme96->iobase + RME96_IO_CONTROL_REGISTER);
+		if (rme96->rcreg & RME96_RCR_IRQ)
+			writel(0, rme96->iobase + RME96_IO_CONFIRM_PLAY_IRQ);
+	}
+	if (op & RME96_TB_CLEAR_CAPTURE_IRQ) {
+		rme96->rcreg = readl(rme96->iobase + RME96_IO_CONTROL_REGISTER);
+		if (rme96->rcreg & RME96_RCR_IRQ_2)
+			writel(0, rme96->iobase + RME96_IO_CONFIRM_REC_IRQ);
+	}
+	if (op & RME96_TB_START_PLAYBACK)
+		rme96->wcreg |= RME96_WCR_START;
+	if (op & RME96_TB_STOP_PLAYBACK)
+		rme96->wcreg &= ~RME96_WCR_START;
+	if (op & RME96_TB_START_CAPTURE)
+		rme96->wcreg |= RME96_WCR_START_2;
+	if (op & RME96_TB_STOP_CAPTURE)
+		rme96->wcreg &= ~RME96_WCR_START_2;
+	writel(rme96->wcreg, rme96->iobase + RME96_IO_CONTROL_REGISTER);
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static irqreturn_t
 snd_rme96_interrupt(int irq,
@@ -1146,6 +1266,7 @@ rme96_set_buffer_size_constraint(struct rme96 *rme96,
 {
 	unsigned int size;
 
+<<<<<<< HEAD
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
 				     RME96_BUFFER_SIZE, RME96_BUFFER_SIZE);
 	if ((size = rme96->playback_periodsize) != 0 ||
@@ -1153,6 +1274,15 @@ rme96_set_buffer_size_constraint(struct rme96 *rme96,
 		snd_pcm_hw_constraint_minmax(runtime,
 					     SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
 					     size, size);
+=======
+	snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+				     RME96_BUFFER_SIZE);
+	if ((size = rme96->playback_periodsize) != 0 ||
+	    (size = rme96->capture_periodsize) != 0)
+		snd_pcm_hw_constraint_single(runtime,
+					     SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
+					     size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		snd_pcm_hw_constraint_list(runtime, 0,
 					   SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
@@ -1166,6 +1296,10 @@ snd_rme96_playback_spdif_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
+=======
+	snd_pcm_set_sync(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&rme96->lock);	
         if (rme96->playback_substream != NULL) {
 		spin_unlock_irq(&rme96->lock);
@@ -1202,6 +1336,10 @@ snd_rme96_capture_spdif_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
+=======
+	snd_pcm_set_sync(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	runtime->hw = snd_rme96_capture_spdif_info;
         if (snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG &&
             (rate = snd_rme96_capture_getrate(rme96, &isadat)) > 0)
@@ -1233,6 +1371,10 @@ snd_rme96_playback_adat_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;        
 	
+<<<<<<< HEAD
+=======
+	snd_pcm_set_sync(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&rme96->lock);	
         if (rme96->playback_substream != NULL) {
 		spin_unlock_irq(&rme96->lock);
@@ -1264,6 +1406,10 @@ snd_rme96_capture_adat_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
+=======
+	snd_pcm_set_sync(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	runtime->hw = snd_rme96_capture_adat_info;
         if (snd_rme96_getinputtype(rme96) == RME96_INPUT_ANALOG) {
                 /* makes no sense to use analog input. Note that analog
@@ -1299,7 +1445,11 @@ snd_rme96_playback_close(struct snd_pcm_substream *substream)
 
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISPLAYING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_playback_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_PLAYBACK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	rme96->playback_substream = NULL;
 	rme96->playback_periodsize = 0;
@@ -1320,7 +1470,11 @@ snd_rme96_capture_close(struct snd_pcm_substream *substream)
 	
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISRECORDING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_capture_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_CAPTURE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	rme96->capture_substream = NULL;
 	rme96->capture_periodsize = 0;
@@ -1335,7 +1489,11 @@ snd_rme96_playback_prepare(struct snd_pcm_substream *substream)
 	
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISPLAYING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_playback_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_PLAYBACK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	writel(0, rme96->iobase + RME96_IO_RESET_PLAY_POS);
 	spin_unlock_irq(&rme96->lock);
@@ -1349,7 +1507,11 @@ snd_rme96_capture_prepare(struct snd_pcm_substream *substream)
 	
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISRECORDING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_capture_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_CAPTURE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	writel(0, rme96->iobase + RME96_IO_RESET_REC_POS);
 	spin_unlock_irq(&rme96->lock);
@@ -1361,10 +1523,25 @@ snd_rme96_playback_trigger(struct snd_pcm_substream *substream,
 			   int cmd)
 {
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
+=======
+	struct snd_pcm_substream *s;
+	bool sync;
+
+	snd_pcm_group_for_each_entry(s, substream) {
+		if (snd_pcm_substream_chip(s) == rme96)
+			snd_pcm_trigger_done(s, substream);
+	}
+
+	sync = (rme96->playback_substream && rme96->capture_substream) &&
+	       (rme96->playback_substream->group ==
+		rme96->capture_substream->group);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		if (!RME96_ISPLAYING(rme96)) {
+<<<<<<< HEAD
 			if (substream != rme96->playback_substream) {
 				return -EBUSY;
 			}
@@ -1378,10 +1555,27 @@ snd_rme96_playback_trigger(struct snd_pcm_substream *substream,
 				return -EBUSY;
 			}
 			snd_rme96_playback_stop(rme96);
+=======
+			if (substream != rme96->playback_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_START_BOTH
+						 : RME96_START_PLAYBACK);
+		}
+		break;
+
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+	case SNDRV_PCM_TRIGGER_STOP:
+		if (RME96_ISPLAYING(rme96)) {
+			if (substream != rme96->playback_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 :  RME96_STOP_PLAYBACK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		if (RME96_ISPLAYING(rme96)) {
 			snd_rme96_playback_stop(rme96);
 		}
@@ -1396,6 +1590,24 @@ snd_rme96_playback_trigger(struct snd_pcm_substream *substream,
 	default:
 		return -EINVAL;
 	}
+=======
+		if (RME96_ISPLAYING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 : RME96_STOP_PLAYBACK);
+		break;
+
+	case SNDRV_PCM_TRIGGER_RESUME:
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+		if (!RME96_ISPLAYING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_RESUME_BOTH
+						 : RME96_RESUME_PLAYBACK);
+		break;
+
+	default:
+		return -EINVAL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1404,10 +1616,25 @@ snd_rme96_capture_trigger(struct snd_pcm_substream *substream,
 			  int cmd)
 {
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
+=======
+	struct snd_pcm_substream *s;
+	bool sync;
+
+	snd_pcm_group_for_each_entry(s, substream) {
+		if (snd_pcm_substream_chip(s) == rme96)
+			snd_pcm_trigger_done(s, substream);
+	}
+
+	sync = (rme96->playback_substream && rme96->capture_substream) &&
+	       (rme96->playback_substream->group ==
+		rme96->capture_substream->group);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		if (!RME96_ISRECORDING(rme96)) {
+<<<<<<< HEAD
 			if (substream != rme96->capture_substream) {
 				return -EBUSY;
 			}
@@ -1421,10 +1648,27 @@ snd_rme96_capture_trigger(struct snd_pcm_substream *substream,
 				return -EBUSY;
 			}
 			snd_rme96_capture_stop(rme96);
+=======
+			if (substream != rme96->capture_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_START_BOTH
+						 : RME96_START_CAPTURE);
+		}
+		break;
+
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+	case SNDRV_PCM_TRIGGER_STOP:
+		if (RME96_ISRECORDING(rme96)) {
+			if (substream != rme96->capture_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 : RME96_STOP_CAPTURE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		if (RME96_ISRECORDING(rme96)) {
 			snd_rme96_capture_stop(rme96);
 		}
@@ -1436,6 +1680,20 @@ snd_rme96_capture_trigger(struct snd_pcm_substream *substream,
 		}
 		break;
 		
+=======
+		if (RME96_ISRECORDING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 : RME96_STOP_CAPTURE);
+		break;
+
+	case SNDRV_PCM_TRIGGER_RESUME:
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+		if (!RME96_ISRECORDING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_RESUME_BOTH
+						 : RME96_RESUME_CAPTURE);
+		break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		return -EINVAL;
 	}
@@ -1457,7 +1715,11 @@ snd_rme96_capture_pointer(struct snd_pcm_substream *substream)
 	return snd_rme96_capture_ptr(rme96);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme96_playback_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_rme96_playback_spdif_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_rme96_playback_spdif_open,
 	.close =	snd_rme96_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1470,7 +1732,11 @@ static struct snd_pcm_ops snd_rme96_playback_spdif_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme96_capture_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_rme96_capture_spdif_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_rme96_capture_spdif_open,
 	.close =	snd_rme96_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1482,7 +1748,11 @@ static struct snd_pcm_ops snd_rme96_capture_spdif_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme96_playback_adat_ops = {
+=======
+static const struct snd_pcm_ops snd_rme96_playback_adat_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_rme96_playback_adat_open,
 	.close =	snd_rme96_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1495,7 +1765,11 @@ static struct snd_pcm_ops snd_rme96_playback_adat_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme96_capture_adat_ops = {
+=======
+static const struct snd_pcm_ops snd_rme96_capture_adat_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_rme96_capture_adat_open,
 	.close =	snd_rme96_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1516,8 +1790,12 @@ snd_rme96_free(void *private_data)
 	        return;
 	}
 	if (rme96->irq >= 0) {
+<<<<<<< HEAD
 		snd_rme96_playback_stop(rme96);
 		snd_rme96_capture_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_BOTH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rme96->areg &= ~RME96_AR_DAC_EN;
 		writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
 		free_irq(rme96->irq, (void *)rme96);
@@ -1531,6 +1809,13 @@ snd_rme96_free(void *private_data)
 		pci_release_regions(rme96->pci);
 		rme96->port = 0;
 	}
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+	vfree(rme96->playback_suspend_buffer);
+	vfree(rme96->capture_suspend_buffer);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_disable_device(rme96->pci);
 }
 
@@ -1566,13 +1851,23 @@ snd_rme96_create(struct rme96 *rme96)
 
 	rme96->iobase = ioremap_nocache(rme96->port, RME96_IO_SIZE);
 	if (!rme96->iobase) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "unable to remap memory region 0x%lx-0x%lx\n", rme96->port, rme96->port + RME96_IO_SIZE - 1);
+=======
+		dev_err(rme96->card->dev,
+			"unable to remap memory region 0x%lx-0x%lx\n",
+			rme96->port, rme96->port + RME96_IO_SIZE - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 
 	if (request_irq(pci->irq, snd_rme96_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, rme96)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
+=======
+		dev_err(rme96->card->dev, "unable to grab IRQ %d\n", pci->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 	rme96->irq = pci->irq;
@@ -1617,8 +1912,12 @@ snd_rme96_create(struct rme96 *rme96)
 	rme96->capture_periodsize = 0;
 	
 	/* make sure playback/capture is stopped, if by some reason active */
+<<<<<<< HEAD
 	snd_rme96_playback_stop(rme96);
 	snd_rme96_capture_stop(rme96);
+=======
+	snd_rme96_trigger(rme96, RME96_STOP_BOTH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 	/* set default values in registers */
 	rme96->wcreg =
@@ -1840,6 +2139,7 @@ snd_rme96_put_loopback_control(struct snd_kcontrol *kcontrol, struct snd_ctl_ele
 static int
 snd_rme96_info_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *_texts[5] = { "Optical", "Coaxial", "Internal", "XLR", "Analog" };
 	struct rme96 *rme96 = snd_kcontrol_chip(kcontrol);
 	char *texts[5] = { _texts[0], _texts[1], _texts[2], _texts[3], _texts[4] };
@@ -1853,19 +2153,46 @@ snd_rme96_info_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 		break;
 	case PCI_DEVICE_ID_RME_DIGI96_8_PRO:
 		uinfo->value.enumerated.items = 4;
+=======
+	static const char * const _texts[5] = {
+		"Optical", "Coaxial", "Internal", "XLR", "Analog"
+	};
+	struct rme96 *rme96 = snd_kcontrol_chip(kcontrol);
+	const char *texts[5] = {
+		_texts[0], _texts[1], _texts[2], _texts[3], _texts[4]
+	};
+	int num_items;
+	
+	switch (rme96->pci->device) {
+	case PCI_DEVICE_ID_RME_DIGI96:
+	case PCI_DEVICE_ID_RME_DIGI96_8:
+		num_items = 3;
+		break;
+	case PCI_DEVICE_ID_RME_DIGI96_8_PRO:
+		num_items = 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case PCI_DEVICE_ID_RME_DIGI96_8_PAD_OR_PST:
 		if (rme96->rev > 4) {
 			/* PST */
+<<<<<<< HEAD
 			uinfo->value.enumerated.items = 4;
 			texts[3] = _texts[4]; /* Analog instead of XLR */
 		} else {
 			/* PAD */
 			uinfo->value.enumerated.items = 5;
+=======
+			num_items = 4;
+			texts[3] = _texts[4]; /* Analog instead of XLR */
+		} else {
+			/* PAD */
+			num_items = 5;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	default:
 		snd_BUG();
+<<<<<<< HEAD
 		break;
 	}
 	if (uinfo->value.enumerated.item > uinfo->value.enumerated.items - 1) {
@@ -1873,6 +2200,11 @@ snd_rme96_info_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+		return -EINVAL;
+	}
+	return snd_ctl_enum_info(uinfo, 1, num_items, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static int
 snd_rme96_get_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1958,6 +2290,7 @@ snd_rme96_put_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 static int
 snd_rme96_info_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = { "AutoSync", "Internal", "Word" };
 	
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1968,6 +2301,11 @@ snd_rme96_info_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = { "AutoSync", "Internal", "Word" };
+	
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static int
 snd_rme96_get_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1997,6 +2335,7 @@ snd_rme96_put_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 static int
 snd_rme96_info_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = { "0 dB", "-6 dB", "-12 dB", "-18 dB" };
 	
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -2007,6 +2346,13 @@ snd_rme96_info_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"0 dB", "-6 dB", "-12 dB", "-18 dB"
+	};
+	
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static int
 snd_rme96_get_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2037,6 +2383,7 @@ snd_rme96_put_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl_
 static int
 snd_rme96_info_montracks_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = { "1+2", "3+4", "5+6", "7+8" };
 	
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -2047,6 +2394,11 @@ snd_rme96_info_montracks_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = { "1+2", "3+4", "5+6", "7+8" };
+	
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static int
 snd_rme96_get_montracks_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2330,6 +2682,80 @@ snd_rme96_create_switches(struct snd_card *card,
  * Card initialisation
  */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+
+static int rme96_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct rme96 *rme96 = card->private_data;
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+	snd_pcm_suspend(rme96->playback_substream);
+	snd_pcm_suspend(rme96->capture_substream);
+
+	/* save capture & playback pointers */
+	rme96->playback_pointer = readl(rme96->iobase + RME96_IO_GET_PLAY_POS)
+				  & RME96_RCR_AUDIO_ADDR_MASK;
+	rme96->capture_pointer = readl(rme96->iobase + RME96_IO_GET_REC_POS)
+				 & RME96_RCR_AUDIO_ADDR_MASK;
+
+	/* save playback and capture buffers */
+	memcpy_fromio(rme96->playback_suspend_buffer,
+		      rme96->iobase + RME96_IO_PLAY_BUFFER, RME96_BUFFER_SIZE);
+	memcpy_fromio(rme96->capture_suspend_buffer,
+		      rme96->iobase + RME96_IO_REC_BUFFER, RME96_BUFFER_SIZE);
+
+	/* disable the DAC  */
+	rme96->areg &= ~RME96_AR_DAC_EN;
+	writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
+	return 0;
+}
+
+static int rme96_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct rme96 *rme96 = card->private_data;
+
+	/* reset playback and record buffer pointers */
+	writel(0, rme96->iobase + RME96_IO_SET_PLAY_POS
+		  + rme96->playback_pointer);
+	writel(0, rme96->iobase + RME96_IO_SET_REC_POS
+		  + rme96->capture_pointer);
+
+	/* restore playback and capture buffers */
+	memcpy_toio(rme96->iobase + RME96_IO_PLAY_BUFFER,
+		    rme96->playback_suspend_buffer, RME96_BUFFER_SIZE);
+	memcpy_toio(rme96->iobase + RME96_IO_REC_BUFFER,
+		    rme96->capture_suspend_buffer, RME96_BUFFER_SIZE);
+
+	/* reset the ADC */
+	writel(rme96->areg | RME96_AR_PD2,
+	       rme96->iobase + RME96_IO_ADDITIONAL_REG);
+	writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
+
+	/* reset and enable DAC, restore analog volume */
+	snd_rme96_reset_dac(rme96);
+	rme96->areg |= RME96_AR_DAC_EN;
+	writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
+	if (RME96_HAS_ANALOG_OUT(rme96)) {
+		usleep_range(3000, 10000);
+		snd_rme96_apply_dac_volume(rme96);
+	}
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
+
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(rme96_pm, rme96_suspend, rme96_resume);
+#define RME96_PM_OPS	&rme96_pm
+#else
+#define RME96_PM_OPS	NULL
+#endif /* CONFIG_PM_SLEEP */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void snd_rme96_card_free(struct snd_card *card)
 {
 	snd_rme96_free(card->private_data);
@@ -2352,20 +2778,48 @@ snd_rme96_probe(struct pci_dev *pci,
 		dev++;
 		return -ENOENT;
 	}
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct rme96), &card);
+=======
+	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+			   sizeof(struct rme96), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	card->private_free = snd_rme96_card_free;
 	rme96 = card->private_data;
 	rme96->card = card;
 	rme96->pci = pci;
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_rme96_create(rme96)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
 	
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+	rme96->playback_suspend_buffer = vmalloc(RME96_BUFFER_SIZE);
+	if (!rme96->playback_suspend_buffer) {
+		dev_err(card->dev,
+			   "Failed to allocate playback suspend buffer!\n");
+		snd_card_free(card);
+		return -ENOMEM;
+	}
+	rme96->capture_suspend_buffer = vmalloc(RME96_BUFFER_SIZE);
+	if (!rme96->capture_suspend_buffer) {
+		dev_err(card->dev,
+			   "Failed to allocate capture suspend buffer!\n");
+		snd_card_free(card);
+		return -ENOMEM;
+	}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	strcpy(card->driver, "Digi96");
 	switch (rme96->pci->device) {
 	case PCI_DEVICE_ID_RME_DIGI96:
@@ -2401,7 +2855,10 @@ snd_rme96_probe(struct pci_dev *pci,
 static void snd_rme96_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
+<<<<<<< HEAD
 	pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pci_driver rme96_driver = {
@@ -2409,6 +2866,12 @@ static struct pci_driver rme96_driver = {
 	.id_table = snd_rme96_ids,
 	.probe = snd_rme96_probe,
 	.remove = snd_rme96_remove,
+<<<<<<< HEAD
+=======
+	.driver = {
+		.pm = RME96_PM_OPS,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_pci_driver(rme96_driver);

@@ -5,7 +5,11 @@
  * Copyright 2001 Red Hat, Inc.
  * Based on code from mm/memory.c Copyright Linus Torvalds and others.
  *
+<<<<<<< HEAD
  * Copyright 2011 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ * Copyright 2011 Red Hat, Inc., Peter Zijlstra
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -96,10 +100,16 @@ struct mmu_gather {
 #endif
 	unsigned long		start;
 	unsigned long		end;
+<<<<<<< HEAD
 	unsigned int		need_flush : 1,	/* Did free PTEs */
 	/* we are in the middle of an operation to clear
 	 * a full mm and can make some optimizations */
 				fullmm : 1,
+=======
+	/* we are in the middle of an operation to clear
+	 * a full mm and can make some optimizations */
+	unsigned int		fullmm : 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* we have performed an operation which
 	 * requires a complete flush of the tlb */
 				need_flush_all : 1;
@@ -108,6 +118,15 @@ struct mmu_gather {
 	struct mmu_gather_batch	local;
 	struct page		*__pages[MMU_GATHER_BUNDLE];
 	unsigned int		batch_count;
+<<<<<<< HEAD
+=======
+	/*
+	 * __tlb_adjust_range  will track the new addr here,
+	 * that that we can adjust the range after the flush
+	 */
+	unsigned long addr;
+	int page_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define HAVE_GENERIC_MMU_GATHER
@@ -116,7 +135,51 @@ void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm, unsigned long 
 void tlb_flush_mmu(struct mmu_gather *tlb);
 void tlb_finish_mmu(struct mmu_gather *tlb, unsigned long start,
 							unsigned long end);
+<<<<<<< HEAD
 int __tlb_remove_page(struct mmu_gather *tlb, struct page *page);
+=======
+extern bool __tlb_remove_page_size(struct mmu_gather *tlb, struct page *page,
+				   int page_size);
+
+static inline void __tlb_adjust_range(struct mmu_gather *tlb,
+				      unsigned long address)
+{
+	tlb->start = min(tlb->start, address);
+	tlb->end = max(tlb->end, address + PAGE_SIZE);
+	/*
+	 * Track the last address with which we adjusted the range. This
+	 * will be used later to adjust again after a mmu_flush due to
+	 * failed __tlb_remove_page
+	 */
+	tlb->addr = address;
+}
+
+static inline void __tlb_reset_range(struct mmu_gather *tlb)
+{
+	if (tlb->fullmm) {
+		tlb->start = tlb->end = ~0;
+	} else {
+		tlb->start = TASK_SIZE;
+		tlb->end = 0;
+	}
+}
+
+static inline void tlb_remove_page_size(struct mmu_gather *tlb,
+					struct page *page, int page_size)
+{
+	if (__tlb_remove_page_size(tlb, page, page_size)) {
+		tlb_flush_mmu(tlb);
+		tlb->page_size = page_size;
+		__tlb_adjust_range(tlb, tlb->addr);
+		__tlb_remove_page_size(tlb, page, page_size);
+	}
+}
+
+static bool __tlb_remove_page(struct mmu_gather *tlb, struct page *page)
+{
+	return __tlb_remove_page_size(tlb, page, PAGE_SIZE);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* tlb_remove_page
  *	Similar to __tlb_remove_page but will call tlb_flush_mmu() itself when
@@ -124,6 +187,7 @@ int __tlb_remove_page(struct mmu_gather *tlb, struct page *page);
  */
 static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 {
+<<<<<<< HEAD
 	if (!__tlb_remove_page(tlb, page))
 		tlb_flush_mmu(tlb);
 }
@@ -138,6 +202,55 @@ static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 #define tlb_remove_tlb_entry(tlb, ptep, address)		\
 	do {							\
 		tlb->need_flush = 1;				\
+=======
+	return tlb_remove_page_size(tlb, page, PAGE_SIZE);
+}
+
+static inline bool __tlb_remove_pte_page(struct mmu_gather *tlb, struct page *page)
+{
+	/* active->nr should be zero when we call this */
+	VM_BUG_ON_PAGE(tlb->active->nr, page);
+	tlb->page_size = PAGE_SIZE;
+	__tlb_adjust_range(tlb, tlb->addr);
+	return __tlb_remove_page(tlb, page);
+}
+
+/*
+ * In the case of tlb vma handling, we can optimise these away in the
+ * case where we're doing a full MM flush.  When we're doing a munmap,
+ * the vmas are adjusted to only cover the region to be torn down.
+ */
+#ifndef tlb_start_vma
+#define tlb_start_vma(tlb, vma) do { } while (0)
+#endif
+
+#define __tlb_end_vma(tlb, vma)					\
+	do {							\
+		if (!tlb->fullmm && tlb->end) {			\
+			tlb_flush(tlb);				\
+			__tlb_reset_range(tlb);			\
+		}						\
+	} while (0)
+
+#ifndef tlb_end_vma
+#define tlb_end_vma	__tlb_end_vma
+#endif
+
+#ifndef __tlb_remove_tlb_entry
+#define __tlb_remove_tlb_entry(tlb, ptep, address) do { } while (0)
+#endif
+
+/**
+ * tlb_remove_tlb_entry - remember a pte unmapping for later tlb invalidation.
+ *
+ * Record the fact that pte's were really unmapped by updating the range,
+ * so we can later optimise away the tlb invalidate.   This helps when
+ * userspace is unmapping already-unmapped pages, which happens quite a lot.
+ */
+#define tlb_remove_tlb_entry(tlb, ptep, address)		\
+	do {							\
+		__tlb_adjust_range(tlb, address);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__tlb_remove_tlb_entry(tlb, ptep, address);	\
 	} while (0)
 
@@ -151,27 +264,43 @@ static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 
 #define tlb_remove_pmd_tlb_entry(tlb, pmdp, address)		\
 	do {							\
+<<<<<<< HEAD
 		tlb->need_flush = 1;				\
+=======
+		__tlb_adjust_range(tlb, address);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__tlb_remove_pmd_tlb_entry(tlb, pmdp, address);	\
 	} while (0)
 
 #define pte_free_tlb(tlb, ptep, address)			\
 	do {							\
+<<<<<<< HEAD
 		tlb->need_flush = 1;				\
+=======
+		__tlb_adjust_range(tlb, address);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__pte_free_tlb(tlb, ptep, address);		\
 	} while (0)
 
 #ifndef __ARCH_HAS_4LEVEL_HACK
 #define pud_free_tlb(tlb, pudp, address)			\
 	do {							\
+<<<<<<< HEAD
 		tlb->need_flush = 1;				\
+=======
+		__tlb_adjust_range(tlb, address);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__pud_free_tlb(tlb, pudp, address);		\
 	} while (0)
 #endif
 
 #define pmd_free_tlb(tlb, pmdp, address)			\
 	do {							\
+<<<<<<< HEAD
 		tlb->need_flush = 1;				\
+=======
+		__tlb_adjust_range(tlb, address);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__pmd_free_tlb(tlb, pmdp, address);		\
 	} while (0)
 

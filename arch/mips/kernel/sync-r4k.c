@@ -6,12 +6,18 @@
  * not have done anything significant (but they may have had interrupts
  * enabled briefly - prom_smp_finish() should not be responsible for enabling
  * interrupts...)
+<<<<<<< HEAD
  *
  * FIXME: broken for SMTC
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/kernel.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/irqflags.h>
 #include <linux/cpumask.h>
 
@@ -20,6 +26,7 @@
 #include <asm/barrier.h>
 #include <asm/mipsregs.h>
 
+<<<<<<< HEAD
 static atomic_t __cpuinitdata count_start_flag = ATOMIC_INIT(0);
 static atomic_t __cpuinitdata count_count_start = ATOMIC_INIT(0);
 static atomic_t __cpuinitdata count_count_stop = ATOMIC_INIT(0);
@@ -41,12 +48,26 @@ void __cpuinit synchronise_count_master(int cpu)
 	 */
 	return;
 #endif
+=======
+static unsigned int initcount = 0;
+static atomic_t count_count_start = ATOMIC_INIT(0);
+static atomic_t count_count_stop = ATOMIC_INIT(0);
+
+#define COUNTON 100
+#define NR_LOOPS 3
+
+void synchronise_count_master(int cpu)
+{
+	int i;
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk(KERN_INFO "Synchronize counters for CPU %u: ", cpu);
 
 	local_irq_save(flags);
 
 	/*
+<<<<<<< HEAD
 	 * Notify the slaves that it's time to start
 	 */
 	atomic_set(&count_reference, read_c0_count());
@@ -57,6 +78,8 @@ void __cpuinit synchronise_count_master(int cpu)
 	initcount = read_c0_count();
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * We loop a few times to get a primed instruction cache,
 	 * then the last pass is more or less synchronised and
 	 * the master and slaves each set their cycle counters to a known
@@ -74,9 +97,19 @@ void __cpuinit synchronise_count_master(int cpu)
 		atomic_set(&count_count_stop, 0);
 		smp_wmb();
 
+<<<<<<< HEAD
 		/* this lets the slaves write their count register */
 		atomic_inc(&count_count_start);
 
+=======
+		/* Let the slave writes its count register */
+		atomic_inc(&count_count_start);
+
+		/* Count will be initialised to current timer */
+		if (i == 1)
+			initcount = read_c0_count();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Everyone initialises count in the last loop:
 		 */
@@ -84,7 +117,11 @@ void __cpuinit synchronise_count_master(int cpu)
 			write_c0_count(initcount);
 
 		/*
+<<<<<<< HEAD
 		 * Wait for all slaves to leave the synchronization point:
+=======
+		 * Wait for slave to leave the synchronization point:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		while (atomic_read(&count_count_stop) != 1)
 			mb();
@@ -94,7 +131,10 @@ void __cpuinit synchronise_count_master(int cpu)
 	}
 	/* Arrange for an interrupt in a short while */
 	write_c0_compare(read_c0_count() + COUNTON);
+<<<<<<< HEAD
 	atomic_set(&count_start_flag, 0);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	local_irq_restore(flags);
 
@@ -106,6 +146,7 @@ void __cpuinit synchronise_count_master(int cpu)
 	printk("done.\n");
 }
 
+<<<<<<< HEAD
 void __cpuinit synchronise_count_slave(int cpu)
 {
 	int i;
@@ -118,18 +159,26 @@ void __cpuinit synchronise_count_slave(int cpu)
 	 */
 	return;
 #endif
+=======
+void synchronise_count_slave(int cpu)
+{
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Not every cpu is online at the time this gets called,
 	 * so we first wait for the master to say everyone is ready
 	 */
 
+<<<<<<< HEAD
 	while (atomic_read(&count_start_flag) != cpu)
 		mb();
 
 	/* Count will be initialised to next expire for all CPU's */
 	initcount = atomic_read(&count_reference);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < NR_LOOPS; i++) {
 		atomic_inc(&count_count_start);
 		while (atomic_read(&count_count_start) != 2)

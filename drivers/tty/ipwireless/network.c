@@ -116,7 +116,11 @@ static int ipwireless_ppp_start_xmit(struct ppp_channel *ppp_channel,
 					       skb->len,
 					       notify_packet_sent,
 					       network);
+<<<<<<< HEAD
 			if (ret == -1) {
+=======
+			if (ret < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				skb_pull(skb, 2);
 				return 0;
 			}
@@ -133,7 +137,11 @@ static int ipwireless_ppp_start_xmit(struct ppp_channel *ppp_channel,
 					       notify_packet_sent,
 					       network);
 			kfree(buf);
+<<<<<<< HEAD
 			if (ret == -1)
+=======
+			if (ret < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return 0;
 		}
 		kfree_skb(skb);

@@ -48,10 +48,21 @@ static inline unsigned long find_zero(unsigned long mask)
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DCACHE_WORD_ACCESS
 
 #define zero_bytemask(mask) (mask)
 
+=======
+#define zero_bytemask(mask) (mask)
+
+#else	/* __ARMEB__ */
+#include <asm-generic/word-at-a-time.h>
+#endif
+
+#ifdef CONFIG_DCACHE_WORD_ACCESS
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Load an unaligned word from kernel space.
  *
@@ -67,13 +78,25 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
 	asm(
 	"1:	ldr	%0, [%2]\n"
 	"2:\n"
+<<<<<<< HEAD
 	"	.pushsection .fixup,\"ax\"\n"
+=======
+	"	.pushsection .text.fixup,\"ax\"\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	.align 2\n"
 	"3:	and	%1, %2, #0x3\n"
 	"	bic	%2, %2, #0x3\n"
 	"	ldr	%0, [%2]\n"
 	"	lsl	%1, %1, #0x3\n"
+<<<<<<< HEAD
 	"	lsr	%0, %0, %1\n"
+=======
+#ifndef __ARMEB__
+	"	lsr	%0, %0, %1\n"
+#else
+	"	lsl	%0, %0, %1\n"
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	b	2b\n"
 	"	.popsection\n"
 	"	.pushsection __ex_table,\"a\"\n"
@@ -86,6 +109,7 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
 	return ret;
 }
 
+<<<<<<< HEAD
 
 #endif	/* DCACHE_WORD_ACCESS */
 
@@ -93,4 +117,7 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
 #include <asm-generic/word-at-a-time.h>
 #endif
 
+=======
+#endif	/* DCACHE_WORD_ACCESS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_ARM_WORD_AT_A_TIME_H */

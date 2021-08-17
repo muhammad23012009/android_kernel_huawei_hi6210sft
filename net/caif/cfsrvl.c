@@ -15,6 +15,10 @@
 #include <net/caif/caif_layer.h>
 #include <net/caif/cfsrvl.h>
 #include <net/caif/cfpkt.h>
+<<<<<<< HEAD
+=======
+#include <net/caif/caif_dev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SRVL_CTRL_PKT_SIZE 1
 #define SRVL_FLOW_OFF 0x81

@@ -3,7 +3,11 @@
 
 #include <linux/list.h>
 #include <linux/elf.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/extable.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct mod_arch_specific {
 	/* Data Bus Error exception tables */
@@ -88,10 +92,20 @@ search_module_dbetables(unsigned long addr)
 #define MODULE_PROC_FAMILY "MIPS32_R1 "
 #elif defined CONFIG_CPU_MIPS32_R2
 #define MODULE_PROC_FAMILY "MIPS32_R2 "
+<<<<<<< HEAD
+=======
+#elif defined CONFIG_CPU_MIPS32_R6
+#define MODULE_PROC_FAMILY "MIPS32_R6 "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif defined CONFIG_CPU_MIPS64_R1
 #define MODULE_PROC_FAMILY "MIPS64_R1 "
 #elif defined CONFIG_CPU_MIPS64_R2
 #define MODULE_PROC_FAMILY "MIPS64_R2 "
+<<<<<<< HEAD
+=======
+#elif defined CONFIG_CPU_MIPS64_R6
+#define MODULE_PROC_FAMILY "MIPS64_R6 "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif defined CONFIG_CPU_R3000
 #define MODULE_PROC_FAMILY "R3000 "
 #elif defined CONFIG_CPU_TX39XX
@@ -126,6 +140,11 @@ search_module_dbetables(unsigned long addr)
 #define MODULE_PROC_FAMILY "LOONGSON1 "
 #elif defined CONFIG_CPU_LOONGSON2
 #define MODULE_PROC_FAMILY "LOONGSON2 "
+<<<<<<< HEAD
+=======
+#elif defined CONFIG_CPU_LOONGSON3
+#define MODULE_PROC_FAMILY "LOONGSON3 "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif defined CONFIG_CPU_CAVIUM_OCTEON
 #define MODULE_PROC_FAMILY "OCTEON "
 #elif defined CONFIG_CPU_XLR
@@ -142,6 +161,7 @@ search_module_dbetables(unsigned long addr)
 #define MODULE_KERNEL_TYPE "64BIT "
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 #define MODULE_KERNEL_SMTC "MT_SMTC "
 #else
@@ -150,5 +170,9 @@ search_module_dbetables(unsigned long addr)
 
 #define MODULE_ARCH_VERMAGIC \
 	MODULE_PROC_FAMILY MODULE_KERNEL_TYPE MODULE_KERNEL_SMTC
+=======
+#define MODULE_ARCH_VERMAGIC \
+	MODULE_PROC_FAMILY MODULE_KERNEL_TYPE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_MODULE_H */

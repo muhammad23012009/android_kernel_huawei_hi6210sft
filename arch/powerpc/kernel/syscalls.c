@@ -34,13 +34,20 @@
 #include <linux/ipc.h>
 #include <linux/utsname.h>
 #include <linux/file.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/personality.h>
 
 #include <asm/uaccess.h>
 #include <asm/syscalls.h>
 #include <asm/time.h>
 #include <asm/unistd.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-prototypes.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long do_mmap2(unsigned long addr, size_t len,
 			unsigned long prot, unsigned long flags,
@@ -123,6 +130,7 @@ long ppc_fadvise64_64(int fd, int advice, u32 offset_high, u32 offset_low,
 			     (u64)len_high << 32 | len_low, advice);
 }
 
+<<<<<<< HEAD
 void do_show_syscall(unsigned long r3, unsigned long r4, unsigned long r5,
 		     unsigned long r6, unsigned long r7, unsigned long r8,
 		     struct pt_regs *regs)
@@ -135,4 +143,21 @@ void do_show_syscall(unsigned long r3, unsigned long r4, unsigned long r5,
 void do_show_syscall_exit(unsigned long r3)
 {
 	printk(" -> %lx, current=%p cpu=%d\n", r3, current, smp_processor_id());
+=======
+long sys_switch_endian(void)
+{
+	struct thread_info *ti;
+
+	current->thread.regs->msr ^= MSR_LE;
+
+	/*
+	 * Set TIF_RESTOREALL so that r3 isn't clobbered on return to
+	 * userspace. That also has the effect of restoring the non-volatile
+	 * GPRs, so we saved them on the way in here.
+	 */
+	ti = current_thread_info();
+	ti->flags |= _TIF_RESTOREALL;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

@@ -144,6 +144,10 @@ static int adp8870_read(struct i2c_client *client, int reg, uint8_t *val)
 static int adp8870_write(struct i2c_client *client, u8 reg, u8 val)
 {
 	int ret = i2c_smbus_write_byte_data(client, reg, val);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		dev_err(&client->dev, "failed to write\n");
 
@@ -195,6 +199,10 @@ static int adp8870_clr_bits(struct i2c_client *client, int reg, uint8_t bit_mask
 static void adp8870_led_work(struct work_struct *work)
 {
 	struct adp8870_led *led = container_of(work, struct adp8870_led, work);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adp8870_write(led->client, ADP8870_ISC1 + led->id - 1,
 			 led->new_brightness >> 1);
 }
@@ -238,7 +246,11 @@ static int adp8870_led_setup(struct adp8870_led *led)
 static int adp8870_led_probe(struct i2c_client *client)
 {
 	struct adp8870_backlight_platform_data *pdata =
+<<<<<<< HEAD
 		client->dev.platform_data;
+=======
+		dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adp8870_bl *data = i2c_get_clientdata(client);
 	struct adp8870_led *led, *led_dat;
 	struct led_info *cur_led;
@@ -246,10 +258,15 @@ static int adp8870_led_probe(struct i2c_client *client)
 
 	led = devm_kzalloc(&client->dev, pdata->num_leds * sizeof(*led),
 				GFP_KERNEL);
+<<<<<<< HEAD
 	if (led == NULL) {
 		dev_err(&client->dev, "failed to alloc memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (led == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = adp8870_write(client, ADP8870_ISCLAW, pdata->led_fade_law);
 	if (ret)
@@ -325,7 +342,11 @@ static int adp8870_led_probe(struct i2c_client *client)
 static int adp8870_led_remove(struct i2c_client *client)
 {
 	struct adp8870_backlight_platform_data *pdata =
+<<<<<<< HEAD
 		client->dev.platform_data;
+=======
+		dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adp8870_bl *data = i2c_get_clientdata(client);
 	int i;
 
@@ -401,6 +422,10 @@ static int adp8870_bl_set(struct backlight_device *bl, int brightness)
 static int adp8870_bl_update_status(struct backlight_device *bl)
 {
 	int brightness = bl->props.brightness;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bl->props.power != FB_BLANK_UNBLANK)
 		brightness = 0;
 
@@ -651,6 +676,10 @@ static ssize_t adp8870_bl_l1_daylight_max_store(struct device *dev,
 {
 	struct adp8870_bl *data = dev_get_drvdata(dev);
 	int ret = kstrtoul(buf, 10, &data->cached_daylight_max);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -805,10 +834,19 @@ static ssize_t adp8870_bl_ambient_light_zone_store(struct device *dev,
 
 		/* Set user supplied ambient light zone */
 		mutex_lock(&data->lock);
+<<<<<<< HEAD
 		adp8870_read(data->client, ADP8870_CFGR, &reg_val);
 		reg_val &= ~(CFGR_BLV_MASK << CFGR_BLV_SHIFT);
 		reg_val |= (val - 1) << CFGR_BLV_SHIFT;
 		adp8870_write(data->client, ADP8870_CFGR, reg_val);
+=======
+		ret = adp8870_read(data->client, ADP8870_CFGR, &reg_val);
+		if (!ret) {
+			reg_val &= ~(CFGR_BLV_MASK << CFGR_BLV_SHIFT);
+			reg_val |= (val - 1) << CFGR_BLV_SHIFT;
+			adp8870_write(data->client, ADP8870_CFGR, reg_val);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&data->lock);
 	}
 
@@ -848,7 +886,11 @@ static int adp8870_probe(struct i2c_client *client,
 	struct backlight_device *bl;
 	struct adp8870_bl *data;
 	struct adp8870_backlight_platform_data *pdata =
+<<<<<<< HEAD
 		client->dev.platform_data;
+=======
+		dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint8_t reg_val;
 	int ret;
 
@@ -888,8 +930,14 @@ static int adp8870_probe(struct i2c_client *client,
 	memset(&props, 0, sizeof(props));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = props.brightness = ADP8870_MAX_BRIGHTNESS;
+<<<<<<< HEAD
 	bl = backlight_device_register(dev_driver_string(&client->dev),
 			&client->dev, data, &adp8870_bl_ops, &props);
+=======
+	bl = devm_backlight_device_register(&client->dev,
+				dev_driver_string(&client->dev),
+				&client->dev, data, &adp8870_bl_ops, &props);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(bl)) {
 		dev_err(&client->dev, "failed to register backlight\n");
 		return PTR_ERR(bl);
@@ -902,7 +950,11 @@ static int adp8870_probe(struct i2c_client *client,
 			&adp8870_bl_attr_group);
 		if (ret) {
 			dev_err(&client->dev, "failed to register sysfs\n");
+<<<<<<< HEAD
 			goto out1;
+=======
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -925,8 +977,11 @@ out:
 	if (data->pdata->en_ambl_sens)
 		sysfs_remove_group(&data->bl->dev.kobj,
 			&adp8870_bl_attr_group);
+<<<<<<< HEAD
 out1:
 	backlight_device_unregister(bl);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -944,8 +999,11 @@ static int adp8870_remove(struct i2c_client *client)
 		sysfs_remove_group(&data->bl->dev.kobj,
 			&adp8870_bl_attr_group);
 
+<<<<<<< HEAD
 	backlight_device_unregister(data->bl);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -993,4 +1051,7 @@ module_i2c_driver(adp8870_driver);
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
 MODULE_DESCRIPTION("ADP8870 Backlight driver");
+<<<<<<< HEAD
 MODULE_ALIAS("i2c:adp8870-backlight");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

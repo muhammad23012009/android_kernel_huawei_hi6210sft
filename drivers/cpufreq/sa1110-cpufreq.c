@@ -159,7 +159,11 @@ sdram_calculate_timing(struct sdram_info *sd, u_int cpu_khz,
 	 * half speed or use delayed read latching (errata 13).
 	 */
 	if ((ns_to_cycles(sdram->tck, sd_khz) > 1) ||
+<<<<<<< HEAD
 	    (CPU_REVISION < CPU_SA1110_B2 && sd_khz < 62000))
+=======
+	    (read_cpuid_revision() < ARM_CPU_REV_SA1110_B2 && sd_khz < 62000))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sd_khz /= 2;
 
 	sd->mdcnfg = MDCNFG & 0x007f007f;
@@ -229,6 +233,7 @@ sdram_update_refresh(u_int cpu_khz, struct sdram_params *sdram)
 /*
  * Ok, set the CPU frequency.
  */
+<<<<<<< HEAD
 static int sa1110_target(struct cpufreq_policy *policy,
 			 unsigned int target_freq,
 			 unsigned int relation)
@@ -259,6 +264,16 @@ static int sa1110_target(struct cpufreq_policy *policy,
 	freqs.new = sa11x0_ppcr_to_freq(ppcr);
 
 	sdram_calculate_timing(&sd, freqs.new, sdram);
+=======
+static int sa1110_target(struct cpufreq_policy *policy, unsigned int ppcr)
+{
+	struct sdram_params *sdram = &sdram_params;
+	struct sdram_info sd;
+	unsigned long flags;
+	unsigned int unused;
+
+	sdram_calculate_timing(&sd, sa11x0_freq_table[ppcr].frequency, sdram);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if 0
 	/*
@@ -277,8 +292,11 @@ static int sa1110_target(struct cpufreq_policy *policy,
 	sd.mdcas[2] = 0xaaaaaaaa;
 #endif
 
+<<<<<<< HEAD
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * The clock could be going away for some time.  Set the SDRAMs
 	 * to refresh rapidly (every 64 memory clock cycles).  To get
@@ -323,15 +341,20 @@ static int sa1110_target(struct cpufreq_policy *policy,
 	/*
 	 * Now, return the SDRAM refresh back to normal.
 	 */
+<<<<<<< HEAD
 	sdram_update_refresh(freqs.new, sdram);
 
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+=======
+	sdram_update_refresh(sa11x0_freq_table[ppcr].frequency, sdram);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int __init sa1110_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	if (policy->cpu != 0)
 		return -EINVAL;
 	policy->cur = policy->min = policy->max = sa11x0_getspeed(0);
@@ -339,14 +362,23 @@ static int __init sa1110_cpu_init(struct cpufreq_policy *policy)
 	policy->cpuinfo.max_freq = 287000;
 	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
 	return 0;
+=======
+	return cpufreq_generic_init(policy, sa11x0_freq_table, CPUFREQ_ETERNAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* sa1110_driver needs __refdata because it must remain after init registers
  * it with cpufreq_register_driver() */
 static struct cpufreq_driver sa1110_driver __refdata = {
+<<<<<<< HEAD
 	.flags		= CPUFREQ_STICKY,
 	.verify		= sa11x0_verify_speed,
 	.target		= sa1110_target,
+=======
+	.flags		= CPUFREQ_STICKY | CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= sa1110_target,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get		= sa11x0_getspeed,
 	.init		= sa1110_cpu_init,
 	.name		= "sa1110",
@@ -381,7 +413,11 @@ static int __init sa1110_clk_init(void)
 			name = "K4S641632D";
 		if (machine_is_h3100())
 			name = "KM416S4030CT";
+<<<<<<< HEAD
 		if (machine_is_jornada720())
+=======
+		if (machine_is_jornada720() || machine_is_h3600())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			name = "K4S281632B-1H";
 		if (machine_is_nanoengine())
 			name = "MT48LC8M16A2TG-75";

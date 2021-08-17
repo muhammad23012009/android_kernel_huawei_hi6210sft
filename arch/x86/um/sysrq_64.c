@@ -12,7 +12,11 @@
 #include <asm/ptrace.h>
 #include <asm/sysrq.h>
 
+<<<<<<< HEAD
 void __show_regs(struct pt_regs *regs)
+=======
+void show_regs(struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	printk("\n");
 	print_modules();
@@ -33,9 +37,12 @@ void __show_regs(struct pt_regs *regs)
 	printk(KERN_INFO "R13: %016lx R14: %016lx R15: %016lx\n",
 	       PT_REGS_R13(regs), PT_REGS_R14(regs), PT_REGS_R15(regs));
 }
+<<<<<<< HEAD
 
 void show_regs(struct pt_regs *regs)
 {
 	__show_regs(regs);
 	show_trace(current, (unsigned long *) &regs);
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

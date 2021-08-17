@@ -201,6 +201,7 @@ static int sgio2audio_gain_put(struct snd_kcontrol *kcontrol,
 static int sgio2audio_source_info(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static const char *texts[3] = {
 		"Cam Mic", "Mic", "Line"
 	};
@@ -212,6 +213,12 @@ static int sgio2audio_source_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"Cam Mic", "Mic", "Line"
+	};
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int sgio2audio_source_get(struct snd_kcontrol *kcontrol,
@@ -920,7 +927,11 @@ static int snd_sgio2audio_probe(struct platform_device *pdev)
 	struct snd_sgio2audio *chip;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pdev->dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -929,7 +940,10 @@ static int snd_sgio2audio_probe(struct platform_device *pdev)
 		snd_card_free(card);
 		return err;
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = snd_sgio2audio_new_pcm(chip);
 	if (err < 0) {
@@ -971,7 +985,10 @@ static struct platform_driver sgio2audio_driver = {
 	.remove	= snd_sgio2audio_remove,
 	.driver = {
 		.name	= "sgio2audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 

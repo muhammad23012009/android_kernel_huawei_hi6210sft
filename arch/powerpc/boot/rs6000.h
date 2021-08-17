@@ -239,5 +239,9 @@ struct external_reloc {
 #define DEFAULT_DATA_SECTION_ALIGNMENT 4
 #define DEFAULT_BSS_SECTION_ALIGNMENT 4
 #define DEFAULT_TEXT_SECTION_ALIGNMENT 4
+<<<<<<< HEAD
 /* For new sections we havn't heard of before */
+=======
+/* For new sections we haven't heard of before */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DEFAULT_SECTION_ALIGNMENT 4

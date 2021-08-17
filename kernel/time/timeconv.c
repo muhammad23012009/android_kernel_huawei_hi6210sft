@@ -67,13 +67,18 @@ static const unsigned short __mon_yday[2][13] = {
 #define SECS_PER_DAY	(SECS_PER_HOUR * 24)
 
 /**
+<<<<<<< HEAD
  * time_to_tm - converts the calendar time to local broken-down time
+=======
+ * time64_to_tm - converts the calendar time to local broken-down time
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * @totalsecs	the number of seconds elapsed since 00:00:00 on January 1, 1970,
  *		Coordinated Universal Time (UTC).
  * @offset	offset seconds adding to totalsecs.
  * @result	pointer to struct tm variable to receive broken-down time
  */
+<<<<<<< HEAD
 void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 {
 	long days, rem, y;
@@ -81,6 +86,16 @@ void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 
 	days = totalsecs / SECS_PER_DAY;
 	rem = totalsecs % SECS_PER_DAY;
+=======
+void time64_to_tm(time64_t totalsecs, int offset, struct tm *result)
+{
+	long days, rem, y;
+	int remainder;
+	const unsigned short *ip;
+
+	days = div_s64_rem(totalsecs, SECS_PER_DAY, &remainder);
+	rem = remainder;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rem += offset;
 	while (rem < 0) {
 		rem += SECS_PER_DAY;
@@ -124,4 +139,8 @@ void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 	result->tm_mon = y;
 	result->tm_mday = days + 1;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(time_to_tm);
+=======
+EXPORT_SYMBOL(time64_to_tm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

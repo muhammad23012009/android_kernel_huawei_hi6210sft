@@ -20,6 +20,7 @@
 
 struct inode;
 struct posix_acl;
+<<<<<<< HEAD
 struct xfs_inode;
 
 #define XFS_ACL_NOT_PRESENT (-1)
@@ -67,14 +68,29 @@ extern int posix_acl_default_exists(struct inode *inode);
 
 extern const struct xattr_handler xfs_xattr_acl_access_handler;
 extern const struct xattr_handler xfs_xattr_acl_default_handler;
+=======
+
+#ifdef CONFIG_XFS_POSIX_ACL
+extern struct posix_acl *xfs_get_acl(struct inode *inode, int type);
+extern int xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type);
+extern int __xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline struct posix_acl *xfs_get_acl(struct inode *inode, int type)
 {
 	return NULL;
 }
+<<<<<<< HEAD
 # define xfs_inherit_acl(inode, default_acl)		0
 # define xfs_acl_chmod(inode)				0
 # define posix_acl_access_exists(inode)			0
 # define posix_acl_default_exists(inode)		0
 #endif /* CONFIG_XFS_POSIX_ACL */
+=======
+# define xfs_set_acl					NULL
+#endif /* CONFIG_XFS_POSIX_ACL */
+
+extern void xfs_forget_acl(struct inode *inode, const char *name, int xflags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* __XFS_ACL_H__ */

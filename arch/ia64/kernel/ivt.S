@@ -57,8 +57,14 @@
 #include <asm/thread_info.h>
 #include <asm/unistd.h>
 #include <asm/errno.h>
+<<<<<<< HEAD
 
 #if 1
+=======
+#include <asm/export.h>
+
+#if 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define PSR_DEFAULT_BITS	psr.ac
 #else
 # define PSR_DEFAULT_BITS	0
@@ -85,6 +91,10 @@
 
 	.align 32768	// align on 32KB boundary
 	.global ia64_ivt
+<<<<<<< HEAD
+=======
+	EXPORT_DATA_SYMBOL(ia64_ivt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ia64_ivt:
 /////////////////////////////////////////////////////////////////////////////////////////
 // 0x0000 Entry 0 (size 64 bundles) VHPT Translation (8,20,47)
@@ -146,7 +156,11 @@ ENTRY(vhpt_miss)
 (p6)	dep r17=r18,r19,3,(PAGE_SHIFT-3)	// r17=pgd_offset for region 5
 (p7)	dep r17=r18,r17,3,(PAGE_SHIFT-6)	// r17=pgd_offset for region[0-4]
 	cmp.eq p7,p6=0,r21			// unused address bits all zeroes?
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	shr.u r28=r22,PUD_SHIFT			// shift pud index into position
 #else
 	shr.u r18=r22,PMD_SHIFT			// shift pmd index into position
@@ -155,7 +169,11 @@ ENTRY(vhpt_miss)
 	ld8 r17=[r17]				// get *pgd (may be 0)
 	;;
 (p7)	cmp.eq p6,p7=r17,r0			// was pgd_present(*pgd) == NULL?
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dep r28=r28,r17,3,(PAGE_SHIFT-3)	// r28=pud_offset(pgd,addr)
 	;;
 	shr.u r18=r22,PMD_SHIFT			// shift pmd index into position
@@ -222,13 +240,21 @@ ENTRY(vhpt_miss)
 	 */
 	ld8 r25=[r21]				// read *pte again
 	ld8 r26=[r17]				// read *pmd again
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ld8 r19=[r28]				// read *pud again
 #endif
 	cmp.ne p6,p7=r0,r0
 	;;
 	cmp.ne.or.andcm p6,p7=r26,r20		// did *pmd change
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmp.ne.or.andcm p6,p7=r19,r29		// did *pud change
 #endif
 	mov r27=PAGE_SHIFT<<2
@@ -476,7 +502,11 @@ ENTRY(nested_dtlb_miss)
 (p6)	dep r17=r18,r19,3,(PAGE_SHIFT-3)	// r17=pgd_offset for region 5
 (p7)	dep r17=r18,r17,3,(PAGE_SHIFT-6)	// r17=pgd_offset for region[0-4]
 	cmp.eq p7,p6=0,r21			// unused address bits all zeroes?
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	shr.u r18=r22,PUD_SHIFT			// shift pud index into position
 #else
 	shr.u r18=r22,PMD_SHIFT			// shift pmd index into position
@@ -487,7 +517,11 @@ ENTRY(nested_dtlb_miss)
 (p7)	cmp.eq p6,p7=r17,r0			// was pgd_present(*pgd) == NULL?
 	dep r17=r18,r17,3,(PAGE_SHIFT-3)	// r17=p[u|m]d_offset(pgd,addr)
 	;;
+<<<<<<< HEAD
 #ifdef CONFIG_PGTABLE_4
+=======
+#if CONFIG_PGTABLE_LEVELS == 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 (p7)	ld8 r17=[r17]				// get *pud (may be 0)
 	shr.u r18=r22,PMD_SHIFT			// shift pmd index into position
 	;;
@@ -937,7 +971,10 @@ END(interrupt)
 	 *	- ar.fpsr: set to kernel settings
 	 *	-  b6: preserved (same as on entry)
 	 */
+<<<<<<< HEAD
 #ifdef __IA64_ASM_PARAVIRTUALIZED_NATIVE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 GLOBAL_ENTRY(ia64_syscall_setup)
 #if PT(B6) != 0
 # error This code assumes that b6 is the first field in pt_regs.
@@ -1029,7 +1066,10 @@ GLOBAL_ENTRY(ia64_syscall_setup)
 (p10)	mov r8=-EINVAL
 	br.ret.sptk.many b7
 END(ia64_syscall_setup)
+<<<<<<< HEAD
 #endif /* __IA64_ASM_PARAVIRTUALIZED_NATIVE */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.org ia64_ivt+0x3c00
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1043,7 +1083,11 @@ END(ia64_syscall_setup)
 	DBG_FAULT(16)
 	FAULT(16)
 
+<<<<<<< HEAD
 #if defined(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE) && defined(__IA64_ASM_PARAVIRTUALIZED_NATIVE)
+=======
+#if defined(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * There is no particular reason for this code to be here, other than
 	 * that there happens to be space here that would go unused otherwise.

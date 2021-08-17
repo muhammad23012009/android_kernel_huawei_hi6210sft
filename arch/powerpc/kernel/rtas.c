@@ -44,6 +44,12 @@
 #include <asm/mmu.h>
 #include <asm/topology.h>
 
+<<<<<<< HEAD
+=======
+/* This is here deliberately so it's only used in this file */
+void enter_rtas(unsigned long);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct rtas_t rtas = {
 	.lock = __ARCH_SPIN_LOCK_UNLOCKED
 };
@@ -91,13 +97,19 @@ static void unlock_rtas(unsigned long flags)
  * are designed only for very early low-level debugging, which
  * is why the token is hard-coded to 10.
  */
+<<<<<<< HEAD
 static void call_rtas_display_status(char c)
 {
 	struct rtas_args *args = &rtas.args;
+=======
+static void call_rtas_display_status(unsigned char c)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long s;
 
 	if (!rtas.base)
 		return;
+<<<<<<< HEAD
 	s = lock_rtas();
 
 	args->token = 10;
@@ -108,6 +120,11 @@ static void call_rtas_display_status(char c)
 
 	enter_rtas(__pa(args));
 
+=======
+
+	s = lock_rtas();
+	rtas_call_unlocked(&rtas.args, 10, 1, 1, NULL, c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_rtas(s);
 }
 
@@ -204,7 +221,11 @@ void rtas_progress(char *s, unsigned short hex)
 {
 	struct device_node *root;
 	int width;
+<<<<<<< HEAD
 	const int *p;
+=======
+	const __be32 *p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *os;
 	static int display_character, set_indicator;
 	static int display_width, display_lines, form_feed;
@@ -221,6 +242,7 @@ void rtas_progress(char *s, unsigned short hex)
 		if ((root = of_find_node_by_path("/rtas"))) {
 			if ((p = of_get_property(root,
 					"ibm,display-line-length", NULL)))
+<<<<<<< HEAD
 				display_width = *p;
 			if ((p = of_get_property(root,
 					"ibm,form-feed", NULL)))
@@ -228,6 +250,15 @@ void rtas_progress(char *s, unsigned short hex)
 			if ((p = of_get_property(root,
 					"ibm,display-number-of-lines", NULL)))
 				display_lines = *p;
+=======
+				display_width = be32_to_cpu(*p);
+			if ((p = of_get_property(root,
+					"ibm,form-feed", NULL)))
+				form_feed = be32_to_cpu(*p);
+			if ((p = of_get_property(root,
+					"ibm,display-number-of-lines", NULL)))
+				display_lines = be32_to_cpu(*p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			row_width = of_get_property(root,
 					"ibm,display-truncation-length", NULL);
 			of_node_put(root);
@@ -322,11 +353,19 @@ EXPORT_SYMBOL(rtas_progress);		/* needed by rtas_flash module */
 
 int rtas_token(const char *service)
 {
+<<<<<<< HEAD
 	const int *tokp;
 	if (rtas.dev == NULL)
 		return RTAS_UNKNOWN_SERVICE;
 	tokp = of_get_property(rtas.dev, service, NULL);
 	return tokp ? *tokp : RTAS_UNKNOWN_SERVICE;
+=======
+	const __be32 *tokp;
+	if (rtas.dev == NULL)
+		return RTAS_UNKNOWN_SERVICE;
+	tokp = of_get_property(rtas.dev, service, NULL);
+	return tokp ? be32_to_cpu(*tokp) : RTAS_UNKNOWN_SERVICE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(rtas_token);
 
@@ -380,11 +419,19 @@ static char *__fetch_rtas_last_error(char *altbuf)
 
 	bufsz = rtas_get_error_log_max();
 
+<<<<<<< HEAD
 	err_args.token = rtas_last_error_token;
 	err_args.nargs = 2;
 	err_args.nret = 1;
 	err_args.args[0] = (rtas_arg_t)__pa(rtas_err_buf);
 	err_args.args[1] = bufsz;
+=======
+	err_args.token = cpu_to_be32(rtas_last_error_token);
+	err_args.nargs = cpu_to_be32(2);
+	err_args.nret = cpu_to_be32(1);
+	err_args.args[0] = cpu_to_be32(__pa(rtas_err_buf));
+	err_args.args[1] = cpu_to_be32(bufsz);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err_args.args[2] = 0;
 
 	save_args = rtas.args;
@@ -401,7 +448,11 @@ static char *__fetch_rtas_last_error(char *altbuf)
 			buf = altbuf;
 		} else {
 			buf = rtas_err_buf;
+<<<<<<< HEAD
 			if (mem_init_done)
+=======
+			if (slab_is_available())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				buf = kmalloc(RTAS_ERROR_LOG_MAX, GFP_ATOMIC);
 		}
 		if (buf)
@@ -418,6 +469,39 @@ static char *__fetch_rtas_last_error(char *altbuf)
 #define get_errorlog_buffer()		NULL
 #endif
 
+<<<<<<< HEAD
+=======
+
+static void
+va_rtas_call_unlocked(struct rtas_args *args, int token, int nargs, int nret,
+		      va_list list)
+{
+	int i;
+
+	args->token = cpu_to_be32(token);
+	args->nargs = cpu_to_be32(nargs);
+	args->nret  = cpu_to_be32(nret);
+	args->rets  = &(args->args[nargs]);
+
+	for (i = 0; i < nargs; ++i)
+		args->args[i] = cpu_to_be32(va_arg(list, __u32));
+
+	for (i = 0; i < nret; ++i)
+		args->rets[i] = 0;
+
+	enter_rtas(__pa(args));
+}
+
+void rtas_call_unlocked(struct rtas_args *args, int token, int nargs, int nret, ...)
+{
+	va_list list;
+
+	va_start(list, nret);
+	va_rtas_call_unlocked(args, token, nargs, nret, list);
+	va_end(list);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rtas_call(int token, int nargs, int nret, int *outputs, ...)
 {
 	va_list list;
@@ -431,6 +515,7 @@ int rtas_call(int token, int nargs, int nret, int *outputs, ...)
 		return -1;
 
 	s = lock_rtas();
+<<<<<<< HEAD
 	rtas_args = &rtas.args;
 
 	rtas_args->token = token;
@@ -450,18 +535,40 @@ int rtas_call(int token, int nargs, int nret, int *outputs, ...)
 	/* A -1 return code indicates that the last command couldn't
 	   be completed due to a hardware error. */
 	if (rtas_args->rets[0] == -1)
+=======
+
+	/* We use the global rtas args buffer */
+	rtas_args = &rtas.args;
+
+	va_start(list, outputs);
+	va_rtas_call_unlocked(rtas_args, token, nargs, nret, list);
+	va_end(list);
+
+	/* A -1 return code indicates that the last command couldn't
+	   be completed due to a hardware error. */
+	if (be32_to_cpu(rtas_args->rets[0]) == -1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		buff_copy = __fetch_rtas_last_error(NULL);
 
 	if (nret > 1 && outputs != NULL)
 		for (i = 0; i < nret-1; ++i)
+<<<<<<< HEAD
 			outputs[i] = rtas_args->rets[i+1];
 	ret = (nret > 0)? rtas_args->rets[0]: 0;
+=======
+			outputs[i] = be32_to_cpu(rtas_args->rets[i+1]);
+	ret = (nret > 0)? be32_to_cpu(rtas_args->rets[0]): 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unlock_rtas(s);
 
 	if (buff_copy) {
 		log_error(buff_copy, ERR_TYPE_RTAS_LOG, 0);
+<<<<<<< HEAD
 		if (mem_init_done)
+=======
+		if (slab_is_available())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kfree(buff_copy);
 	}
 	return ret;
@@ -478,8 +585,14 @@ unsigned int rtas_busy_delay_time(int status)
 
 	if (status == RTAS_BUSY) {
 		ms = 1;
+<<<<<<< HEAD
 	} else if (status >= 9900 && status <= 9905) {
 		order = status - 9900;
+=======
+	} else if (status >= RTAS_EXTENDED_DELAY_MIN &&
+		   status <= RTAS_EXTENDED_DELAY_MAX) {
+		order = status - RTAS_EXTENDED_DELAY_MIN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (ms = 1; order > 0; order--)
 			ms *= 10;
 	}
@@ -605,8 +718,13 @@ bool rtas_indicator_present(int token, int *maxindex)
 {
 	int proplen, count, i;
 	const struct indicator_elem {
+<<<<<<< HEAD
 		u32 token;
 		u32 maxindex;
+=======
+		__be32 token;
+		__be32 maxindex;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} *indicators;
 
 	indicators = of_get_property(rtas.dev, "rtas-indicators", &proplen);
@@ -616,10 +734,17 @@ bool rtas_indicator_present(int token, int *maxindex)
 	count = proplen / sizeof(struct indicator_elem);
 
 	for (i = 0; i < count; i++) {
+<<<<<<< HEAD
 		if (indicators[i].token != token)
 			continue;
 		if (maxindex)
 			*maxindex = indicators[i].maxindex;
+=======
+		if (__be32_to_cpu(indicators[i].token) != token)
+			continue;
+		if (maxindex)
+			*maxindex = __be32_to_cpu(indicators[i].maxindex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return true;
 	}
 
@@ -658,7 +783,12 @@ int rtas_set_indicator_fast(int indicator, int index, int new_value)
 
 	rc = rtas_call(token, 3, 1, NULL, indicator, index, new_value);
 
+<<<<<<< HEAD
 	WARN_ON(rc == -2 || (rc >= 9900 && rc <= 9905));
+=======
+	WARN_ON(rc == RTAS_BUSY || (rc >= RTAS_EXTENDED_DELAY_MIN &&
+				    rc <= RTAS_EXTENDED_DELAY_MAX));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (rc < 0)
 		return rtas_error_rc(rc);
@@ -666,7 +796,11 @@ int rtas_set_indicator_fast(int indicator, int index, int new_value)
 	return rc;
 }
 
+<<<<<<< HEAD
 void rtas_restart(char *cmd)
+=======
+void __noreturn rtas_restart(char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (rtas_flash_term_hook)
 		rtas_flash_term_hook(SYS_RESTART);
@@ -685,7 +819,11 @@ void rtas_power_off(void)
 	for (;;);
 }
 
+<<<<<<< HEAD
 void rtas_halt(void)
+=======
+void __noreturn rtas_halt(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (rtas_flash_term_hook)
 		rtas_flash_term_hook(SYS_HALT);
@@ -855,6 +993,7 @@ static int rtas_cpu_state_change_mask(enum rtas_cpu_state state,
 		return 0;
 
 	for_each_cpu(cpu, cpus) {
+<<<<<<< HEAD
 		switch (state) {
 		case DOWN:
 			cpuret = cpu_down(cpu);
@@ -864,6 +1003,19 @@ static int rtas_cpu_state_change_mask(enum rtas_cpu_state state,
 			break;
 		}
 		if (cpuret) {
+=======
+		struct device *dev = get_cpu_device(cpu);
+
+		switch (state) {
+		case DOWN:
+			cpuret = device_offline(dev);
+			break;
+		case UP:
+			cpuret = device_online(dev);
+			break;
+		}
+		if (cpuret < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_debug("%s: cpu_%s for cpu#%d returned %d.\n",
 					__func__,
 					((state == UP) ? "up" : "down"),
@@ -914,7 +1066,11 @@ int rtas_offline_cpus_mask(cpumask_var_t cpus)
 }
 EXPORT_SYMBOL(rtas_offline_cpus_mask);
 
+<<<<<<< HEAD
 int rtas_ibm_suspend_me(struct rtas_args *args)
+=======
+int rtas_ibm_suspend_me(u64 handle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	long state;
 	long rc;
@@ -928,8 +1084,12 @@ int rtas_ibm_suspend_me(struct rtas_args *args)
 		return -ENOSYS;
 
 	/* Make sure the state is valid */
+<<<<<<< HEAD
 	rc = plpar_hcall(H_VASI_STATE, retbuf,
 			 ((u64)args->args[0] << 32) | args->args[1]);
+=======
+	rc = plpar_hcall(H_VASI_STATE, retbuf, handle);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	state = retbuf[0];
 
@@ -937,6 +1097,7 @@ int rtas_ibm_suspend_me(struct rtas_args *args)
 		printk(KERN_ERR "rtas_ibm_suspend_me: vasi_state returned %ld\n",rc);
 		return rc;
 	} else if (state == H_VASI_ENABLED) {
+<<<<<<< HEAD
 		args->args[args->nargs] = RTAS_NOT_SUSPENDABLE;
 		return 0;
 	} else if (state != H_VASI_SUSPENDING) {
@@ -944,6 +1105,13 @@ int rtas_ibm_suspend_me(struct rtas_args *args)
 		       state);
 		args->args[args->nargs] = -1;
 		return 0;
+=======
+		return -EAGAIN;
+	} else if (state != H_VASI_SUSPENDING) {
+		printk(KERN_ERR "rtas_ibm_suspend_me: vasi_state returned state %ld\n",
+		       state);
+		return -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!alloc_cpumask_var(&offline_mask, GFP_TEMPORARY))
@@ -955,6 +1123,11 @@ int rtas_ibm_suspend_me(struct rtas_args *args)
 	data.token = rtas_token("ibm,suspend-me");
 	data.complete = &done;
 
+<<<<<<< HEAD
+=======
+	lock_device_hotplug();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* All present CPUs must be online */
 	cpumask_andnot(offline_mask, cpu_present_mask, cpu_online_mask);
 	cpuret = rtas_online_cpus_mask(offline_mask);
@@ -964,6 +1137,10 @@ int rtas_ibm_suspend_me(struct rtas_args *args)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	cpu_hotplug_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stop_topology_update();
 
 	/* Call function on all CPUs.  One of us will make the
@@ -978,6 +1155,10 @@ int rtas_ibm_suspend_me(struct rtas_args *args)
 		printk(KERN_ERR "Error doing global join\n");
 
 	start_topology_update();
+<<<<<<< HEAD
+=======
+	cpu_hotplug_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Take down CPUs not online prior to suspend */
 	cpuret = rtas_offline_cpus_mask(offline_mask);
@@ -986,11 +1167,19 @@ int rtas_ibm_suspend_me(struct rtas_args *args)
 				__func__);
 
 out:
+<<<<<<< HEAD
+=======
+	unlock_device_hotplug();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_cpumask_var(offline_mask);
 	return atomic_read(&data.error);
 }
 #else /* CONFIG_PPC_PSERIES */
+<<<<<<< HEAD
 int rtas_ibm_suspend_me(struct rtas_args *args)
+=======
+int rtas_ibm_suspend_me(u64 handle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -ENOSYS;
 }
@@ -1010,6 +1199,7 @@ struct pseries_errorlog *get_pseries_errorlog(struct rtas_error_log *log,
 		(struct rtas_ext_event_log_v6 *)log->buffer;
 	struct pseries_errorlog *sect;
 	unsigned char *p, *log_end;
+<<<<<<< HEAD
 
 	/* Check that we understand the format */
 	if (log->extended_log_length < sizeof(struct rtas_ext_event_log_v6) ||
@@ -1018,25 +1208,52 @@ struct pseries_errorlog *get_pseries_errorlog(struct rtas_error_log *log,
 		return NULL;
 
 	log_end = log->buffer + log->extended_log_length;
+=======
+	uint32_t ext_log_length = rtas_error_extended_log_length(log);
+	uint8_t log_format = rtas_ext_event_log_format(ext_log);
+	uint32_t company_id = rtas_ext_event_company_id(ext_log);
+
+	/* Check that we understand the format */
+	if (ext_log_length < sizeof(struct rtas_ext_event_log_v6) ||
+	    log_format != RTAS_V6EXT_LOG_FORMAT_EVENT_LOG ||
+	    company_id != RTAS_V6EXT_COMPANY_ID_IBM)
+		return NULL;
+
+	log_end = log->buffer + ext_log_length;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	p = ext_log->vendor_log;
 
 	while (p < log_end) {
 		sect = (struct pseries_errorlog *)p;
+<<<<<<< HEAD
 		if (sect->id == section_id)
 			return sect;
 		p += sect->length;
+=======
+		if (pseries_errorlog_id(sect) == section_id)
+			return sect;
+		p += pseries_errorlog_length(sect);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+/* We assume to be passed big endian arguments */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
 {
 	struct rtas_args args;
 	unsigned long flags;
 	char *buff_copy, *errbuf = NULL;
+<<<<<<< HEAD
 	int nargs;
 	int rc;
+=======
+	int nargs, nret, token;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -1047,10 +1264,20 @@ asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
 	if (copy_from_user(&args, uargs, 3 * sizeof(u32)) != 0)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	nargs = args.nargs;
 	if (nargs > ARRAY_SIZE(args.args)
 	    || args.nret > ARRAY_SIZE(args.args)
 	    || nargs + args.nret > ARRAY_SIZE(args.args))
+=======
+	nargs = be32_to_cpu(args.nargs);
+	nret  = be32_to_cpu(args.nret);
+	token = be32_to_cpu(args.token);
+
+	if (nargs >= ARRAY_SIZE(args.args)
+	    || nret > ARRAY_SIZE(args.args)
+	    || nargs + nret > ARRAY_SIZE(args.args))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	/* Copy in args. */
@@ -1058,6 +1285,7 @@ asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
 			   nargs * sizeof(rtas_arg_t)) != 0)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (args.token == RTAS_UNKNOWN_SERVICE)
 		return -EINVAL;
 
@@ -1068,6 +1296,30 @@ asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
 	if (args.token == ibm_suspend_me_token) {
 		rc = rtas_ibm_suspend_me(&args);
 		if (rc)
+=======
+	if (token == RTAS_UNKNOWN_SERVICE)
+		return -EINVAL;
+
+	args.rets = &args.args[nargs];
+	memset(args.rets, 0, nret * sizeof(rtas_arg_t));
+
+	/* Need to handle ibm,suspend_me call specially */
+	if (token == ibm_suspend_me_token) {
+
+		/*
+		 * rtas_ibm_suspend_me assumes the streamid handle is in cpu
+		 * endian, or at least the hcall within it requires it.
+		 */
+		int rc = 0;
+		u64 handle = ((u64)be32_to_cpu(args.args[0]) << 32)
+		              | be32_to_cpu(args.args[1]);
+		rc = rtas_ibm_suspend_me(handle);
+		if (rc == -EAGAIN)
+			args.rets[0] = cpu_to_be32(RTAS_NOT_SUSPENDABLE);
+		else if (rc == -EIO)
+			args.rets[0] = cpu_to_be32(-1);
+		else if (rc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return rc;
 		goto copy_return;
 	}
@@ -1082,7 +1334,11 @@ asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
 
 	/* A -1 return code indicates that the last command couldn't
 	   be completed due to a hardware error. */
+<<<<<<< HEAD
 	if (args.rets[0] == -1)
+=======
+	if (be32_to_cpu(args.rets[0]) == -1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		errbuf = __fetch_rtas_last_error(buff_copy);
 
 	unlock_rtas(flags);
@@ -1097,15 +1353,24 @@ asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
 	/* Copy out args. */
 	if (copy_to_user(uargs->args + nargs,
 			 args.args + nargs,
+<<<<<<< HEAD
 			 args.nret * sizeof(rtas_arg_t)) != 0)
+=======
+			 nret * sizeof(rtas_arg_t)) != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EFAULT;
 
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  * Call early during boot, before mem init or bootmem, to retrieve the RTAS
  * informations from the device-tree and allocate the RMO buffer for userland
+=======
+ * Call early during boot, before mem init, to retrieve the RTAS
+ * information from the device-tree and allocate the RMO buffer for userland
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * accesses.
  */
 void __init rtas_initialize(void)
@@ -1117,19 +1382,32 @@ void __init rtas_initialize(void)
 	 */
 	rtas.dev = of_find_node_by_name(NULL, "rtas");
 	if (rtas.dev) {
+<<<<<<< HEAD
 		const u32 *basep, *entryp, *sizep;
+=======
+		const __be32 *basep, *entryp, *sizep;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		basep = of_get_property(rtas.dev, "linux,rtas-base", NULL);
 		sizep = of_get_property(rtas.dev, "rtas-size", NULL);
 		if (basep != NULL && sizep != NULL) {
+<<<<<<< HEAD
 			rtas.base = *basep;
 			rtas.size = *sizep;
+=======
+			rtas.base = __be32_to_cpu(*basep);
+			rtas.size = __be32_to_cpu(*sizep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			entryp = of_get_property(rtas.dev,
 					"linux,rtas-entry", NULL);
 			if (entryp == NULL) /* Ugh */
 				rtas.entry = rtas.base;
 			else
+<<<<<<< HEAD
 				rtas.entry = *entryp;
+=======
+				rtas.entry = __be32_to_cpu(*entryp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			rtas.dev = NULL;
 	}
@@ -1140,7 +1418,11 @@ void __init rtas_initialize(void)
 	 * the stop-self token if any
 	 */
 #ifdef CONFIG_PPC64
+<<<<<<< HEAD
 	if (machine_is(pseries) && firmware_has_feature(FW_FEATURE_LPAR)) {
+=======
+	if (firmware_has_feature(FW_FEATURE_LPAR)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rtas_region = min(ppc64_rma_size, RTAS_INSTANTIATE_MAX);
 		ibm_suspend_me_token = rtas_token("ibm,suspend-me");
 	}
@@ -1192,7 +1474,11 @@ int __init early_init_dt_scan_rtas(unsigned long node,
 static arch_spinlock_t timebase_lock;
 static u64 timebase = 0;
 
+<<<<<<< HEAD
 void __cpuinit rtas_give_timebase(void)
+=======
+void rtas_give_timebase(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 
@@ -1209,7 +1495,11 @@ void __cpuinit rtas_give_timebase(void)
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
 void __cpuinit rtas_take_timebase(void)
+=======
+void rtas_take_timebase(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	while (!timebase)
 		barrier();

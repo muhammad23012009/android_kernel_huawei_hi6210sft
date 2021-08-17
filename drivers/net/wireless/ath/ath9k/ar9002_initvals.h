@@ -925,6 +925,7 @@ static const u32 ar9280PciePhy_clkreq_always_on_L1_9280[][2] = {
 	{0x00004044, 0x00000000},
 };
 
+<<<<<<< HEAD
 static const u32 ar9280PciePhy_awow[][2] = {
 	/* Addr      allmodes  */
 	{0x00004040, 0x9248fd00},
@@ -939,6 +940,8 @@ static const u32 ar9280PciePhy_awow[][2] = {
 	{0x00004044, 0x00000000},
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 ar9285Modes_9285_1_2[][5] = {
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00001030, 0x00000230, 0x00000460, 0x000002c0, 0x00000160},

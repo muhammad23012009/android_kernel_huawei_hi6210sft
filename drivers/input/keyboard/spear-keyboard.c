@@ -3,7 +3,11 @@
  * Based on omap-keypad driver
  *
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Rajeev Kumar<rajeev-dlh.kumar@st.com>
+=======
+ * Rajeev Kumar <rajeevkumar.linux@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -12,7 +16,10 @@
 
 #include <linux/clk.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/io.h>
@@ -191,12 +198,15 @@ static int spear_kbd_probe(struct platform_device *pdev)
 	int irq;
 	int error;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "no keyboard resource defined\n");
 		return -EBUSY;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		dev_err(&pdev->dev, "not able to get irq for the device\n");
@@ -228,6 +238,10 @@ static int spear_kbd_probe(struct platform_device *pdev)
 		kbd->suspended_rate = pdata->suspended_rate;
 	}
 
+<<<<<<< HEAD
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kbd->io_base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(kbd->io_base))
 		return PTR_ERR(kbd->io_base);
@@ -290,13 +304,20 @@ static int spear_kbd_remove(struct platform_device *pdev)
 	clk_unprepare(kbd->clk);
 
 	device_init_wakeup(&pdev->dev, 0);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int spear_kbd_suspend(struct device *dev)
+=======
+static int __maybe_unused spear_kbd_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct spear_kbd *kbd = platform_get_drvdata(pdev);
@@ -349,7 +370,11 @@ static int spear_kbd_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int spear_kbd_resume(struct device *dev)
+=======
+static int __maybe_unused spear_kbd_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct spear_kbd *kbd = platform_get_drvdata(pdev);
@@ -375,7 +400,10 @@ static int spear_kbd_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(spear_kbd_pm_ops, spear_kbd_suspend, spear_kbd_resume);
 
@@ -392,7 +420,10 @@ static struct platform_driver spear_kbd_driver = {
 	.remove		= spear_kbd_remove,
 	.driver		= {
 		.name	= "keyboard",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &spear_kbd_pm_ops,
 		.of_match_table = of_match_ptr(spear_kbd_id_table),
 	},

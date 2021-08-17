@@ -17,10 +17,17 @@
 #include <linux/delay.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-mediabus.h>
 #include <media/ov7670.h>
+=======
+#include <media/v4l2-ctrls.h>
+#include <media/v4l2-mediabus.h>
+#include <media/v4l2-image-sizes.h>
+#include <media/i2c/ov7670.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Jonathan Corbet <corbet@lwn.net>");
 MODULE_DESCRIPTION("A low-level driver for OmniVision ov7670 sensors");
@@ -31,6 +38,7 @@ module_param(debug, bool, 0644);
 MODULE_PARM_DESC(debug, "Debug level (0-1)");
 
 /*
+<<<<<<< HEAD
  * Basic window sizes.  These probably belong somewhere more globally
  * useful.
  */
@@ -44,6 +52,8 @@ MODULE_PARM_DESC(debug, "Debug level (0-1)");
 #define	QCIF_HEIGHT	144
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The 7670 sits on i2c with ID 0x42
  */
 #define OV7670_I2C_ADDR 0x42
@@ -168,10 +178,17 @@ MODULE_PARM_DESC(debug, "Debug level (0-1)");
 #define REG_GFIX	0x69	/* Fix gain control */
 
 #define REG_DBLV	0x6b	/* PLL control an debugging */
+<<<<<<< HEAD
 #define   DBLV_BYPASS	  0x00	  /* Bypass PLL */
 #define   DBLV_X4	  0x01	  /* clock x4 */
 #define   DBLV_X6	  0x10	  /* clock x6 */
 #define   DBLV_X8	  0x11	  /* clock x8 */
+=======
+#define   DBLV_BYPASS	  0x0a	  /* Bypass PLL */
+#define   DBLV_X4	  0x4a	  /* clock x4 */
+#define   DBLV_X6	  0x8a	  /* clock x6 */
+#define   DBLV_X8	  0xca	  /* clock x8 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define REG_REG76	0x76	/* OV's name */
 #define   R76_BLKPCOR	  0x80	  /* Black pixel correction enable */
@@ -645,31 +662,52 @@ static int ov7670_detect(struct v4l2_subdev *sd)
  * The magic matrix numbers come from OmniVision.
  */
 static struct ov7670_format_struct {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode mbus_code;
+=======
+	u32 mbus_code;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum v4l2_colorspace colorspace;
 	struct regval_list *regs;
 	int cmatrix[CMATRIX_LEN];
 } ov7670_formats[] = {
 	{
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YUYV8_2X8,
 		.colorspace	= V4L2_COLORSPACE_JPEG,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
+		.colorspace	= V4L2_COLORSPACE_SRGB,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.regs 		= ov7670_fmt_yuv422,
 		.cmatrix	= { 128, -128, 0, -34, -94, 128 },
 	},
 	{
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_RGB444_2X8_PADHI_LE,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_RGB444_2X8_PADHI_LE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.regs		= ov7670_fmt_rgb444,
 		.cmatrix	= { 179, -179, 0, -61, -176, 228 },
 	},
 	{
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_RGB565_2X8_LE,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_RGB565_2X8_LE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.regs		= ov7670_fmt_rgb565,
 		.cmatrix	= { 179, -179, 0, -61, -176, 228 },
 	},
 	{
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_SBGGR8_1X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_SBGGR8_1X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.colorspace	= V4L2_COLORSPACE_SRGB,
 		.regs 		= ov7670_fmt_raw,
 		.cmatrix	= { 0, 0, 0, 0, 0, 0 },
@@ -785,7 +823,11 @@ static void ov7675_get_framerate(struct v4l2_subdev *sd,
 		pll_factor = PLL_FACTOR;
 
 	clkrc++;
+<<<<<<< HEAD
 	if (info->fmt->mbus_code == V4L2_MBUS_FMT_SBGGR8_1X8)
+=======
+	if (info->fmt->mbus_code == MEDIA_BUS_FMT_SBGGR8_1X8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clkrc = (clkrc >> 1);
 
 	tpf->numerator = 1;
@@ -823,7 +865,11 @@ static int ov7675_set_framerate(struct v4l2_subdev *sd,
 	} else {
 		clkrc = (5 * pll_factor * info->clock_speed * tpf->numerator) /
 			(4 * tpf->denominator);
+<<<<<<< HEAD
 		if (info->fmt->mbus_code == V4L2_MBUS_FMT_SBGGR8_1X8)
+=======
+		if (info->fmt->mbus_code == MEDIA_BUS_FMT_SBGGR8_1X8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clkrc = (clkrc << 1);
 		clkrc--;
 	}
@@ -846,7 +892,11 @@ static int ov7675_set_framerate(struct v4l2_subdev *sd,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	return ov7670_write(sd, REG_DBLV, DBLV_X4);
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ov7670_get_framerate_legacy(struct v4l2_subdev *sd,
@@ -912,6 +962,7 @@ static int ov7670_set_hw(struct v4l2_subdev *sd, int hstart, int hstop,
 }
 
 
+<<<<<<< HEAD
 static int ov7670_enum_mbus_fmt(struct v4l2_subdev *sd, unsigned index,
 					enum v4l2_mbus_pixelcode *code)
 {
@@ -919,6 +970,16 @@ static int ov7670_enum_mbus_fmt(struct v4l2_subdev *sd, unsigned index,
 		return -EINVAL;
 
 	*code = ov7670_formats[index].mbus_code;
+=======
+static int ov7670_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad || code->index >= N_OV7670_FMTS)
+		return -EINVAL;
+
+	code->code = ov7670_formats[code->index].mbus_code;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -983,6 +1044,7 @@ static int ov7670_try_fmt_internal(struct v4l2_subdev *sd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ov7670_try_mbus_fmt(struct v4l2_subdev *sd,
 			    struct v4l2_mbus_framefmt *fmt)
 {
@@ -994,6 +1056,14 @@ static int ov7670_try_mbus_fmt(struct v4l2_subdev *sd,
  */
 static int ov7670_s_mbus_fmt(struct v4l2_subdev *sd,
 			  struct v4l2_mbus_framefmt *fmt)
+=======
+/*
+ * Set a format.
+ */
+static int ov7670_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ov7670_format_struct *ovfmt;
 	struct ov7670_win_size *wsize;
@@ -1001,7 +1071,22 @@ static int ov7670_s_mbus_fmt(struct v4l2_subdev *sd,
 	unsigned char com7;
 	int ret;
 
+<<<<<<< HEAD
 	ret = ov7670_try_fmt_internal(sd, fmt, &ovfmt, &wsize);
+=======
+	if (format->pad)
+		return -EINVAL;
+
+	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
+		ret = ov7670_try_fmt_internal(sd, &format->format, NULL, NULL);
+		if (ret)
+			return ret;
+		cfg->try_fmt = format->format;
+		return 0;
+	}
+
+	ret = ov7670_try_fmt_internal(sd, &format->format, &ovfmt, &wsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -1082,6 +1167,7 @@ static int ov7670_s_parm(struct v4l2_subdev *sd, struct v4l2_streamparm *parms)
 
 static int ov7670_frame_rates[] = { 30, 15, 10, 5, 1 };
 
+<<<<<<< HEAD
 static int ov7670_enum_frameintervals(struct v4l2_subdev *sd,
 		struct v4l2_frmivalenum *interval)
 {
@@ -1090,21 +1176,71 @@ static int ov7670_enum_frameintervals(struct v4l2_subdev *sd,
 	interval->type = V4L2_FRMIVAL_TYPE_DISCRETE;
 	interval->discrete.numerator = 1;
 	interval->discrete.denominator = ov7670_frame_rates[interval->index];
+=======
+static int ov7670_enum_frame_interval(struct v4l2_subdev *sd,
+				      struct v4l2_subdev_pad_config *cfg,
+				      struct v4l2_subdev_frame_interval_enum *fie)
+{
+	struct ov7670_info *info = to_state(sd);
+	unsigned int n_win_sizes = info->devtype->n_win_sizes;
+	int i;
+
+	if (fie->pad)
+		return -EINVAL;
+	if (fie->index >= ARRAY_SIZE(ov7670_frame_rates))
+		return -EINVAL;
+
+	/*
+	 * Check if the width/height is valid.
+	 *
+	 * If a minimum width/height was requested, filter out the capture
+	 * windows that fall outside that.
+	 */
+	for (i = 0; i < n_win_sizes; i++) {
+		struct ov7670_win_size *win = &info->devtype->win_sizes[i];
+
+		if (info->min_width && win->width < info->min_width)
+			continue;
+		if (info->min_height && win->height < info->min_height)
+			continue;
+		if (fie->width == win->width && fie->height == win->height)
+			break;
+	}
+	if (i == n_win_sizes)
+		return -EINVAL;
+	fie->interval.numerator = 1;
+	fie->interval.denominator = ov7670_frame_rates[fie->index];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 /*
  * Frame size enumeration
  */
+<<<<<<< HEAD
 static int ov7670_enum_framesizes(struct v4l2_subdev *sd,
 		struct v4l2_frmsizeenum *fsize)
+=======
+static int ov7670_enum_frame_size(struct v4l2_subdev *sd,
+				  struct v4l2_subdev_pad_config *cfg,
+				  struct v4l2_subdev_frame_size_enum *fse)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ov7670_info *info = to_state(sd);
 	int i;
 	int num_valid = -1;
+<<<<<<< HEAD
 	__u32 index = fsize->index;
 	unsigned int n_win_sizes = info->devtype->n_win_sizes;
 
+=======
+	__u32 index = fse->index;
+	unsigned int n_win_sizes = info->devtype->n_win_sizes;
+
+	if (fse->pad)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * If a minimum width/height was requested, filter out the capture
 	 * windows that fall outside that.
@@ -1116,9 +1252,14 @@ static int ov7670_enum_framesizes(struct v4l2_subdev *sd,
 		if (info->min_height && win->height < info->min_height)
 			continue;
 		if (index == ++num_valid) {
+<<<<<<< HEAD
 			fsize->type = V4L2_FRMSIZE_TYPE_DISCRETE;
 			fsize->discrete.width = win->width;
 			fsize->discrete.height = win->height;
+=======
+			fse->min_width = fse->max_width = win->width;
+			fse->min_height = fse->max_height = win->height;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 	}
@@ -1370,7 +1511,11 @@ static int ov7670_s_exp(struct v4l2_subdev *sd, int value)
 	unsigned char com1, com8, aech, aechh;
 
 	ret = ov7670_read(sd, REG_COM1, &com1) +
+<<<<<<< HEAD
 		ov7670_read(sd, REG_COM8, &com8);
+=======
+		ov7670_read(sd, REG_COM8, &com8) +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ov7670_read(sd, REG_AECHH, &aechh);
 	if (ret)
 		return ret;
@@ -1462,6 +1607,7 @@ static const struct v4l2_ctrl_ops ov7670_ctrl_ops = {
 	.g_volatile_ctrl = ov7670_g_volatile_ctrl,
 };
 
+<<<<<<< HEAD
 static int ov7670_g_chip_ident(struct v4l2_subdev *sd,
 		struct v4l2_dbg_chip_ident *chip)
 {
@@ -1481,6 +1627,14 @@ static int ov7670_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *r
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+#ifdef CONFIG_VIDEO_ADV_DEBUG
+static int ov7670_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *reg)
+{
+	unsigned char val = 0;
+	int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = ov7670_read(sd, reg->reg & 0xff, &val);
 	reg->val = val;
 	reg->size = 1;
@@ -1489,12 +1643,15 @@ static int ov7670_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *r
 
 static int ov7670_s_register(struct v4l2_subdev *sd, const struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	if (!v4l2_chip_match_i2c_client(client, &reg->match))
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ov7670_write(sd, reg->reg & 0xff, reg->val & 0xff);
 	return 0;
 }
@@ -1503,7 +1660,10 @@ static int ov7670_s_register(struct v4l2_subdev *sd, const struct v4l2_dbg_regis
 /* ----------------------------------------------------------------------- */
 
 static const struct v4l2_subdev_core_ops ov7670_core_ops = {
+<<<<<<< HEAD
 	.g_chip_ident = ov7670_g_chip_ident,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reset = ov7670_reset,
 	.init = ov7670_init,
 #ifdef CONFIG_VIDEO_ADV_DEBUG
@@ -1513,6 +1673,7 @@ static const struct v4l2_subdev_core_ops ov7670_core_ops = {
 };
 
 static const struct v4l2_subdev_video_ops ov7670_video_ops = {
+<<<<<<< HEAD
 	.enum_mbus_fmt = ov7670_enum_mbus_fmt,
 	.try_mbus_fmt = ov7670_try_mbus_fmt,
 	.s_mbus_fmt = ov7670_s_mbus_fmt,
@@ -1520,11 +1681,26 @@ static const struct v4l2_subdev_video_ops ov7670_video_ops = {
 	.g_parm = ov7670_g_parm,
 	.enum_frameintervals = ov7670_enum_frameintervals,
 	.enum_framesizes = ov7670_enum_framesizes,
+=======
+	.s_parm = ov7670_s_parm,
+	.g_parm = ov7670_g_parm,
+};
+
+static const struct v4l2_subdev_pad_ops ov7670_pad_ops = {
+	.enum_frame_interval = ov7670_enum_frame_interval,
+	.enum_frame_size = ov7670_enum_frame_size,
+	.enum_mbus_code = ov7670_enum_mbus_code,
+	.set_fmt = ov7670_set_fmt,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_subdev_ops ov7670_ops = {
 	.core = &ov7670_core_ops,
 	.video = &ov7670_video_ops,
+<<<<<<< HEAD
+=======
+	.pad = &ov7670_pad_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----------------------------------------------------------------------- */
@@ -1552,7 +1728,11 @@ static int ov7670_probe(struct i2c_client *client,
 	struct ov7670_info *info;
 	int ret;
 
+<<<<<<< HEAD
 	info = kzalloc(sizeof(struct ov7670_info), GFP_KERNEL);
+=======
+	info = devm_kzalloc(&client->dev, sizeof(*info), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info == NULL)
 		return -ENOMEM;
 	sd = &info->sd;
@@ -1573,11 +1753,15 @@ static int ov7670_probe(struct i2c_client *client,
 		if (config->clock_speed)
 			info->clock_speed = config->clock_speed;
 
+<<<<<<< HEAD
 		/*
 		 * It should be allowed for ov7670 too when it is migrated to
 		 * the new frame rate formula.
 		 */
 		if (config->pll_bypass && id->driver_data != MODEL_OV7670)
+=======
+		if (config->pll_bypass)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			info->pll_bypass = true;
 
 		if (config->pclk_hb_disable)
@@ -1590,7 +1774,10 @@ static int ov7670_probe(struct i2c_client *client,
 		v4l_dbg(1, debug, client,
 			"chip found @ 0x%x (%s) is not an ov7670 chip.\n",
 			client->addr << 1, client->adapter->name);
+<<<<<<< HEAD
 		kfree(info);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 	v4l_info(client, "chip found @ 0x%02x (%s)\n",
@@ -1635,7 +1822,10 @@ static int ov7670_probe(struct i2c_client *client,
 		int err = info->hdl.error;
 
 		v4l2_ctrl_handler_free(&info->hdl);
+<<<<<<< HEAD
 		kfree(info);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 	/*
@@ -1659,7 +1849,10 @@ static int ov7670_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&info->hdl);
+<<<<<<< HEAD
 	kfree(info);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1672,7 +1865,10 @@ MODULE_DEVICE_TABLE(i2c, ov7670_id);
 
 static struct i2c_driver ov7670_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "ov7670",
 	},
 	.probe		= ov7670_probe,

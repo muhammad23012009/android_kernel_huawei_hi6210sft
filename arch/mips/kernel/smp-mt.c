@@ -21,6 +21,10 @@
 #include <linux/sched.h>
 #include <linux/cpumask.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/mips-gic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/compiler.h>
 #include <linux/smp.h>
 
@@ -34,7 +38,10 @@
 #include <asm/mipsregs.h>
 #include <asm/mipsmtregs.h>
 #include <asm/mips_mt.h>
+<<<<<<< HEAD
 #include <asm/gic.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __init smvp_copy_vpe_config(void)
 {
@@ -71,6 +78,10 @@ static unsigned int __init smvp_vpe_init(unsigned int tc, unsigned int mvpconf0,
 
 		/* Record this as available CPU */
 		set_cpu_possible(tc, true);
+<<<<<<< HEAD
+=======
+		set_cpu_present(tc, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__cpu_number_map[tc]	= ++ncpu;
 		__cpu_logical_map[ncpu] = tc;
 	}
@@ -118,6 +129,15 @@ static void vsmp_send_ipi_single(int cpu, unsigned int action)
 	unsigned long flags;
 	int vpflags;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MIPS_GIC
+	if (gic_present) {
+		mips_smp_send_ipi_single(cpu, action);
+		return;
+	}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_save(flags);
 
 	vpflags = dvpe();	/* can't access the other CPU's registers whilst MVPE enabled */
@@ -149,12 +169,22 @@ static void vsmp_send_ipi_mask(const struct cpumask *mask, unsigned int action)
 		vsmp_send_ipi_single(i, action);
 }
 
+<<<<<<< HEAD
 static void __cpuinit vsmp_init_secondary(void)
 {
 #ifdef CONFIG_IRQ_GIC
 	/* This is Malta specific: IPI,performance and timer interrupts */
 	if (gic_present)
 		change_c0_status(ST0_IM, STATUSF_IP3 | STATUSF_IP4 |
+=======
+static void vsmp_init_secondary(void)
+{
+#ifdef CONFIG_MIPS_GIC
+	/* This is Malta specific: IPI,performance and timer interrupts */
+	if (gic_present)
+		change_c0_status(ST0_IM, STATUSF_IP2 | STATUSF_IP3 |
+					 STATUSF_IP4 | STATUSF_IP5 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 STATUSF_IP6 | STATUSF_IP7);
 	else
 #endif
@@ -162,7 +192,11 @@ static void __cpuinit vsmp_init_secondary(void)
 					 STATUSF_IP6 | STATUSF_IP7);
 }
 
+<<<<<<< HEAD
 static void __cpuinit vsmp_smp_finish(void)
+=======
+static void vsmp_smp_finish(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* CDFIXME: remove this? */
 	write_c0_compare(read_c0_count() + (8* mips_hpt_frequency/HZ));
@@ -170,16 +204,23 @@ static void __cpuinit vsmp_smp_finish(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
+<<<<<<< HEAD
 		cpu_set(smp_processor_id(), mt_fpu_cpumask);
+=======
+		cpumask_set_cpu(smp_processor_id(), &mt_fpu_cpumask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_MIPS_MT_FPAFF */
 
 	local_irq_enable();
 }
 
+<<<<<<< HEAD
 static void vsmp_cpus_done(void)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Setup the PC, SP, and GP of a secondary processor and start it
  * running!
@@ -188,7 +229,11 @@ static void vsmp_cpus_done(void)
  * (unsigned long)idle->thread_info the gp
  * assumes a 1:1 mapping of TC => VPE
  */
+<<<<<<< HEAD
 static void __cpuinit vsmp_boot_secondary(int cpu, struct task_struct *idle)
+=======
+static void vsmp_boot_secondary(int cpu, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct thread_info *gp = task_thread_info(idle);
 	dvpe();
@@ -235,7 +280,11 @@ static void __init vsmp_smp_setup(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
+<<<<<<< HEAD
 		cpu_set(0, mt_fpu_cpumask);
+=======
+		cpumask_set_cpu(0, &mt_fpu_cpumask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_MIPS_MT_FPAFF */
 	if (!cpu_has_mipsmt)
 		return;
@@ -280,8 +329,15 @@ struct plat_smp_ops vsmp_smp_ops = {
 	.send_ipi_mask		= vsmp_send_ipi_mask,
 	.init_secondary		= vsmp_init_secondary,
 	.smp_finish		= vsmp_smp_finish,
+<<<<<<< HEAD
 	.cpus_done		= vsmp_cpus_done,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.boot_secondary		= vsmp_boot_secondary,
 	.smp_setup		= vsmp_smp_setup,
 	.prepare_cpus		= vsmp_prepare_cpus,
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

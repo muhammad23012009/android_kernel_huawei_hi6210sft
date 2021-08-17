@@ -400,10 +400,23 @@ static ssize_t lm3530_mode_set(struct device *dev, struct device_attribute
 }
 static DEVICE_ATTR(mode, 0644, lm3530_mode_get, lm3530_mode_set);
 
+<<<<<<< HEAD
 static int lm3530_probe(struct i2c_client *client,
 			   const struct i2c_device_id *id)
 {
 	struct lm3530_platform_data *pdata = client->dev.platform_data;
+=======
+static struct attribute *lm3530_attrs[] = {
+	&dev_attr_mode.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(lm3530);
+
+static int lm3530_probe(struct i2c_client *client,
+			   const struct i2c_device_id *id)
+{
+	struct lm3530_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lm3530_data *drvdata;
 	int err = 0;
 
@@ -436,6 +449,10 @@ static int lm3530_probe(struct i2c_client *client,
 	drvdata->led_dev.name = LM3530_LED_DEV;
 	drvdata->led_dev.brightness_set = lm3530_brightness_set;
 	drvdata->led_dev.max_brightness = MAX_BRIGHTNESS;
+<<<<<<< HEAD
+=======
+	drvdata->led_dev.groups = lm3530_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	i2c_set_clientdata(client, drvdata);
 
@@ -461,6 +478,7 @@ static int lm3530_probe(struct i2c_client *client,
 		return err;
 	}
 
+<<<<<<< HEAD
 	err = device_create_file(drvdata->led_dev.dev, &dev_attr_mode);
 	if (err < 0) {
 		dev_err(&client->dev, "File device creation failed: %d\n", err);
@@ -473,14 +491,20 @@ static int lm3530_probe(struct i2c_client *client,
 err_create_file:
 	led_classdev_unregister(&drvdata->led_dev);
 	return err;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int lm3530_remove(struct i2c_client *client)
 {
 	struct lm3530_data *drvdata = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	device_remove_file(drvdata->led_dev.dev, &dev_attr_mode);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lm3530_led_disable(drvdata);
 	led_classdev_unregister(&drvdata->led_dev);
 	return 0;
@@ -498,7 +522,10 @@ static struct i2c_driver lm3530_i2c_driver = {
 	.id_table = lm3530_id,
 	.driver = {
 		.name = LM3530_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

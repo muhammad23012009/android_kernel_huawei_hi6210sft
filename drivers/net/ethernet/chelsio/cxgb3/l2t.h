@@ -75,8 +75,13 @@ struct l2t_data {
 	struct l2t_entry *rover;	/* starting point for next allocation */
 	atomic_t nfree;		/* number of free entries */
 	rwlock_t lock;
+<<<<<<< HEAD
 	struct l2t_entry l2tab[0];
 	struct rcu_head rcu_head;	/* to handle rcu cleanup */
+=======
+	struct rcu_head rcu_head;	/* to handle rcu cleanup */
+	struct l2t_entry l2tab[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 typedef void (*arp_failure_handler_func)(struct t3cdev * dev,

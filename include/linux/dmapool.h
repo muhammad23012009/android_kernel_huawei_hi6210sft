@@ -11,8 +11,15 @@
 #ifndef LINUX_DMAPOOL_H
 #define	LINUX_DMAPOOL_H
 
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+#include <asm/io.h>
+
+struct device;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct dma_pool *dma_pool_create(const char *name, struct device *dev, 
 			size_t size, size_t align, size_t allocation);
@@ -22,6 +29,15 @@ void dma_pool_destroy(struct dma_pool *pool);
 void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
 		     dma_addr_t *handle);
 
+<<<<<<< HEAD
+=======
+static inline void *dma_pool_zalloc(struct dma_pool *pool, gfp_t mem_flags,
+				    dma_addr_t *handle)
+{
+	return dma_pool_alloc(pool, mem_flags | __GFP_ZERO, handle);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t addr);
 
 /*

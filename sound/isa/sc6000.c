@@ -559,8 +559,13 @@ static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
 	char __iomem *vmss_port;
 
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, sizeof(vport),
 				&card);
+=======
+	err = snd_card_new(devptr, index[dev], id[dev], THIS_MODULE,
+			   sizeof(vport), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -625,7 +630,11 @@ static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
 	if (err < 0)
 		goto err_unmap2;
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(chip, 0, NULL);
+=======
+	err = snd_wss_pcm(chip, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 		snd_printk(KERN_ERR PFX
 			   "error creating new WSS PCM device\n");
@@ -668,8 +677,11 @@ static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
 	sprintf(card->longname, "Gallant SC-6000 at 0x%lx, irq %d, dma %d",
 		mss_port[dev], xirq, xdma);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, devptr);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_card_register(card);
 	if (err < 0)
 		goto err_unmap2;
@@ -698,7 +710,10 @@ static int snd_sc6000_remove(struct device *devptr, unsigned int dev)
 	release_region(port[dev], 0x10);
 	release_region(mss_port[dev], 4);
 
+<<<<<<< HEAD
 	dev_set_drvdata(devptr, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_card_free(card);
 	return 0;
 }
@@ -714,6 +729,7 @@ static struct isa_driver snd_sc6000_driver = {
 };
 
 
+<<<<<<< HEAD
 static int __init alsa_card_sc6000_init(void)
 {
 	return isa_register_driver(&snd_sc6000_driver, SNDRV_CARDS);
@@ -726,3 +742,6 @@ static void __exit alsa_card_sc6000_exit(void)
 
 module_init(alsa_card_sc6000_init)
 module_exit(alsa_card_sc6000_exit)
+=======
+module_isa_driver(snd_sc6000_driver, SNDRV_CARDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

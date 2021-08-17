@@ -225,7 +225,11 @@ out_cancel:
 out_up:
 	up_write(&c->commit_sem);
 out:
+<<<<<<< HEAD
 	ubifs_err("commit failed, error %d", err);
+=======
+	ubifs_err(c, "commit failed, error %d", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&c->cs_lock);
 	c->cmt_state = COMMIT_BROKEN;
 	wake_up(&c->cmt_wq);
@@ -289,7 +293,11 @@ int ubifs_bg_thread(void *info)
 	int err;
 	struct ubifs_info *c = info;
 
+<<<<<<< HEAD
 	ubifs_msg("background thread \"%s\" started, PID %d",
+=======
+	ubifs_msg(c, "background thread \"%s\" started, PID %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  c->bgt_name, current->pid);
 	set_freezable();
 
@@ -324,7 +332,11 @@ int ubifs_bg_thread(void *info)
 		cond_resched();
 	}
 
+<<<<<<< HEAD
 	ubifs_msg("background thread \"%s\" stops", c->bgt_name);
+=======
+	ubifs_msg(c, "background thread \"%s\" stops", c->bgt_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -712,13 +724,21 @@ out:
 	return 0;
 
 out_dump:
+<<<<<<< HEAD
 	ubifs_err("dumping index node (iip=%d)", i->iip);
+=======
+	ubifs_err(c, "dumping index node (iip=%d)", i->iip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ubifs_dump_node(c, idx);
 	list_del(&i->list);
 	kfree(i);
 	if (!list_empty(&list)) {
 		i = list_entry(list.prev, struct idx_node, list);
+<<<<<<< HEAD
 		ubifs_err("dumping parent index node");
+=======
+		ubifs_err(c, "dumping parent index node");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ubifs_dump_node(c, &i->idx);
 	}
 out_free:
@@ -727,7 +747,11 @@ out_free:
 		list_del(&i->list);
 		kfree(i);
 	}
+<<<<<<< HEAD
 	ubifs_err("failed, error %d", err);
+=======
+	ubifs_err(c, "failed, error %d", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err > 0)
 		err = -EINVAL;
 	return err;

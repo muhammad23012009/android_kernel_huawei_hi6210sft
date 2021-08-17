@@ -34,7 +34,254 @@
  *     special interrupts from within a non-standard level will probably
  *     blow you up
  */
+<<<<<<< HEAD
 #define	SPECIAL_EXC_FRAME_SIZE	INT_FRAME_SIZE
+=======
+#define SPECIAL_EXC_SRR0	0
+#define SPECIAL_EXC_SRR1	1
+#define SPECIAL_EXC_SPRG_GEN	2
+#define SPECIAL_EXC_SPRG_TLB	3
+#define SPECIAL_EXC_MAS0	4
+#define SPECIAL_EXC_MAS1	5
+#define SPECIAL_EXC_MAS2	6
+#define SPECIAL_EXC_MAS3	7
+#define SPECIAL_EXC_MAS6	8
+#define SPECIAL_EXC_MAS7	9
+#define SPECIAL_EXC_MAS5	10	/* E.HV only */
+#define SPECIAL_EXC_MAS8	11	/* E.HV only */
+#define SPECIAL_EXC_IRQHAPPENED	12
+#define SPECIAL_EXC_DEAR	13
+#define SPECIAL_EXC_ESR		14
+#define SPECIAL_EXC_SOFTE	15
+#define SPECIAL_EXC_CSRR0	16
+#define SPECIAL_EXC_CSRR1	17
+/* must be even to keep 16-byte stack alignment */
+#define SPECIAL_EXC_END		18
+
+#define SPECIAL_EXC_FRAME_SIZE	(INT_FRAME_SIZE + SPECIAL_EXC_END * 8)
+#define SPECIAL_EXC_FRAME_OFFS  (INT_FRAME_SIZE - 288)
+
+#define SPECIAL_EXC_STORE(reg, name) \
+	std	reg, (SPECIAL_EXC_##name * 8 + SPECIAL_EXC_FRAME_OFFS)(r1)
+
+#define SPECIAL_EXC_LOAD(reg, name) \
+	ld	reg, (SPECIAL_EXC_##name * 8 + SPECIAL_EXC_FRAME_OFFS)(r1)
+
+special_reg_save:
+	lbz	r9,PACAIRQHAPPENED(r13)
+	RECONCILE_IRQ_STATE(r3,r4)
+
+	/*
+	 * We only need (or have stack space) to save this stuff if
+	 * we interrupted the kernel.
+	 */
+	ld	r3,_MSR(r1)
+	andi.	r3,r3,MSR_PR
+	bnelr
+
+	/* Copy info into temporary exception thread info */
+	ld	r11,PACAKSAVE(r13)
+	CURRENT_THREAD_INFO(r11, r11)
+	CURRENT_THREAD_INFO(r12, r1)
+	ld	r10,TI_FLAGS(r11)
+	std	r10,TI_FLAGS(r12)
+	ld	r10,TI_PREEMPT(r11)
+	std	r10,TI_PREEMPT(r12)
+	ld	r10,TI_TASK(r11)
+	std	r10,TI_TASK(r12)
+
+	/*
+	 * Advance to the next TLB exception frame for handler
+	 * types that don't do it automatically.
+	 */
+	LOAD_REG_ADDR(r11,extlb_level_exc)
+	lwz	r12,0(r11)
+	mfspr	r10,SPRN_SPRG_TLB_EXFRAME
+	add	r10,r10,r12
+	mtspr	SPRN_SPRG_TLB_EXFRAME,r10
+
+	/*
+	 * Save registers needed to allow nesting of certain exceptions
+	 * (such as TLB misses) inside special exception levels
+	 */
+	mfspr	r10,SPRN_SRR0
+	SPECIAL_EXC_STORE(r10,SRR0)
+	mfspr	r10,SPRN_SRR1
+	SPECIAL_EXC_STORE(r10,SRR1)
+	mfspr	r10,SPRN_SPRG_GEN_SCRATCH
+	SPECIAL_EXC_STORE(r10,SPRG_GEN)
+	mfspr	r10,SPRN_SPRG_TLB_SCRATCH
+	SPECIAL_EXC_STORE(r10,SPRG_TLB)
+	mfspr	r10,SPRN_MAS0
+	SPECIAL_EXC_STORE(r10,MAS0)
+	mfspr	r10,SPRN_MAS1
+	SPECIAL_EXC_STORE(r10,MAS1)
+	mfspr	r10,SPRN_MAS2
+	SPECIAL_EXC_STORE(r10,MAS2)
+	mfspr	r10,SPRN_MAS3
+	SPECIAL_EXC_STORE(r10,MAS3)
+	mfspr	r10,SPRN_MAS6
+	SPECIAL_EXC_STORE(r10,MAS6)
+	mfspr	r10,SPRN_MAS7
+	SPECIAL_EXC_STORE(r10,MAS7)
+BEGIN_FTR_SECTION
+	mfspr	r10,SPRN_MAS5
+	SPECIAL_EXC_STORE(r10,MAS5)
+	mfspr	r10,SPRN_MAS8
+	SPECIAL_EXC_STORE(r10,MAS8)
+
+	/* MAS5/8 could have inappropriate values if we interrupted KVM code */
+	li	r10,0
+	mtspr	SPRN_MAS5,r10
+	mtspr	SPRN_MAS8,r10
+END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
+	SPECIAL_EXC_STORE(r9,IRQHAPPENED)
+
+	mfspr	r10,SPRN_DEAR
+	SPECIAL_EXC_STORE(r10,DEAR)
+	mfspr	r10,SPRN_ESR
+	SPECIAL_EXC_STORE(r10,ESR)
+
+	lbz	r10,PACASOFTIRQEN(r13)
+	SPECIAL_EXC_STORE(r10,SOFTE)
+	ld	r10,_NIP(r1)
+	SPECIAL_EXC_STORE(r10,CSRR0)
+	ld	r10,_MSR(r1)
+	SPECIAL_EXC_STORE(r10,CSRR1)
+
+	blr
+
+ret_from_level_except:
+	ld	r3,_MSR(r1)
+	andi.	r3,r3,MSR_PR
+	beq	1f
+	b	ret_from_except
+1:
+
+	LOAD_REG_ADDR(r11,extlb_level_exc)
+	lwz	r12,0(r11)
+	mfspr	r10,SPRN_SPRG_TLB_EXFRAME
+	sub	r10,r10,r12
+	mtspr	SPRN_SPRG_TLB_EXFRAME,r10
+
+	/*
+	 * It's possible that the special level exception interrupted a
+	 * TLB miss handler, and inserted the same entry that the
+	 * interrupted handler was about to insert.  On CPUs without TLB
+	 * write conditional, this can result in a duplicate TLB entry.
+	 * Wipe all non-bolted entries to be safe.
+	 *
+	 * Note that this doesn't protect against any TLB misses
+	 * we may take accessing the stack from here to the end of
+	 * the special level exception.  It's not clear how we can
+	 * reasonably protect against that, but only CPUs with
+	 * neither TLB write conditional nor bolted kernel memory
+	 * are affected.  Do any such CPUs even exist?
+	 */
+	PPC_TLBILX_ALL(0,R0)
+
+	REST_NVGPRS(r1)
+
+	SPECIAL_EXC_LOAD(r10,SRR0)
+	mtspr	SPRN_SRR0,r10
+	SPECIAL_EXC_LOAD(r10,SRR1)
+	mtspr	SPRN_SRR1,r10
+	SPECIAL_EXC_LOAD(r10,SPRG_GEN)
+	mtspr	SPRN_SPRG_GEN_SCRATCH,r10
+	SPECIAL_EXC_LOAD(r10,SPRG_TLB)
+	mtspr	SPRN_SPRG_TLB_SCRATCH,r10
+	SPECIAL_EXC_LOAD(r10,MAS0)
+	mtspr	SPRN_MAS0,r10
+	SPECIAL_EXC_LOAD(r10,MAS1)
+	mtspr	SPRN_MAS1,r10
+	SPECIAL_EXC_LOAD(r10,MAS2)
+	mtspr	SPRN_MAS2,r10
+	SPECIAL_EXC_LOAD(r10,MAS3)
+	mtspr	SPRN_MAS3,r10
+	SPECIAL_EXC_LOAD(r10,MAS6)
+	mtspr	SPRN_MAS6,r10
+	SPECIAL_EXC_LOAD(r10,MAS7)
+	mtspr	SPRN_MAS7,r10
+BEGIN_FTR_SECTION
+	SPECIAL_EXC_LOAD(r10,MAS5)
+	mtspr	SPRN_MAS5,r10
+	SPECIAL_EXC_LOAD(r10,MAS8)
+	mtspr	SPRN_MAS8,r10
+END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
+
+	lbz	r6,PACASOFTIRQEN(r13)
+	ld	r5,SOFTE(r1)
+
+	/* Interrupts had better not already be enabled... */
+	twnei	r6,0
+
+	cmpwi	cr0,r5,0
+	beq	1f
+
+	TRACE_ENABLE_INTS
+	stb	r5,PACASOFTIRQEN(r13)
+1:
+	/*
+	 * Restore PACAIRQHAPPENED rather than setting it based on
+	 * the return MSR[EE], since we could have interrupted
+	 * __check_irq_replay() or other inconsistent transitory
+	 * states that must remain that way.
+	 */
+	SPECIAL_EXC_LOAD(r10,IRQHAPPENED)
+	stb	r10,PACAIRQHAPPENED(r13)
+
+	SPECIAL_EXC_LOAD(r10,DEAR)
+	mtspr	SPRN_DEAR,r10
+	SPECIAL_EXC_LOAD(r10,ESR)
+	mtspr	SPRN_ESR,r10
+
+	stdcx.	r0,0,r1		/* to clear the reservation */
+
+	REST_4GPRS(2, r1)
+	REST_4GPRS(6, r1)
+
+	ld	r10,_CTR(r1)
+	ld	r11,_XER(r1)
+	mtctr	r10
+	mtxer	r11
+
+	blr
+
+.macro ret_from_level srr0 srr1 paca_ex scratch
+	bl	ret_from_level_except
+
+	ld	r10,_LINK(r1)
+	ld	r11,_CCR(r1)
+	ld	r0,GPR13(r1)
+	mtlr	r10
+	mtcr	r11
+
+	ld	r10,GPR10(r1)
+	ld	r11,GPR11(r1)
+	ld	r12,GPR12(r1)
+	mtspr	\scratch,r0
+
+	std	r10,\paca_ex+EX_R10(r13);
+	std	r11,\paca_ex+EX_R11(r13);
+	ld	r10,_NIP(r1)
+	ld	r11,_MSR(r1)
+	ld	r0,GPR0(r1)
+	ld	r1,GPR1(r1)
+	mtspr	\srr0,r10
+	mtspr	\srr1,r11
+	ld	r10,\paca_ex+EX_R10(r13)
+	ld	r11,\paca_ex+EX_R11(r13)
+	mfspr	r13,\scratch
+.endm
+
+ret_from_crit_except:
+	ret_from_level SPRN_CSRR0 SPRN_CSRR1 PACA_EXCRIT SPRN_SPRG_CRIT_SCRATCH
+	rfci
+
+ret_from_mc_except:
+	ret_from_level SPRN_MCSRR0 SPRN_MCSRR1 PACA_EXMC SPRN_SPRG_MC_SCRATCH
+	rfmci
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Exception prolog code for all exceptions */
 #define EXCEPTION_PROLOG(n, intnum, type, addition)	    		    \
@@ -42,7 +289,10 @@
 	mfspr	r13,SPRN_SPRG_PACA;	/* get PACA */			    \
 	std	r10,PACA_EX##type+EX_R10(r13);				    \
 	std	r11,PACA_EX##type+EX_R11(r13);				    \
+<<<<<<< HEAD
 	PROLOG_STORE_RESTORE_SCRATCH_##type;				    \
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfcr	r10;			/* save CR */			    \
 	mfspr	r11,SPRN_##type##_SRR1;/* what are we coming from */	    \
 	DO_KVM	intnum,SPRN_##type##_SRR1;    /* KVM hook */		    \
@@ -53,7 +303,12 @@
 	andi.	r10,r11,MSR_PR;		/* save stack pointer */	    \
 	beq	1f;			/* branch around if supervisor */   \
 	ld	r1,PACAKSAVE(r13);	/* get kernel stack coming from usr */\
+<<<<<<< HEAD
 1:	cmpdi	cr1,r1,0;		/* check if SP makes sense */	    \
+=======
+1:	type##_BTB_FLUSH		\
+	cmpdi	cr1,r1,0;		/* check if SP makes sense */	    \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bge-	cr1,exc_##n##_bad_stack;/* bad stack (TODO: out of line) */ \
 	mfspr	r10,SPRN_##type##_SRR0;	/* read SRR0 before touching stack */
 
@@ -69,22 +324,61 @@
 
 #define CRIT_SET_KSTACK						            \
 	ld	r1,PACA_CRIT_STACK(r13);				    \
+<<<<<<< HEAD
 	subi	r1,r1,SPECIAL_EXC_FRAME_SIZE;
+=======
+	subi	r1,r1,SPECIAL_EXC_FRAME_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SPRN_CRIT_SRR0	SPRN_CSRR0
 #define SPRN_CRIT_SRR1	SPRN_CSRR1
 
 #define DBG_SET_KSTACK						            \
 	ld	r1,PACA_DBG_STACK(r13);					    \
+<<<<<<< HEAD
 	subi	r1,r1,SPECIAL_EXC_FRAME_SIZE;
+=======
+	subi	r1,r1,SPECIAL_EXC_FRAME_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SPRN_DBG_SRR0	SPRN_DSRR0
 #define SPRN_DBG_SRR1	SPRN_DSRR1
 
 #define MC_SET_KSTACK						            \
 	ld	r1,PACA_MC_STACK(r13);					    \
+<<<<<<< HEAD
 	subi	r1,r1,SPECIAL_EXC_FRAME_SIZE;
 #define SPRN_MC_SRR0	SPRN_MCSRR0
 #define SPRN_MC_SRR1	SPRN_MCSRR1
 
+=======
+	subi	r1,r1,SPECIAL_EXC_FRAME_SIZE
+#define SPRN_MC_SRR0	SPRN_MCSRR0
+#define SPRN_MC_SRR1	SPRN_MCSRR1
+
+#ifdef CONFIG_PPC_FSL_BOOK3E
+#define GEN_BTB_FLUSH			\
+	START_BTB_FLUSH_SECTION		\
+		beq 1f;			\
+		BTB_FLUSH(r10)			\
+		1:		\
+	END_BTB_FLUSH_SECTION
+
+#define CRIT_BTB_FLUSH			\
+	START_BTB_FLUSH_SECTION		\
+		BTB_FLUSH(r10)		\
+	END_BTB_FLUSH_SECTION
+
+#define DBG_BTB_FLUSH CRIT_BTB_FLUSH
+#define MC_BTB_FLUSH CRIT_BTB_FLUSH
+#define GDBELL_BTB_FLUSH GEN_BTB_FLUSH
+#else
+#define GEN_BTB_FLUSH
+#define CRIT_BTB_FLUSH
+#define DBG_BTB_FLUSH
+#define MC_BTB_FLUSH
+#define GDBELL_BTB_FLUSH
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NORMAL_EXCEPTION_PROLOG(n, intnum, addition)			    \
 	EXCEPTION_PROLOG(n, intnum, GEN, addition##_GEN(n))
 
@@ -100,6 +394,7 @@
 #define GDBELL_EXCEPTION_PROLOG(n, intnum, addition)			    \
 	EXCEPTION_PROLOG(n, intnum, GDBELL, addition##_GDBELL(n))
 
+<<<<<<< HEAD
 /*
  * Store user-visible scratch in PACA exception slots and restore proper value
  */
@@ -114,6 +409,8 @@
 	ld	r11,PACA_SPRG3(r13);					    \
 	mtspr	SPRN_SPRG_CRIT_SCRATCH,r11;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Variants of the "addition" argument for the prolog
  */
 #define PROLOG_ADDITION_NONE_GEN(n)
@@ -147,10 +444,15 @@
 	std	r15,PACA_EXMC+EX_R15(r13)
 
 
+<<<<<<< HEAD
 /* Core exception code for all exceptions except TLB misses.
  * XXX: Needs to make SPRN_SPRG_GEN depend on exception type
  */
 #define EXCEPTION_COMMON(n, excf, ints)					    \
+=======
+/* Core exception code for all exceptions except TLB misses. */
+#define EXCEPTION_COMMON_LVL(n, scratch, excf)				    \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 exc_##n##_common:							    \
 	std	r0,GPR0(r1);		/* save r0 in stackframe */	    \
 	std	r2,GPR2(r1);		/* save r2 in stackframe */	    \
@@ -160,10 +462,17 @@ exc_##n##_common:							    \
 	std	r10,_NIP(r1);		/* save SRR0 to stackframe */	    \
 	std	r11,_MSR(r1);		/* save SRR1 to stackframe */	    \
 	beq	2f;			/* if from kernel mode */	    \
+<<<<<<< HEAD
 	ACCOUNT_CPU_USER_ENTRY(r10,r11);/* accounting (uses cr0+eq) */	    \
 2:	ld	r3,excf+EX_R10(r13);	/* get back r10 */		    \
 	ld	r4,excf+EX_R11(r13);	/* get back r11 */		    \
 	mfspr	r5,SPRN_SPRG_GEN_SCRATCH;/* get back r13 */		    \
+=======
+	ACCOUNT_CPU_USER_ENTRY(r13,r10,r11);/* accounting (uses cr0+eq) */  \
+2:	ld	r3,excf+EX_R10(r13);	/* get back r10 */		    \
+	ld	r4,excf+EX_R11(r13);	/* get back r11 */		    \
+	mfspr	r5,scratch;		/* get back r13 */		    \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	std	r12,GPR12(r1);		/* save r12 in stackframe */	    \
 	ld	r2,PACATOC(r13);	/* get kernel TOC into r2 */	    \
 	mflr	r6;			/* save LR in stackframe */	    \
@@ -187,6 +496,7 @@ exc_##n##_common:							    \
 	std	r11,SOFTE(r1);		/* and save it to stackframe */     \
 	std	r12,STACK_FRAME_OVERHEAD-16(r1); /* mark the frame */	    \
 	std	r3,_TRAP(r1);		/* set trap number		*/  \
+<<<<<<< HEAD
 	std	r0,RESULT(r1);		/* clear regs->result */	    \
 	ints;
 
@@ -205,6 +515,31 @@ exc_##n##_common:							    \
 /* This is called by exceptions that used INTS_KEEP (that did not touch
  * irq indicators in the PACA). This will restore MSR:EE to it's previous
  * value
+=======
+	std	r0,RESULT(r1);		/* clear regs->result */
+
+#define EXCEPTION_COMMON(n) \
+	EXCEPTION_COMMON_LVL(n, SPRN_SPRG_GEN_SCRATCH, PACA_EXGEN)
+#define EXCEPTION_COMMON_CRIT(n) \
+	EXCEPTION_COMMON_LVL(n, SPRN_SPRG_CRIT_SCRATCH, PACA_EXCRIT)
+#define EXCEPTION_COMMON_MC(n) \
+	EXCEPTION_COMMON_LVL(n, SPRN_SPRG_MC_SCRATCH, PACA_EXMC)
+#define EXCEPTION_COMMON_DBG(n) \
+	EXCEPTION_COMMON_LVL(n, SPRN_SPRG_DBG_SCRATCH, PACA_EXDBG)
+
+/*
+ * This is meant for exceptions that don't immediately hard-enable.  We
+ * set a bit in paca->irq_happened to ensure that a subsequent call to
+ * arch_local_irq_restore() will properly hard-enable and avoid the
+ * fast-path, and then reconcile irq state.
+ */
+#define INTS_DISABLE	RECONCILE_IRQ_STATE(r3,r4)
+
+/*
+ * This is called by exceptions that don't use INTS_DISABLE (that did not
+ * touch irq indicators in the PACA).  This will restore MSR:EE to it's
+ * previous value
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * XXX In the long run, we may want to open-code it in order to separate the
  *     load from the wrtee, thus limiting the latency caused by the dependency
@@ -222,7 +557,11 @@ exc_##n##_bad_stack:							    \
 	sth	r1,PACA_TRAP_SAVE(r13);	/* store trap */		    \
 	b	bad_stack_book3e;	/* bad stack error */
 
+<<<<<<< HEAD
 /* WARNING: If you change the layout of this stub, make sure you chcek
+=======
+/* WARNING: If you change the layout of this stub, make sure you check
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*   the debug exception handler which handles single stepping
 	*   into exceptions from userspace, and the MM code in
 	*   arch/powerpc/mm/tlb_nohash.c which patches the branch here
@@ -262,12 +601,21 @@ exc_##n##_bad_stack:							    \
 #define MASKABLE_EXCEPTION(trapnum, intnum, label, hdlr, ack)		\
 	START_EXCEPTION(label);						\
 	NORMAL_EXCEPTION_PROLOG(trapnum, intnum, PROLOG_ADDITION_MASKABLE)\
+<<<<<<< HEAD
 	EXCEPTION_COMMON(trapnum, PACA_EXGEN, INTS_DISABLE)		\
+=======
+	EXCEPTION_COMMON(trapnum)					\
+	INTS_DISABLE;							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ack(r8);							\
 	CHECK_NAPPING();						\
 	addi	r3,r1,STACK_FRAME_OVERHEAD;				\
 	bl	hdlr;							\
+<<<<<<< HEAD
 	b	.ret_from_except_lite;
+=======
+	b	ret_from_except_lite;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* This value is used to mark exception frames on the stack. */
 	.section	".toc","aw"
@@ -283,8 +631,13 @@ exception_marker:
 	.balign	0x1000
 	.globl interrupt_base_book3e
 interrupt_base_book3e:					/* fake trap */
+<<<<<<< HEAD
 	EXCEPTION_STUB(0x000, machine_check)		/* 0x0200 */
 	EXCEPTION_STUB(0x020, critical_input)		/* 0x0580 */
+=======
+	EXCEPTION_STUB(0x000, machine_check)
+	EXCEPTION_STUB(0x020, critical_input)		/* 0x0100 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	EXCEPTION_STUB(0x040, debug_crit)		/* 0x0d00 */
 	EXCEPTION_STUB(0x060, data_storage)		/* 0x0300 */
 	EXCEPTION_STUB(0x080, instruction_storage)	/* 0x0400 */
@@ -299,8 +652,13 @@ interrupt_base_book3e:					/* fake trap */
 	EXCEPTION_STUB(0x1a0, watchdog)			/* 0x09f0 */
 	EXCEPTION_STUB(0x1c0, data_tlb_miss)
 	EXCEPTION_STUB(0x1e0, instruction_tlb_miss)
+<<<<<<< HEAD
 	EXCEPTION_STUB(0x200, altivec_unavailable)	/* 0x0f20 */
 	EXCEPTION_STUB(0x220, altivec_assist)		/* 0x1700 */
+=======
+	EXCEPTION_STUB(0x200, altivec_unavailable)
+	EXCEPTION_STUB(0x220, altivec_assist)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	EXCEPTION_STUB(0x260, perfmon)
 	EXCEPTION_STUB(0x280, doorbell)
 	EXCEPTION_STUB(0x2a0, doorbell_crit)
@@ -308,14 +666,22 @@ interrupt_base_book3e:					/* fake trap */
 	EXCEPTION_STUB(0x2e0, guest_doorbell_crit)
 	EXCEPTION_STUB(0x300, hypercall)
 	EXCEPTION_STUB(0x320, ehpriv)
+<<<<<<< HEAD
 
 	.globl interrupt_end_book3e
 interrupt_end_book3e:
+=======
+	EXCEPTION_STUB(0x340, lrat_error)
+
+	.globl __end_interrupts
+__end_interrupts:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Critical Input Interrupt */
 	START_EXCEPTION(critical_input);
 	CRIT_EXCEPTION_PROLOG(0x100, BOOKE_INTERRUPT_CRITICAL,
 			      PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 //	EXCEPTION_COMMON(0x100, PACA_EXCRIT, INTS_DISABLE)
 //	bl	special_reg_save_crit
 //	CHECK_NAPPING();
@@ -335,6 +701,27 @@ interrupt_end_book3e:
 //	bl	.machine_check_exception
 //	b	ret_from_mc_except
 	b	.
+=======
+	EXCEPTION_COMMON_CRIT(0x100)
+	bl	save_nvgprs
+	bl	special_reg_save
+	CHECK_NAPPING();
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	unknown_exception
+	b	ret_from_crit_except
+
+/* Machine Check Interrupt */
+	START_EXCEPTION(machine_check);
+	MC_EXCEPTION_PROLOG(0x000, BOOKE_INTERRUPT_MACHINE_CHECK,
+			    PROLOG_ADDITION_NONE)
+	EXCEPTION_COMMON_MC(0x000)
+	bl	save_nvgprs
+	bl	special_reg_save
+	CHECK_NAPPING();
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	machine_check_exception
+	b	ret_from_mc_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Data Storage Interrupt */
 	START_EXCEPTION(data_storage)
@@ -342,7 +729,12 @@ interrupt_end_book3e:
 				PROLOG_ADDITION_2REGS)
 	mfspr	r14,SPRN_DEAR
 	mfspr	r15,SPRN_ESR
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x300, PACA_EXGEN, INTS_DISABLE)
+=======
+	EXCEPTION_COMMON(0x300)
+	INTS_DISABLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b	storage_fault_common
 
 /* Instruction Storage Interrupt */
@@ -351,12 +743,21 @@ interrupt_end_book3e:
 				PROLOG_ADDITION_2REGS)
 	li	r15,0
 	mr	r14,r10
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x400, PACA_EXGEN, INTS_DISABLE)
+=======
+	EXCEPTION_COMMON(0x400)
+	INTS_DISABLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b	storage_fault_common
 
 /* External Input Interrupt */
 	MASKABLE_EXCEPTION(0x500, BOOKE_INTERRUPT_EXTERNAL,
+<<<<<<< HEAD
 			   external_input, .do_IRQ, ACK_NONE)
+=======
+			   external_input, do_IRQ, ACK_NONE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Alignment */
 	START_EXCEPTION(alignment);
@@ -364,7 +765,11 @@ interrupt_end_book3e:
 				PROLOG_ADDITION_2REGS)
 	mfspr	r14,SPRN_DEAR
 	mfspr	r15,SPRN_ESR
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x600, PACA_EXGEN, INTS_KEEP)
+=======
+	EXCEPTION_COMMON(0x600)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b	alignment_more	/* no room, go out of line */
 
 /* Program Interrupt */
@@ -372,6 +777,7 @@ interrupt_end_book3e:
 	NORMAL_EXCEPTION_PROLOG(0x700, BOOKE_INTERRUPT_PROGRAM,
 				PROLOG_ADDITION_1REG)
 	mfspr	r14,SPRN_ESR
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x700, PACA_EXGEN, INTS_DISABLE)
 	std	r14,_DSISR(r1)
 	addi	r3,r1,STACK_FRAME_OVERHEAD
@@ -379,12 +785,23 @@ interrupt_end_book3e:
 	bl	.save_nvgprs
 	bl	.program_check_exception
 	b	.ret_from_except
+=======
+	EXCEPTION_COMMON(0x700)
+	INTS_DISABLE
+	std	r14,_DSISR(r1)
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	ld	r14,PACA_EXGEN+EX_R14(r13)
+	bl	save_nvgprs
+	bl	program_check_exception
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Floating Point Unavailable Interrupt */
 	START_EXCEPTION(fp_unavailable);
 	NORMAL_EXCEPTION_PROLOG(0x800, BOOKE_INTERRUPT_FP_UNAVAIL,
 				PROLOG_ADDITION_NONE)
 	/* we can probably do a shorter exception entry for that one... */
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x800, PACA_EXGEN, INTS_KEEP)
 	ld	r12,_MSR(r1)
 	andi.	r0,r12,MSR_PR;
@@ -396,24 +813,46 @@ interrupt_end_book3e:
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	.kernel_fp_unavailable_exception
 	b	.ret_from_except
+=======
+	EXCEPTION_COMMON(0x800)
+	ld	r12,_MSR(r1)
+	andi.	r0,r12,MSR_PR;
+	beq-	1f
+	bl	load_up_fpu
+	b	fast_exception_return
+1:	INTS_DISABLE
+	bl	save_nvgprs
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	kernel_fp_unavailable_exception
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Altivec Unavailable Interrupt */
 	START_EXCEPTION(altivec_unavailable);
 	NORMAL_EXCEPTION_PROLOG(0x200, BOOKE_INTERRUPT_ALTIVEC_UNAVAIL,
 				PROLOG_ADDITION_NONE)
 	/* we can probably do a shorter exception entry for that one... */
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x200, PACA_EXGEN, INTS_KEEP)
+=======
+	EXCEPTION_COMMON(0x200)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_ALTIVEC
 BEGIN_FTR_SECTION
 	ld	r12,_MSR(r1)
 	andi.	r0,r12,MSR_PR;
 	beq-	1f
+<<<<<<< HEAD
 	bl	.load_up_altivec
+=======
+	bl	load_up_altivec
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b	fast_exception_return
 1:
 END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 #endif
 	INTS_DISABLE
+<<<<<<< HEAD
 	bl	.save_nvgprs
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	.altivec_unavailable_exception
@@ -434,20 +873,53 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 	bl	.unknown_exception
 #endif
 	b	.ret_from_except
+=======
+	bl	save_nvgprs
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	altivec_unavailable_exception
+	b	ret_from_except
+
+/* AltiVec Assist */
+	START_EXCEPTION(altivec_assist);
+	NORMAL_EXCEPTION_PROLOG(0x220,
+				BOOKE_INTERRUPT_ALTIVEC_ASSIST,
+				PROLOG_ADDITION_NONE)
+	EXCEPTION_COMMON(0x220)
+	INTS_DISABLE
+	bl	save_nvgprs
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+#ifdef CONFIG_ALTIVEC
+BEGIN_FTR_SECTION
+	bl	altivec_assist_exception
+END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+#else
+	bl	unknown_exception
+#endif
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /* Decrementer Interrupt */
 	MASKABLE_EXCEPTION(0x900, BOOKE_INTERRUPT_DECREMENTER,
+<<<<<<< HEAD
 			   decrementer, .timer_interrupt, ACK_DEC)
 
 /* Fixed Interval Timer Interrupt */
 	MASKABLE_EXCEPTION(0x980, BOOKE_INTERRUPT_FIT,
 			   fixed_interval, .unknown_exception, ACK_FIT)
+=======
+			   decrementer, timer_interrupt, ACK_DEC)
+
+/* Fixed Interval Timer Interrupt */
+	MASKABLE_EXCEPTION(0x980, BOOKE_INTERRUPT_FIT,
+			   fixed_interval, unknown_exception, ACK_FIT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Watchdog Timer Interrupt */
 	START_EXCEPTION(watchdog);
 	CRIT_EXCEPTION_PROLOG(0x9f0, BOOKE_INTERRUPT_WATCHDOG,
 			      PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 //	EXCEPTION_COMMON(0x9f0, PACA_EXCRIT, INTS_DISABLE)
 //	bl	special_reg_save_crit
 //	CHECK_NAPPING();
@@ -455,6 +927,19 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 //	bl	.unknown_exception
 //	b	ret_from_crit_except
 	b	.
+=======
+	EXCEPTION_COMMON_CRIT(0x9f0)
+	bl	save_nvgprs
+	bl	special_reg_save
+	CHECK_NAPPING();
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+#ifdef CONFIG_BOOKE_WDT
+	bl	WatchdogException
+#else
+	bl	unknown_exception
+#endif
+	b	ret_from_crit_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* System Call Interrupt */
 	START_EXCEPTION(system_call)
@@ -468,11 +953,20 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 	START_EXCEPTION(ap_unavailable);
 	NORMAL_EXCEPTION_PROLOG(0xf20, BOOKE_INTERRUPT_AP_UNAVAIL,
 				PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0xf20, PACA_EXGEN, INTS_DISABLE)
 	bl	.save_nvgprs
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	.unknown_exception
 	b	.ret_from_except
+=======
+	EXCEPTION_COMMON(0xf20)
+	INTS_DISABLE
+	bl	save_nvgprs
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	unknown_exception
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Debug exception as a critical interrupt*/
 	START_EXCEPTION(debug_crit);
@@ -492,8 +986,19 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 	andis.	r15,r14,(DBSR_IC|DBSR_BT)@h
 	beq+	1f
 
+<<<<<<< HEAD
 	LOAD_REG_IMMEDIATE(r14,interrupt_base_book3e)
 	LOAD_REG_IMMEDIATE(r15,interrupt_end_book3e)
+=======
+#ifdef CONFIG_RELOCATABLE
+	ld	r15,PACATOC(r13)
+	ld	r14,interrupt_base_book3e@got(r15)
+	ld	r15,__end_interrupts@got(r15)
+#else
+	LOAD_REG_IMMEDIATE(r14,interrupt_base_book3e)
+	LOAD_REG_IMMEDIATE(r15,__end_interrupts)
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmpld	cr0,r10,r14
 	cmpld	cr1,r10,r15
 	blt+	cr0,1f
@@ -511,7 +1016,11 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 	mtcr	r10
 	ld	r10,PACA_EXCRIT+EX_R10(r13)	/* restore registers */
 	ld	r11,PACA_EXCRIT+EX_R11(r13)
+<<<<<<< HEAD
 	ld	r13,PACA_EXCRIT+EX_R13(r13)
+=======
+	mfspr	r13,SPRN_SPRG_CRIT_SCRATCH
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rfci
 
 	/* Normal debug exception */
@@ -524,18 +1033,29 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 	/* Now we mash up things to make it look like we are coming on a
 	 * normal exception
 	 */
+<<<<<<< HEAD
 	ld	r15,PACA_EXCRIT+EX_R13(r13)
 	mtspr	SPRN_SPRG_GEN_SCRATCH,r15
 	mfspr	r14,SPRN_DBSR
 	EXCEPTION_COMMON(0xd00, PACA_EXCRIT, INTS_DISABLE)
+=======
+	mfspr	r14,SPRN_DBSR
+	EXCEPTION_COMMON_CRIT(0xd00)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	std	r14,_DSISR(r1)
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	mr	r4,r14
 	ld	r14,PACA_EXCRIT+EX_R14(r13)
 	ld	r15,PACA_EXCRIT+EX_R15(r13)
+<<<<<<< HEAD
 	bl	.save_nvgprs
 	bl	.DebugException
 	b	.ret_from_except
+=======
+	bl	save_nvgprs
+	bl	DebugException
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 kernel_dbg_exc:
 	b	.	/* NYI */
@@ -558,8 +1078,19 @@ kernel_dbg_exc:
 	andis.	r15,r14,(DBSR_IC|DBSR_BT)@h
 	beq+	1f
 
+<<<<<<< HEAD
 	LOAD_REG_IMMEDIATE(r14,interrupt_base_book3e)
 	LOAD_REG_IMMEDIATE(r15,interrupt_end_book3e)
+=======
+#ifdef CONFIG_RELOCATABLE
+	ld	r15,PACATOC(r13)
+	ld	r14,interrupt_base_book3e@got(r15)
+	ld	r15,__end_interrupts@got(r15)
+#else
+	LOAD_REG_IMMEDIATE(r14,interrupt_base_book3e)
+	LOAD_REG_IMMEDIATE(r15,__end_interrupts)
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmpld	cr0,r10,r14
 	cmpld	cr1,r10,r15
 	blt+	cr0,1f
@@ -590,22 +1121,35 @@ kernel_dbg_exc:
 	/* Now we mash up things to make it look like we are coming on a
 	 * normal exception
 	 */
+<<<<<<< HEAD
 	mfspr	r15,SPRN_SPRG_DBG_SCRATCH
 	mtspr	SPRN_SPRG_GEN_SCRATCH,r15
 	mfspr	r14,SPRN_DBSR
 	EXCEPTION_COMMON(0xd08, PACA_EXDBG, INTS_DISABLE)
+=======
+	mfspr	r14,SPRN_DBSR
+	EXCEPTION_COMMON_DBG(0xd08)
+	INTS_DISABLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	std	r14,_DSISR(r1)
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	mr	r4,r14
 	ld	r14,PACA_EXDBG+EX_R14(r13)
 	ld	r15,PACA_EXDBG+EX_R15(r13)
+<<<<<<< HEAD
 	bl	.save_nvgprs
 	bl	.DebugException
 	b	.ret_from_except
+=======
+	bl	save_nvgprs
+	bl	DebugException
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	START_EXCEPTION(perfmon);
 	NORMAL_EXCEPTION_PROLOG(0x260, BOOKE_INTERRUPT_PERFORMANCE_MONITOR,
 				PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x260, PACA_EXGEN, INTS_DISABLE)
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	.performance_monitor_exception
@@ -614,11 +1158,24 @@ kernel_dbg_exc:
 /* Doorbell interrupt */
 	MASKABLE_EXCEPTION(0x280, BOOKE_INTERRUPT_DOORBELL,
 			   doorbell, .doorbell_exception, ACK_NONE)
+=======
+	EXCEPTION_COMMON(0x260)
+	INTS_DISABLE
+	CHECK_NAPPING()
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	performance_monitor_exception
+	b	ret_from_except_lite
+
+/* Doorbell interrupt */
+	MASKABLE_EXCEPTION(0x280, BOOKE_INTERRUPT_DOORBELL,
+			   doorbell, doorbell_exception, ACK_NONE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Doorbell critical Interrupt */
 	START_EXCEPTION(doorbell_crit);
 	CRIT_EXCEPTION_PROLOG(0x2a0, BOOKE_INTERRUPT_DOORBELL_CRITICAL,
 			      PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 //	EXCEPTION_COMMON(0x2a0, PACA_EXCRIT, INTS_DISABLE)
 //	bl	special_reg_save_crit
 //	CHECK_NAPPING();
@@ -626,6 +1183,15 @@ kernel_dbg_exc:
 //	bl	.doorbell_critical_exception
 //	b	ret_from_crit_except
 	b	.
+=======
+	EXCEPTION_COMMON_CRIT(0x2a0)
+	bl	save_nvgprs
+	bl	special_reg_save
+	CHECK_NAPPING();
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	unknown_exception
+	b	ret_from_crit_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Guest doorbell interrupt
@@ -634,17 +1200,27 @@ kernel_dbg_exc:
 	START_EXCEPTION(guest_doorbell);
 	GDBELL_EXCEPTION_PROLOG(0x2c0, BOOKE_INTERRUPT_GUEST_DBELL,
 			        PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x2c0, PACA_EXGEN, INTS_KEEP)
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	.save_nvgprs
 	INTS_RESTORE_HARD
 	bl	.unknown_exception
 	b	.ret_from_except
+=======
+	EXCEPTION_COMMON(0x2c0)
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	save_nvgprs
+	INTS_RESTORE_HARD
+	bl	unknown_exception
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Guest Doorbell critical Interrupt */
 	START_EXCEPTION(guest_doorbell_crit);
 	CRIT_EXCEPTION_PROLOG(0x2e0, BOOKE_INTERRUPT_GUEST_DBELL_CRIT,
 			      PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 //	EXCEPTION_COMMON(0x2e0, PACA_EXCRIT, INTS_DISABLE)
 //	bl	special_reg_save_crit
 //	CHECK_NAPPING();
@@ -652,23 +1228,56 @@ kernel_dbg_exc:
 //	bl	.guest_doorbell_critical_exception
 //	b	ret_from_crit_except
 	b	.
+=======
+	EXCEPTION_COMMON_CRIT(0x2e0)
+	bl	save_nvgprs
+	bl	special_reg_save
+	CHECK_NAPPING();
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	unknown_exception
+	b	ret_from_crit_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Hypervisor call */
 	START_EXCEPTION(hypercall);
 	NORMAL_EXCEPTION_PROLOG(0x310, BOOKE_INTERRUPT_HV_SYSCALL,
 			        PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x310, PACA_EXGEN, INTS_KEEP)
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	.save_nvgprs
 	INTS_RESTORE_HARD
 	bl	.unknown_exception
 	b	.ret_from_except
+=======
+	EXCEPTION_COMMON(0x310)
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	save_nvgprs
+	INTS_RESTORE_HARD
+	bl	unknown_exception
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Embedded Hypervisor priviledged  */
 	START_EXCEPTION(ehpriv);
 	NORMAL_EXCEPTION_PROLOG(0x320, BOOKE_INTERRUPT_HV_PRIV,
 			        PROLOG_ADDITION_NONE)
+<<<<<<< HEAD
 	EXCEPTION_COMMON(0x320, PACA_EXGEN, INTS_KEEP)
+=======
+	EXCEPTION_COMMON(0x320)
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	bl	save_nvgprs
+	INTS_RESTORE_HARD
+	bl	unknown_exception
+	b	ret_from_except
+
+/* LRAT Error interrupt */
+	START_EXCEPTION(lrat_error);
+	NORMAL_EXCEPTION_PROLOG(0x340, BOOKE_INTERRUPT_LRAT_ERROR,
+			        PROLOG_ADDITION_NONE)
+	EXCEPTION_COMMON(0x340)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	bl	.save_nvgprs
 	INTS_RESTORE_HARD
@@ -761,6 +1370,7 @@ storage_fault_common:
 	mr	r5,r15
 	ld	r14,PACA_EXGEN+EX_R14(r13)
 	ld	r15,PACA_EXGEN+EX_R15(r13)
+<<<<<<< HEAD
 	bl	.do_page_fault
 	cmpdi	r3,0
 	bne-	1f
@@ -771,6 +1381,18 @@ storage_fault_common:
 	ld	r4,_DAR(r1)
 	bl	.bad_page_fault
 	b	.ret_from_except
+=======
+	bl	do_page_fault
+	cmpdi	r3,0
+	bne-	1f
+	b	ret_from_except_lite
+1:	bl	save_nvgprs
+	mr	r5,r3
+	addi	r3,r1,STACK_FRAME_OVERHEAD
+	ld	r4,_DAR(r1)
+	bl	bad_page_fault
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Alignment exception doesn't fit entirely in the 0x100 bytes so it
@@ -782,10 +1404,17 @@ alignment_more:
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	ld	r14,PACA_EXGEN+EX_R14(r13)
 	ld	r15,PACA_EXGEN+EX_R15(r13)
+<<<<<<< HEAD
 	bl	.save_nvgprs
 	INTS_RESTORE_HARD
 	bl	.alignment_exception
 	b	.ret_from_except
+=======
+	bl	save_nvgprs
+	INTS_RESTORE_HARD
+	bl	alignment_exception
+	b	ret_from_except
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * We branch here from entry_64.S for the last stage of the exception
@@ -806,7 +1435,11 @@ fast_exception_return:
 	andi.	r6,r10,MSR_PR
 	REST_2GPRS(6, r1)
 	beq	1f
+<<<<<<< HEAD
 	ACCOUNT_CPU_USER_EXIT(r10, r11)
+=======
+	ACCOUNT_CPU_USER_EXIT(r13, r10, r11)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ld	r0,GPR13(r1)
 
 1:	stdcx.	r0,0,r1		/* to clear the reservation */
@@ -857,6 +1490,10 @@ BAD_STACK_TRAMPOLINE(0x2e0)
 BAD_STACK_TRAMPOLINE(0x300)
 BAD_STACK_TRAMPOLINE(0x310)
 BAD_STACK_TRAMPOLINE(0x320)
+<<<<<<< HEAD
+=======
+BAD_STACK_TRAMPOLINE(0x340)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 BAD_STACK_TRAMPOLINE(0x400)
 BAD_STACK_TRAMPOLINE(0x500)
 BAD_STACK_TRAMPOLINE(0x600)
@@ -918,7 +1555,11 @@ bad_stack_book3e:
 	std	r12,0(r11)
 	ld	r2,PACATOC(r13)
 1:	addi	r3,r1,STACK_FRAME_OVERHEAD
+<<<<<<< HEAD
 	bl	.kernel_bad_stack
+=======
+	bl	kernel_bad_stack
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b	1b
 
 /*
@@ -1053,6 +1694,7 @@ skpinv:	addi	r6,r6,1				/* Increment */
 	mtspr	SPRN_MAS0,r3
 	tlbre
 	mfspr	r6,SPRN_MAS1
+<<<<<<< HEAD
 	rlwinm	r6,r6,0,2,0	/* clear IPROT */
 	mtspr	SPRN_MAS1,r6
 	tlbwe
@@ -1067,6 +1709,22 @@ skpinv:	addi	r6,r6,1				/* Increment */
 #define M_IF_SMP	MAS2_M
 #else
 #define M_IF_SMP	0
+=======
+	rlwinm	r6,r6,0,2,31	/* clear IPROT and VALID */
+	mtspr	SPRN_MAS1,r6
+	tlbwe
+	sync
+	isync
+
+/*
+ * The mapping only needs to be cache-coherent on SMP, except on
+ * Freescale e500mc derivatives where it's also needed for coherent DMA.
+ */
+#if defined(CONFIG_SMP) || defined(CONFIG_PPC_E500MC)
+#define M_IF_NEEDED	MAS2_M
+#else
+#define M_IF_NEEDED	0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* 6. Setup KERNELBASE mapping in TLB[0]
@@ -1081,7 +1739,11 @@ skpinv:	addi	r6,r6,1				/* Increment */
 	ori	r6,r6,(MAS1_TSIZE(BOOK3E_PAGESZ_1GB))@l
 	mtspr	SPRN_MAS1,r6
 
+<<<<<<< HEAD
 	LOAD_REG_IMMEDIATE(r6, PAGE_OFFSET | M_IF_SMP)
+=======
+	LOAD_REG_IMMEDIATE(r6, PAGE_OFFSET | M_IF_NEEDED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mtspr	SPRN_MAS2,r6
 
 	rlwinm	r5,r5,0,0,25
@@ -1097,7 +1759,14 @@ skpinv:	addi	r6,r6,1				/* Increment */
  * r4 = MAS0 w/TLBSEL & ESEL for the temp mapping
  */
 	/* Now we branch the new virtual address mapped by this entry */
+<<<<<<< HEAD
 	LOAD_REG_IMMEDIATE(r6,2f)
+=======
+	bl	1f		/* Find our address */
+1:	mflr	r6
+	addi	r6,r6,(2f - 1b)
+	tovirt(r6,r6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lis	r7,MSR_KERNEL@h
 	ori	r7,r7,MSR_KERNEL@l
 	mtspr	SPRN_SRR0,r6
@@ -1112,12 +1781,18 @@ skpinv:	addi	r6,r6,1				/* Increment */
 	mtspr	SPRN_MAS0,r4
 	tlbre
 	mfspr	r5,SPRN_MAS1
+<<<<<<< HEAD
 	rlwinm	r5,r5,0,2,0	/* clear IPROT */
 	mtspr	SPRN_MAS1,r5
 	tlbwe
 
 	/* Invalidate TLB1 */
 	PPC_TLBILX_ALL(0,R0)
+=======
+	rlwinm	r5,r5,0,2,31	/* clear IPROT and VALID */
+	mtspr	SPRN_MAS1,r5
+	tlbwe
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sync
 	isync
 
@@ -1219,6 +1894,7 @@ a2_tlbinit_after_linear_map:
 	.globl  a2_tlbinit_after_iprot_flush
 a2_tlbinit_after_iprot_flush:
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_EARLY_DEBUG_WSP
 	/* Now establish early debug mappings if applicable */
 	/* Restore the MAS0 we used for linear mapping load */
@@ -1235,6 +1911,8 @@ a2_tlbinit_after_iprot_flush:
 	tlbwe
 #endif /* CONFIG_PPC_EARLY_DEBUG_WSP */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PPC_TLBILX(0,0,R0)
 	sync
 	isync
@@ -1273,6 +1951,7 @@ _GLOBAL(start_initialization_book3e)
 	 * and always use AS 0, so we just set it up to match our link
 	 * address and never use 0 based addresses.
 	 */
+<<<<<<< HEAD
 	bl	.initial_tlb_book3e
 
 	/* Init global core bits */
@@ -1280,6 +1959,15 @@ _GLOBAL(start_initialization_book3e)
 
 	/* Init per-thread bits */
 	bl	.init_thread_book3e
+=======
+	bl	initial_tlb_book3e
+
+	/* Init global core bits */
+	bl	init_core_book3e
+
+	/* Init per-thread bits */
+	bl	init_thread_book3e
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Return to common init code */
 	tovirt(r28,r28)
@@ -1300,7 +1988,11 @@ _GLOBAL(start_initialization_book3e)
  */
 _GLOBAL(book3e_secondary_core_init_tlb_set)
 	li	r4,1
+<<<<<<< HEAD
 	b	.generic_secondary_smp_init
+=======
+	b	generic_secondary_smp_init
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 _GLOBAL(book3e_secondary_core_init)
 	mflr	r28
@@ -1310,11 +2002,16 @@ _GLOBAL(book3e_secondary_core_init)
 	bne	2f
 
 	/* Setup TLB for this core */
+<<<<<<< HEAD
 	bl	.initial_tlb_book3e
+=======
+	bl	initial_tlb_book3e
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We can return from the above running at a different
 	 * address, so recalculate r2 (TOC)
 	 */
+<<<<<<< HEAD
 	bl	.relative_toc
 
 	/* Init global core bits */
@@ -1322,6 +2019,15 @@ _GLOBAL(book3e_secondary_core_init)
 
 	/* Init per-thread bits */
 3:	bl	.init_thread_book3e
+=======
+	bl	relative_toc
+
+	/* Init global core bits */
+2:	bl	init_core_book3e
+
+	/* Init per-thread bits */
+3:	bl	init_thread_book3e
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Return to common init code at proper virtual address.
 	 *
@@ -1348,14 +2054,26 @@ _GLOBAL(book3e_secondary_thread_init)
 	mflr	r28
 	b	3b
 
+<<<<<<< HEAD
 _STATIC(init_core_book3e)
 	/* Establish the interrupt vector base */
 	LOAD_REG_IMMEDIATE(r3, interrupt_base_book3e)
+=======
+	.globl init_core_book3e
+init_core_book3e:
+	/* Establish the interrupt vector base */
+	tovirt(r2,r2)
+	LOAD_REG_ADDR(r3, interrupt_base_book3e)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mtspr	SPRN_IVPR,r3
 	sync
 	blr
 
+<<<<<<< HEAD
 _STATIC(init_thread_book3e)
+=======
+init_thread_book3e:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lis	r3,(SPRN_EPCR_ICM | SPRN_EPCR_GICM)@h
 	mtspr	SPRN_EPCR,r3
 
@@ -1412,3 +2130,10 @@ _GLOBAL(setup_ehv_ivors)
 	SET_IVOR(38, 0x2c0) /* Guest Processor Doorbell */
 	SET_IVOR(39, 0x2e0) /* Guest Processor Doorbell Crit/MC */
 	blr
+<<<<<<< HEAD
+=======
+
+_GLOBAL(setup_lrat_ivor)
+	SET_IVOR(42, 0x340) /* LRAT Error */
+	blr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

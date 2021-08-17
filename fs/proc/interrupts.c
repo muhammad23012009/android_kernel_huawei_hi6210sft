@@ -50,4 +50,8 @@ static int __init proc_interrupts_init(void)
 	proc_create("interrupts", 0, NULL, &proc_interrupts_operations);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(proc_interrupts_init);
+=======
+fs_initcall(proc_interrupts_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

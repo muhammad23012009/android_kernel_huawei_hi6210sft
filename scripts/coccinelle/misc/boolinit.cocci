@@ -6,7 +6,11 @@
 // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
 // Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
 // URL: http://coccinelle.lip6.fr/
+<<<<<<< HEAD
 // Options: -include_headers
+=======
+// Options: --include-headers
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 virtual patch
 virtual context

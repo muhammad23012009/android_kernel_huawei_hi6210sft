@@ -33,8 +33,11 @@
 /* The user-configurable values.
    These may be modified when a driver module is loaded.*/
 
+<<<<<<< HEAD
 static int debug = 1;			/* 1 normal messages, 0 quiet .. 7 verbose. */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MAX_UNITS 8				/* More are supported, limit only on options */
 /* Used to pass the full-duplex flag, etc. */
 static int full_duplex[MAX_UNITS];
@@ -60,6 +63,11 @@ static int options[MAX_UNITS];
 
 #include "8390.h"
 
+<<<<<<< HEAD
+=======
+static u32 ne2k_msg_enable;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* These identify the driver base version and may not be removed. */
 static const char version[] =
 	KERN_INFO DRV_NAME ".c:v" DRV_VERSION " " DRV_RELDATE
@@ -76,10 +84,17 @@ MODULE_AUTHOR("Donald Becker / Paul Gortmaker");
 MODULE_DESCRIPTION("PCI NE2000 clone driver");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_param(debug, int, 0);
 module_param_array(options, int, NULL, 0);
 module_param_array(full_duplex, int, NULL, 0);
 MODULE_PARM_DESC(debug, "debug level (1-2)");
+=======
+module_param_named(msg_enable, ne2k_msg_enable, uint, (S_IRUSR|S_IRGRP|S_IROTH));
+module_param_array(options, int, NULL, 0);
+module_param_array(full_duplex, int, NULL, 0);
+MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_PARM_DESC(options, "Bit 5: full duplex");
 MODULE_PARM_DESC(full_duplex, "full duplex setting(s) (1)");
 
@@ -135,7 +150,11 @@ static struct {
 };
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ne2k_pci_tbl) = {
+=======
+static const struct pci_device_id ne2k_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x10ec, 0x8029, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_RealTek_RTL_8029 },
 	{ 0x1050, 0x0940, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_Winbond_89C940 },
 	{ 0x11f6, 0x1401, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_Compex_RL2000 },
@@ -226,6 +245,10 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 	static unsigned int fnd_cnt;
 	long ioaddr;
 	int flags = pci_clone_list[chip_idx].flags;
+<<<<<<< HEAD
+=======
+	struct ei_device *ei_local;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* when built into the kernel, we only print version if device is found */
 #ifndef MODULE
@@ -245,13 +268,21 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 
 	if (!ioaddr || ((pci_resource_flags (pdev, 0) & IORESOURCE_IO) == 0)) {
 		dev_err(&pdev->dev, "no I/O resource at PCI BAR #0\n");
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		goto err_out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (request_region (ioaddr, NE_IO_EXTENT, DRV_NAME) == NULL) {
 		dev_err(&pdev->dev, "I/O resource 0x%x @ 0x%lx busy\n",
 			NE_IO_EXTENT, ioaddr);
+<<<<<<< HEAD
 		return -EBUSY;
+=======
+		goto err_out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	reg0 = inb(ioaddr);
@@ -280,6 +311,11 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 		goto err_out_free_res;
 	}
 	dev->netdev_ops = &ne2k_netdev_ops;
+<<<<<<< HEAD
+=======
+	ei_local = netdev_priv(dev);
+	ei_local->msg_enable = ne2k_msg_enable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
@@ -379,9 +415,15 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 	if (i)
 		goto err_out_free_netdev;
 
+<<<<<<< HEAD
 	printk("%s: %s found at %#lx, IRQ %d, %pM.\n",
 	       dev->name, pci_clone_list[chip_idx].name, ioaddr, dev->irq,
 	       dev->dev_addr);
+=======
+	netdev_info(dev, "%s found at %#lx, IRQ %d, %pM.\n",
+		    pci_clone_list[chip_idx].name, ioaddr, dev->irq,
+		    dev->dev_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -389,9 +431,15 @@ err_out_free_netdev:
 	free_netdev (dev);
 err_out_free_res:
 	release_region (ioaddr, NE_IO_EXTENT);
+<<<<<<< HEAD
 	pci_set_drvdata (pdev, NULL);
 	return -ENODEV;
 
+=======
+err_out:
+	pci_disable_device(pdev);
+	return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -452,9 +500,16 @@ static int ne2k_pci_close(struct net_device *dev)
 static void ne2k_pci_reset_8390(struct net_device *dev)
 {
 	unsigned long reset_start_time = jiffies;
+<<<<<<< HEAD
 
 	if (debug > 1) printk("%s: Resetting the 8390 t=%ld...",
 						  dev->name, jiffies);
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_dbg(ei_local, hw, dev, "resetting the 8390 t=%ld...\n",
+		  jiffies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	outb(inb(NE_BASE + NE_RESET), NE_BASE + NE_RESET);
 
@@ -464,7 +519,11 @@ static void ne2k_pci_reset_8390(struct net_device *dev)
 	/* This check _should_not_ be necessary, omit eventually. */
 	while ((inb(NE_BASE+EN0_ISR) & ENISR_RESET) == 0)
 		if (jiffies - reset_start_time > 2) {
+<<<<<<< HEAD
 			printk("%s: ne2k_pci_reset_8390() did not complete.\n", dev->name);
+=======
+			netdev_err(dev, "ne2k_pci_reset_8390() did not complete.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	outb(ENISR_RESET, NE_BASE + EN0_ISR);	/* Ack intr. */
@@ -481,9 +540,15 @@ static void ne2k_pci_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *
 
 	/* This *shouldn't* happen. If it does, it's the last thing you'll see */
 	if (ei_status.dmaing) {
+<<<<<<< HEAD
 		printk("%s: DMAing conflict in ne2k_pci_get_8390_hdr "
 			   "[DMAstat:%d][irqlock:%d].\n",
 			   dev->name, ei_status.dmaing, ei_status.irqlock);
+=======
+		netdev_err(dev, "DMAing conflict in ne2k_pci_get_8390_hdr "
+			   "[DMAstat:%d][irqlock:%d].\n",
+			   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -519,9 +584,15 @@ static void ne2k_pci_block_input(struct net_device *dev, int count,
 
 	/* This *shouldn't* happen. If it does, it's the last thing you'll see */
 	if (ei_status.dmaing) {
+<<<<<<< HEAD
 		printk("%s: DMAing conflict in ne2k_pci_block_input "
 			   "[DMAstat:%d][irqlock:%d].\n",
 			   dev->name, ei_status.dmaing, ei_status.irqlock);
+=======
+		netdev_err(dev, "DMAing conflict in ne2k_pci_block_input "
+			   "[DMAstat:%d][irqlock:%d].\n",
+			   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	ei_status.dmaing |= 0x01;
@@ -574,9 +645,15 @@ static void ne2k_pci_block_output(struct net_device *dev, int count,
 
 	/* This *shouldn't* happen. If it does, it's the last thing you'll see */
 	if (ei_status.dmaing) {
+<<<<<<< HEAD
 		printk("%s: DMAing conflict in ne2k_pci_block_output."
 			   "[DMAstat:%d][irqlock:%d]\n",
 			   dev->name, ei_status.dmaing, ei_status.irqlock);
+=======
+		netdev_err(dev, "DMAing conflict in ne2k_pci_block_output."
+			   "[DMAstat:%d][irqlock:%d]\n",
+			   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	ei_status.dmaing |= 0x01;
@@ -621,7 +698,11 @@ static void ne2k_pci_block_output(struct net_device *dev, int count,
 
 	while ((inb(nic_base + EN0_ISR) & ENISR_RDC) == 0)
 		if (jiffies - dma_start > 2) {			/* Avoid clock roll-over. */
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: timeout waiting for Tx RDC.\n", dev->name);
+=======
+			netdev_warn(dev, "timeout waiting for Tx RDC.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ne2k_pci_reset_8390(dev);
 			NS8390_init(dev,1);
 			break;
@@ -642,8 +723,29 @@ static void ne2k_pci_get_drvinfo(struct net_device *dev,
 	strlcpy(info->bus_info, pci_name(pci_dev), sizeof(info->bus_info));
 }
 
+<<<<<<< HEAD
 static const struct ethtool_ops ne2k_pci_ethtool_ops = {
 	.get_drvinfo		= ne2k_pci_get_drvinfo,
+=======
+static u32 ne2k_pci_get_msglevel(struct net_device *dev)
+{
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	return ei_local->msg_enable;
+}
+
+static void ne2k_pci_set_msglevel(struct net_device *dev, u32 v)
+{
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	ei_local->msg_enable = v;
+}
+
+static const struct ethtool_ops ne2k_pci_ethtool_ops = {
+	.get_drvinfo		= ne2k_pci_get_drvinfo,
+	.get_msglevel		= ne2k_pci_get_msglevel,
+	.set_msglevel		= ne2k_pci_set_msglevel,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void ne2k_pci_remove_one(struct pci_dev *pdev)
@@ -655,7 +757,10 @@ static void ne2k_pci_remove_one(struct pci_dev *pdev)
 	release_region(dev->base_addr, NE_IO_EXTENT);
 	free_netdev(dev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM
@@ -676,7 +781,11 @@ static int ne2k_pci_resume (struct pci_dev *pdev)
 	struct net_device *dev = pci_get_drvdata (pdev);
 	int rc;
 
+<<<<<<< HEAD
 	pci_set_power_state(pdev, 0);
+=======
+	pci_set_power_state(pdev, PCI_D0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_restore_state(pdev);
 
 	rc = pci_enable_device(pdev);

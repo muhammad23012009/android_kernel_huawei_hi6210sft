@@ -48,11 +48,18 @@ static void vortex_fix_latency(struct pci_dev *vortex)
 {
 	int rc;
 	if (!(rc = pci_write_config_byte(vortex, 0x40, 0xff))) {
+<<<<<<< HEAD
 			printk(KERN_INFO CARD_NAME
 			       ": vortex latency is 0xff\n");
 	} else {
 		printk(KERN_WARNING CARD_NAME
 				": could not set vortex latency: pci error 0x%x\n", rc);
+=======
+			dev_info(&vortex->dev, "vortex latency is 0xff\n");
+	} else {
+		dev_warn(&vortex->dev,
+			 "could not set vortex latency: pci error 0x%x\n", rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -70,11 +77,18 @@ static void vortex_fix_agp_bridge(struct pci_dev *via)
 	if (!(rc = pci_read_config_byte(via, 0x42, &value))
 			&& ((value & 0x10)
 				|| !(rc = pci_write_config_byte(via, 0x42, value | 0x10)))) {
+<<<<<<< HEAD
 		printk(KERN_INFO CARD_NAME
 				": bridge config is 0x%x\n", value | 0x10);
 	} else {
 		printk(KERN_WARNING CARD_NAME
 				": could not set vortex latency: pci error 0x%x\n", rc);
+=======
+		dev_info(&via->dev, "bridge config is 0x%x\n", value | 0x10);
+	} else {
+		dev_warn(&via->dev,
+			 "could not set vortex latency: pci error 0x%x\n", rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -97,7 +111,12 @@ static void snd_vortex_workaround(struct pci_dev *vortex, int fix)
 					PCI_DEVICE_ID_AMD_FE_GATE_7007, NULL);
 		}
 		if (via) {
+<<<<<<< HEAD
 			printk(KERN_INFO CARD_NAME ": Activating latency workaround...\n");
+=======
+			dev_info(&vortex->dev,
+				 "Activating latency workaround...\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vortex_fix_latency(vortex);
 			vortex_fix_agp_bridge(via);
 		}
@@ -151,9 +170,15 @@ snd_vortex_create(struct snd_card *card, struct pci_dev *pci, vortex_t ** rchip)
 	// check PCI availability (DMA).
 	if ((err = pci_enable_device(pci)) < 0)
 		return err;
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(32)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(32)) < 0) {
 		printk(KERN_ERR "error to set DMA mask\n");
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(32)) < 0 ||
+	    dma_set_coherent_mask(&pci->dev, DMA_BIT_MASK(32)) < 0) {
+		dev_err(card->dev, "error to set DMA mask\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_disable_device(pci);
 		return -ENXIO;
 	}
@@ -182,7 +207,11 @@ snd_vortex_create(struct snd_card *card, struct pci_dev *pci, vortex_t ** rchip)
 
 	chip->mmio = pci_ioremap_bar(pci, 0);
 	if (!chip->mmio) {
+<<<<<<< HEAD
 		printk(KERN_ERR "MMIO area remap failed.\n");
+=======
+		dev_err(card->dev, "MMIO area remap failed.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -ENOMEM;
 		goto ioremap_out;
 	}
@@ -191,14 +220,22 @@ snd_vortex_create(struct snd_card *card, struct pci_dev *pci, vortex_t ** rchip)
 	 * This must be done before we do request_irq otherwise we can get spurious
 	 * interrupts that we do not handle properly and make a mess of things */
 	if ((err = vortex_core_init(chip)) != 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "hw core init failed\n");
+=======
+		dev_err(card->dev, "hw core init failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto core_out;
 	}
 
 	if ((err = request_irq(pci->irq, vortex_interrupt,
 			       IRQF_SHARED, KBUILD_MODNAME,
 	                       chip)) != 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cannot grab irq\n");
+=======
+		dev_err(card->dev, "cannot grab irq\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto irq_out;
 	}
 	chip->irq = pci->irq;
@@ -211,8 +248,11 @@ snd_vortex_create(struct snd_card *card, struct pci_dev *pci, vortex_t ** rchip)
 		goto alloc_out;
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*rchip = chip;
 
 	return 0;
@@ -250,7 +290,12 @@ snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		return -ENOENT;
 	}
 	// (2)
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -316,7 +361,11 @@ snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	if (snd_seq_device_new(card, 1, SNDRV_SEQ_DEV_ID_VORTEX_SYNTH,
 			       sizeof(snd_vortex_synth_arg_t), &wave) < 0
 	    || wave == NULL) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "Can't initialize Aureal wavetable synth\n");
+=======
+		dev_err(card->dev, "Can't initialize Aureal wavetable synth\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		snd_vortex_synth_arg_t *arg;
 
@@ -343,11 +392,19 @@ snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	chip->rev = pci->revision;
 #ifdef CHIP_AU8830
 	if ((chip->rev) != 0xfe && (chip->rev) != 0xfa) {
+<<<<<<< HEAD
 		printk(KERN_ALERT
 		       "vortex: The revision (%x) of your card has not been seen before.\n",
 		       chip->rev);
 		printk(KERN_ALERT
 		       "vortex: Please email the results of 'lspci -vv' to openvortex-dev@nongnu.org.\n");
+=======
+		dev_alert(card->dev,
+			  "The revision (%x) of your card has not been seen before.\n",
+		       chip->rev);
+		dev_alert(card->dev,
+			  "Please email the results of 'lspci -vv' to openvortex-dev@nongnu.org.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_card_free(card);
 		err = -ENODEV;
 		return err;
@@ -371,7 +428,10 @@ snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 static void snd_vortex_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
+<<<<<<< HEAD
 	pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 // pci_driver definition

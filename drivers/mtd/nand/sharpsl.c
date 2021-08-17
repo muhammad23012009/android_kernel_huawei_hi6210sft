@@ -29,13 +29,23 @@
 #include <asm/mach-types.h>
 
 struct sharpsl_nand {
+<<<<<<< HEAD
 	struct mtd_info		mtd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nand_chip	chip;
 
 	void __iomem		*io;
 };
 
+<<<<<<< HEAD
 #define mtd_to_sharpsl(_mtd)	container_of(_mtd, struct sharpsl_nand, mtd)
+=======
+static inline struct sharpsl_nand *mtd_to_sharpsl(struct mtd_info *mtd)
+{
+	return container_of(mtd_to_nand(mtd), struct sharpsl_nand, chip);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* register offset */
 #define ECCLPLB		0x00	/* line parity 7 - 0 bit */
@@ -66,7 +76,11 @@ static void sharpsl_nand_hwcontrol(struct mtd_info *mtd, int cmd,
 				   unsigned int ctrl)
 {
 	struct sharpsl_nand *sharpsl = mtd_to_sharpsl(mtd);
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ctrl & NAND_CTRL_CHANGE) {
 		unsigned char bits = ctrl & 0x07;
@@ -109,10 +123,18 @@ static int sharpsl_nand_calculate_ecc(struct mtd_info *mtd, const u_char * dat, 
 static int sharpsl_nand_probe(struct platform_device *pdev)
 {
 	struct nand_chip *this;
+<<<<<<< HEAD
 	struct resource *r;
 	int err = 0;
 	struct sharpsl_nand *sharpsl;
 	struct sharpsl_nand_platform_data *data = pdev->dev.platform_data;
+=======
+	struct mtd_info *mtd;
+	struct resource *r;
+	int err = 0;
+	struct sharpsl_nand *sharpsl;
+	struct sharpsl_nand_platform_data *data = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!data) {
 		dev_err(&pdev->dev, "no platform data!\n");
@@ -121,10 +143,15 @@ static int sharpsl_nand_probe(struct platform_device *pdev)
 
 	/* Allocate memory for MTD device structure and private data */
 	sharpsl = kzalloc(sizeof(struct sharpsl_nand), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!sharpsl) {
 		printk("Unable to allocate SharpSL NAND MTD device structure.\n");
 		return -ENOMEM;
 	}
+=======
+	if (!sharpsl)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r) {
@@ -136,7 +163,11 @@ static int sharpsl_nand_probe(struct platform_device *pdev)
 	/* map physical address */
 	sharpsl->io = ioremap(r->start, resource_size(r));
 	if (!sharpsl->io) {
+<<<<<<< HEAD
 		printk("ioremap to access Sharp SL NAND chip failed\n");
+=======
+		dev_err(&pdev->dev, "ioremap to access Sharp SL NAND chip failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EIO;
 		goto err_ioremap;
 	}
@@ -145,8 +176,14 @@ static int sharpsl_nand_probe(struct platform_device *pdev)
 	this = (struct nand_chip *)(&sharpsl->chip);
 
 	/* Link the private data with the MTD structure */
+<<<<<<< HEAD
 	sharpsl->mtd.priv = this;
 	sharpsl->mtd.owner = THIS_MODULE;
+=======
+	mtd = nand_to_mtd(this);
+	mtd->dev.parent = &pdev->dev;
+	mtd_set_ooblayout(mtd, data->ecc_layout);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, sharpsl);
 
@@ -169,20 +206,33 @@ static int sharpsl_nand_probe(struct platform_device *pdev)
 	this->ecc.bytes = 3;
 	this->ecc.strength = 1;
 	this->badblock_pattern = data->badblock_pattern;
+<<<<<<< HEAD
 	this->ecc.layout = data->ecc_layout;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	this->ecc.hwctl = sharpsl_nand_enable_hwecc;
 	this->ecc.calculate = sharpsl_nand_calculate_ecc;
 	this->ecc.correct = nand_correct_data;
 
 	/* Scan to find existence of the device */
+<<<<<<< HEAD
 	err = nand_scan(&sharpsl->mtd, 1);
+=======
+	err = nand_scan(mtd, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		goto err_scan;
 
 	/* Register the partitions */
+<<<<<<< HEAD
 	sharpsl->mtd.name = "sharpsl-nand";
 
 	err = mtd_device_parse_register(&sharpsl->mtd, NULL, NULL,
+=======
+	mtd->name = "sharpsl-nand";
+
+	err = mtd_device_parse_register(mtd, NULL, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					data->partitions, data->nr_partitions);
 	if (err)
 		goto err_add;
@@ -191,10 +241,16 @@ static int sharpsl_nand_probe(struct platform_device *pdev)
 	return 0;
 
 err_add:
+<<<<<<< HEAD
 	nand_release(&sharpsl->mtd);
 
 err_scan:
 	platform_set_drvdata(pdev, NULL);
+=======
+	nand_cleanup(this);
+
+err_scan:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iounmap(sharpsl->io);
 err_ioremap:
 err_get_res:
@@ -210,9 +266,13 @@ static int sharpsl_nand_remove(struct platform_device *pdev)
 	struct sharpsl_nand *sharpsl = platform_get_drvdata(pdev);
 
 	/* Release resources, unregister device */
+<<<<<<< HEAD
 	nand_release(&sharpsl->mtd);
 
 	platform_set_drvdata(pdev, NULL);
+=======
+	nand_release(&sharpsl->chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iounmap(sharpsl->io);
 
@@ -225,7 +285,10 @@ static int sharpsl_nand_remove(struct platform_device *pdev)
 static struct platform_driver sharpsl_nand_driver = {
 	.driver = {
 		.name	= "sharpsl-nand",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= sharpsl_nand_probe,
 	.remove		= sharpsl_nand_remove,

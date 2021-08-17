@@ -21,4 +21,8 @@ static int __init proc_cpuinfo_init(void)
 	proc_create("cpuinfo", 0, NULL, &proc_cpuinfo_operations);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(proc_cpuinfo_init);
+=======
+fs_initcall(proc_cpuinfo_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

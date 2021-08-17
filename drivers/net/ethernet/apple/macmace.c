@@ -211,6 +211,10 @@ static int mace_probe(struct platform_device *pdev)
 	mp = netdev_priv(dev);
 
 	mp->device = &pdev->dev;
+<<<<<<< HEAD
+=======
+	platform_set_drvdata(pdev, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
 	dev->base_addr = (u32)MACE_BASE;
@@ -574,7 +578,11 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 			mace_reset(dev);
 			/*
 			 * XXX mace likes to hang the machine after a xmtfs error.
+<<<<<<< HEAD
 			 * This is hard to reproduce, reseting *may* help
+=======
+			 * This is hard to reproduce, resetting *may* help
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 */
 		}
 		/* dma should have finished */
@@ -767,7 +775,10 @@ static struct platform_driver mac_mace_driver = {
 	.remove = mac_mace_device_remove,
 	.driver	= {
 		.name	= mac_mace_string,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

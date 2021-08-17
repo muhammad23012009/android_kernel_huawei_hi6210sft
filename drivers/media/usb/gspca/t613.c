@@ -837,7 +837,11 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 			u8 *data,			/* isoc packet */
 			int len)			/* iso packet length */
 {
+<<<<<<< HEAD
 	struct sd *sd = (struct sd *) gspca_dev;
+=======
+	struct sd *sd __maybe_unused = (struct sd *) gspca_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int pkt_type;
 
 	if (data[0] == 0x5a) {

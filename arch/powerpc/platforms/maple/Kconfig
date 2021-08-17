@@ -1,5 +1,9 @@
 config PPC_MAPLE
+<<<<<<< HEAD
 	depends on PPC64 && PPC_BOOK3S
+=======
+	depends on PPC64 && PPC_BOOK3S && CPU_BIG_ENDIAN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool "Maple 970FX Evaluation Board"
 	select PCI
 	select MPIC

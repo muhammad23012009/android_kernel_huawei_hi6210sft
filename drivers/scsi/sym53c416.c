@@ -838,7 +838,10 @@ static struct scsi_host_template driver_template = {
 	.can_queue =		1,
 	.this_id =		SYM53C416_SCSI_ID,
 	.sg_tablesize =		32,
+<<<<<<< HEAD
 	.cmd_per_lun =		1,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unchecked_isa_dma =	1,
 	.use_clustering =	ENABLE_CLUSTERING,
 };

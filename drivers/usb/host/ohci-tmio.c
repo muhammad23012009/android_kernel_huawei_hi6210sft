@@ -27,7 +27,10 @@
 /*#include <linux/fs.h>
 #include <linux/mount.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/namei.h>
 #include <linux/sched.h>*/
 #include <linux/platform_device.h>
@@ -59,7 +62,11 @@
 #define CCR_PM_CKRNEN    0x0002
 #define CCR_PM_USBPW1    0x0004
 #define CCR_PM_USBPW2    0x0008
+<<<<<<< HEAD
 #define CCR_PM_USBPW3    0x0008
+=======
+#define CCR_PM_USBPW3    0x0010
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CCR_PM_PMEE      0x0100
 #define CCR_PM_PMES      0x8000
 
@@ -250,6 +257,10 @@ static int ohci_hcd_tmio_drv_probe(struct platform_device *dev)
 	if (ret)
 		goto err_add_hcd;
 
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret == 0)
 		return ret;
 
@@ -287,8 +298,11 @@ static int ohci_hcd_tmio_drv_remove(struct platform_device *dev)
 	iounmap(tmio->ccr);
 	usb_put_hcd(hcd);
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -370,6 +384,9 @@ static struct platform_driver ohci_hcd_tmio_driver = {
 	.resume		= ohci_hcd_tmio_drv_resume,
 	.driver		= {
 		.name	= "tmio-ohci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };

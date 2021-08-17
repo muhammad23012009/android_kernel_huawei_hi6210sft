@@ -180,7 +180,11 @@ static void __init km82xx_setup_arch(void)
 		ppc_md.progress("km82xx_setup_arch(), finish", 0);
 }
 
+<<<<<<< HEAD
 static  __initdata struct of_device_id of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "simple-bus", },
 	{},
 };
@@ -198,8 +202,12 @@ machine_device_initcall(km82xx, declare_of_platform_devices);
  */
 static int __init km82xx_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 	return of_flat_dt_is_compatible(root, "keymile,km82xx");
+=======
+	return of_machine_is_compatible("keymile,km82xx");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(km82xx)

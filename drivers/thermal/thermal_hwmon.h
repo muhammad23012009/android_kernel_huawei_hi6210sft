@@ -34,13 +34,21 @@
 int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz);
 void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz);
 #else
+<<<<<<< HEAD
 static int
+=======
+static inline int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static void
+=======
+static inline void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
 {
 }

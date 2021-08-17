@@ -20,6 +20,16 @@
  * Author: Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>
  *
  * Changes/Revisions:
+<<<<<<< HEAD
+=======
+ *	0.5	08/13/2015 (David Herrmann <dh.herrmann@gmail.com> &
+ *			    Benjamin Tissoires <benjamin.tissoires@redhat.com>)
+ *		- add UI_DEV_SETUP ioctl
+ *		- add UI_ABS_SETUP ioctl
+ *		- add UI_GET_VERSION ioctl
+ *	0.4	01/09/2014 (Benjamin Tissoires <benjamin.tissoires@redhat.com>)
+ *		- add UI_GET_SYSNAME ioctl
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	0.3	24/05/2006 (Anssi Hannula <anssi.hannulagmail.com>)
  *		- update ff support for the changes in kernel interface
  *		- add UINPUT_VERSION

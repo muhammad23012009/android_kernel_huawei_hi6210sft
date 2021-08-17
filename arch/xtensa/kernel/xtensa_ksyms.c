@@ -20,11 +20,19 @@
 #include <linux/in6.h>
 
 #include <asm/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <asm/cacheflush.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/checksum.h>
 #include <asm/dma.h>
 #include <asm/io.h>
 #include <asm/page.h>
 #include <asm/pgalloc.h>
+<<<<<<< HEAD
+=======
+#include <asm/ftrace.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BLK_DEV_FD
 #include <asm/floppy.h>
 #endif
@@ -80,30 +88,48 @@ void __xtensa_libgcc_window_spill(void)
 }
 EXPORT_SYMBOL(__xtensa_libgcc_window_spill);
 
+<<<<<<< HEAD
 unsigned long __sync_fetch_and_and_4(unsigned long *p, unsigned long v)
+=======
+unsigned int __sync_fetch_and_and_4(volatile void *p, unsigned int v)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	BUG();
 }
 EXPORT_SYMBOL(__sync_fetch_and_and_4);
 
+<<<<<<< HEAD
 unsigned long __sync_fetch_and_or_4(unsigned long *p, unsigned long v)
+=======
+unsigned int __sync_fetch_and_or_4(volatile void *p, unsigned int v)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	BUG();
 }
 EXPORT_SYMBOL(__sync_fetch_and_or_4);
 
+<<<<<<< HEAD
 #ifdef CONFIG_NET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Networking support
  */
 EXPORT_SYMBOL(csum_partial);
 EXPORT_SYMBOL(csum_partial_copy_generic);
+<<<<<<< HEAD
 #endif /* CONFIG_NET */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Architecture-specific symbols
  */
 EXPORT_SYMBOL(__xtensa_copy_user);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__invalidate_icache_range);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Kernel hacking ...
@@ -113,6 +139,7 @@ EXPORT_SYMBOL(__xtensa_copy_user);
 // FIXME EXPORT_SYMBOL(screen_info);
 #endif
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(outsb);
 EXPORT_SYMBOL(outsw);
 EXPORT_SYMBOL(outsl);
@@ -124,3 +151,16 @@ extern long common_exception_return;
 extern long _spill_registers;
 EXPORT_SYMBOL(common_exception_return);
 EXPORT_SYMBOL(_spill_registers);
+=======
+extern long common_exception_return;
+EXPORT_SYMBOL(common_exception_return);
+
+#ifdef CONFIG_FUNCTION_TRACER
+EXPORT_SYMBOL(_mcount);
+#endif
+
+EXPORT_SYMBOL(__invalidate_dcache_range);
+#if XCHAL_DCACHE_IS_WRITEBACK
+EXPORT_SYMBOL(__flush_dcache_range);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

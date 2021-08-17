@@ -1,7 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2004-2008 Emulex.  All rights reserved.           *
+=======
+ * Copyright (C) 2004-2013 Emulex.  All rights reserved.           *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
  *                                                                 *
@@ -78,7 +82,11 @@ struct lpfc_nodelist {
 	struct list_head nlp_listp;
 	struct lpfc_name nlp_portname;
 	struct lpfc_name nlp_nodename;
+<<<<<<< HEAD
 	uint32_t         nlp_flag;		/* entry  flags */
+=======
+	uint32_t         nlp_flag;		/* entry flags */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t         nlp_DID;		/* FC D_ID of entry */
 	uint32_t         nlp_last_elscmd;	/* Last ELS cmd sent */
 	uint16_t         nlp_type;
@@ -116,7 +124,11 @@ struct lpfc_nodelist {
 	atomic_t cmd_pending;
 	uint32_t cmd_qdepth;
 	unsigned long last_change_time;
+<<<<<<< HEAD
 	struct lpfc_node_rrqs active_rrqs;
+=======
+	unsigned long *active_rrqs_xri_bitmap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lpfc_scsicmd_bkt *lat_data;	/* Latency data */
 };
 struct lpfc_node_rrq {
@@ -146,6 +158,10 @@ struct lpfc_node_rrq {
 #define NLP_LOGO_ACC       0x00100000	/* Process LOGO after ACC completes */
 #define NLP_TGT_NO_SCSIID  0x00200000	/* good PRLI but no binding for scsid */
 #define NLP_ISSUE_LOGO     0x00400000	/* waiting to issue a LOGO */
+<<<<<<< HEAD
+=======
+#define NLP_IN_DEV_LOSS    0x00800000	/* devloss in progress */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NLP_ACC_REGLOGIN   0x01000000	/* Issue Reg Login after successful
 					   ACC */
 #define NLP_NPR_ADISC      0x02000000	/* Issue ADISC when dq'ed from
@@ -154,8 +170,15 @@ struct lpfc_node_rrq {
 #define NLP_NODEV_REMOVE   0x08000000	/* Defer removal till discovery ends */
 #define NLP_TARGET_REMOVE  0x10000000   /* Target remove in process */
 #define NLP_SC_REQ         0x20000000	/* Target requires authentication */
+<<<<<<< HEAD
 #define NLP_RPI_REGISTERED 0x80000000	/* nlp_rpi is valid */
 
+=======
+#define NLP_FIRSTBURST     0x40000000	/* Target supports FirstBurst */
+#define NLP_RPI_REGISTERED 0x80000000	/* nlp_rpi is valid */
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ndlp usage management macros */
 #define NLP_CHK_NODE_ACT(ndlp)		(((ndlp)->nlp_usg_map \
 						& NLP_USG_NODE_ACT_BIT) \

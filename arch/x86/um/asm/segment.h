@@ -7,4 +7,15 @@ extern int host_gdt_entry_tls_min;
 #define GDT_ENTRY_TLS_MIN host_gdt_entry_tls_min
 #define GDT_ENTRY_TLS_MAX (GDT_ENTRY_TLS_MIN + GDT_ENTRY_TLS_ENTRIES - 1)
 
+<<<<<<< HEAD
+=======
+typedef struct {
+	unsigned long seg;
+} mm_segment_t;
+
+#define MAKE_MM_SEG(s)	((mm_segment_t) { (s) })
+#define KERNEL_DS	MAKE_MM_SEG(~0UL)
+#define USER_DS		MAKE_MM_SEG(TASK_SIZE)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

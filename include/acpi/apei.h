@@ -42,5 +42,12 @@ ssize_t erst_read(u64 record_id, struct cper_record_header *record,
 		  size_t buflen);
 int erst_clear(u64 record_id);
 
+<<<<<<< HEAD
+=======
+int arch_apei_enable_cmcff(struct acpi_hest_header *hest_hdr, void *data);
+void arch_apei_report_mem_error(int sev, struct cper_sec_mem_err *mem_err);
+void arch_apei_flush_tlb_one(unsigned long addr);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #endif

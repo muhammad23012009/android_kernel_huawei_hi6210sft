@@ -239,6 +239,7 @@ spufs_mem_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	unsigned long address = (unsigned long)vmf->virtual_address;
 	unsigned long pfn, offset;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 	struct spu_state *csa = &ctx->csa;
 	int psize;
@@ -256,6 +257,8 @@ spufs_mem_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	}
 #endif /* CONFIG_SPU_FS_64K_LS */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	offset = vmf->pgoff << PAGE_SHIFT;
 	if (offset >= LS_SIZE)
 		return VM_FAULT_SIGBUS;
@@ -310,6 +313,7 @@ static const struct vm_operations_struct spufs_mem_mmap_vmops = {
 
 static int spufs_mem_mmap(struct file *file, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 	struct spu_context	*ctx = file->private_data;
 	struct spu_state	*csa = &ctx->csa;
@@ -326,6 +330,8 @@ static int spufs_mem_mmap(struct file *file, struct vm_area_struct *vma)
 	}
 #endif /* CONFIG_SPU_FS_64K_LS */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
@@ -336,6 +342,7 @@ static int spufs_mem_mmap(struct file *file, struct vm_area_struct *vma)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 static unsigned long spufs_get_unmapped_area(struct file *file,
 		unsigned long addr, unsigned long len, unsigned long pgoff,
@@ -355,6 +362,8 @@ static unsigned long spufs_get_unmapped_area(struct file *file,
 }
 #endif /* CONFIG_SPU_FS_64K_LS */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct file_operations spufs_mem_fops = {
 	.open			= spufs_mem_open,
 	.release		= spufs_mem_release,
@@ -362,9 +371,12 @@ static const struct file_operations spufs_mem_fops = {
 	.write			= spufs_mem_write,
 	.llseek			= generic_file_llseek,
 	.mmap			= spufs_mem_mmap,
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 	.get_unmapped_area	= spufs_get_unmapped_area,
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int spufs_ps_fault(struct vm_area_struct *vma,
@@ -921,7 +933,11 @@ void spufs_wbox_callback(struct spu *spu)
  * - end of the mapped area
  *
  * If the file is opened without O_NONBLOCK, we wait here until
+<<<<<<< HEAD
  * space is availabyl, but return when we have been able to
+=======
+ * space is available, but return when we have been able to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * write something.
  */
 static ssize_t spufs_wbox_write(struct file *file, const char __user *buf,
@@ -1854,9 +1870,15 @@ static int spufs_mfc_fsync(struct file *file, loff_t start, loff_t end, int data
 	struct inode *inode = file_inode(file);
 	int err = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (!err) {
+<<<<<<< HEAD
 		mutex_lock(&inode->i_mutex);
 		err = spufs_mfc_flush(file, NULL);
 		mutex_unlock(&inode->i_mutex);
+=======
+		inode_lock(inode);
+		err = spufs_mfc_flush(file, NULL);
+		inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return err;
 }
@@ -2099,8 +2121,14 @@ static ssize_t __spufs_mbox_info_read(struct spu_context *ctx,
 static ssize_t spufs_mbox_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
+<<<<<<< HEAD
 	int ret;
 	struct spu_context *ctx = file->private_data;
+=======
+	struct spu_context *ctx = file->private_data;
+	u32 stat, data;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!access_ok(VERIFY_WRITE, buf, len))
 		return -EFAULT;
@@ -2109,11 +2137,24 @@ static ssize_t spufs_mbox_info_read(struct file *file, char __user *buf,
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
+<<<<<<< HEAD
 	ret = __spufs_mbox_info_read(ctx, buf, len, pos);
 	spin_unlock(&ctx->csa.register_lock);
 	spu_release_saved(ctx);
 
 	return ret;
+=======
+	stat = ctx->csa.prob.mb_stat_R;
+	data = ctx->csa.prob.pu_mb_R;
+	spin_unlock(&ctx->csa.register_lock);
+	spu_release_saved(ctx);
+
+	/* EOF if there's no entry in the mbox */
+	if (!(stat & 0x0000ff))
+		return 0;
+
+	return simple_read_from_buffer(buf, len, pos, &data, sizeof(data));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations spufs_mbox_info_fops = {
@@ -2140,6 +2181,10 @@ static ssize_t spufs_ibox_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
+<<<<<<< HEAD
+=======
+	u32 stat, data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	if (!access_ok(VERIFY_WRITE, buf, len))
@@ -2149,11 +2194,24 @@ static ssize_t spufs_ibox_info_read(struct file *file, char __user *buf,
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
+<<<<<<< HEAD
 	ret = __spufs_ibox_info_read(ctx, buf, len, pos);
 	spin_unlock(&ctx->csa.register_lock);
 	spu_release_saved(ctx);
 
 	return ret;
+=======
+	stat = ctx->csa.prob.mb_stat_R;
+	data = ctx->csa.priv2.puint_mb_R;
+	spin_unlock(&ctx->csa.register_lock);
+	spu_release_saved(ctx);
+
+	/* EOF if there's no entry in the ibox */
+	if (!(stat & 0xff0000))
+		return 0;
+
+	return simple_read_from_buffer(buf, len, pos, &data, sizeof(data));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations spufs_ibox_info_fops = {
@@ -2162,6 +2220,14 @@ static const struct file_operations spufs_ibox_info_fops = {
 	.llseek  = generic_file_llseek,
 };
 
+<<<<<<< HEAD
+=======
+static size_t spufs_wbox_info_cnt(struct spu_context *ctx)
+{
+	return (4 - ((ctx->csa.prob.mb_stat_R & 0x00ff00) >> 8)) * sizeof(u32);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t __spufs_wbox_info_read(struct spu_context *ctx,
 			char __user *buf, size_t len, loff_t *pos)
 {
@@ -2170,7 +2236,11 @@ static ssize_t __spufs_wbox_info_read(struct spu_context *ctx,
 	u32 wbox_stat;
 
 	wbox_stat = ctx->csa.prob.mb_stat_R;
+<<<<<<< HEAD
 	cnt = 4 - ((wbox_stat & 0x00ff00) >> 8);
+=======
+	cnt = spufs_wbox_info_cnt(ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < cnt; i++) {
 		data[i] = ctx->csa.spu_mailbox_data[i];
 	}
@@ -2183,7 +2253,12 @@ static ssize_t spufs_wbox_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
+<<<<<<< HEAD
 	int ret;
+=======
+	u32 data[ARRAY_SIZE(ctx->csa.spu_mailbox_data)];
+	int ret, count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!access_ok(VERIFY_WRITE, buf, len))
 		return -EFAULT;
@@ -2192,11 +2267,21 @@ static ssize_t spufs_wbox_info_read(struct file *file, char __user *buf,
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
+<<<<<<< HEAD
 	ret = __spufs_wbox_info_read(ctx, buf, len, pos);
 	spin_unlock(&ctx->csa.register_lock);
 	spu_release_saved(ctx);
 
 	return ret;
+=======
+	count = spufs_wbox_info_cnt(ctx);
+	memcpy(&data, &ctx->csa.spu_mailbox_data, sizeof(data));
+	spin_unlock(&ctx->csa.register_lock);
+	spu_release_saved(ctx);
+
+	return simple_read_from_buffer(buf, len, pos, &data,
+				count * sizeof(u32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations spufs_wbox_info_fops = {
@@ -2205,6 +2290,7 @@ static const struct file_operations spufs_wbox_info_fops = {
 	.llseek  = generic_file_llseek,
 };
 
+<<<<<<< HEAD
 static ssize_t __spufs_dma_info_read(struct spu_context *ctx,
 			char __user *buf, size_t len, loff_t *pos)
 {
@@ -2220,12 +2306,38 @@ static ssize_t __spufs_dma_info_read(struct spu_context *ctx,
 	for (i = 0; i < 16; i++) {
 		qp = &info.dma_info_command_data[i];
 		spuqp = &ctx->csa.priv2.spuq[i];
+=======
+static void spufs_get_dma_info(struct spu_context *ctx,
+		struct spu_dma_info *info)
+{
+	int i;
+
+	info->dma_info_type = ctx->csa.priv2.spu_tag_status_query_RW;
+	info->dma_info_mask = ctx->csa.lscsa->tag_mask.slot[0];
+	info->dma_info_status = ctx->csa.spu_chnldata_RW[24];
+	info->dma_info_stall_and_notify = ctx->csa.spu_chnldata_RW[25];
+	info->dma_info_atomic_command_status = ctx->csa.spu_chnldata_RW[27];
+	for (i = 0; i < 16; i++) {
+		struct mfc_cq_sr *qp = &info->dma_info_command_data[i];
+		struct mfc_cq_sr *spuqp = &ctx->csa.priv2.spuq[i];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		qp->mfc_cq_data0_RW = spuqp->mfc_cq_data0_RW;
 		qp->mfc_cq_data1_RW = spuqp->mfc_cq_data1_RW;
 		qp->mfc_cq_data2_RW = spuqp->mfc_cq_data2_RW;
 		qp->mfc_cq_data3_RW = spuqp->mfc_cq_data3_RW;
 	}
+<<<<<<< HEAD
+=======
+}
+
+static ssize_t __spufs_dma_info_read(struct spu_context *ctx,
+			char __user *buf, size_t len, loff_t *pos)
+{
+	struct spu_dma_info info;
+
+	spufs_get_dma_info(ctx, &info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return simple_read_from_buffer(buf, len, pos, &info,
 				sizeof info);
@@ -2235,6 +2347,10 @@ static ssize_t spufs_dma_info_read(struct file *file, char __user *buf,
 			      size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
+<<<<<<< HEAD
+=======
+	struct spu_dma_info info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	if (!access_ok(VERIFY_WRITE, buf, len))
@@ -2244,11 +2360,20 @@ static ssize_t spufs_dma_info_read(struct file *file, char __user *buf,
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
+<<<<<<< HEAD
 	ret = __spufs_dma_info_read(ctx, buf, len, pos);
 	spin_unlock(&ctx->csa.register_lock);
 	spu_release_saved(ctx);
 
 	return ret;
+=======
+	spufs_get_dma_info(ctx, &info);
+	spin_unlock(&ctx->csa.register_lock);
+	spu_release_saved(ctx);
+
+	return simple_read_from_buffer(buf, len, pos, &info,
+				sizeof(info));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations spufs_dma_info_fops = {
@@ -2257,13 +2382,40 @@ static const struct file_operations spufs_dma_info_fops = {
 	.llseek = no_llseek,
 };
 
+<<<<<<< HEAD
+=======
+static void spufs_get_proxydma_info(struct spu_context *ctx,
+		struct spu_proxydma_info *info)
+{
+	int i;
+
+	info->proxydma_info_type = ctx->csa.prob.dma_querytype_RW;
+	info->proxydma_info_mask = ctx->csa.prob.dma_querymask_RW;
+	info->proxydma_info_status = ctx->csa.prob.dma_tagstatus_R;
+
+	for (i = 0; i < 8; i++) {
+		struct mfc_cq_sr *qp = &info->proxydma_info_command_data[i];
+		struct mfc_cq_sr *puqp = &ctx->csa.priv2.puq[i];
+
+		qp->mfc_cq_data0_RW = puqp->mfc_cq_data0_RW;
+		qp->mfc_cq_data1_RW = puqp->mfc_cq_data1_RW;
+		qp->mfc_cq_data2_RW = puqp->mfc_cq_data2_RW;
+		qp->mfc_cq_data3_RW = puqp->mfc_cq_data3_RW;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t __spufs_proxydma_info_read(struct spu_context *ctx,
 			char __user *buf, size_t len, loff_t *pos)
 {
 	struct spu_proxydma_info info;
+<<<<<<< HEAD
 	struct mfc_cq_sr *qp, *puqp;
 	int ret = sizeof info;
 	int i;
+=======
+	int ret = sizeof info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (len < ret)
 		return -EINVAL;
@@ -2271,6 +2423,7 @@ static ssize_t __spufs_proxydma_info_read(struct spu_context *ctx,
 	if (!access_ok(VERIFY_WRITE, buf, len))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	info.proxydma_info_type = ctx->csa.prob.dma_querytype_RW;
 	info.proxydma_info_mask = ctx->csa.prob.dma_querymask_RW;
 	info.proxydma_info_status = ctx->csa.prob.dma_tagstatus_R;
@@ -2283,6 +2436,9 @@ static ssize_t __spufs_proxydma_info_read(struct spu_context *ctx,
 		qp->mfc_cq_data2_RW = puqp->mfc_cq_data2_RW;
 		qp->mfc_cq_data3_RW = puqp->mfc_cq_data3_RW;
 	}
+=======
+	spufs_get_proxydma_info(ctx, &info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return simple_read_from_buffer(buf, len, pos, &info,
 				sizeof info);
@@ -2292,17 +2448,30 @@ static ssize_t spufs_proxydma_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
+<<<<<<< HEAD
+=======
+	struct spu_proxydma_info info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
+<<<<<<< HEAD
 	ret = __spufs_proxydma_info_read(ctx, buf, len, pos);
 	spin_unlock(&ctx->csa.register_lock);
 	spu_release_saved(ctx);
 
 	return ret;
+=======
+	spufs_get_proxydma_info(ctx, &info);
+	spin_unlock(&ctx->csa.register_lock);
+	spu_release_saved(ctx);
+
+	return simple_read_from_buffer(buf, len, pos, &info,
+				sizeof(info));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations spufs_proxydma_info_fops = {
@@ -2338,7 +2507,10 @@ static const char *ctx_state_names[] = {
 static unsigned long long spufs_acct_time(struct spu_context *ctx,
 		enum spu_utilization_state state)
 {
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long long time = ctx->stats.times[state];
 
 	/*
@@ -2351,8 +2523,12 @@ static unsigned long long spufs_acct_time(struct spu_context *ctx,
 	 * of the spu context.
 	 */
 	if (ctx->spu && ctx->stats.util_state == state) {
+<<<<<<< HEAD
 		ktime_get_ts(&ts);
 		time += timespec_to_ns(&ts) - ctx->stats.tstamp;
+=======
+		time += ktime_get_ns() - ctx->stats.tstamp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return time / NSEC_PER_MSEC;

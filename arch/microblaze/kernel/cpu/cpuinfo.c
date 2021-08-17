@@ -8,6 +8,10 @@
  * for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <asm/cpuinfo.h>
 #include <asm/pvr.h>
@@ -39,6 +43,18 @@ const struct cpu_ver_key cpu_ver_lookup[] = {
 	{"8.30.a", 0x17},
 	{"8.40.a", 0x18},
 	{"8.40.b", 0x19},
+<<<<<<< HEAD
+=======
+	{"8.50.a", 0x1a},
+	{"8.50.b", 0x1c},
+	{"8.50.c", 0x1e},
+	{"9.0", 0x1b},
+	{"9.1", 0x1d},
+	{"9.2", 0x1f},
+	{"9.3", 0x20},
+	{"9.4", 0x21},
+	{"9.5", 0x22},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{NULL, 0},
 };
 
@@ -57,20 +73,36 @@ const struct family_string_key family_string_lookup[] = {
 	{"spartan3adsp", 0xc},
 	{"spartan6", 0xd},
 	{"virtex6", 0xe},
+<<<<<<< HEAD
+=======
+	{"virtex7", 0xf},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* FIXME There is no key code defined for spartan2 */
 	{"spartan2", 0xf0},
 	{"kintex7", 0x10},
 	{"artix7", 0x11},
 	{"zynq7000", 0x12},
+<<<<<<< HEAD
+=======
+	{"UltraScale Virtex", 0x13},
+	{"UltraScale Kintex", 0x14},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{NULL, 0},
 };
 
 struct cpuinfo cpuinfo;
+<<<<<<< HEAD
 
 void __init setup_cpuinfo(void)
 {
 	struct device_node *cpu = NULL;
 
+=======
+static struct device_node *cpu;
+
+void __init setup_cpuinfo(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpu = (struct device_node *) of_find_node_by_type(NULL, "cpu");
 	if (!cpu)
 		pr_err("You don't have cpu!!!\n");
@@ -100,3 +132,25 @@ void __init setup_cpuinfo(void)
 		pr_warn("%s: Stream instructions enabled"
 			" - USERSPACE CAN LOCK THIS KERNEL!\n", __func__);
 }
+<<<<<<< HEAD
+=======
+
+void __init setup_cpuinfo_clk(void)
+{
+	struct clk *clk;
+
+	clk = of_clk_get(cpu, 0);
+	if (IS_ERR(clk)) {
+		pr_err("ERROR: CPU CCF input clock not found\n");
+		/* take timebase-frequency from DTS */
+		cpuinfo.cpu_clock_freq = fcpu(cpu, "timebase-frequency");
+	} else {
+		cpuinfo.cpu_clock_freq = clk_get_rate(clk);
+	}
+
+	if (!cpuinfo.cpu_clock_freq) {
+		pr_err("ERROR: CPU clock frequency not setup\n");
+		BUG();
+	}
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

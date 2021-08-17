@@ -26,6 +26,10 @@
 #include <linux/sfi.h>
 #include <linux/io.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/irqdomain.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io_apic.h>
 #include <asm/mpspec.h>
 #include <asm/setup.h>
@@ -76,13 +80,24 @@ static int __init sfi_parse_ioapic(struct sfi_table_header *table)
 	struct sfi_table_simple *sb;
 	struct sfi_apic_table_entry *pentry;
 	int i, num;
+<<<<<<< HEAD
+=======
+	struct ioapic_domain_cfg cfg = {
+		.type = IOAPIC_DOMAIN_STRICT,
+		.ops = &mp_ioapic_irqdomain_ops,
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sb = (struct sfi_table_simple *)table;
 	num = SFI_GET_NUM_ENTRIES(sb, struct sfi_apic_table_entry);
 	pentry = (struct sfi_apic_table_entry *)sb->pentry;
 
 	for (i = 0; i < num; i++) {
+<<<<<<< HEAD
 		mp_register_ioapic(i, pentry->phys_addr, gsi_top);
+=======
+		mp_register_ioapic(i, pentry->phys_addr, gsi_top, &cfg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pentry++;
 	}
 

@@ -44,9 +44,12 @@ struct exception_table_entry
 	unsigned long insn, fixup;
 };
 
+<<<<<<< HEAD
 /* Returns 0 if exception not found and fixup otherwise.  */
 extern unsigned long search_exception_table(unsigned long);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These are the main single-value transfer routines.  They automatically
@@ -135,10 +138,13 @@ extern int __get_user_bad(void);
 #define __copy_to_user_inatomic __copy_to_user
 #define __copy_from_user_inatomic __copy_from_user
 
+<<<<<<< HEAD
 #define copy_to_user_ret(to,from,n,retval) ({ if (copy_to_user(to,from,n)) return retval; })
 
 #define copy_from_user_ret(to,from,n,retval) ({ if (copy_from_user(to,from,n)) return retval; })
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Copy a null terminated string from userspace.
  */

@@ -11,6 +11,7 @@
 #include <linux/balloon_compaction.h>
 
 /*
+<<<<<<< HEAD
  * balloon_devinfo_alloc - allocates a balloon device information descriptor.
  * @balloon_dev_descriptor: pointer to reference the balloon device which
  *                          this struct balloon_dev_info will be servicing.
@@ -43,6 +44,14 @@ EXPORT_SYMBOL_GPL(balloon_devinfo_alloc);
  *
  * Driver must call it to properly allocate a new enlisted balloon page
  * before definetively removing it from the guest system.
+=======
+ * balloon_page_enqueue - allocates a new page and inserts it into the balloon
+ *			  page list.
+ * @b_dev_info: balloon device descriptor where we will insert a new page to
+ *
+ * Driver must call it to properly allocate a new enlisted balloon page
+ * before definitively removing it from the guest system.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This function returns the page address for the recently enqueued page or
  * NULL in the case we fail to allocate a new page this turn.
  */
@@ -61,7 +70,12 @@ struct page *balloon_page_enqueue(struct balloon_dev_info *b_dev_info)
 	 */
 	BUG_ON(!trylock_page(page));
 	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
+<<<<<<< HEAD
 	balloon_page_insert(page, b_dev_info->mapping, &b_dev_info->pages);
+=======
+	balloon_page_insert(b_dev_info, page);
+	__count_vm_event(BALLOON_INFLATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
 	unlock_page(page);
 	return page;
@@ -86,6 +100,10 @@ struct page *balloon_page_dequeue(struct balloon_dev_info *b_dev_info)
 	bool dequeued_page;
 
 	dequeued_page = false;
+<<<<<<< HEAD
+=======
+	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_for_each_entry_safe(page, tmp, &b_dev_info->pages, lru) {
 		/*
 		 * Block others from accessing the 'page' while we get around
@@ -93,6 +111,7 @@ struct page *balloon_page_dequeue(struct balloon_dev_info *b_dev_info)
 		 * to be released by the balloon driver.
 		 */
 		if (trylock_page(page)) {
+<<<<<<< HEAD
 			spin_lock_irqsave(&b_dev_info->pages_lock, flags);
 			/*
 			 * Raise the page refcount here to prevent any wrong
@@ -106,11 +125,26 @@ struct page *balloon_page_dequeue(struct balloon_dev_info *b_dev_info)
 			get_page(page);
 			balloon_page_delete(page);
 			spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
+=======
+#ifdef CONFIG_BALLOON_COMPACTION
+			if (PageIsolated(page)) {
+				/* raced with isolation */
+				unlock_page(page);
+				continue;
+			}
+#endif
+			balloon_page_delete(page);
+			__count_vm_event(BALLOON_DEFLATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			unlock_page(page);
 			dequeued_page = true;
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!dequeued_page) {
 		/*
@@ -132,6 +166,7 @@ struct page *balloon_page_dequeue(struct balloon_dev_info *b_dev_info)
 EXPORT_SYMBOL_GPL(balloon_page_dequeue);
 
 #ifdef CONFIG_BALLOON_COMPACTION
+<<<<<<< HEAD
 /*
  * balloon_mapping_alloc - allocates a special ->mapping for ballooned pages.
  * @b_dev_info: holds the balloon device information descriptor.
@@ -187,22 +222,44 @@ static inline void __isolate_balloon_page(struct page *page)
 {
 	struct balloon_dev_info *b_dev_info = page->mapping->private_data;
 	unsigned long flags;
+=======
+
+bool balloon_page_isolate(struct page *page, isolate_mode_t mode)
+
+{
+	struct balloon_dev_info *b_dev_info = balloon_page_device(page);
+	unsigned long flags;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
 	list_del(&page->lru);
 	b_dev_info->isolated_pages++;
 	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
+<<<<<<< HEAD
 }
 
 static inline void __putback_balloon_page(struct page *page)
 {
 	struct balloon_dev_info *b_dev_info = page->mapping->private_data;
 	unsigned long flags;
+=======
+
+	return true;
+}
+
+void balloon_page_putback(struct page *page)
+{
+	struct balloon_dev_info *b_dev_info = balloon_page_device(page);
+	unsigned long flags;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
 	list_add(&page->lru, &b_dev_info->pages);
 	b_dev_info->isolated_pages--;
 	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
 }
 
+<<<<<<< HEAD
 static inline int __migrate_balloon_page(struct address_space *mapping,
 		struct page *newpage, struct page *page, enum migrate_mode mode)
 {
@@ -299,4 +356,27 @@ int balloon_page_migrate(struct page *newpage,
 	unlock_page(newpage);
 	return rc;
 }
+=======
+
+/* move_to_new_page() counterpart for a ballooned page */
+int balloon_page_migrate(struct address_space *mapping,
+		struct page *newpage, struct page *page,
+		enum migrate_mode mode)
+{
+	struct balloon_dev_info *balloon = balloon_page_device(page);
+
+	VM_BUG_ON_PAGE(!PageLocked(page), page);
+	VM_BUG_ON_PAGE(!PageLocked(newpage), newpage);
+
+	return balloon->migratepage(balloon, newpage, page, mode);
+}
+
+const struct address_space_operations balloon_aops = {
+	.migratepage = balloon_page_migrate,
+	.isolate_page = balloon_page_isolate,
+	.putback_page = balloon_page_putback,
+};
+EXPORT_SYMBOL_GPL(balloon_aops);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_BALLOON_COMPACTION */

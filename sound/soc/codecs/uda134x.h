@@ -26,8 +26,11 @@
 #define UDA134X_DATA011 13
 #define UDA134X_DATA1   14
 
+<<<<<<< HEAD
 #define UDA134X_REGS_NUM 15
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define STATUS0_DAIFMT_MASK (~(7<<1))
 #define STATUS0_SYSCLK_MASK (~(3<<4))
 

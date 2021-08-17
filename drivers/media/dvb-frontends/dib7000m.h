@@ -1,8 +1,11 @@
 #ifndef DIB7000M_H
 #define DIB7000M_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "dibx000_common.h"
 
 struct dib7000m_config {
@@ -40,7 +43,11 @@ struct dib7000m_config {
 
 #define DEFAULT_DIB7000M_I2C_ADDRESS 18
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_DIB7000M)
+=======
+#if IS_REACHABLE(CONFIG_DVB_DIB7000M)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *dib7000m_attach(struct i2c_adapter *i2c_adap,
 					    u8 i2c_addr,
 					    struct dib7000m_config *cfg);

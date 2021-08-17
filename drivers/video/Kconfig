@@ -8,15 +8,19 @@ menu "Graphics support"
 config HAVE_FB_ATMEL
 	bool
 
+<<<<<<< HEAD
 config SH_MIPI_DSI
 	tristate
 	depends on (SUPERH || ARCH_SHMOBILE) && HAVE_CLK
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config SH_LCD_MIPI_DSI
 	bool
 
 source "drivers/char/agp/Kconfig"
 
+<<<<<<< HEAD
 config VGASTATE
        tristate
        default n
@@ -2590,6 +2594,30 @@ source "drivers/video/hisilicon/Kconfig"
 source "drivers/video/mmp/Kconfig"
 source "drivers/video/backlight/Kconfig"
 source "drivers/video/adf/Kconfig"
+=======
+source "drivers/gpu/vga/Kconfig"
+
+source "drivers/gpu/host1x/Kconfig"
+source "drivers/gpu/ipu-v3/Kconfig"
+
+source "drivers/gpu/drm/Kconfig"
+
+menu "Frame buffer Devices"
+source "drivers/video/fbdev/Kconfig"
+endmenu
+
+source "drivers/video/backlight/Kconfig"
+
+config VGASTATE
+       tristate
+       default n
+
+config VIDEOMODE_HELPERS
+	bool
+
+config HDMI
+	bool
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 if VT
 	source "drivers/video/console/Kconfig"
@@ -2597,6 +2625,7 @@ endif
 
 if FB || SGI_NEWPORT_CONSOLE
 	source "drivers/video/logo/Kconfig"
+<<<<<<< HEAD
 endif
 
 config FB_SH_MOBILE_MERAM
@@ -2657,5 +2686,10 @@ config HISI_HI6210_IOMMU
     default n
     ---help---
       This is the media MMU base on hi6210
+=======
+
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endmenu

@@ -28,6 +28,11 @@ static int xfrm6_transport_output(struct xfrm_state *x, struct sk_buff *skb)
 	iph = ipv6_hdr(skb);
 
 	hdr_len = x->type->hdr_offset(x, skb, &prevhdr);
+<<<<<<< HEAD
+=======
+	if (hdr_len < 0)
+		return hdr_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_set_mac_header(skb, (prevhdr - x->props.header_len) - skb->data);
 	skb_set_network_header(skb, -x->props.header_len);
 	skb->transport_header = skb->network_header + hdr_len;

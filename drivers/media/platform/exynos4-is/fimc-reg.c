@@ -13,7 +13,11 @@
 #include <linux/io.h>
 #include <linux/regmap.h>
 
+<<<<<<< HEAD
 #include <media/s5p_fimc.h>
+=======
+#include <media/drv-intf/exynos-fimc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "media-dev.h"
 
 #include "fimc-reg.h"
@@ -592,10 +596,17 @@ struct mbus_pixfmt_desc {
 };
 
 static const struct mbus_pixfmt_desc pix_desc[] = {
+<<<<<<< HEAD
 	{ V4L2_MBUS_FMT_YUYV8_2X8, FIMC_REG_CISRCFMT_ORDER422_YCBYCR, 8 },
 	{ V4L2_MBUS_FMT_YVYU8_2X8, FIMC_REG_CISRCFMT_ORDER422_YCRYCB, 8 },
 	{ V4L2_MBUS_FMT_VYUY8_2X8, FIMC_REG_CISRCFMT_ORDER422_CRYCBY, 8 },
 	{ V4L2_MBUS_FMT_UYVY8_2X8, FIMC_REG_CISRCFMT_ORDER422_CBYCRY, 8 },
+=======
+	{ MEDIA_BUS_FMT_YUYV8_2X8, FIMC_REG_CISRCFMT_ORDER422_YCBYCR, 8 },
+	{ MEDIA_BUS_FMT_YVYU8_2X8, FIMC_REG_CISRCFMT_ORDER422_YCRYCB, 8 },
+	{ MEDIA_BUS_FMT_VYUY8_2X8, FIMC_REG_CISRCFMT_ORDER422_CRYCBY, 8 },
+	{ MEDIA_BUS_FMT_UYVY8_2X8, FIMC_REG_CISRCFMT_ORDER422_CBYCRY, 8 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int fimc_hw_set_camera_source(struct fimc_dev *fimc,
@@ -618,7 +629,11 @@ int fimc_hw_set_camera_source(struct fimc_dev *fimc,
 		}
 
 		if (i == ARRAY_SIZE(pix_desc)) {
+<<<<<<< HEAD
 			v4l2_err(&vc->vfd,
+=======
+			v4l2_err(&vc->ve.vdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 "Camera color format not supported: %d\n",
 				 vc->ci_fmt.code);
 			return -EINVAL;
@@ -689,16 +704,28 @@ int fimc_hw_set_camera_type(struct fimc_dev *fimc,
 
 		/* TODO: add remaining supported formats. */
 		switch (vid_cap->ci_fmt.code) {
+<<<<<<< HEAD
 		case V4L2_MBUS_FMT_VYUY8_2X8:
 			tmp = FIMC_REG_CSIIMGFMT_YCBCR422_8BIT;
 			break;
 		case V4L2_MBUS_FMT_JPEG_1X8:
 		case V4L2_MBUS_FMT_S5C_UYVY_JPEG_1X8:
+=======
+		case MEDIA_BUS_FMT_VYUY8_2X8:
+			tmp = FIMC_REG_CSIIMGFMT_YCBCR422_8BIT;
+			break;
+		case MEDIA_BUS_FMT_JPEG_1X8:
+		case MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tmp = FIMC_REG_CSIIMGFMT_USER(1);
 			cfg |= FIMC_REG_CIGCTRL_CAM_JPEG;
 			break;
 		default:
+<<<<<<< HEAD
 			v4l2_err(&vid_cap->vfd,
+=======
+			v4l2_err(&vid_cap->ve.vdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 "Not supported camera pixel format: %#x\n",
 				 vid_cap->ci_fmt.code);
 			return -EINVAL;
@@ -721,7 +748,12 @@ int fimc_hw_set_camera_type(struct fimc_dev *fimc,
 			WARN_ONCE(1, "ISP Writeback input is not supported\n");
 		break;
 	default:
+<<<<<<< HEAD
 		v4l2_err(&vid_cap->vfd, "Invalid FIMC bus type selected: %d\n",
+=======
+		v4l2_err(&vid_cap->ve.vdev,
+			 "Invalid FIMC bus type selected: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 source->fimc_bus_type);
 		return -EINVAL;
 	}

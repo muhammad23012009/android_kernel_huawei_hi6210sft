@@ -7,6 +7,7 @@ src := $(obj)
 PHONY := __clean
 __clean:
 
+<<<<<<< HEAD
 # Shorthand for $(Q)$(MAKE) scripts/Makefile.clean obj=dir
 # Usage:
 # $(Q)$(MAKE) $(clean)=dir
@@ -16,6 +17,13 @@ clean := -f $(if $(KBUILD_SRC),$(srctree)/)scripts/Makefile.clean obj
 kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
 #include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-dir)/Makefile)
 -include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(if $(wildcard $(kbuild-dir)/Makefile), $(kbuild-dir)/Makefile))
+=======
+include scripts/Kbuild.include
+
+# The filename Kbuild has precedence over Makefile
+kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+-include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-dir)/Makefile)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Figure out what we need to build from the various variables
 # ==========================================================================
@@ -24,15 +32,22 @@ __subdir-y	:= $(patsubst %/,%,$(filter %/, $(obj-y)))
 subdir-y	+= $(__subdir-y)
 __subdir-m	:= $(patsubst %/,%,$(filter %/, $(obj-m)))
 subdir-m	+= $(__subdir-m)
+<<<<<<< HEAD
 __subdir-n	:= $(patsubst %/,%,$(filter %/, $(obj-n)))
 subdir-n	+= $(__subdir-n)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __subdir-	:= $(patsubst %/,%,$(filter %/, $(obj-)))
 subdir-		+= $(__subdir-)
 
 # Subdirectories we need to descend into
 
 subdir-ym	:= $(sort $(subdir-y) $(subdir-m))
+<<<<<<< HEAD
 subdir-ymn      := $(sort $(subdir-ym) $(subdir-n) $(subdir-))
+=======
+subdir-ymn      := $(sort $(subdir-ym) $(subdir-))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Add subdir path
 
@@ -41,6 +56,7 @@ subdir-ymn	:= $(addprefix $(obj)/,$(subdir-ymn))
 # build a list of files to remove, usually relative to the current
 # directory
 
+<<<<<<< HEAD
 __clean-files	:= $(extra-y) $(always)                  \
 		   $(targets) $(clean-files)             \
 		   $(host-progs)                         \
@@ -61,6 +77,30 @@ __clean-files   := $(wildcard                                               \
 __clean-dirs    := $(wildcard                                               \
                    $(addprefix $(obj)/, $(filter-out /%, $(clean-dirs)))    \
 		   $(filter /%, $(clean-dirs)))
+=======
+__clean-files	:= $(extra-y) $(extra-m) $(extra-)       \
+		   $(always) $(targets) $(clean-files)   \
+		   $(host-progs)                         \
+		   $(hostprogs-y) $(hostprogs-m) $(hostprogs-) \
+		   $(hostlibs-y) $(hostlibs-m) $(hostlibs-) \
+		   $(hostcxxlibs-y) $(hostcxxlibs-m)
+
+__clean-files   := $(filter-out $(no-clean-files), $(__clean-files))
+
+# clean-files is given relative to the current directory, unless it
+# starts with $(objtree)/ (which means "./", so do not add "./" unless
+# you want to delete a file from the toplevel object directory).
+
+__clean-files   := $(wildcard                                               \
+		   $(addprefix $(obj)/, $(filter-out $(objtree)/%, $(__clean-files))) \
+		   $(filter $(objtree)/%, $(__clean-files)))
+
+# same as clean-files
+
+__clean-dirs    := $(wildcard                                               \
+		   $(addprefix $(obj)/, $(filter-out $(objtree)/%, $(clean-dirs)))    \
+		   $(filter $(objtree)/%, $(clean-dirs)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # ==========================================================================
 
@@ -77,9 +117,12 @@ endif
 ifneq ($(strip $(__clean-dirs)),)
 	+$(call cmd,cleandir)
 endif
+<<<<<<< HEAD
 ifneq ($(strip $(clean-rule)),)
 	+$(clean-rule)
 endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	@:
 
 
@@ -94,11 +137,14 @@ PHONY += $(subdir-ymn)
 $(subdir-ymn):
 	$(Q)$(MAKE) $(clean)=$@
 
+<<<<<<< HEAD
 # If quiet is set, only print short version of command
 
 cmd = @$(if $($(quiet)cmd_$(1)),echo '  $($(quiet)cmd_$(1))' &&) $(cmd_$(1))
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Declare the contents of the .PHONY variable as phony.  We keep that
 # information in a variable se we can use it in if_changed and friends.
 

@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_ASM_ARCH_MXC_EHCI_H
 #define __INCLUDE_ASM_ARCH_MXC_EHCI_H
 
+<<<<<<< HEAD
 /* values for portsc field */
 #define MXC_EHCI_PHY_LOW_POWER_SUSPEND	(1 << 23)
 #define MXC_EHCI_FORCE_FS		(1 << 24)
@@ -41,6 +42,8 @@
 #define MX5_USB_UTMI_PHYCTRL1_PLLDIV_MASK		0x3
 #define MX5_USB_UTMI_PHYCTRL1_PLLDIV_SHIFT		0
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mxc_usbh_platform_data {
 	int (*init)(struct platform_device *pdev);
 	int (*exit)(struct platform_device *pdev);
@@ -49,11 +52,14 @@ struct mxc_usbh_platform_data {
 	struct usb_phy		*otg;
 };
 
+<<<<<<< HEAD
 int mx51_initialize_usb_hw(int port, unsigned int flags);
 int mx25_initialize_usb_hw(int port, unsigned int flags);
 int mx31_initialize_usb_hw(int port, unsigned int flags);
 int mx35_initialize_usb_hw(int port, unsigned int flags);
 int mx27_initialize_usb_hw(int port, unsigned int flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __INCLUDE_ASM_ARCH_MXC_EHCI_H */
 

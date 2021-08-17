@@ -11,12 +11,17 @@
 #ifndef __ASM_PROM_H
 #define __ASM_PROM_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
+=======
+#ifdef CONFIG_USE_OF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/bug.h>
 #include <linux/io.h>
 #include <linux/types.h>
 #include <asm/bootinfo.h>
 
+<<<<<<< HEAD
 extern int early_init_dt_scan_memory_arch(unsigned long node,
 	const char *uname, int depth, void *data);
 
@@ -43,6 +48,14 @@ extern void __dt_setup_arch(struct boot_param_header *bph);
 									\
 	__dt_setup_arch(&__dtb_##sym##_begin);				\
 })
+=======
+extern void device_tree_init(void);
+
+struct boot_param_header;
+
+extern void __dt_setup_arch(void *bph);
+extern int __dt_register_buses(const char *bus0, const char *bus1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else /* CONFIG_OF */
 static inline void device_tree_init(void) { }

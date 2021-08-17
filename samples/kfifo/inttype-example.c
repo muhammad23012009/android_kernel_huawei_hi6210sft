@@ -61,7 +61,11 @@ static int __init testfunc(void)
 
 	/* put values into the fifo */
 	for (i = 0; i != 10; i++)
+<<<<<<< HEAD
 		kfifo_put(&test, &i);
+=======
+		kfifo_put(&test, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* show the number of used elements */
 	printk(KERN_INFO "fifo len: %u\n", kfifo_len(&test));
@@ -78,7 +82,11 @@ static int __init testfunc(void)
 	kfifo_skip(&test);
 
 	/* put values into the fifo until is full */
+<<<<<<< HEAD
 	for (i = 20; kfifo_put(&test, &i); i++)
+=======
+	for (i = 20; kfifo_put(&test, i); i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		;
 
 	printk(KERN_INFO "queue len: %u\n", kfifo_len(&test));
@@ -117,8 +125,15 @@ static ssize_t fifo_write(struct file *file, const char __user *buf,
 	ret = kfifo_from_user(&test, buf, count, &copied);
 
 	mutex_unlock(&write_lock);
+<<<<<<< HEAD
 
 	return ret ? ret : copied;
+=======
+	if (ret)
+		return ret;
+
+	return copied;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t fifo_read(struct file *file, char __user *buf,
@@ -133,8 +148,15 @@ static ssize_t fifo_read(struct file *file, char __user *buf,
 	ret = kfifo_to_user(&test, buf, count, &copied);
 
 	mutex_unlock(&read_lock);
+<<<<<<< HEAD
 
 	return ret ? ret : copied;
+=======
+	if (ret)
+		return ret;
+
+	return copied;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations fifo_fops = {

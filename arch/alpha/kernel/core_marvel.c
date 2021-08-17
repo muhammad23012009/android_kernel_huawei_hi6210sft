@@ -24,7 +24,10 @@
 #include <asm/gct.h>
 #include <asm/pgalloc.h>
 #include <asm/tlbflush.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/vga.h>
 
 #include "proto.h"

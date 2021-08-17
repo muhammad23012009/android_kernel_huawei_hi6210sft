@@ -53,12 +53,20 @@ static struct nvec_ps2 ps2_dev;
 static int ps2_startstreaming(struct serio *ser_dev)
 {
 	unsigned char buf[] = { NVEC_PS2, AUTO_RECEIVE_N, PACKET_SIZE };
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nvec_write_async(ps2_dev.nvec, buf, sizeof(buf));
 }
 
 static void ps2_stopstreaming(struct serio *ser_dev)
 {
 	unsigned char buf[] = { NVEC_PS2, CANCEL_AUTO_RECEIVE };
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nvec_write_async(ps2_dev.nvec, buf, sizeof(buf));
 }
 
@@ -76,7 +84,11 @@ static int nvec_ps2_notifier(struct notifier_block *nb,
 			     unsigned long event_type, void *data)
 {
 	int i;
+<<<<<<< HEAD
 	unsigned char *msg = (unsigned char *)data;
+=======
+	unsigned char *msg = data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (event_type) {
 	case NVEC_PS2_EVT:
@@ -104,6 +116,7 @@ static int nvec_mouse_probe(struct platform_device *pdev)
 {
 	struct nvec_chip *nvec = dev_get_drvdata(pdev->dev.parent);
 	struct serio *ser_dev;
+<<<<<<< HEAD
 	char mouse_reset[] = { NVEC_PS2, SEND_COMMAND, PSMOUSE_RST, 3 };
 
 	ser_dev = kzalloc(sizeof(struct serio), GFP_KERNEL);
@@ -111,6 +124,14 @@ static int nvec_mouse_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	ser_dev->id.type = SERIO_PS_PSTHRU;
+=======
+
+	ser_dev = kzalloc(sizeof(struct serio), GFP_KERNEL);
+	if (!ser_dev)
+		return -ENOMEM;
+
+	ser_dev->id.type = SERIO_8042;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ser_dev->write = ps2_sendcommand;
 	ser_dev->start = ps2_startstreaming;
 	ser_dev->stop = ps2_stopstreaming;
@@ -125,9 +146,12 @@ static int nvec_mouse_probe(struct platform_device *pdev)
 
 	serio_register_port(ser_dev);
 
+<<<<<<< HEAD
 	/* mouse reset */
 	nvec_write_async(nvec, mouse_reset, sizeof(mouse_reset));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -167,15 +191,23 @@ static int nvec_mouse_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 static const SIMPLE_DEV_PM_OPS(nvec_mouse_pm_ops, nvec_mouse_suspend,
 				nvec_mouse_resume);
+=======
+static SIMPLE_DEV_PM_OPS(nvec_mouse_pm_ops, nvec_mouse_suspend,
+			 nvec_mouse_resume);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver nvec_mouse_driver = {
 	.probe  = nvec_mouse_probe,
 	.remove = nvec_mouse_remove,
 	.driver = {
 		.name = "nvec-mouse",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &nvec_mouse_pm_ops,
 	},
 };

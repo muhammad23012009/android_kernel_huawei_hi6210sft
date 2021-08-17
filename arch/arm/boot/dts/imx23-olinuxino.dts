@@ -12,7 +12,12 @@
  */
 
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "imx23.dtsi"
+=======
+#include <dt-bindings/gpio/gpio.h>
+#include "imx23.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "i.MX23 Olinuxino Low Cost Board";
@@ -40,21 +45,37 @@
 				hog_pins_a: hog@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x0113 /* MX23_PAD_GPMI_ALE__GPIO_0_17 */
 					>;
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_GPMI_ALE__GPIO_0_17
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				led_pin_gpio2_1: led_gpio2_1@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x2013 /* MX23_PAD_SSP1_DETECT__GPIO_2_1 */
 					>;
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_SSP1_DETECT__GPIO_2_1
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -69,6 +90,19 @@
 		};
 
 		apbx@80040000 {
+<<<<<<< HEAD
+=======
+			lradc@80050000 {
+				status = "okay";
+			};
+
+			i2c: i2c@80058000 {
+				pinctrl-names = "default";
+				pinctrl-0 = <&i2c_pins_b>;
+				status = "okay";
+			};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			duart: serial@80070000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&duart_pins_a>;
@@ -89,6 +123,10 @@
 
 	ahb@80080000 {
 		usb0: usb@80080000 {
+<<<<<<< HEAD
+=======
+			dr_mode = "host";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vbus-supply = <&reg_usb0_vbus>;
 			status = "okay";
 		};
@@ -96,9 +134,18 @@
 
 	regulators {
 		compatible = "simple-bus";
+<<<<<<< HEAD
 
 		reg_usb0_vbus: usb0_vbus {
 			compatible = "regulator-fixed";
+=======
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg_usb0_vbus: regulator@0 {
+			compatible = "regulator-fixed";
+			reg = <0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "usb0_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
@@ -115,7 +162,11 @@
 
 		user {
 			label = "green";
+<<<<<<< HEAD
 			gpios = <&gpio2 1 1>;
+=======
+			gpios = <&gpio2 1 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 };

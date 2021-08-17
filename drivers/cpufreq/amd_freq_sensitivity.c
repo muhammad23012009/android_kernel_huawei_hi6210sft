@@ -21,7 +21,11 @@
 #include <asm/msr.h>
 #include <asm/cpufeature.h>
 
+<<<<<<< HEAD
 #include "cpufreq_governor.h"
+=======
+#include "cpufreq_ondemand.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MSR_AMD64_FREQ_SENSITIVITY_ACTUAL	0xc0010080
 #define MSR_AMD64_FREQ_SENSITIVITY_REFERENCE	0xc0010081
@@ -45,12 +49,20 @@ static unsigned int amd_powersave_bias_target(struct cpufreq_policy *policy,
 	long d_actual, d_reference;
 	struct msr actual, reference;
 	struct cpu_data_t *data = &per_cpu(cpu_data, policy->cpu);
+<<<<<<< HEAD
 	struct dbs_data *od_data = policy->governor_data;
 	struct od_dbs_tuners *od_tuners = od_data->tuners;
 	struct od_cpu_dbs_info_s *od_info =
 		od_data->cdata->get_cpu_dbs_info_s(policy->cpu);
 
 	if (!od_info->freq_table)
+=======
+	struct policy_dbs_info *policy_dbs = policy->governor_data;
+	struct dbs_data *od_data = policy_dbs->dbs_data;
+	struct od_dbs_tuners *od_tuners = od_data->tuners;
+
+	if (!policy->freq_table)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return freq_next;
 
 	rdmsr_on_cpu(policy->cpu, MSR_AMD64_FREQ_SENSITIVITY_ACTUAL,
@@ -92,10 +104,16 @@ static unsigned int amd_powersave_bias_target(struct cpufreq_policy *policy,
 		else {
 			unsigned int index;
 
+<<<<<<< HEAD
 			cpufreq_frequency_table_target(policy,
 				od_info->freq_table, policy->cur - 1,
 				CPUFREQ_RELATION_H, &index);
 			freq_next = od_info->freq_table[index].frequency;
+=======
+			index = cpufreq_table_find_index_h(policy,
+							   policy->cur - 1);
+			freq_next = policy->freq_table[index].frequency;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		data->freq_prev = freq_next;

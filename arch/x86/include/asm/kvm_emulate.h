@@ -37,6 +37,10 @@ struct x86_instruction_info {
 	u8  modrm_reg;          /* index of register used               */
 	u8  modrm_rm;		/* rm part of modrm			*/
 	u64 src_val;            /* value of source operand              */
+<<<<<<< HEAD
+=======
+	u64 dst_val;            /* value of destination operand         */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8  src_bytes;          /* size of source operand               */
 	u8  dst_bytes;          /* size of destination operand          */
 	u8  ad_bytes;           /* size of src/dst address              */
@@ -104,11 +108,29 @@ struct x86_emulate_ops {
 	 *  @addr:  [IN ] Linear address from which to read.
 	 *  @val:   [OUT] Value read from memory, zero-extended to 'u_long'.
 	 *  @bytes: [IN ] Number of bytes to read from memory.
+<<<<<<< HEAD
+=======
+	 *  @system:[IN ] Whether the access is forced to be at CPL0.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	int (*read_std)(struct x86_emulate_ctxt *ctxt,
 			unsigned long addr, void *val,
 			unsigned int bytes,
+<<<<<<< HEAD
 			struct x86_exception *fault);
+=======
+			struct x86_exception *fault, bool system);
+
+	/*
+	 * read_phys: Read bytes of standard (non-emulated/special) memory.
+	 *            Used for descriptor reading.
+	 *  @addr:  [IN ] Physical address from which to read.
+	 *  @val:   [OUT] Value read from memory.
+	 *  @bytes: [IN ] Number of bytes to read from memory.
+	 */
+	int (*read_phys)(struct x86_emulate_ctxt *ctxt, unsigned long addr,
+			void *val, unsigned int bytes);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * write_std: Write bytes of standard (non-emulated/special) memory.
@@ -116,10 +138,18 @@ struct x86_emulate_ops {
 	 *  @addr:  [IN ] Linear address to which to write.
 	 *  @val:   [OUT] Value write to memory, zero-extended to 'u_long'.
 	 *  @bytes: [IN ] Number of bytes to write to memory.
+<<<<<<< HEAD
 	 */
 	int (*write_std)(struct x86_emulate_ctxt *ctxt,
 			 unsigned long addr, void *val, unsigned int bytes,
 			 struct x86_exception *fault);
+=======
+	 *  @system:[IN ] Whether the access is forced to be at CPL0.
+	 */
+	int (*write_std)(struct x86_emulate_ctxt *ctxt,
+			 unsigned long addr, void *val, unsigned int bytes,
+			 struct x86_exception *fault, bool system);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * fetch: Read bytes of standard (non-emulated/special) memory.
 	 *        Used for instruction fetch.
@@ -189,12 +219,23 @@ struct x86_emulate_ops {
 	void (*set_idt)(struct x86_emulate_ctxt *ctxt, struct desc_ptr *dt);
 	ulong (*get_cr)(struct x86_emulate_ctxt *ctxt, int cr);
 	int (*set_cr)(struct x86_emulate_ctxt *ctxt, int cr, ulong val);
+<<<<<<< HEAD
 	void (*set_rflags)(struct x86_emulate_ctxt *ctxt, ulong val);
 	int (*cpl)(struct x86_emulate_ctxt *ctxt);
 	int (*get_dr)(struct x86_emulate_ctxt *ctxt, int dr, ulong *dest);
 	int (*set_dr)(struct x86_emulate_ctxt *ctxt, int dr, ulong value);
 	int (*set_msr)(struct x86_emulate_ctxt *ctxt, u32 msr_index, u64 data);
 	int (*get_msr)(struct x86_emulate_ctxt *ctxt, u32 msr_index, u64 *pdata);
+=======
+	int (*cpl)(struct x86_emulate_ctxt *ctxt);
+	int (*get_dr)(struct x86_emulate_ctxt *ctxt, int dr, ulong *dest);
+	int (*set_dr)(struct x86_emulate_ctxt *ctxt, int dr, ulong value);
+	u64 (*get_smbase)(struct x86_emulate_ctxt *ctxt);
+	void (*set_smbase)(struct x86_emulate_ctxt *ctxt, u64 smbase);
+	int (*set_msr)(struct x86_emulate_ctxt *ctxt, u32 msr_index, u64 data);
+	int (*get_msr)(struct x86_emulate_ctxt *ctxt, u32 msr_index, u64 *pdata);
+	int (*check_pmc)(struct x86_emulate_ctxt *ctxt, u32 pmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*read_pmc)(struct x86_emulate_ctxt *ctxt, u32 pmc, u64 *pdata);
 	void (*halt)(struct x86_emulate_ctxt *ctxt);
 	void (*wbinvd)(struct x86_emulate_ctxt *ctxt);
@@ -207,6 +248,13 @@ struct x86_emulate_ops {
 
 	void (*get_cpuid)(struct x86_emulate_ctxt *ctxt,
 			  u32 *eax, u32 *ebx, u32 *ecx, u32 *edx);
+<<<<<<< HEAD
+=======
+	void (*set_nmi_mask)(struct x86_emulate_ctxt *ctxt, bool masked);
+
+	unsigned (*get_hflags)(struct x86_emulate_ctxt *ctxt);
+	void (*set_hflags)(struct x86_emulate_ctxt *ctxt, unsigned hflags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 typedef u32 __attribute__((vector_size(16))) sse128_t;
@@ -232,7 +280,11 @@ struct operand {
 	union {
 		unsigned long val;
 		u64 val64;
+<<<<<<< HEAD
 		char valptr[sizeof(unsigned long) + 2];
+=======
+		char valptr[sizeof(sse128_t)];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sse128_t vec_val;
 		u64 mm_val;
 		void *data;
@@ -241,8 +293,13 @@ struct operand {
 
 struct fetch_cache {
 	u8 data[15];
+<<<<<<< HEAD
 	unsigned long start;
 	unsigned long end;
+=======
+	u8 *ptr;
+	u8 *end;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct read_cache {
@@ -260,6 +317,14 @@ enum x86emul_mode {
 	X86EMUL_MODE_PROT64,	/* 64-bit (long) mode.    */
 };
 
+<<<<<<< HEAD
+=======
+/* These match some of the HF_* flags defined in kvm_host.h  */
+#define X86EMUL_GUEST_MASK           (1 << 5) /* VCPU is in guest-mode */
+#define X86EMUL_SMM_MASK             (1 << 6)
+#define X86EMUL_SMM_INSIDE_NMI_MASK  (1 << 7)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct x86_emulate_ctxt {
 	const struct x86_emulate_ops *ops;
 
@@ -272,13 +337,20 @@ struct x86_emulate_ctxt {
 	/* interruptibility state, as a result of execution of STI or MOV SS */
 	int interruptibility;
 
+<<<<<<< HEAD
 	bool guest_mode; /* guest running a nested guest */
 	bool perm_ok; /* do not check permissions if true */
 	bool only_vendor_specific_insn;
+=======
+	bool perm_ok; /* do not check permissions if true */
+	bool ud;	/* inject an #UD if host doesn't support insn */
+	bool tf;	/* TF value before instruction (after for syscall/sysret) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bool have_exception;
 	struct x86_exception exception;
 
+<<<<<<< HEAD
 	/* decode cache */
 	u8 twobyte;
 	u8 b;
@@ -296,17 +368,54 @@ struct x86_emulate_ctxt {
 	u64 d;
 	int (*execute)(struct x86_emulate_ctxt *ctxt);
 	int (*check_perm)(struct x86_emulate_ctxt *ctxt);
+=======
+	/*
+	 * decode cache
+	 */
+
+	/* current opcode length in bytes */
+	u8 opcode_len;
+	u8 b;
+	u8 intercept;
+	u8 op_bytes;
+	u8 ad_bytes;
+	struct operand src;
+	struct operand src2;
+	struct operand dst;
+	int (*execute)(struct x86_emulate_ctxt *ctxt);
+	int (*check_perm)(struct x86_emulate_ctxt *ctxt);
+	/*
+	 * The following six fields are cleared together,
+	 * the rest are initialized unconditionally in x86_decode_insn
+	 * or elsewhere
+	 */
+	bool rip_relative;
+	u8 rex_prefix;
+	u8 lock_prefix;
+	u8 rep_prefix;
+	/* bitmaps of registers in _regs[] that can be read */
+	u32 regs_valid;
+	/* bitmaps of registers in _regs[] that have been written */
+	u32 regs_dirty;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* modrm */
 	u8 modrm;
 	u8 modrm_mod;
 	u8 modrm_reg;
 	u8 modrm_rm;
 	u8 modrm_seg;
+<<<<<<< HEAD
 	bool rip_relative;
 	unsigned long _eip;
 	struct operand memop;
 	u32 regs_valid;  /* bitmaps of registers in _regs[] that can be read */
 	u32 regs_dirty;  /* bitmaps of registers in _regs[] that have been written */
+=======
+	u8 seg_override;
+	u64 d;
+	unsigned long _eip;
+	struct operand memop;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Fields above regs are cleared together. */
 	unsigned long _regs[NR_VCPU_REGS];
 	struct operand *memopp;
@@ -404,6 +513,10 @@ bool x86_page_table_writing_insn(struct x86_emulate_ctxt *ctxt);
 #define EMULATION_OK 0
 #define EMULATION_RESTART 1
 #define EMULATION_INTERCEPTED 2
+<<<<<<< HEAD
+=======
+void init_decode_cache(struct x86_emulate_ctxt *ctxt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int x86_emulate_insn(struct x86_emulate_ctxt *ctxt);
 int emulator_task_switch(struct x86_emulate_ctxt *ctxt,
 			 u16 tss_selector, int idt_index, int reason,

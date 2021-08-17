@@ -14,6 +14,7 @@
 #ifndef __ASM_ARM_PSCI_H
 #define __ASM_ARM_PSCI_H
 
+<<<<<<< HEAD
 #define PSCI_POWER_STATE_TYPE_STANDBY		0
 #define PSCI_POWER_STATE_TYPE_POWER_DOWN	1
 #define PSCI_POWER_STATE_AFFINITY_LEVEL0	0
@@ -58,4 +59,14 @@ static inline int psci_probe(void)
 	return -ENODEV;
 }
 #endif
+=======
+extern const struct smp_operations psci_smp_ops;
+
+#if defined(CONFIG_SMP) && defined(CONFIG_ARM_PSCI)
+bool psci_smp_available(void);
+#else
+static inline bool psci_smp_available(void) { return false; }
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_ARM_PSCI_H */

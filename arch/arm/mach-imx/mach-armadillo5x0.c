@@ -50,6 +50,10 @@
 #include "common.h"
 #include "devices-imx31.h"
 #include "crmregs-imx3.h"
+<<<<<<< HEAD
+=======
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hardware.h"
 #include "iomux-mx3.h"
 #include "ulpi.h"
@@ -404,8 +408,12 @@ static int armadillo5x0_sdhc1_init(struct device *dev,
 
 	/* When supported the trigger type have to be BOTH */
 	ret = request_irq(gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_ATA_DMACK)),
+<<<<<<< HEAD
 			  detect_irq,
 			  IRQF_DISABLED | IRQF_TRIGGER_FALLING,
+=======
+			  detect_irq, IRQF_TRIGGER_FALLING,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  "sdhc-detect", data);
 
 	if (ret)
@@ -493,24 +501,30 @@ static void __init armadillo5x0_init(void)
 
 	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
 
+<<<<<<< HEAD
 	armadillo5x0_smc911x_resources[1].start =
 			gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_0));
 	armadillo5x0_smc911x_resources[1].end =
 			gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_0));
 	platform_add_devices(devices, ARRAY_SIZE(devices));
 	imx_add_gpio_keys(&armadillo5x0_button_data);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx31_add_imx_i2c1(NULL);
 
 	/* Register UART */
 	imx31_add_imx_uart0(&uart_pdata);
 	imx31_add_imx_uart1(&uart_pdata);
 
+<<<<<<< HEAD
 	/* SMSC9118 IRQ pin */
 	gpio_direction_input(MX31_PIN_GPIO1_0);
 
 	/* Register SDHC */
 	imx31_add_mxc_mmc(0, &sdhc_pdata);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Register FB */
 	imx31_add_ipu_core();
 	imx31_add_mx3_sdc_fb(&mx3fb_pdata);
@@ -525,6 +539,7 @@ static void __init armadillo5x0_init(void)
 	imx31_add_mxc_nand(&armadillo5x0_nand_board_info);
 
 	/* set NAND page size to 2k if not configured via boot mode pins */
+<<<<<<< HEAD
 	__raw_writel(__raw_readl(mx3_ccm_base + MXC_CCM_RCSR) |
 					(1 << 30), mx3_ccm_base + MXC_CCM_RCSR);
 
@@ -542,6 +557,43 @@ static void __init armadillo5x0_init(void)
 
 	/* USB */
 
+=======
+	imx_writel(imx_readl(mx3_ccm_base + MXC_CCM_RCSR) | (1 << 30),
+		   mx3_ccm_base + MXC_CCM_RCSR);
+}
+
+static void __init armadillo5x0_late(void)
+{
+	armadillo5x0_smc911x_resources[1].start =
+		gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_0));
+	armadillo5x0_smc911x_resources[1].end =
+		gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_0));
+	platform_add_devices(devices, ARRAY_SIZE(devices));
+
+	imx_add_gpio_keys(&armadillo5x0_button_data);
+
+	/* SMSC9118 IRQ pin */
+	gpio_direction_input(MX31_PIN_GPIO1_0);
+
+	/* Register SDHC */
+	imx31_add_mxc_mmc(0, &sdhc_pdata);
+
+	/* RTC */
+	/* Get RTC IRQ and register the chip */
+	if (!gpio_request(ARMADILLO5X0_RTC_GPIO, "rtc")) {
+		if (!gpio_direction_input(ARMADILLO5X0_RTC_GPIO))
+			armadillo5x0_i2c_rtc.irq =
+				gpio_to_irq(ARMADILLO5X0_RTC_GPIO);
+		else
+			gpio_free(ARMADILLO5X0_RTC_GPIO);
+	}
+
+	if (armadillo5x0_i2c_rtc.irq == 0)
+		pr_warn("armadillo5x0_init: failed to get RTC IRQ\n");
+	i2c_register_board_info(1, &armadillo5x0_i2c_rtc, 1);
+
+	/* USB */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usbotg_pdata.otg = imx_otg_ulpi_create(ULPI_OTG_DRVVBUS |
 			ULPI_OTG_DRVVBUS_EXT);
 	if (usbotg_pdata.otg)
@@ -563,8 +615,14 @@ MACHINE_START(ARMADILLO5X0, "Armadillo-500")
 	.map_io = mx31_map_io,
 	.init_early = imx31_init_early,
 	.init_irq = mx31_init_irq,
+<<<<<<< HEAD
 	.handle_irq = imx31_handle_irq,
 	.init_time	= armadillo5x0_timer_init,
 	.init_machine = armadillo5x0_init,
+=======
+	.init_time	= armadillo5x0_timer_init,
+	.init_machine = armadillo5x0_init,
+	.init_late	= armadillo5x0_late,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.restart	= mxc_restart,
 MACHINE_END

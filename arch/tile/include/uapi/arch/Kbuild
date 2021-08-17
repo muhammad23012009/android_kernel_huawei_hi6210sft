@@ -1,7 +1,10 @@
 # UAPI Header export list
 header-y += abi.h
 header-y += chip.h
+<<<<<<< HEAD
 header-y += chip_tile64.h
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += chip_tilegx.h
 header-y += chip_tilepro.h
 header-y += icache.h

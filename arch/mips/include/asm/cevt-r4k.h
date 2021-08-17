@@ -21,12 +21,16 @@ DECLARE_PER_CPU(struct clock_event_device, mips_clockevent_device);
 
 void mips_event_handler(struct clock_event_device *dev);
 int c0_compare_int_usable(void);
+<<<<<<< HEAD
 void mips_set_clock_mode(enum clock_event_mode, struct clock_event_device *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 irqreturn_t c0_compare_interrupt(int, void *);
 
 extern struct irqaction c0_compare_irqaction;
 extern int cp0_timer_irq_installed;
 
+<<<<<<< HEAD
 /*
  * Possibly handle a performance counter interrupt.
  * Return true if the timer interrupt should not be checked
@@ -46,4 +50,6 @@ static inline int handle_perf_irq(int r2)
 		!r2;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_CEVT_R4K_H */

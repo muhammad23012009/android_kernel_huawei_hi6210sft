@@ -7,6 +7,10 @@
  * AB8500 Power-On Key handler
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -65,12 +69,23 @@ static int ab8500_ponkey_probe(struct platform_device *pdev)
 		return irq_dbr;
 	}
 
+<<<<<<< HEAD
 	ponkey = kzalloc(sizeof(struct ab8500_ponkey), GFP_KERNEL);
 	input = input_allocate_device();
 	if (!ponkey || !input) {
 		error = -ENOMEM;
 		goto err_free_mem;
 	}
+=======
+	ponkey = devm_kzalloc(&pdev->dev, sizeof(struct ab8500_ponkey),
+			      GFP_KERNEL);
+	if (!ponkey)
+		return -ENOMEM;
+
+	input = devm_input_allocate_device(&pdev->dev);
+	if (!input)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ponkey->idev = input;
 	ponkey->ab8500 = ab8500;
@@ -82,6 +97,7 @@ static int ab8500_ponkey_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_KEY, KEY_POWER);
 
+<<<<<<< HEAD
 	error = request_any_context_irq(ponkey->irq_dbf, ab8500_ponkey_handler,
 					0, "ab8500-ponkey-dbf", ponkey);
 	if (error < 0) {
@@ -96,16 +112,39 @@ static int ab8500_ponkey_probe(struct platform_device *pdev)
 		dev_err(ab8500->dev, "Failed to request dbr IRQ#%d: %d\n",
 			ponkey->irq_dbr, error);
 		goto err_free_dbf_irq;
+=======
+	error = devm_request_any_context_irq(&pdev->dev, ponkey->irq_dbf,
+					     ab8500_ponkey_handler, 0,
+					     "ab8500-ponkey-dbf", ponkey);
+	if (error < 0) {
+		dev_err(ab8500->dev, "Failed to request dbf IRQ#%d: %d\n",
+			ponkey->irq_dbf, error);
+		return error;
+	}
+
+	error = devm_request_any_context_irq(&pdev->dev, ponkey->irq_dbr,
+					     ab8500_ponkey_handler, 0,
+					     "ab8500-ponkey-dbr", ponkey);
+	if (error < 0) {
+		dev_err(ab8500->dev, "Failed to request dbr IRQ#%d: %d\n",
+			ponkey->irq_dbr, error);
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	error = input_register_device(ponkey->idev);
 	if (error) {
 		dev_err(ab8500->dev, "Can't register input device: %d\n", error);
+<<<<<<< HEAD
 		goto err_free_dbr_irq;
+=======
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, ponkey);
 	return 0;
+<<<<<<< HEAD
 
 err_free_dbr_irq:
 	free_irq(ponkey->irq_dbr, ponkey);
@@ -130,6 +169,8 @@ static int ab8500_ponkey_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_OF
@@ -137,16 +178,26 @@ static const struct of_device_id ab8500_ponkey_match[] = {
 	{ .compatible = "stericsson,ab8500-ponkey", },
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, ab8500_ponkey_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct platform_driver ab8500_ponkey_driver = {
 	.driver		= {
 		.name	= "ab8500-poweron-key",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = of_match_ptr(ab8500_ponkey_match),
 	},
 	.probe		= ab8500_ponkey_probe,
 	.remove		= ab8500_ponkey_remove,
+=======
+		.of_match_table = of_match_ptr(ab8500_ponkey_match),
+	},
+	.probe		= ab8500_ponkey_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 module_platform_driver(ab8500_ponkey_driver);
 

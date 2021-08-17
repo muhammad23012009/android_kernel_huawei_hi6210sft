@@ -22,13 +22,19 @@ void foo(void)
 	BLANK();
 
 	OFFSET(TI_task,			thread_info, task);
+<<<<<<< HEAD
 	OFFSET(TI_exec_domain,		thread_info, exec_domain);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	OFFSET(TI_frame,		thread_info, frame);
 	OFFSET(TI_flags,		thread_info, flags);
 	OFFSET(TI_cpu,			thread_info, cpu);
 	OFFSET(TI_preempt_count,	thread_info, preempt_count);
 	OFFSET(TI_addr_limit,		thread_info, addr_limit);
+<<<<<<< HEAD
 	OFFSET(TI_restart_block,	thread_info, restart_block);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BLANK();
 
 	OFFSET(REG_D0,			pt_regs, d0);
@@ -86,7 +92,10 @@ void foo(void)
 	DEFINE(SIGCHLD_asm,		SIGCHLD);
 	BLANK();
 
+<<<<<<< HEAD
 	OFFSET(EXEC_DOMAIN_handler,	exec_domain, handler);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	OFFSET(RT_SIGFRAME_sigcontext,	rt_sigframe, uc.uc_mcontext);
 
 	DEFINE(PAGE_SIZE_asm,		PAGE_SIZE);

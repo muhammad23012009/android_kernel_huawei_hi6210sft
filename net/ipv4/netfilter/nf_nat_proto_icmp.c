@@ -67,7 +67,11 @@ icmp_manip_pkt(struct sk_buff *skb,
 
 	hdr = (struct icmphdr *)(skb->data + hdroff);
 	inet_proto_csum_replace2(&hdr->checksum, skb,
+<<<<<<< HEAD
 				 hdr->un.echo.id, tuple->src.u.icmp.id, 0);
+=======
+				 hdr->un.echo.id, tuple->src.u.icmp.id, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hdr->un.echo.id = tuple->src.u.icmp.id;
 	return true;
 }
@@ -77,7 +81,11 @@ const struct nf_nat_l4proto nf_nat_l4proto_icmp = {
 	.manip_pkt		= icmp_manip_pkt,
 	.in_range		= icmp_in_range,
 	.unique_tuple		= icmp_unique_tuple,
+<<<<<<< HEAD
 #if defined(CONFIG_NF_CT_NETLINK) || defined(CONFIG_NF_CT_NETLINK_MODULE)
+=======
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.nlattr_to_range	= nf_nat_l4proto_nlattr_to_range,
 #endif
 };

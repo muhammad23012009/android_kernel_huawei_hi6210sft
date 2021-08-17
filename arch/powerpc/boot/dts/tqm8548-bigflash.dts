@@ -185,31 +185,46 @@
 					interrupt-parent = <&mpic>;
 					interrupts = <8 1>;
 					reg = <1>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 				phy2: ethernet-phy@1 {
 					interrupt-parent = <&mpic>;
 					interrupts = <8 1>;
 					reg = <2>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 				phy3: ethernet-phy@3 {
 					interrupt-parent = <&mpic>;
 					interrupts = <8 1>;
 					reg = <3>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 				phy4: ethernet-phy@4 {
 					interrupt-parent = <&mpic>;
 					interrupts = <8 1>;
 					reg = <4>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 				phy5: ethernet-phy@5 {
 					interrupt-parent = <&mpic>;
 					interrupts = <8 1>;
 					reg = <5>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 				tbi0: tbi-phy@11 {
 					reg = <0x11>;

@@ -39,6 +39,10 @@
 #include <linux/vmalloc.h>
 #include <linux/timer.h>
 #include <linux/ioctl.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "rsxx.h"
 #include "rsxx_cfg.h"
@@ -51,7 +55,11 @@ struct proc_cmd;
 #define RS70_PCI_REV_SUPPORTED	4
 
 #define DRIVER_NAME "rsxx"
+<<<<<<< HEAD
 #define DRIVER_VERSION "4.0"
+=======
+#define DRIVER_VERSION "4.0.3.2516"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Block size is 4096 */
 #define RSXX_HW_BLK_SHIFT		12
@@ -114,6 +122,10 @@ struct rsxx_dma_ctrl {
 	struct timer_list		activity_timer;
 	struct dma_tracker_list		*trackers;
 	struct rsxx_dma_stats		stats;
+<<<<<<< HEAD
+=======
+	struct mutex			work_lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct rsxx_cardinfo {
@@ -134,6 +146,10 @@ struct rsxx_cardinfo {
 		spinlock_t		lock;
 		bool			active;
 		struct creg_cmd		*active_cmd;
+<<<<<<< HEAD
+=======
+		struct workqueue_struct	*creg_wq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct work_struct	done_work;
 		struct list_head	queue;
 		unsigned int		q_depth;
@@ -154,6 +170,10 @@ struct rsxx_cardinfo {
 		int buf_len;
 	} log;
 
+<<<<<<< HEAD
+=======
+	struct workqueue_struct	*event_wq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct work_struct	event_work;
 	unsigned int		state;
 	u64			size8;
@@ -181,6 +201,11 @@ struct rsxx_cardinfo {
 
 	int			n_targets;
 	struct rsxx_dma_ctrl	*ctrl;
+<<<<<<< HEAD
+=======
+
+	struct dentry		*debugfs_dir;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum rsxx_pci_regmap {
@@ -283,6 +308,10 @@ enum rsxx_creg_addr {
 	CREG_ADD_CAPABILITIES		= 0x80001050,
 	CREG_ADD_LOG			= 0x80002000,
 	CREG_ADD_NUM_TARGETS		= 0x80003000,
+<<<<<<< HEAD
+=======
+	CREG_ADD_CRAM			= 0xA0000000,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CREG_ADD_CONFIG			= 0xB0000000,
 };
 
@@ -338,6 +367,14 @@ enum rsxx_creg_stat {
 	CREG_STAT_TAG_MASK	= 0x0000ff00,
 };
 
+<<<<<<< HEAD
+=======
+enum rsxx_dma_finish {
+	FREE_DMA	= 0x0,
+	COMPLETE_DMA	= 0x1,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned int CREG_DATA(int N)
 {
 	return CREG_DATA0 + (N << 2);
@@ -372,6 +409,13 @@ typedef void (*rsxx_dma_cb)(struct rsxx_cardinfo *card,
 int rsxx_dma_setup(struct rsxx_cardinfo *card);
 void rsxx_dma_destroy(struct rsxx_cardinfo *card);
 int rsxx_dma_init(void);
+<<<<<<< HEAD
+=======
+int rsxx_cleanup_dma_queue(struct rsxx_dma_ctrl *ctrl,
+				struct list_head *q,
+				unsigned int done);
+int rsxx_dma_cancel(struct rsxx_dma_ctrl *ctrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void rsxx_dma_cleanup(void);
 void rsxx_dma_queue_reset(struct rsxx_cardinfo *card);
 int rsxx_dma_configure(struct rsxx_cardinfo *card);
@@ -382,7 +426,10 @@ int rsxx_dma_queue_bio(struct rsxx_cardinfo *card,
 			   void *cb_data);
 int rsxx_hw_buffers_init(struct pci_dev *dev, struct rsxx_dma_ctrl *ctrl);
 int rsxx_eeh_save_issued_dmas(struct rsxx_cardinfo *card);
+<<<<<<< HEAD
 void rsxx_eeh_cancel_dmas(struct rsxx_cardinfo *card);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rsxx_eeh_remap_dmas(struct rsxx_cardinfo *card);
 
 /***** cregs.c *****/

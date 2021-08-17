@@ -10,6 +10,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -17,6 +18,10 @@
  */
 
 #include <linux/init.h>
+=======
+ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
 #include <linux/interrupt.h>
@@ -29,6 +34,11 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_bitbang.h>
 
+<<<<<<< HEAD
+=======
+#define SPI_BITBANG_CS_DELAY	100
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*----------------------------------------------------------------------*/
 
@@ -40,7 +50,11 @@
  * to glue code.  These bitbang setup() and cleanup() routines are always
  * used, though maybe they're called from controller-aware code.
  *
+<<<<<<< HEAD
  * chipselect() and friends may use use spi_device->controller_data and
+=======
+ * chipselect() and friends may use spi_device->controller_data and
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * controller registers as appropriate.
  *
  *
@@ -185,13 +199,20 @@ int spi_bitbang_setup(struct spi_device *spi)
 {
 	struct spi_bitbang_cs	*cs = spi->controller_state;
 	struct spi_bitbang	*bitbang;
+<<<<<<< HEAD
 	int			retval;
 	unsigned long		flags;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bitbang = spi_master_get_devdata(spi->master);
 
 	if (!cs) {
+<<<<<<< HEAD
 		cs = kzalloc(sizeof *cs, GFP_KERNEL);
+=======
+		cs = kzalloc(sizeof(*cs), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!cs)
 			return -ENOMEM;
 		spi->controller_state = cs;
@@ -202,9 +223,17 @@ int spi_bitbang_setup(struct spi_device *spi)
 	if (!cs->txrx_word)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	retval = bitbang->setup_transfer(spi, NULL);
 	if (retval < 0)
 		return retval;
+=======
+	if (bitbang->setup_transfer) {
+		int retval = bitbang->setup_transfer(spi, NULL);
+		if (retval < 0)
+			return retval;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&spi->dev, "%s, %u nsec/bit\n", __func__, 2 * cs->nsecs);
 
@@ -214,12 +243,20 @@ int spi_bitbang_setup(struct spi_device *spi)
 	 */
 
 	/* deselect chip (low or high) */
+<<<<<<< HEAD
 	spin_lock_irqsave(&bitbang->lock, flags);
+=======
+	mutex_lock(&bitbang->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!bitbang->busy) {
 		bitbang->chipselect(spi, BITBANG_CS_INACTIVE);
 		ndelay(cs->nsecs);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&bitbang->lock, flags);
+=======
+	mutex_unlock(&bitbang->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -255,6 +292,7 @@ static int spi_bitbang_bufs(struct spi_device *spi, struct spi_transfer *t)
  * Drivers can provide word-at-a-time i/o primitives, or provide
  * transfer-at-a-time ones to leverage dma or fifo hardware.
  */
+<<<<<<< HEAD
 static void bitbang_work(struct work_struct *work)
 {
 	struct spi_bitbang	*bitbang =
@@ -399,6 +437,77 @@ int spi_bitbang_transfer(struct spi_device *spi, struct spi_message *m)
 	return status;
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_transfer);
+=======
+
+static int spi_bitbang_prepare_hardware(struct spi_master *spi)
+{
+	struct spi_bitbang	*bitbang;
+
+	bitbang = spi_master_get_devdata(spi);
+
+	mutex_lock(&bitbang->lock);
+	bitbang->busy = 1;
+	mutex_unlock(&bitbang->lock);
+
+	return 0;
+}
+
+static int spi_bitbang_transfer_one(struct spi_master *master,
+				    struct spi_device *spi,
+				    struct spi_transfer *transfer)
+{
+	struct spi_bitbang *bitbang = spi_master_get_devdata(master);
+	int status = 0;
+
+	if (bitbang->setup_transfer) {
+		status = bitbang->setup_transfer(spi, transfer);
+		if (status < 0)
+			goto out;
+	}
+
+	if (transfer->len)
+		status = bitbang->txrx_bufs(spi, transfer);
+
+	if (status == transfer->len)
+		status = 0;
+	else if (status >= 0)
+		status = -EREMOTEIO;
+
+out:
+	spi_finalize_current_transfer(master);
+
+	return status;
+}
+
+static int spi_bitbang_unprepare_hardware(struct spi_master *spi)
+{
+	struct spi_bitbang	*bitbang;
+
+	bitbang = spi_master_get_devdata(spi);
+
+	mutex_lock(&bitbang->lock);
+	bitbang->busy = 0;
+	mutex_unlock(&bitbang->lock);
+
+	return 0;
+}
+
+static void spi_bitbang_set_cs(struct spi_device *spi, bool enable)
+{
+	struct spi_bitbang *bitbang = spi_master_get_devdata(spi->master);
+
+	/* SPI core provides CS high / low, but bitbang driver
+	 * expects CS active
+	 * spi device driver takes care of handling SPI_CS_HIGH
+	 */
+	enable = (!!(spi->mode & SPI_CS_HIGH) == enable);
+
+	ndelay(SPI_BITBANG_CS_DELAY);
+	bitbang->chipselect(spi, enable ? BITBANG_CS_ACTIVE :
+			    BITBANG_CS_INACTIVE);
+	ndelay(SPI_BITBANG_CS_DELAY);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*----------------------------------------------------------------------*/
 
@@ -424,24 +533,51 @@ EXPORT_SYMBOL_GPL(spi_bitbang_transfer);
  * This routine registers the spi_master, which will process requests in a
  * dedicated task, keeping IRQs unblocked most of the time.  To stop
  * processing those requests, call spi_bitbang_stop().
+<<<<<<< HEAD
+=======
+ *
+ * On success, this routine will take a reference to master. The caller is
+ * responsible for calling spi_bitbang_stop() to decrement the reference and
+ * spi_master_put() as counterpart of spi_alloc_master() to prevent a memory
+ * leak.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 int spi_bitbang_start(struct spi_bitbang *bitbang)
 {
 	struct spi_master *master = bitbang->master;
+<<<<<<< HEAD
 	int status;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!master || !bitbang->chipselect)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	INIT_WORK(&bitbang->work, bitbang_work);
 	spin_lock_init(&bitbang->lock);
 	INIT_LIST_HEAD(&bitbang->queue);
+=======
+	mutex_init(&bitbang->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!master->mode_bits)
 		master->mode_bits = SPI_CPOL | SPI_CPHA | bitbang->flags;
 
+<<<<<<< HEAD
 	if (!master->transfer)
 		master->transfer = spi_bitbang_transfer;
+=======
+	if (master->transfer || master->transfer_one_message)
+		return -EINVAL;
+
+	master->prepare_transfer_hardware = spi_bitbang_prepare_hardware;
+	master->unprepare_transfer_hardware = spi_bitbang_unprepare_hardware;
+	master->transfer_one = spi_bitbang_transfer_one;
+	master->set_cs = spi_bitbang_set_cs;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!bitbang->txrx_bufs) {
 		bitbang->use_dma = 0;
 		bitbang->txrx_bufs = spi_bitbang_bufs;
@@ -452,6 +588,7 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 			master->setup = spi_bitbang_setup;
 			master->cleanup = spi_bitbang_cleanup;
 		}
+<<<<<<< HEAD
 	} else if (!master->setup)
 		return -EINVAL;
 	if (master->transfer == spi_bitbang_transfer &&
@@ -465,11 +602,14 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 	if (bitbang->workqueue == NULL) {
 		status = -EBUSY;
 		goto err1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* driver may get busy before register() returns, especially
 	 * if someone registered boardinfo for devices
 	 */
+<<<<<<< HEAD
 	status = spi_register_master(master);
 	if (status < 0)
 		goto err2;
@@ -480,12 +620,20 @@ err2:
 	destroy_workqueue(bitbang->workqueue);
 err1:
 	return status;
+=======
+	ret = spi_register_master(spi_master_get(master));
+	if (ret)
+		spi_master_put(master);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_start);
 
 /**
  * spi_bitbang_stop - stops the task providing spi communication
  */
+<<<<<<< HEAD
 int spi_bitbang_stop(struct spi_bitbang *bitbang)
 {
 	spi_unregister_master(bitbang->master);
@@ -495,6 +643,11 @@ int spi_bitbang_stop(struct spi_bitbang *bitbang)
 	destroy_workqueue(bitbang->workqueue);
 
 	return 0;
+=======
+void spi_bitbang_stop(struct spi_bitbang *bitbang)
+{
+	spi_unregister_master(bitbang->master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_stop);
 

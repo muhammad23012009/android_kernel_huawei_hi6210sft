@@ -892,7 +892,10 @@ static void pti_pci_remove(struct pci_dev *pdev)
 	}
 
 	iounmap(drv_data->pti_ioaddr);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(drv_data);
 	pci_release_region(pdev, 1);
 	pci_disable_device(pdev);

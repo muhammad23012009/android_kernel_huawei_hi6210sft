@@ -5,6 +5,10 @@
 #include <linux/relay.h>
 #include <linux/compat.h>
 #include <uapi/linux/blktrace_api.h>
+<<<<<<< HEAD
+=======
+#include <linux/list.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_BLK_DEV_IO_TRACE)
 
@@ -23,6 +27,10 @@ struct blk_trace {
 	struct dentry *dir;
 	struct dentry *dropped_file;
 	struct dentry *msg_file;
+<<<<<<< HEAD
+=======
+	struct list_head running_list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_t dropped;
 };
 
@@ -49,12 +57,37 @@ void __trace_note_message(struct blk_trace *, const char *fmt, ...);
  **/
 #define blk_add_trace_msg(q, fmt, ...)					\
 	do {								\
+<<<<<<< HEAD
 		struct blk_trace *bt = (q)->blk_trace;			\
 		if (unlikely(bt))					\
 			__trace_note_message(bt, fmt, ##__VA_ARGS__);	\
 	} while (0)
 #define BLK_TN_MAX_MSG		128
 
+=======
+		struct blk_trace *bt;					\
+									\
+		rcu_read_lock();					\
+		bt = rcu_dereference((q)->blk_trace);			\
+		if (unlikely(bt))					\
+			__trace_note_message(bt, fmt, ##__VA_ARGS__);	\
+		rcu_read_unlock();					\
+	} while (0)
+#define BLK_TN_MAX_MSG		128
+
+static inline bool blk_trace_note_message_enabled(struct request_queue *q)
+{
+	struct blk_trace *bt;
+	bool ret;
+
+	rcu_read_lock();
+	bt = rcu_dereference(q->blk_trace);
+	ret = bt && (bt->act_mask & BLK_TC_NOTIFY);
+	rcu_read_unlock();
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void blk_add_driver_data(struct request_queue *q, struct request *rq,
 				void *data, size_t len);
 extern int blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
@@ -77,6 +110,10 @@ extern struct attribute_group blk_trace_attr_group;
 # define blk_trace_remove(q)				(-ENOTTY)
 # define blk_add_trace_msg(q, fmt, ...)			do { } while (0)
 # define blk_trace_remove_sysfs(dev)			do { } while (0)
+<<<<<<< HEAD
+=======
+# define blk_trace_note_message_enabled(q)		(false)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int blk_trace_init_sysfs(struct device *dev)
 {
 	return 0;
@@ -87,7 +124,11 @@ static inline int blk_trace_init_sysfs(struct device *dev)
 #ifdef CONFIG_COMPAT
 
 struct compat_blk_user_trace_setup {
+<<<<<<< HEAD
 	char name[32];
+=======
+	char name[BLKTRACE_BDEV_SIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 act_mask;
 	u32 buf_size;
 	u32 buf_nr;
@@ -107,7 +148,11 @@ static inline int blk_cmd_buf_len(struct request *rq)
 }
 
 extern void blk_dump_cmd(char *buf, struct request *rq);
+<<<<<<< HEAD
 extern void blk_fill_rwbs(char *rwbs, u32 rw, int bytes);
+=======
+extern void blk_fill_rwbs(char *rwbs, int op, u32 rw, int bytes);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* CONFIG_EVENT_TRACING && CONFIG_BLOCK */
 

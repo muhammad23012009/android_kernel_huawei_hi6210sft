@@ -12,7 +12,11 @@
 #define imx_mx2_emmaprp_data_entry_single(soc)				\
 	{								\
 		.iobase = soc ## _EMMAPRP_BASE_ADDR,			\
+<<<<<<< HEAD
 		.iosize = SZ_32,					\
+=======
+		.iosize = SZ_256,					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.irq = soc ## _INT_EMMAPRP,				\
 	}
 

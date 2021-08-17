@@ -30,7 +30,11 @@
 #include <linux/mutex.h>
 
 /* Addresses to scan */
+<<<<<<< HEAD
 static unsigned short max1668_addr_list[] = {
+=======
+static const unsigned short max1668_addr_list[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x18, 0x19, 0x1a, 0x29, 0x2a, 0x2b, 0x4c, 0x4d, 0x4e, I2C_CLIENT_END };
 
 /* max1668 registers */
@@ -66,7 +70,12 @@ MODULE_PARM_DESC(read_only, "Don't set any values, read only mode");
 enum chips { max1668, max1805, max1989 };
 
 struct max1668_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+	const struct attribute_group *groups[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum chips type;
 
 	struct mutex update_lock;
@@ -82,8 +91,13 @@ struct max1668_data {
 
 static struct max1668_data *max1668_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max1668_data *data = i2c_get_clientdata(client);
+=======
+	struct max1668_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct max1668_data *ret = data;
 	s32 val;
 	int i;
@@ -205,8 +219,13 @@ static ssize_t set_temp_max(struct device *dev,
 			    const char *buf, size_t count)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max1668_data *data = i2c_get_clientdata(client);
+=======
+	struct max1668_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long temp;
 	int ret;
 
@@ -216,10 +235,18 @@ static ssize_t set_temp_max(struct device *dev,
 
 	mutex_lock(&data->update_lock);
 	data->temp_max[index] = clamp_val(temp/1000, -128, 127);
+<<<<<<< HEAD
 	if (i2c_smbus_write_byte_data(client,
 					MAX1668_REG_LIMH_WR(index),
 					data->temp_max[index]))
 		count = -EIO;
+=======
+	ret = i2c_smbus_write_byte_data(client,
+					MAX1668_REG_LIMH_WR(index),
+					data->temp_max[index]);
+	if (ret < 0)
+		count = ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&data->update_lock);
 
 	return count;
@@ -230,8 +257,13 @@ static ssize_t set_temp_min(struct device *dev,
 			    const char *buf, size_t count)
 {
 	int index = to_sensor_dev_attr(devattr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max1668_data *data = i2c_get_clientdata(client);
+=======
+	struct max1668_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long temp;
 	int ret;
 
@@ -241,10 +273,18 @@ static ssize_t set_temp_min(struct device *dev,
 
 	mutex_lock(&data->update_lock);
 	data->temp_min[index] = clamp_val(temp/1000, -128, 127);
+<<<<<<< HEAD
 	if (i2c_smbus_write_byte_data(client,
 					MAX1668_REG_LIML_WR(index),
 					data->temp_min[index]))
 		count = -EIO;
+=======
+	ret = i2c_smbus_write_byte_data(client,
+					MAX1668_REG_LIML_WR(index),
+					data->temp_min[index]);
+	if (ret < 0)
+		count = ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&data->update_lock);
 
 	return count;
@@ -405,12 +445,19 @@ static int max1668_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = client->adapter;
+<<<<<<< HEAD
 	struct max1668_data *data;
 	int err;
+=======
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct max1668_data *data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	data = devm_kzalloc(&client->dev, sizeof(struct max1668_data),
 			    GFP_KERNEL);
 	if (!data)
@@ -459,6 +506,24 @@ static int max1668_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &max1668_group_common);
 
 	return 0;
+=======
+	data = devm_kzalloc(dev, sizeof(struct max1668_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+	data->type = id->driver_data;
+	mutex_init(&data->update_lock);
+
+	/* sysfs hooks */
+	data->groups[0] = &max1668_group_common;
+	if (data->type == max1668 || data->type == max1989)
+		data->groups[1] = &max1668_group_unique;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, data->groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id max1668_id[] = {
@@ -476,7 +541,10 @@ static struct i2c_driver max1668_driver = {
 		  .name	= "max1668",
 		  },
 	.probe = max1668_probe,
+<<<<<<< HEAD
 	.remove	= max1668_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = max1668_id,
 	.detect	= max1668_detect,
 	.address_list = max1668_addr_list,

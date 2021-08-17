@@ -37,7 +37,11 @@ struct videobuf_queue;
  *
  * about the mmap helpers (videobuf_mmap_*):
  *
+<<<<<<< HEAD
  * The mmaper function allows to map any subset of contingous buffers.
+=======
+ * The mmaper function allows to map any subset of contiguous buffers.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This includes one mmap() call for all buffers (which the original
  * video4linux API uses) as well as one mmap() for every single buffer
  * (which v4l2 uses).

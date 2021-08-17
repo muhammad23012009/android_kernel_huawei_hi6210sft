@@ -2368,7 +2368,11 @@ static int gigaset_probe(struct usb_interface *interface,
 	endpoint = &hostif->endpoint[0].desc;
 	usb_fill_int_urb(ucs->urb_int_in, udev,
 			 usb_rcvintpipe(udev,
+<<<<<<< HEAD
 					(endpoint->bEndpointAddress) & 0x0f),
+=======
+					usb_endpoint_num(endpoint)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 ucs->int_in_buf, IP_MSGSIZE, read_int_callback, cs,
 			 endpoint->bInterval);
 	rc = usb_submit_urb(ucs->urb_int_in, GFP_KERNEL);
@@ -2403,6 +2407,10 @@ allocerr:
 error:
 	freeurbs(cs);
 	usb_set_intfdata(interface, NULL);
+<<<<<<< HEAD
+=======
+	usb_put_dev(udev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gigaset_freecs(cs);
 	return rc;
 }

@@ -26,7 +26,11 @@ unsigned int arch_mod_section_prepend(struct module *mod, unsigned int section);
 void *module_alloc(unsigned long size);
 
 /* Free memory returned from module_alloc. */
+<<<<<<< HEAD
 void module_free(struct module *mod, void *module_region);
+=======
+void module_memfree(void *module_region);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Apply the given relocation to the (simplified) ELF.  Return -error
@@ -45,7 +49,12 @@ static inline int apply_relocate(Elf_Shdr *sechdrs,
 				 unsigned int relsec,
 				 struct module *me)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR "module %s: REL relocation unsupported\n", me->name);
+=======
+	printk(KERN_ERR "module %s: REL relocation unsupported\n",
+	       module_name(me));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENOEXEC;
 }
 #endif
@@ -67,7 +76,12 @@ static inline int apply_relocate_add(Elf_Shdr *sechdrs,
 				     unsigned int relsec,
 				     struct module *me)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR "module %s: REL relocation unsupported\n", me->name);
+=======
+	printk(KERN_ERR "module %s: REL relocation unsupported\n",
+	       module_name(me));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENOEXEC;
 }
 #endif
@@ -80,4 +94,17 @@ int module_finalize(const Elf_Ehdr *hdr,
 /* Any cleanup needed when module leaves. */
 void module_arch_cleanup(struct module *mod);
 
+<<<<<<< HEAD
+=======
+/* Any cleanup before freeing mod->module_init */
+void module_arch_freeing_init(struct module *mod);
+
+#ifdef CONFIG_KASAN
+#include <linux/kasan.h>
+#define MODULE_ALIGN (PAGE_SIZE << KASAN_SHADOW_SCALE_SHIFT)
+#else
+#define MODULE_ALIGN PAGE_SIZE
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -74,7 +74,11 @@ static SENSOR_DEVICE_ATTR(in11_input, S_IRUGO, madc_read, NULL, 11);
 static SENSOR_DEVICE_ATTR(in12_input, S_IRUGO, madc_read, NULL, 12);
 static SENSOR_DEVICE_ATTR(in15_input, S_IRUGO, madc_read, NULL, 15);
 
+<<<<<<< HEAD
 static struct attribute *twl4030_madc_attributes[] = {
+=======
+static struct attribute *twl4030_madc_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
@@ -91,6 +95,7 @@ static struct attribute *twl4030_madc_attributes[] = {
 	&sensor_dev_attr_in15_input.dev_attr.attr,
 	NULL
 };
+<<<<<<< HEAD
 
 static const struct attribute_group twl4030_madc_group = {
 	.attrs = twl4030_madc_attributes,
@@ -126,14 +131,31 @@ static int twl4030_madc_hwmon_remove(struct platform_device *pdev)
 	sysfs_remove_group(&pdev->dev.kobj, &twl4030_madc_group);
 
 	return 0;
+=======
+ATTRIBUTE_GROUPS(twl4030_madc);
+
+static int twl4030_madc_hwmon_probe(struct platform_device *pdev)
+{
+	struct device *hwmon;
+
+	hwmon = devm_hwmon_device_register_with_groups(&pdev->dev,
+						       "twl4030_madc", NULL,
+						       twl4030_madc_groups);
+	return PTR_ERR_OR_ZERO(hwmon);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver twl4030_madc_hwmon_driver = {
 	.probe = twl4030_madc_hwmon_probe,
+<<<<<<< HEAD
 	.remove = twl4030_madc_hwmon_remove,
 	.driver = {
 		   .name = "twl4030_madc_hwmon",
 		   .owner = THIS_MODULE,
+=======
+	.driver = {
+		   .name = "twl4030_madc_hwmon",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   },
 };
 

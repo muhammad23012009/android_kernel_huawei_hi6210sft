@@ -12,6 +12,11 @@
 #include <linux/notifier.h>
 #include <linux/err.h>
 
+<<<<<<< HEAD
+=======
+#include <dt-bindings/mfd/dbx500-prcmu.h> /* For clock identifiers */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Offset for the firmware version within the TCPM */
 #define DB8500_PRCMU_FW_VERSION_OFFSET 0xA4
 #define DBX540_PRCMU_FW_VERSION_OFFSET 0xA8
@@ -94,6 +99,7 @@ enum prcmu_wakeup_index {
 #define PRCMU_CLKSRC_ARMCLKFIX		0x46
 #define PRCMU_CLKSRC_HDMICLK		0x47
 
+<<<<<<< HEAD
 /*
  * Clock identifiers.
  */
@@ -150,6 +156,8 @@ enum prcmu_clock {
 	PRCMU_DSI2ESCCLK,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * enum prcmu_wdog_id - PRCMU watchdog IDs
  * @PRCMU_WDOG_ALL: use all timers
@@ -232,6 +240,7 @@ enum ddr_pwrst {
 
 #define DB8500_PRCMU_LEGACY_OFFSET		0xDD4
 
+<<<<<<< HEAD
 struct prcmu_pdata
 {
 	bool enable_set_ddr_opp;
@@ -244,6 +253,8 @@ struct prcmu_pdata
 	u32 adt_offset;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PRCMU_FW_PROJECT_U8500		2
 #define PRCMU_FW_PROJECT_U8400		3
 #define PRCMU_FW_PROJECT_U9500		4 /* Customer specific */
@@ -335,10 +346,13 @@ unsigned long prcmu_clock_rate(u8 clock);
 long prcmu_round_clock_rate(u8 clock, unsigned long rate);
 int prcmu_set_clock_rate(u8 clock, unsigned long rate);
 
+<<<<<<< HEAD
 static inline int prcmu_set_ddr_opp(u8 opp)
 {
 	return db8500_prcmu_set_ddr_opp(opp);
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int prcmu_get_ddr_opp(void)
 {
 	return db8500_prcmu_get_ddr_opp();
@@ -555,11 +569,14 @@ static inline int prcmu_get_arm_opp(void)
 	return ARM_100_OPP;
 }
 
+<<<<<<< HEAD
 static inline int prcmu_set_ddr_opp(u8 opp)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int prcmu_get_ddr_opp(void)
 {
 	return DDR_100_OPP;

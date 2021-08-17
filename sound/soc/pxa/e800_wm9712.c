@@ -71,6 +71,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"MIC2", NULL, "Mic (Internal2)"},
 };
 
+<<<<<<< HEAD
 static int e800_ac97_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
@@ -84,6 +85,8 @@ static int e800_ac97_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_dai_link e800_dai[] = {
 	{
 		.name = "AC97",
@@ -92,7 +95,10 @@ static struct snd_soc_dai_link e800_dai[] = {
 		.codec_dai_name = "wm9712-hifi",
 		.platform_name = "pxa-pcm-audio",
 		.codec_name = "wm9712-codec",
+<<<<<<< HEAD
 		.init = e800_ac97_init,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.name = "AC97 Aux",
@@ -109,6 +115,14 @@ static struct snd_soc_card e800 = {
 	.owner = THIS_MODULE,
 	.dai_link = e800_dai,
 	.num_links = ARRAY_SIZE(e800_dai),
+<<<<<<< HEAD
+=======
+
+	.dapm_widgets = e800_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(e800_dapm_widgets),
+	.dapm_routes = audio_map,
+	.num_dapm_routes = ARRAY_SIZE(audio_map),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct gpio e800_audio_gpios[] = {
@@ -128,7 +142,11 @@ static int e800_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 			ret);
@@ -139,17 +157,25 @@ static int e800_probe(struct platform_device *pdev)
 
 static int e800_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 
 	gpio_free_array(e800_audio_gpios, ARRAY_SIZE(e800_audio_gpios));
 	snd_soc_unregister_card(card);
+=======
+	gpio_free_array(e800_audio_gpios, ARRAY_SIZE(e800_audio_gpios));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver e800_driver = {
 	.driver		= {
 		.name	= "e800-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.pm     = &snd_soc_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= e800_probe,
 	.remove		= e800_remove,

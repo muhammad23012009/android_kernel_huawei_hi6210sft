@@ -73,6 +73,16 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started."
 /*
  * Some TCO specific functions
  */
+<<<<<<< HEAD
+=======
+
+static bool tco_has_sp5100_reg_layout(struct pci_dev *dev)
+{
+	return dev->device == PCI_DEVICE_ID_ATI_SBX00_SMBUS &&
+	       dev->revision < 0x40;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void tco_timer_start(void)
 {
 	u32 val;
@@ -129,7 +139,11 @@ static void tco_timer_enable(void)
 {
 	int val;
 
+<<<<<<< HEAD
 	if (sp5100_tco_pci->revision >= 0x40) {
+=======
+	if (!tco_has_sp5100_reg_layout(sp5100_tco_pci)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* For SB800 or later */
 		/* Set the Watchdog timer resolution to 1 sec */
 		outb(SB800_PM_WATCHDOG_CONFIG, SB800_IO_PM_INDEX_REG);
@@ -303,9 +317,19 @@ static struct miscdevice sp5100_tco_miscdev = {
  * register a pci_driver, because someone else might
  * want to register another driver on the same PCI id.
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(sp5100_tco_pci_tbl) = {
 	{ PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SBX00_SMBUS, PCI_ANY_ID,
 	  PCI_ANY_ID, },
+=======
+static const struct pci_device_id sp5100_tco_pci_tbl[] = {
+	{ PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SBX00_SMBUS, PCI_ANY_ID,
+	  PCI_ANY_ID, },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_HUDSON2_SMBUS, PCI_ANY_ID,
+	  PCI_ANY_ID, },
+	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_KERNCZ_SMBUS, PCI_ANY_ID,
+	  PCI_ANY_ID, },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0, },			/* End of list */
 };
 MODULE_DEVICE_TABLE(pci, sp5100_tco_pci_tbl);
@@ -331,21 +355,39 @@ static unsigned char sp5100_tco_setupdevice(void)
 	if (!sp5100_tco_pci)
 		return 0;
 
+<<<<<<< HEAD
 	pr_info("PCI Revision ID: 0x%x\n", sp5100_tco_pci->revision);
+=======
+	pr_info("PCI Vendor ID: 0x%x, Device ID: 0x%x, Revision ID: 0x%x\n",
+		sp5100_tco_pci->vendor, sp5100_tco_pci->device,
+		sp5100_tco_pci->revision);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Determine type of southbridge chipset.
 	 */
+<<<<<<< HEAD
 	if (sp5100_tco_pci->revision >= 0x40) {
 		dev_name = SB800_DEVNAME;
 		index_reg = SB800_IO_PM_INDEX_REG;
 		data_reg = SB800_IO_PM_DATA_REG;
 		base_addr = SB800_PM_WATCHDOG_BASE;
 	} else {
+=======
+	if (tco_has_sp5100_reg_layout(sp5100_tco_pci)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_name = SP5100_DEVNAME;
 		index_reg = SP5100_IO_PM_INDEX_REG;
 		data_reg = SP5100_IO_PM_DATA_REG;
 		base_addr = SP5100_PM_WATCHDOG_BASE;
+<<<<<<< HEAD
+=======
+	} else {
+		dev_name = SB800_DEVNAME;
+		index_reg = SB800_IO_PM_INDEX_REG;
+		data_reg = SB800_IO_PM_DATA_REG;
+		base_addr = SB800_PM_WATCHDOG_BASE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Request the IO ports used by this driver */
@@ -381,7 +423,15 @@ static unsigned char sp5100_tco_setupdevice(void)
 	 * Secondly, Find the watchdog timer MMIO address
 	 * from SBResource_MMIO register.
 	 */
+<<<<<<< HEAD
 	if (sp5100_tco_pci->revision >= 0x40) {
+=======
+	if (tco_has_sp5100_reg_layout(sp5100_tco_pci)) {
+		/* Read SBResource_MMIO from PCI config(PCI_Reg: 9Ch) */
+		pci_read_config_dword(sp5100_tco_pci,
+				      SP5100_SB_RESOURCE_MMIO_BASE, &val);
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Read SBResource_MMIO from AcpiMmioEn(PM_Reg: 24h) */
 		outb(SB800_PM_ACPI_MMIO_EN+3, SB800_IO_PM_INDEX_REG);
 		val = inb(SB800_IO_PM_DATA_REG);
@@ -391,10 +441,13 @@ static unsigned char sp5100_tco_setupdevice(void)
 		val = val << 8 | inb(SB800_IO_PM_DATA_REG);
 		outb(SB800_PM_ACPI_MMIO_EN+0, SB800_IO_PM_INDEX_REG);
 		val = val << 8 | inb(SB800_IO_PM_DATA_REG);
+<<<<<<< HEAD
 	} else {
 		/* Read SBResource_MMIO from PCI config(PCI_Reg: 9Ch) */
 		pci_read_config_dword(sp5100_tco_pci,
 				      SP5100_SB_RESOURCE_MMIO_BASE, &val);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* The SBResource_MMIO is enabled and mapped memory space? */
@@ -538,7 +591,10 @@ static struct platform_driver sp5100_tco_driver = {
 	.remove		= sp5100_tco_remove,
 	.shutdown	= sp5100_tco_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= TCO_MODULE_NAME,
 	},
 };
@@ -580,4 +636,7 @@ module_exit(sp5100_tco_cleanup_module);
 MODULE_AUTHOR("Priyanka Gupta");
 MODULE_DESCRIPTION("TCO timer driver for SP5100/SB800 chipset");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

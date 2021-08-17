@@ -11,10 +11,17 @@
 #include <linux/kprobes.h>
 #include <linux/kdebug.h>
 #include <linux/prefetch.h>
+<<<<<<< HEAD
 
 #include <asm/pgtable.h>
 #include <asm/processor.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+
+#include <asm/pgtable.h>
+#include <asm/processor.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int die(char *, struct pt_regs *, long);
 
@@ -96,7 +103,11 @@ ia64_do_page_fault (unsigned long address, unsigned long isr, struct pt_regs *re
 	/*
 	 * If we're in an interrupt or have no user context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto no_context;
 
 #ifdef CONFIG_VIRTUAL_MEM_MAP
@@ -159,7 +170,11 @@ retry:
 	 * sure we exit gracefully rather than endlessly redo the
 	 * fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -172,6 +187,11 @@ retry:
 		 */
 		if (fault & VM_FAULT_OOM) {
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		} else if (fault & VM_FAULT_SIGSEGV) {
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else if (fault & VM_FAULT_SIGBUS) {
 			signal = SIGBUS;
 			goto bad_area;

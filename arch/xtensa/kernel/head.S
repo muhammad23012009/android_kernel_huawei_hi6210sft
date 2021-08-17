@@ -19,6 +19,10 @@
 #include <asm/page.h>
 #include <asm/cacheasm.h>
 #include <asm/initialize_mmu.h>
+<<<<<<< HEAD
+=======
+#include <asm/mxregs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/init.h>
 #include <linux/linkage.h>
@@ -54,7 +58,11 @@ ENTRY(_start)
 
 	/* Preserve the pointer to the boot parameter list in EXCSAVE_1 */
 	wsr     a2, excsave1
+<<<<<<< HEAD
 	_j	_SetupMMU
+=======
+	_j	_SetupOCD
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.align	4
 	.literal_position
@@ -62,6 +70,26 @@ ENTRY(_start)
 	.word	_startup
 
 	.align	4
+<<<<<<< HEAD
+=======
+_SetupOCD:
+	/*
+	 * Initialize WB, WS, and clear PS.EXCM (to allow loop instructions).
+	 * Set Interrupt Level just below XCHAL_DEBUGLEVEL to allow
+	 * xt-gdb to single step via DEBUG exceptions received directly
+	 * by ocd.
+	 */
+	movi	a1, 1
+	movi	a0, 0
+	wsr	a1, windowstart
+	wsr	a0, windowbase
+	rsync
+
+	movi	a1, LOCKLEVEL
+	wsr	a1, ps
+	rsync
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.global _SetupMMU
 _SetupMMU:
 	Offset = _SetupMMU - _start
@@ -70,9 +98,18 @@ _SetupMMU:
 	initialize_mmu
 #if defined(CONFIG_MMU) && XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY
 	rsr	a2, excsave1
+<<<<<<< HEAD
 	movi	a3, 0x08000000
 	bgeu	a2, a3, 1f
 	movi	a3, 0xd0000000
+=======
+	movi	a3, XCHAL_KSEG_PADDR
+	bltu	a2, a3, 1f
+	sub	a2, a2, a3
+	movi	a3, XCHAL_KSEG_SIZE
+	bgeu	a2, a3, 1f
+	movi	a3, XCHAL_KSEG_CACHED_VADDR
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	add	a2, a2, a3
 	wsr	a2, excsave1
 1:
@@ -85,11 +122,16 @@ _SetupMMU:
 
 ENDPROC(_start)
 
+<<<<<<< HEAD
 	__INIT
+=======
+	__REF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.literal_position
 
 ENTRY(_startup)
 
+<<<<<<< HEAD
 	/* Disable interrupts and exceptions. */
 
 	movi	a0, LOCKLEVEL
@@ -103,10 +145,20 @@ ENTRY(_startup)
 	wsr	a0, windowbase
 	rsync
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set a0 to 0 for the remaining initialization. */
 
 	movi	a0, 0
 
+<<<<<<< HEAD
+=======
+#if XCHAL_HAVE_VECBASE
+	movi    a2, VECBASE_VADDR
+	wsr	a2, vecbase
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Clear debugging registers. */
 
 #if XCHAL_HAVE_DEBUG
@@ -154,6 +206,7 @@ ENTRY(_startup)
 	wsr	a0, cpenable
 #endif
 
+<<<<<<< HEAD
 	/* Set PS.INTLEVEL=LOCKLEVEL, PS.WOE=0, kernel stack, PS.EXCM=0
 	 *
 	 * Note: PS.EXCM must be cleared before using any loop
@@ -165,6 +218,8 @@ ENTRY(_startup)
 	wsr	a1, ps
 	rsync
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*  Initialize the caches.
 	 *  a2, a3 are just working registers (clobbered).
 	 */
@@ -182,6 +237,35 @@ ENTRY(_startup)
 
 	isync
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HAVE_SMP
+	movi	a2, CCON	# MX External Register to Configure Cache
+	movi	a3, 1
+	wer	a3, a2
+#endif
+
+	/* Setup stack and enable window exceptions (keep irqs disabled) */
+
+	movi	a1, start_info
+	l32i	a1, a1, 0
+
+	movi	a2, (1 << PS_WOE_BIT) | LOCKLEVEL
+					# WOE=1, INTLEVEL=LOCKLEVEL, UM=0
+	wsr	a2, ps			# (enable reg-windows; progmode stack)
+	rsync
+
+#ifdef CONFIG_SMP
+	/*
+	 * Notice that we assume with SMP that cores have PRID
+	 * supported by the cores.
+	 */
+	rsr	a2, prid
+	bnez	a2, .Lboot_secondary
+
+#endif  /* CONFIG_SMP */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Unpack data sections
 	 *
 	 * The linker script used to build the Linux kernel image
@@ -219,7 +303,11 @@ ENTRY(_startup)
 
 	__loopt	a2, a3, a4, 2
 	s32i	a0, a2, 0
+<<<<<<< HEAD
 	__endla	a2, a4, 4
+=======
+	__endla	a2, a3, 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if XCHAL_DCACHE_IS_WRITEBACK
 
@@ -234,6 +322,7 @@ ENTRY(_startup)
 	___invalidate_icache_all a2 a3
 	isync
 
+<<<<<<< HEAD
 	/* Setup stack and enable window exceptions (keep irqs disabled) */
 
 	movi	a1, init_thread_union
@@ -252,6 +341,9 @@ ENTRY(_startup)
 	/* Set up EXCSAVE[1] to point to the exc_table. */
 
 	movi	a6, exc_table
+=======
+	movi	a6, 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xsr	a6, excsave1
 
 	/* init_arch kick-starts the linux kernel */
@@ -265,8 +357,101 @@ ENTRY(_startup)
 should_never_return:
 	j	should_never_return
 
+<<<<<<< HEAD
 ENDPROC(_startup)
 
+=======
+#ifdef CONFIG_SMP
+.Lboot_secondary:
+
+	movi	a2, cpu_start_ccount
+1:
+	memw
+	l32i	a3, a2, 0
+	beqi	a3, 0, 1b
+	movi	a3, 0
+	s32i	a3, a2, 0
+1:
+	memw
+	l32i	a3, a2, 0
+	beqi	a3, 0, 1b
+	wsr	a3, ccount
+	movi	a3, 0
+	s32i	a3, a2, 0
+	memw
+
+	movi	a6, 0
+	wsr	a6, excsave1
+
+	movi	a4, secondary_start_kernel
+	callx4	a4
+	j	should_never_return
+
+#endif  /* CONFIG_SMP */
+
+ENDPROC(_startup)
+
+#ifdef CONFIG_HOTPLUG_CPU
+
+ENTRY(cpu_restart)
+
+#if XCHAL_DCACHE_IS_WRITEBACK
+	___flush_invalidate_dcache_all a2 a3
+#else
+	___invalidate_dcache_all a2 a3
+#endif
+	memw
+	movi	a2, CCON	# MX External Register to Configure Cache
+	movi	a3, 0
+	wer	a3, a2
+	extw
+
+	rsr	a0, prid
+	neg	a2, a0
+	movi	a3, cpu_start_id
+	memw
+	s32i	a2, a3, 0
+#if XCHAL_DCACHE_IS_WRITEBACK
+	dhwbi	a3, 0
+#endif
+1:
+	memw
+	l32i	a2, a3, 0
+	dhi	a3, 0
+	bne	a2, a0, 1b
+
+	/*
+	 * Initialize WB, WS, and clear PS.EXCM (to allow loop instructions).
+	 * Set Interrupt Level just below XCHAL_DEBUGLEVEL to allow
+	 * xt-gdb to single step via DEBUG exceptions received directly
+	 * by ocd.
+	 */
+	movi	a1, 1
+	movi	a0, 0
+	wsr	a1, windowstart
+	wsr	a0, windowbase
+	rsync
+
+	movi	a1, LOCKLEVEL
+	wsr	a1, ps
+	rsync
+
+	j	_startup
+
+ENDPROC(cpu_restart)
+
+#endif  /* CONFIG_HOTPLUG_CPU */
+
+/*
+ * DATA section
+ */
+
+        .section ".data.init.refok"
+        .align  4
+ENTRY(start_info)
+        .long   init_thread_union + KERNEL_STACK_SIZE
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * BSS section
  */

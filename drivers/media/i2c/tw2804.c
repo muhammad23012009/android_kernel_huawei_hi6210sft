@@ -23,7 +23,10 @@
 #include <linux/slab.h>
 #include <media/v4l2-subdev.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-ctrls.h>
 
 #define TW2804_REG_AUTOGAIN		0x02
@@ -343,12 +346,19 @@ static const struct v4l2_ctrl_ops tw2804_ctrl_ops = {
 };
 
 static const struct v4l2_subdev_video_ops tw2804_video_ops = {
+<<<<<<< HEAD
+=======
+	.s_std = tw2804_s_std,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.s_routing = tw2804_s_video_routing,
 };
 
 static const struct v4l2_subdev_core_ops tw2804_core_ops = {
 	.log_status = tw2804_log_status,
+<<<<<<< HEAD
 	.s_std = tw2804_s_std,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_subdev_ops tw2804_ops = {
@@ -368,8 +378,12 @@ static int tw2804_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	state = kzalloc(sizeof(struct tw2804), GFP_KERNEL);
 
+=======
+	state = devm_kzalloc(&client->dev, sizeof(*state), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (state == NULL)
 		return -ENOMEM;
 	sd = &state->sd;
@@ -410,7 +424,10 @@ static int tw2804_probe(struct i2c_client *client,
 	err = state->hdl.error;
 	if (err) {
 		v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 		kfree(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -427,7 +444,10 @@ static int tw2804_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 	kfree(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

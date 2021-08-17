@@ -23,6 +23,10 @@ endef
 # Allow setting CC and AR, or setting CROSS_COMPILE as a prefix.
 $(call allow-override,CC,$(CROSS_COMPILE)gcc)
 $(call allow-override,AR,$(CROSS_COMPILE)ar)
+<<<<<<< HEAD
+=======
+$(call allow-override,NM,$(CROSS_COMPILE)nm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 EXT = -std=gnu99
 INSTALL = install
@@ -34,6 +38,7 @@ INSTALL = install
 DESTDIR ?=
 DESTDIR_SQ = '$(subst ','\'',$(DESTDIR))'
 
+<<<<<<< HEAD
 prefix ?= /usr/local
 bindir_relative = bin
 bindir = $(prefix)/$(bindir_relative)
@@ -48,6 +53,49 @@ export man_dir man_dir_SQ html_install html_install_SQ INSTALL
 export img_install img_install_SQ
 export DESTDIR DESTDIR_SQ
 
+=======
+LP64 := $(shell echo __LP64__ | ${CC} ${CFLAGS} -E -x c - | tail -n 1)
+ifeq ($(LP64), 1)
+  libdir_relative = lib64
+else
+  libdir_relative = lib
+endif
+
+prefix ?= /usr/local
+libdir = $(prefix)/$(libdir_relative)
+man_dir = $(prefix)/share/man
+man_dir_SQ = '$(subst ','\'',$(man_dir))'
+
+export man_dir man_dir_SQ INSTALL
+export DESTDIR DESTDIR_SQ
+
+set_plugin_dir := 1
+
+# Set plugin_dir to preffered global plugin location
+# If we install under $HOME directory we go under
+# $(HOME)/.local/lib/traceevent/plugins
+#
+# We dont set PLUGIN_DIR in case we install under $HOME
+# directory, because by default the code looks under:
+# $(HOME)/.local/lib/traceevent/plugins by default.
+#
+ifeq ($(plugin_dir),)
+ifeq ($(prefix),$(HOME))
+override plugin_dir = $(HOME)/.local/lib/traceevent/plugins
+set_plugin_dir := 0
+else
+override plugin_dir = $(libdir)/traceevent/plugins
+endif
+endif
+
+ifeq ($(set_plugin_dir),1)
+PLUGIN_DIR = -DPLUGIN_DIR="$(plugin_dir)"
+PLUGIN_DIR_SQ = '$(subst ','\'',$(PLUGIN_DIR))'
+endif
+
+include ../../scripts/Makefile.include
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # copy a bit from Linux kbuild
 
 ifeq ("$(origin V)", "command line")
@@ -57,6 +105,7 @@ ifndef VERBOSE
   VERBOSE = 0
 endif
 
+<<<<<<< HEAD
 ifeq ("$(origin O)", "command line")
   BUILD_OUTPUT := $(O)
 endif
@@ -104,6 +153,21 @@ export prefix bindir src obj
 # Shell quotes
 bindir_SQ = $(subst ','\'',$(bindir))
 bindir_relative_SQ = $(subst ','\'',$(bindir_relative))
+=======
+ifeq ($(srctree),)
+srctree := $(patsubst %/,%,$(dir $(shell pwd)))
+srctree := $(patsubst %/,%,$(dir $(srctree)))
+srctree := $(patsubst %/,%,$(dir $(srctree)))
+#$(info Determined 'srctree' to be $(srctree))
+endif
+
+export prefix libdir src obj
+
+# Shell quotes
+libdir_SQ = $(subst ','\'',$(libdir))
+libdir_relative_SQ = $(subst ','\'',$(libdir_relative))
+plugin_dir_SQ = $(subst ','\'',$(plugin_dir))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 LIB_FILE = libtraceevent.a libtraceevent.so
 
@@ -118,6 +182,7 @@ EXTRAVERSION	= $(EP_EXTRAVERSION)
 OBJ		= $@
 N		=
 
+<<<<<<< HEAD
 export Q VERBOSE
 
 EVENT_PARSE_VERSION = $(EP_VERSION).$(EP_PATCHLEVEL).$(EP_EXTRAVERSION)
@@ -128,11 +193,27 @@ INCLUDES = -I. $(CONFIG_INCLUDES)
 CFLAGS ?= -g -Wall
 
 # Append required CFLAGS
+=======
+EVENT_PARSE_VERSION = $(EP_VERSION).$(EP_PATCHLEVEL).$(EP_EXTRAVERSION)
+
+INCLUDES = -I. -I $(srctree)/tools/include $(CONFIG_INCLUDES)
+
+# Set compile option CFLAGS
+ifdef EXTRA_CFLAGS
+  CFLAGS := $(EXTRA_CFLAGS)
+else
+  CFLAGS := -g -Wall
+endif
+
+# Append required CFLAGS
+override CFLAGS += -fPIC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 override CFLAGS += $(CONFIG_FLAGS) $(INCLUDES) $(PLUGIN_DIR_SQ)
 override CFLAGS += $(udis86-flags) -D_GNU_SOURCE
 
 ifeq ($(VERBOSE),1)
   Q =
+<<<<<<< HEAD
   print_compile =
   print_app_build =
   print_fpic_compile =
@@ -228,6 +309,87 @@ define update_version.h
 		echo '  UPDATE                 $@';	\
 		mv -f $@.tmp $@;			\
 	fi);
+=======
+else
+  Q = @
+endif
+
+# Disable command line variables (CFLAGS) overide from top
+# level Makefile (perf), otherwise build Makefile will get
+# the same command line setup.
+MAKEOVERRIDES=
+
+export srctree OUTPUT CC LD CFLAGS V
+build := -f $(srctree)/tools/build/Makefile.build dir=. obj
+
+PLUGINS  = plugin_jbd2.so
+PLUGINS += plugin_hrtimer.so
+PLUGINS += plugin_kmem.so
+PLUGINS += plugin_kvm.so
+PLUGINS += plugin_mac80211.so
+PLUGINS += plugin_sched_switch.so
+PLUGINS += plugin_function.so
+PLUGINS += plugin_xen.so
+PLUGINS += plugin_scsi.so
+PLUGINS += plugin_cfg80211.so
+
+PLUGINS    := $(addprefix $(OUTPUT),$(PLUGINS))
+PLUGINS_IN := $(PLUGINS:.so=-in.o)
+
+TE_IN    := $(OUTPUT)libtraceevent-in.o
+LIB_FILE := $(addprefix $(OUTPUT),$(LIB_FILE))
+DYNAMIC_LIST_FILE := $(OUTPUT)libtraceevent-dynamic-list
+
+CMD_TARGETS = $(LIB_FILE) $(PLUGINS) $(DYNAMIC_LIST_FILE)
+
+TARGETS = $(CMD_TARGETS)
+
+all: all_cmd
+
+all_cmd: $(CMD_TARGETS)
+
+$(TE_IN): force
+	$(Q)$(MAKE) $(build)=libtraceevent
+
+$(OUTPUT)libtraceevent.so: $(TE_IN)
+	$(QUIET_LINK)$(CC) --shared $^ -o $@
+
+$(OUTPUT)libtraceevent.a: $(TE_IN)
+	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
+
+$(OUTPUT)libtraceevent-dynamic-list: $(PLUGINS)
+	$(QUIET_GEN)$(call do_generate_dynamic_list_file, $(PLUGINS), $@)
+
+plugins: $(PLUGINS)
+
+__plugin_obj = $(notdir $@)
+  plugin_obj = $(__plugin_obj:-in.o=)
+
+$(PLUGINS_IN): force
+	$(Q)$(MAKE) $(build)=$(plugin_obj)
+
+$(OUTPUT)%.so: $(OUTPUT)%-in.o
+	$(QUIET_LINK)$(CC) $(CFLAGS) -shared -nostartfiles -o $@ $^
+
+define make_version.h
+  (echo '/* This file is automatically generated. Do not modify. */';		\
+   echo \#define VERSION_CODE $(shell						\
+   expr $(VERSION) \* 256 + $(PATCHLEVEL));					\
+   echo '#define EXTRAVERSION ' $(EXTRAVERSION);				\
+   echo '#define VERSION_STRING "'$(VERSION).$(PATCHLEVEL).$(EXTRAVERSION)'"';	\
+   echo '#define FILE_VERSION '$(FILE_VERSION);					\
+  ) > $1
+endef
+
+define update_version.h
+  ($(call make_version.h, $@.tmp);		\
+    if [ -r $@ ] && cmp -s $@ $@.tmp; then	\
+      rm -f $@.tmp;				\
+    else					\
+      echo '  UPDATE                 $@';	\
+      mv -f $@.tmp $@;				\
+    fi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endef
 
 ep_version.h: force
@@ -236,6 +398,7 @@ ep_version.h: force
 VERSION_FILES = ep_version.h
 
 define update_dir
+<<<<<<< HEAD
 	(echo $1 > $@.tmp;	\
 	if [ -r $@ ] && cmp -s $@ $@.tmp; then		\
 		rm -f $@.tmp;				\
@@ -282,6 +445,17 @@ TRACEEVENT-CFLAGS: force
 		echo "$$FLAGS" >TRACEEVENT-CFLAGS; \
             fi
 
+=======
+  (echo $1 > $@.tmp;				\
+   if [ -r $@ ] && cmp -s $@ $@.tmp; then	\
+     rm -f $@.tmp;				\
+   else						\
+     echo '  UPDATE                 $@';	\
+     mv -f $@.tmp $@;				\
+   fi);
+endef
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 tags:	force
 	$(RM) tags
 	find . -name '*.[ch]' | xargs ctags --extra=+f --c-kinds=+px \
@@ -293,25 +467,59 @@ TAGS:	force
 	--regex='/_PE(\([^,)]*\).*/PEVENT_ERRNO__\1/'
 
 define do_install
+<<<<<<< HEAD
 	$(print_install)				\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if [ ! -d '$(DESTDIR_SQ)$2' ]; then		\
 		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$2';	\
 	fi;						\
 	$(INSTALL) $1 '$(DESTDIR_SQ)$2'
 endef
 
+<<<<<<< HEAD
 install_lib: all_cmd install_plugins install_python
 	$(Q)$(call do_install,$(LIB_FILE),$(bindir_SQ))
+=======
+define do_install_plugins
+	for plugin in $1; do				\
+	  $(call do_install,$$plugin,$(plugin_dir_SQ));	\
+	done
+endef
+
+define do_generate_dynamic_list_file
+	(echo '{';							\
+	$(NM) -u -D $1 | awk 'NF>1 {print "\t"$$2";"}' | sort -u;	\
+	echo '};';							\
+	) > $2
+endef
+
+install_lib: all_cmd install_plugins
+	$(call QUIET_INSTALL, $(LIB_FILE)) \
+		$(call do_install,$(LIB_FILE),$(libdir_SQ))
+
+install_plugins: $(PLUGINS)
+	$(call QUIET_INSTALL, trace_plugins) \
+		$(call do_install_plugins, $(PLUGINS))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 install: install_lib
 
 clean:
+<<<<<<< HEAD
 	$(RM) *.o *~ $(TARGETS) *.a *.so $(VERSION_FILES) .*.d
 	$(RM) TRACEEVENT-CFLAGS tags TAGS
 
 endif # skip-makefile
 
 PHONY += force
+=======
+	$(call QUIET_CLEAN, libtraceevent) \
+		$(RM) *.o *~ $(TARGETS) *.a *.so $(VERSION_FILES) .*.d .*.cmd \
+		$(RM) TRACEEVENT-CFLAGS tags TAGS
+
+PHONY += force plugins
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 force:
 
 # Declare the contents of the .PHONY variable as phony.  We keep that

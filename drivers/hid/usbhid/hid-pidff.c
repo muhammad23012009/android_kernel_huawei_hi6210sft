@@ -568,6 +568,15 @@ static int pidff_upload_effect(struct input_dev *dev, struct ff_effect *effect,
 	int type_id;
 	int error;
 
+<<<<<<< HEAD
+=======
+	pidff->block_load[PID_EFFECT_BLOCK_INDEX].value[0] = 0;
+	if (old) {
+		pidff->block_load[PID_EFFECT_BLOCK_INDEX].value[0] =
+			pidff->pid_id[effect->id];
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (effect->type) {
 	case FF_CONSTANT:
 		if (!old) {
@@ -1252,6 +1261,11 @@ int hid_pidff_init(struct hid_device *hid)
 
 	pidff->hid = hid;
 
+<<<<<<< HEAD
+=======
+	hid_device_io_start(hid);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pidff_find_reports(hid, HID_OUTPUT_REPORT, pidff);
 	pidff_find_reports(hid, HID_FEATURE_REPORT, pidff);
 
@@ -1296,6 +1310,10 @@ int hid_pidff_init(struct hid_device *hid)
 
 	if (pidff->pool[PID_DEVICE_MANAGED_POOL].value &&
 	    pidff->pool[PID_DEVICE_MANAGED_POOL].value[0] == 0) {
+<<<<<<< HEAD
+=======
+		error = -EPERM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hid_notice(hid,
 			   "device does not support device managed pool\n");
 		goto fail;
@@ -1315,9 +1333,19 @@ int hid_pidff_init(struct hid_device *hid)
 
 	hid_info(dev, "Force feedback for USB HID PID devices by Anssi Hannula <anssi.hannula@gmail.com>\n");
 
+<<<<<<< HEAD
 	return 0;
 
  fail:
+=======
+	hid_device_io_stop(hid);
+
+	return 0;
+
+ fail:
+	hid_device_io_stop(hid);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(pidff);
 	return error;
 }

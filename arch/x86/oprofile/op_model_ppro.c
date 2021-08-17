@@ -75,7 +75,11 @@ static void ppro_setup_ctrs(struct op_x86_model_spec const *model,
 	u64 val;
 	int i;
 
+<<<<<<< HEAD
 	if (cpu_has_arch_perfmon) {
+=======
+	if (boot_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		union cpuid10_eax eax;
 		eax.full = cpuid_eax(0xa);
 
@@ -212,8 +216,13 @@ static void arch_perfmon_setup_counters(void)
 	eax.full = cpuid_eax(0xa);
 
 	/* Workaround for BIOS bugs in 6/15. Taken from perfmon2 */
+<<<<<<< HEAD
 	if (eax.split.version_id == 0 && __this_cpu_read(cpu_info.x86) == 6 &&
 		__this_cpu_read(cpu_info.x86_model) == 15) {
+=======
+	if (eax.split.version_id == 0 && boot_cpu_data.x86 == 6 &&
+	    boot_cpu_data.x86_model == 15) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		eax.split.version_id = 2;
 		eax.split.num_counters = 2;
 		eax.split.bit_width = 40;

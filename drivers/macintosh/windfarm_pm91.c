@@ -76,6 +76,10 @@ static struct wf_control *cpufreq_clamp;
 
 /* Set to kick the control loop into life */
 static int wf_smu_all_controls_ok, wf_smu_all_sensors_ok, wf_smu_started;
+<<<<<<< HEAD
+=======
+static bool wf_smu_overtemp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Failure handling.. could be nicer */
 #define FAILURE_FAN		0x01
@@ -517,6 +521,10 @@ static void wf_smu_tick(void)
 	if (new_failure & FAILURE_OVERTEMP) {
 		wf_set_overtemp();
 		wf_smu_skipping = 2;
+<<<<<<< HEAD
+=======
+		wf_smu_overtemp = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* We only clear the overtemp condition if overtemp is cleared
@@ -525,8 +533,15 @@ static void wf_smu_tick(void)
 	 * the control loop levels, but we don't want to keep it clear
 	 * here in this case
 	 */
+<<<<<<< HEAD
 	if (new_failure == 0 && last_failure & FAILURE_OVERTEMP)
 		wf_clear_overtemp();
+=======
+	if (!wf_smu_failure_state && wf_smu_overtemp) {
+		wf_clear_overtemp();
+		wf_smu_overtemp = false;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -695,7 +710,10 @@ static struct platform_driver wf_smu_driver = {
         .remove = wf_smu_remove,
 	.driver = {
 		.name = "windfarm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

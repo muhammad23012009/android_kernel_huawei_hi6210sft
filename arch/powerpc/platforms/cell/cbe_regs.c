@@ -189,7 +189,11 @@ static struct device_node *cbe_get_be_node(int cpu_id)
 	return NULL;
 }
 
+<<<<<<< HEAD
 void __init cbe_fill_regs_map(struct cbe_regs_map *map)
+=======
+static void __init cbe_fill_regs_map(struct cbe_regs_map *map)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if(map->be_node) {
 		struct device_node *be, *np;

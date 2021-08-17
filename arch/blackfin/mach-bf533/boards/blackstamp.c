@@ -20,6 +20,10 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <asm/dma.h>
 #include <asm/bfin5xx_spi.h>
@@ -31,7 +35,11 @@
  */
 const char bfin_board_name[] = "BlackStamp";
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_DRV_BFIN) || defined(CONFIG_RTC_DRV_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_DRV_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device rtc_device = {
 	.name = "rtc-bfin",
 	.id   = -1,
@@ -41,7 +49,11 @@ static struct platform_device rtc_device = {
 /*
  *  Driver needs to know address, irq and flag pin.
  */
+<<<<<<< HEAD
 #if defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SMC91X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/smc91x.h>
 
 static struct smc91x_platdata smc91x_info = {
@@ -74,7 +86,11 @@ static struct platform_device smc91x_device = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_M25P80)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct mtd_partition bfin_spi_flash_partitions[] = {
 	{
 		.name = "bootloader(spi)",
@@ -105,14 +121,22 @@ static struct bfin5xx_spi_chip spi_flash_chip_info = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_SPI) || defined(CONFIG_MMC_SPI_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MMC_SPI)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct bfin5xx_spi_chip mmc_spi_chip_info = {
 	.enable_dma = 0,
 };
 #endif
 
 static struct spi_board_info bfin_spi_board_info[] __initdata = {
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_M25P80)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		/* the modalias must be the same as spi device driver name */
 		.modalias = "m25p80", /* Name of spi_driver for this device */
@@ -125,7 +149,11 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 	},
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_SPI) || defined(CONFIG_MMC_SPI_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MMC_SPI)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.modalias = "mmc_spi",
 		.max_speed_hz = 20000000,     /* max spi clock (SCK) speed in HZ */
@@ -136,7 +164,11 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 	},
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_SPIDEV) || defined(CONFIG_SPI_SPIDEV_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_SPIDEV)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.modalias = "spidev",
 		.max_speed_hz = 3125000,     /* max spi clock (SCK) speed in HZ */
@@ -146,7 +178,11 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 #endif
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_BFIN5XX) || defined(CONFIG_SPI_BFIN5XX_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_BFIN5XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* SPI (0) */
 static struct resource bfin_spi0_resource[] = {
 	[0] = {
@@ -184,7 +220,11 @@ static struct platform_device bfin_spi0_device = {
 };
 #endif  /* spi master and devices */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 static struct resource bfin_uart0_resources[] = {
 	{
@@ -235,7 +275,11 @@ static struct platform_device bfin_uart0_device = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_BFIN_SIR) || defined(CONFIG_BFIN_SIR_MODULE)
+=======
+#if IS_ENABLED(CONFIG_BFIN_SIR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BFIN_SIR0
 static struct resource bfin_sir0_resources[] = {
 	{
@@ -264,7 +308,11 @@ static struct platform_device bfin_sir0_device = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_BFIN_SPORT) || defined(CONFIG_SERIAL_BFIN_SPORT_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_BFIN_SPORT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_SPORT0_UART
 static struct resource bfin_sport0_uart_resources[] = {
 	{
@@ -335,7 +383,11 @@ static struct platform_device bfin_sport1_uart_device = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
+=======
+#if IS_ENABLED(CONFIG_KEYBOARD_GPIO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
 
@@ -358,7 +410,11 @@ static struct platform_device bfin_device_gpiokeys = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C_GPIO) || defined(CONFIG_I2C_GPIO_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C_GPIO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c-gpio.h>
 
 static struct i2c_gpio_platform_data i2c_gpio_data = {
@@ -413,32 +469,56 @@ static struct platform_device *stamp_devices[] __initdata = {
 
 	&bfin_dpmc,
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_DRV_BFIN) || defined(CONFIG_RTC_DRV_BFIN_MODULE)
 	&rtc_device,
 #endif
 
 #if defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_DRV_BFIN)
+	&rtc_device,
+#endif
+
+#if IS_ENABLED(CONFIG_SMC91X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&smc91x_device,
 #endif
 
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_BFIN5XX) || defined(CONFIG_SPI_BFIN5XX_MODULE)
 	&bfin_spi0_device,
 #endif
 
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_BFIN5XX)
+	&bfin_spi0_device,
+#endif
+
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 	&bfin_uart0_device,
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_BFIN_SIR) || defined(CONFIG_BFIN_SIR_MODULE)
+=======
+#if IS_ENABLED(CONFIG_BFIN_SIR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BFIN_SIR0
 	&bfin_sir0_device,
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_BFIN_SPORT) || defined(CONFIG_SERIAL_BFIN_SPORT_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_BFIN_SPORT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_SPORT0_UART
 	&bfin_sport0_uart_device,
 #endif
@@ -447,11 +527,19 @@ static struct platform_device *stamp_devices[] __initdata = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
 	&bfin_device_gpiokeys,
 #endif
 
 #if defined(CONFIG_I2C_GPIO) || defined(CONFIG_I2C_GPIO_MODULE)
+=======
+#if IS_ENABLED(CONFIG_KEYBOARD_GPIO)
+	&bfin_device_gpiokeys,
+#endif
+
+#if IS_ENABLED(CONFIG_I2C_GPIO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&i2c_gpio_device,
 #endif
 };
@@ -469,7 +557,11 @@ static int __init blackstamp_init(void)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 #if defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SMC91X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * setup BF533_STAMP CPLD to route AMS3 to Ethernet MAC.
 	 * the bfin-async-map driver takes care of flipping between

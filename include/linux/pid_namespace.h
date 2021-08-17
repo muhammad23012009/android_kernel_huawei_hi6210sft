@@ -8,6 +8,10 @@
 #include <linux/threads.h>
 #include <linux/nsproxy.h>
 #include <linux/kref.h>
+<<<<<<< HEAD
+=======
+#include <linux/ns_common.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct pidmap {
        atomic_t nr_free;
@@ -18,11 +22,19 @@ struct pidmap {
 #define BITS_PER_PAGE_MASK	(BITS_PER_PAGE-1)
 #define PIDMAP_ENTRIES		((PID_MAX_LIMIT+BITS_PER_PAGE-1)/BITS_PER_PAGE)
 
+<<<<<<< HEAD
 struct bsd_acct_struct;
+=======
+struct fs_pin;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct pid_namespace {
 	struct kref kref;
 	struct pidmap pidmap[PIDMAP_ENTRIES];
+<<<<<<< HEAD
+=======
+	struct rcu_head rcu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int last_pid;
 	unsigned int nr_hashed;
 	struct task_struct *child_reaper;
@@ -32,16 +44,30 @@ struct pid_namespace {
 #ifdef CONFIG_PROC_FS
 	struct vfsmount *proc_mnt;
 	struct dentry *proc_self;
+<<<<<<< HEAD
 #endif
 #ifdef CONFIG_BSD_PROCESS_ACCT
 	struct bsd_acct_struct *bacct;
 #endif
 	struct user_namespace *user_ns;
+=======
+	struct dentry *proc_thread_self;
+#endif
+#ifdef CONFIG_BSD_PROCESS_ACCT
+	struct fs_pin *bacct;
+#endif
+	struct user_namespace *user_ns;
+	struct ucounts *ucounts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct work_struct proc_work;
 	kgid_t pid_gid;
 	int hide_pid;
 	int reboot;	/* group exit code if this pidns was rebooted */
+<<<<<<< HEAD
 	unsigned int proc_inum;
+=======
+	struct ns_common ns;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern struct pid_namespace init_pid_ns;

@@ -19,6 +19,10 @@
  */
 extern void * __init trap_set_handler(int cause, void *handler);
 extern void do_unhandled(struct pt_regs *regs, unsigned long exccause);
+<<<<<<< HEAD
+=======
+void secondary_trap_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void spill_registers(void)
 {
@@ -64,4 +68,24 @@ static inline void spill_registers(void)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+struct debug_table {
+	/* Pointer to debug exception handler */
+	void (*debug_exception)(void);
+	/* Temporary register save area */
+	unsigned long debug_save[1];
+#ifdef CONFIG_HAVE_HW_BREAKPOINT
+	/* Save area for DBREAKC registers */
+	unsigned long dbreakc_save[XCHAL_NUM_DBREAK];
+	/* Saved ICOUNT register */
+	unsigned long icount_save;
+	/* Saved ICOUNTLEVEL register */
+	unsigned long icount_level_save;
+#endif
+};
+
+void debug_exception(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _XTENSA_TRAPS_H */

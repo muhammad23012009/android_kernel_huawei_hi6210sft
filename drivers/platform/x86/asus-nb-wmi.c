@@ -27,6 +27,10 @@
 #include <linux/input/sparse-keymap.h>
 #include <linux/fb.h>
 #include <linux/dmi.h>
+<<<<<<< HEAD
+=======
+#include <linux/i8042.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "asus-wmi.h"
 
@@ -55,8 +59,39 @@ MODULE_PARM_DESC(wapf, "WAPF value");
 
 static struct quirk_entry *quirks;
 
+<<<<<<< HEAD
 static struct quirk_entry quirk_asus_unknown = {
 	.wapf = 0,
+=======
+static bool asus_q500a_i8042_filter(unsigned char data, unsigned char str,
+			      struct serio *port)
+{
+	static bool extended;
+	bool ret = false;
+
+	if (str & I8042_STR_AUXDATA)
+		return false;
+
+	if (unlikely(data == 0xe1)) {
+		extended = true;
+		ret = true;
+	} else if (unlikely(extended)) {
+		extended = false;
+		ret = true;
+	}
+
+	return ret;
+}
+
+static struct quirk_entry quirk_asus_unknown = {
+	.wapf = 0,
+	.wmi_backlight_set_devstate = true,
+};
+
+static struct quirk_entry quirk_asus_q500a = {
+	.i8042_filter = asus_q500a_i8042_filter,
+	.wmi_backlight_set_devstate = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -67,11 +102,50 @@ static struct quirk_entry quirk_asus_unknown = {
 static struct quirk_entry quirk_asus_x55u = {
 	.wapf = 4,
 	.wmi_backlight_power = true,
+<<<<<<< HEAD
 	.no_display_toggle = true,
 };
 
 static struct quirk_entry quirk_asus_x401u = {
 	.wapf = 4,
+=======
+	.wmi_backlight_set_devstate = true,
+	.no_display_toggle = true,
+};
+
+static struct quirk_entry quirk_asus_wapf4 = {
+	.wapf = 4,
+	.wmi_backlight_set_devstate = true,
+};
+
+static struct quirk_entry quirk_asus_x200ca = {
+	.wapf = 2,
+	.wmi_backlight_set_devstate = true,
+};
+
+static struct quirk_entry quirk_no_rfkill = {
+	.no_rfkill = true,
+};
+
+static struct quirk_entry quirk_no_rfkill_wapf4 = {
+	.wapf = 4,
+	.no_rfkill = true,
+};
+
+static struct quirk_entry quirk_asus_ux303ub = {
+	.wmi_backlight_native = true,
+	.wmi_backlight_set_devstate = true,
+};
+
+static struct quirk_entry quirk_asus_x550lb = {
+	.wmi_backlight_set_devstate = true,
+	.xusb2pr = 0x01D9,
+};
+
+static struct quirk_entry quirk_asus_forceals = {
+	.wmi_backlight_set_devstate = true,
+	.wmi_force_als_set = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int dmi_matched(const struct dmi_system_id *dmi)
@@ -80,7 +154,43 @@ static int dmi_matched(const struct dmi_system_id *dmi)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct dmi_system_id asus_quirks[] = {
+=======
+static const struct dmi_system_id asus_quirks[] = {
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. Q500A",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Q500A"),
+		},
+		.driver_data = &quirk_asus_q500a,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. U32U",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK Computer Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "U32U"),
+		},
+		/*
+		 * Note this machine has a Brazos APU, and most Brazos Asus
+		 * machines need quirk_asus_x55u / wmi_backlight_power but
+		 * here acpi-video seems to work fine for backlight control.
+		 */
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X302UA",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X302UA"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.callback = dmi_matched,
 		.ident = "ASUSTeK COMPUTER INC. X401U",
@@ -97,7 +207,11 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X401A"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.callback = dmi_matched,
@@ -106,7 +220,38 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X401A1"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X45U",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X45U"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X456UA",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X456UA"),
+		},
+		.driver_data = &quirk_no_rfkill_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X456UF",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X456UF"),
+		},
+		.driver_data = &quirk_no_rfkill_wapf4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.callback = dmi_matched,
@@ -124,7 +269,11 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X501A"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.callback = dmi_matched,
@@ -133,7 +282,56 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X501A1"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X550CA",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X550CA"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X550CC",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X550CC"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X550CL",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X550CL"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X550VB",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X550VB"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X551CA",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X551CA"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.callback = dmi_matched,
@@ -142,7 +340,11 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X55A"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.callback = dmi_matched,
@@ -151,7 +353,11 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X55C"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.callback = dmi_matched,
@@ -169,7 +375,11 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X55VD"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.callback = dmi_matched,
@@ -178,13 +388,139 @@ static struct dmi_system_id asus_quirks[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "X75A"),
 		},
+<<<<<<< HEAD
 		.driver_data = &quirk_asus_x401u,
+=======
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X75VBP",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X75VBP"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X75VD",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X75VD"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. 1015E",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "1015E"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. 1015U",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "1015U"),
+		},
+		.driver_data = &quirk_asus_wapf4,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X200CA",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X200CA"),
+		},
+		.driver_data = &quirk_asus_x200ca,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X555UB",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X555UB"),
+		},
+		.driver_data = &quirk_no_rfkill,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. N552VW",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "N552VW"),
+		},
+		.driver_data = &quirk_no_rfkill,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. U303LB",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "U303LB"),
+		},
+		.driver_data = &quirk_no_rfkill,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. Z550MA",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Z550MA"),
+		},
+		.driver_data = &quirk_no_rfkill,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. UX303UB",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "UX303UB"),
+		},
+		.driver_data = &quirk_asus_ux303ub,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. UX330UAK",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "UX330UAK"),
+		},
+		.driver_data = &quirk_asus_forceals,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. X550LB",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "X550LB"),
+		},
+		.driver_data = &quirk_asus_x550lb,
+	},
+	{
+		.callback = dmi_matched,
+		.ident = "ASUSTeK COMPUTER INC. UX430UQ",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "UX430UQ"),
+		},
+		.driver_data = &quirk_asus_forceals,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{},
 };
 
 static void asus_nb_wmi_quirks(struct asus_wmi_driver *driver)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	quirks = &quirk_asus_unknown;
 	dmi_check_system(asus_quirks);
 
@@ -196,6 +532,18 @@ static void asus_nb_wmi_quirks(struct asus_wmi_driver *driver)
 		quirks->wapf = wapf;
 	else
 		wapf = quirks->wapf;
+<<<<<<< HEAD
+=======
+
+	if (quirks->i8042_filter) {
+		ret = i8042_install_filter(quirks->i8042_filter);
+		if (ret) {
+			pr_warn("Unable to install key filter\n");
+			return;
+		}
+		pr_info("Using i8042 filter function for receiving events\n");
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct key_entry asus_nb_wmi_keymap[] = {
@@ -204,8 +552,12 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
 	{ KE_KEY, 0x30, { KEY_VOLUMEUP } },
 	{ KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
 	{ KE_KEY, 0x32, { KEY_MUTE } },
+<<<<<<< HEAD
 	{ KE_KEY, 0x33, { KEY_DISPLAYTOGGLE } }, /* LCD on */
 	{ KE_KEY, 0x34, { KEY_DISPLAY_OFF } }, /* LCD off */
+=======
+	{ KE_KEY, 0x35, { KEY_SCREENLOCK } },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ KE_KEY, 0x40, { KEY_PREVIOUSSONG } },
 	{ KE_KEY, 0x41, { KEY_NEXTSONG } },
 	{ KE_KEY, 0x43, { KEY_STOPCD } }, /* Stop/Eject */
@@ -230,6 +582,10 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
 	{ KE_KEY, 0x67, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV */
 	{ KE_KEY, 0x6B, { KEY_TOUCHPAD_TOGGLE } },
 	{ KE_IGNORE, 0x6E, },  /* Low Battery notification */
+<<<<<<< HEAD
+=======
+	{ KE_KEY, 0x7a, { KEY_ALS_TOGGLE } }, /* Ambient Light Sensor Toggle */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ KE_KEY, 0x7D, { KEY_BLUETOOTH } }, /* Bluetooth Enable */
 	{ KE_KEY, 0x7E, { KEY_BLUETOOTH } }, /* Bluetooth Disable */
 	{ KE_KEY, 0x82, { KEY_CAMERA } },
@@ -256,6 +612,11 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
 	{ KE_KEY, 0xB5, { KEY_CALC } },
 	{ KE_KEY, 0xC4, { KEY_KBDILLUMUP } },
 	{ KE_KEY, 0xC5, { KEY_KBDILLUMDOWN } },
+<<<<<<< HEAD
+=======
+	{ KE_IGNORE, 0xC6, },  /* Ambient Light Sensor notification */
+	{ KE_KEY, 0xFA, { KEY_PROG2 } },           /* Lid flip action */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ KE_END, 0},
 };
 
@@ -269,9 +630,39 @@ static struct asus_wmi_driver asus_nb_wmi_driver = {
 	.detect_quirks = asus_nb_wmi_quirks,
 };
 
+<<<<<<< HEAD
 
 static int __init asus_nb_wmi_init(void)
 {
+=======
+static const struct dmi_system_id asus_nb_wmi_blacklist[] __initconst = {
+	{
+		/*
+		 * asus-nb-wm adds no functionality. The T100TA has a detachable
+		 * USB kbd, so no hotkeys and it has no WMI rfkill; and loading
+		 * asus-nb-wm causes the camera LED to turn and _stay_ on.
+		 */
+		.matches = {
+			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T100TA"),
+		},
+	},
+	{
+		/* The Asus T200TA has the same issue as the T100TA */
+		.matches = {
+			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T200TA"),
+		},
+	},
+	{} /* Terminating entry */
+};
+
+static int __init asus_nb_wmi_init(void)
+{
+	if (dmi_check_system(asus_nb_wmi_blacklist))
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return asus_wmi_register_driver(&asus_nb_wmi_driver);
 }
 

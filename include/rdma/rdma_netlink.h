@@ -43,7 +43,11 @@ int ibnl_remove_client(int index);
  * Returns the allocated buffer on success and NULL on failure.
  */
 void *ibnl_put_msg(struct sk_buff *skb, struct nlmsghdr **nlh, int seq,
+<<<<<<< HEAD
 		   int len, int client, int op);
+=======
+		   int len, int client, int op, int flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * Put a new attribute in a supplied skb.
  * @skb: The netlink skb.
@@ -56,4 +60,35 @@ void *ibnl_put_msg(struct sk_buff *skb, struct nlmsghdr **nlh, int seq,
 int ibnl_put_attr(struct sk_buff *skb, struct nlmsghdr *nlh,
 		  int len, void *data, int type);
 
+<<<<<<< HEAD
+=======
+/**
+ * Send the supplied skb to a specific userspace PID.
+ * @skb: The netlink skb
+ * @nlh: Header of the netlink message to send
+ * @pid: Userspace netlink process ID
+ * Returns 0 on success or a negative error code.
+ */
+int ibnl_unicast(struct sk_buff *skb, struct nlmsghdr *nlh,
+			__u32 pid);
+
+/**
+ * Send the supplied skb to a netlink group.
+ * @skb: The netlink skb
+ * @nlh: Header of the netlink message to send
+ * @group: Netlink group ID
+ * @flags: allocation flags
+ * Returns 0 on success or a negative error code.
+ */
+int ibnl_multicast(struct sk_buff *skb, struct nlmsghdr *nlh,
+			unsigned int group, gfp_t flags);
+
+/**
+ * Check if there are any listeners to the netlink group
+ * @group: the netlink group ID
+ * Returns 0 on success or a negative for no listeners.
+ */
+int ibnl_chk_listeners(unsigned int group);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _RDMA_NETLINK_H */

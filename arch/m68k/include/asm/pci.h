@@ -1,7 +1,10 @@
 #ifndef _ASM_M68K_PCI_H
 #define _ASM_M68K_PCI_H
 
+<<<<<<< HEAD
 #include <asm-generic/pci-dma-compat.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/pci.h>
 
 /* The PCI address space does equal the physical memory

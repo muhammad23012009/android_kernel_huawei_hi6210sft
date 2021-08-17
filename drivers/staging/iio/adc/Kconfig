@@ -3,6 +3,7 @@
 #
 menu "Analog to digital converters"
 
+<<<<<<< HEAD
 config AD7291
 	tristate "Analog Devices AD7291 ADC driver"
 	depends on I2C
@@ -13,6 +14,12 @@ config AD7291
 config AD7606
 	tristate "Analog Devices AD7606 ADC driver"
 	depends on GPIOLIB
+=======
+config AD7606
+	tristate "Analog Devices AD7606 ADC driver"
+	depends on GPIOLIB || COMPILE_TEST
+	depends on HAS_IOMEM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select IIO_BUFFER
 	select IIO_TRIGGERED_BUFFER
 	help
@@ -29,6 +36,12 @@ config AD7606_IFACE_PARALLEL
 	  Say yes here to include parallel interface support on the AD7606
 	  ADC driver.
 
+<<<<<<< HEAD
+=======
+	  To compile this driver as a module, choose M here: the
+	  module will be called ad7606_parallel.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config AD7606_IFACE_SPI
 	tristate "spi interface support"
 	depends on AD7606
@@ -37,6 +50,7 @@ config AD7606_IFACE_SPI
 	  Say yes here to include parallel interface support on the AD7606
 	  ADC driver.
 
+<<<<<<< HEAD
 config AD799X
 	tristate "Analog Devices AD799x ADC driver"
 	depends on I2C
@@ -56,11 +70,19 @@ config AD799X_RING_BUFFER
 	help
 	  Say yes here to include ring buffer support in the AD799X
 	  ADC driver.
+=======
+	  To compile this driver as a module, choose M here: the
+	  module will be called ad7606_spi.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config AD7780
 	tristate "Analog Devices AD7780 and similar ADCs driver"
 	depends on SPI
+<<<<<<< HEAD
 	depends on GPIOLIB
+=======
+	depends on GPIOLIB || COMPILE_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select AD_SIGMA_DELTA
 	help
 	  Say yes here to build support for Analog Devices AD7170, AD7171,
@@ -73,18 +95,30 @@ config AD7780
 config AD7816
 	tristate "Analog Devices AD7816/7/8 temperature sensor and ADC driver"
 	depends on SPI
+<<<<<<< HEAD
 	depends on GPIOLIB
+=======
+	depends on GPIOLIB || COMPILE_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say yes here to build support for Analog Devices AD7816/7/8
 	  temperature sensors and ADC.
 
 config AD7192
+<<<<<<< HEAD
 	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
+=======
+	tristate "Analog Devices AD7190 AD7192 AD7193 AD7195 ADC driver"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on SPI
 	select AD_SIGMA_DELTA
 	help
 	  Say yes here to build support for Analog Devices AD7190,
+<<<<<<< HEAD
 	  AD7192 or AD7195 SPI analog to digital converters (ADC).
+=======
+	  AD7192, AD7193 or AD7195 SPI analog to digital converters (ADC).
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  If unsure, say N (but it's safe to say "Y").
 
 	  To compile this driver as a module, choose M here: the
@@ -102,7 +136,12 @@ config AD7280
 
 config LPC32XX_ADC
 	tristate "NXP LPC32XX ADC"
+<<<<<<< HEAD
 	depends on ARCH_LPC32XX
+=======
+	depends on ARCH_LPC32XX || COMPILE_TEST
+	depends on HAS_IOMEM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say yes here to build support for the integrated ADC inside the
 	  LPC32XX SoC. Note that this feature uses the same hardware as the
@@ -111,6 +150,7 @@ config LPC32XX_ADC
 	  activate only one via device tree selection.  Provides direct access
 	  via sysfs.
 
+<<<<<<< HEAD
 config MXS_LRADC
 	tristate "Freescale i.MX23/i.MX28 LRADC"
 	depends on ARCH_MXS
@@ -126,8 +166,19 @@ config MXS_LRADC
 config SPEAR_ADC
 	tristate "ST SPEAr ADC"
 	depends on PLAT_SPEAR
+=======
+config SPEAR_ADC
+	tristate "ST SPEAr ADC"
+	depends on PLAT_SPEAR || COMPILE_TEST
+	depends on HAS_IOMEM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say yes here to build support for the integrated ADC inside the
 	  ST SPEAr SoC. Provides direct access via sysfs.
 
+<<<<<<< HEAD
+=======
+	  To compile this driver as a module, choose M here: the
+	  module will be called spear_adc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu

@@ -46,6 +46,7 @@
 
 static bool is_offset_valid;
 static u8 smps_offset;
+<<<<<<< HEAD
 /*
  * Flag to ensure Smartreflex bit in TWL
  * being cleared in board file is not overwritten.
@@ -55,6 +56,10 @@ static bool __initdata twl_sr_enable_autoinit;
 #define TWL4030_DCDC_GLOBAL_CFG        0x06
 #define REG_SMPS_OFFSET         0xE0
 #define SMARTREFLEX_ENABLE     BIT(3)
+=======
+
+#define REG_SMPS_OFFSET         0xE0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned long twl4030_vsel_to_uv(const u8 vsel)
 {
@@ -251,6 +256,7 @@ int __init omap3_twl_init(void)
 	if (!cpu_is_omap34xx())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/*
 	 * The smartreflex bit on twl4030 specifies if the setting of voltage
 	 * is done over the I2C_SR path. Since this setting is independent of
@@ -263,6 +269,8 @@ int __init omap3_twl_init(void)
 	if (!twl_sr_enable_autoinit)
 		omap3_twl_set_sr_bit(true);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	voltdm = voltdm_lookup("mpu_iva");
 	omap_voltage_register_pmic(voltdm, &omap3_mpu_pmic);
 
@@ -271,6 +279,7 @@ int __init omap3_twl_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 /**
  * omap3_twl_set_sr_bit() - Set/Clear SR bit on TWL
@@ -312,3 +321,5 @@ err:
 	pr_err("%s: Error access to TWL4030 (%d)\n", __func__, ret);
 	return ret;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

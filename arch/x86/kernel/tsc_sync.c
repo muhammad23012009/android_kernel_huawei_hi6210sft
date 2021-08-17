@@ -16,7 +16,10 @@
  */
 #include <linux/spinlock.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/smp.h>
 #include <linux/nmi.h>
 #include <asm/tsc.h>
@@ -25,14 +28,20 @@
  * Entry/exit counters that make sure that both CPUs
  * run the measurement code at once:
  */
+<<<<<<< HEAD
 static __cpuinitdata atomic_t start_count;
 static __cpuinitdata atomic_t stop_count;
+=======
+static atomic_t start_count;
+static atomic_t stop_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * We use a raw spinlock in this exceptional case, because
  * we want to have the fastest, inlined, non-debug version
  * of a critical section, to be able to prove TSC time-warps:
  */
+<<<<<<< HEAD
 static __cpuinitdata arch_spinlock_t sync_lock = __ARCH_SPIN_LOCK_UNLOCKED;
 
 static __cpuinitdata cycles_t last_tsc;
@@ -43,13 +52,30 @@ static __cpuinitdata int nr_warps;
  * TSC-warp measurement loop running on both CPUs:
  */
 static __cpuinit void check_tsc_warp(unsigned int timeout)
+=======
+static arch_spinlock_t sync_lock = __ARCH_SPIN_LOCK_UNLOCKED;
+
+static cycles_t last_tsc;
+static cycles_t max_warp;
+static int nr_warps;
+
+/*
+ * TSC-warp measurement loop running on both CPUs.  This is not called
+ * if there is no TSC.
+ */
+static void check_tsc_warp(unsigned int timeout)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	cycles_t start, now, prev, end;
 	int i;
 
+<<<<<<< HEAD
 	rdtsc_barrier();
 	start = get_cycles();
 	rdtsc_barrier();
+=======
+	start = rdtsc_ordered();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * The measurement runs for 'timeout' msecs:
 	 */
@@ -64,9 +90,13 @@ static __cpuinit void check_tsc_warp(unsigned int timeout)
 		 */
 		arch_spin_lock(&sync_lock);
 		prev = last_tsc;
+<<<<<<< HEAD
 		rdtsc_barrier();
 		now = get_cycles();
 		rdtsc_barrier();
+=======
+		now = rdtsc_ordered();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		last_tsc = now;
 		arch_spin_unlock(&sync_lock);
 
@@ -114,20 +144,32 @@ static __cpuinit void check_tsc_warp(unsigned int timeout)
  */
 static inline unsigned int loop_timeout(int cpu)
 {
+<<<<<<< HEAD
 	return (cpumask_weight(cpu_core_mask(cpu)) > 1) ? 2 : 20;
+=======
+	return (cpumask_weight(topology_core_cpumask(cpu)) > 1) ? 2 : 20;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * Source CPU calls into this - it waits for the freshly booted
  * target CPU to arrive and then starts the measurement:
  */
+<<<<<<< HEAD
 void __cpuinit check_tsc_sync_source(int cpu)
+=======
+void check_tsc_sync_source(int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpus = 2;
 
 	/*
 	 * No need to check if we already know that the TSC is not
+<<<<<<< HEAD
 	 * synchronized:
+=======
+	 * synchronized or if we have no TSC.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	if (unsynchronized_tsc())
 		return;
@@ -187,10 +229,18 @@ void __cpuinit check_tsc_sync_source(int cpu)
 /*
  * Freshly booted CPUs call into this:
  */
+<<<<<<< HEAD
 void __cpuinit check_tsc_sync_target(void)
 {
 	int cpus = 2;
 
+=======
+void check_tsc_sync_target(void)
+{
+	int cpus = 2;
+
+	/* Also aborts if there is no TSC. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unsynchronized_tsc() || tsc_clocksource_reliable)
 		return;
 

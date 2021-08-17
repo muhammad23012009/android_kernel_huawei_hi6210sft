@@ -5,7 +5,10 @@
  * FIXME: LOCKING !!!
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
@@ -805,7 +808,11 @@ void pmf_unregister_driver(struct device_node *np)
 }
 EXPORT_SYMBOL_GPL(pmf_unregister_driver);
 
+<<<<<<< HEAD
 struct pmf_function *__pmf_find_function(struct device_node *target,
+=======
+static struct pmf_function *__pmf_find_function(struct device_node *target,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 const char *name, u32 flags)
 {
 	struct device_node *actor = of_node_get(target);

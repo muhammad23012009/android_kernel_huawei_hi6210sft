@@ -22,10 +22,20 @@
  */
 
 #include <linux/dmi.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <asm/div64.h>
 #include <asm/x86_init.h>
 #include <asm/hypervisor.h>
+=======
+#include <linux/init.h>
+#include <linux/export.h>
+#include <asm/div64.h>
+#include <asm/x86_init.h>
+#include <asm/hypervisor.h>
+#include <asm/timer.h>
+#include <asm/apic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CPUID_VMWARE_INFO_LEAF	0x40000000
 #define VMWARE_HYPERVISOR_MAGIC	0x564D5868
@@ -62,7 +72,11 @@ static unsigned long vmware_get_tsc_khz(void)
 	tsc_hz = eax | (((uint64_t)ebx) << 32);
 	do_div(tsc_hz, 1000);
 	BUG_ON(tsc_hz >> 32);
+<<<<<<< HEAD
 	printk(KERN_INFO "TSC freq read from hypervisor : %lu.%03lu MHz\n",
+=======
+	pr_info("TSC freq read from hypervisor : %lu.%03lu MHz\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 (unsigned long) tsc_hz / 1000,
 			 (unsigned long) tsc_hz % 1000);
 
@@ -81,11 +95,29 @@ static void __init vmware_platform_setup(void)
 
 	VMWARE_PORT(GETHZ, eax, ebx, ecx, edx);
 
+<<<<<<< HEAD
 	if (ebx != UINT_MAX)
 		x86_platform.calibrate_tsc = vmware_get_tsc_khz;
 	else
 		printk(KERN_WARNING
 		       "Failed to get TSC freq from the hypervisor\n");
+=======
+	if (ebx != UINT_MAX) {
+		x86_platform.calibrate_tsc = vmware_get_tsc_khz;
+#ifdef CONFIG_X86_LOCAL_APIC
+		/* Skip lapic calibration since we know the bus frequency. */
+		lapic_timer_frequency = ecx / HZ;
+		pr_info("Host bus clock speed read from hypervisor : %u Hz\n",
+			ecx);
+#endif
+	} else {
+		pr_warn("Failed to get TSC freq from the hypervisor\n");
+	}
+
+#ifdef CONFIG_X86_IO_APIC
+	no_timer_check = 1;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -93,21 +125,36 @@ static void __init vmware_platform_setup(void)
  * serial key should be enough, as this will always have a VMware
  * specific string when running under VMware hypervisor.
  */
+<<<<<<< HEAD
 static bool __init vmware_platform(void)
 {
 	if (cpu_has_hypervisor) {
+=======
+static uint32_t __init vmware_platform(void)
+{
+	if (boot_cpu_has(X86_FEATURE_HYPERVISOR)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned int eax;
 		unsigned int hyper_vendor_id[3];
 
 		cpuid(CPUID_VMWARE_INFO_LEAF, &eax, &hyper_vendor_id[0],
 		      &hyper_vendor_id[1], &hyper_vendor_id[2]);
 		if (!memcmp(hyper_vendor_id, "VMwareVMware", 12))
+<<<<<<< HEAD
 			return true;
 	} else if (dmi_available && dmi_name_in_serial("VMware") &&
 		   __vmware_platform())
 		return true;
 
 	return false;
+=======
+			return CPUID_VMWARE_INFO_LEAF;
+	} else if (dmi_available && dmi_name_in_serial("VMware") &&
+		   __vmware_platform())
+		return 1;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -122,7 +169,11 @@ static bool __init vmware_platform(void)
  * so that the kernel could just trust the hypervisor with providing a
  * reliable virtual TSC that is suitable for timekeeping.
  */
+<<<<<<< HEAD
 static void __cpuinit vmware_set_cpu_features(struct cpuinfo_x86 *c)
+=======
+static void vmware_set_cpu_features(struct cpuinfo_x86 *c)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	set_cpu_cap(c, X86_FEATURE_CONSTANT_TSC);
 	set_cpu_cap(c, X86_FEATURE_TSC_RELIABLE);

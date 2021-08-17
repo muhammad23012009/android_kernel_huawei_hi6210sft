@@ -20,7 +20,18 @@
 
 #define SAMSUNG_PWM_NUM		5
 
+<<<<<<< HEAD
 extern spinlock_t samsung_pwm_lock;
+=======
+/*
+ * Following declaration must be in an ifdef due to this symbol being static
+ * in pwm-samsung driver if the clocksource driver is not compiled in and the
+ * spinlock is not shared between both drivers.
+ */
+#ifdef CONFIG_CLKSRC_SAMSUNG_PWM
+extern spinlock_t samsung_pwm_lock;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct samsung_pwm_variant {
 	u8 bits;

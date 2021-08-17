@@ -62,10 +62,13 @@ typedef pte_t *pte_addr_t;
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)	((pte_t) { (x).val })
 
+<<<<<<< HEAD
 #ifndef __ASSEMBLY__
 static inline int pte_file(pte_t pte) { return 0; }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ZERO_PAGE(vaddr)	({ BUG(); NULL; })
 
 #define swapper_pg_dir		((pgd_t *) NULL)
@@ -127,12 +130,20 @@ extern unsigned long empty_zero_page;
 #define PGDIR_MASK		(~(PGDIR_SIZE - 1))
 #define PTRS_PER_PGD		64
 
+<<<<<<< HEAD
+=======
+#define __PAGETABLE_PUD_FOLDED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PUD_SHIFT		26
 #define PTRS_PER_PUD		1
 #define PUD_SIZE		(1UL << PUD_SHIFT)
 #define PUD_MASK		(~(PUD_SIZE - 1))
 #define PUE_SIZE		256
 
+<<<<<<< HEAD
+=======
+#define __PAGETABLE_PMD_FOLDED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PMD_SHIFT		26
 #define PMD_SIZE		(1UL << PMD_SHIFT)
 #define PMD_MASK		(~(PMD_SIZE - 1))
@@ -144,7 +155,11 @@ extern unsigned long empty_zero_page;
 #define PTRS_PER_PTE		4096
 
 #define USER_PGDS_IN_LAST_PML4	(TASK_SIZE / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define USER_PGD_PTRS		(PAGE_OFFSET >> PGDIR_SHIFT)
 #define KERNEL_PGD_PTRS		(PTRS_PER_PGD - USER_PGD_PTRS)
@@ -298,7 +313,10 @@ static inline pmd_t *pmd_offset(pud_t *dir, unsigned long address)
 
 #define _PAGE_RESERVED_MASK	(xAMPRx_RESERVED8 | xAMPRx_RESERVED13)
 
+<<<<<<< HEAD
 #define _PAGE_FILE		0x002	/* set:pagecache unset:swap */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define _PAGE_PROTNONE		0x000	/* If not present */
 
 #define _PAGE_CHG_MASK		(PTE_MASK | _PAGE_ACCESSED | _PAGE_DIRTY)
@@ -463,6 +481,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
  * Handle swap and file entries
  * - the PTE is encoded in the following format:
  *	bit 0:		Must be 0 (!_PAGE_PRESENT)
+<<<<<<< HEAD
  *	bit 1:		Type: 0 for swap, 1 for file (_PAGE_FILE)
  *	bits 2-7:	Swap type
  *	bits 8-31:	Swap offset
@@ -484,13 +503,27 @@ static inline int pte_file(pte_t pte)
 #define pte_to_pgoff(PTE)	((PTE).pte >> 2)
 #define pgoff_to_pte(off)	__pte((off) << 2 | _PAGE_FILE)
 
+=======
+ *	bits 1-6:	Swap type
+ *	bits 7-31:	Swap offset
+ */
+#define __swp_type(x)			(((x).val >> 1) & 0x1f)
+#define __swp_offset(x)			((x).val >> 7)
+#define __swp_entry(type, offset)	((swp_entry_t) { ((type) << 1) | ((offset) << 7) })
+#define __pte_to_swp_entry(_pte)	((swp_entry_t) { (_pte).pte })
+#define __swp_entry_to_pte(x)		((pte_t) { (x).val })
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Needs to be defined here and not in linux/mm.h, as it is arch dependent */
 #define PageSkip(page)		(0)
 #define kern_addr_valid(addr)	(1)
 
+<<<<<<< HEAD
 #define io_remap_pfn_range(vma, vaddr, pfn, size, prot)		\
 		remap_pfn_range(vma, vaddr, pfn, size, prot)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __HAVE_ARCH_PTEP_TEST_AND_CLEAR_YOUNG
 #define __HAVE_ARCH_PTEP_GET_AND_CLEAR
 #define __HAVE_ARCH_PTEP_SET_WRPROTECT
@@ -540,5 +573,9 @@ extern void __init pgtable_cache_init(void);
 #ifndef __ASSEMBLY__
 extern void __init paging_init(void);
 #endif /* !__ASSEMBLY__ */
+<<<<<<< HEAD
+=======
+#define HAVE_ARCH_UNMAPPED_AREA
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_PGTABLE_H */

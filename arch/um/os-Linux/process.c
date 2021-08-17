@@ -1,4 +1,8 @@
 /*
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
  */
@@ -16,7 +20,10 @@
 #include <init.h>
 #include <longjmp.h>
 #include <os.h>
+<<<<<<< HEAD
 #include <skas_ptrace.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ARBITRARY_ADDR -1
 #define FAILURE_PID    -1
@@ -90,6 +97,14 @@ int os_process_parent(int pid)
 	return parent;
 }
 
+<<<<<<< HEAD
+=======
+void os_alarm_process(int pid)
+{
+	kill(pid, SIGALRM);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void os_stop_process(int pid)
 {
 	kill(pid, SIGSTOP);
@@ -102,6 +117,7 @@ void os_kill_process(int pid, int reap_child)
 		CATCH_EINTR(waitpid(pid, NULL, __WALL));
 }
 
+<<<<<<< HEAD
 /* This is here uniquely to have access to the userspace errno, i.e. the one
  * used by ptrace in case of error.
  */
@@ -117,6 +133,8 @@ long os_ptrace_ldt(long pid, long addr, long data)
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Kill off a ptraced child by all means available.  kill it normally first,
  * then PTRACE_KILL it, then PTRACE_CONT it in case it's in a run state from
  * which it can't exit directly.
@@ -294,5 +312,8 @@ void init_new_thread_signals(void)
 	signal(SIGHUP, SIG_IGN);
 	set_handler(SIGIO);
 	signal(SIGWINCH, SIG_IGN);
+<<<<<<< HEAD
 	signal(SIGTERM, SIG_DFL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

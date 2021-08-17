@@ -50,10 +50,31 @@ enum scsi_device_state {
 	SDEV_CREATED_BLOCK,	/* same as above but for created devices */
 };
 
+<<<<<<< HEAD
 enum scsi_device_event {
 	SDEV_EVT_MEDIA_CHANGE	= 1,	/* media has changed */
 
 	SDEV_EVT_LAST		= SDEV_EVT_MEDIA_CHANGE,
+=======
+enum scsi_scan_mode {
+	SCSI_SCAN_INITIAL = 0,
+	SCSI_SCAN_RESCAN,
+	SCSI_SCAN_MANUAL,
+};
+
+enum scsi_device_event {
+	SDEV_EVT_MEDIA_CHANGE	= 1,	/* media has changed */
+	SDEV_EVT_INQUIRY_CHANGE_REPORTED,		/* 3F 03  UA reported */
+	SDEV_EVT_CAPACITY_CHANGE_REPORTED,		/* 2A 09  UA reported */
+	SDEV_EVT_SOFT_THRESHOLD_REACHED_REPORTED,	/* 38 07  UA reported */
+	SDEV_EVT_MODE_PARAMETER_CHANGE_REPORTED,	/* 2A 01  UA reported */
+	SDEV_EVT_LUN_CHANGE_REPORTED,			/* 3F 0E  UA reported */
+	SDEV_EVT_ALUA_STATE_CHANGE_REPORTED,		/* 2A 06  UA reported */
+
+	SDEV_EVT_FIRST		= SDEV_EVT_MEDIA_CHANGE,
+	SDEV_EVT_LAST		= SDEV_EVT_ALUA_STATE_CHANGE_REPORTED,
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SDEV_EVT_MAXBITS	= SDEV_EVT_LAST + 1
 };
 
@@ -74,6 +95,7 @@ struct scsi_device {
 	struct list_head    siblings;   /* list of all devices on this host */
 	struct list_head    same_target_siblings; /* just the devices sharing same target id */
 
+<<<<<<< HEAD
 	/* this is now protected by the request_queue->queue_lock */
 	unsigned int device_busy;	/* commands actually active on
 					 * low-level. protected by queue_lock. */
@@ -81,6 +103,14 @@ struct scsi_device {
 	struct list_head cmd_list;	/* queue of in use SCSI Command structures */
 	struct list_head starved_entry;
 	struct scsi_cmnd *current_cmnd;	/* currently active command */
+=======
+	atomic_t device_busy;		/* commands actually active on LLDD */
+	atomic_t device_blocked;	/* Device returned QUEUE_FULL. */
+
+	spinlock_t list_lock;
+	struct list_head cmd_list;	/* queue of in use SCSI Command structures */
+	struct list_head starved_entry;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned short queue_depth;	/* How deep of a queue we want */
 	unsigned short max_queue_depth;	/* max queue depth */
 	unsigned short last_queue_full_depth; /* These two are used by */
@@ -91,8 +121,13 @@ struct scsi_device {
 
 	unsigned long last_queue_ramp_up;	/* last queue ramp up time */
 
+<<<<<<< HEAD
 	unsigned int id, lun, channel;
 
+=======
+	unsigned int id, channel;
+	u64 lun;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int manufacturer;	/* Manufacturer of device, for using 
 					 * vendor-specific cmd's */
 	unsigned sector_size;	/* size in bytes */
@@ -101,11 +136,24 @@ struct scsi_device {
 	char type;
 	char scsi_level;
 	char inq_periph_qual;	/* PQ from INQUIRY data */	
+<<<<<<< HEAD
+=======
+	struct mutex inquiry_mutex;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char inquiry_len;	/* valid bytes in 'inquiry' */
 	unsigned char * inquiry;	/* INQUIRY response data */
 	const char * vendor;		/* [back_compat] point into 'inquiry' ... */
 	const char * model;		/* ... after scan; point to static string */
 	const char * rev;		/* ... "nullnullnullnull" before scan */
+<<<<<<< HEAD
+=======
+
+#define SCSI_VPD_PG_LEN                255
+	int vpd_pg83_len;
+	unsigned char __rcu *vpd_pg83;
+	int vpd_pg80_len;
+	unsigned char __rcu *vpd_pg80;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char current_tag;	/* current tag */
 	struct scsi_target      *sdev_target;   /* used only for single_lun */
 
@@ -113,7 +161,11 @@ struct scsi_device {
 				 * scsi_devinfo.[hc]. For now used only to
 				 * pass settings from slave_alloc to scsi
 				 * core. */
+<<<<<<< HEAD
 	unsigned writeable:1;
+=======
+	unsigned int eh_timeout; /* Error handling timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned removable:1;
 	unsigned changed:1;	/* Data invalid due to media change */
 	unsigned busy:1;	/* Used to prevent races */
@@ -128,7 +180,10 @@ struct scsi_device {
 	unsigned ppr:1;		/* Device supports PPR messages */
 	unsigned tagged_supported:1;	/* Supports SCSI-II tagged queuing */
 	unsigned simple_tags:1;	/* simple queue tag messages are enabled */
+<<<<<<< HEAD
 	unsigned ordered_tags:1;/* ordered queue tag messages are enabled */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned was_reset:1;	/* There was a bus reset on the bus for 
 				 * this device */
 	unsigned expecting_cc_ua:1; /* Expecting a CHECK_CONDITION/UNIT_ATTN
@@ -141,6 +196,10 @@ struct scsi_device {
 	unsigned skip_ms_page_8:1;	/* do not use MODE SENSE page 0x08 */
 	unsigned skip_ms_page_3f:1;	/* do not use MODE SENSE page 0x3f */
 	unsigned skip_vpd_pages:1;	/* do not read VPD pages */
+<<<<<<< HEAD
+=======
+	unsigned try_vpd_pages:1;	/* attempt to read VPD pages */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned use_192_bytes_for_3f:1; /* ask for 192 bytes from page 0x3f */
 	unsigned no_start_on_add:1;	/* do not issue start on add */
 	unsigned allow_restart:1; /* issue START_UNIT in error handler */
@@ -159,15 +218,28 @@ struct scsi_device {
 	unsigned is_visible:1;	/* is the device visible in sysfs */
 	unsigned wce_default_on:1;	/* Cache is ON by default */
 	unsigned no_dif:1;	/* T10 PI (DIF) should be disabled */
+<<<<<<< HEAD
+=======
+	unsigned broken_fua:1;		/* Don't set FUA bit */
+	unsigned lun_in_cdb:1;		/* Store LUN bits in CDB[1] */
+	unsigned synchronous_alua:1;	/* Synchronous ALUA commands */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	atomic_t disk_events_disable_depth; /* disable depth for disk events */
 
 	DECLARE_BITMAP(supported_events, SDEV_EVT_MAXBITS); /* supported events */
+<<<<<<< HEAD
 	struct list_head event_list;	/* asserted events */
 	struct work_struct event_work;
 
 	unsigned int device_blocked;	/* Device returned QUEUE_FULL. */
 
+=======
+	DECLARE_BITMAP(pending_events, SDEV_EVT_MAXBITS); /* pending events */
+	struct list_head event_list;	/* asserted events */
+	struct work_struct event_work;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int max_device_blocked; /* what device_blocked counts down from  */
 #define SCSI_DEFAULT_DEVICE_BLOCKED	3
 
@@ -181,11 +253,19 @@ struct scsi_device {
 	struct execute_work	ew; /* used to get process context on put */
 	struct work_struct	requeue_work;
 
+<<<<<<< HEAD
 	struct scsi_dh_data	*scsi_dh_data;
+=======
+	struct scsi_device_handler *handler;
+	void			*handler_data;
+
+	unsigned char		access_state;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum scsi_device_state sdev_state;
 	unsigned long		sdev_data[0];
 } __attribute__((aligned(sizeof(unsigned long))));
 
+<<<<<<< HEAD
 struct scsi_dh_devlist {
 	char *vendor;
 	char *model;
@@ -216,6 +296,8 @@ struct scsi_dh_data {
 	char buf[0];
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	to_scsi_device(d)	\
 	container_of(d, struct scsi_device, sdev_gendev)
 #define	class_to_sdev(d)	\
@@ -223,6 +305,7 @@ struct scsi_dh_data {
 #define transport_class_to_sdev(class_dev) \
 	to_scsi_device(class_dev->parent)
 
+<<<<<<< HEAD
 #define sdev_printk(prefix, sdev, fmt, a...)	\
 	dev_printk(prefix, &(sdev)->sdev_gendev, fmt, ##a)
 
@@ -231,10 +314,42 @@ struct scsi_dh_data {
 	sdev_printk(prefix, (scmd)->device, "[%s] " fmt,		\
 		    (scmd)->request->rq_disk->disk_name, ##a) :		\
 	sdev_printk(prefix, (scmd)->device, fmt, ##a)
+=======
+#define sdev_dbg(sdev, fmt, a...) \
+	dev_dbg(&(sdev)->sdev_gendev, fmt, ##a)
+
+/*
+ * like scmd_printk, but the device name is passed in
+ * as a string pointer
+ */
+__printf(4, 5) void
+sdev_prefix_printk(const char *, const struct scsi_device *, const char *,
+		const char *, ...);
+
+#define sdev_printk(l, sdev, fmt, a...)				\
+	sdev_prefix_printk(l, sdev, NULL, fmt, ##a)
+
+__printf(3, 4) void
+scmd_printk(const char *, const struct scsi_cmnd *, const char *, ...);
+
+#define scmd_dbg(scmd, fmt, a...)					   \
+	do {								   \
+		if ((scmd)->request->rq_disk)				   \
+			sdev_dbg((scmd)->device, "[%s] " fmt,		   \
+				 (scmd)->request->rq_disk->disk_name, ##a);\
+		else							   \
+			sdev_dbg((scmd)->device, fmt, ##a);		   \
+	} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum scsi_target_state {
 	STARGET_CREATED = 1,
 	STARGET_RUNNING,
+<<<<<<< HEAD
+=======
+	STARGET_REMOVE,
+	STARGET_CREATED_REMOVE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	STARGET_DEL,
 };
 
@@ -260,14 +375,27 @@ struct scsi_target {
 						 * means no lun present. */
 	unsigned int		no_report_luns:1;	/* Don't use
 						 * REPORT LUNS for scanning. */
+<<<<<<< HEAD
 	/* commands actually active on LLD. protected by host lock. */
 	unsigned int		target_busy;
+=======
+	unsigned int		expecting_lun_change:1;	/* A device has reported
+						 * a 3F/0E UA, other devices on
+						 * the same target will also. */
+	/* commands actually active on LLD. */
+	atomic_t		target_busy;
+	atomic_t		target_blocked;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * LLDs should set this in the slave_alloc host template callout.
 	 * If set to zero then there is not limit.
 	 */
 	unsigned int		can_queue;
+<<<<<<< HEAD
 	unsigned int		target_blocked;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int		max_target_blocked;
 #define SCSI_DEFAULT_TARGET_BLOCKED	3
 
@@ -290,6 +418,7 @@ static inline struct scsi_target *scsi_target(struct scsi_device *sdev)
 	dev_printk(prefix, &(starget)->dev, fmt, ##a)
 
 extern struct scsi_device *__scsi_add_device(struct Scsi_Host *,
+<<<<<<< HEAD
 		uint, uint, uint, void *hostdata);
 extern int scsi_add_device(struct Scsi_Host *host, uint channel,
 			   uint target, uint lun);
@@ -307,6 +436,27 @@ extern struct scsi_device *scsi_device_lookup_by_target(struct scsi_target *,
 							uint);
 extern struct scsi_device *__scsi_device_lookup_by_target(struct scsi_target *,
 							  uint);
+=======
+		uint, uint, u64, void *hostdata);
+extern int scsi_add_device(struct Scsi_Host *host, uint channel,
+			   uint target, u64 lun);
+extern int scsi_register_device_handler(struct scsi_device_handler *scsi_dh);
+extern void scsi_remove_device(struct scsi_device *);
+extern int scsi_unregister_device_handler(struct scsi_device_handler *scsi_dh);
+void scsi_attach_vpd(struct scsi_device *sdev);
+
+extern struct scsi_device *scsi_device_from_queue(struct request_queue *q);
+extern int scsi_device_get(struct scsi_device *);
+extern void scsi_device_put(struct scsi_device *);
+extern struct scsi_device *scsi_device_lookup(struct Scsi_Host *,
+					      uint, uint, u64);
+extern struct scsi_device *__scsi_device_lookup(struct Scsi_Host *,
+						uint, uint, u64);
+extern struct scsi_device *scsi_device_lookup_by_target(struct scsi_target *,
+							u64);
+extern struct scsi_device *__scsi_device_lookup_by_target(struct scsi_target *,
+							  u64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void starget_for_each_device(struct scsi_target *, void *,
 		     void (*fn)(struct scsi_device *, void *));
 extern void __starget_for_each_device(struct scsi_target *, void *,
@@ -347,7 +497,11 @@ extern struct scsi_device *__scsi_iterate_devices(struct Scsi_Host *,
 #define __shost_for_each_device(sdev, shost) \
 	list_for_each_entry((sdev), &((shost)->__devices), siblings)
 
+<<<<<<< HEAD
 extern void scsi_adjust_queue_depth(struct scsi_device *, int, int);
+=======
+extern int scsi_change_queue_depth(struct scsi_device *, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int scsi_track_queue_full(struct scsi_device *, int);
 
 extern int scsi_set_medium_removal(struct scsi_device *, char);
@@ -379,11 +533,17 @@ extern void scsi_device_resume(struct scsi_device *sdev);
 extern void scsi_target_quiesce(struct scsi_target *);
 extern void scsi_target_resume(struct scsi_target *);
 extern void scsi_scan_target(struct device *parent, unsigned int channel,
+<<<<<<< HEAD
 			     unsigned int id, unsigned int lun, int rescan);
+=======
+			     unsigned int id, u64 lun,
+			     enum scsi_scan_mode rescan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void scsi_target_reap(struct scsi_target *);
 extern void scsi_target_block(struct device *);
 extern void scsi_target_unblock(struct device *, enum scsi_device_state);
 extern void scsi_remove_target(struct device *);
+<<<<<<< HEAD
 extern void int_to_scsilun(unsigned int, struct scsi_lun *);
 extern int scsilun_to_int(struct scsi_lun *);
 extern const char *scsi_device_state_name(enum scsi_device_state);
@@ -397,6 +557,20 @@ extern int scsi_execute_req_flags(struct scsi_device *sdev,
 	const unsigned char *cmd, int data_direction, void *buffer,
 	unsigned bufflen, struct scsi_sense_hdr *sshdr, int timeout,
 	int retries, int *resid, int flags);
+=======
+extern const char *scsi_device_state_name(enum scsi_device_state);
+extern int scsi_is_sdev_device(const struct device *);
+extern int scsi_is_target_device(const struct device *);
+extern void scsi_sanitize_inquiry_string(unsigned char *s, int len);
+extern int scsi_execute(struct scsi_device *sdev, const unsigned char *cmd,
+			int data_direction, void *buffer, unsigned bufflen,
+			unsigned char *sense, int timeout, int retries,
+			u64 flags, int *resid);
+extern int scsi_execute_req_flags(struct scsi_device *sdev,
+	const unsigned char *cmd, int data_direction, void *buffer,
+	unsigned bufflen, struct scsi_sense_hdr *sshdr, int timeout,
+	int retries, int *resid, u64 flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int scsi_execute_req(struct scsi_device *sdev,
 	const unsigned char *cmd, int data_direction, void *buffer,
 	unsigned bufflen, struct scsi_sense_hdr *sshdr, int timeout,
@@ -407,14 +581,25 @@ static inline int scsi_execute_req(struct scsi_device *sdev,
 }
 extern void sdev_disable_disk_events(struct scsi_device *sdev);
 extern void sdev_enable_disk_events(struct scsi_device *sdev);
+<<<<<<< HEAD
 
 #ifdef CONFIG_PM_RUNTIME
+=======
+extern int scsi_vpd_lun_id(struct scsi_device *, char *, size_t);
+extern int scsi_vpd_tpg_id(struct scsi_device *, int *);
+
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int scsi_autopm_get_device(struct scsi_device *);
 extern void scsi_autopm_put_device(struct scsi_device *);
 #else
 static inline int scsi_autopm_get_device(struct scsi_device *d) { return 0; }
 static inline void scsi_autopm_put_device(struct scsi_device *d) {}
+<<<<<<< HEAD
 #endif /* CONFIG_PM_RUNTIME */
+=======
+#endif /* CONFIG_PM */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int __must_check scsi_device_reprobe(struct scsi_device *sdev)
 {
@@ -503,6 +688,34 @@ static inline int scsi_device_tpgs(struct scsi_device *sdev)
 	return sdev->inquiry ? (sdev->inquiry[5] >> 4) & 0x3 : 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * scsi_device_supports_vpd - test if a device supports VPD pages
+ * @sdev: the &struct scsi_device to test
+ *
+ * If the 'try_vpd_pages' flag is set it takes precedence.
+ * Otherwise we will assume VPD pages are supported if the
+ * SCSI level is at least SPC-3 and 'skip_vpd_pages' is not set.
+ */
+static inline int scsi_device_supports_vpd(struct scsi_device *sdev)
+{
+	/* Attempt VPD inquiry if the device blacklist explicitly calls
+	 * for it.
+	 */
+	if (sdev->try_vpd_pages)
+		return 1;
+	/*
+	 * Although VPD inquiries can go to SCSI-2 type devices,
+	 * some USB ones crash on receiving them, and the pages
+	 * we currently ask for are mandatory for SPC-2 and beyond
+	 */
+	if (sdev->scsi_level >= SCSI_SPC_2 && !sdev->skip_vpd_pages)
+		return 1;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MODULE_ALIAS_SCSI_DEVICE(type) \
 	MODULE_ALIAS("scsi:t-" __stringify(type) "*")
 #define SCSI_DEVICE_MODALIAS_FMT "scsi:t-0x%02x"

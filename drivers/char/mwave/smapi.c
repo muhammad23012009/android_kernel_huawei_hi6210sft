@@ -493,7 +493,11 @@ exit_smapi_request_error:
 }
 
 
+<<<<<<< HEAD
 int smapi_set_DSP_power_state(BOOLEAN bOn)
+=======
+int smapi_set_DSP_power_state(bool bOn)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int bRC = -EIO;
 	unsigned short usAX, usBX, usCX, usDX, usDI, usSI;
@@ -556,7 +560,11 @@ int smapi_init(void)
 			PRINTK_ERROR("smapi::smapi_init, ERROR unable to read from SMAPI port\n");
 		} else {
 			PRINTK_2(TRACE_SMAPI,
+<<<<<<< HEAD
 				"smapi::smapi_init, exit TRUE g_usSmapiPort %x\n",
+=======
+				"smapi::smapi_init, exit true g_usSmapiPort %x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				g_usSmapiPort);
 			retval = 0;
 			//SmapiQuerySystemID();

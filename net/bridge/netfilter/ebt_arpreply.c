@@ -67,6 +67,12 @@ static int ebt_arpreply_tg_check(const struct xt_tgchk_param *par)
 	if (e->ethproto != htons(ETH_P_ARP) ||
 	    e->invflags & EBT_IPROTO)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	if (ebt_invalid_target(info->target))
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

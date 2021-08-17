@@ -1,6 +1,10 @@
 /*
  * Code for tracing calls in Linux kernel.
+<<<<<<< HEAD
  * Copyright (C) 2009 Helge Deller <deller@gmx.de>
+=======
+ * Copyright (C) 2009-2016 Helge Deller <deller@gmx.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * based on code for x86 which is:
  * Copyright (C) 2007-2008 Steven Rostedt <srostedt@redhat.com>
@@ -13,10 +17,15 @@
 #include <linux/init.h>
 #include <linux/ftrace.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/assembly.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/sections.h>
 #include <asm/ftrace.h>
 
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 
@@ -102,20 +111,38 @@ unsigned long ftrace_return_to_handler(unsigned long retval0,
 	return ret;
 }
 
+=======
+#define __hot __attribute__ ((__section__ (".text.hot")))
+
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Hook the return address and push it in the stack of return addrs
  * in current thread info.
  */
+<<<<<<< HEAD
 void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 {
 	unsigned long old;
 	unsigned long long calltime;
 	struct ftrace_graph_ent trace;
+=======
+static void __hot prepare_ftrace_return(unsigned long *parent,
+					unsigned long self_addr)
+{
+	unsigned long old;
+	struct ftrace_graph_ent trace;
+	extern int parisc_return_to_handler;
+
+	if (unlikely(ftrace_graph_is_dead()))
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(atomic_read(&current->tracing_graph_pause)))
 		return;
 
 	old = *parent;
+<<<<<<< HEAD
 	*parent = (unsigned long)
 		  dereference_function_descriptor(&return_to_handler);
 
@@ -177,6 +204,49 @@ void ftrace_function_trampoline(unsigned long parent,
 		if (*parent_rp != parent)
 			return;
 		
+=======
+
+	trace.func = self_addr;
+	trace.depth = current->curr_ret_stack + 1;
+
+	/* Only trace if the calling function expects to */
+	if (!ftrace_graph_entry(&trace))
+		return;
+
+        if (ftrace_push_return_trace(old, self_addr, &trace.depth,
+				     0, NULL) == -EBUSY)
+                return;
+
+	/* activate parisc_return_to_handler() as return point */
+	*parent = (unsigned long) &parisc_return_to_handler;
+}
+#endif /* CONFIG_FUNCTION_GRAPH_TRACER */
+
+void notrace __hot ftrace_function_trampoline(unsigned long parent,
+				unsigned long self_addr,
+				unsigned long org_sp_gr3)
+{
+	extern ftrace_func_t ftrace_trace_function;  /* depends on CONFIG_DYNAMIC_FTRACE */
+	extern int ftrace_graph_entry_stub(struct ftrace_graph_ent *trace);
+
+	if (ftrace_trace_function != ftrace_stub) {
+		/* struct ftrace_ops *op, struct pt_regs *regs); */
+		ftrace_trace_function(parent, self_addr, NULL, NULL);
+		return;
+	}
+
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+	if (ftrace_graph_return != (trace_func_graph_ret_t) ftrace_stub ||
+		ftrace_graph_entry != ftrace_graph_entry_stub) {
+		unsigned long *parent_rp;
+
+		/* calculate pointer to %rp in stack */
+		parent_rp = (unsigned long *) (org_sp_gr3 - RP_OFFSET);
+		/* sanity check: parent_rp should hold parent */
+		if (*parent_rp != parent)
+			return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		prepare_ftrace_return(parent_rp, self_addr);
 		return;
 	}

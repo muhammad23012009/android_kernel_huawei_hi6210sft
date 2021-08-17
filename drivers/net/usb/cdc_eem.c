@@ -14,12 +14,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ctype.h>
@@ -140,10 +147,17 @@ static struct sk_buff *eem_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 	}
 
 	skb2 = skb_copy_expand(skb, EEM_HEAD, ETH_FCS_LEN + padlen, flags);
+<<<<<<< HEAD
 	if (!skb2)
 		return NULL;
 
 	dev_kfree_skb_any(skb);
+=======
+	dev_kfree_skb_any(skb);
+	if (!skb2)
+		return NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb = skb2;
 
 done:

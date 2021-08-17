@@ -24,7 +24,11 @@
 
 #define DEBUG 1
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -385,7 +389,11 @@ static void enter_uniprocessor(void)
 	int cpu;
 	int err;
 
+<<<<<<< HEAD
 	if (downed_cpus == NULL &&
+=======
+	if (!cpumask_available(downed_cpus) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    !alloc_cpumask_var(&downed_cpus, GFP_KERNEL)) {
 		pr_notice("Failed to allocate mask\n");
 		goto out;
@@ -410,14 +418,22 @@ out:
 		pr_warning("multiple CPUs still online, may miss events.\n");
 }
 
+<<<<<<< HEAD
 /* __ref because leave_uniprocessor calls cpu_up which is __cpuinit,
    but this whole function is ifdefed CONFIG_HOTPLUG_CPU */
 static void __ref leave_uniprocessor(void)
+=======
+static void leave_uniprocessor(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpu;
 	int err;
 
+<<<<<<< HEAD
 	if (downed_cpus == NULL || cpumask_weight(downed_cpus) == 0)
+=======
+	if (!cpumask_available(downed_cpus) || cpumask_weight(downed_cpus) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	pr_notice("Re-enabling CPUs...\n");
 	for_each_cpu(cpu, downed_cpus) {

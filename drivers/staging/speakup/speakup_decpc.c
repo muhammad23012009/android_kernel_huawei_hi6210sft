@@ -24,10 +24,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/jiffies.h>
 #include <linux/sched.h>
@@ -88,8 +91,14 @@
 #define	CTRL_last_index		0x0b00	/*   get last index spoken */
 #define	CTRL_io_priority	0x0c00	/*   change i/o priority */
 #define	CTRL_free_mem		0x0d00	/*   get free paragraphs on module */
+<<<<<<< HEAD
 #define	CTRL_get_lang		0x0e00	/*   return bit mask of loaded
 					 *   languages */
+=======
+#define	CTRL_get_lang		0x0e00	/* return bit mask of loaded
+						 * languages
+						 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	CMD_test			0x2000		/* self-test request */
 #define	TEST_mask		0x0F00	/* isolate test field */
 #define	TEST_null		0x0000	/* no test requested */
@@ -164,6 +173,7 @@ static struct var_t vars[] = {
  * These attributes will appear in /sys/accessibility/speakup/decpc.
  */
 static struct kobj_attribute caps_start_attribute =
+<<<<<<< HEAD
 	__ATTR(caps_start, USER_RW, spk_var_show, spk_var_store);
 static struct kobj_attribute caps_stop_attribute =
 	__ATTR(caps_stop, USER_RW, spk_var_show, spk_var_store);
@@ -188,6 +198,32 @@ static struct kobj_attribute jiffy_delta_attribute =
 	__ATTR(jiffy_delta, ROOT_W, spk_var_show, spk_var_store);
 static struct kobj_attribute trigger_time_attribute =
 	__ATTR(trigger_time, ROOT_W, spk_var_show, spk_var_store);
+=======
+	__ATTR(caps_start, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute caps_stop_attribute =
+	__ATTR(caps_stop, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute pitch_attribute =
+	__ATTR(pitch, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute punct_attribute =
+	__ATTR(punct, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute rate_attribute =
+	__ATTR(rate, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute voice_attribute =
+	__ATTR(voice, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute vol_attribute =
+	__ATTR(vol, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+
+static struct kobj_attribute delay_time_attribute =
+	__ATTR(delay_time, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute direct_attribute =
+	__ATTR(direct, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute full_time_attribute =
+	__ATTR(full_time, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute jiffy_delta_attribute =
+	__ATTR(jiffy_delta, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+static struct kobj_attribute trigger_time_attribute =
+	__ATTR(trigger_time, S_IWUSR|S_IRUGO, spk_var_show, spk_var_store);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Create a group of attributes so that we can create and destroy them all
@@ -260,6 +296,10 @@ static void dt_sendcmd(u_int cmd)
 static int dt_waitbit(int bit)
 {
 	int timeout = 100;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (--timeout > 0) {
 		if ((dt_getstatus() & bit) == bit)
 			return 1;
@@ -271,6 +311,10 @@ static int dt_waitbit(int bit)
 static int dt_wait_dma(void)
 {
 	int timeout = 100, state = dma_state;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dt_waitbit(STAT_dma_ready))
 		return 0;
 	while (--timeout > 0) {
@@ -285,6 +329,10 @@ static int dt_wait_dma(void)
 static int dt_ctrl(u_int cmd)
 {
 	int timeout = 10;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dt_waitbit(STAT_cmd_ready))
 		return -1;
 	outb_p(0, speakup_info.port_tts+2);
@@ -304,6 +352,10 @@ static int dt_ctrl(u_int cmd)
 static void synth_flush(struct spk_synth *synth)
 {
 	int timeout = 10;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (is_flushing)
 		return;
 	is_flushing = 4;
@@ -346,6 +398,10 @@ static int dt_sendchar(char ch)
 static int testkernel(void)
 {
 	int status = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dt_getstatus() == 0xffff) {
 		status = -1;
 		goto oops;
@@ -377,6 +433,7 @@ static void do_catch_up(struct spk_synth *synth)
 
 	jiffy_delta = spk_get_var(JIFFY);
 	delay_time = spk_get_var(DELAY);
+<<<<<<< HEAD
 	spk_lock(flags);
 	jiffy_delta_val = jiffy_delta->u.n.value;
 	spk_unlock(flags);
@@ -387,17 +444,37 @@ static void do_catch_up(struct spk_synth *synth)
 		if (speakup_info.flushing) {
 			speakup_info.flushing = 0;
 			spk_unlock(flags);
+=======
+	spin_lock_irqsave(&speakup_info.spinlock, flags);
+	jiffy_delta_val = jiffy_delta->u.n.value;
+	spin_unlock_irqrestore(&speakup_info.spinlock, flags);
+	jiff_max = jiffies + jiffy_delta_val;
+
+	while (!kthread_should_stop()) {
+		spin_lock_irqsave(&speakup_info.spinlock, flags);
+		if (speakup_info.flushing) {
+			speakup_info.flushing = 0;
+			spin_unlock_irqrestore(&speakup_info.spinlock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			synth->flush(synth);
 			continue;
 		}
 		if (synth_buffer_empty()) {
+<<<<<<< HEAD
 			spk_unlock(flags);
+=======
+			spin_unlock_irqrestore(&speakup_info.spinlock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		ch = synth_buffer_peek();
 		set_current_state(TASK_INTERRUPTIBLE);
 		delay_time_val = delay_time->u.n.value;
+<<<<<<< HEAD
 		spk_unlock(flags);
+=======
+		spin_unlock_irqrestore(&speakup_info.spinlock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ch == '\n')
 			ch = 0x0D;
 		if (dt_sendchar(ch)) {
@@ -405,9 +482,15 @@ static void do_catch_up(struct spk_synth *synth)
 			continue;
 		}
 		set_current_state(TASK_RUNNING);
+<<<<<<< HEAD
 		spk_lock(flags);
 		synth_buffer_getc();
 		spk_unlock(flags);
+=======
+		spin_lock_irqsave(&speakup_info.spinlock, flags);
+		synth_buffer_getc();
+		spin_unlock_irqrestore(&speakup_info.spinlock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ch == '[')
 			in_escape = 1;
 		else if (ch == ']')
@@ -415,6 +498,7 @@ static void do_catch_up(struct spk_synth *synth)
 		else if (ch <= SPACE) {
 			if (!in_escape && strchr(",.!?;:", last))
 				dt_sendchar(PROCSPEECH);
+<<<<<<< HEAD
 			if (jiffies >= jiff_max) {
 				if (!in_escape)
 					dt_sendchar(PROCSPEECH);
@@ -422,6 +506,17 @@ static void do_catch_up(struct spk_synth *synth)
 				jiffy_delta_val = jiffy_delta->u.n.value;
 				delay_time_val = delay_time->u.n.value;
 				spk_unlock(flags);
+=======
+			if (time_after_eq(jiffies, jiff_max)) {
+				if (!in_escape)
+					dt_sendchar(PROCSPEECH);
+				spin_lock_irqsave(&speakup_info.spinlock,
+							flags);
+				jiffy_delta_val = jiffy_delta->u.n.value;
+				delay_time_val = delay_time->u.n.value;
+				spin_unlock_irqrestore(&speakup_info.spinlock,
+							flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				schedule_timeout(msecs_to_jiffies
 						 (delay_time_val));
 				jiff_max = jiffies + jiffy_delta_val;
@@ -437,6 +532,10 @@ static void do_catch_up(struct spk_synth *synth)
 static const char *synth_immediate(struct spk_synth *synth, const char *buf)
 {
 	u_char ch;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while ((ch = *buf)) {
 		if (ch == '\n')
 			ch = PROCSPEECH;
@@ -444,12 +543,20 @@ static const char *synth_immediate(struct spk_synth *synth, const char *buf)
 			return buf;
 		buf++;
 	}
+<<<<<<< HEAD
 	return 0;
+=======
+	return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int synth_probe(struct spk_synth *synth)
 {
 	int i = 0, failed = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("Probing for %s.\n", synth->long_name);
 	for (i = 0; synth_portlist[i]; i++) {
 		if (synth_request_region(synth_portlist[i], SYNTH_IO_EXTENT)) {
@@ -484,6 +591,7 @@ module_param_named(start, synth_dec_pc.startup, short, S_IRUGO);
 
 MODULE_PARM_DESC(start, "Start the synthesizer once it is loaded.");
 
+<<<<<<< HEAD
 static int __init decpc_init(void)
 {
 	return synth_add(&synth_dec_pc);
@@ -496,9 +604,16 @@ static void __exit decpc_exit(void)
 
 module_init(decpc_init);
 module_exit(decpc_exit);
+=======
+module_spk_synth(synth_dec_pc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Kirk Reiser <kirk@braille.uwo.ca>");
 MODULE_AUTHOR("David Borowski");
 MODULE_DESCRIPTION("Speakup support for DECtalk PC synthesizers");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

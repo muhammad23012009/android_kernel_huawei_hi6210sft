@@ -16,8 +16,11 @@
 #ifndef _ASM_THREAD_INFO_H
 #define _ASM_THREAD_INFO_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/page.h>
 
 #ifdef CONFIG_16KSTACKS
@@ -27,6 +30,10 @@
 #endif
 
 #define THREAD_SIZE     (PAGE_SIZE << THREAD_SIZE_ORDER)
+<<<<<<< HEAD
+=======
+#define THREAD_SHIFT	(PAGE_SHIFT << THREAD_SIZE_ORDER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef __ASSEMBLY__
 
@@ -45,10 +52,15 @@ struct thread_info {
 	int preempt_count;		/* 0 => preemptable, <0 => BUG */
 	struct task_struct *task;	/* main task structure */
 	mm_segment_t addr_limit;	/* thread address space */
+<<<<<<< HEAD
 	struct exec_domain *exec_domain;/* execution domain */
 	__u32 cpu;			/* current CPU */
 	unsigned long thr_ptr;		/* TLS ptr */
 	struct restart_block restart_block;
+=======
+	__u32 cpu;			/* current CPU */
+	unsigned long thr_ptr;		/* TLS ptr */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -59,14 +71,20 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task       = &tsk,			\
+<<<<<<< HEAD
 	.exec_domain    = &default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags      = 0,			\
 	.cpu        = 0,			\
 	.preempt_count  = INIT_PREEMPT_COUNT,	\
 	.addr_limit = KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block  = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info    (init_thread_union.thread_info)
@@ -80,8 +98,11 @@ static inline __attribute_const__ struct thread_info *current_thread_info(void)
 
 #endif /* !__ASSEMBLY__ */
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE      0x10000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * thread information flags
  * - these are process state flags that various assembly files may need to
@@ -112,10 +133,17 @@ static inline __attribute_const__ struct thread_info *current_thread_info(void)
 
 /*
  * _TIF_ALLWORK_MASK includes SYSCALL_TRACE, but we don't need it.
+<<<<<<< HEAD
  * SYSCALL_TRACE is anways seperately/unconditionally tested right after a
  * syscall, so all that reamins to be tested is _TIF_WORK_MASK
  */
 
 #endif /* __KERNEL__ */
 
+=======
+ * SYSCALL_TRACE is anyway seperately/unconditionally tested right after a
+ * syscall, so all that reamins to be tested is _TIF_WORK_MASK
+ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_THREAD_INFO_H */

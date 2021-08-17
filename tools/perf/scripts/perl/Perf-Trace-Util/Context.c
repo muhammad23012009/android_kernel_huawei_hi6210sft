@@ -5,7 +5,14 @@
  *	ANY CHANGES MADE HERE WILL BE LOST! 
  *
  */
+<<<<<<< HEAD
 
+=======
+#include <stdbool.h>
+#ifndef HAS_BOOL
+# define HAS_BOOL 1
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #line 1 "Context.xs"
 /*
  * Context.xs.  XS interfaces for perf script.

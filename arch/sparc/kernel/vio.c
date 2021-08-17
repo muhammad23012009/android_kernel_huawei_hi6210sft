@@ -45,6 +45,17 @@ static const struct vio_device_id *vio_match_device(
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static int vio_hotplug(struct device *dev, struct kobj_uevent_env *env)
+{
+	const struct vio_dev *vio_dev = to_vio_dev(dev);
+
+	add_uevent_var(env, "MODALIAS=vio:T%sS%s", vio_dev->type, vio_dev->compat);
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int vio_bus_match(struct device *dev, struct device_driver *drv)
 {
 	struct vio_dev *vio_dev = to_vio_dev(dev);
@@ -105,15 +116,34 @@ static ssize_t type_show(struct device *dev,
 	return sprintf(buf, "%s\n", vdev->type);
 }
 
+<<<<<<< HEAD
 static struct device_attribute vio_dev_attrs[] = {
 	__ATTR_RO(devspec),
 	__ATTR_RO(type),
+=======
+static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+{
+	const struct vio_dev *vdev = to_vio_dev(dev);
+
+	return sprintf(buf, "vio:T%sS%s\n", vdev->type, vdev->compat);
+}
+
+static struct device_attribute vio_dev_attrs[] = {
+	__ATTR_RO(devspec),
+	__ATTR_RO(type),
+	__ATTR_RO(modalias),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__ATTR_NULL
 };
 
 static struct bus_type vio_bus_type = {
 	.name		= "vio",
 	.dev_attrs	= vio_dev_attrs,
+<<<<<<< HEAD
+=======
+	.uevent         = vio_hotplug,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.match		= vio_bus_match,
 	.probe		= vio_device_probe,
 	.remove		= vio_device_remove,
@@ -180,8 +210,15 @@ static void vio_fill_channel_info(struct mdesc_handle *hp, u64 mp,
 			vdev->tx_irq = sun4v_build_virq(cdev_cfg_handle, *irq);
 
 		irq = mdesc_get_property(hp, target, "rx-ino", NULL);
+<<<<<<< HEAD
 		if (irq)
 			vdev->rx_irq = sun4v_build_virq(cdev_cfg_handle, *irq);
+=======
+		if (irq) {
+			vdev->rx_irq = sun4v_build_virq(cdev_cfg_handle, *irq);
+			vdev->rx_ino = *irq;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		chan_id = mdesc_get_property(hp, target, "id", NULL);
 		if (chan_id)
@@ -189,6 +226,18 @@ static void vio_fill_channel_info(struct mdesc_handle *hp, u64 mp,
 	}
 }
 
+<<<<<<< HEAD
+=======
+int vio_set_intr(unsigned long dev_ino, int state)
+{
+	int err;
+
+	err = sun4v_vintr_set_valid(cdev_cfg_handle, dev_ino, state);
+	return err;
+}
+EXPORT_SYMBOL(vio_set_intr);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 				      struct device *parent)
 {
@@ -273,13 +322,25 @@ static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 	if (!id) {
 		dev_set_name(&vdev->dev, "%s", bus_id_name);
 		vdev->dev_no = ~(u64)0;
+<<<<<<< HEAD
 	} else if (!cfg_handle) {
 		dev_set_name(&vdev->dev, "%s-%llu", bus_id_name, *id);
 		vdev->dev_no = *id;
+=======
+		vdev->id = ~(u64)0;
+	} else if (!cfg_handle) {
+		dev_set_name(&vdev->dev, "%s-%llu", bus_id_name, *id);
+		vdev->dev_no = *id;
+		vdev->id = ~(u64)0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		dev_set_name(&vdev->dev, "%s-%llu-%llu", bus_id_name,
 			     *cfg_handle, *id);
 		vdev->dev_no = *cfg_handle;
+<<<<<<< HEAD
+=======
+		vdev->id = *id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	vdev->dev.parent = parent;
@@ -322,6 +383,7 @@ static void vio_add(struct mdesc_handle *hp, u64 node)
 	(void) vio_create_one(hp, node, &root_vdev->dev);
 }
 
+<<<<<<< HEAD
 static int vio_md_node_match(struct device *dev, void *arg)
 {
 	struct vio_dev *vdev = to_vio_dev(dev);
@@ -330,19 +392,95 @@ static int vio_md_node_match(struct device *dev, void *arg)
 		return 1;
 
 	return 0;
+=======
+struct vio_md_node_query {
+	const char *type;
+	u64 dev_no;
+	u64 id;
+};
+
+static int vio_md_node_match(struct device *dev, void *arg)
+{
+	struct vio_md_node_query *query = (struct vio_md_node_query *) arg;
+	struct vio_dev *vdev = to_vio_dev(dev);
+
+	if (vdev->dev_no != query->dev_no)
+		return 0;
+	if (vdev->id != query->id)
+		return 0;
+	if (strcmp(vdev->type, query->type))
+		return 0;
+
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void vio_remove(struct mdesc_handle *hp, u64 node)
 {
+<<<<<<< HEAD
 	struct device *dev;
 
 	dev = device_find_child(&root_vdev->dev, (void *) node,
+=======
+	const char *type;
+	const u64 *id, *cfg_handle;
+	u64 a;
+	struct vio_md_node_query query;
+	struct device *dev;
+
+	type = mdesc_get_property(hp, node, "device-type", NULL);
+	if (!type) {
+		type = mdesc_get_property(hp, node, "name", NULL);
+		if (!type)
+			type = mdesc_node_name(hp, node);
+	}
+
+	query.type = type;
+
+	id = mdesc_get_property(hp, node, "id", NULL);
+	cfg_handle = NULL;
+	mdesc_for_each_arc(a, hp, node, MDESC_ARC_TYPE_BACK) {
+		u64 target;
+
+		target = mdesc_arc_target(hp, a);
+		cfg_handle = mdesc_get_property(hp, target,
+						"cfg-handle", NULL);
+		if (cfg_handle)
+			break;
+	}
+
+	if (!id) {
+		query.dev_no = ~(u64)0;
+		query.id = ~(u64)0;
+	} else if (!cfg_handle) {
+		query.dev_no = *id;
+		query.id = ~(u64)0;
+	} else {
+		query.dev_no = *cfg_handle;
+		query.id = *id;
+	}
+
+	dev = device_find_child(&root_vdev->dev, &query,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				vio_md_node_match);
 	if (dev) {
 		printk(KERN_INFO "VIO: Removing device %s\n", dev_name(dev));
 
 		device_unregister(dev);
 		put_device(dev);
+<<<<<<< HEAD
+=======
+	} else {
+		if (!id)
+			printk(KERN_ERR "VIO: Removed unknown %s node.\n",
+			       type);
+		else if (!cfg_handle)
+			printk(KERN_ERR "VIO: Removed unknown %s node %llu.\n",
+			       type, *id);
+		else
+			printk(KERN_ERR "VIO: Removed unknown %s node %llu-%llu.\n",
+			       type, *cfg_handle, *id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

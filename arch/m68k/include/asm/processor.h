@@ -110,7 +110,10 @@ struct thread_struct {
 #define setframeformat(_regs)	do { } while (0)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Do necessary setup to start up a newly executed thread.
  */
@@ -123,6 +126,7 @@ static inline void start_thread(struct pt_regs * regs, unsigned long pc,
 	wrusp(usp);
 }
 
+<<<<<<< HEAD
 extern int handle_kernel_fault(struct pt_regs *regs);
 
 #else
@@ -137,12 +141,20 @@ do {                                                    \
 	wrusp(_usp);                                    \
 } while(0)
 
+=======
+#ifdef CONFIG_MMU
+extern int handle_kernel_fault(struct pt_regs *regs);
+#else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline  int handle_kernel_fault(struct pt_regs *regs)
 {
 	/* Any fault in kernel is fatal on non-mmu */
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* Forward declaration, a strange C thing */
@@ -153,6 +165,7 @@ static inline void release_thread(struct task_struct *dead_task)
 {
 }
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -160,6 +173,8 @@ static inline void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned long thread_saved_pc(struct task_struct *tsk);
 
 unsigned long get_wchan(struct task_struct *p);
@@ -176,5 +191,9 @@ unsigned long get_wchan(struct task_struct *p);
 #define task_pt_regs(tsk)	((struct pt_regs *) ((tsk)->thread.esp0))
 
 #define cpu_relax()	barrier()
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

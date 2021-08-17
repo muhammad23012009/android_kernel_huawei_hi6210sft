@@ -56,9 +56,12 @@ struct videobuf_dvb_frontend * videobuf_dvb_get_frontend(struct videobuf_dvb_fro
 int videobuf_dvb_find_frontend(struct videobuf_dvb_frontends *f, struct dvb_frontend *p);
 
 #endif			/* _VIDEOBUF_DVB_H_ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

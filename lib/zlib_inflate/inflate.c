@@ -45,6 +45,7 @@ int zlib_inflateReset(z_streamp strm)
     return Z_OK;
 }
 
+<<<<<<< HEAD
 #if 0
 int zlib_inflatePrime(z_streamp strm, int bits, int value)
 {
@@ -60,6 +61,8 @@ int zlib_inflatePrime(z_streamp strm, int bits, int value)
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int zlib_inflateInit2(z_streamp strm, int windowBits)
 {
     struct inflate_state *state;
@@ -761,6 +764,7 @@ int zlib_inflateEnd(z_streamp strm)
     return Z_OK;
 }
 
+<<<<<<< HEAD
 #if 0
 int zlib_inflateSetDictionary(z_streamp strm, const Byte *dictionary,
         uInt dictLength)
@@ -878,6 +882,8 @@ int zlib_inflateSync(z_streamp strm)
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This subroutine adds the data at next_in/avail_in to the output history
  * without performing any output.  The output buffer must be "caught up";

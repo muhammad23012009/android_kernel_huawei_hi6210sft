@@ -137,13 +137,21 @@ MODULE_PARM_DESC(max_rds_errors, "RDS maximum block errors: *1*");
 /* interrupt out endpoint 2 every 1 millisecond */
 #define UNUSED_REPORT		23
 
+<<<<<<< HEAD
+=======
+#define MAX_REPORT_SIZE		64
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /**************************************************************************
  * Software/Hardware Versions from Scratch Page
  **************************************************************************/
+<<<<<<< HEAD
 #define RADIO_SW_VERSION_NOT_BOOTLOADABLE	6
 #define RADIO_SW_VERSION			1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RADIO_HW_VERSION			1
 
 
@@ -210,7 +218,11 @@ MODULE_PARM_DESC(max_rds_errors, "RDS maximum block errors: *1*");
  */
 static int si470x_get_report(struct si470x_device *radio, void *buf, int size)
 {
+<<<<<<< HEAD
 	unsigned char *report = (unsigned char *) buf;
+=======
+	unsigned char *report = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 
 	retval = usb_control_msg(radio->usbdev,
@@ -233,7 +245,11 @@ static int si470x_get_report(struct si470x_device *radio, void *buf, int size)
  */
 static int si470x_set_report(struct si470x_device *radio, void *buf, int size)
 {
+<<<<<<< HEAD
 	unsigned char *report = (unsigned char *) buf;
+=======
+	unsigned char *report = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 
 	retval = usb_control_msg(radio->usbdev,
@@ -256,6 +272,7 @@ static int si470x_set_report(struct si470x_device *radio, void *buf, int size)
  */
 int si470x_get_register(struct si470x_device *radio, int regnr)
 {
+<<<<<<< HEAD
 	unsigned char buf[REGISTER_REPORT_SIZE];
 	int retval;
 
@@ -265,6 +282,16 @@ int si470x_get_register(struct si470x_device *radio, int regnr)
 
 	if (retval >= 0)
 		radio->registers[regnr] = get_unaligned_be16(&buf[1]);
+=======
+	int retval;
+
+	radio->usb_buf[0] = REGISTER_REPORT(regnr);
+
+	retval = si470x_get_report(radio, radio->usb_buf, REGISTER_REPORT_SIZE);
+
+	if (retval >= 0)
+		radio->registers[regnr] = get_unaligned_be16(&radio->usb_buf[1]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (retval < 0) ? -EINVAL : 0;
 }
@@ -275,6 +302,7 @@ int si470x_get_register(struct si470x_device *radio, int regnr)
  */
 int si470x_set_register(struct si470x_device *radio, int regnr)
 {
+<<<<<<< HEAD
 	unsigned char buf[REGISTER_REPORT_SIZE];
 	int retval;
 
@@ -282,6 +310,14 @@ int si470x_set_register(struct si470x_device *radio, int regnr)
 	put_unaligned_be16(radio->registers[regnr], &buf[1]);
 
 	retval = si470x_set_report(radio, (void *) &buf, sizeof(buf));
+=======
+	int retval;
+
+	radio->usb_buf[0] = REGISTER_REPORT(regnr);
+	put_unaligned_be16(radio->registers[regnr], &radio->usb_buf[1]);
+
+	retval = si470x_set_report(radio, radio->usb_buf, REGISTER_REPORT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (retval < 0) ? -EINVAL : 0;
 }
@@ -297,6 +333,7 @@ int si470x_set_register(struct si470x_device *radio, int regnr)
  */
 static int si470x_get_all_registers(struct si470x_device *radio)
 {
+<<<<<<< HEAD
 	unsigned char buf[ENTIRE_REPORT_SIZE];
 	int retval;
 	unsigned char regnr;
@@ -304,11 +341,23 @@ static int si470x_get_all_registers(struct si470x_device *radio)
 	buf[0] = ENTIRE_REPORT;
 
 	retval = si470x_get_report(radio, (void *) &buf, sizeof(buf));
+=======
+	int retval;
+	unsigned char regnr;
+
+	radio->usb_buf[0] = ENTIRE_REPORT;
+
+	retval = si470x_get_report(radio, radio->usb_buf, ENTIRE_REPORT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (retval >= 0)
 		for (regnr = 0; regnr < RADIO_REGISTER_NUM; regnr++)
 			radio->registers[regnr] = get_unaligned_be16(
+<<<<<<< HEAD
 				&buf[regnr * RADIO_REGISTER_SIZE + 1]);
+=======
+				&radio->usb_buf[regnr * RADIO_REGISTER_SIZE + 1]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (retval < 0) ? -EINVAL : 0;
 }
@@ -325,6 +374,7 @@ static int si470x_get_all_registers(struct si470x_device *radio)
 static int si470x_set_led_state(struct si470x_device *radio,
 		unsigned char led_state)
 {
+<<<<<<< HEAD
 	unsigned char buf[LED_REPORT_SIZE];
 	int retval;
 
@@ -333,6 +383,15 @@ static int si470x_set_led_state(struct si470x_device *radio,
 	buf[2] = led_state;
 
 	retval = si470x_set_report(radio, (void *) &buf, sizeof(buf));
+=======
+	int retval;
+
+	radio->usb_buf[0] = LED_REPORT;
+	radio->usb_buf[1] = LED_COMMAND;
+	radio->usb_buf[2] = led_state;
+
+	retval = si470x_set_report(radio, radio->usb_buf, LED_REPORT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (retval < 0) ? -EINVAL : 0;
 }
@@ -348,19 +407,32 @@ static int si470x_set_led_state(struct si470x_device *radio,
  */
 static int si470x_get_scratch_page_versions(struct si470x_device *radio)
 {
+<<<<<<< HEAD
 	unsigned char buf[SCRATCH_REPORT_SIZE];
 	int retval;
 
 	buf[0] = SCRATCH_REPORT;
 
 	retval = si470x_get_report(radio, (void *) &buf, sizeof(buf));
+=======
+	int retval;
+
+	radio->usb_buf[0] = SCRATCH_REPORT;
+
+	retval = si470x_get_report(radio, radio->usb_buf, SCRATCH_REPORT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (retval < 0)
 		dev_warn(&radio->intf->dev, "si470x_get_scratch: "
 			"si470x_get_report returned %d\n", retval);
 	else {
+<<<<<<< HEAD
 		radio->software_version = buf[1];
 		radio->hardware_version = buf[2];
+=======
+		radio->software_version = radio->usb_buf[1];
+		radio->hardware_version = radio->usb_buf[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return (retval < 0) ? -EINVAL : 0;
@@ -511,6 +583,10 @@ static void si470x_usb_release(struct v4l2_device *v4l2_dev)
 	v4l2_device_unregister(&radio->v4l2_dev);
 	kfree(radio->int_in_buffer);
 	kfree(radio->buffer);
+<<<<<<< HEAD
+=======
+	kfree(radio->usb_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(radio);
 }
 
@@ -595,6 +671,14 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 		retval = -ENOMEM;
 		goto err_initial;
 	}
+<<<<<<< HEAD
+=======
+	radio->usb_buf = kmalloc(MAX_REPORT_SIZE, GFP_KERNEL);
+	if (radio->usb_buf == NULL) {
+		retval = -ENOMEM;
+		goto err_radio;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	radio->usbdev = interface_to_usbdev(intf);
 	radio->intf = intf;
 	radio->band = 1; /* Default to 76 - 108 MHz */
@@ -606,15 +690,23 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 	/* Set up interrupt endpoint information. */
 	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
 		endpoint = &iface_desc->endpoint[i].desc;
+<<<<<<< HEAD
 		if (((endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK) ==
 		 USB_DIR_IN) && ((endpoint->bmAttributes &
 		 USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_INT))
+=======
+		if (usb_endpoint_is_int_in(endpoint))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			radio->int_in_endpoint = endpoint;
 	}
 	if (!radio->int_in_endpoint) {
 		dev_info(&intf->dev, "could not find interrupt in endpoint\n");
 		retval = -EIO;
+<<<<<<< HEAD
 		goto err_radio;
+=======
+		goto err_usbbuf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	int_end_size = le16_to_cpu(radio->int_in_endpoint->wMaxPacketSize);
@@ -623,17 +715,51 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 	if (!radio->int_in_buffer) {
 		dev_info(&intf->dev, "could not allocate int_in_buffer");
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		goto err_radio;
+=======
+		goto err_usbbuf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	radio->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!radio->int_in_urb) {
+<<<<<<< HEAD
 		dev_info(&intf->dev, "could not allocate int_in_urb");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = -ENOMEM;
 		goto err_intbuffer;
 	}
 
 	radio->v4l2_dev.release = si470x_usb_release;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * The si470x SiLabs reference design uses the same USB IDs as
+	 * 'Thanko's Raremono' si4734 based receiver. So check here which we
+	 * have: attempt to read the device ID from the si470x: the lower 12
+	 * bits should be 0x0242 for the si470x.
+	 *
+	 * We use this check to determine which device we are dealing with.
+	 */
+	if (id->idVendor == 0x10c4 && id->idProduct == 0x818a) {
+		retval = usb_control_msg(radio->usbdev,
+				usb_rcvctrlpipe(radio->usbdev, 0),
+				HID_REQ_GET_REPORT,
+				USB_TYPE_CLASS | USB_RECIP_INTERFACE | USB_DIR_IN,
+				1, 2,
+				radio->usb_buf, 3, 500);
+		if (retval != 3 ||
+		    (get_unaligned_be16(&radio->usb_buf[1]) & 0xfff) != 0x0242) {
+			dev_info(&intf->dev, "this is not a si470x device.\n");
+			retval = -ENODEV;
+			goto err_urb;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	retval = v4l2_device_register(&intf->dev, &radio->v4l2_dev);
 	if (retval < 0) {
 		dev_err(&intf->dev, "couldn't register v4l2_device\n");
@@ -655,7 +781,10 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 	radio->videodev.lock = &radio->lock;
 	radio->videodev.v4l2_dev = &radio->v4l2_dev;
 	radio->videodev.release = video_device_release_empty;
+<<<<<<< HEAD
 	set_bit(V4L2_FL_USE_FH_PRIO, &radio->videodev.flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	video_set_drvdata(&radio->videodev, radio);
 
 	/* get device and chip versions */
@@ -664,14 +793,23 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 		goto err_ctrl;
 	}
 	dev_info(&intf->dev, "DeviceID=0x%4.4hx ChipID=0x%4.4hx\n",
+<<<<<<< HEAD
 			radio->registers[DEVICEID], radio->registers[CHIPID]);
 	if ((radio->registers[CHIPID] & CHIPID_FIRMWARE) < RADIO_FW_VERSION) {
+=======
+			radio->registers[DEVICEID], radio->registers[SI_CHIPID]);
+	if ((radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE) < RADIO_FW_VERSION) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_warn(&intf->dev,
 			"This driver is known to work with "
 			"firmware version %hu,\n", RADIO_FW_VERSION);
 		dev_warn(&intf->dev,
 			"but the device has firmware version %hu.\n",
+<<<<<<< HEAD
 			radio->registers[CHIPID] & CHIPID_FIRMWARE);
+=======
+			radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		version_warning = 1;
 	}
 
@@ -682,6 +820,7 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 	}
 	dev_info(&intf->dev, "software version %d, hardware version %d\n",
 			radio->software_version, radio->hardware_version);
+<<<<<<< HEAD
 	if (radio->software_version < RADIO_SW_VERSION) {
 		dev_warn(&intf->dev,
 			"This driver is known to work with "
@@ -691,6 +830,8 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 			radio->software_version);
 		version_warning = 1;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (radio->hardware_version < RADIO_HW_VERSION) {
 		dev_warn(&intf->dev,
 			"This driver is known to work with "
@@ -730,7 +871,11 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 	/* start radio */
 	retval = si470x_start_usb(radio);
 	if (retval < 0)
+<<<<<<< HEAD
 		goto err_all;
+=======
+		goto err_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set initial frequency */
 	si470x_set_freq(radio, 87.5 * FREQ_MUL); /* available in all regions */
@@ -745,6 +890,11 @@ static int si470x_usb_driver_probe(struct usb_interface *intf,
 
 	return 0;
 err_all:
+<<<<<<< HEAD
+=======
+	usb_kill_urb(radio->int_in_urb);
+err_buf:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(radio->buffer);
 err_ctrl:
 	v4l2_ctrl_handler_free(&radio->hdl);
@@ -754,6 +904,11 @@ err_urb:
 	usb_free_urb(radio->int_in_urb);
 err_intbuffer:
 	kfree(radio->int_in_buffer);
+<<<<<<< HEAD
+=======
+err_usbbuf:
+	kfree(radio->usb_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_radio:
 	kfree(radio);
 err_initial:
@@ -816,6 +971,10 @@ static void si470x_usb_driver_disconnect(struct usb_interface *intf)
 	mutex_lock(&radio->lock);
 	v4l2_device_disconnect(&radio->v4l2_dev);
 	video_unregister_device(&radio->videodev);
+<<<<<<< HEAD
+=======
+	usb_kill_urb(radio->int_in_urb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_set_intfdata(intf, NULL);
 	mutex_unlock(&radio->lock);
 	v4l2_device_put(&radio->v4l2_dev);

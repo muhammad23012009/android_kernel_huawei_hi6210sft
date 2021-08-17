@@ -14,6 +14,11 @@
 #ifndef ASM_ARCH_BALLOON3_H
 #define ASM_ARCH_BALLOON3_H
 
+<<<<<<< HEAD
+=======
+#include "irqs.h" /* PXA_NR_BUILTIN_GPIO */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum balloon3_features {
 	BALLOON3_FEATURE_OHCI,
 	BALLOON3_FEATURE_MMC,

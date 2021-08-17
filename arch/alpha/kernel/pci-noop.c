@@ -109,7 +109,11 @@ sys_pciconfig_write(unsigned long bus, unsigned long dfn,
 
 static void *alpha_noop_alloc_coherent(struct device *dev, size_t size,
 				       dma_addr_t *dma_handle, gfp_t gfp,
+<<<<<<< HEAD
 				       struct dma_attrs *attrs)
+=======
+				       unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *ret;
 
@@ -123,6 +127,7 @@ static void *alpha_noop_alloc_coherent(struct device *dev, size_t size,
 	return ret;
 }
 
+<<<<<<< HEAD
 static void alpha_noop_free_coherent(struct device *dev, size_t size,
 				     void *cpu_addr, dma_addr_t dma_addr,
 				     struct dma_attrs *attrs)
@@ -161,11 +166,14 @@ static int alpha_noop_mapping_error(struct device *dev, dma_addr_t dma_addr)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int alpha_noop_supported(struct device *dev, u64 mask)
 {
 	return mask < 0x00ffffffUL ? 0 : 1;
 }
 
+<<<<<<< HEAD
 static int alpha_noop_set_mask(struct device *dev, u64 mask)
 {
 	if (!dev->dma_mask || !dma_supported(dev, mask))
@@ -183,6 +191,15 @@ struct dma_map_ops alpha_noop_ops = {
 	.mapping_error		= alpha_noop_mapping_error,
 	.dma_supported		= alpha_noop_supported,
 	.set_dma_mask		= alpha_noop_set_mask,
+=======
+struct dma_map_ops alpha_noop_ops = {
+	.alloc			= alpha_noop_alloc_coherent,
+	.free			= dma_noop_free_coherent,
+	.map_page		= dma_noop_map_page,
+	.map_sg			= dma_noop_map_sg,
+	.mapping_error		= dma_noop_mapping_error,
+	.dma_supported		= alpha_noop_supported,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct dma_map_ops *dma_ops = &alpha_noop_ops;

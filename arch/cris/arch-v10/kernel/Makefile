@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 # $Id: Makefile,v 1.6 2004/12/13 12:21:51 starvik Exp $
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # Makefile for the linux kernel.
 #

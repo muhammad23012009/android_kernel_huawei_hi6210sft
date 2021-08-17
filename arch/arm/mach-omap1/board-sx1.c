@@ -34,18 +34,29 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/flash.h>
 #include <mach/mux.h>
 #include <linux/omap-dma.h>
 #include <mach/irda.h>
 #include <mach/tc.h>
 #include <mach/board-sx1.h>
+=======
+#include "flash.h"
+#include <mach/mux.h>
+#include <linux/omap-dma.h>
+#include <mach/tc.h>
+#include "board-sx1.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/hardware.h>
 #include <mach/usb.h>
 
 #include "common.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Write to I2C device */
 int sx1_i2c_write_byte(u8 devaddr, u8 regoffset, u8 value)
@@ -228,6 +239,7 @@ static struct platform_device sx1_kp_device = {
 	.resource	= sx1_kp_resources,
 };
 
+<<<<<<< HEAD
 /*----------- IRDA -------------------------*/
 
 static struct omap_irda_config sx1_irda_data = {
@@ -261,6 +273,8 @@ static struct platform_device sx1_irda_device = {
 	.resource	= sx1_irda_resources,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*----------- MTD -------------------------*/
 
 static struct mtd_partition sx1_partitions[] = {
@@ -301,6 +315,7 @@ static struct physmap_flash_data sx1_flash_data = {
 	.nr_parts	= ARRAY_SIZE(sx1_partitions),
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SX1_OLD_FLASH
 /* MTD Intel StrataFlash - old flashes */
 static struct resource sx1_old_flash_resource[] = {
@@ -326,6 +341,8 @@ static struct platform_device sx1_flash_device = {
 	.resource	= &sx1_old_flash_resource,
 };
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* MTD Intel 4000 flash - new flashes */
 static struct resource sx1_new_flash_resource = {
 	.start		= OMAP_CS0_PHYS,
@@ -342,7 +359,10 @@ static struct platform_device sx1_flash_device = {
 	.num_resources	= 1,
 	.resource	= &sx1_new_flash_resource,
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*----------- USB -------------------------*/
 
@@ -366,7 +386,10 @@ static struct omap_lcd_config sx1_lcd_config __initdata = {
 static struct platform_device *sx1_devices[] __initdata = {
 	&sx1_flash_device,
 	&sx1_kp_device,
+<<<<<<< HEAD
 	&sx1_irda_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*-----------------------------------------*/
@@ -405,6 +428,10 @@ MACHINE_START(SX1, "OMAP310 based Siemens SX1")
 	.map_io		= omap15xx_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= omap_sx1_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

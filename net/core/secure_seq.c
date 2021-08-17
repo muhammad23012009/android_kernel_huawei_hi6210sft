@@ -7,6 +7,10 @@
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/net.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <net/secure_seq.h>
 
@@ -15,6 +19,7 @@
 
 static u32 net_secret[NET_SECRET_SIZE] ____cacheline_aligned;
 
+<<<<<<< HEAD
 static void net_secret_init(void)
 {
 	u32 tmp;
@@ -29,6 +34,11 @@ static void net_secret_init(void)
 		} while (!tmp);
 		cmpxchg(&net_secret[--i], 0, tmp);
 	}
+=======
+static __always_inline void net_secret_init(void)
+{
+	net_get_random_once(net_secret, sizeof(net_secret));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -45,7 +55,11 @@ static u32 seq_scale(u32 seq)
 	 *	overlaps less than one time per MSL (2 minutes).
 	 *	Choosing a clock of 64 ns period is OK. (period of 274 s)
 	 */
+<<<<<<< HEAD
 	return seq + (ktime_to_ns(ktime_get_real()) >> 6);
+=======
+	return seq + (ktime_get_real_ns() >> 6);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -145,7 +159,11 @@ u64 secure_dccp_sequence_number(__be32 saddr, __be32 daddr,
 	md5_transform(hash, net_secret);
 
 	seq = hash[0] | (((u64)hash[1]) << 32);
+<<<<<<< HEAD
 	seq += ktime_to_ns(ktime_get_real());
+=======
+	seq += ktime_get_real_ns();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq &= (1ull << 48) - 1;
 
 	return seq;
@@ -164,7 +182,11 @@ u64 secure_dccpv6_sequence_number(__be32 *saddr, __be32 *daddr,
 	net_secret_init();
 	memcpy(hash, saddr, 16);
 	for (i = 0; i < 4; i++)
+<<<<<<< HEAD
 		secret[i] = net_secret[i] + daddr[i];
+=======
+		secret[i] = net_secret[i] + (__force u32)daddr[i];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	secret[4] = net_secret[4] +
 		(((__force u16)sport << 16) + (__force u16)dport);
 	for (i = 5; i < MD5_MESSAGE_BYTES / 4; i++)
@@ -173,7 +195,11 @@ u64 secure_dccpv6_sequence_number(__be32 *saddr, __be32 *daddr,
 	md5_transform(hash, secret);
 
 	seq = hash[0] | (((u64)hash[1]) << 32);
+<<<<<<< HEAD
 	seq += ktime_to_ns(ktime_get_real());
+=======
+	seq += ktime_get_real_ns();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq &= (1ull << 48) - 1;
 
 	return seq;

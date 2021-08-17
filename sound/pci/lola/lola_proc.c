@@ -151,7 +151,11 @@ static void lola_proc_codec_rw_write(struct snd_info_entry *entry,
 	char line[64];
 	unsigned int id, verb, data, extdata;
 	while (!snd_info_get_line(buffer, line, sizeof(line))) {
+<<<<<<< HEAD
 		if (sscanf(line, "%i %i %i %i", &id, &verb, &data, &extdata) != 4)
+=======
+		if (sscanf(line, "%u %u %u %u", &id, &verb, &data, &extdata) != 4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		lola_codec_read(chip, id, verb, data, extdata,
 				&chip->debug_res,

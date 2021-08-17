@@ -132,7 +132,11 @@ static int parse_addr(__le16 *addr, char *str)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dn_node_address_handler(ctl_table *table, int write,
+=======
+static int dn_node_address_handler(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				void __user *buffer,
 				size_t *lenp, loff_t *ppos)
 {
@@ -183,7 +187,11 @@ static int dn_node_address_handler(ctl_table *table, int write,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dn_def_dev_handler(ctl_table *table, int write,
+=======
+static int dn_def_dev_handler(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				void __user *buffer,
 				size_t *lenp, loff_t *ppos)
 {
@@ -246,7 +254,11 @@ static int dn_def_dev_handler(ctl_table *table, int write,
 	return 0;
 }
 
+<<<<<<< HEAD
 static ctl_table dn_table[] = {
+=======
+static struct ctl_table dn_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname = "node_address",
 		.maxlen = 7,

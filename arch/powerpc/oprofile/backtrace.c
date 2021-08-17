@@ -10,8 +10,14 @@
 #include <linux/oprofile.h>
 #include <linux/sched.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/compat.h>
+=======
+#include <linux/uaccess.h>
+#include <asm/compat.h>
+#include <asm/oprofile_impl.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define STACK_SP(STACK)		*(STACK)
 
@@ -104,6 +110,10 @@ void op_powerpc_backtrace(struct pt_regs * const regs, unsigned int depth)
 			first_frame = 0;
 		}
 	} else {
+<<<<<<< HEAD
+=======
+		pagefault_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC64
 		if (!is_32bit_task()) {
 			while (depth--) {
@@ -112,7 +122,11 @@ void op_powerpc_backtrace(struct pt_regs * const regs, unsigned int depth)
 					break;
 				first_frame = 0;
 			}
+<<<<<<< HEAD
 
+=======
+			pagefault_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 		}
 #endif
@@ -123,5 +137,9 @@ void op_powerpc_backtrace(struct pt_regs * const regs, unsigned int depth)
 				break;
 			first_frame = 0;
 		}
+<<<<<<< HEAD
+=======
+		pagefault_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }

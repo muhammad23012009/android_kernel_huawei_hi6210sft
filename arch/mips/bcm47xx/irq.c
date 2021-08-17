@@ -22,6 +22,7 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -29,6 +30,18 @@
 #include <bcm47xx.h>
 
 void plat_irq_dispatch(void)
+=======
+#include "bcm47xx_private.h"
+
+#include <linux/types.h>
+#include <linux/interrupt.h>
+#include <linux/irq.h>
+#include <asm/setup.h>
+#include <asm/irq_cpu.h>
+#include <bcm47xx.h>
+
+asmlinkage void plat_irq_dispatch(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 cause;
 
@@ -50,8 +63,31 @@ void plat_irq_dispatch(void)
 		do_IRQ(6);
 }
 
+<<<<<<< HEAD
 void __init arch_init_irq(void)
 {
+=======
+#define DEFINE_HWx_IRQDISPATCH(x)					\
+	static void bcm47xx_hw ## x ## _irqdispatch(void)		\
+	{								\
+		do_IRQ(x);						\
+	}
+DEFINE_HWx_IRQDISPATCH(2)
+DEFINE_HWx_IRQDISPATCH(3)
+DEFINE_HWx_IRQDISPATCH(4)
+DEFINE_HWx_IRQDISPATCH(5)
+DEFINE_HWx_IRQDISPATCH(6)
+DEFINE_HWx_IRQDISPATCH(7)
+
+void __init arch_init_irq(void)
+{
+	/*
+	 * This is the first arch callback after mm_init (we can use kmalloc),
+	 * so let's finish bus initialization now.
+	 */
+	bcm47xx_bus_setup();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BCM47XX_BCMA
 	if (bcm47xx_bus_type == BCM47XX_BUS_TYPE_BCMA) {
 		bcma_write32(bcm47xx_bus.bcma.bus.drv_mips.core,
@@ -64,4 +100,17 @@ void __init arch_init_irq(void)
 	}
 #endif
 	mips_cpu_irq_init();
+<<<<<<< HEAD
+=======
+
+	if (cpu_has_vint) {
+		pr_info("Setting up vectored interrupts\n");
+		set_vi_handler(2, bcm47xx_hw2_irqdispatch);
+		set_vi_handler(3, bcm47xx_hw3_irqdispatch);
+		set_vi_handler(4, bcm47xx_hw4_irqdispatch);
+		set_vi_handler(5, bcm47xx_hw5_irqdispatch);
+		set_vi_handler(6, bcm47xx_hw6_irqdispatch);
+		set_vi_handler(7, bcm47xx_hw7_irqdispatch);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

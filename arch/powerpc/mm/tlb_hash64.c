@@ -23,7 +23,10 @@
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/percpu.h>
 #include <linux/hardirq.h>
 #include <asm/pgalloc.h>
@@ -31,6 +34,11 @@
 #include <asm/tlb.h>
 #include <asm/bug.h>
 
+<<<<<<< HEAD
+=======
+#include <trace/events/thp.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DEFINE_PER_CPU(struct ppc64_tlb_batch, ppc64_tlb_batch);
 
 /*
@@ -154,7 +162,11 @@ void __flush_tlb_pending(struct ppc64_tlb_batch *batch)
 	batch->index = 0;
 }
 
+<<<<<<< HEAD
 void tlb_flush(struct mmu_gather *tlb)
+=======
+void hash__tlb_flush(struct mmu_gather *tlb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ppc64_tlb_batch *tlbbatch = &get_cpu_var(ppc64_tlb_batch);
 
@@ -183,12 +195,22 @@ void tlb_flush(struct mmu_gather *tlb)
  * since 64K pages may overlap with other bridges when using 64K pages
  * with 4K HW pages on IO space.
  *
+<<<<<<< HEAD
  * Because of that usage pattern, it's only available with CONFIG_HOTPLUG
  * and is implemented for small size rather than speed.
+=======
+ * Because of that usage pattern, it is implemented for small size rather
+ * than speed.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void __flush_hash_table_range(struct mm_struct *mm, unsigned long start,
 			      unsigned long end)
 {
+<<<<<<< HEAD
+=======
+	bool is_thp;
+	int hugepage_shift;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	start = _ALIGN_DOWN(start, PAGE_SIZE);
@@ -206,15 +228,58 @@ void __flush_hash_table_range(struct mm_struct *mm, unsigned long start,
 	local_irq_save(flags);
 	arch_enter_lazy_mmu_mode();
 	for (; start < end; start += PAGE_SIZE) {
+<<<<<<< HEAD
 		pte_t *ptep = find_linux_pte(mm->pgd, start);
+=======
+		pte_t *ptep = find_linux_pte_or_hugepte(mm->pgd, start, &is_thp,
+							&hugepage_shift);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long pte;
 
 		if (ptep == NULL)
 			continue;
 		pte = pte_val(*ptep);
+<<<<<<< HEAD
 		if (!(pte & _PAGE_HASHPTE))
 			continue;
 		hpte_need_flush(mm, start, ptep, pte, 0);
+=======
+		if (is_thp)
+			trace_hugepage_invalidate(start, pte);
+		if (!(pte & H_PAGE_HASHPTE))
+			continue;
+		if (unlikely(is_thp))
+			hpte_do_hugepage_flush(mm, start, (pmd_t *)ptep, pte);
+		else
+			hpte_need_flush(mm, start, ptep, pte, hugepage_shift);
+	}
+	arch_leave_lazy_mmu_mode();
+	local_irq_restore(flags);
+}
+
+void flush_tlb_pmd_range(struct mm_struct *mm, pmd_t *pmd, unsigned long addr)
+{
+	pte_t *pte;
+	pte_t *start_pte;
+	unsigned long flags;
+
+	addr = _ALIGN_DOWN(addr, PMD_SIZE);
+	/* Note: Normally, we should only ever use a batch within a
+	 * PTE locked section. This violates the rule, but will work
+	 * since we don't actually modify the PTEs, we just flush the
+	 * hash while leaving the PTEs intact (including their reference
+	 * to being hashed). This is not the most performance oriented
+	 * way to do things but is fine for our needs here.
+	 */
+	local_irq_save(flags);
+	arch_enter_lazy_mmu_mode();
+	start_pte = pte_offset_map(pmd, addr);
+	for (pte = start_pte; pte < start_pte + PTRS_PER_PTE; pte++) {
+		unsigned long pteval = pte_val(*pte);
+		if (pteval & H_PAGE_HASHPTE)
+			hpte_need_flush(mm, addr, pte, pteval, 0);
+		addr += PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	arch_leave_lazy_mmu_mode();
 	local_irq_restore(flags);

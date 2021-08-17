@@ -78,7 +78,11 @@ struct ps3_bmp {
 /**
  * struct ps3_private - a per cpu data structure
  * @bmp: ps3_bmp structure
+<<<<<<< HEAD
  * @bmp_lock: Syncronize access to bmp.
+=======
+ * @bmp_lock: Synchronize access to bmp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @ipi_debug_brk_mask: Mask for debug break IPIs
  * @ppe_id: HV logical_ppe_id
  * @thread_id: HV thread_id
@@ -192,7 +196,11 @@ static int ps3_virq_setup(enum ps3_cpu_binding cpu, unsigned long outlet,
 
 	*virq = irq_create_mapping(NULL, outlet);
 
+<<<<<<< HEAD
 	if (*virq == NO_IRQ) {
+=======
+	if (!*virq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		FAIL("%s:%d: irq_create_mapping failed: outlet %lu\n",
 			__func__, __LINE__, outlet);
 		result = -ENOMEM;
@@ -339,7 +347,11 @@ int ps3_event_receive_port_setup(enum ps3_cpu_binding cpu, unsigned int *virq)
 	if (result) {
 		FAIL("%s:%d: lv1_construct_event_receive_port failed: %s\n",
 			__func__, __LINE__, ps3_result(result));
+<<<<<<< HEAD
 		*virq = NO_IRQ;
+=======
+		*virq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return result;
 	}
 
@@ -418,7 +430,11 @@ int ps3_sb_event_receive_port_setup(struct ps3_system_bus_device *dev,
 			" failed: %s\n", __func__, __LINE__,
 			ps3_result(result));
 		ps3_event_receive_port_destroy(*virq);
+<<<<<<< HEAD
 		*virq = NO_IRQ;
+=======
+		*virq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return result;
 	}
 
@@ -678,7 +694,12 @@ static int ps3_host_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ps3_host_match(struct irq_domain *h, struct device_node *np)
+=======
+static int ps3_host_match(struct irq_domain *h, struct device_node *np,
+			  enum irq_domain_bus_token bus_token)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* Match all */
 	return 1;
@@ -711,7 +732,11 @@ void __init ps3_register_ipi_irq(unsigned int cpu, unsigned int virq)
 
 static unsigned int ps3_get_irq(void)
 {
+<<<<<<< HEAD
 	struct ps3_private *pd = &__get_cpu_var(ps3_private);
+=======
+	struct ps3_private *pd = this_cpu_ptr(&ps3_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64 x = (pd->bmp.status & pd->bmp.mask);
 	unsigned int plug;
 
@@ -723,12 +748,20 @@ static unsigned int ps3_get_irq(void)
 	asm volatile("cntlzd %0,%1" : "=r" (plug) : "r" (x));
 	plug &= 0x3f;
 
+<<<<<<< HEAD
 	if (unlikely(plug == NO_IRQ)) {
+=======
+	if (unlikely(!plug)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		DBG("%s:%d: no plug found: thread_id %llu\n", __func__,
 			__LINE__, pd->thread_id);
 		dump_bmp(&per_cpu(ps3_private, 0));
 		dump_bmp(&per_cpu(ps3_private, 1));
+<<<<<<< HEAD
 		return NO_IRQ;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 #if defined(DEBUG)

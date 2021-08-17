@@ -29,14 +29,28 @@
 #define CLIENT_HASH_SIZE                (1 << CLIENT_HASH_BITS)
 #define CLIENT_HASH_MASK                (CLIENT_HASH_SIZE - 1)
 
+<<<<<<< HEAD
 #define LOCKOWNER_INO_HASH_BITS		8
 #define LOCKOWNER_INO_HASH_SIZE		(1 << LOCKOWNER_INO_HASH_BITS)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SESSION_HASH_SIZE	512
 
 struct cld_net;
 struct nfsd4_client_tracking_ops;
 
+<<<<<<< HEAD
+=======
+/*
+ * Represents a nfsd "container". With respect to nfsv4 state tracking, the
+ * fields of interest are the *_id_hashtbls and the *_name_tree. These track
+ * the nfs4_client objects by either short or long form clientid.
+ *
+ * Each nfsd_net runs a nfs4_laundromat workqueue job when necessary to clean
+ * up expired clients and delegations within the container.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct nfsd_net {
 	struct cld_net *cld_net;
 
@@ -66,8 +80,11 @@ struct nfsd_net {
 	struct rb_root conf_name_tree;
 	struct list_head *unconf_id_hashtbl;
 	struct rb_root unconf_name_tree;
+<<<<<<< HEAD
 	struct list_head *ownerstr_hashtbl;
 	struct list_head *lockowner_ino_hashtbl;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head *sessionid_hashtbl;
 	/*
 	 * client_lru holds client queue ordered by nfs4_client.cl_time
@@ -82,24 +99,55 @@ struct nfsd_net {
 	struct list_head close_lru;
 	struct list_head del_recall_lru;
 
+<<<<<<< HEAD
+=======
+	/* protected by blocked_locks_lock */
+	struct list_head blocked_locks_lru;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct delayed_work laundromat_work;
 
 	/* client_lock protects the client lru list and session hash table */
 	spinlock_t client_lock;
 
+<<<<<<< HEAD
 	struct file *rec_file;
 	bool in_grace;
 	struct nfsd4_client_tracking_ops *client_tracking_ops;
+=======
+	/* protects blocked_locks_lru */
+	spinlock_t blocked_locks_lock;
+
+	struct file *rec_file;
+	bool in_grace;
+	const struct nfsd4_client_tracking_ops *client_tracking_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	time_t nfsd4_lease;
 	time_t nfsd4_grace;
 
 	bool nfsd_net_up;
+<<<<<<< HEAD
 
 	/*
 	 * Time of server startup
 	 */
 	struct timeval nfssvc_boot;
+=======
+	bool lockd_up;
+
+	/* Time of server startup */
+	struct timeval nfssvc_boot;
+
+	/*
+	 * Max number of connections this nfsd container will allow. Defaults
+	 * to '0' which is means that it bases this on the number of threads.
+	 */
+	unsigned int max_connections;
+
+	u32 clientid_counter;
+	u32 clverifier_counter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct svc_serv *nfsd_serv;
 };

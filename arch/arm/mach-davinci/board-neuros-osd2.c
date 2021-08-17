@@ -26,17 +26,30 @@
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/gpio-davinci.h>
+#include <linux/platform_data/i2c-davinci.h>
+#include <linux/platform_data/mmc-davinci.h>
+#include <linux/platform_data/mtd-davinci.h>
+#include <linux/platform_data/usb-davinci.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
 #include <mach/common.h>
+<<<<<<< HEAD
 #include <linux/platform_data/i2c-davinci.h>
 #include <mach/serial.h>
 #include <mach/mux.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mmc-davinci.h>
 #include <linux/platform_data/usb-davinci.h>
+=======
+#include <mach/serial.h>
+#include <mach/mux.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "davinci.h"
 
@@ -126,8 +139,11 @@ static struct platform_device davinci_fb_device = {
 	.num_resources = 0,
 };
 
+<<<<<<< HEAD
 static struct snd_platform_data dm644x_ntosd2_snd_data;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct gpio_led ntosd2_leds[] = {
 	{ .name = "led1_green", .gpio = GPIO(10), },
 	{ .name = "led1_red",   .gpio = GPIO(11), },
@@ -154,10 +170,13 @@ static struct platform_device *davinci_ntosd2_devices[] __initdata = {
 	&ntosd2_leds_dev,
 };
 
+<<<<<<< HEAD
 static struct davinci_uart_config uart_config __initdata = {
 	.enabled_uarts = (1 << 0),
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init davinci_ntosd2_map_io(void)
 {
 	dm644x_init();
@@ -173,17 +192,33 @@ static struct davinci_mmc_config davinci_ntosd2_mmc_config = {
 
 static __init void davinci_ntosd2_init(void)
 {
+<<<<<<< HEAD
 	struct clk *aemif_clk;
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
 
+=======
+	int ret;
+	struct clk *aemif_clk;
+	struct davinci_soc_info *soc_info = &davinci_soc_info;
+
+	ret = dm644x_gpio_register();
+	if (ret)
+		pr_warn("%s: GPIO init failed: %d\n", __func__, ret);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	aemif_clk = clk_get(NULL, "aemif");
 	clk_prepare_enable(aemif_clk);
 
 	if (HAS_ATA) {
 		if (HAS_NAND)
+<<<<<<< HEAD
 			pr_warning("WARNING: both IDE and Flash are "
 				"enabled, but they share AEMIF pins.\n"
 				"\tDisable IDE for NAND/NOR support.\n");
+=======
+			pr_warn("WARNING: both IDE and Flash are enabled, but they share AEMIF pins\n"
+				"\tDisable IDE for NAND/NOR support\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		davinci_init_ide();
 	} else if (HAS_NAND) {
 		davinci_cfg_reg(DM644X_HPIEN_DISABLE);
@@ -198,8 +233,13 @@ static __init void davinci_ntosd2_init(void)
 	platform_add_devices(davinci_ntosd2_devices,
 				ARRAY_SIZE(davinci_ntosd2_devices));
 
+<<<<<<< HEAD
 	davinci_serial_init(&uart_config);
 	dm644x_init_asp(&dm644x_ntosd2_snd_data);
+=======
+	davinci_serial_init(dm644x_serial_device);
+	dm644x_init_asp();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	soc_info->emac_pdata->phy_id = NEUROS_OSD2_PHY_ID;
 

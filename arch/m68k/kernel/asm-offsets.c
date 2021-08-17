@@ -77,7 +77,11 @@ int main(void)
 	DEFINE(BIR_SIZE, offsetof(struct bi_record, size));
 	DEFINE(BIR_DATA, offsetof(struct bi_record, data));
 
+<<<<<<< HEAD
 	/* offsets into font_desc (drivers/video/console/font.h) */
+=======
+	/* offsets into the font_desc struct */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DEFINE(FONT_DESC_IDX, offsetof(struct font_desc, idx));
 	DEFINE(FONT_DESC_NAME, offsetof(struct font_desc, name));
 	DEFINE(FONT_DESC_WIDTH, offsetof(struct font_desc, width));
@@ -98,6 +102,12 @@ int main(void)
 	DEFINE(CIABBASE, &ciab);
 	DEFINE(C_PRA, offsetof(struct CIA, pra));
 	DEFINE(ZTWOBASE, zTwoBase);
+<<<<<<< HEAD
+=======
+
+	/* enum m68k_fixup_type */
+	DEFINE(M68K_FIXUP_MEMOFFSET, m68k_fixup_memoffset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	return 0;

@@ -70,14 +70,22 @@ static struct resource data_resource = {
 	.name   = "Kernel data",
 	.start  = 0,
 	.end    = 0,
+<<<<<<< HEAD
 	.flags  = IORESOURCE_BUSY | IORESOURCE_MEM
+=======
+	.flags  = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource code_resource = {
 	.name   = "Kernel code",
 	.start  = 0,
 	.end    = 0,
+<<<<<<< HEAD
 	.flags  = IORESOURCE_BUSY | IORESOURCE_MEM
+=======
+	.flags  = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 unsigned long memory_start;

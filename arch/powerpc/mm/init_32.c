@@ -26,7 +26,10 @@
 #include <linux/mm.h>
 #include <linux/stddef.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/highmem.h>
 #include <linux/initrd.h>
 #include <linux/pagemap.h>
@@ -52,7 +55,11 @@
 #if defined(CONFIG_KERNEL_START_BOOL) || defined(CONFIG_LOWMEM_SIZE_BOOL)
 /* The amount of lowmem must be within 0xF0000000 - KERNELBASE. */
 #if (CONFIG_LOWMEM_SIZE > (0xF0000000 - PAGE_OFFSET))
+<<<<<<< HEAD
 #error "You must adjust CONFIG_LOWMEM_SIZE or CONFIG_START_KERNEL"
+=======
+#error "You must adjust CONFIG_LOWMEM_SIZE or CONFIG_KERNEL_START"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #endif
 #define MAX_LOW_MEM	CONFIG_LOWMEM_SIZE
@@ -65,7 +72,11 @@ EXPORT_SYMBOL(memstart_addr);
 phys_addr_t kernstart_addr;
 EXPORT_SYMBOL(kernstart_addr);
 
+<<<<<<< HEAD
 #ifdef CONFIG_RELOCATABLE_PPC32
+=======
+#ifdef CONFIG_RELOCATABLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Used in __va()/__pa() */
 long long virt_phys_offset;
 EXPORT_SYMBOL(virt_phys_offset);
@@ -81,9 +92,12 @@ EXPORT_SYMBOL(agp_special_page);
 
 void MMU_init(void);
 
+<<<<<<< HEAD
 /* XXX should be in current.h  -- paulus */
 extern struct task_struct *current_set[NR_CPUS];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * this tells the system to map all of ram with the segregs
  * (i.e. page tables) instead of the bats.
@@ -103,6 +117,7 @@ unsigned long __max_low_memory = MAX_LOW_MEM;
 /*
  * Check for command-line options that affect what MMU_init will do.
  */
+<<<<<<< HEAD
 void MMU_setup(void)
 {
 	/* Check for nobats option (used in mapin_ram). */
@@ -117,6 +132,22 @@ void MMU_setup(void)
 	__map_without_bats = 1;
 	__map_without_ltlbs = 1;
 #endif
+=======
+void __init MMU_setup(void)
+{
+	/* Check for nobats option (used in mapin_ram). */
+	if (strstr(boot_command_line, "nobats")) {
+		__map_without_bats = 1;
+	}
+
+	if (strstr(boot_command_line, "noltlbs")) {
+		__map_without_ltlbs = 1;
+	}
+	if (debug_pagealloc_enabled()) {
+		__map_without_bats = 1;
+		__map_without_ltlbs = 1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -141,7 +172,11 @@ void __init MMU_init(void)
 	if (memblock.memory.cnt > 1) {
 #ifndef CONFIG_WII
 		memblock_enforce_memory_limit(memblock.memory.regions[0].size);
+<<<<<<< HEAD
 		printk(KERN_WARNING "Only using first contiguous memory region");
+=======
+		pr_warn("Only using first contiguous memory region\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 		wii_memory_fixups();
 #endif
@@ -179,10 +214,13 @@ void __init MMU_init(void)
 	/* Initialize early top-down ioremap allocator */
 	ioremap_bot = IOREMAP_TOP;
 
+<<<<<<< HEAD
 	/* Map in I/O resources */
 	if (ppc_md.progress)
 		ppc_md.progress("MMU:setio", 0x302);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ppc_md.progress)
 		ppc_md.progress("MMU:exit", 0x211);
 
@@ -194,6 +232,7 @@ void __init MMU_init(void)
 	/* Shortly after that, the entire linear mapping will be available */
 	memblock_set_current_limit(lowmem_end_addr);
 }
+<<<<<<< HEAD
 
 /* This is only called until mem_init is done. */
 void __init *early_get_page(void)
@@ -217,3 +256,5 @@ void setup_initial_memory_limit(phys_addr_t first_memblock_base,
 	memblock_set_current_limit(min_t(u64, first_memblock_size, 0x00800000));
 }
 #endif /* CONFIG_8xx */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

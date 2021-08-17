@@ -17,6 +17,12 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#ifndef __DENALI_H__
+#define __DENALI_H__
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/nand.h>
 
 #define DEVICE_RESET				0x0
@@ -175,6 +181,11 @@
 
 #define REVISION				0x370
 #define     REVISION__VALUE				0xffff
+<<<<<<< HEAD
+=======
+#define MAKE_COMPARABLE_REVISION(x)		swab16((x) & REVISION__VALUE)
+#define REVISION_5_1				0x00000501
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ONFI_DEVICE_FEATURES			0x380
 #define     ONFI_DEVICE_FEATURES__VALUE			0x003f
@@ -400,6 +411,7 @@
 #define ONFI_BLOOM_TIME         1
 #define MODE5_WORKAROUND        0
 
+<<<<<<< HEAD
 /* lld_nand.h */
 /*
  * NAND Flash Controller Device Driver
@@ -422,6 +434,8 @@
 
 #ifndef _LLD_NAND_
 #define _LLD_NAND_
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MODE_00    0x00000000
 #define MODE_01    0x04000000
@@ -455,12 +469,19 @@
 
 #define ECC_SECTOR_SIZE     512
 
+<<<<<<< HEAD
 #define DENALI_BUF_SIZE		(NAND_MAX_PAGESIZE + NAND_MAX_OOBSIZE)
 
 struct nand_buf {
 	int head;
 	int tail;
 	uint8_t buf[DENALI_BUF_SIZE];
+=======
+struct nand_buf {
+	int head;
+	int tail;
+	uint8_t *buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_addr_t dma_buf;
 };
 
@@ -469,7 +490,10 @@ struct nand_buf {
 #define DT		3
 
 struct denali_nand_info {
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nand_chip nand;
 	int flash_bank; /* currently selected chip */
 	int status;
@@ -501,4 +525,8 @@ struct denali_nand_info {
 extern int denali_init(struct denali_nand_info *denali);
 extern void denali_remove(struct denali_nand_info *denali);
 
+<<<<<<< HEAD
 #endif /*_LLD_NAND_*/
+=======
+#endif /* __DENALI_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

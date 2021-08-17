@@ -27,7 +27,11 @@
 #include <linux/slab.h>
 #include <linux/clk.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/videobuf2-dma-contig.h>
 
 #include "fimc-core.h"
@@ -56,8 +60,13 @@ static struct fimc_fmt fimc_formats[] = {
 		.colplanes	= 1,
 		.flags		= FMT_FLAGS_M2M,
 	}, {
+<<<<<<< HEAD
 		.name		= "ARGB8888, 32 bpp",
 		.fourcc		= V4L2_PIX_FMT_RGB32,
+=======
+		.name		= "BGRA8888, 32 bpp",
+		.fourcc		= V4L2_PIX_FMT_BGR32,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.depth		= { 32 },
 		.color		= FIMC_FMT_RGB888,
 		.memplanes	= 1,
@@ -81,7 +90,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.flags		= FMT_FLAGS_M2M_OUT | FMT_HAS_ALPHA,
 	}, {
 		.name		= "YUV 4:4:4",
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YUV10_1X30,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YUV10_1X30,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags		= FMT_FLAGS_WRITEBACK,
 	}, {
 		.name		= "YUV 4:2:2 packed, YCbYCr",
@@ -90,7 +103,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_YCBYCR422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YUYV8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 packed, CbYCrY",
@@ -99,7 +116,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_CBYCRY422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_UYVY8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_UYVY8_2X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 packed, CrYCbY",
@@ -108,7 +129,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_CRYCBY422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_VYUY8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_VYUY8_2X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 packed, YCrYCb",
@@ -117,12 +142,20 @@ static struct fimc_fmt fimc_formats[] = {
 		.color		= FIMC_FMT_YCRYCB422,
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_YVYU8_2X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_YVYU8_2X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags		= FMT_FLAGS_M2M | FMT_FLAGS_CAM,
 	}, {
 		.name		= "YUV 4:2:2 planar, Y/Cb/Cr",
 		.fourcc		= V4L2_PIX_FMT_YUV422P,
+<<<<<<< HEAD
 		.depth		= { 12 },
+=======
+		.depth		= { 16 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.color		= FIMC_FMT_YCBYCR422,
 		.memplanes	= 1,
 		.colplanes	= 3,
@@ -190,7 +223,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.depth		= { 8 },
 		.memplanes	= 1,
 		.colplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_JPEG_1X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_JPEG_1X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags		= FMT_FLAGS_CAM | FMT_FLAGS_COMPRESSED,
 	}, {
 		.name		= "S5C73MX interleaved UYVY/JPEG",
@@ -200,7 +237,11 @@ static struct fimc_fmt fimc_formats[] = {
 		.memplanes	= 2,
 		.colplanes	= 1,
 		.mdataplanes	= 0x2, /* plane 1 holds frame meta data */
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_S5C_UYVY_JPEG_1X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags		= FMT_FLAGS_CAM | FMT_FLAGS_COMPRESSED,
 	},
 };
@@ -213,6 +254,7 @@ struct fimc_fmt *fimc_get_format(unsigned int index)
 	return &fimc_formats[index];
 }
 
+<<<<<<< HEAD
 void __fimc_vidioc_querycap(struct device *dev, struct v4l2_capability *cap,
 						unsigned int caps)
 {
@@ -224,6 +266,8 @@ void __fimc_vidioc_querycap(struct device *dev, struct v4l2_capability *cap,
 	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int fimc_check_scaler_ratio(struct fimc_ctx *ctx, int sw, int sh,
 			    int dw, int dh, int rotation)
 {
@@ -461,7 +505,11 @@ void fimc_prepare_dma_offset(struct fimc_ctx *ctx, struct fimc_frame *f)
 	bool pix_hoff = ctx->fimc_dev->drv_data->dma_pix_hoff;
 	u32 i, depth = 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < f->fmt->colplanes; i++)
+=======
+	for (i = 0; i < f->fmt->memplanes; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		depth += f->fmt->depth[i];
 
 	f->dma_offset.y_h = f->offs_h;
@@ -843,6 +891,10 @@ err:
 	return -ENXIO;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int fimc_m2m_suspend(struct fimc_dev *fimc)
 {
 	unsigned long flags;
@@ -881,6 +933,10 @@ static int fimc_m2m_resume(struct fimc_dev *fimc)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_PM */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct of_device_id fimc_of_match[];
 
@@ -1009,6 +1065,7 @@ static int fimc_probe(struct platform_device *pdev)
 
 	ret = devm_request_irq(dev, res->start, fimc_irq_handler,
 			       0, dev_name(dev), fimc);
+<<<<<<< HEAD
 	if (ret) {
 		dev_err(dev, "failed to install irq (%d)\n", ret);
 		goto err_clk;
@@ -1039,18 +1096,54 @@ err_pm:
 err_sd:
 	fimc_unregister_capture_subdev(fimc);
 err_clk:
+=======
+	if (ret < 0) {
+		dev_err(dev, "failed to install irq (%d)\n", ret);
+		goto err_sclk;
+	}
+
+	ret = fimc_initialize_capture_subdev(fimc);
+	if (ret < 0)
+		goto err_sclk;
+
+	platform_set_drvdata(pdev, fimc);
+	pm_runtime_enable(dev);
+
+	if (!pm_runtime_enabled(dev)) {
+		ret = clk_enable(fimc->clock[CLK_GATE]);
+		if (ret < 0)
+			goto err_sd;
+	}
+
+	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
+
+	dev_dbg(dev, "FIMC.%d registered successfully\n", fimc->id);
+	return 0;
+
+err_sd:
+	fimc_unregister_capture_subdev(fimc);
+err_sclk:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_disable(fimc->clock[CLK_BUS]);
 	fimc_clk_put(fimc);
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int fimc_runtime_resume(struct device *dev)
 {
 	struct fimc_dev *fimc =	dev_get_drvdata(dev);
 
 	dbg("fimc%d: state: 0x%lx", fimc->id, fimc->state);
 
+<<<<<<< HEAD
 	/* Enable clocks and perform basic initalization */
+=======
+	/* Enable clocks and perform basic initialization */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_enable(fimc->clock[CLK_GATE]);
 	fimc_hw_reset(fimc);
 
@@ -1076,6 +1169,10 @@ static int fimc_runtime_suspend(struct device *dev)
 	dbg("fimc%d: state: 0x%lx", fimc->id, fimc->state);
 	return ret;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PM_SLEEP
 static int fimc_resume(struct device *dev)
@@ -1121,10 +1218,19 @@ static int fimc_remove(struct platform_device *pdev)
 	struct fimc_dev *fimc = platform_get_drvdata(pdev);
 
 	pm_runtime_disable(&pdev->dev);
+<<<<<<< HEAD
 	pm_runtime_set_suspended(&pdev->dev);
 
 	fimc_unregister_capture_subdev(fimc);
 	vb2_dma_contig_cleanup_ctx(fimc->alloc_ctx);
+=======
+	if (!pm_runtime_status_suspended(&pdev->dev))
+		clk_disable(fimc->clock[CLK_GATE]);
+	pm_runtime_set_suspended(&pdev->dev);
+
+	fimc_unregister_capture_subdev(fimc);
+	vb2_dma_contig_clear_max_seg_size(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clk_disable(fimc->clock[CLK_BUS]);
 	fimc_clk_put(fimc);
@@ -1155,6 +1261,7 @@ static const struct fimc_pix_limit s5p_pix_limit[4] = {
 	},
 };
 
+<<<<<<< HEAD
 static const struct fimc_variant fimc0_variant_s5p = {
 	.has_inp_rot	 = 1,
 	.has_out_rot	 = 1,
@@ -1175,6 +1282,8 @@ static const struct fimc_variant fimc2_variant_s5p = {
 	.pix_limit	 = &s5p_pix_limit[1],
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct fimc_variant fimc0_variant_s5pv210 = {
 	.has_inp_rot	 = 1,
 	.has_out_rot	 = 1,
@@ -1207,6 +1316,7 @@ static const struct fimc_variant fimc2_variant_s5pv210 = {
 	.pix_limit	 = &s5p_pix_limit[2],
 };
 
+<<<<<<< HEAD
 /* S5PC100 */
 static const struct fimc_drvdata fimc_drvdata_s5p = {
 	.variant = {
@@ -1219,6 +1329,8 @@ static const struct fimc_drvdata fimc_drvdata_s5p = {
 	.out_buf_count	= 4,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* S5PV210, S5PC110 */
 static const struct fimc_drvdata fimc_drvdata_s5pv210 = {
 	.variant = {
@@ -1252,6 +1364,7 @@ static const struct fimc_drvdata fimc_drvdata_exynos4x12 = {
 	.out_buf_count	= 32,
 };
 
+<<<<<<< HEAD
 static const struct platform_device_id fimc_driver_ids[] = {
 	{
 		.name		= "s5p-fimc",
@@ -1269,6 +1382,8 @@ static const struct platform_device_id fimc_driver_ids[] = {
 	{ },
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id fimc_of_match[] = {
 	{
 		.compatible = "samsung,s5pv210-fimc",
@@ -1291,11 +1406,17 @@ static const struct dev_pm_ops fimc_pm_ops = {
 static struct platform_driver fimc_driver = {
 	.probe		= fimc_probe,
 	.remove		= fimc_remove,
+<<<<<<< HEAD
 	.id_table	= fimc_driver_ids,
 	.driver = {
 		.of_match_table = fimc_of_match,
 		.name		= FIMC_DRIVER_NAME,
 		.owner		= THIS_MODULE,
+=======
+	.driver = {
+		.of_match_table = fimc_of_match,
+		.name		= FIMC_DRIVER_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm     	= &fimc_pm_ops,
 	}
 };

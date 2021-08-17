@@ -288,8 +288,15 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 	u8 *data;
 	int len;
 
+<<<<<<< HEAD
 	if (skb->len < sizeof(int))
 		printk(KERN_ERR "%s: PH_CONTROL message too short\n", __func__);
+=======
+	if (skb->len < sizeof(int)) {
+		printk(KERN_ERR "%s: PH_CONTROL message too short\n", __func__);
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cont = *((int *)skb->data);
 	len = skb->len - sizeof(int);
 	data = skb->data + sizeof(int);
@@ -458,7 +465,11 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 		}
 		if (dsp_debug & DEBUG_DSP_CORE)
 			printk(KERN_DEBUG "%s: enable mixing of "
+<<<<<<< HEAD
 			       "tx-data with conf mebers\n", __func__);
+=======
+			       "tx-data with conf members\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dsp->tx_mix = 1;
 		dsp_cmx_hardware(dsp->conf, dsp);
 		dsp_rx_off(dsp);
@@ -472,7 +483,11 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 		}
 		if (dsp_debug & DEBUG_DSP_CORE)
 			printk(KERN_DEBUG "%s: disable mixing of "
+<<<<<<< HEAD
 			       "tx-data with conf mebers\n", __func__);
+=======
+			       "tx-data with conf members\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dsp->tx_mix = 0;
 		dsp_cmx_hardware(dsp->conf, dsp);
 		dsp_rx_off(dsp);

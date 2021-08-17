@@ -26,6 +26,11 @@
 #include <asm/thread_info.h>
 #include <asm/kexec.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/mmu.h>
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.text
 
@@ -34,12 +39,17 @@ _GLOBAL(call_do_softirq)
 	std	r0,16(r1)
 	stdu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r3)
 	mr	r1,r3
+<<<<<<< HEAD
 	bl	.__do_softirq
+=======
+	bl	__do_softirq
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ld	r1,0(r1)
 	ld	r0,16(r1)
 	mtlr	r0
 	blr
 
+<<<<<<< HEAD
 _GLOBAL(call_handle_irq)
 	ld	r8,0(r6)
 	mflr	r0
@@ -48,6 +58,14 @@ _GLOBAL(call_handle_irq)
 	stdu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r5)
 	mr	r1,r5
 	bctrl
+=======
+_GLOBAL(call_do_irq)
+	mflr	r0
+	std	r0,16(r1)
+	stdu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r4)
+	mr	r1,r4
+	bl	__do_irq
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ld	r1,0(r1)
 	ld	r0,16(r1)
 	mtlr	r0
@@ -67,8 +85,16 @@ PPC64_CACHES:
  *   flush all bytes from start through stop-1 inclusive
  */
 
+<<<<<<< HEAD
 _KPROBE(__flush_icache_range)
 
+=======
+_GLOBAL_TOC(flush_icache_range)
+BEGIN_FTR_SECTION
+	PURGE_PREFETCHED_INS
+	blr
+END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Flush the data cache to memory 
  * 
@@ -107,7 +133,13 @@ _KPROBE(__flush_icache_range)
 	bdnz	2b
 	isync
 	blr
+<<<<<<< HEAD
 	.previous .text
+=======
+_ASM_NOKPROBE_SYMBOL(flush_icache_range)
+EXPORT_SYMBOL(flush_icache_range)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Like above, but only do the D-cache.
  *
@@ -115,7 +147,11 @@ _KPROBE(__flush_icache_range)
  *
  *    flush all bytes from start to stop-1 inclusive
  */
+<<<<<<< HEAD
 _GLOBAL(flush_dcache_range)
+=======
+_GLOBAL_TOC(flush_dcache_range)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Flush the data cache to memory 
@@ -137,6 +173,10 @@ _GLOBAL(flush_dcache_range)
 	bdnz	0b
 	sync
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(flush_dcache_range)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Like above, but works on non-mapped physical addresses.
@@ -211,6 +251,14 @@ _GLOBAL(__flush_dcache_icache)
  * Different systems have different cache line sizes
  */
 
+<<<<<<< HEAD
+=======
+BEGIN_FTR_SECTION
+	PURGE_PREFETCHED_INS
+	blr
+END_FTR_SECTION_IFSET(CPU_FTR_COHERENT_ICACHE)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Flush the dcache */
  	ld	r7,PPC64_CACHES@toc(r2)
 	clrrdi	r3,r3,PAGE_SHIFT           	    /* Page align */
@@ -235,6 +283,10 @@ _GLOBAL(__flush_dcache_icache)
 	blr
 
 _GLOBAL(__bswapdi2)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__bswapdi2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	srdi	r8,r3,32
 	rlwinm	r7,r3,8,0xffffffff
 	rlwimi	r7,r3,24,0,7
@@ -246,7 +298,45 @@ _GLOBAL(__bswapdi2)
 	or	r3,r7,r9
 	blr
 
+<<<<<<< HEAD
 #if defined(CONFIG_PPC_PMAC) || defined(CONFIG_PPC_MAPLE)
+=======
+
+#ifdef CONFIG_PPC_EARLY_DEBUG_BOOTX
+_GLOBAL(rmci_on)
+	sync
+	isync
+	li	r3,0x100
+	rldicl	r3,r3,32,0
+	mfspr	r5,SPRN_HID4
+	or	r5,r5,r3
+	sync
+	mtspr	SPRN_HID4,r5
+	isync
+	slbia
+	isync
+	sync
+	blr
+
+_GLOBAL(rmci_off)
+	sync
+	isync
+	li	r3,0x100
+	rldicl	r3,r3,32,0
+	mfspr	r5,SPRN_HID4
+	andc	r5,r5,r3
+	sync
+	mtspr	SPRN_HID4,r5
+	isync
+	slbia
+	isync
+	sync
+	blr
+#endif /* CONFIG_PPC_EARLY_DEBUG_BOOTX */
+
+#if defined(CONFIG_PPC_PMAC) || defined(CONFIG_PPC_MAPLE)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Do an IO access in real mode
  */
@@ -416,6 +506,7 @@ _GLOBAL(scom970_write)
 	blr
 #endif /* CONFIG_CPU_FREQ_PMAC64 || CONFIG_CPU_FREQ_MAPLE */
 
+<<<<<<< HEAD
 
 /*
  * disable_kernel_fp()
@@ -429,6 +520,8 @@ _GLOBAL(disable_kernel_fp)
 	isync
 	blr
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* kexec_wait(phys_cpu)
  *
  * wait for the flag to change, indicating this kernel is going away but
@@ -448,9 +541,26 @@ _GLOBAL(kexec_wait)
 #ifdef CONFIG_KEXEC		/* use no memory without kexec */
 	lwz	r4,0(r5)
 	cmpwi	0,r4,0
+<<<<<<< HEAD
 	bnea	0x60
 #endif
 	b	99b
+=======
+	beq	99b
+#ifdef CONFIG_PPC_BOOK3S_64
+	li	r10,0x60
+	mfmsr	r11
+	clrrdi	r11,r11,1	/* Clear MSR_LE */
+	mtsrr0	r10
+	mtsrr1	r11
+	rfid
+#else
+	/* Create TLB entry in book3e_secondary_core_init */
+	li	r4,0
+	ba	0x60
+#endif
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* this can be in text because we won't change it until we are
  * running in real anyways
@@ -460,6 +570,54 @@ kexec_flag:
 
 
 #ifdef CONFIG_KEXEC
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_BOOK3E
+/*
+ * BOOK3E has no real MMU mode, so we have to setup the initial TLB
+ * for a core to identity map v:0 to p:0.  This current implementation
+ * assumes that 1G is enough for kexec.
+ */
+kexec_create_tlb:
+	/*
+	 * Invalidate all non-IPROT TLB entries to avoid any TLB conflict.
+	 * IPROT TLB entries should be >= PAGE_OFFSET and thus not conflict.
+	 */
+	PPC_TLBILX_ALL(0,R0)
+	sync
+	isync
+
+	mfspr	r10,SPRN_TLB1CFG
+	andi.	r10,r10,TLBnCFG_N_ENTRY	/* Extract # entries */
+	subi	r10,r10,1	/* Last entry: no conflict with kernel text */
+	lis	r9,MAS0_TLBSEL(1)@h
+	rlwimi	r9,r10,16,4,15		/* Setup MAS0 = TLBSEL | ESEL(r9) */
+
+/* Set up a temp identity mapping v:0 to p:0 and return to it. */
+#if defined(CONFIG_SMP) || defined(CONFIG_PPC_E500MC)
+#define M_IF_NEEDED	MAS2_M
+#else
+#define M_IF_NEEDED	0
+#endif
+	mtspr	SPRN_MAS0,r9
+
+	lis	r9,(MAS1_VALID|MAS1_IPROT)@h
+	ori	r9,r9,(MAS1_TSIZE(BOOK3E_PAGESZ_1GB))@l
+	mtspr	SPRN_MAS1,r9
+
+	LOAD_REG_IMMEDIATE(r9, 0x0 | M_IF_NEEDED)
+	mtspr	SPRN_MAS2,r9
+
+	LOAD_REG_IMMEDIATE(r9, 0x0 | MAS3_SR | MAS3_SW | MAS3_SX)
+	mtspr	SPRN_MAS3,r9
+	li	r9,0
+	mtspr	SPRN_MAS7,r9
+
+	tlbwe
+	isync
+	blr
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* kexec_smp_wait(void)
  *
@@ -479,7 +637,11 @@ _GLOBAL(kexec_smp_wait)
 	stb	r4,PACAKEXECSTATE(r13)
 	SYNC
 
+<<<<<<< HEAD
 	b	.kexec_wait
+=======
+	b	kexec_wait
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * switch to real mode (turn mmu off)
@@ -489,6 +651,13 @@ _GLOBAL(kexec_smp_wait)
  * don't overwrite r3 here, it is live for kexec_wait above.
  */
 real_mode:	/* assume normal blr return */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_BOOK3E
+	/* Create an identity mapping. */
+	b	kexec_create_tlb
+#else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 1:	li	r9,MSR_RI
 	li	r10,MSR_DR|MSR_IR
 	mflr	r11		/* return address to SRR0 */
@@ -500,10 +669,18 @@ real_mode:	/* assume normal blr return */
 	mtspr	SPRN_SRR1,r10
 	mtspr	SPRN_SRR0,r11
 	rfid
+<<<<<<< HEAD
 
 
 /*
  * kexec_sequence(newstack, start, image, control, clear_all())
+=======
+#endif
+
+/*
+ * kexec_sequence(newstack, start, image, control, clear_all(),
+	          copy_with_mmu_off)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * does the grungy work with stack switching and real mode switches
  * also does simple calls to other code
@@ -539,6 +716,7 @@ _GLOBAL(kexec_sequence)
 	mr	r29,r5			/* image (virt) */
 	mr	r28,r6			/* control, unused */
 	mr	r27,r7			/* clear_all() fn desc */
+<<<<<<< HEAD
 	mr	r26,r8			/* spare */
 	lhz	r25,PACAHWCPUID(r13)	/* get our phys cpu from paca */
 
@@ -560,6 +738,42 @@ _GLOBAL(kexec_sequence)
 	li	r5,0x100
 	li	r6,0
 	bl	.copy_and_flush	/* (dest, src, copy limit, start offset) */
+=======
+	mr	r26,r8			/* copy_with_mmu_off */
+	lhz	r25,PACAHWCPUID(r13)	/* get our phys cpu from paca */
+
+	/* disable interrupts, we are overwriting kernel data next */
+#ifdef CONFIG_PPC_BOOK3E
+	wrteei	0
+#else
+	mfmsr	r3
+	rlwinm	r3,r3,0,17,15
+	mtmsrd	r3,1
+#endif
+
+	/* We need to turn the MMU off unless we are in hash mode
+	 * under a hypervisor
+	 */
+	cmpdi	r26,0
+	beq	1f
+	bl	real_mode
+1:
+	/* copy dest pages, flush whole dest image */
+	mr	r3,r29
+	bl	kexec_copy_flush	/* (image) */
+
+	/* turn off mmu now if not done earlier */
+	cmpdi	r26,0
+	bne	1f
+	bl	real_mode
+
+	/* copy  0x100 bytes starting at start to 0 */
+1:	li	r3,0
+	mr	r4,r30		/* start, aka phys mem offset */
+	li	r5,0x100
+	li	r6,0
+	bl	copy_and_flush	/* (dest, src, copy limit, start offset) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 1:	/* assume normal blr return */
 
 	/* release other cpus to the new kernel secondary start at 0x60 */
@@ -567,10 +781,24 @@ _GLOBAL(kexec_sequence)
 	li	r6,1
 	stw	r6,kexec_flag-1b(5)
 
+<<<<<<< HEAD
 	/* clear out hardware hash page table and tlb */
 	ld	r5,0(r27)		/* deref function descriptor */
 	mtctr	r5
 	bctrl				/* ppc_md.hpte_clear_all(void); */
+=======
+	cmpdi	r27,0
+	beq	1f
+
+	/* clear out hardware hash page table and tlb */
+#ifdef PPC64_ELF_ABI_v1
+	ld	r12,0(r27)		/* deref function descriptor */
+#else
+	mr	r12,r27
+#endif
+	mtctr	r12
+	bctrl				/* mmu_hash_ops.hpte_clear_all(void); */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *   kexec image calling is:
@@ -597,7 +825,11 @@ _GLOBAL(kexec_sequence)
  *    are the boot cpu ?????
  *    other device tree differences (prop sizes, va vs pa, etc)...
  */
+<<<<<<< HEAD
 	mr	r3,r25	# my phys cpu
+=======
+1:	mr	r3,r25	# my phys cpu
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mr	r4,r30	# start, aka phys mem offset
 	mtlr	4
 	li	r5,0

@@ -19,7 +19,11 @@
  * string once.
  */
 
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.text
 
 	.align 4
@@ -52,3 +56,7 @@ $found:	cttz	$2, $3		# U0 :
 	br	__stxcpy	# L0 :
 
 	.end strcat
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strcat)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

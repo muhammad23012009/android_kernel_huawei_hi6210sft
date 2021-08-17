@@ -10,6 +10,7 @@
  */
 
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
 #include <linux/of_irq.h>
@@ -43,14 +44,41 @@ static void __init mmp2_dt_init(void)
 }
 
 static const char *mmp2_dt_board_compat[] __initdata = {
+=======
+#include <linux/irqchip.h>
+#include <linux/of_platform.h>
+#include <linux/clk-provider.h>
+#include <asm/mach/arch.h>
+#include <asm/mach/time.h>
+#include <asm/hardware/cache-tauros2.h>
+
+#include "common.h"
+
+extern void __init mmp_dt_init_timer(void);
+
+static void __init mmp_init_time(void)
+{
+#ifdef CONFIG_CACHE_TAUROS2
+	tauros2_init(0);
+#endif
+	mmp_dt_init_timer();
+	of_clk_init(NULL);
+}
+
+static const char *const mmp2_dt_board_compat[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"mrvl,mmp2-brownstone",
 	NULL,
 };
 
 DT_MACHINE_START(MMP2_DT, "Marvell MMP2 (Device Tree Support)")
 	.map_io		= mmp_map_io,
+<<<<<<< HEAD
 	.init_irq	= mmp_dt_irq_init,
 	.init_time	= mmp_dt_init_timer,
 	.init_machine	= mmp2_dt_init,
+=======
+	.init_time	= mmp_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dt_compat	= mmp2_dt_board_compat,
 MACHINE_END

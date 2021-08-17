@@ -13,6 +13,10 @@
 #include <linux/init.h>
 #include <linux/ioport.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -23,6 +27,10 @@
 #include <linux/mmc/pm.h>
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
+<<<<<<< HEAD
+=======
+#include <linux/mmc/slot-gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/amba/bus.h>
 #include <linux/clk.h>
 #include <linux/scatterlist.h>
@@ -36,8 +44,16 @@
 #include <linux/types.h>
 #include <linux/pinctrl/consumer.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 #include "mmci.h"
+=======
+#include <asm/div64.h>
+#include <asm/io.h>
+
+#include "mmci.h"
+#include "mmci_qcom_dml.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_NAME "mmci-pl18x"
 
@@ -47,21 +63,48 @@ static unsigned int fmax = 515633;
  * struct variant_data - MMCI variant-specific quirks
  * @clkreg: default value for MCICLOCK register
  * @clkreg_enable: enable value for MMCICLOCK register
+<<<<<<< HEAD
+=======
+ * @clkreg_8bit_bus_enable: enable value for 8 bit bus
+ * @clkreg_neg_edge_enable: enable value for inverted data/cmd output
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @datalength_bits: number of bits in the MMCIDATALENGTH register
  * @fifosize: number of bytes that can be written when MMCI_TXFIFOEMPTY
  *	      is asserted (likewise for RX)
  * @fifohalfsize: number of bytes that can be written when MCI_TXFIFOHALFEMPTY
  *		  is asserted (likewise for RX)
+<<<<<<< HEAD
  * @sdio: variant supports SDIO
  * @st_clkdiv: true if using a ST-specific clock divider algorithm
  * @blksz_datactrl16: true if Block size is at b16..b30 position in datactrl register
  * @pwrreg_powerup: power up value for MMCIPOWER register
  * @signal_direction: input/out direction of bus signals can be indicated
  * @pwrreg_clkgate: MMCIPOWER register must be used to gate the clock
+=======
+ * @data_cmd_enable: enable value for data commands.
+ * @st_sdio: enable ST specific SDIO logic
+ * @st_clkdiv: true if using a ST-specific clock divider algorithm
+ * @datactrl_mask_ddrmode: ddr mode mask in datactrl register.
+ * @blksz_datactrl16: true if Block size is at b16..b30 position in datactrl register
+ * @blksz_datactrl4: true if Block size is at b4..b16 position in datactrl
+ *		     register
+ * @datactrl_mask_sdio: SDIO enable mask in datactrl register
+ * @pwrreg_powerup: power up value for MMCIPOWER register
+ * @f_max: maximum clk frequency supported by the controller.
+ * @signal_direction: input/out direction of bus signals can be indicated
+ * @pwrreg_clkgate: MMCIPOWER register must be used to gate the clock
+ * @busy_detect: true if busy detection on dat0 is supported
+ * @pwrreg_nopower: bits in MMCIPOWER don't controls ext. power supply
+ * @explicit_mclk_control: enable explicit mclk control in driver.
+ * @qcom_fifo: enables qcom specific fifo pio read logic.
+ * @qcom_dml: enables qcom specific dma glue for dma transfers.
+ * @reversed_irq_handling: handle data irq before cmd irq.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct variant_data {
 	unsigned int		clkreg;
 	unsigned int		clkreg_enable;
+<<<<<<< HEAD
 	unsigned int		datalength_bits;
 	unsigned int		fifosize;
 	unsigned int		fifohalfsize;
@@ -71,6 +114,30 @@ struct variant_data {
 	u32			pwrreg_powerup;
 	bool			signal_direction;
 	bool			pwrreg_clkgate;
+=======
+	unsigned int		clkreg_8bit_bus_enable;
+	unsigned int		clkreg_neg_edge_enable;
+	unsigned int		datalength_bits;
+	unsigned int		fifosize;
+	unsigned int		fifohalfsize;
+	unsigned int		data_cmd_enable;
+	unsigned int		datactrl_mask_ddrmode;
+	unsigned int		datactrl_mask_sdio;
+	bool			st_sdio;
+	bool			st_clkdiv;
+	bool			blksz_datactrl16;
+	bool			blksz_datactrl4;
+	u32			pwrreg_powerup;
+	u32			f_max;
+	bool			signal_direction;
+	bool			pwrreg_clkgate;
+	bool			busy_detect;
+	bool			pwrreg_nopower;
+	bool			explicit_mclk_control;
+	bool			qcom_fifo;
+	bool			qcom_dml;
+	bool			reversed_irq_handling;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct variant_data variant_arm = {
@@ -78,6 +145,11 @@ static struct variant_data variant_arm = {
 	.fifohalfsize		= 8 * 4,
 	.datalength_bits	= 16,
 	.pwrreg_powerup		= MCI_PWR_UP,
+<<<<<<< HEAD
+=======
+	.f_max			= 100000000,
+	.reversed_irq_handling	= true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct variant_data variant_arm_extended_fifo = {
@@ -85,6 +157,10 @@ static struct variant_data variant_arm_extended_fifo = {
 	.fifohalfsize		= 64 * 4,
 	.datalength_bits	= 16,
 	.pwrreg_powerup		= MCI_PWR_UP,
+<<<<<<< HEAD
+=======
+	.f_max			= 100000000,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct variant_data variant_arm_extended_fifo_hwfc = {
@@ -93,29 +169,58 @@ static struct variant_data variant_arm_extended_fifo_hwfc = {
 	.clkreg_enable		= MCI_ARM_HWFCEN,
 	.datalength_bits	= 16,
 	.pwrreg_powerup		= MCI_PWR_UP,
+<<<<<<< HEAD
+=======
+	.f_max			= 100000000,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct variant_data variant_u300 = {
 	.fifosize		= 16 * 4,
 	.fifohalfsize		= 8 * 4,
 	.clkreg_enable		= MCI_ST_U300_HWFCEN,
+<<<<<<< HEAD
 	.datalength_bits	= 16,
 	.sdio			= true,
 	.pwrreg_powerup		= MCI_PWR_ON,
 	.signal_direction	= true,
 	.pwrreg_clkgate		= true,
+=======
+	.clkreg_8bit_bus_enable = MCI_ST_8BIT_BUS,
+	.datalength_bits	= 16,
+	.datactrl_mask_sdio	= MCI_ST_DPSM_SDIOEN,
+	.st_sdio			= true,
+	.pwrreg_powerup		= MCI_PWR_ON,
+	.f_max			= 100000000,
+	.signal_direction	= true,
+	.pwrreg_clkgate		= true,
+	.pwrreg_nopower		= true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct variant_data variant_nomadik = {
 	.fifosize		= 16 * 4,
 	.fifohalfsize		= 8 * 4,
 	.clkreg			= MCI_CLK_ENABLE,
+<<<<<<< HEAD
 	.datalength_bits	= 24,
 	.sdio			= true,
 	.st_clkdiv		= true,
 	.pwrreg_powerup		= MCI_PWR_ON,
 	.signal_direction	= true,
 	.pwrreg_clkgate		= true,
+=======
+	.clkreg_8bit_bus_enable = MCI_ST_8BIT_BUS,
+	.datalength_bits	= 24,
+	.datactrl_mask_sdio	= MCI_ST_DPSM_SDIOEN,
+	.st_sdio		= true,
+	.st_clkdiv		= true,
+	.pwrreg_powerup		= MCI_PWR_ON,
+	.f_max			= 100000000,
+	.signal_direction	= true,
+	.pwrreg_clkgate		= true,
+	.pwrreg_nopower		= true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct variant_data variant_ux500 = {
@@ -123,12 +228,27 @@ static struct variant_data variant_ux500 = {
 	.fifohalfsize		= 8 * 4,
 	.clkreg			= MCI_CLK_ENABLE,
 	.clkreg_enable		= MCI_ST_UX500_HWFCEN,
+<<<<<<< HEAD
 	.datalength_bits	= 24,
 	.sdio			= true,
 	.st_clkdiv		= true,
 	.pwrreg_powerup		= MCI_PWR_ON,
 	.signal_direction	= true,
 	.pwrreg_clkgate		= true,
+=======
+	.clkreg_8bit_bus_enable = MCI_ST_8BIT_BUS,
+	.clkreg_neg_edge_enable	= MCI_ST_UX500_NEG_EDGE,
+	.datalength_bits	= 24,
+	.datactrl_mask_sdio	= MCI_ST_DPSM_SDIOEN,
+	.st_sdio		= true,
+	.st_clkdiv		= true,
+	.pwrreg_powerup		= MCI_PWR_ON,
+	.f_max			= 100000000,
+	.signal_direction	= true,
+	.pwrreg_clkgate		= true,
+	.busy_detect		= true,
+	.pwrreg_nopower		= true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct variant_data variant_ux500v2 = {
@@ -136,6 +256,7 @@ static struct variant_data variant_ux500v2 = {
 	.fifohalfsize		= 8 * 4,
 	.clkreg			= MCI_CLK_ENABLE,
 	.clkreg_enable		= MCI_ST_UX500_HWFCEN,
+<<<<<<< HEAD
 	.datalength_bits	= 24,
 	.sdio			= true,
 	.st_clkdiv		= true,
@@ -145,6 +266,56 @@ static struct variant_data variant_ux500v2 = {
 	.pwrreg_clkgate		= true,
 };
 
+=======
+	.clkreg_8bit_bus_enable = MCI_ST_8BIT_BUS,
+	.clkreg_neg_edge_enable	= MCI_ST_UX500_NEG_EDGE,
+	.datactrl_mask_ddrmode	= MCI_ST_DPSM_DDRMODE,
+	.datalength_bits	= 24,
+	.datactrl_mask_sdio	= MCI_ST_DPSM_SDIOEN,
+	.st_sdio		= true,
+	.st_clkdiv		= true,
+	.blksz_datactrl16	= true,
+	.pwrreg_powerup		= MCI_PWR_ON,
+	.f_max			= 100000000,
+	.signal_direction	= true,
+	.pwrreg_clkgate		= true,
+	.busy_detect		= true,
+	.pwrreg_nopower		= true,
+};
+
+static struct variant_data variant_qcom = {
+	.fifosize		= 16 * 4,
+	.fifohalfsize		= 8 * 4,
+	.clkreg			= MCI_CLK_ENABLE,
+	.clkreg_enable		= MCI_QCOM_CLK_FLOWENA |
+				  MCI_QCOM_CLK_SELECT_IN_FBCLK,
+	.clkreg_8bit_bus_enable = MCI_QCOM_CLK_WIDEBUS_8,
+	.datactrl_mask_ddrmode	= MCI_QCOM_CLK_SELECT_IN_DDR_MODE,
+	.data_cmd_enable	= MCI_QCOM_CSPM_DATCMD,
+	.blksz_datactrl4	= true,
+	.datalength_bits	= 24,
+	.pwrreg_powerup		= MCI_PWR_UP,
+	.f_max			= 208000000,
+	.explicit_mclk_control	= true,
+	.qcom_fifo		= true,
+	.qcom_dml		= true,
+};
+
+static int mmci_card_busy(struct mmc_host *mmc)
+{
+	struct mmci_host *host = mmc_priv(mmc);
+	unsigned long flags;
+	int busy = 0;
+
+	spin_lock_irqsave(&host->lock, flags);
+	if (readl(host->base + MMCISTATUS) & MCI_ST_CARDBUSY)
+		busy = 1;
+	spin_unlock_irqrestore(&host->lock, flags);
+
+	return busy;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Validate mmc prerequisites
  */
@@ -163,6 +334,24 @@ static int mmci_validate_data(struct mmci_host *host,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void mmci_reg_delay(struct mmci_host *host)
+{
+	/*
+	 * According to the spec, at least three feedback clock cycles
+	 * of max 52 MHz must pass between two writes to the MMCICLOCK reg.
+	 * Three MCLK clock cycles must pass between two MMCIPOWER reg writes.
+	 * Worst delay time during card init is at 100 kHz => 30 us.
+	 * Worst delay time when up and running is at 25 MHz => 120 ns.
+	 */
+	if (host->cclk < 25000000)
+		udelay(30);
+	else
+		ndelay(120);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This must be called with host->lock held
  */
@@ -188,13 +377,40 @@ static void mmci_write_pwrreg(struct mmci_host *host, u32 pwr)
 /*
  * This must be called with host->lock held
  */
+<<<<<<< HEAD
+=======
+static void mmci_write_datactrlreg(struct mmci_host *host, u32 datactrl)
+{
+	/* Keep ST Micro busy mode if enabled */
+	datactrl |= host->datactrl_reg & MCI_ST_DPSM_BUSYMODE;
+
+	if (host->datactrl_reg != datactrl) {
+		host->datactrl_reg = datactrl;
+		writel(datactrl, host->base + MMCIDATACTRL);
+	}
+}
+
+/*
+ * This must be called with host->lock held
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 {
 	struct variant_data *variant = host->variant;
 	u32 clk = variant->clkreg;
 
+<<<<<<< HEAD
 	if (desired) {
 		if (desired >= host->mclk) {
+=======
+	/* Make sure cclk reflects the current calculated clock */
+	host->cclk = 0;
+
+	if (desired) {
+		if (variant->explicit_mclk_control) {
+			host->cclk = host->mclk;
+		} else if (desired >= host->mclk) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clk = MCI_CLK_BYPASS;
 			if (variant->st_clkdiv)
 				clk |= MCI_ST_UX500_NEG_EDGE;
@@ -227,6 +443,7 @@ static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 		/* clk |= MCI_CLK_PWRSAVE; */
 	}
 
+<<<<<<< HEAD
 	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_4)
 		clk |= MCI_4BIT_BUS;
 	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_8)
@@ -234,6 +451,19 @@ static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 
 	if (host->mmc->ios.timing == MMC_TIMING_UHS_DDR50)
 		clk |= MCI_ST_UX500_NEG_EDGE;
+=======
+	/* Set actual clock for debug */
+	host->mmc->actual_clock = host->cclk;
+
+	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_4)
+		clk |= MCI_4BIT_BUS;
+	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_8)
+		clk |= variant->clkreg_8bit_bus_enable;
+
+	if (host->mmc->ios.timing == MMC_TIMING_UHS_DDR50 ||
+	    host->mmc->ios.timing == MMC_TIMING_MMC_DDR52)
+		clk |= variant->clkreg_neg_edge_enable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mmci_write_clkreg(host, clk);
 }
@@ -249,9 +479,12 @@ mmci_request_end(struct mmci_host *host, struct mmc_request *mrq)
 	host->cmd = NULL;
 
 	mmc_request_done(host->mmc, mrq);
+<<<<<<< HEAD
 
 	pm_runtime_mark_last_busy(mmc_dev(host->mmc));
 	pm_runtime_put_autosuspend(mmc_dev(host->mmc));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void mmci_set_mask1(struct mmci_host *host, unsigned int mask)
@@ -272,7 +505,11 @@ static void mmci_set_mask1(struct mmci_host *host, unsigned int mask)
 
 static void mmci_stop_data(struct mmci_host *host)
 {
+<<<<<<< HEAD
 	writel(0, host->base + MMCIDATACTRL);
+=======
+	mmci_write_datactrlreg(host, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mmci_set_mask1(host, 0);
 	host->data = NULL;
 }
@@ -297,6 +534,7 @@ static void mmci_init_sg(struct mmci_host *host, struct mmc_data *data)
 #ifdef CONFIG_DMA_ENGINE
 static void mmci_dma_setup(struct mmci_host *host)
 {
+<<<<<<< HEAD
 	struct mmci_platform_data *plat = host->plat;
 	const char *rxname, *txname;
 	dma_cap_mask_t mask;
@@ -305,19 +543,30 @@ static void mmci_dma_setup(struct mmci_host *host)
 		dev_info(mmc_dev(host->mmc), "no DMA platform data\n");
 		return;
 	}
+=======
+	const char *rxname, *txname;
+	struct variant_data *variant = host->variant;
+
+	host->dma_rx_channel = dma_request_slave_channel(mmc_dev(host->mmc), "rx");
+	host->dma_tx_channel = dma_request_slave_channel(mmc_dev(host->mmc), "tx");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* initialize pre request cookie */
 	host->next_data.cookie = 1;
 
+<<<<<<< HEAD
 	/* Try to acquire a generic DMA engine slave channel */
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * If only an RX channel is specified, the driver will
 	 * attempt to use it bidirectionally, however if it is
 	 * is specified but cannot be located, DMA will be disabled.
 	 */
+<<<<<<< HEAD
 	if (plat->dma_rx_param) {
 		host->dma_rx_channel = dma_request_channel(mask,
 							   plat->dma_filter,
@@ -336,6 +585,10 @@ static void mmci_dma_setup(struct mmci_host *host)
 	} else {
 		host->dma_tx_channel = host->dma_rx_channel;
 	}
+=======
+	if (host->dma_rx_channel && !host->dma_tx_channel)
+		host->dma_tx_channel = host->dma_rx_channel;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (host->dma_rx_channel)
 		rxname = dma_chan_name(host->dma_rx_channel);
@@ -368,6 +621,13 @@ static void mmci_dma_setup(struct mmci_host *host)
 		if (max_seg_size < host->mmc->max_seg_size)
 			host->mmc->max_seg_size = max_seg_size;
 	}
+<<<<<<< HEAD
+=======
+
+	if (variant->qcom_dml && host->dma_rx_channel && host->dma_tx_channel)
+		if (dml_hw_init(host, host->mmc->parent->of_node))
+			variant->qcom_dml = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -376,11 +636,17 @@ static void mmci_dma_setup(struct mmci_host *host)
  */
 static inline void mmci_dma_release(struct mmci_host *host)
 {
+<<<<<<< HEAD
 	struct mmci_platform_data *plat = host->plat;
 
 	if (host->dma_rx_channel)
 		dma_release_channel(host->dma_rx_channel);
 	if (host->dma_tx_channel && plat->dma_tx_param)
+=======
+	if (host->dma_rx_channel)
+		dma_release_channel(host->dma_rx_channel);
+	if (host->dma_tx_channel)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dma_release_channel(host->dma_tx_channel);
 	host->dma_rx_channel = host->dma_tx_channel = NULL;
 }
@@ -471,6 +737,10 @@ static int __mmci_dma_prep_data(struct mmci_host *host, struct mmc_data *data,
 	struct dma_async_tx_descriptor *desc;
 	enum dma_data_direction buffer_dirn;
 	int nr_sg;
+<<<<<<< HEAD
+=======
+	unsigned long flags = DMA_CTRL_ACK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (data->flags & MMC_DATA_READ) {
 		conf.direction = DMA_DEV_TO_MEM;
@@ -495,9 +765,18 @@ static int __mmci_dma_prep_data(struct mmci_host *host, struct mmc_data *data,
 	if (nr_sg == 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	dmaengine_slave_config(chan, &conf);
 	desc = dmaengine_prep_slave_sg(chan, data->sg, nr_sg,
 					    conf.direction, DMA_CTRL_ACK);
+=======
+	if (host->variant->qcom_dml)
+		flags |= DMA_PREP_INTERRUPT;
+
+	dmaengine_slave_config(chan, &conf);
+	desc = dmaengine_prep_slave_sg(chan, data->sg, nr_sg,
+					    conf.direction, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!desc)
 		goto unmap_exit;
 
@@ -546,10 +825,20 @@ static int mmci_dma_start_data(struct mmci_host *host, unsigned int datactrl)
 	dmaengine_submit(host->dma_desc_current);
 	dma_async_issue_pending(host->dma_current);
 
+<<<<<<< HEAD
 	datactrl |= MCI_DPSM_DMAENABLE;
 
 	/* Trigger the DMA transfer */
 	writel(datactrl, host->base + MMCIDATACTRL);
+=======
+	if (host->variant->qcom_dml)
+		dml_start_xfer(host, data);
+
+	datactrl |= MCI_DPSM_DMAENABLE;
+
+	/* Trigger the DMA transfer */
+	mmci_write_datactrlreg(host, datactrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Let the MMCI say when the data is ended and it's time
@@ -613,8 +902,20 @@ static void mmci_post_request(struct mmc_host *mmc, struct mmc_request *mrq,
 			chan = host->dma_tx_channel;
 		dmaengine_terminate_all(chan);
 
+<<<<<<< HEAD
 		next->dma_desc = NULL;
 		next->dma_chan = NULL;
+=======
+		if (host->dma_desc_current == next->dma_desc)
+			host->dma_desc_current = NULL;
+
+		if (host->dma_current == next->dma_chan)
+			host->dma_current = NULL;
+
+		next->dma_desc = NULL;
+		next->dma_chan = NULL;
+		data->host_cookie = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -670,7 +971,11 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 	data->bytes_xfered = 0;
 
 	clks = (unsigned long long)data->timeout_ns * host->cclk;
+<<<<<<< HEAD
 	do_div(clks, 1000000000UL);
+=======
+	do_div(clks, NSEC_PER_SEC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	timeout = data->timeout_clks + (unsigned int)clks;
 
@@ -683,12 +988,18 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 
 	if (variant->blksz_datactrl16)
 		datactrl = MCI_DPSM_ENABLE | (data->blksz << 16);
+<<<<<<< HEAD
+=======
+	else if (variant->blksz_datactrl4)
+		datactrl = MCI_DPSM_ENABLE | (data->blksz << 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		datactrl = MCI_DPSM_ENABLE | blksz_bits << 4;
 
 	if (data->flags & MMC_DATA_READ)
 		datactrl |= MCI_DPSM_DIRECTION;
 
+<<<<<<< HEAD
 	/* The ST Micro variants has a special bit to enable SDIO */
 	if (variant->sdio && host->mmc->card)
 		if (mmc_card_sdio(host->mmc->card)) {
@@ -718,6 +1029,32 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 
 	if (host->mmc->ios.timing == MMC_TIMING_UHS_DDR50)
 		datactrl |= MCI_ST_DPSM_DDRMODE;
+=======
+	if (host->mmc->card && mmc_card_sdio(host->mmc->card)) {
+		u32 clk;
+
+		datactrl |= variant->datactrl_mask_sdio;
+
+		/*
+		 * The ST Micro variant for SDIO small write transfers
+		 * needs to have clock H/W flow control disabled,
+		 * otherwise the transfer will not start. The threshold
+		 * depends on the rate of MCLK.
+		 */
+		if (variant->st_sdio && data->flags & MMC_DATA_WRITE &&
+		    (host->size < 8 ||
+		     (host->size <= 8 && host->mclk > 50000000)))
+			clk = host->clk_reg & ~variant->clkreg_enable;
+		else
+			clk = host->clk_reg | variant->clkreg_enable;
+
+		mmci_write_clkreg(host, clk);
+	}
+
+	if (host->mmc->ios.timing == MMC_TIMING_UHS_DDR50 ||
+	    host->mmc->ios.timing == MMC_TIMING_MMC_DDR52)
+		datactrl |= variant->datactrl_mask_ddrmode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Attempt to use DMA operation mode, if this
@@ -747,7 +1084,11 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 		irqmask = MCI_TXFIFOHALFEMPTYMASK;
 	}
 
+<<<<<<< HEAD
 	writel(datactrl, base + MMCIDATACTRL);
+=======
+	mmci_write_datactrlreg(host, datactrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writel(readl(base + MMCIMASK0) & ~MCI_DATAENDMASK, base + MMCIMASK0);
 	mmci_set_mask1(host, irqmask);
 }
@@ -762,7 +1103,11 @@ mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
 
 	if (readl(base + MMCICOMMAND) & MCI_CPSM_ENABLE) {
 		writel(0, base + MMCICOMMAND);
+<<<<<<< HEAD
 		udelay(1);
+=======
+		mmci_reg_delay(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	c |= cmd->opcode | MCI_CPSM_ENABLE;
@@ -774,6 +1119,12 @@ mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
 	if (/*interrupt*/0)
 		c |= MCI_CPSM_INTERRUPT;
 
+<<<<<<< HEAD
+=======
+	if (mmc_cmd_type(cmd) == MMC_CMD_ADTC)
+		c |= host->variant->data_cmd_enable;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host->cmd = cmd;
 
 	writel(cmd->arg, base + MMCIARGUMENT);
@@ -784,6 +1135,13 @@ static void
 mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 	      unsigned int status)
 {
+<<<<<<< HEAD
+=======
+	/* Make sure we have data to handle */
+	if (!data)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* First check for errors */
 	if (status & (MCI_DATACRCFAIL|MCI_DATATIMEOUT|MCI_STARTBITERR|
 		      MCI_TXUNDERRUN|MCI_RXOVERRUN)) {
@@ -839,7 +1197,11 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 			/* The error clause is handled above, success! */
 			data->bytes_xfered = data->blksz * data->blocks;
 
+<<<<<<< HEAD
 		if (!data->stop) {
+=======
+		if (!data->stop || host->mrq->sbc) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mmci_request_end(host, data->mrq);
 		} else {
 			mmci_start_command(host, data->stop, 0);
@@ -852,6 +1214,41 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 	     unsigned int status)
 {
 	void __iomem *base = host->base;
+<<<<<<< HEAD
+=======
+	bool sbc, busy_resp;
+
+	if (!cmd)
+		return;
+
+	sbc = (cmd == host->mrq->sbc);
+	busy_resp = host->variant->busy_detect && (cmd->flags & MMC_RSP_BUSY);
+
+	if (!((status|host->busy_status) & (MCI_CMDCRCFAIL|MCI_CMDTIMEOUT|
+		MCI_CMDSENT|MCI_CMDRESPEND)))
+		return;
+
+	/* Check if we need to wait for busy completion. */
+	if (host->busy_status && (status & MCI_ST_CARDBUSY))
+		return;
+
+	/* Enable busy completion if needed and supported. */
+	if (!host->busy_status && busy_resp &&
+		!(status & (MCI_CMDCRCFAIL|MCI_CMDTIMEOUT)) &&
+		(readl(base + MMCISTATUS) & MCI_ST_CARDBUSY)) {
+		writel(readl(base + MMCIMASK0) | MCI_ST_BUSYEND,
+			base + MMCIMASK0);
+		host->busy_status = status & (MCI_CMDSENT|MCI_CMDRESPEND);
+		return;
+	}
+
+	/* At busy completion, mask the IRQ and complete the request. */
+	if (host->busy_status) {
+		writel(readl(base + MMCIMASK0) & ~MCI_ST_BUSYEND,
+			base + MMCIMASK0);
+		host->busy_status = 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host->cmd = NULL;
 
@@ -866,7 +1263,11 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 		cmd->resp[3] = readl(base + MMCIRESPONSE3);
 	}
 
+<<<<<<< HEAD
 	if (!cmd->data || cmd->error) {
+=======
+	if ((!sbc && !cmd->data) || cmd->error) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (host->data) {
 			/* Terminate the DMA transfer */
 			if (dma_inprogress(host)) {
@@ -875,21 +1276,57 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 			}
 			mmci_stop_data(host);
 		}
+<<<<<<< HEAD
 		mmci_request_end(host, cmd->mrq);
+=======
+		mmci_request_end(host, host->mrq);
+	} else if (sbc) {
+		mmci_start_command(host, host->mrq->cmd, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (!(cmd->data->flags & MMC_DATA_READ)) {
 		mmci_start_data(host, cmd->data);
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int mmci_get_rx_fifocnt(struct mmci_host *host, u32 status, int remain)
+{
+	return remain - (readl(host->base + MMCIFIFOCNT) << 2);
+}
+
+static int mmci_qcom_get_rx_fifocnt(struct mmci_host *host, u32 status, int r)
+{
+	/*
+	 * on qcom SDCC4 only 8 words are used in each burst so only 8 addresses
+	 * from the fifo range should be used
+	 */
+	if (status & MCI_RXFIFOHALFFULL)
+		return host->variant->fifohalfsize;
+	else if (status & MCI_RXDATAAVLBL)
+		return 4;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mmci_pio_read(struct mmci_host *host, char *buffer, unsigned int remain)
 {
 	void __iomem *base = host->base;
 	char *ptr = buffer;
+<<<<<<< HEAD
 	u32 status;
 	int host_remain = host->size;
 
 	do {
 		int count = host_remain - (readl(base + MMCIFIFOCNT) << 2);
+=======
+	u32 status = readl(host->base + MMCISTATUS);
+	int host_remain = host->size;
+
+	do {
+		int count = host->get_rx_fifocnt(host, status, host_remain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (count > remain)
 			count = remain;
@@ -905,9 +1342,15 @@ static int mmci_pio_read(struct mmci_host *host, char *buffer, unsigned int rema
 		 */
 		if (unlikely(count & 0x3)) {
 			if (count < 4) {
+<<<<<<< HEAD
 				unsigned char buf[4] = {0};
 				ioread32_rep(base + MMCIFIFO, buf, 1);
 				memcpy((void *)ptr,(void const *) buf, count);
+=======
+				unsigned char buf[4];
+				ioread32_rep(base + MMCIFIFO, buf, 1);
+				memcpy(ptr, buf, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else {
 				ioread32_rep(base + MMCIFIFO, ptr, count >> 2);
 				count &= ~0x3;
@@ -1056,9 +1499,12 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 	spin_lock(&host->lock);
 
 	do {
+<<<<<<< HEAD
 		struct mmc_command *cmd;
 		struct mmc_data *data;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = readl(host->base + MMCISTATUS);
 
 		if (host->singleirq) {
@@ -1068,11 +1514,20 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 			status &= ~MCI_IRQ1MASK;
 		}
 
+<<<<<<< HEAD
+=======
+		/*
+		 * We intentionally clear the MCI_ST_CARDBUSY IRQ here (if it's
+		 * enabled) since the HW seems to be triggering the IRQ on both
+		 * edges while monitoring DAT0 for busy completion.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status &= readl(host->base + MMCIMASK0);
 		writel(status, host->base + MMCICLEAR);
 
 		dev_dbg(mmc_dev(host->mmc), "irq0 (data+cmd) %08x\n", status);
 
+<<<<<<< HEAD
 		data = host->data;
 		if (status & (MCI_DATACRCFAIL|MCI_DATATIMEOUT|MCI_STARTBITERR|
 			      MCI_TXUNDERRUN|MCI_RXOVERRUN|MCI_DATAEND|
@@ -1082,6 +1537,19 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 		cmd = host->cmd;
 		if (status & (MCI_CMDCRCFAIL|MCI_CMDTIMEOUT|MCI_CMDSENT|MCI_CMDRESPEND) && cmd)
 			mmci_cmd_irq(host, cmd, status);
+=======
+		if (host->variant->reversed_irq_handling) {
+			mmci_data_irq(host, host->data, status);
+			mmci_cmd_irq(host, host->cmd, status);
+		} else {
+			mmci_cmd_irq(host, host->cmd, status);
+			mmci_data_irq(host, host->data, status);
+		}
+
+		/* Don't poll for busy completion in irq context. */
+		if (host->busy_status)
+			status &= ~MCI_ST_CARDBUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ret = 1;
 	} while (status);
@@ -1104,8 +1572,11 @@ static void mmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		return;
 	}
 
+<<<<<<< HEAD
 	pm_runtime_get_sync(mmc_dev(mmc));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&host->lock, flags);
 
 	host->mrq = mrq;
@@ -1116,7 +1587,14 @@ static void mmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	if (mrq->data && mrq->data->flags & MMC_DATA_READ)
 		mmci_start_data(host, mrq->data);
 
+<<<<<<< HEAD
 	mmci_start_command(host, mrq->cmd, 0);
+=======
+	if (mrq->sbc)
+		mmci_start_command(host, mrq->sbc, 0);
+	else
+		mmci_start_command(host, mrq->cmd, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_unlock_irqrestore(&host->lock, flags);
 }
@@ -1129,8 +1607,11 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	unsigned long flags;
 	int ret;
 
+<<<<<<< HEAD
 	pm_runtime_get_sync(mmc_dev(mmc));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (host->plat->ios_handler &&
 		host->plat->ios_handler(mmc_dev(mmc), ios))
 			dev_err(mmc_dev(mmc), "platform ios_handler failed\n");
@@ -1140,9 +1621,16 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		if (!IS_ERR(mmc->supply.vmmc))
 			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, 0);
 
+<<<<<<< HEAD
 		if (!IS_ERR(mmc->supply.vqmmc) &&
 		    regulator_is_enabled(mmc->supply.vqmmc))
 			regulator_disable(mmc->supply.vqmmc);
+=======
+		if (!IS_ERR(mmc->supply.vqmmc) && host->vqmmc_enabled) {
+			regulator_disable(mmc->supply.vqmmc);
+			host->vqmmc_enabled = false;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		break;
 	case MMC_POWER_UP:
@@ -1158,12 +1646,21 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		break;
 	case MMC_POWER_ON:
+<<<<<<< HEAD
 		if (!IS_ERR(mmc->supply.vqmmc) &&
 		    !regulator_is_enabled(mmc->supply.vqmmc)) {
+=======
+		if (!IS_ERR(mmc->supply.vqmmc) && !host->vqmmc_enabled) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = regulator_enable(mmc->supply.vqmmc);
 			if (ret < 0)
 				dev_err(mmc_dev(mmc),
 					"failed to enable vqmmc regulator\n");
+<<<<<<< HEAD
+=======
+			else
+				host->vqmmc_enabled = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		pwr |= MCI_PWR_ON;
@@ -1176,7 +1673,11 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		 * indicating signal direction for the signals in
 		 * the SD/MMC bus and feedback-clock usage.
 		 */
+<<<<<<< HEAD
 		pwr |= host->plat->sigdir;
+=======
+		pwr |= host->pwr_reg_add;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (ios->bus_width == MMC_BUS_WIDTH_4)
 			pwr &= ~MCI_ST_DATA74DIREN;
@@ -1205,10 +1706,25 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	if (!ios->clock && variant->pwrreg_clkgate)
 		pwr &= ~MCI_PWR_ON;
 
+<<<<<<< HEAD
+=======
+	if (host->variant->explicit_mclk_control &&
+	    ios->clock != host->clock_cache) {
+		ret = clk_set_rate(host->clk, ios->clock);
+		if (ret < 0)
+			dev_err(mmc_dev(host->mmc),
+				"Error setting clock rate (%d)\n", ret);
+		else
+			host->mclk = clk_get_rate(host->clk);
+	}
+	host->clock_cache = ios->clock;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&host->lock, flags);
 
 	mmci_set_clkreg(host, ios->clock);
 	mmci_write_pwrreg(host, pwr);
+<<<<<<< HEAD
 
 	spin_unlock_irqrestore(&host->lock, flags);
 
@@ -1224,19 +1740,31 @@ static int mmci_get_ro(struct mmc_host *mmc)
 		return -ENOSYS;
 
 	return gpio_get_value_cansleep(host->gpio_wp);
+=======
+	mmci_reg_delay(host);
+
+	spin_unlock_irqrestore(&host->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mmci_get_cd(struct mmc_host *mmc)
 {
 	struct mmci_host *host = mmc_priv(mmc);
 	struct mmci_platform_data *plat = host->plat;
+<<<<<<< HEAD
 	unsigned int status;
 
 	if (host->gpio_cd == -ENOSYS) {
+=======
+	unsigned int status = mmc_gpio_get_cd(mmc);
+
+	if (status == -ENOSYS) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!plat->status)
 			return 1; /* Assume always present */
 
 		status = plat->status(mmc_dev(host->mmc));
+<<<<<<< HEAD
 	} else
 		status = !!gpio_get_value_cansleep(host->gpio_cd)
 			^ plat->cd_invert;
@@ -1258,10 +1786,46 @@ static irqreturn_t mmci_cd_irq(int irq, void *dev_id)
 }
 
 static const struct mmc_host_ops mmci_ops = {
+=======
+	}
+	return status;
+}
+
+static int mmci_sig_volt_switch(struct mmc_host *mmc, struct mmc_ios *ios)
+{
+	int ret = 0;
+
+	if (!IS_ERR(mmc->supply.vqmmc)) {
+
+		switch (ios->signal_voltage) {
+		case MMC_SIGNAL_VOLTAGE_330:
+			ret = regulator_set_voltage(mmc->supply.vqmmc,
+						2700000, 3600000);
+			break;
+		case MMC_SIGNAL_VOLTAGE_180:
+			ret = regulator_set_voltage(mmc->supply.vqmmc,
+						1700000, 1950000);
+			break;
+		case MMC_SIGNAL_VOLTAGE_120:
+			ret = regulator_set_voltage(mmc->supply.vqmmc,
+						1100000, 1300000);
+			break;
+		}
+
+		if (ret)
+			dev_warn(mmc_dev(mmc), "Voltage switch failed\n");
+	}
+
+	return ret;
+}
+
+static struct mmc_host_ops mmci_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.request	= mmci_request,
 	.pre_req	= mmci_pre_request,
 	.post_req	= mmci_post_request,
 	.set_ios	= mmci_set_ios,
+<<<<<<< HEAD
 	.get_ro		= mmci_get_ro,
 	.get_cd		= mmci_get_cd,
 };
@@ -1311,6 +1875,41 @@ static void mmci_dt_populate_generic_pdata(struct device_node *np,
 	return;
 }
 #endif
+=======
+	.get_ro		= mmc_gpio_get_ro,
+	.get_cd		= mmci_get_cd,
+	.start_signal_voltage_switch = mmci_sig_volt_switch,
+};
+
+static int mmci_of_parse(struct device_node *np, struct mmc_host *mmc)
+{
+	struct mmci_host *host = mmc_priv(mmc);
+	int ret = mmc_of_parse(mmc);
+
+	if (ret)
+		return ret;
+
+	if (of_get_property(np, "st,sig-dir-dat0", NULL))
+		host->pwr_reg_add |= MCI_ST_DATA0DIREN;
+	if (of_get_property(np, "st,sig-dir-dat2", NULL))
+		host->pwr_reg_add |= MCI_ST_DATA2DIREN;
+	if (of_get_property(np, "st,sig-dir-dat31", NULL))
+		host->pwr_reg_add |= MCI_ST_DATA31DIREN;
+	if (of_get_property(np, "st,sig-dir-dat74", NULL))
+		host->pwr_reg_add |= MCI_ST_DATA74DIREN;
+	if (of_get_property(np, "st,sig-dir-cmd", NULL))
+		host->pwr_reg_add |= MCI_ST_CMDDIREN;
+	if (of_get_property(np, "st,sig-pin-fbclk", NULL))
+		host->pwr_reg_add |= MCI_ST_FBCLKEN;
+
+	if (of_get_property(np, "mmc-cap-mmc-highspeed", NULL))
+		mmc->caps |= MMC_CAP_MMC_HIGHSPEED;
+	if (of_get_property(np, "mmc-cap-sd-highspeed", NULL))
+		mmc->caps |= MMC_CAP_SD_HIGHSPEED;
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int mmci_probe(struct amba_device *dev,
 	const struct amba_id *id)
@@ -1334,6 +1933,7 @@ static int mmci_probe(struct amba_device *dev,
 			return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (np)
 		mmci_dt_populate_generic_pdata(np, plat);
 
@@ -1346,29 +1946,56 @@ static int mmci_probe(struct amba_device *dev,
 		ret = -ENOMEM;
 		goto rel_regions;
 	}
+=======
+	mmc = mmc_alloc_host(sizeof(struct mmci_host), &dev->dev);
+	if (!mmc)
+		return -ENOMEM;
+
+	ret = mmci_of_parse(np, mmc);
+	if (ret)
+		goto host_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host = mmc_priv(mmc);
 	host->mmc = mmc;
 
+<<<<<<< HEAD
 	host->gpio_wp = -ENOSYS;
 	host->gpio_cd = -ENOSYS;
 	host->gpio_cd_irq = -1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host->hw_designer = amba_manf(dev);
 	host->hw_revision = amba_rev(dev);
 	dev_dbg(mmc_dev(mmc), "designer ID = 0x%02x\n", host->hw_designer);
 	dev_dbg(mmc_dev(mmc), "revision = 0x%01x\n", host->hw_revision);
 
+<<<<<<< HEAD
 	host->clk = clk_get(&dev->dev, NULL);
 	if (IS_ERR(host->clk)) {
 		ret = PTR_ERR(host->clk);
 		host->clk = NULL;
+=======
+	host->clk = devm_clk_get(&dev->dev, NULL);
+	if (IS_ERR(host->clk)) {
+		ret = PTR_ERR(host->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto host_free;
 	}
 
 	ret = clk_prepare_enable(host->clk);
 	if (ret)
+<<<<<<< HEAD
 		goto clk_free;
+=======
+		goto host_free;
+
+	if (variant->qcom_fifo)
+		host->get_rx_fifocnt = mmci_qcom_get_rx_fifocnt;
+	else
+		host->get_rx_fifocnt = mmci_get_rx_fifocnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host->plat = plat;
 	host->variant = variant;
@@ -1378,14 +2005,20 @@ static int mmci_probe(struct amba_device *dev,
 	 * so we try to adjust the clock down to this,
 	 * (if possible).
 	 */
+<<<<<<< HEAD
 	if (host->mclk > 100000000) {
 		ret = clk_set_rate(host->clk, 100000000);
+=======
+	if (host->mclk > variant->f_max) {
+		ret = clk_set_rate(host->clk, variant->f_max);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0)
 			goto clk_disable;
 		host->mclk = clk_get_rate(host->clk);
 		dev_dbg(mmc_dev(mmc), "eventual mclk rate: %u Hz\n",
 			host->mclk);
 	}
+<<<<<<< HEAD
 	host->phybase = dev->res.start;
 	host->base = ioremap(dev->res.start, resource_size(&dev->res));
 	if (!host->base) {
@@ -1394,10 +2027,21 @@ static int mmci_probe(struct amba_device *dev,
 	}
 
 	mmc->ops = &mmci_ops;
+=======
+
+	host->phybase = dev->res.start;
+	host->base = devm_ioremap_resource(&dev->dev, &dev->res);
+	if (IS_ERR(host->base)) {
+		ret = PTR_ERR(host->base);
+		goto clk_disable;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * The ARM and ST versions of the block have slightly different
 	 * clock divider equations which means that the minimum divider
 	 * differs too.
+<<<<<<< HEAD
 	 */
 	if (variant->st_clkdiv)
 		mmc->f_min = DIV_ROUND_UP(host->mclk, 257);
@@ -1436,16 +2080,72 @@ static int mmci_probe(struct amba_device *dev,
 
 	/* Get regulators and the supported OCR mask */
 	mmc_regulator_get_supply(mmc);
+=======
+	 * on Qualcomm like controllers get the nearest minimum clock to 100Khz
+	 */
+	if (variant->st_clkdiv)
+		mmc->f_min = DIV_ROUND_UP(host->mclk, 257);
+	else if (variant->explicit_mclk_control)
+		mmc->f_min = clk_round_rate(host->clk, 100000);
+	else
+		mmc->f_min = DIV_ROUND_UP(host->mclk, 512);
+	/*
+	 * If no maximum operating frequency is supplied, fall back to use
+	 * the module parameter, which has a (low) default value in case it
+	 * is not specified. Either value must not exceed the clock rate into
+	 * the block, of course.
+	 */
+	if (mmc->f_max)
+		mmc->f_max = variant->explicit_mclk_control ?
+				min(variant->f_max, mmc->f_max) :
+				min(host->mclk, mmc->f_max);
+	else
+		mmc->f_max = variant->explicit_mclk_control ?
+				fmax : min(host->mclk, fmax);
+
+
+	dev_dbg(mmc_dev(mmc), "clocking block at %u Hz\n", mmc->f_max);
+
+	/* Get regulators and the supported OCR mask */
+	ret = mmc_regulator_get_supply(mmc);
+	if (ret == -EPROBE_DEFER)
+		goto clk_disable;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!mmc->ocr_avail)
 		mmc->ocr_avail = plat->ocr_mask;
 	else if (plat->ocr_mask)
 		dev_warn(mmc_dev(mmc), "Platform OCR mask is ignored\n");
 
+<<<<<<< HEAD
 	mmc->caps = plat->capabilities;
 	mmc->caps2 = plat->capabilities2;
 
 	/* We support these PM capabilities. */
 	mmc->pm_caps = MMC_PM_KEEP_POWER;
+=======
+	/* DT takes precedence over platform data. */
+	if (!np) {
+		if (!plat->cd_invert)
+			mmc->caps2 |= MMC_CAP2_CD_ACTIVE_HIGH;
+		mmc->caps2 |= MMC_CAP2_RO_ACTIVE_HIGH;
+	}
+
+	/* We support these capabilities. */
+	mmc->caps |= MMC_CAP_CMD23;
+
+	if (variant->busy_detect) {
+		mmci_ops.card_busy = mmci_card_busy;
+		mmci_write_datactrlreg(host, MCI_ST_DPSM_BUSYMODE);
+		mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY;
+		mmc->max_busy_timeout = 0;
+	}
+
+	mmc->ops = &mmci_ops;
+
+	/* We support these PM capabilities. */
+	mmc->pm_caps |= MMC_PM_KEEP_POWER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We can do SGIO
@@ -1482,6 +2182,7 @@ static int mmci_probe(struct amba_device *dev,
 	writel(0, host->base + MMCIMASK1);
 	writel(0xfff, host->base + MMCICLEAR);
 
+<<<<<<< HEAD
 	if (plat->gpio_cd == -EPROBE_DEFER) {
 		ret = -EPROBE_DEFER;
 		goto err_gpio_cd;
@@ -1530,14 +2231,58 @@ static int mmci_probe(struct amba_device *dev,
 	ret = request_irq(dev->irq[0], mmci_irq, IRQF_SHARED, DRIVER_NAME " (cmd)", host);
 	if (ret)
 		goto unmap;
+=======
+	/*
+	 * If:
+	 * - not using DT but using a descriptor table, or
+	 * - using a table of descriptors ALONGSIDE DT, or
+	 * look up these descriptors named "cd" and "wp" right here, fail
+	 * silently of these do not exist and proceed to try platform data
+	 */
+	if (!np) {
+		ret = mmc_gpiod_request_cd(mmc, "cd", 0, false, 0, NULL);
+		if (ret < 0) {
+			if (ret == -EPROBE_DEFER)
+				goto clk_disable;
+			else if (gpio_is_valid(plat->gpio_cd)) {
+				ret = mmc_gpio_request_cd(mmc, plat->gpio_cd, 0);
+				if (ret)
+					goto clk_disable;
+			}
+		}
+
+		ret = mmc_gpiod_request_ro(mmc, "wp", 0, false, 0, NULL);
+		if (ret < 0) {
+			if (ret == -EPROBE_DEFER)
+				goto clk_disable;
+			else if (gpio_is_valid(plat->gpio_wp)) {
+				ret = mmc_gpio_request_ro(mmc, plat->gpio_wp);
+				if (ret)
+					goto clk_disable;
+			}
+		}
+	}
+
+	ret = devm_request_irq(&dev->dev, dev->irq[0], mmci_irq, IRQF_SHARED,
+			DRIVER_NAME " (cmd)", host);
+	if (ret)
+		goto clk_disable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!dev->irq[1])
 		host->singleirq = true;
 	else {
+<<<<<<< HEAD
 		ret = request_irq(dev->irq[1], mmci_pio_irq, IRQF_SHARED,
 				  DRIVER_NAME " (pio)", host);
 		if (ret)
 			goto irq0_free;
+=======
+		ret = devm_request_irq(&dev->dev, dev->irq[1], mmci_pio_irq,
+				IRQF_SHARED, DRIVER_NAME " (pio)", host);
+		if (ret)
+			goto clk_disable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	writel(MCI_IRQENABLE, host->base + MMCIMASK0);
@@ -1553,6 +2298,7 @@ static int mmci_probe(struct amba_device *dev,
 
 	pm_runtime_set_autosuspend_delay(&dev->dev, 50);
 	pm_runtime_use_autosuspend(&dev->dev);
+<<<<<<< HEAD
 	pm_runtime_put(&dev->dev);
 
 	mmc_add_host(mmc);
@@ -1580,6 +2326,18 @@ static int mmci_probe(struct amba_device *dev,
  rel_regions:
 	amba_release_regions(dev);
  out:
+=======
+
+	mmc_add_host(mmc);
+
+	pm_runtime_put(&dev->dev);
+	return 0;
+
+ clk_disable:
+	clk_disable_unprepare(host->clk);
+ host_free:
+	mmc_free_host(mmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -1587,8 +2345,11 @@ static int mmci_remove(struct amba_device *dev)
 {
 	struct mmc_host *mmc = amba_get_drvdata(dev);
 
+<<<<<<< HEAD
 	amba_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mmc) {
 		struct mmci_host *host = mmc_priv(mmc);
 
@@ -1607,6 +2368,7 @@ static int mmci_remove(struct amba_device *dev)
 		writel(0, host->base + MMCIDATACTRL);
 
 		mmci_dma_release(host);
+<<<<<<< HEAD
 		free_irq(dev->irq[0], host);
 		if (!host->singleirq)
 			free_irq(dev->irq[1], host);
@@ -1625,11 +2387,16 @@ static int mmci_remove(struct amba_device *dev)
 		mmc_free_host(mmc);
 
 		amba_release_regions(dev);
+=======
+		clk_disable_unprepare(host->clk);
+		mmc_free_host(mmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUSPEND
 static int mmci_suspend(struct device *dev)
 {
@@ -1670,6 +2437,43 @@ static int mmci_resume(struct device *dev)
 #endif
 
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+static void mmci_save(struct mmci_host *host)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&host->lock, flags);
+
+	writel(0, host->base + MMCIMASK0);
+	if (host->variant->pwrreg_nopower) {
+		writel(0, host->base + MMCIDATACTRL);
+		writel(0, host->base + MMCIPOWER);
+		writel(0, host->base + MMCICLOCK);
+	}
+	mmci_reg_delay(host);
+
+	spin_unlock_irqrestore(&host->lock, flags);
+}
+
+static void mmci_restore(struct mmci_host *host)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&host->lock, flags);
+
+	if (host->variant->pwrreg_nopower) {
+		writel(host->clk_reg, host->base + MMCICLOCK);
+		writel(host->datactrl_reg, host->base + MMCIDATACTRL);
+		writel(host->pwr_reg, host->base + MMCIPOWER);
+	}
+	writel(MCI_IRQENABLE, host->base + MMCIMASK0);
+	mmci_reg_delay(host);
+
+	spin_unlock_irqrestore(&host->lock, flags);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mmci_runtime_suspend(struct device *dev)
 {
 	struct amba_device *adev = to_amba_device(dev);
@@ -1677,6 +2481,11 @@ static int mmci_runtime_suspend(struct device *dev)
 
 	if (mmc) {
 		struct mmci_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
+=======
+		pinctrl_pm_select_sleep_state(dev);
+		mmci_save(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clk_disable_unprepare(host->clk);
 	}
 
@@ -1690,7 +2499,13 @@ static int mmci_runtime_resume(struct device *dev)
 
 	if (mmc) {
 		struct mmci_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
 		(void)clk_prepare_enable(host->clk);
+=======
+		clk_prepare_enable(host->clk);
+		mmci_restore(host);
+		pinctrl_pm_select_default_state(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -1698,7 +2513,12 @@ static int mmci_runtime_resume(struct device *dev)
 #endif
 
 static const struct dev_pm_ops mmci_dev_pm_ops = {
+<<<<<<< HEAD
 	SET_SYSTEM_SLEEP_PM_OPS(mmci_suspend, mmci_resume)
+=======
+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				pm_runtime_force_resume)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SET_RUNTIME_PM_OPS(mmci_runtime_suspend, mmci_runtime_resume, NULL)
 };
 
@@ -1749,6 +2569,15 @@ static struct amba_id mmci_ids[] = {
 		.mask   = 0xf0ffffff,
 		.data	= &variant_ux500v2,
 	},
+<<<<<<< HEAD
+=======
+	/* Qualcomm variants */
+	{
+		.id     = 0x00051180,
+		.mask	= 0x000fffff,
+		.data	= &variant_qcom,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0, 0 },
 };
 

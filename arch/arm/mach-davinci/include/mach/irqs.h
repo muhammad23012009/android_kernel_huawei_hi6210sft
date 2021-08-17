@@ -129,8 +129,13 @@
 #define IRQ_DM646X_EMACMISCINT  27
 #define IRQ_DM646X_MCASP0TXINT  28
 #define IRQ_DM646X_MCASP0RXINT  29
+<<<<<<< HEAD
 #define IRQ_DM646X_RESERVED_3   31
 #define IRQ_DM646X_MCASP1TXINT  32
+=======
+#define IRQ_DM646X_MCASP1TXINT  30
+#define IRQ_DM646X_RESERVED_3   31
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IRQ_DM646X_VLQINT       38
 #define IRQ_DM646X_UARTINT2     42
 #define IRQ_DM646X_SPINT0       43
@@ -401,6 +406,7 @@
 
 #define DA850_N_CP_INTC_IRQ		101
 
+<<<<<<< HEAD
 
 /* TNETV107X specific interrupts */
 #define IRQ_TNETV107X_TDM1_TXDMA		0
@@ -498,6 +504,8 @@
 
 #define TNETV107X_N_CP_INTC_IRQ			96
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* da850 currently has the most gpio pins (144) */
 #define DAVINCI_N_GPIO			144
 /* da850 currently has the most irqs so use DA850_N_CP_INTC_IRQ */

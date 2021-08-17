@@ -43,16 +43,25 @@ static int via_fetch_size(void)
 
 static int via_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct aper_size_info_8 *current_size;
 
 	current_size = A_SIZE_8(agp_bridge->current_size);
 	/* aperture size */
 	pci_write_config_byte(agp_bridge->dev, VIA_APSIZE,
 			      current_size->size_value);
+<<<<<<< HEAD
 	/* address to map too */
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	/* address to map to */
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* GART control register */
 	pci_write_config_dword(agp_bridge->dev, VIA_GARTCTRL, 0x0000000f);
@@ -132,9 +141,15 @@ static int via_configure_agp3(void)
 
 	current_size = A_SIZE_16(agp_bridge->current_size);
 
+<<<<<<< HEAD
 	/* address to map too */
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	/* address to map to */
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* attbase - aperture GATT base */
 	pci_write_config_dword(agp_bridge->dev, VIA_AGP3_ATTBASE,
@@ -596,4 +611,8 @@ module_init(agp_via_init);
 module_exit(agp_via_cleanup);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

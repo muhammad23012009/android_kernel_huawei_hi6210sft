@@ -26,7 +26,11 @@ static irqreturn_t dummy_interrupt(int irq, void *dev_id)
 	static int count = 0;
 
 	if (count == 0) {
+<<<<<<< HEAD
 		printk(KERN_INFO "dummy-irq: interrupt occured on IRQ %d\n",
+=======
+		printk(KERN_INFO "dummy-irq: interrupt occurred on IRQ %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				irq);
 		count++;
 	}
@@ -61,3 +65,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jiri Kosina");
 module_param(irq, uint, 0444);
 MODULE_PARM_DESC(irq, "The IRQ to register for");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Dummy IRQ handler driver");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

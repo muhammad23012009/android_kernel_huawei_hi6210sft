@@ -16,12 +16,18 @@
 #include <linux/string.h>
 #include <linux/dma-mapping.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/prom.h>
 #include <asm/pci-bridge.h>
 
+<<<<<<< HEAD
 #include <asm-generic/pci-dma-compat.h>
 
 #define PCIBIOS_MIN_IO		0x1000
@@ -29,6 +35,11 @@
 
 struct pci_dev;
 
+=======
+#define PCIBIOS_MIN_IO		0x1000
+#define PCIBIOS_MIN_MEM		0x10000000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Values for the `which' argument to sys_pciconfig_iobase syscall.  */
 #define IOBASE_BRIDGE_NUMBER	0
 #define IOBASE_MEMORY		1
@@ -44,6 +55,7 @@ struct pci_dev;
  */
 #define pcibios_assign_all_busses()	0
 
+<<<<<<< HEAD
 static inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
@@ -67,6 +79,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int pci_domain_nr(struct pci_bus *bus);
 
 /* Decide whether to display the domain number in /proc */
@@ -96,6 +110,7 @@ extern int pci_mmap_legacy_page_range(struct pci_bus *bus,
  */
 #define PCI_DMA_BUS_IS_PHYS     (1)
 
+<<<<<<< HEAD
 static inline struct resource *pcibios_select_root(struct pci_dev *pdev,
 			struct resource *res)
 {
@@ -109,12 +124,15 @@ static inline struct resource *pcibios_select_root(struct pci_dev *pdev,
 	return root;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void pcibios_claim_one_bus(struct pci_bus *b);
 
 extern void pcibios_finish_adding_to_bus(struct pci_bus *bus);
 
 extern void pcibios_resource_survey(void);
 
+<<<<<<< HEAD
 extern struct pci_controller *init_phb_dynamic(struct device_node *dn);
 extern int remove_phb_dynamic(struct pci_controller *phb);
 
@@ -132,6 +150,8 @@ extern int pci_read_irq_line(struct pci_dev *dev);
 extern int pci_bus_find_capability(struct pci_bus *bus,
 						unsigned int devfn, int cap);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct file;
 extern pgprot_t	pci_phys_mem_access_prot(struct file *file,
 					 unsigned long pfn,
@@ -139,9 +159,12 @@ extern pgprot_t	pci_phys_mem_access_prot(struct file *file,
 					 pgprot_t prot);
 
 #define HAVE_ARCH_PCI_RESOURCE_TO_USER
+<<<<<<< HEAD
 extern void pci_resource_to_user(const struct pci_dev *dev, int bar,
 				 const struct resource *rsrc,
 				 resource_size_t *start, resource_size_t *end);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void pcibios_setup_bus_devices(struct pci_bus *bus);
 extern void pcibios_setup_bus_self(struct pci_bus *bus);

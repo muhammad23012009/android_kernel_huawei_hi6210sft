@@ -65,7 +65,11 @@ static int do_adjust_pte(struct vm_area_struct *vma, unsigned long address,
 	return ret;
 }
 
+<<<<<<< HEAD
 #if USE_SPLIT_PTLOCKS
+=======
+#if USE_SPLIT_PTE_PTLOCKS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * If we are using split PTE locks, then we need to take the page
  * lock here.  Otherwise we are using shared mm->page_table_lock
@@ -84,10 +88,17 @@ static inline void do_pte_unlock(spinlock_t *ptl)
 {
 	spin_unlock(ptl);
 }
+<<<<<<< HEAD
 #else /* !USE_SPLIT_PTLOCKS */
 static inline void do_pte_lock(spinlock_t *ptl) {}
 static inline void do_pte_unlock(spinlock_t *ptl) {}
 #endif /* USE_SPLIT_PTLOCKS */
+=======
+#else /* !USE_SPLIT_PTE_PTLOCKS */
+static inline void do_pte_lock(spinlock_t *ptl) {}
+static inline void do_pte_unlock(spinlock_t *ptl) {}
+#endif /* USE_SPLIT_PTE_PTLOCKS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int adjust_pte(struct vm_area_struct *vma, unsigned long address,
 	unsigned long pfn)
@@ -235,7 +246,11 @@ void __init check_writebuffer_bugs(void)
 	const char *reason;
 	unsigned long v = 1;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "CPU: Testing write buffer coherency: ");
+=======
+	pr_info("CPU: Testing write buffer coherency: ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	page = alloc_page(GFP_KERNEL);
 	if (page) {
@@ -261,9 +276,16 @@ void __init check_writebuffer_bugs(void)
 	}
 
 	if (v) {
+<<<<<<< HEAD
 		printk("failed, %s\n", reason);
 		shared_pte_mask = L_PTE_MT_UNCACHED;
 	} else {
 		printk("ok\n");
+=======
+		pr_cont("failed, %s\n", reason);
+		shared_pte_mask = L_PTE_MT_UNCACHED;
+	} else {
+		pr_cont("ok\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }

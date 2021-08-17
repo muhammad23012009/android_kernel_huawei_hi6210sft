@@ -7,6 +7,10 @@
 #include <linux/sys.h>
 #include <linux/cache.h>
 #include <generated/user_constants.h>
+<<<<<<< HEAD
+=======
+#include <asm/syscall.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __NO_STUBS
 
@@ -24,6 +28,7 @@
 
 #define old_mmap sys_old_mmap
 
+<<<<<<< HEAD
 #define __SYSCALL_I386(nr, sym, compat) extern asmlinkage void sym(void) ;
 #include <asm/syscalls_32.h>
 
@@ -33,6 +38,15 @@
 typedef asmlinkage void (*sys_call_ptr_t)(void);
 
 extern asmlinkage void sys_ni_syscall(void);
+=======
+#define __SYSCALL_I386(nr, sym, qual) extern asmlinkage long sym(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long) ;
+#include <asm/syscalls_32.h>
+
+#undef __SYSCALL_I386
+#define __SYSCALL_I386(nr, sym, qual) [ nr ] = sym,
+
+extern asmlinkage long sys_ni_syscall(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 const sys_call_ptr_t sys_call_table[] ____cacheline_aligned = {
 	/*

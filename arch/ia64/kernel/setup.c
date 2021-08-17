@@ -50,8 +50,11 @@
 #include <asm/mca.h>
 #include <asm/meminit.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/paravirt.h>
 #include <asm/paravirt_patch.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/patch.h>
 #include <asm/pgtable.h>
 #include <asm/processor.h>
@@ -73,7 +76,15 @@ EXPORT_SYMBOL(__per_cpu_offset);
 #endif
 
 DEFINE_PER_CPU(struct cpuinfo_ia64, ia64_cpu_info);
+<<<<<<< HEAD
 DEFINE_PER_CPU(unsigned long, local_per_cpu_offset);
+=======
+EXPORT_SYMBOL(ia64_cpu_info);
+DEFINE_PER_CPU(unsigned long, local_per_cpu_offset);
+#ifdef CONFIG_SMP
+EXPORT_SYMBOL(local_per_cpu_offset);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long ia64_cycles_per_usec;
 struct ia64_boot_param *ia64_boot_param;
 struct screen_info screen_info;
@@ -82,17 +93,29 @@ unsigned long vga_console_membase;
 
 static struct resource data_resource = {
 	.name	= "Kernel data",
+<<<<<<< HEAD
 	.flags	= IORESOURCE_BUSY | IORESOURCE_MEM
+=======
+	.flags	= IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource code_resource = {
 	.name	= "Kernel code",
+<<<<<<< HEAD
 	.flags	= IORESOURCE_BUSY | IORESOURCE_MEM
+=======
+	.flags	= IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource bss_resource = {
 	.name	= "Kernel bss",
+<<<<<<< HEAD
 	.flags	= IORESOURCE_BUSY | IORESOURCE_MEM
+=======
+	.flags	= IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 unsigned long ia64_max_cacheline_size;
@@ -360,8 +383,11 @@ reserve_memory (void)
 	rsvd_region[n].end   = (unsigned long) ia64_imva(_end);
 	n++;
 
+<<<<<<< HEAD
 	n += paravirt_reserve_memory(&rsvd_region[n]);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BLK_DEV_INITRD
 	if (ia64_boot_param->initrd_start) {
 		rsvd_region[n].start = (unsigned long)__va(ia64_boot_param->initrd_start);
@@ -528,10 +554,14 @@ setup_arch (char **cmdline_p)
 {
 	unw_init();
 
+<<<<<<< HEAD
 	paravirt_arch_setup_early();
 
 	ia64_patch_vtop((u64) __start___vtop_patchlist, (u64) __end___vtop_patchlist);
 	paravirt_patch_apply();
+=======
+	ia64_patch_vtop((u64) __start___vtop_patchlist, (u64) __end___vtop_patchlist);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*cmdline_p = __va(ia64_boot_param->command_line);
 	strlcpy(boot_command_line, *cmdline_p, COMMAND_LINE_SIZE);
@@ -559,11 +589,20 @@ setup_arch (char **cmdline_p)
 	early_acpi_boot_init();
 # ifdef CONFIG_ACPI_NUMA
 	acpi_numa_init();
+<<<<<<< HEAD
 #  ifdef CONFIG_ACPI_HOTPLUG_CPU
 	prefill_possible_map();
 #  endif
 	per_cpu_scan_finalize((cpus_weight(early_cpu_possible_map) == 0 ?
 		32 : cpus_weight(early_cpu_possible_map)),
+=======
+	acpi_numa_fixup();
+#  ifdef CONFIG_ACPI_HOTPLUG_CPU
+	prefill_possible_map();
+#  endif
+	per_cpu_scan_finalize((cpumask_weight(&early_cpu_possible_map) == 0 ?
+		32 : cpumask_weight(&early_cpu_possible_map)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		additional_cpus > 0 ? additional_cpus : 0);
 # endif
 #endif /* CONFIG_APCI_BOOT */
@@ -594,9 +633,12 @@ setup_arch (char **cmdline_p)
 	cpu_init();	/* initialize the bootstrap CPU */
 	mmu_context_init();	/* initialize context_id bitmap */
 
+<<<<<<< HEAD
 	paravirt_banner();
 	paravirt_arch_setup_console(cmdline_p);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VT
 	if (!conswitchp) {
 # if defined(CONFIG_DUMMY_CONSOLE)
@@ -616,8 +658,11 @@ setup_arch (char **cmdline_p)
 #endif
 
 	/* enable IA-64 Machine Check Abort Handling unless disabled */
+<<<<<<< HEAD
 	if (paravirt_arch_setup_nomca())
 		nomca = 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!nomca)
 		ia64_mca_init();
 
@@ -702,7 +747,12 @@ show_cpuinfo (struct seq_file *m, void *v)
 		   c->itc_freq / 1000000, c->itc_freq % 1000000,
 		   lpj*HZ/500000, (lpj*HZ/5000) % 100);
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	seq_printf(m, "siblings   : %u\n", cpus_weight(cpu_core_map[cpunum]));
+=======
+	seq_printf(m, "siblings   : %u\n",
+		   cpumask_weight(&cpu_core_map[cpunum]));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (c->socket_id != -1)
 		seq_printf(m, "physical id: %u\n", c->socket_id);
 	if (c->threads_per_core > 1 || c->cores_per_socket > 1)
@@ -748,7 +798,11 @@ const struct seq_operations cpuinfo_op = {
 #define MAX_BRANDS	8
 static char brandname[MAX_BRANDS][128];
 
+<<<<<<< HEAD
 static char * __cpuinit
+=======
+static char *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 get_model_name(__u8 family, __u8 model)
 {
 	static int overflow;
@@ -778,7 +832,11 @@ get_model_name(__u8 family, __u8 model)
 	return "Unknown";
 }
 
+<<<<<<< HEAD
 static void __cpuinit
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 identify_cpu (struct cpuinfo_ia64 *c)
 {
 	union {
@@ -850,7 +908,11 @@ identify_cpu (struct cpuinfo_ia64 *c)
  * 2. the minimum of the i-cache stride sizes for "flush_icache_range()".
  * 3. the minimum of the cache stride sizes for "clflush_cache_range()".
  */
+<<<<<<< HEAD
 static void __cpuinit
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 get_cache_info(void)
 {
 	unsigned long line_size, max = 1;
@@ -915,10 +977,17 @@ get_cache_info(void)
  * cpu_init() initializes state that is per-CPU.  This function acts
  * as a 'CPU state barrier', nothing should get across.
  */
+<<<<<<< HEAD
 void __cpuinit
 cpu_init (void)
 {
 	extern void __cpuinit ia64_mmu_init (void *);
+=======
+void
+cpu_init (void)
+{
+	extern void ia64_mmu_init(void *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	static unsigned long max_num_phys_stacked = IA64_NUM_PHYS_STACK_REG;
 	unsigned long num_phys_stacked;
 	pal_vm_info_2_u_t vmi;
@@ -933,8 +1002,13 @@ cpu_init (void)
 	 * (must be done after per_cpu area is setup)
 	 */
 	if (smp_processor_id() == 0) {
+<<<<<<< HEAD
 		cpu_set(0, per_cpu(cpu_sibling_map, 0));
 		cpu_set(0, cpu_core_map[0]);
+=======
+		cpumask_set_cpu(0, &per_cpu(cpu_sibling_map, 0));
+		cpumask_set_cpu(0, &cpu_core_map[0]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/*
 		 * Set ar.k3 so that assembly code in MCA handler can compute
@@ -1063,6 +1137,10 @@ check_bugs (void)
 static int __init run_dmi_scan(void)
 {
 	dmi_scan_machine();
+<<<<<<< HEAD
+=======
+	dmi_memdev_walk();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dmi_set_dump_stack_arch_desc();
 	return 0;
 }

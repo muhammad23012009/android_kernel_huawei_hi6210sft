@@ -21,6 +21,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -31,15 +32,26 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
  *    Karl Knutson          <karl@athena.chicago.il.us>
  *    Jon Grimm             <jgrimm@us.ibm.com>
  *    Daisy Chang           <daisyc@us.ibm.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/types.h>
@@ -118,7 +130,12 @@ int sctp_bind_addr_dup(struct sctp_bind_addr *dest,
 	dest->port = src->port;
 
 	list_for_each_entry(addr, &src->address_list, list) {
+<<<<<<< HEAD
 		error = sctp_add_bind_addr(dest, &addr->a, 1, gfp);
+=======
+		error = sctp_add_bind_addr(dest, &addr->a, sizeof(addr->a),
+					   1, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (error < 0)
 			break;
 	}
@@ -157,16 +174,28 @@ void sctp_bind_addr_free(struct sctp_bind_addr *bp)
 
 /* Add an address to the bind address list in the SCTP_bind_addr structure. */
 int sctp_add_bind_addr(struct sctp_bind_addr *bp, union sctp_addr *new,
+<<<<<<< HEAD
 		       __u8 addr_state, gfp_t gfp)
+=======
+		       int new_size, __u8 addr_state, gfp_t gfp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sctp_sockaddr_entry *addr;
 
 	/* Add the address to the bind address list.  */
+<<<<<<< HEAD
 	addr = t_new(struct sctp_sockaddr_entry, gfp);
 	if (!addr)
 		return -ENOMEM;
 
 	memcpy(&addr->a, new, sizeof(*new));
+=======
+	addr = kzalloc(sizeof(*addr), gfp);
+	if (!addr)
+		return -ENOMEM;
+
+	memcpy(&addr->a, new, min_t(size_t, sizeof(*new), new_size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Fix up the port if it has not yet been set.
 	 * Both v4 and v6 have the port at the same offset.
@@ -298,7 +327,12 @@ int sctp_raw_to_bind_addrs(struct sctp_bind_addr *bp, __u8 *raw_addr_list,
 		}
 
 		af->from_addr_param(&addr, rawaddr, htons(port), 0);
+<<<<<<< HEAD
 		retval = sctp_add_bind_addr(bp, &addr, SCTP_ADDR_SRC, gfp);
+=======
+		retval = sctp_add_bind_addr(bp, &addr, sizeof(addr),
+					    SCTP_ADDR_SRC, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (retval) {
 			/* Can't finish building the list, clean up. */
 			sctp_bind_addr_clean(bp);
@@ -456,12 +490,21 @@ static int sctp_copy_one_addr(struct net *net, struct sctp_bind_addr *dest,
 		 * well as the remote peer.
 		 */
 		if ((((AF_INET == addr->sa.sa_family) &&
+<<<<<<< HEAD
+=======
+		      (flags & SCTP_ADDR4_ALLOWED) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      (flags & SCTP_ADDR4_PEERSUPP))) ||
 		    (((AF_INET6 == addr->sa.sa_family) &&
 		      (flags & SCTP_ADDR6_ALLOWED) &&
 		      (flags & SCTP_ADDR6_PEERSUPP))))
+<<<<<<< HEAD
 			error = sctp_add_bind_addr(dest, addr, SCTP_ADDR_SRC,
 						    gfp);
+=======
+			error = sctp_add_bind_addr(dest, addr, sizeof(*addr),
+						   SCTP_ADDR_SRC, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return error;

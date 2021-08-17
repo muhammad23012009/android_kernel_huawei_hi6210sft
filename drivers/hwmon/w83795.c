@@ -2,7 +2,11 @@
  *  w83795.c - Linux kernel driver for hardware monitoring
  *  Copyright (C) 2008 Nuvoton Technology Corp.
  *                Wei Song
+<<<<<<< HEAD
  *  Copyright (C) 2010 Jean Delvare <khali@linux-fr.org>
+=======
+ *  Copyright (C) 2010 Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +39,10 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
+=======
+#include <linux/util_macros.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Addresses to scan */
 static const unsigned short normal_i2c[] = {
@@ -308,11 +316,16 @@ static u8 pwm_freq_to_reg(unsigned long val, u16 clkin)
 	unsigned long best0, best1;
 
 	/* Best fit for cksel = 0 */
+<<<<<<< HEAD
 	for (reg0 = 0; reg0 < ARRAY_SIZE(pwm_freq_cksel0) - 1; reg0++) {
 		if (val > (pwm_freq_cksel0[reg0] +
 			   pwm_freq_cksel0[reg0 + 1]) / 2)
 			break;
 	}
+=======
+	reg0 = find_closest_descending(val, pwm_freq_cksel0,
+				       ARRAY_SIZE(pwm_freq_cksel0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (val < 375)	/* cksel = 1 can't beat this */
 		return reg0;
 	best0 = pwm_freq_cksel0[reg0];
@@ -1693,7 +1706,11 @@ store_sf_setup(struct device *dev, struct device_attribute *attr,
  * somewhere else in the code
  */
 #define SENSOR_ATTR_TEMP(index) {					\
+<<<<<<< HEAD
 	SENSOR_ATTR_2(temp##index##_type, S_IRUGO | (index < 4 ? S_IWUSR : 0), \
+=======
+	SENSOR_ATTR_2(temp##index##_type, S_IRUGO | (index < 5 ? S_IWUSR : 0), \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		show_temp_mode, store_temp_mode, NOT_USED, index - 1),	\
 	SENSOR_ATTR_2(temp##index##_input, S_IRUGO, show_temp,		\
 		NULL, TEMP_READ, index - 1),				\
@@ -2282,6 +2299,10 @@ static struct i2c_driver w83795_driver = {
 
 module_i2c_driver(w83795_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Wei Song, Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Wei Song, Jean Delvare <jdelvare@suse.de>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("W83795G/ADG hardware monitoring driver");
 MODULE_LICENSE("GPL");

@@ -2,10 +2,17 @@
 #define _SCHED_SYSCTL_H
 
 #ifdef CONFIG_DETECT_HUNG_TASK
+<<<<<<< HEAD
 extern unsigned int  sysctl_hung_task_panic;
 extern unsigned long sysctl_hung_task_check_count;
 extern unsigned long sysctl_hung_task_timeout_secs;
 extern unsigned long sysctl_hung_task_warnings;
+=======
+extern int	     sysctl_hung_task_check_count;
+extern unsigned int  sysctl_hung_task_panic;
+extern unsigned long sysctl_hung_task_timeout_secs;
+extern int sysctl_hung_task_warnings;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int proc_dohung_task_timeout_secs(struct ctl_table *table, int write,
 					 void __user *buffer,
 					 size_t *lenp, loff_t *ppos);
@@ -14,6 +21,7 @@ extern int proc_dohung_task_timeout_secs(struct ctl_table *table, int write,
 enum { sysctl_hung_task_timeout_secs = 0 };
 #endif
 
+<<<<<<< HEAD
 /*
  * Default maximum number of active map areas, this limits the number of vmas
  * per mm struct. Users can overwrite this number by sysctl but there is a
@@ -31,10 +39,24 @@ enum { sysctl_hung_task_timeout_secs = 0 };
 
 extern int sysctl_max_map_count;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned int sysctl_sched_latency;
 extern unsigned int sysctl_sched_min_granularity;
 extern unsigned int sysctl_sched_wakeup_granularity;
 extern unsigned int sysctl_sched_child_runs_first;
+<<<<<<< HEAD
+=======
+extern unsigned int sysctl_sched_sync_hint_enable;
+extern unsigned int sysctl_sched_initial_task_util;
+extern unsigned int sysctl_sched_cstate_aware;
+#ifdef CONFIG_SCHED_WALT
+extern unsigned int sysctl_sched_use_walt_cpu_util;
+extern unsigned int sysctl_sched_use_walt_task_util;
+extern unsigned int sysctl_sched_walt_init_task_load_pct;
+extern unsigned int sysctl_sched_walt_cpu_high_irqload;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum sched_tunable_scaling {
 	SCHED_TUNABLESCALING_NONE,
@@ -47,6 +69,7 @@ extern enum sched_tunable_scaling sysctl_sched_tunable_scaling;
 extern unsigned int sysctl_numa_balancing_scan_delay;
 extern unsigned int sysctl_numa_balancing_scan_period_min;
 extern unsigned int sysctl_numa_balancing_scan_period_max;
+<<<<<<< HEAD
 extern unsigned int sysctl_numa_balancing_scan_period_reset;
 extern unsigned int sysctl_numa_balancing_scan_size;
 extern unsigned int sysctl_numa_balancing_settle_count;
@@ -56,12 +79,21 @@ extern unsigned int sysctl_sched_migration_cost;
 extern unsigned int sysctl_sched_nr_migrate;
 extern unsigned int sysctl_sched_time_avg;
 extern unsigned int sysctl_timer_migration;
+=======
+extern unsigned int sysctl_numa_balancing_scan_size;
+
+#ifdef CONFIG_SCHED_DEBUG
+extern __read_mostly unsigned int sysctl_sched_migration_cost;
+extern __read_mostly unsigned int sysctl_sched_nr_migrate;
+extern __read_mostly unsigned int sysctl_sched_time_avg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned int sysctl_sched_shares_window;
 
 int sched_proc_update_handler(struct ctl_table *table, int write,
 		void __user *buffer, size_t *length,
 		loff_t *ppos);
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_DEBUG
 static inline unsigned int get_sysctl_timer_migration(void)
 {
@@ -73,6 +105,8 @@ static inline unsigned int get_sysctl_timer_migration(void)
 	return 1;
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *  control realtime throttling:
@@ -87,10 +121,33 @@ extern int sysctl_sched_rt_runtime;
 extern unsigned int sysctl_sched_cfs_bandwidth_slice;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SCHED_TUNE
+extern unsigned int sysctl_sched_cfs_boost;
+int sysctl_sched_cfs_boost_handler(struct ctl_table *table, int write,
+				   void __user *buffer, size_t *length,
+				   loff_t *ppos);
+static inline unsigned int get_sysctl_sched_cfs_boost(void)
+{
+	return sysctl_sched_cfs_boost;
+}
+#else
+static inline unsigned int get_sysctl_sched_cfs_boost(void)
+{
+	return 0;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SCHED_AUTOGROUP
 extern unsigned int sysctl_sched_autogroup_enabled;
 #endif
 
+<<<<<<< HEAD
+=======
+extern int sysctl_sched_rr_timeslice;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int sched_rr_timeslice;
 
 extern int sched_rr_handler(struct ctl_table *table, int write,
@@ -101,4 +158,15 @@ extern int sched_rt_handler(struct ctl_table *table, int write,
 		void __user *buffer, size_t *lenp,
 		loff_t *ppos);
 
+<<<<<<< HEAD
+=======
+extern int sysctl_numa_balancing(struct ctl_table *table, int write,
+				 void __user *buffer, size_t *lenp,
+				 loff_t *ppos);
+
+extern int sysctl_schedstats(struct ctl_table *table, int write,
+				 void __user *buffer, size_t *lenp,
+				 loff_t *ppos);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _SCHED_SYSCTL_H */

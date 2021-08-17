@@ -19,7 +19,10 @@
 
 #include "ksize.h"
 
+<<<<<<< HEAD
 extern int vsprintf(char *, const char *, va_list);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned long switch_to_osf_pal(unsigned long nr,
 	struct pcb_struct * pcb_va, struct pcb_struct * pcb_pa,
 	unsigned long *vptb);

@@ -3,7 +3,11 @@
  *
  *  Copyright (C) 2001-5, B2C2 inc.
  *
+<<<<<<< HEAD
  *  GPL/Linux driver written by Patrick Boettcher <patrick.boettcher@desy.de>
+=======
+ *  GPL/Linux driver written by Patrick Boettcher <patrick.boettcher@posteo.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +38,11 @@ struct bcm3510_config
 	int (*request_firmware)(struct dvb_frontend* fe, const struct firmware **fw, char* name);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_BCM3510)
+=======
+#if IS_REACHABLE(CONFIG_DVB_BCM3510)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* bcm3510_attach(const struct bcm3510_config* config,
 					   struct i2c_adapter* i2c);
 #else

@@ -149,7 +149,11 @@ int main(int argc, char **argv)
 				break;
 		}
 		/* Decode an instruction */
+<<<<<<< HEAD
 		insn_init(&insn, insn_buf, x86_64);
+=======
+		insn_init(&insn, insn_buf, sizeof(insn_buf), x86_64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		insn_get_length(&insn);
 		if (insn.length != nb) {
 			warnings++;

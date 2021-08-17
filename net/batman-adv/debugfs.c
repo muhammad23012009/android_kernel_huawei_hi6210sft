@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2010-2013 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2010-2016  B.A.T.M.A.N. contributors:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Marek Lindner
  *
@@ -12,6 +16,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA
@@ -249,17 +254,95 @@ static int batadv_originators_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
 	return single_open(file, batadv_orig_seq_print_text, net_dev);
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "debugfs.h"
+#include "main.h"
+
+#include <linux/dcache.h>
+#include <linux/debugfs.h>
+#include <linux/device.h>
+#include <linux/errno.h>
+#include <linux/export.h>
+#include <linux/fs.h>
+#include <linux/netdevice.h>
+#include <linux/printk.h>
+#include <linux/sched.h> /* for linux/wait.h */
+#include <linux/seq_file.h>
+#include <linux/stat.h>
+#include <linux/stddef.h>
+#include <linux/stringify.h>
+#include <linux/sysfs.h>
+#include <net/net_namespace.h>
+
+#include "bat_algo.h"
+#include "bridge_loop_avoidance.h"
+#include "distributed-arp-table.h"
+#include "gateway_client.h"
+#include "icmp_socket.h"
+#include "log.h"
+#include "multicast.h"
+#include "network-coding.h"
+#include "originator.h"
+#include "translation-table.h"
+
+static struct dentry *batadv_debugfs;
+
+static int batadv_algorithms_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, batadv_algo_seq_print_text, NULL);
+}
+
+static int neighbors_open(struct inode *inode, struct file *file)
+{
+	struct net_device *net_dev = (struct net_device *)inode->i_private;
+
+	return single_open(file, batadv_hardif_neigh_seq_print_text, net_dev);
+}
+
+static int batadv_originators_open(struct inode *inode, struct file *file)
+{
+	struct net_device *net_dev = (struct net_device *)inode->i_private;
+
+	return single_open(file, batadv_orig_seq_print_text, net_dev);
+}
+
+/**
+ * batadv_originators_hardif_open - handles debugfs output for the
+ *  originator table of an hard interface
+ * @inode: inode pointer to debugfs file
+ * @file: pointer to the seq_file
+ *
+ * Return: 0 on success or negative error number in case of failure
+ */
+static int batadv_originators_hardif_open(struct inode *inode,
+					  struct file *file)
+{
+	struct net_device *net_dev = (struct net_device *)inode->i_private;
+
+	return single_open(file, batadv_orig_hardif_seq_print_text, net_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int batadv_gateways_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return single_open(file, batadv_gw_client_seq_print_text, net_dev);
 }
 
 static int batadv_transtable_global_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return single_open(file, batadv_tt_global_seq_print_text, net_dev);
 }
 
@@ -267,6 +350,10 @@ static int batadv_transtable_global_open(struct inode *inode, struct file *file)
 static int batadv_bla_claim_table_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return single_open(file, batadv_bla_claim_table_seq_print_text,
 			   net_dev);
 }
@@ -275,6 +362,10 @@ static int batadv_bla_backbone_table_open(struct inode *inode,
 					  struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return single_open(file, batadv_bla_backbone_table_seq_print_text,
 			   net_dev);
 }
@@ -286,10 +377,19 @@ static int batadv_bla_backbone_table_open(struct inode *inode,
  * batadv_dat_cache_open - Prepare file handler for reads from dat_chache
  * @inode: inode which was opened
  * @file: file handle to be initialized
+<<<<<<< HEAD
+=======
+ *
+ * Return: 0 on success or negative error number in case of failure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int batadv_dat_cache_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return single_open(file, batadv_dat_cache_seq_print_text, net_dev);
 }
 #endif
@@ -297,6 +397,7 @@ static int batadv_dat_cache_open(struct inode *inode, struct file *file)
 static int batadv_transtable_local_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
+<<<<<<< HEAD
 	return single_open(file, batadv_tt_local_seq_print_text, net_dev);
 }
 
@@ -304,6 +405,10 @@ static int batadv_vis_data_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
 	return single_open(file, batadv_vis_seq_print_text, net_dev);
+=======
+
+	return single_open(file, batadv_tt_local_seq_print_text, net_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct batadv_debuginfo {
@@ -315,10 +420,15 @@ struct batadv_debuginfo {
 static int batadv_nc_nodes_open(struct inode *inode, struct file *file)
 {
 	struct net_device *net_dev = (struct net_device *)inode->i_private;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return single_open(file, batadv_nc_nodes_seq_print_text, net_dev);
 }
 #endif
 
+<<<<<<< HEAD
 #define BATADV_DEBUGINFO(_name, _mode, _open)		\
 struct batadv_debuginfo batadv_debuginfo_##_name = {	\
 	.attr = { .name = __stringify(_name),		\
@@ -330,6 +440,38 @@ struct batadv_debuginfo batadv_debuginfo_##_name = {	\
 		  .release = single_release,		\
 		}					\
 };
+=======
+#ifdef CONFIG_BATMAN_ADV_MCAST
+/**
+ * batadv_mcast_flags_open - prepare file handler for reads from mcast_flags
+ * @inode: inode which was opened
+ * @file: file handle to be initialized
+ *
+ * Return: 0 on success or negative error number in case of failure
+ */
+static int batadv_mcast_flags_open(struct inode *inode, struct file *file)
+{
+	struct net_device *net_dev = (struct net_device *)inode->i_private;
+
+	return single_open(file, batadv_mcast_flags_seq_print_text, net_dev);
+}
+#endif
+
+#define BATADV_DEBUGINFO(_name, _mode, _open)		\
+struct batadv_debuginfo batadv_debuginfo_##_name = {	\
+	.attr = {					\
+		.name = __stringify(_name),		\
+		.mode = _mode,				\
+	},						\
+	.fops = {					\
+		.owner = THIS_MODULE,			\
+		.open = _open,				\
+		.read	= seq_read,			\
+		.llseek = seq_lseek,			\
+		.release = single_release,		\
+	},						\
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* the following attributes are general and therefore they will be directly
  * placed in the BATADV_DEBUGFS_SUBDIR subdirectory of debugfs
@@ -342,6 +484,10 @@ static struct batadv_debuginfo *batadv_general_debuginfos[] = {
 };
 
 /* The following attributes are per soft interface */
+<<<<<<< HEAD
+=======
+static BATADV_DEBUGINFO(neighbors, S_IRUGO, neighbors_open);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static BATADV_DEBUGINFO(originators, S_IRUGO, batadv_originators_open);
 static BATADV_DEBUGINFO(gateways, S_IRUGO, batadv_gateways_open);
 static BATADV_DEBUGINFO(transtable_global, S_IRUGO,
@@ -356,12 +502,24 @@ static BATADV_DEBUGINFO(dat_cache, S_IRUGO, batadv_dat_cache_open);
 #endif
 static BATADV_DEBUGINFO(transtable_local, S_IRUGO,
 			batadv_transtable_local_open);
+<<<<<<< HEAD
 static BATADV_DEBUGINFO(vis_data, S_IRUGO, batadv_vis_data_open);
 #ifdef CONFIG_BATMAN_ADV_NC
 static BATADV_DEBUGINFO(nc_nodes, S_IRUGO, batadv_nc_nodes_open);
 #endif
 
 static struct batadv_debuginfo *batadv_mesh_debuginfos[] = {
+=======
+#ifdef CONFIG_BATMAN_ADV_NC
+static BATADV_DEBUGINFO(nc_nodes, S_IRUGO, batadv_nc_nodes_open);
+#endif
+#ifdef CONFIG_BATMAN_ADV_MCAST
+static BATADV_DEBUGINFO(mcast_flags, S_IRUGO, batadv_mcast_flags_open);
+#endif
+
+static struct batadv_debuginfo *batadv_mesh_debuginfos[] = {
+	&batadv_debuginfo_neighbors,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&batadv_debuginfo_originators,
 	&batadv_debuginfo_gateways,
 	&batadv_debuginfo_transtable_global,
@@ -373,10 +531,42 @@ static struct batadv_debuginfo *batadv_mesh_debuginfos[] = {
 	&batadv_debuginfo_dat_cache,
 #endif
 	&batadv_debuginfo_transtable_local,
+<<<<<<< HEAD
 	&batadv_debuginfo_vis_data,
 #ifdef CONFIG_BATMAN_ADV_NC
 	&batadv_debuginfo_nc_nodes,
 #endif
+=======
+#ifdef CONFIG_BATMAN_ADV_NC
+	&batadv_debuginfo_nc_nodes,
+#endif
+#ifdef CONFIG_BATMAN_ADV_MCAST
+	&batadv_debuginfo_mcast_flags,
+#endif
+	NULL,
+};
+
+#define BATADV_HARDIF_DEBUGINFO(_name, _mode, _open)		\
+struct batadv_debuginfo batadv_hardif_debuginfo_##_name = {	\
+	.attr = {						\
+		.name = __stringify(_name),			\
+		.mode = _mode,					\
+	},							\
+	.fops = {						\
+		.owner = THIS_MODULE,				\
+		.open = _open,					\
+		.read	= seq_read,				\
+		.llseek = seq_lseek,				\
+		.release = single_release,			\
+	},							\
+}
+
+static BATADV_HARDIF_DEBUGINFO(originators, S_IRUGO,
+			       batadv_originators_hardif_open);
+
+static struct batadv_debuginfo *batadv_hardif_debuginfos[] = {
+	&batadv_hardif_debuginfo_originators,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NULL,
 };
 
@@ -407,6 +597,10 @@ void batadv_debugfs_init(void)
 	return;
 err:
 	debugfs_remove_recursive(batadv_debugfs);
+<<<<<<< HEAD
+=======
+	batadv_debugfs = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void batadv_debugfs_destroy(void)
@@ -415,15 +609,107 @@ void batadv_debugfs_destroy(void)
 	batadv_debugfs = NULL;
 }
 
-int batadv_debugfs_add_meshif(struct net_device *dev)
+<<<<<<< HEAD
+=======
+/**
+ * batadv_debugfs_add_hardif - creates the base directory for a hard interface
+ *  in debugfs.
+ * @hard_iface: hard interface which should be added.
+ *
+ * Return: 0 on success or negative error number in case of failure
+ */
+int batadv_debugfs_add_hardif(struct batadv_hard_iface *hard_iface)
 {
-	struct batadv_priv *bat_priv = netdev_priv(dev);
+	struct net *net = dev_net(hard_iface->net_dev);
 	struct batadv_debuginfo **bat_debug;
 	struct dentry *file;
 
 	if (!batadv_debugfs)
 		goto out;
 
+	if (net != &init_net)
+		return 0;
+
+	hard_iface->debug_dir = debugfs_create_dir(hard_iface->net_dev->name,
+						   batadv_debugfs);
+	if (!hard_iface->debug_dir)
+		goto out;
+
+	for (bat_debug = batadv_hardif_debuginfos; *bat_debug; ++bat_debug) {
+		file = debugfs_create_file(((*bat_debug)->attr).name,
+					   S_IFREG | ((*bat_debug)->attr).mode,
+					   hard_iface->debug_dir,
+					   hard_iface->net_dev,
+					   &(*bat_debug)->fops);
+		if (!file)
+			goto rem_attr;
+	}
+
+	return 0;
+rem_attr:
+	debugfs_remove_recursive(hard_iface->debug_dir);
+	hard_iface->debug_dir = NULL;
+out:
+	return -ENOMEM;
+}
+
+/**
+ * batadv_debugfs_rename_hardif() - Fix debugfs path for renamed hardif
+ * @hard_iface: hard interface which was renamed
+ */
+void batadv_debugfs_rename_hardif(struct batadv_hard_iface *hard_iface)
+{
+	const char *name = hard_iface->net_dev->name;
+	struct dentry *dir;
+	struct dentry *d;
+
+	dir = hard_iface->debug_dir;
+	if (!dir)
+		return;
+
+	d = debugfs_rename(dir->d_parent, dir, dir->d_parent, name);
+	if (!d)
+		pr_err("Can't rename debugfs dir to %s\n", name);
+}
+
+/**
+ * batadv_debugfs_del_hardif - delete the base directory for a hard interface
+ *  in debugfs.
+ * @hard_iface: hard interface which is deleted.
+ */
+void batadv_debugfs_del_hardif(struct batadv_hard_iface *hard_iface)
+{
+	struct net *net = dev_net(hard_iface->net_dev);
+
+	if (net != &init_net)
+		return;
+
+	if (batadv_debugfs) {
+		debugfs_remove_recursive(hard_iface->debug_dir);
+		hard_iface->debug_dir = NULL;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+int batadv_debugfs_add_meshif(struct net_device *dev)
+{
+	struct batadv_priv *bat_priv = netdev_priv(dev);
+	struct batadv_debuginfo **bat_debug;
+<<<<<<< HEAD
+=======
+	struct net *net = dev_net(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+	struct dentry *file;
+
+	if (!batadv_debugfs)
+		goto out;
+
+<<<<<<< HEAD
+=======
+	if (net != &init_net)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bat_priv->debug_dir = debugfs_create_dir(dev->name, batadv_debugfs);
 	if (!bat_priv->debug_dir)
 		goto out;
@@ -454,16 +740,47 @@ rem_attr:
 	debugfs_remove_recursive(bat_priv->debug_dir);
 	bat_priv->debug_dir = NULL;
 out:
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 	return -ENOMEM;
 #else
 	return 0;
 #endif /* CONFIG_DEBUG_FS */
+=======
+	return -ENOMEM;
+}
+
+/**
+ * batadv_debugfs_rename_meshif() - Fix debugfs path for renamed softif
+ * @dev: net_device which was renamed
+ */
+void batadv_debugfs_rename_meshif(struct net_device *dev)
+{
+	struct batadv_priv *bat_priv = netdev_priv(dev);
+	const char *name = dev->name;
+	struct dentry *dir;
+	struct dentry *d;
+
+	dir = bat_priv->debug_dir;
+	if (!dir)
+		return;
+
+	d = debugfs_rename(dir->d_parent, dir, dir->d_parent, name);
+	if (!d)
+		pr_err("Can't rename debugfs dir to %s\n", name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void batadv_debugfs_del_meshif(struct net_device *dev)
 {
 	struct batadv_priv *bat_priv = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	struct net *net = dev_net(dev);
+
+	if (net != &init_net)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	batadv_debug_log_cleanup(bat_priv);
 

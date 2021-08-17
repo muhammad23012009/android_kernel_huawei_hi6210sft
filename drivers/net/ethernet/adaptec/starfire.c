@@ -66,7 +66,11 @@
  */
 #define ZEROCOPY
 
+<<<<<<< HEAD
 #if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VLAN_8021Q)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define VLAN_SUPPORT
 #endif
 
@@ -285,7 +289,11 @@ enum chipset {
 	CH_6915 = 0,
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(starfire_pci_tbl) = {
+=======
+static const struct pci_device_id starfire_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(ADAPTEC, 0x6915), CH_6915 },
 	{ 0, }
 };
@@ -784,7 +792,11 @@ static int starfire_init_one(struct pci_dev *pdev,
 
 	dev->netdev_ops = &netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &ethtool_ops);
+=======
+	dev->ethtool_ops = &ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	netif_napi_add(dev, &np->napi, netdev_poll, max_interrupt_work);
 
@@ -835,7 +847,10 @@ static int starfire_init_one(struct pci_dev *pdev,
 	return 0;
 
 err_out_cleardev:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iounmap(base);
 err_out_free_res:
 	pci_release_regions (pdev);
@@ -1130,7 +1145,11 @@ static void tx_timeout(struct net_device *dev)
 
 	/* Trigger an immediate transmit demand. */
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->stats.tx_errors++;
 	netif_wake_queue(dev);
 }
@@ -1154,6 +1173,15 @@ static void init_ring(struct net_device *dev)
 		if (skb == NULL)
 			break;
 		np->rx_info[i].mapping = pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
+=======
+		if (pci_dma_mapping_error(np->pci_dev,
+					  np->rx_info[i].mapping)) {
+			dev_kfree_skb(skb);
+			np->rx_info[i].skb = NULL;
+			break;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Grrr, we cannot offset to correctly align the IP header. */
 		np->rx_ring[i].rxaddr = cpu_to_dma(np->rx_info[i].mapping | RxDescValid);
 	}
@@ -1184,8 +1212,14 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	unsigned int entry;
+<<<<<<< HEAD
 	u32 status;
 	int i;
+=======
+	unsigned int prev_tx;
+	u32 status;
+	int i, j;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * be cautious here, wrapping the queue has weird semantics
@@ -1203,6 +1237,10 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif /* ZEROCOPY && HAS_BROKEN_FIRMWARE */
 
+<<<<<<< HEAD
+=======
+	prev_tx = np->cur_tx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	entry = np->cur_tx % TX_RING_SIZE;
 	for (i = 0; i < skb_num_frags(skb); i++) {
 		int wrap_ring = 0;
@@ -1236,6 +1274,14 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 					       skb_frag_size(this_frag),
 					       PCI_DMA_TODEVICE);
 		}
+<<<<<<< HEAD
+=======
+		if (pci_dma_mapping_error(np->pci_dev,
+					  np->tx_info[entry].mapping)) {
+			dev->stats.tx_dropped++;
+			goto err_out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		np->tx_ring[entry].addr = cpu_to_dma(np->tx_info[entry].mapping);
 		np->tx_ring[entry].status = cpu_to_le32(status);
@@ -1270,8 +1316,35 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 		netif_stop_queue(dev);
 
 	return NETDEV_TX_OK;
+<<<<<<< HEAD
 }
 
+=======
+
+err_out:
+	entry = prev_tx % TX_RING_SIZE;
+	np->tx_info[entry].skb = NULL;
+	if (i > 0) {
+		pci_unmap_single(np->pci_dev,
+				 np->tx_info[entry].mapping,
+				 skb_first_frag_len(skb),
+				 PCI_DMA_TODEVICE);
+		np->tx_info[entry].mapping = 0;
+		entry = (entry + np->tx_info[entry].used_slots) % TX_RING_SIZE;
+		for (j = 1; j < i; j++) {
+			pci_unmap_single(np->pci_dev,
+					 np->tx_info[entry].mapping,
+					 skb_frag_size(
+						&skb_shinfo(skb)->frags[j-1]),
+					 PCI_DMA_TODEVICE);
+			entry++;
+		}
+	}
+	dev_kfree_skb_any(skb);
+	np->cur_tx = prev_tx;
+	return NETDEV_TX_OK;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* The interrupt handler does all of the Rx thread work and cleans up
    after the Tx thread. */
@@ -1571,6 +1644,15 @@ static void refill_rx_ring(struct net_device *dev)
 				break;	/* Better luck next round. */
 			np->rx_info[entry].mapping =
 				pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
+=======
+			if (pci_dma_mapping_error(np->pci_dev,
+						np->rx_info[entry].mapping)) {
+				dev_kfree_skb(skb);
+				np->rx_info[entry].skb = NULL;
+				break;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			np->rx_ring[entry].rxaddr =
 				cpu_to_dma(np->rx_info[entry].mapping | RxDescValid);
 		}
@@ -2012,7 +2094,10 @@ static void starfire_remove_one(struct pci_dev *pdev)
 	iounmap(np->base);
 	pci_release_regions(pdev);
 
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(dev);			/* Will also free np!! */
 }
 

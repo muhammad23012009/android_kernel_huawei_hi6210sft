@@ -22,6 +22,7 @@
  */
 
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/jbd2.h>
 #include <linux/buffer_head.h>
 #include <linux/slab.h>
@@ -35,6 +36,18 @@ static int ext4_dx_readdir(struct file *filp,
 /**
  * Check if the given dir-inode refers to an htree-indexed directory
  * (or a directory which chould potentially get coverted to use htree
+=======
+#include <linux/buffer_head.h>
+#include <linux/slab.h>
+#include "ext4.h"
+#include "xattr.h"
+
+static int ext4_dx_readdir(struct file *, struct dir_context *);
+
+/**
+ * Check if the given dir-inode refers to an htree-indexed directory
+ * (or a directory which could potentially get converted to use htree
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * indexing).
  *
  * Return 1 if it is a dx dir, 0 if not
@@ -43,8 +56,12 @@ static int is_dx_dir(struct inode *inode)
 {
 	struct super_block *sb = inode->i_sb;
 
+<<<<<<< HEAD
 	if (EXT4_HAS_COMPAT_FEATURE(inode->i_sb,
 		     EXT4_FEATURE_COMPAT_DIR_INDEX) &&
+=======
+	if (ext4_has_feature_dir_index(inode->i_sb) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    ((ext4_test_inode_flag(inode, EXT4_INODE_INDEX)) ||
 	     ((inode->i_size >> sb->s_blocksize_bits) == 1) ||
 	     ext4_has_inline_data(inode)))
@@ -78,7 +95,16 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 	else if (unlikely(rlen < EXT4_DIR_REC_LEN(de->name_len)))
 		error_msg = "rec_len is too small for name_len";
 	else if (unlikely(((char *) de - buf) + rlen > size))
+<<<<<<< HEAD
 		error_msg = "directory entry across range";
+=======
+		error_msg = "directory entry overrun";
+	else if (unlikely(((char *) de - buf) + rlen >
+			  size - EXT4_DIR_REC_LEN(1) &&
+			  ((char *) de - buf) + rlen != size)) {
+		error_msg = "directory entry too close to block end";
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (unlikely(le32_to_cpu(de->inode) >
 			le32_to_cpu(EXT4_SB(dir->i_sb)->s_es->s_inodes_count)))
 		error_msg = "inode out of bounds";
@@ -87,6 +113,7 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 
 	if (filp)
 		ext4_error_file(filp, function, line, bh->b_blocknr,
+<<<<<<< HEAD
 				"bad entry in directory: %s - offset=%u(%u), "
 				"inode=%u, rec_len=%d, name_len=%d",
 				error_msg, (unsigned) (offset % size),
@@ -99,10 +126,23 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 				error_msg, (unsigned) (offset % size),
 				offset, le32_to_cpu(de->inode),
 				rlen, de->name_len);
+=======
+				"bad entry in directory: %s - offset=%u, "
+				"inode=%u, rec_len=%d, name_len=%d, size=%d",
+				error_msg, offset, le32_to_cpu(de->inode),
+				rlen, de->name_len, size);
+	else
+		ext4_error_inode(dir, function, line, bh->b_blocknr,
+				"bad entry in directory: %s - offset=%u, "
+				"inode=%u, rec_len=%d, name_len=%d, size=%d",
+				 error_msg, offset, le32_to_cpu(de->inode),
+				 rlen, de->name_len, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 1;
 }
 
+<<<<<<< HEAD
 static int ext4_readdir(struct file *filp,
 			 void *dirent, filldir_t filldir)
 {
@@ -128,10 +168,43 @@ static int ext4_readdir(struct file *filp,
 		 */
 		ext4_clear_inode_flag(file_inode(filp),
 				      EXT4_INODE_INDEX);
+=======
+static int ext4_readdir(struct file *file, struct dir_context *ctx)
+{
+	unsigned int offset;
+	int i;
+	struct ext4_dir_entry_2 *de;
+	int err;
+	struct inode *inode = file_inode(file);
+	struct super_block *sb = inode->i_sb;
+	struct buffer_head *bh = NULL;
+	struct fscrypt_str fstr = FSTR_INIT(NULL, 0);
+
+	if (ext4_encrypted_inode(inode)) {
+		err = fscrypt_get_encryption_info(inode);
+		if (err && err != -ENOKEY)
+			return err;
+	}
+
+	if (is_dx_dir(inode)) {
+		err = ext4_dx_readdir(file, ctx);
+		if (err != ERR_BAD_DX_DIR) {
+			return err;
+		}
+		/* Can we just clear INDEX flag to ignore htree information? */
+		if (!ext4_has_metadata_csum(sb)) {
+			/*
+			 * We don't set the inode dirty flag since it's not
+			 * critical that it gets flushed back to the disk.
+			 */
+			ext4_clear_inode_flag(inode, EXT4_INODE_INDEX);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (ext4_has_inline_data(inode)) {
 		int has_inline_data = 1;
+<<<<<<< HEAD
 		ret = ext4_read_inline_dir(filp, dirent, filldir,
 					   &has_inline_data);
 		if (has_inline_data)
@@ -176,6 +249,62 @@ static int ext4_readdir(struct file *filp,
 			if (filp->f_pos > inode->i_blocks << 9)
 				break;
 			filp->f_pos += sb->s_blocksize - offset;
+=======
+		err = ext4_read_inline_dir(file, ctx,
+					   &has_inline_data);
+		if (has_inline_data)
+			return err;
+	}
+
+	if (ext4_encrypted_inode(inode)) {
+		err = fscrypt_fname_alloc_buffer(inode, EXT4_NAME_LEN, &fstr);
+		if (err < 0)
+			return err;
+	}
+
+	while (ctx->pos < inode->i_size) {
+		struct ext4_map_blocks map;
+
+		if (fatal_signal_pending(current)) {
+			err = -ERESTARTSYS;
+			goto errout;
+		}
+		cond_resched();
+		offset = ctx->pos & (sb->s_blocksize - 1);
+		map.m_lblk = ctx->pos >> EXT4_BLOCK_SIZE_BITS(sb);
+		map.m_len = 1;
+		err = ext4_map_blocks(NULL, inode, &map, 0);
+		if (err == 0) {
+			/* m_len should never be zero but let's avoid
+			 * an infinite loop if it somehow is */
+			if (map.m_len == 0)
+				map.m_len = 1;
+			ctx->pos += map.m_len * sb->s_blocksize;
+			continue;
+		}
+		if (err > 0) {
+			pgoff_t index = map.m_pblk >>
+					(PAGE_SHIFT - inode->i_blkbits);
+			if (!ra_has_index(&file->f_ra, index))
+				page_cache_sync_readahead(
+					sb->s_bdev->bd_inode->i_mapping,
+					&file->f_ra, file,
+					index, 1);
+			file->f_ra.prev_pos = (loff_t)index << PAGE_SHIFT;
+			bh = ext4_bread(NULL, inode, map.m_lblk, 0);
+			if (IS_ERR(bh)) {
+				err = PTR_ERR(bh);
+				bh = NULL;
+				goto errout;
+			}
+		}
+
+		if (!bh) {
+			/* corrupt size?  Maybe no more blocks to read */
+			if (ctx->pos > inode->i_blocks << 9)
+				break;
+			ctx->pos += sb->s_blocksize - offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 
@@ -183,21 +312,37 @@ static int ext4_readdir(struct file *filp,
 		if (!buffer_verified(bh) &&
 		    !ext4_dirent_csum_verify(inode,
 				(struct ext4_dir_entry *)bh->b_data)) {
+<<<<<<< HEAD
 			EXT4_ERROR_FILE(filp, 0, "directory fails checksum "
 					"at offset %llu",
 					(unsigned long long)filp->f_pos);
 			filp->f_pos += sb->s_blocksize - offset;
 			brelse(bh);
+=======
+			EXT4_ERROR_FILE(file, 0, "directory fails checksum "
+					"at offset %llu",
+					(unsigned long long)ctx->pos);
+			ctx->pos += sb->s_blocksize - offset;
+			brelse(bh);
+			bh = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 		set_buffer_verified(bh);
 
+<<<<<<< HEAD
 revalidate:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* If the dir block has changed since the last call to
 		 * readdir(2), then we might be pointing to an invalid
 		 * dirent right now.  Scan from the start of the block
 		 * to make sure. */
+<<<<<<< HEAD
 		if (filp->f_version != inode->i_version) {
+=======
+		if (file->f_version != inode->i_version) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			for (i = 0; i < sb->s_blocksize && i < offset; ) {
 				de = (struct ext4_dir_entry_2 *)
 					(bh->b_data + i);
@@ -214,6 +359,7 @@ revalidate:
 							    sb->s_blocksize);
 			}
 			offset = i;
+<<<<<<< HEAD
 			filp->f_pos = (filp->f_pos & ~(sb->s_blocksize - 1))
 				| offset;
 			filp->f_version = inode->i_version;
@@ -233,10 +379,30 @@ revalidate:
 				brelse(bh);
 				ret = stored;
 				goto out;
+=======
+			ctx->pos = (ctx->pos & ~(sb->s_blocksize - 1))
+				| offset;
+			file->f_version = inode->i_version;
+		}
+
+		while (ctx->pos < inode->i_size
+		       && offset < sb->s_blocksize) {
+			de = (struct ext4_dir_entry_2 *) (bh->b_data + offset);
+			if (ext4_check_dir_entry(inode, file, de, bh,
+						 bh->b_data, bh->b_size,
+						 offset)) {
+				/*
+				 * On error, skip to the next block
+				 */
+				ctx->pos = (ctx->pos |
+						(sb->s_blocksize - 1)) + 1;
+				break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			offset += ext4_rec_len_from_disk(de->rec_len,
 					sb->s_blocksize);
 			if (le32_to_cpu(de->inode)) {
+<<<<<<< HEAD
 				/* We might block in the next section
 				 * if the data destination is
 				 * currently swapped out.  So, use a
@@ -265,12 +431,61 @@ revalidate:
 	}
 out:
 	return ret;
+=======
+				if (!ext4_encrypted_inode(inode)) {
+					if (!dir_emit(ctx, de->name,
+					    de->name_len,
+					    le32_to_cpu(de->inode),
+					    get_dtype(sb, de->file_type)))
+						goto done;
+				} else {
+					int save_len = fstr.len;
+					struct fscrypt_str de_name =
+							FSTR_INIT(de->name,
+								de->name_len);
+
+					/* Directory is encrypted */
+					err = fscrypt_fname_disk_to_usr(inode,
+						0, 0, &de_name, &fstr);
+					de_name = fstr;
+					fstr.len = save_len;
+					if (err)
+						goto errout;
+					if (!dir_emit(ctx,
+					    de_name.name, de_name.len,
+					    le32_to_cpu(de->inode),
+					    get_dtype(sb, de->file_type)))
+						goto done;
+				}
+			}
+			ctx->pos += ext4_rec_len_from_disk(de->rec_len,
+						sb->s_blocksize);
+		}
+		if ((ctx->pos < inode->i_size) && !dir_relax_shared(inode))
+			goto done;
+		brelse(bh);
+		bh = NULL;
+		offset = 0;
+	}
+done:
+	err = 0;
+errout:
+#ifdef CONFIG_EXT4_FS_ENCRYPTION
+	fscrypt_fname_free_buffer(&fstr);
+#endif
+	brelse(bh);
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int is_32bit_api(void)
 {
 #ifdef CONFIG_COMPAT
+<<<<<<< HEAD
 	return is_compat_task();
+=======
+	return in_compat_syscall();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	return (BITS_PER_LONG == 32);
 #endif
@@ -370,6 +585,7 @@ struct fname {
  */
 static void free_rb_tree_fname(struct rb_root *root)
 {
+<<<<<<< HEAD
 	struct rb_node	*n = root->rb_node;
 	struct rb_node	*parent;
 	struct fname	*fname;
@@ -392,11 +608,17 @@ static void free_rb_tree_fname(struct rb_root *root)
 		 */
 		parent = rb_parent(n);
 		fname = rb_entry(n, struct fname, rb_hash);
+=======
+	struct fname *fname, *next;
+
+	rbtree_postorder_for_each_entry_safe(fname, next, root, rb_hash)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while (fname) {
 			struct fname *old = fname;
 			fname = fname->next;
 			kfree(old);
 		}
+<<<<<<< HEAD
 		if (!parent)
 			*root = RB_ROOT;
 		else if (parent->rb_left == n)
@@ -405,6 +627,10 @@ static void free_rb_tree_fname(struct rb_root *root)
 			parent->rb_right = NULL;
 		n = parent;
 	}
+=======
+
+	*root = RB_ROOT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -429,10 +655,22 @@ void ext4_htree_free_dir_info(struct dir_private_info *p)
 
 /*
  * Given a directory entry, enter it into the fname rb tree.
+<<<<<<< HEAD
  */
 int ext4_htree_store_dirent(struct file *dir_file, __u32 hash,
 			     __u32 minor_hash,
 			     struct ext4_dir_entry_2 *dirent)
+=======
+ *
+ * When filename encryption is enabled, the dirent will hold the
+ * encrypted filename, while the htree will hold decrypted filename.
+ * The decrypted filename is passed in via ent_name.  parameter.
+ */
+int ext4_htree_store_dirent(struct file *dir_file, __u32 hash,
+			     __u32 minor_hash,
+			    struct ext4_dir_entry_2 *dirent,
+			    struct fscrypt_str *ent_name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct rb_node **p, *parent = NULL;
 	struct fname *fname, *new_fn;
@@ -443,17 +681,28 @@ int ext4_htree_store_dirent(struct file *dir_file, __u32 hash,
 	p = &info->root.rb_node;
 
 	/* Create and allocate the fname structure */
+<<<<<<< HEAD
 	len = sizeof(struct fname) + dirent->name_len + 1;
+=======
+	len = sizeof(struct fname) + ent_name->len + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	new_fn = kzalloc(len, GFP_KERNEL);
 	if (!new_fn)
 		return -ENOMEM;
 	new_fn->hash = hash;
 	new_fn->minor_hash = minor_hash;
 	new_fn->inode = le32_to_cpu(dirent->inode);
+<<<<<<< HEAD
 	new_fn->name_len = dirent->name_len;
 	new_fn->file_type = dirent->file_type;
 	memcpy(new_fn->name, dirent->name, dirent->name_len);
 	new_fn->name[dirent->name_len] = 0;
+=======
+	new_fn->name_len = ent_name->len;
+	new_fn->file_type = dirent->file_type;
+	memcpy(new_fn->name, ent_name->name, ent_name->len);
+	new_fn->name[ent_name->len] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (*p) {
 		parent = *p;
@@ -492,6 +741,7 @@ int ext4_htree_store_dirent(struct file *dir_file, __u32 hash,
  * for all entres on the fname linked list.  (Normally there is only
  * one entry on the linked list, unless there are 62 bit hash collisions.)
  */
+<<<<<<< HEAD
 static int call_filldir(struct file *filp, void *dirent,
 			filldir_t filldir, struct fname *fname)
 {
@@ -502,6 +752,14 @@ static int call_filldir(struct file *filp, void *dirent,
 	int error;
 
 	sb = inode->i_sb;
+=======
+static int call_filldir(struct file *file, struct dir_context *ctx,
+			struct fname *fname)
+{
+	struct dir_private_info *info = file->private_data;
+	struct inode *inode = file_inode(file);
+	struct super_block *sb = inode->i_sb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!fname) {
 		ext4_msg(sb, KERN_ERR, "%s:%d: inode #%lu: comm %s: "
@@ -509,6 +767,7 @@ static int call_filldir(struct file *filp, void *dirent,
 			 inode->i_ino, current->comm);
 		return 0;
 	}
+<<<<<<< HEAD
 	curr_pos = hash2pos(filp, fname->hash, fname->minor_hash);
 	while (fname) {
 		error = filldir(dirent, fname->name,
@@ -519,21 +778,39 @@ static int call_filldir(struct file *filp, void *dirent,
 			filp->f_pos = curr_pos;
 			info->extra_fname = fname;
 			return error;
+=======
+	ctx->pos = hash2pos(file, fname->hash, fname->minor_hash);
+	while (fname) {
+		if (!dir_emit(ctx, fname->name,
+				fname->name_len,
+				fname->inode,
+				get_dtype(sb, fname->file_type))) {
+			info->extra_fname = fname;
+			return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		fname = fname->next;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ext4_dx_readdir(struct file *filp,
 			 void *dirent, filldir_t filldir)
 {
 	struct dir_private_info *info = filp->private_data;
 	struct inode *inode = file_inode(filp);
+=======
+static int ext4_dx_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct dir_private_info *info = file->private_data;
+	struct inode *inode = file_inode(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fname *fname;
 	int	ret;
 
 	if (!info) {
+<<<<<<< HEAD
 		info = ext4_htree_create_dir_info(filp, filp->f_pos);
 		if (!info)
 			return -ENOMEM;
@@ -550,6 +827,24 @@ static int ext4_dx_readdir(struct file *filp,
 		info->extra_fname = NULL;
 		info->curr_hash = pos2maj_hash(filp, filp->f_pos);
 		info->curr_minor_hash = pos2min_hash(filp, filp->f_pos);
+=======
+		info = ext4_htree_create_dir_info(file, ctx->pos);
+		if (!info)
+			return -ENOMEM;
+		file->private_data = info;
+	}
+
+	if (ctx->pos == ext4_get_htree_eof(file))
+		return 0;	/* EOF */
+
+	/* Some one has messed with f_pos; reset the world */
+	if (info->last_pos != ctx->pos) {
+		free_rb_tree_fname(&info->root);
+		info->curr_node = NULL;
+		info->extra_fname = NULL;
+		info->curr_hash = pos2maj_hash(file, ctx->pos);
+		info->curr_minor_hash = pos2min_hash(file, ctx->pos);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -557,7 +852,11 @@ static int ext4_dx_readdir(struct file *filp,
 	 * chain, return them first.
 	 */
 	if (info->extra_fname) {
+<<<<<<< HEAD
 		if (call_filldir(filp, dirent, filldir, info->extra_fname))
+=======
+		if (call_filldir(file, ctx, info->extra_fname))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto finished;
 		info->extra_fname = NULL;
 		goto next_node;
@@ -571,17 +870,29 @@ static int ext4_dx_readdir(struct file *filp,
 		 * cached entries.
 		 */
 		if ((!info->curr_node) ||
+<<<<<<< HEAD
 		    (filp->f_version != inode->i_version)) {
 			info->curr_node = NULL;
 			free_rb_tree_fname(&info->root);
 			filp->f_version = inode->i_version;
 			ret = ext4_htree_fill_tree(filp, info->curr_hash,
+=======
+		    (file->f_version != inode->i_version)) {
+			info->curr_node = NULL;
+			free_rb_tree_fname(&info->root);
+			file->f_version = inode->i_version;
+			ret = ext4_htree_fill_tree(file, info->curr_hash,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						   info->curr_minor_hash,
 						   &info->next_hash);
 			if (ret < 0)
 				return ret;
 			if (ret == 0) {
+<<<<<<< HEAD
 				filp->f_pos = ext4_get_htree_eof(filp);
+=======
+				ctx->pos = ext4_get_htree_eof(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			}
 			info->curr_node = rb_first(&info->root);
@@ -590,7 +901,11 @@ static int ext4_dx_readdir(struct file *filp,
 		fname = rb_entry(info->curr_node, struct fname, rb_hash);
 		info->curr_hash = fname->hash;
 		info->curr_minor_hash = fname->minor_hash;
+<<<<<<< HEAD
 		if (call_filldir(filp, dirent, filldir, fname))
+=======
+		if (call_filldir(file, ctx, fname))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 	next_node:
 		info->curr_node = rb_next(info->curr_node);
@@ -601,7 +916,11 @@ static int ext4_dx_readdir(struct file *filp,
 			info->curr_minor_hash = fname->minor_hash;
 		} else {
 			if (info->next_hash == ~0) {
+<<<<<<< HEAD
 				filp->f_pos = ext4_get_htree_eof(filp);
+=======
+				ctx->pos = ext4_get_htree_eof(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			}
 			info->curr_hash = info->next_hash;
@@ -609,7 +928,18 @@ static int ext4_dx_readdir(struct file *filp,
 		}
 	}
 finished:
+<<<<<<< HEAD
 	info->last_pos = filp->f_pos;
+=======
+	info->last_pos = ctx->pos;
+	return 0;
+}
+
+static int ext4_dir_open(struct inode * inode, struct file * filp)
+{
+	if (ext4_encrypted_inode(inode))
+		return fscrypt_get_encryption_info(inode) ? -EACCES : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -621,14 +951,49 @@ static int ext4_release_dir(struct inode *inode, struct file *filp)
 	return 0;
 }
 
+<<<<<<< HEAD
 const struct file_operations ext4_dir_operations = {
 	.llseek		= ext4_dir_llseek,
 	.read		= generic_read_dir,
 	.readdir	= ext4_readdir,
+=======
+int ext4_check_all_de(struct inode *dir, struct buffer_head *bh, void *buf,
+		      int buf_size)
+{
+	struct ext4_dir_entry_2 *de;
+	int rlen;
+	unsigned int offset = 0;
+	char *top;
+
+	de = (struct ext4_dir_entry_2 *)buf;
+	top = buf + buf_size;
+	while ((char *) de < top) {
+		if (ext4_check_dir_entry(dir, NULL, de, bh,
+					 buf, buf_size, offset))
+			return -EFSCORRUPTED;
+		rlen = ext4_rec_len_from_disk(de->rec_len, buf_size);
+		de = (struct ext4_dir_entry_2 *)((char *)de + rlen);
+		offset += rlen;
+	}
+	if ((char *) de > top)
+		return -EFSCORRUPTED;
+
+	return 0;
+}
+
+const struct file_operations ext4_dir_operations = {
+	.llseek		= ext4_dir_llseek,
+	.read		= generic_read_dir,
+	.iterate_shared	= ext4_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unlocked_ioctl = ext4_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= ext4_compat_ioctl,
 #endif
 	.fsync		= ext4_sync_file,
+<<<<<<< HEAD
+=======
+	.open		= ext4_dir_open,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.release	= ext4_release_dir,
 };

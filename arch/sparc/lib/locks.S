@@ -10,6 +10,10 @@
 #include <asm/psr.h>
 #include <asm/smp.h>
 #include <asm/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.text
 	.align	4
@@ -48,6 +52,10 @@ ___rw_write_enter_spin_on_wlock:
 	 ld	[%g1], %g2
 
 	.globl	___rw_read_enter
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(___rw_read_enter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ___rw_read_enter:
 	orcc	%g2, 0x0, %g0
 	bne,a	___rw_read_enter_spin_on_wlock
@@ -59,6 +67,10 @@ ___rw_read_enter:
 	 mov	%g4, %o7
 
 	.globl	___rw_read_exit
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(___rw_read_exit)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ___rw_read_exit:
 	orcc	%g2, 0x0, %g0
 	bne,a	___rw_read_exit_spin_on_wlock
@@ -70,6 +82,10 @@ ___rw_read_exit:
 	 mov	%g4, %o7
 
 	.globl	___rw_read_try
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(___rw_read_try)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ___rw_read_try:
 	orcc	%g2, 0x0, %g0
 	bne	___rw_read_try_spin_on_wlock
@@ -81,6 +97,10 @@ ___rw_read_try:
 	 mov	%g4, %o7
 
 	.globl	___rw_write_enter
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(___rw_write_enter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ___rw_write_enter:
 	orcc	%g2, 0x0, %g0
 	bne	___rw_write_enter_spin_on_wlock

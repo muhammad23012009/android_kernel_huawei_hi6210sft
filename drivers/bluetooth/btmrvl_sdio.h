@@ -62,6 +62,13 @@
 
 #define FIRMWARE_READY				0xfedc
 
+<<<<<<< HEAD
+=======
+struct btmrvl_plt_wake_cfg {
+	int irq_bt;
+	bool wake_by_bt;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct btmrvl_sdio_card_reg {
 	u8 cfg;
@@ -78,6 +85,15 @@ struct btmrvl_sdio_card_reg {
 	u8 io_port_0;
 	u8 io_port_1;
 	u8 io_port_2;
+<<<<<<< HEAD
+=======
+	bool int_read_to_clear;
+	u8 host_int_rsr;
+	u8 card_misc_cfg;
+	u8 fw_dump_ctrl;
+	u8 fw_dump_start;
+	u8 fw_dump_end;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct btmrvl_sdio_card {
@@ -86,16 +102,32 @@ struct btmrvl_sdio_card {
 	const char *helper;
 	const char *firmware;
 	const struct btmrvl_sdio_card_reg *reg;
+<<<<<<< HEAD
 	u16 sd_blksz_fw_dl;
 	u8 rx_unit;
 	struct btmrvl_private *priv;
+=======
+	bool support_pscan_win_report;
+	bool supports_fw_dump;
+	u16 sd_blksz_fw_dl;
+	u8 rx_unit;
+	struct btmrvl_private *priv;
+	struct device_node *plt_of_node;
+	struct btmrvl_plt_wake_cfg *plt_wake_cfg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct btmrvl_sdio_device {
 	const char *helper;
 	const char *firmware;
 	const struct btmrvl_sdio_card_reg *reg;
+<<<<<<< HEAD
 	u16 sd_blksz_fw_dl;
+=======
+	const bool support_pscan_win_report;
+	u16 sd_blksz_fw_dl;
+	bool supports_fw_dump;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 

@@ -25,32 +25,51 @@ static struct bus_type node_subsys = {
 };
 
 
+<<<<<<< HEAD
 static ssize_t node_read_cpumap(struct device *dev, int type, char *buf)
 {
 	struct node *node_dev = to_node(dev);
 	const struct cpumask *mask = cpumask_of_node(node_dev->dev.id);
 	int len;
+=======
+static ssize_t node_read_cpumap(struct device *dev, bool list, char *buf)
+{
+	struct node *node_dev = to_node(dev);
+	const struct cpumask *mask = cpumask_of_node(node_dev->dev.id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* 2008/04/07: buf currently PAGE_SIZE, need 9 chars per 32 bits. */
 	BUILD_BUG_ON((NR_CPUS/32 * 9) > (PAGE_SIZE-1));
 
+<<<<<<< HEAD
 	len = type?
 		cpulist_scnprintf(buf, PAGE_SIZE-2, mask) :
 		cpumask_scnprintf(buf, PAGE_SIZE-2, mask);
  	buf[len++] = '\n';
  	buf[len] = '\0';
 	return len;
+=======
+	return cpumap_print_to_pagebuf(list, buf, mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline ssize_t node_read_cpumask(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return node_read_cpumap(dev, 0, buf);
+=======
+	return node_read_cpumap(dev, false, buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static inline ssize_t node_read_cpulist(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return node_read_cpumap(dev, 1, buf);
+=======
+	return node_read_cpumap(dev, true, buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static DEVICE_ATTR(cpumap,  S_IRUGO, node_read_cpumask, NULL);
@@ -62,6 +81,10 @@ static ssize_t node_read_meminfo(struct device *dev,
 {
 	int n;
 	int nid = dev->id;
+<<<<<<< HEAD
+=======
+	struct pglist_data *pgdat = NODE_DATA(nid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sysinfo i;
 
 	si_meminfo_node(&i, nid);
@@ -80,6 +103,7 @@ static ssize_t node_read_meminfo(struct device *dev,
 		       nid, K(i.totalram),
 		       nid, K(i.freeram),
 		       nid, K(i.totalram - i.freeram),
+<<<<<<< HEAD
 		       nid, K(node_page_state(nid, NR_ACTIVE_ANON) +
 				node_page_state(nid, NR_ACTIVE_FILE)),
 		       nid, K(node_page_state(nid, NR_INACTIVE_ANON) +
@@ -90,6 +114,18 @@ static ssize_t node_read_meminfo(struct device *dev,
 		       nid, K(node_page_state(nid, NR_INACTIVE_FILE)),
 		       nid, K(node_page_state(nid, NR_UNEVICTABLE)),
 		       nid, K(node_page_state(nid, NR_MLOCK)));
+=======
+		       nid, K(node_page_state(pgdat, NR_ACTIVE_ANON) +
+				node_page_state(pgdat, NR_ACTIVE_FILE)),
+		       nid, K(node_page_state(pgdat, NR_INACTIVE_ANON) +
+				node_page_state(pgdat, NR_INACTIVE_FILE)),
+		       nid, K(node_page_state(pgdat, NR_ACTIVE_ANON)),
+		       nid, K(node_page_state(pgdat, NR_INACTIVE_ANON)),
+		       nid, K(node_page_state(pgdat, NR_ACTIVE_FILE)),
+		       nid, K(node_page_state(pgdat, NR_INACTIVE_FILE)),
+		       nid, K(node_page_state(pgdat, NR_UNEVICTABLE)),
+		       nid, K(sum_zone_node_page_state(nid, NR_MLOCK)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_HIGHMEM
 	n += sprintf(buf + n,
@@ -119,6 +155,7 @@ static ssize_t node_read_meminfo(struct device *dev,
 		       "Node %d SUnreclaim:     %8lu kB\n"
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 		       "Node %d AnonHugePages:  %8lu kB\n"
+<<<<<<< HEAD
 #endif
 			,
 		       nid, K(node_page_state(nid, NR_FILE_DIRTY)),
@@ -149,6 +186,36 @@ static ssize_t node_read_meminfo(struct device *dev,
 			HPAGE_PMD_NR));
 #else
 		       nid, K(node_page_state(nid, NR_SLAB_UNRECLAIMABLE)));
+=======
+		       "Node %d ShmemHugePages: %8lu kB\n"
+		       "Node %d ShmemPmdMapped: %8lu kB\n"
+#endif
+			,
+		       nid, K(node_page_state(pgdat, NR_FILE_DIRTY)),
+		       nid, K(node_page_state(pgdat, NR_WRITEBACK)),
+		       nid, K(node_page_state(pgdat, NR_FILE_PAGES)),
+		       nid, K(node_page_state(pgdat, NR_FILE_MAPPED)),
+		       nid, K(node_page_state(pgdat, NR_ANON_MAPPED)),
+		       nid, K(i.sharedram),
+		       nid, sum_zone_node_page_state(nid, NR_KERNEL_STACK_KB),
+		       nid, K(sum_zone_node_page_state(nid, NR_PAGETABLE)),
+		       nid, K(node_page_state(pgdat, NR_UNSTABLE_NFS)),
+		       nid, K(sum_zone_node_page_state(nid, NR_BOUNCE)),
+		       nid, K(node_page_state(pgdat, NR_WRITEBACK_TEMP)),
+		       nid, K(sum_zone_node_page_state(nid, NR_SLAB_RECLAIMABLE) +
+				sum_zone_node_page_state(nid, NR_SLAB_UNRECLAIMABLE)),
+		       nid, K(sum_zone_node_page_state(nid, NR_SLAB_RECLAIMABLE)),
+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+		       nid, K(sum_zone_node_page_state(nid, NR_SLAB_UNRECLAIMABLE)),
+		       nid, K(node_page_state(pgdat, NR_ANON_THPS) *
+				       HPAGE_PMD_NR),
+		       nid, K(node_page_state(pgdat, NR_SHMEM_THPS) *
+				       HPAGE_PMD_NR),
+		       nid, K(node_page_state(pgdat, NR_SHMEM_PMDMAPPED) *
+				       HPAGE_PMD_NR));
+#else
+		       nid, K(sum_zone_node_page_state(nid, NR_SLAB_UNRECLAIMABLE)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	n += hugetlb_report_node_meminfo(nid, buf + n);
 	return n;
@@ -167,12 +234,21 @@ static ssize_t node_read_numastat(struct device *dev,
 		       "interleave_hit %lu\n"
 		       "local_node %lu\n"
 		       "other_node %lu\n",
+<<<<<<< HEAD
 		       node_page_state(dev->id, NUMA_HIT),
 		       node_page_state(dev->id, NUMA_MISS),
 		       node_page_state(dev->id, NUMA_FOREIGN),
 		       node_page_state(dev->id, NUMA_INTERLEAVE_HIT),
 		       node_page_state(dev->id, NUMA_LOCAL),
 		       node_page_state(dev->id, NUMA_OTHER));
+=======
+		       sum_zone_node_page_state(dev->id, NUMA_HIT),
+		       sum_zone_node_page_state(dev->id, NUMA_MISS),
+		       sum_zone_node_page_state(dev->id, NUMA_FOREIGN),
+		       sum_zone_node_page_state(dev->id, NUMA_INTERLEAVE_HIT),
+		       sum_zone_node_page_state(dev->id, NUMA_LOCAL),
+		       sum_zone_node_page_state(dev->id, NUMA_OTHER));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static DEVICE_ATTR(numastat, S_IRUGO, node_read_numastat, NULL);
 
@@ -180,19 +256,36 @@ static ssize_t node_read_vmstat(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	int nid = dev->id;
+<<<<<<< HEAD
+=======
+	struct pglist_data *pgdat = NODE_DATA(nid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	int n = 0;
 
 	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
 		n += sprintf(buf+n, "%s %lu\n", vmstat_text[i],
+<<<<<<< HEAD
 			     node_page_state(nid, i));
+=======
+			     sum_zone_node_page_state(nid, i));
+
+	for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++)
+		n += sprintf(buf+n, "%s %lu\n",
+			     vmstat_text[i + NR_VM_ZONE_STAT_ITEMS],
+			     node_page_state(pgdat, i));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return n;
 }
 static DEVICE_ATTR(vmstat, S_IRUGO, node_read_vmstat, NULL);
 
 static ssize_t node_read_distance(struct device *dev,
+<<<<<<< HEAD
 			struct device_attribute *attr, char * buf)
+=======
+			struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int nid = dev->id;
 	int len = 0;
@@ -212,6 +305,20 @@ static ssize_t node_read_distance(struct device *dev,
 }
 static DEVICE_ATTR(distance, S_IRUGO, node_read_distance, NULL);
 
+<<<<<<< HEAD
+=======
+static struct attribute *node_dev_attrs[] = {
+	&dev_attr_cpumap.attr,
+	&dev_attr_cpulist.attr,
+	&dev_attr_meminfo.attr,
+	&dev_attr_numastat.attr,
+	&dev_attr_distance.attr,
+	&dev_attr_vmstat.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(node_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_HUGETLBFS
 /*
  * hugetlbfs per node attributes registration interface:
@@ -285,6 +392,7 @@ static int register_node(struct node *node, int num, struct node *parent)
 	node->dev.id = num;
 	node->dev.bus = &node_subsys;
 	node->dev.release = node_device_release;
+<<<<<<< HEAD
 	error = device_register(&node->dev);
 
 	if (!error){
@@ -297,6 +405,12 @@ static int register_node(struct node *node, int num, struct node *parent)
 
 		scan_unevictable_register_node(node);
 
+=======
+	node->dev.groups = node_dev_groups;
+	error = device_register(&node->dev);
+
+	if (!error){
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hugetlb_register_node(node);
 
 		compaction_register_node(node);
@@ -313,6 +427,7 @@ static int register_node(struct node *node, int num, struct node *parent)
  */
 void unregister_node(struct node *node)
 {
+<<<<<<< HEAD
 	device_remove_file(&node->dev, &dev_attr_cpumap);
 	device_remove_file(&node->dev, &dev_attr_cpulist);
 	device_remove_file(&node->dev, &dev_attr_meminfo);
@@ -321,6 +436,8 @@ void unregister_node(struct node *node)
 	device_remove_file(&node->dev, &dev_attr_vmstat);
 
 	scan_unevictable_unregister_node(node);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
 
 	device_unregister(&node->dev);
@@ -376,12 +493,23 @@ int unregister_cpu_under_node(unsigned int cpu, unsigned int nid)
 #ifdef CONFIG_MEMORY_HOTPLUG_SPARSE
 #define page_initialized(page)  (page->lru.next)
 
+<<<<<<< HEAD
 static int get_nid_for_pfn(unsigned long pfn)
+=======
+static int __ref get_nid_for_pfn(unsigned long pfn)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct page *page;
 
 	if (!pfn_valid_within(pfn))
 		return -1;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEFERRED_STRUCT_PAGE_INIT
+	if (system_state == SYSTEM_BOOTING)
+		return early_pfn_to_nid(pfn);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = pfn_to_page(pfn);
 	if (!page_initialized(page))
 		return -1;
@@ -405,6 +533,19 @@ int register_mem_sect_under_node(struct memory_block *mem_blk, int nid)
 	for (pfn = sect_start_pfn; pfn <= sect_end_pfn; pfn++) {
 		int page_nid;
 
+<<<<<<< HEAD
+=======
+		/*
+		 * memory block could have several absent sections from start.
+		 * skip pfn range from absent section
+		 */
+		if (!pfn_present(pfn)) {
+			pfn = round_down(pfn + PAGES_PER_SECTION,
+					 PAGES_PER_SECTION) - 1;
+			continue;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		page_nid = get_nid_for_pfn(pfn);
 		if (page_nid < 0)
 			continue;
@@ -605,6 +746,12 @@ int register_one_node(int nid)
 
 void unregister_one_node(int nid)
 {
+<<<<<<< HEAD
+=======
+	if (!node_devices[nid])
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unregister_node(node_devices[nid]);
 	node_devices[nid] = NULL;
 }
@@ -617,7 +764,12 @@ static ssize_t print_nodes_state(enum node_states state, char *buf)
 {
 	int n;
 
+<<<<<<< HEAD
 	n = nodelist_scnprintf(buf, PAGE_SIZE-2, node_states[state]);
+=======
+	n = scnprintf(buf, PAGE_SIZE - 1, "%*pbl",
+		      nodemask_pr_args(&node_states[state]));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buf[n++] = '\n';
 	buf[n] = '\0';
 	return n;

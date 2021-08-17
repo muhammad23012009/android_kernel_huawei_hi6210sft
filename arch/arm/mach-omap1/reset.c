@@ -3,6 +3,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/hardware.h>
 
@@ -22,7 +26,11 @@
 #define OMAP_EXTWARM_RST_SRC_ID_SHIFT			5
 
 
+<<<<<<< HEAD
 void omap1_restart(char mode, const char *cmd)
+=======
+void omap1_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * Workaround for 5912/1611b bug mentioned in sprz209d.pdf p. 28

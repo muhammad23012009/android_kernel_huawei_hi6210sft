@@ -15,7 +15,11 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/mmc/host.h>
+<<<<<<< HEAD
 #include <linux/mmc/sh_mobile_sdhi.h>
+=======
+#include <linux/mfd/tmio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/physmap.h>
 #include <linux/delay.h>
 #include <linux/regulator/fixed.h>
@@ -29,7 +33,11 @@
 #include <linux/sh_intc.h>
 #include <linux/videodev2.h>
 #include <video/sh_mobile_lcdc.h>
+<<<<<<< HEAD
 #include <media/sh_mobile_ceu.h>
+=======
+#include <media/drv-intf/sh_mobile_ceu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/sh_fsi.h>
 #include <sound/simple_card.h>
 #include <asm/io.h>
@@ -304,6 +312,7 @@ static struct asoc_simple_card_info fsi_ak4642_info = {
 	.card		= "FSIA-AK4642",
 	.codec		= "ak4642-codec.0-0012",
 	.platform	= "sh_fsi.0",
+<<<<<<< HEAD
 	.daifmt		= SND_SOC_DAIFMT_LEFT_J,
 	.cpu_dai = {
 		.name	= "fsia-dai",
@@ -312,6 +321,14 @@ static struct asoc_simple_card_info fsi_ak4642_info = {
 	.codec_dai = {
 		.name	= "ak4642-hifi",
 		.fmt	= SND_SOC_DAIFMT_CBM_CFM,
+=======
+	.daifmt		= SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_CBM_CFM,
+	.cpu_dai = {
+		.name	= "fsia-dai",
+	},
+	.codec_dai = {
+		.name	= "ak4642-hifi",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.sysclk	= 11289600,
 	},
 };
@@ -365,7 +382,11 @@ static struct platform_device keysc_device = {
 static struct resource sh_eth_resources[] = {
 	[0] = {
 		.start = SH_ETH_ADDR,
+<<<<<<< HEAD
 		.end   = SH_ETH_ADDR + 0x1FC,
+=======
+		.end   = SH_ETH_ADDR + 0x1FC - 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.flags = IORESOURCE_MEM,
 	},
 	[1] = {
@@ -377,11 +398,20 @@ static struct resource sh_eth_resources[] = {
 static struct sh_eth_plat_data sh_eth_plat = {
 	.phy = 0x1f, /* SMSC LAN8187 */
 	.edmac_endian = EDMAC_LITTLE_ENDIAN,
+<<<<<<< HEAD
 };
 
 static struct platform_device sh_eth_device = {
 	.name = "sh-eth",
 	.id	= 0,
+=======
+	.phy_interface = PHY_INTERFACE_MODE_MII,
+};
+
+static struct platform_device sh_eth_device = {
+	.name = "sh7724-ether",
+	.id = 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev = {
 		.platform_data = &sh_eth_plat,
 	},
@@ -469,10 +499,17 @@ static struct resource sdhi0_cn7_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sh7724_sdhi0_data = {
 	.dma_slave_tx	= SHDMA_SLAVE_SDHI0_TX,
 	.dma_slave_rx	= SHDMA_SLAVE_SDHI0_RX,
 	.tmio_caps      = MMC_CAP_SDIO_IRQ,
+=======
+static struct tmio_mmc_data sh7724_sdhi0_data = {
+	.chan_priv_tx	= (void *)SHDMA_SLAVE_SDHI0_TX,
+	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI0_RX,
+	.capabilities	= MMC_CAP_SDIO_IRQ,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device sdhi0_cn7_device = {
@@ -498,10 +535,17 @@ static struct resource sdhi1_cn8_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sh7724_sdhi1_data = {
 	.dma_slave_tx	= SHDMA_SLAVE_SDHI1_TX,
 	.dma_slave_rx	= SHDMA_SLAVE_SDHI1_RX,
 	.tmio_caps      = MMC_CAP_SDIO_IRQ,
+=======
+static struct tmio_mmc_data sh7724_sdhi1_data = {
+	.chan_priv_tx	= (void *)SHDMA_SLAVE_SDHI1_TX,
+	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI1_RX,
+	.capabilities	= MMC_CAP_SDIO_IRQ,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device sdhi1_cn8_device = {
@@ -534,8 +578,13 @@ static struct platform_device irda_device = {
 	.resource       = irda_resources,
 };
 
+<<<<<<< HEAD
 #include <media/ak881x.h>
 #include <media/sh_vou.h>
+=======
+#include <media/i2c/ak881x.h>
+#include <media/drv-intf/sh_vou.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct ak881x_pdata ak881x_pdata = {
 	.flags = AK881X_IF_MODE_SLAVE,

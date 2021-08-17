@@ -70,7 +70,11 @@ static const char *board[] __initdata = {
  */
 static int __init mpc5200_simple_probe(void)
 {
+<<<<<<< HEAD
 	return of_flat_dt_match(of_get_flat_dt_root(), board);
+=======
+	return of_device_compatible_match(of_root, board);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(mpc5200_simple_platform) {

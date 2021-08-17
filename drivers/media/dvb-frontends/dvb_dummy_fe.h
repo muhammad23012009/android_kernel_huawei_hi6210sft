@@ -22,11 +22,18 @@
 #ifndef DVB_DUMMY_FE_H
 #define DVB_DUMMY_FE_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 #include <linux/dvb/frontend.h>
 #include "dvb_frontend.h"
 
 #if IS_ENABLED(CONFIG_DVB_DUMMY_FE)
+=======
+#include <linux/dvb/frontend.h>
+#include "dvb_frontend.h"
+
+#if IS_REACHABLE(CONFIG_DVB_DUMMY_FE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* dvb_dummy_fe_ofdm_attach(void);
 extern struct dvb_frontend* dvb_dummy_fe_qpsk_attach(void);
 extern struct dvb_frontend* dvb_dummy_fe_qam_attach(void);

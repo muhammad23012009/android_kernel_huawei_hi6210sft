@@ -3,7 +3,10 @@ ToDos sorted by priority:
 - Use bitmask functions to parse CPU topology more robust
   (current implementation has issues on AMD)
 - Try to read out boost states and frequencies on Intel
+<<<<<<< HEAD
 - Adjust README
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 - Somewhere saw the ability to read power consumption of
   RAM from HW on Intel SandyBridge -> another monitor?
 - Add another c1e debug idle monitor

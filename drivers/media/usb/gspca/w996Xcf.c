@@ -79,6 +79,11 @@ static void w9968cf_write_fsb(struct sd *sd, u16* data)
 	value = *data++;
 	memcpy(sd->gspca_dev.usb_buf, data, 6);
 
+<<<<<<< HEAD
+=======
+	/* Avoid things going to fast for the bridge with a xhci host */
+	udelay(150);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0), 0,
 			      USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
 			      value, 0x06, sd->gspca_dev.usb_buf, 6, 500);
@@ -99,6 +104,12 @@ static void w9968cf_write_sb(struct sd *sd, u16 value)
 	if (sd->gspca_dev.usb_err < 0)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Avoid things going to fast for the bridge with a xhci host */
+	udelay(150);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* We don't use reg_w here, as that would cause all writes when
 	   bitbanging i2c to be logged, making the logs impossible to read */
 	ret = usb_control_msg(sd->gspca_dev.dev,
@@ -126,6 +137,12 @@ static int w9968cf_read_sb(struct sd *sd)
 	if (sd->gspca_dev.usb_err < 0)
 		return -1;
 
+<<<<<<< HEAD
+=======
+	/* Avoid things going to fast for the bridge with a xhci host */
+	udelay(150);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* We don't use reg_r here, as the w9968cf is special and has 16
 	   bit registers instead of 8 bit */
 	ret = usb_control_msg(sd->gspca_dev.dev,
@@ -139,6 +156,14 @@ static int w9968cf_read_sb(struct sd *sd)
 	} else {
 		pr_err("Read SB reg [01] failed\n");
 		sd->gspca_dev.usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(sd->gspca_dev.usb_buf, 0, 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	udelay(W9968CF_I2C_BUS_DELAY);
@@ -430,11 +455,19 @@ static void w9968cf_set_crop_window(struct sd *sd)
 	#define SC(x) ((x) << 10)
 
 	/* Scaling factors */
+<<<<<<< HEAD
 	fw = SC(sd->gspca_dev.width) / max_width;
 	fh = SC(sd->gspca_dev.height) / max_height;
 
 	cw = (fw >= fh) ? max_width : SC(sd->gspca_dev.width) / fh;
 	ch = (fw >= fh) ? SC(sd->gspca_dev.height) / fw : max_height;
+=======
+	fw = SC(sd->gspca_dev.pixfmt.width) / max_width;
+	fh = SC(sd->gspca_dev.pixfmt.height) / max_height;
+
+	cw = (fw >= fh) ? max_width : SC(sd->gspca_dev.pixfmt.width) / fh;
+	ch = (fw >= fh) ? SC(sd->gspca_dev.pixfmt.height) / fw : max_height;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sd->sensor_width = max_width;
 	sd->sensor_height = max_height;
@@ -454,34 +487,59 @@ static void w9968cf_mode_init_regs(struct sd *sd)
 
 	w9968cf_set_crop_window(sd);
 
+<<<<<<< HEAD
 	reg_w(sd, 0x14, sd->gspca_dev.width);
 	reg_w(sd, 0x15, sd->gspca_dev.height);
 
 	/* JPEG width & height */
 	reg_w(sd, 0x30, sd->gspca_dev.width);
 	reg_w(sd, 0x31, sd->gspca_dev.height);
+=======
+	reg_w(sd, 0x14, sd->gspca_dev.pixfmt.width);
+	reg_w(sd, 0x15, sd->gspca_dev.pixfmt.height);
+
+	/* JPEG width & height */
+	reg_w(sd, 0x30, sd->gspca_dev.pixfmt.width);
+	reg_w(sd, 0x31, sd->gspca_dev.pixfmt.height);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Y & UV frame buffer strides (in WORD) */
 	if (w9968cf_vga_mode[sd->gspca_dev.curr_mode].pixelformat ==
 	    V4L2_PIX_FMT_JPEG) {
+<<<<<<< HEAD
 		reg_w(sd, 0x2c, sd->gspca_dev.width / 2);
 		reg_w(sd, 0x2d, sd->gspca_dev.width / 4);
 	} else
 		reg_w(sd, 0x2c, sd->gspca_dev.width);
+=======
+		reg_w(sd, 0x2c, sd->gspca_dev.pixfmt.width / 2);
+		reg_w(sd, 0x2d, sd->gspca_dev.pixfmt.width / 4);
+	} else
+		reg_w(sd, 0x2c, sd->gspca_dev.pixfmt.width);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	reg_w(sd, 0x00, 0xbf17); /* reset everything */
 	reg_w(sd, 0x00, 0xbf10); /* normal operation */
 
 	/* Transfer size in WORDS (for UYVY format only) */
+<<<<<<< HEAD
 	val = sd->gspca_dev.width * sd->gspca_dev.height;
+=======
+	val = sd->gspca_dev.pixfmt.width * sd->gspca_dev.pixfmt.height;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg_w(sd, 0x3d, val & 0xffff); /* low bits */
 	reg_w(sd, 0x3e, val >> 16);    /* high bits */
 
 	if (w9968cf_vga_mode[sd->gspca_dev.curr_mode].pixelformat ==
 	    V4L2_PIX_FMT_JPEG) {
 		/* We may get called multiple times (usb isoc bw negotiat.) */
+<<<<<<< HEAD
 		jpeg_define(sd->jpeg_hdr, sd->gspca_dev.height,
 			    sd->gspca_dev.width, 0x22); /* JPEG 420 */
+=======
+		jpeg_define(sd->jpeg_hdr, sd->gspca_dev.pixfmt.height,
+			    sd->gspca_dev.pixfmt.width, 0x22); /* JPEG 420 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		jpeg_set_qual(sd->jpeg_hdr, v4l2_ctrl_g_ctrl(sd->jpegqual));
 		w9968cf_upload_quantizationtables(sd);
 		v4l2_ctrl_grab(sd->jpegqual, true);

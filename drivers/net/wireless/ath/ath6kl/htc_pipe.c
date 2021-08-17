@@ -137,7 +137,10 @@ static void get_htc_packet_credit_based(struct htc_target *target,
 			credits_required = 0;
 
 		} else {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ep->cred_dist.credits < credits_required)
 				break;
 
@@ -169,7 +172,10 @@ static void get_htc_packet_credit_based(struct htc_target *target,
 		/* queue this packet into the caller's queue */
 		list_add_tail(&packet->list, queue);
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void get_htc_packet(struct htc_target *target,
@@ -279,7 +285,10 @@ static int htc_issue_packets(struct htc_target *target,
 			list_add(&packet->list, pkt_queue);
 			break;
 		}
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (status != 0) {
@@ -385,7 +394,10 @@ static enum htc_send_queue_result htc_try_send(struct htc_target *target,
 			 */
 			list_for_each_entry_safe(packet, tmp_pkt,
 						 txq, list) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				ath6kl_dbg(ATH6KL_DBG_HTC,
 					   "%s: Indicat overflowed TX pkts: %p\n",
 					   __func__, packet);
@@ -403,7 +415,10 @@ static enum htc_send_queue_result htc_try_send(struct htc_target *target,
 					list_move_tail(&packet->list,
 						       &send_queue);
 				}
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 
 			if (list_empty(&send_queue)) {
@@ -454,7 +469,10 @@ static enum htc_send_queue_result htc_try_send(struct htc_target *target,
 	 * enough transmit resources.
 	 */
 	while (true) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (get_queue_depth(&ep->txq) == 0)
 			break;
 
@@ -495,8 +513,13 @@ static enum htc_send_queue_result htc_try_send(struct htc_target *target,
 		}
 
 		spin_lock_bh(&target->tx_lock);
+<<<<<<< HEAD
 
 	}
+=======
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* done with this endpoint, we can clear the count */
 	ep->tx_proc_cnt = 0;
 	spin_unlock_bh(&target->tx_lock);
@@ -1106,7 +1129,10 @@ free_skb:
 	dev_kfree_skb(skb);
 
 	return status;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void htc_flush_rx_queue(struct htc_target *target,
@@ -1177,8 +1203,17 @@ static int htc_wait_recv_ctrl_message(struct htc_target *target)
 static void htc_rxctrl_complete(struct htc_target *context,
 				struct htc_packet *packet)
 {
+<<<<<<< HEAD
 	/* TODO, can't really receive HTC control messages yet.... */
 	ath6kl_dbg(ATH6KL_DBG_HTC, "%s: invalid call function\n", __func__);
+=======
+	struct sk_buff *skb = packet->skb;
+
+	if (packet->endpoint == ENDPOINT_0 &&
+	    packet->status == -ECANCELED &&
+	    skb != NULL)
+		dev_kfree_skb(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* htc pipe initialization */
@@ -1258,7 +1293,10 @@ static int ath6kl_htc_pipe_conn_service(struct htc_target *target,
 		tx_alloc = 0;
 
 	} else {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tx_alloc = htc_get_credit_alloc(target, conn_req->svc_id);
 		if (tx_alloc == 0) {
 			status = -ENOMEM;
@@ -1686,7 +1724,33 @@ static void ath6kl_htc_pipe_activity_changed(struct htc_target *target,
 
 static void ath6kl_htc_pipe_flush_rx_buf(struct htc_target *target)
 {
+<<<<<<< HEAD
 	/* TODO */
+=======
+	struct htc_endpoint *endpoint;
+	struct htc_packet *packet, *tmp_pkt;
+	int i;
+
+	for (i = ENDPOINT_0; i < ENDPOINT_MAX; i++) {
+		endpoint = &target->endpoint[i];
+
+		spin_lock_bh(&target->rx_lock);
+
+		list_for_each_entry_safe(packet, tmp_pkt,
+					 &endpoint->rx_bufq, list) {
+			list_del(&packet->list);
+			spin_unlock_bh(&target->rx_lock);
+			ath6kl_dbg(ATH6KL_DBG_HTC,
+				   "htc rx flush pkt 0x%p len %d ep %d\n",
+				   packet, packet->buf_len,
+				   packet->endpoint);
+			dev_kfree_skb(packet->pkt_cntxt);
+			spin_lock_bh(&target->rx_lock);
+		}
+
+		spin_unlock_bh(&target->rx_lock);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ath6kl_htc_pipe_credit_setup(struct htc_target *target,

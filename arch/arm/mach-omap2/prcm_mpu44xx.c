@@ -30,12 +30,20 @@ void __iomem *prcm_mpu_base;
 
 u32 omap4_prcm_mpu_read_inst_reg(s16 inst, u16 reg)
 {
+<<<<<<< HEAD
 	return __raw_readl(OMAP44XX_PRCM_MPU_REGADDR(inst, reg));
+=======
+	return readl_relaxed(OMAP44XX_PRCM_MPU_REGADDR(inst, reg));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void omap4_prcm_mpu_write_inst_reg(u32 val, s16 inst, u16 reg)
 {
+<<<<<<< HEAD
 	__raw_writel(val, OMAP44XX_PRCM_MPU_REGADDR(inst, reg));
+=======
+	writel_relaxed(val, OMAP44XX_PRCM_MPU_REGADDR(inst, reg));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 u32 omap4_prcm_mpu_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst, s16 reg)

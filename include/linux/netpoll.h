@@ -24,26 +24,37 @@ struct netpoll {
 	struct net_device *dev;
 	char dev_name[IFNAMSIZ];
 	const char *name;
+<<<<<<< HEAD
 	void (*rx_hook)(struct netpoll *, int, char *, int);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	union inet_addr local_ip, remote_ip;
 	bool ipv6;
 	u16 local_port, remote_port;
 	u8 remote_mac[ETH_ALEN];
 
+<<<<<<< HEAD
 	struct list_head rx; /* rx_np list element */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct work_struct cleanup_work;
 };
 
 struct netpoll_info {
 	atomic_t refcnt;
 
+<<<<<<< HEAD
 	unsigned long rx_flags;
 	spinlock_t rx_lock;
 	struct semaphore dev_lock;
 	struct list_head rx_np; /* netpolls that registered an rx_hook */
 
 	struct sk_buff_head neigh_tx; /* list of neigh requests to reply to */
+=======
+	struct semaphore dev_lock;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff_head txq;
 
 	struct delayed_work tx_work;
@@ -53,16 +64,25 @@ struct netpoll_info {
 };
 
 #ifdef CONFIG_NETPOLL
+<<<<<<< HEAD
 extern int netpoll_rx_disable(struct net_device *dev);
 extern void netpoll_rx_enable(struct net_device *dev);
 #else
 static inline int netpoll_rx_disable(struct net_device *dev) { return 0; }
 static inline void netpoll_rx_enable(struct net_device *dev) { return; }
+=======
+extern void netpoll_poll_disable(struct net_device *dev);
+extern void netpoll_poll_enable(struct net_device *dev);
+#else
+static inline void netpoll_poll_disable(struct net_device *dev) { return; }
+static inline void netpoll_poll_enable(struct net_device *dev) { return; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 void netpoll_send_udp(struct netpoll *np, const char *msg, int len);
 void netpoll_print_options(struct netpoll *np);
 int netpoll_parse_options(struct netpoll *np, char *opt);
+<<<<<<< HEAD
 int __netpoll_setup(struct netpoll *np, struct net_device *ndev, gfp_t gfp);
 int netpoll_setup(struct netpoll *np);
 int netpoll_trap(void);
@@ -71,6 +91,13 @@ void __netpoll_cleanup(struct netpoll *np);
 void __netpoll_free_async(struct netpoll *np);
 void netpoll_cleanup(struct netpoll *np);
 int __netpoll_rx(struct sk_buff *skb, struct netpoll_info *npinfo);
+=======
+int __netpoll_setup(struct netpoll *np, struct net_device *ndev);
+int netpoll_setup(struct netpoll *np);
+void __netpoll_cleanup(struct netpoll *np);
+void __netpoll_free_async(struct netpoll *np);
+void netpoll_cleanup(struct netpoll *np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
 			     struct net_device *dev);
 static inline void netpoll_send_skb(struct netpoll *np, struct sk_buff *skb)
@@ -81,6 +108,7 @@ static inline void netpoll_send_skb(struct netpoll *np, struct sk_buff *skb)
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
 
 
 #ifdef CONFIG_NETPOLL
@@ -121,6 +149,9 @@ static inline int netpoll_receive_skb(struct sk_buff *skb)
 	return 0;
 }
 
+=======
+#ifdef CONFIG_NETPOLL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void *netpoll_poll_lock(struct napi_struct *napi)
 {
 	struct net_device *dev = napi->dev;
@@ -149,6 +180,7 @@ static inline bool netpoll_tx_running(struct net_device *dev)
 }
 
 #else
+<<<<<<< HEAD
 static inline bool netpoll_rx(struct sk_buff *skb)
 {
 	return false;
@@ -161,6 +193,8 @@ static inline int netpoll_receive_skb(struct sk_buff *skb)
 {
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void *netpoll_poll_lock(struct napi_struct *napi)
 {
 	return NULL;

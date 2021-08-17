@@ -48,7 +48,11 @@ struct dib0070_config {
 	u8 vga_filter;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_TUNER_DIB0070)
+=======
+#if IS_REACHABLE(CONFIG_DVB_TUNER_DIB0070)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *dib0070_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, struct dib0070_config *cfg);
 extern u16 dib0070_wbd_offset(struct dvb_frontend *);
 extern void dib0070_ctrl_agc_filter(struct dvb_frontend *, u8 open);

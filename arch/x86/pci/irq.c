@@ -26,6 +26,10 @@ static int acer_tm360_irqrouting;
 static struct irq_routing_table *pirq_table;
 
 static int pirq_enable_irq(struct pci_dev *dev);
+<<<<<<< HEAD
+=======
+static void pirq_disable_irq(struct pci_dev *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Never use: 0, 1, 2 (timer, keyboard, and cascade)
@@ -53,7 +57,11 @@ struct irq_router_handler {
 };
 
 int (*pcibios_enable_irq)(struct pci_dev *dev) = pirq_enable_irq;
+<<<<<<< HEAD
 void (*pcibios_disable_irq)(struct pci_dev *dev) = NULL;
+=======
+void (*pcibios_disable_irq)(struct pci_dev *dev) = pirq_disable_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *  Check passed address for the PCI IRQ Routing Table signature
@@ -136,6 +144,7 @@ static void __init pirq_peer_trick(void)
 		busmap[e->bus] = 1;
 	}
 	for (i = 1; i < 256; i++) {
+<<<<<<< HEAD
 		int node;
 		if (!busmap[i] || pci_find_bus(0, i))
 			continue;
@@ -143,25 +152,46 @@ static void __init pirq_peer_trick(void)
 		if (pci_scan_bus_on_node(i, &pci_root_ops, node))
 			printk(KERN_INFO "PCI: Discovered primary peer "
 			       "bus %02x [IRQ]\n", i);
+=======
+		if (!busmap[i] || pci_find_bus(0, i))
+			continue;
+		pcibios_scan_root(i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	pcibios_last_bus = -1;
 }
 
 /*
  *  Code for querying and setting of IRQ routes on various interrupt routers.
+<<<<<<< HEAD
  */
 
 void eisa_set_level_irq(unsigned int irq)
+=======
+ *  PIC Edge/Level Control Registers (ELCR) 0x4d0 & 0x4d1.
+ */
+
+void elcr_set_level_irq(unsigned int irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned char mask = 1 << (irq & 7);
 	unsigned int port = 0x4d0 + (irq >> 3);
 	unsigned char val;
+<<<<<<< HEAD
 	static u16 eisa_irq_mask;
 
 	if (irq >= 16 || (1 << irq) & eisa_irq_mask)
 		return;
 
 	eisa_irq_mask |= (1 << irq);
+=======
+	static u16 elcr_irq_mask;
+
+	if (irq >= 16 || (1 << irq) & elcr_irq_mask)
+		return;
+
+	elcr_irq_mask |= (1 << irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk(KERN_DEBUG "PCI: setting IRQ %u as level-triggered\n", irq);
 	val = inb(port);
 	if (!(val & mask)) {
@@ -968,11 +998,19 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 	} else if (r->get && (irq = r->get(pirq_router_dev, dev, pirq)) && \
 	((!(pci_probe & PCI_USE_PIRQ_MASK)) || ((1 << irq) & mask))) {
 		msg = "found";
+<<<<<<< HEAD
 		eisa_set_level_irq(irq);
 	} else if (newirq && r->set &&
 		(dev->class >> 8) != PCI_CLASS_DISPLAY_VGA) {
 		if (r->set(pirq_router_dev, dev, pirq, newirq)) {
 			eisa_set_level_irq(newirq);
+=======
+		elcr_set_level_irq(irq);
+	} else if (newirq && r->set &&
+		(dev->class >> 8) != PCI_CLASS_DISPLAY_VGA) {
+		if (r->set(pirq_router_dev, dev, pirq, newirq)) {
+			elcr_set_level_irq(newirq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			msg = "assigned";
 			irq = newirq;
 		}
@@ -1119,6 +1157,11 @@ static struct dmi_system_id __initdata pciirq_dmi_table[] = {
 
 void __init pcibios_irq_init(void)
 {
+<<<<<<< HEAD
+=======
+	struct irq_routing_table *rtable = NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DBG(KERN_DEBUG "PCI: IRQ init\n");
 
 	if (raw_pci_ops == NULL)
@@ -1129,8 +1172,15 @@ void __init pcibios_irq_init(void)
 	pirq_table = pirq_find_routing_table();
 
 #ifdef CONFIG_PCI_BIOS
+<<<<<<< HEAD
 	if (!pirq_table && (pci_probe & PCI_BIOS_IRQ_SCAN))
 		pirq_table = pcibios_get_irq_routing_table();
+=======
+	if (!pirq_table && (pci_probe & PCI_BIOS_IRQ_SCAN)) {
+		pirq_table = pcibios_get_irq_routing_table();
+		rtable = pirq_table;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	if (pirq_table) {
 		pirq_peer_trick();
@@ -1145,8 +1195,15 @@ void __init pcibios_irq_init(void)
 		 * If we're using the I/O APIC, avoid using the PCI IRQ
 		 * routing table
 		 */
+<<<<<<< HEAD
 		if (io_apic_assign_pci_irqs)
 			pirq_table = NULL;
+=======
+		if (io_apic_assign_pci_irqs) {
+			kfree(rtable);
+			pirq_table = NULL;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	x86_init.pci.fixup_irqs();
@@ -1190,7 +1247,11 @@ void pcibios_penalize_isa_irq(int irq, int active)
 
 static int pirq_enable_irq(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	u8 pin;
+=======
+	u8 pin = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &pin);
 	if (pin && !pcibios_lookup_irq(dev, 1)) {
@@ -1203,11 +1264,20 @@ static int pirq_enable_irq(struct pci_dev *dev)
 #ifdef CONFIG_X86_IO_APIC
 			struct pci_dev *temp_dev;
 			int irq;
+<<<<<<< HEAD
 			struct io_apic_irq_attr irq_attr;
 
 			irq = IO_APIC_get_PCI_irq_vector(dev->bus->number,
 						PCI_SLOT(dev->devfn),
 						pin - 1, &irq_attr);
+=======
+
+			if (dev->irq_managed && dev->irq > 0)
+				return 0;
+
+			irq = IO_APIC_get_PCI_irq_vector(dev->bus->number,
+						PCI_SLOT(dev->devfn), pin - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Busses behind bridges are typically not listed in the MP-table.
 			 * In this case we have to look up the IRQ based on the parent bus,
@@ -1221,7 +1291,11 @@ static int pirq_enable_irq(struct pci_dev *dev)
 				pin = pci_swizzle_interrupt_pin(dev, pin);
 				irq = IO_APIC_get_PCI_irq_vector(bridge->bus->number,
 						PCI_SLOT(bridge->devfn),
+<<<<<<< HEAD
 						pin - 1, &irq_attr);
+=======
+						pin - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (irq >= 0)
 					dev_warn(&dev->dev, "using bridge %s "
 						 "INT %c to get IRQ %d\n",
@@ -1231,8 +1305,12 @@ static int pirq_enable_irq(struct pci_dev *dev)
 			}
 			dev = temp_dev;
 			if (irq >= 0) {
+<<<<<<< HEAD
 				io_apic_set_pci_routing(&dev->dev, irq,
 							 &irq_attr);
+=======
+				dev->irq_managed = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dev->irq = irq;
 				dev_info(&dev->dev, "PCI->APIC IRQ transform: "
 					 "INT %c -> IRQ %d\n", 'A' + pin - 1, irq);
@@ -1258,3 +1336,28 @@ static int pirq_enable_irq(struct pci_dev *dev)
 	}
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+bool mp_should_keep_irq(struct device *dev)
+{
+	if (dev->power.is_prepared)
+		return true;
+#ifdef CONFIG_PM
+	if (dev->power.runtime_status == RPM_SUSPENDING)
+		return true;
+#endif
+
+	return false;
+}
+
+static void pirq_disable_irq(struct pci_dev *dev)
+{
+	if (io_apic_assign_pci_irqs && !mp_should_keep_irq(&dev->dev) &&
+	    dev->irq_managed && dev->irq) {
+		mp_unmap_irq(dev->irq);
+		dev->irq = 0;
+		dev->irq_managed = 0;
+	}
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -1,4 +1,9 @@
 #include "cache.h"
+<<<<<<< HEAD
+=======
+#include "util.h"
+#include "config.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *alias_key;
 static char *alias_val;
@@ -55,8 +60,12 @@ int split_cmdline(char *cmdline, const char ***argv)
 				src++;
 				c = cmdline[src];
 				if (!c) {
+<<<<<<< HEAD
 					free(*argv);
 					*argv = NULL;
+=======
+					zfree(argv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					return error("cmdline ends with \\");
 				}
 			}
@@ -68,8 +77,12 @@ int split_cmdline(char *cmdline, const char ***argv)
 	cmdline[dst] = 0;
 
 	if (quoted) {
+<<<<<<< HEAD
 		free(*argv);
 		*argv = NULL;
+=======
+		zfree(argv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return error("unclosed quote");
 	}
 

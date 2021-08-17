@@ -52,9 +52,15 @@ int gfs2_replay_read_block(struct gfs2_jdesc *jd, unsigned int blk,
 	return error;
 }
 
+<<<<<<< HEAD
 int gfs2_revoke_add(struct gfs2_sbd *sdp, u64 blkno, unsigned int where)
 {
 	struct list_head *head = &sdp->sd_revoke_list;
+=======
+int gfs2_revoke_add(struct gfs2_jdesc *jd, u64 blkno, unsigned int where)
+{
+	struct list_head *head = &jd->jd_revoke_list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct gfs2_revoke_replay *rr;
 	int found = 0;
 
@@ -81,13 +87,21 @@ int gfs2_revoke_add(struct gfs2_sbd *sdp, u64 blkno, unsigned int where)
 	return 1;
 }
 
+<<<<<<< HEAD
 int gfs2_revoke_check(struct gfs2_sbd *sdp, u64 blkno, unsigned int where)
+=======
+int gfs2_revoke_check(struct gfs2_jdesc *jd, u64 blkno, unsigned int where)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct gfs2_revoke_replay *rr;
 	int wrap, a, b, revoke;
 	int found = 0;
 
+<<<<<<< HEAD
 	list_for_each_entry(rr, &sdp->sd_revoke_list, rr_list) {
+=======
+	list_for_each_entry(rr, &jd->jd_revoke_list, rr_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rr->rr_blkno == blkno) {
 			found = 1;
 			break;
@@ -97,17 +111,28 @@ int gfs2_revoke_check(struct gfs2_sbd *sdp, u64 blkno, unsigned int where)
 	if (!found)
 		return 0;
 
+<<<<<<< HEAD
 	wrap = (rr->rr_where < sdp->sd_replay_tail);
 	a = (sdp->sd_replay_tail < where);
+=======
+	wrap = (rr->rr_where < jd->jd_replay_tail);
+	a = (jd->jd_replay_tail < where);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b = (where < rr->rr_where);
 	revoke = (wrap) ? (a || b) : (a && b);
 
 	return revoke;
 }
 
+<<<<<<< HEAD
 void gfs2_revoke_clean(struct gfs2_sbd *sdp)
 {
 	struct list_head *head = &sdp->sd_revoke_list;
+=======
+void gfs2_revoke_clean(struct gfs2_jdesc *jd)
+{
+	struct list_head *head = &jd->jd_revoke_list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct gfs2_revoke_replay *rr;
 
 	while (!list_empty(head)) {
@@ -338,7 +363,11 @@ static int foreach_descriptor(struct gfs2_jdesc *jd, unsigned int start,
 			struct gfs2_log_header_host lh;
 			error = get_log_header(jd, start, &lh);
 			if (!error) {
+<<<<<<< HEAD
 				gfs2_replay_incr_blk(sdp, &start);
+=======
+				gfs2_replay_incr_blk(jd, &start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				brelse(bh);
 				continue;
 			}
@@ -360,7 +389,11 @@ static int foreach_descriptor(struct gfs2_jdesc *jd, unsigned int start,
 		}
 
 		while (length--)
+<<<<<<< HEAD
 			gfs2_replay_incr_blk(sdp, &start);
+=======
+			gfs2_replay_incr_blk(jd, &start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		brelse(bh);
 	}
@@ -390,7 +423,11 @@ static int clean_journal(struct gfs2_jdesc *jd, struct gfs2_log_header_host *hea
 	struct buffer_head bh_map = { .b_state = 0, .b_blocknr = 0 };
 
 	lblock = head->lh_blkno;
+<<<<<<< HEAD
 	gfs2_replay_incr_blk(sdp, &lblock);
+=======
+	gfs2_replay_incr_blk(jd, &lblock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bh_map.b_size = 1 << ip->i_inode.i_blkbits;
 	error = gfs2_block_map(&ip->i_inode, lblock, &bh_map, 0);
 	if (error)
@@ -439,7 +476,11 @@ static void gfs2_recovery_done(struct gfs2_sbd *sdp, unsigned int jid,
 
         ls->ls_recover_jid_done = jid;
         ls->ls_recover_jid_status = message;
+<<<<<<< HEAD
 	sprintf(env_jid, "JID=%d", jid);
+=======
+	sprintf(env_jid, "JID=%u", jid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sprintf(env_status, "RECOVERY=%s",
 		message == LM_RD_SUCCESS ? "Done" : "Failed");
         kobject_uevent_env(&sdp->sd_kobj, KOBJ_CHANGE, envp);
@@ -454,7 +495,11 @@ void gfs2_recover_func(struct work_struct *work)
 	struct gfs2_inode *ip = GFS2_I(jd->jd_inode);
 	struct gfs2_sbd *sdp = GFS2_SB(jd->jd_inode);
 	struct gfs2_log_header_host head;
+<<<<<<< HEAD
 	struct gfs2_holder j_gh, ji_gh, t_gh;
+=======
+	struct gfs2_holder j_gh, ji_gh, thaw_gh;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long t;
 	int ro = 0;
 	unsigned int pass;
@@ -508,11 +553,19 @@ void gfs2_recover_func(struct work_struct *work)
 
 		t = jiffies;
 
+<<<<<<< HEAD
 		/* Acquire a shared hold on the transaction lock */
 
 		error = gfs2_glock_nq_init(sdp->sd_trans_gl, LM_ST_SHARED,
 					   LM_FLAG_NOEXP | LM_FLAG_PRIORITY |
 					   GL_NOCACHE, &t_gh);
+=======
+		/* Acquire a shared hold on the freeze lock */
+
+		error = gfs2_glock_nq_init(sdp->sd_freeze_gl, LM_ST_SHARED,
+					   LM_FLAG_NOEXP | LM_FLAG_PRIORITY,
+					   &thaw_gh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (error)
 			goto fail_gunlock_ji;
 
@@ -538,7 +591,11 @@ void gfs2_recover_func(struct work_struct *work)
 			fs_warn(sdp, "jid=%u: Can't replay: read-only block "
 				"device\n", jd->jd_jid);
 			error = -EROFS;
+<<<<<<< HEAD
 			goto fail_gunlock_tr;
+=======
+			goto fail_gunlock_thaw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		fs_info(sdp, "jid=%u: Replaying journal...\n", jd->jd_jid);
@@ -549,14 +606,24 @@ void gfs2_recover_func(struct work_struct *work)
 						   head.lh_blkno, pass);
 			lops_after_scan(jd, error, pass);
 			if (error)
+<<<<<<< HEAD
 				goto fail_gunlock_tr;
+=======
+				goto fail_gunlock_thaw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		error = clean_journal(jd, &head);
 		if (error)
+<<<<<<< HEAD
 			goto fail_gunlock_tr;
 
 		gfs2_glock_dq_uninit(&t_gh);
+=======
+			goto fail_gunlock_thaw;
+
+		gfs2_glock_dq_uninit(&thaw_gh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		t = DIV_ROUND_UP(jiffies - t, HZ);
 		fs_info(sdp, "jid=%u: Journal replayed in %lus\n",
 			jd->jd_jid, t);
@@ -572,8 +639,13 @@ void gfs2_recover_func(struct work_struct *work)
 	fs_info(sdp, "jid=%u: Done\n", jd->jd_jid);
 	goto done;
 
+<<<<<<< HEAD
 fail_gunlock_tr:
 	gfs2_glock_dq_uninit(&t_gh);
+=======
+fail_gunlock_thaw:
+	gfs2_glock_dq_uninit(&thaw_gh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail_gunlock_ji:
 	if (jlocked) {
 		gfs2_glock_dq_uninit(&ji_gh);
@@ -587,6 +659,7 @@ fail:
 	gfs2_recovery_done(sdp, jd->jd_jid, LM_RD_GAVEUP);
 done:
 	clear_bit(JDF_RECOVERY, &jd->jd_flags);
+<<<<<<< HEAD
 	smp_mb__after_clear_bit();
 	wake_up_bit(&jd->jd_flags, JDF_RECOVERY);
 }
@@ -597,6 +670,12 @@ static int gfs2_recovery_wait(void *word)
 	return 0;
 }
 
+=======
+	smp_mb__after_atomic();
+	wake_up_bit(&jd->jd_flags, JDF_RECOVERY);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int gfs2_recover_journal(struct gfs2_jdesc *jd, bool wait)
 {
 	int rv;
@@ -609,7 +688,11 @@ int gfs2_recover_journal(struct gfs2_jdesc *jd, bool wait)
 	BUG_ON(!rv);
 
 	if (wait)
+<<<<<<< HEAD
 		wait_on_bit(&jd->jd_flags, JDF_RECOVERY, gfs2_recovery_wait,
+=======
+		wait_on_bit(&jd->jd_flags, JDF_RECOVERY,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    TASK_UNINTERRUPTIBLE);
 
 	return wait ? jd->jd_recover_error : 0;

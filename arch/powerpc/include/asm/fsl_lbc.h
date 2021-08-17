@@ -95,6 +95,12 @@ struct fsl_lbc_bank {
 #define OR_FCM_TRLX_SHIFT                2
 #define OR_FCM_EHTR             0x00000002
 #define OR_FCM_EHTR_SHIFT                1
+<<<<<<< HEAD
+=======
+
+#define OR_GPCM_AM		0xFFFF8000
+#define OR_GPCM_AM_SHIFT		15
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct fsl_lbc_regs {
@@ -285,7 +291,11 @@ struct fsl_lbc_ctrl {
 	/* device info */
 	struct device			*dev;
 	struct fsl_lbc_regs __iomem	*regs;
+<<<<<<< HEAD
 	int				irq;
+=======
+	int				irq[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wait_queue_head_t		irq_wait;
 	spinlock_t			lock;
 	void				*nand;

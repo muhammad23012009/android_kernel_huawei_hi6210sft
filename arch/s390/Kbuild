@@ -4,6 +4,12 @@ obj-$(CONFIG_KVM)		+= kvm/
 obj-$(CONFIG_CRYPTO_HW)		+= crypto/
 obj-$(CONFIG_S390_HYPFS_FS)	+= hypfs/
 obj-$(CONFIG_APPLDATA_BASE)	+= appldata/
+<<<<<<< HEAD
 obj-$(CONFIG_MATHEMU)		+= math-emu/
 obj-y				+= net/
 obj-$(CONFIG_PCI)		+= pci/
+=======
+obj-y				+= net/
+obj-$(CONFIG_PCI)		+= pci/
+obj-$(CONFIG_NUMA)		+= numa/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

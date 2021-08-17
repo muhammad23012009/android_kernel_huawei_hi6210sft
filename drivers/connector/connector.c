@@ -43,6 +43,11 @@ static struct cn_dev cdev;
 static int cn_already_initialized;
 
 /*
+<<<<<<< HEAD
+=======
+ * Sends mult (multiple) cn_msg at a time.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * msg->seq and msg->ack are used to determine message genealogy.
  * When someone sends message it puts there locally unique sequence
  * and random acknowledge numbers.  Sequence number may be copied into
@@ -50,7 +55,11 @@ static int cn_already_initialized;
  *
  * Sequence number is incremented with each message to be sent.
  *
+<<<<<<< HEAD
  * If we expect reply to our message then the sequence number in
+=======
+ * If we expect a reply to our message then the sequence number in
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * received message MUST be the same as in original message, and
  * acknowledge number MUST be the same + 1.
  *
@@ -62,8 +71,19 @@ static int cn_already_initialized;
  * the acknowledgement number in the original message + 1, then it is
  * a new message.
  *
+<<<<<<< HEAD
  */
 int cn_netlink_send(struct cn_msg *msg, u32 __group, gfp_t gfp_mask)
+=======
+ * If msg->len != len, then additional cn_msg messages are expected following
+ * the first msg.
+ *
+ * The message is sent to, the portid if given, the group if given, both if
+ * both, or if both are zero then the group is looked up and sent there.
+ */
+int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 __group,
+	gfp_t gfp_mask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cn_callback_entry *__cbq;
 	unsigned int size;
@@ -74,7 +94,13 @@ int cn_netlink_send(struct cn_msg *msg, u32 __group, gfp_t gfp_mask)
 	u32 group = 0;
 	int found = 0;
 
+<<<<<<< HEAD
 	if (!__group) {
+=======
+	if (portid || __group) {
+		group = __group;
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_bh(&dev->cbdev->queue_lock);
 		list_for_each_entry(__cbq, &dev->cbdev->queue_list,
 				    callback_entry) {
@@ -88,6 +114,7 @@ int cn_netlink_send(struct cn_msg *msg, u32 __group, gfp_t gfp_mask)
 
 		if (!found)
 			return -ENODEV;
+<<<<<<< HEAD
 	} else {
 		group = __group;
 	}
@@ -96,6 +123,14 @@ int cn_netlink_send(struct cn_msg *msg, u32 __group, gfp_t gfp_mask)
 		return -ESRCH;
 
 	size = sizeof(*msg) + msg->len;
+=======
+	}
+
+	if (!portid && !netlink_has_listeners(dev->nls, group))
+		return -ESRCH;
+
+	size = sizeof(*msg) + len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	skb = nlmsg_new(size, gfp_mask);
 	if (!skb)
@@ -109,11 +144,31 @@ int cn_netlink_send(struct cn_msg *msg, u32 __group, gfp_t gfp_mask)
 
 	data = nlmsg_data(nlh);
 
+<<<<<<< HEAD
 	memcpy(data, msg, sizeof(*data) + msg->len);
 
 	NETLINK_CB(skb).dst_group = group;
 
 	return netlink_broadcast(dev->nls, skb, 0, group, gfp_mask);
+=======
+	memcpy(data, msg, size);
+
+	NETLINK_CB(skb).dst_group = group;
+
+	if (group)
+		return netlink_broadcast(dev->nls, skb, portid, group,
+					 gfp_mask);
+	return netlink_unicast(dev->nls, skb, portid,
+			!gfpflags_allow_blocking(gfp_mask));
+}
+EXPORT_SYMBOL_GPL(cn_netlink_send_mult);
+
+/* same as cn_netlink_send_mult except msg->len is used for len */
+int cn_netlink_send(struct cn_msg *msg, u32 portid, u32 __group,
+	gfp_t gfp_mask)
+{
+	return cn_netlink_send_mult(msg, msg->len, portid, __group, gfp_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(cn_netlink_send);
 
@@ -122,12 +177,24 @@ EXPORT_SYMBOL_GPL(cn_netlink_send);
  */
 static int cn_call_callback(struct sk_buff *skb)
 {
+<<<<<<< HEAD
+=======
+	struct nlmsghdr *nlh;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cn_callback_entry *i, *cbq = NULL;
 	struct cn_dev *dev = &cdev;
 	struct cn_msg *msg = nlmsg_data(nlmsg_hdr(skb));
 	struct netlink_skb_parms *nsp = &NETLINK_CB(skb);
 	int err = -ENODEV;
 
+<<<<<<< HEAD
+=======
+	/* verify msg->len is within skb */
+	nlh = nlmsg_hdr(skb);
+	if (nlh->nlmsg_len < NLMSG_HDRLEN + sizeof(struct cn_msg) + msg->len)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_bh(&dev->cbdev->queue_lock);
 	list_for_each_entry(i, &dev->cbdev->queue_list, callback_entry) {
 		if (cn_cb_equal(&i->id.id, &msg->id)) {
@@ -139,7 +206,10 @@ static int cn_call_callback(struct sk_buff *skb)
 	spin_unlock_bh(&dev->cbdev->queue_lock);
 
 	if (cbq != NULL) {
+<<<<<<< HEAD
 		err = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cbq->callback(msg, nsp);
 		kfree_skb(skb);
 		cn_queue_release_callback(cbq);

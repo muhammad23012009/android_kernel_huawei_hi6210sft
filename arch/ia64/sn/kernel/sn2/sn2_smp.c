@@ -54,7 +54,11 @@ sn2_ptc_deadlock_recovery_core(volatile unsigned long *, unsigned long,
 			       volatile unsigned long *, unsigned long,
 			       volatile unsigned long *, unsigned long);
 void
+<<<<<<< HEAD
 sn2_ptc_deadlock_recovery(short *, short, short, int,
+=======
+sn2_ptc_deadlock_recovery(nodemask_t, short, short, int,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  volatile unsigned long *, unsigned long,
 			  volatile unsigned long *, unsigned long);
 
@@ -134,8 +138,13 @@ sn2_ipi_flush_all_tlb(struct mm_struct *mm)
 	itc = ia64_get_itc();
 	smp_flush_tlb_cpumask(*mm_cpumask(mm));
 	itc = ia64_get_itc() - itc;
+<<<<<<< HEAD
 	__get_cpu_var(ptcstats).shub_ipi_flushes_itc_clocks += itc;
 	__get_cpu_var(ptcstats).shub_ipi_flushes++;
+=======
+	__this_cpu_add(ptcstats.shub_ipi_flushes_itc_clocks, itc);
+	__this_cpu_inc(ptcstats.shub_ipi_flushes);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -169,7 +178,11 @@ sn2_global_tlb_purge(struct mm_struct *mm, unsigned long start,
 	int use_cpu_ptcga;
 	volatile unsigned long *ptc0, *ptc1;
 	unsigned long itc, itc2, flags, data0 = 0, data1 = 0, rr_value, old_rr = 0;
+<<<<<<< HEAD
 	short nasids[MAX_NUMNODES], nix;
+=======
+	short nix;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nodemask_t nodes_flushed;
 	int active, max_active, deadlock, flush_opt = sn2_flush_opt;
 
@@ -199,14 +212,22 @@ sn2_global_tlb_purge(struct mm_struct *mm, unsigned long start,
 			start += (1UL << nbits);
 		} while (start < end);
 		ia64_srlz_i();
+<<<<<<< HEAD
 		__get_cpu_var(ptcstats).ptc_l++;
+=======
+		__this_cpu_inc(ptcstats.ptc_l);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		preempt_enable();
 		return;
 	}
 
 	if (atomic_read(&mm->mm_users) == 1 && mymm) {
 		flush_tlb_mm(mm);
+<<<<<<< HEAD
 		__get_cpu_var(ptcstats).change_rid++;
+=======
+		__this_cpu_inc(ptcstats.change_rid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		preempt_enable();
 		return;
 	}
@@ -218,9 +239,13 @@ sn2_global_tlb_purge(struct mm_struct *mm, unsigned long start,
 	}
 
 	itc = ia64_get_itc();
+<<<<<<< HEAD
 	nix = 0;
 	for_each_node_mask(cnode, nodes_flushed)
 		nasids[nix++] = cnodeid_to_nasid(cnode);
+=======
+	nix = nodes_weight(nodes_flushed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rr_value = (mm->context << 3) | REGION_NUMBER(start);
 
@@ -250,11 +275,19 @@ sn2_global_tlb_purge(struct mm_struct *mm, unsigned long start,
 	spin_lock_irqsave(PTC_LOCK(shub1), flags);
 	itc2 = ia64_get_itc();
 
+<<<<<<< HEAD
 	__get_cpu_var(ptcstats).lock_itc_clocks += itc2 - itc;
 	__get_cpu_var(ptcstats).shub_ptc_flushes++;
 	__get_cpu_var(ptcstats).nodes_flushed += nix;
 	if (!mymm)
 		 __get_cpu_var(ptcstats).shub_ptc_flushes_not_my_mm++;
+=======
+	__this_cpu_add(ptcstats.lock_itc_clocks, itc2 - itc);
+	__this_cpu_inc(ptcstats.shub_ptc_flushes);
+	__this_cpu_add(ptcstats.nodes_flushed, nix);
+	if (!mymm)
+		 __this_cpu_inc(ptcstats.shub_ptc_flushes_not_my_mm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (use_cpu_ptcga && !mymm) {
 		old_rr = ia64_get_rr(start);
@@ -270,8 +303,15 @@ sn2_global_tlb_purge(struct mm_struct *mm, unsigned long start,
 			data0 = (data0 & ~SH2_PTC_ADDR_MASK) | (start & SH2_PTC_ADDR_MASK);
 		deadlock = 0;
 		active = 0;
+<<<<<<< HEAD
 		for (ibegin = 0, i = 0; i < nix; i++) {
 			nasid = nasids[i];
+=======
+		ibegin = 0;
+		i = 0;
+		for_each_node_mask(cnode, nodes_flushed) {
+			nasid = cnodeid_to_nasid(cnode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (use_cpu_ptcga && unlikely(nasid == mynasid)) {
 				ia64_ptcga(start, nbits << 2);
 				ia64_srlz_i();
@@ -286,22 +326,36 @@ sn2_global_tlb_purge(struct mm_struct *mm, unsigned long start,
 				if ((deadlock = wait_piowc())) {
 					if (flush_opt == 1)
 						goto done;
+<<<<<<< HEAD
 					sn2_ptc_deadlock_recovery(nasids, ibegin, i, mynasid, ptc0, data0, ptc1, data1);
+=======
+					sn2_ptc_deadlock_recovery(nodes_flushed, ibegin, i, mynasid, ptc0, data0, ptc1, data1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					if (reset_max_active_on_deadlock())
 						max_active = 1;
 				}
 				active = 0;
 				ibegin = i + 1;
 			}
+<<<<<<< HEAD
+=======
+			i++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		start += (1UL << nbits);
 	} while (start < end);
 
 done:
 	itc2 = ia64_get_itc() - itc2;
+<<<<<<< HEAD
 	__get_cpu_var(ptcstats).shub_itc_clocks += itc2;
 	if (itc2 > __get_cpu_var(ptcstats).shub_itc_clocks_max)
 		__get_cpu_var(ptcstats).shub_itc_clocks_max = itc2;
+=======
+	__this_cpu_add(ptcstats.shub_itc_clocks, itc2);
+	if (itc2 > __this_cpu_read(ptcstats.shub_itc_clocks_max))
+		__this_cpu_write(ptcstats.shub_itc_clocks_max, itc2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (old_rr) {
 		ia64_set_rr(start, old_rr);
@@ -311,7 +365,11 @@ done:
 	spin_unlock_irqrestore(PTC_LOCK(shub1), flags);
 
 	if (flush_opt == 1 && deadlock) {
+<<<<<<< HEAD
 		__get_cpu_var(ptcstats).deadlocks++;
+=======
+		__this_cpu_inc(ptcstats.deadlocks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sn2_ipi_flush_all_tlb(mm);
 	}
 
@@ -327,29 +385,61 @@ done:
  */
 
 void
+<<<<<<< HEAD
 sn2_ptc_deadlock_recovery(short *nasids, short ib, short ie, int mynasid,
+=======
+sn2_ptc_deadlock_recovery(nodemask_t nodes, short ib, short ie, int mynasid,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  volatile unsigned long *ptc0, unsigned long data0,
 			  volatile unsigned long *ptc1, unsigned long data1)
 {
 	short nasid, i;
+<<<<<<< HEAD
 	unsigned long *piows, zeroval, n;
 
 	__get_cpu_var(ptcstats).deadlocks++;
+=======
+	int cnode;
+	unsigned long *piows, zeroval, n;
+
+	__this_cpu_inc(ptcstats.deadlocks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	piows = (unsigned long *) pda->pio_write_status_addr;
 	zeroval = pda->pio_write_status_val;
 
+<<<<<<< HEAD
 
 	for (i=ib; i <= ie; i++) {
 		nasid = nasids[i];
 		if (local_node_uses_ptc_ga(is_shub1()) && nasid == mynasid)
 			continue;
+=======
+	i = 0;
+	for_each_node_mask(cnode, nodes) {
+		if (i < ib)
+			goto next;
+
+		if (i > ie)
+			break;
+
+		nasid = cnodeid_to_nasid(cnode);
+		if (local_node_uses_ptc_ga(is_shub1()) && nasid == mynasid)
+			goto next;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ptc0 = CHANGE_NASID(nasid, ptc0);
 		if (ptc1)
 			ptc1 = CHANGE_NASID(nasid, ptc1);
 
 		n = sn2_ptc_deadlock_recovery_core(ptc0, data0, ptc1, data1, piows, zeroval);
+<<<<<<< HEAD
 		__get_cpu_var(ptcstats).deadlocks2 += n;
+=======
+		__this_cpu_add(ptcstats.deadlocks2, n);
+next:
+		i++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 }

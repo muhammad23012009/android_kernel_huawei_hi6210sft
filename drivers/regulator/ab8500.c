@@ -719,6 +719,10 @@ static struct ab8500_regulator_info
 			.n_voltages	= ARRAY_SIZE(ldo_vauxn_voltages),
 			.volt_table	= ldo_vauxn_voltages,
 			.enable_time	= 200,
+<<<<<<< HEAD
+=======
+			.supply_name    = "vin",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 		.load_lp_uA		= 5000,
 		.update_bank		= 0x04,
@@ -741,6 +745,10 @@ static struct ab8500_regulator_info
 			.n_voltages	= ARRAY_SIZE(ldo_vauxn_voltages),
 			.volt_table	= ldo_vauxn_voltages,
 			.enable_time	= 200,
+<<<<<<< HEAD
+=======
+			.supply_name    = "vin",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 		.load_lp_uA		= 5000,
 		.update_bank		= 0x04,
@@ -763,6 +771,10 @@ static struct ab8500_regulator_info
 			.n_voltages	= ARRAY_SIZE(ldo_vaux3_voltages),
 			.volt_table	= ldo_vaux3_voltages,
 			.enable_time	= 450,
+<<<<<<< HEAD
+=======
+			.supply_name    = "vin",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 		.load_lp_uA		= 5000,
 		.update_bank		= 0x04,
@@ -1096,6 +1108,7 @@ static struct ab8500_regulator_info
 		.update_val_idle	= 0x82,
 		.update_val_normal	= 0x02,
 	},
+<<<<<<< HEAD
 	[AB8505_LDO_USB] = {
 		.desc = {
 			.name           = "LDO-USB",
@@ -1113,6 +1126,8 @@ static struct ab8500_regulator_info
 		.update_val_idle	= 0x03,
 		.update_val_normal	= 0x01,
 	},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[AB8505_LDO_AUDIO] = {
 		.desc = {
 			.name		= "LDO-AUDIO",
@@ -2901,7 +2916,11 @@ static struct of_regulator_match ab8500_regulator_match[] = {
 	{ .name	= "ab8500_ldo_tvout",   .driver_data = (void *) AB8500_LDO_TVOUT, },
 	{ .name = "ab8500_ldo_audio",   .driver_data = (void *) AB8500_LDO_AUDIO, },
 	{ .name	= "ab8500_ldo_anamic1", .driver_data = (void *) AB8500_LDO_ANAMIC1, },
+<<<<<<< HEAD
 	{ .name	= "ab8500_ldo_amamic2", .driver_data = (void *) AB8500_LDO_ANAMIC2, },
+=======
+	{ .name	= "ab8500_ldo_anamic2", .driver_data = (void *) AB8500_LDO_ANAMIC2, },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name	= "ab8500_ldo_dmic",    .driver_data = (void *) AB8500_LDO_DMIC, },
 	{ .name	= "ab8500_ldo_ana",     .driver_data = (void *) AB8500_LDO_ANA, },
 };
@@ -2917,7 +2936,11 @@ static struct of_regulator_match ab8505_regulator_match[] = {
 	{ .name	= "ab8500_ldo_adc",	.driver_data = (void *) AB8505_LDO_ADC, },
 	{ .name = "ab8500_ldo_audio",   .driver_data = (void *) AB8505_LDO_AUDIO, },
 	{ .name	= "ab8500_ldo_anamic1", .driver_data = (void *) AB8505_LDO_ANAMIC1, },
+<<<<<<< HEAD
 	{ .name	= "ab8500_ldo_amamic2", .driver_data = (void *) AB8505_LDO_ANAMIC2, },
+=======
+	{ .name	= "ab8500_ldo_anamic2", .driver_data = (void *) AB8505_LDO_ANAMIC2, },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name	= "ab8500_ldo_aux8",    .driver_data = (void *) AB8505_LDO_AUX8, },
 	{ .name	= "ab8500_ldo_ana",     .driver_data = (void *) AB8505_LDO_ANA, },
 };
@@ -2933,7 +2956,11 @@ static struct of_regulator_match ab8540_regulator_match[] = {
 	{ .name	= "ab8500_ldo_tvout",   .driver_data = (void *) AB8540_LDO_TVOUT, },
 	{ .name = "ab8500_ldo_audio",   .driver_data = (void *) AB8540_LDO_AUDIO, },
 	{ .name	= "ab8500_ldo_anamic1", .driver_data = (void *) AB8540_LDO_ANAMIC1, },
+<<<<<<< HEAD
 	{ .name	= "ab8500_ldo_amamic2", .driver_data = (void *) AB8540_LDO_ANAMIC2, },
+=======
+	{ .name	= "ab8500_ldo_anamic2", .driver_data = (void *) AB8540_LDO_ANAMIC2, },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name	= "ab8500_ldo_dmic",    .driver_data = (void *) AB8540_LDO_DMIC, },
 	{ .name	= "ab8500_ldo_ana",     .driver_data = (void *) AB8540_LDO_ANA, },
 	{ .name = "ab8500_ldo_sdio",    .driver_data = (void *) AB8540_LDO_SDIO, },
@@ -2948,7 +2975,11 @@ static struct of_regulator_match ab9540_regulator_match[] = {
 	{ .name	= "ab8500_ldo_tvout",   .driver_data = (void *) AB9540_LDO_TVOUT, },
 	{ .name = "ab8500_ldo_audio",   .driver_data = (void *) AB9540_LDO_AUDIO, },
 	{ .name	= "ab8500_ldo_anamic1", .driver_data = (void *) AB9540_LDO_ANAMIC1, },
+<<<<<<< HEAD
 	{ .name	= "ab8500_ldo_amamic2", .driver_data = (void *) AB9540_LDO_ANAMIC2, },
+=======
+	{ .name	= "ab8500_ldo_anamic2", .driver_data = (void *) AB9540_LDO_ANAMIC2, },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name	= "ab8500_ldo_dmic",    .driver_data = (void *) AB9540_LDO_DMIC, },
 	{ .name	= "ab8500_ldo_ana",     .driver_data = (void *) AB9540_LDO_ANA, },
 };
@@ -2995,6 +3026,7 @@ static void abx500_get_regulator_info(struct ab8500 *ab8500)
 	}
 }
 
+<<<<<<< HEAD
 static int ab8500_regulator_init_registers(struct platform_device *pdev,
 					   int id, int mask, int value)
 {
@@ -3026,6 +3058,8 @@ static int ab8500_regulator_init_registers(struct platform_device *pdev,
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ab8500_regulator_register(struct platform_device *pdev,
 				     struct regulator_init_data *init_data,
 				     int id, struct device_node *np)
@@ -3033,7 +3067,10 @@ static int ab8500_regulator_register(struct platform_device *pdev,
 	struct ab8500 *ab8500 = dev_get_drvdata(pdev->dev.parent);
 	struct ab8500_regulator_info *info = NULL;
 	struct regulator_config config = { };
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* assign per-regulator data */
 	info = &abx500_regulator.info[id];
@@ -3055,6 +3092,7 @@ static int ab8500_regulator_register(struct platform_device *pdev,
 	}
 
 	/* register regulator with framework */
+<<<<<<< HEAD
 	info->regulator = regulator_register(&info->desc, &config);
 	if (IS_ERR(info->regulator)) {
 		err = PTR_ERR(info->regulator);
@@ -3083,6 +3121,14 @@ ab8500_regulator_of_probe(struct platform_device *pdev,
 			pdev, match[i].init_data, i, match[i].of_node);
 		if (err)
 			return err;
+=======
+	info->regulator = devm_regulator_register(&pdev->dev, &info->desc,
+						&config);
+	if (IS_ERR(info->regulator)) {
+		dev_err(&pdev->dev, "failed to register regulator %s\n",
+			info->desc.name);
+		return PTR_ERR(info->regulator);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -3092,9 +3138,14 @@ static int ab8500_regulator_probe(struct platform_device *pdev)
 {
 	struct ab8500 *ab8500 = dev_get_drvdata(pdev->dev.parent);
 	struct device_node *np = pdev->dev.of_node;
+<<<<<<< HEAD
 	struct ab8500_platform_data *ppdata;
 	struct ab8500_regulator_platform_data *pdata;
 	int i, err;
+=======
+	struct of_regulator_match *match;
+	int err, i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ab8500) {
 		dev_err(&pdev->dev, "null mfd parent\n");
@@ -3103,6 +3154,7 @@ static int ab8500_regulator_probe(struct platform_device *pdev)
 
 	abx500_get_regulator_info(ab8500);
 
+<<<<<<< HEAD
 	if (np) {
 		err = of_regulator_match(&pdev->dev, np,
 					 abx500_regulator.match,
@@ -3201,15 +3253,39 @@ static int ab8500_regulator_remove(struct platform_device *pdev)
 	if (err)
 		return err;
 
+=======
+	err = of_regulator_match(&pdev->dev, np,
+				 abx500_regulator.match,
+				 abx500_regulator.match_size);
+	if (err < 0) {
+		dev_err(&pdev->dev,
+			"Error parsing regulator init data: %d\n", err);
+		return err;
+	}
+
+	match = abx500_regulator.match;
+	for (i = 0; i < abx500_regulator.info_size; i++) {
+		err = ab8500_regulator_register(pdev, match[i].init_data, i,
+						match[i].of_node);
+		if (err)
+			return err;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver ab8500_regulator_driver = {
 	.probe = ab8500_regulator_probe,
+<<<<<<< HEAD
 	.remove = ab8500_regulator_remove,
 	.driver         = {
 		.name   = "ab8500-regulator",
 		.owner  = THIS_MODULE,
+=======
+	.driver         = {
+		.name   = "ab8500-regulator",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

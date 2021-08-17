@@ -6,6 +6,7 @@
  *
  * (C) 2007 SGI, Christoph Lameter
  */
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/gfp.h>
 #include <linux/bug.h>
@@ -18,6 +19,14 @@ enum stat_item {
 	ALLOC_FASTPATH,		/* Allocation from cpu slab */
 	ALLOC_SLOWPATH,		/* Allocation by getting a new cpu slab */
 	FREE_FASTPATH,		/* Free to cpu slub */
+=======
+#include <linux/kobject.h>
+
+enum stat_item {
+	ALLOC_FASTPATH,		/* Allocation from cpu slab */
+	ALLOC_SLOWPATH,		/* Allocation by getting a new cpu slab */
+	FREE_FASTPATH,		/* Free to cpu slab */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	FREE_SLOWPATH,		/* Freeing not to cpu slab */
 	FREE_FROZEN,		/* Freeing to frozen slab */
 	FREE_ADD_PARTIAL,	/* Freeing moves slab to partial list */
@@ -73,7 +82,12 @@ struct kmem_cache {
 	int size;		/* The size of an object including meta data */
 	int object_size;	/* The size of an object without meta data */
 	int offset;		/* Free pointer offset. */
+<<<<<<< HEAD
 	int cpu_partial;	/* Number of per cpu partial objects to keep around */
+=======
+	/* Number of per cpu partial objects to keep around */
+	unsigned int cpu_partial;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct kmem_cache_order_objects oo;
 
 	/* Allocation and freeing of slabs */
@@ -87,12 +101,25 @@ struct kmem_cache {
 	int reserved;		/* Reserved bytes at the end of slabs */
 	const char *name;	/* Name (only for display!) */
 	struct list_head list;	/* List of slab caches */
+<<<<<<< HEAD
 #ifdef CONFIG_SYSFS
 	struct kobject kobj;	/* For sysfs */
 #endif
 #ifdef CONFIG_MEMCG_KMEM
 	struct memcg_cache_params *memcg_params;
 	int max_attr_size; /* for propagation, maximum size of a stored attr */
+=======
+	int red_left_pad;	/* Left redzone padding size */
+#ifdef CONFIG_SYSFS
+	struct kobject kobj;	/* For sysfs */
+#endif
+#ifdef CONFIG_MEMCG
+	struct memcg_cache_params memcg_params;
+	int max_attr_size; /* for propagation, maximum size of a stored attr */
+#ifdef CONFIG_SYSFS
+	struct kset *memcg_kset;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_NUMA
@@ -101,6 +128,7 @@ struct kmem_cache {
 	 */
 	int remote_node_defrag_ratio;
 #endif
+<<<<<<< HEAD
 	struct kmem_cache_node *node[MAX_NUMNODES];
 };
 
@@ -207,5 +235,43 @@ static __always_inline void *kmalloc_node(size_t size, gfp_t flags, int node)
 	return __kmalloc_node(size, flags, node);
 }
 #endif
+=======
+
+#ifdef CONFIG_SLAB_FREELIST_RANDOM
+	unsigned int *random_seq;
+#endif
+
+#ifdef CONFIG_KASAN
+	struct kasan_cache kasan_info;
+#endif
+
+	struct kmem_cache_node *node[MAX_NUMNODES];
+};
+
+#ifdef CONFIG_SYSFS
+#define SLAB_SUPPORTS_SYSFS
+void sysfs_slab_remove(struct kmem_cache *);
+#else
+static inline void sysfs_slab_remove(struct kmem_cache *s)
+{
+}
+#endif
+
+void object_err(struct kmem_cache *s, struct page *page,
+		u8 *object, char *reason);
+
+void *fixup_red_left(struct kmem_cache *s, void *p);
+
+static inline void *nearest_obj(struct kmem_cache *cache, struct page *page,
+				void *x) {
+	void *object = x - (x - page_address(page)) % cache->size;
+	void *last_object = page_address(page) +
+		(page->objects - 1) * cache->size;
+	void *result = (unlikely(object > last_object)) ? last_object : object;
+
+	result = fixup_red_left(cache, result);
+	return result;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _LINUX_SLUB_DEF_H */

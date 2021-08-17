@@ -21,7 +21,10 @@
 #ifndef TDA18218_H
 #define TDA18218_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "dvb_frontend.h"
 
 struct tda18218_config {
@@ -30,7 +33,11 @@ struct tda18218_config {
 	u8 loop_through:1;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_TDA18218)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_TDA18218)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *tda18218_attach(struct dvb_frontend *fe,
 	struct i2c_adapter *i2c, struct tda18218_config *cfg);
 #else

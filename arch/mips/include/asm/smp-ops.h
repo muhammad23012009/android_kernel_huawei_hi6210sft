@@ -13,6 +13,11 @@
 
 #include <linux/errno.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/mips-cm.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 
 #include <linux/cpumask.h>
@@ -24,7 +29,10 @@ struct plat_smp_ops {
 	void (*send_ipi_mask)(const struct cpumask *mask, unsigned int action);
 	void (*init_secondary)(void);
 	void (*smp_finish)(void);
+<<<<<<< HEAD
 	void (*cpus_done)(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*boot_secondary)(int cpu, struct task_struct *idle);
 	void (*smp_setup)(void);
 	void (*prepare_cpus)(unsigned int max_cpus);
@@ -43,6 +51,13 @@ static inline void plat_smp_setup(void)
 	mp_ops->smp_setup();
 }
 
+<<<<<<< HEAD
+=======
+extern void mips_smp_send_ipi_single(int cpu, unsigned int action);
+extern void mips_smp_send_ipi_mask(const struct cpumask *mask,
+				      unsigned int action);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* !CONFIG_SMP */
 
 struct plat_smp_ops;
@@ -76,6 +91,12 @@ static inline int register_cmp_smp_ops(void)
 #ifdef CONFIG_MIPS_CMP
 	extern struct plat_smp_ops cmp_smp_ops;
 
+<<<<<<< HEAD
+=======
+	if (!mips_cm_present())
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	register_smp_ops(&cmp_smp_ops);
 
 	return 0;
@@ -97,4 +118,16 @@ static inline int register_vsmp_smp_ops(void)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MIPS_CPS
+extern int register_cps_smp_ops(void);
+#else
+static inline int register_cps_smp_ops(void)
+{
+	return -ENODEV;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_SMP_OPS_H */

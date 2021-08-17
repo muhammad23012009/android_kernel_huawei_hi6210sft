@@ -28,8 +28,11 @@
 #include <linux/file.h>
 #include <linux/in.h>
 #include <linux/ip.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/rcupdate.h>
 #include <linux/spinlock.h>
 
@@ -39,6 +42,10 @@
 #include <net/icmp.h>
 #include <net/route.h>
 #include <net/gre.h>
+<<<<<<< HEAD
+=======
+#include <net/pptp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/uaccess.h>
 
@@ -47,7 +54,11 @@
 #define MAX_CALLID 65535
 
 static DECLARE_BITMAP(callid_bitmap, MAX_CALLID + 1);
+<<<<<<< HEAD
 static struct pppox_sock **callid_sock;
+=======
+static struct pppox_sock __rcu **callid_sock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_SPINLOCK(chan_lock);
 
@@ -55,6 +66,7 @@ static struct proto pptp_sk_proto __read_mostly;
 static const struct ppp_channel_ops pptp_chan_ops;
 static const struct proto_ops pptp_ops;
 
+<<<<<<< HEAD
 #define PPP_LCP_ECHOREQ 0x09
 #define PPP_LCP_ECHOREP 0x0A
 #define SC_RCV_BITS	(SC_RCV_B7_1|SC_RCV_B7_0|SC_RCV_ODDP|SC_RCV_EVNP)
@@ -90,6 +102,8 @@ struct pptp_gre_header {
 	u32 ack;
 } __packed;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct pppox_sock *lookup_chan(u16 call_id, __be32 s_addr)
 {
 	struct pppox_sock *sock;
@@ -131,24 +145,44 @@ static int lookup_chan_dst(u16 call_id, __be32 d_addr)
 	return i < MAX_CALLID;
 }
 
+<<<<<<< HEAD
 static int add_chan(struct pppox_sock *sock)
+=======
+static int add_chan(struct pppox_sock *sock,
+		    struct pptp_addr *sa)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static int call_id;
 
 	spin_lock(&chan_lock);
+<<<<<<< HEAD
 	if (!sock->proto.pptp.src_addr.call_id)	{
+=======
+	if (!sa->call_id)	{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		call_id = find_next_zero_bit(callid_bitmap, MAX_CALLID, call_id + 1);
 		if (call_id == MAX_CALLID) {
 			call_id = find_next_zero_bit(callid_bitmap, MAX_CALLID, 1);
 			if (call_id == MAX_CALLID)
 				goto out_err;
 		}
+<<<<<<< HEAD
 		sock->proto.pptp.src_addr.call_id = call_id;
 	} else if (test_bit(sock->proto.pptp.src_addr.call_id, callid_bitmap))
 		goto out_err;
 
 	set_bit(sock->proto.pptp.src_addr.call_id, callid_bitmap);
 	rcu_assign_pointer(callid_sock[sock->proto.pptp.src_addr.call_id], sock);
+=======
+		sa->call_id = call_id;
+	} else if (test_bit(sa->call_id, callid_bitmap)) {
+		goto out_err;
+	}
+
+	sock->proto.pptp.src_addr = *sa;
+	set_bit(sa->call_id, callid_bitmap);
+	rcu_assign_pointer(callid_sock[sa->call_id], sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&chan_lock);
 
 	return 0;
@@ -171,6 +205,10 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 {
 	struct sock *sk = (struct sock *) chan->private;
 	struct pppox_sock *po = pppox_sk(sk);
+<<<<<<< HEAD
+=======
+	struct net *net = sock_net(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pptp_opt *opt = &po->proto.pptp;
 	struct pptp_gre_header *hdr;
 	unsigned int header_len = sizeof(*hdr);
@@ -189,7 +227,11 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	if (sk_pppox(po)->sk_state & PPPOX_DEAD)
 		goto tx_error;
 
+<<<<<<< HEAD
 	rt = ip_route_output_ports(sock_net(sk), &fl4, NULL,
+=======
+	rt = ip_route_output_ports(net, &fl4, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   opt->dst_addr.sin_addr.s_addr,
 				   opt->src_addr.sin_addr.s_addr,
 				   0, 0, IPPROTO_GRE,
@@ -238,6 +280,7 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	skb_push(skb, header_len);
 	hdr = (struct pptp_gre_header *)(skb->data);
 
+<<<<<<< HEAD
 	hdr->flags       = PPTP_GRE_FLAG_K;
 	hdr->ver         = PPTP_GRE_VER;
 	hdr->protocol    = htons(PPTP_GRE_PROTO);
@@ -248,6 +291,16 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	if (opt->ack_sent != seq_recv)	{
 		/* send ack with this message */
 		hdr->ver |= PPTP_GRE_FLAG_A;
+=======
+	hdr->gre_hd.flags = GRE_KEY | GRE_VERSION_1 | GRE_SEQ;
+	hdr->gre_hd.protocol = GRE_PROTO_PPP;
+	hdr->call_id = htons(opt->dst_addr.call_id);
+
+	hdr->seq = htonl(++opt->seq_sent);
+	if (opt->ack_sent != seq_recv)	{
+		/* send ack with this message */
+		hdr->gre_hd.flags |= GRE_ACK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hdr->ack  = htonl(seq_recv);
 		opt->ack_sent = seq_recv;
 	}
@@ -281,10 +334,17 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	nf_reset(skb);
 
 	skb->ip_summed = CHECKSUM_NONE;
+<<<<<<< HEAD
 	ip_select_ident(skb, NULL);
 	ip_send_check(iph);
 
 	ip_local_out(skb);
+=======
+	ip_select_ident(net, skb, NULL);
+	ip_send_check(iph);
+
+	ip_local_out(net, skb->sk, skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 
 tx_error:
@@ -310,7 +370,11 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
 	headersize  = sizeof(*header);
 
 	/* test if acknowledgement present */
+<<<<<<< HEAD
 	if (PPTP_GRE_IS_A(header->ver)) {
+=======
+	if (GRE_IS_ACK(header->gre_hd.flags)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__u32 ack;
 
 		if (!pskb_may_pull(skb, headersize))
@@ -318,7 +382,11 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
 		header = (struct pptp_gre_header *)(skb->data);
 
 		/* ack in different place if S = 0 */
+<<<<<<< HEAD
 		ack = PPTP_GRE_IS_S(header->flags) ? header->ack : header->seq;
+=======
+		ack = GRE_IS_SEQ(header->gre_hd.flags) ? header->ack : header->seq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ack = ntohl(ack);
 
@@ -331,7 +399,11 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
 		headersize -= sizeof(header->ack);
 	}
 	/* test if payload present */
+<<<<<<< HEAD
 	if (!PPTP_GRE_IS_S(header->flags))
+=======
+	if (!GRE_IS_SEQ(header->gre_hd.flags))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto drop;
 
 	payload_len = ntohs(header->payload_len);
@@ -392,11 +464,19 @@ static int pptp_rcv(struct sk_buff *skb)
 
 	header = (struct pptp_gre_header *)skb->data;
 
+<<<<<<< HEAD
 	if (ntohs(header->protocol) != PPTP_GRE_PROTO || /* PPTP-GRE protocol for PPTP */
 		PPTP_GRE_IS_C(header->flags) ||                /* flag C should be clear */
 		PPTP_GRE_IS_R(header->flags) ||                /* flag R should be clear */
 		!PPTP_GRE_IS_K(header->flags) ||               /* flag K should be set */
 		(header->flags&0xF) != 0)                      /* routing and recursion ctrl = 0 */
+=======
+	if (header->gre_hd.protocol != GRE_PROTO_PPP || /* PPTP-GRE protocol for PPTP */
+		GRE_IS_CSUM(header->gre_hd.flags) ||    /* flag CSUM should be clear */
+		GRE_IS_ROUTING(header->gre_hd.flags) || /* flag ROUTING should be clear */
+		!GRE_IS_KEY(header->gre_hd.flags) ||    /* flag KEY should be set */
+		(header->gre_hd.flags & GRE_FLAGS))     /* flag Recursion Ctrl should be clear */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* if invalid, discard this packet */
 		goto drop;
 
@@ -417,7 +497,10 @@ static int pptp_bind(struct socket *sock, struct sockaddr *uservaddr,
 	struct sock *sk = sock->sk;
 	struct sockaddr_pppox *sp = (struct sockaddr_pppox *) uservaddr;
 	struct pppox_sock *po = pppox_sk(sk);
+<<<<<<< HEAD
 	struct pptp_opt *opt = &po->proto.pptp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int error = 0;
 
 	if (sockaddr_len < sizeof(struct sockaddr_pppox))
@@ -425,10 +508,29 @@ static int pptp_bind(struct socket *sock, struct sockaddr *uservaddr,
 
 	lock_sock(sk);
 
+<<<<<<< HEAD
 	opt->src_addr = sp->sa_addr.pptp;
 	if (add_chan(po))
 		error = -EBUSY;
 
+=======
+	if (sk->sk_state & PPPOX_DEAD) {
+		error = -EALREADY;
+		goto out;
+	}
+
+	if (sk->sk_state & PPPOX_BOUND) {
+		error = -EBUSY;
+		goto out;
+	}
+
+	if (add_chan(po, &sp->sa_addr.pptp))
+		error = -EBUSY;
+	else
+		sk->sk_state |= PPPOX_BOUND;
+
+out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	release_sock(sk);
 	return error;
 }
@@ -488,7 +590,10 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	po->chan.mtu = dst_mtu(&rt->dst);
 	if (!po->chan.mtu)
 		po->chan.mtu = PPP_MRU;
+<<<<<<< HEAD
 	ip_rt_put(rt);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	po->chan.mtu -= PPTP_HEADER_OVERHEAD;
 
 	po->chan.hdrlen = 2 + sizeof(struct pptp_gre_header);
@@ -499,7 +604,11 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	}
 
 	opt->dst_addr = sp->sa_addr.pptp;
+<<<<<<< HEAD
 	sk->sk_state = PPPOX_CONNECTED;
+=======
+	sk->sk_state |= PPPOX_CONNECTED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  end:
 	release_sock(sk);
@@ -565,16 +674,27 @@ static void pptp_sock_destruct(struct sock *sk)
 		pppox_unbind_sock(sk);
 	}
 	skb_queue_purge(&sk->sk_receive_queue);
+<<<<<<< HEAD
 }
 
 static int pptp_create(struct net *net, struct socket *sock)
+=======
+	dst_release(rcu_dereference_protected(sk->sk_dst_cache, 1));
+}
+
+static int pptp_create(struct net *net, struct socket *sock, int kern)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int error = -ENOMEM;
 	struct sock *sk;
 	struct pppox_sock *po;
 	struct pptp_opt *opt;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pptp_sk_proto);
+=======
+	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pptp_sk_proto, kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sk)
 		goto out;
 
@@ -661,6 +781,12 @@ static const struct proto_ops pptp_ops = {
 	.recvmsg    = sock_no_recvmsg,
 	.mmap       = sock_no_mmap,
 	.ioctl      = pppox_ioctl,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+	.compat_ioctl = pppox_compat_ioctl,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct pppox_proto pppox_pptp_proto = {
@@ -725,3 +851,7 @@ module_exit(pptp_exit_module);
 MODULE_DESCRIPTION("Point-to-Point Tunneling Protocol");
 MODULE_AUTHOR("D. Kozlov (xeb@mail.ru)");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_NET_PF_PROTO(PF_PPPOX, PX_PROTO_PPTP);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

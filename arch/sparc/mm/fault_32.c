@@ -21,11 +21,16 @@
 #include <linux/perf_event.h>
 #include <linux/interrupt.h>
 #include <linux/kdebug.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/openprom.h>
 #include <asm/oplib.h>
+<<<<<<< HEAD
 #include <asm/smp.h>
 #include <asm/traps.h>
 #include <asm/uaccess.h>
@@ -34,6 +39,15 @@ int show_unhandled_signals = 1;
 
 static void unhandled_fault(unsigned long, struct task_struct *,
 		struct pt_regs *) __attribute__ ((noreturn));
+=======
+#include <asm/setup.h>
+#include <asm/smp.h>
+#include <asm/traps.h>
+
+#include "mm_32.h"
+
+int show_unhandled_signals = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __noreturn unhandled_fault(unsigned long address,
 				       struct task_struct *tsk,
@@ -141,9 +155,12 @@ static void __do_fault_siginfo(int code, int sig, struct pt_regs *regs,
 	force_sig_info (sig, &info, current);
 }
 
+<<<<<<< HEAD
 extern unsigned long safe_compute_effective_address(struct pt_regs *,
 						    unsigned int);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned long compute_si_addr(struct pt_regs *regs, int text_fault)
 {
 	unsigned int insn;
@@ -199,7 +216,11 @@ asmlinkage void do_sparc_fault(struct pt_regs *regs, int text_fault, int write,
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (pagefault_disabled() || !mm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto no_context;
 
 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
@@ -244,7 +265,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -252,6 +277,11 @@ good_area:
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();
@@ -304,10 +334,17 @@ no_context:
 		fixup = search_extables_range(regs->pc, &g2);
 		/* Values below 10 are reserved for other things */
 		if (fixup > 10) {
+<<<<<<< HEAD
 			extern const unsigned __memset_start[];
 			extern const unsigned __memset_end[];
 			extern const unsigned __csum_partial_copy_start[];
 			extern const unsigned __csum_partial_copy_end[];
+=======
+			extern const unsigned int __memset_start[];
+			extern const unsigned int __memset_end[];
+			extern const unsigned int __csum_partial_copy_start[];
+			extern const unsigned int __csum_partial_copy_end[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef DEBUG_EXCEPTIONS
 			printk("Exception: PC<%08lx> faddr<%08lx>\n",
@@ -412,7 +449,11 @@ good_area:
 		if (!(vma->vm_flags & (VM_READ | VM_EXEC)))
 			goto bad_area;
 	}
+<<<<<<< HEAD
 	switch (handle_mm_fault(mm, vma, address, flags)) {
+=======
+	switch (handle_mm_fault(vma, address, flags)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case VM_FAULT_SIGBUS:
 	case VM_FAULT_OOM:
 		goto do_sigbus;

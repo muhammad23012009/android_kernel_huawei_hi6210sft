@@ -15,10 +15,17 @@
 #include <asm/leon.h>
 #include <asm/tlbflush.h>
 
+<<<<<<< HEAD
 #include "srmmu.h"
 
 int leon_flush_during_switch = 1;
 int srmmu_swprobe_trace;
+=======
+#include "mm_32.h"
+
+int leon_flush_during_switch = 1;
+static int srmmu_swprobe_trace;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long leon_get_ctable_ptr(void)
 {

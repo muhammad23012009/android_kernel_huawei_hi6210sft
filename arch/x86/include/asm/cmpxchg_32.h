@@ -34,8 +34,11 @@ static inline void set_64bit(volatile u64 *ptr, u64 value)
 		     : "memory");
 }
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_X86_CMPXCHG64
 #define cmpxchg64(ptr, o, n)						\
 	((__typeof__(*(ptr)))__cmpxchg64((ptr), (unsigned long long)(o), \
@@ -111,6 +114,10 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
 
 #endif
 
+<<<<<<< HEAD
 #define system_has_cmpxchg_double() cpu_has_cx8
+=======
+#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_X86_CMPXCHG_32_H */

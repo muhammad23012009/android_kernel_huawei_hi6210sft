@@ -12,10 +12,18 @@
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/random.h>
+<<<<<<< HEAD
+=======
+#include <linux/nls.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "hfsplus_fs.h"
 #include "hfsplus_raw.h"
 #include "xattr.h"
+<<<<<<< HEAD
+=======
+#include "acl.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void hfsplus_instantiate(struct dentry *dentry,
 				       struct inode *inode, u32 cnid)
@@ -42,7 +50,14 @@ static struct dentry *hfsplus_lookup(struct inode *dir, struct dentry *dentry,
 	err = hfs_find_init(HFSPLUS_SB(sb)->cat_tree, &fd);
 	if (err)
 		return ERR_PTR(err);
+<<<<<<< HEAD
 	hfsplus_cat_build_key(sb, fd.search_key, dir->i_ino, &dentry->d_name);
+=======
+	err = hfsplus_cat_build_key(sb, fd.search_key, dir->i_ino,
+			&dentry->d_name);
+	if (unlikely(err < 0))
+		goto fail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 again:
 	err = hfs_brec_read(&fd, &entry, sizeof(entry));
 	if (err) {
@@ -72,13 +87,22 @@ again:
 				cpu_to_be32(HFSP_HARDLINK_TYPE) &&
 				entry.file.user_info.fdCreator ==
 				cpu_to_be32(HFSP_HFSPLUS_CREATOR) &&
+<<<<<<< HEAD
+=======
+				HFSPLUS_SB(sb)->hidden_dir &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				(entry.file.create_date ==
 					HFSPLUS_I(HFSPLUS_SB(sb)->hidden_dir)->
 						create_date ||
 				entry.file.create_date ==
+<<<<<<< HEAD
 					HFSPLUS_I(sb->s_root->d_inode)->
 						create_date) &&
 				HFSPLUS_SB(sb)->hidden_dir) {
+=======
+					HFSPLUS_I(d_inode(sb->s_root))->
+						create_date)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct qstr str;
 			char name[32];
 
@@ -95,9 +119,17 @@ again:
 					be32_to_cpu(entry.file.permissions.dev);
 				str.len = sprintf(name, "iNode%d", linkid);
 				str.name = name;
+<<<<<<< HEAD
 				hfsplus_cat_build_key(sb, fd.search_key,
 					HFSPLUS_SB(sb)->hidden_dir->i_ino,
 					&str);
+=======
+				err = hfsplus_cat_build_key(sb, fd.search_key,
+					HFSPLUS_SB(sb)->hidden_dir->i_ino,
+					&str);
+				if (unlikely(err < 0))
+					goto fail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto again;
 			}
 		} else if (!dentry->d_fsdata)
@@ -121,28 +153,51 @@ fail:
 	return ERR_PTR(err);
 }
 
+<<<<<<< HEAD
 static int hfsplus_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *inode = file_inode(filp);
 	struct super_block *sb = inode->i_sb;
 	int len, err;
 	char strbuf[HFSPLUS_MAX_STRLEN + 1];
+=======
+static int hfsplus_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *inode = file_inode(file);
+	struct super_block *sb = inode->i_sb;
+	int len, err;
+	char *strbuf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hfsplus_cat_entry entry;
 	struct hfs_find_data fd;
 	struct hfsplus_readdir_data *rd;
 	u16 type;
 
+<<<<<<< HEAD
 	if (filp->f_pos >= inode->i_size)
+=======
+	if (file->f_pos >= inode->i_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	err = hfs_find_init(HFSPLUS_SB(sb)->cat_tree, &fd);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	hfsplus_cat_build_key(sb, fd.search_key, inode->i_ino, NULL);
+=======
+	strbuf = kmalloc(NLS_MAX_CHARSET_SIZE * HFSPLUS_MAX_STRLEN + 1, GFP_KERNEL);
+	if (!strbuf) {
+		err = -ENOMEM;
+		goto out;
+	}
+	hfsplus_cat_build_key_with_cnid(sb, fd.search_key, inode->i_ino);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = hfs_brec_find(&fd, hfs_find_rec_by_key);
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	switch ((u32)filp->f_pos) {
 	case 0:
 		/* This is completely artificial... */
@@ -151,6 +206,15 @@ static int hfsplus_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		filp->f_pos++;
 		/* fall through */
 	case 1:
+=======
+	if (ctx->pos == 0) {
+		/* This is completely artificial... */
+		if (!dir_emit_dot(file, ctx))
+			goto out;
+		ctx->pos = 1;
+	}
+	if (ctx->pos == 1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (fd.entrylength > sizeof(entry) || fd.entrylength < 0) {
 			err = -EIO;
 			goto out;
@@ -168,6 +232,7 @@ static int hfsplus_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			err = -EIO;
 			goto out;
 		}
+<<<<<<< HEAD
 		if (filldir(dirent, "..", 2, 1,
 			    be32_to_cpu(entry.thread.parentID), DT_DIR))
 			goto out;
@@ -181,6 +246,18 @@ static int hfsplus_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			goto out;
 	}
 
+=======
+		if (!dir_emit(ctx, "..", 2,
+			    be32_to_cpu(entry.thread.parentID), DT_DIR))
+			goto out;
+		ctx->pos = 2;
+	}
+	if (ctx->pos >= inode->i_size)
+		goto out;
+	err = hfs_brec_goto(&fd, ctx->pos - 1);
+	if (err)
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (;;) {
 		if (be32_to_cpu(fd.key->cat.parent) != inode->i_ino) {
 			pr_err("walked past end of dir\n");
@@ -196,7 +273,11 @@ static int hfsplus_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		hfs_bnode_read(fd.bnode, &entry, fd.entryoffset,
 			fd.entrylength);
 		type = be16_to_cpu(entry.type);
+<<<<<<< HEAD
 		len = HFSPLUS_MAX_STRLEN;
+=======
+		len = NLS_MAX_CHARSET_SIZE * HFSPLUS_MAX_STRLEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = hfsplus_uni2asc(sb, &fd.key->cat.name, strbuf, &len);
 		if (err)
 			goto out;
@@ -211,17 +292,47 @@ static int hfsplus_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			    HFSPLUS_SB(sb)->hidden_dir->i_ino ==
 					be32_to_cpu(entry.folder.id))
 				goto next;
+<<<<<<< HEAD
 			if (filldir(dirent, strbuf, len, filp->f_pos,
 				    be32_to_cpu(entry.folder.id), DT_DIR))
 				break;
 		} else if (type == HFSPLUS_FILE) {
+=======
+			if (!dir_emit(ctx, strbuf, len,
+				    be32_to_cpu(entry.folder.id), DT_DIR))
+				break;
+		} else if (type == HFSPLUS_FILE) {
+			u16 mode;
+			unsigned type = DT_UNKNOWN;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (fd.entrylength < sizeof(struct hfsplus_cat_file)) {
 				pr_err("small file entry\n");
 				err = -EIO;
 				goto out;
 			}
+<<<<<<< HEAD
 			if (filldir(dirent, strbuf, len, filp->f_pos,
 				    be32_to_cpu(entry.file.id), DT_REG))
+=======
+
+			mode = be16_to_cpu(entry.file.permissions.mode);
+			if (S_ISREG(mode))
+				type = DT_REG;
+			else if (S_ISLNK(mode))
+				type = DT_LNK;
+			else if (S_ISFIFO(mode))
+				type = DT_FIFO;
+			else if (S_ISCHR(mode))
+				type = DT_CHR;
+			else if (S_ISBLK(mode))
+				type = DT_BLK;
+			else if (S_ISSOCK(mode))
+				type = DT_SOCK;
+
+			if (!dir_emit(ctx, strbuf, len,
+				      be32_to_cpu(entry.file.id), type))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 		} else {
 			pr_err("bad catalog entry type\n");
@@ -229,26 +340,51 @@ static int hfsplus_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			goto out;
 		}
 next:
+<<<<<<< HEAD
 		filp->f_pos++;
 		if (filp->f_pos >= inode->i_size)
+=======
+		ctx->pos++;
+		if (ctx->pos >= inode->i_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		err = hfs_brec_goto(&fd, 1);
 		if (err)
 			goto out;
 	}
+<<<<<<< HEAD
 	rd = filp->private_data;
+=======
+	rd = file->private_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rd) {
 		rd = kmalloc(sizeof(struct hfsplus_readdir_data), GFP_KERNEL);
 		if (!rd) {
 			err = -ENOMEM;
 			goto out;
 		}
+<<<<<<< HEAD
 		filp->private_data = rd;
 		rd->file = filp;
 		list_add(&rd->list, &HFSPLUS_I(inode)->open_dir_list);
 	}
 	memcpy(&rd->key, fd.key, sizeof(struct hfsplus_cat_key));
 out:
+=======
+		file->private_data = rd;
+		rd->file = file;
+		spin_lock(&HFSPLUS_I(inode)->open_dir_lock);
+		list_add(&rd->list, &HFSPLUS_I(inode)->open_dir_list);
+		spin_unlock(&HFSPLUS_I(inode)->open_dir_lock);
+	}
+	/*
+	 * Can be done after the list insertion; exclusion with
+	 * hfsplus_delete_cat() is provided by directory lock.
+	 */
+	memcpy(&rd->key, fd.key, sizeof(struct hfsplus_cat_key));
+out:
+	kfree(strbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hfs_find_exit(&fd);
 	return err;
 }
@@ -257,9 +393,15 @@ static int hfsplus_dir_release(struct inode *inode, struct file *file)
 {
 	struct hfsplus_readdir_data *rd = file->private_data;
 	if (rd) {
+<<<<<<< HEAD
 		mutex_lock(&inode->i_mutex);
 		list_del(&rd->list);
 		mutex_unlock(&inode->i_mutex);
+=======
+		spin_lock(&HFSPLUS_I(inode)->open_dir_lock);
+		list_del(&rd->list);
+		spin_unlock(&HFSPLUS_I(inode)->open_dir_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(rd);
 	}
 	return 0;
@@ -269,8 +411,13 @@ static int hfsplus_link(struct dentry *src_dentry, struct inode *dst_dir,
 			struct dentry *dst_dentry)
 {
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(dst_dir->i_sb);
+<<<<<<< HEAD
 	struct inode *inode = src_dentry->d_inode;
 	struct inode *src_dir = src_dentry->d_parent->d_inode;
+=======
+	struct inode *inode = d_inode(src_dentry);
+	struct inode *src_dir = d_inode(src_dentry->d_parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct qstr str;
 	char name[32];
 	u32 cnid, id;
@@ -314,7 +461,11 @@ static int hfsplus_link(struct dentry *src_dentry, struct inode *dst_dir,
 	inc_nlink(inode);
 	hfsplus_instantiate(dst_dentry, inode, cnid);
 	ihold(inode);
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(inode);
 	sbi->file_count++;
 	hfsplus_mark_mdb_dirty(dst_dir->i_sb);
@@ -326,7 +477,11 @@ out:
 static int hfsplus_unlink(struct inode *dir, struct dentry *dentry)
 {
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(dir->i_sb);
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct qstr str;
 	char name[32];
 	u32 cnid;
@@ -373,7 +528,11 @@ static int hfsplus_unlink(struct inode *dir, struct dentry *dentry)
 			hfsplus_delete_inode(inode);
 	} else
 		sbi->file_count--;
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(inode);
 out:
 	mutex_unlock(&sbi->vh_mutex);
@@ -383,7 +542,11 @@ out:
 static int hfsplus_rmdir(struct inode *dir, struct dentry *dentry)
 {
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(dir->i_sb);
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int res;
 
 	if (inode->i_size != 2)
@@ -394,7 +557,11 @@ static int hfsplus_rmdir(struct inode *dir, struct dentry *dentry)
 	if (res)
 		goto out;
 	clear_nlink(inode);
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hfsplus_delete_inode(inode);
 	mark_inode_dirty(inode);
 out:
@@ -407,7 +574,11 @@ static int hfsplus_symlink(struct inode *dir, struct dentry *dentry,
 {
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(dir->i_sb);
 	struct inode *inode;
+<<<<<<< HEAD
 	int res = -ENOSPC;
+=======
+	int res = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&sbi->vh_mutex);
 	inode = hfsplus_new_inode(dir->i_sb, S_IFLNK | S_IRWXUGO);
@@ -449,7 +620,11 @@ static int hfsplus_mknod(struct inode *dir, struct dentry *dentry,
 {
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(dir->i_sb);
 	struct inode *inode;
+<<<<<<< HEAD
 	int res = -ENOSPC;
+=======
+	int res = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&sbi->vh_mutex);
 	inode = hfsplus_new_inode(dir->i_sb, mode);
@@ -497,6 +672,7 @@ static int hfsplus_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 }
 
 static int hfsplus_rename(struct inode *old_dir, struct dentry *old_dentry,
+<<<<<<< HEAD
 			  struct inode *new_dir, struct dentry *new_dentry)
 {
 	int res;
@@ -504,6 +680,19 @@ static int hfsplus_rename(struct inode *old_dir, struct dentry *old_dentry,
 	/* Unlink destination if it already exists */
 	if (new_dentry->d_inode) {
 		if (S_ISDIR(new_dentry->d_inode->i_mode))
+=======
+			  struct inode *new_dir, struct dentry *new_dentry,
+			  unsigned int flags)
+{
+	int res;
+
+	if (flags & ~RENAME_NOREPLACE)
+		return -EINVAL;
+
+	/* Unlink destination if it already exists */
+	if (d_really_is_positive(new_dentry)) {
+		if (d_is_dir(new_dentry))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			res = hfsplus_rmdir(new_dir, new_dentry);
 		else
 			res = hfsplus_unlink(new_dir, new_dentry);
@@ -529,16 +718,28 @@ const struct inode_operations hfsplus_dir_inode_operations = {
 	.symlink		= hfsplus_symlink,
 	.mknod			= hfsplus_mknod,
 	.rename			= hfsplus_rename,
+<<<<<<< HEAD
 	.setxattr		= generic_setxattr,
 	.getxattr		= generic_getxattr,
 	.listxattr		= hfsplus_listxattr,
 	.removexattr		= hfsplus_removexattr,
+=======
+	.listxattr		= hfsplus_listxattr,
+#ifdef CONFIG_HFSPLUS_FS_POSIX_ACL
+	.get_acl		= hfsplus_get_posix_acl,
+	.set_acl		= hfsplus_set_posix_acl,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 const struct file_operations hfsplus_dir_operations = {
 	.fsync		= hfsplus_file_fsync,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= hfsplus_readdir,
+=======
+	.iterate_shared	= hfsplus_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unlocked_ioctl = hfsplus_ioctl,
 	.llseek		= generic_file_llseek,
 	.release	= hfsplus_dir_release,

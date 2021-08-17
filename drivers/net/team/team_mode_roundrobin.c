@@ -30,7 +30,12 @@ static bool rr_transmit(struct team *team, struct sk_buff *skb)
 	struct team_port *port;
 	int port_index;
 
+<<<<<<< HEAD
 	port_index = rr_priv(team)->sent_packets++ % team->en_port_count;
+=======
+	port_index = team_num_to_port_index(team,
+					    rr_priv(team)->sent_packets++);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	port = team_get_port_by_index_rcu(team, port_index);
 	if (unlikely(!port))
 		goto drop;
@@ -57,6 +62,10 @@ static const struct team_mode rr_mode = {
 	.owner		= THIS_MODULE,
 	.priv_size	= sizeof(struct rr_priv),
 	.ops		= &rr_mode_ops,
+<<<<<<< HEAD
+=======
+	.lag_tx_type	= NETDEV_LAG_TX_TYPE_ROUNDROBIN,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init rr_init_module(void)

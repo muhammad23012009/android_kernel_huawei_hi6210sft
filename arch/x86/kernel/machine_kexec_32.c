@@ -9,7 +9,10 @@
 #include <linux/mm.h>
 #include <linux/kexec.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/numa.h>
 #include <linux/ftrace.h>
 #include <linux/suspend.h>
@@ -21,6 +24,10 @@
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include <asm/apic.h>
+<<<<<<< HEAD
+=======
+#include <asm/io_apic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cpufeature.h>
 #include <asm/desc.h>
 #include <asm/cacheflush.h>
@@ -71,12 +78,26 @@ static void load_segments(void)
 static void machine_kexec_free_page_tables(struct kimage *image)
 {
 	free_page((unsigned long)image->arch.pgd);
+<<<<<<< HEAD
 #ifdef CONFIG_X86_PAE
 	free_page((unsigned long)image->arch.pmd0);
 	free_page((unsigned long)image->arch.pmd1);
 #endif
 	free_page((unsigned long)image->arch.pte0);
 	free_page((unsigned long)image->arch.pte1);
+=======
+	image->arch.pgd = NULL;
+#ifdef CONFIG_X86_PAE
+	free_page((unsigned long)image->arch.pmd0);
+	image->arch.pmd0 = NULL;
+	free_page((unsigned long)image->arch.pmd1);
+	image->arch.pmd1 = NULL;
+#endif
+	free_page((unsigned long)image->arch.pte0);
+	image->arch.pte0 = NULL;
+	free_page((unsigned long)image->arch.pte1);
+	image->arch.pte1 = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int machine_kexec_alloc_page_tables(struct kimage *image)
@@ -93,7 +114,10 @@ static int machine_kexec_alloc_page_tables(struct kimage *image)
 	    !image->arch.pmd0 || !image->arch.pmd1 ||
 #endif
 	    !image->arch.pte0 || !image->arch.pte1) {
+<<<<<<< HEAD
 		machine_kexec_free_page_tables(image);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 	return 0;
@@ -248,7 +272,12 @@ void machine_kexec(struct kimage *image)
 	/* now call it */
 	image->start = relocate_kernel_ptr((unsigned long)image->head,
 					   (unsigned long)page_list,
+<<<<<<< HEAD
 					   image->start, cpu_has_pae,
+=======
+					   image->start,
+					   boot_cpu_has(X86_FEATURE_PAE),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   image->preserve_context);
 
 #ifdef CONFIG_KEXEC_JUMP

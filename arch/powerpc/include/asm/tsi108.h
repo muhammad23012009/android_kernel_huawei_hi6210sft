@@ -77,17 +77,24 @@
  * nodes if your board uses the Broadcom PHYs
  */
 #define TSI108_PHY_MV88E	0	/* Marvel 88Exxxx PHY */
+<<<<<<< HEAD
 #define TSI108_PHY_BCM54XX	1	/* Broardcom BCM54xx PHY */
+=======
+#define TSI108_PHY_BCM54XX	1	/* Broadcom BCM54xx PHY */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Global variables */
 
 extern u32 tsi108_pci_cfg_base;
 /* Exported functions */
 
+<<<<<<< HEAD
 extern int tsi108_bridge_init(struct pci_controller *hose, uint phys_csr_base);
 extern unsigned long tsi108_get_mem_size(void);
 extern unsigned long tsi108_get_cpu_clk(void);
 extern unsigned long tsi108_get_sdc_clk(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int tsi108_direct_write_config(struct pci_bus *bus, unsigned int devfn,
 				      int offset, int len, u32 val);
 extern int tsi108_direct_read_config(struct pci_bus *bus, unsigned int devfn,

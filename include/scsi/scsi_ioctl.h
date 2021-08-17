@@ -40,9 +40,15 @@ typedef struct scsi_fctargaddress {
 	unsigned char host_wwn[8]; // include NULL term.
 } Scsi_FCTargAddress;
 
+<<<<<<< HEAD
 extern int scsi_ioctl(struct scsi_device *, int, void __user *);
 extern int scsi_nonblockable_ioctl(struct scsi_device *sdev, int cmd,
 				   void __user *arg, int ndelay);
+=======
+int scsi_ioctl_block_when_processing_errors(struct scsi_device *sdev,
+		int cmd, bool ndelay);
+extern int scsi_ioctl(struct scsi_device *, int, void __user *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __KERNEL__ */
 #endif /* _SCSI_IOCTL_H */

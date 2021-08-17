@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 /*
  * arch/arm/mach-ep93xx/include/mach/ep93xx_keypad.h
  */
 
 #ifndef __ASM_ARCH_EP93XX_KEYPAD_H
 #define __ASM_ARCH_EP93XX_KEYPAD_H
+=======
+#ifndef __KEYPAD_EP93XX_H
+#define __KEYPAD_EP93XX_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct matrix_keymap_data;
 
@@ -32,4 +37,8 @@ struct ep93xx_keypad_platform_data {
 #define EP93XX_MATRIX_ROWS		(8)
 #define EP93XX_MATRIX_COLS		(8)
 
+<<<<<<< HEAD
 #endif	/* __ASM_ARCH_EP93XX_KEYPAD_H */
+=======
+#endif	/* __KEYPAD_EP93XX_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

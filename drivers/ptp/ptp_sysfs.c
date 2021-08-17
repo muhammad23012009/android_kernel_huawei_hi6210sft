@@ -18,6 +18,10 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 #include <linux/capability.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "ptp_private.h"
 
@@ -27,6 +31,7 @@ static ssize_t clock_name_show(struct device *dev,
 	struct ptp_clock *ptp = dev_get_drvdata(dev);
 	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
 }
+<<<<<<< HEAD
 
 #define PTP_SHOW_INT(name)						\
 static ssize_t name##_show(struct device *dev,				\
@@ -56,6 +61,25 @@ struct device_attribute ptp_dev_attrs[] = {
 	PTP_RO_ATTR(pps,	pps_available),
 	__ATTR_NULL,
 };
+=======
+static DEVICE_ATTR(clock_name, 0444, clock_name_show, NULL);
+
+#define PTP_SHOW_INT(name, var)						\
+static ssize_t var##_show(struct device *dev,				\
+			   struct device_attribute *attr, char *page)	\
+{									\
+	struct ptp_clock *ptp = dev_get_drvdata(dev);			\
+	return snprintf(page, PAGE_SIZE-1, "%d\n", ptp->info->var);	\
+}									\
+static DEVICE_ATTR(name, 0444, var##_show, NULL);
+
+PTP_SHOW_INT(max_adjustment, max_adj);
+PTP_SHOW_INT(n_alarms, n_alarm);
+PTP_SHOW_INT(n_external_timestamps, n_ext_ts);
+PTP_SHOW_INT(n_periodic_outputs, n_per_out);
+PTP_SHOW_INT(n_programmable_pins, n_pins);
+PTP_SHOW_INT(pps_available, pps);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t extts_enable_store(struct device *dev,
 				  struct device_attribute *attr,
@@ -81,6 +105,10 @@ static ssize_t extts_enable_store(struct device *dev,
 out:
 	return err;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(extts_enable, 0220, NULL, extts_enable_store);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t extts_fifo_show(struct device *dev,
 			       struct device_attribute *attr, char *page)
@@ -114,6 +142,10 @@ out:
 	mutex_unlock(&ptp->tsevq_mux);
 	return cnt;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(fifo, 0444, extts_fifo_show, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t period_store(struct device *dev,
 			    struct device_attribute *attr,
@@ -141,6 +173,10 @@ static ssize_t period_store(struct device *dev,
 out:
 	return err;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(period, 0220, NULL, period_store);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t pps_enable_store(struct device *dev,
 				struct device_attribute *attr,
@@ -167,6 +203,7 @@ static ssize_t pps_enable_store(struct device *dev,
 out:
 	return err;
 }
+<<<<<<< HEAD
 
 static DEVICE_ATTR(extts_enable, 0220, NULL, extts_enable_store);
 static DEVICE_ATTR(fifo,         0444, extts_fifo_show, NULL);
@@ -228,3 +265,160 @@ out2:
 out1:
 	return err;
 }
+=======
+static DEVICE_ATTR(pps_enable, 0220, NULL, pps_enable_store);
+
+static struct attribute *ptp_attrs[] = {
+	&dev_attr_clock_name.attr,
+
+	&dev_attr_max_adjustment.attr,
+	&dev_attr_n_alarms.attr,
+	&dev_attr_n_external_timestamps.attr,
+	&dev_attr_n_periodic_outputs.attr,
+	&dev_attr_n_programmable_pins.attr,
+	&dev_attr_pps_available.attr,
+
+	&dev_attr_extts_enable.attr,
+	&dev_attr_fifo.attr,
+	&dev_attr_period.attr,
+	&dev_attr_pps_enable.attr,
+	NULL
+};
+
+static umode_t ptp_is_attribute_visible(struct kobject *kobj,
+					struct attribute *attr, int n)
+{
+	struct device *dev = kobj_to_dev(kobj);
+	struct ptp_clock *ptp = dev_get_drvdata(dev);
+	struct ptp_clock_info *info = ptp->info;
+	umode_t mode = attr->mode;
+
+	if (attr == &dev_attr_extts_enable.attr ||
+	    attr == &dev_attr_fifo.attr) {
+		if (!info->n_ext_ts)
+			mode = 0;
+	} else if (attr == &dev_attr_period.attr) {
+		if (!info->n_per_out)
+			mode = 0;
+	} else if (attr == &dev_attr_pps_enable.attr) {
+		if (!info->pps)
+			mode = 0;
+	}
+
+	return mode;
+}
+
+static const struct attribute_group ptp_group = {
+	.is_visible	= ptp_is_attribute_visible,
+	.attrs		= ptp_attrs,
+};
+
+const struct attribute_group *ptp_groups[] = {
+	&ptp_group,
+	NULL
+};
+
+static int ptp_pin_name2index(struct ptp_clock *ptp, const char *name)
+{
+	int i;
+	for (i = 0; i < ptp->info->n_pins; i++) {
+		if (!strcmp(ptp->info->pin_config[i].name, name))
+			return i;
+	}
+	return -1;
+}
+
+static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
+			    char *page)
+{
+	struct ptp_clock *ptp = dev_get_drvdata(dev);
+	unsigned int func, chan;
+	int index;
+
+	index = ptp_pin_name2index(ptp, attr->attr.name);
+	if (index < 0)
+		return -EINVAL;
+
+	if (mutex_lock_interruptible(&ptp->pincfg_mux))
+		return -ERESTARTSYS;
+
+	func = ptp->info->pin_config[index].func;
+	chan = ptp->info->pin_config[index].chan;
+
+	mutex_unlock(&ptp->pincfg_mux);
+
+	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
+}
+
+static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
+			     const char *buf, size_t count)
+{
+	struct ptp_clock *ptp = dev_get_drvdata(dev);
+	unsigned int func, chan;
+	int cnt, err, index;
+
+	cnt = sscanf(buf, "%u %u", &func, &chan);
+	if (cnt != 2)
+		return -EINVAL;
+
+	index = ptp_pin_name2index(ptp, attr->attr.name);
+	if (index < 0)
+		return -EINVAL;
+
+	if (mutex_lock_interruptible(&ptp->pincfg_mux))
+		return -ERESTARTSYS;
+	err = ptp_set_pinfunc(ptp, index, func, chan);
+	mutex_unlock(&ptp->pincfg_mux);
+	if (err)
+		return err;
+
+	return count;
+}
+
+int ptp_populate_pin_groups(struct ptp_clock *ptp)
+{
+	struct ptp_clock_info *info = ptp->info;
+	int err = -ENOMEM, i, n_pins = info->n_pins;
+
+	if (!n_pins)
+		return 0;
+
+	ptp->pin_dev_attr = kzalloc(n_pins * sizeof(*ptp->pin_dev_attr),
+				    GFP_KERNEL);
+	if (!ptp->pin_dev_attr)
+		goto no_dev_attr;
+
+	ptp->pin_attr = kzalloc((1 + n_pins) * sizeof(struct attribute *),
+				GFP_KERNEL);
+	if (!ptp->pin_attr)
+		goto no_pin_attr;
+
+	for (i = 0; i < n_pins; i++) {
+		struct device_attribute *da = &ptp->pin_dev_attr[i];
+		sysfs_attr_init(&da->attr);
+		da->attr.name = info->pin_config[i].name;
+		da->attr.mode = 0644;
+		da->show = ptp_pin_show;
+		da->store = ptp_pin_store;
+		ptp->pin_attr[i] = &da->attr;
+	}
+
+	ptp->pin_attr_group.name = "pins";
+	ptp->pin_attr_group.attrs = ptp->pin_attr;
+
+	ptp->pin_attr_groups[0] = &ptp->pin_attr_group;
+
+	return 0;
+
+no_pin_attr:
+	kfree(ptp->pin_dev_attr);
+no_dev_attr:
+	return err;
+}
+
+void ptp_cleanup_pin_groups(struct ptp_clock *ptp)
+{
+	kfree(ptp->pin_attr);
+	kfree(ptp->pin_dev_attr);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

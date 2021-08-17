@@ -22,5 +22,9 @@
 #define CPU_HAS_L2_CACHE	0x0080	/* Secondary cache / URAM */
 #define CPU_HAS_OP32		0x0100	/* 32-bit instruction support */
 #define CPU_HAS_PTEAEX		0x0200	/* PTE ASID Extension support */
+<<<<<<< HEAD
+=======
+#define CPU_HAS_CAS_L		0x0400	/* cas.l atomic compare-and-swap */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASM_SH_CPU_FEATURES_H */

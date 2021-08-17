@@ -40,6 +40,10 @@
 #include <asm/firmware.h>
 #include <asm/rtas.h>
 #include <asm/cputhreads.h>
+<<<<<<< HEAD
+=======
+#include <asm/code-patching.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "interrupt.h"
 #include <asm/udbg.h>
@@ -70,8 +74,13 @@ static cpumask_t of_spin_map;
 static inline int smp_startup_cpu(unsigned int lcpu)
 {
 	int status;
+<<<<<<< HEAD
 	unsigned long start_here = __pa((u32)*((unsigned long *)
 					       generic_secondary_smp_init));
+=======
+	unsigned long start_here =
+			__pa(ppc_function_entry(generic_secondary_smp_init));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int pcpu;
 	int start_cpu;
 
@@ -101,6 +110,7 @@ static inline int smp_startup_cpu(unsigned int lcpu)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __init smp_iic_probe(void)
 {
 	iic_request_IPIs();
@@ -108,6 +118,8 @@ static int __init smp_iic_probe(void)
 	return cpumask_weight(cpu_possible_mask);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void smp_cell_setup_cpu(int cpu)
 {
 	if (cpu != boot_cpuid)
@@ -136,6 +148,7 @@ static int smp_cell_kick_cpu(int nr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int smp_cell_cpu_bootable(unsigned int nr)
 {
 	/* Special case - we inhibit secondary thread startup
@@ -155,6 +168,14 @@ static struct smp_ops_t bpa_iic_smp_ops = {
 	.kick_cpu	= smp_cell_kick_cpu,
 	.setup_cpu	= smp_cell_setup_cpu,
 	.cpu_bootable	= smp_cell_cpu_bootable,
+=======
+static struct smp_ops_t bpa_iic_smp_ops = {
+	.message_pass	= iic_message_pass,
+	.probe		= iic_request_IPIs,
+	.kick_cpu	= smp_cell_kick_cpu,
+	.setup_cpu	= smp_cell_setup_cpu,
+	.cpu_bootable	= smp_generic_cpu_bootable,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* This is called very early */

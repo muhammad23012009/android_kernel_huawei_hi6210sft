@@ -4,7 +4,11 @@
  * DMAC pl080 definitions for SPEAr platform
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any

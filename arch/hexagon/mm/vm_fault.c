@@ -101,7 +101,11 @@ good_area:
 		break;
 	}
 
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;

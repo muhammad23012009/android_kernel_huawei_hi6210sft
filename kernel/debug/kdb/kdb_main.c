@@ -12,6 +12,10 @@
  */
 
 #include <linux/ctype.h>
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/kmsg_dump.h>
@@ -23,6 +27,10 @@
 #include <linux/vmalloc.h>
 #include <linux/atomic.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/moduleparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mm.h>
 #include <linux/init.h>
 #include <linux/kallsyms.h>
@@ -42,8 +50,18 @@
 #include <linux/slab.h>
 #include "kdb_private.h"
 
+<<<<<<< HEAD
 #define GREP_LEN 256
 char kdb_grep_string[GREP_LEN];
+=======
+#undef	MODULE_PARAM_PREFIX
+#define	MODULE_PARAM_PREFIX "kdb."
+
+static int kdb_cmd_enabled = CONFIG_KDB_DEFAULT_ENABLE;
+module_param_named(cmd_enable, kdb_cmd_enabled, int, 0600);
+
+char kdb_grep_string[KDB_GREP_STRLEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int kdb_grepping_flag;
 EXPORT_SYMBOL(kdb_grepping_flag);
 int kdb_grep_leading;
@@ -121,6 +139,10 @@ static kdbmsg_t kdbmsgs[] = {
 	KDBMSG(BADLENGTH, "Invalid length field"),
 	KDBMSG(NOBP, "No Breakpoint exists"),
 	KDBMSG(BADADDR, "Invalid address"),
+<<<<<<< HEAD
+=======
+	KDBMSG(NOPERM, "Permission denied"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #undef KDBMSG
 
@@ -188,6 +210,29 @@ struct task_struct *kdb_curr_task(int cpu)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Check whether the flags of the current command and the permissions
+ * of the kdb console has allow a command to be run.
+ */
+static inline bool kdb_check_flags(kdb_cmdflags_t flags, int permissions,
+				   bool no_args)
+{
+	/* permissions comes from userspace so needs massaging slightly */
+	permissions &= KDB_ENABLE_MASK;
+	permissions |= KDB_ENABLE_ALWAYS_SAFE;
+
+	/* some commands change group when launched with no arguments */
+	if (no_args)
+		permissions |= permissions << KDB_ENABLE_NO_ARGS_SHIFT;
+
+	flags |= KDB_ENABLE_ALL;
+
+	return permissions & flags;
+}
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * kdbgetenv - This function will return the character string value of
  *	an environment variable.
  * Parameters:
@@ -476,6 +521,18 @@ int kdbgetaddrarg(int argc, const char **argv, int *nextarg,
 	kdb_symtab_t symtab;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * If the enable flags prohibit both arbitrary memory access
+	 * and flow control then there are no reasonable grounds to
+	 * provide symbol lookup.
+	 */
+	if (!kdb_check_flags(KDB_ENABLE_MEM_READ | KDB_ENABLE_FLOW_CTRL,
+			     kdb_cmd_enabled, false))
+		return KDB_NOPERM;
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Process arguments which follow the following syntax:
 	 *
 	 *  symbol | numeric-address [+/- numeric-offset]
@@ -641,8 +698,18 @@ static int kdb_defcmd2(const char *cmdstr, const char *argv0)
 		if (!s->count)
 			s->usable = 0;
 		if (s->usable)
+<<<<<<< HEAD
 			kdb_register(s->name, kdb_exec_defcmd,
 				     s->usage, s->help, 0);
+=======
+			/* macros are always safe because when executed each
+			 * internal command re-enters kdb_parse() and is
+			 * safety checked individually.
+			 */
+			kdb_register_flags(s->name, kdb_exec_defcmd, s->usage,
+					   s->help, 0,
+					   KDB_ENABLE_ALWAYS_SAFE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	if (!s->usable)
@@ -827,7 +894,11 @@ static void parse_grep(const char *str)
 	len = strlen(cp);
 	if (!len)
 		return;
+<<<<<<< HEAD
 	if (len >= GREP_LEN) {
+=======
+	if (len >= KDB_GREP_STRLEN) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kdb_printf("search string too long\n");
 		return;
 	}
@@ -872,13 +943,20 @@ int kdb_parse(const char *cmdstr)
 	char *cp;
 	char *cpp, quoted;
 	kdbtab_t *tp;
+<<<<<<< HEAD
 	int i, escaped, ignore_errors = 0, check_grep;
+=======
+	int i, escaped, ignore_errors = 0, check_grep = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * First tokenize the command string.
 	 */
 	cp = (char *)cmdstr;
+<<<<<<< HEAD
 	kdb_grepping_flag = check_grep = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (KDB_FLAG(CMD_INTERRUPT)) {
 		/* Previous command was interrupted, newline must not
@@ -1003,11 +1081,19 @@ int kdb_parse(const char *cmdstr)
 
 	if (i < kdb_max_commands) {
 		int result;
+<<<<<<< HEAD
+=======
+
+		if (!kdb_check_flags(tp->cmd_flags, kdb_cmd_enabled, argc <= 1))
+			return KDB_NOPERM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		KDB_STATE_SET(CMD);
 		result = (*tp->cmd_func)(argc-1, (const char **)argv);
 		if (result && ignore_errors && result > KDB_CMD_GO)
 			result = 0;
 		KDB_STATE_CLEAR(CMD);
+<<<<<<< HEAD
 		switch (tp->cmd_repeat) {
 		case KDB_REPEAT_NONE:
 			argc = 0;
@@ -1022,6 +1108,15 @@ int kdb_parse(const char *cmdstr)
 		case KDB_REPEAT_WITH_ARGS:
 			break;
 		}
+=======
+
+		if (tp->cmd_flags & KDB_REPEAT_WITH_ARGS)
+			return result;
+
+		argc = tp->cmd_flags & KDB_REPEAT_NO_ARGS ? 1 : 0;
+		if (argv[argc])
+			*(argv[argc]) = '\0';
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return result;
 	}
 
@@ -1091,7 +1186,11 @@ static int kdb_reboot(int argc, const char **argv)
 static void kdb_dumpregs(struct pt_regs *regs)
 {
 	int old_lvl = console_loglevel;
+<<<<<<< HEAD
 	console_loglevel = 15;
+=======
+	console_loglevel = CONSOLE_LOGLEVEL_MOTORMOUTH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kdb_trap_printk++;
 	show_regs(regs);
 	kdb_trap_printk--;
@@ -1200,11 +1299,20 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 			   instruction_pointer(regs));
 		kdb_dumpregs(regs);
 		break;
+<<<<<<< HEAD
+=======
+	case KDB_REASON_SYSTEM_NMI:
+		kdb_printf("due to System NonMaskable Interrupt\n");
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case KDB_REASON_NMI:
 		kdb_printf("due to NonMaskable Interrupt @ "
 			   kdb_machreg_fmt "\n",
 			   instruction_pointer(regs));
+<<<<<<< HEAD
 		kdb_dumpregs(regs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case KDB_REASON_SSTEP:
 	case KDB_REASON_BREAK:
@@ -1238,6 +1346,12 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 		 */
 		kdb_nextline = 1;
 		KDB_STATE_CLEAR(SUPPRESS);
+<<<<<<< HEAD
+=======
+		kdb_grepping_flag = 0;
+		/* ensure the old search does not leak into '/' commands */
+		kdb_grep_string[0] = '\0';
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		cmdbuf = cmd_cur;
 		*cmdbuf = '\0';
@@ -1521,6 +1635,10 @@ static int kdb_md(int argc, const char **argv)
 	int symbolic = 0;
 	int valid = 0;
 	int phys = 0;
+<<<<<<< HEAD
+=======
+	int raw = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kdbgetintenv("MDCOUNT", &mdcount);
 	kdbgetintenv("RADIX", &radix);
@@ -1530,9 +1648,16 @@ static int kdb_md(int argc, const char **argv)
 	repeat = mdcount * 16 / bytesperword;
 
 	if (strcmp(argv[0], "mdr") == 0) {
+<<<<<<< HEAD
 		if (argc != 2)
 			return KDB_ARGCOUNT;
 		valid = 1;
+=======
+		if (argc == 2 || (argc == 0 && last_addr != 0))
+			valid = raw = 1;
+		else
+			return KDB_ARGCOUNT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (isdigit(argv[0][2])) {
 		bytesperword = (int)(argv[0][2] - '0');
 		if (bytesperword == 0) {
@@ -1568,7 +1693,14 @@ static int kdb_md(int argc, const char **argv)
 		radix = last_radix;
 		bytesperword = last_bytesperword;
 		repeat = last_repeat;
+<<<<<<< HEAD
 		mdcount = ((repeat * bytesperword) + 15) / 16;
+=======
+		if (raw)
+			mdcount = repeat;
+		else
+			mdcount = ((repeat * bytesperword) + 15) / 16;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (argc) {
@@ -1585,7 +1717,14 @@ static int kdb_md(int argc, const char **argv)
 			diag = kdbgetularg(argv[nextarg], &val);
 			if (!diag) {
 				mdcount = (int) val;
+<<<<<<< HEAD
 				repeat = mdcount * 16 / bytesperword;
+=======
+				if (raw)
+					repeat = mdcount;
+				else
+					repeat = mdcount * 16 / bytesperword;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		if (argc >= nextarg+1) {
@@ -1595,8 +1734,20 @@ static int kdb_md(int argc, const char **argv)
 		}
 	}
 
+<<<<<<< HEAD
 	if (strcmp(argv[0], "mdr") == 0)
 		return kdb_mdr(addr, mdcount);
+=======
+	if (strcmp(argv[0], "mdr") == 0) {
+		int ret;
+		last_addr = addr;
+		ret = kdb_mdr(addr, mdcount);
+		last_addr += mdcount;
+		last_repeat = mdcount;
+		last_bytesperword = bytesperword; // to make REPEAT happy
+		return ret;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (radix) {
 	case 10:
@@ -1918,10 +2069,21 @@ static int kdb_rm(int argc, const char **argv)
  */
 static int kdb_sr(int argc, const char **argv)
 {
+<<<<<<< HEAD
 	if (argc != 1)
 		return KDB_ARGCOUNT;
 	kdb_trap_printk++;
 	__handle_sysrq(*argv[1], false);
+=======
+	bool check_mask =
+	    !kdb_check_flags(KDB_ENABLE_ALL, kdb_cmd_enabled, false);
+
+	if (argc != 1)
+		return KDB_ARGCOUNT;
+
+	kdb_trap_printk++;
+	__handle_sysrq(*argv[1], check_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kdb_trap_printk--;
 
 	return 0;
@@ -1974,9 +2136,15 @@ static int kdb_lsmod(int argc, const char **argv)
 			continue;
 
 		kdb_printf("%-20s%8u  0x%p ", mod->name,
+<<<<<<< HEAD
 			   mod->core_size, (void *)mod);
 #ifdef CONFIG_MODULE_UNLOAD
 		kdb_printf("%4ld ", module_refcount(mod));
+=======
+			   mod->core_layout.size, (void *)mod);
+#ifdef CONFIG_MODULE_UNLOAD
+		kdb_printf("%4d ", module_refcount(mod));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 		if (mod->state == MODULE_STATE_GOING)
 			kdb_printf(" (Unloading)");
@@ -1984,7 +2152,11 @@ static int kdb_lsmod(int argc, const char **argv)
 			kdb_printf(" (Loading)");
 		else
 			kdb_printf(" (Live)");
+<<<<<<< HEAD
 		kdb_printf(" 0x%p", mod->module_core);
+=======
+		kdb_printf(" 0x%p", mod->core_layout.base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_MODULE_UNLOAD
 		{
@@ -2154,6 +2326,11 @@ static void kdb_cpu_status(void)
 	for (start_cpu = -1, i = 0; i < NR_CPUS; i++) {
 		if (!cpu_online(i)) {
 			state = 'F';	/* cpu is offline */
+<<<<<<< HEAD
+=======
+		} else if (!kgdb_info[i].enter_kgdb) {
+			state = 'D';	/* cpu is online but unresponsive */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			state = ' ';	/* cpu is responding to kdb */
 			if (kdb_task_state_char(KDB_TSK(i)) == 'I')
@@ -2207,7 +2384,11 @@ static int kdb_cpu(int argc, const char **argv)
 	/*
 	 * Validate cpunum
 	 */
+<<<<<<< HEAD
 	if ((cpunum > NR_CPUS) || !cpu_online(cpunum))
+=======
+	if ((cpunum >= CONFIG_NR_CPUS) || !kgdb_info[cpunum].enter_kgdb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return KDB_BADCPUNUM;
 
 	dbg_switch_cpu = cpunum;
@@ -2372,6 +2553,11 @@ static int kdb_help(int argc, const char **argv)
 			return 0;
 		if (!kt->cmd_name)
 			continue;
+<<<<<<< HEAD
+=======
+		if (!kdb_check_flags(kt->cmd_flags, kdb_cmd_enabled, true))
+			continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (strlen(kt->cmd_usage) > 20)
 			space = "\n                                    ";
 		kdb_printf("%-15.15s %-20s%s%s\n", kt->cmd_name,
@@ -2469,7 +2655,11 @@ static void kdb_gmtime(struct timespec *tv, struct kdb_tm *tm)
 static void kdb_sysinfo(struct sysinfo *val)
 {
 	struct timespec uptime;
+<<<<<<< HEAD
 	do_posix_clock_monotonic_gettime(&uptime);
+=======
+	ktime_get_ts(&uptime);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(val, 0, sizeof(*val));
 	val->uptime = uptime.tv_sec;
 	val->loads[0] = avenrun[0];
@@ -2566,7 +2756,11 @@ static int kdb_per_cpu(int argc, const char **argv)
 		diag = kdbgetularg(argv[3], &whichcpu);
 		if (diag)
 			return diag;
+<<<<<<< HEAD
 		if (!cpu_online(whichcpu)) {
+=======
+		if (whichcpu >= nr_cpu_ids || !cpu_online(whichcpu)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kdb_printf("cpu %ld is not online\n", whichcpu);
 			return KDB_BADCPUNUM;
 		}
@@ -2626,7 +2820,11 @@ static int kdb_grep_help(int argc, const char **argv)
 }
 
 /*
+<<<<<<< HEAD
  * kdb_register_repeat - This function is used to register a kernel
+=======
+ * kdb_register_flags - This function is used to register a kernel
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * 	debugger command.
  * Inputs:
  *	cmd	Command name
@@ -2638,12 +2836,21 @@ static int kdb_grep_help(int argc, const char **argv)
  *	zero for success, one if a duplicate command.
  */
 #define kdb_command_extend 50	/* arbitrary */
+<<<<<<< HEAD
 int kdb_register_repeat(char *cmd,
 			kdb_func_t func,
 			char *usage,
 			char *help,
 			short minlen,
 			kdb_repeat_t repeat)
+=======
+int kdb_register_flags(char *cmd,
+		       kdb_func_t func,
+		       char *usage,
+		       char *help,
+		       short minlen,
+		       kdb_cmdflags_t flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	kdbtab_t *kp;
@@ -2691,6 +2898,7 @@ int kdb_register_repeat(char *cmd,
 	kp->cmd_func   = func;
 	kp->cmd_usage  = usage;
 	kp->cmd_help   = help;
+<<<<<<< HEAD
 	kp->cmd_flags  = 0;
 	kp->cmd_minlen = minlen;
 	kp->cmd_repeat = repeat;
@@ -2698,12 +2906,24 @@ int kdb_register_repeat(char *cmd,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(kdb_register_repeat);
+=======
+	kp->cmd_minlen = minlen;
+	kp->cmd_flags  = flags;
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(kdb_register_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*
  * kdb_register - Compatibility register function for commands that do
  *	not need to specify a repeat state.  Equivalent to
+<<<<<<< HEAD
  *	kdb_register_repeat with KDB_REPEAT_NONE.
+=======
+ *	kdb_register_flags with flags set to 0.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Inputs:
  *	cmd	Command name
  *	func	Function to execute the command
@@ -2718,8 +2938,12 @@ int kdb_register(char *cmd,
 	     char *help,
 	     short minlen)
 {
+<<<<<<< HEAD
 	return kdb_register_repeat(cmd, func, usage, help, minlen,
 				   KDB_REPEAT_NONE);
+=======
+	return kdb_register_flags(cmd, func, usage, help, minlen, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(kdb_register);
 
@@ -2761,6 +2985,7 @@ static void __init kdb_inittab(void)
 	for_each_kdbcmd(kp, i)
 		kp->cmd_name = NULL;
 
+<<<<<<< HEAD
 	kdb_register_repeat("md", kdb_md, "<vaddr>",
 	  "Display Memory Contents, also mdWcN, e.g. md8c1", 1,
 			    KDB_REPEAT_NO_ARGS);
@@ -2835,6 +3060,111 @@ static void __init kdb_inittab(void)
 	  "Display per_cpu variables", 3, KDB_REPEAT_NONE);
 	kdb_register_repeat("grephelp", kdb_grep_help, "",
 	  "Display help on | grep", 0, KDB_REPEAT_NONE);
+=======
+	kdb_register_flags("md", kdb_md, "<vaddr>",
+	  "Display Memory Contents, also mdWcN, e.g. md8c1", 1,
+	  KDB_ENABLE_MEM_READ | KDB_REPEAT_NO_ARGS);
+	kdb_register_flags("mdr", kdb_md, "<vaddr> <bytes>",
+	  "Display Raw Memory", 0,
+	  KDB_ENABLE_MEM_READ | KDB_REPEAT_NO_ARGS);
+	kdb_register_flags("mdp", kdb_md, "<paddr> <bytes>",
+	  "Display Physical Memory", 0,
+	  KDB_ENABLE_MEM_READ | KDB_REPEAT_NO_ARGS);
+	kdb_register_flags("mds", kdb_md, "<vaddr>",
+	  "Display Memory Symbolically", 0,
+	  KDB_ENABLE_MEM_READ | KDB_REPEAT_NO_ARGS);
+	kdb_register_flags("mm", kdb_mm, "<vaddr> <contents>",
+	  "Modify Memory Contents", 0,
+	  KDB_ENABLE_MEM_WRITE | KDB_REPEAT_NO_ARGS);
+	kdb_register_flags("go", kdb_go, "[<vaddr>]",
+	  "Continue Execution", 1,
+	  KDB_ENABLE_REG_WRITE | KDB_ENABLE_ALWAYS_SAFE_NO_ARGS);
+	kdb_register_flags("rd", kdb_rd, "",
+	  "Display Registers", 0,
+	  KDB_ENABLE_REG_READ);
+	kdb_register_flags("rm", kdb_rm, "<reg> <contents>",
+	  "Modify Registers", 0,
+	  KDB_ENABLE_REG_WRITE);
+	kdb_register_flags("ef", kdb_ef, "<vaddr>",
+	  "Display exception frame", 0,
+	  KDB_ENABLE_MEM_READ);
+	kdb_register_flags("bt", kdb_bt, "[<vaddr>]",
+	  "Stack traceback", 1,
+	  KDB_ENABLE_MEM_READ | KDB_ENABLE_INSPECT_NO_ARGS);
+	kdb_register_flags("btp", kdb_bt, "<pid>",
+	  "Display stack for process <pid>", 0,
+	  KDB_ENABLE_INSPECT);
+	kdb_register_flags("bta", kdb_bt, "[D|R|S|T|C|Z|E|U|I|M|A]",
+	  "Backtrace all processes matching state flag", 0,
+	  KDB_ENABLE_INSPECT);
+	kdb_register_flags("btc", kdb_bt, "",
+	  "Backtrace current process on each cpu", 0,
+	  KDB_ENABLE_INSPECT);
+	kdb_register_flags("btt", kdb_bt, "<vaddr>",
+	  "Backtrace process given its struct task address", 0,
+	  KDB_ENABLE_MEM_READ | KDB_ENABLE_INSPECT_NO_ARGS);
+	kdb_register_flags("env", kdb_env, "",
+	  "Show environment variables", 0,
+	  KDB_ENABLE_ALWAYS_SAFE);
+	kdb_register_flags("set", kdb_set, "",
+	  "Set environment variables", 0,
+	  KDB_ENABLE_ALWAYS_SAFE);
+	kdb_register_flags("help", kdb_help, "",
+	  "Display Help Message", 1,
+	  KDB_ENABLE_ALWAYS_SAFE);
+	kdb_register_flags("?", kdb_help, "",
+	  "Display Help Message", 0,
+	  KDB_ENABLE_ALWAYS_SAFE);
+	kdb_register_flags("cpu", kdb_cpu, "<cpunum>",
+	  "Switch to new cpu", 0,
+	  KDB_ENABLE_ALWAYS_SAFE_NO_ARGS);
+	kdb_register_flags("kgdb", kdb_kgdb, "",
+	  "Enter kgdb mode", 0, 0);
+	kdb_register_flags("ps", kdb_ps, "[<flags>|A]",
+	  "Display active task list", 0,
+	  KDB_ENABLE_INSPECT);
+	kdb_register_flags("pid", kdb_pid, "<pidnum>",
+	  "Switch to another task", 0,
+	  KDB_ENABLE_INSPECT);
+	kdb_register_flags("reboot", kdb_reboot, "",
+	  "Reboot the machine immediately", 0,
+	  KDB_ENABLE_REBOOT);
+#if defined(CONFIG_MODULES)
+	kdb_register_flags("lsmod", kdb_lsmod, "",
+	  "List loaded kernel modules", 0,
+	  KDB_ENABLE_INSPECT);
+#endif
+#if defined(CONFIG_MAGIC_SYSRQ)
+	kdb_register_flags("sr", kdb_sr, "<key>",
+	  "Magic SysRq key", 0,
+	  KDB_ENABLE_ALWAYS_SAFE);
+#endif
+#if defined(CONFIG_PRINTK)
+	kdb_register_flags("dmesg", kdb_dmesg, "[lines]",
+	  "Display syslog buffer", 0,
+	  KDB_ENABLE_ALWAYS_SAFE);
+#endif
+	if (arch_kgdb_ops.enable_nmi) {
+		kdb_register_flags("disable_nmi", kdb_disable_nmi, "",
+		  "Disable NMI entry to KDB", 0,
+		  KDB_ENABLE_ALWAYS_SAFE);
+	}
+	kdb_register_flags("defcmd", kdb_defcmd, "name \"usage\" \"help\"",
+	  "Define a set of commands, down to endefcmd", 0,
+	  KDB_ENABLE_ALWAYS_SAFE);
+	kdb_register_flags("kill", kdb_kill, "<-signal> <pid>",
+	  "Send a signal to a process", 0,
+	  KDB_ENABLE_SIGNAL);
+	kdb_register_flags("summary", kdb_summary, "",
+	  "Summarize the system", 4,
+	  KDB_ENABLE_ALWAYS_SAFE);
+	kdb_register_flags("per_cpu", kdb_per_cpu, "<sym> [<bytes>] [<cpu>]",
+	  "Display per_cpu variables", 3,
+	  KDB_ENABLE_MEM_READ);
+	kdb_register_flags("grephelp", kdb_grep_help, "",
+	  "Display help on | grep", 0,
+	  KDB_ENABLE_ALWAYS_SAFE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Execute any commands defined in kdb_cmds.  */

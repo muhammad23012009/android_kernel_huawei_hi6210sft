@@ -9,15 +9,25 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+#include <linux/clk/mmp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/irq.h>
+#include <linux/irqchip/mmp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 
 #include <asm/hardware/cache-tauros2.h>
 
 #include <asm/mach/time.h>
+<<<<<<< HEAD
 #include <mach/addr-map.h>
 #include <mach/regs-apbc.h>
 #include <mach/cputype.h>
@@ -26,6 +36,16 @@
 #include <mach/mfp.h>
 #include <mach/devices.h>
 #include <mach/mmp2.h>
+=======
+#include "addr-map.h"
+#include "regs-apbc.h"
+#include "cputype.h"
+#include "irqs.h"
+#include "mfp.h"
+#include "devices.h"
+#include "mmp2.h"
+#include "pm-mmp2.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 
@@ -94,6 +114,12 @@ void mmp2_clear_pmic_int(void)
 void __init mmp2_init_irq(void)
 {
 	mmp2_init_icu();
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+	icu_irq_chip.irq_set_wake = mmp2_set_wake;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init mmp2_init(void)
@@ -104,8 +130,14 @@ static int __init mmp2_init(void)
 #endif
 		mfp_init_base(MFPR_VIRT_BASE);
 		mfp_init_addr(mmp2_addr_map);
+<<<<<<< HEAD
 		pxa_init_dma(IRQ_MMP2_DMA_RIQ, 16);
 		mmp2_clk_init();
+=======
+		mmp2_clk_init(APB_PHYS_BASE + 0x50000,
+			      AXI_PHYS_BASE + 0x82800,
+			      APB_PHYS_BASE + 0x15000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;

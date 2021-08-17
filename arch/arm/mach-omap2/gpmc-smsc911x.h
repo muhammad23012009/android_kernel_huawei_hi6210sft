@@ -21,7 +21,11 @@ struct omap_smsc911x_platform_data {
 	u32	flags;
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_SMSC911X) || defined(CONFIG_SMSC911X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SMSC911X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void gpmc_smsc911x_init(struct omap_smsc911x_platform_data *d);
 

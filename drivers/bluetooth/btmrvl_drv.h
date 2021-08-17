@@ -23,14 +23,52 @@
 #include <linux/bitops.h>
 #include <linux/slab.h>
 #include <net/bluetooth/bluetooth.h>
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+#include <linux/gpio.h>
+#include <linux/gfp.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+#include <linux/of_gpio.h>
+#include <linux/of_platform.h>
+#include <linux/platform_device.h>
+#include <linux/pm_runtime.h>
+#include <linux/slab.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BTM_HEADER_LEN			4
 #define BTM_UPLD_SIZE			2312
 
 /* Time to wait until Host Sleep state change in millisecond */
+<<<<<<< HEAD
 #define WAIT_UNTIL_HS_STATE_CHANGED	5000
 /* Time to wait for command response in millisecond */
 #define WAIT_UNTIL_CMD_RESP		5000
+=======
+#define WAIT_UNTIL_HS_STATE_CHANGED	msecs_to_jiffies(5000)
+/* Time to wait for command response in millisecond */
+#define WAIT_UNTIL_CMD_RESP		msecs_to_jiffies(5000)
+
+enum rdwr_status {
+	RDWR_STATUS_SUCCESS = 0,
+	RDWR_STATUS_FAILURE = 1,
+	RDWR_STATUS_DONE = 2
+};
+
+#define FW_DUMP_MAX_NAME_LEN    8
+#define FW_DUMP_HOST_READY      0xEE
+#define FW_DUMP_DONE            0xFF
+#define FW_DUMP_READ_DONE       0xFE
+
+struct memory_type_mapping {
+	u8 mem_name[FW_DUMP_MAX_NAME_LEN];
+	u8 *mem_ptr;
+	u32 mem_size;
+	u8 done_flag;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct btmrvl_thread {
 	struct task_struct *task;
@@ -59,6 +97,11 @@ struct btmrvl_device {
 };
 
 struct btmrvl_adapter {
+<<<<<<< HEAD
+=======
+	void *hw_regs_buf;
+	u8 *hw_regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 int_count;
 	struct sk_buff_head tx_queue;
 	u8 psmode;
@@ -66,31 +109,62 @@ struct btmrvl_adapter {
 	u8 hs_state;
 	u8 wakeup_tries;
 	wait_queue_head_t cmd_wait_q;
+<<<<<<< HEAD
 	u8 cmd_complete;
 	bool is_suspended;
+=======
+	wait_queue_head_t event_hs_wait_q;
+	u8 cmd_complete;
+	bool is_suspended;
+	bool is_suspending;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct btmrvl_private {
 	struct btmrvl_device btmrvl_dev;
 	struct btmrvl_adapter *adapter;
 	struct btmrvl_thread main_thread;
+<<<<<<< HEAD
 	int (*hw_host_to_card) (struct btmrvl_private *priv,
 				u8 *payload, u16 nb);
 	int (*hw_wakeup_firmware) (struct btmrvl_private *priv);
 	int (*hw_process_int_status) (struct btmrvl_private *priv);
+=======
+	int (*hw_host_to_card)(struct btmrvl_private *priv,
+				u8 *payload, u16 nb);
+	int (*hw_wakeup_firmware)(struct btmrvl_private *priv);
+	int (*hw_process_int_status)(struct btmrvl_private *priv);
+	void (*firmware_dump)(struct btmrvl_private *priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t driver_lock;		/* spinlock used by driver */
 #ifdef CONFIG_DEBUG_FS
 	void *debugfs_data;
 #endif
+<<<<<<< HEAD
+=======
+	bool surprise_removed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define MRVL_VENDOR_PKT			0xFE
 
+<<<<<<< HEAD
 /* Bluetooth commands  */
 #define BT_CMD_AUTO_SLEEP_MODE		0x23
 #define BT_CMD_HOST_SLEEP_CONFIG	0x59
 #define BT_CMD_HOST_SLEEP_ENABLE	0x5A
 #define BT_CMD_MODULE_CFG_REQ		0x5B
+=======
+/* Vendor specific Bluetooth commands */
+#define BT_CMD_PSCAN_WIN_REPORT_ENABLE	0xFC03
+#define BT_CMD_ROUTE_SCO_TO_HOST	0xFC1D
+#define BT_CMD_SET_BDADDR		0xFC22
+#define BT_CMD_AUTO_SLEEP_MODE		0xFC23
+#define BT_CMD_HOST_SLEEP_CONFIG	0xFC59
+#define BT_CMD_HOST_SLEEP_ENABLE	0xFC5A
+#define BT_CMD_MODULE_CFG_REQ		0xFC5B
+#define BT_CMD_LOAD_CONFIG_DATA		0xFC61
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Sub-commands: Module Bringup/Shutdown Request/Response */
 #define MODULE_BRINGUP_REQ		0xF1
@@ -99,6 +173,14 @@ struct btmrvl_private {
 
 #define MODULE_SHUTDOWN_REQ		0xF2
 
+<<<<<<< HEAD
+=======
+/* Vendor specific Bluetooth events */
+#define BT_EVENT_AUTO_SLEEP_MODE	0x23
+#define BT_EVENT_HOST_SLEEP_CONFIG	0x59
+#define BT_EVENT_HOST_SLEEP_ENABLE	0x5A
+#define BT_EVENT_MODULE_CFG_REQ		0x5B
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define BT_EVENT_POWER_STATE		0x20
 
 /* Bluetooth Power States */
@@ -106,8 +188,11 @@ struct btmrvl_private {
 #define BT_PS_DISABLE			0x03
 #define BT_PS_SLEEP			0x01
 
+<<<<<<< HEAD
 #define OGF				0x3F
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Host Sleep states */
 #define HS_ACTIVATED			0x01
 #define HS_DEACTIVATED			0x00
@@ -116,11 +201,16 @@ struct btmrvl_private {
 #define PS_SLEEP			0x01
 #define PS_AWAKE			0x00
 
+<<<<<<< HEAD
 struct btmrvl_cmd {
 	__le16 ocf_ogf;
 	u8 length;
 	u8 data[4];
 } __packed;
+=======
+#define BT_CAL_HDR_LEN			4
+#define BT_CAL_DATA_SIZE		28
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct btmrvl_event {
 	u8 ec;		/* event counter */
@@ -139,11 +229,20 @@ void btmrvl_interrupt(struct btmrvl_private *priv);
 bool btmrvl_check_evtpkt(struct btmrvl_private *priv, struct sk_buff *skb);
 int btmrvl_process_event(struct btmrvl_private *priv, struct sk_buff *skb);
 
+<<<<<<< HEAD
 int btmrvl_send_module_cfg_cmd(struct btmrvl_private *priv, int subcmd);
+=======
+int btmrvl_send_module_cfg_cmd(struct btmrvl_private *priv, u8 subcmd);
+int btmrvl_pscan_window_reporting(struct btmrvl_private *priv, u8 subcmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int btmrvl_send_hscfg_cmd(struct btmrvl_private *priv);
 int btmrvl_enable_ps(struct btmrvl_private *priv);
 int btmrvl_prepare_command(struct btmrvl_private *priv);
 int btmrvl_enable_hs(struct btmrvl_private *priv);
+<<<<<<< HEAD
+=======
+void btmrvl_firmware_dump(struct btmrvl_private *priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_DEBUG_FS
 void btmrvl_debugfs_init(struct hci_dev *hdev);

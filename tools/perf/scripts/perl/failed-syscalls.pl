@@ -26,6 +26,14 @@ sub raw_syscalls::sys_exit
 	}
 }
 
+<<<<<<< HEAD
+=======
+sub syscalls::sys_exit
+{
+	raw_syscalls::sys_exit(@_)
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sub trace_end
 {
     printf("\nfailed syscalls by comm:\n\n");

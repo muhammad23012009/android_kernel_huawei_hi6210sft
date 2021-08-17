@@ -732,10 +732,17 @@ static int ftmac100_alloc_buffers(struct ftmac100 *priv)
 {
 	int i;
 
+<<<<<<< HEAD
 	priv->descs = dma_alloc_coherent(priv->dev,
 					 sizeof(struct ftmac100_descs),
 					 &priv->descs_dma_addr,
 					 GFP_KERNEL | __GFP_ZERO);
+=======
+	priv->descs = dma_zalloc_coherent(priv->dev,
+					  sizeof(struct ftmac100_descs),
+					  &priv->descs_dma_addr,
+					  GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!priv->descs)
 		return -ENOMEM;
 
@@ -865,11 +872,18 @@ static irqreturn_t ftmac100_interrupt(int irq, void *dev_id)
 	struct net_device *netdev = dev_id;
 	struct ftmac100 *priv = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	if (likely(netif_running(netdev))) {
 		/* Disable interrupts for polling */
 		ftmac100_disable_all_int(priv);
 		napi_schedule(&priv->napi);
 	}
+=======
+	/* Disable interrupts for polling */
+	ftmac100_disable_all_int(priv);
+	if (likely(netif_running(netdev)))
+		napi_schedule(&priv->napi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_HANDLED;
 }
@@ -1085,7 +1099,11 @@ static int ftmac100_probe(struct platform_device *pdev)
 	}
 
 	SET_NETDEV_DEV(netdev, &pdev->dev);
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &ftmac100_ethtool_ops);
+=======
+	netdev->ethtool_ops = &ftmac100_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev->netdev_ops = &ftmac100_netdev_ops;
 
 	platform_set_drvdata(pdev, netdev);
@@ -1149,7 +1167,10 @@ err_ioremap:
 	release_resource(priv->res);
 err_req_mem:
 	netif_napi_del(&priv->napi);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(netdev);
 err_alloc_etherdev:
 	return err;
@@ -1169,7 +1190,10 @@ static int __exit ftmac100_remove(struct platform_device *pdev)
 	release_resource(priv->res);
 
 	netif_napi_del(&priv->napi);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(netdev);
 	return 0;
 }
@@ -1179,7 +1203,10 @@ static struct platform_driver ftmac100_driver = {
 	.remove		= __exit_p(ftmac100_remove),
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

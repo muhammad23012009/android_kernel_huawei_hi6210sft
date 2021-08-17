@@ -82,4 +82,23 @@ void ps3_vuart_cancel_async(struct ps3_system_bus_device *dev);
 void ps3_vuart_clear_rx_bytes(struct ps3_system_bus_device *dev,
 	unsigned int bytes);
 
+<<<<<<< HEAD
+=======
+struct vuart_triggers {
+	unsigned long rx;
+	unsigned long tx;
+};
+
+int ps3_vuart_get_triggers(struct ps3_system_bus_device *dev,
+	struct vuart_triggers *trig);
+int ps3_vuart_set_triggers(struct ps3_system_bus_device *dev, unsigned int tx,
+	unsigned int rx);
+int ps3_vuart_enable_interrupt_tx(struct ps3_system_bus_device *dev);
+int ps3_vuart_disable_interrupt_tx(struct ps3_system_bus_device *dev);
+int ps3_vuart_enable_interrupt_rx(struct ps3_system_bus_device *dev);
+int ps3_vuart_disable_interrupt_rx(struct ps3_system_bus_device *dev);
+int ps3_vuart_enable_interrupt_disconnect(struct ps3_system_bus_device *dev);
+int ps3_vuart_disable_interrupt_disconnect(struct ps3_system_bus_device *dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

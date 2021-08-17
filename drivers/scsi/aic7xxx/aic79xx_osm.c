@@ -1325,10 +1325,16 @@ int
 ahd_platform_alloc(struct ahd_softc *ahd, void *platform_arg)
 {
 	ahd->platform_data =
+<<<<<<< HEAD
 	    kmalloc(sizeof(struct ahd_platform_data), GFP_ATOMIC);
 	if (ahd->platform_data == NULL)
 		return (ENOMEM);
 	memset(ahd->platform_data, 0, sizeof(struct ahd_platform_data));
+=======
+	    kzalloc(sizeof(struct ahd_platform_data), GFP_ATOMIC);
+	if (ahd->platform_data == NULL)
+		return (ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahd->platform_data->irq = AHD_LINUX_NOIRQ;
 	ahd_lockinit(ahd);
 	ahd->seltime = (aic79xx_seltime & 0x3) << 4;
@@ -1468,12 +1474,18 @@ ahd_platform_set_tags(struct ahd_softc *ahd, struct scsi_device *sdev,
 
 	switch ((dev->flags & (AHD_DEV_Q_BASIC|AHD_DEV_Q_TAGGED))) {
 	case AHD_DEV_Q_BASIC:
+<<<<<<< HEAD
 		scsi_set_tag_type(sdev, MSG_SIMPLE_TASK);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
 		break;
 	case AHD_DEV_Q_TAGGED:
 		scsi_set_tag_type(sdev, MSG_ORDERED_TASK);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
+=======
+	case AHD_DEV_Q_TAGGED:
+		scsi_change_queue_depth(sdev,
+				dev->openings + dev->active);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		/*
@@ -1482,7 +1494,11 @@ ahd_platform_set_tags(struct ahd_softc *ahd, struct scsi_device *sdev,
 		 * serially on the controller/device.  This should
 		 * remove some latency.
 		 */
+<<<<<<< HEAD
 		scsi_deactivate_tcq(sdev, 1);
+=======
+		scsi_change_queue_depth(sdev, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -1619,6 +1635,7 @@ ahd_linux_run_command(struct ahd_softc *ahd, struct ahd_linux_device *dev,
 	}
 
 	if ((dev->flags & (AHD_DEV_Q_TAGGED|AHD_DEV_Q_BASIC)) != 0) {
+<<<<<<< HEAD
 		int	msg_bytes;
 		uint8_t tag_msgs[2];
 
@@ -1628,6 +1645,8 @@ ahd_linux_run_command(struct ahd_softc *ahd, struct ahd_linux_device *dev,
 			if (tag_msgs[0] == MSG_ORDERED_TASK)
 				dev->commands_since_idle_or_otag = 0;
 		} else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (dev->commands_since_idle_or_otag == AHD_OTAG_THRESH
 		 && (dev->flags & AHD_DEV_Q_TAGGED) != 0) {
 			hscb->control |= MSG_ORDERED_TASK;
@@ -2137,7 +2156,11 @@ ahd_linux_queue_cmd_complete(struct ahd_softc *ahd, struct scsi_cmnd *cmd)
 	if (do_fallback) {
 		printk("%s: device overrun (status %x) on %d:%d:%d\n",
 		       ahd_name(ahd), status, cmd->device->channel,
+<<<<<<< HEAD
 		       cmd->device->id, cmd->device->lun);
+=======
+		       cmd->device->id, (u8)cmd->device->lun);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ahd_cmd_set_transaction_status(cmd, new_status);
@@ -2253,13 +2276,21 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 	disconnected = TRUE;
 	if (ahd_search_qinfifo(ahd, cmd->device->id, 
 			       cmd->device->channel + 'A',
+<<<<<<< HEAD
 			       cmd->device->lun, 
+=======
+			       cmd->device->lun,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       pending_scb->hscb->tag,
 			       ROLE_INITIATOR, CAM_REQ_ABORTED,
 			       SEARCH_COMPLETE) > 0) {
 		printk("%s:%d:%d:%d: Cmd aborted from QINFIFO\n",
 		       ahd_name(ahd), cmd->device->channel, 
+<<<<<<< HEAD
 		       cmd->device->id, cmd->device->lun);
+=======
+		       cmd->device->id, (u8)cmd->device->lun);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = SUCCESS;
 		goto done;
 	}

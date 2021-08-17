@@ -24,6 +24,7 @@
 #include <asm/ptrace.h>
 #include <asm/user.h>
 
+<<<<<<< HEAD
 typedef unsigned long elf_greg_t;
 
 #define ELF_NGREG (sizeof(struct user_pt_regs) / sizeof(elf_greg_t))
@@ -33,6 +34,8 @@ typedef unsigned long elf_greg_t;
 typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 typedef struct user_fpsimd_state elf_fpregset_t;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * AArch64 static relocation types.
  */
@@ -86,6 +89,11 @@ typedef struct user_fpsimd_state elf_fpregset_t;
 #define R_AARCH64_MOVW_PREL_G2_NC	292
 #define R_AARCH64_MOVW_PREL_G3		293
 
+<<<<<<< HEAD
+=======
+#define R_AARCH64_RELATIVE		1027
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * These are used to set parameters in the core dumps.
  */
@@ -120,6 +128,7 @@ typedef struct user_fpsimd_state elf_fpregset_t;
 #define ELF_EXEC_PAGESIZE	PAGE_SIZE
 
 /*
+<<<<<<< HEAD
  * This is the location that an ET_DYN program is loaded if exec'ed.  Typical
  * use of this is to invoke "./ld.so someprog" to test out a new version of
  * the loader.  We need to make sure that it is out of the way of the program
@@ -127,6 +136,24 @@ typedef struct user_fpsimd_state elf_fpregset_t;
  */
 extern unsigned long randomize_et_dyn(unsigned long base);
 #define ELF_ET_DYN_BASE	(randomize_et_dyn(2 * TASK_SIZE_64 / 3))
+=======
+ * This is the base location for PIE (ET_DYN with INTERP) loads. On
+ * 64-bit, this is above 4GB to leave the entire 32-bit address
+ * space open for things that want to use the area for 32-bit pointers.
+ */
+#define ELF_ET_DYN_BASE		(2 * TASK_SIZE_64 / 3)
+
+#ifndef __ASSEMBLY__
+
+typedef unsigned long elf_greg_t;
+
+#define ELF_NGREG (sizeof(struct user_pt_regs) / sizeof(elf_greg_t))
+#define ELF_CORE_COPY_REGS(dest, regs)	\
+	*(struct user_pt_regs *)&(dest) = (regs)->user_regs;
+
+typedef elf_greg_t elf_gregset_t[ELF_NGREG];
+typedef struct user_fpsimd_state elf_fpregset_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * When the program starts, a1 contains a pointer to a function to be
@@ -158,19 +185,29 @@ extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 #define STACK_RND_MASK			(0x3ffff >> (PAGE_SHIFT - 12))
 #endif
 
+<<<<<<< HEAD
 struct mm_struct;
 extern unsigned long arch_randomize_brk(struct mm_struct *mm);
 #define arch_randomize_brk arch_randomize_brk
 
 #ifdef CONFIG_COMPAT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef __AARCH64EB__
 #define COMPAT_ELF_PLATFORM		("v8b")
 #else
 #define COMPAT_ELF_PLATFORM		("v8l")
 #endif
 
+<<<<<<< HEAD
 #define COMPAT_ELF_ET_DYN_BASE		(randomize_et_dyn(2 * TASK_SIZE_32 / 3))
+=======
+#ifdef CONFIG_COMPAT
+
+/* PIE load location for compat arm. Must match ARM ELF_ET_DYN_BASE. */
+#define COMPAT_ELF_ET_DYN_BASE		(2 * TASK_SIZE_32 / 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* AArch32 registers. */
 #define COMPAT_ELF_NGREG		18
@@ -179,7 +216,12 @@ typedef compat_elf_greg_t		compat_elf_gregset_t[COMPAT_ELF_NGREG];
 
 /* AArch32 EABI. */
 #define EF_ARM_EABI_MASK		0xff000000
+<<<<<<< HEAD
 #define compat_elf_check_arch(x)	(((x)->e_machine == EM_ARM) && \
+=======
+#define compat_elf_check_arch(x)	(system_supports_32bit_el0() && \
+					 ((x)->e_machine == EM_ARM) && \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 ((x)->e_flags & EF_ARM_EABI_MASK))
 
 #define compat_start_thread		compat_start_thread
@@ -192,4 +234,9 @@ extern int aarch32_setup_vectors_page(struct linux_binprm *bprm,
 
 #endif /* CONFIG_COMPAT */
 
+<<<<<<< HEAD
+=======
+#endif /* !__ASSEMBLY__ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

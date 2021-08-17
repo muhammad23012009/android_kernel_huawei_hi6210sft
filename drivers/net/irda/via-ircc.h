@@ -18,8 +18,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
+<<<<<<< HEAD
 this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  * Comment:
  * jul/08/2002 : Rx buffer length should use Rx ring ptr.	
@@ -30,7 +34,10 @@ this program; if not, write to the Free Software Foundation, Inc.,
  ********************************************************************/
 #ifndef via_IRCC_H
 #define via_IRCC_H
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock.h>
 #include <linux/pm.h>
 #include <linux/types.h>
@@ -107,9 +114,12 @@ struct via_ircc_cb {
 
 	__u8 ier;		/* Interrupt enable register */
 
+<<<<<<< HEAD
 	struct timeval stamp;
 	struct timeval now;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t lock;	/* For serializing operations */
 
 	__u32 flags;		/* Interface flags */

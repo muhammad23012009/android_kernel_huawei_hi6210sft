@@ -67,7 +67,11 @@ struct ocfs2_meta_cache_item {
 	sector_t	c_block;
 };
 
+<<<<<<< HEAD
 static struct kmem_cache *ocfs2_uptodate_cachep = NULL;
+=======
+static struct kmem_cache *ocfs2_uptodate_cachep;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 u64 ocfs2_metadata_cache_owner(struct ocfs2_caching_info *ci)
 {

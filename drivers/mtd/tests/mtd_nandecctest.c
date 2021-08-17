@@ -9,6 +9,11 @@
 #include <linux/slab.h>
 #include <linux/mtd/nand_ecc.h>
 
+<<<<<<< HEAD
+=======
+#include "mtd_test.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Test the implementation for software ECC
  *
@@ -19,7 +24,11 @@
  * or detected.
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_NAND) || defined(CONFIG_MTD_NAND_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_NAND)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct nand_ecc_test {
 	const char *name;
@@ -185,7 +194,11 @@ static int double_bit_error_detect(void *error_data, void *error_ecc,
 	__nand_calculate_ecc(error_data, size, calc_ecc);
 	ret = __nand_correct_data(error_data, error_ecc, calc_ecc, size);
 
+<<<<<<< HEAD
 	return (ret == -1) ? 0 : -EINVAL;
+=======
+	return (ret == -EBADMSG) ? 0 : -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct nand_ecc_test nand_ecc_test[] = {
@@ -274,6 +287,13 @@ static int nand_ecc_test_run(const size_t size)
 		}
 		pr_info("ok - %s-%zd\n",
 			nand_ecc_test[i].name, size);
+<<<<<<< HEAD
+=======
+
+		err = mtdtest_relax();
+		if (err)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 error:
 	kfree(error_data);

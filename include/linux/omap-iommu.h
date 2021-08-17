@@ -10,6 +10,7 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #ifndef _INTEL_IOMMU_H_
 #define _INTEL_IOMMU_H_
 
@@ -45,6 +46,10 @@ extern void
 omap_iommu_vfree(struct iommu_domain *domain, struct device *dev,
 				const u32 da);
 extern void *omap_da_to_va(struct device *dev, u32 da);
+=======
+#ifndef _OMAP_IOMMU_H_
+#define _OMAP_IOMMU_H_
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void omap_iommu_save_ctx(struct device *dev);
 extern void omap_iommu_restore_ctx(struct device *dev);

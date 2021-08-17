@@ -23,9 +23,15 @@
 #include <sound/initval.h>
 #include <sound/soc.h>
 #include <sound/pxa2xx-lib.h>
+<<<<<<< HEAD
 
 #include <mach/hardware.h>
 #include <mach/dma.h>
+=======
+#include <sound/dmaengine_pcm.h>
+
+#include <mach/hardware.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/audio.h>
 
 #include "pxa2xx-i2s.h"
@@ -82,6 +88,7 @@ static struct pxa_i2s_port pxa_i2s;
 static struct clk *clk_i2s;
 static int clk_ena = 0;
 
+<<<<<<< HEAD
 static struct pxa2xx_pcm_dma_params pxa2xx_i2s_pcm_stereo_out = {
 	.name			= "I2S PCM Stereo out",
 	.dev_addr		= __PREG(SADR),
@@ -96,6 +103,22 @@ static struct pxa2xx_pcm_dma_params pxa2xx_i2s_pcm_stereo_in = {
 	.drcmr			= &DRCMR(2),
 	.dcmd			= DCMD_INCTRGADDR | DCMD_FLOWSRC |
 				  DCMD_BURST32 | DCMD_WIDTH4,
+=======
+static unsigned long pxa2xx_i2s_pcm_stereo_out_req = 3;
+static struct snd_dmaengine_dai_dma_data pxa2xx_i2s_pcm_stereo_out = {
+	.addr		= __PREG(SADR),
+	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+	.maxburst	= 32,
+	.filter_data	= &pxa2xx_i2s_pcm_stereo_out_req,
+};
+
+static unsigned long pxa2xx_i2s_pcm_stereo_in_req = 2;
+static struct snd_dmaengine_dai_dma_data pxa2xx_i2s_pcm_stereo_in = {
+	.addr		= __PREG(SADR),
+	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+	.maxburst	= 32,
+	.filter_data	= &pxa2xx_i2s_pcm_stereo_in_req,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int pxa2xx_i2s_startup(struct snd_pcm_substream *substream,
@@ -163,9 +186,16 @@ static int pxa2xx_i2s_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct pxa2xx_pcm_dma_params *dma_data;
 
 	BUG_ON(IS_ERR(clk_i2s));
+=======
+	struct snd_dmaengine_dai_dma_data *dma_data;
+
+	if (WARN_ON(IS_ERR(clk_i2s)))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_prepare_enable(clk_i2s);
 	clk_ena = 1;
 	pxa_i2s_wait();
@@ -318,6 +348,12 @@ static int pxa2xx_i2s_probe(struct snd_soc_dai *dai)
 	/* Along with FIFO servicing */
 	SAIMR &= ~(SAIMR_RFS | SAIMR_TFS);
 
+<<<<<<< HEAD
+=======
+	snd_soc_dai_init_dma_data(dai, &pxa2xx_i2s_pcm_stereo_out,
+		&pxa2xx_i2s_pcm_stereo_in);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -366,6 +402,7 @@ static const struct snd_soc_component_driver pxa_i2s_component = {
 
 static int pxa2xx_i2s_drv_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_component(&pdev->dev, &pxa_i2s_component,
 					  &pxa_i2s_dai, 1);
 }
@@ -374,15 +411,25 @@ static int pxa2xx_i2s_drv_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_component(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_component(&pdev->dev, &pxa_i2s_component,
+					       &pxa_i2s_dai, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver pxa2xx_i2s_driver = {
 	.probe = pxa2xx_i2s_drv_probe,
+<<<<<<< HEAD
 	.remove = pxa2xx_i2s_drv_remove,
 
 	.driver = {
 		.name = "pxa2xx-i2s",
 		.owner = THIS_MODULE,
+=======
+
+	.driver = {
+		.name = "pxa2xx-i2s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

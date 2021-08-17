@@ -22,6 +22,10 @@
 
 struct lp55xx_led_config {
 	const char *name;
+<<<<<<< HEAD
+=======
+	const char *default_trigger;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 chan_nr;
 	u8 led_current; /* mA x10, 0 if led is not connected */
 	u8 max_current;
@@ -36,6 +40,16 @@ struct lp55xx_predef_pattern {
 	u8 size_b;
 };
 
+<<<<<<< HEAD
+=======
+enum lp8501_pwr_sel {
+	LP8501_ALL_VDD,		/* D1~9 are connected to VDD */
+	LP8501_6VDD_3VOUT,	/* D1~6 with VDD, D7~9 with VOUT */
+	LP8501_3VDD_6VOUT,	/* D1~6 with VOUT, D7~9 with VDD */
+	LP8501_ALL_VOUT,	/* D1~9 are connected to VOUT */
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * struct lp55xx_platform_data
  * @led_config        : Configurable led class device
@@ -59,14 +73,25 @@ struct lp55xx_platform_data {
 	/* Clock configuration */
 	u8 clock_mode;
 
+<<<<<<< HEAD
 	/* Platform specific functions */
 	int (*setup_resources)(void);
 	void (*release_resources)(void);
 	void (*enable)(bool state);
+=======
+	/* optional enable GPIO */
+	int enable_gpio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Predefined pattern data */
 	struct lp55xx_predef_pattern *patterns;
 	unsigned int num_patterns;
+<<<<<<< HEAD
+=======
+
+	/* LP8501 specific */
+	enum lp8501_pwr_sel pwr_sel;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* _LEDS_LP55XX_H */

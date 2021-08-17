@@ -31,6 +31,13 @@ static int sys_ptrace(int request, pid_t pid, void *addr, void *data)
 #define TEST_SICODE_PRIV	-1
 #define TEST_SICODE_SHARE	-2
 
+<<<<<<< HEAD
+=======
+#ifndef PAGE_SIZE
+#define PAGE_SIZE sysconf(_SC_PAGESIZE)
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define err(fmt, ...)						\
 		fprintf(stderr,					\
 			"Error (%s:%d): " fmt,			\

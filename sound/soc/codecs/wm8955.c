@@ -298,7 +298,11 @@ static int wm8955_configure_clocking(struct snd_soc_codec *codec)
 		snd_soc_update_bits(codec, WM8955_PLL_CONTROL_2,
 				    WM8955_K_17_9_MASK,
 				    (pll.k >> 9) & WM8955_K_17_9_MASK);
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8955_PLL_CONTROL_2,
+=======
+		snd_soc_update_bits(codec, WM8955_PLL_CONTROL_3,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    WM8955_K_8_0_MASK,
 				    pll.k & WM8955_K_8_0_MASK);
 		if (pll.k)
@@ -333,7 +337,11 @@ static int wm8955_configure_clocking(struct snd_soc_codec *codec)
 static int wm8955_sysclk(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	/* Always disable the clocks - if we're doing reconfiguration this
@@ -390,7 +398,11 @@ static int wm8955_set_deemph(struct snd_soc_codec *codec)
 static int wm8955_get_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8955_priv *wm8955 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = wm8955->deemph;
@@ -400,9 +412,15 @@ static int wm8955_get_deemph(struct snd_kcontrol *kcontrol,
 static int wm8955_put_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8955_priv *wm8955 = snd_soc_codec_get_drvdata(codec);
 	int deemph = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+	struct wm8955_priv *wm8955 = snd_soc_codec_get_drvdata(codec);
+	unsigned int deemph = ucontrol->value.integer.value[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (deemph > 1)
 		return -EINVAL;
@@ -416,22 +434,36 @@ static const char *bass_mode_text[] = {
 	"Linear", "Adaptive",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum bass_mode =
 	SOC_ENUM_SINGLE(WM8955_BASS_CONTROL, 7, 2, bass_mode_text);
+=======
+static SOC_ENUM_SINGLE_DECL(bass_mode, WM8955_BASS_CONTROL, 7, bass_mode_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *bass_cutoff_text[] = {
 	"Low", "High"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum bass_cutoff =
 	SOC_ENUM_SINGLE(WM8955_BASS_CONTROL, 6, 2, bass_cutoff_text);
+=======
+static SOC_ENUM_SINGLE_DECL(bass_cutoff, WM8955_BASS_CONTROL, 6,
+			    bass_cutoff_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *treble_cutoff_text[] = {
 	"High", "Low"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum treble_cutoff =
 	SOC_ENUM_SINGLE(WM8955_TREBLE_CONTROL, 6, 2, treble_cutoff_text);
+=======
+static SOC_ENUM_SINGLE_DECL(treble_cutoff, WM8955_TREBLE_CONTROL, 2,
+			    treble_cutoff_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const DECLARE_TLV_DB_SCALE(digital_tlv, -12750, 50, 1);
 static const DECLARE_TLV_DB_SCALE(atten_tlv, -600, 600, 0);
@@ -598,6 +630,7 @@ static int wm8955_hw_params(struct snd_pcm_substream *substream,
 	int ret;
 	int wl;
 
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		wl = 0;
@@ -609,6 +642,19 @@ static int wm8955_hw_params(struct snd_pcm_substream *substream,
 		wl = 0x8;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		wl = 0;
+		break;
+	case 20:
+		wl = 0x4;
+		break;
+	case 24:
+		wl = 0x8;
+		break;
+	case 32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wl = 0xc;
 		break;
 	default:
@@ -786,7 +832,11 @@ static int wm8955_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8955->supplies),
 						    wm8955->supplies);
 			if (ret != 0) {
@@ -839,7 +889,10 @@ static int wm8955_set_bias_level(struct snd_soc_codec *codec,
 				       wm8955->supplies);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -867,6 +920,7 @@ static struct snd_soc_dai_driver wm8955_dai = {
 	.ops = &wm8955_dai_ops,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int wm8955_suspend(struct snd_soc_codec *codec)
 {
@@ -890,12 +944,15 @@ static int wm8955_resume(struct snd_soc_codec *codec)
 #define wm8955_resume NULL
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm8955_probe(struct snd_soc_codec *codec)
 {
 	struct wm8955_priv *wm8955 = snd_soc_codec_get_drvdata(codec);
 	struct wm8955_pdata *pdata = dev_get_platdata(codec->dev);
 	int ret, i;
 
+<<<<<<< HEAD
 	codec->control_data = wm8955->regmap;
 
 	ret = snd_soc_codec_set_cache_io(codec, 7, 9, SND_SOC_REGMAP);
@@ -908,6 +965,12 @@ static int wm8955_probe(struct snd_soc_codec *codec)
 		wm8955->supplies[i].supply = wm8955_supply_names[i];
 
 	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(wm8955->supplies),
+=======
+	for (i = 0; i < ARRAY_SIZE(wm8955->supplies); i++)
+		wm8955->supplies[i].supply = wm8955_supply_names[i];
+
+	ret = devm_regulator_bulk_get(codec->dev, ARRAY_SIZE(wm8955->supplies),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 wm8955->supplies);
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
@@ -918,7 +981,11 @@ static int wm8955_probe(struct snd_soc_codec *codec)
 				    wm8955->supplies);
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
+<<<<<<< HEAD
 		goto err_get;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = wm8955_reset(codec);
@@ -961,7 +1028,11 @@ static int wm8955_probe(struct snd_soc_codec *codec)
 					    WM8955_DMEN, WM8955_DMEN);
 	}
 
+<<<<<<< HEAD
 	wm8955_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	snd_soc_codec_force_bias_level(codec, SND_SOC_BIAS_STANDBY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Bias level configuration will have done an extra enable */
 	regulator_bulk_disable(ARRAY_SIZE(wm8955->supplies), wm8955->supplies);
@@ -970,6 +1041,7 @@ static int wm8955_probe(struct snd_soc_codec *codec)
 
 err_enable:
 	regulator_bulk_disable(ARRAY_SIZE(wm8955->supplies), wm8955->supplies);
+<<<<<<< HEAD
 err_get:
 	regulator_bulk_free(ARRAY_SIZE(wm8955->supplies), wm8955->supplies);
 	return ret;
@@ -997,6 +1069,24 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8955 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8955_dapm_widgets),
 	.dapm_routes =	wm8955_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8955_dapm_routes),
+=======
+	return ret;
+}
+
+static const struct snd_soc_codec_driver soc_codec_dev_wm8955 = {
+	.probe =	wm8955_probe,
+	.set_bias_level = wm8955_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8955_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8955_snd_controls),
+		.dapm_widgets		= wm8955_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8955_dapm_widgets),
+		.dapm_routes		= wm8955_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm8955_dapm_routes),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct regmap_config wm8955_regmap = {
@@ -1055,7 +1145,10 @@ MODULE_DEVICE_TABLE(i2c, wm8955_i2c_id);
 static struct i2c_driver wm8955_i2c_driver = {
 	.driver = {
 		.name = "wm8955",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe =    wm8955_i2c_probe,
 	.remove =   wm8955_i2c_remove,

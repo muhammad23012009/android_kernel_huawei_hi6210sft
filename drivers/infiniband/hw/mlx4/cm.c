@@ -39,7 +39,11 @@
 
 #include "mlx4_ib.h"
 
+<<<<<<< HEAD
 #define CM_CLEANUP_CACHE_TIMEOUT  (5 * HZ)
+=======
+#define CM_CLEANUP_CACHE_TIMEOUT  (30 * HZ)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct id_map_entry {
 	struct rb_node node;
@@ -61,6 +65,14 @@ struct cm_generic_msg {
 	__be32 remote_comm_id;
 };
 
+<<<<<<< HEAD
+=======
+struct cm_sidr_generic_msg {
+	struct ib_mad_hdr hdr;
+	__be32 request_id;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cm_req_msg {
 	unsigned char unused[0x60];
 	union ib_gid primary_path_sgid;
@@ -69,28 +81,84 @@ struct cm_req_msg {
 
 static void set_local_comm_id(struct ib_mad *mad, u32 cm_id)
 {
+<<<<<<< HEAD
 	struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
 	msg->local_comm_id = cpu_to_be32(cm_id);
+=======
+	if (mad->mad_hdr.attr_id == CM_SIDR_REQ_ATTR_ID) {
+		struct cm_sidr_generic_msg *msg =
+			(struct cm_sidr_generic_msg *)mad;
+		msg->request_id = cpu_to_be32(cm_id);
+	} else if (mad->mad_hdr.attr_id == CM_SIDR_REP_ATTR_ID) {
+		pr_err("trying to set local_comm_id in SIDR_REP\n");
+		return;
+	} else {
+		struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
+		msg->local_comm_id = cpu_to_be32(cm_id);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u32 get_local_comm_id(struct ib_mad *mad)
 {
+<<<<<<< HEAD
 	struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
 
 	return be32_to_cpu(msg->local_comm_id);
+=======
+	if (mad->mad_hdr.attr_id == CM_SIDR_REQ_ATTR_ID) {
+		struct cm_sidr_generic_msg *msg =
+			(struct cm_sidr_generic_msg *)mad;
+		return be32_to_cpu(msg->request_id);
+	} else if (mad->mad_hdr.attr_id == CM_SIDR_REP_ATTR_ID) {
+		pr_err("trying to set local_comm_id in SIDR_REP\n");
+		return -1;
+	} else {
+		struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
+		return be32_to_cpu(msg->local_comm_id);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void set_remote_comm_id(struct ib_mad *mad, u32 cm_id)
 {
+<<<<<<< HEAD
 	struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
 	msg->remote_comm_id = cpu_to_be32(cm_id);
+=======
+	if (mad->mad_hdr.attr_id == CM_SIDR_REP_ATTR_ID) {
+		struct cm_sidr_generic_msg *msg =
+			(struct cm_sidr_generic_msg *)mad;
+		msg->request_id = cpu_to_be32(cm_id);
+	} else if (mad->mad_hdr.attr_id == CM_SIDR_REQ_ATTR_ID) {
+		pr_err("trying to set remote_comm_id in SIDR_REQ\n");
+		return;
+	} else {
+		struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
+		msg->remote_comm_id = cpu_to_be32(cm_id);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u32 get_remote_comm_id(struct ib_mad *mad)
 {
+<<<<<<< HEAD
 	struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
 
 	return be32_to_cpu(msg->remote_comm_id);
+=======
+	if (mad->mad_hdr.attr_id == CM_SIDR_REP_ATTR_ID) {
+		struct cm_sidr_generic_msg *msg =
+			(struct cm_sidr_generic_msg *)mad;
+		return be32_to_cpu(msg->request_id);
+	} else if (mad->mad_hdr.attr_id == CM_SIDR_REQ_ATTR_ID) {
+		pr_err("trying to set remote_comm_id in SIDR_REQ\n");
+		return -1;
+	} else {
+		struct cm_generic_msg *msg = (struct cm_generic_msg *)mad;
+		return be32_to_cpu(msg->remote_comm_id);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static union ib_gid gid_from_req_msg(struct ib_device *ibdev, struct ib_mad *mad)
@@ -270,6 +338,12 @@ static void schedule_delayed(struct ib_device *ibdev, struct id_map_entry *id)
 	if (!sriov->is_going_down) {
 		id->scheduled_delete = 1;
 		schedule_delayed_work(&id->timeout, CM_CLEANUP_CACHE_TIMEOUT);
+<<<<<<< HEAD
+=======
+	} else if (id->scheduled_delete) {
+		/* Adjust timeout if already scheduled */
+		mod_delayed_work(system_wq, &id->timeout, CM_CLEANUP_CACHE_TIMEOUT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock_irqrestore(&sriov->going_down_lock, flags);
 	spin_unlock(&sriov->id_map_lock);
@@ -282,19 +356,34 @@ int mlx4_ib_multiplex_cm_handler(struct ib_device *ibdev, int port, int slave_id
 	u32 sl_cm_id;
 	int pv_cm_id = -1;
 
+<<<<<<< HEAD
 	sl_cm_id = get_local_comm_id(mad);
 
 	if (mad->mad_hdr.attr_id == CM_REQ_ATTR_ID ||
 			mad->mad_hdr.attr_id == CM_REP_ATTR_ID) {
+=======
+	if (mad->mad_hdr.attr_id == CM_REQ_ATTR_ID ||
+			mad->mad_hdr.attr_id == CM_REP_ATTR_ID ||
+			mad->mad_hdr.attr_id == CM_SIDR_REQ_ATTR_ID) {
+		sl_cm_id = get_local_comm_id(mad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		id = id_map_alloc(ibdev, slave_id, sl_cm_id);
 		if (IS_ERR(id)) {
 			mlx4_ib_warn(ibdev, "%s: id{slave: %d, sl_cm_id: 0x%x} Failed to id_map_alloc\n",
 				__func__, slave_id, sl_cm_id);
 			return PTR_ERR(id);
 		}
+<<<<<<< HEAD
 	} else if (mad->mad_hdr.attr_id == CM_REJ_ATTR_ID) {
 		return 0;
 	} else {
+=======
+	} else if (mad->mad_hdr.attr_id == CM_REJ_ATTR_ID ||
+		   mad->mad_hdr.attr_id == CM_SIDR_REP_ATTR_ID) {
+		return 0;
+	} else {
+		sl_cm_id = get_local_comm_id(mad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		id = id_map_get(ibdev, &pv_cm_id, slave_id, sl_cm_id);
 	}
 
@@ -315,19 +404,37 @@ int mlx4_ib_multiplex_cm_handler(struct ib_device *ibdev, int port, int slave_id
 }
 
 int mlx4_ib_demux_cm_handler(struct ib_device *ibdev, int port, int *slave,
+<<<<<<< HEAD
 							     struct ib_mad *mad)
+=======
+			     struct ib_mad *mad)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 pv_cm_id;
 	struct id_map_entry *id;
 
+<<<<<<< HEAD
 	if (mad->mad_hdr.attr_id == CM_REQ_ATTR_ID) {
 		union ib_gid gid;
 
+=======
+	if (mad->mad_hdr.attr_id == CM_REQ_ATTR_ID ||
+	    mad->mad_hdr.attr_id == CM_SIDR_REQ_ATTR_ID) {
+		union ib_gid gid;
+
+		if (!slave)
+			return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gid = gid_from_req_msg(ibdev, mad);
 		*slave = mlx4_ib_find_real_gid(ibdev, port, gid.global.interface_id);
 		if (*slave < 0) {
 			mlx4_ib_warn(ibdev, "failed matching slave_id by gid (0x%llx)\n",
+<<<<<<< HEAD
 					gid.global.interface_id);
+=======
+				     be64_to_cpu(gid.global.interface_id));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENOENT;
 		}
 		return 0;
@@ -341,7 +448,12 @@ int mlx4_ib_demux_cm_handler(struct ib_device *ibdev, int port, int *slave,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	*slave = id->slave_id;
+=======
+	if (slave)
+		*slave = id->slave_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_remote_comm_id(mad, id->sl_cm_id);
 
 	if (mad->mad_hdr.attr_id == CM_DREQ_ATTR_ID)

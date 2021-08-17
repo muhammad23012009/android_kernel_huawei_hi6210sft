@@ -11,6 +11,10 @@
 #include <linux/kernel.h>
 #include <linux/of.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/slab.h>
 

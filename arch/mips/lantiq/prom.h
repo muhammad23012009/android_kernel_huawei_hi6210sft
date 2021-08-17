@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  * Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _LTQ_PROM_H__
@@ -26,6 +30,9 @@ struct ltq_soc_info {
 extern void ltq_soc_detect(struct ltq_soc_info *i);
 extern void ltq_soc_init(void);
 
+<<<<<<< HEAD
 extern struct boot_param_header __dtb_start;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

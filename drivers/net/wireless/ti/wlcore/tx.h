@@ -37,6 +37,10 @@
 #define TX_HW_ATTR_TX_CMPLT_REQ          BIT(12)
 #define TX_HW_ATTR_TX_DUMMY_REQ          BIT(13)
 #define TX_HW_ATTR_HOST_ENCRYPT          BIT(14)
+<<<<<<< HEAD
+=======
+#define TX_HW_ATTR_EAPOL_FRAME           BIT(15)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define TX_HW_ATTR_OFST_SAVE_RETRIES     0
 #define TX_HW_ATTR_OFST_HEADER_PAD       1
@@ -56,6 +60,12 @@
 /* Used for management frames and dummy packets */
 #define WL1271_TID_MGMT 7
 
+<<<<<<< HEAD
+=======
+/* stop a ROC for pending authentication reply after this time (ms) */
+#define WLCORE_PEND_AUTH_ROC_TIMEOUT     1000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct wl127x_tx_mem {
 	/*
 	 * Number of extra memory blocks to allocate for this packet
@@ -242,9 +252,15 @@ int wlcore_tx_complete(struct wl1271 *wl);
 void wl12xx_tx_reset_wlvif(struct wl1271 *wl, struct wl12xx_vif *wlvif);
 void wl12xx_tx_reset(struct wl1271 *wl);
 void wl1271_tx_flush(struct wl1271 *wl);
+<<<<<<< HEAD
 u8 wlcore_rate_to_idx(struct wl1271 *wl, u8 rate, enum ieee80211_band band);
 u32 wl1271_tx_enabled_rates_get(struct wl1271 *wl, u32 rate_set,
 				enum ieee80211_band rate_band);
+=======
+u8 wlcore_rate_to_idx(struct wl1271 *wl, u8 rate, enum nl80211_band band);
+u32 wl1271_tx_enabled_rates_get(struct wl1271 *wl, u32 rate_set,
+				enum nl80211_band rate_band);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u32 wl1271_tx_min_rate_get(struct wl1271 *wl, u32 rate_set);
 u8 wl12xx_tx_get_hlid(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 		      struct sk_buff *skb, struct ieee80211_sta *sta);

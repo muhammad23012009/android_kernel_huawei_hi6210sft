@@ -85,6 +85,10 @@ struct flchip {
 	unsigned int write_suspended:1;
 	unsigned int erase_suspended:1;
 	unsigned long in_progress_block_addr;
+<<<<<<< HEAD
+=======
+	unsigned long in_progress_block_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex mutex;
 	wait_queue_head_t wq; /* Wait on here when we're waiting for the chip

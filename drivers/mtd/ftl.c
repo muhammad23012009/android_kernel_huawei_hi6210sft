@@ -111,7 +111,10 @@ typedef struct partition_t {
     struct mtd_blktrans_dev mbd;
     uint32_t		state;
     uint32_t		*VirtualBlockMap;
+<<<<<<< HEAD
     uint32_t		*VirtualPageMap;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     uint32_t		FreeTotal;
     struct eun_info_t {
 	uint32_t		Offset;
@@ -572,12 +575,17 @@ static int copy_erase_unit(partition_t *part, uint16_t srcunit,
 
 
     /* Update the maps and usage stats*/
+<<<<<<< HEAD
     i = xfer->EraseCount;
     xfer->EraseCount = eun->EraseCount;
     eun->EraseCount = i;
     i = xfer->Offset;
     xfer->Offset = eun->Offset;
     eun->Offset = i;
+=======
+    swap(xfer->EraseCount, eun->EraseCount);
+    swap(xfer->Offset, eun->Offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     part->FreeTotal -= eun->Free;
     part->FreeTotal += free;
     eun->Free = free;
@@ -1035,8 +1043,11 @@ static void ftl_freepart(partition_t *part)
 {
 	vfree(part->VirtualBlockMap);
 	part->VirtualBlockMap = NULL;
+<<<<<<< HEAD
 	kfree(part->VirtualPageMap);
 	part->VirtualPageMap = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(part->EUNInfo);
 	part->EUNInfo = NULL;
 	kfree(part->XferInfo);

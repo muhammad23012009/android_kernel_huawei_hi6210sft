@@ -9,7 +9,12 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+<<<<<<< HEAD
 /include/ "skeleton.dtsi"
+=======
+#include "skeleton.dtsi"
+#include "imx23-pinfunc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	interrupt-parent = <&icoll>;
@@ -20,6 +25,12 @@
 		gpio2 = &gpio2;
 		serial0 = &auart0;
 		serial1 = &auart1;
+<<<<<<< HEAD
+=======
+		spi0 = &ssp0;
+		spi1 = &ssp1;
+		usbphy0 = &usbphy0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	cpus {
@@ -76,23 +87,38 @@
 				#size-cells = <1>;
 				reg = <0x8000c000 0x2000>, <0x8000a000 0x2000>;
 				reg-names = "gpmi-nand", "bch";
+<<<<<<< HEAD
 				interrupts = <13>, <56>;
 				interrupt-names = "gpmi-dma", "bch";
+=======
+				interrupts = <56>;
+				interrupt-names = "bch";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				clocks = <&clks 34>;
 				clock-names = "gpmi_io";
 				dmas = <&dma_apbh 4>;
 				dma-names = "rx-tx";
+<<<<<<< HEAD
 				fsl,gpmi-dma-channel = <4>;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "disabled";
 			};
 
 			ssp0: ssp@80010000 {
 				reg = <0x80010000 0x2000>;
+<<<<<<< HEAD
 				interrupts = <15 14>;
 				clocks = <&clks 33>;
 				dmas = <&dma_apbh 1>;
 				dma-names = "rx-tx";
 				fsl,ssp-dma-channel = <1>;
+=======
+				interrupts = <15>;
+				clocks = <&clks 33>;
+				dmas = <&dma_apbh 1>;
+				dma-names = "rx-tx";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "disabled";
 			};
 
@@ -109,6 +135,10 @@
 
 				gpio0: gpio@0 {
 					compatible = "fsl,imx23-gpio", "fsl,mxs-gpio";
+<<<<<<< HEAD
+=======
+					reg = <0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					interrupts = <16>;
 					gpio-controller;
 					#gpio-cells = <2>;
@@ -118,6 +148,10 @@
 
 				gpio1: gpio@1 {
 					compatible = "fsl,imx23-gpio", "fsl,mxs-gpio";
+<<<<<<< HEAD
+=======
+					reg = <1>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					interrupts = <17>;
 					gpio-controller;
 					#gpio-cells = <2>;
@@ -127,6 +161,10 @@
 
 				gpio2: gpio@2 {
 					compatible = "fsl,imx23-gpio", "fsl,mxs-gpio";
+<<<<<<< HEAD
+=======
+					reg = <2>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					interrupts = <18>;
 					gpio-controller;
 					#gpio-cells = <2>;
@@ -137,17 +175,27 @@
 				duart_pins_a: duart@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x11a2 /* MX23_PAD_PWM0__DUART_RX */
 						0x11b2 /* MX23_PAD_PWM1__DUART_TX */
 					>;
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_PWM0__DUART_RX
+						MX23_PAD_PWM1__DUART_TX
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				auart0_pins_a: auart0@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x01c0 /* MX23_PAD_AUART1_RX__AUART1_RX */
 						0x01d0 /* MX23_PAD_AUART1_TX__AUART1_TX */
 						0x01a0 /* MX23_PAD_AUART1_CTS__AUART1_CTS */
@@ -156,22 +204,53 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_AUART1_RX__AUART1_RX
+						MX23_PAD_AUART1_TX__AUART1_TX
+						MX23_PAD_AUART1_CTS__AUART1_CTS
+						MX23_PAD_AUART1_RTS__AUART1_RTS
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				auart0_2pins_a: auart0-2pins@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x01e2 /* MX23_PAD_I2C_SCL__AUART1_TX */
 						0x01f2 /* MX23_PAD_I2C_SDA__AUART1_RX */
 					>;
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_I2C_SCL__AUART1_TX
+						MX23_PAD_I2C_SDA__AUART1_RX
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+				};
+
+				auart1_2pins_a: auart1-2pins@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_GPMI_D14__AUART2_RX
+						MX23_PAD_GPMI_D15__AUART2_TX
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				gpmi_pins_a: gpmi-nand@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x0000 /* MX23_PAD_GPMI_D00__GPMI_D00 */
 						0x0010 /* MX23_PAD_GPMI_D01__GPMI_D01 */
 						0x0020 /* MX23_PAD_GPMI_D02__GPMI_D02 */
@@ -193,20 +272,52 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_GPMI_D00__GPMI_D00
+						MX23_PAD_GPMI_D01__GPMI_D01
+						MX23_PAD_GPMI_D02__GPMI_D02
+						MX23_PAD_GPMI_D03__GPMI_D03
+						MX23_PAD_GPMI_D04__GPMI_D04
+						MX23_PAD_GPMI_D05__GPMI_D05
+						MX23_PAD_GPMI_D06__GPMI_D06
+						MX23_PAD_GPMI_D07__GPMI_D07
+						MX23_PAD_GPMI_CLE__GPMI_CLE
+						MX23_PAD_GPMI_ALE__GPMI_ALE
+						MX23_PAD_GPMI_RDY0__GPMI_RDY0
+						MX23_PAD_GPMI_RDY1__GPMI_RDY1
+						MX23_PAD_GPMI_WPN__GPMI_WPN
+						MX23_PAD_GPMI_WRN__GPMI_WRN
+						MX23_PAD_GPMI_RDN__GPMI_RDN
+						MX23_PAD_GPMI_CE1N__GPMI_CE1N
+						MX23_PAD_GPMI_CE0N__GPMI_CE0N
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				gpmi_pins_fixup: gpmi-pins-fixup {
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x0170 /* MX23_PAD_GPMI_WPN__GPMI_WPN */
 						0x0180 /* MX23_PAD_GPMI_WRN__GPMI_WRN */
 						0x0190 /* MX23_PAD_GPMI_RDN__GPMI_RDN */
 					>;
 					fsl,drive-strength = <2>;
+=======
+						MX23_PAD_GPMI_WPN__GPMI_WPN
+						MX23_PAD_GPMI_WRN__GPMI_WRN
+						MX23_PAD_GPMI_RDN__GPMI_RDN
+					>;
+					fsl,drive-strength = <MXS_DRIVE_12mA>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				mmc0_4bit_pins_a: mmc0-4bit@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x2020 /* MX23_PAD_SSP1_DATA0__SSP1_DATA0 */
 						0x2030 /* MX23_PAD_SSP1_DATA1__SSP1_DATA1 */
 						0x2040 /* MX23_PAD_SSP1_DATA2__SSP1_DATA2 */
@@ -217,11 +328,24 @@
 					fsl,drive-strength = <1>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <1>;
+=======
+						MX23_PAD_SSP1_DATA0__SSP1_DATA0
+						MX23_PAD_SSP1_DATA1__SSP1_DATA1
+						MX23_PAD_SSP1_DATA2__SSP1_DATA2
+						MX23_PAD_SSP1_DATA3__SSP1_DATA3
+						MX23_PAD_SSP1_CMD__SSP1_CMD
+						MX23_PAD_SSP1_SCK__SSP1_SCK
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				mmc0_8bit_pins_a: mmc0-8bit@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x2020 /* MX23_PAD_SSP1_DATA0__SSP1_DATA0 */
 						0x2030 /* MX23_PAD_SSP1_DATA1__SSP1_DATA1 */
 						0x2040 /* MX23_PAD_SSP1_DATA2__SSP1_DATA2 */
@@ -237,29 +361,96 @@
 					fsl,drive-strength = <1>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <1>;
+=======
+						MX23_PAD_SSP1_DATA0__SSP1_DATA0
+						MX23_PAD_SSP1_DATA1__SSP1_DATA1
+						MX23_PAD_SSP1_DATA2__SSP1_DATA2
+						MX23_PAD_SSP1_DATA3__SSP1_DATA3
+						MX23_PAD_GPMI_D08__SSP1_DATA4
+						MX23_PAD_GPMI_D09__SSP1_DATA5
+						MX23_PAD_GPMI_D10__SSP1_DATA6
+						MX23_PAD_GPMI_D11__SSP1_DATA7
+						MX23_PAD_SSP1_CMD__SSP1_CMD
+						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+						MX23_PAD_SSP1_SCK__SSP1_SCK
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				mmc0_pins_fixup: mmc0-pins-fixup {
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x2010 /* MX23_PAD_SSP1_DETECT__SSP1_DETECT */
 						0x2060 /* MX23_PAD_SSP1_SCK__SSP1_SCK */
 					>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+						MX23_PAD_SSP1_SCK__SSP1_SCK
+					>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+				};
+
+				mmc1_4bit_pins_a: mmc1-4bit@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_GPMI_D00__SSP2_DATA0
+						MX23_PAD_GPMI_D01__SSP2_DATA1
+						MX23_PAD_GPMI_D02__SSP2_DATA2
+						MX23_PAD_GPMI_D03__SSP2_DATA3
+						MX23_PAD_GPMI_RDY1__SSP2_CMD
+						MX23_PAD_GPMI_WRN__SSP2_SCK
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+				mmc1_8bit_pins_a: mmc1-8bit@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_GPMI_D00__SSP2_DATA0
+						MX23_PAD_GPMI_D01__SSP2_DATA1
+						MX23_PAD_GPMI_D02__SSP2_DATA2
+						MX23_PAD_GPMI_D03__SSP2_DATA3
+						MX23_PAD_GPMI_D04__SSP2_DATA4
+						MX23_PAD_GPMI_D05__SSP2_DATA5
+						MX23_PAD_GPMI_D06__SSP2_DATA6
+						MX23_PAD_GPMI_D07__SSP2_DATA7
+						MX23_PAD_GPMI_RDY1__SSP2_CMD
+						MX23_PAD_GPMI_WRN__SSP2_SCK
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				pwm2_pins_a: pwm2@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x11c0 /* MX23_PAD_PWM2__PWM2 */
 					>;
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_PWM2__PWM2
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				lcdif_24bit_pins_a: lcdif-24bit@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x1000 /* MX23_PAD_LCD_D00__LCD_D0 */
 						0x1010 /* MX23_PAD_LCD_D01__LCD_D1 */
 						0x1020 /* MX23_PAD_LCD_D02__LCD_D2 */
@@ -292,11 +483,46 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_LCD_D00__LCD_D00
+						MX23_PAD_LCD_D01__LCD_D01
+						MX23_PAD_LCD_D02__LCD_D02
+						MX23_PAD_LCD_D03__LCD_D03
+						MX23_PAD_LCD_D04__LCD_D04
+						MX23_PAD_LCD_D05__LCD_D05
+						MX23_PAD_LCD_D06__LCD_D06
+						MX23_PAD_LCD_D07__LCD_D07
+						MX23_PAD_LCD_D08__LCD_D08
+						MX23_PAD_LCD_D09__LCD_D09
+						MX23_PAD_LCD_D10__LCD_D10
+						MX23_PAD_LCD_D11__LCD_D11
+						MX23_PAD_LCD_D12__LCD_D12
+						MX23_PAD_LCD_D13__LCD_D13
+						MX23_PAD_LCD_D14__LCD_D14
+						MX23_PAD_LCD_D15__LCD_D15
+						MX23_PAD_LCD_D16__LCD_D16
+						MX23_PAD_LCD_D17__LCD_D17
+						MX23_PAD_GPMI_D08__LCD_D18
+						MX23_PAD_GPMI_D09__LCD_D19
+						MX23_PAD_GPMI_D10__LCD_D20
+						MX23_PAD_GPMI_D11__LCD_D21
+						MX23_PAD_GPMI_D12__LCD_D22
+						MX23_PAD_GPMI_D13__LCD_D23
+						MX23_PAD_LCD_DOTCK__LCD_DOTCK
+						MX23_PAD_LCD_ENABLE__LCD_ENABLE
+						MX23_PAD_LCD_HSYNC__LCD_HSYNC
+						MX23_PAD_LCD_VSYNC__LCD_VSYNC
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				spi2_pins_a: spi2@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x0182 /* MX23_PAD_GPMI_WRN__SSP2_SCK */
 						0x0142 /* MX23_PAD_GPMI_RDY1__SSP2_CMD */
 						0x0002 /* MX23_PAD_GPMI_D00__SSP2_DATA0 */
@@ -305,6 +531,49 @@
 					fsl,drive-strength = <1>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <1>;
+=======
+						MX23_PAD_GPMI_WRN__SSP2_SCK
+						MX23_PAD_GPMI_RDY1__SSP2_CMD
+						MX23_PAD_GPMI_D00__SSP2_DATA0
+						MX23_PAD_GPMI_D03__SSP2_DATA3
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+				i2c_pins_a: i2c@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX23_PAD_I2C_SCL__I2C_SCL
+						MX23_PAD_I2C_SDA__I2C_SDA
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+				i2c_pins_b: i2c@1 {
+					reg = <1>;
+					fsl,pinmux-ids = <
+						MX23_PAD_LCD_ENABLE__I2C_SCL
+						MX23_PAD_LCD_HSYNC__I2C_SDA
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+				};
+
+				i2c_pins_c: i2c@2 {
+					reg = <2>;
+					fsl,pinmux-ids = <
+						MX23_PAD_SSP1_DATA1__I2C_SCL
+						MX23_PAD_SSP1_DATA2__I2C_SDA
+					>;
+					fsl,drive-strength = <MXS_DRIVE_8mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_ENABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -336,8 +605,15 @@
 			};
 
 			dcp@80028000 {
+<<<<<<< HEAD
 				reg = <0x80028000 0x2000>;
 				status = "disabled";
+=======
+				compatible = "fsl,imx23-dcp";
+				reg = <0x80028000 0x2000>;
+				interrupts = <53 54>;
+				status = "okay";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 
 			pxp@8002a000 {
@@ -346,9 +622,17 @@
 			};
 
 			ocotp@8002c000 {
+<<<<<<< HEAD
 				compatible = "fsl,ocotp";
 				reg = <0x8002c000 0x2000>;
 				status = "disabled";
+=======
+				compatible = "fsl,imx23-ocotp", "fsl,ocotp";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				reg = <0x8002c000 0x2000>;
+				clocks = <&clks 15>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 
 			axi-ahb@8002e000 {
@@ -366,11 +650,18 @@
 
 			ssp1: ssp@80034000 {
 				reg = <0x80034000 0x2000>;
+<<<<<<< HEAD
 				interrupts = <2 20>;
 				clocks = <&clks 33>;
 				dmas = <&dma_apbh 2>;
 				dma-names = "rx-tx";
 				fsl,ssp-dma-channel = <2>;
+=======
+				interrupts = <2>;
+				clocks = <&clks 33>;
+				dmas = <&dma_apbh 2>;
+				dma-names = "rx-tx";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "disabled";
 			};
 
@@ -426,11 +717,20 @@
 				status = "disabled";
 			};
 
+<<<<<<< HEAD
 			lradc@80050000 {
+=======
+			lradc: lradc@80050000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				compatible = "fsl,imx23-lradc";
 				reg = <0x80050000 0x2000>;
 				interrupts = <36 37 38 39 40 41 42 43 44>;
 				status = "disabled";
+<<<<<<< HEAD
+=======
+				clocks = <&clks 26>;
+				#io-channel-cells = <1>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 
 			spdif@80054000 {
@@ -440,8 +740,18 @@
 				status = "disabled";
 			};
 
+<<<<<<< HEAD
 			i2c@80058000 {
 				reg = <0x80058000 0x2000>;
+=======
+			i2c: i2c@80058000 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				compatible = "fsl,imx23-i2c";
+				reg = <0x80058000 0x2000>;
+				interrupts = <27>;
+				clock-frequency = <100000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dmas = <&dma_apbx 3>;
 				dma-names = "rx-tx";
 				status = "disabled";
@@ -472,7 +782,11 @@
 			auart0: serial@8006c000 {
 				compatible = "fsl,imx23-auart";
 				reg = <0x8006c000 0x2000>;
+<<<<<<< HEAD
 				interrupts = <24 25 23>;
+=======
+				interrupts = <24>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				clocks = <&clks 32>;
 				dmas = <&dma_apbx 6>, <&dma_apbx 7>;
 				dma-names = "rx", "tx";
@@ -482,7 +796,11 @@
 			auart1: serial@8006e000 {
 				compatible = "fsl,imx23-auart";
 				reg = <0x8006e000 0x2000>;
+<<<<<<< HEAD
 				interrupts = <59 60 58>;
+=======
+				interrupts = <59>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				clocks = <&clks 32>;
 				dmas = <&dma_apbx 8>, <&dma_apbx 9>;
 				dma-names = "rx", "tx";
@@ -523,4 +841,12 @@
 			status = "disabled";
 		};
 	};
+<<<<<<< HEAD
+=======
+
+	iio-hwmon {
+		compatible = "iio-hwmon";
+		io-channels = <&lradc 8>;
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

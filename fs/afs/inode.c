@@ -56,6 +56,10 @@ static int afs_inode_map_status(struct afs_vnode *vnode, struct key *key)
 	case AFS_FTYPE_SYMLINK:
 		inode->i_mode	= S_IFLNK | vnode->status.mode;
 		inode->i_op	= &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		printk("kAFS: AFS vnode with undefined type\n");
@@ -69,9 +73,15 @@ static int afs_inode_map_status(struct afs_vnode *vnode, struct key *key)
 
 	set_nlink(inode, vnode->status.nlink);
 	inode->i_uid		= vnode->status.owner;
+<<<<<<< HEAD
 	inode->i_gid		= GLOBAL_ROOT_GID;
 	inode->i_size		= vnode->status.size;
 	inode->i_ctime.tv_sec	= vnode->status.mtime_server;
+=======
+	inode->i_gid            = vnode->status.group;
+	inode->i_size		= vnode->status.size;
+	inode->i_ctime.tv_sec	= vnode->status.mtime_client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	inode->i_ctime.tv_nsec	= 0;
 	inode->i_atime		= inode->i_mtime = inode->i_ctime;
 	inode->i_blocks		= 0;
@@ -244,12 +254,21 @@ struct inode *afs_iget(struct super_block *sb, struct key *key,
 			vnode->cb_version = 0;
 			vnode->cb_expiry = 0;
 			vnode->cb_type = 0;
+<<<<<<< HEAD
 			vnode->cb_expires = get_seconds();
+=======
+			vnode->cb_expires = ktime_get_real_seconds();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			vnode->cb_version = cb->version;
 			vnode->cb_expiry = cb->expiry;
 			vnode->cb_type = cb->type;
+<<<<<<< HEAD
 			vnode->cb_expires = vnode->cb_expiry + get_seconds();
+=======
+			vnode->cb_expires = vnode->cb_expiry +
+				ktime_get_real_seconds();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -259,7 +278,11 @@ struct inode *afs_iget(struct super_block *sb, struct key *key,
 #ifdef CONFIG_AFS_FSCACHE
 	vnode->cache = fscache_acquire_cookie(vnode->volume->cache,
 					      &afs_vnode_cache_index_def,
+<<<<<<< HEAD
 					      vnode);
+=======
+					      vnode, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	ret = afs_inode_map_status(vnode, key);
@@ -322,7 +345,11 @@ int afs_validate(struct afs_vnode *vnode, struct key *key)
 	    !test_bit(AFS_VNODE_CB_BROKEN, &vnode->flags) &&
 	    !test_bit(AFS_VNODE_MODIFIED, &vnode->flags) &&
 	    !test_bit(AFS_VNODE_ZAP_DATA, &vnode->flags)) {
+<<<<<<< HEAD
 		if (vnode->cb_expires < get_seconds() + 10) {
+=======
+		if (vnode->cb_expires < ktime_get_real_seconds() + 10) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			_debug("callback expired");
 			set_bit(AFS_VNODE_CB_BROKEN, &vnode->flags);
 		} else {
@@ -379,7 +406,11 @@ int afs_getattr(struct vfsmount *mnt, struct dentry *dentry,
 {
 	struct inode *inode;
 
+<<<<<<< HEAD
 	inode = dentry->d_inode;
+=======
+	inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
 
@@ -422,7 +453,11 @@ void afs_evict_inode(struct inode *inode)
 
 	ASSERTCMP(inode->i_ino, ==, vnode->fid.vnode);
 
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_inode(inode);
 
 	afs_give_up_callback(vnode);
@@ -458,12 +493,21 @@ void afs_evict_inode(struct inode *inode)
  */
 int afs_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct afs_vnode *vnode = AFS_FS_I(dentry->d_inode);
 	struct key *key;
 	int ret;
 
 	_enter("{%x:%u},{n=%s},%x",
 	       vnode->fid.vid, vnode->fid.vnode, dentry->d_name.name,
+=======
+	struct afs_vnode *vnode = AFS_FS_I(d_inode(dentry));
+	struct key *key;
+	int ret;
+
+	_enter("{%x:%u},{n=%pd},%x",
+	       vnode->fid.vid, vnode->fid.vnode, dentry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       attr->ia_valid);
 
 	if (!(attr->ia_valid & (ATTR_SIZE | ATTR_MODE | ATTR_UID | ATTR_GID |

@@ -31,14 +31,23 @@
  * passing it, as you might expect, the function to run when nothing is pending
  * and the workqueue to run that function out of.
  *
+<<<<<<< HEAD
  * continue_at() also, critically, is a macro that returns the calling function.
+=======
+ * continue_at() also, critically, requires a 'return' immediately following the
+ * location where this macro is referenced, to return to the calling function.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * There's good reason for this.
  *
  * To use safely closures asynchronously, they must always have a refcount while
  * they are running owned by the thread that is running them. Otherwise, suppose
  * you submit some bios and wish to have a function run when they all complete:
  *
+<<<<<<< HEAD
  * foo_endio(struct bio *bio, int error)
+=======
+ * foo_endio(struct bio *bio)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * {
  *	closure_put(cl);
  * }
@@ -72,6 +81,7 @@
  * closure - _always_ use continue_at(). Doing so consistently will help
  * eliminate an entire class of particularly pernicious races.
  *
+<<<<<<< HEAD
  * For a closure to wait on an arbitrary event, we need to introduce waitlists:
  *
  * struct closure_waitlist list;
@@ -96,6 +106,8 @@
  * mode explicitly with closure_wait_event_sync() and
  * closure_wait_event_async(), which do just what you might expect.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Lastly, you might have a wait list dedicated to a specific event, and have no
  * need for specifying the condition - you just want to wait until someone runs
  * closure_wake_up() on the appropriate wait list. In that case, just use
@@ -121,6 +133,7 @@
  * All this implies that a closure should typically be embedded in a particular
  * struct (which its refcount will normally control the lifetime of), and that
  * struct can very much be thought of as a stack frame.
+<<<<<<< HEAD
  *
  * Locking:
  *
@@ -170,6 +183,8 @@
  * probably expect, if you happen to need the features of both. (You don't
  * really want to know how all this is implemented, but if I've done my job
  * right you shouldn't have to care).
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 struct closure;
@@ -179,6 +194,7 @@ struct closure_waitlist {
 	struct llist_head	list;
 };
 
+<<<<<<< HEAD
 enum closure_type {
 	TYPE_closure				= 0,
 	TYPE_closure_with_waitlist		= 1,
@@ -192,6 +208,10 @@ enum closure_state {
 	 * CLOSURE_BLOCKING: Causes closure_wait_event() to block, instead of
 	 * waiting asynchronously
 	 *
+=======
+enum closure_state {
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * CLOSURE_WAITING: Set iff the closure is on a waitlist. Must be set by
 	 * the thread that owns the closure, and cleared by the thread that's
 	 * waking up the closure.
@@ -200,10 +220,13 @@ enum closure_state {
 	 * - indicates that cl->task is valid and closure_put() may wake it up.
 	 * Only set or cleared by the thread that owns the closure.
 	 *
+<<<<<<< HEAD
 	 * CLOSURE_TIMER: Analagous to CLOSURE_WAITING, indicates that a closure
 	 * has an outstanding timer. Must be set by the thread that owns the
 	 * closure, and cleared by the timer function when the timer goes off.
 	 *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * The rest are for debugging and don't affect behaviour:
 	 *
 	 * CLOSURE_RUNNING: Set when a closure is running (i.e. by
@@ -218,19 +241,31 @@ enum closure_state {
 	 * closure with this flag set
 	 */
 
+<<<<<<< HEAD
 	CLOSURE_BITS_START	= (1 << 19),
 	CLOSURE_DESTRUCTOR	= (1 << 19),
 	CLOSURE_BLOCKING	= (1 << 21),
 	CLOSURE_WAITING		= (1 << 23),
 	CLOSURE_SLEEPING	= (1 << 25),
 	CLOSURE_TIMER		= (1 << 27),
+=======
+	CLOSURE_BITS_START	= (1 << 23),
+	CLOSURE_DESTRUCTOR	= (1 << 23),
+	CLOSURE_WAITING		= (1 << 25),
+	CLOSURE_SLEEPING	= (1 << 27),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CLOSURE_RUNNING		= (1 << 29),
 	CLOSURE_STACK		= (1 << 31),
 };
 
 #define CLOSURE_GUARD_MASK					\
+<<<<<<< HEAD
 	((CLOSURE_DESTRUCTOR|CLOSURE_BLOCKING|CLOSURE_WAITING|	\
 	  CLOSURE_SLEEPING|CLOSURE_TIMER|CLOSURE_RUNNING|CLOSURE_STACK) << 1)
+=======
+	((CLOSURE_DESTRUCTOR|CLOSURE_WAITING|CLOSURE_SLEEPING|	\
+	  CLOSURE_RUNNING|CLOSURE_STACK) << 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CLOSURE_REMAINING_MASK		(CLOSURE_BITS_START - 1)
 #define CLOSURE_REMAINING_INITIALIZER	(1|CLOSURE_RUNNING)
@@ -250,8 +285,11 @@ struct closure {
 
 	atomic_t		remaining;
 
+<<<<<<< HEAD
 	enum closure_type	type;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BCACHE_CLOSURES_DEBUG
 #define CLOSURE_MAGIC_DEAD	0xc054dead
 #define CLOSURE_MAGIC_ALIVE	0xc054a11e
@@ -263,6 +301,7 @@ struct closure {
 #endif
 };
 
+<<<<<<< HEAD
 struct closure_with_waitlist {
 	struct closure		cl;
 	struct closure_waitlist	wait;
@@ -297,10 +336,15 @@ extern unsigned invalid_closure_type(void);
 void closure_sub(struct closure *cl, int v);
 void closure_put(struct closure *cl);
 void closure_queue(struct closure *cl);
+=======
+void closure_sub(struct closure *cl, int v);
+void closure_put(struct closure *cl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __closure_wake_up(struct closure_waitlist *list);
 bool closure_wait(struct closure_waitlist *list, struct closure *cl);
 void closure_sync(struct closure *cl);
 
+<<<<<<< HEAD
 bool closure_trylock(struct closure *cl, struct closure *parent);
 void __closure_lock(struct closure *cl, struct closure *parent,
 		    struct closure_waitlist *wait_list);
@@ -311,6 +355,8 @@ bool __closure_delay(struct closure *cl, unsigned long delay,
 void __closure_flush(struct closure *cl, struct timer_list *timer);
 void __closure_flush_sync(struct closure *cl, struct timer_list *timer);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BCACHE_CLOSURES_DEBUG
 
 void closure_debug_init(void);
@@ -339,6 +385,7 @@ static inline void closure_set_ret_ip(struct closure *cl)
 #endif
 }
 
+<<<<<<< HEAD
 static inline void closure_get(struct closure *cl)
 {
 #ifdef CONFIG_BCACHE_CLOSURES_DEBUG
@@ -416,10 +463,79 @@ do {								\
 
 /**
  * closure_init() - Initialize a closure, setting the refcount to 1
+=======
+static inline void closure_set_waiting(struct closure *cl, unsigned long f)
+{
+#ifdef CONFIG_BCACHE_CLOSURES_DEBUG
+	cl->waiting_on = f;
+#endif
+}
+
+static inline void __closure_end_sleep(struct closure *cl)
+{
+	__set_current_state(TASK_RUNNING);
+
+	if (atomic_read(&cl->remaining) & CLOSURE_SLEEPING)
+		atomic_sub(CLOSURE_SLEEPING, &cl->remaining);
+}
+
+static inline void __closure_start_sleep(struct closure *cl)
+{
+	closure_set_ip(cl);
+	cl->task = current;
+	set_current_state(TASK_UNINTERRUPTIBLE);
+
+	if (!(atomic_read(&cl->remaining) & CLOSURE_SLEEPING))
+		atomic_add(CLOSURE_SLEEPING, &cl->remaining);
+}
+
+static inline void closure_set_stopped(struct closure *cl)
+{
+	atomic_sub(CLOSURE_RUNNING, &cl->remaining);
+}
+
+static inline void set_closure_fn(struct closure *cl, closure_fn *fn,
+				  struct workqueue_struct *wq)
+{
+	BUG_ON(object_is_on_stack(cl));
+	closure_set_ip(cl);
+	cl->fn = fn;
+	cl->wq = wq;
+	/* between atomic_dec() in closure_put() */
+	smp_mb__before_atomic();
+}
+
+static inline void closure_queue(struct closure *cl)
+{
+	struct workqueue_struct *wq = cl->wq;
+	if (wq) {
+		INIT_WORK(&cl->work, cl->work.func);
+		BUG_ON(!queue_work(wq, &cl->work));
+	} else
+		cl->fn(cl);
+}
+
+/**
+ * closure_get - increment a closure's refcount
+ */
+static inline void closure_get(struct closure *cl)
+{
+#ifdef CONFIG_BCACHE_CLOSURES_DEBUG
+	BUG_ON((atomic_inc_return(&cl->remaining) &
+		CLOSURE_REMAINING_MASK) <= 1);
+#else
+	atomic_inc(&cl->remaining);
+#endif
+}
+
+/**
+ * closure_init - Initialize a closure, setting the refcount to 1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @cl:		closure to initialize
  * @parent:	parent of the new closure. cl will take a refcount on it for its
  *		lifetime; may be NULL.
  */
+<<<<<<< HEAD
 #define closure_init(cl, parent)				\
 do {								\
 	memset((cl), 0, sizeof(*(cl)));				\
@@ -533,6 +649,29 @@ static inline void clear_closure_blocking(struct closure *cl)
 
 /**
  * closure_wake_up() - wake up all closures on a wait list.
+=======
+static inline void closure_init(struct closure *cl, struct closure *parent)
+{
+	memset(cl, 0, sizeof(struct closure));
+	cl->parent = parent;
+	if (parent)
+		closure_get(parent);
+
+	atomic_set(&cl->remaining, CLOSURE_REMAINING_INITIALIZER);
+
+	closure_debug_create(cl);
+	closure_set_ip(cl);
+}
+
+static inline void closure_init_stack(struct closure *cl)
+{
+	memset(cl, 0, sizeof(struct closure));
+	atomic_set(&cl->remaining, CLOSURE_REMAINING_INITIALIZER|CLOSURE_STACK);
+}
+
+/**
+ * closure_wake_up - wake up all closures on a wait list.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static inline void closure_wake_up(struct closure_waitlist *list)
 {
@@ -540,6 +679,7 @@ static inline void closure_wake_up(struct closure_waitlist *list)
 	__closure_wake_up(list);
 }
 
+<<<<<<< HEAD
 /*
  * Wait on an event, synchronously or asynchronously - analogous to wait_event()
  * but for closures.
@@ -630,10 +770,26 @@ static inline void set_closure_fn(struct closure *cl, closure_fn *fn,
 	smp_mb__before_atomic_dec();
 }
 
+=======
+/**
+ * continue_at - jump to another function with barrier
+ *
+ * After @cl is no longer waiting on anything (i.e. all outstanding refs have
+ * been dropped with closure_put()), it will resume execution at @fn running out
+ * of @wq (or, if @wq is NULL, @fn will be called by closure_put() directly).
+ *
+ * NOTE: This macro expands to a return in the calling function!
+ *
+ * This is because after calling continue_at() you no longer have a ref on @cl,
+ * and whatever @cl owns may be freed out from under you - a running closure fn
+ * has a ref on its own closure which continue_at() drops.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define continue_at(_cl, _fn, _wq)					\
 do {									\
 	set_closure_fn(_cl, _fn, _wq);					\
 	closure_sub(_cl, CLOSURE_RUNNING + 1);				\
+<<<<<<< HEAD
 	return;								\
 } while (0)
 
@@ -646,13 +802,66 @@ do {									\
 	return;								\
 } while (0)
 
+=======
+} while (0)
+
+/**
+ * closure_return - finish execution of a closure
+ *
+ * This is used to indicate that @cl is finished: when all outstanding refs on
+ * @cl have been dropped @cl's ref on its parent closure (as passed to
+ * closure_init()) will be dropped, if one was specified - thus this can be
+ * thought of as returning to the parent closure.
+ */
+#define closure_return(_cl)	continue_at((_cl), NULL, NULL)
+
+/**
+ * continue_at_nobarrier - jump to another function without barrier
+ *
+ * Causes @fn to be executed out of @cl, in @wq context (or called directly if
+ * @wq is NULL).
+ *
+ * NOTE: like continue_at(), this macro expands to a return in the caller!
+ *
+ * The ref the caller of continue_at_nobarrier() had on @cl is now owned by @fn,
+ * thus it's not safe to touch anything protected by @cl after a
+ * continue_at_nobarrier().
+ */
+#define continue_at_nobarrier(_cl, _fn, _wq)				\
+do {									\
+	set_closure_fn(_cl, _fn, _wq);					\
+	closure_queue(_cl);						\
+} while (0)
+
+/**
+ * closure_return - finish execution of a closure, with destructor
+ *
+ * Works like closure_return(), except @destructor will be called when all
+ * outstanding refs on @cl have been dropped; @destructor may be used to safely
+ * free the memory occupied by @cl, and it is called with the ref on the parent
+ * closure still held - so @destructor could safely return an item to a
+ * freelist protected by @cl's parent.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define closure_return_with_destructor(_cl, _destructor)		\
 do {									\
 	set_closure_fn(_cl, _destructor, NULL);				\
 	closure_sub(_cl, CLOSURE_RUNNING - CLOSURE_DESTRUCTOR + 1);	\
+<<<<<<< HEAD
 	return;								\
 } while (0)
 
+=======
+} while (0)
+
+/**
+ * closure_call - execute @fn out of a new, uninitialized closure
+ *
+ * Typically used when running out of one closure, and we want to run @fn
+ * asynchronously out of a new closure - @parent will then wait for @cl to
+ * finish.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void closure_call(struct closure *cl, closure_fn fn,
 				struct workqueue_struct *wq,
 				struct closure *parent)
@@ -661,6 +870,7 @@ static inline void closure_call(struct closure *cl, closure_fn fn,
 	continue_at_nobarrier(cl, fn, wq);
 }
 
+<<<<<<< HEAD
 static inline void closure_trylock_call(struct closure *cl, closure_fn fn,
 					struct workqueue_struct *wq,
 					struct closure *parent)
@@ -669,4 +879,6 @@ static inline void closure_trylock_call(struct closure *cl, closure_fn fn,
 		continue_at_nobarrier(cl, fn, wq);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_CLOSURE_H */

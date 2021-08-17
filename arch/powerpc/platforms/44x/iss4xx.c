@@ -32,7 +32,11 @@
 #include <asm/mpic.h>
 #include <asm/mmu.h>
 
+<<<<<<< HEAD
 static __initdata struct of_device_id iss4xx_of_bus[] = {
+=======
+static const struct of_device_id iss4xx_of_bus[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "ibm,plb4", },
 	{ .compatible = "ibm,plb6", },
 	{ .compatible = "ibm,opb", },
@@ -81,12 +85,20 @@ static void __init iss4xx_init_irq(void)
 }
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 static void __cpuinit smp_iss4xx_setup_cpu(int cpu)
+=======
+static void smp_iss4xx_setup_cpu(int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	mpic_setup_this_cpu();
 }
 
+<<<<<<< HEAD
 static int __cpuinit smp_iss4xx_kick_cpu(int cpu)
+=======
+static int smp_iss4xx_kick_cpu(int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device_node *cpunode = of_get_cpu_node(cpu, NULL);
 	const u64 *spin_table_addr_prop;
@@ -149,9 +161,13 @@ static void __init iss4xx_setup_arch(void)
  */
 static int __init iss4xx_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "ibm,iss-4xx"))
+=======
+	if (!of_machine_is_compatible("ibm,iss-4xx"))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	return 1;

@@ -72,7 +72,11 @@
 #define	PCIRFWPR	(CONFIG_MBAR + 0x84d4)	/* RX FIFO write pointer */
 
 #define	PACR		(CONFIG_MBAR + 0xc00)	/* PCI arbiter control */
+<<<<<<< HEAD
 #define	PASR		(COFNIG_MBAR + 0xc04)	/* PCI arbiter status */
+=======
+#define	PASR		(CONFIG_MBAR + 0xc04)	/* PCI arbiter status */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Definitions for the Global status and control register.

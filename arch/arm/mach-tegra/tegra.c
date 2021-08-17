@@ -16,6 +16,7 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/clocksource.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -79,6 +80,75 @@ static struct of_dev_auxdata tegra20_auxdata_lookup[] __initdata = {
 		       &tegra_ehci3_pdata),
 	{}
 };
+=======
+#include <linux/clk.h>
+#include <linux/clk/tegra.h>
+#include <linux/dma-mapping.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/irqchip.h>
+#include <linux/irqdomain.h>
+#include <linux/kernel.h>
+#include <linux/of_address.h>
+#include <linux/of_fdt.h>
+#include <linux/of.h>
+#include <linux/of_platform.h>
+#include <linux/pda_power.h>
+#include <linux/platform_device.h>
+#include <linux/serial_8250.h>
+#include <linux/slab.h>
+#include <linux/sys_soc.h>
+#include <linux/usb/tegra_usb_phy.h>
+
+#include <soc/tegra/fuse.h>
+#include <soc/tegra/pmc.h>
+
+#include <asm/hardware/cache-l2x0.h>
+#include <asm/mach/arch.h>
+#include <asm/mach/time.h>
+#include <asm/mach-types.h>
+#include <asm/setup.h>
+#include <asm/trusted_foundations.h>
+
+#include "board.h"
+#include "common.h"
+#include "cpuidle.h"
+#include "flowctrl.h"
+#include "iomap.h"
+#include "irq.h"
+#include "pm.h"
+#include "reset.h"
+#include "sleep.h"
+
+/*
+ * Storage for debug-macro.S's state.
+ *
+ * This must be in .data not .bss so that it gets initialized each time the
+ * kernel is loaded. The data is declared here rather than debug-macro.S so
+ * that multiple inclusions of debug-macro.S point at the same data.
+ */
+u32 tegra_uart_config[3] = {
+	/* Debug UART initialization required */
+	1,
+	/* Debug UART physical address */
+	0,
+	/* Debug UART virtual address */
+	0,
+};
+
+static void __init tegra_init_early(void)
+{
+	of_register_trusted_foundations();
+	tegra_cpu_reset_handler_init();
+	tegra_flowctrl_init();
+}
+
+static void __init tegra_dt_init_irq(void)
+{
+	tegra_init_irq();
+	irqchip_init();
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __init tegra_dt_init(void)
 {
@@ -86,15 +156,24 @@ static void __init tegra_dt_init(void)
 	struct soc_device *soc_dev;
 	struct device *parent = NULL;
 
+<<<<<<< HEAD
 	tegra_clocks_apply_init_table();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	soc_dev_attr = kzalloc(sizeof(*soc_dev_attr), GFP_KERNEL);
 	if (!soc_dev_attr)
 		goto out;
 
 	soc_dev_attr->family = kasprintf(GFP_KERNEL, "Tegra");
+<<<<<<< HEAD
 	soc_dev_attr->revision = kasprintf(GFP_KERNEL, "%d", tegra_revision);
 	soc_dev_attr->soc_id = kasprintf(GFP_KERNEL, "%d", tegra_chip_id);
+=======
+	soc_dev_attr->revision = kasprintf(GFP_KERNEL, "%d",
+					   tegra_sku_info.revision);
+	soc_dev_attr->soc_id = kasprintf(GFP_KERNEL, "%u", tegra_get_chip_id());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	soc_dev = soc_device_register(soc_dev_attr);
 	if (IS_ERR(soc_dev)) {
@@ -112,6 +191,7 @@ static void __init tegra_dt_init(void)
 	 * devices
 	 */
 out:
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table,
 				tegra20_auxdata_lookup, parent);
 }
@@ -168,6 +248,23 @@ static void __init tegra_dt_init_late(void)
 }
 
 static const char * const tegra_dt_board_compat[] = {
+=======
+	of_platform_default_populate(NULL, NULL, parent);
+}
+
+static void __init tegra_dt_init_late(void)
+{
+	tegra_init_suspend();
+	tegra_cpuidle_init();
+
+	if (IS_ENABLED(CONFIG_ARCH_TEGRA_2x_SOC) &&
+	    of_machine_is_compatible("compal,paz00"))
+		tegra_paz00_wifikill_init();
+}
+
+static const char * const tegra_dt_board_compat[] = {
+	"nvidia,tegra124",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"nvidia,tegra114",
 	"nvidia,tegra30",
 	"nvidia,tegra20",
@@ -175,6 +272,7 @@ static const char * const tegra_dt_board_compat[] = {
 };
 
 DT_MACHINE_START(TEGRA_DT, "NVIDIA Tegra SoC (Flattened Device Tree)")
+<<<<<<< HEAD
 	.map_io		= tegra_map_common_io,
 	.smp		= smp_ops(tegra_smp_ops),
 	.init_early	= tegra_init_early,
@@ -183,5 +281,15 @@ DT_MACHINE_START(TEGRA_DT, "NVIDIA Tegra SoC (Flattened Device Tree)")
 	.init_machine	= tegra_dt_init,
 	.init_late	= tegra_dt_init_late,
 	.restart	= tegra_assert_system_reset,
+=======
+	.l2c_aux_val	= 0x3c400000,
+	.l2c_aux_mask	= 0xc20fc3ff,
+	.smp		= smp_ops(tegra_smp_ops),
+	.map_io		= tegra_map_common_io,
+	.init_early	= tegra_init_early,
+	.init_irq	= tegra_dt_init_irq,
+	.init_machine	= tegra_dt_init,
+	.init_late	= tegra_dt_init_late,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dt_compat	= tegra_dt_board_compat,
 MACHINE_END

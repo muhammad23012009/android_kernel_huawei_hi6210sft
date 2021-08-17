@@ -62,7 +62,11 @@ static void camellia_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 }
 
 /* camellia sboxes */
+<<<<<<< HEAD
 const u64 camellia_sp10011110[256] = {
+=======
+__visible const u64 camellia_sp10011110[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x7000007070707000ULL, 0x8200008282828200ULL, 0x2c00002c2c2c2c00ULL,
 	0xec0000ecececec00ULL, 0xb30000b3b3b3b300ULL, 0x2700002727272700ULL,
 	0xc00000c0c0c0c000ULL, 0xe50000e5e5e5e500ULL, 0xe40000e4e4e4e400ULL,
@@ -151,7 +155,11 @@ const u64 camellia_sp10011110[256] = {
 	0x9e00009e9e9e9e00ULL,
 };
 
+<<<<<<< HEAD
 const u64 camellia_sp22000222[256] = {
+=======
+__visible const u64 camellia_sp22000222[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0xe0e0000000e0e0e0ULL, 0x0505000000050505ULL, 0x5858000000585858ULL,
 	0xd9d9000000d9d9d9ULL, 0x6767000000676767ULL, 0x4e4e0000004e4e4eULL,
 	0x8181000000818181ULL, 0xcbcb000000cbcbcbULL, 0xc9c9000000c9c9c9ULL,
@@ -240,7 +248,11 @@ const u64 camellia_sp22000222[256] = {
 	0x3d3d0000003d3d3dULL,
 };
 
+<<<<<<< HEAD
 const u64 camellia_sp03303033[256] = {
+=======
+__visible const u64 camellia_sp03303033[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x0038380038003838ULL, 0x0041410041004141ULL, 0x0016160016001616ULL,
 	0x0076760076007676ULL, 0x00d9d900d900d9d9ULL, 0x0093930093009393ULL,
 	0x0060600060006060ULL, 0x00f2f200f200f2f2ULL, 0x0072720072007272ULL,
@@ -329,7 +341,11 @@ const u64 camellia_sp03303033[256] = {
 	0x004f4f004f004f4fULL,
 };
 
+<<<<<<< HEAD
 const u64 camellia_sp00444404[256] = {
+=======
+__visible const u64 camellia_sp00444404[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x0000707070700070ULL, 0x00002c2c2c2c002cULL, 0x0000b3b3b3b300b3ULL,
 	0x0000c0c0c0c000c0ULL, 0x0000e4e4e4e400e4ULL, 0x0000575757570057ULL,
 	0x0000eaeaeaea00eaULL, 0x0000aeaeaeae00aeULL, 0x0000232323230023ULL,
@@ -418,7 +434,11 @@ const u64 camellia_sp00444404[256] = {
 	0x00009e9e9e9e009eULL,
 };
 
+<<<<<<< HEAD
 const u64 camellia_sp02220222[256] = {
+=======
+__visible const u64 camellia_sp02220222[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x00e0e0e000e0e0e0ULL, 0x0005050500050505ULL, 0x0058585800585858ULL,
 	0x00d9d9d900d9d9d9ULL, 0x0067676700676767ULL, 0x004e4e4e004e4e4eULL,
 	0x0081818100818181ULL, 0x00cbcbcb00cbcbcbULL, 0x00c9c9c900c9c9c9ULL,
@@ -507,7 +527,11 @@ const u64 camellia_sp02220222[256] = {
 	0x003d3d3d003d3d3dULL,
 };
 
+<<<<<<< HEAD
 const u64 camellia_sp30333033[256] = {
+=======
+__visible const u64 camellia_sp30333033[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x3800383838003838ULL, 0x4100414141004141ULL, 0x1600161616001616ULL,
 	0x7600767676007676ULL, 0xd900d9d9d900d9d9ULL, 0x9300939393009393ULL,
 	0x6000606060006060ULL, 0xf200f2f2f200f2f2ULL, 0x7200727272007272ULL,
@@ -596,7 +620,11 @@ const u64 camellia_sp30333033[256] = {
 	0x4f004f4f4f004f4fULL,
 };
 
+<<<<<<< HEAD
 const u64 camellia_sp44044404[256] = {
+=======
+__visible const u64 camellia_sp44044404[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x7070007070700070ULL, 0x2c2c002c2c2c002cULL, 0xb3b300b3b3b300b3ULL,
 	0xc0c000c0c0c000c0ULL, 0xe4e400e4e4e400e4ULL, 0x5757005757570057ULL,
 	0xeaea00eaeaea00eaULL, 0xaeae00aeaeae00aeULL, 0x2323002323230023ULL,
@@ -685,7 +713,11 @@ const u64 camellia_sp44044404[256] = {
 	0x9e9e009e9e9e009eULL,
 };
 
+<<<<<<< HEAD
 const u64 camellia_sp11101110[256] = {
+=======
+__visible const u64 camellia_sp11101110[256] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x7070700070707000ULL, 0x8282820082828200ULL, 0x2c2c2c002c2c2c00ULL,
 	0xececec00ececec00ULL, 0xb3b3b300b3b3b300ULL, 0x2727270027272700ULL,
 	0xc0c0c000c0c0c000ULL, 0xe5e5e500e5e5e500ULL, 0xe4e4e400e4e4e400ULL,
@@ -828,8 +860,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 
 	subRL[1] ^= (subRL[1] & ~subRL[9]) << 32;
 	/* modified for FLinv(kl2) */
+<<<<<<< HEAD
 	dw = (subRL[1] & subRL[9]) >> 32,
 		subRL[1] ^= rol32(dw, 1);
+=======
+	dw = (subRL[1] & subRL[9]) >> 32;
+	subRL[1] ^= rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* round 8 */
 	subRL[11] ^= subRL[1];
@@ -840,8 +877,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 
 	subRL[1] ^= (subRL[1] & ~subRL[17]) << 32;
 	/* modified for FLinv(kl4) */
+<<<<<<< HEAD
 	dw = (subRL[1] & subRL[17]) >> 32,
 		subRL[1] ^= rol32(dw, 1);
+=======
+	dw = (subRL[1] & subRL[17]) >> 32;
+	subRL[1] ^= rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* round 14 */
 	subRL[19] ^= subRL[1];
@@ -859,8 +901,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 	} else {
 		subRL[1] ^= (subRL[1] & ~subRL[25]) << 32;
 		/* modified for FLinv(kl6) */
+<<<<<<< HEAD
 		dw = (subRL[1] & subRL[25]) >> 32,
 			subRL[1] ^= rol32(dw, 1);
+=======
+		dw = (subRL[1] & subRL[25]) >> 32;
+		subRL[1] ^= rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* round 20 */
 		subRL[27] ^= subRL[1];
@@ -882,8 +929,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 
 		kw4 ^= (kw4 & ~subRL[24]) << 32;
 		/* modified for FL(kl5) */
+<<<<<<< HEAD
 		dw = (kw4 & subRL[24]) >> 32,
 			kw4 ^= rol32(dw, 1);
+=======
+		dw = (kw4 & subRL[24]) >> 32;
+		kw4 ^= rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* round 17 */
@@ -895,8 +947,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 
 	kw4 ^= (kw4 & ~subRL[16]) << 32;
 	/* modified for FL(kl3) */
+<<<<<<< HEAD
 	dw = (kw4 & subRL[16]) >> 32,
 		kw4 ^= rol32(dw, 1);
+=======
+	dw = (kw4 & subRL[16]) >> 32;
+	kw4 ^= rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* round 11 */
 	subRL[14] ^= kw4;
@@ -907,8 +964,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 
 	kw4 ^= (kw4 & ~subRL[8]) << 32;
 	/* modified for FL(kl1) */
+<<<<<<< HEAD
 	dw = (kw4 & subRL[8]) >> 32,
 		kw4 ^= rol32(dw, 1);
+=======
+	dw = (kw4 & subRL[8]) >> 32;
+	kw4 ^= rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* round 5 */
 	subRL[6] ^= kw4;
@@ -928,8 +990,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 	SET_SUBKEY_LR(6, subRL[5] ^ subRL[7]);			/* round 5 */
 
 	tl = (subRL[10] >> 32) ^ (subRL[10] & ~subRL[8]);
+<<<<<<< HEAD
 	dw = tl & (subRL[8] >> 32),				/* FL(kl1) */
 		tr = subRL[10] ^ rol32(dw, 1);
+=======
+	dw = tl & (subRL[8] >> 32);				/* FL(kl1) */
+	tr = subRL[10] ^ rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tt = (tr | ((u64)tl << 32));
 
 	SET_SUBKEY_LR(7, subRL[6] ^ tt);			/* round 6 */
@@ -937,8 +1004,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 	SET_SUBKEY_LR(9, subRL[9]);				/* FLinv(kl2) */
 
 	tl = (subRL[7] >> 32) ^ (subRL[7] & ~subRL[9]);
+<<<<<<< HEAD
 	dw = tl & (subRL[9] >> 32),				/* FLinv(kl2) */
 		tr = subRL[7] ^ rol32(dw, 1);
+=======
+	dw = tl & (subRL[9] >> 32);				/* FLinv(kl2) */
+	tr = subRL[7] ^ rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tt = (tr | ((u64)tl << 32));
 
 	SET_SUBKEY_LR(10, subRL[11] ^ tt);			/* round 7 */
@@ -948,8 +1020,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 	SET_SUBKEY_LR(14, subRL[13] ^ subRL[15]);		/* round 11 */
 
 	tl = (subRL[18] >> 32) ^ (subRL[18] & ~subRL[16]);
+<<<<<<< HEAD
 	dw = tl & (subRL[16] >> 32),				/* FL(kl3) */
 		tr = subRL[18] ^ rol32(dw, 1);
+=======
+	dw = tl & (subRL[16] >> 32);				/* FL(kl3) */
+	tr = subRL[18] ^ rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tt = (tr | ((u64)tl << 32));
 
 	SET_SUBKEY_LR(15, subRL[14] ^ tt);			/* round 12 */
@@ -957,8 +1034,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 	SET_SUBKEY_LR(17, subRL[17]);				/* FLinv(kl4) */
 
 	tl = (subRL[15] >> 32) ^ (subRL[15] & ~subRL[17]);
+<<<<<<< HEAD
 	dw = tl & (subRL[17] >> 32),				/* FLinv(kl4) */
 		tr = subRL[15] ^ rol32(dw, 1);
+=======
+	dw = tl & (subRL[17] >> 32);				/* FLinv(kl4) */
+	tr = subRL[15] ^ rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tt = (tr | ((u64)tl << 32));
 
 	SET_SUBKEY_LR(18, subRL[19] ^ tt);			/* round 13 */
@@ -972,8 +1054,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 		SET_SUBKEY_LR(24, subRL[24] ^ subRL[23]);	/* kw3 */
 	} else {
 		tl = (subRL[26] >> 32) ^ (subRL[26] & ~subRL[24]);
+<<<<<<< HEAD
 		dw = tl & (subRL[24] >> 32),			/* FL(kl5) */
 			tr = subRL[26] ^ rol32(dw, 1);
+=======
+		dw = tl & (subRL[24] >> 32);			/* FL(kl5) */
+		tr = subRL[26] ^ rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tt = (tr | ((u64)tl << 32));
 
 		SET_SUBKEY_LR(23, subRL[22] ^ tt);		/* round 18 */
@@ -981,8 +1068,13 @@ static void camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 		SET_SUBKEY_LR(25, subRL[25]);			/* FLinv(kl6) */
 
 		tl = (subRL[23] >> 32) ^ (subRL[23] & ~subRL[25]);
+<<<<<<< HEAD
 		dw = tl & (subRL[25] >> 32),			/* FLinv(kl6) */
 			tr = subRL[23] ^ rol32(dw, 1);
+=======
+		dw = tl & (subRL[25] >> 32);			/* FLinv(kl6) */
+		tr = subRL[23] ^ rol32(dw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tt = (tr | ((u64)tl << 32));
 
 		SET_SUBKEY_LR(26, subRL[27] ^ tt);		/* round 19 */
@@ -1503,6 +1595,7 @@ int xts_camellia_setkey(struct crypto_tfm *tfm, const u8 *key,
 	u32 *flags = &tfm->crt_flags;
 	int err;
 
+<<<<<<< HEAD
 	/* key consists of keys of equal size concatenated, therefore
 	 * the length must be even
 	 */
@@ -1510,6 +1603,11 @@ int xts_camellia_setkey(struct crypto_tfm *tfm, const u8 *key,
 		*flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
 		return -EINVAL;
 	}
+=======
+	err = xts_check_key(tfm, key, keylen);
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* first half of xts-key is for crypt */
 	err = __camellia_setkey(&ctx->crypt_ctx, key, keylen / 2, flags);

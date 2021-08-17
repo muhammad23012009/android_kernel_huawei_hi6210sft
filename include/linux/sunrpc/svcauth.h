@@ -14,7 +14,13 @@
 #include <linux/string.h>
 #include <linux/sunrpc/msg_prot.h>
 #include <linux/sunrpc/cache.h>
+<<<<<<< HEAD
 #include <linux/hash.h>
+=======
+#include <linux/sunrpc/gss_api.h>
+#include <linux/hash.h>
+#include <linux/stringhash.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cred.h>
 
 struct svc_cred {
@@ -22,14 +28,41 @@ struct svc_cred {
 	kgid_t			cr_gid;
 	struct group_info	*cr_group_info;
 	u32			cr_flavor; /* pseudoflavor */
+<<<<<<< HEAD
 	char			*cr_principal; /* for gss */
 };
 
+=======
+	/* name of form servicetype/hostname@REALM, passed down by
+	 * gss-proxy: */
+	char			*cr_raw_principal;
+	/* name of form servicetype@hostname, passed down by
+	 * rpc.svcgssd, or computed from the above: */
+	char			*cr_principal;
+	struct gss_api_mech	*cr_gss_mech;
+};
+
+static inline void init_svc_cred(struct svc_cred *cred)
+{
+	cred->cr_group_info = NULL;
+	cred->cr_raw_principal = NULL;
+	cred->cr_principal = NULL;
+	cred->cr_gss_mech = NULL;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void free_svc_cred(struct svc_cred *cred)
 {
 	if (cred->cr_group_info)
 		put_group_info(cred->cr_group_info);
+<<<<<<< HEAD
 	kfree(cred->cr_principal);
+=======
+	kfree(cred->cr_raw_principal);
+	kfree(cred->cr_principal);
+	gss_mech_put(cred->cr_gss_mech);
+	init_svc_cred(cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct svc_rqst;		/* forward decl */
@@ -147,6 +180,7 @@ extern int svcauth_unix_set_client(struct svc_rqst *rqstp);
 extern int unix_gid_cache_create(struct net *net);
 extern void unix_gid_cache_destroy(struct net *net);
 
+<<<<<<< HEAD
 static inline unsigned long hash_str(char *name, int bits)
 {
 	unsigned long hash = 0;
@@ -182,6 +216,20 @@ static inline unsigned long hash_mem(char *buf, int length, int bits)
 			hash = hash_long(hash^l, BITS_PER_LONG);
 	} while (len);
 	return hash >> (BITS_PER_LONG - bits);
+=======
+/*
+ * The <stringhash.h> functions are good enough that we don't need to
+ * use hash_32() on them; just extracting the high bits is enough.
+ */
+static inline unsigned long hash_str(char const *name, int bits)
+{
+	return hashlen_hash(hashlen_string(NULL, name)) >> (32 - bits);
+}
+
+static inline unsigned long hash_mem(char const *buf, int length, int bits)
+{
+	return full_name_hash(NULL, buf, length) >> (32 - bits);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* __KERNEL__ */

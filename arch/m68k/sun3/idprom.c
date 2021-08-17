@@ -125,8 +125,12 @@ void __init idprom_init(void)
 
 	display_system_type(idprom->id_machtype);
 
+<<<<<<< HEAD
 	printk("Ethernet address: %x:%x:%x:%x:%x:%x\n",
 		    idprom->id_ethaddr[0], idprom->id_ethaddr[1],
 		    idprom->id_ethaddr[2], idprom->id_ethaddr[3],
 		    idprom->id_ethaddr[4], idprom->id_ethaddr[5]);
+=======
+	printk("Ethernet address: %pM\n", idprom->id_ethaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

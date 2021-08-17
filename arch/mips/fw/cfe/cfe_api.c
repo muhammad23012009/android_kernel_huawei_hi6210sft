@@ -406,12 +406,20 @@ int cfe_setenv(char *name, char *val)
 	return xiocb.xiocb_status;
 }
 
+<<<<<<< HEAD
 int cfe_write(int handle, unsigned char *buffer, int length)
+=======
+int cfe_write(int handle, const char *buffer, int length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return cfe_writeblk(handle, 0, buffer, length);
 }
 
+<<<<<<< HEAD
 int cfe_writeblk(int handle, s64 offset, unsigned char *buffer, int length)
+=======
+int cfe_writeblk(int handle, s64 offset, const char *buffer, int length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cfe_xiocb xiocb;
 

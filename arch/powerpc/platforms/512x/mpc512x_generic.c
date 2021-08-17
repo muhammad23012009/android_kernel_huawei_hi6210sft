@@ -38,15 +38,28 @@ static const char * const board[] __initconst = {
  */
 static int __init mpc512x_generic_probe(void)
 {
+<<<<<<< HEAD
 	return of_flat_dt_match(of_get_flat_dt_root(), board);
+=======
+	if (!of_device_compatible_match(of_root, board))
+		return 0;
+
+	mpc512x_init_early();
+
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(mpc512x_generic) {
 	.name			= "MPC512x generic",
 	.probe			= mpc512x_generic_probe,
 	.init			= mpc512x_init,
+<<<<<<< HEAD
 	.init_early		= mpc512x_init_diu,
 	.setup_arch		= mpc512x_setup_diu,
+=======
+	.setup_arch		= mpc512x_setup_arch,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_IRQ		= mpc512x_init_IRQ,
 	.get_irq		= ipic_get_irq,
 	.calibrate_decr		= generic_calibrate_decr,

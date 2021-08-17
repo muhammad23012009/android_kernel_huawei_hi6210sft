@@ -37,12 +37,19 @@
 #include <asm/smp.h>
 #include <asm/mmu.h>
 #include <asm/pgtable.h>
+<<<<<<< HEAD
 #include <asm/pci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/iommu.h>
 #include <asm/btext.h>
 #include <asm/sections.h>
 #include <asm/machdep.h>
 #include <asm/opal.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-prototypes.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/linux_logo.h>
 
@@ -107,10 +114,17 @@ int of_workarounds;
 typedef u32 prom_arg_t;
 
 struct prom_args {
+<<<<<<< HEAD
         u32 service;
         u32 nargs;
         u32 nret;
         prom_arg_t args[10];
+=======
+        __be32 service;
+        __be32 nargs;
+        __be32 nret;
+        __be32 args[10];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct prom_t {
@@ -123,11 +137,19 @@ struct prom_t {
 };
 
 struct mem_map_entry {
+<<<<<<< HEAD
 	u64	base;
 	u64	size;
 };
 
 typedef u32 cell_t;
+=======
+	__be64	base;
+	__be64	size;
+};
+
+typedef __be32 cell_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void __start(unsigned long r3, unsigned long r4, unsigned long r5,
 		    unsigned long r6, unsigned long r7, unsigned long r8,
@@ -196,6 +218,11 @@ static int __initdata mem_reserve_cnt;
 
 static cell_t __initdata regbuf[1024];
 
+<<<<<<< HEAD
+=======
+static bool rtas_has_query_cpu_stopped;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Error results ... some OF calls will return "-1" on error, some
@@ -219,6 +246,7 @@ static int __init call_prom(const char *service, int nargs, int nret, ...)
 	struct prom_args args;
 	va_list list;
 
+<<<<<<< HEAD
 	args.service = ADDR(service);
 	args.nargs = nargs;
 	args.nret = nret;
@@ -226,6 +254,15 @@ static int __init call_prom(const char *service, int nargs, int nret, ...)
 	va_start(list, nret);
 	for (i = 0; i < nargs; i++)
 		args.args[i] = va_arg(list, prom_arg_t);
+=======
+	args.service = cpu_to_be32(ADDR(service));
+	args.nargs = cpu_to_be32(nargs);
+	args.nret = cpu_to_be32(nret);
+
+	va_start(list, nret);
+	for (i = 0; i < nargs; i++)
+		args.args[i] = cpu_to_be32(va_arg(list, prom_arg_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	va_end(list);
 
 	for (i = 0; i < nret; i++)
@@ -234,7 +271,11 @@ static int __init call_prom(const char *service, int nargs, int nret, ...)
 	if (enter_prom(&args, prom_entry) < 0)
 		return PROM_ERROR;
 
+<<<<<<< HEAD
 	return (nret > 0) ? args.args[nargs] : 0;
+=======
+	return (nret > 0) ? be32_to_cpu(args.args[nargs]) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init call_prom_ret(const char *service, int nargs, int nret,
@@ -244,6 +285,7 @@ static int __init call_prom_ret(const char *service, int nargs, int nret,
 	struct prom_args args;
 	va_list list;
 
+<<<<<<< HEAD
 	args.service = ADDR(service);
 	args.nargs = nargs;
 	args.nret = nret;
@@ -251,6 +293,15 @@ static int __init call_prom_ret(const char *service, int nargs, int nret,
 	va_start(list, rets);
 	for (i = 0; i < nargs; i++)
 		args.args[i] = va_arg(list, prom_arg_t);
+=======
+	args.service = cpu_to_be32(ADDR(service));
+	args.nargs = cpu_to_be32(nargs);
+	args.nret = cpu_to_be32(nret);
+
+	va_start(list, rets);
+	for (i = 0; i < nargs; i++)
+		args.args[i] = cpu_to_be32(va_arg(list, prom_arg_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	va_end(list);
 
 	for (i = 0; i < nret; i++)
@@ -261,9 +312,15 @@ static int __init call_prom_ret(const char *service, int nargs, int nret,
 
 	if (rets != NULL)
 		for (i = 1; i < nret; ++i)
+<<<<<<< HEAD
 			rets[i-1] = args.args[nargs+i];
 
 	return (nret > 0) ? args.args[nargs] : 0;
+=======
+			rets[i-1] = be32_to_cpu(args.args[nargs+i]);
+
+	return (nret > 0) ? be32_to_cpu(args.args[nargs]) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -388,6 +445,10 @@ static void __init prom_printf(const char *format, ...)
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -527,7 +588,11 @@ static int __init prom_setprop(phandle node, const char *nodename,
 #define islower(c)	('a' <= (c) && (c) <= 'z')
 #define toupper(c)	(islower(c) ? ((c) - 'a' + 'A') : (c))
 
+<<<<<<< HEAD
 unsigned long prom_strtoul(const char *cp, const char **endp)
+=======
+static unsigned long prom_strtoul(const char *cp, const char **endp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long result = 0, base = 10, value;
 
@@ -552,7 +617,11 @@ unsigned long prom_strtoul(const char *cp, const char **endp)
 	return result;
 }
 
+<<<<<<< HEAD
 unsigned long prom_memparse(const char *ptr, const char **retptr)
+=======
+static unsigned long prom_memparse(const char *ptr, const char **retptr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long ret = prom_strtoul(ptr, retptr);
 	int shift = 0;
@@ -640,25 +709,54 @@ static void __init early_cmdline_parse(void)
 #define W(x)	((x) >> 24) & 0xff, ((x) >> 16) & 0xff, \
 		((x) >> 8) & 0xff, (x) & 0xff
 
+<<<<<<< HEAD
+=======
+/* Firmware expects the value to be n - 1, where n is the # of vectors */
+#define NUM_VECTORS(n)		((n) - 1)
+
+/*
+ * Firmware expects 1 + n - 2, where n is the length of the option vector in
+ * bytes. The 1 accounts for the length byte itself, the - 2 .. ?
+ */
+#define VECTOR_LENGTH(n)	(1 + (n) - 2)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned char ibm_architecture_vec[] = {
 	W(0xfffe0000), W(0x003a0000),	/* POWER5/POWER5+ */
 	W(0xffff0000), W(0x003e0000),	/* POWER6 */
 	W(0xffff0000), W(0x003f0000),	/* POWER7 */
+<<<<<<< HEAD
 	W(0xffff0000), W(0x004b0000),	/* POWER8 */
+=======
+	W(0xffff0000), W(0x004b0000),	/* POWER8E */
+	W(0xffff0000), W(0x004c0000),   /* POWER8NVL */
+	W(0xffff0000), W(0x004d0000),	/* POWER8 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	W(0xffffffff), W(0x0f000004),	/* all 2.07-compliant */
 	W(0xffffffff), W(0x0f000003),	/* all 2.06-compliant */
 	W(0xffffffff), W(0x0f000002),	/* all 2.05-compliant */
 	W(0xfffffffe), W(0x0f000001),	/* all 2.04-compliant and earlier */
+<<<<<<< HEAD
 	6 - 1,				/* 6 option vectors */
 
 	/* option vector 1: processor architectures supported */
 	3 - 2,				/* length */
+=======
+	NUM_VECTORS(6),			/* 6 option vectors */
+
+	/* option vector 1: processor architectures supported */
+	VECTOR_LENGTH(2),		/* length */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0,				/* don't ignore, don't halt */
 	OV1_PPC_2_00 | OV1_PPC_2_01 | OV1_PPC_2_02 | OV1_PPC_2_03 |
 	OV1_PPC_2_04 | OV1_PPC_2_05 | OV1_PPC_2_06 | OV1_PPC_2_07,
 
 	/* option vector 2: Open Firmware options supported */
+<<<<<<< HEAD
 	34 - 2,				/* length */
+=======
+	VECTOR_LENGTH(33),		/* length */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	OV2_REAL_MODE,
 	0, 0,
 	W(0xffffffff),			/* real_base */
@@ -672,17 +770,29 @@ unsigned char ibm_architecture_vec[] = {
 	48,				/* max log_2(hash table size) */
 
 	/* option vector 3: processor options supported */
+<<<<<<< HEAD
 	3 - 2,				/* length */
+=======
+	VECTOR_LENGTH(2),		/* length */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0,				/* don't ignore, don't halt */
 	OV3_FP | OV3_VMX | OV3_DFP,
 
 	/* option vector 4: IBM PAPR implementation */
+<<<<<<< HEAD
 	3 - 2,				/* length */
+=======
+	VECTOR_LENGTH(2),		/* length */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0,				/* don't halt */
 	OV4_MIN_ENT_CAP,		/* minimum VP entitled capacity */
 
 	/* option vector 5: PAPR/OF options */
+<<<<<<< HEAD
 	19 - 2,				/* length */
+=======
+	VECTOR_LENGTH(21),		/* length */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0,				/* don't ignore, don't halt */
 	OV5_FEAT(OV5_LPAR) | OV5_FEAT(OV5_SPLPAR) | OV5_FEAT(OV5_LARGE_PAGES) |
 	OV5_FEAT(OV5_DRCONF_MEMORY) | OV5_FEAT(OV5_DONATE_DEDICATE_CPU) |
@@ -706,13 +816,18 @@ unsigned char ibm_architecture_vec[] = {
 	 * must match by the macro below. Update the definition if
 	 * the structure layout changes.
 	 */
+<<<<<<< HEAD
 #define IBM_ARCH_VEC_NRCORES_OFFSET	117
+=======
+#define IBM_ARCH_VEC_NRCORES_OFFSET	133
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	W(NR_CPUS),			/* number of cores supported */
 	0,
 	0,
 	0,
 	0,
 	OV5_FEAT(OV5_PFO_HW_RNG) | OV5_FEAT(OV5_PFO_HW_ENCR) |
+<<<<<<< HEAD
 	OV5_FEAT(OV5_PFO_HW_842),
 	OV5_FEAT(OV5_SUB_PROCESSORS),
 	/* option vector 6: IBM PAPR hints */
@@ -724,6 +839,23 @@ unsigned char ibm_architecture_vec[] = {
 };
 
 /* Old method - ELF header with PT_NOTE sections */
+=======
+	OV5_FEAT(OV5_PFO_HW_842),				/* Byte 17 */
+	0,							/* Byte 18 */
+	0,							/* Byte 19 */
+	0,							/* Byte 20 */
+	OV5_FEAT(OV5_SUB_PROCESSORS),				/* Byte 21 */
+
+	/* option vector 6: IBM PAPR hints */
+	VECTOR_LENGTH(3),		/* length */
+	0,
+	0,
+	OV6_LINUX,
+};
+
+/* Old method - ELF header with PT_NOTE sections only works on BE */
+#ifdef __BIG_ENDIAN__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct fake_elf {
 	Elf32_Ehdr	elfhdr;
 	Elf32_Phdr	phdr[2];
@@ -809,6 +941,10 @@ static struct fake_elf {
 		}
 	}
 };
+<<<<<<< HEAD
+=======
+#endif /* __BIG_ENDIAN__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init prom_count_smt_threads(void)
 {
@@ -851,9 +987,16 @@ static int __init prom_count_smt_threads(void)
 
 static void __init prom_send_capabilities(void)
 {
+<<<<<<< HEAD
 	ihandle elfloader, root;
 	prom_arg_t ret;
 	u32 *cores;
+=======
+	ihandle root;
+	prom_arg_t ret;
+	u32 cores;
+	unsigned char *ptcores;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	root = call_prom("open", 1, 1, ADDR("/"));
 	if (root != 0) {
@@ -863,6 +1006,7 @@ static void __init prom_send_capabilities(void)
 		 * (we assume this is the same for all cores) and use it to
 		 * divide NR_CPUS.
 		 */
+<<<<<<< HEAD
 		cores = (u32 *)&ibm_architecture_vec[IBM_ARCH_VEC_NRCORES_OFFSET];
 		if (*cores != NR_CPUS) {
 			prom_printf("WARNING ! "
@@ -872,6 +1016,32 @@ static void __init prom_send_capabilities(void)
 			*cores = DIV_ROUND_UP(NR_CPUS, prom_count_smt_threads());
 			prom_printf("Max number of cores passed to firmware: %lu (NR_CPUS = %lu)\n",
 				    *cores, NR_CPUS);
+=======
+
+		/* The core value may start at an odd address. If such a word
+		 * access is made at a cache line boundary, this leads to an
+		 * exception which may not be handled at this time.
+		 * Forcing a per byte access to avoid exception.
+		 */
+		ptcores = &ibm_architecture_vec[IBM_ARCH_VEC_NRCORES_OFFSET];
+		cores = 0;
+		cores |= ptcores[0] << 24;
+		cores |= ptcores[1] << 16;
+		cores |= ptcores[2] << 8;
+		cores |= ptcores[3];
+		if (cores != NR_CPUS) {
+			prom_printf("WARNING ! "
+				    "ibm_architecture_vec structure inconsistent: %lu!\n",
+				    cores);
+		} else {
+			cores = DIV_ROUND_UP(NR_CPUS, prom_count_smt_threads());
+			prom_printf("Max number of cores passed to firmware: %lu (NR_CPUS = %lu)\n",
+				    cores, NR_CPUS);
+			ptcores[0] = (cores >> 24) & 0xff;
+			ptcores[1] = (cores >> 16) & 0xff;
+			ptcores[2] = (cores >> 8) & 0xff;
+			ptcores[3] = cores & 0xff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		/* try calling the ibm,client-architecture-support method */
@@ -892,6 +1062,7 @@ static void __init prom_send_capabilities(void)
 		prom_printf(" not implemented\n");
 	}
 
+<<<<<<< HEAD
 	/* no ibm,client-architecture-support call, try the old way */
 	elfloader = call_prom("open", 1, 1, ADDR("/packages/elf-loader"));
 	if (elfloader == 0) {
@@ -903,6 +1074,26 @@ static void __init prom_send_capabilities(void)
 	call_prom("close", 1, 0, elfloader);
 }
 #endif
+=======
+#ifdef __BIG_ENDIAN__
+	{
+		ihandle elfloader;
+
+		/* no ibm,client-architecture-support call, try the old way */
+		elfloader = call_prom("open", 1, 1,
+				      ADDR("/packages/elf-loader"));
+		if (elfloader == 0) {
+			prom_printf("couldn't open /packages/elf-loader\n");
+			return;
+		}
+		call_prom("call-method", 3, 1, ADDR("process-elf-header"),
+			  elfloader, ADDR(&fake_elf));
+		call_prom("close", 1, 0, elfloader);
+	}
+#endif /* __BIG_ENDIAN__ */
+}
+#endif /* #if defined(CONFIG_PPC_PSERIES) || defined(CONFIG_PPC_POWERNV) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Memory allocation strategy... our layout is normally:
@@ -1049,11 +1240,19 @@ static unsigned long __init prom_next_cell(int s, cell_t **cellp)
 		p++;
 		s--;
 	}
+<<<<<<< HEAD
 	r = *p++;
 #ifdef CONFIG_PPC64
 	if (s > 1) {
 		r <<= 32;
 		r |= *(p++);
+=======
+	r = be32_to_cpu(*p++);
+#ifdef CONFIG_PPC64
+	if (s > 1) {
+		r <<= 32;
+		r |= be32_to_cpu(*(p++));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 	*cellp = p;
@@ -1086,8 +1285,13 @@ static void __init reserve_mem(u64 base, u64 size)
 
 	if (cnt >= (MEM_RESERVE_MAP_SIZE - 1))
 		prom_panic("Memory reserve map exhausted !\n");
+<<<<<<< HEAD
 	mem_reserve_map[cnt].base = base;
 	mem_reserve_map[cnt].size = size;
+=======
+	mem_reserve_map[cnt].base = cpu_to_be64(base);
+	mem_reserve_map[cnt].size = cpu_to_be64(size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mem_reserve_cnt = cnt + 1;
 }
 
@@ -1101,6 +1305,10 @@ static void __init prom_init_mem(void)
 	char *path, type[64];
 	unsigned int plen;
 	cell_t *p, *endp;
+<<<<<<< HEAD
+=======
+	__be32 val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 rac, rsc;
 
 	/*
@@ -1108,12 +1316,23 @@ static void __init prom_init_mem(void)
 	 * 1) top of RMO (first node)
 	 * 2) top of memory
 	 */
+<<<<<<< HEAD
 	rac = 2;
 	prom_getprop(prom.root, "#address-cells", &rac, sizeof(rac));
 	rsc = 1;
 	prom_getprop(prom.root, "#size-cells", &rsc, sizeof(rsc));
 	prom_debug("root_addr_cells: %x\n", (unsigned long) rac);
 	prom_debug("root_size_cells: %x\n", (unsigned long) rsc);
+=======
+	val = cpu_to_be32(2);
+	prom_getprop(prom.root, "#address-cells", &val, sizeof(val));
+	rac = be32_to_cpu(val);
+	val = cpu_to_be32(1);
+	prom_getprop(prom.root, "#size-cells", &val, sizeof(rsc));
+	rsc = be32_to_cpu(val);
+	prom_debug("root_addr_cells: %x\n", rac);
+	prom_debug("root_size_cells: %x\n", rsc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	prom_debug("scanning memory:\n");
 	path = prom_scratch;
@@ -1221,25 +1440,39 @@ static void __init prom_init_mem(void)
 
 static void __init prom_close_stdin(void)
 {
+<<<<<<< HEAD
 	ihandle val;
 
 	if (prom_getprop(prom.chosen, "stdin", &val, sizeof(val)) > 0)
 		call_prom("close", 1, 0, val);
+=======
+	__be32 val;
+	ihandle stdin;
+
+	if (prom_getprop(prom.chosen, "stdin", &val, sizeof(val)) > 0) {
+		stdin = be32_to_cpu(val);
+		call_prom("close", 1, 0, stdin);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PPC_POWERNV
 
+<<<<<<< HEAD
 static u64 __initdata prom_opal_size;
 static u64 __initdata prom_opal_align;
 static int __initdata prom_rtas_start_cpu;
 static u64 __initdata prom_rtas_data;
 static u64 __initdata prom_rtas_entry;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC_EARLY_DEBUG_OPAL
 static u64 __initdata prom_opal_base;
 static u64 __initdata prom_opal_entry;
 #endif
 
+<<<<<<< HEAD
 /* XXX Don't change this structure without updating opal-takeover.S */
 static struct opal_secondary_data {
 	s64				ack;	/*  0 */
@@ -1425,6 +1658,8 @@ static void __init prom_opal_takeover(void)
 		opal_do_takeover(args);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Allocate room for and instantiate OPAL
  */
@@ -1434,6 +1669,10 @@ static void __init prom_instantiate_opal(void)
 	ihandle opal_inst;
 	u64 base, entry;
 	u64 size = 0, align = 0x10000;
+<<<<<<< HEAD
+=======
+	__be64 val64;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 rets[2];
 
 	prom_debug("prom_instantiate_opal: start...\n");
@@ -1443,11 +1682,22 @@ static void __init prom_instantiate_opal(void)
 	if (!PHANDLE_VALID(opal_node))
 		return;
 
+<<<<<<< HEAD
 	prom_getprop(opal_node, "opal-runtime-size", &size, sizeof(size));
 	if (size == 0)
 		return;
 	prom_getprop(opal_node, "opal-runtime-alignment", &align,
 		     sizeof(align));
+=======
+	val64 = 0;
+	prom_getprop(opal_node, "opal-runtime-size", &val64, sizeof(val64));
+	size = be64_to_cpu(val64);
+	if (size == 0)
+		return;
+	val64 = 0;
+	prom_getprop(opal_node, "opal-runtime-alignment", &val64,sizeof(val64));
+	align = be64_to_cpu(val64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	base = alloc_down(size, align, 0);
 	if (base == 0) {
@@ -1504,6 +1754,10 @@ static void __init prom_instantiate_rtas(void)
 	phandle rtas_node;
 	ihandle rtas_inst;
 	u32 base, entry = 0;
+<<<<<<< HEAD
+=======
+	__be32 val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 size = 0;
 
 	prom_debug("prom_instantiate_rtas: start...\n");
@@ -1513,7 +1767,13 @@ static void __init prom_instantiate_rtas(void)
 	if (!PHANDLE_VALID(rtas_node))
 		return;
 
+<<<<<<< HEAD
 	prom_getprop(rtas_node, "rtas-size", &size, sizeof(size));
+=======
+	val = 0;
+	prom_getprop(rtas_node, "rtas-size", &val, sizeof(size));
+	size = be32_to_cpu(val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (size == 0)
 		return;
 
@@ -1540,6 +1800,7 @@ static void __init prom_instantiate_rtas(void)
 
 	reserve_mem(base, size);
 
+<<<<<<< HEAD
 	prom_setprop(rtas_node, "/rtas", "linux,rtas-base",
 		     &base, sizeof(base));
 	prom_setprop(rtas_node, "/rtas", "linux,rtas-entry",
@@ -1551,6 +1812,20 @@ static void __init prom_instantiate_rtas(void)
 	prom_rtas_entry = entry;
 	prom_getprop(rtas_node, "start-cpu", &prom_rtas_start_cpu, 4);
 #endif
+=======
+	val = cpu_to_be32(base);
+	prom_setprop(rtas_node, "/rtas", "linux,rtas-base",
+		     &val, sizeof(val));
+	val = cpu_to_be32(entry);
+	prom_setprop(rtas_node, "/rtas", "linux,rtas-entry",
+		     &val, sizeof(val));
+
+	/* Check if it supports "query-cpu-stopped-state" */
+	if (prom_getprop(rtas_node, "query-cpu-stopped-state",
+			 &val, sizeof(val)) != PROM_ERROR)
+		rtas_has_query_cpu_stopped = true;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prom_debug("rtas base     = 0x%x\n", base);
 	prom_debug("rtas entry    = 0x%x\n", entry);
 	prom_debug("rtas size     = 0x%x\n", (long)size);
@@ -1566,27 +1841,66 @@ static void __init prom_instantiate_sml(void)
 {
 	phandle ibmvtpm_node;
 	ihandle ibmvtpm_inst;
+<<<<<<< HEAD
 	u32 entry = 0, size = 0;
 	u64 base;
 
 	prom_debug("prom_instantiate_sml: start...\n");
 
 	ibmvtpm_node = call_prom("finddevice", 1, 1, ADDR("/ibm,vtpm"));
+=======
+	u32 entry = 0, size = 0, succ = 0;
+	u64 base;
+	__be32 val;
+
+	prom_debug("prom_instantiate_sml: start...\n");
+
+	ibmvtpm_node = call_prom("finddevice", 1, 1, ADDR("/vdevice/vtpm"));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prom_debug("ibmvtpm_node: %x\n", ibmvtpm_node);
 	if (!PHANDLE_VALID(ibmvtpm_node))
 		return;
 
+<<<<<<< HEAD
 	ibmvtpm_inst = call_prom("open", 1, 1, ADDR("/ibm,vtpm"));
+=======
+	ibmvtpm_inst = call_prom("open", 1, 1, ADDR("/vdevice/vtpm"));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!IHANDLE_VALID(ibmvtpm_inst)) {
 		prom_printf("opening vtpm package failed (%x)\n", ibmvtpm_inst);
 		return;
 	}
 
+<<<<<<< HEAD
 	if (call_prom_ret("call-method", 2, 2, &size,
 			  ADDR("sml-get-handover-size"),
 			  ibmvtpm_inst) != 0 || size == 0) {
 		prom_printf("SML get handover size failed\n");
 		return;
+=======
+	if (prom_getprop(ibmvtpm_node, "ibm,sml-efi-reformat-supported",
+			 &val, sizeof(val)) != PROM_ERROR) {
+		if (call_prom_ret("call-method", 2, 2, &succ,
+				  ADDR("reformat-sml-to-efi-alignment"),
+				  ibmvtpm_inst) != 0 || succ == 0) {
+			prom_printf("Reformat SML to EFI alignment failed\n");
+			return;
+		}
+
+		if (call_prom_ret("call-method", 2, 2, &size,
+				  ADDR("sml-get-allocated-size"),
+				  ibmvtpm_inst) != 0 || size == 0) {
+			prom_printf("SML get allocated size failed\n");
+			return;
+		}
+	} else {
+		if (call_prom_ret("call-method", 2, 2, &size,
+				  ADDR("sml-get-handover-size"),
+				  ibmvtpm_inst) != 0 || size == 0) {
+			prom_printf("SML get handover size failed\n");
+			return;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	base = alloc_down(size, PAGE_SIZE, 0);
@@ -1595,6 +1909,11 @@ static void __init prom_instantiate_sml(void)
 
 	prom_printf("instantiating sml at 0x%x...", base);
 
+<<<<<<< HEAD
+=======
+	memset((void *)base, 0, size);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (call_prom_ret("call-method", 4, 2, &entry,
 			  ADDR("sml-handover"),
 			  ibmvtpm_inst, size, base) != 0 || entry == 0) {
@@ -1605,9 +1924,15 @@ static void __init prom_instantiate_sml(void)
 
 	reserve_mem(base, size);
 
+<<<<<<< HEAD
 	prom_setprop(ibmvtpm_node, "/ibm,vtpm", "linux,sml-base",
 		     &base, sizeof(base));
 	prom_setprop(ibmvtpm_node, "/ibm,vtpm", "linux,sml-size",
+=======
+	prom_setprop(ibmvtpm_node, "/vdevice/vtpm", "linux,sml-base",
+		     &base, sizeof(base));
+	prom_setprop(ibmvtpm_node, "/vdevice/vtpm", "linux,sml-size",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     &size, sizeof(size));
 
 	prom_debug("sml base     = 0x%x\n", base);
@@ -1619,6 +1944,10 @@ static void __init prom_instantiate_sml(void)
 /*
  * Allocate room for and initialize TCE tables
  */
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init prom_initialize_tce_table(void)
 {
 	phandle node;
@@ -1747,7 +2076,12 @@ static void __init prom_initialize_tce_table(void)
 	/* Flag the first invalid entry */
 	prom_debug("ending prom_initialize_tce_table\n");
 }
+<<<<<<< HEAD
 #endif
+=======
+#endif /* __BIG_ENDIAN__ */
+#endif /* CONFIG_PPC64 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * With CHRP SMP we need to use the OF to start the other processors.
@@ -1776,7 +2110,10 @@ static void __init prom_initialize_tce_table(void)
 static void __init prom_hold_cpus(void)
 {
 	unsigned long i;
+<<<<<<< HEAD
 	unsigned int reg;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	phandle node;
 	char type[64];
 	unsigned long *spinloop
@@ -1785,6 +2122,21 @@ static void __init prom_hold_cpus(void)
 		= (void *) LOW_ADDR(__secondary_hold_acknowledge);
 	unsigned long secondary_hold = LOW_ADDR(__secondary_hold);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * On pseries, if RTAS supports "query-cpu-stopped-state",
+	 * we skip this stage, the CPUs will be started by the
+	 * kernel using RTAS.
+	 */
+	if ((of_platform == PLATFORM_PSERIES ||
+	     of_platform == PLATFORM_PSERIES_LPAR) &&
+	    rtas_has_query_cpu_stopped) {
+		prom_printf("prom_hold_cpus: skipped\n");
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prom_debug("prom_hold_cpus: start...\n");
 	prom_debug("    1) spinloop       = 0x%x\n", (unsigned long)spinloop);
 	prom_debug("    1) *spinloop      = 0x%x\n", *spinloop);
@@ -1802,6 +2154,12 @@ static void __init prom_hold_cpus(void)
 
 	/* look for cpus */
 	for (node = 0; prom_next_node(&node); ) {
+<<<<<<< HEAD
+=======
+		unsigned int cpu_no;
+		__be32 reg;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		type[0] = 0;
 		prom_getprop(node, "device_type", type, sizeof(type));
 		if (strcmp(type, "cpu") != 0)
@@ -1812,10 +2170,18 @@ static void __init prom_hold_cpus(void)
 			if (strcmp(type, "okay") != 0)
 				continue;
 
+<<<<<<< HEAD
 		reg = -1;
 		prom_getprop(node, "reg", &reg, sizeof(reg));
 
 		prom_debug("cpu hw idx   = %lu\n", reg);
+=======
+		reg = cpu_to_be32(-1); /* make sparse happy */
+		prom_getprop(node, "reg", &reg, sizeof(reg));
+		cpu_no = be32_to_cpu(reg);
+
+		prom_debug("cpu hw idx   = %lu\n", cpu_no);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Init the acknowledge var which will be reset by
 		 * the secondary cpu when it awakens from its OF
@@ -1823,24 +2189,40 @@ static void __init prom_hold_cpus(void)
 		 */
 		*acknowledge = (unsigned long)-1;
 
+<<<<<<< HEAD
 		if (reg != prom.cpu) {
 			/* Primary Thread of non-boot cpu or any thread */
 			prom_printf("starting cpu hw idx %lu... ", reg);
 			call_prom("start-cpu", 3, 0, node,
 				  secondary_hold, reg);
+=======
+		if (cpu_no != prom.cpu) {
+			/* Primary Thread of non-boot cpu or any thread */
+			prom_printf("starting cpu hw idx %lu... ", cpu_no);
+			call_prom("start-cpu", 3, 0, node,
+				  secondary_hold, cpu_no);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			for (i = 0; (i < 100000000) && 
 			     (*acknowledge == ((unsigned long)-1)); i++ )
 				mb();
 
+<<<<<<< HEAD
 			if (*acknowledge == reg)
+=======
+			if (*acknowledge == cpu_no)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				prom_printf("done\n");
 			else
 				prom_printf("failed: %x\n", *acknowledge);
 		}
 #ifdef CONFIG_SMP
 		else
+<<<<<<< HEAD
 			prom_printf("boot cpu hw idx %lu\n", reg);
+=======
+			prom_printf("boot cpu hw idx %lu\n", cpu_no);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SMP */
 	}
 
@@ -1894,6 +2276,10 @@ static void __init prom_find_mmu(void)
 	prom.memory = call_prom("open", 1, 1, ADDR("/memory"));
 	prom_getprop(prom.chosen, "mmu", &prom.mmumap,
 		     sizeof(prom.mmumap));
+<<<<<<< HEAD
+=======
+	prom.mmumap = be32_to_cpu(prom.mmumap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!IHANDLE_VALID(prom.memory) || !IHANDLE_VALID(prom.mmumap))
 		of_workarounds &= ~OF_WA_CLAIM;		/* hmmm */
 }
@@ -1905,28 +2291,56 @@ static void __init prom_init_stdout(void)
 {
 	char *path = of_stdout_device;
 	char type[16];
+<<<<<<< HEAD
 	u32 val;
+=======
+	phandle stdout_node;
+	__be32 val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (prom_getprop(prom.chosen, "stdout", &val, sizeof(val)) <= 0)
 		prom_panic("cannot find stdout");
 
+<<<<<<< HEAD
 	prom.stdout = val;
+=======
+	prom.stdout = be32_to_cpu(val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Get the full OF pathname of the stdout device */
 	memset(path, 0, 256);
 	call_prom("instance-to-path", 3, 1, prom.stdout, path, 255);
+<<<<<<< HEAD
 	val = call_prom("instance-to-package", 1, 1, prom.stdout);
 	prom_setprop(prom.chosen, "/chosen", "linux,stdout-package",
 		     &val, sizeof(val));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prom_printf("OF stdout device is: %s\n", of_stdout_device);
 	prom_setprop(prom.chosen, "/chosen", "linux,stdout-path",
 		     path, strlen(path) + 1);
 
+<<<<<<< HEAD
 	/* If it's a display, note it */
 	memset(type, 0, sizeof(type));
 	prom_getprop(val, "device_type", type, sizeof(type));
 	if (strcmp(type, "display") == 0)
 		prom_setprop(val, path, "linux,boot-display", NULL, 0);
+=======
+	/* instance-to-package fails on PA-Semi */
+	stdout_node = call_prom("instance-to-package", 1, 1, prom.stdout);
+	if (stdout_node != PROM_ERROR) {
+		val = cpu_to_be32(stdout_node);
+		prom_setprop(prom.chosen, "/chosen", "linux,stdout-package",
+			     &val, sizeof(val));
+
+		/* If it's a display, note it */
+		memset(type, 0, sizeof(type));
+		prom_getprop(stdout_node, "device_type", type, sizeof(type));
+		if (strcmp(type, "display") == 0)
+			prom_setprop(stdout_node, path, "linux,boot-display", NULL, 0);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init prom_find_machine_type(void)
@@ -2081,6 +2495,25 @@ static void __init prom_check_displays(void)
 					   clut[2]) != 0)
 				break;
 #endif /* CONFIG_LOGO_LINUX_CLUT224 */
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_PPC_EARLY_DEBUG_BOOTX
+		if (prom_getprop(node, "linux,boot-display", NULL, 0) !=
+		    PROM_ERROR) {
+			u32 width, height, pitch, addr;
+
+			prom_printf("Setting btext !\n");
+			prom_getprop(node, "width", &width, 4);
+			prom_getprop(node, "height", &height, 4);
+			prom_getprop(node, "linebytes", &pitch, 4);
+			prom_getprop(node, "address", &addr, 4);
+			prom_printf("W=%d H=%d LB=%d addr=0x%x\n",
+				    width, height, pitch, addr);
+			btext_setup_display(width, height, 8, pitch, addr);
+		}
+#endif /* CONFIG_PPC_EARLY_DEBUG_BOOTX */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -2116,8 +2549,15 @@ static void __init *make_room(unsigned long *mem_start, unsigned long *mem_end,
 	return ret;
 }
 
+<<<<<<< HEAD
 #define dt_push_token(token, mem_start, mem_end) \
 	do { *((u32 *)make_room(mem_start, mem_end, 4, 4)) = token; } while(0)
+=======
+#define dt_push_token(token, mem_start, mem_end) do { 			\
+		void *room = make_room(mem_start, mem_end, 4, 4);	\
+		*(__be32 *)room = cpu_to_be32(token);			\
+	} while(0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned long __init dt_find_string(char *str)
 {
@@ -2290,7 +2730,11 @@ static void __init scan_dt_build_struct(phandle node, unsigned long *mem_start,
 			dt_push_token(4, mem_start, mem_end);
 			dt_push_token(soff, mem_start, mem_end);
 			valp = make_room(mem_start, mem_end, 4, 4);
+<<<<<<< HEAD
 			*(u32 *)valp = node;
+=======
+			*(__be32 *)valp = cpu_to_be32(node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -2363,6 +2807,7 @@ static void __init flatten_device_tree(void)
 	dt_struct_end = PAGE_ALIGN(mem_start);
 
 	/* Finish header */
+<<<<<<< HEAD
 	hdr->boot_cpuid_phys = prom.cpu;
 	hdr->magic = OF_DT_HEADER;
 	hdr->totalsize = dt_struct_end - dt_header_start;
@@ -2373,6 +2818,18 @@ static void __init flatten_device_tree(void)
 	hdr->version = OF_DT_VERSION;
 	/* Version 16 is not backward compatible */
 	hdr->last_comp_version = 0x10;
+=======
+	hdr->boot_cpuid_phys = cpu_to_be32(prom.cpu);
+	hdr->magic = cpu_to_be32(OF_DT_HEADER);
+	hdr->totalsize = cpu_to_be32(dt_struct_end - dt_header_start);
+	hdr->off_dt_struct = cpu_to_be32(dt_struct_start - dt_header_start);
+	hdr->off_dt_strings = cpu_to_be32(dt_string_start - dt_header_start);
+	hdr->dt_strings_size = cpu_to_be32(dt_string_end - dt_string_start);
+	hdr->off_mem_rsvmap = cpu_to_be32(((unsigned long)rsvmap) - dt_header_start);
+	hdr->version = cpu_to_be32(OF_DT_VERSION);
+	/* Version 16 is not backward compatible */
+	hdr->last_comp_version = cpu_to_be32(0x10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Copy the reserve map in */
 	memcpy(rsvmap, mem_reserve_map, sizeof(mem_reserve_map));
@@ -2383,8 +2840,13 @@ static void __init flatten_device_tree(void)
 		prom_printf("reserved memory map:\n");
 		for (i = 0; i < mem_reserve_cnt; i++)
 			prom_printf("  %x - %x\n",
+<<<<<<< HEAD
 				    mem_reserve_map[i].base,
 				    mem_reserve_map[i].size);
+=======
+				    be64_to_cpu(mem_reserve_map[i].base),
+				    be64_to_cpu(mem_reserve_map[i].size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 	/* Bump mem_reserve_cnt to cause further reservations to fail
@@ -2396,7 +2858,10 @@ static void __init flatten_device_tree(void)
 		    dt_string_start, dt_string_end);
 	prom_printf("Device tree struct  0x%x -> 0x%x\n",
 		    dt_struct_start, dt_struct_end);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PPC_MAPLE
@@ -2718,6 +3183,89 @@ static void __init fixup_device_tree_efika(void)
 #define fixup_device_tree_efika()
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_PASEMI_NEMO
+/*
+ * CFE supplied on Nemo is broken in several ways, biggest
+ * problem is that it reassigns ISA interrupts to unused mpic ints.
+ * Add an interrupt-controller property for the io-bridge to use
+ * and correct the ints so we can attach them to an irq_domain
+ */
+static void __init fixup_device_tree_pasemi(void)
+{
+	u32 interrupts[2], parent, rval, val = 0;
+	char *name, *pci_name;
+	phandle iob, node;
+
+	/* Find the root pci node */
+	name = "/pxp@0,e0000000";
+	iob = call_prom("finddevice", 1, 1, ADDR(name));
+	if (!PHANDLE_VALID(iob))
+		return;
+
+	/* check if interrupt-controller node set yet */
+	if (prom_getproplen(iob, "interrupt-controller") !=PROM_ERROR)
+		return;
+
+	prom_printf("adding interrupt-controller property for SB600...\n");
+
+	prom_setprop(iob, name, "interrupt-controller", &val, 0);
+
+	pci_name = "/pxp@0,e0000000/pci@11";
+	node = call_prom("finddevice", 1, 1, ADDR(pci_name));
+	parent = ADDR(iob);
+
+	for( ; prom_next_node(&node); ) {
+		/* scan each node for one with an interrupt */
+		if (!PHANDLE_VALID(node))
+			continue;
+
+		rval = prom_getproplen(node, "interrupts");
+		if (rval == 0 || rval == PROM_ERROR)
+			continue;
+
+		prom_getprop(node, "interrupts", &interrupts, sizeof(interrupts));
+		if ((interrupts[0] < 212) || (interrupts[0] > 222))
+			continue;
+
+		/* found a node, update both interrupts and interrupt-parent */
+		if ((interrupts[0] >= 212) && (interrupts[0] <= 215))
+			interrupts[0] -= 203;
+		if ((interrupts[0] >= 216) && (interrupts[0] <= 220))
+			interrupts[0] -= 213;
+		if (interrupts[0] == 221)
+			interrupts[0] = 14;
+		if (interrupts[0] == 222)
+			interrupts[0] = 8;
+
+		prom_setprop(node, pci_name, "interrupts", interrupts,
+					sizeof(interrupts));
+		prom_setprop(node, pci_name, "interrupt-parent", &parent,
+					sizeof(parent));
+	}
+
+	/*
+	 * The io-bridge has device_type set to 'io-bridge' change it to 'isa'
+	 * so that generic isa-bridge code can add the SB600 and its on-board
+	 * peripherals.
+	 */
+	name = "/pxp@0,e0000000/io-bridge@0";
+	iob = call_prom("finddevice", 1, 1, ADDR(name));
+	if (!PHANDLE_VALID(iob))
+		return;
+
+	/* device_type is already set, just change it. */
+
+	prom_printf("Changing device_type of SB600 node...\n");
+
+	prom_setprop(iob, name, "device_type", "isa", sizeof("isa"));
+}
+#else	/* !CONFIG_PPC_PASEMI_NEMO */
+static inline void fixup_device_tree_pasemi(void) { }
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init fixup_device_tree(void)
 {
 	fixup_device_tree_maple();
@@ -2725,10 +3273,15 @@ static void __init fixup_device_tree(void)
 	fixup_device_tree_chrp();
 	fixup_device_tree_pmac();
 	fixup_device_tree_efika();
+<<<<<<< HEAD
+=======
+	fixup_device_tree_pasemi();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init prom_find_boot_cpu(void)
 {
+<<<<<<< HEAD
 	u32 getprop_rval;
 	ihandle prom_cpu;
 	phandle cpu_pkg;
@@ -2741,6 +3294,24 @@ static void __init prom_find_boot_cpu(void)
 
 	prom_getprop(cpu_pkg, "reg", &getprop_rval, sizeof(getprop_rval));
 	prom.cpu = getprop_rval;
+=======
+	__be32 rval;
+	ihandle prom_cpu;
+	phandle cpu_pkg;
+
+	rval = 0;
+	if (prom_getprop(prom.chosen, "cpu", &rval, sizeof(rval)) <= 0)
+		return;
+	prom_cpu = be32_to_cpu(rval);
+
+	cpu_pkg = call_prom("instance-to-package", 1, 1, prom_cpu);
+
+	if (!PHANDLE_VALID(cpu_pkg))
+		return;
+
+	prom_getprop(cpu_pkg, "reg", &rval, sizeof(rval));
+	prom.cpu = be32_to_cpu(rval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	prom_debug("Booting CPU hw index = %lu\n", prom.cpu);
 }
@@ -2749,15 +3320,26 @@ static void __init prom_check_initrd(unsigned long r3, unsigned long r4)
 {
 #ifdef CONFIG_BLK_DEV_INITRD
 	if (r3 && r4 && r4 != 0xdeadbeef) {
+<<<<<<< HEAD
 		unsigned long val;
+=======
+		__be64 val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		prom_initrd_start = is_kernel_addr(r3) ? __pa(r3) : r3;
 		prom_initrd_end = prom_initrd_start + r4;
 
+<<<<<<< HEAD
 		val = prom_initrd_start;
 		prom_setprop(prom.chosen, "/chosen", "linux,initrd-start",
 			     &val, sizeof(val));
 		val = prom_initrd_end;
+=======
+		val = cpu_to_be64(prom_initrd_start);
+		prom_setprop(prom.chosen, "/chosen", "linux,initrd-start",
+			     &val, sizeof(val));
+		val = cpu_to_be64(prom_initrd_end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		prom_setprop(prom.chosen, "/chosen", "linux,initrd-end",
 			     &val, sizeof(val));
 
@@ -2914,7 +3496,11 @@ unsigned long __init prom_init(unsigned long r3, unsigned long r4,
 	 */
 	prom_check_displays();
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC64
+=======
+#if defined(CONFIG_PPC64) && defined(__BIG_ENDIAN__)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Initialize IOMMU (TCE tables) on pSeries. Do that before anything else
 	 * that uses the allocator, we need to make sure we get the top of memory
@@ -2933,6 +3519,7 @@ unsigned long __init prom_init(unsigned long r3, unsigned long r4,
 		prom_instantiate_rtas();
 
 #ifdef CONFIG_PPC_POWERNV
+<<<<<<< HEAD
 	/* Detect HAL and try instanciating it & doing takeover */
 	if (of_platform == PLATFORM_PSERIES_LPAR) {
 		prom_query_opal();
@@ -2943,6 +3530,11 @@ unsigned long __init prom_init(unsigned long r3, unsigned long r4,
 	} else if (of_platform == PLATFORM_OPAL)
 		prom_instantiate_opal();
 #endif
+=======
+	if (of_platform == PLATFORM_OPAL)
+		prom_instantiate_opal();
+#endif /* CONFIG_PPC_POWERNV */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PPC64
 	/* instantiate sml */
@@ -2953,6 +3545,11 @@ unsigned long __init prom_init(unsigned long r3, unsigned long r4,
 	 * On non-powermacs, put all CPUs in spin-loops.
 	 *
 	 * PowerMacs use a different mechanism to spin CPUs
+<<<<<<< HEAD
+=======
+	 *
+	 * (This must be done after instanciating RTAS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	if (of_platform != PLATFORM_POWERMAC &&
 	    of_platform != PLATFORM_OPAL)
@@ -2961,10 +3558,18 @@ unsigned long __init prom_init(unsigned long r3, unsigned long r4,
 	/*
 	 * Fill in some infos for use by the kernel later on
 	 */
+<<<<<<< HEAD
 	if (prom_memory_limit)
 		prom_setprop(prom.chosen, "/chosen", "linux,memory-limit",
 			     &prom_memory_limit,
 			     sizeof(prom_memory_limit));
+=======
+	if (prom_memory_limit) {
+		__be64 val = cpu_to_be64(prom_memory_limit);
+		prom_setprop(prom.chosen, "/chosen", "linux,memory-limit",
+			     &val, sizeof(val));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC64
 	if (prom_iommu_off)
 		prom_setprop(prom.chosen, "/chosen", "linux,iommu-off",
@@ -3009,7 +3614,11 @@ unsigned long __init prom_init(unsigned long r3, unsigned long r4,
 	 * Call OF "quiesce" method to shut down pending DMA's from
 	 * devices etc...
 	 */
+<<<<<<< HEAD
 	prom_printf("Calling quiesce...\n");
+=======
+	prom_printf("Quiescing Open Firmware ...\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	call_prom("quiesce", 0, 0);
 
 	/*
@@ -3021,7 +3630,11 @@ unsigned long __init prom_init(unsigned long r3, unsigned long r4,
 
 	/* Don't print anything after quiesce under OPAL, it crashes OFW */
 	if (of_platform != PLATFORM_OPAL) {
+<<<<<<< HEAD
 		prom_printf("returning from prom_init\n");
+=======
+		prom_printf("Booting Linux via __start() @ 0x%lx ...\n", kbase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		prom_debug("->dt_header_start=0x%x\n", hdr);
 	}
 

@@ -18,7 +18,10 @@
 #include <linux/fsl_devices.h>
 
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/mpc8xx.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/8xx_immap.h>
 #include <asm/prom.h>
 #include <asm/fs_pd.h>
@@ -28,8 +31,11 @@
 
 #include "mpc8xx.h"
 
+<<<<<<< HEAD
 struct mpc8xx_pcmcia_ops m8xx_pcmcia_ops;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int cpm_pic_init(void);
 extern int cpm_get_irq(void);
 
@@ -43,6 +49,10 @@ static irqreturn_t timebase_interrupt(int irq, void *dev)
 
 static struct irqaction tbint_irqaction = {
 	.handler = timebase_interrupt,
+<<<<<<< HEAD
+=======
+	.flags = IRQF_NO_THREAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name = "tbint",
 };
 
@@ -200,7 +210,11 @@ void mpc8xx_get_rtc_time(struct rtc_time *tm)
 	return;
 }
 
+<<<<<<< HEAD
 void mpc8xx_restart(char *cmd)
+=======
+void __noreturn mpc8xx_restart(char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	car8xx_t __iomem *clk_r = immr_map(im_clkrst);
 
@@ -216,6 +230,7 @@ void mpc8xx_restart(char *cmd)
 	panic("Restart failed\n");
 }
 
+<<<<<<< HEAD
 static void cpm_cascade(unsigned int irq, struct irq_desc *desc)
 {
 	struct irq_chip *chip;
@@ -231,6 +246,16 @@ static void cpm_cascade(unsigned int irq, struct irq_desc *desc)
 	}
 
 	chip = irq_desc_get_chip(desc);
+=======
+static void cpm_cascade(struct irq_desc *desc)
+{
+	struct irq_chip *chip = irq_desc_get_chip(desc);
+	int cascade_irq = cpm_get_irq();
+
+	if (cascade_irq >= 0)
+		generic_handle_irq(cascade_irq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->irq_eoi(&desc->irq_data);
 }
 
@@ -250,6 +275,10 @@ void __init mpc8xx_pics_init(void)
 	}
 
 	irq = cpm_pic_init();
+<<<<<<< HEAD
 	if (irq != NO_IRQ)
+=======
+	if (irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		irq_set_chained_handler(irq, cpm_cascade);
 }

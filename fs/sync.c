@@ -65,7 +65,11 @@ int sync_filesystem(struct super_block *sb)
 		return ret;
 	return __sync_filesystem(sb, 1);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(sync_filesystem);
+=======
+EXPORT_SYMBOL(sync_filesystem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void sync_inodes_one_sb(struct super_block *sb, void *arg)
 {
@@ -86,7 +90,16 @@ static void fdatawrite_one_bdev(struct block_device *bdev, void *arg)
 
 static void fdatawait_one_bdev(struct block_device *bdev, void *arg)
 {
+<<<<<<< HEAD
 	filemap_fdatawait(bdev->bd_inode->i_mapping);
+=======
+	/*
+	 * We keep the error status of individual mapping so that
+	 * applications can catch the writeback error using fsync(2).
+	 * See filemap_fdatawait_keep_errors() for details.
+	 */
+	filemap_fdatawait_keep_errors(bdev->bd_inode->i_mapping);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -154,7 +167,11 @@ SYSCALL_DEFINE1(syncfs, int, fd)
 
 	if (!f.file)
 		return -EBADF;
+<<<<<<< HEAD
 	sb = f.file->f_dentry->d_sb;
+=======
+	sb = f.file->f_path.dentry->d_sb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	down_read(&sb->s_umount);
 	ret = sync_filesystem(sb);
@@ -177,8 +194,21 @@ SYSCALL_DEFINE1(syncfs, int, fd)
  */
 int vfs_fsync_range(struct file *file, loff_t start, loff_t end, int datasync)
 {
+<<<<<<< HEAD
 	if (!file->f_op || !file->f_op->fsync)
 		return -EINVAL;
+=======
+	struct inode *inode = file->f_mapping->host;
+
+	if (!file->f_op->fsync)
+		return -EINVAL;
+	if (!datasync && (inode->i_state & I_DIRTY_TIME)) {
+		spin_lock(&inode->i_lock);
+		inode->i_state &= ~I_DIRTY_TIME;
+		spin_unlock(&inode->i_lock);
+		mark_inode_dirty_sync(inode);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return file->f_op->fsync(file, start, end, datasync);
 }
 EXPORT_SYMBOL(vfs_fsync_range);
@@ -205,6 +235,10 @@ static int do_fsync(unsigned int fd, int datasync)
 	if (f.file) {
 		ret = vfs_fsync(f.file, datasync);
 		fdput(f);
+<<<<<<< HEAD
+=======
+		inc_syscfs(current);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return ret;
 }
@@ -219,6 +253,7 @@ SYSCALL_DEFINE1(fdatasync, unsigned int, fd)
 	return do_fsync(fd, 1);
 }
 
+<<<<<<< HEAD
 /**
  * generic_write_sync - perform syncing after a write if file / inode is sync
  * @file:	file to which the write happened
@@ -236,6 +271,8 @@ int generic_write_sync(struct file *file, loff_t pos, loff_t count)
 }
 EXPORT_SYMBOL(generic_write_sync);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * sys_sync_file_range() permits finely controlled syncing over a segment of
  * a file in the range offset .. (offset+nbytes-1) inclusive.  If nbytes is
@@ -306,7 +343,11 @@ SYSCALL_DEFINE4(sync_file_range, int, fd, loff_t, offset, loff_t, nbytes,
 		goto out;
 
 	if (sizeof(pgoff_t) == 4) {
+<<<<<<< HEAD
 		if (offset >= (0x100000000ULL << PAGE_CACHE_SHIFT)) {
+=======
+		if (offset >= (0x100000000ULL << PAGE_SHIFT)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * The range starts outside a 32 bit machine's
 			 * pagecache addressing capabilities.  Let it "succeed"
@@ -314,7 +355,11 @@ SYSCALL_DEFINE4(sync_file_range, int, fd, loff_t, offset, loff_t, nbytes,
 			ret = 0;
 			goto out;
 		}
+<<<<<<< HEAD
 		if (endbyte >= (0x100000000ULL << PAGE_CACHE_SHIFT)) {
+=======
+		if (endbyte >= (0x100000000ULL << PAGE_SHIFT)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Out to EOF
 			 */
@@ -352,7 +397,12 @@ SYSCALL_DEFINE4(sync_file_range, int, fd, loff_t, offset, loff_t, nbytes,
 	}
 
 	if (flags & SYNC_FILE_RANGE_WRITE) {
+<<<<<<< HEAD
 		ret = filemap_fdatawrite_range(mapping, offset, endbyte);
+=======
+		ret = __filemap_fdatawrite_range(mapping, offset, endbyte,
+						 WB_SYNC_NONE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0)
 			goto out_put;
 	}

@@ -9,14 +9,22 @@
  *
  */
 
+<<<<<<< HEAD
 
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "ncp_fs.h"
 
 static inline void assert_server_locked(struct ncp_server *server)
 {
 	if (server->lock == 0) {
+<<<<<<< HEAD
 		DPRINTK("ncpfs: server not locked!\n");
+=======
+		ncp_dbg(1, "server not locked!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -75,7 +83,11 @@ static void ncp_add_pstring(struct ncp_server *server, const char *s)
 	int len = strlen(s);
 	assert_server_locked(server);
 	if (len > 255) {
+<<<<<<< HEAD
 		DPRINTK("ncpfs: string too long: %s\n", s);
+=======
+		ncp_dbg(1, "string too long: %s\n", s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		len = 255;
 	}
 	ncp_add_byte(server, len);
@@ -225,7 +237,11 @@ int ncp_get_volume_info_with_number(struct ncp_server* server,
 	result = -EIO;
 	len = ncp_reply_byte(server, 29);
 	if (len > NCP_VOLNAME_LEN) {
+<<<<<<< HEAD
 		DPRINTK("ncpfs: volume name too long: %d\n", len);
+=======
+		ncp_dbg(1, "volume name too long: %d\n", len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	memcpy(&(target->volume_name), ncp_reply_data(server, 30), len);
@@ -259,7 +275,11 @@ int ncp_get_directory_info(struct ncp_server* server, __u8 n,
 	result = -EIO;
 	len = ncp_reply_byte(server, 21);
 	if (len > NCP_VOLNAME_LEN) {
+<<<<<<< HEAD
 		DPRINTK("ncpfs: volume name too long: %d\n", len);
+=======
+		ncp_dbg(1, "volume name too long: %d\n", len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	memcpy(&(target->volume_name), ncp_reply_data(server, 22), len);
@@ -295,9 +315,15 @@ ncp_make_closed(struct inode *inode)
 		err = ncp_close_file(NCP_SERVER(inode), NCP_FINFO(inode)->file_handle);
 
 		if (!err)
+<<<<<<< HEAD
 			PPRINTK("ncp_make_closed: volnum=%d, dirent=%u, error=%d\n",
 				NCP_FINFO(inode)->volNumber,
 				NCP_FINFO(inode)->dirEntNum, err);
+=======
+			ncp_vdbg("volnum=%d, dirent=%u, error=%d\n",
+				 NCP_FINFO(inode)->volNumber,
+				 NCP_FINFO(inode)->dirEntNum, err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mutex_unlock(&NCP_FINFO(inode)->open_mutex);
 	return err;
@@ -394,8 +420,12 @@ int ncp_obtain_nfs_info(struct ncp_server *server,
 
 		if ((result = ncp_request(server, 87)) == 0) {
 			ncp_extract_nfs_info(ncp_reply_data(server, 0), &target->nfs);
+<<<<<<< HEAD
 			DPRINTK(KERN_DEBUG
 				"ncp_obtain_nfs_info: (%s) mode=0%o, rdev=0x%x\n",
+=======
+			ncp_dbg(1, "(%s) mode=0%o, rdev=0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				target->entryName, target->nfs.mode,
 				target->nfs.rdev);
 		} else {
@@ -425,7 +455,11 @@ int ncp_obtain_info(struct ncp_server *server, struct inode *dir, const char *pa
 	int result;
 
 	if (target == NULL) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ncp_obtain_info: invalid call\n");
+=======
+		pr_err("%s: invalid call\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	ncp_init_request(server);
@@ -498,7 +532,11 @@ ncp_get_known_namespace(struct ncp_server *server, __u8 volume)
 	namespace = ncp_reply_data(server, 2);
 
 	while (no_namespaces > 0) {
+<<<<<<< HEAD
 		DPRINTK("get_namespaces: found %d on %d\n", *namespace, volume);
+=======
+		ncp_dbg(1, "found %d on %d\n", *namespace, volume);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_NCPFS_NFS_NS
 		if ((*namespace == NW_NS_NFS) && !(server->m.flags&NCP_MOUNT_NO_NFS)) 
@@ -531,8 +569,12 @@ ncp_update_known_namespace(struct ncp_server *server, __u8 volume, int *ret_ns)
 	if (ret_ns)
 		*ret_ns = ns;
 
+<<<<<<< HEAD
 	DPRINTK("lookup_vol: namespace[%d] = %d\n",
 		volume, server->name_space[volume]);
+=======
+	ncp_dbg(1, "namespace[%d] = %d\n", volume, server->name_space[volume]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (server->name_space[volume] == ns)
 		return 0;
@@ -596,7 +638,11 @@ ncp_get_volume_root(struct ncp_server *server,
 {
 	int result;
 
+<<<<<<< HEAD
 	DPRINTK("ncp_get_volume_root: looking up vol %s\n", volname);
+=======
+	ncp_dbg(1, "looking up vol %s\n", volname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ncp_init_request(server);
 	ncp_add_byte(server, 22);	/* Subfunction: Generate dir handle */
@@ -729,7 +775,11 @@ int
 ncp_del_file_or_subdir2(struct ncp_server *server,
 			struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8  volnum;
 	__le32 dirent;
 
@@ -982,6 +1032,13 @@ ncp_read_kernel(struct ncp_server *server, const char *file_id,
 		goto out;
 	}
 	*bytes_read = ncp_reply_be16(server, 0);
+<<<<<<< HEAD
+=======
+	if (*bytes_read > to_read) {
+		result = -EINVAL;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	source = ncp_reply_data(server, 2 + (offset & 1));
 
 	memcpy(target, source, *bytes_read);
@@ -1003,8 +1060,13 @@ out:
  */
 int
 ncp_read_bounce(struct ncp_server *server, const char *file_id,
+<<<<<<< HEAD
 	 __u32 offset, __u16 to_read, char __user *target, int *bytes_read,
 	 void* bounce, __u32 bufsize)
+=======
+	 __u32 offset, __u16 to_read, struct iov_iter *to,
+	 int *bytes_read, void *bounce, __u32 bufsize)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int result;
 
@@ -1027,7 +1089,11 @@ ncp_read_bounce(struct ncp_server *server, const char *file_id,
 			         (offset & 1);
 			*bytes_read = len;
 			result = 0;
+<<<<<<< HEAD
 			if (copy_to_user(target, source, len))
+=======
+			if (copy_to_iter(source, len, to) != len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				result = -EFAULT;
 		}
 	}

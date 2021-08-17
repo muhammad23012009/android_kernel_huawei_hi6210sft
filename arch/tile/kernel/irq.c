@@ -21,6 +21,10 @@
 #include <hv/drv_pcie_rc_intf.h>
 #include <arch/spr_def.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
+=======
+#include <linux/perf_event.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Bit-flag stored in irq_desc->chip_data to indicate HW-cleared irqs. */
 #define IS_HW_CLEARED 1
@@ -53,12 +57,15 @@ static DEFINE_PER_CPU(unsigned long, irq_disable_mask)
  */
 static DEFINE_PER_CPU(int, irq_depth);
 
+<<<<<<< HEAD
 /* State for allocating IRQs on Gx. */
 #if CHIP_HAS_IPI()
 static unsigned long available_irqs = ~(1UL << IRQ_RESCHEDULE);
 static DEFINE_SPINLOCK(available_irqs_lock);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if CHIP_HAS_IPI()
 /* Use SPRs to manipulate device interrupts. */
 #define mask_irqs(irq_mask) __insn_mtspr(SPR_IPI_MASK_SET_K, irq_mask)
@@ -73,11 +80,20 @@ static DEFINE_SPINLOCK(available_irqs_lock);
 
 /*
  * The interrupt handling path, implemented in terms of HV interrupt
+<<<<<<< HEAD
  * emulation on TILE64 and TILEPro, and IPI hardware on TILE-Gx.
  */
 void tile_dev_intr(struct pt_regs *regs, int intnum)
 {
 	int depth = __get_cpu_var(irq_depth)++;
+=======
+ * emulation on TILEPro, and IPI hardware on TILE-Gx.
+ * Entered with interrupts disabled.
+ */
+void tile_dev_intr(struct pt_regs *regs, int intnum)
+{
+	int depth = __this_cpu_inc_return(irq_depth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long original_irqs;
 	unsigned long remaining_irqs;
 	struct pt_regs *old_regs;
@@ -111,9 +127,14 @@ void tile_dev_intr(struct pt_regs *regs, int intnum)
 	{
 		long sp = stack_pointer - (long) current_thread_info();
 		if (unlikely(sp < (sizeof(struct thread_info) + STACK_WARN))) {
+<<<<<<< HEAD
 			pr_emerg("tile_dev_intr: "
 			       "stack overflow: %ld\n",
 			       sp - sizeof(struct thread_info));
+=======
+			pr_emerg("%s: stack overflow: %ld\n",
+				 __func__, sp - sizeof(struct thread_info));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dump_stack();
 		}
 	}
@@ -124,7 +145,11 @@ void tile_dev_intr(struct pt_regs *regs, int intnum)
 
 		/* Count device irqs; Linux IPIs are counted elsewhere. */
 		if (irq != IRQ_RESCHEDULE)
+<<<<<<< HEAD
 			__get_cpu_var(irq_stat).irq_dev_intr_count++;
+=======
+			__this_cpu_inc(irq_stat.irq_dev_intr_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		generic_handle_irq(irq);
 	}
@@ -134,10 +159,17 @@ void tile_dev_intr(struct pt_regs *regs, int intnum)
 	 * including any that were reenabled during interrupt
 	 * handling.
 	 */
+<<<<<<< HEAD
 	if (depth == 0)
 		unmask_irqs(~__get_cpu_var(irq_disable_mask));
 
 	__get_cpu_var(irq_depth)--;
+=======
+	if (depth == 1)
+		unmask_irqs(~__this_cpu_read(irq_disable_mask));
+
+	__this_cpu_dec(irq_depth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Track time spent against the current process again and
@@ -155,7 +187,11 @@ void tile_dev_intr(struct pt_regs *regs, int intnum)
 static void tile_irq_chip_enable(struct irq_data *d)
 {
 	get_cpu_var(irq_disable_mask) &= ~(1UL << d->irq);
+<<<<<<< HEAD
 	if (__get_cpu_var(irq_depth) == 0)
+=======
+	if (__this_cpu_read(irq_depth) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unmask_irqs(1UL << d->irq);
 	put_cpu_var(irq_disable_mask);
 }
@@ -201,7 +237,11 @@ static void tile_irq_chip_ack(struct irq_data *d)
  */
 static void tile_irq_chip_eoi(struct irq_data *d)
 {
+<<<<<<< HEAD
 	if (!(__get_cpu_var(irq_disable_mask) & (1UL << d->irq)))
+=======
+	if (!(__this_cpu_read(irq_disable_mask) & (1UL << d->irq)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unmask_irqs(1UL << d->irq);
 }
 
@@ -220,7 +260,11 @@ void __init init_IRQ(void)
 	ipi_init();
 }
 
+<<<<<<< HEAD
 void __cpuinit setup_irq_regs(void)
+=======
+void setup_irq_regs(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* Enable interrupt delivery. */
 	unmask_irqs(~0UL);
@@ -233,7 +277,11 @@ void tile_irq_activate(unsigned int irq, int tile_irq_type)
 {
 	/*
 	 * We use handle_level_irq() by default because the pending
+<<<<<<< HEAD
 	 * interrupt vector (whether modeled by the HV on TILE64 and
+=======
+	 * interrupt vector (whether modeled by the HV on
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * TILEPro or implemented in hardware on TILE-Gx) has
 	 * level-style semantics for each bit.  An interrupt fires
 	 * whenever a bit is high, not just at edges.
@@ -259,6 +307,7 @@ void ack_bad_irq(unsigned int irq)
 }
 
 /*
+<<<<<<< HEAD
  * Generic, controller-independent functions:
  */
 
@@ -292,4 +341,29 @@ void destroy_irq(unsigned int irq)
 	spin_unlock_irqrestore(&available_irqs_lock, flags);
 }
 EXPORT_SYMBOL(destroy_irq);
+=======
+ * /proc/interrupts printing:
+ */
+int arch_show_interrupts(struct seq_file *p, int prec)
+{
+#ifdef CONFIG_PERF_EVENTS
+	int i;
+
+	seq_printf(p, "%*s: ", prec, "PMI");
+
+	for_each_online_cpu(i)
+		seq_printf(p, "%10llu ", per_cpu(perf_irqs, i));
+	seq_puts(p, "  perf_events\n");
+#endif
+	return 0;
+}
+
+#if CHIP_HAS_IPI()
+int arch_setup_hwirq(unsigned int irq, int node)
+{
+	return irq >= NR_IRQS ? -EINVAL : 0;
+}
+
+void arch_teardown_hwirq(unsigned int irq) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

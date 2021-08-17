@@ -105,6 +105,7 @@
 #include <linux/module.h>
 #include <asm/sections.h>
 
+<<<<<<< HEAD
 #define v1printk(a...) do { \
 	if (verbose) \
 		printk(KERN_INFO a); \
@@ -118,6 +119,22 @@
 		printk(KERN_ERR a); \
 		WARN_ON(1); \
 	} while (0)
+=======
+#define v1printk(a...) do {		\
+	if (verbose)			\
+		printk(KERN_INFO a);	\
+} while (0)
+#define v2printk(a...) do {		\
+	if (verbose > 1) {		\
+		printk(KERN_INFO a);	\
+	}				\
+	touch_nmi_watchdog();		\
+} while (0)
+#define eprintk(a...) do {		\
+	printk(KERN_ERR a);		\
+	WARN_ON(1);			\
+} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MAX_CONFIG_LEN		40
 
 static struct kgdb_io kgdbts_io_ops;
@@ -220,7 +237,11 @@ static unsigned long lookup_addr(char *arg)
 	else if (!strcmp(arg, "sys_open"))
 		addr = (unsigned long)do_sys_open;
 	else if (!strcmp(arg, "do_fork"))
+<<<<<<< HEAD
 		addr = (unsigned long)do_fork;
+=======
+		addr = (unsigned long)_do_fork;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (!strcmp(arg, "hw_break_val"))
 		addr = (unsigned long)&hw_break_val;
 	addr = (unsigned long) dereference_function_descriptor((void *)addr);
@@ -979,6 +1000,15 @@ static void kgdbts_run_tests(void)
 	int nmi_sleep = 0;
 	int i;
 
+<<<<<<< HEAD
+=======
+	verbose = 0;
+	if (strstr(config, "V1"))
+		verbose = 1;
+	if (strstr(config, "V2"))
+		verbose = 2;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ptr = strchr(config, 'F');
 	if (ptr)
 		fork_test = simple_strtol(ptr + 1, NULL, 10);
@@ -1062,6 +1092,7 @@ static int kgdbts_option_setup(char *opt)
 		return -ENOSPC;
 	}
 	strcpy(config, opt);
+<<<<<<< HEAD
 
 	verbose = 0;
 	if (strstr(config, "V1"))
@@ -1069,6 +1100,8 @@ static int kgdbts_option_setup(char *opt)
 	if (strstr(config, "V2"))
 		verbose = 2;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1080,9 +1113,12 @@ static int configure_kgdbts(void)
 
 	if (!strlen(config) || isspace(config[0]))
 		goto noconfig;
+<<<<<<< HEAD
 	err = kgdbts_option_setup(config);
 	if (err)
 		goto noconfig;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	final_ack = 0;
 	run_plant_and_detach_test(1);
@@ -1112,6 +1148,10 @@ static int __init init_kgdbts(void)
 
 	return configure_kgdbts();
 }
+<<<<<<< HEAD
+=======
+device_initcall(init_kgdbts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int kgdbts_get_char(void)
 {
@@ -1131,7 +1171,11 @@ static void kgdbts_put_char(u8 chr)
 
 static int param_set_kgdbts_var(const char *kmessage, struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	int len = strlen(kmessage);
+=======
+	size_t len = strlen(kmessage);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (len >= MAX_CONFIG_LEN) {
 		printk(KERN_ERR "kgdbts: config string too long\n");
@@ -1151,7 +1195,11 @@ static int param_set_kgdbts_var(const char *kmessage, struct kernel_param *kp)
 
 	strcpy(config, kmessage);
 	/* Chop out \n char as a result of echo */
+<<<<<<< HEAD
 	if (config[len - 1] == '\n')
+=======
+	if (len && config[len - 1] == '\n')
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		config[len - 1] = '\0';
 
 	/* Go and configure with the new params. */
@@ -1180,6 +1228,7 @@ static struct kgdb_io kgdbts_io_ops = {
 	.post_exception		= kgdbts_post_exp_handler,
 };
 
+<<<<<<< HEAD
 module_init(init_kgdbts);
 module_param_call(kgdbts, param_set_kgdbts_var, param_get_string, &kps, 0644);
 MODULE_PARM_DESC(kgdbts, "<A|V1|V2>[F#|S#][N#]");
@@ -1187,3 +1236,11 @@ MODULE_DESCRIPTION("KGDB Test Suite");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Wind River Systems, Inc.");
 
+=======
+/*
+ * not really modular, but the easiest way to keep compat with existing
+ * bootargs behaviour is to continue using module_param here.
+ */
+module_param_call(kgdbts, param_set_kgdbts_var, param_get_string, &kps, 0644);
+MODULE_PARM_DESC(kgdbts, "<A|V1|V2>[F#|S#][N#]");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

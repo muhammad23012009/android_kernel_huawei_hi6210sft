@@ -256,11 +256,19 @@ static void crisv32_arbiter_init(void)
 	crisv32_arbiter_config(1, EXT_REGION, 0);
 
 	if (request_irq(MEMARB_FOO_INTR_VECT, crisv32_foo_arbiter_irq,
+<<<<<<< HEAD
 			IRQF_DISABLED, "arbiter", NULL))
 		printk(KERN_ERR "Couldn't allocate arbiter IRQ\n");
 
 	if (request_irq(MEMARB_BAR_INTR_VECT, crisv32_bar_arbiter_irq,
 			IRQF_DISABLED, "arbiter", NULL))
+=======
+			0, "arbiter", NULL))
+		printk(KERN_ERR "Couldn't allocate arbiter IRQ\n");
+
+	if (request_irq(MEMARB_BAR_INTR_VECT, crisv32_bar_arbiter_irq,
+			0, "arbiter", NULL))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "Couldn't allocate arbiter IRQ\n");
 
 #ifndef CONFIG_ETRAX_KGDB

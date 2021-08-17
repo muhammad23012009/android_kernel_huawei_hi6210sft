@@ -1,18 +1,39 @@
+<<<<<<< HEAD
 #include <signal.h>
 #include <stdbool.h>
 
 #include "../../util/cache.h"
 #include "../../util/debug.h"
+=======
+#include <errno.h>
+#include <signal.h>
+#include <stdbool.h>
+#ifdef HAVE_BACKTRACE_SUPPORT
+#include <execinfo.h>
+#endif
+
+#include "../../util/cache.h"
+#include "../../util/debug.h"
+#include "../../util/util.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "../browser.h"
 #include "../helpline.h"
 #include "../ui.h"
 #include "../util.h"
 #include "../libslang.h"
 #include "../keysyms.h"
+<<<<<<< HEAD
+=======
+#include "tui.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static volatile int ui__need_resize;
 
 extern struct perf_error_ops perf_tui_eops;
+<<<<<<< HEAD
+=======
+extern bool tui_helpline__set;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void hist_browser__init_hpp(void);
 
@@ -87,6 +108,28 @@ int ui__getch(int delay_secs)
 	return SLkp_getkey();
 }
 
+<<<<<<< HEAD
+=======
+#ifdef HAVE_BACKTRACE_SUPPORT
+static void ui__signal_backtrace(int sig)
+{
+	void *stackdump[32];
+	size_t size;
+
+	ui__exit(false);
+	psignal(sig, "perf");
+
+	printf("-------- backtrace --------\n");
+	size = backtrace(stackdump, ARRAY_SIZE(stackdump));
+	backtrace_symbols_fd(stackdump, size, STDOUT_FILENO);
+
+	exit(0);
+}
+#else
+# define ui__signal_backtrace  ui__signal
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ui__signal(int sig)
 {
 	ui__exit(false);
@@ -105,7 +148,11 @@ int ui__init(void)
 	err = SLsmg_init_smg();
 	if (err < 0)
 		goto out;
+<<<<<<< HEAD
 	err = SLang_init_tty(0, 0, 0);
+=======
+	err = SLang_init_tty(-1, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		goto out;
 
@@ -117,18 +164,30 @@ int ui__init(void)
 
 	SLkp_define_keysym((char *)"^(kB)", SL_KEY_UNTAB);
 
+<<<<<<< HEAD
 	ui_helpline__init();
 	ui_browser__init();
 	ui_progress__init();
 
 	signal(SIGSEGV, ui__signal);
 	signal(SIGFPE, ui__signal);
+=======
+	signal(SIGSEGV, ui__signal_backtrace);
+	signal(SIGFPE, ui__signal_backtrace);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	signal(SIGINT, ui__signal);
 	signal(SIGQUIT, ui__signal);
 	signal(SIGTERM, ui__signal);
 
 	perf_error__register(&perf_tui_eops);
 
+<<<<<<< HEAD
+=======
+	ui_helpline__init();
+	ui_browser__init();
+	tui_progress__init();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hist_browser__init_hpp();
 out:
 	return err;
@@ -136,7 +195,11 @@ out:
 
 void ui__exit(bool wait_for_ok)
 {
+<<<<<<< HEAD
 	if (wait_for_ok)
+=======
+	if (wait_for_ok && tui_helpline__set)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ui__question_window("Fatal Error",
 				    ui_helpline__last_msg,
 				    "Press any key...", 0);

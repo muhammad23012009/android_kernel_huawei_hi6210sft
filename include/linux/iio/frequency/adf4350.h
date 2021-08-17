@@ -1,7 +1,11 @@
 /*
  * ADF4350/ADF4351 SPI PLL driver
  *
+<<<<<<< HEAD
  * Copyright 2012 Analog Devices Inc.
+=======
+ * Copyright 2012-2013 Analog Devices Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Licensed under the GPL-2.
  */
@@ -41,7 +45,11 @@
 #define ADF4350_REG2_RDIV2_EN			(1 << 24)
 #define ADF4350_REG2_RMULT2_EN			(1 << 25)
 #define ADF4350_REG2_MUXOUT(x)			((x) << 26)
+<<<<<<< HEAD
 #define ADF4350_REG2_NOISE_MODE(x)		((x) << 29)
+=======
+#define ADF4350_REG2_NOISE_MODE(x)		(((unsigned)(x)) << 29)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADF4350_MUXOUT_THREESTATE		0
 #define ADF4350_MUXOUT_DVDD			1
 #define ADF4350_MUXOUT_GND			2

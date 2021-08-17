@@ -26,7 +26,11 @@ static int coda_symlink_filler(struct file *file, struct page *page)
 	int error;
 	struct coda_inode_info *cii;
 	unsigned int len = PAGE_SIZE;
+<<<<<<< HEAD
 	char *p = kmap(page);
+=======
+	char *p = page_address(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cii = ITOC(inode);
 
@@ -34,13 +38,19 @@ static int coda_symlink_filler(struct file *file, struct page *page)
 	if (error)
 		goto fail;
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return 0;
 
 fail:
 	SetPageError(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return error;
 }

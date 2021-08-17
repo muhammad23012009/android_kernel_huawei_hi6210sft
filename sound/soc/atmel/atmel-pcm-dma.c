@@ -50,12 +50,19 @@ static const struct snd_pcm_hardware atmel_pcm_dma_hardware = {
 				  SNDRV_PCM_INFO_INTERLEAVED |
 				  SNDRV_PCM_INFO_RESUME |
 				  SNDRV_PCM_INFO_PAUSE,
+<<<<<<< HEAD
 	.formats		= SNDRV_PCM_FMTBIT_S16_LE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.period_bytes_min	= 256,		/* lighting DMA overhead */
 	.period_bytes_max	= 2 * 0xffff,	/* if 2 bytes format */
 	.periods_min		= 8,
 	.periods_max		= 1024,		/* no limit */
+<<<<<<< HEAD
 	.buffer_bytes_max	= ATMEL_SSC_DMABUF_SIZE,
+=======
+	.buffer_bytes_max	= 512 * 1024,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -81,9 +88,13 @@ static void atmel_pcm_dma_irq(u32 ssc_sr,
 
 		/* stop RX and capture: will be enabled again at restart */
 		ssc_writex(prtd->ssc->regs, SSC_CR, prtd->mask->ssc_disable);
+<<<<<<< HEAD
 		snd_pcm_stream_lock(substream);
 		snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
 		snd_pcm_stream_unlock(substream);
+=======
+		snd_pcm_stop_xrun(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* now drain RHR and read status to remove xrun condition */
 		ssc_readx(prtd->ssc->regs, SSC_RHR);
@@ -91,6 +102,7 @@ static void atmel_pcm_dma_irq(u32 ssc_sr,
 	}
 }
 
+<<<<<<< HEAD
 /*--------------------------------------------------------------------------*\
  * DMAENGINE operations
 \*--------------------------------------------------------------------------*/
@@ -143,10 +155,15 @@ static int atmel_pcm_configure_dma(struct snd_pcm_substream *substream,
 
 static int atmel_pcm_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
+=======
+static int atmel_pcm_configure_dma(struct snd_pcm_substream *substream,
+	struct snd_pcm_hw_params *params, struct dma_slave_config *slave_config)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct atmel_pcm_dma_params *prtd;
 	struct ssc_device *ssc;
+<<<<<<< HEAD
 	struct at_dma_slave *sdata = NULL;
 	int ret;
 
@@ -193,10 +210,31 @@ static int atmel_pcm_dma_prepare(struct snd_pcm_substream *substream)
 static int atmel_pcm_open(struct snd_pcm_substream *substream)
 {
 	snd_soc_set_runtime_hwparams(substream, &atmel_pcm_dma_hardware);
+=======
+	int ret;
+
+	prtd = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
+	ssc = prtd->ssc;
+
+	ret = snd_hwparams_to_dma_slave_config(substream, params, slave_config);
+	if (ret) {
+		pr_err("atmel-pcm: hwparams to dma slave configure failed\n");
+		return ret;
+	}
+
+	slave_config->dst_addr = ssc->phybase + SSC_THR;
+	slave_config->dst_maxburst = 1;
+
+	slave_config->src_addr = ssc->phybase + SSC_RHR;
+	slave_config->src_maxburst = 1;
+
+	prtd->dma_intr_handler = atmel_pcm_dma_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops atmel_pcm_ops = {
 	.open		= atmel_pcm_open,
 	.close		= snd_dmaengine_pcm_close_release_chan,
@@ -212,17 +250,31 @@ static struct snd_soc_platform_driver atmel_soc_platform = {
 	.ops		= &atmel_pcm_ops,
 	.pcm_new	= atmel_pcm_new,
 	.pcm_free	= atmel_pcm_free,
+=======
+static const struct snd_dmaengine_pcm_config atmel_dmaengine_pcm_config = {
+	.prepare_slave_config = atmel_pcm_configure_dma,
+	.pcm_hardware = &atmel_pcm_dma_hardware,
+	.prealloc_buffer_size = 64 * 1024,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int atmel_pcm_dma_platform_register(struct device *dev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_platform(dev, &atmel_soc_platform);
+=======
+	return snd_dmaengine_pcm_register(dev, &atmel_dmaengine_pcm_config, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(atmel_pcm_dma_platform_register);
 
 void atmel_pcm_dma_platform_unregister(struct device *dev)
 {
+<<<<<<< HEAD
 	snd_soc_unregister_platform(dev);
+=======
+	snd_dmaengine_pcm_unregister(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(atmel_pcm_dma_platform_unregister);
 

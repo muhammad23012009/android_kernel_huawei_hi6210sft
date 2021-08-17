@@ -124,7 +124,11 @@ static void qe_init_rings(struct sunqe *qep)
 {
 	struct qe_init_block *qb = qep->qe_block;
 	struct sunqe_buffers *qbufs = qep->buffers;
+<<<<<<< HEAD
 	__u32 qbufs_dvma = qep->buffers_dvma;
+=======
+	__u32 qbufs_dvma = (__u32)qep->buffers_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	qep->rx_new = qep->rx_old = qep->tx_new = qep->tx_old = 0;
@@ -144,6 +148,10 @@ static int qe_init(struct sunqe *qep, int from_irq)
 	void __iomem *mregs = qep->mregs;
 	void __iomem *gregs = qecp->gregs;
 	unsigned char *e = &qep->dev->dev_addr[0];
+<<<<<<< HEAD
+=======
+	__u32 qblk_dvma = (__u32)qep->qblock_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 tmp;
 	int i;
 
@@ -152,8 +160,13 @@ static int qe_init(struct sunqe *qep, int from_irq)
 		return -EAGAIN;
 
 	/* Setup initial rx/tx init block pointers. */
+<<<<<<< HEAD
 	sbus_writel(qep->qblock_dvma + qib_offset(qe_rxd, 0), cregs + CREG_RXDS);
 	sbus_writel(qep->qblock_dvma + qib_offset(qe_txd, 0), cregs + CREG_TXDS);
+=======
+	sbus_writel(qblk_dvma + qib_offset(qe_rxd, 0), cregs + CREG_RXDS);
+	sbus_writel(qblk_dvma + qib_offset(qe_txd, 0), cregs + CREG_TXDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable/mask the various irq's. */
 	sbus_writel(0, cregs + CREG_RIMASK);
@@ -413,7 +426,11 @@ static void qe_rx(struct sunqe *qep)
 	struct net_device *dev = qep->dev;
 	struct qe_rxd *this;
 	struct sunqe_buffers *qbufs = qep->buffers;
+<<<<<<< HEAD
 	__u32 qbufs_dvma = qep->buffers_dvma;
+=======
+	__u32 qbufs_dvma = (__u32)qep->buffers_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int elem = qep->rx_new;
 	u32 flags;
 
@@ -572,7 +589,11 @@ static int qe_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct sunqe *qep = netdev_priv(dev);
 	struct sunqe_buffers *qbufs = qep->buffers;
+<<<<<<< HEAD
 	__u32 txbuf_dvma, qbufs_dvma = qep->buffers_dvma;
+=======
+	__u32 txbuf_dvma, qbufs_dvma = (__u32)qep->buffers_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char *txbuf;
 	int len, entry;
 
@@ -767,7 +788,11 @@ static struct sunqec *get_qec(struct platform_device *child)
 	struct platform_device *op = to_platform_device(child->dev.parent);
 	struct sunqec *qecp;
 
+<<<<<<< HEAD
 	qecp = dev_get_drvdata(&op->dev);
+=======
+	qecp = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!qecp) {
 		qecp = kzalloc(sizeof(struct sunqec), GFP_KERNEL);
 		if (qecp) {
@@ -801,7 +826,11 @@ static struct sunqec *get_qec(struct platform_device *child)
 				goto fail;
 			}
 
+<<<<<<< HEAD
 			dev_set_drvdata(&op->dev, qecp);
+=======
+			platform_set_drvdata(op, qecp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			qecp->next_module = root_qec_dev;
 			root_qec_dev = qecp;
@@ -843,7 +872,11 @@ static int qec_ether_init(struct platform_device *op)
 	if (!dev)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, idprom->id_ethaddr, 6);
+=======
+	memcpy(dev->dev_addr, idprom->id_ethaddr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	qe = netdev_priv(dev);
 
@@ -902,7 +935,11 @@ static int qec_ether_init(struct platform_device *op)
 	if (res)
 		goto fail;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, qe);
+=======
+	platform_set_drvdata(op, qe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk(KERN_INFO "%s: qe channel[%d] %pM\n", dev->name, qe->channel,
 	       dev->dev_addr);
@@ -934,7 +971,11 @@ static int qec_sbus_probe(struct platform_device *op)
 
 static int qec_sbus_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct sunqe *qp = dev_get_drvdata(&op->dev);
+=======
+	struct sunqe *qp = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net_device *net_dev = qp->dev;
 
 	unregister_netdev(net_dev);
@@ -948,8 +989,11 @@ static int qec_sbus_remove(struct platform_device *op)
 
 	free_netdev(net_dev);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -965,7 +1009,10 @@ MODULE_DEVICE_TABLE(of, qec_sbus_match);
 static struct platform_driver qec_sbus_driver = {
 	.driver = {
 		.name = "qec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = qec_sbus_match,
 	},
 	.probe		= qec_sbus_probe,

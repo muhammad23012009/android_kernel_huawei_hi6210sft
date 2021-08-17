@@ -30,6 +30,10 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -47,11 +51,19 @@
 #define LTC4151_ADIN_L	0x05
 
 struct ltc4151_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex update_lock;
 	bool valid;
 	unsigned long last_updated; /* in jiffies */
+<<<<<<< HEAD
+=======
+	unsigned int shunt; /* in micro ohms */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Registers */
 	u8 regs[6];
@@ -59,8 +71,13 @@ struct ltc4151_data {
 
 static struct ltc4151_data *ltc4151_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4151_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4151_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ltc4151_data *ret = data;
 
 	mutex_lock(&data->update_lock);
@@ -111,9 +128,15 @@ static int ltc4151_get_value(struct ltc4151_data *data, u8 reg)
 	case LTC4151_SENSE_H:
 		/*
 		 * 20uV resolution. Convert to current as measured with
+<<<<<<< HEAD
 		 * an 1 mOhm sense resistor, in mA.
 		 */
 		val = val * 20;
+=======
+		 * a given sense resistor, in mA.
+		 */
+		val = val * 20 * 1000 / data->shunt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case LTC4151_VIN_H:
 		/* 25 mV per increment */
@@ -159,7 +182,11 @@ static SENSOR_DEVICE_ATTR(curr1_input, S_IRUGO, ltc4151_show_value, NULL,
  * Finally, construct an array of pointers to members of the above objects,
  * as required for sysfs_create_group()
  */
+<<<<<<< HEAD
 static struct attribute *ltc4151_attributes[] = {
+=======
+static struct attribute *ltc4151_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
 
@@ -167,21 +194,33 @@ static struct attribute *ltc4151_attributes[] = {
 
 	NULL,
 };
+<<<<<<< HEAD
 
 static const struct attribute_group ltc4151_group = {
 	.attrs = ltc4151_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(ltc4151);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int ltc4151_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = client->adapter;
+<<<<<<< HEAD
 	struct ltc4151_data *data;
 	int ret;
+=======
+	struct device *dev = &client->dev;
+	struct ltc4151_data *data;
+	struct device *hwmon_dev;
+	u32 shunt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
@@ -215,6 +254,28 @@ static int ltc4151_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &ltc4151_group);
 
 	return 0;
+=======
+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	if (of_property_read_u32(client->dev.of_node,
+				 "shunt-resistor-micro-ohms", &shunt))
+		shunt = 1000; /* 1 mOhm if not set via DT */
+
+	if (shunt == 0)
+		return -EINVAL;
+
+	data->shunt = shunt;
+
+	data->client = client;
+	mutex_init(&data->update_lock);
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   ltc4151_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id ltc4151_id[] = {
@@ -223,13 +284,27 @@ static const struct i2c_device_id ltc4151_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ltc4151_id);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id ltc4151_match[] = {
+	{ .compatible = "lltc,ltc4151" },
+	{},
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This is the driver that will be inserted */
 static struct i2c_driver ltc4151_driver = {
 	.driver = {
 		.name	= "ltc4151",
+<<<<<<< HEAD
 	},
 	.probe		= ltc4151_probe,
 	.remove		= ltc4151_remove,
+=======
+		.of_match_table = of_match_ptr(ltc4151_match),
+	},
+	.probe		= ltc4151_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= ltc4151_id,
 };
 

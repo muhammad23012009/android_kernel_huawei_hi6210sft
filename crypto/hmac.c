@@ -52,6 +52,7 @@ static int hmac_setkey(struct crypto_shash *parent,
 	struct hmac_ctx *ctx = align_ptr(opad + ss,
 					 crypto_tfm_ctx_alignment());
 	struct crypto_shash *hash = ctx->hash;
+<<<<<<< HEAD
 	struct {
 		struct shash_desc shash;
 		char ctx[crypto_shash_descsize(hash)];
@@ -61,11 +62,23 @@ static int hmac_setkey(struct crypto_shash *parent,
 	desc.shash.tfm = hash;
 	desc.shash.flags = crypto_shash_get_flags(parent) &
 			    CRYPTO_TFM_REQ_MAY_SLEEP;
+=======
+	SHASH_DESC_ON_STACK(shash, hash);
+	unsigned int i;
+
+	shash->tfm = hash;
+	shash->flags = crypto_shash_get_flags(parent)
+		& CRYPTO_TFM_REQ_MAY_SLEEP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (keylen > bs) {
 		int err;
 
+<<<<<<< HEAD
 		err = crypto_shash_digest(&desc.shash, inkey, keylen, ipad);
+=======
+		err = crypto_shash_digest(shash, inkey, keylen, ipad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)
 			return err;
 
@@ -81,12 +94,21 @@ static int hmac_setkey(struct crypto_shash *parent,
 		opad[i] ^= 0x5c;
 	}
 
+<<<<<<< HEAD
 	return crypto_shash_init(&desc.shash) ?:
 	       crypto_shash_update(&desc.shash, ipad, bs) ?:
 	       crypto_shash_export(&desc.shash, ipad) ?:
 	       crypto_shash_init(&desc.shash) ?:
 	       crypto_shash_update(&desc.shash, opad, bs) ?:
 	       crypto_shash_export(&desc.shash, opad);
+=======
+	return crypto_shash_init(shash) ?:
+	       crypto_shash_update(shash, ipad, bs) ?:
+	       crypto_shash_export(shash, ipad) ?:
+	       crypto_shash_init(shash) ?:
+	       crypto_shash_update(shash, opad, bs) ?:
+	       crypto_shash_export(shash, opad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int hmac_export(struct shash_desc *pdesc, void *out)
@@ -197,11 +219,23 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
 	salg = shash_attr_alg(tb[1], 0, 0);
 	if (IS_ERR(salg))
 		return PTR_ERR(salg);
+<<<<<<< HEAD
 
 	err = -EINVAL;
 	ds = salg->digestsize;
 	ss = salg->statesize;
 	alg = &salg->base;
+=======
+	alg = &salg->base;
+
+	/* The underlying hash algorithm must be unkeyed */
+	err = -EINVAL;
+	if (crypto_shash_alg_has_setkey(salg))
+		goto out_put_alg;
+
+	ds = salg->digestsize;
+	ss = salg->statesize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ds > alg->cra_blocksize ||
 	    ss < alg->cra_blocksize)
 		goto out_put_alg;

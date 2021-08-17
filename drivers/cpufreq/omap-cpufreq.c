@@ -13,6 +13,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -22,7 +28,11 @@
 #include <linux/err.h>
 #include <linux/clk.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/opp.h>
+=======
+#include <linux/pm_opp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpu.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -36,6 +46,7 @@
 
 static struct cpufreq_frequency_table *freq_table;
 static atomic_t freq_table_users = ATOMIC_INIT(0);
+<<<<<<< HEAD
 static struct clk *mpu_clk;
 static struct device *mpu_dev;
 static struct regulator *mpu_reg;
@@ -99,6 +110,24 @@ static int omap_target(struct cpufreq_policy *policy,
 	freq = freqs.new * 1000;
 	ret = clk_round_rate(mpu_clk, freq);
 	if (IS_ERR_VALUE(ret)) {
+=======
+static struct device *mpu_dev;
+static struct regulator *mpu_reg;
+
+static int omap_target(struct cpufreq_policy *policy, unsigned int index)
+{
+	int r, ret;
+	struct dev_pm_opp *opp;
+	unsigned long freq, volt = 0, volt_old = 0, tol = 0;
+	unsigned int old_freq, new_freq;
+
+	old_freq = policy->cur;
+	new_freq = freq_table[index].frequency;
+
+	freq = new_freq * 1000;
+	ret = clk_round_rate(policy->clk, freq);
+	if (ret < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_warn(mpu_dev,
 			 "CPUfreq: Cannot find matching frequency for %lu\n",
 			 freq);
@@ -108,6 +137,7 @@ static int omap_target(struct cpufreq_policy *policy,
 
 	if (mpu_reg) {
 		rcu_read_lock();
+<<<<<<< HEAD
 		opp = opp_find_freq_ceil(mpu_dev, &freq);
 		if (IS_ERR(opp)) {
 			rcu_read_unlock();
@@ -116,21 +146,40 @@ static int omap_target(struct cpufreq_policy *policy,
 			return -EINVAL;
 		}
 		volt = opp_get_voltage(opp);
+=======
+		opp = dev_pm_opp_find_freq_ceil(mpu_dev, &freq);
+		if (IS_ERR(opp)) {
+			rcu_read_unlock();
+			dev_err(mpu_dev, "%s: unable to find MPU OPP for %d\n",
+				__func__, new_freq);
+			return -EINVAL;
+		}
+		volt = dev_pm_opp_get_voltage(opp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rcu_read_unlock();
 		tol = volt * OPP_TOLERANCE / 100;
 		volt_old = regulator_get_voltage(mpu_reg);
 	}
 
 	dev_dbg(mpu_dev, "cpufreq-omap: %u MHz, %ld mV --> %u MHz, %ld mV\n", 
+<<<<<<< HEAD
 		freqs.old / 1000, volt_old ? volt_old / 1000 : -1,
 		freqs.new / 1000, volt ? volt / 1000 : -1);
 
 	/* scaling up?  scale voltage before frequency */
 	if (mpu_reg && (freqs.new > freqs.old)) {
+=======
+		old_freq / 1000, volt_old ? volt_old / 1000 : -1,
+		new_freq / 1000, volt ? volt / 1000 : -1);
+
+	/* scaling up?  scale voltage before frequency */
+	if (mpu_reg && (new_freq > old_freq)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r = regulator_set_voltage(mpu_reg, volt - tol, volt + tol);
 		if (r < 0) {
 			dev_warn(mpu_dev, "%s: unable to scale voltage up.\n",
 				 __func__);
+<<<<<<< HEAD
 			freqs.new = freqs.old;
 			goto done;
 		}
@@ -140,10 +189,21 @@ static int omap_target(struct cpufreq_policy *policy,
 
 	/* scaling down?  scale voltage after frequency */
 	if (mpu_reg && (freqs.new < freqs.old)) {
+=======
+			return r;
+		}
+	}
+
+	ret = clk_set_rate(policy->clk, new_freq * 1000);
+
+	/* scaling down?  scale voltage after frequency */
+	if (mpu_reg && (new_freq < old_freq)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r = regulator_set_voltage(mpu_reg, volt - tol, volt + tol);
 		if (r < 0) {
 			dev_warn(mpu_dev, "%s: unable to scale voltage down.\n",
 				 __func__);
+<<<<<<< HEAD
 			ret = clk_set_rate(mpu_clk, freqs.old * 1000);
 			freqs.new = freqs.old;
 			goto done;
@@ -156,12 +216,20 @@ done:
 	/* notifiers */
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
 
+=======
+			clk_set_rate(policy->clk, old_freq * 1000);
+			return r;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static inline void freq_table_free(void)
 {
 	if (atomic_dec_and_test(&freq_table_users))
+<<<<<<< HEAD
 		opp_free_cpufreq_table(mpu_dev, &freq_table);
 }
 
@@ -187,10 +255,32 @@ static int __cpuinit omap_cpu_init(struct cpufreq_policy *policy)
 		dev_err(mpu_dev, "%s: cpu%d: failed creating freq table[%d]\n",
 				__func__, policy->cpu, result);
 		goto fail_ck;
+=======
+		dev_pm_opp_free_cpufreq_table(mpu_dev, &freq_table);
+}
+
+static int omap_cpu_init(struct cpufreq_policy *policy)
+{
+	int result;
+
+	policy->clk = clk_get(NULL, "cpufreq_ck");
+	if (IS_ERR(policy->clk))
+		return PTR_ERR(policy->clk);
+
+	if (!freq_table) {
+		result = dev_pm_opp_init_cpufreq_table(mpu_dev, &freq_table);
+		if (result) {
+			dev_err(mpu_dev,
+				"%s: cpu%d: failed creating freq table[%d]\n",
+				__func__, policy->cpu, result);
+			goto fail;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	atomic_inc_return(&freq_table_users);
 
+<<<<<<< HEAD
 	result = cpufreq_frequency_table_cpuinfo(policy, freq_table);
 	if (result)
 		goto fail_table;
@@ -218,12 +308,23 @@ fail_table:
 	freq_table_free();
 fail_ck:
 	clk_put(mpu_clk);
+=======
+	/* FIXME: what's the actual transition time? */
+	result = cpufreq_generic_init(policy, freq_table, 300 * 1000);
+	if (!result)
+		return 0;
+
+	freq_table_free();
+fail:
+	clk_put(policy->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 
 static int omap_cpu_exit(struct cpufreq_policy *policy)
 {
 	freq_table_free();
+<<<<<<< HEAD
 	clk_put(mpu_clk);
 	return 0;
 }
@@ -242,19 +343,42 @@ static struct cpufreq_driver omap_driver = {
 	.exit		= omap_cpu_exit,
 	.name		= "omap",
 	.attr		= omap_cpufreq_attr,
+=======
+	clk_put(policy->clk);
+	return 0;
+}
+
+static struct cpufreq_driver omap_driver = {
+	.flags		= CPUFREQ_STICKY | CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= omap_target,
+	.get		= cpufreq_generic_get,
+	.init		= omap_cpu_init,
+	.exit		= omap_cpu_exit,
+	.name		= "omap",
+	.attr		= cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int omap_cpufreq_probe(struct platform_device *pdev)
 {
 	mpu_dev = get_cpu_device(0);
 	if (!mpu_dev) {
+<<<<<<< HEAD
 		pr_warning("%s: unable to get the mpu device\n", __func__);
+=======
+		pr_warn("%s: unable to get the MPU device\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	mpu_reg = regulator_get(mpu_dev, "vcc");
 	if (IS_ERR(mpu_reg)) {
+<<<<<<< HEAD
 		pr_warning("%s: unable to get MPU regulator\n", __func__);
+=======
+		pr_warn("%s: unable to get MPU regulator\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mpu_reg = NULL;
 	} else {
 		/* 
@@ -280,7 +404,10 @@ static int omap_cpufreq_remove(struct platform_device *pdev)
 static struct platform_driver omap_cpufreq_platdrv = {
 	.driver = {
 		.name	= "omap-cpufreq",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= omap_cpufreq_probe,
 	.remove		= omap_cpufreq_remove,

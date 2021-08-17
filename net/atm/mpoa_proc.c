@@ -272,7 +272,11 @@ static int parse_qos(const char *buff)
 	qos.rxtp.max_pcr = rx_pcr;
 	qos.rxtp.max_sdu = rx_sdu;
 	qos.aal = ATM_AAL5;
+<<<<<<< HEAD
 	dprintk("parse_qos(): setting qos paramameters to tx=%d,%d rx=%d,%d\n",
+=======
+	dprintk("parse_qos(): setting qos parameters to tx=%d,%d rx=%d,%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		qos.txtp.max_pcr, qos.txtp.max_sdu,
 		qos.rxtp.max_pcr, qos.rxtp.max_sdu);
 

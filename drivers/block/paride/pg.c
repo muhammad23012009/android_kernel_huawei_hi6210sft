@@ -137,7 +137,11 @@
 
 */
 
+<<<<<<< HEAD
 static bool verbose = 0;
+=======
+static int verbose;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int major = PG_MAJOR;
 static char *name = PG_NAME;
 static int disable = 0;
@@ -168,7 +172,11 @@ enum {D_PRT, D_PRO, D_UNI, D_MOD, D_SLV, D_DLY};
 
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 module_param(verbose, bool, 0644);
+=======
+module_param(verbose, int, 0644);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(major, int, 0);
 module_param(name, charp, 0);
 module_param_array(drive0, int, NULL, 0);
@@ -227,6 +235,10 @@ static int pg_identify(struct pg *dev, int log);
 static char pg_scratch[512];	/* scratch block buffer */
 
 static struct class *pg_class;
+<<<<<<< HEAD
+=======
+static void *par_drv;		/* reference of parport driver */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* kernel glue structures */
 
@@ -481,6 +493,15 @@ static int pg_detect(void)
 
 	printk("%s: %s version %s, major %d\n", name, name, PG_VERSION, major);
 
+<<<<<<< HEAD
+=======
+	par_drv = pi_register_driver(name);
+	if (!par_drv) {
+		pr_err("failed to register %s driver\n", name);
+		return -1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	k = 0;
 	if (pg_drive_count == 0) {
 		if (pi_init(dev->pi, 1, -1, -1, -1, -1, -1, pg_scratch,
@@ -511,6 +532,10 @@ static int pg_detect(void)
 	if (k)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	pi_unregister_driver(par_drv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk("%s: No ATAPI device detected\n", name);
 	return -1;
 }
@@ -581,7 +606,11 @@ static ssize_t pg_write(struct file *filp, const char __user *buf, size_t count,
 
 	if (hdr.magic != PG_MAGIC)
 		return -EINVAL;
+<<<<<<< HEAD
 	if (hdr.dlen > PG_MAX_DATA)
+=======
+	if (hdr.dlen < 0 || hdr.dlen > PG_MAX_DATA)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	if ((count - hs) > PG_MAX_DATA)
 		return -EINVAL;

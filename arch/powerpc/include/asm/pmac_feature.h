@@ -46,7 +46,11 @@
 
 /* PowerSurge are the first generation of PCI Pmacs. This include
  * all of the Grand-Central based machines. We currently don't
+<<<<<<< HEAD
  * differenciate most of them.
+=======
+ * differentiate most of them.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define PMAC_TYPE_PSURGE		0x10	/* PowerSurge */
 #define PMAC_TYPE_ANS			0x11	/* Apple Network Server */
@@ -210,7 +214,11 @@ static inline long pmac_call_feature(int selector, struct device_node* node,
 
 /* PMAC_FTR_SOUND_CHIP_ENABLE	(struct device_node* node, 0, int value)
  * enable/disable the sound chip, whatever it is and provided it can
+<<<<<<< HEAD
  * acually be controlled
+=======
+ * actually be controlled
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define PMAC_FTR_SOUND_CHIP_ENABLE	PMAC_FTR_DEF(9)
 

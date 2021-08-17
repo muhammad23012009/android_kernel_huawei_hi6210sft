@@ -2,7 +2,11 @@
  * A hwmon driver for ACPI 4.0 power meters
  * Copyright (C) 2009 IBM
  *
+<<<<<<< HEAD
  * Author: Darrick J. Wong <djwong@us.ibm.com>
+=======
+ * Author: Darrick J. Wong <darrick.wong@oracle.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +34,12 @@
 #include <linux/sched.h>
 #include <linux/time.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <acpi/acpi_drivers.h>
 #include <acpi/acpi_bus.h>
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ACPI_POWER_METER_NAME		"power_meter"
 ACPI_MODULE_NAME(ACPI_POWER_METER_NAME);
@@ -381,8 +389,15 @@ static ssize_t show_str(struct device *dev,
 		val = resource->oem_info;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
 		val = "";
+=======
+		WARN(1, "Implementation error: unexpected attribute index %d\n",
+		     attr->index);
+		val = "";
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return sprintf(buf, "%s\n", val);
@@ -436,7 +451,13 @@ static ssize_t show_val(struct device *dev,
 		val = resource->trip[attr->index - 7] * 1000;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Implementation error: unexpected attribute index %d\n",
+		     attr->index);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return sprintf(buf, "%llu\n", val);
@@ -598,9 +619,14 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
 
 		/* Create a symlink to domain objects */
 		resource->domain_devices[i] = NULL;
+<<<<<<< HEAD
 		status = acpi_bus_get_device(element->reference.handle,
 					     &resource->domain_devices[i]);
 		if (ACPI_FAILURE(status))
+=======
+		if (acpi_bus_get_device(element->reference.handle,
+					&resource->domain_devices[i]))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		obj = resource->domain_devices[i];
@@ -691,8 +717,13 @@ static int setup_attrs(struct acpi_power_meter_resource *resource)
 
 	if (resource->caps.flags & POWER_METER_CAN_CAP) {
 		if (!can_cap_in_hardware()) {
+<<<<<<< HEAD
 			dev_err(&resource->acpi_dev->dev,
 				"Ignoring unsafe software power cap!\n");
+=======
+			dev_warn(&resource->acpi_dev->dev,
+				 "Ignoring unsafe software power cap!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto skip_unsafe_cap;
 		}
 
@@ -855,7 +886,12 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
 		dev_info(&device->dev, "Capping in progress.\n");
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Unexpected event %d\n", event);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mutex_unlock(&resource->lock);
 
@@ -892,7 +928,11 @@ static int acpi_power_meter_add(struct acpi_device *device)
 
 	res = setup_attrs(resource);
 	if (res)
+<<<<<<< HEAD
 		goto exit_free;
+=======
+		goto exit_free_capability;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	resource->hwmon_dev = hwmon_device_register(&device->dev);
 	if (IS_ERR(resource->hwmon_dev)) {
@@ -905,6 +945,11 @@ static int acpi_power_meter_add(struct acpi_device *device)
 
 exit_remove:
 	remove_attrs(resource);
+<<<<<<< HEAD
+=======
+exit_free_capability:
+	free_capabilities(resource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 exit_free:
 	kfree(resource);
 exit:
@@ -991,7 +1036,11 @@ static int __init acpi_power_meter_init(void)
 
 	result = acpi_bus_register_driver(&acpi_power_meter_driver);
 	if (result < 0)
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		return result;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1001,7 +1050,11 @@ static void __exit acpi_power_meter_exit(void)
 	acpi_bus_unregister_driver(&acpi_power_meter_driver);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Darrick J. Wong <djwong@us.ibm.com>");
+=======
+MODULE_AUTHOR("Darrick J. Wong <darrick.wong@oracle.com>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("ACPI 4.0 power meter driver");
 MODULE_LICENSE("GPL");
 

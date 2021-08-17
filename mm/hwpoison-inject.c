@@ -20,8 +20,11 @@ static int hwpoison_inject(void *data, u64 val)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
 	if (!hwpoison_filter_enable)
 		goto inject;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pfn_valid(pfn))
 		return -ENXIO;
 
@@ -30,6 +33,7 @@ static int hwpoison_inject(void *data, u64 val)
 	/*
 	 * This implies unable to support free buddy pages.
 	 */
+<<<<<<< HEAD
 	if (!get_page_unless_zero(hpage))
 		return 0;
 
@@ -40,10 +44,26 @@ static int hwpoison_inject(void *data, u64 val)
 	 */
 	if (!PageLRU(p) && !PageHuge(p))
 		return 0;
+=======
+	if (!get_hwpoison_page(p))
+		return 0;
+
+	if (!hwpoison_filter_enable)
+		goto inject;
+
+	if (!PageLRU(hpage) && !PageHuge(p))
+		shake_page(hpage, 0);
+	/*
+	 * This implies unable to support non-LRU pages.
+	 */
+	if (!PageLRU(hpage) && !PageHuge(p))
+		goto put_out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * do a racy check with elevated page count, to make sure PG_hwpoison
 	 * will only be set for the targeted owner (or on a free page).
+<<<<<<< HEAD
 	 * We temporarily take page lock for try_get_mem_cgroup_from_page().
 	 * memory_failure() will redo the check reliably inside page lock.
 	 */
@@ -56,6 +76,20 @@ static int hwpoison_inject(void *data, u64 val)
 inject:
 	printk(KERN_INFO "Injecting memory failure at pfn %lx\n", pfn);
 	return memory_failure(pfn, 18, MF_COUNT_INCREASED);
+=======
+	 * memory_failure() will redo the check reliably inside page lock.
+	 */
+	err = hwpoison_filter(hpage);
+	if (err)
+		goto put_out;
+
+inject:
+	pr_info("Injecting memory failure at pfn %#lx\n", pfn);
+	return memory_failure(pfn, 18, MF_COUNT_INCREASED);
+put_out:
+	put_hwpoison_page(p);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int hwpoison_unpoison(void *data, u64 val)
@@ -71,8 +105,12 @@ DEFINE_SIMPLE_ATTRIBUTE(unpoison_fops, NULL, hwpoison_unpoison, "%lli\n");
 
 static void pfn_inject_exit(void)
 {
+<<<<<<< HEAD
 	if (hwpoison_dir)
 		debugfs_remove_recursive(hwpoison_dir);
+=======
+	debugfs_remove_recursive(hwpoison_dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pfn_inject_init(void)
@@ -88,12 +126,20 @@ static int pfn_inject_init(void)
 	 * hardware status change, hence do not require hardware support.
 	 * They are mainly for testing hwpoison in software level.
 	 */
+<<<<<<< HEAD
 	dentry = debugfs_create_file("corrupt-pfn", 0600, hwpoison_dir,
+=======
+	dentry = debugfs_create_file("corrupt-pfn", 0200, hwpoison_dir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  NULL, &hwpoison_fops);
 	if (!dentry)
 		goto fail;
 
+<<<<<<< HEAD
 	dentry = debugfs_create_file("unpoison-pfn", 0600, hwpoison_dir,
+=======
+	dentry = debugfs_create_file("unpoison-pfn", 0200, hwpoison_dir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     NULL, &unpoison_fops);
 	if (!dentry)
 		goto fail;
@@ -123,7 +169,11 @@ static int pfn_inject_init(void)
 	if (!dentry)
 		goto fail;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MEMCG_SWAP
+=======
+#ifdef CONFIG_MEMCG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dentry = debugfs_create_u64("corrupt-filter-memcg", 0600,
 				    hwpoison_dir, &hwpoison_filter_memcg);
 	if (!dentry)

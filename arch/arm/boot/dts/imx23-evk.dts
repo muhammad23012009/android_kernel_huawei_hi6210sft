@@ -10,7 +10,11 @@
  */
 
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "imx23.dtsi"
+=======
+#include "imx23.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Freescale i.MX23 Evaluation Kit";
@@ -45,6 +49,7 @@
 				hog_pins_a: hog@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x1123 /* MX23_PAD_LCD_RESET__GPIO_1_18 */
 						0x11d3 /* MX23_PAD_PWM3__GPIO_1_29 */
 						0x11e3 /* MX23_PAD_PWM4__GPIO_1_30 */
@@ -53,6 +58,16 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX23_PAD_LCD_RESET__GPIO_1_18
+						MX23_PAD_PWM3__GPIO_1_29
+						MX23_PAD_PWM4__GPIO_1_30
+						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -60,10 +75,17 @@
 				pinctrl-names = "default";
 				pinctrl-0 = <&lcdif_24bit_pins_a>;
 				lcd-supply = <&reg_lcd_3v3>;
+<<<<<<< HEAD
 				display = <&display>;
 				status = "okay";
 
 				display: display {
+=======
+				display = <&display0>;
+				status = "okay";
+
+				display0: display0 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					bits-per-pixel = <32>;
 					bus-width = <24>;
 
@@ -90,6 +112,14 @@
 		};
 
 		apbx@80040000 {
+<<<<<<< HEAD
+=======
+			lradc@80050000 {
+				status = "okay";
+				fsl,lradc-touchscreen-wires = <4>;
+			};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pwm: pwm@80064000 {
 				pinctrl-names = "default";
 				pinctrl-0 = <&pwm2_pins_a>;
@@ -107,22 +137,50 @@
 				pinctrl-0 = <&duart_pins_a>;
 				status = "okay";
 			};
+<<<<<<< HEAD
+=======
+
+			usbphy0: usbphy@8007c000 {
+				status = "okay";
+			};
+		};
+	};
+
+	ahb@80080000 {
+		usb0: usb@80080000 {
+			status = "okay";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
 	regulators {
 		compatible = "simple-bus";
+<<<<<<< HEAD
 
 		reg_vddio_sd0: vddio-sd0 {
 			compatible = "regulator-fixed";
+=======
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg_vddio_sd0: regulator@0 {
+			compatible = "regulator-fixed";
+			reg = <0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "vddio-sd0";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
 			gpio = <&gpio1 29 0>;
 		};
 
+<<<<<<< HEAD
 		reg_lcd_3v3: lcd-3v3 {
 			compatible = "regulator-fixed";
+=======
+		reg_lcd_3v3: regulator@1 {
+			compatible = "regulator-fixed";
+			reg = <1>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "lcd-3v3";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;

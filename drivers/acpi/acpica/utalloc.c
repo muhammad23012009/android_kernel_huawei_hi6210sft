@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +52,42 @@
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utalloc")
 
+<<<<<<< HEAD
+=======
+#if !defined (USE_NATIVE_ALLOCATE_ZEROED)
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_os_allocate_zeroed
+ *
+ * PARAMETERS:  size                - Size of the allocation
+ *
+ * RETURN:      Address of the allocated memory on success, NULL on failure.
+ *
+ * DESCRIPTION: Subsystem equivalent of calloc. Allocate and zero memory.
+ *              This is the default implementation. Can be overridden via the
+ *              USE_NATIVE_ALLOCATE_ZEROED flag.
+ *
+ ******************************************************************************/
+void *acpi_os_allocate_zeroed(acpi_size size)
+{
+	void *allocation;
+
+	ACPI_FUNCTION_ENTRY();
+
+	allocation = acpi_os_allocate(size);
+	if (allocation) {
+
+		/* Clear the memory block */
+
+		memset(allocation, 0, size);
+	}
+
+	return (allocation);
+}
+
+#endif				/* !USE_NATIVE_ALLOCATE_ZEROED */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_create_caches
@@ -59,6 +99,10 @@ ACPI_MODULE_NAME("utalloc")
  * DESCRIPTION: Create all local caches
  *
  ******************************************************************************/
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 acpi_status acpi_ut_create_caches(void)
 {
 	acpi_status status;
@@ -147,7 +191,11 @@ acpi_status acpi_ut_delete_caches(void)
 	char buffer[7];
 
 	if (acpi_gbl_display_final_mem_stats) {
+<<<<<<< HEAD
 		ACPI_STRCPY(buffer, "MEMORY");
+=======
+		strcpy(buffer, "MEMORY");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(void)acpi_db_display_statistics(buffer);
 	}
 #endif
@@ -175,10 +223,17 @@ acpi_status acpi_ut_delete_caches(void)
 
 	/* Free memory lists */
 
+<<<<<<< HEAD
 	ACPI_FREE(acpi_gbl_global_list);
 	acpi_gbl_global_list = NULL;
 
 	ACPI_FREE(acpi_gbl_ns_node_list);
+=======
+	acpi_os_free(acpi_gbl_global_list);
+	acpi_gbl_global_list = NULL;
+
+	acpi_os_free(acpi_gbl_ns_node_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_gbl_ns_node_list = NULL;
 #endif
 
@@ -197,7 +252,11 @@ acpi_status acpi_ut_delete_caches(void)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_ut_validate_buffer(struct acpi_buffer * buffer)
+=======
+acpi_status acpi_ut_validate_buffer(struct acpi_buffer *buffer)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 
 	/* Obviously, the structure pointer must be valid */
@@ -238,8 +297,12 @@ acpi_status acpi_ut_validate_buffer(struct acpi_buffer * buffer)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_initialize_buffer(struct acpi_buffer * buffer,
 			  acpi_size required_length)
+=======
+acpi_ut_initialize_buffer(struct acpi_buffer *buffer, acpi_size required_length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_size input_buffer_length;
 
@@ -268,9 +331,19 @@ acpi_ut_initialize_buffer(struct acpi_buffer * buffer,
 		return (AE_BUFFER_OVERFLOW);
 
 	case ACPI_ALLOCATE_BUFFER:
+<<<<<<< HEAD
 
 		/* Allocate a new buffer */
 
+=======
+		/*
+		 * Allocate a new buffer. We directectly call acpi_os_allocate here to
+		 * purposefully bypass the (optionally enabled) internal allocation
+		 * tracking mechanism since we only want to track internal
+		 * allocations. Note: The caller should use acpi_os_free to free this
+		 * buffer created via ACPI_ALLOCATE_BUFFER.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		buffer->pointer = acpi_os_allocate(required_length);
 		break;
 
@@ -299,6 +372,7 @@ acpi_ut_initialize_buffer(struct acpi_buffer * buffer,
 
 	/* Have a valid buffer, clear it */
 
+<<<<<<< HEAD
 	ACPI_MEMSET(buffer->pointer, 0, required_length);
 	return (AE_OK);
 }
@@ -381,3 +455,8 @@ void *acpi_ut_allocate_zeroed(acpi_size size,
 	return (allocation);
 }
 #endif
+=======
+	memset(buffer->pointer, 0, required_length);
+	return (AE_OK);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

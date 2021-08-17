@@ -22,12 +22,19 @@
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/ide.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/io.h>
 
 #ifdef CONFIG_PPC_PMAC
 #include <asm/prom.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define DRV_NAME "pdc202xx_new"
@@ -243,13 +250,21 @@ static long read_counter(u32 dma_base)
  */
 static long detect_pll_input_clock(unsigned long dma_base)
 {
+<<<<<<< HEAD
 	struct timeval start_time, end_time;
+=======
+	ktime_t start_time, end_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long start_count, end_count;
 	long pll_input, usec_elapsed;
 	u8 scr1;
 
 	start_count = read_counter(dma_base);
+<<<<<<< HEAD
 	do_gettimeofday(&start_time);
+=======
+	start_time = ktime_get();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Start the test mode */
 	outb(0x01, dma_base + 0x01);
@@ -261,7 +276,11 @@ static long detect_pll_input_clock(unsigned long dma_base)
 	mdelay(10);
 
 	end_count = read_counter(dma_base);
+<<<<<<< HEAD
 	do_gettimeofday(&end_time);
+=======
+	end_time = ktime_get();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Stop the test mode */
 	outb(0x01, dma_base + 0x01);
@@ -273,8 +292,12 @@ static long detect_pll_input_clock(unsigned long dma_base)
 	 * Calculate the input clock in Hz
 	 * (the clock counter is 30 bit wide and counts down)
 	 */
+<<<<<<< HEAD
 	usec_elapsed = (end_time.tv_sec - start_time.tv_sec) * 1000000 +
 		(end_time.tv_usec - start_time.tv_usec);
+=======
+	usec_elapsed = ktime_us_delta(end_time, start_time);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pll_input = ((start_count - end_count) & 0x3fffffff) / 10 *
 		(10000000 / usec_elapsed);
 

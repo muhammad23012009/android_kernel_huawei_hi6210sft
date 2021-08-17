@@ -1,4 +1,8 @@
 #include "symbol.h"
+<<<<<<< HEAD
+=======
+#include "util.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -128,6 +132,10 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 
 		for (i = 0, phdr = buf; i < ehdr.e_phnum; i++, phdr++) {
 			void *tmp;
+<<<<<<< HEAD
+=======
+			long offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (need_swap) {
 				phdr->p_type = bswap_32(phdr->p_type);
@@ -139,12 +147,20 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 				continue;
 
 			buf_size = phdr->p_filesz;
+<<<<<<< HEAD
+=======
+			offset = phdr->p_offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tmp = realloc(buf, buf_size);
 			if (tmp == NULL)
 				goto out_free;
 
 			buf = tmp;
+<<<<<<< HEAD
 			fseek(fp, phdr->p_offset, SEEK_SET);
+=======
+			fseek(fp, offset, SEEK_SET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (fread(buf, buf_size, 1, fp) != 1)
 				goto out_free;
 
@@ -177,6 +193,10 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 
 		for (i = 0, phdr = buf; i < ehdr.e_phnum; i++, phdr++) {
 			void *tmp;
+<<<<<<< HEAD
+=======
+			long offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (need_swap) {
 				phdr->p_type = bswap_32(phdr->p_type);
@@ -188,12 +208,20 @@ int filename__read_build_id(const char *filename, void *bf, size_t size)
 				continue;
 
 			buf_size = phdr->p_filesz;
+<<<<<<< HEAD
+=======
+			offset = phdr->p_offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tmp = realloc(buf, buf_size);
 			if (tmp == NULL)
 				goto out_free;
 
 			buf = tmp;
+<<<<<<< HEAD
 			fseek(fp, phdr->p_offset, SEEK_SET);
+=======
+			fseek(fp, offset, SEEK_SET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (fread(buf, buf_size, 1, fp) != 1)
 				goto out_free;
 
@@ -241,23 +269,40 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int symsrc__init(struct symsrc *ss, struct dso *dso __maybe_unused,
 		 const char *name,
+=======
+int symsrc__init(struct symsrc *ss, struct dso *dso, const char *name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	         enum dso_binary_type type)
 {
 	int fd = open(name, O_RDONLY);
 	if (fd < 0)
+<<<<<<< HEAD
 		return -1;
+=======
+		goto out_errno;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ss->name = strdup(name);
 	if (!ss->name)
 		goto out_close;
 
+<<<<<<< HEAD
+=======
+	ss->fd = fd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ss->type = type;
 
 	return 0;
 out_close:
 	close(fd);
+<<<<<<< HEAD
+=======
+out_errno:
+	dso->load_errno = errno;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -1;
 }
 
@@ -274,18 +319,27 @@ bool symsrc__has_symtab(struct symsrc *ss __maybe_unused)
 
 void symsrc__destroy(struct symsrc *ss)
 {
+<<<<<<< HEAD
 	free(ss->name);
+=======
+	zfree(&ss->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	close(ss->fd);
 }
 
 int dso__synthesize_plt_symbols(struct dso *dso __maybe_unused,
 				struct symsrc *ss __maybe_unused,
+<<<<<<< HEAD
 				struct map *map __maybe_unused,
 				symbol_filter_t filter __maybe_unused)
+=======
+				struct map *map __maybe_unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 int dso__load_sym(struct dso *dso, struct map *map __maybe_unused,
 		  struct symsrc *ss,
 		  struct symsrc *runtime_ss __maybe_unused,
@@ -297,10 +351,89 @@ int dso__load_sym(struct dso *dso, struct map *map __maybe_unused,
 	if (filename__read_build_id(ss->name, build_id, BUILD_ID_SIZE) > 0) {
 		dso__set_build_id(dso, build_id);
 		return 1;
+=======
+static int fd__is_64_bit(int fd)
+{
+	u8 e_ident[EI_NIDENT];
+
+	if (lseek(fd, 0, SEEK_SET))
+		return -1;
+
+	if (readn(fd, e_ident, sizeof(e_ident)) != sizeof(e_ident))
+		return -1;
+
+	if (memcmp(e_ident, ELFMAG, SELFMAG) ||
+	    e_ident[EI_VERSION] != EV_CURRENT)
+		return -1;
+
+	return e_ident[EI_CLASS] == ELFCLASS64;
+}
+
+enum dso_type dso__type_fd(int fd)
+{
+	Elf64_Ehdr ehdr;
+	int ret;
+
+	ret = fd__is_64_bit(fd);
+	if (ret < 0)
+		return DSO__TYPE_UNKNOWN;
+
+	if (ret)
+		return DSO__TYPE_64BIT;
+
+	if (readn(fd, &ehdr, sizeof(ehdr)) != sizeof(ehdr))
+		return DSO__TYPE_UNKNOWN;
+
+	if (ehdr.e_machine == EM_X86_64)
+		return DSO__TYPE_X32BIT;
+
+	return DSO__TYPE_32BIT;
+}
+
+int dso__load_sym(struct dso *dso, struct map *map __maybe_unused,
+		  struct symsrc *ss,
+		  struct symsrc *runtime_ss __maybe_unused,
+		  int kmodule __maybe_unused)
+{
+	unsigned char build_id[BUILD_ID_SIZE];
+	int ret;
+
+	ret = fd__is_64_bit(ss->fd);
+	if (ret >= 0)
+		dso->is_64_bit = ret;
+
+	if (filename__read_build_id(ss->name, build_id, BUILD_ID_SIZE) > 0) {
+		dso__set_build_id(dso, build_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int file__read_maps(int fd __maybe_unused, bool exe __maybe_unused,
+		    mapfn_t mapfn __maybe_unused, void *data __maybe_unused,
+		    bool *is_64_bit __maybe_unused)
+{
+	return -1;
+}
+
+int kcore_extract__create(struct kcore_extract *kce __maybe_unused)
+{
+	return -1;
+}
+
+void kcore_extract__delete(struct kcore_extract *kce __maybe_unused)
+{
+}
+
+int kcore_copy(const char *from_dir __maybe_unused,
+	       const char *to_dir __maybe_unused)
+{
+	return -1;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void symbol__elf_init(void)
 {
 }

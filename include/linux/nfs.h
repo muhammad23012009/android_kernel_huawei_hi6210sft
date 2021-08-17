@@ -46,6 +46,13 @@ static inline void nfs_copy_fh(struct nfs_fh *target, const struct nfs_fh *sourc
 enum nfs3_stable_how {
 	NFS_UNSTABLE = 0,
 	NFS_DATA_SYNC = 1,
+<<<<<<< HEAD
 	NFS_FILE_SYNC = 2
+=======
+	NFS_FILE_SYNC = 2,
+
+	/* used by direct.c to mark verf as invalid */
+	NFS_INVALID_STABLE_HOW = -1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #endif /* _LINUX_NFS_H */

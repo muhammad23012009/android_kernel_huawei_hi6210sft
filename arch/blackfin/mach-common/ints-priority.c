@@ -17,13 +17,20 @@
 #include <linux/irq.h>
 #include <linux/sched.h>
 #include <linux/syscore_ops.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/delay.h>
 #ifdef CONFIG_IPIPE
 #include <linux/ipipe.h>
 #endif
 #include <asm/traps.h>
 #include <asm/blackfin.h>
+<<<<<<< HEAD
 #include <asm/gpio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq_handler.h>
 #include <asm/dpmc.h>
 #include <asm/traps.h>
@@ -194,7 +201,12 @@ void bfin_internal_unmask_irq(unsigned int irq)
 #ifdef CONFIG_SMP
 static void bfin_internal_unmask_irq_chip(struct irq_data *d)
 {
+<<<<<<< HEAD
 	bfin_internal_unmask_irq_affinity(d->irq, d->affinity);
+=======
+	bfin_internal_unmask_irq_affinity(d->irq,
+					  irq_data_get_affinity_mask(d));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int bfin_internal_set_affinity(struct irq_data *d,
@@ -429,6 +441,7 @@ static void init_software_driven_irq(void)
 	bfin_sec_enable_ssi(37);
 }
 
+<<<<<<< HEAD
 void bfin_sec_resume(void)
 {
 	bfin_write_SEC_SCI(0, SEC_CCTL, SEC_CCTL_RESET);
@@ -437,6 +450,8 @@ void bfin_sec_resume(void)
 	bfin_write_SEC_SCI(0, SEC_CCTL, SEC_CCTL_EN | SEC_CCTL_NMI_EN);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void handle_sec_sfi_fault(uint32_t gstat)
 {
 
@@ -455,7 +470,11 @@ void handle_sec_sci_fault(uint32_t gstat)
 			printk(KERN_DEBUG "sec ack err\n");
 			break;
 		default:
+<<<<<<< HEAD
 			printk(KERN_DEBUG "sec sci unknow err\n");
+=======
+			printk(KERN_DEBUG "sec sci unknown err\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -471,6 +490,7 @@ void handle_sec_ssi_fault(uint32_t gstat)
 
 }
 
+<<<<<<< HEAD
 void handle_sec_fault(unsigned int irq, struct irq_desc *desc)
 {
 	uint32_t sec_gstat;
@@ -478,6 +498,10 @@ void handle_sec_fault(unsigned int irq, struct irq_desc *desc)
 	raw_spin_lock(&desc->lock);
 
 	sec_gstat = bfin_read32(SEC_GSTAT);
+=======
+void handle_sec_fault(uint32_t sec_gstat)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sec_gstat & SEC_GSTAT_ERR) {
 
 		switch (sec_gstat & SEC_GSTAT_ERRC) {
@@ -494,6 +518,7 @@ void handle_sec_fault(unsigned int irq, struct irq_desc *desc)
 
 
 	}
+<<<<<<< HEAD
 
 	raw_spin_unlock(&desc->lock);
 
@@ -506,6 +531,18 @@ void handle_core_fault(unsigned int irq, struct irq_desc *desc)
 
 	raw_spin_lock(&desc->lock);
 
+=======
+}
+
+static struct irqaction bfin_fault_irq = {
+	.name = "Blackfin fault",
+};
+
+static irqreturn_t bfin_fault_routine(int irq, void *data)
+{
+	struct pt_regs *fp = get_irq_regs();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (irq) {
 	case IRQ_C0_DBL_FAULT:
 		double_fault_c(fp);
@@ -522,11 +559,23 @@ void handle_core_fault(unsigned int irq, struct irq_desc *desc)
 	case IRQ_C0_NMI_L1_PARITY_ERR:
 		panic("Core 0 NMI L1 parity error");
 		break;
+<<<<<<< HEAD
 	default:
 		panic("Core 1 fault %d occurs unexpectedly", irq);
 	}
 
 	raw_spin_unlock(&desc->lock);
+=======
+	case IRQ_SEC_ERR:
+		pr_err("SEC error\n");
+		handle_sec_fault(bfin_read32(SEC_GSTAT));
+		break;
+	default:
+		panic("Unknown fault %d", irq);
+	}
+
+	return IRQ_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* SEC_GCTL */
 
@@ -666,8 +715,12 @@ static struct irq_chip bfin_mac_status_irqchip = {
 	.irq_set_wake = bfin_mac_status_set_wake,
 };
 
+<<<<<<< HEAD
 void bfin_demux_mac_status_irq(unsigned int int_err_irq,
 			       struct irq_desc *inta_desc)
+=======
+void bfin_demux_mac_status_irq(struct irq_desc *inta_desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, irq = 0;
 	u32 status = bfin_read_EMAC_SYSTAT();
@@ -696,11 +749,16 @@ void bfin_demux_mac_status_irq(unsigned int int_err_irq,
 }
 #endif
 
+<<<<<<< HEAD
 static inline void bfin_set_irq_handler(unsigned irq, irq_flow_handler_t handle)
+=======
+static inline void bfin_set_irq_handler(struct irq_data *d, irq_flow_handler_t handle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef CONFIG_IPIPE
 	handle = handle_level_irq;
 #endif
+<<<<<<< HEAD
 	__irq_set_handler_locked(irq, handle);
 }
 
@@ -708,6 +766,14 @@ static DECLARE_BITMAP(gpio_enabled, MAX_BLACKFIN_GPIOS);
 extern void bfin_gpio_irq_prepare(unsigned gpio);
 
 #if !BFIN_GPIO_PINT
+=======
+	irq_set_handler_locked(d, handle);
+}
+
+#ifdef CONFIG_GPIO_ADI
+
+static DECLARE_BITMAP(gpio_enabled, MAX_BLACKFIN_GPIOS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void bfin_gpio_ack_irq(struct irq_data *d)
 {
@@ -814,13 +880,20 @@ static int bfin_gpio_irq_type(struct irq_data *d, unsigned int type)
 	}
 
 	if (type & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING))
+<<<<<<< HEAD
 		bfin_set_irq_handler(irq, handle_edge_irq);
 	else
 		bfin_set_irq_handler(irq, handle_level_irq);
+=======
+		bfin_set_irq_handler(d, handle_edge_irq);
+	else
+		bfin_set_irq_handler(d, handle_level_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int bfin_gpio_set_wake(struct irq_data *d, unsigned int state)
 {
@@ -830,6 +903,8 @@ static int bfin_gpio_set_wake(struct irq_data *d, unsigned int state)
 # define bfin_gpio_set_wake NULL
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void bfin_demux_gpio_block(unsigned int irq)
 {
 	unsigned int gpio, mask;
@@ -845,9 +920,15 @@ static void bfin_demux_gpio_block(unsigned int irq)
 	}
 }
 
+<<<<<<< HEAD
 void bfin_demux_gpio_irq(unsigned int inta_irq,
 			struct irq_desc *desc)
 {
+=======
+void bfin_demux_gpio_irq(struct irq_desc *desc)
+{
+	unsigned int inta_irq = irq_desc_get_irq(desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int irq;
 
 	switch (inta_irq) {
@@ -896,6 +977,7 @@ void bfin_demux_gpio_irq(unsigned int inta_irq,
 	bfin_demux_gpio_block(irq);
 }
 
+<<<<<<< HEAD
 #else
 
 #define NR_PINT_BITS		32
@@ -1169,6 +1251,42 @@ void bfin_pint_resume(void)
 }
 
 #ifdef SEC_GCTL
+=======
+#ifdef CONFIG_PM
+
+static int bfin_gpio_set_wake(struct irq_data *d, unsigned int state)
+{
+	return bfin_gpio_pm_wakeup_ctrl(irq_to_gpio(d->irq), state);
+}
+
+#else
+
+# define bfin_gpio_set_wake NULL
+
+#endif
+
+static struct irq_chip bfin_gpio_irqchip = {
+	.name = "GPIO",
+	.irq_ack = bfin_gpio_ack_irq,
+	.irq_mask = bfin_gpio_mask_irq,
+	.irq_mask_ack = bfin_gpio_mask_ack_irq,
+	.irq_unmask = bfin_gpio_unmask_irq,
+	.irq_disable = bfin_gpio_mask_irq,
+	.irq_enable = bfin_gpio_unmask_irq,
+	.irq_set_type = bfin_gpio_irq_type,
+	.irq_startup = bfin_gpio_irq_startup,
+	.irq_shutdown = bfin_gpio_irq_shutdown,
+	.irq_set_wake = bfin_gpio_set_wake,
+};
+
+#endif
+
+#ifdef CONFIG_PM
+
+#ifdef SEC_GCTL
+static u32 save_pint_sec_ctl[NR_PINT_SYS_IRQS];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int sec_suspend(void)
 {
 	u32 bank;
@@ -1195,6 +1313,7 @@ static struct syscore_ops sec_pm_syscore_ops = {
 	.suspend = sec_suspend,
 	.resume = sec_resume,
 };
+<<<<<<< HEAD
 
 #endif
 #else
@@ -1282,6 +1401,13 @@ static struct irq_chip bfin_gpio_irqchip = {
 };
 
 void __cpuinit init_exception_vectors(void)
+=======
+#endif
+
+#endif
+
+void init_exception_vectors(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* cannot program in software:
 	 * evt0 - emulation (jtag)
@@ -1331,6 +1457,7 @@ int __init init_arch_irq(void)
 
 	local_irq_disable();
 
+<<<<<<< HEAD
 #if BFIN_GPIO_PINT
 # ifdef CONFIG_PINTx_REASSIGN
 	pint[0]->assign = CONFIG_PINT0_ASSIGN;
@@ -1342,6 +1469,8 @@ int __init init_arch_irq(void)
 	init_pint_lut();
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (irq = 0; irq <= SYS_IRQS; irq++) {
 		if (irq <= IRQ_CORETMR)
 			irq_set_chip(irq, &bfin_core_irqchip);
@@ -1349,12 +1478,17 @@ int __init init_arch_irq(void)
 			irq_set_chip(irq, &bfin_internal_irqchip);
 
 		switch (irq) {
+<<<<<<< HEAD
 #if BFIN_GPIO_PINT
 		case IRQ_PINT0:
 		case IRQ_PINT1:
 		case IRQ_PINT2:
 		case IRQ_PINT3:
 #elif defined(BF537_FAMILY)
+=======
+#if !BFIN_GPIO_PINT
+#if defined(BF537_FAMILY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case IRQ_PH_INTA_MAC_RX:
 		case IRQ_PF_INTA_PG_INTA:
 #elif defined(BF533_FAMILY)
@@ -1372,6 +1506,10 @@ int __init init_arch_irq(void)
 #endif
 			irq_set_chained_handler(irq, bfin_demux_gpio_irq);
 			break;
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_BFIN_MAC) || defined(CONFIG_BFIN_MAC_MODULE)
 		case IRQ_MAC_ERROR:
 			irq_set_chained_handler(irq,
@@ -1419,10 +1557,18 @@ int __init init_arch_irq(void)
 					 handle_level_irq);
 #endif
 	/* if configured as edge, then will be changed to do_edge_IRQ */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_GPIO_ADI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (irq = GPIO_IRQ_BASE;
 		irq < (GPIO_IRQ_BASE + MAX_BLACKFIN_GPIOS); irq++)
 		irq_set_chip_and_handler(irq, &bfin_gpio_irqchip,
 					 handle_level_irq);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bfin_write_IMASK(0);
 	CSYNC();
 	ilat = bfin_read_ILAT();
@@ -1525,6 +1671,7 @@ int __init init_arch_irq(void)
 
 	local_irq_disable();
 
+<<<<<<< HEAD
 #if BFIN_GPIO_PINT
 # ifdef CONFIG_PINTx_REASSIGN
 	pint[0]->assign = CONFIG_PINT0_ASSIGN;
@@ -1538,6 +1685,8 @@ int __init init_arch_irq(void)
 	init_pint_lut();
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (irq = 0; irq <= SYS_IRQS; irq++) {
 		if (irq <= IRQ_CORETMR) {
 			irq_set_chip_and_handler(irq, &bfin_core_irqchip,
@@ -1546,14 +1695,18 @@ int __init init_arch_irq(void)
 			if (irq == IRQ_CORETMR)
 				irq_set_handler(irq, handle_percpu_irq);
 #endif
+<<<<<<< HEAD
 		} else if (irq >= BFIN_IRQ(21) && irq <= BFIN_IRQ(26)) {
 			irq_set_chip(irq, &bfin_sec_irqchip);
 			irq_set_chained_handler(irq, bfin_demux_gpio_irq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else if (irq >= BFIN_IRQ(34) && irq <= BFIN_IRQ(37)) {
 			irq_set_chip_and_handler(irq, &bfin_sec_irqchip,
 				handle_percpu_irq);
 		} else {
 			irq_set_chip(irq, &bfin_sec_irqchip);
+<<<<<<< HEAD
 			if (irq == IRQ_SEC_ERR)
 				irq_set_handler(irq, handle_sec_fault);
 			else if (irq >= IRQ_C0_DBL_FAULT && irq < CORE_IRQS)
@@ -1567,6 +1720,12 @@ int __init init_arch_irq(void)
 		irq < (GPIO_IRQ_BASE + MAX_BLACKFIN_GPIOS); irq++)
 		irq_set_chip_and_handler(irq, &bfin_gpio_irqchip,
 					handle_level_irq);
+=======
+			irq_set_handler(irq, handle_fasteoi_irq);
+			__irq_set_preflow_handler(irq, bfin_sec_preflow_handler);
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bfin_write_IMASK(0);
 	CSYNC();
@@ -1579,8 +1738,11 @@ int __init init_arch_irq(void)
 
 	bfin_sec_set_priority(CONFIG_SEC_IRQ_PRIORITY_LEVELS, sec_int_priority);
 
+<<<<<<< HEAD
 	bfin_sec_set_priority(CONFIG_SEC_IRQ_PRIORITY_LEVELS, sec_int_priority);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Enable interrupts IVG7-15 */
 	bfin_irq_flags |= IMASK_IVG15 |
 	    IMASK_IVG14 | IMASK_IVG13 | IMASK_IVG12 | IMASK_IVG11 |
@@ -1602,6 +1764,16 @@ int __init init_arch_irq(void)
 	register_syscore_ops(&sec_pm_syscore_ops);
 #endif
 
+<<<<<<< HEAD
+=======
+	bfin_fault_irq.handler = bfin_fault_routine;
+#ifdef CONFIG_L1_PARITY_CHECK
+	setup_irq(IRQ_C0_NMI_L1_PARITY_ERR, &bfin_fault_irq);
+#endif
+	setup_irq(IRQ_C0_DBL_FAULT, &bfin_fault_irq);
+	setup_irq(IRQ_SEC_ERR, &bfin_fault_irq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1675,12 +1847,21 @@ asmlinkage int __ipipe_grab_irq(int vec, struct pt_regs *regs)
 		bfin_write_TIMER_STATUS(1); /* Latch TIMIL0 */
 #endif
 		/* This is basically what we need from the register frame. */
+<<<<<<< HEAD
 		__raw_get_cpu_var(__ipipe_tick_regs).ipend = regs->ipend;
 		__raw_get_cpu_var(__ipipe_tick_regs).pc = regs->pc;
 		if (this_domain != ipipe_root_domain)
 			__raw_get_cpu_var(__ipipe_tick_regs).ipend &= ~0x10;
 		else
 			__raw_get_cpu_var(__ipipe_tick_regs).ipend |= 0x10;
+=======
+		__this_cpu_write(__ipipe_tick_regs.ipend, regs->ipend);
+		__this_cpu_write(__ipipe_tick_regs.pc, regs->pc);
+		if (this_domain != ipipe_root_domain)
+			__this_cpu_and(__ipipe_tick_regs.ipend, ~0x10);
+		else
+			__this_cpu_or(__ipipe_tick_regs.ipend, 0x10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*

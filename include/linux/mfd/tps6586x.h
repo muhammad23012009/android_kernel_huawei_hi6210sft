@@ -13,6 +13,17 @@
 #define TPS6586X_SLEW_RATE_SET		0x08
 #define TPS6586X_SLEW_RATE_MASK         0x07
 
+<<<<<<< HEAD
+=======
+/* VERSION CRC */
+#define TPS658621A	0x15
+#define TPS658621CD	0x2c
+#define TPS658623	0x1b
+#define TPS658640	0x01
+#define TPS658640v2	0x02
+#define TPS658643	0x03
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum {
 	TPS6586X_ID_SYS,
 	TPS6586X_ID_SM_0,
@@ -97,5 +108,9 @@ extern int tps6586x_clr_bits(struct device *dev, int reg, uint8_t bit_mask);
 extern int tps6586x_update(struct device *dev, int reg, uint8_t val,
 			   uint8_t mask);
 extern int tps6586x_irq_get_virq(struct device *dev, int irq);
+<<<<<<< HEAD
+=======
+extern int tps6586x_get_version(struct device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /*__LINUX_MFD_TPS6586X_H */

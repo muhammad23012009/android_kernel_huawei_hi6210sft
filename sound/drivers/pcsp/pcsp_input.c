@@ -14,8 +14,14 @@
 
 #include <linux/init.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <asm/io.h>
 #include "pcsp.h"
+=======
+#include <linux/io.h>
+#include "pcsp.h"
+#include "pcsp_input.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void pcspkr_do_sound(unsigned int count)
 {

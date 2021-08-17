@@ -30,7 +30,11 @@
 #include <asm/machdep.h>
 #include <asm/mpc52xx.h>
 
+<<<<<<< HEAD
 static struct of_device_id mpc5200_gpio_ids[] __initdata = {
+=======
+static const struct of_device_id mpc5200_gpio_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-gpio", },
 	{ .compatible = "mpc5200-gpio", },
 	{}
@@ -80,7 +84,11 @@ static struct irq_chip media5200_irq_chip = {
 	.irq_mask_ack = media5200_irq_mask,
 };
 
+<<<<<<< HEAD
 void media5200_irq_cascade(unsigned int virq, struct irq_desc *desc)
+=======
+static void media5200_irq_cascade(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	int sub_virq, val;
@@ -242,7 +250,11 @@ static const char * const board[] __initconst = {
  */
 static int __init media5200_probe(void)
 {
+<<<<<<< HEAD
 	return of_flat_dt_match(of_get_flat_dt_root(), board);
+=======
+	return of_device_compatible_match(of_root, board);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(media5200_platform) {

@@ -275,7 +275,10 @@ static int i82875p_setup_overfl_dev(struct pci_dev *pdev,
 {
 	struct pci_dev *dev;
 	void __iomem *window;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*ovrfl_pdev = NULL;
 	*ovrfl_window = NULL;
@@ -293,6 +296,7 @@ static int i82875p_setup_overfl_dev(struct pci_dev *pdev,
 		if (dev == NULL)
 			return 1;
 
+<<<<<<< HEAD
 		err = pci_bus_add_device(dev);
 		if (err) {
 			i82875p_printk(KERN_ERR,
@@ -300,6 +304,10 @@ static int i82875p_setup_overfl_dev(struct pci_dev *pdev,
 				__func__);
 		}
 		pci_bus_assign_resources(dev->bus);
+=======
+		pci_bus_assign_resources(dev->bus);
+		pci_bus_add_device(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	*ovrfl_pdev = dev;
@@ -406,8 +414,11 @@ static int i82875p_probe1(struct pci_dev *pdev, int dev_idx)
 
 	edac_dbg(0, "\n");
 
+<<<<<<< HEAD
 	ovrfl_pdev = pci_get_device(PCI_VEND_DEV(INTEL, 82875_6), NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (i82875p_setup_overfl_dev(pdev, &ovrfl_pdev, &ovrfl_window))
 		return -ENODEV;
 	drc = readl(ovrfl_window + I82875P_DRC);
@@ -527,7 +538,11 @@ static void i82875p_remove_one(struct pci_dev *pdev)
 	edac_mc_free(mci);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(i82875p_pci_tbl) = {
+=======
+static const struct pci_device_id i82875p_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 PCI_VEND_DEV(INTEL, 82875_0), PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 	 I82875P},
@@ -584,9 +599,13 @@ fail1:
 	pci_unregister_driver(&i82875p_driver);
 
 fail0:
+<<<<<<< HEAD
 	if (mci_pdev != NULL)
 		pci_dev_put(mci_pdev);
 
+=======
+	pci_dev_put(mci_pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pci_rc;
 }
 

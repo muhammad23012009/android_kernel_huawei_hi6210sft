@@ -38,7 +38,11 @@ struct tosa_bl_data {
 
 static void tosa_bl_set_backlight(struct tosa_bl_data *data, int brightness)
 {
+<<<<<<< HEAD
 	struct spi_device *spi = data->i2c->dev.platform_data;
+=======
+	struct spi_device *spi = dev_get_platdata(&data->i2c->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	i2c_smbus_write_byte_data(data->i2c, DAC_CH1, data->comadj);
 
@@ -105,8 +109,14 @@ static int tosa_bl_probe(struct i2c_client *client,
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = 512 - 1;
+<<<<<<< HEAD
 	data->bl = backlight_device_register("tosa-bl", &client->dev, data,
 					     &bl_ops, &props);
+=======
+	data->bl = devm_backlight_device_register(&client->dev, "tosa-bl",
+						&client->dev, data, &bl_ops,
+						&props);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(data->bl)) {
 		ret = PTR_ERR(data->bl);
 		goto err_reg;
@@ -128,9 +138,13 @@ static int tosa_bl_remove(struct i2c_client *client)
 {
 	struct tosa_bl_data *data = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	backlight_device_unregister(data->bl);
 	data->bl = NULL;
 
+=======
+	data->bl = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -159,11 +173,18 @@ static const struct i2c_device_id tosa_bl_id[] = {
 	{ "tosa-bl", 0 },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, tosa_bl_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct i2c_driver tosa_bl_driver = {
 	.driver = {
 		.name		= "tosa-bl",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm		= &tosa_bl_pm_ops,
 	},
 	.probe		= tosa_bl_probe,

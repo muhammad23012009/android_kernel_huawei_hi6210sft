@@ -77,9 +77,20 @@ static inline struct page *pte_alloc_one(struct mm_struct *mm,
 					 unsigned long address)
 {
 	struct page *pte;
+<<<<<<< HEAD
 	pte = alloc_pages(GFP_KERNEL|__GFP_REPEAT, 0);
 	if (pte)
 		clear_page(page_address(pte));
+=======
+	pte = alloc_pages(GFP_KERNEL, 0);
+	if (!pte)
+		return NULL;
+	clear_page(page_address(pte));
+	if (!pgtable_page_ctor(pte)) {
+		__free_page(pte);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pte;
 }
 
@@ -90,6 +101,10 @@ static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
 
 static inline void pte_free(struct mm_struct *mm, struct page *pte)
 {
+<<<<<<< HEAD
+=======
+	pgtable_page_dtor(pte);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__free_page(pte);
 }
 

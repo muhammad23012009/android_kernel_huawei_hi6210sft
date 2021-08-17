@@ -56,6 +56,16 @@ extern void debug_dma_alloc_coherent(struct device *dev, size_t size,
 extern void debug_dma_free_coherent(struct device *dev, size_t size,
 				    void *virt, dma_addr_t addr);
 
+<<<<<<< HEAD
+=======
+extern void debug_dma_map_resource(struct device *dev, phys_addr_t addr,
+				   size_t size, int direction,
+				   dma_addr_t dma_addr);
+
+extern void debug_dma_unmap_resource(struct device *dev, dma_addr_t dma_addr,
+				     size_t size, int direction);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void debug_dma_sync_single_for_cpu(struct device *dev,
 					  dma_addr_t dma_handle, size_t size,
 					  int direction);
@@ -85,6 +95,11 @@ extern void debug_dma_sync_sg_for_device(struct device *dev,
 
 extern void debug_dma_dump_mappings(struct device *dev);
 
+<<<<<<< HEAD
+=======
+extern void debug_dma_assert_idle(struct page *page);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_DMA_API_DEBUG */
 
 static inline void dma_debug_add_bus(struct bus_type *bus)
@@ -139,6 +154,21 @@ static inline void debug_dma_free_coherent(struct device *dev, size_t size,
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline void debug_dma_map_resource(struct device *dev, phys_addr_t addr,
+					  size_t size, int direction,
+					  dma_addr_t dma_addr)
+{
+}
+
+static inline void debug_dma_unmap_resource(struct device *dev,
+					    dma_addr_t dma_addr, size_t size,
+					    int direction)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void debug_dma_sync_single_for_cpu(struct device *dev,
 						 dma_addr_t dma_handle,
 						 size_t size, int direction)
@@ -183,6 +213,13 @@ static inline void debug_dma_dump_mappings(struct device *dev)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline void debug_dma_assert_idle(struct page *page)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_DMA_API_DEBUG */
 
 #endif /* __DMA_DEBUG_H */

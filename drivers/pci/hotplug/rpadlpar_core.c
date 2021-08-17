@@ -55,6 +55,10 @@ static struct device_node *find_vio_slot_node(char *drc_name)
 		if ((rc == 0) && (!strcmp(drc_name, name)))
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return dn;
 }
@@ -78,6 +82,10 @@ static struct device_node *find_php_slot_pci_node(char *drc_name,
 	return np;
 }
 
+<<<<<<< HEAD
+=======
+/* Returns a device_node with its reference count incremented */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct device_node *find_dlpar_node(char *drc_name, int *node_type)
 {
 	struct device_node *dn;
@@ -114,11 +122,18 @@ static struct device_node *find_dlpar_node(char *drc_name, int *node_type)
  */
 static struct slot *find_php_slot(struct device_node *dn)
 {
+<<<<<<< HEAD
 	struct list_head *tmp, *n;
 	struct slot *slot;
 
 	list_for_each_safe(tmp, n, &rpaphp_slot_head) {
 		slot = list_entry(tmp, struct slot, rpaphp_slot_list);
+=======
+	struct slot *slot, *next;
+
+	list_for_each_entry_safe(slot, next, &rpaphp_slot_head,
+				 rpaphp_slot_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (slot->dn == dn)
 			return slot;
 	}
@@ -146,7 +161,11 @@ static void dlpar_pci_add_bus(struct device_node *dn)
 	struct pci_controller *phb = pdn->phb;
 	struct pci_dev *dev = NULL;
 
+<<<<<<< HEAD
 	eeh_add_device_tree_early(dn);
+=======
+	eeh_add_device_tree_early(pdn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Add EADS device to PHB bus, adding new entry to bus->devices */
 	dev = of_create_pci_dev(dn, phb->bus, pdn->devfn);
@@ -157,8 +176,12 @@ static void dlpar_pci_add_bus(struct device_node *dn)
 	}
 
 	/* Scan below the new bridge */
+<<<<<<< HEAD
 	if (dev->hdr_type == PCI_HEADER_TYPE_BRIDGE ||
 	    dev->hdr_type == PCI_HEADER_TYPE_CARDBUS)
+=======
+	if (pci_is_bridge(dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		of_scan_pci_bridge(dev);
 
 	/* Map IO space for child bus, which may or may not succeed */
@@ -177,7 +200,11 @@ static int dlpar_add_pci_slot(char *drc_name, struct device_node *dn)
 	struct pci_dev *dev;
 	struct pci_controller *phb;
 
+<<<<<<< HEAD
 	if (pcibios_find_pci_bus(dn))
+=======
+	if (pci_find_bus_by_node(dn))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	/* Add pci bus */
@@ -214,10 +241,17 @@ static int dlpar_remove_phb(char *drc_name, struct device_node *dn)
 	struct pci_dn *pdn;
 	int rc = 0;
 
+<<<<<<< HEAD
 	if (!pcibios_find_pci_bus(dn))
 		return -EINVAL;
 
 	/* If pci slot is hotplugable, use hotplug to remove it */
+=======
+	if (!pci_find_bus_by_node(dn))
+		return -EINVAL;
+
+	/* If pci slot is hotpluggable, use hotplug to remove it */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	slot = find_php_slot(dn);
 	if (slot && rpaphp_deregister_slot(slot)) {
 		printk(KERN_ERR "%s: unable to remove hotplug slot %s\n",
@@ -315,6 +349,10 @@ int dlpar_add_slot(char *drc_name)
 			rc = dlpar_add_phb(drc_name, dn);
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(dn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk(KERN_INFO "%s: slot %s added\n", DLPAR_MODULE_NAME, drc_name);
 exit:
@@ -362,10 +400,22 @@ int dlpar_remove_pci_slot(char *drc_name, struct device_node *dn)
 {
 	struct pci_bus *bus;
 	struct slot *slot;
+<<<<<<< HEAD
 
 	bus = pcibios_find_pci_bus(dn);
 	if (!bus)
 		return -EINVAL;
+=======
+	int ret = 0;
+
+	pci_lock_rescan_remove();
+
+	bus = pci_find_bus_by_node(dn);
+	if (!bus) {
+		ret = -EINVAL;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("PCI: Removing PCI slot below EADS bridge %s\n",
 		 bus->self ? pci_name(bus->self) : "<!PHB!>");
@@ -379,27 +429,49 @@ int dlpar_remove_pci_slot(char *drc_name, struct device_node *dn)
 			printk(KERN_ERR
 				"%s: unable to remove hotplug slot %s\n",
 				__func__, drc_name);
+<<<<<<< HEAD
 			return -EIO;
+=======
+			ret = -EIO;
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	/* Remove all devices below slot */
+<<<<<<< HEAD
 	pcibios_remove_pci_devices(bus);
+=======
+	pci_hp_remove_devices(bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Unmap PCI IO space */
 	if (pcibios_unmap_io_space(bus)) {
 		printk(KERN_ERR "%s: failed to unmap bus range\n",
 			__func__);
+<<<<<<< HEAD
 		return -ERANGE;
+=======
+		ret = -ERANGE;
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Remove the EADS bridge device itself */
 	BUG_ON(!bus->self);
 	pr_debug("PCI: Now removing bridge device %s\n", pci_name(bus->self));
+<<<<<<< HEAD
 	eeh_remove_bus_device(bus->self, true);
 	pci_stop_and_remove_bus_device(bus->self);
 
 	return 0;
+=======
+	pci_stop_and_remove_bus_device(bus->self);
+
+ out:
+	pci_unlock_rescan_remove();
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -440,6 +512,10 @@ int dlpar_remove_slot(char *drc_name)
 			rc = dlpar_remove_pci_slot(drc_name, dn);
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(dn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vm_unmap_aliases();
 
 	printk(KERN_INFO "%s: slot %s removed\n", DLPAR_MODULE_NAME, drc_name);

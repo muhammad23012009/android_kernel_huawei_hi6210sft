@@ -1,8 +1,15 @@
 #ifndef _ASM_POWERPC_PGTABLE_H
 #define _ASM_POWERPC_PGTABLE_H
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 #ifndef __ASSEMBLY__
+=======
+
+#ifndef __ASSEMBLY__
+#include <linux/mmdebug.h>
+#include <linux/mmzone.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h>		/* For TASK_SIZE */
 #include <asm/mmu.h>
 #include <asm/page.h>
@@ -11,6 +18,7 @@ struct mm_struct;
 
 #endif /* !__ASSEMBLY__ */
 
+<<<<<<< HEAD
 #if defined(CONFIG_PPC64)
 #  include <asm/pgtable-ppc64.h>
 #else
@@ -22,11 +30,19 @@ struct mm_struct;
  * PTE page. We use the 8 bytes per each pte entry.
  */
 #define PTE_PAGE_HIDX_OFFSET (PTRS_PER_PTE * 8)
+=======
+#ifdef CONFIG_PPC_BOOK3S
+#include <asm/book3s/pgtable.h>
+#else
+#include <asm/nohash/pgtable.h>
+#endif /* !CONFIG_PPC_BOOK3S */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef __ASSEMBLY__
 
 #include <asm/tlbflush.h>
 
+<<<<<<< HEAD
 /* Generic accessors to PTE bits */
 static inline int pte_write(pte_t pte)		{ return pte_val(pte) & _PAGE_RW; }
 static inline int pte_dirty(pte_t pte)		{ return pte_val(pte) & _PAGE_DIRTY; }
@@ -49,10 +65,13 @@ static inline pte_t pfn_pte(unsigned long pfn, pgprot_t pgprot) {
 static inline unsigned long pte_pfn(pte_t pte)	{
 	return pte_val(pte) >> PTE_RPN_SHIFT; }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Keep these as a macros to avoid include dependency mess */
 #define pte_page(x)		pfn_to_page(pte_pfn(x))
 #define mk_pte(page, pgprot)	pfn_pte(page_to_pfn(page), (pgprot))
 
+<<<<<<< HEAD
 /* Generic modifiers for PTE bits */
 static inline pte_t pte_wrprotect(pte_t pte) {
 	pte_val(pte) &= ~(_PAGE_RW | _PAGE_HWWRITE); return pte; }
@@ -180,6 +199,8 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
 				     unsigned long size, pgprot_t vma_prot);
 #define __HAVE_PHYS_MEM_ACCESS_PROT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * ZERO_PAGE is a global shared page that is always zero: used
  * for zero-mapped memory areas etc..
@@ -189,6 +210,11 @@ extern unsigned long empty_zero_page[];
 
 extern pgd_t swapper_pg_dir[];
 
+<<<<<<< HEAD
+=======
+void limit_zone_pfn(enum zone_type zone, unsigned long max_pfn);
+int dma_pfn_limit_to_zone(u64 pfn_limit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void paging_init(void);
 
 /*
@@ -198,9 +224,12 @@ extern void paging_init(void);
  */
 #define kern_addr_valid(addr)	(1)
 
+<<<<<<< HEAD
 #define io_remap_pfn_range(vma, vaddr, pfn, size, prot)		\
 		remap_pfn_range(vma, vaddr, pfn, size, prot)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/pgtable.h>
 
 
@@ -215,6 +244,7 @@ extern void paging_init(void);
  */
 extern void update_mmu_cache(struct vm_area_struct *, unsigned long, pte_t *);
 
+<<<<<<< HEAD
 extern int gup_hugepd(hugepd_t *hugepd, unsigned pdshift, unsigned long addr,
 		      unsigned long end, int write, struct page **pages, int *nr);
 
@@ -223,4 +253,26 @@ extern int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
 #endif /* __ASSEMBLY__ */
 
 #endif /* __KERNEL__ */
+=======
+extern int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
+		       unsigned long end, int write,
+		       struct page **pages, int *nr);
+#ifndef CONFIG_TRANSPARENT_HUGEPAGE
+#define pmd_large(pmd)		0
+#endif
+pte_t *__find_linux_pte_or_hugepte(pgd_t *pgdir, unsigned long ea,
+				   bool *is_thp, unsigned *shift);
+static inline pte_t *find_linux_pte_or_hugepte(pgd_t *pgdir, unsigned long ea,
+					       bool *is_thp, unsigned *shift)
+{
+	VM_WARN(!arch_irqs_disabled(),
+		"%s called with irq enabled\n", __func__);
+	return __find_linux_pte_or_hugepte(pgdir, ea, is_thp, shift);
+}
+
+unsigned long vmalloc_to_phys(void *vmalloc_addr);
+
+#endif /* __ASSEMBLY__ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_POWERPC_PGTABLE_H */

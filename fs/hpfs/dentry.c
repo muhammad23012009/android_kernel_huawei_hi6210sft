@@ -12,8 +12,12 @@
  * Note: the dentry argument is the parent dentry.
  */
 
+<<<<<<< HEAD
 static int hpfs_hash_dentry(const struct dentry *dentry, const struct inode *inode,
 		struct qstr *qstr)
+=======
+static int hpfs_hash_dentry(const struct dentry *dentry, struct qstr *qstr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long	 hash;
 	int		 i;
@@ -27,7 +31,11 @@ static int hpfs_hash_dentry(const struct dentry *dentry, const struct inode *ino
 		/*return -ENOENT;*/
 	x:
 
+<<<<<<< HEAD
 	hash = init_name_hash();
+=======
+	hash = init_name_hash(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < l; i++)
 		hash = partial_name_hash(hpfs_upcase(hpfs_sb(dentry->d_sb)->sb_cp_table,qstr->name[i]), hash);
 	qstr->hash = end_name_hash(hash);
@@ -35,9 +43,13 @@ static int hpfs_hash_dentry(const struct dentry *dentry, const struct inode *ino
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hpfs_compare_dentry(const struct dentry *parent,
 		const struct inode *pinode,
 		const struct dentry *dentry, const struct inode *inode,
+=======
+static int hpfs_compare_dentry(const struct dentry *dentry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	unsigned al = len;
@@ -53,7 +65,11 @@ static int hpfs_compare_dentry(const struct dentry *parent,
 
 	if (hpfs_chk_name(name->name, &bl))
 		return 1;
+<<<<<<< HEAD
 	if (hpfs_compare_names(parent->d_sb, str, al, name->name, bl, 0))
+=======
+	if (hpfs_compare_names(dentry->d_sb, str, al, name->name, bl, 0))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	return 0;
 }

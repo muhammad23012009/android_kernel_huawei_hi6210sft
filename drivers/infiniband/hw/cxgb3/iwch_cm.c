@@ -367,7 +367,11 @@ static void arp_failure_discard(struct t3cdev *dev, struct sk_buff *skb)
  */
 static void act_open_req_arp_failure(struct t3cdev *dev, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR MOD "ARP failure duing connect\n");
+=======
+	printk(KERN_ERR MOD "ARP failure during connect\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree_skb(skb);
 }
 
@@ -418,6 +422,10 @@ static int send_abort(struct iwch_ep *ep, struct sk_buff *skb, gfp_t gfp)
 	skb->priority = CPL_PRIORITY_DATA;
 	set_arp_failure_handler(skb, abort_arp_failure);
 	req = (struct cpl_abort_req *) skb_put(skb, sizeof(*req));
+<<<<<<< HEAD
+=======
+	memset(req, 0, sizeof(*req));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	req->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_OFLD_HOST_ABORT_CON_REQ));
 	req->wr.wr_lo = htonl(V_WR_TID(ep->hwtid));
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_ABORT_REQ, ep->hwtid));
@@ -721,8 +729,15 @@ static void connect_reply_upcall(struct iwch_ep *ep, int status)
 	memset(&event, 0, sizeof(event));
 	event.event = IW_CM_EVENT_CONNECT_REPLY;
 	event.status = status;
+<<<<<<< HEAD
 	event.local_addr = ep->com.local_addr;
 	event.remote_addr = ep->com.remote_addr;
+=======
+	memcpy(&event.local_addr, &ep->com.local_addr,
+	       sizeof(ep->com.local_addr));
+	memcpy(&event.remote_addr, &ep->com.remote_addr,
+	       sizeof(ep->com.remote_addr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((status == 0) || (status == -ECONNREFUSED)) {
 		event.private_data_len = ep->plen;
@@ -747,8 +762,15 @@ static void connect_request_upcall(struct iwch_ep *ep)
 	PDBG("%s ep %p tid %d\n", __func__, ep, ep->hwtid);
 	memset(&event, 0, sizeof(event));
 	event.event = IW_CM_EVENT_CONNECT_REQUEST;
+<<<<<<< HEAD
 	event.local_addr = ep->com.local_addr;
 	event.remote_addr = ep->com.remote_addr;
+=======
+	memcpy(&event.local_addr, &ep->com.local_addr,
+	       sizeof(ep->com.local_addr));
+	memcpy(&event.remote_addr, &ep->com.remote_addr,
+	       sizeof(ep->com.local_addr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	event.private_data_len = ep->plen;
 	event.private_data = ep->mpa_pkt + sizeof(struct mpa_message);
 	event.provider_data = ep;
@@ -1391,10 +1413,17 @@ static int pass_accept_req(struct t3cdev *tdev, struct sk_buff *skb, void *ctx)
 	state_set(&child_ep->com, CONNECTING);
 	child_ep->com.tdev = tdev;
 	child_ep->com.cm_id = NULL;
+<<<<<<< HEAD
 	child_ep->com.local_addr.sin_family = PF_INET;
 	child_ep->com.local_addr.sin_port = req->local_port;
 	child_ep->com.local_addr.sin_addr.s_addr = req->local_ip;
 	child_ep->com.remote_addr.sin_family = PF_INET;
+=======
+	child_ep->com.local_addr.sin_family = AF_INET;
+	child_ep->com.local_addr.sin_port = req->local_port;
+	child_ep->com.local_addr.sin_addr.s_addr = req->local_ip;
+	child_ep->com.remote_addr.sin_family = AF_INET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	child_ep->com.remote_addr.sin_port = req->peer_port;
 	child_ep->com.remote_addr.sin_addr.s_addr = req->peer_ip;
 	get_ep(&parent_ep->com);
@@ -1872,8 +1901,14 @@ err:
 static int is_loopback_dst(struct iw_cm_id *cm_id)
 {
 	struct net_device *dev;
+<<<<<<< HEAD
 
 	dev = ip_dev_find(&init_net, cm_id->remote_addr.sin_addr.s_addr);
+=======
+	struct sockaddr_in *raddr = (struct sockaddr_in *)&cm_id->m_remote_addr;
+
+	dev = ip_dev_find(&init_net, raddr->sin_addr.s_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dev)
 		return 0;
 	dev_put(dev);
@@ -1886,6 +1921,16 @@ int iwch_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	struct iwch_ep *ep;
 	struct rtable *rt;
 	int err = 0;
+<<<<<<< HEAD
+=======
+	struct sockaddr_in *laddr = (struct sockaddr_in *)&cm_id->m_local_addr;
+	struct sockaddr_in *raddr = (struct sockaddr_in *)&cm_id->m_remote_addr;
+
+	if (cm_id->m_remote_addr.ss_family != PF_INET) {
+		err = -ENOSYS;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (is_loopback_dst(cm_id)) {
 		err = -ENOSYS;
@@ -1929,11 +1974,17 @@ int iwch_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	}
 
 	/* find a route */
+<<<<<<< HEAD
 	rt = find_route(h->rdev.t3cdev_p,
 			cm_id->local_addr.sin_addr.s_addr,
 			cm_id->remote_addr.sin_addr.s_addr,
 			cm_id->local_addr.sin_port,
 			cm_id->remote_addr.sin_port, IPTOS_LOWDELAY);
+=======
+	rt = find_route(h->rdev.t3cdev_p, laddr->sin_addr.s_addr,
+			raddr->sin_addr.s_addr, laddr->sin_port,
+			raddr->sin_port, IPTOS_LOWDELAY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rt) {
 		printk(KERN_ERR MOD "%s - cannot find route.\n", __func__);
 		err = -EHOSTUNREACH;
@@ -1941,7 +1992,11 @@ int iwch_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	}
 	ep->dst = &rt->dst;
 	ep->l2t = t3_l2t_get(ep->com.tdev, ep->dst, NULL,
+<<<<<<< HEAD
 			     &cm_id->remote_addr.sin_addr.s_addr);
+=======
+			     &raddr->sin_addr.s_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ep->l2t) {
 		printk(KERN_ERR MOD "%s - cannot alloc l2e.\n", __func__);
 		err = -ENOMEM;
@@ -1950,8 +2005,15 @@ int iwch_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 
 	state_set(&ep->com, CONNECTING);
 	ep->tos = IPTOS_LOWDELAY;
+<<<<<<< HEAD
 	ep->com.local_addr = cm_id->local_addr;
 	ep->com.remote_addr = cm_id->remote_addr;
+=======
+	memcpy(&ep->com.local_addr, &cm_id->m_local_addr,
+	       sizeof(ep->com.local_addr));
+	memcpy(&ep->com.remote_addr, &cm_id->m_remote_addr,
+	       sizeof(ep->com.remote_addr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* send connect request to rnic */
 	err = send_connect(ep);
@@ -1979,6 +2041,14 @@ int iwch_create_listen(struct iw_cm_id *cm_id, int backlog)
 
 	might_sleep();
 
+<<<<<<< HEAD
+=======
+	if (cm_id->m_local_addr.ss_family != PF_INET) {
+		err = -ENOSYS;
+		goto fail1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ep = alloc_ep(sizeof(*ep), GFP_KERNEL);
 	if (!ep) {
 		printk(KERN_ERR MOD "%s - cannot alloc ep.\n", __func__);
@@ -1990,7 +2060,12 @@ int iwch_create_listen(struct iw_cm_id *cm_id, int backlog)
 	cm_id->add_ref(cm_id);
 	ep->com.cm_id = cm_id;
 	ep->backlog = backlog;
+<<<<<<< HEAD
 	ep->com.local_addr = cm_id->local_addr;
+=======
+	memcpy(&ep->com.local_addr, &cm_id->m_local_addr,
+	       sizeof(ep->com.local_addr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Allocate a server TID.
@@ -2239,7 +2314,11 @@ int __init iwch_cm_init(void)
 {
 	skb_queue_head_init(&rxq);
 
+<<<<<<< HEAD
 	workq = create_singlethread_workqueue("iw_cxgb3");
+=======
+	workq = alloc_ordered_workqueue("iw_cxgb3", WQ_MEM_RECLAIM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!workq)
 		return -ENOMEM;
 

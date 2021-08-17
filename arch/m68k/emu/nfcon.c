@@ -15,6 +15,10 @@
 #include <linux/slab.h>
 #include <linux/err.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/natfeat.h>
 
@@ -25,17 +29,29 @@ static struct tty_driver *nfcon_tty_driver;
 static void nfputs(const char *str, unsigned int count)
 {
 	char buf[68];
+<<<<<<< HEAD
+=======
+	unsigned long phys = virt_to_phys(buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf[64] = 0;
 	while (count > 64) {
 		memcpy(buf, str, 64);
+<<<<<<< HEAD
 		nf_call(stderr_id, buf);
+=======
+		nf_call(stderr_id, phys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		str += 64;
 		count -= 64;
 	}
 	memcpy(buf, str, count);
 	buf[count] = 0;
+<<<<<<< HEAD
 	nf_call(stderr_id, buf);
+=======
+	nf_call(stderr_id, phys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void nfcon_write(struct console *con, const char *str,
@@ -79,7 +95,11 @@ static int nfcon_tty_put_char(struct tty_struct *tty, unsigned char ch)
 {
 	char temp[2] = { ch, 0 };
 
+<<<<<<< HEAD
 	nf_call(stderr_id, temp);
+=======
+	nf_call(stderr_id, virt_to_phys(temp));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 

@@ -67,8 +67,11 @@ struct vpfe_device {
 	/* CCDC IRQs used when CCDC/ISIF output to SDRAM */
 	unsigned int			ccdc_irq0;
 	unsigned int			ccdc_irq1;
+<<<<<<< HEAD
 	/* maximum video memory that is available*/
 	unsigned int			video_limit;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* media device */
 	struct media_device		media_dev;
 	/* ccdc subdevice */
@@ -87,8 +90,11 @@ struct vpfe_fh {
 	struct vpfe_video_device *video;
 	/* Indicates whether this file handle is doing IO */
 	u8 io_allowed;
+<<<<<<< HEAD
 	/* Used to keep track priority of this instance */
 	enum v4l2_priority prio;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void mbus_to_pix(const struct v4l2_mbus_framefmt *mbus,

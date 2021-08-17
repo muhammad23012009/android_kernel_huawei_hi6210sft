@@ -19,12 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ****************************************************************/
 
+<<<<<<< HEAD
+=======
+#include "smscoreapi.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/usb.h>
 #include <linux/firmware.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include "smscoreapi.h"
 #include "sms-cards.h"
@@ -34,6 +40,13 @@ static int sms_dbg;
 module_param_named(debug, sms_dbg, int, 0644);
 MODULE_PARM_DESC(debug, "set debug level (info=1, adv=2 (or-able))");
 
+=======
+#include <media/media-device.h>
+
+#include "sms-cards.h"
+#include "smsendian.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define USB1_BUFFER_SIZE		0x1000
 #define USB2_BUFFER_SIZE		0x2000
 
@@ -54,6 +67,12 @@ struct smsusb_urb_t {
 	struct smsusb_device_t *dev;
 
 	struct urb urb;
+<<<<<<< HEAD
+=======
+
+	/* For the bottom half */
+	struct work_struct wq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct smsusb_device_t {
@@ -74,6 +93,21 @@ static int smsusb_submit_urb(struct smsusb_device_t *dev,
 			     struct smsusb_urb_t *surb);
 
 /**
+<<<<<<< HEAD
+=======
+ * Completing URB's callback handler - bottom half (proccess context)
+ * submits the URB prepared on smsusb_onresponse()
+ */
+static void do_submit_urb(struct work_struct *work)
+{
+	struct smsusb_urb_t *surb = container_of(work, struct smsusb_urb_t, wq);
+	struct smsusb_device_t *dev = surb->dev;
+
+	smsusb_submit_urb(dev, surb);
+}
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Completing URB's callback handler - top half (interrupt context)
  * adds completing sms urb to the global surbs list and activtes the worker
  * thread the surb
@@ -87,7 +121,11 @@ static void smsusb_onresponse(struct urb *urb)
 	struct smsusb_device_t *dev = surb->dev;
 
 	if (urb->status == -ESHUTDOWN) {
+<<<<<<< HEAD
 		sms_err("error, urb status %d (-ESHUTDOWN), %d bytes",
+=======
+		pr_err("error, urb status %d (-ESHUTDOWN), %d bytes\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			urb->status, urb->actual_length);
 		return;
 	}
@@ -109,9 +147,13 @@ static void smsusb_onresponse(struct urb *urb)
 				/* sanity check */
 				if (((int) phdr->msg_length +
 				     surb->cb->offset) > urb->actual_length) {
+<<<<<<< HEAD
 					sms_err("invalid response "
 						"msglen %d offset %d "
 						"size %d",
+=======
+					pr_err("invalid response msglen %d offset %d size %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						phdr->msg_length,
 						surb->cb->offset,
 						urb->actual_length);
@@ -125,7 +167,11 @@ static void smsusb_onresponse(struct urb *urb)
 			} else
 				surb->cb->offset = 0;
 
+<<<<<<< HEAD
 			sms_debug("received %s(%d) size: %d",
+=======
+			pr_debug("received %s(%d) size: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  smscore_translate_msg(phdr->msg_type),
 				  phdr->msg_type, phdr->msg_length);
 
@@ -134,26 +180,46 @@ static void smsusb_onresponse(struct urb *urb)
 			smscore_onresponse(dev->coredev, surb->cb);
 			surb->cb = NULL;
 		} else {
+<<<<<<< HEAD
 			sms_err("invalid response "
 				"msglen %d actual %d",
 				phdr->msg_length, urb->actual_length);
 		}
 	} else
 		sms_err("error, urb status %d, %d bytes",
+=======
+			pr_err("invalid response msglen %d actual %d\n",
+				phdr->msg_length, urb->actual_length);
+		}
+	} else
+		pr_err("error, urb status %d, %d bytes\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			urb->status, urb->actual_length);
 
 
 exit_and_resubmit:
+<<<<<<< HEAD
 	smsusb_submit_urb(dev, surb);
+=======
+	INIT_WORK(&surb->wq, do_submit_urb);
+	schedule_work(&surb->wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int smsusb_submit_urb(struct smsusb_device_t *dev,
 			     struct smsusb_urb_t *surb)
 {
 	if (!surb->cb) {
+<<<<<<< HEAD
 		surb->cb = smscore_getbuffer(dev->coredev);
 		if (!surb->cb) {
 			sms_err("smscore_getbuffer(...) returned NULL");
+=======
+		/* This function can sleep */
+		surb->cb = smscore_getbuffer(dev->coredev);
+		if (!surb->cb) {
+			pr_err("smscore_getbuffer(...) returned NULL\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENOMEM;
 		}
 	}
@@ -194,7 +260,11 @@ static int smsusb_start_streaming(struct smsusb_device_t *dev)
 	for (i = 0; i < MAX_URBS; i++) {
 		rc = smsusb_submit_urb(dev, &dev->surbs[i]);
 		if (rc < 0) {
+<<<<<<< HEAD
 			sms_err("smsusb_submit_urb(...) failed");
+=======
+			pr_err("smsusb_submit_urb(...) failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			smsusb_stop_streaming(dev);
 			break;
 		}
@@ -209,15 +279,26 @@ static int smsusb_sendrequest(void *context, void *buffer, size_t size)
 	struct sms_msg_hdr *phdr;
 	int dummy, ret;
 
+<<<<<<< HEAD
 	if (dev->state != SMSUSB_ACTIVE)
 		return -ENOENT;
+=======
+	if (dev->state != SMSUSB_ACTIVE) {
+		pr_debug("Device not active yet\n");
+		return -ENOENT;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	phdr = kmalloc(size, GFP_KERNEL);
 	if (!phdr)
 		return -ENOMEM;
 	memcpy(phdr, buffer, size);
 
+<<<<<<< HEAD
 	sms_debug("sending %s(%d) size: %d",
+=======
+	pr_debug("sending %s(%d) size: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  smscore_translate_msg(phdr->msg_type), phdr->msg_type,
 		  phdr->msg_length);
 
@@ -251,8 +332,16 @@ static int smsusb1_load_firmware(struct usb_device *udev, int id, int board_id)
 	int rc, dummy;
 	char *fw_filename;
 
+<<<<<<< HEAD
 	if (id < DEVICE_MODE_DVBT || id > DEVICE_MODE_DVBT_BDA) {
 		sms_err("invalid firmware id specified %d", id);
+=======
+	if (id < 0)
+		id = sms_get_board(board_id)->default_mode;
+
+	if (id < DEVICE_MODE_DVBT || id > DEVICE_MODE_DVBT_BDA) {
+		pr_err("invalid firmware id specified %d\n", id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -260,13 +349,22 @@ static int smsusb1_load_firmware(struct usb_device *udev, int id, int board_id)
 
 	rc = request_firmware(&fw, fw_filename, &udev->dev);
 	if (rc < 0) {
+<<<<<<< HEAD
 		sms_warn("failed to open \"%s\" mode %d, "
 			 "trying again with default firmware", fw_filename, id);
+=======
+		pr_warn("failed to open '%s' mode %d, trying again with default firmware\n",
+			fw_filename, id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		fw_filename = smsusb1_fw_lkup[id];
 		rc = request_firmware(&fw, fw_filename, &udev->dev);
 		if (rc < 0) {
+<<<<<<< HEAD
 			sms_warn("failed to open \"%s\" mode %d",
+=======
+			pr_warn("failed to open '%s' mode %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 fw_filename, id);
 
 			return rc;
@@ -280,6 +378,7 @@ static int smsusb1_load_firmware(struct usb_device *udev, int id, int board_id)
 		rc = usb_bulk_msg(udev, usb_sndbulkpipe(udev, 2),
 				  fw_buffer, fw->size, &dummy, 1000);
 
+<<<<<<< HEAD
 		sms_info("sent %zd(%d) bytes, rc %d", fw->size, dummy, rc);
 
 		kfree(fw_buffer);
@@ -288,6 +387,16 @@ static int smsusb1_load_firmware(struct usb_device *udev, int id, int board_id)
 		rc = -ENOMEM;
 	}
 	sms_info("read FW %s, size=%zd", fw_filename, fw->size);
+=======
+		pr_debug("sent %zu(%d) bytes, rc %d\n", fw->size, dummy, rc);
+
+		kfree(fw_buffer);
+	} else {
+		pr_err("failed to allocate firmware buffer\n");
+		rc = -ENOMEM;
+	}
+	pr_debug("read FW %s, size=%zu\n", fw_filename, fw->size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	release_firmware(fw);
 
@@ -303,7 +412,11 @@ static void smsusb1_detectmode(void *context, int *mode)
 
 	if (!product_string) {
 		product_string = "none";
+<<<<<<< HEAD
 		sms_err("product string not found");
+=======
+		pr_err("product string not found\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (strstr(product_string, "DVBH"))
 		*mode = 1;
 	else if (strstr(product_string, "BDA"))
@@ -313,7 +426,11 @@ static void smsusb1_detectmode(void *context, int *mode)
 	else if (strstr(product_string, "TDMB"))
 		*mode = 2;
 
+<<<<<<< HEAD
 	sms_info("%d \"%s\"", *mode, product_string);
+=======
+	pr_debug("%d \"%s\"\n", *mode, product_string);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int smsusb1_setmode(void *context, int mode)
@@ -322,7 +439,11 @@ static int smsusb1_setmode(void *context, int mode)
 			     sizeof(struct sms_msg_hdr), 0 };
 
 	if (mode < DEVICE_MODE_DVBT || mode > DEVICE_MODE_DVBT_BDA) {
+<<<<<<< HEAD
 		sms_err("invalid firmware id specified %d", mode);
+=======
+		pr_err("invalid firmware id specified %d\n", mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -342,17 +463,55 @@ static void smsusb_term_device(struct usb_interface *intf)
 		if (dev->coredev)
 			smscore_unregister_device(dev->coredev);
 
+<<<<<<< HEAD
 		sms_info("device 0x%p destroyed", dev);
+=======
+		pr_debug("device 0x%p destroyed\n", dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(dev);
 	}
 
 	usb_set_intfdata(intf, NULL);
 }
 
+<<<<<<< HEAD
+=======
+static void *siano_media_device_register(struct smsusb_device_t *dev,
+					int board_id)
+{
+#ifdef CONFIG_MEDIA_CONTROLLER_DVB
+	struct media_device *mdev;
+	struct usb_device *udev = dev->udev;
+	struct sms_board *board = sms_get_board(board_id);
+	int ret;
+
+	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+	if (!mdev)
+		return NULL;
+
+	media_device_usb_init(mdev, udev, board->name);
+
+	ret = media_device_register(mdev);
+	if (ret) {
+		media_device_cleanup(mdev);
+		kfree(mdev);
+		return NULL;
+	}
+
+	pr_info("media controller created\n");
+
+	return mdev;
+#else
+	return NULL;
+#endif
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int smsusb_init_device(struct usb_interface *intf, int board_id)
 {
 	struct smsdevice_params_t params;
 	struct smsusb_device_t *dev;
+<<<<<<< HEAD
 	int i, rc;
 
 	/* create device object */
@@ -361,12 +520,43 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 		sms_err("kzalloc(sizeof(struct smsusb_device_t) failed");
 		return -ENOMEM;
 	}
+=======
+	void *mdev;
+	int i, rc;
+	int align = 0;
+
+	/* create device object */
+	dev = kzalloc(sizeof(struct smsusb_device_t), GFP_KERNEL);
+	if (!dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(&params, 0, sizeof(params));
 	usb_set_intfdata(intf, dev);
 	dev->udev = interface_to_usbdev(intf);
 	dev->state = SMSUSB_DISCONNECTED;
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < intf->cur_altsetting->desc.bNumEndpoints; i++) {
+		struct usb_endpoint_descriptor *desc =
+				&intf->cur_altsetting->endpoint[i].desc;
+
+		if (desc->bEndpointAddress & USB_DIR_IN) {
+			dev->in_ep = desc->bEndpointAddress;
+			align = usb_endpoint_maxp(desc) - sizeof(struct sms_msg_hdr);
+		} else {
+			dev->out_ep = desc->bEndpointAddress;
+		}
+	}
+
+	pr_debug("in_ep = %02x, out_ep = %02x\n", dev->in_ep, dev->out_ep);
+	if (!dev->in_ep || !dev->out_ep || align < 0) {  /* Missing endpoints? */
+		smsusb_term_device(intf);
+		return -ENODEV;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	params.device_type = sms_get_board(board_id)->type;
 
 	switch (params.device_type) {
@@ -377,6 +567,7 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 		params.detectmode_handler = smsusb1_detectmode;
 		break;
 	case SMS_UNKNOWN_TYPE:
+<<<<<<< HEAD
 		sms_err("Unspecified sms device type!");
 		/* fall-thru */
 	default:
@@ -384,11 +575,19 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 		dev->response_alignment =
 		    le16_to_cpu(dev->udev->ep_in[1]->desc.wMaxPacketSize) -
 		    sizeof(struct sms_msg_hdr);
+=======
+		pr_err("Unspecified sms device type!\n");
+		/* fall-thru */
+	default:
+		dev->buffer_size = USB2_BUFFER_SIZE;
+		dev->response_alignment = align;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		params.flags |= SMS_DEVICE_FAMILY2;
 		break;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < intf->cur_altsetting->desc.bNumEndpoints; i++) {
 		if (intf->cur_altsetting->endpoint[i].desc. bEndpointAddress & USB_DIR_IN)
 			dev->in_ep = intf->cur_altsetting->endpoint[i].desc.bEndpointAddress;
@@ -399,6 +598,8 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 	sms_info("in_ep = %02x, out_ep = %02x",
 		dev->in_ep, dev->out_ep);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	params.device = &dev->udev->dev;
 	params.buffer_size = dev->buffer_size;
 	params.num_buffers = MAX_BUFFERS;
@@ -406,11 +607,25 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 	params.context = dev;
 	usb_make_path(dev->udev, params.devpath, sizeof(params.devpath));
 
+<<<<<<< HEAD
 	/* register in smscore */
 	rc = smscore_register_device(&params, &dev->coredev);
 	if (rc < 0) {
 		sms_err("smscore_register_device(...) failed, rc %d", rc);
 		smsusb_term_device(intf);
+=======
+	mdev = siano_media_device_register(dev, board_id);
+
+	/* register in smscore */
+	rc = smscore_register_device(&params, &dev->coredev, mdev);
+	if (rc < 0) {
+		pr_err("smscore_register_device(...) failed, rc %d\n", rc);
+		smsusb_term_device(intf);
+#ifdef CONFIG_MEDIA_CONTROLLER_DVB
+		media_device_unregister(mdev);
+#endif
+		kfree(mdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return rc;
 	}
 
@@ -424,10 +639,17 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 		usb_init_urb(&dev->surbs[i].urb);
 	}
 
+<<<<<<< HEAD
 	sms_info("smsusb_start_streaming(...).");
 	rc = smsusb_start_streaming(dev);
 	if (rc < 0) {
 		sms_err("smsusb_start_streaming(...) failed");
+=======
+	pr_debug("smsusb_start_streaming(...).\n");
+	rc = smsusb_start_streaming(dev);
+	if (rc < 0) {
+		pr_err("smsusb_start_streaming(...) failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		smsusb_term_device(intf);
 		return rc;
 	}
@@ -436,12 +658,20 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 
 	rc = smscore_start_device(dev->coredev);
 	if (rc < 0) {
+<<<<<<< HEAD
 		sms_err("smscore_start_device(...) failed");
+=======
+		pr_err("smscore_start_device(...) failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		smsusb_term_device(intf);
 		return rc;
 	}
 
+<<<<<<< HEAD
 	sms_info("device 0x%p created", dev);
+=======
+	pr_debug("device 0x%p created\n", dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }
@@ -453,14 +683,25 @@ static int smsusb_probe(struct usb_interface *intf,
 	char devpath[32];
 	int i, rc;
 
+<<<<<<< HEAD
 	sms_info("interface number %d",
+=======
+	pr_info("board id=%lu, interface number %d\n",
+		 id->driver_info,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 intf->cur_altsetting->desc.bInterfaceNumber);
 
 	if (sms_get_board(id->driver_info)->intf_num !=
 	    intf->cur_altsetting->desc.bInterfaceNumber) {
+<<<<<<< HEAD
 		sms_err("interface number is %d expecting %d",
 			sms_get_board(id->driver_info)->intf_num,
 			intf->cur_altsetting->desc.bInterfaceNumber);
+=======
+		pr_debug("interface %d won't be used. Expecting interface %d to popup\n",
+			intf->cur_altsetting->desc.bInterfaceNumber,
+			sms_get_board(id->driver_info)->intf_num);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 
@@ -469,15 +710,26 @@ static int smsusb_probe(struct usb_interface *intf,
 				       intf->cur_altsetting->desc.bInterfaceNumber,
 				       0);
 		if (rc < 0) {
+<<<<<<< HEAD
 			sms_err("usb_set_interface failed, rc %d", rc);
+=======
+			pr_err("usb_set_interface failed, rc %d\n", rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return rc;
 		}
 	}
 
+<<<<<<< HEAD
 	sms_info("smsusb_probe %d",
 	       intf->cur_altsetting->desc.bInterfaceNumber);
 	for (i = 0; i < intf->cur_altsetting->desc.bNumEndpoints; i++) {
 		sms_info("endpoint %d %02x %02x %d", i,
+=======
+	pr_debug("smsusb_probe %d\n",
+	       intf->cur_altsetting->desc.bInterfaceNumber);
+	for (i = 0; i < intf->cur_altsetting->desc.bNumEndpoints; i++) {
+		pr_debug("endpoint %d %02x %02x %d\n", i,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       intf->cur_altsetting->endpoint[i].desc.bEndpointAddress,
 		       intf->cur_altsetting->endpoint[i].desc.bmAttributes,
 		       intf->cur_altsetting->endpoint[i].desc.wMaxPacketSize);
@@ -491,11 +743,16 @@ static int smsusb_probe(struct usb_interface *intf,
 	}
 	if ((udev->actconfig->desc.bNumInterfaces == 2) &&
 	    (intf->cur_altsetting->desc.bInterfaceNumber == 0)) {
+<<<<<<< HEAD
 		sms_err("rom interface 0 is not used");
+=======
+		pr_debug("rom interface 0 is not used\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 
 	if (id->driver_info == SMS1XXX_BOARD_SIANO_STELLAR_ROM) {
+<<<<<<< HEAD
 		sms_info("stellar device was found.");
 		snprintf(devpath, sizeof(devpath), "usb\\%d-%s",
 			 udev->bus->busnum, udev->devpath);
@@ -507,6 +764,31 @@ static int smsusb_probe(struct usb_interface *intf,
 
 	rc = smsusb_init_device(intf, id->driver_info);
 	sms_info("rc %d", rc);
+=======
+		/* Detected a Siano Stellar uninitialized */
+
+		snprintf(devpath, sizeof(devpath), "usb\\%d-%s",
+			 udev->bus->busnum, udev->devpath);
+		pr_info("stellar device in cold state was found at %s.\n",
+			devpath);
+		rc = smsusb1_load_firmware(
+				udev, smscore_registry_getmode(devpath),
+				id->driver_info);
+
+		/* This device will reset and gain another USB ID */
+		if (!rc)
+			pr_info("stellar device now in warm state\n");
+		else
+			pr_err("Failed to put stellar in warm state. Error: %d\n",
+			       rc);
+
+		return rc;
+	} else {
+		rc = smsusb_init_device(intf, id->driver_info);
+	}
+
+	pr_info("Device initialized with return code %d\n", rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sms_board_load_modules(id->driver_info);
 	return rc;
 }
@@ -558,10 +840,20 @@ static int smsusb_resume(struct usb_interface *intf)
 }
 
 static const struct usb_device_id smsusb_id_table[] = {
+<<<<<<< HEAD
 	{ USB_DEVICE(0x187f, 0x0010),
 		.driver_info = SMS1XXX_BOARD_SIANO_STELLAR },
 	{ USB_DEVICE(0x187f, 0x0100),
 		.driver_info = SMS1XXX_BOARD_SIANO_STELLAR },
+=======
+	/* This device is only present before firmware load */
+	{ USB_DEVICE(0x187f, 0x0010),
+		.driver_info = SMS1XXX_BOARD_SIANO_STELLAR_ROM },
+	/* This device pops up after firmware load */
+	{ USB_DEVICE(0x187f, 0x0100),
+		.driver_info = SMS1XXX_BOARD_SIANO_STELLAR },
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ USB_DEVICE(0x187f, 0x0200),
 		.driver_info = SMS1XXX_BOARD_SIANO_NOVA_A },
 	{ USB_DEVICE(0x187f, 0x0201),
@@ -642,6 +934,13 @@ static const struct usb_device_id smsusb_id_table[] = {
 		.driver_info = SMS1XXX_BOARD_ZTE_DVB_DATA_CARD },
 	{ USB_DEVICE(0x19D2, 0x0078),
 		.driver_info = SMS1XXX_BOARD_ONDA_MDTV_DATA_CARD },
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(0x3275, 0x0080),
+		.driver_info = SMS1XXX_BOARD_SIANO_RIO },
+	{ USB_DEVICE(0x2013, 0x0257),
+		.driver_info = SMS1XXX_BOARD_PCTV_77E },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ } /* Terminating entry */
 	};
 

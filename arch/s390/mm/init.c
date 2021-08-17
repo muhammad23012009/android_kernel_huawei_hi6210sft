@@ -27,6 +27,10 @@
 #include <linux/initrd.h>
 #include <linux/export.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h>
 #include <asm/uaccess.h>
 #include <asm/pgtable.h>
@@ -39,7 +43,11 @@
 #include <asm/ctl_reg.h>
 #include <asm/sclp.h>
 
+<<<<<<< HEAD
 pgd_t swapper_pg_dir[PTRS_PER_PGD] __attribute__((__aligned__(PAGE_SIZE)));
+=======
+pgd_t swapper_pg_dir[PTRS_PER_PGD] __section(.bss..swapper_pg_dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned long empty_zero_page, zero_page_mask;
 EXPORT_SYMBOL(empty_zero_page);
@@ -47,11 +55,15 @@ EXPORT_SYMBOL(zero_page_mask);
 
 static void __init setup_zero_pages(void)
 {
+<<<<<<< HEAD
 	struct cpuid cpu_id;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int order;
 	struct page *page;
 	int i;
 
+<<<<<<< HEAD
 	get_cpu_id(&cpu_id);
 	switch (cpu_id.machine) {
 	case 0x9672:	/* g5 */
@@ -78,6 +90,14 @@ static void __init setup_zero_pages(void)
 	/* Limit number of empty zero pages for small memory sizes */
 	if (order > 2 && totalram_pages <= 16384)
 		order = 2;
+=======
+	/* Latest machines require a mapping granularity of 512KB */
+	order = 7;
+
+	/* Limit number of empty zero pages for small memory sizes */
+	while (order > 2 && (totalram_pages >> 10) < (1UL << order))
+		order--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	empty_zero_page = __get_free_pages(GFP_KERNEL | __GFP_ZERO, order);
 	if (!empty_zero_page)
@@ -102,7 +122,10 @@ void __init paging_init(void)
 	unsigned long pgd_type, asce_bits;
 
 	init_mm.pgd = swapper_pg_dir;
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (VMALLOC_END > (1UL << 42)) {
 		asce_bits = _ASCE_TYPE_REGION2 | _ASCE_TABLE_LENGTH;
 		pgd_type = _REGION2_ENTRY_EMPTY;
@@ -110,11 +133,16 @@ void __init paging_init(void)
 		asce_bits = _ASCE_TYPE_REGION3 | _ASCE_TABLE_LENGTH;
 		pgd_type = _REGION3_ENTRY_EMPTY;
 	}
+<<<<<<< HEAD
 #else
 	asce_bits = _ASCE_TABLE_LENGTH;
 	pgd_type = _SEGMENT_ENTRY_EMPTY;
 #endif
 	S390_lowcore.kernel_asce = (__pa(init_mm.pgd) & PAGE_MASK) | asce_bits;
+=======
+	init_mm.context.asce = (__pa(init_mm.pgd) & PAGE_MASK) | asce_bits;
+	S390_lowcore.kernel_asce = init_mm.context.asce;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_table((unsigned long *) init_mm.pgd, pgd_type,
 		    sizeof(unsigned long)*2048);
 	vmem_map_init();
@@ -123,9 +151,13 @@ void __init paging_init(void)
 	__ctl_load(S390_lowcore.kernel_asce, 1, 1);
 	__ctl_load(S390_lowcore.kernel_asce, 7, 7);
 	__ctl_load(S390_lowcore.kernel_asce, 13, 13);
+<<<<<<< HEAD
 	arch_local_irq_restore(4UL << (BITS_PER_LONG - 8));
 
 	atomic_set(&init_mm.context.attach_count, 1);
+=======
+	__arch_local_irq_stosm(0x04);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sparse_memory_present_with_active_regions(MAX_NUMNODES);
 	sparse_init();
@@ -135,17 +167,35 @@ void __init paging_init(void)
 	free_area_init_nodes(max_zone_pfns);
 }
 
+<<<<<<< HEAD
 void __init mem_init(void)
 {
 	unsigned long codesize, reservedpages, datasize, initsize;
 
         max_mapnr = num_physpages = max_low_pfn;
+=======
+void mark_rodata_ro(void)
+{
+	unsigned long size = __end_ro_after_init - __start_ro_after_init;
+
+	set_memory_ro((unsigned long)__start_ro_after_init, size >> PAGE_SHIFT);
+	pr_info("Write protected read-only-after-init data: %luk\n", size >> 10);
+}
+
+void __init mem_init(void)
+{
+	cpumask_set_cpu(0, &init_mm.context.cpu_attach_mask);
+	cpumask_set_cpu(0, mm_cpumask(&init_mm));
+
+	set_max_mapnr(max_low_pfn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
 
 	/* Setup guest page hinting */
 	cmma_init();
 
 	/* this will put all low memory onto the freelists */
+<<<<<<< HEAD
 	totalram_pages += free_all_bootmem();
 	setup_zero_pages();	/* Setup zeroed pages. */
 
@@ -164,35 +214,68 @@ void __init mem_init(void)
 	printk("Write protected kernel read-only data: %#lx - %#lx\n",
 	       (unsigned long)&_stext,
 	       PFN_ALIGN((unsigned long)&_eshared) - 1);
+=======
+	free_all_bootmem();
+	setup_zero_pages();	/* Setup zeroed pages. */
+
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void free_initmem(void)
 {
+<<<<<<< HEAD
 	free_initmem_default(0);
+=======
+	free_initmem_default(POISON_FREE_INITMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_BLK_DEV_INITRD
 void __init free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	free_reserved_area(start, end, POISON_FREE_INITMEM, "initrd");
+=======
+	free_reserved_area((void *)start, (void *)end, POISON_FREE_INITMEM,
+			   "initrd");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
 #ifdef CONFIG_MEMORY_HOTPLUG
+<<<<<<< HEAD
 int arch_add_memory(int nid, u64 start, u64 size)
+=======
+int arch_add_memory(int nid, u64 start, u64 size, bool for_device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long zone_start_pfn, zone_end_pfn, nr_pages;
 	unsigned long start_pfn = PFN_DOWN(start);
 	unsigned long size_pages = PFN_DOWN(size);
+<<<<<<< HEAD
 	struct zone *zone;
 	int rc;
+=======
+	pg_data_t *pgdat = NODE_DATA(nid);
+	struct zone *zone;
+	int rc, i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = vmem_add_mapping(start, size);
 	if (rc)
 		return rc;
+<<<<<<< HEAD
 	for_each_zone(zone) {
 		if (zone_idx(zone) != ZONE_MOVABLE) {
 			/* Add range within existing zone limits */
+=======
+
+	for (i = 0; i < MAX_NR_ZONES; i++) {
+		zone = pgdat->node_zones + i;
+		if (zone_idx(zone) != ZONE_MOVABLE) {
+			/* Add range within existing zone limits, if possible */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			zone_start_pfn = zone->zone_start_pfn;
 			zone_end_pfn = zone->zone_start_pfn +
 				       zone->spanned_pages;
@@ -224,7 +307,11 @@ unsigned long memory_block_size_bytes(void)
 	 * Make sure the memory block size is always greater
 	 * or equal than the memory increment size.
 	 */
+<<<<<<< HEAD
 	return max_t(unsigned long, MIN_MEMORY_BLOCK_SIZE, sclp_get_rzm());
+=======
+	return max_t(unsigned long, MIN_MEMORY_BLOCK_SIZE, sclp.rzm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_MEMORY_HOTREMOVE

@@ -83,11 +83,19 @@ struct internal_state;
 
 typedef struct z_stream_s {
     const Byte *next_in;   /* next input byte */
+<<<<<<< HEAD
     uInt     avail_in;  /* number of bytes available at next_in */
     uLong    total_in;  /* total nb of input bytes read so far */
 
     Byte    *next_out;  /* next output byte should be put there */
     uInt     avail_out; /* remaining free space at next_out */
+=======
+	uLong avail_in;  /* number of bytes available at next_in */
+    uLong    total_in;  /* total nb of input bytes read so far */
+
+    Byte    *next_out;  /* next output byte should be put there */
+	uLong avail_out; /* remaining free space at next_out */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     uLong    total_out; /* total nb of bytes output so far */
 
     char     *msg;      /* last error message, NULL if no error */
@@ -493,6 +501,7 @@ extern int deflateInit2 (z_streamp strm,
    method). msg is set to null if there is no error message.  deflateInit2 does
    not perform any compression: this will be done by deflate().
 */
+<<<<<<< HEAD
                             
 #if 0
 extern int zlib_deflateSetDictionary (z_streamp strm,
@@ -551,6 +560,8 @@ extern int zlib_deflateCopy (z_streamp dest, z_streamp source);
    (such as zalloc being NULL). msg is left unchanged in both source and
    destination.
 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int zlib_deflateReset (z_streamp strm);
 /*
@@ -568,6 +579,7 @@ static inline unsigned long deflateBound(unsigned long s)
 	return s + ((s + 7) >> 3) + ((s + 63) >> 6) + 11;
 }
 
+<<<<<<< HEAD
 #if 0
 extern int zlib_deflateParams (z_streamp strm, int level, int strategy);
 #endif
@@ -589,6 +601,8 @@ extern int zlib_deflateParams (z_streamp strm, int level, int strategy);
    if strm->avail_out was zero.
 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*   
 extern int inflateInit2 (z_streamp strm, int  windowBits);
 
@@ -631,6 +645,7 @@ extern int inflateInit2 (z_streamp strm, int  windowBits);
    and avail_out are unchanged.)
 */
 
+<<<<<<< HEAD
 extern int zlib_inflateSetDictionary (z_streamp strm,
 						     const Byte *dictionary,
 						     uInt  dictLength);
@@ -670,6 +685,8 @@ extern int zlib_inflateSync (z_streamp strm);
   until success or end of the input data.
 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int zlib_inflateReset (z_streamp strm);
 /*
      This function is equivalent to inflateEnd followed by inflateInit,

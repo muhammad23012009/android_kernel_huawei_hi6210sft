@@ -1,7 +1,11 @@
 /*
  *  pc87360.c - Part of lm_sensors, Linux kernel modules
  *              for hardware monitoring
+<<<<<<< HEAD
  *  Copyright (C) 2004, 2007 Jean Delvare <khali@linux-fr.org>
+=======
+ *  Copyright (C) 2004, 2007 Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  Copied from smsc47m1.c:
  *  Copyright (C) 2002 Mark D. Studebaker <mdsxyz123@yahoo.com>
@@ -244,7 +248,10 @@ static struct pc87360_data *pc87360_update_device(struct device *dev);
 
 static struct platform_driver pc87360_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "pc87360",
 	},
 	.probe		= pc87360_probe,
@@ -615,6 +622,12 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	if (val > 255)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->vrm = val;
 	return count;
 }
@@ -1225,7 +1238,11 @@ static int pc87360_probe(struct platform_device *pdev)
 	int i;
 	struct pc87360_data *data;
 	int err = 0;
+<<<<<<< HEAD
 	const char *name = "pc87360";
+=======
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int use_thermistors = 0;
 	struct device *dev = &pdev->dev;
 
@@ -1233,6 +1250,7 @@ static int pc87360_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	data->fannr = 2;
 	data->innr = 0;
 	data->tempnr = 0;
@@ -1240,6 +1258,16 @@ static int pc87360_probe(struct platform_device *pdev)
 	switch (devid) {
 	case 0xe8:
 		name = "pc87363";
+=======
+	switch (devid) {
+	default:
+		name = "pc87360";
+		data->fannr = 2;
+		break;
+	case 0xe8:
+		name = "pc87363";
+		data->fannr = 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case 0xe4:
 		name = "pc87364";
@@ -1260,7 +1288,10 @@ static int pc87360_probe(struct platform_device *pdev)
 	}
 
 	data->name = name;
+<<<<<<< HEAD
 	data->valid = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&data->lock);
 	mutex_init(&data->update_lock);
 	platform_set_drvdata(pdev, data);
@@ -1808,7 +1839,11 @@ static void __exit pc87360_exit(void)
 }
 
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("PC8736x hardware monitor");
 MODULE_LICENSE("GPL");
 

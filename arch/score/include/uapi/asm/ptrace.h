@@ -4,6 +4,7 @@
 #define PTRACE_GETREGS		12
 #define PTRACE_SETREGS		13
 
+<<<<<<< HEAD
 #define PC		32
 #define CONDITION	33
 #define ECR		34
@@ -15,6 +16,8 @@
 #define STCR		40
 #define PSR		41
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SINGLESTEP16_INSN	0x7006
 #define SINGLESTEP32_INSN	0x840C8000
 #define BREAKPOINT16_INSN	0x7002		/* work on SPG300 */

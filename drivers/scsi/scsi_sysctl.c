@@ -12,7 +12,11 @@
 #include "scsi_priv.h"
 
 
+<<<<<<< HEAD
 static ctl_table scsi_table[] = {
+=======
+static struct ctl_table scsi_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .procname	= "logging_level",
 	  .data		= &scsi_logging_level,
 	  .maxlen	= sizeof(scsi_logging_level),
@@ -21,14 +25,22 @@ static ctl_table scsi_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table scsi_dir_table[] = {
+=======
+static struct ctl_table scsi_dir_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .procname	= "scsi",
 	  .mode		= 0555,
 	  .child	= scsi_table },
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table scsi_root_table[] = {
+=======
+static struct ctl_table scsi_root_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .procname	= "dev",
 	  .mode		= 0555,
 	  .child	= scsi_dir_table },

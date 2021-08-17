@@ -31,6 +31,14 @@
 #include <trace/events/napi.h>
 #include <trace/events/sock.h>
 #include <trace/events/udp.h>
+<<<<<<< HEAD
+=======
+#include <trace/events/fib.h>
+#if IS_ENABLED(CONFIG_IPV6)
+#include <trace/events/fib6.h>
+EXPORT_TRACEPOINT_SYMBOL_GPL(fib6_table_lookup);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 EXPORT_TRACEPOINT_SYMBOL_GPL(kfree_skb);
 

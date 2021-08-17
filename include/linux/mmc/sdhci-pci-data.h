@@ -15,4 +15,9 @@ struct sdhci_pci_data {
 extern struct sdhci_pci_data *(*sdhci_pci_get_data)(struct pci_dev *pdev,
 				int slotno);
 
+<<<<<<< HEAD
+=======
+extern int sdhci_pci_spt_drive_strength;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

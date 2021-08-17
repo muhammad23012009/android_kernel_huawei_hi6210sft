@@ -75,7 +75,11 @@ hscx_empty_fifo(struct BCState *bcs, int count)
 		t += sprintf(t, "hscx_empty_fifo %c cnt %d",
 			     bcs->hw.hscx.hscx ? 'B' : 'A', count);
 		QuickHex(t, ptr, count);
+<<<<<<< HEAD
 		debugl1(cs, bcs->blog);
+=======
+		debugl1(cs, "%s", bcs->blog);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -115,7 +119,11 @@ hscx_fill_fifo(struct BCState *bcs)
 		t += sprintf(t, "hscx_fill_fifo %c cnt %d",
 			     bcs->hw.hscx.hscx ? 'B' : 'A', count);
 		QuickHex(t, ptr, count);
+<<<<<<< HEAD
 		debugl1(cs, bcs->blog);
+=======
+		debugl1(cs, "%s", bcs->blog);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

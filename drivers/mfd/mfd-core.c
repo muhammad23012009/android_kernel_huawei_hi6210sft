@@ -14,12 +14,20 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
+=======
+#include <linux/property.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/core.h>
 #include <linux/pm_runtime.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/irqdomain.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/consumer.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct device_type mfd_dev_type = {
 	.name	= "mfd_device",
@@ -30,6 +38,14 @@ int mfd_cell_enable(struct platform_device *pdev)
 	const struct mfd_cell *cell = mfd_get_cell(pdev);
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (!cell->enable) {
+		dev_dbg(&pdev->dev, "No .enable() call-back registered\n");
+		return 0;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* only call enable hook if the cell wasn't previously enabled */
 	if (atomic_inc_return(cell->usage_count) == 1)
 		err = cell->enable(pdev);
@@ -47,6 +63,14 @@ int mfd_cell_disable(struct platform_device *pdev)
 	const struct mfd_cell *cell = mfd_get_cell(pdev);
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (!cell->disable) {
+		dev_dbg(&pdev->dev, "No .disable() call-back registered\n");
+		return 0;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* only disable if no other clients are using it */
 	if (atomic_dec_return(cell->usage_count) == 0)
 		err = cell->disable(pdev);
@@ -63,7 +87,12 @@ int mfd_cell_disable(struct platform_device *pdev)
 EXPORT_SYMBOL(mfd_cell_disable);
 
 static int mfd_platform_add_cell(struct platform_device *pdev,
+<<<<<<< HEAD
 				 const struct mfd_cell *cell)
+=======
+				 const struct mfd_cell *cell,
+				 atomic_t *usage_count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!cell)
 		return 0;
@@ -72,11 +101,78 @@ static int mfd_platform_add_cell(struct platform_device *pdev,
 	if (!pdev->mfd_cell)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	return 0;
 }
 
 static int mfd_add_device(struct device *parent, int id,
 			  const struct mfd_cell *cell,
+=======
+	pdev->mfd_cell->usage_count = usage_count;
+	return 0;
+}
+
+#if IS_ENABLED(CONFIG_ACPI)
+static void mfd_acpi_add_device(const struct mfd_cell *cell,
+				struct platform_device *pdev)
+{
+	const struct mfd_cell_acpi_match *match = cell->acpi_match;
+	struct acpi_device *parent, *child;
+	struct acpi_device *adev;
+
+	parent = ACPI_COMPANION(pdev->dev.parent);
+	if (!parent)
+		return;
+
+	/*
+	 * MFD child device gets its ACPI handle either from the ACPI device
+	 * directly under the parent that matches the either _HID or _CID, or
+	 * _ADR or it will use the parent handle if is no ID is given.
+	 *
+	 * Note that use of _ADR is a grey area in the ACPI specification,
+	 * though Intel Galileo Gen2 is using it to distinguish the children
+	 * devices.
+	 */
+	adev = parent;
+	if (match) {
+		if (match->pnpid) {
+			struct acpi_device_id ids[2] = {};
+
+			strlcpy(ids[0].id, match->pnpid, sizeof(ids[0].id));
+			list_for_each_entry(child, &parent->children, node) {
+				if (!acpi_match_device_ids(child, ids)) {
+					adev = child;
+					break;
+				}
+			}
+		} else {
+			unsigned long long adr;
+			acpi_status status;
+
+			list_for_each_entry(child, &parent->children, node) {
+				status = acpi_evaluate_integer(child->handle,
+							       "_ADR", NULL,
+							       &adr);
+				if (ACPI_SUCCESS(status) && match->adr == adr) {
+					adev = child;
+					break;
+				}
+			}
+		}
+	}
+
+	ACPI_COMPANION_SET(&pdev->dev, adev);
+}
+#else
+static inline void mfd_acpi_add_device(const struct mfd_cell *cell,
+				       struct platform_device *pdev)
+{
+}
+#endif
+
+static int mfd_add_device(struct device *parent, int id,
+			  const struct mfd_cell *cell, atomic_t *usage_count,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  struct resource *mem_base,
 			  int irq_base, struct irq_domain *domain)
 {
@@ -84,9 +180,21 @@ static int mfd_add_device(struct device *parent, int id,
 	struct platform_device *pdev;
 	struct device_node *np = NULL;
 	int ret = -ENOMEM;
+<<<<<<< HEAD
 	int r;
 
 	pdev = platform_device_alloc(cell->name, id + cell->id);
+=======
+	int platform_id;
+	int r;
+
+	if (id == PLATFORM_DEVID_AUTO)
+		platform_id = id;
+	else
+		platform_id = id + cell->id;
+
+	pdev = platform_device_alloc(cell->name, platform_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdev)
 		goto fail_alloc;
 
@@ -96,26 +204,63 @@ static int mfd_add_device(struct device *parent, int id,
 
 	pdev->dev.parent = parent;
 	pdev->dev.type = &mfd_dev_type;
+<<<<<<< HEAD
+=======
+	pdev->dev.dma_mask = parent->dma_mask;
+	pdev->dev.dma_parms = parent->dma_parms;
+	pdev->dev.coherent_dma_mask = parent->coherent_dma_mask;
+
+	ret = regulator_bulk_register_supply_alias(
+			&pdev->dev, cell->parent_supplies,
+			parent, cell->parent_supplies,
+			cell->num_parent_supplies);
+	if (ret < 0)
+		goto fail_res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (parent->of_node && cell->of_compatible) {
 		for_each_child_of_node(parent->of_node, np) {
 			if (of_device_is_compatible(np, cell->of_compatible)) {
 				pdev->dev.of_node = np;
+<<<<<<< HEAD
+=======
+				pdev->dev.fwnode = &np->fwnode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			}
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	mfd_acpi_add_device(cell, pdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cell->pdata_size) {
 		ret = platform_device_add_data(pdev,
 					cell->platform_data, cell->pdata_size);
 		if (ret)
+<<<<<<< HEAD
 			goto fail_res;
 	}
 
 	ret = mfd_platform_add_cell(pdev, cell);
 	if (ret)
 		goto fail_res;
+=======
+			goto fail_alias;
+	}
+
+	if (cell->properties) {
+		ret = platform_device_add_properties(pdev, cell->properties);
+		if (ret)
+			goto fail_alias;
+	}
+
+	ret = mfd_platform_add_cell(pdev, cell, usage_count);
+	if (ret)
+		goto fail_alias;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (r = 0; r < cell->num_resources; r++) {
 		res[r].name = cell->resources[r].name;
@@ -148,19 +293,35 @@ static int mfd_add_device(struct device *parent, int id,
 		}
 
 		if (!cell->ignore_resource_conflicts) {
+<<<<<<< HEAD
 			ret = acpi_check_resource_conflict(&res[r]);
 			if (ret)
 				goto fail_res;
+=======
+			if (has_acpi_companion(&pdev->dev)) {
+				ret = acpi_check_resource_conflict(&res[r]);
+				if (ret)
+					goto fail_alias;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	ret = platform_device_add_resources(pdev, res, cell->num_resources);
 	if (ret)
+<<<<<<< HEAD
 		goto fail_res;
 
 	ret = platform_device_add(pdev);
 	if (ret)
 		goto fail_res;
+=======
+		goto fail_alias;
+
+	ret = platform_device_add(pdev);
+	if (ret)
+		goto fail_alias;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cell->pm_runtime_no_callbacks)
 		pm_runtime_no_callbacks(&pdev->dev);
@@ -169,6 +330,13 @@ static int mfd_add_device(struct device *parent, int id,
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+fail_alias:
+	regulator_bulk_unregister_supply_alias(&pdev->dev,
+					       cell->parent_supplies,
+					       cell->num_parent_supplies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail_res:
 	kfree(res);
 fail_device:
@@ -178,12 +346,20 @@ fail_alloc:
 }
 
 int mfd_add_devices(struct device *parent, int id,
+<<<<<<< HEAD
 		    struct mfd_cell *cells, int n_devs,
+=======
+		    const struct mfd_cell *cells, int n_devs,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    struct resource *mem_base,
 		    int irq_base, struct irq_domain *domain)
 {
 	int i;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_t *cnts;
 
 	/* initialize reference counting for all cells */
@@ -193,6 +369,7 @@ int mfd_add_devices(struct device *parent, int id,
 
 	for (i = 0; i < n_devs; i++) {
 		atomic_set(&cnts[i], 0);
+<<<<<<< HEAD
 		cells[i].usage_count = &cnts[i];
 		ret = mfd_add_device(parent, id, cells + i, mem_base,
 				     irq_base, domain);
@@ -203,6 +380,21 @@ int mfd_add_devices(struct device *parent, int id,
 	if (ret)
 		mfd_remove_devices(parent);
 
+=======
+		ret = mfd_add_device(parent, id, cells + i, cnts + i, mem_base,
+				     irq_base, domain);
+		if (ret)
+			goto fail;
+	}
+
+	return 0;
+
+fail:
+	if (i)
+		mfd_remove_devices(parent);
+	else
+		kfree(cnts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 EXPORT_SYMBOL(mfd_add_devices);
@@ -219,6 +411,12 @@ static int mfd_remove_devices_fn(struct device *dev, void *c)
 	pdev = to_platform_device(dev);
 	cell = mfd_get_cell(pdev);
 
+<<<<<<< HEAD
+=======
+	regulator_bulk_unregister_supply_alias(dev, cell->parent_supplies,
+					       cell->num_parent_supplies);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* find the base address of usage_count pointers (for freeing) */
 	if (!*usage_count || (cell->usage_count < *usage_count))
 		*usage_count = cell->usage_count;
@@ -231,11 +429,56 @@ void mfd_remove_devices(struct device *parent)
 {
 	atomic_t *cnts = NULL;
 
+<<<<<<< HEAD
 	device_for_each_child(parent, &cnts, mfd_remove_devices_fn);
+=======
+	device_for_each_child_reverse(parent, &cnts, mfd_remove_devices_fn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(cnts);
 }
 EXPORT_SYMBOL(mfd_remove_devices);
 
+<<<<<<< HEAD
+=======
+static void devm_mfd_dev_release(struct device *dev, void *res)
+{
+	mfd_remove_devices(dev);
+}
+
+/**
+ * devm_mfd_add_devices - Resource managed version of mfd_add_devices()
+ *
+ * Returns 0 on success or an appropriate negative error number on failure.
+ * All child-devices of the MFD will automatically be removed when it gets
+ * unbinded.
+ */
+int devm_mfd_add_devices(struct device *dev, int id,
+			 const struct mfd_cell *cells, int n_devs,
+			 struct resource *mem_base,
+			 int irq_base, struct irq_domain *domain)
+{
+	struct device **ptr;
+	int ret;
+
+	ptr = devres_alloc(devm_mfd_dev_release, sizeof(*ptr), GFP_KERNEL);
+	if (!ptr)
+		return -ENOMEM;
+
+	ret = mfd_add_devices(dev, id, cells, n_devs, mem_base,
+			      irq_base, domain);
+	if (ret < 0) {
+		devres_free(ptr);
+		return ret;
+	}
+
+	*ptr = dev;
+	devres_add(dev, ptr);
+
+	return ret;
+}
+EXPORT_SYMBOL(devm_mfd_add_devices);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int mfd_clone_cell(const char *cell, const char **clones, size_t n_clones)
 {
 	struct mfd_cell cell_entry;
@@ -257,8 +500,13 @@ int mfd_clone_cell(const char *cell, const char **clones, size_t n_clones)
 	for (i = 0; i < n_clones; i++) {
 		cell_entry.name = clones[i];
 		/* don't give up if a single call fails; just report error */
+<<<<<<< HEAD
 		if (mfd_add_device(pdev->dev.parent, -1, &cell_entry, NULL, 0,
 				   NULL))
+=======
+		if (mfd_add_device(pdev->dev.parent, -1, &cell_entry,
+				   cell_entry.usage_count, NULL, 0, NULL))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_err(dev, "failed to create platform device '%s'\n",
 					clones[i]);
 	}

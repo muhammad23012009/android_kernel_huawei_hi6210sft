@@ -44,6 +44,10 @@ static int adis16209_write_raw(struct iio_dev *indio_dev,
 	int bits;
 	s16 val16;
 	u8 addr;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (mask) {
 	case IIO_CHAN_INFO_CALIBBIAS:
 		switch (chan->type) {
@@ -130,6 +134,7 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
 }
 
 static const struct iio_chan_spec adis16209_channels[] = {
+<<<<<<< HEAD
 	ADIS_SUPPLY_CHAN(ADIS16209_SUPPLY_OUT, ADIS16209_SCAN_SUPPLY, 14),
 	ADIS_TEMP_CHAN(ADIS16209_TEMP_OUT, ADIS16209_SCAN_TEMP, 12),
 	ADIS_ACCEL_CHAN(X, ADIS16209_XACCL_OUT, ADIS16209_SCAN_ACC_X,
@@ -140,6 +145,20 @@ static const struct iio_chan_spec adis16209_channels[] = {
 	ADIS_INCLI_CHAN(X, ADIS16209_XINCL_OUT, ADIS16209_SCAN_INCLI_X, 0, 14),
 	ADIS_INCLI_CHAN(Y, ADIS16209_YINCL_OUT, ADIS16209_SCAN_INCLI_Y, 0, 14),
 	ADIS_ROT_CHAN(X, ADIS16209_ROT_OUT, ADIS16209_SCAN_ROT, 0, 14),
+=======
+	ADIS_SUPPLY_CHAN(ADIS16209_SUPPLY_OUT, ADIS16209_SCAN_SUPPLY, 0, 14),
+	ADIS_TEMP_CHAN(ADIS16209_TEMP_OUT, ADIS16209_SCAN_TEMP, 0, 12),
+	ADIS_ACCEL_CHAN(X, ADIS16209_XACCL_OUT, ADIS16209_SCAN_ACC_X,
+			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+	ADIS_ACCEL_CHAN(Y, ADIS16209_YACCL_OUT, ADIS16209_SCAN_ACC_Y,
+			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+	ADIS_AUX_ADC_CHAN(ADIS16209_AUX_ADC, ADIS16209_SCAN_AUX_ADC, 0, 12),
+	ADIS_INCLI_CHAN(X, ADIS16209_XINCL_OUT, ADIS16209_SCAN_INCLI_X,
+			0, 0, 14),
+	ADIS_INCLI_CHAN(Y, ADIS16209_YINCL_OUT, ADIS16209_SCAN_INCLI_Y,
+			0, 0, 14),
+	ADIS_ROT_CHAN(X, ADIS16209_ROT_OUT, ADIS16209_SCAN_ROT, 0, 0, 14),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IIO_CHAN_SOFT_TIMESTAMP(8)
 };
 
@@ -165,6 +184,10 @@ static const struct adis_data adis16209_data = {
 	.diag_stat_reg = ADIS16209_DIAG_STAT,
 
 	.self_test_mask = ADIS16209_MSC_CTRL_SELF_TEST_EN,
+<<<<<<< HEAD
+=======
+	.self_test_no_autoclear = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.startup_delay = ADIS16209_STARTUP_DELAY,
 
 	.status_error_msgs = adis16209_status_error_msgs,
@@ -175,7 +198,10 @@ static const struct adis_data adis16209_data = {
 		BIT(ADIS16209_DIAG_STAT_POWER_LOW_BIT),
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int adis16209_probe(struct spi_device *spi)
 {
 	int ret;
@@ -183,11 +209,17 @@ static int adis16209_probe(struct spi_device *spi)
 	struct iio_dev *indio_dev;
 
 	/* setup the industrialio driver allocated elements */
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*st));
 	if (indio_dev == NULL) {
 		ret = -ENOMEM;
 		goto error_ret;
 	}
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+	if (!indio_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	st = iio_priv(indio_dev);
 	/* this is only used for removal purposes */
 	spi_set_drvdata(spi, indio_dev);
@@ -201,10 +233,17 @@ static int adis16209_probe(struct spi_device *spi)
 
 	ret = adis_init(st, indio_dev, spi, &adis16209_data);
 	if (ret)
+<<<<<<< HEAD
 		goto error_free_dev;
 	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
 	if (ret)
 		goto error_free_dev;
+=======
+		return ret;
+	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Get the device into a sane initial state */
 	ret = adis_initial_startup(st);
@@ -218,9 +257,12 @@ static int adis16209_probe(struct spi_device *spi)
 
 error_cleanup_buffer_trigger:
 	adis_cleanup_buffer_and_trigger(st, indio_dev);
+<<<<<<< HEAD
 error_free_dev:
 	iio_device_free(indio_dev);
 error_ret:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -231,7 +273,10 @@ static int adis16209_remove(struct spi_device *spi)
 
 	iio_device_unregister(indio_dev);
 	adis_cleanup_buffer_and_trigger(st, indio_dev);
+<<<<<<< HEAD
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -239,7 +284,10 @@ static int adis16209_remove(struct spi_device *spi)
 static struct spi_driver adis16209_driver = {
 	.driver = {
 		.name = "adis16209",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = adis16209_probe,
 	.remove = adis16209_remove,

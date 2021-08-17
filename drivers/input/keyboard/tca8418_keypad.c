@@ -164,11 +164,26 @@ static void tca8418_read_keypad(struct tca8418_keypad *keypad_data)
 	int error, col, row;
 	u8 reg, state, code;
 
+<<<<<<< HEAD
 	/* Initial read of the key event FIFO */
 	error = tca8418_read_byte(keypad_data, REG_KEY_EVENT_A, &reg);
 
 	/* Assume that key code 0 signifies empty FIFO */
 	while (error >= 0 && reg > 0) {
+=======
+	do {
+		error = tca8418_read_byte(keypad_data, REG_KEY_EVENT_A, &reg);
+		if (error < 0) {
+			dev_err(&keypad_data->client->dev,
+				"unable to read REG_KEY_EVENT_A\n");
+			break;
+		}
+
+		/* Assume that key code 0 signifies empty FIFO */
+		if (reg <= 0)
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		state = reg & KEY_EVENT_VALUE;
 		code  = reg & KEY_EVENT_CODE;
 
@@ -182,6 +197,7 @@ static void tca8418_read_keypad(struct tca8418_keypad *keypad_data)
 		input_event(input, EV_MSC, MSC_SCAN, code);
 		input_report_key(input, keymap[code], state);
 
+<<<<<<< HEAD
 		/* Read for next loop */
 		error = tca8418_read_byte(keypad_data, REG_KEY_EVENT_A, &reg);
 	}
@@ -189,6 +205,9 @@ static void tca8418_read_keypad(struct tca8418_keypad *keypad_data)
 	if (error < 0)
 		dev_err(&keypad_data->client->dev,
 			"unable to read REG_KEY_EVENT_A\n");
+=======
+	} while (1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input_sync(input);
 }
@@ -274,7 +293,10 @@ static int tca8418_keypad_probe(struct i2c_client *client,
 	bool irq_is_gpio = false;
 	int irq;
 	int error, row_shift, max_keys;
+<<<<<<< HEAD
 	unsigned long trigger = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Copy the platform data */
 	if (pdata) {
@@ -287,7 +309,10 @@ static int tca8418_keypad_probe(struct i2c_client *client,
 		cols = pdata->cols;
 		rep  = pdata->rep;
 		irq_is_gpio = pdata->irq_is_gpio;
+<<<<<<< HEAD
 		trigger = IRQF_TRIGGER_FALLING;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		struct device_node *np = dev->of_node;
 		int err;
@@ -362,7 +387,13 @@ static int tca8418_keypad_probe(struct i2c_client *client,
 		irq = gpio_to_irq(irq);
 
 	error = devm_request_threaded_irq(dev, irq, NULL, tca8418_irq_handler,
+<<<<<<< HEAD
 					  trigger | IRQF_SHARED | IRQF_ONESHOT,
+=======
+					  IRQF_TRIGGER_FALLING |
+						IRQF_SHARED |
+						IRQF_ONESHOT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  client->name, keypad_data);
 	if (error) {
 		dev_err(dev, "Unable to claim irq %d; error %d\n",
@@ -392,12 +423,25 @@ static const struct of_device_id tca8418_dt_ids[] = {
 	{ }
 };
 MODULE_DEVICE_TABLE(of, tca8418_dt_ids);
+<<<<<<< HEAD
+=======
+
+/*
+ * The device tree based i2c loader looks for
+ * "i2c:" + second_component_of(property("compatible"))
+ * and therefore we need an alias to be found.
+ */
+MODULE_ALIAS("i2c:tca8418");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct i2c_driver tca8418_keypad_driver = {
 	.driver = {
 		.name	= TCA8418_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_match_ptr(tca8418_dt_ids),
 	},
 	.probe		= tca8418_keypad_probe,

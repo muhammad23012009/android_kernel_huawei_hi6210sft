@@ -19,25 +19,51 @@
 /*
  * zsmalloc mapping modes
  *
+<<<<<<< HEAD
  * NOTE: These only make a difference when a mapped object spans pages
 */
+=======
+ * NOTE: These only make a difference when a mapped object spans pages.
+ * They also have no effect when PGTABLE_MAPPING is selected.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum zs_mapmode {
 	ZS_MM_RW, /* normal read-write mapping */
 	ZS_MM_RO, /* read-only (no copy-out at unmap time) */
 	ZS_MM_WO /* write-only (no copy-in at map time) */
+<<<<<<< HEAD
+=======
+	/*
+	 * NOTE: ZS_MM_WO should only be used for initializing new
+	 * (uninitialized) allocations.  Partial writes to already
+	 * initialized allocations should use ZS_MM_RW to preserve the
+	 * existing data.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct zs_pool_stats {
 	/* How many pages were migrated (freed) */
+<<<<<<< HEAD
 	unsigned long pages_compacted;
+=======
+	atomic_long_t pages_compacted;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct zs_pool;
 
+<<<<<<< HEAD
 struct zs_pool *zs_create_pool(char *name, gfp_t flags);
 void zs_destroy_pool(struct zs_pool *pool);
 
 unsigned long zs_malloc(struct zs_pool *pool, size_t size);
+=======
+struct zs_pool *zs_create_pool(const char *name);
+void zs_destroy_pool(struct zs_pool *pool);
+
+unsigned long zs_malloc(struct zs_pool *pool, size_t size, gfp_t flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void zs_free(struct zs_pool *pool, unsigned long obj);
 
 void *zs_map_object(struct zs_pool *pool, unsigned long handle,

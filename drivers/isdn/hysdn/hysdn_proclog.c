@@ -175,14 +175,25 @@ hysdn_log_read(struct file *file, char __user *buf, size_t count, loff_t *off)
 	int len;
 	hysdn_card *card = PDE_DATA(file_inode(file));
 
+<<<<<<< HEAD
 	if (!*((struct log_data **) file->private_data)) {
+=======
+	if (!(inf = *((struct log_data **) file->private_data))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct procdata *pd = card->proclog;
 		if (file->f_flags & O_NONBLOCK)
 			return (-EAGAIN);
 
+<<<<<<< HEAD
 		interruptible_sleep_on(&(pd->rd_queue));
 	}
 	if (!(inf = *((struct log_data **) file->private_data)))
+=======
+		wait_event_interruptible(pd->rd_queue, (inf =
+				*((struct log_data **) file->private_data)));
+	}
+	if (!inf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return (0);
 
 	inf->usage_cnt--;	/* new usage count */

@@ -132,16 +132,27 @@ int dialog_checklist(const char *title, const char *prompt, int height,
 	}
 
 do_resize:
+<<<<<<< HEAD
 	if (getmaxy(stdscr) < (height + 6))
 		return -ERRDISPLAYTOOSMALL;
 	if (getmaxx(stdscr) < (width + 6))
+=======
+	if (getmaxy(stdscr) < (height + CHECKLIST_HEIGTH_MIN))
+		return -ERRDISPLAYTOOSMALL;
+	if (getmaxx(stdscr) < (width + CHECKLIST_WIDTH_MIN))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ERRDISPLAYTOOSMALL;
 
 	max_choice = MIN(list_height, item_count());
 
 	/* center dialog box on screen */
+<<<<<<< HEAD
 	x = (COLS - width) / 2;
 	y = (LINES - height) / 2;
+=======
+	x = (getmaxx(stdscr) - width) / 2;
+	y = (getmaxy(stdscr) - height) / 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	draw_shadow(stdscr, y, x, height, width);
 
@@ -168,13 +179,21 @@ do_resize:
 
 	/* create new window for the list */
 	list = subwin(dialog, list_height, list_width, y + box_y + 1,
+<<<<<<< HEAD
 	              x + box_x + 1);
+=======
+		      x + box_x + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	keypad(list, TRUE);
 
 	/* draw a box around the list items */
 	draw_box(dialog, box_y, box_x, list_height + 2, list_width + 2,
+<<<<<<< HEAD
 	         dlg.menubox_border.atr, dlg.menubox.atr);
+=======
+		 dlg.menubox_border.atr, dlg.menubox.atr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Find length of longest item in order to center checklist */
 	check_x = 0;

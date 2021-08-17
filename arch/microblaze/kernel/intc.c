@@ -1,5 +1,10 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2007-2009 Michal Simek <monstr@monstr.eu>
+=======
+ * Copyright (C) 2007-2013 Michal Simek <monstr@monstr.eu>
+ * Copyright (C) 2012-2013 Xilinx, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2007-2009 PetaLogix
  * Copyright (C) 2006 Atmark Techno, Inc.
  *
@@ -8,6 +13,7 @@
  * for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/irqdomain.h>
 #include <linux/irq.h>
@@ -25,6 +31,16 @@
 static unsigned int intc_baseaddr;
 #define INTC_BASE	intc_baseaddr
 #endif
+=======
+#include <linux/irqdomain.h>
+#include <linux/irq.h>
+#include <linux/irqchip.h>
+#include <linux/of_address.h>
+#include <linux/io.h>
+#include <linux/bug.h>
+
+static void __iomem *intc_baseaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* No one else should require these constants, so define them locally here. */
 #define ISR 0x00			/* Interrupt Status Register */
@@ -39,6 +55,32 @@ static unsigned int intc_baseaddr;
 #define MER_ME (1<<0)
 #define MER_HIE (1<<1)
 
+<<<<<<< HEAD
+=======
+static unsigned int (*read_fn)(void __iomem *);
+static void (*write_fn)(u32, void __iomem *);
+
+static void intc_write32(u32 val, void __iomem *addr)
+{
+	iowrite32(val, addr);
+}
+
+static unsigned int intc_read32(void __iomem *addr)
+{
+	return ioread32(addr);
+}
+
+static void intc_write32_be(u32 val, void __iomem *addr)
+{
+	iowrite32be(val, addr);
+}
+
+static unsigned int intc_read32_be(void __iomem *addr)
+{
+	return ioread32be(addr);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void intc_enable_or_unmask(struct irq_data *d)
 {
 	unsigned long mask = 1 << d->hwirq;
@@ -50,21 +92,35 @@ static void intc_enable_or_unmask(struct irq_data *d)
 	 * acks the irq before calling the interrupt handler
 	 */
 	if (irqd_is_level_type(d))
+<<<<<<< HEAD
 		out_be32(INTC_BASE + IAR, mask);
 
 	out_be32(INTC_BASE + SIE, mask);
+=======
+		write_fn(mask, intc_baseaddr + IAR);
+
+	write_fn(mask, intc_baseaddr + SIE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void intc_disable_or_mask(struct irq_data *d)
 {
 	pr_debug("disable: %ld\n", d->hwirq);
+<<<<<<< HEAD
 	out_be32(INTC_BASE + CIE, 1 << d->hwirq);
+=======
+	write_fn(1 << d->hwirq, intc_baseaddr + CIE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void intc_ack(struct irq_data *d)
 {
 	pr_debug("ack: %ld\n", d->hwirq);
+<<<<<<< HEAD
 	out_be32(INTC_BASE + IAR, 1 << d->hwirq);
+=======
+	write_fn(1 << d->hwirq, intc_baseaddr + IAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void intc_mask_ack(struct irq_data *d)
@@ -72,8 +128,13 @@ static void intc_mask_ack(struct irq_data *d)
 	unsigned long mask = 1 << d->hwirq;
 
 	pr_debug("disable_and_ack: %ld\n", d->hwirq);
+<<<<<<< HEAD
 	out_be32(INTC_BASE + CIE, mask);
 	out_be32(INTC_BASE + IAR, mask);
+=======
+	write_fn(mask, intc_baseaddr + CIE);
+	write_fn(mask, intc_baseaddr + IAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct irq_chip intc_dev = {
@@ -90,7 +151,11 @@ unsigned int get_irq(void)
 {
 	unsigned int hwirq, irq = -1;
 
+<<<<<<< HEAD
 	hwirq = in_be32(INTC_BASE + IVR);
+=======
+	hwirq = read_fn(intc_baseaddr + IVR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hwirq != -1U)
 		irq = irq_find_mapping(root_domain, hwirq);
 
@@ -120,6 +185,7 @@ static const struct irq_domain_ops xintc_irq_domain_ops = {
 	.map = xintc_map,
 };
 
+<<<<<<< HEAD
 void __init init_IRQ(void)
 {
 	u32 nr_irq, intr_mask;
@@ -154,11 +220,43 @@ void __init init_IRQ(void)
 #endif
 	pr_info("%s #0 at 0x%08x, num_irq=%d, edge=0x%x\n",
 		intc->name, intc_baseaddr, nr_irq, intr_mask);
+=======
+static int __init xilinx_intc_of_init(struct device_node *intc,
+					     struct device_node *parent)
+{
+	u32 nr_irq, intr_mask;
+	int ret;
+
+	intc_baseaddr = of_iomap(intc, 0);
+	BUG_ON(!intc_baseaddr);
+
+	ret = of_property_read_u32(intc, "xlnx,num-intr-inputs", &nr_irq);
+	if (ret < 0) {
+		pr_err("%s: unable to read xlnx,num-intr-inputs\n", __func__);
+		return ret;
+	}
+
+	ret = of_property_read_u32(intc, "xlnx,kind-of-intr", &intr_mask);
+	if (ret < 0) {
+		pr_err("%s: unable to read xlnx,kind-of-intr\n", __func__);
+		return ret;
+	}
+
+	if (intr_mask >> nr_irq)
+		pr_warn("%s: mismatch in kind-of-intr param\n", __func__);
+
+	pr_info("%s: num_irq=%d, edge=0x%x\n",
+		intc->full_name, nr_irq, intr_mask);
+
+	write_fn = intc_write32;
+	read_fn = intc_read32;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Disable all external interrupts until they are
 	 * explicity requested.
 	 */
+<<<<<<< HEAD
 	out_be32(intc_baseaddr + IER, 0);
 
 	/* Acknowledge any pending interrupts just in case. */
@@ -166,6 +264,20 @@ void __init init_IRQ(void)
 
 	/* Turn on the Master Enable. */
 	out_be32(intc_baseaddr + MER, MER_HIE | MER_ME);
+=======
+	write_fn(0, intc_baseaddr + IER);
+
+	/* Acknowledge any pending interrupts just in case. */
+	write_fn(0xffffffff, intc_baseaddr + IAR);
+
+	/* Turn on the Master Enable. */
+	write_fn(MER_HIE | MER_ME, intc_baseaddr + MER);
+	if (!(read_fn(intc_baseaddr + MER) & (MER_HIE | MER_ME))) {
+		write_fn = intc_write32_be;
+		read_fn = intc_read32_be;
+		write_fn(MER_HIE | MER_ME, intc_baseaddr + MER);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Yeah, okay, casting the intr_mask to a void* is butt-ugly, but I'm
 	 * lazy and Michal can clean it up to something nicer when he tests
@@ -174,4 +286,12 @@ void __init init_IRQ(void)
 							(void *)intr_mask);
 
 	irq_set_default_host(root_domain);
+<<<<<<< HEAD
 }
+=======
+
+	return 0;
+}
+
+IRQCHIP_DECLARE(xilinx_intc, "xlnx,xps-intc-1.00.a", xilinx_intc_of_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -281,7 +281,11 @@ static struct page *logfs_get_read_page(struct inode *inode, u64 bix,
 static void logfs_put_read_page(struct page *page)
 {
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void logfs_lock_write_page(struct page *page)
@@ -323,7 +327,11 @@ repeat:
 			return NULL;
 		err = add_to_page_cache_lru(page, mapping, index, GFP_NOFS);
 		if (unlikely(err)) {
+<<<<<<< HEAD
 			page_cache_release(page);
+=======
+			put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (err == -EEXIST)
 				goto repeat;
 			return NULL;
@@ -342,7 +350,11 @@ static void logfs_unlock_write_page(struct page *page)
 static void logfs_put_write_page(struct page *page)
 {
 	logfs_unlock_write_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct page *logfs_get_page(struct inode *inode, u64 bix, level_t level,
@@ -562,20 +574,32 @@ static void indirect_free_block(struct super_block *sb,
 
 	if (PagePrivate(page)) {
 		ClearPagePrivate(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_page_private(page, 0);
 	}
 	__free_block(sb, block);
 }
 
 
+<<<<<<< HEAD
 static struct logfs_block_ops inode_block_ops = {
+=======
+static const struct logfs_block_ops inode_block_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.write_block = inode_write_block,
 	.free_block = inode_free_block,
 	.write_alias = inode_write_alias,
 };
 
+<<<<<<< HEAD
 struct logfs_block_ops indirect_block_ops = {
+=======
+const struct logfs_block_ops indirect_block_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.write_block = indirect_write_block,
 	.free_block = indirect_free_block,
 	.write_alias = indirect_write_alias,
@@ -655,7 +679,11 @@ static void alloc_data_block(struct inode *inode, struct page *page)
 	block->page = page;
 
 	SetPagePrivate(page);
+<<<<<<< HEAD
 	page_cache_get(page);
+=======
+	get_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_page_private(page, (unsigned long) block);
 
 	block->ops = &indirect_block_ops;
@@ -709,7 +737,11 @@ static u64 block_get_pointer(struct page *page, int index)
 
 static int logfs_read_empty(struct page *page)
 {
+<<<<<<< HEAD
 	zero_user_segment(page, 0, PAGE_CACHE_SIZE);
+=======
+	zero_user_segment(page, 0, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1019,11 +1051,19 @@ static int __logfs_is_valid_block(struct inode *inode, u64 bix, u64 ofs)
 /**
  * logfs_is_valid_block - check whether this block is still valid
  *
+<<<<<<< HEAD
  * @sb	- superblock
  * @ofs	- block physical offset
  * @ino	- block inode number
  * @bix	- block index
  * @level - block level
+=======
+ * @sb:		superblock
+ * @ofs:	block physical offset
+ * @ino:	block inode number
+ * @bix:	block index
+ * @gc_level:	block level
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Returns 0 if the block is invalid, 1 if it is valid and 2 if it will
  * become invalid once the journal is written.
@@ -1546,7 +1586,11 @@ static int __logfs_write_buf(struct inode *inode, struct page *page, long flags)
 	int err;
 
 	flags |= WF_WRITE | WF_DELETE;
+<<<<<<< HEAD
 	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
+=======
+	inode->i_ctime = inode->i_mtime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	logfs_unpack_index(index, &bix, &level);
 	if (logfs_block(page) && logfs_block(page)->reserved_bytes)
@@ -1578,7 +1622,11 @@ static int __logfs_delete(struct inode *inode, struct page *page)
 	long flags = WF_DELETE;
 	int err;
 
+<<<<<<< HEAD
 	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
+=======
+	inode->i_ctime = inode->i_mtime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (page->index < I0_BLOCKS)
 		return logfs_write_direct(inode, page, flags);
@@ -1660,7 +1708,11 @@ static int truncate_data_block(struct inode *inode, struct page *page,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	zero_user_segment(page, size - pageofs, PAGE_CACHE_SIZE);
+=======
+	zero_user_segment(page, size - pageofs, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return logfs_segment_write(inode, page, shadow);
 }
 
@@ -1919,7 +1971,11 @@ static void move_page_to_inode(struct inode *inode, struct page *page)
 	block->page = NULL;
 	if (PagePrivate(page)) {
 		ClearPagePrivate(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_page_private(page, 0);
 	}
 }
@@ -1940,7 +1996,11 @@ static void move_inode_to_page(struct page *page, struct inode *inode)
 
 	if (!PagePrivate(page)) {
 		SetPagePrivate(page);
+<<<<<<< HEAD
 		page_cache_get(page);
+=======
+		get_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_page_private(page, (unsigned long) block);
 	}
 
@@ -1971,7 +2031,11 @@ int logfs_read_inode(struct inode *inode)
 	logfs_disk_to_inode(di, inode);
 	kunmap_atomic(di);
 	move_page_to_inode(inode, page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2180,7 +2244,11 @@ void logfs_evict_inode(struct inode *inode)
 			do_delete_inode(inode);
 		}
 	}
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_inode(inode);
 
 	/* Cheaper version of write_inode.  All changes are concealed in
@@ -2226,10 +2294,16 @@ void btree_write_block(struct logfs_block *block)
  *
  * @inode:		parent inode (ifile or directory)
  * @buf:		object to write (inode or dentry)
+<<<<<<< HEAD
  * @n:			object size
  * @_pos:		object number (file position in blocks/objects)
  * @flags:		write flags
  * @lock:		0 if write lock is already taken, 1 otherwise
+=======
+ * @count:		object size
+ * @bix:		block index
+ * @flags:		write flags
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @shadow_tree:	shadow below this inode
  *
  * FIXME: All caller of this put a 200-300 byte variable on the stack,

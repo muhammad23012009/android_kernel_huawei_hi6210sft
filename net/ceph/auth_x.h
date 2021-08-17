@@ -16,7 +16,11 @@ struct ceph_x_ticket_handler {
 	unsigned int service;
 
 	struct ceph_crypto_key session_key;
+<<<<<<< HEAD
 	struct ceph_timespec validity;
+=======
+	bool have_key;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u64 secret_id;
 	struct ceph_buffer *ticket_blob;
@@ -24,13 +28,25 @@ struct ceph_x_ticket_handler {
 	unsigned long renew_after, expires;
 };
 
+<<<<<<< HEAD
 
 struct ceph_x_authorizer {
+=======
+#define CEPHX_AU_ENC_BUF_LEN	128  /* big enough for encrypted blob */
+
+struct ceph_x_authorizer {
+	struct ceph_authorizer base;
+	struct ceph_crypto_key session_key;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ceph_buffer *buf;
 	unsigned int service;
 	u64 nonce;
 	u64 secret_id;
+<<<<<<< HEAD
 	char reply_buf[128];  /* big enough for encrypted blob */
+=======
+	char enc_buf[CEPHX_AU_ENC_BUF_LEN] __aligned(8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ceph_x_info {
@@ -45,7 +61,11 @@ struct ceph_x_info {
 	struct ceph_x_authorizer auth_authorizer;
 };
 
+<<<<<<< HEAD
 extern int ceph_x_init(struct ceph_auth_client *ac);
+=======
+int ceph_x_init(struct ceph_auth_client *ac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 

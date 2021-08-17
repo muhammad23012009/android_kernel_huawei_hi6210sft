@@ -23,6 +23,14 @@
 #define CR_RR	(1 << 14)	/* Round Robin cache replacement	*/
 #define CR_L4	(1 << 15)	/* LDR pc can set T bit			*/
 #define CR_DT	(1 << 16)
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+#define CR_HA	(1 << 17)	/* Hardware management of Access Flag   */
+#else
+#define CR_BR	(1 << 17)	/* MPU Background region enable (PMSA)  */
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CR_IT	(1 << 18)
 #define CR_ST	(1 << 19)
 #define CR_FI	(1 << 21)	/* Fast interrupt (lower latency mode)	*/
@@ -37,24 +45,60 @@
 #ifndef __ASSEMBLY__
 
 #if __LINUX_ARM_ARCH__ >= 4
+<<<<<<< HEAD
 #define vectors_high()	(cr_alignment & CR_V)
+=======
+#define vectors_high()	(get_cr() & CR_V)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define vectors_high()	(0)
 #endif
 
 #ifdef CONFIG_CPU_CP15
 
+<<<<<<< HEAD
 extern unsigned long cr_no_alignment;	/* defined in entry-armv.S */
 extern unsigned long cr_alignment;	/* defined in entry-armv.S */
 
 static inline unsigned int get_cr(void)
 {
 	unsigned int val;
+=======
+#define __ACCESS_CP15(CRn, Op1, CRm, Op2)	\
+	"mrc", "mcr", __stringify(p15, Op1, %0, CRn, CRm, Op2), u32
+#define __ACCESS_CP15_64(Op1, CRm)		\
+	"mrrc", "mcrr", __stringify(p15, Op1, %Q0, %R0, CRm), u64
+
+#define __read_sysreg(r, w, c, t) ({				\
+	t __val;						\
+	asm volatile(r " " c : "=r" (__val));			\
+	__val;							\
+})
+#define read_sysreg(...)		__read_sysreg(__VA_ARGS__)
+
+#define __write_sysreg(v, r, w, c, t)	asm volatile(w " " c : : "r" ((t)(v)))
+#define write_sysreg(v, ...)		__write_sysreg(v, __VA_ARGS__)
+
+#define BPIALL				__ACCESS_CP15(c7, 0, c5, 6)
+#define ICIALLU				__ACCESS_CP15(c7, 0, c5, 0)
+
+#define CNTVCT				__ACCESS_CP15_64(1, c14)
+
+extern unsigned long cr_alignment;	/* defined in entry-armv.S */
+
+static inline unsigned long get_cr(void)
+{
+	unsigned long val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	asm("mrc p15, 0, %0, c1, c0, 0	@ get CR" : "=r" (val) : : "cc");
 	return val;
 }
 
+<<<<<<< HEAD
 static inline void set_cr(unsigned int val)
+=======
+static inline void set_cr(unsigned long val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	asm volatile("mcr p15, 0, %0, c1, c0, 0	@ set CR"
 	  : : "r" (val) : "cc");
@@ -75,10 +119,13 @@ static inline void set_auxcr(unsigned int val)
 	isb();
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 extern void adjust_cr(unsigned long mask, unsigned long set);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CPACC_FULL(n)		(3 << (n * 2))
 #define CPACC_SVC(n)		(1 << (n * 2))
 #define CPACC_DISABLE(n)	(0 << (n * 2))
@@ -101,6 +148,7 @@ static inline void set_copro_access(unsigned int val)
 #else /* ifdef CONFIG_CPU_CP15 */
 
 /*
+<<<<<<< HEAD
  * cr_alignment and cr_no_alignment are tightly coupled to cp15 (at least in the
  * minds of the developers). Yielding 0 for machines without a cp15 (and making
  * it read-only) is fine for most cases and saves quite some #ifdeffery.
@@ -108,6 +156,19 @@ static inline void set_copro_access(unsigned int val)
 #define cr_no_alignment	UL(0)
 #define cr_alignment	UL(0)
 
+=======
+ * cr_alignment is tightly coupled to cp15 (at least in the minds of the
+ * developers). Yielding 0 for machines without a cp15 (and making it
+ * read-only) is fine for most cases and saves quite some #ifdeffery.
+ */
+#define cr_alignment	UL(0)
+
+static inline unsigned long get_cr(void)
+{
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* ifdef CONFIG_CPU_CP15 / else */
 
 #endif /* ifndef __ASSEMBLY__ */

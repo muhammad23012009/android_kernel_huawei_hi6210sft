@@ -57,8 +57,12 @@
 #define UPT_SYSCALL_ARG5(r) UPT_R8(r)
 #define UPT_SYSCALL_ARG6(r) UPT_R9(r)
 
+<<<<<<< HEAD
 static inline void arch_init_registers(int pid)
 {
 }
+=======
+extern void arch_init_registers(int pid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

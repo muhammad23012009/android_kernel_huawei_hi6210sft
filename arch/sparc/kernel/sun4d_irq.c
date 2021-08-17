@@ -143,7 +143,11 @@ static void sun4d_sbus_handler_irq(int sbusl)
 	}
 }
 
+<<<<<<< HEAD
 void sun4d_handler_irq(int pil, struct pt_regs *regs)
+=======
+void sun4d_handler_irq(unsigned int pil, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pt_regs *old_regs;
 	/* SBUS IRQ level (1 - 7) */
@@ -188,7 +192,11 @@ void sun4d_handler_irq(int pil, struct pt_regs *regs)
 
 static void sun4d_mask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct sun4d_handler_data *handler_data = data->handler_data;
+=======
+	struct sun4d_handler_data *handler_data = irq_data_get_irq_handler_data(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int real_irq;
 #ifdef CONFIG_SMP
 	int cpuid = handler_data->cpuid;
@@ -206,7 +214,11 @@ static void sun4d_mask_irq(struct irq_data *data)
 
 static void sun4d_unmask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct sun4d_handler_data *handler_data = data->handler_data;
+=======
+	struct sun4d_handler_data *handler_data = irq_data_get_irq_handler_data(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int real_irq;
 #ifdef CONFIG_SMP
 	int cpuid = handler_data->cpuid;
@@ -236,7 +248,11 @@ static void sun4d_shutdown_irq(struct irq_data *data)
 	irq_unlink(data->irq);
 }
 
+<<<<<<< HEAD
 struct irq_chip sun4d_irq = {
+=======
+static struct irq_chip sun4d_irq = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "sun4d",
 	.irq_startup	= sun4d_startup_irq,
 	.irq_shutdown	= sun4d_shutdown_irq,
@@ -285,9 +301,15 @@ static void __init sun4d_load_profile_irqs(void)
 	}
 }
 
+<<<<<<< HEAD
 unsigned int _sun4d_build_device_irq(unsigned int real_irq,
                                      unsigned int pil,
                                      unsigned int board)
+=======
+static unsigned int _sun4d_build_device_irq(unsigned int real_irq,
+                                            unsigned int pil,
+                                            unsigned int board)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sun4d_handler_data *handler_data;
 	unsigned int irq;
@@ -320,8 +342,13 @@ err_out:
 
 
 
+<<<<<<< HEAD
 unsigned int sun4d_build_device_irq(struct platform_device *op,
                                     unsigned int real_irq)
+=======
+static unsigned int sun4d_build_device_irq(struct platform_device *op,
+                                           unsigned int real_irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device_node *dp = op->dev.of_node;
 	struct device_node *board_parent, *bus = dp->parent;
@@ -383,7 +410,12 @@ err_out:
 	return irq;
 }
 
+<<<<<<< HEAD
 unsigned int sun4d_build_timer_irq(unsigned int board, unsigned int real_irq)
+=======
+static unsigned int sun4d_build_timer_irq(unsigned int board,
+                                          unsigned int real_irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return _sun4d_build_device_irq(real_irq, real_irq, board);
 }

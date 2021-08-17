@@ -44,6 +44,7 @@ extern void xfs_qm_exit(void);
 # define XFS_REALTIME_STRING
 #endif
 
+<<<<<<< HEAD
 #if XFS_BIG_BLKNOS
 # if XFS_BIG_INUMS
 #  define XFS_BIGFS_STRING	"large block/inode numbers, "
@@ -54,6 +55,8 @@ extern void xfs_qm_exit(void);
 # define XFS_BIGFS_STRING
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef DEBUG
 # define XFS_DBG_STRING		"debug"
 #else
@@ -64,7 +67,10 @@ extern void xfs_qm_exit(void);
 #define XFS_BUILD_OPTIONS	XFS_ACL_STRING \
 				XFS_SECURITY_STRING \
 				XFS_REALTIME_STRING \
+<<<<<<< HEAD
 				XFS_BIGFS_STRING \
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				XFS_DBG_STRING /* DBG must be last */
 
 struct xfs_inode;
@@ -72,17 +78,30 @@ struct xfs_mount;
 struct xfs_buftarg;
 struct block_device;
 
+<<<<<<< HEAD
 extern __uint64_t xfs_max_file_offset(unsigned int);
 
 extern void xfs_flush_inodes(struct xfs_mount *mp);
 extern void xfs_blkdev_issue_flush(struct xfs_buftarg *);
 extern xfs_agnumber_t xfs_set_inode32(struct xfs_mount *);
 extern xfs_agnumber_t xfs_set_inode64(struct xfs_mount *);
+=======
+extern void xfs_quiesce_attr(struct xfs_mount *mp);
+extern void xfs_flush_inodes(struct xfs_mount *mp);
+extern void xfs_blkdev_issue_flush(struct xfs_buftarg *);
+extern xfs_agnumber_t xfs_set_inode_alloc(struct xfs_mount *,
+					   xfs_agnumber_t agcount);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern const struct export_operations xfs_export_operations;
 extern const struct xattr_handler *xfs_xattr_handlers[];
 extern const struct quotactl_ops xfs_quotactl_operations;
 
+<<<<<<< HEAD
+=======
+extern void xfs_reinit_percpu_counters(struct xfs_mount *mp);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define XFS_M(sb)		((struct xfs_mount *)((sb)->s_fs_info))
 
 #endif	/* __XFS_SUPER_H__ */

@@ -35,7 +35,11 @@
 #include "mantis_vp1033.h"
 #include "mantis_reg.h"
 
+<<<<<<< HEAD
 u8 lgtdqcs001f_inittab[] = {
+=======
+static u8 lgtdqcs001f_inittab[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x01, 0x15,
 	0x02, 0x30,
 	0x03, 0x00,
@@ -150,7 +154,11 @@ static int lgtdqcs001f_set_symbol_rate(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 struct stv0299_config lgtdqcs001f_config = {
+=======
+static struct stv0299_config lgtdqcs001f_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.demod_address		= 0x68,
 	.inittab		= lgtdqcs001f_inittab,
 	.mclk			= 88000000UL,

@@ -2,6 +2,15 @@
 #define __MAC80211_DEBUG_H
 #include <net/cfg80211.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MAC80211_OCB_DEBUG
+#define MAC80211_OCB_DEBUG 1
+#else
+#define MAC80211_OCB_DEBUG 0
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MAC80211_IBSS_DEBUG
 #define MAC80211_IBSS_DEBUG 1
 #else
@@ -44,6 +53,15 @@
 #define MAC80211_MESH_SYNC_DEBUG 0
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MAC80211_MESH_CSA_DEBUG
+#define MAC80211_MESH_CSA_DEBUG 1
+#else
+#define MAC80211_MESH_CSA_DEBUG 0
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MAC80211_MESH_PS_DEBUG
 #define MAC80211_MESH_PS_DEBUG 1
 #else
@@ -125,6 +143,13 @@ do {									\
 	_sdata_dbg(MAC80211_HT_DEBUG && net_ratelimit(),		\
 		   sdata, fmt, ##__VA_ARGS__)
 
+<<<<<<< HEAD
+=======
+#define ocb_dbg(sdata, fmt, ...)					\
+	_sdata_dbg(MAC80211_OCB_DEBUG,					\
+		   sdata, fmt, ##__VA_ARGS__)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ibss_dbg(sdata, fmt, ...)					\
 	_sdata_dbg(MAC80211_IBSS_DEBUG,					\
 		   sdata, fmt, ##__VA_ARGS__)
@@ -157,6 +182,13 @@ do {									\
 	_sdata_dbg(MAC80211_MESH_SYNC_DEBUG,				\
 		   sdata, fmt, ##__VA_ARGS__)
 
+<<<<<<< HEAD
+=======
+#define mcsa_dbg(sdata, fmt, ...)					\
+	_sdata_dbg(MAC80211_MESH_CSA_DEBUG,				\
+		   sdata, fmt, ##__VA_ARGS__)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define mps_dbg(sdata, fmt, ...)					\
 	_sdata_dbg(MAC80211_MESH_PS_DEBUG,				\
 		   sdata, fmt, ##__VA_ARGS__)

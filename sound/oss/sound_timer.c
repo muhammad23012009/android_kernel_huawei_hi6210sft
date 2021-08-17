@@ -17,7 +17,11 @@
 #include "sound_config.h"
 
 static volatile int initialized, opened, tmr_running;
+<<<<<<< HEAD
 static volatile time_t tmr_offs, tmr_ctr;
+=======
+static volatile unsigned int tmr_offs, tmr_ctr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static volatile unsigned long ticks_offs;
 static volatile int curr_tempo, curr_timebase;
 static volatile unsigned long curr_ticks;

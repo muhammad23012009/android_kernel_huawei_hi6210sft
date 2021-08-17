@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * drivers/gpu/ion/ion_cma_heap.c
+=======
+ * drivers/staging/android/ion/ion_cma_heap.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) Linaro 2012
  * Author: <benjamin.gaignard@linaro.org> for ST-Ericsson.
@@ -39,6 +43,7 @@ struct ion_cma_buffer_info {
 	struct sg_table *table;
 };
 
+<<<<<<< HEAD
 /*
  * Create scatter-list for the already allocated DMA buffer.
  * This function could be replaced by dma_common_get_sgtable
@@ -57,6 +62,8 @@ static int ion_cma_get_sgtable(struct device *dev, struct sg_table *sgt,
 	sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* ION CMA heap operations functions */
 static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
@@ -76,10 +83,15 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
 		return -EINVAL;
 
 	info = kzalloc(sizeof(struct ion_cma_buffer_info), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!info) {
 		dev_err(dev, "Can't allocate buffer info\n");
 		return ION_CMA_ALLOCATE_FAILED;
 	}
+=======
+	if (!info)
+		return ION_CMA_ALLOCATE_FAILED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	info->cpu_addr = dma_alloc_coherent(dev, len, &(info->handle),
 						GFP_HIGHUSER | __GFP_ZERO);
@@ -90,6 +102,7 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
 	}
 
 	info->table = kmalloc(sizeof(struct sg_table), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!info->table) {
 		dev_err(dev, "Fail to allocate sg table\n");
 		goto free_mem;
@@ -100,6 +113,17 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
 		goto free_table;
 	/* keep this for memory release */
 	buffer->priv_virt = info;
+=======
+	if (!info->table)
+		goto free_mem;
+
+	if (dma_get_sgtable(dev, info->table, info->cpu_addr, info->handle,
+			    len))
+		goto free_table;
+	/* keep this for memory release */
+	buffer->priv_virt = info;
+	buffer->sg_table = info->table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(dev, "Allocate buffer %p\n", buffer);
 	return 0;
 
@@ -127,6 +151,7 @@ static void ion_cma_free(struct ion_buffer *buffer)
 	kfree(info);
 }
 
+<<<<<<< HEAD
 /* return physical address in addr */
 static int ion_cma_phys(struct ion_heap *heap, struct ion_buffer *buffer,
 			ion_phys_addr_t *addr, size_t *len)
@@ -158,6 +183,8 @@ static void ion_cma_heap_unmap_dma(struct ion_heap *heap,
 	return;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ion_cma_mmap(struct ion_heap *mapper, struct ion_buffer *buffer,
 			struct vm_area_struct *vma)
 {
@@ -178,13 +205,18 @@ static void *ion_cma_map_kernel(struct ion_heap *heap,
 }
 
 static void ion_cma_unmap_kernel(struct ion_heap *heap,
+<<<<<<< HEAD
 					struct ion_buffer *buffer)
+=======
+				 struct ion_buffer *buffer)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 
 static struct ion_heap_ops ion_cma_ops = {
 	.allocate = ion_cma_allocate,
 	.free = ion_cma_free,
+<<<<<<< HEAD
 	.map_dma = ion_cma_heap_map_dma,
 	.unmap_dma = ion_cma_heap_unmap_dma,
 	.phys = ion_cma_phys,
@@ -193,6 +225,11 @@ static struct ion_heap_ops ion_cma_ops = {
 	.unmap_kernel = ion_cma_unmap_kernel,
 	.map_iommu = ion_heap_map_iommu,
 	.unmap_iommu = ion_heap_unmap_iommu,
+=======
+	.map_user = ion_cma_mmap,
+	.map_kernel = ion_cma_map_kernel,
+	.unmap_kernel = ion_cma_unmap_kernel,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ion_heap *ion_cma_heap_create(struct ion_platform_heap *data)
@@ -205,10 +242,18 @@ struct ion_heap *ion_cma_heap_create(struct ion_platform_heap *data)
 		return ERR_PTR(-ENOMEM);
 
 	cma_heap->heap.ops = &ion_cma_ops;
+<<<<<<< HEAD
 	/* get device from private heaps data, later it will be
 	 * used to make the link with reserved CMA memory */
 	//cma_heap->dev = data->priv;
 	cma_heap->dev = NULL;
+=======
+	/*
+	 * get device from private heaps data, later it will be
+	 * used to make the link with reserved CMA memory
+	 */
+	cma_heap->dev = data->priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cma_heap->heap.type = ION_HEAP_TYPE_DMA;
 	return &cma_heap->heap;
 }

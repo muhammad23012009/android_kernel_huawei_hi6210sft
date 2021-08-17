@@ -16,6 +16,10 @@
 #include "boot.h"
 #include "video.h"
 #include "vesa.h"
+<<<<<<< HEAD
+=======
+#include "string.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* VESA information */
 static struct vesa_general_info vginfo;

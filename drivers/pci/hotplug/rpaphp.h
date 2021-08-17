@@ -49,6 +49,7 @@
 extern bool rpaphp_debug;
 #define dbg(format, arg...)					\
 	do {							\
+<<<<<<< HEAD
 		if (rpaphp_debug)					\
 			printk(KERN_DEBUG "%s: " format,	\
 				MY_NAME , ## arg); 		\
@@ -56,6 +57,15 @@ extern bool rpaphp_debug;
 #define err(format, arg...) printk(KERN_ERR "%s: " format, MY_NAME , ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format, MY_NAME , ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format, MY_NAME , ## arg)
+=======
+		if (rpaphp_debug)				\
+			printk(KERN_DEBUG "%s: " format,	\
+				MY_NAME, ## arg);		\
+	} while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format, MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format, MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format, MY_NAME, ## arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* slot states */
 
@@ -99,5 +109,9 @@ void dealloc_slot_struct(struct slot *slot);
 struct slot *alloc_slot_struct(struct device_node *dn, int drc_index, char *drc_name, int power_domain);
 int rpaphp_register_slot(struct slot *slot);
 int rpaphp_deregister_slot(struct slot *slot);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/* _PPC64PHP_H */

@@ -178,6 +178,7 @@ static void del_edac_pci_from_global_list(struct edac_pci_ctl_info *pci)
 	INIT_LIST_HEAD(&pci->link);
 }
 
+<<<<<<< HEAD
 #if 0
 /* Older code, but might use in the future */
 
@@ -213,6 +214,8 @@ struct edac_pci_ctl_info *edac_pci_find(int idx)
 EXPORT_SYMBOL_GPL(edac_pci_find);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * edac_pci_workq_function()
  *
@@ -230,6 +233,7 @@ static void edac_pci_workq_function(struct work_struct *work_req)
 
 	mutex_lock(&edac_pci_ctls_mutex);
 
+<<<<<<< HEAD
 	if (pci->op_state == OP_RUNNING_POLL) {
 		/* we might be in POLL mode, but there may NOT be a poll func
 		 */
@@ -305,6 +309,27 @@ void edac_pci_reset_delay_period(struct edac_pci_ctl_info *pci,
 	mutex_unlock(&edac_pci_ctls_mutex);
 }
 EXPORT_SYMBOL_GPL(edac_pci_reset_delay_period);
+=======
+	if (pci->op_state != OP_RUNNING_POLL) {
+		mutex_unlock(&edac_pci_ctls_mutex);
+		return;
+	}
+
+	if (edac_pci_get_check_errors())
+		pci->edac_check(pci);
+
+	/* if we are on a one second period, then use round */
+	msec = edac_pci_get_poll_msec();
+	if (msec == 1000)
+		delay = round_jiffies_relative(msecs_to_jiffies(msec));
+	else
+		delay = msecs_to_jiffies(msec);
+
+	edac_queue_work(&pci->work, delay);
+
+	mutex_unlock(&edac_pci_ctls_mutex);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * edac_pci_alloc_index: Allocate a unique PCI index number
@@ -349,20 +374,35 @@ int edac_pci_add_device(struct edac_pci_ctl_info *pci, int edac_idx)
 		goto fail1;
 	}
 
+<<<<<<< HEAD
 	if (pci->edac_check != NULL) {
 		pci->op_state = OP_RUNNING_POLL;
 
 		edac_pci_workq_setup(pci, 1000);
+=======
+	if (pci->edac_check) {
+		pci->op_state = OP_RUNNING_POLL;
+
+		INIT_DELAYED_WORK(&pci->work, edac_pci_workq_function);
+		edac_queue_work(&pci->work, msecs_to_jiffies(edac_pci_get_poll_msec()));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		pci->op_state = OP_RUNNING_INTERRUPT;
 	}
 
 	edac_pci_printk(pci, KERN_INFO,
+<<<<<<< HEAD
 			"Giving out device to module '%s' controller '%s':"
 			" DEV '%s' (%s)\n",
 			pci->mod_name,
 			pci->ctl_name,
 			edac_dev_name(pci), edac_op_state_to_string(pci->op_state));
+=======
+		"Giving out device to module %s controller %s: DEV %s (%s)\n",
+		pci->mod_name, pci->ctl_name, pci->dev_name,
+		edac_op_state_to_string(pci->op_state));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&edac_pci_ctls_mutex);
 	return 0;
@@ -412,8 +452,13 @@ struct edac_pci_ctl_info *edac_pci_del_device(struct device *dev)
 
 	mutex_unlock(&edac_pci_ctls_mutex);
 
+<<<<<<< HEAD
 	/* stop the workq timer */
 	edac_pci_workq_teardown(pci);
+=======
+	if (pci->edac_check)
+		edac_stop_work(&pci->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	edac_printk(KERN_INFO, EDAC_PCI,
 		"Removed device %d for %s %s: DEV %s\n",

@@ -85,7 +85,11 @@ static int fd_request_irq(void)
 {
 	if(MACH_IS_Q40)
 		return request_irq(FLOPPY_IRQ, floppy_hardint,
+<<<<<<< HEAD
 				   IRQF_DISABLED, "floppy", floppy_hardint);
+=======
+				   0, "floppy", floppy_hardint);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if(MACH_IS_SUN3X)
 		return sun3xflop_request_irq();
 	return -ENXIO;

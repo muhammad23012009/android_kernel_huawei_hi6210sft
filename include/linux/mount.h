@@ -45,11 +45,18 @@ struct mnt_namespace;
 #define MNT_USER_SETTABLE_MASK  (MNT_NOSUID | MNT_NODEV | MNT_NOEXEC \
 				 | MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME \
 				 | MNT_READONLY)
+<<<<<<< HEAD
 
 #define MNT_ATIME_MASK (MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME )
 
 #define MNT_INTERNAL_FLAGS (MNT_SHARED | MNT_WRITE_HOLD | MNT_INTERNAL | \
 			    MNT_MARKED)
+=======
+#define MNT_ATIME_MASK (MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME )
+
+#define MNT_INTERNAL_FLAGS (MNT_SHARED | MNT_WRITE_HOLD | MNT_INTERNAL | \
+			    MNT_DOOMED | MNT_SYNC_UMOUNT | MNT_MARKED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MNT_INTERNAL	0x4000
 
@@ -58,7 +65,15 @@ struct mnt_namespace;
 #define MNT_LOCK_NOSUID		0x100000
 #define MNT_LOCK_NODEV		0x200000
 #define MNT_LOCK_READONLY	0x400000
+<<<<<<< HEAD
 #define MNT_MARKED			0x4000000
+=======
+#define MNT_LOCKED		0x800000
+#define MNT_DOOMED		0x1000000
+#define MNT_SYNC_UMOUNT		0x2000000
+#define MNT_MARKED		0x4000000
+#define MNT_UMOUNT		0x8000000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct vfsmount {
 	struct dentry *mnt_root;	/* root of the mounted tree */
@@ -68,6 +83,10 @@ struct vfsmount {
 };
 
 struct file; /* forward dec */
+<<<<<<< HEAD
+=======
+struct path;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int mnt_want_write(struct vfsmount *mnt);
 extern int mnt_want_write_file(struct file *file);
@@ -76,18 +95,39 @@ extern void mnt_drop_write(struct vfsmount *mnt);
 extern void mnt_drop_write_file(struct file *file);
 extern void mntput(struct vfsmount *mnt);
 extern struct vfsmount *mntget(struct vfsmount *mnt);
+<<<<<<< HEAD
 extern void mnt_pin(struct vfsmount *mnt);
 extern void mnt_unpin(struct vfsmount *mnt);
 extern int __mnt_is_readonly(struct vfsmount *mnt);
+=======
+extern struct vfsmount *mnt_clone_internal(struct path *path);
+extern int __mnt_is_readonly(struct vfsmount *mnt);
+extern bool mnt_may_suid(struct vfsmount *mnt);
+
+struct path;
+extern struct vfsmount *clone_private_mount(struct path *path);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct file_system_type;
 extern struct vfsmount *vfs_kern_mount(struct file_system_type *type,
 				      int flags, const char *name,
 				      void *data);
+<<<<<<< HEAD
+=======
+extern struct vfsmount *vfs_submount(const struct dentry *mountpoint,
+				     struct file_system_type *type,
+				     const char *name, void *data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void mnt_set_expiry(struct vfsmount *mnt, struct list_head *expiry_list);
 extern void mark_mounts_for_expiry(struct list_head *mounts);
 
+<<<<<<< HEAD
 extern dev_t name_to_dev_t(char *name);
+=======
+extern dev_t name_to_dev_t(const char *name);
+
+extern unsigned int sysctl_mount_max;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _LINUX_MOUNT_H */

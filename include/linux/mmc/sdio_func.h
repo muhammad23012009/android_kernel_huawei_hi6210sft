@@ -61,7 +61,11 @@ struct sdio_func {
 	unsigned int		state;		/* function state */
 #define SDIO_STATE_PRESENT	(1<<0)		/* present in sysfs */
 
+<<<<<<< HEAD
 	u8			tmpbuf[4];	/* DMA:able scratch buffer */
+=======
+	u8			*tmpbuf;	/* DMA:able scratch buffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unsigned		num_info;	/* number of info strings */
 	const char		**info;		/* info strings */
@@ -92,8 +96,11 @@ struct sdio_driver {
 	struct device_driver drv;
 };
 
+<<<<<<< HEAD
 #define to_sdio_driver(d)	container_of(d, struct sdio_driver, drv)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * SDIO_DEVICE - macro used to describe a specific SDIO device
  * @vend: the 16 bit manufacturer code

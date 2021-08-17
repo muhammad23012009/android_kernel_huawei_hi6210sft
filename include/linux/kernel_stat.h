@@ -9,7 +9,11 @@
 #include <linux/sched.h>
 #include <linux/vtime.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/cputime.h>
+=======
+#include <linux/cputime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * 'kernel_stat.h' contains the definitions needed for doing
@@ -28,10 +32,13 @@ enum cpu_usage_stat {
 	CPUTIME_STEAL,
 	CPUTIME_GUEST,
 	CPUTIME_GUEST_NICE,
+<<<<<<< HEAD
 #ifdef CONFIG_HUAWEI_MSG_POLICY
 	CPUTIME_MESSAGE,
 	CPUTIME_MESSAGE_PERCENT,
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NR_STATS,
 };
 
@@ -40,9 +47,12 @@ struct kernel_cpustat {
 };
 
 struct kernel_stat {
+<<<<<<< HEAD
 #ifndef CONFIG_GENERIC_HARDIRQS
        unsigned int irqs[NR_IRQS];
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long irqs_sum;
 	unsigned int softirqs[NR_SOFTIRQS];
 };
@@ -51,13 +61,19 @@ DECLARE_PER_CPU(struct kernel_stat, kstat);
 DECLARE_PER_CPU(struct kernel_cpustat, kernel_cpustat);
 
 /* Must have preemption disabled for this to be meaningful. */
+<<<<<<< HEAD
 #define kstat_this_cpu (&__get_cpu_var(kstat))
 #define kcpustat_this_cpu (&__get_cpu_var(kernel_cpustat))
+=======
+#define kstat_this_cpu this_cpu_ptr(&kstat)
+#define kcpustat_this_cpu this_cpu_ptr(&kernel_cpustat)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define kstat_cpu(cpu) per_cpu(kstat, cpu)
 #define kcpustat_cpu(cpu) per_cpu(kernel_cpustat, cpu)
 
 extern unsigned long long nr_context_switches(void);
 
+<<<<<<< HEAD
 #ifndef CONFIG_GENERIC_HARDIRQS
 
 struct irq_desc;
@@ -84,6 +100,10 @@ do {							\
 } while (0)
 
 #endif
+=======
+extern unsigned int kstat_irqs_cpu(unsigned int irq, int cpu);
+extern void kstat_incr_irq_this_cpu(unsigned int irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void kstat_incr_softirqs_this_cpu(unsigned int irq)
 {
@@ -98,6 +118,7 @@ static inline unsigned int kstat_softirqs_cpu(unsigned int irq, int cpu)
 /*
  * Number of interrupts per specific IRQ source, since bootup
  */
+<<<<<<< HEAD
 #ifndef CONFIG_GENERIC_HARDIRQS
 static inline unsigned int kstat_irqs(unsigned int irq)
 {
@@ -112,6 +133,10 @@ static inline unsigned int kstat_irqs(unsigned int irq)
 #else
 extern unsigned int kstat_irqs(unsigned int irq);
 #endif
+=======
+extern unsigned int kstat_irqs(unsigned int irq);
+extern unsigned int kstat_irqs_usr(unsigned int irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Number of interrupts per cpu, since bootup
@@ -121,11 +146,14 @@ static inline unsigned int kstat_cpu_irqs_sum(unsigned int cpu)
 	return kstat_cpu(cpu).irqs_sum;
 }
 
+<<<<<<< HEAD
 /*
  * Lock/unlock the current runqueue - to extract task statistics:
  */
 extern unsigned long long task_delta_exec(struct task_struct *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void account_user_time(struct task_struct *, cputime_t, cputime_t);
 extern void account_system_time(struct task_struct *, int, cputime_t, cputime_t);
 extern void account_steal_time(cputime_t);
@@ -140,7 +168,10 @@ static inline void account_process_tick(struct task_struct *tsk, int user)
 extern void account_process_tick(struct task_struct *, int user);
 #endif
 
+<<<<<<< HEAD
 extern void account_steal_ticks(unsigned long ticks);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void account_idle_ticks(unsigned long ticks);
 
 #endif /* _LINUX_KERNEL_STAT_H */

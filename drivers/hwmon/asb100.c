@@ -510,6 +510,13 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	err = kstrtoul(buf, 10, &val);
 	if (err)
 		return err;
+<<<<<<< HEAD
+=======
+
+	if (val > 255)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->vrm = val;
 	return count;
 }

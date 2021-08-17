@@ -45,7 +45,10 @@ struct sd {
 	const struct v4l2_pix_format *cap_mode;
 	/* Driver stuff */
 	struct work_struct work_struct;
+<<<<<<< HEAD
 	struct workqueue_struct *work_thread;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 frame_brightness;
 	int block_size;	/* block size of camera */
 	int vga;	/* 1 if vga cam, 0 if cif cam */
@@ -455,7 +458,11 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	struct sd *sd = (struct sd *) gspca_dev;
 	sd->cap_mode = gspca_dev->cam.cam_mode;
 
+<<<<<<< HEAD
 	switch (gspca_dev->width) {
+=======
+	switch (gspca_dev->pixfmt.width) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 640:
 		PDEBUG(D_STREAM, "Start streaming at vga resolution");
 		jl2005c_stream_start_vga_lg(gspca_dev);
@@ -477,9 +484,13 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	/* Start the workqueue function to do the streaming */
 	sd->work_thread = create_singlethread_workqueue(MODULE_NAME);
 	queue_work(sd->work_thread, &sd->work_struct);
+=======
+	schedule_work(&sd->work_struct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -493,8 +504,12 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 	/* wait for the work queue to terminate */
 	mutex_unlock(&gspca_dev->usb_lock);
 	/* This waits for sq905c_dostream to finish */
+<<<<<<< HEAD
 	destroy_workqueue(dev->work_thread);
 	dev->work_thread = NULL;
+=======
+	flush_work(&dev->work_struct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&gspca_dev->usb_lock);
 }
 

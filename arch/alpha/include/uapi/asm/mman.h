@@ -37,6 +37,12 @@
 
 #define MCL_CURRENT	 8192		/* lock all currently mapped pages */
 #define MCL_FUTURE	16384		/* lock all additions to address space */
+<<<<<<< HEAD
+=======
+#define MCL_ONFAULT	32768		/* lock all pages that are faulted in */
+
+#define MLOCK_ONFAULT	0x01		/* Lock pages in range after they are faulted in, do not prefault */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MADV_NORMAL	0		/* no further special treatment */
 #define MADV_RANDOM	1		/* expect random page references */
@@ -46,6 +52,10 @@
 #define MADV_DONTNEED	6		/* don't need these pages */
 
 /* common/generic parameters */
+<<<<<<< HEAD
+=======
+#define MADV_FREE	8		/* free pages only if memory pressure */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MADV_REMOVE	9		/* remove these pages & resources */
 #define MADV_DONTFORK	10		/* don't inherit across fork */
 #define MADV_DOFORK	11		/* do inherit across fork */
@@ -74,4 +84,12 @@
 #define MAP_HUGE_SHIFT	26
 #define MAP_HUGE_MASK	0x3f
 
+<<<<<<< HEAD
+=======
+#define PKEY_DISABLE_ACCESS	0x1
+#define PKEY_DISABLE_WRITE	0x2
+#define PKEY_ACCESS_MASK	(PKEY_DISABLE_ACCESS |\
+				 PKEY_DISABLE_WRITE)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ALPHA_MMAN_H__ */

@@ -8,7 +8,15 @@
 #include <linux/thread_info.h>
 
 #define __TYPE_IS_PTR(t) (!__builtin_types_compatible_p(typeof(0?(t)0:0ULL), u64))
+<<<<<<< HEAD
 #define __SC_DELOUSE(t,v) (t)(__TYPE_IS_PTR(t) ? ((v) & 0x7fffffff) : (v))
+=======
+
+#define __SC_DELOUSE(t,v) ({ \
+	BUILD_BUG_ON(sizeof(t) > 4 && !__TYPE_IS_PTR(t)); \
+	(t)(__TYPE_IS_PTR(t) ? ((v) & 0x7fffffff) : (v)); \
+})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PSW32_MASK_PER		0x40000000UL
 #define PSW32_MASK_DAT		0x04000000UL
@@ -22,6 +30,10 @@
 #define PSW32_MASK_ASC		0x0000C000UL
 #define PSW32_MASK_CC		0x00003000UL
 #define PSW32_MASK_PM		0x00000f00UL
+<<<<<<< HEAD
+=======
+#define PSW32_MASK_RI		0x00000080UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PSW32_MASK_USER		0x0000FF00UL
 
@@ -35,7 +47,14 @@
 #define PSW32_ASC_SECONDARY	0x00008000UL
 #define PSW32_ASC_HOME		0x0000C000UL
 
+<<<<<<< HEAD
 extern u32 psw32_user_bits;
+=======
+#define PSW32_USER_BITS (PSW32_MASK_DAT | PSW32_MASK_IO | PSW32_MASK_EXT | \
+			 PSW32_DEFAULT_KEY | PSW32_MASK_BASE | \
+			 PSW32_MASK_MCHECK | PSW32_MASK_PSTATE | \
+			 PSW32_ASC_PRIMARY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define COMPAT_USER_HZ		100
 #define COMPAT_UTS_MACHINE	"s390\0\0\0\0"
@@ -276,7 +295,11 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
 
 static inline int is_compat_task(void)
 {
+<<<<<<< HEAD
 	return is_32bit_task();
+=======
+	return test_thread_flag(TIF_31BIT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void __user *arch_compat_alloc_user_space(long len)

@@ -68,6 +68,11 @@
 #include <linux/init.h>
 #include <linux/blkdev.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/completion.h>
+#include <linux/wait.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/atafd.h>
 #include <asm/atafdreg.h>
@@ -301,7 +306,11 @@ module_param_array(UserSteprate, int, NULL, 0);
 /* Synchronization of FDC access. */
 static volatile int fdc_busy = 0;
 static DECLARE_WAIT_QUEUE_HEAD(fdc_wait);
+<<<<<<< HEAD
 static DECLARE_WAIT_QUEUE_HEAD(format_wait);
+=======
+static DECLARE_COMPLETION(format_wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned long changed_floppies = 0xff, fake_change = 0;
 #define	CHECK_CHANGE_DELAY	HZ/2
@@ -608,7 +617,11 @@ static void fd_error( void )
 	if (IsFormatting) {
 		IsFormatting = 0;
 		FormatError = 1;
+<<<<<<< HEAD
 		wake_up( &format_wait );
+=======
+		complete(&format_wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -650,9 +663,14 @@ static int do_format(int drive, int type, struct atari_format_descr *desc)
 	DPRINT(("do_format( dr=%d tr=%d he=%d offs=%d )\n",
 		drive, desc->track, desc->head, desc->sect_offset ));
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	while( fdc_busy ) sleep_on( &fdc_wait );
 	fdc_busy = 1;
+=======
+	wait_event(fdc_wait, cmpxchg(&fdc_busy, 0, 1) == 0);
+	local_irq_save(flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stdma_lock(floppy_irq, NULL);
 	atari_turnon_irq( IRQ_MFP_FDC ); /* should be already, just to be sure */
 	local_irq_restore(flags);
@@ -706,7 +724,11 @@ static int do_format(int drive, int type, struct atari_format_descr *desc)
 	ReqSide  = desc->head;
 	do_fd_action( drive );
 
+<<<<<<< HEAD
 	sleep_on( &format_wait );
+=======
+	wait_for_completion(&format_wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	redo_fd_request();
 	return( FormatError ? -EIO : 0 );	
@@ -1229,7 +1251,11 @@ static void fd_writetrack_done( int status )
 		goto err_end;
 	}
 
+<<<<<<< HEAD
 	wake_up( &format_wait );
+=======
+	complete(&format_wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 
   err_end:
@@ -1483,7 +1509,11 @@ repeat:
 	ReqCnt = 0;
 	ReqCmd = rq_data_dir(fd_request);
 	ReqBlock = blk_rq_pos(fd_request);
+<<<<<<< HEAD
 	ReqBuffer = fd_request->buffer;
+=======
+	ReqBuffer = bio_data(fd_request->bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	setup_req_params( drive );
 	do_fd_action( drive );
 
@@ -1497,8 +1527,12 @@ repeat:
 void do_fd_request(struct request_queue * q)
 {
 	DPRINT(("do_fd_request for pid %d\n",current->pid));
+<<<<<<< HEAD
 	while( fdc_busy ) sleep_on( &fdc_wait );
 	fdc_busy = 1;
+=======
+	wait_event(fdc_wait, cmpxchg(&fdc_busy, 0, 1) == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stdma_lock(floppy_irq, NULL);
 
 	atari_disable_irq( IRQ_MFP_FDC );
@@ -1933,6 +1967,14 @@ static int __init atari_floppy_init (void)
 		unit[i].disk = alloc_disk(1);
 		if (!unit[i].disk)
 			goto Enomem;
+<<<<<<< HEAD
+=======
+
+		unit[i].disk->queue = blk_init_queue(do_fd_request,
+						     &ataflop_lock);
+		if (!unit[i].disk->queue)
+			goto Enomem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (UseTrackbuffer < 0)
@@ -1952,7 +1994,11 @@ static int __init atari_floppy_init (void)
 		goto Enomem;
 	}
 	TrackBuffer = DMABuffer + 512;
+<<<<<<< HEAD
 	PhysDMABuffer = virt_to_phys(DMABuffer);
+=======
+	PhysDMABuffer = atari_stram_to_phys(DMABuffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PhysTrackBuffer = virt_to_phys(TrackBuffer);
 	BufferDrive = BufferSide = BufferTrack = -1;
 
@@ -1964,10 +2010,13 @@ static int __init atari_floppy_init (void)
 		sprintf(unit[i].disk->disk_name, "fd%d", i);
 		unit[i].disk->fops = &floppy_fops;
 		unit[i].disk->private_data = &unit[i];
+<<<<<<< HEAD
 		unit[i].disk->queue = blk_init_queue(do_fd_request,
 					&ataflop_lock);
 		if (!unit[i].disk->queue)
 			goto Enomem;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_capacity(unit[i].disk, MAX_DISK_SIZE * 2);
 		add_disk(unit[i].disk);
 	}
@@ -1982,6 +2031,7 @@ static int __init atari_floppy_init (void)
 
 	return 0;
 Enomem:
+<<<<<<< HEAD
 	while (i--) {
 		struct request_queue *q = unit[i].disk->queue;
 
@@ -1989,6 +2039,19 @@ Enomem:
 		if (q)
 			blk_cleanup_queue(q);
 	}
+=======
+	do {
+		struct gendisk *disk = unit[i].disk;
+
+		if (disk) {
+			if (disk->queue) {
+				blk_cleanup_queue(disk->queue);
+				disk->queue = NULL;
+			}
+			put_disk(unit[i].disk);
+		}
+	} while (i--);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unregister_blkdev(FLOPPY_MAJOR, "fd");
 	return -ENOMEM;

@@ -566,11 +566,19 @@ static int ld9040_power_on(struct ld9040 *lcd)
 	if (!pd->reset) {
 		dev_err(lcd->dev, "reset is NULL.\n");
 		return -EINVAL;
+<<<<<<< HEAD
 	} else {
 		pd->reset(lcd->ld);
 		msleep(pd->reset_delay);
 	}
 
+=======
+	}
+
+	pd->reset(lcd->ld);
+	msleep(pd->reset_delay);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = ld9040_ldi_init(lcd);
 	if (ret) {
 		dev_err(lcd->dev, "failed to initialize ldi.\n");
@@ -642,11 +650,14 @@ static int ld9040_get_power(struct lcd_device *ld)
 	return lcd->power;
 }
 
+<<<<<<< HEAD
 static int ld9040_get_brightness(struct backlight_device *bd)
 {
 	return bd->props.brightness;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ld9040_set_brightness(struct backlight_device *bd)
 {
 	int ret = 0, brightness = bd->props.brightness;
@@ -674,7 +685,10 @@ static struct lcd_ops ld9040_lcd_ops = {
 };
 
 static const struct backlight_ops ld9040_backlight_ops  = {
+<<<<<<< HEAD
 	.get_brightness = ld9040_get_brightness,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.update_status = ld9040_set_brightness,
 };
 
@@ -702,7 +716,11 @@ static int ld9040_probe(struct spi_device *spi)
 	lcd->spi = spi;
 	lcd->dev = &spi->dev;
 
+<<<<<<< HEAD
 	lcd->lcd_pd = spi->dev.platform_data;
+=======
+	lcd->lcd_pd = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!lcd->lcd_pd) {
 		dev_err(&spi->dev, "platform data is NULL.\n");
 		return -EINVAL;
@@ -716,7 +734,12 @@ static int ld9040_probe(struct spi_device *spi)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ld = lcd_device_register("ld9040", &spi->dev, lcd, &ld9040_lcd_ops);
+=======
+	ld = devm_lcd_device_register(&spi->dev, "ld9040", &spi->dev, lcd,
+					&ld9040_lcd_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(ld))
 		return PTR_ERR(ld);
 
@@ -726,12 +749,19 @@ static int ld9040_probe(struct spi_device *spi)
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = MAX_BRIGHTNESS;
 
+<<<<<<< HEAD
 	bd = backlight_device_register("ld9040-bl", &spi->dev,
 		lcd, &ld9040_backlight_ops, &props);
 	if (IS_ERR(bd)) {
 		ret = PTR_ERR(bd);
 		goto out_unregister_lcd;
 	}
+=======
+	bd = devm_backlight_device_register(&spi->dev, "ld9040-bl", &spi->dev,
+					lcd, &ld9040_backlight_ops, &props);
+	if (IS_ERR(bd))
+		return PTR_ERR(bd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bd->props.brightness = MAX_BRIGHTNESS;
 	lcd->bd = bd;
@@ -757,11 +787,14 @@ static int ld9040_probe(struct spi_device *spi)
 
 	dev_info(&spi->dev, "ld9040 panel driver has been probed.\n");
 	return 0;
+<<<<<<< HEAD
 
 out_unregister_lcd:
 	lcd_device_unregister(lcd->ld);
 
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ld9040_remove(struct spi_device *spi)
@@ -769,9 +802,12 @@ static int ld9040_remove(struct spi_device *spi)
 	struct ld9040 *lcd = spi_get_drvdata(spi);
 
 	ld9040_power(lcd, FB_BLANK_POWERDOWN);
+<<<<<<< HEAD
 	backlight_device_unregister(lcd->bd);
 	lcd_device_unregister(lcd->ld);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -812,7 +848,10 @@ static void ld9040_shutdown(struct spi_device *spi)
 static struct spi_driver ld9040_driver = {
 	.driver = {
 		.name	= "ld9040",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &ld9040_pm_ops,
 	},
 	.probe		= ld9040_probe,

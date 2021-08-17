@@ -95,7 +95,11 @@ static char *test_format_dir_get(void)
 		struct test_format *format = &test_formats[i];
 		FILE *file;
 
+<<<<<<< HEAD
 		snprintf(name, PATH_MAX, "%s/%s", dir, format->name);
+=======
+		scnprintf(name, PATH_MAX, "%s/%s", dir, format->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		file = fopen(name, "w");
 		if (!file)
@@ -133,7 +137,11 @@ static struct list_head *test_terms_list(void)
 	return &terms;
 }
 
+<<<<<<< HEAD
 int test__pmu(void)
+=======
+int test__pmu(int subtest __maybe_unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *format = test_format_dir_get();
 	LIST_HEAD(formats);
@@ -152,7 +160,12 @@ int test__pmu(void)
 		if (ret)
 			break;
 
+<<<<<<< HEAD
 		ret = perf_pmu__config_terms(&formats, &attr, terms);
+=======
+		ret = perf_pmu__config_terms(&formats, &attr, terms,
+					     false, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			break;
 
@@ -168,6 +181,10 @@ int test__pmu(void)
 		ret = 0;
 	} while (0);
 
+<<<<<<< HEAD
+=======
+	perf_pmu__del_formats(&formats);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	test_format_dir_put(format);
 	return ret;
 }

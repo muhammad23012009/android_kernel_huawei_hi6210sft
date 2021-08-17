@@ -106,7 +106,11 @@ void ar9003_hw_rtt_load_hist(struct ath_hw *ah)
 	int chain, i;
 
 	for (chain = 0; chain < AR9300_MAX_CHAINS; chain++) {
+<<<<<<< HEAD
 		if (!(ah->rxchainmask & (1 << chain)))
+=======
+		if (!(ah->caps.rx_chainmask & (1 << chain)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		for (i = 0; i < MAX_RTT_TABLE_ENTRY; i++) {
 			ar9003_hw_rtt_load_hist_entry(ah, chain, i,
@@ -118,6 +122,30 @@ void ar9003_hw_rtt_load_hist(struct ath_hw *ah)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void ar9003_hw_patch_rtt(struct ath_hw *ah, int index, int chain)
+{
+	int agc, caldac;
+
+	if (!test_bit(SW_PKDET_DONE, &ah->caldata->cal_flags))
+		return;
+
+	if ((index != 5) || (chain >= 2))
+		return;
+
+	agc = REG_READ_FIELD(ah, AR_PHY_65NM_RXRF_AGC(chain),
+			     AR_PHY_65NM_RXRF_AGC_AGC_OVERRIDE);
+	if (!agc)
+		return;
+
+	caldac = ah->caldata->caldac[chain];
+	ah->caldata->rtt_table[chain][index] &= 0xFFFF05FF;
+	caldac = (caldac & 0x20) | ((caldac & 0x1F) << 7);
+	ah->caldata->rtt_table[chain][index] |= (caldac << 4);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ar9003_hw_rtt_fill_hist_entry(struct ath_hw *ah, u8 chain, u32 index)
 {
 	u32 val;
@@ -150,18 +178,32 @@ void ar9003_hw_rtt_fill_hist(struct ath_hw *ah)
 	int chain, i;
 
 	for (chain = 0; chain < AR9300_MAX_CHAINS; chain++) {
+<<<<<<< HEAD
 		if (!(ah->rxchainmask & (1 << chain)))
+=======
+		if (!(ah->caps.rx_chainmask & (1 << chain)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		for (i = 0; i < MAX_RTT_TABLE_ENTRY; i++) {
 			ah->caldata->rtt_table[chain][i] =
 				ar9003_hw_rtt_fill_hist_entry(ah, chain, i);
+<<<<<<< HEAD
+=======
+
+			ar9003_hw_patch_rtt(ah, i, chain);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ath_dbg(ath9k_hw_common(ah), CALIBRATE,
 				"RTT value at idx %d, chain %d is: 0x%x\n",
 				i, chain, ah->caldata->rtt_table[chain][i]);
 		}
 	}
 
+<<<<<<< HEAD
 	ah->caldata->rtt_done = true;
+=======
+	set_bit(RTT_DONE, &ah->caldata->cal_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void ar9003_hw_rtt_clear_hist(struct ath_hw *ah)
@@ -169,14 +211,22 @@ void ar9003_hw_rtt_clear_hist(struct ath_hw *ah)
 	int chain, i;
 
 	for (chain = 0; chain < AR9300_MAX_CHAINS; chain++) {
+<<<<<<< HEAD
 		if (!(ah->rxchainmask & (1 << chain)))
+=======
+		if (!(ah->caps.rx_chainmask & (1 << chain)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		for (i = 0; i < MAX_RTT_TABLE_ENTRY; i++)
 			ar9003_hw_rtt_load_hist_entry(ah, chain, i, 0);
 	}
 
 	if (ah->caldata)
+<<<<<<< HEAD
 		ah->caldata->rtt_done = false;
+=======
+		clear_bit(RTT_DONE, &ah->caldata->cal_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 bool ar9003_hw_rtt_restore(struct ath_hw *ah, struct ath9k_channel *chan)
@@ -186,11 +236,45 @@ bool ar9003_hw_rtt_restore(struct ath_hw *ah, struct ath9k_channel *chan)
 	if (!ah->caldata)
 		return false;
 
+<<<<<<< HEAD
 	if (!ah->caldata->rtt_done)
 		return false;
 
 	ar9003_hw_rtt_enable(ah);
 	ar9003_hw_rtt_set_mask(ah, 0x10);
+=======
+	if (test_bit(SW_PKDET_DONE, &ah->caldata->cal_flags)) {
+		if (IS_CHAN_2GHZ(chan)){
+			REG_RMW_FIELD(ah, AR_PHY_65NM_RXRF_AGC(0),
+				      AR_PHY_65NM_RXRF_AGC_AGC2G_CALDAC_OVR,
+				      ah->caldata->caldac[0]);
+			REG_RMW_FIELD(ah, AR_PHY_65NM_RXRF_AGC(1),
+				      AR_PHY_65NM_RXRF_AGC_AGC2G_CALDAC_OVR,
+				      ah->caldata->caldac[1]);
+		} else {
+			REG_RMW_FIELD(ah, AR_PHY_65NM_RXRF_AGC(0),
+				      AR_PHY_65NM_RXRF_AGC_AGC5G_CALDAC_OVR,
+				      ah->caldata->caldac[0]);
+			REG_RMW_FIELD(ah, AR_PHY_65NM_RXRF_AGC(1),
+				      AR_PHY_65NM_RXRF_AGC_AGC5G_CALDAC_OVR,
+				      ah->caldata->caldac[1]);
+		}
+		REG_RMW_FIELD(ah, AR_PHY_65NM_RXRF_AGC(1),
+			      AR_PHY_65NM_RXRF_AGC_AGC_OVERRIDE, 0x1);
+		REG_RMW_FIELD(ah, AR_PHY_65NM_RXRF_AGC(0),
+			      AR_PHY_65NM_RXRF_AGC_AGC_OVERRIDE, 0x1);
+	}
+
+	if (!test_bit(RTT_DONE, &ah->caldata->cal_flags))
+		return false;
+
+	ar9003_hw_rtt_enable(ah);
+
+	if (test_bit(SW_PKDET_DONE, &ah->caldata->cal_flags))
+		ar9003_hw_rtt_set_mask(ah, 0x30);
+	else
+		ar9003_hw_rtt_set_mask(ah, 0x10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ath9k_hw_rfbus_req(ah)) {
 		ath_err(ath9k_hw_common(ah), "Could not stop baseband\n");

@@ -9,7 +9,11 @@
 
 #define NFSDBG_FACILITY		NFSDBG_CLIENT
 
+<<<<<<< HEAD
 int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh)
+=======
+int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh, bool auth_probe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct nfs_fsinfo fsinfo;
 	int ret = -ENOMEM;
@@ -21,7 +25,11 @@ int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh)
 		goto out;
 
 	/* Start by getting the root filehandle from the server */
+<<<<<<< HEAD
 	ret = nfs4_proc_get_rootfh(server, mntfh, &fsinfo);
+=======
+	ret = nfs4_proc_get_rootfh(server, mntfh, &fsinfo, auth_probe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		dprintk("nfs4_get_rootfh: getroot error = %d\n", -ret);
 		goto out;
@@ -35,6 +43,7 @@ int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (fsinfo.fattr->valid & NFS_ATTR_FATTR_V4_REFERRAL) {
 		printk(KERN_ERR "nfs4_get_rootfh:"
 		       " getroot obtained referral\n");
@@ -42,6 +51,8 @@ int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh)
 		goto out;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(&server->fsid, &fsinfo.fattr->fsid, sizeof(server->fsid));
 out:
 	nfs_free_fattr(fsinfo.fattr);

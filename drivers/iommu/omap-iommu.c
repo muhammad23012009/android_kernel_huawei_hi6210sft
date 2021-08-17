@@ -12,7 +12,10 @@
  */
 
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
@@ -23,6 +26,15 @@
 #include <linux/spinlock.h>
 #include <linux/io.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_iommu.h>
+#include <linux/of_irq.h>
+#include <linux/of_platform.h>
+#include <linux/regmap.h>
+#include <linux/mfd/syscon.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/cacheflush.h>
 
@@ -31,10 +43,15 @@
 #include "omap-iopgtable.h"
 #include "omap-iommu.h"
 
+<<<<<<< HEAD
 #define for_each_iotlb_cr(obj, n, __i, cr)				\
 	for (__i = 0;							\
 	     (__i < (n)) && (cr = __iotlb_read_cr((obj), __i), true);	\
 	     __i++)
+=======
+#define to_iommu(dev)							\
+	((struct omap_iommu *)platform_get_drvdata(to_platform_device(dev)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* bitmap of the page sizes currently supported */
 #define OMAP_IOMMU_PGSIZES	(SZ_4K | SZ_64K | SZ_1M | SZ_16M)
@@ -52,6 +69,10 @@ struct omap_iommu_domain {
 	struct omap_iommu *iommu_dev;
 	struct device *dev;
 	spinlock_t lock;
+<<<<<<< HEAD
+=======
+	struct iommu_domain domain;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define MMU_LOCK_BASE_SHIFT	10
@@ -64,6 +85,7 @@ struct omap_iommu_domain {
 #define MMU_LOCK_VICT(x)	\
 	((x & MMU_LOCK_VICT_MASK) >> MMU_LOCK_VICT_SHIFT)
 
+<<<<<<< HEAD
 struct iotlb_lock {
 	short base;
 	short vict;
@@ -72,10 +94,13 @@ struct iotlb_lock {
 /* accommodate the difference between omap1 and omap2/3 */
 static const struct iommu_functions *arch_iommu;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver omap_iommu_driver;
 static struct kmem_cache *iopte_cachep;
 
 /**
+<<<<<<< HEAD
  * omap_install_iommu_arch - Install archtecure specific iommu functions
  * @ops:	a pointer to architecture specific iommu functions
  *
@@ -106,6 +131,15 @@ void omap_uninstall_iommu_arch(const struct iommu_functions *ops)
 	arch_iommu = NULL;
 }
 EXPORT_SYMBOL_GPL(omap_uninstall_iommu_arch);
+=======
+ * to_omap_domain - Get struct omap_iommu_domain from generic iommu_domain
+ * @dom:	generic iommu domain handle
+ **/
+static struct omap_iommu_domain *to_omap_domain(struct iommu_domain *dom)
+{
+	return container_of(dom, struct omap_iommu_domain, domain);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * omap_iommu_save_ctx - Save registers for pm off-mode support
@@ -114,8 +148,18 @@ EXPORT_SYMBOL_GPL(omap_uninstall_iommu_arch);
 void omap_iommu_save_ctx(struct device *dev)
 {
 	struct omap_iommu *obj = dev_to_omap_iommu(dev);
+<<<<<<< HEAD
 
 	arch_iommu->save_ctx(obj);
+=======
+	u32 *p = obj->ctx;
+	int i;
+
+	for (i = 0; i < (MMU_REG_SIZE / sizeof(u32)); i++) {
+		p[i] = iommu_read_reg(obj, i * sizeof(u32));
+		dev_dbg(obj->dev, "%s\t[%02d] %08x\n", __func__, i, p[i]);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(omap_iommu_save_ctx);
 
@@ -126,6 +170,7 @@ EXPORT_SYMBOL_GPL(omap_iommu_save_ctx);
 void omap_iommu_restore_ctx(struct device *dev)
 {
 	struct omap_iommu *obj = dev_to_omap_iommu(dev);
+<<<<<<< HEAD
 
 	arch_iommu->restore_ctx(obj);
 }
@@ -153,6 +198,93 @@ static int iommu_enable(struct omap_iommu *obj)
 		return -ENODEV;
 
 	if (pdata->deassert_reset) {
+=======
+	u32 *p = obj->ctx;
+	int i;
+
+	for (i = 0; i < (MMU_REG_SIZE / sizeof(u32)); i++) {
+		iommu_write_reg(obj, p[i], i * sizeof(u32));
+		dev_dbg(obj->dev, "%s\t[%02d] %08x\n", __func__, i, p[i]);
+	}
+}
+EXPORT_SYMBOL_GPL(omap_iommu_restore_ctx);
+
+static void dra7_cfg_dspsys_mmu(struct omap_iommu *obj, bool enable)
+{
+	u32 val, mask;
+
+	if (!obj->syscfg)
+		return;
+
+	mask = (1 << (obj->id * DSP_SYS_MMU_CONFIG_EN_SHIFT));
+	val = enable ? mask : 0;
+	regmap_update_bits(obj->syscfg, DSP_SYS_MMU_CONFIG, mask, val);
+}
+
+static void __iommu_set_twl(struct omap_iommu *obj, bool on)
+{
+	u32 l = iommu_read_reg(obj, MMU_CNTL);
+
+	if (on)
+		iommu_write_reg(obj, MMU_IRQ_TWL_MASK, MMU_IRQENABLE);
+	else
+		iommu_write_reg(obj, MMU_IRQ_TLB_MISS_MASK, MMU_IRQENABLE);
+
+	l &= ~MMU_CNTL_MASK;
+	if (on)
+		l |= (MMU_CNTL_MMU_EN | MMU_CNTL_TWL_EN);
+	else
+		l |= (MMU_CNTL_MMU_EN);
+
+	iommu_write_reg(obj, l, MMU_CNTL);
+}
+
+static int omap2_iommu_enable(struct omap_iommu *obj)
+{
+	u32 l, pa;
+
+	if (!obj->iopgd || !IS_ALIGNED((u32)obj->iopgd,  SZ_16K))
+		return -EINVAL;
+
+	pa = virt_to_phys(obj->iopgd);
+	if (!IS_ALIGNED(pa, SZ_16K))
+		return -EINVAL;
+
+	l = iommu_read_reg(obj, MMU_REVISION);
+	dev_info(obj->dev, "%s: version %d.%d\n", obj->name,
+		 (l >> 4) & 0xf, l & 0xf);
+
+	iommu_write_reg(obj, pa, MMU_TTB);
+
+	dra7_cfg_dspsys_mmu(obj, true);
+
+	if (obj->has_bus_err_back)
+		iommu_write_reg(obj, MMU_GP_REG_BUS_ERR_BACK_EN, MMU_GP_REG);
+
+	__iommu_set_twl(obj, true);
+
+	return 0;
+}
+
+static void omap2_iommu_disable(struct omap_iommu *obj)
+{
+	u32 l = iommu_read_reg(obj, MMU_CNTL);
+
+	l &= ~MMU_CNTL_MASK;
+	iommu_write_reg(obj, l, MMU_CNTL);
+	dra7_cfg_dspsys_mmu(obj, false);
+
+	dev_dbg(obj->dev, "%s is shutting down\n", obj->name);
+}
+
+static int iommu_enable(struct omap_iommu *obj)
+{
+	int err;
+	struct platform_device *pdev = to_platform_device(obj->dev);
+	struct iommu_platform_data *pdata = dev_get_platdata(&pdev->dev);
+
+	if (pdata && pdata->deassert_reset) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = pdata->deassert_reset(pdev, pdata->reset_name);
 		if (err) {
 			dev_err(obj->dev, "deassert_reset failed: %d\n", err);
@@ -162,7 +294,11 @@ static int iommu_enable(struct omap_iommu *obj)
 
 	pm_runtime_get_sync(obj->dev);
 
+<<<<<<< HEAD
 	err = arch_iommu->enable(obj);
+=======
+	err = omap2_iommu_enable(obj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -170,6 +306,7 @@ static int iommu_enable(struct omap_iommu *obj)
 static void iommu_disable(struct omap_iommu *obj)
 {
 	struct platform_device *pdev = to_platform_device(obj->dev);
+<<<<<<< HEAD
 	struct iommu_platform_data *pdata = pdev->dev.platform_data;
 
 	if (!pdata)
@@ -180,12 +317,22 @@ static void iommu_disable(struct omap_iommu *obj)
 	pm_runtime_put_sync(obj->dev);
 
 	if (pdata->assert_reset)
+=======
+	struct iommu_platform_data *pdata = dev_get_platdata(&pdev->dev);
+
+	omap2_iommu_disable(obj);
+
+	pm_runtime_put_sync(obj->dev);
+
+	if (pdata && pdata->assert_reset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pdata->assert_reset(pdev, pdata->reset_name);
 }
 
 /*
  *	TLB operations
  */
+<<<<<<< HEAD
 void omap_iotlb_cr_to_e(struct cr_regs *cr, struct iotlb_entry *e)
 {
 	BUG_ON(!cr || !e);
@@ -227,6 +374,48 @@ static u32 iommu_report_fault(struct omap_iommu *obj, u32 *da)
 }
 
 static void iotlb_lock_get(struct omap_iommu *obj, struct iotlb_lock *l)
+=======
+static u32 iotlb_cr_to_virt(struct cr_regs *cr)
+{
+	u32 page_size = cr->cam & MMU_CAM_PGSZ_MASK;
+	u32 mask = get_cam_va_mask(cr->cam & page_size);
+
+	return cr->cam & mask;
+}
+
+static u32 get_iopte_attr(struct iotlb_entry *e)
+{
+	u32 attr;
+
+	attr = e->mixed << 5;
+	attr |= e->endian;
+	attr |= e->elsz >> 3;
+	attr <<= (((e->pgsz == MMU_CAM_PGSZ_4K) ||
+			(e->pgsz == MMU_CAM_PGSZ_64K)) ? 0 : 6);
+	return attr;
+}
+
+static u32 iommu_report_fault(struct omap_iommu *obj, u32 *da)
+{
+	u32 status, fault_addr;
+
+	status = iommu_read_reg(obj, MMU_IRQSTATUS);
+	status &= MMU_IRQ_MASK;
+	if (!status) {
+		*da = 0;
+		return 0;
+	}
+
+	fault_addr = iommu_read_reg(obj, MMU_FAULT_AD);
+	*da = fault_addr;
+
+	iommu_write_reg(obj, status, MMU_IRQSTATUS);
+
+	return status;
+}
+
+void iotlb_lock_get(struct omap_iommu *obj, struct iotlb_lock *l)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 val;
 
@@ -234,10 +423,16 @@ static void iotlb_lock_get(struct omap_iommu *obj, struct iotlb_lock *l)
 
 	l->base = MMU_LOCK_BASE(val);
 	l->vict = MMU_LOCK_VICT(val);
+<<<<<<< HEAD
 
 }
 
 static void iotlb_lock_set(struct omap_iommu *obj, struct iotlb_lock *l)
+=======
+}
+
+void iotlb_lock_set(struct omap_iommu *obj, struct iotlb_lock *l)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 val;
 
@@ -249,17 +444,28 @@ static void iotlb_lock_set(struct omap_iommu *obj, struct iotlb_lock *l)
 
 static void iotlb_read_cr(struct omap_iommu *obj, struct cr_regs *cr)
 {
+<<<<<<< HEAD
 	arch_iommu->tlb_read_cr(obj, cr);
+=======
+	cr->cam = iommu_read_reg(obj, MMU_READ_CAM);
+	cr->ram = iommu_read_reg(obj, MMU_READ_RAM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void iotlb_load_cr(struct omap_iommu *obj, struct cr_regs *cr)
 {
+<<<<<<< HEAD
 	arch_iommu->tlb_load_cr(obj, cr);
+=======
+	iommu_write_reg(obj, cr->cam | MMU_CAM_V, MMU_CAM);
+	iommu_write_reg(obj, cr->ram, MMU_RAM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iommu_write_reg(obj, 1, MMU_FLUSH_ENTRY);
 	iommu_write_reg(obj, 1, MMU_LD_TLB);
 }
 
+<<<<<<< HEAD
 /**
  * iotlb_dump_cr - Dump an iommu tlb entry into buf
  * @obj:	target iommu
@@ -276,6 +482,10 @@ static inline ssize_t iotlb_dump_cr(struct omap_iommu *obj, struct cr_regs *cr,
 
 /* only used in iotlb iteration for-loop */
 static struct cr_regs __iotlb_read_cr(struct omap_iommu *obj, int n)
+=======
+/* only used in iotlb iteration for-loop */
+struct cr_regs __iotlb_read_cr(struct omap_iommu *obj, int n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cr_regs cr;
 	struct iotlb_lock l;
@@ -288,12 +498,43 @@ static struct cr_regs __iotlb_read_cr(struct omap_iommu *obj, int n)
 	return cr;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef PREFETCH_IOTLB
+static struct cr_regs *iotlb_alloc_cr(struct omap_iommu *obj,
+				      struct iotlb_entry *e)
+{
+	struct cr_regs *cr;
+
+	if (!e)
+		return NULL;
+
+	if (e->da & ~(get_cam_va_mask(e->pgsz))) {
+		dev_err(obj->dev, "%s:\twrong alignment: %08x\n", __func__,
+			e->da);
+		return ERR_PTR(-EINVAL);
+	}
+
+	cr = kmalloc(sizeof(*cr), GFP_KERNEL);
+	if (!cr)
+		return ERR_PTR(-ENOMEM);
+
+	cr->cam = (e->da & MMU_CAM_VATAG_MASK) | e->prsvd | e->pgsz | e->valid;
+	cr->ram = e->pa | e->endian | e->elsz | e->mixed;
+
+	return cr;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * load_iotlb_entry - Set an iommu tlb entry
  * @obj:	target iommu
  * @e:		an iommu tlb entry info
  **/
+<<<<<<< HEAD
 #ifdef PREFETCH_IOTLB
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int load_iotlb_entry(struct omap_iommu *obj, struct iotlb_entry *e)
 {
 	int err = 0;
@@ -394,6 +635,10 @@ static void flush_iotlb_page(struct omap_iommu *obj, u32 da)
 				__func__, start, da, bytes);
 			iotlb_load_cr(obj, &cr);
 			iommu_write_reg(obj, 1, MMU_FLUSH_ENTRY);
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	pm_runtime_put_sync(obj->dev);
@@ -421,6 +666,7 @@ static void flush_iotlb_all(struct omap_iommu *obj)
 	pm_runtime_put_sync(obj->dev);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_OMAP_IOMMU_DEBUG) || defined(CONFIG_OMAP_IOMMU_DEBUG_MODULE)
 
 ssize_t omap_iommu_dump_ctx(struct omap_iommu *obj, char *buf, ssize_t bytes)
@@ -497,6 +743,8 @@ EXPORT_SYMBOL_GPL(omap_foreach_iommu_device);
 
 #endif /* CONFIG_OMAP_IOMMU_DEBUG_MODULE */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	H/W pagetable operations
  */
@@ -523,7 +771,12 @@ static void flush_iopte_range(u32 *first, u32 *last)
 static void iopte_free(u32 *iopte)
 {
 	/* Note: freed iopte's must be clean ready for re-use */
+<<<<<<< HEAD
 	kmem_cache_free(iopte_cachep, iopte);
+=======
+	if (iopte)
+		kmem_cache_free(iopte_cachep, iopte);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd, u32 da)
@@ -659,10 +912,19 @@ iopgtable_store_entry_core(struct omap_iommu *obj, struct iotlb_entry *e)
 		break;
 	default:
 		fn = NULL;
+<<<<<<< HEAD
 		BUG();
 		break;
 	}
 
+=======
+		break;
+	}
+
+	if (WARN_ON(!fn))
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prot = get_iopte_attr(e);
 
 	spin_lock(&obj->page_table_lock);
@@ -677,7 +939,12 @@ iopgtable_store_entry_core(struct omap_iommu *obj, struct iotlb_entry *e)
  * @obj:	target iommu
  * @e:		an iommu tlb entry info
  **/
+<<<<<<< HEAD
 int omap_iopgtable_store_entry(struct omap_iommu *obj, struct iotlb_entry *e)
+=======
+static int
+omap_iopgtable_store_entry(struct omap_iommu *obj, struct iotlb_entry *e)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 
@@ -687,7 +954,10 @@ int omap_iopgtable_store_entry(struct omap_iommu *obj, struct iotlb_entry *e)
 		prefetch_iotlb_entry(obj, e);
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(omap_iopgtable_store_entry);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * iopgtable_lookup_entry - Lookup an iommu pte entry
@@ -816,8 +1086,14 @@ static irqreturn_t iommu_fault_handler(int irq, void *data)
 	u32 *iopgd, *iopte;
 	struct omap_iommu *obj = data;
 	struct iommu_domain *domain = obj->domain;
+<<<<<<< HEAD
 
 	if (!obj->refcount)
+=======
+	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+
+	if (!omap_domain->iommu_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return IRQ_NONE;
 
 	errs = iommu_report_fault(obj, &da);
@@ -833,16 +1109,26 @@ static irqreturn_t iommu_fault_handler(int irq, void *data)
 	iopgd = iopgd_offset(obj, da);
 
 	if (!iopgd_is_table(*iopgd)) {
+<<<<<<< HEAD
 		dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p "
 			"*pgd:px%08x\n", obj->name, errs, da, iopgd, *iopgd);
+=======
+		dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p *pgd:px%08x\n",
+			obj->name, errs, da, iopgd, *iopgd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return IRQ_NONE;
 	}
 
 	iopte = iopte_offset(iopgd, da);
 
+<<<<<<< HEAD
 	dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p *pgd:0x%08x "
 		"pte:0x%p *pte:0x%08x\n", obj->name, errs, da, iopgd, *iopgd,
 		iopte, *iopte);
+=======
+	dev_err(obj->dev, "%s: errs:0x%08x da:0x%08x pgd:0x%p *pgd:0x%08x pte:0x%p *pte:0x%08x\n",
+		obj->name, errs, da, iopgd, *iopgd, iopte, *iopte);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_NONE;
 }
@@ -864,6 +1150,7 @@ static int device_match_by_alias(struct device *dev, void *data)
  **/
 static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
 {
+<<<<<<< HEAD
 	int err = -ENOMEM;
 	struct device *dev;
 	struct omap_iommu *obj;
@@ -873,11 +1160,22 @@ static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
 				device_match_by_alias);
 	if (!dev)
 		return NULL;
+=======
+	int err;
+	struct device *dev;
+	struct omap_iommu *obj;
+
+	dev = driver_find_device(&omap_iommu_driver.driver, NULL, (void *)name,
+				 device_match_by_alias);
+	if (!dev)
+		return ERR_PTR(-ENODEV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	obj = to_iommu(dev);
 
 	spin_lock(&obj->iommu_lock);
 
+<<<<<<< HEAD
 	/* an iommu device can only be attached once */
 	if (++obj->refcount > 1) {
 		dev_err(dev, "%s: already attached!\n", obj->name);
@@ -885,25 +1183,34 @@ static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
 		goto err_enable;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	obj->iopgd = iopgd;
 	err = iommu_enable(obj);
 	if (err)
 		goto err_enable;
 	flush_iotlb_all(obj);
 
+<<<<<<< HEAD
 	if (!try_module_get(obj->owner))
 		goto err_module;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&obj->iommu_lock);
 
 	dev_dbg(obj->dev, "%s: %s\n", __func__, obj->name);
 	return obj;
 
+<<<<<<< HEAD
 err_module:
 	if (obj->refcount == 1)
 		iommu_disable(obj);
 err_enable:
 	obj->refcount--;
+=======
+err_enable:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&obj->iommu_lock);
 	return ERR_PTR(err);
 }
@@ -919,11 +1226,15 @@ static void omap_iommu_detach(struct omap_iommu *obj)
 
 	spin_lock(&obj->iommu_lock);
 
+<<<<<<< HEAD
 	if (--obj->refcount == 0)
 		iommu_disable(obj);
 
 	module_put(obj->owner);
 
+=======
+	iommu_disable(obj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	obj->iopgd = NULL;
 
 	spin_unlock(&obj->iommu_lock);
@@ -931,6 +1242,45 @@ static void omap_iommu_detach(struct omap_iommu *obj)
 	dev_dbg(obj->dev, "%s: %s\n", __func__, obj->name);
 }
 
+<<<<<<< HEAD
+=======
+static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
+					      struct omap_iommu *obj)
+{
+	struct device_node *np = pdev->dev.of_node;
+	int ret;
+
+	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
+		return 0;
+
+	if (!of_property_read_bool(np, "ti,syscon-mmuconfig")) {
+		dev_err(&pdev->dev, "ti,syscon-mmuconfig property is missing\n");
+		return -EINVAL;
+	}
+
+	obj->syscfg =
+		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
+	if (IS_ERR(obj->syscfg)) {
+		/* can fail with -EPROBE_DEFER */
+		ret = PTR_ERR(obj->syscfg);
+		return ret;
+	}
+
+	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
+				       &obj->id)) {
+		dev_err(&pdev->dev, "couldn't get the IOMMU instance id within subsystem\n");
+		return -EINVAL;
+	}
+
+	if (obj->id != 0 && obj->id != 1) {
+		dev_err(&pdev->dev, "invalid IOMMU instance id\n");
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	OMAP Device MMU(IOMMU) detection
  */
@@ -940,6 +1290,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
 	int irq;
 	struct omap_iommu *obj;
 	struct resource *res;
+<<<<<<< HEAD
 	struct iommu_platform_data *pdata = pdev->dev.platform_data;
 
 	obj = kzalloc(sizeof(*obj) + MMU_REG_SIZE, GFP_KERNEL);
@@ -986,11 +1337,60 @@ static int omap_iommu_probe(struct platform_device *pdev)
 			  dev_name(&pdev->dev), obj);
 	if (err < 0)
 		goto err_irq;
+=======
+	struct iommu_platform_data *pdata = dev_get_platdata(&pdev->dev);
+	struct device_node *of = pdev->dev.of_node;
+
+	obj = devm_kzalloc(&pdev->dev, sizeof(*obj) + MMU_REG_SIZE, GFP_KERNEL);
+	if (!obj)
+		return -ENOMEM;
+
+	if (of) {
+		obj->name = dev_name(&pdev->dev);
+		obj->nr_tlb_entries = 32;
+		err = of_property_read_u32(of, "ti,#tlb-entries",
+					   &obj->nr_tlb_entries);
+		if (err && err != -EINVAL)
+			return err;
+		if (obj->nr_tlb_entries != 32 && obj->nr_tlb_entries != 8)
+			return -EINVAL;
+		if (of_find_property(of, "ti,iommu-bus-err-back", NULL))
+			obj->has_bus_err_back = MMU_GP_REG_BUS_ERR_BACK_EN;
+	} else {
+		obj->nr_tlb_entries = pdata->nr_tlb_entries;
+		obj->name = pdata->name;
+	}
+
+	obj->dev = &pdev->dev;
+	obj->ctx = (void *)obj + sizeof(*obj);
+
+	spin_lock_init(&obj->iommu_lock);
+	spin_lock_init(&obj->page_table_lock);
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	obj->regbase = devm_ioremap_resource(obj->dev, res);
+	if (IS_ERR(obj->regbase))
+		return PTR_ERR(obj->regbase);
+
+	err = omap_iommu_dra7_get_dsp_system_cfg(pdev, obj);
+	if (err)
+		return err;
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return -ENODEV;
+
+	err = devm_request_irq(obj->dev, irq, iommu_fault_handler, IRQF_SHARED,
+			       dev_name(obj->dev), obj);
+	if (err < 0)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_set_drvdata(pdev, obj);
 
 	pm_runtime_irq_safe(obj->dev);
 	pm_runtime_enable(obj->dev);
 
+<<<<<<< HEAD
 	dev_info(&pdev->dev, "%s registered\n", obj->name);
 	return 0;
 
@@ -1001,10 +1401,17 @@ err_ioremap:
 err_mem:
 	kfree(obj);
 	return err;
+=======
+	omap_iommu_debugfs_add(obj);
+
+	dev_info(&pdev->dev, "%s registered\n", obj->name);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int omap_iommu_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int irq;
 	struct resource *res;
 	struct omap_iommu *obj = platform_get_drvdata(pdev);
@@ -1018,19 +1425,42 @@ static int omap_iommu_remove(struct platform_device *pdev)
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	release_mem_region(res->start, resource_size(res));
 	iounmap(obj->regbase);
+=======
+	struct omap_iommu *obj = platform_get_drvdata(pdev);
+
+	omap_iommu_debugfs_remove(obj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pm_runtime_disable(obj->dev);
 
 	dev_info(&pdev->dev, "%s removed\n", obj->name);
+<<<<<<< HEAD
 	kfree(obj);
 	return 0;
 }
 
+=======
+	return 0;
+}
+
+static const struct of_device_id omap_iommu_of_match[] = {
+	{ .compatible = "ti,omap2-iommu" },
+	{ .compatible = "ti,omap4-iommu" },
+	{ .compatible = "ti,dra7-iommu"	},
+	{ .compatible = "ti,dra7-dsp-iommu" },
+	{},
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver omap_iommu_driver = {
 	.probe	= omap_iommu_probe,
 	.remove	= omap_iommu_remove,
 	.driver	= {
 		.name	= "omap-iommu",
+<<<<<<< HEAD
+=======
+		.of_match_table = of_match_ptr(omap_iommu_of_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -1039,45 +1469,74 @@ static void iopte_cachep_ctor(void *iopte)
 	clean_dcache_area(iopte, IOPTE_TABLE_SIZE);
 }
 
+<<<<<<< HEAD
 static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa,
 				   u32 flags)
+=======
+static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa, int pgsz)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	memset(e, 0, sizeof(*e));
 
 	e->da		= da;
 	e->pa		= pa;
+<<<<<<< HEAD
 	e->valid	= 1;
 	/* FIXME: add OMAP1 support */
 	e->pgsz		= flags & MMU_CAM_PGSZ_MASK;
 	e->endian	= flags & MMU_RAM_ENDIAN_MASK;
 	e->elsz		= flags & MMU_RAM_ELSZ_MASK;
 	e->mixed	= flags & MMU_RAM_MIXED_MASK;
+=======
+	e->valid	= MMU_CAM_V;
+	e->pgsz		= pgsz;
+	e->endian	= MMU_RAM_ENDIAN_LITTLE;
+	e->elsz		= MMU_RAM_ELSZ_8;
+	e->mixed	= 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return iopgsz_to_bytes(e->pgsz);
 }
 
 static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
+<<<<<<< HEAD
 			 phys_addr_t pa, size_t bytes, int prot)
 {
 	struct omap_iommu_domain *omap_domain = domain->priv;
+=======
+			  phys_addr_t pa, size_t bytes, int prot)
+{
+	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
 	struct device *dev = oiommu->dev;
 	struct iotlb_entry e;
 	int omap_pgsz;
+<<<<<<< HEAD
 	u32 ret, flags;
 
 	/* we only support mapping a single iommu page for now */
+=======
+	u32 ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_pgsz = bytes_to_iopgsz(bytes);
 	if (omap_pgsz < 0) {
 		dev_err(dev, "invalid size to map: %d\n", bytes);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(dev, "mapping da 0x%lx to pa 0x%x size 0x%x\n", da, pa, bytes);
 
 	flags = omap_pgsz | prot;
 
 	iotlb_init_entry(&e, da, pa, flags);
+=======
+	dev_dbg(dev, "mapping da 0x%lx to pa %pa size 0x%x\n", da, &pa, bytes);
+
+	iotlb_init_entry(&e, da, pa, omap_pgsz);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = omap_iopgtable_store_entry(oiommu, &e);
 	if (ret)
@@ -1087,9 +1546,15 @@ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
 }
 
 static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
+<<<<<<< HEAD
 			    size_t size)
 {
 	struct omap_iommu_domain *omap_domain = domain->priv;
+=======
+			       size_t size)
+{
+	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
 	struct device *dev = oiommu->dev;
 
@@ -1101,11 +1566,23 @@ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
 static int
 omap_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 {
+<<<<<<< HEAD
 	struct omap_iommu_domain *omap_domain = domain->priv;
+=======
+	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_iommu *oiommu;
 	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!arch_data || !arch_data->name) {
+		dev_err(dev, "device doesn't have an associated iommu\n");
+		return -EINVAL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&omap_domain->lock);
 
 	/* only a single device is supported per domain for now */
@@ -1133,7 +1610,11 @@ out:
 }
 
 static void _omap_iommu_detach_dev(struct omap_iommu_domain *omap_domain,
+<<<<<<< HEAD
 			struct device *dev)
+=======
+				   struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct omap_iommu *oiommu = dev_to_omap_iommu(dev);
 	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
@@ -1150,18 +1631,29 @@ static void _omap_iommu_detach_dev(struct omap_iommu_domain *omap_domain,
 
 	omap_domain->iommu_dev = arch_data->iommu_dev = NULL;
 	omap_domain->dev = NULL;
+<<<<<<< HEAD
 }
 
 static void omap_iommu_detach_dev(struct iommu_domain *domain,
 				 struct device *dev)
 {
 	struct omap_iommu_domain *omap_domain = domain->priv;
+=======
+	oiommu->domain = NULL;
+}
+
+static void omap_iommu_detach_dev(struct iommu_domain *domain,
+				  struct device *dev)
+{
+	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock(&omap_domain->lock);
 	_omap_iommu_detach_dev(omap_domain, dev);
 	spin_unlock(&omap_domain->lock);
 }
 
+<<<<<<< HEAD
 static int omap_iommu_domain_init(struct iommu_domain *domain)
 {
 	struct omap_iommu_domain *omap_domain;
@@ -1177,16 +1669,38 @@ static int omap_iommu_domain_init(struct iommu_domain *domain)
 		pr_err("kzalloc failed\n");
 		goto fail_nomem;
 	}
+=======
+static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
+{
+	struct omap_iommu_domain *omap_domain;
+
+	if (type != IOMMU_DOMAIN_UNMANAGED)
+		return NULL;
+
+	omap_domain = kzalloc(sizeof(*omap_domain), GFP_KERNEL);
+	if (!omap_domain)
+		goto out;
+
+	omap_domain->pgtable = kzalloc(IOPGD_TABLE_SIZE, GFP_KERNEL);
+	if (!omap_domain->pgtable)
+		goto fail_nomem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * should never fail, but please keep this around to ensure
 	 * we keep the hardware happy
 	 */
+<<<<<<< HEAD
 	BUG_ON(!IS_ALIGNED((long)omap_domain->pgtable, IOPGD_TABLE_SIZE));
+=======
+	if (WARN_ON(!IS_ALIGNED((long)omap_domain->pgtable, IOPGD_TABLE_SIZE)))
+		goto fail_align;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clean_dcache_area(omap_domain->pgtable, IOPGD_TABLE_SIZE);
 	spin_lock_init(&omap_domain->lock);
 
+<<<<<<< HEAD
 	domain->priv = omap_domain;
 
 	domain->geometry.aperture_start = 0;
@@ -1206,6 +1720,25 @@ static void omap_iommu_domain_destroy(struct iommu_domain *domain)
 	struct omap_iommu_domain *omap_domain = domain->priv;
 
 	domain->priv = NULL;
+=======
+	omap_domain->domain.geometry.aperture_start = 0;
+	omap_domain->domain.geometry.aperture_end   = (1ULL << 32) - 1;
+	omap_domain->domain.geometry.force_aperture = true;
+
+	return &omap_domain->domain;
+
+fail_align:
+	kfree(omap_domain->pgtable);
+fail_nomem:
+	kfree(omap_domain);
+out:
+	return NULL;
+}
+
+static void omap_iommu_domain_free(struct iommu_domain *domain)
+{
+	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * An iommu device is still attached
@@ -1219,9 +1752,15 @@ static void omap_iommu_domain_destroy(struct iommu_domain *domain)
 }
 
 static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
+<<<<<<< HEAD
 					  dma_addr_t da)
 {
 	struct omap_iommu_domain *omap_domain = domain->priv;
+=======
+					   dma_addr_t da)
+{
+	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
 	struct device *dev = oiommu->dev;
 	u32 *pgd, *pte;
@@ -1235,19 +1774,30 @@ static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
 		else if (iopte_is_large(*pte))
 			ret = omap_iommu_translate(*pte, da, IOLARGE_MASK);
 		else
+<<<<<<< HEAD
 			dev_err(dev, "bogus pte 0x%x, da 0x%lx", *pte, da);
+=======
+			dev_err(dev, "bogus pte 0x%x, da 0x%llx", *pte,
+				(unsigned long long)da);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		if (iopgd_is_section(*pgd))
 			ret = omap_iommu_translate(*pgd, da, IOSECTION_MASK);
 		else if (iopgd_is_super(*pgd))
 			ret = omap_iommu_translate(*pgd, da, IOSUPER_MASK);
 		else
+<<<<<<< HEAD
 			dev_err(dev, "bogus pgd 0x%x, da 0x%lx", *pgd, da);
+=======
+			dev_err(dev, "bogus pgd 0x%x, da 0x%llx", *pgd,
+				(unsigned long long)da);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int omap_iommu_domain_has_cap(struct iommu_domain *domain,
 				    unsigned long cap)
 {
@@ -1257,12 +1807,74 @@ static int omap_iommu_domain_has_cap(struct iommu_domain *domain,
 static struct iommu_ops omap_iommu_ops = {
 	.domain_init	= omap_iommu_domain_init,
 	.domain_destroy	= omap_iommu_domain_destroy,
+=======
+static int omap_iommu_add_device(struct device *dev)
+{
+	struct omap_iommu_arch_data *arch_data;
+	struct device_node *np;
+	struct platform_device *pdev;
+
+	/*
+	 * Allocate the archdata iommu structure for DT-based devices.
+	 *
+	 * TODO: Simplify this when removing non-DT support completely from the
+	 * IOMMU users.
+	 */
+	if (!dev->of_node)
+		return 0;
+
+	np = of_parse_phandle(dev->of_node, "iommus", 0);
+	if (!np)
+		return 0;
+
+	pdev = of_find_device_by_node(np);
+	if (WARN_ON(!pdev)) {
+		of_node_put(np);
+		return -EINVAL;
+	}
+
+	arch_data = kzalloc(sizeof(*arch_data), GFP_KERNEL);
+	if (!arch_data) {
+		of_node_put(np);
+		return -ENOMEM;
+	}
+
+	arch_data->name = kstrdup(dev_name(&pdev->dev), GFP_KERNEL);
+	dev->archdata.iommu = arch_data;
+
+	of_node_put(np);
+
+	return 0;
+}
+
+static void omap_iommu_remove_device(struct device *dev)
+{
+	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
+
+	if (!dev->of_node || !arch_data)
+		return;
+
+	kfree(arch_data->name);
+	kfree(arch_data);
+}
+
+static const struct iommu_ops omap_iommu_ops = {
+	.domain_alloc	= omap_iommu_domain_alloc,
+	.domain_free	= omap_iommu_domain_free,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.attach_dev	= omap_iommu_attach_dev,
 	.detach_dev	= omap_iommu_detach_dev,
 	.map		= omap_iommu_map,
 	.unmap		= omap_iommu_unmap,
+<<<<<<< HEAD
 	.iova_to_phys	= omap_iommu_iova_to_phys,
 	.domain_has_cap	= omap_iommu_domain_has_cap,
+=======
+	.map_sg		= default_iommu_map_sg,
+	.iova_to_phys	= omap_iommu_iova_to_phys,
+	.add_device	= omap_iommu_add_device,
+	.remove_device	= omap_iommu_remove_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
 };
 
@@ -1271,6 +1883,17 @@ static int __init omap_iommu_init(void)
 	struct kmem_cache *p;
 	const unsigned long flags = SLAB_HWCACHE_ALIGN;
 	size_t align = 1 << 10; /* L2 pagetable alignement */
+<<<<<<< HEAD
+=======
+	struct device_node *np;
+	int ret;
+
+	np = of_find_matching_node(NULL, omap_iommu_of_match);
+	if (!np)
+		return 0;
+
+	of_node_put(np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	p = kmem_cache_create("iopte_cache", IOPTE_TABLE_SIZE, align, flags,
 			      iopte_cachep_ctor);
@@ -1278,6 +1901,7 @@ static int __init omap_iommu_init(void)
 		return -ENOMEM;
 	iopte_cachep = p;
 
+<<<<<<< HEAD
 	bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
 
 	return platform_driver_register(&omap_iommu_driver);
@@ -1297,3 +1921,27 @@ MODULE_DESCRIPTION("omap iommu: tlb and pagetable primitives");
 MODULE_ALIAS("platform:omap-iommu");
 MODULE_AUTHOR("Hiroshi DOYU, Paul Mundt and Toshihiro Kobayashi");
 MODULE_LICENSE("GPL v2");
+=======
+	omap_iommu_debugfs_init();
+
+	ret = platform_driver_register(&omap_iommu_driver);
+	if (ret) {
+		pr_err("%s: failed to register driver\n", __func__);
+		goto fail_driver;
+	}
+
+	ret = bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
+	if (ret)
+		goto fail_bus;
+
+	return 0;
+
+fail_bus:
+	platform_driver_unregister(&omap_iommu_driver);
+fail_driver:
+	kmem_cache_destroy(iopte_cachep);
+	return ret;
+}
+subsys_initcall(omap_iommu_init);
+/* must be ready before omap3isp is probed */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -8,7 +8,11 @@
 
 #include <uapi/asm/mman.h>
 
+<<<<<<< HEAD
 #if !defined(__ASSEMBLY__) && defined(CONFIG_64BIT)
+=======
+#ifndef __ASSEMBLY__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int s390_mmap_check(unsigned long addr, unsigned long len, unsigned long flags);
 #define arch_mmap_check(addr, len, flags) s390_mmap_check(addr, len, flags)
 #endif

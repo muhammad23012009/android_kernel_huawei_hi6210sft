@@ -1,7 +1,13 @@
 obj-$(CONFIG_MLX4_CORE)		+= mlx4_core.o
 
+<<<<<<< HEAD
 mlx4_core-y :=	alloc.o catas.o cmd.o cq.o eq.o fw.o icm.o intf.o main.o mcg.o \
 		mr.o pd.o port.o profile.o qp.o reset.o sense.o srq.o resource_tracker.o
+=======
+mlx4_core-y :=	alloc.o catas.o cmd.o cq.o eq.o fw.o fw_qos.o icm.o intf.o \
+		main.o mcg.o mr.o pd.o port.o profile.o qp.o reset.o sense.o \
+		srq.o resource_tracker.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_MLX4_EN)               += mlx4_en.o
 

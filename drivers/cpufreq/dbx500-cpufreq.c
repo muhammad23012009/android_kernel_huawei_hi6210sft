@@ -19,6 +19,7 @@
 static struct cpufreq_frequency_table *freq_table;
 static struct clk *armss_clk;
 
+<<<<<<< HEAD
 static struct freq_attr *dbx500_cpufreq_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
@@ -121,11 +122,39 @@ static struct cpufreq_driver dbx500_cpufreq_driver = {
 	.init   = dbx500_cpufreq_init,
 	.name   = "DBX500",
 	.attr   = dbx500_cpufreq_attr,
+=======
+static int dbx500_cpufreq_target(struct cpufreq_policy *policy,
+				unsigned int index)
+{
+	/* update armss clk frequency */
+	return clk_set_rate(armss_clk, freq_table[index].frequency * 1000);
+}
+
+static int dbx500_cpufreq_init(struct cpufreq_policy *policy)
+{
+	policy->clk = armss_clk;
+	return cpufreq_generic_init(policy, freq_table, 20 * 1000);
+}
+
+static struct cpufreq_driver dbx500_cpufreq_driver = {
+	.flags  = CPUFREQ_STICKY | CPUFREQ_CONST_LOOPS |
+			CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+	.verify = cpufreq_generic_frequency_table_verify,
+	.target_index = dbx500_cpufreq_target,
+	.get    = cpufreq_generic_get,
+	.init   = dbx500_cpufreq_init,
+	.name   = "DBX500",
+	.attr   = cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int dbx500_cpufreq_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int i = 0;
+=======
+	struct cpufreq_frequency_table *pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	freq_table = dev_get_platdata(&pdev->dev);
 	if (!freq_table) {
@@ -140,10 +169,15 @@ static int dbx500_cpufreq_probe(struct platform_device *pdev)
 	}
 
 	pr_info("dbx500-cpufreq: Available frequencies:\n");
+<<<<<<< HEAD
 	while (freq_table[i].frequency != CPUFREQ_TABLE_END) {
 		pr_info("  %d Mhz\n", freq_table[i].frequency/1000);
 		i++;
 	}
+=======
+	cpufreq_for_each_entry(pos, freq_table)
+		pr_info("  %d Mhz\n", pos->frequency / 1000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return cpufreq_register_driver(&dbx500_cpufreq_driver);
 }
@@ -151,7 +185,10 @@ static int dbx500_cpufreq_probe(struct platform_device *pdev)
 static struct platform_driver dbx500_cpufreq_plat_driver = {
 	.driver = {
 		.name = "cpufreq-ux500",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = dbx500_cpufreq_probe,
 };

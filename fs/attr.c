@@ -17,6 +17,7 @@
 #include <linux/ima.h>
 
 /**
+<<<<<<< HEAD
  * inode_change_ok - check if attribute changes to an inode are allowed
  * @inode:	inode to check
  * @attr:	attributes to change
@@ -24,12 +25,29 @@
  * Check if we are allowed to change the attributes contained in @attr
  * in the given inode.  This includes the normal unix access permission
  * checks, as well as checks for rlimits and others.
+=======
+ * setattr_prepare - check if attribute changes to a dentry are allowed
+ * @dentry:	dentry to check
+ * @attr:	attributes to change
+ *
+ * Check if we are allowed to change the attributes contained in @attr
+ * in the given dentry.  This includes the normal unix access permission
+ * checks, as well as checks for rlimits and others. The function also clears
+ * SGID bit from mode if user is not allowed to set it. Also file capabilities
+ * and IMA extended attributes are cleared if ATTR_KILL_PRIV is set.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Should be called as the first thing in ->setattr implementations,
  * possibly after taking additional locks.
  */
+<<<<<<< HEAD
 int inode_change_ok(const struct inode *inode, struct iattr *attr)
 {
+=======
+int setattr_prepare(struct dentry *dentry, struct iattr *attr)
+{
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int ia_valid = attr->ia_valid;
 
 	/*
@@ -44,7 +62,11 @@ int inode_change_ok(const struct inode *inode, struct iattr *attr)
 
 	/* If force is set do it anyway. */
 	if (ia_valid & ATTR_FORCE)
+<<<<<<< HEAD
 		return 0;
+=======
+		goto kill_priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Make sure a caller can chown. */
 	if ((ia_valid & ATTR_UID) &&
@@ -77,9 +99,25 @@ int inode_change_ok(const struct inode *inode, struct iattr *attr)
 			return -EPERM;
 	}
 
+<<<<<<< HEAD
 	return 0;
 }
 EXPORT_SYMBOL(inode_change_ok);
+=======
+kill_priv:
+	/* User has permission for the change */
+	if (ia_valid & ATTR_KILL_PRIV) {
+		int error;
+
+		error = security_inode_killpriv(dentry);
+		if (error)
+			return error;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL(setattr_prepare);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * inode_newsize_ok - may this inode be truncated to a given size
@@ -167,7 +205,31 @@ void setattr_copy(struct inode *inode, const struct iattr *attr)
 }
 EXPORT_SYMBOL(setattr_copy);
 
+<<<<<<< HEAD
 int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * attr)
+=======
+/**
+ * notify_change - modify attributes of a filesytem object
+ * @dentry:	object affected
+ * @iattr:	new attributes
+ * @delegated_inode: returns inode, if the inode is delegated
+ *
+ * The caller must hold the i_mutex on the affected object.
+ *
+ * If notify_change discovers a delegation in need of breaking,
+ * it will return -EWOULDBLOCK and return a reference to the inode in
+ * delegated_inode.  The caller should then break the delegation and
+ * retry.  Because breaking a delegation may take a long time, the
+ * caller should drop the i_mutex before doing so.
+ *
+ * Alternatively, a caller may pass NULL for delegated_inode.  This may
+ * be appropriate for callers that expect the underlying filesystem not
+ * to be NFS exported.  Also, passing NULL is fine for callers holding
+ * the file open for write, as there can be no conflicting delegation in
+ * that case.
+ */
+int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * attr, struct inode **delegated_inode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct inode *inode = dentry->d_inode;
 	umode_t mode = inode->i_mode;
@@ -175,13 +237,35 @@ int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * 
 	struct timespec now;
 	unsigned int ia_valid = attr->ia_valid;
 
+<<<<<<< HEAD
 	WARN_ON_ONCE(!mutex_is_locked(&inode->i_mutex));
+=======
+	WARN_ON_ONCE(!inode_is_locked(inode));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ia_valid & (ATTR_MODE | ATTR_UID | ATTR_GID | ATTR_TIMES_SET)) {
 		if (IS_IMMUTABLE(inode) || IS_APPEND(inode))
 			return -EPERM;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If utimes(2) and friends are called with times == NULL (or both
+	 * times are UTIME_NOW), then we need to check for write permission
+	 */
+	if (ia_valid & ATTR_TOUCH) {
+		if (IS_IMMUTABLE(inode))
+			return -EPERM;
+
+		if (!inode_owner_or_capable(inode)) {
+			error = inode_permission2(mnt, inode, MAY_WRITE);
+			if (error)
+				return error;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((ia_valid & ATTR_MODE)) {
 		umode_t amode = attr->ia_mode;
 		/* Flag setting protected by i_mutex */
@@ -189,7 +273,11 @@ int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * 
 			inode->i_flags &= ~S_NOSEC;
 	}
 
+<<<<<<< HEAD
 	now = current_fs_time(inode->i_sb);
+=======
+	now = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	attr->ia_ctime = now;
 	if (!(ia_valid & ATTR_ATIME_SET))
@@ -197,6 +285,7 @@ int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * 
 	if (!(ia_valid & ATTR_MTIME_SET))
 		attr->ia_mtime = now;
 	if (ia_valid & ATTR_KILL_PRIV) {
+<<<<<<< HEAD
 		attr->ia_valid &= ~ATTR_KILL_PRIV;
 		ia_valid &= ~ATTR_KILL_PRIV;
 		error = security_inode_need_killpriv(dentry);
@@ -204,6 +293,13 @@ int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * 
 			error = security_inode_killpriv(dentry);
 		if (error)
 			return error;
+=======
+		error = security_inode_need_killpriv(dentry);
+		if (error < 0)
+			return error;
+		if (error == 0)
+			ia_valid = attr->ia_valid &= ~ATTR_KILL_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -235,9 +331,37 @@ int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * 
 	if (!(attr->ia_valid & ~(ATTR_KILL_SUID | ATTR_KILL_SGID)))
 		return 0;
 
+<<<<<<< HEAD
 	error = security_inode_setattr(dentry, attr);
 	if (error)
 		return error;
+=======
+	/*
+	 * Verify that uid/gid changes are valid in the target
+	 * namespace of the superblock.
+	 */
+	if (ia_valid & ATTR_UID &&
+	    !kuid_has_mapping(inode->i_sb->s_user_ns, attr->ia_uid))
+		return -EOVERFLOW;
+	if (ia_valid & ATTR_GID &&
+	    !kgid_has_mapping(inode->i_sb->s_user_ns, attr->ia_gid))
+		return -EOVERFLOW;
+
+	/* Don't allow modifications of files with invalid uids or
+	 * gids unless those uids & gids are being made valid.
+	 */
+	if (!(ia_valid & ATTR_UID) && !uid_valid(inode->i_uid))
+		return -EOVERFLOW;
+	if (!(ia_valid & ATTR_GID) && !gid_valid(inode->i_gid))
+		return -EOVERFLOW;
+
+	error = security_inode_setattr(dentry, attr);
+	if (error)
+		return error;
+	error = try_break_deleg(inode, delegated_inode);
+	if (error)
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mnt && inode->i_op->setattr2)
 		error = inode->i_op->setattr2(mnt, dentry, attr);
@@ -256,8 +380,14 @@ int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * 
 }
 EXPORT_SYMBOL(notify_change2);
 
+<<<<<<< HEAD
 int notify_change(struct dentry * dentry, struct iattr * attr)
 {
 	return notify_change2(NULL, dentry, attr);
+=======
+int notify_change(struct dentry * dentry, struct iattr * attr, struct inode **delegated_inode)
+{
+	return notify_change2(NULL, dentry, attr, delegated_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(notify_change);

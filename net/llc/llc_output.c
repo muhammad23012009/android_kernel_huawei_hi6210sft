@@ -43,7 +43,11 @@ int llc_mac_hdr_init(struct sk_buff *skb,
 			rc = 0;
 		break;
 	default:
+<<<<<<< HEAD
 		WARN(1, "device type not supported: %d\n", skb->dev->type);
+=======
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return rc;
 }
@@ -72,6 +76,11 @@ int llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,
 	rc = llc_mac_hdr_init(skb, skb->dev->dev_addr, dmac);
 	if (likely(!rc))
 		rc = dev_queue_xmit(skb);
+<<<<<<< HEAD
+=======
+	else
+		kfree_skb(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 

@@ -17,7 +17,11 @@
 /**
  * sh64_tlb_init - Perform initial setup for the DTLB and ITLB.
  */
+<<<<<<< HEAD
 int __cpuinit sh64_tlb_init(void)
+=======
+int sh64_tlb_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* Assign some sane DTLB defaults */
 	cpu_data->dtlb.entries	= 64;

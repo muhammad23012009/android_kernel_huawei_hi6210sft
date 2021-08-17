@@ -6,13 +6,17 @@
  */
 
 #include <linux/kernel_stat.h>
+<<<<<<< HEAD
 #include <linux/notifier.h>
 #include <linux/kprobes.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/timex.h>
 #include <linux/types.h>
 #include <linux/time.h>
+<<<<<<< HEAD
 #include <linux/cpu.h>
 #include <linux/smp.h>
 
@@ -20,17 +24,37 @@
 #include <asm/cputime.h>
 #include <asm/vtimer.h>
 #include <asm/irq.h>
+=======
+
+#include <asm/cputime.h>
+#include <asm/vtimer.h>
+#include <asm/vtime.h>
+#include <asm/cpu_mf.h>
+#include <asm/smp.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "entry.h"
 
 static void virt_timer_expire(void);
 
+<<<<<<< HEAD
 DEFINE_PER_CPU(struct s390_idle_data, s390_idle);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static LIST_HEAD(virt_timer_list);
 static DEFINE_SPINLOCK(virt_timer_lock);
 static atomic64_t virt_timer_current;
 static atomic64_t virt_timer_elapsed;
 
+<<<<<<< HEAD
+=======
+DEFINE_PER_CPU(u64, mt_cycles[8]);
+static DEFINE_PER_CPU(u64, mt_scaling_mult) = { 1 };
+static DEFINE_PER_CPU(u64, mt_scaling_div) = { 1 };
+static DEFINE_PER_CPU(u64, mt_scaling_jiffies);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline u64 get_vtimer(void)
 {
 	u64 timer;
@@ -61,6 +85,37 @@ static inline int virt_timer_forward(u64 elapsed)
 	return elapsed >= atomic64_read(&virt_timer_current);
 }
 
+<<<<<<< HEAD
+=======
+static void update_mt_scaling(void)
+{
+	u64 cycles_new[8], *cycles_old;
+	u64 delta, fac, mult, div;
+	int i;
+
+	stcctm5(smp_cpu_mtid + 1, cycles_new);
+	cycles_old = this_cpu_ptr(mt_cycles);
+	fac = 1;
+	mult = div = 0;
+	for (i = 0; i <= smp_cpu_mtid; i++) {
+		delta = cycles_new[i] - cycles_old[i];
+		div += delta;
+		mult *= i + 1;
+		mult += delta * fac;
+		fac *= i + 1;
+	}
+	div *= fac;
+	if (div > 0) {
+		/* Update scaling factor */
+		__this_cpu_write(mt_scaling_mult, mult);
+		__this_cpu_write(mt_scaling_div, div);
+		memcpy(cycles_old, cycles_new,
+		       sizeof(u64) * (smp_cpu_mtid + 1));
+	}
+	__this_cpu_write(mt_scaling_jiffies, jiffies_64);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Update process times based on virtual cpu times stored by entry.S
  * to the lowcore fields user_timer, system_timer & steal_clock.
@@ -69,26 +124,65 @@ static int do_account_vtime(struct task_struct *tsk, int hardirq_offset)
 {
 	struct thread_info *ti = task_thread_info(tsk);
 	u64 timer, clock, user, system, steal;
+<<<<<<< HEAD
+=======
+	u64 user_scaled, system_scaled;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	timer = S390_lowcore.last_update_timer;
 	clock = S390_lowcore.last_update_clock;
 	asm volatile(
 		"	stpt	%0\n"	/* Store current cpu timer value */
+<<<<<<< HEAD
 		"	stck	%1"	/* Store current tod clock value */
+=======
+#ifdef CONFIG_HAVE_MARCH_Z9_109_FEATURES
+		"	stckf	%1"	/* Store current tod clock value */
+#else
+		"	stck	%1"	/* Store current tod clock value */
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "=m" (S390_lowcore.last_update_timer),
 		  "=m" (S390_lowcore.last_update_clock));
 	S390_lowcore.system_timer += timer - S390_lowcore.last_update_timer;
 	S390_lowcore.steal_timer += S390_lowcore.last_update_clock - clock;
 
+<<<<<<< HEAD
 	user = S390_lowcore.user_timer - ti->user_timer;
 	S390_lowcore.steal_timer -= user;
 	ti->user_timer = S390_lowcore.user_timer;
 	account_user_time(tsk, user, user);
+=======
+	/* Update MT utilization calculation */
+	if (smp_cpu_mtid &&
+	    time_after64(jiffies_64, this_cpu_read(mt_scaling_jiffies)))
+		update_mt_scaling();
+
+	user = S390_lowcore.user_timer - ti->user_timer;
+	S390_lowcore.steal_timer -= user;
+	ti->user_timer = S390_lowcore.user_timer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	system = S390_lowcore.system_timer - ti->system_timer;
 	S390_lowcore.steal_timer -= system;
 	ti->system_timer = S390_lowcore.system_timer;
+<<<<<<< HEAD
 	account_system_time(tsk, hardirq_offset, system, system);
+=======
+
+	user_scaled = user;
+	system_scaled = system;
+	/* Do MT utilization scaling */
+	if (smp_cpu_mtid) {
+		u64 mult = __this_cpu_read(mt_scaling_mult);
+		u64 div = __this_cpu_read(mt_scaling_div);
+
+		user_scaled = (user_scaled * mult) / div;
+		system_scaled = (system_scaled * mult) / div;
+	}
+	account_user_time(tsk, user, user_scaled);
+	account_system_time(tsk, hardirq_offset, system, system_scaled);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	steal = S390_lowcore.steal_timer;
 	if ((s64) steal > 0) {
@@ -130,18 +224,42 @@ void vtime_account_user(struct task_struct *tsk)
 void vtime_account_irq_enter(struct task_struct *tsk)
 {
 	struct thread_info *ti = task_thread_info(tsk);
+<<<<<<< HEAD
 	u64 timer, system;
 
 	WARN_ON_ONCE(!irqs_disabled());
+=======
+	u64 timer, system, system_scaled;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	timer = S390_lowcore.last_update_timer;
 	S390_lowcore.last_update_timer = get_vtimer();
 	S390_lowcore.system_timer += timer - S390_lowcore.last_update_timer;
 
+<<<<<<< HEAD
 	system = S390_lowcore.system_timer - ti->system_timer;
 	S390_lowcore.steal_timer -= system;
 	ti->system_timer = S390_lowcore.system_timer;
 	account_system_time(tsk, 0, system, system);
+=======
+	/* Update MT utilization calculation */
+	if (smp_cpu_mtid &&
+	    time_after64(jiffies_64, this_cpu_read(mt_scaling_jiffies)))
+		update_mt_scaling();
+
+	system = S390_lowcore.system_timer - ti->system_timer;
+	S390_lowcore.steal_timer -= system;
+	ti->system_timer = S390_lowcore.system_timer;
+	system_scaled = system;
+	/* Do MT utilization scaling */
+	if (smp_cpu_mtid) {
+		u64 mult = __this_cpu_read(mt_scaling_mult);
+		u64 div = __this_cpu_read(mt_scaling_div);
+
+		system_scaled = (system_scaled * mult) / div;
+	}
+	account_system_time(tsk, 0, system, system_scaled);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	virt_timer_forward(system);
 }
@@ -151,6 +269,7 @@ void vtime_account_system(struct task_struct *tsk)
 __attribute__((alias("vtime_account_irq_enter")));
 EXPORT_SYMBOL_GPL(vtime_account_system);
 
+<<<<<<< HEAD
 void __kprobes vtime_stop_cpu(void)
 {
 	struct s390_idle_data *idle = &__get_cpu_var(s390_idle);
@@ -194,6 +313,8 @@ cputime64_t s390_get_idle_time(int cpu)
 	return idle_enter ? ((idle_exit ?: now) - idle_enter) : 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Sorted add to a list. List is linear searched until first bigger
  * element is found.
@@ -371,6 +492,7 @@ EXPORT_SYMBOL(del_virt_timer);
 /*
  * Start the virtual CPU timer on the current CPU.
  */
+<<<<<<< HEAD
 void __cpuinit init_cpu_vtimer(void)
 {
 	/* set initial cpu timer */
@@ -398,4 +520,17 @@ void __init vtime_init(void)
 	/* Enable cpu timer interrupts on the boot cpu. */
 	init_cpu_vtimer();
 	cpu_notifier(s390_nohz_notify, 0);
+=======
+void vtime_init(void)
+{
+	/* set initial cpu timer */
+	set_vtimer(VTIMER_MAX_SLICE);
+	/* Setup initial MT scaling values */
+	if (smp_cpu_mtid) {
+		__this_cpu_write(mt_scaling_jiffies, jiffies);
+		__this_cpu_write(mt_scaling_mult, 1);
+		__this_cpu_write(mt_scaling_div, 1);
+		stcctm5(smp_cpu_mtid + 1, this_cpu_ptr(mt_cycles));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

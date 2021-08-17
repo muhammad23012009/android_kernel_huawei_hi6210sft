@@ -20,12 +20,22 @@
 #include <asm/mach/arch.h>
 #include <linux/i2c.h>
 #include <linux/i2c/pxa-i2c.h>
+<<<<<<< HEAD
 
 #include <mach/pxa27x.h>
 #include <mach/colibri.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <mach/pxa27x-udc.h>
+=======
+#include <asm/io.h>
+
+#include "pxa27x.h"
+#include "colibri.h"
+#include <linux/platform_data/mmc-pxamci.h>
+#include <linux/platform_data/usb-ohci-pxa27x.h>
+#include "pxa27x-udc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "generic.h"
 #include "devices.h"

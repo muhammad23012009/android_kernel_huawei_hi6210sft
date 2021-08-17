@@ -17,7 +17,10 @@
 #include <linux/types.h>
 #include <linux/platform_device.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/idr.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "../w1.h"
 #include "../w1_int.h"
@@ -87,15 +90,22 @@ int w1_ds2781_eeprom_cmd(struct device *dev, int addr, int cmd)
 }
 EXPORT_SYMBOL(w1_ds2781_eeprom_cmd);
 
+<<<<<<< HEAD
 static ssize_t w1_ds2781_read_bin(struct file *filp,
 				  struct kobject *kobj,
 				  struct bin_attribute *bin_attr,
 				  char *buf, loff_t off, size_t count)
+=======
+static ssize_t w1_slave_read(struct file *filp, struct kobject *kobj,
+			     struct bin_attribute *bin_attr, char *buf,
+			     loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device *dev = container_of(kobj, struct device, kobj);
 	return w1_ds2781_io(dev, buf, off, count, 0);
 }
 
+<<<<<<< HEAD
 static struct bin_attribute w1_ds2781_bin_attr = {
 	.attr = {
 		.name = "w1_slave",
@@ -106,10 +116,28 @@ static struct bin_attribute w1_ds2781_bin_attr = {
 };
 
 static DEFINE_IDA(bat_ida);
+=======
+static BIN_ATTR_RO(w1_slave, DS2781_DATA_SIZE);
+
+static struct bin_attribute *w1_ds2781_bin_attrs[] = {
+	&bin_attr_w1_slave,
+	NULL,
+};
+
+static const struct attribute_group w1_ds2781_group = {
+	.bin_attrs = w1_ds2781_bin_attrs,
+};
+
+static const struct attribute_group *w1_ds2781_groups[] = {
+	&w1_ds2781_group,
+	NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int w1_ds2781_add_slave(struct w1_slave *sl)
 {
 	int ret;
+<<<<<<< HEAD
 	int id;
 	struct platform_device *pdev;
 
@@ -124,20 +152,31 @@ static int w1_ds2781_add_slave(struct w1_slave *sl)
 		ret = -ENOMEM;
 		goto pdev_alloc_failed;
 	}
+=======
+	struct platform_device *pdev;
+
+	pdev = platform_device_alloc("ds2781-battery", PLATFORM_DEVID_AUTO);
+	if (!pdev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pdev->dev.parent = &sl->dev;
 
 	ret = platform_device_add(pdev);
 	if (ret)
 		goto pdev_add_failed;
 
+<<<<<<< HEAD
 	ret = sysfs_create_bin_file(&sl->dev.kobj, &w1_ds2781_bin_attr);
 	if (ret)
 		goto bin_attr_failed;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_set_drvdata(&sl->dev, pdev);
 
 	return 0;
 
+<<<<<<< HEAD
 bin_attr_failed:
 	platform_device_del(pdev);
 pdev_add_failed:
@@ -145,28 +184,43 @@ pdev_add_failed:
 pdev_alloc_failed:
 	ida_simple_remove(&bat_ida, id);
 noid:
+=======
+pdev_add_failed:
+	platform_device_put(pdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static void w1_ds2781_remove_slave(struct w1_slave *sl)
 {
 	struct platform_device *pdev = dev_get_drvdata(&sl->dev);
+<<<<<<< HEAD
 	int id = pdev->id;
 
 	platform_device_unregister(pdev);
 	ida_simple_remove(&bat_ida, id);
 	sysfs_remove_bin_file(&sl->dev.kobj, &w1_ds2781_bin_attr);
+=======
+
+	platform_device_unregister(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct w1_family_ops w1_ds2781_fops = {
 	.add_slave    = w1_ds2781_add_slave,
 	.remove_slave = w1_ds2781_remove_slave,
+<<<<<<< HEAD
+=======
+	.groups       = w1_ds2781_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct w1_family w1_ds2781_family = {
 	.fid = W1_FAMILY_DS2781,
 	.fops = &w1_ds2781_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_ds2781_init(void)
 {
@@ -182,7 +236,14 @@ static void __exit w1_ds2781_exit(void)
 
 module_init(w1_ds2781_init);
 module_exit(w1_ds2781_exit);
+=======
+module_w1_family(w1_ds2781_family);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Renata Sayakhova <renata@oktetlabs.ru>");
 MODULE_DESCRIPTION("1-wire Driver for Maxim/Dallas DS2781 Stand-Alone Fuel Gauge IC");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("w1-family-" __stringify(W1_FAMILY_DS2781));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

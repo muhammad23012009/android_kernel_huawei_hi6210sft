@@ -6,26 +6,43 @@ extern int set_signals(int enable);
 extern void block_signals(void);
 extern void unblock_signals(void);
 
+<<<<<<< HEAD
+=======
+#define arch_local_save_flags arch_local_save_flags
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long arch_local_save_flags(void)
 {
 	return get_signals();
 }
 
+<<<<<<< HEAD
+=======
+#define arch_local_irq_restore arch_local_irq_restore
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_local_irq_restore(unsigned long flags)
 {
 	set_signals(flags);
 }
 
+<<<<<<< HEAD
+=======
+#define arch_local_irq_enable arch_local_irq_enable
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_local_irq_enable(void)
 {
 	unblock_signals();
 }
 
+<<<<<<< HEAD
+=======
+#define arch_local_irq_disable arch_local_irq_disable
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_local_irq_disable(void)
 {
 	block_signals();
 }
 
+<<<<<<< HEAD
 static inline unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags;
@@ -38,5 +55,11 @@ static inline bool arch_irqs_disabled(void)
 {
 	return arch_local_save_flags() == 0;
 }
+=======
+#define ARCH_IRQ_DISABLED	0
+#define ARCh_IRQ_ENABLED	(SIGIO|SIGVTALRM)
+
+#include <asm-generic/irqflags.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

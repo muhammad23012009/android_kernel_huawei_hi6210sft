@@ -43,7 +43,11 @@
 
 #define	EUSERS		68	/* Too many users */
 #define	EDQUOT		69	/* Quota exceeded */
+<<<<<<< HEAD
 #define	ESTALE		70	/* Stale NFS file handle */
+=======
+#define	ESTALE		70	/* Stale file handle */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	EREMOTE		71	/* Object is remote */
 
 #define	ENOLCK		77	/* No record locks available */

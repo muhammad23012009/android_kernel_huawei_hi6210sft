@@ -173,12 +173,20 @@ static void ip27_send_ipi_mask(const struct cpumask *mask, unsigned int action)
 		ip27_send_ipi_single(i, action);
 }
 
+<<<<<<< HEAD
 static void __cpuinit ip27_init_secondary(void)
+=======
+static void ip27_init_secondary(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	per_cpu_init();
 }
 
+<<<<<<< HEAD
 static void __cpuinit ip27_smp_finish(void)
+=======
+static void ip27_smp_finish(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	extern void hub_rt_clock_event_init(void);
 
@@ -186,16 +194,23 @@ static void __cpuinit ip27_smp_finish(void)
 	local_irq_enable();
 }
 
+<<<<<<< HEAD
 static void __init ip27_cpus_done(void)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Launch a slave into smp_bootstrap().	 It doesn't take an argument, and we
  * set sp to the kernel stack of the newly created idle process, gp to the proc
  * struct so that current_thread_info() will work.
  */
+<<<<<<< HEAD
 static void __cpuinit ip27_boot_secondary(int cpu, struct task_struct *idle)
+=======
+static void ip27_boot_secondary(int cpu, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long gp = (unsigned long)task_thread_info(idle);
 	unsigned long sp = __KSTK_TOS(idle);
@@ -236,7 +251,10 @@ struct plat_smp_ops ip27_smp_ops = {
 	.send_ipi_mask		= ip27_send_ipi_mask,
 	.init_secondary		= ip27_init_secondary,
 	.smp_finish		= ip27_smp_finish,
+<<<<<<< HEAD
 	.cpus_done		= ip27_cpus_done,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.boot_secondary		= ip27_boot_secondary,
 	.smp_setup		= ip27_smp_setup,
 	.prepare_cpus		= ip27_prepare_cpus,

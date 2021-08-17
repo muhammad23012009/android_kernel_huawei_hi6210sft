@@ -12,11 +12,16 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
 #include <linux/scatterlist.h>
+=======
+#include <linux/mm.h>
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "trans_common.h"
 
 /**
@@ -31,6 +36,7 @@ void p9_release_pages(struct page **pages, int nr_pages)
 			put_page(pages[i]);
 }
 EXPORT_SYMBOL(p9_release_pages);
+<<<<<<< HEAD
 
 /**
  * p9_nr_pages - Return number of pages needed to accommodate the payload.
@@ -67,3 +73,5 @@ int p9_payload_gup(char *data, int *nr_pages, struct page **pages, int write)
 	return 0;
 }
 EXPORT_SYMBOL(p9_payload_gup);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

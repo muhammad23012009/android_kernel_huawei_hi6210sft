@@ -46,9 +46,15 @@ void put_filesystem(struct file_system_type *fs)
 static struct file_system_type **find_filesystem(const char *name, unsigned len)
 {
 	struct file_system_type **p;
+<<<<<<< HEAD
 	for (p=&file_systems; *p; p=&(*p)->next)
 		if (strlen((*p)->name) == len &&
 		    strncmp((*p)->name, name, len) == 0)
+=======
+	for (p = &file_systems; *p; p = &(*p)->next)
+		if (strncmp((*p)->name, name, len) == 0 &&
+		    !(*p)->name[len])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 	return p;
 }
@@ -121,6 +127,10 @@ int unregister_filesystem(struct file_system_type * fs)
 
 EXPORT_SYMBOL(unregister_filesystem);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SYSFS_SYSCALL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int fs_index(const char __user * __name)
 {
 	struct file_system_type * tmp;
@@ -199,6 +209,10 @@ SYSCALL_DEFINE3(sysfs, int, option, unsigned long, arg1, unsigned long, arg2)
 	}
 	return retval;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int __init get_filesystem_list(char *buf)
 {

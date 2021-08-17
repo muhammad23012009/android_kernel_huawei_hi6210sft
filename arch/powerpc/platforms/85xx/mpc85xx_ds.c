@@ -46,12 +46,20 @@
 #endif
 
 #ifdef CONFIG_PPC_I8259
+<<<<<<< HEAD
 static void mpc85xx_8259_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void mpc85xx_8259_cascade(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
 
+<<<<<<< HEAD
 	if (cascade_irq != NO_IRQ) {
+=======
+	if (cascade_irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		generic_handle_irq(cascade_irq);
 	}
 	chip->irq_eoi(&desc->irq_data);
@@ -66,9 +74,13 @@ void __init mpc85xx_ds_pic_init(void)
 	struct device_node *cascade_node = NULL;
 	int cascade_irq;
 #endif
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,MPC8572DS-CAMP")) {
+=======
+	if (of_machine_is_compatible("fsl,MPC8572DS-CAMP")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mpic = mpic_alloc(NULL, 0,
 			MPIC_NO_RESET |
 			MPIC_BIG_ENDIAN |
@@ -98,7 +110,11 @@ void __init mpc85xx_ds_pic_init(void)
 	}
 
 	cascade_irq = irq_of_parse_and_map(cascade_node, 0);
+<<<<<<< HEAD
 	if (cascade_irq == NO_IRQ) {
+=======
+	if (!cascade_irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "Failed to map cascade interrupt\n");
 		return;
 	}
@@ -169,9 +185,13 @@ static void __init mpc85xx_ds_setup_arch(void)
  */
 static int __init mpc8544_ds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return !!of_flat_dt_is_compatible(root, "MPC8544DS");
+=======
+	return !!of_machine_is_compatible("MPC8544DS");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 machine_arch_initcall(mpc8544_ds, mpc85xx_common_publish_devices);
@@ -187,9 +207,13 @@ machine_arch_initcall(p2020_ds, swiotlb_setup_bus_notifier);
  */
 static int __init mpc8572_ds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return !!of_flat_dt_is_compatible(root, "fsl,MPC8572DS");
+=======
+	return !!of_machine_is_compatible("fsl,MPC8572DS");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -197,9 +221,13 @@ static int __init mpc8572_ds_probe(void)
  */
 static int __init p2020_ds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return !!of_flat_dt_is_compatible(root, "fsl,P2020DS");
+=======
+	return !!of_machine_is_compatible("fsl,P2020DS");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(mpc8544_ds) {
@@ -209,9 +237,15 @@ define_machine(mpc8544_ds) {
 	.init_IRQ		= mpc85xx_ds_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -223,9 +257,15 @@ define_machine(mpc8572_ds) {
 	.init_IRQ		= mpc85xx_ds_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };
@@ -237,9 +277,15 @@ define_machine(p2020_ds) {
 	.init_IRQ		= mpc85xx_ds_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };

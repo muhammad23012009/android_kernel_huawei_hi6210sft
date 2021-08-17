@@ -235,6 +235,21 @@ struct sadb_x_kmaddress {
 } __attribute__((packed));
 /* sizeof(struct sadb_x_kmaddress) == 8 */
 
+<<<<<<< HEAD
+=======
+/* To specify the SA dump filter */
+struct sadb_x_filter {
+	__u16	sadb_x_filter_len;
+	__u16	sadb_x_filter_exttype;
+	__u32	sadb_x_filter_saddr[4];
+	__u32	sadb_x_filter_daddr[4];
+	__u16	sadb_x_filter_family;
+	__u8	sadb_x_filter_splen;
+	__u8	sadb_x_filter_dplen;
+} __attribute__((packed));
+/* sizeof(struct sadb_x_filter) == 40 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Message types */
 #define SADB_RESERVED		0
 #define SADB_GETSPI		1
@@ -358,7 +373,12 @@ struct sadb_x_kmaddress {
 #define SADB_X_EXT_SEC_CTX		24
 /* Used with MIGRATE to pass @ to IKE for negotiation */
 #define SADB_X_EXT_KMADDRESS		25
+<<<<<<< HEAD
 #define SADB_EXT_MAX			25
+=======
+#define SADB_X_EXT_FILTER		26
+#define SADB_EXT_MAX			26
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Identity Extension values */
 #define SADB_IDENTTYPE_RESERVED	0

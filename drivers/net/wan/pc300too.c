@@ -281,7 +281,10 @@ static void pc300_pci_remove_one(struct pci_dev *pdev)
 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (card->ports[0].netdev)
 		free_netdev(card->ports[0].netdev);
 	if (card->ports[1].netdev)
@@ -348,6 +351,10 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 	    card->rambase == NULL) {
 		pr_err("ioremap() failed\n");
 		pc300_pci_remove_one(pdev);
+<<<<<<< HEAD
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* PLX PCI 9050 workaround for local configuration register read bug */
@@ -478,7 +485,11 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
 
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pc300_pci_tbl) = {
+=======
+static const struct pci_device_id pc300_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_CYCLADES, PCI_DEVICE_ID_PC300_RX_1, PCI_ANY_ID,
 	  PCI_ANY_ID, 0, 0, 0 },
 	{ PCI_VENDOR_ID_CYCLADES, PCI_DEVICE_ID_PC300_RX_2, PCI_ANY_ID,

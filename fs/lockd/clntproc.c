@@ -474,6 +474,7 @@ static void nlmclnt_locks_init_private(struct file_lock *fl, struct nlm_host *ho
 
 static int do_vfs_lock(struct file_lock *fl)
 {
+<<<<<<< HEAD
 	int res = 0;
 	switch (fl->fl_flags & (FL_POSIX|FL_FLOCK)) {
 		case FL_POSIX:
@@ -486,6 +487,9 @@ static int do_vfs_lock(struct file_lock *fl)
 			BUG();
 	}
 	return res;
+=======
+	return locks_lock_file_wait(fl->fl_file, fl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

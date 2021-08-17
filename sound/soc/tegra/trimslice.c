@@ -24,8 +24,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/mach-types.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -52,8 +55,12 @@ static int trimslice_asoc_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct snd_soc_card *card = codec->card;
+=======
+	struct snd_soc_card *card = rtd->card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tegra_trimslice *trimslice = snd_soc_card_get_drvdata(card);
 	int srate, mclk;
 	int err;
@@ -106,6 +113,10 @@ static struct snd_soc_dai_link trimslice_tlv320aic23_dai = {
 
 static struct snd_soc_card snd_soc_trimslice = {
 	.name = "tegra-trimslice",
+<<<<<<< HEAD
+=======
+	.driver_name = "tegra",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.owner = THIS_MODULE,
 	.dai_link = &trimslice_tlv320aic23_dai,
 	.num_links = 1,
@@ -196,7 +207,10 @@ MODULE_DEVICE_TABLE(of, trimslice_of_match);
 static struct platform_driver tegra_snd_trimslice_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = trimslice_of_match,
 	},
 	.probe = tegra_snd_trimslice_probe,

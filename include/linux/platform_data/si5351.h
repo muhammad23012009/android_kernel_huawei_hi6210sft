@@ -5,6 +5,7 @@
 #ifndef __LINUX_PLATFORM_DATA_SI5351_H__
 #define __LINUX_PLATFORM_DATA_SI5351_H__
 
+<<<<<<< HEAD
 struct clk;
 
 /**
@@ -21,6 +22,8 @@ enum si5351_variant {
 	SI5351_VARIANT_C = 4,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * enum si5351_pll_src - Si5351 pll clock source
  * @SI5351_PLL_SRC_DEFAULT: default, do not change eeprom config
@@ -79,6 +82,26 @@ enum si5351_drive_strength {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * enum si5351_disable_state - Si5351 clock output disable state
+ * @SI5351_DISABLE_DEFAULT: default, do not change eeprom config
+ * @SI5351_DISABLE_LOW: CLKx is set to a LOW state when disabled
+ * @SI5351_DISABLE_HIGH: CLKx is set to a HIGH state when disabled
+ * @SI5351_DISABLE_FLOATING: CLKx is set to a FLOATING state when
+ *				disabled
+ * @SI5351_DISABLE_NEVER: CLKx is NEVER disabled
+ */
+enum si5351_disable_state {
+	SI5351_DISABLE_DEFAULT = 0,
+	SI5351_DISABLE_LOW,
+	SI5351_DISABLE_HIGH,
+	SI5351_DISABLE_FLOATING,
+	SI5351_DISABLE_NEVER,
+};
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct si5351_clkout_config - Si5351 clock output configuration
  * @clkout: clkout number
  * @multisynth_src: multisynth source clock
@@ -91,22 +114,32 @@ struct si5351_clkout_config {
 	enum si5351_multisynth_src multisynth_src;
 	enum si5351_clkout_src clkout_src;
 	enum si5351_drive_strength drive;
+<<<<<<< HEAD
+=======
+	enum si5351_disable_state disable_state;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool pll_master;
 	unsigned long rate;
 };
 
 /**
  * struct si5351_platform_data - Platform data for the Si5351 clock driver
+<<<<<<< HEAD
  * @variant: Si5351 chip variant
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @clk_xtal: xtal input clock
  * @clk_clkin: clkin input clock
  * @pll_src: array of pll source clock setting
  * @clkout: array of clkout configuration
  */
 struct si5351_platform_data {
+<<<<<<< HEAD
 	enum si5351_variant variant;
 	struct clk *clk_xtal;
 	struct clk *clk_clkin;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum si5351_pll_src pll_src[2];
 	struct si5351_clkout_config clkout[8];
 };

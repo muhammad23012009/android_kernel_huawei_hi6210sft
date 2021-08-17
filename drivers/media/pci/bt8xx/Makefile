@@ -1,6 +1,10 @@
 bttv-objs      :=      bttv-driver.o bttv-cards.o bttv-if.o \
 		       bttv-risc.o bttv-vbi.o bttv-i2c.o bttv-gpio.o \
+<<<<<<< HEAD
 		       bttv-input.o bttv-audio-hook.o
+=======
+		       bttv-input.o bttv-audio-hook.o btcx-risc.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_VIDEO_BT848) += bttv.o
 obj-$(CONFIG_DVB_BT8XX) += bt878.o dvb-bt8xx.o dst.o dst_ca.o

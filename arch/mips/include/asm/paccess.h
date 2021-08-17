@@ -56,6 +56,10 @@ struct __large_pstruct { unsigned long buf[100]; };
 	"1:\t" insn "\t%1,%2\n\t"					\
 	"move\t%0,$0\n"							\
 	"2:\n\t"							\
+<<<<<<< HEAD
+=======
+	".insn\n\t"							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	".section\t.fixup,\"ax\"\n"					\
 	"3:\tli\t%0,%3\n\t"						\
 	"move\t%1,$0\n\t"						\
@@ -94,6 +98,10 @@ extern void __get_dbe_unknown(void);
 	"1:\t" insn "\t%1,%2\n\t"					\
 	"move\t%0,$0\n"							\
 	"2:\n\t"							\
+<<<<<<< HEAD
+=======
+	".insn\n\t"							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	".section\t.fixup,\"ax\"\n"					\
 	"3:\tli\t%0,%3\n\t"						\
 	"j\t2b\n\t"							\

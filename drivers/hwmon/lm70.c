@@ -37,6 +37,10 @@
 #include <linux/mod_devicetable.h>
 #include <linux/spi/spi.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #define DRVNAME		"lm70"
@@ -47,7 +51,11 @@
 #define LM70_CHIP_LM74		3	/* NS LM74 */
 
 struct lm70 {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct spi_device *spi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex lock;
 	unsigned int chip;
 };
@@ -56,11 +64,19 @@ struct lm70 {
 static ssize_t lm70_sense_temp(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct spi_device *spi = to_spi_device(dev);
 	int status, val = 0;
 	u8 rxbuf[2];
 	s16 raw = 0;
 	struct lm70 *p_lm70 = spi_get_drvdata(spi);
+=======
+	struct lm70 *p_lm70 = dev_get_drvdata(dev);
+	struct spi_device *spi = p_lm70->spi;
+	int status, val = 0;
+	u8 rxbuf[2];
+	s16 raw = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mutex_lock_interruptible(&p_lm70->lock))
 		return -ERESTARTSYS;
@@ -121,6 +137,7 @@ out:
 
 static DEVICE_ATTR(temp1_input, S_IRUGO, lm70_sense_temp, NULL);
 
+<<<<<<< HEAD
 static ssize_t lm70_show_name(struct device *dev, struct device_attribute
 			      *devattr, char *buf)
 {
@@ -136,6 +153,52 @@ static int lm70_probe(struct spi_device *spi)
 	int chip = spi_get_device_id(spi)->driver_data;
 	struct lm70 *p_lm70;
 	int status;
+=======
+static struct attribute *lm70_attrs[] = {
+	&dev_attr_temp1_input.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(lm70);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef CONFIG_OF
+static const struct of_device_id lm70_of_ids[] = {
+	{
+		.compatible = "ti,lm70",
+		.data = (void *) LM70_CHIP_LM70,
+	},
+	{
+		.compatible = "ti,tmp121",
+		.data = (void *) LM70_CHIP_TMP121,
+	},
+	{
+		.compatible = "ti,lm71",
+		.data = (void *) LM70_CHIP_LM71,
+	},
+	{
+		.compatible = "ti,lm74",
+		.data = (void *) LM70_CHIP_LM74,
+	},
+	{},
+};
+MODULE_DEVICE_TABLE(of, lm70_of_ids);
+#endif
+
+static int lm70_probe(struct spi_device *spi)
+{
+	const struct of_device_id *match;
+	struct device *hwmon_dev;
+	struct lm70 *p_lm70;
+	int chip;
+
+	match = of_match_device(lm70_of_ids, &spi->dev);
+	if (match)
+		chip = (int)(uintptr_t)match->data;
+	else
+		chip = spi_get_device_id(spi)->driver_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* signaling is SPI_MODE_0 */
 	if (spi->mode & (SPI_CPOL | SPI_CPHA))
@@ -149,6 +212,7 @@ static int lm70_probe(struct spi_device *spi)
 
 	mutex_init(&p_lm70->lock);
 	p_lm70->chip = chip;
+<<<<<<< HEAD
 
 	spi_set_drvdata(spi, p_lm70);
 
@@ -191,6 +255,16 @@ static int lm70_remove(struct spi_device *spi)
 }
 
 
+=======
+	p_lm70->spi = spi;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(&spi->dev,
+							   spi->modalias,
+							   p_lm70, lm70_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct spi_device_id lm70_ids[] = {
 	{ "lm70",   LM70_CHIP_LM70 },
 	{ "tmp121", LM70_CHIP_TMP121 },
@@ -203,11 +277,18 @@ MODULE_DEVICE_TABLE(spi, lm70_ids);
 static struct spi_driver lm70_driver = {
 	.driver = {
 		.name	= "lm70",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.id_table = lm70_ids,
 	.probe	= lm70_probe,
 	.remove	= lm70_remove,
+=======
+		.of_match_table	= of_match_ptr(lm70_of_ids),
+	},
+	.id_table = lm70_ids,
+	.probe	= lm70_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_spi_driver(lm70_driver);

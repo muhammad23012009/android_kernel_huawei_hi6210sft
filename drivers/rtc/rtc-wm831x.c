@@ -460,11 +460,14 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int wm831x_rtc_remove(struct platform_device *pdev)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct dev_pm_ops wm831x_rtc_pm_ops = {
 	.suspend = wm831x_rtc_suspend,
 	.resume = wm831x_rtc_resume,
@@ -478,7 +481,10 @@ static const struct dev_pm_ops wm831x_rtc_pm_ops = {
 
 static struct platform_driver wm831x_rtc_driver = {
 	.probe = wm831x_rtc_probe,
+<<<<<<< HEAD
 	.remove = wm831x_rtc_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.driver = {
 		.name = "wm831x-rtc",
 		.pm = &wm831x_rtc_pm_ops,

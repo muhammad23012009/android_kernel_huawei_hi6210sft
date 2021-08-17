@@ -19,8 +19,13 @@
 #include <linux/vmw_vmci_defs.h>
 #include <linux/vmw_vmci_api.h>
 
+<<<<<<< HEAD
 #include "vsock_addr.h"
 #include "af_vsock.h"
+=======
+#include <net/vsock_addr.h>
+#include <net/af_vsock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* If the packet format changes in a release then this should change too. */
 #define VMCI_TRANSPORT_PACKET_VERSION 1
@@ -119,10 +124,19 @@ struct vmci_transport {
 	u64 queue_pair_size;
 	u64 queue_pair_min_size;
 	u64 queue_pair_max_size;
+<<<<<<< HEAD
 	u32 attach_sub_id;
 	u32 detach_sub_id;
 	union vmci_transport_notify notify;
 	struct vmci_transport_notify_ops *notify_ops;
+=======
+	u32 detach_sub_id;
+	union vmci_transport_notify notify;
+	const struct vmci_transport_notify_ops *notify_ops;
+	struct list_head elem;
+	struct sock *sk;
+	spinlock_t lock; /* protects sk. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int vmci_transport_register(void);

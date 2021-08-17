@@ -11,7 +11,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/usb.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -66,6 +69,7 @@ struct tusb_omap_dma {
 	unsigned			multichannel:1;
 };
 
+<<<<<<< HEAD
 static int tusb_omap_dma_start(struct dma_controller *c)
 {
 	struct tusb_omap_dma	*tusb_dma;
@@ -88,6 +92,8 @@ static int tusb_omap_dma_stop(struct dma_controller *c)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Allocate dmareq0 to the current channel unless it's already taken
  */
@@ -243,6 +249,10 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 	u32				dma_remaining;
 	int				src_burst, dst_burst;
 	u16				csr;
+<<<<<<< HEAD
+=======
+	u32				psize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int				ch;
 	s8				dmareq;
 	s8				sync_dev;
@@ -333,9 +343,15 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 
 	dma_params.frame_count	= chdat->transfer_len / 32; /* Burst sz frame */
 
+<<<<<<< HEAD
 	dev_dbg(musb->controller, "ep%i %s dma ch%i dma: %08x len: %u(%u) packet_sz: %i(%i)\n",
 		chdat->epnum, chdat->tx ? "tx" : "rx",
 		ch, dma_addr, chdat->transfer_len, len,
+=======
+	dev_dbg(musb->controller, "ep%i %s dma ch%i dma: %pad len: %u(%u) packet_sz: %i(%i)\n",
+		chdat->epnum, chdat->tx ? "tx" : "rx",
+		ch, &dma_addr, chdat->transfer_len, len,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		chdat->transfer_packet_sz, packet_sz);
 
 	/*
@@ -414,15 +430,29 @@ static int tusb_omap_dma_program(struct dma_channel *channel, u16 packet_sz,
 
 	if (chdat->tx) {
 		/* Send transfer_packet_sz packets at a time */
+<<<<<<< HEAD
 		musb_writel(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET,
 			chdat->transfer_packet_sz);
+=======
+		psize = musb_readl(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET);
+		psize &= ~0x7ff;
+		psize |= chdat->transfer_packet_sz;
+		musb_writel(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET, psize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		musb_writel(ep_conf, TUSB_EP_TX_OFFSET,
 			TUSB_EP_CONFIG_XFR_SIZE(chdat->transfer_len));
 	} else {
 		/* Receive transfer_packet_sz packets at a time */
+<<<<<<< HEAD
 		musb_writel(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET,
 			chdat->transfer_packet_sz << 16);
+=======
+		psize = musb_readl(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET);
+		psize &= ~(0x7ff << 16);
+		psize |= (chdat->transfer_packet_sz << 16);
+		musb_writel(ep_conf, TUSB_EP_MAX_PACKET_SIZE_OFFSET, psize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		musb_writel(ep_conf, TUSB_EP_RX_OFFSET,
 			TUSB_EP_CONFIG_XFR_SIZE(chdat->transfer_len));
@@ -648,7 +678,11 @@ static void tusb_omap_dma_release(struct dma_channel *channel)
 	channel = NULL;
 }
 
+<<<<<<< HEAD
 void dma_controller_destroy(struct dma_controller *c)
+=======
+void tusb_dma_controller_destroy(struct dma_controller *c)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct tusb_omap_dma	*tusb_dma;
 	int			i;
@@ -667,8 +701,15 @@ void dma_controller_destroy(struct dma_controller *c)
 
 	kfree(tusb_dma);
 }
+<<<<<<< HEAD
 
 struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *base)
+=======
+EXPORT_SYMBOL_GPL(tusb_dma_controller_destroy);
+
+struct dma_controller *
+tusb_dma_controller_create(struct musb *musb, void __iomem *base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem		*tbase = musb->ctrl_base;
 	struct tusb_omap_dma	*tusb_dma;
@@ -695,14 +736,21 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 	tusb_dma->dmareq = -1;
 	tusb_dma->sync_dev = -1;
 
+<<<<<<< HEAD
 	tusb_dma->controller.start = tusb_omap_dma_start;
 	tusb_dma->controller.stop = tusb_omap_dma_stop;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tusb_dma->controller.channel_alloc = tusb_omap_dma_allocate;
 	tusb_dma->controller.channel_release = tusb_omap_dma_release;
 	tusb_dma->controller.channel_program = tusb_omap_dma_program;
 	tusb_dma->controller.channel_abort = tusb_omap_dma_abort;
 
+<<<<<<< HEAD
 	if (tusb_get_revision(musb) >= TUSB_REV_30)
+=======
+	if (musb->tusb_revision >= TUSB_REV_30)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tusb_dma->multichannel = 1;
 
 	for (i = 0; i < MAX_DMAREQ; i++) {
@@ -726,7 +774,15 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 	return &tusb_dma->controller;
 
 cleanup:
+<<<<<<< HEAD
 	dma_controller_destroy(&tusb_dma->controller);
 out:
 	return NULL;
 }
+=======
+	musb_dma_controller_destroy(&tusb_dma->controller);
+out:
+	return NULL;
+}
+EXPORT_SYMBOL_GPL(tusb_dma_controller_create);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

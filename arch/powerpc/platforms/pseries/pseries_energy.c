@@ -108,8 +108,13 @@ err:
  * energy consumption.
  */
 
+<<<<<<< HEAD
 #define FLAGS_MODE1	0x004E200000080E01
 #define FLAGS_MODE2	0x004E200000080401
+=======
+#define FLAGS_MODE1	0x004E200000080E01UL
+#define FLAGS_MODE2	0x004E200000080401UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FLAGS_ACTIVATE  0x100
 
 static ssize_t get_best_energy_list(char *page, int activate)
@@ -208,6 +213,7 @@ static ssize_t percpu_deactivate_hint_show(struct device *dev,
  *	Per-cpu value of the hint
  */
 
+<<<<<<< HEAD
 struct device_attribute attr_cpu_activate_hint_list =
 		__ATTR(pseries_activate_hint_list, 0444,
 		cpu_activate_hint_list_show, NULL);
@@ -221,6 +227,21 @@ struct device_attribute attr_percpu_activate_hint =
 		percpu_activate_hint_show, NULL);
 
 struct device_attribute attr_percpu_deactivate_hint =
+=======
+static struct device_attribute attr_cpu_activate_hint_list =
+		__ATTR(pseries_activate_hint_list, 0444,
+		cpu_activate_hint_list_show, NULL);
+
+static struct device_attribute attr_cpu_deactivate_hint_list =
+		__ATTR(pseries_deactivate_hint_list, 0444,
+		cpu_deactivate_hint_list_show, NULL);
+
+static struct device_attribute attr_percpu_activate_hint =
+		__ATTR(pseries_activate_hint, 0444,
+		percpu_activate_hint_show, NULL);
+
+static struct device_attribute attr_percpu_deactivate_hint =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__ATTR(pseries_deactivate_hint, 0444,
 		percpu_deactivate_hint_show, NULL);
 

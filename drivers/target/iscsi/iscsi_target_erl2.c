@@ -2,9 +2,13 @@
  * This file contains error recovery level two functions used by
  * the iSCSI Target driver.
  *
+<<<<<<< HEAD
  * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
  *
  * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
+=======
+ * (c) Copyright 2007-2013 Datera, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
  *
@@ -23,7 +27,11 @@
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "iscsi_target_datain_values.h"
 #include "iscsi_target_util.h"
 #include "iscsi_target_erl0.h"

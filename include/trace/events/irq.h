@@ -9,6 +9,7 @@
 struct irqaction;
 struct softirq_action;
 
+<<<<<<< HEAD
 #define softirq_name(sirq) { sirq##_SOFTIRQ, #sirq }
 #define show_softirq_name(val)				\
 	__print_symbolic(val,				\
@@ -22,6 +23,36 @@ struct softirq_action;
 			 softirq_name(SCHED),		\
 			 softirq_name(HRTIMER),		\
 			 softirq_name(RCU))
+=======
+#define SOFTIRQ_NAME_LIST				\
+			 softirq_name(HI)		\
+			 softirq_name(TIMER)		\
+			 softirq_name(NET_TX)		\
+			 softirq_name(NET_RX)		\
+			 softirq_name(BLOCK)		\
+			 softirq_name(IRQ_POLL)		\
+			 softirq_name(TASKLET)		\
+			 softirq_name(SCHED)		\
+			 softirq_name(HRTIMER)		\
+			 softirq_name_end(RCU)
+
+#undef softirq_name
+#undef softirq_name_end
+
+#define softirq_name(sirq) TRACE_DEFINE_ENUM(sirq##_SOFTIRQ);
+#define softirq_name_end(sirq)  TRACE_DEFINE_ENUM(sirq##_SOFTIRQ);
+
+SOFTIRQ_NAME_LIST
+
+#undef softirq_name
+#undef softirq_name_end
+
+#define softirq_name(sirq) { sirq##_SOFTIRQ, #sirq },
+#define softirq_name_end(sirq) { sirq##_SOFTIRQ, #sirq }
+
+#define show_softirq_name(val)				\
+	__print_symbolic(val, SOFTIRQ_NAME_LIST)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * irq_handler_entry - called immediately before the irq action handler
@@ -60,7 +91,11 @@ TRACE_EVENT(irq_handler_entry,
  * @ret: return value
  *
  * If the @ret value is set to IRQ_HANDLED, then we know that the corresponding
+<<<<<<< HEAD
  * @action->handler scuccessully handled this irq. Otherwise, the irq might be
+=======
+ * @action->handler successfully handled this irq. Otherwise, the irq might be
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * a shared irq line, or the irq was not handled successfully. Can be used in
  * conjunction with the irq_handler_entry to understand irq handler latencies.
  */
@@ -107,7 +142,11 @@ DECLARE_EVENT_CLASS(softirq,
  * @vec_nr:  softirq vector number
  *
  * When used in combination with the softirq_exit tracepoint
+<<<<<<< HEAD
  * we can determine the softirq handler runtine.
+=======
+ * we can determine the softirq handler routine.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 DEFINE_EVENT(softirq, softirq_entry,
 
@@ -121,7 +160,11 @@ DEFINE_EVENT(softirq, softirq_entry,
  * @vec_nr:  softirq vector number
  *
  * When used in combination with the softirq_entry tracepoint
+<<<<<<< HEAD
  * we can determine the softirq handler runtine.
+=======
+ * we can determine the softirq handler routine.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 DEFINE_EVENT(softirq, softirq_exit,
 

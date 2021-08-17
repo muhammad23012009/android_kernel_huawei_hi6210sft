@@ -11,10 +11,16 @@
 
 extern int this_is_starfire;
 
+<<<<<<< HEAD
 extern void check_if_starfire(void);
 extern int starfire_hard_smp_processor_id(void);
 extern void starfire_hookup(int);
 extern unsigned int starfire_translate(unsigned long imap, unsigned int upaid);
+=======
+void check_if_starfire(void);
+void starfire_hookup(int);
+unsigned int starfire_translate(unsigned long imap, unsigned int upaid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 #endif

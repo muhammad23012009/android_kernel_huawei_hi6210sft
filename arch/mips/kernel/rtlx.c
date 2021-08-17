@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2005 MIPS Technologies, Inc.  All rights reserved.
  * Copyright (C) 2005, 06 Ralf Baechle (ralf@linux-mips.org)
  *
@@ -88,16 +89,49 @@ static irqreturn_t rtlx_interrupt(int irq, void *dev_id)
 
 	return IRQ_HANDLED;
 }
+=======
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License.  See the file "COPYING" in the main directory of this archive
+ * for more details.
+ *
+ * Copyright (C) 2005 MIPS Technologies, Inc.  All rights reserved.
+ * Copyright (C) 2005, 06 Ralf Baechle (ralf@linux-mips.org)
+ * Copyright (C) 2013 Imagination Technologies Ltd.
+ */
+#include <linux/kernel.h>
+#include <linux/fs.h>
+#include <linux/syscalls.h>
+#include <linux/moduleloader.h>
+#include <linux/atomic.h>
+#include <asm/mipsmtregs.h>
+#include <asm/mips_mt.h>
+#include <asm/processor.h>
+#include <asm/rtlx.h>
+#include <asm/setup.h>
+#include <asm/vpe.h>
+
+static int sp_stopping;
+struct rtlx_info *rtlx;
+struct chan_waitqueues channel_wqs[RTLX_CHANNELS];
+struct vpe_notifications rtlx_notify;
+void (*aprp_hook)(void) = NULL;
+EXPORT_SYMBOL(aprp_hook);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __used dump_rtlx(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	printk("id 0x%lx state %d\n", rtlx->id, rtlx->state);
+=======
+	pr_info("id 0x%lx state %d\n", rtlx->id, rtlx->state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < RTLX_CHANNELS; i++) {
 		struct rtlx_channel *chan = &rtlx->channel[i];
 
+<<<<<<< HEAD
 		printk(" rt_state %d lx_state %d buffer_size %d\n",
 		       chan->rt_state, chan->lx_state, chan->buffer_size);
 
@@ -109,6 +143,19 @@ static void __used dump_rtlx(void)
 
 		printk(" rt_buffer <%s>\n", chan->rt_buffer);
 		printk(" lx_buffer <%s>\n", chan->lx_buffer);
+=======
+		pr_info(" rt_state %d lx_state %d buffer_size %d\n",
+			chan->rt_state, chan->lx_state, chan->buffer_size);
+
+		pr_info(" rt_read %d rt_write %d\n",
+			chan->rt_read, chan->rt_write);
+
+		pr_info(" lx_read %d lx_write %d\n",
+			chan->lx_read, chan->lx_write);
+
+		pr_info(" rt_buffer <%s>\n", chan->rt_buffer);
+		pr_info(" lx_buffer <%s>\n", chan->lx_buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -116,8 +163,12 @@ static void __used dump_rtlx(void)
 static int rtlx_init(struct rtlx_info *rtlxi)
 {
 	if (rtlxi->id != RTLX_ID) {
+<<<<<<< HEAD
 		printk(KERN_ERR "no valid RTLX id at 0x%p 0x%lx\n",
 			rtlxi, rtlxi->id);
+=======
+		pr_err("no valid RTLX id at 0x%p 0x%lx\n", rtlxi, rtlxi->id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOEXEC;
 	}
 
@@ -127,20 +178,32 @@ static int rtlx_init(struct rtlx_info *rtlxi)
 }
 
 /* notifications */
+<<<<<<< HEAD
 static void starting(int vpe)
+=======
+void rtlx_starting(int vpe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	sp_stopping = 0;
 
 	/* force a reload of rtlx */
+<<<<<<< HEAD
 	rtlx=NULL;
+=======
+	rtlx = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* wake up any sleeping rtlx_open's */
 	for (i = 0; i < RTLX_CHANNELS; i++)
 		wake_up_interruptible(&channel_wqs[i].lx_queue);
 }
 
+<<<<<<< HEAD
 static void stopping(int vpe)
+=======
+void rtlx_stopping(int vpe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 
@@ -158,18 +221,27 @@ int rtlx_open(int index, int can_sleep)
 	int ret = 0;
 
 	if (index >= RTLX_CHANNELS) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "rtlx_open index out of range\n");
+=======
+		pr_debug("rtlx_open index out of range\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOSYS;
 	}
 
 	if (atomic_inc_return(&channel_wqs[index].in_open) > 1) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "rtlx_open channel %d already opened\n",
 		       index);
+=======
+		pr_debug("rtlx_open channel %d already opened\n", index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EBUSY;
 		goto out_fail;
 	}
 
 	if (rtlx == NULL) {
+<<<<<<< HEAD
 		if( (p = vpe_get_shared(tclimit)) == NULL) {
 		    if (can_sleep) {
 			__wait_event_interruptible(channel_wqs[index].lx_queue,
@@ -182,6 +254,21 @@ int rtlx_open(int index, int can_sleep)
 			ret = -ENOSYS;
 			goto out_fail;
 		    }
+=======
+		p = vpe_get_shared(aprp_cpu_index());
+		if (p == NULL) {
+			if (can_sleep) {
+				ret = __wait_event_interruptible(
+					channel_wqs[index].lx_queue,
+					(p = vpe_get_shared(aprp_cpu_index())));
+				if (ret)
+					goto out_fail;
+			} else {
+				pr_debug("No SP program loaded, and device opened with O_NONBLOCK\n");
+				ret = -ENOSYS;
+				goto out_fail;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		smp_rmb();
@@ -203,24 +290,41 @@ int rtlx_open(int index, int can_sleep)
 					ret = -ERESTARTSYS;
 					goto out_fail;
 				}
+<<<<<<< HEAD
 				finish_wait(&channel_wqs[index].lx_queue, &wait);
 			} else {
 				pr_err(" *vpe_get_shared is NULL. "
 				       "Has an SP program been loaded?\n");
+=======
+				finish_wait(&channel_wqs[index].lx_queue,
+					    &wait);
+			} else {
+				pr_err(" *vpe_get_shared is NULL. Has an SP program been loaded?\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				ret = -ENOSYS;
 				goto out_fail;
 			}
 		}
 
 		if ((unsigned int)*p < KSEG0) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "vpe_get_shared returned an "
 			       "invalid pointer maybe an error code %d\n",
 			       (int)*p);
+=======
+			pr_warn("vpe_get_shared returned an invalid pointer maybe an error code %d\n",
+				(int)*p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -ENOSYS;
 			goto out_fail;
 		}
 
+<<<<<<< HEAD
 		if ((ret = rtlx_init(*p)) < 0)
+=======
+		ret = rtlx_init(*p);
+		if (ret < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out_ret;
 	}
 
@@ -263,11 +367,18 @@ unsigned int rtlx_read_poll(int index, int can_sleep)
 	/* data available to read? */
 	if (chan->lx_read == chan->lx_write) {
 		if (can_sleep) {
+<<<<<<< HEAD
 			int ret = 0;
 
 			__wait_event_interruptible(channel_wqs[index].lx_queue,
 				(chan->lx_read != chan->lx_write) ||
 				sp_stopping, ret);
+=======
+			int ret = __wait_event_interruptible(
+				channel_wqs[index].lx_queue,
+				(chan->lx_read != chan->lx_write) ||
+				sp_stopping);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ret)
 				return ret;
 
@@ -352,7 +463,11 @@ ssize_t rtlx_write(int index, const void __user *buffer, size_t count)
 	size_t fl;
 
 	if (rtlx == NULL)
+<<<<<<< HEAD
 		return(-ENOSYS);
+=======
+		return -ENOSYS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rt = &rtlx->channel[index];
 
@@ -361,8 +476,13 @@ ssize_t rtlx_write(int index, const void __user *buffer, size_t count)
 	rt_read = rt->rt_read;
 
 	/* total number of bytes to copy */
+<<<<<<< HEAD
 	count = min(count, (size_t)write_spacefree(rt_read, rt->rt_write,
 							rt->buffer_size));
+=======
+	count = min_t(size_t, count, write_spacefree(rt_read, rt->rt_write,
+						     rt->buffer_size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* first bit from write pointer to the end of the buffer, or count */
 	fl = min(count, (size_t) rt->buffer_size - rt->rt_write);
@@ -372,9 +492,14 @@ ssize_t rtlx_write(int index, const void __user *buffer, size_t count)
 		goto out;
 
 	/* if there's any left copy to the beginning of the buffer */
+<<<<<<< HEAD
 	if (count - fl) {
 		failed = copy_from_user(rt->rt_buffer, buffer + fl, count - fl);
 	}
+=======
+	if (count - fl)
+		failed = copy_from_user(rt->rt_buffer, buffer + fl, count - fl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out:
 	count -= failed;
@@ -384,6 +509,11 @@ out:
 	smp_wmb();
 	mutex_unlock(&channel_wqs[index].mutex);
 
+<<<<<<< HEAD
+=======
+	_interrupt_sp();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return count;
 }
 
@@ -398,7 +528,11 @@ static int file_release(struct inode *inode, struct file *filp)
 	return rtlx_release(iminor(inode));
 }
 
+<<<<<<< HEAD
 static unsigned int file_poll(struct file *file, poll_table * wait)
+=======
+static unsigned int file_poll(struct file *file, poll_table *wait)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int minor = iminor(file_inode(file));
 	unsigned int mask = 0;
@@ -420,19 +554,30 @@ static unsigned int file_poll(struct file *file, poll_table * wait)
 	return mask;
 }
 
+<<<<<<< HEAD
 static ssize_t file_read(struct file *file, char __user * buffer, size_t count,
 			 loff_t * ppos)
+=======
+static ssize_t file_read(struct file *file, char __user *buffer, size_t count,
+			 loff_t *ppos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int minor = iminor(file_inode(file));
 
 	/* data available? */
+<<<<<<< HEAD
 	if (!rtlx_read_poll(minor, (file->f_flags & O_NONBLOCK) ? 0 : 1)) {
 		return 0;	// -EAGAIN makes cat whinge
 	}
+=======
+	if (!rtlx_read_poll(minor, (file->f_flags & O_NONBLOCK) ? 0 : 1))
+		return 0;	/* -EAGAIN makes 'cat' whine */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rtlx_read(minor, buffer, count);
 }
 
+<<<<<<< HEAD
 static ssize_t file_write(struct file *file, const char __user * buffer,
 			  size_t count, loff_t * ppos)
 {
@@ -442,13 +587,28 @@ static ssize_t file_write(struct file *file, const char __user * buffer,
 	/* any space left... */
 	if (!rtlx_write_poll(minor)) {
 		int ret = 0;
+=======
+static ssize_t file_write(struct file *file, const char __user *buffer,
+			  size_t count, loff_t *ppos)
+{
+	int minor = iminor(file_inode(file));
+
+	/* any space left... */
+	if (!rtlx_write_poll(minor)) {
+		int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (file->f_flags & O_NONBLOCK)
 			return -EAGAIN;
 
+<<<<<<< HEAD
 		__wait_event_interruptible(channel_wqs[minor].rt_queue,
 					   rtlx_write_poll(minor),
 					   ret);
+=======
+		ret = __wait_event_interruptible(channel_wqs[minor].rt_queue,
+					   rtlx_write_poll(minor));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 	}
@@ -456,6 +616,7 @@ static ssize_t file_write(struct file *file, const char __user * buffer,
 	return rtlx_write(minor, buffer, count);
 }
 
+<<<<<<< HEAD
 static const struct file_operations rtlx_fops = {
 	.owner =   THIS_MODULE,
 	.open =	   file_open,
@@ -550,6 +711,18 @@ static void __exit rtlx_module_exit(void)
 	unregister_chrdev(major, module_name);
 }
 
+=======
+const struct file_operations rtlx_fops = {
+	.owner =   THIS_MODULE,
+	.open =    file_open,
+	.release = file_release,
+	.write =   file_write,
+	.read =    file_read,
+	.poll =    file_poll,
+	.llseek =  noop_llseek,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_init(rtlx_module_init);
 module_exit(rtlx_module_exit);
 

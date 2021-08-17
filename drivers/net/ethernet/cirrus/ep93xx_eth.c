@@ -18,7 +18,10 @@
 #include <linux/mii.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/moduleparam.h>
 #include <linux/platform_device.h>
@@ -469,6 +472,12 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 	struct device *dev = ep->dev->dev.parent;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (!ep->descs)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < RX_QUEUE_ENTRIES; i++) {
 		dma_addr_t d;
 
@@ -476,8 +485,12 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 		if (d)
 			dma_unmap_single(dev, d, PKT_BUF_SIZE, DMA_FROM_DEVICE);
 
+<<<<<<< HEAD
 		if (ep->rx_buf[i] != NULL)
 			kfree(ep->rx_buf[i]);
+=======
+		kfree(ep->rx_buf[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = 0; i < TX_QUEUE_ENTRIES; i++) {
@@ -487,12 +500,20 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 		if (d)
 			dma_unmap_single(dev, d, PKT_BUF_SIZE, DMA_TO_DEVICE);
 
+<<<<<<< HEAD
 		if (ep->tx_buf[i] != NULL)
 			kfree(ep->tx_buf[i]);
+=======
+		kfree(ep->tx_buf[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dma_free_coherent(dev, sizeof(struct ep93xx_descs), ep->descs,
 							ep->descs_dma_addr);
+<<<<<<< HEAD
+=======
+	ep->descs = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ep93xx_alloc_buffers(struct ep93xx_priv *ep)
@@ -779,11 +800,18 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 {
 	struct net_device *dev;
 	struct ep93xx_priv *ep;
+<<<<<<< HEAD
+=======
+	struct resource *mem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev = platform_get_drvdata(pdev);
 	if (dev == NULL)
 		return 0;
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ep = netdev_priv(dev);
 
@@ -795,8 +823,13 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 		iounmap(ep->base_addr);
 
 	if (ep->res != NULL) {
+<<<<<<< HEAD
 		release_resource(ep->res);
 		kfree(ep->res);
+=======
+		mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+		release_mem_region(mem->start, resource_size(mem));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	free_netdev(dev);
@@ -815,7 +848,11 @@ static int ep93xx_eth_probe(struct platform_device *pdev)
 
 	if (pdev == NULL)
 		return -ENODEV;
+<<<<<<< HEAD
 	data = pdev->dev.platform_data;
+=======
+	data = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	irq = platform_get_irq(pdev, 0);
@@ -883,7 +920,10 @@ static struct platform_driver ep93xx_eth_driver = {
 	.remove		= ep93xx_eth_remove,
 	.driver		= {
 		.name	= "ep93xx-eth",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

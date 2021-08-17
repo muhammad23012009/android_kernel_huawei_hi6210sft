@@ -15,7 +15,10 @@
  * the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -539,7 +542,11 @@ static void cypress_process_packet(struct psmouse *psmouse, bool zero_pkt)
 		pos[i].y = contact->y;
 	}
 
+<<<<<<< HEAD
 	input_mt_assign_slots(input, slots, pos, n);
+=======
+	input_mt_assign_slots(input, slots, pos, n, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < n; i++) {
 		contact = &report_data.contacts[i];
@@ -665,6 +672,7 @@ int cypress_init(struct psmouse *psmouse)
 {
 	struct cytp_data *cytp;
 
+<<<<<<< HEAD
 	cytp = (struct cytp_data *)kzalloc(sizeof(struct cytp_data), GFP_KERNEL);
 	psmouse->private = (void *)cytp;
 	if (cytp == NULL)
@@ -674,6 +682,17 @@ int cypress_init(struct psmouse *psmouse)
 
 	psmouse->pktsize = 8;
 
+=======
+	cytp = kzalloc(sizeof(struct cytp_data), GFP_KERNEL);
+	if (!cytp)
+		return -ENOMEM;
+
+	psmouse->private = cytp;
+	psmouse->pktsize = 8;
+
+	cypress_reset(psmouse);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cypress_query_hardware(psmouse)) {
 		psmouse_err(psmouse, "Unable to query Trackpad hardware.\n");
 		goto err_exit;
@@ -711,8 +730,11 @@ err_exit:
 
 	return -1;
 }
+<<<<<<< HEAD
 
 bool cypress_supported(void)
 {
 	return true;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

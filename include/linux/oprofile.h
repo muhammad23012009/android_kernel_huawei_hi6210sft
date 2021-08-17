@@ -42,7 +42,10 @@
 #define IBS_FETCH_CODE			13
 #define IBS_OP_CODE			14
 
+<<<<<<< HEAD
 struct super_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dentry;
 struct file_operations;
 struct pt_regs;
@@ -51,7 +54,11 @@ struct pt_regs;
 struct oprofile_operations {
 	/* create any necessary configuration files in the oprofile fs.
 	 * Optional. */
+<<<<<<< HEAD
 	int (*create_files)(struct super_block * sb, struct dentry * root);
+=======
+	int (*create_files)(struct dentry * root);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Do any necessary interrupt setup. Optional. */
 	int (*setup)(void);
 	/* Do any necessary interrupt shutdown. Optional. */
@@ -125,6 +132,7 @@ void oprofile_add_trace(unsigned long eip);
  * Create a file of the given name as a child of the given root, with
  * the specified file operations.
  */
+<<<<<<< HEAD
 int oprofilefs_create_file(struct super_block * sb, struct dentry * root,
 	char const * name, const struct file_operations * fops);
 
@@ -146,6 +154,28 @@ int oprofilefs_create_ro_atomic(struct super_block * sb, struct dentry * root,
 /** create a directory */
 struct dentry * oprofilefs_mkdir(struct super_block * sb, struct dentry * root,
 	char const * name);
+=======
+int oprofilefs_create_file(struct dentry * root,
+	char const * name, const struct file_operations * fops);
+
+int oprofilefs_create_file_perm(struct dentry * root,
+	char const * name, const struct file_operations * fops, int perm);
+ 
+/** Create a file for read/write access to an unsigned long. */
+int oprofilefs_create_ulong(struct dentry * root,
+	char const * name, ulong * val);
+ 
+/** Create a file for read-only access to an unsigned long. */
+int oprofilefs_create_ro_ulong(struct dentry * root,
+	char const * name, ulong * val);
+ 
+/** Create a file for read-only access to an atomic_t. */
+int oprofilefs_create_ro_atomic(struct dentry * root,
+	char const * name, atomic_t * val);
+ 
+/** create a directory */
+struct dentry *oprofilefs_mkdir(struct dentry *parent, char const *name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * Write the given asciz string to the given user buffer @buf, updating *offset

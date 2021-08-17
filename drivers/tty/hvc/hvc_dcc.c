@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
+=======
+/* Copyright (c) 2010, 2014 The Linux Foundation. All rights reserved.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -8,6 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -22,6 +27,13 @@
 #include <linux/moduleparam.h>
 #include <linux/types.h>
 
+=======
+ */
+
+#include <linux/init.h>
+
+#include <asm/dcc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h>
 
 #include "hvc_console.h"
@@ -30,6 +42,7 @@
 #define DCC_STATUS_RX		(1 << 30)
 #define DCC_STATUS_TX		(1 << 29)
 
+<<<<<<< HEAD
 static inline u32 __dcc_getstatus(void)
 {
 	u32 __ret;
@@ -59,6 +72,8 @@ static inline void __dcc_putchar(char c)
 	isb();
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int hvc_dcc_put_chars(uint32_t vt, const char *buf, int count)
 {
 	int i;
@@ -86,6 +101,24 @@ static int hvc_dcc_get_chars(uint32_t vt, char *buf, int count)
 	return i;
 }
 
+<<<<<<< HEAD
+=======
+static bool hvc_dcc_check(void)
+{
+	unsigned long time = jiffies + (HZ / 10);
+
+	/* Write a test character to check if it is handled */
+	__dcc_putchar('\n');
+
+	while (time_is_after_jiffies(time)) {
+		if (!(__dcc_getstatus() & DCC_STATUS_TX))
+			return true;
+	}
+
+	return false;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct hv_ops hvc_dcc_get_put_ops = {
 	.get_chars = hvc_dcc_get_chars,
 	.put_chars = hvc_dcc_put_chars,
@@ -93,14 +126,37 @@ static const struct hv_ops hvc_dcc_get_put_ops = {
 
 static int __init hvc_dcc_console_init(void)
 {
+<<<<<<< HEAD
 	hvc_instantiate(0, 0, &hvc_dcc_get_put_ops);
 	return 0;
+=======
+	int ret;
+
+	if (!hvc_dcc_check())
+		return -ENODEV;
+
+	/* Returns -1 if error */
+	ret = hvc_instantiate(0, 0, &hvc_dcc_get_put_ops);
+
+	return ret < 0 ? -ENODEV : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 console_initcall(hvc_dcc_console_init);
 
 static int __init hvc_dcc_init(void)
 {
+<<<<<<< HEAD
 	hvc_alloc(0, 0, &hvc_dcc_get_put_ops, 128);
 	return 0;
+=======
+	struct hvc_struct *p;
+
+	if (!hvc_dcc_check())
+		return -ENODEV;
+
+	p = hvc_alloc(0, 0, &hvc_dcc_get_put_ops, 128);
+
+	return PTR_ERR_OR_ZERO(p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 device_initcall(hvc_dcc_init);

@@ -91,8 +91,13 @@ static int ab3100_set_register_interruptible(struct ab3100 *ab3100,
 			err);
 	} else if (err != 2) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (write register) "
 			"%d bytes transferred (expected 2)\n",
+=======
+			"write error (write register)\n"
+			"  %d bytes transferred (expected 2)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 	} else {
@@ -135,8 +140,13 @@ static int ab3100_set_test_register_interruptible(struct ab3100 *ab3100,
 			err);
 	} else if (err != 2) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (write test register) "
 			"%d bytes transferred (expected 2)\n",
+=======
+			"write error (write test register)\n"
+			"  %d bytes transferred (expected 2)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 	} else {
@@ -171,8 +181,13 @@ static int ab3100_get_register_interruptible(struct ab3100 *ab3100,
 		goto get_reg_out_unlock;
 	} else if (err != 1) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (send register address) "
 			"%d bytes transferred (expected 1)\n",
+=======
+			"write error (send register address)\n"
+			"  %d bytes transferred (expected 1)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 		goto get_reg_out_unlock;
@@ -189,8 +204,13 @@ static int ab3100_get_register_interruptible(struct ab3100 *ab3100,
 		goto get_reg_out_unlock;
 	} else if (err != 1) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (read register) "
 			"%d bytes transferred (expected 1)\n",
+=======
+			"write error (read register)\n"
+			"  %d bytes transferred (expected 1)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 		goto get_reg_out_unlock;
@@ -237,8 +257,13 @@ static int ab3100_get_register_page_interruptible(struct ab3100 *ab3100,
 		goto get_reg_page_out_unlock;
 	} else if (err != 1) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (send first register address) "
 			"%d bytes transferred (expected 1)\n",
+=======
+			"write error (send first register address)\n"
+			"  %d bytes transferred (expected 1)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 		goto get_reg_page_out_unlock;
@@ -252,8 +277,13 @@ static int ab3100_get_register_page_interruptible(struct ab3100 *ab3100,
 		goto get_reg_page_out_unlock;
 	} else if (err != numregs) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (read register page) "
 			"%d bytes transferred (expected %d)\n",
+=======
+			"write error (read register page)\n"
+			"  %d bytes transferred (expected %d)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err, numregs);
 		err = -EIO;
 		goto get_reg_page_out_unlock;
@@ -295,8 +325,13 @@ static int ab3100_mask_and_set_register_interruptible(struct ab3100 *ab3100,
 		goto get_maskset_unlock;
 	} else if (err != 1) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (maskset send address) "
 			"%d bytes transferred (expected 1)\n",
+=======
+			"write error (maskset send address)\n"
+			"  %d bytes transferred (expected 1)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 		goto get_maskset_unlock;
@@ -310,8 +345,13 @@ static int ab3100_mask_and_set_register_interruptible(struct ab3100 *ab3100,
 		goto get_maskset_unlock;
 	} else if (err != 1) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (maskset read register) "
 			"%d bytes transferred (expected 1)\n",
+=======
+			"write error (maskset read register)\n"
+			"  %d bytes transferred (expected 1)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 		goto get_maskset_unlock;
@@ -330,8 +370,13 @@ static int ab3100_mask_and_set_register_interruptible(struct ab3100 *ab3100,
 		goto get_maskset_unlock;
 	} else if (err != 2) {
 		dev_err(ab3100->dev,
+<<<<<<< HEAD
 			"write error (write register) "
 			"%d bytes transferred (expected 2)\n",
+=======
+			"write error (write register)\n"
+			"  %d bytes transferred (expected 2)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err);
 		err = -EIO;
 		goto get_maskset_unlock;
@@ -371,7 +416,11 @@ EXPORT_SYMBOL(ab3100_event_register);
 int ab3100_event_unregister(struct ab3100 *ab3100,
 			    struct notifier_block *nb)
 {
+<<<<<<< HEAD
   return blocking_notifier_chain_unregister(&ab3100->event_subscribers,
+=======
+	return blocking_notifier_chain_unregister(&ab3100->event_subscribers,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    nb);
 }
 EXPORT_SYMBOL(ab3100_event_unregister);
@@ -381,9 +430,17 @@ static int ab3100_event_registers_startup_state_get(struct device *dev,
 					     u8 *event)
 {
 	struct ab3100 *ab3100 = dev_get_drvdata(dev->parent);
+<<<<<<< HEAD
 	if (!ab3100->startup_events_read)
 		return -EAGAIN; /* Try again later */
 	memcpy(event, ab3100->startup_events, 3);
+=======
+
+	if (!ab3100->startup_events_read)
+		return -EAGAIN; /* Try again later */
+	memcpy(event, ab3100->startup_events, 3);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -455,7 +512,11 @@ static int ab3100_registers_print(struct seq_file *s, void *p)
 	u8 value;
 	u8 reg;
 
+<<<<<<< HEAD
 	seq_printf(s, "AB3100 registers:\n");
+=======
+	seq_puts(s, "AB3100 registers:\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (reg = 0; reg < 0xff; reg++) {
 		ab3100_get_register_interruptible(ab3100, reg, &value);
@@ -491,7 +552,11 @@ static ssize_t ab3100_get_set_reg(struct file *file,
 	char buf[32];
 	ssize_t buf_size;
 	int regp;
+<<<<<<< HEAD
 	unsigned long user_reg;
+=======
+	u8 user_reg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 	int i = 0;
 
@@ -514,21 +579,32 @@ static ssize_t ab3100_get_set_reg(struct file *file,
 	/*
 	 * Advance pointer to end of string then terminate
 	 * the register string. This is needed to satisfy
+<<<<<<< HEAD
 	 * the strict_strtoul() function.
+=======
+	 * the kstrtou8() function.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	while ((i < buf_size) && (buf[i] != ' '))
 		i++;
 	buf[i] = '\0';
 
+<<<<<<< HEAD
 	err = strict_strtoul(&buf[regp], 16, &user_reg);
 	if (err)
 		return err;
 	if (user_reg > 0xff)
 		return -EINVAL;
+=======
+	err = kstrtou8(&buf[regp], 16, &user_reg);
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Either we read or we write a register here */
 	if (!priv->mode) {
 		/* Reading */
+<<<<<<< HEAD
 		u8 reg = (u8) user_reg;
 		u8 regvalue;
 
@@ -542,6 +618,18 @@ static ssize_t ab3100_get_set_reg(struct file *file,
 		unsigned long user_value;
 		u8 reg = (u8) user_reg;
 		u8 value;
+=======
+		u8 regvalue;
+
+		ab3100_get_register_interruptible(ab3100, user_reg, &regvalue);
+
+		dev_info(ab3100->dev,
+			 "debug read AB3100 reg[0x%02x]: 0x%02x\n",
+			 user_reg, regvalue);
+	} else {
+		int valp;
+		u8 user_value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u8 regvalue;
 
 		/*
@@ -557,6 +645,7 @@ static ssize_t ab3100_get_set_reg(struct file *file,
 			i++;
 		buf[i] = '\0';
 
+<<<<<<< HEAD
 		err = strict_strtoul(&buf[valp], 16, &user_value);
 		if (err)
 			return err;
@@ -571,6 +660,19 @@ static ssize_t ab3100_get_set_reg(struct file *file,
 			 "debug write reg[0x%02x] with 0x%02x, "
 			 "after readback: 0x%02x\n",
 			 reg, value, regvalue);
+=======
+		err = kstrtou8(&buf[valp], 16, &user_value);
+		if (err)
+			return err;
+
+		ab3100_set_register_interruptible(ab3100, user_reg, user_value);
+		ab3100_get_register_interruptible(ab3100, user_reg, &regvalue);
+
+		dev_info(ab3100->dev,
+			 "debug write reg[0x%02x]\n"
+			 "  with 0x%02x, after readback: 0x%02x\n",
+			 user_reg, user_value, regvalue);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return buf_size;
 }
@@ -727,8 +829,12 @@ static int ab3100_setup(struct ab3100 *ab3100)
 	 */
 	if (ab3100->chip_id == 0xc4) {
 		dev_warn(ab3100->dev,
+<<<<<<< HEAD
 			 "AB3100 P1E variant detected, "
 			 "forcing chip to 32KHz\n");
+=======
+			 "AB3100 P1E variant detected forcing chip to 32KHz\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = ab3100_set_test_register_interruptible(ab3100,
 			0x02, 0x08);
 	}
@@ -862,15 +968,24 @@ static int ab3100_probe(struct i2c_client *client,
 {
 	struct ab3100 *ab3100;
 	struct ab3100_platform_data *ab3100_plf_data =
+<<<<<<< HEAD
 		client->dev.platform_data;
+=======
+		dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 	int i;
 
 	ab3100 = devm_kzalloc(&client->dev, sizeof(struct ab3100), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!ab3100) {
 		dev_err(&client->dev, "could not allocate AB3100 device\n");
 		return -ENOMEM;
 	}
+=======
+	if (!ab3100)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Initialize data structure */
 	mutex_init(&ab3100->access_mutex);
@@ -886,13 +1001,18 @@ static int ab3100_probe(struct i2c_client *client,
 						&ab3100->chip_id);
 	if (err) {
 		dev_err(&client->dev,
+<<<<<<< HEAD
 			"could not communicate with the AB3100 analog "
 			"baseband chip\n");
+=======
+			"failed to communicate with AB3100 chip\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit_no_detect;
 	}
 
 	for (i = 0; ids[i].id != 0x0; i++) {
 		if (ids[i].id == ab3100->chip_id) {
+<<<<<<< HEAD
 			if (ids[i].name != NULL) {
 				snprintf(&ab3100->chip_name[0],
 					 sizeof(ab3100->chip_name) - 1,
@@ -912,6 +1032,24 @@ static int ab3100_probe(struct i2c_client *client,
 			ab3100->chip_id);
 		dev_err(&client->dev, "accepting it anyway. Please update "
 			"the driver.\n");
+=======
+			if (ids[i].name)
+				break;
+
+			dev_err(&client->dev, "AB3000 is not supported\n");
+			goto exit_no_detect;
+		}
+	}
+
+	snprintf(&ab3100->chip_name[0],
+		 sizeof(ab3100->chip_name) - 1, "AB3100 %s", ids[i].name);
+
+	if (ids[i].id == 0x0) {
+		dev_err(&client->dev, "unknown analog baseband chip id: 0x%x\n",
+			ab3100->chip_id);
+		dev_err(&client->dev,
+			"accepting it anyway. Please update the driver.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit_no_detect;
 	}
 
@@ -982,7 +1120,10 @@ MODULE_DEVICE_TABLE(i2c, ab3100_id);
 static struct i2c_driver ab3100_driver = {
 	.driver = {
 		.name	= "ab3100",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table	= ab3100_id,
 	.probe		= ab3100_probe,

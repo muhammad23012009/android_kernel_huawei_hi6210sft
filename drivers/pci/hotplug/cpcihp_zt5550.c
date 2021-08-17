@@ -13,6 +13,7 @@
  * option) any later version.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+<<<<<<< HEAD
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
  * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
  * THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
@@ -21,6 +22,16 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+=======
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ * THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * You should have received a copy of the GNU General Public License along
@@ -48,6 +59,7 @@
 
 #define dbg(format, arg...)					\
 	do {							\
+<<<<<<< HEAD
 		if(debug)					\
 			printk (KERN_DEBUG "%s: " format "\n",	\
 				MY_NAME , ## arg); 		\
@@ -55,6 +67,15 @@
 #define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME , ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME , ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME , ## arg)
+=======
+		if (debug)					\
+			printk(KERN_DEBUG "%s: " format "\n",	\
+				MY_NAME, ## arg);		\
+	} while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* local variables */
 static bool debug;
@@ -82,13 +103,21 @@ static int zt5550_hc_config(struct pci_dev *pdev)
 	int ret;
 
 	/* Since we know that no boards exist with two HC chips, treat it as an error */
+<<<<<<< HEAD
 	if(hc_dev) {
+=======
+	if (hc_dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("too many host controller devices?");
 		return -EBUSY;
 	}
 
 	ret = pci_enable_device(pdev);
+<<<<<<< HEAD
 	if(ret) {
+=======
+	if (ret) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("cannot enable %s\n", pci_name(pdev));
 		return ret;
 	}
@@ -98,7 +127,11 @@ static int zt5550_hc_config(struct pci_dev *pdev)
 	dbg("pci resource start %llx", (unsigned long long)pci_resource_start(hc_dev, 1));
 	dbg("pci resource len %llx", (unsigned long long)pci_resource_len(hc_dev, 1));
 
+<<<<<<< HEAD
 	if(!request_mem_region(pci_resource_start(hc_dev, 1),
+=======
+	if (!request_mem_region(pci_resource_start(hc_dev, 1),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				pci_resource_len(hc_dev, 1), MY_NAME)) {
 		err("cannot reserve MMIO region");
 		ret = -ENOMEM;
@@ -107,7 +140,11 @@ static int zt5550_hc_config(struct pci_dev *pdev)
 
 	hc_registers =
 	    ioremap(pci_resource_start(hc_dev, 1), pci_resource_len(hc_dev, 1));
+<<<<<<< HEAD
 	if(!hc_registers) {
+=======
+	if (!hc_registers) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("cannot remap MMIO region %llx @ %llx",
 			(unsigned long long)pci_resource_len(hc_dev, 1),
 			(unsigned long long)pci_resource_start(hc_dev, 1));
@@ -146,7 +183,11 @@ exit_disable_device:
 
 static int zt5550_hc_cleanup(void)
 {
+<<<<<<< HEAD
 	if(!hc_dev)
+=======
+	if (!hc_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	iounmap(hc_registers);
@@ -170,9 +211,15 @@ static int zt5550_hc_check_irq(void *dev_id)
 	u8 reg;
 
 	ret = 0;
+<<<<<<< HEAD
 	if(dev_id == zt5550_hpc.dev_id) {
 		reg = readb(csr_int_status);
 		if(reg)
+=======
+	if (dev_id == zt5550_hpc.dev_id) {
+		reg = readb(csr_int_status);
+		if (reg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = 1;
 	}
 	return ret;
@@ -182,9 +229,15 @@ static int zt5550_hc_enable_irq(void)
 {
 	u8 reg;
 
+<<<<<<< HEAD
 	if(hc_dev == NULL) {
 		return -ENODEV;
 	}
+=======
+	if (hc_dev == NULL)
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = readb(csr_int_mask);
 	reg = reg & ~ENUM_INT_MASK;
 	writeb(reg, csr_int_mask);
@@ -195,9 +248,14 @@ static int zt5550_hc_disable_irq(void)
 {
 	u8 reg;
 
+<<<<<<< HEAD
 	if(hc_dev == NULL) {
 		return -ENODEV;
 	}
+=======
+	if (hc_dev == NULL)
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	reg = readb(csr_int_mask);
 	reg = reg | ENUM_INT_MASK;
@@ -205,11 +263,16 @@ static int zt5550_hc_disable_irq(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int zt5550_hc_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
+=======
+static int zt5550_hc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int status;
 
 	status = zt5550_hc_config(pdev);
+<<<<<<< HEAD
 	if(status != 0) {
 		return status;
 	}
@@ -219,6 +282,17 @@ static int zt5550_hc_init_one (struct pci_dev *pdev, const struct pci_device_id 
 	zt5550_hpc_ops.query_enum = zt5550_hc_query_enum;
 	zt5550_hpc.ops = &zt5550_hpc_ops;
 	if(!poll) {
+=======
+	if (status != 0)
+		return status;
+
+	dbg("returned from zt5550_hc_config");
+
+	memset(&zt5550_hpc, 0, sizeof(struct cpci_hp_controller));
+	zt5550_hpc_ops.query_enum = zt5550_hc_query_enum;
+	zt5550_hpc.ops = &zt5550_hpc_ops;
+	if (!poll) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		zt5550_hpc.irq = hc_dev->irq;
 		zt5550_hpc.irq_flags = IRQF_SHARED;
 		zt5550_hpc.dev_id = hc_dev;
@@ -231,15 +305,25 @@ static int zt5550_hc_init_one (struct pci_dev *pdev, const struct pci_device_id 
 	}
 
 	status = cpci_hp_register_controller(&zt5550_hpc);
+<<<<<<< HEAD
 	if(status != 0) {
+=======
+	if (status != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("could not register cPCI hotplug controller");
 		goto init_hc_error;
 	}
 	dbg("registered controller");
 
 	/* Look for first device matching cPCI bus's bridge vendor and device IDs */
+<<<<<<< HEAD
 	if(!(bus0_dev = pci_get_device(PCI_VENDOR_ID_DEC,
 					 PCI_DEVICE_ID_DEC_21154, NULL))) {
+=======
+	bus0_dev = pci_get_device(PCI_VENDOR_ID_DEC,
+				  PCI_DEVICE_ID_DEC_21154, NULL);
+	if (!bus0_dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = -ENODEV;
 		goto init_register_error;
 	}
@@ -247,14 +331,22 @@ static int zt5550_hc_init_one (struct pci_dev *pdev, const struct pci_device_id 
 	pci_dev_put(bus0_dev);
 
 	status = cpci_hp_register_bus(bus0, 0x0a, 0x0f);
+<<<<<<< HEAD
 	if(status != 0) {
+=======
+	if (status != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("could not register cPCI hotplug bus");
 		goto init_register_error;
 	}
 	dbg("registered bus");
 
 	status = cpci_hp_start();
+<<<<<<< HEAD
 	if(status != 0) {
+=======
+	if (status != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("could not started cPCI hotplug system");
 		cpci_hp_unregister_bus(bus0);
 		goto init_register_error;
@@ -285,7 +377,11 @@ static struct pci_device_id zt5550_hc_pci_tbl[] = {
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, zt5550_hc_pci_tbl);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct pci_driver zt5550_hc_driver = {
 	.name		= "zt5550_hc",
 	.id_table	= zt5550_hc_pci_tbl,
@@ -295,16 +391,28 @@ static struct pci_driver zt5550_hc_driver = {
 
 static int __init zt5550_init(void)
 {
+<<<<<<< HEAD
 	struct resource* r;
+=======
+	struct resource *r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	info(DRIVER_DESC " version: " DRIVER_VERSION);
 	r = request_region(ENUM_PORT, 1, "#ENUM hotswap signal register");
+<<<<<<< HEAD
 	if(!r)
 		return -EBUSY;
 
 	rc = pci_register_driver(&zt5550_hc_driver);
 	if(rc < 0)
+=======
+	if (!r)
+		return -EBUSY;
+
+	rc = pci_register_driver(&zt5550_hc_driver);
+	if (rc < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		release_region(ENUM_PORT, 1);
 	return rc;
 }

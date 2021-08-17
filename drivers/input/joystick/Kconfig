@@ -196,6 +196,10 @@ config JOYSTICK_TWIDJOY
 config JOYSTICK_ZHENHUA
 	tristate "5-byte Zhenhua RC transmitter"
 	select SERIO
+<<<<<<< HEAD
+=======
+	select BITREVERSE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y here if you have a Zhen Hua PPM-4CH transmitter which is
 	  supplied with a ready to fly micro electric indoor helicopters

@@ -28,12 +28,20 @@
 #include <linux/keyboard.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
+=======
+#include <asm/bootinfo-amiga.h>
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/setup.h>
 #include <asm/pgtable.h>
 #include <asm/amigahw.h>
 #include <asm/amigaints.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/machdep.h>
 #include <asm/io.h>
 
@@ -140,6 +148,7 @@ static struct resource ram_resource[NUM_MEMINFO];
      *  Parse an Amiga-specific record in the bootinfo
      */
 
+<<<<<<< HEAD
 int amiga_parse_bootinfo(const struct bi_record *record)
 {
 	int unknown = 0;
@@ -168,11 +177,42 @@ int amiga_parse_bootinfo(const struct bi_record *record)
 
 	case BI_AMIGA_PSFREQ:
 		amiga_psfreq = *(const unsigned char *)data;
+=======
+int __init amiga_parse_bootinfo(const struct bi_record *record)
+{
+	int unknown = 0;
+	const void *data = record->data;
+
+	switch (be16_to_cpu(record->tag)) {
+	case BI_AMIGA_MODEL:
+		amiga_model = be32_to_cpup(data);
+		break;
+
+	case BI_AMIGA_ECLOCK:
+		amiga_eclock = be32_to_cpup(data);
+		break;
+
+	case BI_AMIGA_CHIPSET:
+		amiga_chipset = be32_to_cpup(data);
+		break;
+
+	case BI_AMIGA_CHIP_SIZE:
+		amiga_chip_size = be32_to_cpup(data);
+		break;
+
+	case BI_AMIGA_VBLANK:
+		amiga_vblank = *(const __u8 *)data;
+		break;
+
+	case BI_AMIGA_PSFREQ:
+		amiga_psfreq = *(const __u8 *)data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case BI_AMIGA_AUTOCON:
 #ifdef CONFIG_ZORRO
 		if (zorro_num_autocon < ZORRO_NUM_AUTO) {
+<<<<<<< HEAD
 			const struct ConfigDev *cd = (struct ConfigDev *)data;
 			struct zorro_dev *dev = &zorro_autocon[zorro_num_autocon++];
 			dev->rom = cd->cd_Rom;
@@ -182,6 +222,17 @@ int amiga_parse_bootinfo(const struct bi_record *record)
 			dev->resource.end = dev->resource.start + cd->cd_BoardSize - 1;
 		} else
 			printk("amiga_parse_bootinfo: too many AutoConfig devices\n");
+=======
+			const struct ConfigDev *cd = data;
+			struct zorro_dev_init *dev = &zorro_autocon_init[zorro_num_autocon++];
+			dev->rom = cd->cd_Rom;
+			dev->slotaddr = be16_to_cpu(cd->cd_SlotAddr);
+			dev->slotsize = be16_to_cpu(cd->cd_SlotSize);
+			dev->boardaddr = be32_to_cpu(cd->cd_BoardAddr);
+			dev->boardsize = be32_to_cpu(cd->cd_BoardSize);
+		} else
+			pr_warn("amiga_parse_bootinfo: too many AutoConfig devices\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_ZORRO */
 		break;
 
@@ -207,9 +258,15 @@ static void __init amiga_identify(void)
 
 	memset(&amiga_hw_present, 0, sizeof(amiga_hw_present));
 
+<<<<<<< HEAD
 	printk("Amiga hardware found: ");
 	if (amiga_model >= AMI_500 && amiga_model <= AMI_DRACO) {
 		printk("[%s] ", amiga_models[amiga_model-AMI_500]);
+=======
+	pr_info("Amiga hardware found: ");
+	if (amiga_model >= AMI_500 && amiga_model <= AMI_DRACO) {
+		pr_cont("[%s] ", amiga_models[amiga_model-AMI_500]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		strcat(amiga_model_name, amiga_models[amiga_model-AMI_500]);
 	}
 
@@ -320,7 +377,11 @@ static void __init amiga_identify(void)
 
 #define AMIGAHW_ANNOUNCE(name, str)		\
 	if (AMIGAHW_PRESENT(name))		\
+<<<<<<< HEAD
 		printk(str)
+=======
+		pr_cont(str)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	AMIGAHW_ANNOUNCE(AMI_VIDEO, "VIDEO ");
 	AMIGAHW_ANNOUNCE(AMI_BLITTER, "BLITTER ");
@@ -352,12 +413,28 @@ static void __init amiga_identify(void)
 	AMIGAHW_ANNOUNCE(MAGIC_REKICK, "MAGIC_REKICK ");
 	AMIGAHW_ANNOUNCE(PCMCIA, "PCMCIA ");
 	if (AMIGAHW_PRESENT(ZORRO))
+<<<<<<< HEAD
 		printk("ZORRO%s ", AMIGAHW_PRESENT(ZORRO3) ? "3" : "");
 	printk("\n");
+=======
+		pr_cont("ZORRO%s ", AMIGAHW_PRESENT(ZORRO3) ? "3" : "");
+	pr_cont("\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #undef AMIGAHW_ANNOUNCE
 }
 
+<<<<<<< HEAD
+=======
+
+static unsigned long amiga_random_get_entropy(void)
+{
+	/* VPOSR/VHPOSR provide at least 17 bits of data changing at 1.79 MHz */
+	return *(unsigned long *)&amiga_custom.vposr;
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     /*
      *  Setup the Amiga configuration info
      */
@@ -387,7 +464,11 @@ void __init config_amiga(void)
 	mach_max_dma_address = 0xffffffff;
 
 	mach_reset           = amiga_reset;
+<<<<<<< HEAD
 #if defined(CONFIG_INPUT_M68K_BEEP) || defined(CONFIG_INPUT_M68K_BEEP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_INPUT_M68K_BEEP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mach_beep            = amiga_mksound;
 #endif
 
@@ -395,6 +476,11 @@ void __init config_amiga(void)
 	mach_heartbeat = amiga_heartbeat;
 #endif
 
+<<<<<<< HEAD
+=======
+	mach_random_get_entropy = amiga_random_get_entropy;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Fill in the clock value (based on the 700 kHz E-Clock) */
 	amiga_colorclock = 5*amiga_eclock;	/* 3.5 MHz */
 
@@ -412,7 +498,11 @@ void __init config_amiga(void)
 			if (m68k_memory[i].addr < 16*1024*1024) {
 				if (i == 0) {
 					/* don't cut off the branch we're sitting on */
+<<<<<<< HEAD
 					printk("Warning: kernel runs in Zorro II memory\n");
+=======
+					pr_warn("Warning: kernel runs in Zorro II memory\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					continue;
 				}
 				disabled_z2mem += m68k_memory[i].size;
@@ -423,8 +513,13 @@ void __init config_amiga(void)
 			}
 		}
 		if (disabled_z2mem)
+<<<<<<< HEAD
 		printk("%dK of Zorro II memory will not be used as system memory\n",
 		disabled_z2mem>>10);
+=======
+			pr_info("%dK of Zorro II memory will not be used as system memory\n",
+				disabled_z2mem>>10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* request all RAM */
@@ -463,7 +558,11 @@ static void __init amiga_sched_init(irq_handler_t timer_routine)
 	jiffy_ticks = DIV_ROUND_CLOSEST(amiga_eclock, HZ);
 
 	if (request_resource(&mb_resources._ciab, &sched_res))
+<<<<<<< HEAD
 		printk("Cannot allocate ciab.ta{lo,hi}\n");
+=======
+		pr_warn("Cannot allocate ciab.ta{lo,hi}\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ciab.cra &= 0xC0;   /* turn off timer A, continuous mode, from Eclk */
 	ciab.talo = jiffy_ticks % 256;
 	ciab.tahi = jiffy_ticks / 256;
@@ -608,6 +707,11 @@ static void amiga_mem_console_write(struct console *co, const char *s,
 
 static int __init amiga_savekmsg_setup(char *arg)
 {
+<<<<<<< HEAD
+=======
+	bool registered;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!MACH_IS_AMIGA || strcmp(arg, "mem"))
 		return 0;
 
@@ -618,14 +722,25 @@ static int __init amiga_savekmsg_setup(char *arg)
 
 	/* Just steal the block, the chipram allocator isn't functional yet */
 	amiga_chip_size -= SAVEKMSG_MAXMEM;
+<<<<<<< HEAD
 	savekmsg = (void *)ZTWO_VADDR(CHIP_PHYSADDR + amiga_chip_size);
+=======
+	savekmsg = ZTWO_VADDR(CHIP_PHYSADDR + amiga_chip_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	savekmsg->magic1 = SAVEKMSG_MAGIC1;
 	savekmsg->magic2 = SAVEKMSG_MAGIC2;
 	savekmsg->magicptr = ZTWO_PADDR(savekmsg);
 	savekmsg->size = 0;
 
+<<<<<<< HEAD
 	amiga_console_driver.write = amiga_mem_console_write;
 	register_console(&amiga_console_driver);
+=======
+	registered = !!amiga_console_driver.write;
+	amiga_console_driver.write = amiga_mem_console_write;
+	if (!registered)
+		register_console(&amiga_console_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -707,11 +822,24 @@ void amiga_serial_gets(struct console *co, char *s, int len)
 
 static int __init amiga_debug_setup(char *arg)
 {
+<<<<<<< HEAD
 	if (MACH_IS_AMIGA && !strcmp(arg, "ser")) {
 		/* no initialization required (?) */
 		amiga_console_driver.write = amiga_serial_console_write;
 		register_console(&amiga_console_driver);
 	}
+=======
+	bool registered;
+
+	if (!MACH_IS_AMIGA || strcmp(arg, "ser"))
+		return 0;
+
+	/* no initialization required (?) */
+	registered = !!amiga_console_driver.write;
+	amiga_console_driver.write = amiga_serial_console_write;
+	if (!registered)
+		register_console(&amiga_console_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

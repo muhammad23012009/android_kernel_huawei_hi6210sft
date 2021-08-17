@@ -75,6 +75,7 @@ void __init paging_init(void)
 
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	unsigned long codesize, reservedpages, datasize, initsize;
 	unsigned long tmp, ram = 0;
 
@@ -102,17 +103,33 @@ void __init mem_init(void)
 			reservedpages << (PAGE_SHIFT-10), datasize >> 10,
 			initsize >> 10,
 			totalhigh_pages << (PAGE_SHIFT-10));
+=======
+	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
+	free_all_bootmem();
+	setup_zero_page();	/* Setup zeroed pages. */
+
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* !CONFIG_NEED_MULTIPLE_NODES */
 
 #ifdef CONFIG_BLK_DEV_INITRD
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	free_reserved_area(start, end, POISON_FREE_INITMEM, "initrd");
 }
 #endif
 
 void __init_refok free_initmem(void)
+=======
+	free_reserved_area((void *)start, (void *)end, POISON_FREE_INITMEM,
+			   "initrd");
+}
+#endif
+
+void __ref free_initmem(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	free_initmem_default(POISON_FREE_INITMEM);
 }

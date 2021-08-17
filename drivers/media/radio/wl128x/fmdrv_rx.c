@@ -116,7 +116,11 @@ int fm_rx_set_freq(struct fmdev *fmdev, u32 freq)
 	if (ret < 0)
 		goto exit;
 
+<<<<<<< HEAD
 	curr_frq = be16_to_cpu(curr_frq);
+=======
+	curr_frq = be16_to_cpu((__force __be16)curr_frq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	curr_frq_in_khz = (fmdev->rx.region.bot_freq + ((u32)curr_frq * FM_FREQ_MUL));
 
 	if (curr_frq_in_khz != freq) {
@@ -189,7 +193,11 @@ int fm_rx_seek(struct fmdev *fmdev, u32 seek_upward,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	curr_frq = be16_to_cpu(curr_frq);
+=======
+	curr_frq = be16_to_cpu((__force __be16)curr_frq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	last_frq = (fmdev->rx.region.top_freq - fmdev->rx.region.bot_freq) / FM_FREQ_MUL;
 
 	/* Check the offset in order to be aligned to the channel spacing*/
@@ -285,7 +293,11 @@ again:
 		if (ret < 0)
 			return ret;
 
+<<<<<<< HEAD
 		curr_frq = be16_to_cpu(curr_frq);
+=======
+		curr_frq = be16_to_cpu((__force __be16)curr_frq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fmdev->rx.freq = (fmdev->rx.region.bot_freq +
 				((u32)curr_frq * FM_FREQ_MUL));
 
@@ -517,7 +529,11 @@ int fm_rx_set_rfdepend_softmute(struct fmdev *fmdev, u8 rfdepend_mute)
 /* Returns the signal strength level of current channel */
 int fm_rx_get_rssi_level(struct fmdev *fmdev, u16 *rssilvl)
 {
+<<<<<<< HEAD
 	u16 curr_rssi_lel;
+=======
+	__be16 curr_rssi_lel;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 resp_len;
 	int ret;
 
@@ -608,7 +624,11 @@ int fm_rx_set_stereo_mono(struct fmdev *fmdev, u16 mode)
 /* Gets current RX stereo/mono mode */
 int fm_rx_get_stereo_mono(struct fmdev *fmdev, u16 *mode)
 {
+<<<<<<< HEAD
 	u16 curr_mode;
+=======
+	__be16 curr_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 resp_len;
 	int ret;
 
@@ -785,6 +805,7 @@ int fm_rx_set_rds_system(struct fmdev *fmdev, u8 rds_mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Returns current RDS operation mode */
 int fm_rx_get_rds_system(struct fmdev *fmdev, u8 *rds_mode)
 {
@@ -801,6 +822,8 @@ int fm_rx_get_rds_system(struct fmdev *fmdev, u8 *rds_mode)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Configures Alternate Frequency switch mode */
 int fm_rx_set_af_switch(struct fmdev *fmdev, u8 af_mode)
 {

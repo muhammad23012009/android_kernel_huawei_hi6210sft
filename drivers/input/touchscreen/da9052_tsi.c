@@ -329,8 +329,11 @@ static int  da9052_ts_remove(struct platform_device *pdev)
 	input_unregister_device(tsi->dev);
 	kfree(tsi);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -339,7 +342,10 @@ static struct platform_driver da9052_tsi_driver = {
 	.remove	= da9052_ts_remove,
 	.driver	= {
 		.name	= "da9052-tsi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

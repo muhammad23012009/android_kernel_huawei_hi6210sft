@@ -106,7 +106,12 @@ int __dlm_lockres_unused(struct dlm_lock_resource *res)
 	if (!list_empty(&res->dirty) || res->state & DLM_LOCK_RES_DIRTY)
 		return 0;
 
+<<<<<<< HEAD
 	if (res->state & DLM_LOCK_RES_RECOVERING)
+=======
+	if (res->state & (DLM_LOCK_RES_RECOVERING|
+			DLM_LOCK_RES_RECOVERY_WAITING))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* Another node has this resource with this node as the master */
@@ -159,6 +164,55 @@ void dlm_lockres_calc_usage(struct dlm_ctxt *dlm,
 	spin_unlock(&dlm->spinlock);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Do the real purge work:
+ *     unhash the lockres, and
+ *     clear flag DLM_LOCK_RES_DROPPING_REF.
+ * It requires dlm and lockres spinlock to be taken.
+ */
+void __dlm_do_purge_lockres(struct dlm_ctxt *dlm,
+		struct dlm_lock_resource *res)
+{
+	assert_spin_locked(&dlm->spinlock);
+	assert_spin_locked(&res->spinlock);
+
+	if (!list_empty(&res->purge)) {
+		mlog(0, "%s: Removing res %.*s from purgelist\n",
+		     dlm->name, res->lockname.len, res->lockname.name);
+		list_del_init(&res->purge);
+		dlm_lockres_put(res);
+		dlm->purge_count--;
+	}
+
+	if (!__dlm_lockres_unused(res)) {
+		mlog(ML_ERROR, "%s: res %.*s in use after deref\n",
+		     dlm->name, res->lockname.len, res->lockname.name);
+		__dlm_print_one_lock_resource(res);
+		BUG();
+	}
+
+	__dlm_unhash_lockres(dlm, res);
+
+	spin_lock(&dlm->track_lock);
+	if (!list_empty(&res->tracking))
+		list_del_init(&res->tracking);
+	else {
+		mlog(ML_ERROR, "%s: Resource %.*s not on the Tracking list\n",
+		     dlm->name, res->lockname.len, res->lockname.name);
+		__dlm_print_one_lock_resource(res);
+	}
+	spin_unlock(&dlm->track_lock);
+
+	/*
+	 * lockres is not in the hash now. drop the flag and wake up
+	 * any processes waiting in dlm_get_lock_resource.
+	 */
+	res->state &= ~DLM_LOCK_RES_DROPPING_REF;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 			     struct dlm_lock_resource *res)
 {
@@ -174,6 +228,16 @@ static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 	     res->lockname.len, res->lockname.name, master);
 
 	if (!master) {
+<<<<<<< HEAD
+=======
+		if (res->state & DLM_LOCK_RES_DROPPING_REF) {
+			mlog(ML_NOTICE, "%s: res %.*s already in DLM_LOCK_RES_DROPPING_REF state\n",
+				dlm->name, res->lockname.len, res->lockname.name);
+			spin_unlock(&res->spinlock);
+			return;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		res->state |= DLM_LOCK_RES_DROPPING_REF;
 		/* drop spinlock...  retake below */
 		spin_unlock(&res->spinlock);
@@ -202,6 +266,16 @@ static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 		dlm->purge_count--;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!master && ret == DLM_DEREF_RESPONSE_INPROG) {
+		mlog(0, "%s: deref %.*s in progress\n",
+			dlm->name, res->lockname.len, res->lockname.name);
+		spin_unlock(&res->spinlock);
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!__dlm_lockres_unused(res)) {
 		mlog(ML_ERROR, "%s: res %.*s in use after deref\n",
 		     dlm->name, res->lockname.len, res->lockname.name);
@@ -211,6 +285,19 @@ static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 
 	__dlm_unhash_lockres(dlm, res);
 
+<<<<<<< HEAD
+=======
+	spin_lock(&dlm->track_lock);
+	if (!list_empty(&res->tracking))
+		list_del_init(&res->tracking);
+	else {
+		mlog(ML_ERROR, "Resource %.*s not on the Tracking list\n",
+				res->lockname.len, res->lockname.name);
+		__dlm_print_one_lock_resource(res);
+	}
+	spin_unlock(&dlm->track_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* lockres is not in the hash now.  drop the flag and wake up
 	 * any processes waiting in dlm_get_lock_resource. */
 	if (!master) {
@@ -259,12 +346,24 @@ static void dlm_run_purge_list(struct dlm_ctxt *dlm,
 		 * refs on it. */
 		unused = __dlm_lockres_unused(lockres);
 		if (!unused ||
+<<<<<<< HEAD
 		    (lockres->state & DLM_LOCK_RES_MIGRATING)) {
 			mlog(0, "%s: res %.*s is in use or being remastered, "
 			     "used %d, state %d\n", dlm->name,
 			     lockres->lockname.len, lockres->lockname.name,
 			     !unused, lockres->state);
 			list_move_tail(&dlm->purge_list, &lockres->purge);
+=======
+		    (lockres->state & DLM_LOCK_RES_MIGRATING) ||
+		    (lockres->inflight_assert_workers != 0)) {
+			mlog(0, "%s: res %.*s is in use or being remastered, "
+			     "used %d, state %d, assert master workers %u\n",
+			     dlm->name, lockres->lockname.len,
+			     lockres->lockname.name,
+			     !unused, lockres->state,
+			     lockres->inflight_assert_workers);
+			list_move_tail(&lockres->purge, &dlm->purge_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_unlock(&lockres->spinlock);
 			continue;
 		}
@@ -286,8 +385,11 @@ static void dlm_shuffle_lists(struct dlm_ctxt *dlm,
 			      struct dlm_lock_resource *res)
 {
 	struct dlm_lock *lock, *target;
+<<<<<<< HEAD
 	struct list_head *iter;
 	struct list_head *head;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int can_grant = 1;
 
 	/*
@@ -314,9 +416,13 @@ converting:
 		     dlm->name, res->lockname.len, res->lockname.name);
 		BUG();
 	}
+<<<<<<< HEAD
 	head = &res->granted;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, &res->granted, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type,
@@ -333,9 +439,14 @@ converting:
 					target->ml.convert_type;
 		}
 	}
+<<<<<<< HEAD
 	head = &res->converting;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+
+	list_for_each_entry(lock, &res->converting, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type,
@@ -384,9 +495,13 @@ blocked:
 		goto leave;
 	target = list_entry(res->blocked.next, struct dlm_lock, list);
 
+<<<<<<< HEAD
 	head = &res->granted;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, &res->granted, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type, target->ml.type)) {
@@ -400,9 +515,13 @@ blocked:
 		}
 	}
 
+<<<<<<< HEAD
 	head = &res->converting;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, &res->converting, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type, target->ml.type)) {
@@ -489,7 +608,12 @@ int dlm_launch_thread(struct dlm_ctxt *dlm)
 {
 	mlog(0, "Starting dlm_thread...\n");
 
+<<<<<<< HEAD
 	dlm->dlm_thread_task = kthread_run(dlm_thread, dlm, "dlm_thread");
+=======
+	dlm->dlm_thread_task = kthread_run(dlm_thread, dlm, "dlm-%s",
+			dlm->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(dlm->dlm_thread_task)) {
 		mlog_errno(PTR_ERR(dlm->dlm_thread_task));
 		dlm->dlm_thread_task = NULL;
@@ -695,7 +819,12 @@ static int dlm_thread(void *data)
 			 * dirty for a short while. */
 			BUG_ON(res->state & DLM_LOCK_RES_MIGRATING);
 			if (res->state & (DLM_LOCK_RES_IN_PROGRESS |
+<<<<<<< HEAD
 					  DLM_LOCK_RES_RECOVERING)) {
+=======
+					  DLM_LOCK_RES_RECOVERING |
+					  DLM_LOCK_RES_RECOVERY_WAITING)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/* move it to the tail and keep going */
 				res->state &= ~DLM_LOCK_RES_DIRTY;
 				spin_unlock(&res->spinlock);

@@ -40,10 +40,13 @@
 #define CONTRAST_DEFAULT                5000
 #define HUE_DEFAULT                     5000
 
+<<<<<<< HEAD
 unsigned short _num_decoders;
 unsigned short _num_cameras;
 
 unsigned int _video_standard;
 int _display_field_cnt[MAX_DECODERS];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

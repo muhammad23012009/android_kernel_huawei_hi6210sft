@@ -82,7 +82,11 @@ static int debug = -1;	/* defaults above */
 module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(skge_id_table) = {
+=======
+static const struct pci_device_id skge_id_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_3COM, 0x1700) },	  /* 3Com 3C940 */
 	{ PCI_DEVICE(PCI_VENDOR_ID_3COM, 0x80EB) },	  /* 3Com 3C940B */
 #ifdef CONFIG_SKGE_GENESIS
@@ -152,8 +156,15 @@ static void skge_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 	memset(p, 0, regs->len);
 	memcpy_fromio(p, io, B3_RAM_ADDR);
 
+<<<<<<< HEAD
 	memcpy_fromio(p + B3_RI_WTO_R1, io + B3_RI_WTO_R1,
 		      regs->len - B3_RI_WTO_R1);
+=======
+	if (regs->len > B3_RI_WTO_R1) {
+		memcpy_fromio(p + B3_RI_WTO_R1, io + B3_RI_WTO_R1,
+			      regs->len - B3_RI_WTO_R1);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Wake on Lan only supported on Yukon chips with rev 1 or above */
@@ -931,17 +942,33 @@ static int skge_ring_alloc(struct skge_ring *ring, void *vaddr, u32 base)
 }
 
 /* Allocate and setup a new buffer for receiving */
+<<<<<<< HEAD
 static void skge_rx_setup(struct skge_port *skge, struct skge_element *e,
 			  struct sk_buff *skb, unsigned int bufsize)
 {
 	struct skge_rx_desc *rd = e->desc;
 	u64 map;
+=======
+static int skge_rx_setup(struct skge_port *skge, struct skge_element *e,
+			 struct sk_buff *skb, unsigned int bufsize)
+{
+	struct skge_rx_desc *rd = e->desc;
+	dma_addr_t map;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	map = pci_map_single(skge->hw->pdev, skb->data, bufsize,
 			     PCI_DMA_FROMDEVICE);
 
+<<<<<<< HEAD
 	rd->dma_lo = map;
 	rd->dma_hi = map >> 32;
+=======
+	if (pci_dma_mapping_error(skge->hw->pdev, map))
+		return -1;
+
+	rd->dma_lo = lower_32_bits(map);
+	rd->dma_hi = upper_32_bits(map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	e->skb = skb;
 	rd->csum1_start = ETH_HLEN;
 	rd->csum2_start = ETH_HLEN;
@@ -953,6 +980,10 @@ static void skge_rx_setup(struct skge_port *skge, struct skge_element *e,
 	rd->control = BMU_OWN | BMU_STF | BMU_IRQ_EOF | BMU_TCP_CHECK | bufsize;
 	dma_unmap_addr_set(e, mapaddr, map);
 	dma_unmap_len_set(e, maplen, bufsize);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Resume receiving using existing skb,
@@ -1014,7 +1045,14 @@ static int skge_rx_fill(struct net_device *dev)
 			return -ENOMEM;
 
 		skb_reserve(skb, NET_IP_ALIGN);
+<<<<<<< HEAD
 		skge_rx_setup(skge, e, skb, skge->rx_buf_size);
+=======
+		if (skge_rx_setup(skge, e, skb, skge->rx_buf_size) < 0) {
+			dev_kfree_skb(skb);
+			return -EIO;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while ((e = e->next) != ring->start);
 
 	ring->to_clean = ring->start;
@@ -1100,7 +1138,11 @@ static u16 xm_phy_read(struct skge_hw *hw, int port, u16 reg)
 {
 	u16 v = 0;
 	if (__xm_phy_read(hw, port, reg, &v))
+<<<<<<< HEAD
 		pr_warning("%s: phy read timed out\n", hw->dev[port]->name);
+=======
+		pr_warn("%s: phy read timed out\n", hw->dev[port]->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return v;
 }
 
@@ -1896,7 +1938,11 @@ static int gm_phy_write(struct skge_hw *hw, int port, u16 reg, u16 val)
 			return 0;
 	}
 
+<<<<<<< HEAD
 	pr_warning("%s: phy write timeout\n", hw->dev[port]->name);
+=======
+	pr_warn("%s: phy write timeout\n", hw->dev[port]->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -1924,7 +1970,11 @@ static u16 gm_phy_read(struct skge_hw *hw, int port, u16 reg)
 {
 	u16 v = 0;
 	if (__gm_phy_read(hw, port, reg, &v))
+<<<<<<< HEAD
 		pr_warning("%s: phy read timeout\n", hw->dev[port]->name);
+=======
+		pr_warn("%s: phy read timeout\n", hw->dev[port]->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return v;
 }
 
@@ -2544,7 +2594,11 @@ static int skge_up(struct net_device *dev)
 
 	BUG_ON(skge->dma & 7);
 
+<<<<<<< HEAD
 	if ((u64)skge->dma >> 32 != ((u64) skge->dma + skge->mem_size) >> 32) {
+=======
+	if (upper_32_bits(skge->dma) != upper_32_bits(skge->dma + skge->mem_size)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&hw->pdev->dev, "pci_alloc_consistent region crosses 4G boundary\n");
 		err = -EINVAL;
 		goto free_pci_mem;
@@ -2729,7 +2783,11 @@ static netdev_tx_t skge_xmit_frame(struct sk_buff *skb,
 	struct skge_tx_desc *td;
 	int i;
 	u32 control, len;
+<<<<<<< HEAD
 	u64 map;
+=======
+	dma_addr_t map;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (skb_padto(skb, ETH_ZLEN))
 		return NETDEV_TX_OK;
@@ -2743,11 +2801,22 @@ static netdev_tx_t skge_xmit_frame(struct sk_buff *skb,
 	e->skb = skb;
 	len = skb_headlen(skb);
 	map = pci_map_single(hw->pdev, skb->data, len, PCI_DMA_TODEVICE);
+<<<<<<< HEAD
 	dma_unmap_addr_set(e, mapaddr, map);
 	dma_unmap_len_set(e, maplen, len);
 
 	td->dma_lo = map;
 	td->dma_hi = map >> 32;
+=======
+	if (pci_dma_mapping_error(hw->pdev, map))
+		goto mapping_error;
+
+	dma_unmap_addr_set(e, mapaddr, map);
+	dma_unmap_len_set(e, maplen, len);
+
+	td->dma_lo = lower_32_bits(map);
+	td->dma_hi = upper_32_bits(map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		const int offset = skb_checksum_start_offset(skb);
@@ -2778,14 +2847,24 @@ static netdev_tx_t skge_xmit_frame(struct sk_buff *skb,
 
 			map = skb_frag_dma_map(&hw->pdev->dev, frag, 0,
 					       skb_frag_size(frag), DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+			if (dma_mapping_error(&hw->pdev->dev, map))
+				goto mapping_unwind;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			e = e->next;
 			e->skb = skb;
 			tf = e->desc;
 			BUG_ON(tf->control & BMU_OWN);
 
+<<<<<<< HEAD
 			tf->dma_lo = map;
 			tf->dma_hi = (u64) map >> 32;
+=======
+			tf->dma_lo = lower_32_bits(map);
+			tf->dma_hi = upper_32_bits(map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dma_unmap_addr_set(e, mapaddr, map);
 			dma_unmap_len_set(e, maplen, skb_frag_size(frag));
 
@@ -2815,6 +2894,29 @@ static netdev_tx_t skge_xmit_frame(struct sk_buff *skb,
 	}
 
 	return NETDEV_TX_OK;
+<<<<<<< HEAD
+=======
+
+mapping_unwind:
+	e = skge->tx_ring.to_use;
+	pci_unmap_single(hw->pdev,
+			 dma_unmap_addr(e, mapaddr),
+			 dma_unmap_len(e, maplen),
+			 PCI_DMA_TODEVICE);
+	while (i-- > 0) {
+		e = e->next;
+		pci_unmap_page(hw->pdev,
+			       dma_unmap_addr(e, mapaddr),
+			       dma_unmap_len(e, maplen),
+			       PCI_DMA_TODEVICE);
+	}
+
+mapping_error:
+	if (net_ratelimit())
+		dev_warn(&hw->pdev->dev, "%s: tx mapping error\n", dev->name);
+	dev_kfree_skb_any(skb);
+	return NETDEV_TX_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -3045,6 +3147,7 @@ static struct sk_buff *skge_rx_get(struct net_device *dev,
 
 		pci_dma_sync_single_for_cpu(skge->hw->pdev,
 					    dma_unmap_addr(e, mapaddr),
+<<<<<<< HEAD
 					    len, PCI_DMA_FROMDEVICE);
 		skb_copy_from_linear_data(e->skb, skb->data, len);
 		pci_dma_sync_single_for_device(skge->hw->pdev,
@@ -3052,12 +3155,25 @@ static struct sk_buff *skge_rx_get(struct net_device *dev,
 					       len, PCI_DMA_FROMDEVICE);
 		skge_rx_reuse(e, skge->rx_buf_size);
 	} else {
+=======
+					    dma_unmap_len(e, maplen),
+					    PCI_DMA_FROMDEVICE);
+		skb_copy_from_linear_data(e->skb, skb->data, len);
+		pci_dma_sync_single_for_device(skge->hw->pdev,
+					       dma_unmap_addr(e, mapaddr),
+					       dma_unmap_len(e, maplen),
+					       PCI_DMA_FROMDEVICE);
+		skge_rx_reuse(e, skge->rx_buf_size);
+	} else {
+		struct skge_element ee;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct sk_buff *nskb;
 
 		nskb = netdev_alloc_skb_ip_align(dev, skge->rx_buf_size);
 		if (!nskb)
 			goto resubmit;
 
+<<<<<<< HEAD
 		pci_unmap_single(skge->hw->pdev,
 				 dma_unmap_addr(e, mapaddr),
 				 dma_unmap_len(e, maplen),
@@ -3065,12 +3181,32 @@ static struct sk_buff *skge_rx_get(struct net_device *dev,
 		skb = e->skb;
 		prefetch(skb->data);
 		skge_rx_setup(skge, e, nskb, skge->rx_buf_size);
+=======
+		ee = *e;
+
+		skb = ee.skb;
+		prefetch(skb->data);
+
+		if (skge_rx_setup(skge, e, nskb, skge->rx_buf_size) < 0) {
+			dev_kfree_skb(nskb);
+			goto resubmit;
+		}
+
+		pci_unmap_single(skge->hw->pdev,
+				 dma_unmap_addr(&ee, mapaddr),
+				 dma_unmap_len(&ee, maplen),
+				 PCI_DMA_FROMDEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	skb_put(skb, len);
 
 	if (dev->features & NETIF_F_RXCSUM) {
+<<<<<<< HEAD
 		skb->csum = csum;
+=======
+		skb->csum = le16_to_cpu(csum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb->ip_summed = CHECKSUM_COMPLETE;
 	}
 
@@ -3130,7 +3266,11 @@ static void skge_tx_done(struct net_device *dev)
 			pkts_compl++;
 			bytes_compl += e->skb->len;
 
+<<<<<<< HEAD
 			dev_kfree_skb(e->skb);
+=======
+			dev_consume_skb_any(e->skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	netdev_completed_queue(dev, pkts_compl, bytes_compl);
@@ -3391,10 +3531,16 @@ static irqreturn_t skge_intr(int irq, void *dev_id)
 
 	if (status & IS_HW_ERR)
 		skge_error_irq(hw);
+<<<<<<< HEAD
 
 	skge_write32(hw, B0_IMSK, hw->intr_mask);
 	skge_read32(hw, B0_IMSK);
 out:
+=======
+out:
+	skge_write32(hw, B0_IMSK, hw->intr_mask);
+	skge_read32(hw, B0_IMSK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&hw->hw_lock);
 
 	return IRQ_RETVAL(handled);
@@ -3706,7 +3852,11 @@ static const struct file_operations skge_debug_fops = {
 static int skge_device_event(struct notifier_block *unused,
 			     unsigned long event, void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct skge_port *skge;
 	struct dentry *d;
 
@@ -4004,7 +4154,10 @@ err_out_free_regions:
 	pci_release_regions(pdev);
 err_out_disable_pdev:
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out:
 	return err;
 }
@@ -4048,7 +4201,10 @@ static void skge_remove(struct pci_dev *pdev)
 
 	iounmap(hw->regs);
 	kfree(hw);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -4159,6 +4315,16 @@ static struct dmi_system_id skge_32bit_dma_boards[] = {
 			DMI_MATCH(DMI_BOARD_NAME, "P5NSLI")
 		},
 	},
+<<<<<<< HEAD
+=======
+	{
+		.ident = "FUJITSU SIEMENS A8NE-FM",
+		.matches = {
+			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTek Computer INC."),
+			DMI_MATCH(DMI_BOARD_NAME, "A8NE-FM")
+		},
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{}
 };
 

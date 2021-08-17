@@ -13,6 +13,7 @@
  * option) any later version.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+<<<<<<< HEAD
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
  * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
  * THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
@@ -21,6 +22,16 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+=======
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ * THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * You should have received a copy of the GNU General Public License along
@@ -53,6 +64,7 @@
 
 #define dbg(format, arg...)					\
 	do {							\
+<<<<<<< HEAD
 		if(debug)					\
 			printk (KERN_DEBUG "%s: " format "\n",	\
 				MY_NAME , ## arg); 		\
@@ -60,6 +72,15 @@
 #define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME , ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME , ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME , ## arg)
+=======
+		if (debug)					\
+			printk(KERN_DEBUG "%s: " format "\n",	\
+				MY_NAME, ## arg);		\
+	} while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* local variables */
 static bool debug;
@@ -78,32 +99,56 @@ static struct cpci_hp_controller generic_hpc;
 
 static int __init validate_parameters(void)
 {
+<<<<<<< HEAD
 	char* str;
 	char* p;
 	unsigned long tmp;
 
 	if(!bridge) {
+=======
+	char *str;
+	char *p;
+	unsigned long tmp;
+
+	if (!bridge) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		info("not configured, disabling.");
 		return -EINVAL;
 	}
 	str = bridge;
+<<<<<<< HEAD
 	if(!*str)
 		return -EINVAL;
 
 	tmp = simple_strtoul(str, &p, 16);
 	if(p == str || tmp > 0xff) {
+=======
+	if (!*str)
+		return -EINVAL;
+
+	tmp = simple_strtoul(str, &p, 16);
+	if (p == str || tmp > 0xff) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Invalid hotplug bus bridge device bus number");
 		return -EINVAL;
 	}
 	bridge_busnr = (u8) tmp;
 	dbg("bridge_busnr = 0x%02x", bridge_busnr);
+<<<<<<< HEAD
 	if(*p != ':') {
+=======
+	if (*p != ':') {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Invalid hotplug bus bridge device");
 		return -EINVAL;
 	}
 	str = p + 1;
 	tmp = simple_strtoul(str, &p, 16);
+<<<<<<< HEAD
 	if(p == str || tmp > 0x1f) {
+=======
+	if (p == str || tmp > 0x1f) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Invalid hotplug bus bridge device slot number");
 		return -EINVAL;
 	}
@@ -112,18 +157,30 @@ static int __init validate_parameters(void)
 
 	dbg("first_slot = 0x%02x", first_slot);
 	dbg("last_slot = 0x%02x", last_slot);
+<<<<<<< HEAD
 	if(!(first_slot && last_slot)) {
 		err("Need to specify first_slot and last_slot");
 		return -EINVAL;
 	}
 	if(last_slot < first_slot) {
+=======
+	if (!(first_slot && last_slot)) {
+		err("Need to specify first_slot and last_slot");
+		return -EINVAL;
+	}
+	if (last_slot < first_slot) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("first_slot must be less than last_slot");
 		return -EINVAL;
 	}
 
 	dbg("port = 0x%04x", port);
 	dbg("enum_bit = 0x%02x", enum_bit);
+<<<<<<< HEAD
 	if(enum_bit > 7) {
+=======
+	if (enum_bit > 7) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Invalid #ENUM bit");
 		return -EINVAL;
 	}
@@ -142,8 +199,13 @@ static int query_enum(void)
 static int __init cpcihp_generic_init(void)
 {
 	int status;
+<<<<<<< HEAD
 	struct resource* r;
 	struct pci_dev* dev;
+=======
+	struct resource *r;
+	struct pci_dev *dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	info(DRIVER_DESC " version: " DRIVER_VERSION);
 	status = validate_parameters();
@@ -151,12 +213,20 @@ static int __init cpcihp_generic_init(void)
 		return status;
 
 	r = request_region(port, 1, "#ENUM hotswap signal register");
+<<<<<<< HEAD
 	if(!r)
+=======
+	if (!r)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 
 	dev = pci_get_domain_bus_and_slot(0, bridge_busnr,
 					  PCI_DEVFN(bridge_slot, 0));
+<<<<<<< HEAD
 	if(!dev || dev->hdr_type != PCI_HEADER_TYPE_BRIDGE) {
+=======
+	if (!dev || dev->hdr_type != PCI_HEADER_TYPE_BRIDGE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Invalid bridge device %s", bridge);
 		pci_dev_put(dev);
 		return -EINVAL;
@@ -164,26 +234,42 @@ static int __init cpcihp_generic_init(void)
 	bus = dev->subordinate;
 	pci_dev_put(dev);
 
+<<<<<<< HEAD
 	memset(&generic_hpc, 0, sizeof (struct cpci_hp_controller));
+=======
+	memset(&generic_hpc, 0, sizeof(struct cpci_hp_controller));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	generic_hpc_ops.query_enum = query_enum;
 	generic_hpc.ops = &generic_hpc_ops;
 
 	status = cpci_hp_register_controller(&generic_hpc);
+<<<<<<< HEAD
 	if(status != 0) {
+=======
+	if (status != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Could not register cPCI hotplug controller");
 		return -ENODEV;
 	}
 	dbg("registered controller");
 
 	status = cpci_hp_register_bus(bus, first_slot, last_slot);
+<<<<<<< HEAD
 	if(status != 0) {
+=======
+	if (status != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Could not register cPCI hotplug bus");
 		goto init_bus_register_error;
 	}
 	dbg("registered bus");
 
 	status = cpci_hp_start();
+<<<<<<< HEAD
 	if(status != 0) {
+=======
+	if (status != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("Could not started cPCI hotplug system");
 		goto init_start_error;
 	}

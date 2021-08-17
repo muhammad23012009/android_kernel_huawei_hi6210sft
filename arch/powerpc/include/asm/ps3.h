@@ -21,7 +21,10 @@
 #if !defined(_ASM_POWERPC_PS3_H)
 #define _ASM_POWERPC_PS3_H
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/device.h>
 #include <asm/cell-pmu.h>
@@ -84,6 +87,10 @@ struct ps3_dma_region_ops;
  * @bus_addr: The 'translated' bus address of the region.
  * @len: The length in bytes of the region.
  * @offset: The offset from the start of memory of the region.
+<<<<<<< HEAD
+=======
+ * @dma_mask: Device dma_mask.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @ioid: The IOID of the device who owns this region
  * @chunk_list: Opaque variable used by the ioc page manager.
  * @region_ops: struct ps3_dma_region_ops - dma region operations
@@ -98,6 +105,10 @@ struct ps3_dma_region {
 	enum ps3_dma_region_type region_type;
 	unsigned long len;
 	unsigned long offset;
+<<<<<<< HEAD
+=======
+	u64 dma_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* driver variables  (set by ps3_dma_region_create) */
 	unsigned long bus_addr;
@@ -527,4 +538,9 @@ void ps3_sync_irq(int node);
 u32 ps3_get_hw_thread_id(int cpu);
 u64 ps3_get_spe_id(void *arg);
 
+<<<<<<< HEAD
+=======
+void ps3_early_mm_init(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

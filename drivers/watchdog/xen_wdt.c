@@ -320,7 +320,10 @@ static struct platform_driver xen_wdt_driver = {
 	.suspend        = xen_wdt_suspend,
 	.resume         = xen_wdt_resume,
 	.driver         = {
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name   = DRV_NAME,
 	},
 };
@@ -362,4 +365,7 @@ MODULE_AUTHOR("Jan Beulich <jbeulich@novell.com>");
 MODULE_DESCRIPTION("Xen WatchDog Timer Driver");
 MODULE_VERSION(DRV_VERSION);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -11,12 +11,19 @@
 #include <linux/delay.h>
 #include <linux/initrd.h>
 #include <linux/tty.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/seq_file.h>
 #include <linux/root_dev.h>
 #include <linux/cpu.h>
 #include <linux/console.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/io.h>
 #include <asm/prom.h>
@@ -37,29 +44,47 @@
 #include <asm/time.h>
 #include <asm/serial.h>
 #include <asm/udbg.h>
+<<<<<<< HEAD
 #include <asm/mmu_context.h>
 
 #include "setup.h"
+=======
+#include <asm/code-patching.h>
+#include <asm/cpu_has_feature.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DBG(fmt...)
 
 extern void bootx_init(unsigned long r4, unsigned long phys);
 
+<<<<<<< HEAD
 int boot_cpuid = -1;
 EXPORT_SYMBOL_GPL(boot_cpuid);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int boot_cpuid_phys;
 EXPORT_SYMBOL_GPL(boot_cpuid_phys);
 
 int smp_hw_index[NR_CPUS];
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(smp_hw_index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned long ISA_DMA_THRESHOLD;
 unsigned int DMA_MODE_READ;
 unsigned int DMA_MODE_WRITE;
 
+<<<<<<< HEAD
 #ifdef CONFIG_VGA_CONSOLE
 unsigned long vgacon_remap_base;
 EXPORT_SYMBOL(vgacon_remap_base);
 #endif
+=======
+EXPORT_SYMBOL(ISA_DMA_THRESHOLD);
+EXPORT_SYMBOL(DMA_MODE_READ);
+EXPORT_SYMBOL(DMA_MODE_WRITE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These are used in binfmt_elf.c to put aux entries on the stack
@@ -70,9 +95,13 @@ int icache_bsize;
 int ucache_bsize;
 
 /*
+<<<<<<< HEAD
  * We're called here very early in the boot.  We determine the machine
  * type and call the appropriate low-level setup functions.
  *  -- Cort <cort@fsmlabs.com>
+=======
+ * We're called here very early in the boot.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Note that the kernel may be running at an address which is different
  * from the address that it was linked at, so we must use RELOC/PTRRELOC
@@ -81,7 +110,10 @@ int ucache_bsize;
 notrace unsigned long __init early_init(unsigned long dt_ptr)
 {
 	unsigned long offset = reloc_offset();
+<<<<<<< HEAD
 	struct cpu_spec *spec;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* First zero the BSS -- use memset_io, some platforms don't have
 	 * caches on yet */
@@ -92,6 +124,7 @@ notrace unsigned long __init early_init(unsigned long dt_ptr)
 	 * Identify the CPU type and fix up code sections
 	 * that depend on which cpu we have.
 	 */
+<<<<<<< HEAD
 	spec = identify_cpu(offset, mfspr(SPRN_PVR));
 
 	do_feature_fixups(spec->cpu_features,
@@ -107,12 +140,18 @@ notrace unsigned long __init early_init(unsigned long dt_ptr)
 			 PTRRELOC(&__stop___lwsync_fixup));
 
 	do_final_fixups();
+=======
+	identify_cpu(offset, mfspr(SPRN_PVR));
+
+	apply_feature_fixups();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return KERNELBASE + offset;
 }
 
 
 /*
+<<<<<<< HEAD
  * Find out what kind of machine we're on and save any data we need
  * from the early boot process (devtree is copied on pmac by prom_init()).
  * This is called very early on the boot process, after a minimal
@@ -121,15 +160,37 @@ notrace unsigned long __init early_init(unsigned long dt_ptr)
 notrace void __init machine_init(u64 dt_ptr)
 {
 	lockdep_init();
+=======
+ * This is run before start_kernel(), the kernel has been relocated
+ * and we are running with enough of the MMU enabled to have our
+ * proper kernel virtual addresses
+ *
+ * We do the initial parsing of the flat device-tree and prepares
+ * for the MMU to be fully initialized.
+ */
+extern unsigned int memset_nocache_branch; /* Insn to be replaced by NOP */
+
+notrace void __init machine_init(u64 dt_ptr)
+{
+	/* Configure static keys first, now that we're relocated. */
+	setup_feature_keys();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable early debugging if any specified (see udbg.h) */
 	udbg_early_init();
 
+<<<<<<< HEAD
+=======
+	patch_instruction((unsigned int *)&memcpy, PPC_INST_NOP);
+	patch_instruction(&memset_nocache_branch, PPC_INST_NOP);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Do some early initialization based on the flat device tree */
 	early_init_devtree(__va(dt_ptr));
 
 	early_init_mmu();
 
+<<<<<<< HEAD
 	probe_machine();
 
 	setup_kdump_trampoline();
@@ -147,6 +208,9 @@ notrace void __init machine_init(u64 dt_ptr)
 #endif
 	if (ppc_md.progress)
 		ppc_md.progress("id mach(): done", 0x200);
+=======
+	setup_kdump_trampoline();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Checks "l2cr=xxxx" command-line option */
@@ -224,7 +288,11 @@ int __init ppc_init(void)
 
 arch_initcall(ppc_init);
 
+<<<<<<< HEAD
 static void __init irqstack_early_init(void)
+=======
+void __init irqstack_early_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int i;
 
@@ -239,14 +307,27 @@ static void __init irqstack_early_init(void)
 }
 
 #if defined(CONFIG_BOOKE) || defined(CONFIG_40x)
+<<<<<<< HEAD
 static void __init exc_lvl_early_init(void)
+=======
+void __init exc_lvl_early_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int i, hw_cpu;
 
 	/* interrupt stacks must be in lowmem, we get that for free on ppc32
 	 * as the memblock is limited to lowmem by MEMBLOCK_REAL_LIMIT */
 	for_each_possible_cpu(i) {
+<<<<<<< HEAD
 		hw_cpu = get_hard_smp_processor_id(i);
+=======
+#ifdef CONFIG_SMP
+		hw_cpu = get_hard_smp_processor_id(i);
+#else
+		hw_cpu = 0;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		critirq_ctx[hw_cpu] = (struct thread_info *)
 			__va(memblock_alloc(THREAD_SIZE, THREAD_SIZE));
 #ifdef CONFIG_BOOKE
@@ -257,6 +338,7 @@ static void __init exc_lvl_early_init(void)
 #endif
 	}
 }
+<<<<<<< HEAD
 #else
 #define exc_lvl_early_init()
 #endif
@@ -284,6 +366,27 @@ void __init setup_arch(char **cmdline_p)
 
 	xmon_setup();
 
+=======
+#endif
+
+void __init setup_power_save(void)
+{
+#ifdef CONFIG_6xx
+	if (cpu_has_feature(CPU_FTR_CAN_DOZE) ||
+	    cpu_has_feature(CPU_FTR_CAN_NAP))
+		ppc_md.power_save = ppc6xx_idle;
+#endif
+
+#ifdef CONFIG_E500
+	if (cpu_has_feature(CPU_FTR_CAN_DOZE) ||
+	    cpu_has_feature(CPU_FTR_CAN_NAP))
+		ppc_md.power_save = e500_idle;
+#endif
+}
+
+__init void initialize_cache_info(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Set cache line size based on type of cpu as a default.
 	 * Systems with OF can look in the properties on the cpu node(s)
@@ -294,6 +397,7 @@ void __init setup_arch(char **cmdline_p)
 	ucache_bsize = 0;
 	if (cpu_has_feature(CPU_FTR_UNIFIED_ID_CACHE))
 		ucache_bsize = icache_bsize = dcache_bsize;
+<<<<<<< HEAD
 
 	/* reboot on panic */
 	panic_timeout = 180;
@@ -327,4 +431,6 @@ void __init setup_arch(char **cmdline_p)
 	/* Initialize the MMU context management stuff */
 	mmu_context_init();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

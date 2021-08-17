@@ -27,6 +27,10 @@
 
 #include <asm/errno.h>
 #include <asm/asm.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				
 /*
  * computes a partial checksum, e.g. for TCP/UDP fragments
@@ -214,6 +218,7 @@ csum_partial:
 	ret
 				
 #endif
+<<<<<<< HEAD
 
 /*
 unsigned int csum_partial_copy_generic (const char *src, char *dst,
@@ -453,3 +458,6 @@ DST(	movb %dl, (%edi)         )
 #undef ROUND1		
 		
 #endif
+=======
+	EXPORT_SYMBOL(csum_partial)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

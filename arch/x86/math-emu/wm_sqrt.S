@@ -208,7 +208,11 @@ sqrt_stage_2_finish:
 
 #ifdef PARANOID
 /* It should be possible to get here only if the arg is ffff....ffff */
+<<<<<<< HEAD
 	cmp	$0xffffffff,FPU_fsqrt_arg_1
+=======
+	cmpl	$0xffffffff,FPU_fsqrt_arg_1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jnz	sqrt_stage_2_error
 #endif /* PARANOID */
 

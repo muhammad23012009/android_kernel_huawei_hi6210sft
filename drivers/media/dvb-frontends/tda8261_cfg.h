@@ -19,6 +19,7 @@
 
 static int tda8261_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 {
+<<<<<<< HEAD
 	struct dvb_frontend_ops	*frontend_ops = NULL;
 	struct dvb_tuner_ops	*tuner_ops = NULL;
 	struct tuner_state	t_state;
@@ -35,12 +36,26 @@ static int tda8261_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 		}
 		*frequency = t_state.frequency;
 		printk("%s: Frequency=%d\n", __func__, t_state.frequency);
+=======
+	struct dvb_frontend_ops	*frontend_ops = &fe->ops;
+	struct dvb_tuner_ops	*tuner_ops = &frontend_ops->tuner_ops;
+	int err = 0;
+
+	if (tuner_ops->get_frequency) {
+		err = tuner_ops->get_frequency(fe, frequency);
+		if (err < 0) {
+			pr_err("%s: Invalid parameter\n", __func__);
+			return err;
+		}
+		pr_debug("%s: Frequency=%d\n", __func__, *frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
 static int tda8261_set_frequency(struct dvb_frontend *fe, u32 frequency)
 {
+<<<<<<< HEAD
 	struct dvb_frontend_ops	*frontend_ops = NULL;
 	struct dvb_tuner_ops	*tuner_ops = NULL;
 	struct tuner_state	t_state;
@@ -58,11 +73,27 @@ static int tda8261_set_frequency(struct dvb_frontend *fe, u32 frequency)
 		}
 	}
 	printk("%s: Frequency=%d\n", __func__, t_state.frequency);
+=======
+	struct dvb_frontend_ops	*frontend_ops = &fe->ops;
+	struct dvb_tuner_ops	*tuner_ops = &frontend_ops->tuner_ops;
+	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+	int err = 0;
+
+	if (tuner_ops->set_params) {
+		err = tuner_ops->set_params(fe);
+		if (err < 0) {
+			pr_err("%s: Invalid parameter\n", __func__);
+			return err;
+		}
+	}
+	pr_debug("%s: Frequency=%d\n", __func__, c->frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int tda8261_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 {
+<<<<<<< HEAD
 	struct dvb_frontend_ops	*frontend_ops = &fe->ops;
 	struct dvb_tuner_ops	*tuner_ops = &frontend_ops->tuner_ops;
 	struct tuner_state	t_state;
@@ -80,5 +111,10 @@ static int tda8261_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 		*bandwidth = t_state.bandwidth;
 		printk("%s: Bandwidth=%d\n", __func__, t_state.bandwidth);
 	}
+=======
+	/* FIXME! need to calculate Bandwidth */
+	*bandwidth = 40000000;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }

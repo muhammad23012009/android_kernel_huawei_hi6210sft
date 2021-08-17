@@ -16,6 +16,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
@@ -51,7 +55,11 @@ enum ltc4245_cmd {
 };
 
 struct ltc4245_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex update_lock;
 	bool valid;
@@ -77,8 +85,13 @@ struct ltc4245_data {
  */
 static void ltc4245_update_gpios(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4245_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4245_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 gpio_curr, gpio_next, gpio_reg;
 	int i;
 
@@ -93,7 +106,10 @@ static void ltc4245_update_gpios(struct device *dev)
 	 * readings as stale by setting them to -EAGAIN
 	 */
 	if (time_after(jiffies, data->last_updated + 5 * HZ)) {
+<<<<<<< HEAD
 		dev_dbg(&client->dev, "Marking GPIOs invalid\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (i = 0; i < ARRAY_SIZE(data->gpios); i++)
 			data->gpios[i] = -EAGAIN;
 	}
@@ -130,8 +146,13 @@ static void ltc4245_update_gpios(struct device *dev)
 
 static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4245_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4245_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s32 val;
 	int i;
 
@@ -139,8 +160,11 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 
 	if (time_after(jiffies, data->last_updated + HZ) || !data->valid) {
 
+<<<<<<< HEAD
 		dev_dbg(&client->dev, "Starting ltc4245 update\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Read control registers -- 0x00 to 0x07 */
 		for (i = 0; i < ARRAY_SIZE(data->cregs); i++) {
 			val = i2c_smbus_read_byte_data(client, i);
@@ -163,7 +187,11 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 		ltc4245_update_gpios(dev);
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -257,6 +285,7 @@ static unsigned int ltc4245_get_current(struct device *dev, u8 reg)
 	return curr;
 }
 
+<<<<<<< HEAD
 static ssize_t ltc4245_show_voltage(struct device *dev,
 				    struct device_attribute *da,
 				    char *buf)
@@ -491,23 +520,233 @@ static void ltc4245_sysfs_remove_groups(struct i2c_client *client)
 
 	sysfs_remove_group(&dev->kobj, &ltc4245_std_group);
 }
+=======
+/* Map from voltage channel index to voltage register */
+
+static const s8 ltc4245_in_regs[] = {
+	LTC4245_12VIN, LTC4245_5VIN, LTC4245_3VIN, LTC4245_VEEIN,
+	LTC4245_12VOUT, LTC4245_5VOUT, LTC4245_3VOUT, LTC4245_VEEOUT,
+};
+
+/* Map from current channel index to current register */
+
+static const s8 ltc4245_curr_regs[] = {
+	LTC4245_12VSENSE, LTC4245_5VSENSE, LTC4245_3VSENSE, LTC4245_VEESENSE,
+};
+
+static int ltc4245_read_curr(struct device *dev, u32 attr, int channel,
+			     long *val)
+{
+	struct ltc4245_data *data = ltc4245_update_device(dev);
+
+	switch (attr) {
+	case hwmon_curr_input:
+		*val = ltc4245_get_current(dev, ltc4245_curr_regs[channel]);
+		return 0;
+	case hwmon_curr_max_alarm:
+		*val = !!(data->cregs[LTC4245_FAULT1] & BIT(channel + 4));
+		return 0;
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static int ltc4245_read_in(struct device *dev, u32 attr, int channel, long *val)
+{
+	struct ltc4245_data *data = ltc4245_update_device(dev);
+
+	switch (attr) {
+	case hwmon_in_input:
+		if (channel < 8) {
+			*val = ltc4245_get_voltage(dev,
+						ltc4245_in_regs[channel]);
+		} else {
+			int regval = data->gpios[channel - 8];
+
+			if (regval < 0)
+				return regval;
+			*val = regval * 10;
+		}
+		return 0;
+	case hwmon_in_min_alarm:
+		if (channel < 4)
+			*val = !!(data->cregs[LTC4245_FAULT1] & BIT(channel));
+		else
+			*val = !!(data->cregs[LTC4245_FAULT2] &
+				  BIT(channel - 4));
+		return 0;
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static int ltc4245_read_power(struct device *dev, u32 attr, int channel,
+			      long *val)
+{
+	unsigned long curr;
+	long voltage;
+
+	switch (attr) {
+	case hwmon_power_input:
+		(void)ltc4245_update_device(dev);
+		curr = ltc4245_get_current(dev, ltc4245_curr_regs[channel]);
+		voltage = ltc4245_get_voltage(dev, ltc4245_in_regs[channel]);
+		*val = abs(curr * voltage);
+		return 0;
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static int ltc4245_read(struct device *dev, enum hwmon_sensor_types type,
+			u32 attr, int channel, long *val)
+{
+
+	switch (type) {
+	case hwmon_curr:
+		return ltc4245_read_curr(dev, attr, channel, val);
+	case hwmon_power:
+		return ltc4245_read_power(dev, attr, channel, val);
+	case hwmon_in:
+		return ltc4245_read_in(dev, attr, channel - 1, val);
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static umode_t ltc4245_is_visible(const void *_data,
+				  enum hwmon_sensor_types type,
+				  u32 attr, int channel)
+{
+	const struct ltc4245_data *data = _data;
+
+	switch (type) {
+	case hwmon_in:
+		if (channel == 0)
+			return 0;
+		switch (attr) {
+		case hwmon_in_input:
+			if (channel > 9 && !data->use_extra_gpios)
+				return 0;
+			return S_IRUGO;
+		case hwmon_in_min_alarm:
+			if (channel > 8)
+				return 0;
+			return S_IRUGO;
+		default:
+			return 0;
+		}
+	case hwmon_curr:
+		switch (attr) {
+		case hwmon_curr_input:
+		case hwmon_curr_max_alarm:
+			return S_IRUGO;
+		default:
+			return 0;
+		}
+	case hwmon_power:
+		switch (attr) {
+		case hwmon_power_input:
+			return S_IRUGO;
+		default:
+			return 0;
+		}
+	default:
+		return 0;
+	}
+}
+
+static const u32 ltc4245_in_config[] = {
+	HWMON_I_INPUT,			/* dummy, skipped in is_visible */
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+	HWMON_I_INPUT,
+	HWMON_I_INPUT,
+	HWMON_I_INPUT,
+	0
+};
+
+static const struct hwmon_channel_info ltc4245_in = {
+	.type = hwmon_in,
+	.config = ltc4245_in_config,
+};
+
+static const u32 ltc4245_curr_config[] = {
+	HWMON_C_INPUT | HWMON_C_MAX_ALARM,
+	HWMON_C_INPUT | HWMON_C_MAX_ALARM,
+	HWMON_C_INPUT | HWMON_C_MAX_ALARM,
+	HWMON_C_INPUT | HWMON_C_MAX_ALARM,
+	0
+};
+
+static const struct hwmon_channel_info ltc4245_curr = {
+	.type = hwmon_curr,
+	.config = ltc4245_curr_config,
+};
+
+static const u32 ltc4245_power_config[] = {
+	HWMON_P_INPUT,
+	HWMON_P_INPUT,
+	HWMON_P_INPUT,
+	HWMON_P_INPUT,
+	0
+};
+
+static const struct hwmon_channel_info ltc4245_power = {
+	.type = hwmon_power,
+	.config = ltc4245_power_config,
+};
+
+static const struct hwmon_channel_info *ltc4245_info[] = {
+	&ltc4245_in,
+	&ltc4245_curr,
+	&ltc4245_power,
+	NULL
+};
+
+static const struct hwmon_ops ltc4245_hwmon_ops = {
+	.is_visible = ltc4245_is_visible,
+	.read = ltc4245_read,
+};
+
+static const struct hwmon_chip_info ltc4245_chip_info = {
+	.ops = &ltc4245_hwmon_ops,
+	.info = ltc4245_info,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static bool ltc4245_use_extra_gpios(struct i2c_client *client)
 {
 	struct ltc4245_platform_data *pdata = dev_get_platdata(&client->dev);
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 	struct device_node *np = client->dev.of_node;
 #endif
+=======
+	struct device_node *np = client->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* prefer platform data */
 	if (pdata)
 		return pdata->use_extra_gpios;
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 	/* fallback on OF */
 	if (of_find_property(np, "ltc4245,use-extra-gpios", NULL))
 		return true;
 #endif
+=======
+	/* fallback on OF */
+	if (of_find_property(np, "ltc4245,use-extra-gpios", NULL))
+		return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return false;
 }
@@ -517,7 +756,11 @@ static int ltc4245_probe(struct i2c_client *client,
 {
 	struct i2c_adapter *adapter = client->adapter;
 	struct ltc4245_data *data;
+<<<<<<< HEAD
 	int ret;
+=======
+	struct device *hwmon_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
@@ -526,7 +769,11 @@ static int ltc4245_probe(struct i2c_client *client,
 	if (!data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	i2c_set_clientdata(client, data);
+=======
+	data->client = client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&data->update_lock);
 	data->use_extra_gpios = ltc4245_use_extra_gpios(client);
 
@@ -534,6 +781,7 @@ static int ltc4245_probe(struct i2c_client *client,
 	i2c_smbus_write_byte_data(client, LTC4245_FAULT1, 0x00);
 	i2c_smbus_write_byte_data(client, LTC4245_FAULT2, 0x00);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	ret = ltc4245_sysfs_create_groups(client);
 	if (ret)
@@ -560,6 +808,13 @@ static int ltc4245_remove(struct i2c_client *client)
 	ltc4245_sysfs_remove_groups(client);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_info(&client->dev,
+							 client->name, data,
+							 &ltc4245_chip_info,
+							 NULL);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id ltc4245_id[] = {
@@ -574,7 +829,10 @@ static struct i2c_driver ltc4245_driver = {
 		.name	= "ltc4245",
 	},
 	.probe		= ltc4245_probe,
+<<<<<<< HEAD
 	.remove		= ltc4245_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= ltc4245_id,
 };
 

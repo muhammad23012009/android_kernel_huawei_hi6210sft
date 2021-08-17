@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,16 +70,42 @@
  *
  *****************************************************************************/
 
+<<<<<<< HEAD
 /* iASL configuration */
 
 #ifdef ACPI_ASL_COMPILER
 #define ACPI_APPLICATION
 #define ACPI_DISASSEMBLER
+=======
+/* Common application configuration. All single threaded except for acpi_exec. */
+
+#if (defined ACPI_ASL_COMPILER) || \
+	(defined ACPI_BIN_APP)      || \
+	(defined ACPI_DUMP_APP)     || \
+	(defined ACPI_HELP_APP)     || \
+	(defined ACPI_NAMES_APP)    || \
+	(defined ACPI_SRC_APP)      || \
+	(defined ACPI_XTRACT_APP)   || \
+	(defined ACPI_EXAMPLE_APP)
+#define ACPI_APPLICATION
+#define ACPI_SINGLE_THREADED
+#define USE_NATIVE_ALLOCATE_ZEROED
+#endif
+
+/* iASL configuration */
+
+#ifdef ACPI_ASL_COMPILER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_DEBUG_OUTPUT
 #define ACPI_CONSTANT_EVAL_ONLY
 #define ACPI_LARGE_NAMESPACE_NODE
 #define ACPI_DATA_TABLE_DISASSEMBLY
+<<<<<<< HEAD
 #define ACPI_SINGLE_THREADED
+=======
+#define ACPI_32BIT_PHYSICAL_ADDRESS
+#define ACPI_DISASSEMBLER 1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* acpi_exec configuration. Multithreaded with full AML debugger */
@@ -87,6 +117,7 @@
 #define ACPI_DBG_TRACK_ALLOCATIONS
 #endif
 
+<<<<<<< HEAD
 /* acpi_names configuration. Single threaded with debugger output enabled. */
 
 #ifdef ACPI_NAMES_APP
@@ -117,11 +148,57 @@
 #ifdef ACPI_LIBRARY
 #define ACPI_USE_LOCAL_CACHE
 #define ACPI_FUTURE_USAGE
+=======
+/* acpi_help configuration. Error messages disabled. */
+
+#ifdef ACPI_HELP_APP
+#define ACPI_NO_ERROR_MESSAGES
+#endif
+
+/* acpi_names configuration. Debug output enabled. */
+
+#ifdef ACPI_NAMES_APP
+#define ACPI_DEBUG_OUTPUT
+#endif
+
+/* acpi_exec/acpi_names/Example configuration. Native RSDP used. */
+
+#if (defined ACPI_EXEC_APP)     || \
+	(defined ACPI_EXAMPLE_APP)  || \
+	(defined ACPI_NAMES_APP)
+#define ACPI_USE_NATIVE_RSDP_POINTER
+#endif
+
+/* acpi_dump configuration. Native mapping used if provided by the host */
+
+#ifdef ACPI_DUMP_APP
+#define ACPI_USE_NATIVE_MEMORY_MAPPING
+#endif
+
+/* acpi_names/Example configuration. Hardware disabled */
+
+#if (defined ACPI_EXAMPLE_APP)  || \
+	(defined ACPI_NAMES_APP)
+#define ACPI_REDUCED_HARDWARE 1
+#endif
+
+/* Linkable ACPICA library. Two versions, one with full debug. */
+
+#ifdef ACPI_LIBRARY
+#define ACPI_USE_LOCAL_CACHE
+#define ACPI_DEBUGGER 1
+#define ACPI_DISASSEMBLER 1
+
+#ifdef _DEBUG
+#define ACPI_DEBUG_OUTPUT
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* Common for all ACPICA applications */
 
 #ifdef ACPI_APPLICATION
+<<<<<<< HEAD
 #define ACPI_USE_SYSTEM_CLIBRARY
 #define ACPI_USE_LOCAL_CACHE
 #endif
@@ -132,6 +209,17 @@
 #define ACPI_DEBUGGER
 #define ACPI_DEBUG_OUTPUT
 #define ACPI_DISASSEMBLER
+=======
+#define ACPI_USE_LOCAL_CACHE
+#endif
+
+/* Common debug/disassembler support */
+
+#ifdef ACPI_FULL_DEBUG
+#define ACPI_DEBUG_OUTPUT
+#define ACPI_DEBUGGER 1
+#define ACPI_DISASSEMBLER 1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 
@@ -140,6 +228,7 @@
 /******************************************************************************
  *
  * Host configuration files. The compiler configuration files are included
+<<<<<<< HEAD
  * by the host files.
  *
  *****************************************************************************/
@@ -147,6 +236,32 @@
 #if defined(_LINUX) || defined(__linux__)
 #include <acpi/platform/aclinux.h>
 
+=======
+ * first.
+ *
+ *****************************************************************************/
+
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
+#include <acpi/platform/acgcc.h>
+
+#elif defined(_MSC_VER)
+#include "acmsvc.h"
+
+#elif defined(__INTEL_COMPILER)
+#include <acpi/platform/acintel.h>
+
+#endif
+
+#if defined(_LINUX) || defined(__linux__)
+#include <acpi/platform/aclinux.h>
+
+#elif defined(_APPLE) || defined(__APPLE__)
+#include "acmacosx.h"
+
+#elif defined(__DragonFly__)
+#include "acdragonfly.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 #include "acfreebsd.h"
 
@@ -177,12 +292,29 @@
 #elif defined(__OS2__)
 #include "acos2.h"
 
+<<<<<<< HEAD
 #elif defined(_AED_EFI)
 #include "acefi.h"
 
 #elif defined(__HAIKU__)
 #include "achaiku.h"
 
+=======
+#elif defined(__HAIKU__)
+#include "achaiku.h"
+
+#elif defined(__QNX__)
+#include "acqnx.h"
+
+/*
+ * EFI applications can be built with -nostdlib, in this case, it must be
+ * included after including all other host environmental definitions, in
+ * order to override the definitions.
+ */
+#elif defined(_AED_EFI) || defined(_GNU_EFI) || defined(_EDK2_EFI)
+#include "acefi.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 
 /* Unknown environment */
@@ -269,11 +401,19 @@
  * multi-threaded if ACPI_APPLICATION is not set.
  */
 #ifndef DEBUGGER_THREADING
+<<<<<<< HEAD
 #ifdef ACPI_APPLICATION
 #define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
 
 #else
 #define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
+=======
+#if !defined (ACPI_APPLICATION) || defined (ACPI_EXEC_APP)
+#define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
+
+#else
+#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #endif				/* !DEBUGGER_THREADING */
 
@@ -287,15 +427,26 @@
  * ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
  *      Otherwise, local versions of string/memory functions will be used.
  * ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
+<<<<<<< HEAD
  *      the standard header files may be used.
  *
  * The ACPICA subsystem only uses low level C library functions that do not call
  * operating system services and may therefore be inlined in the code.
+=======
+ *      the standard header files may be used. Defining this implies that
+ *      ACPI_USE_SYSTEM_CLIBRARY has been defined.
+ *
+ * The ACPICA subsystem only uses low level C library functions that do not
+ * call operating system services and may therefore be inlined in the code.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * It may be necessary to tailor these include files to the target
  * generation environment.
  */
+<<<<<<< HEAD
 #ifdef ACPI_USE_SYSTEM_CLIBRARY
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Use the standard C library headers. We want to keep these to a minimum. */
 
@@ -303,6 +454,7 @@
 
 /* Use the standard headers from the standard locations */
 
+<<<<<<< HEAD
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -389,5 +541,33 @@ typedef char *va_list;
 #define ACPI_TOLOWER(c)         acpi_ut_to_lower ((int) (c))
 
 #endif				/* ACPI_USE_SYSTEM_CLIBRARY */
+=======
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#ifdef ACPI_APPLICATION
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <time.h>
+#include <signal.h>
+#endif
+
+#endif				/* ACPI_USE_STANDARD_HEADERS */
+
+#ifdef ACPI_APPLICATION
+#define ACPI_FILE              FILE *
+#define ACPI_FILE_OUT          stdout
+#define ACPI_FILE_ERR          stderr
+#else
+#define ACPI_FILE              void *
+#define ACPI_FILE_OUT          NULL
+#define ACPI_FILE_ERR          NULL
+#endif				/* ACPI_APPLICATION */
+
+#ifndef ACPI_INIT_FUNCTION
+#define ACPI_INIT_FUNCTION
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif				/* __ACENV_H__ */

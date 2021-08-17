@@ -14,7 +14,10 @@
  */
 
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/module.h>
@@ -24,8 +27,15 @@
 #include <linux/clk.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/input/ti_am335x_tsc.h>
 #include <linux/delay.h>
+=======
+#include <linux/delay.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/sort.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/mfd/ti_am335x_tscadc.h>
 
@@ -33,6 +43,16 @@
 #define SEQ_SETTLE		275
 #define MAX_12BIT		((1 << 12) - 1)
 
+<<<<<<< HEAD
+=======
+static const int config_pins[] = {
+	STEPCONFIG_XPP,
+	STEPCONFIG_XNN,
+	STEPCONFIG_YPP,
+	STEPCONFIG_YNN,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct titsc {
 	struct input_dev	*input;
 	struct ti_tscadc_dev	*mfd_tscadc;
@@ -40,7 +60,16 @@ struct titsc {
 	unsigned int		wires;
 	unsigned int		x_plate_resistance;
 	bool			pen_down;
+<<<<<<< HEAD
 	int			steps_to_configure;
+=======
+	int			coordinate_readouts;
+	u32			config_inp[4];
+	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+	u32			inp_xp, inp_xn, inp_yp, inp_yn;
+	u32			step_mask;
+	u32			charge_delay;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
@@ -54,6 +83,7 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
 	writel(val, tsc->mfd_tscadc->tscadc_base + reg);
 }
 
+<<<<<<< HEAD
 static void titsc_step_config(struct titsc *ts_dev)
 {
 	unsigned int	config;
@@ -79,12 +109,95 @@ static void titsc_step_config(struct titsc *ts_dev)
 	}
 
 	for (i = 1; i <= ts_dev->steps_to_configure; i++) {
+=======
+static int titsc_config_wires(struct titsc *ts_dev)
+{
+	u32 analog_line[4];
+	u32 wire_order[4];
+	int i, bit_cfg;
+
+	for (i = 0; i < 4; i++) {
+		/*
+		 * Get the order in which TSC wires are attached
+		 * w.r.t. each of the analog input lines on the EVM.
+		 */
+		analog_line[i] = (ts_dev->config_inp[i] & 0xF0) >> 4;
+		wire_order[i] = ts_dev->config_inp[i] & 0x0F;
+		if (WARN_ON(analog_line[i] > 7))
+			return -EINVAL;
+		if (WARN_ON(wire_order[i] > ARRAY_SIZE(config_pins)))
+			return -EINVAL;
+	}
+
+	for (i = 0; i < 4; i++) {
+		int an_line;
+		int wi_order;
+
+		an_line = analog_line[i];
+		wi_order = wire_order[i];
+		bit_cfg = config_pins[wi_order];
+		if (bit_cfg == 0)
+			return -EINVAL;
+		switch (wi_order) {
+		case 0:
+			ts_dev->bit_xp = bit_cfg;
+			ts_dev->inp_xp = an_line;
+			break;
+
+		case 1:
+			ts_dev->bit_xn = bit_cfg;
+			ts_dev->inp_xn = an_line;
+			break;
+
+		case 2:
+			ts_dev->bit_yp = bit_cfg;
+			ts_dev->inp_yp = an_line;
+			break;
+		case 3:
+			ts_dev->bit_yn = bit_cfg;
+			ts_dev->inp_yn = an_line;
+			break;
+		}
+	}
+	return 0;
+}
+
+static void titsc_step_config(struct titsc *ts_dev)
+{
+	unsigned int	config;
+	int i;
+	int end_step, first_step, tsc_steps;
+	u32 stepenable;
+
+	config = STEPCONFIG_MODE_HWSYNC |
+			STEPCONFIG_AVG_16 | ts_dev->bit_xp;
+	switch (ts_dev->wires) {
+	case 4:
+		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+		break;
+	case 5:
+		config |= ts_dev->bit_yn |
+				STEPCONFIG_INP_AN4 | ts_dev->bit_xn |
+				ts_dev->bit_yp;
+		break;
+	case 8:
+		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+		break;
+	}
+
+	tsc_steps = ts_dev->coordinate_readouts * 2 + 2;
+	first_step = TOTAL_STEPS - tsc_steps;
+	/* Steps 16 to 16-coordinate_readouts is for X */
+	end_step = first_step + tsc_steps;
+	for (i = end_step - ts_dev->coordinate_readouts; i < end_step; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
 	}
 
 	config = 0;
 	config = STEPCONFIG_MODE_HWSYNC |
+<<<<<<< HEAD
 			STEPCONFIG_AVG_16 | STEPCONFIG_YNN |
 			STEPCONFIG_INM_ADCREFM | STEPCONFIG_FIFO1;
 	switch (ts_dev->wires) {
@@ -101,10 +214,31 @@ static void titsc_step_config(struct titsc *ts_dev)
 	}
 
 	for (i = (ts_dev->steps_to_configure + 1); i <= total_steps; i++) {
+=======
+			STEPCONFIG_AVG_16 | ts_dev->bit_yn |
+			STEPCONFIG_INM_ADCREFM;
+	switch (ts_dev->wires) {
+	case 4:
+		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+		break;
+	case 5:
+		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
+				ts_dev->bit_xn | ts_dev->bit_yp;
+		break;
+	case 8:
+		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+		break;
+	}
+
+	/* 1 ... coordinate_readouts is for Y */
+	end_step = first_step + ts_dev->coordinate_readouts;
+	for (i = first_step; i < end_step; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
 	}
 
+<<<<<<< HEAD
 	config = 0;
 	/* Charge step configuration */
 	config = STEPCONFIG_XPP | STEPCONFIG_YNN |
@@ -176,12 +310,100 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
 			prev_val_y = read;
 		}
 	}
+=======
+	/* Make CHARGECONFIG same as IDLECONFIG */
+
+	config = titsc_readl(ts_dev, REG_IDLECONFIG);
+	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+	titsc_writel(ts_dev, REG_CHARGEDELAY, ts_dev->charge_delay);
+
+	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
+	config = STEPCONFIG_MODE_HWSYNC |
+			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
+			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
+			STEPCONFIG_INP(ts_dev->inp_xp);
+	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
+	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
+			STEPCONFIG_OPENDLY);
+
+	end_step++;
+	config |= STEPCONFIG_INP(ts_dev->inp_yn);
+	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
+	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
+			STEPCONFIG_OPENDLY);
+
+	/* The steps end ... end - readouts * 2 + 2 and bit 0 for TS_Charge */
+	stepenable = 1;
+	for (i = 0; i < tsc_steps; i++)
+		stepenable |= 1 << (first_step + i + 1);
+
+	ts_dev->step_mask = stepenable;
+	am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
+}
+
+static int titsc_cmp_coord(const void *a, const void *b)
+{
+	return *(int *)a - *(int *)b;
+}
+
+static void titsc_read_coordinates(struct titsc *ts_dev,
+		u32 *x, u32 *y, u32 *z1, u32 *z2)
+{
+	unsigned int yvals[7], xvals[7];
+	unsigned int i, xsum = 0, ysum = 0;
+	unsigned int creads = ts_dev->coordinate_readouts;
+
+	for (i = 0; i < creads; i++) {
+		yvals[i] = titsc_readl(ts_dev, REG_FIFO0);
+		yvals[i] &= 0xfff;
+	}
+
+	*z1 = titsc_readl(ts_dev, REG_FIFO0);
+	*z1 &= 0xfff;
+	*z2 = titsc_readl(ts_dev, REG_FIFO0);
+	*z2 &= 0xfff;
+
+	for (i = 0; i < creads; i++) {
+		xvals[i] = titsc_readl(ts_dev, REG_FIFO0);
+		xvals[i] &= 0xfff;
+	}
+
+	/*
+	 * If co-ordinates readouts is less than 4 then
+	 * report the average. In case of 4 or more
+	 * readouts, sort the co-ordinate samples, drop
+	 * min and max values and report the average of
+	 * remaining values.
+	 */
+	if (creads <=  3) {
+		for (i = 0; i < creads; i++) {
+			ysum += yvals[i];
+			xsum += xvals[i];
+		}
+		ysum /= creads;
+		xsum /= creads;
+	} else {
+		sort(yvals, creads, sizeof(unsigned int),
+		     titsc_cmp_coord, NULL);
+		sort(xvals, creads, sizeof(unsigned int),
+		     titsc_cmp_coord, NULL);
+		for (i = 1; i < creads - 1; i++) {
+			ysum += yvals[i];
+			xsum += xvals[i];
+		}
+		ysum /= creads - 2;
+		xsum /= creads - 2;
+	}
+	*y = ysum;
+	*x = xsum;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static irqreturn_t titsc_irq(int irq, void *dev)
 {
 	struct titsc *ts_dev = dev;
 	struct input_dev *input_dev = ts_dev->input;
+<<<<<<< HEAD
 	unsigned int status, irqclr = 0;
 	unsigned int x = 0, y = 0;
 	unsigned int z1, z2, z;
@@ -203,6 +425,41 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 		fifo0count = titsc_readl(ts_dev, REG_FIFO0CNT);
 		for (i = 0; i < fifo0count; i++)
 			titsc_readl(ts_dev, REG_FIFO0);
+=======
+	unsigned int fsm, status, irqclr = 0;
+	unsigned int x = 0, y = 0;
+	unsigned int z1, z2, z;
+
+	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
+	if (status & IRQENB_HW_PEN) {
+		ts_dev->pen_down = true;
+		irqclr |= IRQENB_HW_PEN;
+	}
+
+	if (status & IRQENB_PENUP) {
+		fsm = titsc_readl(ts_dev, REG_ADCFSM);
+		if (fsm == ADCFSM_STEPID) {
+			ts_dev->pen_down = false;
+			input_report_key(input_dev, BTN_TOUCH, 0);
+			input_report_abs(input_dev, ABS_PRESSURE, 0);
+			input_sync(input_dev);
+		} else {
+			ts_dev->pen_down = true;
+		}
+		irqclr |= IRQENB_PENUP;
+	}
+
+	if (status & IRQENB_EOS)
+		irqclr |= IRQENB_EOS;
+
+	/*
+	 * ADC and touchscreen share the IRQ line.
+	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
+	 */
+	if (status & IRQENB_FIFO0THRES) {
+
+		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
 			/*
@@ -210,10 +467,17 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 			 * Resistance(touch) = x plate resistance *
 			 * x postion/4096 * ((z2 / z1) - 1)
 			 */
+<<<<<<< HEAD
 			z = z2 - z1;
 			z *= x;
 			z *= ts_dev->x_plate_resistance;
 			z /= z1;
+=======
+			z = z1 - z2;
+			z *= x;
+			z *= ts_dev->x_plate_resistance;
+			z /= z2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			z = (z + 2047) >> 12;
 
 			if (z <= MAX_12BIT) {
@@ -226,6 +490,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 		}
 		irqclr |= IRQENB_FIFO0THRES;
 	}
+<<<<<<< HEAD
 
 	/*
 	 * Time for sequencer to settle, to read
@@ -252,6 +517,78 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 
 	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
 	return IRQ_HANDLED;
+=======
+	if (irqclr) {
+		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+		if (status & IRQENB_EOS)
+			am335x_tsc_se_set_cache(ts_dev->mfd_tscadc,
+						ts_dev->step_mask);
+		return IRQ_HANDLED;
+	}
+	return IRQ_NONE;
+}
+
+static int titsc_parse_dt(struct platform_device *pdev,
+					struct titsc *ts_dev)
+{
+	struct device_node *node = pdev->dev.of_node;
+	int err;
+
+	if (!node)
+		return -EINVAL;
+
+	err = of_property_read_u32(node, "ti,wires", &ts_dev->wires);
+	if (err < 0)
+		return err;
+	switch (ts_dev->wires) {
+	case 4:
+	case 5:
+	case 8:
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	err = of_property_read_u32(node, "ti,x-plate-resistance",
+			&ts_dev->x_plate_resistance);
+	if (err < 0)
+		return err;
+
+	/*
+	 * Try with the new binding first. If it fails, try again with
+	 * bogus, miss-spelled version.
+	 */
+	err = of_property_read_u32(node, "ti,coordinate-readouts",
+			&ts_dev->coordinate_readouts);
+	if (err < 0) {
+		dev_warn(&pdev->dev, "please use 'ti,coordinate-readouts' instead\n");
+		err = of_property_read_u32(node, "ti,coordiante-readouts",
+				&ts_dev->coordinate_readouts);
+	}
+
+	if (err < 0)
+		return err;
+
+	if (ts_dev->coordinate_readouts <= 0) {
+		dev_warn(&pdev->dev,
+			 "invalid co-ordinate readouts, resetting it to 5\n");
+		ts_dev->coordinate_readouts = 5;
+	}
+
+	err = of_property_read_u32(node, "ti,charge-delay",
+				   &ts_dev->charge_delay);
+	/*
+	 * If ti,charge-delay value is not specified, then use
+	 * CHARGEDLY_OPENDLY as the default value.
+	 */
+	if (err < 0) {
+		ts_dev->charge_delay = CHARGEDLY_OPENDLY;
+		dev_warn(&pdev->dev, "ti,charge-delay not specified\n");
+	}
+
+	return of_property_read_u32_array(node, "ti,wire-config",
+			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -262,6 +599,7 @@ static int titsc_probe(struct platform_device *pdev)
 {
 	struct titsc *ts_dev;
 	struct input_dev *input_dev;
+<<<<<<< HEAD
 	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
 	struct mfd_tscadc_board	*pdata;
 	int err;
@@ -275,6 +613,13 @@ static int titsc_probe(struct platform_device *pdev)
 
 	/* Allocate memory for device */
 	ts_dev = kzalloc(sizeof(struct titsc), GFP_KERNEL);
+=======
+	struct ti_tscadc_dev *tscadc_dev = ti_tscadc_dev_get(pdev);
+	int err;
+
+	/* Allocate memory for device */
+	ts_dev = kzalloc(sizeof(*ts_dev), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_dev = input_allocate_device();
 	if (!ts_dev || !input_dev) {
 		dev_err(&pdev->dev, "failed to allocate memory.\n");
@@ -286,20 +631,44 @@ static int titsc_probe(struct platform_device *pdev)
 	ts_dev->mfd_tscadc = tscadc_dev;
 	ts_dev->input = input_dev;
 	ts_dev->irq = tscadc_dev->irq;
+<<<<<<< HEAD
 	ts_dev->wires = pdata->tsc_init->wires;
 	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
 	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
 
 	err = request_irq(ts_dev->irq, titsc_irq,
 			  0, pdev->dev.driver->name, ts_dev);
+=======
+
+	err = titsc_parse_dt(pdev, ts_dev);
+	if (err) {
+		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+		goto err_free_mem;
+	}
+
+	err = request_irq(ts_dev->irq, titsc_irq,
+			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err) {
 		dev_err(&pdev->dev, "failed to allocate irq.\n");
 		goto err_free_mem;
 	}
 
 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
+<<<<<<< HEAD
 	titsc_step_config(ts_dev);
 	titsc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
+=======
+	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_EOS);
+	err = titsc_config_wires(ts_dev);
+	if (err) {
+		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
+		goto err_free_irq;
+	}
+	titsc_step_config(ts_dev);
+	titsc_writel(ts_dev, REG_FIFO0THR,
+			ts_dev->coordinate_readouts * 2 + 2 - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input_dev->name = "ti-tsc";
 	input_dev->dev.parent = &pdev->dev;
@@ -329,6 +698,7 @@ err_free_mem:
 
 static int titsc_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
 	struct titsc *ts_dev = tscadc_dev->tsc;
 
@@ -337,10 +707,25 @@ static int titsc_remove(struct platform_device *pdev)
 	input_unregister_device(ts_dev->input);
 
 	platform_set_drvdata(pdev, NULL);
+=======
+	struct titsc *ts_dev = platform_get_drvdata(pdev);
+	u32 steps;
+
+	free_irq(ts_dev->irq, ts_dev);
+
+	/* total steps followed by the enable mask */
+	steps = 2 * ts_dev->coordinate_readouts + 2;
+	steps = (1 << steps) - 1;
+	am335x_tsc_se_clr(ts_dev->mfd_tscadc, steps);
+
+	input_unregister_device(ts_dev->input);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(ts_dev);
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int titsc_suspend(struct device *dev)
 {
@@ -348,6 +733,15 @@ static int titsc_suspend(struct device *dev)
 	struct titsc *ts_dev = tscadc_dev->tsc;
 	unsigned int idle;
 
+=======
+static int __maybe_unused titsc_suspend(struct device *dev)
+{
+	struct titsc *ts_dev = dev_get_drvdata(dev);
+	struct ti_tscadc_dev *tscadc_dev;
+	unsigned int idle;
+
+	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (device_may_wakeup(tscadc_dev->dev)) {
 		idle = titsc_readl(ts_dev, REG_IRQENABLE);
 		titsc_writel(ts_dev, REG_IRQENABLE,
@@ -357,11 +751,20 @@ static int titsc_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int titsc_resume(struct device *dev)
 {
 	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
 	struct titsc *ts_dev = tscadc_dev->tsc;
 
+=======
+static int __maybe_unused titsc_resume(struct device *dev)
+{
+	struct titsc *ts_dev = dev_get_drvdata(dev);
+	struct ti_tscadc_dev *tscadc_dev;
+
+	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (device_may_wakeup(tscadc_dev->dev)) {
 		titsc_writel(ts_dev, REG_IRQWAKEUP,
 				0x00);
@@ -369,6 +772,7 @@ static int titsc_resume(struct device *dev)
 	}
 	titsc_step_config(ts_dev);
 	titsc_writel(ts_dev, REG_FIFO0THR,
+<<<<<<< HEAD
 			ts_dev->steps_to_configure);
 	return 0;
 }
@@ -381,14 +785,33 @@ static const struct dev_pm_ops titsc_pm_ops = {
 #else
 #define TITSC_PM_OPS NULL
 #endif
+=======
+			ts_dev->coordinate_readouts * 2 + 2 - 1);
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(titsc_pm_ops, titsc_suspend, titsc_resume);
+
+static const struct of_device_id ti_tsc_dt_ids[] = {
+	{ .compatible = "ti,am3359-tsc", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, ti_tsc_dt_ids);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver ti_tsc_driver = {
 	.probe	= titsc_probe,
 	.remove	= titsc_remove,
 	.driver	= {
+<<<<<<< HEAD
 		.name   = "tsc",
 		.owner	= THIS_MODULE,
 		.pm	= TITSC_PM_OPS,
+=======
+		.name   = "TI-am335x-tsc",
+		.pm	= &titsc_pm_ops,
+		.of_match_table = ti_tsc_dt_ids,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(ti_tsc_driver);

@@ -33,12 +33,22 @@
 #include <linux/gpio.h>
 #include <linux/interrupt.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/io.h>
 
 #include <plat/regs-serial.h>
 #include <mach/regs-clock.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-irq.h>
+=======
+#include <linux/serial_s3c.h>
+#include <linux/io.h>
+
+#include <mach/regs-clock.h>
+#include <mach/regs-gpio.h>
+#include <mach/regs-irq.h>
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/time.h>
 
@@ -49,10 +59,15 @@
 
 #define PFX "s3c24xx-pm: "
 
+<<<<<<< HEAD
 static struct sleep_save core_save[] = {
 	SAVE_ITEM(S3C2410_LOCKTIME),
 	SAVE_ITEM(S3C2410_CLKCON),
 
+=======
+#ifdef CONFIG_PM_SLEEP
+static struct sleep_save core_save[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* we restore the timings here, with the proviso that the board
 	 * brings the system up in an slower, or equal frequency setting
 	 * to the original system.
@@ -68,6 +83,7 @@ static struct sleep_save core_save[] = {
 	SAVE_ITEM(S3C2410_BANKCON3),
 	SAVE_ITEM(S3C2410_BANKCON4),
 	SAVE_ITEM(S3C2410_BANKCON5),
+<<<<<<< HEAD
 
 #ifndef CONFIG_CPU_FREQ
 	SAVE_ITEM(S3C2410_CLKDIVN),
@@ -81,6 +97,10 @@ static struct sleep_save core_save[] = {
 static struct sleep_save misc_save[] = {
 	SAVE_ITEM(S3C2410_DCLKCON),
 };
+=======
+};
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* s3c_pm_check_resume_pin
  *
@@ -135,16 +155,29 @@ void s3c_pm_configure_extint(void)
 	}
 }
 
+<<<<<<< HEAD
 
 void s3c_pm_restore_core(void)
 {
 	s3c_pm_do_restore_core(core_save, ARRAY_SIZE(core_save));
 	s3c_pm_do_restore(misc_save, ARRAY_SIZE(misc_save));
+=======
+#ifdef CONFIG_PM_SLEEP
+void s3c_pm_restore_core(void)
+{
+	s3c_pm_do_restore_core(core_save, ARRAY_SIZE(core_save));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void s3c_pm_save_core(void)
 {
+<<<<<<< HEAD
 	s3c_pm_do_save(misc_save, ARRAY_SIZE(misc_save));
 	s3c_pm_do_save(core_save, ARRAY_SIZE(core_save));
 }
 
+=======
+	s3c_pm_do_save(core_save, ARRAY_SIZE(core_save));
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

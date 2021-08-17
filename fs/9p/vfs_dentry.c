@@ -43,6 +43,7 @@
 #include "fid.h"
 
 /**
+<<<<<<< HEAD
  * v9fs_dentry_delete - called when dentry refcount equals 0
  * @dentry:  dentry in question
  *
@@ -60,17 +61,27 @@ static int v9fs_dentry_delete(const struct dentry *dentry)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * v9fs_cached_dentry_delete - called when dentry refcount equals 0
  * @dentry:  dentry in question
  *
  */
 static int v9fs_cached_dentry_delete(const struct dentry *dentry)
 {
+<<<<<<< HEAD
 	p9_debug(P9_DEBUG_VFS, " dentry: %s (%p)\n",
 		 dentry->d_name.name, dentry);
 
 	/* Don't cache negative dentries */
 	if (!dentry->d_inode)
+=======
+	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
+		 dentry, dentry);
+
+	/* Don't cache negative dentries */
+	if (d_really_is_negative(dentry))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	return 0;
 }
@@ -84,8 +95,13 @@ static int v9fs_cached_dentry_delete(const struct dentry *dentry)
 static void v9fs_dentry_release(struct dentry *dentry)
 {
 	struct hlist_node *p, *n;
+<<<<<<< HEAD
 	p9_debug(P9_DEBUG_VFS, " dentry: %s (%p)\n",
 		 dentry->d_name.name, dentry);
+=======
+	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
+		 dentry, dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hlist_for_each_safe(p, n, (struct hlist_head *)&dentry->d_fsdata)
 		p9_client_clunk(hlist_entry(p, struct p9_fid, dlist));
 	dentry->d_fsdata = NULL;
@@ -100,7 +116,11 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
+<<<<<<< HEAD
 	inode = dentry->d_inode;
+=======
+	inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!inode)
 		goto out_valid;
 
@@ -134,6 +154,10 @@ const struct dentry_operations v9fs_cached_dentry_operations = {
 };
 
 const struct dentry_operations v9fs_dentry_operations = {
+<<<<<<< HEAD
 	.d_delete = v9fs_dentry_delete,
+=======
+	.d_delete = always_delete_dentry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.d_release = v9fs_dentry_release,
 };

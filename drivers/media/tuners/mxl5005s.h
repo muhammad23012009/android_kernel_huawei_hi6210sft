@@ -23,8 +23,11 @@
 #ifndef __MXL5005S_H
 #define __MXL5005S_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 
@@ -118,7 +121,11 @@ struct mxl5005s_config {
 	u8 AgcMasterByte;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_MXL5005S)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_MXL5005S)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *mxl5005s_attach(struct dvb_frontend *fe,
 					    struct i2c_adapter *i2c,
 					    struct mxl5005s_config *config);

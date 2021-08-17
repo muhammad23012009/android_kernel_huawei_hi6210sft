@@ -28,6 +28,7 @@
 #include "nx.h"
 
 
+<<<<<<< HEAD
 static int nx_sha512_init(struct shash_desc *desc)
 {
 	struct sha512_state *sctx = shash_desc_ctx(desc);
@@ -37,13 +38,47 @@ static int nx_sha512_init(struct shash_desc *desc)
 	nx_ctx_init(nx_ctx, HCOP_FC_SHA);
 
 	memset(sctx, 0, sizeof *sctx);
+=======
+static int nx_crypto_ctx_sha512_init(struct crypto_tfm *tfm)
+{
+	struct nx_crypto_ctx *nx_ctx = crypto_tfm_ctx(tfm);
+	int err;
+
+	err = nx_crypto_ctx_sha_init(tfm);
+	if (err)
+		return err;
+
+	nx_ctx_init(nx_ctx, HCOP_FC_SHA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nx_ctx->ap = &nx_ctx->props[NX_PROPS_SHA512];
 
 	NX_CPB_SET_DIGEST_SIZE(nx_ctx->csbcpb, NX_DS_SHA512);
+<<<<<<< HEAD
 	out_sg = nx_build_sg_list(nx_ctx->out_sg, (u8 *)sctx->state,
 				  SHA512_DIGEST_SIZE, nx_ctx->ap->sglen);
 	nx_ctx->op.outlen = (nx_ctx->out_sg - out_sg) * sizeof(struct nx_sg);
+=======
+
+	return 0;
+}
+
+static int nx_sha512_init(struct shash_desc *desc)
+{
+	struct sha512_state *sctx = shash_desc_ctx(desc);
+
+	memset(sctx, 0, sizeof *sctx);
+
+	sctx->state[0] = __cpu_to_be64(SHA512_H0);
+	sctx->state[1] = __cpu_to_be64(SHA512_H1);
+	sctx->state[2] = __cpu_to_be64(SHA512_H2);
+	sctx->state[3] = __cpu_to_be64(SHA512_H3);
+	sctx->state[4] = __cpu_to_be64(SHA512_H4);
+	sctx->state[5] = __cpu_to_be64(SHA512_H5);
+	sctx->state[6] = __cpu_to_be64(SHA512_H6);
+	sctx->state[7] = __cpu_to_be64(SHA512_H7);
+	sctx->count[0] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -54,6 +89,7 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 	struct sha512_state *sctx = shash_desc_ctx(desc);
 	struct nx_crypto_ctx *nx_ctx = crypto_tfm_ctx(&desc->tfm->base);
 	struct nx_csbcpb *csbcpb = (struct nx_csbcpb *)nx_ctx->csbcpb;
+<<<<<<< HEAD
 	struct nx_sg *in_sg;
 	u64 to_process, leftover, spbc_bits;
 	int rc = 0;
@@ -71,10 +107,30 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 	 */
 	if ((u64)len + sctx->count[0] < SHA512_BLOCK_SIZE) {
 		memcpy(sctx->buf + sctx->count[0], data, len);
+=======
+	struct nx_sg *out_sg;
+	u64 to_process, leftover = 0, total;
+	unsigned long irq_flags;
+	int rc = 0;
+	int data_len;
+	u32 max_sg_len;
+	u64 buf_len = (sctx->count[0] % SHA512_BLOCK_SIZE);
+
+	spin_lock_irqsave(&nx_ctx->lock, irq_flags);
+
+	/* 2 cases for total data len:
+	 *  1: < SHA512_BLOCK_SIZE: copy into state, return 0
+	 *  2: >= SHA512_BLOCK_SIZE: process X blocks, copy in leftover
+	 */
+	total = (sctx->count[0] % SHA512_BLOCK_SIZE) + len;
+	if (total < SHA512_BLOCK_SIZE) {
+		memcpy(sctx->buf + buf_len, data, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sctx->count[0] += len;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* to_process: the SHA512_BLOCK_SIZE data chunk to process in this
 	 * update */
 	to_process = (sctx->count[0] + len) & ~(SHA512_BLOCK_SIZE - 1);
@@ -98,10 +154,28 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 	NX_CPB_FDM(csbcpb) |= NX_FDM_INTERMEDIATE;
 
 	if (!nx_ctx->op.inlen || !nx_ctx->op.outlen) {
+=======
+	memcpy(csbcpb->cpb.sha512.message_digest, sctx->state, SHA512_DIGEST_SIZE);
+	NX_CPB_FDM(csbcpb) |= NX_FDM_INTERMEDIATE;
+	NX_CPB_FDM(csbcpb) |= NX_FDM_CONTINUATION;
+
+	max_sg_len = min_t(u64, nx_ctx->ap->sglen,
+			nx_driver.of.max_sg_len/sizeof(struct nx_sg));
+	max_sg_len = min_t(u64, max_sg_len,
+			nx_ctx->ap->databytelen/NX_PAGE_SIZE);
+
+	data_len = SHA512_DIGEST_SIZE;
+	out_sg = nx_build_sg_list(nx_ctx->out_sg, (u8 *)sctx->state,
+				  &data_len, max_sg_len);
+	nx_ctx->op.outlen = (nx_ctx->out_sg - out_sg) * sizeof(struct nx_sg);
+
+	if (data_len != SHA512_DIGEST_SIZE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -EINVAL;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	rc = nx_hcall_sync(nx_ctx, &nx_ctx->op,
 			   desc->flags & CRYPTO_TFM_REQ_MAY_SLEEP);
 	if (rc)
@@ -122,6 +196,83 @@ static int nx_sha512_update(struct shash_desc *desc, const u8 *data,
 	/* everything after the first update is continuation */
 	NX_CPB_FDM(csbcpb) |= NX_FDM_CONTINUATION;
 out:
+=======
+	do {
+		int used_sgs = 0;
+		struct nx_sg *in_sg = nx_ctx->in_sg;
+
+		if (buf_len) {
+			data_len = buf_len;
+			in_sg = nx_build_sg_list(in_sg,
+						 (u8 *) sctx->buf,
+						 &data_len, max_sg_len);
+
+			if (data_len != buf_len) {
+				rc = -EINVAL;
+				goto out;
+			}
+			used_sgs = in_sg - nx_ctx->in_sg;
+		}
+
+		/* to_process: SHA512_BLOCK_SIZE aligned chunk to be
+		 * processed in this iteration. This value is restricted
+		 * by sg list limits and number of sgs we already used
+		 * for leftover data. (see above)
+		 * In ideal case, we could allow NX_PAGE_SIZE * max_sg_len,
+		 * but because data may not be aligned, we need to account
+		 * for that too. */
+		to_process = min_t(u64, total,
+			(max_sg_len - 1 - used_sgs) * NX_PAGE_SIZE);
+		to_process = to_process & ~(SHA512_BLOCK_SIZE - 1);
+
+		data_len = to_process - buf_len;
+		in_sg = nx_build_sg_list(in_sg, (u8 *) data,
+					 &data_len, max_sg_len);
+
+		nx_ctx->op.inlen = (nx_ctx->in_sg - in_sg) * sizeof(struct nx_sg);
+
+		if (data_len != (to_process - buf_len)) {
+			rc = -EINVAL;
+			goto out;
+		}
+
+		to_process = data_len + buf_len;
+		leftover = total - to_process;
+
+		/*
+		 * we've hit the nx chip previously and we're updating
+		 * again, so copy over the partial digest.
+		 */
+		memcpy(csbcpb->cpb.sha512.input_partial_digest,
+			       csbcpb->cpb.sha512.message_digest,
+			       SHA512_DIGEST_SIZE);
+
+		if (!nx_ctx->op.inlen || !nx_ctx->op.outlen) {
+			rc = -EINVAL;
+			goto out;
+		}
+
+		rc = nx_hcall_sync(nx_ctx, &nx_ctx->op,
+				   desc->flags & CRYPTO_TFM_REQ_MAY_SLEEP);
+		if (rc)
+			goto out;
+
+		atomic_inc(&(nx_ctx->stats->sha512_ops));
+
+		total -= to_process;
+		data += to_process - buf_len;
+		buf_len = 0;
+
+	} while (leftover >= SHA512_BLOCK_SIZE);
+
+	/* copy the leftover back into the state struct */
+	if (leftover)
+		memcpy(sctx->buf, data, leftover);
+	sctx->count[0] += len;
+	memcpy(sctx->state, csbcpb->cpb.sha512.message_digest, SHA512_DIGEST_SIZE);
+out:
+	spin_unlock_irqrestore(&nx_ctx->lock, irq_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
@@ -131,6 +282,7 @@ static int nx_sha512_final(struct shash_desc *desc, u8 *out)
 	struct nx_crypto_ctx *nx_ctx = crypto_tfm_ctx(&desc->tfm->base);
 	struct nx_csbcpb *csbcpb = (struct nx_csbcpb *)nx_ctx->csbcpb;
 	struct nx_sg *in_sg, *out_sg;
+<<<<<<< HEAD
 	u64 count0;
 	int rc;
 
@@ -143,10 +295,40 @@ static int nx_sha512_final(struct shash_desc *desc, u8 *out)
 
 	/* final is represented by continuing the operation and indicating that
 	 * this is not an intermediate operation */
+=======
+	u32 max_sg_len;
+	u64 count0;
+	unsigned long irq_flags;
+	int rc = 0;
+	int len;
+
+	spin_lock_irqsave(&nx_ctx->lock, irq_flags);
+
+	max_sg_len = min_t(u64, nx_ctx->ap->sglen,
+			nx_driver.of.max_sg_len/sizeof(struct nx_sg));
+	max_sg_len = min_t(u64, max_sg_len,
+			nx_ctx->ap->databytelen/NX_PAGE_SIZE);
+
+	/* final is represented by continuing the operation and indicating that
+	 * this is not an intermediate operation */
+	if (sctx->count[0] >= SHA512_BLOCK_SIZE) {
+		/* we've hit the nx chip previously, now we're finalizing,
+		 * so copy over the partial digest */
+		memcpy(csbcpb->cpb.sha512.input_partial_digest, sctx->state,
+							SHA512_DIGEST_SIZE);
+		NX_CPB_FDM(csbcpb) &= ~NX_FDM_INTERMEDIATE;
+		NX_CPB_FDM(csbcpb) |= NX_FDM_CONTINUATION;
+	} else {
+		NX_CPB_FDM(csbcpb) &= ~NX_FDM_INTERMEDIATE;
+		NX_CPB_FDM(csbcpb) &= ~NX_FDM_CONTINUATION;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NX_CPB_FDM(csbcpb) &= ~NX_FDM_INTERMEDIATE;
 
 	count0 = sctx->count[0] * 8;
 
+<<<<<<< HEAD
 	csbcpb->cpb.sha512.message_bit_length_lo += count0;
 	if (csbcpb->cpb.sha512.message_bit_length_lo < count0)
 		csbcpb->cpb.sha512.message_bit_length_hi++;
@@ -155,6 +337,23 @@ static int nx_sha512_final(struct shash_desc *desc, u8 *out)
 				 nx_ctx->ap->sglen);
 	out_sg = nx_build_sg_list(nx_ctx->out_sg, out, SHA512_DIGEST_SIZE,
 				  nx_ctx->ap->sglen);
+=======
+	csbcpb->cpb.sha512.message_bit_length_lo = count0;
+
+	len = sctx->count[0] & (SHA512_BLOCK_SIZE - 1);
+	in_sg = nx_build_sg_list(nx_ctx->in_sg, sctx->buf, &len,
+				 max_sg_len);
+
+	if (len != (sctx->count[0] & (SHA512_BLOCK_SIZE - 1))) {
+		rc = -EINVAL;
+		goto out;
+	}
+
+	len = SHA512_DIGEST_SIZE;
+	out_sg = nx_build_sg_list(nx_ctx->out_sg, out, &len,
+				 max_sg_len);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nx_ctx->op.inlen = (nx_ctx->in_sg - in_sg) * sizeof(struct nx_sg);
 	nx_ctx->op.outlen = (nx_ctx->out_sg - out_sg) * sizeof(struct nx_sg);
 
@@ -169,17 +368,26 @@ static int nx_sha512_final(struct shash_desc *desc, u8 *out)
 		goto out;
 
 	atomic_inc(&(nx_ctx->stats->sha512_ops));
+<<<<<<< HEAD
 	atomic64_add(csbcpb->cpb.sha512.message_bit_length_lo / 8,
 		     &(nx_ctx->stats->sha512_bytes));
 
 	memcpy(out, csbcpb->cpb.sha512.message_digest, SHA512_DIGEST_SIZE);
 out:
+=======
+	atomic64_add(sctx->count[0], &(nx_ctx->stats->sha512_bytes));
+
+	memcpy(out, csbcpb->cpb.sha512.message_digest, SHA512_DIGEST_SIZE);
+out:
+	spin_unlock_irqrestore(&nx_ctx->lock, irq_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
 static int nx_sha512_export(struct shash_desc *desc, void *out)
 {
 	struct sha512_state *sctx = shash_desc_ctx(desc);
+<<<<<<< HEAD
 	struct nx_crypto_ctx *nx_ctx = crypto_tfm_ctx(&desc->tfm->base);
 	struct nx_csbcpb *csbcpb = (struct nx_csbcpb *)nx_ctx->csbcpb;
 	struct sha512_state *octx = out;
@@ -213,6 +421,10 @@ static int nx_sha512_export(struct shash_desc *desc, void *out)
 		octx->state[6] = SHA512_H6;
 		octx->state[7] = SHA512_H7;
 	}
+=======
+
+	memcpy(out, sctx, sizeof(*sctx));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -220,6 +432,7 @@ static int nx_sha512_export(struct shash_desc *desc, void *out)
 static int nx_sha512_import(struct shash_desc *desc, const void *in)
 {
 	struct sha512_state *sctx = shash_desc_ctx(desc);
+<<<<<<< HEAD
 	struct nx_crypto_ctx *nx_ctx = crypto_tfm_ctx(&desc->tfm->base);
 	struct nx_csbcpb *csbcpb = (struct nx_csbcpb *)nx_ctx->csbcpb;
 	const struct sha512_state *ictx = in;
@@ -239,6 +452,10 @@ static int nx_sha512_import(struct shash_desc *desc, const void *in)
 		NX_CPB_FDM(csbcpb) |= NX_FDM_CONTINUATION;
 		NX_CPB_FDM(csbcpb) |= NX_FDM_INTERMEDIATE;
 	}
+=======
+
+	memcpy(sctx, in, sizeof(*sctx));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -260,7 +477,11 @@ struct shash_alg nx_shash_sha512_alg = {
 		.cra_blocksize   = SHA512_BLOCK_SIZE,
 		.cra_module      = THIS_MODULE,
 		.cra_ctxsize     = sizeof(struct nx_crypto_ctx),
+<<<<<<< HEAD
 		.cra_init        = nx_crypto_ctx_sha_init,
+=======
+		.cra_init        = nx_crypto_ctx_sha512_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.cra_exit        = nx_crypto_ctx_exit,
 	}
 };

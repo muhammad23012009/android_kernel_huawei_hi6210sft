@@ -3,7 +3,11 @@
 
 /* ECC atomic, DMA, SMP and interrupt safe scrub function */
 
+<<<<<<< HEAD
 static inline void atomic_scrub(void *va, u32 size)
+=======
+static inline void edac_atomic_scrub(void *va, u32 size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 i, *virt_addr = va;
 

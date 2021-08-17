@@ -10,11 +10,19 @@
 
 #include <asm/types.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+#include <asm/segment.h>
+#include <sysdep/ptrace_user.h>
+
+struct thread_info {
+	struct task_struct	*task;		/* main task structure */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		flags;		/* low level flags */
 	__u32			cpu;		/* current CPU */
 	int			preempt_count;  /* 0 => preemptable,
@@ -22,21 +30,33 @@ struct thread_info {
 	mm_segment_t		addr_limit;	/* thread address space:
 					 	   0-0xBFFFFFFF for user
 						   0-0xFFFFFFFF for kernel */
+<<<<<<< HEAD
 	struct restart_block    restart_block;
 	struct thread_info	*real_thread;    /* Points to non-IRQ stack */
+=======
+	struct thread_info	*real_thread;    /* Points to non-IRQ stack */
+	unsigned long aux_fp_regs[FP_SIZE];	/* auxiliary fp_regs to save/restore
+						   them out-of-band */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task =		&tsk,			\
+<<<<<<< HEAD
 	.exec_domain =	&default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags =		0,		\
 	.cpu =		0,			\
 	.preempt_count = INIT_PREEMPT_COUNT,	\
 	.addr_limit =	KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block =  {			\
 		.fn =  do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.real_thread = NULL,			\
 }
 
@@ -60,8 +80,11 @@ static inline struct thread_info *current_thread_info(void)
 
 #endif
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE		0x10000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TIF_SYSCALL_TRACE	0	/* syscall trace active */
 #define TIF_SIGPENDING		1	/* signal pending */
 #define TIF_NEED_RESCHED	2	/* rescheduling necessary */
@@ -70,11 +93,19 @@ static inline struct thread_info *current_thread_info(void)
 #define TIF_SYSCALL_AUDIT	6
 #define TIF_RESTORE_SIGMASK	7
 #define TIF_NOTIFY_RESUME	8
+<<<<<<< HEAD
+=======
+#define TIF_SECCOMP		9	/* secure computing */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
 #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED	(1 << TIF_NEED_RESCHED)
 #define _TIF_MEMDIE		(1 << TIF_MEMDIE)
 #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
+<<<<<<< HEAD
+=======
+#define _TIF_SECCOMP		(1 << TIF_SECCOMP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

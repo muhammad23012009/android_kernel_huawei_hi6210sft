@@ -14,12 +14,16 @@
 
 #include <linux/bcma/bcma.h>
 
+<<<<<<< HEAD
 #include <linux/mtd/physmap.h>
 #include <linux/platform_device.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/serial.h>
 #include <linux/serial_core.h>
 #include <linux/serial_reg.h>
 #include <linux/time.h>
+<<<<<<< HEAD
 
 static const char * const part_probes[] = { "bcm47xxpart", NULL };
 
@@ -39,6 +43,18 @@ struct platform_device bcma_pflash_dev = {
 	},
 	.resource	= &bcma_pflash_resource,
 	.num_resources	= 1,
+=======
+#ifdef CONFIG_BCM47XX
+#include <linux/bcm47xx_nvram.h>
+#endif
+
+enum bcma_boot_dev {
+	BCMA_BOOT_DEV_UNK = 0,
+	BCMA_BOOT_DEV_ROM,
+	BCMA_BOOT_DEV_PARALLEL,
+	BCMA_BOOT_DEV_SERIAL,
+	BCMA_BOOT_DEV_NAND,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* The 47162a0 hangs when reading MIPS DMP registers registers */
@@ -107,7 +123,11 @@ static u32 bcma_core_mips_irqflag(struct bcma_device *dev)
  * If disabled, 5 is returned.
  * If not supported, 6 is returned.
  */
+<<<<<<< HEAD
 static unsigned int bcma_core_mips_irq(struct bcma_device *dev)
+=======
+unsigned int bcma_core_mips_irq(struct bcma_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct bcma_device *mdev = dev->bus->drv_mips.core;
 	u32 irqflag;
@@ -125,6 +145,7 @@ static unsigned int bcma_core_mips_irq(struct bcma_device *dev)
 	return 5;
 }
 
+<<<<<<< HEAD
 unsigned int bcma_core_irq(struct bcma_device *dev)
 {
 	unsigned int mips_irq = bcma_core_mips_irq(dev);
@@ -132,6 +153,8 @@ unsigned int bcma_core_irq(struct bcma_device *dev)
 }
 EXPORT_SYMBOL(bcma_core_irq);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 {
 	unsigned int oldirq = bcma_core_mips_irq(dev);
@@ -229,6 +252,7 @@ u32 bcma_cpu_clock(struct bcma_drv_mips *mcore)
 }
 EXPORT_SYMBOL(bcma_cpu_clock);
 
+<<<<<<< HEAD
 static void bcma_core_mips_flash_detect(struct bcma_drv_mips *mcore)
 {
 	struct bcma_bus *bus = mcore->core->bus;
@@ -268,6 +292,70 @@ static void bcma_core_mips_flash_detect(struct bcma_drv_mips *mcore)
 			bcma_debug(bus, "Found NAND flash\n");
 			bcma_nflash_init(cc);
 		}
+=======
+static enum bcma_boot_dev bcma_boot_dev(struct bcma_bus *bus)
+{
+	struct bcma_drv_cc *cc = &bus->drv_cc;
+	u8 cc_rev = cc->core->id.rev;
+
+	if (cc_rev == 42) {
+		struct bcma_device *core;
+
+		core = bcma_find_core(bus, BCMA_CORE_NS_ROM);
+		if (core) {
+			switch (bcma_aread32(core, BCMA_IOST) &
+				BCMA_NS_ROM_IOST_BOOT_DEV_MASK) {
+			case BCMA_NS_ROM_IOST_BOOT_DEV_NOR:
+				return BCMA_BOOT_DEV_SERIAL;
+			case BCMA_NS_ROM_IOST_BOOT_DEV_NAND:
+				return BCMA_BOOT_DEV_NAND;
+			case BCMA_NS_ROM_IOST_BOOT_DEV_ROM:
+			default:
+				return BCMA_BOOT_DEV_ROM;
+			}
+		}
+	} else {
+		if (cc_rev == 38) {
+			if (cc->status & BCMA_CC_CHIPST_5357_NAND_BOOT)
+				return BCMA_BOOT_DEV_NAND;
+			else if (cc->status & BIT(5))
+				return BCMA_BOOT_DEV_ROM;
+		}
+
+		if ((cc->capabilities & BCMA_CC_CAP_FLASHT) ==
+		    BCMA_CC_FLASHT_PARA)
+			return BCMA_BOOT_DEV_PARALLEL;
+		else
+			return BCMA_BOOT_DEV_SERIAL;
+	}
+
+	return BCMA_BOOT_DEV_SERIAL;
+}
+
+static void bcma_core_mips_nvram_init(struct bcma_drv_mips *mcore)
+{
+	struct bcma_bus *bus = mcore->core->bus;
+	enum bcma_boot_dev boot_dev;
+
+	/* Determine flash type this SoC boots from */
+	boot_dev = bcma_boot_dev(bus);
+	switch (boot_dev) {
+	case BCMA_BOOT_DEV_PARALLEL:
+	case BCMA_BOOT_DEV_SERIAL:
+#ifdef CONFIG_BCM47XX
+		bcm47xx_nvram_init_from_mem(BCMA_SOC_FLASH2,
+					    BCMA_SOC_FLASH2_SZ);
+#endif
+		break;
+	case BCMA_BOOT_DEV_NAND:
+#ifdef CONFIG_BCM47XX
+		bcm47xx_nvram_init_from_mem(BCMA_SOC_FLASH1,
+					    BCMA_SOC_FLASH1_SZ);
+#endif
+		break;
+	default:
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -279,7 +367,11 @@ void bcma_core_mips_early_init(struct bcma_drv_mips *mcore)
 		return;
 
 	bcma_chipco_serial_init(&bus->drv_cc);
+<<<<<<< HEAD
 	bcma_core_mips_flash_detect(mcore);
+=======
+	bcma_core_mips_nvram_init(mcore);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mcore->early_setup_done = true;
 }
@@ -361,7 +453,11 @@ void bcma_core_mips_init(struct bcma_drv_mips *mcore)
 		break;
 	default:
 		list_for_each_entry(core, &bus->cores, list) {
+<<<<<<< HEAD
 			core->irq = bcma_core_irq(core);
+=======
+			core->irq = bcma_core_irq(core, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		bcma_err(bus,
 			 "Unknown device (0x%x) found, can not configure IRQs\n",

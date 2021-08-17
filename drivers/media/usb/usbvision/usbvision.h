@@ -36,6 +36,10 @@
 #include <linux/i2c.h>
 #include <linux/mutex.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-ctrls.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/tuner.h>
 #include <linux/videodev2.h>
 
@@ -203,6 +207,7 @@ enum {
 	mr = LIMIT_RGB(mm_r); \
 }
 
+<<<<<<< HEAD
 /* Debugging aid */
 #define USBVISION_SAY_AND_WAIT(what) { \
 	wait_queue_head_t wq; \
@@ -211,6 +216,8 @@ enum {
 	interruptible_sleep_on_timeout(&wq, HZ * 3); \
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This macro checks if usbvision is still operational. The 'usbvision'
  * pointer must be valid, usbvision->dev must be valid, we are not
@@ -365,8 +372,14 @@ extern struct usb_device_id usbvision_table[];
 
 struct usb_usbvision {
 	struct v4l2_device v4l2_dev;
+<<<<<<< HEAD
 	struct video_device *vdev;					/* Video Device */
 	struct video_device *rdev;					/* Radio Device */
+=======
+	struct v4l2_ctrl_handler hdl;
+	struct video_device vdev;					/* Video Device */
+	struct video_device rdev;					/* Radio Device */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* i2c Declaration Section*/
 	struct i2c_adapter i2c_adap;
@@ -384,7 +397,12 @@ struct usb_usbvision {
 	int bridge_type;						/* NT1003, NT1004, NT1005 */
 	int radio;
 	int video_inputs;						/* # of inputs */
+<<<<<<< HEAD
 	unsigned long freq;
+=======
+	unsigned long radio_freq;
+	unsigned long tv_freq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int audio_mute;
 	int audio_channel;
 	int isoc_mode;							/* format of video data for the usb isoc-transfer */
@@ -399,8 +417,11 @@ struct usb_usbvision {
 	unsigned char iface_alt;					/* Alt settings */
 	unsigned char vin_reg2_preset;
 	struct mutex v4l2_lock;
+<<<<<<< HEAD
 	struct timer_list power_off_timer;
 	struct work_struct power_off_work;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int power;							/* is the device powered on? */
 	int user;							/* user count for exclusive use */
 	int initialized;						/* Had we already sent init sequence? */
@@ -518,13 +539,17 @@ int usbvision_muxsel(struct usb_usbvision *usbvision, int channel);
 int usbvision_set_input(struct usb_usbvision *usbvision);
 int usbvision_set_output(struct usb_usbvision *usbvision, int width, int height);
 
+<<<<<<< HEAD
 void usbvision_init_power_off_timer(struct usb_usbvision *usbvision);
 void usbvision_set_power_off_timer(struct usb_usbvision *usbvision);
 void usbvision_reset_power_off_timer(struct usb_usbvision *usbvision);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int usbvision_power_off(struct usb_usbvision *usbvision);
 int usbvision_power_on(struct usb_usbvision *usbvision);
 
 #endif									/* __LINUX_USBVISION_H */
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -533,3 +558,5 @@ int usbvision_power_on(struct usb_usbvision *usbvision);
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

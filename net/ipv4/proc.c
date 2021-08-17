@@ -46,6 +46,7 @@
 #include <net/sock.h>
 #include <net/raw.h>
 
+<<<<<<< HEAD
 /*< DTS2015021204710 c00106552 20150212 add begin */
 //#define CONFIG_HW_WIFIPRO_PROC
 #ifndef CONFIG_HW_WIFIPRO
@@ -59,6 +60,10 @@
 #ifdef CONFIG_HW_WIFI
 #include "wifi_tcp_statistics.h"
 #endif
+=======
+#define TCPUDP_MIB_MAX max_t(u32, UDP_MIB_MAX, TCP_MIB_MAX)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	Report socket allocation statistics [mea@utu.fi]
  */
@@ -75,7 +80,11 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
 	socket_seq_show(seq);
 	seq_printf(seq, "TCP: inuse %d orphan %d tw %d alloc %d mem %ld\n",
 		   sock_prot_inuse_get(net, &tcp_prot), orphans,
+<<<<<<< HEAD
 		   tcp_death_row.tw_count, sockets,
+=======
+		   atomic_read(&tcp_death_row.tw_count), sockets,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   proto_memory_allocated(&tcp_prot));
 	seq_printf(seq, "UDP: inuse %d mem %ld\n",
 		   sock_prot_inuse_get(net, &udp_prot),
@@ -84,8 +93,14 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
 		   sock_prot_inuse_get(net, &udplite_prot));
 	seq_printf(seq, "RAW: inuse %d\n",
 		   sock_prot_inuse_get(net, &raw_prot));
+<<<<<<< HEAD
 	seq_printf(seq,  "FRAG: inuse %d memory %d\n",
 			ip_frag_nqueues(net), ip_frag_mem(net));
+=======
+	seq_printf(seq,  "FRAG: inuse %u memory %lu\n",
+		   atomic_read(&net->ipv4.frags.rhashtable.nelems),
+		   frag_mem_limit(&net->ipv4.frags));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -124,7 +139,11 @@ static const struct snmp_mib snmp4_ipstats_list[] = {
 	SNMP_MIB_SENTINEL
 };
 
+<<<<<<< HEAD
 /* Following RFC4293 items are displayed in /proc/net/netstat */
+=======
+/* Following items are displayed in /proc/net/netstat */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snmp_mib snmp4_ipextstats_list[] = {
 	SNMP_MIB_ITEM("InNoRoutes", IPSTATS_MIB_INNOROUTES),
 	SNMP_MIB_ITEM("InTruncatedPkts", IPSTATS_MIB_INTRUNCATEDPKTS),
@@ -138,7 +157,17 @@ static const struct snmp_mib snmp4_ipextstats_list[] = {
 	SNMP_MIB_ITEM("OutMcastOctets", IPSTATS_MIB_OUTMCASTOCTETS),
 	SNMP_MIB_ITEM("InBcastOctets", IPSTATS_MIB_INBCASTOCTETS),
 	SNMP_MIB_ITEM("OutBcastOctets", IPSTATS_MIB_OUTBCASTOCTETS),
+<<<<<<< HEAD
 	SNMP_MIB_ITEM("InCsumErrors", IPSTATS_MIB_CSUMERRORS),
+=======
+	/* Non RFC4293 fields */
+	SNMP_MIB_ITEM("InCsumErrors", IPSTATS_MIB_CSUMERRORS),
+	SNMP_MIB_ITEM("InNoECTPkts", IPSTATS_MIB_NOECTPKTS),
+	SNMP_MIB_ITEM("InECT1Pkts", IPSTATS_MIB_ECT1PKTS),
+	SNMP_MIB_ITEM("InECT0Pkts", IPSTATS_MIB_ECT0PKTS),
+	SNMP_MIB_ITEM("InCEPkts", IPSTATS_MIB_CEPKTS),
+	SNMP_MIB_ITEM("ReasmOverlaps", IPSTATS_MIB_REASM_OVERLAPS),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SNMP_MIB_SENTINEL
 };
 
@@ -188,6 +217,10 @@ static const struct snmp_mib snmp4_udp_list[] = {
 	SNMP_MIB_ITEM("RcvbufErrors", UDP_MIB_RCVBUFERRORS),
 	SNMP_MIB_ITEM("SndbufErrors", UDP_MIB_SNDBUFERRORS),
 	SNMP_MIB_ITEM("InCsumErrors", UDP_MIB_CSUMERRORS),
+<<<<<<< HEAD
+=======
+	SNMP_MIB_ITEM("IgnoredMulti", UDP_MIB_IGNOREDMULTI),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SNMP_MIB_SENTINEL
 };
 
@@ -263,6 +296,10 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TCPSpuriousRTOs", LINUX_MIB_TCPSPURIOUSRTOS),
 	SNMP_MIB_ITEM("TCPMD5NotFound", LINUX_MIB_TCPMD5NOTFOUND),
 	SNMP_MIB_ITEM("TCPMD5Unexpected", LINUX_MIB_TCPMD5UNEXPECTED),
+<<<<<<< HEAD
+=======
+	SNMP_MIB_ITEM("TCPMD5Failure", LINUX_MIB_TCPMD5FAILURE),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SNMP_MIB_ITEM("TCPSackShifted", LINUX_MIB_SACKSHIFTED),
 	SNMP_MIB_ITEM("TCPSackMerged", LINUX_MIB_SACKMERGED),
 	SNMP_MIB_ITEM("TCPSackShiftFallback", LINUX_MIB_SACKSHIFTFALLBACK),
@@ -281,11 +318,40 @@ static const struct snmp_mib snmp4_net_list[] = {
 	SNMP_MIB_ITEM("TCPChallengeACK", LINUX_MIB_TCPCHALLENGEACK),
 	SNMP_MIB_ITEM("TCPSYNChallenge", LINUX_MIB_TCPSYNCHALLENGE),
 	SNMP_MIB_ITEM("TCPFastOpenActive", LINUX_MIB_TCPFASTOPENACTIVE),
+<<<<<<< HEAD
+=======
+	SNMP_MIB_ITEM("TCPFastOpenActiveFail", LINUX_MIB_TCPFASTOPENACTIVEFAIL),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SNMP_MIB_ITEM("TCPFastOpenPassive", LINUX_MIB_TCPFASTOPENPASSIVE),
 	SNMP_MIB_ITEM("TCPFastOpenPassiveFail", LINUX_MIB_TCPFASTOPENPASSIVEFAIL),
 	SNMP_MIB_ITEM("TCPFastOpenListenOverflow", LINUX_MIB_TCPFASTOPENLISTENOVERFLOW),
 	SNMP_MIB_ITEM("TCPFastOpenCookieReqd", LINUX_MIB_TCPFASTOPENCOOKIEREQD),
 	SNMP_MIB_ITEM("TCPSpuriousRtxHostQueues", LINUX_MIB_TCPSPURIOUS_RTX_HOSTQUEUES),
+<<<<<<< HEAD
+=======
+	SNMP_MIB_ITEM("BusyPollRxPackets", LINUX_MIB_BUSYPOLLRXPACKETS),
+	SNMP_MIB_ITEM("TCPAutoCorking", LINUX_MIB_TCPAUTOCORKING),
+	SNMP_MIB_ITEM("TCPFromZeroWindowAdv", LINUX_MIB_TCPFROMZEROWINDOWADV),
+	SNMP_MIB_ITEM("TCPToZeroWindowAdv", LINUX_MIB_TCPTOZEROWINDOWADV),
+	SNMP_MIB_ITEM("TCPWantZeroWindowAdv", LINUX_MIB_TCPWANTZEROWINDOWADV),
+	SNMP_MIB_ITEM("TCPSynRetrans", LINUX_MIB_TCPSYNRETRANS),
+	SNMP_MIB_ITEM("TCPOrigDataSent", LINUX_MIB_TCPORIGDATASENT),
+	SNMP_MIB_ITEM("TCPHystartTrainDetect", LINUX_MIB_TCPHYSTARTTRAINDETECT),
+	SNMP_MIB_ITEM("TCPHystartTrainCwnd", LINUX_MIB_TCPHYSTARTTRAINCWND),
+	SNMP_MIB_ITEM("TCPHystartDelayDetect", LINUX_MIB_TCPHYSTARTDELAYDETECT),
+	SNMP_MIB_ITEM("TCPHystartDelayCwnd", LINUX_MIB_TCPHYSTARTDELAYCWND),
+	SNMP_MIB_ITEM("TCPACKSkippedSynRecv", LINUX_MIB_TCPACKSKIPPEDSYNRECV),
+	SNMP_MIB_ITEM("TCPACKSkippedPAWS", LINUX_MIB_TCPACKSKIPPEDPAWS),
+	SNMP_MIB_ITEM("TCPACKSkippedSeq", LINUX_MIB_TCPACKSKIPPEDSEQ),
+	SNMP_MIB_ITEM("TCPACKSkippedFinWait2", LINUX_MIB_TCPACKSKIPPEDFINWAIT2),
+	SNMP_MIB_ITEM("TCPACKSkippedTimeWait", LINUX_MIB_TCPACKSKIPPEDTIMEWAIT),
+	SNMP_MIB_ITEM("TCPACKSkippedChallenge", LINUX_MIB_TCPACKSKIPPEDCHALLENGE),
+	SNMP_MIB_ITEM("TCPWinProbe", LINUX_MIB_TCPWINPROBE),
+	SNMP_MIB_ITEM("TCPKeepAlive", LINUX_MIB_TCPKEEPALIVE),
+	SNMP_MIB_ITEM("TCPMTUPFail", LINUX_MIB_TCPMTUPFAIL),
+	SNMP_MIB_ITEM("TCPMTUPSuccess", LINUX_MIB_TCPMTUPSUCCESS),
+	SNMP_MIB_ITEM("TCPWqueueTooBig", LINUX_MIB_TCPWQUEUETOOBIG),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SNMP_MIB_SENTINEL
 };
 
@@ -295,12 +361,20 @@ static void icmpmsg_put_line(struct seq_file *seq, unsigned long *vals,
 	int j;
 
 	if (count) {
+<<<<<<< HEAD
 		seq_printf(seq, "\nIcmpMsg:");
+=======
+		seq_puts(seq, "\nIcmpMsg:");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (j = 0; j < count; ++j)
 			seq_printf(seq, " %sType%u",
 				type[j] & 0x100 ? "Out" : "In",
 				type[j] & 0xff);
+<<<<<<< HEAD
 		seq_printf(seq, "\nIcmpMsg:");
+=======
+		seq_puts(seq, "\nIcmpMsg:");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (j = 0; j < count; ++j)
 			seq_printf(seq, " %lu", vals[j]);
 	}
@@ -339,6 +413,7 @@ static void icmp_put(struct seq_file *seq)
 	atomic_long_t *ptr = net->mib.icmpmsg_statistics->mibs;
 
 	seq_puts(seq, "\nIcmp: InMsgs InErrors InCsumErrors");
+<<<<<<< HEAD
 	for (i=0; icmpmibmap[i].name != NULL; i++)
 		seq_printf(seq, " In%s", icmpmibmap[i].name);
 	seq_printf(seq, " OutMsgs OutErrors");
@@ -355,6 +430,24 @@ static void icmp_put(struct seq_file *seq)
 		snmp_fold_field((void __percpu **) net->mib.icmp_statistics, ICMP_MIB_OUTMSGS),
 		snmp_fold_field((void __percpu **) net->mib.icmp_statistics, ICMP_MIB_OUTERRORS));
 	for (i=0; icmpmibmap[i].name != NULL; i++)
+=======
+	for (i = 0; icmpmibmap[i].name; i++)
+		seq_printf(seq, " In%s", icmpmibmap[i].name);
+	seq_puts(seq, " OutMsgs OutErrors");
+	for (i = 0; icmpmibmap[i].name; i++)
+		seq_printf(seq, " Out%s", icmpmibmap[i].name);
+	seq_printf(seq, "\nIcmp: %lu %lu %lu",
+		snmp_fold_field(net->mib.icmp_statistics, ICMP_MIB_INMSGS),
+		snmp_fold_field(net->mib.icmp_statistics, ICMP_MIB_INERRORS),
+		snmp_fold_field(net->mib.icmp_statistics, ICMP_MIB_CSUMERRORS));
+	for (i = 0; icmpmibmap[i].name; i++)
+		seq_printf(seq, " %lu",
+			   atomic_long_read(ptr + icmpmibmap[i].index));
+	seq_printf(seq, " %lu %lu",
+		snmp_fold_field(net->mib.icmp_statistics, ICMP_MIB_OUTMSGS),
+		snmp_fold_field(net->mib.icmp_statistics, ICMP_MIB_OUTERRORS));
+	for (i = 0; icmpmibmap[i].name; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		seq_printf(seq, " %lu",
 			   atomic_long_read(ptr + (icmpmibmap[i].index | 0x100)));
 }
@@ -362,6 +455,7 @@ static void icmp_put(struct seq_file *seq)
 /*
  *	Called from the PROCfs module. This outputs /proc/net/snmp.
  */
+<<<<<<< HEAD
 static int snmp_seq_show(struct seq_file *seq, void *v)
 {
 	int i;
@@ -370,10 +464,23 @@ static int snmp_seq_show(struct seq_file *seq, void *v)
 	seq_puts(seq, "Ip: Forwarding DefaultTTL");
 
 	for (i = 0; snmp4_ipstats_list[i].name != NULL; i++)
+=======
+static int snmp_seq_show_ipstats(struct seq_file *seq, void *v)
+{
+	struct net *net = seq->private;
+	u64 buff64[IPSTATS_MIB_MAX];
+	int i;
+
+	memset(buff64, 0, IPSTATS_MIB_MAX * sizeof(u64));
+
+	seq_puts(seq, "Ip: Forwarding DefaultTTL");
+	for (i = 0; snmp4_ipstats_list[i].name; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		seq_printf(seq, " %s", snmp4_ipstats_list[i].name);
 
 	seq_printf(seq, "\nIp: %d %d",
 		   IPV4_DEVCONF_ALL(net, FORWARDING) ? 1 : 2,
+<<<<<<< HEAD
 		   sysctl_ip_default_ttl);
 
 	BUILD_BUG_ON(offsetof(struct ipstats_mib, mibs) != 0);
@@ -423,11 +530,85 @@ static int snmp_seq_show(struct seq_file *seq, void *v)
 		seq_printf(seq, " %lu",
 			   snmp_fold_field((void __percpu **)net->mib.udplite_statistics,
 					   snmp4_udp_list[i].entry));
+=======
+		   net->ipv4.sysctl_ip_default_ttl);
+
+	BUILD_BUG_ON(offsetof(struct ipstats_mib, mibs) != 0);
+	snmp_get_cpu_field64_batch(buff64, snmp4_ipstats_list,
+				   net->mib.ip_statistics,
+				   offsetof(struct ipstats_mib, syncp));
+	for (i = 0; snmp4_ipstats_list[i].name; i++)
+		seq_printf(seq, " %llu", buff64[i]);
+
+	return 0;
+}
+
+static int snmp_seq_show_tcp_udp(struct seq_file *seq, void *v)
+{
+	unsigned long buff[TCPUDP_MIB_MAX];
+	struct net *net = seq->private;
+	int i;
+
+	memset(buff, 0, TCPUDP_MIB_MAX * sizeof(unsigned long));
+
+	seq_puts(seq, "\nTcp:");
+	for (i = 0; snmp4_tcp_list[i].name; i++)
+		seq_printf(seq, " %s", snmp4_tcp_list[i].name);
+
+	seq_puts(seq, "\nTcp:");
+	snmp_get_cpu_field_batch(buff, snmp4_tcp_list,
+				 net->mib.tcp_statistics);
+	for (i = 0; snmp4_tcp_list[i].name; i++) {
+		/* MaxConn field is signed, RFC 2012 */
+		if (snmp4_tcp_list[i].entry == TCP_MIB_MAXCONN)
+			seq_printf(seq, " %ld", buff[i]);
+		else
+			seq_printf(seq, " %lu", buff[i]);
+	}
+
+	memset(buff, 0, TCPUDP_MIB_MAX * sizeof(unsigned long));
+
+	snmp_get_cpu_field_batch(buff, snmp4_udp_list,
+				 net->mib.udp_statistics);
+	seq_puts(seq, "\nUdp:");
+	for (i = 0; snmp4_udp_list[i].name; i++)
+		seq_printf(seq, " %s", snmp4_udp_list[i].name);
+	seq_puts(seq, "\nUdp:");
+	for (i = 0; snmp4_udp_list[i].name; i++)
+		seq_printf(seq, " %lu", buff[i]);
+
+	memset(buff, 0, TCPUDP_MIB_MAX * sizeof(unsigned long));
+
+	/* the UDP and UDP-Lite MIBs are the same */
+	seq_puts(seq, "\nUdpLite:");
+	snmp_get_cpu_field_batch(buff, snmp4_udp_list,
+				 net->mib.udplite_statistics);
+	for (i = 0; snmp4_udp_list[i].name; i++)
+		seq_printf(seq, " %s", snmp4_udp_list[i].name);
+	seq_puts(seq, "\nUdpLite:");
+	for (i = 0; snmp4_udp_list[i].name; i++)
+		seq_printf(seq, " %lu", buff[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	seq_putc(seq, '\n');
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int snmp_seq_show(struct seq_file *seq, void *v)
+{
+	snmp_seq_show_ipstats(seq, v);
+
+	icmp_put(seq);	/* RFC 2011 compatibility */
+	icmpmsg_put(seq);
+
+	snmp_seq_show_tcp_udp(seq, v);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int snmp_seq_open(struct inode *inode, struct file *file)
 {
 	return single_open_net(inode, file, snmp_seq_show);
@@ -452,6 +633,7 @@ static int netstat_seq_show(struct seq_file *seq, void *v)
 	struct net *net = seq->private;
 
 	seq_puts(seq, "TcpExt:");
+<<<<<<< HEAD
 	for (i = 0; snmp4_net_list[i].name != NULL; i++)
 		seq_printf(seq, " %s", snmp4_net_list[i].name);
 
@@ -469,6 +651,25 @@ static int netstat_seq_show(struct seq_file *seq, void *v)
 	for (i = 0; snmp4_ipextstats_list[i].name != NULL; i++)
 		seq_printf(seq, " %llu",
 			   snmp_fold_field64((void __percpu **)net->mib.ip_statistics,
+=======
+	for (i = 0; snmp4_net_list[i].name; i++)
+		seq_printf(seq, " %s", snmp4_net_list[i].name);
+
+	seq_puts(seq, "\nTcpExt:");
+	for (i = 0; snmp4_net_list[i].name; i++)
+		seq_printf(seq, " %lu",
+			   snmp_fold_field(net->mib.net_statistics,
+					   snmp4_net_list[i].entry));
+
+	seq_puts(seq, "\nIpExt:");
+	for (i = 0; snmp4_ipextstats_list[i].name; i++)
+		seq_printf(seq, " %s", snmp4_ipextstats_list[i].name);
+
+	seq_puts(seq, "\nIpExt:");
+	for (i = 0; snmp4_ipextstats_list[i].name; i++)
+		seq_printf(seq, " %llu",
+			   snmp_fold_field64(net->mib.ip_statistics,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     snmp4_ipextstats_list[i].entry,
 					     offsetof(struct ipstats_mib, syncp)));
 
@@ -498,6 +699,7 @@ static __net_init int ip_proc_init_net(struct net *net)
 		goto out_netstat;
 	if (!proc_create("snmp", S_IRUGO, net->proc_net, &snmp_seq_fops))
 		goto out_snmp;
+<<<<<<< HEAD
 /*< DTS2015021204710 c00106552 20150212 add begin */
 #ifdef CONFIG_HW_WIFIPRO_PROC
     if (wifipro_init_proc(net)){
@@ -510,6 +712,8 @@ static __net_init int ip_proc_init_net(struct net *net)
         WIFIPRO_WARNING("wifi_tcp_init_proc fail!");
     }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 

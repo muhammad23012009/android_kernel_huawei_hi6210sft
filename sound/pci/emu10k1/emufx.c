@@ -36,6 +36,10 @@
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/core.h>
 #include <sound/tlv.h>
@@ -777,8 +781,12 @@ static void snd_emu10k1_ctl_private_free(struct snd_kcontrol *kctl)
 	kctl->private_value = 0;
 	list_del(&ctl->list);
 	kfree(ctl);
+<<<<<<< HEAD
 	if (kctl->tlv.p)
 		kfree(kctl->tlv.p);
+=======
+	kfree(kctl->tlv.p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_emu10k1_add_controls(struct snd_emu10k1 *emu,
@@ -1001,6 +1009,11 @@ static int snd_emu10k1_ipcm_poke(struct snd_emu10k1 *emu,
 
 	if (ipcm->substream >= EMU10K1_FX8010_PCM_COUNT)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	ipcm->substream = array_index_nospec(ipcm->substream,
+					     EMU10K1_FX8010_PCM_COUNT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ipcm->channels > 32)
 		return -EINVAL;
 	pcm = &emu->fx8010.pcm[ipcm->substream];
@@ -1047,6 +1060,11 @@ static int snd_emu10k1_ipcm_peek(struct snd_emu10k1 *emu,
 
 	if (ipcm->substream >= EMU10K1_FX8010_PCM_COUNT)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	ipcm->substream = array_index_nospec(ipcm->substream,
+					     EMU10K1_FX8010_PCM_COUNT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pcm = &emu->fx8010.pcm[ipcm->substream];
 	mutex_lock(&emu->fx8010.lock);
 	spin_lock_irq(&emu->reg_lock);
@@ -1182,6 +1200,7 @@ static int _snd_emu10k1_audigy_init_efx(struct snd_emu10k1 *emu)
 	u32 *gpr_map;
 	mm_segment_t seg;
 
+<<<<<<< HEAD
 	if ((icode = kzalloc(sizeof(*icode), GFP_KERNEL)) == NULL ||
 	    (icode->gpr_map = (u_int32_t __user *)
 	     kcalloc(512 + 256 + 256 + 2 * 1024, sizeof(u_int32_t),
@@ -1191,6 +1210,22 @@ static int _snd_emu10k1_audigy_init_efx(struct snd_emu10k1 *emu)
 		err = -ENOMEM;
 		goto __err;
 	}
+=======
+	err = -ENOMEM;
+	icode = kzalloc(sizeof(*icode), GFP_KERNEL);
+	if (!icode)
+		return err;
+
+	icode->gpr_map = (u_int32_t __user *) kcalloc(512 + 256 + 256 + 2 * 1024,
+						      sizeof(u_int32_t), GFP_KERNEL);
+	if (!icode->gpr_map)
+		goto __err_gpr;
+	controls = kcalloc(SND_EMU10K1_GPR_CONTROLS,
+			   sizeof(*controls), GFP_KERNEL);
+	if (!controls)
+		goto __err_ctrls;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpr_map = (u32 __force *)icode->gpr_map;
 
 	icode->tram_data_map = icode->gpr_map + 512;
@@ -1542,7 +1577,11 @@ A_OP(icode, &ptr, iMAC0, A_GPR(var), A_GPR(var), A_GPR(vol), A_EXTIN(input))
 	/* A_PUT_STEREO_OUTPUT(A_EXTOUT_FRONT_L, A_EXTOUT_FRONT_R, playback + SND_EMU10K1_PLAYBACK_CHANNELS); */
 	if (emu->card_capabilities->emu_model) {
 		/* EMU1010 Outputs from PCM Front, Rear, Center, LFE, Side */
+<<<<<<< HEAD
 		snd_printk(KERN_INFO "EMU outputs on\n");
+=======
+		dev_info(emu->card->dev, "EMU outputs on\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (z = 0; z < 8; z++) {
 			if (emu->card_capabilities->ca0108_chip) {
 				A_OP(icode, &ptr, iACC3, A3_EMU32OUT(z), A_GPR(playback + SND_EMU10K1_PLAYBACK_CHANNELS + z), A_C_00000000, A_C_00000000);
@@ -1566,7 +1605,13 @@ A_OP(icode, &ptr, iMAC0, A_GPR(var), A_GPR(var), A_GPR(vol), A_EXTIN(input))
 		A_SWITCH(icode, &ptr, tmp + 1, playback + SND_EMU10K1_PLAYBACK_CHANNELS + z, tmp + 1);
 		if ((z==1) && (emu->card_capabilities->spdif_bug)) {
 			/* Due to a SPDIF output bug on some Audigy cards, this code delays the Right channel by 1 sample */
+<<<<<<< HEAD
 			snd_printk(KERN_INFO "Installing spdif_bug patch: %s\n", emu->card_capabilities->name);
+=======
+			dev_info(emu->card->dev,
+				 "Installing spdif_bug patch: %s\n",
+				 emu->card_capabilities->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			A_OP(icode, &ptr, iACC3, A_EXTOUT(A_EXTOUT_FRONT_L + z), A_GPR(gpr - 3), A_C_00000000, A_C_00000000);
 			A_OP(icode, &ptr, iACC3, A_GPR(gpr - 3), A_GPR(tmp + 0), A_GPR(tmp + 1), A_C_00000000);
 		} else {
@@ -1590,7 +1635,11 @@ A_OP(icode, &ptr, iMAC0, A_GPR(var), A_GPR(var), A_GPR(vol), A_EXTIN(input))
 
 	if (emu->card_capabilities->emu_model) {
 		if (emu->card_capabilities->ca0108_chip) {
+<<<<<<< HEAD
 			snd_printk(KERN_INFO "EMU2 inputs on\n");
+=======
+			dev_info(emu->card->dev, "EMU2 inputs on\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			for (z = 0; z < 0x10; z++) {
 				snd_emu10k1_audigy_dsp_convert_32_to_2x16( icode, &ptr, tmp, 
 									bit_shifter16,
@@ -1598,11 +1647,19 @@ A_OP(icode, &ptr, iMAC0, A_GPR(var), A_GPR(var), A_GPR(vol), A_EXTIN(input))
 									A_FXBUS2(z*2) );
 			}
 		} else {
+<<<<<<< HEAD
 			snd_printk(KERN_INFO "EMU inputs on\n");
 			/* Capture 16 (originally 8) channels of S32_LE sound */
 
 			/*
 			printk(KERN_DEBUG "emufx.c: gpr=0x%x, tmp=0x%x\n",
+=======
+			dev_info(emu->card->dev, "EMU inputs on\n");
+			/* Capture 16 (originally 8) channels of S32_LE sound */
+
+			/*
+			dev_dbg(emu->card->dev, "emufx.c: gpr=0x%x, tmp=0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       gpr, tmp);
 			*/
 			/* For the EMU1010: How to get 32bit values from the DSP. High 16bits into L, low 16bits into R. */
@@ -1741,12 +1798,21 @@ A_OP(icode, &ptr, iMAC0, A_GPR(var), A_GPR(var), A_GPR(vol), A_EXTIN(input))
 	emu->support_tlv = 0; /* clear again */
 	snd_leave_user(seg);
 
+<<<<<<< HEAD
  __err:
 	kfree(controls);
 	if (icode != NULL) {
 		kfree((void __force *)icode->gpr_map);
 		kfree(icode);
 	}
+=======
+__err:
+	kfree(controls);
+__err_ctrls:
+	kfree((void __force *)icode->gpr_map);
+__err_gpr:
+	kfree(icode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -1813,6 +1879,7 @@ static int _snd_emu10k1_init_efx(struct snd_emu10k1 *emu)
 	u32 *gpr_map;
 	mm_segment_t seg;
 
+<<<<<<< HEAD
 	if ((icode = kzalloc(sizeof(*icode), GFP_KERNEL)) == NULL)
 		return -ENOMEM;
 	if ((icode->gpr_map = (u_int32_t __user *)
@@ -1825,6 +1892,28 @@ static int _snd_emu10k1_init_efx(struct snd_emu10k1 *emu)
 		err = -ENOMEM;
 		goto __err;
 	}
+=======
+	err = -ENOMEM;
+	icode = kzalloc(sizeof(*icode), GFP_KERNEL);
+	if (!icode)
+		return err;
+
+	icode->gpr_map = (u_int32_t __user *) kcalloc(256 + 160 + 160 + 2 * 512,
+						      sizeof(u_int32_t), GFP_KERNEL);
+	if (!icode->gpr_map)
+		goto __err_gpr;
+
+	controls = kcalloc(SND_EMU10K1_GPR_CONTROLS,
+			   sizeof(struct snd_emu10k1_fx8010_control_gpr),
+			   GFP_KERNEL);
+	if (!controls)
+		goto __err_ctrls;
+
+	ipcm = kzalloc(sizeof(*ipcm), GFP_KERNEL);
+	if (!ipcm)
+		goto __err_ipcm;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpr_map = (u32 __force *)icode->gpr_map;
 
 	icode->tram_data_map = icode->gpr_map + 256;
@@ -2363,6 +2452,7 @@ static int _snd_emu10k1_init_efx(struct snd_emu10k1 *emu)
 	snd_leave_user(seg);
 	if (err >= 0)
 		err = snd_emu10k1_ipcm_poke(emu, ipcm);
+<<<<<<< HEAD
       __err:
 	kfree(ipcm);
 	kfree(controls);
@@ -2370,6 +2460,16 @@ static int _snd_emu10k1_init_efx(struct snd_emu10k1 *emu)
 		kfree((void __force *)icode->gpr_map);
 		kfree(icode);
 	}
+=======
+__err:
+	kfree(ipcm);
+__err_ipcm:
+	kfree(controls);
+__err_ctrls:
+	kfree((void __force *)icode->gpr_map);
+__err_gpr:
+	kfree(icode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -2505,7 +2605,11 @@ static int snd_emu10k1_fx8010_ioctl(struct snd_hwdep * hw, struct file *file, un
 		emu->support_tlv = 1;
 		return put_user(SNDRV_EMU10K1_VERSION, (int __user *)argp);
 	case SNDRV_EMU10K1_IOCTL_INFO:
+<<<<<<< HEAD
 		info = kmalloc(sizeof(*info), GFP_KERNEL);
+=======
+		info = kzalloc(sizeof(*info), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!info)
 			return -ENOMEM;
 		snd_emu10k1_fx8010_info(emu, info);
@@ -2626,14 +2730,21 @@ static int snd_emu10k1_fx8010_release(struct snd_hwdep * hw, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 int snd_emu10k1_fx8010_new(struct snd_emu10k1 *emu, int device,
 			   struct snd_hwdep **rhwdep)
+=======
+int snd_emu10k1_fx8010_new(struct snd_emu10k1 *emu, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_hwdep *hw;
 	int err;
 	
+<<<<<<< HEAD
 	if (rhwdep)
 		*rhwdep = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_hwdep_new(emu->card, "FX8010", device, &hw)) < 0)
 		return err;
 	strcpy(hw->name, "EMU10K1 (FX8010)");
@@ -2642,8 +2753,11 @@ int snd_emu10k1_fx8010_new(struct snd_emu10k1 *emu, int device,
 	hw->ops.ioctl = snd_emu10k1_fx8010_ioctl;
 	hw->ops.release = snd_emu10k1_fx8010_release;
 	hw->private_data = emu;
+<<<<<<< HEAD
 	if (rhwdep)
 		*rhwdep = hw;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -9,7 +9,10 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -34,7 +37,11 @@ struct clk_div {
 
 static inline struct clk_div *to_clk_div(struct clk_hw *hw)
 {
+<<<<<<< HEAD
 	struct clk_divider *divider = container_of(hw, struct clk_divider, hw);
+=======
+	struct clk_divider *divider = to_clk_divider(hw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return container_of(divider, struct clk_div, divider);
 }

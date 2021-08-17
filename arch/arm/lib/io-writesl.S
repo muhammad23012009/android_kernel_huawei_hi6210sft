@@ -12,7 +12,11 @@
 
 ENTRY(__raw_writesl)
 		teq	r2, #0		@ do we have to check for the zero len?
+<<<<<<< HEAD
 		moveq	pc, lr
+=======
+		reteq	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ands	ip, r1, #3
 		bne	3f
 
@@ -33,7 +37,11 @@ ENTRY(__raw_writesl)
 		ldrne	r3, [r1, #0]
 		strcs	ip, [r0, #0]
 		strne	r3, [r0, #0]
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 3:		bic	r1, r1, #3
 		ldr	r3, [r1], #4
@@ -47,7 +55,11 @@ ENTRY(__raw_writesl)
 		orr	ip, ip, r3, lspush #16
 		str	ip, [r0]
 		bne	4b
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 5:		mov	ip, r3, lspull #8
 		ldr	r3, [r1], #4
@@ -55,7 +67,11 @@ ENTRY(__raw_writesl)
 		orr	ip, ip, r3, lspush #24
 		str	ip, [r0]
 		bne	5b
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 6:		mov	ip, r3, lspull #24
 		ldr	r3, [r1], #4
@@ -63,5 +79,9 @@ ENTRY(__raw_writesl)
 		orr	ip, ip, r3, lspush #8
 		str	ip, [r0]
 		bne	6b
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(__raw_writesl)

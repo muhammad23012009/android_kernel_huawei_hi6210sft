@@ -16,19 +16,25 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
 #ifndef __ACPI_DRIVERS_H__
 #define __ACPI_DRIVERS_H__
 
+<<<<<<< HEAD
 #include <linux/acpi.h>
 #include <acpi/acpi_bus.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_MAX_STRING			80
 
 /*
@@ -99,7 +105,16 @@ struct pci_dev *acpi_get_pci_dev(acpi_handle);
 /* Arch-defined function to add a bus to the system */
 
 struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root);
+<<<<<<< HEAD
 void pci_acpi_crs_quirks(void);
+=======
+
+#ifdef CONFIG_X86
+void pci_acpi_crs_quirks(void);
+#else
+static inline void pci_acpi_crs_quirks(void) { }
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* --------------------------------------------------------------------------
                                     Processor
@@ -112,6 +127,7 @@ void pci_acpi_crs_quirks(void);
 /*--------------------------------------------------------------------------
                                   Dock Station
   -------------------------------------------------------------------------- */
+<<<<<<< HEAD
 struct acpi_dock_ops {
 	acpi_notify_handler handler;
 	acpi_notify_handler uevent;
@@ -151,5 +167,16 @@ static inline void unregister_hotplug_dock_device(acpi_handle handle)
 {
 }
 #endif
+=======
+
+#ifdef CONFIG_ACPI_DOCK
+extern int is_dock_device(struct acpi_device *adev);
+#else
+static inline int is_dock_device(struct acpi_device *adev)
+{
+	return 0;
+}
+#endif /* CONFIG_ACPI_DOCK */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /*__ACPI_DRIVERS_H__*/

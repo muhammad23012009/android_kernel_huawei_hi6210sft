@@ -13,6 +13,7 @@
 #endif
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
 
 #ifdef CONFIG_ILOCKDEP
 #include <linux/ilockdep.h>
@@ -27,15 +28,29 @@
  */
 struct rw_semaphore {
 	__s32			activity;
+=======
+/*
+ * the rw-semaphore definition
+ * - if count is 0 then there are no active readers or writers
+ * - if count is +ve then that is the number of active readers
+ * - if count is -1 then there is one active writer
+ * - if wait_list is not empty, then there are processes waiting for the semaphore
+ */
+struct rw_semaphore {
+	__s32			count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	raw_spinlock_t		wait_lock;
 	struct list_head	wait_list;
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	struct lockdep_map dep_map;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_ILOCKDEP
 	struct ilockdep_map idep_map;
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define RWSEM_UNLOCKED_VALUE		0x00000000
@@ -43,7 +58,11 @@ struct rw_semaphore {
 extern void __down_read(struct rw_semaphore *sem);
 extern int __down_read_trylock(struct rw_semaphore *sem);
 extern void __down_write(struct rw_semaphore *sem);
+<<<<<<< HEAD
 extern void __down_write_nested(struct rw_semaphore *sem, int subclass);
+=======
+extern int __must_check __down_write_killable(struct rw_semaphore *sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int __down_write_trylock(struct rw_semaphore *sem);
 extern void __up_read(struct rw_semaphore *sem);
 extern void __up_write(struct rw_semaphore *sem);

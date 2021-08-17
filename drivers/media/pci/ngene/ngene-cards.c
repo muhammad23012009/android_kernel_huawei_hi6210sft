@@ -57,7 +57,11 @@ static int tuner_attach_stv6110(struct ngene_channel *chan)
 		chan->dev->card_info->fe_config[chan->number];
 	struct stv6110x_config *tunerconf = (struct stv6110x_config *)
 		chan->dev->card_info->tuner_config[chan->number];
+<<<<<<< HEAD
 	struct stv6110x_devctl *ctl;
+=======
+	const struct stv6110x_devctl *ctl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* tuner 1+2: i2c adapter #0, tuner 3+4: i2c adapter #1 */
 	if (chan->number < 2)
@@ -613,7 +617,11 @@ static struct stv6110x_config tuner_cineS2_1 = {
 	.clk_div = 1,
 };
 
+<<<<<<< HEAD
 static struct ngene_info ngene_info_cineS2 = {
+=======
+static const struct ngene_info ngene_info_cineS2 = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type		= NGENE_SIDEWINDER,
 	.name		= "Linux4Media cineS2 DVB-S2 Twin Tuner",
 	.io_type	= {NGENE_IO_TSIN, NGENE_IO_TSIN},
@@ -627,7 +635,11 @@ static struct ngene_info ngene_info_cineS2 = {
 	.msi_supported	= true,
 };
 
+<<<<<<< HEAD
 static struct ngene_info ngene_info_satixS2 = {
+=======
+static const struct ngene_info ngene_info_satixS2 = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type		= NGENE_SIDEWINDER,
 	.name		= "Mystique SaTiX-S2 Dual",
 	.io_type	= {NGENE_IO_TSIN, NGENE_IO_TSIN},
@@ -641,7 +653,11 @@ static struct ngene_info ngene_info_satixS2 = {
 	.msi_supported	= true,
 };
 
+<<<<<<< HEAD
 static struct ngene_info ngene_info_satixS2v2 = {
+=======
+static const struct ngene_info ngene_info_satixS2v2 = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type		= NGENE_SIDEWINDER,
 	.name		= "Mystique SaTiX-S2 Dual (v2)",
 	.io_type	= {NGENE_IO_TSIN, NGENE_IO_TSIN, NGENE_IO_TSIN, NGENE_IO_TSIN,
@@ -656,7 +672,11 @@ static struct ngene_info ngene_info_satixS2v2 = {
 	.msi_supported	= true,
 };
 
+<<<<<<< HEAD
 static struct ngene_info ngene_info_cineS2v5 = {
+=======
+static const struct ngene_info ngene_info_cineS2v5 = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type		= NGENE_SIDEWINDER,
 	.name		= "Linux4Media cineS2 DVB-S2 Twin Tuner (v5)",
 	.io_type	= {NGENE_IO_TSIN, NGENE_IO_TSIN, NGENE_IO_TSIN, NGENE_IO_TSIN,
@@ -672,7 +692,11 @@ static struct ngene_info ngene_info_cineS2v5 = {
 };
 
 
+<<<<<<< HEAD
 static struct ngene_info ngene_info_duoFlex = {
+=======
+static const struct ngene_info ngene_info_duoFlex = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type           = NGENE_SIDEWINDER,
 	.name           = "Digital Devices DuoFlex PCIe or miniPCIe",
 	.io_type        = {NGENE_IO_TSIN, NGENE_IO_TSIN, NGENE_IO_TSIN, NGENE_IO_TSIN,
@@ -687,7 +711,11 @@ static struct ngene_info ngene_info_duoFlex = {
 	.msi_supported	= true,
 };
 
+<<<<<<< HEAD
 static struct ngene_info ngene_info_m780 = {
+=======
+static const struct ngene_info ngene_info_m780 = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type           = NGENE_APP,
 	.name           = "Aver M780 ATSC/QAM-B",
 
@@ -696,7 +724,11 @@ static struct ngene_info ngene_info_m780 = {
 	.demod_attach   = { NULL, demod_attach_lg330x },
 
 	/* Ensure these are NULL else the frame will call them (as funcs) */
+<<<<<<< HEAD
 	.tuner_attach   = { 0, 0, 0, 0 },
+=======
+	.tuner_attach   = { NULL, NULL, NULL, NULL },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fe_config      = { NULL, &aver_m780 },
 	.avf            = { 0 },
 
@@ -727,7 +759,11 @@ static struct drxd_config fe_terratec_dvbt_1 = {
 	.osc_deviation  = osc_deviation,
 };
 
+<<<<<<< HEAD
 static struct ngene_info ngene_info_terratec = {
+=======
+static const struct ngene_info ngene_info_terratec = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type           = NGENE_TERRATEC,
 	.name           = "Terratec Integra/Cinergy2400i Dual DVB-T",
 	.io_type        = {NGENE_IO_TSIN, NGENE_IO_TSIN},

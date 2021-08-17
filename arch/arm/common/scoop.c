@@ -69,7 +69,11 @@ static void __scoop_gpio_set(struct scoop_dev *sdev,
 
 static void scoop_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	spin_lock_irqsave(&sdev->scoop_lock, flags);
@@ -81,16 +85,27 @@ static void scoop_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int scoop_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
 
 	/* XXX: I'm unsure, but it seems so */
 	return ioread16(sdev->base + SCOOP_GPRR) & (1 << (offset + 1));
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+
+	/* XXX: I'm unsure, but it seems so */
+	return !!(ioread16(sdev->base + SCOOP_GPRR) & (1 << (offset + 1)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int scoop_gpio_direction_input(struct gpio_chip *chip,
 			unsigned offset)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned short gpcr;
 
@@ -108,7 +123,11 @@ static int scoop_gpio_direction_input(struct gpio_chip *chip,
 static int scoop_gpio_direction_output(struct gpio_chip *chip,
 			unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct scoop_dev *sdev = container_of(chip, struct scoop_dev, gpio);
+=======
+	struct scoop_dev *sdev = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned short gpcr;
 
@@ -182,7 +201,10 @@ static int scoop_probe(struct platform_device *pdev)
 	struct scoop_config *inf;
 	struct resource *mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	int ret;
+<<<<<<< HEAD
 	int temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!mem)
 		return -EINVAL;
@@ -225,15 +247,22 @@ static int scoop_probe(struct platform_device *pdev)
 		devptr->gpio.direction_input = scoop_gpio_direction_input;
 		devptr->gpio.direction_output = scoop_gpio_direction_output;
 
+<<<<<<< HEAD
 		ret = gpiochip_add(&devptr->gpio);
+=======
+		ret = gpiochip_add_data(&devptr->gpio, devptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			goto err_gpio;
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 	if (devptr->gpio.base != -1)
 		temp = gpiochip_remove(&devptr->gpio);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_gpio:
 	platform_set_drvdata(pdev, NULL);
 err_ioremap:
@@ -246,11 +275,15 @@ err_ioremap:
 static int scoop_remove(struct platform_device *pdev)
 {
 	struct scoop_dev *sdev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!sdev)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (sdev->gpio.base != -1) {
 		ret = gpiochip_remove(&sdev->gpio);
 		if (ret) {
@@ -258,6 +291,10 @@ static int scoop_remove(struct platform_device *pdev)
 			return ret;
 		}
 	}
+=======
+	if (sdev->gpio.base != -1)
+		gpiochip_remove(&sdev->gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, NULL);
 	iounmap(sdev->base);

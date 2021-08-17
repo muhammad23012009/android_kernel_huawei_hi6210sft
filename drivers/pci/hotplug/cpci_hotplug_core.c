@@ -45,12 +45,21 @@
 #define dbg(format, arg...)					\
 	do {							\
 		if (cpci_debug)					\
+<<<<<<< HEAD
 			printk (KERN_DEBUG "%s: " format "\n",	\
 				MY_NAME , ## arg); 		\
 	} while (0)
 #define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME , ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME , ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME , ## arg)
+=======
+			printk(KERN_DEBUG "%s: " format "\n",	\
+				MY_NAME, ## arg);		\
+	} while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* local variables */
 static DECLARE_RWSEM(list_rwsem);
@@ -65,10 +74,17 @@ static int thread_finished;
 static int enable_slot(struct hotplug_slot *slot);
 static int disable_slot(struct hotplug_slot *slot);
 static int set_attention_status(struct hotplug_slot *slot, u8 value);
+<<<<<<< HEAD
 static int get_power_status(struct hotplug_slot *slot, u8 * value);
 static int get_attention_status(struct hotplug_slot *slot, u8 * value);
 static int get_adapter_status(struct hotplug_slot *slot, u8 * value);
 static int get_latch_status(struct hotplug_slot *slot, u8 * value);
+=======
+static int get_power_status(struct hotplug_slot *slot, u8 *value);
+static int get_attention_status(struct hotplug_slot *slot, u8 *value);
+static int get_adapter_status(struct hotplug_slot *slot, u8 *value);
+static int get_latch_status(struct hotplug_slot *slot, u8 *value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct hotplug_slot_ops cpci_hotplug_slot_ops = {
 	.enable_slot = enable_slot,
@@ -125,7 +141,12 @@ disable_slot(struct hotplug_slot *hotplug_slot)
 
 	/* Unconfigure device */
 	dbg("%s - unconfiguring slot %s", __func__, slot_name(slot));
+<<<<<<< HEAD
 	if ((retval = cpci_unconfigure_slot(slot))) {
+=======
+	retval = cpci_unconfigure_slot(slot);
+	if (retval) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err("%s - could not unconfigure slot %s",
 		    __func__, slot_name(slot));
 		goto disable_error;
@@ -141,9 +162,17 @@ disable_slot(struct hotplug_slot *hotplug_slot)
 	}
 	cpci_led_on(slot);
 
+<<<<<<< HEAD
 	if (controller->ops->set_power)
 		if ((retval = controller->ops->set_power(slot, 0)))
 			goto disable_error;
+=======
+	if (controller->ops->set_power) {
+		retval = controller->ops->set_power(slot, 0);
+		if (retval)
+			goto disable_error;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (update_adapter_status(slot->hotplug_slot, 0))
 		warn("failure to update adapter file");
@@ -168,7 +197,11 @@ cpci_get_power_status(struct slot *slot)
 }
 
 static int
+<<<<<<< HEAD
 get_power_status(struct hotplug_slot *hotplug_slot, u8 * value)
+=======
+get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct slot *slot = hotplug_slot->private;
 
@@ -177,7 +210,11 @@ get_power_status(struct hotplug_slot *hotplug_slot, u8 * value)
 }
 
 static int
+<<<<<<< HEAD
 get_attention_status(struct hotplug_slot *hotplug_slot, u8 * value)
+=======
+get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct slot *slot = hotplug_slot->private;
 
@@ -192,14 +229,22 @@ set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
 }
 
 static int
+<<<<<<< HEAD
 get_adapter_status(struct hotplug_slot *hotplug_slot, u8 * value)
+=======
+get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	*value = hotplug_slot->info->adapter_status;
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 get_latch_status(struct hotplug_slot *hotplug_slot, u8 * value)
+=======
+get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	*value = hotplug_slot->info->latch_status;
 	return 0;
@@ -211,8 +256,12 @@ static void release_slot(struct hotplug_slot *hotplug_slot)
 
 	kfree(slot->hotplug_slot->info);
 	kfree(slot->hotplug_slot);
+<<<<<<< HEAD
 	if (slot->dev)
 		pci_dev_put(slot->dev);
+=======
+	pci_dev_put(slot->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(slot);
 }
 
@@ -236,21 +285,33 @@ cpci_hp_register_bus(struct pci_bus *bus, u8 first, u8 last)
 	 * with the pci_hotplug subsystem.
 	 */
 	for (i = first; i <= last; ++i) {
+<<<<<<< HEAD
 		slot = kzalloc(sizeof (struct slot), GFP_KERNEL);
+=======
+		slot = kzalloc(sizeof(struct slot), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!slot) {
 			status = -ENOMEM;
 			goto error;
 		}
 
 		hotplug_slot =
+<<<<<<< HEAD
 			kzalloc(sizeof (struct hotplug_slot), GFP_KERNEL);
+=======
+			kzalloc(sizeof(struct hotplug_slot), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!hotplug_slot) {
 			status = -ENOMEM;
 			goto error_slot;
 		}
 		slot->hotplug_slot = hotplug_slot;
 
+<<<<<<< HEAD
 		info = kzalloc(sizeof (struct hotplug_slot_info), GFP_KERNEL);
+=======
+		info = kzalloc(sizeof(struct hotplug_slot_info), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!info) {
 			status = -ENOMEM;
 			goto error_hpslot;
@@ -299,6 +360,10 @@ error_slot:
 error:
 	return status;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpci_hp_register_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int
 cpci_hp_unregister_bus(struct pci_bus *bus)
@@ -329,6 +394,10 @@ cpci_hp_unregister_bus(struct pci_bus *bus)
 	up_write(&list_rwsem);
 	return status;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpci_hp_unregister_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* This is the interrupt mode interrupt handler */
 static irqreturn_t
@@ -360,7 +429,11 @@ static int
 init_slots(int clear_ins)
 {
 	struct slot *slot;
+<<<<<<< HEAD
 	struct pci_dev* dev;
+=======
+	struct pci_dev *dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dbg("%s - enter", __func__);
 	down_read(&list_rwsem);
@@ -465,9 +538,15 @@ check_slots(void)
 			    __func__, slot_name(slot), hs_csr);
 
 			if (!slot->extracting) {
+<<<<<<< HEAD
 				if (update_latch_status(slot->hotplug_slot, 0)) {
 					warn("failure to update latch file");
 				}
+=======
+				if (update_latch_status(slot->hotplug_slot, 0))
+					warn("failure to update latch file");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				slot->extracting = 1;
 				atomic_inc(&extracting);
 			}
@@ -614,6 +693,10 @@ cpci_hp_register_controller(struct cpci_hp_controller *new_controller)
 		controller = new_controller;
 	return status;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpci_hp_register_controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void
 cleanup_slots(void)
@@ -653,6 +736,10 @@ cpci_hp_unregister_controller(struct cpci_hp_controller *old_controller)
 		status = -ENODEV;
 	return status;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpci_hp_unregister_controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int
 cpci_hp_start(void)
@@ -690,6 +777,10 @@ cpci_hp_start(void)
 	dbg("%s - exit", __func__);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpci_hp_start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int
 cpci_hp_stop(void)
@@ -704,6 +795,10 @@ cpci_hp_stop(void)
 	cpci_stop_thread();
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpci_hp_stop);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int __init
 cpci_hotplug_init(int debug)
@@ -711,6 +806,7 @@ cpci_hotplug_init(int debug)
 	cpci_debug = debug;
 	return 0;
 }
+<<<<<<< HEAD
 
 void __exit
 cpci_hotplug_exit(void)
@@ -728,3 +824,5 @@ EXPORT_SYMBOL_GPL(cpci_hp_register_bus);
 EXPORT_SYMBOL_GPL(cpci_hp_unregister_bus);
 EXPORT_SYMBOL_GPL(cpci_hp_start);
 EXPORT_SYMBOL_GPL(cpci_hp_stop);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

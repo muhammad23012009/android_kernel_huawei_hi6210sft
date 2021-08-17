@@ -5,12 +5,18 @@
 config NET_VENDOR_IBM
 	bool "IBM devices"
 	default y
+<<<<<<< HEAD
 	depends on MCA || PPC_PSERIES || PPC_PSERIES || PPC_DCR || \
 		   (IBMEBUS && SPARSEMEM)
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	depends on PPC_PSERIES || PPC_DCR || (IBMEBUS && SPARSEMEM)
+	---help---
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -40,4 +46,17 @@ config EHEA
 	  To compile the driver as a module, choose M here. The module
 	  will be called ehea.
 
+<<<<<<< HEAD
+=======
+config IBMVNIC
+	tristate "IBM Virtual NIC support"
+	depends on PPC_PSERIES
+	---help---
+	  This driver supports Virtual NIC adapters on IBM i and IBM System p
+	  systems.
+
+	  To compile this driver as a module, choose M here. The module will
+	  be called ibmvnic.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif # NET_VENDOR_IBM

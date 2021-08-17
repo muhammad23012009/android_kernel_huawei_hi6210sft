@@ -7,6 +7,7 @@
 #include <linux/mutex.h>
 #include <linux/cpumask.h>
 #include <linux/nodemask.h>
+<<<<<<< HEAD
 
 struct seq_operations;
 struct file;
@@ -14,21 +15,35 @@ struct path;
 struct inode;
 struct dentry;
 struct user_namespace;
+=======
+#include <linux/fs.h>
+#include <linux/cred.h>
+
+struct seq_operations;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct seq_file {
 	char *buf;
 	size_t size;
 	size_t from;
 	size_t count;
+<<<<<<< HEAD
+=======
+	size_t pad_until;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	loff_t index;
 	loff_t read_pos;
 	u64 version;
 	struct mutex lock;
 	const struct seq_operations *op;
 	int poll_event;
+<<<<<<< HEAD
 #ifdef CONFIG_USER_NS
 	struct user_namespace *user_ns;
 #endif
+=======
+	const struct file *file;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *private;
 };
 
@@ -42,6 +57,24 @@ struct seq_operations {
 #define SEQ_SKIP 1
 
 /**
+<<<<<<< HEAD
+=======
+ * seq_has_overflowed - check if the buffer has overflowed
+ * @m: the seq_file handle
+ *
+ * seq_files have a buffer which may overflow. When this happens a larger
+ * buffer is reallocated and all the data will be printed again.
+ * The overflow state is true when m->count == m->size.
+ *
+ * Returns true if the buffer received more than it can hold.
+ */
+static inline bool seq_has_overflowed(struct seq_file *m)
+{
+	return m->count == m->size;
+}
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * seq_get_buf - get buffer to write arbitrary data to
  * @m: the seq_file handle
  * @bufp: the beginning of the buffer is stored here
@@ -79,11 +112,29 @@ static inline void seq_commit(struct seq_file *m, int num)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * seq_setwidth - set padding width
+ * @m: the seq_file handle
+ * @size: the max number of bytes to pad.
+ *
+ * Call seq_setwidth() for setting max width, then call seq_printf() etc. and
+ * finally call seq_pad() to pad the remaining bytes.
+ */
+static inline void seq_setwidth(struct seq_file *m, size_t size)
+{
+	m->pad_until = m->count + size;
+}
+void seq_pad(struct seq_file *m, char c);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 char *mangle_path(char *s, const char *p, const char *esc);
 int seq_open(struct file *, const struct seq_operations *);
 ssize_t seq_read(struct file *, char __user *, size_t, loff_t *);
 loff_t seq_lseek(struct file *, loff_t, int);
 int seq_release(struct inode *, struct file *);
+<<<<<<< HEAD
 int seq_escape(struct seq_file *, const char *, const char *);
 int seq_putc(struct seq_file *m, char c);
 int seq_puts(struct seq_file *m, const char *s);
@@ -121,6 +172,30 @@ static inline int seq_nodemask_list(struct seq_file *m, nodemask_t *mask)
 {
 	return seq_bitmap_list(m, mask->bits, MAX_NUMNODES);
 }
+=======
+int seq_write(struct seq_file *seq, const void *data, size_t len);
+
+__printf(2, 0)
+void seq_vprintf(struct seq_file *m, const char *fmt, va_list args);
+__printf(2, 3)
+void seq_printf(struct seq_file *m, const char *fmt, ...);
+void seq_putc(struct seq_file *m, char c);
+void seq_puts(struct seq_file *m, const char *s);
+void seq_put_decimal_ull(struct seq_file *m, const char *delimiter,
+			 unsigned long long num);
+void seq_put_decimal_ll(struct seq_file *m, const char *delimiter, long long num);
+void seq_escape(struct seq_file *m, const char *s, const char *esc);
+
+void seq_hex_dump(struct seq_file *m, const char *prefix_str, int prefix_type,
+		  int rowsize, int groupsize, const void *buf, size_t len,
+		  bool ascii);
+
+int seq_path(struct seq_file *, const struct path *, const char *);
+int seq_file_path(struct seq_file *, struct file *, const char *);
+int seq_dentry(struct seq_file *, struct dentry *, const char *);
+int seq_path_root(struct seq_file *m, const struct path *path,
+		  const struct path *root, const char *esc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int single_open(struct file *, int (*)(struct seq_file *, void *), void *);
 int single_open_size(struct file *, int (*)(struct seq_file *, void *), void *, size_t);
@@ -128,21 +203,66 @@ int single_release(struct inode *, struct file *);
 void *__seq_open_private(struct file *, const struct seq_operations *, int);
 int seq_open_private(struct file *, const struct seq_operations *, int);
 int seq_release_private(struct inode *, struct file *);
+<<<<<<< HEAD
 int seq_put_decimal_ull(struct seq_file *m, char delimiter,
 			unsigned long long num);
 int seq_put_decimal_ll(struct seq_file *m, char delimiter,
 			long long num);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline struct user_namespace *seq_user_ns(struct seq_file *seq)
 {
 #ifdef CONFIG_USER_NS
+<<<<<<< HEAD
 	return seq->user_ns;
+=======
+	return seq->file->f_cred->user_ns;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	extern struct user_namespace init_user_ns;
 	return &init_user_ns;
 #endif
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * seq_show_options - display mount options with appropriate escapes.
+ * @m: the seq_file handle
+ * @name: the mount option name
+ * @value: the mount option name's value, can be NULL
+ */
+static inline void seq_show_option(struct seq_file *m, const char *name,
+				   const char *value)
+{
+	seq_putc(m, ',');
+	seq_escape(m, name, ",= \t\n\\");
+	if (value) {
+		seq_putc(m, '=');
+		seq_escape(m, value, ", \t\n\\");
+	}
+}
+
+/**
+ * seq_show_option_n - display mount options with appropriate escapes
+ *		       where @value must be a specific length.
+ * @m: the seq_file handle
+ * @name: the mount option name
+ * @value: the mount option name's value, cannot be NULL
+ * @length: the length of @value to display
+ *
+ * This is a macro since this uses "length" to define the size of the
+ * stack buffer.
+ */
+#define seq_show_option_n(m, name, value, length) {	\
+	char val_buf[length + 1];			\
+	strncpy(val_buf, value, length);		\
+	val_buf[length] = '\0';				\
+	seq_show_option(m, name, val_buf);		\
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SEQ_START_TOKEN ((void *)1)
 /*
  * Helpers for iteration over list_head-s in seq_files
@@ -173,4 +293,13 @@ extern struct hlist_node *seq_hlist_start_head_rcu(struct hlist_head *head,
 extern struct hlist_node *seq_hlist_next_rcu(void *v,
 						   struct hlist_head *head,
 						   loff_t *ppos);
+<<<<<<< HEAD
+=======
+
+/* Helpers for iterating over per-cpu hlist_head-s in seq_files */
+extern struct hlist_node *seq_hlist_start_percpu(struct hlist_head __percpu *head, int *cpu, loff_t pos);
+
+extern struct hlist_node *seq_hlist_next_percpu(void *v, struct hlist_head __percpu *head, int *cpu, loff_t *pos);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

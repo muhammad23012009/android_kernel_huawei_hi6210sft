@@ -172,6 +172,10 @@ void __init ks8695_init_irq(void)
 							 handle_edge_irq);
 		}
 
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }

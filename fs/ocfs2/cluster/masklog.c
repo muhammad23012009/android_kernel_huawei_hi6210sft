@@ -49,6 +49,7 @@ static ssize_t mlog_mask_show(u64 mask, char *buf)
 
 static ssize_t mlog_mask_store(u64 mask, const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	if (!strnicmp(buf, "allow", 5)) {
 		__mlog_set_u64(mask, mlog_and_bits);
 		__mlog_clear_u64(mask, mlog_not_bits);
@@ -56,6 +57,15 @@ static ssize_t mlog_mask_store(u64 mask, const char *buf, size_t count)
 		__mlog_set_u64(mask, mlog_not_bits);
 		__mlog_clear_u64(mask, mlog_and_bits);
 	} else if (!strnicmp(buf, "off", 3)) {
+=======
+	if (!strncasecmp(buf, "allow", 5)) {
+		__mlog_set_u64(mask, mlog_and_bits);
+		__mlog_clear_u64(mask, mlog_not_bits);
+	} else if (!strncasecmp(buf, "deny", 4)) {
+		__mlog_set_u64(mask, mlog_not_bits);
+		__mlog_clear_u64(mask, mlog_and_bits);
+	} else if (!strncasecmp(buf, "off", 3)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__mlog_clear_u64(mask, mlog_not_bits);
 		__mlog_clear_u64(mask, mlog_and_bits);
 	} else
@@ -64,6 +74,43 @@ static ssize_t mlog_mask_store(u64 mask, const char *buf, size_t count)
 	return count;
 }
 
+<<<<<<< HEAD
+=======
+void __mlog_printk(const u64 *mask, const char *func, int line,
+		   const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+	const char *level;
+	const char *prefix = "";
+
+	if (!__mlog_test_u64(*mask, mlog_and_bits) ||
+	    __mlog_test_u64(*mask, mlog_not_bits))
+		return;
+
+	if (*mask & ML_ERROR) {
+		level = KERN_ERR;
+		prefix = "ERROR: ";
+	} else if (*mask & ML_NOTICE) {
+		level = KERN_NOTICE;
+	} else {
+		level = KERN_INFO;
+	}
+
+	va_start(args, fmt);
+
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	printk("%s(%s,%u,%u):%s:%d %s%pV",
+	       level, current->comm, task_pid_nr(current),
+	       raw_smp_processor_id(), func, line, prefix, &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL_GPL(__mlog_printk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mlog_attribute {
 	struct attribute attr;
 	u64 mask;

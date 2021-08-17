@@ -187,10 +187,17 @@ static const struct v4l2_ctrl_ops tw9903_ctrl_ops = {
 
 static const struct v4l2_subdev_core_ops tw9903_core_ops = {
 	.log_status = tw9903_log_status,
+<<<<<<< HEAD
 	.s_std = tw9903_s_std,
 };
 
 static const struct v4l2_subdev_video_ops tw9903_video_ops = {
+=======
+};
+
+static const struct v4l2_subdev_video_ops tw9903_video_ops = {
+	.s_std = tw9903_s_std,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.s_routing = tw9903_s_video_routing,
 };
 
@@ -215,7 +222,11 @@ static int tw9903_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%02x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	dec = kzalloc(sizeof(struct tw9903), GFP_KERNEL);
+=======
+	dec = devm_kzalloc(&client->dev, sizeof(*dec), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dec == NULL)
 		return -ENOMEM;
 	sd = &dec->sd;
@@ -233,7 +244,10 @@ static int tw9903_probe(struct i2c_client *client,
 		int err = hdl->error;
 
 		v4l2_ctrl_handler_free(hdl);
+<<<<<<< HEAD
 		kfree(dec);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -242,7 +256,10 @@ static int tw9903_probe(struct i2c_client *client,
 
 	if (write_regs(sd, initial_registers) < 0) {
 		v4l2_err(client, "error initializing TW9903\n");
+<<<<<<< HEAD
 		kfree(dec);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -255,7 +272,10 @@ static int tw9903_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&to_state(sd)->hdl);
+<<<<<<< HEAD
 	kfree(to_state(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -269,7 +289,10 @@ MODULE_DEVICE_TABLE(i2c, tw9903_id);
 
 static struct i2c_driver tw9903_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "tw9903",
 	},
 	.probe = tw9903_probe,

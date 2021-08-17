@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -26,7 +35,10 @@ int
 bfad_iocmd_ioc_enable(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
+<<<<<<< HEAD
 	int	rc = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
@@ -34,7 +46,11 @@ bfad_iocmd_ioc_enable(struct bfad_s *bfad, void *cmd)
 	if (!bfa_ioc_is_disabled(&bfad->bfa.ioc)) {
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 		iocmd->status = BFA_STATUS_OK;
+<<<<<<< HEAD
 		return rc;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	init_completion(&bfad->enable_comp);
@@ -43,21 +59,32 @@ bfad_iocmd_ioc_enable(struct bfad_s *bfad, void *cmd)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	wait_for_completion(&bfad->enable_comp);
 
+<<<<<<< HEAD
 	return rc;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int
 bfad_iocmd_ioc_disable(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
+<<<<<<< HEAD
 	int	rc = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	if (bfa_ioc_is_disabled(&bfad->bfa.ioc)) {
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 		iocmd->status = BFA_STATUS_OK;
+<<<<<<< HEAD
 		return rc;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (bfad->disable_active) {
@@ -74,7 +101,11 @@ bfad_iocmd_ioc_disable(struct bfad_s *bfad, void *cmd)
 	bfad->disable_active = BFA_FALSE;
 	iocmd->status = BFA_STATUS_OK;
 
+<<<<<<< HEAD
 	return rc;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int
@@ -128,7 +159,11 @@ bfad_iocmd_ioc_get_attr(struct bfad_s *bfad, void *cmd)
 
 	/* fill in driver attr info */
 	strcpy(iocmd->ioc_attr.driver_attr.driver, BFAD_DRIVER_NAME);
+<<<<<<< HEAD
 	strncpy(iocmd->ioc_attr.driver_attr.driver_ver,
+=======
+	strlcpy(iocmd->ioc_attr.driver_attr.driver_ver,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		BFAD_DRIVER_VERSION, BFA_VERSION_LEN);
 	strcpy(iocmd->ioc_attr.driver_attr.fw_ver,
 		iocmd->ioc_attr.adapter_attr.fw_ver);
@@ -229,6 +264,21 @@ bfad_iocmd_iocfc_get_attr(struct bfad_s *bfad, void *cmd)
 }
 
 int
+<<<<<<< HEAD
+=======
+bfad_iocmd_ioc_fw_sig_inv(struct bfad_s *bfad, void *cmd)
+{
+	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
+	unsigned long flags;
+
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	iocmd->status = bfa_ioc_fwsig_invalidate(&bfad->bfa.ioc);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+	return 0;
+}
+
+int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 bfad_iocmd_iocfc_set_intr(struct bfad_s *bfad, void *cmd)
 {
 	struct bfa_bsg_iocfc_intr_s *iocmd = (struct bfa_bsg_iocfc_intr_s *)cmd;
@@ -304,9 +354,15 @@ bfad_iocmd_port_get_attr(struct bfad_s *bfad, void *cmd)
 	iocmd->attr.port_type = port_attr.port_type;
 	iocmd->attr.loopback = port_attr.loopback;
 	iocmd->attr.authfail = port_attr.authfail;
+<<<<<<< HEAD
 	strncpy(iocmd->attr.port_symname.symname,
 		port_attr.port_cfg.sym_name.symname,
 		sizeof(port_attr.port_cfg.sym_name.symname));
+=======
+	strlcpy(iocmd->attr.port_symname.symname,
+		port_attr.port_cfg.sym_name.symname,
+		sizeof(iocmd->attr.port_symname.symname));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iocmd->status = BFA_STATUS_OK;
 	return 0;
@@ -402,6 +458,7 @@ bfad_iocmd_port_cfg_maxfrsize(struct bfad_s *bfad, void *cmd)
 }
 
 int
+<<<<<<< HEAD
 bfad_iocmd_port_cfg_bbsc(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)cmd;
@@ -421,6 +478,45 @@ bfad_iocmd_port_cfg_bbsc(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 	return 0;
 }
 
+=======
+bfad_iocmd_port_cfg_bbcr(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
+{
+	struct bfa_bsg_bbcr_enable_s *iocmd =
+			(struct bfa_bsg_bbcr_enable_s *)pcmd;
+	unsigned long flags;
+	int rc;
+
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	if (cmd == IOCMD_PORT_BBCR_ENABLE)
+		rc = bfa_fcport_cfg_bbcr(&bfad->bfa, BFA_TRUE, iocmd->bb_scn);
+	else if (cmd == IOCMD_PORT_BBCR_DISABLE)
+		rc = bfa_fcport_cfg_bbcr(&bfad->bfa, BFA_FALSE, 0);
+	else {
+		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+		return -EINVAL;
+	}
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+
+	iocmd->status = rc;
+	return 0;
+}
+
+int
+bfad_iocmd_port_get_bbcr_attr(struct bfad_s *bfad, void *pcmd)
+{
+	struct bfa_bsg_bbcr_attr_s *iocmd = (struct bfa_bsg_bbcr_attr_s *) pcmd;
+	unsigned long flags;
+
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	iocmd->status =
+		bfa_fcport_get_bbcr_attr(&bfad->bfa, &iocmd->attr);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+
+	return 0;
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int
 bfad_iocmd_lport_get_attr(struct bfad_s *bfad, void *cmd)
 {
@@ -1767,14 +1863,22 @@ bfad_iocmd_diag_lb_stat(struct bfad_s *bfad, void *cmd)
 }
 
 int
+<<<<<<< HEAD
 bfad_iocmd_diag_cfg_dport(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 {
 	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)pcmd;
+=======
+bfad_iocmd_diag_dport_enable(struct bfad_s *bfad, void *pcmd)
+{
+	struct bfa_bsg_dport_enable_s *iocmd =
+				(struct bfa_bsg_dport_enable_s *)pcmd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 	struct bfad_hal_comp fcomp;
 
 	init_completion(&fcomp.comp);
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+<<<<<<< HEAD
 	if (cmd == IOCMD_DIAG_DPORT_ENABLE)
 		iocmd->status = bfa_dport_enable(&bfad->bfa,
 					bfad_hcb_comp, &fcomp);
@@ -1788,17 +1892,70 @@ bfad_iocmd_diag_cfg_dport(struct bfad_s *bfad, unsigned int cmd, void *pcmd)
 	}
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
+=======
+	iocmd->status = bfa_dport_enable(&bfad->bfa, iocmd->lpcnt,
+					iocmd->pat, bfad_hcb_comp, &fcomp);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	if (iocmd->status != BFA_STATUS_OK)
 		bfa_trc(bfad, iocmd->status);
 	else {
 		wait_for_completion(&fcomp.comp);
 		iocmd->status = fcomp.status;
 	}
+	return 0;
+}
+
+int
+bfad_iocmd_diag_dport_disable(struct bfad_s *bfad, void *pcmd)
+{
+	struct bfa_bsg_gen_s *iocmd = (struct bfa_bsg_gen_s *)pcmd;
+	unsigned long	flags;
+	struct bfad_hal_comp fcomp;
+
+	init_completion(&fcomp.comp);
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	iocmd->status = bfa_dport_disable(&bfad->bfa, bfad_hcb_comp, &fcomp);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+	if (iocmd->status != BFA_STATUS_OK)
+		bfa_trc(bfad, iocmd->status);
+	else {
+		wait_for_completion(&fcomp.comp);
+		iocmd->status = fcomp.status;
+	}
+<<<<<<< HEAD
+=======
+	return 0;
+}
+
+int
+bfad_iocmd_diag_dport_start(struct bfad_s *bfad, void *pcmd)
+{
+	struct bfa_bsg_dport_enable_s *iocmd =
+				(struct bfa_bsg_dport_enable_s *)pcmd;
+	unsigned long   flags;
+	struct bfad_hal_comp fcomp;
+
+	init_completion(&fcomp.comp);
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	iocmd->status = bfa_dport_start(&bfad->bfa, iocmd->lpcnt,
+					iocmd->pat, bfad_hcb_comp,
+					&fcomp);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+
+	if (iocmd->status != BFA_STATUS_OK) {
+		bfa_trc(bfad, iocmd->status);
+	} else {
+		wait_for_completion(&fcomp.comp);
+		iocmd->status = fcomp.status;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 int
+<<<<<<< HEAD
 bfad_iocmd_diag_dport_get_state(struct bfad_s *bfad, void *pcmd)
 {
 	struct bfa_bsg_diag_dport_get_state_s *iocmd =
@@ -1807,11 +1964,25 @@ bfad_iocmd_diag_dport_get_state(struct bfad_s *bfad, void *pcmd)
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_dport_get_state(&bfad->bfa, &iocmd->state);
+=======
+bfad_iocmd_diag_dport_show(struct bfad_s *bfad, void *pcmd)
+{
+	struct bfa_bsg_diag_dport_show_s *iocmd =
+				(struct bfa_bsg_diag_dport_show_s *)pcmd;
+	unsigned long   flags;
+
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	iocmd->status = bfa_dport_show(&bfad->bfa, &iocmd->result);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int
 bfad_iocmd_phy_get_attr(struct bfad_s *bfad, void *cmd)
 {
@@ -2238,8 +2409,15 @@ bfad_iocmd_cfg_trunk(struct bfad_s *bfad, void *cmd, unsigned int v_cmd)
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 
+<<<<<<< HEAD
 	if (bfa_fcport_is_dport(&bfad->bfa))
 		return BFA_STATUS_DPORT_ERR;
+=======
+	if (bfa_fcport_is_dport(&bfad->bfa)) {
+		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+		return BFA_STATUS_DPORT_ERR;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fcport->cfg.topology == BFA_PORT_TOPOLOGY_LOOP) ||
 		(fcport->topology == BFA_PORT_TOPOLOGY_LOOP))
@@ -2662,7 +2840,11 @@ bfad_iocmd_fruvpd_update(struct bfad_s *bfad, void *cmd)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	iocmd->status = bfa_fruvpd_update(BFA_FRU(&bfad->bfa),
 				&iocmd->data, iocmd->len, iocmd->offset,
+<<<<<<< HEAD
 				bfad_hcb_comp, &fcomp);
+=======
+				bfad_hcb_comp, &fcomp, iocmd->trfr_cmpl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	if (iocmd->status == BFA_STATUS_OK) {
 		wait_for_completion(&fcomp.comp);
@@ -2750,9 +2932,18 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_PORT_CFG_MAXFRSZ:
 		rc = bfad_iocmd_port_cfg_maxfrsize(bfad, iocmd);
 		break;
+<<<<<<< HEAD
 	case IOCMD_PORT_BBSC_ENABLE:
 	case IOCMD_PORT_BBSC_DISABLE:
 		rc = bfad_iocmd_port_cfg_bbsc(bfad, iocmd, cmd);
+=======
+	case IOCMD_PORT_BBCR_ENABLE:
+	case IOCMD_PORT_BBCR_DISABLE:
+		rc = bfad_iocmd_port_cfg_bbcr(bfad, cmd, iocmd);
+		break;
+	case IOCMD_PORT_BBCR_GET_ATTR:
+		rc = bfad_iocmd_port_get_bbcr_attr(bfad, iocmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case IOCMD_LPORT_GET_ATTR:
 		rc = bfad_iocmd_lport_get_attr(bfad, iocmd);
@@ -2836,6 +3027,12 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 	case IOCMD_IOC_PCIFN_CFG:
 		rc = bfad_iocmd_ioc_get_pcifn_cfg(bfad, iocmd);
 		break;
+<<<<<<< HEAD
+=======
+	case IOCMD_IOC_FW_SIG_INV:
+		rc = bfad_iocmd_ioc_fw_sig_inv(bfad, iocmd);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case IOCMD_PCIFN_CREATE:
 		rc = bfad_iocmd_pcifn_create(bfad, iocmd);
 		break;
@@ -2913,11 +3110,24 @@ bfad_iocmd_handler(struct bfad_s *bfad, unsigned int cmd, void *iocmd,
 		rc = bfad_iocmd_diag_lb_stat(bfad, iocmd);
 		break;
 	case IOCMD_DIAG_DPORT_ENABLE:
+<<<<<<< HEAD
 	case IOCMD_DIAG_DPORT_DISABLE:
 		rc = bfad_iocmd_diag_cfg_dport(bfad, cmd, iocmd);
 		break;
 	case IOCMD_DIAG_DPORT_GET_STATE:
 		rc = bfad_iocmd_diag_dport_get_state(bfad, iocmd);
+=======
+		rc = bfad_iocmd_diag_dport_enable(bfad, iocmd);
+		break;
+	case IOCMD_DIAG_DPORT_DISABLE:
+		rc = bfad_iocmd_diag_dport_disable(bfad, iocmd);
+		break;
+	case IOCMD_DIAG_DPORT_SHOW:
+		rc = bfad_iocmd_diag_dport_show(bfad, iocmd);
+		break;
+	case IOCMD_DIAG_DPORT_START:
+		rc = bfad_iocmd_diag_dport_start(bfad, iocmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case IOCMD_PHY_GET_ATTR:
 		rc = bfad_iocmd_phy_get_attr(bfad, iocmd);
@@ -3191,13 +3401,22 @@ bfad_fcxp_map_sg(struct bfad_s *bfad, void *payload_kbuf,
 	/* Allocate dma coherent memory */
 	buf_info = buf_base;
 	buf_info->size = payload_len;
+<<<<<<< HEAD
 	buf_info->virt = dma_alloc_coherent(&bfad->pcidev->dev, buf_info->size,
 					&buf_info->phys, GFP_KERNEL);
+=======
+	buf_info->virt = dma_zalloc_coherent(&bfad->pcidev->dev,
+					     buf_info->size, &buf_info->phys,
+					     GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!buf_info->virt)
 		goto out_free_mem;
 
 	/* copy the linear bsg buffer to buf_info */
+<<<<<<< HEAD
 	memset(buf_info->virt, 0, buf_info->size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(buf_info->virt, payload_kbuf, buf_info->size);
 
 	/*
@@ -3309,7 +3528,12 @@ bfad_im_bsg_els_ct_request(struct fc_bsg_job *job)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (copy_from_user((uint8_t *)bsg_fcpt, bsg_data->payload,
+=======
+	if (copy_from_user((uint8_t *)bsg_fcpt,
+				(void *)(unsigned long)bsg_data->payload,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				bsg_data->payload_len)) {
 		kfree(bsg_fcpt);
 		rc = -EIO;
@@ -3463,8 +3687,13 @@ out_free_mem:
 	kfree(rsp_kbuf);
 
 	/* Need a copy to user op */
+<<<<<<< HEAD
 	if (copy_to_user(bsg_data->payload, (void *) bsg_fcpt,
 			 bsg_data->payload_len))
+=======
+	if (copy_to_user((void *)(unsigned long)bsg_data->payload,
+			(void *)bsg_fcpt, bsg_data->payload_len))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -EIO;
 
 	kfree(bsg_fcpt);

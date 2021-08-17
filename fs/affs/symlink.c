@@ -14,16 +14,26 @@ static int affs_symlink_readpage(struct file *file, struct page *page)
 {
 	struct buffer_head *bh;
 	struct inode *inode = page->mapping->host;
+<<<<<<< HEAD
 	char *link = kmap(page);
 	struct slink_front *lf;
 	int err;
+=======
+	char *link = page_address(page);
+	struct slink_front *lf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			 i, j;
 	char			 c;
 	char			 lc;
 
+<<<<<<< HEAD
 	pr_debug("AFFS: follow_link(ino=%lu)\n",inode->i_ino);
 
 	err = -EIO;
+=======
+	pr_debug("get_link(ino=%lu)\n", inode->i_ino);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bh = affs_bread(inode->i_sb, inode->i_ino);
 	if (!bh)
 		goto fail;
@@ -59,14 +69,22 @@ static int affs_symlink_readpage(struct file *file, struct page *page)
 	link[i] = '\0';
 	affs_brelse(bh);
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return 0;
 fail:
 	SetPageError(page);
+<<<<<<< HEAD
 	kunmap(page);
 	unlock_page(page);
 	return err;
+=======
+	unlock_page(page);
+	return -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct address_space_operations affs_symlink_aops = {
@@ -75,7 +93,11 @@ const struct address_space_operations affs_symlink_aops = {
 
 const struct inode_operations affs_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.setattr	= affs_notify_change,
 };

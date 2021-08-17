@@ -36,7 +36,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+#include <crypto/skcipher.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sunrpc/auth_gss.h>
 #include <linux/sunrpc/gss_err.h>
 #include <linux/sunrpc/gss_asn1.h>
@@ -71,17 +75,28 @@ struct gss_krb5_enctype {
 	const u32		keyed_cksum;	/* is it a keyed cksum? */
 	const u32		keybytes;	/* raw key len, in bytes */
 	const u32		keylength;	/* final key len, in bytes */
+<<<<<<< HEAD
 	u32 (*encrypt) (struct crypto_blkcipher *tfm,
 			void *iv, void *in, void *out,
 			int length);		/* encryption function */
 	u32 (*decrypt) (struct crypto_blkcipher *tfm,
+=======
+	u32 (*encrypt) (struct crypto_skcipher *tfm,
+			void *iv, void *in, void *out,
+			int length);		/* encryption function */
+	u32 (*decrypt) (struct crypto_skcipher *tfm,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			void *iv, void *in, void *out,
 			int length);		/* decryption function */
 	u32 (*mk_key) (const struct gss_krb5_enctype *gk5e,
 		       struct xdr_netobj *in,
 		       struct xdr_netobj *out);	/* complete key generation */
 	u32 (*encrypt_v2) (struct krb5_ctx *kctx, u32 offset,
+<<<<<<< HEAD
 			   struct xdr_buf *buf, int ec,
+=======
+			   struct xdr_buf *buf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct page **pages); /* v2 encryption function */
 	u32 (*decrypt_v2) (struct krb5_ctx *kctx, u32 offset,
 			   struct xdr_buf *buf, u32 *headskip,
@@ -98,12 +113,21 @@ struct krb5_ctx {
 	u32			enctype;
 	u32			flags;
 	const struct gss_krb5_enctype *gk5e; /* enctype-specific info */
+<<<<<<< HEAD
 	struct crypto_blkcipher	*enc;
 	struct crypto_blkcipher	*seq;
 	struct crypto_blkcipher *acceptor_enc;
 	struct crypto_blkcipher *initiator_enc;
 	struct crypto_blkcipher *acceptor_enc_aux;
 	struct crypto_blkcipher *initiator_enc_aux;
+=======
+	struct crypto_skcipher	*enc;
+	struct crypto_skcipher	*seq;
+	struct crypto_skcipher *acceptor_enc;
+	struct crypto_skcipher *initiator_enc;
+	struct crypto_skcipher *acceptor_enc_aux;
+	struct crypto_skcipher *initiator_enc_aux;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8			Ksess[GSS_KRB5_MAX_KEYLEN]; /* session key */
 	u8			cksum[GSS_KRB5_MAX_KEYLEN];
 	s32			endtime;
@@ -262,6 +286,7 @@ gss_unwrap_kerberos(struct gss_ctx *ctx_id, int offset,
 
 
 u32
+<<<<<<< HEAD
 krb5_encrypt(struct crypto_blkcipher *key,
 	     void *iv, void *in, void *out, int length);
 
@@ -275,11 +300,30 @@ gss_encrypt_xdr_buf(struct crypto_blkcipher *tfm, struct xdr_buf *outbuf,
 
 int
 gss_decrypt_xdr_buf(struct crypto_blkcipher *tfm, struct xdr_buf *inbuf,
+=======
+krb5_encrypt(struct crypto_skcipher *key,
+	     void *iv, void *in, void *out, int length);
+
+u32
+krb5_decrypt(struct crypto_skcipher *key,
+	     void *iv, void *in, void *out, int length); 
+
+int
+gss_encrypt_xdr_buf(struct crypto_skcipher *tfm, struct xdr_buf *outbuf,
+		    int offset, struct page **pages);
+
+int
+gss_decrypt_xdr_buf(struct crypto_skcipher *tfm, struct xdr_buf *inbuf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    int offset);
 
 s32
 krb5_make_seq_num(struct krb5_ctx *kctx,
+<<<<<<< HEAD
 		struct crypto_blkcipher *key,
+=======
+		struct crypto_skcipher *key,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int direction,
 		u32 seqnum, unsigned char *cksum, unsigned char *buf);
 
@@ -310,7 +354,11 @@ gss_krb5_aes_make_key(const struct gss_krb5_enctype *gk5e,
 
 u32
 gss_krb5_aes_encrypt(struct krb5_ctx *kctx, u32 offset,
+<<<<<<< HEAD
 		     struct xdr_buf *buf, int ec,
+=======
+		     struct xdr_buf *buf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     struct page **pages);
 
 u32
@@ -320,12 +368,20 @@ gss_krb5_aes_decrypt(struct krb5_ctx *kctx, u32 offset,
 
 int
 krb5_rc4_setup_seq_key(struct krb5_ctx *kctx,
+<<<<<<< HEAD
 		       struct crypto_blkcipher *cipher,
+=======
+		       struct crypto_skcipher *cipher,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       unsigned char *cksum);
 
 int
 krb5_rc4_setup_enc_key(struct krb5_ctx *kctx,
+<<<<<<< HEAD
 		       struct crypto_blkcipher *cipher,
+=======
+		       struct crypto_skcipher *cipher,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       s32 seqnum);
 void
 gss_krb5_make_confounder(char *p, u32 conflen);

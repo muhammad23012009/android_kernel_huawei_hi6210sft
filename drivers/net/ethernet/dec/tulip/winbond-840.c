@@ -219,7 +219,11 @@ enum chip_capability_flags {
 	CanHaveMII=1, HasBrokenTx=2, AlwaysFDX=4, FDXOnNoMII=8,
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(w840_pci_tbl) = {
+=======
+static const struct pci_device_id w840_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x1050, 0x0840, PCI_ANY_ID, 0x8153,     0, 0, 0 },
 	{ 0x1050, 0x0840, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 1 },
 	{ 0x11f6, 0x2011, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 2 },
@@ -368,7 +372,11 @@ static int w840_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 	int i, option = find_cnt < MAX_UNITS ? options[find_cnt] : 0;
 	void __iomem *ioaddr;
 
+<<<<<<< HEAD
 	i = pci_enable_device(pdev);
+=======
+	i = pcim_enable_device(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (i) return i;
 
 	pci_set_master(pdev);
@@ -390,7 +398,11 @@ static int w840_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	ioaddr = pci_iomap(pdev, TULIP_BAR, netdev_res_size);
 	if (!ioaddr)
+<<<<<<< HEAD
 		goto err_out_free_res;
+=======
+		goto err_out_netdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < 3; i++)
 		((__le16 *)dev->dev_addr)[i] = cpu_to_le16(eeprom_read(ioaddr, i));
@@ -468,10 +480,14 @@ static int w840_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return 0;
 
 err_out_cleardev:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
 	pci_iounmap(pdev, ioaddr);
 err_out_free_res:
 	pci_release_regions(pdev);
+=======
+	pci_iounmap(pdev, ioaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out_netdev:
 	free_netdev (dev);
 	return -ENODEV;
@@ -905,10 +921,17 @@ static void init_registers(struct net_device *dev)
 	}
 #elif defined(__powerpc__) || defined(__i386__) || defined(__alpha__) || defined(__ia64__) || defined(__x86_64__)
 	i |= 0xE000;
+<<<<<<< HEAD
 #elif defined(CONFIG_SPARC) || defined (CONFIG_PARISC)
 	i |= 0x4800;
 #else
 #warning Processor architecture undefined
+=======
+#elif defined(CONFIG_SPARC) || defined (CONFIG_PARISC) || defined(CONFIG_ARM)
+	i |= 0x4800;
+#else
+	dev_warn(&dev->dev, "unknown CPU architecture, using default csr0 setting\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i |= 0x4800;
 #endif
 	iowrite32(i, ioaddr + PCIBusCfg);
@@ -967,7 +990,11 @@ static void tx_timeout(struct net_device *dev)
 	enable_irq(irq);
 
 	netif_wake_queue(dev);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	np->stats.tx_errors++;
 }
 
@@ -1538,12 +1565,18 @@ static void w840_remove1(struct pci_dev *pdev)
 	if (dev) {
 		struct netdev_private *np = netdev_priv(dev);
 		unregister_netdev(dev);
+<<<<<<< HEAD
 		pci_release_regions(pdev);
 		pci_iounmap(pdev, np->base_addr);
 		free_netdev(dev);
 	}
 
 	pci_set_drvdata(pdev, NULL);
+=======
+		pci_iounmap(pdev, np->base_addr);
+		free_netdev(dev);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM

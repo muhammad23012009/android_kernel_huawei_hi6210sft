@@ -130,6 +130,7 @@ EXPORT_SYMBOL_GPL(af_alg_release);
 void af_alg_release_parent(struct sock *sk)
 {
 	struct alg_sock *ask = alg_sk(sk);
+<<<<<<< HEAD
 	unsigned int nokey = ask->nokey_refcnt;
 	bool last = nokey && !ask->refcnt;
 
@@ -149,12 +150,27 @@ void af_alg_release_parent(struct sock *sk)
 	release_sock(sk);
 
 	if (last)
+=======
+	unsigned int nokey = atomic_read(&ask->nokey_refcnt);
+
+	sk = ask->parent;
+	ask = alg_sk(sk);
+
+	if (nokey)
+		atomic_dec(&ask->nokey_refcnt);
+
+	if (atomic_dec_and_test(&ask->refcnt))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sock_put(sk);
 }
 EXPORT_SYMBOL_GPL(af_alg_release_parent);
 
 static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 {
+<<<<<<< HEAD
+=======
+	const u32 allowed = CRYPTO_ALG_KERN_DRIVER_ONLY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sock *sk = sock->sk;
 	struct alg_sock *ask = alg_sk(sk);
 	struct sockaddr_alg *sa = (void *)uaddr;
@@ -168,6 +184,13 @@ static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 	if (addr_len != sizeof(*sa))
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	/* If caller uses non-allowed flag, return error. */
+	if ((sa->salg_feat & ~allowed) || (sa->salg_mask & ~allowed))
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sa->salg_type[sizeof(sa->salg_type) - 1] = 0;
 	sa->salg_name[sizeof(sa->salg_name) - 1] = 0;
 
@@ -188,7 +211,11 @@ static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 
 	err = -EBUSY;
 	lock_sock(sk);
+<<<<<<< HEAD
 	if (ask->refcnt | ask->nokey_refcnt)
+=======
+	if (atomic_read(&ask->refcnt))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto unlock;
 
 	swap(ask->type, type);
@@ -223,7 +250,11 @@ static int alg_setkey(struct sock *sk, char __user *ukey,
 	err = type->setkey(ask->private, key, keylen);
 
 out:
+<<<<<<< HEAD
 	sock_kfree_s(sk, key, keylen);
+=======
+	sock_kzfree_s(sk, key, keylen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -237,7 +268,11 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
 	int err = -EBUSY;
 
 	lock_sock(sk);
+<<<<<<< HEAD
 	if (ask->refcnt)
+=======
+	if (atomic_read(&ask->refcnt) != atomic_read(&ask->nokey_refcnt))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto unlock;
 
 	type = ask->type;
@@ -254,6 +289,16 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
 			goto unlock;
 
 		err = alg_setkey(sk, optval, optlen);
+<<<<<<< HEAD
+=======
+		break;
+	case ALG_SET_AEAD_AUTHSIZE:
+		if (sock->state == SS_CONNECTED)
+			goto unlock;
+		if (!type->setauthsize)
+			goto unlock;
+		err = type->setauthsize(ask->private, optlen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 unlock:
@@ -277,7 +322,11 @@ int af_alg_accept(struct sock *sk, struct socket *newsock)
 	if (!type)
 		goto unlock;
 
+<<<<<<< HEAD
 	sk2 = sk_alloc(sock_net(sk), PF_ALG, GFP_KERNEL, &alg_proto);
+=======
+	sk2 = sk_alloc(sock_net(sk), PF_ALG, GFP_KERNEL, &alg_proto, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = -ENOMEM;
 	if (!sk2)
 		goto unlock;
@@ -297,12 +346,23 @@ int af_alg_accept(struct sock *sk, struct socket *newsock)
 
 	sk2->sk_family = PF_ALG;
 
+<<<<<<< HEAD
 	if (nokey || !ask->refcnt++)
 		sock_hold(sk);
 	ask->nokey_refcnt += nokey;
 	alg_sk(sk2)->parent = sk;
 	alg_sk(sk2)->type = type;
 	alg_sk(sk2)->nokey_refcnt = nokey;
+=======
+	if (atomic_inc_return_relaxed(&ask->refcnt) == 1)
+		sock_hold(sk);
+	if (nokey) {
+		atomic_inc(&ask->nokey_refcnt);
+		atomic_set(&alg_sk(sk2)->nokey_refcnt, 1);
+	}
+	alg_sk(sk2)->parent = sk;
+	alg_sk(sk2)->type = type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	newsock->ops = type->ops;
 	newsock->state = SS_CONNECTED;
@@ -366,7 +426,11 @@ static int alg_create(struct net *net, struct socket *sock, int protocol,
 		return -EPROTONOSUPPORT;
 
 	err = -ENOMEM;
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_ALG, GFP_KERNEL, &alg_proto);
+=======
+	sk = sk_alloc(net, PF_ALG, GFP_KERNEL, &alg_proto, kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sk)
 		goto out;
 
@@ -387,6 +451,7 @@ static const struct net_proto_family alg_family = {
 	.owner	=	THIS_MODULE,
 };
 
+<<<<<<< HEAD
 int af_alg_make_sg(struct af_alg_sgl *sgl, void __user *addr, int len,
 		   int write)
 {
@@ -419,12 +484,32 @@ int af_alg_make_sg(struct af_alg_sgl *sgl, void __user *addr, int len,
 	sg_init_table(sgl->sg, npages);
 
 	for (i = 0; i < npages; i++) {
+=======
+int af_alg_make_sg(struct af_alg_sgl *sgl, struct iov_iter *iter, int len)
+{
+	size_t off;
+	ssize_t n;
+	int npages, i;
+
+	n = iov_iter_get_pages(iter, sgl->pages, len, ALG_MAX_PAGES, &off);
+	if (n < 0)
+		return n;
+
+	npages = (off + n + PAGE_SIZE - 1) >> PAGE_SHIFT;
+	if (WARN_ON(npages == 0))
+		return -EINVAL;
+	/* Add one extra for linking */
+	sg_init_table(sgl->sg, npages + 1);
+
+	for (i = 0, len = n; i < npages; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int plen = min_t(int, len, PAGE_SIZE - off);
 
 		sg_set_page(sgl->sg + i, sgl->pages[i], plen, off);
 
 		off = 0;
 		len -= plen;
+<<<<<<< HEAD
 		err += plen;
 	}
 
@@ -433,14 +518,36 @@ out:
 }
 EXPORT_SYMBOL_GPL(af_alg_make_sg);
 
+=======
+	}
+	sg_mark_end(sgl->sg + npages - 1);
+	sgl->npages = npages;
+
+	return n;
+}
+EXPORT_SYMBOL_GPL(af_alg_make_sg);
+
+void af_alg_link_sg(struct af_alg_sgl *sgl_prev, struct af_alg_sgl *sgl_new)
+{
+	sg_unmark_end(sgl_prev->sg + sgl_prev->npages - 1);
+	sg_chain(sgl_prev->sg, sgl_prev->npages + 1, sgl_new->sg);
+}
+EXPORT_SYMBOL_GPL(af_alg_link_sg);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void af_alg_free_sg(struct af_alg_sgl *sgl)
 {
 	int i;
 
+<<<<<<< HEAD
 	i = 0;
 	do {
 		put_page(sgl->pages[i]);
 	} while (!sg_is_last(sgl->sg + (i++)));
+=======
+	for (i = 0; i < sgl->npages; i++)
+		put_page(sgl->pages[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(af_alg_free_sg);
 
@@ -448,13 +555,21 @@ int af_alg_cmsg_send(struct msghdr *msg, struct af_alg_control *con)
 {
 	struct cmsghdr *cmsg;
 
+<<<<<<< HEAD
 	for (cmsg = CMSG_FIRSTHDR(msg); cmsg; cmsg = CMSG_NXTHDR(msg, cmsg)) {
+=======
+	for_each_cmsghdr(cmsg, msg) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!CMSG_OK(msg, cmsg))
 			return -EINVAL;
 		if (cmsg->cmsg_level != SOL_ALG)
 			continue;
 
+<<<<<<< HEAD
 		switch(cmsg->cmsg_type) {
+=======
+		switch (cmsg->cmsg_type) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case ALG_SET_IV:
 			if (cmsg->cmsg_len < CMSG_LEN(sizeof(*con->iv)))
 				return -EINVAL;
@@ -470,6 +585,15 @@ int af_alg_cmsg_send(struct msghdr *msg, struct af_alg_control *con)
 			con->op = *(u32 *)CMSG_DATA(cmsg);
 			break;
 
+<<<<<<< HEAD
+=======
+		case ALG_SET_AEAD_ASSOCLEN:
+			if (cmsg->cmsg_len < CMSG_LEN(sizeof(u32)))
+				return -EINVAL;
+			con->aead_assoclen = *(u32 *)CMSG_DATA(cmsg);
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			return -EINVAL;
 		}
@@ -485,7 +609,11 @@ int af_alg_wait_for_completion(int err, struct af_alg_completion *completion)
 	case -EINPROGRESS:
 	case -EBUSY:
 		wait_for_completion(&completion->completion);
+<<<<<<< HEAD
 		INIT_COMPLETION(completion->completion);
+=======
+		reinit_completion(&completion->completion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = completion->err;
 		break;
 	};

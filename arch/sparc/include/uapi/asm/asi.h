@@ -279,7 +279,11 @@
 				      * Most-Recently-Used, primary,
 				      * implicit
 				      */
+<<<<<<< HEAD
 #define ASI_ST_BLKINIT_MRU_S	0xf2 /* (NG4) init-store, twin load,
+=======
+#define ASI_ST_BLKINIT_MRU_S	0xf3 /* (NG4) init-store, twin load,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      * Most-Recently-Used, secondary,
 				      * implicit
 				      */

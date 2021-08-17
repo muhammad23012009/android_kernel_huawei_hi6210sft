@@ -51,6 +51,32 @@ config USB_SERIAL_GENERIC
 	  support" be compiled as a module for this driver to be used
 	  properly.
 
+<<<<<<< HEAD
+=======
+config USB_SERIAL_SIMPLE
+	tristate "USB Serial Simple Driver"
+	help
+	  Say Y here to use the USB serial "simple" driver.  This driver
+	  handles a wide range of very simple devices, all in one
+	  driver.  Specifically, it supports:
+		- Suunto ANT+ USB device.
+		- Medtronic CareLink USB device
+		- Fundamental Software dongle.
+		- Google USB serial devices
+		- HP4x calculators
+		- Libtransistor USB console
+		- a number of Motorola phones
+		- Motorola Tetra devices
+		- Novatel Wireless GPS receivers
+		- Siemens USB/MPI adapter.
+		- ViVOtech ViVOpay USB device.
+		- Infineon Modem Flashloader USB interface
+		- ZIO Motherboard USB serial interface
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called usb-serial-simple.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_AIRCABLE
 	tristate "USB AIRcable Bluetooth Dongle Driver"
 	help
@@ -150,7 +176,11 @@ config USB_SERIAL_FTDI_SIO
 	---help---
 	  Say Y here if you want to use a FTDI SIO single port USB to serial
 	  converter device. The implementation I have is called the USC-1000.
+<<<<<<< HEAD
 	  This driver has also be tested with the 245 and 232 devices.
+=======
+	  This driver has also been tested with the 245 and 232 devices.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  See <http://ftdi-usb-sio.sourceforge.net/> for more
 	  information on this driver and the device.
@@ -158,6 +188,7 @@ config USB_SERIAL_FTDI_SIO
 	  To compile this driver as a module, choose M here: the
 	  module will be called ftdi_sio.
 
+<<<<<<< HEAD
 config USB_SERIAL_FUNSOFT
 	tristate "USB Fundamental Software Dongle Driver"
 	---help---
@@ -166,6 +197,8 @@ config USB_SERIAL_FUNSOFT
 	  To compile this driver as a module, choose M here: the
 	  module will be called funsoft.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_VISOR
 	tristate "USB Handspring Visor / Palm m50x / Sony Clie Driver"
 	help
@@ -462,6 +495,7 @@ config USB_SERIAL_MOS7840
 	  To compile this driver as a module, choose M here: the
 	  module will be called mos7840.  If unsure, choose N.
 
+<<<<<<< HEAD
 config USB_SERIAL_MOTOROLA
 	tristate "USB Motorola Phone modem driver"
 	---help---
@@ -470,6 +504,36 @@ config USB_SERIAL_MOTOROLA
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called moto_modem.  If unsure, choose N.
+=======
+config USB_SERIAL_MXUPORT
+	tristate "USB Moxa UPORT Serial Driver"
+	---help---
+	  Say Y here if you want to use a MOXA UPort Serial hub.
+
+	  This driver supports:
+
+	  [2 Port]
+	  - UPort 1250 :  2 Port RS-232/422/485 USB to Serial Hub
+	  - UPort 1250I : 2 Port RS-232/422/485 USB to Serial Hub with
+			  Isolation
+
+	  [4 Port]
+	  - UPort 1410 :  4 Port RS-232 USB to Serial Hub
+	  - UPort 1450 :  4 Port RS-232/422/485 USB to Serial Hub
+	  - UPort 1450I : 4 Port RS-232/422/485 USB to Serial Hub with
+			  Isolation
+
+	  [8 Port]
+	  - UPort 1610-8 : 8 Port RS-232 USB to Serial Hub
+	  - UPort 1650-8 : 8 Port RS-232/422/485 USB to Serial Hub
+
+	  [16 Port]
+	  - UPort 1610-16 : 16 Port RS-232 USB to Serial Hub
+	  - UPort 1650-16 : 16 Port RS-232/422/485 USB to Serial Hub
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called mxuport.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config USB_SERIAL_NAVMAN
 	tristate "USB Navman GPS device"
@@ -495,6 +559,7 @@ config USB_SERIAL_OTI6858
 	  To compile this driver as a module, choose M here: the
 	  module will be called oti6858.
 
+<<<<<<< HEAD
 config USB_SERIAL_HISI
 	tristate "USB HISI Generic Serial Port Driver"
 	select USB_SERIAL_WWAN
@@ -506,6 +571,8 @@ config USB_SERIAL_HISI
 	  To compile this driver as a module, choose M here: the
 	  module will be called hisi usb serial.  If unsure, choose N.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_QCAUX
 	tristate "USB Qualcomm Auxiliary Serial Port Driver"
 	help
@@ -536,6 +603,7 @@ config USB_SERIAL_SPCP8X5
 	  To compile this driver as a module, choose M here: the
 	  module will be called spcp8x5.
 
+<<<<<<< HEAD
 config USB_SERIAL_HP4X
         tristate "USB HP4x Calculators support"
         help
@@ -544,6 +612,8 @@ config USB_SERIAL_HP4X
           To compile this driver as a module, choose M here: the
           module will be called hp4x.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_SAFE
 	tristate "USB Safe Serial (Encapsulated) Driver"
 
@@ -551,6 +621,7 @@ config USB_SERIAL_SAFE_PADDED
 	bool "USB Secure Encapsulated Driver - Padded"
 	depends on USB_SERIAL_SAFE
 
+<<<<<<< HEAD
 config USB_SERIAL_SIEMENS_MPI
 	tristate "USB Siemens MPI driver"
 	help
@@ -559,6 +630,8 @@ config USB_SERIAL_SIEMENS_MPI
 	  To compile this driver as a module, choose M here: the
 	  module will be called siemens_mpi.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_SIERRAWIRELESS
 	tristate "USB Sierra Wireless Driver"
 	help
@@ -601,10 +674,17 @@ config USB_SERIAL_CYBERJACK
 	  If unsure, say N.
 
 config USB_SERIAL_XIRCOM
+<<<<<<< HEAD
 	tristate "USB Xircom / Entregra Single Port Serial Driver"
 	select USB_EZUSB_FX2
 	help
 	  Say Y here if you want to use a Xircom or Entregra single port USB to
+=======
+	tristate "USB Xircom / Entrega Single Port Serial Driver"
+	select USB_EZUSB_FX2
+	help
+	  Say Y here if you want to use a Xircom or Entrega single port USB to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  serial converter device.  This driver makes use of firmware
 	  developed from scratch by Brian Warner.
 
@@ -650,6 +730,7 @@ config USB_SERIAL_OPTICON
 	  To compile this driver as a module, choose M here: the
 	  module will be called opticon.
 
+<<<<<<< HEAD
 config USB_SERIAL_VIVOPAY_SERIAL
         tristate "USB ViVOpay serial interface driver"
         help
@@ -658,6 +739,8 @@ config USB_SERIAL_VIVOPAY_SERIAL
           To compile this driver as a module, choose M here: the
           module will be called vivopay-serial.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_XSENS_MT
 	tristate "Xsens motion tracker serial interface driver"
 	help
@@ -670,6 +753,7 @@ config USB_SERIAL_XSENS_MT
 	  To compile this driver as a module, choose M here: the
 	  module will be called xsens_mt.
 
+<<<<<<< HEAD
 config USB_SERIAL_ZIO
 	tristate "ZIO Motherboard USB serial interface driver"
 	help
@@ -678,6 +762,8 @@ config USB_SERIAL_ZIO
 	  To compile this driver as a module, choose M here: the
 	  module will be called zio.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_WISHBONE
 	tristate "USB-Wishbone adapter interface driver"
 	help
@@ -695,6 +781,7 @@ config USB_SERIAL_WISHBONE
 	  To compile this driver as a module, choose M here: the
 	  module will be called wishbone-serial.
 
+<<<<<<< HEAD
 config USB_SERIAL_ZTE
 	tristate "ZTE USB serial driver"
 	help
@@ -703,6 +790,8 @@ config USB_SERIAL_ZTE
 	  To compile this driver as a module, choose M here: the
 	  module will be called zte.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config USB_SERIAL_SSU100
 	tristate "USB Quatech SSU-100 Single Port Serial Driver"
 	help

@@ -56,8 +56,11 @@
 #include "pxa2xx-ac97.h"
 #include "../codecs/wm9713.h"
 
+<<<<<<< HEAD
 #define ARRAY_AND_SIZE(x)	(x), ARRAY_SIZE(x)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AC97_GPIO_PULL		0x58
 
 /* Use GPIO8 for rear speaker amplifier */
@@ -83,8 +86,17 @@ static int rear_amp_power(struct snd_soc_codec *codec, int power)
 static int rear_amp_event(struct snd_soc_dapm_widget *widget,
 			  struct snd_kcontrol *kctl, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = widget->codec;
 
+=======
+	struct snd_soc_card *card = widget->dapm->card;
+	struct snd_soc_pcm_runtime *rtd;
+	struct snd_soc_codec *codec;
+
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[0].name);
+	codec = rtd->codec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rear_amp_power(codec, SND_SOC_DAPM_EVENT_ON(event));
 }
 
@@ -129,6 +141,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 static int mioa701_wm9713_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 	unsigned short reg;
 
@@ -151,6 +164,14 @@ static int mioa701_wm9713_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_enable_pin(dapm, "Front Mic");
 	snd_soc_dapm_enable_pin(dapm, "GSM Line In");
 	snd_soc_dapm_enable_pin(dapm, "GSM Line Out");
+=======
+
+	/* Prepare GPIO8 for rear speaker amplifier */
+	snd_soc_update_bits(codec, AC97_GPIO_CFG, 0x100, 0x100);
+
+	/* Prepare MIC input */
+	snd_soc_update_bits(codec, AC97_3D_CONTROL, 0xc000, 0xc000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -184,6 +205,14 @@ static struct snd_soc_card mioa701 = {
 	.owner = THIS_MODULE,
 	.dai_link = mioa701_dai,
 	.num_links = ARRAY_SIZE(mioa701_dai),
+<<<<<<< HEAD
+=======
+
+	.dapm_widgets = mioa701_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(mioa701_dapm_widgets),
+	.dapm_routes = audio_map,
+	.num_dapm_routes = ARRAY_SIZE(audio_map),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int mioa701_wm9713_probe(struct platform_device *pdev)
@@ -194,7 +223,11 @@ static int mioa701_wm9713_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	mioa701.dev = &pdev->dev;
+<<<<<<< HEAD
 	rc =  snd_soc_register_card(&mioa701);
+=======
+	rc = devm_snd_soc_register_card(&pdev->dev, &mioa701);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rc)
 		dev_warn(&pdev->dev, "Be warned that incorrect mixers/muxes setup will"
 			 "lead to overheating and possible destruction of your device."
@@ -202,6 +235,7 @@ static int mioa701_wm9713_probe(struct platform_device *pdev)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int mioa701_wm9713_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -216,6 +250,13 @@ static struct platform_driver mioa701_wm9713_driver = {
 	.driver		= {
 		.name		= "mioa701-wm9713",
 		.owner		= THIS_MODULE,
+=======
+static struct platform_driver mioa701_wm9713_driver = {
+	.probe		= mioa701_wm9713_probe,
+	.driver		= {
+		.name		= "mioa701-wm9713",
+		.pm     = &snd_soc_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -225,3 +266,7 @@ module_platform_driver(mioa701_wm9713_driver);
 MODULE_AUTHOR("Robert Jarzmik (rjarzmik@free.fr)");
 MODULE_DESCRIPTION("ALSA SoC WM9713 MIO A701");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:mioa701-wm9713");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

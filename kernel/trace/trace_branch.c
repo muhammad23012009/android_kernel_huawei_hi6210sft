@@ -7,7 +7,10 @@
 #include <linux/seq_file.h>
 #include <linux/spinlock.h>
 #include <linux/irqflags.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/uaccess.h>
 #include <linux/module.h>
 #include <linux/ftrace.h>
@@ -30,16 +33,29 @@ static struct trace_array *branch_tracer;
 static void
 probe_likely_condition(struct ftrace_branch_data *f, int val, int expect)
 {
+<<<<<<< HEAD
 	struct ftrace_event_call *call = &event_branch;
+=======
+	struct trace_event_call *call = &event_branch;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct trace_array *tr = branch_tracer;
 	struct trace_array_cpu *data;
 	struct ring_buffer_event *event;
 	struct trace_branch *entry;
 	struct ring_buffer *buffer;
 	unsigned long flags;
+<<<<<<< HEAD
 	int cpu, pc;
 	const char *p;
 
+=======
+	int pc;
+	const char *p;
+
+	if (current->trace_recursion & TRACE_BRANCH_BIT)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * I would love to save just the ftrace_likely_data pointer, but
 	 * this code can also be used by modules. Ugly things can happen
@@ -50,10 +66,17 @@ probe_likely_condition(struct ftrace_branch_data *f, int val, int expect)
 	if (unlikely(!tr))
 		return;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	cpu = raw_smp_processor_id();
 	data = per_cpu_ptr(tr->trace_buffer.data, cpu);
 	if (atomic_inc_return(&data->disabled) != 1)
+=======
+	raw_local_irq_save(flags);
+	current->trace_recursion |= TRACE_BRANCH_BIT;
+	data = this_cpu_ptr(tr->trace_buffer.data);
+	if (atomic_read(&data->disabled))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 
 	pc = preempt_count();
@@ -78,12 +101,21 @@ probe_likely_condition(struct ftrace_branch_data *f, int val, int expect)
 	entry->line = f->line;
 	entry->correct = val == expect;
 
+<<<<<<< HEAD
 	if (!filter_check_discard(call, entry, buffer, event))
 		__buffer_unlock_commit(buffer, event);
 
  out:
 	atomic_dec(&data->disabled);
 	local_irq_restore(flags);
+=======
+	if (!call_filter_check_discard(call, entry, buffer, event))
+		__buffer_unlock_commit(buffer, event);
+
+ out:
+	current->trace_recursion &= ~TRACE_BRANCH_BIT;
+	raw_local_irq_restore(flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline
@@ -123,6 +155,7 @@ void disable_branch_tracing(void)
 	mutex_unlock(&branch_tracing_mutex);
 }
 
+<<<<<<< HEAD
 static void start_branch_trace(struct trace_array *tr)
 {
 	enable_branch_tracing(tr);
@@ -137,11 +170,20 @@ static int branch_trace_init(struct trace_array *tr)
 {
 	start_branch_trace(tr);
 	return 0;
+=======
+static int branch_trace_init(struct trace_array *tr)
+{
+	return enable_branch_tracing(tr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void branch_trace_reset(struct trace_array *tr)
 {
+<<<<<<< HEAD
 	stop_branch_trace(tr);
+=======
+	disable_branch_tracing();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static enum print_line_t trace_branch_print(struct trace_iterator *iter,
@@ -151,6 +193,7 @@ static enum print_line_t trace_branch_print(struct trace_iterator *iter,
 
 	trace_assign_type(field, iter->ent);
 
+<<<<<<< HEAD
 	if (trace_seq_printf(&iter->seq, "[%s] %s:%s:%d\n",
 			     field->correct ? "  ok  " : " MISS ",
 			     field->func,
@@ -159,14 +202,29 @@ static enum print_line_t trace_branch_print(struct trace_iterator *iter,
 		return TRACE_TYPE_PARTIAL_LINE;
 
 	return TRACE_TYPE_HANDLED;
+=======
+	trace_seq_printf(&iter->seq, "[%s] %s:%s:%d\n",
+			 field->correct ? "  ok  " : " MISS ",
+			 field->func,
+			 field->file,
+			 field->line);
+
+	return trace_handle_return(&iter->seq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void branch_print_header(struct seq_file *s)
 {
 	seq_puts(s, "#           TASK-PID    CPU#    TIMESTAMP  CORRECT"
+<<<<<<< HEAD
 		"  FUNC:FILE:LINE\n");
 	seq_puts(s, "#              | |       |          |         |   "
 		"    |\n");
+=======
+		    "  FUNC:FILE:LINE\n"
+		    "#              | |       |          |         |   "
+		    "    |\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct trace_event_functions trace_branch_funcs = {
@@ -193,7 +251,11 @@ __init static int init_branch_tracer(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = register_ftrace_event(&trace_branch_event);
+=======
+	ret = register_trace_event(&trace_branch_event);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ret) {
 		printk(KERN_WARNING "Warning: could not register "
 				    "branch events\n");
@@ -233,12 +295,21 @@ extern unsigned long __stop_annotated_branch_profile[];
 
 static int annotated_branch_stat_headers(struct seq_file *m)
 {
+<<<<<<< HEAD
 	seq_printf(m, " correct incorrect  %% ");
 	seq_printf(m, "       Function                "
 			      "  File              Line\n"
 			      " ------- ---------  - "
 			      "       --------                "
 			      "  ----              ----\n");
+=======
+	seq_puts(m, " correct incorrect  % "
+		    "       Function                "
+		    "  File              Line\n"
+		    " ------- ---------  - "
+		    "       --------                "
+		    "  ----              ----\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -274,7 +345,11 @@ static int branch_stat_show(struct seq_file *m, void *v)
 
 	seq_printf(m, "%8lu %8lu ",  p->correct, p->incorrect);
 	if (percent < 0)
+<<<<<<< HEAD
 		seq_printf(m, "  X ");
+=======
+		seq_puts(m, "  X ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		seq_printf(m, "%3ld ", percent);
 	seq_printf(m, "%-30.30s %-20.20s %d\n", p->func, f, p->line);
@@ -362,12 +437,21 @@ extern unsigned long __stop_branch_profile[];
 
 static int all_branch_stat_headers(struct seq_file *m)
 {
+<<<<<<< HEAD
 	seq_printf(m, "   miss      hit    %% ");
 	seq_printf(m, "       Function                "
 			      "  File              Line\n"
 			      " ------- ---------  - "
 			      "       --------                "
 			      "  ----              ----\n");
+=======
+	seq_puts(m, "   miss      hit    % "
+		    "       Function                "
+		    "  File              Line\n"
+		    " ------- ---------  - "
+		    "       --------                "
+		    "  ----              ----\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

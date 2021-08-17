@@ -17,11 +17,19 @@
 #include <linux/mfd/core.h>
 #include <linux/mfd/max8907.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_device.h>
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 static struct mfd_cell max8907_cells[] = {
+=======
+static const struct mfd_cell max8907_cells[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name = "max8907-regulator", },
 	{ .name = "max8907-rtc", },
 };
@@ -304,7 +312,11 @@ static int max8907_i2c_remove(struct i2c_client *i2c)
 }
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id max8907_of_match[] = {
+=======
+static const struct of_device_id max8907_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "maxim,max8907" },
 	{ },
 };
@@ -320,7 +332,10 @@ MODULE_DEVICE_TABLE(i2c, max8907_i2c_id);
 static struct i2c_driver max8907_i2c_driver = {
 	.driver = {
 		.name = "max8907",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_match_ptr(max8907_of_match),
 	},
 	.probe = max8907_i2c_probe,

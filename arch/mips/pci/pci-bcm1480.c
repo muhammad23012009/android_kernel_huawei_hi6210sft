@@ -39,6 +39,10 @@
 #include <linux/mm.h>
 #include <linux/console.h>
 #include <linux/tty.h>
+<<<<<<< HEAD
+=======
+#include <linux/vt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/sibyte/bcm1480_regs.h>
 #include <asm/sibyte/bcm1480_scd.h>
@@ -172,8 +176,13 @@ static int bcm1480_pcibios_write(struct pci_bus *bus, unsigned int devfn,
 }
 
 struct pci_ops bcm1480_pci_ops = {
+<<<<<<< HEAD
 	bcm1480_pcibios_read,
 	bcm1480_pcibios_write,
+=======
+	.read	= bcm1480_pcibios_read,
+	.write	= bcm1480_pcibios_write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource bcm1480_mem_resource = {
@@ -257,7 +266,13 @@ static int __init bcm1480_pcibios_init(void)
 	register_pci_controller(&bcm1480_controller);
 
 #ifdef CONFIG_VGA_CONSOLE
+<<<<<<< HEAD
 	take_over_console(&vga_con, 0, MAX_NR_CONSOLES-1, 1);
+=======
+	console_lock();
+	do_take_over_console(&vga_con, 0, MAX_NR_CONSOLES-1, 1);
+	console_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	return 0;
 }

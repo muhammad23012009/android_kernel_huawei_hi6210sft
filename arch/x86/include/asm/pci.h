@@ -5,7 +5,11 @@
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/x86_init.h>
 
@@ -15,28 +19,48 @@ struct pci_sysdata {
 	int		domain;		/* PCI domain */
 	int		node;		/* NUMA node */
 #ifdef CONFIG_ACPI
+<<<<<<< HEAD
 	void		*acpi;		/* ACPI-specific data */
+=======
+	struct acpi_device *companion;	/* ACPI companion device */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #ifdef CONFIG_X86_64
 	void		*iommu;		/* IOMMU private data */
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
+	void		*fwnode;	/* IRQ domain for MSI assignment */
+#endif
+#if IS_ENABLED(CONFIG_VMD)
+	bool vmd_domain;		/* True if in Intel VMD domain */
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern int pci_routeirq;
 extern int noioapicquirk;
 extern int noioapicreroute;
 
+<<<<<<< HEAD
 /* scan a bus after allocating a pci_sysdata for it */
 extern struct pci_bus *pci_scan_bus_on_node(int busno, struct pci_ops *ops,
 					    int node);
 extern struct pci_bus *pci_scan_bus_with_sysdata(int busno);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PCI
 
 #ifdef CONFIG_PCI_DOMAINS
 static inline int pci_domain_nr(struct pci_bus *bus)
 {
 	struct pci_sysdata *sd = bus->sysdata;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return sd->domain;
 }
 
@@ -46,6 +70,31 @@ static inline int pci_proc_domain(struct pci_bus *bus)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
+static inline void *_pci_root_bus_fwnode(struct pci_bus *bus)
+{
+	struct pci_sysdata *sd = bus->sysdata;
+
+	return sd->fwnode;
+}
+
+#define pci_root_bus_fwnode	_pci_root_bus_fwnode
+#endif
+
+static inline bool is_vmd(struct pci_bus *bus)
+{
+#if IS_ENABLED(CONFIG_VMD)
+	struct pci_sysdata *sd = bus->sysdata;
+
+	return sd->vmd_domain;
+#else
+	return false;
+#endif
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Can be used to override the logic in pci_scan_bus for skipping
    already-configured bus numbers - to be used for buggy BIOSes
    or architectures with incomplete PCI setup by the loader */
@@ -70,10 +119,16 @@ extern unsigned long pci_mem_start;
 
 extern int pcibios_enabled;
 void pcibios_config_init(void);
+<<<<<<< HEAD
 struct pci_bus *pcibios_scan_root(int bus);
 
 void pcibios_set_master(struct pci_dev *dev);
 void pcibios_penalize_isa_irq(int irq, int active);
+=======
+void pcibios_scan_root(int bus);
+
+void pcibios_set_master(struct pci_dev *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct irq_routing_table *pcibios_get_irq_routing_table(void);
 int pcibios_set_irq_routing(struct pci_dev *dev, int pin, int irq);
 
@@ -86,6 +141,7 @@ extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 
 #ifdef CONFIG_PCI
 extern void early_quirks(void);
+<<<<<<< HEAD
 static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 					enum pci_dma_burst_strategy *strat,
 					unsigned long *strategy_parameter)
@@ -93,6 +149,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 	*strat = PCI_DMA_BURST_INFINITY;
 	*strategy_parameter = ~0UL;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline void early_quirks(void) { }
 #endif
@@ -100,6 +158,7 @@ static inline void early_quirks(void) { }
 extern void pci_iommu_alloc(void);
 
 #ifdef CONFIG_PCI_MSI
+<<<<<<< HEAD
 /* MSI arch specific hooks */
 static inline int x86_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 {
@@ -123,10 +182,13 @@ static inline void x86_restore_msi_irqs(struct pci_dev *dev, int irq)
 #define arch_teardown_msi_irqs x86_teardown_msi_irqs
 #define arch_teardown_msi_irq x86_teardown_msi_irq
 #define arch_restore_msi_irqs x86_restore_msi_irqs
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* implemented in arch/x86/kernel/apic/io_apic. */
 struct msi_desc;
 int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
 void native_teardown_msi_irq(unsigned int irq);
+<<<<<<< HEAD
 void native_restore_msi_irqs(struct pci_dev *dev, int irq);
 int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
 		  unsigned int irq_base, unsigned int irq_offset);
@@ -140,6 +202,12 @@ void default_restore_msi_irqs(struct pci_dev *dev, int irq);
 #define native_teardown_msi_irq		NULL
 #define default_teardown_msi_irqs	NULL
 #define default_restore_msi_irqs	NULL
+=======
+void native_restore_msi_irqs(struct pci_dev *dev);
+#else
+#define native_setup_msi_irqs		NULL
+#define native_teardown_msi_irq		NULL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define PCI_DMA_BUS_IS_PHYS (dma_ops->is_phys)
@@ -150,12 +218,17 @@ void default_restore_msi_irqs(struct pci_dev *dev, int irq);
 #include <asm/pci_64.h>
 #endif
 
+<<<<<<< HEAD
 /* implement the pci_ DMA API in terms of the generic device dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
 /* generic pci stuff */
 #include <asm-generic/pci.h>
 #define PCIBIOS_MAX_MEM_32 0xffffffff
+=======
+/* generic pci stuff */
+#include <asm-generic/pci.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_NUMA
 /* Returns the node based on pci bus */

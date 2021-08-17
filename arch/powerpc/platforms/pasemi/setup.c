@@ -59,10 +59,17 @@ struct mce_regs {
 
 static struct mce_regs mce_regs[MAX_MCE_REGS];
 static int num_mce_regs;
+<<<<<<< HEAD
 static int nmi_virq = NO_IRQ;
 
 
 static void pas_restart(char *cmd)
+=======
+static int nmi_virq = 0;
+
+
+static void __noreturn pas_restart(char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* Need to put others cpu in hold loop so they're not sleeping */
 	smp_send_stop();
@@ -105,7 +112,11 @@ static void pas_take_timebase(void)
 	arch_spin_unlock(&timebase_lock);
 }
 
+<<<<<<< HEAD
 struct smp_ops_t pas_smp_ops = {
+=======
+static struct smp_ops_t pas_smp_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe		= smp_mpic_probe,
 	.message_pass	= smp_mpic_message_pass,
 	.kick_cpu	= smp_generic_kick_cpu,
@@ -115,7 +126,11 @@ struct smp_ops_t pas_smp_ops = {
 };
 #endif /* CONFIG_SMP */
 
+<<<<<<< HEAD
 void __init pas_setup_arch(void)
+=======
+static void __init pas_setup_arch(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef CONFIG_SMP
 	/* Setup SMP callback */
@@ -264,7 +279,11 @@ static int pas_machine_check_handler(struct pt_regs *regs)
 	srr0 = regs->nip;
 	srr1 = regs->msr;
 
+<<<<<<< HEAD
 	if (nmi_virq != NO_IRQ && mpic_get_mcirq() == nmi_virq) {
+=======
+	if (nmi_virq && mpic_get_mcirq() == nmi_virq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "NMI delivered\n");
 		debugger(regs);
 		mpic_end_irq(irq_get_irq_data(nmi_virq));
@@ -339,11 +358,14 @@ out:
 	return !!(srr1 & 0x2);
 }
 
+<<<<<<< HEAD
 static void __init pas_init_early(void)
 {
 	iommu_init_early_pasemi();
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PCMCIA
 static int pcmcia_notify(struct notifier_block *nb, unsigned long action,
 			 void *data)
@@ -393,7 +415,11 @@ static inline void pasemi_pcmcia_init(void)
 #endif
 
 
+<<<<<<< HEAD
 static struct of_device_id pasemi_bus_ids[] = {
+=======
+static const struct of_device_id pasemi_bus_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Unfortunately needed for legacy firmwares */
 	{ .type = "localbus", },
 	{ .type = "sdc", },
@@ -420,6 +446,7 @@ machine_device_initcall(pasemi, pasemi_publish_devices);
  */
 static int __init pas_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "PA6T-1682M") &&
@@ -429,6 +456,13 @@ static int __init pas_probe(void)
 	hpte_init_native();
 
 	alloc_iobmap_l2();
+=======
+	if (!of_machine_is_compatible("PA6T-1682M") &&
+	    !of_machine_is_compatible("pasemi,pwrficient"))
+		return 0;
+
+	iommu_init_early_pasemi();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 1;
 }
@@ -437,7 +471,10 @@ define_machine(pasemi) {
 	.name			= "PA Semi PWRficient",
 	.probe			= pas_probe,
 	.setup_arch		= pas_setup_arch,
+<<<<<<< HEAD
 	.init_early		= pas_init_early,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_IRQ		= pas_init_IRQ,
 	.get_irq		= mpic_get_irq,
 	.restart		= pas_restart,

@@ -25,13 +25,22 @@
 #include <media/v4l2-device.h>
 
 #include "media-dev.h"
+<<<<<<< HEAD
+=======
+#include "fimc-isp-video.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "fimc-is-command.h"
 #include "fimc-is-param.h"
 #include "fimc-is-regs.h"
 #include "fimc-is.h"
 
+<<<<<<< HEAD
 static int debug;
 module_param_named(debug_isp, debug, int, S_IRUGO | S_IWUSR);
+=======
+int fimc_isp_debug;
+module_param_named(debug_isp, fimc_isp_debug, int, S_IRUGO | S_IWUSR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct fimc_fmt fimc_isp_formats[FIMC_ISP_NUM_FORMATS] = {
 	{
@@ -40,21 +49,33 @@ static const struct fimc_fmt fimc_isp_formats[FIMC_ISP_NUM_FORMATS] = {
 		.depth		= { 8 },
 		.color		= FIMC_FMT_RAW8,
 		.memplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_SGRBG8_1X8,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_SGRBG8_1X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}, {
 		.name		= "RAW10 (GRBG)",
 		.fourcc		= V4L2_PIX_FMT_SGRBG10,
 		.depth		= { 10 },
 		.color		= FIMC_FMT_RAW10,
 		.memplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_SGRBG10_1X10,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_SGRBG10_1X10,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}, {
 		.name		= "RAW12 (GRBG)",
 		.fourcc		= V4L2_PIX_FMT_SGRBG12,
 		.depth		= { 12 },
 		.color		= FIMC_FMT_RAW12,
 		.memplanes	= 1,
+<<<<<<< HEAD
 		.mbus_code	= V4L2_MBUS_FMT_SGRBG12_1X12,
+=======
+		.mbus_code	= MEDIA_BUS_FMT_SGRBG12_1X12,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -93,8 +114,13 @@ void fimc_isp_irq_handler(struct fimc_is *is)
 	is->i2h_cmd.args[1] = mcuctl_read(is, MCUCTL_REG_ISSR(21));
 
 	fimc_is_fw_clear_irq1(is, FIMC_IS_INT_FRAME_DONE_ISP);
+<<<<<<< HEAD
 
 	/* TODO: Complete ISP DMA interrupt handler */
+=======
+	fimc_isp_video_irq_handler(is);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wake_up(&is->irq_queue);
 }
 
@@ -111,7 +137,11 @@ static const struct media_entity_operations fimc_is_subdev_media_ops = {
 };
 
 static int fimc_is_subdev_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				struct v4l2_subdev_fh *fh,
+=======
+				struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct v4l2_subdev_mbus_code_enum *code)
 {
 	const struct fimc_fmt *fmt;
@@ -124,6 +154,7 @@ static int fimc_is_subdev_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int fimc_isp_subdev_get_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
 				   struct v4l2_subdev_format *fmt)
 {
@@ -135,12 +166,23 @@ static int fimc_isp_subdev_get_fmt(struct v4l2_subdev *sd,
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 		mf = v4l2_subdev_get_try_format(fh, fmt->pad);
 		fmt->format = *mf;
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+				   struct v4l2_subdev_format *fmt)
+{
+	struct fimc_isp *isp = v4l2_get_subdevdata(sd);
+	struct v4l2_mbus_framefmt *mf = &fmt->format;
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+		*mf = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
 	mf->colorspace = V4L2_COLORSPACE_SRGB;
 
 	mutex_lock(&isp->subdev_lock);
+<<<<<<< HEAD
 	__is_get_frame_size(is, &cur_fmt);
 
 	if (fmt->pad == FIMC_ISP_SD_PAD_SINK) {
@@ -153,37 +195,91 @@ static int fimc_isp_subdev_get_fmt(struct v4l2_subdev *sd,
 		mf->width = cur_fmt.width;
 		mf->height = cur_fmt.height;
 		mf->code = V4L2_MBUS_FMT_YUV10_1X30;
+=======
+
+	if (fmt->pad == FIMC_ISP_SD_PAD_SINK) {
+		/* ISP OTF input image format */
+		*mf = isp->sink_fmt;
+	} else {
+		/* ISP OTF output image format */
+		*mf = isp->src_fmt;
+
+		if (fmt->pad == FIMC_ISP_SD_PAD_SRC_FIFO) {
+			mf->colorspace = V4L2_COLORSPACE_JPEG;
+			mf->code = MEDIA_BUS_FMT_YUV10_1X30;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_unlock(&isp->subdev_lock);
 
+<<<<<<< HEAD
 	v4l2_dbg(1, debug, sd, "%s: pad%d: fmt: 0x%x, %dx%d\n",
 		 __func__, fmt->pad, mf->code, mf->width, mf->height);
+=======
+	isp_dbg(1, sd, "%s: pad%d: fmt: 0x%x, %dx%d\n", __func__,
+		fmt->pad, mf->code, mf->width, mf->height);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static void __isp_subdev_try_format(struct fimc_isp *isp,
+<<<<<<< HEAD
 				   struct v4l2_subdev_format *fmt)
 {
 	struct v4l2_mbus_framefmt *mf = &fmt->format;
+=======
+				    struct v4l2_subdev_pad_config *cfg,
+				    struct v4l2_subdev_format *fmt)
+{
+	struct v4l2_mbus_framefmt *mf = &fmt->format;
+	struct v4l2_mbus_framefmt *format;
+
+	mf->colorspace = V4L2_COLORSPACE_SRGB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fmt->pad == FIMC_ISP_SD_PAD_SINK) {
 		v4l_bound_align_image(&mf->width, FIMC_ISP_SINK_WIDTH_MIN,
 				FIMC_ISP_SINK_WIDTH_MAX, 0,
 				&mf->height, FIMC_ISP_SINK_HEIGHT_MIN,
 				FIMC_ISP_SINK_HEIGHT_MAX, 0, 0);
+<<<<<<< HEAD
 		isp->subdev_fmt = *mf;
 	} else {
 		/* Allow changing format only on sink pad */
 		mf->width = isp->subdev_fmt.width - FIMC_ISP_CAC_MARGIN_WIDTH;
 		mf->height = isp->subdev_fmt.height - FIMC_ISP_CAC_MARGIN_HEIGHT;
 		mf->code = isp->subdev_fmt.code;
+=======
+		mf->code = MEDIA_BUS_FMT_SGRBG10_1X10;
+	} else {
+		if (fmt->which == V4L2_SUBDEV_FORMAT_TRY)
+			format = v4l2_subdev_get_try_format(&isp->subdev, cfg,
+						FIMC_ISP_SD_PAD_SINK);
+		else
+			format = &isp->sink_fmt;
+
+		/* Allow changing format only on sink pad */
+		mf->width = format->width - FIMC_ISP_CAC_MARGIN_WIDTH;
+		mf->height = format->height - FIMC_ISP_CAC_MARGIN_HEIGHT;
+
+		if (fmt->pad == FIMC_ISP_SD_PAD_SRC_FIFO) {
+			mf->code = MEDIA_BUS_FMT_YUV10_1X30;
+			mf->colorspace = V4L2_COLORSPACE_JPEG;
+		} else {
+			mf->code = format->code;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 static int fimc_isp_subdev_set_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct v4l2_subdev_format *fmt)
 {
 	struct fimc_isp *isp = v4l2_get_subdevdata(sd);
@@ -191,6 +287,7 @@ static int fimc_isp_subdev_set_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *mf = &fmt->format;
 	int ret = 0;
 
+<<<<<<< HEAD
 	v4l2_dbg(1, debug, sd, "%s: pad%d: code: 0x%x, %dx%d\n",
 		 __func__, fmt->pad, mf->code, mf->width, mf->height);
 
@@ -212,6 +309,52 @@ static int fimc_isp_subdev_set_fmt(struct v4l2_subdev *sd,
 		ret = -EBUSY;
 	mutex_unlock(&isp->subdev_lock);
 
+=======
+	isp_dbg(1, sd, "%s: pad%d: code: 0x%x, %dx%d\n",
+		 __func__, fmt->pad, mf->code, mf->width, mf->height);
+
+	mutex_lock(&isp->subdev_lock);
+	__isp_subdev_try_format(isp, cfg, fmt);
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+		mf = v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+		*mf = fmt->format;
+
+		/* Propagate format to the source pads */
+		if (fmt->pad == FIMC_ISP_SD_PAD_SINK) {
+			struct v4l2_subdev_format format = *fmt;
+			unsigned int pad;
+
+			for (pad = FIMC_ISP_SD_PAD_SRC_FIFO;
+					pad < FIMC_ISP_SD_PADS_NUM; pad++) {
+				format.pad = pad;
+				__isp_subdev_try_format(isp, cfg, &format);
+				mf = v4l2_subdev_get_try_format(sd, cfg, pad);
+				*mf = format.format;
+			}
+		}
+	} else {
+		if (sd->entity.stream_count == 0) {
+			if (fmt->pad == FIMC_ISP_SD_PAD_SINK) {
+				struct v4l2_subdev_format format = *fmt;
+
+				isp->sink_fmt = *mf;
+
+				format.pad = FIMC_ISP_SD_PAD_SRC_DMA;
+				__isp_subdev_try_format(isp, cfg, &format);
+
+				isp->src_fmt = format.format;
+				__is_set_frame_size(is, &isp->src_fmt);
+			} else {
+				isp->src_fmt = *mf;
+			}
+		} else {
+			ret = -EBUSY;
+		}
+	}
+
+	mutex_unlock(&isp->subdev_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -221,7 +364,11 @@ static int fimc_isp_subdev_s_stream(struct v4l2_subdev *sd, int on)
 	struct fimc_is *is = fimc_isp_to_is(isp);
 	int ret;
 
+<<<<<<< HEAD
 	v4l2_dbg(1, debug, sd, "%s: on: %d\n", __func__, on);
+=======
+	isp_dbg(1, sd, "%s: on: %d\n", __func__, on);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!test_bit(IS_ST_INIT_DONE, &is->state))
 		return -EBUSY;
@@ -235,8 +382,13 @@ static int fimc_isp_subdev_s_stream(struct v4l2_subdev *sd, int on)
 				return ret;
 		}
 
+<<<<<<< HEAD
 		v4l2_dbg(1, debug, sd, "changing mode to %d\n",
 						is->config_index);
+=======
+		isp_dbg(1, sd, "changing mode to %d\n", is->config_index);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = fimc_is_itf_mode_change(is);
 		if (ret)
 			return -EINVAL;
@@ -274,8 +426,15 @@ static int fimc_isp_subdev_s_power(struct v4l2_subdev *sd, int on)
 
 	if (on) {
 		ret = pm_runtime_get_sync(&is->pdev->dev);
+<<<<<<< HEAD
 		if (ret < 0)
 			return ret;
+=======
+		if (ret < 0) {
+			pm_runtime_put(&is->pdev->dev);
+			return ret;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_bit(IS_ST_PWR_ON, &is->state);
 
 		ret = fimc_is_start_firmware(is);
@@ -317,8 +476,13 @@ static int fimc_isp_subdev_s_power(struct v4l2_subdev *sd, int on)
 		clear_bit(IS_ST_PWR_ON, &is->state);
 		clear_bit(IS_ST_INIT_DONE, &is->state);
 		is->state = 0;
+<<<<<<< HEAD
 		is->config[is->config_index].p_region_index1 = 0;
 		is->config[is->config_index].p_region_index2 = 0;
+=======
+		is->config[is->config_index].p_region_index[0] = 0;
+		is->config[is->config_index].p_region_index[1] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_bit(IS_ST_IDLE, &is->state);
 		wmb();
 	}
@@ -332,7 +496,11 @@ static int fimc_isp_subdev_open(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt fmt;
 	struct v4l2_mbus_framefmt *format;
 
+<<<<<<< HEAD
 	format = v4l2_subdev_get_try_format(fh, FIMC_ISP_SD_PAD_SINK);
+=======
+	format = v4l2_subdev_get_try_format(sd, fh->pad, FIMC_ISP_SD_PAD_SINK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fmt.colorspace = V4L2_COLORSPACE_SRGB;
 	fmt.code = fimc_isp_formats[0].mbus_code;
@@ -341,18 +509,56 @@ static int fimc_isp_subdev_open(struct v4l2_subdev *sd,
 	fmt.field = V4L2_FIELD_NONE;
 	*format = fmt;
 
+<<<<<<< HEAD
 	format = v4l2_subdev_get_try_format(fh, FIMC_ISP_SD_PAD_SRC_FIFO);
+=======
+	format = v4l2_subdev_get_try_format(sd, fh->pad, FIMC_ISP_SD_PAD_SRC_FIFO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fmt.width = DEFAULT_PREVIEW_STILL_WIDTH;
 	fmt.height = DEFAULT_PREVIEW_STILL_HEIGHT;
 	*format = fmt;
 
+<<<<<<< HEAD
 	format = v4l2_subdev_get_try_format(fh, FIMC_ISP_SD_PAD_SRC_DMA);
+=======
+	format = v4l2_subdev_get_try_format(sd, fh->pad, FIMC_ISP_SD_PAD_SRC_DMA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*format = fmt;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct v4l2_subdev_internal_ops fimc_is_subdev_internal_ops = {
+=======
+static int fimc_isp_subdev_registered(struct v4l2_subdev *sd)
+{
+	struct fimc_isp *isp = v4l2_get_subdevdata(sd);
+	int ret;
+
+	/* Use pipeline object allocated by the media device. */
+	isp->video_capture.ve.pipe = v4l2_get_subdev_hostdata(sd);
+
+	ret = fimc_isp_video_device_register(isp, sd->v4l2_dev,
+			V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+	if (ret < 0)
+		isp->video_capture.ve.pipe = NULL;
+
+	return ret;
+}
+
+static void fimc_isp_subdev_unregistered(struct v4l2_subdev *sd)
+{
+	struct fimc_isp *isp = v4l2_get_subdevdata(sd);
+
+	fimc_isp_video_device_unregister(isp,
+			V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+}
+
+static const struct v4l2_subdev_internal_ops fimc_is_subdev_internal_ops = {
+	.registered = fimc_isp_subdev_registered,
+	.unregistered = fimc_isp_subdev_unregistered,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = fimc_isp_subdev_open,
 };
 
@@ -475,7 +681,11 @@ static int __ctrl_set_metering(struct fimc_is *is, unsigned int value)
 		break;
 	default:
 		return -EINVAL;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__is_set_isp_metering(is, IS_METERING_CONFIG_CMD, val);
 	return 0;
@@ -609,6 +819,25 @@ static const struct v4l2_ctrl_ops fimc_isp_ctrl_ops = {
 	.s_ctrl	= fimc_is_s_ctrl,
 };
 
+<<<<<<< HEAD
+=======
+static void __isp_subdev_set_default_format(struct fimc_isp *isp)
+{
+	struct fimc_is *is = fimc_isp_to_is(isp);
+
+	isp->sink_fmt.width = DEFAULT_PREVIEW_STILL_WIDTH +
+				FIMC_ISP_CAC_MARGIN_WIDTH;
+	isp->sink_fmt.height = DEFAULT_PREVIEW_STILL_HEIGHT +
+				FIMC_ISP_CAC_MARGIN_HEIGHT;
+	isp->sink_fmt.code = MEDIA_BUS_FMT_SGRBG10_1X10;
+
+	isp->src_fmt.width = DEFAULT_PREVIEW_STILL_WIDTH;
+	isp->src_fmt.height = DEFAULT_PREVIEW_STILL_HEIGHT;
+	isp->src_fmt.code = MEDIA_BUS_FMT_SGRBG10_1X10;
+	__is_set_frame_size(is, &isp->src_fmt);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int fimc_isp_subdev_create(struct fimc_isp *isp)
 {
 	const struct v4l2_ctrl_ops *ops = &fimc_isp_ctrl_ops;
@@ -620,15 +849,29 @@ int fimc_isp_subdev_create(struct fimc_isp *isp)
 	mutex_init(&isp->subdev_lock);
 
 	v4l2_subdev_init(sd, &fimc_is_subdev_ops);
+<<<<<<< HEAD
+=======
+
+	sd->owner = THIS_MODULE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sd->grp_id = GRP_ID_FIMC_IS;
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	snprintf(sd->name, sizeof(sd->name), "FIMC-IS-ISP");
 
+<<<<<<< HEAD
 	isp->subdev_pads[FIMC_ISP_SD_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
 	isp->subdev_pads[FIMC_ISP_SD_PAD_SRC_FIFO].flags = MEDIA_PAD_FL_SOURCE;
 	isp->subdev_pads[FIMC_ISP_SD_PAD_SRC_DMA].flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_init(&sd->entity, FIMC_ISP_SD_PADS_NUM,
 				isp->subdev_pads, 0);
+=======
+	sd->entity.function = MEDIA_ENT_F_PROC_VIDEO_PIXEL_FORMATTER;
+	isp->subdev_pads[FIMC_ISP_SD_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
+	isp->subdev_pads[FIMC_ISP_SD_PAD_SRC_FIFO].flags = MEDIA_PAD_FL_SOURCE;
+	isp->subdev_pads[FIMC_ISP_SD_PAD_SRC_DMA].flags = MEDIA_PAD_FL_SOURCE;
+	ret = media_entity_pads_init(&sd->entity, FIMC_ISP_SD_PADS_NUM,
+				isp->subdev_pads);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -689,6 +932,11 @@ int fimc_isp_subdev_create(struct fimc_isp *isp)
 	sd->entity.ops = &fimc_is_subdev_media_ops;
 	v4l2_set_subdevdata(sd, isp);
 
+<<<<<<< HEAD
+=======
+	__isp_subdev_set_default_format(isp);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

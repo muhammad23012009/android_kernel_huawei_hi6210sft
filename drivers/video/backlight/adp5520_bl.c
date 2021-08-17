@@ -67,6 +67,10 @@ static int adp5520_bl_set(struct backlight_device *bl, int brightness)
 static int adp5520_bl_update_status(struct backlight_device *bl)
 {
 	int brightness = bl->props.brightness;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bl->props.power != FB_BLANK_UNBLANK)
 		brightness = 0;
 
@@ -297,7 +301,11 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	data->master = pdev->dev.parent;
+<<<<<<< HEAD
 	data->pdata = pdev->dev.platform_data;
+=======
+	data->pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (data->pdata  == NULL) {
 		dev_err(&pdev->dev, "missing platform data\n");
@@ -312,8 +320,14 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = ADP5020_MAX_BRIGHTNESS;
+<<<<<<< HEAD
 	bl = backlight_device_register(pdev->name, data->master, data,
 				       &adp5520_bl_ops, &props);
+=======
+	bl = devm_backlight_device_register(&pdev->dev, pdev->name,
+					data->master, data, &adp5520_bl_ops,
+					&props);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
 		return PTR_ERR(bl);
@@ -326,6 +340,7 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register sysfs\n");
+<<<<<<< HEAD
 		backlight_device_unregister(bl);
 	}
 
@@ -334,6 +349,24 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 	backlight_update_status(bl);
 
 	return ret;
+=======
+		return ret;
+	}
+
+	platform_set_drvdata(pdev, bl);
+	ret = adp5520_bl_setup(bl);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to setup\n");
+		if (data->pdata->en_ambl_sens)
+			sysfs_remove_group(&bl->dev.kobj,
+					&adp5520_bl_attr_group);
+		return ret;
+	}
+
+	backlight_update_status(bl);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int adp5520_bl_remove(struct platform_device *pdev)
@@ -347,8 +380,11 @@ static int adp5520_bl_remove(struct platform_device *pdev)
 		sysfs_remove_group(&bl->dev.kobj,
 				&adp5520_bl_attr_group);
 
+<<<<<<< HEAD
 	backlight_device_unregister(bl);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -375,7 +411,10 @@ static SIMPLE_DEV_PM_OPS(adp5520_bl_pm_ops, adp5520_bl_suspend,
 static struct platform_driver adp5520_bl_driver = {
 	.driver		= {
 		.name	= "adp5520-backlight",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &adp5520_bl_pm_ops,
 	},
 	.probe		= adp5520_bl_probe,

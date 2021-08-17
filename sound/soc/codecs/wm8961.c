@@ -194,7 +194,11 @@ static bool wm8961_readable(struct device *dev, unsigned int reg)
 static int wm8961_hp_event(struct snd_soc_dapm_widget *w,
 			   struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 hp_reg = snd_soc_read(codec, WM8961_ANALOGUE_HP_0);
 	u16 cp_reg = snd_soc_read(codec, WM8961_CHARGE_PUMP_1);
 	u16 pwr_reg = snd_soc_read(codec, WM8961_PWR_MGMT_2);
@@ -286,7 +290,11 @@ static int wm8961_hp_event(struct snd_soc_dapm_widget *w,
 static int wm8961_spk_event(struct snd_soc_dapm_widget *w,
 			    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 pwr_reg = snd_soc_read(codec, WM8961_PWR_MGMT_2);
 	u16 spk_reg = snd_soc_read(codec, WM8961_CLASS_D_CONTROL_1);
 
@@ -317,20 +325,31 @@ static const char *adc_hpf_text[] = {
 	"Hi-fi", "Voice 1", "Voice 2", "Voice 3",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum adc_hpf =
 	SOC_ENUM_SINGLE(WM8961_ADC_DAC_CONTROL_2, 7, 4, adc_hpf_text);
+=======
+static SOC_ENUM_SINGLE_DECL(adc_hpf,
+			    WM8961_ADC_DAC_CONTROL_2, 7, adc_hpf_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *dac_deemph_text[] = {
 	"None", "32kHz", "44.1kHz", "48kHz",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dac_deemph =
 	SOC_ENUM_SINGLE(WM8961_ADC_DAC_CONTROL_1, 1, 4, dac_deemph_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dac_deemph,
+			    WM8961_ADC_DAC_CONTROL_1, 1, dac_deemph_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const DECLARE_TLV_DB_SCALE(out_tlv, -12100, 100, 1);
 static const DECLARE_TLV_DB_SCALE(hp_sec_tlv, -700, 100, 0);
 static const DECLARE_TLV_DB_SCALE(adc_tlv, -7200, 75, 1);
 static const DECLARE_TLV_DB_SCALE(sidetone_tlv, -3600, 300, 0);
+<<<<<<< HEAD
 static unsigned int boost_tlv[] = {
 	TLV_DB_RANGE_HEAD(4),
 	0, 0, TLV_DB_SCALE_ITEM(0,  0, 0),
@@ -338,6 +357,14 @@ static unsigned int boost_tlv[] = {
 	2, 2, TLV_DB_SCALE_ITEM(20, 0, 0),
 	3, 3, TLV_DB_SCALE_ITEM(29, 0, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(boost_tlv,
+	0, 0, TLV_DB_SCALE_ITEM(0,  0, 0),
+	1, 1, TLV_DB_SCALE_ITEM(13, 0, 0),
+	2, 2, TLV_DB_SCALE_ITEM(20, 0, 0),
+	3, 3, TLV_DB_SCALE_ITEM(29, 0, 0)
+);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const DECLARE_TLV_DB_SCALE(pga_tlv, -2325, 75, 0);
 
 static const struct snd_kcontrol_new wm8961_snd_controls[] = {
@@ -385,11 +412,19 @@ static const char *sidetone_text[] = {
 	"None", "Left", "Right"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dacl_sidetone =
 	SOC_ENUM_SINGLE(WM8961_DSP_SIDETONE_0, 2, 3, sidetone_text);
 
 static const struct soc_enum dacr_sidetone =
 	SOC_ENUM_SINGLE(WM8961_DSP_SIDETONE_1, 2, 3, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dacl_sidetone,
+			    WM8961_DSP_SIDETONE_0, 2, sidetone_text);
+
+static SOC_ENUM_SINGLE_DECL(dacr_sidetone,
+			    WM8961_DSP_SIDETONE_1, 2, sidetone_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new dacl_mux =
 	SOC_DAPM_ENUM("DACL Sidetone", dacl_sidetone);
@@ -565,6 +600,7 @@ static int wm8961_hw_params(struct snd_pcm_substream *substream,
 
 	reg = snd_soc_read(codec, WM8961_AUDIO_INTERFACE_0);
 	reg &= ~WM8961_WL_MASK;
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		break;
@@ -575,6 +611,18 @@ static int wm8961_hw_params(struct snd_pcm_substream *substream,
 		reg |= 2 << WM8961_WL_SHIFT;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		reg |= 1 << WM8961_WL_SHIFT;
+		break;
+	case 24:
+		reg |= 2 << WM8961_WL_SHIFT;
+		break;
+	case 32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		reg |= 3 << WM8961_WL_SHIFT;
 		break;
 	default:
@@ -758,7 +806,11 @@ static int wm8961_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_STANDBY) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_STANDBY) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Enable bias generation */
 			reg = snd_soc_read(codec, WM8961_ANTI_POP);
 			reg |= WM8961_BUFIOEN | WM8961_BUFDCOPEN;
@@ -773,7 +825,11 @@ static int wm8961_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_PREPARE) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_PREPARE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* VREF off */
 			reg = snd_soc_read(codec, WM8961_PWR_MGMT_1);
 			reg &= ~WM8961_VREF;
@@ -795,8 +851,11 @@ static int wm8961_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -835,6 +894,7 @@ static struct snd_soc_dai_driver wm8961_dai = {
 
 static int wm8961_probe(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 	int ret = 0;
 	u16 reg;
@@ -845,6 +905,10 @@ static int wm8961_probe(struct snd_soc_codec *codec)
 		return ret;
 	}
 
+=======
+	u16 reg;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Enable class W */
 	reg = snd_soc_read(codec, WM8961_CHARGE_PUMP_B);
 	reg |= WM8961_CP_DYN_PWR_MASK;
@@ -878,6 +942,7 @@ static int wm8961_probe(struct snd_soc_codec *codec)
 	reg &= ~WM8961_MANUAL_MODE;
 	snd_soc_write(codec, WM8961_CLOCKING_3, reg);
 
+<<<<<<< HEAD
 	wm8961_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
 	snd_soc_add_codec_controls(codec, wm8961_snd_controls,
@@ -892,21 +957,27 @@ static int wm8961_probe(struct snd_soc_codec *codec)
 static int wm8961_remove(struct snd_soc_codec *codec)
 {
 	wm8961_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 #ifdef CONFIG_PM
+<<<<<<< HEAD
 static int wm8961_suspend(struct snd_soc_codec *codec)
 {
 	wm8961_set_bias_level(codec, SND_SOC_BIAS_OFF);
 
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int wm8961_resume(struct snd_soc_codec *codec)
 {
 	snd_soc_cache_sync(codec);
 
+<<<<<<< HEAD
 	wm8961_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
 	return 0;
@@ -922,6 +993,28 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8961 = {
 	.suspend =	wm8961_suspend,
 	.resume =	wm8961_resume,
 	.set_bias_level = wm8961_set_bias_level,
+=======
+	return 0;
+}
+#else
+#define wm8961_resume NULL
+#endif
+
+static const struct snd_soc_codec_driver soc_codec_dev_wm8961 = {
+	.probe =	wm8961_probe,
+	.resume =	wm8961_resume,
+	.set_bias_level = wm8961_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8961_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8961_snd_controls),
+		.dapm_widgets		= wm8961_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8961_dapm_widgets),
+		.dapm_routes		= audio_paths,
+		.num_dapm_routes	= ARRAY_SIZE(audio_paths),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct regmap_config wm8961_regmap = {
@@ -1009,7 +1102,10 @@ MODULE_DEVICE_TABLE(i2c, wm8961_i2c_id);
 static struct i2c_driver wm8961_i2c_driver = {
 	.driver = {
 		.name = "wm8961",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe =    wm8961_i2c_probe,
 	.remove =   wm8961_i2c_remove,

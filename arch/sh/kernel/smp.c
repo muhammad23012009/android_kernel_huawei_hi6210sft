@@ -22,6 +22,10 @@
 #include <linux/interrupt.h>
 #include <linux/sched.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/clockchips.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h>
 #include <asm/mmu_context.h>
 #include <asm/smp.h>
@@ -37,7 +41,11 @@ struct plat_smp_ops *mp_ops = NULL;
 /* State of each CPU */
 DEFINE_PER_CPU(int, cpu_state) = { 0 };
 
+<<<<<<< HEAD
 void __cpuinit register_smp_ops(struct plat_smp_ops *ops)
+=======
+void register_smp_ops(struct plat_smp_ops *ops)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (mp_ops)
 		printk(KERN_WARNING "Overriding previously set SMP ops\n");
@@ -45,7 +53,11 @@ void __cpuinit register_smp_ops(struct plat_smp_ops *ops)
 	mp_ops = ops;
 }
 
+<<<<<<< HEAD
 static inline void __cpuinit smp_store_cpu_info(unsigned int cpu)
+=======
+static inline void smp_store_cpu_info(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sh_cpuinfo *c = cpu_data + cpu;
 
@@ -111,7 +123,11 @@ void play_dead_common(void)
 	irq_ctx_exit(raw_smp_processor_id());
 	mb();
 
+<<<<<<< HEAD
 	__get_cpu_var(cpu_state) = CPU_DEAD;
+=======
+	__this_cpu_write(cpu_state, CPU_DEAD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_disable();
 }
 
@@ -141,16 +157,25 @@ int __cpu_disable(void)
 	migrate_irqs();
 
 	/*
+<<<<<<< HEAD
 	 * Stop the local timer for this CPU.
 	 */
 	local_timer_stop(cpu);
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Flush user cache and TLB mappings, and then remove this CPU
 	 * from the vm mask set of all processes.
 	 */
 	flush_cache_all();
+<<<<<<< HEAD
 	local_flush_tlb_all();
+=======
+#ifdef CONFIG_MMU
+	local_flush_tlb_all();
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clear_tasks_mm_cpumask(cpu);
 
@@ -174,7 +199,11 @@ void native_play_dead(void)
 }
 #endif
 
+<<<<<<< HEAD
 asmlinkage void __cpuinit start_secondary(void)
+=======
+asmlinkage void start_secondary(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int cpu = smp_processor_id();
 	struct mm_struct *mm = &init_mm;
@@ -183,8 +212,15 @@ asmlinkage void __cpuinit start_secondary(void)
 	atomic_inc(&mm->mm_count);
 	atomic_inc(&mm->mm_users);
 	current->active_mm = mm;
+<<<<<<< HEAD
 	enter_lazy_tlb(mm, current);
 	local_flush_tlb_all();
+=======
+#ifdef CONFIG_MMU
+	enter_lazy_tlb(mm, current);
+	local_flush_tlb_all();
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	per_cpu_trap_init();
 
@@ -194,8 +230,11 @@ asmlinkage void __cpuinit start_secondary(void)
 
 	local_irq_enable();
 
+<<<<<<< HEAD
 	/* Enable local timers */
 	local_timer_setup(cpu);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	calibrate_delay();
 
 	smp_store_cpu_info(cpu);
@@ -203,7 +242,11 @@ asmlinkage void __cpuinit start_secondary(void)
 	set_cpu_online(cpu, true);
 	per_cpu(cpu_state, cpu) = CPU_ONLINE;
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 extern struct {
@@ -215,7 +258,11 @@ extern struct {
 	void *thread_info;
 } stack_start;
 
+<<<<<<< HEAD
 int __cpuinit __cpu_up(unsigned int cpu, struct task_struct *tsk)
+=======
+int __cpu_up(unsigned int cpu, struct task_struct *tsk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long timeout;
 
@@ -285,7 +332,12 @@ void arch_send_call_function_single_ipi(int cpu)
 	mp_ops->send_ipi(cpu, SMP_MSG_FUNCTION_SINGLE);
 }
 
+<<<<<<< HEAD
 void smp_timer_broadcast(const struct cpumask *mask)
+=======
+#ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
+void tick_broadcast(const struct cpumask *mask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpu;
 
@@ -296,9 +348,16 @@ void smp_timer_broadcast(const struct cpumask *mask)
 static void ipi_timer(void)
 {
 	irq_enter();
+<<<<<<< HEAD
 	local_timer_interrupt();
 	irq_exit();
 }
+=======
+	tick_receive_broadcast();
+	irq_exit();
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void smp_message_recv(unsigned int msg)
 {
@@ -312,9 +371,17 @@ void smp_message_recv(unsigned int msg)
 	case SMP_MSG_FUNCTION_SINGLE:
 		generic_smp_call_function_single_interrupt();
 		break;
+<<<<<<< HEAD
 	case SMP_MSG_TIMER:
 		ipi_timer();
 		break;
+=======
+#ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
+	case SMP_MSG_TIMER:
+		ipi_timer();
+		break;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		printk(KERN_WARNING "SMP %d: %s(): unknown IPI %d\n",
 		       smp_processor_id(), __func__, msg);
@@ -328,6 +395,11 @@ int setup_profiling_timer(unsigned int multiplier)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void flush_tlb_all_ipi(void *info)
 {
 	local_flush_tlb_all();
@@ -363,7 +435,11 @@ void flush_tlb_mm(struct mm_struct *mm)
 		smp_call_function(flush_tlb_mm_ipi, (void *)mm, 1);
 	} else {
 		int i;
+<<<<<<< HEAD
 		for (i = 0; i < num_online_cpus(); i++)
+=======
+		for_each_online_cpu(i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (smp_processor_id() != i)
 				cpu_context(i, mm) = 0;
 	}
@@ -400,7 +476,11 @@ void flush_tlb_range(struct vm_area_struct *vma,
 		smp_call_function(flush_tlb_range_ipi, (void *)&fd, 1);
 	} else {
 		int i;
+<<<<<<< HEAD
 		for (i = 0; i < num_online_cpus(); i++)
+=======
+		for_each_online_cpu(i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (smp_processor_id() != i)
 				cpu_context(i, mm) = 0;
 	}
@@ -443,7 +523,11 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 		smp_call_function(flush_tlb_page_ipi, (void *)&fd, 1);
 	} else {
 		int i;
+<<<<<<< HEAD
 		for (i = 0; i < num_online_cpus(); i++)
+=======
+		for_each_online_cpu(i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (smp_processor_id() != i)
 				cpu_context(i, vma->vm_mm) = 0;
 	}
@@ -467,3 +551,8 @@ void flush_tlb_one(unsigned long asid, unsigned long vaddr)
 	smp_call_function(flush_tlb_one_ipi, (void *)&fd, 1);
 	local_flush_tlb_one(asid, vaddr);
 }
+<<<<<<< HEAD
+=======
+
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

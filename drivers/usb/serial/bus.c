@@ -38,6 +38,7 @@ static int usb_serial_device_match(struct device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_port_number(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
@@ -48,28 +49,44 @@ static ssize_t show_port_number(struct device *dev,
 
 static DEVICE_ATTR(port_number, S_IRUGO, show_port_number, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int usb_serial_device_probe(struct device *dev)
 {
 	struct usb_serial_driver *driver;
 	struct usb_serial_port *port;
+<<<<<<< HEAD
+=======
+	struct device *tty_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval = 0;
 	int minor;
 
 	port = to_usb_serial_port(dev);
+<<<<<<< HEAD
 	if (!port) {
 		retval = -ENODEV;
 		goto exit;
 	}
+=======
+	if (!port)
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* make sure suspend/resume doesn't race against port_probe */
 	retval = usb_autopm_get_interface(port->serial->interface);
 	if (retval)
+<<<<<<< HEAD
 		goto exit;
+=======
+		return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	driver = port->serial->type;
 	if (driver->port_probe) {
 		retval = driver->port_probe(port);
 		if (retval)
+<<<<<<< HEAD
 			goto exit_with_autopm;
 	}
 
@@ -82,13 +99,38 @@ static int usb_serial_device_probe(struct device *dev)
 
 	minor = port->number;
 	tty_register_device(usb_serial_tty_driver, minor, dev);
+=======
+			goto err_autopm_put;
+	}
+
+	minor = port->minor;
+	tty_dev = tty_register_device(usb_serial_tty_driver, minor, dev);
+	if (IS_ERR(tty_dev)) {
+		retval = PTR_ERR(tty_dev);
+		goto err_port_remove;
+	}
+
+	usb_autopm_put_interface(port->serial->interface);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&port->serial->dev->dev,
 		 "%s converter now attached to ttyUSB%d\n",
 		 driver->description, minor);
 
+<<<<<<< HEAD
 exit_with_autopm:
 	usb_autopm_put_interface(port->serial->interface);
 exit:
+=======
+	return 0;
+
+err_port_remove:
+	if (driver->port_remove)
+		driver->port_remove(port);
+err_autopm_put:
+	usb_autopm_put_interface(port->serial->interface);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
@@ -112,11 +154,17 @@ static int usb_serial_device_remove(struct device *dev)
 	 */
 	autopm_err = usb_autopm_get_interface(port->serial->interface);
 
+<<<<<<< HEAD
 	minor = port->number;
 	tty_unregister_device(usb_serial_tty_driver, minor);
 
 	device_remove_file(&port->dev, &dev_attr_port_number);
 
+=======
+	minor = port->minor;
+	tty_unregister_device(usb_serial_tty_driver, minor);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	driver = port->serial->type;
 	if (driver->port_remove)
 		retval = driver->port_remove(port);
@@ -130,6 +178,7 @@ static int usb_serial_device_remove(struct device *dev)
 	return retval;
 }
 
+<<<<<<< HEAD
 static ssize_t store_new_id(struct device_driver *driver,
 			    const char *buf, size_t count)
 {
@@ -138,22 +187,48 @@ static ssize_t store_new_id(struct device_driver *driver,
 
 	if (retval >= 0 && usb_drv->usb_driver != NULL)
 		retval = usb_store_new_id(&usb_drv->usb_driver->dynids,
+=======
+static ssize_t new_id_store(struct device_driver *driver,
+			    const char *buf, size_t count)
+{
+	struct usb_serial_driver *usb_drv = to_usb_serial_driver(driver);
+	ssize_t retval = usb_store_new_id(&usb_drv->dynids, usb_drv->id_table,
+					 driver, buf, count);
+
+	if (retval >= 0 && usb_drv->usb_driver != NULL)
+		retval = usb_store_new_id(&usb_drv->usb_driver->dynids,
+					  usb_drv->usb_driver->id_table,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  &usb_drv->usb_driver->drvwrap.driver,
 					  buf, count);
 	return retval;
 }
 
+<<<<<<< HEAD
 static ssize_t show_dynids(struct device_driver *driver, char *buf)
+=======
+static ssize_t new_id_show(struct device_driver *driver, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct usb_serial_driver *usb_drv = to_usb_serial_driver(driver);
 
 	return usb_show_dynids(&usb_drv->dynids, buf);
 }
+<<<<<<< HEAD
 
 static struct driver_attribute drv_attrs[] = {
 	__ATTR(new_id, S_IRUGO | S_IWUSR, show_dynids, store_new_id),
 	__ATTR_NULL,
 };
+=======
+static DRIVER_ATTR_RW(new_id);
+
+static struct attribute *usb_serial_drv_attrs[] = {
+	&driver_attr_new_id.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(usb_serial_drv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void free_dynids(struct usb_serial_driver *drv)
 {
@@ -172,7 +247,11 @@ struct bus_type usb_serial_bus_type = {
 	.match =	usb_serial_device_match,
 	.probe =	usb_serial_device_probe,
 	.remove =	usb_serial_device_remove,
+<<<<<<< HEAD
 	.drv_attrs = 	drv_attrs,
+=======
+	.drv_groups = 	usb_serial_drv_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int usb_serial_bus_register(struct usb_serial_driver *driver)

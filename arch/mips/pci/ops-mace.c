@@ -6,10 +6,15 @@
  * Copyright (C) 2000, 2001 Keith M Wesolowski
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/types.h>
 #include <asm/pci.h>
+=======
+#include <linux/pci.h>
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/ip32/mace.h>
 
 #if 0

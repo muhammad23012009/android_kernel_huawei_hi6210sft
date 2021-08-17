@@ -4,28 +4,45 @@ comment "Linux Kernel Configuration for Hexagon"
 config HEXAGON
 	def_bool y
 	select HAVE_OPROFILE
+<<<<<<< HEAD
 	select USE_GENERIC_SMP_HELPERS if SMP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	# Other pending projects/to-do items.
 	# select HAVE_REGS_AND_STACK_ACCESS_API
 	# select HAVE_HW_BREAKPOINT if PERF_EVENTS
 	# select ARCH_HAS_CPU_IDLE_WAIT
+<<<<<<< HEAD
 	# select ARCH_WANT_OPTIONAL_GPIOLIB
 	# select ARCH_REQUIRE_GPIOLIB
+=======
+	# select GPIOLIB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	# select HAVE_CLK
 	# select GENERIC_PENDING_IRQ if SMP
 	select GENERIC_ATOMIC64
 	select HAVE_PERF_EVENTS
+<<<<<<< HEAD
 	select HAVE_GENERIC_HARDIRQS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	# GENERIC_ALLOCATOR is used by dma_alloc_coherent()
 	select GENERIC_ALLOCATOR
 	select GENERIC_IRQ_SHOW
 	select HAVE_ARCH_KGDB
 	select HAVE_ARCH_TRACEHOOK
+<<<<<<< HEAD
 	select NO_IOPORT
 	select GENERIC_IOMAP
 	select GENERIC_SMP_IDLE_THREAD
 	select STACKTRACE_SUPPORT
 	select KTIME_SCALAR
+=======
+	select NO_IOPORT_MAP
+	select GENERIC_IOMAP
+	select GENERIC_SMP_IDLE_THREAD
+	select STACKTRACE_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select GENERIC_CLOCKEVENTS
 	select GENERIC_CLOCKEVENTS_BROADCAST
 	select MODULES_USE_ELF_RELA
@@ -158,6 +175,10 @@ source "kernel/Kconfig.hz"
 endmenu
 
 source "init/Kconfig"
+<<<<<<< HEAD
+=======
+source "kernel/Kconfig.freezer"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "drivers/Kconfig"
 source "fs/Kconfig"
 

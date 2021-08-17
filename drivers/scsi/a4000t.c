@@ -56,7 +56,11 @@ static int __init amiga_a4000t_scsi_probe(struct platform_device *pdev)
 	scsi_addr = res->start + A4000T_SCSI_OFFSET;
 
 	/* Fill in the required pieces of hostdata */
+<<<<<<< HEAD
 	hostdata->base = (void __iomem *)ZTWO_VADDR(scsi_addr);
+=======
+	hostdata->base = ZTWO_VADDR(scsi_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hostdata->clock = 50;
 	hostdata->chip710 = 1;
 	hostdata->dmode_extra = DMODE_FC2;
@@ -112,6 +116,7 @@ static struct platform_driver amiga_a4000t_scsi_driver = {
 	.remove = __exit_p(amiga_a4000t_scsi_remove),
 	.driver   = {
 		.name	= "amiga-a4000t-scsi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -130,6 +135,12 @@ static void __exit amiga_a4000t_scsi_exit(void)
 }
 
 module_exit(amiga_a4000t_scsi_exit);
+=======
+	},
+};
+
+module_platform_driver_probe(amiga_a4000t_scsi_driver, amiga_a4000t_scsi_probe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Alan Hourihane <alanh@fairlite.demon.co.uk> / "
 	      "Kars de Jong <jongk@linux-m68k.org>");

@@ -487,7 +487,11 @@ static void pcan_free_channels(struct pcan_pccard *card)
 		if (!netdev)
 			continue;
 
+<<<<<<< HEAD
 		strncpy(name, netdev->name, IFNAMSIZ);
+=======
+		strlcpy(name, netdev->name, IFNAMSIZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		unregister_sja1000dev(netdev);
 
@@ -550,6 +554,10 @@ static int pcan_add_channels(struct pcan_pccard *card)
 		priv = netdev_priv(netdev);
 		priv->priv = card;
 		SET_NETDEV_DEV(netdev, &pdev->dev);
+<<<<<<< HEAD
+=======
+		netdev->dev_id = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		priv->irq_flags = IRQF_SHARED;
 		netdev->irq = pdev->irq;

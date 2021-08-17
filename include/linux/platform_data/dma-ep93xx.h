@@ -84,7 +84,11 @@ static inline enum dma_transfer_direction
 ep93xx_dma_chan_direction(struct dma_chan *chan)
 {
 	if (!ep93xx_dma_chan_is_m2p(chan))
+<<<<<<< HEAD
 		return DMA_NONE;
+=======
+		return DMA_TRANS_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* even channels are for TX, odd for RX */
 	return (chan->chan_id % 2 == 0) ? DMA_MEM_TO_DEV : DMA_DEV_TO_MEM;

@@ -4,6 +4,10 @@
  * EBSA285 machine fixup
  */
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/leds.h>
@@ -17,6 +21,14 @@
 
 /* LEDs */
 #if defined(CONFIG_NEW_LEDS) && defined(CONFIG_LEDS_CLASS)
+<<<<<<< HEAD
+=======
+#define XBUS_AMBER_L	BIT(0)
+#define XBUS_GREEN_L	BIT(1)
+#define XBUS_RED_L	BIT(2)
+#define XBUS_TOGGLE	BIT(7)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ebsa285_led {
 	struct led_classdev     cdev;
 	u8                      mask;
@@ -36,6 +48,10 @@ static const struct {
 };
 
 static unsigned char hw_led_state;
+<<<<<<< HEAD
+=======
+static void __iomem *xbus;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void ebsa285_led_set(struct led_classdev *cdev,
 		enum led_brightness b)
@@ -47,7 +63,11 @@ static void ebsa285_led_set(struct led_classdev *cdev,
 		hw_led_state |= led->mask;
 	else
 		hw_led_state &= ~led->mask;
+<<<<<<< HEAD
 	*XBUS_LEDS = hw_led_state;
+=======
+	writeb(hw_led_state, xbus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static enum led_brightness ebsa285_led_get(struct led_classdev *cdev)
@@ -65,9 +85,19 @@ static int __init ebsa285_leds_init(void)
 	if (!machine_is_ebsa285())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/* 3 LEDS all off */
 	hw_led_state = XBUS_LED_AMBER | XBUS_LED_GREEN | XBUS_LED_RED;
 	*XBUS_LEDS = hw_led_state;
+=======
+	xbus = ioremap(XBUS_CS2, SZ_4K);
+	if (!xbus)
+		return -ENOMEM;
+
+	/* 3 LEDS all off */
+	hw_led_state = XBUS_AMBER_L | XBUS_GREEN_L | XBUS_RED_L;
+	writeb(hw_led_state, xbus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < ARRAY_SIZE(ebsa285_leds); i++) {
 		struct ebsa285_led *led;
@@ -104,6 +134,10 @@ MACHINE_START(EBSA285, "EBSA285")
 	.video_start	= 0x000a0000,
 	.video_end	= 0x000bffff,
 	.map_io		= footbridge_map_io,
+<<<<<<< HEAD
+=======
+	.init_early	= footbridge_sched_clock,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_irq	= footbridge_init_irq,
 	.init_time	= footbridge_timer_init,
 	.restart	= footbridge_restart,

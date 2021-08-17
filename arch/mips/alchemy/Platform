@@ -5,6 +5,7 @@ platform-$(CONFIG_MIPS_ALCHEMY) += alchemy/common/
 
 
 #
+<<<<<<< HEAD
 # AMD Alchemy Db1000/Db1500/Pb1500/Db1100/Pb1100 eval boards
 #
 platform-$(CONFIG_MIPS_DB1000)	+= alchemy/devboards/
@@ -17,6 +18,14 @@ load-$(CONFIG_MIPS_DB1000)	+= 0xffffffff80100000
 platform-$(CONFIG_MIPS_DB1235)	+= alchemy/devboards/
 cflags-$(CONFIG_MIPS_DB1235)	+= -I$(srctree)/arch/mips/include/asm/mach-db1x00
 load-$(CONFIG_MIPS_DB1235)	+= 0xffffffff80100000
+=======
+# AMD Alchemy Db1000/Db1500/Pb1500/Db1100/Pb1100
+#             Db1550/Pb1550/Db1200/Pb1200/Db1300
+#
+platform-$(CONFIG_MIPS_DB1XXX)	+= alchemy/devboards/
+cflags-$(CONFIG_MIPS_DB1XXX)	+= -I$(srctree)/arch/mips/include/asm/mach-db1x00
+load-$(CONFIG_MIPS_DB1XXX)	+= 0xffffffff80100000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # 4G-Systems MTX-1 "MeshCube" wireless router

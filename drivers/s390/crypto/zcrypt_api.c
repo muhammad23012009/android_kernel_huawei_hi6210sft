@@ -44,6 +44,11 @@
 #include "zcrypt_debug.h"
 #include "zcrypt_api.h"
 
+<<<<<<< HEAD
+=======
+#include "zcrypt_msgtype6.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Module description.
  */
@@ -52,6 +57,13 @@ MODULE_DESCRIPTION("Cryptographic Coprocessor interface, " \
 		   "Copyright IBM Corp. 2001, 2012");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
+=======
+static int zcrypt_hwrng_seed = 1;
+module_param_named(hwrng_seed, zcrypt_hwrng_seed, int, S_IRUSR|S_IRGRP);
+MODULE_PARM_DESC(hwrng_seed, "Turn on/off hwrng auto seed, default is 1 (on).");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEFINE_SPINLOCK(zcrypt_device_lock);
 static LIST_HEAD(zcrypt_device_list);
 static int zcrypt_device_count = 0;
@@ -311,11 +323,17 @@ EXPORT_SYMBOL(zcrypt_device_unregister);
 
 void zcrypt_msgtype_register(struct zcrypt_ops *zops)
 {
+<<<<<<< HEAD
 	if (zops->owner) {
 		spin_lock_bh(&zcrypt_ops_list_lock);
 		list_add_tail(&zops->list, &zcrypt_ops_list);
 		spin_unlock_bh(&zcrypt_ops_list_lock);
 	}
+=======
+	spin_lock_bh(&zcrypt_ops_list_lock);
+	list_add_tail(&zops->list, &zcrypt_ops_list);
+	spin_unlock_bh(&zcrypt_ops_list_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(zcrypt_msgtype_register);
 
@@ -336,15 +354,27 @@ struct zcrypt_ops *__ops_lookup(unsigned char *name, int variant)
 	spin_lock_bh(&zcrypt_ops_list_lock);
 	list_for_each_entry(zops, &zcrypt_ops_list, list) {
 		if ((zops->variant == variant) &&
+<<<<<<< HEAD
 		    (!strncmp(zops->owner->name, name, MODULE_NAME_LEN))) {
+=======
+		    (!strncmp(zops->name, name, sizeof(zops->name)))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			found = 1;
 			break;
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_bh(&zcrypt_ops_list_lock);
 
 	if (!found)
 		return NULL;
+=======
+	if (!found || !try_module_get(zops->owner))
+		zops = NULL;
+
+	spin_unlock_bh(&zcrypt_ops_list_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return zops;
 }
 
@@ -354,11 +384,17 @@ struct zcrypt_ops *zcrypt_msgtype_request(unsigned char *name, int variant)
 
 	zops = __ops_lookup(name, variant);
 	if (!zops) {
+<<<<<<< HEAD
 		request_module(name);
 		zops = __ops_lookup(name, variant);
 	}
 	if ((!zops) || (!try_module_get(zops->owner)))
 		return NULL;
+=======
+		request_module("%s", name);
+		zops = __ops_lookup(name, variant);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return zops;
 }
 EXPORT_SYMBOL(zcrypt_msgtype_request);
@@ -467,8 +503,12 @@ static long zcrypt_rsa_crt(struct ica_rsa_modexpo_crt *crt)
 	unsigned long long z1, z2, z3;
 	int rc, copied;
 
+<<<<<<< HEAD
 	if (crt->outputdatalength < crt->inputdatalength ||
 	    (crt->inputdatalength & 1))
+=======
+	if (crt->outputdatalength < crt->inputdatalength)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	/*
 	 * As long as outputdatalength is big enough, we can set the
@@ -554,9 +594,15 @@ static long zcrypt_send_cprb(struct ica_xcRB *xcRB)
 	spin_lock_bh(&zcrypt_device_lock);
 	list_for_each_entry(zdev, &zcrypt_device_list, list) {
 		if (!zdev->online || !zdev->ops->send_cprb ||
+<<<<<<< HEAD
 		    (xcRB->user_defined != AUTOSELECT &&
 			AP_QID_DEVICE(zdev->ap_dev->qid) != xcRB->user_defined)
 		    )
+=======
+		   (zdev->ops->variant == MSGTYPE06_VARIANT_EP11) ||
+		   (xcRB->user_defined != AUTOSELECT &&
+		    AP_QID_DEVICE(zdev->ap_dev->qid) != xcRB->user_defined))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		zcrypt_device_get(zdev);
 		get_device(&zdev->ap_dev->device);
@@ -581,6 +627,93 @@ static long zcrypt_send_cprb(struct ica_xcRB *xcRB)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
+=======
+struct ep11_target_dev_list {
+	unsigned short		targets_num;
+	struct ep11_target_dev	*targets;
+};
+
+static bool is_desired_ep11dev(unsigned int dev_qid,
+			       struct ep11_target_dev_list dev_list)
+{
+	int n;
+
+	for (n = 0; n < dev_list.targets_num; n++, dev_list.targets++) {
+		if ((AP_QID_DEVICE(dev_qid) == dev_list.targets->ap_id) &&
+		    (AP_QID_QUEUE(dev_qid) == dev_list.targets->dom_id)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+static long zcrypt_send_ep11_cprb(struct ep11_urb *xcrb)
+{
+	struct zcrypt_device *zdev;
+	bool autoselect = false;
+	int rc;
+	struct ep11_target_dev_list ep11_dev_list = {
+		.targets_num	=  0x00,
+		.targets	=  NULL,
+	};
+
+	ep11_dev_list.targets_num = (unsigned short) xcrb->targets_num;
+
+	/* empty list indicates autoselect (all available targets) */
+	if (ep11_dev_list.targets_num == 0)
+		autoselect = true;
+	else {
+		ep11_dev_list.targets = kcalloc((unsigned short)
+						xcrb->targets_num,
+						sizeof(struct ep11_target_dev),
+						GFP_KERNEL);
+		if (!ep11_dev_list.targets)
+			return -ENOMEM;
+
+		if (copy_from_user(ep11_dev_list.targets,
+				   (struct ep11_target_dev __force __user *)
+				   xcrb->targets, xcrb->targets_num *
+				   sizeof(struct ep11_target_dev)))
+			return -EFAULT;
+	}
+
+	spin_lock_bh(&zcrypt_device_lock);
+	list_for_each_entry(zdev, &zcrypt_device_list, list) {
+		/* check if device is eligible */
+		if (!zdev->online ||
+		    zdev->ops->variant != MSGTYPE06_VARIANT_EP11)
+			continue;
+
+		/* check if device is selected as valid target */
+		if (!is_desired_ep11dev(zdev->ap_dev->qid, ep11_dev_list) &&
+		    !autoselect)
+			continue;
+
+		zcrypt_device_get(zdev);
+		get_device(&zdev->ap_dev->device);
+		zdev->request_count++;
+		__zcrypt_decrease_preference(zdev);
+		if (try_module_get(zdev->ap_dev->drv->driver.owner)) {
+			spin_unlock_bh(&zcrypt_device_lock);
+			rc = zdev->ops->send_ep11_cprb(zdev, xcrb);
+			spin_lock_bh(&zcrypt_device_lock);
+			module_put(zdev->ap_dev->drv->driver.owner);
+		} else {
+			rc = -EAGAIN;
+		  }
+		zdev->request_count--;
+		__zcrypt_increase_preference(zdev);
+		put_device(&zdev->ap_dev->device);
+		zcrypt_device_put(zdev);
+		spin_unlock_bh(&zcrypt_device_lock);
+		return rc;
+	}
+	spin_unlock_bh(&zcrypt_device_lock);
+	return -ENODEV;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static long zcrypt_rng(char *buffer)
 {
 	struct zcrypt_device *zdev;
@@ -784,6 +917,26 @@ static long zcrypt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 			return -EFAULT;
 		return rc;
 	}
+<<<<<<< HEAD
+=======
+	case ZSENDEP11CPRB: {
+		struct ep11_urb __user *uxcrb = (void __user *)arg;
+		struct ep11_urb xcrb;
+		if (copy_from_user(&xcrb, uxcrb, sizeof(xcrb)))
+			return -EFAULT;
+		do {
+			rc = zcrypt_send_ep11_cprb(&xcrb);
+		} while (rc == -EAGAIN);
+		/* on failure: retry once again after a requested rescan */
+		if ((rc == -ENODEV) && (zcrypt_process_rescan()))
+			do {
+				rc = zcrypt_send_ep11_cprb(&xcrb);
+			} while (rc == -EAGAIN);
+		if (copy_to_user(uxcrb, &xcrb, sizeof(xcrb)))
+			return -EFAULT;
+		return rc;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case Z90STAT_STATUS_MASK: {
 		char status[AP_DEVICES];
 		zcrypt_status_mask(status);
@@ -1100,6 +1253,7 @@ static void sprinthx(unsigned char *title, struct seq_file *m,
 static void sprinthx4(unsigned char *title, struct seq_file *m,
 		      unsigned int *array, unsigned int len)
 {
+<<<<<<< HEAD
 	int r;
 
 	seq_printf(m, "\n%s\n", title);
@@ -1110,6 +1264,10 @@ static void sprinthx4(unsigned char *title, struct seq_file *m,
 		if ((r % 8) == 7)
 			seq_putc(m, '\n');
 	}
+=======
+	seq_printf(m, "\n%s\n", title);
+	seq_hex_dump(m, "    ", DUMP_PREFIX_NONE, 32, 4, array, len, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_putc(m, '\n');
 }
 
@@ -1271,6 +1429,10 @@ static int zcrypt_rng_data_read(struct hwrng *rng, u32 *data)
 static struct hwrng zcrypt_rng_dev = {
 	.name		= "zcrypt",
 	.data_read	= zcrypt_rng_data_read,
+<<<<<<< HEAD
+=======
+	.quality	= 990,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int zcrypt_rng_device_add(void)
@@ -1285,6 +1447,11 @@ static int zcrypt_rng_device_add(void)
 			goto out;
 		}
 		zcrypt_rng_buffer_index = 0;
+<<<<<<< HEAD
+=======
+		if (!zcrypt_hwrng_seed)
+			zcrypt_rng_dev.quality = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = hwrng_register(&zcrypt_rng_dev);
 		if (rc)
 			goto out_free;
@@ -1330,10 +1497,15 @@ int __init zcrypt_debug_init(void)
 void zcrypt_debug_exit(void)
 {
 	debugfs_remove(debugfs_root);
+<<<<<<< HEAD
 	if (zcrypt_dbf_common)
 		debug_unregister(zcrypt_dbf_common);
 	if (zcrypt_dbf_devices)
 		debug_unregister(zcrypt_dbf_devices);
+=======
+	debug_unregister(zcrypt_dbf_common);
+	debug_unregister(zcrypt_dbf_devices);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

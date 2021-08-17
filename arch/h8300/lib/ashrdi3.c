@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ashrdi3.c extracted from gcc-2.7.2/libgcc2.c which is: */
 /* Copyright (C) 1989, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
 
@@ -60,4 +61,29 @@ __ashrdi3 (DItype u, word_type b)
     }
 
   return w.ll;
+=======
+#include "libgcc.h"
+
+DWtype __ashrdi3(DWtype u, word_type b)
+{
+	const DWunion uu = {.ll = u};
+	const word_type bm = (sizeof (Wtype) * BITS_PER_UNIT) - b;
+	DWunion w;
+
+	if (b == 0)
+		return u;
+
+	if (bm <= 0) {
+		/* w.s.high = 1..1 or 0..0 */
+		w.s.high = uu.s.high >> (sizeof (Wtype) * BITS_PER_UNIT - 1);
+		w.s.low = uu.s.high >> -bm;
+	} else {
+		const UWtype carries = (UWtype) uu.s.high << bm;
+
+		w.s.high = uu.s.high >> b;
+		w.s.low = ((UWtype) uu.s.low >> b) | carries;
+	}
+
+	return w.ll;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

@@ -26,7 +26,10 @@
 #include <linux/nfs_mount.h>
 #include <linux/mm.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/gfp.h>
 #include <linux/swap.h>
 
@@ -36,6 +39,12 @@
 #include "internal.h"
 #include "iostat.h"
 #include "fscache.h"
+<<<<<<< HEAD
+=======
+#include "pnfs.h"
+
+#include "nfstrace.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define NFSDBG_FACILITY		NFSDBG_FILE
 
@@ -63,9 +72,13 @@ nfs_file_open(struct inode *inode, struct file *filp)
 {
 	int res;
 
+<<<<<<< HEAD
 	dprintk("NFS: open file(%s/%s)\n",
 			filp->f_path.dentry->d_parent->d_name.name,
 			filp->f_path.dentry->d_name.name);
+=======
+	dprintk("NFS: open file(%pD2)\n", filp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nfs_inc_stats(inode, NFSIOS_VFSOPEN);
 	res = nfs_check_flags(filp->f_flags);
@@ -79,12 +92,20 @@ nfs_file_open(struct inode *inode, struct file *filp)
 int
 nfs_file_release(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
 	dprintk("NFS: release(%s/%s)\n",
 			filp->f_path.dentry->d_parent->d_name.name,
 			filp->f_path.dentry->d_name.name);
 
 	nfs_inc_stats(inode, NFSIOS_VFSRELEASE);
 	return nfs_release(inode, filp);
+=======
+	dprintk("NFS: release(%pD2)\n", filp);
+
+	nfs_inc_stats(inode, NFSIOS_VFSRELEASE);
+	nfs_file_clear_open_context(filp);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(nfs_file_release);
 
@@ -121,10 +142,15 @@ force_reval:
 
 loff_t nfs_file_llseek(struct file *filp, loff_t offset, int whence)
 {
+<<<<<<< HEAD
 	dprintk("NFS: llseek file(%s/%s, %lld, %d)\n",
 			filp->f_path.dentry->d_parent->d_name.name,
 			filp->f_path.dentry->d_name.name,
 			offset, whence);
+=======
+	dprintk("NFS: llseek file(%pD2, %lld, %d)\n",
+			filp, offset, whence);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * whence == SEEK_END || SEEK_DATA || SEEK_HOLE => we must revalidate
@@ -145,6 +171,7 @@ EXPORT_SYMBOL_GPL(nfs_file_llseek);
 /*
  * Flush all dirty pages, and check for write errors.
  */
+<<<<<<< HEAD
 int
 nfs_file_flush(struct file *file, fl_owner_t id)
 {
@@ -154,11 +181,20 @@ nfs_file_flush(struct file *file, fl_owner_t id)
 	dprintk("NFS: flush(%s/%s)\n",
 			dentry->d_parent->d_name.name,
 			dentry->d_name.name);
+=======
+static int
+nfs_file_flush(struct file *file, fl_owner_t id)
+{
+	struct inode	*inode = file_inode(file);
+
+	dprintk("NFS: flush(%pD2)\n", file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nfs_inc_stats(inode, NFSIOS_VFSFLUSH);
 	if ((file->f_mode & FMODE_WRITE) == 0)
 		return 0;
 
+<<<<<<< HEAD
 	/*
 	 * If we're holding a write delegation, then just start the i/o
 	 * but don't wait for completion (or send a commit).
@@ -192,10 +228,38 @@ nfs_file_read(struct kiocb *iocb, const struct iovec *iov,
 		if (result > 0)
 			nfs_add_stats(inode, NFSIOS_NORMALREADBYTES, result);
 	}
+=======
+	/* Flush writes to the server and return any errors */
+	return vfs_fsync(file, 0);
+}
+
+ssize_t
+nfs_file_read(struct kiocb *iocb, struct iov_iter *to)
+{
+	struct inode *inode = file_inode(iocb->ki_filp);
+	ssize_t result;
+
+	if (iocb->ki_flags & IOCB_DIRECT)
+		return nfs_file_direct_read(iocb, to);
+
+	dprintk("NFS: read(%pD2, %zu@%lu)\n",
+		iocb->ki_filp,
+		iov_iter_count(to), (unsigned long) iocb->ki_pos);
+
+	nfs_start_io_read(inode);
+	result = nfs_revalidate_mapping(inode, iocb->ki_filp->f_mapping);
+	if (!result) {
+		result = generic_file_read_iter(iocb, to);
+		if (result > 0)
+			nfs_add_stats(inode, NFSIOS_NORMALREADBYTES, result);
+	}
+	nfs_end_io_read(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 EXPORT_SYMBOL_GPL(nfs_file_read);
 
+<<<<<<< HEAD
 ssize_t
 nfs_file_splice_read(struct file *filp, loff_t *ppos,
 		     struct pipe_inode_info *pipe, size_t count,
@@ -228,6 +292,15 @@ nfs_file_mmap(struct file * file, struct vm_area_struct * vma)
 
 	dprintk("NFS: mmap(%s/%s)\n",
 		dentry->d_parent->d_name.name, dentry->d_name.name);
+=======
+int
+nfs_file_mmap(struct file * file, struct vm_area_struct * vma)
+{
+	struct inode *inode = file_inode(file);
+	int	status;
+
+	dprintk("NFS: mmap(%pD2)\n", file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Note: generic_file_mmap() returns ENOSYS on nommu systems
 	 *       so we call that before revalidating the mapping
@@ -253,6 +326,7 @@ EXPORT_SYMBOL_GPL(nfs_file_mmap);
  * nfs_file_write() that a write error occurred, and hence cause it to
  * fall back to doing a synchronous write.
  */
+<<<<<<< HEAD
 int
 nfs_file_fsync_commit(struct file *file, loff_t start, loff_t end, int datasync)
 {
@@ -265,6 +339,17 @@ nfs_file_fsync_commit(struct file *file, loff_t start, loff_t end, int datasync)
 	dprintk("NFS: fsync file(%s/%s) datasync %d\n",
 			dentry->d_parent->d_name.name, dentry->d_name.name,
 			datasync);
+=======
+static int
+nfs_file_fsync_commit(struct file *file, loff_t start, loff_t end, int datasync)
+{
+	struct nfs_open_context *ctx = nfs_file_open_context(file);
+	struct inode *inode = file_inode(file);
+	int have_error, do_resend, status;
+	int ret = 0;
+
+	dprintk("NFS: fsync file(%pD2) datasync %d\n", file, datasync);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nfs_inc_stats(inode, NFSIOS_VFSFSYNC);
 	do_resend = test_and_clear_bit(NFS_CONTEXT_RESEND_WRITES, &ctx->flags);
@@ -286,21 +371,37 @@ nfs_file_fsync_commit(struct file *file, loff_t start, loff_t end, int datasync)
 out:
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(nfs_file_fsync_commit);
 
 static int
+=======
+
+int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 nfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 {
 	int ret;
 	struct inode *inode = file_inode(file);
 
+<<<<<<< HEAD
+=======
+	trace_nfs_fsync_enter(inode);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		ret = filemap_write_and_wait_range(inode->i_mapping, start, end);
 		if (ret != 0)
 			break;
+<<<<<<< HEAD
 		mutex_lock(&inode->i_mutex);
 		ret = nfs_file_fsync_commit(file, start, end, datasync);
 		mutex_unlock(&inode->i_mutex);
+=======
+		ret = nfs_file_fsync_commit(file, start, end, datasync);
+		if (!ret)
+			ret = pnfs_sync_inode(inode, !!datasync);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * If nfs_file_fsync_commit detected a server reboot, then
 		 * resend all dirty pages that might have been covered by
@@ -310,8 +411,15 @@ nfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 		end = LLONG_MAX;
 	} while (ret == -EAGAIN);
 
+<<<<<<< HEAD
 	return ret;
 }
+=======
+	trace_nfs_fsync_exit(inode, ret);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(nfs_file_fsync);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Decide whether a read/modify/write cycle may be more efficient
@@ -337,9 +445,21 @@ static int nfs_want_read_modify_write(struct file *file, struct page *page,
 			loff_t pos, unsigned len)
 {
 	unsigned int pglen = nfs_page_length(page);
+<<<<<<< HEAD
 	unsigned int offset = pos & (PAGE_CACHE_SIZE - 1);
 	unsigned int end = offset + len;
 
+=======
+	unsigned int offset = pos & (PAGE_SIZE - 1);
+	unsigned int end = offset + len;
+
+	if (pnfs_ld_read_whole_page(file->f_mapping->host)) {
+		if (!PageUptodate(page))
+			return 1;
+		return 0;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((file->f_mode & FMODE_READ) &&	/* open for read? */
 	    !PageUptodate(page) &&		/* Uptodate? */
 	    !PagePrivate(page) &&		/* i/o request already? */
@@ -362,6 +482,7 @@ static int nfs_write_begin(struct file *file, struct address_space *mapping,
 			struct page **pagep, void **fsdata)
 {
 	int ret;
+<<<<<<< HEAD
 	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
 	struct page *page;
 	int once_thru = 0;
@@ -381,6 +502,16 @@ start:
 	if (ret)
 		return ret;
 
+=======
+	pgoff_t index = pos >> PAGE_SHIFT;
+	struct page *page;
+	int once_thru = 0;
+
+	dfprintk(PAGECACHE, "NFS: write_begin(%pD2(%lu), %u@%lld)\n",
+		file, mapping->host->i_ino, len, (long long) pos);
+
+start:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = grab_cache_page_write_begin(mapping, index, flags);
 	if (!page)
 		return -ENOMEM;
@@ -389,12 +520,20 @@ start:
 	ret = nfs_flush_incompatible(file, page);
 	if (ret) {
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (!once_thru &&
 		   nfs_want_read_modify_write(file, page, pos, len)) {
 		once_thru = 1;
 		ret = nfs_readpage(file, page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!ret)
 			goto start;
 	}
@@ -405,6 +544,7 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned copied,
 			struct page *page, void *fsdata)
 {
+<<<<<<< HEAD
 	unsigned offset = pos & (PAGE_CACHE_SIZE - 1);
 	int status;
 
@@ -412,6 +552,14 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
 		file->f_path.dentry->d_parent->d_name.name,
 		file->f_path.dentry->d_name.name,
 		mapping->host->i_ino, len, (long long) pos);
+=======
+	unsigned offset = pos & (PAGE_SIZE - 1);
+	struct nfs_open_context *ctx = nfs_file_open_context(file);
+	int status;
+
+	dfprintk(PAGECACHE, "NFS: write_end(%pD2(%lu), %u@%lld)\n",
+		file, mapping->host->i_ino, len, (long long) pos);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Zero any uninitialised parts of the page, and then mark the page
@@ -423,6 +571,7 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
 
 		if (pglen == 0) {
 			zero_user_segments(page, 0, offset,
+<<<<<<< HEAD
 					end, PAGE_CACHE_SIZE);
 			SetPageUptodate(page);
 		} else if (end >= pglen) {
@@ -431,16 +580,40 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
 				SetPageUptodate(page);
 		} else
 			zero_user_segment(page, pglen, PAGE_CACHE_SIZE);
+=======
+					end, PAGE_SIZE);
+			SetPageUptodate(page);
+		} else if (end >= pglen) {
+			zero_user_segment(page, end, PAGE_SIZE);
+			if (offset == 0)
+				SetPageUptodate(page);
+		} else
+			zero_user_segment(page, pglen, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	status = nfs_updatepage(file, page, offset, copied);
 
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (status < 0)
 		return status;
 	NFS_I(mapping->host)->write_io += copied;
+<<<<<<< HEAD
+=======
+
+	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
+		status = nfs_wb_all(mapping->host);
+		if (status < 0)
+			return status;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return copied;
 }
 
@@ -451,11 +624,21 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
  * - Called if either PG_private or PG_fscache is set on the page
  * - Caller holds page lock
  */
+<<<<<<< HEAD
 static void nfs_invalidate_page(struct page *page, unsigned long offset)
 {
 	dfprintk(PAGECACHE, "NFS: invalidate_page(%p, %lu)\n", page, offset);
 
 	if (offset != 0)
+=======
+static void nfs_invalidate_page(struct page *page, unsigned int offset,
+				unsigned int length)
+{
+	dfprintk(PAGECACHE, "NFS: invalidate_page(%p, %u, %u)\n",
+		 page, offset, length);
+
+	if (offset != 0 || length < PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	/* Cancel any unstarted writes on this page */
 	nfs_wb_page_cancel(page_file_mapping(page)->host, page);
@@ -471,6 +654,7 @@ static void nfs_invalidate_page(struct page *page, unsigned long offset)
  */
 static int nfs_release_page(struct page *page, gfp_t gfp)
 {
+<<<<<<< HEAD
 	struct address_space *mapping = page->mapping;
 
 	dfprintk(PAGECACHE, "NFS: release_page(%p)\n", page);
@@ -487,12 +671,48 @@ static int nfs_release_page(struct page *page, gfp_t gfp)
 			how = 0;
 		nfs_commit_inode(mapping->host, how);
 	}
+=======
+	dfprintk(PAGECACHE, "NFS: release_page(%p)\n", page);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* If PagePrivate() is set, then the page is not freeable */
 	if (PagePrivate(page))
 		return 0;
 	return nfs_fscache_release_page(page, gfp);
 }
 
+<<<<<<< HEAD
+=======
+static void nfs_check_dirty_writeback(struct page *page,
+				bool *dirty, bool *writeback)
+{
+	struct nfs_inode *nfsi;
+	struct address_space *mapping = page_file_mapping(page);
+
+	if (!mapping || PageSwapCache(page))
+		return;
+
+	/*
+	 * Check if an unstable page is currently being committed and
+	 * if so, have the VM treat it as if the page is under writeback
+	 * so it will not block due to pages that will shortly be freeable.
+	 */
+	nfsi = NFS_I(mapping->host);
+	if (atomic_read(&nfsi->commit_info.rpcs_out)) {
+		*writeback = true;
+		return;
+	}
+
+	/*
+	 * If PagePrivate() is set, then the page is not freeable and as the
+	 * inode is not being committed, it's not going to be cleaned in the
+	 * near future so treat it as dirty
+	 */
+	if (PagePrivate(page))
+		*dirty = true;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Attempt to clear the private state associated with a page when an error
  * occurs that requires the cached contents of an inode to be written back or
@@ -510,6 +730,7 @@ static int nfs_launder_page(struct page *page)
 		inode->i_ino, (long long)page_offset(page));
 
 	nfs_fscache_wait_on_page_write(nfsi, page);
+<<<<<<< HEAD
 	return nfs_wb_page(inode, page);
 }
 
@@ -519,13 +740,33 @@ static int nfs_swap_activate(struct swap_info_struct *sis, struct file *file,
 {
 	*span = sis->pages;
 	return xs_swapper(NFS_CLIENT(file->f_mapping->host)->cl_xprt, 1);
+=======
+	return nfs_wb_launder_page(inode, page);
+}
+
+static int nfs_swap_activate(struct swap_info_struct *sis, struct file *file,
+						sector_t *span)
+{
+	struct rpc_clnt *clnt = NFS_CLIENT(file->f_mapping->host);
+
+	*span = sis->pages;
+
+	return rpc_clnt_swap_activate(clnt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void nfs_swap_deactivate(struct file *file)
 {
+<<<<<<< HEAD
 	xs_swapper(NFS_CLIENT(file->f_mapping->host)->cl_xprt, 0);
 }
 #endif
+=======
+	struct rpc_clnt *clnt = NFS_CLIENT(file->f_mapping->host);
+
+	rpc_clnt_swap_deactivate(clnt);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 const struct address_space_operations nfs_file_aops = {
 	.readpage = nfs_readpage,
@@ -538,6 +779,7 @@ const struct address_space_operations nfs_file_aops = {
 	.invalidatepage = nfs_invalidate_page,
 	.releasepage = nfs_release_page,
 	.direct_IO = nfs_direct_IO,
+<<<<<<< HEAD
 	.migratepage = nfs_migrate_page,
 	.launder_page = nfs_launder_page,
 	.error_remove_page = generic_error_remove_page,
@@ -545,6 +787,16 @@ const struct address_space_operations nfs_file_aops = {
 	.swap_activate = nfs_swap_activate,
 	.swap_deactivate = nfs_swap_deactivate,
 #endif
+=======
+#ifdef CONFIG_MIGRATION
+	.migratepage = nfs_migrate_page,
+#endif
+	.launder_page = nfs_launder_page,
+	.is_dirty_writeback = nfs_check_dirty_writeback,
+	.error_remove_page = generic_error_remove_page,
+	.swap_activate = nfs_swap_activate,
+	.swap_deactivate = nfs_swap_deactivate,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -556,11 +808,16 @@ static int nfs_vm_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 {
 	struct page *page = vmf->page;
 	struct file *filp = vma->vm_file;
+<<<<<<< HEAD
 	struct dentry *dentry = filp->f_path.dentry;
+=======
+	struct inode *inode = file_inode(filp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned pagelen;
 	int ret = VM_FAULT_NOPAGE;
 	struct address_space *mapping;
 
+<<<<<<< HEAD
 	dfprintk(PAGECACHE, "NFS: vm_page_mkwrite(%s/%s(%ld), offset %lld)\n",
 		dentry->d_parent->d_name.name, dentry->d_name.name,
 		filp->f_mapping->host->i_ino,
@@ -572,6 +829,23 @@ static int nfs_vm_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 	lock_page(page);
 	mapping = page_file_mapping(page);
 	if (mapping != dentry->d_inode->i_mapping)
+=======
+	dfprintk(PAGECACHE, "NFS: vm_page_mkwrite(%pD2(%lu), offset %lld)\n",
+		filp, filp->f_mapping->host->i_ino,
+		(long long)page_offset(page));
+
+	sb_start_pagefault(inode->i_sb);
+
+	/* make sure the cache has finished storing the page */
+	nfs_fscache_wait_on_page_write(NFS_I(inode), page);
+
+	wait_on_bit_action(&NFS_I(inode)->flags, NFS_INO_INVALIDATING,
+			nfs_wait_bit_killable, TASK_KILLABLE);
+
+	lock_page(page);
+	mapping = page_file_mapping(page);
+	if (mapping != inode->i_mapping)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_unlock;
 
 	wait_on_page_writeback(page);
@@ -589,11 +863,16 @@ static int nfs_vm_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 out_unlock:
 	unlock_page(page);
 out:
+<<<<<<< HEAD
+=======
+	sb_end_pagefault(inode->i_sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static const struct vm_operations_struct nfs_file_vm_ops = {
 	.fault = filemap_fault,
+<<<<<<< HEAD
 	.page_mkwrite = nfs_vm_page_mkwrite,
 	.remap_pages = generic_file_remap_pages,
 };
@@ -606,10 +885,24 @@ static int nfs_need_sync_write(struct file *filp, struct inode *inode)
 		return 1;
 	ctx = nfs_file_open_context(filp);
 	if (test_bit(NFS_CONTEXT_ERROR_WRITE, &ctx->flags))
+=======
+	.map_pages = filemap_map_pages,
+	.page_mkwrite = nfs_vm_page_mkwrite,
+};
+
+static int nfs_need_check_write(struct file *filp, struct inode *inode)
+{
+	struct nfs_open_context *ctx;
+
+	ctx = nfs_file_open_context(filp);
+	if (test_bit(NFS_CONTEXT_ERROR_WRITE, &ctx->flags) ||
+	    nfs_ctx_key_to_expire(ctx, inode))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	return 0;
 }
 
+<<<<<<< HEAD
 ssize_t nfs_file_write(struct kiocb *iocb, const struct iovec *iov,
 		       unsigned long nr_segs, loff_t pos)
 {
@@ -627,17 +920,42 @@ ssize_t nfs_file_write(struct kiocb *iocb, const struct iovec *iov,
 		(unsigned long) count, (long long) pos);
 
 	result = -EBUSY;
+=======
+ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+{
+	struct file *file = iocb->ki_filp;
+	struct inode *inode = file_inode(file);
+	unsigned long written = 0;
+	ssize_t result;
+
+	result = nfs_key_timeout_notify(file, inode);
+	if (result)
+		return result;
+
+	if (iocb->ki_flags & IOCB_DIRECT)
+		return nfs_file_direct_write(iocb, from);
+
+	dprintk("NFS: write(%pD2, %zu@%Ld)\n",
+		file, iov_iter_count(from), (long long) iocb->ki_pos);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_SWAPFILE(inode))
 		goto out_swapfile;
 	/*
 	 * O_APPEND implies that we must revalidate the file length.
 	 */
+<<<<<<< HEAD
 	if (iocb->ki_filp->f_flags & O_APPEND) {
 		result = nfs_revalidate_file_size(inode, iocb->ki_filp);
+=======
+	if (iocb->ki_flags & IOCB_APPEND) {
+		result = nfs_revalidate_file_size(inode, file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (result)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	result = count;
 	if (!count)
 		goto out;
@@ -654,11 +972,38 @@ ssize_t nfs_file_write(struct kiocb *iocb, const struct iovec *iov,
 	}
 	if (result > 0)
 		nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+=======
+	nfs_start_io_write(inode);
+	result = generic_write_checks(iocb, from);
+	if (result > 0) {
+		current->backing_dev_info = inode_to_bdi(inode);
+		result = generic_perform_write(file, from, iocb->ki_pos);
+		current->backing_dev_info = NULL;
+	}
+	nfs_end_io_write(inode);
+	if (result <= 0)
+		goto out;
+
+	written = result;
+	iocb->ki_pos += written;
+	result = generic_write_sync(iocb, written);
+	if (result < 0)
+		goto out;
+
+	/* Return error values */
+	if (nfs_need_check_write(file, inode)) {
+		int err = vfs_fsync(file, 0);
+		if (err < 0)
+			result = err;
+	}
+	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return result;
 
 out_swapfile:
 	printk(KERN_INFO "NFS: attempt to write to active swap file!\n");
+<<<<<<< HEAD
 	goto out;
 }
 EXPORT_SYMBOL_GPL(nfs_file_write);
@@ -695,6 +1040,12 @@ ssize_t nfs_file_splice_write(struct pipe_inode_info *pipe,
 }
 EXPORT_SYMBOL_GPL(nfs_file_splice_write);
 
+=======
+	return -EBUSY;
+}
+EXPORT_SYMBOL_GPL(nfs_file_write);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int
 do_getlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 {
@@ -724,6 +1075,7 @@ out_noconflict:
 	goto out;
 }
 
+<<<<<<< HEAD
 static int do_vfs_lock(struct file *file, struct file_lock *fl)
 {
 	int res = 0;
@@ -740,6 +1092,8 @@ static int do_vfs_lock(struct file *file, struct file_lock *fl)
 	return res;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int
 do_unlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 {
@@ -751,11 +1105,19 @@ do_unlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 	 * Flush all pending writes before doing anything
 	 * with locks..
 	 */
+<<<<<<< HEAD
 	nfs_sync_mapping(filp->f_mapping);
 
 	l_ctx = nfs_get_lock_context(nfs_file_open_context(filp));
 	if (!IS_ERR(l_ctx)) {
 		status = nfs_iocounter_wait(&l_ctx->io_count);
+=======
+	vfs_fsync(filp, 0);
+
+	l_ctx = nfs_get_lock_context(nfs_file_open_context(filp));
+	if (!IS_ERR(l_ctx)) {
+		status = nfs_iocounter_wait(l_ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nfs_put_lock_context(l_ctx);
 		if (status < 0)
 			return status;
@@ -772,16 +1134,23 @@ do_unlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 	if (!is_local)
 		status = NFS_PROTO(inode)->lock(filp, cmd, fl);
 	else
+<<<<<<< HEAD
 		status = do_vfs_lock(filp, fl);
+=======
+		status = locks_lock_file_wait(filp, fl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return status;
 }
 
 static int
+<<<<<<< HEAD
 is_time_granular(struct timespec *ts) {
 	return ((ts->tv_sec == 0) && (ts->tv_nsec <= 1000));
 }
 
 static int
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 do_setlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 {
 	struct inode *inode = filp->f_mapping->host;
@@ -802,7 +1171,11 @@ do_setlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 	if (!is_local)
 		status = NFS_PROTO(inode)->lock(filp, cmd, fl);
 	else
+<<<<<<< HEAD
 		status = do_vfs_lock(filp, fl);
+=======
+		status = locks_lock_file_wait(filp, fl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (status < 0)
 		goto out;
 
@@ -814,12 +1187,17 @@ do_setlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 	 * This makes locking act as a cache coherency point.
 	 */
 	nfs_sync_mapping(filp->f_mapping);
+<<<<<<< HEAD
 	if (!NFS_PROTO(inode)->have_delegation(inode, FMODE_READ)) {
 		if (is_time_granular(&NFS_SERVER(inode)->time_delta))
 			__nfs_revalidate_inode(NFS_SERVER(inode), inode);
 		else
 			nfs_zap_caches(inode);
 	}
+=======
+	if (!NFS_PROTO(inode)->have_delegation(inode, FMODE_READ))
+		nfs_zap_caches(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return status;
 }
@@ -833,10 +1211,15 @@ int nfs_lock(struct file *filp, int cmd, struct file_lock *fl)
 	int ret = -ENOLCK;
 	int is_local = 0;
 
+<<<<<<< HEAD
 	dprintk("NFS: lock(%s/%s, t=%x, fl=%x, r=%lld:%lld)\n",
 			filp->f_path.dentry->d_parent->d_name.name,
 			filp->f_path.dentry->d_name.name,
 			fl->fl_type, fl->fl_flags,
+=======
+	dprintk("NFS: lock(%pD2, t=%x, fl=%x, r=%lld:%lld)\n",
+			filp, fl->fl_type, fl->fl_flags,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			(long long)fl->fl_start, (long long)fl->fl_end);
 
 	nfs_inc_stats(inode, NFSIOS_VFSLOCK);
@@ -873,10 +1256,15 @@ int nfs_flock(struct file *filp, int cmd, struct file_lock *fl)
 	struct inode *inode = filp->f_mapping->host;
 	int is_local = 0;
 
+<<<<<<< HEAD
 	dprintk("NFS: flock(%s/%s, t=%x, fl=%x)\n",
 			filp->f_path.dentry->d_parent->d_name.name,
 			filp->f_path.dentry->d_name.name,
 			fl->fl_type, fl->fl_flags);
+=======
+	dprintk("NFS: flock(%pD2, t=%x, fl=%x)\n",
+			filp, fl->fl_type, fl->fl_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(fl->fl_flags & FL_FLOCK))
 		return -ENOLCK;
@@ -894,16 +1282,20 @@ int nfs_flock(struct file *filp, int cmd, struct file_lock *fl)
 		is_local = 1;
 
 	/* We're simulating flock() locks using posix locks on the server */
+<<<<<<< HEAD
 	fl->fl_owner = (fl_owner_t)filp;
 	fl->fl_start = 0;
 	fl->fl_end = OFFSET_MAX;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (fl->fl_type == F_UNLCK)
 		return do_unlk(filp, cmd, fl, is_local);
 	return do_setlk(filp, cmd, fl, is_local);
 }
 EXPORT_SYMBOL_GPL(nfs_flock);
 
+<<<<<<< HEAD
 /*
  * There is no protocol support for leases, so we have no way to implement
  * them correctly in the face of opens by other clients.
@@ -923,6 +1315,12 @@ const struct file_operations nfs_file_operations = {
 	.write		= do_sync_write,
 	.aio_read	= nfs_file_read,
 	.aio_write	= nfs_file_write,
+=======
+const struct file_operations nfs_file_operations = {
+	.llseek		= nfs_file_llseek,
+	.read_iter	= nfs_file_read,
+	.write_iter	= nfs_file_write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mmap		= nfs_file_mmap,
 	.open		= nfs_file_open,
 	.flush		= nfs_file_flush,
@@ -930,9 +1328,16 @@ const struct file_operations nfs_file_operations = {
 	.fsync		= nfs_file_fsync,
 	.lock		= nfs_lock,
 	.flock		= nfs_flock,
+<<<<<<< HEAD
 	.splice_read	= nfs_file_splice_read,
 	.splice_write	= nfs_file_splice_write,
 	.check_flags	= nfs_check_flags,
 	.setlease	= nfs_setlease,
+=======
+	.splice_read	= generic_file_splice_read,
+	.splice_write	= iter_file_splice_write,
+	.check_flags	= nfs_check_flags,
+	.setlease	= simple_nosetlease,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 EXPORT_SYMBOL_GPL(nfs_file_operations);

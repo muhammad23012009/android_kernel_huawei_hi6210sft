@@ -99,7 +99,11 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
 	}
 	return ret;
 }
+<<<<<<< HEAD
 #if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * ipv6_skb_to_auditdata : fill auditdata from skb
  * @skb : the skb
@@ -211,7 +215,11 @@ static inline void print_ipv4_addr(struct audit_buffer *ab, __be32 addr,
 static void dump_common_audit_data(struct audit_buffer *ab,
 				   struct common_audit_data *a)
 {
+<<<<<<< HEAD
 	struct task_struct *tsk = current;
+=======
+	char comm[sizeof(current->comm)];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * To keep stack sizes in check force programers to notice if they
@@ -220,11 +228,16 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 	 */
 	BUILD_BUG_ON(sizeof(a->u) > sizeof(void *)*2);
 
+<<<<<<< HEAD
 	audit_log_format(ab, " pid=%d comm=", tsk->pid);
 	audit_log_untrustedstring(ab, tsk->comm);
 
 	audit_log_format(ab, " ppid=%d ppid_comm=", tsk->real_parent->pid);
 	audit_log_untrustedstring(ab, tsk->real_parent->comm);
+=======
+	audit_log_format(ab, " pid=%d comm=", task_tgid_nr(current));
+	audit_log_untrustedstring(ab, memcpy(comm, current->comm, sizeof(comm)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (a->type) {
 	case LSM_AUDIT_DATA_NONE:
@@ -240,7 +253,24 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 
 		audit_log_d_path(ab, " path=", &a->u.path);
 
+<<<<<<< HEAD
 		inode = a->u.path.dentry->d_inode;
+=======
+		inode = d_backing_inode(a->u.path.dentry);
+		if (inode) {
+			audit_log_format(ab, " dev=");
+			audit_log_untrustedstring(ab, inode->i_sb->s_id);
+			audit_log_format(ab, " ino=%lu", inode->i_ino);
+		}
+		break;
+	}
+	case LSM_AUDIT_DATA_FILE: {
+		struct inode *inode;
+
+		audit_log_d_path(ab, " path=", &a->u.file->f_path);
+
+		inode = file_inode(a->u.file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (inode) {
 			audit_log_format(ab, " dev=");
 			audit_log_untrustedstring(ab, inode->i_sb->s_id);
@@ -260,16 +290,28 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 			audit_log_format(ab, " ino=%lu", inode->i_ino);
 		}
 
+<<<<<<< HEAD
 		audit_log_format(ab, " ioctlcmd=%hx", a->u.op->cmd);
+=======
+		audit_log_format(ab, " ioctlcmd=0x%hx", a->u.op->cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 	case LSM_AUDIT_DATA_DENTRY: {
 		struct inode *inode;
 
 		audit_log_format(ab, " name=");
+<<<<<<< HEAD
 		audit_log_untrustedstring(ab, a->u.dentry->d_name.name);
 
 		inode = a->u.dentry->d_inode;
+=======
+		spin_lock(&a->u.dentry->d_lock);
+		audit_log_untrustedstring(ab, a->u.dentry->d_name.name);
+		spin_unlock(&a->u.dentry->d_lock);
+
+		inode = d_backing_inode(a->u.dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (inode) {
 			audit_log_format(ab, " dev=");
 			audit_log_untrustedstring(ab, inode->i_sb->s_id);
@@ -285,8 +327,14 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		dentry = d_find_alias(inode);
 		if (dentry) {
 			audit_log_format(ab, " name=");
+<<<<<<< HEAD
 			audit_log_untrustedstring(ab,
 					 dentry->d_name.name);
+=======
+			spin_lock(&dentry->d_lock);
+			audit_log_untrustedstring(ab, dentry->d_name.name);
+			spin_unlock(&dentry->d_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dput(dentry);
 		}
 		audit_log_format(ab, " dev=");
@@ -294,6 +342,7 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		audit_log_format(ab, " ino=%lu", inode->i_ino);
 		break;
 	}
+<<<<<<< HEAD
 	case LSM_AUDIT_DATA_TASK:
 		tsk = a->u.tsk;
 		if (tsk && tsk->pid) {
@@ -301,10 +350,29 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 			audit_log_untrustedstring(ab, tsk->comm);
 		}
 		break;
+=======
+	case LSM_AUDIT_DATA_TASK: {
+		struct task_struct *tsk = a->u.tsk;
+		if (tsk) {
+			pid_t pid = task_tgid_nr(tsk);
+			if (pid) {
+				char comm[sizeof(tsk->comm)];
+				audit_log_format(ab, " opid=%d ocomm=", pid);
+				audit_log_untrustedstring(ab,
+				    memcpy(comm, tsk->comm, sizeof(comm)));
+			}
+		}
+		break;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case LSM_AUDIT_DATA_NET:
 		if (a->u.net->sk) {
 			struct sock *sk = a->u.net->sk;
 			struct unix_sock *u;
+<<<<<<< HEAD
+=======
+			struct unix_address *addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			int len = 0;
 			char *p = NULL;
 
@@ -320,6 +388,7 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 						"faddr", "fport");
 				break;
 			}
+<<<<<<< HEAD
 			case AF_INET6: {
 				struct inet_sock *inet = inet_sk(sk);
 				struct ipv6_pinfo *inet6 = inet6_sk(sk);
@@ -328,20 +397,44 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 						inet->inet_sport,
 						"laddr", "lport");
 				print_ipv6_addr(ab, &inet6->daddr,
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+			case AF_INET6: {
+				struct inet_sock *inet = inet_sk(sk);
+
+				print_ipv6_addr(ab, &sk->sk_v6_rcv_saddr,
+						inet->inet_sport,
+						"laddr", "lport");
+				print_ipv6_addr(ab, &sk->sk_v6_daddr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						inet->inet_dport,
 						"faddr", "fport");
 				break;
 			}
+<<<<<<< HEAD
 			case AF_UNIX:
 				u = unix_sk(sk);
+=======
+#endif
+			case AF_UNIX:
+				u = unix_sk(sk);
+				addr = smp_load_acquire(&u->addr);
+				if (!addr)
+					break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (u->path.dentry) {
 					audit_log_d_path(ab, " path=", &u->path);
 					break;
 				}
+<<<<<<< HEAD
 				if (!u->addr)
 					break;
 				len = u->addr->len-sizeof(short);
 				p = &u->addr->name->sun_path[0];
+=======
+				len = addr->len-sizeof(short);
+				p = &addr->name->sun_path[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				audit_log_format(ab, " path=");
 				if (*p)
 					audit_log_untrustedstring(ab, p);
@@ -414,7 +507,12 @@ void common_lsm_audit(struct common_audit_data *a,
 	if (a == NULL)
 		return;
 	/* we use GFP_ATOMIC so we won't sleep */
+<<<<<<< HEAD
 	ab = audit_log_start(current->audit_context, GFP_ATOMIC, AUDIT_AVC);
+=======
+	ab = audit_log_start(current->audit_context, GFP_ATOMIC | __GFP_NOWARN,
+			     AUDIT_AVC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ab == NULL)
 		return;

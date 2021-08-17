@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 /* -*- c -*- --------------------------------------------------------------- *
  *
  * linux/fs/autofs/waitq.c
  *
  *  Copyright 1997-1998 Transmeta Corporation -- All Rights Reserved
  *  Copyright 2001-2006 Ian Kent <raven@themaw.net>
+=======
+/*
+ * Copyright 1997-1998 Transmeta Corporation -- All Rights Reserved
+ * Copyright 2001-2006 Ian Kent <raven@themaw.net>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is part of the Linux kernel and is made available under
  * the terms of the GNU General Public License, version 2, or at your
  * option, any later version, incorporated herein by reference.
+<<<<<<< HEAD
  *
  * ------------------------------------------------------------------------- */
+=======
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/slab.h>
 #include <linux/time.h>
@@ -18,7 +28,12 @@
 #include "autofs_i.h"
 
 /* We make this a static variable rather than a part of the superblock; it
+<<<<<<< HEAD
    is better if we don't reassign numbers easily even across filesystems */
+=======
+ * is better if we don't reassign numbers easily even across filesystems
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static autofs_wqt_t autofs4_next_wait_queue = 1;
 
 /* These are the signals we allow interrupting a pending mount */
@@ -34,7 +49,11 @@ void autofs4_catatonic_mode(struct autofs_sb_info *sbi)
 		return;
 	}
 
+<<<<<<< HEAD
 	DPRINTK("entering catatonic mode");
+=======
+	pr_debug("entering catatonic mode\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sbi->catatonic = 1;
 	wq = sbi->queues;
@@ -69,8 +88,15 @@ static int autofs4_write(struct autofs_sb_info *sbi,
 	set_fs(KERNEL_DS);
 
 	mutex_lock(&sbi->pipe_mutex);
+<<<<<<< HEAD
 	while (bytes &&
 	       (wr = file->f_op->write(file,data,bytes,&file->f_pos)) > 0) {
+=======
+	while (bytes) {
+		wr = __vfs_write(file, data, bytes, &file->f_pos);
+		if (wr <= 0)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data += wr;
 		bytes -= wr;
 	}
@@ -79,7 +105,12 @@ static int autofs4_write(struct autofs_sb_info *sbi,
 	set_fs(fs);
 
 	/* Keep the currently executing process from receiving a
+<<<<<<< HEAD
 	   SIGPIPE unless it was already supposed to get one */
+=======
+	 * SIGPIPE unless it was already supposed to get one
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (wr == -EPIPE && !sigpipe) {
 		spin_lock_irqsave(&current->sighand->siglock, flags);
 		sigdelset(&current->pending.signal, SIGPIPE);
@@ -87,9 +118,16 @@ static int autofs4_write(struct autofs_sb_info *sbi,
 		spin_unlock_irqrestore(&current->sighand->siglock, flags);
 	}
 
+<<<<<<< HEAD
 	return (bytes > 0);
 }
 	
+=======
+	/* if 'wr' returned 0 (impossible) we assume -EIO (safe) */
+	return bytes == 0 ? 0 : wr < 0 ? wr : -EIO;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void autofs4_notify_daemon(struct autofs_sb_info *sbi,
 				 struct autofs_wait_queue *wq,
 				 int type)
@@ -101,6 +139,7 @@ static void autofs4_notify_daemon(struct autofs_sb_info *sbi,
 	} pkt;
 	struct file *pipe = NULL;
 	size_t pktsz;
+<<<<<<< HEAD
 
 	DPRINTK("wait id = 0x%08lx, name = %.*s, type=%d",
 		(unsigned long) wq->wait_queue_token, wq->name.len, wq->name.name, type);
@@ -116,6 +155,19 @@ static void autofs4_notify_daemon(struct autofs_sb_info *sbi,
 		mutex_unlock(&sbi->wq_mutex);
 		return;
 	}
+=======
+	int ret;
+
+	pr_debug("wait id = 0x%08lx, name = %.*s, type=%d\n",
+		 (unsigned long) wq->wait_queue_token,
+		 wq->name.len, wq->name.name, type);
+
+	memset(&pkt, 0, sizeof(pkt)); /* For security reasons */
+
+	pkt.hdr.proto_version = sbi->version;
+	pkt.hdr.type = type;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (type) {
 	/* Kernel protocol v4 missing and expire packets */
 	case autofs_ptype_missing:
@@ -132,7 +184,12 @@ static void autofs4_notify_daemon(struct autofs_sb_info *sbi,
 	}
 	case autofs_ptype_expire_multi:
 	{
+<<<<<<< HEAD
 		struct autofs_packet_expire_multi *ep = &pkt.v4_pkt.expire_multi;
+=======
+		struct autofs_packet_expire_multi *ep =
+					&pkt.v4_pkt.expire_multi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		pktsz = sizeof(*ep);
 
@@ -169,7 +226,11 @@ static void autofs4_notify_daemon(struct autofs_sb_info *sbi,
 		break;
 	}
 	default:
+<<<<<<< HEAD
 		printk("autofs4_notify_daemon: bad type %d!\n", type);
+=======
+		pr_warn("bad type %d!\n", type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&sbi->wq_mutex);
 		return;
 	}
@@ -178,8 +239,23 @@ static void autofs4_notify_daemon(struct autofs_sb_info *sbi,
 
 	mutex_unlock(&sbi->wq_mutex);
 
+<<<<<<< HEAD
 	if (autofs4_write(sbi, pipe, &pkt, pktsz))
 		autofs4_catatonic_mode(sbi);
+=======
+	switch (ret = autofs4_write(sbi, pipe, &pkt, pktsz)) {
+	case 0:
+		break;
+	case -ENOMEM:
+	case -ERESTARTSYS:
+		/* Just fail this one */
+		autofs4_wait_release(sbi, wq->wait_queue_token, ret);
+		break;
+	default:
+		autofs4_catatonic_mode(sbi);
+		break;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fput(pipe);
 }
 
@@ -229,7 +305,11 @@ rename_retry:
 }
 
 static struct autofs_wait_queue *
+<<<<<<< HEAD
 autofs4_find_wait(struct autofs_sb_info *sbi, struct qstr *qstr)
+=======
+autofs4_find_wait(struct autofs_sb_info *sbi, const struct qstr *qstr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct autofs_wait_queue *wq;
 
@@ -237,7 +317,11 @@ autofs4_find_wait(struct autofs_sb_info *sbi, struct qstr *qstr)
 		if (wq->name.hash == qstr->hash &&
 		    wq->name.len == qstr->len &&
 		    wq->name.name &&
+<<<<<<< HEAD
 			 !memcmp(wq->name.name, qstr->name, qstr->len))
+=======
+		    !memcmp(wq->name.name, qstr->name, qstr->len))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 	}
 	return wq;
@@ -253,8 +337,13 @@ autofs4_find_wait(struct autofs_sb_info *sbi, struct qstr *qstr)
  */
 static int validate_request(struct autofs_wait_queue **wait,
 			    struct autofs_sb_info *sbi,
+<<<<<<< HEAD
 			    struct qstr *qstr,
 			    struct dentry*dentry, enum autofs_notify notify)
+=======
+			    const struct qstr *qstr,
+			    struct dentry *dentry, enum autofs_notify notify)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct autofs_wait_queue *wq;
 	struct autofs_info *ino;
@@ -328,8 +417,15 @@ static int validate_request(struct autofs_wait_queue **wait,
 		 * continue on and create a new request.
 		 */
 		if (!IS_ROOT(dentry)) {
+<<<<<<< HEAD
 			if (dentry->d_inode && d_unhashed(dentry)) {
 				struct dentry *parent = dentry->d_parent;
+=======
+			if (d_unhashed(dentry) &&
+			    d_really_is_positive(dentry)) {
+				struct dentry *parent = dentry->d_parent;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				new = d_lookup(parent, &dentry->d_name);
 				if (new)
 					dentry = new;
@@ -346,19 +442,43 @@ static int validate_request(struct autofs_wait_queue **wait,
 	return 1;
 }
 
+<<<<<<< HEAD
 int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 		enum autofs_notify notify)
+=======
+int autofs4_wait(struct autofs_sb_info *sbi,
+		 struct dentry *dentry, enum autofs_notify notify)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct autofs_wait_queue *wq;
 	struct qstr qstr;
 	char *name;
 	int status, ret, type;
+<<<<<<< HEAD
+=======
+	pid_t pid;
+	pid_t tgid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* In catatonic mode, we don't wait for nobody */
 	if (sbi->catatonic)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	if (!dentry->d_inode) {
+=======
+	/*
+	 * Try translating pids to the namespace of the daemon.
+	 *
+	 * Zero means failure: we are in an unrelated pid namespace.
+	 */
+	pid = task_pid_nr_ns(current, ns_of_pid(sbi->oz_pgrp));
+	tgid = task_tgid_nr_ns(current, ns_of_pid(sbi->oz_pgrp));
+	if (pid == 0 || tgid == 0)
+		return -ENOENT;
+
+	if (d_really_is_negative(dentry)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * A wait for a negative dentry is invalid for certain
 		 * cases. A direct or offset mount "always" has its mount
@@ -388,7 +508,11 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 		}
 	}
 	qstr.name = name;
+<<<<<<< HEAD
 	qstr.hash = full_name_hash(name, qstr.len);
+=======
+	qstr.hash = full_name_hash(dentry, name, qstr.len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mutex_lock_interruptible(&sbi->wq_mutex)) {
 		kfree(qstr.name);
@@ -405,7 +529,11 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 
 	if (!wq) {
 		/* Create a new wait queue */
+<<<<<<< HEAD
 		wq = kmalloc(sizeof(struct autofs_wait_queue),GFP_KERNEL);
+=======
+		wq = kmalloc(sizeof(struct autofs_wait_queue), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!wq) {
 			kfree(qstr.name);
 			mutex_unlock(&sbi->wq_mutex);
@@ -421,6 +549,7 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 		memcpy(&wq->name, &qstr, sizeof(struct qstr));
 		wq->dev = autofs4_get_dev(sbi);
 		wq->ino = autofs4_get_ino(sbi);
+<<<<<<< HEAD
 		wq->uid = current_uid();
 		wq->gid = current_gid();
 		wq->pid = current->pid;
@@ -428,6 +557,14 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 		wq->status = -EINTR; /* Status return if interrupted */
 		wq->wait_ctr = 2;
 		mutex_unlock(&sbi->wq_mutex);
+=======
+		wq->uid = current_cred()->uid;
+		wq->gid = current_cred()->gid;
+		wq->pid = pid;
+		wq->tgid = tgid;
+		wq->status = -EINTR; /* Status return if interrupted */
+		wq->wait_ctr = 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (sbi->version < 5) {
 			if (notify == NFY_MOUNT)
@@ -445,6 +582,7 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 					autofs_ptype_expire_indirect;
 		}
 
+<<<<<<< HEAD
 		DPRINTK("new wait id = 0x%08lx, name = %.*s, nfy=%d\n",
 			(unsigned long) wq->wait_queue_token, wq->name.len,
 			wq->name.name, notify);
@@ -458,6 +596,23 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 		DPRINTK("existing wait id = 0x%08lx, name = %.*s, nfy=%d",
 			(unsigned long) wq->wait_queue_token, wq->name.len,
 			wq->name.name, notify);
+=======
+		pr_debug("new wait id = 0x%08lx, name = %.*s, nfy=%d\n",
+			 (unsigned long) wq->wait_queue_token, wq->name.len,
+			 wq->name.name, notify);
+
+		/*
+		 * autofs4_notify_daemon() may block; it will unlock ->wq_mutex
+		 */
+		autofs4_notify_daemon(sbi, wq, type);
+	} else {
+		wq->wait_ctr++;
+		pr_debug("existing wait id = 0x%08lx, name = %.*s, nfy=%d\n",
+			 (unsigned long) wq->wait_queue_token, wq->name.len,
+			 wq->name.name, notify);
+		mutex_unlock(&sbi->wq_mutex);
+		kfree(qstr.name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -466,12 +621,23 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 	 */
 	if (wq->name.name) {
 		/* Block all but "shutdown" signals while waiting */
+<<<<<<< HEAD
 		sigset_t oldset;
 		unsigned long irqflags;
 
 		spin_lock_irqsave(&current->sighand->siglock, irqflags);
 		oldset = current->blocked;
 		siginitsetinv(&current->blocked, SHUTDOWN_SIGS & ~oldset.sig[0]);
+=======
+		unsigned long shutdown_sigs_mask;
+		unsigned long irqflags;
+		sigset_t oldset;
+
+		spin_lock_irqsave(&current->sighand->siglock, irqflags);
+		oldset = current->blocked;
+		shutdown_sigs_mask = SHUTDOWN_SIGS & ~oldset.sig[0];
+		siginitsetinv(&current->blocked, shutdown_sigs_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		recalc_sigpending();
 		spin_unlock_irqrestore(&current->sighand->siglock, irqflags);
 
@@ -482,7 +648,11 @@ int autofs4_wait(struct autofs_sb_info *sbi, struct dentry *dentry,
 		recalc_sigpending();
 		spin_unlock_irqrestore(&current->sighand->siglock, irqflags);
 	} else {
+<<<<<<< HEAD
 		DPRINTK("skipped sleeping");
+=======
+		pr_debug("skipped sleeping\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	status = wq->status;
@@ -557,4 +727,7 @@ int autofs4_wait_release(struct autofs_sb_info *sbi, autofs_wqt_t wait_queue_tok
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

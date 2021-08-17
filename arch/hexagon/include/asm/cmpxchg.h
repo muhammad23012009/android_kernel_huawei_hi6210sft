@@ -44,7 +44,11 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
 	__asm__ __volatile__ (
 	"1:	%0 = memw_locked(%1);\n"    /*  load into retval */
 	"	memw_locked(%1,P0) = %2;\n" /*  store into memory */
+<<<<<<< HEAD
 	"	if !P0 jump 1b;\n"
+=======
+	"	if (!P0) jump 1b;\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	: "=&r" (retval)
 	: "r" (ptr), "r" (x)
 	: "memory", "p0"
@@ -64,7 +68,10 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
  *  looks just like atomic_cmpxchg on our arch currently with a bunch of
  *  variable casting.
  */
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define cmpxchg(ptr, old, new)					\
 ({								\

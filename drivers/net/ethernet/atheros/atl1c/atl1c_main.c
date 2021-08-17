@@ -34,7 +34,11 @@ char atl1c_driver_version[] = ATL1C_DRV_VERSION;
  * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
  *   Class, Class Mask, private data (not used) }
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(atl1c_pci_tbl) = {
+=======
+static const struct pci_device_id atl1c_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATTANSIC_L1C)},
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATTANSIC_L2C)},
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATHEROS_L2C_B)},
@@ -48,7 +52,11 @@ MODULE_DEVICE_TABLE(pci, atl1c_pci_tbl);
 
 MODULE_AUTHOR("Jie Yang");
 MODULE_AUTHOR("Qualcomm Atheros Inc., <nic-devel@qualcomm.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Qualcom Atheros 100/1000M Ethernet Network Driver");
+=======
+MODULE_DESCRIPTION("Qualcomm Atheros 100/1000M Ethernet Network Driver");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");
 MODULE_VERSION(ATL1C_DRV_VERSION);
 
@@ -65,10 +73,13 @@ static void atl1c_reset_dma_ring(struct atl1c_adapter *adapter);
 static int atl1c_configure(struct atl1c_adapter *adapter);
 static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter);
 
+<<<<<<< HEAD
 static const u16 atl1c_pay_load_size[] = {
 	128, 256, 512, 1024, 2048, 4096,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const u32 atl1c_default_msg = NETIF_MSG_DRV | NETIF_MSG_PROBE |
 	NETIF_MSG_LINK | NETIF_MSG_TIMER | NETIF_MSG_IFDOWN | NETIF_MSG_IFUP;
@@ -145,9 +156,17 @@ static void atl1c_reset_pcie(struct atl1c_hw *hw, u32 flag)
 	 * Mask some pcie error bits
 	 */
 	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ERR);
+<<<<<<< HEAD
 	pci_read_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, &data);
 	data &= ~(PCI_ERR_UNC_DLP | PCI_ERR_UNC_FCP);
 	pci_write_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, data);
+=======
+	if (pos) {
+		pci_read_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, &data);
+		data &= ~(PCI_ERR_UNC_DLP | PCI_ERR_UNC_FCP);
+		pci_write_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, data);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* clear error status */
 	pcie_capability_write_word(pdev, PCI_EXP_DEVSTA,
 			PCI_EXP_DEVSTA_NFED |
@@ -750,7 +769,11 @@ static void atl1c_patch_assign(struct atl1c_hw *hw)
 
 	if (hw->device_id == PCI_DEVICE_ID_ATHEROS_L2C_B2 &&
 	    hw->revision_id == L2CB_V21) {
+<<<<<<< HEAD
 		/* config acess mode */
+=======
+		/* config access mode */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_write_config_dword(pdev, REG_PCIE_IND_ACC_ADDR,
 				       REG_PCIE_DEV_MISC_CTRL);
 		pci_read_config_dword(pdev, REG_PCIE_IND_ACC_DATA, &misc_ctrl);
@@ -823,14 +846,21 @@ static int atl1c_sw_init(struct atl1c_adapter *adapter)
 	atl1c_set_rxbufsize(adapter, adapter->netdev);
 	atomic_set(&adapter->irq_sem, 1);
 	spin_lock_init(&adapter->mdio_lock);
+<<<<<<< HEAD
 	spin_lock_init(&adapter->tx_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_bit(__AT_DOWN, &adapter->flags);
 
 	return 0;
 }
 
 static inline void atl1c_clean_buffer(struct pci_dev *pdev,
+<<<<<<< HEAD
 				struct atl1c_buffer *buffer_info, int in_irq)
+=======
+				struct atl1c_buffer *buffer_info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u16 pci_driection;
 	if (buffer_info->flags & ATL1C_BUFFER_FREE)
@@ -848,12 +878,17 @@ static inline void atl1c_clean_buffer(struct pci_dev *pdev,
 			pci_unmap_page(pdev, buffer_info->dma,
 					buffer_info->length, pci_driection);
 	}
+<<<<<<< HEAD
 	if (buffer_info->skb) {
 		if (in_irq)
 			dev_kfree_skb_irq(buffer_info->skb);
 		else
 			dev_kfree_skb(buffer_info->skb);
 	}
+=======
+	if (buffer_info->skb)
+		dev_consume_skb_any(buffer_info->skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buffer_info->dma = 0;
 	buffer_info->skb = NULL;
 	ATL1C_SET_BUFFER_STATE(buffer_info, ATL1C_BUFFER_FREE);
@@ -873,9 +908,17 @@ static void atl1c_clean_tx_ring(struct atl1c_adapter *adapter,
 	ring_count = tpd_ring->count;
 	for (index = 0; index < ring_count; index++) {
 		buffer_info = &tpd_ring->buffer_info[index];
+<<<<<<< HEAD
 		atl1c_clean_buffer(pdev, buffer_info, 0);
 	}
 
+=======
+		atl1c_clean_buffer(pdev, buffer_info);
+	}
+
+	netdev_reset_queue(adapter->netdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Zero out Tx-buffers */
 	memset(tpd_ring->desc, 0, sizeof(struct atl1c_tpd_desc) *
 		ring_count);
@@ -897,7 +940,11 @@ static void atl1c_clean_rx_ring(struct atl1c_adapter *adapter)
 
 	for (j = 0; j < rfd_ring->count; j++) {
 		buffer_info = &rfd_ring->buffer_info[j];
+<<<<<<< HEAD
 		atl1c_clean_buffer(pdev, buffer_info, 0);
+=======
+		atl1c_clean_buffer(pdev, buffer_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* zero out the descriptor ring */
 	memset(rfd_ring->desc, 0, rfd_ring->size);
@@ -1022,7 +1069,10 @@ static int atl1c_setup_ring_resources(struct atl1c_adapter *adapter)
 		dev_err(&pdev->dev, "could not get memory for DMA buffer\n");
 		goto err_nomem;
 	}
+<<<<<<< HEAD
 	memset(ring_header->desc, 0, ring_header->size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* init TPD ring */
 
 	tpd_ring[0].dma = roundup(ring_header->dma, 8);
@@ -1498,31 +1548,65 @@ static struct net_device_stats *atl1c_get_stats(struct net_device *netdev)
 	struct net_device_stats *net_stats = &netdev->stats;
 
 	atl1c_update_hw_stats(adapter);
+<<<<<<< HEAD
 	net_stats->rx_packets = hw_stats->rx_ok;
 	net_stats->tx_packets = hw_stats->tx_ok;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	net_stats->rx_bytes   = hw_stats->rx_byte_cnt;
 	net_stats->tx_bytes   = hw_stats->tx_byte_cnt;
 	net_stats->multicast  = hw_stats->rx_mcast;
 	net_stats->collisions = hw_stats->tx_1_col +
+<<<<<<< HEAD
 				hw_stats->tx_2_col * 2 +
 				hw_stats->tx_late_col + hw_stats->tx_abort_col;
 	net_stats->rx_errors  = hw_stats->rx_frag + hw_stats->rx_fcs_err +
 				hw_stats->rx_len_err + hw_stats->rx_sz_ov +
 				hw_stats->rx_rrd_ov + hw_stats->rx_align_err;
+=======
+				hw_stats->tx_2_col +
+				hw_stats->tx_late_col +
+				hw_stats->tx_abort_col;
+
+	net_stats->rx_errors  = hw_stats->rx_frag +
+				hw_stats->rx_fcs_err +
+				hw_stats->rx_len_err +
+				hw_stats->rx_sz_ov +
+				hw_stats->rx_rrd_ov +
+				hw_stats->rx_align_err +
+				hw_stats->rx_rxf_ov;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	net_stats->rx_fifo_errors   = hw_stats->rx_rxf_ov;
 	net_stats->rx_length_errors = hw_stats->rx_len_err;
 	net_stats->rx_crc_errors    = hw_stats->rx_fcs_err;
 	net_stats->rx_frame_errors  = hw_stats->rx_align_err;
+<<<<<<< HEAD
 	net_stats->rx_over_errors   = hw_stats->rx_rrd_ov + hw_stats->rx_rxf_ov;
 
 	net_stats->rx_missed_errors = hw_stats->rx_rrd_ov + hw_stats->rx_rxf_ov;
 
 	net_stats->tx_errors = hw_stats->tx_late_col + hw_stats->tx_abort_col +
 				hw_stats->tx_underrun + hw_stats->tx_trunc;
+=======
+	net_stats->rx_dropped       = hw_stats->rx_rrd_ov;
+
+	net_stats->tx_errors = hw_stats->tx_late_col +
+			       hw_stats->tx_abort_col +
+			       hw_stats->tx_underrun +
+			       hw_stats->tx_trunc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	net_stats->tx_fifo_errors    = hw_stats->tx_underrun;
 	net_stats->tx_aborted_errors = hw_stats->tx_abort_col;
 	net_stats->tx_window_errors  = hw_stats->tx_late_col;
 
+<<<<<<< HEAD
+=======
+	net_stats->rx_packets = hw_stats->rx_ok + net_stats->rx_errors;
+	net_stats->tx_packets = hw_stats->tx_ok + net_stats->tx_errors;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return net_stats;
 }
 
@@ -1544,6 +1628,10 @@ static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
 	u16 next_to_clean = atomic_read(&tpd_ring->next_to_clean);
 	u16 hw_next_to_clean;
 	u16 reg;
+<<<<<<< HEAD
+=======
+	unsigned int total_bytes = 0, total_packets = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	reg = type == atl1c_trans_high ? REG_TPD_PRI1_CIDX : REG_TPD_PRI0_CIDX;
 
@@ -1551,12 +1639,25 @@ static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
 
 	while (next_to_clean != hw_next_to_clean) {
 		buffer_info = &tpd_ring->buffer_info[next_to_clean];
+<<<<<<< HEAD
 		atl1c_clean_buffer(pdev, buffer_info, 1);
+=======
+		if (buffer_info->skb) {
+			total_bytes += buffer_info->skb->len;
+			total_packets++;
+		}
+		atl1c_clean_buffer(pdev, buffer_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (++next_to_clean == tpd_ring->count)
 			next_to_clean = 0;
 		atomic_set(&tpd_ring->next_to_clean, next_to_clean);
 	}
 
+<<<<<<< HEAD
+=======
+	netdev_completed_queue(adapter->netdev, total_packets, total_bytes);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (netif_queue_stopped(adapter->netdev) &&
 			netif_carrier_ok(adapter->netdev)) {
 		netif_wake_queue(adapter->netdev);
@@ -1668,6 +1769,10 @@ static struct sk_buff *atl1c_alloc_skb(struct atl1c_adapter *adapter)
 	skb = build_skb(page_address(page) + adapter->rx_page_offset,
 			adapter->rx_frag_size);
 	if (likely(skb)) {
+<<<<<<< HEAD
+=======
+		skb_reserve(skb, NET_SKB_PAD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		adapter->rx_page_offset += adapter->rx_frag_size;
 		if (adapter->rx_page_offset >= PAGE_SIZE)
 			adapter->rx_page = NULL;
@@ -1966,6 +2071,7 @@ static int atl1c_tso_csum(struct atl1c_adapter *adapter,
 			  enum atl1c_trans_queue type)
 {
 	struct pci_dev *pdev = adapter->pdev;
+<<<<<<< HEAD
 	u8 hdr_len;
 	u32 real_len;
 	unsigned short offload_type;
@@ -1977,6 +2083,19 @@ static int atl1c_tso_csum(struct atl1c_adapter *adapter,
 			if (unlikely(err))
 				return -1;
 		}
+=======
+	unsigned short offload_type;
+	u8 hdr_len;
+	u32 real_len;
+
+	if (skb_is_gso(skb)) {
+		int err;
+
+		err = skb_cow_head(skb, 0);
+		if (err < 0)
+			return err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		offload_type = skb_shinfo(skb)->gso_type;
 
 		if (offload_type & SKB_GSO_TCPV4) {
@@ -2074,7 +2193,11 @@ static void atl1c_tx_rollback(struct atl1c_adapter *adpt,
 	while (index != tpd_ring->next_to_use) {
 		tpd = ATL1C_TPD_DESC(tpd_ring, index);
 		buffer_info = &tpd_ring->buffer_info[index];
+<<<<<<< HEAD
 		atl1c_clean_buffer(adpt->pdev, buffer_info, 0);
+=======
+		atl1c_clean_buffer(adpt->pdev, buffer_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memset(tpd, 0, sizeof(struct atl1c_tpd_desc));
 		if (++index == tpd_ring->count)
 			index = 0;
@@ -2195,7 +2318,10 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 					  struct net_device *netdev)
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 tpd_req = 1;
 	struct atl1c_tpd_desc *tpd;
 	enum atl1c_trans_queue type = atl1c_trans_normal;
@@ -2206,16 +2332,22 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 	}
 
 	tpd_req = atl1c_cal_tpd_req(skb);
+<<<<<<< HEAD
 	if (!spin_trylock_irqsave(&adapter->tx_lock, flags)) {
 		if (netif_msg_pktdata(adapter))
 			dev_info(&adapter->pdev->dev, "tx locked\n");
 		return NETDEV_TX_LOCKED;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (atl1c_tpd_avail(adapter, type) < tpd_req) {
 		/* no enough descriptor, just stop queue */
 		netif_stop_queue(netdev);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NETDEV_TX_BUSY;
 	}
 
@@ -2223,13 +2355,21 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 
 	/* do TSO and check sum */
 	if (atl1c_tso_csum(adapter, skb, &tpd, type) != 0) {
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
 	}
 
+<<<<<<< HEAD
 	if (unlikely(vlan_tx_tag_present(skb))) {
 		u16 vlan = vlan_tx_tag_get(skb);
+=======
+	if (unlikely(skb_vlan_tag_present(skb))) {
+		u16 vlan = skb_vlan_tag_get(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__le16 tag;
 
 		vlan = cpu_to_le16(vlan);
@@ -2246,11 +2386,18 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 			   "tx-skb droppted due to dma error\n");
 		/* roll back tpd/buffer */
 		atl1c_tx_rollback(adapter, tpd, type);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
 		dev_kfree_skb(skb);
 	} else {
 		atl1c_tx_queue(adapter, skb, tpd, type);
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+		dev_kfree_skb_any(skb);
+	} else {
+		netdev_sent_queue(adapter->netdev, skb->len);
+		atl1c_tx_queue(adapter, skb, tpd, type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return NETDEV_TX_OK;
@@ -2793,6 +2940,7 @@ static struct pci_driver atl1c_driver = {
 	.driver.pm = &atl1c_pm_ops,
 };
 
+<<<<<<< HEAD
 /**
  * atl1c_init_module - Driver Registration Routine
  *
@@ -2817,3 +2965,6 @@ static void __exit atl1c_exit_module(void)
 
 module_init(atl1c_init_module);
 module_exit(atl1c_exit_module);
+=======
+module_pci_driver(atl1c_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

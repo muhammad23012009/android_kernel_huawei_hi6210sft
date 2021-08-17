@@ -563,7 +563,11 @@ static void add_offloaded_reg(struct vub300_mmc_host *vub300,
 			i += 1;
 			continue;
 		}
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__add_offloaded_reg_to_fifo(vub300, register_access, func);
 }
 
@@ -659,7 +663,11 @@ static void __vub300_irqpoll_response(struct vub300_mmc_host *vub300)
 static void __do_poll(struct vub300_mmc_host *vub300)
 {
 	/* cmd_mutex is held by vub300_pollwork_thread */
+<<<<<<< HEAD
 	long commretval;
+=======
+	unsigned long commretval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mod_timer(&vub300->inactivity_timer, jiffies + HZ);
 	init_completion(&vub300->irqpoll_complete);
 	send_irqpoll(vub300);
@@ -671,8 +679,11 @@ static void __do_poll(struct vub300_mmc_host *vub300)
 		vub300->usb_timed_out = 1;
 		usb_kill_urb(vub300->command_out_urb);
 		usb_kill_urb(vub300->command_res_urb);
+<<<<<<< HEAD
 	} else if (commretval < 0) {
 		vub300_queue_poll_work(vub300, 1);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else { /* commretval > 0 */
 		__vub300_irqpoll_response(vub300);
 	}
@@ -1374,7 +1385,11 @@ static void download_offload_pseudocode(struct vub300_mmc_host *vub300)
 		l += snprintf(vub300->vub_name + l,
 			      sizeof(vub300->vub_name) - l, "_%04X%04X",
 			      sf->vendor, sf->device);
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snprintf(vub300->vub_name + l, sizeof(vub300->vub_name) - l, ".bin");
 	dev_info(&vub300->udev->dev, "requesting offload firmware %s\n",
 		 vub300->vub_name);
@@ -1895,7 +1910,11 @@ static int satisfy_request_from_offloaded_data(struct vub300_mmc_host *vub300,
 			i += 1;
 			continue;
 		}
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (vub300->total_offload_count == 0)
 		return 0;
 	else if (vub300->fn[func].offload_count == 0)
@@ -2079,7 +2098,11 @@ static void vub300_enable_sdio_irq(struct mmc_host *mmc, int enable)
 	kref_put(&vub300->kref, vub300_delete);
 }
 
+<<<<<<< HEAD
 void vub300_init_card(struct mmc_host *mmc, struct mmc_card *card)
+=======
+static void vub300_init_card(struct mmc_host *mmc, struct mmc_card *card)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {				/* NOT irq */
 	struct vub300_mmc_host *vub300 = mmc_priv(mmc);
 	dev_info(&vub300->udev->dev, "NO host QUIRKS for this card\n");
@@ -2118,13 +2141,19 @@ static int vub300_probe(struct usb_interface *interface,
 	command_out_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!command_out_urb) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		dev_err(&udev->dev, "not enough memory for command_out_urb\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error0;
 	}
 	command_res_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!command_res_urb) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		dev_err(&udev->dev, "not enough memory for command_res_urb\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error1;
 	}
 	/* this also allocates memory for our VUB300 mmc host device */
@@ -2296,7 +2325,11 @@ static int vub300_probe(struct usb_interface *interface,
 	if (retval < 0)
 		goto error5;
 	retval =
+<<<<<<< HEAD
 		usb_control_msg(vub300->udev, usb_rcvctrlpipe(vub300->udev, 0),
+=======
+		usb_control_msg(vub300->udev, usb_sndctrlpipe(vub300->udev, 0),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				SET_ROM_WAIT_STATES,
 				USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 				firmware_rom_wait_states, 0x0000, NULL, 0, HZ);
@@ -2392,6 +2425,7 @@ static void vub300_disconnect(struct usb_interface *interface)
 #ifdef CONFIG_PM
 static int vub300_suspend(struct usb_interface *intf, pm_message_t message)
 {
+<<<<<<< HEAD
 	struct vub300_mmc_host *vub300 = usb_get_intfdata(intf);
 	if (!vub300 || !vub300->mmc) {
 		return 0;
@@ -2400,10 +2434,14 @@ static int vub300_suspend(struct usb_interface *intf, pm_message_t message)
 		mmc_suspend_host(mmc);
 		return 0;
 	}
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vub300_resume(struct usb_interface *intf)
 {
+<<<<<<< HEAD
 	struct vub300_mmc_host *vub300 = usb_get_intfdata(intf);
 	if (!vub300 || !vub300->mmc) {
 		return 0;
@@ -2412,6 +2450,9 @@ static int vub300_resume(struct usb_interface *intf)
 		mmc_resume_host(mmc);
 		return 0;
 	}
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else
 #define vub300_suspend NULL

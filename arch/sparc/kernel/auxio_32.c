@@ -9,12 +9,21 @@
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/oplib.h>
 #include <asm/io.h>
 #include <asm/auxio.h>
 #include <asm/string.h>		/* memset(), Linux has no bzero() */
 #include <asm/cpu_type.h>
 
+<<<<<<< HEAD
+=======
+#include "kernel.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Probe and map in the Auxiliary I/O register */
 
 /* auxio_register is not static because it is referenced 
@@ -103,7 +112,11 @@ EXPORT_SYMBOL(set_auxio);
 
 /* sun4m power control register (AUXIO2) */
 
+<<<<<<< HEAD
 volatile unsigned char * auxio_power_register = NULL;
+=======
+volatile u8 __iomem *auxio_power_register = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init auxio_power_probe(void)
 {
@@ -127,8 +140,13 @@ void __init auxio_power_probe(void)
 	r.flags = regs.which_io & 0xF;
 	r.start = regs.phys_addr;
 	r.end = regs.phys_addr + regs.reg_size - 1;
+<<<<<<< HEAD
 	auxio_power_register = (unsigned char *) of_ioremap(&r, 0,
 	    regs.reg_size, "auxpower");
+=======
+	auxio_power_register =
+		(u8 __iomem *)of_ioremap(&r, 0, regs.reg_size, "auxpower");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Display a quick message on the console. */
 	if (auxio_power_register)

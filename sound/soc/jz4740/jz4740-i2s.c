@@ -14,6 +14,11 @@
 
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -29,9 +34,18 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 #include <sound/initval.h>
+<<<<<<< HEAD
 
 #include "jz4740-i2s.h"
 #include "jz4740-pcm.h"
+=======
+#include <sound/dmaengine_pcm.h>
+
+#include "jz4740-i2s.h"
+
+#define JZ4740_DMA_TYPE_AIC_TRANSMIT 24
+#define JZ4740_DMA_TYPE_AIC_RECEIVE 25
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define JZ_REG_AIC_CONF		0x00
 #define JZ_REG_AIC_CTRL		0x04
@@ -53,6 +67,15 @@
 
 #define JZ_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET 12
 #define JZ_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET 8
+<<<<<<< HEAD
+=======
+#define JZ4780_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET 24
+#define JZ4780_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET 16
+#define JZ4780_AIC_CONF_FIFO_RX_THRESHOLD_MASK \
+			(0xf << JZ4780_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET)
+#define JZ4780_AIC_CONF_FIFO_TX_THRESHOLD_MASK \
+			(0x1f <<  JZ4780_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_MASK (0x7 << 19)
 #define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_MASK (0x7 << 16)
@@ -74,12 +97,28 @@
 #define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_OFFSET  16
 
 #define JZ_AIC_I2S_FMT_DISABLE_BIT_CLK BIT(12)
+<<<<<<< HEAD
+=======
+#define JZ_AIC_I2S_FMT_DISABLE_BIT_ICLK BIT(13)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define JZ_AIC_I2S_FMT_ENABLE_SYS_CLK BIT(4)
 #define JZ_AIC_I2S_FMT_MSB BIT(0)
 
 #define JZ_AIC_I2S_STATUS_BUSY BIT(2)
 
 #define JZ_AIC_CLK_DIV_MASK 0xf
+<<<<<<< HEAD
+=======
+#define I2SDIV_DV_SHIFT 0
+#define I2SDIV_DV_MASK (0xf << I2SDIV_DV_SHIFT)
+#define I2SDIV_IDV_SHIFT 8
+#define I2SDIV_IDV_MASK (0xf << I2SDIV_IDV_SHIFT)
+
+enum jz47xx_i2s_version {
+	JZ_I2S_JZ4740,
+	JZ_I2S_JZ4780,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct jz4740_i2s {
 	struct resource *mem;
@@ -89,8 +128,15 @@ struct jz4740_i2s {
 	struct clk *clk_aic;
 	struct clk *clk_i2s;
 
+<<<<<<< HEAD
 	struct jz4740_pcm_config pcm_config_playback;
 	struct jz4740_pcm_config pcm_config_capture;
+=======
+	struct snd_dmaengine_dai_dma_data playback_dma_data;
+	struct snd_dmaengine_dai_dma_data capture_dma_data;
+
+	enum jz47xx_i2s_version version;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline uint32_t jz4740_i2s_read(const struct jz4740_i2s *i2s,
@@ -118,7 +164,11 @@ static int jz4740_i2s_startup(struct snd_pcm_substream *substream,
 	ctrl |= JZ_AIC_CTRL_FLUSH;
 	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
 
+<<<<<<< HEAD
 	clk_enable(i2s->clk_i2s);
+=======
+	clk_prepare_enable(i2s->clk_i2s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	conf = jz4740_i2s_read(i2s, JZ_REG_AIC_CONF);
 	conf |= JZ_AIC_CONF_ENABLE;
@@ -140,7 +190,11 @@ static void jz4740_i2s_shutdown(struct snd_pcm_substream *substream,
 	conf &= ~JZ_AIC_CONF_ENABLE;
 	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
 
+<<<<<<< HEAD
 	clk_disable(i2s->clk_i2s);
+=======
+	clk_disable_unprepare(i2s->clk_i2s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int jz4740_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
@@ -233,6 +287,7 @@ static int jz4740_i2s_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
 	struct jz4740_i2s *i2s = snd_soc_dai_get_drvdata(dai);
+<<<<<<< HEAD
 	enum jz4740_dma_width dma_width;
 	struct jz4740_pcm_config *pcm_config;
 	unsigned int sample_size;
@@ -248,6 +303,23 @@ static int jz4740_i2s_hw_params(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_FORMAT_S16:
 		sample_size = 1;
 		dma_width = JZ4740_DMA_WIDTH_16BIT;
+=======
+	unsigned int sample_size;
+	uint32_t ctrl, div_reg;
+	int div;
+
+	ctrl = jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+
+	div_reg = jz4740_i2s_read(i2s, JZ_REG_AIC_CLK_DIV);
+	div = clk_get_rate(i2s->clk_i2s) / (64 * params_rate(params));
+
+	switch (params_format(params)) {
+	case SNDRV_PCM_FORMAT_S8:
+		sample_size = 0;
+		break;
+	case SNDRV_PCM_FORMAT_S16:
+		sample_size = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		return -EINVAL;
@@ -261,13 +333,19 @@ static int jz4740_i2s_hw_params(struct snd_pcm_substream *substream,
 		else
 			ctrl &= ~JZ_AIC_CTRL_MONO_TO_STEREO;
 
+<<<<<<< HEAD
 		pcm_config = &i2s->pcm_config_playback;
 		pcm_config->dma_config.dst_width = dma_width;
 
+=======
+		div_reg &= ~I2SDIV_DV_MASK;
+		div_reg |= (div - 1) << I2SDIV_DV_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		ctrl &= ~JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_MASK;
 		ctrl |= sample_size << JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_OFFSET;
 
+<<<<<<< HEAD
 		pcm_config = &i2s->pcm_config_capture;
 		pcm_config->dma_config.src_width = dma_width;
 	}
@@ -275,6 +353,19 @@ static int jz4740_i2s_hw_params(struct snd_pcm_substream *substream,
 	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
 
 	snd_soc_dai_set_dma_data(dai, substream, pcm_config);
+=======
+		if (i2s->version >= JZ_I2S_JZ4780) {
+			div_reg &= ~I2SDIV_IDV_MASK;
+			div_reg |= (div - 1) << I2SDIV_IDV_SHIFT;
+		} else {
+			div_reg &= ~I2SDIV_DV_MASK;
+			div_reg |= (div - 1) << I2SDIV_DV_SHIFT;
+		}
+	}
+
+	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+	jz4740_i2s_write(i2s, JZ_REG_AIC_CLK_DIV, div_reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -289,10 +380,20 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 	switch (clk_id) {
 	case JZ4740_I2S_CLKSRC_EXT:
 		parent = clk_get(NULL, "ext");
+<<<<<<< HEAD
+=======
+		if (IS_ERR(parent))
+			return PTR_ERR(parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clk_set_parent(i2s->clk_i2s, parent);
 		break;
 	case JZ4740_I2S_CLKSRC_PLL:
 		parent = clk_get(NULL, "pll half");
+<<<<<<< HEAD
+=======
+		if (IS_ERR(parent))
+			return PTR_ERR(parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clk_set_parent(i2s->clk_i2s, parent);
 		ret = clk_set_rate(i2s->clk_i2s, freq);
 		break;
@@ -314,10 +415,17 @@ static int jz4740_i2s_suspend(struct snd_soc_dai *dai)
 		conf &= ~JZ_AIC_CONF_ENABLE;
 		jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
 
+<<<<<<< HEAD
 		clk_disable(i2s->clk_i2s);
 	}
 
 	clk_disable(i2s->clk_aic);
+=======
+		clk_disable_unprepare(i2s->clk_i2s);
+	}
+
+	clk_disable_unprepare(i2s->clk_aic);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -327,10 +435,17 @@ static int jz4740_i2s_resume(struct snd_soc_dai *dai)
 	struct jz4740_i2s *i2s = snd_soc_dai_get_drvdata(dai);
 	uint32_t conf;
 
+<<<<<<< HEAD
 	clk_enable(i2s->clk_aic);
 
 	if (dai->active) {
 		clk_enable(i2s->clk_i2s);
+=======
+	clk_prepare_enable(i2s->clk_aic);
+
+	if (dai->active) {
+		clk_prepare_enable(i2s->clk_i2s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		conf = jz4740_i2s_read(i2s, JZ_REG_AIC_CONF);
 		conf |= JZ_AIC_CONF_ENABLE;
@@ -342,6 +457,7 @@ static int jz4740_i2s_resume(struct snd_soc_dai *dai)
 
 static void jz4740_i2c_init_pcm_config(struct jz4740_i2s *i2s)
 {
+<<<<<<< HEAD
 	struct jz4740_dma_config *dma_config;
 
 	/* Playback */
@@ -361,6 +477,21 @@ static void jz4740_i2c_init_pcm_config(struct jz4740_i2s *i2s)
 	dma_config->flags = JZ4740_DMA_DST_AUTOINC;
 	dma_config->mode = JZ4740_DMA_MODE_SINGLE;
 	i2s->pcm_config_capture.fifo_addr = i2s->phys_base + JZ_REG_AIC_FIFO;
+=======
+	struct snd_dmaengine_dai_dma_data *dma_data;
+
+	/* Playback */
+	dma_data = &i2s->playback_dma_data;
+	dma_data->maxburst = 16;
+	dma_data->slave_id = JZ4740_DMA_TYPE_AIC_TRANSMIT;
+	dma_data->addr = i2s->phys_base + JZ_REG_AIC_FIFO;
+
+	/* Capture */
+	dma_data = &i2s->capture_dma_data;
+	dma_data->maxburst = 16;
+	dma_data->slave_id = JZ4740_DMA_TYPE_AIC_RECEIVE;
+	dma_data->addr = i2s->phys_base + JZ_REG_AIC_FIFO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int jz4740_i2s_dai_probe(struct snd_soc_dai *dai)
@@ -368,6 +499,7 @@ static int jz4740_i2s_dai_probe(struct snd_soc_dai *dai)
 	struct jz4740_i2s *i2s = snd_soc_dai_get_drvdata(dai);
 	uint32_t conf;
 
+<<<<<<< HEAD
 	clk_enable(i2s->clk_aic);
 
 	jz4740_i2c_init_pcm_config(i2s);
@@ -377,6 +509,27 @@ static int jz4740_i2s_dai_probe(struct snd_soc_dai *dai)
 		JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
 		JZ_AIC_CONF_I2S |
 		JZ_AIC_CONF_INTERNAL_CODEC;
+=======
+	clk_prepare_enable(i2s->clk_aic);
+
+	jz4740_i2c_init_pcm_config(i2s);
+	snd_soc_dai_init_dma_data(dai, &i2s->playback_dma_data,
+		&i2s->capture_dma_data);
+
+	if (i2s->version >= JZ_I2S_JZ4780) {
+		conf = (7 << JZ4780_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET) |
+			(8 << JZ4780_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET) |
+			JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
+			JZ_AIC_CONF_I2S |
+			JZ_AIC_CONF_INTERNAL_CODEC;
+	} else {
+		conf = (7 << JZ_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET) |
+			(8 << JZ_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET) |
+			JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
+			JZ_AIC_CONF_I2S |
+			JZ_AIC_CONF_INTERNAL_CODEC;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, JZ_AIC_CONF_RESET);
 	jz4740_i2s_write(i2s, JZ_REG_AIC_CONF, conf);
@@ -388,7 +541,11 @@ static int jz4740_i2s_dai_remove(struct snd_soc_dai *dai)
 {
 	struct jz4740_i2s *i2s = snd_soc_dai_get_drvdata(dai);
 
+<<<<<<< HEAD
 	clk_disable(i2s->clk_aic);
+=======
+	clk_disable_unprepare(i2s->clk_aic);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -425,10 +582,34 @@ static struct snd_soc_dai_driver jz4740_i2s_dai = {
 	.resume = jz4740_i2s_resume,
 };
 
+<<<<<<< HEAD
+=======
+static struct snd_soc_dai_driver jz4780_i2s_dai = {
+	.probe = jz4740_i2s_dai_probe,
+	.remove = jz4740_i2s_dai_remove,
+	.playback = {
+		.channels_min = 1,
+		.channels_max = 2,
+		.rates = SNDRV_PCM_RATE_8000_48000,
+		.formats = JZ4740_I2S_FMTS,
+	},
+	.capture = {
+		.channels_min = 2,
+		.channels_max = 2,
+		.rates = SNDRV_PCM_RATE_8000_48000,
+		.formats = JZ4740_I2S_FMTS,
+	},
+	.ops = &jz4740_i2s_dai_ops,
+	.suspend = jz4740_i2s_suspend,
+	.resume = jz4740_i2s_resume,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_soc_component_driver jz4740_i2s_component = {
 	.name		= "jz4740-i2s",
 };
 
+<<<<<<< HEAD
 static int jz4740_i2s_dev_probe(struct platform_device *pdev)
 {
 	struct jz4740_i2s *i2s;
@@ -513,14 +694,75 @@ static int jz4740_i2s_dev_remove(struct platform_device *pdev)
 	kfree(i2s);
 
 	return 0;
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id jz4740_of_matches[] = {
+	{ .compatible = "ingenic,jz4740-i2s", .data = (void *)JZ_I2S_JZ4740 },
+	{ .compatible = "ingenic,jz4780-i2s", .data = (void *)JZ_I2S_JZ4780 },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, jz4740_of_matches);
+#endif
+
+static int jz4740_i2s_dev_probe(struct platform_device *pdev)
+{
+	struct jz4740_i2s *i2s;
+	struct resource *mem;
+	int ret;
+	const struct of_device_id *match;
+
+	i2s = devm_kzalloc(&pdev->dev, sizeof(*i2s), GFP_KERNEL);
+	if (!i2s)
+		return -ENOMEM;
+
+	match = of_match_device(jz4740_of_matches, &pdev->dev);
+	if (match)
+		i2s->version = (enum jz47xx_i2s_version)match->data;
+
+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	i2s->base = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(i2s->base))
+		return PTR_ERR(i2s->base);
+
+	i2s->phys_base = mem->start;
+
+	i2s->clk_aic = devm_clk_get(&pdev->dev, "aic");
+	if (IS_ERR(i2s->clk_aic))
+		return PTR_ERR(i2s->clk_aic);
+
+	i2s->clk_i2s = devm_clk_get(&pdev->dev, "i2s");
+	if (IS_ERR(i2s->clk_i2s))
+		return PTR_ERR(i2s->clk_i2s);
+
+	platform_set_drvdata(pdev, i2s);
+
+	if (i2s->version == JZ_I2S_JZ4780)
+		ret = devm_snd_soc_register_component(&pdev->dev,
+			&jz4740_i2s_component, &jz4780_i2s_dai, 1);
+	else
+		ret = devm_snd_soc_register_component(&pdev->dev,
+			&jz4740_i2s_component, &jz4740_i2s_dai, 1);
+
+	if (ret)
+		return ret;
+
+	return devm_snd_dmaengine_pcm_register(&pdev->dev, NULL,
+		SND_DMAENGINE_PCM_FLAG_COMPAT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver jz4740_i2s_driver = {
 	.probe = jz4740_i2s_dev_probe,
+<<<<<<< HEAD
 	.remove = jz4740_i2s_dev_remove,
 	.driver = {
 		.name = "jz4740-i2s",
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.name = "jz4740-i2s",
+		.of_match_table = of_match_ptr(jz4740_of_matches)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

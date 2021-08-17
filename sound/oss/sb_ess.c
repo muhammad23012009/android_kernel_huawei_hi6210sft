@@ -604,7 +604,11 @@ static void ess_audio_output_block_audio2
 	ess_chgmixer (devc, 0x78, 0x03, 0x03);   /* Go */
 
 	devc->irq_mode_16 = IMODE_OUTPUT;
+<<<<<<< HEAD
 		devc->intr_active_16 = 1;
+=======
+	devc->intr_active_16 = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ess_audio_output_block
@@ -865,8 +869,11 @@ printk(KERN_INFO "FKS: ess_dsp_reset 1\n");
 ess_show_mixerregs (devc);
 #endif
 
+<<<<<<< HEAD
 	DEB(printk("Entered ess_dsp_reset()\n"));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	outb(3, DSP_RESET); /* Reset FIFO too */
 
 	udelay(10);
@@ -881,8 +888,11 @@ ess_show_mixerregs (devc);
 	}
 	ess_extended (devc);
 
+<<<<<<< HEAD
 	DEB(printk("sb_dsp_reset() OK\n"));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef FKS_LOGGING
 printk(KERN_INFO "FKS: dsp_reset 2\n");
 ess_show_mixerregs (devc);
@@ -1187,6 +1197,7 @@ FKS_test (devc);
 			chip = "ES1688";
 		}
 
+<<<<<<< HEAD
 	    printk ( KERN_INFO "ESS chip %s %s%s\n"
                , chip
                , ( devc->sbmo.esstype == ESSTYPE_DETECT || devc->sbmo.esstype == ESSTYPE_LIKE20
@@ -1198,6 +1209,14 @@ FKS_test (devc);
                  : ""
                  )
                );
+=======
+		printk(KERN_INFO "ESS chip %s %s%s\n", chip,
+		       (devc->sbmo.esstype == ESSTYPE_DETECT ||
+			devc->sbmo.esstype == ESSTYPE_LIKE20) ?
+				"detected" : "specified",
+			devc->sbmo.esstype == ESSTYPE_LIKE20 ?
+				" (kernel 2.0 compatible)" : "");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		sprintf(name,"ESS %s AudioDrive (rev %d)", chip, ess_minor & 0x0f);
 	} else {
@@ -1544,7 +1563,11 @@ static int ess_has_rec_mixer (int submodel)
 		return 1;
 	default:
 		return 0;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #ifdef FKS_LOGGING

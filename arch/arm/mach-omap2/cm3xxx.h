@@ -29,9 +29,14 @@
  * These registers appear once per CM module.
  */
 
+<<<<<<< HEAD
 #define OMAP3430_CM_REVISION		OMAP34XX_CM_REGADDR(OCP_MOD, 0x0000)
 #define OMAP3430_CM_SYSCONFIG		OMAP34XX_CM_REGADDR(OCP_MOD, 0x0010)
 #define OMAP3430_CM_POLCTRL		OMAP34XX_CM_REGADDR(OCP_MOD, 0x009c)
+=======
+#define OMAP3430_CM_SYSCONFIG		0x0010
+#define OMAP3430_CM_POLCTRL		0x009c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define OMAP3_CM_CLKOUT_CTRL_OFFSET	0x0070
 #define OMAP3430_CM_CLKOUT_CTRL		OMAP_CM_REGADDR(OMAP3430_CCR_MOD, 0x0070)
@@ -69,6 +74,7 @@
 
 #ifndef __ASSEMBLER__
 
+<<<<<<< HEAD
 extern void omap3xxx_cm_clkdm_enable_hwsup(s16 module, u32 mask);
 extern void omap3xxx_cm_clkdm_disable_hwsup(s16 module, u32 mask);
 extern void omap3xxx_cm_clkdm_force_sleep(s16 module, u32 mask);
@@ -85,6 +91,13 @@ extern void omap3_cm_save_context(void);
 extern void omap3_cm_restore_context(void);
 
 extern int __init omap3xxx_cm_init(void);
+=======
+extern void omap3_cm_save_context(void);
+extern void omap3_cm_restore_context(void);
+extern void omap3_cm_save_scratchpad_contents(u32 *ptr);
+
+int __init omap3xxx_cm_init(const struct omap_prcm_init_data *data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 

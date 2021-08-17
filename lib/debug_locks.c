@@ -30,13 +30,21 @@ EXPORT_SYMBOL_GPL(debug_locks);
  * a locking bug is detected.
  */
 int debug_locks_silent;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_locks_silent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Generic 'turn off all lock debugging' function:
  */
 int debug_locks_off(void)
 {
+<<<<<<< HEAD
 	if (__debug_locks_off()) {
+=======
+	if (debug_locks && __debug_locks_off()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!debug_locks_silent) {
 			console_verbose();
 			return 1;
@@ -44,3 +52,7 @@ int debug_locks_off(void)
 	}
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_locks_off);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

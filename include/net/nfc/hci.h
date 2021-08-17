@@ -12,9 +12,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __NET_HCI_H
@@ -24,17 +28,24 @@
 
 #include <net/nfc/nfc.h>
 
+<<<<<<< HEAD
 struct nfc_phy_ops {
 	int (*write)(void *dev_id, struct sk_buff *skb);
 	int (*enable)(void *dev_id);
 	void (*disable)(void *dev_id);
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct nfc_hci_dev;
 
 struct nfc_hci_ops {
 	int (*open) (struct nfc_hci_dev *hdev);
 	void (*close) (struct nfc_hci_dev *hdev);
+<<<<<<< HEAD
+=======
+	int (*load_session) (struct nfc_hci_dev *hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*hci_ready) (struct nfc_hci_dev *hdev);
 	/*
 	 * xmit must always send the complete buffer before
@@ -44,6 +55,10 @@ struct nfc_hci_ops {
 	int (*xmit) (struct nfc_hci_dev *hdev, struct sk_buff *skb);
 	int (*start_poll) (struct nfc_hci_dev *hdev,
 			   u32 im_protocols, u32 tm_protocols);
+<<<<<<< HEAD
+=======
+	void (*stop_poll) (struct nfc_hci_dev *hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*dep_link_up)(struct nfc_hci_dev *hdev, struct nfc_target *target,
 			   u8 comm_mode, u8 *gb, size_t gb_len);
 	int (*dep_link_down)(struct nfc_hci_dev *hdev);
@@ -57,6 +72,7 @@ struct nfc_hci_ops {
 	int (*tm_send)(struct nfc_hci_dev *hdev, struct sk_buff *skb);
 	int (*check_presence)(struct nfc_hci_dev *hdev,
 			      struct nfc_target *target);
+<<<<<<< HEAD
 	int (*event_received)(struct nfc_hci_dev *hdev, u8 gate, u8 event,
 			      struct sk_buff *skb);
 	int (*enable_se)(struct nfc_dev *dev, u32 secure_element);
@@ -65,6 +81,26 @@ struct nfc_hci_ops {
 
 /* Pipes */
 #define NFC_HCI_INVALID_PIPE	0x80
+=======
+	int (*event_received)(struct nfc_hci_dev *hdev, u8 pipe, u8 event,
+			      struct sk_buff *skb);
+	void (*cmd_received)(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
+			    struct sk_buff *skb);
+	int (*fw_download)(struct nfc_hci_dev *hdev, const char *firmware_name);
+	int (*discover_se)(struct nfc_hci_dev *dev);
+	int (*enable_se)(struct nfc_hci_dev *dev, u32 se_idx);
+	int (*disable_se)(struct nfc_hci_dev *dev, u32 se_idx);
+	int (*se_io)(struct nfc_hci_dev *dev, u32 se_idx,
+		      u8 *apdu, size_t apdu_length,
+		      se_io_cb_t cb, void *cb_context);
+};
+
+/* Pipes */
+#define NFC_HCI_DO_NOT_CREATE_PIPE	0x81
+#define NFC_HCI_INVALID_PIPE	0x80
+#define NFC_HCI_INVALID_GATE	0xFF
+#define NFC_HCI_INVALID_HOST	0x80
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NFC_HCI_LINK_MGMT_PIPE	0x00
 #define NFC_HCI_ADMIN_PIPE	0x01
 
@@ -73,7 +109,21 @@ struct nfc_hci_gate {
 	u8 pipe;
 };
 
+<<<<<<< HEAD
 #define NFC_HCI_MAX_CUSTOM_GATES	50
+=======
+struct nfc_hci_pipe {
+	u8 gate;
+	u8 dest_host;
+};
+
+#define NFC_HCI_MAX_CUSTOM_GATES	50
+/*
+ * According to specification 102 622 chapter 4.4 Pipes,
+ * the pipe identifier is 7 bits long.
+ */
+#define NFC_HCI_MAX_PIPES		128
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct nfc_hci_init_data {
 	u8 gate_count;
 	struct nfc_hci_gate gates[NFC_HCI_MAX_CUSTOM_GATES];
@@ -125,6 +175,10 @@ struct nfc_hci_dev {
 	void *clientdata;
 
 	u8 gate2pipe[NFC_HCI_MAX_GATES];
+<<<<<<< HEAD
+=======
+	struct nfc_hci_pipe pipes[NFC_HCI_MAX_PIPES];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u8 sw_romlib;
 	u8 sw_patch;
@@ -152,7 +206,10 @@ struct nfc_hci_dev *nfc_hci_allocate_device(struct nfc_hci_ops *ops,
 					    struct nfc_hci_init_data *init_data,
 					    unsigned long quirks,
 					    u32 protocols,
+<<<<<<< HEAD
 					    u32 supported_se,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    const char *llc_name,
 					    int tx_headroom,
 					    int tx_tailroom,
@@ -165,9 +222,24 @@ void nfc_hci_unregister_device(struct nfc_hci_dev *hdev);
 void nfc_hci_set_clientdata(struct nfc_hci_dev *hdev, void *clientdata);
 void *nfc_hci_get_clientdata(struct nfc_hci_dev *hdev);
 
+<<<<<<< HEAD
 void nfc_hci_driver_failure(struct nfc_hci_dev *hdev, int err);
 
 int nfc_hci_result_to_errno(u8 result);
+=======
+static inline int nfc_hci_set_vendor_cmds(struct nfc_hci_dev *hdev,
+					  struct nfc_vendor_cmd *cmds,
+					  int n_cmds)
+{
+	return nfc_set_vendor_cmds(hdev->ndev, cmds, n_cmds);
+}
+
+void nfc_hci_driver_failure(struct nfc_hci_dev *hdev, int err);
+
+int nfc_hci_result_to_errno(u8 result);
+void nfc_hci_reset_pipes(struct nfc_hci_dev *dev);
+void nfc_hci_reset_pipes_per_host(struct nfc_hci_dev *hdev, u8 host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Host IDs */
 #define NFC_HCI_HOST_CONTROLLER_ID	0x00
@@ -220,6 +292,15 @@ int nfc_hci_result_to_errno(u8 result);
 #define NFC_HCI_EVT_POST_DATA			0x02
 #define NFC_HCI_EVT_HOT_PLUG			0x03
 
+<<<<<<< HEAD
+=======
+/* Generic commands */
+#define NFC_HCI_ANY_SET_PARAMETER	0x01
+#define NFC_HCI_ANY_GET_PARAMETER	0x02
+#define NFC_HCI_ANY_OPEN_PIPE		0x03
+#define NFC_HCI_ANY_CLOSE_PIPE		0x04
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Reader RF gates events */
 #define NFC_HCI_EVT_READER_REQUESTED	0x10
 #define NFC_HCI_EVT_END_OPERATION	0x11
@@ -250,8 +331,11 @@ int nfc_hci_send_cmd(struct nfc_hci_dev *hdev, u8 gate, u8 cmd,
 int nfc_hci_send_cmd_async(struct nfc_hci_dev *hdev, u8 gate, u8 cmd,
 			   const u8 *param, size_t param_len,
 			   data_exchange_cb_t cb, void *cb_context);
+<<<<<<< HEAD
 int nfc_hci_send_response(struct nfc_hci_dev *hdev, u8 gate, u8 response,
 			  const u8 *param, size_t param_len);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int nfc_hci_send_event(struct nfc_hci_dev *hdev, u8 gate, u8 event,
 		       const u8 *param, size_t param_len);
 int nfc_hci_target_discovered(struct nfc_hci_dev *hdev, u8 gate);

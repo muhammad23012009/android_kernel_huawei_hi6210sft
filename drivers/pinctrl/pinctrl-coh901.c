@@ -8,21 +8,33 @@
  * Author: Jonas Aaberg <jonas.aberg@stericsson.com>
  */
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/irqdomain.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/pinctrl/pinconf-generic.h>
 #include <linux/platform_data/pinctrl-coh901.h>
+=======
+#include <linux/slab.h>
+#include <linux/pinctrl/consumer.h>
+#include <linux/pinctrl/pinconf-generic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "pinctrl-coh901.h"
 
 #define U300_GPIO_PORT_STRIDE				(0x30)
@@ -58,12 +70,30 @@
 #define U300_GPIO_PXICR_IRQ_CONFIG_RISING_EDGE		(0x00000001UL)
 
 /* 8 bits per port, no version has more than 7 ports */
+<<<<<<< HEAD
 #define U300_GPIO_PINS_PER_PORT 8
 #define U300_GPIO_MAX (U300_GPIO_PINS_PER_PORT * 7)
 
 struct u300_gpio {
 	struct gpio_chip chip;
 	struct list_head port_list;
+=======
+#define U300_GPIO_NUM_PORTS 7
+#define U300_GPIO_PINS_PER_PORT 8
+#define U300_GPIO_MAX (U300_GPIO_PINS_PER_PORT * U300_GPIO_NUM_PORTS)
+
+struct u300_gpio_port {
+	struct u300_gpio *gpio;
+	char name[8];
+	int irq;
+	int number;
+	u8 toggle_edge_mode;
+};
+
+struct u300_gpio {
+	struct gpio_chip chip;
+	struct u300_gpio_port ports[U300_GPIO_NUM_PORTS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct clk *clk;
 	void __iomem *base;
 	struct device *dev;
@@ -78,6 +108,7 @@ struct u300_gpio {
 	u32 iev;
 };
 
+<<<<<<< HEAD
 struct u300_gpio_port {
 	struct list_head node;
 	struct u300_gpio *gpio;
@@ -88,6 +119,8 @@ struct u300_gpio_port {
 	u8 toggle_edge_mode;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Macro to expand to read a specific register found in the "gpio"
  * struct. It requires the struct u300_gpio *gpio variable to exist in
@@ -111,9 +144,12 @@ struct u300_gpio_confdata {
 	int outval;
 };
 
+<<<<<<< HEAD
 /* BS335 has seven ports of 8 bits each = GPIO pins 0..55 */
 #define BS335_GPIO_NUM_PORTS 7
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define U300_FLOATING_INPUT { \
 	.bias_mode = PIN_CONFIG_BIAS_HIGH_IMPEDANCE, \
 	.output = false, \
@@ -135,8 +171,13 @@ struct u300_gpio_confdata {
 }
 
 /* Initial configuration */
+<<<<<<< HEAD
 static const struct __initconst u300_gpio_confdata
 bs335_gpio_config[BS335_GPIO_NUM_PORTS][U300_GPIO_PINS_PER_PORT] = {
+=======
+static const struct u300_gpio_confdata __initconst
+bs335_gpio_config[U300_GPIO_NUM_PORTS][U300_GPIO_PINS_PER_PORT] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Port 0, pins 0-7 */
 	{
 		U300_FLOATING_INPUT,
@@ -216,6 +257,7 @@ bs335_gpio_config[BS335_GPIO_NUM_PORTS][U300_GPIO_PINS_PER_PORT] = {
 	}
 };
 
+<<<<<<< HEAD
 /**
  * to_u300_gpio() - get the pointer to u300_gpio
  * @chip: the gpio chip member of the structure u300_gpio
@@ -248,11 +290,22 @@ static int u300_gpio_get(struct gpio_chip *chip, unsigned offset)
 	struct u300_gpio *gpio = to_u300_gpio(chip);
 
 	return readl(U300_PIN_REG(offset, dir)) & U300_PIN_BIT(offset);
+=======
+static int u300_gpio_get(struct gpio_chip *chip, unsigned offset)
+{
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+
+	return !!(readl(U300_PIN_REG(offset, dir)) & U300_PIN_BIT(offset));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void u300_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct u300_gpio *gpio = to_u300_gpio(chip);
+=======
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 val;
 
@@ -269,7 +322,11 @@ static void u300_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int u300_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct u300_gpio *gpio = to_u300_gpio(chip);
+=======
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 val;
 
@@ -285,7 +342,11 @@ static int u300_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 static int u300_gpio_direction_output(struct gpio_chip *chip, unsigned offset,
 				      int value)
 {
+<<<<<<< HEAD
 	struct u300_gpio *gpio = to_u300_gpio(chip);
+=======
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 oldmode;
 	u32 val;
@@ -311,6 +372,7 @@ static int u300_gpio_direction_output(struct gpio_chip *chip, unsigned offset,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int u300_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 {
 	struct u300_gpio *gpio = to_u300_gpio(chip);
@@ -344,12 +406,18 @@ static int u300_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 	return retirq;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Returning -EINVAL means "supported but not available" */
 int u300_gpio_config_get(struct gpio_chip *chip,
 			 unsigned offset,
 			 unsigned long *config)
 {
+<<<<<<< HEAD
 	struct u300_gpio *gpio = to_u300_gpio(chip);
+=======
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum pin_config_param param = (enum pin_config_param) *config;
 	bool biasmode;
 	u32 drmode;
@@ -407,7 +475,11 @@ int u300_gpio_config_get(struct gpio_chip *chip,
 int u300_gpio_config_set(struct gpio_chip *chip, unsigned offset,
 			 enum pin_config_param param)
 {
+<<<<<<< HEAD
 	struct u300_gpio *gpio = to_u300_gpio(chip);
+=======
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 val;
 
@@ -458,13 +530,21 @@ int u300_gpio_config_set(struct gpio_chip *chip, unsigned offset,
 static struct gpio_chip u300_gpio_chip = {
 	.label			= "u300-gpio-chip",
 	.owner			= THIS_MODULE,
+<<<<<<< HEAD
 	.request		= u300_gpio_request,
 	.free			= u300_gpio_free,
+=======
+	.request		= gpiochip_generic_request,
+	.free			= gpiochip_generic_free,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get			= u300_gpio_get,
 	.set			= u300_gpio_set,
 	.direction_input	= u300_gpio_direction_input,
 	.direction_output	= u300_gpio_direction_output,
+<<<<<<< HEAD
 	.to_irq			= u300_gpio_to_irq,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void u300_toggle_trigger(struct u300_gpio *gpio, unsigned offset)
@@ -488,9 +568,16 @@ static void u300_toggle_trigger(struct u300_gpio *gpio, unsigned offset)
 
 static int u300_gpio_irq_type(struct irq_data *d, unsigned trigger)
 {
+<<<<<<< HEAD
 	struct u300_gpio_port *port = irq_data_get_irq_chip_data(d);
 	struct u300_gpio *gpio = port->gpio;
 	int offset = (port->number << 3) + d->hwirq;
+=======
+	struct gpio_chip *chip = irq_data_get_irq_chip_data(d);
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+	struct u300_gpio_port *port = &gpio->ports[d->hwirq >> 3];
+	int offset = d->hwirq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 val;
 
 	if ((trigger & IRQF_TRIGGER_RISING) &&
@@ -524,9 +611,16 @@ static int u300_gpio_irq_type(struct irq_data *d, unsigned trigger)
 
 static void u300_gpio_irq_enable(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct u300_gpio_port *port = irq_data_get_irq_chip_data(d);
 	struct u300_gpio *gpio = port->gpio;
 	int offset = (port->number << 3) + d->hwirq;
+=======
+	struct gpio_chip *chip = irq_data_get_irq_chip_data(d);
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+	struct u300_gpio_port *port = &gpio->ports[d->hwirq >> 3];
+	int offset = d->hwirq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 val;
 	unsigned long flags;
 
@@ -540,9 +634,15 @@ static void u300_gpio_irq_enable(struct irq_data *d)
 
 static void u300_gpio_irq_disable(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct u300_gpio_port *port = irq_data_get_irq_chip_data(d);
 	struct u300_gpio *gpio = port->gpio;
 	int offset = (port->number << 3) + d->hwirq;
+=======
+	struct gpio_chip *chip = irq_data_get_irq_chip_data(d);
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+	int offset = d->hwirq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 val;
 	unsigned long flags;
 
@@ -557,6 +657,7 @@ static struct irq_chip u300_gpio_irqchip = {
 	.irq_enable		= u300_gpio_irq_enable,
 	.irq_disable		= u300_gpio_irq_disable,
 	.irq_set_type		= u300_gpio_irq_type,
+<<<<<<< HEAD
 
 };
 
@@ -568,6 +669,22 @@ static void u300_gpio_irq_handler(unsigned irq, struct irq_desc *desc)
 	unsigned long val;
 
 	desc->irq_data.chip->irq_ack(&desc->irq_data);
+=======
+};
+
+static void u300_gpio_irq_handler(struct irq_desc *desc)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+	struct irq_chip *parent_chip = irq_desc_get_chip(desc);
+	struct gpio_chip *chip = irq_desc_get_handler_data(desc);
+	struct u300_gpio *gpio = gpiochip_get_data(chip);
+	struct u300_gpio_port *port = &gpio->ports[irq - chip->base];
+	int pinoffset = port->number << 3; /* get the right stride */
+	unsigned long val;
+
+	chained_irq_enter(parent_chip, desc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Read event register */
 	val = readl(U300_PIN_REG(pinoffset, iev));
 	/* Mask relevant bits */
@@ -580,8 +697,13 @@ static void u300_gpio_irq_handler(unsigned irq, struct irq_desc *desc)
 		int irqoffset;
 
 		for_each_set_bit(irqoffset, &val, U300_GPIO_PINS_PER_PORT) {
+<<<<<<< HEAD
 			int pin_irq = irq_find_mapping(port->domain, irqoffset);
 			int offset = pinoffset + irqoffset;
+=======
+			int offset = pinoffset + irqoffset;
+			int pin_irq = irq_find_mapping(chip->irqdomain, offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			dev_dbg(gpio->dev, "GPIO IRQ %d on pin %d\n",
 				pin_irq, offset);
@@ -595,7 +717,11 @@ static void u300_gpio_irq_handler(unsigned irq, struct irq_desc *desc)
 		}
 	}
 
+<<<<<<< HEAD
 	desc->irq_data.chip->irq_unmask(&desc->irq_data);
+=======
+	chained_irq_exit(parent_chip, desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init u300_gpio_init_pin(struct u300_gpio *gpio,
@@ -630,13 +756,21 @@ static void __init u300_gpio_init_pin(struct u300_gpio *gpio,
 	}
 }
 
+<<<<<<< HEAD
 static void __init u300_gpio_init_coh901571(struct u300_gpio *gpio,
 				     struct u300_gpio_platform *plat)
+=======
+static void __init u300_gpio_init_coh901571(struct u300_gpio *gpio)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, j;
 
 	/* Write default config and values to all pins */
+<<<<<<< HEAD
 	for (i = 0; i < plat->ports; i++) {
+=======
+	for (i = 0; i < U300_GPIO_NUM_PORTS; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (j = 0; j < 8; j++) {
 			const struct u300_gpio_confdata *conf;
 			int offset = (i*8) + j;
@@ -647,6 +781,7 @@ static void __init u300_gpio_init_coh901571(struct u300_gpio *gpio,
 	}
 }
 
+<<<<<<< HEAD
 static inline void u300_gpio_free_ports(struct u300_gpio *gpio)
 {
 	struct u300_gpio_port *port;
@@ -661,6 +796,8 @@ static inline void u300_gpio_free_ports(struct u300_gpio *gpio)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Here we map a GPIO in the local gpio_chip pin space to a pin in
  * the local pinctrl pin space. The pin controller used is
@@ -693,7 +830,10 @@ static struct coh901_pinpair coh901_pintable[] = {
 
 static int __init u300_gpio_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct u300_gpio_platform *plat = dev_get_platdata(&pdev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct u300_gpio *gpio;
 	struct resource *memres;
 	int err = 0;
@@ -707,9 +847,15 @@ static int __init u300_gpio_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	gpio->chip = u300_gpio_chip;
+<<<<<<< HEAD
 	gpio->chip.ngpio = plat->ports * U300_GPIO_PINS_PER_PORT;
 	gpio->chip.dev = &pdev->dev;
 	gpio->chip.base = plat->gpio_base;
+=======
+	gpio->chip.ngpio = U300_GPIO_NUM_PORTS * U300_GPIO_PINS_PER_PORT;
+	gpio->chip.parent = &pdev->dev;
+	gpio->chip.base = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpio->dev = &pdev->dev;
 
 	memres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -750,6 +896,7 @@ static int __init u300_gpio_probe(struct platform_device *pdev)
 		 ((val & 0x0000FE00) >> 9) * 8);
 	writel(U300_GPIO_CR_BLOCK_CLKRQ_ENABLE,
 	       gpio->base + U300_GPIO_CR);
+<<<<<<< HEAD
 	u300_gpio_init_coh901571(gpio, plat);
 
 	/* Add each port with its IRQ separately */
@@ -763,11 +910,38 @@ static int __init u300_gpio_probe(struct platform_device *pdev)
 			err = -ENOMEM;
 			goto err_no_port;
 		}
+=======
+	u300_gpio_init_coh901571(gpio);
+
+#ifdef CONFIG_OF_GPIO
+	gpio->chip.of_node = pdev->dev.of_node;
+#endif
+	err = gpiochip_add_data(&gpio->chip, gpio);
+	if (err) {
+		dev_err(gpio->dev, "unable to add gpiochip: %d\n", err);
+		goto err_no_chip;
+	}
+
+	err = gpiochip_irqchip_add(&gpio->chip,
+				   &u300_gpio_irqchip,
+				   0,
+				   handle_simple_irq,
+				   IRQ_TYPE_EDGE_FALLING);
+	if (err) {
+		dev_err(gpio->dev, "no GPIO irqchip\n");
+		goto err_no_irqchip;
+	}
+
+	/* Add each port with its IRQ separately */
+	for (portno = 0 ; portno < U300_GPIO_NUM_PORTS; portno++) {
+		struct u300_gpio_port *port = &gpio->ports[portno];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		snprintf(port->name, 8, "gpio%d", portno);
 		port->number = portno;
 		port->gpio = gpio;
 
+<<<<<<< HEAD
 		port->irq = platform_get_irq_byname(pdev,
 						    port->name);
 
@@ -812,6 +986,20 @@ static int __init u300_gpio_probe(struct platform_device *pdev)
 		goto err_no_chip;
 	}
 
+=======
+		port->irq = platform_get_irq(pdev, portno);
+
+		gpiochip_set_chained_irqchip(&gpio->chip,
+					     &u300_gpio_irqchip,
+					     port->irq,
+					     u300_gpio_irq_handler);
+
+		/* Turns off irq force (test register) for this port */
+		writel(0x0, gpio->base + portno * gpio->stride + ifr);
+	}
+	dev_dbg(gpio->dev, "initialized %d GPIO ports\n", portno);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Add pinctrl pin ranges, the pin controller must be registered
 	 * at this point
@@ -830,12 +1018,18 @@ static int __init u300_gpio_probe(struct platform_device *pdev)
 	return 0;
 
 err_no_range:
+<<<<<<< HEAD
 	if (gpiochip_remove(&gpio->chip))
 		dev_err(&pdev->dev, "failed to remove gpio chip\n");
 err_no_chip:
 err_no_domain:
 err_no_port:
 	u300_gpio_free_ports(gpio);
+=======
+err_no_irqchip:
+	gpiochip_remove(&gpio->chip);
+err_no_chip:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_disable_unprepare(gpio->clk);
 	dev_err(&pdev->dev, "module ERROR:%d\n", err);
 	return err;
@@ -844,11 +1038,15 @@ err_no_port:
 static int __exit u300_gpio_remove(struct platform_device *pdev)
 {
 	struct u300_gpio *gpio = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Turn off the GPIO block */
 	writel(0x00000000U, gpio->base + U300_GPIO_CR);
 
+<<<<<<< HEAD
 	err = gpiochip_remove(&gpio->chip);
 	if (err < 0) {
 		dev_err(gpio->dev, "unable to remove gpiochip: %d\n", err);
@@ -863,6 +1061,22 @@ static int __exit u300_gpio_remove(struct platform_device *pdev)
 static struct platform_driver u300_gpio_driver = {
 	.driver		= {
 		.name	= "u300-gpio",
+=======
+	gpiochip_remove(&gpio->chip);
+	clk_disable_unprepare(gpio->clk);
+	return 0;
+}
+
+static const struct of_device_id u300_gpio_match[] = {
+	{ .compatible = "stericsson,gpio-coh901" },
+	{},
+};
+
+static struct platform_driver u300_gpio_driver = {
+	.driver		= {
+		.name	= "u300-gpio",
+		.of_match_table = u300_gpio_match,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove		= __exit_p(u300_gpio_remove),
 };

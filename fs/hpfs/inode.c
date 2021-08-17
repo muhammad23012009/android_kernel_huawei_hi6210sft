@@ -77,6 +77,10 @@ void hpfs_read_inode(struct inode *i)
 			kfree(ea);
 			i->i_mode = S_IFLNK | 0777;
 			i->i_op = &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+			inode_nohighmem(i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			i->i_data.a_ops = &hpfs_symlink_aops;
 			set_nlink(i, 1);
 			i->i_size = ea_size;
@@ -183,7 +187,12 @@ void hpfs_write_inode(struct inode *i)
 	struct inode *parent;
 	if (i->i_ino == hpfs_sb(i->i_sb)->sb_root) return;
 	if (hpfs_inode->i_rddir_off && !atomic_read(&i->i_count)) {
+<<<<<<< HEAD
 		if (*hpfs_inode->i_rddir_off) printk("HPFS: write_inode: some position still there\n");
+=======
+		if (*hpfs_inode->i_rddir_off)
+			pr_err("write_inode: some position still there\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(hpfs_inode->i_rddir_off);
 		hpfs_inode->i_rddir_off = NULL;
 	}
@@ -256,7 +265,11 @@ void hpfs_write_inode_nolock(struct inode *i)
 
 int hpfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int error = -EINVAL;
 
 	hpfs_lock(inode->i_sb);
@@ -271,7 +284,11 @@ int hpfs_setattr(struct dentry *dentry, struct iattr *attr)
 	if ((attr->ia_valid & ATTR_SIZE) && attr->ia_size > inode->i_size)
 		goto out_unlock;
 
+<<<<<<< HEAD
 	error = inode_change_ok(inode, attr);
+=======
+	error = setattr_prepare(dentry, attr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error)
 		goto out_unlock;
 
@@ -304,7 +321,11 @@ void hpfs_write_if_changed(struct inode *inode)
 
 void hpfs_evict_inode(struct inode *inode)
 {
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_inode(inode);
 	if (!inode->i_nlink) {
 		hpfs_lock(inode->i_sb);

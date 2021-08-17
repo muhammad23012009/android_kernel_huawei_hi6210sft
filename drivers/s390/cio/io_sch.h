@@ -120,7 +120,10 @@ struct ccw_device_private {
 	int state;		/* device state */
 	atomic_t onoff;
 	struct ccw_dev_id dev_id;	/* device id */
+<<<<<<< HEAD
 	struct subchannel_id schid;	/* subchannel number */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ccw_request req;		/* internal I/O request */
 	int iretry;
 	u8 pgid_valid_mask;	/* mask of valid PGIDs */
@@ -155,6 +158,10 @@ struct ccw_device_private {
 	unsigned long intparm;	/* user interruption parameter */
 	struct qdio_irq *qdio_data;
 	struct irb irb;		/* device status */
+<<<<<<< HEAD
+=======
+	int async_kill_io_rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct senseid senseid;	/* SenseID info */
 	struct pgid pgid[8];	/* path group IDs per chpid*/
 	struct ccw1 iccws[2];	/* ccws for SNID/SID/SPGID commands */
@@ -169,6 +176,7 @@ struct ccw_device_private {
 	enum interruption_class int_class;
 };
 
+<<<<<<< HEAD
 static inline int rsch(struct subchannel_id schid)
 {
 	register struct subchannel_id reg1 asm("1") = schid;
@@ -214,4 +222,6 @@ static inline int xsch(struct subchannel_id schid)
 	return ccode;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

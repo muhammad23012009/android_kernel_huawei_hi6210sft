@@ -24,6 +24,7 @@
 #include <linux/netfilter/ipset/ip_set_getport.h>
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
+<<<<<<< HEAD
 #define REVISION_MIN	0
 /*			1    SCTP and UDPLITE support added */
 #define REVISION_MAX	2 /* Counters support added */
@@ -31,12 +32,28 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>");
 IP_SET_MODULE_DESC("hash:ip,port", REVISION_MIN, REVISION_MAX);
+=======
+#define IPSET_TYPE_REV_MIN	0
+/*				1    SCTP and UDPLITE support added */
+/*				2    Counters support added */
+/*				3    Comments support added */
+/*				4    Forceadd support added */
+#define IPSET_TYPE_REV_MAX	5 /* skbinfo support added */
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>");
+IP_SET_MODULE_DESC("hash:ip,port", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS("ip_set_hash:ip,port");
 
 /* Type specific function prefix */
 #define HTYPE		hash_ipport
 
+<<<<<<< HEAD
 /* IPv4 variants */
+=======
+/* IPv4 variant */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Member elements */
 struct hash_ipport4_elem {
@@ -46,6 +63,7 @@ struct hash_ipport4_elem {
 	u8 padding;
 };
 
+<<<<<<< HEAD
 struct hash_ipport4t_elem {
 	__be32 ip;
 	__be16 port;
@@ -71,6 +89,8 @@ struct hash_ipport4ct_elem {
 	unsigned long timeout;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Common functions */
 
 static inline bool
@@ -91,10 +111,17 @@ hash_ipport4_data_list(struct sk_buff *skb,
 	    nla_put_net16(skb, IPSET_ATTR_PORT, data->port) ||
 	    nla_put_u8(skb, IPSET_ATTR_PROTO, data->proto))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	return 0;
 
 nla_put_failure:
 	return 1;
+=======
+	return false;
+
+nla_put_failure:
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
@@ -105,10 +132,15 @@ hash_ipport4_data_next(struct hash_ipport4_elem *next,
 	next->port = d->port;
 }
 
+<<<<<<< HEAD
 #define MTYPE           hash_ipport4
 #define PF              4
 #define HOST_MASK       32
 #define HKEY_DATALEN	sizeof(struct hash_ipport4_elem)
+=======
+#define MTYPE		hash_ipport4
+#define HOST_MASK	32
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "ip_set_hash_gen.h"
 
 static int
@@ -116,10 +148,16 @@ hash_ipport4_kadt(struct ip_set *set, const struct sk_buff *skb,
 		  const struct xt_action_param *par,
 		  enum ipset_adt adt, struct ip_set_adt_opt *opt)
 {
+<<<<<<< HEAD
 	const struct hash_ipport *h = set->data;
 	ipset_adtfn adtfn = set->variant->adt[adt];
 	struct hash_ipport4_elem e = { };
 	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, h);
+=======
+	ipset_adtfn adtfn = set->variant->adt[adt];
+	struct hash_ipport4_elem e = { .ip = 0 };
+	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ip_set_get_ip4_port(skb, opt->flags & IPSET_DIM_TWO_SRC,
 				 &e.port, &e.proto))
@@ -135,6 +173,7 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 {
 	const struct hash_ipport *h = set->data;
 	ipset_adtfn adtfn = set->variant->adt[adt];
+<<<<<<< HEAD
 	struct hash_ipport4_elem e = { };
 	struct ip_set_ext ext = IP_SET_INIT_UEXT(h);
 	u32 ip, ip_to, p = 0, port, port_to;
@@ -161,6 +200,31 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 		e.port = nla_get_be16(tb[IPSET_ATTR_PORT]);
 	else
 		return -IPSET_ERR_PROTOCOL;
+=======
+	struct hash_ipport4_elem e = { .ip = 0 };
+	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
+	u32 ip, ip_to = 0, p = 0, port, port_to;
+	bool with_ports = false;
+	int ret;
+
+	if (tb[IPSET_ATTR_LINENO])
+		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
+
+	if (unlikely(!tb[IPSET_ATTR_IP] ||
+		     !ip_set_attr_netorder(tb, IPSET_ATTR_PORT) ||
+		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PORT_TO)))
+		return -IPSET_ERR_PROTOCOL;
+
+	ret = ip_set_get_ipaddr4(tb[IPSET_ATTR_IP], &e.ip);
+	if (ret)
+		return ret;
+
+	ret = ip_set_get_extensions(set, tb, &ext);
+	if (ret)
+		return ret;
+
+	e.port = nla_get_be16(tb[IPSET_ATTR_PORT]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (tb[IPSET_ATTR_PROTO]) {
 		e.proto = nla_get_u8(tb[IPSET_ATTR_PROTO]);
@@ -168,8 +232,14 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 
 		if (e.proto == 0)
 			return -IPSET_ERR_INVALID_PROTO;
+<<<<<<< HEAD
 	} else
 		return -IPSET_ERR_MISSING_PROTO;
+=======
+	} else {
+		return -IPSET_ERR_MISSING_PROTO;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(with_ports || e.proto == IPPROTO_ICMP))
 		e.port = 0;
@@ -191,7 +261,11 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 	} else if (tb[IPSET_ATTR_CIDR]) {
 		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
 
+<<<<<<< HEAD
 		if (!cidr || cidr > 32)
+=======
+		if (!cidr || cidr > HOST_MASK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -IPSET_ERR_INVALID_CIDR;
 		ip_set_mask_from_to(ip, ip_to, cidr);
 	}
@@ -215,14 +289,23 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 
 			if (ret && !ip_set_eexist(ret, flags))
 				return ret;
+<<<<<<< HEAD
 			else
 				ret = 0;
+=======
+
+			ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	return ret;
 }
 
+<<<<<<< HEAD
 /* IPv6 variants */
+=======
+/* IPv6 variant */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct hash_ipport6_elem {
 	union nf_inet_addr ip;
@@ -231,6 +314,7 @@ struct hash_ipport6_elem {
 	u8 padding;
 };
 
+<<<<<<< HEAD
 struct hash_ipport6t_elem {
 	union nf_inet_addr ip;
 	__be16 port;
@@ -256,6 +340,8 @@ struct hash_ipport6ct_elem {
 	unsigned long timeout;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Common functions */
 
 static inline bool
@@ -276,10 +362,17 @@ hash_ipport6_data_list(struct sk_buff *skb,
 	    nla_put_net16(skb, IPSET_ATTR_PORT, data->port) ||
 	    nla_put_u8(skb, IPSET_ATTR_PROTO, data->proto))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	return 0;
 
 nla_put_failure:
 	return 1;
+=======
+	return false;
+
+nla_put_failure:
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
@@ -290,6 +383,7 @@ hash_ipport6_data_next(struct hash_ipport4_elem *next,
 }
 
 #undef MTYPE
+<<<<<<< HEAD
 #undef PF
 #undef HOST_MASK
 #undef HKEY_DATALEN
@@ -299,6 +393,13 @@ hash_ipport6_data_next(struct hash_ipport4_elem *next,
 #define HOST_MASK	128
 #define HKEY_DATALEN	sizeof(struct hash_ipport6_elem)
 #define	IP_SET_EMIT_CREATE
+=======
+#undef HOST_MASK
+
+#define MTYPE		hash_ipport6
+#define HOST_MASK	128
+#define IP_SET_EMIT_CREATE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "ip_set_hash_gen.h"
 
 static int
@@ -306,10 +407,16 @@ hash_ipport6_kadt(struct ip_set *set, const struct sk_buff *skb,
 		  const struct xt_action_param *par,
 		  enum ipset_adt adt, struct ip_set_adt_opt *opt)
 {
+<<<<<<< HEAD
 	const struct hash_ipport *h = set->data;
 	ipset_adtfn adtfn = set->variant->adt[adt];
 	struct hash_ipport6_elem e = { };
 	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, h);
+=======
+	ipset_adtfn adtfn = set->variant->adt[adt];
+	struct hash_ipport6_elem e = { .ip = { .all = { 0 } } };
+	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ip_set_get_ip6_port(skb, opt->flags & IPSET_DIM_TWO_SRC,
 				 &e.port, &e.proto))
@@ -325,12 +432,18 @@ hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
 {
 	const struct hash_ipport *h = set->data;
 	ipset_adtfn adtfn = set->variant->adt[adt];
+<<<<<<< HEAD
 	struct hash_ipport6_elem e = { };
 	struct ip_set_ext ext = IP_SET_INIT_UEXT(h);
+=======
+	struct hash_ipport6_elem e = { .ip = { .all = { 0 } } };
+	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 port, port_to;
 	bool with_ports = false;
 	int ret;
 
+<<<<<<< HEAD
 	if (unlikely(!tb[IPSET_ATTR_IP] ||
 		     !ip_set_attr_netorder(tb, IPSET_ATTR_PORT) ||
 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PORT_TO) ||
@@ -353,6 +466,33 @@ hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
 		e.port = nla_get_be16(tb[IPSET_ATTR_PORT]);
 	else
 		return -IPSET_ERR_PROTOCOL;
+=======
+	if (tb[IPSET_ATTR_LINENO])
+		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
+
+	if (unlikely(!tb[IPSET_ATTR_IP] ||
+		     !ip_set_attr_netorder(tb, IPSET_ATTR_PORT) ||
+		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PORT_TO)))
+		return -IPSET_ERR_PROTOCOL;
+	if (unlikely(tb[IPSET_ATTR_IP_TO]))
+		return -IPSET_ERR_HASH_RANGE_UNSUPPORTED;
+	if (unlikely(tb[IPSET_ATTR_CIDR])) {
+		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
+
+		if (cidr != HOST_MASK)
+			return -IPSET_ERR_INVALID_CIDR;
+	}
+
+	ret = ip_set_get_ipaddr6(tb[IPSET_ATTR_IP], &e.ip);
+	if (ret)
+		return ret;
+
+	ret = ip_set_get_extensions(set, tb, &ext);
+	if (ret)
+		return ret;
+
+	e.port = nla_get_be16(tb[IPSET_ATTR_PORT]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (tb[IPSET_ATTR_PROTO]) {
 		e.proto = nla_get_u8(tb[IPSET_ATTR_PROTO]);
@@ -360,8 +500,14 @@ hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
 
 		if (e.proto == 0)
 			return -IPSET_ERR_INVALID_PROTO;
+<<<<<<< HEAD
 	} else
 		return -IPSET_ERR_MISSING_PROTO;
+=======
+	} else {
+		return -IPSET_ERR_MISSING_PROTO;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(with_ports || e.proto == IPPROTO_ICMPV6))
 		e.port = 0;
@@ -384,8 +530,13 @@ hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
 
 		if (ret && !ip_set_eexist(ret, flags))
 			return ret;
+<<<<<<< HEAD
 		else
 			ret = 0;
+=======
+
+		ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return ret;
 }
@@ -396,8 +547,13 @@ static struct ip_set_type hash_ipport_type __read_mostly = {
 	.features	= IPSET_TYPE_IP | IPSET_TYPE_PORT,
 	.dimension	= IPSET_DIM_TWO,
 	.family		= NFPROTO_UNSPEC,
+<<<<<<< HEAD
 	.revision_min	= REVISION_MIN,
 	.revision_max	= REVISION_MAX,
+=======
+	.revision_min	= IPSET_TYPE_REV_MIN,
+	.revision_max	= IPSET_TYPE_REV_MAX,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.create		= hash_ipport_create,
 	.create_policy	= {
 		[IPSET_ATTR_HASHSIZE]	= { .type = NLA_U32 },
@@ -419,6 +575,14 @@ static struct ip_set_type hash_ipport_type __read_mostly = {
 		[IPSET_ATTR_LINENO]	= { .type = NLA_U32 },
 		[IPSET_ATTR_BYTES]	= { .type = NLA_U64 },
 		[IPSET_ATTR_PACKETS]	= { .type = NLA_U64 },
+<<<<<<< HEAD
+=======
+		[IPSET_ATTR_COMMENT]	= { .type = NLA_NUL_STRING,
+					    .len  = IPSET_MAX_COMMENT_SIZE },
+		[IPSET_ATTR_SKBMARK]	= { .type = NLA_U64 },
+		[IPSET_ATTR_SKBPRIO]	= { .type = NLA_U32 },
+		[IPSET_ATTR_SKBQUEUE]	= { .type = NLA_U16 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.me		= THIS_MODULE,
 };
@@ -432,6 +596,10 @@ hash_ipport_init(void)
 static void __exit
 hash_ipport_fini(void)
 {
+<<<<<<< HEAD
+=======
+	rcu_barrier();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ip_set_type_unregister(&hash_ipport_type);
 }
 

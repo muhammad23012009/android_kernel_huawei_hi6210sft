@@ -20,6 +20,7 @@
 
 #include <asm/spitfire.h>
 
+<<<<<<< HEAD
 extern void xor_vis_2(unsigned long, unsigned long *, unsigned long *);
 extern void xor_vis_3(unsigned long, unsigned long *, unsigned long *,
 		      unsigned long *);
@@ -27,6 +28,15 @@ extern void xor_vis_4(unsigned long, unsigned long *, unsigned long *,
 		      unsigned long *, unsigned long *);
 extern void xor_vis_5(unsigned long, unsigned long *, unsigned long *,
 		      unsigned long *, unsigned long *, unsigned long *);
+=======
+void xor_vis_2(unsigned long, unsigned long *, unsigned long *);
+void xor_vis_3(unsigned long, unsigned long *, unsigned long *,
+	       unsigned long *);
+void xor_vis_4(unsigned long, unsigned long *, unsigned long *,
+	       unsigned long *, unsigned long *);
+void xor_vis_5(unsigned long, unsigned long *, unsigned long *,
+	       unsigned long *, unsigned long *, unsigned long *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* XXX Ugh, write cheetah versions... -DaveM */
 
@@ -38,6 +48,7 @@ static struct xor_block_template xor_block_VIS = {
         .do_5	= xor_vis_5,
 };
 
+<<<<<<< HEAD
 extern void xor_niagara_2(unsigned long, unsigned long *, unsigned long *);
 extern void xor_niagara_3(unsigned long, unsigned long *, unsigned long *,
 			  unsigned long *);
@@ -45,6 +56,15 @@ extern void xor_niagara_4(unsigned long, unsigned long *, unsigned long *,
 			  unsigned long *, unsigned long *);
 extern void xor_niagara_5(unsigned long, unsigned long *, unsigned long *,
 			  unsigned long *, unsigned long *, unsigned long *);
+=======
+void xor_niagara_2(unsigned long, unsigned long *, unsigned long *);
+void xor_niagara_3(unsigned long, unsigned long *, unsigned long *,
+		   unsigned long *);
+void xor_niagara_4(unsigned long, unsigned long *, unsigned long *,
+		   unsigned long *, unsigned long *);
+void xor_niagara_5(unsigned long, unsigned long *, unsigned long *,
+		   unsigned long *, unsigned long *, unsigned long *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct xor_block_template xor_block_niagara = {
         .name	= "Niagara",

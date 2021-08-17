@@ -119,7 +119,11 @@ exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops duration_ops = {
+=======
+static const struct kernel_param_ops duration_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set = duration_set,
 	.get = param_get_int,
 };
@@ -167,7 +171,11 @@ exit_win:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct kernel_param_ops window_size_ops = {
+=======
+static const struct kernel_param_ops window_size_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set = window_size_set,
 	.get = param_get_int,
 };
@@ -206,6 +214,7 @@ static void find_target_mwait(void)
 
 }
 
+<<<<<<< HEAD
 static u64 pkg_state_counter(void)
 {
 	u64 val;
@@ -242,6 +251,59 @@ static u64 pkg_state_counter(void)
 			count += val;
 		else
 			skip_c7 = true;
+=======
+struct pkg_cstate_info {
+	bool skip;
+	int msr_index;
+	int cstate_id;
+};
+
+#define PKG_CSTATE_INIT(id) {				\
+		.msr_index = MSR_PKG_C##id##_RESIDENCY, \
+		.cstate_id = id				\
+			}
+
+static struct pkg_cstate_info pkg_cstates[] = {
+	PKG_CSTATE_INIT(2),
+	PKG_CSTATE_INIT(3),
+	PKG_CSTATE_INIT(6),
+	PKG_CSTATE_INIT(7),
+	PKG_CSTATE_INIT(8),
+	PKG_CSTATE_INIT(9),
+	PKG_CSTATE_INIT(10),
+	{NULL},
+};
+
+static bool has_pkg_state_counter(void)
+{
+	u64 val;
+	struct pkg_cstate_info *info = pkg_cstates;
+
+	/* check if any one of the counter msrs exists */
+	while (info->msr_index) {
+		if (!rdmsrl_safe(info->msr_index, &val))
+			return true;
+		info++;
+	}
+
+	return false;
+}
+
+static u64 pkg_state_counter(void)
+{
+	u64 val;
+	u64 count = 0;
+	struct pkg_cstate_info *info = pkg_cstates;
+
+	while (info->msr_index) {
+		if (!info->skip) {
+			if (!rdmsrl_safe(info->msr_index, &val))
+				count += val;
+			else
+				info->skip = true;
+		}
+		info++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return count;
@@ -325,7 +387,11 @@ static bool powerclamp_adjust_controls(unsigned int target_ratio,
 
 	/* check result for the last window */
 	msr_now = pkg_state_counter();
+<<<<<<< HEAD
 	rdtscll(tsc_now);
+=======
+	tsc_now = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* calculate pkg cstate vs tsc ratio */
 	if (!msr_last || !tsc_last)
@@ -373,7 +439,11 @@ static int clamp_thread(void *arg)
 		int sleeptime;
 		unsigned long target_jiffies;
 		unsigned int guard;
+<<<<<<< HEAD
 		unsigned int compensation = 0;
+=======
+		unsigned int compensated_ratio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int interval; /* jiffies to sleep for each attempt */
 		unsigned int duration_jiffies = msecs_to_jiffies(duration);
 		unsigned int window_size_now;
@@ -394,8 +464,16 @@ static int clamp_thread(void *arg)
 		 * c-states, thus we need to compensate the injected idle ratio
 		 * to achieve the actual target reported by the HW.
 		 */
+<<<<<<< HEAD
 		compensation = get_compensation(target_ratio);
 		interval = duration_jiffies*100/(target_ratio+compensation);
+=======
+		compensated_ratio = target_ratio +
+			get_compensation(target_ratio);
+		if (compensated_ratio <= 0)
+			compensated_ratio = 1;
+		interval = duration_jiffies * 100 / compensated_ratio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* align idle time */
 		target_jiffies = roundup(jiffies, interval);
@@ -426,7 +504,10 @@ static int clamp_thread(void *arg)
 		 * allowed. thus jiffies are updated properly.
 		 */
 		preempt_disable();
+<<<<<<< HEAD
 		tick_nohz_idle_enter();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* mwait until target jiffies is reached */
 		while (time_before(jiffies, target_jiffies)) {
 			unsigned long ecx = 1;
@@ -438,6 +519,7 @@ static int clamp_thread(void *arg)
 			 */
 			local_touch_nmi();
 			stop_critical_timings();
+<<<<<<< HEAD
 			__monitor((void *)&current_thread_info()->flags, 0, 0);
 			cpu_relax(); /* allow HT sibling to run */
 			__mwait(eax, ecx);
@@ -446,6 +528,13 @@ static int clamp_thread(void *arg)
 		}
 		tick_nohz_idle_exit();
 		preempt_enable_no_resched();
+=======
+			mwait_idle_with_hints(eax, ecx);
+			start_critical_timings();
+			atomic_inc(&idle_wakeup_counter);
+		}
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	del_timer_sync(&wakeup_timer);
 	clear_bit(cpunr, cpu_clamping_mask);
@@ -471,7 +560,11 @@ static void poll_pkg_cstate(struct work_struct *dummy)
 	u64 val64;
 
 	msr_now = pkg_state_counter();
+<<<<<<< HEAD
 	rdtscll(tsc_now);
+=======
+	tsc_now = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jiffies_now = jiffies;
 
 	/* calculate pkg cstate vs tsc ratio */
@@ -499,12 +592,15 @@ static int start_power_clamp(void)
 	unsigned long cpu;
 	struct task_struct *thread;
 
+<<<<<<< HEAD
 	/* check if pkg cstate counter is completely 0, abort in this case */
 	if (!pkg_state_counter()) {
 		pr_err("pkg cstate counter not functional, abort\n");
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_target_ratio = clamp(set_target_ratio, 0U, MAX_TARGET_RATIO - 1);
 	/* prevent cpu hotplug */
 	get_online_cpus();
@@ -642,8 +738,13 @@ static int powerclamp_set_cur_state(struct thermal_cooling_device *cdev,
 		goto exit_set;
 	} else	if (set_target_ratio > 0 && new_target_ratio == 0) {
 		pr_info("Stop forced idle injection\n");
+<<<<<<< HEAD
 		set_target_ratio = 0;
 		end_power_clamp();
+=======
+		end_power_clamp();
+		set_target_ratio = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else	/* adjust currently running */ {
 		set_target_ratio = new_target_ratio;
 		/* make new set_target_ratio visible to other cpus */
@@ -661,6 +762,7 @@ static struct thermal_cooling_device_ops powerclamp_cooling_ops = {
 	.set_cur_state = powerclamp_set_cur_state,
 };
 
+<<<<<<< HEAD
 /* runs on Nehalem and later */
 static const struct x86_cpu_id intel_powerclamp_ids[] = {
 	{ X86_VENDOR_INTEL, 6, 0x1a},
@@ -675,10 +777,15 @@ static const struct x86_cpu_id intel_powerclamp_ids[] = {
 	{ X86_VENDOR_INTEL, 6, 0x2e},
 	{ X86_VENDOR_INTEL, 6, 0x2f},
 	{ X86_VENDOR_INTEL, 6, 0x3a},
+=======
+static const struct x86_cpu_id __initconst intel_powerclamp_ids[] = {
+	{ X86_VENDOR_INTEL, X86_FAMILY_ANY, X86_MODEL_ANY, X86_FEATURE_MWAIT },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, intel_powerclamp_ids);
 
+<<<<<<< HEAD
 static int powerclamp_probe(void)
 {
 	if (!x86_match_cpu(intel_powerclamp_ids)) {
@@ -691,6 +798,21 @@ static int powerclamp_probe(void)
 		!boot_cpu_has(X86_FEATURE_MWAIT) ||
 		!boot_cpu_has(X86_FEATURE_ARAT))
 		return -ENODEV;
+=======
+static int __init powerclamp_probe(void)
+{
+
+	if (!x86_match_cpu(intel_powerclamp_ids)) {
+		pr_err("CPU does not support MWAIT");
+		return -ENODEV;
+	}
+
+	/* The goal for idle time alignment is to achieve package cstate. */
+	if (!has_pkg_state_counter()) {
+		pr_info("No package C-state available");
+		return -ENODEV;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* find the deepest mwait value */
 	find_target_mwait();
@@ -745,7 +867,11 @@ file_error:
 	debugfs_remove_recursive(debug_dir);
 }
 
+<<<<<<< HEAD
 static int powerclamp_init(void)
+=======
+static int __init powerclamp_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int retval;
 	int bitmap_size;
@@ -758,6 +884,7 @@ static int powerclamp_init(void)
 	/* probe cpu features and ids here */
 	retval = powerclamp_probe();
 	if (retval)
+<<<<<<< HEAD
 		return retval;
 	/* set default limit, maybe adjusted during runtime based on feedback */
 	window_size = 2;
@@ -777,6 +904,45 @@ static int powerclamp_init(void)
 module_init(powerclamp_init);
 
 static void powerclamp_exit(void)
+=======
+		goto exit_free;
+
+	/* set default limit, maybe adjusted during runtime based on feedback */
+	window_size = 2;
+	register_hotcpu_notifier(&powerclamp_cpu_notifier);
+
+	powerclamp_thread = alloc_percpu(struct task_struct *);
+	if (!powerclamp_thread) {
+		retval = -ENOMEM;
+		goto exit_unregister;
+	}
+
+	cooling_dev = thermal_cooling_device_register("intel_powerclamp", NULL,
+						&powerclamp_cooling_ops);
+	if (IS_ERR(cooling_dev)) {
+		retval = -ENODEV;
+		goto exit_free_thread;
+	}
+
+	if (!duration)
+		duration = jiffies_to_msecs(DEFAULT_DURATION_JIFFIES);
+
+	powerclamp_create_debug_files();
+
+	return 0;
+
+exit_free_thread:
+	free_percpu(powerclamp_thread);
+exit_unregister:
+	unregister_hotcpu_notifier(&powerclamp_cpu_notifier);
+exit_free:
+	kfree(cpu_clamping_mask);
+	return retval;
+}
+module_init(powerclamp_init);
+
+static void __exit powerclamp_exit(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unregister_hotcpu_notifier(&powerclamp_cpu_notifier);
 	end_power_clamp();

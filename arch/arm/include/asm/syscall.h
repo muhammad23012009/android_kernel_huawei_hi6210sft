@@ -7,7 +7,11 @@
 #ifndef _ASM_ARM_SYSCALL_H
 #define _ASM_ARM_SYSCALL_H
 
+<<<<<<< HEAD
 #include <linux/audit.h> /* for AUDIT_ARCH_* */
+=======
+#include <uapi/linux/audit.h> /* for AUDIT_ARCH_* */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/elf.h> /* for ELF_EM */
 #include <linux/err.h>
 #include <linux/sched.h>
@@ -63,8 +67,13 @@ static inline void syscall_get_arguments(struct task_struct *task,
 	if (i + n > SYSCALL_MAX_ARGS) {
 		unsigned long *args_bad = args + SYSCALL_MAX_ARGS - i;
 		unsigned int n_bad = n + i - SYSCALL_MAX_ARGS;
+<<<<<<< HEAD
 		pr_warning("%s called with max args %d, handling only %d\n",
 			   __func__, i + n, SYSCALL_MAX_ARGS);
+=======
+		pr_warn("%s called with max args %d, handling only %d\n",
+			__func__, i + n, SYSCALL_MAX_ARGS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memset(args_bad, 0, n_bad * sizeof(args[0]));
 		n = SYSCALL_MAX_ARGS - i;
 	}
@@ -88,8 +97,13 @@ static inline void syscall_set_arguments(struct task_struct *task,
 		return;
 
 	if (i + n > SYSCALL_MAX_ARGS) {
+<<<<<<< HEAD
 		pr_warning("%s called with max args %d, handling only %d\n",
 			   __func__, i + n, SYSCALL_MAX_ARGS);
+=======
+		pr_warn("%s called with max args %d, handling only %d\n",
+			__func__, i + n, SYSCALL_MAX_ARGS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		n = SYSCALL_MAX_ARGS - i;
 	}
 

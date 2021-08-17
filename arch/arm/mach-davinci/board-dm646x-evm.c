@@ -22,28 +22,49 @@
 #include <linux/gpio.h>
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/at24.h>
 #include <linux/i2c/pcf857x.h>
 
 #include <media/tvp514x.h>
 #include <media/adv7343.h>
+=======
+#include <linux/platform_data/at24.h>
+#include <linux/i2c/pcf857x.h>
+
+#include <media/i2c/tvp514x.h>
+#include <media/i2c/adv7343.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 #include <linux/clk.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/gpio-davinci.h>
+#include <linux/platform_data/i2c-davinci.h>
+#include <linux/platform_data/mtd-davinci.h>
+#include <linux/platform_data/mtd-davinci-aemif.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
 #include <mach/common.h>
+<<<<<<< HEAD
 #include <mach/serial.h>
 #include <linux/platform_data/i2c-davinci.h>
 #include <linux/platform_data/mtd-davinci.h>
 #include <mach/clock.h>
 #include <mach/cdce949.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
+=======
+#include <mach/irqs.h>
+#include <mach/serial.h>
+#include <mach/clock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "davinci.h"
 #include "clock.h"
@@ -120,6 +141,10 @@ static struct platform_device davinci_nand_device = {
 
 #define HAS_ATA		IS_ENABLED(CONFIG_BLK_DEV_PALMCHIP_BK3710)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_I2C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* CPLD Register 0 bits to control ATA */
 #define DM646X_EVM_ATA_RST		BIT(0)
 #define DM646X_EVM_ATA_PWD		BIT(1)
@@ -315,6 +340,10 @@ static struct at24_platform_data eeprom_info = {
 	.setup          = davinci_get_mac_addr,
 	.context	= (void *)0x7f00,
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static u8 dm646x_iis_serializer_direction[] = {
        TX_MODE, RX_MODE, INACTIVE_MODE, INACTIVE_MODE,
@@ -345,6 +374,10 @@ static struct snd_platform_data dm646x_evm_snd_data[] = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_I2C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct i2c_client *cpld_client;
 
 static int cpld_video_probe(struct i2c_client *client,
@@ -397,9 +430,12 @@ static struct i2c_board_info __initdata i2c_info[] =  {
 	{
 		I2C_BOARD_INFO("cpld_video", 0x3b),
 	},
+<<<<<<< HEAD
 	{
 		I2C_BOARD_INFO("cdce949", 0x6c),
 	},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct davinci_i2c_platform_data i2c_pdata = {
@@ -712,6 +748,7 @@ static void __init evm_init_i2c(void)
 	evm_init_cpld();
 	evm_init_video();
 }
+<<<<<<< HEAD
 
 #define CDCE949_XIN_RATE	27000000
 
@@ -737,6 +774,9 @@ static void __init cdce_clk_init(void)
 		clk_register(clk);
 	}
 }
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DM6467T_EVM_REF_FREQ		33000000
 
@@ -746,6 +786,7 @@ static void __init davinci_map_io(void)
 
 	if (machine_is_davinci_dm6467tevm())
 		davinci_set_refclk_rate(DM6467T_EVM_REF_FREQ);
+<<<<<<< HEAD
 
 	cdce_clk_init();
 }
@@ -754,6 +795,10 @@ static struct davinci_uart_config uart_config __initdata = {
 	.enabled_uarts = (1 << 0),
 };
 
+=======
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DM646X_EVM_PHY_ID		"davinci_mdio-0:01"
 /*
  * The following EDMA channels/slots are not being used by drivers (for
@@ -790,10 +835,25 @@ static struct edma_rsv_info dm646x_edma_rsv[] = {
 
 static __init void evm_init(void)
 {
+<<<<<<< HEAD
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
 
 	evm_init_i2c();
 	davinci_serial_init(&uart_config);
+=======
+	int ret;
+	struct davinci_soc_info *soc_info = &davinci_soc_info;
+
+	ret = dm646x_gpio_register();
+	if (ret)
+		pr_warn("%s: GPIO init failed: %d\n", __func__, ret);
+
+#ifdef CONFIG_I2C
+	evm_init_i2c();
+#endif
+
+	davinci_serial_init(dm646x_serial_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dm646x_init_mcasp0(&dm646x_evm_snd_data[0]);
 	dm646x_init_mcasp1(&dm646x_evm_snd_data[1]);
 
@@ -802,6 +862,12 @@ static __init void evm_init(void)
 
 	platform_device_register(&davinci_nand_device);
 
+<<<<<<< HEAD
+=======
+	if (davinci_aemif_setup(&davinci_nand_device))
+		pr_warn("%s: Cannot configure AEMIF.\n", __func__);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dm646x_init_edma(dm646x_edma_rsv);
 
 	if (HAS_ATA)

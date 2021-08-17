@@ -101,7 +101,11 @@ static void __init resource_init(void)
 	res->name = "System RAM";
 	res->start = MEMORY_START;
 	res->end = MEMORY_START + MEMORY_SIZE - 1;
+<<<<<<< HEAD
 	res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+=======
+	res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	request_resource(&iomem_resource, res);
 
 	request_resource(res, &code_resource);

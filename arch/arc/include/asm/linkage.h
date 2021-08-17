@@ -9,6 +9,7 @@
 #ifndef __ASM_LINKAGE_H
 #define __ASM_LINKAGE_H
 
+<<<<<<< HEAD
 #ifdef __ASSEMBLY__
 
 /* Can't use the ENTRY macro in linux/linkage.h
@@ -24,6 +25,15 @@
 #define ASM_PREV_SYM_ADDR(name)  .-##name
 	.size \ name, ASM_PREV_SYM_ADDR(\name)
 .endm
+=======
+#include <asm/dwarf.h>
+
+#ifdef __ASSEMBLY__
+
+#define ASM_NL		 `	/* use '`' to mark new line in macro */
+#define __ALIGN		.align 4
+#define __ALIGN_STR	__stringify(__ALIGN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* annotation for data we want in DCCM - if enabled in .config */
 .macro ARCFP_DATA nm
@@ -44,6 +54,19 @@
 #endif
 .endm
 
+<<<<<<< HEAD
+=======
+#define ENTRY_CFI(name)		\
+	.globl name ASM_NL	\
+	ALIGN ASM_NL 		\
+	name: ASM_NL		\
+	CFI_STARTPROC ASM_NL
+
+#define END_CFI(name) 		\
+	CFI_ENDPROC ASM_NL	\
+	.size name, .-name
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else	/* !__ASSEMBLY__ */
 
 #ifdef CONFIG_ARC_HAS_ICCM

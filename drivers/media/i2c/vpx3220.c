@@ -27,7 +27,10 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-ctrls.h>
 
 MODULE_DESCRIPTION("vpx3220a/vpx3216b/vpx3214c video decoder driver");
@@ -49,7 +52,10 @@ struct vpx3220 {
 	unsigned char reg[255];
 
 	v4l2_std_id norm;
+<<<<<<< HEAD
 	int ident;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int input;
 	int enable;
 };
@@ -126,7 +132,11 @@ static int vpx3220_fp_write(struct v4l2_subdev *sd, u8 fpaddr, u16 data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static u16 vpx3220_fp_read(struct v4l2_subdev *sd, u16 fpaddr)
+=======
+static int vpx3220_fp_read(struct v4l2_subdev *sd, u16 fpaddr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	s16 data;
@@ -297,7 +307,11 @@ static int vpx3220_init(struct v4l2_subdev *sd, u32 val)
 static int vpx3220_status(struct v4l2_subdev *sd, u32 *pstatus, v4l2_std_id *pstd)
 {
 	int res = V4L2_IN_ST_NO_SIGNAL, status;
+<<<<<<< HEAD
 	v4l2_std_id std = 0;
+=======
+	v4l2_std_id std = pstd ? *pstd : V4L2_STD_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	status = vpx3220_fp_read(sd, 0x0f3);
 
@@ -314,19 +328,35 @@ static int vpx3220_status(struct v4l2_subdev *sd, u32 *pstatus, v4l2_std_id *pst
 		case 0x10:
 		case 0x14:
 		case 0x18:
+<<<<<<< HEAD
 			std = V4L2_STD_PAL;
 			break;
 
 		case 0x08:
 			std = V4L2_STD_SECAM;
+=======
+			std &= V4L2_STD_PAL;
+			break;
+
+		case 0x08:
+			std &= V4L2_STD_SECAM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case 0x04:
 		case 0x0c:
 		case 0x1c:
+<<<<<<< HEAD
 			std = V4L2_STD_NTSC;
 			break;
 		}
+=======
+			std &= V4L2_STD_NTSC;
+			break;
+		}
+	} else {
+		std = V4L2_STD_UNKNOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (pstd)
 		*pstd = std;
@@ -442,6 +472,7 @@ static int vpx3220_s_ctrl(struct v4l2_ctrl *ctrl)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int vpx3220_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct vpx3220 *decoder = to_vpx3220(sd);
@@ -450,6 +481,8 @@ static int vpx3220_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ide
 	return v4l2_chip_ident_i2c_client(client, chip, decoder->ident, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ----------------------------------------------------------------------- */
 
 static const struct v4l2_ctrl_ops vpx3220_ctrl_ops = {
@@ -457,6 +490,7 @@ static const struct v4l2_ctrl_ops vpx3220_ctrl_ops = {
 };
 
 static const struct v4l2_subdev_core_ops vpx3220_core_ops = {
+<<<<<<< HEAD
 	.g_chip_ident = vpx3220_g_chip_ident,
 	.init = vpx3220_init,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
@@ -470,6 +504,13 @@ static const struct v4l2_subdev_core_ops vpx3220_core_ops = {
 };
 
 static const struct v4l2_subdev_video_ops vpx3220_video_ops = {
+=======
+	.init = vpx3220_init,
+};
+
+static const struct v4l2_subdev_video_ops vpx3220_video_ops = {
+	.s_std = vpx3220_s_std,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.s_routing = vpx3220_s_routing,
 	.s_stream = vpx3220_s_stream,
 	.querystd = vpx3220_querystd,
@@ -499,7 +540,11 @@ static int vpx3220_probe(struct i2c_client *client,
 		I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_WORD_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	decoder = kzalloc(sizeof(struct vpx3220), GFP_KERNEL);
+=======
+	decoder = devm_kzalloc(&client->dev, sizeof(*decoder), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (decoder == NULL)
 		return -ENOMEM;
 	sd = &decoder->sd;
@@ -521,7 +566,10 @@ static int vpx3220_probe(struct i2c_client *client,
 		int err = decoder->hdl.error;
 
 		v4l2_ctrl_handler_free(&decoder->hdl);
+<<<<<<< HEAD
 		kfree(decoder);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 	v4l2_ctrl_handler_setup(&decoder->hdl);
@@ -529,7 +577,10 @@ static int vpx3220_probe(struct i2c_client *client,
 	ver = i2c_smbus_read_byte_data(client, 0x00);
 	pn = (i2c_smbus_read_byte_data(client, 0x02) << 8) +
 		i2c_smbus_read_byte_data(client, 0x01);
+<<<<<<< HEAD
 	decoder->ident = V4L2_IDENT_VPX3220A;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ver == 0xec) {
 		switch (pn) {
 		case 0x4680:
@@ -537,11 +588,17 @@ static int vpx3220_probe(struct i2c_client *client,
 			break;
 		case 0x4260:
 			name = "vpx3216b";
+<<<<<<< HEAD
 			decoder->ident = V4L2_IDENT_VPX3216B;
 			break;
 		case 0x4280:
 			name = "vpx3214c";
 			decoder->ident = V4L2_IDENT_VPX3214C;
+=======
+			break;
+		case 0x4280:
+			name = "vpx3214c";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
@@ -566,7 +623,11 @@ static int vpx3220_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&decoder->hdl);
+<<<<<<< HEAD
 	kfree(decoder);
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -580,7 +641,10 @@ MODULE_DEVICE_TABLE(i2c, vpx3220_id);
 
 static struct i2c_driver vpx3220_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "vpx3220",
 	},
 	.probe		= vpx3220_probe,

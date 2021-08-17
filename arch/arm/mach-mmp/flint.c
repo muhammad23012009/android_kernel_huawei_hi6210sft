@@ -21,10 +21,17 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/addr-map.h>
 #include <mach/mfp-mmp2.h>
 #include <mach/mmp2.h>
 #include <mach/irqs.h>
+=======
+#include "addr-map.h"
+#include "mfp-mmp2.h"
+#include "mmp2.h"
+#include "irqs.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 

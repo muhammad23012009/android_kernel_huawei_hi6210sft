@@ -6,6 +6,7 @@
  * Authors: Felipe Balbi <balbi@ti.com>,
  *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  *
+<<<<<<< HEAD
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,6 +35,16 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=======
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2  of
+ * the License as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __DRIVERS_USB_DWC3_GADGET_H
@@ -76,12 +87,15 @@ struct dwc3;
 /* DEPXFERCFG parameter 0 */
 #define DWC3_DEPXFERCFG_NUM_XFER_RES(n)	((n) & 0xffff)
 
+<<<<<<< HEAD
 struct dwc3_gadget_ep_cmd_params {
 	u32	param2;
 	u32	param1;
 	u32	param0;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* -------------------------------------------------------------------------- */
 
 #define to_dwc3_request(r)	(container_of(r, struct dwc3_request, request))
@@ -94,30 +108,49 @@ static inline struct dwc3_request *next_request(struct list_head *list)
 	return list_first_entry(list, struct dwc3_request, list);
 }
 
+<<<<<<< HEAD
 static inline void dwc3_gadget_move_request_queued(struct dwc3_request *req)
 {
 	struct dwc3_ep		*dep = req->dep;
 
 	req->queued = true;
 	list_move_tail(&req->list, &dep->req_queued);
+=======
+static inline void dwc3_gadget_move_started_request(struct dwc3_request *req)
+{
+	struct dwc3_ep		*dep = req->dep;
+
+	req->started = true;
+	list_move_tail(&req->list, &dep->started_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void dwc3_gadget_giveback(struct dwc3_ep *dep, struct dwc3_request *req,
 		int status);
 
+<<<<<<< HEAD
 int dwc3_gadget_set_test_mode(struct dwc3 *dwc, int mode);
 int dwc3_gadget_set_link_state(struct dwc3 *dwc, enum dwc3_link_state state);
 
 void dwc3_ep0_interrupt(struct dwc3 *dwc,
 		const struct dwc3_event_depevt *event);
 void dwc3_ep0_out_start(struct dwc3 *dwc);
+=======
+void dwc3_ep0_interrupt(struct dwc3 *dwc,
+		const struct dwc3_event_depevt *event);
+void dwc3_ep0_out_start(struct dwc3 *dwc);
+int __dwc3_gadget_ep0_set_halt(struct usb_ep *ep, int value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int dwc3_gadget_ep0_set_halt(struct usb_ep *ep, int value);
 int dwc3_gadget_ep0_queue(struct usb_ep *ep, struct usb_request *request,
 		gfp_t gfp_flags);
 int __dwc3_gadget_ep_set_halt(struct dwc3_ep *dep, int value, int protocol);
+<<<<<<< HEAD
 int dwc3_send_gadget_ep_cmd(struct dwc3 *dwc, unsigned ep,
 		unsigned cmd, struct dwc3_gadget_ep_cmd_params *params);
 int dwc3_send_gadget_generic_command(struct dwc3 *dwc, int cmd, u32 param);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * dwc3_gadget_ep_get_transfer_index - Gets transfer index from HW
@@ -126,15 +159,24 @@ int dwc3_send_gadget_generic_command(struct dwc3 *dwc, int cmd, u32 param);
  *
  * Caller should take care of locking
  */
+<<<<<<< HEAD
 static inline u32 dwc3_gadget_ep_get_transfer_index(struct dwc3 *dwc, u8 number)
 {
 	u32			res_id;
 
 	res_id = dwc3_readl(dwc->regs, DWC3_DEPCMD(number));
+=======
+static inline u32 dwc3_gadget_ep_get_transfer_index(struct dwc3_ep *dep)
+{
+	u32			res_id;
+
+	res_id = dwc3_readl(dep->regs, DWC3_DEPCMD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return DWC3_DEPCMD_GET_RSC_IDX(res_id);
 }
 
+<<<<<<< HEAD
 /**
  * dwc3_gadget_event_string - returns event name
  * @event: the event code
@@ -191,4 +233,6 @@ static inline const char *dwc3_ep_event_string(u8 event)
 	return "UNKNOWN";
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __DRIVERS_USB_DWC3_GADGET_H */

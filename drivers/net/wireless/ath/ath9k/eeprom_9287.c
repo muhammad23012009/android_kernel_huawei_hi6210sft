@@ -125,8 +125,13 @@ static u32 ath9k_hw_ar9287_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 	struct base_eep_ar9287_header *pBase = &eep->baseEepHeader;
 
 	if (!dump_base_hdr) {
+<<<<<<< HEAD
 		len += snprintf(buf + len, size - len,
 				"%20s :\n", "2GHz modal Header");
+=======
+		len += scnprintf(buf + len, size - len,
+				 "%20s :\n", "2GHz modal Header");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		len = ar9287_dump_modal_eeprom(buf, len, size,
 						&eep->modalHeader);
 		goto out;
@@ -157,8 +162,13 @@ static u32 ath9k_hw_ar9287_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 	PR_EEP("Power Table Offset", pBase->pwrTableOffset);
 	PR_EEP("OpenLoop Power Ctrl", pBase->openLoopPwrCntl);
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, size - len, "%20s : %pM\n", "MacAddress",
 			pBase->macAddr);
+=======
+	len += scnprintf(buf + len, size - len, "%20s : %pM\n", "MacAddress",
+			 pBase->macAddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out:
 	if (len > size)
@@ -177,6 +187,7 @@ static u32 ath9k_hw_ar9287_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 
 static int ath9k_hw_ar9287_check_eeprom(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	u32 sum = 0, el, integer;
 	u16 temp, word, magic, magic2, *eepdata;
 	int i, addr;
@@ -230,6 +241,26 @@ static int ath9k_hw_ar9287_check_eeprom(struct ath_hw *ah)
 
 	for (i = 0; i < el; i++)
 		sum ^= *eepdata++;
+=======
+	u32 el, integer;
+	u16 word;
+	int i, err;
+	bool need_swap;
+	struct ar9287_eeprom *eep = &ah->eeprom.map9287;
+
+	err = ath9k_hw_nvram_swap_data(ah, &need_swap, SIZE_EEPROM_AR9287);
+	if (err)
+		return err;
+
+	if (need_swap)
+		el = swab16(eep->baseEepHeader.length);
+	else
+		el = eep->baseEepHeader.length;
+
+	el = min(el / sizeof(u16), SIZE_EEPROM_AR9287);
+	if (!ath9k_hw_nvram_validate_checksum(ah, el))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (need_swap) {
 		word = swab16(eep->baseEepHeader.length);
@@ -270,16 +301,27 @@ static int ath9k_hw_ar9287_check_eeprom(struct ath_hw *ah)
 		}
 	}
 
+<<<<<<< HEAD
 	if (sum != 0xffff || ah->eep_ops->get_eeprom_ver(ah) != AR9287_EEP_VER
 	    || ah->eep_ops->get_eeprom_rev(ah) < AR5416_EEP_NO_BACK_VER) {
 		ath_err(common, "Bad EEPROM checksum 0x%x or revision 0x%04x\n",
 			sum, ah->eep_ops->get_eeprom_ver(ah));
 		return -EINVAL;
 	}
+=======
+	if (!ath9k_hw_nvram_check_version(ah, AR9287_EEP_VER,
+	    AR5416_EEP_NO_BACK_VER))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#undef SIZE_EEPROM_AR9287
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u32 ath9k_hw_ar9287_get_eeprom(struct ath_hw *ah,
 				      enum eeprom_param param)
 {
@@ -886,6 +928,24 @@ static void ath9k_hw_ar9287_set_txpower(struct ath_hw *ah,
 			  | ATH9K_POW_SM(ratesArray[rateDupOfdm], 8)
 			  | ATH9K_POW_SM(ratesArray[rateDupCck], 0));
 	}
+<<<<<<< HEAD
+=======
+
+	/* TPC initializations */
+	if (ah->tpc_enabled) {
+		int ht40_delta;
+
+		ht40_delta = (IS_CHAN_HT40(chan)) ? ht40PowerIncForPdadc : 0;
+		ar5008_hw_init_rate_txpower(ah, ratesArray, chan, ht40_delta);
+		/* Enable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX,
+			MAX_RATE_POWER | AR_PHY_POWER_TX_RATE_MAX_TPC_ENABLE);
+	} else {
+		/* Disable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX, MAX_RATE_POWER);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	REGWRITE_BUFFER_FLUSH(ah);
 }
 
@@ -1004,6 +1064,7 @@ static void ath9k_hw_ar9287_set_board_values(struct ath_hw *ah,
 static u16 ath9k_hw_ar9287_get_spur_channel(struct ath_hw *ah,
 					    u16 i, bool is2GHz)
 {
+<<<<<<< HEAD
 #define EEP_MAP9287_SPURCHAN \
 	(ah->eeprom.map9287.modalHeader.spurChans[i].spurChan)
 
@@ -1029,6 +1090,9 @@ static u16 ath9k_hw_ar9287_get_spur_channel(struct ath_hw *ah,
 	return spur_val;
 
 #undef EEP_MAP9287_SPURCHAN
+=======
+	return ah->eeprom.map9287.modalHeader.spurChans[i].spurChan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct eeprom_ops eep_ar9287_ops = {

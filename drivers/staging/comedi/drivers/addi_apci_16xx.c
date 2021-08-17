@@ -20,6 +20,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
@@ -32,6 +33,13 @@
 #include <linux/pci.h>
 
 #include "../comedidev.h"
+=======
+ */
+
+#include <linux/module.h>
+
+#include "../comedi_pci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Register I/O map
@@ -66,6 +74,7 @@ static int apci16xx_insn_config(struct comedi_device *dev,
 				struct comedi_insn *insn,
 				unsigned int *data)
 {
+<<<<<<< HEAD
 	unsigned int chan_mask = 1 << CR_CHAN(insn->chanspec);
 	unsigned int bits;
 
@@ -96,6 +105,24 @@ static int apci16xx_insn_config(struct comedi_device *dev,
 	default:
 		return -EINVAL;
 	}
+=======
+	unsigned int chan = CR_CHAN(insn->chanspec);
+	unsigned int mask;
+	int ret;
+
+	if (chan < 8)
+		mask = 0x000000ff;
+	else if (chan < 16)
+		mask = 0x0000ff00;
+	else if (chan < 24)
+		mask = 0x00ff0000;
+	else
+		mask = 0xff000000;
+
+	ret = comedi_dio_insn_config(dev, s, insn, data, mask);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	outl(s->io_bits, dev->iobase + APCI16XX_DIR_REG(s->index));
 
@@ -107,6 +134,7 @@ static int apci16xx_dio_insn_bits(struct comedi_device *dev,
 				  struct comedi_insn *insn,
 				  unsigned int *data)
 {
+<<<<<<< HEAD
 	unsigned int mask = data[0];
 	unsigned int bits = data[1];
 
@@ -118,6 +146,10 @@ static int apci16xx_dio_insn_bits(struct comedi_device *dev,
 
 		outl(s->state, dev->iobase + APCI16XX_OUT_REG(s->index));
 	}
+=======
+	if (comedi_dio_update_state(s, data))
+		outl(s->state, dev->iobase + APCI16XX_OUT_REG(s->index));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	data[1] = inl(dev->iobase + APCI16XX_IN_REG(s->index));
 
@@ -169,7 +201,11 @@ static int apci16xx_auto_attach(struct comedi_device *dev,
 	for (i = 0; i < n_subdevs; i++) {
 		s = &dev->subdevices[i];
 		s->type		= COMEDI_SUBD_DIO;
+<<<<<<< HEAD
 		s->subdev_flags	= SDF_WRITEABLE | SDF_READABLE;
+=======
+		s->subdev_flags	= SDF_WRITABLE | SDF_READABLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		s->n_chan	= ((i * 32) < board->n_chan) ? 32 : last;
 		s->maxdata	= 1;
 		s->range_table	= &range_digital;
@@ -188,7 +224,11 @@ static struct comedi_driver apci16xx_driver = {
 	.driver_name	= "addi_apci_16xx",
 	.module		= THIS_MODULE,
 	.auto_attach	= apci16xx_auto_attach,
+<<<<<<< HEAD
 	.detach		= comedi_pci_disable,
+=======
+	.detach		= comedi_pci_detach,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int apci16xx_pci_probe(struct pci_dev *dev,
@@ -197,7 +237,11 @@ static int apci16xx_pci_probe(struct pci_dev *dev,
 	return comedi_pci_auto_config(dev, &apci16xx_driver, id->driver_data);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(apci16xx_pci_table) = {
+=======
+static const struct pci_device_id apci16xx_pci_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(ADDIDATA, 0x1009), BOARD_APCI1648 },
 	{ PCI_VDEVICE(ADDIDATA, 0x100a), BOARD_APCI1696 },
 	{ 0 }

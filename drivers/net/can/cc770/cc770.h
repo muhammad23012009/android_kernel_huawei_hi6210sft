@@ -193,6 +193,11 @@ struct cc770_priv {
 	u8 cpu_interface;	/* CPU interface register */
 	u8 clkout;		/* Clock out register */
 	u8 bus_config;		/* Bus conffiguration register */
+<<<<<<< HEAD
+=======
+
+	struct sk_buff *tx_skb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct net_device *alloc_cc770dev(int sizeof_priv);

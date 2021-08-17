@@ -14,22 +14,39 @@
 
 int mmc_select_card(struct mmc_card *card);
 int mmc_deselect_cards(struct mmc_host *host);
+<<<<<<< HEAD
+=======
+int mmc_set_dsr(struct mmc_host *host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int mmc_go_idle(struct mmc_host *host);
 int mmc_send_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr);
 int mmc_all_send_cid(struct mmc_host *host, u32 *cid);
 int mmc_set_relative_addr(struct mmc_card *card);
 int mmc_send_csd(struct mmc_card *card, u32 *csd);
+<<<<<<< HEAD
 int mmc_send_ext_csd(struct mmc_card *card, u8 *ext_csd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int mmc_send_status(struct mmc_card *card, u32 *status);
 int mmc_send_cid(struct mmc_host *host, u32 *cid);
 int mmc_spi_read_ocr(struct mmc_host *host, int highcap, u32 *ocrp);
 int mmc_spi_set_crc(struct mmc_host *host, int use_crc);
+<<<<<<< HEAD
 int mmc_card_sleepawake(struct mmc_host *host, int sleep);
 int mmc_bus_test(struct mmc_card *card, u8 bus_width);
 int mmc_send_hpi_cmd(struct mmc_card *card, u32 *status);
 #ifdef CONFIG_MMC_PASSWORDS
 int mmc_lock_unlock_by_buf(struct mmc_card *card, u8* key_buf,int key_len, int mode);
 #endif 
+=======
+int mmc_bus_test(struct mmc_card *card, u8 bus_width);
+int mmc_send_hpi_cmd(struct mmc_card *card, u32 *status);
+int mmc_can_ext_csd(struct mmc_card *card);
+int mmc_switch_status_error(struct mmc_host *host, u32 status);
+int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
+		unsigned int timeout_ms, bool use_busy_signal, bool send_status,
+		bool ignore_crc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 

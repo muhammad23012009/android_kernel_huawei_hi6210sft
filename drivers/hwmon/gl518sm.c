@@ -4,7 +4,11 @@
  * Copyright (C) 1998, 1999 Frodo Looijaard <frodol@dds.nl> and
  * Kyosti Malkki <kmalkki@cc.hut.fi>
  * Copyright (C) 2004 Hong-Gunn Chew <hglinux@gunnet.org> and
+<<<<<<< HEAD
  * Jean Delvare <khali@linux-fr.org>
+=======
+ * Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +118,12 @@ static inline u8 FAN_TO_REG(long rpm, int div)
 
 /* Each client has this additional data */
 struct gl518_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+	const struct attribute_group *groups[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum chips type;
 
 	struct mutex update_lock;
@@ -137,6 +146,7 @@ struct gl518_data {
 	u8 beep_enable;		/* Boolean */
 };
 
+<<<<<<< HEAD
 static int gl518_probe(struct i2c_client *client,
 		       const struct i2c_device_id *id);
 static int gl518_detect(struct i2c_client *client, struct i2c_board_info *info);
@@ -164,6 +174,100 @@ static struct i2c_driver gl518_driver = {
 	.detect		= gl518_detect,
 	.address_list	= normal_i2c,
 };
+=======
+/*
+ * Registers 0x07 to 0x0c are word-sized, others are byte-sized
+ * GL518 uses a high-byte first convention, which is exactly opposite to
+ * the SMBus standard.
+ */
+static int gl518_read_value(struct i2c_client *client, u8 reg)
+{
+	if ((reg >= 0x07) && (reg <= 0x0c))
+		return i2c_smbus_read_word_swapped(client, reg);
+	else
+		return i2c_smbus_read_byte_data(client, reg);
+}
+
+static int gl518_write_value(struct i2c_client *client, u8 reg, u16 value)
+{
+	if ((reg >= 0x07) && (reg <= 0x0c))
+		return i2c_smbus_write_word_swapped(client, reg, value);
+	else
+		return i2c_smbus_write_byte_data(client, reg, value);
+}
+
+static struct gl518_data *gl518_update_device(struct device *dev)
+{
+	struct gl518_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int val;
+
+	mutex_lock(&data->update_lock);
+
+	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
+	    || !data->valid) {
+		dev_dbg(&client->dev, "Starting gl518 update\n");
+
+		data->alarms = gl518_read_value(client, GL518_REG_INT);
+		data->beep_mask = gl518_read_value(client, GL518_REG_ALARM);
+
+		val = gl518_read_value(client, GL518_REG_VDD_LIMIT);
+		data->voltage_min[0] = val & 0xff;
+		data->voltage_max[0] = (val >> 8) & 0xff;
+		val = gl518_read_value(client, GL518_REG_VIN1_LIMIT);
+		data->voltage_min[1] = val & 0xff;
+		data->voltage_max[1] = (val >> 8) & 0xff;
+		val = gl518_read_value(client, GL518_REG_VIN2_LIMIT);
+		data->voltage_min[2] = val & 0xff;
+		data->voltage_max[2] = (val >> 8) & 0xff;
+		val = gl518_read_value(client, GL518_REG_VIN3_LIMIT);
+		data->voltage_min[3] = val & 0xff;
+		data->voltage_max[3] = (val >> 8) & 0xff;
+
+		val = gl518_read_value(client, GL518_REG_FAN_COUNT);
+		data->fan_in[0] = (val >> 8) & 0xff;
+		data->fan_in[1] = val & 0xff;
+
+		val = gl518_read_value(client, GL518_REG_FAN_LIMIT);
+		data->fan_min[0] = (val >> 8) & 0xff;
+		data->fan_min[1] = val & 0xff;
+
+		data->temp_in = gl518_read_value(client, GL518_REG_TEMP_IN);
+		data->temp_max =
+		    gl518_read_value(client, GL518_REG_TEMP_MAX);
+		data->temp_hyst =
+		    gl518_read_value(client, GL518_REG_TEMP_HYST);
+
+		val = gl518_read_value(client, GL518_REG_MISC);
+		data->fan_div[0] = (val >> 6) & 0x03;
+		data->fan_div[1] = (val >> 4) & 0x03;
+		data->fan_auto1  = (val >> 3) & 0x01;
+
+		data->alarms &= data->alarm_mask;
+
+		val = gl518_read_value(client, GL518_REG_CONF);
+		data->beep_enable = (val >> 2) & 1;
+
+		if (data->type != gl518sm_r00) {
+			data->voltage_in[0] =
+			    gl518_read_value(client, GL518_REG_VDD);
+			data->voltage_in[1] =
+			    gl518_read_value(client, GL518_REG_VIN1);
+			data->voltage_in[2] =
+			    gl518_read_value(client, GL518_REG_VIN2);
+		}
+		data->voltage_in[3] =
+		    gl518_read_value(client, GL518_REG_VIN3);
+
+		data->last_updated = jiffies;
+		data->valid = 1;
+	}
+
+	mutex_unlock(&data->update_lock);
+
+	return data;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Sysfs stuff
@@ -228,8 +332,13 @@ static ssize_t set_##suffix(struct device *dev,				\
 			    struct device_attribute *attr,		\
 			    const char *buf, size_t count)		\
 {									\
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);			\
 	struct gl518_data *data = i2c_get_clientdata(client);		\
+=======
+	struct gl518_data *data = dev_get_drvdata(dev);			\
+	struct i2c_client *client = data->client;			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long val;							\
 	int err = kstrtol(buf, 10, &val);				\
 	if (err)							\
@@ -247,8 +356,13 @@ static ssize_t set_##suffix(struct device *dev,				\
 			    struct device_attribute *attr,		\
 			    const char *buf, size_t count)		\
 {									\
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);			\
 	struct gl518_data *data = i2c_get_clientdata(client);		\
+=======
+	struct gl518_data *data = dev_get_drvdata(dev);			\
+	struct i2c_client *client = data->client;			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int regvalue;							\
 	unsigned long val;						\
 	int err = kstrtoul(buf, 10, &val);				\
@@ -286,8 +400,13 @@ set(BEEP_MASK, beep_mask, beep_mask, GL518_REG_ALARM);
 static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct gl518_data *data = i2c_get_clientdata(client);
+=======
+	struct gl518_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int nr = to_sensor_dev_attr(attr)->index;
 	int regvalue;
 	unsigned long val;
@@ -319,8 +438,13 @@ static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct gl518_data *data = i2c_get_clientdata(client);
+=======
+	struct gl518_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int nr = to_sensor_dev_attr(attr)->index;
 	int regvalue;
 	unsigned long val;
@@ -420,8 +544,13 @@ static ssize_t show_beep(struct device *dev, struct device_attribute *attr,
 static ssize_t set_beep(struct device *dev, struct device_attribute *attr,
 			const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct gl518_data *data = i2c_get_clientdata(client);
+=======
+	struct gl518_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int bitnr = to_sensor_dev_attr(attr)->index;
 	unsigned long bit;
 	int err;
@@ -539,6 +668,7 @@ static int gl518_detect(struct i2c_client *client, struct i2c_board_info *info)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int gl518_probe(struct i2c_client *client,
 		       const struct i2c_device_id *id)
 {
@@ -585,6 +715,8 @@ exit_remove_files:
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Called when we have found a new GL518SM.
  * Note that we preserve D4:NoFan2 and D2:beep_enable.
@@ -605,6 +737,7 @@ static void gl518_init_client(struct i2c_client *client)
 	gl518_write_value(client, GL518_REG_CONF, 0x40 | regvalue);
 }
 
+<<<<<<< HEAD
 static int gl518_remove(struct i2c_client *client)
 {
 	struct gl518_data *data = i2c_get_clientdata(client);
@@ -709,6 +842,55 @@ static struct gl518_data *gl518_update_device(struct device *dev)
 
 	return data;
 }
+=======
+static int gl518_probe(struct i2c_client *client,
+		       const struct i2c_device_id *id)
+{
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct gl518_data *data;
+	int revision;
+
+	data = devm_kzalloc(dev, sizeof(struct gl518_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+	revision = gl518_read_value(client, GL518_REG_REVISION);
+	data->type = revision == 0x80 ? gl518sm_r80 : gl518sm_r00;
+	mutex_init(&data->update_lock);
+
+	/* Initialize the GL518SM chip */
+	data->alarm_mask = 0xff;
+	gl518_init_client(client);
+
+	/* sysfs hooks */
+	data->groups[0] = &gl518_group;
+	if (data->type == gl518sm_r80)
+		data->groups[1] = &gl518_group_r80;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, data->groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id gl518_id[] = {
+	{ "gl518sm", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, gl518_id);
+
+static struct i2c_driver gl518_driver = {
+	.class		= I2C_CLASS_HWMON,
+	.driver = {
+		.name	= "gl518sm",
+	},
+	.probe		= gl518_probe,
+	.id_table	= gl518_id,
+	.detect		= gl518_detect,
+	.address_list	= normal_i2c,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_i2c_driver(gl518_driver);
 

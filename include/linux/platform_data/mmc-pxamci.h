@@ -12,7 +12,11 @@ struct pxamci_platform_data {
 	unsigned long detect_delay_ms;		/* delay in millisecond before detecting cards after interrupt */
 	int (*init)(struct device *, irq_handler_t , void *);
 	int (*get_ro)(struct device *);
+<<<<<<< HEAD
 	void (*setpower)(struct device *, unsigned int);
+=======
+	int (*setpower)(struct device *, unsigned int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*exit)(struct device *, void *);
 	int gpio_card_detect;			/* gpio detecting card insertion */
 	int gpio_card_ro;			/* gpio detecting read only toggle */

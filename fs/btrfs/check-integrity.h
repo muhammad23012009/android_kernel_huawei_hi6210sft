@@ -20,11 +20,21 @@
 #define __BTRFS_CHECK_INTEGRITY__
 
 #ifdef CONFIG_BTRFS_FS_CHECK_INTEGRITY
+<<<<<<< HEAD
 int btrfsic_submit_bh(int rw, struct buffer_head *bh);
 void btrfsic_submit_bio(int rw, struct bio *bio);
 #else
 #define btrfsic_submit_bh submit_bh
 #define btrfsic_submit_bio submit_bio
+=======
+int btrfsic_submit_bh(int op, int op_flags, struct buffer_head *bh);
+void btrfsic_submit_bio(struct bio *bio);
+int btrfsic_submit_bio_wait(struct bio *bio);
+#else
+#define btrfsic_submit_bh submit_bh
+#define btrfsic_submit_bio submit_bio
+#define btrfsic_submit_bio_wait submit_bio_wait
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 int btrfsic_mount(struct btrfs_root *root,

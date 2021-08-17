@@ -13,14 +13,20 @@
 #include <linux/gfp.h>
 #include "affs.h"
 
+<<<<<<< HEAD
 extern const struct inode_operations affs_symlink_inode_operations;
 extern struct timezone sys_tz;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 {
 	struct affs_sb_info	*sbi = AFFS_SB(sb);
 	struct buffer_head	*bh;
+<<<<<<< HEAD
 	struct affs_head	*head;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct affs_tail	*tail;
 	struct inode		*inode;
 	u32			 block;
@@ -34,7 +40,11 @@ struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 	if (!(inode->i_state & I_NEW))
 		return inode;
 
+<<<<<<< HEAD
 	pr_debug("AFFS: affs_iget(%lu)\n", inode->i_ino);
+=======
+	pr_debug("affs_iget(%lu)\n", inode->i_ino);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	block = inode->i_ino;
 	bh = affs_bread(sb, block);
@@ -49,7 +59,10 @@ struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 		goto bad_inode;
 	}
 
+<<<<<<< HEAD
 	head = AFFS_HEAD(bh);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tail = AFFS_TAIL(sb, bh);
 	prot = be32_to_cpu(tail->protect);
 
@@ -71,23 +84,39 @@ struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 	AFFS_I(inode)->i_lastalloc = 0;
 	AFFS_I(inode)->i_pa_cnt = 0;
 
+<<<<<<< HEAD
 	if (sbi->s_flags & SF_SETMODE)
+=======
+	if (affs_test_opt(sbi->s_flags, SF_SETMODE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode->i_mode = sbi->s_mode;
 	else
 		inode->i_mode = prot_to_mode(prot);
 
 	id = be16_to_cpu(tail->uid);
+<<<<<<< HEAD
 	if (id == 0 || sbi->s_flags & SF_SETUID)
 		inode->i_uid = sbi->s_uid;
 	else if (id == 0xFFFF && sbi->s_flags & SF_MUFS)
+=======
+	if (id == 0 || affs_test_opt(sbi->s_flags, SF_SETUID))
+		inode->i_uid = sbi->s_uid;
+	else if (id == 0xFFFF && affs_test_opt(sbi->s_flags, SF_MUFS))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		i_uid_write(inode, 0);
 	else
 		i_uid_write(inode, id);
 
 	id = be16_to_cpu(tail->gid);
+<<<<<<< HEAD
 	if (id == 0 || sbi->s_flags & SF_SETGID)
 		inode->i_gid = sbi->s_gid;
 	else if (id == 0xFFFF && sbi->s_flags & SF_MUFS)
+=======
+	if (id == 0 || affs_test_opt(sbi->s_flags, SF_SETGID))
+		inode->i_gid = sbi->s_gid;
+	else if (id == 0xFFFF && affs_test_opt(sbi->s_flags, SF_MUFS))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		i_gid_write(inode, 0);
 	else
 		i_gid_write(inode, id);
@@ -99,7 +128,11 @@ struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 		/* fall through */
 	case ST_USERDIR:
 		if (be32_to_cpu(tail->stype) == ST_USERDIR ||
+<<<<<<< HEAD
 		    sbi->s_flags & SF_SETMODE) {
+=======
+		    affs_test_opt(sbi->s_flags, SF_SETMODE)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (inode->i_mode & S_IRUSR)
 				inode->i_mode |= S_IXUSR;
 			if (inode->i_mode & S_IRGRP)
@@ -138,12 +171,21 @@ struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 		}
 		if (tail->link_chain)
 			set_nlink(inode, 2);
+<<<<<<< HEAD
 		inode->i_mapping->a_ops = (sbi->s_flags & SF_OFS) ? &affs_aops_ofs : &affs_aops;
+=======
+		inode->i_mapping->a_ops = affs_test_opt(sbi->s_flags, SF_OFS) ?
+					  &affs_aops_ofs : &affs_aops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode->i_op = &affs_file_inode_operations;
 		inode->i_fop = &affs_file_operations;
 		break;
 	case ST_SOFTLINK:
 		inode->i_mode |= S_IFLNK;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode->i_op = &affs_symlink_inode_operations;
 		inode->i_data.a_ops = &affs_symlink_aops;
 		break;
@@ -175,7 +217,11 @@ affs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	uid_t			 uid;
 	gid_t			 gid;
 
+<<<<<<< HEAD
 	pr_debug("AFFS: write_inode(%lu)\n",inode->i_ino);
+=======
+	pr_debug("write_inode(%lu)\n", inode->i_ino);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!inode->i_nlink)
 		// possibly free block
@@ -195,15 +241,25 @@ affs_write_inode(struct inode *inode, struct writeback_control *wbc)
 		if (!(inode->i_ino == AFFS_SB(sb)->s_root_block)) {
 			uid = i_uid_read(inode);
 			gid = i_gid_read(inode);
+<<<<<<< HEAD
 			if (AFFS_SB(sb)->s_flags & SF_MUFS) {
+=======
+			if (affs_test_opt(AFFS_SB(sb)->s_flags, SF_MUFS)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (uid == 0 || uid == 0xFFFF)
 					uid = uid ^ ~0;
 				if (gid == 0 || gid == 0xFFFF)
 					gid = gid ^ ~0;
 			}
+<<<<<<< HEAD
 			if (!(AFFS_SB(sb)->s_flags & SF_SETUID))
 				tail->uid = cpu_to_be16(uid);
 			if (!(AFFS_SB(sb)->s_flags & SF_SETGID))
+=======
+			if (!affs_test_opt(AFFS_SB(sb)->s_flags, SF_SETUID))
+				tail->uid = cpu_to_be16(uid);
+			if (!affs_test_opt(AFFS_SB(sb)->s_flags, SF_SETGID))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				tail->gid = cpu_to_be16(gid);
 		}
 	}
@@ -217,6 +273,7 @@ affs_write_inode(struct inode *inode, struct writeback_control *wbc)
 int
 affs_notify_change(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	int error;
 
@@ -231,6 +288,25 @@ affs_notify_change(struct dentry *dentry, struct iattr *attr)
 	    ((attr->ia_valid & ATTR_MODE) &&
 	     (AFFS_SB(inode->i_sb)->s_flags & (SF_SETMODE | SF_IMMUTABLE)))) {
 		if (!(AFFS_SB(inode->i_sb)->s_flags & SF_QUIET))
+=======
+	struct inode *inode = d_inode(dentry);
+	int error;
+
+	pr_debug("notify_change(%lu,0x%x)\n", inode->i_ino, attr->ia_valid);
+
+	error = setattr_prepare(dentry, attr);
+	if (error)
+		goto out;
+
+	if (((attr->ia_valid & ATTR_UID) &&
+	      affs_test_opt(AFFS_SB(inode->i_sb)->s_flags, SF_SETUID)) ||
+	    ((attr->ia_valid & ATTR_GID) &&
+	      affs_test_opt(AFFS_SB(inode->i_sb)->s_flags, SF_SETGID)) ||
+	    ((attr->ia_valid & ATTR_MODE) &&
+	     (AFFS_SB(inode->i_sb)->s_flags &
+	      (AFFS_MOUNT_SF_SETMODE | AFFS_MOUNT_SF_IMMUTABLE)))) {
+		if (!affs_test_opt(AFFS_SB(inode->i_sb)->s_flags, SF_QUIET))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			error = -EPERM;
 		goto out;
 	}
@@ -258,8 +334,14 @@ void
 affs_evict_inode(struct inode *inode)
 {
 	unsigned long cache_page;
+<<<<<<< HEAD
 	pr_debug("AFFS: evict_inode(ino=%lu, nlink=%u)\n", inode->i_ino, inode->i_nlink);
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	pr_debug("evict_inode(ino=%lu, nlink=%u)\n",
+		 inode->i_ino, inode->i_nlink);
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!inode->i_nlink) {
 		inode->i_size = 0;
@@ -271,7 +353,11 @@ affs_evict_inode(struct inode *inode)
 	affs_free_prealloc(inode);
 	cache_page = (unsigned long)AFFS_I(inode)->i_lc;
 	if (cache_page) {
+<<<<<<< HEAD
 		pr_debug("AFFS: freeing ext cache\n");
+=======
+		pr_debug("freeing ext cache\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		AFFS_I(inode)->i_lc = NULL;
 		AFFS_I(inode)->i_ac = NULL;
 		free_page(cache_page);
@@ -308,7 +394,11 @@ affs_new_inode(struct inode *dir)
 	inode->i_gid     = current_fsgid();
 	inode->i_ino     = block;
 	set_nlink(inode, 1);
+<<<<<<< HEAD
 	inode->i_mtime   = inode->i_atime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_mtime   = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_set(&AFFS_I(inode)->i_opencnt, 0);
 	AFFS_I(inode)->i_blkcnt = 0;
 	AFFS_I(inode)->i_lc = NULL;
@@ -346,12 +436,21 @@ affs_add_entry(struct inode *dir, struct inode *inode, struct dentry *dentry, s3
 {
 	struct super_block *sb = dir->i_sb;
 	struct buffer_head *inode_bh = NULL;
+<<<<<<< HEAD
 	struct buffer_head *bh = NULL;
 	u32 block = 0;
 	int retval;
 
 	pr_debug("AFFS: add_entry(dir=%u, inode=%u, \"%*s\", type=%d)\n", (u32)dir->i_ino,
 	         (u32)inode->i_ino, (int)dentry->d_name.len, dentry->d_name.name, type);
+=======
+	struct buffer_head *bh;
+	u32 block = 0;
+	int retval;
+
+	pr_debug("%s(dir=%lu, inode=%lu, \"%pd\", type=%d)\n", __func__,
+		 dir->i_ino, inode->i_ino, dentry, type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = -EIO;
 	bh = affs_bread(sb, inode->i_ino);

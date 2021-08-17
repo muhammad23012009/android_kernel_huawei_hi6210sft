@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2006-2010, 2012 Freescale Semiconductor, Inc.
+=======
+ * Copyright (C) 2006-2010, 2012-2013 Freescale Semiconductor, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Author: Andy Fleming <afleming@freescale.com>
@@ -34,6 +38,10 @@
 #include <linux/of_device.h>
 #include <linux/phy.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
+=======
+#include <linux/fsl/guts.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/atomic.h>
 #include <asm/time.h>
@@ -47,11 +55,18 @@
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 #include <sysdev/simple_gpio.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
 #include <asm/qe_ic.h>
 #include <asm/mpic.h>
 #include <asm/swiotlb.h>
 #include <asm/fsl_guts.h>
+=======
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/qe_ic.h>
+#include <asm/mpic.h>
+#include <asm/swiotlb.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "smp.h"
 
 #include "mpc85xx.h"
@@ -63,6 +78,11 @@
 #define DBG(fmt...)
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_BUILTIN(CONFIG_PHYLIB)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MV88E1111_SCR	0x10
 #define MV88E1111_SCR_125CLK	0x0010
 static int mpc8568_fixup_125_clock(struct phy_device *phydev)
@@ -152,6 +172,11 @@ static int mpc8568_mds_phy_fixups(struct phy_device *phydev)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ************************************************************************
  *
  * Setup the architecture
@@ -238,6 +263,7 @@ static void __init mpc85xx_mds_qe_init(void)
 {
 	struct device_node *np;
 
+<<<<<<< HEAD
 	np = of_find_compatible_node(NULL, NULL, "fsl,qe");
 	if (!np) {
 		np = of_find_node_by_name(NULL, "qe");
@@ -264,6 +290,10 @@ static void __init mpc85xx_mds_qe_init(void)
 			par_io_of_config(ucc);
 	}
 
+=======
+	mpc85xx_qe_init();
+	mpc85xx_qe_par_io_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mpc85xx_mds_reset_ucc_phys();
 
 	if (machine_is(p1021_mds)) {
@@ -337,6 +367,10 @@ static void __init mpc85xx_mds_setup_arch(void)
 	swiotlb_detect_4g();
 }
 
+<<<<<<< HEAD
+=======
+#if IS_BUILTIN(CONFIG_PHYLIB)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init board_fixups(void)
 {
@@ -366,9 +400,18 @@ static int __init board_fixups(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 machine_arch_initcall(mpc8568_mds, board_fixups);
 machine_arch_initcall(mpc8569_mds, board_fixups);
 
+=======
+
+machine_arch_initcall(mpc8568_mds, board_fixups);
+machine_arch_initcall(mpc8569_mds, board_fixups);
+
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init mpc85xx_publish_devices(void)
 {
 	if (machine_is(mpc8568_mds))
@@ -400,9 +443,13 @@ static void __init mpc85xx_mds_pic_init(void)
 
 static int __init mpc85xx_mds_probe(void)
 {
+<<<<<<< HEAD
         unsigned long root = of_get_flat_dt_root();
 
         return of_flat_dt_is_compatible(root, "MPC85xxMDS");
+=======
+	return of_machine_is_compatible("MPC85xxMDS");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(mpc8568_mds) {
@@ -411,19 +458,30 @@ define_machine(mpc8568_mds) {
 	.setup_arch	= mpc85xx_mds_setup_arch,
 	.init_IRQ	= mpc85xx_mds_pic_init,
 	.get_irq	= mpic_get_irq,
+<<<<<<< HEAD
 	.restart	= fsl_rstcr_restart,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.calibrate_decr	= generic_calibrate_decr,
 	.progress	= udbg_progress,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 };
 
 static int __init mpc8569_mds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,MPC8569EMDS");
+=======
+	return of_machine_is_compatible("fsl,MPC8569EMDS");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(mpc8569_mds) {
@@ -432,19 +490,30 @@ define_machine(mpc8569_mds) {
 	.setup_arch	= mpc85xx_mds_setup_arch,
 	.init_IRQ	= mpc85xx_mds_pic_init,
 	.get_irq	= mpic_get_irq,
+<<<<<<< HEAD
 	.restart	= fsl_rstcr_restart,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.calibrate_decr	= generic_calibrate_decr,
 	.progress	= udbg_progress,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 };
 
 static int __init p1021_mds_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,P1021MDS");
+=======
+	return of_machine_is_compatible("fsl,P1021MDS");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 }
 
@@ -454,11 +523,20 @@ define_machine(p1021_mds) {
 	.setup_arch	= mpc85xx_mds_setup_arch,
 	.init_IRQ	= mpc85xx_mds_pic_init,
 	.get_irq	= mpic_get_irq,
+<<<<<<< HEAD
 	.restart	= fsl_rstcr_restart,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.calibrate_decr	= generic_calibrate_decr,
 	.progress	= udbg_progress,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 };
 
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

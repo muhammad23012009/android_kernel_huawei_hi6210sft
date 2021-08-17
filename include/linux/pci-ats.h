@@ -3,6 +3,7 @@
 
 #include <linux/pci.h>
 
+<<<<<<< HEAD
 /* Address Translation Service */
 struct pci_ats {
 	int pos;        /* capability position */
@@ -52,14 +53,20 @@ static inline int pci_ats_enabled(struct pci_dev *dev)
 
 #endif /* CONFIG_PCI_ATS */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PCI_PRI
 
 int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
 void pci_disable_pri(struct pci_dev *pdev);
+<<<<<<< HEAD
 bool pci_pri_enabled(struct pci_dev *pdev);
 int pci_reset_pri(struct pci_dev *pdev);
 bool pci_pri_stopped(struct pci_dev *pdev);
 int pci_pri_status(struct pci_dev *pdev);
+=======
+int pci_reset_pri(struct pci_dev *pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else /* CONFIG_PCI_PRI */
 
@@ -72,16 +79,20 @@ static inline void pci_disable_pri(struct pci_dev *pdev)
 {
 }
 
+<<<<<<< HEAD
 static inline bool pci_pri_enabled(struct pci_dev *pdev)
 {
 	return false;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int pci_reset_pri(struct pci_dev *pdev)
 {
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static inline bool pci_pri_stopped(struct pci_dev *pdev)
 {
 	return true;
@@ -91,6 +102,8 @@ static inline int pci_pri_status(struct pci_dev *pdev)
 {
 	return -ENODEV;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_PCI_PRI */
 
 #ifdef CONFIG_PCI_PASID

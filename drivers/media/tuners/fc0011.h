@@ -1,7 +1,10 @@
 #ifndef LINUX_FC0011_H_
 #define LINUX_FC0011_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "dvb_frontend.h"
 
 
@@ -23,7 +26,11 @@ enum fc0011_fe_callback_commands {
 	FC0011_FE_CALLBACK_RESET,
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_FC0011)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_FC0011)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dvb_frontend *fc0011_attach(struct dvb_frontend *fe,
 				   struct i2c_adapter *i2c,
 				   const struct fc0011_config *config);

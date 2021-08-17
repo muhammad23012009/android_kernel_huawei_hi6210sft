@@ -156,6 +156,10 @@ out:
 					 */
 			case 0x2C:	/* Westmere EP - Gulftown */
 				cpu_info->caps |= CPUPOWER_CAP_HAS_TURBO_RATIO;
+<<<<<<< HEAD
+=======
+				break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			case 0x2A:	/* SNB */
 			case 0x2D:	/* SNB Xeon */
 			case 0x3A:	/* IVB */

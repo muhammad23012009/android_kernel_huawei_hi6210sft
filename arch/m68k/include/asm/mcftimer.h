@@ -51,7 +51,11 @@
  *	Bit definitions for the Timer Event Registers (TER).
  */
 #define	MCFTIMER_TER_CAP	0x01		/* Capture event */
+<<<<<<< HEAD
 #define	MCFTIMER_TER_REF	0x02		/* Refernece event */
+=======
+#define	MCFTIMER_TER_REF	0x02		/* Reference event */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /****************************************************************************/
 #endif	/* mcftimer_h */

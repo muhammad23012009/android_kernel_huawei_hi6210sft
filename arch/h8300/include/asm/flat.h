@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * include/asm-h8300/flat.h -- uClinux flat-format executables
+=======
+ * arch/h8300/asm/include/flat.h -- uClinux flat-format executables
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __H8300_FLAT_H__
@@ -17,10 +21,20 @@
  * is is 0 (davidm@snapgear.com)
  */
 
+<<<<<<< HEAD
 #define	flat_get_relocate_addr(rel)		(rel)
 #define flat_get_addr_from_rp(rp, relval, flags, persistent) \
         (get_unaligned(rp) & ((flags & FLAT_FLAG_GOTPIC) ? 0xffffffff: 0x00ffffff))
 #define flat_put_addr_at_rp(rp, addr, rel) \
 	put_unaligned (((*(char *)(rp)) << 24) | ((addr) & 0x00ffffff), rp)
+=======
+#define	flat_get_relocate_addr(rel)		(rel & ~0x00000001)
+#define flat_get_addr_from_rp(rp, relval, flags, persistent) \
+	({(void)persistent; \
+		get_unaligned(rp) & (((flags) & FLAT_FLAG_GOTPIC) ?	\
+				     0xffffffff : 0x00ffffff); })
+#define flat_put_addr_at_rp(rp, addr, rel) \
+	put_unaligned(((*(char *)(rp)) << 24) | ((addr) & 0x00ffffff), (rp))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __H8300_FLAT_H__ */

@@ -28,10 +28,13 @@
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 
+<<<<<<< HEAD
 #ifdef SERIAL_INLINE
 #define _INLINE_ inline
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SERIAL_MAX_NUM_LINES 1
 #define SERIAL_TIMER_VALUE (HZ / 10)
 

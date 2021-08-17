@@ -38,9 +38,15 @@
 #include "util.h"
 
 #ifdef DEBUG
+<<<<<<< HEAD
 #define debug(fmt,args...)	printf(fmt, ##args)
 #else
 #define debug(fmt,args...)
+=======
+#define debug(...)	printf(__VA_ARGS__)
+#else
+#define debug(...)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 
@@ -66,7 +72,10 @@ typedef uint32_t cell_t;
 #define strneq(a, b, n)	(strncmp((a), (b), (n)) == 0)
 
 #define ALIGN(x, a)	(((x) + (a) - 1) & ~((a) - 1))
+<<<<<<< HEAD
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Data blobs */
 enum markertype {
@@ -89,7 +98,11 @@ struct data {
 };
 
 
+<<<<<<< HEAD
 #define empty_data ((struct data){ /* all .members = 0 or NULL */ })
+=======
+#define empty_data ((struct data){ 0 /* all .members = 0 or NULL */ })
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define for_each_marker(m) \
 	for (; (m); (m) = (m)->next)
@@ -119,7 +132,11 @@ struct data data_append_align(struct data d, int align);
 
 struct data data_add_marker(struct data d, enum markertype type, char *ref);
 
+<<<<<<< HEAD
 int data_is_one_string(struct data d);
+=======
+bool data_is_one_string(struct data d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* DT constraints */
 
@@ -128,13 +145,21 @@ int data_is_one_string(struct data d);
 
 /* Live trees */
 struct label {
+<<<<<<< HEAD
 	int deleted;
+=======
+	bool deleted;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *label;
 	struct label *next;
 };
 
 struct property {
+<<<<<<< HEAD
 	int deleted;
+=======
+	bool deleted;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *name;
 	struct data val;
 
@@ -144,7 +169,11 @@ struct property {
 };
 
 struct node {
+<<<<<<< HEAD
 	int deleted;
+=======
+	bool deleted;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *name;
 	struct property *proplist;
 	struct node *children;
@@ -248,8 +277,13 @@ void sort_tree(struct boot_info *bi);
 
 /* Checks */
 
+<<<<<<< HEAD
 void parse_checks_option(bool warn, bool error, const char *optarg);
 void process_checks(int force, struct boot_info *bi);
+=======
+void parse_checks_option(bool warn, bool error, const char *arg);
+void process_checks(bool force, struct boot_info *bi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Flattened trees */
 

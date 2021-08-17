@@ -25,7 +25,11 @@
  * Define the default configuration for dual address memory-memory transfer.
  * The 0x400 value represents auto-request, external->external.
  */
+<<<<<<< HEAD
 #define RS_DUAL	(DM_INC | SM_INC | 0x400 | TS_INDEX2VAL(XMIT_SZ_32BIT))
+=======
+#define RS_DUAL	(DM_INC | SM_INC | RS_AUTO | TS_INDEX2VAL(XMIT_SZ_32BIT))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned long dma_find_base(unsigned int chan)
 {

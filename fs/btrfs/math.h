@@ -28,8 +28,12 @@ static inline u64 div_factor(u64 num, int factor)
 	if (factor == 10)
 		return num;
 	num *= factor;
+<<<<<<< HEAD
 	do_div(num, 10);
 	return num;
+=======
+	return div_u64(num, 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline u64 div_factor_fine(u64 num, int factor)
@@ -37,8 +41,12 @@ static inline u64 div_factor_fine(u64 num, int factor)
 	if (factor == 100)
 		return num;
 	num *= factor;
+<<<<<<< HEAD
 	do_div(num, 100);
 	return num;
+=======
+	return div_u64(num, 100);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif

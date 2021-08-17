@@ -15,8 +15,13 @@
 #include <asm/page.h>
 #include <asm/mach/map.h>
 #include <asm/system_misc.h>
+<<<<<<< HEAD
 #include <mach/addr-map.h>
 #include <mach/cputype.h>
+=======
+#include "addr-map.h"
+#include "cputype.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 
@@ -47,7 +52,11 @@ void __init mmp_map_io(void)
 	mmp_chip_id = __raw_readl(MMP_CHIPID);
 }
 
+<<<<<<< HEAD
 void mmp_restart(char mode, const char *cmd)
+=======
+void mmp_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	soft_restart(0);
 }

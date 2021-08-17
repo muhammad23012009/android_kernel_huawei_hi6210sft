@@ -395,7 +395,11 @@ static int eeprom_open(struct inode * inode, struct file * file)
 static loff_t eeprom_lseek(struct file * file, loff_t offset, int orig)
 {
 /*
+<<<<<<< HEAD
  *  orig 0: position from begning of eeprom
+=======
+ *  orig 0: position from beginning of eeprom
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  orig 1: relative from current position
  *  orig 2: position from last eeprom address
  */
@@ -848,5 +852,9 @@ static void eeprom_disable_write_protect(void)
     /* Write protect disabled */
   }
 }
+<<<<<<< HEAD
 
 module_init(eeprom_init);
+=======
+device_initcall(eeprom_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

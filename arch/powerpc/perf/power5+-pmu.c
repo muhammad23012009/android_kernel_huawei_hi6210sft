@@ -452,7 +452,11 @@ static int power5p_marked_instr_event(u64 event)
 }
 
 static int power5p_compute_mmcr(u64 event[], int n_ev,
+<<<<<<< HEAD
 				unsigned int hwc[], unsigned long mmcr[])
+=======
+				unsigned int hwc[], unsigned long mmcr[], struct perf_event *pevents[])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long mmcr1 = 0;
 	unsigned long mmcra = 0;

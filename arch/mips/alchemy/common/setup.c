@@ -27,15 +27,22 @@
 
 #include <linux/init.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/jiffies.h>
 #include <linux/module.h>
 
 #include <asm/mipsregs.h>
 #include <asm/time.h>
+=======
+
+#include <asm/dma-coherence.h>
+#include <asm/mipsregs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <au1000.h>
 
 extern void __init board_setup(void);
+<<<<<<< HEAD
 extern void set_cpuspec(void);
 
 void __init plat_mem_setup(void)
@@ -51,6 +58,13 @@ void __init plat_mem_setup(void)
 
 	/* this is faster than wasting cycles trying to approximate it */
 	preset_lpj = (est_freq >> 1) / HZ;
+=======
+extern void __init alchemy_set_lpj(void);
+
+void __init plat_mem_setup(void)
+{
+	alchemy_set_lpj();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (au1xxx_cpu_needs_config_od())
 		/* Various early Au1xx0 errata corrected by this */
@@ -59,6 +73,24 @@ void __init plat_mem_setup(void)
 		/* Clear to obtain best system bus performance */
 		clear_c0_config(1 << 19); /* Clear Config[OD] */
 
+<<<<<<< HEAD
+=======
+	hw_coherentio = 0;
+	coherentio = IO_COHERENCE_ENABLED;
+	switch (alchemy_get_cputype()) {
+	case ALCHEMY_CPU_AU1000:
+	case ALCHEMY_CPU_AU1500:
+	case ALCHEMY_CPU_AU1100:
+		coherentio = IO_COHERENCE_DISABLED;
+		break;
+	case ALCHEMY_CPU_AU1200:
+		/* Au1200 AB USB does not support coherent memory */
+		if (0 == (read_c0_prid() & PRID_REV_MASK))
+			coherentio = IO_COHERENCE_DISABLED;
+		break;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	board_setup();	/* board specific setup */
 
 	/* IO/MEM resources. */
@@ -69,9 +101,15 @@ void __init plat_mem_setup(void)
 	iomem_resource.end = IOMEM_RESOURCE_END;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT_PHYS_ADDR) && defined(CONFIG_PCI)
 /* This routine should be valid for all Au1x based boards */
 phys_t __fixup_bigphys_addr(phys_t phys_addr, phys_t size)
+=======
+#if defined(CONFIG_PHYS_ADDR_T_64BIT) && defined(CONFIG_PCI)
+/* This routine should be valid for all Au1x based boards */
+phys_addr_t __fixup_bigphys_addr(phys_addr_t phys_addr, phys_addr_t size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long start = ALCHEMY_PCI_MEMWIN_START;
 	unsigned long end = ALCHEMY_PCI_MEMWIN_END;
@@ -82,7 +120,11 @@ phys_t __fixup_bigphys_addr(phys_t phys_addr, phys_t size)
 
 	/* Check for PCI memory window */
 	if (phys_addr >= start && (phys_addr + size - 1) <= end)
+<<<<<<< HEAD
 		return (phys_t)(AU1500_PCI_MEM_PHYS_ADDR + phys_addr);
+=======
+		return (phys_addr_t)(AU1500_PCI_MEM_PHYS_ADDR + phys_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* default nop */
 	return phys_addr;

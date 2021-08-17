@@ -1,6 +1,7 @@
 #include <linux/utsname.h>
 #include <net/cfg80211.h>
 #include "core.h"
+<<<<<<< HEAD
 #include "ethtool.h"
 #include "rdev-ops.h"
 
@@ -11,6 +12,20 @@ static void cfg80211_get_drvinfo(struct net_device *dev,
 
 	strlcpy(info->driver, wiphy_dev(wdev->wiphy)->driver->name,
 		sizeof(info->driver));
+=======
+#include "rdev-ops.h"
+
+void cfg80211_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
+{
+	struct wireless_dev *wdev = dev->ieee80211_ptr;
+	struct device *pdev = wiphy_dev(wdev->wiphy);
+
+	if (pdev->driver)
+		strlcpy(info->driver, pdev->driver->name,
+			sizeof(info->driver));
+	else
+		strlcpy(info->driver, "N/A", sizeof(info->driver));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	strlcpy(info->version, init_utsname()->release, sizeof(info->version));
 
@@ -23,6 +38,7 @@ static void cfg80211_get_drvinfo(struct net_device *dev,
 	strlcpy(info->bus_info, dev_name(wiphy_dev(wdev->wiphy)),
 		sizeof(info->bus_info));
 }
+<<<<<<< HEAD
 
 static int cfg80211_get_regs_len(struct net_device *dev)
 {
@@ -104,3 +120,6 @@ const struct ethtool_ops cfg80211_ethtool_ops = {
 	.get_ethtool_stats = cfg80211_get_stats,
 	.get_sset_count = cfg80211_get_sset_count,
 };
+=======
+EXPORT_SYMBOL(cfg80211_get_drvinfo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

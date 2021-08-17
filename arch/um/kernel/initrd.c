@@ -14,7 +14,11 @@
 static char *initrd __initdata = NULL;
 static int load_initrd(char *filename, void *buf, int size);
 
+<<<<<<< HEAD
 static int __init read_initrd(void)
+=======
+int __init read_initrd(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *area;
 	long long size;
@@ -37,8 +41,11 @@ static int __init read_initrd(void)
 	}
 
 	area = alloc_bootmem(size);
+<<<<<<< HEAD
 	if (area == NULL)
 		return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (load_initrd(initrd, area, size) == -1)
 		return 0;
@@ -48,8 +55,11 @@ static int __init read_initrd(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 __uml_postsetup(read_initrd);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init uml_initrd_setup(char *line, int *add)
 {
 	initrd = line;

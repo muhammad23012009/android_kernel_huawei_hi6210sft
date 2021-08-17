@@ -12,6 +12,10 @@
  *   more details.
  */
 
+<<<<<<< HEAD
+=======
+#define __ARCH_WANT_RENAMEAT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if !defined(__LP64__) || defined(__SYSCALL_COMPAT)
 /* Use the flavor of this syscall that matches the 32-bit API better. */
 #define __ARCH_WANT_SYNC_FILE_RANGE2

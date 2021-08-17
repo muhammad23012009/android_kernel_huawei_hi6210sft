@@ -97,7 +97,10 @@ int nf_conntrack_tstamp_pernet_init(struct net *net)
 void nf_conntrack_tstamp_pernet_fini(struct net *net)
 {
 	nf_conntrack_tstamp_fini_sysctl(net);
+<<<<<<< HEAD
 	nf_ct_extend_unregister(&tstamp_extend);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int nf_conntrack_tstamp_init(void)

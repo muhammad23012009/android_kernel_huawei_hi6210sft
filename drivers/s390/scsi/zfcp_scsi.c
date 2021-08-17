@@ -3,7 +3,11 @@
  *
  * Interface to Linux SCSI midlayer.
  *
+<<<<<<< HEAD
  * Copyright IBM Corp. 2002, 2016
+=======
+ * Copyright IBM Corp. 2002, 2018
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define KMSG_COMPONENT "zfcp"
@@ -32,6 +36,7 @@ static bool allow_lun_scan = 1;
 module_param(allow_lun_scan, bool, 0600);
 MODULE_PARM_DESC(allow_lun_scan, "For NPIV, scan and attach all storage LUNs");
 
+<<<<<<< HEAD
 static int zfcp_scsi_change_queue_depth(struct scsi_device *sdev, int depth,
 					int reason)
 {
@@ -51,6 +56,8 @@ static int zfcp_scsi_change_queue_depth(struct scsi_device *sdev, int depth,
 	return sdev->queue_depth;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void zfcp_scsi_slave_destroy(struct scsi_device *sdev)
 {
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(sdev);
@@ -66,9 +73,13 @@ static void zfcp_scsi_slave_destroy(struct scsi_device *sdev)
 static int zfcp_scsi_slave_configure(struct scsi_device *sdp)
 {
 	if (sdp->tagged_supported)
+<<<<<<< HEAD
 		scsi_adjust_queue_depth(sdp, MSG_SIMPLE_TAG, default_depth);
 	else
 		scsi_adjust_queue_depth(sdp, 0, 1);
+=======
+		scsi_change_queue_depth(sdp, default_depth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -136,10 +147,30 @@ static int zfcp_scsi_slave_alloc(struct scsi_device *sdev)
 	struct zfcp_unit *unit;
 	int npiv = adapter->connection_features & FSF_FEATURE_NPIV_MODE;
 
+<<<<<<< HEAD
+=======
+	zfcp_sdev->erp_action.adapter = adapter;
+	zfcp_sdev->erp_action.sdev = sdev;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	port = zfcp_get_port_by_wwpn(adapter, rport->port_name);
 	if (!port)
 		return -ENXIO;
 
+<<<<<<< HEAD
+=======
+	zfcp_sdev->erp_action.port = port;
+
+	mutex_lock(&zfcp_sysfs_port_units_mutex);
+	if (zfcp_sysfs_port_is_removing(port)) {
+		/* port is already gone */
+		mutex_unlock(&zfcp_sysfs_port_units_mutex);
+		put_device(&port->dev); /* undo zfcp_get_port_by_wwpn() */
+		return -ENXIO;
+	}
+	mutex_unlock(&zfcp_sysfs_port_units_mutex);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unit = zfcp_unit_find(port, zfcp_scsi_dev_lun(sdev));
 	if (unit)
 		put_device(&unit->dev);
@@ -196,6 +227,10 @@ static int zfcp_scsi_eh_abort_handler(struct scsi_cmnd *scpnt)
 		if (abrt_req)
 			break;
 
+<<<<<<< HEAD
+=======
+		zfcp_dbf_scsi_abort("abrt_wt", scpnt, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		zfcp_erp_wait(adapter);
 		ret = fc_block_scsi_eh(scpnt);
 		if (ret) {
@@ -292,31 +327,54 @@ static int zfcp_task_mgmt_function(struct scsi_cmnd *scpnt, u8 tm_flags)
 		if (fsf_req)
 			break;
 
+<<<<<<< HEAD
 		zfcp_erp_wait(adapter);
 		ret = fc_block_scsi_eh(scpnt);
 		if (ret) {
 			zfcp_dbf_scsi_devreset("fiof", scpnt, tm_flags);
+=======
+		zfcp_dbf_scsi_devreset("wait", scpnt, tm_flags, NULL);
+		zfcp_erp_wait(adapter);
+		ret = fc_block_scsi_eh(scpnt);
+		if (ret) {
+			zfcp_dbf_scsi_devreset("fiof", scpnt, tm_flags, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return ret;
 		}
 
 		if (!(atomic_read(&adapter->status) &
 		      ZFCP_STATUS_COMMON_RUNNING)) {
+<<<<<<< HEAD
 			zfcp_dbf_scsi_devreset("nres", scpnt, tm_flags);
+=======
+			zfcp_dbf_scsi_devreset("nres", scpnt, tm_flags, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return SUCCESS;
 		}
 	}
 	if (!fsf_req) {
+<<<<<<< HEAD
 		zfcp_dbf_scsi_devreset("reqf", scpnt, tm_flags);
+=======
+		zfcp_dbf_scsi_devreset("reqf", scpnt, tm_flags, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return FAILED;
 	}
 
 	wait_for_completion(&fsf_req->completion);
 
 	if (fsf_req->status & ZFCP_STATUS_FSFREQ_TMFUNCFAILED) {
+<<<<<<< HEAD
 		zfcp_dbf_scsi_devreset("fail", scpnt, tm_flags);
 		retval = FAILED;
 	} else {
 		zfcp_dbf_scsi_devreset("okay", scpnt, tm_flags);
+=======
+		zfcp_dbf_scsi_devreset("fail", scpnt, tm_flags, fsf_req);
+		retval = FAILED;
+	} else {
+		zfcp_dbf_scsi_devreset("okay", scpnt, tm_flags, fsf_req);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		zfcp_scsi_forget_cmnds(zfcp_sdev, tm_flags);
 	}
 
@@ -338,6 +396,7 @@ static int zfcp_scsi_eh_host_reset_handler(struct scsi_cmnd *scpnt)
 {
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(scpnt->device);
 	struct zfcp_adapter *adapter = zfcp_sdev->port->adapter;
+<<<<<<< HEAD
 	int ret;
 
 	zfcp_erp_adapter_reopen(adapter, 0, "schrh_1");
@@ -347,6 +406,22 @@ static int zfcp_scsi_eh_host_reset_handler(struct scsi_cmnd *scpnt)
 		return ret;
 
 	return SUCCESS;
+=======
+	int ret = SUCCESS, fc_ret;
+
+	if (!(adapter->connection_features & FSF_FEATURE_NPIV_MODE)) {
+		zfcp_erp_port_forced_reopen_all(adapter, 0, "schrh_p");
+		zfcp_erp_wait(adapter);
+	}
+	zfcp_erp_adapter_reopen(adapter, 0, "schrh_1");
+	zfcp_erp_wait(adapter);
+	fc_ret = fc_block_scsi_eh(scpnt);
+	if (fc_ret)
+		ret = fc_ret;
+
+	zfcp_dbf_scsi_eh("schrh_r", adapter, ~0, ret);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct scsi_transport_template *zfcp_scsi_transport_template;
@@ -362,7 +437,11 @@ static struct scsi_host_template zfcp_scsi_host_template = {
 	.slave_alloc		 = zfcp_scsi_slave_alloc,
 	.slave_configure	 = zfcp_scsi_slave_configure,
 	.slave_destroy		 = zfcp_scsi_slave_destroy,
+<<<<<<< HEAD
 	.change_queue_depth	 = zfcp_scsi_change_queue_depth,
+=======
+	.change_queue_depth	 = scsi_change_queue_depth,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.proc_name		 = "zfcp",
 	.can_queue		 = 4096,
 	.this_id		 = -1,
@@ -373,10 +452,17 @@ static struct scsi_host_template zfcp_scsi_host_template = {
 				     * ZFCP_QDIO_MAX_SBALS_PER_REQ) - 2) * 8,
 				   /* GCD, adjusted later */
 	.dma_boundary		 = ZFCP_QDIO_SBALE_LEN - 1,
+<<<<<<< HEAD
 	.cmd_per_lun		 = 1,
 	.use_clustering		 = 1,
 	.shost_attrs		 = zfcp_sysfs_shost_attrs,
 	.sdev_attrs		 = zfcp_sysfs_sdev_attrs,
+=======
+	.use_clustering		 = 1,
+	.shost_attrs		 = zfcp_sysfs_shost_attrs,
+	.sdev_attrs		 = zfcp_sysfs_sdev_attrs,
+	.track_queue_depth	 = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -616,6 +702,14 @@ static void zfcp_scsi_terminate_rport_io(struct fc_rport *rport)
 	if (port) {
 		zfcp_erp_port_forced_reopen(port, 0, "sctrpi1");
 		put_device(&port->dev);
+<<<<<<< HEAD
+=======
+	} else {
+		zfcp_erp_port_forced_no_port_dbf(
+			"sctrpin", adapter,
+			rport->port_name /* zfcp_scsi_rport_register */,
+			rport->port_id /* zfcp_scsi_rport_register */);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -632,9 +726,15 @@ static void zfcp_scsi_rport_register(struct zfcp_port *port)
 	ids.port_id = port->d_id;
 	ids.roles = FC_RPORT_ROLE_FCP_TARGET;
 
+<<<<<<< HEAD
 	zfcp_dbf_rec_trig("scpaddy", port->adapter, port, NULL,
 			  ZFCP_PSEUDO_ERP_ACTION_RPORT_ADD,
 			  ZFCP_PSEUDO_ERP_ACTION_RPORT_ADD);
+=======
+	zfcp_dbf_rec_trig_lock("scpaddy", port->adapter, port, NULL,
+			       ZFCP_PSEUDO_ERP_ACTION_RPORT_ADD,
+			       ZFCP_PSEUDO_ERP_ACTION_RPORT_ADD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rport = fc_remote_port_add(port->adapter->scsi_host, 0, &ids);
 	if (!rport) {
 		dev_err(&port->adapter->ccw_device->dev,
@@ -656,9 +756,15 @@ static void zfcp_scsi_rport_block(struct zfcp_port *port)
 	struct fc_rport *rport = port->rport;
 
 	if (rport) {
+<<<<<<< HEAD
 		zfcp_dbf_rec_trig("scpdely", port->adapter, port, NULL,
 				  ZFCP_PSEUDO_ERP_ACTION_RPORT_DEL,
 				  ZFCP_PSEUDO_ERP_ACTION_RPORT_DEL);
+=======
+		zfcp_dbf_rec_trig_lock("scpdely", port->adapter, port, NULL,
+				       ZFCP_PSEUDO_ERP_ACTION_RPORT_DEL,
+				       ZFCP_PSEUDO_ERP_ACTION_RPORT_DEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fc_remote_port_delete(rport);
 		port->rport = NULL;
 	}

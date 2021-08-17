@@ -21,9 +21,15 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*****************************************************************************
  * RD-88F5181L GE Info
@@ -102,7 +108,11 @@ static struct dsa_chip_data rd88f5181l_ge_switch_chip_data = {
 	.port_names[7]	= "lan3",
 };
 
+<<<<<<< HEAD
 static struct dsa_platform_data rd88f5181l_ge_switch_plat_data = {
+=======
+static struct dsa_platform_data __initdata rd88f5181l_ge_switch_plat_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.nr_chips	= 1,
 	.chip		= &rd88f5181l_ge_switch_chip_data,
 };
@@ -125,6 +135,7 @@ static void __init rd88f5181l_ge_init(void)
 	 */
 	orion5x_ehci0_init();
 	orion5x_eth_init(&rd88f5181l_ge_eth_data);
+<<<<<<< HEAD
 	orion5x_eth_switch_init(&rd88f5181l_ge_switch_plat_data,
 				gpio_to_irq(8));
 	orion5x_i2c_init();
@@ -132,6 +143,16 @@ static void __init rd88f5181l_ge_init(void)
 
 	mvebu_mbus_add_window("devbus-boot", RD88F5181L_GE_NOR_BOOT_BASE,
 			      RD88F5181L_GE_NOR_BOOT_SIZE);
+=======
+	orion5x_eth_switch_init(&rd88f5181l_ge_switch_plat_data);
+	orion5x_i2c_init();
+	orion5x_uart0_init();
+
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    RD88F5181L_GE_NOR_BOOT_BASE,
+				    RD88F5181L_GE_NOR_BOOT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&rd88f5181l_ge_nor_boot_flash);
 
 	i2c_register_board_info(0, &rd88f5181l_ge_i2c_rtc, 1);
@@ -179,6 +200,10 @@ subsys_initcall(rd88f5181l_ge_pci_init);
 MACHINE_START(RD88F5181L_GE, "Marvell Orion-VoIP GE Reference Design")
 	/* Maintainer: Lennert Buytenhek <buytenh@marvell.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= rd88f5181l_ge_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,

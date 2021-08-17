@@ -407,12 +407,23 @@ enum _BUFFER_CONFIGS {
 
 struct FW_CONFIGURE_FREE_BUFFERS {
 	struct FW_HEADER hdr;
+<<<<<<< HEAD
 	u8   UVI1_BufferLength;
 	u8   UVI2_BufferLength;
 	u8   TVO_BufferLength;
 	u8   AUD1_BufferLength;
 	u8   AUD2_BufferLength;
 	u8   TVA_BufferLength;
+=======
+	struct {
+		u8   UVI1_BufferLength;
+		u8   UVI2_BufferLength;
+		u8   TVO_BufferLength;
+		u8   AUD1_BufferLength;
+		u8   AUD2_BufferLength;
+		u8   TVA_BufferLength;
+	} __packed config;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __attribute__ ((__packed__));
 
 struct FW_CONFIGURE_UART {
@@ -682,7 +693,11 @@ struct ngene_channel {
 	int                   AudioDTOUpdated;
 	u32                   AudioDTOValue;
 
+<<<<<<< HEAD
 	int (*set_tone)(struct dvb_frontend *, fe_sec_tone_mode_t);
+=======
+	int (*set_tone)(struct dvb_frontend *, enum fe_sec_tone_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 lnbh;
 
 	/* stuff from analog driver */
@@ -737,7 +752,11 @@ typedef void (tx_cb_t)(struct ngene *, u32);
 struct ngene {
 	int                   nr;
 	struct pci_dev       *pci_dev;
+<<<<<<< HEAD
 	unsigned char        *iomem;
+=======
+	unsigned char __iomem *iomem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*struct i2c_adapter  i2c_adapter;*/
 

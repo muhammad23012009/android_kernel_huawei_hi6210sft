@@ -25,8 +25,13 @@ static inline void __down_read(struct rw_semaphore *sem)
 {
 	long oldcount;
 #ifndef	CONFIG_SMP
+<<<<<<< HEAD
 	oldcount = sem->count;
 	sem->count += RWSEM_ACTIVE_READ_BIAS;
+=======
+	oldcount = sem->count.counter;
+	sem->count.counter += RWSEM_ACTIVE_READ_BIAS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	long temp;
 	__asm__ __volatile__(
@@ -52,23 +57,40 @@ static inline int __down_read_trylock(struct rw_semaphore *sem)
 {
 	long old, new, res;
 
+<<<<<<< HEAD
 	res = sem->count;
+=======
+	res = atomic_long_read(&sem->count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		new = res + RWSEM_ACTIVE_READ_BIAS;
 		if (new <= 0)
 			break;
 		old = res;
+<<<<<<< HEAD
 		res = cmpxchg(&sem->count, old, new);
+=======
+		res = atomic_long_cmpxchg(&sem->count, old, new);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (res != old);
 	return res >= 0 ? 1 : 0;
 }
 
+<<<<<<< HEAD
 static inline void __down_write(struct rw_semaphore *sem)
 {
 	long oldcount;
 #ifndef	CONFIG_SMP
 	oldcount = sem->count;
 	sem->count += RWSEM_ACTIVE_WRITE_BIAS;
+=======
+static inline long ___down_write(struct rw_semaphore *sem)
+{
+	long oldcount;
+#ifndef	CONFIG_SMP
+	oldcount = sem->count.counter;
+	sem->count.counter += RWSEM_ACTIVE_WRITE_BIAS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	long temp;
 	__asm__ __volatile__(
@@ -83,16 +105,41 @@ static inline void __down_write(struct rw_semaphore *sem)
 	:"=&r" (oldcount), "=m" (sem->count), "=&r" (temp)
 	:"Ir" (RWSEM_ACTIVE_WRITE_BIAS), "m" (sem->count) : "memory");
 #endif
+<<<<<<< HEAD
 	if (unlikely(oldcount))
 		rwsem_down_write_failed(sem);
 }
 
+=======
+	return oldcount;
+}
+
+static inline void __down_write(struct rw_semaphore *sem)
+{
+	if (unlikely(___down_write(sem)))
+		rwsem_down_write_failed(sem);
+}
+
+static inline int __down_write_killable(struct rw_semaphore *sem)
+{
+	if (unlikely(___down_write(sem)))
+		if (IS_ERR(rwsem_down_write_failed_killable(sem)))
+			return -EINTR;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * trylock for writing -- returns 1 if successful, 0 if contention
  */
 static inline int __down_write_trylock(struct rw_semaphore *sem)
 {
+<<<<<<< HEAD
 	long ret = cmpxchg(&sem->count, RWSEM_UNLOCKED_VALUE,
+=======
+	long ret = atomic_long_cmpxchg(&sem->count, RWSEM_UNLOCKED_VALUE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   RWSEM_ACTIVE_WRITE_BIAS);
 	if (ret == RWSEM_UNLOCKED_VALUE)
 		return 1;
@@ -103,8 +150,13 @@ static inline void __up_read(struct rw_semaphore *sem)
 {
 	long oldcount;
 #ifndef	CONFIG_SMP
+<<<<<<< HEAD
 	oldcount = sem->count;
 	sem->count -= RWSEM_ACTIVE_READ_BIAS;
+=======
+	oldcount = sem->count.counter;
+	sem->count.counter -= RWSEM_ACTIVE_READ_BIAS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	long temp;
 	__asm__ __volatile__(
@@ -128,8 +180,13 @@ static inline void __up_write(struct rw_semaphore *sem)
 {
 	long count;
 #ifndef	CONFIG_SMP
+<<<<<<< HEAD
 	sem->count -= RWSEM_ACTIVE_WRITE_BIAS;
 	count = sem->count;
+=======
+	sem->count.counter -= RWSEM_ACTIVE_WRITE_BIAS;
+	count = sem->count.counter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	long temp;
 	__asm__ __volatile__(
@@ -157,8 +214,13 @@ static inline void __downgrade_write(struct rw_semaphore *sem)
 {
 	long oldcount;
 #ifndef	CONFIG_SMP
+<<<<<<< HEAD
 	oldcount = sem->count;
 	sem->count -= RWSEM_WAITING_BIAS;
+=======
+	oldcount = sem->count.counter;
+	sem->count.counter -= RWSEM_WAITING_BIAS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	long temp;
 	__asm__ __volatile__(
@@ -177,6 +239,7 @@ static inline void __downgrade_write(struct rw_semaphore *sem)
 		rwsem_downgrade_wake(sem);
 }
 
+<<<<<<< HEAD
 static inline void rwsem_atomic_add(long val, struct rw_semaphore *sem)
 {
 #ifndef	CONFIG_SMP
@@ -219,5 +282,7 @@ static inline long rwsem_atomic_update(long val, struct rw_semaphore *sem)
 #endif
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 #endif /* _ALPHA_RWSEM_H */

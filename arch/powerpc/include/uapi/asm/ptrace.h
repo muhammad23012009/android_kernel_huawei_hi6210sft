@@ -136,7 +136,11 @@ struct pt_regs {
 #endif /* __powerpc64__ */
 
 /*
+<<<<<<< HEAD
  * Get/set all the altivec registers vr0..vr31, vscr, vrsave, in one go.
+=======
+ * Get/set all the altivec registers v0..v31, vscr, vrsave, in one go.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The transfer totals 34 quadword.  Quadwords 0-31 contain the
  * corresponding vector registers.  Quadword 32 contains the vscr as the
  * last word (offset 12) within that quadword.  Quadword 33 contains the

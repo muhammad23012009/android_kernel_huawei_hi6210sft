@@ -6,7 +6,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <asm/linkage.h>
+=======
+#include <linux/linkage.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef __LITTLE_ENDIAN__
 #define WORD2 r2
@@ -16,7 +20,11 @@
 #define SHIFT r2
 #endif
 
+<<<<<<< HEAD
 ARC_ENTRY memcmp
+=======
+ENTRY_CFI(memcmp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	or	r12,r0,r1
 	asl_s	r12,r12,30
 	sub	r3,r2,1
@@ -24,14 +32,42 @@ ARC_ENTRY memcmp
 	ld	r4,[r0,0]
 	ld	r5,[r1,0]
 	lsr.f	lp_count,r3,3
+<<<<<<< HEAD
 	lpne	.Loop_end
 	ld_s	WORD2,[r0,4]
+=======
+#ifdef CONFIG_ISA_ARCV2
+	/* In ARCv2 a branch can't be the last instruction in a zero overhead
+	 * loop.
+	 * So we move the branch to the start of the loop, duplicate it
+	 * after the end, and set up r12 so that the branch isn't taken
+	 *  initially.
+	 */
+	mov_s	r12,WORD2
+	lpne	.Loop_end
+	brne	WORD2,r12,.Lodd
+	ld	WORD2,[r0,4]
+#else
+	lpne	.Loop_end
+	ld_s	WORD2,[r0,4]
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ld_s	r12,[r1,4]
 	brne	r4,r5,.Leven
 	ld.a	r4,[r0,8]
 	ld.a	r5,[r1,8]
+<<<<<<< HEAD
 	brne	WORD2,r12,.Lodd
 .Loop_end:
+=======
+#ifdef CONFIG_ISA_ARCV2
+.Loop_end:
+	brne	WORD2,r12,.Lodd
+#else
+	brne	WORD2,r12,.Lodd
+.Loop_end:
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	asl_s	SHIFT,SHIFT,3
 	bhs_s	.Last_cmp
 	brne	r4,r5,.Leven
@@ -89,7 +125,10 @@ ARC_ENTRY memcmp
 	bset.cs	r0,r0,31
 .Lodd:
 	cmp_s	WORD2,r12
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov_s	r0,1
 	j_s.d	[blink]
 	bset.cs	r0,r0,31
@@ -100,14 +139,34 @@ ARC_ENTRY memcmp
 	ldb	r4,[r0,0]
 	ldb	r5,[r1,0]
 	lsr.f	lp_count,r3
+<<<<<<< HEAD
 	lpne	.Lbyte_end
+=======
+#ifdef CONFIG_ISA_ARCV2
+	mov	r12,r3
+	lpne	.Lbyte_end
+	brne	r3,r12,.Lbyte_odd
+#else
+	lpne	.Lbyte_end
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ldb_s	r3,[r0,1]
 	ldb	r12,[r1,1]
 	brne	r4,r5,.Lbyte_even
 	ldb.a	r4,[r0,2]
 	ldb.a	r5,[r1,2]
+<<<<<<< HEAD
 	brne	r3,r12,.Lbyte_odd
 .Lbyte_end:
+=======
+#ifdef CONFIG_ISA_ARCV2
+.Lbyte_end:
+	brne	r3,r12,.Lbyte_odd
+#else
+	brne	r3,r12,.Lbyte_odd
+.Lbyte_end:
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bcc	.Lbyte_even
 	brne	r4,r5,.Lbyte_even
 	ldb_s	r3,[r0,1]
@@ -121,4 +180,8 @@ ARC_ENTRY memcmp
 .Lnil:
 	j_s.d	[blink]
 	mov	r0,0
+<<<<<<< HEAD
 ARC_EXIT memcmp
+=======
+END_CFI(memcmp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

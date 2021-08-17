@@ -9,8 +9,15 @@
 
 #include "../codecs/wm8994.h"
 #include <sound/pcm_params.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/of.h>
+=======
+#include <sound/soc.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  /*
   * Default CFG switch settings to use this driver:
@@ -37,23 +44,43 @@
 /* SMDK has a 16.934MHZ crystal attached to WM8994 */
 #define SMDK_WM8994_FREQ 16934000
 
+<<<<<<< HEAD
+=======
+struct smdk_wm8994_data {
+	int mclk1_rate;
+};
+
+/* Default SMDKs */
+static struct smdk_wm8994_data smdk_board_data = {
+	.mclk1_rate = SMDK_WM8994_FREQ,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int smdk_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+<<<<<<< HEAD
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	unsigned int pll_out;
 	int ret;
 
 	/* AIF1CLK should be >=3MHz for optimal performance */
+<<<<<<< HEAD
 	if (params_format(params) == SNDRV_PCM_FORMAT_S24_LE)
+=======
+	if (params_width(params) == 24)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pll_out = params_rate(params) * 384;
 	else if (params_rate(params) == 8000 || params_rate(params) == 11025)
 		pll_out = params_rate(params) * 512;
 	else
 		pll_out = params_rate(params) * 256;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S
 					 | SND_SOC_DAIFMT_NB_NF
 					 | SND_SOC_DAIFMT_CBM_CFM);
@@ -66,6 +93,8 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL1, WM8994_FLL_SRC_MCLK1,
 					SMDK_WM8994_FREQ, pll_out);
 	if (ret < 0)
@@ -88,6 +117,7 @@ static struct snd_soc_ops smdk_ops = {
 
 static int smdk_wm8994_init_paiftx(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
@@ -102,6 +132,9 @@ static int smdk_wm8994_init_paiftx(struct snd_soc_pcm_runtime *rtd)
 	/* LineIn */
 	snd_soc_dapm_enable_pin(dapm, "IN2LN");
 	snd_soc_dapm_enable_pin(dapm, "IN2RN");
+=======
+	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Other pins NC */
 	snd_soc_dapm_nc_pin(dapm, "HPOUT2P");
@@ -131,6 +164,11 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.platform_name = "samsung-i2s.0",
 		.codec_name = "wm8994-codec",
 		.init = smdk_wm8994_init_paiftx,
+<<<<<<< HEAD
+=======
+		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+			SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops = &smdk_ops,
 	}, { /* Sec_Fifo Playback i/f */
 		.name = "Sec_FIFO TX",
@@ -139,6 +177,11 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8994-aif1",
 		.platform_name = "samsung-i2s-sec",
 		.codec_name = "wm8994-codec",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+			SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops = &smdk_ops,
 	},
 };
@@ -150,15 +193,35 @@ static struct snd_soc_card smdk = {
 	.num_links = ARRAY_SIZE(smdk_dai),
 };
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id samsung_wm8994_of_match[] = {
+	{ .compatible = "samsung,smdk-wm8994", .data = &smdk_board_data },
+	{},
+};
+MODULE_DEVICE_TABLE(of, samsung_wm8994_of_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int smdk_audio_probe(struct platform_device *pdev)
 {
 	int ret;
 	struct device_node *np = pdev->dev.of_node;
 	struct snd_soc_card *card = &smdk;
+<<<<<<< HEAD
 
 	card->dev = &pdev->dev;
 
+=======
+	struct smdk_wm8994_data *board;
+	const struct of_device_id *id;
+
+	card->dev = &pdev->dev;
+
+	board = devm_kzalloc(&pdev->dev, sizeof(*board), GFP_KERNEL);
+	if (!board)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (np) {
 		smdk_dai[0].cpu_dai_name = NULL;
 		smdk_dai[0].cpu_of_node = of_parse_phandle(np,
@@ -173,7 +236,17 @@ static int smdk_audio_probe(struct platform_device *pdev)
 		smdk_dai[0].platform_of_node = smdk_dai[0].cpu_of_node;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	id = of_match_device(of_match_ptr(samsung_wm8994_of_match), &pdev->dev);
+	if (id)
+		*board = *((struct smdk_wm8994_data *)id->data);
+
+	platform_set_drvdata(pdev, board);
+
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		dev_err(&pdev->dev, "snd_soc_register_card() failed:%d\n", ret);
@@ -181,6 +254,7 @@ static int smdk_audio_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int smdk_audio_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -206,10 +280,23 @@ static struct platform_driver smdk_audio_driver = {
 	},
 	.probe		= smdk_audio_probe,
 	.remove		= smdk_audio_remove,
+=======
+static struct platform_driver smdk_audio_driver = {
+	.driver		= {
+		.name	= "smdk-audio-wm8994",
+		.of_match_table = of_match_ptr(samsung_wm8994_of_match),
+		.pm	= &snd_soc_pm_ops,
+	},
+	.probe		= smdk_audio_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(smdk_audio_driver);
 
 MODULE_DESCRIPTION("ALSA SoC SMDK WM8994");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS("platform:smdk-audio");
+=======
+MODULE_ALIAS("platform:smdk-audio-wm8994");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

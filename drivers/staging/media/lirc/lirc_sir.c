@@ -44,7 +44,11 @@
 #include <linux/ioport.h>
 #include <linux/kernel.h>
 #include <linux/serial_reg.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/ktime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/wait.h>
@@ -55,6 +59,7 @@
 #include <asm/irq.h>
 #include <linux/fcntl.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #ifdef LIRC_ON_SA1100
 #include <asm/hardware.h>
 #ifdef CONFIG_SA1100_COLLIE
@@ -62,6 +67,8 @@
 #include <asm/ucb1200.h>
 #endif
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/timer.h>
 
@@ -94,6 +101,7 @@ static void init_act200(void);
 static void init_act220(void);
 #endif
 
+<<<<<<< HEAD
 /*** SA1100 ***/
 #ifdef LIRC_ON_SA1100
 struct sa1100_ser2_registers {
@@ -123,6 +131,8 @@ static unsigned int duty_cycle = 50;   /* duty cycle of 50% */
 
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RBUF_LEN 1024
 #define WBUF_LEN 1024
 
@@ -163,9 +173,15 @@ static int threshold = 3;
 static DEFINE_SPINLOCK(timer_lock);
 static struct timer_list timerlist;
 /* time of last signal change detected */
+<<<<<<< HEAD
 static struct timeval last_tv = {0, 0};
 /* time of last UART data ready interrupt */
 static struct timeval last_intr_tv = {0, 0};
+=======
+static ktime_t last;
+/* time of last UART data ready interrupt */
+static ktime_t last_intr_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int last_value;
 
 static DECLARE_WAIT_QUEUE_HEAD(lirc_read_queue);
@@ -176,21 +192,31 @@ static int rx_buf[RBUF_LEN];
 static unsigned int rx_tail, rx_head;
 
 static bool debug;
+<<<<<<< HEAD
 #define dprintk(fmt, args...)						\
 	do {								\
 		if (debug)						\
 			printk(KERN_DEBUG LIRC_DRIVER_NAME ": "		\
 				fmt, ## args);				\
 	} while (0)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* SECTION: Prototypes */
 
 /* Communication with user-space */
 static unsigned int lirc_poll(struct file *file, poll_table *wait);
+<<<<<<< HEAD
 static ssize_t lirc_read(struct file *file, char *buf, size_t count,
 		loff_t *ppos);
 static ssize_t lirc_write(struct file *file, const char *buf, size_t n,
 		loff_t *pos);
+=======
+static ssize_t lirc_read(struct file *file, char __user *buf, size_t count,
+			 loff_t *ppos);
+static ssize_t lirc_write(struct file *file, const char __user *buf, size_t n,
+			  loff_t *pos);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg);
 static void add_read_queue(int flag, unsigned long val);
 static int init_chrdev(void);
@@ -205,6 +231,7 @@ static void drop_hardware(void);
 static int init_port(void);
 static void drop_port(void);
 
+<<<<<<< HEAD
 #ifdef LIRC_ON_SA1100
 static void on(void)
 {
@@ -216,6 +243,8 @@ static void off(void)
 	PPSR &= ~PPC_TXD2;
 }
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned int sinp(int offset)
 {
 	return inb(io + offset);
@@ -225,7 +254,10 @@ static inline void soutp(int offset, int value)
 {
 	outb(value, io + offset);
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef MAX_UDELAY_MS
 #define MAX_UDELAY_US 5000
@@ -252,8 +284,13 @@ static unsigned int lirc_poll(struct file *file, poll_table *wait)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t lirc_read(struct file *file, char *buf, size_t count,
 		loff_t *ppos)
+=======
+static ssize_t lirc_read(struct file *file, char __user *buf, size_t count,
+			 loff_t *ppos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int n = 0;
 	int retval = 0;
@@ -266,9 +303,15 @@ static ssize_t lirc_read(struct file *file, char *buf, size_t count,
 	set_current_state(TASK_INTERRUPTIBLE);
 	while (n < count) {
 		if (rx_head != rx_tail) {
+<<<<<<< HEAD
 			if (copy_to_user((void *) buf + n,
 					(void *) (rx_buf + rx_head),
 					sizeof(int))) {
+=======
+			if (copy_to_user(buf + n,
+					 rx_buf + rx_head,
+					 sizeof(int))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				retval = -EFAULT;
 				break;
 			}
@@ -291,8 +334,13 @@ static ssize_t lirc_read(struct file *file, char *buf, size_t count,
 	set_current_state(TASK_RUNNING);
 	return n ? n : retval;
 }
+<<<<<<< HEAD
 static ssize_t lirc_write(struct file *file, const char *buf, size_t n,
 				loff_t *pos)
+=======
+static ssize_t lirc_write(struct file *file, const char __user *buf, size_t n,
+			  loff_t *pos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 	int i, count;
@@ -305,10 +353,13 @@ static ssize_t lirc_write(struct file *file, const char *buf, size_t n,
 	if (IS_ERR(tx_buf))
 		return PTR_ERR(tx_buf);
 	i = 0;
+<<<<<<< HEAD
 #ifdef LIRC_ON_SA1100
 	/* disable receiver */
 	Ser2UTCR3 = 0;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_save(flags);
 	while (1) {
 		if (i >= count)
@@ -323,6 +374,7 @@ static ssize_t lirc_write(struct file *file, const char *buf, size_t n,
 		i++;
 	}
 	local_irq_restore(flags);
+<<<<<<< HEAD
 #ifdef LIRC_ON_SA1100
 	off();
 	udelay(1000); /* wait 1ms for IR diode to recover */
@@ -332,12 +384,15 @@ static ssize_t lirc_write(struct file *file, const char *buf, size_t n,
 	/* enable receiver */
 	Ser2UTCR3 = UTCR3_RXE|UTCR3_RIE;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(tx_buf);
 	return count;
 }
 
 static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 {
+<<<<<<< HEAD
 	int retval = 0;
 	__u32 value = 0;
 #ifdef LIRC_ON_SA1100
@@ -353,22 +408,37 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 		value = LIRC_MODE_MODE2;
 #else
 	if (cmd == LIRC_GET_FEATURES)
+=======
+	u32 __user *uptr = (u32 __user *)arg;
+	int retval = 0;
+	u32 value = 0;
+
+	if (cmd == LIRC_GET_FEATURES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		value = LIRC_CAN_SEND_PULSE | LIRC_CAN_REC_MODE2;
 	else if (cmd == LIRC_GET_SEND_MODE)
 		value = LIRC_MODE_PULSE;
 	else if (cmd == LIRC_GET_REC_MODE)
 		value = LIRC_MODE_MODE2;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (cmd) {
 	case LIRC_GET_FEATURES:
 	case LIRC_GET_SEND_MODE:
 	case LIRC_GET_REC_MODE:
+<<<<<<< HEAD
 		retval = put_user(value, (__u32 *) arg);
+=======
+		retval = put_user(value, uptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case LIRC_SET_SEND_MODE:
 	case LIRC_SET_REC_MODE:
+<<<<<<< HEAD
 		retval = get_user(value, (__u32 *) arg);
 		break;
 #ifdef LIRC_ON_SA1100
@@ -402,6 +472,10 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 			space_width -= LIRC_ON_SA1100_TRANSMITTER_LATENCY;
 		break;
 #endif
+=======
+		retval = get_user(value, uptr);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		retval = -ENOIOCTLCMD;
 
@@ -425,7 +499,11 @@ static void add_read_queue(int flag, unsigned long val)
 	unsigned int new_rx_tail;
 	int newval;
 
+<<<<<<< HEAD
 	dprintk("add flag %d with val %lu\n", flag, val);
+=======
+	pr_debug("add flag %d with val %lu\n", flag, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	newval = val & PULSE_MASK;
 
@@ -445,7 +523,11 @@ static void add_read_queue(int flag, unsigned long val)
 	}
 	new_rx_tail = (rx_tail + 1) & (RBUF_LEN - 1);
 	if (new_rx_tail == rx_head) {
+<<<<<<< HEAD
 		dprintk("Buffer overrun.\n");
+=======
+		pr_debug("Buffer overrun.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	rx_buf[rx_tail] = newval;
@@ -509,6 +591,7 @@ static void drop_chrdev(void)
 }
 
 /* SECTION: Hardware */
+<<<<<<< HEAD
 static long delta(struct timeval *tv1, struct timeval *tv2)
 {
 	unsigned long deltv;
@@ -523,6 +606,8 @@ static long delta(struct timeval *tv1, struct timeval *tv2)
 	return deltv;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sir_timeout(unsigned long data)
 {
 	/*
@@ -538,6 +623,7 @@ static void sir_timeout(unsigned long data)
 	/* avoid interference with interrupt */
 	spin_lock_irqsave(&timer_lock, flags);
 	if (last_value) {
+<<<<<<< HEAD
 #ifndef LIRC_ON_SA1100
 		/* clear unread bits in UART and restart */
 		outb(UART_FCR_CLEAR_RCVR, io + UART_FCR);
@@ -548,6 +634,19 @@ static void sir_timeout(unsigned long data)
 		add_read_queue(last_value, pulse_end);
 		last_value = 0;
 		last_tv = last_intr_tv;
+=======
+		/* clear unread bits in UART and restart */
+		outb(UART_FCR_CLEAR_RCVR, io + UART_FCR);
+		/* determine 'virtual' pulse end: */
+		pulse_end = min_t(unsigned long,
+				  ktime_us_delta(last, last_intr_time),
+				  PULSE_MASK);
+		dev_dbg(driver.dev, "timeout add %d for %lu usec\n",
+				    last_value, pulse_end);
+		add_read_queue(last_value, pulse_end);
+		last_value = 0;
+		last = last_intr_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock_irqrestore(&timer_lock, flags);
 }
@@ -555,6 +654,7 @@ static void sir_timeout(unsigned long data)
 static irqreturn_t sir_interrupt(int irq, void *dev_id)
 {
 	unsigned char data;
+<<<<<<< HEAD
 	struct timeval curr_tv;
 	static unsigned long deltv;
 #ifdef LIRC_ON_SA1100
@@ -614,6 +714,11 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 		Ser2UTSR0 = status;
 #else
 	unsigned long deltintrtv;
+=======
+	ktime_t curr_time;
+	static unsigned long delt;
+	unsigned long deltintr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int iir, lsr;
 
@@ -637,14 +742,28 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 			do {
 				del_timer(&timerlist);
 				data = inb(io + UART_RX);
+<<<<<<< HEAD
 				do_gettimeofday(&curr_tv);
 				deltv = delta(&last_tv, &curr_tv);
 				deltintrtv = delta(&last_intr_tv, &curr_tv);
 				dprintk("t %lu, d %d\n", deltintrtv, (int)data);
+=======
+				curr_time = ktime_get();
+				delt = min_t(unsigned long,
+					     ktime_us_delta(last, curr_time),
+					     PULSE_MASK);
+				deltintr = min_t(unsigned long,
+						 ktime_us_delta(last_intr_time,
+								curr_time),
+						 PULSE_MASK);
+				dev_dbg(driver.dev, "t %lu, d %d\n",
+						    deltintr, (int)data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/*
 				 * if nothing came in last X cycles,
 				 * it was gap
 				 */
+<<<<<<< HEAD
 				if (deltintrtv > TIME_CONST * threshold) {
 					if (last_value) {
 						dprintk("GAP\n");
@@ -658,11 +777,24 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 						last_tv.tv_usec =
 							last_intr_tv.tv_usec;
 						deltv = deltintrtv;
+=======
+				if (deltintr > TIME_CONST * threshold) {
+					if (last_value) {
+						dev_dbg(driver.dev, "GAP\n");
+						/* simulate signal change */
+						add_read_queue(last_value,
+							       delt -
+							       deltintr);
+						last_value = 0;
+						last = last_intr_time;
+						delt = deltintr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					}
 				}
 				data = 1;
 				if (data ^ last_value) {
 					/*
+<<<<<<< HEAD
 					 * deltintrtv > 2*TIME_CONST, remember?
 					 * the other case is timeout
 					 */
@@ -679,6 +811,19 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 					}
 				}
 				last_intr_tv = curr_tv;
+=======
+					 * deltintr > 2*TIME_CONST, remember?
+					 * the other case is timeout
+					 */
+					add_read_queue(last_value,
+						       delt-TIME_CONST);
+					last_value = data;
+					last = curr_time;
+					last = ktime_sub_us(last,
+							    TIME_CONST);
+				}
+				last_intr_time = curr_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (data) {
 					/*
 					 * start timer for end of
@@ -697,6 +842,7 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 			break;
 		}
 	}
+<<<<<<< HEAD
 #endif
 	return IRQ_RETVAL(IRQ_HANDLED);
 }
@@ -735,6 +881,11 @@ static void send_space(unsigned long length)
 	safe_udelay(length);
 }
 #else
+=======
+	return IRQ_RETVAL(IRQ_HANDLED);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void send_space(unsigned long len)
 {
 	safe_udelay(len);
@@ -754,6 +905,7 @@ static void send_pulse(unsigned long len)
 			;
 	}
 }
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_SA1100_COLLIE
@@ -779,6 +931,8 @@ static int sa1100_irda_set_power_collie(int state)
 	return 0;
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int init_hardware(void)
 {
@@ -786,6 +940,7 @@ static int init_hardware(void)
 
 	spin_lock_irqsave(&hardware_lock, flags);
 	/* reset UART */
+<<<<<<< HEAD
 #ifdef LIRC_ON_SA1100
 #ifdef CONFIG_SA1100_COLLIE
 	sa1100_irda_set_power_collie(3);	/* power on */
@@ -831,6 +986,9 @@ static int init_hardware(void)
 	Ser2UTSR0 &= (UTSR0_RID | UTSR0_RBB | UTSR0_REB);
 
 #elif defined(LIRC_SIR_TEKRAM)
+=======
+#if defined(LIRC_SIR_TEKRAM)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* disable FIFO */
 	soutp(UART_FCR,
 	      UART_FCR_CLEAR_RCVR|
@@ -926,6 +1084,7 @@ static void drop_hardware(void)
 
 	spin_lock_irqsave(&hardware_lock, flags);
 
+<<<<<<< HEAD
 #ifdef LIRC_ON_SA1100
 	Ser2UTCR3 = 0;
 
@@ -943,6 +1102,11 @@ static void drop_hardware(void)
 	/* turn off interrupts */
 	outb(0, io + UART_IER);
 #endif
+=======
+	/* turn off interrupts */
+	outb(0, io + UART_IER);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&hardware_lock, flags);
 }
 
@@ -953,11 +1117,15 @@ static int init_port(void)
 	int retval;
 
 	/* get I/O port access and IRQ line */
+<<<<<<< HEAD
 #ifndef LIRC_ON_SA1100
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (request_region(io, 8, LIRC_DRIVER_NAME) == NULL) {
 		pr_err("i/o port 0x%.4x already in use.\n", io);
 		return -EBUSY;
 	}
+<<<<<<< HEAD
 #endif
 	retval = request_irq(irq, sir_interrupt, 0,
 			     LIRC_DRIVER_NAME, NULL);
@@ -975,6 +1143,18 @@ static int init_port(void)
 	init_timer(&timerlist);
 	timerlist.function = sir_timeout;
 	timerlist.data = 0xabadcafe;
+=======
+	retval = request_irq(irq, sir_interrupt, 0,
+			     LIRC_DRIVER_NAME, NULL);
+	if (retval < 0) {
+		release_region(io, 8);
+		pr_err("IRQ %d already in use.\n", irq);
+		return retval;
+	}
+	pr_info("I/O port 0x%.4x, IRQ %d.\n", io, irq);
+
+	setup_timer(&timerlist, sir_timeout, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -983,9 +1163,13 @@ static void drop_port(void)
 {
 	free_irq(irq, NULL);
 	del_timer_sync(&timerlist);
+<<<<<<< HEAD
 #ifndef LIRC_ON_SA1100
 	release_region(io, 8);
 #endif
+=======
+	release_region(io, 8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef LIRC_SIR_ACTISYS_ACT200L
@@ -1218,7 +1402,10 @@ static struct platform_driver lirc_sir_driver = {
 	.remove		= lirc_sir_remove,
 	.driver		= {
 		.name	= "lirc_sir",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -1283,9 +1470,12 @@ module_exit(lirc_sir_exit);
 #ifdef LIRC_SIR_TEKRAM
 MODULE_DESCRIPTION("Infrared receiver driver for Tekram Irmate 210");
 MODULE_AUTHOR("Christoph Bartelmus");
+<<<<<<< HEAD
 #elif defined(LIRC_ON_SA1100)
 MODULE_DESCRIPTION("LIRC driver for StrongARM SA1100 embedded microprocessor");
 MODULE_AUTHOR("Christoph Bartelmus");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif defined(LIRC_SIR_ACTISYS_ACT200L)
 MODULE_DESCRIPTION("LIRC driver for Actisys Act200L");
 MODULE_AUTHOR("Karl Bongers");
@@ -1298,10 +1488,13 @@ MODULE_AUTHOR("Milan Pikula");
 #endif
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 #ifdef LIRC_ON_SA1100
 module_param(irq, int, S_IRUGO);
 MODULE_PARM_DESC(irq, "Interrupt (16)");
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(io, int, S_IRUGO);
 MODULE_PARM_DESC(io, "I/O address base (0x3f8 or 0x2f8)");
 
@@ -1310,7 +1503,10 @@ MODULE_PARM_DESC(irq, "Interrupt (4 or 3)");
 
 module_param(threshold, int, S_IRUGO);
 MODULE_PARM_DESC(threshold, "space detection threshold (3)");
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Enable debugging messages");

@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Written by:
  * Sergey Lapin <slapin@ossfans.org>
  * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
@@ -26,6 +29,7 @@
 #include <linux/timer.h>
 #include <linux/platform_device.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <net/mac802154.h>
 #include <net/wpan-phy.h>
@@ -52,11 +56,42 @@ fakelb_hw_ed(struct ieee802154_dev *dev, u8 *level)
 {
 	might_sleep();
 	BUG_ON(!level);
+=======
+#include <linux/device.h>
+#include <linux/spinlock.h>
+#include <net/mac802154.h>
+#include <net/cfg802154.h>
+
+static int numlbs = 2;
+
+static LIST_HEAD(fakelb_phys);
+static DEFINE_MUTEX(fakelb_phys_lock);
+
+static LIST_HEAD(fakelb_ifup_phys);
+static DEFINE_RWLOCK(fakelb_ifup_phys_lock);
+
+struct fakelb_phy {
+	struct ieee802154_hw *hw;
+
+	u8 page;
+	u8 channel;
+
+	bool suspended;
+
+	struct list_head list;
+	struct list_head list_ifup;
+};
+
+static int fakelb_hw_ed(struct ieee802154_hw *hw, u8 *level)
+{
+	WARN_ON(!level);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*level = 0xbe;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 fakelb_hw_channel(struct ieee802154_dev *dev, int page, int channel)
 {
@@ -135,16 +170,89 @@ fakelb_hw_stop(struct ieee802154_dev *dev) {
 static struct ieee802154_ops fakelb_ops = {
 	.owner = THIS_MODULE,
 	.xmit = fakelb_hw_xmit,
+=======
+static int fakelb_hw_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
+{
+	struct fakelb_phy *phy = hw->priv;
+
+	write_lock_bh(&fakelb_ifup_phys_lock);
+	phy->page = page;
+	phy->channel = channel;
+	write_unlock_bh(&fakelb_ifup_phys_lock);
+	return 0;
+}
+
+static int fakelb_hw_xmit(struct ieee802154_hw *hw, struct sk_buff *skb)
+{
+	struct fakelb_phy *current_phy = hw->priv, *phy;
+
+	read_lock_bh(&fakelb_ifup_phys_lock);
+	WARN_ON(current_phy->suspended);
+	list_for_each_entry(phy, &fakelb_ifup_phys, list_ifup) {
+		if (current_phy == phy)
+			continue;
+
+		if (current_phy->page == phy->page &&
+		    current_phy->channel == phy->channel) {
+			struct sk_buff *newskb = pskb_copy(skb, GFP_ATOMIC);
+
+			if (newskb)
+				ieee802154_rx_irqsafe(phy->hw, newskb, 0xcc);
+		}
+	}
+	read_unlock_bh(&fakelb_ifup_phys_lock);
+
+	ieee802154_xmit_complete(hw, skb, false);
+	return 0;
+}
+
+static int fakelb_hw_start(struct ieee802154_hw *hw)
+{
+	struct fakelb_phy *phy = hw->priv;
+
+	write_lock_bh(&fakelb_ifup_phys_lock);
+	phy->suspended = false;
+	list_add(&phy->list_ifup, &fakelb_ifup_phys);
+	write_unlock_bh(&fakelb_ifup_phys_lock);
+
+	return 0;
+}
+
+static void fakelb_hw_stop(struct ieee802154_hw *hw)
+{
+	struct fakelb_phy *phy = hw->priv;
+
+	write_lock_bh(&fakelb_ifup_phys_lock);
+	phy->suspended = true;
+	list_del(&phy->list_ifup);
+	write_unlock_bh(&fakelb_ifup_phys_lock);
+}
+
+static int
+fakelb_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
+{
+	return 0;
+}
+
+static const struct ieee802154_ops fakelb_ops = {
+	.owner = THIS_MODULE,
+	.xmit_async = fakelb_hw_xmit,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ed = fakelb_hw_ed,
 	.set_channel = fakelb_hw_channel,
 	.start = fakelb_hw_start,
 	.stop = fakelb_hw_stop,
+<<<<<<< HEAD
+=======
+	.set_promiscuous_mode = fakelb_set_promiscuous_mode,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Number of dummy devices to be set up by this module. */
 module_param(numlbs, int, 0);
 MODULE_PARM_DESC(numlbs, " number of pseudo devices");
 
+<<<<<<< HEAD
 static int fakelb_add_one(struct device *dev, struct fakelb_priv *fake)
 {
 	struct fakelb_dev_priv *priv;
@@ -203,10 +311,72 @@ static int fakelb_add_one(struct device *dev, struct fakelb_priv *fake)
 	write_lock_bh(&fake->lock);
 	list_add_tail(&priv->list, &fake->list);
 	write_unlock_bh(&fake->lock);
+=======
+static int fakelb_add_one(struct device *dev)
+{
+	struct ieee802154_hw *hw;
+	struct fakelb_phy *phy;
+	int err;
+
+	hw = ieee802154_alloc_hw(sizeof(*phy), &fakelb_ops);
+	if (!hw)
+		return -ENOMEM;
+
+	phy = hw->priv;
+	phy->hw = hw;
+
+	/* 868 MHz BPSK	802.15.4-2003 */
+	hw->phy->supported.channels[0] |= 1;
+	/* 915 MHz BPSK	802.15.4-2003 */
+	hw->phy->supported.channels[0] |= 0x7fe;
+	/* 2.4 GHz O-QPSK 802.15.4-2003 */
+	hw->phy->supported.channels[0] |= 0x7FFF800;
+	/* 868 MHz ASK 802.15.4-2006 */
+	hw->phy->supported.channels[1] |= 1;
+	/* 915 MHz ASK 802.15.4-2006 */
+	hw->phy->supported.channels[1] |= 0x7fe;
+	/* 868 MHz O-QPSK 802.15.4-2006 */
+	hw->phy->supported.channels[2] |= 1;
+	/* 915 MHz O-QPSK 802.15.4-2006 */
+	hw->phy->supported.channels[2] |= 0x7fe;
+	/* 2.4 GHz CSS 802.15.4a-2007 */
+	hw->phy->supported.channels[3] |= 0x3fff;
+	/* UWB Sub-gigahertz 802.15.4a-2007 */
+	hw->phy->supported.channels[4] |= 1;
+	/* UWB Low band 802.15.4a-2007 */
+	hw->phy->supported.channels[4] |= 0x1e;
+	/* UWB High band 802.15.4a-2007 */
+	hw->phy->supported.channels[4] |= 0xffe0;
+	/* 750 MHz O-QPSK 802.15.4c-2009 */
+	hw->phy->supported.channels[5] |= 0xf;
+	/* 750 MHz MPSK 802.15.4c-2009 */
+	hw->phy->supported.channels[5] |= 0xf0;
+	/* 950 MHz BPSK 802.15.4d-2009 */
+	hw->phy->supported.channels[6] |= 0x3ff;
+	/* 950 MHz GFSK 802.15.4d-2009 */
+	hw->phy->supported.channels[6] |= 0x3ffc00;
+
+	ieee802154_random_extended_addr(&hw->phy->perm_extended_addr);
+	/* fake phy channel 13 as default */
+	hw->phy->current_channel = 13;
+	phy->channel = hw->phy->current_channel;
+
+	hw->flags = IEEE802154_HW_PROMISCUOUS;
+	hw->parent = dev;
+
+	err = ieee802154_register_hw(hw);
+	if (err)
+		goto err_reg;
+
+	mutex_lock(&fakelb_phys_lock);
+	list_add_tail(&phy->list, &fakelb_phys);
+	mutex_unlock(&fakelb_phys_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
 err_reg:
+<<<<<<< HEAD
 	ieee802154_free_device(priv->dev);
 	return err;
 }
@@ -219,10 +389,23 @@ static void fakelb_del(struct fakelb_dev_priv *priv)
 
 	ieee802154_unregister_device(priv->dev);
 	ieee802154_free_device(priv->dev);
+=======
+	ieee802154_free_hw(phy->hw);
+	return err;
+}
+
+static void fakelb_del(struct fakelb_phy *phy)
+{
+	list_del(&phy->list);
+
+	ieee802154_unregister_hw(phy->hw);
+	ieee802154_free_hw(phy->hw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int fakelb_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct fakelb_priv *priv;
 	struct fakelb_dev_priv *dp;
 	int err = -ENOMEM;
@@ -237,24 +420,42 @@ static int fakelb_probe(struct platform_device *pdev)
 
 	for (i = 0; i < numlbs; i++) {
 		err = fakelb_add_one(&pdev->dev, priv);
+=======
+	struct fakelb_phy *phy, *tmp;
+	int err, i;
+
+	for (i = 0; i < numlbs; i++) {
+		err = fakelb_add_one(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err < 0)
 			goto err_slave;
 	}
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, priv);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&pdev->dev, "added ieee802154 hardware\n");
 	return 0;
 
 err_slave:
+<<<<<<< HEAD
 	list_for_each_entry(dp, &priv->list, list)
 		fakelb_del(dp);
 	kfree(priv);
 err_alloc:
+=======
+	mutex_lock(&fakelb_phys_lock);
+	list_for_each_entry_safe(phy, tmp, &fakelb_phys, list)
+		fakelb_del(phy);
+	mutex_unlock(&fakelb_phys_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
 static int fakelb_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct fakelb_priv *priv = platform_get_drvdata(pdev);
 	struct fakelb_dev_priv *dp, *temp;
 
@@ -262,6 +463,14 @@ static int fakelb_remove(struct platform_device *pdev)
 		fakelb_del(dp);
 	kfree(priv);
 
+=======
+	struct fakelb_phy *phy, *tmp;
+
+	mutex_lock(&fakelb_phys_lock);
+	list_for_each_entry_safe(phy, tmp, &fakelb_phys, list)
+		fakelb_del(phy);
+	mutex_unlock(&fakelb_phys_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -272,7 +481,10 @@ static struct platform_driver ieee802154fake_driver = {
 	.remove = fakelb_remove,
 	.driver = {
 			.name = "ieee802154fakelb",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

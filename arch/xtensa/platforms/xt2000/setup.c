@@ -64,6 +64,7 @@ void platform_restart(void)
 {
 	/* Flush and reset the mmu, simulate a processor reset, and
 	 * jump to the reset vector. */
+<<<<<<< HEAD
 
 	__asm__ __volatile__ ("movi	a2, 15\n\t"
 			      "wsr	a2, icountlevel\n\t"
@@ -82,6 +83,9 @@ void platform_restart(void)
 			      : "a2"
 			      );
 
+=======
+	cpu_reset();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* control never gets here */
 }
 
@@ -92,6 +96,7 @@ void __init platform_setup(char** cmdline)
 
 /* early initialization */
 
+<<<<<<< HEAD
 extern sysmem_info_t __initdata sysmem;
 
 void platform_init(bp_tag_t* first)
@@ -104,6 +109,10 @@ void platform_init(bp_tag_t* first)
 		sysmem.bank[0].end = PLATFORM_DEFAULT_MEM_START
 				     + PLATFORM_DEFAULT_MEM_SIZE;
 	}
+=======
+void __init platform_init(bp_tag_t *first)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Heartbeat. Let the LED blink. */
@@ -121,7 +130,10 @@ void platform_heartbeat(void)
 }
 
 //#define RS_TABLE_SIZE 2
+<<<<<<< HEAD
 //#define STD_COM_FLAGS (ASYNC_BOOT_AUTOCONF|ASYNC_SKIP_TEST)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _SERIAL_PORT(_base,_irq)					\
 {									\

@@ -139,7 +139,11 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	struct sd *sd = (struct sd *) gspca_dev;
 	struct cam *cam = &gspca_dev->cam;
 
+<<<<<<< HEAD
 	/* Give the camera some time to settle, otherwise initalization will
+=======
+	/* Give the camera some time to settle, otherwise initialization will
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   fail on hotplug, and yes it really needs a full second. */
 	msleep(1000);
 

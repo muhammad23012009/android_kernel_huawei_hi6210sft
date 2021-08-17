@@ -99,6 +99,7 @@ static inline struct intc_desc_int *get_intc_desc(unsigned int irq)
  */
 static inline void activate_irq(int irq)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	/* ARM requires an extra step to clear IRQ_NOREQUEST, which it
 	 * sets on behalf of every irq_chip.  Also sets IRQ_NOPROBE.
@@ -108,6 +109,9 @@ static inline void activate_irq(int irq)
 	/* same effect on other architectures */
 	irq_set_noprobe(irq);
 #endif
+=======
+	irq_modify_status(irq, IRQ_NOREQUEST, IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int intc_handle_int_cmp(const void *a, const void *b)

@@ -1,22 +1,39 @@
+<<<<<<< HEAD
 ifneq ($(CONFIG_ARM),y)
 obj-y	+= manage.o
 obj-$(CONFIG_HOTPLUG_CPU)		+= cpu_hotplug.o
 endif
 obj-$(CONFIG_X86)			+= fallback.o
 obj-y	+= grant-table.o features.o events.o balloon.o
+=======
+obj-$(CONFIG_HOTPLUG_CPU)		+= cpu_hotplug.o
+obj-$(CONFIG_X86)			+= fallback.o
+obj-y	+= grant-table.o features.o balloon.o manage.o preempt.o time.o
+obj-y	+= events/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-y	+= xenbus/
 
 nostackp := $(call cc-option, -fno-stack-protector)
 CFLAGS_features.o			:= $(nostackp)
 
+<<<<<<< HEAD
 dom0-$(CONFIG_PCI) += pci.o
 dom0-$(CONFIG_USB_SUPPORT) += dbgp.o
 dom0-$(CONFIG_ACPI) += acpi.o $(xen-pad-y)
+=======
+dom0-$(CONFIG_ARM64) += arm-device.o
+dom0-$(CONFIG_PCI) += pci.o
+dom0-$(CONFIG_USB_SUPPORT) += dbgp.o
+dom0-$(CONFIG_XEN_ACPI) += acpi.o $(xen-pad-y)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 xen-pad-$(CONFIG_X86) += xen-acpi-pad.o
 dom0-$(CONFIG_X86) += pcpu.o
 obj-$(CONFIG_XEN_DOM0)			+= $(dom0-y)
 obj-$(CONFIG_BLOCK)			+= biomerge.o
+<<<<<<< HEAD
 obj-$(CONFIG_XEN_XENCOMM)		+= xencomm.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_XEN_BALLOON)		+= xen-balloon.o
 obj-$(CONFIG_XEN_SELFBALLOONING)	+= xen-selfballoon.o
 obj-$(CONFIG_XEN_DEV_EVTCHN)		+= xen-evtchn.o
@@ -34,6 +51,12 @@ obj-$(CONFIG_XEN_STUB)			+= xen-stub.o
 obj-$(CONFIG_XEN_ACPI_HOTPLUG_MEMORY)	+= xen-acpi-memhotplug.o
 obj-$(CONFIG_XEN_ACPI_HOTPLUG_CPU)	+= xen-acpi-cpuhotplug.o
 obj-$(CONFIG_XEN_ACPI_PROCESSOR)	+= xen-acpi-processor.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_XEN_EFI)			+= efi.o
+obj-$(CONFIG_XEN_SCSI_BACKEND)		+= xen-scsiback.o
+obj-$(CONFIG_XEN_AUTO_XLATE)		+= xlate_mmu.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 xen-evtchn-y				:= evtchn.o
 xen-gntdev-y				:= gntdev.o
 xen-gntalloc-y				:= gntalloc.o

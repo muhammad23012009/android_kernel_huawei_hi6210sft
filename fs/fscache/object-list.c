@@ -50,6 +50,11 @@ void fscache_objlist_add(struct fscache_object *obj)
 	struct fscache_object *xobj;
 	struct rb_node **p = &fscache_object_list.rb_node, *parent = NULL;
 
+<<<<<<< HEAD
+=======
+	ASSERT(RB_EMPTY_NODE(&obj->objlist_link));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	write_lock(&fscache_object_list_lock);
 
 	while (*p) {
@@ -70,6 +75,7 @@ void fscache_objlist_add(struct fscache_object *obj)
 	write_unlock(&fscache_object_list_lock);
 }
 
+<<<<<<< HEAD
 /**
  * fscache_object_destroy - Note that a cache object is about to be destroyed
  * @object: The object to be destroyed
@@ -78,6 +84,16 @@ void fscache_objlist_add(struct fscache_object *obj)
  */
 void fscache_object_destroy(struct fscache_object *obj)
 {
+=======
+/*
+ * Remove an object from the object list.
+ */
+void fscache_objlist_remove(struct fscache_object *obj)
+{
+	if (RB_EMPTY_NODE(&obj->objlist_link))
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	write_lock(&fscache_object_list_lock);
 
 	BUG_ON(RB_EMPTY_ROOT(&fscache_object_list));
@@ -85,7 +101,10 @@ void fscache_object_destroy(struct fscache_object *obj)
 
 	write_unlock(&fscache_object_list_lock);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(fscache_object_destroy);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * find the object in the tree on or after the specified index
@@ -166,15 +185,25 @@ static int fscache_objlist_show(struct seq_file *m, void *v)
 {
 	struct fscache_objlist_data *data = m->private;
 	struct fscache_object *obj = v;
+<<<<<<< HEAD
 	unsigned long config = data->config;
 	uint16_t keylen, auxlen;
 	char _type[3], *type;
 	bool no_cookie;
+=======
+	struct fscache_cookie *cookie;
+	unsigned long config = data->config;
+	char _type[3], *type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *buf = data->buf, *p;
 
 	if ((unsigned long) v == 1) {
 		seq_puts(m, "OBJECT   PARENT   STAT CHLDN OPS OOP IPR EX READS"
+<<<<<<< HEAD
 			 " EM EV F S"
+=======
+			 " EM EV FL S"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 " | NETFS_COOKIE_DEF TY FL NETFS_DATA");
 		if (config & (FSCACHE_OBJLIST_CONFIG_KEY |
 			      FSCACHE_OBJLIST_CONFIG_AUX))
@@ -193,7 +222,11 @@ static int fscache_objlist_show(struct seq_file *m, void *v)
 
 	if ((unsigned long) v == 2) {
 		seq_puts(m, "======== ======== ==== ===== === === === == ====="
+<<<<<<< HEAD
 			 " == == = ="
+=======
+			 " == == == ="
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 " | ================ == == ================");
 		if (config & (FSCACHE_OBJLIST_CONFIG_KEY |
 			      FSCACHE_OBJLIST_CONFIG_AUX))
@@ -216,10 +249,18 @@ static int fscache_objlist_show(struct seq_file *m, void *v)
 		}							\
 	} while(0)
 
+<<<<<<< HEAD
 	if (~config) {
 		FILTER(obj->cookie,
 		       COOKIE, NOCOOKIE);
 		FILTER(obj->state != FSCACHE_OBJECT_ACTIVE ||
+=======
+	cookie = obj->cookie;
+	if (~config) {
+		FILTER(cookie->def,
+		       COOKIE, NOCOOKIE);
+		FILTER(fscache_object_is_active(obj) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       obj->n_ops != 0 ||
 		       obj->n_obj_ops != 0 ||
 		       obj->flags ||
@@ -235,10 +276,17 @@ static int fscache_objlist_show(struct seq_file *m, void *v)
 	}
 
 	seq_printf(m,
+<<<<<<< HEAD
 		   "%8x %8x %s %5u %3u %3u %3u %2u %5u %2lx %2lx %1lx %1x | ",
 		   obj->debug_id,
 		   obj->parent ? obj->parent->debug_id : -1,
 		   fscache_object_states_short[obj->state],
+=======
+		   "%8x %8x %s %5u %3u %3u %3u %2u %5u %2lx %2lx %2lx %1x | ",
+		   obj->debug_id,
+		   obj->parent ? obj->parent->debug_id : -1,
+		   obj->state->short_name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   obj->n_children,
 		   obj->n_ops,
 		   obj->n_obj_ops,
@@ -250,6 +298,7 @@ static int fscache_objlist_show(struct seq_file *m, void *v)
 		   obj->flags,
 		   work_busy(&obj->work));
 
+<<<<<<< HEAD
 	no_cookie = true;
 	keylen = auxlen = 0;
 	if (obj->cookie) {
@@ -293,21 +342,70 @@ static int fscache_objlist_show(struct seq_file *m, void *v)
 
 		if (!no_cookie && (keylen > 0 || auxlen > 0)) {
 			seq_printf(m, " ");
+=======
+	if (fscache_use_cookie(obj)) {
+		uint16_t keylen = 0, auxlen = 0;
+
+		switch (cookie->def->type) {
+		case 0:
+			type = "IX";
+			break;
+		case 1:
+			type = "DT";
+			break;
+		default:
+			sprintf(_type, "%02u", cookie->def->type);
+			type = _type;
+			break;
+		}
+
+		seq_printf(m, "%-16s %s %2lx %16p",
+			   cookie->def->name,
+			   type,
+			   cookie->flags,
+			   cookie->netfs_data);
+
+		if (cookie->def->get_key &&
+		    config & FSCACHE_OBJLIST_CONFIG_KEY)
+			keylen = cookie->def->get_key(cookie->netfs_data,
+						      buf, 400);
+
+		if (cookie->def->get_aux &&
+		    config & FSCACHE_OBJLIST_CONFIG_AUX)
+			auxlen = cookie->def->get_aux(cookie->netfs_data,
+						      buf + keylen, 512 - keylen);
+		fscache_unuse_cookie(obj);
+
+		if (keylen > 0 || auxlen > 0) {
+			seq_puts(m, " ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			for (p = buf; keylen > 0; keylen--)
 				seq_printf(m, "%02x", *p++);
 			if (auxlen > 0) {
 				if (config & FSCACHE_OBJLIST_CONFIG_KEY)
+<<<<<<< HEAD
 					seq_printf(m, ", ");
+=======
+					seq_puts(m, ", ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				for (; auxlen > 0; auxlen--)
 					seq_printf(m, "%02x", *p++);
 			}
 		}
+<<<<<<< HEAD
 	}
 
 	if (no_cookie)
 		seq_printf(m, "<no_cookie>\n");
 	else
 		seq_printf(m, "\n");
+=======
+
+		seq_puts(m, "\n");
+	} else {
+		seq_puts(m, "<no_netfs>\n");
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -324,7 +422,11 @@ static const struct seq_operations fscache_objlist_ops = {
 static void fscache_objlist_config(struct fscache_objlist_data *data)
 {
 #ifdef CONFIG_KEYS
+<<<<<<< HEAD
 	struct user_key_payload *confkey;
+=======
+	const struct user_key_payload *confkey;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long config;
 	struct key *key;
 	const char *buf;
@@ -337,7 +439,11 @@ static void fscache_objlist_config(struct fscache_objlist_data *data)
 	config = 0;
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	confkey = key->payload.data;
+=======
+	confkey = user_key_payload(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!confkey) {
 		/* key was revoked */
 		rcu_read_unlock();
@@ -395,6 +501,7 @@ no_config:
 static int fscache_objlist_open(struct inode *inode, struct file *file)
 {
 	struct fscache_objlist_data *data;
+<<<<<<< HEAD
 	struct seq_file *m;
 	int ret;
 
@@ -410,11 +517,20 @@ static int fscache_objlist_open(struct inode *inode, struct file *file)
 		seq_release(inode, file);
 		return -ENOMEM;
 	}
+=======
+
+	data = __seq_open_private(file, &fscache_objlist_ops, sizeof(*data));
+	if (!data)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* get the configuration key */
 	fscache_objlist_config(data);
 
+<<<<<<< HEAD
 	m->private = data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -431,7 +547,10 @@ static int fscache_objlist_release(struct inode *inode, struct file *file)
 }
 
 const struct file_operations fscache_objlist_fops = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= fscache_objlist_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,

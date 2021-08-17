@@ -2,8 +2,14 @@
  * This module provides common API for accessing firmware configuration pages
  *
  * This code is based on drivers/scsi/mpt3sas/mpt3sas_base.c
+<<<<<<< HEAD
  * Copyright (C) 2012  LSI Corporation
  *  (mailto:DL-MPTFusionLinux@lsi.com)
+=======
+ * Copyright (C) 2012-2014  LSI Corporation
+ * Copyright (C) 2013-2014 Avago Technologies
+ *  (mailto: MPT-FusionLinux.pdl@avagotech.com)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -82,7 +88,10 @@ struct config_request {
 	dma_addr_t		page_dma;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_MPT3SAS_LOGGING
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * _config_display_some_debug - debug routine
  * @ioc: per adapter object
@@ -172,7 +181,10 @@ _config_display_some_debug(struct MPT3SAS_ADAPTER *ioc, u16 smid,
 		    ioc->name, le16_to_cpu(mpi_reply->IOCStatus),
 		    le32_to_cpu(mpi_reply->IOCLogInfo));
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * _config_alloc_config_dma_memory - obtain physical memory
@@ -254,9 +266,13 @@ mpt3sas_config_done(struct MPT3SAS_ADAPTER *ioc, u16 smid, u8 msix_index,
 		    mpi_reply->MsgLength*4);
 	}
 	ioc->config_cmds.status &= ~MPT3_CMD_PENDING;
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_MPT3SAS_LOGGING
 	_config_display_some_debug(ioc, smid, "config_done", mpi_reply);
 #endif
+=======
+	_config_display_some_debug(ioc, smid, "config_done", mpi_reply);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ioc->config_cmds.smid = USHRT_MAX;
 	complete(&ioc->config_cmds.done);
 	return 1;
@@ -288,7 +304,10 @@ _config_request(struct MPT3SAS_ADAPTER *ioc, Mpi2ConfigRequest_t
 {
 	u16 smid;
 	u32 ioc_state;
+<<<<<<< HEAD
 	unsigned long timeleft;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	Mpi2ConfigRequest_t *config_request;
 	int r;
 	u8 retry_count, issue_host_reset = 0;
@@ -386,6 +405,7 @@ _config_request(struct MPT3SAS_ADAPTER *ioc, Mpi2ConfigRequest_t
 	config_request = mpt3sas_base_get_msg_frame(ioc, smid);
 	ioc->config_cmds.smid = smid;
 	memcpy(config_request, mpi_request, sizeof(Mpi2ConfigRequest_t));
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_MPT3SAS_LOGGING
 	_config_display_some_debug(ioc, smid, "config_request", NULL);
 #endif
@@ -393,6 +413,12 @@ _config_request(struct MPT3SAS_ADAPTER *ioc, Mpi2ConfigRequest_t
 	mpt3sas_base_put_smid_default(ioc, smid);
 	timeleft = wait_for_completion_timeout(&ioc->config_cmds.done,
 	    timeout*HZ);
+=======
+	_config_display_some_debug(ioc, smid, "config_request", NULL);
+	init_completion(&ioc->config_cmds.done);
+	mpt3sas_base_put_smid_default(ioc, smid);
+	wait_for_completion_timeout(&ioc->config_cmds.done, timeout*HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(ioc->config_cmds.status & MPT3_CMD_COMPLETE)) {
 		pr_err(MPT3SAS_FMT "%s: timeout\n",
 		    ioc->name, __func__);
@@ -496,8 +522,12 @@ _config_request(struct MPT3SAS_ADAPTER *ioc, Mpi2ConfigRequest_t
 	mutex_unlock(&ioc->config_cmds.mutex);
 
 	if (issue_host_reset)
+<<<<<<< HEAD
 		mpt3sas_base_hard_reset_handler(ioc, CAN_SLEEP,
 		    FORCE_BIG_HAMMER);
+=======
+		mpt3sas_base_hard_reset_handler(ioc, FORCE_BIG_HAMMER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return r;
 }
 
@@ -682,10 +712,13 @@ mpt3sas_config_set_manufacturing_pg11(struct MPT3SAS_ADAPTER *ioc,
 	r = _config_request(ioc, &mpi_request, mpi_reply,
 	    MPT3_CONFIG_PAGE_DEFAULT_TIMEOUT, config_page,
 	    sizeof(*config_page));
+<<<<<<< HEAD
 	mpi_request.Action = MPI2_CONFIG_ACTION_PAGE_WRITE_NVRAM;
 	r = _config_request(ioc, &mpi_request, mpi_reply,
 	    MPT3_CONFIG_PAGE_DEFAULT_TIMEOUT, config_page,
 	    sizeof(*config_page));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	return r;
 }
@@ -871,6 +904,81 @@ mpt3sas_config_set_iounit_pg1(struct MPT3SAS_ADAPTER *ioc,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * mpt3sas_config_get_iounit_pg3 - obtain iounit page 3
+ * @ioc: per adapter object
+ * @mpi_reply: reply mf payload returned from firmware
+ * @config_page: contents of the config page
+ * @sz: size of buffer passed in config_page
+ * Context: sleep.
+ *
+ * Returns 0 for success, non-zero for failure.
+ */
+int
+mpt3sas_config_get_iounit_pg3(struct MPT3SAS_ADAPTER *ioc,
+	Mpi2ConfigReply_t *mpi_reply, Mpi2IOUnitPage3_t *config_page, u16 sz)
+{
+	Mpi2ConfigRequest_t mpi_request;
+	int r;
+
+	memset(&mpi_request, 0, sizeof(Mpi2ConfigRequest_t));
+	mpi_request.Function = MPI2_FUNCTION_CONFIG;
+	mpi_request.Action = MPI2_CONFIG_ACTION_PAGE_HEADER;
+	mpi_request.Header.PageType = MPI2_CONFIG_PAGETYPE_IO_UNIT;
+	mpi_request.Header.PageNumber = 3;
+	mpi_request.Header.PageVersion = MPI2_IOUNITPAGE3_PAGEVERSION;
+	ioc->build_zero_len_sge_mpi(ioc, &mpi_request.PageBufferSGE);
+	r = _config_request(ioc, &mpi_request, mpi_reply,
+	    MPT3_CONFIG_PAGE_DEFAULT_TIMEOUT, NULL, 0);
+	if (r)
+		goto out;
+
+	mpi_request.Action = MPI2_CONFIG_ACTION_PAGE_READ_CURRENT;
+	r = _config_request(ioc, &mpi_request, mpi_reply,
+	    MPT3_CONFIG_PAGE_DEFAULT_TIMEOUT, config_page, sz);
+ out:
+	return r;
+}
+
+/**
+ * mpt3sas_config_get_iounit_pg8 - obtain iounit page 8
+ * @ioc: per adapter object
+ * @mpi_reply: reply mf payload returned from firmware
+ * @config_page: contents of the config page
+ * Context: sleep.
+ *
+ * Returns 0 for success, non-zero for failure.
+ */
+int
+mpt3sas_config_get_iounit_pg8(struct MPT3SAS_ADAPTER *ioc,
+	Mpi2ConfigReply_t *mpi_reply, Mpi2IOUnitPage8_t *config_page)
+{
+	Mpi2ConfigRequest_t mpi_request;
+	int r;
+
+	memset(&mpi_request, 0, sizeof(Mpi2ConfigRequest_t));
+	mpi_request.Function = MPI2_FUNCTION_CONFIG;
+	mpi_request.Action = MPI2_CONFIG_ACTION_PAGE_HEADER;
+	mpi_request.Header.PageType = MPI2_CONFIG_PAGETYPE_IO_UNIT;
+	mpi_request.Header.PageNumber = 8;
+	mpi_request.Header.PageVersion = MPI2_IOUNITPAGE8_PAGEVERSION;
+	ioc->build_zero_len_sge_mpi(ioc, &mpi_request.PageBufferSGE);
+	r = _config_request(ioc, &mpi_request, mpi_reply,
+	    MPT3_CONFIG_PAGE_DEFAULT_TIMEOUT, NULL, 0);
+	if (r)
+		goto out;
+
+	mpi_request.Action = MPI2_CONFIG_ACTION_PAGE_READ_CURRENT;
+	r = _config_request(ioc, &mpi_request, mpi_reply,
+	    MPT3_CONFIG_PAGE_DEFAULT_TIMEOUT, config_page,
+	    sizeof(*config_page));
+ out:
+	return r;
+}
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * mpt3sas_config_get_ioc_pg8 - obtain ioc page 8
  * @ioc: per adapter object
  * @mpi_reply: reply mf payload returned from firmware

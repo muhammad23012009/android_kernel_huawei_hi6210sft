@@ -4,10 +4,17 @@
 #include <linux/perf_event.h>
 #include <sys/types.h>
 #include <stdbool.h>
+<<<<<<< HEAD
 #include "types.h"
 #include "event.h"
 
 #include <linux/bitmap.h>
+=======
+#include <linux/bitmap.h>
+#include <linux/types.h>
+#include "event.h"
+#include "env.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum {
 	HEADER_RESERVED		= 0,	/* always cleared */
@@ -30,10 +37,24 @@ enum {
 	HEADER_BRANCH_STACK,
 	HEADER_PMU_MAPPINGS,
 	HEADER_GROUP_DESC,
+<<<<<<< HEAD
+=======
+	HEADER_AUXTRACE,
+	HEADER_STAT,
+	HEADER_CACHE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HEADER_LAST_FEATURE,
 	HEADER_FEAT_BITS	= 256,
 };
 
+<<<<<<< HEAD
+=======
+enum perf_header_version {
+	PERF_HEADER_VERSION_1,
+	PERF_HEADER_VERSION_2,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct perf_file_section {
 	u64 offset;
 	u64 size;
@@ -45,6 +66,10 @@ struct perf_file_header {
 	u64				attr_size;
 	struct perf_file_section	attrs;
 	struct perf_file_section	data;
+<<<<<<< HEAD
+=======
+	/* event_types is ignored */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct perf_file_section	event_types;
 	DECLARE_BITMAP(adds_features, HEADER_FEAT_BITS);
 };
@@ -59,6 +84,7 @@ struct perf_header;
 int perf_file_header__read(struct perf_file_header *header,
 			   struct perf_header *ph, int fd);
 
+<<<<<<< HEAD
 struct perf_session_env {
 	char			*hostname;
 	char			*os_release;
@@ -93,20 +119,37 @@ struct perf_header {
 	u64			event_size;
 	DECLARE_BITMAP(adds_features, HEADER_FEAT_BITS);
 	struct perf_session_env env;
+=======
+struct perf_header {
+	enum perf_header_version	version;
+	bool				needs_swap;
+	u64				data_offset;
+	u64				data_size;
+	u64				feat_offset;
+	DECLARE_BITMAP(adds_features, HEADER_FEAT_BITS);
+	struct perf_env 	env;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct perf_evlist;
 struct perf_session;
 
+<<<<<<< HEAD
 int perf_session__read_header(struct perf_session *session, int fd);
+=======
+int perf_session__read_header(struct perf_session *session);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int perf_session__write_header(struct perf_session *session,
 			       struct perf_evlist *evlist,
 			       int fd, bool at_exit);
 int perf_header__write_pipe(int fd);
 
+<<<<<<< HEAD
 int perf_header__push_event(u64 id, const char *name);
 char *perf_header__find_event(u64 id);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void perf_header__set_feat(struct perf_header *header, int feat);
 void perf_header__clear_feat(struct perf_header *header, int feat);
 bool perf_header__has_feat(const struct perf_header *header, int feat);
@@ -121,16 +164,20 @@ int perf_header__process_sections(struct perf_header *header, int fd,
 
 int perf_header__fprintf_info(struct perf_session *s, FILE *fp, bool full);
 
+<<<<<<< HEAD
 int build_id_cache__add_s(const char *sbuild_id, const char *debugdir,
 			  const char *name, bool is_kallsyms, bool is_vdso);
 int build_id_cache__remove_s(const char *sbuild_id, const char *debugdir);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int perf_event__synthesize_attr(struct perf_tool *tool,
 				struct perf_event_attr *attr, u32 ids, u64 *id,
 				perf_event__handler_t process);
 int perf_event__synthesize_attrs(struct perf_tool *tool,
 				 struct perf_session *session,
 				 perf_event__handler_t process);
+<<<<<<< HEAD
 int perf_event__process_attr(union perf_event *event, struct perf_evlist **pevlist);
 
 int perf_event__synthesize_event_type(struct perf_tool *tool,
@@ -142,11 +189,36 @@ int perf_event__synthesize_event_types(struct perf_tool *tool,
 				       struct machine *machine);
 int perf_event__process_event_type(struct perf_tool *tool,
 				   union perf_event *event);
+=======
+int perf_event__synthesize_event_update_unit(struct perf_tool *tool,
+					     struct perf_evsel *evsel,
+					     perf_event__handler_t process);
+int perf_event__synthesize_event_update_scale(struct perf_tool *tool,
+					      struct perf_evsel *evsel,
+					      perf_event__handler_t process);
+int perf_event__synthesize_event_update_name(struct perf_tool *tool,
+					     struct perf_evsel *evsel,
+					     perf_event__handler_t process);
+int perf_event__synthesize_event_update_cpus(struct perf_tool *tool,
+					     struct perf_evsel *evsel,
+					     perf_event__handler_t process);
+int perf_event__process_attr(struct perf_tool *tool, union perf_event *event,
+			     struct perf_evlist **pevlist);
+int perf_event__process_event_update(struct perf_tool *tool,
+				     union perf_event *event,
+				     struct perf_evlist **pevlist);
+size_t perf_event__fprintf_event_update(union perf_event *event, FILE *fp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int perf_event__synthesize_tracing_data(struct perf_tool *tool,
 					int fd, struct perf_evlist *evlist,
 					perf_event__handler_t process);
+<<<<<<< HEAD
 int perf_event__process_tracing_data(union perf_event *event,
+=======
+int perf_event__process_tracing_data(struct perf_tool *tool,
+				     union perf_event *event,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     struct perf_session *session);
 
 int perf_event__synthesize_build_id(struct perf_tool *tool,
@@ -158,9 +230,20 @@ int perf_event__process_build_id(struct perf_tool *tool,
 				 struct perf_session *session);
 bool is_perf_magic(u64 magic);
 
+<<<<<<< HEAD
+=======
+#define NAME_ALIGN 64
+
+int write_padded(int fd, const void *bf, size_t count, size_t count_aligned);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * arch specific callback
  */
 int get_cpuid(char *buffer, size_t sz);
 
+<<<<<<< HEAD
+=======
+char *get_cpuid_str(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __PERF_HEADER_H */

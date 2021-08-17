@@ -102,7 +102,11 @@ typedef struct capi_manufacturer_cmd {
 
 /*
  * member contr is input for
+<<<<<<< HEAD
  * CAPI_GET_MANUFACTURER, CAPI_VERSION, CAPI_GET_SERIAL
+=======
+ * CAPI_GET_MANUFACTURER, CAPI_GET_VERSION, CAPI_GET_SERIAL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * and CAPI_GET_PROFILE
  */
 typedef union capi_ioctl_struct {

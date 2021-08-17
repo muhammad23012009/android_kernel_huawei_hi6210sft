@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Netlink inteface for IEEE 802.15.4 stack
+=======
+ * Netlink interface for IEEE 802.15.4 stack
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright 2007, 2008 Siemens AG
  *
@@ -12,10 +16,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Written by:
  * Sergey Lapin <slapin@ossfans.org>
  * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
@@ -27,16 +34,28 @@
 #include <linux/if_arp.h>
 #include <net/netlink.h>
 #include <net/genetlink.h>
+<<<<<<< HEAD
 #include <net/wpan-phy.h>
+=======
+#include <net/cfg802154.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/af_ieee802154.h>
 #include <net/ieee802154_netdev.h>
 #include <net/rtnetlink.h> /* for rtnl_{un,}lock */
 #include <linux/nl802154.h>
 
 #include "ieee802154.h"
+<<<<<<< HEAD
 
 static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
 	u32 seq, int flags, struct wpan_phy *phy)
+=======
+#include "rdev-ops.h"
+#include "core.h"
+
+static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
+				  u32 seq, int flags, struct wpan_phy *phy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *hdr;
 	int i, pages = 0;
@@ -48,40 +67,71 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
 		return -EMSGSIZE;
 
 	hdr = genlmsg_put(msg, 0, seq, &nl802154_family, flags,
+<<<<<<< HEAD
 		IEEE802154_LIST_PHY);
 	if (!hdr)
 		goto out;
 
 	mutex_lock(&phy->pib_lock);
+=======
+			  IEEE802154_LIST_PHY);
+	if (!hdr)
+		goto out;
+
+	rtnl_lock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (nla_put_string(msg, IEEE802154_ATTR_PHY_NAME, wpan_phy_name(phy)) ||
 	    nla_put_u8(msg, IEEE802154_ATTR_PAGE, phy->current_page) ||
 	    nla_put_u8(msg, IEEE802154_ATTR_CHANNEL, phy->current_channel))
 		goto nla_put_failure;
 	for (i = 0; i < 32; i++) {
+<<<<<<< HEAD
 		if (phy->channels_supported[i])
 			buf[pages++] = phy->channels_supported[i] | (i << 27);
+=======
+		if (phy->supported.channels[i])
+			buf[pages++] = phy->supported.channels[i] | (i << 27);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (pages &&
 	    nla_put(msg, IEEE802154_ATTR_CHANNEL_PAGE_LIST,
 		    pages * sizeof(uint32_t), buf))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	mutex_unlock(&phy->pib_lock);
 	kfree(buf);
 	return genlmsg_end(msg, hdr);
 
 nla_put_failure:
 	mutex_unlock(&phy->pib_lock);
+=======
+	rtnl_unlock();
+	kfree(buf);
+	genlmsg_end(msg, hdr);
+	return 0;
+
+nla_put_failure:
+	rtnl_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	genlmsg_cancel(msg, hdr);
 out:
 	kfree(buf);
 	return -EMSGSIZE;
 }
 
+<<<<<<< HEAD
 static int ieee802154_list_phy(struct sk_buff *skb,
 	struct genl_info *info)
 {
 	/* Request for interface name, index, type, IEEE address,
 	   PAN Id, short address */
+=======
+int ieee802154_list_phy(struct sk_buff *skb, struct genl_info *info)
+{
+	/* Request for interface name, index, type, IEEE address,
+	 * PAN Id, short address
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *msg;
 	struct wpan_phy *phy;
 	const char *name;
@@ -96,7 +146,10 @@ static int ieee802154_list_phy(struct sk_buff *skb,
 	if (name[nla_len(info->attrs[IEEE802154_ATTR_PHY_NAME]) - 1] != '\0')
 		return -EINVAL; /* phy name should be null-terminated */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	phy = wpan_phy_find(name);
 	if (!phy)
 		return -ENODEV;
@@ -106,7 +159,11 @@ static int ieee802154_list_phy(struct sk_buff *skb,
 		goto out_dev;
 
 	rc = ieee802154_nl_fill_phy(msg, info->snd_portid, info->snd_seq,
+<<<<<<< HEAD
 			0, phy);
+=======
+				    0, phy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc < 0)
 		goto out_free;
 
@@ -118,7 +175,10 @@ out_free:
 out_dev:
 	wpan_phy_put(phy);
 	return rc;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct dump_phy_data {
@@ -138,10 +198,17 @@ static int ieee802154_dump_phy_iter(struct wpan_phy *phy, void *_data)
 		return 0;
 
 	rc = ieee802154_nl_fill_phy(data->skb,
+<<<<<<< HEAD
 			NETLINK_CB(data->cb->skb).portid,
 			data->cb->nlh->nlmsg_seq,
 			NLM_F_MULTI,
 			phy);
+=======
+				    NETLINK_CB(data->cb->skb).portid,
+				    data->cb->nlh->nlmsg_seq,
+				    NLM_F_MULTI,
+				    phy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (rc < 0) {
 		data->idx--;
@@ -151,8 +218,12 @@ static int ieee802154_dump_phy_iter(struct wpan_phy *phy, void *_data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ieee802154_dump_phy(struct sk_buff *skb,
 	struct netlink_callback *cb)
+=======
+int ieee802154_dump_phy(struct sk_buff *skb, struct netlink_callback *cb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dump_phy_data data = {
 		.cb = cb,
@@ -170,8 +241,12 @@ static int ieee802154_dump_phy(struct sk_buff *skb,
 	return skb->len;
 }
 
+<<<<<<< HEAD
 static int ieee802154_add_iface(struct sk_buff *skb,
 		struct genl_info *info)
+=======
+int ieee802154_add_iface(struct sk_buff *skb, struct genl_info *info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sk_buff *msg;
 	struct wpan_phy *phy;
@@ -180,6 +255,10 @@ static int ieee802154_add_iface(struct sk_buff *skb,
 	int rc = -ENOBUFS;
 	struct net_device *dev;
 	int type = __IEEE802154_DEV_INVALID;
+<<<<<<< HEAD
+=======
+	unsigned char name_assign_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("%s\n", __func__);
 
@@ -195,8 +274,15 @@ static int ieee802154_add_iface(struct sk_buff *skb,
 		if (devname[nla_len(info->attrs[IEEE802154_ATTR_DEV_NAME]) - 1]
 				!= '\0')
 			return -EINVAL; /* phy name should be null-terminated */
+<<<<<<< HEAD
 	} else  {
 		devname = "wpan%d";
+=======
+		name_assign_type = NET_NAME_USER;
+	} else  {
+		devname = "wpan%d";
+		name_assign_type = NET_NAME_ENUM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (strlen(devname) >= IFNAMSIZ)
@@ -210,11 +296,14 @@ static int ieee802154_add_iface(struct sk_buff *skb,
 	if (!msg)
 		goto out_dev;
 
+<<<<<<< HEAD
 	if (!phy->add_iface) {
 		rc = -EINVAL;
 		goto nla_put_failure;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info->attrs[IEEE802154_ATTR_HW_ADDR] &&
 	    nla_len(info->attrs[IEEE802154_ATTR_HW_ADDR]) !=
 			IEEE802154_ADDR_LEN) {
@@ -230,21 +319,36 @@ static int ieee802154_add_iface(struct sk_buff *skb,
 		}
 	}
 
+<<<<<<< HEAD
 	dev = phy->add_iface(phy, devname, type);
+=======
+	dev = rdev_add_virtual_intf_deprecated(wpan_phy_to_rdev(phy), devname,
+					       name_assign_type, type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(dev)) {
 		rc = PTR_ERR(dev);
 		goto nla_put_failure;
 	}
+<<<<<<< HEAD
+=======
+	dev_hold(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (info->attrs[IEEE802154_ATTR_HW_ADDR]) {
 		struct sockaddr addr;
 
 		addr.sa_family = ARPHRD_IEEE802154;
 		nla_memcpy(&addr.sa_data, info->attrs[IEEE802154_ATTR_HW_ADDR],
+<<<<<<< HEAD
 				IEEE802154_ADDR_LEN);
 
 		/*
 		 * strangely enough, some callbacks (inetdev_event) from
+=======
+			   IEEE802154_ADDR_LEN);
+
+		/* strangely enough, some callbacks (inetdev_event) from
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * dev_set_mac_address require RTNL_LOCK
 		 */
 		rtnl_lock();
@@ -255,8 +359,15 @@ static int ieee802154_add_iface(struct sk_buff *skb,
 	}
 
 	if (nla_put_string(msg, IEEE802154_ATTR_PHY_NAME, wpan_phy_name(phy)) ||
+<<<<<<< HEAD
 	    nla_put_string(msg, IEEE802154_ATTR_DEV_NAME, dev->name))
 		goto nla_put_failure;
+=======
+	    nla_put_string(msg, IEEE802154_ATTR_DEV_NAME, dev->name)) {
+		rc = -EMSGSIZE;
+		goto nla_put_failure;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_put(dev);
 
 	wpan_phy_put(phy);
@@ -265,7 +376,11 @@ static int ieee802154_add_iface(struct sk_buff *skb,
 
 dev_unregister:
 	rtnl_lock(); /* del_iface must be called with RTNL lock */
+<<<<<<< HEAD
 	phy->del_iface(phy, dev);
+=======
+	rdev_del_virtual_intf_deprecated(wpan_phy_to_rdev(phy), dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_put(dev);
 	rtnl_unlock();
 nla_put_failure:
@@ -275,8 +390,12 @@ out_dev:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int ieee802154_del_iface(struct sk_buff *skb,
 		struct genl_info *info)
+=======
+int ieee802154_del_iface(struct sk_buff *skb, struct genl_info *info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sk_buff *msg;
 	struct wpan_phy *phy;
@@ -297,8 +416,14 @@ static int ieee802154_del_iface(struct sk_buff *skb,
 	if (!dev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	phy = ieee802154_mlme_ops(dev)->get_phy(dev);
 	BUG_ON(!phy);
+=======
+	phy = dev->ieee802154_ptr->wpan_phy;
+	BUG_ON(!phy);
+	get_device(&phy->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = -EINVAL;
 	/* phy name is optional, but should be checked if it's given */
@@ -328,6 +453,7 @@ static int ieee802154_del_iface(struct sk_buff *skb,
 	if (!msg)
 		goto out_dev;
 
+<<<<<<< HEAD
 	if (!phy->del_iface) {
 		rc = -EINVAL;
 		goto nla_put_failure;
@@ -335,6 +461,10 @@ static int ieee802154_del_iface(struct sk_buff *skb,
 
 	rtnl_lock();
 	phy->del_iface(phy, dev);
+=======
+	rtnl_lock();
+	rdev_del_virtual_intf_deprecated(wpan_phy_to_rdev(phy), dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We don't have device anymore */
 	dev_put(dev);
@@ -358,6 +488,7 @@ out_dev:
 
 	return rc;
 }
+<<<<<<< HEAD
 
 static struct genl_ops ieee802154_phy_ops[] = {
 	IEEE802154_DUMP(IEEE802154_LIST_PHY, ieee802154_list_phy,
@@ -383,3 +514,5 @@ int nl802154_phy_register(void)
 
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

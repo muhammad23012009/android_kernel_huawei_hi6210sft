@@ -13,12 +13,16 @@
 #define __SIMPLE_CARD_H
 
 #include <sound/soc.h>
+<<<<<<< HEAD
 
 struct asoc_simple_dai {
 	const char *name;
 	unsigned int fmt;
 	unsigned int sysclk;
 };
+=======
+#include <sound/simple_card_utils.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct asoc_simple_card_info {
 	const char *name;
@@ -29,10 +33,13 @@ struct asoc_simple_card_info {
 	unsigned int daifmt;
 	struct asoc_simple_dai cpu_dai;
 	struct asoc_simple_dai codec_dai;
+<<<<<<< HEAD
 
 	/* used in simple-card.c */
 	struct snd_soc_dai_link snd_link;
 	struct snd_soc_card snd_card;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* __SIMPLE_CARD_H */

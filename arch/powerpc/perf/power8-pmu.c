@@ -10,14 +10,21 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/perf_event.h>
 #include <asm/firmware.h>
 
+=======
+#define pr_fmt(fmt)	"power8-pmu: " fmt
+
+#include "isa207-common.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Some power8 event codes.
  */
+<<<<<<< HEAD
 #define PM_CYC				0x0001e
 #define PM_GCT_NOSLOT_CYC		0x100f8
 #define PM_CMPLU_STALL			0x4000a
@@ -118,11 +125,21 @@
 	 (EVENT_COMBINE_MASK   << EVENT_COMBINE_SHIFT)		|	\
 	 (EVENT_MARKED_MASK    << EVENT_MARKED_SHIFT)		|	\
 	  EVENT_PSEL_MASK)
+=======
+#define EVENT(_name, _code)	_name = _code,
+
+enum {
+#include "power8-events-list.h"
+};
+
+#undef EVENT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* MMCRA IFM bits - POWER8 */
 #define	POWER8_MMCRA_IFM1		0x0000000040000000UL
 #define	POWER8_MMCRA_IFM2		0x0000000080000000UL
 #define	POWER8_MMCRA_IFM3		0x00000000C0000000UL
+<<<<<<< HEAD
 
 #define ONLY_PLM \
 	(PERF_SAMPLE_BRANCH_USER        |\
@@ -417,6 +434,23 @@ static const unsigned int event_alternatives[][MAX_ALT] = {
 	{ 0x2013c, 0x3012e },		/* PM_MRK_FILT_MATCH */
 	{ 0x3e054, 0x400f0 },		/* PM_LD_MISS_L1 */
 	{ 0x400fa, 0x500fa },		/* PM_RUN_INST_CMPL */
+=======
+#define	POWER8_MMCRA_BHRB_MASK		0x00000000C0000000UL
+
+/* Table of alternatives, sorted by column 0 */
+static const unsigned int event_alternatives[][MAX_ALT] = {
+	{ PM_MRK_ST_CMPL,		PM_MRK_ST_CMPL_ALT },
+	{ PM_BR_MRK_2PATH,		PM_BR_MRK_2PATH_ALT },
+	{ PM_L3_CO_MEPF,		PM_L3_CO_MEPF_ALT },
+	{ PM_MRK_DATA_FROM_L2MISS,	PM_MRK_DATA_FROM_L2MISS_ALT },
+	{ PM_CMPLU_STALL_ALT,		PM_CMPLU_STALL },
+	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
+	{ PM_INST_DISP,			PM_INST_DISP_ALT },
+	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
+	{ PM_MRK_FILT_MATCH,		PM_MRK_FILT_MATCH_ALT },
+	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
+	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -464,6 +498,7 @@ static int power8_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 		j = num_alt;
 		for (i = 0; i < num_alt; ++i) {
 			switch (alt[i]) {
+<<<<<<< HEAD
 			case 0x1e:	/* PM_CYC */
 				alt[j++] = 0x600f4;	/* PM_RUN_CYC */
 				break;
@@ -475,6 +510,19 @@ static int power8_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 				break;
 			case 0x500fa:	/* PM_RUN_INST_CMPL */
 				alt[j++] = 0x2;	/* PM_PPC_CMPL */
+=======
+			case PM_CYC:
+				alt[j++] = PM_RUN_CYC;
+				break;
+			case PM_RUN_CYC:
+				alt[j++] = PM_CYC;
+				break;
+			case PM_INST_CMPL:
+				alt[j++] = PM_RUN_INST_CMPL;
+				break;
+			case PM_RUN_INST_CMPL:
+				alt[j++] = PM_INST_CMPL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			}
 		}
@@ -484,11 +532,78 @@ static int power8_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 	return num_alt;
 }
 
+<<<<<<< HEAD
 static void power8_disable_pmc(unsigned int pmc, unsigned long mmcr[])
 {
 	if (pmc <= 3)
 		mmcr[1] &= ~(0xffUL << MMCR1_PMCSEL_SHIFT(pmc + 1));
 }
+=======
+GENERIC_EVENT_ATTR(cpu-cycles,			PM_CYC);
+GENERIC_EVENT_ATTR(stalled-cycles-frontend,	PM_GCT_NOSLOT_CYC);
+GENERIC_EVENT_ATTR(stalled-cycles-backend,	PM_CMPLU_STALL);
+GENERIC_EVENT_ATTR(instructions,		PM_INST_CMPL);
+GENERIC_EVENT_ATTR(branch-instructions,		PM_BRU_FIN);
+GENERIC_EVENT_ATTR(branch-misses,		PM_BR_MPRED_CMPL);
+GENERIC_EVENT_ATTR(cache-references,		PM_LD_REF_L1);
+GENERIC_EVENT_ATTR(cache-misses,		PM_LD_MISS_L1);
+
+CACHE_EVENT_ATTR(L1-dcache-load-misses,		PM_LD_MISS_L1);
+CACHE_EVENT_ATTR(L1-dcache-loads,		PM_LD_REF_L1);
+
+CACHE_EVENT_ATTR(L1-dcache-prefetches,		PM_L1_PREF);
+CACHE_EVENT_ATTR(L1-dcache-store-misses,	PM_ST_MISS_L1);
+CACHE_EVENT_ATTR(L1-icache-load-misses,		PM_L1_ICACHE_MISS);
+CACHE_EVENT_ATTR(L1-icache-loads,		PM_INST_FROM_L1);
+CACHE_EVENT_ATTR(L1-icache-prefetches,		PM_IC_PREF_WRITE);
+
+CACHE_EVENT_ATTR(LLC-load-misses,		PM_DATA_FROM_L3MISS);
+CACHE_EVENT_ATTR(LLC-loads,			PM_DATA_FROM_L3);
+CACHE_EVENT_ATTR(LLC-prefetches,		PM_L3_PREF_ALL);
+CACHE_EVENT_ATTR(LLC-store-misses,		PM_L2_ST_MISS);
+CACHE_EVENT_ATTR(LLC-stores,			PM_L2_ST);
+
+CACHE_EVENT_ATTR(branch-load-misses,		PM_BR_MPRED_CMPL);
+CACHE_EVENT_ATTR(branch-loads,			PM_BRU_FIN);
+CACHE_EVENT_ATTR(dTLB-load-misses,		PM_DTLB_MISS);
+CACHE_EVENT_ATTR(iTLB-load-misses,		PM_ITLB_MISS);
+
+static struct attribute *power8_events_attr[] = {
+	GENERIC_EVENT_PTR(PM_CYC),
+	GENERIC_EVENT_PTR(PM_GCT_NOSLOT_CYC),
+	GENERIC_EVENT_PTR(PM_CMPLU_STALL),
+	GENERIC_EVENT_PTR(PM_INST_CMPL),
+	GENERIC_EVENT_PTR(PM_BRU_FIN),
+	GENERIC_EVENT_PTR(PM_BR_MPRED_CMPL),
+	GENERIC_EVENT_PTR(PM_LD_REF_L1),
+	GENERIC_EVENT_PTR(PM_LD_MISS_L1),
+
+	CACHE_EVENT_PTR(PM_LD_MISS_L1),
+	CACHE_EVENT_PTR(PM_LD_REF_L1),
+	CACHE_EVENT_PTR(PM_L1_PREF),
+	CACHE_EVENT_PTR(PM_ST_MISS_L1),
+	CACHE_EVENT_PTR(PM_L1_ICACHE_MISS),
+	CACHE_EVENT_PTR(PM_INST_FROM_L1),
+	CACHE_EVENT_PTR(PM_IC_PREF_WRITE),
+	CACHE_EVENT_PTR(PM_DATA_FROM_L3MISS),
+	CACHE_EVENT_PTR(PM_DATA_FROM_L3),
+	CACHE_EVENT_PTR(PM_L3_PREF_ALL),
+	CACHE_EVENT_PTR(PM_L2_ST_MISS),
+	CACHE_EVENT_PTR(PM_L2_ST),
+
+	CACHE_EVENT_PTR(PM_BR_MPRED_CMPL),
+	CACHE_EVENT_PTR(PM_BRU_FIN),
+
+	CACHE_EVENT_PTR(PM_DTLB_MISS),
+	CACHE_EVENT_PTR(PM_ITLB_MISS),
+	NULL
+};
+
+static struct attribute_group power8_pmu_events_group = {
+	.name = "events",
+	.attrs = power8_events_attr,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 PMU_FORMAT_ATTR(event,		"config:0-49");
 PMU_FORMAT_ATTR(pmcxsel,	"config:0-7");
@@ -519,13 +634,21 @@ static struct attribute *power8_pmu_format_attr[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 struct attribute_group power8_pmu_format_group = {
+=======
+static struct attribute_group power8_pmu_format_group = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name = "format",
 	.attrs = power8_pmu_format_attr,
 };
 
 static const struct attribute_group *power8_pmu_attr_groups[] = {
 	&power8_pmu_format_group,
+<<<<<<< HEAD
+=======
+	&power8_pmu_events_group,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NULL,
 };
 
@@ -536,11 +659,17 @@ static int power8_generic_events[] = {
 	[PERF_COUNT_HW_INSTRUCTIONS] =			PM_INST_CMPL,
 	[PERF_COUNT_HW_BRANCH_INSTRUCTIONS] =		PM_BRU_FIN,
 	[PERF_COUNT_HW_BRANCH_MISSES] =			PM_BR_MPRED_CMPL,
+<<<<<<< HEAD
+=======
+	[PERF_COUNT_HW_CACHE_REFERENCES] =		PM_LD_REF_L1,
+	[PERF_COUNT_HW_CACHE_MISSES] =			PM_LD_MISS_L1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static u64 power8_bhrb_filter_map(u64 branch_sample_type)
 {
 	u64 pmu_bhrb_filter = 0;
+<<<<<<< HEAD
 	u64 br_privilege = branch_sample_type & ONLY_PLM;
 
 	/* BHRB and regular PMU events share the same prvillege state
@@ -553,6 +682,15 @@ static u64 power8_bhrb_filter_map(u64 branch_sample_type)
 	 */
 	if ((br_privilege != 7) && (br_privilege != 0))
 		return -1;
+=======
+
+	/* BHRB and regular PMU events share the same privilege state
+	 * filter configuration. BHRB is always recorded along with a
+	 * regular PMU event. As the privilege state filter is handled
+	 * in the basic PMC configuration of the accompanying regular
+	 * PMU event, we ignore any separate BHRB specific request.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* No branch filter requested */
 	if (branch_sample_type & PERF_SAMPLE_BRANCH_ANY)
@@ -565,6 +703,12 @@ static u64 power8_bhrb_filter_map(u64 branch_sample_type)
 	if (branch_sample_type & PERF_SAMPLE_BRANCH_IND_CALL)
 		return -1;
 
+<<<<<<< HEAD
+=======
+	if (branch_sample_type & PERF_SAMPLE_BRANCH_CALL)
+		return -1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (branch_sample_type & PERF_SAMPLE_BRANCH_ANY_CALL) {
 		pmu_bhrb_filter |= POWER8_MMCRA_IFM1;
 		return pmu_bhrb_filter;
@@ -576,10 +720,16 @@ static u64 power8_bhrb_filter_map(u64 branch_sample_type)
 
 static void power8_config_bhrb(u64 pmu_bhrb_filter)
 {
+<<<<<<< HEAD
+=======
+	pmu_bhrb_filter &= POWER8_MMCRA_BHRB_MASK;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Enable BHRB filter in PMU */
 	mtspr(SPRN_MMCRA, (mfspr(SPRN_MMCRA) | pmu_bhrb_filter));
 }
 
+<<<<<<< HEAD
 static struct power_pmu power8_pmu = {
 	.name			= "POWER8",
 	.n_counter		= 6,
@@ -595,16 +745,163 @@ static struct power_pmu power8_pmu = {
 	.flags			= PPMU_HAS_SSLOT | PPMU_HAS_SIER | PPMU_ARCH_207S,
 	.n_generic		= ARRAY_SIZE(power8_generic_events),
 	.generic_events		= power8_generic_events,
+=======
+#define C(x)	PERF_COUNT_HW_CACHE_##x
+
+/*
+ * Table of generalized cache-related events.
+ * 0 means not supported, -1 means nonsensical, other values
+ * are event codes.
+ */
+static int power8_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
+	[ C(L1D) ] = {
+		[ C(OP_READ) ] = {
+			[ C(RESULT_ACCESS) ] = PM_LD_REF_L1,
+			[ C(RESULT_MISS)   ] = PM_LD_MISS_L1,
+		},
+		[ C(OP_WRITE) ] = {
+			[ C(RESULT_ACCESS) ] = 0,
+			[ C(RESULT_MISS)   ] = PM_ST_MISS_L1,
+		},
+		[ C(OP_PREFETCH) ] = {
+			[ C(RESULT_ACCESS) ] = PM_L1_PREF,
+			[ C(RESULT_MISS)   ] = 0,
+		},
+	},
+	[ C(L1I) ] = {
+		[ C(OP_READ) ] = {
+			[ C(RESULT_ACCESS) ] = PM_INST_FROM_L1,
+			[ C(RESULT_MISS)   ] = PM_L1_ICACHE_MISS,
+		},
+		[ C(OP_WRITE) ] = {
+			[ C(RESULT_ACCESS) ] = PM_L1_DEMAND_WRITE,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+		[ C(OP_PREFETCH) ] = {
+			[ C(RESULT_ACCESS) ] = PM_IC_PREF_WRITE,
+			[ C(RESULT_MISS)   ] = 0,
+		},
+	},
+	[ C(LL) ] = {
+		[ C(OP_READ) ] = {
+			[ C(RESULT_ACCESS) ] = PM_DATA_FROM_L3,
+			[ C(RESULT_MISS)   ] = PM_DATA_FROM_L3MISS,
+		},
+		[ C(OP_WRITE) ] = {
+			[ C(RESULT_ACCESS) ] = PM_L2_ST,
+			[ C(RESULT_MISS)   ] = PM_L2_ST_MISS,
+		},
+		[ C(OP_PREFETCH) ] = {
+			[ C(RESULT_ACCESS) ] = PM_L3_PREF_ALL,
+			[ C(RESULT_MISS)   ] = 0,
+		},
+	},
+	[ C(DTLB) ] = {
+		[ C(OP_READ) ] = {
+			[ C(RESULT_ACCESS) ] = 0,
+			[ C(RESULT_MISS)   ] = PM_DTLB_MISS,
+		},
+		[ C(OP_WRITE) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+		[ C(OP_PREFETCH) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+	},
+	[ C(ITLB) ] = {
+		[ C(OP_READ) ] = {
+			[ C(RESULT_ACCESS) ] = 0,
+			[ C(RESULT_MISS)   ] = PM_ITLB_MISS,
+		},
+		[ C(OP_WRITE) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+		[ C(OP_PREFETCH) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+	},
+	[ C(BPU) ] = {
+		[ C(OP_READ) ] = {
+			[ C(RESULT_ACCESS) ] = PM_BRU_FIN,
+			[ C(RESULT_MISS)   ] = PM_BR_MPRED_CMPL,
+		},
+		[ C(OP_WRITE) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+		[ C(OP_PREFETCH) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+	},
+	[ C(NODE) ] = {
+		[ C(OP_READ) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+		[ C(OP_WRITE) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+		[ C(OP_PREFETCH) ] = {
+			[ C(RESULT_ACCESS) ] = -1,
+			[ C(RESULT_MISS)   ] = -1,
+		},
+	},
+};
+
+#undef C
+
+static struct power_pmu power8_pmu = {
+	.name			= "POWER8",
+	.n_counter		= MAX_PMU_COUNTERS,
+	.max_alternatives	= MAX_ALT + 1,
+	.add_fields		= ISA207_ADD_FIELDS,
+	.test_adder		= ISA207_TEST_ADDER,
+	.compute_mmcr		= isa207_compute_mmcr,
+	.config_bhrb		= power8_config_bhrb,
+	.bhrb_filter_map	= power8_bhrb_filter_map,
+	.get_constraint		= isa207_get_constraint,
+	.get_alternatives	= power8_get_alternatives,
+	.disable_pmc		= isa207_disable_pmc,
+	.flags			= PPMU_HAS_SIER | PPMU_ARCH_207S,
+	.n_generic		= ARRAY_SIZE(power8_generic_events),
+	.generic_events		= power8_generic_events,
+	.cache_events		= &power8_cache_events,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.attr_groups		= power8_pmu_attr_groups,
 	.bhrb_nr		= 32,
 };
 
 static int __init init_power8_pmu(void)
 {
+<<<<<<< HEAD
+=======
+	int rc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!cur_cpu_spec->oprofile_cpu_type ||
 	    strcmp(cur_cpu_spec->oprofile_cpu_type, "ppc64/power8"))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	return register_power_pmu(&power8_pmu);
+=======
+	rc = register_power_pmu(&power8_pmu);
+	if (rc)
+		return rc;
+
+	/* Tell userspace that EBB is supported */
+	cur_cpu_spec->cpu_user_features2 |= PPC_FEATURE2_EBB;
+
+	if (cpu_has_feature(CPU_FTR_PMAO_BUG))
+		pr_info("PMAO restore workaround active.\n");
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 early_initcall(init_power8_pmu);

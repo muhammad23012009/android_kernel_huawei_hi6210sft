@@ -27,7 +27,11 @@
 #define get_ds()  (KERNEL_DS)
 #define set_fs(x) (current_thread_info()->addr_limit = (x))
 
+<<<<<<< HEAD
 #define segment_eq(a,b)	((a).seg == (b).seg)
+=======
+#define segment_eq(a, b)	((a).seg == (b).seg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Is a address valid? This does a straightforward calculation rather
@@ -39,6 +43,7 @@
  *  - AND "addr+size" doesn't have any high-bits set
  *  - OR we are in kernel mode.
  */
+<<<<<<< HEAD
 #define __access_ok(addr,size,segment) \
 	(((segment).seg & (addr | size | (addr+size))) == 0)
 
@@ -46,6 +51,15 @@
 ({								\
 	__chk_user_ptr(addr);					\
 	__access_ok(((unsigned long)(addr)),(size),get_fs());	\
+=======
+#define __access_ok(addr, size, segment) \
+	(((segment).seg & (addr | size | (addr+size))) == 0)
+
+#define access_ok(type, addr, size)				\
+({								\
+	__chk_user_ptr(addr);					\
+	__access_ok(((unsigned long)(addr)), (size), get_fs());	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 
 /*
@@ -60,20 +74,34 @@
  * (a) re-use the arguments for side effects (sizeof/typeof is ok)
  * (b) require any knowledge of processes at this stage
  */
+<<<<<<< HEAD
 #define put_user(x,ptr) \
   __put_user_check((__typeof__(*(ptr)))(x),(ptr),sizeof(*(ptr)),get_fs())
 #define get_user(x,ptr) \
   __get_user_check((x),(ptr),sizeof(*(ptr)),get_fs())
+=======
+#define put_user(x, ptr) \
+  __put_user_check((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)), get_fs())
+#define get_user(x, ptr) \
+  __get_user_check((x), (ptr), sizeof(*(ptr)), get_fs())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The "__xxx" versions do not do address space checking, useful when
  * doing multiple accesses to the same area (the programmer has to do the
  * checks by hand with "access_ok()")
  */
+<<<<<<< HEAD
 #define __put_user(x,ptr) \
   __put_user_nocheck((__typeof__(*(ptr)))(x),(ptr),sizeof(*(ptr)))
 #define __get_user(x,ptr) \
   __get_user_nocheck((x),(ptr),sizeof(*(ptr)))
+=======
+#define __put_user(x, ptr) \
+  __put_user_nocheck((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+#define __get_user(x, ptr) \
+  __get_user_nocheck((x), (ptr), sizeof(*(ptr)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   
 /*
  * The "lda %1, 2b-1b(%0)" bits are magic to get the assembler to
@@ -84,7 +112,11 @@
 
 extern void __get_user_unknown(void);
 
+<<<<<<< HEAD
 #define __get_user_nocheck(x,ptr,size)				\
+=======
+#define __get_user_nocheck(x, ptr, size)			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ({								\
 	long __gu_err = 0;					\
 	unsigned long __gu_val;					\
@@ -96,16 +128,28 @@ extern void __get_user_unknown(void);
 	  case 8: __get_user_64(ptr); break;			\
 	  default: __get_user_unknown(); break;			\
 	}							\
+<<<<<<< HEAD
 	(x) = (__typeof__(*(ptr))) __gu_val;			\
 	__gu_err;						\
 })
 
 #define __get_user_check(x,ptr,size,segment)				\
+=======
+	(x) = (__force __typeof__(*(ptr))) __gu_val;		\
+	__gu_err;						\
+})
+
+#define __get_user_check(x, ptr, size, segment)				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ({									\
 	long __gu_err = -EFAULT;					\
 	unsigned long __gu_val = 0;					\
 	const __typeof__(*(ptr)) __user *__gu_addr = (ptr);		\
+<<<<<<< HEAD
 	if (__access_ok((unsigned long)__gu_addr,size,segment)) {	\
+=======
+	if (__access_ok((unsigned long)__gu_addr, size, segment)) {	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__gu_err = 0;						\
 		switch (size) {						\
 		  case 1: __get_user_8(__gu_addr); break;		\
@@ -115,7 +159,11 @@ extern void __get_user_unknown(void);
 		  default: __get_user_unknown(); break;			\
 		}							\
 	}								\
+<<<<<<< HEAD
 	(x) = (__typeof__(*(ptr))) __gu_val;				\
+=======
+	(x) = (__force __typeof__(*(ptr))) __gu_val;			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__gu_err;							\
 })
 
@@ -201,20 +249,32 @@ struct __large_struct { unsigned long buf[100]; };
 
 extern void __put_user_unknown(void);
 
+<<<<<<< HEAD
 #define __put_user_nocheck(x,ptr,size)				\
+=======
+#define __put_user_nocheck(x, ptr, size)			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ({								\
 	long __pu_err = 0;					\
 	__chk_user_ptr(ptr);					\
 	switch (size) {						\
+<<<<<<< HEAD
 	  case 1: __put_user_8(x,ptr); break;			\
 	  case 2: __put_user_16(x,ptr); break;			\
 	  case 4: __put_user_32(x,ptr); break;			\
 	  case 8: __put_user_64(x,ptr); break;			\
+=======
+	  case 1: __put_user_8(x, ptr); break;			\
+	  case 2: __put_user_16(x, ptr); break;			\
+	  case 4: __put_user_32(x, ptr); break;			\
+	  case 8: __put_user_64(x, ptr); break;			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  default: __put_user_unknown(); break;			\
 	}							\
 	__pu_err;						\
 })
 
+<<<<<<< HEAD
 #define __put_user_check(x,ptr,size,segment)				\
 ({									\
 	long __pu_err = -EFAULT;					\
@@ -226,6 +286,19 @@ extern void __put_user_unknown(void);
 		  case 2: __put_user_16(x,__pu_addr); break;		\
 		  case 4: __put_user_32(x,__pu_addr); break;		\
 		  case 8: __put_user_64(x,__pu_addr); break;		\
+=======
+#define __put_user_check(x, ptr, size, segment)				\
+({									\
+	long __pu_err = -EFAULT;					\
+	__typeof__(*(ptr)) __user *__pu_addr = (ptr);			\
+	if (__access_ok((unsigned long)__pu_addr, size, segment)) {	\
+		__pu_err = 0;						\
+		switch (size) {						\
+		  case 1: __put_user_8(x, __pu_addr); break;		\
+		  case 2: __put_user_16(x, __pu_addr); break;		\
+		  case 4: __put_user_32(x, __pu_addr); break;		\
+		  case 8: __put_user_64(x, __pu_addr); break;		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  default: __put_user_unknown(); break;			\
 		}							\
 	}								\
@@ -237,7 +310,11 @@ extern void __put_user_unknown(void);
  * instead of writing: this is because they do not write to
  * any memory gcc knows about, so there are no aliasing issues
  */
+<<<<<<< HEAD
 #define __put_user_64(x,addr)					\
+=======
+#define __put_user_64(x, addr)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __asm__ __volatile__("1: stq %r2,%1\n"				\
 	"2:\n"							\
 	".section __ex_table,\"a\"\n"				\
@@ -247,7 +324,11 @@ __asm__ __volatile__("1: stq %r2,%1\n"				\
 		: "=r"(__pu_err)				\
 		: "m" (__m(addr)), "rJ" (x), "0"(__pu_err))
 
+<<<<<<< HEAD
 #define __put_user_32(x,addr)					\
+=======
+#define __put_user_32(x, addr)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __asm__ __volatile__("1: stl %r2,%1\n"				\
 	"2:\n"							\
 	".section __ex_table,\"a\"\n"				\
@@ -260,7 +341,11 @@ __asm__ __volatile__("1: stl %r2,%1\n"				\
 #ifdef __alpha_bwx__
 /* Those lucky bastards with ev56 and later CPUs can do byte/word moves.  */
 
+<<<<<<< HEAD
 #define __put_user_16(x,addr)					\
+=======
+#define __put_user_16(x, addr)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __asm__ __volatile__("1: stw %r2,%1\n"				\
 	"2:\n"							\
 	".section __ex_table,\"a\"\n"				\
@@ -270,7 +355,11 @@ __asm__ __volatile__("1: stw %r2,%1\n"				\
 		: "=r"(__pu_err)				\
 		: "m"(__m(addr)), "rJ"(x), "0"(__pu_err))
 
+<<<<<<< HEAD
 #define __put_user_8(x,addr)					\
+=======
+#define __put_user_8(x, addr)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __asm__ __volatile__("1: stb %r2,%1\n"				\
 	"2:\n"							\
 	".section __ex_table,\"a\"\n"				\
@@ -283,7 +372,11 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 /* Unfortunately, we can't get an unaligned access trap for the sub-word
    write, so we have to do a general unaligned operation.  */
 
+<<<<<<< HEAD
 #define __put_user_16(x,addr)					\
+=======
+#define __put_user_16(x, addr)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {								\
 	long __pu_tmp1, __pu_tmp2, __pu_tmp3, __pu_tmp4;	\
 	__asm__ __volatile__(					\
@@ -308,13 +401,22 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 	"	.long 4b - .\n"					\
 	"	lda $31, 5b-4b(%0)\n"				\
 	".previous"						\
+<<<<<<< HEAD
 		: "=r"(__pu_err), "=&r"(__pu_tmp1),		\
 		  "=&r"(__pu_tmp2), "=&r"(__pu_tmp3),		\
+=======
+		: "=r"(__pu_err), "=&r"(__pu_tmp1), 		\
+		  "=&r"(__pu_tmp2), "=&r"(__pu_tmp3), 		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  "=&r"(__pu_tmp4)				\
 		: "r"(addr), "r"((unsigned long)(x)), "0"(__pu_err)); \
 }
 
+<<<<<<< HEAD
 #define __put_user_8(x,addr)					\
+=======
+#define __put_user_8(x, addr)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {								\
 	long __pu_tmp1, __pu_tmp2;				\
 	__asm__ __volatile__(					\
@@ -330,7 +432,11 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 	"	.long 2b - .\n"					\
 	"	lda $31, 3b-2b(%0)\n"				\
 	".previous"						\
+<<<<<<< HEAD
 		: "=r"(__pu_err),				\
+=======
+		: "=r"(__pu_err), 				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  	  "=&r"(__pu_tmp1), "=&r"(__pu_tmp2)		\
 		: "r"((unsigned long)(x)), "r"(addr), "0"(__pu_err)); \
 }
@@ -341,6 +447,7 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
  * Complex access routines
  */
 
+<<<<<<< HEAD
 /* This little bit of silliness is to get the GP loaded for a function
    that ordinarily wouldn't.  Otherwise we could have it done by the macro
    directly, which can be optimized the linker.  */
@@ -380,6 +487,19 @@ __copy_tofrom_user_nocheck(void *to, const void *from, long len)
 ({									\
 	__chk_user_ptr(from);						\
 	__copy_tofrom_user_nocheck((to),(__force void *)(from),(n));	\
+=======
+extern long __copy_user(void *to, const void *from, long len);
+
+#define __copy_to_user(to, from, n)			\
+({							\
+	__chk_user_ptr(to);				\
+	__copy_user((__force void *)(to), (from), (n));	\
+})
+#define __copy_from_user(to, from, n)			\
+({							\
+	__chk_user_ptr(from);				\
+	__copy_user((to), (__force void *)(from), (n));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 
 #define __copy_to_user_inatomic __copy_to_user
@@ -389,13 +509,18 @@ extern inline long
 copy_to_user(void __user *to, const void *from, long n)
 {
 	if (likely(__access_ok((unsigned long)to, n, get_fs())))
+<<<<<<< HEAD
 		n = __copy_tofrom_user_nocheck((__force void *)to, from, n);
+=======
+		n = __copy_user((__force void *)to, from, n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return n;
 }
 
 extern inline long
 copy_from_user(void *to, const void __user *from, long n)
 {
+<<<<<<< HEAD
 	if (likely(__access_ok((unsigned long)from, n, get_fs())))
 		n = __copy_tofrom_user_nocheck(to, (__force void *)from, n);
 	else
@@ -418,6 +543,17 @@ __clear_user(void __user *to, long len)
 		: "$1","$2","$3","$4","$5","$28","memory");
 	return __cl_len;
 }
+=======
+	long res = n;
+	if (likely(__access_ok((unsigned long)from, n, get_fs())))
+		res = __copy_from_user_inatomic(to, from, n);
+	if (unlikely(res))
+		memset(to + (n - res), 0, res);
+	return res;
+}
+
+extern long __clear_user(void __user *to, long len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern inline long
 clear_user(void __user *to, long len)
@@ -427,9 +563,12 @@ clear_user(void __user *to, long len)
 	return len;
 }
 
+<<<<<<< HEAD
 #undef __module_address
 #undef __module_call
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define user_addr_max() \
         (segment_eq(get_fs(), USER_DS) ? TASK_SIZE : ~0UL)
 
@@ -480,7 +619,18 @@ struct exception_table_entry
 	(pc) + (_fixup)->fixup.bits.nextinsn;			\
 })
 
+<<<<<<< HEAD
 #define ARCH_HAS_SORT_EXTABLE
 #define ARCH_HAS_SEARCH_EXTABLE
+=======
+#define ARCH_HAS_RELATIVE_EXTABLE
+
+#define swap_ex_entry_fixup(a, b, tmp, delta)			\
+	do {							\
+		(a)->fixup.unit = (b)->fixup.unit;		\
+		(b)->fixup.unit = (tmp).fixup.unit;		\
+	} while (0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ALPHA_UACCESS_H */

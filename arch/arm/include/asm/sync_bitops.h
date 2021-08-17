@@ -2,7 +2,10 @@
 #define __ASM_SYNC_BITOPS_H__
 
 #include <asm/bitops.h>
+<<<<<<< HEAD
 #include <asm/system.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* sync_bitops functions are equivalent to the SMP implementation of the
  * original functions, independently from CONFIG_SMP being defined.

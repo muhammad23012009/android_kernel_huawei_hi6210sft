@@ -30,7 +30,10 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb/input.h>
@@ -49,6 +52,10 @@ struct atp_info {
 	int yfact;				/* Y multiplication factor */
 	int datalen;				/* size of USB transfers */
 	void (*callback)(struct urb *);		/* callback function */
+<<<<<<< HEAD
+=======
+	int fuzz;				/* fuzz touchpad generates */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void atp_complete_geyser_1_2(struct urb *urb);
@@ -62,6 +69,10 @@ static const struct atp_info fountain_info = {
 	.yfact		= 43,
 	.datalen	= 81,
 	.callback	= atp_complete_geyser_1_2,
+<<<<<<< HEAD
+=======
+	.fuzz		= 16,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct atp_info geyser1_info = {
@@ -72,6 +83,10 @@ static const struct atp_info geyser1_info = {
 	.yfact		= 43,
 	.datalen	= 81,
 	.callback	= atp_complete_geyser_1_2,
+<<<<<<< HEAD
+=======
+	.fuzz		= 16,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct atp_info geyser2_info = {
@@ -82,6 +97,10 @@ static const struct atp_info geyser2_info = {
 	.yfact		= 43,
 	.datalen	= 64,
 	.callback	= atp_complete_geyser_1_2,
+<<<<<<< HEAD
+=======
+	.fuzz		= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct atp_info geyser3_info = {
@@ -91,6 +110,10 @@ static const struct atp_info geyser3_info = {
 	.yfact		= 64,
 	.datalen	= 64,
 	.callback	= atp_complete_geyser_3_4,
+<<<<<<< HEAD
+=======
+	.fuzz		= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct atp_info geyser4_info = {
@@ -100,6 +123,10 @@ static const struct atp_info geyser4_info = {
 	.yfact		= 64,
 	.datalen	= 64,
 	.callback	= atp_complete_geyser_3_4,
+<<<<<<< HEAD
+=======
+	.fuzz		= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define ATP_DEVICE(prod, info)					\
@@ -156,8 +183,16 @@ MODULE_DEVICE_TABLE(usb, atp_table);
 #define ATP_XSENSORS	26
 #define ATP_YSENSORS	16
 
+<<<<<<< HEAD
 /* amount of fuzz this touchpad generates */
 #define ATP_FUZZ	16
+=======
+/*
+ * The largest possible bank of sensors with additional buffer of 4 extra values
+ * on either side, for an array of smoothed sensor values.
+ */
+#define ATP_SMOOTHSIZE	34
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* maximum pressure this driver will report */
 #define ATP_PRESSURE	300
@@ -166,7 +201,17 @@ MODULE_DEVICE_TABLE(usb, atp_table);
  * Threshold for the touchpad sensors. Any change less than ATP_THRESHOLD is
  * ignored.
  */
+<<<<<<< HEAD
 #define ATP_THRESHOLD	 5
+=======
+#define ATP_THRESHOLD	5
+
+/*
+ * How far we'll bitshift our sensor values before averaging them. Mitigates
+ * rounding errors.
+ */
+#define ATP_SCALE	12
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Geyser initialization constants */
 #define ATP_GEYSER_MODE_READ_REQUEST_ID		1
@@ -204,11 +249,20 @@ struct atp {
 	bool			valid;		/* are the samples valid? */
 	bool			size_detect_done;
 	bool			overflow_warned;
+<<<<<<< HEAD
+=======
+	int			fingers_old;	/* last reported finger count */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			x_old;		/* last reported x/y, */
 	int			y_old;		/* used for smoothing */
 	signed char		xy_cur[ATP_XSENSORS + ATP_YSENSORS];
 	signed char		xy_old[ATP_XSENSORS + ATP_YSENSORS];
 	int			xy_acc[ATP_XSENSORS + ATP_YSENSORS];
+<<<<<<< HEAD
+=======
+	int			smooth[ATP_SMOOTHSIZE];
+	int			smooth_tmp[ATP_SMOOTHSIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			idlecount;	/* number of empty packets */
 	struct work_struct	work;
 };
@@ -327,10 +381,24 @@ static void atp_reinit(struct work_struct *work)
 			retval);
 }
 
+<<<<<<< HEAD
 static int atp_calculate_abs(int *xy_sensors, int nb_sensors, int fact,
 			     int *z, int *fingers)
 {
 	int i;
+=======
+static int atp_calculate_abs(struct atp *dev, int offset, int nb_sensors,
+			     int fact, int *z, int *fingers)
+{
+	int i, pass;
+
+	/*
+	 * Use offset to point xy_sensors at the first value in dev->xy_acc
+	 * for whichever dimension we're looking at this particular go-round.
+	 */
+	int *xy_sensors = dev->xy_acc + offset;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* values to calculate mean */
 	int pcum = 0, psum = 0;
 	int is_increasing = 0;
@@ -342,9 +410,12 @@ static int atp_calculate_abs(int *xy_sensors, int nb_sensors, int fact,
 			if (is_increasing)
 				is_increasing = 0;
 
+<<<<<<< HEAD
 			continue;
 		}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Makes the finger detection more versatile.  For example,
 		 * two fingers with no gap will be detected.  Also, my
@@ -359,13 +430,19 @@ static int atp_calculate_abs(int *xy_sensors, int nb_sensors, int fact,
 		 *
 		 * - Jason Parekh <jasonparekh@gmail.com>
 		 */
+<<<<<<< HEAD
 		if (i < 1 ||
+=======
+
+		} else if (i < 1 ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    (!is_increasing && xy_sensors[i - 1] < xy_sensors[i])) {
 			(*fingers)++;
 			is_increasing = 1;
 		} else if (i > 0 && (xy_sensors[i - 1] - xy_sensors[i] > threshold)) {
 			is_increasing = 0;
 		}
+<<<<<<< HEAD
 
 		/*
 		 * Subtracts threshold so a high sensor that just passes the
@@ -380,6 +457,57 @@ static int atp_calculate_abs(int *xy_sensors, int nb_sensors, int fact,
 
 	if (psum > 0) {
 		*z = psum;
+=======
+	}
+
+	if (*fingers < 1)     /* No need to continue if no fingers are found. */
+		return 0;
+
+	/*
+	 * Use a smoothed version of sensor data for movement calculations, to
+	 * combat noise without needing to rely so heavily on a threshold.
+	 * This improves tracking.
+	 *
+	 * The smoothed array is bigger than the original so that the smoothing
+	 * doesn't result in edge values being truncated.
+	 */
+
+	memset(dev->smooth, 0, 4 * sizeof(dev->smooth[0]));
+	/* Pull base values, scaled up to help avoid truncation errors. */
+	for (i = 0; i < nb_sensors; i++)
+		dev->smooth[i + 4] = xy_sensors[i] << ATP_SCALE;
+	memset(&dev->smooth[nb_sensors + 4], 0, 4 * sizeof(dev->smooth[0]));
+
+	for (pass = 0; pass < 4; pass++) {
+		/* Handle edge. */
+		dev->smooth_tmp[0] = (dev->smooth[0] + dev->smooth[1]) / 2;
+
+		/* Average values with neighbors. */
+		for (i = 1; i < nb_sensors + 7; i++)
+			dev->smooth_tmp[i] = (dev->smooth[i - 1] +
+					      dev->smooth[i] * 2 +
+					      dev->smooth[i + 1]) / 4;
+
+		/* Handle other edge. */
+		dev->smooth_tmp[i] = (dev->smooth[i - 1] + dev->smooth[i]) / 2;
+
+		memcpy(dev->smooth, dev->smooth_tmp, sizeof(dev->smooth));
+	}
+
+	for (i = 0; i < nb_sensors + 8; i++) {
+		/*
+		 * Skip values if they're small enough to be truncated to 0
+		 * by scale. Mostly noise.
+		 */
+		if ((dev->smooth[i] >> ATP_SCALE) > 0) {
+			pcum += dev->smooth[i] * i;
+			psum += dev->smooth[i];
+		}
+	}
+
+	if (psum > 0) {
+		*z = psum >> ATP_SCALE;        /* Scale down pressure output. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return pcum * fact / psum;
 	}
 
@@ -456,7 +584,11 @@ static void atp_detect_size(struct atp *dev)
 			input_set_abs_params(dev->input, ABS_X, 0,
 					     (dev->info->xsensors_17 - 1) *
 							dev->info->xfact - 1,
+<<<<<<< HEAD
 					     ATP_FUZZ, 0);
+=======
+					     dev->info->fuzz, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
@@ -472,7 +604,11 @@ static void atp_complete_geyser_1_2(struct urb *urb)
 {
 	int x, y, x_z, y_z, x_f, y_f;
 	int retval, i, j;
+<<<<<<< HEAD
 	int key;
+=======
+	int key, fingers;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct atp *dev = urb->context;
 	int status = atp_status_check(urb);
 
@@ -549,6 +685,7 @@ static void atp_complete_geyser_1_2(struct urb *urb)
 
 	dbg_dump("accumulator", dev->xy_acc);
 
+<<<<<<< HEAD
 	x = atp_calculate_abs(dev->xy_acc, ATP_XSENSORS,
 			      dev->info->xfact, &x_z, &x_f);
 	y = atp_calculate_abs(dev->xy_acc + ATP_XSENSORS, ATP_YSENSORS,
@@ -559,6 +696,20 @@ static void atp_complete_geyser_1_2(struct urb *urb)
 		if (dev->x_old != -1) {
 			x = (dev->x_old * 3 + x) >> 2;
 			y = (dev->y_old * 3 + y) >> 2;
+=======
+	x = atp_calculate_abs(dev, 0, ATP_XSENSORS,
+			      dev->info->xfact, &x_z, &x_f);
+	y = atp_calculate_abs(dev, ATP_XSENSORS, ATP_YSENSORS,
+			      dev->info->yfact, &y_z, &y_f);
+	key = dev->data[dev->info->datalen - 1] & ATP_STATUS_BUTTON;
+
+	fingers = max(x_f, y_f);
+
+	if (x && y && fingers == dev->fingers_old) {
+		if (dev->x_old != -1) {
+			x = (dev->x_old * 7 + x) >> 3;
+			y = (dev->y_old * 7 + y) >> 3;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev->x_old = x;
 			dev->y_old = y;
 
@@ -572,7 +723,11 @@ static void atp_complete_geyser_1_2(struct urb *urb)
 			input_report_abs(dev->input, ABS_Y, y);
 			input_report_abs(dev->input, ABS_PRESSURE,
 					 min(ATP_PRESSURE, x_z + y_z));
+<<<<<<< HEAD
 			atp_report_fingers(dev->input, max(x_f, y_f));
+=======
+			atp_report_fingers(dev->input, fingers);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		dev->x_old = x;
 		dev->y_old = y;
@@ -580,6 +735,10 @@ static void atp_complete_geyser_1_2(struct urb *urb)
 	} else if (!x && !y) {
 
 		dev->x_old = dev->y_old = -1;
+<<<<<<< HEAD
+=======
+		dev->fingers_old = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		input_report_key(dev->input, BTN_TOUCH, 0);
 		input_report_abs(dev->input, ABS_PRESSURE, 0);
 		atp_report_fingers(dev->input, 0);
@@ -588,6 +747,13 @@ static void atp_complete_geyser_1_2(struct urb *urb)
 		memset(dev->xy_acc, 0, sizeof(dev->xy_acc));
 	}
 
+<<<<<<< HEAD
+=======
+	if (fingers != dev->fingers_old)
+		dev->x_old = dev->y_old = -1;
+	dev->fingers_old = fingers;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_report_key(dev->input, BTN_LEFT, key);
 	input_sync(dev->input);
 
@@ -605,7 +771,11 @@ static void atp_complete_geyser_3_4(struct urb *urb)
 {
 	int x, y, x_z, y_z, x_f, y_f;
 	int retval, i, j;
+<<<<<<< HEAD
 	int key;
+=======
+	int key, fingers;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct atp *dev = urb->context;
 	int status = atp_status_check(urb);
 
@@ -661,6 +831,7 @@ static void atp_complete_geyser_3_4(struct urb *urb)
 
 	dbg_dump("accumulator", dev->xy_acc);
 
+<<<<<<< HEAD
 	x = atp_calculate_abs(dev->xy_acc, ATP_XSENSORS,
 			      dev->info->xfact, &x_z, &x_f);
 	y = atp_calculate_abs(dev->xy_acc + ATP_XSENSORS, ATP_YSENSORS,
@@ -671,6 +842,21 @@ static void atp_complete_geyser_3_4(struct urb *urb)
 		if (dev->x_old != -1) {
 			x = (dev->x_old * 3 + x) >> 2;
 			y = (dev->y_old * 3 + y) >> 2;
+=======
+	x = atp_calculate_abs(dev, 0, ATP_XSENSORS,
+			      dev->info->xfact, &x_z, &x_f);
+	y = atp_calculate_abs(dev, ATP_XSENSORS, ATP_YSENSORS,
+			      dev->info->yfact, &y_z, &y_f);
+
+	key = dev->data[dev->info->datalen - 1] & ATP_STATUS_BUTTON;
+
+	fingers = max(x_f, y_f);
+
+	if (x && y && fingers == dev->fingers_old) {
+		if (dev->x_old != -1) {
+			x = (dev->x_old * 7 + x) >> 3;
+			y = (dev->y_old * 7 + y) >> 3;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev->x_old = x;
 			dev->y_old = y;
 
@@ -684,7 +870,11 @@ static void atp_complete_geyser_3_4(struct urb *urb)
 			input_report_abs(dev->input, ABS_Y, y);
 			input_report_abs(dev->input, ABS_PRESSURE,
 					 min(ATP_PRESSURE, x_z + y_z));
+<<<<<<< HEAD
 			atp_report_fingers(dev->input, max(x_f, y_f));
+=======
+			atp_report_fingers(dev->input, fingers);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		dev->x_old = x;
 		dev->y_old = y;
@@ -692,6 +882,10 @@ static void atp_complete_geyser_3_4(struct urb *urb)
 	} else if (!x && !y) {
 
 		dev->x_old = dev->y_old = -1;
+<<<<<<< HEAD
+=======
+		dev->fingers_old = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		input_report_key(dev->input, BTN_TOUCH, 0);
 		input_report_abs(dev->input, ABS_PRESSURE, 0);
 		atp_report_fingers(dev->input, 0);
@@ -700,6 +894,13 @@ static void atp_complete_geyser_3_4(struct urb *urb)
 		memset(dev->xy_acc, 0, sizeof(dev->xy_acc));
 	}
 
+<<<<<<< HEAD
+=======
+	if (fingers != dev->fingers_old)
+		dev->x_old = dev->y_old = -1;
+	dev->fingers_old = fingers;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_report_key(dev->input, BTN_LEFT, key);
 	input_sync(dev->input);
 
@@ -844,10 +1045,17 @@ static int atp_probe(struct usb_interface *iface,
 
 	input_set_abs_params(input_dev, ABS_X, 0,
 			     (dev->info->xsensors - 1) * dev->info->xfact - 1,
+<<<<<<< HEAD
 			     ATP_FUZZ, 0);
 	input_set_abs_params(input_dev, ABS_Y, 0,
 			     (dev->info->ysensors - 1) * dev->info->yfact - 1,
 			     ATP_FUZZ, 0);
+=======
+			     dev->info->fuzz, 0);
+	input_set_abs_params(input_dev, ABS_Y, 0,
+			     (dev->info->ysensors - 1) * dev->info->yfact - 1,
+			     dev->info->fuzz, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_set_abs_params(input_dev, ABS_PRESSURE, 0, ATP_PRESSURE, 0, 0);
 
 	set_bit(EV_KEY, input_dev->evbit);

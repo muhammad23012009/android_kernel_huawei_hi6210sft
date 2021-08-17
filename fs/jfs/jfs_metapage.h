@@ -48,7 +48,10 @@ struct metapage {
 
 /* metapage flag */
 #define META_locked	0
+<<<<<<< HEAD
 #define META_free	1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define META_dirty	2
 #define META_sync	3
 #define META_discard	4
@@ -107,7 +110,11 @@ static inline void metapage_nohomeok(struct metapage *mp)
 	lock_page(page);
 	if (!mp->nohomeok++) {
 		mark_metapage_dirty(mp);
+<<<<<<< HEAD
 		page_cache_get(page);
+=======
+		get_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wait_on_page_writeback(page);
 	}
 	unlock_page(page);
@@ -129,7 +136,11 @@ static inline void metapage_wait_for_io(struct metapage *mp)
 static inline void _metapage_homeok(struct metapage *mp)
 {
 	if (!--mp->nohomeok)
+<<<<<<< HEAD
 		page_cache_release(mp->page);
+=======
+		put_page(mp->page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void metapage_homeok(struct metapage *mp)

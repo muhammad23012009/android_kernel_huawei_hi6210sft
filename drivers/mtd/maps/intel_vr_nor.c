@@ -31,7 +31,10 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
 #include <linux/mtd/partitions.h>
@@ -91,7 +94,11 @@ static int vr_nor_mtd_setup(struct vr_nor_mtd *p)
 	if (!p->info)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	p->info->owner = THIS_MODULE;
+=======
+	p->info->dev.parent = &p->dev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -180,7 +187,10 @@ static void vr_nor_pci_remove(struct pci_dev *dev)
 {
 	struct vr_nor_mtd *p = pci_get_drvdata(dev);
 
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vr_nor_destroy_partitions(p);
 	vr_nor_destroy_mtd_setup(p);
 	vr_nor_destroy_maps(p);

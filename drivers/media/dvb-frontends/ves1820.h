@@ -41,7 +41,11 @@ struct ves1820_config
 	u8 selagc:1;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_VES1820)
+=======
+#if IS_REACHABLE(CONFIG_DVB_VES1820)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* ves1820_attach(const struct ves1820_config* config,
 					   struct i2c_adapter* i2c, u8 pwm);
 #else

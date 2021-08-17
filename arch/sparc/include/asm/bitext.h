@@ -20,8 +20,14 @@ struct bit_map {
 	int num_colors;
 };
 
+<<<<<<< HEAD
 extern int bit_map_string_get(struct bit_map *t, int len, int align);
 extern void bit_map_clear(struct bit_map *t, int offset, int len);
 extern void bit_map_init(struct bit_map *t, unsigned long *map, int size);
+=======
+int bit_map_string_get(struct bit_map *t, int len, int align);
+void bit_map_clear(struct bit_map *t, int offset, int len);
+void bit_map_init(struct bit_map *t, unsigned long *map, int size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* defined(_SPARC_BITEXT_H) */

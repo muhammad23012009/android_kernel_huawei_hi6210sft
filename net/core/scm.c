@@ -56,9 +56,15 @@ static __inline__ int scm_check_creds(struct ucred *creds)
 	if ((creds->pid == task_tgid_vnr(current) ||
 	     ns_capable(task_active_pid_ns(current)->user_ns, CAP_SYS_ADMIN)) &&
 	    ((uid_eq(uid, cred->uid)   || uid_eq(uid, cred->euid) ||
+<<<<<<< HEAD
 	      uid_eq(uid, cred->suid)) || nsown_capable(CAP_SETUID)) &&
 	    ((gid_eq(gid, cred->gid)   || gid_eq(gid, cred->egid) ||
 	      gid_eq(gid, cred->sgid)) || nsown_capable(CAP_SETGID))) {
+=======
+	      uid_eq(uid, cred->suid)) || ns_capable(cred->user_ns, CAP_SETUID)) &&
+	    ((gid_eq(gid, cred->gid)   || gid_eq(gid, cred->egid) ||
+	      gid_eq(gid, cred->sgid)) || ns_capable(cred->user_ns, CAP_SETGID))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       return 0;
 	}
 	return -EPERM;
@@ -135,8 +141,12 @@ int __scm_send(struct socket *sock, struct msghdr *msg, struct scm_cookie *p)
 	struct cmsghdr *cmsg;
 	int err;
 
+<<<<<<< HEAD
 	for (cmsg = CMSG_FIRSTHDR(msg); cmsg; cmsg = CMSG_NXTHDR(msg, cmsg))
 	{
+=======
+	for_each_cmsghdr(cmsg, msg) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EINVAL;
 
 		/* Verify that cmsg_len is at least sizeof(struct cmsghdr) */
@@ -296,8 +306,13 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
 		/* Bump the usage count and install the file. */
 		sock = sock_from_file(fp[i], &err);
 		if (sock) {
+<<<<<<< HEAD
 			sock_update_netprioidx(sock->sk);
 			sock_update_classid(sock->sk);
+=======
+			sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+			sock_update_classid(&sock->sk->sk_cgrp_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		fd_install(new_fd, get_file(fp[i]));
 	}

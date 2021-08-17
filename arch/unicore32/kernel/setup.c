@@ -53,6 +53,13 @@ struct stack {
 
 static struct stack stacks[NR_CPUS];
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_VGA_CONSOLE
+struct screen_info screen_info;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 char elf_platform[ELF_PLATFORM_SIZE];
 EXPORT_SYMBOL(elf_platform);
 
@@ -68,13 +75,21 @@ static struct resource mem_res[] = {
 		.name = "Kernel code",
 		.start = 0,
 		.end = 0,
+<<<<<<< HEAD
 		.flags = IORESOURCE_MEM
+=======
+		.flags = IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.name = "Kernel data",
 		.start = 0,
 		.end = 0,
+<<<<<<< HEAD
 		.flags = IORESOURCE_MEM
+=======
+		.flags = IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 
@@ -207,7 +222,11 @@ request_standard_resources(struct meminfo *mi)
 		res->name  = "System RAM";
 		res->start = mi->bank[i].start;
 		res->end   = mi->bank[i].start + mi->bank[i].size - 1;
+<<<<<<< HEAD
 		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+=======
+		res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		request_resource(&iomem_resource, res);
 

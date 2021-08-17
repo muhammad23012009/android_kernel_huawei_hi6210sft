@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ccflags-$(CONFIG_POWER_SUPPLY_DEBUG) := -DDEBUG
 
 power_supply-y				:= power_supply_core.o
@@ -57,3 +58,8 @@ obj-$(CONFIG_CHARGER_SMB347)	+= smb347-charger.o
 obj-$(CONFIG_CHARGER_TPS65090)	+= tps65090-charger.o
 obj-$(CONFIG_POWER_RESET)	+= reset/
 obj-$(CONFIG_POWER_HUAWEI)	+= huawei/
+=======
+obj-$(CONFIG_POWER_AVS)		+= avs/
+obj-$(CONFIG_POWER_RESET)	+= reset/
+obj-$(CONFIG_POWER_SUPPLY)	+= supply/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -8,6 +8,11 @@
  *  BIG FAT DISCLAIMER: Work in progress code. Possibly *dangerous*
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -22,7 +27,10 @@
 #define POWERNOW_IOPORT 0xfff0          /* it doesn't matter where, as long
 					   as it is unused */
 
+<<<<<<< HEAD
 #define PFX "powernow-k6: "
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int                     busfreq;   /* FSB, in 10 kHz */
 static unsigned int                     max_multiplier;
 
@@ -37,6 +45,7 @@ MODULE_PARM_DESC(bus_frequency, "Bus frequency in kHz");
 
 /* Clock ratio multiplied by 10 - see table 27 in AMD#23446 */
 static struct cpufreq_frequency_table clock_ratio[] = {
+<<<<<<< HEAD
 	{60,  /* 110 -> 6.0x */ 0},
 	{55,  /* 011 -> 5.5x */ 0},
 	{50,  /* 001 -> 5.0x */ 0},
@@ -46,6 +55,17 @@ static struct cpufreq_frequency_table clock_ratio[] = {
 	{30,  /* 101 -> 3.0x */ 0},
 	{20,  /* 100 -> 2.0x */ 0},
 	{0, CPUFREQ_TABLE_END}
+=======
+	{0, 60,  /* 110 -> 6.0x */ 0},
+	{0, 55,  /* 011 -> 5.5x */ 0},
+	{0, 50,  /* 001 -> 5.0x */ 0},
+	{0, 45,  /* 000 -> 4.5x */ 0},
+	{0, 40,  /* 010 -> 4.0x */ 0},
+	{0, 35,  /* 111 -> 3.5x */ 0},
+	{0, 30,  /* 101 -> 3.0x */ 0},
+	{0, 20,  /* 100 -> 2.0x */ 0},
+	{0, 0, CPUFREQ_TABLE_END}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const u8 index_to_register[8] = { 6, 3, 1, 0, 2, 7, 5, 4 };
@@ -55,6 +75,10 @@ static const struct {
 	unsigned freq;
 	unsigned mult;
 } usual_frequency_table[] = {
+<<<<<<< HEAD
+=======
+	{ 350000, 35 },	// 100   * 3.5
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 400000, 40 },	// 100   * 4
 	{ 450000, 45 }, // 100   * 4.5
 	{ 475000, 50 }, //  95   * 5
@@ -94,7 +118,11 @@ static int powernow_k6_get_cpu_multiplier(void)
 
 	local_irq_enable();
 
+<<<<<<< HEAD
 	return clock_ratio[register_to_index[(invalue >> 5)&7]].index;
+=======
+	return clock_ratio[register_to_index[(invalue >> 5)&7]].driver_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void powernow_k6_set_cpu_multiplier(unsigned int best_i)
@@ -130,11 +158,16 @@ static void powernow_k6_set_cpu_multiplier(unsigned int best_i)
 }
 
 /**
+<<<<<<< HEAD
  * powernow_k6_set_state - set the PowerNow! multiplier
+=======
+ * powernow_k6_target - set the PowerNow! multiplier
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @best_i: clock_ratio[best_i] is the target multiplier
  *
  *   Tries to change the PowerNow! multiplier
  */
+<<<<<<< HEAD
 static void powernow_k6_set_state(struct cpufreq_policy *policy,
 		unsigned int best_i)
 {
@@ -192,13 +225,31 @@ static int powernow_k6_target(struct cpufreq_policy *policy,
 
 	powernow_k6_set_state(policy, newstate);
 
+=======
+static int powernow_k6_target(struct cpufreq_policy *policy,
+		unsigned int best_i)
+{
+
+	if (clock_ratio[best_i].driver_data > max_multiplier) {
+		pr_err("invalid target frequency\n");
+		return -EINVAL;
+	}
+
+	powernow_k6_set_cpu_multiplier(best_i);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int powernow_k6_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	unsigned int i, f;
 	int result;
+=======
+	struct cpufreq_frequency_table *pos;
+	unsigned int i, f;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned khz;
 
 	if (policy->cpu != 0)
@@ -215,6 +266,7 @@ static int powernow_k6_cpu_init(struct cpufreq_policy *policy)
 		}
 	}
 	if (param_max_multiplier) {
+<<<<<<< HEAD
 		for (i = 0; (clock_ratio[i].frequency != CPUFREQ_TABLE_END); i++) {
 			if (clock_ratio[i].index == param_max_multiplier) {
 				max_multiplier = param_max_multiplier;
@@ -222,12 +274,26 @@ static int powernow_k6_cpu_init(struct cpufreq_policy *policy)
 			}
 		}
 		printk(KERN_ERR "powernow-k6: invalid max_multiplier parameter, valid parameters 20, 30, 35, 40, 45, 50, 55, 60\n");
+=======
+		cpufreq_for_each_entry(pos, clock_ratio)
+			if (pos->driver_data == param_max_multiplier) {
+				max_multiplier = param_max_multiplier;
+				goto have_max_multiplier;
+			}
+		pr_err("invalid max_multiplier parameter, valid parameters 20, 30, 35, 40, 45, 50, 55, 60\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	if (!max_multiplier) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "powernow-k6: unknown frequency %u, cannot determine current multiplier\n", khz);
 		printk(KERN_WARNING "powernow-k6: use module parameters max_multiplier and bus_frequency\n");
+=======
+		pr_warn("unknown frequency %u, cannot determine current multiplier\n",
+			khz);
+		pr_warn("use module parameters max_multiplier and bus_frequency\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EOPNOTSUPP;
 	}
 
@@ -239,7 +305,11 @@ have_max_multiplier:
 			busfreq = param_busfreq / 10;
 			goto have_busfreq;
 		}
+<<<<<<< HEAD
 		printk(KERN_ERR "powernow-k6: invalid bus_frequency parameter, allowed range 50000 - 150000 kHz\n");
+=======
+		pr_err("invalid bus_frequency parameter, allowed range 50000 - 150000 kHz\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -248,16 +318,26 @@ have_busfreq:
 	param_busfreq = busfreq * 10;
 
 	/* table init */
+<<<<<<< HEAD
 	for (i = 0; (clock_ratio[i].frequency != CPUFREQ_TABLE_END); i++) {
 		f = clock_ratio[i].index;
 		if (f > max_multiplier)
 			clock_ratio[i].frequency = CPUFREQ_ENTRY_INVALID;
 		else
 			clock_ratio[i].frequency = busfreq * f;
+=======
+	cpufreq_for_each_entry(pos, clock_ratio) {
+		f = pos->driver_data;
+		if (f > max_multiplier)
+			pos->frequency = CPUFREQ_ENTRY_INVALID;
+		else
+			pos->frequency = busfreq * f;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* cpuinfo and default policy values */
 	policy->cpuinfo.transition_latency = 500000;
+<<<<<<< HEAD
 	policy->cur = busfreq * max_multiplier;
 
 	result = cpufreq_frequency_table_cpuinfo(policy, clock_ratio);
@@ -267,17 +347,39 @@ have_busfreq:
 	cpufreq_frequency_table_get_attr(clock_ratio, policy->cpu);
 
 	return 0;
+=======
+
+	return cpufreq_table_validate_and_show(policy, clock_ratio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
 static int powernow_k6_cpu_exit(struct cpufreq_policy *policy)
 {
 	unsigned int i;
+<<<<<<< HEAD
 	for (i = 0; i < 8; i++) {
 		if (i == max_multiplier)
 			powernow_k6_set_state(policy, i);
 	}
 	cpufreq_frequency_table_put_attr(policy->cpu);
+=======
+
+	for (i = 0; (clock_ratio[i].frequency != CPUFREQ_TABLE_END); i++) {
+		if (clock_ratio[i].driver_data == max_multiplier) {
+			struct cpufreq_freqs freqs;
+
+			freqs.old = policy->cur;
+			freqs.new = clock_ratio[i].frequency;
+			freqs.flags = 0;
+
+			cpufreq_freq_transition_begin(policy, &freqs);
+			powernow_k6_target(policy, i);
+			cpufreq_freq_transition_end(policy, &freqs, 0);
+			break;
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -288,6 +390,7 @@ static unsigned int powernow_k6_get(unsigned int cpu)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct freq_attr *powernow_k6_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
@@ -296,12 +399,21 @@ static struct freq_attr *powernow_k6_attr[] = {
 static struct cpufreq_driver powernow_k6_driver = {
 	.verify		= powernow_k6_verify,
 	.target		= powernow_k6_target,
+=======
+static struct cpufreq_driver powernow_k6_driver = {
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= powernow_k6_target,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init		= powernow_k6_cpu_init,
 	.exit		= powernow_k6_cpu_exit,
 	.get		= powernow_k6_get,
 	.name		= "powernow-k6",
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
 	.attr		= powernow_k6_attr,
+=======
+	.attr		= cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct x86_cpu_id powernow_k6_ids[] = {
@@ -324,7 +436,11 @@ static int __init powernow_k6_init(void)
 		return -ENODEV;
 
 	if (!request_region(POWERNOW_IOPORT, 16, "PowerNow!")) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "PowerNow IOPORT region already used.\n");
+=======
+		pr_info("PowerNow IOPORT region already used\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 
@@ -349,7 +465,11 @@ static void __exit powernow_k6_exit(void)
 }
 
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Arjan van de Ven, Dave Jones <davej@redhat.com>, "
+=======
+MODULE_AUTHOR("Arjan van de Ven, Dave Jones, "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"Dominik Brodowski <linux@brodo.de>");
 MODULE_DESCRIPTION("PowerNow! driver for AMD K6-2+ / K6-3+ processors.");
 MODULE_LICENSE("GPL");

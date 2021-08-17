@@ -47,12 +47,19 @@
  * of times)
  */
 
+<<<<<<< HEAD
 #include <linux/latencytop.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kallsyms.h>
 #include <linux/seq_file.h>
 #include <linux/notifier.h>
 #include <linux/spinlock.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/latencytop.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/sched.h>
 #include <linux/list.h>
@@ -88,7 +95,12 @@ static void clear_global_latency_tracing(void)
 }
 
 static void __sched
+<<<<<<< HEAD
 account_global_scheduler_latency(struct task_struct *tsk, struct latency_record *lat)
+=======
+account_global_scheduler_latency(struct task_struct *tsk,
+				 struct latency_record *lat)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int firstnonnull = MAXLR + 1;
 	int i;
@@ -255,7 +267,11 @@ static int lstats_show(struct seq_file *m, void *v)
 					break;
 				seq_printf(m, " %ps", (void *)bt);
 			}
+<<<<<<< HEAD
 			seq_printf(m, "\n");
+=======
+			seq_puts(m, "\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	return 0;
@@ -288,4 +304,19 @@ static int __init init_lstats_procfs(void)
 	proc_create("latency_stats", 0644, NULL, &lstats_fops);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+int sysctl_latencytop(struct ctl_table *table, int write,
+			void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	int err;
+
+	err = proc_dointvec(table, write, buffer, lenp, ppos);
+	if (latencytop_enabled)
+		force_schedstat_enabled();
+
+	return err;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 device_initcall(init_lstats_procfs);

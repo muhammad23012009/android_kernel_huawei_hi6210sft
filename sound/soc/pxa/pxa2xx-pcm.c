@@ -12,21 +12,35 @@
 
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/core.h>
 #include <sound/soc.h>
 #include <sound/pxa2xx-lib.h>
+<<<<<<< HEAD
+=======
+#include <sound/dmaengine_pcm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "../../arm/pxa2xx-pcm.h"
 
 static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *prtd = runtime->private_data;
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct pxa2xx_pcm_dma_params *dma;
 	int ret;
+=======
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_dmaengine_dai_dma_data *dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dma = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
 
@@ -35,6 +49,7 @@ static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (!dma)
 		return 0;
 
+<<<<<<< HEAD
 	/* this may get called several times by oss emulation
 	 * with different params */
 	if (prtd->params == NULL) {
@@ -54,11 +69,14 @@ static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 		prtd->dma_ch = ret;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return __pxa2xx_pcm_hw_params(substream, params);
 }
 
 static int pxa2xx_pcm_hw_free(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct pxa2xx_runtime_data *prtd = substream->runtime->private_data;
 
 	__pxa2xx_pcm_hw_free(substream);
@@ -69,6 +87,10 @@ static int pxa2xx_pcm_hw_free(struct snd_pcm_substream *substream)
 		prtd->params = NULL;
 	}
 
+=======
+	__pxa2xx_pcm_hw_free(substream);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -84,18 +106,29 @@ static struct snd_pcm_ops pxa2xx_pcm_ops = {
 	.mmap		= pxa2xx_pcm_mmap,
 };
 
+<<<<<<< HEAD
 static u64 pxa2xx_pcm_dmamask = DMA_BIT_MASK(32);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pxa2xx_soc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_pcm *pcm = rtd->pcm;
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (!card->dev->dma_mask)
 		card->dev->dma_mask = &pxa2xx_pcm_dmamask;
 	if (!card->dev->coherent_dma_mask)
 		card->dev->coherent_dma_mask = DMA_BIT_MASK(32);
+=======
+	int ret;
+
+	ret = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(32));
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream) {
 		ret = pxa2xx_pcm_preallocate_dma_buffer(pcm,
@@ -122,6 +155,7 @@ static struct snd_soc_platform_driver pxa2xx_soc_platform = {
 
 static int pxa2xx_soc_platform_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &pxa2xx_soc_platform);
 }
 
@@ -139,6 +173,26 @@ static struct platform_driver pxa_pcm_driver = {
 
 	.probe = pxa2xx_soc_platform_probe,
 	.remove = pxa2xx_soc_platform_remove,
+=======
+	return devm_snd_soc_register_platform(&pdev->dev, &pxa2xx_soc_platform);
+}
+
+#ifdef CONFIG_OF
+static const struct of_device_id snd_soc_pxa_audio_match[] = {
+	{ .compatible   = "mrvl,pxa-pcm-audio" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, snd_soc_pxa_audio_match);
+#endif
+
+static struct platform_driver pxa_pcm_driver = {
+	.driver = {
+		.name = "pxa-pcm-audio",
+		.of_match_table = of_match_ptr(snd_soc_pxa_audio_match),
+	},
+
+	.probe = pxa2xx_soc_platform_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(pxa_pcm_driver);
@@ -146,3 +200,7 @@ module_platform_driver(pxa_pcm_driver);
 MODULE_AUTHOR("Nicolas Pitre");
 MODULE_DESCRIPTION("Intel PXA2xx PCM DMA module");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:pxa-pcm-audio");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -32,6 +32,7 @@
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/netlink.h>
+<<<<<<< HEAD
 
 /* A unified ethernet device probe.  This is the easiest way to have every
    ethernet adaptor have the name "eth[0123...]".
@@ -64,6 +65,13 @@ extern int iph5526_probe(struct net_device *dev);
 
 /* SBNI adapters */
 extern int sbni_probe(int unit);
+=======
+#include <net/Space.h>
+
+/* A unified ethernet device probe.  This is the easiest way to have every
+ * ethernet adaptor have the name "eth[0123...]".
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct devprobe2 {
 	struct net_device *(*probe)(int unit);
@@ -73,6 +81,10 @@ struct devprobe2 {
 static int __init probe_list2(int unit, struct devprobe2 *p, int autoprobe)
 {
 	struct net_device *dev;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (; p->probe; p++) {
 		if (autoprobe && p->status)
 			continue;
@@ -85,8 +97,12 @@ static int __init probe_list2(int unit, struct devprobe2 *p, int autoprobe)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 /*
  * ISA probes that touch addresses < 0x400 (including those that also
+=======
+/* ISA probes that touch addresses < 0x400 (including those that also
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * look for EISA/PCI cards in addition to ISA cards).
  */
 static struct devprobe2 isa_probes[] __initdata = {
@@ -102,8 +118,12 @@ static struct devprobe2 isa_probes[] __initdata = {
 #ifdef CONFIG_WD80x3
 	{wd_probe, 0},
 #endif
+<<<<<<< HEAD
 #if defined(CONFIG_NE2000) || \
     defined(CONFIG_NE_H8300)  /* ISA (use ne2k-pci for PCI cards) */
+=======
+#if defined(CONFIG_NE2000) /* ISA (use ne2k-pci for PCI cards) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ne_probe, 0},
 #endif
 #ifdef CONFIG_LANCE		/* ISA/VLB (use pcnet32 for PCI cards) */
@@ -114,11 +134,19 @@ static struct devprobe2 isa_probes[] __initdata = {
 #endif
 #ifdef CONFIG_CS89x0
 #ifndef CONFIG_CS89x0_PLATFORM
+<<<<<<< HEAD
  	{cs89x0_probe, 0},
 #endif
 #endif
 #if defined(CONFIG_MVME16x_NET) || defined(CONFIG_BVME6000_NET)	/* Intel I82596 */
 	{i82596_probe, 0},
+=======
+	{cs89x0_probe, 0},
+#endif
+#endif
+#if defined(CONFIG_MVME16x_NET) || defined(CONFIG_BVME6000_NET)	/* Intel */
+	{i82596_probe, 0},					/* I82596 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #ifdef CONFIG_NI65
 	{ni65_probe, 0},
@@ -146,13 +174,21 @@ static struct devprobe2 m68k_probes[] __initdata = {
 	{mac8390_probe, 0},
 #endif
 #ifdef CONFIG_MAC89x0
+<<<<<<< HEAD
  	{mac89x0_probe, 0},
+=======
+	{mac89x0_probe, 0},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	{NULL, 0},
 };
 
+<<<<<<< HEAD
 /*
  * Unified ethernet device probe, segmented per architecture and
+=======
+/* Unified ethernet device probe, segmented per architecture and
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * per bus interface. This drives the legacy devices only for now.
  */
 
@@ -163,7 +199,11 @@ static void __init ethif_probe2(int unit)
 	if (base_addr == 1)
 		return;
 
+<<<<<<< HEAD
 	(void)(	probe_list2(unit, m68k_probes, base_addr == 0) &&
+=======
+	(void)(probe_list2(unit, m68k_probes, base_addr == 0) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		probe_list2(unit, isa_probes, base_addr == 0));
 }
 

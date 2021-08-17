@@ -17,7 +17,11 @@
  *	U	- upper subcluster; U0 - subcluster U0; U1 - subcluster U1
  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set noreorder
 	.set noat
 
@@ -47,3 +51,7 @@ $found:
 	ret	$31, ($26)	# L0 :
 
 	.end	strlen
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strlen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

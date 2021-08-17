@@ -119,6 +119,7 @@ static void __v4l2_event_queue_fh(struct v4l2_fh *fh, const struct v4l2_event *e
 	if (sev == NULL)
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * If the event has been added to the fh->subscribed list, but its
 	 * add op has not completed yet elems will be 0, treat this as
@@ -127,6 +128,8 @@ static void __v4l2_event_queue_fh(struct v4l2_fh *fh, const struct v4l2_event *e
 	if (!sev->elems)
 		return;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Increase event sequence number on fh. */
 	fh->sequence++;
 
@@ -172,6 +175,12 @@ void v4l2_event_queue(struct video_device *vdev, const struct v4l2_event *ev)
 	unsigned long flags;
 	struct timespec timestamp;
 
+<<<<<<< HEAD
+=======
+	if (vdev == NULL)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ktime_get_ts(&timestamp);
 
 	spin_lock_irqsave(&vdev->fh_lock, flags);
@@ -202,6 +211,25 @@ int v4l2_event_pending(struct v4l2_fh *fh)
 }
 EXPORT_SYMBOL_GPL(v4l2_event_pending);
 
+<<<<<<< HEAD
+=======
+static void __v4l2_event_unsubscribe(struct v4l2_subscribed_event *sev)
+{
+	struct v4l2_fh *fh = sev->fh;
+	unsigned int i;
+
+	lockdep_assert_held(&fh->subscribe_lock);
+	assert_spin_locked(&fh->vdev->fh_lock);
+
+	/* Remove any pending events for this subscription */
+	for (i = 0; i < sev->in_use; i++) {
+		list_del(&sev->events[sev_pos(sev, i)].list);
+		fh->navailable--;
+	}
+	list_del(&sev->list);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int v4l2_event_subscribe(struct v4l2_fh *fh,
 			 const struct v4l2_event_subscription *sub, unsigned elems,
 			 const struct v4l2_subscribed_event_ops *ops)
@@ -209,6 +237,10 @@ int v4l2_event_subscribe(struct v4l2_fh *fh,
 	struct v4l2_subscribed_event *sev, *found_ev;
 	unsigned long flags;
 	unsigned i;
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sub->type == V4L2_EVENT_ALL)
 		return -EINVAL;
@@ -226,6 +258,12 @@ int v4l2_event_subscribe(struct v4l2_fh *fh,
 	sev->flags = sub->flags;
 	sev->fh = fh;
 	sev->ops = ops;
+<<<<<<< HEAD
+=======
+	sev->elems = elems;
+
+	mutex_lock(&fh->subscribe_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&fh->vdev->fh_lock, flags);
 	found_ev = v4l2_event_subscribed(fh, sub->type, sub->id);
@@ -234,6 +272,7 @@ int v4l2_event_subscribe(struct v4l2_fh *fh,
 	spin_unlock_irqrestore(&fh->vdev->fh_lock, flags);
 
 	if (found_ev) {
+<<<<<<< HEAD
 		kfree(sev);
 		return 0; /* Already listening */
 	}
@@ -251,6 +290,23 @@ int v4l2_event_subscribe(struct v4l2_fh *fh,
 	sev->elems = elems;
 
 	return 0;
+=======
+		/* Already listening */
+		kfree(sev);
+	} else if (sev->ops && sev->ops->add) {
+		ret = sev->ops->add(sev, elems);
+		if (ret) {
+			spin_lock_irqsave(&fh->vdev->fh_lock, flags);
+			__v4l2_event_unsubscribe(sev);
+			spin_unlock_irqrestore(&fh->vdev->fh_lock, flags);
+			kfree(sev);
+		}
+	}
+
+	mutex_unlock(&fh->subscribe_lock);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(v4l2_event_subscribe);
 
@@ -282,13 +338,17 @@ int v4l2_event_unsubscribe(struct v4l2_fh *fh,
 {
 	struct v4l2_subscribed_event *sev;
 	unsigned long flags;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sub->type == V4L2_EVENT_ALL) {
 		v4l2_event_unsubscribe_all(fh);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&fh->vdev->fh_lock, flags);
 
 	sev = v4l2_event_subscribed(fh, sub->type, sub->id);
@@ -300,12 +360,26 @@ int v4l2_event_unsubscribe(struct v4l2_fh *fh,
 		}
 		list_del(&sev->list);
 	}
+=======
+	mutex_lock(&fh->subscribe_lock);
+
+	spin_lock_irqsave(&fh->vdev->fh_lock, flags);
+
+	sev = v4l2_event_subscribed(fh, sub->type, sub->id);
+	if (sev != NULL)
+		__v4l2_event_unsubscribe(sev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_unlock_irqrestore(&fh->vdev->fh_lock, flags);
 
 	if (sev && sev->ops && sev->ops->del)
 		sev->ops->del(sev);
 
+<<<<<<< HEAD
+=======
+	mutex_unlock(&fh->subscribe_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(sev);
 
 	return 0;
@@ -318,3 +392,42 @@ int v4l2_event_subdev_unsubscribe(struct v4l2_subdev *sd, struct v4l2_fh *fh,
 	return v4l2_event_unsubscribe(fh, sub);
 }
 EXPORT_SYMBOL_GPL(v4l2_event_subdev_unsubscribe);
+<<<<<<< HEAD
+=======
+
+static void v4l2_event_src_replace(struct v4l2_event *old,
+				const struct v4l2_event *new)
+{
+	u32 old_changes = old->u.src_change.changes;
+
+	old->u.src_change = new->u.src_change;
+	old->u.src_change.changes |= old_changes;
+}
+
+static void v4l2_event_src_merge(const struct v4l2_event *old,
+				struct v4l2_event *new)
+{
+	new->u.src_change.changes |= old->u.src_change.changes;
+}
+
+static const struct v4l2_subscribed_event_ops v4l2_event_src_ch_ops = {
+	.replace = v4l2_event_src_replace,
+	.merge = v4l2_event_src_merge,
+};
+
+int v4l2_src_change_event_subscribe(struct v4l2_fh *fh,
+				const struct v4l2_event_subscription *sub)
+{
+	if (sub->type == V4L2_EVENT_SOURCE_CHANGE)
+		return v4l2_event_subscribe(fh, sub, 0, &v4l2_event_src_ch_ops);
+	return -EINVAL;
+}
+EXPORT_SYMBOL_GPL(v4l2_src_change_event_subscribe);
+
+int v4l2_src_change_event_subdev_subscribe(struct v4l2_subdev *sd,
+		struct v4l2_fh *fh, struct v4l2_event_subscription *sub)
+{
+	return v4l2_src_change_event_subscribe(fh, sub);
+}
+EXPORT_SYMBOL_GPL(v4l2_src_change_event_subdev_subscribe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

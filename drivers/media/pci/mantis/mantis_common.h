@@ -25,6 +25,10 @@
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
 
+<<<<<<< HEAD
+=======
+#include "mantis_reg.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "mantis_uart.h"
 
 #include "mantis_link.h"
@@ -68,12 +72,21 @@
 #define TECHNISAT		0x1ae4
 #define TERRATEC		0x153b
 
+<<<<<<< HEAD
 #define MAKE_ENTRY(__subven, __subdev, __configptr) {			\
+=======
+#define MAKE_ENTRY(__subven, __subdev, __configptr, __rc) {		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.vendor		= TWINHAN_TECHNOLOGIES,			\
 		.device		= MANTIS,				\
 		.subvendor	= (__subven),				\
 		.subdevice	= (__subdev),				\
+<<<<<<< HEAD
 		.driver_data	= (unsigned long) (__configptr)		\
+=======
+		.driver_data	= (unsigned long)			\
+			&(struct mantis_pci_drvdata){__configptr, __rc}	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 enum mantis_i2c_mode {
@@ -101,6 +114,14 @@ struct mantis_hwconfig {
 	enum mantis_i2c_mode	i2c_mode;
 };
 
+<<<<<<< HEAD
+=======
+struct mantis_pci_drvdata {
+	struct mantis_hwconfig *hwconfig;
+	char *rc_map_name;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mantis_pci {
 	unsigned int		verbose;
 
@@ -127,10 +148,18 @@ struct mantis_pci {
 	u32			last_block;
 	u8			*buf_cpu;
 	dma_addr_t		buf_dma;
+<<<<<<< HEAD
 	u32			*risc_cpu;
 	dma_addr_t		risc_dma;
 
 	struct tasklet_struct	tasklet;
+=======
+	__le32			*risc_cpu;
+	dma_addr_t		risc_dma;
+
+	struct tasklet_struct	tasklet;
+	spinlock_t		intmask_lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct i2c_adapter	adapter;
 	int			i2c_rc;
@@ -165,15 +194,44 @@ struct mantis_pci {
 
 	struct mantis_ca	*mantis_ca;
 
+<<<<<<< HEAD
 	wait_queue_head_t	uart_wq;
 	struct work_struct	uart_work;
 	spinlock_t		uart_lock;
+=======
+	struct work_struct	uart_work;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct rc_dev		*rc;
 	char			input_name[80];
 	char			input_phys[80];
+<<<<<<< HEAD
+=======
+	char			*rc_map_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define MANTIS_HIF_STATUS	(mantis->gpio_status)
 
+<<<<<<< HEAD
+=======
+static inline void mantis_mask_ints(struct mantis_pci *mantis, u32 mask)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&mantis->intmask_lock, flags);
+	mmwrite(mmread(MANTIS_INT_MASK) & ~mask, MANTIS_INT_MASK);
+	spin_unlock_irqrestore(&mantis->intmask_lock, flags);
+}
+
+static inline void mantis_unmask_ints(struct mantis_pci *mantis, u32 mask)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&mantis->intmask_lock, flags);
+	mmwrite(mmread(MANTIS_INT_MASK) | mask, MANTIS_INT_MASK);
+	spin_unlock_irqrestore(&mantis->intmask_lock, flags);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __MANTIS_COMMON_H */

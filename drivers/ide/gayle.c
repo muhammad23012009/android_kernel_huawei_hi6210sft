@@ -132,7 +132,11 @@ static int __init amiga_gayle_ide_probe(struct platform_device *pdev)
 	if (!request_mem_region(res->start, resource_size(res), "IDE"))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("ide: Gayle IDE controller (A%u style%s)\n",
 		pdata->explicit_ack ? 1200 : 4000,
 		ide_doubler ? ", IDE doubler" : "");
@@ -179,6 +183,7 @@ static struct platform_driver amiga_gayle_ide_driver = {
 	.remove = __exit_p(amiga_gayle_ide_remove),
 	.driver   = {
 		.name	= "amiga-gayle-ide",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -197,6 +202,12 @@ static void __exit amiga_gayle_ide_exit(void)
 }
 
 module_exit(amiga_gayle_ide_exit);
+=======
+	},
+};
+
+module_platform_driver_probe(amiga_gayle_ide_driver, amiga_gayle_ide_probe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:amiga-gayle-ide");

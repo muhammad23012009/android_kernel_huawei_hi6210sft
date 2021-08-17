@@ -18,14 +18,22 @@ DECLARE_EVENT_CLASS(mm_filemap_op_page_cache,
 	TP_ARGS(page),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(struct page *, page)
+=======
+		__field(unsigned long, pfn)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__field(unsigned long, i_ino)
 		__field(unsigned long, index)
 		__field(dev_t, s_dev)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->page = page;
+=======
+		__entry->pfn = page_to_pfn(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__entry->i_ino = page->mapping->host->i_ino;
 		__entry->index = page->index;
 		if (page->mapping->host->i_sb)
@@ -37,8 +45,13 @@ DECLARE_EVENT_CLASS(mm_filemap_op_page_cache,
 	TP_printk("dev %d:%d ino %lx page=%p pfn=%lu ofs=%lu",
 		MAJOR(__entry->s_dev), MINOR(__entry->s_dev),
 		__entry->i_ino,
+<<<<<<< HEAD
 		__entry->page,
 		page_to_pfn(__entry->page),
+=======
+		pfn_to_page(__entry->pfn),
+		__entry->pfn,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__entry->index << PAGE_SHIFT)
 );
 

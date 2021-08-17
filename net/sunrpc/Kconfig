@@ -1,14 +1,23 @@
 config SUNRPC
 	tristate
+<<<<<<< HEAD
+=======
+	depends on MULTIUSER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SUNRPC_GSS
 	tristate
 	select OID_REGISTRY
+<<<<<<< HEAD
+=======
+	depends on MULTIUSER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SUNRPC_BACKCHANNEL
 	bool
 	depends on SUNRPC
 
+<<<<<<< HEAD
 config SUNRPC_XPRT_RDMA
 	tristate
 	depends on SUNRPC && INFINIBAND && INFINIBAND_ADDR_TRANS
@@ -22,6 +31,8 @@ config SUNRPC_XPRT_RDMA
 
 	  If unsure, say N.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config SUNRPC_SWAP
 	bool
 	depends on SUNRPC
@@ -48,6 +59,10 @@ config RPCSEC_GSS_KRB5
 config SUNRPC_DEBUG
 	bool "RPC: Enable dprintk debugging"
 	depends on SUNRPC && SYSCTL
+<<<<<<< HEAD
+=======
+	select DEBUG_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  This option enables a sysctl-based debugging interface
 	  that is be used by the 'rpcdebug' utility to turn on or off
@@ -57,3 +72,20 @@ config SUNRPC_DEBUG
 	  but makes troubleshooting NFS issues significantly harder.
 
 	  If unsure, say Y.
+<<<<<<< HEAD
+=======
+
+config SUNRPC_XPRT_RDMA
+	tristate "RPC-over-RDMA transport"
+	depends on SUNRPC && INFINIBAND && INFINIBAND_ADDR_TRANS
+	default SUNRPC && INFINIBAND
+	help
+	  This option allows the NFS client and server to use RDMA
+	  transports (InfiniBand, iWARP, or RoCE).
+
+	  To compile this support as a module, choose M. The module
+	  will be called rpcrdma.ko.
+
+	  If unsure, or you know there is no RDMA capability on your
+	  hardware platform, say N.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -30,8 +30,13 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/pcm027.h>
+=======
+#include "pxa27x.h"
+#include "pcm027.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "generic.h"
 
 /*

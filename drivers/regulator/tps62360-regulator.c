@@ -293,18 +293,31 @@ static const struct regmap_config tps62360_regmap_config = {
 };
 
 static struct tps62360_regulator_platform_data *
+<<<<<<< HEAD
 	of_get_tps62360_platform_data(struct device *dev)
+=======
+	of_get_tps62360_platform_data(struct device *dev,
+				      const struct regulator_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct tps62360_regulator_platform_data *pdata;
 	struct device_node *np = dev->of_node;
 
 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pdata) {
 		dev_err(dev, "Memory alloc failed for platform data\n");
 		return NULL;
 	}
 
 	pdata->reg_init_data = of_get_regulator_init_data(dev, dev->of_node);
+=======
+	if (!pdata)
+		return NULL;
+
+	pdata->reg_init_data = of_get_regulator_init_data(dev, dev->of_node,
+							  desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata->reg_init_data) {
 		dev_err(dev, "Not able to get OF regulator init data\n");
 		return NULL;
@@ -350,8 +363,23 @@ static int tps62360_probe(struct i2c_client *client,
 	int i;
 	int chip_id;
 
+<<<<<<< HEAD
 	pdata = client->dev.platform_data;
 	chip_id = id->driver_data;
+=======
+	pdata = dev_get_platdata(&client->dev);
+
+	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
+	if (!tps)
+		return -ENOMEM;
+
+	tps->desc.name = client->name;
+	tps->desc.id = 0;
+	tps->desc.ops = &tps62360_dcdc_ops;
+	tps->desc.type = REGULATOR_VOLTAGE;
+	tps->desc.owner = THIS_MODULE;
+	tps->desc.uV_step = 10000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (client->dev.of_node) {
 		const struct of_device_id *match;
@@ -361,9 +389,21 @@ static int tps62360_probe(struct i2c_client *client,
 			dev_err(&client->dev, "Error: No device match found\n");
 			return -ENODEV;
 		}
+<<<<<<< HEAD
 		chip_id = (int)match->data;
 		if (!pdata)
 			pdata = of_get_tps62360_platform_data(&client->dev);
+=======
+		chip_id = (int)(long)match->data;
+		if (!pdata)
+			pdata = of_get_tps62360_platform_data(&client->dev,
+							      &tps->desc);
+	} else if (id) {
+		chip_id = id->driver_data;
+	} else {
+		dev_err(&client->dev, "No device tree match or id table match found\n");
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!pdata) {
@@ -372,6 +412,7 @@ static int tps62360_probe(struct i2c_client *client,
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
 	if (!tps) {
 		dev_err(&client->dev, "%s(): Memory allocation failed\n",
@@ -379,6 +420,8 @@ static int tps62360_probe(struct i2c_client *client,
 		return -ENOMEM;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tps->en_discharge = pdata->en_discharge;
 	tps->en_internal_pulldn = pdata->en_internal_pulldn;
 	tps->vsel0_gpio = pdata->vsel0_gpio;
@@ -402,6 +445,7 @@ static int tps62360_probe(struct i2c_client *client,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	tps->desc.name = id->name;
 	tps->desc.id = 0;
 	tps->desc.ops = &tps62360_dcdc_ops;
@@ -409,6 +453,8 @@ static int tps62360_probe(struct i2c_client *client,
 	tps->desc.owner = THIS_MODULE;
 	tps->desc.uV_step = 10000;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tps->regmap = devm_regmap_init_i2c(client, &tps62360_regmap_config);
 	if (IS_ERR(tps->regmap)) {
 		ret = PTR_ERR(tps->regmap);
@@ -472,7 +518,11 @@ static int tps62360_probe(struct i2c_client *client,
 	config.of_node = client->dev.of_node;
 
 	/* Register the regulators */
+<<<<<<< HEAD
 	rdev = regulator_register(&tps->desc, &config);
+=======
+	rdev = devm_regulator_register(&client->dev, &tps->desc, &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdev)) {
 		dev_err(tps->dev,
 			"%s(): regulator register failed with err %s\n",
@@ -484,6 +534,7 @@ static int tps62360_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * tps62360_remove - tps62360 driver i2c remove handler
  * @client: i2c driver client device structure
@@ -498,6 +549,8 @@ static int tps62360_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void tps62360_shutdown(struct i2c_client *client)
 {
 	struct tps62360_chip *tps = i2c_get_clientdata(client);
@@ -527,11 +580,17 @@ MODULE_DEVICE_TABLE(i2c, tps62360_id);
 static struct i2c_driver tps62360_i2c_driver = {
 	.driver = {
 		.name = "tps62360",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(tps62360_of_match),
 	},
 	.probe = tps62360_probe,
 	.remove = tps62360_remove,
+=======
+		.of_match_table = of_match_ptr(tps62360_of_match),
+	},
+	.probe = tps62360_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.shutdown = tps62360_shutdown,
 	.id_table = tps62360_id,
 };

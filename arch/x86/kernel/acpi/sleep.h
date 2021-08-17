@@ -15,3 +15,10 @@ extern unsigned long acpi_copy_wakeup_routine(unsigned long);
 extern void wakeup_long64(void);
 
 extern void do_suspend_lowlevel(void);
+<<<<<<< HEAD
+=======
+
+extern int x86_acpi_suspend_lowlevel(void);
+
+acpi_status asmlinkage x86_acpi_enter_sleep_state(u8 state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

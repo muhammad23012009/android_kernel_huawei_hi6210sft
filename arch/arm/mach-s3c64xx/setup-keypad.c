@@ -13,6 +13,10 @@
 #include <linux/gpio.h>
 #include <plat/gpio-cfg.h>
 #include <plat/keypad.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void samsung_keypad_cfg_gpio(unsigned int rows, unsigned int cols)
 {

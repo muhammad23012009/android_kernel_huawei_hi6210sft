@@ -40,6 +40,7 @@ extern struct start_info *xen_start_info;
 
 static inline uint32_t xen_cpuid_base(void)
 {
+<<<<<<< HEAD
 	uint32_t base, eax, ebx, ecx, edx;
 	char signature[13];
 
@@ -55,6 +56,9 @@ static inline uint32_t xen_cpuid_base(void)
 	}
 
 	return 0;
+=======
+	return hypervisor_cpuid_base("XenVMMXenVMM", 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_XEN
@@ -71,6 +75,14 @@ static inline bool xen_x2apic_para_available(void)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HOTPLUG_CPU
+void xen_arch_register_cpu(int num);
+void xen_arch_unregister_cpu(int num);
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void xen_set_iopl_mask(unsigned mask);
 
 #endif /* _ASM_X86_XEN_HYPERVISOR_H */

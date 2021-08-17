@@ -83,6 +83,14 @@ static struct bus_type tx_7segled_subsys = {
 	.dev_name	= "7segled",
 };
 
+<<<<<<< HEAD
+=======
+static void tx_7segled_release(struct device *dev)
+{
+	kfree(dev);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init tx_7segled_init_sysfs(void)
 {
 	int error, i;
@@ -103,11 +111,22 @@ static int __init tx_7segled_init_sysfs(void)
 		}
 		dev->id = i;
 		dev->bus = &tx_7segled_subsys;
+<<<<<<< HEAD
 		error = device_register(dev);
 		if (!error) {
 			device_create_file(dev, &dev_attr_ascii);
 			device_create_file(dev, &dev_attr_raw);
 		}
+=======
+		dev->release = &tx_7segled_release;
+		error = device_register(dev);
+		if (error) {
+			put_device(dev);
+			return error;
+		}
+		device_create_file(dev, &dev_attr_ascii);
+		device_create_file(dev, &dev_attr_raw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return error;
 }

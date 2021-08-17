@@ -59,10 +59,13 @@ int snd_soc_params_to_bclk(struct snd_pcm_hw_params *params)
 EXPORT_SYMBOL_GPL(snd_soc_params_to_bclk);
 
 static const struct snd_pcm_hardware dummy_dma_hardware = {
+<<<<<<< HEAD
 	.formats		= 0xffffffff,
 	.channels_min		= 1,
 	.channels_max		= UINT_MAX,
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Random values to keep userspace happy when checking constraints */
 	.info			= SNDRV_PCM_INFO_INTERLEAVED |
 				  SNDRV_PCM_INFO_BLOCK_TRANSFER,
@@ -75,12 +78,24 @@ static const struct snd_pcm_hardware dummy_dma_hardware = {
 
 static int dummy_dma_open(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	snd_soc_set_runtime_hwparams(substream, &dummy_dma_hardware);
+=======
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+
+	/* BE's dont need dummy params */
+	if (!rtd->dai_link->no_pcm)
+		snd_soc_set_runtime_hwparams(substream, &dummy_dma_hardware);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops dummy_dma_ops = {
+=======
+static const struct snd_pcm_ops dummy_dma_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= dummy_dma_open,
 	.ioctl		= snd_pcm_lib_ioctl,
 };
@@ -101,6 +116,18 @@ static struct snd_soc_codec_driver dummy_codec;
 			SNDRV_PCM_FMTBIT_S32_LE | \
 			SNDRV_PCM_FMTBIT_U32_LE | \
 			SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE)
+<<<<<<< HEAD
+=======
+/*
+ * The dummy CODEC is only meant to be used in situations where there is no
+ * actual hardware.
+ *
+ * If there is actual hardware even if it does not have a control bus
+ * the hardware will still have constraints like supported samplerates, etc.
+ * which should be modelled. And the data flow graph also should be modelled
+ * using DAPM.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_dai_driver dummy_dai = {
 	.name = "snd-soc-dummy-dai",
 	.playback = {
@@ -119,6 +146,16 @@ static struct snd_soc_dai_driver dummy_dai = {
 	 },
 };
 
+<<<<<<< HEAD
+=======
+int snd_soc_dai_is_dummy(struct snd_soc_dai *dai)
+{
+	if (dai->driver == &dummy_dai)
+		return 1;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int snd_soc_dummy_probe(struct platform_device *pdev)
 {
 	int ret;
@@ -147,7 +184,10 @@ static int snd_soc_dummy_remove(struct platform_device *pdev)
 static struct platform_driver soc_dummy_driver = {
 	.driver = {
 		.name = "snd-soc-dummy",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = snd_soc_dummy_probe,
 	.remove = snd_soc_dummy_remove,
@@ -159,6 +199,7 @@ int __init snd_soc_util_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	soc_dummy_dev = platform_device_alloc("snd-soc-dummy", -1);
 	if (!soc_dummy_dev)
 		return -ENOMEM;
@@ -168,6 +209,12 @@ int __init snd_soc_util_init(void)
 		platform_device_put(soc_dummy_dev);
 		return ret;
 	}
+=======
+	soc_dummy_dev =
+		platform_device_register_simple("snd-soc-dummy", -1, NULL, 0);
+	if (IS_ERR(soc_dummy_dev))
+		return PTR_ERR(soc_dummy_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = platform_driver_register(&soc_dummy_driver);
 	if (ret != 0)

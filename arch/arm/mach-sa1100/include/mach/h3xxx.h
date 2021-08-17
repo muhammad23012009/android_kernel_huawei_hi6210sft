@@ -13,6 +13,11 @@
 #ifndef _INCLUDE_H3XXX_H_
 #define _INCLUDE_H3XXX_H_
 
+<<<<<<< HEAD
+=======
+#include "hardware.h" /* Gives GPIO_MAX */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Physical memory regions corresponding to chip selects */
 #define H3600_EGPIO_PHYS	(SA1100_CS5_PHYS + 0x01000000)
 #define H3600_BANK_2_PHYS	SA1100_CS2_PHYS
@@ -77,6 +82,7 @@
 #define H3600_EGPIO_LCD_5V_ON		(H3XXX_EGPIO_BASE + 14) /* enable 5V to LCD. active high. */
 #define H3600_EGPIO_LVDD_ON		(H3XXX_EGPIO_BASE + 15) /* enable 9V and -6.5V to LCD. */
 
+<<<<<<< HEAD
 struct gpio_default_state {
 	int gpio;
 	int mode;
@@ -88,6 +94,8 @@ struct gpio_default_state {
 #define GPIO_MODE_OUT1	1
 
 void h3xxx_init_gpio(struct gpio_default_state *s, size_t n);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init h3xxx_map_io(void);
 void __init h3xxx_mach_init(void);
 

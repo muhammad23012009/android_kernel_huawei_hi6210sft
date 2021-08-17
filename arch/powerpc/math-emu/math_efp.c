@@ -20,6 +20,10 @@
  */
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/prctl.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/uaccess.h>
 #include <asm/reg.h>
@@ -275,6 +279,7 @@ int do_spe_mathemu(struct pt_regs *regs)
 
 		case EFSCTSF:
 		case EFSCTUF:
+<<<<<<< HEAD
 			if (!((vb.wp[1] >> 23) == 0xff && ((vb.wp[1] & 0x7fffff) > 0))) {
 				/* NaN */
 				if (((vb.wp[1] >> 23) & 0xff) == 0) {
@@ -290,6 +295,15 @@ int do_spe_mathemu(struct pt_regs *regs)
 				}
 			} else { /* rB is NaN */
 				vc.wp[1] = 0x0;
+=======
+			if (SB_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				SB_e += (func == EFSCTSF ? 31 : 32);
+				FP_TO_INT_ROUND_S(vc.wp[1], SB, 32,
+						(func == EFSCTSF));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			goto update_regs;
 
@@ -306,6 +320,7 @@ int do_spe_mathemu(struct pt_regs *regs)
 		}
 
 		case EFSCTSI:
+<<<<<<< HEAD
 		case EFSCTSIZ:
 		case EFSCTUI:
 		case EFSCTUIZ:
@@ -316,6 +331,27 @@ int do_spe_mathemu(struct pt_regs *regs)
 			}
 			FP_TO_INT_S(vc.wp[1], SB, 32,
 					(((func & 0x3) != 0) || SB_s));
+=======
+		case EFSCTUI:
+			if (SB_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_ROUND_S(vc.wp[1], SB, 32,
+						((func & 0x3) != 0));
+			}
+			goto update_regs;
+
+		case EFSCTSIZ:
+		case EFSCTUIZ:
+			if (SB_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_S(vc.wp[1], SB, 32,
+						((func & 0x3) != 0));
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto update_regs;
 
 		default:
@@ -404,6 +440,7 @@ cmp_s:
 
 		case EFDCTSF:
 		case EFDCTUF:
+<<<<<<< HEAD
 			if (!((vb.wp[0] >> 20) == 0x7ff &&
 			   ((vb.wp[0] & 0xfffff) > 0 || (vb.wp[1] > 0)))) {
 				/* not a NaN */
@@ -420,6 +457,15 @@ cmp_s:
 				}
 			} else { /* NaN */
 				vc.wp[1] = 0x0;
+=======
+			if (DB_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				DB_e += (func == EFDCTSF ? 31 : 32);
+				FP_TO_INT_ROUND_D(vc.wp[1], DB, 32,
+						(func == EFDCTSF));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			goto update_regs;
 
@@ -437,12 +483,23 @@ cmp_s:
 
 		case EFDCTUIDZ:
 		case EFDCTSIDZ:
+<<<<<<< HEAD
 			_FP_ROUND_ZERO(2, DB);
 			FP_TO_INT_D(vc.dp[0], DB, 64, ((func & 0x1) == 0));
+=======
+			if (DB_c == FP_CLS_NAN) {
+				vc.dp[0] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_D(vc.dp[0], DB, 64,
+						((func & 0x1) == 0));
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto update_regs;
 
 		case EFDCTUI:
 		case EFDCTSI:
+<<<<<<< HEAD
 		case EFDCTUIZ:
 		case EFDCTSIZ:
 			if (func & 0x4) {
@@ -452,6 +509,26 @@ cmp_s:
 			}
 			FP_TO_INT_D(vc.wp[1], DB, 32,
 					(((func & 0x3) != 0) || DB_s));
+=======
+			if (DB_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_ROUND_D(vc.wp[1], DB, 32,
+						((func & 0x3) != 0));
+			}
+			goto update_regs;
+
+		case EFDCTUIZ:
+		case EFDCTSIZ:
+			if (DB_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_D(vc.wp[1], DB, 32,
+						((func & 0x3) != 0));
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto update_regs;
 
 		default:
@@ -556,6 +633,7 @@ cmp_d:
 			cmp = -1;
 			goto cmp_vs;
 
+<<<<<<< HEAD
 		case EVFSCTSF:
 			__asm__ __volatile__ ("mtspr 512, %4\n"
 				"efsctsf %0, %2\n"
@@ -570,10 +648,31 @@ cmp_d:
 				"efsctuf %1, %3\n"
 				: "=r" (vc.wp[0]), "=r" (vc.wp[1])
 				: "r" (vb.wp[0]), "r" (vb.wp[1]), "r" (0));
+=======
+		case EVFSCTUF:
+		case EVFSCTSF:
+			if (SB0_c == FP_CLS_NAN) {
+				vc.wp[0] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				SB0_e += (func == EVFSCTSF ? 31 : 32);
+				FP_TO_INT_ROUND_S(vc.wp[0], SB0, 32,
+						(func == EVFSCTSF));
+			}
+			if (SB1_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				SB1_e += (func == EVFSCTSF ? 31 : 32);
+				FP_TO_INT_ROUND_S(vc.wp[1], SB1, 32,
+						(func == EVFSCTSF));
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto update_regs;
 
 		case EVFSCTUI:
 		case EVFSCTSI:
+<<<<<<< HEAD
 		case EVFSCTUIZ:
 		case EVFSCTSIZ:
 			if (func & 0x4) {
@@ -587,6 +686,40 @@ cmp_d:
 					(((func & 0x3) != 0) || SB0_s));
 			FP_TO_INT_S(vc.wp[1], SB1, 32,
 					(((func & 0x3) != 0) || SB1_s));
+=======
+			if (SB0_c == FP_CLS_NAN) {
+				vc.wp[0] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_ROUND_S(vc.wp[0], SB0, 32,
+						((func & 0x3) != 0));
+			}
+			if (SB1_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_ROUND_S(vc.wp[1], SB1, 32,
+						((func & 0x3) != 0));
+			}
+			goto update_regs;
+
+		case EVFSCTUIZ:
+		case EVFSCTSIZ:
+			if (SB0_c == FP_CLS_NAN) {
+				vc.wp[0] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_S(vc.wp[0], SB0, 32,
+						((func & 0x3) != 0));
+			}
+			if (SB1_c == FP_CLS_NAN) {
+				vc.wp[1] = 0;
+				FP_SET_EXCEPTION(FP_EX_INVALID);
+			} else {
+				FP_TO_INT_S(vc.wp[1], SB1, 32,
+						((func & 0x3) != 0));
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto update_regs;
 
 		default:
@@ -630,9 +763,33 @@ update_ccr:
 	regs->ccr |= (IR << ((7 - ((speinsn >> 23) & 0x7)) << 2));
 
 update_regs:
+<<<<<<< HEAD
 	__FPU_FPSCR &= ~FP_EX_MASK;
 	__FPU_FPSCR |= (FP_CUR_EXCEPTIONS & FP_EX_MASK);
 	mtspr(SPRN_SPEFSCR, __FPU_FPSCR);
+=======
+	/*
+	 * If the "invalid" exception sticky bit was set by the
+	 * processor for non-finite input, but was not set before the
+	 * instruction being emulated, clear it.  Likewise for the
+	 * "underflow" bit, which may have been set by the processor
+	 * for exact underflow, not just inexact underflow when the
+	 * flag should be set for IEEE 754 semantics.  Other sticky
+	 * exceptions will only be set by the processor when they are
+	 * correct according to IEEE 754 semantics, and we must not
+	 * clear sticky bits that were already set before the emulated
+	 * instruction as they represent the user-visible sticky
+	 * exception status.  "inexact" traps to kernel are not
+	 * required for IEEE semantics and are not enabled by default,
+	 * so the "inexact" sticky bit may have been set by a previous
+	 * instruction without the kernel being aware of it.
+	 */
+	__FPU_FPSCR
+	  &= ~(FP_EX_INVALID | FP_EX_UNDERFLOW) | current->thread.spefscr_last;
+	__FPU_FPSCR |= (FP_CUR_EXCEPTIONS & FP_EX_MASK);
+	mtspr(SPRN_SPEFSCR, __FPU_FPSCR);
+	current->thread.spefscr_last = __FPU_FPSCR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	current->thread.evr[fc] = vc.wp[0];
 	regs->gpr[fc] = vc.wp[1];
@@ -644,6 +801,26 @@ update_regs:
 	pr_debug("va: %08x  %08x\n", va.wp[0], va.wp[1]);
 	pr_debug("vb: %08x  %08x\n", vb.wp[0], vb.wp[1]);
 
+<<<<<<< HEAD
+=======
+	if (current->thread.fpexc_mode & PR_FP_EXC_SW_ENABLE) {
+		if ((FP_CUR_EXCEPTIONS & FP_EX_DIVZERO)
+		    && (current->thread.fpexc_mode & PR_FP_EXC_DIV))
+			return 1;
+		if ((FP_CUR_EXCEPTIONS & FP_EX_OVERFLOW)
+		    && (current->thread.fpexc_mode & PR_FP_EXC_OVF))
+			return 1;
+		if ((FP_CUR_EXCEPTIONS & FP_EX_UNDERFLOW)
+		    && (current->thread.fpexc_mode & PR_FP_EXC_UND))
+			return 1;
+		if ((FP_CUR_EXCEPTIONS & FP_EX_INEXACT)
+		    && (current->thread.fpexc_mode & PR_FP_EXC_RES))
+			return 1;
+		if ((FP_CUR_EXCEPTIONS & FP_EX_INVALID)
+		    && (current->thread.fpexc_mode & PR_FP_EXC_INV))
+			return 1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 illegal:
@@ -662,21 +839,41 @@ int speround_handler(struct pt_regs *regs)
 {
 	union dw_union fgpr;
 	int s_lo, s_hi;
+<<<<<<< HEAD
 	unsigned long speinsn, type, fc;
+=======
+	int lo_inexact, hi_inexact;
+	int fp_result;
+	unsigned long speinsn, type, fb, fc, fptype, func;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (get_user(speinsn, (unsigned int __user *) regs->nip))
 		return -EFAULT;
 	if ((speinsn >> 26) != 4)
 		return -EINVAL;         /* not an spe instruction */
 
+<<<<<<< HEAD
 	type = insn_type(speinsn & 0x7ff);
+=======
+	func = speinsn & 0x7ff;
+	type = insn_type(func);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (type == XCR) return -ENOSYS;
 
 	__FPU_FPSCR = mfspr(SPRN_SPEFSCR);
 	pr_debug("speinsn:%08lx spefscr:%08lx\n", speinsn, __FPU_FPSCR);
 
+<<<<<<< HEAD
 	/* No need to round if the result is exact */
 	if (!(__FPU_FPSCR & FP_EX_INEXACT))
+=======
+	fptype = (speinsn >> 5) & 0x7;
+
+	/* No need to round if the result is exact */
+	lo_inexact = __FPU_FPSCR & (SPEFSCR_FG | SPEFSCR_FX);
+	hi_inexact = __FPU_FPSCR & (SPEFSCR_FGH | SPEFSCR_FXH);
+	if (!(lo_inexact || (hi_inexact && fptype == VCT)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	fc = (speinsn >> 21) & 0x1f;
@@ -685,9 +882,74 @@ int speround_handler(struct pt_regs *regs)
 	fgpr.wp[0] = current->thread.evr[fc];
 	fgpr.wp[1] = regs->gpr[fc];
 
+<<<<<<< HEAD
 	pr_debug("round fgpr: %08x  %08x\n", fgpr.wp[0], fgpr.wp[1]);
 
 	switch ((speinsn >> 5) & 0x7) {
+=======
+	fb = (speinsn >> 11) & 0x1f;
+	switch (func) {
+	case EFSCTUIZ:
+	case EFSCTSIZ:
+	case EVFSCTUIZ:
+	case EVFSCTSIZ:
+	case EFDCTUIDZ:
+	case EFDCTSIDZ:
+	case EFDCTUIZ:
+	case EFDCTSIZ:
+		/*
+		 * These instructions always round to zero,
+		 * independent of the rounding mode.
+		 */
+		return 0;
+
+	case EFSCTUI:
+	case EFSCTUF:
+	case EVFSCTUI:
+	case EVFSCTUF:
+	case EFDCTUI:
+	case EFDCTUF:
+		fp_result = 0;
+		s_lo = 0;
+		s_hi = 0;
+		break;
+
+	case EFSCTSI:
+	case EFSCTSF:
+		fp_result = 0;
+		/* Recover the sign of a zero result if possible.  */
+		if (fgpr.wp[1] == 0)
+			s_lo = regs->gpr[fb] & SIGN_BIT_S;
+		break;
+
+	case EVFSCTSI:
+	case EVFSCTSF:
+		fp_result = 0;
+		/* Recover the sign of a zero result if possible.  */
+		if (fgpr.wp[1] == 0)
+			s_lo = regs->gpr[fb] & SIGN_BIT_S;
+		if (fgpr.wp[0] == 0)
+			s_hi = current->thread.evr[fb] & SIGN_BIT_S;
+		break;
+
+	case EFDCTSI:
+	case EFDCTSF:
+		fp_result = 0;
+		s_hi = s_lo;
+		/* Recover the sign of a zero result if possible.  */
+		if (fgpr.wp[1] == 0)
+			s_hi = current->thread.evr[fb] & SIGN_BIT_S;
+		break;
+
+	default:
+		fp_result = 1;
+		break;
+	}
+
+	pr_debug("round fgpr: %08x  %08x\n", fgpr.wp[0], fgpr.wp[1]);
+
+	switch (fptype) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Since SPE instructions on E500 core can handle round to nearest
 	 * and round toward zero with IEEE-754 complied, we just need
 	 * to handle round toward +Inf and round toward -Inf by software.
@@ -696,25 +958,70 @@ int speround_handler(struct pt_regs *regs)
 		if ((FP_ROUNDMODE) == FP_RND_PINF) {
 			if (!s_lo) fgpr.wp[1]++; /* Z > 0, choose Z1 */
 		} else { /* round to -Inf */
+<<<<<<< HEAD
 			if (s_lo) fgpr.wp[1]++; /* Z < 0, choose Z2 */
+=======
+			if (s_lo) {
+				if (fp_result)
+					fgpr.wp[1]++; /* Z < 0, choose Z2 */
+				else
+					fgpr.wp[1]--; /* Z < 0, choose Z2 */
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
 	case DPFP:
 		if (FP_ROUNDMODE == FP_RND_PINF) {
+<<<<<<< HEAD
 			if (!s_hi) fgpr.dp[0]++; /* Z > 0, choose Z1 */
 		} else { /* round to -Inf */
 			if (s_hi) fgpr.dp[0]++; /* Z < 0, choose Z2 */
+=======
+			if (!s_hi) {
+				if (fp_result)
+					fgpr.dp[0]++; /* Z > 0, choose Z1 */
+				else
+					fgpr.wp[1]++; /* Z > 0, choose Z1 */
+			}
+		} else { /* round to -Inf */
+			if (s_hi) {
+				if (fp_result)
+					fgpr.dp[0]++; /* Z < 0, choose Z2 */
+				else
+					fgpr.wp[1]--; /* Z < 0, choose Z2 */
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
 	case VCT:
 		if (FP_ROUNDMODE == FP_RND_PINF) {
+<<<<<<< HEAD
 			if (!s_lo) fgpr.wp[1]++; /* Z_low > 0, choose Z1 */
 			if (!s_hi) fgpr.wp[0]++; /* Z_high word > 0, choose Z1 */
 		} else { /* round to -Inf */
 			if (s_lo) fgpr.wp[1]++; /* Z_low < 0, choose Z2 */
 			if (s_hi) fgpr.wp[0]++; /* Z_high < 0, choose Z2 */
+=======
+			if (lo_inexact && !s_lo)
+				fgpr.wp[1]++; /* Z_low > 0, choose Z1 */
+			if (hi_inexact && !s_hi)
+				fgpr.wp[0]++; /* Z_high word > 0, choose Z1 */
+		} else { /* round to -Inf */
+			if (lo_inexact && s_lo) {
+				if (fp_result)
+					fgpr.wp[1]++; /* Z_low < 0, choose Z2 */
+				else
+					fgpr.wp[1]--; /* Z_low < 0, choose Z2 */
+			}
+			if (hi_inexact && s_hi) {
+				if (fp_result)
+					fgpr.wp[0]++; /* Z_high < 0, choose Z2 */
+				else
+					fgpr.wp[0]--; /* Z_high < 0, choose Z2 */
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
@@ -727,6 +1034,11 @@ int speround_handler(struct pt_regs *regs)
 
 	pr_debug("  to fgpr: %08x  %08x\n", fgpr.wp[0], fgpr.wp[1]);
 
+<<<<<<< HEAD
+=======
+	if (current->thread.fpexc_mode & PR_FP_EXC_SW_ENABLE)
+		return (current->thread.fpexc_mode & PR_FP_EXC_RES) ? 1 : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

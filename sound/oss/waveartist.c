@@ -92,7 +92,11 @@ static unsigned short levels[SOUND_MIXER_NRDEVICES] = {
 	0x0000		/* Monitor		 */
 };
 
+<<<<<<< HEAD
 typedef struct {
+=======
+struct wavnc_info {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct address_info  hw;	/* hardware */
 	char		*chip_name;
 
@@ -119,7 +123,11 @@ typedef struct {
 	unsigned int	line_mute_state	:1;/* set by ioctl or autoselect */
 	unsigned int	use_slider	:1;/* use slider setting for o/p vol */
 #endif
+<<<<<<< HEAD
 } wavnc_info;
+=======
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This is the implementation specific mixer information.
@@ -129,6 +137,7 @@ struct waveartist_mixer_info {
 	unsigned int	recording_devs;	   /* Recordable devies */
 	unsigned int	stereo_devs;	   /* Stereo devices	*/
 
+<<<<<<< HEAD
 	unsigned int	(*select_input)(wavnc_info *, unsigned int,
 					unsigned char *, unsigned char *);
 	int		(*decode_mixer)(wavnc_info *, int,
@@ -137,21 +146,43 @@ struct waveartist_mixer_info {
 };
 
 typedef struct wavnc_port_info {
+=======
+	unsigned int	(*select_input)(struct wavnc_info *, unsigned int,
+					unsigned char *, unsigned char *);
+	int		(*decode_mixer)(struct wavnc_info *, int,
+					unsigned char, unsigned char);
+	int		(*get_mixer)(struct wavnc_info *, int);
+};
+
+struct wavnc_port_info {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int		open_mode;
 	int		speed;
 	int		channels;
 	int		audio_format;
+<<<<<<< HEAD
 } wavnc_port_info;
 
 static int		nr_waveartist_devs;
 static wavnc_info	adev_info[MAX_AUDIO_DEV];
+=======
+};
+
+static int		nr_waveartist_devs;
+static struct wavnc_info	adev_info[MAX_AUDIO_DEV];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEFINE_SPINLOCK(waveartist_lock);
 
 #ifndef CONFIG_ARCH_NETWINDER
 #define machine_is_netwinder() 0
 #else
 static struct timer_list vnc_timer;
+<<<<<<< HEAD
 static void vnc_configure_mixer(wavnc_info *devc, unsigned int input_mask);
+=======
+static void vnc_configure_mixer(struct wavnc_info *devc,
+				unsigned int input_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int vnc_private_ioctl(int dev, unsigned int cmd, int __user *arg);
 static void vnc_slider_tick(unsigned long data);
 #endif
@@ -169,7 +200,11 @@ waveartist_set_ctlr(struct address_info *hw, unsigned char clear, unsigned char 
 /* Toggle IRQ acknowledge line
  */
 static inline void
+<<<<<<< HEAD
 waveartist_iack(wavnc_info *devc)
+=======
+waveartist_iack(struct wavnc_info *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int ctlr_port = devc->hw.io_base + CTLR;
 	int old_ctlr;
@@ -188,7 +223,11 @@ waveartist_sleep(int timeout_ms)
 }
 
 static int
+<<<<<<< HEAD
 waveartist_reset(wavnc_info *devc)
+=======
+waveartist_reset(struct wavnc_info *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct address_info *hw = &devc->hw;
 	unsigned int timeout, res = -1;
@@ -223,7 +262,11 @@ waveartist_reset(wavnc_info *devc)
  * and can send or receive multiple words.
  */
 static int
+<<<<<<< HEAD
 waveartist_cmd(wavnc_info *devc,
+=======
+waveartist_cmd(struct wavnc_info *devc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int nr_cmd, unsigned int *cmd,
 		int nr_resp, unsigned int *resp)
 {
@@ -299,7 +342,11 @@ waveartist_cmd(wavnc_info *devc,
  * Send one command word
  */
 static inline int
+<<<<<<< HEAD
 waveartist_cmd1(wavnc_info *devc, unsigned int cmd)
+=======
+waveartist_cmd1(struct wavnc_info *devc, unsigned int cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return waveartist_cmd(devc, 1, &cmd, 0, NULL);
 }
@@ -308,7 +355,11 @@ waveartist_cmd1(wavnc_info *devc, unsigned int cmd)
  * Send one command, receive one word
  */
 static inline unsigned int
+<<<<<<< HEAD
 waveartist_cmd1_r(wavnc_info *devc, unsigned int cmd)
+=======
+waveartist_cmd1_r(struct wavnc_info *devc, unsigned int cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int ret;
 
@@ -322,7 +373,11 @@ waveartist_cmd1_r(wavnc_info *devc, unsigned int cmd)
  * word (and throw it away)
  */
 static inline int
+<<<<<<< HEAD
 waveartist_cmd2(wavnc_info *devc, unsigned int cmd, unsigned int arg)
+=======
+waveartist_cmd2(struct wavnc_info *devc, unsigned int cmd, unsigned int arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int vals[2];
 
@@ -336,7 +391,11 @@ waveartist_cmd2(wavnc_info *devc, unsigned int cmd, unsigned int arg)
  * Send a triple command
  */
 static inline int
+<<<<<<< HEAD
 waveartist_cmd3(wavnc_info *devc, unsigned int cmd,
+=======
+waveartist_cmd3(struct wavnc_info *devc, unsigned int cmd,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned int arg1, unsigned int arg2)
 {
 	unsigned int vals[3];
@@ -349,7 +408,11 @@ waveartist_cmd3(wavnc_info *devc, unsigned int cmd,
 }
 
 static int
+<<<<<<< HEAD
 waveartist_getrev(wavnc_info *devc, char *rev)
+=======
+waveartist_getrev(struct wavnc_info *devc, char *rev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int temp[2];
 	unsigned int cmd = WACMD_GETREV;
@@ -371,15 +434,25 @@ static void waveartist_trigger(int dev, int state);
 static int
 waveartist_open(int dev, int mode)
 {
+<<<<<<< HEAD
 	wavnc_info	*devc;
 	wavnc_port_info	*portc;
+=======
+	struct wavnc_info	*devc;
+	struct wavnc_port_info	*portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 
 	if (dev < 0 || dev >= num_audiodevs)
 		return -ENXIO;
 
+<<<<<<< HEAD
 	devc  = (wavnc_info *) audio_devs[dev]->devc;
 	portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	devc  = (struct wavnc_info *) audio_devs[dev]->devc;
+	portc = (struct wavnc_port_info *) audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&waveartist_lock, flags);
 	if (portc->open_mode || (devc->open_mode & mode)) {
@@ -404,8 +477,15 @@ waveartist_open(int dev, int mode)
 static void
 waveartist_close(int dev)
 {
+<<<<<<< HEAD
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
 	wavnc_port_info	*portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+	struct wavnc_port_info	*portc = (struct wavnc_port_info *)
+					 audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 
 	spin_lock_irqsave(&waveartist_lock, flags);
@@ -422,8 +502,15 @@ waveartist_close(int dev)
 static void
 waveartist_output_block(int dev, unsigned long buf, int __count, int intrflag)
 {
+<<<<<<< HEAD
 	wavnc_port_info	*portc = (wavnc_port_info *) audio_devs[dev]->portc;
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
+=======
+	struct wavnc_port_info	*portc = (struct wavnc_port_info *)
+					 audio_devs[dev]->portc;
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 	unsigned int	count = __count; 
 
@@ -467,8 +554,15 @@ waveartist_output_block(int dev, unsigned long buf, int __count, int intrflag)
 static void
 waveartist_start_input(int dev, unsigned long buf, int __count, int intrflag)
 {
+<<<<<<< HEAD
 	wavnc_port_info *portc = (wavnc_port_info *) audio_devs[dev]->portc;
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
+=======
+	struct wavnc_port_info *portc = (struct wavnc_port_info *)
+					audio_devs[dev]->portc;
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 	unsigned int	count = __count;
 
@@ -514,7 +608,11 @@ waveartist_ioctl(int dev, unsigned int cmd, void __user * arg)
 }
 
 static unsigned int
+<<<<<<< HEAD
 waveartist_get_speed(wavnc_port_info *portc)
+=======
+waveartist_get_speed(struct wavnc_port_info *portc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int speed;
 
@@ -542,7 +640,11 @@ waveartist_get_speed(wavnc_port_info *portc)
 }
 
 static unsigned int
+<<<<<<< HEAD
 waveartist_get_bits(wavnc_port_info *portc)
+=======
+waveartist_get_bits(struct wavnc_port_info *portc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int bits;
 
@@ -560,8 +662,15 @@ static int
 waveartist_prepare_for_input(int dev, int bsize, int bcount)
 {
 	unsigned long	flags;
+<<<<<<< HEAD
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
 	wavnc_port_info	*portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+	struct wavnc_port_info	*portc = (struct wavnc_port_info *)
+					 audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int	speed, bits;
 
 	if (devc->audio_mode)
@@ -615,8 +724,15 @@ static int
 waveartist_prepare_for_output(int dev, int bsize, int bcount)
 {
 	unsigned long	flags;
+<<<<<<< HEAD
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
 	wavnc_port_info	*portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+	struct wavnc_port_info	*portc = (struct wavnc_port_info *)
+					 audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int	speed, bits;
 
 	/*
@@ -660,8 +776,14 @@ waveartist_prepare_for_output(int dev, int bsize, int bcount)
 static void
 waveartist_halt(int dev)
 {
+<<<<<<< HEAD
 	wavnc_port_info	*portc = (wavnc_port_info *) audio_devs[dev]->portc;
 	wavnc_info	*devc;
+=======
+	struct wavnc_port_info	*portc = (struct wavnc_port_info *)
+					 audio_devs[dev]->portc;
+	struct wavnc_info	*devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (portc->open_mode & OPEN_WRITE)
 		waveartist_halt_output(dev);
@@ -669,14 +791,23 @@ waveartist_halt(int dev)
 	if (portc->open_mode & OPEN_READ)
 		waveartist_halt_input(dev);
 
+<<<<<<< HEAD
 	devc = (wavnc_info *) audio_devs[dev]->devc;
+=======
+	devc = (struct wavnc_info *) audio_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	devc->audio_mode = 0;
 }
 
 static void
 waveartist_halt_input(int dev)
 {
+<<<<<<< HEAD
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
+=======
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 
 	spin_lock_irqsave(&waveartist_lock, flags);
@@ -703,7 +834,12 @@ waveartist_halt_input(int dev)
 static void
 waveartist_halt_output(int dev)
 {
+<<<<<<< HEAD
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
+=======
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 
 	spin_lock_irqsave(&waveartist_lock, flags);
@@ -727,8 +863,15 @@ waveartist_halt_output(int dev)
 static void
 waveartist_trigger(int dev, int state)
 {
+<<<<<<< HEAD
 	wavnc_info	*devc = (wavnc_info *) audio_devs[dev]->devc;
 	wavnc_port_info	*portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	struct wavnc_info	*devc = (struct wavnc_info *)
+					audio_devs[dev]->devc;
+	struct wavnc_port_info	*portc = (struct wavnc_port_info *)
+					 audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 
 	if (debug_flg & DEBUG_TRIGGER) {
@@ -764,7 +907,12 @@ waveartist_trigger(int dev, int state)
 static int
 waveartist_set_speed(int dev, int arg)
 {
+<<<<<<< HEAD
 	wavnc_port_info *portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	struct wavnc_port_info *portc = (struct wavnc_port_info *)
+					audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (arg <= 0)
 		return portc->speed;
@@ -782,7 +930,12 @@ waveartist_set_speed(int dev, int arg)
 static short
 waveartist_set_channels(int dev, short arg)
 {
+<<<<<<< HEAD
 	wavnc_port_info *portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	struct wavnc_port_info *portc = (struct wavnc_port_info *)
+					audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (arg != 1 && arg != 2)
 		return portc->channels;
@@ -794,7 +947,12 @@ waveartist_set_channels(int dev, short arg)
 static unsigned int
 waveartist_set_bits(int dev, unsigned int arg)
 {
+<<<<<<< HEAD
 	wavnc_port_info *portc = (wavnc_port_info *) audio_devs[dev]->portc;
+=======
+	struct wavnc_port_info *portc = (struct wavnc_port_info *)
+					audio_devs[dev]->portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (arg == 0)
 		return portc->audio_format;
@@ -829,7 +987,11 @@ static struct audio_driver waveartist_audio_driver = {
 static irqreturn_t
 waveartist_intr(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	wavnc_info *devc = dev_id;
+=======
+	struct wavnc_info *devc = dev_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int	   irqstatus, status;
 
 	spin_lock(&waveartist_lock);
@@ -912,7 +1074,11 @@ static const struct mix_ent mix_devs[SOUND_MIXER_NRDEVICES] = {
 };
 
 static void
+<<<<<<< HEAD
 waveartist_mixer_update(wavnc_info *devc, int whichDev)
+=======
+waveartist_mixer_update(struct wavnc_info *devc, int whichDev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int lev_left, lev_right;
 
@@ -973,7 +1139,12 @@ waveartist_mixer_update(wavnc_info *devc, int whichDev)
  * relevant *_select_input function has done that for us.
  */
 static void
+<<<<<<< HEAD
 waveartist_set_adc_mux(wavnc_info *devc, char left_dev, char right_dev)
+=======
+waveartist_set_adc_mux(struct wavnc_info *devc, char left_dev,
+		       char right_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int reg_08, reg_09;
 
@@ -996,7 +1167,11 @@ waveartist_set_adc_mux(wavnc_info *devc, char left_dev, char right_dev)
  *  SOUND_MASK_MIC	Mic		Microphone
  */
 static unsigned int
+<<<<<<< HEAD
 waveartist_select_input(wavnc_info *devc, unsigned int recmask,
+=======
+waveartist_select_input(struct wavnc_info *devc, unsigned int recmask,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			unsigned char *dev_l, unsigned char *dev_r)
 {
 	unsigned int recdev = ADC_MUX_NONE;
@@ -1024,7 +1199,12 @@ waveartist_select_input(wavnc_info *devc, unsigned int recmask,
 }
 
 static int
+<<<<<<< HEAD
 waveartist_decode_mixer(wavnc_info *devc, int dev, unsigned char lev_l,
+=======
+waveartist_decode_mixer(struct wavnc_info *devc, int dev,
+			unsigned char lev_l,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			unsigned char lev_r)
 {
 	switch (dev) {
@@ -1050,7 +1230,11 @@ waveartist_decode_mixer(wavnc_info *devc, int dev, unsigned char lev_l,
 	return dev;
 }
 
+<<<<<<< HEAD
 static int waveartist_get_mixer(wavnc_info *devc, int dev)
+=======
+static int waveartist_get_mixer(struct wavnc_info *devc, int dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return devc->levels[dev];
 }
@@ -1068,7 +1252,11 @@ static const struct waveartist_mixer_info waveartist_mixer = {
 };
 
 static void
+<<<<<<< HEAD
 waveartist_set_recmask(wavnc_info *devc, unsigned int recmask)
+=======
+waveartist_set_recmask(struct wavnc_info *devc, unsigned int recmask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned char dev_l, dev_r;
 
@@ -1092,7 +1280,11 @@ waveartist_set_recmask(wavnc_info *devc, unsigned int recmask)
 }
 
 static int
+<<<<<<< HEAD
 waveartist_set_mixer(wavnc_info *devc, int dev, unsigned int level)
+=======
+waveartist_set_mixer(struct wavnc_info *devc, int dev, unsigned int level)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int lev_left  = level & 0x00ff;
 	unsigned int lev_right = (level & 0xff00) >> 8;
@@ -1120,7 +1312,11 @@ waveartist_set_mixer(wavnc_info *devc, int dev, unsigned int level)
 static int
 waveartist_mixer_ioctl(int dev, unsigned int cmd, void __user * arg)
 {
+<<<<<<< HEAD
 	wavnc_info *devc = (wavnc_info *)audio_devs[dev]->devc;
+=======
+	struct wavnc_info *devc = (struct wavnc_info *)audio_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0, val, nr;
 
 	/*
@@ -1204,7 +1400,11 @@ static struct mixer_operations waveartist_mixer_operations =
 };
 
 static void
+<<<<<<< HEAD
 waveartist_mixer_reset(wavnc_info *devc)
+=======
+waveartist_mixer_reset(struct wavnc_info *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 
@@ -1241,9 +1441,15 @@ waveartist_mixer_reset(wavnc_info *devc)
 		waveartist_mixer_update(devc, i);
 }
 
+<<<<<<< HEAD
 static int __init waveartist_init(wavnc_info *devc)
 {
 	wavnc_port_info *portc;
+=======
+static int __init waveartist_init(struct wavnc_info *devc)
+{
+	struct wavnc_port_info *portc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char rev[3], dev_name[64];
 	int my_dev;
 
@@ -1261,7 +1467,11 @@ static int __init waveartist_init(wavnc_info *devc)
 	conf_printf2(dev_name, devc->hw.io_base, devc->hw.irq,
 		     devc->hw.dma, devc->hw.dma2);
 
+<<<<<<< HEAD
 	portc = kzalloc(sizeof(wavnc_port_info), GFP_KERNEL);
+=======
+	portc = kzalloc(sizeof(struct wavnc_port_info), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (portc == NULL)
 		goto nomem;
 
@@ -1330,7 +1540,11 @@ nomem:
 
 static int __init probe_waveartist(struct address_info *hw_config)
 {
+<<<<<<< HEAD
 	wavnc_info *devc = &adev_info[nr_waveartist_devs];
+=======
+	struct wavnc_info *devc = &adev_info[nr_waveartist_devs];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (nr_waveartist_devs >= MAX_AUDIO_DEV) {
 		printk(KERN_WARNING "waveartist: too many audio devices\n");
@@ -1367,7 +1581,11 @@ static int __init probe_waveartist(struct address_info *hw_config)
 static void __init
 attach_waveartist(struct address_info *hw, const struct waveartist_mixer_info *mix)
 {
+<<<<<<< HEAD
 	wavnc_info *devc = &adev_info[nr_waveartist_devs];
+=======
+	struct wavnc_info *devc = &adev_info[nr_waveartist_devs];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * NOTE! If irq < 0, there is another driver which has allocated the
@@ -1393,11 +1611,17 @@ attach_waveartist(struct address_info *hw, const struct waveartist_mixer_info *m
 	else {
 #ifdef CONFIG_ARCH_NETWINDER
 		if (machine_is_netwinder()) {
+<<<<<<< HEAD
 			init_timer(&vnc_timer);
 			vnc_timer.function = vnc_slider_tick;
 			vnc_timer.expires  = jiffies;
 			vnc_timer.data     = nr_waveartist_devs;
 			add_timer(&vnc_timer);
+=======
+			setup_timer(&vnc_timer, vnc_slider_tick,
+				    nr_waveartist_devs);
+			mod_timer(&vnc_timer, jiffies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			vnc_configure_mixer(devc, 0);
 
@@ -1410,7 +1634,11 @@ attach_waveartist(struct address_info *hw, const struct waveartist_mixer_info *m
 
 static void __exit unload_waveartist(struct address_info *hw)
 {
+<<<<<<< HEAD
 	wavnc_info *devc = NULL;
+=======
+	struct wavnc_info *devc = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	for (i = 0; i < nr_waveartist_devs; i++)
@@ -1478,7 +1706,11 @@ static void __exit unload_waveartist(struct address_info *hw)
 #define VNC_DISABLE_AUTOSWITCH	0x80
 
 static inline void
+<<<<<<< HEAD
 vnc_mute_spkr(wavnc_info *devc)
+=======
+vnc_mute_spkr(struct wavnc_info *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 
@@ -1488,7 +1720,11 @@ vnc_mute_spkr(wavnc_info *devc)
 }
 
 static void
+<<<<<<< HEAD
 vnc_mute_lout(wavnc_info *devc)
+=======
+vnc_mute_lout(struct wavnc_info *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int left, right;
 
@@ -1507,7 +1743,11 @@ vnc_mute_lout(wavnc_info *devc)
 }
 
 static int
+<<<<<<< HEAD
 vnc_volume_slider(wavnc_info *devc)
+=======
+vnc_volume_slider(struct wavnc_info *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static signed int old_slider_volume;
 	unsigned long flags;
@@ -1567,7 +1807,11 @@ vnc_volume_slider(wavnc_info *devc)
  *  SOUND_MASK_MIC	Right Mic	Builtin microphone
  */
 static unsigned int
+<<<<<<< HEAD
 netwinder_select_input(wavnc_info *devc, unsigned int recmask,
+=======
+netwinder_select_input(struct wavnc_info *devc, unsigned int recmask,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       unsigned char *dev_l, unsigned char *dev_r)
 {
 	unsigned int recdev_l = ADC_MUX_NONE, recdev_r = ADC_MUX_NONE;
@@ -1604,7 +1848,11 @@ netwinder_select_input(wavnc_info *devc, unsigned int recmask,
 }
 
 static int
+<<<<<<< HEAD
 netwinder_decode_mixer(wavnc_info *devc, int dev, unsigned char lev_l,
+=======
+netwinder_decode_mixer(struct wavnc_info *devc, int dev, unsigned char lev_l,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       unsigned char lev_r)
 {
 	switch (dev) {
@@ -1643,7 +1891,11 @@ netwinder_decode_mixer(wavnc_info *devc, int dev, unsigned char lev_l,
 	return dev;
 }
 
+<<<<<<< HEAD
 static int netwinder_get_mixer(wavnc_info *devc, int dev)
+=======
+static int netwinder_get_mixer(struct wavnc_info *devc, int dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int levels;
 
@@ -1703,7 +1955,11 @@ static const struct waveartist_mixer_info netwinder_mixer = {
 };
 
 static void
+<<<<<<< HEAD
 vnc_configure_mixer(wavnc_info *devc, unsigned int recmask)
+=======
+vnc_configure_mixer(struct wavnc_info *devc, unsigned int recmask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!devc->no_autoselect) {
 		if (devc->handset_detect) {
@@ -1729,7 +1985,11 @@ vnc_configure_mixer(wavnc_info *devc, unsigned int recmask)
 }
 
 static int
+<<<<<<< HEAD
 vnc_slider(wavnc_info *devc)
+=======
+vnc_slider(struct wavnc_info *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	signed int slider_volume;
 	unsigned int temp, old_hs, old_td;
@@ -1795,7 +2055,11 @@ vnc_slider_tick(unsigned long data)
 static int
 vnc_private_ioctl(int dev, unsigned int cmd, int __user * arg)
 {
+<<<<<<< HEAD
 	wavnc_info *devc = (wavnc_info *)audio_devs[dev]->devc;
+=======
+	struct wavnc_info *devc = (struct wavnc_info *)audio_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int val;
 
 	switch (cmd) {

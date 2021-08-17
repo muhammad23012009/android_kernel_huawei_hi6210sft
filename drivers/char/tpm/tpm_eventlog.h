@@ -6,6 +6,15 @@
 #define MAX_TEXT_EVENT		1000	/* Max event string length */
 #define ACPI_TCPA_SIG		"TCPA"	/* 0x41504354 /'TCPA' */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC64
+#define do_endian_conversion(x) be32_to_cpu(x)
+#else
+#define do_endian_conversion(x) x
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum bios_platform_class {
 	BIOS_CLIENT = 0x00,
 	BIOS_SERVER = 0x01,
@@ -71,10 +80,17 @@ int read_log(struct tpm_bios_log *log);
 
 #if defined(CONFIG_TCG_IBMVTPM) || defined(CONFIG_TCG_IBMVTPM_MODULE) || \
 	defined(CONFIG_ACPI)
+<<<<<<< HEAD
 extern struct dentry **tpm_bios_log_setup(char *);
 extern void tpm_bios_log_teardown(struct dentry **);
 #else
 static inline struct dentry **tpm_bios_log_setup(char *name)
+=======
+extern struct dentry **tpm_bios_log_setup(const char *);
+extern void tpm_bios_log_teardown(struct dentry **);
+#else
+static inline struct dentry **tpm_bios_log_setup(const char *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return NULL;
 }

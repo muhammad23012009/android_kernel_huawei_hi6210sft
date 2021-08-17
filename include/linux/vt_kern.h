@@ -45,7 +45,11 @@ void poke_blanked_console(void);
 int con_font_op(struct vc_data *vc, struct console_font_op *op);
 int con_set_cmap(unsigned char __user *cmap);
 int con_get_cmap(unsigned char __user *cmap);
+<<<<<<< HEAD
 void scrollback(struct vc_data *vc, int lines);
+=======
+void scrollback(struct vc_data *vc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void scrollfront(struct vc_data *vc, int lines);
 void clear_buffer_attributes(struct vc_data *vc);
 void update_region(struct vc_data *vc, unsigned long start, int count);
@@ -59,14 +63,21 @@ int tioclinux(struct tty_struct *tty, unsigned long arg);
 #ifdef CONFIG_CONSOLE_TRANSLATIONS
 /* consolemap.c */
 
+<<<<<<< HEAD
 struct unimapinit;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct unipair;
 
 int con_set_trans_old(unsigned char __user * table);
 int con_get_trans_old(unsigned char __user * table);
 int con_set_trans_new(unsigned short __user * table);
 int con_get_trans_new(unsigned short __user * table);
+<<<<<<< HEAD
 int con_clear_unimap(struct vc_data *vc, struct unimapinit *ui);
+=======
+int con_clear_unimap(struct vc_data *vc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list);
 int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct unipair __user *list);
 int con_set_default_unimap(struct vc_data *vc);
@@ -92,7 +103,11 @@ static inline int con_get_trans_new(unsigned short __user *table)
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 static inline int con_clear_unimap(struct vc_data *vc, struct unimapinit *ui)
+=======
+static inline int con_clear_unimap(struct vc_data *vc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return 0;
 }
@@ -133,8 +148,11 @@ void change_console(struct vc_data *new_vc);
 void reset_vc(struct vc_data *vc);
 extern int do_unbind_con_driver(const struct consw *csw, int first, int last,
 			     int deflt);
+<<<<<<< HEAD
 extern int unbind_con_driver(const struct consw *csw, int first, int last,
 			     int deflt);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int vty_init(const struct file_operations *console_fops);
 
 static inline bool vt_force_oops_output(struct vc_data *vc)
@@ -144,7 +162,11 @@ static inline bool vt_force_oops_output(struct vc_data *vc)
 	return false;
 }
 
+<<<<<<< HEAD
 extern char vt_dont_switch;
+=======
+extern bool vt_dont_switch;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int default_utf8;
 extern int global_cursor_default;
 

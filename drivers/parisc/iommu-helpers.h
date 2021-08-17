@@ -30,9 +30,15 @@ iommu_fill_pdir(struct ioc *ioc, struct scatterlist *startsg, int nents,
 		unsigned long vaddr;
 		long size;
 
+<<<<<<< HEAD
 		DBG_RUN_SG(" %d : %08lx/%05x %08lx/%05x\n", nents,
 			   (unsigned long)sg_dma_address(startsg), cnt,
 			   sg_virt_addr(startsg), startsg->length
+=======
+		DBG_RUN_SG(" %d : %08lx/%05x %p/%05x\n", nents,
+			   (unsigned long)sg_dma_address(startsg), cnt,
+			   sg_virt(startsg), startsg->length
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		);
 
 
@@ -66,7 +72,11 @@ iommu_fill_pdir(struct ioc *ioc, struct scatterlist *startsg, int nents,
 		
 		BUG_ON(pdirp == NULL);
 		
+<<<<<<< HEAD
 		vaddr = sg_virt_addr(startsg);
+=======
+		vaddr = (unsigned long)sg_virt(startsg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sg_dma_len(dma_sg) += startsg->length;
 		size = startsg->length + dma_offset;
 		dma_offset = 0;
@@ -117,7 +127,11 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 		*/
 		contig_sg = startsg;
 		dma_len = startsg->length;
+<<<<<<< HEAD
 		dma_offset = sg_virt_addr(startsg) & ~IOVP_MASK;
+=======
+		dma_offset = startsg->offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* PARANOID: clear entries */
 		sg_dma_address(startsg) = 0;
@@ -128,6 +142,7 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 		** it's always looking one "ahead".
 		*/
 		while(--nents > 0) {
+<<<<<<< HEAD
 			unsigned long prevstartsg_end, startsg_end;
 
 			prevstartsg_end = sg_virt_addr(startsg) +
@@ -136,6 +151,15 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 			startsg++;
 			startsg_end = sg_virt_addr(startsg) + 
 				startsg->length;
+=======
+			unsigned long prev_end, sg_start;
+
+			prev_end = (unsigned long)sg_virt(startsg) +
+							startsg->length;
+
+			startsg++;
+			sg_start = (unsigned long)sg_virt(startsg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			/* PARANOID: clear entries */
 			sg_dma_address(startsg) = 0;
@@ -151,10 +175,20 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 				break;
 
 			/*
+<<<<<<< HEAD
 			** Next see if we can append the next chunk (i.e.
 			** it must end on one page and begin on another
 			*/
 			if (unlikely(((prevstartsg_end | sg_virt_addr(startsg)) & ~PAGE_MASK) != 0))
+=======
+			* Next see if we can append the next chunk (i.e.
+			* it must end on one page and begin on another, or
+			* it must start on the same address as the previous
+			* entry ended.
+			*/
+			if (unlikely((prev_end != sg_start) ||
+				((prev_end | sg_start) & ~PAGE_MASK)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			
 			dma_len += startsg->length;

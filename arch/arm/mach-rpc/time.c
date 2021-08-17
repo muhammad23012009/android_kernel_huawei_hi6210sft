@@ -24,6 +24,12 @@
 
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
+=======
+#define RPC_CLOCK_FREQ 2000000
+#define RPC_LATCH DIV_ROUND_CLOSEST(RPC_CLOCK_FREQ, HZ)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u32 ioc_timer_gettimeoffset(void)
 {
 	unsigned int count1, count2, status;
@@ -46,23 +52,40 @@ static u32 ioc_timer_gettimeoffset(void)
 		 * and count2.
 		 */
 		if (status & (1 << 5))
+<<<<<<< HEAD
 			offset -= LATCH;
+=======
+			offset -= RPC_LATCH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (count2 > count1) {
 		/*
 		 * We have just had another interrupt between reading
 		 * count1 and count2.
 		 */
+<<<<<<< HEAD
 		offset -= LATCH;
 	}
 
 	offset = (LATCH - offset) * (tick_nsec / 1000);
 	return ((offset + LATCH/2) / LATCH) * 1000;
+=======
+		offset -= RPC_LATCH;
+	}
+
+	offset = (RPC_LATCH - offset) * (tick_nsec / 1000);
+	return DIV_ROUND_CLOSEST(offset, RPC_LATCH) * 1000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init ioctime_init(void)
 {
+<<<<<<< HEAD
 	ioc_writeb(LATCH & 255, IOC_T0LTCHL);
 	ioc_writeb(LATCH >> 8, IOC_T0LTCHH);
+=======
+	ioc_writeb(RPC_LATCH & 255, IOC_T0LTCHL);
+	ioc_writeb(RPC_LATCH >> 8, IOC_T0LTCHH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ioc_writeb(0, IOC_T0GO);
 }
 
@@ -75,7 +98,10 @@ ioc_timer_interrupt(int irq, void *dev_id)
 
 static struct irqaction ioc_timer_irq = {
 	.name		= "timer",
+<<<<<<< HEAD
 	.flags		= IRQF_DISABLED,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.handler	= ioc_timer_interrupt
 };
 

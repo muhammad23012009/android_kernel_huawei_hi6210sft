@@ -1,6 +1,13 @@
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM gpio
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_TRACING_EVENTS_GPIO
+#define NOTRACE
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if !defined(_TRACE_GPIO_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_GPIO_H
 

@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -2882,7 +2891,11 @@ bfa_ioim_good_comp_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 	iotag = be16_to_cpu(rsp->io_tag);
 
 	ioim = BFA_IOIM_FROM_TAG(fcpim, iotag);
+<<<<<<< HEAD
 	WARN_ON(BFA_IOIM_TAG_2_ID(ioim->iotag) != iotag);
+=======
+	WARN_ON(ioim->iotag != iotag);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bfa_ioim_cb_profile_comp(fcpim, ioim);
 

@@ -3,6 +3,11 @@
  *
  * Copyright (C) 2007, 2008, 2009, 2010 Cavium Networks
  *
+<<<<<<< HEAD
+=======
+ * Converted to use WATCHDOG_CORE by Aaro Koskinen <aaro.koskinen@iki.fi>.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Some parts derived from wdt.c
  *
  *	(c) Copyright 1996-1997 Alan Cox <alan@lxorguk.ukuu.org.uk>,
@@ -103,6 +108,7 @@ MODULE_PARM_DESC(nowayout,
 	"Watchdog cannot be stopped once started (default="
 				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
+<<<<<<< HEAD
 static unsigned long octeon_wdt_is_open;
 static char expect_close;
 
@@ -110,6 +116,12 @@ static u32 __initdata nmi_stage1_insns[64];
 /* We need one branch and therefore one relocation per target label. */
 static struct uasm_label __initdata labels[5];
 static struct uasm_reloc __initdata relocs[5];
+=======
+static u32 nmi_stage1_insns[64] __initdata;
+/* We need one branch and therefore one relocation per target label. */
+static struct uasm_label labels[5] __initdata;
+static struct uasm_reloc relocs[5] __initdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum lable_id {
 	label_enter_bootloader = 1
@@ -145,13 +157,20 @@ static void __init octeon_wdt_build_stage1(void)
 
 	uasm_i_mfc0(&p, K0, C0_STATUS);
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	uasm_il_bbit0(&p, &r, K0, ilog2(ST0_NMI), label_enter_bootloader);
+=======
+	if (octeon_bootloader_entry_addr)
+		uasm_il_bbit0(&p, &r, K0, ilog2(ST0_NMI),
+			      label_enter_bootloader);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	/* Force 64-bit addressing enabled */
 	uasm_i_ori(&p, K0, K0, ST0_UX | ST0_SX | ST0_KX);
 	uasm_i_mtc0(&p, K0, C0_STATUS);
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	uasm_i_mfc0(&p, K0, C0_EBASE);
 	/* Coreid number in K0 */
 	uasm_i_andi(&p, K0, K0, 0xf);
@@ -174,6 +193,32 @@ static void __init octeon_wdt_build_stage1(void)
 	 */
 	uasm_il_bbit0(&p, &r, K0, 1, label_enter_bootloader);
 	uasm_i_nop(&p);
+=======
+	if (octeon_bootloader_entry_addr) {
+		uasm_i_mfc0(&p, K0, C0_EBASE);
+		/* Coreid number in K0 */
+		uasm_i_andi(&p, K0, K0, 0xf);
+		/* 8 * coreid in bits 16-31 */
+		uasm_i_dsll_safe(&p, K0, K0, 3 + 16);
+		uasm_i_ori(&p, K0, K0, 0x8001);
+		uasm_i_dsll_safe(&p, K0, K0, 16);
+		uasm_i_ori(&p, K0, K0, 0x0700);
+		uasm_i_drotr_safe(&p, K0, K0, 32);
+		/*
+		 * Should result in: 0x8001,0700,0000,8*coreid which is
+		 * CVMX_CIU_WDOGX(coreid) - 0x0500
+		 *
+		 * Now ld K0, CVMX_CIU_WDOGX(coreid)
+		 */
+		uasm_i_ld(&p, K0, 0x500, K0);
+		/*
+		 * If bit one set handle the NMI as a watchdog event.
+		 * otherwise transfer control to bootloader.
+		 */
+		uasm_il_bbit0(&p, &r, K0, 1, label_enter_bootloader);
+		uasm_i_nop(&p);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* Clear Dcache so cvmseg works right. */
@@ -194,11 +239,21 @@ static void __init octeon_wdt_build_stage1(void)
 	uasm_i_dmfc0(&p, K0, C0_DESAVE);
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	uasm_build_label(&l, p, label_enter_bootloader);
 	/* Jump to the bootloader and restore K0 */
 	UASM_i_LA(&p, K0, (long)octeon_bootloader_entry_addr);
 	uasm_i_jr(&p, K0);
 	uasm_i_dmfc0(&p, K0, C0_DESAVE);
+=======
+	if (octeon_bootloader_entry_addr) {
+		uasm_build_label(&l, p, label_enter_bootloader);
+		/* Jump to the bootloader and restore K0 */
+		UASM_i_LA(&p, K0, (long)octeon_bootloader_entry_addr);
+		uasm_i_jr(&p, K0);
+		uasm_i_dmfc0(&p, K0, C0_DESAVE);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	uasm_resolve_relocs(relocs, labels);
 
@@ -212,7 +267,12 @@ static void __init octeon_wdt_build_stage1(void)
 	pr_debug("\t.set pop\n");
 
 	if (len > 32)
+<<<<<<< HEAD
 		panic("NMI stage 1 handler exceeds 32 instructions, was %d\n", len);
+=======
+		panic("NMI stage 1 handler exceeds 32 instructions, was %d\n",
+		      len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int cpu2core(int cpu)
@@ -288,6 +348,10 @@ static void octeon_wdt_write_hex(u64 value, int digits)
 {
 	int d;
 	int v;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (d = 0; d < digits; d++) {
 		v = (value >> ((digits - d - 1) * 4)) & 0xf;
 		if (v >= 10)
@@ -297,7 +361,11 @@ static void octeon_wdt_write_hex(u64 value, int digits)
 	}
 }
 
+<<<<<<< HEAD
 const char *reg_name[] = {
+=======
+static const char reg_name[][3] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"$0", "at", "v0", "v1", "a0", "a1", "a2", "a3",
 	"a4", "a5", "a6", "a7", "t0", "t1", "t2", "t3",
 	"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7",
@@ -424,7 +492,11 @@ static int octeon_wdt_cpu_callback(struct notifier_block *nfb,
 {
 	unsigned int cpu = (unsigned long)hcpu;
 
+<<<<<<< HEAD
 	switch (action) {
+=======
+	switch (action & ~CPU_TASKS_FROZEN) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CPU_DOWN_PREPARE:
 		octeon_wdt_disable_interrupt(cpu);
 		break;
@@ -438,7 +510,11 @@ static int octeon_wdt_cpu_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static void octeon_wdt_ping(void)
+=======
+static int octeon_wdt_ping(struct watchdog_device __always_unused *wdog)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpu;
 	int coreid;
@@ -451,10 +527,18 @@ static void octeon_wdt_ping(void)
 		    !cpumask_test_cpu(cpu, &irq_enabled_cpus)) {
 			/* We have to enable the irq */
 			int irq = OCTEON_IRQ_WDOG0 + coreid;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			enable_irq(irq);
 			cpumask_set_cpu(cpu, &irq_enabled_cpus);
 		}
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void octeon_wdt_calc_parameters(int t)
@@ -483,7 +567,12 @@ static void octeon_wdt_calc_parameters(int t)
 	timeout_cnt = ((octeon_get_io_clock_rate() >> 8) * timeout_sec) >> 8;
 }
 
+<<<<<<< HEAD
 static int octeon_wdt_set_heartbeat(int t)
+=======
+static int octeon_wdt_set_timeout(struct watchdog_device *wdog,
+				  unsigned int t)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpu;
 	int coreid;
@@ -503,6 +592,7 @@ static int octeon_wdt_set_heartbeat(int t)
 		cvmx_write_csr(CVMX_CIU_WDOGX(coreid), ciu_wdog.u64);
 		cvmx_write_csr(CVMX_CIU_PP_POKEX(coreid), 1);
 	}
+<<<<<<< HEAD
 	octeon_wdt_ping(); /* Get the irqs back on. */
 	return 0;
 }
@@ -655,6 +745,47 @@ static struct notifier_block octeon_wdt_cpu_notifier = {
 	.notifier_call = octeon_wdt_cpu_callback,
 };
 
+=======
+	octeon_wdt_ping(wdog); /* Get the irqs back on. */
+	return 0;
+}
+
+static int octeon_wdt_start(struct watchdog_device *wdog)
+{
+	octeon_wdt_ping(wdog);
+	do_coundown = 1;
+	return 0;
+}
+
+static int octeon_wdt_stop(struct watchdog_device *wdog)
+{
+	do_coundown = 0;
+	octeon_wdt_ping(wdog);
+	return 0;
+}
+
+static struct notifier_block octeon_wdt_cpu_notifier = {
+	.notifier_call = octeon_wdt_cpu_callback,
+};
+
+static const struct watchdog_info octeon_wdt_info = {
+	.options = WDIOF_SETTIMEOUT | WDIOF_MAGICCLOSE | WDIOF_KEEPALIVEPING,
+	.identity = "OCTEON",
+};
+
+static const struct watchdog_ops octeon_wdt_ops = {
+	.owner		= THIS_MODULE,
+	.start		= octeon_wdt_start,
+	.stop		= octeon_wdt_stop,
+	.ping		= octeon_wdt_ping,
+	.set_timeout	= octeon_wdt_set_timeout,
+};
+
+static struct watchdog_device octeon_wdt = {
+	.info	= &octeon_wdt_info,
+	.ops	= &octeon_wdt_ops,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * Module/ driver initialization.
@@ -679,7 +810,12 @@ static int __init octeon_wdt_init(void)
 	max_timeout_sec = 6;
 	do {
 		max_timeout_sec--;
+<<<<<<< HEAD
 		timeout_cnt = ((octeon_get_io_clock_rate() >> 8) * max_timeout_sec) >> 8;
+=======
+		timeout_cnt = ((octeon_get_io_clock_rate() >> 8) *
+			      max_timeout_sec) >> 8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (timeout_cnt > 65535);
 
 	BUG_ON(timeout_cnt == 0);
@@ -688,11 +824,23 @@ static int __init octeon_wdt_init(void)
 
 	pr_info("Initial granularity %d Sec\n", timeout_sec);
 
+<<<<<<< HEAD
 	ret = misc_register(&octeon_wdt_miscdev);
 	if (ret) {
 		pr_err("cannot register miscdev on minor=%d (err=%d)\n",
 		       WATCHDOG_MINOR, ret);
 		goto out;
+=======
+	octeon_wdt.timeout	= timeout_sec;
+	octeon_wdt.max_timeout	= UINT_MAX;
+
+	watchdog_set_nowayout(&octeon_wdt, nowayout);
+
+	ret = watchdog_register_device(&octeon_wdt);
+	if (ret) {
+		pr_err("watchdog_register_device() failed: %d\n", ret);
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Build the NMI handler ... */
@@ -708,12 +856,23 @@ static int __init octeon_wdt_init(void)
 
 	cpumask_clear(&irq_enabled_cpus);
 
+<<<<<<< HEAD
 	for_each_online_cpu(cpu)
 		octeon_wdt_setup_interrupt(cpu);
 
 	register_hotcpu_notifier(&octeon_wdt_cpu_notifier);
 out:
 	return ret;
+=======
+	cpu_notifier_register_begin();
+	for_each_online_cpu(cpu)
+		octeon_wdt_setup_interrupt(cpu);
+
+	__register_hotcpu_notifier(&octeon_wdt_cpu_notifier);
+	cpu_notifier_register_done();
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -723,9 +882,16 @@ static void __exit octeon_wdt_cleanup(void)
 {
 	int cpu;
 
+<<<<<<< HEAD
 	misc_deregister(&octeon_wdt_miscdev);
 
 	unregister_hotcpu_notifier(&octeon_wdt_cpu_notifier);
+=======
+	watchdog_unregister_device(&octeon_wdt);
+
+	cpu_notifier_register_begin();
+	__unregister_hotcpu_notifier(&octeon_wdt_cpu_notifier);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_each_online_cpu(cpu) {
 		int core = cpu2core(cpu);
@@ -734,6 +900,12 @@ static void __exit octeon_wdt_cleanup(void)
 		/* Free the interrupt handler */
 		free_irq(OCTEON_IRQ_WDOG0 + core, octeon_wdt_poke_irq);
 	}
+<<<<<<< HEAD
+=======
+
+	cpu_notifier_register_done();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Disable the boot-bus memory, the code it points to is soon
 	 * to go missing.

@@ -26,7 +26,11 @@
 static int hfsplus_ioctl_bless(struct file *file, int __user *user_flags)
 {
 	struct dentry *dentry = file->f_path.dentry;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(inode->i_sb);
 	struct hfsplus_vh *vh = sbi->s_vhdr;
 	struct hfsplus_vh *bvh = sbi->s_backup_vhdr;
@@ -76,7 +80,11 @@ static int hfsplus_ioctl_setflags(struct file *file, int __user *user_flags)
 {
 	struct inode *inode = file_inode(file);
 	struct hfsplus_inode_info *hip = HFSPLUS_I(inode);
+<<<<<<< HEAD
 	unsigned int flags;
+=======
+	unsigned int flags, new_fl = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err = 0;
 
 	err = mnt_want_write_file(file);
@@ -93,7 +101,11 @@ static int hfsplus_ioctl_setflags(struct file *file, int __user *user_flags)
 		goto out_drop_write;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((flags & (FS_IMMUTABLE_FL|FS_APPEND_FL)) ||
 	    inode->i_flags & (S_IMMUTABLE|S_APPEND)) {
@@ -110,6 +122,7 @@ static int hfsplus_ioctl_setflags(struct file *file, int __user *user_flags)
 	}
 
 	if (flags & FS_IMMUTABLE_FL)
+<<<<<<< HEAD
 		inode->i_flags |= S_IMMUTABLE;
 	else
 		inode->i_flags &= ~S_IMMUTABLE;
@@ -118,17 +131,33 @@ static int hfsplus_ioctl_setflags(struct file *file, int __user *user_flags)
 		inode->i_flags |= S_APPEND;
 	else
 		inode->i_flags &= ~S_APPEND;
+=======
+		new_fl |= S_IMMUTABLE;
+
+	if (flags & FS_APPEND_FL)
+		new_fl |= S_APPEND;
+
+	inode_set_flags(inode, new_fl, S_IMMUTABLE | S_APPEND);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (flags & FS_NODUMP_FL)
 		hip->userflags |= HFSPLUS_FLG_NODUMP;
 	else
 		hip->userflags &= ~HFSPLUS_FLG_NODUMP;
 
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
 	mark_inode_dirty(inode);
 
 out_unlock_inode:
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode->i_ctime = current_time(inode);
+	mark_inode_dirty(inode);
+
+out_unlock_inode:
+	inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_drop_write:
 	mnt_drop_write_file(file);
 out:

@@ -117,27 +117,64 @@
 # endif
 #endif
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_CPU_V7M)
+#  define MULTI_CACHE 1
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if !defined(_CACHE) && !defined(MULTI_CACHE)
 #error Unknown cache maintenance model
 #endif
 
+<<<<<<< HEAD
 #ifndef MULTI_CACHE
 #define __cpuc_flush_icache_all		__glue(_CACHE,_flush_icache_all)
 #define __cpuc_flush_kern_all		__glue(_CACHE,_flush_kern_cache_all)
 #define __cpuc_flush_kern_all_pm		__glue(_CACHE,_flush_kern_cache_all_pm)
 #define __cpuc_flush_kern_louis		__glue(_CACHE,_flush_kern_cache_louis)
 #define __cpuc_flush_kern_louis_pm		__glue(_CACHE,_flush_kern_cache_louis_pm)
+=======
+#ifndef __ASSEMBLER__
+static inline void nop_flush_icache_all(void) { }
+static inline void nop_flush_kern_cache_all(void) { }
+static inline void nop_flush_kern_cache_louis(void) { }
+static inline void nop_flush_user_cache_all(void) { }
+static inline void nop_flush_user_cache_range(unsigned long a,
+		unsigned long b, unsigned int c) { }
+
+static inline void nop_coherent_kern_range(unsigned long a, unsigned long b) { }
+static inline int nop_coherent_user_range(unsigned long a,
+		unsigned long b) { return 0; }
+static inline void nop_flush_kern_dcache_area(void *a, size_t s) { }
+
+static inline void nop_dma_flush_range(const void *a, const void *b) { }
+
+static inline void nop_dma_map_area(const void *s, size_t l, int f) { }
+static inline void nop_dma_unmap_area(const void *s, size_t l, int f) { }
+#endif
+
+#ifndef MULTI_CACHE
+#define __cpuc_flush_icache_all		__glue(_CACHE,_flush_icache_all)
+#define __cpuc_flush_kern_all		__glue(_CACHE,_flush_kern_cache_all)
+#define __cpuc_flush_kern_louis		__glue(_CACHE,_flush_kern_cache_louis)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __cpuc_flush_user_all		__glue(_CACHE,_flush_user_cache_all)
 #define __cpuc_flush_user_range		__glue(_CACHE,_flush_user_cache_range)
 #define __cpuc_coherent_kern_range	__glue(_CACHE,_coherent_kern_range)
 #define __cpuc_coherent_user_range	__glue(_CACHE,_coherent_user_range)
 #define __cpuc_flush_dcache_area	__glue(_CACHE,_flush_kern_dcache_area)
 
+<<<<<<< HEAD
 #define dmac_map_area			__glue(_CACHE,_dma_map_area)
 #define dmac_unmap_area			__glue(_CACHE,_dma_unmap_area)
 #define dmac_flush_range		__glue(_CACHE,_dma_flush_range)
 #define dmac_inv_range			__glue(_CACHE,_dma_inv_range)
 #define dmac_clean_range		__glue(_CACHE,_dma_clean_range)
+=======
+#define dmac_flush_range		__glue(_CACHE,_dma_flush_range)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif

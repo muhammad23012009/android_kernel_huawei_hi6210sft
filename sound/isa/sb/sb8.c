@@ -102,8 +102,13 @@ static int snd_sb8_probe(struct device *pdev, unsigned int dev)
 	struct snd_opl3 *opl3;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_sb8), &card);
+=======
+	err = snd_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+			   sizeof(struct snd_sb8), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	acard = card->private_data;
@@ -157,7 +162,11 @@ static int snd_sb8_probe(struct device *pdev, unsigned int dev)
 		goto _err;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_sb8dsp_pcm(chip, 0, NULL)) < 0)
+=======
+	if ((err = snd_sb8dsp_pcm(chip, 0)) < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto _err;
 
 	if ((err = snd_sbmixer_new(chip)) < 0)
@@ -182,7 +191,11 @@ static int snd_sb8_probe(struct device *pdev, unsigned int dev)
 			goto _err;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_sb8dsp_midi(chip, 0, NULL)) < 0)
+=======
+	if ((err = snd_sb8dsp_midi(chip, 0)) < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto _err;
 
 	strcpy(card->driver, chip->hardware == SB_HW_PRO ? "SB Pro" : "SB8");
@@ -192,8 +205,11 @@ static int snd_sb8_probe(struct device *pdev, unsigned int dev)
 		chip->port,
 		irq[dev], dma8[dev]);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, pdev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_card_register(card)) < 0)
 		goto _err;
 
@@ -208,7 +224,10 @@ static int snd_sb8_probe(struct device *pdev, unsigned int dev)
 static int snd_sb8_remove(struct device *pdev, unsigned int dev)
 {
 	snd_card_free(dev_get_drvdata(pdev));
+<<<<<<< HEAD
 	dev_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -254,6 +273,7 @@ static struct isa_driver snd_sb8_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_sb8_init(void)
 {
 	return isa_register_driver(&snd_sb8_driver, SNDRV_CARDS);
@@ -266,3 +286,6 @@ static void __exit alsa_card_sb8_exit(void)
 
 module_init(alsa_card_sb8_init)
 module_exit(alsa_card_sb8_exit)
+=======
+module_isa_driver(snd_sb8_driver, SNDRV_CARDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

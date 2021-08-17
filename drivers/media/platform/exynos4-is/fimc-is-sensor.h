@@ -13,6 +13,7 @@
 #ifndef FIMC_IS_SENSOR_H_
 #define FIMC_IS_SENSOR_H_
 
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -31,6 +32,15 @@
 
 #define SENSOR_NUM_SUPPLIES		2
 
+=======
+#include <linux/of.h>
+#include <linux/types.h>
+
+#define S5K6A3_OPEN_TIMEOUT		2000 /* ms */
+#define S5K6A3_SENSOR_WIDTH		1392
+#define S5K6A3_SENSOR_HEIGHT		1392
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum fimc_is_sensor_id {
 	FIMC_IS_SENSOR_ID_S5K3H2 = 1,
 	FIMC_IS_SENSOR_ID_S5K6A3,
@@ -45,13 +55,19 @@ enum fimc_is_sensor_id {
 
 struct sensor_drv_data {
 	enum fimc_is_sensor_id id;
+<<<<<<< HEAD
 	const char * const subdev_name;
 	unsigned int width;
 	unsigned int height;
+=======
+	/* sensor open timeout in ms */
+	unsigned short open_timeout;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
  * struct fimc_is_sensor - fimc-is sensor data structure
+<<<<<<< HEAD
  * @dev: pointer to this I2C client device structure
  * @subdev: the image sensor's v4l2 subdev
  * @pad: subdev media source pad
@@ -85,5 +101,19 @@ struct fimc_is_sensor *sd_to_fimc_is_sensor(struct v4l2_subdev *sd)
 
 int fimc_is_register_sensor_driver(void);
 void fimc_is_unregister_sensor_driver(void);
+=======
+ * @drvdata: a pointer to the sensor's parameters data structure
+ * @i2c_bus: ISP I2C bus index (0...1)
+ * @test_pattern: true to enable video test pattern
+ */
+struct fimc_is_sensor {
+	const struct sensor_drv_data *drvdata;
+	unsigned int i2c_bus;
+	u8 test_pattern;
+};
+
+const struct sensor_drv_data *fimc_is_sensor_get_drvdata(
+				struct device_node *node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* FIMC_IS_SENSOR_H_ */

@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * drivers/gpu/ion/ion_chunk_heap.c
+=======
+ * drivers/staging/android/ion/ion_chunk_heap.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 2012 Google, Inc.
  *
@@ -34,9 +38,15 @@ struct ion_chunk_heap {
 };
 
 static int ion_chunk_heap_allocate(struct ion_heap *heap,
+<<<<<<< HEAD
 				      struct ion_buffer *buffer,
 				      unsigned long size, unsigned long align,
 				      unsigned long flags)
+=======
+				   struct ion_buffer *buffer,
+				   unsigned long size, unsigned long align,
+				   unsigned long flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ion_chunk_heap *chunk_heap =
 		container_of(heap, struct ion_chunk_heap, heap);
@@ -55,7 +65,11 @@ static int ion_chunk_heap_allocate(struct ion_heap *heap,
 	if (allocated_size > chunk_heap->size - chunk_heap->allocated)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	table = kzalloc(sizeof(struct sg_table), GFP_KERNEL);
+=======
+	table = kmalloc(sizeof(*table), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!table)
 		return -ENOMEM;
 	ret = sg_alloc_table(table, num_chunks, GFP_KERNEL);
@@ -71,11 +85,19 @@ static int ion_chunk_heap_allocate(struct ion_heap *heap,
 		if (!paddr)
 			goto err;
 		sg_set_page(sg, pfn_to_page(PFN_DOWN(paddr)),
+<<<<<<< HEAD
 				chunk_heap->chunk_size, 0);
 		sg = sg_next(sg);
 	}
 
 	buffer->priv_virt = table;
+=======
+			    chunk_heap->chunk_size, 0);
+		sg = sg_next(sg);
+	}
+
+	buffer->sg_table = table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chunk_heap->allocated += allocated_size;
 	return 0;
 err:
@@ -95,7 +117,11 @@ static void ion_chunk_heap_free(struct ion_buffer *buffer)
 	struct ion_heap *heap = buffer->heap;
 	struct ion_chunk_heap *chunk_heap =
 		container_of(heap, struct ion_chunk_heap, heap);
+<<<<<<< HEAD
 	struct sg_table *table = buffer->priv_virt;
+=======
+	struct sg_table *table = buffer->sg_table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct scatterlist *sg;
 	int i;
 	unsigned long allocated_size;
@@ -106,7 +132,11 @@ static void ion_chunk_heap_free(struct ion_buffer *buffer)
 
 	if (ion_buffer_cached(buffer))
 		dma_sync_sg_for_device(NULL, table->sgl, table->nents,
+<<<<<<< HEAD
 								DMA_BIDIRECTIONAL);
+=======
+				       DMA_BIDIRECTIONAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_each_sg(table->sgl, sg, table->nents, i) {
 		gen_pool_free(chunk_heap->pool, page_to_phys(sg_page(sg)),
@@ -117,6 +147,7 @@ static void ion_chunk_heap_free(struct ion_buffer *buffer)
 	kfree(table);
 }
 
+<<<<<<< HEAD
 static struct sg_table *ion_chunk_heap_map_dma(struct ion_heap *heap,
 					       struct ion_buffer *buffer)
 {
@@ -134,6 +165,11 @@ static struct ion_heap_ops chunk_heap_ops = {
 	.free = ion_chunk_heap_free,
 	.map_dma = ion_chunk_heap_map_dma,
 	.unmap_dma = ion_chunk_heap_unmap_dma,
+=======
+static struct ion_heap_ops chunk_heap_ops = {
+	.allocate = ion_chunk_heap_allocate,
+	.free = ion_chunk_heap_free,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map_user = ion_heap_map_user,
 	.map_kernel = ion_heap_map_kernel,
 	.unmap_kernel = ion_heap_unmap_kernel,
@@ -155,7 +191,11 @@ struct ion_heap *ion_chunk_heap_create(struct ion_platform_heap *heap_data)
 	if (ret)
 		return ERR_PTR(ret);
 
+<<<<<<< HEAD
 	chunk_heap = kzalloc(sizeof(struct ion_chunk_heap), GFP_KERNEL);
+=======
+	chunk_heap = kzalloc(sizeof(*chunk_heap), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!chunk_heap)
 		return ERR_PTR(-ENOMEM);
 
@@ -174,8 +214,13 @@ struct ion_heap *ion_chunk_heap_create(struct ion_platform_heap *heap_data)
 	chunk_heap->heap.ops = &chunk_heap_ops;
 	chunk_heap->heap.type = ION_HEAP_TYPE_CHUNK;
 	chunk_heap->heap.flags = ION_HEAP_FLAG_DEFER_FREE;
+<<<<<<< HEAD
 	pr_info("%s: base %lu size %zu align %ld\n", __func__, chunk_heap->base,
 		heap_data->size, heap_data->align);
+=======
+	pr_debug("%s: base %lu size %zu align %ld\n", __func__,
+		 chunk_heap->base, heap_data->size, heap_data->align);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return &chunk_heap->heap;
 

@@ -129,11 +129,19 @@ static int rtrack_s_mute_volume(struct radio_isa_card *isa, bool mute, int vol)
 	} else if (curvol < vol) {
 		outb(0x98, isa->io);	/* volume up + sigstr + on	*/
 		for (; curvol < vol; curvol++)
+<<<<<<< HEAD
 			udelay(3000);
 	} else if (curvol > vol) {
 		outb(0x58, isa->io);	/* volume down + sigstr + on	*/
 		for (; curvol > vol; curvol--)
 			udelay(3000);
+=======
+			mdelay(3);
+	} else if (curvol > vol) {
+		outb(0x58, isa->io);	/* volume down + sigstr + on	*/
+		for (; curvol > vol; curvol--)
+			mdelay(3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	outb(0xd8, isa->io);		/* volume steady + sigstr + on	*/
 	rt->curvol = vol;

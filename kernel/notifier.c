@@ -12,6 +12,7 @@
  *	and the like.
  */
 BLOCKING_NOTIFIER_HEAD(reboot_notifier_list);
+<<<<<<< HEAD
 /* DTS2013031107868 qidechun 2013-03-11 begin */
 #ifdef CONFIG_SRECORDER
 #ifdef CONFIG_POWERCOLLAPSE
@@ -21,6 +22,8 @@ RAW_NOTIFIER_HEAD(emergency_reboot_notifier_list);
 #endif
 #endif
 /* DTS2013031107868 qidechun 2013-03-11 end */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Notifier chain core routines.  The exported routines below
@@ -80,9 +83,15 @@ static int notifier_chain_unregister(struct notifier_block **nl,
  *	@returns:	notifier_call_chain returns the value returned by the
  *			last notifier function called.
  */
+<<<<<<< HEAD
 static int __kprobes notifier_call_chain(struct notifier_block **nl,
 					unsigned long val, void *v,
 					int nr_to_call,	int *nr_calls)
+=======
+static int notifier_call_chain(struct notifier_block **nl,
+			       unsigned long val, void *v,
+			       int nr_to_call, int *nr_calls)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret = NOTIFY_DONE;
 	struct notifier_block *nb, *next_nb;
@@ -111,6 +120,10 @@ static int __kprobes notifier_call_chain(struct notifier_block **nl,
 	}
 	return ret;
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(notifier_call_chain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Atomic notifier chain routines.  Registration and unregistration
@@ -181,9 +194,15 @@ EXPORT_SYMBOL_GPL(atomic_notifier_chain_unregister);
  *	Otherwise the return value is the return value
  *	of the last notifier function called.
  */
+<<<<<<< HEAD
 int __kprobes __atomic_notifier_call_chain(struct atomic_notifier_head *nh,
 					unsigned long val, void *v,
 					int nr_to_call, int *nr_calls)
+=======
+int __atomic_notifier_call_chain(struct atomic_notifier_head *nh,
+				 unsigned long val, void *v,
+				 int nr_to_call, int *nr_calls)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 
@@ -193,13 +212,24 @@ int __kprobes __atomic_notifier_call_chain(struct atomic_notifier_head *nh,
 	return ret;
 }
 EXPORT_SYMBOL_GPL(__atomic_notifier_call_chain);
+<<<<<<< HEAD
 
 int __kprobes atomic_notifier_call_chain(struct atomic_notifier_head *nh,
 		unsigned long val, void *v)
+=======
+NOKPROBE_SYMBOL(__atomic_notifier_call_chain);
+
+int atomic_notifier_call_chain(struct atomic_notifier_head *nh,
+			       unsigned long val, void *v)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return __atomic_notifier_call_chain(nh, val, v, -1, NULL);
 }
 EXPORT_SYMBOL_GPL(atomic_notifier_call_chain);
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(atomic_notifier_call_chain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Blocking notifier chain routines.  All access to the chain is
@@ -318,7 +348,11 @@ int __blocking_notifier_call_chain(struct blocking_notifier_head *nh,
 	 * racy then it does not matter what the result of the test
 	 * is, we re-check the list after having taken the lock anyway:
 	 */
+<<<<<<< HEAD
 	if (rcu_dereference_raw(nh->head)) {
+=======
+	if (rcu_access_pointer(nh->head)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		down_read(&nh->rwsem);
 		ret = notifier_call_chain(&nh->head, val, v, nr_to_call,
 					nr_calls);
@@ -408,6 +442,10 @@ int raw_notifier_call_chain(struct raw_notifier_head *nh,
 }
 EXPORT_SYMBOL_GPL(raw_notifier_call_chain);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SRCU
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	SRCU notifier chain routines.    Registration and unregistration
  *	use a mutex, and call_chain is synchronized by SRCU (no locks).
@@ -534,9 +572,17 @@ void srcu_init_notifier_head(struct srcu_notifier_head *nh)
 }
 EXPORT_SYMBOL_GPL(srcu_init_notifier_head);
 
+<<<<<<< HEAD
 static ATOMIC_NOTIFIER_HEAD(die_chain);
 
 int notrace __kprobes notify_die(enum die_val val, const char *str,
+=======
+#endif /* CONFIG_SRCU */
+
+static ATOMIC_NOTIFIER_HEAD(die_chain);
+
+int notrace notify_die(enum die_val val, const char *str,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       struct pt_regs *regs, long err, int trap, int sig)
 {
 	struct die_args args = {
@@ -547,12 +593,24 @@ int notrace __kprobes notify_die(enum die_val val, const char *str,
 		.signr	= sig,
 
 	};
+<<<<<<< HEAD
 	return atomic_notifier_call_chain(&die_chain, val, &args);
 }
 
 int register_die_notifier(struct notifier_block *nb)
 {
 	vmalloc_sync_all();
+=======
+	RCU_LOCKDEP_WARN(!rcu_is_watching(),
+			   "notify_die called but RCU thinks we're quiescent");
+	return atomic_notifier_call_chain(&die_chain, val, &args);
+}
+NOKPROBE_SYMBOL(notify_die);
+
+int register_die_notifier(struct notifier_block *nb)
+{
+	vmalloc_sync_mappings();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return atomic_notifier_chain_register(&die_chain, nb);
 }
 EXPORT_SYMBOL_GPL(register_die_notifier);

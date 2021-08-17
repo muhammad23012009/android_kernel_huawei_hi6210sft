@@ -25,8 +25,14 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <asm/byteorder.h>
 #include <linux/types.h>
+=======
+#include <linux/types.h>
+#include <asm/byteorder.h>
+#include <asm/unaligned.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define TGR192_DIGEST_SIZE 24
 #define TGR160_DIGEST_SIZE 20
@@ -468,10 +474,16 @@ static void tgr192_transform(struct tgr192_ctx *tctx, const u8 * data)
 	u64 a, b, c, aa, bb, cc;
 	u64 x[8];
 	int i;
+<<<<<<< HEAD
 	const __le64 *ptr = (const __le64 *)data;
 
 	for (i = 0; i < 8; i++)
 		x[i] = le64_to_cpu(ptr[i]);
+=======
+
+	for (i = 0; i < 8; i++)
+		x[i] = get_unaligned_le64(data + i * sizeof(__le64));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* save */
 	a = aa = tctx->a;
@@ -612,7 +624,11 @@ static int tgr160_final(struct shash_desc *desc, u8 * out)
 
 	tgr192_final(desc, D);
 	memcpy(out, D, TGR160_DIGEST_SIZE);
+<<<<<<< HEAD
 	memset(D, 0, TGR192_DIGEST_SIZE);
+=======
+	memzero_explicit(D, TGR192_DIGEST_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -623,7 +639,11 @@ static int tgr128_final(struct shash_desc *desc, u8 * out)
 
 	tgr192_final(desc, D);
 	memcpy(out, D, TGR128_DIGEST_SIZE);
+<<<<<<< HEAD
 	memset(D, 0, TGR192_DIGEST_SIZE);
+=======
+	memzero_explicit(D, TGR192_DIGEST_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

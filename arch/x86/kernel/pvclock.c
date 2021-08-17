@@ -43,6 +43,17 @@ unsigned long pvclock_tsc_khz(struct pvclock_vcpu_time_info *src)
 	return pv_tsc_khz;
 }
 
+<<<<<<< HEAD
+=======
+void pvclock_touch_watchdogs(void)
+{
+	touch_softlockup_watchdog_sync();
+	clocksource_touch_watchdog();
+	rcu_cpu_stall_reset();
+	reset_hung_task_detector();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static atomic64_t last_value = ATOMIC64_INIT(0);
 
 void pvclock_resume(void)
@@ -53,12 +64,21 @@ void pvclock_resume(void)
 u8 pvclock_read_flags(struct pvclock_vcpu_time_info *src)
 {
 	unsigned version;
+<<<<<<< HEAD
 	cycle_t ret;
 	u8 flags;
 
 	do {
 		version = __pvclock_read_cycles(src, &ret, &flags);
 	} while ((src->version & 1) || version != src->version);
+=======
+	u8 flags;
+
+	do {
+		version = pvclock_read_begin(src);
+		flags = src->flags;
+	} while (pvclock_read_retry(src, version));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return flags & valid_flags;
 }
@@ -71,8 +91,20 @@ cycle_t pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
 	u8 flags;
 
 	do {
+<<<<<<< HEAD
 		version = __pvclock_read_cycles(src, &ret, &flags);
 	} while ((src->version & 1) || version != src->version);
+=======
+		version = pvclock_read_begin(src);
+		ret = __pvclock_read_cycles(src, rdtsc_ordered());
+		flags = src->flags;
+	} while (pvclock_read_retry(src, version));
+
+	if (unlikely((flags & PVCLOCK_GUEST_STOPPED) != 0)) {
+		src->flags &= ~PVCLOCK_GUEST_STOPPED;
+		pvclock_touch_watchdogs();
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((valid_flags & PVCLOCK_TSC_STABLE_BIT) &&
 		(flags & PVCLOCK_TSC_STABLE_BIT))
@@ -127,6 +159,7 @@ void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
 
 	set_normalized_timespec(ts, now.tv_sec, now.tv_nsec);
 }
+<<<<<<< HEAD
 
 static struct pvclock_vsyscall_time_info *pvclock_vdso_info;
 
@@ -195,3 +228,5 @@ int __init pvclock_init_vsyscall(struct pvclock_vsyscall_time_info *i,
 	return 0;
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

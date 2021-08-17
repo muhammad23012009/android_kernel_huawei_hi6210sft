@@ -58,7 +58,11 @@
  * About SOFTNET:
  * Most of the changes were pretty obvious and basically done by HE already.
  *
+<<<<<<< HEAD
  * One problem of the isdn net device code is that is uses struct net_device
+=======
+ * One problem of the isdn net device code is that it uses struct net_device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * for masters and slaves. However, only master interface are registered to
  * the network layer, and therefore, it only makes sense to call netif_*
  * functions on them.
@@ -885,7 +889,11 @@ isdn_net_log_skb(struct sk_buff *skb, isdn_net_local *lp)
 
 	addinfo[0] = '\0';
 	/* This check stolen from 2.1.72 dev_queue_xmit_nit() */
+<<<<<<< HEAD
 	if (p < skb->data || skb->network_header >= skb->tail) {
+=======
+	if (p < skb->data || skb_network_header(skb) >= skb_tail_pointer(skb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* fall back to old isdn_net_log_packet method() */
 		char *buf = skb->data;
 
@@ -1153,7 +1161,11 @@ static void isdn_net_tx_timeout(struct net_device *ndev)
 		 * ever called   --KG
 		 */
 	}
+<<<<<<< HEAD
 	ndev->trans_start = jiffies;
+=======
+	netif_trans_update(ndev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_wake_queue(ndev);
 }
 
@@ -1291,7 +1303,11 @@ isdn_net_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			}
 		} else {
 			/* Device is connected to an ISDN channel */
+<<<<<<< HEAD
 			ndev->trans_start = jiffies;
+=======
+			netif_trans_update(ndev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!lp->dialstate) {
 				/* ISDN connection is established, try sending */
 				int ret;
@@ -1371,7 +1387,11 @@ isdn_net_type_trans(struct sk_buff *skb, struct net_device *dev)
 	eth = eth_hdr(skb);
 
 	if (*eth->h_dest & 1) {
+<<<<<<< HEAD
 		if (memcmp(eth->h_dest, dev->broadcast, ETH_ALEN) == 0)
+=======
+		if (ether_addr_equal(eth->h_dest, dev->broadcast))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			skb->pkt_type = PACKET_BROADCAST;
 		else
 			skb->pkt_type = PACKET_MULTICAST;
@@ -1382,7 +1402,11 @@ isdn_net_type_trans(struct sk_buff *skb, struct net_device *dev)
 	 */
 
 	else if (dev->flags & (IFF_PROMISC /*| IFF_ALLMULTI*/)) {
+<<<<<<< HEAD
 		if (memcmp(eth->h_dest, dev->dev_addr, ETH_ALEN))
+=======
+		if (!ether_addr_equal(eth->h_dest, dev->dev_addr))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			skb->pkt_type = PACKET_OTHERHOST;
 	}
 	if (ntohs(eth->h_proto) >= ETH_P_802_3_MIN)
@@ -1951,6 +1975,7 @@ static int isdn_net_header(struct sk_buff *skb, struct net_device *dev,
 	return len;
 }
 
+<<<<<<< HEAD
 /* We don't need to send arp, because we have point-to-point connections. */
 static int
 isdn_net_rebuild_header(struct sk_buff *skb)
@@ -1983,6 +2008,8 @@ isdn_net_rebuild_header(struct sk_buff *skb)
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int isdn_header_cache(const struct neighbour *neigh, struct hh_cache *hh,
 			     __be16 type)
 {
@@ -2005,7 +2032,10 @@ static void isdn_header_cache_update(struct hh_cache *hh,
 
 static const struct header_ops isdn_header_ops = {
 	.create = isdn_net_header,
+<<<<<<< HEAD
 	.rebuild = isdn_net_rebuild_header,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cache = isdn_header_cache,
 	.cache_update = isdn_header_cache_update,
 };
@@ -2588,7 +2618,12 @@ isdn_net_new(char *name, struct net_device *master)
 		printk(KERN_WARNING "isdn_net: Could not allocate net-device\n");
 		return NULL;
 	}
+<<<<<<< HEAD
 	netdev->dev = alloc_netdev(sizeof(isdn_net_local), name, _isdn_setup);
+=======
+	netdev->dev = alloc_netdev(sizeof(isdn_net_local), name,
+				   NET_NAME_UNKNOWN, _isdn_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!netdev->dev) {
 		printk(KERN_WARNING "isdn_net: Could not allocate network device\n");
 		kfree(netdev);
@@ -2643,10 +2678,16 @@ isdn_net_newslave(char *parm)
 	char newname[10];
 
 	if (p) {
+<<<<<<< HEAD
 		/* Slave-Name MUST not be empty */
 		if (!strlen(p + 1))
 			return NULL;
 		strcpy(newname, p + 1);
+=======
+		/* Slave-Name MUST not be empty or overflow 'newname' */
+		if (strscpy(newname, p + 1, sizeof(newname)) <= 0)
+			return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*p = 0;
 		/* Master must already exist */
 		if (!(n = isdn_net_findif(parm)))
@@ -2917,8 +2958,13 @@ isdn_net_getcfg(isdn_net_ioctl_cfg *cfg)
 			cfg->callback = 2;
 		cfg->cbhup = (lp->flags & ISDN_NET_CBHUP) ? 1 : 0;
 		cfg->dialmode = lp->flags & ISDN_NET_DIALMODE_MASK;
+<<<<<<< HEAD
 		cfg->chargehup = (lp->hupflags & 4) ? 1 : 0;
 		cfg->ihup = (lp->hupflags & 8) ? 1 : 0;
+=======
+		cfg->chargehup = (lp->hupflags & ISDN_CHARGEHUP) ? 1 : 0;
+		cfg->ihup = (lp->hupflags & ISDN_INHUP) ? 1 : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cfg->cbdelay = lp->cbdelay;
 		cfg->dialmax = lp->dialmax;
 		cfg->triggercps = lp->triggercps;

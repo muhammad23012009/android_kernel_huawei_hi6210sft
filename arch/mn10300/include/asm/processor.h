@@ -18,7 +18,10 @@
 #include <asm/page.h>
 #include <asm/ptrace.h>
 #include <asm/cpu-regs.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/current.h>
 
 /* Forward declaration, a strange C thing */
@@ -68,7 +71,13 @@ extern struct mn10300_cpuinfo cpu_data[];
 extern void identify_cpu(struct mn10300_cpuinfo *);
 extern void print_cpu_info(struct mn10300_cpuinfo *);
 extern void dodgy_tsc(void);
+<<<<<<< HEAD
 #define cpu_relax() barrier()
+=======
+
+#define cpu_relax() barrier()
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * User space process size: 1.75GB (default).

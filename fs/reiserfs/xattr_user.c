@@ -4,6 +4,7 @@
 #include <linux/pagemap.h>
 #include <linux/xattr.h>
 #include "xattr.h"
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 static int
@@ -42,6 +43,35 @@ static size_t user_list(struct dentry *dentry, char *list, size_t list_size,
 		list[name_len] = '\0';
 	}
 	return len;
+=======
+#include <linux/uaccess.h>
+
+static int
+user_get(const struct xattr_handler *handler, struct dentry *unused,
+	 struct inode *inode, const char *name, void *buffer, size_t size)
+{
+	if (!reiserfs_xattrs_user(inode->i_sb))
+		return -EOPNOTSUPP;
+	return reiserfs_xattr_get(inode, xattr_full_name(handler, name),
+				  buffer, size);
+}
+
+static int
+user_set(const struct xattr_handler *handler, struct dentry *unused,
+	 struct inode *inode, const char *name, const void *buffer,
+	 size_t size, int flags)
+{
+	if (!reiserfs_xattrs_user(inode->i_sb))
+		return -EOPNOTSUPP;
+	return reiserfs_xattr_set(inode,
+				  xattr_full_name(handler, name),
+				  buffer, size, flags);
+}
+
+static bool user_list(struct dentry *dentry)
+{
+	return reiserfs_xattrs_user(dentry->d_sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct xattr_handler reiserfs_xattr_user_handler = {

@@ -73,8 +73,13 @@ static int qnx6_get_block(struct inode *inode, sector_t iblock,
 {
 	unsigned phys;
 
+<<<<<<< HEAD
 	QNX6DEBUG((KERN_INFO "qnx6: qnx6_get_block inode=[%ld] iblock=[%ld]\n",
 			inode->i_ino, (unsigned long)iblock));
+=======
+	pr_debug("qnx6_get_block inode=[%ld] iblock=[%ld]\n",
+		 inode->i_ino, (unsigned long)iblock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	phys = qnx6_block_map(inode, iblock);
 	if (phys) {
@@ -87,7 +92,11 @@ static int qnx6_get_block(struct inode *inode, sector_t iblock,
 static int qnx6_check_blockptr(__fs32 ptr)
 {
 	if (ptr == ~(__fs32)0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: hit unused blockpointer.\n");
+=======
+		pr_err("hit unused blockpointer.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	return 1;
@@ -127,8 +136,12 @@ static unsigned qnx6_block_map(struct inode *inode, unsigned no)
 	levelptr = no >> bitdelta;
 
 	if (levelptr > QNX6_NO_DIRECT_POINTERS - 1) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6:Requested file block number (%u) too big.",
 				no);
+=======
+		pr_err("Requested file block number (%u) too big.", no);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -137,8 +150,12 @@ static unsigned qnx6_block_map(struct inode *inode, unsigned no)
 	for (i = 0; i < depth; i++) {
 		bh = sb_bread(s, block);
 		if (!bh) {
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6:Error reading block (%u)\n",
 					block);
+=======
+			pr_err("Error reading block (%u)\n", block);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 		bitdelta -= ptrbits;
@@ -184,7 +201,11 @@ static const char *qnx6_checkroot(struct super_block *s)
 	static char match_root[2][3] = {".\0\0", "..\0"};
 	int i, error = 0;
 	struct qnx6_dir_entry *dir_entry;
+<<<<<<< HEAD
 	struct inode *root = s->s_root->d_inode;
+=======
+	struct inode *root = d_inode(s->s_root);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct address_space *mapping = root->i_mapping;
 	struct page *page = read_mapping_page(mapping, 0, NULL);
 	if (IS_ERR(page))
@@ -207,6 +228,7 @@ void qnx6_superblock_debug(struct qnx6_super_block *sb, struct super_block *s)
 {
 	struct qnx6_sb_info *sbi = QNX6_SB(s);
 
+<<<<<<< HEAD
 	QNX6DEBUG((KERN_INFO "magic: %08x\n",
 				fs32_to_cpu(sbi, sb->sb_magic)));
 	QNX6DEBUG((KERN_INFO "checksum: %08x\n",
@@ -227,6 +249,18 @@ void qnx6_superblock_debug(struct qnx6_super_block *sb, struct super_block *s)
 				fs32_to_cpu(sbi, sb->sb_free_blocks)));
 	QNX6DEBUG((KERN_INFO "inode_levels: %02x\n",
 				sb->Inode.levels));
+=======
+	pr_debug("magic: %08x\n", fs32_to_cpu(sbi, sb->sb_magic));
+	pr_debug("checksum: %08x\n", fs32_to_cpu(sbi, sb->sb_checksum));
+	pr_debug("serial: %llx\n", fs64_to_cpu(sbi, sb->sb_serial));
+	pr_debug("flags: %08x\n", fs32_to_cpu(sbi, sb->sb_flags));
+	pr_debug("blocksize: %08x\n", fs32_to_cpu(sbi, sb->sb_blocksize));
+	pr_debug("num_inodes: %08x\n", fs32_to_cpu(sbi, sb->sb_num_inodes));
+	pr_debug("free_inodes: %08x\n", fs32_to_cpu(sbi, sb->sb_free_inodes));
+	pr_debug("num_blocks: %08x\n", fs32_to_cpu(sbi, sb->sb_num_blocks));
+	pr_debug("free_blocks: %08x\n", fs32_to_cpu(sbi, sb->sb_free_blocks));
+	pr_debug("inode_levels: %02x\n", sb->Inode.levels);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -277,7 +311,11 @@ static struct buffer_head *qnx6_check_first_superblock(struct super_block *s,
 	   start with the first superblock */
 	bh = sb_bread(s, offset);
 	if (!bh) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to read the first superblock\n");
+=======
+		pr_err("unable to read the first superblock\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 	sb = (struct qnx6_super_block *)bh->b_data;
@@ -285,13 +323,18 @@ static struct buffer_head *qnx6_check_first_superblock(struct super_block *s,
 		sbi->s_bytesex = BYTESEX_BE;
 		if (fs32_to_cpu(sbi, sb->sb_magic) == QNX6_SUPER_MAGIC) {
 			/* we got a big endian fs */
+<<<<<<< HEAD
 			QNX6DEBUG((KERN_INFO "qnx6: fs got different"
 					" endianness.\n"));
+=======
+			pr_debug("fs got different endianness.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return bh;
 		} else
 			sbi->s_bytesex = BYTESEX_LE;
 		if (!silent) {
 			if (offset == 0) {
+<<<<<<< HEAD
 				printk(KERN_ERR "qnx6: wrong signature (magic)"
 					" in superblock #1.\n");
 			} else {
@@ -299,6 +342,12 @@ static struct buffer_head *qnx6_check_first_superblock(struct super_block *s,
 					" at position (0x%lx) - will try"
 					" alternative position (0x0000).\n",
 						offset * s->s_blocksize);
+=======
+				pr_err("wrong signature (magic) in superblock #1.\n");
+			} else {
+				pr_info("wrong signature (magic) at position (0x%lx) - will try alternative position (0x0000).\n",
+					offset * s->s_blocksize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		brelse(bh);
@@ -329,13 +378,21 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 
 	/* Superblock always is 512 Byte long */
 	if (!sb_set_blocksize(s, QNX6_SUPERBLOCK_SIZE)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to set blocksize\n");
+=======
+		pr_err("unable to set blocksize\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto outnobh;
 	}
 
 	/* parse the mount-options */
 	if (!qnx6_parse_options((char *) data, s)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: invalid mount options.\n");
+=======
+		pr_err("invalid mount options.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto outnobh;
 	}
 	if (test_opt(s, MMI_FS)) {
@@ -355,7 +412,11 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 		/* try again without bootblock offset */
 		bh1 = qnx6_check_first_superblock(s, 0, silent);
 		if (!bh1) {
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6: unable to read the first superblock\n");
+=======
+			pr_err("unable to read the first superblock\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto outnobh;
 		}
 		/* seems that no bootblock at partition start */
@@ -370,13 +431,21 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 	/* checksum check - start at byte 8 and end at byte 512 */
 	if (fs32_to_cpu(sbi, sb1->sb_checksum) !=
 			crc32_be(0, (char *)(bh1->b_data + 8), 504)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: superblock #1 checksum error\n");
+=======
+		pr_err("superblock #1 checksum error\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
 	/* set new blocksize */
 	if (!sb_set_blocksize(s, fs32_to_cpu(sbi, sb1->sb_blocksize))) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to set blocksize\n");
+=======
+		pr_err("unable to set blocksize\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	/* blocksize invalidates bh - pull it back in */
@@ -398,21 +467,33 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 	/* next the second superblock */
 	bh2 = sb_bread(s, offset);
 	if (!bh2) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to read the second superblock\n");
+=======
+		pr_err("unable to read the second superblock\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	sb2 = (struct qnx6_super_block *)bh2->b_data;
 	if (fs32_to_cpu(sbi, sb2->sb_magic) != QNX6_SUPER_MAGIC) {
 		if (!silent)
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6: wrong signature (magic)"
 					" in superblock #2.\n");
+=======
+			pr_err("wrong signature (magic) in superblock #2.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
 	/* checksum check - start at byte 8 and end at byte 512 */
 	if (fs32_to_cpu(sbi, sb2->sb_checksum) !=
 				crc32_be(0, (char *)(bh2->b_data + 8), 504)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: superblock #2 checksum error\n");
+=======
+		pr_err("superblock #2 checksum error\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -422,17 +503,26 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 		sbi->sb_buf = bh1;
 		sbi->sb = (struct qnx6_super_block *)bh1->b_data;
 		brelse(bh2);
+<<<<<<< HEAD
 		printk(KERN_INFO "qnx6: superblock #1 active\n");
+=======
+		pr_info("superblock #1 active\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* superblock #2 active */
 		sbi->sb_buf = bh2;
 		sbi->sb = (struct qnx6_super_block *)bh2->b_data;
 		brelse(bh1);
+<<<<<<< HEAD
 		printk(KERN_INFO "qnx6: superblock #2 active\n");
+=======
+		pr_info("superblock #2 active\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 mmi_success:
 	/* sanity check - limit maximum indirect pointer levels */
 	if (sb1->Inode.levels > QNX6_PTR_MAX_LEVELS) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: too many inode levels (max %i, sb %i)\n",
 			QNX6_PTR_MAX_LEVELS, sb1->Inode.levels);
 		goto out;
@@ -441,6 +531,15 @@ mmi_success:
 		printk(KERN_ERR "qnx6: too many longfilename levels"
 				" (max %i, sb %i)\n",
 			QNX6_PTR_MAX_LEVELS, sb1->Longfile.levels);
+=======
+		pr_err("too many inode levels (max %i, sb %i)\n",
+		       QNX6_PTR_MAX_LEVELS, sb1->Inode.levels);
+		goto out;
+	}
+	if (sb1->Longfile.levels > QNX6_PTR_MAX_LEVELS) {
+		pr_err("too many longfilename levels (max %i, sb %i)\n",
+		       QNX6_PTR_MAX_LEVELS, sb1->Longfile.levels);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	s->s_op = &qnx6_sops;
@@ -460,7 +559,11 @@ mmi_success:
 	/* prefetch root inode */
 	root = qnx6_iget(s, QNX6_ROOT_INO);
 	if (IS_ERR(root)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: get inode failed\n");
+=======
+		pr_err("get inode failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = PTR_ERR(root);
 		goto out2;
 	}
@@ -474,7 +577,11 @@ mmi_success:
 	errmsg = qnx6_checkroot(s);
 	if (errmsg != NULL) {
 		if (!silent)
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6: %s\n", errmsg);
+=======
+			pr_err("%s\n", errmsg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out3;
 	}
 	return 0;
@@ -555,12 +662,17 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 	inode->i_mode = 0;
 
 	if (ino == 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: bad inode number on dev %s: %u is "
 				"out of range\n",
+=======
+		pr_err("bad inode number on dev %s: %u is out of range\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       sb->s_id, ino);
 		iget_failed(inode);
 		return ERR_PTR(-EIO);
 	}
+<<<<<<< HEAD
 	n = (ino - 1) >> (PAGE_CACHE_SHIFT - QNX6_INODE_SIZE_BITS);
 	offs = (ino - 1) & (~PAGE_CACHE_MASK >> QNX6_INODE_SIZE_BITS);
 	mapping = sbi->inodes->i_mapping;
@@ -568,6 +680,15 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 	if (IS_ERR(page)) {
 		printk(KERN_ERR "qnx6: major problem: unable to read inode from "
 		       "dev %s\n", sb->s_id);
+=======
+	n = (ino - 1) >> (PAGE_SHIFT - QNX6_INODE_SIZE_BITS);
+	offs = (ino - 1) & (~PAGE_MASK >> QNX6_INODE_SIZE_BITS);
+	mapping = sbi->inodes->i_mapping;
+	page = read_mapping_page(mapping, n, NULL);
+	if (IS_ERR(page)) {
+		pr_err("major problem: unable to read inode from dev %s\n",
+		       sb->s_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iget_failed(inode);
 		return ERR_CAST(page);
 	}
@@ -601,6 +722,10 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 		inode->i_mapping->a_ops = &qnx6_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode->i_mapping->a_ops = &qnx6_aops;
 	} else
 		init_special_inode(inode, inode->i_mode, 0);
@@ -643,7 +768,11 @@ static int init_inodecache(void)
 	qnx6_inode_cachep = kmem_cache_create("qnx6_inode_cache",
 					     sizeof(struct qnx6_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     init_once);
 	if (!qnx6_inode_cachep)
 		return -ENOMEM;
@@ -689,7 +818,11 @@ static int __init init_qnx6_fs(void)
 		return err;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "QNX6 filesystem 1.0.0 registered.\n");
+=======
+	pr_info("QNX6 filesystem 1.0.0 registered.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

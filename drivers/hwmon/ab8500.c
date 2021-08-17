@@ -6,7 +6,11 @@
  *
  * When the AB8500 thermal warning temperature is reached (threshold cannot
  * be changed by SW), an interrupt is set, and if no further action is taken
+<<<<<<< HEAD
  * within a certain time frame, pm_power off will be called.
+=======
+ * within a certain time frame, kernel_power_off will be called.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * When AB8500 thermal shutdown temperature is reached a hardware shutdown of
  * the AB8500 will occur.
@@ -21,6 +25,10 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/power/ab8500.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/sysfs.h>
 #include "abx500.h"
@@ -106,7 +114,11 @@ static void ab8500_thermal_power_off(struct work_struct *work)
 
 	dev_warn(&abx500_data->pdev->dev, "Power off due to critical temp\n");
 
+<<<<<<< HEAD
 	pm_power_off();
+=======
+	kernel_power_off();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t ab8500_show_name(struct device *dev,

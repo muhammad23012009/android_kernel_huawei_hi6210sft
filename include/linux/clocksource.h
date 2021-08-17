@@ -15,18 +15,28 @@
 #include <linux/cache.h>
 #include <linux/timer.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/div64.h>
 #include <asm/io.h>
 
 /* clocksource cycle base type */
 typedef u64 cycle_t;
 struct clocksource;
+=======
+#include <linux/of.h>
+#include <asm/div64.h>
+#include <asm/io.h>
+
+struct clocksource;
+struct module;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_ARCH_CLOCKSOURCE_DATA
 #include <asm/clocksource.h>
 #endif
 
 /**
+<<<<<<< HEAD
  * struct cyclecounter - hardware abstraction for a free running counter
  *	Provides completely state-free accessors to the underlying hardware.
  *	Depending on which hardware it reads, the cycle counter may wrap
@@ -127,6 +137,8 @@ extern u64 timecounter_cyc2time(struct timecounter *tc,
 				cycle_t cycle_tstamp);
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct clocksource - hardware abstraction for a free running counter
  *	Provides mostly state-free accessors to the underlying hardware.
  *	This is the structure used for system time.
@@ -157,10 +169,15 @@ extern u64 timecounter_cyc2time(struct timecounter *tc,
  * @shift:		cycle to nanosecond divisor (power of two)
  * @max_idle_ns:	max idle time permitted by the clocksource (nsecs)
  * @maxadj:		maximum adjustment value to mult (~11%)
+<<<<<<< HEAD
+=======
+ * @max_cycles:		maximum safe cycle value which won't overflow on multiplication
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @flags:		flags describing special properties
  * @archdata:		arch-specific data
  * @suspend:		suspend function for the clocksource, if necessary
  * @resume:		resume function for the clocksource, if necessary
+<<<<<<< HEAD
  * @cycle_last:		most recent cycle counter value seen by ::read()
  */
 struct clocksource {
@@ -170,6 +187,22 @@ struct clocksource {
 	 */
 	cycle_t (*read)(struct clocksource *cs);
 	cycle_t cycle_last;
+=======
+ * @owner:		module reference, must be set by clocksource in modules
+ *
+ * Note: This struct is not used in hotpathes of the timekeeping code
+ * because the timekeeper caches the hot path fields in its own data
+ * structure, so no line cache alignment is required,
+ *
+ * The pointer to the clocksource itself is handed to the read
+ * callback. If you need extra information there you can wrap struct
+ * clocksource into your own struct. Depending on the amount of
+ * information you need you should consider to cache line align that
+ * structure.
+ */
+struct clocksource {
+	cycle_t (*read)(struct clocksource *cs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cycle_t mask;
 	u32 mult;
 	u32 shift;
@@ -178,7 +211,11 @@ struct clocksource {
 #ifdef CONFIG_ARCH_CLOCKSOURCE_DATA
 	struct arch_clocksource_data archdata;
 #endif
+<<<<<<< HEAD
 
+=======
+	u64 max_cycles;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char *name;
 	struct list_head list;
 	int rating;
@@ -195,7 +232,12 @@ struct clocksource {
 	cycle_t cs_last;
 	cycle_t wd_last;
 #endif
+<<<<<<< HEAD
 } ____cacheline_aligned;
+=======
+	struct module *owner;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Clock source flags bits::
@@ -207,9 +249,33 @@ struct clocksource {
 #define CLOCK_SOURCE_VALID_FOR_HRES		0x20
 #define CLOCK_SOURCE_UNSTABLE			0x40
 #define CLOCK_SOURCE_SUSPEND_NONSTOP		0x80
+<<<<<<< HEAD
 
 /* simplify initialization of mask field */
 #define CLOCKSOURCE_MASK(bits) (cycle_t)((bits) < 64 ? ((1ULL<<(bits))-1) : -1)
+=======
+#define CLOCK_SOURCE_RESELECT			0x100
+
+/* simplify initialization of mask field */
+#define CLOCKSOURCE_MASK(bits) GENMASK_ULL((bits) - 1, 0)
+
+static inline u32 clocksource_freq2mult(u32 freq, u32 shift_constant, u64 from)
+{
+	/*  freq = cyc/from
+	 *  mult/2^shift  = ns/cyc
+	 *  mult = ns/cyc * 2^shift
+	 *  mult = from/freq * 2^shift
+	 *  mult = from * 2^shift / freq
+	 *  mult = (from<<shift) / freq
+	 */
+	u64 tmp = ((u64)from) << shift_constant;
+
+	tmp += freq/2; /* round for do_div */
+	do_div(tmp, freq);
+
+	return (u32)tmp;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * clocksource_khz2mult - calculates mult from khz and shift
@@ -221,6 +287,7 @@ struct clocksource {
  */
 static inline u32 clocksource_khz2mult(u32 khz, u32 shift_constant)
 {
+<<<<<<< HEAD
 	/*  khz = cyc/(Million ns)
 	 *  mult/2^shift  = ns/cyc
 	 *  mult = ns/cyc * 2^shift
@@ -234,6 +301,9 @@ static inline u32 clocksource_khz2mult(u32 khz, u32 shift_constant)
 	do_div(tmp, khz);
 
 	return (u32)tmp;
+=======
+	return clocksource_freq2mult(khz, shift_constant, NSEC_PER_MSEC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -247,6 +317,7 @@ static inline u32 clocksource_khz2mult(u32 khz, u32 shift_constant)
  */
 static inline u32 clocksource_hz2mult(u32 hz, u32 shift_constant)
 {
+<<<<<<< HEAD
 	/*  hz = cyc/(Billion ns)
 	 *  mult/2^shift  = ns/cyc
 	 *  mult = ns/cyc * 2^shift
@@ -260,6 +331,9 @@ static inline u32 clocksource_hz2mult(u32 hz, u32 shift_constant)
 	do_div(tmp, hz);
 
 	return (u32)tmp;
+=======
+	return clocksource_freq2mult(hz, shift_constant, NSEC_PER_SEC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -278,16 +352,26 @@ static inline s64 clocksource_cyc2ns(cycle_t cycles, u32 mult, u32 shift)
 }
 
 
+<<<<<<< HEAD
 extern int clocksource_register(struct clocksource*);
 extern void clocksource_unregister(struct clocksource*);
 extern void clocksource_touch_watchdog(void);
 extern struct clocksource* clocksource_get_next(void);
+=======
+extern int clocksource_unregister(struct clocksource*);
+extern void clocksource_touch_watchdog(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void clocksource_change_rating(struct clocksource *cs, int rating);
 extern void clocksource_suspend(void);
 extern void clocksource_resume(void);
 extern struct clocksource * __init clocksource_default_clock(void);
 extern void clocksource_mark_unstable(struct clocksource *cs);
 
+<<<<<<< HEAD
+=======
+extern u64
+clocks_calc_max_nsecs(u32 mult, u32 shift, u32 maxadj, u64 mask, u64 *max_cycles);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void
 clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 minsec);
 
@@ -298,7 +382,20 @@ clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 minsec);
 extern int
 __clocksource_register_scale(struct clocksource *cs, u32 scale, u32 freq);
 extern void
+<<<<<<< HEAD
 __clocksource_updatefreq_scale(struct clocksource *cs, u32 scale, u32 freq);
+=======
+__clocksource_update_freq_scale(struct clocksource *cs, u32 scale, u32 freq);
+
+/*
+ * Don't call this unless you are a default clocksource
+ * (AKA: jiffies) and absolutely have to.
+ */
+static inline int __clocksource_register(struct clocksource *cs)
+{
+	return __clocksource_register_scale(cs, 1, 0);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int clocksource_register_hz(struct clocksource *cs, u32 hz)
 {
@@ -310,6 +407,7 @@ static inline int clocksource_register_khz(struct clocksource *cs, u32 khz)
 	return __clocksource_register_scale(cs, 1000, khz);
 }
 
+<<<<<<< HEAD
 static inline void __clocksource_updatefreq_hz(struct clocksource *cs, u32 hz)
 {
 	__clocksource_updatefreq_scale(cs, 1, hz);
@@ -322,6 +420,20 @@ static inline void __clocksource_updatefreq_khz(struct clocksource *cs, u32 khz)
 
 
 extern void timekeeping_notify(struct clocksource *clock);
+=======
+static inline void __clocksource_update_freq_hz(struct clocksource *cs, u32 hz)
+{
+	__clocksource_update_freq_scale(cs, 1, hz);
+}
+
+static inline void __clocksource_update_freq_khz(struct clocksource *cs, u32 khz)
+{
+	__clocksource_update_freq_scale(cs, 1000, khz);
+}
+
+
+extern int timekeeping_notify(struct clocksource *clock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern cycle_t clocksource_mmio_readl_up(struct clocksource *);
 extern cycle_t clocksource_mmio_readl_down(struct clocksource *);
@@ -333,6 +445,7 @@ extern int clocksource_mmio_init(void __iomem *, const char *,
 
 extern int clocksource_i8253_init(void);
 
+<<<<<<< HEAD
 struct device_node;
 typedef void(*clocksource_of_init_fn)(struct device_node *);
 #ifdef CONFIG_CLKSRC_OF
@@ -352,4 +465,18 @@ static inline void clocksource_of_init(void) {}
 		     .data = (fn == (clocksource_of_init_fn)NULL) ? fn : fn }
 #endif
 
+=======
+#define CLOCKSOURCE_OF_DECLARE(name, compat, fn) \
+	OF_DECLARE_1_RET(clksrc, name, compat, fn)
+
+#ifdef CONFIG_CLKSRC_PROBE
+extern void clocksource_probe(void);
+#else
+static inline void clocksource_probe(void) {}
+#endif
+
+#define CLOCKSOURCE_ACPI_DECLARE(name, table_id, fn)		\
+	ACPI_DECLARE_PROBE_ENTRY(clksrc, name, table_id, 0, NULL, 0, fn)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_CLOCKSOURCE_H */

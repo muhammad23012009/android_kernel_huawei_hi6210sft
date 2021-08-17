@@ -21,19 +21,32 @@
  * Authors:
  *	Srikar Dronamraju
  *	Jim Keniston
+<<<<<<< HEAD
  * Copyright (C) 2011-2012 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ * Copyright (C) 2011-2012 Red Hat, Inc., Peter Zijlstra
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/errno.h>
 #include <linux/rbtree.h>
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct vm_area_struct;
 struct mm_struct;
 struct inode;
+<<<<<<< HEAD
 
 #ifdef CONFIG_ARCH_SUPPORTS_UPROBES
 # include <asm/uprobes.h>
 #endif
+=======
+struct notifier_block;
+struct page;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define UPROBE_HANDLER_REMOVE		1
 #define UPROBE_HANDLER_MASK		1
@@ -59,6 +72,11 @@ struct uprobe_consumer {
 };
 
 #ifdef CONFIG_UPROBES
+<<<<<<< HEAD
+=======
+#include <asm/uprobes.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum uprobe_task_state {
 	UTASK_RUNNING,
 	UTASK_SSTEP,
@@ -71,6 +89,7 @@ enum uprobe_task_state {
  */
 struct uprobe_task {
 	enum uprobe_task_state		state;
+<<<<<<< HEAD
 	struct arch_uprobe_task		autask;
 
 	struct return_instance		*return_instances;
@@ -100,14 +119,64 @@ struct xol_area {
 	unsigned long 		vaddr;		/* Page(s) of instruction slots */
 };
 
+=======
+
+	union {
+		struct {
+			struct arch_uprobe_task	autask;
+			unsigned long		vaddr;
+		};
+
+		struct {
+			struct callback_head	dup_xol_work;
+			unsigned long		dup_xol_addr;
+		};
+	};
+
+	struct uprobe			*active_uprobe;
+	unsigned long			xol_vaddr;
+
+	struct return_instance		*return_instances;
+	unsigned int			depth;
+};
+
+struct return_instance {
+	struct uprobe		*uprobe;
+	unsigned long		func;
+	unsigned long		stack;		/* stack pointer */
+	unsigned long		orig_ret_vaddr; /* original return address */
+	bool			chained;	/* true, if instance is nested */
+
+	struct return_instance	*next;		/* keep as stack */
+};
+
+enum rp_check {
+	RP_CHECK_CALL,
+	RP_CHECK_CHAIN_CALL,
+	RP_CHECK_RET,
+};
+
+struct xol_area;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct uprobes_state {
 	struct xol_area		*xol_area;
 };
 
+<<<<<<< HEAD
 extern int __weak set_swbp(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long vaddr);
 extern int __weak set_orig_insn(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long vaddr);
 extern bool __weak is_swbp_insn(uprobe_opcode_t *insn);
 extern bool __weak is_trap_insn(uprobe_opcode_t *insn);
+=======
+extern int set_swbp(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long vaddr);
+extern int set_orig_insn(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long vaddr);
+extern bool is_swbp_insn(uprobe_opcode_t *insn);
+extern bool is_trap_insn(uprobe_opcode_t *insn);
+extern unsigned long uprobe_get_swbp_addr(struct pt_regs *regs);
+extern unsigned long uprobe_get_trap_addr(struct pt_regs *regs);
+extern int uprobe_write_opcode(struct mm_struct *mm, unsigned long vaddr, uprobe_opcode_t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int uprobe_register(struct inode *inode, loff_t offset, struct uprobe_consumer *uc);
 extern int uprobe_apply(struct inode *inode, loff_t offset, struct uprobe_consumer *uc, bool);
 extern void uprobe_unregister(struct inode *inode, loff_t offset, struct uprobe_consumer *uc);
@@ -117,17 +186,43 @@ extern void uprobe_start_dup_mmap(void);
 extern void uprobe_end_dup_mmap(void);
 extern void uprobe_dup_mmap(struct mm_struct *oldmm, struct mm_struct *newmm);
 extern void uprobe_free_utask(struct task_struct *t);
+<<<<<<< HEAD
 extern void uprobe_copy_process(struct task_struct *t);
 extern unsigned long __weak uprobe_get_swbp_addr(struct pt_regs *regs);
+=======
+extern void uprobe_copy_process(struct task_struct *t, unsigned long flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int uprobe_post_sstep_notifier(struct pt_regs *regs);
 extern int uprobe_pre_sstep_notifier(struct pt_regs *regs);
 extern void uprobe_notify_resume(struct pt_regs *regs);
 extern bool uprobe_deny_signal(void);
+<<<<<<< HEAD
 extern bool __weak arch_uprobe_skip_sstep(struct arch_uprobe *aup, struct pt_regs *regs);
 extern void uprobe_clear_state(struct mm_struct *mm);
 #else /* !CONFIG_UPROBES */
 struct uprobes_state {
 };
+=======
+extern bool arch_uprobe_skip_sstep(struct arch_uprobe *aup, struct pt_regs *regs);
+extern void uprobe_clear_state(struct mm_struct *mm);
+extern int  arch_uprobe_analyze_insn(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long addr);
+extern int  arch_uprobe_pre_xol(struct arch_uprobe *aup, struct pt_regs *regs);
+extern int  arch_uprobe_post_xol(struct arch_uprobe *aup, struct pt_regs *regs);
+extern bool arch_uprobe_xol_was_trapped(struct task_struct *tsk);
+extern int  arch_uprobe_exception_notify(struct notifier_block *self, unsigned long val, void *data);
+extern void arch_uprobe_abort_xol(struct arch_uprobe *aup, struct pt_regs *regs);
+extern unsigned long arch_uretprobe_hijack_return_addr(unsigned long trampoline_vaddr, struct pt_regs *regs);
+extern bool arch_uretprobe_is_alive(struct return_instance *ret, enum rp_check ctx, struct pt_regs *regs);
+extern bool arch_uprobe_ignore(struct arch_uprobe *aup, struct pt_regs *regs);
+extern void arch_uprobe_copy_ixol(struct page *page, unsigned long vaddr,
+					 void *src, unsigned long len);
+#else /* !CONFIG_UPROBES */
+struct uprobes_state {
+};
+
+#define uprobe_get_trap_addr(regs)	instruction_pointer(regs)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int
 uprobe_register(struct inode *inode, loff_t offset, struct uprobe_consumer *uc)
 {
@@ -167,6 +262,7 @@ static inline bool uprobe_deny_signal(void)
 {
 	return false;
 }
+<<<<<<< HEAD
 static inline unsigned long uprobe_get_swbp_addr(struct pt_regs *regs)
 {
 	return 0;
@@ -175,6 +271,12 @@ static inline void uprobe_free_utask(struct task_struct *t)
 {
 }
 static inline void uprobe_copy_process(struct task_struct *t)
+=======
+static inline void uprobe_free_utask(struct task_struct *t)
+{
+}
+static inline void uprobe_copy_process(struct task_struct *t, unsigned long flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 static inline void uprobe_clear_state(struct mm_struct *mm)

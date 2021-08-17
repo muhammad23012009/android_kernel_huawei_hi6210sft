@@ -5,11 +5,16 @@
 #include <linux/threads.h>
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_SECURE_EXTENSION
 #define NR_IPI  9
 #else
 #define NR_IPI	8
 #endif
+=======
+/* number of IPIS _not_ including IPI_CPU_BACKTRACE */
+#define NR_IPI	7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct {
 	unsigned int __softirq_pending;

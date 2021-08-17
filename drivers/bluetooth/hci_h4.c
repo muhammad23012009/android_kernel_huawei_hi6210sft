@@ -40,21 +40,30 @@
 #include <linux/signal.h>
 #include <linux/ioctl.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
 #include "hci_uart.h"
 
+<<<<<<< HEAD
 #define VERSION "1.2"
 
 struct h4_struct {
 	unsigned long rx_state;
 	unsigned long rx_count;
+=======
+struct h4_struct {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *rx_skb;
 	struct sk_buff_head txq;
 };
 
+<<<<<<< HEAD
 /* H4 receiver States */
 #define H4_W4_PACKET_TYPE	0
 #define H4_W4_EVENT_HDR		1
@@ -62,6 +71,8 @@ struct h4_struct {
 #define H4_W4_SCO_HDR		3
 #define H4_W4_DATA		4
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Initialize protocol */
 static int h4_open(struct hci_uart *hu)
 {
@@ -118,12 +129,17 @@ static int h4_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	BT_DBG("hu %p skb %p", hu, skb);
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_queue_tail(&h4->txq, skb);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int h4_check_data_len(struct h4_struct *h4, int len)
 {
 	int room = skb_tailroom(h4->rx_skb);
@@ -152,14 +168,36 @@ static inline int h4_check_data_len(struct h4_struct *h4, int len)
 static int h4_recv(struct hci_uart *hu, void *data, int count)
 {
 	int ret;
+=======
+static const struct h4_recv_pkt h4_recv_pkts[] = {
+	{ H4_RECV_ACL,   .recv = hci_recv_frame },
+	{ H4_RECV_SCO,   .recv = hci_recv_frame },
+	{ H4_RECV_EVENT, .recv = hci_recv_frame },
+};
+
+/* Recv data */
+static int h4_recv(struct hci_uart *hu, const void *data, int count)
+{
+	struct h4_struct *h4 = hu->priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!test_bit(HCI_UART_REGISTERED, &hu->flags))
 		return -EUNATCH;
 
+<<<<<<< HEAD
 	ret = hci_recv_stream_fragment(hu->hdev, data, count);
 	if (ret < 0) {
 		BT_ERR("Frame Reassembly Failed");
 		return ret;
+=======
+	h4->rx_skb = h4_recv_buf(hu->hdev, h4->rx_skb, data, count,
+				 h4_recv_pkts, ARRAY_SIZE(h4_recv_pkts));
+	if (IS_ERR(h4->rx_skb)) {
+		int err = PTR_ERR(h4->rx_skb);
+		BT_ERR("%s: Frame reassembly failed (%d)", hu->hdev->name, err);
+		h4->rx_skb = NULL;
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return count;
@@ -171,8 +209,14 @@ static struct sk_buff *h4_dequeue(struct hci_uart *hu)
 	return skb_dequeue(&h4->txq);
 }
 
+<<<<<<< HEAD
 static struct hci_uart_proto h4p = {
 	.id		= HCI_UART_H4,
+=======
+static const struct hci_uart_proto h4p = {
+	.id		= HCI_UART_H4,
+	.name		= "H4",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= h4_open,
 	.close		= h4_close,
 	.recv		= h4_recv,
@@ -183,6 +227,7 @@ static struct hci_uart_proto h4p = {
 
 int __init h4_init(void)
 {
+<<<<<<< HEAD
 	int err = hci_uart_register_proto(&h4p);
 
 	if (!err)
@@ -191,9 +236,116 @@ int __init h4_init(void)
 		BT_ERR("HCI H4 protocol registration failed");
 
 	return err;
+=======
+	return hci_uart_register_proto(&h4p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int __exit h4_deinit(void)
 {
 	return hci_uart_unregister_proto(&h4p);
 }
+<<<<<<< HEAD
+=======
+
+struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
+			    const unsigned char *buffer, int count,
+			    const struct h4_recv_pkt *pkts, int pkts_count)
+{
+	while (count) {
+		int i, len;
+
+		if (!skb) {
+			for (i = 0; i < pkts_count; i++) {
+				if (buffer[0] != (&pkts[i])->type)
+					continue;
+
+				skb = bt_skb_alloc((&pkts[i])->maxlen,
+						   GFP_ATOMIC);
+				if (!skb)
+					return ERR_PTR(-ENOMEM);
+
+				hci_skb_pkt_type(skb) = (&pkts[i])->type;
+				hci_skb_expect(skb) = (&pkts[i])->hlen;
+				break;
+			}
+
+			/* Check for invalid packet type */
+			if (!skb)
+				return ERR_PTR(-EILSEQ);
+
+			count -= 1;
+			buffer += 1;
+		}
+
+		len = min_t(uint, hci_skb_expect(skb) - skb->len, count);
+		memcpy(skb_put(skb, len), buffer, len);
+
+		count -= len;
+		buffer += len;
+
+		/* Check for partial packet */
+		if (skb->len < hci_skb_expect(skb))
+			continue;
+
+		for (i = 0; i < pkts_count; i++) {
+			if (hci_skb_pkt_type(skb) == (&pkts[i])->type)
+				break;
+		}
+
+		if (i >= pkts_count) {
+			kfree_skb(skb);
+			return ERR_PTR(-EILSEQ);
+		}
+
+		if (skb->len == (&pkts[i])->hlen) {
+			u16 dlen;
+
+			switch ((&pkts[i])->lsize) {
+			case 0:
+				/* No variable data length */
+				dlen = 0;
+				break;
+			case 1:
+				/* Single octet variable length */
+				dlen = skb->data[(&pkts[i])->loff];
+				hci_skb_expect(skb) += dlen;
+
+				if (skb_tailroom(skb) < dlen) {
+					kfree_skb(skb);
+					return ERR_PTR(-EMSGSIZE);
+				}
+				break;
+			case 2:
+				/* Double octet variable length */
+				dlen = get_unaligned_le16(skb->data +
+							  (&pkts[i])->loff);
+				hci_skb_expect(skb) += dlen;
+
+				if (skb_tailroom(skb) < dlen) {
+					kfree_skb(skb);
+					return ERR_PTR(-EMSGSIZE);
+				}
+				break;
+			default:
+				/* Unsupported variable length */
+				kfree_skb(skb);
+				return ERR_PTR(-EILSEQ);
+			}
+
+			if (!dlen) {
+				/* No more data, complete frame */
+				(&pkts[i])->recv(hdev, skb);
+				skb = NULL;
+			}
+		} else {
+			/* Complete frame */
+			(&pkts[i])->recv(hdev, skb);
+			skb = NULL;
+		}
+	}
+
+	return skb;
+}
+EXPORT_SYMBOL_GPL(h4_recv_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

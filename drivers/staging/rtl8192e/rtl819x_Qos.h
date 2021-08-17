@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -19,8 +22,11 @@
 #ifndef __INC_QOS_TYPE_H
 #define __INC_QOS_TYPE_H
 
+<<<<<<< HEAD
 #include "rtllib_endianfree.h"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define BIT0		    0x00000001
 #define BIT1		    0x00000002
 #define BIT2		    0x00000004
@@ -93,6 +99,7 @@ union tspec_body {
 	} f;
 };
 
+<<<<<<< HEAD
 struct wmm_tspec {
 	u8		ID;
 	u8		Length;
@@ -103,11 +110,14 @@ struct wmm_tspec {
 	union tspec_body Body;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct octet_string {
 	u8 *Octet;
 	u16 Length;
 };
 
+<<<<<<< HEAD
 #define	MAX_WMMELE_LENGTH	64
 
 #define QOS_MODE u32
@@ -192,12 +202,15 @@ enum qos_ie_source {
 
 #define AC_CODING u32
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AC0_BE	0
 #define AC1_BK	1
 #define AC2_VI	2
 #define AC3_VO	3
 #define AC_MAX	4
 
+<<<<<<< HEAD
 
 #define AC_PARAM_SIZE	4
 
@@ -246,6 +259,8 @@ enum qos_ele_subtype {
 };
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum direction_value {
 	DIR_UP			= 0,
 	DIR_DOWN		= 1,
@@ -266,6 +281,7 @@ struct acm {
 	u8		HwAcmCtl;
 };
 
+<<<<<<< HEAD
 
 
 #define AC_UAPSD	u8
@@ -282,6 +298,8 @@ struct acm {
 #define	GET_BE_UAPSD(_apsd) ((_apsd) & BIT3)
 #define	SET_BE_UAPSD(_apsd) ((_apsd) |= BIT3)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 union qos_tclas {
 
 	struct _TYPE_GENERAL {
@@ -294,8 +312,13 @@ union qos_tclas {
 		u8		Priority;
 		u8		ClassifierType;
 		u8		Mask;
+<<<<<<< HEAD
 		u8		SrcAddr[6];
 		u8		DstAddr[6];
+=======
+		u8		SrcAddr[ETH_ALEN];
+		u8		DstAddr[ETH_ALEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u16		Type;
 	} TYPE0_ETH;
 
@@ -333,6 +356,7 @@ union qos_tclas {
 	} TYPE2_8021Q;
 };
 
+<<<<<<< HEAD
 struct qos_tstream {
 
 	bool			bUsed;
@@ -411,6 +435,8 @@ struct bss_qos {
 #define IsACValid(ac)		((ac >= 0 && ac <= 7) ? true : false)
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 union aci_aifsn {
 	u8	charData;
 
@@ -422,6 +448,7 @@ union aci_aifsn {
 	} f;
 };
 
+<<<<<<< HEAD
 union ecw {
 	u8	charData;
 	struct {
@@ -441,4 +468,6 @@ union ac_param {
 	} f;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

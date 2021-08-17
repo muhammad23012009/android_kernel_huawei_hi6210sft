@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 #include <linux/module.h>
 
 #include "libgcc.h"
 
 long long __ashldi3(long long u, word_type b)
+=======
+#include <linux/export.h>
+
+#include "libgcc.h"
+
+long long notrace __ashldi3(long long u, word_type b)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	DWunion uu, w;
 	word_type bm;

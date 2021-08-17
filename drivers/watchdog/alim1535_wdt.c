@@ -301,7 +301,11 @@ static int ali_notify_sys(struct notifier_block *this,
  *	want to register another driver on the same PCI id.
  */
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ali_pci_tbl) __used = {
+=======
+static const struct pci_device_id ali_pci_tbl[] __used = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_AL, 0x1533, PCI_ANY_ID, PCI_ANY_ID,},
 	{ PCI_VENDOR_ID_AL, 0x1535, PCI_ANY_ID, PCI_ANY_ID,},
 	{ 0, },
@@ -452,4 +456,7 @@ module_exit(watchdog_exit);
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("ALi M1535 PMU Watchdog Timer driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

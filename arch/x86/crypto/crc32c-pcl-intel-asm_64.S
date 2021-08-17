@@ -45,6 +45,10 @@
 
 #include <asm/inst.h>
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/nospec-branch.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ## ISCSI CRC 32 Implementation with crc32 and pclmulqdq Instruction
 
@@ -72,6 +76,10 @@
 
 # unsigned int crc_pcl(u8 *buffer, int len, unsigned int crc_init);
 
+<<<<<<< HEAD
+=======
+.text
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENTRY(crc_pcl)
 #define    bufp		%rdi
 #define    bufp_dw	%edi
@@ -169,15 +177,25 @@ continue_block:
 	## branch into array
 	lea	jump_table(%rip), bufp
 	movzxw  (bufp, %rax, 2), len
+<<<<<<< HEAD
 	offset=crc_array-jump_table
 	lea     offset(bufp, len, 1), bufp
 	jmp     *bufp
+=======
+	lea	crc_array(%rip), bufp
+	lea     (bufp, len, 1), bufp
+	JMP_NOSPEC bufp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	################################################################
 	## 2a) PROCESS FULL BLOCKS:
 	################################################################
 full_block:
+<<<<<<< HEAD
 	movq    $128,%rax
+=======
+	movl    $128,%eax
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lea     128*8*2(block_0), block_1
 	lea     128*8*3(block_0), block_2
 	add     $128*8*1, block_0
@@ -216,6 +234,7 @@ LABEL crc_ %i
 	## 4) Combine three results:
 	################################################################
 
+<<<<<<< HEAD
 	lea	(K_table-16)(%rip), bufp	# first entry is for idx 1
 	shlq    $3, %rax			# rax *= 8
 	subq    %rax, tmp			# tmp -= rax*8
@@ -225,6 +244,13 @@ LABEL crc_ %i
 	addq    %rax, bufp
 
 	movdqa  (bufp), %xmm0			# 2 consts: K1:K2
+=======
+	lea	(K_table-8)(%rip), bufp		# first entry is for idx 1
+	shlq    $3, %rax			# rax *= 8
+	pmovzxdq (bufp,%rax), %xmm0		# 2 consts: K1:K2
+	leal	(%eax,%eax,2), %eax		# rax *= 3 (total *24)
+	subq    %rax, tmp			# tmp -= rax*24
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	movq    crc_init, %xmm1			# CRC for block 1
 	PCLMULQDQ 0x00,%xmm0,%xmm1		# Multiply by K2
@@ -238,9 +264,15 @@ LABEL crc_ %i
 	mov     crc2, crc_init
 	crc32   %rax, crc_init
 
+<<<<<<< HEAD
 ################################################################
 ## 5) Check for end:
 ################################################################
+=======
+	################################################################
+	## 5) Check for end:
+	################################################################
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 LABEL crc_ 0
 	mov     tmp, len
@@ -313,7 +345,13 @@ do_return:
 	popq    %rdi
 	popq    %rbx
         ret
+<<<<<<< HEAD
 
+=======
+ENDPROC(crc_pcl)
+
+.section	.rodata, "a", %progbits
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         ################################################################
         ## jump table        Table is 129 entries x 2 bytes each
         ################################################################
@@ -327,6 +365,7 @@ JMPTBL_ENTRY %i
 	i=i+1
 .endr
 
+<<<<<<< HEAD
 ENDPROC(crc_pcl)
 
 	################################################################
@@ -464,3 +503,140 @@ K_table:
         .quad 0x045cddf4e,0x0e0ac139e
         .quad 0x1a91647f2,0x169cf9eb0
         .quad 0x1a0f717c4,0x0170076fa
+=======
+
+	################################################################
+	## PCLMULQDQ tables
+	## Table is 128 entries x 2 words (8 bytes) each
+	################################################################
+.align 8
+K_table:
+	.long 0x493c7d27, 0x00000001
+	.long 0xba4fc28e, 0x493c7d27
+	.long 0xddc0152b, 0xf20c0dfe
+	.long 0x9e4addf8, 0xba4fc28e
+	.long 0x39d3b296, 0x3da6d0cb
+	.long 0x0715ce53, 0xddc0152b
+	.long 0x47db8317, 0x1c291d04
+	.long 0x0d3b6092, 0x9e4addf8
+	.long 0xc96cfdc0, 0x740eef02
+	.long 0x878a92a7, 0x39d3b296
+	.long 0xdaece73e, 0x083a6eec
+	.long 0xab7aff2a, 0x0715ce53
+	.long 0x2162d385, 0xc49f4f67
+	.long 0x83348832, 0x47db8317
+	.long 0x299847d5, 0x2ad91c30
+	.long 0xb9e02b86, 0x0d3b6092
+	.long 0x18b33a4e, 0x6992cea2
+	.long 0xb6dd949b, 0xc96cfdc0
+	.long 0x78d9ccb7, 0x7e908048
+	.long 0xbac2fd7b, 0x878a92a7
+	.long 0xa60ce07b, 0x1b3d8f29
+	.long 0xce7f39f4, 0xdaece73e
+	.long 0x61d82e56, 0xf1d0f55e
+	.long 0xd270f1a2, 0xab7aff2a
+	.long 0xc619809d, 0xa87ab8a8
+	.long 0x2b3cac5d, 0x2162d385
+	.long 0x65863b64, 0x8462d800
+	.long 0x1b03397f, 0x83348832
+	.long 0xebb883bd, 0x71d111a8
+	.long 0xb3e32c28, 0x299847d5
+	.long 0x064f7f26, 0xffd852c6
+	.long 0xdd7e3b0c, 0xb9e02b86
+	.long 0xf285651c, 0xdcb17aa4
+	.long 0x10746f3c, 0x18b33a4e
+	.long 0xc7a68855, 0xf37c5aee
+	.long 0x271d9844, 0xb6dd949b
+	.long 0x8e766a0c, 0x6051d5a2
+	.long 0x93a5f730, 0x78d9ccb7
+	.long 0x6cb08e5c, 0x18b0d4ff
+	.long 0x6b749fb2, 0xbac2fd7b
+	.long 0x1393e203, 0x21f3d99c
+	.long 0xcec3662e, 0xa60ce07b
+	.long 0x96c515bb, 0x8f158014
+	.long 0xe6fc4e6a, 0xce7f39f4
+	.long 0x8227bb8a, 0xa00457f7
+	.long 0xb0cd4768, 0x61d82e56
+	.long 0x39c7ff35, 0x8d6d2c43
+	.long 0xd7a4825c, 0xd270f1a2
+	.long 0x0ab3844b, 0x00ac29cf
+	.long 0x0167d312, 0xc619809d
+	.long 0xf6076544, 0xe9adf796
+	.long 0x26f6a60a, 0x2b3cac5d
+	.long 0xa741c1bf, 0x96638b34
+	.long 0x98d8d9cb, 0x65863b64
+	.long 0x49c3cc9c, 0xe0e9f351
+	.long 0x68bce87a, 0x1b03397f
+	.long 0x57a3d037, 0x9af01f2d
+	.long 0x6956fc3b, 0xebb883bd
+	.long 0x42d98888, 0x2cff42cf
+	.long 0x3771e98f, 0xb3e32c28
+	.long 0xb42ae3d9, 0x88f25a3a
+	.long 0x2178513a, 0x064f7f26
+	.long 0xe0ac139e, 0x4e36f0b0
+	.long 0x170076fa, 0xdd7e3b0c
+	.long 0x444dd413, 0xbd6f81f8
+	.long 0x6f345e45, 0xf285651c
+	.long 0x41d17b64, 0x91c9bd4b
+	.long 0xff0dba97, 0x10746f3c
+	.long 0xa2b73df1, 0x885f087b
+	.long 0xf872e54c, 0xc7a68855
+	.long 0x1e41e9fc, 0x4c144932
+	.long 0x86d8e4d2, 0x271d9844
+	.long 0x651bd98b, 0x52148f02
+	.long 0x5bb8f1bc, 0x8e766a0c
+	.long 0xa90fd27a, 0xa3c6f37a
+	.long 0xb3af077a, 0x93a5f730
+	.long 0x4984d782, 0xd7c0557f
+	.long 0xca6ef3ac, 0x6cb08e5c
+	.long 0x234e0b26, 0x63ded06a
+	.long 0xdd66cbbb, 0x6b749fb2
+	.long 0x4597456a, 0x4d56973c
+	.long 0xe9e28eb4, 0x1393e203
+	.long 0x7b3ff57a, 0x9669c9df
+	.long 0xc9c8b782, 0xcec3662e
+	.long 0x3f70cc6f, 0xe417f38a
+	.long 0x93e106a4, 0x96c515bb
+	.long 0x62ec6c6d, 0x4b9e0f71
+	.long 0xd813b325, 0xe6fc4e6a
+	.long 0x0df04680, 0xd104b8fc
+	.long 0x2342001e, 0x8227bb8a
+	.long 0x0a2a8d7e, 0x5b397730
+	.long 0x6d9a4957, 0xb0cd4768
+	.long 0xe8b6368b, 0xe78eb416
+	.long 0xd2c3ed1a, 0x39c7ff35
+	.long 0x995a5724, 0x61ff0e01
+	.long 0x9ef68d35, 0xd7a4825c
+	.long 0x0c139b31, 0x8d96551c
+	.long 0xf2271e60, 0x0ab3844b
+	.long 0x0b0bf8ca, 0x0bf80dd2
+	.long 0x2664fd8b, 0x0167d312
+	.long 0xed64812d, 0x8821abed
+	.long 0x02ee03b2, 0xf6076544
+	.long 0x8604ae0f, 0x6a45d2b2
+	.long 0x363bd6b3, 0x26f6a60a
+	.long 0x135c83fd, 0xd8d26619
+	.long 0x5fabe670, 0xa741c1bf
+	.long 0x35ec3279, 0xde87806c
+	.long 0x00bcf5f6, 0x98d8d9cb
+	.long 0x8ae00689, 0x14338754
+	.long 0x17f27698, 0x49c3cc9c
+	.long 0x58ca5f00, 0x5bd2011f
+	.long 0xaa7c7ad5, 0x68bce87a
+	.long 0xb5cfca28, 0xdd07448e
+	.long 0xded288f8, 0x57a3d037
+	.long 0x59f229bc, 0xdde8f5b9
+	.long 0x6d390dec, 0x6956fc3b
+	.long 0x37170390, 0xa3e3e02c
+	.long 0x6353c1cc, 0x42d98888
+	.long 0xc4584f5c, 0xd73c7bea
+	.long 0xf48642e9, 0x3771e98f
+	.long 0x531377e2, 0x80ff0093
+	.long 0xdd35bc8d, 0xb42ae3d9
+	.long 0xb25b29f2, 0x8fe4c34d
+	.long 0x9a5ede41, 0x2178513a
+	.long 0xa563905d, 0xdf99fc11
+	.long 0x45cddf4e, 0xe0ac139e
+	.long 0xacfa3103, 0x6c23e841
+	.long 0xa51b6135, 0x170076fa
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

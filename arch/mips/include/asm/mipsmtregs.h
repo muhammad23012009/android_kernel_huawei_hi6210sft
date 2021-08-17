@@ -36,6 +36,11 @@
 
 #define read_c0_tcbind()		__read_32bit_c0_register($2, 2)
 
+<<<<<<< HEAD
+=======
+#define write_c0_tchalt(val)		__write_32bit_c0_register($2, 4, val)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define read_c0_tccontext()		__read_32bit_c0_register($2, 5)
 #define write_c0_tccontext(val)		__write_32bit_c0_register($2, 5, val)
 
@@ -176,6 +181,20 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
+=======
+static inline unsigned core_nvpes(void)
+{
+	unsigned conf0;
+
+	if (!cpu_has_mipsmt)
+		return 1;
+
+	conf0 = read_c0_mvpconf0();
+	return ((conf0 & MVPCONF0_PVPE) >> MVPCONF0_PVPE_SHIFT) + 1;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned int dvpe(void)
 {
 	int res = 0;

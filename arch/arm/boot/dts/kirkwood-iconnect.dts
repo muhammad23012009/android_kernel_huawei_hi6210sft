@@ -1,7 +1,12 @@
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "kirkwood.dtsi"
 /include/ "kirkwood-6281.dtsi"
+=======
+#include "kirkwood.dtsi"
+#include "kirkwood-6281.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Iomega Iconnect";
@@ -14,11 +19,16 @@
 
 	chosen {
 		bootargs = "console=ttyS0,115200n8 earlyprintk";
+<<<<<<< HEAD
+=======
+		stdout-path = &uart0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		linux,initrd-start = <0x4500040>;
 		linux,initrd-end   = <0x4800000>;
 	};
 
 	ocp@f1000000 {
+<<<<<<< HEAD
 		pinctrl: pinctrl@10000 {
 
 			pinctrl-0 = < &pmx_gpio_12 &pmx_gpio_35
@@ -65,6 +75,46 @@
 				marvell,function = "gpio";
 			};
 			pmx_gpio_48: pmx-gpio-48 {
+=======
+		pinctrl: pin-controller@10000 {
+			pmx_button_reset: pmx-button-reset {
+				marvell,pins = "mpp12";
+				marvell,function = "gpio";
+			};
+			pmx_button_otb: pmx-button-otb {
+				marvell,pins = "mpp35";
+				marvell,function = "gpio";
+			};
+			pmx_led_level: pmx-led-level {
+				marvell,pins = "mpp41";
+				marvell,function = "gpio";
+			};
+			pmx_led_power_blue: pmx-led-power-blue {
+				marvell,pins = "mpp42";
+				marvell,function = "gpio";
+			};
+			pmx_led_power_red: pmx-power-red {
+				marvell,pins = "mpp43";
+				marvell,function = "gpio";
+			};
+			pmx_led_usb1: pmx-led-usb1 {
+				marvell,pins = "mpp44";
+				marvell,function = "gpio";
+			};
+			pmx_led_usb2: pmx-led-usb2 {
+				marvell,pins = "mpp45";
+				marvell,function = "gpio";
+			};
+			pmx_led_usb3: pmx-led-usb3 {
+				marvell,pins = "mpp46";
+				marvell,function = "gpio";
+			};
+			pmx_led_usb4: pmx-led-usb4 {
+				marvell,pins = "mpp47";
+				marvell,function = "gpio";
+			};
+			pmx_led_otb: pmx-led-otb {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				marvell,pins = "mpp48";
 				marvell,function = "gpio";
 			};
@@ -80,6 +130,7 @@
 		serial@12000 {
 			status = "ok";
 		};
+<<<<<<< HEAD
 
 		nand@3000000 {
 			status = "okay";
@@ -109,10 +160,13 @@
 				reg = <0x980000 0x1f400000>;
 			};
 		};
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	gpio-leds {
 		compatible = "gpio-leds";
+<<<<<<< HEAD
 
 		led-level {
 			label = "led_level";
@@ -147,6 +201,47 @@
 		otb {
 			label = "otb:blue";
 			gpios = <&gpio1 16 0>;
+=======
+		pinctrl-0 = < &pmx_led_level &pmx_led_power_blue
+			      &pmx_led_power_red &pmx_led_usb1
+			      &pmx_led_usb2 &pmx_led_usb3
+			      &pmx_led_usb4 &pmx_led_otb >;
+		pinctrl-names = "default";
+
+		led-level {
+			label = "led_level";
+			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+		power-blue {
+			label = "power:blue";
+			gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+			default-state = "keep";
+		};
+		power-red {
+			label = "power:red";
+			gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+		};
+		usb1 {
+			label = "usb1:blue";
+			gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
+		};
+		usb2 {
+			label = "usb2:blue";
+			gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+		};
+		usb3 {
+			label = "usb3:blue";
+			gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
+		};
+		usb4 {
+			label = "usb4:blue";
+			gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+		};
+		otb {
+			label = "otb:blue";
+			gpios = <&gpio1 16 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
@@ -154,6 +249,7 @@
 		compatible = "gpio-keys";
 		#address-cells = <1>;
 		#size-cells = <0>;
+<<<<<<< HEAD
 		button@1 {
 			label = "OTB Button";
 			linux,code = <133>;
@@ -164,7 +260,77 @@
 			label = "Reset";
 			linux,code = <0x198>;
 			gpios = <&gpio0 12 1>;
+=======
+		pinctrl-0 = < &pmx_button_reset &pmx_button_otb >;
+		pinctrl-names = "default";
+
+		otb {
+			label = "OTB Button";
+			linux,code = <KEY_COPY>;
+			gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
+			debounce-interval = <100>;
+		};
+		reset {
+			label = "Reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			debounce-interval = <100>;
 		};
 	};
 };
+<<<<<<< HEAD
+=======
+
+&nand {
+	status = "okay";
+
+	partition@0 {
+		label = "uboot";
+		reg = <0x0000000 0xc0000>;
+	};
+
+	partition@a0000 {
+		label = "env";
+		reg = <0xa0000 0x20000>;
+	};
+
+	partition@100000 {
+		label = "zImage";
+		reg = <0x100000 0x300000>;
+	};
+
+	partition@540000 {
+		label = "initrd";
+		reg = <0x540000 0x300000>;
+	};
+
+	partition@980000 {
+		label = "boot";
+		reg = <0x980000 0x1f400000>;
+	};
+};
+
+&mdio {
+	status = "okay";
+
+	ethphy0: ethernet-phy@11 {
+		reg = <11>;
+	};
+};
+
+&eth0 {
+	status = "okay";
+	ethernet0-port@0 {
+		phy-handle = <&ethphy0>;
+	};
+};
+
+&pciec {
+        status = "okay";
+};
+
+&pcie0 {
+	status = "okay";
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

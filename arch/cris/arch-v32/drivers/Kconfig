@@ -2,9 +2,13 @@ if ETRAX_ARCH_V32
 
 config ETRAX_ETHERNET
 	bool "Ethernet support"
+<<<<<<< HEAD
 	depends on ETRAX_ARCH_V32
 	select ETHERNET
 	select NET_CORE
+=======
+	depends on ETRAX_ARCH_V32 && NETDEVICES
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MII
 	help
 	  This option enables the ETRAX FS built-in 10/100Mbit Ethernet
@@ -13,7 +17,10 @@ config ETRAX_ETHERNET
 config ETRAX_NO_PHY
 	bool "PHY not present"
 	depends on ETRAX_ETHERNET
+<<<<<<< HEAD
 	default N
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  This option disables all MDIO communication with an ethernet
 	  transceiver connected to the MII interface. This option shall
@@ -21,6 +28,7 @@ config ETRAX_NO_PHY
 	  switch. This option should normally be disabled. If enabled,
 	  speed and duplex will be locked to 100 Mbit and full duplex.
 
+<<<<<<< HEAD
 config ETRAX_ETHERNET_IFACE0
 	depends on ETRAX_ETHERNET
 	bool "Enable network interface 0"
@@ -79,6 +87,8 @@ config ETRAX_ETH1_USE_LEDGRPNULL
 	  Use no LEDs for eth1
 endchoice
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAXFS_SERIAL
 	bool "Serial-port support"
 	depends on ETRAX_ARCH_V32
@@ -110,6 +120,7 @@ config ETRAX_SERIAL_PORT0
 	  if you do not need DMA to something else.
 	  ser0 can use dma4 or dma6 for output and dma5 or dma7 for input.
 
+<<<<<<< HEAD
 choice
 	prompt "Ser0 default port type "
 	depends on ETRAX_SERIAL_PORT0
@@ -151,12 +162,15 @@ config ETRAX_SER0_CD_BIT
 	string "Ser 0 CD bit (empty = not used)"
 	depends on ETRAX_SERIAL_PORT0
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_SERIAL_PORT1
 	bool "Serial port 1 enabled"
 	depends on ETRAXFS_SERIAL
 	help
 	  Enables the ETRAX FS serial driver for ser1 (ttyS1).
 
+<<<<<<< HEAD
 choice
 	prompt "Ser1 default port type"
 	depends on ETRAX_SERIAL_PORT1
@@ -198,12 +212,15 @@ config ETRAX_SER1_CD_BIT
 	string "Ser 1 CD bit (empty = not used)"
 	depends on ETRAX_SERIAL_PORT1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_SERIAL_PORT2
 	bool "Serial port 2 enabled"
 	depends on ETRAXFS_SERIAL
 	help
 	  Enables the ETRAX FS serial driver for ser2 (ttyS2).
 
+<<<<<<< HEAD
 choice
 	prompt "Ser2 default port type"
 	depends on ETRAX_SERIAL_PORT2
@@ -246,12 +263,15 @@ config ETRAX_SER2_CD_BIT
 	string "Ser 2 CD bit (empty = not used)"
 	depends on ETRAX_SERIAL_PORT2
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_SERIAL_PORT3
 	bool "Serial port 3 enabled"
 	depends on ETRAXFS_SERIAL
 	help
 	  Enables the ETRAX FS serial driver for ser3 (ttyS3).
 
+<<<<<<< HEAD
 choice
 	prompt "Ser3 default port type"
 	depends on ETRAX_SERIAL_PORT3
@@ -365,6 +385,8 @@ config ETRAX_SER4_CD_BIT
 	string "Ser 4 CD bit (empty = not used)"
 	depends on ETRAX_SERIAL_PORT4
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_SYNCHRONOUS_SERIAL
 	bool "Synchronous serial-port support"
 	depends on ETRAX_ARCH_V32
@@ -406,6 +428,10 @@ config ETRAX_AXISFLASHMAP
 	select MTD_JEDECPROBE
 	select MTD_BLOCK
 	select MTD_COMPLEX_MAPPINGS
+<<<<<<< HEAD
+=======
+	select MTD_MTDRAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  This option enables MTD mapping of flash devices.  Needed to use
 	  flash memories.  If unsure, say Y.
@@ -413,7 +439,10 @@ config ETRAX_AXISFLASHMAP
 config ETRAX_AXISFLASHMAP_MTD0WHOLE
 	bool "MTD0 is whole boot flash device"
 	depends on ETRAX_AXISFLASHMAP
+<<<<<<< HEAD
 	default N
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  When this option is not set, mtd0 refers to the first partition
 	  on the boot flash device. When set, mtd0 refers to the whole
@@ -447,6 +476,7 @@ config ETRAX_NANDBOOT
 	  Say Y if your boot code, kernel and root file system is in
 	  NAND flash. Say N if they are in NOR flash.
 
+<<<<<<< HEAD
 config ETRAX_I2C
 	bool "I2C driver"
 	depends on ETRAX_ARCH_V32
@@ -618,6 +648,11 @@ config ETRAX_CARDBUS
         bool "Cardbus support"
         depends on ETRAX_ARCH_V32
         select HOTPLUG
+=======
+config ETRAX_CARDBUS
+        bool "Cardbus support"
+        depends on ETRAX_ARCH_V32
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         help
 	 Enabled the ETRAX Cardbus driver.
 
@@ -641,8 +676,11 @@ config ETRAX_STREAMCOPROC
 	  This option enables a driver for the stream co-processor
 	  for cryptographic operations.
 
+<<<<<<< HEAD
 source drivers/mmc/Kconfig
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_MMC_IOP
 	tristate "MMC/SD host driver using IO-processor"
 	depends on ETRAX_ARCH_V32 && MMC
@@ -660,6 +698,7 @@ config ETRAX_SPI_MMC
 	default MMC
 	select SPI
 	select MMC_SPI
+<<<<<<< HEAD
 	select ETRAX_SPI_MMC_BOARD
 
 # For the parts that can't be a module (due to restrictions in
@@ -667,6 +706,8 @@ config ETRAX_SPI_MMC
 config ETRAX_SPI_MMC_BOARD
        boolean
        default n
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # While the board info is MMC_SPI only, the drivers are written to be
 # independent of MMC_SPI, so we'll keep SPI non-dependent on the
@@ -708,6 +749,7 @@ config ETRAX_SPI_SSER0
 	  want to build it as a module, which will be named spi_crisv32_sser.
 	  (You need to select MMC separately.)
 
+<<<<<<< HEAD
 config ETRAX_SPI_SSER0_DMA
 	bool "DMA for SPI on sser0 enabled"
 	depends on ETRAX_SPI_SSER0
@@ -734,6 +776,8 @@ config ETRAX_SPI_MMC_WP_SSER0_PIN
 	  The pin to use for the SD/MMC write-protect signal for a memory
 	  card.  If defined as " " (space), the card is considered writable.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_SPI_SSER1
 	tristate "SPI using synchronous serial port 1 (sser1)"
 	depends on ETRAX_SPI_MMC
@@ -747,6 +791,7 @@ config ETRAX_SPI_SSER1
 	  want to build it as a module, which will be named spi_crisv32_sser.
 	  (You need to select MMC separately.)
 
+<<<<<<< HEAD
 config ETRAX_SPI_SSER1_DMA
 	bool "DMA for SPI on sser1 enabled"
 	depends on ETRAX_SPI_SSER1 && !ETRAX_ETHERNET_IFACE1
@@ -773,6 +818,8 @@ config ETRAX_SPI_MMC_WP_SSER1_PIN
 	  The pin to use for the SD/MMC write-protect signal for a memory
 	  card.  If defined as " " (space), the card is considered writable.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_SPI_GPIO
 	tristate "Bitbanged SPI using gpio pins"
 	depends on ETRAX_SPI_MMC
@@ -787,6 +834,7 @@ config ETRAX_SPI_GPIO
 	  Say m to build it as a module, which will be called spi_crisv32_gpio.
 	  (You need to select MMC separately.)
 
+<<<<<<< HEAD
 # The default match that of sser0, only because that's how it was tested.
 config ETRAX_SPI_CS_PIN
 	string "SPI chip select pin"
@@ -839,4 +887,6 @@ if ETRAX_SPI_MMC
 source drivers/spi/Kconfig
 endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif

@@ -93,6 +93,10 @@ static struct ehci_qh *ehci_qh_alloc (struct ehci_hcd *ehci, gfp_t flags)
 	qh->qh_dma = dma;
 	// INIT_LIST_HEAD (&qh->qh_list);
 	INIT_LIST_HEAD (&qh->qtd_list);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&qh->unlink_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* dummy td enables safe urb queuing */
 	qh->dummy = ehci_qtd_alloc (ehci, flags);
@@ -127,6 +131,7 @@ static void ehci_mem_cleanup (struct ehci_hcd *ehci)
 	ehci->dummy = NULL;
 
 	/* DMA consistent memory and pools */
+<<<<<<< HEAD
 	if (ehci->qtd_pool)
 		dma_pool_destroy (ehci->qtd_pool);
 	ehci->qtd_pool = NULL;
@@ -142,6 +147,15 @@ static void ehci_mem_cleanup (struct ehci_hcd *ehci)
 
 	if (ehci->sitd_pool)
 		dma_pool_destroy (ehci->sitd_pool);
+=======
+	dma_pool_destroy(ehci->qtd_pool);
+	ehci->qtd_pool = NULL;
+	dma_pool_destroy(ehci->qh_pool);
+	ehci->qh_pool = NULL;
+	dma_pool_destroy(ehci->itd_pool);
+	ehci->itd_pool = NULL;
+	dma_pool_destroy(ehci->sitd_pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ehci->sitd_pool = NULL;
 
 	if (ehci->periodic)
@@ -208,7 +222,11 @@ static int ehci_mem_init (struct ehci_hcd *ehci, gfp_t flags)
 	ehci->periodic = (__le32 *)
 		dma_alloc_coherent (ehci_to_hcd(ehci)->self.controller,
 			ehci->periodic_size * sizeof(__le32),
+<<<<<<< HEAD
 			&ehci->periodic_dma, 0);
+=======
+			&ehci->periodic_dma, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ehci->periodic == NULL) {
 		goto fail;
 	}
@@ -223,11 +241,19 @@ static int ehci_mem_init (struct ehci_hcd *ehci, gfp_t flags)
 		hw->hw_next = EHCI_LIST_END(ehci);
 		hw->hw_qtd_next = EHCI_LIST_END(ehci);
 		hw->hw_alt_next = EHCI_LIST_END(ehci);
+<<<<<<< HEAD
 		hw->hw_token &= ~QTD_STS_ACTIVE;
 		ehci->dummy->hw = hw;
 
 		for (i = 0; i < ehci->periodic_size; i++)
 			ehci->periodic[i] = ehci->dummy->qh_dma;
+=======
+		ehci->dummy->hw = hw;
+
+		for (i = 0; i < ehci->periodic_size; i++)
+			ehci->periodic[i] = cpu_to_hc32(ehci,
+					ehci->dummy->qh_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		for (i = 0; i < ehci->periodic_size; i++)
 			ehci->periodic[i] = EHCI_LIST_END(ehci);

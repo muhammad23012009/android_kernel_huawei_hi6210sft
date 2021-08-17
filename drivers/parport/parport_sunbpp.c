@@ -286,12 +286,25 @@ static int bpp_probe(struct platform_device *op)
 
 	ops = kmemdup(&parport_sunbpp_ops, sizeof(struct parport_operations),
 		      GFP_KERNEL);
+<<<<<<< HEAD
         if (!ops)
 		goto out_unmap;
 
 	dprintk(("register_port\n"));
 	if (!(p = parport_register_port((unsigned long)base, irq, dma, ops)))
 		goto out_free_ops;
+=======
+	if (!ops) {
+		err = -ENOMEM;
+		goto out_unmap;
+	}
+
+	dprintk(("register_port\n"));
+	if (!(p = parport_register_port((unsigned long)base, irq, dma, ops))) {
+		err = -ENOMEM;
+		goto out_free_ops;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	p->size = size;
 	p->dev = &op->dev;
@@ -362,7 +375,10 @@ MODULE_DEVICE_TABLE(of, bpp_match);
 static struct platform_driver bpp_sbus_driver = {
 	.driver = {
 		.name = "bpp",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = bpp_match,
 	},
 	.probe		= bpp_probe,

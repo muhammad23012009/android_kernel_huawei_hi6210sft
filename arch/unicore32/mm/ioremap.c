@@ -144,11 +144,19 @@ void __iomem *__uc32_ioremap_pfn_caller(unsigned long pfn,
 	 * Don't allow RAM to be mapped
 	 */
 	if (pfn_valid(pfn)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "BUG: Your driver calls ioremap() on\n"
 			"system memory.  This leads to architecturally\n"
 			"unpredictable behaviour, and ioremap() will fail in\n"
 			"the next kernel release. Please fix your driver.\n");
 		WARN_ON(1);
+=======
+		WARN(1, "BUG: Your driver calls ioremap() on\n"
+			"system memory.  This leads to architecturally\n"
+			"unpredictable behaviour, and ioremap() will fail in\n"
+			"the next kernel release. Please fix your driver.\n");
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	type = get_mem_type(mtype);

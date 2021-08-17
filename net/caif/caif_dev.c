@@ -22,6 +22,10 @@
 #include <net/pkt_sched.h>
 #include <net/caif/caif_device.h>
 #include <net/caif/caif_layer.h>
+<<<<<<< HEAD
+=======
+#include <net/caif/caif_dev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/caif/cfpkt.h>
 #include <net/caif/cfcnfg.h>
 #include <net/caif/cfserl.h>
@@ -130,8 +134,15 @@ static void caif_flow_cb(struct sk_buff *skb)
 	caifd = caif_get(skb->dev);
 
 	WARN_ON(caifd == NULL);
+<<<<<<< HEAD
 	if (caifd == NULL)
 		return;
+=======
+	if (!caifd) {
+		rcu_read_unlock();
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	caifd_hold(caifd);
 	rcu_read_unlock();
@@ -176,7 +187,11 @@ static int transmit(struct cflayer *layer, struct cfpkt *pkt)
 	skb->protocol = htons(ETH_P_CAIF);
 
 	/* Check if we need to handle xoff */
+<<<<<<< HEAD
 	if (likely(caifd->netdev->tx_queue_len == 0))
+=======
+	if (likely(caifd->netdev->priv_flags & IFF_NO_QUEUE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto noxoff;
 
 	if (unlikely(caifd->xoff))
@@ -300,7 +315,11 @@ static void dev_flowctrl(struct net_device *dev, int on)
 	caifd_put(caifd);
 }
 
+<<<<<<< HEAD
 void caif_enroll_dev(struct net_device *dev, struct caif_dev_common *caifdev,
+=======
+int caif_enroll_dev(struct net_device *dev, struct caif_dev_common *caifdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     struct cflayer *link_support, int head_room,
 		     struct cflayer **layer,
 		     int (**rcv_func)(struct sk_buff *, struct net_device *,
@@ -311,11 +330,19 @@ void caif_enroll_dev(struct net_device *dev, struct caif_dev_common *caifdev,
 	enum cfcnfg_phy_preference pref;
 	struct cfcnfg *cfg = get_cfcnfg(dev_net(dev));
 	struct caif_device_entry_list *caifdevs;
+<<<<<<< HEAD
+=======
+	int res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	caifdevs = caif_device_list(dev_net(dev));
 	caifd = caif_device_alloc(dev);
 	if (!caifd)
+<<<<<<< HEAD
 		return;
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*layer = &caifd->layer;
 	spin_lock_init(&caifd->flow_lock);
 
@@ -337,7 +364,11 @@ void caif_enroll_dev(struct net_device *dev, struct caif_dev_common *caifdev,
 		sizeof(caifd->layer.name) - 1);
 	caifd->layer.name[sizeof(caifd->layer.name) - 1] = 0;
 	caifd->layer.transmit = transmit;
+<<<<<<< HEAD
 	cfcnfg_add_phy_layer(cfg,
+=======
+	res = cfcnfg_add_phy_layer(cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dev,
 				&caifd->layer,
 				pref,
@@ -347,20 +378,34 @@ void caif_enroll_dev(struct net_device *dev, struct caif_dev_common *caifdev,
 	mutex_unlock(&caifdevs->lock);
 	if (rcv_func)
 		*rcv_func = receive;
+<<<<<<< HEAD
+=======
+	return res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(caif_enroll_dev);
 
 /* notify Caif of device events */
 static int caif_device_notify(struct notifier_block *me, unsigned long what,
+<<<<<<< HEAD
 			      void *arg)
 {
 	struct net_device *dev = arg;
+=======
+			      void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct caif_device_entry *caifd = NULL;
 	struct caif_dev_common *caifdev;
 	struct cfcnfg *cfg;
 	struct cflayer *layer, *link_support;
 	int head_room = 0;
 	struct caif_device_entry_list *caifdevs;
+<<<<<<< HEAD
+=======
+	int res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cfg = get_cfcnfg(dev_net(dev));
 	caifdevs = caif_device_list(dev_net(dev));
@@ -386,8 +431,15 @@ static int caif_device_notify(struct notifier_block *me, unsigned long what,
 				break;
 			}
 		}
+<<<<<<< HEAD
 		caif_enroll_dev(dev, caifdev, link_support, head_room,
 				&layer, NULL);
+=======
+		res = caif_enroll_dev(dev, caifdev, link_support, head_room,
+				&layer, NULL);
+		if (res)
+			cfserl_release(link_support);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		caifdev->flowctrl = dev_flowctrl;
 		break;
 

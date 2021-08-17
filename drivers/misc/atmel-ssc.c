@@ -13,16 +13,26 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+#include <linux/mutex.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/atmel-ssc.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/pinctrl/consumer.h>
 
 /* Serialize access to ssc_list and user count */
 static DEFINE_SPINLOCK(user_lock);
+=======
+
+/* Serialize access to ssc_list and user count */
+static DEFINE_MUTEX(user_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static LIST_HEAD(ssc_list);
 
 struct ssc_device *ssc_request(unsigned int ssc_num)
@@ -30,11 +40,19 @@ struct ssc_device *ssc_request(unsigned int ssc_num)
 	int ssc_valid = 0;
 	struct ssc_device *ssc;
 
+<<<<<<< HEAD
 	spin_lock(&user_lock);
+=======
+	mutex_lock(&user_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_for_each_entry(ssc, &ssc_list, list) {
 		if (ssc->pdev->dev.of_node) {
 			if (of_alias_get_id(ssc->pdev->dev.of_node, "ssc")
 				== ssc_num) {
+<<<<<<< HEAD
+=======
+				ssc->pdev->id = ssc_num;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				ssc_valid = 1;
 				break;
 			}
@@ -45,20 +63,34 @@ struct ssc_device *ssc_request(unsigned int ssc_num)
 	}
 
 	if (!ssc_valid) {
+<<<<<<< HEAD
 		spin_unlock(&user_lock);
+=======
+		mutex_unlock(&user_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("ssc: ssc%d platform device is missing\n", ssc_num);
 		return ERR_PTR(-ENODEV);
 	}
 
 	if (ssc->user) {
+<<<<<<< HEAD
 		spin_unlock(&user_lock);
+=======
+		mutex_unlock(&user_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(&ssc->pdev->dev, "module busy\n");
 		return ERR_PTR(-EBUSY);
 	}
 	ssc->user++;
+<<<<<<< HEAD
 	spin_unlock(&user_lock);
 
 	clk_enable(ssc->clk);
+=======
+	mutex_unlock(&user_lock);
+
+	clk_prepare(ssc->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ssc;
 }
@@ -66,6 +98,7 @@ EXPORT_SYMBOL(ssc_request);
 
 void ssc_free(struct ssc_device *ssc)
 {
+<<<<<<< HEAD
 	spin_lock(&user_lock);
 	if (ssc->user) {
 		ssc->user--;
@@ -74,15 +107,43 @@ void ssc_free(struct ssc_device *ssc)
 		dev_dbg(&ssc->pdev->dev, "device already free\n");
 	}
 	spin_unlock(&user_lock);
+=======
+	bool disable_clk = true;
+
+	mutex_lock(&user_lock);
+	if (ssc->user)
+		ssc->user--;
+	else {
+		disable_clk = false;
+		dev_dbg(&ssc->pdev->dev, "device already free\n");
+	}
+	mutex_unlock(&user_lock);
+
+	if (disable_clk)
+		clk_unprepare(ssc->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(ssc_free);
 
 static struct atmel_ssc_platform_data at91rm9200_config = {
 	.use_dma = 0,
+<<<<<<< HEAD
+=======
+	.has_fslen_ext = 0,
+};
+
+static struct atmel_ssc_platform_data at91sam9rl_config = {
+	.use_dma = 0,
+	.has_fslen_ext = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct atmel_ssc_platform_data at91sam9g45_config = {
 	.use_dma = 1,
+<<<<<<< HEAD
+=======
+	.has_fslen_ext = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct platform_device_id atmel_ssc_devtypes[] = {
@@ -90,6 +151,12 @@ static const struct platform_device_id atmel_ssc_devtypes[] = {
 		.name = "at91rm9200_ssc",
 		.driver_data = (unsigned long) &at91rm9200_config,
 	}, {
+<<<<<<< HEAD
+=======
+		.name = "at91sam9rl_ssc",
+		.driver_data = (unsigned long) &at91sam9rl_config,
+	}, {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "at91sam9g45_ssc",
 		.driver_data = (unsigned long) &at91sam9g45_config,
 	}, {
@@ -103,6 +170,12 @@ static const struct of_device_id atmel_ssc_dt_ids[] = {
 		.compatible = "atmel,at91rm9200-ssc",
 		.data = &at91rm9200_config,
 	}, {
+<<<<<<< HEAD
+=======
+		.compatible = "atmel,at91sam9rl-ssc",
+		.data = &at91sam9rl_config,
+	}, {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.compatible = "atmel,at91sam9g45-ssc",
 		.data = &at91sam9g45_config,
 	}, {
@@ -112,7 +185,11 @@ static const struct of_device_id atmel_ssc_dt_ids[] = {
 MODULE_DEVICE_TABLE(of, atmel_ssc_dt_ids);
 #endif
 
+<<<<<<< HEAD
 static inline const struct atmel_ssc_platform_data * __init
+=======
+static inline const struct atmel_ssc_platform_data *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atmel_ssc_get_driver_data(struct platform_device *pdev)
 {
 	if (pdev->dev.of_node) {
@@ -132,6 +209,7 @@ static int ssc_probe(struct platform_device *pdev)
 	struct resource *regs;
 	struct ssc_device *ssc;
 	const struct atmel_ssc_platform_data *plat_dat;
+<<<<<<< HEAD
 	struct pinctrl *pinctrl;
 
 	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
@@ -139,6 +217,8 @@ static int ssc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to request pinctrl\n");
 		return PTR_ERR(pinctrl);
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ssc = devm_kzalloc(&pdev->dev, sizeof(struct ssc_device), GFP_KERNEL);
 	if (!ssc) {
@@ -153,6 +233,15 @@ static int ssc_probe(struct platform_device *pdev)
 		return -ENODEV;
 	ssc->pdata = (struct atmel_ssc_platform_data *)plat_dat;
 
+<<<<<<< HEAD
+=======
+	if (pdev->dev.of_node) {
+		struct device_node *np = pdev->dev.of_node;
+		ssc->clk_from_rk_pin =
+			of_property_read_bool(np, "atmel,clk-from-rk-pin");
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	ssc->regs = devm_ioremap_resource(&pdev->dev, regs);
 	if (IS_ERR(ssc->regs))
@@ -167,10 +256,17 @@ static int ssc_probe(struct platform_device *pdev)
 	}
 
 	/* disable all interrupts */
+<<<<<<< HEAD
 	clk_enable(ssc->clk);
 	ssc_writel(ssc->regs, IDR, -1);
 	ssc_readl(ssc->regs, SR);
 	clk_disable(ssc->clk);
+=======
+	clk_prepare_enable(ssc->clk);
+	ssc_writel(ssc->regs, IDR, -1);
+	ssc_readl(ssc->regs, SR);
+	clk_disable_unprepare(ssc->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ssc->irq = platform_get_irq(pdev, 0);
 	if (!ssc->irq) {
@@ -178,9 +274,15 @@ static int ssc_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&user_lock);
 	list_add_tail(&ssc->list, &ssc_list);
 	spin_unlock(&user_lock);
+=======
+	mutex_lock(&user_lock);
+	list_add_tail(&ssc->list, &ssc_list);
+	mutex_unlock(&user_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, ssc);
 
@@ -194,9 +296,15 @@ static int ssc_remove(struct platform_device *pdev)
 {
 	struct ssc_device *ssc = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	spin_lock(&user_lock);
 	list_del(&ssc->list);
 	spin_unlock(&user_lock);
+=======
+	mutex_lock(&user_lock);
+	list_del(&ssc->list);
+	mutex_unlock(&user_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -204,7 +312,10 @@ static int ssc_remove(struct platform_device *pdev)
 static struct platform_driver ssc_driver = {
 	.driver		= {
 		.name		= "ssc",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table	= of_match_ptr(atmel_ssc_dt_ids),
 	},
 	.id_table	= atmel_ssc_devtypes,

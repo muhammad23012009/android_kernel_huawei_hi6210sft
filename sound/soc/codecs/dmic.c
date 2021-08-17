@@ -50,6 +50,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{"DMIC AIF", NULL, "DMic"},
 };
 
+<<<<<<< HEAD
 static int dmic_probe(struct snd_soc_codec *codec)
 {
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
@@ -64,6 +65,15 @@ static int dmic_probe(struct snd_soc_codec *codec)
 
 static struct snd_soc_codec_driver soc_dmic = {
 	.probe	= dmic_probe,
+=======
+static struct snd_soc_codec_driver soc_dmic = {
+	.component_driver = {
+		.dapm_widgets		= dmic_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(dmic_dapm_widgets),
+		.dapm_routes		= intercon,
+		.num_dapm_routes	= ARRAY_SIZE(intercon),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int dmic_dev_probe(struct platform_device *pdev)
@@ -83,7 +93,10 @@ MODULE_ALIAS("platform:dmic-codec");
 static struct platform_driver dmic_driver = {
 	.driver = {
 		.name = "dmic-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = dmic_dev_probe,
 	.remove = dmic_dev_remove,

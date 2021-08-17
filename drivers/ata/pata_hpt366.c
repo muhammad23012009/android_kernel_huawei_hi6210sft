@@ -19,7 +19,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -177,6 +180,7 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 			       const char * const list[])
 {
 	unsigned char model_num[ATA_ID_PROD_LEN + 1];
+<<<<<<< HEAD
 	int i = 0;
 
 	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
@@ -188,6 +192,16 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 			return 1;
 		}
 		i++;
+=======
+	int i;
+
+	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
+
+	i = match_string(list, -1, model_num);
+	if (i >= 0) {
+		pr_warn("%s is not supported for %s\n", modestr, list[i]);
+		return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -353,7 +367,11 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	};
 	const struct ata_port_info *ppi[] = { &info_hpt366, NULL };
 
+<<<<<<< HEAD
 	void *hpriv = NULL;
+=======
+	const void *hpriv = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 reg1;
 	int rc;
 
@@ -372,7 +390,11 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 
 	/* PCI clocking determines the ATA timing values to use */
 	/* info_hpt366 is safe against re-entry so we can scribble on it */
+<<<<<<< HEAD
 	switch ((reg1 & 0x700) >> 8) {
+=======
+	switch ((reg1 & 0xf00) >> 8) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 9:
 		hpriv = &hpt366_40;
 		break;
@@ -384,6 +406,7 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		break;
 	}
 	/* Now kick off ATA set up */
+<<<<<<< HEAD
 	return ata_pci_bmdma_init_one(dev, ppi, &hpt36x_sht, hpriv, 0);
 }
 
@@ -391,6 +414,15 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 static int hpt36x_reinit_one(struct pci_dev *dev)
 {
 	struct ata_host *host = dev_get_drvdata(&dev->dev);
+=======
+	return ata_pci_bmdma_init_one(dev, ppi, &hpt36x_sht, (void *)hpriv, 0);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int hpt36x_reinit_one(struct pci_dev *dev)
+{
+	struct ata_host *host = pci_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = ata_pci_device_do_resume(dev);
@@ -412,7 +444,11 @@ static struct pci_driver hpt36x_pci_driver = {
 	.id_table	= hpt36x,
 	.probe		= hpt36x_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend	= ata_pci_device_suspend,
 	.resume		= hpt36x_reinit_one,
 #endif

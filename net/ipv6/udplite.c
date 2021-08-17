@@ -45,18 +45,28 @@ struct proto udplitev6_prot = {
 	.getsockopt	   = udpv6_getsockopt,
 	.sendmsg	   = udpv6_sendmsg,
 	.recvmsg	   = udpv6_recvmsg,
+<<<<<<< HEAD
 	.backlog_rcv	   = udpv6_queue_rcv_skb,
+=======
+	.backlog_rcv	   = __udpv6_queue_rcv_skb,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hash		   = udp_lib_hash,
 	.unhash		   = udp_lib_unhash,
 	.get_port	   = udp_v6_get_port,
 	.obj_size	   = sizeof(struct udp6_sock),
+<<<<<<< HEAD
 	.slab_flags	   = SLAB_DESTROY_BY_RCU,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.h.udp_table	   = &udplite_table,
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_udpv6_setsockopt,
 	.compat_getsockopt = compat_udpv6_getsockopt,
 #endif
+<<<<<<< HEAD
 	.clear_sk	   = udp_v6_clear_sk,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct inet_protosw udplite6_protosw = {
@@ -64,7 +74,10 @@ static struct inet_protosw udplite6_protosw = {
 	.protocol	= IPPROTO_UDPLITE,
 	.prot		= &udplitev6_prot,
 	.ops		= &inet6_dgram_ops,
+<<<<<<< HEAD
 	.no_check	= 0,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= INET_PROTOSW_PERMANENT,
 };
 

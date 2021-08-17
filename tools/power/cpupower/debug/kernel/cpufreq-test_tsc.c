@@ -18,19 +18,29 @@
  * 5.) if the third value, "diff_pmtmr", changes between 2. and 4., the
  *     TSC-based delay routine on the Linux kernel does not correctly
  *     handle the cpufreq transition. Please report this to
+<<<<<<< HEAD
  *     cpufreq@vger.kernel.org
+=======
+ *     linux-pm@vger.kernel.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 
+=======
+#include <linux/acpi.h>
+#include <asm/io.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pm_tmr_ioport = 0;
 
 /*helper function to safely read acpi pm timesource*/
@@ -84,11 +94,19 @@ static int __init cpufreq_test_tsc(void)
 
 	printk(KERN_DEBUG "start--> \n");
 	then = read_pmtmr();
+<<<<<<< HEAD
         rdtscll(then_tsc);
 	for (i=0;i<20;i++) {
 		mdelay(100);
 		now = read_pmtmr();
 		rdtscll(now_tsc);
+=======
+	then_tsc = rdtsc();
+	for (i=0;i<20;i++) {
+		mdelay(100);
+		now = read_pmtmr();
+		now_tsc = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		diff = (now - then) & 0xFFFFFF;
 		diff_tsc = now_tsc - then_tsc;
 		printk(KERN_DEBUG "t1: %08u t2: %08u diff_pmtmr: %08u diff_tsc: %016llu\n", then, now, diff, diff_tsc);

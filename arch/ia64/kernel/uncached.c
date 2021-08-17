@@ -97,8 +97,13 @@ static int uncached_add_chunk(struct uncached_pool *uc_pool, int nid)
 
 	/* attempt to allocate a granule's worth of cached memory pages */
 
+<<<<<<< HEAD
 	page = alloc_pages_exact_node(nid,
 				GFP_KERNEL | __GFP_ZERO | GFP_THISNODE,
+=======
+	page = __alloc_pages_node(nid,
+				GFP_KERNEL | __GFP_ZERO | __GFP_THISNODE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				IA64_GRANULE_SHIFT-PAGE_SHIFT);
 	if (!page) {
 		mutex_unlock(&uc_pool->add_chunk_mutex);

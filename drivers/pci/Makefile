@@ -4,7 +4,11 @@
 
 obj-y		+= access.o bus.o probe.o host-bridge.o remove.o pci.o \
 			pci-driver.o search.o pci-sysfs.o rom.o setup-res.o \
+<<<<<<< HEAD
 			irq.o vpd.o setup-bus.o
+=======
+			irq.o vpd.o setup-bus.o vc.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_PROC_FS) += proc.o
 obj-$(CONFIG_SYSFS) += slot.o
 
@@ -13,8 +17,11 @@ obj-$(CONFIG_PCI_QUIRKS) += quirks.o
 # Build PCI Express stuff if needed
 obj-$(CONFIG_PCIEPORTBUS) += pcie/
 
+<<<<<<< HEAD
 obj-$(CONFIG_PCI_IOAPIC) += ioapic.o
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Build the PCI Hotplug drivers if we were asked to
 obj-$(CONFIG_HOTPLUG_PCI) += hotplug/
 ifdef CONFIG_HOTPLUG_PCI
@@ -33,6 +40,7 @@ obj-$(CONFIG_PCI_IOV) += iov.o
 #
 # Some architectures use the generic PCI setup functions
 #
+<<<<<<< HEAD
 obj-$(CONFIG_X86) += setup-bus.o
 obj-$(CONFIG_ALPHA) += setup-bus.o setup-irq.o
 obj-$(CONFIG_ARM) += setup-bus.o setup-irq.o
@@ -48,6 +56,18 @@ obj-$(CONFIG_MICROBLAZE) += setup-bus.o
 obj-$(CONFIG_TILE) += setup-bus.o setup-irq.o
 obj-$(CONFIG_SPARC_LEON) += setup-bus.o setup-irq.o
 obj-$(CONFIG_M68K) += setup-bus.o setup-irq.o
+=======
+obj-$(CONFIG_ALPHA) += setup-irq.o
+obj-$(CONFIG_ARC) += setup-irq.o
+obj-$(CONFIG_ARM) += setup-irq.o
+obj-$(CONFIG_ARM64) += setup-irq.o
+obj-$(CONFIG_UNICORE32) += setup-irq.o
+obj-$(CONFIG_SUPERH) += setup-irq.o
+obj-$(CONFIG_MIPS) += setup-irq.o
+obj-$(CONFIG_TILE) += setup-irq.o
+obj-$(CONFIG_SPARC_LEON) += setup-irq.o
+obj-$(CONFIG_M68K) += setup-irq.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # ACPI Related PCI FW Functions
@@ -58,12 +78,29 @@ obj-$(CONFIG_ACPI)    += pci-acpi.o
 # SMBIOS provided firmware instance and labels
 obj-$(CONFIG_PCI_LABEL) += pci-label.o
 
+<<<<<<< HEAD
+=======
+# Intel MID platform PM support
+obj-$(CONFIG_X86_INTEL_MID) += pci-mid.o
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_PCI_SYSCALL) += syscall.o
 
 obj-$(CONFIG_PCI_STUB) += pci-stub.o
 
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_PCI_ECAM) += ecam.o
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_XEN_PCIDEV_FRONTEND) += xen-pcifront.o
 
 obj-$(CONFIG_OF) += of.o
 
 ccflags-$(CONFIG_PCI_DEBUG) := -DDEBUG
+<<<<<<< HEAD
+=======
+
+# PCI host controller drivers
+obj-y += host/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

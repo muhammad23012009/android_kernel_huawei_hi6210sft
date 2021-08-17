@@ -9,6 +9,11 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/rtc.h>
 
 /* IMPORTANT: the RTC only stores whole seconds. It is arbitrary
@@ -26,14 +31,23 @@ static int __init rtc_hctosys(void)
 {
 	int err = -ENODEV;
 	struct rtc_time tm;
+<<<<<<< HEAD
 	struct timespec tv = {
+=======
+	struct timespec64 tv64 = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.tv_nsec = NSEC_PER_SEC >> 1,
 	};
 	struct rtc_device *rtc = rtc_class_open(CONFIG_RTC_HCTOSYS_DEVICE);
 
 	if (rtc == NULL) {
+<<<<<<< HEAD
 		pr_err("%s: unable to open rtc device (%s)\n",
 			__FILE__, CONFIG_RTC_HCTOSYS_DEVICE);
+=======
+		pr_info("unable to open rtc device (%s)\n",
+			CONFIG_RTC_HCTOSYS_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_open;
 	}
 
@@ -45,6 +59,7 @@ static int __init rtc_hctosys(void)
 
 	}
 
+<<<<<<< HEAD
 	err = rtc_valid_tm(&tm);
 	if (err) {
 		dev_err(rtc->dev.parent,
@@ -64,6 +79,26 @@ static int __init rtc_hctosys(void)
 		(unsigned int) tv.tv_sec);
 
 err_invalid:
+=======
+	tv64.tv_sec = rtc_tm_to_time64(&tm);
+
+#if BITS_PER_LONG == 32
+	if (tv64.tv_sec > INT_MAX) {
+		err = -ERANGE;
+		goto err_read;
+	}
+#endif
+
+	err = do_settimeofday64(&tv64);
+
+	dev_info(rtc->dev.parent,
+		"setting system clock to "
+		"%d-%02d-%02d %02d:%02d:%02d UTC (%lld)\n",
+		tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+		tm.tm_hour, tm.tm_min, tm.tm_sec,
+		(long long) tv64.tv_sec);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_read:
 	rtc_class_close(rtc);
 

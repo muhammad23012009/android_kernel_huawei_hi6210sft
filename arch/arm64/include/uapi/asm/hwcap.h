@@ -27,5 +27,11 @@
 #define HWCAP_SHA1		(1 << 5)
 #define HWCAP_SHA2		(1 << 6)
 #define HWCAP_CRC32		(1 << 7)
+<<<<<<< HEAD
+=======
+#define HWCAP_ATOMICS		(1 << 8)
+#define HWCAP_FPHP		(1 << 9)
+#define HWCAP_ASIMDHP		(1 << 10)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _UAPI__ASM_HWCAP_H */

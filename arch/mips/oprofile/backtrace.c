@@ -65,7 +65,11 @@ static inline int is_end_of_function_marker(union mips_instruction *ip)
  * - handle cases where the stack is adjusted inside a function
  *     (generally doesn't happen)
  * - find optimal value for max_instr_check
+<<<<<<< HEAD
  * - try to find a way to handle leaf functions
+=======
+ * - try to find a better way to handle leaf functions
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 static inline int unwind_user_frame(struct stackframe *old_frame,
@@ -104,7 +108,11 @@ static inline int unwind_user_frame(struct stackframe *old_frame,
 	}
 
 	if (!ra_offset || !stack_size)
+<<<<<<< HEAD
 		return -1;
+=======
+		goto done;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ra_offset) {
 		new_frame.ra = old_frame->sp + ra_offset;
@@ -121,6 +129,10 @@ static inline int unwind_user_frame(struct stackframe *old_frame,
 	if (new_frame.sp > old_frame->sp)
 		return -2;
 
+<<<<<<< HEAD
+=======
+done:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	new_frame.pc = old_frame->ra;
 	*old_frame = new_frame;
 

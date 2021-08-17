@@ -72,7 +72,11 @@ FTRACE_ENTRY_REG(function, ftrace_entry,
 );
 
 /* Function call entry */
+<<<<<<< HEAD
 FTRACE_ENTRY(funcgraph_entry, ftrace_graph_ent_entry,
+=======
+FTRACE_ENTRY_PACKED(funcgraph_entry, ftrace_graph_ent_entry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	TRACE_GRAPH_ENT,
 
@@ -88,7 +92,11 @@ FTRACE_ENTRY(funcgraph_entry, ftrace_graph_ent_entry,
 );
 
 /* Function return entry */
+<<<<<<< HEAD
 FTRACE_ENTRY(funcgraph_exit, ftrace_graph_ret_entry,
+=======
+FTRACE_ENTRY_PACKED(funcgraph_exit, ftrace_graph_ret_entry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	TRACE_GRAPH_RET,
 
@@ -178,7 +186,11 @@ FTRACE_ENTRY(kernel_stack, stack_entry,
 
 	F_STRUCT(
 		__field(	int,		size	)
+<<<<<<< HEAD
 		__dynamic_array(unsigned long,	caller	)
+=======
+		__array(	unsigned long,	caller,	FTRACE_STACK_ENTRIES	)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	),
 
 	F_printk("\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n"
@@ -223,7 +235,11 @@ FTRACE_ENTRY(bprint, bprint_entry,
 		__dynamic_array(	u32,	buf	)
 	),
 
+<<<<<<< HEAD
 	F_printk("%pf: %s",
+=======
+	F_printk("%ps: %s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 (void *)__entry->ip, __entry->fmt),
 
 	FILTER_OTHER
@@ -238,7 +254,11 @@ FTRACE_ENTRY(print, print_entry,
 		__dynamic_array(	char,	buf	)
 	),
 
+<<<<<<< HEAD
 	F_printk("%pf: %s",
+=======
+	F_printk("%ps: %s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 (void *)__entry->ip, __entry->buf),
 
 	FILTER_OTHER
@@ -253,7 +273,11 @@ FTRACE_ENTRY(bputs, bputs_entry,
 		__field(	const char *,	str	)
 	),
 
+<<<<<<< HEAD
 	F_printk("%pf: %s",
+=======
+	F_printk("%ps: %s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 (void *)__entry->ip, __entry->str),
 
 	FILTER_OTHER
@@ -322,3 +346,33 @@ FTRACE_ENTRY(branch, trace_branch,
 	FILTER_OTHER
 );
 
+<<<<<<< HEAD
+=======
+
+FTRACE_ENTRY(hwlat, hwlat_entry,
+
+	TRACE_HWLAT,
+
+	F_STRUCT(
+		__field(	u64,			duration	)
+		__field(	u64,			outer_duration	)
+		__field(	u64,			nmi_total_ts	)
+		__field_struct( struct timespec,	timestamp	)
+		__field_desc(	long,	timestamp,	tv_sec		)
+		__field_desc(	long,	timestamp,	tv_nsec		)
+		__field(	unsigned int,		nmi_count	)
+		__field(	unsigned int,		seqnum		)
+	),
+
+	F_printk("cnt:%u\tts:%010lu.%010lu\tinner:%llu\touter:%llunmi-ts:%llu\tnmi-count:%u\n",
+		 __entry->seqnum,
+		 __entry->tv_sec,
+		 __entry->tv_nsec,
+		 __entry->duration,
+		 __entry->outer_duration,
+		 __entry->nmi_total_ts,
+		 __entry->nmi_count),
+
+	FILTER_OTHER
+);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

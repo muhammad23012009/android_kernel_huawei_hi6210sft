@@ -52,7 +52,11 @@ static void clk_sysctrl_unprepare(struct clk_hw *hw)
 	struct clk_sysctrl *clk = to_clk_sysctrl(hw);
 	if (ab8500_sysctrl_clear(clk->reg_sel[0], clk->reg_mask[0]))
 		dev_err(clk->dev, "clk_sysctrl: %s fail to clear %s.\n",
+<<<<<<< HEAD
 			__func__, __clk_get_name(hw->clk));
+=======
+			__func__, clk_hw_get_name(hw));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned long clk_sysctrl_recalc_rate(struct clk_hw *hw,

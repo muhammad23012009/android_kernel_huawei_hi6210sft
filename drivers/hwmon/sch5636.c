@@ -449,7 +449,11 @@ static int sch5636_probe(struct platform_device *pdev)
 		}
 		revision[i] = val;
 	}
+<<<<<<< HEAD
 	pr_info("Found %s chip at %#hx, revison: %d.%02d\n", DEVNAME,
+=======
+	pr_info("Found %s chip at %#hx, revision: %d.%02d\n", DEVNAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data->addr, revision[0], revision[1]);
 
 	/* Read all temp + fan ctrl registers to determine which are active */
@@ -521,7 +525,10 @@ error:
 
 static struct platform_driver sch5636_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= DRVNAME,
 	},
 	.probe		= sch5636_probe,

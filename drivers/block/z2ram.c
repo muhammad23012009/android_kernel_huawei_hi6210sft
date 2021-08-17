@@ -43,9 +43,12 @@
 #include <linux/zorro.h>
 
 
+<<<<<<< HEAD
 extern int m68k_realnum_memory;
 extern struct mem_info m68k_memory[NUM_MEMINFO];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define Z2MINOR_COMBINED      (0)
 #define Z2MINOR_Z2ONLY        (1)
 #define Z2MINOR_CHIPONLY      (2)
@@ -90,13 +93,24 @@ static void do_z2_request(struct request_queue *q)
 		while (len) {
 			unsigned long addr = start & Z2RAM_CHUNKMASK;
 			unsigned long size = Z2RAM_CHUNKSIZE - addr;
+<<<<<<< HEAD
+=======
+			void *buffer = bio_data(req->bio);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (len < size)
 				size = len;
 			addr += z2ram_map[ start >> Z2RAM_CHUNKSHIFT ];
 			if (rq_data_dir(req) == READ)
+<<<<<<< HEAD
 				memcpy(req->buffer, (char *)addr, size);
 			else
 				memcpy((char *)addr, req->buffer, size);
+=======
+				memcpy(buffer, (char *)addr, size);
+			else
+				memcpy((char *)addr, buffer, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			start += size;
 			len -= size;
 		}
@@ -116,8 +130,13 @@ get_z2ram( void )
 	if ( test_bit( i, zorro_unused_z2ram ) )
 	{
 	    z2_count++;
+<<<<<<< HEAD
 	    z2ram_map[ z2ram_size++ ] = 
 		ZTWO_VADDR( Z2RAM_START ) + ( i << Z2RAM_CHUNKSHIFT );
+=======
+	    z2ram_map[z2ram_size++] = (unsigned long)ZTWO_VADDR(Z2RAM_START) +
+				      (i << Z2RAM_CHUNKSHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    clear_bit( i, zorro_unused_z2ram );
 	}
     }

@@ -24,6 +24,10 @@
 #include <linux/stddef.h>
 #include <linux/unistd.h>
 #include <linux/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <linux/random.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/user.h>
 #include <linux/tty.h>
 #include <linux/ioport.h>
@@ -40,14 +44,20 @@
 #include <linux/ctype.h>
 #include <linux/reboot.h>
 #include <linux/topology.h>
+<<<<<<< HEAD
 #include <linux/ftrace.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kexec.h>
 #include <linux/crash_dump.h>
 #include <linux/memory.h>
 #include <linux/compat.h>
 
 #include <asm/ipl.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/facility.h>
 #include <asm/smp.h>
 #include <asm/mmu_context.h>
@@ -62,6 +72,7 @@
 #include <asm/diag.h>
 #include <asm/os_info.h>
 #include <asm/sclp.h>
+<<<<<<< HEAD
 #include "entry.h"
 
 long psw_kernel_bits	= PSW_DEFAULT_KEY | PSW_MASK_BASE | PSW_ASC_PRIMARY |
@@ -76,6 +87,14 @@ long psw_user_bits	= PSW_MASK_DAT | PSW_MASK_IO | PSW_MASK_EXT |
 struct uaccess_ops uaccess;
 EXPORT_SYMBOL(uaccess);
 
+=======
+#include <asm/sysinfo.h>
+#include <asm/numa.h>
+#include <asm/alternative.h>
+#include <asm/nospec-branch.h>
+#include "entry.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Machine setup..
  */
@@ -88,6 +107,7 @@ EXPORT_SYMBOL(console_devno);
 unsigned int console_irq = -1;
 EXPORT_SYMBOL(console_irq);
 
+<<<<<<< HEAD
 unsigned long elf_hwcap = 0;
 char elf_platform[ELF_PLATFORM_SIZE];
 
@@ -95,6 +115,16 @@ struct mem_chunk __initdata memory_chunk[MEMORY_CHUNKS];
 
 int __initdata memory_end_set;
 unsigned long __initdata memory_end;
+=======
+unsigned long elf_hwcap __read_mostly = 0;
+char elf_platform[ELF_PLATFORM_SIZE];
+
+unsigned long int_hwcap = 0;
+
+int __initdata memory_end_set;
+unsigned long __initdata memory_end;
+unsigned long __initdata max_physmem_end;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned long VMALLOC_START;
 EXPORT_SYMBOL(VMALLOC_START);
@@ -105,6 +135,7 @@ EXPORT_SYMBOL(VMALLOC_END);
 struct page *vmemmap;
 EXPORT_SYMBOL(vmemmap);
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 unsigned long MODULES_VADDR;
 unsigned long MODULES_END;
@@ -112,6 +143,13 @@ unsigned long MODULES_END;
 
 /* An array with a pointer to the lowcore of every CPU. */
 struct _lowcore *lowcore_ptr[NR_CPUS];
+=======
+unsigned long MODULES_VADDR;
+unsigned long MODULES_END;
+
+/* An array with a pointer to the lowcore of every CPU. */
+struct lowcore *lowcore_ptr[NR_CPUS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(lowcore_ptr);
 
 /*
@@ -142,6 +180,7 @@ __setup("condev=", condev_setup);
 
 static void __init set_preferred_console(void)
 {
+<<<<<<< HEAD
 	if (MACHINE_IS_KVM) {
 		if (sclp_has_vt220())
 			add_preferred_console("ttyS", 1, NULL);
@@ -153,6 +192,16 @@ static void __init set_preferred_console(void)
 		add_preferred_console("ttyS", 0, NULL);
 	else if (CONSOLE_IS_3270)
 		add_preferred_console("tty3270", 0, NULL);
+=======
+	if (CONSOLE_IS_3215 || CONSOLE_IS_SCLP)
+		add_preferred_console("ttyS", 0, NULL);
+	else if (CONSOLE_IS_3270)
+		add_preferred_console("tty3270", 0, NULL);
+	else if (CONSOLE_IS_VT220)
+		add_preferred_console("ttysclp", 0, NULL);
+	else if (CONSOLE_IS_HVC)
+		add_preferred_console("hvc", 0, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init conmode_setup(char *str)
@@ -218,6 +267,16 @@ static void __init conmode_default(void)
 			SET_CONSOLE_SCLP;
 #endif
 		}
+<<<<<<< HEAD
+=======
+	} else if (MACHINE_IS_KVM) {
+		if (sclp.has_vt220 && IS_ENABLED(CONFIG_SCLP_VT220_CONSOLE))
+			SET_CONSOLE_VT220;
+		else if (sclp.has_linemode && IS_ENABLED(CONFIG_SCLP_CONSOLE))
+			SET_CONSOLE_SCLP;
+		else
+			SET_CONSOLE_HVC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 #if defined(CONFIG_SCLP_CONSOLE) || defined(CONFIG_SCLP_VT220_CONSOLE)
 		SET_CONSOLE_SCLP;
@@ -225,7 +284,11 @@ static void __init conmode_default(void)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_ZFCPDUMP
+=======
+#ifdef CONFIG_CRASH_DUMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init setup_zfcpdump(void)
 {
 	if (ipl_info.type != IPL_TYPE_FCP_DUMP)
@@ -237,7 +300,11 @@ static void __init setup_zfcpdump(void)
 }
 #else
 static inline void setup_zfcpdump(void) {}
+<<<<<<< HEAD
 #endif /* CONFIG_ZFCPDUMP */
+=======
+#endif /* CONFIG_CRASH_DUMP */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  /*
  * Reboot, halt and power_off stubs. They just call _machine_restart,
@@ -286,6 +353,10 @@ EXPORT_SYMBOL_GPL(pm_power_off);
 static int __init early_parse_mem(char *p)
 {
 	memory_end = memparse(p, &p);
+<<<<<<< HEAD
+=======
+	memory_end &= PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memory_end_set = 1;
 	return 0;
 }
@@ -300,6 +371,7 @@ static int __init parse_vmalloc(char *arg)
 }
 early_param("vmalloc", parse_vmalloc);
 
+<<<<<<< HEAD
 unsigned int s390_user_mode = PRIMARY_SPACE_MODE;
 EXPORT_SYMBOL_GPL(s390_user_mode);
 
@@ -342,10 +414,18 @@ void *restart_stack __attribute__((__section__(".data")));
 static void __init setup_lowcore(void)
 {
 	struct _lowcore *lc;
+=======
+void *restart_stack __section(.data);
+
+static void __init setup_lowcore(void)
+{
+	struct lowcore *lc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Setup lowcore for boot cpu
 	 */
+<<<<<<< HEAD
 	BUILD_BUG_ON(sizeof(struct _lowcore) != LC_PAGES * 4096);
 	lc = __alloc_bootmem_low(LC_PAGES * PAGE_SIZE, LC_PAGES * PAGE_SIZE, 0);
 	lc->restart_psw.mask = psw_kernel_bits;
@@ -368,6 +448,26 @@ static void __init setup_lowcore(void)
 	lc->io_new_psw.mask = psw_kernel_bits |
 		PSW_MASK_DAT | PSW_MASK_MCHECK;
 	lc->io_new_psw.addr = PSW_ADDR_AMODE | (unsigned long) io_int_handler;
+=======
+	BUILD_BUG_ON(sizeof(struct lowcore) != LC_PAGES * 4096);
+	lc = __alloc_bootmem_low(LC_PAGES * PAGE_SIZE, LC_PAGES * PAGE_SIZE, 0);
+	lc->restart_psw.mask = PSW_KERNEL_BITS;
+	lc->restart_psw.addr = (unsigned long) restart_int_handler;
+	lc->external_new_psw.mask = PSW_KERNEL_BITS |
+		PSW_MASK_DAT | PSW_MASK_MCHECK;
+	lc->external_new_psw.addr = (unsigned long) ext_int_handler;
+	lc->svc_new_psw.mask = PSW_KERNEL_BITS |
+		PSW_MASK_DAT | PSW_MASK_IO | PSW_MASK_EXT | PSW_MASK_MCHECK;
+	lc->svc_new_psw.addr = (unsigned long) system_call;
+	lc->program_new_psw.mask = PSW_KERNEL_BITS |
+		PSW_MASK_DAT | PSW_MASK_MCHECK;
+	lc->program_new_psw.addr = (unsigned long) pgm_check_handler;
+	lc->mcck_new_psw.mask = PSW_KERNEL_BITS;
+	lc->mcck_new_psw.addr = (unsigned long) mcck_int_handler;
+	lc->io_new_psw.mask = PSW_KERNEL_BITS |
+		PSW_MASK_DAT | PSW_MASK_MCHECK;
+	lc->io_new_psw.addr = (unsigned long) io_int_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lc->clock_comparator = -1ULL;
 	lc->kernel_stack = ((unsigned long) &init_thread_union)
 		+ THREAD_SIZE - STACK_FRAME_OVERHEAD - sizeof(struct pt_regs);
@@ -379,6 +479,7 @@ static void __init setup_lowcore(void)
 		+ PAGE_SIZE - STACK_FRAME_OVERHEAD - sizeof(struct pt_regs);
 	lc->current_task = (unsigned long) init_thread_union.thread_info.task;
 	lc->thread_info = (unsigned long) &init_thread_union;
+<<<<<<< HEAD
 	lc->machine_flags = S390_lowcore.machine_flags;
 	lc->stfl_fac_list = S390_lowcore.stfl_fac_list;
 	memcpy(lc->stfle_fac_list, S390_lowcore.stfle_fac_list,
@@ -393,6 +494,19 @@ static void __init setup_lowcore(void)
 #else
 	lc->vdso_per_cpu_data = (unsigned long) &lc->paste[0];
 #endif
+=======
+	lc->lpp = LPP_MAGIC;
+	lc->machine_flags = S390_lowcore.machine_flags;
+	lc->stfl_fac_list = S390_lowcore.stfl_fac_list;
+	memcpy(lc->stfle_fac_list, S390_lowcore.stfle_fac_list,
+	       sizeof(lc->stfle_fac_list));
+	memcpy(lc->alt_stfle_fac_list, S390_lowcore.alt_stfle_fac_list,
+	       sizeof(lc->alt_stfle_fac_list));
+	if (MACHINE_HAS_VX)
+		lc->vector_save_area_addr =
+			(unsigned long) &lc->vector_save_area;
+	lc->vdso_per_cpu_data = (unsigned long) &lc->paste[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lc->sync_enter_timer = S390_lowcore.sync_enter_timer;
 	lc->async_enter_timer = S390_lowcore.async_enter_timer;
 	lc->exit_timer = S390_lowcore.exit_timer;
@@ -401,14 +515,21 @@ static void __init setup_lowcore(void)
 	lc->steal_timer = S390_lowcore.steal_timer;
 	lc->last_update_timer = S390_lowcore.last_update_timer;
 	lc->last_update_clock = S390_lowcore.last_update_clock;
+<<<<<<< HEAD
 	lc->ftrace_func = S390_lowcore.ftrace_func;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	restart_stack = __alloc_bootmem(ASYNC_SIZE, ASYNC_SIZE, 0);
 	restart_stack += ASYNC_SIZE;
 
 	/*
 	 * Set up PSW restart to call ipl.c:do_restart(). Copy the relevant
+<<<<<<< HEAD
 	 * restart data to the absolute zero lowcore. This is necesary if
+=======
+	 * restart data to the absolute zero lowcore. This is necessary if
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * PSW restart is done on an offline CPU that has lowcore zero.
 	 */
 	lc->restart_stack = (unsigned long) restart_stack;
@@ -423,23 +544,43 @@ static void __init setup_lowcore(void)
 	mem_assign_absolute(S390_lowcore.restart_source, lc->restart_source);
 	mem_assign_absolute(S390_lowcore.restart_psw, lc->restart_psw);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+	lc->spinlock_lockval = arch_spin_lockval(0);
+#endif
+	lc->br_r1_trampoline = 0x07f1;	/* br %r1 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_prefix((u32)(unsigned long) lc);
 	lowcore_ptr[0] = lc;
 }
 
 static struct resource code_resource = {
 	.name  = "Kernel code",
+<<<<<<< HEAD
 	.flags = IORESOURCE_BUSY | IORESOURCE_MEM,
+=======
+	.flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource data_resource = {
 	.name = "Kernel data",
+<<<<<<< HEAD
 	.flags = IORESOURCE_BUSY | IORESOURCE_MEM,
+=======
+	.flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource bss_resource = {
 	.name = "Kernel bss",
+<<<<<<< HEAD
 	.flags = IORESOURCE_BUSY | IORESOURCE_MEM,
+=======
+	.flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource __initdata *standard_resources[] = {
@@ -451,7 +592,12 @@ static struct resource __initdata *standard_resources[] = {
 static void __init setup_resources(void)
 {
 	struct resource *res, *std_res, *sub_res;
+<<<<<<< HEAD
 	int i, j;
+=======
+	struct memblock_region *reg;
+	int j;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	code_resource.start = (unsigned long) &_text;
 	code_resource.end = (unsigned long) &_etext - 1;
@@ -460,6 +606,7 @@ static void __init setup_resources(void)
 	bss_resource.start = (unsigned long) &__bss_start;
 	bss_resource.end = (unsigned long) &__bss_stop - 1;
 
+<<<<<<< HEAD
 	for (i = 0; i < MEMORY_CHUNKS; i++) {
 		if (!memory_chunk[i].size)
 			continue;
@@ -478,6 +625,15 @@ static void __init setup_resources(void)
 		}
 		res->start = memory_chunk[i].addr;
 		res->end = res->start + memory_chunk[i].size - 1;
+=======
+	for_each_memblock(memory, reg) {
+		res = alloc_bootmem_low(sizeof(*res));
+		res->flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM;
+
+		res->name = "System RAM";
+		res->start = reg->base;
+		res->end = reg->base + reg->size - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		request_resource(&iomem_resource, res);
 
 		for (j = 0; j < ARRAY_SIZE(standard_resources); j++) {
@@ -496,11 +652,29 @@ static void __init setup_resources(void)
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CRASH_DUMP
+	/*
+	 * Re-add removed crash kernel memory as reserved memory. This makes
+	 * sure it will be mapped with the identity mapping and struct pages
+	 * will be created, so it can be resized later on.
+	 * However add it later since the crash kernel resource should not be
+	 * part of the System RAM resource.
+	 */
+	if (crashk_res.end) {
+		memblock_add_node(crashk_res.start, resource_size(&crashk_res), 0);
+		memblock_reserve(crashk_res.start, resource_size(&crashk_res));
+		insert_resource(&iomem_resource, &crashk_res);
+	}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init setup_memory_end(void)
 {
 	unsigned long vmax, vmalloc_size, tmp;
+<<<<<<< HEAD
 	unsigned long real_memory_size = 0;
 	int i;
 
@@ -544,6 +718,14 @@ static void __init setup_memory_end(void)
 	tmp = (memory_end ?: real_memory_size) / PAGE_SIZE;
 	tmp = tmp * (sizeof(struct page) + PAGE_SIZE) + vmalloc_size;
 	if (tmp <= (1UL << 42))
+=======
+
+	/* Choose kernel address space layout: 2, 3, or 4 levels. */
+	vmalloc_size = VMALLOC_END ?: (128UL << 30) - MODULES_LEN;
+	tmp = (memory_end ?: max_physmem_end) / PAGE_SIZE;
+	tmp = tmp * (sizeof(struct page) + PAGE_SIZE);
+	if (tmp + vmalloc_size + MODULES_LEN <= (1UL << 42))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		vmax = 1UL << 42;	/* 3-level kernel page table */
 	else
 		vmax = 1UL << 53;	/* 4-level kernel page table */
@@ -551,12 +733,15 @@ static void __init setup_memory_end(void)
 	MODULES_END = vmax;
 	MODULES_VADDR = MODULES_END - MODULES_LEN;
 	VMALLOC_END = MODULES_VADDR;
+<<<<<<< HEAD
 #else
 	vmalloc_size = VMALLOC_END ?: 96UL << 20;
 	vmax = 1UL << 31;		/* 2-level kernel page table */
 	/* vmalloc area is at the end of the kernel address space. */
 	VMALLOC_END = vmax;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	VMALLOC_START = vmax - vmalloc_size;
 
 	/* Split remaining virtual space between 1:1 mapping & vmemmap array */
@@ -569,6 +754,7 @@ static void __init setup_memory_end(void)
 	vmemmap = (struct page *) tmp;
 
 	/* Take care that memory_end is set and <= vmemmap */
+<<<<<<< HEAD
 	memory_end = min(memory_end ?: real_memory_size, tmp);
 
 	/* Fixup memory chunk array to fit into 0..memory_end */
@@ -584,6 +770,13 @@ static void __init setup_memory_end(void)
 		if (chunk->addr + chunk->size > memory_end)
 			chunk->size = memory_end - chunk->addr;
 	}
+=======
+	memory_end = min(memory_end ?: max_physmem_end, tmp);
+	max_pfn = max_low_pfn = PFN_DOWN(memory_end);
+	memblock_remove(memory_end, ULONG_MAX);
+
+	pr_notice("Max memory size: %luMB\n", memory_end >> 20);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init setup_vmcoreinfo(void)
@@ -594,6 +787,7 @@ static void __init setup_vmcoreinfo(void)
 #ifdef CONFIG_CRASH_DUMP
 
 /*
+<<<<<<< HEAD
  * Find suitable location for crashkernel memory
  */
 static unsigned long __init find_crash_base(unsigned long crash_size,
@@ -677,6 +871,8 @@ static int __init verify_crash_base(unsigned long crash_base,
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * When kdump is enabled, we have to ensure that no memory from
  * the area [0 - crashkernel memory size] and
  * [crashk_res.start - crashk_res.end] is set offline.
@@ -686,6 +882,11 @@ static int kdump_mem_notifier(struct notifier_block *nb,
 {
 	struct memory_notify *arg = data;
 
+<<<<<<< HEAD
+=======
+	if (action != MEM_GOING_OFFLINE)
+		return NOTIFY_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (arg->start_pfn < PFN_DOWN(resource_size(&crashk_res)))
 		return NOTIFY_BAD;
 	if (arg->start_pfn > PFN_DOWN(crashk_res.end))
@@ -702,6 +903,7 @@ static struct notifier_block kdump_mem_nb = {
 #endif
 
 /*
+<<<<<<< HEAD
  * Make sure that oldmem, where the dump is stored, is protected
  */
 static void reserve_oldmem(void)
@@ -723,6 +925,46 @@ static void reserve_oldmem(void)
 		saved_max_pfn = PFN_DOWN(OLDMEM_BASE) - 1;
 	else
 		saved_max_pfn = PFN_DOWN(real_size) - 1;
+=======
+ * Make sure that the area behind memory_end is protected
+ */
+static void __init reserve_memory_end(void)
+{
+#ifdef CONFIG_CRASH_DUMP
+	if (ipl_info.type == IPL_TYPE_FCP_DUMP &&
+	    !OLDMEM_BASE && sclp.hsa_size) {
+		memory_end = sclp.hsa_size;
+		memory_end &= PAGE_MASK;
+		memory_end_set = 1;
+	}
+#endif
+	if (!memory_end_set)
+		return;
+	memblock_reserve(memory_end, ULONG_MAX);
+}
+
+/*
+ * Make sure that oldmem, where the dump is stored, is protected
+ */
+static void __init reserve_oldmem(void)
+{
+#ifdef CONFIG_CRASH_DUMP
+	if (OLDMEM_BASE)
+		/* Forget all memory above the running kdump system */
+		memblock_reserve(OLDMEM_SIZE, (phys_addr_t)ULONG_MAX);
+#endif
+}
+
+/*
+ * Make sure that oldmem, where the dump is stored, is protected
+ */
+static void __init remove_oldmem(void)
+{
+#ifdef CONFIG_CRASH_DUMP
+	if (OLDMEM_BASE)
+		/* Forget all memory above the running kdump system */
+		memblock_remove(OLDMEM_SIZE, (phys_addr_t)ULONG_MAX);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 }
 
@@ -733,11 +975,16 @@ static void __init reserve_crashkernel(void)
 {
 #ifdef CONFIG_CRASH_DUMP
 	unsigned long long crash_base, crash_size;
+<<<<<<< HEAD
 	char *msg = NULL;
+=======
+	phys_addr_t low, high;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = parse_crashkernel(boot_command_line, memory_end, &crash_size,
 			       &crash_base);
+<<<<<<< HEAD
 	if (rc || crash_size == 0)
 		return;
 	crash_base = ALIGN(crash_base, KEXEC_CRASH_MEM_ALIGN);
@@ -756,19 +1003,71 @@ static void __init reserve_crashkernel(void)
 		unregister_memory_notifier(&kdump_mem_nb);
 		return;
 	}
+=======
+
+	crash_base = ALIGN(crash_base, KEXEC_CRASH_MEM_ALIGN);
+	crash_size = ALIGN(crash_size, KEXEC_CRASH_MEM_ALIGN);
+	if (rc || crash_size == 0)
+		return;
+
+	if (memblock.memory.regions[0].size < crash_size) {
+		pr_info("crashkernel reservation failed: %s\n",
+			"first memory chunk must be at least crashkernel size");
+		return;
+	}
+
+	low = crash_base ?: OLDMEM_BASE;
+	high = low + crash_size;
+	if (low >= OLDMEM_BASE && high <= OLDMEM_BASE + OLDMEM_SIZE) {
+		/* The crashkernel fits into OLDMEM, reuse OLDMEM */
+		crash_base = low;
+	} else {
+		/* Find suitable area in free memory */
+		low = max_t(unsigned long, crash_size, sclp.hsa_size);
+		high = crash_base ? crash_base + crash_size : ULONG_MAX;
+
+		if (crash_base && crash_base < low) {
+			pr_info("crashkernel reservation failed: %s\n",
+				"crash_base too low");
+			return;
+		}
+		low = crash_base ?: low;
+		crash_base = memblock_find_in_range(low, high, crash_size,
+						    KEXEC_CRASH_MEM_ALIGN);
+	}
+
+	if (!crash_base) {
+		pr_info("crashkernel reservation failed: %s\n",
+			"no suitable area found");
+		return;
+	}
+
+	if (register_memory_notifier(&kdump_mem_nb))
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!OLDMEM_BASE && MACHINE_IS_VM)
 		diag10_range(PFN_DOWN(crash_base), PFN_DOWN(crash_size));
 	crashk_res.start = crash_base;
 	crashk_res.end = crash_base + crash_size - 1;
+<<<<<<< HEAD
 	insert_resource(&iomem_resource, &crashk_res);
 	create_mem_hole(memory_chunk, crash_base, crash_size);
 	pr_info("Reserving %lluMB of memory at %lluMB "
 		"for crashkernel (System RAM: %luMB)\n",
 		crash_size >> 20, crash_base >> 20, memory_end >> 20);
+=======
+	memblock_remove(crash_base, crash_size);
+	pr_info("Reserving %lluMB of memory at %lluMB "
+		"for crashkernel (System RAM: %luMB)\n",
+		crash_size >> 20, crash_base >> 20,
+		(unsigned long)memblock.memory.total_size >> 20);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	os_info_crashkernel_add(crash_base, crash_size);
 #endif
 }
 
+<<<<<<< HEAD
 static void __init setup_memory(void)
 {
         unsigned long bootmap_size;
@@ -894,12 +1193,80 @@ static void __init setup_memory(void)
 		}
 	}
 #endif
+=======
+/*
+ * Reserve the initrd from being used by memblock
+ */
+static void __init reserve_initrd(void)
+{
+#ifdef CONFIG_BLK_DEV_INITRD
+	initrd_start = INITRD_START;
+	initrd_end = initrd_start + INITRD_SIZE;
+	memblock_reserve(INITRD_START, INITRD_SIZE);
+#endif
+}
+
+/*
+ * Check for initrd being in usable memory
+ */
+static void __init check_initrd(void)
+{
+#ifdef CONFIG_BLK_DEV_INITRD
+	if (INITRD_START && INITRD_SIZE &&
+	    !memblock_is_region_memory(INITRD_START, INITRD_SIZE)) {
+		pr_err("initrd does not fit memory.\n");
+		memblock_free(INITRD_START, INITRD_SIZE);
+		initrd_start = initrd_end = 0;
+	}
+#endif
+}
+
+/*
+ * Reserve memory used for lowcore/command line/kernel image.
+ */
+static void __init reserve_kernel(void)
+{
+	unsigned long start_pfn = PFN_UP(__pa(&_end));
+
+#ifdef CONFIG_DMA_API_DEBUG
+	/*
+	 * DMA_API_DEBUG code stumbles over addresses from the
+	 * range [_ehead, _stext]. Mark the memory as reserved
+	 * so it is not used for CONFIG_DMA_API_DEBUG=y.
+	 */
+	memblock_reserve(0, PFN_PHYS(start_pfn));
+#else
+	memblock_reserve(0, (unsigned long)_ehead);
+	memblock_reserve((unsigned long)_stext, PFN_PHYS(start_pfn)
+			 - (unsigned long)_stext);
+#endif
+}
+
+static void __init setup_memory(void)
+{
+	struct memblock_region *reg;
+
+	/*
+	 * Init storage key for present memory
+	 */
+	for_each_memblock(memory, reg) {
+		storage_key_init_range(reg->base, reg->base + reg->size);
+	}
+	psw_set_key(PAGE_DEFAULT_KEY);
+
+	/* Only cosmetics */
+	memblock_enforce_memory_limit(memblock_end_of_DRAM());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * Setup hardware capabilities.
  */
+<<<<<<< HEAD
 static void __init setup_hwcaps(void)
+=======
+static int __init setup_hwcaps(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static const int stfl_bits[6] = { 0, 2, 7, 17, 19, 21 };
 	struct cpuid cpu_id;
@@ -952,7 +1319,10 @@ static void __init setup_hwcaps(void)
 	if (MACHINE_HAS_HPAGE)
 		elf_hwcap |= HWCAP_S390_HPAGE;
 
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * 64-bit register support for 31-bit processes
 	 * HWCAP_S390_HIGH_GPRS is bit 9.
@@ -964,6 +1334,7 @@ static void __init setup_hwcaps(void)
 	 */
 	if (test_facility(50) && test_facility(73))
 		elf_hwcap |= HWCAP_S390_TE;
+<<<<<<< HEAD
 #endif
 
 	get_cpu_id(&cpu_id);
@@ -979,6 +1350,22 @@ static void __init setup_hwcaps(void)
 #if defined(CONFIG_64BIT)
 	default:	/* Use "z900" as default for 64 bit kernels. */
 #endif
+=======
+
+	/*
+	 * Vector extension HWCAP_S390_VXRS is bit 11. The Vector extension
+	 * can be disabled with the "novx" parameter. Use MACHINE_HAS_VX
+	 * instead of facility bit 129.
+	 */
+	if (MACHINE_HAS_VX)
+		elf_hwcap |= HWCAP_S390_VXRS;
+	get_cpu_id(&cpu_id);
+	add_device_randomness(&cpu_id, sizeof(cpu_id));
+	switch (cpu_id.machine) {
+	case 0x2064:
+	case 0x2066:
+	default:	/* Use "z900" as default for 64 bit kernels. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		strcpy(elf_platform, "z900");
 		break;
 	case 0x2084:
@@ -1001,7 +1388,53 @@ static void __init setup_hwcaps(void)
 	case 0x2828:
 		strcpy(elf_platform, "zEC12");
 		break;
+<<<<<<< HEAD
 	}
+=======
+	case 0x2964:
+	case 0x2965:
+		strcpy(elf_platform, "z13");
+		break;
+	}
+
+	/*
+	 * Virtualization support HWCAP_INT_SIE is bit 0.
+	 */
+	if (sclp.has_sief2)
+		int_hwcap |= HWCAP_INT_SIE;
+
+	return 0;
+}
+arch_initcall(setup_hwcaps);
+
+/*
+ * Add system information as device randomness
+ */
+static void __init setup_randomness(void)
+{
+	struct sysinfo_3_2_2 *vmms;
+
+	vmms = (struct sysinfo_3_2_2 *) memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+	if (stsi(vmms, 3, 2, 2) == 0 && vmms->count)
+		add_device_randomness(&vmms->vm, sizeof(vmms->vm[0]) * vmms->count);
+	memblock_free((unsigned long) vmms, PAGE_SIZE);
+}
+
+/*
+ * Find the correct size for the task_struct. This depends on
+ * the size of the struct fpu at the end of the thread_struct
+ * which is embedded in the task_struct.
+ */
+static void __init setup_task_size(void)
+{
+	int task_size = sizeof(struct task_struct);
+
+	if (!MACHINE_HAS_VX) {
+		task_size -= sizeof(__vector128) * __NUM_VXRS;
+		task_size += sizeof(freg_t) * __NUM_FPRS;
+	}
+	arch_task_struct_size = task_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1014,6 +1447,7 @@ void __init setup_arch(char **cmdline_p)
         /*
          * print what head.S has found out about the machine
          */
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 	if (MACHINE_IS_VM)
 		pr_info("Linux is running as a z/VM "
@@ -1027,6 +1461,8 @@ void __init setup_arch(char **cmdline_p)
 		pr_info("The hardware system has no IEEE compatible "
 			"floating point units\n");
 #else /* CONFIG_64BIT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (MACHINE_IS_VM)
 		pr_info("Linux is running as a z/VM "
 			"guest operating system in 64-bit mode\n");
@@ -1034,7 +1470,12 @@ void __init setup_arch(char **cmdline_p)
 		pr_info("Linux is running under KVM in 64-bit mode\n");
 	else if (MACHINE_IS_LPAR)
 		pr_info("Linux is running natively in 64-bit mode\n");
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+	else
+		pr_info("Linux is running as a guest in 64-bit mode\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Have one command line that is parsed and saved in /proc/cmdline */
 	/* boot_command_line has been already set up in early.c */
@@ -1042,11 +1483,16 @@ void __init setup_arch(char **cmdline_p)
 
         ROOT_DEV = Root_RAM0;
 
+<<<<<<< HEAD
+=======
+	/* Is init_mm really needed? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	init_mm.start_code = PAGE_OFFSET;
 	init_mm.end_code = (unsigned long) &_etext;
 	init_mm.end_data = (unsigned long) &_edata;
 	init_mm.brk = (unsigned long) &_end;
 
+<<<<<<< HEAD
 	if (MACHINE_HAS_MVCOS)
 		memcpy(&uaccess, &uaccess_mvcos, sizeof(uaccess));
 	else
@@ -1072,6 +1518,61 @@ void __init setup_arch(char **cmdline_p)
 	 * Setup capabilities (ELF_HWCAP & ELF_PLATFORM).
 	 */
 	setup_hwcaps();
+=======
+	if (IS_ENABLED(CONFIG_EXPOLINE_AUTO))
+		nospec_auto_detect();
+
+	parse_early_param();
+#ifdef CONFIG_CRASH_DUMP
+	/* Deactivate elfcorehdr= kernel parameter */
+	elfcorehdr_addr = ELFCORE_ADDR_MAX;
+#endif
+
+	os_info_init();
+	setup_ipl();
+	setup_task_size();
+
+	/* Do some memory reservations *before* memory is added to memblock */
+	reserve_memory_end();
+	reserve_oldmem();
+	reserve_kernel();
+	reserve_initrd();
+	memblock_allow_resize();
+
+	/* Get information about *all* installed memory */
+	detect_memory_memblock();
+
+	remove_oldmem();
+
+	/*
+	 * Make sure all chunks are MAX_ORDER aligned so we don't need the
+	 * extra checks that HOLES_IN_ZONE would require.
+	 *
+	 * Is this still required?
+	 */
+	memblock_trim_memory(1UL << (MAX_ORDER - 1 + PAGE_SHIFT));
+
+	setup_memory_end();
+	setup_memory();
+
+	check_initrd();
+	reserve_crashkernel();
+#ifdef CONFIG_CRASH_DUMP
+	/*
+	 * Be aware that smp_save_dump_cpus() triggers a system reset.
+	 * Therefore CPU and device initialization should be done afterwards.
+	 */
+	smp_save_dump_cpus();
+#endif
+
+	setup_resources();
+	setup_vmcoreinfo();
+	setup_lowcore();
+	smp_fill_possible_mask();
+	cpu_detect_mhz_feature();
+        cpu_init();
+	numa_setup();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Create kernel page tables and switch to virtual addressing.
@@ -1082,6 +1583,18 @@ void __init setup_arch(char **cmdline_p)
 	conmode_default();
 	set_preferred_console();
 
+<<<<<<< HEAD
 	/* Setup zfcpdump support */
 	setup_zfcpdump();
+=======
+	apply_alternative_instructions();
+	if (IS_ENABLED(CONFIG_EXPOLINE))
+		nospec_init_branches();
+
+	/* Setup zfcpdump support */
+	setup_zfcpdump();
+
+	/* Add system specific data to the random pool */
+	setup_randomness();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

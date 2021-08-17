@@ -5,9 +5,21 @@ ifneq ($(O),)
 endif
 endif
 
+<<<<<<< HEAD
 LIBS = -L../ -L$(OUTPUT) -lm -lcpupower
 
 OBJS = $(OUTPUT)main.o $(OUTPUT)parse.o $(OUTPUT)system.o $(OUTPUT)benchmark.o
+=======
+ifeq ($(strip $(STATIC)),true)
+LIBS = -L../ -L$(OUTPUT) -lm
+OBJS = $(OUTPUT)main.o $(OUTPUT)parse.o $(OUTPUT)system.o $(OUTPUT)benchmark.o \
+       $(OUTPUT)../lib/cpufreq.o $(OUTPUT)../lib/cpupower.o
+else
+LIBS = -L../ -L$(OUTPUT) -lm -lcpupower
+OBJS = $(OUTPUT)main.o $(OUTPUT)parse.o $(OUTPUT)system.o $(OUTPUT)benchmark.o
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 CFLAGS += -D_GNU_SOURCE -I../lib -DDEFAULT_CONFIG_FILE=\"$(confdir)/cpufreq-bench.conf\"
 
 $(OUTPUT)%.o : %.c
@@ -16,7 +28,11 @@ $(OUTPUT)%.o : %.c
 
 $(OUTPUT)cpufreq-bench: $(OBJS)
 	$(ECHO) "  CC      " $@
+<<<<<<< HEAD
 	$(QUIET) $(CC) -o $@ $(CFLAGS) $(OBJS) $(LIBS)
+=======
+	$(QUIET) $(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 all: $(OUTPUT)cpufreq-bench
 

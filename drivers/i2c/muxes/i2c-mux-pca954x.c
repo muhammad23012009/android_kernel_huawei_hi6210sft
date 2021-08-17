@@ -28,13 +28,18 @@
  * Based on:
  *	i2c-virtual_cb.c from Brian Kuschak <bkuschak@yahoo.com>
  * and
+<<<<<<< HEAD
  *	pca9540.c from Jean Delvare <khali@linux-fr.org>.
+=======
+ *	pca9540.c from Jean Delvare <jdelvare@suse.de>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -43,6 +48,18 @@
 #include <linux/i2c-mux.h>
 
 #include <linux/i2c/pca954x.h>
+=======
+#include <linux/device.h>
+#include <linux/gpio/consumer.h>
+#include <linux/i2c.h>
+#include <linux/i2c-mux.h>
+#include <linux/i2c/pca954x.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/pm.h>
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PCA954X_MAX_NCHANS 8
 
@@ -57,6 +74,7 @@ enum pca_type {
 	pca_9548,
 };
 
+<<<<<<< HEAD
 struct pca954x {
 	enum pca_type type;
 	struct i2c_adapter *virt_adaps[PCA954X_MAX_NCHANS];
@@ -64,6 +82,8 @@ struct pca954x {
 	u8 last_chan;		/* last register value */
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct chip_desc {
 	u8 nchans;
 	u8 enable;	/* used for muxes only */
@@ -73,6 +93,17 @@ struct chip_desc {
 	} muxtype;
 };
 
+<<<<<<< HEAD
+=======
+struct pca954x {
+	const struct chip_desc *chip;
+
+	u8 last_chan;		/* last register value */
+	u8 deselect;
+	struct i2c_client *client;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Provide specs for the PCA954x types we know about */
 static const struct chip_desc chips[] = {
 	[pca_9540] = {
@@ -93,6 +124,13 @@ static const struct chip_desc chips[] = {
 		.nchans = 4,
 		.muxtype = pca954x_isswi,
 	},
+<<<<<<< HEAD
+=======
+	[pca_9546] = {
+		.nchans = 4,
+		.muxtype = pca954x_isswi,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[pca_9547] = {
 		.nchans = 8,
 		.enable = 0x8,
@@ -110,13 +148,34 @@ static const struct i2c_device_id pca954x_id[] = {
 	{ "pca9543", pca_9543 },
 	{ "pca9544", pca_9544 },
 	{ "pca9545", pca_9545 },
+<<<<<<< HEAD
 	{ "pca9546", pca_9545 },
+=======
+	{ "pca9546", pca_9546 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "pca9547", pca_9547 },
 	{ "pca9548", pca_9548 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, pca954x_id);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id pca954x_of_match[] = {
+	{ .compatible = "nxp,pca9540", .data = &chips[pca_9540] },
+	{ .compatible = "nxp,pca9542", .data = &chips[pca_9542] },
+	{ .compatible = "nxp,pca9543", .data = &chips[pca_9543] },
+	{ .compatible = "nxp,pca9544", .data = &chips[pca_9544] },
+	{ .compatible = "nxp,pca9545", .data = &chips[pca_9545] },
+	{ .compatible = "nxp,pca9546", .data = &chips[pca_9546] },
+	{ .compatible = "nxp,pca9547", .data = &chips[pca_9547] },
+	{ .compatible = "nxp,pca9548", .data = &chips[pca_9548] },
+	{}
+};
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Write to mux register. Don't use i2c_transfer()/i2c_smbus_xfer()
    for this as they will try to lock adapter a second time */
 static int pca954x_reg_write(struct i2c_adapter *adap,
@@ -133,7 +192,14 @@ static int pca954x_reg_write(struct i2c_adapter *adap,
 		msg.len = 1;
 		buf[0] = val;
 		msg.buf = buf;
+<<<<<<< HEAD
 		ret = adap->algo->master_xfer(adap, &msg, 1);
+=======
+		ret = __i2c_transfer(adap, &msg, 1);
+
+		if (ret >= 0 && ret != 1)
+			ret = -EREMOTEIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		union i2c_smbus_data data;
 		ret = adap->algo->smbus_xfer(adap, client->addr,
@@ -145,11 +211,19 @@ static int pca954x_reg_write(struct i2c_adapter *adap,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int pca954x_select_chan(struct i2c_adapter *adap,
 			       void *client, u32 chan)
 {
 	struct pca954x *data = i2c_get_clientdata(client);
 	const struct chip_desc *chip = &chips[data->type];
+=======
+static int pca954x_select_chan(struct i2c_mux_core *muxc, u32 chan)
+{
+	struct pca954x *data = i2c_mux_priv(muxc);
+	struct i2c_client *client = data->client;
+	const struct chip_desc *chip = data->chip;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 regval;
 	int ret = 0;
 
@@ -161,13 +235,19 @@ static int pca954x_select_chan(struct i2c_adapter *adap,
 
 	/* Only select the channel if its different from the last channel */
 	if (data->last_chan != regval) {
+<<<<<<< HEAD
 		ret = pca954x_reg_write(adap, client, regval);
 		data->last_chan = regval;
+=======
+		ret = pca954x_reg_write(muxc->parent, client, regval);
+		data->last_chan = ret < 0 ? 0 : regval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int pca954x_deselect_mux(struct i2c_adapter *adap,
 				void *client, u32 chan)
 {
@@ -176,6 +256,19 @@ static int pca954x_deselect_mux(struct i2c_adapter *adap,
 	/* Deselect active channel */
 	data->last_chan = 0;
 	return pca954x_reg_write(adap, client, data->last_chan);
+=======
+static int pca954x_deselect_mux(struct i2c_mux_core *muxc, u32 chan)
+{
+	struct pca954x *data = i2c_mux_priv(muxc);
+	struct i2c_client *client = data->client;
+
+	if (!(data->deselect & (1 << chan)))
+		return 0;
+
+	/* Deselect active channel */
+	data->last_chan = 0;
+	return pca954x_reg_write(muxc->parent, client, data->last_chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -185,6 +278,7 @@ static int pca954x_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adap = to_i2c_adapter(client->dev.parent);
+<<<<<<< HEAD
 	struct pca954x_platform_data *pdata = client->dev.platform_data;
 	int num, force, class;
 	struct pca954x *data;
@@ -200,6 +294,35 @@ static int pca954x_probe(struct i2c_client *client,
 	}
 
 	i2c_set_clientdata(client, data);
+=======
+	struct pca954x_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct device_node *of_node = client->dev.of_node;
+	bool idle_disconnect_dt;
+	struct gpio_desc *gpio;
+	int num, force, class;
+	struct i2c_mux_core *muxc;
+	struct pca954x *data;
+	const struct of_device_id *match;
+	int ret;
+
+	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE))
+		return -ENODEV;
+
+	muxc = i2c_mux_alloc(adap, &client->dev,
+			     PCA954X_MAX_NCHANS, sizeof(*data), 0,
+			     pca954x_select_chan, pca954x_deselect_mux);
+	if (!muxc)
+		return -ENOMEM;
+	data = i2c_mux_priv(muxc);
+
+	i2c_set_clientdata(client, muxc);
+	data->client = client;
+
+	/* Get the mux out of reset if a reset GPIO is specified. */
+	gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_LOW);
+	if (IS_ERR(gpio))
+		return PTR_ERR(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Write the mux register at addr to verify
 	 * that the mux is in fact present. This also
@@ -207,6 +330,7 @@ static int pca954x_probe(struct i2c_client *client,
 	 */
 	if (i2c_smbus_write_byte(client, 0) < 0) {
 		dev_warn(&client->dev, "probe failed\n");
+<<<<<<< HEAD
 		goto exit_free;
 	}
 
@@ -215,6 +339,26 @@ static int pca954x_probe(struct i2c_client *client,
 
 	/* Now create an adapter for each channel */
 	for (num = 0; num < chips[data->type].nchans; num++) {
+=======
+		return -ENODEV;
+	}
+
+	match = of_match_device(of_match_ptr(pca954x_of_match), &client->dev);
+	if (match)
+		data->chip = of_device_get_match_data(&client->dev);
+	else
+		data->chip = &chips[id->driver_data];
+
+	data->last_chan = 0;		   /* force the first selection */
+
+	idle_disconnect_dt = of_node &&
+		of_property_read_bool(of_node, "i2c-mux-idle-disconnect");
+
+	/* Now create an adapter for each channel */
+	for (num = 0; num < data->chip->nchans; num++) {
+		bool idle_disconnect_pd = false;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		force = 0;			  /* dynamic adap number */
 		class = 0;			  /* no class by default */
 		if (pdata) {
@@ -225,6 +369,7 @@ static int pca954x_probe(struct i2c_client *client,
 			} else
 				/* discard unconfigured channels */
 				break;
+<<<<<<< HEAD
 		}
 
 		data->virt_adaps[num] =
@@ -235,6 +380,16 @@ static int pca954x_probe(struct i2c_client *client,
 
 		if (data->virt_adaps[num] == NULL) {
 			ret = -ENODEV;
+=======
+			idle_disconnect_pd = pdata->modes[num].deselect_on_exit;
+		}
+		data->deselect |= (idle_disconnect_pd ||
+				   idle_disconnect_dt) << num;
+
+		ret = i2c_mux_add_adapter(muxc, force, num, class);
+
+		if (ret) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_err(&client->dev,
 				"failed to register multiplexed adapter"
 				" %d as bus %d\n", num, force);
@@ -244,22 +399,31 @@ static int pca954x_probe(struct i2c_client *client,
 
 	dev_info(&client->dev,
 		 "registered %d multiplexed busses for I2C %s %s\n",
+<<<<<<< HEAD
 		 num, chips[data->type].muxtype == pca954x_ismux
+=======
+		 num, data->chip->muxtype == pca954x_ismux
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				? "mux" : "switch", client->name);
 
 	return 0;
 
 virt_reg_failed:
+<<<<<<< HEAD
 	for (num--; num >= 0; num--)
 		i2c_del_mux_adapter(data->virt_adaps[num]);
 exit_free:
 	kfree(data);
 err:
+=======
+	i2c_mux_del_adapters(muxc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int pca954x_remove(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	struct pca954x *data = i2c_get_clientdata(client);
 	const struct chip_desc *chip = &chips[data->type];
 	int i;
@@ -278,6 +442,33 @@ static struct i2c_driver pca954x_driver = {
 	.driver		= {
 		.name	= "pca954x",
 		.owner	= THIS_MODULE,
+=======
+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+
+	i2c_mux_del_adapters(muxc);
+	return 0;
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int pca954x_resume(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
+	struct pca954x *data = i2c_mux_priv(muxc);
+
+	data->last_chan = 0;
+	return i2c_smbus_write_byte(client, 0);
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(pca954x_pm, NULL, pca954x_resume);
+
+static struct i2c_driver pca954x_driver = {
+	.driver		= {
+		.name	= "pca954x",
+		.pm	= &pca954x_pm,
+		.of_match_table = of_match_ptr(pca954x_of_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= pca954x_probe,
 	.remove		= pca954x_remove,

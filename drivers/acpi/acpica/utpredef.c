@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -147,6 +151,14 @@ void acpi_ut_get_expected_return_types(char *buffer, u32 expected_btypes)
 	u32 i;
 	u32 j;
 
+<<<<<<< HEAD
+=======
+	if (!expected_btypes) {
+		strcpy(buffer, "NONE");
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	j = 1;
 	buffer[0] = 0;
 	this_rtype = ACPI_RTYPE_INTEGER;
@@ -156,7 +168,11 @@ void acpi_ut_get_expected_return_types(char *buffer, u32 expected_btypes)
 		/* If one of the expected types, concatenate the name of this type */
 
 		if (expected_btypes & this_rtype) {
+<<<<<<< HEAD
 			ACPI_STRCAT(buffer, &ut_rtype_names[i][j]);
+=======
+			strcat(buffer, &ut_rtype_names[i][j]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			j = 0;	/* Use name separator from now on */
 		}
 
@@ -171,8 +187,11 @@ void acpi_ut_get_expected_return_types(char *buffer, u32 expected_btypes)
  ******************************************************************************/
 
 #if (defined ACPI_ASL_COMPILER || defined ACPI_HELP_APP)
+<<<<<<< HEAD
 #include <stdio.h>
 #include <string.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Local prototypes */
 
@@ -220,8 +239,15 @@ const union acpi_predefined_info *acpi_ut_match_resource_name(char *name)
 {
 	const union acpi_predefined_info *this_name;
 
+<<<<<<< HEAD
 	/* Quick check for a predefined name, first character must be underscore */
 
+=======
+	/*
+	 * Quick check for a predefined name, first character must
+	 * be underscore
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (name[0] != '_') {
 		return (NULL);
 	}
@@ -328,9 +354,13 @@ static u32 acpi_ut_get_argument_types(char *buffer, u16 argument_types)
 
 	/* First field in the types list is the count of args to follow */
 
+<<<<<<< HEAD
 	arg_count = (argument_types & METHOD_ARG_MASK);
 	argument_types >>= METHOD_ARG_BIT_WIDTH;
 
+=======
+	arg_count = METHOD_GET_ARG_COUNT(argument_types);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (arg_count > METHOD_PREDEF_ARGS_MAX) {
 		printf("**** Invalid argument count (%u) "
 		       "in predefined info structure\n", arg_count);
@@ -340,7 +370,12 @@ static u32 acpi_ut_get_argument_types(char *buffer, u16 argument_types)
 	/* Get each argument from the list, convert to ascii, store to buffer */
 
 	for (i = 0; i < arg_count; i++) {
+<<<<<<< HEAD
 		this_argument_type = (argument_types & METHOD_ARG_MASK);
+=======
+		this_argument_type = METHOD_GET_NEXT_TYPE(argument_types);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!this_argument_type
 		    || (this_argument_type > METHOD_MAX_ARG_TYPE)) {
 			printf("**** Invalid argument type (%u) "
@@ -351,10 +386,13 @@ static u32 acpi_ut_get_argument_types(char *buffer, u16 argument_types)
 
 		strcat(buffer,
 		       ut_external_type_names[this_argument_type] + sub_index);
+<<<<<<< HEAD
 
 		/* Shift to next argument type field */
 
 		argument_types >>= METHOD_ARG_BIT_WIDTH;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sub_index = 0;
 	}
 

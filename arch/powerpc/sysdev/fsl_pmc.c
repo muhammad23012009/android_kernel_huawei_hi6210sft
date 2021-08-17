@@ -18,6 +18,10 @@
 #include <linux/suspend.h>
 #include <linux/delay.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 
 struct pmc_regs {
@@ -79,7 +83,10 @@ static const struct of_device_id pmc_ids[] = {
 static struct platform_driver pmc_driver = {
 	.driver = {
 		.name = "fsl-pmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = pmc_ids,
 	},
 	.probe = pmc_probe,

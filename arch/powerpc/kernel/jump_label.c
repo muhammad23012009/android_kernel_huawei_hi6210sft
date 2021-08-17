@@ -17,7 +17,11 @@ void arch_jump_label_transform(struct jump_entry *entry,
 {
 	u32 *addr = (u32 *)(unsigned long)entry->code;
 
+<<<<<<< HEAD
 	if (type == JUMP_LABEL_ENABLE)
+=======
+	if (type == JUMP_LABEL_JMP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		patch_branch(addr, entry->target, 0);
 	else
 		patch_instruction(addr, PPC_INST_NOP);

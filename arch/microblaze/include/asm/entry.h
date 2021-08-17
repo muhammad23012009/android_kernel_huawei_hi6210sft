@@ -15,6 +15,10 @@
 
 #include <asm/percpu.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <linux/linkage.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These are per-cpu variables required in entry.S, among other

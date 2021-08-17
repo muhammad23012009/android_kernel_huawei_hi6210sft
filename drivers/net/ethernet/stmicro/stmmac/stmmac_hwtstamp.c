@@ -33,6 +33,7 @@ static void stmmac_config_hw_tstamping(void __iomem *ioaddr, u32 data)
 	writel(data, ioaddr + PTP_TCR);
 }
 
+<<<<<<< HEAD
 static void stmmac_config_sub_second_increment(void __iomem *ioaddr)
 {
 	u32 value = readl(ioaddr + PTP_TCR);
@@ -49,6 +50,41 @@ static void stmmac_config_sub_second_increment(void __iomem *ioaddr)
 		data = (data * 100) / 465;
 
 	writel(data, ioaddr + PTP_SSIR);
+=======
+static u32 stmmac_config_sub_second_increment(void __iomem *ioaddr,
+					      u32 ptp_clock, int gmac4)
+{
+	u32 value = readl(ioaddr + PTP_TCR);
+	unsigned long data;
+	u32 reg_value;
+
+	/* For GMAC3.x, 4.x versions, in "fine adjustement mode" set sub-second
+	 * increment to twice the number of nanoseconds of a clock cycle.
+	 * The calculation of the default_addend value by the caller will set it
+	 * to mid-range = 2^31 when the remainder of this division is zero,
+	 * which will make the accumulator overflow once every 2 ptp_clock
+	 * cycles, adding twice the number of nanoseconds of a clock cycle :
+	 * 2000000000ULL / ptp_clock.
+	 */
+	if (value & PTP_TCR_TSCFUPDT)
+		data = (2000000000ULL / ptp_clock);
+	else
+		data = (1000000000ULL / ptp_clock);
+
+	/* 0.465ns accuracy */
+	if (!(value & PTP_TCR_TSCTRLSSR))
+		data = (data * 1000) / 465;
+
+	data &= PTP_SSIR_SSINC_MASK;
+
+	reg_value = data;
+	if (gmac4)
+		reg_value <<= GMAC4_PTP_SSIR_SSINC_SHIFT;
+
+	writel(reg_value, ioaddr + PTP_SSIR);
+
+	return data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int stmmac_init_systime(void __iomem *ioaddr, u32 sec, u32 nsec)
@@ -101,14 +137,40 @@ static int stmmac_config_addend(void __iomem *ioaddr, u32 addend)
 }
 
 static int stmmac_adjust_systime(void __iomem *ioaddr, u32 sec, u32 nsec,
+<<<<<<< HEAD
 				 int add_sub)
+=======
+				 int add_sub, int gmac4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 value;
 	int limit;
 
+<<<<<<< HEAD
 	writel(sec, ioaddr + PTP_STSUR);
 	writel(((add_sub << PTP_STNSUR_ADDSUB_SHIFT) | nsec),
 		ioaddr + PTP_STNSUR);
+=======
+	if (add_sub) {
+		/* If the new sec value needs to be subtracted with
+		 * the system time, then MAC_STSUR reg should be
+		 * programmed with (2^32 – <new_sec_value>)
+		 */
+		if (gmac4)
+			sec = -sec;
+
+		value = readl(ioaddr + PTP_TCR);
+		if (value & PTP_TCR_TSCTRLSSR)
+			nsec = (PTP_DIGITAL_ROLLOVER_MODE - nsec);
+		else
+			nsec = (PTP_BINARY_ROLLOVER_MODE - nsec);
+	}
+
+	writel(sec, ioaddr + PTP_STSUR);
+	value = (add_sub << PTP_STNSUR_ADDSUB_SHIFT) | nsec;
+	writel(value, ioaddr + PTP_STNSUR);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* issue command to initialize the system time value */
 	value = readl(ioaddr + PTP_TCR);
 	value |= PTP_TCR_TSUPDT;
@@ -131,8 +193,14 @@ static u64 stmmac_get_systime(void __iomem *ioaddr)
 {
 	u64 ns;
 
+<<<<<<< HEAD
 	ns = readl(ioaddr + PTP_STNSR);
 	/* convert sec time value to nanosecond */
+=======
+	/* Get the TSSS value */
+	ns = readl(ioaddr + PTP_STNSR);
+	/* Get the TSS and convert sec time value to nanosecond */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ns += readl(ioaddr + PTP_STSR) * 1000000000ULL;
 
 	return ns;

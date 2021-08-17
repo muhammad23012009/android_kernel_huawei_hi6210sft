@@ -27,7 +27,11 @@
 #include <asm/sizes.h>
 #include <asm/signal.h>
 #include <asm/mach/pci.h>
+<<<<<<< HEAD
 #include <mach/pci.h>
+=======
+#include "pci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IOP13XX_PCI_DEBUG 0
 #define PRINTK(x...) ((void)(IOP13XX_PCI_DEBUG && printk(x)))

@@ -1,5 +1,8 @@
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/list.h>
@@ -181,6 +184,10 @@ static const char ql_gstrings_test[][ETH_GSTRING_LEN] = {
 };
 #define QLGE_TEST_LEN (sizeof(ql_gstrings_test) / ETH_GSTRING_LEN)
 #define QLGE_STATS_LEN ARRAY_SIZE(ql_gstrings_stats)
+<<<<<<< HEAD
+=======
+#define QLGE_RCV_MAC_ERR_STATS	7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int ql_update_ring_coalescing(struct ql_adapter *qdev)
 {
@@ -280,6 +287,12 @@ static void ql_update_stats(struct ql_adapter *qdev)
 		iter++;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Update receive mac error statistics */
+	iter += QLGE_RCV_MAC_ERR_STATS;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Get Per-priority TX pause frame counter statistics.
 	 */
@@ -412,6 +425,7 @@ static void ql_get_drvinfo(struct net_device *ndev,
 		 (qdev->fw_rev_id & 0x000000ff));
 	strlcpy(drvinfo->bus_info, pci_name(qdev->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->n_stats = 0;
 	drvinfo->testinfo_len = 0;
 	if (!test_bit(QL_FRC_COREDUMP, &qdev->flags))
@@ -419,6 +433,8 @@ static void ql_get_drvinfo(struct net_device *ndev,
 	else
 		drvinfo->regdump_len = sizeof(struct ql_reg_dump);
 	drvinfo->eedump_len = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ql_get_wol(struct net_device *ndev, struct ethtool_wolinfo *wol)

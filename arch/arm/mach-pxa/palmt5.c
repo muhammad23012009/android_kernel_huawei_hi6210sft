@@ -33,16 +33,28 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/audio.h>
 #include <mach/palmt5.h>
+=======
+#include "pxa27x.h"
+#include <mach/audio.h>
+#include "palmt5.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/keypad-pxa27x.h>
+<<<<<<< HEAD
 #include <mach/udc.h>
 #include <linux/platform_data/asoc-palm27x.h>
 #include <mach/palm27x.h>
+=======
+#include "udc.h"
+#include <linux/platform_data/asoc-palm27x.h>
+#include "palm27x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "generic.h"
 #include "devices.h"
@@ -108,7 +120,11 @@ static unsigned long palmt5_pin_config[] __initdata = {
  * GPIO keyboard
  ******************************************************************************/
 #if defined(CONFIG_KEYBOARD_PXA27x) || defined(CONFIG_KEYBOARD_PXA27x_MODULE)
+<<<<<<< HEAD
 static unsigned int palmt5_matrix_keys[] = {
+=======
+static const unsigned int palmt5_matrix_keys[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	KEY(0, 0, KEY_POWER),
 	KEY(0, 1, KEY_F1),
 	KEY(0, 2, KEY_ENTER),
@@ -124,11 +140,23 @@ static unsigned int palmt5_matrix_keys[] = {
 	KEY(3, 2, KEY_LEFT),
 };
 
+<<<<<<< HEAD
 static struct pxa27x_keypad_platform_data palmt5_keypad_platform_data = {
 	.matrix_key_rows	= 4,
 	.matrix_key_cols	= 3,
 	.matrix_key_map		= palmt5_matrix_keys,
 	.matrix_key_map_size	= ARRAY_SIZE(palmt5_matrix_keys),
+=======
+static struct matrix_keymap_data palmt5_matrix_keymap_data = {
+	.keymap			= palmt5_matrix_keys,
+	.keymap_size		= ARRAY_SIZE(palmt5_matrix_keys),
+};
+
+static struct pxa27x_keypad_platform_data palmt5_keypad_platform_data = {
+	.matrix_key_rows	= 4,
+	.matrix_key_cols	= 3,
+	.matrix_keymap_data	= &palmt5_matrix_keymap_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.debounce_interval	= 30,
 };

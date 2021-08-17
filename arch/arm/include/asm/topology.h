@@ -3,6 +3,10 @@
 
 #ifdef CONFIG_ARM_CPU_TOPOLOGY
 
+<<<<<<< HEAD
+=======
+#include <linux/cpufreq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpumask.h>
 
 struct cputopo_arm {
@@ -18,14 +22,19 @@ extern struct cputopo_arm cpu_topology[NR_CPUS];
 #define topology_physical_package_id(cpu)	(cpu_topology[cpu].socket_id)
 #define topology_core_id(cpu)		(cpu_topology[cpu].core_id)
 #define topology_core_cpumask(cpu)	(&cpu_topology[cpu].core_sibling)
+<<<<<<< HEAD
 #define topology_thread_cpumask(cpu)	(&cpu_topology[cpu].thread_sibling)
 
 #define mc_capable()	(cpu_topology[0].socket_id != -1)
 #define smt_capable()	(cpu_topology[0].thread_id != -1)
+=======
+#define topology_sibling_cpumask(cpu)	(&cpu_topology[cpu].thread_sibling)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void init_cpu_topology(void);
 void store_cpu_topology(unsigned int cpuid);
 const struct cpumask *cpu_coregroup_mask(int cpu);
+<<<<<<< HEAD
 int cluster_to_logical_mask(unsigned int socket_id, cpumask_t *cluster_mask);
 
 #ifdef CONFIG_DISABLE_CPU_SCHED_DOMAIN_BALANCE
@@ -58,13 +67,24 @@ int cluster_to_logical_mask(unsigned int socket_id, cpumask_t *cluster_mask);
 }
 #endif
 #endif /* CONFIG_DISABLE_CPU_SCHED_DOMAIN_BALANCE */
+=======
+
+#ifdef CONFIG_CPU_FREQ
+#define arch_scale_freq_capacity cpufreq_scale_freq_capacity
+#endif
+#define arch_scale_cpu_capacity scale_cpu_capacity
+extern unsigned long scale_cpu_capacity(struct sched_domain *sd, int cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 
 static inline void init_cpu_topology(void) { }
 static inline void store_cpu_topology(unsigned int cpuid) { }
+<<<<<<< HEAD
 static inline int cluster_to_logical_mask(unsigned int socket_id,
 	cpumask_t *cluster_mask) { return -EINVAL; }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 

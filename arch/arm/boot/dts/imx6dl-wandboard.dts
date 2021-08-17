@@ -10,6 +10,10 @@
  */
 /dts-v1/;
 #include "imx6dl.dtsi"
+<<<<<<< HEAD
+=======
+#include "imx6qdl-wandboard-revc1.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Wandboard i.MX6 Dual Lite Board";
@@ -19,6 +23,7 @@
 		reg = <0x10000000 0x40000000>;
 	};
 };
+<<<<<<< HEAD
 
 &fec {
 	pinctrl-names = "default";
@@ -42,3 +47,5 @@
 	pinctrl-0 = <&pinctrl_usdhc3_2>;
 	status = "okay";
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

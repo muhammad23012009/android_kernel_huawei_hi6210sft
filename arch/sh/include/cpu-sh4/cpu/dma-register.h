@@ -32,7 +32,10 @@
 #define CHCR_TS_HIGH_SHIFT	(20 - 2)	/* 2 bits for shifted low TS */
 #elif defined(CONFIG_CPU_SUBTYPE_SH7757) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7763) || \
+<<<<<<< HEAD
 	defined(CONFIG_CPU_SUBTYPE_SH7764) || \
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	defined(CONFIG_CPU_SUBTYPE_SH7780) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7785)
 #define CHCR_TS_LOW_MASK	0x00000018

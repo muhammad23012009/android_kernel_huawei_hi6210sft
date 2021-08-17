@@ -11,6 +11,7 @@
 #ifndef _LINUX_ZORRO_H
 #define _LINUX_ZORRO_H
 
+<<<<<<< HEAD
 #include <linux/device.h>
 
 
@@ -112,6 +113,12 @@ struct ConfigDev {
 
 #ifdef __KERNEL__
 
+=======
+
+#include <uapi/linux/zorro.h>
+
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/ioport.h>
 #include <linux/mod_devicetable.h>
@@ -175,7 +182,27 @@ static inline struct zorro_driver *zorro_dev_driver(const struct zorro_dev *z)
 
 
 extern unsigned int zorro_num_autocon;	/* # of autoconfig devices found */
+<<<<<<< HEAD
 extern struct zorro_dev zorro_autocon[ZORRO_NUM_AUTO];
+=======
+extern struct zorro_dev *zorro_autocon;
+
+
+    /*
+     * Minimal information about a Zorro device, passed from bootinfo
+     * Only available temporarily, i.e. until initmem has been freed!
+     */
+
+struct zorro_dev_init {
+	struct ExpansionRom rom;
+	u16 slotaddr;
+	u16 slotsize;
+	u32 boardaddr;
+	u32 boardsize;
+};
+
+extern struct zorro_dev_init zorro_autocon_init[ZORRO_NUM_AUTO] __initdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
     /*
@@ -229,6 +256,9 @@ extern DECLARE_BITMAP(zorro_unused_z2ram, 128);
 #define Z2RAM_CHUNKSHIFT	(16)
 
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_ZORRO_H */

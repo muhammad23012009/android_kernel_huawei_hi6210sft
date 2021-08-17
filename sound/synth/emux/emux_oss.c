@@ -26,7 +26,11 @@
 #ifdef CONFIG_SND_SEQUENCER_OSS
 
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include "emux_voice.h"
 #include <sound/asoundef.h>
@@ -119,12 +123,17 @@ snd_emux_open_seq_oss(struct snd_seq_oss_arg *arg, void *closure)
 	if (snd_BUG_ON(!arg || !emu))
 		return -ENXIO;
 
+<<<<<<< HEAD
 	mutex_lock(&emu->register_mutex);
 
 	if (!snd_emux_inc_count(emu)) {
 		mutex_unlock(&emu->register_mutex);
 		return -EFAULT;
 	}
+=======
+	if (!snd_emux_inc_count(emu))
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(&callback, 0, sizeof(callback));
 	callback.owner = THIS_MODULE;
@@ -136,7 +145,10 @@ snd_emux_open_seq_oss(struct snd_seq_oss_arg *arg, void *closure)
 	if (p == NULL) {
 		snd_printk(KERN_ERR "can't create port\n");
 		snd_emux_dec_count(emu);
+<<<<<<< HEAD
 		mutex_unlock(&emu->register_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 
@@ -149,8 +161,11 @@ snd_emux_open_seq_oss(struct snd_seq_oss_arg *arg, void *closure)
 	reset_port_mode(p, arg->seq_mode);
 
 	snd_emux_reset_port(p);
+<<<<<<< HEAD
 
 	mutex_unlock(&emu->register_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -196,13 +211,19 @@ snd_emux_close_seq_oss(struct snd_seq_oss_arg *arg)
 	if (snd_BUG_ON(!emu))
 		return -ENXIO;
 
+<<<<<<< HEAD
 	mutex_lock(&emu->register_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_emux_sounds_off_all(p);
 	snd_soundfont_close_check(emu->sflist, SF_CLIENT_NO(p->chset.port));
 	snd_seq_event_port_detach(p->chset.client, p->chset.port);
 	snd_emux_dec_count(emu);
 
+<<<<<<< HEAD
 	mutex_unlock(&emu->register_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -9,7 +9,10 @@
 #define __ASM_MACH_GENERIC_FLOPPY_H
 
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/sched.h>
 #include <linux/linkage.h>
@@ -116,11 +119,15 @@ static inline unsigned long fd_getfdaddr1(void)
 
 static inline unsigned long fd_dma_mem_alloc(unsigned long size)
 {
+<<<<<<< HEAD
 	unsigned long mem;
 
 	mem = __get_dma_pages(GFP_KERNEL, get_order(size));
 
 	return mem;
+=======
+	return __get_dma_pages(GFP_KERNEL, get_order(size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void fd_dma_mem_free(unsigned long addr, unsigned long size)

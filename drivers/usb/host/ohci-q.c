@@ -41,6 +41,10 @@ finish_urb(struct ohci_hcd *ohci, struct urb *urb, int status)
 __releases(ohci->lock)
 __acquires(ohci->lock)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = ohci_to_hcd(ohci)->self.controller;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_host_endpoint *ep = urb->ep;
 	struct urb_priv *urb_priv;
 
@@ -59,7 +63,11 @@ __acquires(ohci->lock)
 			if (quirk_amdiso(ohci))
 				usb_amd_quirk_pll_enable();
 			if (quirk_amdprefetch(ohci))
+<<<<<<< HEAD
 				sb800_prefetch(ohci, 0);
+=======
+				sb800_prefetch(dev, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	case PIPE_INTERRUPT:
@@ -67,10 +75,13 @@ __acquires(ohci->lock)
 		break;
 	}
 
+<<<<<<< HEAD
 #ifdef OHCI_VERBOSE_DEBUG
 	urb_print(urb, "RET", usb_pipeout (urb->pipe), status);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* urb->complete() can reenter this HCD */
 	usb_hcd_unlink_urb_from_ep(ohci_to_hcd(ohci), urb);
 	spin_unlock (&ohci->lock);
@@ -146,7 +157,11 @@ static void periodic_link (struct ohci_hcd *ohci, struct ed *ed)
 {
 	unsigned	i;
 
+<<<<<<< HEAD
 	ohci_vdbg (ohci, "link %sed %p branch %d [%dus.], interval %d\n",
+=======
+	ohci_dbg(ohci, "link %sed %p branch %d [%dus.], interval %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(ed->hwINFO & cpu_to_hc32 (ohci, ED_ISO)) ? "iso " : "",
 		ed, ed->branch, ed->load, ed->interval);
 
@@ -186,6 +201,7 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 {
 	int	branch;
 
+<<<<<<< HEAD
 	ed->state = ED_OPER;
 	ed->ed_prev = NULL;
 	ed->ed_next = NULL;
@@ -194,6 +210,11 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 			&& (ed->type == PIPE_INTERRUPT)
 			&& !(ohci->eds_scheduled++))
 		mod_timer(&ohci->unlink_watchdog, round_jiffies(jiffies + HZ));
+=======
+	ed->ed_prev = NULL;
+	ed->ed_next = NULL;
+	ed->hwNextED = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wmb ();
 
 	/* we care about rm_list when setting CLE/BLE in case the HC was at
@@ -266,6 +287,11 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 	/* the HC may not see the schedule updates yet, but if it does
 	 * then they'll be properly ordered.
 	 */
+<<<<<<< HEAD
+=======
+
+	ed->state = ED_OPER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -293,7 +319,11 @@ static void periodic_unlink (struct ohci_hcd *ohci, struct ed *ed)
 	}
 	ohci_to_hcd(ohci)->self.bandwidth_allocated -= ed->load / ed->interval;
 
+<<<<<<< HEAD
 	ohci_vdbg (ohci, "unlink %sed %p branch %d [%dus.], interval %d\n",
+=======
+	ohci_dbg(ohci, "unlink %sed %p branch %d [%dus.], interval %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(ed->hwINFO & cpu_to_hc32 (ohci, ED_ISO)) ? "iso " : "",
 		ed, ed->branch, ed->load, ed->interval);
 }
@@ -414,7 +444,12 @@ static struct ed *ed_get (
 
 	spin_lock_irqsave (&ohci->lock, flags);
 
+<<<<<<< HEAD
 	if (!(ed = ep->hcpriv)) {
+=======
+	ed = ep->hcpriv;
+	if (!ed) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct td	*td;
 		int		is_out;
 		u32		info;
@@ -597,12 +632,21 @@ static void td_submit_urb (
 	struct urb	*urb
 ) {
 	struct urb_priv	*urb_priv = urb->hcpriv;
+<<<<<<< HEAD
+=======
+	struct device *dev = ohci_to_hcd(ohci)->self.controller;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_addr_t	data;
 	int		data_len = urb->transfer_buffer_length;
 	int		cnt = 0;
 	u32		info = 0;
 	int		is_out = usb_pipeout (urb->pipe);
 	int		periodic = 0;
+<<<<<<< HEAD
+=======
+	int		i, this_sg_len, n;
+	struct scatterlist	*sg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* OHCI handles the bulk/interrupt data toggles itself.  We just
 	 * use the device toggle bits for resetting, and rely on the fact
@@ -616,10 +660,31 @@ static void td_submit_urb (
 
 	list_add (&urb_priv->pending, &ohci->pending);
 
+<<<<<<< HEAD
 	if (data_len)
 		data = urb->transfer_dma;
 	else
 		data = 0;
+=======
+	i = urb->num_mapped_sgs;
+	if (data_len > 0 && i > 0) {
+		sg = urb->sg;
+		data = sg_dma_address(sg);
+
+		/*
+		 * urb->transfer_buffer_length may be smaller than the
+		 * size of the scatterlist (or vice versa)
+		 */
+		this_sg_len = min_t(int, sg_dma_len(sg), data_len);
+	} else {
+		sg = NULL;
+		if (data_len)
+			data = urb->transfer_dma;
+		else
+			data = 0;
+		this_sg_len = data_len;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* NOTE:  TD_CC is set so we can tell which TDs the HC processed by
 	 * using TD_CC_GET, as well as by seeing them on the done list.
@@ -640,6 +705,7 @@ static void td_submit_urb (
 			? TD_T_TOGGLE | TD_CC | TD_DP_OUT
 			: TD_T_TOGGLE | TD_CC | TD_DP_IN;
 		/* TDs _could_ transfer up to 8K each */
+<<<<<<< HEAD
 		while (data_len > 4096) {
 			td_fill (ohci, info, data, 4096, urb, cnt);
 			data += 4096;
@@ -651,6 +717,31 @@ static void td_submit_urb (
 			info |= TD_R;
 		td_fill (ohci, info, data, data_len, urb, cnt);
 		cnt++;
+=======
+		for (;;) {
+			n = min(this_sg_len, 4096);
+
+			/* maybe avoid ED halt on final TD short read */
+			if (n >= data_len || (i == 1 && n >= this_sg_len)) {
+				if (!(urb->transfer_flags & URB_SHORT_NOT_OK))
+					info |= TD_R;
+			}
+			td_fill(ohci, info, data, n, urb, cnt);
+			this_sg_len -= n;
+			data_len -= n;
+			data += n;
+			cnt++;
+
+			if (this_sg_len <= 0) {
+				if (--i <= 0 || data_len <= 0)
+					break;
+				sg = sg_next(sg);
+				data = sg_dma_address(sg);
+				this_sg_len = min_t(int, sg_dma_len(sg),
+						data_len);
+			}
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((urb->transfer_flags & URB_ZERO_PACKET)
 				&& cnt < urb_priv->length) {
 			td_fill (ohci, info, 0, 0, urb, cnt);
@@ -706,7 +797,11 @@ static void td_submit_urb (
 			if (quirk_amdiso(ohci))
 				usb_amd_quirk_pll_disable();
 			if (quirk_amdprefetch(ohci))
+<<<<<<< HEAD
 				sb800_prefetch(ohci, 1);
+=======
+				sb800_prefetch(dev, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		periodic = ohci_to_hcd(ohci)->self.bandwidth_isoc_reqs++ == 0
 			&& ohci_to_hcd(ohci)->self.bandwidth_int_reqs == 0;
@@ -762,7 +857,11 @@ static int td_done(struct ohci_hcd *ohci, struct urb *urb, struct td *td)
 		urb->iso_frame_desc [td->index].status = cc_to_error [cc];
 
 		if (cc != TD_CC_NOERROR)
+<<<<<<< HEAD
 			ohci_vdbg (ohci,
+=======
+			ohci_dbg(ohci,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				"urb %p iso td %p (%d) len %d cc %d\n",
 				urb, td, 1 + td->index, dlen, cc);
 
@@ -794,7 +893,11 @@ static int td_done(struct ohci_hcd *ohci, struct urb *urb, struct td *td)
 		}
 
 		if (cc != TD_CC_NOERROR && cc < 0x0E)
+<<<<<<< HEAD
 			ohci_vdbg (ohci,
+=======
+			ohci_dbg(ohci,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				"urb %p td %p (%d) cc %d, len=%d/%d\n",
 				urb, td, 1 + td->index, cc,
 				urb->actual_length,
@@ -870,6 +973,7 @@ static void ed_halted(struct ohci_hcd *ohci, struct td *td, int cc)
 	}
 }
 
+<<<<<<< HEAD
 /* replies to the request have to be on a FIFO basis so
  * we unreverse the hc-reversed done-list
  */
@@ -877,6 +981,48 @@ static struct td *dl_reverse_done_list (struct ohci_hcd *ohci)
 {
 	u32		td_dma;
 	struct td	*td_rev = NULL;
+=======
+/* Add a TD to the done list */
+static void add_to_done_list(struct ohci_hcd *ohci, struct td *td)
+{
+	struct td	*td2, *td_prev;
+	struct ed	*ed;
+
+	if (td->next_dl_td)
+		return;		/* Already on the list */
+
+	/* Add all the TDs going back until we reach one that's on the list */
+	ed = td->ed;
+	td2 = td_prev = td;
+	list_for_each_entry_continue_reverse(td2, &ed->td_list, td_list) {
+		if (td2->next_dl_td)
+			break;
+		td2->next_dl_td = td_prev;
+		td_prev = td2;
+	}
+
+	if (ohci->dl_end)
+		ohci->dl_end->next_dl_td = td_prev;
+	else
+		ohci->dl_start = td_prev;
+
+	/*
+	 * Make td->next_dl_td point to td itself, to mark the fact
+	 * that td is on the done list.
+	 */
+	ohci->dl_end = td->next_dl_td = td;
+
+	/* Did we just add the latest pending TD? */
+	td2 = ed->pending_td;
+	if (td2 && td2->next_dl_td)
+		ed->pending_td = NULL;
+}
+
+/* Get the entries on the hardware done queue and put them on our list */
+static void update_done_list(struct ohci_hcd *ohci)
+{
+	u32		td_dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct td	*td = NULL;
 
 	td_dma = hc32_to_cpup (ohci, &ohci->hcca->done_head);
@@ -884,7 +1030,11 @@ static struct td *dl_reverse_done_list (struct ohci_hcd *ohci)
 	wmb();
 
 	/* get TD from hc's singly linked list, and
+<<<<<<< HEAD
 	 * prepend to ours.  ed->td_list changes later.
+=======
+	 * add to ours.  ed->td_list changes later.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	while (td_dma) {
 		int		cc;
@@ -906,19 +1056,31 @@ static struct td *dl_reverse_done_list (struct ohci_hcd *ohci)
 				&& (td->ed->hwHeadP & cpu_to_hc32 (ohci, ED_H)))
 			ed_halted(ohci, td, cc);
 
+<<<<<<< HEAD
 		td->next_dl_td = td_rev;
 		td_rev = td;
 		td_dma = hc32_to_cpup (ohci, &td->hwNextTD);
 	}
 	return td_rev;
+=======
+		td_dma = hc32_to_cpup (ohci, &td->hwNextTD);
+		add_to_done_list(ohci, td);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*-------------------------------------------------------------------------*/
 
 /* there are some urbs/eds to unlink; called in_irq(), with HCD locked */
+<<<<<<< HEAD
 static void
 finish_unlinks (struct ohci_hcd *ohci, u16 tick)
 {
+=======
+static void finish_unlinks(struct ohci_hcd *ohci)
+{
+	unsigned	tick = ohci_frame_no(ohci);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ed	*ed, **last;
 
 rescan_all:
@@ -930,6 +1092,7 @@ rescan_all:
 		/* only take off EDs that the HC isn't using, accounting for
 		 * frame counter wraps and EDs with partially retired TDs
 		 */
+<<<<<<< HEAD
 		if (likely(ohci->rh_state == OHCI_RH_RUNNING)) {
 			if (tick_before (tick, ed->tick)) {
 skip_ed:
@@ -959,6 +1122,32 @@ skip_ed:
 		/* ED's now officially unlinked, hc doesn't see */
 		if (quirk_zfmicro(ohci) && ed->type == PIPE_INTERRUPT)
 			ohci->eds_scheduled--;
+=======
+		if (likely(ohci->rh_state == OHCI_RH_RUNNING) &&
+				tick_before(tick, ed->tick)) {
+skip_ed:
+			last = &ed->ed_next;
+			continue;
+		}
+		if (!list_empty(&ed->td_list)) {
+			struct td	*td;
+			u32		head;
+
+			td = list_first_entry(&ed->td_list, struct td, td_list);
+
+			/* INTR_WDH may need to clean up first */
+			head = hc32_to_cpu(ohci, ed->hwHeadP) & TD_MASK;
+			if (td->td_dma != head &&
+					ohci->rh_state == OHCI_RH_RUNNING)
+				goto skip_ed;
+
+			/* Don't mess up anything already on the done list */
+			if (td->next_dl_td)
+				goto skip_ed;
+		}
+
+		/* ED's now officially unlinked, hc doesn't see */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ed->hwHeadP &= ~cpu_to_hc32(ohci, ED_H);
 		ed->hwNextED = 0;
 		wmb();
@@ -968,6 +1157,11 @@ skip_ed:
 		 * have modified this list.  normally it's just prepending
 		 * entries (which we'd ignore), but paranoia won't hurt.
 		 */
+<<<<<<< HEAD
+=======
+		*last = ed->ed_next;
+		ed->ed_next = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		modified = 0;
 
 		/* unlink urbs as requested, but rescan the list after
@@ -1026,6 +1220,7 @@ rescan_this:
 			goto rescan_this;
 
 		/*
+<<<<<<< HEAD
 		 * If no TDs are queued, take ED off the ed_rm_list.
 		 * Otherwise, if the HC is running, reschedule.
 		 * If not, leave it on the list for further dequeues.
@@ -1040,6 +1235,24 @@ rescan_this:
 			ed_schedule(ohci, ed);
 		} else {
 			last = &ed->ed_next;
+=======
+		 * If no TDs are queued, ED is now idle.
+		 * Otherwise, if the HC is running, reschedule.
+		 * If the HC isn't running, add ED back to the
+		 * start of the list for later processing.
+		 */
+		if (list_empty(&ed->td_list)) {
+			ed->state = ED_IDLE;
+			list_del(&ed->in_use_list);
+		} else if (ohci->rh_state == OHCI_RH_RUNNING) {
+			ed_schedule(ohci, ed);
+		} else {
+			ed->ed_next = ohci->ed_rm_list;
+			ohci->ed_rm_list = ed;
+			/* Don't loop on the same ED */
+			if (last == &ohci->ed_rm_list)
+				last = &ed->ed_next;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		if (modified)
@@ -1091,12 +1304,16 @@ rescan_this:
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 /*
  * Used to take back a TD from the host controller. This would normally be
  * called from within dl_done_list, however it may be called directly if the
  * HC no longer sees the TD and it has not appeared on the donelist (after
  * two frames).  This bug has been observed on ZF Micro systems.
  */
+=======
+/* Take back a TD from the host controller */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void takeback_td(struct ohci_hcd *ohci, struct td *td)
 {
 	struct urb	*urb = td->urb;
@@ -1143,6 +1360,7 @@ static void takeback_td(struct ohci_hcd *ohci, struct td *td)
  *
  * This is the main path for handing urbs back to drivers.  The only other
  * normal path is finish_unlinks(), which unlinks URBs using ed_rm_list,
+<<<<<<< HEAD
  * instead of scanning the (re-reversed) donelist as this does.  There's
  * an abnormal path too, handling a quirk in some Compaq silicon:  URBs
  * with TDs that appear to be orphaned are directly reclaimed.
@@ -1176,4 +1394,45 @@ dl_done_list (struct ohci_hcd *ohci)
 		takeback_td(ohci, td);
 		td = td_next;
 	}
+=======
+ * instead of scanning the (re-reversed) donelist as this does.
+ */
+static void process_done_list(struct ohci_hcd *ohci)
+{
+	struct td	*td;
+
+	while (ohci->dl_start) {
+		td = ohci->dl_start;
+		if (td == ohci->dl_end)
+			ohci->dl_start = ohci->dl_end = NULL;
+		else
+			ohci->dl_start = td->next_dl_td;
+
+		takeback_td(ohci, td);
+	}
+}
+
+/*
+ * TD takeback and URB giveback must be single-threaded.
+ * This routine takes care of it all.
+ */
+static void ohci_work(struct ohci_hcd *ohci)
+{
+	if (ohci->working) {
+		ohci->restart_work = 1;
+		return;
+	}
+	ohci->working = 1;
+
+ restart:
+	process_done_list(ohci);
+	if (ohci->ed_rm_list)
+		finish_unlinks(ohci);
+
+	if (ohci->restart_work) {
+		ohci->restart_work = 0;
+		goto restart;
+	}
+	ohci->working = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

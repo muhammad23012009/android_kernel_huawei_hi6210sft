@@ -28,6 +28,10 @@
 #include <linux/ratelimit.h>
 #include <asm/uaccess.h>
 #include <asm/hardirq.h>
+<<<<<<< HEAD
+=======
+#include <asm/traps.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* #define DEBUG_UNALIGNED 1 */
 
@@ -130,8 +134,11 @@
 
 int unaligned_enabled __read_mostly = 1;
 
+<<<<<<< HEAD
 void die_if_kernel (char *str, struct pt_regs *regs, long err);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int emulate_ldh(struct pt_regs *regs, int toreg)
 {
 	unsigned long saddr = regs->ior;

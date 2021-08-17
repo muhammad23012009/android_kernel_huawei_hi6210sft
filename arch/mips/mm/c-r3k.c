@@ -9,7 +9,10 @@
  * Copyright (C) 1998 Gleb Raiko & Vladimir Roganov
  * Copyright (C) 2001, 2004, 2007  Maciej W. Rozycki
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
@@ -26,7 +29,11 @@
 static unsigned long icache_size, dcache_size;		/* Size in bytes */
 static unsigned long icache_lsize, dcache_lsize;	/* Size in bytes */
 
+<<<<<<< HEAD
 unsigned long __cpuinit r3k_cache_size(unsigned long ca_flags)
+=======
+unsigned long r3k_cache_size(unsigned long ca_flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags, status, dummy, size;
 	volatile unsigned long *p;
@@ -61,7 +68,11 @@ unsigned long __cpuinit r3k_cache_size(unsigned long ca_flags)
 	return size * sizeof(*p);
 }
 
+<<<<<<< HEAD
 unsigned long __cpuinit r3k_cache_lsize(unsigned long ca_flags)
+=======
+unsigned long r3k_cache_lsize(unsigned long ca_flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags, status, lsize, i;
 	volatile unsigned long *p;
@@ -90,7 +101,11 @@ unsigned long __cpuinit r3k_cache_lsize(unsigned long ca_flags)
 	return lsize * sizeof(*p);
 }
 
+<<<<<<< HEAD
 static void __cpuinit r3k_probe_cache(void)
+=======
+static void r3k_probe_cache(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dcache_size = r3k_cache_size(ST0_ISC);
 	if (dcache_size)
@@ -312,7 +327,11 @@ static void r3k_dma_cache_wback_inv(unsigned long start, unsigned long size)
 	r3k_flush_dcache_range(start, start + size);
 }
 
+<<<<<<< HEAD
 void __cpuinit r3k_cache_init(void)
+=======
+void r3k_cache_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	extern void build_clear_page(void);
 	extern void build_copy_page(void);
@@ -326,6 +345,11 @@ void __cpuinit r3k_cache_init(void)
 	flush_cache_page = r3k_flush_cache_page;
 	flush_icache_range = r3k_flush_icache_range;
 	local_flush_icache_range = r3k_flush_icache_range;
+<<<<<<< HEAD
+=======
+	__flush_icache_user_range = r3k_flush_icache_range;
+	__local_flush_icache_user_range = r3k_flush_icache_range;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__flush_kernel_vmap_range = r3k_flush_kernel_vmap_range;
 

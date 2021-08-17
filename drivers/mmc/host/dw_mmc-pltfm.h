@@ -12,6 +12,7 @@
 #ifndef _DW_MMC_PLTFM_H_
 #define _DW_MMC_PLTFM_H_
 
+<<<<<<< HEAD
 #define INTMSK_ALL	0xFFFFFFFF
 #define INTMSK_CDETECT	(0x1 << 0)
 #define INTMSK_RE	(0x1 << 1)
@@ -70,6 +71,8 @@
 #define MMC_SD    (0x1)
 #define MMC_SDIO  (0x2)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int dw_mci_pltfm_register(struct platform_device *pdev,
 				const struct dw_mci_drv_data *drv_data);
 extern int dw_mci_pltfm_remove(struct platform_device *pdev);

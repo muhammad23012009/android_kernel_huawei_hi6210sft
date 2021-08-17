@@ -10,6 +10,7 @@
 #ifndef _IIO_TYPES_H_
 #define _IIO_TYPES_H_
 
+<<<<<<< HEAD
 enum iio_chan_type {
 	IIO_VOLTAGE,
 	IIO_CURRENT,
@@ -52,12 +53,27 @@ enum iio_modifier {
 	IIO_MOD_LIGHT_RED,
 	IIO_MOD_LIGHT_GREEN,
 	IIO_MOD_LIGHT_BLUE,
+=======
+#include <uapi/linux/iio/types.h>
+
+enum iio_event_info {
+	IIO_EV_INFO_ENABLE,
+	IIO_EV_INFO_VALUE,
+	IIO_EV_INFO_HYSTERESIS,
+	IIO_EV_INFO_PERIOD,
+	IIO_EV_INFO_HIGH_PASS_FILTER_3DB,
+	IIO_EV_INFO_LOW_PASS_FILTER_3DB,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define IIO_VAL_INT 1
 #define IIO_VAL_INT_PLUS_MICRO 2
 #define IIO_VAL_INT_PLUS_NANO 3
 #define IIO_VAL_INT_PLUS_MICRO_DB 4
+<<<<<<< HEAD
+=======
+#define IIO_VAL_INT_MULTIPLE 5
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IIO_VAL_FRACTIONAL 10
 #define IIO_VAL_FRACTIONAL_LOG2 11
 

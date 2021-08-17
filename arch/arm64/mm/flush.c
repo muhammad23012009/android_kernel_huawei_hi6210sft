@@ -25,8 +25,11 @@
 #include <asm/cachetype.h>
 #include <asm/tlbflush.h>
 
+<<<<<<< HEAD
 #include "mm.h"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void flush_cache_range(struct vm_area_struct *vma, unsigned long start,
 		       unsigned long end)
 {
@@ -34,10 +37,26 @@ void flush_cache_range(struct vm_area_struct *vma, unsigned long start,
 		__flush_icache_all();
 }
 
+<<<<<<< HEAD
+=======
+static void sync_icache_aliases(void *kaddr, unsigned long len)
+{
+	unsigned long addr = (unsigned long)kaddr;
+
+	if (icache_is_aliasing()) {
+		__clean_dcache_area_pou(kaddr, len);
+		__flush_icache_all();
+	} else {
+		flush_icache_range(addr, addr + len);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 				unsigned long uaddr, void *kaddr,
 				unsigned long len)
 {
+<<<<<<< HEAD
 	if (vma->vm_flags & VM_EXEC) {
 		unsigned long addr = (unsigned long)kaddr;
 		if (icache_is_aliasing()) {
@@ -47,19 +66,27 @@ static void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 			flush_icache_range(addr, addr + len);
 		}
 	}
+=======
+	if (vma->vm_flags & VM_EXEC)
+		sync_icache_aliases(kaddr, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * Copy user data from/to a page which is mapped into a different processes
  * address space.  Really, we want to allow our "user space" model to handle
  * this.
+<<<<<<< HEAD
  *
  * Note that this code needs to run on the current CPU.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		       unsigned long uaddr, void *dst, const void *src,
 		       unsigned long len)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	preempt_disable();
 #endif
@@ -68,12 +95,17 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 #ifdef CONFIG_SMP
 	preempt_enable();
 #endif
+=======
+	memcpy(dst, src, len);
+	flush_ptrace_access(vma, page, uaddr, dst, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __sync_icache_dcache(pte_t pte, unsigned long addr)
 {
 	struct page *page = pte_page(pte);
 
+<<<<<<< HEAD
 	/* no flushing needed for anonymous pages */
 	if (!page_mapping(page))
 		return;
@@ -85,6 +117,13 @@ void __sync_icache_dcache(pte_t pte, unsigned long addr)
 	} else if (icache_is_aivivt()) {
 		__flush_icache_all();
 	}
+=======
+	if (!test_and_set_bit(PG_dcache_clean, &page->flags))
+		sync_icache_aliases(page_address(page),
+				    PAGE_SIZE << compound_order(page));
+	else if (icache_is_aivivt())
+		__flush_icache_all();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -102,5 +141,8 @@ EXPORT_SYMBOL(flush_dcache_page);
 /*
  * Additional functions defined in assembly.
  */
+<<<<<<< HEAD
 EXPORT_SYMBOL(flush_cache_all);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(flush_icache_range);

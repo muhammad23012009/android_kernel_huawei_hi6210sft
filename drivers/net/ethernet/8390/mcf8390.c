@@ -13,7 +13,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -39,6 +42,10 @@ static const char version[] =
 
 #define NESM_START_PG	0x40	/* First page of TX buffer */
 #define NESM_STOP_PG	0x80	/* Last page +1 of RX ring */
+<<<<<<< HEAD
+=======
+static u32 mcf8390_msg_enable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef NE2000_ODDOFFSET
 /*
@@ -153,9 +160,15 @@ static void mcf8390_reset_8390(struct net_device *dev)
 {
 	unsigned long reset_start_time = jiffies;
 	u32 addr = dev->base_addr;
+<<<<<<< HEAD
 
 	if (ei_debug > 1)
 		netdev_dbg(dev, "resetting the 8390 t=%ld...\n", jiffies);
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_dbg(ei_local, hw, dev, "resetting the 8390 t=%ld...\n", jiffies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ei_outb(ei_inb(addr + NE_RESET), addr + NE_RESET);
 
@@ -288,7 +301,11 @@ static void mcf8390_block_output(struct net_device *dev, int count,
 	dma_start = jiffies;
 	while ((ei_inb(addr + NE_EN0_ISR) & ENISR_RDC) == 0) {
 		if (time_after(jiffies, dma_start + 2 * HZ / 100)) { /* 20ms */
+<<<<<<< HEAD
 			netdev_err(dev, "timeout waiting for Tx RDC\n");
+=======
+			netdev_warn(dev, "timeout waiting for Tx RDC\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mcf8390_reset_8390(dev);
 			__NS8390_init(dev, 1);
 			break;
@@ -437,6 +454,10 @@ static int mcf8390_probe(struct platform_device *pdev)
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	platform_set_drvdata(pdev, dev);
 	ei_local = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	ei_local->msg_enable = mcf8390_msg_enable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->irq = irq->start;
 	dev->base_addr = mem->start;
@@ -466,7 +487,10 @@ static int mcf8390_remove(struct platform_device *pdev)
 static struct platform_driver mcf8390_drv = {
 	.driver = {
 		.name	= "mcf8390",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= mcf8390_probe,
 	.remove		= mcf8390_remove,

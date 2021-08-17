@@ -14,7 +14,10 @@
 /* Board specific touch screen initial values */
 struct touchscreen_init_data {
 	int	poll_period;	/* ms */
+<<<<<<< HEAD
 	int	vref;		/* non-zero to leave vref on */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u16	min_pressure;	/* min reading to be treated as a touch */
 	__u16	vendor;
 	__u16	product;

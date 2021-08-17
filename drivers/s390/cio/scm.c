@@ -15,8 +15,11 @@
 #include "chsc.h"
 
 static struct device *scm_root;
+<<<<<<< HEAD
 static struct eadm_ops *eadm_ops;
 static DEFINE_MUTEX(eadm_ops_mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define to_scm_dev(n) container_of(n, struct scm_device, dev)
 #define	to_scm_drv(d) container_of(d, struct scm_driver, drv)
@@ -73,6 +76,7 @@ void scm_driver_unregister(struct scm_driver *scmdrv)
 }
 EXPORT_SYMBOL_GPL(scm_driver_unregister);
 
+<<<<<<< HEAD
 int scm_get_ref(void)
 {
 	int ret = 0;
@@ -116,6 +120,8 @@ int scm_start_aob(struct aob *aob)
 }
 EXPORT_SYMBOL_GPL(scm_start_aob);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void scm_irq_handler(struct aob *aob, int error)
 {
 	struct aob_rq_header *aobrq = (void *) aob->request.data;

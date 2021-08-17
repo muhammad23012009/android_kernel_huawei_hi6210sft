@@ -36,11 +36,16 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/crc32c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct crypto_shash *tfm;
 
 u32 crc32c(u32 crc, const void *address, unsigned int length)
 {
+<<<<<<< HEAD
 	struct {
 		struct shash_desc shash;
 		char ctx[crypto_shash_descsize(tfm)];
@@ -55,6 +60,22 @@ u32 crc32c(u32 crc, const void *address, unsigned int length)
 	BUG_ON(err);
 
 	return *(u32 *)desc.ctx;
+=======
+	SHASH_DESC_ON_STACK(shash, tfm);
+	u32 ret, *ctx = (u32 *)shash_desc_ctx(shash);
+	int err;
+
+	shash->tfm = tfm;
+	shash->flags = 0;
+	*ctx = crc;
+
+	err = crypto_shash_update(shash, address, length);
+	BUG_ON(err);
+
+	ret = *ctx;
+	barrier_data(ctx);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 EXPORT_SYMBOL(crc32c);
@@ -62,10 +83,14 @@ EXPORT_SYMBOL(crc32c);
 static int __init libcrc32c_mod_init(void)
 {
 	tfm = crypto_alloc_shash("crc32c", 0, 0);
+<<<<<<< HEAD
 	if (IS_ERR(tfm))
 		return PTR_ERR(tfm);
 
 	return 0;
+=======
+	return PTR_ERR_OR_ZERO(tfm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __exit libcrc32c_mod_fini(void)
@@ -79,3 +104,7 @@ module_exit(libcrc32c_mod_fini);
 MODULE_AUTHOR("Clay Haapala <chaapala@cisco.com>");
 MODULE_DESCRIPTION("CRC32c (Castagnoli) calculations");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_SOFTDEP("pre: crc32c");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

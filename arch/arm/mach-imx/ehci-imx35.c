@@ -17,6 +17,10 @@
 #include <linux/io.h>
 #include <linux/platform_data/usb-ehci-mxc.h>
 
+<<<<<<< HEAD
+=======
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hardware.h"
 
 #define USBCTRL_OTGBASE_OFFSET	0x600

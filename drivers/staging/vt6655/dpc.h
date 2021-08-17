@@ -29,6 +29,7 @@
 #ifndef __DPC_H__
 #define __DPC_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "device.h"
 #include "wcmd.h"
@@ -50,3 +51,10 @@ device_receive_frame(
 void	MngWorkItem(void *Context);
 
 #endif // __RXTX_H__
+=======
+#include "device.h"
+
+bool vnt_receive_frame(struct vnt_private *priv, struct vnt_rx_desc *curr_rd);
+
+#endif /* __RXTX_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

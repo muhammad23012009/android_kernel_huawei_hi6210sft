@@ -43,9 +43,13 @@ static void __init mpc5121_ads_setup_arch(void)
 		mpc83xx_add_bridge(np);
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_FB_FSL_DIU) || defined(CONFIG_FB_FSL_DIU_MODULE)
 	mpc512x_setup_diu();
 #endif
+=======
+	mpc512x_setup_arch();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init mpc5121_ads_init_IRQ(void)
@@ -59,9 +63,18 @@ static void __init mpc5121_ads_init_IRQ(void)
  */
 static int __init mpc5121_ads_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "fsl,mpc5121ads");
+=======
+	if (!of_machine_is_compatible("fsl,mpc5121ads"))
+		return 0;
+
+	mpc512x_init_early();
+
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(mpc5121_ads) {
@@ -69,7 +82,10 @@ define_machine(mpc5121_ads) {
 	.probe			= mpc5121_ads_probe,
 	.setup_arch		= mpc5121_ads_setup_arch,
 	.init			= mpc512x_init,
+<<<<<<< HEAD
 	.init_early		= mpc512x_init_diu,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_IRQ		= mpc5121_ads_init_IRQ,
 	.get_irq		= ipic_get_irq,
 	.calibrate_decr		= generic_calibrate_decr,

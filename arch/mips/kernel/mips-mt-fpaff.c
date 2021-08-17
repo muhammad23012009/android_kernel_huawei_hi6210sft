@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * General MIPS MT support routines, usable in AP/SP, SMVP, or SMTC kernels
+=======
+ * General MIPS MT support routines, usable in AP/SP and SMVP.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2005 Mips Technologies, Inc
  */
 #include <linux/cpu.h>
@@ -27,12 +31,20 @@ unsigned long mt_fpemul_threshold;
  * FPU affinity with the user's requested processor affinity.
  * This code is 98% identical with the sys_sched_setaffinity()
  * and sys_sched_getaffinity() system calls, and should be
+<<<<<<< HEAD
  * updated when kernel/sched.c changes.
+=======
+ * updated when kernel/sched/core.c changes.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
  * find_process_by_pid - find a process with a matching PID value.
+<<<<<<< HEAD
  * used in sys_sched_set/getaffinity() in kernel/sched.c, so
+=======
+ * used in sys_sched_set/getaffinity() in kernel/sched/core.c, so
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * cloned here.
  */
 static inline struct task_struct *find_process_by_pid(pid_t pid)
@@ -114,8 +126,13 @@ asmlinkage long mipsmt_sys_sched_setaffinity(pid_t pid, unsigned int len,
 	/* Compute new global allowed CPU set if necessary */
 	ti = task_thread_info(p);
 	if (test_ti_thread_flag(ti, TIF_FPUBOUND) &&
+<<<<<<< HEAD
 	    cpus_intersects(*new_mask, mt_fpu_cpumask)) {
 		cpus_and(*effective_mask, *new_mask, mt_fpu_cpumask);
+=======
+	    cpumask_intersects(new_mask, &mt_fpu_cpumask)) {
+		cpumask_and(effective_mask, new_mask, &mt_fpu_cpumask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = set_cpus_allowed_ptr(p, effective_mask);
 	} else {
 		cpumask_copy(effective_mask, new_mask);

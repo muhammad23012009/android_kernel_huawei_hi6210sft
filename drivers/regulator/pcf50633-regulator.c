@@ -86,11 +86,20 @@ static int pcf50633_regulator_probe(struct platform_device *pdev)
 	pcf = dev_to_pcf50633(pdev->dev.parent);
 
 	config.dev = &pdev->dev;
+<<<<<<< HEAD
 	config.init_data = pdev->dev.platform_data;
 	config.driver_data = pcf;
 	config.regmap = pcf->regmap;
 
 	rdev = regulator_register(&regulators[pdev->id], &config);
+=======
+	config.init_data = dev_get_platdata(&pdev->dev);
+	config.driver_data = pcf;
+	config.regmap = pcf->regmap;
+
+	rdev = devm_regulator_register(&pdev->dev, &regulators[pdev->id],
+				       &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdev))
 		return PTR_ERR(rdev);
 
@@ -102,6 +111,7 @@ static int pcf50633_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pcf50633_regulator_remove(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev = platform_get_drvdata(pdev);
@@ -118,6 +128,13 @@ static struct platform_driver pcf50633_regulator_driver = {
 	},
 	.probe = pcf50633_regulator_probe,
 	.remove = pcf50633_regulator_remove,
+=======
+static struct platform_driver pcf50633_regulator_driver = {
+	.driver = {
+		.name = "pcf50633-regulator",
+	},
+	.probe = pcf50633_regulator_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init pcf50633_regulator_init(void)

@@ -1,6 +1,10 @@
 #ifndef __ASM_MICROBLAZE_SYSCALL_H
 #define __ASM_MICROBLAZE_SYSCALL_H
 
+<<<<<<< HEAD
+=======
+#include <uapi/linux/audit.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <asm/ptrace.h>
@@ -96,7 +100,17 @@ static inline void syscall_set_arguments(struct task_struct *task,
 		microblaze_set_syscall_arg(regs, i++, *args++);
 }
 
+<<<<<<< HEAD
 asmlinkage long do_syscall_trace_enter(struct pt_regs *regs);
 asmlinkage void do_syscall_trace_leave(struct pt_regs *regs);
 
+=======
+asmlinkage unsigned long do_syscall_trace_enter(struct pt_regs *regs);
+asmlinkage void do_syscall_trace_leave(struct pt_regs *regs);
+
+static inline int syscall_get_arch(void)
+{
+	return AUDIT_ARCH_MICROBLAZE;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_MICROBLAZE_SYSCALL_H */

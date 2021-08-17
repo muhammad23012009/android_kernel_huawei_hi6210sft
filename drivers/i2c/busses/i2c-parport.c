@@ -1,7 +1,11 @@
 /* ------------------------------------------------------------------------ *
  * i2c-parport.c I2C bus over parallel port                                 *
  * ------------------------------------------------------------------------ *
+<<<<<<< HEAD
    Copyright (C) 2003-2011 Jean Delvare <khali@linux-fr.org>
+=======
+   Copyright (C) 2003-2011 Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
    Based on older i2c-philips-par.c driver
    Copyright (C) 1995-2000 Simon G. Vogl
@@ -18,12 +22,19 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
+<<<<<<< HEAD
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * ------------------------------------------------------------------------ */
 
+=======
+ * ------------------------------------------------------------------------ */
+
+#define pr_fmt(fmt) "i2c-parport: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -50,6 +61,12 @@ struct i2c_par {
 
 static LIST_HEAD(adapter_list);
 static DEFINE_MUTEX(adapter_list_lock);
+<<<<<<< HEAD
+=======
+#define MAX_DEVICE 4
+static int parport[MAX_DEVICE] = {0, -1, -1, -1};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* ----- Low-level parallel port access ----------------------------------- */
 
@@ -167,6 +184,7 @@ static void i2c_parport_irq(void *data)
 static void i2c_parport_attach(struct parport *port)
 {
 	struct i2c_par *adapter;
+<<<<<<< HEAD
 
 	adapter = kzalloc(sizeof(struct i2c_par), GFP_KERNEL);
 	if (adapter == NULL) {
@@ -180,6 +198,36 @@ static void i2c_parport_attach(struct parport *port)
 		NULL, NULL, i2c_parport_irq, PARPORT_FLAG_EXCL, adapter);
 	if (!adapter->pdev) {
 		printk(KERN_ERR "i2c-parport: Unable to register with parport\n");
+=======
+	int i;
+	struct pardev_cb i2c_parport_cb;
+
+	for (i = 0; i < MAX_DEVICE; i++) {
+		if (parport[i] == -1)
+			continue;
+		if (port->number == parport[i])
+			break;
+	}
+	if (i == MAX_DEVICE) {
+		pr_debug("Not using parport%d.\n", port->number);
+		return;
+	}
+
+	adapter = kzalloc(sizeof(struct i2c_par), GFP_KERNEL);
+	if (!adapter)
+		return;
+	memset(&i2c_parport_cb, 0, sizeof(i2c_parport_cb));
+	i2c_parport_cb.flags = PARPORT_FLAG_EXCL;
+	i2c_parport_cb.irq_func = i2c_parport_irq;
+	i2c_parport_cb.private = adapter;
+
+	pr_debug("attaching to %s\n", port->name);
+	parport_disable_irq(port);
+	adapter->pdev = parport_register_dev_model(port, "i2c-parport",
+						   &i2c_parport_cb, i);
+	if (!adapter->pdev) {
+		pr_err("Unable to register with parport\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_free;
 	}
 
@@ -199,7 +247,12 @@ static void i2c_parport_attach(struct parport *port)
 	adapter->adapter.dev.parent = port->physport->dev;
 
 	if (parport_claim_or_block(adapter->pdev) < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "i2c-parport: Could not claim parallel port\n");
+=======
+		dev_err(&adapter->pdev->dev,
+			"Could not claim parallel port\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_unregister;
 	}
 
@@ -214,7 +267,11 @@ static void i2c_parport_attach(struct parport *port)
 	}
 
 	if (i2c_bit_add_bus(&adapter->adapter) < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "i2c-parport: Unable to register with I2C\n");
+=======
+		dev_err(&adapter->pdev->dev, "Unable to register with I2C\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_unregister;
 	}
 
@@ -226,8 +283,13 @@ static void i2c_parport_attach(struct parport *port)
 		if (adapter->ara)
 			parport_enable_irq(port);
 		else
+<<<<<<< HEAD
 			printk(KERN_WARNING "i2c-parport: Failed to register "
 			       "ARA client\n");
+=======
+			dev_warn(&adapter->pdev->dev,
+				 "Failed to register ARA client\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Add the new adapter to the list */
@@ -271,9 +333,16 @@ static void i2c_parport_detach(struct parport *port)
 }
 
 static struct parport_driver i2c_parport_driver = {
+<<<<<<< HEAD
 	.name	= "i2c-parport",
 	.attach	= i2c_parport_attach,
 	.detach	= i2c_parport_detach,
+=======
+	.name = "i2c-parport",
+	.match_port = i2c_parport_attach,
+	.detach = i2c_parport_detach,
+	.devmodel = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----- Module loading, unloading and information ------------------------ */
@@ -281,12 +350,20 @@ static struct parport_driver i2c_parport_driver = {
 static int __init i2c_parport_init(void)
 {
 	if (type < 0) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "i2c-parport: adapter type unspecified\n");
+=======
+		pr_warn("adapter type unspecified\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 
 	if (type >= ARRAY_SIZE(adapter_parm)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "i2c-parport: invalid type (%d)\n", type);
+=======
+		pr_warn("invalid type (%d)\n", type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 
@@ -298,9 +375,23 @@ static void __exit i2c_parport_exit(void)
 	parport_unregister_driver(&i2c_parport_driver);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
 MODULE_DESCRIPTION("I2C bus over parallel port");
 MODULE_LICENSE("GPL");
 
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+MODULE_DESCRIPTION("I2C bus over parallel port");
+MODULE_LICENSE("GPL");
+
+module_param_array(parport, int, NULL, 0);
+MODULE_PARM_DESC(parport,
+		 "List of parallel ports to bind to, by index.\n"
+		 " Atmost " __stringify(MAX_DEVICE) " devices are supported.\n"
+		 " Default is one device connected to parport0.\n"
+);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_init(i2c_parport_init);
 module_exit(i2c_parport_exit);

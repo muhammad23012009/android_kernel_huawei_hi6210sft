@@ -17,6 +17,10 @@
 #define _ASM_TILE_BITOPS_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef _LINUX_BITOPS_H
 #error only <linux/bitops.h> can be included directly
@@ -29,6 +33,7 @@
 #endif
 
 /**
+<<<<<<< HEAD
  * __ffs - find first set bit in word
  * @word: The word to search
  *
@@ -40,6 +45,8 @@ static inline unsigned long __ffs(unsigned long word)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ffz - find first zero bit in word
  * @word: The word to search
  *
@@ -50,6 +57,7 @@ static inline unsigned long ffz(unsigned long word)
 	return __builtin_ctzl(~word);
 }
 
+<<<<<<< HEAD
 /**
  * __fls - find last set bit in word
  * @word: The word to search
@@ -77,6 +85,8 @@ static inline int ffs(int x)
 	return __builtin_ffs(x);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int fls64(__u64 w)
 {
 	return (sizeof(__u64) * 8) - __builtin_clzll(w);
@@ -118,6 +128,12 @@ static inline unsigned long __arch_hweight64(__u64 w)
 	return __builtin_popcountll(w);
 }
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/bitops/builtin-__ffs.h>
+#include <asm-generic/bitops/builtin-__fls.h>
+#include <asm-generic/bitops/builtin-ffs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/bitops/const_hweight.h>
 #include <asm-generic/bitops/lock.h>
 #include <asm-generic/bitops/find.h>

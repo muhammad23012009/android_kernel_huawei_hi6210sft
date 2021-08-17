@@ -12,6 +12,10 @@
 #define __ASM_ARM_ATOMIC_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/prefetch.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/irqflags.h>
 #include <asm/barrier.h>
@@ -26,9 +30,14 @@
  * strex/ldrex monitor on some implementations. The reason we can use it for
  * atomic_set() is the clrex or dummy strex done on every exception return.
  */
+<<<<<<< HEAD
 #define atomic_read(v)	(*(volatile int *)&(v)->counter)
 #define atomic_set(v,i)	(((v)->counter) = (i))
 #define cpu_relaxed_read_atomic(v)	atomic_read(v)
+=======
+#define atomic_read(v)	READ_ONCE((v)->counter)
+#define atomic_set(v,i)	WRITE_ONCE(((v)->counter), (i))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if __LINUX_ARM_ARCH__ >= 6
 
@@ -37,6 +46,7 @@
  * store exclusive to ensure that these are atomic.  We may loop
  * to ensure that the update happens.
  */
+<<<<<<< HEAD
 static inline void atomic_add(int i, atomic_t *v)
 {
 	unsigned long tmp;
@@ -114,11 +124,89 @@ static inline int atomic_sub_return(int i, atomic_t *v)
 }
 
 static inline int atomic_cmpxchg(atomic_t *ptr, int old, int new)
+=======
+
+#define ATOMIC_OP(op, c_op, asm_op)					\
+static inline void atomic_##op(int i, atomic_t *v)			\
+{									\
+	unsigned long tmp;						\
+	int result;							\
+									\
+	prefetchw(&v->counter);						\
+	__asm__ __volatile__("@ atomic_" #op "\n"			\
+"1:	ldrex	%0, [%3]\n"						\
+"	" #asm_op "	%0, %0, %4\n"					\
+"	strex	%1, %0, [%3]\n"						\
+"	teq	%1, #0\n"						\
+"	bne	1b"							\
+	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
+	: "r" (&v->counter), "Ir" (i)					\
+	: "cc");							\
+}									\
+
+#define ATOMIC_OP_RETURN(op, c_op, asm_op)				\
+static inline int atomic_##op##_return_relaxed(int i, atomic_t *v)	\
+{									\
+	unsigned long tmp;						\
+	int result;							\
+									\
+	prefetchw(&v->counter);						\
+									\
+	__asm__ __volatile__("@ atomic_" #op "_return\n"		\
+"1:	ldrex	%0, [%3]\n"						\
+"	" #asm_op "	%0, %0, %4\n"					\
+"	strex	%1, %0, [%3]\n"						\
+"	teq	%1, #0\n"						\
+"	bne	1b"							\
+	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
+	: "r" (&v->counter), "Ir" (i)					\
+	: "cc");							\
+									\
+	return result;							\
+}
+
+#define ATOMIC_FETCH_OP(op, c_op, asm_op)				\
+static inline int atomic_fetch_##op##_relaxed(int i, atomic_t *v)	\
+{									\
+	unsigned long tmp;						\
+	int result, val;						\
+									\
+	prefetchw(&v->counter);						\
+									\
+	__asm__ __volatile__("@ atomic_fetch_" #op "\n"			\
+"1:	ldrex	%0, [%4]\n"						\
+"	" #asm_op "	%1, %0, %5\n"					\
+"	strex	%2, %1, [%4]\n"						\
+"	teq	%2, #0\n"						\
+"	bne	1b"							\
+	: "=&r" (result), "=&r" (val), "=&r" (tmp), "+Qo" (v->counter)	\
+	: "r" (&v->counter), "Ir" (i)					\
+	: "cc");							\
+									\
+	return result;							\
+}
+
+#define atomic_add_return_relaxed	atomic_add_return_relaxed
+#define atomic_sub_return_relaxed	atomic_sub_return_relaxed
+#define atomic_fetch_add_relaxed	atomic_fetch_add_relaxed
+#define atomic_fetch_sub_relaxed	atomic_fetch_sub_relaxed
+
+#define atomic_fetch_and_relaxed	atomic_fetch_and_relaxed
+#define atomic_fetch_andnot_relaxed	atomic_fetch_andnot_relaxed
+#define atomic_fetch_or_relaxed		atomic_fetch_or_relaxed
+#define atomic_fetch_xor_relaxed	atomic_fetch_xor_relaxed
+
+static inline int atomic_cmpxchg_relaxed(atomic_t *ptr, int old, int new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int oldval;
 	unsigned long res;
 
+<<<<<<< HEAD
 	smp_mb();
+=======
+	prefetchw(&ptr->counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	do {
 		__asm__ __volatile__("@ atomic_cmpxchg\n"
@@ -131,6 +219,7 @@ static inline int atomic_cmpxchg(atomic_t *ptr, int old, int new)
 		    : "cc");
 	} while (res);
 
+<<<<<<< HEAD
 	smp_mb();
 
 	return oldval;
@@ -149,6 +238,37 @@ static inline void atomic_clear_mask(unsigned long mask, unsigned long *addr)
 	: "=&r" (tmp), "=&r" (tmp2), "+Qo" (*addr)
 	: "r" (addr), "Ir" (mask)
 	: "cc");
+=======
+	return oldval;
+}
+#define atomic_cmpxchg_relaxed		atomic_cmpxchg_relaxed
+
+static inline int __atomic_add_unless(atomic_t *v, int a, int u)
+{
+	int oldval, newval;
+	unsigned long tmp;
+
+	smp_mb();
+	prefetchw(&v->counter);
+
+	__asm__ __volatile__ ("@ atomic_add_unless\n"
+"1:	ldrex	%0, [%4]\n"
+"	teq	%0, %5\n"
+"	beq	2f\n"
+"	add	%1, %0, %6\n"
+"	strex	%2, %1, [%4]\n"
+"	teq	%2, #0\n"
+"	bne	1b\n"
+"2:"
+	: "=&r" (oldval), "=&r" (newval), "=&r" (tmp), "+Qo" (v->counter)
+	: "r" (&v->counter), "r" (u), "r" (a)
+	: "cc");
+
+	if (oldval != u)
+		smp_mb();
+
+	return oldval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #else /* ARM_ARCH_6 */
@@ -157,6 +277,7 @@ static inline void atomic_clear_mask(unsigned long mask, unsigned long *addr)
 #error SMP not supported on pre-ARMv6 CPUs
 #endif
 
+<<<<<<< HEAD
 static inline int atomic_add_return(int i, atomic_t *v)
 {
 	unsigned long flags;
@@ -184,6 +305,45 @@ static inline int atomic_sub_return(int i, atomic_t *v)
 	return val;
 }
 #define atomic_sub(i, v)	(void) atomic_sub_return(i, v)
+=======
+#define ATOMIC_OP(op, c_op, asm_op)					\
+static inline void atomic_##op(int i, atomic_t *v)			\
+{									\
+	unsigned long flags;						\
+									\
+	raw_local_irq_save(flags);					\
+	v->counter c_op i;						\
+	raw_local_irq_restore(flags);					\
+}									\
+
+#define ATOMIC_OP_RETURN(op, c_op, asm_op)				\
+static inline int atomic_##op##_return(int i, atomic_t *v)		\
+{									\
+	unsigned long flags;						\
+	int val;							\
+									\
+	raw_local_irq_save(flags);					\
+	v->counter c_op i;						\
+	val = v->counter;						\
+	raw_local_irq_restore(flags);					\
+									\
+	return val;							\
+}
+
+#define ATOMIC_FETCH_OP(op, c_op, asm_op)				\
+static inline int atomic_fetch_##op(int i, atomic_t *v)			\
+{									\
+	unsigned long flags;						\
+	int val;							\
+									\
+	raw_local_irq_save(flags);					\
+	val = v->counter;						\
+	v->counter c_op i;						\
+	raw_local_irq_restore(flags);					\
+									\
+	return val;							\
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int atomic_cmpxchg(atomic_t *v, int old, int new)
 {
@@ -199,6 +359,7 @@ static inline int atomic_cmpxchg(atomic_t *v, int old, int new)
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline void atomic_clear_mask(unsigned long mask, unsigned long *addr)
 {
 	unsigned long flags;
@@ -212,6 +373,8 @@ static inline void atomic_clear_mask(unsigned long mask, unsigned long *addr)
 
 #define atomic_xchg(v, new) (xchg(&((v)->counter), new))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int __atomic_add_unless(atomic_t *v, int a, int u)
 {
 	int c, old;
@@ -222,22 +385,62 @@ static inline int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
+<<<<<<< HEAD
+=======
+#endif /* __LINUX_ARM_ARCH__ */
+
+#define ATOMIC_OPS(op, c_op, asm_op)					\
+	ATOMIC_OP(op, c_op, asm_op)					\
+	ATOMIC_OP_RETURN(op, c_op, asm_op)				\
+	ATOMIC_FETCH_OP(op, c_op, asm_op)
+
+ATOMIC_OPS(add, +=, add)
+ATOMIC_OPS(sub, -=, sub)
+
+#define atomic_andnot atomic_andnot
+
+#undef ATOMIC_OPS
+#define ATOMIC_OPS(op, c_op, asm_op)					\
+	ATOMIC_OP(op, c_op, asm_op)					\
+	ATOMIC_FETCH_OP(op, c_op, asm_op)
+
+ATOMIC_OPS(and, &=, and)
+ATOMIC_OPS(andnot, &= ~, bic)
+ATOMIC_OPS(or,  |=, orr)
+ATOMIC_OPS(xor, ^=, eor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+#undef ATOMIC_OP_RETURN
+#undef ATOMIC_OP
+
+#define atomic_xchg(v, new) (xchg(&((v)->counter), new))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define atomic_inc(v)		atomic_add(1, v)
 #define atomic_dec(v)		atomic_sub(1, v)
 
 #define atomic_inc_and_test(v)	(atomic_add_return(1, v) == 0)
 #define atomic_dec_and_test(v)	(atomic_sub_return(1, v) == 0)
+<<<<<<< HEAD
 #define atomic_inc_return(v)    (atomic_add_return(1, v))
 #define atomic_dec_return(v)    (atomic_sub_return(1, v))
+=======
+#define atomic_inc_return_relaxed(v)    (atomic_add_return_relaxed(1, v))
+#define atomic_dec_return_relaxed(v)    (atomic_sub_return_relaxed(1, v))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define atomic_sub_and_test(i, v) (atomic_sub_return(i, v) == 0)
 
 #define atomic_add_negative(i,v) (atomic_add_return(i, v) < 0)
 
+<<<<<<< HEAD
 #define smp_mb__before_atomic_dec()	smp_mb()
 #define smp_mb__after_atomic_dec()	smp_mb()
 #define smp_mb__before_atomic_inc()	smp_mb()
 #define smp_mb__after_atomic_inc()	smp_mb()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef CONFIG_GENERIC_ATOMIC64
 typedef struct {
 	long long counter;
@@ -285,6 +488,10 @@ static inline void atomic64_set(atomic64_t *v, long long i)
 {
 	long long tmp;
 
+<<<<<<< HEAD
+=======
+	prefetchw(&v->counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__("@ atomic64_set\n"
 "1:	ldrexd	%0, %H0, [%2]\n"
 "	strexd	%0, %3, %H3, [%2]\n"
@@ -296,6 +503,7 @@ static inline void atomic64_set(atomic64_t *v, long long i)
 }
 #endif
 
+<<<<<<< HEAD
 static inline void atomic64_add(long long i, atomic64_t *v)
 {
 	long long result;
@@ -378,11 +586,119 @@ static inline long long atomic64_sub_return(long long i, atomic64_t *v)
 
 static inline long long atomic64_cmpxchg(atomic64_t *ptr, long long old,
 					long long new)
+=======
+#define ATOMIC64_OP(op, op1, op2)					\
+static inline void atomic64_##op(long long i, atomic64_t *v)		\
+{									\
+	long long result;						\
+	unsigned long tmp;						\
+									\
+	prefetchw(&v->counter);						\
+	__asm__ __volatile__("@ atomic64_" #op "\n"			\
+"1:	ldrexd	%0, %H0, [%3]\n"					\
+"	" #op1 " %Q0, %Q0, %Q4\n"					\
+"	" #op2 " %R0, %R0, %R4\n"					\
+"	strexd	%1, %0, %H0, [%3]\n"					\
+"	teq	%1, #0\n"						\
+"	bne	1b"							\
+	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
+	: "r" (&v->counter), "r" (i)					\
+	: "cc");							\
+}									\
+
+#define ATOMIC64_OP_RETURN(op, op1, op2)				\
+static inline long long							\
+atomic64_##op##_return_relaxed(long long i, atomic64_t *v)		\
+{									\
+	long long result;						\
+	unsigned long tmp;						\
+									\
+	prefetchw(&v->counter);						\
+									\
+	__asm__ __volatile__("@ atomic64_" #op "_return\n"		\
+"1:	ldrexd	%0, %H0, [%3]\n"					\
+"	" #op1 " %Q0, %Q0, %Q4\n"					\
+"	" #op2 " %R0, %R0, %R4\n"					\
+"	strexd	%1, %0, %H0, [%3]\n"					\
+"	teq	%1, #0\n"						\
+"	bne	1b"							\
+	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
+	: "r" (&v->counter), "r" (i)					\
+	: "cc");							\
+									\
+	return result;							\
+}
+
+#define ATOMIC64_FETCH_OP(op, op1, op2)					\
+static inline long long							\
+atomic64_fetch_##op##_relaxed(long long i, atomic64_t *v)		\
+{									\
+	long long result, val;						\
+	unsigned long tmp;						\
+									\
+	prefetchw(&v->counter);						\
+									\
+	__asm__ __volatile__("@ atomic64_fetch_" #op "\n"		\
+"1:	ldrexd	%0, %H0, [%4]\n"					\
+"	" #op1 " %Q1, %Q0, %Q5\n"					\
+"	" #op2 " %R1, %R0, %R5\n"					\
+"	strexd	%2, %1, %H1, [%4]\n"					\
+"	teq	%2, #0\n"						\
+"	bne	1b"							\
+	: "=&r" (result), "=&r" (val), "=&r" (tmp), "+Qo" (v->counter)	\
+	: "r" (&v->counter), "r" (i)					\
+	: "cc");							\
+									\
+	return result;							\
+}
+
+#define ATOMIC64_OPS(op, op1, op2)					\
+	ATOMIC64_OP(op, op1, op2)					\
+	ATOMIC64_OP_RETURN(op, op1, op2)				\
+	ATOMIC64_FETCH_OP(op, op1, op2)
+
+ATOMIC64_OPS(add, adds, adc)
+ATOMIC64_OPS(sub, subs, sbc)
+
+#define atomic64_add_return_relaxed	atomic64_add_return_relaxed
+#define atomic64_sub_return_relaxed	atomic64_sub_return_relaxed
+#define atomic64_fetch_add_relaxed	atomic64_fetch_add_relaxed
+#define atomic64_fetch_sub_relaxed	atomic64_fetch_sub_relaxed
+
+#undef ATOMIC64_OPS
+#define ATOMIC64_OPS(op, op1, op2)					\
+	ATOMIC64_OP(op, op1, op2)					\
+	ATOMIC64_FETCH_OP(op, op1, op2)
+
+#define atomic64_andnot atomic64_andnot
+
+ATOMIC64_OPS(and, and, and)
+ATOMIC64_OPS(andnot, bic, bic)
+ATOMIC64_OPS(or,  orr, orr)
+ATOMIC64_OPS(xor, eor, eor)
+
+#define atomic64_fetch_and_relaxed	atomic64_fetch_and_relaxed
+#define atomic64_fetch_andnot_relaxed	atomic64_fetch_andnot_relaxed
+#define atomic64_fetch_or_relaxed	atomic64_fetch_or_relaxed
+#define atomic64_fetch_xor_relaxed	atomic64_fetch_xor_relaxed
+
+#undef ATOMIC64_OPS
+#undef ATOMIC64_FETCH_OP
+#undef ATOMIC64_OP_RETURN
+#undef ATOMIC64_OP
+
+static inline long long
+atomic64_cmpxchg_relaxed(atomic64_t *ptr, long long old, long long new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	long long oldval;
 	unsigned long res;
 
+<<<<<<< HEAD
 	smp_mb();
+=======
+	prefetchw(&ptr->counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	do {
 		__asm__ __volatile__("@ atomic64_cmpxchg\n"
@@ -396,17 +712,29 @@ static inline long long atomic64_cmpxchg(atomic64_t *ptr, long long old,
 		: "cc");
 	} while (res);
 
+<<<<<<< HEAD
 	smp_mb();
 
 	return oldval;
 }
 
 static inline long long atomic64_xchg(atomic64_t *ptr, long long new)
+=======
+	return oldval;
+}
+#define atomic64_cmpxchg_relaxed	atomic64_cmpxchg_relaxed
+
+static inline long long atomic64_xchg_relaxed(atomic64_t *ptr, long long new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	long long result;
 	unsigned long tmp;
 
+<<<<<<< HEAD
 	smp_mb();
+=======
+	prefetchw(&ptr->counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__asm__ __volatile__("@ atomic64_xchg\n"
 "1:	ldrexd	%0, %H0, [%3]\n"
@@ -417,10 +745,16 @@ static inline long long atomic64_xchg(atomic64_t *ptr, long long new)
 	: "r" (&ptr->counter), "r" (new)
 	: "cc");
 
+<<<<<<< HEAD
 	smp_mb();
 
 	return result;
 }
+=======
+	return result;
+}
+#define atomic64_xchg_relaxed		atomic64_xchg_relaxed
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline long long atomic64_dec_if_positive(atomic64_t *v)
 {
@@ -428,6 +762,10 @@ static inline long long atomic64_dec_if_positive(atomic64_t *v)
 	unsigned long tmp;
 
 	smp_mb();
+<<<<<<< HEAD
+=======
+	prefetchw(&v->counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__asm__ __volatile__("@ atomic64_dec_if_positive\n"
 "1:	ldrexd	%0, %H0, [%3]\n"
@@ -455,6 +793,10 @@ static inline int atomic64_add_unless(atomic64_t *v, long long a, long long u)
 	int ret = 1;
 
 	smp_mb();
+<<<<<<< HEAD
+=======
+	prefetchw(&v->counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__asm__ __volatile__("@ atomic64_add_unless\n"
 "1:	ldrexd	%0, %H0, [%4]\n"
@@ -480,11 +822,19 @@ static inline int atomic64_add_unless(atomic64_t *v, long long a, long long u)
 
 #define atomic64_add_negative(a, v)	(atomic64_add_return((a), (v)) < 0)
 #define atomic64_inc(v)			atomic64_add(1LL, (v))
+<<<<<<< HEAD
 #define atomic64_inc_return(v)		atomic64_add_return(1LL, (v))
 #define atomic64_inc_and_test(v)	(atomic64_inc_return(v) == 0)
 #define atomic64_sub_and_test(a, v)	(atomic64_sub_return((a), (v)) == 0)
 #define atomic64_dec(v)			atomic64_sub(1LL, (v))
 #define atomic64_dec_return(v)		atomic64_sub_return(1LL, (v))
+=======
+#define atomic64_inc_return_relaxed(v)	atomic64_add_return_relaxed(1LL, (v))
+#define atomic64_inc_and_test(v)	(atomic64_inc_return(v) == 0)
+#define atomic64_sub_and_test(a, v)	(atomic64_sub_return((a), (v)) == 0)
+#define atomic64_dec(v)			atomic64_sub(1LL, (v))
+#define atomic64_dec_return_relaxed(v)	atomic64_sub_return_relaxed(1LL, (v))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define atomic64_dec_and_test(v)	(atomic64_dec_return((v)) == 0)
 #define atomic64_inc_not_zero(v)	atomic64_add_unless((v), 1LL, 0LL)
 

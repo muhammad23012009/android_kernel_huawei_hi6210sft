@@ -1,7 +1,11 @@
 /*
  *  mxl111sf-demod.h - driver for the MaxLinear MXL111SF DVB-T demodulator
  *
+<<<<<<< HEAD
  *  Copyright (C) 2010 Michael Krufky <mkrufky@kernellabs.com>
+=======
+ *  Copyright (C) 2010-2014 Michael Krufky <mkrufky@linuxtv.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +25,10 @@
 #ifndef __MXL111SF_DEMOD_H__
 #define __MXL111SF_DEMOD_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "dvb_frontend.h"
 #include "mxl111sf.h"
 
@@ -35,11 +42,19 @@ struct mxl111sf_demod_config {
 #if IS_ENABLED(CONFIG_DVB_USB_MXL111SF)
 extern
 struct dvb_frontend *mxl111sf_demod_attach(struct mxl111sf_state *mxl_state,
+<<<<<<< HEAD
 					   struct mxl111sf_demod_config *cfg);
 #else
 static inline
 struct dvb_frontend *mxl111sf_demod_attach(struct mxl111sf_state *mxl_state,
 					   struct mxl111sf_demod_config *cfg)
+=======
+				   const struct mxl111sf_demod_config *cfg);
+#else
+static inline
+struct dvb_frontend *mxl111sf_demod_attach(struct mxl111sf_state *mxl_state,
+				   const struct mxl111sf_demod_config *cfg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
@@ -47,9 +62,12 @@ struct dvb_frontend *mxl111sf_demod_attach(struct mxl111sf_state *mxl_state,
 #endif /* CONFIG_DVB_USB_MXL111SF */
 
 #endif /* __MXL111SF_DEMOD_H__ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

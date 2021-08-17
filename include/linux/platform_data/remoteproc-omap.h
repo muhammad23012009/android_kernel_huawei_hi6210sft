@@ -39,9 +39,15 @@ struct omap_rproc_pdata {
 	const char *firmware;
 	const char *mbox_name;
 	const struct rproc_ops *ops;
+<<<<<<< HEAD
 	int (*device_enable) (struct platform_device *pdev);
 	int (*device_shutdown) (struct platform_device *pdev);
 	void(*set_bootaddr)(u32);
+=======
+	int (*device_enable)(struct platform_device *pdev);
+	int (*device_shutdown)(struct platform_device *pdev);
+	void (*set_bootaddr)(u32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #if defined(CONFIG_OMAP_REMOTEPROC) || defined(CONFIG_OMAP_REMOTEPROC_MODULE)
@@ -50,7 +56,11 @@ void __init omap_rproc_reserve_cma(void);
 
 #else
 
+<<<<<<< HEAD
 void __init omap_rproc_reserve_cma(void)
+=======
+static inline void __init omap_rproc_reserve_cma(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 

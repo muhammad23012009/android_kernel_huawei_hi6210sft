@@ -43,12 +43,16 @@
  */
 #define VMALLOC_OFFSET		(8*1024*1024)
 #define VMALLOC_START		(((unsigned long)high_memory + VMALLOC_OFFSET) & ~(VMALLOC_OFFSET-1))
+<<<<<<< HEAD
 #if defined (CHIP_BB_HI6210)
 /*V8R1 VMALLOC空间调整，与fixmap连续*/
 #define VMALLOC_END		0xFFE00000UL
 #else
 #define VMALLOC_END		0xFF000000UL
 #endif
+=======
+#define VMALLOC_END		0xff800000UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define LIBRARY_TEXT_START	0x0c000000
 
@@ -102,10 +106,19 @@ extern pgprot_t		pgprot_s2_device;
 #define PAGE_READONLY_EXEC	_MOD_PROT(pgprot_user, L_PTE_USER | L_PTE_RDONLY)
 #define PAGE_KERNEL		_MOD_PROT(pgprot_kernel, L_PTE_XN)
 #define PAGE_KERNEL_EXEC	pgprot_kernel
+<<<<<<< HEAD
 #define PAGE_HYP		_MOD_PROT(pgprot_kernel, L_PTE_HYP)
 #define PAGE_HYP_DEVICE		_MOD_PROT(pgprot_hyp_device, L_PTE_HYP)
 #define PAGE_S2			_MOD_PROT(pgprot_s2, L_PTE_S2_RDONLY)
 #define PAGE_S2_DEVICE		_MOD_PROT(pgprot_s2_device, L_PTE_S2_RDWR)
+=======
+#define PAGE_HYP		_MOD_PROT(pgprot_kernel, L_PTE_HYP | L_PTE_XN)
+#define PAGE_HYP_EXEC		_MOD_PROT(pgprot_kernel, L_PTE_HYP | L_PTE_RDONLY)
+#define PAGE_HYP_RO		_MOD_PROT(pgprot_kernel, L_PTE_HYP | L_PTE_RDONLY | L_PTE_XN)
+#define PAGE_HYP_DEVICE		_MOD_PROT(pgprot_hyp_device, L_PTE_HYP)
+#define PAGE_S2			_MOD_PROT(pgprot_s2, L_PTE_S2_RDONLY)
+#define PAGE_S2_DEVICE		_MOD_PROT(pgprot_s2_device, L_PTE_S2_RDONLY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __PAGE_NONE		__pgprot(_L_PTE_DEFAULT | L_PTE_RDONLY | L_PTE_XN | L_PTE_NONE)
 #define __PAGE_SHARED		__pgprot(_L_PTE_DEFAULT | L_PTE_USER | L_PTE_XN)
@@ -187,7 +200,10 @@ extern pgd_t swapper_pg_dir[PTRS_PER_PGD];
 #define pgd_offset_k(addr)	pgd_offset(&init_mm, addr)
 
 #define pmd_none(pmd)		(!pmd_val(pmd))
+<<<<<<< HEAD
 #define pmd_present(pmd)	(pmd_val(pmd))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline pte_t *pmd_page_vaddr(pmd_t pmd)
 {
@@ -225,13 +241,24 @@ static inline pte_t *pmd_page_vaddr(pmd_t pmd)
 
 #define pte_none(pte)		(!pte_val(pte))
 #define pte_present(pte)	(pte_isset((pte), L_PTE_PRESENT))
+<<<<<<< HEAD
+=======
+#define pte_valid(pte)		(pte_isset((pte), L_PTE_VALID))
+#define pte_accessible(mm, pte)	(mm_tlb_flush_pending(mm) ? pte_present(pte) : pte_valid(pte))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pte_write(pte)		(pte_isclear((pte), L_PTE_RDONLY))
 #define pte_dirty(pte)		(pte_isset((pte), L_PTE_DIRTY))
 #define pte_young(pte)		(pte_isset((pte), L_PTE_YOUNG))
 #define pte_exec(pte)		(pte_isclear((pte), L_PTE_XN))
+<<<<<<< HEAD
 #define pte_special(pte)	(0)
 
 #define pte_present_user(pte)  (pte_present(pte) && (pte_val(pte) & L_PTE_USER))
+=======
+
+#define pte_valid_user(pte)	\
+	(pte_valid(pte) && pte_isset((pte), L_PTE_USER) && pte_young(pte))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if __LINUX_ARM_ARCH__ < 6
 static inline void __sync_icache_dcache(pte_t pteval)
@@ -246,14 +273,21 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
 {
 	unsigned long ext = 0;
 
+<<<<<<< HEAD
 	if (addr < TASK_SIZE && pte_present_user(pteval)) {
 		__sync_icache_dcache(pteval);
+=======
+	if (addr < TASK_SIZE && pte_valid_user(pteval)) {
+		if (!pte_special(pteval))
+			__sync_icache_dcache(pteval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ext |= PTE_EXT_NG;
 	}
 
 	set_pte_ext(ptep, pteval, ext);
 }
 
+<<<<<<< HEAD
 #define PTE_BIT_FUNC(fn,op) \
 static inline pte_t pte_##fn(pte_t pte) { pte_val(pte) op; return pte; }
 
@@ -265,6 +299,59 @@ PTE_BIT_FUNC(mkold,     &= ~L_PTE_YOUNG);
 PTE_BIT_FUNC(mkyoung,   |= L_PTE_YOUNG);
 
 static inline pte_t pte_mkspecial(pte_t pte) { return pte; }
+=======
+static inline pte_t clear_pte_bit(pte_t pte, pgprot_t prot)
+{
+	pte_val(pte) &= ~pgprot_val(prot);
+	return pte;
+}
+
+static inline pte_t set_pte_bit(pte_t pte, pgprot_t prot)
+{
+	pte_val(pte) |= pgprot_val(prot);
+	return pte;
+}
+
+static inline pte_t pte_wrprotect(pte_t pte)
+{
+	return set_pte_bit(pte, __pgprot(L_PTE_RDONLY));
+}
+
+static inline pte_t pte_mkwrite(pte_t pte)
+{
+	return clear_pte_bit(pte, __pgprot(L_PTE_RDONLY));
+}
+
+static inline pte_t pte_mkclean(pte_t pte)
+{
+	return clear_pte_bit(pte, __pgprot(L_PTE_DIRTY));
+}
+
+static inline pte_t pte_mkdirty(pte_t pte)
+{
+	return set_pte_bit(pte, __pgprot(L_PTE_DIRTY));
+}
+
+static inline pte_t pte_mkold(pte_t pte)
+{
+	return clear_pte_bit(pte, __pgprot(L_PTE_YOUNG));
+}
+
+static inline pte_t pte_mkyoung(pte_t pte)
+{
+	return set_pte_bit(pte, __pgprot(L_PTE_YOUNG));
+}
+
+static inline pte_t pte_mkexec(pte_t pte)
+{
+	return clear_pte_bit(pte, __pgprot(L_PTE_XN));
+}
+
+static inline pte_t pte_mknexec(pte_t pte)
+{
+	return set_pte_bit(pte, __pgprot(L_PTE_XN));
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 {
@@ -280,12 +367,21 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
  *
  *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
  *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+<<<<<<< HEAD
  *   <--------------- offset ----------------------> < type -> 0 0 0
  *
  * This gives us up to 31 swap files and 64GB per swap file.  Note that
  * the offset field is always non-zero.
  */
 #define __SWP_TYPE_SHIFT	3
+=======
+ *   <--------------- offset ------------------------> < type -> 0 0
+ *
+ * This gives us up to 31 swap files and 128GB per swap file.  Note that
+ * the offset field is always non-zero.
+ */
+#define __SWP_TYPE_SHIFT	2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __SWP_TYPE_BITS		5
 #define __SWP_TYPE_MASK		((1 << __SWP_TYPE_BITS) - 1)
 #define __SWP_OFFSET_SHIFT	(__SWP_TYPE_BITS + __SWP_TYPE_SHIFT)
@@ -304,6 +400,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
  */
 #define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > __SWP_TYPE_BITS)
 
+<<<<<<< HEAD
 /*
  * Encode and decode a file entry.  File entries are stored in the Linux
  * page tables as follows:
@@ -318,6 +415,8 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 
 #define PTE_FILE_MAX_BITS	29
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Needs to be defined here and not in linux/mm.h, as it is arch dependent */
 /* FIXME: this is not correct */
 #define kern_addr_valid(addr)	(1)
@@ -330,6 +429,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 #define HAVE_ARCH_UNMAPPED_AREA
 #define HAVE_ARCH_UNMAPPED_AREA_TOPDOWN
 
+<<<<<<< HEAD
 /*
  * remap a physical page `pfn' of size `size' with page protection `prot'
  * into virtual address `from'
@@ -337,6 +437,8 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 #define io_remap_pfn_range(vma,from,pfn,size,prot) \
 		remap_pfn_range(vma, from, pfn, size, prot)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pgtable_cache_init() do { } while (0)
 
 #endif /* !__ASSEMBLY__ */

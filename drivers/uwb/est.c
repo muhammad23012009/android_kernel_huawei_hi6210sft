@@ -258,7 +258,10 @@ int uwb_est_register(u8 type, u8 event_high, u16 vendor, u16 product,
 {
 	unsigned long flags;
 	unsigned itr;
+<<<<<<< HEAD
 	u16 type_event_high;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int result = 0;
 
 	write_lock_irqsave(&uwb_est_lock, flags);
@@ -268,7 +271,10 @@ int uwb_est_register(u8 type, u8 event_high, u16 vendor, u16 product,
 			goto out;
 	}
 	/* Find the right spot to insert it in */
+<<<<<<< HEAD
 	type_event_high = type << 8 | event_high;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (itr = 0; itr < uwb_est_used; itr++)
 		if (uwb_est[itr].type_event_high < type
 		    && uwb_est[itr].vendor < vendor
@@ -436,7 +442,10 @@ ssize_t uwb_est_find_size(struct uwb_rc *rc, const struct uwb_rceb *rceb,
 	unsigned long flags;
 	unsigned itr;
 	u16 type_event_high, event;
+<<<<<<< HEAD
 	u8 *ptr = (u8 *) rceb;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	read_lock_irqsave(&uwb_est_lock, flags);
 	size = -ENOSPC;
@@ -453,12 +462,21 @@ ssize_t uwb_est_find_size(struct uwb_rc *rc, const struct uwb_rceb *rceb,
 		if (size != -ENOENT)
 			goto out;
 	}
+<<<<<<< HEAD
 	dev_dbg(dev, "event 0x%02x/%04x/%02x: no handlers available; "
 		"RCEB %02x %02x %02x %02x\n",
 		(unsigned) rceb->bEventType,
 		(unsigned) le16_to_cpu(rceb->wEvent),
 		(unsigned) rceb->bEventContext,
 		ptr[0], ptr[1], ptr[2], ptr[3]);
+=======
+	dev_dbg(dev,
+		"event 0x%02x/%04x/%02x: no handlers available; RCEB %4ph\n",
+		(unsigned) rceb->bEventType,
+		(unsigned) le16_to_cpu(rceb->wEvent),
+		(unsigned) rceb->bEventContext,
+		rceb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	size = -ENOENT;
 out:
 	read_unlock_irqrestore(&uwb_est_lock, flags);

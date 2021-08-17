@@ -8,7 +8,10 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/platform_device.h>
@@ -84,7 +87,12 @@ static void pxa930_rotary_close(struct input_dev *dev)
 
 static int pxa930_rotary_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct pxa930_rotary_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct pxa930_rotary_platform_data *pdata =
+			dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pxa930_rotary *r;
 	struct input_dev *input_dev;
 	struct resource *res;
@@ -181,7 +189,10 @@ static int pxa930_rotary_remove(struct platform_device *pdev)
 	free_irq(platform_get_irq(pdev, 0), r);
 	input_unregister_device(r->input_dev);
 	iounmap(r->mmio_base);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(r);
 
 	return 0;
@@ -190,7 +201,10 @@ static int pxa930_rotary_remove(struct platform_device *pdev)
 static struct platform_driver pxa930_rotary_driver = {
 	.driver		= {
 		.name	= "pxa930-rotary",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= pxa930_rotary_probe,
 	.remove		= pxa930_rotary_remove,

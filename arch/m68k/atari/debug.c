@@ -287,6 +287,11 @@ static void __init atari_init_midi_port(int cflag)
 
 static int __init atari_debug_setup(char *arg)
 {
+<<<<<<< HEAD
+=======
+	bool registered;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!MACH_IS_ATARI)
 		return 0;
 
@@ -294,6 +299,10 @@ static int __init atari_debug_setup(char *arg)
 		/* defaults to ser2 for a Falcon and ser1 otherwise */
 		arg = MACH_IS_FALCON ? "ser2" : "ser1";
 
+<<<<<<< HEAD
+=======
+	registered = !!atari_console_driver.write;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!strcmp(arg, "ser1")) {
 		/* ST-MFP Modem1 serial port */
 		atari_init_mfp_port(B9600|CS8);
@@ -317,7 +326,11 @@ static int __init atari_debug_setup(char *arg)
 		sound_ym.wd_data = sound_ym.rd_data_reg_sel | 0x20; /* strobe H */
 		atari_console_driver.write = atari_par_console_write;
 	}
+<<<<<<< HEAD
 	if (atari_console_driver.write)
+=======
+	if (atari_console_driver.write && !registered)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		register_console(&atari_console_driver);
 
 	return 0;

@@ -60,7 +60,11 @@ struct lgdt3305_state {
 
 	struct dvb_frontend frontend;
 
+<<<<<<< HEAD
 	fe_modulation_t current_modulation;
+=======
+	enum fe_modulation current_modulation;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 current_frequency;
 	u32 snr;
 };
@@ -236,12 +240,22 @@ static inline int lgdt3305_mpeg_mode(struct lgdt3305_state *state,
 	return lgdt3305_set_reg_bit(state, LGDT3305_TP_CTRL_1, 5, mode);
 }
 
+<<<<<<< HEAD
 static int lgdt3305_mpeg_mode_polarity(struct lgdt3305_state *state,
 				       enum lgdt3305_tp_clock_edge edge,
 				       enum lgdt3305_tp_valid_polarity valid)
 {
 	u8 val;
 	int ret;
+=======
+static int lgdt3305_mpeg_mode_polarity(struct lgdt3305_state *state)
+{
+	u8 val;
+	int ret;
+	enum lgdt3305_tp_clock_edge edge = state->cfg->tpclk_edge;
+	enum lgdt3305_tp_clock_mode mode = state->cfg->tpclk_mode;
+	enum lgdt3305_tp_valid_polarity valid = state->cfg->tpvalid_polarity;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	lg_dbg("edge = %d, valid = %d\n", edge, valid);
 
@@ -253,6 +267,11 @@ static int lgdt3305_mpeg_mode_polarity(struct lgdt3305_state *state,
 
 	if (edge)
 		val |= 0x08;
+<<<<<<< HEAD
+=======
+	if (mode)
+		val |= 0x40;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (valid)
 		val |= 0x01;
 
@@ -740,9 +759,13 @@ static int lgdt3304_set_parameters(struct dvb_frontend *fe)
 		goto fail;
 
 	/* lgdt3305_mpeg_mode_polarity calls lgdt3305_soft_reset */
+<<<<<<< HEAD
 	ret = lgdt3305_mpeg_mode_polarity(state,
 					  state->cfg->tpclk_edge,
 					  state->cfg->tpvalid_polarity);
+=======
+	ret = lgdt3305_mpeg_mode_polarity(state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail:
 	return ret;
 }
@@ -806,16 +829,26 @@ static int lgdt3305_set_parameters(struct dvb_frontend *fe)
 		goto fail;
 
 	/* lgdt3305_mpeg_mode_polarity calls lgdt3305_soft_reset */
+<<<<<<< HEAD
 	ret = lgdt3305_mpeg_mode_polarity(state,
 					  state->cfg->tpclk_edge,
 					  state->cfg->tpvalid_polarity);
+=======
+	ret = lgdt3305_mpeg_mode_polarity(state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int lgdt3305_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int lgdt3305_get_frontend(struct dvb_frontend *fe,
+				 struct dtv_frontend_properties *p)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lgdt3305_state *state = fe->demodulator_priv;
 
 	lg_dbg("\n");
@@ -913,7 +946,11 @@ fail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int lgdt3305_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int lgdt3305_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct lgdt3305_state *state = fe->demodulator_priv;
 	u8 val;
@@ -1176,6 +1213,10 @@ static struct dvb_frontend_ops lgdt3304_ops = {
 	},
 	.i2c_gate_ctrl        = lgdt3305_i2c_gate_ctrl,
 	.init                 = lgdt3305_init,
+<<<<<<< HEAD
+=======
+	.sleep                = lgdt3305_sleep,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set_frontend         = lgdt3304_set_parameters,
 	.get_frontend         = lgdt3305_get_frontend,
 	.get_tune_settings    = lgdt3305_get_tune_settings,
@@ -1214,9 +1255,12 @@ MODULE_DESCRIPTION("LG Electronics LGDT3304/5 ATSC/QAM-B Demodulator Driver");
 MODULE_AUTHOR("Michael Krufky <mkrufky@linuxtv.org>");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("0.2");
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

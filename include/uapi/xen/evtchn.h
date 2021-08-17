@@ -85,4 +85,22 @@ struct ioctl_evtchn_notify {
 #define IOCTL_EVTCHN_RESET				\
 	_IOC(_IOC_NONE, 'E', 5, 0)
 
+<<<<<<< HEAD
+=======
+/*
+ * Restrict this file descriptor so that it can only be used to bind
+ * new interdomain events from one domain.
+ *
+ * Once a file descriptor has been restricted it cannot be
+ * de-restricted, and must be closed and re-opened.  Event channels
+ * which were bound before restricting remain bound afterwards, and
+ * can be notified as usual.
+ */
+#define IOCTL_EVTCHN_RESTRICT_DOMID			\
+	_IOC(_IOC_NONE, 'E', 6, sizeof(struct ioctl_evtchn_restrict_domid))
+struct ioctl_evtchn_restrict_domid {
+	domid_t domid;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __LINUX_PUBLIC_EVTCHN_H__ */

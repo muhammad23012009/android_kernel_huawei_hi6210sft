@@ -20,6 +20,10 @@
   the file called "COPYING".
 
   Contact Information:
+<<<<<<< HEAD
+=======
+  Linux NICS <linux.nics@intel.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
@@ -252,8 +256,12 @@ void ixgbe_dbg_adapter_init(struct ixgbe_adapter *adapter)
  **/
 void ixgbe_dbg_adapter_exit(struct ixgbe_adapter *adapter)
 {
+<<<<<<< HEAD
 	if (adapter->ixgbe_dbg_adapter)
 		debugfs_remove_recursive(adapter->ixgbe_dbg_adapter);
+=======
+	debugfs_remove_recursive(adapter->ixgbe_dbg_adapter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adapter->ixgbe_dbg_adapter = NULL;
 }
 

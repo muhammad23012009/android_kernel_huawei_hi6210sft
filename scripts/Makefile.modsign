@@ -7,7 +7,11 @@ __modsign:
 
 include scripts/Kbuild.include
 
+<<<<<<< HEAD
 __modules := $(sort $(shell grep -h '\.ko' /dev/null $(wildcard $(MODVERDIR)/*.mod)))
+=======
+__modules := $(sort $(shell grep -h '\.ko$$' /dev/null $(wildcard $(MODVERDIR)/*.mod)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 modules := $(patsubst %.o,%.ko,$(wildcard $(__modules:.ko=.o)))
 
 PHONY += $(modules)

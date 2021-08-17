@@ -10,7 +10,10 @@
  * by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pm.h>
 #include <linux/types.h>
 #include <linux/ioport.h>
@@ -20,6 +23,11 @@
 #include <linux/freezer.h>
 #include <linux/suspend.h>
 #include <linux/fsl_devices.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/export.h>
 
@@ -320,7 +328,11 @@ static const struct platform_suspend_ops mpc83xx_suspend_ops = {
 	.end = mpc83xx_suspend_end,
 };
 
+<<<<<<< HEAD
 static struct of_device_id pmc_match[];
+=======
+static const struct of_device_id pmc_match[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pmc_probe(struct platform_device *ofdev)
 {
 	const struct of_device_id *match;
@@ -351,7 +363,11 @@ static int pmc_probe(struct platform_device *ofdev)
 		return -ENODEV;
 
 	pmc_irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (pmc_irq != NO_IRQ) {
+=======
+	if (pmc_irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = request_irq(pmc_irq, pmc_irq_handler, IRQF_SHARED,
 		                  "pmc", ofdev);
 
@@ -399,7 +415,11 @@ out_syscr:
 out_pmc:
 	iounmap(pmc_regs);
 out:
+<<<<<<< HEAD
 	if (pmc_irq != NO_IRQ)
+=======
+	if (pmc_irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		free_irq(pmc_irq, ofdev);
 
 	return ret;
@@ -419,7 +439,11 @@ static struct pmc_type pmc_types[] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct of_device_id pmc_match[] = {
+=======
+static const struct of_device_id pmc_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.compatible = "fsl,mpc8313-pmc",
 		.data = &pmc_types[0],
@@ -434,7 +458,10 @@ static struct of_device_id pmc_match[] = {
 static struct platform_driver pmc_driver = {
 	.driver = {
 		.name = "mpc83xx-pmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = pmc_match,
 	},
 	.probe = pmc_probe,
@@ -445,5 +472,9 @@ static int pmc_init(void)
 {
 	return platform_driver_register(&pmc_driver);
 }
+<<<<<<< HEAD
 
 module_init(pmc_init);
+=======
+device_initcall(pmc_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

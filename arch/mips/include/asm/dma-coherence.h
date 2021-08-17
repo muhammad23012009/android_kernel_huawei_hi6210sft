@@ -9,7 +9,29 @@
 #ifndef __ASM_DMA_COHERENCE_H
 #define __ASM_DMA_COHERENCE_H
 
+<<<<<<< HEAD
 extern int coherentio;
 extern int hw_coherentio;
+=======
+enum coherent_io_user_state {
+	IO_COHERENCE_DEFAULT,
+	IO_COHERENCE_ENABLED,
+	IO_COHERENCE_DISABLED,
+};
+
+#if defined(CONFIG_DMA_PERDEV_COHERENT)
+/* Don't provide (hw_)coherentio to avoid misuse */
+#elif defined(CONFIG_DMA_MAYBE_COHERENT)
+extern enum coherent_io_user_state coherentio;
+extern int hw_coherentio;
+#else
+#ifdef CONFIG_DMA_COHERENT
+#define coherentio	IO_COHERENCE_ENABLED
+#else
+#define coherentio	IO_COHERENCE_DISABLED
+#endif
+#define hw_coherentio	0
+#endif /* CONFIG_DMA_MAYBE_COHERENT */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

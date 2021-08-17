@@ -167,17 +167,32 @@
 #define SAA7134_HSYNC_START                     0x106
 #define SAA7134_HSYNC_STOP                      0x107
 #define SAA7134_SYNC_CTRL                       0x108
+<<<<<<< HEAD
 #define SAA7134_LUMA_CTRL                       0x109
+=======
+#define   SAA7134_SYNC_CTRL_AUFD                (1 << 7)
+#define SAA7134_LUMA_CTRL                       0x109
+#define   SAA7134_LUMA_CTRL_LDEL                (1 << 5)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SAA7134_DEC_LUMA_BRIGHT                 0x10a
 #define SAA7134_DEC_LUMA_CONTRAST               0x10b
 #define SAA7134_DEC_CHROMA_SATURATION           0x10c
 #define SAA7134_DEC_CHROMA_HUE                  0x10d
 #define SAA7134_CHROMA_CTRL1                    0x10e
+<<<<<<< HEAD
+=======
+#define   SAA7134_CHROMA_CTRL1_AUTO0            (1 << 1)
+#define   SAA7134_CHROMA_CTRL1_FCTC             (1 << 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SAA7134_CHROMA_GAIN                     0x10f
 #define SAA7134_CHROMA_CTRL2                    0x110
 #define SAA7134_MODE_DELAY_CTRL                 0x111
 
 #define SAA7134_ANALOG_ADC                      0x114
+<<<<<<< HEAD
+=======
+#define   SAA7134_ANALOG_ADC_AUTO1              (1 << 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SAA7134_VGATE_START                     0x115
 #define SAA7134_VGATE_STOP                      0x116
 #define SAA7134_MISC_VGATE_MSB                  0x117
@@ -369,6 +384,7 @@
 #define SAA7135_DSP_RWCLEAR_RERR		    1
 
 #define SAA7133_I2S_AUDIO_CONTROL               0x591
+<<<<<<< HEAD
 /* ------------------------------------------------------------------ */
 /*
  * Local variables:
@@ -376,3 +392,5 @@
  * End:
  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

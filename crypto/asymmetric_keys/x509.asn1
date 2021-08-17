@@ -6,7 +6,11 @@ Certificate ::= SEQUENCE {
 
 TBSCertificate ::= SEQUENCE {
 	version           [ 0 ]	Version DEFAULT,
+<<<<<<< HEAD
 	serialNumber		CertificateSerialNumber,
+=======
+	serialNumber		CertificateSerialNumber ({ x509_note_serial }),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	signature		AlgorithmIdentifier ({ x509_note_pkey_algo }),
 	issuer			Name ({ x509_note_issuer }),
 	validity		Validity,

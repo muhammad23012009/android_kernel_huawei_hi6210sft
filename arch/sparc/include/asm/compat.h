@@ -307,4 +307,14 @@ static inline int is_compat_task(void)
 	return test_thread_flag(TIF_32BIT);
 }
 
+<<<<<<< HEAD
+=======
+static inline bool in_compat_syscall(void)
+{
+	/* Vector 0x110 is LINUX_32BIT_SYSCALL_TRAP */
+	return pt_regs_trap_type(current_pt_regs()) == 0x110;
+}
+#define in_compat_syscall in_compat_syscall
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_SPARC64_COMPAT_H */

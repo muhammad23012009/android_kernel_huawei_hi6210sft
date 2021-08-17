@@ -44,6 +44,7 @@ void show_mem(unsigned int filter)
 {
 	struct zone *zone;
 
+<<<<<<< HEAD
 	pr_err("Active:%lu inactive:%lu dirty:%lu writeback:%lu unstable:%lu"
 	       " free:%lu\n slab:%lu mapped:%lu pagetables:%lu bounce:%lu"
 	       " pagecache:%lu swap:%lu\n",
@@ -61,6 +62,23 @@ void show_mem(unsigned int filter)
 	       global_page_state(NR_PAGETABLE),
 	       global_page_state(NR_BOUNCE),
 	       global_page_state(NR_FILE_PAGES),
+=======
+	pr_err("Active:%lu inactive:%lu dirty:%lu writeback:%lu unstable:%lu free:%lu\n slab:%lu mapped:%lu pagetables:%lu bounce:%lu pagecache:%lu swap:%lu\n",
+	       (global_node_page_state(NR_ACTIVE_ANON) +
+		global_node_page_state(NR_ACTIVE_FILE)),
+	       (global_node_page_state(NR_INACTIVE_ANON) +
+		global_node_page_state(NR_INACTIVE_FILE)),
+	       global_node_page_state(NR_FILE_DIRTY),
+	       global_node_page_state(NR_WRITEBACK),
+	       global_node_page_state(NR_UNSTABLE_NFS),
+	       global_page_state(NR_FREE_PAGES),
+	       (global_page_state(NR_SLAB_RECLAIMABLE) +
+		global_page_state(NR_SLAB_UNRECLAIMABLE)),
+	       global_node_page_state(NR_FILE_MAPPED),
+	       global_page_state(NR_PAGETABLE),
+	       global_page_state(NR_BOUNCE),
+	       global_node_page_state(NR_FILE_PAGES),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       get_nr_swap_pages());
 
 	for_each_zone(zone) {
@@ -83,6 +101,7 @@ void show_mem(unsigned int filter)
 	}
 }
 
+<<<<<<< HEAD
 /*
  * Associate a virtual page frame with a given physical page frame
  * and protection flags for that frame.
@@ -132,6 +151,8 @@ void __set_fixmap(enum fixed_addresses idx, unsigned long phys, pgprot_t flags)
 	set_pte_pfn(address, phys >> PAGE_SHIFT, flags);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * shatter_huge_page() - ensure a given address is mapped by a small page.
  *
@@ -176,8 +197,12 @@ void shatter_huge_page(unsigned long addr)
 	}
 
 	/* Shatter the huge page into the preallocated L2 page table. */
+<<<<<<< HEAD
 	pmd_populate_kernel(&init_mm, pmd,
 			    get_prealloc_pte(pte_pfn(*(pte_t *)pmd)));
+=======
+	pmd_populate_kernel(&init_mm, pmd, get_prealloc_pte(pmd_pfn(*pmd)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef __PAGETABLE_PMD_FOLDED
 	/* Walk every pgd on the system and update the pmd there. */
@@ -283,7 +308,11 @@ void pgd_free(struct mm_struct *mm, pgd_t *pgd)
 struct page *pgtable_alloc_one(struct mm_struct *mm, unsigned long address,
 			       int order)
 {
+<<<<<<< HEAD
 	gfp_t flags = GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO;
+=======
+	gfp_t flags = GFP_KERNEL|__GFP_ZERO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct page *p;
 	int i;
 
@@ -291,6 +320,14 @@ struct page *pgtable_alloc_one(struct mm_struct *mm, unsigned long address,
 	if (p == NULL)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	if (!pgtable_page_ctor(p)) {
+		__free_pages(p, L2_USER_PGTABLE_ORDER);
+		return NULL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Make every page have a page_count() of one, not just the first.
 	 * We don't use __GFP_COMP since it doesn't look like it works
@@ -301,7 +338,10 @@ struct page *pgtable_alloc_one(struct mm_struct *mm, unsigned long address,
 		inc_zone_page_state(p+i, NR_PAGETABLE);
 	}
 
+<<<<<<< HEAD
 	pgtable_page_ctor(p);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return p;
 }
 
@@ -374,6 +414,20 @@ void ptep_set_wrprotect(struct mm_struct *mm,
 
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * Return a pointer to the PTE that corresponds to the given
+ * address in the given page table.  A NULL page table just uses
+ * the standard kernel page table; the preferred API in this case
+ * is virt_to_kpte().
+ *
+ * The returned pointer can point to a huge page in other levels
+ * of the page table than the bottom, if the huge page is present
+ * in the page table.  For bottom-level PTEs, the returned pointer
+ * can point to a PTE that is either present or not.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 pte_t *virt_to_pte(struct mm_struct* mm, unsigned long addr)
 {
 	pgd_t *pgd;
@@ -387,6 +441,7 @@ pte_t *virt_to_pte(struct mm_struct* mm, unsigned long addr)
 	pud = pud_offset(pgd, addr);
 	if (!pud_present(*pud))
 		return NULL;
+<<<<<<< HEAD
 	pmd = pmd_offset(pud, addr);
 	if (pmd_huge_page(*pmd))
 		return (pte_t *)pmd;
@@ -394,6 +449,25 @@ pte_t *virt_to_pte(struct mm_struct* mm, unsigned long addr)
 		return NULL;
 	return pte_offset_kernel(pmd, addr);
 }
+=======
+	if (pud_huge_page(*pud))
+		return (pte_t *)pud;
+	pmd = pmd_offset(pud, addr);
+	if (!pmd_present(*pmd))
+		return NULL;
+	if (pmd_huge_page(*pmd))
+		return (pte_t *)pmd;
+	return pte_offset_kernel(pmd, addr);
+}
+EXPORT_SYMBOL(virt_to_pte);
+
+pte_t *virt_to_kpte(unsigned long kaddr)
+{
+	BUG_ON(kaddr < PAGE_OFFSET);
+	return virt_to_pte(NULL, kaddr);
+}
+EXPORT_SYMBOL(virt_to_kpte);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 pgprot_t set_remote_cache_cpu(pgprot_t prot, int cpu)
 {
@@ -568,7 +642,11 @@ void __iomem *ioremap_prot(resource_size_t phys_addr, unsigned long size,
 	addr = area->addr;
 	if (ioremap_page_range((unsigned long)addr, (unsigned long)addr + size,
 			       phys_addr, pgprot)) {
+<<<<<<< HEAD
 		remove_vm_area((void *)(PAGE_MASK & (unsigned long) addr));
+=======
+		free_vm_area(area);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 	return (__force void __iomem *) (offset + (char *)addr);

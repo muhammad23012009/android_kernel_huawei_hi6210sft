@@ -83,6 +83,10 @@
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "slip.h"
 #ifdef CONFIG_INET
 #include <linux/ip.h>
@@ -406,7 +410,11 @@ static void sl_encaps(struct slip *sl, unsigned char *icp, int len)
 	set_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
 	actual = sl->tty->ops->write(sl->tty, sl->xbuff, count);
 #ifdef SL_CHECK_TRANSMIT
+<<<<<<< HEAD
 	sl->dev->trans_start = jiffies;
+=======
+	netif_trans_update(sl->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	sl->xleft = count - actual;
 	sl->xhead = sl->xbuff + actual;
@@ -416,6 +424,7 @@ static void sl_encaps(struct slip *sl, unsigned char *icp, int len)
 #endif
 }
 
+<<<<<<< HEAD
 /*
  * Called by the driver when there's room for more data.  If we have
  * more packets to send, we send them here.
@@ -428,19 +437,63 @@ static void slip_write_wakeup(struct tty_struct *tty)
 	/* First make sure we're connected. */
 	if (!sl || sl->magic != SLIP_MAGIC || !netif_running(sl->dev))
 		return;
+=======
+/* Write out any remaining transmit buffer. Scheduled when tty is writable */
+static void slip_transmit(struct work_struct *work)
+{
+	struct slip *sl = container_of(work, struct slip, tx_work);
+	int actual;
+
+	spin_lock_bh(&sl->lock);
+	/* First make sure we're connected. */
+	if (!sl->tty || sl->magic != SLIP_MAGIC || !netif_running(sl->dev)) {
+		spin_unlock_bh(&sl->lock);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sl->xleft <= 0)  {
 		/* Now serial buffer is almost free & we can start
 		 * transmission of another packet */
 		sl->dev->stats.tx_packets++;
+<<<<<<< HEAD
 		clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+=======
+		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+		spin_unlock_bh(&sl->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sl_unlock(sl);
 		return;
 	}
 
+<<<<<<< HEAD
 	actual = tty->ops->write(tty, sl->xhead, sl->xleft);
 	sl->xleft -= actual;
 	sl->xhead += actual;
+=======
+	actual = sl->tty->ops->write(sl->tty, sl->xhead, sl->xleft);
+	sl->xleft -= actual;
+	sl->xhead += actual;
+	spin_unlock_bh(&sl->lock);
+}
+
+/*
+ * Called by the driver when there's room for more data.
+ * Schedule the transmit.
+ */
+static void slip_write_wakeup(struct tty_struct *tty)
+{
+	struct slip *sl;
+
+	rcu_read_lock();
+	sl = rcu_dereference(tty->disc_data);
+	if (!sl)
+		goto out;
+
+	schedule_work(&sl->tx_work);
+out:
+	rcu_read_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sl_tx_timeout(struct net_device *dev)
@@ -735,7 +788,11 @@ static struct slip *sl_alloc(dev_t line)
 		return NULL;
 
 	sprintf(name, "sl%d", i);
+<<<<<<< HEAD
 	dev = alloc_netdev(sizeof(*sl), name, sl_setup);
+=======
+	dev = alloc_netdev(sizeof(*sl), name, NET_NAME_UNKNOWN, sl_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dev)
 		return NULL;
 
@@ -746,6 +803,10 @@ static struct slip *sl_alloc(dev_t line)
 	sl->magic       = SLIP_MAGIC;
 	sl->dev	      	= dev;
 	spin_lock_init(&sl->lock);
+<<<<<<< HEAD
+=======
+	INIT_WORK(&sl->tx_work, slip_transmit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sl->mode        = SL_MODE_DEFAULT;
 #ifdef CONFIG_SLIP_SMART
 	/* initialize timer_list struct */
@@ -845,6 +906,13 @@ err_free_chan:
 	sl->tty = NULL;
 	tty->disc_data = NULL;
 	clear_bit(SLF_INUSE, &sl->flags);
+<<<<<<< HEAD
+=======
+	/* do not call free_netdev before rtnl_unlock */
+	rtnl_unlock();
+	sl_free_netdev(sl->dev);
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 err_exit:
 	rtnl_unlock();
@@ -869,8 +937,18 @@ static void slip_close(struct tty_struct *tty)
 	if (!sl || sl->magic != SLIP_MAGIC || sl->tty != tty)
 		return;
 
+<<<<<<< HEAD
 	tty->disc_data = NULL;
 	sl->tty = NULL;
+=======
+	spin_lock_bh(&sl->lock);
+	rcu_assign_pointer(tty->disc_data, NULL);
+	sl->tty = NULL;
+	spin_unlock_bh(&sl->lock);
+
+	synchronize_rcu();
+	flush_work(&sl->tx_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* VSV = very important to remove timers */
 #ifdef CONFIG_SLIP_SMART

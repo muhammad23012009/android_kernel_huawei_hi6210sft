@@ -123,7 +123,11 @@ STD_ENTRY(flush_and_install_context)
 	}
 	{
 	 move r8, zero  /* asidcount */
+<<<<<<< HEAD
 	 jal hv_flush_remote
+=======
+	 jal _hv_flush_remote
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	bnez r0, 1f
 
@@ -136,7 +140,11 @@ STD_ENTRY(flush_and_install_context)
 	 move r2, r_asid
 	 moveli r3, HV_CTX_DIRECTIO | CTX_PAGE_FLAG
 	}
+<<<<<<< HEAD
 	jal hv_install_context
+=======
+	jal _hv_install_context
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bnez r0, 1f
 
 	/* Finally, flush the TLB. */

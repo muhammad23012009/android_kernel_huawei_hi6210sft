@@ -22,8 +22,13 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 #include <mach/pxa3xx-regs.h>
+<<<<<<< HEAD
 #include <mach/mfp-pxa300.h>
 #include <mach/colibri.h>
+=======
+#include "mfp-pxa300.h"
+#include "colibri.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/mtd-nand-pxa3xx.h>

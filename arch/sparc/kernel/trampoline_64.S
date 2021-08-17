@@ -4,7 +4,10 @@
  * Copyright (C) 1997 David S. Miller (davem@caip.rutgers.edu)
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/head.h>
 #include <asm/asi.h>
@@ -32,13 +35,19 @@ itlb_load:
 dtlb_load:
 	.asciz	"SUNW,dtlb-load"
 
+<<<<<<< HEAD
 	/* XXX __cpuinit this thing XXX */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TRAMP_STACK_SIZE	1024
 	.align	16
 tramp_stack:
 	.skip	TRAMP_STACK_SIZE
 
+<<<<<<< HEAD
 	__CPUINIT
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.align		8
 	.globl		sparc64_cpu_startup, sparc64_cpu_startup_end
 sparc64_cpu_startup:
@@ -112,10 +121,20 @@ startup_continue:
 	brnz,pn		%g1, 1b
 	 nop
 
+<<<<<<< HEAD
 	sethi		%hi(p1275buf), %g2
 	or		%g2, %lo(p1275buf), %g2
 	ldx		[%g2 + 0x10], %l2
 	add		%l2, -(192 + 128), %sp
+=======
+	/* Get onto temporary stack which will be in the locked
+	 * kernel image.
+	 */
+	sethi		%hi(tramp_stack), %g1
+	or		%g1, %lo(tramp_stack), %g1
+	add		%g1, TRAMP_STACK_SIZE, %g1
+	sub		%g1, STACKFRAME_SZ + STACK_BIAS + 256, %sp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	flushw
 
 	/* Setup the loop variables:
@@ -397,7 +416,10 @@ after_lock_tlb:
 	sllx		%g5, THREAD_SHIFT, %g5
 	sub		%g5, (STACKFRAME_SZ + STACK_BIAS), %g5
 	add		%g6, %g5, %sp
+<<<<<<< HEAD
 	mov		0, %fp
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rdpr		%pstate, %o1
 	or		%o1, PSTATE_IE, %o1

@@ -29,11 +29,21 @@ struct udphdr {
 /* UDP socket options */
 #define UDP_CORK	1	/* Never send partially complete segments */
 #define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
+<<<<<<< HEAD
+=======
+#define UDP_NO_CHECK6_TX 101	/* Disable sending checksum for UDP6X */
+#define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* UDP encapsulation types */
 #define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
 #define UDP_ENCAP_ESPINUDP	2 /* draft-ietf-ipsec-udp-encaps-06 */
 #define UDP_ENCAP_L2TPINUDP	3 /* rfc2661 */
+<<<<<<< HEAD
 
+=======
+#define UDP_ENCAP_GTP0		4 /* GSM TS 09.60 */
+#define UDP_ENCAP_GTP1U		5 /* 3GPP TS 29.060 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _UAPI_LINUX_UDP_H */

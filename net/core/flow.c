@@ -24,6 +24,10 @@
 #include <net/flow.h>
 #include <linux/atomic.h>
 #include <linux/security.h>
+<<<<<<< HEAD
+=======
+#include <net/net_namespace.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct flow_cache_entry {
 	union {
@@ -38,6 +42,7 @@ struct flow_cache_entry {
 	struct flow_cache_object	*object;
 };
 
+<<<<<<< HEAD
 struct flow_cache_percpu {
 	struct hlist_head		*hash_table;
 	int				hash_count;
@@ -46,12 +51,15 @@ struct flow_cache_percpu {
 	struct tasklet_struct		flush_tasklet;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct flow_flush_info {
 	struct flow_cache		*cache;
 	atomic_t			cpuleft;
 	struct completion		completion;
 };
 
+<<<<<<< HEAD
 struct flow_cache {
 	u32				hash_shift;
 	struct flow_cache_percpu __percpu *percpu;
@@ -69,6 +77,10 @@ static struct kmem_cache *flow_cachep __read_mostly;
 static DEFINE_SPINLOCK(flow_cache_gc_lock);
 static LIST_HEAD(flow_cache_gc_list);
 
+=======
+static struct kmem_cache *flow_cachep __read_mostly;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define flow_cache_hash_size(cache)	(1 << (cache)->hash_shift)
 #define FLOW_HASH_RND_PERIOD		(10 * 60 * HZ)
 
@@ -84,16 +96,28 @@ static void flow_cache_new_hashrnd(unsigned long arg)
 	add_timer(&fc->rnd_timer);
 }
 
+<<<<<<< HEAD
 static int flow_entry_valid(struct flow_cache_entry *fle)
 {
 	if (atomic_read(&flow_cache_genid) != fle->genid)
+=======
+static int flow_entry_valid(struct flow_cache_entry *fle,
+				struct netns_xfrm *xfrm)
+{
+	if (atomic_read(&xfrm->flow_cache_genid) != fle->genid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	if (fle->object && !fle->object->ops->check(fle->object))
 		return 0;
 	return 1;
 }
 
+<<<<<<< HEAD
 static void flow_entry_kill(struct flow_cache_entry *fle)
+=======
+static void flow_entry_kill(struct flow_cache_entry *fle,
+				struct netns_xfrm *xfrm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (fle->object)
 		fle->object->ops->delete(fle->object);
@@ -104,6 +128,7 @@ static void flow_cache_gc_task(struct work_struct *work)
 {
 	struct list_head gc_list;
 	struct flow_cache_entry *fce, *n;
+<<<<<<< HEAD
 
 	INIT_LIST_HEAD(&gc_list);
 	spin_lock_bh(&flow_cache_gc_lock);
@@ -124,6 +149,33 @@ static void flow_cache_queue_garbage(struct flow_cache_percpu *fcp,
 		list_splice_tail(gc_list, &flow_cache_gc_list);
 		spin_unlock_bh(&flow_cache_gc_lock);
 		schedule_work(&flow_cache_gc_work);
+=======
+	struct netns_xfrm *xfrm = container_of(work, struct netns_xfrm,
+						flow_cache_gc_work);
+
+	INIT_LIST_HEAD(&gc_list);
+	spin_lock_bh(&xfrm->flow_cache_gc_lock);
+	list_splice_tail_init(&xfrm->flow_cache_gc_list, &gc_list);
+	spin_unlock_bh(&xfrm->flow_cache_gc_lock);
+
+	list_for_each_entry_safe(fce, n, &gc_list, u.gc_list) {
+		flow_entry_kill(fce, xfrm);
+		atomic_dec(&xfrm->flow_cache_gc_count);
+	}
+}
+
+static void flow_cache_queue_garbage(struct flow_cache_percpu *fcp,
+				     int deleted, struct list_head *gc_list,
+				     struct netns_xfrm *xfrm)
+{
+	if (deleted) {
+		atomic_add(deleted, &xfrm->flow_cache_gc_count);
+		fcp->hash_count -= deleted;
+		spin_lock_bh(&xfrm->flow_cache_gc_lock);
+		list_splice_tail(gc_list, &xfrm->flow_cache_gc_list);
+		spin_unlock_bh(&xfrm->flow_cache_gc_lock);
+		schedule_work(&xfrm->flow_cache_gc_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -135,6 +187,11 @@ static void __flow_cache_shrink(struct flow_cache *fc,
 	struct hlist_node *tmp;
 	LIST_HEAD(gc_list);
 	int i, deleted = 0;
+<<<<<<< HEAD
+=======
+	struct netns_xfrm *xfrm = container_of(fc, struct netns_xfrm,
+						flow_cache_global);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < flow_cache_hash_size(fc); i++) {
 		int saved = 0;
@@ -142,7 +199,11 @@ static void __flow_cache_shrink(struct flow_cache *fc,
 		hlist_for_each_entry_safe(fle, tmp,
 					  &fcp->hash_table[i], u.hlist) {
 			if (saved < shrink_to &&
+<<<<<<< HEAD
 			    flow_entry_valid(fle)) {
+=======
+			    flow_entry_valid(fle, xfrm)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				saved++;
 			} else {
 				deleted++;
@@ -152,7 +213,11 @@ static void __flow_cache_shrink(struct flow_cache *fc,
 		}
 	}
 
+<<<<<<< HEAD
 	flow_cache_queue_garbage(fcp, deleted, &gc_list);
+=======
+	flow_cache_queue_garbage(fcp, deleted, &gc_list, xfrm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void flow_cache_shrink(struct flow_cache *fc,
@@ -208,7 +273,11 @@ struct flow_cache_object *
 flow_cache_lookup(struct net *net, const struct flowi *key, u16 family, u8 dir,
 		  flow_resolve_t resolver, void *ctx)
 {
+<<<<<<< HEAD
 	struct flow_cache *fc = &flow_cache_global;
+=======
+	struct flow_cache *fc = &net->xfrm.flow_cache_global;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct flow_cache_percpu *fcp;
 	struct flow_cache_entry *fle, *tfle;
 	struct flow_cache_object *flo;
@@ -248,6 +317,15 @@ flow_cache_lookup(struct net *net, const struct flowi *key, u16 family, u8 dir,
 		if (fcp->hash_count > fc->high_watermark)
 			flow_cache_shrink(fc, fcp);
 
+<<<<<<< HEAD
+=======
+		if (atomic_read(&net->xfrm.flow_cache_gc_count) >
+		    2 * num_online_cpus() * fc->high_watermark) {
+			flo = ERR_PTR(-ENOBUFS);
+			goto ret_object;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fle = kmem_cache_alloc(flow_cachep, GFP_ATOMIC);
 		if (fle) {
 			fle->net = net;
@@ -258,7 +336,11 @@ flow_cache_lookup(struct net *net, const struct flowi *key, u16 family, u8 dir,
 			hlist_add_head(&fle->u.hlist, &fcp->hash_table[hash]);
 			fcp->hash_count++;
 		}
+<<<<<<< HEAD
 	} else if (likely(fle->genid == atomic_read(&flow_cache_genid))) {
+=======
+	} else if (likely(fle->genid == atomic_read(&net->xfrm.flow_cache_genid))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		flo = fle->object;
 		if (!flo)
 			goto ret_object;
@@ -279,7 +361,11 @@ nocache:
 	}
 	flo = resolver(net, key, family, dir, flo, ctx);
 	if (fle) {
+<<<<<<< HEAD
 		fle->genid = atomic_read(&flow_cache_genid);
+=======
+		fle->genid = atomic_read(&net->xfrm.flow_cache_genid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!IS_ERR(flo))
 			fle->object = flo;
 		else
@@ -303,12 +389,21 @@ static void flow_cache_flush_tasklet(unsigned long data)
 	struct hlist_node *tmp;
 	LIST_HEAD(gc_list);
 	int i, deleted = 0;
+<<<<<<< HEAD
+=======
+	struct netns_xfrm *xfrm = container_of(fc, struct netns_xfrm,
+						flow_cache_global);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fcp = this_cpu_ptr(fc->percpu);
 	for (i = 0; i < flow_cache_hash_size(fc); i++) {
 		hlist_for_each_entry_safe(fle, tmp,
 					  &fcp->hash_table[i], u.hlist) {
+<<<<<<< HEAD
 			if (flow_entry_valid(fle))
+=======
+			if (flow_entry_valid(fle, xfrm))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 
 			deleted++;
@@ -317,7 +412,11 @@ static void flow_cache_flush_tasklet(unsigned long data)
 		}
 	}
 
+<<<<<<< HEAD
 	flow_cache_queue_garbage(fcp, deleted, &gc_list);
+=======
+	flow_cache_queue_garbage(fcp, deleted, &gc_list, xfrm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (atomic_dec_and_test(&info->cpuleft))
 		complete(&info->completion);
@@ -351,10 +450,16 @@ static void flow_cache_flush_per_cpu(void *data)
 	tasklet_schedule(tasklet);
 }
 
+<<<<<<< HEAD
 void flow_cache_flush(void)
 {
 	struct flow_flush_info info;
 	static DEFINE_MUTEX(flow_flush_sem);
+=======
+void flow_cache_flush(struct net *net)
+{
+	struct flow_flush_info info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpumask_var_t mask;
 	int i, self;
 
@@ -365,8 +470,13 @@ void flow_cache_flush(void)
 
 	/* Don't want cpus going down or up during this. */
 	get_online_cpus();
+<<<<<<< HEAD
 	mutex_lock(&flow_flush_sem);
 	info.cache = &flow_cache_global;
+=======
+	mutex_lock(&net->xfrm.flow_flush_sem);
+	info.cache = &net->xfrm.flow_cache_global;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_online_cpu(i)
 		if (!flow_cache_percpu_empty(info.cache, i))
 			cpumask_set_cpu(i, mask);
@@ -386,13 +496,18 @@ void flow_cache_flush(void)
 	wait_for_completion(&info.completion);
 
 done:
+<<<<<<< HEAD
 	mutex_unlock(&flow_flush_sem);
+=======
+	mutex_unlock(&net->xfrm.flow_flush_sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	put_online_cpus();
 	free_cpumask_var(mask);
 }
 
 static void flow_cache_flush_task(struct work_struct *work)
 {
+<<<<<<< HEAD
 	flow_cache_flush();
 }
 
@@ -404,6 +519,21 @@ void flow_cache_flush_deferred(void)
 }
 
 static int __cpuinit flow_cache_cpu_prepare(struct flow_cache *fc, int cpu)
+=======
+	struct netns_xfrm *xfrm = container_of(work, struct netns_xfrm,
+						flow_cache_flush_work);
+	struct net *net = container_of(xfrm, struct net, xfrm);
+
+	flow_cache_flush(net);
+}
+
+void flow_cache_flush_deferred(struct net *net)
+{
+	schedule_work(&net->xfrm.flow_cache_flush_work);
+}
+
+static int flow_cache_cpu_prepare(struct flow_cache *fc, int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct flow_cache_percpu *fcp = per_cpu_ptr(fc->percpu, cpu);
 	size_t sz = sizeof(struct hlist_head) * flow_cache_hash_size(fc);
@@ -421,11 +551,20 @@ static int __cpuinit flow_cache_cpu_prepare(struct flow_cache *fc, int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __cpuinit flow_cache_cpu(struct notifier_block *nfb,
 			  unsigned long action,
 			  void *hcpu)
 {
 	struct flow_cache *fc = container_of(nfb, struct flow_cache, hotcpu_notifier);
+=======
+static int flow_cache_cpu(struct notifier_block *nfb,
+			  unsigned long action,
+			  void *hcpu)
+{
+	struct flow_cache *fc = container_of(nfb, struct flow_cache,
+						hotcpu_notifier);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int res, cpu = (unsigned long) hcpu;
 	struct flow_cache_percpu *fcp = per_cpu_ptr(fc->percpu, cpu);
 
@@ -444,9 +583,27 @@ static int __cpuinit flow_cache_cpu(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static int __init flow_cache_init(struct flow_cache *fc)
 {
 	int i;
+=======
+int flow_cache_init(struct net *net)
+{
+	int i;
+	struct flow_cache *fc = &net->xfrm.flow_cache_global;
+
+	if (!flow_cachep)
+		flow_cachep = kmem_cache_create("flow_cache",
+						sizeof(struct flow_cache_entry),
+						0, SLAB_PANIC, NULL);
+	spin_lock_init(&net->xfrm.flow_cache_gc_lock);
+	INIT_LIST_HEAD(&net->xfrm.flow_cache_gc_list);
+	INIT_WORK(&net->xfrm.flow_cache_gc_work, flow_cache_gc_task);
+	INIT_WORK(&net->xfrm.flow_cache_flush_work, flow_cache_flush_task);
+	mutex_init(&net->xfrm.flow_flush_sem);
+	atomic_set(&net->xfrm.flow_cache_gc_count, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fc->hash_shift = 10;
 	fc->low_watermark = 2 * flow_cache_hash_size(fc);
@@ -456,6 +613,11 @@ static int __init flow_cache_init(struct flow_cache *fc)
 	if (!fc->percpu)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	cpu_notifier_register_begin();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_online_cpu(i) {
 		if (flow_cache_cpu_prepare(fc, i))
 			goto err;
@@ -463,7 +625,13 @@ static int __init flow_cache_init(struct flow_cache *fc)
 	fc->hotcpu_notifier = (struct notifier_block){
 		.notifier_call = flow_cache_cpu,
 	};
+<<<<<<< HEAD
 	register_hotcpu_notifier(&fc->hotcpu_notifier);
+=======
+	__register_hotcpu_notifier(&fc->hotcpu_notifier);
+
+	cpu_notifier_register_done();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	setup_timer(&fc->rnd_timer, flow_cache_new_hashrnd,
 		    (unsigned long) fc);
@@ -479,11 +647,17 @@ err:
 		fcp->hash_table = NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	cpu_notifier_register_done();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_percpu(fc->percpu);
 	fc->percpu = NULL;
 
 	return -ENOMEM;
 }
+<<<<<<< HEAD
 
 static int __init flow_cache_init_global(void)
 {
@@ -495,3 +669,25 @@ static int __init flow_cache_init_global(void)
 }
 
 module_init(flow_cache_init_global);
+=======
+EXPORT_SYMBOL(flow_cache_init);
+
+void flow_cache_fini(struct net *net)
+{
+	int i;
+	struct flow_cache *fc = &net->xfrm.flow_cache_global;
+
+	del_timer_sync(&fc->rnd_timer);
+	unregister_hotcpu_notifier(&fc->hotcpu_notifier);
+
+	for_each_possible_cpu(i) {
+		struct flow_cache_percpu *fcp = per_cpu_ptr(fc->percpu, i);
+		kfree(fcp->hash_table);
+		fcp->hash_table = NULL;
+	}
+
+	free_percpu(fc->percpu);
+	fc->percpu = NULL;
+}
+EXPORT_SYMBOL(flow_cache_fini);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

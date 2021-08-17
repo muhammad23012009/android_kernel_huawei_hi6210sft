@@ -17,8 +17,13 @@
 #define SH_CACHE_COMBINED	4
 #define SH_CACHE_ASSOC		8
 
+<<<<<<< HEAD
 #define CCR		0xfffc1000 /* CCR1 */
 #define CCR2		0xfffc1004
+=======
+#define SH_CCR		0xfffc1000 /* CCR1 */
+#define SH_CCR2		0xfffc1004
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Most of the SH-2A CCR1 definitions resemble the SH-4 ones. All others not

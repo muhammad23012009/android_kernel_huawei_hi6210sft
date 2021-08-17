@@ -70,7 +70,11 @@ config AIC79XX_DEBUG_MASK
 	default "0"
 	help
 	Bit mask of debug options that is only valid if the
+<<<<<<< HEAD
 	CONFIG_AIC79XX_DEBUG_ENBLE option is enabled.  The bits in this mask
+=======
+	CONFIG_AIC79XX_DEBUG_ENABLE option is enabled.  The bits in this mask
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	are defined in the drivers/scsi/aic7xxx/aic79xx.h - search for the
 	variable ahd_debug in that file to find them.
 

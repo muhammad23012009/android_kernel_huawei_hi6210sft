@@ -30,9 +30,13 @@
 static int ncp_file_mmap_fault(struct vm_area_struct *area,
 					struct vm_fault *vmf)
 {
+<<<<<<< HEAD
 	struct file *file = area->vm_file;
 	struct dentry *dentry = file->f_path.dentry;
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = file_inode(area->vm_file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *pg_addr;
 	unsigned int already_read;
 	unsigned int count;
@@ -107,7 +111,11 @@ int ncp_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct inode *inode = file_inode(file);
 	
+<<<<<<< HEAD
 	DPRINTK("ncp_mmap: called\n");
+=======
+	ncp_dbg(1, "called\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ncp_conn_valid(NCP_SERVER(inode)))
 		return -EIO;
@@ -117,7 +125,11 @@ int ncp_mmap(struct file *file, struct vm_area_struct *vma)
 		return -EINVAL;
 	/* we do not support files bigger than 4GB... We eventually 
 	   supports just 4GB... */
+<<<<<<< HEAD
 	if (((vma->vm_end - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff 
+=======
+	if (vma_pages(vma) + vma->vm_pgoff
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   > (1U << (32 - PAGE_SHIFT)))
 		return -EFBIG;
 

@@ -80,7 +80,10 @@ struct onenand_bufferram {
  * @page_buf:		[INTERN] page main data buffer
  * @oob_buf:		[INTERN] page oob data buffer
  * @subpagesize:	[INTERN] holds the subpagesize
+<<<<<<< HEAD
  * @ecclayout:		[REPLACEABLE] the default ecc placement scheme
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @bbm:		[REPLACEABLE] pointer to Bad Block Management
  * @priv:		[OPTIONAL] pointer to private chip date
  */
@@ -134,7 +137,10 @@ struct onenand_chip {
 #endif
 
 	int			subpagesize;
+<<<<<<< HEAD
 	struct nand_ecclayout	*ecclayout;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	void			*bbm;
 

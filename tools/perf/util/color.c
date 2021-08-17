@@ -1,5 +1,6 @@
 #include <linux/kernel.h>
 #include "cache.h"
+<<<<<<< HEAD
 #include "color.h"
 
 int perf_use_color_default = -1;
@@ -130,6 +131,17 @@ bad:
 	die("bad color value '%.*s' for variable '%s'", value_len, value, var);
 }
 
+=======
+#include "config.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "color.h"
+#include <math.h>
+#include <unistd.h>
+
+int perf_use_color_default = -1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)
 {
 	if (value) {
@@ -149,7 +161,11 @@ int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)
  auto_color:
 	if (stdout_is_tty < 0)
 		stdout_is_tty = isatty(1);
+<<<<<<< HEAD
 	if (stdout_is_tty || (pager_in_use() && pager_use_color)) {
+=======
+	if (stdout_is_tty || pager_in_use()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		char *term = getenv("TERM");
 		if (term && strcmp(term, "dumb"))
 			return 1;
@@ -157,14 +173,23 @@ int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)
 	return 0;
 }
 
+<<<<<<< HEAD
 int perf_color_default_config(const char *var, const char *value, void *cb)
+=======
+int perf_color_default_config(const char *var, const char *value,
+			      void *cb __maybe_unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!strcmp(var, "color.ui")) {
 		perf_use_color_default = perf_config_colorbool(var, value, -1);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	return perf_default_config(var, value, cb);
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __color_vsnprintf(char *bf, size_t size, const char *color,
@@ -192,8 +217,14 @@ static int __color_vsnprintf(char *bf, size_t size, const char *color,
 	return r;
 }
 
+<<<<<<< HEAD
 static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
 		va_list args, const char *trail)
+=======
+/* Colors are not included in return value */
+static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
+		va_list args)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int r = 0;
 
@@ -208,12 +239,19 @@ static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
 	}
 
 	if (perf_use_color_default && *color)
+<<<<<<< HEAD
 		r += fprintf(fp, "%s", color);
 	r += vfprintf(fp, fmt, args);
 	if (perf_use_color_default && *color)
 		r += fprintf(fp, "%s", PERF_COLOR_RESET);
 	if (trail)
 		r += fprintf(fp, "%s", trail);
+=======
+		fprintf(fp, "%s", color);
+	r += vfprintf(fp, fmt, args);
+	if (perf_use_color_default && *color)
+		fprintf(fp, "%s", PERF_COLOR_RESET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return r;
 }
 
@@ -225,7 +263,11 @@ int color_vsnprintf(char *bf, size_t size, const char *color,
 
 int color_vfprintf(FILE *fp, const char *color, const char *fmt, va_list args)
 {
+<<<<<<< HEAD
 	return __color_vfprintf(fp, color, fmt, args, NULL);
+=======
+	return __color_vfprintf(fp, color, fmt, args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int color_snprintf(char *bf, size_t size, const char *color,
@@ -251,6 +293,7 @@ int color_fprintf(FILE *fp, const char *color, const char *fmt, ...)
 	return r;
 }
 
+<<<<<<< HEAD
 int color_fprintf_ln(FILE *fp, const char *color, const char *fmt, ...)
 {
 	va_list args;
@@ -261,6 +304,8 @@ int color_fprintf_ln(FILE *fp, const char *color, const char *fmt, ...)
 	return r;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This function splits the buffer by newlines and colors the lines individually.
  *
@@ -298,10 +343,17 @@ const char *get_percent_color(double percent)
 	 * entries in green - and keep the low overhead places
 	 * normal:
 	 */
+<<<<<<< HEAD
 	if (percent >= MIN_RED)
 		color = PERF_COLOR_RED;
 	else {
 		if (percent > MIN_GREEN)
+=======
+	if (fabs(percent) >= MIN_RED)
+		color = PERF_COLOR_RED;
+	else {
+		if (fabs(percent) > MIN_GREEN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			color = PERF_COLOR_GREEN;
 	}
 	return color;
@@ -318,10 +370,20 @@ int percent_color_fprintf(FILE *fp, const char *fmt, double percent)
 	return r;
 }
 
+<<<<<<< HEAD
+=======
+int value_color_snprintf(char *bf, size_t size, const char *fmt, double value)
+{
+	const char *color = get_percent_color(value);
+	return color_snprintf(bf, size, color, fmt, value);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int percent_color_snprintf(char *bf, size_t size, const char *fmt, ...)
 {
 	va_list args;
 	double percent;
+<<<<<<< HEAD
 	const char *color;
 
 	va_start(args, fmt);
@@ -329,4 +391,27 @@ int percent_color_snprintf(char *bf, size_t size, const char *fmt, ...)
 	va_end(args);
 	color = get_percent_color(percent);
 	return color_snprintf(bf, size, color, fmt, percent);
+=======
+
+	va_start(args, fmt);
+	percent = va_arg(args, double);
+	va_end(args);
+	return value_color_snprintf(bf, size, fmt, percent);
+}
+
+int percent_color_len_snprintf(char *bf, size_t size, const char *fmt, ...)
+{
+	va_list args;
+	int len;
+	double percent;
+	const char *color;
+
+	va_start(args, fmt);
+	len = va_arg(args, int);
+	percent = va_arg(args, double);
+	va_end(args);
+
+	color = get_percent_color(percent);
+	return color_snprintf(bf, size, color, fmt, len, percent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

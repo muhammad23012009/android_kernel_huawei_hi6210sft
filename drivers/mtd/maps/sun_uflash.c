@@ -11,7 +11,10 @@
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
@@ -75,7 +78,11 @@ int uflash_devinit(struct platform_device *op, struct device_node *dp)
 
 	up->name = of_get_property(dp, "model", NULL);
 	if (up->name && 0 < strlen(up->name))
+<<<<<<< HEAD
 		up->map.name = (char *)up->name;
+=======
+		up->map.name = up->name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	up->map.phys = op->resource[0].start;
 
@@ -151,7 +158,10 @@ MODULE_DEVICE_TABLE(of, uflash_match);
 static struct platform_driver uflash_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = uflash_match,
 	},
 	.probe		= uflash_probe,

@@ -26,6 +26,10 @@ typedef struct {
 
 DECLARE_PER_CPU(cpuinfo_sparc, __cpu_data);
 #define cpu_data(__cpu) per_cpu(__cpu_data, (__cpu))
+<<<<<<< HEAD
 #define local_cpu_data() __get_cpu_var(__cpu_data)
+=======
+#define local_cpu_data() (*this_cpu_ptr(&__cpu_data))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _SPARC_CPUDATA_H */

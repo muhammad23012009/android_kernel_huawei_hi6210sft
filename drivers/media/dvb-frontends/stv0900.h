@@ -26,7 +26,10 @@
 #ifndef STV0900_H
 #define STV0900_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 #include "dvb_frontend.h"
 
@@ -58,7 +61,11 @@ struct stv0900_config {
 	void (*set_lock_led)(struct dvb_frontend *fe, int offon);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_STV0900)
+=======
+#if IS_REACHABLE(CONFIG_DVB_STV0900)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *stv0900_attach(const struct stv0900_config *config,
 					struct i2c_adapter *i2c, int demod);
 #else

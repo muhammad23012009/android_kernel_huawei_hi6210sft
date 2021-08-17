@@ -49,7 +49,11 @@ static int tosa_tg_send(struct spi_device *spi, int adrs, uint8_t data)
 	struct spi_message msg;
 	struct spi_transfer xfer = {
 		.len		= 1,
+<<<<<<< HEAD
 		.cs_change	= 1,
+=======
+		.cs_change	= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.tx_buf		= buf,
 	};
 
@@ -198,7 +202,11 @@ static int tosa_lcd_probe(struct spi_device *spi)
 	ret = devm_gpio_request_one(&spi->dev, TOSA_GPIO_TG_ON,
 				GPIOF_OUT_INIT_LOW, "tg #pwr");
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err_gpio_tg;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mdelay(60);
 
@@ -206,8 +214,13 @@ static int tosa_lcd_probe(struct spi_device *spi)
 
 	tosa_lcd_tg_on(data);
 
+<<<<<<< HEAD
 	data->lcd = lcd_device_register("tosa-lcd", &spi->dev, data,
 			&tosa_lcd_ops);
+=======
+	data->lcd = devm_lcd_device_register(&spi->dev, "tosa-lcd", &spi->dev,
+					data, &tosa_lcd_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (IS_ERR(data->lcd)) {
 		ret = PTR_ERR(data->lcd);
@@ -219,8 +232,11 @@ static int tosa_lcd_probe(struct spi_device *spi)
 
 err_register:
 	tosa_lcd_tg_off(data);
+<<<<<<< HEAD
 err_gpio_tg:
 	spi_set_drvdata(spi, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -228,15 +244,21 @@ static int tosa_lcd_remove(struct spi_device *spi)
 {
 	struct tosa_lcd_data *data = spi_get_drvdata(spi);
 
+<<<<<<< HEAD
 	lcd_device_unregister(data->lcd);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (data->i2c)
 		i2c_unregister_device(data->i2c);
 
 	tosa_lcd_tg_off(data);
 
+<<<<<<< HEAD
 	spi_set_drvdata(spi, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -269,7 +291,10 @@ static SIMPLE_DEV_PM_OPS(tosa_lcd_pm_ops, tosa_lcd_suspend, tosa_lcd_resume);
 static struct spi_driver tosa_lcd_driver = {
 	.driver = {
 		.name		= "tosa-lcd",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm		= &tosa_lcd_pm_ops,
 	},
 	.probe		= tosa_lcd_probe,

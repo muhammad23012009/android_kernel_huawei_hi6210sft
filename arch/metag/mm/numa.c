@@ -34,7 +34,11 @@ void __init setup_bootmem_node(int nid, unsigned long start, unsigned long end)
 	unsigned long pgdat_paddr;
 
 	/* Don't allow bogus node assignment */
+<<<<<<< HEAD
 	BUG_ON(nid > MAX_NUMNODES || nid <= 0);
+=======
+	BUG_ON(nid >= MAX_NUMNODES || nid <= 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	start_pfn = start >> PAGE_SHIFT;
 	end_pfn = end >> PAGE_SHIFT;
@@ -42,7 +46,12 @@ void __init setup_bootmem_node(int nid, unsigned long start, unsigned long end)
 	memblock_add(start, end - start);
 
 	memblock_set_node(PFN_PHYS(start_pfn),
+<<<<<<< HEAD
 			  PFN_PHYS(end_pfn - start_pfn), nid);
+=======
+			  PFN_PHYS(end_pfn - start_pfn),
+			  &memblock.memory, nid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Node-local pgdat */
 	pgdat_paddr = memblock_alloc_base(sizeof(struct pglist_data),

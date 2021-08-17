@@ -20,6 +20,10 @@
 #include <linux/ata_platform.h>
 #include <linux/io.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/elf.h>
 #include <asm/mach-types.h>
@@ -201,7 +205,11 @@ static int __init rpc_init(void)
 
 arch_initcall(rpc_init);
 
+<<<<<<< HEAD
 static void rpc_restart(char mode, const char *cmd)
+=======
+static void rpc_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	iomd_writeb(0, IOMD_ROMCR0);
 

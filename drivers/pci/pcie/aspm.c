@@ -57,6 +57,10 @@ struct pcie_link_state {
 	u32 clkpm_capable:1;		/* Clock PM capable? */
 	u32 clkpm_enabled:1;		/* Current Clock PM state */
 	u32 clkpm_default:1;		/* Default Clock PM state by BIOS */
+<<<<<<< HEAD
+=======
+	u32 clkpm_disable:1;		/* Clock PM disabled */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Exit latencies */
 	struct aspm_latency latency_up;	/* Upstream direction exit latency */
@@ -127,6 +131,7 @@ static void pcie_set_clkpm_nocheck(struct pcie_link_state *link, int enable)
 {
 	struct pci_dev *child;
 	struct pci_bus *linkbus = link->pdev->subordinate;
+<<<<<<< HEAD
 
 	list_for_each_entry(child, &linkbus->devices, bus_list) {
 		if (enable)
@@ -136,13 +141,29 @@ static void pcie_set_clkpm_nocheck(struct pcie_link_state *link, int enable)
 			pcie_capability_clear_word(child, PCI_EXP_LNKCTL,
 						   PCI_EXP_LNKCTL_CLKREQ_EN);
 	}
+=======
+	u32 val = enable ? PCI_EXP_LNKCTL_CLKREQ_EN : 0;
+
+	list_for_each_entry(child, &linkbus->devices, bus_list)
+		pcie_capability_clear_and_set_word(child, PCI_EXP_LNKCTL,
+						   PCI_EXP_LNKCTL_CLKREQ_EN,
+						   val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	link->clkpm_enabled = !!enable;
 }
 
 static void pcie_set_clkpm(struct pcie_link_state *link, int enable)
 {
+<<<<<<< HEAD
 	/* Don't enable Clock PM if the link is not Clock PM capable */
 	if (!link->clkpm_capable && enable)
+=======
+	/*
+	 * Don't enable Clock PM if the link is not Clock PM capable
+	 * or Clock PM is disabled
+	 */
+	if (!link->clkpm_capable || link->clkpm_disable)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		enable = 0;
 	/* Need nothing if the specified equals to current state */
 	if (link->clkpm_enabled == enable)
@@ -172,7 +193,44 @@ static void pcie_clkpm_cap_init(struct pcie_link_state *link, int blacklist)
 	}
 	link->clkpm_enabled = enabled;
 	link->clkpm_default = enabled;
+<<<<<<< HEAD
 	link->clkpm_capable = (blacklist) ? 0 : capable;
+=======
+	link->clkpm_capable = capable;
+	link->clkpm_disable = blacklist ? 1 : 0;
+}
+
+static bool pcie_retrain_link(struct pcie_link_state *link)
+{
+	struct pci_dev *parent = link->pdev;
+	unsigned long start_jiffies;
+	u16 reg16;
+
+	pcie_capability_read_word(parent, PCI_EXP_LNKCTL, &reg16);
+	reg16 |= PCI_EXP_LNKCTL_RL;
+	pcie_capability_write_word(parent, PCI_EXP_LNKCTL, reg16);
+	if (parent->clear_retrain_link) {
+		/*
+		 * Due to an erratum in some devices the Retrain Link bit
+		 * needs to be cleared again manually to allow the link
+		 * training to succeed.
+		 */
+		reg16 &= ~PCI_EXP_LNKCTL_RL;
+		pcie_capability_write_word(parent, PCI_EXP_LNKCTL, reg16);
+	}
+
+	/* Wait for link training end. Break out after waiting for timeout */
+	start_jiffies = jiffies;
+	for (;;) {
+		pcie_capability_read_word(parent, PCI_EXP_LNKSTA, &reg16);
+		if (!(reg16 & PCI_EXP_LNKSTA_LT))
+			break;
+		if (time_after(jiffies, start_jiffies + LINK_RETRAIN_TIMEOUT))
+			break;
+		msleep(1);
+	}
+	return !(reg16 & PCI_EXP_LNKSTA_LT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -184,7 +242,10 @@ static void pcie_aspm_configure_common_clock(struct pcie_link_state *link)
 {
 	int same_clock = 1;
 	u16 reg16, parent_reg, child_reg[8];
+<<<<<<< HEAD
 	unsigned long start_jiffies;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_dev *child, *parent = link->pdev;
 	struct pci_bus *linkbus = parent->subordinate;
 	/*
@@ -224,6 +285,7 @@ static void pcie_aspm_configure_common_clock(struct pcie_link_state *link)
 		reg16 &= ~PCI_EXP_LNKCTL_CCC;
 	pcie_capability_write_word(parent, PCI_EXP_LNKCTL, reg16);
 
+<<<<<<< HEAD
 	/* Retrain link */
 	reg16 |= PCI_EXP_LNKCTL_RL;
 	pcie_capability_write_word(parent, PCI_EXP_LNKCTL, reg16);
@@ -239,6 +301,9 @@ static void pcie_aspm_configure_common_clock(struct pcie_link_state *link)
 		msleep(1);
 	}
 	if (!(reg16 & PCI_EXP_LNKSTA_LT))
+=======
+	if (pcie_retrain_link(link))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* Training failed. Restore common clock configurations */
@@ -391,6 +456,7 @@ static void pcie_aspm_cap_init(struct pcie_link_state *link, int blacklist)
 
 	/* Setup initial capable state. Will be updated later */
 	link->aspm_capable = link->aspm_support;
+<<<<<<< HEAD
 	/*
 	 * If the downstream component has pci bridge function, don't
 	 * do ASPM for now.
@@ -401,6 +467,8 @@ static void pcie_aspm_cap_init(struct pcie_link_state *link, int blacklist)
 			break;
 		}
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Get and check endpoint acceptable latencies */
 	list_for_each_entry(child, &linkbus->devices, bus_list) {
@@ -521,17 +589,40 @@ static struct pcie_link_state *alloc_pcie_link_state(struct pci_dev *pdev)
 	link = kzalloc(sizeof(*link), GFP_KERNEL);
 	if (!link)
 		return NULL;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_LIST_HEAD(&link->sibling);
 	INIT_LIST_HEAD(&link->children);
 	INIT_LIST_HEAD(&link->link);
 	link->pdev = pdev;
+<<<<<<< HEAD
 	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM) {
 		struct pcie_link_state *parent;
+=======
+
+	/*
+	 * Root Ports and PCI/PCI-X to PCIe Bridges are roots of PCIe
+	 * hierarchies.  Note that some PCIe host implementations omit
+	 * the root ports entirely, in which case a downstream port on
+	 * a switch may become the root of the link state chain for all
+	 * its subordinate endpoints.
+	 */
+	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
+	    pci_pcie_type(pdev) == PCI_EXP_TYPE_PCIE_BRIDGE ||
+	    !pdev->bus->parent->self) {
+		link->root = link;
+	} else {
+		struct pcie_link_state *parent;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		parent = pdev->bus->parent->self->link_state;
 		if (!parent) {
 			kfree(link);
 			return NULL;
 		}
+<<<<<<< HEAD
 		link->parent = parent;
 		list_add(&link->link, &parent->children);
 	}
@@ -540,6 +631,13 @@ static struct pcie_link_state *alloc_pcie_link_state(struct pci_dev *pdev)
 		link->root = link;
 	else
 		link->root = link->parent->root;
+=======
+
+		link->parent = parent;
+		link->root = link->parent->root;
+		list_add(&link->link, &parent->children);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_add(&link->sibling, &link_list);
 	pdev->link_state = link;
@@ -548,7 +646,11 @@ static struct pcie_link_state *alloc_pcie_link_state(struct pci_dev *pdev)
 
 /*
  * pcie_aspm_init_link_state: Initiate PCI express link state.
+<<<<<<< HEAD
  * It is called after the pcie and its children devices are scaned.
+=======
+ * It is called after the pcie and its children devices are scanned.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @pdev: the root port or switch downstream port
  */
 void pcie_aspm_init_link_state(struct pci_dev *pdev)
@@ -559,10 +661,22 @@ void pcie_aspm_init_link_state(struct pci_dev *pdev)
 	if (!aspm_support_enabled)
 		return;
 
+<<<<<<< HEAD
 	if (!pci_is_pcie(pdev) || pdev->link_state)
 		return;
 	if (pci_pcie_type(pdev) != PCI_EXP_TYPE_ROOT_PORT &&
 	    pci_pcie_type(pdev) != PCI_EXP_TYPE_DOWNSTREAM)
+=======
+	if (pdev->link_state)
+		return;
+
+	/*
+	 * We allocate pcie_link_state for the component on the upstream
+	 * end of a Link, so there's nothing to do unless this device has a
+	 * Link on its secondary side.
+	 */
+	if (!pdev->has_secondary_link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* VIA has a strange chipset, root port is under a bridge */
@@ -675,10 +789,14 @@ void pcie_aspm_pm_state_change(struct pci_dev *pdev)
 {
 	struct pcie_link_state *link = pdev->link_state;
 
+<<<<<<< HEAD
 	if (aspm_disabled || !pci_is_pcie(pdev) || !link)
 		return;
 	if ((pci_pcie_type(pdev) != PCI_EXP_TYPE_ROOT_PORT) &&
 	    (pci_pcie_type(pdev) != PCI_EXP_TYPE_DOWNSTREAM))
+=======
+	if (aspm_disabled || !link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	/*
 	 * Devices changed PM state, we should recheck if latency
@@ -696,16 +814,23 @@ void pcie_aspm_powersave_config_link(struct pci_dev *pdev)
 {
 	struct pcie_link_state *link = pdev->link_state;
 
+<<<<<<< HEAD
 	if (aspm_disabled || !pci_is_pcie(pdev) || !link)
+=======
+	if (aspm_disabled || !link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	if (aspm_policy != POLICY_POWERSAVE)
 		return;
 
+<<<<<<< HEAD
 	if ((pci_pcie_type(pdev) != PCI_EXP_TYPE_ROOT_PORT) &&
 	    (pci_pcie_type(pdev) != PCI_EXP_TYPE_DOWNSTREAM))
 		return;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	down_read(&pci_bus_sem);
 	mutex_lock(&aspm_lock);
 	pcie_config_aspm_path(link);
@@ -714,16 +839,21 @@ void pcie_aspm_powersave_config_link(struct pci_dev *pdev)
 	up_read(&pci_bus_sem);
 }
 
+<<<<<<< HEAD
 /*
  * pci_disable_link_state - disable pci device's link state, so the link will
  * never enter specific states
  */
 static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem,
 				     bool force)
+=======
+static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *parent = pdev->bus->self;
 	struct pcie_link_state *link;
 
+<<<<<<< HEAD
 	if (aspm_disabled && !force)
 		return;
 
@@ -732,10 +862,32 @@ static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem,
 
 	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
 	    pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM)
+=======
+	if (!pci_is_pcie(pdev))
+		return;
+
+	if (pdev->has_secondary_link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		parent = pdev;
 	if (!parent || !parent->link_state)
 		return;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * A driver requested that ASPM be disabled on this device, but
+	 * if we don't have permission to manage ASPM (e.g., on ACPI
+	 * systems we have to observe the FADT ACPI_FADT_NO_ASPM bit and
+	 * the _OSC method), we can't honor that request.  Windows has
+	 * a similar mechanism using "PciASPMOptOut", which is also
+	 * ignored in this situation.
+	 */
+	if (aspm_disabled) {
+		dev_warn(&pdev->dev, "can't disable ASPM; OS doesn't have ASPM control\n");
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sem)
 		down_read(&pci_bus_sem);
 	mutex_lock(&aspm_lock);
@@ -746,10 +898,16 @@ static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem,
 		link->aspm_disable |= ASPM_STATE_L1;
 	pcie_config_aspm_link(link, policy_to_aspm_state(link));
 
+<<<<<<< HEAD
 	if (state & PCIE_LINK_STATE_CLKPM) {
 		link->clkpm_capable = 0;
 		pcie_set_clkpm(link, 0);
 	}
+=======
+	if (state & PCIE_LINK_STATE_CLKPM)
+		link->clkpm_disable = 1;
+	pcie_set_clkpm(link, policy_to_clkpm_state(link));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&aspm_lock);
 	if (sem)
 		up_read(&pci_bus_sem);
@@ -757,6 +915,7 @@ static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem,
 
 void pci_disable_link_state_locked(struct pci_dev *pdev, int state)
 {
+<<<<<<< HEAD
 	__pci_disable_link_state(pdev, state, false, false);
 }
 EXPORT_SYMBOL(pci_disable_link_state_locked);
@@ -785,6 +944,27 @@ void pcie_clear_aspm(struct pci_bus *bus)
 	}
 }
 
+=======
+	__pci_disable_link_state(pdev, state, false);
+}
+EXPORT_SYMBOL(pci_disable_link_state_locked);
+
+/**
+ * pci_disable_link_state - Disable device's link state, so the link will
+ * never enter specific states.  Note that if the BIOS didn't grant ASPM
+ * control to the OS, this does nothing because we can't touch the LNKCTL
+ * register.
+ *
+ * @pdev: PCI device
+ * @state: ASPM link state to disable
+ */
+void pci_disable_link_state(struct pci_dev *pdev, int state)
+{
+	__pci_disable_link_state(pdev, state, true);
+}
+EXPORT_SYMBOL(pci_disable_link_state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pcie_aspm_set_policy(const char *val, struct kernel_param *kp)
 {
 	int i;
@@ -820,6 +1000,10 @@ static int pcie_aspm_get_policy(char *buffer, struct kernel_param *kp)
 			cnt += sprintf(buffer + cnt, "[%s] ", policy_str[i]);
 		else
 			cnt += sprintf(buffer + cnt, "%s ", policy_str[i]);
+<<<<<<< HEAD
+=======
+	cnt += sprintf(buffer + cnt, "\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return cnt;
 }
 
@@ -844,6 +1028,7 @@ static ssize_t link_state_store(struct device *dev,
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct pcie_link_state *link, *root = pdev->link_state->root;
+<<<<<<< HEAD
 	u32 val = buf[0] - '0', state = 0;
 
 	if (aspm_disabled)
@@ -856,6 +1041,17 @@ static ssize_t link_state_store(struct device *dev,
 		state |= ASPM_STATE_L0S;
 	if (val & PCIE_LINK_STATE_L1)
 		state |= ASPM_STATE_L1;
+=======
+	u32 state;
+
+	if (aspm_disabled)
+		return -EPERM;
+
+	if (kstrtouint(buf, 10, &state))
+		return -EINVAL;
+	if ((state & ~ASPM_STATE_ALL) != 0)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	down_read(&pci_bus_sem);
 	mutex_lock(&aspm_lock);
@@ -885,6 +1081,7 @@ static ssize_t clk_ctl_store(struct device *dev,
 		size_t n)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
+<<<<<<< HEAD
 	int state;
 
 	if (n < 1)
@@ -894,6 +1091,16 @@ static ssize_t clk_ctl_store(struct device *dev,
 	down_read(&pci_bus_sem);
 	mutex_lock(&aspm_lock);
 	pcie_set_clkpm_nocheck(pdev->link_state, !!state);
+=======
+	bool state;
+
+	if (strtobool(buf, &state))
+		return -EINVAL;
+
+	down_read(&pci_bus_sem);
+	mutex_lock(&aspm_lock);
+	pcie_set_clkpm_nocheck(pdev->link_state, state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&aspm_lock);
 	up_read(&pci_bus_sem);
 
@@ -908,9 +1115,13 @@ void pcie_aspm_create_sysfs_dev_files(struct pci_dev *pdev)
 {
 	struct pcie_link_state *link_state = pdev->link_state;
 
+<<<<<<< HEAD
 	if (!pci_is_pcie(pdev) ||
 	    (pci_pcie_type(pdev) != PCI_EXP_TYPE_ROOT_PORT &&
 	     pci_pcie_type(pdev) != PCI_EXP_TYPE_DOWNSTREAM) || !link_state)
+=======
+	if (!link_state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	if (link_state->aspm_support)
@@ -925,9 +1136,13 @@ void pcie_aspm_remove_sysfs_dev_files(struct pci_dev *pdev)
 {
 	struct pcie_link_state *link_state = pdev->link_state;
 
+<<<<<<< HEAD
 	if (!pci_is_pcie(pdev) ||
 	    (pci_pcie_type(pdev) != PCI_EXP_TYPE_ROOT_PORT &&
 	     pci_pcie_type(pdev) != PCI_EXP_TYPE_DOWNSTREAM) || !link_state)
+=======
+	if (!link_state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	if (link_state->aspm_support)
@@ -969,6 +1184,7 @@ void pcie_no_aspm(void)
 	}
 }
 
+<<<<<<< HEAD
 /**
  * pcie_aspm_enabled - is PCIe ASPM enabled?
  *
@@ -981,6 +1197,8 @@ int pcie_aspm_enabled(void)
 }
 EXPORT_SYMBOL(pcie_aspm_enabled);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 bool pcie_aspm_support_enabled(void)
 {
 	return aspm_support_enabled;

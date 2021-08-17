@@ -20,6 +20,10 @@
  * 02111-1307, USA
  */
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/of.h>
@@ -44,7 +48,11 @@ int pinctrl_utils_reserve_map(struct pinctrl_dev *pctldev,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	memset((new_map + old_num), 0, ((new_num - old_num) * sizeof(*new_map)));
+=======
+	memset(new_map + old_num, 0, (new_num - old_num) * sizeof(*new_map));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*map = new_map;
 	*reserved_maps = new_num;
@@ -121,7 +129,11 @@ int pinctrl_utils_add_config(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinctrl_utils_add_config);
 
+<<<<<<< HEAD
 void pinctrl_utils_dt_free_map(struct pinctrl_dev *pctldev,
+=======
+void pinctrl_utils_free_map(struct pinctrl_dev *pctldev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	      struct pinctrl_map *map, unsigned num_maps)
 {
 	int i;
@@ -138,4 +150,8 @@ void pinctrl_utils_dt_free_map(struct pinctrl_dev *pctldev,
 	}
 	kfree(map);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(pinctrl_utils_dt_free_map);
+=======
+EXPORT_SYMBOL_GPL(pinctrl_utils_free_map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

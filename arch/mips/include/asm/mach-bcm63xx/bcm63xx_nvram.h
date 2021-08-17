@@ -30,4 +30,9 @@ u8 *bcm63xx_nvram_get_name(void);
  */
 int bcm63xx_nvram_get_mac_address(u8 *mac);
 
+<<<<<<< HEAD
+=======
+int bcm63xx_nvram_get_psi_size(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* BCM63XX_NVRAM_H */

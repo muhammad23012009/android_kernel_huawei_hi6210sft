@@ -14,6 +14,11 @@
 #include <asm/io.h>
 #include <linux/rtc.h>			/* get the user-level API */
 #include <asm/mc146818rtc.h>		/* register access macros */
+<<<<<<< HEAD
+=======
+#include <linux/bcd.h>
+#include <linux/delay.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef __KERNEL__
 #include <linux/spinlock.h>		/* spinlock_t */
@@ -31,6 +36,13 @@ struct cmos_rtc_board_info {
 	void	(*wake_on)(struct device *dev);
 	void	(*wake_off)(struct device *dev);
 
+<<<<<<< HEAD
+=======
+	u32	flags;
+#define CMOS_RTC_FLAGS_NOFREQ	(1 << 0)
+	int	address_space;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	rtc_day_alarm;		/* zero, or register index */
 	u8	rtc_mon_alarm;		/* zero, or register index */
 	u8	rtc_century;		/* zero, or register index */
@@ -116,4 +128,10 @@ struct cmos_rtc_board_info {
 #define RTC_IO_EXTENT_USED      RTC_IO_EXTENT
 #endif /* ARCH_RTC_LOCATION */
 
+<<<<<<< HEAD
+=======
+unsigned int mc146818_get_time(struct rtc_time *time);
+int mc146818_set_time(struct rtc_time *time);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _MC146818RTC_H */

@@ -22,6 +22,12 @@ enum jz4740_wait_mode {
 
 void jz4740_clock_set_wait_mode(enum jz4740_wait_mode mode);
 
+<<<<<<< HEAD
+=======
+void jz4740_clock_suspend(void);
+void jz4740_clock_resume(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void jz4740_clock_udc_enable_auto_suspend(void);
 void jz4740_clock_udc_disable_auto_suspend(void);
 

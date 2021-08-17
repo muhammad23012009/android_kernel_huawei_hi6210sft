@@ -11,7 +11,11 @@
 #define __ASM_MACH_IP27_IRQ_H
 
 /*
+<<<<<<< HEAD
  * A hardwired interrupt number is completly stupid for this system - a
+=======
+ * A hardwired interrupt number is completely stupid for this system - a
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * large configuration might have thousands if not tenthousands of
  * interrupts.
  */

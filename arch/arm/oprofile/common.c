@@ -33,12 +33,23 @@ static struct op_perf_name {
 	char *perf_name;
 	char *op_name;
 } op_perf_name_map[] = {
+<<<<<<< HEAD
 	{ "xscale1",		"arm/xscale1"	},
 	{ "xscale1",		"arm/xscale2"	},
 	{ "v6",			"arm/armv6"	},
 	{ "v6mpcore",		"arm/mpcore"	},
 	{ "ARMv7 Cortex-A8",	"arm/armv7"	},
 	{ "ARMv7 Cortex-A9",	"arm/armv7-ca9"	},
+=======
+	{ "armv5_xscale1",	"arm/xscale1"	},
+	{ "armv5_xscale2",	"arm/xscale2"	},
+	{ "armv6_1136",		"arm/armv6"	},
+	{ "armv6_1156",		"arm/armv6"	},
+	{ "armv6_1176",		"arm/armv6"	},
+	{ "armv6_11mpcore",	"arm/mpcore"	},
+	{ "armv7_cortex_a8",	"arm/armv7"	},
+	{ "armv7_cortex_a9",	"arm/armv7-ca9"	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 char *op_name_from_perf_id(void)
@@ -107,10 +118,14 @@ static void arm_backtrace(struct pt_regs * const regs, unsigned int depth)
 
 	if (!user_mode(regs)) {
 		struct stackframe frame;
+<<<<<<< HEAD
 		frame.fp = regs->ARM_fp;
 		frame.sp = regs->ARM_sp;
 		frame.lr = regs->ARM_lr;
 		frame.pc = regs->ARM_pc;
+=======
+		arm_get_current_stackframe(regs, &frame);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		walk_stackframe(&frame, report_trace, &depth);
 		return;
 	}

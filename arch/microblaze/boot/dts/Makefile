@@ -1,6 +1,9 @@
 #
+<<<<<<< HEAD
 # arch/microblaze/boot/Makefile
 #
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-y += linked_dtb.o
 
@@ -18,5 +21,8 @@ quiet_cmd_cp = CP      $< $@$2
 
 # Rule to build device tree blobs
 DTC_FLAGS := -p 1024
+<<<<<<< HEAD
 
 clean-files += *.dtb
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -36,6 +36,7 @@
 
 #if defined(CONFIG_PPC_BOOK3S_64)
 
+<<<<<<< HEAD
 #define FUNC(name) 		GLUE(.,name)
 
 	.globl	kvmppc_skip_interrupt
@@ -63,11 +64,24 @@ kvmppc_skip_Hinterrupt:
 	GET_SCRATCH0(r13)
 	hrfid
 	b	.
+=======
+#ifdef PPC64_ELF_ABI_v2
+#define FUNC(name) 		name
+#else
+#define FUNC(name) 		GLUE(.,name)
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #elif defined(CONFIG_PPC_BOOK3S_32)
 
 #define FUNC(name)		name
 
+<<<<<<< HEAD
+=======
+#define RFI_TO_KERNEL	RFI
+#define RFI_TO_GUEST	RFI
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 .macro INTERRUPT_TRAMPOLINE intno
 
 .global kvmppc_trampoline_\intno
@@ -163,7 +177,11 @@ kvmppc_handler_skip_ins:
 	GET_SCRATCH0(r13)
 
 	/* And get back into the code */
+<<<<<<< HEAD
 	RFI
+=======
+	RFI_TO_KERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
@@ -172,7 +190,11 @@ kvmppc_handler_skip_ins:
  * On entry, r4 contains the guest shadow MSR
  * MSR.EE has to be 0 when calling this function
  */
+<<<<<<< HEAD
 _GLOBAL(kvmppc_entry_trampoline)
+=======
+_GLOBAL_TOC(kvmppc_entry_trampoline)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfmsr	r5
 	LOAD_REG_ADDR(r7, kvmppc_handler_trampoline_enter)
 	toreal(r7)
@@ -181,11 +203,16 @@ _GLOBAL(kvmppc_entry_trampoline)
 	andc	r6, r5, r6	/* Clear DR and IR in MSR value */
 	/*
 	 * Set EE in HOST_MSR so that it's enabled when we get into our
+<<<<<<< HEAD
 	 * C exit handler function
+=======
+	 * C exit handler function.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	ori	r5, r5, MSR_EE
 	mtsrr0	r7
 	mtsrr1	r6
+<<<<<<< HEAD
 	RFI
 
 #if defined(CONFIG_PPC_BOOK3S_32)
@@ -234,5 +261,8 @@ define_load_up(fpu)
 #ifdef CONFIG_ALTIVEC
 define_load_up(altivec)
 #endif
+=======
+	RFI_TO_KERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "book3s_segment.S"

@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 
 #include <linux/types.h>
 #include <linux/crush/hash.h>
+=======
+#ifdef __KERNEL__
+# include <linux/crush/hash.h>
+#else
+# include "hash.h"
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Robert Jenkins' function for mixing 32-bit values

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /* bnx2fc_io.c: Broadcom NetXtreme II Linux FCoE offload driver.
  * IO manager and SCSI IO processing.
  *
  * Copyright (c) 2008 - 2013 Broadcom Corporation
+=======
+/* bnx2fc_io.c: QLogic Linux FCoE offload driver.
+ * IO manager and SCSI IO processing.
+ *
+ * Copyright (c) 2008-2013 Broadcom Corporation
+ * Copyright (c) 2014-2015 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,11 +47,16 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 {
 	struct bnx2fc_cmd *io_req = container_of(work, struct bnx2fc_cmd,
 						 timeout_work.work);
+<<<<<<< HEAD
 	struct fc_lport *lport;
 	struct fc_rport_priv *rdata;
 	u8 cmd_type = io_req->cmd_type;
 	struct bnx2fc_rport *tgt = io_req->tgt;
 	int logo_issued;
+=======
+	u8 cmd_type = io_req->cmd_type;
+	struct bnx2fc_rport *tgt = io_req->tgt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	BNX2FC_IO_DBG(io_req, "cmd_timeout, cmd_type = %d,"
@@ -79,6 +92,7 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 					io_req->refcount.refcount.counter);
 			if (!(test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
 					       &io_req->req_flags))) {
+<<<<<<< HEAD
 
 				lport = io_req->port->lport;
 				rdata = io_req->tgt->rdata;
@@ -98,6 +112,16 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 					lport->tt.rport_logoff(rdata);
 					mutex_unlock(&lport->disc.disc_mutex);
 				}
+=======
+				/*
+				 * Cleanup and return original command to
+				 * mid-layer.
+				 */
+				bnx2fc_initiate_cleanup(io_req);
+				kref_put(&io_req->refcount, bnx2fc_cmd_release);
+				spin_unlock_bh(&tgt->tgt_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return;
 			}
 		} else {
@@ -115,6 +139,7 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 				rc = bnx2fc_initiate_abts(io_req);
 				if (rc == SUCCESS)
 					goto done;
+<<<<<<< HEAD
 				/*
 				 * Explicitly logo the target if
 				 * abts initiation fails
@@ -137,6 +162,12 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 					lport->tt.rport_logoff(rdata);
 					mutex_unlock(&lport->disc.disc_mutex);
 				}
+=======
+
+				kref_put(&io_req->refcount, bnx2fc_cmd_release);
+				spin_unlock_bh(&tgt->tgt_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return;
 			} else {
 				BNX2FC_IO_DBG(io_req, "IO already in "
@@ -151,6 +182,7 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 
 			if (!test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
 					      &io_req->req_flags)) {
+<<<<<<< HEAD
 				lport = io_req->port->lport;
 				rdata = io_req->tgt->rdata;
 				logo_issued = test_and_set_bit(
@@ -167,6 +199,11 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 					lport->tt.rport_logoff(rdata);
 					mutex_unlock(&lport->disc.disc_mutex);
 				}
+=======
+				kref_put(&io_req->refcount, bnx2fc_cmd_release);
+				spin_unlock_bh(&tgt->tgt_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return;
 			}
 		} else {
@@ -223,12 +260,30 @@ static void bnx2fc_scsi_done(struct bnx2fc_cmd *io_req, int err_code)
 
 	bnx2fc_unmap_sg_list(io_req);
 	io_req->sc_cmd = NULL;
+<<<<<<< HEAD
+=======
+
+	/* Sanity checks before returning command to mid-layer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sc_cmd) {
 		printk(KERN_ERR PFX "scsi_done - sc_cmd NULL. "
 				    "IO(0x%x) already cleaned up\n",
 		       io_req->xid);
 		return;
 	}
+<<<<<<< HEAD
+=======
+	if (!sc_cmd->device) {
+		pr_err(PFX "0x%x: sc_cmd->device is NULL.\n", io_req->xid);
+		return;
+	}
+	if (!sc_cmd->device->host) {
+		pr_err(PFX "0x%x: sc_cmd->device->host is NULL.\n",
+		    io_req->xid);
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sc_cmd->result = err_code << 16;
 
 	BNX2FC_IO_DBG(io_req, "sc=%p, result=0x%x, retries=%d, allowed=%d\n",
@@ -282,6 +337,11 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba)
 				       arr_sz, GFP_KERNEL);
 	if (!cmgr->free_list_lock) {
 		printk(KERN_ERR PFX "failed to alloc free_list_lock\n");
+<<<<<<< HEAD
+=======
+		kfree(cmgr->free_list);
+		cmgr->free_list = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto mem_err;
 	}
 
@@ -594,13 +654,21 @@ static void bnx2fc_free_mp_resc(struct bnx2fc_cmd *io_req)
 		mp_req->mp_resp_bd = NULL;
 	}
 	if (mp_req->req_buf) {
+<<<<<<< HEAD
 		dma_free_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+		dma_free_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     mp_req->req_buf,
 				     mp_req->req_buf_dma);
 		mp_req->req_buf = NULL;
 	}
 	if (mp_req->resp_buf) {
+<<<<<<< HEAD
 		dma_free_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+		dma_free_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     mp_req->resp_buf,
 				     mp_req->resp_buf_dma);
 		mp_req->resp_buf = NULL;
@@ -620,9 +688,19 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 	mp_req = (struct bnx2fc_mp_req *)&(io_req->mp_req);
 	memset(mp_req, 0, sizeof(struct bnx2fc_mp_req));
 
+<<<<<<< HEAD
 	mp_req->req_len = sizeof(struct fcp_cmnd);
 	io_req->data_xfer_len = mp_req->req_len;
 	mp_req->req_buf = dma_alloc_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+	if (io_req->cmd_type != BNX2FC_ELS) {
+		mp_req->req_len = sizeof(struct fcp_cmnd);
+		io_req->data_xfer_len = mp_req->req_len;
+	} else
+		mp_req->req_len = io_req->data_xfer_len;
+
+	mp_req->req_buf = dma_alloc_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     &mp_req->req_buf_dma,
 					     GFP_ATOMIC);
 	if (!mp_req->req_buf) {
@@ -631,7 +709,11 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 		return FAILED;
 	}
 
+<<<<<<< HEAD
 	mp_req->resp_buf = dma_alloc_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+	mp_req->resp_buf = dma_alloc_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					      &mp_req->resp_buf_dma,
 					      GFP_ATOMIC);
 	if (!mp_req->resp_buf) {
@@ -639,8 +721,13 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 		bnx2fc_free_mp_resc(io_req);
 		return FAILED;
 	}
+<<<<<<< HEAD
 	memset(mp_req->req_buf, 0, PAGE_SIZE);
 	memset(mp_req->resp_buf, 0, PAGE_SIZE);
+=======
+	memset(mp_req->req_buf, 0, CNIC_PAGE_SIZE);
+	memset(mp_req->resp_buf, 0, CNIC_PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Allocate and map mp_req_bd and mp_resp_bd */
 	sz = sizeof(struct fcoe_bd_ctx);
@@ -665,7 +752,11 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 	mp_req_bd = mp_req->mp_req_bd;
 	mp_req_bd->buf_addr_lo = (u32)addr & 0xffffffff;
 	mp_req_bd->buf_addr_hi = (u32)((u64)addr >> 32);
+<<<<<<< HEAD
 	mp_req_bd->buf_len = PAGE_SIZE;
+=======
+	mp_req_bd->buf_len = CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mp_req_bd->flags = 0;
 
 	/*
@@ -677,7 +768,11 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 	addr = mp_req->resp_buf_dma;
 	mp_resp_bd->buf_addr_lo = (u32)addr & 0xffffffff;
 	mp_resp_bd->buf_addr_hi = (u32)((u64)addr >> 32);
+<<<<<<< HEAD
 	mp_resp_bd->buf_len = PAGE_SIZE;
+=======
+	mp_resp_bd->buf_len = CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mp_resp_bd->flags = 0;
 
 	return SUCCESS;
@@ -808,7 +903,11 @@ retry_tmf:
 	spin_unlock_bh(&tgt->tgt_lock);
 
 	rc = wait_for_completion_timeout(&io_req->tm_done,
+<<<<<<< HEAD
 					 BNX2FC_TM_TIMEOUT * HZ);
+=======
+					 interface->tm_timeout * HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_bh(&tgt->tgt_lock);
 
 	io_req->wait_for_comp = 0;
@@ -1105,6 +1204,7 @@ int bnx2fc_eh_device_reset(struct scsi_cmnd *sc_cmd)
 	return bnx2fc_initiate_tmf(sc_cmd, FCP_TMF_LUN_RESET);
 }
 
+<<<<<<< HEAD
 int bnx2fc_expl_logo(struct fc_lport *lport, struct bnx2fc_cmd *io_req)
 {
 	struct bnx2fc_rport *tgt = io_req->tgt;
@@ -1117,6 +1217,13 @@ int bnx2fc_expl_logo(struct fc_lport *lport, struct bnx2fc_cmd *io_req)
 		      tgt->flags);
 	logo_issued = test_and_set_bit(BNX2FC_FLAG_EXPL_LOGO,
 				       &tgt->flags);
+=======
+static int bnx2fc_abts_cleanup(struct bnx2fc_cmd *io_req)
+{
+	struct bnx2fc_rport *tgt = io_req->tgt;
+	int rc = SUCCESS;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	io_req->wait_for_comp = 1;
 	bnx2fc_initiate_cleanup(io_req);
 
@@ -1129,6 +1236,7 @@ int bnx2fc_expl_logo(struct fc_lport *lport, struct bnx2fc_cmd *io_req)
 	 * release the reference taken in eh_abort to allow the
 	 * target to re-login after flushing IOs
 	 */
+<<<<<<< HEAD
 	 kref_put(&io_req->refcount, bnx2fc_cmd_release);
 
 	if (!logo_issued) {
@@ -1144,6 +1252,10 @@ int bnx2fc_expl_logo(struct fc_lport *lport, struct bnx2fc_cmd *io_req)
 			}
 		} while (!test_bit(BNX2FC_FLAG_SESSION_READY, &tgt->flags));
 	}
+=======
+	kref_put(&io_req->refcount, bnx2fc_cmd_release);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_bh(&tgt->tgt_lock);
 	return rc;
 }
@@ -1162,8 +1274,12 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	struct bnx2fc_cmd *io_req;
 	struct fc_lport *lport;
 	struct bnx2fc_rport *tgt;
+<<<<<<< HEAD
 	int rc = FAILED;
 
+=======
+	int rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = fc_block_scsi_eh(sc_cmd);
 	if (rc)
@@ -1172,7 +1288,11 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	lport = shost_priv(sc_cmd->device->host);
 	if ((lport->state != LPORT_ST_READY) || !(lport->link_up)) {
 		printk(KERN_ERR PFX "eh_abort: link not ready\n");
+<<<<<<< HEAD
 		return rc;
+=======
+		return FAILED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	tgt = (struct bnx2fc_rport *)&rp[1];
@@ -1245,7 +1365,17 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		if (cancel_delayed_work(&io_req->timeout_work))
 			kref_put(&io_req->refcount,
 				 bnx2fc_cmd_release); /* drop timer hold */
+<<<<<<< HEAD
 		rc = bnx2fc_expl_logo(lport, io_req);
+=======
+		rc = bnx2fc_abts_cleanup(io_req);
+		/* This only occurs when an task abort was requested while ABTS
+		   is in progress.  Setting the IO_CLEANUP flag will skip the
+		   RRQ process in the case when the fw generated SCSI_CMD cmpl
+		   was a result from the ABTS request rather than the CLEANUP
+		   request */
+		set_bit(BNX2FC_FLAG_IO_CLEANUP,	&io_req->req_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -1278,7 +1408,11 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		/* Let the scsi-ml try to recover this command */
 		printk(KERN_ERR PFX "abort failed, xid = 0x%x\n",
 		       io_req->xid);
+<<<<<<< HEAD
 		rc = bnx2fc_expl_logo(lport, io_req);
+=======
+		rc = bnx2fc_abts_cleanup(io_req);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	} else {
 		/*
@@ -1442,9 +1576,15 @@ static void bnx2fc_lun_reset_cmpl(struct bnx2fc_cmd *io_req)
 	struct scsi_cmnd *sc_cmd = io_req->sc_cmd;
 	struct bnx2fc_rport *tgt = io_req->tgt;
 	struct bnx2fc_cmd *cmd, *tmp;
+<<<<<<< HEAD
 	int tm_lun = sc_cmd->device->lun;
 	int rc = 0;
 	int lun;
+=======
+	u64 tm_lun = sc_cmd->device->lun;
+	u64 lun;
+	int rc = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* called with tgt_lock held */
 	BNX2FC_IO_DBG(io_req, "Entered bnx2fc_lun_reset_cmpl\n");
@@ -1645,6 +1785,13 @@ static int bnx2fc_map_sg(struct bnx2fc_cmd *io_req)
 	u64 addr;
 	int i;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Use dma_map_sg directly to ensure we're using the correct
+	 * dev struct off of pcidev.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sg_count = dma_map_sg(&hba->pcidev->dev, scsi_sglist(sc),
 			      scsi_sg_count(sc), sc->sc_data_direction);
 	scsi_for_each_sg(sc, sg, sg_count, i) {
@@ -1694,9 +1841,22 @@ static int bnx2fc_build_bd_list_from_sg(struct bnx2fc_cmd *io_req)
 static void bnx2fc_unmap_sg_list(struct bnx2fc_cmd *io_req)
 {
 	struct scsi_cmnd *sc = io_req->sc_cmd;
+<<<<<<< HEAD
 
 	if (io_req->bd_tbl->bd_valid && sc) {
 		scsi_dma_unmap(sc);
+=======
+	struct bnx2fc_interface *interface = io_req->port->priv;
+	struct bnx2fc_hba *hba = interface->hba;
+
+	/*
+	 * Use dma_unmap_sg directly to ensure we're using the correct
+	 * dev struct off of pcidev.
+	 */
+	if (io_req->bd_tbl->bd_valid && sc && scsi_sg_count(sc)) {
+		dma_unmap_sg(&hba->pcidev->dev, scsi_sglist(sc),
+		    scsi_sg_count(sc), sc->sc_data_direction);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		io_req->bd_tbl->bd_valid = 0;
 	}
 }
@@ -1705,7 +1865,10 @@ void bnx2fc_build_fcp_cmnd(struct bnx2fc_cmd *io_req,
 				  struct fcp_cmnd *fcp_cmnd)
 {
 	struct scsi_cmnd *sc_cmd = io_req->sc_cmd;
+<<<<<<< HEAD
 	char tag[2];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(fcp_cmnd, 0, sizeof(struct fcp_cmnd));
 
@@ -1718,6 +1881,7 @@ void bnx2fc_build_fcp_cmnd(struct bnx2fc_cmd *io_req,
 	fcp_cmnd->fc_pri_ta = 0;
 	fcp_cmnd->fc_tm_flags = io_req->mp_req.tm_flags;
 	fcp_cmnd->fc_flags = io_req->io_req_flags;
+<<<<<<< HEAD
 
 	if (scsi_populate_tag_msg(sc_cmd, tag)) {
 		switch (tag[0]) {
@@ -1734,6 +1898,9 @@ void bnx2fc_build_fcp_cmnd(struct bnx2fc_cmd *io_req,
 	} else {
 		fcp_cmnd->fc_pri_ta = 0;
 	}
+=======
+	fcp_cmnd->fc_pri_ta = FCP_PTA_SIMPLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
@@ -1751,7 +1918,14 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 	int fcp_rsp_len = 0;
 
 	io_req->fcp_status = FC_GOOD;
+<<<<<<< HEAD
 	io_req->fcp_resid = fcp_rsp->fcp_resid;
+=======
+	io_req->fcp_resid = 0;
+	if (rsp_flags & (FCOE_FCP_RSP_FLAGS_FCP_RESID_OVER |
+	    FCOE_FCP_RSP_FLAGS_FCP_RESID_UNDER))
+		io_req->fcp_resid = fcp_rsp->fcp_resid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	io_req->scsi_comp_flags = rsp_flags;
 	CMD_SCSI_STATUS(sc_cmd) = io_req->cdb_status =
@@ -1801,7 +1975,11 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 		if ((fcp_rsp_len == 4) || (fcp_rsp_len == 8)) {
 			/* Only for task management function */
 			io_req->fcp_rsp_code = rq_data[3];
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "fcp_rsp_code = %d\n",
+=======
+			BNX2FC_IO_DBG(io_req, "fcp_rsp_code = %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				io_req->fcp_rsp_code);
 		}
 
@@ -1865,19 +2043,45 @@ int bnx2fc_queuecommand(struct Scsi_Host *host,
 		rc = SCSI_MLQUEUE_TARGET_BUSY;
 		goto exit_qcmd;
 	}
+<<<<<<< HEAD
+=======
+	if (tgt->retry_delay_timestamp) {
+		if (time_after(jiffies, tgt->retry_delay_timestamp)) {
+			tgt->retry_delay_timestamp = 0;
+		} else {
+			/* If retry_delay timer is active, flow off the ML */
+			rc = SCSI_MLQUEUE_TARGET_BUSY;
+			goto exit_qcmd;
+		}
+	}
+
+	spin_lock_bh(&tgt->tgt_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	io_req = bnx2fc_cmd_alloc(tgt);
 	if (!io_req) {
 		rc = SCSI_MLQUEUE_HOST_BUSY;
+<<<<<<< HEAD
 		goto exit_qcmd;
+=======
+		goto exit_qcmd_tgtlock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	io_req->sc_cmd = sc_cmd;
 
 	if (bnx2fc_post_io_req(tgt, io_req)) {
 		printk(KERN_ERR PFX "Unable to post io_req\n");
 		rc = SCSI_MLQUEUE_HOST_BUSY;
+<<<<<<< HEAD
 		goto exit_qcmd;
 	}
+=======
+		goto exit_qcmd_tgtlock;
+	}
+
+exit_qcmd_tgtlock:
+	spin_unlock_bh(&tgt->tgt_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 exit_qcmd:
 	return rc;
 }
@@ -1898,6 +2102,10 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 		/* we will not receive ABTS response for this IO */
 		BNX2FC_IO_DBG(io_req, "Timer context finished processing "
 			   "this scsi cmd\n");
+<<<<<<< HEAD
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Cancel the timeout_work, as we received IO completion */
@@ -1955,6 +2163,18 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 				 " fcp_resid = 0x%x\n",
 				io_req->cdb_status, io_req->fcp_resid);
 			sc_cmd->result = (DID_OK << 16) | io_req->cdb_status;
+<<<<<<< HEAD
+=======
+
+			if (io_req->cdb_status == SAM_STAT_TASK_SET_FULL ||
+			    io_req->cdb_status == SAM_STAT_BUSY) {
+				/* Set the jiffies + retry_delay_timer * 100ms
+				   for the rport/tgt */
+				tgt->retry_delay_timestamp = jiffies +
+					fcp_rsp->retry_delay_timer * HZ / 10;
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		if (io_req->fcp_resid)
 			scsi_set_resid(sc_cmd, io_req->fcp_resid);
@@ -1983,6 +2203,11 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 	int task_idx, index;
 	u16 xid;
 
+<<<<<<< HEAD
+=======
+	/* bnx2fc_post_io_req() is called with the tgt_lock held */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Initialize rest of io_req fields */
 	io_req->cmd_type = BNX2FC_SCSI_CMD;
 	io_req->port = port;
@@ -2010,9 +2235,13 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 	/* Build buffer descriptor list for firmware from sg list */
 	if (bnx2fc_build_bd_list_from_sg(io_req)) {
 		printk(KERN_ERR PFX "BD list creation failed\n");
+<<<<<<< HEAD
 		spin_lock_bh(&tgt->tgt_lock);
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 		spin_unlock_bh(&tgt->tgt_lock);
+=======
+		kref_put(&io_req->refcount, bnx2fc_cmd_release);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;
 	}
 
@@ -2024,19 +2253,28 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 	task = &(task_page[index]);
 	bnx2fc_init_task(io_req, task);
 
+<<<<<<< HEAD
 	spin_lock_bh(&tgt->tgt_lock);
 
 	if (tgt->flush_in_prog) {
 		printk(KERN_ERR PFX "Flush in progress..Host Busy\n");
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 		spin_unlock_bh(&tgt->tgt_lock);
+=======
+	if (tgt->flush_in_prog) {
+		printk(KERN_ERR PFX "Flush in progress..Host Busy\n");
+		kref_put(&io_req->refcount, bnx2fc_cmd_release);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;
 	}
 
 	if (!test_bit(BNX2FC_FLAG_SESSION_READY, &tgt->flags)) {
 		printk(KERN_ERR PFX "Session not ready...post_io\n");
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
+<<<<<<< HEAD
 		spin_unlock_bh(&tgt->tgt_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;
 	}
 
@@ -2054,6 +2292,9 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 
 	/* Ring doorbell */
 	bnx2fc_ring_doorbell(tgt);
+<<<<<<< HEAD
 	spin_unlock_bh(&tgt->tgt_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }

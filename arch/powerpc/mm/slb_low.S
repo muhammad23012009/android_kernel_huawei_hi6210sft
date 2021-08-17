@@ -35,7 +35,11 @@ _GLOBAL(slb_allocate_realmode)
 	 * check for bad kernel/user address
 	 * (ea & ~REGION_MASK) >= PGTABLE_RANGE
 	 */
+<<<<<<< HEAD
 	rldicr. r9,r3,4,(63 - 46 - 4)
+=======
+	rldicr. r9,r3,4,(63 - H_PGTABLE_EADDR_SIZE - 4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bne-	8f
 
 	srdi	r9,r3,60		/* get region */
@@ -59,7 +63,12 @@ _GLOBAL(slb_allocate_realmode)
 	/* Linear mapping encoding bits, the "li" instruction below will
 	 * be patched by the kernel at boot
 	 */
+<<<<<<< HEAD
 _GLOBAL(slb_miss_kernel_load_linear)
+=======
+.globl slb_miss_kernel_load_linear
+slb_miss_kernel_load_linear:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	li	r11,0
 	/*
 	 * context = (MAX_USER_CONTEXT) + ((ea >> 60) - 0xc) + 1
@@ -79,7 +88,12 @@ END_MMU_FTR_SECTION_IFCLR(MMU_FTR_1T_SEGMENT)
 	/* Check virtual memmap region. To be patches at kernel boot */
 	cmpldi	cr0,r9,0xf
 	bne	1f
+<<<<<<< HEAD
 _GLOBAL(slb_miss_kernel_load_vmemmap)
+=======
+.globl slb_miss_kernel_load_vmemmap
+slb_miss_kernel_load_vmemmap:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	li	r11,0
 	b	6f
 1:
@@ -89,13 +103,22 @@ _GLOBAL(slb_miss_kernel_load_vmemmap)
 	 * can be demoted from 64K -> 4K dynamically on some machines
 	 */
 	clrldi	r11,r10,48
+<<<<<<< HEAD
 	cmpldi	r11,(VMALLOC_SIZE >> 28) - 1
+=======
+	cmpldi	r11,(H_VMALLOC_SIZE >> 28) - 1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bgt	5f
 	lhz	r11,PACAVMALLOCSLLP(r13)
 	b	6f
 5:
 	/* IO mapping */
+<<<<<<< HEAD
 	_GLOBAL(slb_miss_kernel_load_io)
+=======
+.globl slb_miss_kernel_load_io
+slb_miss_kernel_load_io:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	li	r11,0
 6:
 	/*
@@ -175,6 +198,7 @@ BEGIN_FTR_SECTION
 END_MMU_FTR_SECTION_IFSET(MMU_FTR_1T_SEGMENT)
 	b	slb_finish_load
 
+<<<<<<< HEAD
 8:	/* invalid EA */
 	li	r10,0			/* BAD_VSID */
 	li	r9,0			/* BAD_VSID */
@@ -230,6 +254,11 @@ _GLOBAL(slb_allocate_user)
 
 #endif /* __DISABLED__ */
 
+=======
+8:	/* invalid EA - return an error indication */
+	crset	4*cr0+eq		/* indicate failure */
+	blr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Finish loading of an SLB entry and return
@@ -255,7 +284,12 @@ slb_finish_load:
 7:	ld	r10,PACASTABRR(r13)
 	addi	r10,r10,1
 	/* This gets soft patched on boot. */
+<<<<<<< HEAD
 _GLOBAL(slb_compare_rr_to_size)
+=======
+.globl slb_compare_rr_to_size
+slb_compare_rr_to_size:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmpldi	r10,0
 
 	blt+	4f

@@ -5,7 +5,11 @@
 struct net;
 
 int vlan_proc_init(struct net *net);
+<<<<<<< HEAD
 int vlan_proc_rem_dev(struct net_device *vlandev);
+=======
+void vlan_proc_rem_dev(struct net_device *vlandev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int vlan_proc_add_dev(struct net_device *vlandev);
 void vlan_proc_cleanup(struct net *net);
 
@@ -14,7 +18,11 @@ void vlan_proc_cleanup(struct net *net);
 #define vlan_proc_init(net)	(0)
 #define vlan_proc_cleanup(net)	do {} while (0)
 #define vlan_proc_add_dev(dev)	({(void)(dev), 0; })
+<<<<<<< HEAD
 #define vlan_proc_rem_dev(dev)	({(void)(dev), 0; })
+=======
+#define vlan_proc_rem_dev(dev)	do {} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* !(__BEN_VLAN_PROC_INC__) */

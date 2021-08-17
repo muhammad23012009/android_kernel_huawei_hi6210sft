@@ -78,11 +78,18 @@ struct jz4740_codec {
 	struct regmap *regmap;
 };
 
+<<<<<<< HEAD
 static const unsigned int jz4740_mic_tlv[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 2, TLV_DB_SCALE_ITEM(0, 600, 0),
 	3, 3, TLV_DB_SCALE_ITEM(2000, 0, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(jz4740_mic_tlv,
+	0, 2, TLV_DB_SCALE_ITEM(0, 600, 0),
+	3, 3, TLV_DB_SCALE_ITEM(2000, 0, 0)
+);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const DECLARE_TLV_DB_SCALE(jz4740_out_tlv, 0, 200, 0);
 static const DECLARE_TLV_DB_SCALE(jz4740_in_tlv, -3450, 150, 0);
@@ -258,7 +265,11 @@ static int jz4740_codec_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	case SND_SOC_BIAS_STANDBY:
 		/* The only way to clear the suspend flag is to reset the codec */
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			jz4740_codec_wakeup(regmap);
 
 		mask = JZ4740_CODEC_1_VREF_DISABLE |
@@ -281,8 +292,11 @@ static int jz4740_codec_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -293,6 +307,7 @@ static int jz4740_codec_dev_probe(struct snd_soc_codec *codec)
 	regmap_update_bits(jz4740_codec->regmap, JZ4740_REG_CODEC_1,
 			JZ4740_CODEC_1_SW2_ENABLE, JZ4740_CODEC_1_SW2_ENABLE);
 
+<<<<<<< HEAD
 	jz4740_codec_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
 	return 0;
@@ -335,6 +350,24 @@ static struct snd_soc_codec_driver soc_codec_dev_jz4740_codec = {
 	.num_dapm_widgets = ARRAY_SIZE(jz4740_codec_dapm_widgets),
 	.dapm_routes = jz4740_codec_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(jz4740_codec_dapm_routes),
+=======
+	return 0;
+}
+
+static struct snd_soc_codec_driver soc_codec_dev_jz4740_codec = {
+	.probe = jz4740_codec_dev_probe,
+	.set_bias_level = jz4740_codec_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= jz4740_codec_controls,
+		.num_controls		= ARRAY_SIZE(jz4740_codec_controls),
+		.dapm_widgets		= jz4740_codec_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(jz4740_codec_dapm_widgets),
+		.dapm_routes		= jz4740_codec_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(jz4740_codec_dapm_routes),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct regmap_config jz4740_codec_regmap_config = {
@@ -384,8 +417,11 @@ static int jz4740_codec_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_codec(&pdev->dev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -394,7 +430,10 @@ static struct platform_driver jz4740_codec_driver = {
 	.remove = jz4740_codec_remove,
 	.driver = {
 		.name = "jz4740-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

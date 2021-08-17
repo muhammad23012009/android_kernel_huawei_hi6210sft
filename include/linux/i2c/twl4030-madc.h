@@ -44,7 +44,11 @@ struct twl4030_madc_conversion_method {
 
 struct twl4030_madc_request {
 	unsigned long channels;
+<<<<<<< HEAD
 	u16 do_avg;
+=======
+	bool do_avg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 method;
 	u16 type;
 	bool active;

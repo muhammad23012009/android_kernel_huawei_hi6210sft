@@ -15,6 +15,7 @@
 /* These ELF defines belong to uapi but libc elf.h already defines them */
 #define EM_ARCOMPACT		93
 
+<<<<<<< HEAD
 /* ARC Relocations (kernel Modules only) */
 #define  R_ARC_32		0x4
 #define  R_ARC_32_ME		0x1B
@@ -23,6 +24,20 @@
 
 /*to set parameters in the core dumps */
 #define ELF_ARCH		EM_ARCOMPACT
+=======
+#define EM_ARCV2		195	/* ARCv2 Cores */
+
+#define EM_ARC_INUSE		(IS_ENABLED(CONFIG_ISA_ARCOMPACT) ? \
+					EM_ARCOMPACT : EM_ARCV2)
+
+/* ARC Relocations (kernel Modules only) */
+#define  R_ARC_32		0x4
+#define  R_ARC_32_ME		0x1B
+#define  R_ARC_32_PCREL		0x31
+
+/*to set parameters in the core dumps */
+#define ELF_ARCH		EM_ARC_INUSE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ELF_CLASS		ELFCLASS32
 
 #ifdef CONFIG_CPU_BIG_ENDIAN
@@ -50,7 +65,11 @@ extern int elf_check_arch(const struct elf32_hdr *);
  * the loader.  We need to make sure that it is out of the way of the program
  * that it will "exec", and that there is sufficient room for the brk.
  */
+<<<<<<< HEAD
 #define ELF_ET_DYN_BASE		(2 * TASK_SIZE / 3)
+=======
+#define ELF_ET_DYN_BASE		(2UL * TASK_SIZE / 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * When the program starts, a1 contains a pointer to a function to be

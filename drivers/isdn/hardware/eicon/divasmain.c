@@ -445,32 +445,56 @@ void divasa_unmap_pci_bar(void __iomem *bar)
 /*********************************************************
  ** I/O port access
  *********************************************************/
+<<<<<<< HEAD
 byte __inline__ inpp(void __iomem *addr)
+=======
+inline byte inpp(void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return (inb((unsigned long) addr));
 }
 
+<<<<<<< HEAD
 word __inline__ inppw(void __iomem *addr)
+=======
+inline word inppw(void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return (inw((unsigned long) addr));
 }
 
+<<<<<<< HEAD
 void __inline__ inppw_buffer(void __iomem *addr, void *P, int length)
+=======
+inline void inppw_buffer(void __iomem *addr, void *P, int length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	insw((unsigned long) addr, (word *) P, length >> 1);
 }
 
+<<<<<<< HEAD
 void __inline__ outppw_buffer(void __iomem *addr, void *P, int length)
+=======
+inline void outppw_buffer(void __iomem *addr, void *P, int length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	outsw((unsigned long) addr, (word *) P, length >> 1);
 }
 
+<<<<<<< HEAD
 void __inline__ outppw(void __iomem *addr, word w)
+=======
+inline void outppw(void __iomem *addr, word w)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	outw(w, (unsigned long) addr);
 }
 
+<<<<<<< HEAD
 void __inline__ outpp(void __iomem *addr, word p)
+=======
+inline void outpp(void __iomem *addr, word p)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	outb(p, (unsigned long) addr);
 }
@@ -481,7 +505,11 @@ void __inline__ outpp(void __iomem *addr, word p)
 int diva_os_register_irq(void *context, byte irq, const char *name)
 {
 	int result = request_irq(irq, diva_os_irq_wrapper,
+<<<<<<< HEAD
 				 IRQF_DISABLED | IRQF_SHARED, name, context);
+=======
+				 IRQF_SHARED, name, context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (result);
 }
 
@@ -591,10 +619,15 @@ static int divas_release(struct inode *inode, struct file *file)
 static ssize_t divas_write(struct file *file, const char __user *buf,
 			   size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
+=======
+	diva_xdi_um_cfg_cmd_t msg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = -EINVAL;
 
 	if (!file->private_data) {
 		file->private_data = diva_xdi_open_adapter(file, buf,
+<<<<<<< HEAD
 							   count,
 							   xdi_copy_from_user);
 	}
@@ -604,6 +637,19 @@ static ssize_t divas_write(struct file *file, const char __user *buf,
 
 	ret = diva_xdi_write(file->private_data, file,
 			     buf, count, xdi_copy_from_user);
+=======
+							   count, &msg,
+							   xdi_copy_from_user);
+		if (!file->private_data)
+			return (-ENODEV);
+		ret = diva_xdi_write(file->private_data, file,
+				     buf, count, &msg, xdi_copy_from_user);
+	} else {
+		ret = diva_xdi_write(file->private_data, file,
+				     buf, count, NULL, xdi_copy_from_user);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (ret) {
 	case -1:		/* Message should be removed from rx mailbox first */
 		ret = -EBUSY;
@@ -622,11 +668,19 @@ static ssize_t divas_write(struct file *file, const char __user *buf,
 static ssize_t divas_read(struct file *file, char __user *buf,
 			  size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
+=======
+	diva_xdi_um_cfg_cmd_t msg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = -EINVAL;
 
 	if (!file->private_data) {
 		file->private_data = diva_xdi_open_adapter(file, buf,
+<<<<<<< HEAD
 							   count,
+=======
+							   count, &msg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							   xdi_copy_from_user);
 	}
 	if (!file->private_data) {

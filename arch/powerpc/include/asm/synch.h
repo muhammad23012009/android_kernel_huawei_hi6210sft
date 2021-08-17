@@ -5,15 +5,21 @@
 #include <linux/stringify.h>
 #include <asm/feature-fixups.h>
 
+<<<<<<< HEAD
 #if defined(__powerpc64__) || defined(CONFIG_PPC_E500MC)
 #define __SUBARCH_HAS_LWSYNC
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __ASSEMBLY__
 extern unsigned int __start___lwsync_fixup, __stop___lwsync_fixup;
 extern void do_lwsync_fixups(unsigned long value, void *fixup_start,
 			     void *fixup_end);
+<<<<<<< HEAD
 extern void do_final_fixups(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void eieio(void)
 {

@@ -23,6 +23,7 @@
 #include <linux/iio/common/st_sensors.h>
 #include "st_magn.h"
 
+<<<<<<< HEAD
 static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
 {
 	int err;
@@ -35,6 +36,13 @@ static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
 
 st_magn_set_enable_error:
 	return err;
+=======
+int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
+{
+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+
+	return st_sensors_set_dataready_irq(indio_dev, state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
@@ -52,7 +60,11 @@ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
 	if (err < 0)
 		goto st_magn_buffer_postenable_error;
 
+<<<<<<< HEAD
 	return err;
+=======
+	return st_sensors_set_enable(indio_dev, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 st_magn_buffer_postenable_error:
 	kfree(mdata->buffer_data);
@@ -65,11 +77,19 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
 	int err;
 	struct st_sensor_data *mdata = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	err = iio_triggered_buffer_predisable(indio_dev);
 	if (err < 0)
 		goto st_magn_buffer_predisable_error;
 
 	err = st_sensors_set_enable(indio_dev, false);
+=======
+	err = st_sensors_set_enable(indio_dev, false);
+	if (err < 0)
+		goto st_magn_buffer_predisable_error;
+
+	err = iio_triggered_buffer_predisable(indio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 st_magn_buffer_predisable_error:
 	kfree(mdata->buffer_data);
@@ -77,14 +97,21 @@ st_magn_buffer_predisable_error:
 }
 
 static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
+<<<<<<< HEAD
 	.preenable = &st_magn_buffer_preenable,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.postenable = &st_magn_buffer_postenable,
 	.predisable = &st_magn_buffer_predisable,
 };
 
 int st_magn_allocate_ring(struct iio_dev *indio_dev)
 {
+<<<<<<< HEAD
 	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+=======
+	return iio_triggered_buffer_setup(indio_dev, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		&st_sensors_trigger_handler, &st_magn_buffer_setup_ops);
 }
 

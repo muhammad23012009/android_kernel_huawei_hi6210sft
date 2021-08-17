@@ -2,6 +2,10 @@
 #define ASM_X86_CMPXCHG_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpufeatures.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/alternative.h> /* Provides LOCK_PREFIX */
 
 /*
@@ -143,7 +147,10 @@ extern void __add_wrong_size(void)
 # include <asm/cmpxchg_64.h>
 #endif
 
+<<<<<<< HEAD
 #ifdef __HAVE_ARCH_CMPXCHG
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cmpxchg(ptr, old, new)						\
 	__cmpxchg(ptr, old, new, sizeof(*(ptr)))
 
@@ -152,13 +159,17 @@ extern void __add_wrong_size(void)
 
 #define cmpxchg_local(ptr, old, new)					\
 	__cmpxchg_local(ptr, old, new, sizeof(*(ptr)))
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * xadd() adds "inc" to "*ptr" and atomically returns the previous
  * value of "*ptr".
  *
  * xadd() is locked when multiple CPUs are online
+<<<<<<< HEAD
  * xadd_sync() is always locked
  * xadd_local() is never locked
  */
@@ -206,6 +217,11 @@ extern void __add_wrong_size(void)
  */
 #define add_smp(ptr, inc)	__add((ptr), (inc), LOCK_PREFIX)
 #define add_sync(ptr, inc)	__add((ptr), (inc), "lock; ")
+=======
+ */
+#define __xadd(ptr, inc, lock)	__xchg_op((ptr), (inc), xadd, lock)
+#define xadd(ptr, inc)		__xadd((ptr), (inc), LOCK_PREFIX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __cmpxchg_double(pfx, p1, p2, o1, o2, n1, n2)			\
 ({									\

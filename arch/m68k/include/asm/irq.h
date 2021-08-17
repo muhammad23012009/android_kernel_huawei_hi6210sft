@@ -64,8 +64,12 @@ extern void m68k_setup_auto_interrupt(void (*handler)(unsigned int,
 						      struct pt_regs *));
 extern void m68k_setup_user_interrupt(unsigned int vec, unsigned int cnt);
 extern void m68k_setup_irq_controller(struct irq_chip *,
+<<<<<<< HEAD
 				      void (*handle)(unsigned int irq,
 						     struct irq_desc *desc),
+=======
+				      void (*handle)(struct irq_desc *desc),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      unsigned int irq, unsigned int cnt);
 
 extern unsigned int irq_canonicalize(unsigned int irq);

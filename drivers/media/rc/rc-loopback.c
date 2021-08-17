@@ -195,7 +195,11 @@ static int __init loop_init(void)
 	rc->map_name		= RC_MAP_EMPTY;
 	rc->priv		= &loopdev;
 	rc->driver_type		= RC_DRIVER_IR_RAW;
+<<<<<<< HEAD
 	rc->allowed_protos	= RC_BIT_ALL;
+=======
+	rc->allowed_protocols	= RC_BIT_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc->timeout		= 100 * 1000 * 1000; /* 100 ms */
 	rc->min_timeout		= 1;
 	rc->max_timeout		= UINT_MAX;

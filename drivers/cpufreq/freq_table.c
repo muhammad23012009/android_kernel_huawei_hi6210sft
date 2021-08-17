@@ -11,15 +11,21 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/cpufreq.h>
+=======
+#include <linux/cpufreq.h>
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*********************************************************************
  *                     FREQUENCY TABLE HELPERS                       *
  *********************************************************************/
 
+<<<<<<< HEAD
 int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 				    struct cpufreq_frequency_table *table)
 {
@@ -36,6 +42,39 @@ int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 		}
 		pr_debug("table entry %u: %u kHz, %u index\n",
 					i, freq, table[i].index);
+=======
+bool policy_has_boost_freq(struct cpufreq_policy *policy)
+{
+	struct cpufreq_frequency_table *pos, *table = policy->freq_table;
+
+	if (!table)
+		return false;
+
+	cpufreq_for_each_valid_entry(pos, table)
+		if (pos->flags & CPUFREQ_BOOST_FREQ)
+			return true;
+
+	return false;
+}
+EXPORT_SYMBOL_GPL(policy_has_boost_freq);
+
+int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
+				    struct cpufreq_frequency_table *table)
+{
+	struct cpufreq_frequency_table *pos;
+	unsigned int min_freq = ~0;
+	unsigned int max_freq = 0;
+	unsigned int freq;
+
+	cpufreq_for_each_valid_entry(pos, table) {
+		freq = pos->frequency;
+
+		if (!cpufreq_boost_enabled()
+		    && (pos->flags & CPUFREQ_BOOST_FREQ))
+			continue;
+
+		pr_debug("table entry %u: %u kHz\n", (int)(pos - table), freq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (freq < min_freq)
 			min_freq = freq;
 		if (freq > max_freq)
@@ -50,19 +89,29 @@ int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 	else
 		return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(cpufreq_frequency_table_cpuinfo);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpufreq_frequency_table_verify(struct cpufreq_policy *policy,
 				   struct cpufreq_frequency_table *table)
 {
+<<<<<<< HEAD
 	unsigned int next_larger = ~0;
 	unsigned int i;
 	unsigned int count = 0;
+=======
+	struct cpufreq_frequency_table *pos;
+	unsigned int freq, next_larger = ~0;
+	bool found = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("request for verification of policy (%u - %u kHz) for cpu %u\n",
 					policy->min, policy->max, policy->cpu);
 
+<<<<<<< HEAD
 	cpufreq_verify_within_limits(policy, policy->cpuinfo.min_freq,
 				     policy->cpuinfo.max_freq);
 
@@ -81,6 +130,26 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy *policy,
 
 	cpufreq_verify_within_limits(policy, policy->cpuinfo.min_freq,
 				     policy->cpuinfo.max_freq);
+=======
+	cpufreq_verify_within_cpu_limits(policy);
+
+	cpufreq_for_each_valid_entry(pos, table) {
+		freq = pos->frequency;
+
+		if ((freq >= policy->min) && (freq <= policy->max)) {
+			found = true;
+			break;
+		}
+
+		if ((next_larger > freq) && (freq > policy->max))
+			next_larger = freq;
+	}
+
+	if (!found) {
+		policy->max = next_larger;
+		cpufreq_verify_within_cpu_limits(policy);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("verification lead to (%u - %u kHz) for cpu %u\n",
 				policy->min, policy->max, policy->cpu);
@@ -89,6 +158,7 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_frequency_table_verify);
 
+<<<<<<< HEAD
 
 int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
 				   struct cpufreq_frequency_table *table,
@@ -105,6 +175,37 @@ int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
 		.frequency = 0,
 	};
 	unsigned int i;
+=======
+/*
+ * Generic routine to verify policy & frequency table, requires driver to set
+ * policy->freq_table prior to it.
+ */
+int cpufreq_generic_frequency_table_verify(struct cpufreq_policy *policy)
+{
+	if (!policy->freq_table)
+		return -ENODEV;
+
+	return cpufreq_frequency_table_verify(policy, policy->freq_table);
+}
+EXPORT_SYMBOL_GPL(cpufreq_generic_frequency_table_verify);
+
+int cpufreq_table_index_unsorted(struct cpufreq_policy *policy,
+				 unsigned int target_freq,
+				 unsigned int relation)
+{
+	struct cpufreq_frequency_table optimal = {
+		.driver_data = ~0,
+		.frequency = 0,
+	};
+	struct cpufreq_frequency_table suboptimal = {
+		.driver_data = ~0,
+		.frequency = 0,
+	};
+	struct cpufreq_frequency_table *pos;
+	struct cpufreq_frequency_table *table = policy->freq_table;
+	unsigned int freq, diff, i = 0;
+	int index;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("request for target %u kHz (relation: %u) for cpu %u\n",
 					target_freq, relation, policy->cpu);
@@ -114,10 +215,15 @@ int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
 		suboptimal.frequency = ~0;
 		break;
 	case CPUFREQ_RELATION_L:
+<<<<<<< HEAD
+=======
+	case CPUFREQ_RELATION_C:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		optimal.frequency = ~0;
 		break;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; (table[i].frequency != CPUFREQ_TABLE_END); i++) {
 		unsigned int freq = table[i].frequency;
 		if (freq == CPUFREQ_ENTRY_INVALID)
@@ -130,23 +236,53 @@ int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
 				if (freq >= optimal.frequency) {
 					optimal.frequency = freq;
 					optimal.index = i;
+=======
+	cpufreq_for_each_valid_entry(pos, table) {
+		freq = pos->frequency;
+
+		i = pos - table;
+		if ((freq < policy->min) || (freq > policy->max))
+			continue;
+		if (freq == target_freq) {
+			optimal.driver_data = i;
+			break;
+		}
+		switch (relation) {
+		case CPUFREQ_RELATION_H:
+			if (freq < target_freq) {
+				if (freq >= optimal.frequency) {
+					optimal.frequency = freq;
+					optimal.driver_data = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			} else {
 				if (freq <= suboptimal.frequency) {
 					suboptimal.frequency = freq;
+<<<<<<< HEAD
 					suboptimal.index = i;
+=======
+					suboptimal.driver_data = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			}
 			break;
 		case CPUFREQ_RELATION_L:
+<<<<<<< HEAD
 			if (freq >= target_freq) {
 				if (freq <= optimal.frequency) {
 					optimal.frequency = freq;
 					optimal.index = i;
+=======
+			if (freq > target_freq) {
+				if (freq <= optimal.frequency) {
+					optimal.frequency = freq;
+					optimal.driver_data = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			} else {
 				if (freq >= suboptimal.frequency) {
 					suboptimal.frequency = freq;
+<<<<<<< HEAD
 					suboptimal.index = i;
 				}
 			}
@@ -187,6 +323,85 @@ static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf)
 		if (table[i].frequency == CPUFREQ_ENTRY_INVALID)
 			continue;
 		count += sprintf(&buf[count], "%d ", table[i].frequency);
+=======
+					suboptimal.driver_data = i;
+				}
+			}
+			break;
+		case CPUFREQ_RELATION_C:
+			diff = abs(freq - target_freq);
+			if (diff < optimal.frequency ||
+			    (diff == optimal.frequency &&
+			     freq > table[optimal.driver_data].frequency)) {
+				optimal.frequency = diff;
+				optimal.driver_data = i;
+			}
+			break;
+		}
+	}
+	if (optimal.driver_data > i) {
+		if (suboptimal.driver_data > i) {
+			WARN(1, "Invalid frequency table: %d\n", policy->cpu);
+			return 0;
+		}
+
+		index = suboptimal.driver_data;
+	} else
+		index = optimal.driver_data;
+
+	pr_debug("target index is %u, freq is:%u kHz\n", index,
+		 table[index].frequency);
+	return index;
+}
+EXPORT_SYMBOL_GPL(cpufreq_table_index_unsorted);
+
+int cpufreq_frequency_table_get_index(struct cpufreq_policy *policy,
+		unsigned int freq)
+{
+	struct cpufreq_frequency_table *pos, *table = policy->freq_table;
+
+	if (unlikely(!table)) {
+		pr_debug("%s: Unable to find frequency table\n", __func__);
+		return -ENOENT;
+	}
+
+	cpufreq_for_each_valid_entry(pos, table)
+		if (pos->frequency == freq)
+			return pos - table;
+
+	return -EINVAL;
+}
+EXPORT_SYMBOL_GPL(cpufreq_frequency_table_get_index);
+
+/**
+ * show_available_freqs - show available frequencies for the specified CPU
+ */
+static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf,
+				    bool show_boost)
+{
+	ssize_t count = 0;
+	struct cpufreq_frequency_table *pos, *table = policy->freq_table;
+
+	if (!table)
+		return -ENODEV;
+
+	cpufreq_for_each_valid_entry(pos, table) {
+		/*
+		 * show_boost = true and driver_data = BOOST freq
+		 * display BOOST freqs
+		 *
+		 * show_boost = false and driver_data = BOOST freq
+		 * show_boost = true and driver_data != BOOST freq
+		 * continue - do not display anything
+		 *
+		 * show_boost = false and driver_data != BOOST freq
+		 * display NON BOOST freqs
+		 */
+		if (show_boost ^ (pos->flags & CPUFREQ_BOOST_FREQ))
+			continue;
+
+		count += sprintf(&buf[count], "%d ", pos->frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	count += sprintf(&buf[count], "\n");
 
@@ -194,6 +409,7 @@ static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf)
 
 }
 
+<<<<<<< HEAD
 struct freq_attr cpufreq_freq_attr_scaling_available_freqs = {
 	.attr = { .name = "scaling_available_frequencies",
 		  .mode = 0444,
@@ -235,6 +451,113 @@ struct cpufreq_frequency_table *cpufreq_frequency_get_table(unsigned int cpu)
 	return per_cpu(cpufreq_show_table, cpu);
 }
 EXPORT_SYMBOL_GPL(cpufreq_frequency_get_table);
+=======
+#define cpufreq_attr_available_freq(_name)	  \
+struct freq_attr cpufreq_freq_attr_##_name##_freqs =     \
+__ATTR_RO(_name##_frequencies)
+
+/**
+ * show_scaling_available_frequencies - show available normal frequencies for
+ * the specified CPU
+ */
+static ssize_t scaling_available_frequencies_show(struct cpufreq_policy *policy,
+						  char *buf)
+{
+	return show_available_freqs(policy, buf, false);
+}
+cpufreq_attr_available_freq(scaling_available);
+EXPORT_SYMBOL_GPL(cpufreq_freq_attr_scaling_available_freqs);
+
+/**
+ * show_available_boost_freqs - show available boost frequencies for
+ * the specified CPU
+ */
+static ssize_t scaling_boost_frequencies_show(struct cpufreq_policy *policy,
+					      char *buf)
+{
+	return show_available_freqs(policy, buf, true);
+}
+cpufreq_attr_available_freq(scaling_boost);
+EXPORT_SYMBOL_GPL(cpufreq_freq_attr_scaling_boost_freqs);
+
+struct freq_attr *cpufreq_generic_attr[] = {
+	&cpufreq_freq_attr_scaling_available_freqs,
+#ifdef CONFIG_CPU_FREQ_BOOST_SW
+	&cpufreq_freq_attr_scaling_boost_freqs,
+#endif
+	NULL,
+};
+EXPORT_SYMBOL_GPL(cpufreq_generic_attr);
+
+static int set_freq_table_sorted(struct cpufreq_policy *policy)
+{
+	struct cpufreq_frequency_table *pos, *table = policy->freq_table;
+	struct cpufreq_frequency_table *prev = NULL;
+	int ascending = 0;
+
+	policy->freq_table_sorted = CPUFREQ_TABLE_UNSORTED;
+
+	cpufreq_for_each_valid_entry(pos, table) {
+		if (!prev) {
+			prev = pos;
+			continue;
+		}
+
+		if (pos->frequency == prev->frequency) {
+			pr_warn("Duplicate freq-table entries: %u\n",
+				pos->frequency);
+			return -EINVAL;
+		}
+
+		/* Frequency increased from prev to pos */
+		if (pos->frequency > prev->frequency) {
+			/* But frequency was decreasing earlier */
+			if (ascending < 0) {
+				pr_debug("Freq table is unsorted\n");
+				return 0;
+			}
+
+			ascending++;
+		} else {
+			/* Frequency decreased from prev to pos */
+
+			/* But frequency was increasing earlier */
+			if (ascending > 0) {
+				pr_debug("Freq table is unsorted\n");
+				return 0;
+			}
+
+			ascending--;
+		}
+
+		prev = pos;
+	}
+
+	if (ascending > 0)
+		policy->freq_table_sorted = CPUFREQ_TABLE_SORTED_ASCENDING;
+	else
+		policy->freq_table_sorted = CPUFREQ_TABLE_SORTED_DESCENDING;
+
+	pr_debug("Freq table is sorted in %s order\n",
+		 ascending > 0 ? "ascending" : "descending");
+
+	return 0;
+}
+
+int cpufreq_table_validate_and_show(struct cpufreq_policy *policy,
+				      struct cpufreq_frequency_table *table)
+{
+	int ret;
+
+	ret = cpufreq_frequency_table_cpuinfo(policy, table);
+	if (ret)
+		return ret;
+
+	policy->freq_table = table;
+	return set_freq_table_sorted(policy);
+}
+EXPORT_SYMBOL_GPL(cpufreq_table_validate_and_show);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Dominik Brodowski <linux@brodo.de>");
 MODULE_DESCRIPTION("CPUfreq frequency table helpers");

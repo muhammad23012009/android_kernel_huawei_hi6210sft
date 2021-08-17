@@ -261,7 +261,11 @@ void sel_netif_flush(void)
 static int sel_netif_netdev_notifier_handler(struct notifier_block *this,
 					     unsigned long event, void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (event == NETDEV_DOWN)
 		sel_netif_kill(dev_net(dev), dev->ifindex);
@@ -275,7 +279,11 @@ static struct notifier_block sel_netif_netdev_notifier = {
 
 static __init int sel_netif_init(void)
 {
+<<<<<<< HEAD
 	int i, err;
+=======
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!selinux_enabled)
 		return 0;
@@ -285,7 +293,11 @@ static __init int sel_netif_init(void)
 
 	register_netdevice_notifier(&sel_netif_netdev_notifier);
 
+<<<<<<< HEAD
 	return err;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 __initcall(sel_netif_init);

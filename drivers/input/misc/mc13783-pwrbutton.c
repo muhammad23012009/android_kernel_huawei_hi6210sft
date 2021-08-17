@@ -20,7 +20,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/input.h>
@@ -250,7 +253,10 @@ static int mc13783_pwrbutton_remove(struct platform_device *pdev)
 
 	input_unregister_device(priv->pwr);
 	kfree(priv);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -260,7 +266,10 @@ static struct platform_driver mc13783_pwrbutton_driver = {
 	.remove		= mc13783_pwrbutton_remove,
 	.driver		= {
 		.name	= "mc13783-pwrbutton",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

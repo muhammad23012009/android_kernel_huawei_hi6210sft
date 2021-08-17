@@ -1159,7 +1159,12 @@ hfcsx_l2l1(struct PStack *st, int pr, void *arg)
 	case (PH_PULL | INDICATION):
 		spin_lock_irqsave(&bcs->cs->lock, flags);
 		if (bcs->tx_skb) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "hfc_l2l1: this shouldn't happen\n");
+=======
+			printk(KERN_WARNING "%s: this shouldn't happen\n",
+			       __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 //				test_and_set_bit(BC_FLG_BUSY, &bcs->Flag);
 			bcs->tx_skb = skb;

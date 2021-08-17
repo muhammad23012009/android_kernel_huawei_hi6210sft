@@ -47,7 +47,11 @@ void ps3_sys_manager_register_ops(const struct ps3_sys_manager_ops *ops)
 }
 EXPORT_SYMBOL_GPL(ps3_sys_manager_register_ops);
 
+<<<<<<< HEAD
 void ps3_sys_manager_power_off(void)
+=======
+void __noreturn ps3_sys_manager_power_off(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (ps3_sys_manager_ops.power_off)
 		ps3_sys_manager_ops.power_off(ps3_sys_manager_ops.dev);
@@ -55,7 +59,11 @@ void ps3_sys_manager_power_off(void)
 	ps3_sys_manager_halt();
 }
 
+<<<<<<< HEAD
 void ps3_sys_manager_restart(void)
+=======
+void __noreturn ps3_sys_manager_restart(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (ps3_sys_manager_ops.restart)
 		ps3_sys_manager_ops.restart(ps3_sys_manager_ops.dev);
@@ -63,7 +71,11 @@ void ps3_sys_manager_restart(void)
 	ps3_sys_manager_halt();
 }
 
+<<<<<<< HEAD
 void ps3_sys_manager_halt(void)
+=======
+void __noreturn ps3_sys_manager_halt(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	pr_emerg("System Halted, OK to turn off power\n");
 	local_irq_disable();

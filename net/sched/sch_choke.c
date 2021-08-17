@@ -14,12 +14,19 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/reciprocal_div.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/vmalloc.h>
 #include <net/pkt_sched.h>
 #include <net/inet_ecn.h>
 #include <net/red.h>
+<<<<<<< HEAD
 #include <net/flow_keys.h>
+=======
+#include <net/flow_dissector.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
    CHOKe stateless AQM for fair bandwidth allocation
@@ -58,7 +65,11 @@ struct choke_sched_data {
 
 /* Variables */
 	struct red_vars  vars;
+<<<<<<< HEAD
 	struct tcf_proto *filter_list;
+=======
+	struct tcf_proto __rcu *filter_list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct {
 		u32	prob_drop;	/* Early probability drops */
 		u32	prob_mark;	/* Early probability marks */
@@ -77,12 +88,15 @@ struct choke_sched_data {
 	struct sk_buff **tab;
 };
 
+<<<<<<< HEAD
 /* deliver a random number between 0 and N - 1 */
 static u32 random_N(unsigned int N)
 {
 	return reciprocal_divide(prandom_u32(), N);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* number of elements in queue including holes */
 static unsigned int choke_len(const struct choke_sched_data *q)
 {
@@ -122,7 +136,12 @@ static void choke_zap_tail_holes(struct choke_sched_data *q)
 }
 
 /* Drop packet from queue array by creating a "hole" */
+<<<<<<< HEAD
 static void choke_drop_by_idx(struct Qdisc *sch, unsigned int idx)
+=======
+static void choke_drop_by_idx(struct Qdisc *sch, unsigned int idx,
+			      struct sk_buff **to_free)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
 	struct sk_buff *skb = q->tab[idx];
@@ -134,16 +153,26 @@ static void choke_drop_by_idx(struct Qdisc *sch, unsigned int idx)
 	if (idx == q->tail)
 		choke_zap_tail_holes(q);
 
+<<<<<<< HEAD
 	sch->qstats.backlog -= qdisc_pkt_len(skb);
 	qdisc_drop(skb, sch);
 	qdisc_tree_decrease_qlen(sch, 1);
+=======
+	qdisc_qstats_backlog_dec(sch, skb);
+	qdisc_tree_reduce_backlog(sch, 1, qdisc_pkt_len(skb));
+	qdisc_drop(skb, sch, to_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	--sch->q.qlen;
 }
 
 struct choke_skb_cb {
 	u16			classid;
 	u8			keys_valid;
+<<<<<<< HEAD
 	struct flow_keys	keys;
+=======
+	struct			flow_keys_digest keys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct choke_skb_cb *choke_skb_cb(const struct sk_buff *skb)
@@ -170,22 +199,41 @@ static u16 choke_get_classid(const struct sk_buff *skb)
 static bool choke_match_flow(struct sk_buff *skb1,
 			     struct sk_buff *skb2)
 {
+<<<<<<< HEAD
+=======
+	struct flow_keys temp;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (skb1->protocol != skb2->protocol)
 		return false;
 
 	if (!choke_skb_cb(skb1)->keys_valid) {
 		choke_skb_cb(skb1)->keys_valid = 1;
+<<<<<<< HEAD
 		skb_flow_dissect(skb1, &choke_skb_cb(skb1)->keys);
+=======
+		skb_flow_dissect_flow_keys(skb1, &temp, 0);
+		make_flow_keys_digest(&choke_skb_cb(skb1)->keys, &temp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!choke_skb_cb(skb2)->keys_valid) {
 		choke_skb_cb(skb2)->keys_valid = 1;
+<<<<<<< HEAD
 		skb_flow_dissect(skb2, &choke_skb_cb(skb2)->keys);
+=======
+		skb_flow_dissect_flow_keys(skb2, &temp, 0);
+		make_flow_keys_digest(&choke_skb_cb(skb2)->keys, &temp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return !memcmp(&choke_skb_cb(skb1)->keys,
 		       &choke_skb_cb(skb2)->keys,
+<<<<<<< HEAD
 		       sizeof(struct flow_keys));
+=======
+		       sizeof(choke_skb_cb(skb1)->keys));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -200,9 +248,17 @@ static bool choke_classify(struct sk_buff *skb,
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
 	struct tcf_result res;
+<<<<<<< HEAD
 	int result;
 
 	result = tc_classify(skb, q->filter_list, &res);
+=======
+	struct tcf_proto *fl;
+	int result;
+
+	fl = rcu_dereference_bh(q->filter_list);
+	result = tc_classify(skb, fl, &res, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result >= 0) {
 #ifdef CONFIG_NET_CLS_ACT
 		switch (result) {
@@ -233,7 +289,11 @@ static struct sk_buff *choke_peek_random(const struct choke_sched_data *q,
 	int retrys = 3;
 
 	do {
+<<<<<<< HEAD
 		*pidx = (q->head + random_N(choke_len(q))) & q->tab_mask;
+=======
+		*pidx = (q->head + prandom_u32_max(choke_len(q))) & q->tab_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb = q->tab[*pidx];
 		if (skb)
 			return skb;
@@ -256,12 +316,17 @@ static bool choke_match_random(const struct choke_sched_data *q,
 		return false;
 
 	oskb = choke_peek_random(q, pidx);
+<<<<<<< HEAD
 	if (q->filter_list)
+=======
+	if (rcu_access_pointer(q->filter_list))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return choke_get_classid(nskb) == choke_get_classid(oskb);
 
 	return choke_match_flow(oskb, nskb);
 }
 
+<<<<<<< HEAD
 static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
@@ -269,6 +334,16 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	int ret = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
 
 	if (q->filter_list) {
+=======
+static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+			 struct sk_buff **to_free)
+{
+	int ret = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+	struct choke_sched_data *q = qdisc_priv(sch);
+	const struct red_parms *p = &q->parms;
+
+	if (rcu_access_pointer(q->filter_list)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* If using external classifiers, get result and record it. */
 		if (!choke_classify(skb, sch, &ret))
 			goto other_drop;	/* Packet was eaten by filter */
@@ -289,7 +364,11 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		/* Draw a packet at random from queue and compare flow */
 		if (choke_match_random(q, skb, &idx)) {
 			q->stats.matched++;
+<<<<<<< HEAD
 			choke_drop_by_idx(sch, idx);
+=======
+			choke_drop_by_idx(sch, idx, to_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto congestion_drop;
 		}
 
@@ -297,7 +376,11 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		if (q->vars.qavg > p->qth_max) {
 			q->vars.qcount = -1;
 
+<<<<<<< HEAD
 			sch->qstats.overlimits++;
+=======
+			qdisc_qstats_overlimit(sch);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (use_harddrop(q) || !use_ecn(q) ||
 			    !INET_ECN_set_ce(skb)) {
 				q->stats.forced_drop++;
@@ -310,7 +393,11 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 				q->vars.qcount = 0;
 				q->vars.qR = red_random(p);
 
+<<<<<<< HEAD
 				sch->qstats.overlimits++;
+=======
+				qdisc_qstats_overlimit(sch);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (!use_ecn(q) || !INET_ECN_set_ce(skb)) {
 					q->stats.prob_drop++;
 					goto congestion_drop;
@@ -327,21 +414,37 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		q->tab[q->tail] = skb;
 		q->tail = (q->tail + 1) & q->tab_mask;
 		++sch->q.qlen;
+<<<<<<< HEAD
 		sch->qstats.backlog += qdisc_pkt_len(skb);
+=======
+		qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NET_XMIT_SUCCESS;
 	}
 
 	q->stats.pdrop++;
+<<<<<<< HEAD
 	return qdisc_drop(skb, sch);
 
 congestion_drop:
 	qdisc_drop(skb, sch);
+=======
+	return qdisc_drop(skb, sch, to_free);
+
+congestion_drop:
+	qdisc_drop(skb, sch, to_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NET_XMIT_CN;
 
 other_drop:
 	if (ret & __NET_XMIT_BYPASS)
+<<<<<<< HEAD
 		sch->qstats.drops++;
 	kfree_skb(skb);
+=======
+		qdisc_qstats_drop(sch);
+	__qdisc_drop(skb, to_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -360,12 +463,17 @@ static struct sk_buff *choke_dequeue(struct Qdisc *sch)
 	q->tab[q->head] = NULL;
 	choke_zap_head_holes(q);
 	--sch->q.qlen;
+<<<<<<< HEAD
 	sch->qstats.backlog -= qdisc_pkt_len(skb);
+=======
+	qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	qdisc_bstats_update(sch, skb);
 
 	return skb;
 }
 
+<<<<<<< HEAD
 static unsigned int choke_drop(struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
@@ -386,6 +494,26 @@ static void choke_reset(struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
 
+=======
+static void choke_reset(struct Qdisc *sch)
+{
+	struct choke_sched_data *q = qdisc_priv(sch);
+
+	while (q->head != q->tail) {
+		struct sk_buff *skb = q->tab[q->head];
+
+		q->head = (q->head + 1) & q->tab_mask;
+		if (!skb)
+			continue;
+		rtnl_qdisc_drop(skb, sch);
+	}
+
+	sch->q.qlen = 0;
+	sch->qstats.backlog = 0;
+	if (q->tab)
+		memset(q->tab, 0, (q->tab_mask + 1) * sizeof(struct sk_buff *));
+	q->head = q->tail = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	red_restart(&q->vars);
 }
 
@@ -398,12 +526,16 @@ static const struct nla_policy choke_policy[TCA_CHOKE_MAX + 1] = {
 
 static void choke_free(void *addr)
 {
+<<<<<<< HEAD
 	if (addr) {
 		if (is_vmalloc_addr(addr))
 			vfree(addr);
 		else
 			kfree(addr);
 	}
+=======
+	kvfree(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int choke_change(struct Qdisc *sch, struct nlattr *opt)
@@ -415,6 +547,10 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	struct sk_buff **old = NULL;
 	unsigned int mask;
 	u32 max_P;
+<<<<<<< HEAD
+=======
+	u8 *stab;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (opt == NULL)
 		return -EINVAL;
@@ -430,6 +566,12 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	max_P = tb[TCA_CHOKE_MAX_P] ? nla_get_u32(tb[TCA_CHOKE_MAX_P]) : 0;
 
 	ctl = nla_data(tb[TCA_CHOKE_PARMS]);
+<<<<<<< HEAD
+=======
+	stab = nla_data(tb[TCA_CHOKE_STAB]);
+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log, stab))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ctl->limit > CHOKE_MAX_QUEUE)
 		return -EINVAL;
@@ -438,7 +580,12 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	if (mask != q->tab_mask) {
 		struct sk_buff **ntab;
 
+<<<<<<< HEAD
 		ntab = kcalloc(mask + 1, sizeof(struct sk_buff *), GFP_KERNEL);
+=======
+		ntab = kcalloc(mask + 1, sizeof(struct sk_buff *),
+			       GFP_KERNEL | __GFP_NOWARN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!ntab)
 			ntab = vzalloc((mask + 1) * sizeof(struct sk_buff *));
 		if (!ntab)
@@ -448,6 +595,10 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 		old = q->tab;
 		if (old) {
 			unsigned int oqlen = sch->q.qlen, tail = 0;
+<<<<<<< HEAD
+=======
+			unsigned dropped = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			while (q->head != q->tail) {
 				struct sk_buff *skb = q->tab[q->head];
@@ -459,11 +610,20 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 					ntab[tail++] = skb;
 					continue;
 				}
+<<<<<<< HEAD
 				sch->qstats.backlog -= qdisc_pkt_len(skb);
 				--sch->q.qlen;
 				qdisc_drop(skb, sch);
 			}
 			qdisc_tree_decrease_qlen(sch, oqlen - sch->q.qlen);
+=======
+				dropped += qdisc_pkt_len(skb);
+				qdisc_qstats_backlog_dec(sch, skb);
+				--sch->q.qlen;
+				rtnl_qdisc_drop(skb, sch);
+			}
+			qdisc_tree_reduce_backlog(sch, oqlen - sch->q.qlen, dropped);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			q->head = 0;
 			q->tail = tail;
 		}
@@ -478,7 +638,11 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 
 	red_set_parms(&q->parms, ctl->qth_min, ctl->qth_max, ctl->Wlog,
 		      ctl->Plog, ctl->Scell_log,
+<<<<<<< HEAD
 		      nla_data(tb[TCA_CHOKE_STAB]),
+=======
+		      stab,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      max_P);
 	red_set_vars(&q->vars);
 
@@ -545,6 +709,7 @@ static void choke_destroy(struct Qdisc *sch)
 	choke_free(q->tab);
 }
 
+<<<<<<< HEAD
 static struct Qdisc *choke_leaf(struct Qdisc *sch, unsigned long arg)
 {
 	return NULL;
@@ -603,6 +768,8 @@ static const struct Qdisc_class_ops choke_class_ops = {
 	.walk		=	choke_walk,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct sk_buff *choke_peek_head(struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
@@ -617,7 +784,10 @@ static struct Qdisc_ops choke_qdisc_ops __read_mostly = {
 	.enqueue	=	choke_enqueue,
 	.dequeue	=	choke_dequeue,
 	.peek		=	choke_peek_head,
+<<<<<<< HEAD
 	.drop		=	choke_drop,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init		=	choke_init,
 	.destroy	=	choke_destroy,
 	.reset		=	choke_reset,

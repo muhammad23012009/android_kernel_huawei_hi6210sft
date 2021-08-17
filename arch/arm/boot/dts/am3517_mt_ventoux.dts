@@ -7,13 +7,21 @@
  */
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "omap34xx.dtsi"
+=======
+#include "omap34xx.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "TeeJet Mt.Ventoux";
 	compatible = "teejet,mt_ventoux", "ti,omap3";
 
+<<<<<<< HEAD
 	memory {
+=======
+	memory@80000000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		device_type = "memory";
 		reg = <0x80000000 0x10000000>; /* 256 MB */
 	};

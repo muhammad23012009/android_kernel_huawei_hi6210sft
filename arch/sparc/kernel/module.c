@@ -29,7 +29,11 @@ static void *module_map(unsigned long size)
 	if (PAGE_ALIGN(size) > MODULES_LEN)
 		return NULL;
 	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
+<<<<<<< HEAD
 				GFP_KERNEL, PAGE_KERNEL, -1,
+=======
+				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__builtin_return_address(0));
 }
 #else

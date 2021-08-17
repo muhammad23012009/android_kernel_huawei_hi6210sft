@@ -39,7 +39,11 @@
 static u8 AD7414_REG_LIMIT[] = { AD7414_REG_T_HIGH, AD7414_REG_T_LOW };
 
 struct ad7414_data {
+<<<<<<< HEAD
 	struct device		*hwmon_dev;
+=======
+	struct i2c_client	*client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex		lock;	/* atomic read data updates */
 	char			valid;	/* !=0 if following fields are valid */
 	unsigned long		next_update;	/* In jiffies */
@@ -72,8 +76,13 @@ static inline int ad7414_write(struct i2c_client *client, u8 reg, u8 value)
 
 static struct ad7414_data *ad7414_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ad7414_data *data = i2c_get_clientdata(client);
+=======
+	struct ad7414_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&data->lock);
 
@@ -127,8 +136,13 @@ static ssize_t set_max_min(struct device *dev,
 			   struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ad7414_data *data = i2c_get_clientdata(client);
+=======
+	struct ad7414_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int index = to_sensor_dev_attr(attr)->index;
 	u8 reg = AD7414_REG_LIMIT[index];
 	long temp;
@@ -164,7 +178,11 @@ static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
 static SENSOR_DEVICE_ATTR(temp1_min_alarm, S_IRUGO, show_alarm, NULL, 3);
 static SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL, 4);
 
+<<<<<<< HEAD
 static struct attribute *ad7414_attributes[] = {
+=======
+static struct attribute *ad7414_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_max.dev_attr.attr,
 	&sensor_dev_attr_temp1_min.dev_attr.attr,
@@ -173,27 +191,46 @@ static struct attribute *ad7414_attributes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group ad7414_group = {
 	.attrs = ad7414_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(ad7414);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int ad7414_probe(struct i2c_client *client,
 			const struct i2c_device_id *dev_id)
 {
+<<<<<<< HEAD
 	struct ad7414_data *data;
 	int conf;
 	int err;
+=======
+	struct device *dev = &client->dev;
+	struct ad7414_data *data;
+	struct device *hwmon_dev;
+	int conf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA |
 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	data = devm_kzalloc(&client->dev, sizeof(struct ad7414_data),
 			    GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+=======
+	data = devm_kzalloc(dev, sizeof(struct ad7414_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&data->lock);
 
 	dev_info(&client->dev, "chip found\n");
@@ -201,13 +238,18 @@ static int ad7414_probe(struct i2c_client *client,
 	/* Make sure the chip is powered up. */
 	conf = i2c_smbus_read_byte_data(client, AD7414_REG_CONF);
 	if (conf < 0)
+<<<<<<< HEAD
 		dev_warn(&client->dev,
 			 "ad7414_probe unable to read config register.\n");
+=======
+		dev_warn(dev, "ad7414_probe unable to read config register.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else {
 		conf &= ~(1 << 7);
 		i2c_smbus_write_byte_data(client, AD7414_REG_CONF, conf);
 	}
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &ad7414_group);
 	if (err)
@@ -233,6 +275,12 @@ static int ad7414_remove(struct i2c_client *client)
 	hwmon_device_unregister(data->hwmon_dev);
 	sysfs_remove_group(&client->dev.kobj, &ad7414_group);
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev,
+							   client->name,
+							   data, ad7414_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id ad7414_id[] = {
@@ -246,7 +294,10 @@ static struct i2c_driver ad7414_driver = {
 		.name	= "ad7414",
 	},
 	.probe	= ad7414_probe,
+<<<<<<< HEAD
 	.remove	= ad7414_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = ad7414_id,
 };
 

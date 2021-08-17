@@ -51,6 +51,19 @@ struct dma_chan *snd_dmaengine_pcm_request_channel(dma_filter_fn filter_fn,
 	void *filter_data);
 struct dma_chan *snd_dmaengine_pcm_get_chan(struct snd_pcm_substream *substream);
 
+<<<<<<< HEAD
+=======
+/*
+ * The DAI supports packed transfers, eg 2 16-bit samples in a 32-bit word.
+ * If this flag is set the dmaengine driver won't put any restriction on
+ * the supported sample formats and set the DMA transfer size to undefined.
+ * The DAI driver is responsible to disable any unsupported formats in it's
+ * configuration and catch corner cases that are not already handled in
+ * the ALSA core.
+ */
+#define SND_DMAENGINE_PCM_DAI_FLAG_PACK BIT(0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct snd_dmaengine_dai_dma_data - DAI DMA configuration data
  * @addr: Address of the DAI data source or destination register.
@@ -61,6 +74,12 @@ struct dma_chan *snd_dmaengine_pcm_get_chan(struct snd_pcm_substream *substream)
  * @slave_id: Slave requester id for the DMA channel.
  * @filter_data: Custom DMA channel filter data, this will usually be used when
  * requesting the DMA channel.
+<<<<<<< HEAD
+=======
+ * @chan_name: Custom channel name to use when requesting DMA channel.
+ * @fifo_size: FIFO size of the DAI controller in bytes
+ * @flags: PCM_DAI flags, only SND_DMAENGINE_PCM_DAI_FLAG_PACK for now
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct snd_dmaengine_dai_dma_data {
 	dma_addr_t addr;
@@ -68,6 +87,12 @@ struct snd_dmaengine_dai_dma_data {
 	u32 maxburst;
 	unsigned int slave_id;
 	void *filter_data;
+<<<<<<< HEAD
+=======
+	const char *chan_name;
+	unsigned int fifo_size;
+	unsigned int flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void snd_dmaengine_pcm_set_config_from_dai_data(
@@ -87,15 +112,25 @@ void snd_dmaengine_pcm_set_config_from_dai_data(
  */
 #define SND_DMAENGINE_PCM_FLAG_NO_DT BIT(1)
 /*
+<<<<<<< HEAD
  * The platforms dmaengine driver does not support reporting the amount of
  * bytes that are still left to transfer.
  */
 #define SND_DMAENGINE_PCM_FLAG_NO_RESIDUE BIT(2)
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The PCM is half duplex and the DMA channel is shared between capture and
  * playback.
  */
 #define SND_DMAENGINE_PCM_FLAG_HALF_DUPLEX BIT(3)
+<<<<<<< HEAD
+=======
+/*
+ * The PCM streams have custom channel names specified.
+ */
+#define SND_DMAENGINE_PCM_FLAG_CUSTOM_CHANNEL_NAME BIT(4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct snd_dmaengine_pcm_config - Configuration data for dmaengine based PCM
@@ -106,6 +141,13 @@ void snd_dmaengine_pcm_set_config_from_dai_data(
  * @compat_filter_fn: Will be used as the filter function when requesting a
  *  channel for platforms which do not use devicetree. The filter parameter
  *  will be the DAI's DMA data.
+<<<<<<< HEAD
+=======
+ * @dma_dev: If set, request DMA channel on this device rather than the DAI
+ *  device.
+ * @chan_names: If set, these custom DMA channel names will be requested at
+ *  registration time.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @pcm_hardware: snd_pcm_hardware struct to be used for the PCM.
  * @prealloc_buffer_size: Size of the preallocated audio buffer.
  *
@@ -122,6 +164,11 @@ struct snd_dmaengine_pcm_config {
 			struct snd_soc_pcm_runtime *rtd,
 			struct snd_pcm_substream *substream);
 	dma_filter_fn compat_filter_fn;
+<<<<<<< HEAD
+=======
+	struct device *dma_dev;
+	const char *chan_names[SNDRV_PCM_STREAM_LAST + 1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	const struct snd_pcm_hardware *pcm_hardware;
 	unsigned int prealloc_buffer_size;
@@ -132,6 +179,13 @@ int snd_dmaengine_pcm_register(struct device *dev,
 	unsigned int flags);
 void snd_dmaengine_pcm_unregister(struct device *dev);
 
+<<<<<<< HEAD
+=======
+int devm_snd_dmaengine_pcm_register(struct device *dev,
+	const struct snd_dmaengine_pcm_config *config,
+	unsigned int flags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_dmaengine_pcm_prepare_slave_config(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params,
 	struct dma_slave_config *slave_config);

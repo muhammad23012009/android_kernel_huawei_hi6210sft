@@ -1,6 +1,10 @@
 #include <linux/pci.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <arch/hwregs/intr_vect.h>
+=======
+#include <hwregs/intr_vect.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void pcibios_fixup_bus(struct pci_bus *b)
 {

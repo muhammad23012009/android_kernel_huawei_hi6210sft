@@ -25,8 +25,12 @@ struct thread_struct {
  */
 #define TASK_SIZE	(0xB0000000UL)
 
+<<<<<<< HEAD
 /* CCS I=1, enable interrupts. */
 #define INIT_THREAD { 0, 0, (1 << I_CCS_BITNR) }
+=======
+#define INIT_THREAD { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define KSTK_EIP(tsk)		\
 ({				\

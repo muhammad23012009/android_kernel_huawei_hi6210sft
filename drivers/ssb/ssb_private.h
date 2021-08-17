@@ -85,8 +85,11 @@ static inline int ssb_pci_init(struct ssb_bus *bus)
 
 /* pcmcia.c */
 #ifdef CONFIG_SSB_PCMCIAHOST
+<<<<<<< HEAD
 extern int ssb_pcmcia_switch_core(struct ssb_bus *bus,
 				  struct ssb_device *dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int ssb_pcmcia_switch_coreidx(struct ssb_bus *bus,
 				     u8 coreidx);
 extern int ssb_pcmcia_switch_segment(struct ssb_bus *bus,
@@ -96,6 +99,7 @@ extern int ssb_pcmcia_get_invariants(struct ssb_bus *bus,
 extern int ssb_pcmcia_hardware_setup(struct ssb_bus *bus);
 extern void ssb_pcmcia_exit(struct ssb_bus *bus);
 extern int ssb_pcmcia_init(struct ssb_bus *bus);
+<<<<<<< HEAD
 extern const struct ssb_bus_ops ssb_pcmcia_ops;
 #else /* CONFIG_SSB_PCMCIAHOST */
 static inline int ssb_pcmcia_switch_core(struct ssb_bus *bus,
@@ -103,6 +107,12 @@ static inline int ssb_pcmcia_switch_core(struct ssb_bus *bus,
 {
 	return 0;
 }
+=======
+extern int ssb_host_pcmcia_init(void);
+extern void ssb_host_pcmcia_exit(void);
+extern const struct ssb_bus_ops ssb_pcmcia_ops;
+#else /* CONFIG_SSB_PCMCIAHOST */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int ssb_pcmcia_switch_coreidx(struct ssb_bus *bus,
 					    u8 coreidx)
 {
@@ -124,6 +134,16 @@ static inline int ssb_pcmcia_init(struct ssb_bus *bus)
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+static inline int ssb_host_pcmcia_init(void)
+{
+	return 0;
+}
+static inline void ssb_host_pcmcia_exit(void)
+{
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
 /* sdio.c */
@@ -132,9 +152,13 @@ extern int ssb_sdio_get_invariants(struct ssb_bus *bus,
 				     struct ssb_init_invariants *iv);
 
 extern u32 ssb_sdio_scan_read32(struct ssb_bus *bus, u16 offset);
+<<<<<<< HEAD
 extern int ssb_sdio_switch_core(struct ssb_bus *bus, struct ssb_device *dev);
 extern int ssb_sdio_scan_switch_coreidx(struct ssb_bus *bus, u8 coreidx);
 extern int ssb_sdio_hardware_setup(struct ssb_bus *bus);
+=======
+extern int ssb_sdio_scan_switch_coreidx(struct ssb_bus *bus, u8 coreidx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void ssb_sdio_exit(struct ssb_bus *bus);
 extern int ssb_sdio_init(struct ssb_bus *bus);
 
@@ -144,19 +168,25 @@ static inline u32 ssb_sdio_scan_read32(struct ssb_bus *bus, u16 offset)
 {
 	return 0;
 }
+<<<<<<< HEAD
 static inline int ssb_sdio_switch_core(struct ssb_bus *bus,
 					 struct ssb_device *dev)
 {
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int ssb_sdio_scan_switch_coreidx(struct ssb_bus *bus, u8 coreidx)
 {
 	return 0;
 }
+<<<<<<< HEAD
 static inline int ssb_sdio_hardware_setup(struct ssb_bus *bus)
 {
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void ssb_sdio_exit(struct ssb_bus *bus)
 {
 }
@@ -166,6 +196,19 @@ static inline int ssb_sdio_init(struct ssb_bus *bus)
 }
 #endif /* CONFIG_SSB_SDIOHOST */
 
+<<<<<<< HEAD
+=======
+/**************************************************
+ * host_soc.c
+ **************************************************/
+
+#ifdef CONFIG_SSB_HOST_SOC
+extern const struct ssb_bus_ops ssb_host_soc_ops;
+
+extern int ssb_host_soc_get_invariants(struct ssb_bus *bus,
+				       struct ssb_init_invariants *iv);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* scan.c */
 extern const char *ssb_core_name(u16 coreid);
@@ -243,6 +286,13 @@ static inline int ssb_sflash_init(struct ssb_chipcommon *cc)
 extern struct platform_device ssb_pflash_dev;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SSB_SFLASH
+extern struct platform_device ssb_sflash_dev;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SSB_DRIVER_EXTIF
 extern u32 ssb_extif_watchdog_timer_set_wdt(struct bcm47xx_wdt *wdt, u32 ticks);
 extern u32 ssb_extif_watchdog_timer_set_ms(struct bcm47xx_wdt *wdt, u32 ms);

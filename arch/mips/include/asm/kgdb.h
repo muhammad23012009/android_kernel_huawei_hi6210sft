@@ -33,7 +33,10 @@
 #define CACHE_FLUSH_IS_SAFE	0
 
 extern void arch_kgdb_breakpoint(void);
+<<<<<<< HEAD
 extern int kgdb_early_setup;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void *saved_vectors[32];
 extern void handle_exception(struct pt_regs *regs);
 extern void breakinst(void);

@@ -14,16 +14,27 @@
 #include <linux/cpuidle.h>
 #include <linux/cpu_pm.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/clockchips.h>
 
 #include <asm/cpuidle.h>
 #include <asm/proc-fns.h>
+=======
+#include <linux/tick.h>
+
+#include <asm/cpuidle.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 #include "pm.h"
 #include "prm.h"
 #include "clockdomain.h"
 
+<<<<<<< HEAD
+=======
+#define MAX_CPUS	2
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Machine specific information */
 struct idle_statedata {
 	u32 cpu_state;
@@ -49,11 +60,19 @@ static struct idle_statedata omap4_idle_data[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct powerdomain *mpu_pd, *cpu_pd[NR_CPUS];
 static struct clockdomain *cpu_clkdm[NR_CPUS];
 
 static atomic_t abort_barrier;
 static bool cpu_done[NR_CPUS];
+=======
+static struct powerdomain *mpu_pd, *cpu_pd[MAX_CPUS];
+static struct clockdomain *cpu_clkdm[MAX_CPUS];
+
+static atomic_t abort_barrier;
+static bool cpu_done[MAX_CPUS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct idle_statedata *state_ptr = &omap4_idle_data[0];
 
 /* Private functions */
@@ -81,7 +100,11 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 			int index)
 {
 	struct idle_statedata *cx = state_ptr + index;
+<<<<<<< HEAD
 	int cpu_id = smp_processor_id();
+=======
+	u32 mpuss_can_lose_context = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * CPU0 has to wait and stay ON until CPU1 is OFF state.
@@ -106,7 +129,14 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_ENTER, &cpu_id);
+=======
+	mpuss_can_lose_context = (cx->mpu_state == PWRDM_POWER_RET) &&
+				 (cx->mpu_logic_state == PWRDM_POWER_OFF);
+
+	tick_broadcast_enter();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Call idle CPU PM enter notifier chain so that
@@ -122,9 +152,14 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 		 * Call idle CPU cluster PM enter notifier chain
 		 * to save GIC and wakeupgen context.
 		 */
+<<<<<<< HEAD
 		if ((cx->mpu_state == PWRDM_POWER_RET) &&
 			(cx->mpu_logic_state == PWRDM_POWER_OFF))
 				cpu_cluster_pm_enter();
+=======
+		if (mpuss_can_lose_context)
+			cpu_cluster_pm_enter();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	omap4_enter_lowpower(dev->cpu, cx->cpu_state);
@@ -132,9 +167,29 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 
 	/* Wakeup CPU1 only if it is not offlined */
 	if (dev->cpu == 0 && cpumask_test_cpu(1, cpu_online_mask)) {
+<<<<<<< HEAD
 		clkdm_wakeup(cpu_clkdm[1]);
 		omap_set_pwrdm_state(cpu_pd[1], PWRDM_POWER_ON);
 		clkdm_allow_idle(cpu_clkdm[1]);
+=======
+
+		if (IS_PM44XX_ERRATUM(PM_OMAP4_ROM_SMP_BOOT_ERRATUM_GICD) &&
+		    mpuss_can_lose_context)
+			gic_dist_disable();
+
+		clkdm_deny_idle(cpu_clkdm[1]);
+		omap_set_pwrdm_state(cpu_pd[1], PWRDM_POWER_ON);
+		clkdm_allow_idle(cpu_clkdm[1]);
+
+		if (IS_PM44XX_ERRATUM(PM_OMAP4_ROM_SMP_BOOT_ERRATUM_GICD) &&
+		    mpuss_can_lose_context) {
+			while (gic_dist_disabled()) {
+				udelay(1);
+				cpu_relax();
+			}
+			gic_timer_retrigger();
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -147,11 +202,18 @@ static int omap_enter_idle_coupled(struct cpuidle_device *dev,
 	 * Call idle CPU cluster PM exit notifier chain
 	 * to restore GIC and wakeupgen context.
 	 */
+<<<<<<< HEAD
 	if ((cx->mpu_state == PWRDM_POWER_RET) &&
 		(cx->mpu_logic_state == PWRDM_POWER_OFF))
 		cpu_cluster_pm_exit();
 
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_EXIT, &cpu_id);
+=======
+	if (dev->cpu == 0 && mpuss_can_lose_context)
+		cpu_cluster_pm_exit();
+
+	tick_broadcast_exit();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 fail:
 	cpuidle_coupled_parallel_barrier(dev, &abort_barrier);
@@ -166,8 +228,12 @@ fail:
  */
 static void omap_setup_broadcast_timer(void *arg)
 {
+<<<<<<< HEAD
 	int cpu = smp_processor_id();
 	clockevents_notify(CLOCK_EVT_NOTIFY_BROADCAST_ON, &cpu);
+=======
+	tick_broadcast_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct cpuidle_driver omap4_idle_driver = {
@@ -178,7 +244,10 @@ static struct cpuidle_driver omap4_idle_driver = {
 			/* C1 - CPU0 ON + CPU1 ON + MPU ON */
 			.exit_latency = 2 + 2,
 			.target_residency = 5,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.enter = omap_enter_idle_simple,
 			.name = "C1",
 			.desc = "CPUx ON, MPUSS ON"
@@ -187,7 +256,11 @@ static struct cpuidle_driver omap4_idle_driver = {
 			/* C2 - CPU0 OFF + CPU1 OFF + MPU CSWR */
 			.exit_latency = 328 + 440,
 			.target_residency = 960,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID | CPUIDLE_FLAG_COUPLED,
+=======
+			.flags = CPUIDLE_FLAG_COUPLED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.enter = omap_enter_idle_coupled,
 			.name = "C2",
 			.desc = "CPUx OFF, MPUSS CSWR",
@@ -196,7 +269,11 @@ static struct cpuidle_driver omap4_idle_driver = {
 			/* C3 - CPU0 OFF + CPU1 OFF + MPU OSWR */
 			.exit_latency = 460 + 518,
 			.target_residency = 1100,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID | CPUIDLE_FLAG_COUPLED,
+=======
+			.flags = CPUIDLE_FLAG_COUPLED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.enter = omap_enter_idle_coupled,
 			.name = "C3",
 			.desc = "CPUx OFF, MPUSS OSWR",

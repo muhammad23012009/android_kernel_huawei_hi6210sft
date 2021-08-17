@@ -10,8 +10,15 @@
  */
 static inline void ext4_truncate_failed_write(struct inode *inode)
 {
+<<<<<<< HEAD
 	truncate_inode_pages(inode->i_mapping, inode->i_size);
 	ext4_truncate(inode);
+=======
+	down_write(&EXT4_I(inode)->i_mmap_sem);
+	truncate_inode_pages(inode->i_mapping, inode->i_size);
+	ext4_truncate(inode);
+	up_write(&EXT4_I(inode)->i_mmap_sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

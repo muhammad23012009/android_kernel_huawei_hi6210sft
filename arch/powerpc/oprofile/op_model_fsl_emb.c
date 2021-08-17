@@ -14,7 +14,10 @@
  */
 
 #include <linux/oprofile.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/smp.h>
 #include <asm/ptrace.h>
 #include <asm/processor.h>
@@ -46,6 +49,15 @@ static inline u32 get_pmlca(int ctr)
 		case 3:
 			pmlca = mfpmr(PMRN_PMLCA3);
 			break;
+<<<<<<< HEAD
+=======
+		case 4:
+			pmlca = mfpmr(PMRN_PMLCA4);
+			break;
+		case 5:
+			pmlca = mfpmr(PMRN_PMLCA5);
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			panic("Bad ctr number\n");
 	}
@@ -68,6 +80,15 @@ static inline void set_pmlca(int ctr, u32 pmlca)
 		case 3:
 			mtpmr(PMRN_PMLCA3, pmlca);
 			break;
+<<<<<<< HEAD
+=======
+		case 4:
+			mtpmr(PMRN_PMLCA4, pmlca);
+			break;
+		case 5:
+			mtpmr(PMRN_PMLCA5, pmlca);
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			panic("Bad ctr number\n");
 	}
@@ -84,6 +105,13 @@ static inline unsigned int ctr_read(unsigned int i)
 			return mfpmr(PMRN_PMC2);
 		case 3:
 			return mfpmr(PMRN_PMC3);
+<<<<<<< HEAD
+=======
+		case 4:
+			return mfpmr(PMRN_PMC4);
+		case 5:
+			return mfpmr(PMRN_PMC5);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			return 0;
 	}
@@ -104,6 +132,15 @@ static inline void ctr_write(unsigned int i, unsigned int val)
 		case 3:
 			mtpmr(PMRN_PMC3, val);
 			break;
+<<<<<<< HEAD
+=======
+		case 4:
+			mtpmr(PMRN_PMC4, val);
+			break;
+		case 5:
+			mtpmr(PMRN_PMC5, val);
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			break;
 	}
@@ -133,6 +170,17 @@ static void init_pmc_stop(int ctr)
 			mtpmr(PMRN_PMLCA3, pmlca);
 			mtpmr(PMRN_PMLCB3, pmlcb);
 			break;
+<<<<<<< HEAD
+=======
+		case 4:
+			mtpmr(PMRN_PMLCA4, pmlca);
+			mtpmr(PMRN_PMLCB4, pmlcb);
+			break;
+		case 5:
+			mtpmr(PMRN_PMLCA5, pmlca);
+			mtpmr(PMRN_PMLCB5, pmlcb);
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			panic("Bad ctr number!\n");
 	}

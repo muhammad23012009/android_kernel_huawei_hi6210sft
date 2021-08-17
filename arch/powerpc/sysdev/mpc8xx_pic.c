@@ -1,6 +1,9 @@
 #include <linux/kernel.h>
 #include <linux/stddef.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <linux/signal.h>
 #include <linux/irq.h>
@@ -56,13 +59,21 @@ static int mpc8xx_set_irq_type(struct irq_data *d, unsigned int flow_type)
 		unsigned int siel = in_be32(&siu_reg->sc_siel);
 		siel |= mpc8xx_irqd_to_bit(d);
 		out_be32(&siu_reg->sc_siel, siel);
+<<<<<<< HEAD
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
+=======
+		irq_set_handler_locked(d, handle_edge_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
 static struct irq_chip mpc8xx_pic = {
+<<<<<<< HEAD
 	.name = "MPC8XX SIU",
+=======
+	.name = "8XX SIU",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.irq_unmask = mpc8xx_unmask_irq,
 	.irq_mask = mpc8xx_mask_irq,
 	.irq_ack = mpc8xx_ack,
@@ -80,7 +91,11 @@ unsigned int mpc8xx_get_irq(void)
 	irq = in_be32(&siu_reg->sc_sivec) >> 26;
 
 	if (irq == PIC_VEC_SPURRIOUS)
+<<<<<<< HEAD
 		irq = NO_IRQ;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
         return irq_linear_revmap(mpc8xx_pic_host, irq);
 
@@ -121,7 +136,11 @@ static int mpc8xx_pic_host_xlate(struct irq_domain *h, struct device_node *ct,
 }
 
 
+<<<<<<< HEAD
 static struct irq_domain_ops mpc8xx_pic_host_ops = {
+=======
+static const struct irq_domain_ops mpc8xx_pic_host_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map = mpc8xx_pic_host_map,
 	.xlate = mpc8xx_pic_host_xlate,
 };

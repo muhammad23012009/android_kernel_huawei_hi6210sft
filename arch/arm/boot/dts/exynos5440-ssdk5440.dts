@@ -10,6 +10,7 @@
 */
 
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "exynos5440.dtsi"
 
 / {
@@ -22,6 +23,23 @@
 
 	spi {
 		status = "disabled";
+=======
+#include "exynos5440.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	model = "SAMSUNG SSDK5440 board based on EXYNOS5440";
+	compatible = "samsung,ssdk5440", "samsung,exynos5440", "samsung,exynos5";
+
+	chosen {
+		bootargs = "root=/dev/sda2 rw rootwait ignore_loglevel earlyprintk no_console_suspend mem=2048M@0x80000000 mem=6144M@0x100000000 console=ttySAC0,115200";
+	};
+
+	/* FIXME: set reg property with correct start address and size */
+	memory@0 {
+		device_type = "memory";
+		reg = <0 0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	fixed-rate-clocks {
@@ -31,3 +49,54 @@
 		};
 	};
 };
+<<<<<<< HEAD
+=======
+
+&pcie_0 {
+	reset-gpio = <&pin_ctrl 5 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&pcie_1 {
+	reset-gpio = <&pin_ctrl 22 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
+&spi_0 {
+	flash: w25q128@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "winbond,w25q128";
+		spi-max-frequency = <15625000>;
+		reg = <0>;
+		controller-data {
+			samsung,spi-feedback-delay = <0>;
+		};
+
+		partition@00000 {
+			label = "BootLoader";
+			reg = <0x60000 0x80000>;
+			read-only;
+		};
+
+		partition@e0000 {
+			label = "Recovery-Kernel";
+			reg = <0xe0000 0x300000>;
+			read-only;
+		};
+
+		partition@3e0000 {
+			label = "CRAM-FS";
+			reg = <0x3e0000 0x700000>;
+			read-only;
+		};
+
+		partition@ae0000 {
+			label = "User-Data";
+			reg = <0xae0000 0x520000>;
+		};
+
+	};
+
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -67,8 +67,12 @@ static int write_modem(struct cardstate *cs)
 	struct sk_buff *skb = bcs->tx_skb;
 	int sent = -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (!tty || !tty->driver || !skb)
 		return -EINVAL;
+=======
+	WARN_ON(!tty || !tty->ops || !skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!skb->len) {
 		dev_kfree_skb_any(skb);
@@ -109,8 +113,12 @@ static int send_cb(struct cardstate *cs)
 	unsigned long flags;
 	int sent = 0;
 
+<<<<<<< HEAD
 	if (!tty || !tty->driver)
 		return -EFAULT;
+=======
+	WARN_ON(!tty || !tty->ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cb = cs->cmdbuf;
 	if (!cb)
@@ -370,19 +378,27 @@ static void gigaset_freecshw(struct cardstate *cs)
 	tasklet_kill(&cs->write_tasklet);
 	if (!cs->hw.ser)
 		return;
+<<<<<<< HEAD
 	dev_set_drvdata(&cs->hw.ser->dev.dev, NULL);
 	platform_device_unregister(&cs->hw.ser->dev);
 	kfree(cs->hw.ser);
 	cs->hw.ser = NULL;
+=======
+	platform_device_unregister(&cs->hw.ser->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void gigaset_device_release(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 
 	/* adapted from platform_device_release() in drivers/base/platform.c */
 	kfree(dev->platform_data);
 	kfree(pdev->resource);
+=======
+	kfree(container_of(dev, struct ser_cardstate, dev.dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -411,7 +427,10 @@ static int gigaset_initcshw(struct cardstate *cs)
 		cs->hw.ser = NULL;
 		return rc;
 	}
+<<<<<<< HEAD
 	dev_set_drvdata(&cs->hw.ser->dev.dev, cs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tasklet_init(&cs->write_tasklet,
 		     gigaset_modem_fill, (unsigned long) cs);
@@ -432,7 +451,13 @@ static int gigaset_set_modem_ctrl(struct cardstate *cs, unsigned old_state,
 	struct tty_struct *tty = cs->hw.ser->tty;
 	unsigned int set, clear;
 
+<<<<<<< HEAD
 	if (!tty || !tty->driver || !tty->ops->tiocmset)
+=======
+	WARN_ON(!tty || !tty->ops);
+	/* tiocmset is an optional tty driver method */
+	if (!tty->ops->tiocmset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	set = new_state & ~old_state;
 	clear = old_state & ~new_state;
@@ -607,6 +632,7 @@ static int gigaset_tty_hangup(struct tty_struct *tty)
 }
 
 /*
+<<<<<<< HEAD
  * Read on the tty.
  * Unused, received data goes only to the Gigaset driver.
  */
@@ -629,6 +655,8 @@ gigaset_tty_write(struct tty_struct *tty, struct file *file,
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Ioctl on the tty.
  * Called in process context only.
  * May be re-entered by multiple ioctl calling threads.
@@ -761,8 +789,11 @@ static struct tty_ldisc_ops gigaset_ldisc = {
 	.open		= gigaset_tty_open,
 	.close		= gigaset_tty_close,
 	.hangup		= gigaset_tty_hangup,
+<<<<<<< HEAD
 	.read		= gigaset_tty_read,
 	.write		= gigaset_tty_write,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ioctl		= gigaset_tty_ioctl,
 	.receive_buf	= gigaset_tty_receive,
 	.write_wakeup	= gigaset_tty_wakeup,

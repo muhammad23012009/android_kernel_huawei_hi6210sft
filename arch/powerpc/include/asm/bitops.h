@@ -14,9 +14,15 @@
  *
  * The bitop functions are defined to work on unsigned longs, so for a
  * ppc64 system the bits end up numbered:
+<<<<<<< HEAD
  *   |63..............0|127............64|191...........128|255...........196|
  * and on ppc32:
  *   |31.....0|63....31|95....64|127...96|159..128|191..160|223..192|255..224|
+=======
+ *   |63..............0|127............64|191...........128|255...........192|
+ * and on ppc32:
+ *   |31.....0|63....32|95....64|127...96|159..128|191..160|223..192|255..224|
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * There are a few little-endian macros used mostly for filesystem
  * bitmaps, these work on similar bit arrays layouts, but
@@ -46,11 +52,20 @@
 #include <asm/asm-compat.h>
 #include <asm/synch.h>
 
+<<<<<<< HEAD
 /*
  * clear_bit doesn't imply a memory barrier
  */
 #define smp_mb__before_clear_bit()	smp_mb()
 #define smp_mb__after_clear_bit()	smp_mb()
+=======
+/* PPC bit number conversion */
+#define PPC_BITLSHIFT(be)	(BITS_PER_LONG - 1 - (be))
+#define PPC_BIT(bit)		(1UL << PPC_BITLSHIFT(bit))
+#define PPC_BITMASK(bs, be)	((PPC_BIT(bs) - PPC_BIT(be)) | PPC_BIT(bs))
+
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Macro for generating the ***_bits() functions */
 #define DEFINE_BITOP(fn, op, prefix)		\
@@ -212,7 +227,11 @@ static __inline__ unsigned long ffz(unsigned long x)
 	return __ilog2(x & -x);
 }
 
+<<<<<<< HEAD
 static __inline__ int __ffs(unsigned long x)
+=======
+static __inline__ unsigned long __ffs(unsigned long x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return __ilog2(x & -x);
 }

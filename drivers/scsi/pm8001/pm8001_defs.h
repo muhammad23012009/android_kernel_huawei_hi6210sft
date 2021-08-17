@@ -46,13 +46,27 @@ enum chip_flavors {
 	chip_8008,
 	chip_8009,
 	chip_8018,
+<<<<<<< HEAD
 	chip_8019
+=======
+	chip_8019,
+	chip_8074,
+	chip_8076,
+	chip_8077,
+	chip_8006,
+	chip_8070,
+	chip_8072
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum phy_speed {
 	PHY_SPEED_15 = 0x01,
 	PHY_SPEED_30 = 0x02,
 	PHY_SPEED_60 = 0x04,
+<<<<<<< HEAD
+=======
+	PHY_SPEED_120 = 0x08,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum data_direction {
@@ -99,7 +113,12 @@ enum memory_region_num {
 	NVMD,	    /* NVM device */
 	DEV_MEM,    /* memory for devices */
 	CCB_MEM,    /* memory for command control block */
+<<<<<<< HEAD
 	FW_FLASH    /* memory for fw flash update */
+=======
+	FW_FLASH,    /* memory for fw flash update */
+	FORENSIC_MEM  /* memory for fw forensic data */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #define	PM8001_EVENT_LOG_SIZE	 (128 * 1024)
 

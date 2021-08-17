@@ -201,6 +201,7 @@ static int lpc32xx_rtc_probe(struct platform_device *pdev)
 {
 	struct resource *res;
 	struct lpc32xx_rtc *rtc;
+<<<<<<< HEAD
 	resource_size_t size;
 	int rtcirq;
 	u32 tmp;
@@ -213,11 +214,19 @@ static int lpc32xx_rtc_probe(struct platform_device *pdev)
 
 	rtcirq = platform_get_irq(pdev, 0);
 	if (rtcirq < 0 || rtcirq >= NR_IRQS) {
+=======
+	int rtcirq;
+	u32 tmp;
+
+	rtcirq = platform_get_irq(pdev, 0);
+	if (rtcirq < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_warn(&pdev->dev, "Can't get interrupt resource\n");
 		rtcirq = -1;
 	}
 
 	rtc = devm_kzalloc(&pdev->dev, sizeof(*rtc), GFP_KERNEL);
+<<<<<<< HEAD
 	if (unlikely(!rtc)) {
 		dev_err(&pdev->dev, "Can't allocate memory\n");
 		return -ENOMEM;
@@ -237,6 +246,17 @@ static int lpc32xx_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Can't map memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (unlikely(!rtc))
+		return -ENOMEM;
+
+	rtc->irq = rtcirq;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	rtc->rtc_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(rtc->rtc_base))
+		return PTR_ERR(rtc->rtc_base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&rtc->lock);
 
@@ -277,7 +297,10 @@ static int lpc32xx_rtc_probe(struct platform_device *pdev)
 					&lpc32xx_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc->rtc)) {
 		dev_err(&pdev->dev, "Can't get RTC\n");
+<<<<<<< HEAD
 		platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return PTR_ERR(rtc->rtc);
 	}
 
@@ -306,8 +329,11 @@ static int lpc32xx_rtc_remove(struct platform_device *pdev)
 	if (rtc->irq >= 0)
 		device_init_wakeup(&pdev->dev, 0);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -399,7 +425,10 @@ static struct platform_driver lpc32xx_rtc_driver = {
 	.remove		= lpc32xx_rtc_remove,
 	.driver = {
 		.name	= RTC_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= LPC32XX_RTC_PM_OPS,
 		.of_match_table = of_match_ptr(lpc32xx_rtc_match),
 	},

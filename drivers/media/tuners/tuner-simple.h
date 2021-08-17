@@ -20,7 +20,11 @@
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_SIMPLE)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_SIMPLE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *simple_tuner_attach(struct dvb_frontend *fe,
 						struct i2c_adapter *i2c_adap,
 						u8 i2c_addr,

@@ -150,7 +150,11 @@ static int user_atoi(char __user *ubuf, size_t len)
 /*
  * Send us to sleep.
  */
+<<<<<<< HEAD
 static int sysctl_pm_do_suspend(ctl_table *ctl, int write,
+=======
+static int sysctl_pm_do_suspend(struct ctl_table *ctl, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				void __user *buffer, size_t *lenp, loff_t *fpos)
 {
 	int mode;
@@ -197,7 +201,11 @@ static int try_set_cmode(int new_cmode)
 }
 
 
+<<<<<<< HEAD
 static int cmode_procctl(ctl_table *ctl, int write,
+=======
+static int cmode_procctl(struct ctl_table *ctl, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 void __user *buffer, size_t *lenp, loff_t *fpos)
 {
 	int new_cmode;
@@ -269,7 +277,11 @@ static int try_set_cm(int new_cm)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int p0_procctl(ctl_table *ctl, int write,
+=======
+static int p0_procctl(struct ctl_table *ctl, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      void __user *buffer, size_t *lenp, loff_t *fpos)
 {
 	int new_p0;
@@ -282,7 +294,11 @@ static int p0_procctl(ctl_table *ctl, int write,
 	return try_set_p0(new_p0)?:*lenp;
 }
 
+<<<<<<< HEAD
 static int cm_procctl(ctl_table *ctl, int write,
+=======
+static int cm_procctl(struct ctl_table *ctl, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      void __user *buffer, size_t *lenp, loff_t *fpos)
 {
 	int new_cm;

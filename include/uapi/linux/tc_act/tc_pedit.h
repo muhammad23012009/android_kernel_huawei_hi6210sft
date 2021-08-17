@@ -10,6 +10,10 @@ enum {
 	TCA_PEDIT_UNSPEC,
 	TCA_PEDIT_TM,
 	TCA_PEDIT_PARMS,
+<<<<<<< HEAD
+=======
+	TCA_PEDIT_PAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__TCA_PEDIT_MAX
 };
 #define TCA_PEDIT_MAX (__TCA_PEDIT_MAX - 1)

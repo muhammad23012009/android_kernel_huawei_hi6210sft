@@ -206,10 +206,13 @@ module_param(ips, charp, 0);
 #define IPS_VERSION_HIGH        IPS_VER_MAJOR_STRING "." IPS_VER_MINOR_STRING
 #define IPS_VERSION_LOW         "." IPS_VER_BUILD_STRING " "
 
+<<<<<<< HEAD
 #if !defined(__i386__) && !defined(__ia64__) && !defined(__x86_64__)
 #warning "This driver has only been tested on the x86/ia64/x86_64 platforms"
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IPS_DMA_DIR(scb) ((!scb->scsi_cmd || ips_is_passthru(scb->scsi_cmd) || \
                          DMA_NONE == scb->scsi_cmd->sc_data_direction) ? \
                          PCI_DMA_BIDIRECTIONAL : \
@@ -528,7 +531,11 @@ ips_setup(char *ips_str)
 		 * Update the variables
 		 */
 		for (i = 0; i < ARRAY_SIZE(options); i++) {
+<<<<<<< HEAD
 			if (strnicmp
+=======
+			if (strncasecmp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    (key, options[i].option_name,
 			     strlen(options[i].option_name)) == 0) {
 				if (value)
@@ -1210,7 +1217,11 @@ ips_slave_configure(struct scsi_device * SDptr)
 		min = ha->max_cmds / 2;
 		if (ha->enq->ucLogDriveCount <= 2)
 			min = ha->max_cmds - 1;
+<<<<<<< HEAD
 		scsi_adjust_queue_depth(SDptr, MSG_ORDERED_TAG, min);
+=======
+		scsi_change_queue_depth(SDptr, min);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	SDptr->skip_ms_page_8 = 1;
@@ -2038,15 +2049,23 @@ ips_host_info(ips_ha_t *ha, struct seq_file *m)
 {
 	METHOD_TRACE("ips_host_info", 1);
 
+<<<<<<< HEAD
 	seq_printf(m, "\nIBM ServeRAID General Information:\n\n");
+=======
+	seq_puts(m, "\nIBM ServeRAID General Information:\n\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((le32_to_cpu(ha->nvram->signature) == IPS_NVRAM_P5_SIG) &&
 	    (le16_to_cpu(ha->nvram->adapter_type) != 0))
 		seq_printf(m, "\tController Type                   : %s\n",
 			  ips_adapter_name[ha->ad_type - 1]);
 	else
+<<<<<<< HEAD
 		seq_printf(m,
 			  "\tController Type                   : Unknown\n");
+=======
+		seq_puts(m, "\tController Type                   : Unknown\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ha->io_addr)
 		seq_printf(m,
@@ -2138,7 +2157,11 @@ ips_host_info(ips_ha_t *ha, struct seq_file *m)
 	seq_printf(m, "\tCurrent Active PT Commands        : %d\n",
 		  ha->num_ioctl);
 
+<<<<<<< HEAD
 	seq_printf(m, "\n");
+=======
+	seq_putc(m, '\n');
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -3505,6 +3528,10 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 
 		case START_STOP:
 			scb->scsi_cmd->result = DID_OK << 16;
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		case TEST_UNIT_READY:
 		case INQUIRY:
@@ -6789,6 +6816,14 @@ ips_remove_device(struct pci_dev *pci_dev)
 static int __init
 ips_module_init(void)
 {
+<<<<<<< HEAD
+=======
+#if !defined(__i386__) && !defined(__ia64__) && !defined(__x86_64__)
+	printk(KERN_ERR "ips: This driver has only been tested on the x86/ia64/x86_64 platforms\n");
+	add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pci_register_driver(&ips_pci_driver) < 0)
 		return -ENODEV;
 	ips_driver_template.module = THIS_MODULE;

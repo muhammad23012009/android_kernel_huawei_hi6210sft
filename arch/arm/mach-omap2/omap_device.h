@@ -29,6 +29,10 @@
 #include "omap_hwmod.h"
 
 extern struct dev_pm_domain omap_device_pm_domain;
+<<<<<<< HEAD
+=======
+extern struct dev_pm_domain omap_device_fail_pm_domain;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* omap_device._state values */
 #define OMAP_DEVICE_STATE_UNKNOWN	0
@@ -38,7 +42,10 @@ extern struct dev_pm_domain omap_device_pm_domain;
 
 /* omap_device.flags values */
 #define OMAP_DEVICE_SUSPENDED		BIT(0)
+<<<<<<< HEAD
 #define OMAP_DEVICE_NO_IDLE_ON_SUSPEND	BIT(1)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct omap_device - omap_device wrapper for platform_devices
@@ -101,6 +108,7 @@ static inline struct omap_device *to_omap_device(struct platform_device *pdev)
 {
 	return pdev ? pdev->archdata.od : NULL;
 }
+<<<<<<< HEAD
 
 static inline
 void omap_device_disable_idle_on_suspend(struct platform_device *pdev)
@@ -110,4 +118,6 @@ void omap_device_disable_idle_on_suspend(struct platform_device *pdev)
 	od->flags |= OMAP_DEVICE_NO_IDLE_ON_SUSPEND;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

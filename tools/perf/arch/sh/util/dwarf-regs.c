@@ -51,5 +51,9 @@ const char *sh_regs_table[SH_MAX_REGS] = {
 /* Return architecture dependent register string (for kprobe-tracer) */
 const char *get_arch_regstr(unsigned int n)
 {
+<<<<<<< HEAD
 	return (n <= SH_MAX_REGS) ? sh_regs_table[n] : NULL;
+=======
+	return (n < SH_MAX_REGS) ? sh_regs_table[n] : NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

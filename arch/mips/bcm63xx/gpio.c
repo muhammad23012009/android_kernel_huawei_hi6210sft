@@ -11,13 +11,18 @@
 #include <linux/module.h>
 #include <linux/spinlock.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <bcm63xx_cpu.h>
 #include <bcm63xx_gpio.h>
 #include <bcm63xx_io.h>
 #include <bcm63xx_regs.h>
 
+<<<<<<< HEAD
 #ifndef BCMCPU_RUNTIME_DETECT
 #define gpio_out_low_reg	GPIO_DATA_LO_REG
 #ifdef CONFIG_BCM63XX_CPU_6345
@@ -31,6 +36,8 @@ static inline void bcm63xx_gpio_out_low_reg_init(void)
 {
 }
 #else /* ! BCMCPU_RUNTIME_DETECT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u32 gpio_out_low_reg;
 
 static void bcm63xx_gpio_out_low_reg_init(void)
@@ -44,7 +51,10 @@ static void bcm63xx_gpio_out_low_reg_init(void)
 		break;
 	}
 }
+<<<<<<< HEAD
 #endif /* ! BCMCPU_RUNTIME_DETECT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_SPINLOCK(bcm63xx_gpio_lock);
 static u32 gpio_out_low, gpio_out_high;
@@ -161,5 +171,9 @@ int __init bcm63xx_gpio_init(void)
 	bcm63xx_gpio_chip.ngpio = bcm63xx_gpio_count();
 	pr_info("registering %d GPIOs\n", bcm63xx_gpio_chip.ngpio);
 
+<<<<<<< HEAD
 	return gpiochip_add(&bcm63xx_gpio_chip);
+=======
+	return gpiochip_add_data(&bcm63xx_gpio_chip, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

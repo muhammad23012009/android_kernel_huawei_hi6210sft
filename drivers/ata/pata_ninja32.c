@@ -37,7 +37,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -123,10 +126,17 @@ static int ninja32_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		return rc;
 
 	host->iomap = pcim_iomap_table(dev);
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(dev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(dev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask(&dev->dev, ATA_DMA_MASK);
+	if (rc)
+		return rc;
+	rc = dma_set_coherent_mask(&dev->dev, ATA_DMA_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc)
 		return rc;
 	pci_set_master(dev);
@@ -145,7 +155,11 @@ static int ninja32_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	ap->ioaddr.altstatus_addr = base + 0x1E;
 	ap->ioaddr.bmdma_addr = base;
 	ata_sff_std_ports(&ap->ioaddr);
+<<<<<<< HEAD
 	ap->pflags = ATA_PFLAG_PIO32 | ATA_PFLAG_PIO32CHANGE;
+=======
+	ap->pflags |= ATA_PFLAG_PIO32 | ATA_PFLAG_PIO32CHANGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ninja32_program(base);
 	/* FIXME: Should we disable them at remove ? */
@@ -153,11 +167,18 @@ static int ninja32_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 				 IRQF_SHARED, &ninja32_sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int ninja32_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int ninja32_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -184,7 +205,11 @@ static struct pci_driver ninja32_pci_driver = {
 	.id_table	= ninja32,
 	.probe 		= ninja32_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ninja32_reinit_one,
 #endif

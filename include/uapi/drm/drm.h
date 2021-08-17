@@ -36,7 +36,17 @@
 #ifndef _DRM_H_
 #define _DRM_H_
 
+<<<<<<< HEAD
 #if defined(__KERNEL__) || defined(__linux__)
+=======
+#if defined(__KERNEL__)
+
+#include <linux/types.h>
+#include <asm/ioctl.h>
+typedef unsigned int drm_handle_t;
+
+#elif defined(__linux__)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/types.h>
 #include <asm/ioctl.h>
@@ -54,10 +64,21 @@ typedef int32_t  __s32;
 typedef uint32_t __u32;
 typedef int64_t  __s64;
 typedef uint64_t __u64;
+<<<<<<< HEAD
+=======
+typedef size_t   __kernel_size_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef unsigned long drm_handle_t;
 
 #endif
 
+<<<<<<< HEAD
+=======
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DRM_NAME	"drm"	  /**< Name in kernel, /dev, and /proc */
 #define DRM_MIN_ORDER	5	  /**< At least 2^5 bytes = 32 bytes */
 #define DRM_MAX_ORDER	22	  /**< Up to 2^22 bytes = 4MB */
@@ -129,11 +150,19 @@ struct drm_version {
 	int version_major;	  /**< Major version */
 	int version_minor;	  /**< Minor version */
 	int version_patchlevel;	  /**< Patch level */
+<<<<<<< HEAD
 	size_t name_len;	  /**< Length of name buffer */
 	char __user *name;	  /**< Name of driver */
 	size_t date_len;	  /**< Length of date buffer */
 	char __user *date;	  /**< User-space buffer to hold date */
 	size_t desc_len;	  /**< Length of desc buffer */
+=======
+	__kernel_size_t name_len;	  /**< Length of name buffer */
+	char __user *name;	  /**< Name of driver */
+	__kernel_size_t date_len;	  /**< Length of date buffer */
+	char __user *date;	  /**< User-space buffer to hold date */
+	__kernel_size_t desc_len;	  /**< Length of desc buffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char __user *desc;	  /**< User-space buffer to hold desc */
 };
 
@@ -143,7 +172,11 @@ struct drm_version {
  * \sa drmGetBusid() and drmSetBusId().
  */
 struct drm_unique {
+<<<<<<< HEAD
 	size_t unique_len;	  /**< Length of unique */
+=======
+	__kernel_size_t unique_len;	  /**< Length of unique */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char __user *unique;	  /**< Unique name for driver instantiation */
 };
 
@@ -180,8 +213,12 @@ enum drm_map_type {
 	_DRM_SHM = 2,		  /**< shared, cached */
 	_DRM_AGP = 3,		  /**< AGP/GART */
 	_DRM_SCATTER_GATHER = 4,  /**< Scatter/gather memory for PCI DMA */
+<<<<<<< HEAD
 	_DRM_CONSISTENT = 5,	  /**< Consistent memory for PCI DMA */
 	_DRM_GEM = 6,		  /**< GEM object */
+=======
+	_DRM_CONSISTENT = 5	  /**< Consistent memory for PCI DMA */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -373,7 +410,15 @@ struct drm_buf_pub {
  */
 struct drm_buf_map {
 	int count;		/**< Length of the buffer list */
+<<<<<<< HEAD
 	void __user *virtual;		/**< Mmap'd area in user-virtual */
+=======
+#ifdef __cplusplus
+	void __user *virt;
+#else
+	void __user *virtual;		/**< Mmap'd area in user-virtual */
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct drm_buf_pub __user *list;	/**< Buffer information */
 };
 
@@ -431,7 +476,11 @@ struct drm_draw {
  * DRM_IOCTL_UPDATE_DRAW ioctl argument type.
  */
 typedef enum {
+<<<<<<< HEAD
 	DRM_DRAWABLE_CLIPRECTS,
+=======
+	DRM_DRAWABLE_CLIPRECTS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } drm_drawable_info_type_t;
 
 struct drm_update_draw {
@@ -611,12 +660,72 @@ struct drm_gem_open {
 	__u64 size;
 };
 
+<<<<<<< HEAD
+=======
+#define DRM_CAP_DUMB_BUFFER		0x1
+#define DRM_CAP_VBLANK_HIGH_CRTC	0x2
+#define DRM_CAP_DUMB_PREFERRED_DEPTH	0x3
+#define DRM_CAP_DUMB_PREFER_SHADOW	0x4
+#define DRM_CAP_PRIME			0x5
+#define  DRM_PRIME_CAP_IMPORT		0x1
+#define  DRM_PRIME_CAP_EXPORT		0x2
+#define DRM_CAP_TIMESTAMP_MONOTONIC	0x6
+#define DRM_CAP_ASYNC_PAGE_FLIP		0x7
+/*
+ * The CURSOR_WIDTH and CURSOR_HEIGHT capabilities return a valid widthxheight
+ * combination for the hardware cursor. The intention is that a hardware
+ * agnostic userspace can query a cursor plane size to use.
+ *
+ * Note that the cross-driver contract is to merely return a valid size;
+ * drivers are free to attach another meaning on top, eg. i915 returns the
+ * maximum plane size.
+ */
+#define DRM_CAP_CURSOR_WIDTH		0x8
+#define DRM_CAP_CURSOR_HEIGHT		0x9
+#define DRM_CAP_ADDFB2_MODIFIERS	0x10
+#define DRM_CAP_PAGE_FLIP_TARGET	0x11
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /** DRM_IOCTL_GET_CAP ioctl argument type */
 struct drm_get_cap {
 	__u64 capability;
 	__u64 value;
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * DRM_CLIENT_CAP_STEREO_3D
+ *
+ * if set to 1, the DRM core will expose the stereo 3D capabilities of the
+ * monitor by advertising the supported 3D layouts in the flags of struct
+ * drm_mode_modeinfo.
+ */
+#define DRM_CLIENT_CAP_STEREO_3D	1
+
+/**
+ * DRM_CLIENT_CAP_UNIVERSAL_PLANES
+ *
+ * If set to 1, the DRM core will expose all planes (overlay, primary, and
+ * cursor) to userspace.
+ */
+#define DRM_CLIENT_CAP_UNIVERSAL_PLANES  2
+
+/**
+ * DRM_CLIENT_CAP_ATOMIC
+ *
+ * If set to 1, the DRM core will expose atomic properties to userspace
+ */
+#define DRM_CLIENT_CAP_ATOMIC	3
+
+/** DRM_IOCTL_SET_CLIENT_CAP ioctl argument type */
+struct drm_set_client_cap {
+	__u64 capability;
+	__u64 value;
+};
+
+#define DRM_RDWR O_RDWR
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DRM_CLOEXEC O_CLOEXEC
 struct drm_prime_handle {
 	__u32 handle;
@@ -628,7 +737,19 @@ struct drm_prime_handle {
 	__s32 fd;
 };
 
+<<<<<<< HEAD
 #include <drm/drm_mode.h>
+=======
+#if defined(__cplusplus)
+}
+#endif
+
+#include "drm_mode.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRM_IOCTL_BASE			'd'
 #define DRM_IO(nr)			_IO(DRM_IOCTL_BASE,nr)
@@ -649,6 +770,10 @@ struct drm_prime_handle {
 #define DRM_IOCTL_GEM_FLINK		DRM_IOWR(0x0a, struct drm_gem_flink)
 #define DRM_IOCTL_GEM_OPEN		DRM_IOWR(0x0b, struct drm_gem_open)
 #define DRM_IOCTL_GET_CAP		DRM_IOWR(0x0c, struct drm_get_cap)
+<<<<<<< HEAD
+=======
+#define DRM_IOCTL_SET_CLIENT_CAP	DRM_IOW( 0x0d, struct drm_set_client_cap)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRM_IOCTL_SET_UNIQUE		DRM_IOW( 0x10, struct drm_unique)
 #define DRM_IOCTL_AUTH_MAGIC		DRM_IOW( 0x11, struct drm_auth)
@@ -732,10 +857,21 @@ struct drm_prime_handle {
 #define DRM_IOCTL_MODE_ADDFB2		DRM_IOWR(0xB8, struct drm_mode_fb_cmd2)
 #define DRM_IOCTL_MODE_OBJ_GETPROPERTIES	DRM_IOWR(0xB9, struct drm_mode_obj_get_properties)
 #define DRM_IOCTL_MODE_OBJ_SETPROPERTY	DRM_IOWR(0xBA, struct drm_mode_obj_set_property)
+<<<<<<< HEAD
 
 /**
  * Device specific ioctls should only be in their respective headers
  * The device specific ioctl range is from 0x40 to 0x99.
+=======
+#define DRM_IOCTL_MODE_CURSOR2		DRM_IOWR(0xBB, struct drm_mode_cursor2)
+#define DRM_IOCTL_MODE_ATOMIC		DRM_IOWR(0xBC, struct drm_mode_atomic)
+#define DRM_IOCTL_MODE_CREATEPROPBLOB	DRM_IOWR(0xBD, struct drm_mode_create_blob)
+#define DRM_IOCTL_MODE_DESTROYPROPBLOB	DRM_IOWR(0xBE, struct drm_mode_destroy_blob)
+
+/**
+ * Device specific ioctls should only be in their respective headers
+ * The device specific ioctl range is from 0x40 to 0x9f.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Generic IOCTLS restart at 0xA0.
  *
  * \sa drmCommandNone(), drmCommandRead(), drmCommandWrite(), and
@@ -773,6 +909,7 @@ struct drm_event_vblank {
 	__u32 reserved;
 };
 
+<<<<<<< HEAD
 #define DRM_CAP_DUMB_BUFFER 0x1
 #define DRM_CAP_VBLANK_HIGH_CRTC 0x2
 #define DRM_CAP_DUMB_PREFERRED_DEPTH 0x3
@@ -783,6 +920,8 @@ struct drm_event_vblank {
 #define DRM_PRIME_CAP_IMPORT 0x1
 #define DRM_PRIME_CAP_EXPORT 0x2
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* typedef area */
 #ifndef __KERNEL__
 typedef struct drm_clip_rect drm_clip_rect_t;
@@ -828,4 +967,11 @@ typedef struct drm_scatter_gather drm_scatter_gather_t;
 typedef struct drm_set_version drm_set_version_t;
 #endif
 
+<<<<<<< HEAD
+=======
+#if defined(__cplusplus)
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

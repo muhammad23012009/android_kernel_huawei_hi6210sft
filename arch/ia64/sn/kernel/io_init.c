@@ -118,13 +118,18 @@ static void __init sn_fixup_ionodes(void)
 }
 
 /*
+<<<<<<< HEAD
  * sn_pci_legacy_window_fixup - Create PCI controller windows for
+=======
+ * sn_pci_legacy_window_fixup - Setup PCI resources for
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *				legacy IO and MEM space. This needs to
  *				be done here, as the PROM does not have
  *				ACPI support defining the root buses
  *				and their resources (_CRS),
  */
 static void
+<<<<<<< HEAD
 sn_legacy_pci_window_fixup(struct pci_controller *controller,
 			   u64 legacy_io, u64 legacy_mem)
 {
@@ -188,6 +193,21 @@ sn_pci_window_fixup(struct pci_dev *dev, unsigned int count,
 
 	controller->windows = new_count;
 	controller->window = new_window;
+=======
+sn_legacy_pci_window_fixup(struct resource *res,
+		u64 legacy_io, u64 legacy_mem)
+{
+		res[0].name = "legacy_io";
+		res[0].flags = IORESOURCE_IO;
+		res[0].start = legacy_io;
+		res[0].end = res[0].start + 0xffff;
+		res[0].parent = &ioport_resource;
+		res[1].name = "legacy_mem";
+		res[1].flags = IORESOURCE_MEM;
+		res[1].start = legacy_mem;
+		res[1].end = res[1].start + (1024 * 1024) - 1;
+		res[1].parent = &iomem_resource;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -199,10 +219,16 @@ sn_pci_window_fixup(struct pci_dev *dev, unsigned int count,
 void
 sn_io_slot_fixup(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	unsigned int count = 0;
 	int idx;
 	s64 pci_addrs[PCI_ROM_RESOURCE + 1];
 	unsigned long addr, end, size, start;
+=======
+	int idx;
+	struct resource *res;
+	unsigned long size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pcidev_info *pcidev_info;
 	struct sn_irq_info *sn_irq_info;
 	int status;
@@ -227,6 +253,7 @@ sn_io_slot_fixup(struct pci_dev *dev)
 
 	/* Copy over PIO Mapped Addresses */
 	for (idx = 0; idx <= PCI_ROM_RESOURCE; idx++) {
+<<<<<<< HEAD
 
 		if (!pcidev_info->pdi_pio_mapped_addr[idx]) {
 			pci_addrs[idx] = -1;
@@ -246,11 +273,25 @@ sn_io_slot_fixup(struct pci_dev *dev)
 		addr = ((addr << 4) >> 4) | __IA64_UNCACHED_OFFSET;
 		dev->resource[idx].start = addr;
 		dev->resource[idx].end = addr + size;
+=======
+		if (!pcidev_info->pdi_pio_mapped_addr[idx])
+			continue;
+
+		res = &dev->resource[idx];
+
+		size = res->end - res->start;
+		if (size == 0)
+			continue;
+
+		res->start = pcidev_info->pdi_pio_mapped_addr[idx];
+		res->end = res->start + size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * if it's already in the device structure, remove it before
 		 * inserting
 		 */
+<<<<<<< HEAD
 		if (dev->resource[idx].parent && dev->resource[idx].parent->child)
 			release_resource(&dev->resource[idx]);
 
@@ -285,6 +326,27 @@ sn_io_slot_fixup(struct pci_dev *dev)
 	sn_pci_fixup_slot(dev, pcidev_info, sn_irq_info);
 }
 
+=======
+		if (res->parent && res->parent->child)
+			release_resource(res);
+
+		if (res->flags & IORESOURCE_IO)
+			insert_resource(&ioport_resource, res);
+		else
+			insert_resource(&iomem_resource, res);
+		/*
+		 * If ROM, mark as shadowed in PROM.
+		 */
+		if (idx == PCI_ROM_RESOURCE) {
+			pci_disable_rom(dev);
+			res->flags = IORESOURCE_MEM | IORESOURCE_ROM_SHADOW |
+				     IORESOURCE_PCI_FIXED;
+		}
+	}
+
+	sn_pci_fixup_slot(dev, pcidev_info, sn_irq_info);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(sn_io_slot_fixup);
 
 /*
@@ -297,8 +359,13 @@ sn_pci_controller_fixup(int segment, int busnum, struct pci_bus *bus)
 	s64 status = 0;
 	struct pci_controller *controller;
 	struct pcibus_bussoft *prom_bussoft_ptr;
+<<<<<<< HEAD
 	LIST_HEAD(resources);
 	int i;
+=======
+	struct resource *res;
+	LIST_HEAD(resources);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  	status = sal_get_pcibus_info((u64) segment, (u64) busnum,
  				     (u64) ia64_tpa(&prom_bussoft_ptr));
@@ -310,12 +377,19 @@ sn_pci_controller_fixup(int segment, int busnum, struct pci_bus *bus)
 	BUG_ON(!controller);
 	controller->segment = segment;
 
+<<<<<<< HEAD
+=======
+	res = kcalloc(2, sizeof(struct resource), GFP_KERNEL);
+	BUG_ON(!res);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Temporarily save the prom_bussoft_ptr for use by sn_bus_fixup().
 	 * (platform_data will be overwritten later in sn_common_bus_fixup())
 	 */
 	controller->platform_data = prom_bussoft_ptr;
 
+<<<<<<< HEAD
 	sn_legacy_pci_window_fixup(controller,
 				   prom_bussoft_ptr->bs_legacy_io,
 				   prom_bussoft_ptr->bs_legacy_mem);
@@ -336,6 +410,24 @@ error_return:
 
 	kfree(controller);
 	return;
+=======
+	sn_legacy_pci_window_fixup(res,
+			prom_bussoft_ptr->bs_legacy_io,
+			prom_bussoft_ptr->bs_legacy_mem);
+	pci_add_resource_offset(&resources,	&res[0],
+			prom_bussoft_ptr->bs_legacy_io);
+	pci_add_resource_offset(&resources,	&res[1],
+			prom_bussoft_ptr->bs_legacy_mem);
+
+	bus = pci_scan_root_bus(NULL, busnum, &pci_root_ops, controller,
+				&resources);
+ 	if (bus == NULL) {
+		kfree(res);
+		kfree(controller);
+		return;
+	}
+	pci_bus_add_devices(bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

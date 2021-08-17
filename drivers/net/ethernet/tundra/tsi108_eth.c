@@ -32,7 +32,10 @@
 
 #include <linux/module.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/net.h>
 #include <linux/netdevice.h>
@@ -162,12 +165,19 @@ static struct platform_driver tsi_eth_driver = {
 	.remove = tsi108_ether_remove,
 	.driver	= {
 		.name = "tsi-ethernet",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
 static void tsi108_timed_checker(unsigned long dev_ptr);
 
+<<<<<<< HEAD
+=======
+#ifdef DEBUG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void dump_eth_one(struct net_device *dev)
 {
 	struct tsi108_prv_data *data = netdev_priv(dev);
@@ -192,6 +202,10 @@ static void dump_eth_one(struct net_device *dev)
 	       TSI_READ(TSI108_EC_RXESTAT),
 	       TSI_READ(TSI108_EC_RXERR), data->rxpending);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Synchronization is needed between the thread and up/down events.
  * Note that the PHY is accessed through the same registers for both
@@ -381,9 +395,16 @@ tsi108_stat_carry_one(int carry, int carry_bit, int carry_shift,
 static void tsi108_stat_carry(struct net_device *dev)
 {
 	struct tsi108_prv_data *data = netdev_priv(dev);
+<<<<<<< HEAD
 	u32 carry1, carry2;
 
 	spin_lock_irq(&data->misclock);
+=======
+	unsigned long flags;
+	u32 carry1, carry2;
+
+	spin_lock_irqsave(&data->misclock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	carry1 = TSI_READ(TSI108_STAT_CARRY1);
 	carry2 = TSI_READ(TSI108_STAT_CARRY2);
@@ -451,7 +472,11 @@ static void tsi108_stat_carry(struct net_device *dev)
 			      TSI108_STAT_TXPAUSEDROP_CARRY,
 			      &data->tx_pause_drop);
 
+<<<<<<< HEAD
 	spin_unlock_irq(&data->misclock);
+=======
+	spin_unlock_irqrestore(&data->misclock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Read a stat counter atomically with respect to carries.
@@ -1308,6 +1333,7 @@ static int tsi108_open(struct net_device *dev)
 		       data->id, dev->irq, dev->name);
 	}
 
+<<<<<<< HEAD
 	data->rxring = dma_alloc_coherent(NULL, rxring_size, &data->rxdma,
 					  GFP_KERNEL | __GFP_ZERO);
 	if (!data->rxring)
@@ -1317,6 +1343,18 @@ static int tsi108_open(struct net_device *dev)
 					  GFP_KERNEL | __GFP_ZERO);
 	if (!data->txring) {
 		pci_free_consistent(0, rxring_size, data->rxring, data->rxdma);
+=======
+	data->rxring = dma_zalloc_coherent(NULL, rxring_size, &data->rxdma,
+					   GFP_KERNEL);
+	if (!data->rxring)
+		return -ENOMEM;
+
+	data->txring = dma_zalloc_coherent(NULL, txring_size, &data->txdma,
+					   GFP_KERNEL);
+	if (!data->txring) {
+		pci_free_consistent(NULL, rxring_size, data->rxring,
+				    data->rxdma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 
@@ -1558,7 +1596,11 @@ tsi108_init_one(struct platform_device *pdev)
 	hw_info *einfo;
 	int err = 0;
 
+<<<<<<< HEAD
 	einfo = pdev->dev.platform_data;
+=======
+	einfo = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (NULL == einfo) {
 		printk(KERN_ERR "tsi-eth %d: Missing additional data!\n",
@@ -1682,7 +1724,10 @@ static int tsi108_ether_remove(struct platform_device *pdev)
 
 	unregister_netdev(dev);
 	tsi108_stop_ethernet(dev);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iounmap(priv->regs);
 	iounmap(priv->phyregs);
 	free_netdev(dev);

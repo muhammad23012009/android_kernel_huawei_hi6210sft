@@ -36,11 +36,14 @@ static const struct snd_pcm_hardware snd_mxs_hardware = {
 				  SNDRV_PCM_INFO_RESUME |
 				  SNDRV_PCM_INFO_INTERLEAVED |
 				  SNDRV_PCM_INFO_HALF_DUPLEX,
+<<<<<<< HEAD
 	.formats		= SNDRV_PCM_FMTBIT_S16_LE |
 				  SNDRV_PCM_FMTBIT_S20_3LE |
 				  SNDRV_PCM_FMTBIT_S24_LE,
 	.channels_min		= 2,
 	.channels_max		= 2,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 8192,
 	.periods_min		= 1,
@@ -49,6 +52,7 @@ static const struct snd_pcm_hardware snd_mxs_hardware = {
 	.fifo_size		= 32,
 };
 
+<<<<<<< HEAD
 static bool filter(struct dma_chan *chan, void *param)
 {
 	struct mxs_pcm_dma_params *dma_params = param;
@@ -67,23 +71,34 @@ static bool filter(struct dma_chan *chan, void *param)
 static const struct snd_dmaengine_pcm_config mxs_dmaengine_pcm_config = {
 	.pcm_hardware = &snd_mxs_hardware,
 	.compat_filter_fn = filter,
+=======
+static const struct snd_dmaengine_pcm_config mxs_dmaengine_pcm_config = {
+	.pcm_hardware = &snd_mxs_hardware,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.prealloc_buffer_size = 64 * 1024,
 };
 
 int mxs_pcm_platform_register(struct device *dev)
 {
+<<<<<<< HEAD
 	return snd_dmaengine_pcm_register(dev, &mxs_dmaengine_pcm_config,
 		SND_DMAENGINE_PCM_FLAG_NO_RESIDUE |
 		SND_DMAENGINE_PCM_FLAG_NO_DT |
 		SND_DMAENGINE_PCM_FLAG_COMPAT |
+=======
+	return devm_snd_dmaengine_pcm_register(dev, &mxs_dmaengine_pcm_config,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		SND_DMAENGINE_PCM_FLAG_HALF_DUPLEX);
 }
 EXPORT_SYMBOL_GPL(mxs_pcm_platform_register);
 
+<<<<<<< HEAD
 void mxs_pcm_platform_unregister(struct device *dev)
 {
 	snd_dmaengine_pcm_unregister(dev);
 }
 EXPORT_SYMBOL_GPL(mxs_pcm_platform_unregister);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

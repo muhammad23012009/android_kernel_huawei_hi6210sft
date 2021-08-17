@@ -13,7 +13,11 @@ struct arpt_mangle
 	union {
 		struct in_addr tgt_ip;
 	} u_t;
+<<<<<<< HEAD
 	u_int8_t flags;
+=======
+	__u8 flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int target;
 };
 

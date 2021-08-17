@@ -21,9 +21,18 @@ generic-y += ioctl.h
 generic-y += ioctls.h
 generic-y += ipcbuf.h
 generic-y += irq_regs.h
+<<<<<<< HEAD
 generic-y += kdebug.h
 generic-y += kmap_types.h
 generic-y += local.h
+=======
+generic-y += irq_work.h
+generic-y += kdebug.h
+generic-y += kmap_types.h
+generic-y += local.h
+generic-y += mcs_spinlock.h
+generic-y += mm-arch-hooks.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += mman.h
 generic-y += module.h
 generic-y += msgbuf.h
@@ -32,8 +41,13 @@ generic-y += parport.h
 generic-y += percpu.h
 generic-y += poll.h
 generic-y += posix_types.h
+<<<<<<< HEAD
 generic-y += resource.h
 generic-y += scatterlist.h
+=======
+generic-y += preempt.h
+generic-y += resource.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += sections.h
 generic-y += segment.h
 generic-y += sembuf.h
@@ -59,4 +73,8 @@ generic-y += ucontext.h
 generic-y += unaligned.h
 generic-y += user.h
 generic-y += vga.h
+<<<<<<< HEAD
+=======
+generic-y += word-at-a-time.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += xor.h

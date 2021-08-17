@@ -35,7 +35,11 @@
 
 #else /* !CONFIG_MMU */
 		.macro	addruart_current, rx, tmp1, tmp2
+<<<<<<< HEAD
 		addruart	\rx, \tmp1
+=======
+		addruart	\rx, \tmp1, \tmp2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.endm
 
 #endif /* CONFIG_MMU */
@@ -90,7 +94,11 @@ ENTRY(printascii)
 		ldrneb	r1, [r0], #1
 		teqne	r1, #0
 		bne	1b
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(printascii)
 
 ENTRY(printch)
@@ -105,7 +113,11 @@ ENTRY(debug_ll_addr)
 		addruart r2, r3, ip
 		str	r2, [r0]
 		str	r3, [r1]
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(debug_ll_addr)
 #endif
 
@@ -116,7 +128,11 @@ ENTRY(printascii)
 		mov	r0, #0x04		@ SYS_WRITE0
 	ARM(	svc	#0x123456	)
 	THUMB(	svc	#0xab		)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(printascii)
 
 ENTRY(printch)
@@ -125,14 +141,22 @@ ENTRY(printch)
 		mov	r0, #0x03		@ SYS_WRITEC
 	ARM(	svc	#0x123456	)
 	THUMB(	svc	#0xab		)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(printch)
 
 ENTRY(debug_ll_addr)
 		mov	r2, #0
 		str	r2, [r0]
 		str	r2, [r1]
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(debug_ll_addr)
 
 #endif

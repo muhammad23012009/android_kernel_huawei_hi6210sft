@@ -535,5 +535,9 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("DES & Triple DES EDE Cipher Algorithms, sparc64 des opcode accelerated");
 
 MODULE_ALIAS_CRYPTO("des");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_CRYPTO("des3_ede");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "crop_devid.c"

@@ -17,7 +17,10 @@
 #include "pm.h"
 #include "cm.h"
 #include "cm-regbits-34xx.h"
+<<<<<<< HEAD
 #include "cm-regbits-44xx.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "prm-regbits-34xx.h"
 #include "prm-regbits-44xx.h"
 

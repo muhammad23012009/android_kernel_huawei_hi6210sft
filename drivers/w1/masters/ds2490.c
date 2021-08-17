@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  *	dscore.c
+=======
+ *	ds2490.c  USB to one wire bridge
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
  *
@@ -28,6 +32,13 @@
 #include "../w1_int.h"
 #include "../w1.h"
 
+<<<<<<< HEAD
+=======
+/* USB Standard */
+/* USB Control request vendor type */
+#define VENDOR				0x40
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* COMMAND TYPE CODES */
 #define CONTROL_CMD			0x00
 #define COMM_CMD			0x01
@@ -107,6 +118,11 @@
 #define ST_HALT				0x10  /* DS2490 is currently halted */
 #define ST_IDLE				0x20  /* DS2490 is currently idle */
 #define ST_EPOF				0x80
+<<<<<<< HEAD
+=======
+/* Status transfer size, 16 bytes status, 16 byte result flags */
+#define ST_SIZE				0x20
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Result Register flags */
 #define RR_DETECT			0xA5 /* New device detected */
@@ -147,6 +163,12 @@ struct ds_device
 	 */
 	u16			spu_bit;
 
+<<<<<<< HEAD
+=======
+	u8			st_buf[ST_SIZE];
+	u8			byte_buf;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct w1_bus_master	master;
 };
 
@@ -168,7 +190,10 @@ struct ds_status
 	u8			data_in_buffer_status;
 	u8			reserved1;
 	u8			reserved2;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct usb_device_id ds_id_table [] = {
@@ -198,9 +223,15 @@ static int ds_send_control_cmd(struct ds_device *dev, u16 value, u16 index)
 	int err;
 
 	err = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, dev->ep[EP_CONTROL]),
+<<<<<<< HEAD
 			CONTROL_CMD, 0x40, value, index, NULL, 0, 1000);
 	if (err < 0) {
 		printk(KERN_ERR "Failed to send command control message %x.%x: err=%d.\n",
+=======
+			CONTROL_CMD, VENDOR, value, index, NULL, 0, 1000);
+	if (err < 0) {
+		pr_err("Failed to send command control message %x.%x: err=%d.\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				value, index, err);
 		return err;
 	}
@@ -213,9 +244,15 @@ static int ds_send_control_mode(struct ds_device *dev, u16 value, u16 index)
 	int err;
 
 	err = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, dev->ep[EP_CONTROL]),
+<<<<<<< HEAD
 			MODE_CMD, 0x40, value, index, NULL, 0, 1000);
 	if (err < 0) {
 		printk(KERN_ERR "Failed to send mode control message %x.%x: err=%d.\n",
+=======
+			MODE_CMD, VENDOR, value, index, NULL, 0, 1000);
+	if (err < 0) {
+		pr_err("Failed to send mode control message %x.%x: err=%d.\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				value, index, err);
 		return err;
 	}
@@ -228,9 +265,15 @@ static int ds_send_control(struct ds_device *dev, u16 value, u16 index)
 	int err;
 
 	err = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, dev->ep[EP_CONTROL]),
+<<<<<<< HEAD
 			COMM_CMD, 0x40, value, index, NULL, 0, 1000);
 	if (err < 0) {
 		printk(KERN_ERR "Failed to send control message %x.%x: err=%d.\n",
+=======
+			COMM_CMD, VENDOR, value, index, NULL, 0, 1000);
+	if (err < 0) {
+		pr_err("Failed to send control message %x.%x: err=%d.\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				value, index, err);
 		return err;
 	}
@@ -238,6 +281,7 @@ static int ds_send_control(struct ds_device *dev, u16 value, u16 index)
 	return err;
 }
 
+<<<<<<< HEAD
 static int ds_recv_status_nodump(struct ds_device *dev, struct ds_status *st,
 				 unsigned char *buf, int size)
 {
@@ -261,16 +305,28 @@ static int ds_recv_status_nodump(struct ds_device *dev, struct ds_status *st,
 static inline void ds_print_msg(unsigned char *buf, unsigned char *str, int off)
 {
 	printk(KERN_INFO "%45s: %8x\n", str, buf[off]);
+=======
+static inline void ds_print_msg(unsigned char *buf, unsigned char *str, int off)
+{
+	pr_info("%45s: %8x\n", str, buf[off]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ds_dump_status(struct ds_device *dev, unsigned char *buf, int count)
 {
 	int i;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "0x%x: count=%d, status: ", dev->ep[EP_STATUS], count);
 	for (i=0; i<count; ++i)
 		printk("%02x ", buf[i]);
 	printk(KERN_INFO "\n");
+=======
+	pr_info("0x%x: count=%d, status: ", dev->ep[EP_STATUS], count);
+	for (i=0; i<count; ++i)
+		pr_info("%02x ", buf[i]);
+	pr_info("\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (count >= 16) {
 		ds_print_msg(buf, "enable flag", 0);
@@ -298,6 +354,7 @@ static void ds_dump_status(struct ds_device *dev, unsigned char *buf, int count)
 		}
 		ds_print_msg(buf, "Result Register Value: ", i);
 		if (buf[i] & RR_NRS)
+<<<<<<< HEAD
 			printk(KERN_INFO "NRS: Reset no presence or ...\n");
 		if (buf[i] & RR_SH)
 			printk(KERN_INFO "SH: short on reset or set path\n");
@@ -314,6 +371,53 @@ static void ds_dump_status(struct ds_device *dev, unsigned char *buf, int count)
 		if (buf[i] & RR_EOS)
 			printk(KERN_INFO "EOS: end of search error\n");
 	}
+=======
+			pr_info("NRS: Reset no presence or ...\n");
+		if (buf[i] & RR_SH)
+			pr_info("SH: short on reset or set path\n");
+		if (buf[i] & RR_APP)
+			pr_info("APP: alarming presence on reset\n");
+		if (buf[i] & RR_VPP)
+			pr_info("VPP: 12V expected not seen\n");
+		if (buf[i] & RR_CMP)
+			pr_info("CMP: compare error\n");
+		if (buf[i] & RR_CRC)
+			pr_info("CRC: CRC error detected\n");
+		if (buf[i] & RR_RDP)
+			pr_info("RDP: redirected page\n");
+		if (buf[i] & RR_EOS)
+			pr_info("EOS: end of search error\n");
+	}
+}
+
+static int ds_recv_status(struct ds_device *dev, struct ds_status *st,
+			  bool dump)
+{
+	int count, err;
+
+	if (st)
+		memset(st, 0, sizeof(*st));
+
+	count = 0;
+	err = usb_interrupt_msg(dev->udev,
+				usb_rcvintpipe(dev->udev,
+					       dev->ep[EP_STATUS]),
+				dev->st_buf, sizeof(dev->st_buf),
+				&count, 1000);
+	if (err < 0) {
+		pr_err("Failed to read 1-wire data from 0x%x: err=%d.\n",
+		       dev->ep[EP_STATUS], err);
+		return err;
+	}
+
+	if (dump)
+		ds_dump_status(dev, dev->st_buf, count);
+
+	if (st && count >= sizeof(*st))
+		memcpy(st, dev->st_buf, sizeof(*st));
+
+	return count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ds_reset_device(struct ds_device *dev)
@@ -323,22 +427,33 @@ static void ds_reset_device(struct ds_device *dev)
 	 * the strong pullup.
 	 */
 	if (ds_send_control_mode(dev, MOD_PULSE_EN, PULSE_SPUE))
+<<<<<<< HEAD
 		printk(KERN_ERR "ds_reset_device: "
 			"Error allowing strong pullup\n");
+=======
+		pr_err("ds_reset_device: Error allowing strong pullup\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Chip strong pullup time was cleared. */
 	if (dev->spu_sleep) {
 		/* lower 4 bits are 0, see ds_set_pullup */
 		u8 del = dev->spu_sleep>>4;
 		if (ds_send_control(dev, COMM_SET_DURATION | COMM_IM, del))
+<<<<<<< HEAD
 			printk(KERN_ERR "ds_reset_device: "
 				"Error setting duration\n");
+=======
+			pr_err("ds_reset_device: Error setting duration\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 static int ds_recv_data(struct ds_device *dev, unsigned char *buf, int size)
 {
 	int count, err;
+<<<<<<< HEAD
 	struct ds_status st;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Careful on size.  If size is less than what is available in
 	 * the input buffer, the device fails the bulk transfer and
@@ -353,6 +468,7 @@ static int ds_recv_data(struct ds_device *dev, unsigned char *buf, int size)
 	err = usb_bulk_msg(dev->udev, usb_rcvbulkpipe(dev->udev, dev->ep[EP_DATA_IN]),
 				buf, size, &count, 1000);
 	if (err < 0) {
+<<<<<<< HEAD
 		u8 buf[0x20];
 		int count;
 
@@ -361,6 +477,11 @@ static int ds_recv_data(struct ds_device *dev, unsigned char *buf, int size)
 
 		count = ds_recv_status_nodump(dev, &st, buf, sizeof(buf));
 		ds_dump_status(dev, buf, count);
+=======
+		pr_info("Clearing ep0x%x.\n", dev->ep[EP_DATA_IN]);
+		usb_clear_halt(dev->udev, usb_rcvbulkpipe(dev->udev, dev->ep[EP_DATA_IN]));
+		ds_recv_status(dev, NULL, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -384,7 +505,11 @@ static int ds_send_data(struct ds_device *dev, unsigned char *buf, int len)
 	count = 0;
 	err = usb_bulk_msg(dev->udev, usb_sndbulkpipe(dev->udev, dev->ep[EP_DATA_OUT]), buf, len, &count, 1000);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to write 1-wire data to ep0x%x: "
+=======
+		pr_err("Failed to write 1-wire data to ep0x%x: "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"err=%d.\n", dev->ep[EP_DATA_OUT], err);
 		return err;
 	}
@@ -398,7 +523,10 @@ int ds_stop_pulse(struct ds_device *dev, int limit)
 {
 	struct ds_status st;
 	int count = 0, err = 0;
+<<<<<<< HEAD
 	u8 buf[0x20];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	do {
 		err = ds_send_control(dev, CTL_HALT_EXE_IDLE, 0);
@@ -407,7 +535,11 @@ int ds_stop_pulse(struct ds_device *dev, int limit)
 		err = ds_send_control(dev, CTL_RESUME_EXE, 0);
 		if (err)
 			break;
+<<<<<<< HEAD
 		err = ds_recv_status_nodump(dev, &st, buf, sizeof(buf));
+=======
+		err = ds_recv_status(dev, &st, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)
 			break;
 
@@ -450,16 +582,25 @@ int ds_detect(struct ds_device *dev, struct ds_status *st)
 
 static int ds_wait_status(struct ds_device *dev, struct ds_status *st)
 {
+<<<<<<< HEAD
 	u8 buf[0x20];
 	int err, count = 0;
 
 	do {
 		err = ds_recv_status_nodump(dev, st, buf, sizeof(buf));
+=======
+	int err, count = 0;
+
+	do {
+		st->status = 0;
+		err = ds_recv_status(dev, st, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if 0
 		if (err >= 0) {
 			int i;
 			printk("0x%x: count=%d, status: ", dev->ep[EP_STATUS], err);
 			for (i=0; i<err; ++i)
+<<<<<<< HEAD
 				printk("%02x ", buf[i]);
 			printk("\n");
 		}
@@ -468,6 +609,16 @@ static int ds_wait_status(struct ds_device *dev, struct ds_status *st)
 
 	if (err >= 16 && st->status & ST_EPOF) {
 		printk(KERN_INFO "Resetting device after ST_EPOF.\n");
+=======
+				printk("%02x ", dev->st_buf[i]);
+			printk("\n");
+		}
+#endif
+	} while (!(st->status & ST_IDLE) && !(err < 0) && ++count < 100);
+
+	if (err >= 16 && st->status & ST_EPOF) {
+		pr_info("Resetting device after ST_EPOF.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ds_reset_device(dev);
 		/* Always dump the device status. */
 		count = 101;
@@ -478,7 +629,11 @@ static int ds_wait_status(struct ds_device *dev, struct ds_status *st)
 	 * can do something with it).
 	 */
 	if (err > 16 || count >= 100 || err < 0)
+<<<<<<< HEAD
 		ds_dump_status(dev, buf, err);
+=======
+		ds_dump_status(dev, dev->st_buf, err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Extended data isn't an error.  Well, a short is, but the dump
 	 * would have already told the user that and we can't do anything
@@ -601,7 +756,10 @@ static int ds_write_byte(struct ds_device *dev, u8 byte)
 {
 	int err;
 	struct ds_status st;
+<<<<<<< HEAD
 	u8 rbyte;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = ds_send_control(dev, COMM_BYTE_IO | COMM_IM | dev->spu_bit, byte);
 	if (err)
@@ -614,11 +772,19 @@ static int ds_write_byte(struct ds_device *dev, u8 byte)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	err = ds_recv_data(dev, &rbyte, sizeof(rbyte));
 	if (err < 0)
 		return err;
 
 	return !(byte == rbyte);
+=======
+	err = ds_recv_data(dev, &dev->byte_buf, 1);
+	if (err < 0)
+		return err;
+
+	return !(byte == dev->byte_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ds_read_byte(struct ds_device *dev, u8 *byte)
@@ -690,6 +856,7 @@ static int ds_write_block(struct ds_device *dev, u8 *buf, int len)
 	return !(err == len);
 }
 
+<<<<<<< HEAD
 #if 0
 
 static int ds_search(struct ds_device *dev, u64 init, u64 *buf, u8 id_number, int conditional_search)
@@ -721,6 +888,116 @@ static int ds_search(struct ds_device *dev, u64 init, u64 *buf, u8 id_number, in
 	return err/8;
 }
 
+=======
+static void ds9490r_search(void *data, struct w1_master *master,
+	u8 search_type, w1_slave_found_callback callback)
+{
+	/* When starting with an existing id, the first id returned will
+	 * be that device (if it is still on the bus most likely).
+	 *
+	 * If the number of devices found is less than or equal to the
+	 * search_limit, that number of IDs will be returned.  If there are
+	 * more, search_limit IDs will be returned followed by a non-zero
+	 * discrepency value.
+	 */
+	struct ds_device *dev = data;
+	int err;
+	u16 value, index;
+	struct ds_status st;
+	int search_limit;
+	int found = 0;
+	int i;
+
+	/* DS18b20 spec, 13.16 ms per device, 75 per second, sleep for
+	 * discovering 8 devices (1 bulk transfer and 1/2 FIFO size) at a time.
+	 */
+	const unsigned long jtime = msecs_to_jiffies(1000*8/75);
+	/* FIFO 128 bytes, bulk packet size 64, read a multiple of the
+	 * packet size.
+	 */
+	const size_t bufsize = 2 * 64;
+	u64 *buf;
+
+	buf = kmalloc(bufsize, GFP_KERNEL);
+	if (!buf)
+		return;
+
+	mutex_lock(&master->bus_mutex);
+
+	/* address to start searching at */
+	if (ds_send_data(dev, (u8 *)&master->search_id, 8) < 0)
+		goto search_out;
+	master->search_id = 0;
+
+	value = COMM_SEARCH_ACCESS | COMM_IM | COMM_RST | COMM_SM | COMM_F |
+		COMM_RTS;
+	search_limit = master->max_slave_count;
+	if (search_limit > 255)
+		search_limit = 0;
+	index = search_type | (search_limit << 8);
+	if (ds_send_control(dev, value, index) < 0)
+		goto search_out;
+
+	do {
+		schedule_timeout(jtime);
+
+		err = ds_recv_status(dev, &st, false);
+		if (err < 0 || err < sizeof(st))
+			break;
+
+		if (st.data_in_buffer_status) {
+			/* Bulk in can receive partial ids, but when it does
+			 * they fail crc and will be discarded anyway.
+			 * That has only been seen when status in buffer
+			 * is 0 and bulk is read anyway, so don't read
+			 * bulk without first checking if status says there
+			 * is data to read.
+			 */
+			err = ds_recv_data(dev, (u8 *)buf, bufsize);
+			if (err < 0)
+				break;
+			for (i = 0; i < err/8; ++i) {
+				++found;
+				if (found <= search_limit)
+					callback(master, buf[i]);
+				/* can't know if there will be a discrepancy
+				 * value after until the next id */
+				if (found == search_limit)
+					master->search_id = buf[i];
+			}
+		}
+
+		if (test_bit(W1_ABORT_SEARCH, &master->flags))
+			break;
+	} while (!(st.status & (ST_IDLE | ST_HALT)));
+
+	/* only continue the search if some weren't found */
+	if (found <= search_limit) {
+		master->search_id = 0;
+	} else if (!test_bit(W1_WARN_MAX_COUNT, &master->flags)) {
+		/* Only max_slave_count will be scanned in a search,
+		 * but it will start where it left off next search
+		 * until all ids are identified and then it will start
+		 * over.  A continued search will report the previous
+		 * last id as the first id (provided it is still on the
+		 * bus).
+		 */
+		dev_info(&dev->udev->dev, "%s: max_slave_count %d reached, "
+			"will continue next search.\n", __func__,
+			master->max_slave_count);
+		set_bit(W1_WARN_MAX_COUNT, &master->flags);
+	}
+search_out:
+	mutex_unlock(&master->bus_mutex);
+	kfree(buf);
+}
+
+#if 0
+/*
+ * FIXME: if this disabled code is ever used in the future all ds_send_data()
+ * calls must be changed to use a DMAable buffer.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ds_match_access(struct ds_device *dev, u64 init)
 {
 	int err;
@@ -769,6 +1046,7 @@ static int ds_set_path(struct ds_device *dev, u64 init)
 
 static u8 ds9490r_touch_bit(void *data, u8 bit)
 {
+<<<<<<< HEAD
 	u8 ret;
 	struct ds_device *dev = data;
 
@@ -776,6 +1054,14 @@ static u8 ds9490r_touch_bit(void *data, u8 bit)
 		return 0;
 
 	return ret;
+=======
+	struct ds_device *dev = data;
+
+	if (ds_touch_bit(dev, bit, &dev->byte_buf))
+		return 0;
+
+	return dev->byte_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #if 0
@@ -790,6 +1076,7 @@ static u8 ds9490r_read_bit(void *data)
 {
 	struct ds_device *dev = data;
 	int err;
+<<<<<<< HEAD
 	u8 bit = 0;
 
 	err = ds_touch_bit(dev, 1, &bit);
@@ -797,6 +1084,14 @@ static u8 ds9490r_read_bit(void *data)
 		return 0;
 
 	return bit & 1;
+=======
+
+	err = ds_touch_bit(dev, 1, &dev->byte_buf);
+	if (err)
+		return 0;
+
+	return dev->byte_buf & 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -811,6 +1106,7 @@ static u8 ds9490r_read_byte(void *data)
 {
 	struct ds_device *dev = data;
 	int err;
+<<<<<<< HEAD
 	u8 byte = 0;
 
 	err = ds_read_byte(dev, &byte);
@@ -818,25 +1114,68 @@ static u8 ds9490r_read_byte(void *data)
 		return 0;
 
 	return byte;
+=======
+
+	err = ds_read_byte(dev, &dev->byte_buf);
+	if (err)
+		return 0;
+
+	return dev->byte_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ds9490r_write_block(void *data, const u8 *buf, int len)
 {
 	struct ds_device *dev = data;
+<<<<<<< HEAD
 
 	ds_write_block(dev, (u8 *)buf, len);
+=======
+	u8 *tbuf;
+
+	if (len <= 0)
+		return;
+
+	tbuf = kmalloc(len, GFP_KERNEL);
+	if (!tbuf)
+		return;
+
+	memcpy(tbuf, buf, len);
+	ds_write_block(dev, tbuf, len);
+
+	kfree(tbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u8 ds9490r_read_block(void *data, u8 *buf, int len)
 {
 	struct ds_device *dev = data;
 	int err;
+<<<<<<< HEAD
 
 	err = ds_read_block(dev, buf, len);
 	if (err < 0)
 		return 0;
 
 	return len;
+=======
+	u8 *tbuf;
+
+	if (len <= 0)
+		return 0;
+
+	tbuf = kmalloc(len, GFP_KERNEL);
+	if (!tbuf)
+		return 0;
+
+	err = ds_read_block(dev, tbuf, len);
+	if (err >= 0)
+		memcpy(buf, tbuf, len);
+
+	kfree(tbuf);
+
+	return err >= 0 ? len : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u8 ds9490r_reset(void *data)
@@ -894,6 +1233,10 @@ static int ds_w1_init(struct ds_device *dev)
 	dev->master.write_block	= &ds9490r_write_block;
 	dev->master.reset_bus	= &ds9490r_reset;
 	dev->master.set_pullup	= &ds9490r_set_pullup;
+<<<<<<< HEAD
+=======
+	dev->master.search	= &ds9490r_search;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return w1_add_master_device(&dev->master);
 }
@@ -910,6 +1253,7 @@ static int ds_probe(struct usb_interface *intf,
 	struct usb_endpoint_descriptor *endpoint;
 	struct usb_host_interface *iface_desc;
 	struct ds_device *dev;
+<<<<<<< HEAD
 	int i, err;
 
 	dev = kmalloc(sizeof(struct ds_device), GFP_KERNEL);
@@ -919,6 +1263,15 @@ static int ds_probe(struct usb_interface *intf,
 	}
 	dev->spu_sleep = 0;
 	dev->spu_bit = 0;
+=======
+	int i, err, alt;
+
+	dev = kzalloc(sizeof(struct ds_device), GFP_KERNEL);
+	if (!dev) {
+		pr_info("Failed to allocate new DS9490R structure.\n");
+		return -ENOMEM;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->udev = usb_get_dev(udev);
 	if (!dev->udev) {
 		err = -ENOMEM;
@@ -928,6 +1281,7 @@ static int ds_probe(struct usb_interface *intf,
 
 	usb_set_intfdata(intf, dev);
 
+<<<<<<< HEAD
 	err = usb_set_interface(dev->udev, intf->altsetting[0].desc.bInterfaceNumber, 3);
 	if (err) {
 		printk(KERN_ERR "Failed to set alternative setting 3 for %d interface: err=%d.\n",
@@ -944,6 +1298,30 @@ static int ds_probe(struct usb_interface *intf,
 	iface_desc = &intf->altsetting[0];
 	if (iface_desc->desc.bNumEndpoints != NUM_EP-1) {
 		printk(KERN_INFO "Num endpoints=%d. It is not DS9490R.\n", iface_desc->desc.bNumEndpoints);
+=======
+	err = usb_reset_configuration(dev->udev);
+	if (err) {
+		dev_err(&dev->udev->dev,
+			"Failed to reset configuration: err=%d.\n", err);
+		goto err_out_clear;
+	}
+
+	/* alternative 3, 1ms interrupt (greatly speeds search), 64 byte bulk */
+	alt = 3;
+	err = usb_set_interface(dev->udev,
+		intf->cur_altsetting->desc.bInterfaceNumber, alt);
+	if (err) {
+		dev_err(&dev->udev->dev, "Failed to set alternative setting %d "
+			"for %d interface: err=%d.\n", alt,
+			intf->cur_altsetting->desc.bInterfaceNumber, err);
+		goto err_out_clear;
+	}
+
+	iface_desc = intf->cur_altsetting;
+	if (iface_desc->desc.bNumEndpoints != NUM_EP-1) {
+		pr_info("Num endpoints=%d. It is not DS9490R.\n",
+			iface_desc->desc.bNumEndpoints);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EINVAL;
 		goto err_out_clear;
 	}

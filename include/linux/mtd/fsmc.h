@@ -103,6 +103,7 @@
 
 #define FSMC_BUSY_WAIT_TIMEOUT	(1 * HZ)
 
+<<<<<<< HEAD
 /*
  * There are 13 bytes of ecc for every 512 byte block in FSMC version 8
  * and it has to be read consecutively and immediately after the 512
@@ -121,6 +122,8 @@ struct fsmc_eccplace {
 	struct fsmc_nand_eccplace eccplace[MAX_ECCPLACE_ENTRIES];
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct fsmc_nand_timings {
 	uint8_t tclr;
 	uint8_t tar;
@@ -137,6 +140,10 @@ enum access_mode {
 
 /**
  * fsmc_nand_platform_data - platform specific NAND controller config
+<<<<<<< HEAD
+=======
+ * @nand_timings: timing setup for the physical NAND interface
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @partitions: partition table for the platform, use a default fallback
  * if this is NULL
  * @nr_partitions: the number of partitions in the previous entry

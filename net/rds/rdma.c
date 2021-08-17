@@ -40,7 +40,10 @@
 /*
  * XXX
  *  - build with sparse
+<<<<<<< HEAD
  *  - should we limit the size of a mr region?  let transport return failure?
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  - should we detect duplicate keys on a socket?  hmm.
  *  - an rdma is an mlock, apply rlimit?
  */
@@ -184,7 +187,11 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
 	long i;
 	int ret;
 
+<<<<<<< HEAD
 	if (rs->rs_bound_addr == 0) {
+=======
+	if (rs->rs_bound_addr == 0 || !rs->rs_transport) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOTCONN; /* XXX not a great errno */
 		goto out;
 	}
@@ -200,6 +207,17 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Restrict the size of mr irrespective of underlying transport
+	 * To account for unaligned mr regions, subtract one from nr_pages
+	 */
+	if ((nr_pages - 1) > (RDS_MAX_MSG_SIZE >> PAGE_SHIFT)) {
+		ret = -EMSGSIZE;
+		goto out;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rdsdebug("RDS: get_mr addr %llx len %llu nr_pages %u\n",
 		args->vec.addr, args->vec.bytes, nr_pages);
 
@@ -435,9 +453,16 @@ void rds_rdma_unuse(struct rds_sock *rs, u32 r_key, int force)
 
 	/* If the MR was marked as invalidate, this will
 	 * trigger an async flush. */
+<<<<<<< HEAD
 	if (zot_me)
 		rds_destroy_mr(mr);
 	rds_mr_put(mr);
+=======
+	if (zot_me) {
+		rds_destroy_mr(mr);
+		rds_mr_put(mr);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void rds_rdma_free_op(struct rm_rdma_op *ro)
@@ -451,7 +476,11 @@ void rds_rdma_free_op(struct rm_rdma_op *ro)
 		 * is the case for a RDMA_READ which copies from remote
 		 * to local memory */
 		if (!ro->op_write) {
+<<<<<<< HEAD
 			BUG_ON(irqs_disabled());
+=======
+			WARN_ON(!page->mapping && irqs_disabled());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			set_page_dirty(page);
 		}
 		put_page(page);
@@ -516,6 +545,12 @@ int rds_rdma_extra_size(struct rds_rdma_args *args)
 
 	local_vec = (struct rds_iovec __user *)(unsigned long) args->local_vec_addr;
 
+<<<<<<< HEAD
+=======
+	if (args->nr_local == 0)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* figure out the number of pages in the vector */
 	for (i = 0; i < args->nr_local; i++) {
 		if (copy_from_user(&vec, &local_vec[i],
@@ -564,12 +599,20 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
 
 	if (rs->rs_bound_addr == 0) {
 		ret = -ENOTCONN; /* XXX not a great errno */
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (args->nr_local > UIO_MAXIOV) {
 		ret = -EMSGSIZE;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Check whether to allocate the iovec area */
@@ -578,7 +621,11 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
 		iovs = sock_kmalloc(rds_rs_to_sk(rs), iov_size, GFP_KERNEL);
 		if (!iovs) {
 			ret = -ENOMEM;
+<<<<<<< HEAD
 			goto out;
+=======
+			goto out_ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -625,6 +672,19 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
 		}
 		op->op_notifier->n_user_token = args->user_token;
 		op->op_notifier->n_status = RDS_RDMA_SUCCESS;
+<<<<<<< HEAD
+=======
+
+		/* Enable rmda notification on data operation for composite
+		 * rds messages and make sure notification is enabled only
+		 * for the data operation which follows it so that application
+		 * gets notified only after full message gets delivered.
+		 */
+		if (rm->data.op_sg) {
+			rm->rdma.op_notify = 0;
+			rm->data.op_notify = !!(args->flags & RDS_RDMA_NOTIFY_ME);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* The cookie contains the R_Key of the remote memory region, and
@@ -658,6 +718,11 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
 		ret = rds_pin_pages(iov->addr, nr, pages, !op->op_write);
 		if (ret < 0)
 			goto out;
+<<<<<<< HEAD
+=======
+		else
+			ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		rdsdebug("RDS: nr_bytes %u nr %u iov->bytes %llu iov->addr %llx\n",
 			 nr_bytes, nr, iov->bytes, iov->addr);
@@ -696,6 +761,10 @@ out:
 	if (iovs != iovstack)
 		sock_kfree_s(rds_rs_to_sk(rs), iovs, iov_size);
 	kfree(pages);
+<<<<<<< HEAD
+=======
+out_ret:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		rds_rdma_free_op(op);
 	else
@@ -852,6 +921,10 @@ int rds_cmsg_atomic(struct rds_sock *rs, struct rds_message *rm,
 err:
 	if (page)
 		put_page(page);
+<<<<<<< HEAD
+=======
+	rm->atomic.op_active = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(rm->atomic.op_notifier);
 
 	return ret;

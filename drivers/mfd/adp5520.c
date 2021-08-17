@@ -9,10 +9,17 @@
  *
  * Derived from da903x:
  * Copyright (C) 2008 Compulab, Ltd.
+<<<<<<< HEAD
  * 	Mike Rapoport <mike@compulab.co.il>
  *
  * Copyright (C) 2006-2008 Marvell International Ltd.
  * 	Eric Miao <eric.miao@marvell.com>
+=======
+ *	Mike Rapoport <mike@compulab.co.il>
+ *
+ * Copyright (C) 2006-2008 Marvell International Ltd.
+ *	Eric Miao <eric.miao@marvell.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Licensed under the GPL-2 or later.
  */
@@ -20,7 +27,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -207,7 +217,11 @@ static int adp5520_remove_subdevs(struct adp5520_chip *chip)
 static int adp5520_probe(struct i2c_client *client,
 					const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct adp5520_platform_data *pdata = client->dev.platform_data;
+=======
+	struct adp5520_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct platform_device *pdev;
 	struct adp5520_chip *chip;
 	int ret;
@@ -223,7 +237,11 @@ static int adp5520_probe(struct i2c_client *client,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
+=======
+	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!chip)
 		return -ENOMEM;
 
@@ -244,7 +262,11 @@ static int adp5520_probe(struct i2c_client *client,
 		if (ret) {
 			dev_err(&client->dev, "failed to request irq %d\n",
 					chip->irq);
+<<<<<<< HEAD
 			goto out_free_chip;
+=======
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -302,9 +324,12 @@ out_free_irq:
 	if (chip->irq)
 		free_irq(chip->irq, chip);
 
+<<<<<<< HEAD
 out_free_chip:
 	kfree(chip);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -317,7 +342,10 @@ static int adp5520_remove(struct i2c_client *client)
 
 	adp5520_remove_subdevs(chip);
 	adp5520_write(chip->dev, ADP5520_MODE_STATUS, 0);
+<<<<<<< HEAD
 	kfree(chip);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -356,12 +384,19 @@ MODULE_DEVICE_TABLE(i2c, adp5520_id);
 static struct i2c_driver adp5520_driver = {
 	.driver = {
 		.name	= "adp5520",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &adp5520_pm,
 	},
 	.probe		= adp5520_probe,
 	.remove		= adp5520_remove,
+<<<<<<< HEAD
 	.id_table 	= adp5520_id,
+=======
+	.id_table	= adp5520_id,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_i2c_driver(adp5520_driver);

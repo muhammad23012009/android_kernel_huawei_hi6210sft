@@ -172,6 +172,10 @@ struct ipack_bus_ops {
  *	@ops: bus operations for the mezzanine drivers
  */
 struct ipack_bus_device {
+<<<<<<< HEAD
+=======
+	struct module *owner;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *parent;
 	int slots;
 	int bus_nr;
@@ -189,7 +193,12 @@ struct ipack_bus_device {
  * available bus device in ipack.
  */
 struct ipack_bus_device *ipack_bus_register(struct device *parent, int slots,
+<<<<<<< HEAD
 					    const struct ipack_bus_ops *ops);
+=======
+					    const struct ipack_bus_ops *ops,
+					    struct module *owner);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  *	ipack_bus_unregister -- unregister an ipack bus
@@ -265,3 +274,26 @@ void ipack_put_device(struct ipack_device *dev);
 	 .format = (_format), \
 	 .vendor = (vend), \
 	 .device = (dev)
+<<<<<<< HEAD
+=======
+
+/**
+ * ipack_get_carrier - it increase the carrier ref. counter of
+ *                     the carrier module
+ * @dev: mezzanine device which wants to get the carrier
+ */
+static inline int ipack_get_carrier(struct ipack_device *dev)
+{
+	return try_module_get(dev->bus->owner);
+}
+
+/**
+ * ipack_get_carrier - it decrease the carrier ref. counter of
+ *                     the carrier module
+ * @dev: mezzanine device which wants to get the carrier
+ */
+static inline void ipack_put_carrier(struct ipack_device *dev)
+{
+	module_put(dev->bus->owner);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

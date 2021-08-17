@@ -1,8 +1,16 @@
 obj-$(CONFIG_SOC_CAMERA)		+= soc_camera.o soc_mediabus.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SOC_CAMERA_SCALE_CROP)	+= soc_scale_crop.o
+
+# a platform subdevice driver stub, allowing to support cameras by adding a
+# couple of callback functions to the board code
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_SOC_CAMERA_PLATFORM)	+= soc_camera_platform.o
 
 # soc-camera host drivers have to be linked after camera drivers
 obj-$(CONFIG_VIDEO_ATMEL_ISI)		+= atmel-isi.o
+<<<<<<< HEAD
 obj-$(CONFIG_VIDEO_MX1)			+= mx1_camera.o
 obj-$(CONFIG_VIDEO_MX2)			+= mx2_camera.o
 obj-$(CONFIG_VIDEO_MX3)			+= mx3_camera.o
@@ -12,3 +20,6 @@ obj-$(CONFIG_VIDEO_SH_MOBILE_CEU)	+= sh_mobile_ceu_camera.o
 obj-$(CONFIG_VIDEO_SH_MOBILE_CSI2)	+= sh_mobile_csi2.o
 
 ccflags-y += -I$(srctree)/drivers/media/i2c/soc_camera
+=======
+obj-$(CONFIG_VIDEO_SH_MOBILE_CEU)	+= sh_mobile_ceu_camera.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

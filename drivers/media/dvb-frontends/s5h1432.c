@@ -36,7 +36,11 @@ struct s5h1432_state {
 
 	struct dvb_frontend frontend;
 
+<<<<<<< HEAD
 	fe_modulation_t current_modulation;
+=======
+	enum fe_modulation current_modulation;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int first_tune:1;
 
 	u32 current_frequency;
@@ -302,7 +306,11 @@ static int s5h1432_init(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int s5h1432_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int s5h1432_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return 0;
 }

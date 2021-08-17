@@ -16,7 +16,11 @@
 #define _ASM_TILE_BITOPS_64_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 #include <linux/atomic.h>
+=======
+#include <asm/cmpxchg.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* See <asm/bitops.h> for API comments. */
 
@@ -32,10 +36,13 @@ static inline void clear_bit(unsigned nr, volatile unsigned long *addr)
 	__insn_fetchand((void *)(addr + nr / BITS_PER_LONG), ~mask);
 }
 
+<<<<<<< HEAD
 #define smp_mb__before_clear_bit()	smp_mb()
 #define smp_mb__after_clear_bit()	smp_mb()
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void change_bit(unsigned nr, volatile unsigned long *addr)
 {
 	unsigned long mask = (1UL << (nr % BITS_PER_LONG));
@@ -44,8 +51,12 @@ static inline void change_bit(unsigned nr, volatile unsigned long *addr)
 	oldval = *addr;
 	do {
 		guess = oldval;
+<<<<<<< HEAD
 		oldval = atomic64_cmpxchg((atomic64_t *)addr,
 					  guess, guess ^ mask);
+=======
+		oldval = cmpxchg(addr, guess, guess ^ mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (guess != oldval);
 }
 
@@ -90,8 +101,12 @@ static inline int test_and_change_bit(unsigned nr,
 	oldval = *addr;
 	do {
 		guess = oldval;
+<<<<<<< HEAD
 		oldval = atomic64_cmpxchg((atomic64_t *)addr,
 					  guess, guess ^ mask);
+=======
+		oldval = cmpxchg(addr, guess, guess ^ mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (guess != oldval);
 	return (oldval & mask) != 0;
 }

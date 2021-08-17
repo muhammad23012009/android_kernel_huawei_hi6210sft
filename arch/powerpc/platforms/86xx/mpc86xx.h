@@ -17,5 +17,10 @@
 
 extern void mpc86xx_smp_init(void);
 extern void mpc86xx_init_irq(void);
+<<<<<<< HEAD
+=======
+extern long mpc86xx_time_init(void);
+extern int mpc86xx_common_publish_devices(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __MPC86XX_H__ */

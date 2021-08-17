@@ -339,7 +339,12 @@ static unsigned long lance_probe1( struct net_device *dev, struct lance_addr
                                    *init_rec );
 static int lance_open( struct net_device *dev );
 static void lance_init_ring( struct net_device *dev );
+<<<<<<< HEAD
 static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev );
+=======
+static netdev_tx_t lance_start_xmit(struct sk_buff *skb,
+				    struct net_device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static irqreturn_t lance_interrupt( int irq, void *dev_id );
 static int lance_rx( struct net_device *dev );
 static int lance_close( struct net_device *dev );
@@ -553,8 +558,13 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 	if (lp->cardtype == PAM_CARD ||
 		memaddr == (unsigned short *)0xffe00000) {
 		/* PAMs card and Riebl on ST use level 5 autovector */
+<<<<<<< HEAD
 		if (request_irq(IRQ_AUTO_5, lance_interrupt, IRQ_TYPE_PRIO,
 		            "PAM,Riebl-ST Ethernet", dev)) {
+=======
+		if (request_irq(IRQ_AUTO_5, lance_interrupt, 0,
+				"PAM,Riebl-ST Ethernet", dev)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			printk( "Lance: request for irq %d failed\n", IRQ_AUTO_5 );
 			return 0;
 		}
@@ -567,8 +577,13 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 			printk( "Lance: request for VME interrupt failed\n" );
 			return 0;
 		}
+<<<<<<< HEAD
 		if (request_irq(irq, lance_interrupt, IRQ_TYPE_PRIO,
 		            "Riebl-VME Ethernet", dev)) {
+=======
+		if (request_irq(irq, lance_interrupt, 0, "Riebl-VME Ethernet",
+				dev)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			printk( "Lance: request for irq %u failed\n", irq );
 			return 0;
 		}
@@ -586,10 +601,17 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 	switch( lp->cardtype ) {
 	  case OLD_RIEBL:
 		/* No ethernet address! (Set some default address) */
+<<<<<<< HEAD
 		memcpy( dev->dev_addr, OldRieblDefHwaddr, 6 );
 		break;
 	  case NEW_RIEBL:
 		lp->memcpy_f( dev->dev_addr, RIEBL_HWADDR_ADDR, 6 );
+=======
+		memcpy(dev->dev_addr, OldRieblDefHwaddr, ETH_ALEN);
+		break;
+	  case NEW_RIEBL:
+		lp->memcpy_f(dev->dev_addr, RIEBL_HWADDR_ADDR, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	  case PAM_CARD:
 		i = IO->eeprom;
@@ -764,13 +786,22 @@ static void lance_tx_timeout (struct net_device *dev)
 	/* lance_restart, essentially */
 	lance_init_ring(dev);
 	REGA( CSR0 ) = CSR0_INEA | CSR0_INIT | CSR0_STRT;
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_wake_queue(dev);
 }
 
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
 
+<<<<<<< HEAD
 static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev )
+=======
+static netdev_tx_t
+lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct lance_private *lp = netdev_priv(dev);
 	struct lance_ioreg	 *IO = lp->iobase;
@@ -1147,7 +1178,11 @@ static struct net_device *atarilance_dev;
 static int __init atarilance_module_init(void)
 {
 	atarilance_dev = atarilance_probe(-1);
+<<<<<<< HEAD
 	return PTR_RET(atarilance_dev);
+=======
+	return PTR_ERR_OR_ZERO(atarilance_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __exit atarilance_module_exit(void)

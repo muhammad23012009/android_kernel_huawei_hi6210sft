@@ -4,11 +4,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "tests.h"
 
 extern int verbose;
 
+<<<<<<< HEAD
 int test__python_use(void)
+=======
+int test__python_use(int subtest __maybe_unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *cmd;
 	int ret;

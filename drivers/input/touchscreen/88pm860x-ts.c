@@ -16,6 +16,10 @@
 #include <linux/input.h>
 #include <linux/mfd/88pm860x.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MEAS_LEN		(8)
 #define ACCURATE_BIT		(12)
@@ -125,7 +129,11 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 	int data, n, ret;
 	if (!np)
 		return -ENODEV;
+<<<<<<< HEAD
 	np = of_find_node_by_name(np, "touch");
+=======
+	np = of_get_child_by_name(np, "touch");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!np) {
 		dev_err(&pdev->dev, "Can't find touch node\n");
 		return -EINVAL;
@@ -143,13 +151,21 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 	if (data) {
 		ret = pm860x_reg_write(i2c, PM8607_GPADC_MISC1, data);
 		if (ret < 0)
+<<<<<<< HEAD
 			return -EINVAL;
+=======
+			goto err_put_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* set tsi prebias time */
 	if (!of_property_read_u32(np, "marvell,88pm860x-tsi-prebias", &data)) {
 		ret = pm860x_reg_write(i2c, PM8607_TSI_PREBIAS, data);
 		if (ret < 0)
+<<<<<<< HEAD
 			return -EINVAL;
+=======
+			goto err_put_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* set prebias & prechg time of pen detect */
 	data = 0;
@@ -160,10 +176,25 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 	if (data) {
 		ret = pm860x_reg_write(i2c, PM8607_PD_PREBIAS, data);
 		if (ret < 0)
+<<<<<<< HEAD
 			return -EINVAL;
 	}
 	of_property_read_u32(np, "marvell,88pm860x-resistor-X", res_x);
 	return 0;
+=======
+			goto err_put_node;
+	}
+	of_property_read_u32(np, "marvell,88pm860x-resistor-X", res_x);
+
+	of_node_put(np);
+
+	return 0;
+
+err_put_node:
+	of_node_put(np);
+
+	return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else
 #define pm860x_touch_dt_init(x, y, z)	(-1)
@@ -172,7 +203,11 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 static int pm860x_touch_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	struct pm860x_touch_pdata *pdata = pdev->dev.platform_data;
+=======
+	struct pm860x_touch_pdata *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pm860x_touch *touch;
 	struct i2c_client *i2c = (chip->id == CHIP_PM8607) ? chip->client \
 				 : chip->companion;
@@ -234,6 +269,7 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	touch = kzalloc(sizeof(struct pm860x_touch), GFP_KERNEL);
 	if (touch == NULL)
 		return -ENOMEM;
@@ -244,6 +280,19 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to allocate input device!\n");
 		ret = -ENOMEM;
 		goto out;
+=======
+	touch = devm_kzalloc(&pdev->dev, sizeof(struct pm860x_touch),
+			     GFP_KERNEL);
+	if (!touch)
+		return -ENOMEM;
+
+	platform_set_drvdata(pdev, touch);
+
+	touch->idev = devm_input_allocate_device(&pdev->dev);
+	if (!touch->idev) {
+		dev_err(&pdev->dev, "Failed to allocate input device!\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	touch->idev->name = "88pm860x-touch";
@@ -258,10 +307,18 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 	touch->res_x = res_x;
 	input_set_drvdata(touch->idev, touch);
 
+<<<<<<< HEAD
 	ret = request_threaded_irq(touch->irq, NULL, pm860x_touch_handler,
 				   IRQF_ONESHOT, "touch", touch);
 	if (ret < 0)
 		goto out_irq;
+=======
+	ret = devm_request_threaded_irq(&pdev->dev, touch->irq, NULL,
+					pm860x_touch_handler, IRQF_ONESHOT,
+					"touch", touch);
+	if (ret < 0)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__set_bit(EV_ABS, touch->idev->evbit);
 	__set_bit(ABS_X, touch->idev->absbit);
@@ -279,11 +336,16 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 	ret = input_register_device(touch->idev);
 	if (ret < 0) {
 		dev_err(chip->dev, "Failed to register touch!\n");
+<<<<<<< HEAD
 		goto out_rg;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, touch);
 	return 0;
+<<<<<<< HEAD
 out_rg:
 	free_irq(touch->irq, touch);
 out_irq:
@@ -302,15 +364,22 @@ static int pm860x_touch_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 	kfree(touch);
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver pm860x_touch_driver = {
 	.driver	= {
 		.name	= "88pm860x-touch",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe	= pm860x_touch_probe,
 	.remove	= pm860x_touch_remove,
+=======
+	},
+	.probe	= pm860x_touch_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 module_platform_driver(pm860x_touch_driver);
 

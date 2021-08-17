@@ -42,7 +42,11 @@ static struct platform_device smc91x_device = {
 	.resource      = smc91x_resources,
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 static struct resource bfin_uart0_resources[] = {
 	{
@@ -93,7 +97,11 @@ static struct platform_device bfin_uart0_device = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_BFIN_SIR) || defined(CONFIG_BFIN_SIR_MODULE)
+=======
+#if IS_ENABLED(CONFIG_BFIN_SIR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BFIN_SIR0
 static struct resource bfin_sir0_resources[] = {
 	{
@@ -125,13 +133,21 @@ static struct platform_device bfin_sir0_device = {
 static struct platform_device *tepla_devices[] __initdata = {
 	&smc91x_device,
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 	&bfin_uart0_device,
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_BFIN_SIR) || defined(CONFIG_BFIN_SIR_MODULE)
+=======
+#if IS_ENABLED(CONFIG_BFIN_SIR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BFIN_SIR0
 	&bfin_sir0_device,
 #endif

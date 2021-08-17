@@ -55,8 +55,11 @@
 #define SUPPORT_SYSRQ
 #endif
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/ioport.h>
@@ -139,8 +142,11 @@ struct mpsc_port_info {
 	/* Internal driver state for this ctlr */
 	u8 ready;
 	u8 rcv_data;
+<<<<<<< HEAD
 	tcflag_t c_iflag;	/* save termios->c_iflag */
 	tcflag_t c_cflag;	/* save termios->c_cflag */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Info passed in from platform */
 	u8 mirror_regs;		/* Need to mirror regs? */
@@ -755,7 +761,11 @@ static int mpsc_alloc_ring_mem(struct mpsc_port_info *pi)
 		pi->port.line);
 
 	if (!pi->dma_region) {
+<<<<<<< HEAD
 		if (!dma_supported(pi->port.dev, 0xffffffff)) {
+=======
+		if (!dma_set_mask(pi->port.dev, 0xffffffff)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			printk(KERN_ERR "MPSC: Inadequate DMA support\n");
 			rc = -ENXIO;
 		} else if ((pi->dma_region = dma_alloc_noncoherent(pi->port.dev,
@@ -913,7 +923,12 @@ static int mpsc_make_ready(struct mpsc_port_info *pi)
 
 	if (!pi->ready) {
 		mpsc_init_hw(pi);
+<<<<<<< HEAD
 		if ((rc = mpsc_alloc_ring_mem(pi)))
+=======
+		rc = mpsc_alloc_ring_mem(pi);
+		if (rc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return rc;
 		mpsc_init_rings(pi);
 		pi->ready = 1;
@@ -934,7 +949,11 @@ static int serial_polled;
  ******************************************************************************
  */
 
+<<<<<<< HEAD
 static int mpsc_rx_intr(struct mpsc_port_info *pi)
+=======
+static int mpsc_rx_intr(struct mpsc_port_info *pi, unsigned long *flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mpsc_rx_desc *rxre;
 	struct tty_port *port = &pi->port.state->port;
@@ -969,8 +988,16 @@ static int mpsc_rx_intr(struct mpsc_port_info *pi)
 #endif
 		/* Following use of tty struct directly is deprecated */
 		if (tty_buffer_request_room(port, bytes_in) < bytes_in) {
+<<<<<<< HEAD
 			if (port->low_latency)
 				tty_flip_buffer_push(port);
+=======
+			if (port->low_latency) {
+				spin_unlock_irqrestore(&pi->port.lock, *flags);
+				tty_flip_buffer_push(port);
+				spin_lock_irqsave(&pi->port.lock, *flags);
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * If this failed then we will throw away the bytes
 			 * but must do so to clear interrupts.
@@ -1080,7 +1107,13 @@ next_frame:
 	if ((readl(pi->sdma_base + SDMA_SDCM) & SDMA_SDCM_ERD) == 0)
 		mpsc_start_rx(pi);
 
+<<<<<<< HEAD
 	tty_flip_buffer_push(port);
+=======
+	spin_unlock_irqrestore(&pi->port.lock, *flags);
+	tty_flip_buffer_push(port);
+	spin_lock_irqsave(&pi->port.lock, *flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
@@ -1222,7 +1255,11 @@ static irqreturn_t mpsc_sdma_intr(int irq, void *dev_id)
 
 	spin_lock_irqsave(&pi->port.lock, iflags);
 	mpsc_sdma_intr_ack(pi);
+<<<<<<< HEAD
 	if (mpsc_rx_intr(pi))
+=======
+	if (mpsc_rx_intr(pi, &iflags))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = IRQ_HANDLED;
 	if (mpsc_tx_intr(pi))
 		rc = IRQ_HANDLED;
@@ -1241,7 +1278,12 @@ static irqreturn_t mpsc_sdma_intr(int irq, void *dev_id)
  */
 static uint mpsc_tx_empty(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ulong iflags;
 	uint rc;
 
@@ -1259,7 +1301,12 @@ static void mpsc_set_mctrl(struct uart_port *port, uint mctrl)
 
 static uint mpsc_get_mctrl(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 mflags, status;
 
 	status = (pi->mirror_regs) ? pi->MPSC_CHR_10_m
@@ -1276,7 +1323,12 @@ static uint mpsc_get_mctrl(struct uart_port *port)
 
 static void mpsc_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("mpsc_stop_tx[%d]\n", port->line);
 
@@ -1285,7 +1337,12 @@ static void mpsc_stop_tx(struct uart_port *port)
 
 static void mpsc_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long iflags;
 
 	spin_lock_irqsave(&pi->tx_lock, iflags);
@@ -1311,7 +1368,12 @@ static void mpsc_start_rx(struct mpsc_port_info *pi)
 
 static void mpsc_stop_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("mpsc_stop_rx[%d]: Stopping...\n", port->line);
 
@@ -1331,6 +1393,7 @@ static void mpsc_stop_rx(struct uart_port *port)
 	mpsc_sdma_cmd(pi, SDMA_SDCM_AR);
 }
 
+<<<<<<< HEAD
 static void mpsc_enable_ms(struct uart_port *port)
 {
 }
@@ -1338,6 +1401,12 @@ static void mpsc_enable_ms(struct uart_port *port)
 static void mpsc_break_ctl(struct uart_port *port, int ctl)
 {
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+static void mpsc_break_ctl(struct uart_port *port, int ctl)
+{
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ulong	flags;
 	u32	v;
 
@@ -1352,7 +1421,12 @@ static void mpsc_break_ctl(struct uart_port *port, int ctl)
 
 static int mpsc_startup(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 flag = 0;
 	int rc;
 
@@ -1382,7 +1456,12 @@ static int mpsc_startup(struct uart_port *port)
 
 static void mpsc_shutdown(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("mpsc_shutdown[%d]: Shutting down MPSC\n", port->line);
 
@@ -1393,14 +1472,22 @@ static void mpsc_shutdown(struct uart_port *port)
 static void mpsc_set_termios(struct uart_port *port, struct ktermios *termios,
 		 struct ktermios *old)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 baud;
 	ulong flags;
 	u32 chr_bits, stop_bits, par;
 
+<<<<<<< HEAD
 	pi->c_iflag = termios->c_iflag;
 	pi->c_cflag = termios->c_cflag;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (termios->c_cflag & CSIZE) {
 	case CS5:
 		chr_bits = MPSC_MPCR_CL_5;
@@ -1453,7 +1540,11 @@ static void mpsc_set_termios(struct uart_port *port, struct ktermios *termios,
 		pi->port.read_status_mask |= SDMA_DESC_CMDSTAT_PE
 			| SDMA_DESC_CMDSTAT_FR;
 
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pi->port.read_status_mask |= SDMA_DESC_CMDSTAT_BR;
 
 	/* Characters/events to ignore */
@@ -1497,7 +1588,12 @@ static int mpsc_request_port(struct uart_port *port)
 
 static void mpsc_release_port(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pi->ready) {
 		mpsc_uninit_rings(pi);
@@ -1512,7 +1608,12 @@ static void mpsc_config_port(struct uart_port *port, int flags)
 
 static int mpsc_verify_port(struct uart_port *port, struct serial_struct *ser)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc = 0;
 
 	pr_debug("mpsc_verify_port[%d]: Verifying port data\n", pi->port.line);
@@ -1547,7 +1648,12 @@ static void mpsc_put_poll_char(struct uart_port *port,
 
 static int mpsc_get_poll_char(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mpsc_rx_desc *rxre;
 	u32	cmdstat, bytes_in, i;
 	u8	*bp;
@@ -1647,7 +1753,12 @@ static int mpsc_get_poll_char(struct uart_port *port)
 static void mpsc_put_poll_char(struct uart_port *port,
 			 unsigned char c)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info *pi = (struct mpsc_port_info *)port;
+=======
+	struct mpsc_port_info *pi =
+		container_of(port, struct mpsc_port_info, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 data;
 
 	data = readl(pi->mpsc_base + MPSC_MPCR);
@@ -1669,7 +1780,10 @@ static struct uart_ops mpsc_pops = {
 	.stop_tx	= mpsc_stop_tx,
 	.start_tx	= mpsc_start_tx,
 	.stop_rx	= mpsc_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= mpsc_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl	= mpsc_break_ctl,
 	.startup	= mpsc_startup,
 	.shutdown	= mpsc_shutdown,
@@ -1858,12 +1972,20 @@ static int mpsc_shared_map_regs(struct platform_device *pd)
 
 static void mpsc_shared_unmap_regs(void)
 {
+<<<<<<< HEAD
 	if (!mpsc_shared_regs.mpsc_routing_base) {
+=======
+	if (mpsc_shared_regs.mpsc_routing_base) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iounmap(mpsc_shared_regs.mpsc_routing_base);
 		release_mem_region(mpsc_shared_regs.mpsc_routing_base_p,
 				MPSC_ROUTING_REG_BLOCK_SIZE);
 	}
+<<<<<<< HEAD
 	if (!mpsc_shared_regs.sdma_intr_base) {
+=======
+	if (mpsc_shared_regs.sdma_intr_base) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iounmap(mpsc_shared_regs.sdma_intr_base);
 		release_mem_region(mpsc_shared_regs.sdma_intr_base_p,
 				MPSC_SDMA_INTR_REG_BLOCK_SIZE);
@@ -1879,6 +2001,7 @@ static void mpsc_shared_unmap_regs(void)
 static int mpsc_shared_drv_probe(struct platform_device *dev)
 {
 	struct mpsc_shared_pdata	*pdata;
+<<<<<<< HEAD
 	int				 rc = -ENODEV;
 
 	if (dev->id == 0) {
@@ -1899,10 +2022,31 @@ static int mpsc_shared_drv_probe(struct platform_device *dev)
 	}
 
 	return rc;
+=======
+	int rc;
+
+	if (dev->id != 0)
+		return -ENODEV;
+
+	rc = mpsc_shared_map_regs(dev);
+	if (rc)
+		return rc;
+
+	pdata = dev_get_platdata(&dev->dev);
+
+	mpsc_shared_regs.MPSC_MRR_m = pdata->mrr_val;
+	mpsc_shared_regs.MPSC_RCRR_m= pdata->rcrr_val;
+	mpsc_shared_regs.MPSC_TCRR_m= pdata->tcrr_val;
+	mpsc_shared_regs.SDMA_INTR_CAUSE_m = pdata->intr_cause_val;
+	mpsc_shared_regs.SDMA_INTR_MASK_m = pdata->intr_mask_val;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mpsc_shared_drv_remove(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	int	rc = -ENODEV;
 
 	if (dev->id == 0) {
@@ -1916,6 +2060,19 @@ static int mpsc_shared_drv_remove(struct platform_device *dev)
 	}
 
 	return rc;
+=======
+	if (dev->id != 0)
+		return -ENODEV;
+
+	mpsc_shared_unmap_regs();
+	mpsc_shared_regs.MPSC_MRR_m = 0;
+	mpsc_shared_regs.MPSC_RCRR_m = 0;
+	mpsc_shared_regs.MPSC_TCRR_m = 0;
+	mpsc_shared_regs.SDMA_INTR_CAUSE_m = 0;
+	mpsc_shared_regs.SDMA_INTR_MASK_m = 0;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver mpsc_shared_driver = {
@@ -1966,10 +2123,13 @@ static int mpsc_drv_map_regs(struct mpsc_port_info *pi,
 		pi->sdma_base_p = r->start;
 	} else {
 		mpsc_resource_err("SDMA base");
+<<<<<<< HEAD
 		if (pi->mpsc_base) {
 			iounmap(pi->mpsc_base);
 			pi->mpsc_base = NULL;
 		}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 
@@ -1980,6 +2140,7 @@ static int mpsc_drv_map_regs(struct mpsc_port_info *pi,
 		pi->brg_base_p = r->start;
 	} else {
 		mpsc_resource_err("BRG base");
+<<<<<<< HEAD
 		if (pi->mpsc_base) {
 			iounmap(pi->mpsc_base);
 			pi->mpsc_base = NULL;
@@ -1988,16 +2149,30 @@ static int mpsc_drv_map_regs(struct mpsc_port_info *pi,
 			iounmap(pi->sdma_base);
 			pi->sdma_base = NULL;
 		}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 	return 0;
 
 err:
+<<<<<<< HEAD
+=======
+	if (pi->sdma_base) {
+		iounmap(pi->sdma_base);
+		pi->sdma_base = NULL;
+	}
+	if (pi->mpsc_base) {
+		iounmap(pi->mpsc_base);
+		pi->mpsc_base = NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENOMEM;
 }
 
 static void mpsc_drv_unmap_regs(struct mpsc_port_info *pi)
 {
+<<<<<<< HEAD
 	if (!pi->mpsc_base) {
 		iounmap(pi->mpsc_base);
 		release_mem_region(pi->mpsc_base_p, MPSC_REG_BLOCK_SIZE);
@@ -2007,6 +2182,17 @@ static void mpsc_drv_unmap_regs(struct mpsc_port_info *pi)
 		release_mem_region(pi->sdma_base_p, MPSC_SDMA_REG_BLOCK_SIZE);
 	}
 	if (!pi->brg_base) {
+=======
+	if (pi->mpsc_base) {
+		iounmap(pi->mpsc_base);
+		release_mem_region(pi->mpsc_base_p, MPSC_REG_BLOCK_SIZE);
+	}
+	if (pi->sdma_base) {
+		iounmap(pi->sdma_base);
+		release_mem_region(pi->sdma_base_p, MPSC_SDMA_REG_BLOCK_SIZE);
+	}
+	if (pi->brg_base) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iounmap(pi->brg_base);
 		release_mem_region(pi->brg_base_p, MPSC_BRG_REG_BLOCK_SIZE);
 	}
@@ -2025,7 +2211,11 @@ static void mpsc_drv_get_platform_data(struct mpsc_port_info *pi,
 {
 	struct mpsc_pdata	*pdata;
 
+<<<<<<< HEAD
 	pdata = (struct mpsc_pdata *)pd->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pd->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pi->port.uartclk = pdata->brg_clk_freq;
 	pi->port.iotype = UPIO_MEM;
@@ -2060,6 +2250,7 @@ static void mpsc_drv_get_platform_data(struct mpsc_port_info *pi,
 
 static int mpsc_drv_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct mpsc_port_info	*pi;
 	int			rc = -ENODEV;
 
@@ -2104,14 +2295,54 @@ static int mpsc_drv_remove(struct platform_device *dev)
 	} else {
 		return -ENODEV;
 	}
+=======
+	struct mpsc_port_info *pi;
+	int rc;
+
+	dev_dbg(&dev->dev, "mpsc_drv_probe: Adding MPSC %d\n", dev->id);
+
+	if (dev->id >= MPSC_NUM_CTLRS)
+		return -ENODEV;
+
+	pi = &mpsc_ports[dev->id];
+
+	rc = mpsc_drv_map_regs(pi, dev);
+	if (rc)
+		return rc;
+
+	mpsc_drv_get_platform_data(pi, dev, dev->id);
+	pi->port.dev = &dev->dev;
+
+	rc = mpsc_make_ready(pi);
+	if (rc)
+		goto err_unmap;
+
+	spin_lock_init(&pi->tx_lock);
+	rc = uart_add_one_port(&mpsc_reg, &pi->port);
+	if (rc)
+		goto err_relport;
+
+	return 0;
+err_relport:
+	mpsc_release_port(&pi->port);
+err_unmap:
+	mpsc_drv_unmap_regs(pi);
+	return rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver mpsc_driver = {
 	.probe	= mpsc_drv_probe,
+<<<<<<< HEAD
 	.remove	= mpsc_drv_remove,
 	.driver	= {
 		.name	= MPSC_CTLR_NAME,
 		.owner	= THIS_MODULE,
+=======
+	.driver	= {
+		.name			= MPSC_CTLR_NAME,
+		.suppress_bind_attrs	= true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -2124,6 +2355,7 @@ static int __init mpsc_drv_init(void)
 	memset(mpsc_ports, 0, sizeof(mpsc_ports));
 	memset(&mpsc_shared_regs, 0, sizeof(mpsc_shared_regs));
 
+<<<<<<< HEAD
 	if (!(rc = uart_register_driver(&mpsc_reg))) {
 		if (!(rc = platform_driver_register(&mpsc_shared_driver))) {
 			if ((rc = platform_driver_register(&mpsc_driver))) {
@@ -2156,3 +2388,31 @@ MODULE_VERSION(MPSC_VERSION);
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_CHARDEV_MAJOR(MPSC_MAJOR);
 MODULE_ALIAS("platform:" MPSC_CTLR_NAME);
+=======
+	rc = uart_register_driver(&mpsc_reg);
+	if (rc)
+		return rc;
+
+	rc = platform_driver_register(&mpsc_shared_driver);
+	if (rc)
+		goto err_unreg_uart;
+
+	rc = platform_driver_register(&mpsc_driver);
+	if (rc)
+		goto err_unreg_plat;
+
+	return 0;
+err_unreg_plat:
+	platform_driver_unregister(&mpsc_shared_driver);
+err_unreg_uart:
+	uart_unregister_driver(&mpsc_reg);
+	return rc;
+}
+device_initcall(mpsc_drv_init);
+
+/*
+MODULE_AUTHOR("Mark A. Greer <mgreer@mvista.com>");
+MODULE_DESCRIPTION("Generic Marvell MPSC serial/UART driver");
+MODULE_LICENSE("GPL");
+*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

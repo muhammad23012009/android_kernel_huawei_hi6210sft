@@ -21,10 +21,13 @@
 #ifndef VT_BUF_HAVE_RW
 #define scr_writew(val, addr) (*(addr) = (val))
 #define scr_readw(addr) (*(addr))
+<<<<<<< HEAD
 #define scr_memcpyw(d, s, c) memcpy(d, s, c)
 #define scr_memmovew(d, s, c) memmove(d, s, c)
 #define VT_BUF_HAVE_MEMCPYW
 #define VT_BUF_HAVE_MEMMOVEW
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifndef VT_BUF_HAVE_MEMSETW

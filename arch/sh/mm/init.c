@@ -231,7 +231,11 @@ static void __init bootmem_init_one_node(unsigned int nid)
 	if (!p->node_spanned_pages)
 		return;
 
+<<<<<<< HEAD
 	end_pfn = p->node_start_pfn + p->node_spanned_pages;
+=======
+	end_pfn = pgdat_end_pfn(p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	total_pages = bootmem_bootmap_pages(p->node_spanned_pages);
 
@@ -407,6 +411,7 @@ unsigned int mem_init_done = 0;
 
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	int codesize, datasize, initsize;
 	int nid;
 
@@ -431,6 +436,18 @@ void __init mem_init(void)
 		if (node_high_memory > high_memory)
 			high_memory = node_high_memory;
 	}
+=======
+	pg_data_t *pgdat;
+
+	iommu_init();
+
+	high_memory = NULL;
+	for_each_online_pgdat(pgdat)
+		high_memory = max_t(void *, high_memory,
+				    __va(pgdat_end_pfn(pgdat) << PAGE_SHIFT));
+
+	free_all_bootmem();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set this up early, so we can take care of the zero page */
 	cpu_cache_init();
@@ -441,6 +458,7 @@ void __init mem_init(void)
 
 	vsyscall_init();
 
+<<<<<<< HEAD
 	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
 	datasize =  (unsigned long) &_edata - (unsigned long) &_etext;
 	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
@@ -454,6 +472,10 @@ void __init mem_init(void)
 		initsize >> 10);
 
 	printk(KERN_INFO "virtual kernel memory layout:\n"
+=======
+	mem_init_print_info(NULL);
+	pr_info("virtual kernel memory layout:\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 #ifdef CONFIG_HIGHMEM
 		"    pkmap   : 0x%08lx - 0x%08lx   (%4ld kB)\n"
@@ -499,29 +521,51 @@ void __init mem_init(void)
 
 void free_initmem(void)
 {
+<<<<<<< HEAD
 	free_initmem_default(0);
+=======
+	free_initmem_default(-1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_BLK_DEV_INITRD
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	free_reserved_area(start, end, 0, "initrd");
+=======
+	free_reserved_area((void *)start, (void *)end, -1, "initrd");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
 #ifdef CONFIG_MEMORY_HOTPLUG
+<<<<<<< HEAD
 int arch_add_memory(int nid, u64 start, u64 size)
 {
 	pg_data_t *pgdat;
 	unsigned long start_pfn = start >> PAGE_SHIFT;
+=======
+int arch_add_memory(int nid, u64 start, u64 size, bool for_device)
+{
+	pg_data_t *pgdat;
+	unsigned long start_pfn = PFN_DOWN(start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long nr_pages = size >> PAGE_SHIFT;
 	int ret;
 
 	pgdat = NODE_DATA(nid);
 
 	/* We only have ZONE_NORMAL, so this is easy.. */
+<<<<<<< HEAD
 	ret = __add_pages(nid, pgdat->node_zones + ZONE_NORMAL,
 				start_pfn, nr_pages);
+=======
+	ret = __add_pages(nid, pgdat->node_zones +
+			zone_for_memory(nid, start, size, ZONE_NORMAL,
+			for_device),
+			start_pfn, nr_pages);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(ret))
 		printk("%s: Failed, __add_pages() == %d\n", __func__, ret);
 
@@ -541,7 +585,11 @@ EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
 #ifdef CONFIG_MEMORY_HOTREMOVE
 int arch_remove_memory(u64 start, u64 size)
 {
+<<<<<<< HEAD
 	unsigned long start_pfn = start >> PAGE_SHIFT;
+=======
+	unsigned long start_pfn = PFN_DOWN(start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long nr_pages = size >> PAGE_SHIFT;
 	struct zone *zone;
 	int ret;

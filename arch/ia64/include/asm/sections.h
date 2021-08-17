@@ -10,7 +10,11 @@
 #include <linux/uaccess.h>
 #include <asm-generic/sections.h>
 
+<<<<<<< HEAD
 extern char __per_cpu_start[], __per_cpu_end[], __phys_per_cpu_start[];
+=======
+extern char __phys_per_cpu_start[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef	CONFIG_SMP
 extern char __cpu0_per_cpu[];
 #endif

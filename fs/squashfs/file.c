@@ -175,7 +175,11 @@ static long long read_indexes(struct super_block *sb, int n,
 {
 	int err, i;
 	long long block = 0;
+<<<<<<< HEAD
 	__le32 *blist = kmalloc(PAGE_CACHE_SIZE, GFP_KERNEL);
+=======
+	__le32 *blist = kmalloc(PAGE_SIZE, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (blist == NULL) {
 		ERROR("read_indexes: Failed to allocate block_list\n");
@@ -183,7 +187,11 @@ static long long read_indexes(struct super_block *sb, int n,
 	}
 
 	while (n) {
+<<<<<<< HEAD
 		int blocks = min_t(int, n, PAGE_CACHE_SIZE >> 2);
+=======
+		int blocks = min_t(int, n, PAGE_SIZE >> 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		err = squashfs_read_metadata(sb, blist, start_block,
 				offset, blocks << 2);
@@ -194,7 +202,15 @@ static long long read_indexes(struct super_block *sb, int n,
 		}
 
 		for (i = 0; i < blocks; i++) {
+<<<<<<< HEAD
 			int size = le32_to_cpu(blist[i]);
+=======
+			int size = squashfs_block_size(blist[i]);
+			if (size < 0) {
+				err = size;
+				goto failure;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			block += SQUASHFS_COMPRESSED_SIZE_BLOCK(size);
 		}
 		n -= blocks;
@@ -220,11 +236,19 @@ failure:
  * If the skip factor is limited in this way then the file will use multiple
  * slots.
  */
+<<<<<<< HEAD
 static inline int calculate_skip(int blocks)
 {
 	int skip = blocks / ((SQUASHFS_META_ENTRIES + 1)
 		 * SQUASHFS_META_INDEXES);
 	return min(SQUASHFS_CACHED_BLKS - 1, skip + 1);
+=======
+static inline int calculate_skip(u64 blocks)
+{
+	u64 skip = blocks / ((SQUASHFS_META_ENTRIES + 1)
+		 * SQUASHFS_META_INDEXES);
+	return min((u64) SQUASHFS_CACHED_BLKS - 1, skip + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -367,7 +391,28 @@ static int read_blocklist(struct inode *inode, int index, u64 *block)
 			sizeof(size));
 	if (res < 0)
 		return res;
+<<<<<<< HEAD
 	return le32_to_cpu(size);
+=======
+	return squashfs_block_size(size);
+}
+
+void squashfs_fill_page(struct page *page, struct squashfs_cache_entry *buffer, int offset, int avail)
+{
+	int copied;
+	void *pageaddr;
+
+	pageaddr = kmap_atomic(page);
+	copied = squashfs_copy_data(pageaddr, buffer, offset, avail);
+	memset(pageaddr + copied, 0, PAGE_SIZE - copied);
+	kunmap_atomic(pageaddr);
+
+	flush_dcache_page(page);
+	if (copied == avail)
+		SetPageUptodate(page);
+	else
+		SetPageError(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Copy data into page cache  */
@@ -376,20 +421,34 @@ void squashfs_copy_cache(struct page *page, struct squashfs_cache_entry *buffer,
 {
 	struct inode *inode = page->mapping->host;
 	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
+<<<<<<< HEAD
 	void *pageaddr;
 	int i, mask = (1 << (msblk->block_log - PAGE_CACHE_SHIFT)) - 1;
+=======
+	int i, mask = (1 << (msblk->block_log - PAGE_SHIFT)) - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int start_index = page->index & ~mask, end_index = start_index | mask;
 
 	/*
 	 * Loop copying datablock into pages.  As the datablock likely covers
+<<<<<<< HEAD
 	 * many PAGE_CACHE_SIZE pages (default block size is 128 KiB) explicitly
+=======
+	 * many PAGE_SIZE pages (default block size is 128 KiB) explicitly
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * grab the pages from the page cache, except for the page that we've
 	 * been called to fill.
 	 */
 	for (i = start_index; i <= end_index && bytes > 0; i++,
+<<<<<<< HEAD
 			bytes -= PAGE_CACHE_SIZE, offset += PAGE_CACHE_SIZE) {
 		struct page *push_page;
 		int avail = buffer ? min_t(int, bytes, PAGE_CACHE_SIZE) : 0;
+=======
+			bytes -= PAGE_SIZE, offset += PAGE_SIZE) {
+		struct page *push_page;
+		int avail = buffer ? min_t(int, bytes, PAGE_SIZE) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		TRACE("bytes %d, i %d, available_bytes %d\n", bytes, i, avail);
 
@@ -402,6 +461,7 @@ void squashfs_copy_cache(struct page *page, struct squashfs_cache_entry *buffer,
 		if (PageUptodate(push_page))
 			goto skip_page;
 
+<<<<<<< HEAD
 		pageaddr = kmap_atomic(push_page);
 		squashfs_copy_data(pageaddr, buffer, offset, avail);
 		memset(pageaddr + avail, 0, PAGE_CACHE_SIZE - avail);
@@ -412,14 +472,27 @@ skip_page:
 		unlock_page(push_page);
 		if (i != page->index)
 			page_cache_release(push_page);
+=======
+		squashfs_fill_page(push_page, buffer, offset, avail);
+skip_page:
+		unlock_page(push_page);
+		if (i != page->index)
+			put_page(push_page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 /* Read datablock stored packed inside a fragment (tail-end packed block) */
+<<<<<<< HEAD
 static int squashfs_readpage_fragment(struct page *page)
 {
 	struct inode *inode = page->mapping->host;
 	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
+=======
+static int squashfs_readpage_fragment(struct page *page, int expected)
+{
+	struct inode *inode = page->mapping->host;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct squashfs_cache_entry *buffer = squashfs_get_fragment(inode->i_sb,
 		squashfs_i(inode)->fragment_block,
 		squashfs_i(inode)->fragment_size);
@@ -430,14 +503,19 @@ static int squashfs_readpage_fragment(struct page *page)
 			squashfs_i(inode)->fragment_block,
 			squashfs_i(inode)->fragment_size);
 	else
+<<<<<<< HEAD
 		squashfs_copy_cache(page, buffer, i_size_read(inode) &
 			(msblk->block_size - 1),
+=======
+		squashfs_copy_cache(page, buffer, expected,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			squashfs_i(inode)->fragment_offset);
 
 	squashfs_cache_put(buffer);
 	return res;
 }
 
+<<<<<<< HEAD
 static int squashfs_readpage_sparse(struct page *page, int index, int file_end)
 {
 	struct inode *inode = page->mapping->host;
@@ -447,6 +525,11 @@ static int squashfs_readpage_sparse(struct page *page, int index, int file_end)
 			 msblk->block_size;
 
 	squashfs_copy_cache(page, NULL, bytes, 0);
+=======
+static int squashfs_readpage_sparse(struct page *page, int expected)
+{
+	squashfs_copy_cache(page, NULL, expected, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -454,16 +537,29 @@ static int squashfs_readpage(struct file *file, struct page *page)
 {
 	struct inode *inode = page->mapping->host;
 	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
+<<<<<<< HEAD
 	int index = page->index >> (msblk->block_log - PAGE_CACHE_SHIFT);
 	int file_end = i_size_read(inode) >> msblk->block_log;
+=======
+	int index = page->index >> (msblk->block_log - PAGE_SHIFT);
+	int file_end = i_size_read(inode) >> msblk->block_log;
+	int expected = index == file_end ?
+			(i_size_read(inode) & (msblk->block_size - 1)) :
+			 msblk->block_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int res;
 	void *pageaddr;
 
 	TRACE("Entered squashfs_readpage, page index %lx, start block %llx\n",
 				page->index, squashfs_i(inode)->start);
 
+<<<<<<< HEAD
 	if (page->index >= ((i_size_read(inode) + PAGE_CACHE_SIZE - 1) >>
 					PAGE_CACHE_SHIFT))
+=======
+	if (page->index >= ((i_size_read(inode) + PAGE_SIZE - 1) >>
+					PAGE_SHIFT))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 
 	if (index < file_end || squashfs_i(inode)->fragment_block ==
@@ -474,11 +570,19 @@ static int squashfs_readpage(struct file *file, struct page *page)
 			goto error_out;
 
 		if (bsize == 0)
+<<<<<<< HEAD
 			res = squashfs_readpage_sparse(page, index, file_end);
 		else
 			res = squashfs_readpage_block(page, block, bsize);
 	} else
 		res = squashfs_readpage_fragment(page);
+=======
+			res = squashfs_readpage_sparse(page, expected);
+		else
+			res = squashfs_readpage_block(page, block, bsize, expected);
+	} else
+		res = squashfs_readpage_fragment(page, expected);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!res)
 		return 0;
@@ -487,7 +591,11 @@ error_out:
 	SetPageError(page);
 out:
 	pageaddr = kmap_atomic(page);
+<<<<<<< HEAD
 	memset(pageaddr, 0, PAGE_CACHE_SIZE);
+=======
+	memset(pageaddr, 0, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kunmap_atomic(pageaddr);
 	flush_dcache_page(page);
 	if (!PageError(page))

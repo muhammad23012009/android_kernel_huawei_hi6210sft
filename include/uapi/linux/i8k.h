@@ -34,7 +34,12 @@
 #define I8K_FAN_OFF		0
 #define I8K_FAN_LOW		1
 #define I8K_FAN_HIGH		2
+<<<<<<< HEAD
 #define I8K_FAN_MAX		I8K_FAN_HIGH
+=======
+#define I8K_FAN_TURBO		3
+#define I8K_FAN_MAX		I8K_FAN_TURBO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define I8K_VOL_UP		1
 #define I8K_VOL_DOWN		2

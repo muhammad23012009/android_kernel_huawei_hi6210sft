@@ -1495,7 +1495,10 @@ static const struct of_device_id schizo_match[] = {
 static struct platform_driver schizo_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = schizo_match,
 	},
 	.probe		= schizo_probe,

@@ -27,6 +27,7 @@
 #ifndef __OMAP_PANEL_DATA_H
 #define __OMAP_PANEL_DATA_H
 
+<<<<<<< HEAD
 struct omap_dss_device;
 
 /**
@@ -145,6 +146,58 @@ struct panel_nec_nl8048_data {
  */
 struct panel_tpo_td043_data {
 	int nreset_gpio;
+=======
+#include <video/display_timing.h>
+
+/**
+ * connector_atv platform data
+ * @name: name for this display entity
+ * @source: name of the display entity used as a video source
+ * @invert_polarity: invert signal polarity
+ */
+struct connector_atv_platform_data {
+	const char *name;
+	const char *source;
+
+	bool invert_polarity;
+};
+
+/**
+ * panel_dpi platform data
+ * @name: name for this display entity
+ * @source: name of the display entity used as a video source
+ * @data_lines: number of DPI datalines
+ * @display_timing: timings for this panel
+ * @backlight_gpio: gpio to enable/disable the backlight (or -1)
+ * @enable_gpio: gpio to enable/disable the panel (or -1)
+ */
+struct panel_dpi_platform_data {
+	const char *name;
+	const char *source;
+
+	int data_lines;
+
+	const struct display_timing *display_timing;
+
+	int backlight_gpio;
+	int enable_gpio;
+};
+
+/**
+ * panel_acx565akm platform data
+ * @name: name for this display entity
+ * @source: name of the display entity used as a video source
+ * @reset_gpio: gpio to reset the panel (or -1)
+ * @datapairs: number of SDI datapairs
+ */
+struct panel_acx565akm_platform_data {
+	const char *name;
+	const char *source;
+
+	int reset_gpio;
+
+	int datapairs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* __OMAP_PANEL_DATA_H */

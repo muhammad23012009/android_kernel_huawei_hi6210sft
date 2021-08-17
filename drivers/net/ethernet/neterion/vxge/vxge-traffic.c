@@ -1004,8 +1004,11 @@ void vxge_hw_device_clear_tx_rx(struct __vxge_hw_device *hldev)
 static enum vxge_hw_status
 vxge_hw_channel_dtr_alloc(struct __vxge_hw_channel *channel, void **dtrh)
 {
+<<<<<<< HEAD
 	void **tmp_arr;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (channel->reserve_ptr - channel->reserve_top > 0) {
 _alloc_after_swap:
 		*dtrh =	channel->reserve_arr[--channel->reserve_ptr];
@@ -1020,10 +1023,14 @@ _alloc_after_swap:
 	 * i.e.	no additional lock need	to be done when	we free	a resource */
 
 	if (channel->length - channel->free_ptr > 0) {
+<<<<<<< HEAD
 
 		tmp_arr	= channel->reserve_arr;
 		channel->reserve_arr = channel->free_arr;
 		channel->free_arr = tmp_arr;
+=======
+		swap(channel->reserve_arr, channel->free_arr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		channel->reserve_ptr = channel->length;
 		channel->reserve_top = channel->free_ptr;
 		channel->free_ptr = channel->length;
@@ -1956,8 +1963,12 @@ exit:
  * @vid: vlan id to be added for this vpath into the list
  *
  * Adds the given vlan id into the list for this  vpath.
+<<<<<<< HEAD
  * see also: vxge_hw_vpath_vid_delete, vxge_hw_vpath_vid_get and
  * vxge_hw_vpath_vid_get_next
+=======
+ * see also: vxge_hw_vpath_vid_delete
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 enum vxge_hw_status
@@ -1979,6 +1990,7 @@ exit:
 }
 
 /**
+<<<<<<< HEAD
  * vxge_hw_vpath_vid_get - Get the first vid entry for this vpath
  *               from vlan id table.
  * @vp: Vpath handle.
@@ -2010,14 +2022,20 @@ exit:
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * vxge_hw_vpath_vid_delete - Delete the vlan id entry for this vpath
  *               to vlan id table.
  * @vp: Vpath handle.
  * @vid: vlan id to be added for this vpath into the list
  *
  * Adds the given vlan id into the list for this  vpath.
+<<<<<<< HEAD
  * see also: vxge_hw_vpath_vid_add, vxge_hw_vpath_vid_get and
  * vxge_hw_vpath_vid_get_next
+=======
+ * see also: vxge_hw_vpath_vid_add
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 enum vxge_hw_status

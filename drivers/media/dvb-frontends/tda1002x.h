@@ -57,7 +57,11 @@ struct tda10023_config {
 	u16 deltaf;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_TDA10021)
+=======
+#if IS_REACHABLE(CONFIG_DVB_TDA10021)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* tda10021_attach(const struct tda1002x_config* config,
 					    struct i2c_adapter* i2c, u8 pwm);
 #else
@@ -69,7 +73,11 @@ static inline struct dvb_frontend* tda10021_attach(const struct tda1002x_config*
 }
 #endif // CONFIG_DVB_TDA10021
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_TDA10023)
+=======
+#if IS_REACHABLE(CONFIG_DVB_TDA10023)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *tda10023_attach(
 	const struct tda10023_config *config,
 	struct i2c_adapter *i2c, u8 pwm);

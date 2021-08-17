@@ -30,6 +30,10 @@
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
 #include <linux/phy.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_mdio.h>
 #include <linux/of_platform.h>
 
@@ -40,7 +44,10 @@ static void __iomem *gpio_regs;
 struct gpio_priv {
 	int mdc_pin;
 	int mdio_pin;
+<<<<<<< HEAD
 	int mdio_irqs[PHY_MAX_ADDR];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define MDC_PIN(bus)	(((struct gpio_priv *)bus->priv)->mdc_pin)
@@ -244,8 +251,11 @@ static int gpio_mdio_probe(struct platform_device *ofdev)
 	snprintf(new_bus->id, MII_BUS_ID_SIZE, "%x", *prop);
 	new_bus->priv = priv;
 
+<<<<<<< HEAD
 	new_bus->irq = priv->mdio_irqs;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prop = of_get_property(np, "mdc-pin", NULL);
 	priv->mdc_pin = *prop;
 
@@ -289,7 +299,11 @@ static int gpio_mdio_remove(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id gpio_mdio_match[] =
+=======
+static const struct of_device_id gpio_mdio_match[] =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	{
 		.compatible      = "gpio-mdio",
@@ -304,12 +318,19 @@ static struct platform_driver gpio_mdio_driver =
 	.remove		= gpio_mdio_remove,
 	.driver = {
 		.name = "gpio-mdio-bitbang",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = gpio_mdio_match,
 	},
 };
 
+<<<<<<< HEAD
 int gpio_mdio_init(void)
+=======
+static int gpio_mdio_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device_node *np;
 
@@ -329,7 +350,11 @@ int gpio_mdio_init(void)
 }
 module_init(gpio_mdio_init);
 
+<<<<<<< HEAD
 void gpio_mdio_exit(void)
+=======
+static void gpio_mdio_exit(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	platform_driver_unregister(&gpio_mdio_driver);
 	if (gpio_regs)

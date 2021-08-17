@@ -44,7 +44,11 @@ static inline void i8042_write_command(int val)
 
 static inline int i8042_platform_init(void)
 {
+<<<<<<< HEAD
 	i8042_reset = 1;
+=======
+	i8042_reset = I8042_RESET_ALWAYS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

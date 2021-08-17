@@ -51,6 +51,7 @@ void arch_cpu_idle(void)
 	local_irq_enable();
 }
 
+<<<<<<< HEAD
 static char reboot_mode = 'h';
 
 int __init reboot_setup(char *str)
@@ -61,6 +62,8 @@ int __init reboot_setup(char *str)
 
 __setup("reboot=", reboot_setup);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void machine_halt(void)
 {
 	gpio_set_value(GPO_SOFT_OFF, 0);
@@ -70,6 +73,10 @@ void machine_halt(void)
  * Function pointers to optional machine specific functions
  */
 void (*pm_power_off)(void) = NULL;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pm_power_off);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void machine_power_off(void)
 {
@@ -88,7 +95,11 @@ void machine_restart(char *cmd)
 	 * we may need it to insert some 1:1 mappings so that
 	 * soft boot works.
 	 */
+<<<<<<< HEAD
 	setup_mm_for_reboot(reboot_mode);
+=======
+	setup_mm_for_reboot();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Clean and invalidate caches */
 	flush_cache_all();
@@ -102,7 +113,11 @@ void machine_restart(char *cmd)
 	/*
 	 * Now handle reboot code.
 	 */
+<<<<<<< HEAD
 	if (reboot_mode == 's') {
+=======
+	if (reboot_mode == REBOOT_SOFT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Jump into ROM at address 0xffff0000 */
 		cpu_reset(VECTORS_BASE);
 	} else {
@@ -210,6 +225,7 @@ void show_regs(struct pt_regs *regs)
 	__backtrace();
 }
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -217,6 +233,8 @@ void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void flush_thread(void)
 {
 	struct thread_info *thread = current_thread_info();
@@ -311,8 +329,12 @@ unsigned long get_wchan(struct task_struct *p)
 
 unsigned long arch_randomize_brk(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	unsigned long range_end = mm->brk + 0x02000000;
 	return randomize_range(mm->brk, range_end, 0) ? : mm->brk;
+=======
+	return randomize_page(mm->brk, 0x02000000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

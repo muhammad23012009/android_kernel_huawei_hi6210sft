@@ -14,6 +14,10 @@
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ptrace.h>
 #include <linux/user.h>
 #include <linux/smp.h>
@@ -26,6 +30,10 @@
 #include <trace/syscall.h>
 #include <linux/compat.h>
 #include <linux/elf.h>
+<<<<<<< HEAD
+=======
+#include <linux/context_tracking.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/asi.h>
 #include <asm/pgtable.h>
@@ -116,6 +124,10 @@ void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 
 	preempt_enable();
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(flush_ptrace_access);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int get_from_target(struct task_struct *target, unsigned long uaddr,
 			   void *kbuf, int len)
@@ -124,7 +136,12 @@ static int get_from_target(struct task_struct *target, unsigned long uaddr,
 		if (copy_from_user(kbuf, (void __user *) uaddr, len))
 			return -EFAULT;
 	} else {
+<<<<<<< HEAD
 		int len2 = access_process_vm(target, uaddr, kbuf, len, 0);
+=======
+		int len2 = access_process_vm(target, uaddr, kbuf, len,
+				FOLL_FORCE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (len2 != len)
 			return -EFAULT;
 	}
@@ -138,7 +155,12 @@ static int set_to_target(struct task_struct *target, unsigned long uaddr,
 		if (copy_to_user((void __user *) uaddr, kbuf, len))
 			return -EFAULT;
 	} else {
+<<<<<<< HEAD
 		int len2 = access_process_vm(target, uaddr, kbuf, len, 1);
+=======
+		int len2 = access_process_vm(target, uaddr, kbuf, len,
+				FOLL_FORCE | FOLL_WRITE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (len2 != len)
 			return -EFAULT;
 	}
@@ -502,7 +524,12 @@ static int genregs32_get(struct task_struct *target,
 				if (access_process_vm(target,
 						      (unsigned long)
 						      &reg_window[pos],
+<<<<<<< HEAD
 						      k, sizeof(*k), 0)
+=======
+						      k, sizeof(*k),
+						      FOLL_FORCE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    != sizeof(*k))
 					return -EFAULT;
 				k++;
@@ -527,6 +554,7 @@ static int genregs32_get(struct task_struct *target,
 			for (; count > 0 && pos < 32; count--) {
 				if (access_process_vm(target,
 						      (unsigned long)
+<<<<<<< HEAD
 						      &reg_window[pos],
 						      &reg, sizeof(reg), 0)
 				    != sizeof(reg))
@@ -538,6 +566,15 @@ static int genregs32_get(struct task_struct *target,
 					return -EFAULT;
 				pos++;
 				u++;
+=======
+						      &reg_window[pos++],
+						      &reg, sizeof(reg),
+						      FOLL_FORCE)
+				    != sizeof(reg))
+					return -EFAULT;
+				if (put_user(reg, u++))
+					return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
@@ -612,7 +649,12 @@ static int genregs32_set(struct task_struct *target,
 						      (unsigned long)
 						      &reg_window[pos],
 						      (void *) k,
+<<<<<<< HEAD
 						      sizeof(*k), 1)
+=======
+						      sizeof(*k),
+						      FOLL_FORCE | FOLL_WRITE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    != sizeof(*k))
 					return -EFAULT;
 				k++;
@@ -636,16 +678,25 @@ static int genregs32_set(struct task_struct *target,
 			}
 		} else {
 			for (; count > 0 && pos < 32; count--) {
+<<<<<<< HEAD
 				if (access_process_vm(target,
 						      (unsigned long)
 						      u,
 						      &reg, sizeof(reg), 0)
 				    != sizeof(reg))
+=======
+				if (get_user(reg, u++))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					return -EFAULT;
 				if (access_process_vm(target,
 						      (unsigned long)
 						      &reg_window[pos],
+<<<<<<< HEAD
 						      &reg, sizeof(reg), 1)
+=======
+						      &reg, sizeof(reg),
+						      FOLL_FORCE | FOLL_WRITE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    != sizeof(reg))
 					return -EFAULT;
 				pos++;
@@ -1064,12 +1115,19 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs)
 	/* do the secure computing check first */
 	secure_computing_strict(regs->u_regs[UREG_G1]);
 
+<<<<<<< HEAD
+=======
+	if (test_thread_flag(TIF_NOHZ))
+		user_exit();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
 		ret = tracehook_report_syscall_entry(regs);
 
 	if (unlikely(test_thread_flag(TIF_SYSCALL_TRACEPOINT)))
 		trace_sys_enter(regs, regs->u_regs[UREG_G1]);
 
+<<<<<<< HEAD
 	audit_syscall_entry((test_thread_flag(TIF_32BIT) ?
 			     AUDIT_ARCH_SPARC :
 			     AUDIT_ARCH_SPARC64),
@@ -1077,6 +1135,10 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs)
 			    regs->u_regs[UREG_I0],
 			    regs->u_regs[UREG_I1],
 			    regs->u_regs[UREG_I2],
+=======
+	audit_syscall_entry(regs->u_regs[UREG_G1], regs->u_regs[UREG_I0],
+			    regs->u_regs[UREG_I1], regs->u_regs[UREG_I2],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    regs->u_regs[UREG_I3]);
 
 	return ret;
@@ -1084,6 +1146,7 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs)
 
 asmlinkage void syscall_trace_leave(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	audit_syscall_exit(regs);
 
 	if (unlikely(test_thread_flag(TIF_SYSCALL_TRACEPOINT)))
@@ -1091,4 +1154,19 @@ asmlinkage void syscall_trace_leave(struct pt_regs *regs)
 
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
 		tracehook_report_syscall_exit(regs, 0);
+=======
+	if (test_thread_flag(TIF_NOHZ))
+		user_exit();
+
+	audit_syscall_exit(regs);
+
+	if (unlikely(test_thread_flag(TIF_SYSCALL_TRACEPOINT)))
+		trace_sys_exit(regs, regs->u_regs[UREG_I0]);
+
+	if (test_thread_flag(TIF_SYSCALL_TRACE))
+		tracehook_report_syscall_exit(regs, 0);
+
+	if (test_thread_flag(TIF_NOHZ))
+		user_enter();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

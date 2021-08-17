@@ -13,6 +13,10 @@
 #include <asm/assembler.h>
 #include <asm/cmpxchg.h>
 #include <asm/dcache_clear.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Atomic operations that C can't guarantee us.  Useful for
@@ -27,7 +31,11 @@
  *
  * Atomically reads the value of @v.
  */
+<<<<<<< HEAD
 #define atomic_read(v)	(*(volatile int *)&(v)->counter)
+=======
+#define atomic_read(v)	READ_ONCE((v)->counter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * atomic_set - set atomic variable
@@ -36,6 +44,7 @@
  *
  * Atomically sets the value of @v to @i.
  */
+<<<<<<< HEAD
 #define atomic_set(v,i)	(((v)->counter) = (i))
 
 /**
@@ -117,6 +126,100 @@ static __inline__ int atomic_sub_return(int i, atomic_t *v)
  * Atomically subtracts @i from @v.
  */
 #define atomic_sub(i,v) ((void) atomic_sub_return((i), (v)))
+=======
+#define atomic_set(v,i)	WRITE_ONCE(((v)->counter), (i))
+
+#ifdef CONFIG_CHIP_M32700_TS1
+#define __ATOMIC_CLOBBER	, "r4"
+#else
+#define __ATOMIC_CLOBBER
+#endif
+
+#define ATOMIC_OP(op)							\
+static __inline__ void atomic_##op(int i, atomic_t *v)			\
+{									\
+	unsigned long flags;						\
+	int result;							\
+									\
+	local_irq_save(flags);						\
+	__asm__ __volatile__ (						\
+		"# atomic_" #op "		\n\t"			\
+		DCACHE_CLEAR("%0", "r4", "%1")				\
+		M32R_LOCK" %0, @%1;		\n\t"			\
+		#op " %0, %2;			\n\t"			\
+		M32R_UNLOCK" %0, @%1;		\n\t"			\
+		: "=&r" (result)					\
+		: "r" (&v->counter), "r" (i)				\
+		: "memory"						\
+		__ATOMIC_CLOBBER					\
+	);								\
+	local_irq_restore(flags);					\
+}									\
+
+#define ATOMIC_OP_RETURN(op)						\
+static __inline__ int atomic_##op##_return(int i, atomic_t *v)		\
+{									\
+	unsigned long flags;						\
+	int result;							\
+									\
+	local_irq_save(flags);						\
+	__asm__ __volatile__ (						\
+		"# atomic_" #op "_return	\n\t"			\
+		DCACHE_CLEAR("%0", "r4", "%1")				\
+		M32R_LOCK" %0, @%1;		\n\t"			\
+		#op " %0, %2;			\n\t"			\
+		M32R_UNLOCK" %0, @%1;		\n\t"			\
+		: "=&r" (result)					\
+		: "r" (&v->counter), "r" (i)				\
+		: "memory"						\
+		__ATOMIC_CLOBBER					\
+	);								\
+	local_irq_restore(flags);					\
+									\
+	return result;							\
+}
+
+#define ATOMIC_FETCH_OP(op)						\
+static __inline__ int atomic_fetch_##op(int i, atomic_t *v)		\
+{									\
+	unsigned long flags;						\
+	int result, val;						\
+									\
+	local_irq_save(flags);						\
+	__asm__ __volatile__ (						\
+		"# atomic_fetch_" #op "		\n\t"			\
+		DCACHE_CLEAR("%0", "r4", "%2")				\
+		M32R_LOCK" %1, @%2;		\n\t"			\
+		"mv %0, %1			\n\t" 			\
+		#op " %1, %3;			\n\t"			\
+		M32R_UNLOCK" %1, @%2;		\n\t"			\
+		: "=&r" (result), "=&r" (val)				\
+		: "r" (&v->counter), "r" (i)				\
+		: "memory"						\
+		__ATOMIC_CLOBBER					\
+	);								\
+	local_irq_restore(flags);					\
+									\
+	return result;							\
+}
+
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op) ATOMIC_FETCH_OP(op)
+
+ATOMIC_OPS(add)
+ATOMIC_OPS(sub)
+
+#undef ATOMIC_OPS
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op)
+
+ATOMIC_OPS(and)
+ATOMIC_OPS(or)
+ATOMIC_OPS(xor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+#undef ATOMIC_OP_RETURN
+#undef ATOMIC_OP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * atomic_sub_and_test - subtract value from variable and test result
@@ -150,9 +253,13 @@ static __inline__ int atomic_inc_return(atomic_t *v)
 		: "=&r" (result)
 		: "r" (&v->counter)
 		: "memory"
+<<<<<<< HEAD
 #ifdef CONFIG_CHIP_M32700_TS1
 		, "r4"
 #endif	/* CONFIG_CHIP_M32700_TS1 */
+=======
+		__ATOMIC_CLOBBER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	);
 	local_irq_restore(flags);
 
@@ -180,9 +287,13 @@ static __inline__ int atomic_dec_return(atomic_t *v)
 		: "=&r" (result)
 		: "r" (&v->counter)
 		: "memory"
+<<<<<<< HEAD
 #ifdef CONFIG_CHIP_M32700_TS1
 		, "r4"
 #endif	/* CONFIG_CHIP_M32700_TS1 */
+=======
+		__ATOMIC_CLOBBER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	);
 	local_irq_restore(flags);
 
@@ -263,6 +374,7 @@ static __inline__ int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
+<<<<<<< HEAD
 
 static __inline__ void atomic_clear_mask(unsigned long  mask, atomic_t *addr)
 {
@@ -314,4 +426,6 @@ static __inline__ void atomic_set_mask(unsigned long  mask, atomic_t *addr)
 #define smp_mb__before_atomic_inc()	barrier()
 #define smp_mb__after_atomic_inc()	barrier()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* _ASM_M32R_ATOMIC_H */

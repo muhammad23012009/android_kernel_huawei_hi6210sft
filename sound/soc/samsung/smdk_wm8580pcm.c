@@ -16,7 +16,10 @@
 #include <asm/mach-types.h>
 
 #include "../codecs/wm8580.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "pcm.h"
 
 /*
@@ -25,7 +28,11 @@
  *  o '0' means 'OFF'
  *  o 'X' means 'Don't care'
  *
+<<<<<<< HEAD
  * SMDK6410, SMDK6440, SMDK6450 Base B/D: CFG1-0000, CFG2-1111
+=======
+ * SMDK6410 Base B/D: CFG1-0000, CFG2-1111
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SMDKC110, SMDKV210: CFGB11-100100, CFGB12-0000
  */
 
@@ -62,6 +69,7 @@ static int smdk_wm8580_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	rfs = mclk_freq / params_rate(params) / 2;
 
+<<<<<<< HEAD
 	/* Set the codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_DSP_B
 				| SND_SOC_DAIFMT_IB_NF
@@ -76,6 +84,8 @@ static int smdk_wm8580_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mclk_freq == xtal_freq) {
 		ret = snd_soc_dai_set_sysclk(codec_dai, WM8580_CLKSRC_MCLK,
 						mclk_freq, SND_SOC_CLOCK_IN);
@@ -121,6 +131,12 @@ static struct snd_soc_ops smdk_wm8580_pcm_ops = {
 	.hw_params = smdk_wm8580_pcm_hw_params,
 };
 
+<<<<<<< HEAD
+=======
+#define SMDK_DAI_FMT (SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_IB_NF | \
+	SND_SOC_DAIFMT_CBS_CFS)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_dai_link smdk_dai[] = {
 	{
 		.name = "WM8580 PAIF PCM RX",
@@ -129,6 +145,10 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8580-hifi-playback",
 		.platform_name = "samsung-audio",
 		.codec_name = "wm8580.0-001b",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SMDK_DAI_FMT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops = &smdk_wm8580_pcm_ops,
 	}, {
 		.name = "WM8580 PAIF PCM TX",
@@ -137,6 +157,10 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8580-hifi-capture",
 		.platform_name = "samsung-pcm.0",
 		.codec_name = "wm8580.0-001b",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SMDK_DAI_FMT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops = &smdk_wm8580_pcm_ops,
 	},
 };
@@ -164,6 +188,7 @@ static int snd_smdk_probe(struct platform_device *pdev)
 		xtal_freq = mclk_freq = SMDK_WM8580_EXT_VOICE;
 
 	smdk_pcm.dev = &pdev->dev;
+<<<<<<< HEAD
 	ret = snd_soc_register_card(&smdk_pcm);
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card failed %d\n", ret);
@@ -178,15 +203,28 @@ static int snd_smdk_remove(struct platform_device *pdev)
 	snd_soc_unregister_card(&smdk_pcm);
 	platform_set_drvdata(pdev, NULL);
 	return 0;
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, &smdk_pcm);
+	if (ret)
+		dev_err(&pdev->dev, "snd_soc_register_card failed %d\n", ret);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver snd_smdk_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.name = "samsung-smdk-pcm",
 	},
 	.probe = snd_smdk_probe,
 	.remove = snd_smdk_remove,
+=======
+		.name = "samsung-smdk-pcm",
+	},
+	.probe = snd_smdk_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(snd_smdk_driver);

@@ -106,7 +106,11 @@ struct afs_volume *afs_volume_lookup(struct afs_mount_params *params)
 	volume->cell		= params->cell;
 	volume->vid		= vlocation->vldb.vid[params->type];
 
+<<<<<<< HEAD
 	ret = bdi_setup_and_register(&volume->bdi, "afs", BDI_CAP_MAP_COPY);
+=======
+	ret = bdi_setup_and_register(&volume->bdi, "afs");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto error_bdi;
 
@@ -131,7 +135,11 @@ struct afs_volume *afs_volume_lookup(struct afs_mount_params *params)
 #ifdef CONFIG_AFS_FSCACHE
 	volume->cache = fscache_acquire_cookie(vlocation->cache,
 					       &afs_volume_cache_index_def,
+<<<<<<< HEAD
 					       volume);
+=======
+					       volume, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	afs_get_vlocation(vlocation);
 	volume->vlocation = vlocation;

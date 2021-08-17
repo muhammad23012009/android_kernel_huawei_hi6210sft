@@ -13,9 +13,15 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 
 #include <asm/dma.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/dma.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/dma.h>
 #include <asm/hardware/dec21285.h>

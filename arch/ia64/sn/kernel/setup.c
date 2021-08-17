@@ -192,7 +192,11 @@ void __init early_sn_setup(void)
 }
 
 extern int platform_intr_list[];
+<<<<<<< HEAD
 static int __cpuinitdata shub_1_1_found;
+=======
+static int shub_1_1_found;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * sn_check_for_wars
@@ -200,7 +204,11 @@ static int __cpuinitdata shub_1_1_found;
  * Set flag for enabling shub specific wars
  */
 
+<<<<<<< HEAD
 static inline int __cpuinit is_shub_1_1(int nasid)
+=======
+static inline int is_shub_1_1(int nasid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long id;
 	int rev;
@@ -212,7 +220,11 @@ static inline int __cpuinit is_shub_1_1(int nasid)
 	return rev <= 2;
 }
 
+<<<<<<< HEAD
 static void __cpuinit sn_check_for_wars(void)
+=======
+static void sn_check_for_wars(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cnode;
 
@@ -558,7 +570,11 @@ static void __init sn_init_pdas(char **cmdline_p)
  * Also sets up a few fields in the nodepda.  Also known as
  * platform_cpu_init() by the ia64 machvec code.
  */
+<<<<<<< HEAD
 void __cpuinit sn_cpu_init(void)
+=======
+void sn_cpu_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpuid;
 	int cpuphyid;
@@ -579,7 +595,11 @@ void __cpuinit sn_cpu_init(void)
 		       (sn_prom_type == 1) ? "real" : "fake");
 	}
 
+<<<<<<< HEAD
 	memset(pda, 0, sizeof(pda));
+=======
+	memset(pda, 0, sizeof(*pda));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ia64_sn_get_sn_info(0, &sn_hub_info->shub2,
 				&sn_hub_info->nasid_bitmask,
 				&sn_hub_info->nasid_shift,
@@ -629,7 +649,11 @@ void __cpuinit sn_cpu_init(void)
 
 	cnode = nasid_to_cnodeid(nasid);
 
+<<<<<<< HEAD
 	sn_nodepda = nodepdaindr[cnode];
+=======
+	__this_cpu_write(__sn_nodepda, nodepdaindr[cnode]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pda->led_address =
 	    (typeof(pda->led_address)) (LED0 + (slice << LED_CPU_SHIFT));

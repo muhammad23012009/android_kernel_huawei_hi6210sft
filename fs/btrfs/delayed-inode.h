@@ -48,6 +48,13 @@ struct btrfs_delayed_root {
 	wait_queue_head_t wait;
 };
 
+<<<<<<< HEAD
+=======
+#define BTRFS_DELAYED_NODE_IN_LIST	0
+#define BTRFS_DELAYED_NODE_INODE_DIRTY	1
+#define BTRFS_DELAYED_NODE_DEL_IREF	2
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct btrfs_delayed_node {
 	u64 inode_id;
 	u64 bytes_reserved;
@@ -65,8 +72,12 @@ struct btrfs_delayed_node {
 	struct btrfs_inode_item inode_item;
 	atomic_t refs;
 	u64 index_cnt;
+<<<<<<< HEAD
 	bool in_list;
 	bool inode_dirty;
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int count;
 };
 
@@ -125,6 +136,10 @@ int btrfs_commit_inode_delayed_inode(struct inode *inode);
 int btrfs_delayed_update_inode(struct btrfs_trans_handle *trans,
 			       struct btrfs_root *root, struct inode *inode);
 int btrfs_fill_inode(struct inode *inode, u32 *rdev);
+<<<<<<< HEAD
+=======
+int btrfs_delayed_delete_inode_ref(struct inode *inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Used for drop dead root */
 void btrfs_kill_all_delayed_nodes(struct btrfs_root *root);
@@ -133,6 +148,7 @@ void btrfs_kill_all_delayed_nodes(struct btrfs_root *root);
 void btrfs_destroy_delayed_inodes(struct btrfs_root *root);
 
 /* Used for readdir() */
+<<<<<<< HEAD
 void btrfs_get_delayed_items(struct inode *inode, struct list_head *ins_list,
 			     struct list_head *del_list);
 void btrfs_put_delayed_items(struct list_head *ins_list,
@@ -142,6 +158,18 @@ int btrfs_should_delete_dir_index(struct list_head *del_list,
 int btrfs_readdir_delayed_dir_index(struct file *filp, void *dirent,
 				    filldir_t filldir,
 				    struct list_head *ins_list);
+=======
+bool btrfs_readdir_get_delayed_items(struct inode *inode,
+				     struct list_head *ins_list,
+				     struct list_head *del_list);
+void btrfs_readdir_put_delayed_items(struct inode *inode,
+				     struct list_head *ins_list,
+				     struct list_head *del_list);
+int btrfs_should_delete_dir_index(struct list_head *del_list,
+				  u64 index);
+int btrfs_readdir_delayed_dir_index(struct dir_context *ctx,
+				    struct list_head *ins_list, bool *emitted);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* for init */
 int __init btrfs_delayed_inode_init(void);

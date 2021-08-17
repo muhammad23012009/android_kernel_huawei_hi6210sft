@@ -9,6 +9,10 @@
 #include <linux/usb.h>
 #include <linux/slab.h>
 #include <linux/time.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/mutex.h>
 #include <linux/debugfs.h>
@@ -82,6 +86,11 @@ struct mon_reader_text {
 
 	wait_queue_head_t wait;
 	int printf_size;
+<<<<<<< HEAD
+=======
+	size_t printf_offset;
+	size_t printf_togo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *printf_buf;
 	struct mutex printf_lock;
 
@@ -176,12 +185,21 @@ static inline char mon_text_get_data(struct mon_event_text *ep, struct urb *urb,
 
 static inline unsigned int mon_get_timestamp(void)
 {
+<<<<<<< HEAD
 	struct timeval tval;
 	unsigned int stamp;
 
 	do_gettimeofday(&tval);
 	stamp = tval.tv_sec & 0xFFF;	/* 2^32 = 4294967296. Limit to 4096s. */
 	stamp = stamp * 1000000 + tval.tv_usec;
+=======
+	struct timespec64 now;
+	unsigned int stamp;
+
+	ktime_get_ts64(&now);
+	stamp = now.tv_sec & 0xFFF;  /* 2^32 = 4294967296. Limit to 4096s. */
+	stamp = stamp * USEC_PER_SEC + now.tv_nsec / NSEC_PER_USEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return stamp;
 }
 
@@ -373,6 +391,7 @@ err_alloc:
 	return rc;
 }
 
+<<<<<<< HEAD
 /*
  * For simplicity, we read one record in one system call and throw out
  * what does not fit. This means that the following does not work:
@@ -381,10 +400,28 @@ err_alloc:
  */
 static ssize_t mon_text_read_t(struct file *file, char __user *buf,
 				size_t nbytes, loff_t *ppos)
+=======
+static ssize_t mon_text_copy_to_user(struct mon_reader_text *rp,
+    char __user * const buf, const size_t nbytes)
+{
+	const size_t togo = min(nbytes, rp->printf_togo);
+
+	if (copy_to_user(buf, &rp->printf_buf[rp->printf_offset], togo))
+		return -EFAULT;
+	rp->printf_togo -= togo;
+	rp->printf_offset += togo;
+	return togo;
+}
+
+/* ppos is not advanced since the llseek operation is not permitted. */
+static ssize_t mon_text_read_t(struct file *file, char __user *buf,
+    size_t nbytes, loff_t *ppos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mon_reader_text *rp = file->private_data;
 	struct mon_event_text *ep;
 	struct mon_text_ptr ptr;
+<<<<<<< HEAD
 
 	if (IS_ERR(ep = mon_text_read_wait(rp, file)))
 		return PTR_ERR(ep);
@@ -408,10 +445,48 @@ static ssize_t mon_text_read_t(struct file *file, char __user *buf,
 
 static ssize_t mon_text_read_u(struct file *file, char __user *buf,
 				size_t nbytes, loff_t *ppos)
+=======
+	ssize_t ret;
+
+	mutex_lock(&rp->printf_lock);
+
+	if (rp->printf_togo == 0) {
+
+		ep = mon_text_read_wait(rp, file);
+		if (IS_ERR(ep)) {
+			mutex_unlock(&rp->printf_lock);
+			return PTR_ERR(ep);
+		}
+		ptr.cnt = 0;
+		ptr.pbuf = rp->printf_buf;
+		ptr.limit = rp->printf_size;
+
+		mon_text_read_head_t(rp, &ptr, ep);
+		mon_text_read_statset(rp, &ptr, ep);
+		ptr.cnt += snprintf(ptr.pbuf + ptr.cnt, ptr.limit - ptr.cnt,
+		    " %d", ep->length);
+		mon_text_read_data(rp, &ptr, ep);
+
+		rp->printf_togo = ptr.cnt;
+		rp->printf_offset = 0;
+
+		kmem_cache_free(rp->e_slab, ep);
+	}
+
+	ret = mon_text_copy_to_user(rp, buf, nbytes);
+	mutex_unlock(&rp->printf_lock);
+	return ret;
+}
+
+/* ppos is not advanced since the llseek operation is not permitted. */
+static ssize_t mon_text_read_u(struct file *file, char __user *buf,
+    size_t nbytes, loff_t *ppos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mon_reader_text *rp = file->private_data;
 	struct mon_event_text *ep;
 	struct mon_text_ptr ptr;
+<<<<<<< HEAD
 
 	if (IS_ERR(ep = mon_text_read_wait(rp, file)))
 		return PTR_ERR(ep);
@@ -440,6 +515,47 @@ static ssize_t mon_text_read_u(struct file *file, char __user *buf,
 	mutex_unlock(&rp->printf_lock);
 	kmem_cache_free(rp->e_slab, ep);
 	return ptr.cnt;
+=======
+	ssize_t ret;
+
+	mutex_lock(&rp->printf_lock);
+
+	if (rp->printf_togo == 0) {
+
+		ep = mon_text_read_wait(rp, file);
+		if (IS_ERR(ep)) {
+			mutex_unlock(&rp->printf_lock);
+			return PTR_ERR(ep);
+		}
+		ptr.cnt = 0;
+		ptr.pbuf = rp->printf_buf;
+		ptr.limit = rp->printf_size;
+
+		mon_text_read_head_u(rp, &ptr, ep);
+		if (ep->type == 'E') {
+			mon_text_read_statset(rp, &ptr, ep);
+		} else if (ep->xfertype == USB_ENDPOINT_XFER_ISOC) {
+			mon_text_read_isostat(rp, &ptr, ep);
+			mon_text_read_isodesc(rp, &ptr, ep);
+		} else if (ep->xfertype == USB_ENDPOINT_XFER_INT) {
+			mon_text_read_intstat(rp, &ptr, ep);
+		} else {
+			mon_text_read_statset(rp, &ptr, ep);
+		}
+		ptr.cnt += snprintf(ptr.pbuf + ptr.cnt, ptr.limit - ptr.cnt,
+		    " %d", ep->length);
+		mon_text_read_data(rp, &ptr, ep);
+
+		rp->printf_togo = ptr.cnt;
+		rp->printf_offset = 0;
+
+		kmem_cache_free(rp->e_slab, ep);
+	}
+
+	ret = mon_text_copy_to_user(rp, buf, nbytes);
+	mutex_unlock(&rp->printf_lock);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct mon_event_text *mon_text_read_wait(struct mon_reader_text *rp,

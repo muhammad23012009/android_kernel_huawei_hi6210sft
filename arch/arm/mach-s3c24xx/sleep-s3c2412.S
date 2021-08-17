@@ -65,4 +65,8 @@ s3c2412_sleep_enter1:
 	strne	r9, [r3]
 	bne	s3c2412_sleep_enter1
 
+<<<<<<< HEAD
 	mov	pc, r14
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

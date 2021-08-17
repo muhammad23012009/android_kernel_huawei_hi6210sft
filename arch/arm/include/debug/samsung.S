@@ -9,17 +9,29 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* The S5PV210/S5PC110 implementations are as belows. */
 
 	.macro fifo_level_s5pv210 rd, rx
 		ldr	\rd, [\rx, # S3C2410_UFSTAT]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		and	\rd, \rd, #S5PV210_UFSTAT_TXMASK
 	.endm
 
 	.macro  fifo_full_s5pv210 rd, rx
 		ldr	\rd, [\rx, # S3C2410_UFSTAT]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	\rd, #S5PV210_UFSTAT_TXFULL
 	.endm
 
@@ -28,6 +40,10 @@
 
 	.macro fifo_level_s3c2440 rd, rx
 		ldr	\rd, [\rx, # S3C2410_UFSTAT]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		and	\rd, \rd, #S3C2440_UFSTAT_TXMASK
 	.endm
 
@@ -37,6 +53,10 @@
 
 	.macro  fifo_full_s3c2440 rd, rx
 		ldr	\rd, [\rx, # S3C2410_UFSTAT]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	\rd, #S3C2440_UFSTAT_TXFULL
 	.endm
 
@@ -50,6 +70,10 @@
 
 	.macro	busyuart, rd, rx
 		ldr	\rd, [\rx, # S3C2410_UFCON]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	\rd, #S3C2410_UFCON_FIFOMODE	@ fifo enabled?
 		beq	1001f				@
 		@ FIFO enabled...
@@ -61,6 +85,10 @@
 1001:
 		@ busy waiting for non fifo
 		ldr	\rd, [\rx, # S3C2410_UTRSTAT]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	\rd, #S3C2410_UTRSTAT_TXFE
 		beq	1001b
 
@@ -69,6 +97,10 @@
 
 	.macro	waituart,rd,rx
 		ldr	\rd, [\rx, # S3C2410_UFCON]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	\rd, #S3C2410_UFCON_FIFOMODE	@ fifo enabled?
 		beq	1001f				@
 		@ FIFO enabled...
@@ -80,6 +112,10 @@
 1001:
 		@ idle waiting for non fifo
 		ldr	\rd, [\rx, # S3C2410_UTRSTAT]
+<<<<<<< HEAD
+=======
+ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	\rd, #S3C2410_UTRSTAT_TXFE
 		beq	1001b
 

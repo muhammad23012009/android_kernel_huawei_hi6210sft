@@ -14,6 +14,10 @@
 #include "dlm_internal.h"
 #include "lock.h"
 #include "user.h"
+<<<<<<< HEAD
+=======
+#include "ast.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static uint64_t dlm_cb_seq;
 static DEFINE_SPINLOCK(dlm_cb_seq_spin);
@@ -267,10 +271,14 @@ void dlm_callback_work(struct work_struct *work)
 int dlm_callback_start(struct dlm_ls *ls)
 {
 	ls->ls_callback_wq = alloc_workqueue("dlm_callback",
+<<<<<<< HEAD
 					     WQ_UNBOUND |
 					     WQ_MEM_RECLAIM |
 					     WQ_NON_REENTRANT,
 					     0);
+=======
+					     WQ_UNBOUND | WQ_MEM_RECLAIM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ls->ls_callback_wq) {
 		log_print("can't start dlm_callback workqueue");
 		return -ENOMEM;
@@ -292,6 +300,11 @@ void dlm_callback_suspend(struct dlm_ls *ls)
 		flush_workqueue(ls->ls_callback_wq);
 }
 
+<<<<<<< HEAD
+=======
+#define MAX_CB_QUEUE 25
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void dlm_callback_resume(struct dlm_ls *ls)
 {
 	struct dlm_lkb *lkb, *safe;
@@ -302,15 +315,33 @@ void dlm_callback_resume(struct dlm_ls *ls)
 	if (!ls->ls_callback_wq)
 		return;
 
+<<<<<<< HEAD
+=======
+more:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&ls->ls_cb_mutex);
 	list_for_each_entry_safe(lkb, safe, &ls->ls_cb_delay, lkb_cb_list) {
 		list_del_init(&lkb->lkb_cb_list);
 		queue_work(ls->ls_callback_wq, &lkb->lkb_cb_work);
 		count++;
+<<<<<<< HEAD
+=======
+		if (count == MAX_CB_QUEUE)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mutex_unlock(&ls->ls_cb_mutex);
 
 	if (count)
+<<<<<<< HEAD
 		log_debug(ls, "dlm_callback_resume %d", count);
+=======
+		log_rinfo(ls, "dlm_callback_resume %d", count);
+	if (count == MAX_CB_QUEUE) {
+		count = 0;
+		cond_resched();
+		goto more;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 

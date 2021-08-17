@@ -39,7 +39,10 @@
 
 #include <asm/dma.h>
 
+<<<<<<< HEAD
 #include "bf5xx-ac97-pcm.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "bf5xx-ac97.h"
 #include "bf5xx-sport.h"
 
@@ -108,7 +111,10 @@ static const struct snd_pcm_hardware bf5xx_pcm_hardware = {
 #endif
 				   SNDRV_PCM_INFO_BLOCK_TRANSFER,
 
+<<<<<<< HEAD
 	.formats		= SNDRV_PCM_FMTBIT_S16_LE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 0x10000,
 	.periods_min		= 1,
@@ -416,12 +422,16 @@ static void bf5xx_pcm_free_dma_buffers(struct snd_pcm *pcm)
 	}
 }
 
+<<<<<<< HEAD
 static u64 bf5xx_pcm_dmamask = DMA_BIT_MASK(32);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int bf5xx_pcm_ac97_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_pcm *pcm = rtd->pcm;
+<<<<<<< HEAD
 	int ret = 0;
 
 	pr_debug("%s enter\n", __func__);
@@ -429,6 +439,14 @@ static int bf5xx_pcm_ac97_new(struct snd_soc_pcm_runtime *rtd)
 		card->dev->dma_mask = &bf5xx_pcm_dmamask;
 	if (!card->dev->coherent_dma_mask)
 		card->dev->coherent_dma_mask = DMA_BIT_MASK(32);
+=======
+	int ret;
+
+	pr_debug("%s enter\n", __func__);
+	ret = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(32));
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream) {
 		ret = bf5xx_pcm_preallocate_dma_buffer(pcm,
@@ -455,6 +473,7 @@ static struct snd_soc_platform_driver bf5xx_ac97_soc_platform = {
 
 static int bf5xx_soc_platform_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &bf5xx_ac97_soc_platform);
 }
 
@@ -462,16 +481,26 @@ static int bf5xx_soc_platform_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev,
+					      &bf5xx_ac97_soc_platform);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver bf5xx_pcm_driver = {
 	.driver = {
 			.name = "bfin-ac97-pcm-audio",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
 	},
 
 	.probe = bf5xx_soc_platform_probe,
 	.remove = bf5xx_soc_platform_remove,
+=======
+	},
+
+	.probe = bf5xx_soc_platform_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(bf5xx_pcm_driver);

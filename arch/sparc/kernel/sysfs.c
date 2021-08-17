@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* sysfs.c: Toplogy sysfs support code for sparc64.
+=======
+/* sysfs.c: Topology sysfs support code for sparc64.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 2007 David S. Miller <davem@davemloft.net>
  */
@@ -151,7 +155,11 @@ static ssize_t store_mmustat_enable(struct device *s,
 			size_t count)
 {
 	unsigned long val, err;
+<<<<<<< HEAD
 	int ret = sscanf(buf, "%ld", &val);
+=======
+	int ret = sscanf(buf, "%lu", &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret != 1)
 		return -EINVAL;
@@ -246,7 +254,11 @@ static void unregister_cpu_online(unsigned int cpu)
 }
 #endif
 
+<<<<<<< HEAD
 static int __cpuinit sysfs_cpu_notify(struct notifier_block *self,
+=======
+static int sysfs_cpu_notify(struct notifier_block *self,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned int)(long)hcpu;
@@ -266,7 +278,11 @@ static int __cpuinit sysfs_cpu_notify(struct notifier_block *self,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static struct notifier_block __cpuinitdata sysfs_cpu_nb = {
+=======
+static struct notifier_block sysfs_cpu_nb = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.notifier_call	= sysfs_cpu_notify,
 };
 
@@ -300,7 +316,11 @@ static int __init topology_init(void)
 
 	check_mmu_stats();
 
+<<<<<<< HEAD
 	register_cpu_notifier(&sysfs_cpu_nb);
+=======
+	cpu_notifier_register_begin();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_each_possible_cpu(cpu) {
 		struct cpu *c = &per_cpu(cpu_devices, cpu);
@@ -310,6 +330,13 @@ static int __init topology_init(void)
 			register_cpu_online(cpu);
 	}
 
+<<<<<<< HEAD
+=======
+	__register_cpu_notifier(&sysfs_cpu_nb);
+
+	cpu_notifier_register_done();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

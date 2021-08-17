@@ -41,9 +41,17 @@ struct nfs_client {
 #define NFS_CS_DISCRTRY		1		/* - disconnect on RPC retry */
 #define NFS_CS_MIGRATION	2		/* - transparent state migr */
 #define NFS_CS_INFINITE_SLOTS	3		/* - don't limit TCP slots */
+<<<<<<< HEAD
 	struct sockaddr_storage	cl_addr;	/* server identifier */
 	size_t			cl_addrlen;
 	char *			cl_hostname;	/* hostname of server */
+=======
+#define NFS_CS_NO_RETRANS_TIMEOUT	4	/* - Disable retransmit timeouts */
+	struct sockaddr_storage	cl_addr;	/* server identifier */
+	size_t			cl_addrlen;
+	char *			cl_hostname;	/* hostname of server */
+	char *			cl_acceptor;	/* GSSAPI acceptor name */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head	cl_share_link;	/* link in global client list */
 	struct list_head	cl_superblocks;	/* List of nfs_server structs */
 
@@ -56,6 +64,10 @@ struct nfs_client {
 	struct rpc_cred		*cl_machine_cred;
 
 #if IS_ENABLED(CONFIG_NFS_V4)
+<<<<<<< HEAD
+=======
+	struct list_head	cl_ds_clients; /* auth flavor data servers */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64			cl_clientid;	/* constant */
 	nfs4_verifier		cl_confirm;	/* Clientid verifier */
 	unsigned long		cl_state;
@@ -71,12 +83,24 @@ struct nfs_client {
 	/* idmapper */
 	struct idmap *		cl_idmap;
 
+<<<<<<< HEAD
 	/* Our own IP address, as a null-terminated string.
 	 * This is used to generate the mv0 callback address.
 	 */
 	char			cl_ipaddr[48];
 	u32			cl_cb_ident;	/* v4.0 callback identifier */
 	const struct nfs4_minor_version_ops *cl_mvops;
+=======
+	/* Client owner identifier */
+	const char *		cl_owner_id;
+
+	u32			cl_cb_ident;	/* v4.0 callback identifier */
+	const struct nfs4_minor_version_ops *cl_mvops;
+	unsigned long		cl_mig_gen;
+
+	/* NFSv4.0 transport blocking */
+	struct nfs4_slot_table	*cl_slot_tbl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* The sequence id to use for the next CREATE_SESSION */
 	u32			cl_seqid;
@@ -87,8 +111,31 @@ struct nfs_client {
 	struct nfs41_server_owner *cl_serverowner;
 	struct nfs41_server_scope *cl_serverscope;
 	struct nfs41_impl_id	*cl_implid;
+<<<<<<< HEAD
 #endif /* CONFIG_NFS_V4 */
 
+=======
+	/* nfs 4.1+ state protection modes: */
+	unsigned long		cl_sp4_flags;
+#define NFS_SP4_MACH_CRED_MINIMAL  1	/* Minimal sp4_mach_cred - state ops
+					 * must use machine cred */
+#define NFS_SP4_MACH_CRED_CLEANUP  2	/* CLOSE and LOCKU */
+#define NFS_SP4_MACH_CRED_SECINFO  3	/* SECINFO and SECINFO_NO_NAME */
+#define NFS_SP4_MACH_CRED_STATEID  4	/* TEST_STATEID and FREE_STATEID */
+#define NFS_SP4_MACH_CRED_WRITE    5	/* WRITE */
+#define NFS_SP4_MACH_CRED_COMMIT   6	/* COMMIT */
+#define NFS_SP4_MACH_CRED_PNFS_CLEANUP  7 /* LAYOUTRETURN */
+#if IS_ENABLED(CONFIG_NFS_V4_1)
+	wait_queue_head_t	cl_lock_waitq;
+#endif /* CONFIG_NFS_V4_1 */
+#endif /* CONFIG_NFS_V4 */
+
+	/* Our own IP address, as a null-terminated string.
+	 * This is used to generate the mv0 callback address.
+	 */
+	char			cl_ipaddr[48];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NFS_FSCACHE
 	struct fscache_cookie	*fscache;	/* client index cache cookie */
 #endif
@@ -127,6 +174,10 @@ struct nfs_server {
 	unsigned int		acdirmax;
 	unsigned int		namelen;
 	unsigned int		options;	/* extra options enabled by mount */
+<<<<<<< HEAD
+=======
+	unsigned int		clone_blksize;	/* granularity of a CLONE operation */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NFS_OPTION_FSCACHE	0x00000001	/* - local caching enabled */
 #define NFS_OPTION_MIGRATION	0x00000002	/* - NFSv4 migration enabled */
 
@@ -134,7 +185,13 @@ struct nfs_server {
 	__u64			maxfilesize;	/* maximum file size */
 	struct timespec		time_delta;	/* smallest time granularity */
 	unsigned long		mount_time;	/* when this fs was mounted */
+<<<<<<< HEAD
 	dev_t			s_dev;		/* superblock dev numbers */
+=======
+	struct super_block	*super;		/* VFS super block */
+	dev_t			s_dev;		/* superblock dev numbers */
+	struct nfs_auth_info	auth_info;	/* parsed auth flavors */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_NFS_FSCACHE
 	struct nfs_fscache_key	*fscache_key;	/* unique key for superblock */
@@ -146,7 +203,21 @@ struct nfs_server {
 	u32			attr_bitmask[3];/* V4 bitmask representing the set
 						   of attributes supported on this
 						   filesystem */
+<<<<<<< HEAD
 	u32			cache_consistency_bitmask[2];
+=======
+	u32			attr_bitmask_nl[3];
+						/* V4 bitmask representing the
+						   set of attributes supported
+						   on this filesystem excluding
+						   the label support bit. */
+	u32			exclcreat_bitmask[3];
+						/* V4 bitmask representing the
+						   set of attributes supported
+						   on this filesystem for the
+						   exclusive create. */
+	u32			cache_consistency_bitmask[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						/* V4 bitmask representing the subset
 						   of change attribute, size, ctime
 						   and mtime attributes supported by
@@ -169,6 +240,15 @@ struct nfs_server {
 	struct list_head	state_owners_lru;
 	struct list_head	layouts;
 	struct list_head	delegations;
+<<<<<<< HEAD
+=======
+
+	unsigned long		mig_gen;
+	unsigned long		mig_status;
+#define NFS_MIG_IN_TRANSITION		(1)
+#define NFS_MIG_FAILED			(2)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*destroy)(struct nfs_server *);
 
 	atomic_t active; /* Keep trace of any activity to this server */
@@ -187,7 +267,11 @@ struct nfs_server {
 #define NFS_CAP_SYMLINKS	(1U << 2)
 #define NFS_CAP_ACLS		(1U << 3)
 #define NFS_CAP_ATOMIC_OPEN	(1U << 4)
+<<<<<<< HEAD
 #define NFS_CAP_CHANGE_ATTR	(1U << 5)
+=======
+/* #define NFS_CAP_CHANGE_ATTR	(1U << 5) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NFS_CAP_FILEID		(1U << 6)
 #define NFS_CAP_MODE		(1U << 7)
 #define NFS_CAP_NLINK		(1U << 8)
@@ -200,5 +284,15 @@ struct nfs_server {
 #define NFS_CAP_UIDGID_NOMAP	(1U << 15)
 #define NFS_CAP_STATEID_NFSV41	(1U << 16)
 #define NFS_CAP_ATOMIC_OPEN_V1	(1U << 17)
+<<<<<<< HEAD
+=======
+#define NFS_CAP_SECURITY_LABEL	(1U << 18)
+#define NFS_CAP_SEEK		(1U << 19)
+#define NFS_CAP_ALLOCATE	(1U << 20)
+#define NFS_CAP_DEALLOCATE	(1U << 21)
+#define NFS_CAP_LAYOUTSTATS	(1U << 22)
+#define NFS_CAP_CLONE		(1U << 23)
+#define NFS_CAP_COPY		(1U << 24)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

@@ -240,7 +240,11 @@ void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t pte)
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
 void __cpuinit tlb_init(void)
+=======
+void tlb_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	tlblock_set(0);
 	local_flush_tlb_all();

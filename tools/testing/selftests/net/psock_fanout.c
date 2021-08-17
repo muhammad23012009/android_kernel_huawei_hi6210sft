@@ -19,6 +19,11 @@
  *   - PACKET_FANOUT_LB
  *   - PACKET_FANOUT_CPU
  *   - PACKET_FANOUT_ROLLOVER
+<<<<<<< HEAD
+=======
+ *   - PACKET_FANOUT_CBPF
+ *   - PACKET_FANOUT_EBPF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Todo:
  * - functionality: PACKET_FANOUT_FLAG_DEFRAG
@@ -44,7 +49,13 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+<<<<<<< HEAD
 #include <linux/filter.h>
+=======
+#include <linux/unistd.h>	/* for __NR_bpf */
+#include <linux/filter.h>
+#include <linux/bpf.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/if_packet.h>
 #include <net/ethernet.h>
 #include <netinet/ip.h>
@@ -91,6 +102,55 @@ static int sock_fanout_open(uint16_t typeflags, int num_packets)
 	return fd;
 }
 
+<<<<<<< HEAD
+=======
+static void sock_fanout_set_ebpf(int fd)
+{
+	static char log_buf[65536];
+
+	const int len_off = __builtin_offsetof(struct __sk_buff, len);
+	struct bpf_insn prog[] = {
+		{ BPF_ALU64 | BPF_MOV | BPF_X,   6, 1, 0, 0 },
+		{ BPF_LDX   | BPF_W   | BPF_MEM, 0, 6, len_off, 0 },
+		{ BPF_JMP   | BPF_JGE | BPF_K,   0, 0, 1, DATA_LEN },
+		{ BPF_JMP   | BPF_JA  | BPF_K,   0, 0, 4, 0 },
+		{ BPF_LD    | BPF_B   | BPF_ABS, 0, 0, 0, 0x50 },
+		{ BPF_JMP   | BPF_JEQ | BPF_K,   0, 0, 2, DATA_CHAR },
+		{ BPF_JMP   | BPF_JEQ | BPF_K,   0, 0, 1, DATA_CHAR_1 },
+		{ BPF_ALU   | BPF_MOV | BPF_K,   0, 0, 0, 0 },
+		{ BPF_JMP   | BPF_EXIT,          0, 0, 0, 0 }
+	};
+	union bpf_attr attr;
+	int pfd;
+
+	memset(&attr, 0, sizeof(attr));
+	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
+	attr.insns = (unsigned long) prog;
+	attr.insn_cnt = sizeof(prog) / sizeof(prog[0]);
+	attr.license = (unsigned long) "GPL";
+	attr.log_buf = (unsigned long) log_buf,
+	attr.log_size = sizeof(log_buf),
+	attr.log_level = 1,
+
+	pfd = syscall(__NR_bpf, BPF_PROG_LOAD, &attr, sizeof(attr));
+	if (pfd < 0) {
+		perror("bpf");
+		fprintf(stderr, "bpf verifier:\n%s\n", log_buf);
+		exit(1);
+	}
+
+	if (setsockopt(fd, SOL_PACKET, PACKET_FANOUT_DATA, &pfd, sizeof(pfd))) {
+		perror("fanout data ebpf");
+		exit(1);
+	}
+
+	if (close(pfd)) {
+		perror("close ebpf");
+		exit(1);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static char *sock_fanout_open_ring(int fd)
 {
 	struct tpacket_req req = {
@@ -115,8 +175,13 @@ static char *sock_fanout_open_ring(int fd)
 
 	ring = mmap(0, req.tp_block_size * req.tp_block_nr,
 		    PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+<<<<<<< HEAD
 	if (!ring) {
 		fprintf(stderr, "packetsock ring mmap\n");
+=======
+	if (ring == MAP_FAILED) {
+		perror("packetsock ring mmap");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		exit(1);
 	}
 
@@ -128,7 +193,11 @@ static int sock_fanout_read_ring(int fd, void *ring)
 	struct tpacket2_hdr *header = ring;
 	int count = 0;
 
+<<<<<<< HEAD
 	while (header->tp_status & TP_STATUS_USER && count < RING_NUM_FRAMES) {
+=======
+	while (count < RING_NUM_FRAMES && header->tp_status & TP_STATUS_USER) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		count++;
 		header = ring + (count * getpagesize());
 	}
@@ -209,6 +278,10 @@ static int test_datapath(uint16_t typeflags, int port_off,
 {
 	const int expect0[] = { 0, 0 };
 	char *rings[2];
+<<<<<<< HEAD
+=======
+	uint8_t type = typeflags & 0xFF;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int fds[2], fds_udp[2][2], ret;
 
 	fprintf(stderr, "test: datapath 0x%hx\n", typeflags);
@@ -219,6 +292,14 @@ static int test_datapath(uint16_t typeflags, int port_off,
 		fprintf(stderr, "ERROR: failed open\n");
 		exit(1);
 	}
+<<<<<<< HEAD
+=======
+	if (type == PACKET_FANOUT_CBPF)
+		sock_setfilter(fds[0], SOL_PACKET, PACKET_FANOUT_DATA);
+	else if (type == PACKET_FANOUT_EBPF)
+		sock_fanout_set_ebpf(fds[0]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rings[0] = sock_fanout_open_ring(fds[0]);
 	rings[1] = sock_fanout_open_ring(fds[1]);
 	pair_udp_open(fds_udp[0], PORT_BASE);
@@ -227,11 +308,19 @@ static int test_datapath(uint16_t typeflags, int port_off,
 
 	/* Send data, but not enough to overflow a queue */
 	pair_udp_send(fds_udp[0], 15);
+<<<<<<< HEAD
 	pair_udp_send(fds_udp[1], 5);
 	ret = sock_fanout_read(fds, rings, expect1);
 
 	/* Send more data, overflow the queue */
 	pair_udp_send(fds_udp[0], 15);
+=======
+	pair_udp_send_char(fds_udp[1], 5, DATA_CHAR_1);
+	ret = sock_fanout_read(fds, rings, expect1);
+
+	/* Send more data, overflow the queue */
+	pair_udp_send_char(fds_udp[0], 15, DATA_CHAR_1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* TODO: ensure consistent order between expect1 and expect2 */
 	ret |= sock_fanout_read(fds, rings, expect2);
 
@@ -272,9 +361,16 @@ int main(int argc, char **argv)
 	const int expect_hash[2][2]	= { { 15, 5 },  { 20, 5 } };
 	const int expect_hash_rb[2][2]	= { { 15, 5 },  { 20, 15 } };
 	const int expect_lb[2][2]	= { { 10, 10 }, { 18, 17 } };
+<<<<<<< HEAD
 	const int expect_rb[2][2]	= { { 20, 0 },  { 20, 15 } };
 	const int expect_cpu0[2][2]	= { { 20, 0 },  { 20, 0 } };
 	const int expect_cpu1[2][2]	= { { 0, 20 },  { 0, 20 } };
+=======
+	const int expect_rb[2][2]	= { { 15, 5 },  { 20, 15 } };
+	const int expect_cpu0[2][2]	= { { 20, 0 },  { 20, 0 } };
+	const int expect_cpu1[2][2]	= { { 0, 20 },  { 0, 20 } };
+	const int expect_bpf[2][2]	= { { 15, 5 },  { 15, 20 } };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int port_off = 2, tries = 5, ret;
 
 	test_control_single();
@@ -296,6 +392,14 @@ int main(int argc, char **argv)
 	ret |= test_datapath(PACKET_FANOUT_ROLLOVER,
 			     port_off, expect_rb[0], expect_rb[1]);
 
+<<<<<<< HEAD
+=======
+	ret |= test_datapath(PACKET_FANOUT_CBPF,
+			     port_off, expect_bpf[0], expect_bpf[1]);
+	ret |= test_datapath(PACKET_FANOUT_EBPF,
+			     port_off, expect_bpf[0], expect_bpf[1]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_cpuaffinity(0);
 	ret |= test_datapath(PACKET_FANOUT_CPU, port_off,
 			     expect_cpu0[0], expect_cpu0[1]);

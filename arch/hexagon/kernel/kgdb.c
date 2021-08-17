@@ -18,6 +18,11 @@
  * 02110-1301, USA.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/irq.h>
+#include <linux/sched.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kdebug.h>
 #include <linux/kgdb.h>
 
@@ -234,9 +239,15 @@ static struct notifier_block kgdb_notifier = {
 };
 
 /**
+<<<<<<< HEAD
  * kgdb_arch_init - Perform any architecture specific initalization.
  *
  * This function will handle the initalization of any architecture
+=======
+ * kgdb_arch_init - Perform any architecture specific initialization.
+ *
+ * This function will handle the initialization of any architecture
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * specific callbacks.
  */
 int kgdb_arch_init(void)

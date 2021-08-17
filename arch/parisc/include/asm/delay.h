@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _PARISC_DELAY_H
 #define _PARISC_DELAY_H
 
@@ -10,6 +11,10 @@
  *
  * Delay routines
  */
+=======
+#ifndef _ASM_PARISC_DELAY_H
+#define _ASM_PARISC_DELAY_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static __inline__ void __delay(unsigned long loops) {
 	asm volatile(
@@ -19,6 +24,7 @@ static __inline__ void __delay(unsigned long loops) {
 		: "=r" (loops) : "0" (loops));
 }
 
+<<<<<<< HEAD
 static __inline__ void __cr16_delay(unsigned long clocks) {
 	unsigned long start;
 
@@ -41,3 +47,16 @@ static __inline__ void __udelay(unsigned long usecs) {
 #define udelay(n) __udelay(n)
 
 #endif /* defined(_PARISC_DELAY_H) */
+=======
+extern void __udelay(unsigned long usecs);
+extern void __udelay_bad(unsigned long usecs);
+
+static inline void udelay(unsigned long usecs)
+{
+	if (__builtin_constant_p(usecs) && (usecs) > 20000)
+		__udelay_bad(usecs);
+	__udelay(usecs);
+}
+
+#endif /* _ASM_PARISC_DELAY_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

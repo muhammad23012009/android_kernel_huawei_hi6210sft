@@ -41,11 +41,16 @@ static const struct file_operations afs_proc_cells_fops = {
 	.write		= afs_proc_cells_write,
 	.llseek		= seq_lseek,
 	.release	= seq_release,
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
 };
 
 static int afs_proc_rootcell_open(struct inode *inode, struct file *file);
 static int afs_proc_rootcell_release(struct inode *inode, struct file *file);
+=======
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t afs_proc_rootcell_read(struct file *file, char __user *buf,
 				      size_t size, loff_t *_pos);
 static ssize_t afs_proc_rootcell_write(struct file *file,
@@ -53,6 +58,7 @@ static ssize_t afs_proc_rootcell_write(struct file *file,
 				       size_t size, loff_t *_pos);
 
 static const struct file_operations afs_proc_rootcell_fops = {
+<<<<<<< HEAD
 	.open		= afs_proc_rootcell_open,
 	.read		= afs_proc_rootcell_read,
 	.write		= afs_proc_rootcell_write,
@@ -64,6 +70,14 @@ static const struct file_operations afs_proc_rootcell_fops = {
 static int afs_proc_cell_volumes_open(struct inode *inode, struct file *file);
 static int afs_proc_cell_volumes_release(struct inode *inode,
 					 struct file *file);
+=======
+	.read		= afs_proc_rootcell_read,
+	.write		= afs_proc_rootcell_write,
+	.llseek		= no_llseek,
+};
+
+static int afs_proc_cell_volumes_open(struct inode *inode, struct file *file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void *afs_proc_cell_volumes_start(struct seq_file *p, loff_t *pos);
 static void *afs_proc_cell_volumes_next(struct seq_file *p, void *v,
 					loff_t *pos);
@@ -81,14 +95,21 @@ static const struct file_operations afs_proc_cell_volumes_fops = {
 	.open		= afs_proc_cell_volumes_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,
+<<<<<<< HEAD
 	.release	= afs_proc_cell_volumes_release,
 	.owner		= THIS_MODULE,
+=======
+	.release	= seq_release,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int afs_proc_cell_vlservers_open(struct inode *inode,
 					struct file *file);
+<<<<<<< HEAD
 static int afs_proc_cell_vlservers_release(struct inode *inode,
 					   struct file *file);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void *afs_proc_cell_vlservers_start(struct seq_file *p, loff_t *pos);
 static void *afs_proc_cell_vlservers_next(struct seq_file *p, void *v,
 					  loff_t *pos);
@@ -106,6 +127,7 @@ static const struct file_operations afs_proc_cell_vlservers_fops = {
 	.open		= afs_proc_cell_vlservers_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,
+<<<<<<< HEAD
 	.release	= afs_proc_cell_vlservers_release,
 	.owner		= THIS_MODULE,
 };
@@ -113,6 +135,12 @@ static const struct file_operations afs_proc_cell_vlservers_fops = {
 static int afs_proc_cell_servers_open(struct inode *inode, struct file *file);
 static int afs_proc_cell_servers_release(struct inode *inode,
 					 struct file *file);
+=======
+	.release	= seq_release,
+};
+
+static int afs_proc_cell_servers_open(struct inode *inode, struct file *file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void *afs_proc_cell_servers_start(struct seq_file *p, loff_t *pos);
 static void *afs_proc_cell_servers_next(struct seq_file *p, void *v,
 					loff_t *pos);
@@ -130,8 +158,12 @@ static const struct file_operations afs_proc_cell_servers_fops = {
 	.open		= afs_proc_cell_servers_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,
+<<<<<<< HEAD
 	.release	= afs_proc_cell_servers_release,
 	.owner		= THIS_MODULE,
+=======
+	.release	= seq_release,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -139,14 +171,18 @@ static const struct file_operations afs_proc_cell_servers_fops = {
  */
 int afs_proc_init(void)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *p;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_enter("");
 
 	proc_afs = proc_mkdir("fs/afs", NULL);
 	if (!proc_afs)
 		goto error_dir;
 
+<<<<<<< HEAD
 	p = proc_create("cells", 0, proc_afs, &afs_proc_cells_fops);
 	if (!p)
 		goto error_cells;
@@ -154,14 +190,24 @@ int afs_proc_init(void)
 	p = proc_create("rootcell", 0, proc_afs, &afs_proc_rootcell_fops);
 	if (!p)
 		goto error_rootcell;
+=======
+	if (!proc_create("cells", 0644, proc_afs, &afs_proc_cells_fops) ||
+	    !proc_create("rootcell", 0644, proc_afs, &afs_proc_rootcell_fops))
+		goto error_tree;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	_leave(" = 0");
 	return 0;
 
+<<<<<<< HEAD
 error_rootcell:
  	remove_proc_entry("cells", proc_afs);
 error_cells:
 	remove_proc_entry("fs/afs", NULL);
+=======
+error_tree:
+	remove_proc_subtree("fs/afs", NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_dir:
 	_leave(" = -ENOMEM");
 	return -ENOMEM;
@@ -172,9 +218,13 @@ error_dir:
  */
 void afs_proc_cleanup(void)
 {
+<<<<<<< HEAD
 	remove_proc_entry("rootcell", proc_afs);
 	remove_proc_entry("cells", proc_afs);
 	remove_proc_entry("fs/afs", NULL);
+=======
+	remove_proc_subtree("fs/afs", NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -255,6 +305,7 @@ static ssize_t afs_proc_cells_write(struct file *file, const char __user *buf,
 	if (size <= 1 || size >= PAGE_SIZE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	kbuf = kmalloc(size + 1, GFP_KERNEL);
 	if (!kbuf)
 		return -ENOMEM;
@@ -263,6 +314,11 @@ static ssize_t afs_proc_cells_write(struct file *file, const char __user *buf,
 	if (copy_from_user(kbuf, buf, size) != 0)
 		goto done;
 	kbuf[size] = 0;
+=======
+	kbuf = memdup_user_nul(buf, size);
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* trim to first NL */
 	name = memchr(kbuf, '\n', size);
@@ -319,6 +375,7 @@ inval:
 	goto done;
 }
 
+<<<<<<< HEAD
 /*
  * Stubs for /proc/fs/afs/rootcell
  */
@@ -332,6 +389,8 @@ static int afs_proc_rootcell_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t afs_proc_rootcell_read(struct file *file, char __user *buf,
 				      size_t size, loff_t *_pos)
 {
@@ -353,6 +412,7 @@ static ssize_t afs_proc_rootcell_write(struct file *file,
 	if (size <= 1 || size >= PAGE_SIZE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = -ENOMEM;
 	kbuf = kmalloc(size + 1, GFP_KERNEL);
 	if (!kbuf)
@@ -362,6 +422,11 @@ static ssize_t afs_proc_rootcell_write(struct file *file,
 	if (copy_from_user(kbuf, buf, size) != 0)
 		goto infault;
 	kbuf[size] = 0;
+=======
+	kbuf = memdup_user_nul(buf, size);
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* trim to first NL */
 	s = memchr(kbuf, '\n', size);
@@ -375,9 +440,13 @@ static ssize_t afs_proc_rootcell_write(struct file *file,
 	if (ret >= 0)
 		ret = size;	/* consume everything, always */
 
+<<<<<<< HEAD
 infault:
 	kfree(kbuf);
 nomem:
+=======
+	kfree(kbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_leave(" = %d", ret);
 	return ret;
 }
@@ -387,6 +456,7 @@ nomem:
  */
 int afs_proc_cell_setup(struct afs_cell *cell)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *p;
 
 	_enter("%p{%s}", cell, cell->name);
@@ -409,16 +479,38 @@ int afs_proc_cell_setup(struct afs_cell *cell)
 			     &afs_proc_cell_volumes_fops, cell);
 	if (!p)
 		goto error_volumes;
+=======
+	struct proc_dir_entry *dir;
+
+	_enter("%p{%s}", cell, cell->name);
+
+	dir = proc_mkdir(cell->name, proc_afs);
+	if (!dir)
+		goto error_dir;
+
+	if (!proc_create_data("servers", 0, dir,
+			     &afs_proc_cell_servers_fops, cell) ||
+	    !proc_create_data("vlservers", 0, dir,
+			     &afs_proc_cell_vlservers_fops, cell) ||
+	    !proc_create_data("volumes", 0, dir,
+			     &afs_proc_cell_volumes_fops, cell))
+		goto error_tree;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	_leave(" = 0");
 	return 0;
 
+<<<<<<< HEAD
 error_volumes:
 	remove_proc_entry("vlservers", cell->proc_dir);
 error_vlservers:
 	remove_proc_entry("servers", cell->proc_dir);
 error_servers:
 	remove_proc_entry(cell->name, proc_afs);
+=======
+error_tree:
+	remove_proc_subtree(cell->name, proc_afs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_dir:
 	_leave(" = -ENOMEM");
 	return -ENOMEM;
@@ -431,10 +523,14 @@ void afs_proc_cell_remove(struct afs_cell *cell)
 {
 	_enter("");
 
+<<<<<<< HEAD
 	remove_proc_entry("volumes", cell->proc_dir);
 	remove_proc_entry("vlservers", cell->proc_dir);
 	remove_proc_entry("servers", cell->proc_dir);
 	remove_proc_entry(cell->name, proc_afs);
+=======
+	remove_proc_subtree(cell->name, proc_afs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	_leave("");
 }
@@ -463,6 +559,7 @@ static int afs_proc_cell_volumes_open(struct inode *inode, struct file *file)
 }
 
 /*
+<<<<<<< HEAD
  * close the file and release the ref to the cell
  */
 static int afs_proc_cell_volumes_release(struct inode *inode, struct file *file)
@@ -471,6 +568,8 @@ static int afs_proc_cell_volumes_release(struct inode *inode, struct file *file)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * set up the iterator to start reading from the cells list and return the
  * first item
  */
@@ -569,6 +668,7 @@ static int afs_proc_cell_vlservers_open(struct inode *inode, struct file *file)
 }
 
 /*
+<<<<<<< HEAD
  * close the file and release the ref to the cell
  */
 static int afs_proc_cell_vlservers_release(struct inode *inode,
@@ -578,6 +678,8 @@ static int afs_proc_cell_vlservers_release(struct inode *inode,
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * set up the iterator to start reading from the cells list and return the
  * first item
  */
@@ -673,6 +775,7 @@ static int afs_proc_cell_servers_open(struct inode *inode, struct file *file)
 }
 
 /*
+<<<<<<< HEAD
  * close the file and release the ref to the cell
  */
 static int afs_proc_cell_servers_release(struct inode *inode,
@@ -682,6 +785,8 @@ static int afs_proc_cell_servers_release(struct inode *inode,
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * set up the iterator to start reading from the cells list and return the
  * first item
  */

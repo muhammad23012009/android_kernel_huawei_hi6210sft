@@ -112,7 +112,11 @@ int ncp_symlink(struct inode *dir, struct dentry *dentry, const char *symname) {
 	__le32 attr;
 	unsigned int hdr;
 
+<<<<<<< HEAD
 	DPRINTK("ncp_symlink(dir=%p,dentry=%p,symname=%s)\n",dir,dentry,symname);
+=======
+	ncp_dbg(1, "dir=%p, dentry=%p, symname=%s\n", dir, dentry, symname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ncp_is_nfs_extras(NCP_SERVER(dir), NCP_FINFO(dir)->volNumber))
 		kludge = 0;
@@ -156,7 +160,11 @@ int ncp_symlink(struct inode *dir, struct dentry *dentry, const char *symname) {
 		goto failfree;
 	}
 
+<<<<<<< HEAD
 	inode=dentry->d_inode;
+=======
+	inode=d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ncp_make_open(inode, O_WRONLY))
 		goto failfree;

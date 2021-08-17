@@ -64,7 +64,11 @@ static int menu_width, item_x;
  * Print menu item
  */
 static void do_print_item(WINDOW * win, const char *item, int line_y,
+<<<<<<< HEAD
                           int selected, int hotkey)
+=======
+			  int selected, int hotkey)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int j;
 	char *menu_item = malloc(menu_width + 1);
@@ -182,7 +186,11 @@ static void do_scroll(WINDOW *win, int *scroll, int n)
  * Display a menu for choosing among a number of options
  */
 int dialog_menu(const char *title, const char *prompt,
+<<<<<<< HEAD
                 const void *selected, int *s_scroll)
+=======
+		const void *selected, int *s_scroll)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, j, x, y, box_x, box_y;
 	int height, width, menu_height;
@@ -193,7 +201,11 @@ int dialog_menu(const char *title, const char *prompt,
 do_resize:
 	height = getmaxy(stdscr);
 	width = getmaxx(stdscr);
+<<<<<<< HEAD
 	if (height < 15 || width < 65)
+=======
+	if (height < MENUBOX_HEIGTH_MIN || width < MENUBOX_WIDTH_MIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ERRDISPLAYTOOSMALL;
 
 	height -= 4;
@@ -203,8 +215,13 @@ do_resize:
 	max_choice = MIN(menu_height, item_count());
 
 	/* center dialog box on screen */
+<<<<<<< HEAD
 	x = (COLS - width) / 2;
 	y = (LINES - height) / 2;
+=======
+	x = (getmaxx(stdscr) - width) / 2;
+	y = (getmaxy(stdscr) - height) / 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	draw_shadow(stdscr, y, x, height, width);
 

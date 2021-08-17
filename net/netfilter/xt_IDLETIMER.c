@@ -49,6 +49,10 @@
 #include <linux/notifier.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
+<<<<<<< HEAD
+=======
+#include <net/inet_sock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct idletimer_tg_attr {
 	struct attribute attr;
@@ -75,7 +79,10 @@ struct idletimer_tg {
 	bool send_nl_msg;
 	bool active;
 	uid_t uid;
+<<<<<<< HEAD
 	bool suspend_time_valid;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static LIST_HEAD(idletimer_tg_list);
@@ -277,6 +284,25 @@ static int idletimer_resume(struct notifier_block *notifier,
 	return NOTIFY_DONE;
 }
 
+<<<<<<< HEAD
+=======
+static int idletimer_check_sysfs_name(const char *name, unsigned int size)
+{
+	int ret;
+
+	ret = xt_check_proc_name(name, size);
+	if (ret < 0)
+		return ret;
+
+	if (!strcmp(name, "power") ||
+	    !strcmp(name, "subsystem") ||
+	    !strcmp(name, "uevent"))
+		return -EINVAL;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int idletimer_tg_create(struct idletimer_tg_info *info)
 {
 	int ret;
@@ -287,6 +313,14 @@ static int idletimer_tg_create(struct idletimer_tg_info *info)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = idletimer_check_sysfs_name(info->label, sizeof(info->label));
+	if (ret < 0)
+		goto out_free_timer;
+
+	sysfs_attr_init(&info->timer->attr.attr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->timer->attr.attr.name = kstrdup(info->label, GFP_KERNEL);
 	if (!info->timer->attr.attr.name) {
 		ret = -ENOMEM;
@@ -300,8 +334,11 @@ static int idletimer_tg_create(struct idletimer_tg_info *info)
 		pr_debug("couldn't add file to sysfs");
 		goto out_free_attr;
 	}
+<<<<<<< HEAD
 	/* notify userspace */
 	kobject_uevent(idletimer_tg_kobj, KOBJ_ADD);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_add(&info->timer->entry, &idletimer_tg_list);
 
@@ -324,11 +361,19 @@ static int idletimer_tg_create(struct idletimer_tg_info *info)
 		printk(KERN_WARNING "[%s] Failed to register pm notifier %d\n",
 				__func__, ret);
 
+<<<<<<< HEAD
 	mod_timer(&info->timer->timer,
 		  msecs_to_jiffies(info->timeout * 1000) + jiffies);
 
 	INIT_WORK(&info->timer->work, idletimer_tg_work);
 
+=======
+	INIT_WORK(&info->timer->work, idletimer_tg_work);
+
+	mod_timer(&info->timer->timer,
+		  msecs_to_jiffies(info->timeout * 1000) + jiffies);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 out_free_attr:
@@ -356,12 +401,17 @@ static void reset_timer(const struct idletimer_tg_info *info,
 
 		/* Stores the uid resposible for waking up the radio */
 		if (skb && (skb->sk)) {
+<<<<<<< HEAD
 			struct sock *sk = skb->sk;
 			read_lock_bh(&sk->sk_callback_lock);
 			if ((sk->sk_socket) && (sk->sk_socket->file) &&
 		    (sk->sk_socket->file->f_cred))
 				timer->uid = sk->sk_socket->file->f_cred->uid;
 			read_unlock_bh(&sk->sk_callback_lock);
+=======
+			timer->uid = from_kuid_munged(current_user_ns(),
+					sock_i_uid(skb_to_full_sk(skb)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		/* checks if there is a pending inactive notification*/
@@ -417,7 +467,14 @@ static int idletimer_tg_checkentry(const struct xt_tgchk_param *par)
 		pr_debug("timeout value is zero\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 
+=======
+	if (info->timeout >= INT_MAX / 1000) {
+		pr_debug("timeout value is too big\n");
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info->label[0] == '\0' ||
 	    strnlen(info->label,
 		    MAX_IDLETIMER_LABEL_SIZE) == MAX_IDLETIMER_LABEL_SIZE) {
@@ -462,6 +519,10 @@ static void idletimer_tg_destroy(const struct xt_tgdtor_param *par)
 		del_timer_sync(&info->timer->timer);
 		sysfs_remove_file(idletimer_tg_kobj, &info->timer->attr.attr);
 		unregister_pm_notifier(&info->timer->pm_nb);
+<<<<<<< HEAD
+=======
+		cancel_work_sync(&info->timer->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(info->timer->attr.attr.name);
 		kfree(info->timer);
 	} else {

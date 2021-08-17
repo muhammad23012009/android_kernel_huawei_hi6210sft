@@ -15,16 +15,43 @@
 /* This file is machine-generated; DO NOT EDIT! */
 #include "gxio/iorpc_mpipe_info.h"
 
+<<<<<<< HEAD
+=======
+struct instance_aux_param {
+	_gxio_mpipe_link_name_t name;
+};
+
+int gxio_mpipe_info_instance_aux(gxio_mpipe_info_context_t *context,
+				 _gxio_mpipe_link_name_t name)
+{
+	struct instance_aux_param temp;
+	struct instance_aux_param *params = &temp;
+
+	params->name = name;
+
+	return hv_dev_pwrite(context->fd, 0, (HV_VirtAddr) params,
+			     sizeof(*params), GXIO_MPIPE_INFO_OP_INSTANCE_AUX);
+}
+
+EXPORT_SYMBOL(gxio_mpipe_info_instance_aux);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct enumerate_aux_param {
 	_gxio_mpipe_link_name_t name;
 	_gxio_mpipe_link_mac_t mac;
 };
 
+<<<<<<< HEAD
 int gxio_mpipe_info_enumerate_aux(gxio_mpipe_info_context_t * context,
 				  unsigned int idx,
 				  _gxio_mpipe_link_name_t * name,
 				  _gxio_mpipe_link_mac_t * mac)
+=======
+int gxio_mpipe_info_enumerate_aux(gxio_mpipe_info_context_t *context,
+				  unsigned int idx,
+				  _gxio_mpipe_link_name_t *name,
+				  _gxio_mpipe_link_mac_t *mac)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int __result;
 	struct enumerate_aux_param temp;
@@ -32,7 +59,11 @@ int gxio_mpipe_info_enumerate_aux(gxio_mpipe_info_context_t * context,
 
 	__result =
 	    hv_dev_pread(context->fd, 0, (HV_VirtAddr) params, sizeof(*params),
+<<<<<<< HEAD
 			 (((uint64_t) idx << 32) |
+=======
+			 (((uint64_t)idx << 32) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  GXIO_MPIPE_INFO_OP_ENUMERATE_AUX));
 	*name = params->name;
 	*mac = params->mac;
@@ -46,7 +77,11 @@ struct get_mmio_base_param {
 	HV_PTE base;
 };
 
+<<<<<<< HEAD
 int gxio_mpipe_info_get_mmio_base(gxio_mpipe_info_context_t * context,
+=======
+int gxio_mpipe_info_get_mmio_base(gxio_mpipe_info_context_t *context,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  HV_PTE *base)
 {
 	int __result;
@@ -68,7 +103,11 @@ struct check_mmio_offset_param {
 	unsigned long size;
 };
 
+<<<<<<< HEAD
 int gxio_mpipe_info_check_mmio_offset(gxio_mpipe_info_context_t * context,
+=======
+int gxio_mpipe_info_check_mmio_offset(gxio_mpipe_info_context_t *context,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      unsigned long offset, unsigned long size)
 {
 	struct check_mmio_offset_param temp;

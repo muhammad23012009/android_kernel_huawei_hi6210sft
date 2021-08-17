@@ -26,7 +26,10 @@
 #include <linux/utsname.h>
 #include <linux/personality.h>
 #include <linux/dnotify.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/binfmts.h>
 #include <linux/security.h>
 #include <linux/compat.h>

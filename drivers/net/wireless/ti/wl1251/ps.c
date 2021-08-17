@@ -32,7 +32,11 @@ void wl1251_elp_work(struct work_struct *work)
 	struct delayed_work *dwork;
 	struct wl1251 *wl;
 
+<<<<<<< HEAD
 	dwork = container_of(work, struct delayed_work, work);
+=======
+	dwork = to_delayed_work(work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wl = container_of(dwork, struct wl1251, elp_work);
 
 	wl1251_debug(DEBUG_PSM, "elp work");

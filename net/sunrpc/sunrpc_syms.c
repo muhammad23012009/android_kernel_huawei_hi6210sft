@@ -44,12 +44,24 @@ static __net_init int sunrpc_init_net(struct net *net)
 	if (err)
 		goto err_unixgid;
 
+<<<<<<< HEAD
 	rpc_pipefs_init_net(net);
+=======
+	err = rpc_pipefs_init_net(net);
+	if (err)
+		goto err_pipefs;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_LIST_HEAD(&sn->all_clients);
 	spin_lock_init(&sn->rpc_client_lock);
 	spin_lock_init(&sn->rpcb_clnt_lock);
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_pipefs:
+	unix_gid_cache_destroy(net);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_unixgid:
 	ip_map_cache_destroy(net);
 err_ipmap:
@@ -60,6 +72,10 @@ err_proc:
 
 static __net_exit void sunrpc_exit_net(struct net *net)
 {
+<<<<<<< HEAD
+=======
+	rpc_pipefs_exit_net(net);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unix_gid_cache_destroy(net);
 	ip_map_cache_destroy(net);
 	rpc_proc_exit(net);
@@ -91,7 +107,13 @@ init_sunrpc(void)
 	err = register_rpc_pipefs();
 	if (err)
 		goto out4;
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+
+	sunrpc_debugfs_init();
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rpc_register_sysctl();
 #endif
 	svc_init_xprt_sock();	/* svc sock transport */
@@ -111,6 +133,7 @@ out:
 static void __exit
 cleanup_sunrpc(void)
 {
+<<<<<<< HEAD
 	rpcauth_remove_module();
 	cleanup_socket_xprt();
 	svc_cleanup_xprt_sock();
@@ -118,6 +141,17 @@ cleanup_sunrpc(void)
 	rpc_destroy_mempool();
 	unregister_pernet_subsys(&sunrpc_net_ops);
 #ifdef RPC_DEBUG
+=======
+	rpc_cleanup_clids();
+	rpcauth_remove_module();
+	cleanup_socket_xprt();
+	svc_cleanup_xprt_sock();
+	sunrpc_debugfs_exit();
+	unregister_rpc_pipefs();
+	rpc_destroy_mempool();
+	unregister_pernet_subsys(&sunrpc_net_ops);
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rpc_unregister_sysctl();
 #endif
 	rcu_barrier(); /* Wait for completion of call_rcu()'s */

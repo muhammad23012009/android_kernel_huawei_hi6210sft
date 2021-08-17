@@ -88,6 +88,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"Mic Amp", NULL, "Mic (Internal)"},
 };
 
+<<<<<<< HEAD
 static int e740_ac97_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
@@ -111,6 +112,8 @@ static int e740_ac97_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_dai_link e740_dai[] = {
 	{
 		.name = "AC97",
@@ -119,7 +122,10 @@ static struct snd_soc_dai_link e740_dai[] = {
 		.codec_dai_name = "wm9705-hifi",
 		.platform_name = "pxa-pcm-audio",
 		.codec_name = "wm9705-codec",
+<<<<<<< HEAD
 		.init = e740_ac97_init,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.name = "AC97 Aux",
@@ -136,6 +142,15 @@ static struct snd_soc_card e740 = {
 	.owner = THIS_MODULE,
 	.dai_link = e740_dai,
 	.num_links = ARRAY_SIZE(e740_dai),
+<<<<<<< HEAD
+=======
+
+	.dapm_widgets = e740_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(e740_dapm_widgets),
+	.dapm_routes = audio_map,
+	.num_dapm_routes = ARRAY_SIZE(audio_map),
+	.fully_routed = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct gpio e740_audio_gpios[] = {
@@ -156,7 +171,11 @@ static int e740_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 			ret);
@@ -167,17 +186,25 @@ static int e740_probe(struct platform_device *pdev)
 
 static int e740_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 
 	gpio_free_array(e740_audio_gpios, ARRAY_SIZE(e740_audio_gpios));
 	snd_soc_unregister_card(card);
+=======
+	gpio_free_array(e740_audio_gpios, ARRAY_SIZE(e740_audio_gpios));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver e740_driver = {
 	.driver		= {
 		.name	= "e740-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.pm     = &snd_soc_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= e740_probe,
 	.remove		= e740_remove,

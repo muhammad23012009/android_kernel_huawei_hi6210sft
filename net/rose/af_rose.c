@@ -192,7 +192,12 @@ static void rose_kill_by_device(struct net_device *dev)
 
 		if (rose->device == dev) {
 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+<<<<<<< HEAD
 			rose->neighbour->use--;
+=======
+			if (rose->neighbour)
+				rose->neighbour->use--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rose->device = NULL;
 		}
 	}
@@ -202,10 +207,17 @@ static void rose_kill_by_device(struct net_device *dev)
 /*
  *	Handle device status changes.
  */
+<<<<<<< HEAD
 static int rose_device_event(struct notifier_block *this, unsigned long event,
 	void *ptr)
 {
 	struct net_device *dev = (struct net_device *)ptr;
+=======
+static int rose_device_event(struct notifier_block *this,
+			     unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
@@ -520,7 +532,11 @@ static int rose_create(struct net *net, struct socket *sock, int protocol,
 	if (sock->type != SOCK_SEQPACKET || protocol != 0)
 		return -ESOCKTNOSUPPORT;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_ROSE, GFP_ATOMIC, &rose_proto);
+=======
+	sk = sk_alloc(net, PF_ROSE, GFP_ATOMIC, &rose_proto, kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sk == NULL)
 		return -ENOMEM;
 
@@ -559,7 +575,11 @@ static struct sock *rose_make_new(struct sock *osk)
 	if (osk->sk_type != SOCK_SEQPACKET)
 		return NULL;
 
+<<<<<<< HEAD
 	sk = sk_alloc(sock_net(osk), PF_ROSE, GFP_ATOMIC, &rose_proto);
+=======
+	sk = sk_alloc(sock_net(osk), PF_ROSE, GFP_ATOMIC, &rose_proto, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sk == NULL)
 		return NULL;
 
@@ -1012,7 +1032,11 @@ int rose_rx_call_request(struct sk_buff *skb, struct net_device *dev, struct ros
 	make_rose->source_call   = facilities.source_call;
 	make_rose->source_ndigis = facilities.source_ndigis;
 	for (n = 0 ; n < facilities.source_ndigis ; n++)
+<<<<<<< HEAD
 		make_rose->source_digis[n]= facilities.source_digis[n];
+=======
+		make_rose->source_digis[n] = facilities.source_digis[n];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	make_rose->neighbour     = neigh;
 	make_rose->device        = dev;
 	make_rose->facilities    = facilities;
@@ -1041,17 +1065,29 @@ int rose_rx_call_request(struct sk_buff *skb, struct net_device *dev, struct ros
 	rose_start_heartbeat(make);
 
 	if (!sock_flag(sk, SOCK_DEAD))
+<<<<<<< HEAD
 		sk->sk_data_ready(sk, skb->len);
+=======
+		sk->sk_data_ready(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 1;
 }
 
+<<<<<<< HEAD
 static int rose_sendmsg(struct kiocb *iocb, struct socket *sock,
 			struct msghdr *msg, size_t len)
 {
 	struct sock *sk = sock->sk;
 	struct rose_sock *rose = rose_sk(sk);
 	struct sockaddr_rose *usrose = (struct sockaddr_rose *)msg->msg_name;
+=======
+static int rose_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+{
+	struct sock *sk = sock->sk;
+	struct rose_sock *rose = rose_sk(sk);
+	DECLARE_SOCKADDR(struct sockaddr_rose *, usrose, msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 	struct full_sockaddr_rose srose;
 	struct sk_buff *skb;
@@ -1121,7 +1157,11 @@ static int rose_sendmsg(struct kiocb *iocb, struct socket *sock,
 	skb_reset_transport_header(skb);
 	skb_put(skb, len);
 
+<<<<<<< HEAD
 	err = memcpy_fromiovec(skb_transport_header(skb), msg->msg_iov, len);
+=======
+	err = memcpy_from_msg(skb_transport_header(skb), msg, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err) {
 		kfree_skb(skb);
 		return err;
@@ -1211,8 +1251,13 @@ static int rose_sendmsg(struct kiocb *iocb, struct socket *sock,
 }
 
 
+<<<<<<< HEAD
 static int rose_recvmsg(struct kiocb *iocb, struct socket *sock,
 			struct msghdr *msg, size_t size, int flags)
+=======
+static int rose_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+			int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sock *sk = sock->sk;
 	struct rose_sock *rose = rose_sk(sk);
@@ -1249,11 +1294,20 @@ static int rose_recvmsg(struct kiocb *iocb, struct socket *sock,
 		msg->msg_flags |= MSG_TRUNC;
 	}
 
+<<<<<<< HEAD
 	skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
 
 	if (msg->msg_name) {
 		struct sockaddr_rose *srose;
 		struct full_sockaddr_rose *full_srose = msg->msg_name;
+=======
+	skb_copy_datagram_msg(skb, 0, msg, copied);
+
+	if (msg->msg_name) {
+		struct sockaddr_rose *srose;
+		DECLARE_SOCKADDR(struct full_sockaddr_rose *, full_srose,
+				 msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		memset(msg->msg_name, 0, sizeof(struct full_sockaddr_rose));
 		srose = msg->msg_name;
@@ -1537,7 +1591,11 @@ static int __init rose_proto_init(void)
 		char name[IFNAMSIZ];
 
 		sprintf(name, "rose%d", i);
+<<<<<<< HEAD
 		dev = alloc_netdev(0, name, rose_setup);
+=======
+		dev = alloc_netdev(0, name, NET_NAME_UNKNOWN, rose_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!dev) {
 			printk(KERN_ERR "ROSE: rose_proto_init - unable to allocate memory\n");
 			rc = -ENOMEM;

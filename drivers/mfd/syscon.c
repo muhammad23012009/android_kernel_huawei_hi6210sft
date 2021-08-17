@@ -15,6 +15,7 @@
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
@@ -34,10 +35,110 @@ static int syscon_match_node(struct device *dev, void *data)
 	struct device_node *dn = data;
 
 	return (dev->of_node == dn) ? 1 : 0;
+=======
+#include <linux/list.h>
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_platform.h>
+#include <linux/platform_data/syscon.h>
+#include <linux/platform_device.h>
+#include <linux/regmap.h>
+#include <linux/mfd/syscon.h>
+#include <linux/slab.h>
+
+static struct platform_driver syscon_driver;
+
+static DEFINE_SPINLOCK(syscon_list_slock);
+static LIST_HEAD(syscon_list);
+
+struct syscon {
+	struct device_node *np;
+	struct regmap *regmap;
+	struct list_head list;
+};
+
+static const struct regmap_config syscon_regmap_config = {
+	.reg_bits = 32,
+	.val_bits = 32,
+	.reg_stride = 4,
+};
+
+static struct syscon *of_syscon_register(struct device_node *np)
+{
+	struct syscon *syscon;
+	struct regmap *regmap;
+	void __iomem *base;
+	u32 reg_io_width;
+	int ret;
+	struct regmap_config syscon_config = syscon_regmap_config;
+	struct resource res;
+
+	if (!of_device_is_compatible(np, "syscon"))
+		return ERR_PTR(-EINVAL);
+
+	syscon = kzalloc(sizeof(*syscon), GFP_KERNEL);
+	if (!syscon)
+		return ERR_PTR(-ENOMEM);
+
+	if (of_address_to_resource(np, 0, &res)) {
+		ret = -ENOMEM;
+		goto err_map;
+	}
+
+	base = ioremap(res.start, resource_size(&res));
+	if (!base) {
+		ret = -ENOMEM;
+		goto err_map;
+	}
+
+	/* Parse the device's DT node for an endianness specification */
+	if (of_property_read_bool(np, "big-endian"))
+		syscon_config.val_format_endian = REGMAP_ENDIAN_BIG;
+	else if (of_property_read_bool(np, "little-endian"))
+		syscon_config.val_format_endian = REGMAP_ENDIAN_LITTLE;
+	else if (of_property_read_bool(np, "native-endian"))
+		syscon_config.val_format_endian = REGMAP_ENDIAN_NATIVE;
+
+	/*
+	 * search for reg-io-width property in DT. If it is not provided,
+	 * default to 4 bytes. regmap_init_mmio will return an error if values
+	 * are invalid so there is no need to check them here.
+	 */
+	ret = of_property_read_u32(np, "reg-io-width", &reg_io_width);
+	if (ret)
+		reg_io_width = 4;
+
+	syscon_config.reg_stride = reg_io_width;
+	syscon_config.val_bits = reg_io_width * 8;
+	syscon_config.max_register = resource_size(&res) - reg_io_width;
+
+	regmap = regmap_init_mmio(NULL, base, &syscon_config);
+	if (IS_ERR(regmap)) {
+		pr_err("regmap init failed\n");
+		ret = PTR_ERR(regmap);
+		goto err_regmap;
+	}
+
+	syscon->regmap = regmap;
+	syscon->np = np;
+
+	spin_lock(&syscon_list_slock);
+	list_add_tail(&syscon->list, &syscon_list);
+	spin_unlock(&syscon_list_slock);
+
+	return syscon;
+
+err_regmap:
+	iounmap(base);
+err_map:
+	kfree(syscon);
+	return ERR_PTR(ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct regmap *syscon_node_to_regmap(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct syscon *syscon;
 	struct device *dev;
 
@@ -47,6 +148,25 @@ struct regmap *syscon_node_to_regmap(struct device_node *np)
 		return ERR_PTR(-EPROBE_DEFER);
 
 	syscon = dev_get_drvdata(dev);
+=======
+	struct syscon *entry, *syscon = NULL;
+
+	spin_lock(&syscon_list_slock);
+
+	list_for_each_entry(entry, &syscon_list, list)
+		if (entry->np == np) {
+			syscon = entry;
+			break;
+		}
+
+	spin_unlock(&syscon_list_slock);
+
+	if (!syscon)
+		syscon = of_syscon_register(np);
+
+	if (IS_ERR(syscon))
+		return ERR_CAST(syscon);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return syscon->regmap;
 }
@@ -70,6 +190,7 @@ EXPORT_SYMBOL_GPL(syscon_regmap_lookup_by_compatible);
 
 static int syscon_match_pdevname(struct device *dev, void *data)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	const struct platform_device_id *id = platform_get_device_id(pdev);
 
@@ -77,6 +198,8 @@ static int syscon_match_pdevname(struct device *dev, void *data)
 		if (!strcmp(id->name, (const char *)data))
 			return 1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return !strcmp(dev_name(dev), (const char *)data);
 }
 
@@ -102,7 +225,15 @@ struct regmap *syscon_regmap_lookup_by_phandle(struct device_node *np,
 	struct device_node *syscon_np;
 	struct regmap *regmap;
 
+<<<<<<< HEAD
 	syscon_np = of_parse_phandle(np, property, 0);
+=======
+	if (property)
+		syscon_np = of_parse_phandle(np, property, 0);
+	else
+		syscon_np = np;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!syscon_np)
 		return ERR_PTR(-ENODEV);
 
@@ -113,6 +244,7 @@ struct regmap *syscon_regmap_lookup_by_phandle(struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(syscon_regmap_lookup_by_phandle);
 
+<<<<<<< HEAD
 static const struct of_device_id of_syscon_match[] = {
 	{ .compatible = "syscon", },
 	{ },
@@ -129,6 +261,16 @@ static int syscon_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct syscon *syscon;
 	struct resource *res;
+=======
+static int syscon_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct syscon_platform_data *pdata = dev_get_platdata(dev);
+	struct syscon *syscon;
+	struct regmap_config syscon_config = syscon_regmap_config;
+	struct resource *res;
+	void __iomem *base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	syscon = devm_kzalloc(dev, sizeof(*syscon), GFP_KERNEL);
 	if (!syscon)
@@ -138,6 +280,7 @@ static int syscon_probe(struct platform_device *pdev)
 	if (!res)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	syscon->base = devm_ioremap(dev, res->start, resource_size(res));
 	if (!syscon->base)
 		return -ENOMEM;
@@ -145,6 +288,16 @@ static int syscon_probe(struct platform_device *pdev)
 	syscon_regmap_config.max_register = res->end - res->start - 3;
 	syscon->regmap = devm_regmap_init_mmio(dev, syscon->base,
 					&syscon_regmap_config);
+=======
+	base = devm_ioremap(dev, res->start, resource_size(res));
+	if (!base)
+		return -ENOMEM;
+
+	syscon_config.max_register = res->end - res->start - 3;
+	if (pdata)
+		syscon_config.name = pdata->label;
+	syscon->regmap = devm_regmap_init_mmio(dev, base, &syscon_config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(syscon->regmap)) {
 		dev_err(dev, "regmap init failed\n");
 		return PTR_ERR(syscon->regmap);
@@ -152,7 +305,11 @@ static int syscon_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, syscon);
 
+<<<<<<< HEAD
 	dev_info(dev, "regmap %pR registered\n", res);
+=======
+	dev_dbg(dev, "regmap %pR registered\n", res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -165,8 +322,11 @@ static const struct platform_device_id syscon_ids[] = {
 static struct platform_driver syscon_driver = {
 	.driver = {
 		.name = "syscon",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_syscon_match,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= syscon_probe,
 	.id_table	= syscon_ids,

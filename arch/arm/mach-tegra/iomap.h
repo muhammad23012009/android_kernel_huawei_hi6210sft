@@ -19,11 +19,16 @@
 #ifndef __MACH_TEGRA_IOMAP_H
 #define __MACH_TEGRA_IOMAP_H
 
+<<<<<<< HEAD
+=======
+#include <asm/pgtable.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/sizes.h>
 
 #define TEGRA_IRAM_BASE			0x40000000
 #define TEGRA_IRAM_SIZE			SZ_256K
 
+<<<<<<< HEAD
 #define TEGRA_HOST1X_BASE		0x50000000
 #define TEGRA_HOST1X_SIZE		0x24000
 
@@ -75,6 +80,14 @@
 #define TEGRA_QUINARY_ICTLR_BASE	0x60004400
 #define TEGRA_QUINARY_ICTLR_SIZE	SZ_64
 
+=======
+#define TEGRA_ARM_PERIF_BASE		0x50040000
+#define TEGRA_ARM_PERIF_SIZE		SZ_8K
+
+#define TEGRA_ARM_INT_DIST_BASE		0x50041000
+#define TEGRA_ARM_INT_DIST_SIZE		SZ_4K
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TEGRA_TMR1_BASE			0x60005000
 #define TEGRA_TMR1_SIZE			SZ_8
 
@@ -96,6 +109,7 @@
 #define TEGRA_FLOW_CTRL_BASE		0x60007000
 #define TEGRA_FLOW_CTRL_SIZE		20
 
+<<<<<<< HEAD
 #define TEGRA_AHB_DMA_BASE		0x60008000
 #define TEGRA_AHB_DMA_SIZE		SZ_4K
 
@@ -120,12 +134,18 @@
 #define TEGRA_GPIO_BASE			0x6000D000
 #define TEGRA_GPIO_SIZE			SZ_4K
 
+=======
+#define TEGRA_SB_BASE			0x6000C200
+#define TEGRA_SB_SIZE			256
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TEGRA_EXCEPTION_VECTORS_BASE    0x6000F000
 #define TEGRA_EXCEPTION_VECTORS_SIZE    SZ_4K
 
 #define TEGRA_APB_MISC_BASE		0x70000000
 #define TEGRA_APB_MISC_SIZE		SZ_4K
 
+<<<<<<< HEAD
 #define TEGRA_APB_MISC_DAS_BASE		0x70000c00
 #define TEGRA_APB_MISC_DAS_SIZE		SZ_128
 
@@ -141,6 +161,8 @@
 #define TEGRA_I2S2_BASE			0x70002A00
 #define TEGRA_I2S2_SIZE			SZ_256
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TEGRA_UARTA_BASE		0x70006000
 #define TEGRA_UARTA_SIZE		SZ_64
 
@@ -156,6 +178,7 @@
 #define TEGRA_UARTE_BASE		0x70006400
 #define TEGRA_UARTE_SIZE		SZ_256
 
+<<<<<<< HEAD
 #define TEGRA_NAND_BASE			0x70008000
 #define TEGRA_NAND_SIZE			SZ_256
 
@@ -236,10 +259,27 @@
 
 #define TEGRA_KFUSE_BASE		0x7000FC00
 #define TEGRA_KFUSE_SIZE		SZ_1K
+=======
+#define TEGRA_PMC_BASE			0x7000E400
+#define TEGRA_PMC_SIZE			SZ_256
+
+#define TEGRA_EMC_BASE			0x7000F400
+#define TEGRA_EMC_SIZE			SZ_1K
+
+#define TEGRA_EMC0_BASE			0x7001A000
+#define TEGRA_EMC0_SIZE			SZ_2K
+
+#define TEGRA_EMC1_BASE			0x7001A800
+#define TEGRA_EMC1_SIZE			SZ_2K
+
+#define TEGRA124_EMC_BASE		0x7001B000
+#define TEGRA124_EMC_SIZE		SZ_2K
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define TEGRA_CSITE_BASE		0x70040000
 #define TEGRA_CSITE_SIZE		SZ_256K
 
+<<<<<<< HEAD
 #define TEGRA_SDMMC1_BASE		0xC8000000
 #define TEGRA_SDMMC1_SIZE		SZ_512
 
@@ -252,26 +292,40 @@
 #define TEGRA_SDMMC4_BASE		0xC8000600
 #define TEGRA_SDMMC4_SIZE		SZ_512
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* On TEGRA, many peripherals are very closely packed in
  * two 256MB io windows (that actually only use about 64KB
  * at the start of each).
  *
+<<<<<<< HEAD
  * We will just map the first 1MB of each window (to minimize
  * pt entries needed) and provide a macro to transform physical
  * io addresses to an appropriate void __iomem *.
  *
+=======
+ * We will just map the first MMU section of each window (to minimize
+ * pt entries needed) and provide a macro to transform physical
+ * io addresses to an appropriate void __iomem *.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define IO_IRAM_PHYS	0x40000000
 #define IO_IRAM_VIRT	IOMEM(0xFE400000)
 #define IO_IRAM_SIZE	SZ_256K
 
+<<<<<<< HEAD
 #define IO_CPU_PHYS     0x50040000
 #define IO_CPU_VIRT     IOMEM(0xFE000000)
+=======
+#define IO_CPU_PHYS	0x50040000
+#define IO_CPU_VIRT	IOMEM(0xFE440000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IO_CPU_SIZE	SZ_16K
 
 #define IO_PPSB_PHYS	0x60000000
 #define IO_PPSB_VIRT	IOMEM(0xFE200000)
+<<<<<<< HEAD
 #define IO_PPSB_SIZE	SZ_1M
 
 #define IO_APB_PHYS	0x70000000
@@ -280,6 +334,13 @@
 
 #define TEGRA_PCIE_BASE		0x80000000
 #define TEGRA_PCIE_IO_BASE	(TEGRA_PCIE_BASE + SZ_4M)
+=======
+#define IO_PPSB_SIZE	SECTION_SIZE
+
+#define IO_APB_PHYS	0x70000000
+#define IO_APB_VIRT	IOMEM(0xFE000000)
+#define IO_APB_SIZE	SECTION_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IO_TO_VIRT_BETWEEN(p, st, sz)	((p) >= (st) && (p) < ((st) + (sz)))
 #define IO_TO_VIRT_XLATE(p, pst, vst)	(((p) - (pst) + (vst)))

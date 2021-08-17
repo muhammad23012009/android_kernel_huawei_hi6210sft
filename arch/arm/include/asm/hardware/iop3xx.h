@@ -18,6 +18,7 @@
 /*
  * IOP3XX GPIO handling
  */
+<<<<<<< HEAD
 #define GPIO_IN			0
 #define GPIO_OUT		1
 #define GPIO_LOW		0
@@ -28,6 +29,11 @@
 extern void gpio_line_config(int line, int direction);
 extern int  gpio_line_get(int line);
 extern void gpio_line_set(int line, int value);
+=======
+#define IOP3XX_GPIO_LINE(x)	(x)
+
+#ifndef __ASSEMBLY__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int init_atu;
 extern int iop3xx_get_init_atu(void);
 #endif
@@ -168,11 +174,14 @@ extern int iop3xx_get_init_atu(void);
 /* PERCR0 DOESN'T EXIST - index from 1! */
 #define IOP3XX_PERCR0		(volatile u32 *)IOP3XX_REG_ADDR(0x0710)
 
+<<<<<<< HEAD
 /* General Purpose I/O  */
 #define IOP3XX_GPOE		(volatile u32 *)IOP3XX_GPIO_REG(0x0000)
 #define IOP3XX_GPID		(volatile u32 *)IOP3XX_GPIO_REG(0x0004)
 #define IOP3XX_GPOD		(volatile u32 *)IOP3XX_GPIO_REG(0x0008)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Timers  */
 #define IOP3XX_TU_TMR0		(volatile u32 *)IOP3XX_TIMER_REG(0x0000)
 #define IOP3XX_TU_TMR1		(volatile u32 *)IOP3XX_TIMER_REG(0x0004)
@@ -223,11 +232,19 @@ extern int iop3xx_get_init_atu(void);
 #ifndef __ASSEMBLY__
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void iop3xx_map_io(void);
 void iop_init_cp6_handler(void);
 void iop_init_time(unsigned long tickrate);
+<<<<<<< HEAD
 void iop3xx_restart(char, const char *);
+=======
+void iop3xx_restart(enum reboot_mode, const char *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline u32 read_tmr0(void)
 {

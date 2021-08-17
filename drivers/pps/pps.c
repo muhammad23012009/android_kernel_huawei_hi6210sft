@@ -129,6 +129,17 @@ static long pps_cdev_ioctl(struct file *file,
 			pps->params.mode |= PPS_CANWAIT;
 		pps->params.api_version = PPS_API_VERS;
 
+<<<<<<< HEAD
+=======
+		/*
+		 * Clear unused fields of pps_kparams to avoid leaking
+		 * uninitialized data of the PPS_SETPARAMS caller via
+		 * PPS_GETPARAMS
+		 */
+		pps->params.assert_off_tu.flags = 0;
+		pps->params.clear_off_tu.flags = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irq(&pps->lock);
 
 		break;
@@ -406,7 +417,11 @@ static int __init pps_init(void)
 		pr_err("failed to allocate class\n");
 		return PTR_ERR(pps_class);
 	}
+<<<<<<< HEAD
 	pps_class->dev_attrs = pps_attrs;
+=======
+	pps_class->dev_groups = pps_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = alloc_chrdev_region(&pps_devt, 0, PPS_MAX_SOURCES, "pps");
 	if (err < 0) {

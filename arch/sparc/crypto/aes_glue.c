@@ -124,7 +124,11 @@ extern void aes_sparc64_ctr_crypt_256(const u64 *key, const u64 *input,
 				      u64 *output, unsigned int len,
 				      u64 *iv);
 
+<<<<<<< HEAD
 struct aes_ops aes128_ops = {
+=======
+static struct aes_ops aes128_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.encrypt		= aes_sparc64_encrypt_128,
 	.decrypt		= aes_sparc64_decrypt_128,
 	.load_encrypt_keys	= aes_sparc64_load_encrypt_keys_128,
@@ -136,7 +140,11 @@ struct aes_ops aes128_ops = {
 	.ctr_crypt		= aes_sparc64_ctr_crypt_128,
 };
 
+<<<<<<< HEAD
 struct aes_ops aes192_ops = {
+=======
+static struct aes_ops aes192_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.encrypt		= aes_sparc64_encrypt_192,
 	.decrypt		= aes_sparc64_decrypt_192,
 	.load_encrypt_keys	= aes_sparc64_load_encrypt_keys_192,
@@ -148,7 +156,11 @@ struct aes_ops aes192_ops = {
 	.ctr_crypt		= aes_sparc64_ctr_crypt_192,
 };
 
+<<<<<<< HEAD
 struct aes_ops aes256_ops = {
+=======
+static struct aes_ops aes256_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.encrypt		= aes_sparc64_encrypt_256,
 	.decrypt		= aes_sparc64_decrypt_256,
 	.load_encrypt_keys	= aes_sparc64_load_encrypt_keys_256,
@@ -499,7 +511,11 @@ module_init(aes_sparc64_mod_init);
 module_exit(aes_sparc64_mod_fini);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("AES Secure Hash Algorithm, sparc64 aes opcode accelerated");
+=======
+MODULE_DESCRIPTION("Rijndael (AES) Cipher Algorithm, sparc64 aes opcode accelerated");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_ALIAS_CRYPTO("aes");
 

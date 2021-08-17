@@ -120,10 +120,17 @@ static int au1xpsc_i2s_hw_params(struct snd_pcm_substream *substream,
 	unsigned long stat;
 
 	/* check if the PSC is already streaming data */
+<<<<<<< HEAD
 	stat = au_readl(I2S_STAT(pscdata));
 	if (stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB)) {
 		/* reject parameters not currently set up in hardware */
 		cfgbits = au_readl(I2S_CFG(pscdata));
+=======
+	stat = __raw_readl(I2S_STAT(pscdata));
+	if (stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB)) {
+		/* reject parameters not currently set up in hardware */
+		cfgbits = __raw_readl(I2S_CFG(pscdata));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((PSC_I2SCFG_GET_LEN(cfgbits) != params->msbits) ||
 		    (params_rate(params) != pscdata->rate))
 			return -EINVAL;
@@ -149,16 +156,25 @@ static int au1xpsc_i2s_configure(struct au1xpsc_audio_data *pscdata)
 	unsigned long tmo;
 
 	/* bring PSC out of sleep, and configure I2S unit */
+<<<<<<< HEAD
 	au_writel(PSC_CTRL_ENABLE, PSC_CTRL(pscdata));
 	au_sync();
 
 	tmo = 1000000;
 	while (!(au_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_SR) && tmo)
+=======
+	__raw_writel(PSC_CTRL_ENABLE, PSC_CTRL(pscdata));
+	wmb(); /* drain writebuffer */
+
+	tmo = 1000000;
+	while (!(__raw_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_SR) && tmo)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tmo--;
 
 	if (!tmo)
 		goto psc_err;
 
+<<<<<<< HEAD
 	au_writel(0, I2S_CFG(pscdata));
 	au_sync();
 	au_writel(pscdata->cfg | PSC_I2SCFG_DE_ENABLE, I2S_CFG(pscdata));
@@ -167,15 +183,31 @@ static int au1xpsc_i2s_configure(struct au1xpsc_audio_data *pscdata)
 	/* wait for I2S controller to become ready */
 	tmo = 1000000;
 	while (!(au_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_DR) && tmo)
+=======
+	__raw_writel(0, I2S_CFG(pscdata));
+	wmb(); /* drain writebuffer */
+	__raw_writel(pscdata->cfg | PSC_I2SCFG_DE_ENABLE, I2S_CFG(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for I2S controller to become ready */
+	tmo = 1000000;
+	while (!(__raw_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_DR) && tmo)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tmo--;
 
 	if (tmo)
 		return 0;
 
 psc_err:
+<<<<<<< HEAD
 	au_writel(0, I2S_CFG(pscdata));
 	au_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
 	au_sync();
+=======
+	__raw_writel(0, I2S_CFG(pscdata));
+	__raw_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
+	wmb(); /* drain writebuffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ETIMEDOUT;
 }
 
@@ -187,13 +219,18 @@ static int au1xpsc_i2s_start(struct au1xpsc_audio_data *pscdata, int stype)
 	ret = 0;
 
 	/* if both TX and RX are idle, configure the PSC  */
+<<<<<<< HEAD
 	stat = au_readl(I2S_STAT(pscdata));
+=======
+	stat = __raw_readl(I2S_STAT(pscdata));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB))) {
 		ret = au1xpsc_i2s_configure(pscdata);
 		if (ret)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	au_writel(I2SPCR_CLRFIFO(stype), I2S_PCR(pscdata));
 	au_sync();
 	au_writel(I2SPCR_START(stype), I2S_PCR(pscdata));
@@ -207,6 +244,21 @@ static int au1xpsc_i2s_start(struct au1xpsc_audio_data *pscdata, int stype)
 	if (!tmo) {
 		au_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
 		au_sync();
+=======
+	__raw_writel(I2SPCR_CLRFIFO(stype), I2S_PCR(pscdata));
+	wmb(); /* drain writebuffer */
+	__raw_writel(I2SPCR_START(stype), I2S_PCR(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for start confirmation */
+	tmo = 1000000;
+	while (!(__raw_readl(I2S_STAT(pscdata)) & I2SSTAT_BUSY(stype)) && tmo)
+		tmo--;
+
+	if (!tmo) {
+		__raw_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ETIMEDOUT;
 	}
 out:
@@ -217,6 +269,7 @@ static int au1xpsc_i2s_stop(struct au1xpsc_audio_data *pscdata, int stype)
 {
 	unsigned long tmo, stat;
 
+<<<<<<< HEAD
 	au_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
 	au_sync();
 
@@ -232,6 +285,23 @@ static int au1xpsc_i2s_stop(struct au1xpsc_audio_data *pscdata, int stype)
 		au_sync();
 		au_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
 		au_sync();
+=======
+	__raw_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for stop confirmation */
+	tmo = 1000000;
+	while ((__raw_readl(I2S_STAT(pscdata)) & I2SSTAT_BUSY(stype)) && tmo)
+		tmo--;
+
+	/* if both TX and RX are idle, disable PSC */
+	stat = __raw_readl(I2S_STAT(pscdata));
+	if (!(stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB))) {
+		__raw_writel(0, I2S_CFG(pscdata));
+		wmb(); /* drain writebuffer */
+		__raw_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -296,7 +366,10 @@ static int au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 {
 	struct resource *iores, *dmares;
 	unsigned long sel;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct au1xpsc_audio_data *wd;
 
 	wd = devm_kzalloc(&pdev->dev, sizeof(struct au1xpsc_audio_data),
@@ -305,6 +378,7 @@ static int au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!iores)
 		return -ENODEV;
 
@@ -318,6 +392,11 @@ static int au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 				resource_size(iores));
 	if (!wd->mmio)
 		return -EBUSY;
+=======
+	wd->mmio = devm_ioremap_resource(&pdev->dev, iores);
+	if (IS_ERR(wd->mmio))
+		return PTR_ERR(wd->mmio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dmares = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!dmares)
@@ -332,12 +411,21 @@ static int au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 	/* preserve PSC clock source set up by platform (dev.platform_data
 	 * is already occupied by soc layer)
 	 */
+<<<<<<< HEAD
 	sel = au_readl(PSC_SEL(wd)) & PSC_SEL_CLK_MASK;
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
 	au_writel(PSC_SEL_PS_I2SMODE | sel, PSC_SEL(wd));
 	au_writel(0, I2S_CFG(wd));
 	au_sync();
+=======
+	sel = __raw_readl(PSC_SEL(wd)) & PSC_SEL_CLK_MASK;
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_SEL_PS_I2SMODE | sel, PSC_SEL(wd));
+	__raw_writel(0, I2S_CFG(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* preconfigure: set max rx/tx fifo depths */
 	wd->cfg |= PSC_I2SCFG_RT_FIFO8 | PSC_I2SCFG_TT_FIFO8;
@@ -364,10 +452,17 @@ static int au1xpsc_i2s_drvremove(struct platform_device *pdev)
 
 	snd_soc_unregister_component(&pdev->dev);
 
+<<<<<<< HEAD
 	au_writel(0, I2S_CFG(wd));
 	au_sync();
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
+=======
+	__raw_writel(0, I2S_CFG(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -378,12 +473,21 @@ static int au1xpsc_i2s_drvsuspend(struct device *dev)
 	struct au1xpsc_audio_data *wd = dev_get_drvdata(dev);
 
 	/* save interesting register and disable PSC */
+<<<<<<< HEAD
 	wd->pm[0] = au_readl(PSC_SEL(wd));
 
 	au_writel(0, I2S_CFG(wd));
 	au_sync();
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
+=======
+	wd->pm[0] = __raw_readl(PSC_SEL(wd));
+
+	__raw_writel(0, I2S_CFG(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -393,12 +497,21 @@ static int au1xpsc_i2s_drvresume(struct device *dev)
 	struct au1xpsc_audio_data *wd = dev_get_drvdata(dev);
 
 	/* select I2S mode and PSC clock */
+<<<<<<< HEAD
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
 	au_writel(0, PSC_SEL(wd));
 	au_sync();
 	au_writel(wd->pm[0], PSC_SEL(wd));
 	au_sync();
+=======
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(0, PSC_SEL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(wd->pm[0], PSC_SEL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -419,7 +532,10 @@ static struct dev_pm_ops au1xpsci2s_pmops = {
 static struct platform_driver au1xpsc_i2s_driver = {
 	.driver		= {
 		.name	= "au1xpsc_i2s",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= AU1XPSCI2S_PMOPS,
 	},
 	.probe		= au1xpsc_i2s_drvprobe,

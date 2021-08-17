@@ -110,6 +110,7 @@ enum {
 	CONF_SG_OPPORTUNISTIC
 };
 
+<<<<<<< HEAD
 enum {
 	/*
 	 * Configure the min and max time BT gains the antenna
@@ -346,6 +347,13 @@ enum {
 
 struct conf_sg_settings {
 	u32 params[CONF_SG_PARAMS_MAX];
+=======
+#define WLCORE_CONF_SG_PARAMS_MAX 67
+#define WLCORE_CONF_SG_PARAMS_ALL 0xff
+
+struct conf_sg_settings {
+	u32 params[WLCORE_CONF_SG_PARAMS_MAX];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 state;
 } __packed;
 
@@ -997,6 +1005,14 @@ struct conf_conn_settings {
 	 * whether we can go to ELP.
 	 */
 	u8 sta_sleep_auth;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Default RX BA Activity filter configuration
+	 */
+	u8 suspend_rx_ba_activity;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 enum {
@@ -1181,6 +1197,18 @@ struct conf_sched_scan_settings {
 
 	/* SNR threshold to be used for filtering */
 	s8 snr_threshold;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * number of short intervals scheduled scan cycles before
+	 * switching to long intervals
+	 */
+	u8 num_short_intervals;
+
+	/* interval between each long scheduled scan cycle (in ms) */
+	u16 long_interval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 struct conf_ht_setting {
@@ -1274,6 +1302,12 @@ struct conf_rx_streaming_settings {
 	u8 always;
 } __packed;
 
+<<<<<<< HEAD
+=======
+#define CONF_FWLOG_MIN_MEM_BLOCKS	2
+#define CONF_FWLOG_MAX_MEM_BLOCKS	16
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct conf_fwlog {
 	/* Continuous or on-demand */
 	u8 mode;
@@ -1281,7 +1315,11 @@ struct conf_fwlog {
 	/*
 	 * Number of memory blocks dedicated for the FW logger
 	 *
+<<<<<<< HEAD
 	 * Range: 1-3, or 0 to disable the FW logger
+=======
+	 * Range: 2-16, or 0 to disable the FW logger
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	u8 mem_blocks;
 
@@ -1344,7 +1382,11 @@ struct conf_recovery_settings {
  * version, the two LSB are the lower driver's private conf
  * version.
  */
+<<<<<<< HEAD
 #define WLCORE_CONF_VERSION	(0x0005 << 16)
+=======
+#define WLCORE_CONF_VERSION	(0x0007 << 16)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define WLCORE_CONF_MASK	0xffff0000
 #define WLCORE_CONF_SIZE	(sizeof(struct wlcore_conf_header) +	\
 				 sizeof(struct wlcore_conf))

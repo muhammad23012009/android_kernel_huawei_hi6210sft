@@ -79,7 +79,11 @@ struct ahc_hard_error_entry {
 
 static const struct ahc_hard_error_entry ahc_hard_errors[] = {
 	{ ILLHADDR,	"Illegal Host Access" },
+<<<<<<< HEAD
 	{ ILLSADDR,	"Illegal Sequencer Address referrenced" },
+=======
+	{ ILLSADDR,	"Illegal Sequencer Address referenced" },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ ILLOPCODE,	"Illegal Opcode in sequencer program" },
 	{ SQPARERR,	"Sequencer Parity Error" },
 	{ DPARERR,	"Data-path Parity Error" },
@@ -500,7 +504,11 @@ ahc_inq(struct ahc_softc *ahc, u_int port)
 	return ((ahc_inb(ahc, port))
 	      | (ahc_inb(ahc, port+1) << 8)
 	      | (ahc_inb(ahc, port+2) << 16)
+<<<<<<< HEAD
 	      | (ahc_inb(ahc, port+3) << 24)
+=======
+	      | (((uint64_t)ahc_inb(ahc, port+3)) << 24)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	      | (((uint64_t)ahc_inb(ahc, port+4)) << 32)
 	      | (((uint64_t)ahc_inb(ahc, port+5)) << 40)
 	      | (((uint64_t)ahc_inb(ahc, port+6)) << 48)
@@ -2321,7 +2329,11 @@ ahc_find_syncrate(struct ahc_softc *ahc, u_int *period,
 			 * At some speeds, we only support
 			 * ST transfers.
 			 */
+<<<<<<< HEAD
 		 	if ((syncrate->sxfr_u2 & ST_SXFR) != 0)
+=======
+			if ((syncrate->sxfr_u2 & ST_SXFR) != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				*ppr_options &= ~MSG_EXT_PPR_DT_REQ;
 			break;
 		}
@@ -4464,10 +4476,16 @@ ahc_softc_init(struct ahc_softc *ahc)
 	ahc->pause = ahc->unpause | PAUSE; 
 	/* XXX The shared scb data stuff should be deprecated */
 	if (ahc->scb_data == NULL) {
+<<<<<<< HEAD
 		ahc->scb_data = kmalloc(sizeof(*ahc->scb_data), GFP_ATOMIC);
 		if (ahc->scb_data == NULL)
 			return (ENOMEM);
 		memset(ahc->scb_data, 0, sizeof(*ahc->scb_data));
+=======
+		ahc->scb_data = kzalloc(sizeof(*ahc->scb_data), GFP_ATOMIC);
+		if (ahc->scb_data == NULL)
+			return (ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return (0);
@@ -4780,10 +4798,17 @@ ahc_init_scbdata(struct ahc_softc *ahc)
 	SLIST_INIT(&scb_data->sg_maps);
 
 	/* Allocate SCB resources */
+<<<<<<< HEAD
 	scb_data->scbarray = kmalloc(sizeof(struct scb) * AHC_SCB_MAX_ALLOC, GFP_ATOMIC);
 	if (scb_data->scbarray == NULL)
 		return (ENOMEM);
 	memset(scb_data->scbarray, 0, sizeof(struct scb) * AHC_SCB_MAX_ALLOC);
+=======
+	scb_data->scbarray = kzalloc(sizeof(struct scb) * AHC_SCB_MAX_ALLOC,
+				GFP_ATOMIC);
+	if (scb_data->scbarray == NULL)
+		return (ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Determine the number of hardware SCBs and initialize them */
 
@@ -7558,14 +7583,21 @@ ahc_handle_en_lun(struct ahc_softc *ahc, struct cam_sim *sim, union ccb *ccb)
 				return;
 			}
 		}
+<<<<<<< HEAD
 		lstate = kmalloc(sizeof(*lstate), GFP_ATOMIC);
+=======
+		lstate = kzalloc(sizeof(*lstate), GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (lstate == NULL) {
 			xpt_print_path(ccb->ccb_h.path);
 			printk("Couldn't allocate lstate\n");
 			ccb->ccb_h.status = CAM_RESRC_UNAVAIL;
 			return;
 		}
+<<<<<<< HEAD
 		memset(lstate, 0, sizeof(*lstate));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = xpt_create_path(&lstate->path, /*periph*/NULL,
 					 xpt_path_path_id(ccb->ccb_h.path),
 					 xpt_path_target_id(ccb->ccb_h.path),

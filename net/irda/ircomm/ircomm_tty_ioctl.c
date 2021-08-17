@@ -22,9 +22,13 @@
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  *     along with this program; if not, write to the Free Software
  *     Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *     MA 02111-1307 USA
+=======
+ *     along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  ********************************************************************/
 
@@ -58,8 +62,11 @@ static void ircomm_tty_change_speed(struct ircomm_tty_cb *self,
 	unsigned int cflag, cval;
 	int baud;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!self->ircomm)
 		return;
 
@@ -90,6 +97,7 @@ static void ircomm_tty_change_speed(struct ircomm_tty_cb *self,
 	ircomm_param_request(self, IRCOMM_DATA_RATE, FALSE);
 
 	/* CTS flow control flag and modem status interrupts */
+<<<<<<< HEAD
 	if (cflag & CRTSCTS) {
 		self->port.flags |= ASYNC_CTS_FLOW;
 		self->settings.flow_control |= IRCOMM_RTS_CTS_IN;
@@ -104,6 +112,19 @@ static void ircomm_tty_change_speed(struct ircomm_tty_cb *self,
 		self->port.flags &= ~ASYNC_CHECK_CD;
 	else
 		self->port.flags |= ASYNC_CHECK_CD;
+=======
+	tty_port_set_cts_flow(&self->port, cflag & CRTSCTS);
+	if (cflag & CRTSCTS) {
+		self->settings.flow_control |= IRCOMM_RTS_CTS_IN;
+		/* This got me. Bummer. Jean II */
+		if (self->service_type == IRCOMM_3_WIRE_RAW)
+			net_warn_ratelimited("%s(), enabling RTS/CTS on link that doesn't support it (3-wire-raw)\n",
+					     __func__);
+	} else {
+		self->settings.flow_control &= ~IRCOMM_RTS_CTS_IN;
+	}
+	tty_port_set_check_carrier(&self->port, ~cflag & CLOCAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if 0
 	/*
 	 * Set up parity check flag
@@ -151,8 +172,11 @@ void ircomm_tty_set_termios(struct tty_struct *tty,
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 	unsigned int cflag = tty->termios.c_cflag;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((cflag == old_termios->c_cflag) &&
 	    (RELEVANT_IFLAG(tty->termios.c_iflag) ==
 	     RELEVANT_IFLAG(old_termios->c_iflag)))
@@ -163,13 +187,18 @@ void ircomm_tty_set_termios(struct tty_struct *tty,
 	ircomm_tty_change_speed(self, tty);
 
 	/* Handle transition to B0 status */
+<<<<<<< HEAD
 	if ((old_termios->c_cflag & CBAUD) &&
 	    !(cflag & CBAUD)) {
+=======
+	if ((old_termios->c_cflag & CBAUD) && !(cflag & CBAUD)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		self->settings.dte &= ~(IRCOMM_DTR|IRCOMM_RTS);
 		ircomm_param_request(self, IRCOMM_DTE, TRUE);
 	}
 
 	/* Handle transition away from B0 status */
+<<<<<<< HEAD
 	if (!(old_termios->c_cflag & CBAUD) &&
 	    (cflag & CBAUD)) {
 		self->settings.dte |= IRCOMM_DTR;
@@ -177,12 +206,22 @@ void ircomm_tty_set_termios(struct tty_struct *tty,
 		    !test_bit(TTY_THROTTLED, &tty->flags)) {
 			self->settings.dte |= IRCOMM_RTS;
 		}
+=======
+	if (!(old_termios->c_cflag & CBAUD) && (cflag & CBAUD)) {
+		self->settings.dte |= IRCOMM_DTR;
+		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+			self->settings.dte |= IRCOMM_RTS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ircomm_param_request(self, IRCOMM_DTE, TRUE);
 	}
 
 	/* Handle turning off CRTSCTS */
+<<<<<<< HEAD
 	if ((old_termios->c_cflag & CRTSCTS) &&
 	    !(tty->termios.c_cflag & CRTSCTS))
+=======
+	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		tty->hw_stopped = 0;
 		ircomm_tty_start(tty);
@@ -200,9 +239,13 @@ int ircomm_tty_tiocmget(struct tty_struct *tty)
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 	unsigned int result;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
 	if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if (tty_io_error(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 	result =  ((self->settings.dte & IRCOMM_RTS) ? TIOCM_RTS : 0)
@@ -225,9 +268,13 @@ int ircomm_tty_tiocmset(struct tty_struct *tty,
 {
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
 	if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if (tty_io_error(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 	IRDA_ASSERT(self != NULL, return -1;);
@@ -264,11 +311,14 @@ static int ircomm_tty_get_serial_info(struct ircomm_tty_cb *self,
 {
 	struct serial_struct info;
 
+<<<<<<< HEAD
 	if (!retinfo)
 		return -EFAULT;
 
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(&info, 0, sizeof(info));
 	info.line = self->line;
 	info.flags = self->port.flags;
@@ -278,11 +328,14 @@ static int ircomm_tty_get_serial_info(struct ircomm_tty_cb *self,
 
 	/* For compatibility  */
 	info.type = PORT_16550A;
+<<<<<<< HEAD
 	info.port = 0;
 	info.irq = 0;
 	info.xmit_fifo_size = 0;
 	info.hub6 = 0;
 	info.custom_divisor = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (copy_to_user(retinfo, &info, sizeof(*retinfo)))
 		return -EFAULT;
@@ -303,8 +356,11 @@ static int ircomm_tty_set_serial_info(struct ircomm_tty_cb *self,
 	struct serial_struct new_serial;
 	struct ircomm_tty_cb old_state, *state;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (copy_from_user(&new_serial,new_info,sizeof(new_serial)))
 		return -EFAULT;
 
@@ -346,7 +402,11 @@ static int ircomm_tty_set_serial_info(struct ircomm_tty_cb *self,
 
  check_and_exit:
 
+<<<<<<< HEAD
 	if (self->flags & ASYNC_INITIALIZED) {
+=======
+	if (tty_port_initialized(self)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (((old_state.flags & ASYNC_SPD_MASK) !=
 		     (self->flags & ASYNC_SPD_MASK)) ||
 		    (old_driver.custom_divisor != driver->custom_divisor)) {
@@ -377,12 +437,19 @@ int ircomm_tty_ioctl(struct tty_struct *tty,
 	struct ircomm_tty_cb *self = (struct ircomm_tty_cb *) tty->driver_data;
 	int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
 	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
 	    (cmd != TIOCMIWAIT) && (cmd != TIOCGICOUNT)) {
 		if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
+	    (cmd != TIOCSERCONFIG) && (cmd != TIOCSERGSTRUCT) &&
+	    (cmd != TIOCMIWAIT) && (cmd != TIOCGICOUNT)) {
+		if (tty_io_error(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    return -EIO;
 	}
 
@@ -394,11 +461,19 @@ int ircomm_tty_ioctl(struct tty_struct *tty,
 		ret = ircomm_tty_set_serial_info(self, (struct serial_struct __user *) arg);
 		break;
 	case TIOCMIWAIT:
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "(), TIOCMIWAIT, not impl!\n");
 		break;
 
 	case TIOCGICOUNT:
 		IRDA_DEBUG(0, "%s(), TIOCGICOUNT not impl!\n", __func__ );
+=======
+		pr_debug("(), TIOCMIWAIT, not impl!\n");
+		break;
+
+	case TIOCGICOUNT:
+		pr_debug("%s(), TIOCGICOUNT not impl!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if 0
 		save_flags(flags); cli();
 		cnow = driver->icount;

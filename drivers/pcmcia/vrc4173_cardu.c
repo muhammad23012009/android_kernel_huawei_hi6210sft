@@ -563,7 +563,11 @@ static int vrc4173_cardu_setup(char *options)
 
 __setup("vrc4173_cardu=", vrc4173_cardu_setup);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(vrc4173_cardu_id_table) = {
+=======
+static const struct pci_device_id vrc4173_cardu_id_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_NAPCCARD) },
         {0, }
 };

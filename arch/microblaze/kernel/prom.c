@@ -30,6 +30,10 @@
 #include <linux/debugfs.h>
 #include <linux/irq.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_fdt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/prom.h>
 #include <asm/page.h>
@@ -41,6 +45,7 @@
 #include <asm/sections.h>
 #include <asm/pci-bridge.h>
 
+<<<<<<< HEAD
 void __init early_init_dt_add_memory_arch(u64 base, u64 size)
 {
 	memblock_add(base, size);
@@ -51,6 +56,8 @@ void * __init early_init_dt_alloc_memory_arch(u64 size, u64 align)
 	return __va(memblock_alloc(size, align));
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_EARLY_PRINTK
 static const char *stdout;
 
@@ -111,6 +118,7 @@ void __init early_init_devtree(void *params)
 {
 	pr_debug(" -> early_init_devtree(%p)\n", params);
 
+<<<<<<< HEAD
 	/* Setup flat device-tree pointer */
 	initial_boot_params = params;
 
@@ -126,6 +134,12 @@ void __init early_init_devtree(void *params)
 
 	/* Save command line for /proc/cmdline and then parse parameters */
 	strlcpy(boot_command_line, cmd_line, COMMAND_LINE_SIZE);
+=======
+	early_init_dt_scan(params);
+	if (!strlen(boot_command_line))
+		strlcpy(boot_command_line, cmd_line, COMMAND_LINE_SIZE);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	parse_early_param();
 
 	memblock_allow_resize();
@@ -134,6 +148,7 @@ void __init early_init_devtree(void *params)
 
 	pr_debug(" <- early_init_devtree()\n");
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_BLK_DEV_INITRD
 void __init early_init_dt_setup_initrd_arch(u64 start, u64 end)
@@ -174,3 +189,5 @@ static int __init export_flat_device_tree(void)
 }
 device_initcall(export_flat_device_tree);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -6,6 +6,10 @@ header-y += bitsperlong.h
 header-y += byteorder.h
 header-y += chpid.h
 header-y += chsc.h
+<<<<<<< HEAD
+=======
+header-y += clp.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += cmb.h
 header-y += dasd.h
 header-y += debug.h
@@ -16,6 +20,10 @@ header-y += ioctls.h
 header-y += ipcbuf.h
 header-y += kvm.h
 header-y += kvm_para.h
+<<<<<<< HEAD
+=======
+header-y += kvm_perf.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += kvm_virtio.h
 header-y += mman.h
 header-y += monwriter.h
@@ -35,6 +43,11 @@ header-y += siginfo.h
 header-y += signal.h
 header-y += socket.h
 header-y += sockios.h
+<<<<<<< HEAD
+=======
+header-y += sclp_ctl.h
+header-y += sie.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += stat.h
 header-y += statfs.h
 header-y += swab.h

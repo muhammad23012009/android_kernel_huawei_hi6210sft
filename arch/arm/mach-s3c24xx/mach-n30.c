@@ -24,6 +24,10 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/timer.h>
 #include <linux/io.h>
 #include <linux/mmc/host.h>
@@ -36,15 +40,23 @@
 #include <linux/platform_data/leds-s3c24xx.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 #include <asm/mach/map.h>
 
 #include <linux/platform_data/i2c-s3c2410.h>
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
 
 #include <plat/clock.h>
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/cpu.h>
 #include <plat/devs.h>
 #include <linux/platform_data/mmc-s3cmci.h>
@@ -522,7 +534,11 @@ static void __init n30_hwinit(void)
 	 *
 	 * The pull ups for H6/H7 are enabled on N30 but not on the
 	 * N35/PiN.  I suppose is useful for a budget model of the N30
+<<<<<<< HEAD
 	 * with no bluetooh.  It doesn't hurt to have the pull ups
+=======
+	 * with no bluetooth.  It doesn't hurt to have the pull ups
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * enabled on the N35, so leave them enabled for all models.
 	 */
 	__raw_writel(0x0028aaaa, S3C2410_GPHCON);
@@ -534,11 +550,23 @@ static void __init n30_map_io(void)
 {
 	s3c24xx_init_io(n30_iodesc, ARRAY_SIZE(n30_iodesc));
 	n30_hwinit();
+<<<<<<< HEAD
 	s3c24xx_init_clocks(0);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(n30_uartcfgs, ARRAY_SIZE(n30_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init n30_init_time(void)
+{
+	s3c2410_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* GPB3 is the line that controls the pull-up for the USB D+ line */
 
 static void __init n30_init(void)
@@ -590,20 +618,34 @@ MACHINE_START(N30, "Acer-N30")
 				Ben Dooks <ben-linux@fluff.org>
 	*/
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.init_machine	= n30_init,
 	.init_irq	= s3c2410_init_irq,
 	.map_io		= n30_map_io,
 	.restart	= s3c2410_restart,
+=======
+	.init_time	= n30_init_time,
+	.init_machine	= n30_init,
+	.init_irq	= s3c2410_init_irq,
+	.map_io		= n30_map_io,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END
 
 MACHINE_START(N35, "Acer-N35")
 	/* Maintainer: Christer Weinigel <christer@weinigel.se>
 	*/
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.init_machine	= n30_init,
 	.init_irq	= s3c2410_init_irq,
 	.map_io		= n30_map_io,
 	.restart	= s3c2410_restart,
+=======
+	.init_time	= n30_init_time,
+	.init_machine	= n30_init,
+	.init_irq	= s3c2410_init_irq,
+	.map_io		= n30_map_io,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

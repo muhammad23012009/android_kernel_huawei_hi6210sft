@@ -111,7 +111,10 @@ enum tx3589x_block {
 #define TC3589x_INT_PORIRQ	7
 
 #define TC3589x_NR_INTERNAL_IRQS	8
+<<<<<<< HEAD
 #define TC3589x_INT_GPIO(x)	(TC3589x_NR_INTERNAL_IRQS + (x))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct tc3589x {
 	struct mutex lock;
@@ -141,6 +144,7 @@ extern int tc3589x_set_bits(struct tc3589x *tc3589x, u8 reg, u8 mask, u8 val);
 #define TC_KPD_DEBOUNCE_PERIOD  0xA3
 #define TC_KPD_SETTLE_TIME      0xA3
 
+<<<<<<< HEAD
 /**
  * struct tc35893_platform_data - data structure for platform specific data
  * @keymap_data:        matrix scan code table for keycodes
@@ -175,10 +179,13 @@ struct tc3589x_gpio_platform_data {
 	void (*setup)(struct tc3589x *tc3589x, unsigned gpio_base);
 	void (*remove)(struct tc3589x *tc3589x, unsigned gpio_base);
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct tc3589x_platform_data - TC3589x platform data
  * @block: bitmask of blocks to enable (use TC3589x_BLOCK_*)
+<<<<<<< HEAD
  * @irq_base: base IRQ number.  %TC3589x_NR_IRQS irqs will be used.
  * @gpio: GPIO-specific platform data
  * @keypad: keypad-specific platform data
@@ -193,4 +200,11 @@ struct tc3589x_platform_data {
 #define TC3589x_NR_GPIOS	24
 #define TC3589x_NR_IRQS		TC3589x_INT_GPIO(TC3589x_NR_GPIOS)
 
+=======
+ */
+struct tc3589x_platform_data {
+	unsigned int block;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

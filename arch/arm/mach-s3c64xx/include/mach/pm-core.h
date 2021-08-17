@@ -15,7 +15,16 @@
 #ifndef __MACH_S3C64XX_PM_CORE_H
 #define __MACH_S3C64XX_PM_CORE_H __FILE__
 
+<<<<<<< HEAD
 #include <mach/regs-gpio.h>
+=======
+#include <linux/serial_s3c.h>
+#include <linux/delay.h>
+
+#include <mach/regs-gpio.h>
+#include <mach/regs-clock.h>
+#include <mach/map.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void s3c_pm_debug_init_uart(void)
 {
@@ -54,9 +63,19 @@ static inline void s3c_pm_arch_show_resume_irqs(void)
 
 /* make these defines, we currently do not have any need to change
  * the IRQ wake controls depending on the CPU we are running on */
+<<<<<<< HEAD
 
 #define s3c_irqwake_eintallow	((1 << 28) - 1)
 #define s3c_irqwake_intallow	(~0)
+=======
+#ifdef CONFIG_PM_SLEEP
+#define s3c_irqwake_eintallow	((1 << 28) - 1)
+#define s3c_irqwake_intallow	(~0)
+#else
+#define s3c_irqwake_eintallow 0
+#define s3c_irqwake_intallow  0
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void s3c_pm_arch_update_uart(void __iomem *regs,
 					   struct pm_uart_save *save)

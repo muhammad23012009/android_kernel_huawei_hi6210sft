@@ -1,2 +1,7 @@
 #!/bin/bash
+<<<<<<< HEAD
 perf record -e raw_syscalls:sys_enter $@
+=======
+(perf record -e raw_syscalls:sys_enter $@ || \
+ perf record -e syscalls:sys_enter $@) 2> /dev/null
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

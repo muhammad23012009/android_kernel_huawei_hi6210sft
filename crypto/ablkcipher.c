@@ -14,6 +14,7 @@
  */
 
 #include <crypto/internal/skcipher.h>
+<<<<<<< HEAD
 #include <linux/cpumask.h>
 #include <linux/err.h>
 #include <linux/init.h>
@@ -21,6 +22,10 @@
 #include <linux/module.h>
 #include <linux/rtnetlink.h>
 #include <linux/sched.h>
+=======
+#include <linux/err.h>
+#include <linux/kernel.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/seq_file.h>
 #include <linux/cryptouser.h>
@@ -30,8 +35,11 @@
 
 #include "internal.h"
 
+<<<<<<< HEAD
 static const char *skcipher_default_geniv __read_mostly;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ablkcipher_buffer {
 	struct list_head	entry;
 	struct scatter_walk	dst;
@@ -73,6 +81,7 @@ static inline void ablkcipher_queue_write(struct ablkcipher_walk *walk,
 static inline u8 *ablkcipher_get_spot(u8 *start, unsigned int len)
 {
 	u8 *end_page = (u8 *)(((unsigned long)(start + len - 1)) & PAGE_MASK);
+<<<<<<< HEAD
 	return max(start, end_page);
 }
 
@@ -81,6 +90,15 @@ static inline unsigned int ablkcipher_done_slow(struct ablkcipher_walk *walk,
 {
 	unsigned int n = bsize;
 
+=======
+
+	return max(start, end_page);
+}
+
+static inline void ablkcipher_done_slow(struct ablkcipher_walk *walk,
+					unsigned int n)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (;;) {
 		unsigned int len_this_page = scatterwalk_pagelen(&walk->out);
 
@@ -90,6 +108,7 @@ static inline unsigned int ablkcipher_done_slow(struct ablkcipher_walk *walk,
 		if (n == len_this_page)
 			break;
 		n -= len_this_page;
+<<<<<<< HEAD
 		scatterwalk_start(&walk->out, scatterwalk_sg_next(walk->out.sg));
 	}
 
@@ -103,6 +122,17 @@ static inline unsigned int ablkcipher_done_fast(struct ablkcipher_walk *walk,
 	scatterwalk_advance(&walk->out, n);
 
 	return n;
+=======
+		scatterwalk_start(&walk->out, sg_next(walk->out.sg));
+	}
+}
+
+static inline void ablkcipher_done_fast(struct ablkcipher_walk *walk,
+					unsigned int n)
+{
+	scatterwalk_advance(&walk->in, n);
+	scatterwalk_advance(&walk->out, n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ablkcipher_walk_next(struct ablkcipher_request *req,
@@ -112,6 +142,7 @@ int ablkcipher_walk_done(struct ablkcipher_request *req,
 			 struct ablkcipher_walk *walk, int err)
 {
 	struct crypto_tfm *tfm = req->base.tfm;
+<<<<<<< HEAD
 	unsigned int nbytes = 0;
 
 	if (likely(err >= 0)) {
@@ -145,6 +176,42 @@ err:
 		memcpy(req->info, walk->iv, tfm->crt_ablkcipher.ivsize);
 	kfree(walk->iv_buffer);
 
+=======
+	unsigned int n; /* bytes processed */
+	bool more;
+
+	if (unlikely(err < 0))
+		goto finish;
+
+	n = walk->nbytes - err;
+	walk->total -= n;
+	more = (walk->total != 0);
+
+	if (likely(!(walk->flags & ABLKCIPHER_WALK_SLOW))) {
+		ablkcipher_done_fast(walk, n);
+	} else {
+		if (WARN_ON(err)) {
+			/* unexpected case; didn't process all bytes */
+			err = -EINVAL;
+			goto finish;
+		}
+		ablkcipher_done_slow(walk, n);
+	}
+
+	scatterwalk_done(&walk->in, 0, more);
+	scatterwalk_done(&walk->out, 1, more);
+
+	if (more) {
+		crypto_yield(req->base.flags);
+		return ablkcipher_walk_next(req, walk);
+	}
+	err = 0;
+finish:
+	walk->nbytes = 0;
+	if (walk->iv != req->info)
+		memcpy(req->info, walk->iv, tfm->crt_ablkcipher.ivsize);
+	kfree(walk->iv_buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 EXPORT_SYMBOL_GPL(ablkcipher_walk_done);
@@ -280,14 +347,24 @@ static int ablkcipher_walk_first(struct ablkcipher_request *req,
 	if (WARN_ON_ONCE(in_irq()))
 		return -EDEADLK;
 
+<<<<<<< HEAD
+=======
+	walk->iv = req->info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	walk->nbytes = walk->total;
 	if (unlikely(!walk->total))
 		return 0;
 
 	walk->iv_buffer = NULL;
+<<<<<<< HEAD
 	walk->iv = req->info;
 	if (unlikely(((unsigned long)walk->iv & alignmask))) {
 		int err = ablkcipher_copy_iv(walk, tfm, alignmask);
+=======
+	if (unlikely(((unsigned long)walk->iv & alignmask))) {
+		int err = ablkcipher_copy_iv(walk, tfm, alignmask);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)
 			return err;
 	}
@@ -351,6 +428,7 @@ static unsigned int crypto_ablkcipher_ctxsize(struct crypto_alg *alg, u32 type,
 	return alg->cra_ctxsize;
 }
 
+<<<<<<< HEAD
 int skcipher_null_givencrypt(struct skcipher_givcrypt_request *req)
 {
 	return crypto_ablkcipher_encrypt(&req->creq);
@@ -361,6 +439,8 @@ int skcipher_null_givdecrypt(struct skcipher_givcrypt_request *req)
 	return crypto_ablkcipher_decrypt(&req->creq);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int crypto_init_ablkcipher_ops(struct crypto_tfm *tfm, u32 type,
 				      u32 mask)
 {
@@ -373,6 +453,7 @@ static int crypto_init_ablkcipher_ops(struct crypto_tfm *tfm, u32 type,
 	crt->setkey = setkey;
 	crt->encrypt = alg->encrypt;
 	crt->decrypt = alg->decrypt;
+<<<<<<< HEAD
 	if (!alg->ivsize) {
 		crt->givencrypt = skcipher_null_givencrypt;
 		crt->givdecrypt = skcipher_null_givdecrypt;
@@ -380,6 +461,10 @@ static int crypto_init_ablkcipher_ops(struct crypto_tfm *tfm, u32 type,
 	crt->base = __crypto_ablkcipher_cast(tfm);
 	crt->ivsize = alg->ivsize;
 	crt->has_setkey = alg->max_keysize;
+=======
+	crt->base = __crypto_ablkcipher_cast(tfm);
+	crt->ivsize = alg->ivsize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -392,6 +477,10 @@ static int crypto_ablkcipher_report(struct sk_buff *skb, struct crypto_alg *alg)
 	strncpy(rblkcipher.type, "ablkcipher", sizeof(rblkcipher.type));
 	strncpy(rblkcipher.geniv, alg->cra_ablkcipher.geniv ?: "<default>",
 		sizeof(rblkcipher.geniv));
+<<<<<<< HEAD
+=======
+	rblkcipher.geniv[sizeof(rblkcipher.geniv) - 1] = '\0';
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rblkcipher.blocksize = alg->cra_blocksize;
 	rblkcipher.min_keysize = alg->cra_ablkcipher.min_keysize;
@@ -439,11 +528,14 @@ const struct crypto_type crypto_ablkcipher_type = {
 };
 EXPORT_SYMBOL_GPL(crypto_ablkcipher_type);
 
+<<<<<<< HEAD
 static int no_givdecrypt(struct skcipher_givcrypt_request *req)
 {
 	return -ENOSYS;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int crypto_init_givcipher_ops(struct crypto_tfm *tfm, u32 type,
 				      u32 mask)
 {
@@ -457,11 +549,16 @@ static int crypto_init_givcipher_ops(struct crypto_tfm *tfm, u32 type,
 		      alg->setkey : setkey;
 	crt->encrypt = alg->encrypt;
 	crt->decrypt = alg->decrypt;
+<<<<<<< HEAD
 	crt->givencrypt = alg->givencrypt;
 	crt->givdecrypt = alg->givdecrypt ?: no_givdecrypt;
 	crt->base = __crypto_ablkcipher_cast(tfm);
 	crt->ivsize = alg->ivsize;
 	crt->has_setkey = alg->max_keysize;
+=======
+	crt->base = __crypto_ablkcipher_cast(tfm);
+	crt->ivsize = alg->ivsize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -474,6 +571,10 @@ static int crypto_givcipher_report(struct sk_buff *skb, struct crypto_alg *alg)
 	strncpy(rblkcipher.type, "givcipher", sizeof(rblkcipher.type));
 	strncpy(rblkcipher.geniv, alg->cra_ablkcipher.geniv ?: "<built-in>",
 		sizeof(rblkcipher.geniv));
+<<<<<<< HEAD
+=======
+	rblkcipher.geniv[sizeof(rblkcipher.geniv) - 1] = '\0';
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rblkcipher.blocksize = alg->cra_blocksize;
 	rblkcipher.min_keysize = alg->cra_ablkcipher.min_keysize;
@@ -520,6 +621,7 @@ const struct crypto_type crypto_givcipher_type = {
 	.report = crypto_givcipher_report,
 };
 EXPORT_SYMBOL_GPL(crypto_givcipher_type);
+<<<<<<< HEAD
 
 const char *crypto_default_geniv(const struct crypto_alg *alg)
 {
@@ -725,3 +827,5 @@ static void skcipher_module_exit(void)
 
 module_init(skcipher_module_init);
 module_exit(skcipher_module_exit);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

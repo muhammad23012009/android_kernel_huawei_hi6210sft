@@ -21,7 +21,10 @@ typedef struct {
 	unsigned int irq_stack_usage;
 #ifdef CONFIG_SMP
 	unsigned int irq_resched_count;
+<<<<<<< HEAD
 	unsigned int irq_call_count;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	unsigned int irq_unaligned_count;
 	unsigned int irq_fpassist_count;

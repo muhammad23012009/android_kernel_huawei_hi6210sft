@@ -5,6 +5,7 @@
  *	David Mosberger-Tang <davidm@hpl.hp.com>
  */
 
+<<<<<<< HEAD
 #include <linux/sort.h>
 
 #include <asm/uaccess.h>
@@ -101,11 +102,18 @@ search_extable (const struct exception_table_entry *first,
         }
         return NULL;
 }
+=======
+#include <asm/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void
 ia64_handle_exception (struct pt_regs *regs, const struct exception_table_entry *e)
 {
+<<<<<<< HEAD
 	long fix = (u64) &e->cont + e->cont;
+=======
+	long fix = (u64) &e->fixup + e->fixup;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	regs->r8 = -EFAULT;
 	if (fix & 4)

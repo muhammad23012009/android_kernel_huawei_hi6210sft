@@ -28,28 +28,55 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 /* < DTS2014070101273  zhangran 20140701 begin */ 
 /**
  * struct wakeup_source - Representation of wakeup sources
  *
+=======
+struct wake_irq;
+
+/**
+ * struct wakeup_source - Representation of wakeup sources
+ *
+ * @name: Name of the wakeup source
+ * @entry: Wakeup source list entry
+ * @lock: Wakeup source lock
+ * @wakeirq: Optional device specific wakeirq
+ * @timer: Wakeup timer list
+ * @timer_expires: Wakeup timer expiration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @total_time: Total time this wakeup source has been active.
  * @max_time: Maximum time this wakeup source has been continuously active.
  * @last_time: Monotonic clock when the wakeup source's was touched last time.
  * @prevent_sleep_time: Total time this source has been preventing autosleep.
+<<<<<<< HEAD
  * @screen_off_time: Total time off the screen this source has been preventing autosleep. 
  * @event_count: Number of signaled wakeup events.
  * @active_count: Number of times the wakeup sorce was activated.
  * @relax_count: Number of times the wakeup sorce was deactivated.
+=======
+ * @event_count: Number of signaled wakeup events.
+ * @active_count: Number of times the wakeup source was activated.
+ * @relax_count: Number of times the wakeup source was deactivated.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @expire_count: Number of times the wakeup source's timeout has expired.
  * @wakeup_count: Number of times the wakeup source might abort suspend.
  * @active: Status of the wakeup source.
  * @has_timeout: The wakeup source has been activated with a timeout.
  */
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct wakeup_source {
 	const char 		*name;
 	struct list_head	entry;
 	spinlock_t		lock;
+<<<<<<< HEAD
+=======
+	struct wake_irq		*wakeirq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct timer_list	timer;
 	unsigned long		timer_expires;
 	ktime_t total_time;
@@ -57,9 +84,12 @@ struct wakeup_source {
 	ktime_t last_time;
 	ktime_t start_prevent_time;
 	ktime_t prevent_sleep_time;
+<<<<<<< HEAD
 #if 1//def CONFIG_HUAWEI_KERNEL  
       ktime_t screen_off_time;  
 #endif  
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		event_count;
 	unsigned long		active_count;
 	unsigned long		relax_count;
@@ -68,7 +98,10 @@ struct wakeup_source {
 	bool			active:1;
 	bool			autosleep_enabled:1;
 };
+<<<<<<< HEAD
 /* DTS2014070101273  zhangran 20140701 end > */ 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PM_SLEEP
 

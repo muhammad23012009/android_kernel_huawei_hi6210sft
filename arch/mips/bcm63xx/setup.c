@@ -20,10 +20,18 @@
 #include <bcm63xx_cpu.h>
 #include <bcm63xx_regs.h>
 #include <bcm63xx_io.h>
+<<<<<<< HEAD
 
 void bcm63xx_machine_halt(void)
 {
 	printk(KERN_INFO "System halted\n");
+=======
+#include <bcm63xx_gpio.h>
+
+void bcm63xx_machine_halt(void)
+{
+	pr_info("System halted\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (1)
 		;
 }
@@ -33,7 +41,11 @@ static void bcm6348_a1_reboot(void)
 	u32 reg;
 
 	/* soft reset all blocks */
+<<<<<<< HEAD
 	printk(KERN_INFO "soft-resetting all blocks ...\n");
+=======
+	pr_info("soft-resetting all blocks ...\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = bcm_perf_readl(PERF_SOFTRESET_REG);
 	reg &= ~SOFTRESET_6348_ALL;
 	bcm_perf_writel(reg, PERF_SOFTRESET_REG);
@@ -45,7 +57,11 @@ static void bcm6348_a1_reboot(void)
 	mdelay(10);
 
 	/* Jump to the power on address. */
+<<<<<<< HEAD
 	printk(KERN_INFO "jumping to reset vector.\n");
+=======
+	pr_info("jumping to reset vector.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* set high vectors (base at 0xbfc00000 */
 	set_c0_status(ST0_BEV | ST0_ERL);
 	/* run uncached in kseg0 */
@@ -68,6 +84,12 @@ void bcm63xx_machine_reboot(void)
 
 	/* mask and clear all external irq */
 	switch (bcm63xx_get_cpu_id()) {
+<<<<<<< HEAD
+=======
+	case BCM3368_CPU_ID:
+		perf_regs[0] = PERF_EXTIRQ_CFG_REG_3368;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BCM6328_CPU_ID:
 		perf_regs[0] = PERF_EXTIRQ_CFG_REG_6328;
 		break;
@@ -106,7 +128,11 @@ void bcm63xx_machine_reboot(void)
 	if (BCMCPU_IS_6348() && (bcm63xx_get_cpu_rev() == 0xa1))
 		bcm6348_a1_reboot();
 
+<<<<<<< HEAD
 	printk(KERN_INFO "triggering watchdog soft-reset...\n");
+=======
+	pr_info("triggering watchdog soft-reset...\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (BCMCPU_IS_6328()) {
 		bcm_wdt_writel(1, WDT_SOFTRESET_REG);
 	} else {
@@ -157,6 +183,12 @@ void __init plat_mem_setup(void)
 
 int __init bcm63xx_register_devices(void)
 {
+<<<<<<< HEAD
+=======
+	/* register gpiochip */
+	bcm63xx_gpio_init();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return board_register_devices();
 }
 

@@ -104,7 +104,10 @@ struct cx18_av_state {
 	enum cx18_av_audio_input aud_input;
 	u32 audclk_freq;
 	int audmode;
+<<<<<<< HEAD
 	u32 id;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 rev;
 	int is_initialized;
 

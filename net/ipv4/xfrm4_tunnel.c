@@ -63,7 +63,11 @@ static int xfrm_tunnel_err(struct sk_buff *skb, u32 info)
 static struct xfrm_tunnel xfrm_tunnel_handler __read_mostly = {
 	.handler	=	xfrm_tunnel_rcv,
 	.err_handler	=	xfrm_tunnel_err,
+<<<<<<< HEAD
 	.priority	=	2,
+=======
+	.priority	=	3,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #if IS_ENABLED(CONFIG_IPV6)

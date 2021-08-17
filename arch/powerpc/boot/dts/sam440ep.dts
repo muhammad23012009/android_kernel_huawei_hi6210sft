@@ -196,7 +196,11 @@
 				interrupt-parent = <&UIC0>;
 				interrupts = <2 4>;
 				rtc@68 {
+<<<<<<< HEAD
 					compatible = "stm,m41t80";
+=======
+					compatible = "st,m41t80";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					reg = <0x68>;
 				};
 			};

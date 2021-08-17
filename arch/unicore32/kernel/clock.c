@@ -179,7 +179,11 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	}
 #ifdef CONFIG_CPU_FREQ
 	if (clk == &clk_mclk_clk) {
+<<<<<<< HEAD
 		u32 pll_rate, divstatus = PM_DIVSTATUS;
+=======
+		u32 pll_rate, divstatus = readl(PM_DIVSTATUS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int ret, i;
 
 		/* lookup mclk_clk_table */
@@ -201,10 +205,17 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 				/ (((divstatus & 0x0000f000) >> 12) + 1);
 
 		/* set pll sys cfg reg. */
+<<<<<<< HEAD
 		PM_PLLSYSCFG = pll_rate;
 
 		PM_PMCR = PM_PMCR_CFBSYS;
 		while ((PM_PLLDFCDONE & PM_PLLDFCDONE_SYSDFC)
+=======
+		writel(pll_rate, PM_PLLSYSCFG);
+
+		writel(PM_PMCR_CFBSYS, PM_PMCR);
+		while ((readl(PM_PLLDFCDONE) & PM_PLLDFCDONE_SYSDFC)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				!= PM_PLLDFCDONE_SYSDFC)
 			udelay(100);
 			/* about 1ms */

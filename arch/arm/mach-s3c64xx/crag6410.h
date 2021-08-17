@@ -11,9 +11,16 @@
 #ifndef MACH_CRAG6410_H
 #define MACH_CRAG6410_H
 
+<<<<<<< HEAD
 #include <linux/gpio.h>
 
 #define GLENFARCLAS_PMIC_IRQ_BASE	IRQ_BOARD_START
+=======
+#include <mach/gpio-samsung.h>
+
+#define GLENFARCLAS_PMIC_IRQ_BASE	IRQ_BOARD_START
+#define BANFF_PMIC_IRQ_BASE		(IRQ_BOARD_START + 64)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PCA935X_GPIO_BASE		GPIO_BOARD_START
 #define CODEC_GPIO_BASE			(GPIO_BOARD_START + 8)

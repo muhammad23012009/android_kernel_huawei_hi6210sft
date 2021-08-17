@@ -1479,9 +1479,19 @@ typedef union
 
 /* Define EISA controller register offsets */
 
+<<<<<<< HEAD
 #define PI_ESIC_K_CSR_IO_LEN		0x80		/* 128 bytes */
 
 #define PI_DEFEA_K_BURST_HOLDOFF	0x040
+=======
+#define PI_ESIC_K_CSR_IO_LEN		0x40		/* 64 bytes */
+#define PI_ESIC_K_BURST_HOLDOFF_LEN	0x04		/* 4 bytes */
+#define PI_ESIC_K_ESIC_CSR_LEN		0x40		/* 64 bytes */
+
+#define PI_DEFEA_K_CSR_IO		0x000
+#define PI_DEFEA_K_BURST_HOLDOFF	0x040
+#define PI_ESIC_K_ESIC_CSR		0xC80
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PI_ESIC_K_SLOT_ID            	0xC80
 #define PI_ESIC_K_SLOT_CNTRL		0xC84
@@ -1554,6 +1564,7 @@ typedef union
 #define PI_BURST_HOLDOFF_V_RESERVED	1
 #define PI_BURST_HOLDOFF_V_MEM_MAP	0
 
+<<<<<<< HEAD
 /* Define the implicit mask of the Memory Address Mask Register.  */
 
 #define PI_MEM_ADD_MASK_M		0x3ff
@@ -1563,6 +1574,15 @@ typedef union
  * The driver must initialize the slot field with the slot ID shifted by the
  * amount shown below.
  */
+=======
+/* Define the implicit mask of the Memory Address Compare registers.  */
+
+#define PI_MEM_ADD_MASK_M		0x3ff
+
+/* Define the fields in the I/O Address Compare and Mask registers.  */
+
+#define PI_IO_CMP_M_SLOT		0xf0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PI_IO_CMP_V_SLOT		4
 
@@ -1693,7 +1713,11 @@ typedef union
 /* Only execute special print call when debug driver was built */
 
 #ifdef DEFXX_DEBUG
+<<<<<<< HEAD
 #define DBG_printk(args...) printk(## args)
+=======
+#define DBG_printk(args...) printk(args)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define DBG_printk(args...)
 #endif

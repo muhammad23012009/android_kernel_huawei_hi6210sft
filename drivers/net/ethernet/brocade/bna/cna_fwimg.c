@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/firmware.h>
 #include "bnad.h"
@@ -29,9 +40,16 @@ cna_read_firmware(struct pci_dev *pdev, u32 **bfi_image,
 			u32 *bfi_image_size, char *fw_name)
 {
 	const struct firmware *fw;
+<<<<<<< HEAD
 
 	if (request_firmware(&fw, fw_name, &pdev->dev)) {
 		pr_alert("Can't locate firmware %s\n", fw_name);
+=======
+	u32 n;
+
+	if (request_firmware(&fw, fw_name, &pdev->dev)) {
+		dev_alert(&pdev->dev, "can't load firmware %s\n", fw_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 	}
 
@@ -39,6 +57,15 @@ cna_read_firmware(struct pci_dev *pdev, u32 **bfi_image,
 	*bfi_image_size = fw->size/sizeof(u32);
 	bfi_fw = fw;
 
+<<<<<<< HEAD
+=======
+	/* Convert loaded firmware to host order as it is stored in file
+	 * as sequence of LE32 integers.
+	 */
+	for (n = 0; n < *bfi_image_size; n++)
+		le32_to_cpus(*bfi_image + n);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return *bfi_image;
 error:
 	return NULL;
@@ -68,10 +95,15 @@ bfa_cb_image_get_chunk(enum bfi_asic_gen asic_gen, u32 off)
 	switch (asic_gen) {
 	case BFI_ASIC_GEN_CT:
 		return (bfi_image_ct_cna + off);
+<<<<<<< HEAD
 		break;
 	case BFI_ASIC_GEN_CT2:
 		return (bfi_image_ct2_cna + off);
 		break;
+=======
+	case BFI_ASIC_GEN_CT2:
+		return (bfi_image_ct2_cna + off);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		return NULL;
 	}
@@ -83,10 +115,15 @@ bfa_cb_image_get_size(enum bfi_asic_gen asic_gen)
 	switch (asic_gen) {
 	case BFI_ASIC_GEN_CT:
 		return bfi_image_ct_cna_size;
+<<<<<<< HEAD
 		break;
 	case BFI_ASIC_GEN_CT2:
 		return bfi_image_ct2_cna_size;
 		break;
+=======
+	case BFI_ASIC_GEN_CT2:
+		return bfi_image_ct2_cna_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		return 0;
 	}

@@ -5,6 +5,10 @@
 
 #include <locale.h>
 #include <ctype.h>
+<<<<<<< HEAD
+=======
+#include <limits.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,7 +45,11 @@ static int tty_stdio;
 static int valid_stdin = 1;
 static int sync_kconfig;
 static int conf_cnt;
+<<<<<<< HEAD
 static char line[128];
+=======
+static char line[PATH_MAX];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct menu *rootEntry;
 
 static void print_help(struct menu *menu)
@@ -109,7 +117,11 @@ static int conf_askvalue(struct symbol *sym, const char *def)
 		/* fall through */
 	case oldaskconfig:
 		fflush(stdout);
+<<<<<<< HEAD
 		xfgets(line, 128, stdin);
+=======
+		xfgets(line, sizeof(line), stdin);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!tty_stdio)
 			printf("\n");
 		return 1;
@@ -311,7 +323,11 @@ static int conf_choice(struct menu *menu)
 			/* fall through */
 		case oldaskconfig:
 			fflush(stdout);
+<<<<<<< HEAD
 			xfgets(line, 128, stdin);
+=======
+			xfgets(line, sizeof(line), stdin);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			strip(line);
 			if (line[0] == '?') {
 				print_help(menu);
@@ -471,7 +487,11 @@ static struct option long_opts[] = {
 static void conf_usage(const char *progname)
 {
 
+<<<<<<< HEAD
 	printf("Usage: %s [option] <kconfig-file>\n", progname);
+=======
+	printf("Usage: %s [-s] [option] <kconfig-file>\n", progname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printf("[option] is _one_ of the following:\n");
 	printf("  --listnewconfig         List new options\n");
 	printf("  --oldaskconfig          Start a new configuration using a line-oriented program\n");
@@ -501,7 +521,15 @@ int main(int ac, char **av)
 
 	tty_stdio = isatty(0) && isatty(1) && isatty(2);
 
+<<<<<<< HEAD
 	while ((opt = getopt_long(ac, av, "", long_opts, NULL)) != -1) {
+=======
+	while ((opt = getopt_long(ac, av, "s", long_opts, NULL)) != -1) {
+		if (opt == 's') {
+			conf_set_message_callback(NULL);
+			continue;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		input_mode = (enum input_mode)opt;
 		switch (opt) {
 		case silentoldconfig:
@@ -527,11 +555,19 @@ int main(int ac, char **av)
 			seed_env = getenv("KCONFIG_SEED");
 			if( seed_env && *seed_env ) {
 				char *endp;
+<<<<<<< HEAD
 				int tmp = (int)strtol(seed_env, &endp, 10);
+=======
+				int tmp = (int)strtol(seed_env, &endp, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (*endp == '\0') {
 					seed = tmp;
 				}
 			}
+<<<<<<< HEAD
+=======
+			fprintf( stderr, "KCONFIG_SEED=0x%X\n", seed );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			srand(seed);
 			break;
 		}
@@ -653,7 +689,12 @@ int main(int ac, char **av)
 		conf_set_all_new_symbols(def_default);
 		break;
 	case randconfig:
+<<<<<<< HEAD
 		conf_set_all_new_symbols(def_random);
+=======
+		/* Really nothing to do in this loop */
+		while (conf_set_all_new_symbols(def_random)) ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case defconfig:
 		conf_set_all_new_symbols(def_default);
@@ -694,7 +735,11 @@ int main(int ac, char **av)
 	} else if (input_mode == savedefconfig) {
 		if (conf_write_defconfig(defconfig_file)) {
 			fprintf(stderr, _("n*** Error while saving defconfig to: %s\n\n"),
+<<<<<<< HEAD
 			        defconfig_file);
+=======
+				defconfig_file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 1;
 		}
 	} else if (input_mode != listnewconfig) {

@@ -47,7 +47,11 @@
 /* COMMAND API interface ****************************************************/
 /****************************************************************************/
 
+<<<<<<< HEAD
 static ssize_t ts_write(struct file *file, const char *buf,
+=======
+static ssize_t ts_write(struct file *file, const char __user *buf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			size_t count, loff_t *ppos)
 {
 	struct dvb_device *dvbdev = file->private_data;
@@ -59,12 +63,20 @@ static ssize_t ts_write(struct file *file, const char *buf,
 				     (&dev->tsout_rbuf) >= count) < 0)
 		return 0;
 
+<<<<<<< HEAD
 	dvb_ringbuffer_write(&dev->tsout_rbuf, buf, count);
+=======
+	dvb_ringbuffer_write_user(&dev->tsout_rbuf, buf, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t ts_read(struct file *file, char *buf,
+=======
+static ssize_t ts_read(struct file *file, char __user *buf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       size_t count, loff_t *ppos)
 {
 	struct dvb_device *dvbdev = file->private_data;
@@ -97,7 +109,10 @@ static const struct file_operations ci_fops = {
 };
 
 struct dvb_device ngene_dvbdev_ci = {
+<<<<<<< HEAD
 	.priv    = 0,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.readers = -1,
 	.writers = -1,
 	.users   = -1,

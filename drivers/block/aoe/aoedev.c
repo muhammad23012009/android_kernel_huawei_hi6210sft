@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012 Coraid, Inc.  See COPYING for GPL terms. */
+=======
+/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * aoedev.c
  * AoE device utility functions; maintains device list.
@@ -12,6 +16,10 @@
 #include <linux/bitmap.h>
 #include <linux/kdev_t.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
+=======
+#include <linux/string.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "aoe.h"
 
 static void dummy_timer(ulong);
@@ -169,7 +177,11 @@ aoe_failip(struct aoedev *d)
 	if (rq == NULL)
 		return;
 	while ((bio = d->ip.nxbio)) {
+<<<<<<< HEAD
 		clear_bit(BIO_UPTODATE, &bio->bi_flags);
+=======
+		bio->bi_error = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		d->ip.nxbio = bio->bi_next;
 		n = (unsigned long) rq->special;
 		rq->special = (void *) --n;
@@ -241,16 +253,24 @@ aoedev_downdev(struct aoedev *d)
 static int
 user_req(char *s, size_t slen, struct aoedev *d)
 {
+<<<<<<< HEAD
 	char *p;
+=======
+	const char *p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	size_t lim;
 
 	if (!d->gd)
 		return 0;
+<<<<<<< HEAD
 	p = strrchr(d->gd->disk_name, '/');
 	if (!p)
 		p = d->gd->disk_name;
 	else
 		p += 1;
+=======
+	p = kbasename(d->gd->disk_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lim = sizeof(d->gd->disk_name);
 	lim -= p - d->gd->disk_name;
 	if (slen < lim)
@@ -278,6 +298,10 @@ freedev(struct aoedev *d)
 
 	del_timer_sync(&d->timer);
 	if (d->gd) {
+<<<<<<< HEAD
+=======
+		aoedisk_rm_debugfs(d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		aoedisk_rm_sysfs(d);
 		del_gendisk(d->gd);
 		put_disk(d->gd);
@@ -518,7 +542,10 @@ void
 aoedev_exit(void)
 {
 	flush_scheduled_work();
+<<<<<<< HEAD
 	aoe_flush_iocq();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	flush(NULL, 0, EXITING);
 }
 

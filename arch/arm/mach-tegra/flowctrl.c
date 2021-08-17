@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -26,6 +27,18 @@
 #include "flowctrl.h"
 #include "iomap.h"
 #include "fuse.h"
+=======
+#include <linux/cpumask.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/of.h>
+#include <linux/of_address.h>
+
+#include <soc/tegra/fuse.h>
+
+#include "flowctrl.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static u8 flowctrl_offset_halt_cpu[] = {
 	FLOW_CTRL_HALT_CPU0_EVENTS,
@@ -41,6 +54,7 @@ static u8 flowctrl_offset_cpu_csr[] = {
 	FLOW_CTRL_CPU1_CSR + 16,
 };
 
+<<<<<<< HEAD
 static void flowctrl_update(u8 offset, u32 value)
 {
 	void __iomem *addr = IO_ADDRESS(TEGRA_FLOW_CTRL_BASE) + offset;
@@ -50,14 +64,30 @@ static void flowctrl_update(u8 offset, u32 value)
 	/* ensure the update has reached the flow controller */
 	wmb();
 	readl_relaxed(addr);
+=======
+static void __iomem *tegra_flowctrl_base;
+
+static void flowctrl_update(u8 offset, u32 value)
+{
+	writel(value, tegra_flowctrl_base + offset);
+
+	/* ensure the update has reached the flow controller */
+	wmb();
+	readl_relaxed(tegra_flowctrl_base + offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 u32 flowctrl_read_cpu_csr(unsigned int cpuid)
 {
 	u8 offset = flowctrl_offset_cpu_csr[cpuid];
+<<<<<<< HEAD
 	void __iomem *addr = IO_ADDRESS(TEGRA_FLOW_CTRL_BASE) + offset;
 
 	return readl(addr);
+=======
+
+	return readl(tegra_flowctrl_base + offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void flowctrl_write_cpu_csr(unsigned int cpuid, u32 value)
@@ -76,7 +106,11 @@ void flowctrl_cpu_suspend_enter(unsigned int cpuid)
 	int i;
 
 	reg = flowctrl_read_cpu_csr(cpuid);
+<<<<<<< HEAD
 	switch (tegra_chip_id) {
+=======
+	switch (tegra_get_chip_id()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case TEGRA20:
 		/* clear wfe bitmap */
 		reg &= ~TEGRA20_FLOW_CTRL_CSR_WFE_BITMAP;
@@ -86,6 +120,11 @@ void flowctrl_cpu_suspend_enter(unsigned int cpuid)
 		reg |= TEGRA20_FLOW_CTRL_CSR_WFE_CPU0 << cpuid;
 		break;
 	case TEGRA30:
+<<<<<<< HEAD
+=======
+	case TEGRA114:
+	case TEGRA124:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* clear wfe bitmap */
 		reg &= ~TEGRA30_FLOW_CTRL_CSR_WFE_BITMAP;
 		/* clear wfi bitmap */
@@ -115,7 +154,11 @@ void flowctrl_cpu_suspend_exit(unsigned int cpuid)
 
 	/* Disable powergating via flow controller for CPU0 */
 	reg = flowctrl_read_cpu_csr(cpuid);
+<<<<<<< HEAD
 	switch (tegra_chip_id) {
+=======
+	switch (tegra_get_chip_id()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case TEGRA20:
 		/* clear wfe bitmap */
 		reg &= ~TEGRA20_FLOW_CTRL_CSR_WFE_BITMAP;
@@ -123,6 +166,11 @@ void flowctrl_cpu_suspend_exit(unsigned int cpuid)
 		reg &= ~TEGRA20_FLOW_CTRL_CSR_WFI_BITMAP;
 		break;
 	case TEGRA30:
+<<<<<<< HEAD
+=======
+	case TEGRA114:
+	case TEGRA124:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* clear wfe bitmap */
 		reg &= ~TEGRA30_FLOW_CTRL_CSR_WFE_BITMAP;
 		/* clear wfi bitmap */
@@ -134,3 +182,36 @@ void flowctrl_cpu_suspend_exit(unsigned int cpuid)
 	reg |= FLOW_CTRL_CSR_EVENT_FLAG;		/* clear event */
 	flowctrl_write_cpu_csr(cpuid, reg);
 }
+<<<<<<< HEAD
+=======
+
+static const struct of_device_id matches[] __initconst = {
+	{ .compatible = "nvidia,tegra124-flowctrl" },
+	{ .compatible = "nvidia,tegra114-flowctrl" },
+	{ .compatible = "nvidia,tegra30-flowctrl" },
+	{ .compatible = "nvidia,tegra20-flowctrl" },
+	{ }
+};
+
+void __init tegra_flowctrl_init(void)
+{
+	/* hardcoded fallback if device tree node is missing */
+	unsigned long base = 0x60007000;
+	unsigned long size = SZ_4K;
+	struct device_node *np;
+
+	np = of_find_matching_node(NULL, matches);
+	if (np) {
+		struct resource res;
+
+		if (of_address_to_resource(np, 0, &res) == 0) {
+			size = resource_size(&res);
+			base = res.start;
+		}
+
+		of_node_put(np);
+	}
+
+	tegra_flowctrl_base = ioremap_nocache(base, size);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

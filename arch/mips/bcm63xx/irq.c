@@ -12,6 +12,10 @@
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/spinlock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq_cpu.h>
 #include <asm/mipsregs.h>
 #include <bcm63xx_cpu.h>
@@ -19,6 +23,7 @@
 #include <bcm63xx_io.h>
 #include <bcm63xx_irq.h>
 
+<<<<<<< HEAD
 static void __dispatch_internal(void) __maybe_unused;
 static void __dispatch_internal_64(void) __maybe_unused;
 static void __internal_irq_mask_32(unsigned int irq) __maybe_unused;
@@ -125,10 +130,20 @@ static inline void bcm63xx_init_irq(void)
 
 static u32 irq_stat_addr, irq_mask_addr;
 static void (*dispatch_internal)(void);
+=======
+
+static DEFINE_SPINLOCK(ipic_lock);
+static DEFINE_SPINLOCK(epic_lock);
+
+static u32 irq_stat_addr[2];
+static u32 irq_mask_addr[2];
+static void (*dispatch_internal)(int cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int is_ext_irq_cascaded;
 static unsigned int ext_irq_count;
 static unsigned int ext_irq_start, ext_irq_end;
 static unsigned int ext_irq_cfg_reg1, ext_irq_cfg_reg2;
+<<<<<<< HEAD
 static void (*internal_irq_mask)(unsigned int irq);
 static void (*internal_irq_unmask)(unsigned int irq);
 
@@ -217,6 +232,11 @@ static void bcm63xx_init_irq(void)
 	}
 }
 #endif /* ! BCMCPU_RUNTIME_DETECT */
+=======
+static void (*internal_irq_mask)(struct irq_data *d);
+static void (*internal_irq_unmask)(struct irq_data *d, const struct cpumask *m);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline u32 get_ext_irq_perf_reg(int irq)
 {
@@ -234,12 +254,30 @@ static inline void handle_internal(int intbit)
 		do_IRQ(intbit + IRQ_INTERNAL_BASE);
 }
 
+<<<<<<< HEAD
+=======
+static inline int enable_irq_for_cpu(int cpu, struct irq_data *d,
+				     const struct cpumask *m)
+{
+	bool enable = cpu_online(cpu);
+
+#ifdef CONFIG_SMP
+	if (m)
+		enable &= cpumask_test_cpu(cpu, m);
+	else if (irqd_affinity_was_set(d))
+		enable &= cpumask_test_cpu(cpu, irq_data_get_affinity_mask(d));
+#endif
+	return enable;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * dispatch internal devices IRQ (uart, enet, watchdog, ...). do not
  * prioritize any interrupt relatively to another. the static counter
  * will resume the loop where it ended the last time we left this
  * function.
  */
+<<<<<<< HEAD
 static void __dispatch_internal(void)
 {
 	u32 pending;
@@ -281,6 +319,95 @@ static void __dispatch_internal_64(void)
 		}
 	}
 }
+=======
+
+#define BUILD_IPIC_INTERNAL(width)					\
+void __dispatch_internal_##width(int cpu)				\
+{									\
+	u32 pending[width / 32];					\
+	unsigned int src, tgt;						\
+	bool irqs_pending = false;					\
+	static unsigned int i[2];					\
+	unsigned int *next = &i[cpu];					\
+	unsigned long flags;						\
+									\
+	/* read registers in reverse order */				\
+	spin_lock_irqsave(&ipic_lock, flags);				\
+	for (src = 0, tgt = (width / 32); src < (width / 32); src++) {	\
+		u32 val;						\
+									\
+		val = bcm_readl(irq_stat_addr[cpu] + src * sizeof(u32)); \
+		val &= bcm_readl(irq_mask_addr[cpu] + src * sizeof(u32)); \
+		pending[--tgt] = val;					\
+									\
+		if (val)						\
+			irqs_pending = true;				\
+	}								\
+	spin_unlock_irqrestore(&ipic_lock, flags);			\
+									\
+	if (!irqs_pending)						\
+		return;							\
+									\
+	while (1) {							\
+		unsigned int to_call = *next;				\
+									\
+		*next = (*next + 1) & (width - 1);			\
+		if (pending[to_call / 32] & (1 << (to_call & 0x1f))) {	\
+			handle_internal(to_call);			\
+			break;						\
+		}							\
+	}								\
+}									\
+									\
+static void __internal_irq_mask_##width(struct irq_data *d)		\
+{									\
+	u32 val;							\
+	unsigned irq = d->irq - IRQ_INTERNAL_BASE;			\
+	unsigned reg = (irq / 32) ^ (width/32 - 1);			\
+	unsigned bit = irq & 0x1f;					\
+	unsigned long flags;						\
+	int cpu;							\
+									\
+	spin_lock_irqsave(&ipic_lock, flags);				\
+	for_each_present_cpu(cpu) {					\
+		if (!irq_mask_addr[cpu])				\
+			break;						\
+									\
+		val = bcm_readl(irq_mask_addr[cpu] + reg * sizeof(u32));\
+		val &= ~(1 << bit);					\
+		bcm_writel(val, irq_mask_addr[cpu] + reg * sizeof(u32));\
+	}								\
+	spin_unlock_irqrestore(&ipic_lock, flags);			\
+}									\
+									\
+static void __internal_irq_unmask_##width(struct irq_data *d,		\
+					  const struct cpumask *m)	\
+{									\
+	u32 val;							\
+	unsigned irq = d->irq - IRQ_INTERNAL_BASE;			\
+	unsigned reg = (irq / 32) ^ (width/32 - 1);			\
+	unsigned bit = irq & 0x1f;					\
+	unsigned long flags;						\
+	int cpu;							\
+									\
+	spin_lock_irqsave(&ipic_lock, flags);				\
+	for_each_present_cpu(cpu) {					\
+		if (!irq_mask_addr[cpu])				\
+			break;						\
+									\
+		val = bcm_readl(irq_mask_addr[cpu] + reg * sizeof(u32));\
+		if (enable_irq_for_cpu(cpu, d, m))			\
+			val |= (1 << bit);				\
+		else							\
+			val &= ~(1 << bit);				\
+		bcm_writel(val, irq_mask_addr[cpu] + reg * sizeof(u32));\
+	}								\
+	spin_unlock_irqrestore(&ipic_lock, flags);			\
+}
+
+BUILD_IPIC_INTERNAL(32);
+BUILD_IPIC_INTERNAL(64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 asmlinkage void plat_irq_dispatch(void)
 {
@@ -294,9 +421,22 @@ asmlinkage void plat_irq_dispatch(void)
 
 		if (cause & CAUSEF_IP7)
 			do_IRQ(7);
+<<<<<<< HEAD
 		if (cause & CAUSEF_IP2)
 			dispatch_internal();
 		if (!is_ext_irq_cascaded) {
+=======
+		if (cause & CAUSEF_IP0)
+			do_IRQ(0);
+		if (cause & CAUSEF_IP1)
+			do_IRQ(1);
+		if (cause & CAUSEF_IP2)
+			dispatch_internal(0);
+		if (is_ext_irq_cascaded) {
+			if (cause & CAUSEF_IP3)
+				dispatch_internal(1);
+		} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (cause & CAUSEF_IP3)
 				do_IRQ(IRQ_EXT_0);
 			if (cause & CAUSEF_IP4)
@@ -313,6 +453,7 @@ asmlinkage void plat_irq_dispatch(void)
  * internal IRQs operations: only mask/unmask on PERF irq mask
  * register.
  */
+<<<<<<< HEAD
 static void __internal_irq_mask_32(unsigned int irq)
 {
 	u32 mask;
@@ -352,11 +493,20 @@ static void __internal_irq_unmask_64(unsigned int irq)
 static void bcm63xx_internal_irq_mask(struct irq_data *d)
 {
 	internal_irq_mask(d->irq - IRQ_INTERNAL_BASE);
+=======
+static void bcm63xx_internal_irq_mask(struct irq_data *d)
+{
+	internal_irq_mask(d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bcm63xx_internal_irq_unmask(struct irq_data *d)
 {
+<<<<<<< HEAD
 	internal_irq_unmask(d->irq - IRQ_INTERNAL_BASE);
+=======
+	internal_irq_unmask(d, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -367,8 +517,15 @@ static void bcm63xx_external_irq_mask(struct irq_data *d)
 {
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
+<<<<<<< HEAD
 
 	regaddr = get_ext_irq_perf_reg(irq);
+=======
+	unsigned long flags;
+
+	regaddr = get_ext_irq_perf_reg(irq);
+	spin_lock_irqsave(&epic_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = bcm_perf_readl(regaddr);
 
 	if (BCMCPU_IS_6348())
@@ -377,16 +534,30 @@ static void bcm63xx_external_irq_mask(struct irq_data *d)
 		reg &= ~EXTIRQ_CFG_MASK(irq % 4);
 
 	bcm_perf_writel(reg, regaddr);
+<<<<<<< HEAD
 	if (is_ext_irq_cascaded)
 		internal_irq_mask(irq + ext_irq_start);
+=======
+	spin_unlock_irqrestore(&epic_lock, flags);
+
+	if (is_ext_irq_cascaded)
+		internal_irq_mask(irq_get_irq_data(irq + ext_irq_start));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bcm63xx_external_irq_unmask(struct irq_data *d)
 {
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
+<<<<<<< HEAD
 
 	regaddr = get_ext_irq_perf_reg(irq);
+=======
+	unsigned long flags;
+
+	regaddr = get_ext_irq_perf_reg(irq);
+	spin_lock_irqsave(&epic_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = bcm_perf_readl(regaddr);
 
 	if (BCMCPU_IS_6348())
@@ -395,17 +566,32 @@ static void bcm63xx_external_irq_unmask(struct irq_data *d)
 		reg |= EXTIRQ_CFG_MASK(irq % 4);
 
 	bcm_perf_writel(reg, regaddr);
+<<<<<<< HEAD
 
 	if (is_ext_irq_cascaded)
 		internal_irq_unmask(irq + ext_irq_start);
+=======
+	spin_unlock_irqrestore(&epic_lock, flags);
+
+	if (is_ext_irq_cascaded)
+		internal_irq_unmask(irq_get_irq_data(irq + ext_irq_start),
+				    NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bcm63xx_external_irq_clear(struct irq_data *d)
 {
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
+<<<<<<< HEAD
 
 	regaddr = get_ext_irq_perf_reg(irq);
+=======
+	unsigned long flags;
+
+	regaddr = get_ext_irq_perf_reg(irq);
+	spin_lock_irqsave(&epic_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = bcm_perf_readl(regaddr);
 
 	if (BCMCPU_IS_6348())
@@ -414,6 +600,10 @@ static void bcm63xx_external_irq_clear(struct irq_data *d)
 		reg |= EXTIRQ_CFG_CLEAR(irq % 4);
 
 	bcm_perf_writel(reg, regaddr);
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&epic_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int bcm63xx_external_irq_set_type(struct irq_data *d,
@@ -422,6 +612,10 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
 	int levelsense, sense, bothedge;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	flow_type &= IRQ_TYPE_SENSE_MASK;
 
@@ -451,11 +645,19 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 		break;
 
 	default:
+<<<<<<< HEAD
 		printk(KERN_ERR "bogus flow type combination given !\n");
+=======
+		pr_err("bogus flow type combination given !\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	regaddr = get_ext_irq_perf_reg(irq);
+<<<<<<< HEAD
+=======
+	spin_lock_irqsave(&epic_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = bcm_perf_readl(regaddr);
 	irq %= 4;
 
@@ -475,6 +677,10 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 			reg &= ~EXTIRQ_CFG_BOTHEDGE_6348(irq);
 		break;
 
+<<<<<<< HEAD
+=======
+	case BCM3368_CPU_ID:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BCM6328_CPU_ID:
 	case BCM6338_CPU_ID:
 	case BCM6345_CPU_ID:
@@ -499,16 +705,41 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 	}
 
 	bcm_perf_writel(reg, regaddr);
+<<<<<<< HEAD
 
 	irqd_set_trigger_type(d, flow_type);
 	if (flow_type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 	else
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
+=======
+	spin_unlock_irqrestore(&epic_lock, flags);
+
+	irqd_set_trigger_type(d, flow_type);
+	if (flow_type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
+		irq_set_handler_locked(d, handle_level_irq);
+	else
+		irq_set_handler_locked(d, handle_edge_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_SET_MASK_OK_NOCOPY;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+static int bcm63xx_internal_set_affinity(struct irq_data *data,
+					 const struct cpumask *dest,
+					 bool force)
+{
+	if (!irqd_irq_disabled(data))
+		internal_irq_unmask(data, dest);
+
+	return 0;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct irq_chip bcm63xx_internal_irq_chip = {
 	.name		= "bcm63xx_ipic",
 	.irq_mask	= bcm63xx_internal_irq_mask,
@@ -531,12 +762,136 @@ static struct irqaction cpu_ip2_cascade_action = {
 	.flags		= IRQF_NO_THREAD,
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+static struct irqaction cpu_ip3_cascade_action = {
+	.handler	= no_action,
+	.name		= "cascade_ip3",
+	.flags		= IRQF_NO_THREAD,
+};
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct irqaction cpu_ext_cascade_action = {
 	.handler	= no_action,
 	.name		= "cascade_extirq",
 	.flags		= IRQF_NO_THREAD,
 };
 
+<<<<<<< HEAD
+=======
+static void bcm63xx_init_irq(void)
+{
+	int irq_bits;
+
+	irq_stat_addr[0] = bcm63xx_regset_address(RSET_PERF);
+	irq_mask_addr[0] = bcm63xx_regset_address(RSET_PERF);
+	irq_stat_addr[1] = bcm63xx_regset_address(RSET_PERF);
+	irq_mask_addr[1] = bcm63xx_regset_address(RSET_PERF);
+
+	switch (bcm63xx_get_cpu_id()) {
+	case BCM3368_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_3368_REG;
+		irq_mask_addr[0] += PERF_IRQMASK_3368_REG;
+		irq_stat_addr[1] = 0;
+		irq_mask_addr[1] = 0;
+		irq_bits = 32;
+		ext_irq_count = 4;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_3368;
+		break;
+	case BCM6328_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_6328_REG(0);
+		irq_mask_addr[0] += PERF_IRQMASK_6328_REG(0);
+		irq_stat_addr[1] += PERF_IRQSTAT_6328_REG(1);
+		irq_mask_addr[1] += PERF_IRQMASK_6328_REG(1);
+		irq_bits = 64;
+		ext_irq_count = 4;
+		is_ext_irq_cascaded = 1;
+		ext_irq_start = BCM_6328_EXT_IRQ0 - IRQ_INTERNAL_BASE;
+		ext_irq_end = BCM_6328_EXT_IRQ3 - IRQ_INTERNAL_BASE;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6328;
+		break;
+	case BCM6338_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_6338_REG;
+		irq_mask_addr[0] += PERF_IRQMASK_6338_REG;
+		irq_stat_addr[1] = 0;
+		irq_mask_addr[1] = 0;
+		irq_bits = 32;
+		ext_irq_count = 4;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6338;
+		break;
+	case BCM6345_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_6345_REG;
+		irq_mask_addr[0] += PERF_IRQMASK_6345_REG;
+		irq_stat_addr[1] = 0;
+		irq_mask_addr[1] = 0;
+		irq_bits = 32;
+		ext_irq_count = 4;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6345;
+		break;
+	case BCM6348_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_6348_REG;
+		irq_mask_addr[0] += PERF_IRQMASK_6348_REG;
+		irq_stat_addr[1] = 0;
+		irq_mask_addr[1] = 0;
+		irq_bits = 32;
+		ext_irq_count = 4;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6348;
+		break;
+	case BCM6358_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_6358_REG(0);
+		irq_mask_addr[0] += PERF_IRQMASK_6358_REG(0);
+		irq_stat_addr[1] += PERF_IRQSTAT_6358_REG(1);
+		irq_mask_addr[1] += PERF_IRQMASK_6358_REG(1);
+		irq_bits = 32;
+		ext_irq_count = 4;
+		is_ext_irq_cascaded = 1;
+		ext_irq_start = BCM_6358_EXT_IRQ0 - IRQ_INTERNAL_BASE;
+		ext_irq_end = BCM_6358_EXT_IRQ3 - IRQ_INTERNAL_BASE;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6358;
+		break;
+	case BCM6362_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_6362_REG(0);
+		irq_mask_addr[0] += PERF_IRQMASK_6362_REG(0);
+		irq_stat_addr[1] += PERF_IRQSTAT_6362_REG(1);
+		irq_mask_addr[1] += PERF_IRQMASK_6362_REG(1);
+		irq_bits = 64;
+		ext_irq_count = 4;
+		is_ext_irq_cascaded = 1;
+		ext_irq_start = BCM_6362_EXT_IRQ0 - IRQ_INTERNAL_BASE;
+		ext_irq_end = BCM_6362_EXT_IRQ3 - IRQ_INTERNAL_BASE;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6362;
+		break;
+	case BCM6368_CPU_ID:
+		irq_stat_addr[0] += PERF_IRQSTAT_6368_REG(0);
+		irq_mask_addr[0] += PERF_IRQMASK_6368_REG(0);
+		irq_stat_addr[1] += PERF_IRQSTAT_6368_REG(1);
+		irq_mask_addr[1] += PERF_IRQMASK_6368_REG(1);
+		irq_bits = 64;
+		ext_irq_count = 6;
+		is_ext_irq_cascaded = 1;
+		ext_irq_start = BCM_6368_EXT_IRQ0 - IRQ_INTERNAL_BASE;
+		ext_irq_end = BCM_6368_EXT_IRQ5 - IRQ_INTERNAL_BASE;
+		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6368;
+		ext_irq_cfg_reg2 = PERF_EXTIRQ_CFG_REG2_6368;
+		break;
+	default:
+		BUG();
+	}
+
+	if (irq_bits == 32) {
+		dispatch_internal = __dispatch_internal_32;
+		internal_irq_mask = __internal_irq_mask_32;
+		internal_irq_unmask = __internal_irq_unmask_32;
+	} else {
+		dispatch_internal = __dispatch_internal_64;
+		internal_irq_mask = __internal_irq_mask_64;
+		internal_irq_unmask = __internal_irq_unmask_64;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init arch_init_irq(void)
 {
 	int i;
@@ -557,4 +912,17 @@ void __init arch_init_irq(void)
 	}
 
 	setup_irq(MIPS_CPU_IRQ_BASE + 2, &cpu_ip2_cascade_action);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+	if (is_ext_irq_cascaded) {
+		setup_irq(MIPS_CPU_IRQ_BASE + 3, &cpu_ip3_cascade_action);
+		bcm63xx_internal_irq_chip.irq_set_affinity =
+			bcm63xx_internal_set_affinity;
+
+		cpumask_clear(irq_default_affinity);
+		cpumask_set_cpu(smp_processor_id(), irq_default_affinity);
+	}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

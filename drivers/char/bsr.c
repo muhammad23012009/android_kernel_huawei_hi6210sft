@@ -21,6 +21,10 @@
 
 #include <linux/kernel.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 #include <linux/fs.h>
@@ -95,6 +99,10 @@ bsr_size_show(struct device *dev, struct device_attribute *attr, char *buf)
 	struct bsr_dev *bsr_dev = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", bsr_dev->bsr_bytes);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(bsr_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t
 bsr_stride_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -102,13 +110,21 @@ bsr_stride_show(struct device *dev, struct device_attribute *attr, char *buf)
 	struct bsr_dev *bsr_dev = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", bsr_dev->bsr_stride);
 }
+<<<<<<< HEAD
 
 static ssize_t
 bsr_len_show(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(bsr_stride);
+
+static ssize_t
+bsr_length_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct bsr_dev *bsr_dev = dev_get_drvdata(dev);
 	return sprintf(buf, "%llu\n", bsr_dev->bsr_len);
 }
+<<<<<<< HEAD
 
 static struct device_attribute bsr_dev_attrs[] = {
 	__ATTR(bsr_size, S_IRUGO, bsr_size_show, NULL),
@@ -116,6 +132,17 @@ static struct device_attribute bsr_dev_attrs[] = {
 	__ATTR(bsr_length, S_IRUGO, bsr_len_show, NULL),
 	__ATTR_NULL
 };
+=======
+static DEVICE_ATTR_RO(bsr_length);
+
+static struct attribute *bsr_dev_attrs[] = {
+	&dev_attr_bsr_size.attr,
+	&dev_attr_bsr_stride.attr,
+	&dev_attr_bsr_length.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(bsr_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int bsr_mmap(struct file *filp, struct vm_area_struct *vma)
 {
@@ -254,7 +281,11 @@ static int bsr_add_node(struct device_node *bn)
 		}
 
 		cur->bsr_device = device_create(bsr_class, NULL, cur->bsr_dev,
+<<<<<<< HEAD
 						cur, cur->bsr_name);
+=======
+						cur, "%s", cur->bsr_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (IS_ERR(cur->bsr_device)) {
 			printk(KERN_ERR "device_create failed for %s\n",
 			       cur->bsr_name);
@@ -308,7 +339,11 @@ static int __init bsr_init(void)
 		ret = PTR_ERR(bsr_class);
 		goto out_err_1;
 	}
+<<<<<<< HEAD
 	bsr_class->dev_attrs = bsr_dev_attrs;
+=======
+	bsr_class->dev_groups = bsr_dev_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = alloc_chrdev_region(&bsr_dev, 0, BSR_MAX_DEVS, "bsr");
 	bsr_major = MAJOR(bsr_dev);

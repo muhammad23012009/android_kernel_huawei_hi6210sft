@@ -51,8 +51,13 @@
  * file calls, even though this violates some
  * expectations of harmlessness.
  */
+<<<<<<< HEAD
 static int qib_tune_pcie_caps(struct qib_devdata *);
 static int qib_tune_pcie_coalesce(struct qib_devdata *);
+=======
+static void qib_tune_pcie_caps(struct qib_devdata *);
+static void qib_tune_pcie_coalesce(struct qib_devdata *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Do all the common PCIe setup and initialization.
@@ -144,6 +149,7 @@ int qib_pcie_ddinit(struct qib_devdata *dd, struct pci_dev *pdev,
 	addr = pci_resource_start(pdev, 0);
 	len = pci_resource_len(pdev, 0);
 
+<<<<<<< HEAD
 #if defined(__powerpc__)
 	/* There isn't a generic way to specify writethrough mappings */
 	dd->kregbase = __ioremap(addr, len, _PAGE_NO_CACHE | _PAGE_WRITETHRU);
@@ -151,6 +157,9 @@ int qib_pcie_ddinit(struct qib_devdata *dd, struct pci_dev *pdev,
 	dd->kregbase = ioremap_nocache(addr, len);
 #endif
 
+=======
+	dd->kregbase = ioremap_nocache(addr, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dd->kregbase)
 		return -ENOMEM;
 
@@ -197,6 +206,7 @@ static void qib_msix_setup(struct qib_devdata *dd, int pos, u32 *msixcnt,
 			   struct qib_msix_entry *qib_msix_entry)
 {
 	int ret;
+<<<<<<< HEAD
 	u32 tabsize = 0;
 	u16 msix_flags;
 	struct msix_entry *msix_entry;
@@ -237,6 +247,51 @@ do_intx:
 	if (ret)
 		qib_enable_intx(dd->pcidev);
 
+=======
+	int nvec = *msixcnt;
+	struct msix_entry *msix_entry;
+	int i;
+
+	ret = pci_msix_vec_count(dd->pcidev);
+	if (ret < 0)
+		goto do_intx;
+
+	nvec = min(nvec, ret);
+
+	/* We can't pass qib_msix_entry array to qib_msix_setup
+	 * so use a dummy msix_entry array and copy the allocated
+	 * irq back to the qib_msix_entry array. */
+	msix_entry = kcalloc(nvec, sizeof(*msix_entry), GFP_KERNEL);
+	if (!msix_entry)
+		goto do_intx;
+
+	for (i = 0; i < nvec; i++)
+		msix_entry[i] = qib_msix_entry[i].msix;
+
+	ret = pci_enable_msix_range(dd->pcidev, msix_entry, 1, nvec);
+	if (ret < 0)
+		goto free_msix_entry;
+	else
+		nvec = ret;
+
+	for (i = 0; i < nvec; i++)
+		qib_msix_entry[i].msix = msix_entry[i];
+
+	kfree(msix_entry);
+	*msixcnt = nvec;
+	return;
+
+free_msix_entry:
+	kfree(msix_entry);
+
+do_intx:
+	qib_dev_err(
+		dd,
+		"pci_enable_msix_range %d vectors failed: %d, falling back to INTx\n",
+		nvec, ret);
+	*msixcnt = 0;
+	qib_enable_intx(dd->pcidev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -283,12 +338,20 @@ int qib_pcie_params(struct qib_devdata *dd, u32 minw, u32 *nent,
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	pos = pci_find_capability(dd->pcidev, PCI_CAP_ID_MSIX);
+=======
+	pos = dd->pcidev->msix_cap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (nent && *nent && pos) {
 		qib_msix_setup(dd, pos, nent, entry);
 		ret = 0; /* did it, either MSIx or INTx */
 	} else {
+<<<<<<< HEAD
 		pos = pci_find_capability(dd->pcidev, PCI_CAP_ID_MSI);
+=======
+		pos = dd->pcidev->msi_cap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (pos)
 			ret = qib_msi_setup(dd, pos);
 		else
@@ -357,7 +420,11 @@ int qib_reinit_intr(struct qib_devdata *dd)
 	if (!dd->msi_lo)
 		goto bail;
 
+<<<<<<< HEAD
 	pos = pci_find_capability(dd->pcidev, PCI_CAP_ID_MSI);
+=======
+	pos = dd->pcidev->msi_cap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pos) {
 		qib_dev_err(dd,
 			"Can't find MSI capability, can't restore MSI settings\n");
@@ -426,7 +493,11 @@ void qib_enable_intx(struct pci_dev *pdev)
 	if (new != cw)
 		pci_write_config_word(pdev, PCI_COMMAND, new);
 
+<<<<<<< HEAD
 	pos = pci_find_capability(pdev, PCI_CAP_ID_MSI);
+=======
+	pos = pdev->msi_cap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pos) {
 		/* then turn off MSI */
 		pci_read_config_word(pdev, pos + PCI_MSI_FLAGS, &cw);
@@ -434,7 +505,11 @@ void qib_enable_intx(struct pci_dev *pdev)
 		if (new != cw)
 			pci_write_config_word(pdev, pos + PCI_MSI_FLAGS, new);
 	}
+<<<<<<< HEAD
 	pos = pci_find_capability(pdev, PCI_CAP_ID_MSIX);
+=======
+	pos = pdev->msix_cap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pos) {
 		/* then turn off MSIx */
 		pci_read_config_word(pdev, pos + PCI_MSIX_FLAGS, &cw);
@@ -458,6 +533,10 @@ void qib_pcie_getcmd(struct qib_devdata *dd, u16 *cmd, u8 *iline, u8 *cline)
 void qib_pcie_reenable(struct qib_devdata *dd, u16 cmd, u8 iline, u8 cline)
 {
 	int r;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r = pci_write_config_dword(dd->pcidev, PCI_BASE_ADDRESS_0,
 				   dd->pcibar0);
 	if (r)
@@ -476,6 +555,7 @@ void qib_pcie_reenable(struct qib_devdata *dd, u16 cmd, u8 iline, u8 cline)
 			"pci_enable_device failed after reset: %d\n", r);
 }
 
+<<<<<<< HEAD
 /* code to adjust PCIe capabilities. */
 
 static int fld2val(int wd, int mask)
@@ -500,6 +580,8 @@ static int val2fld(int wd, int mask)
 	wd *= lsbmask;
 	return wd;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int qib_pcie_coalesce;
 module_param_named(pcie_coalesce, qib_pcie_coalesce, int, S_IRUGO);
@@ -511,7 +593,11 @@ MODULE_PARM_DESC(pcie_coalesce, "tune PCIe colescing on some Intel chipsets");
  * of these chipsets, with some BIOS settings, and enabling it on those
  * systems may result in the system crashing, and/or data corruption.
  */
+<<<<<<< HEAD
 static int qib_tune_pcie_coalesce(struct qib_devdata *dd)
+=======
+static void qib_tune_pcie_coalesce(struct qib_devdata *dd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int r;
 	struct pci_dev *parent;
@@ -519,18 +605,31 @@ static int qib_tune_pcie_coalesce(struct qib_devdata *dd)
 	u32 mask, bits, val;
 
 	if (!qib_pcie_coalesce)
+<<<<<<< HEAD
 		return 0;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Find out supported and configured values for parent (root) */
 	parent = dd->pcidev->bus->self;
 	if (parent->bus->parent) {
 		qib_devinfo(dd->pcidev, "Parent not root\n");
+<<<<<<< HEAD
 		return 1;
 	}
 	if (!pci_is_pcie(parent))
 		return 1;
 	if (parent->vendor != 0x8086)
 		return 1;
+=======
+		return;
+	}
+	if (!pci_is_pcie(parent))
+		return;
+	if (parent->vendor != 0x8086)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *  - bit 12: Max_rdcmp_Imt_EN: need to set to 1
@@ -563,13 +662,20 @@ static int qib_tune_pcie_coalesce(struct qib_devdata *dd)
 		mask = (3U << 24) | (7U << 10);
 	} else {
 		/* not one of the chipsets that we know about */
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	pci_read_config_dword(parent, 0x48, &val);
 	val &= ~mask;
 	val |= bits;
 	r = pci_write_config_dword(parent, 0x48, val);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -580,6 +686,7 @@ static int qib_pcie_caps;
 module_param_named(pcie_caps, qib_pcie_caps, int, S_IRUGO);
 MODULE_PARM_DESC(pcie_caps, "Max PCIe tuning: Payload (0..3), ReadReq (4..7)");
 
+<<<<<<< HEAD
 static int qib_tune_pcie_caps(struct qib_devdata *dd)
 {
 	int ret = 1; /* Assume the worst */
@@ -629,6 +736,46 @@ static int qib_tune_pcie_caps(struct qib_devdata *dd)
 		ectl = (ectl & ~PCI_EXP_DEVCTL_PAYLOAD) |
 			val2fld(ep_cur, PCI_EXP_DEVCTL_PAYLOAD);
 		pcie_capability_write_word(dd->pcidev, PCI_EXP_DEVCTL, ectl);
+=======
+static void qib_tune_pcie_caps(struct qib_devdata *dd)
+{
+	struct pci_dev *parent;
+	u16 rc_mpss, rc_mps, ep_mpss, ep_mps;
+	u16 rc_mrrs, ep_mrrs, max_mrrs;
+
+	/* Find out supported and configured values for parent (root) */
+	parent = dd->pcidev->bus->self;
+	if (!pci_is_root_bus(parent->bus)) {
+		qib_devinfo(dd->pcidev, "Parent not root\n");
+		return;
+	}
+
+	if (!pci_is_pcie(parent) || !pci_is_pcie(dd->pcidev))
+		return;
+
+	rc_mpss = parent->pcie_mpss;
+	rc_mps = ffs(pcie_get_mps(parent)) - 8;
+	/* Find out supported and configured values for endpoint (us) */
+	ep_mpss = dd->pcidev->pcie_mpss;
+	ep_mps = ffs(pcie_get_mps(dd->pcidev)) - 8;
+
+	/* Find max payload supported by root, endpoint */
+	if (rc_mpss > ep_mpss)
+		rc_mpss = ep_mpss;
+
+	/* If Supported greater than limit in module param, limit it */
+	if (rc_mpss > (qib_pcie_caps & 7))
+		rc_mpss = qib_pcie_caps & 7;
+	/* If less than (allowed, supported), bump root payload */
+	if (rc_mpss > rc_mps) {
+		rc_mps = rc_mpss;
+		pcie_set_mps(parent, 128 << rc_mps);
+	}
+	/* If less than (allowed, supported), bump endpoint payload */
+	if (rc_mpss > ep_mps) {
+		ep_mps = rc_mpss;
+		pcie_set_mps(dd->pcidev, 128 << ep_mps);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -636,6 +783,7 @@ static int qib_tune_pcie_caps(struct qib_devdata *dd)
 	 * No field for max supported, but PCIe spec limits it to 4096,
 	 * which is code '5' (log2(4096) - 7)
 	 */
+<<<<<<< HEAD
 	rc_sup = 5;
 	if (rc_sup > ((qib_pcie_caps >> 4) & 7))
 		rc_sup = (qib_pcie_caps >> 4) & 7;
@@ -656,6 +804,24 @@ static int qib_tune_pcie_caps(struct qib_devdata *dd)
 	}
 bail:
 	return ret;
+=======
+	max_mrrs = 5;
+	if (max_mrrs > ((qib_pcie_caps >> 4) & 7))
+		max_mrrs = (qib_pcie_caps >> 4) & 7;
+
+	max_mrrs = 128 << max_mrrs;
+	rc_mrrs = pcie_get_readrq(parent);
+	ep_mrrs = pcie_get_readrq(dd->pcidev);
+
+	if (max_mrrs > rc_mrrs) {
+		rc_mrrs = max_mrrs;
+		pcie_set_readrq(parent, rc_mrrs);
+	}
+	if (max_mrrs > ep_mrrs) {
+		ep_mrrs = max_mrrs;
+		pcie_set_readrq(dd->pcidev, ep_mrrs);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 /* End of PCIe capability tuning */
 
@@ -735,6 +901,10 @@ static void
 qib_pci_resume(struct pci_dev *pdev)
 {
 	struct qib_devdata *dd = pci_get_drvdata(pdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	qib_devinfo(pdev, "QIB resume function called\n");
 	pci_cleanup_aer_uncorrect_error_status(pdev);
 	/*

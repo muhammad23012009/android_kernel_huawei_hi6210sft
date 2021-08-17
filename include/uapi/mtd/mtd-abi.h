@@ -21,7 +21,10 @@
 #define __MTD_ABI_H__
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/mtd/hisi_nve_interface.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct erase_info_user {
 	__u32 start;
@@ -95,10 +98,17 @@ struct mtd_write_req {
 #define MTD_RAM			1
 #define MTD_ROM			2
 #define MTD_NORFLASH		3
+<<<<<<< HEAD
 #define MTD_NANDFLASH		4
 #define MTD_DATAFLASH		6
 #define MTD_UBIVOLUME		7
 #define MTD_MLCNANDFLASH	8
+=======
+#define MTD_NANDFLASH		4	/* SLC NAND */
+#define MTD_DATAFLASH		6
+#define MTD_UBIVOLUME		7
+#define MTD_MLCNANDFLASH	8	/* MLC NAND (including TLC) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MTD_WRITEABLE		0x400	/* Device is writeable */
 #define MTD_BIT_WRITEABLE	0x800	/* Single bits can be flipped */
@@ -110,21 +120,32 @@ struct mtd_write_req {
 #define MTD_CAP_RAM		(MTD_WRITEABLE | MTD_BIT_WRITEABLE | MTD_NO_ERASE)
 #define MTD_CAP_NORFLASH	(MTD_WRITEABLE | MTD_BIT_WRITEABLE)
 #define MTD_CAP_NANDFLASH	(MTD_WRITEABLE)
+<<<<<<< HEAD
+=======
+#define MTD_CAP_NVRAM		(MTD_WRITEABLE | MTD_BIT_WRITEABLE | MTD_NO_ERASE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Obsolete ECC byte placement modes (used with obsolete MEMGETOOBSEL) */
 #define MTD_NANDECC_OFF		0	// Switch off ECC (Not recommended)
 #define MTD_NANDECC_PLACE	1	// Use the given placement in the structure (YAFFS1 legacy mode)
 #define MTD_NANDECC_AUTOPLACE	2	// Use the default placement scheme
 #define MTD_NANDECC_PLACEONLY	3	// Use the given placement in the structure (Do not store ecc result on read)
+<<<<<<< HEAD
 #define MTD_NANDECC_AUTOPL_USR	4	// Use the given autoplacement scheme rather than using the default
+=======
+#define MTD_NANDECC_AUTOPL_USR 	4	// Use the given autoplacement scheme rather than using the default
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* OTP mode selection */
 #define MTD_OTP_OFF		0
 #define MTD_OTP_FACTORY		1
 #define MTD_OTP_USER		2
 
+<<<<<<< HEAD
 /*add end,used for NV.*/
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mtd_info_user {
 	__u8 type;
 	__u32 flags;
@@ -149,7 +170,10 @@ struct otp_info {
 	__u32 locked;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Note, the following ioctl existed in the past and was removed:
  * #define MEMSETOOBSEL           _IOW('M', 9, struct nand_oobinfo)
@@ -206,9 +230,12 @@ struct otp_info {
  * without OOB, e.g., NOR flash.
  */
 #define MEMWRITE		_IOWR('M', 24, struct mtd_write_req)
+<<<<<<< HEAD
 /*add begin,used for NV.*/
 #define NVEACCESSDATA           _IOWR('M', 25, struct hisi_nve_info_user)
 /*add end,used for NV.*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Obsolete legacy interface. Keep it in order not to break userspace
@@ -234,7 +261,11 @@ struct nand_oobfree {
  * complete set of ECC information. The ioctl truncates the larger internal
  * structure to retain binary compatibility with the static declaration of the
  * ioctl. Note that the "MTD_MAX_..._ENTRIES" macros represent the max size of
+<<<<<<< HEAD
  * the user struct, not the MAX size of the internal struct nand_ecclayout.
+=======
+ * the user struct, not the MAX size of the internal OOB layout representation.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct nand_ecclayout_user {
 	__u32 eccbytes;
@@ -282,4 +313,12 @@ enum mtd_file_modes {
 	MTD_FILE_MODE_RAW,
 };
 
+<<<<<<< HEAD
+=======
+static inline int mtd_type_is_nand_user(const struct mtd_info_user *mtd)
+{
+	return mtd->type == MTD_NANDFLASH || mtd->type == MTD_MLCNANDFLASH;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __MTD_ABI_H__ */

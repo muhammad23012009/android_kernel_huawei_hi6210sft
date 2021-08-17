@@ -19,7 +19,10 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/leds.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
@@ -87,7 +90,11 @@ static struct platform_device geos_leds_dev = {
 	.dev.platform_data = &geos_leds_data,
 };
 
+<<<<<<< HEAD
 static struct __initdata platform_device *geos_devs[] = {
+=======
+static struct platform_device *geos_devs[] __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&geos_buttons_dev,
 	&geos_leds_dev,
 };
@@ -120,9 +127,13 @@ static int __init geos_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(geos_init);
 
 MODULE_AUTHOR("Philip Prindeville <philipp@redfish-solutions.com>");
 MODULE_DESCRIPTION("Traverse Technologies Geos System Setup");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(geos_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

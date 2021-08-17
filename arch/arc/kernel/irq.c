@@ -8,6 +8,7 @@
  */
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/irqdomain.h>
@@ -115,6 +116,11 @@ init_onchip_IRQ(struct device_node *intc, struct device_node *parent)
 }
 
 IRQCHIP_DECLARE(arc_intc, "snps,arc700-intc", init_onchip_IRQ);
+=======
+#include <linux/irqchip.h>
+#include <asm/mach_desc.h>
+#include <asm/smp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Late Interrupt system init called from start_kernel for Boot CPU only
@@ -124,6 +130,7 @@ IRQCHIP_DECLARE(arc_intc, "snps,arc700-intc", init_onchip_IRQ);
  */
 void __init init_IRQ(void)
 {
+<<<<<<< HEAD
 	/* Any external intc can be setup here */
 	if (machine_desc->init_irq)
 		machine_desc->init_irq();
@@ -136,12 +143,30 @@ void __init init_IRQ(void)
 	if (machine_desc->init_smp)
 		machine_desc->init_smp(smp_processor_id());
 #endif
+=======
+	/*
+	 * process the entire interrupt tree in one go
+	 * Any external intc will be setup provided DT chains them
+	 * properly
+	 */
+	irqchip_init();
+
+#ifdef CONFIG_SMP
+	/* a SMP H/w block could do IPI IRQ request here */
+	if (plat_smp_ops.init_per_cpu)
+		plat_smp_ops.init_per_cpu(smp_processor_id());
+#endif
+
+	if (machine_desc->init_per_cpu)
+		machine_desc->init_per_cpu(smp_processor_id());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * "C" Entry point for any ARC ISR, called from low level vector handler
  * @irq is the vector number read from ICAUSE reg of on-chip intc
  */
+<<<<<<< HEAD
 void arch_do_IRQ(unsigned int irq, struct pt_regs *regs)
 {
 	struct pt_regs *old_regs = set_irq_regs(regs);
@@ -273,3 +298,9 @@ void arch_local_irq_enable(void)
 }
 #endif
 EXPORT_SYMBOL(arch_local_irq_enable);
+=======
+void arch_do_IRQ(unsigned int hwirq, struct pt_regs *regs)
+{
+	handle_domain_irq(NULL, hwirq, regs);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

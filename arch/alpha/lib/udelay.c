@@ -30,6 +30,10 @@ __delay(int loops)
 		"	bgt %0,1b"
 		: "=&r" (tmp), "=r" (loops) : "1"(loops));
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__delay);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 #define LPJ	 cpu_data[smp_processor_id()].loops_per_jiffy

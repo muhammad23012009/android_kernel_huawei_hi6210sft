@@ -33,7 +33,11 @@
 void set_cpuinfo_pvr_full(struct cpuinfo *ci, struct device_node *cpu)
 {
 	struct pvr_s pvr;
+<<<<<<< HEAD
 	int temp; /* for saving temp value */
+=======
+	u32 temp; /* for saving temp value */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	get_pvr(&pvr);
 
 	CI(ver_code, VERSION);
@@ -112,7 +116,10 @@ void set_cpuinfo_pvr_full(struct cpuinfo *ci, struct device_node *cpu)
 	CI(num_wr_brk, NUMBER_OF_WR_ADDR_BRK);
 
 	CI(fpga_family_code, TARGET_FAMILY);
+<<<<<<< HEAD
 
 	/* take timebase-frequency from DTS */
 	ci->cpu_clock_freq = fcpu(cpu, "timebase-frequency");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

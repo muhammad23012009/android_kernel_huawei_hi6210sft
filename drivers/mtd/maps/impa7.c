@@ -79,7 +79,11 @@ static int __init init_impa7(void)
 		}
 		simple_map_init(&impa7_map[i]);
 
+<<<<<<< HEAD
 		impa7_mtd[i] = 0;
+=======
+		impa7_mtd[i] = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		type = rom_probe_types;
 		for(; !impa7_mtd[i] && *type; type++) {
 			impa7_mtd[i] = do_map_probe(*type, &impa7_map[i]);
@@ -91,9 +95,15 @@ static int __init init_impa7(void)
 			mtd_device_parse_register(impa7_mtd[i], NULL, NULL,
 						  partitions,
 						  ARRAY_SIZE(partitions));
+<<<<<<< HEAD
 		}
 		else
 			iounmap((void *)impa7_map[i].virt);
+=======
+		} else {
+			iounmap((void __iomem *)impa7_map[i].virt);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return devicesfound == 0 ? -ENXIO : 0;
 }
@@ -105,8 +115,13 @@ static void __exit cleanup_impa7(void)
 		if (impa7_mtd[i]) {
 			mtd_device_unregister(impa7_mtd[i]);
 			map_destroy(impa7_mtd[i]);
+<<<<<<< HEAD
 			iounmap((void *)impa7_map[i].virt);
 			impa7_map[i].virt = 0;
+=======
+			iounmap((void __iomem *)impa7_map[i].virt);
+			impa7_map[i].virt = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }

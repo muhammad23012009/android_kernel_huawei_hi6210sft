@@ -235,7 +235,11 @@ static void atl1_check_options(struct atl1_adapter *adapter)
 /*
  * atl1_pci_tbl - PCI Device ID Table
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(atl1_pci_tbl) = {
+=======
+static const struct pci_device_id atl1_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATTANSIC_L1)},
 	/* required last entry */
 	{0,}
@@ -910,7 +914,10 @@ static s32 atl1_get_speed_and_duplex(struct atl1_hw *hw, u16 *speed, u16 *duplex
 		if (netif_msg_hw(adapter))
 			dev_dbg(&pdev->dev, "error getting speed\n");
 		return ATLX_ERR_PHY_SPEED;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (phy_data & MII_ATLX_PSSR_DPLX)
 		*duplex = FULL_DUPLEX;
@@ -1678,6 +1685,7 @@ static void atl1_inc_smb(struct atl1_adapter *adapter)
 	struct net_device *netdev = adapter->netdev;
 	struct stats_msg_block *smb = adapter->smb.smb;
 
+<<<<<<< HEAD
 	/* Fill out the OS statistics structure */
 	adapter->soft_stats.rx_packets += smb->rx_ok;
 	adapter->soft_stats.tx_packets += smb->tx_ok;
@@ -1691,20 +1699,54 @@ static void atl1_inc_smb(struct atl1_adapter *adapter)
 	adapter->soft_stats.rx_errors += (smb->rx_frag + smb->rx_fcs_err +
 		smb->rx_len_err + smb->rx_sz_ov + smb->rx_rxf_ov +
 		smb->rx_rrd_ov + smb->rx_align_err);
+=======
+	u64 new_rx_errors = smb->rx_frag +
+			    smb->rx_fcs_err +
+			    smb->rx_len_err +
+			    smb->rx_sz_ov +
+			    smb->rx_rxf_ov +
+			    smb->rx_rrd_ov +
+			    smb->rx_align_err;
+	u64 new_tx_errors = smb->tx_late_col +
+			    smb->tx_abort_col +
+			    smb->tx_underrun +
+			    smb->tx_trunc;
+
+	/* Fill out the OS statistics structure */
+	adapter->soft_stats.rx_packets += smb->rx_ok + new_rx_errors;
+	adapter->soft_stats.tx_packets += smb->tx_ok + new_tx_errors;
+	adapter->soft_stats.rx_bytes += smb->rx_byte_cnt;
+	adapter->soft_stats.tx_bytes += smb->tx_byte_cnt;
+	adapter->soft_stats.multicast += smb->rx_mcast;
+	adapter->soft_stats.collisions += smb->tx_1_col +
+					  smb->tx_2_col +
+					  smb->tx_late_col +
+					  smb->tx_abort_col;
+
+	/* Rx Errors */
+	adapter->soft_stats.rx_errors += new_rx_errors;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adapter->soft_stats.rx_fifo_errors += smb->rx_rxf_ov;
 	adapter->soft_stats.rx_length_errors += smb->rx_len_err;
 	adapter->soft_stats.rx_crc_errors += smb->rx_fcs_err;
 	adapter->soft_stats.rx_frame_errors += smb->rx_align_err;
+<<<<<<< HEAD
 	adapter->soft_stats.rx_missed_errors += (smb->rx_rrd_ov +
 		smb->rx_rxf_ov);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	adapter->soft_stats.rx_pause += smb->rx_pause;
 	adapter->soft_stats.rx_rrd_ov += smb->rx_rrd_ov;
 	adapter->soft_stats.rx_trunc += smb->rx_sz_ov;
 
 	/* Tx Errors */
+<<<<<<< HEAD
 	adapter->soft_stats.tx_errors += (smb->tx_late_col +
 		smb->tx_abort_col + smb->tx_underrun + smb->tx_trunc);
+=======
+	adapter->soft_stats.tx_errors += new_tx_errors;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adapter->soft_stats.tx_fifo_errors += smb->tx_underrun;
 	adapter->soft_stats.tx_aborted_errors += smb->tx_abort_col;
 	adapter->soft_stats.tx_window_errors += smb->tx_late_col;
@@ -1718,23 +1760,33 @@ static void atl1_inc_smb(struct atl1_adapter *adapter)
 	adapter->soft_stats.tx_trunc += smb->tx_trunc;
 	adapter->soft_stats.tx_pause += smb->tx_pause;
 
+<<<<<<< HEAD
 	netdev->stats.rx_packets = adapter->soft_stats.rx_packets;
 	netdev->stats.tx_packets = adapter->soft_stats.tx_packets;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev->stats.rx_bytes = adapter->soft_stats.rx_bytes;
 	netdev->stats.tx_bytes = adapter->soft_stats.tx_bytes;
 	netdev->stats.multicast = adapter->soft_stats.multicast;
 	netdev->stats.collisions = adapter->soft_stats.collisions;
 	netdev->stats.rx_errors = adapter->soft_stats.rx_errors;
+<<<<<<< HEAD
 	netdev->stats.rx_over_errors =
 		adapter->soft_stats.rx_missed_errors;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev->stats.rx_length_errors =
 		adapter->soft_stats.rx_length_errors;
 	netdev->stats.rx_crc_errors = adapter->soft_stats.rx_crc_errors;
 	netdev->stats.rx_frame_errors =
 		adapter->soft_stats.rx_frame_errors;
 	netdev->stats.rx_fifo_errors = adapter->soft_stats.rx_fifo_errors;
+<<<<<<< HEAD
 	netdev->stats.rx_missed_errors =
 		adapter->soft_stats.rx_missed_errors;
+=======
+	netdev->stats.rx_dropped = adapter->soft_stats.rx_rrd_ov;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev->stats.tx_errors = adapter->soft_stats.tx_errors;
 	netdev->stats.tx_fifo_errors = adapter->soft_stats.tx_fifo_errors;
 	netdev->stats.tx_aborted_errors =
@@ -1743,6 +1795,12 @@ static void atl1_inc_smb(struct atl1_adapter *adapter)
 		adapter->soft_stats.tx_window_errors;
 	netdev->stats.tx_carrier_errors =
 		adapter->soft_stats.tx_carrier_errors;
+<<<<<<< HEAD
+=======
+
+	netdev->stats.rx_packets = adapter->soft_stats.rx_packets;
+	netdev->stats.tx_packets = adapter->soft_stats.tx_packets;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void atl1_update_mailbox(struct atl1_adapter *adapter)
@@ -1872,7 +1930,11 @@ static u16 atl1_alloc_rx_buffers(struct atl1_adapter *adapter)
 						adapter->rx_buffer_len);
 		if (unlikely(!skb)) {
 			/* Better luck next round */
+<<<<<<< HEAD
 			adapter->netdev->stats.rx_dropped++;
+=======
+			adapter->soft_stats.rx_dropped++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 
@@ -2111,6 +2173,7 @@ static u16 atl1_tpd_avail(struct atl1_tpd_ring *tpd_ring)
 }
 
 static int atl1_tso(struct atl1_adapter *adapter, struct sk_buff *skb,
+<<<<<<< HEAD
 	struct tx_packet_desc *ptpd)
 {
 	u8 hdr_len, ip_off;
@@ -2123,6 +2186,19 @@ static int atl1_tso(struct atl1_adapter *adapter, struct sk_buff *skb,
 			if (unlikely(err))
 				return -1;
 		}
+=======
+		    struct tx_packet_desc *ptpd)
+{
+	u8 hdr_len, ip_off;
+	u32 real_len;
+
+	if (skb_shinfo(skb)->gso_size) {
+		int err;
+
+		err = skb_cow_head(skb, 0);
+		if (err < 0)
+			return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (skb->protocol == htons(ETH_P_IP)) {
 			struct iphdr *iph = ip_hdr(skb);
@@ -2168,7 +2244,11 @@ static int atl1_tso(struct atl1_adapter *adapter, struct sk_buff *skb,
 			return 3;
 		}
 	}
+<<<<<<< HEAD
 	return false;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int atl1_tx_csum(struct atl1_adapter *adapter, struct sk_buff *skb,
@@ -2410,8 +2490,13 @@ static netdev_tx_t atl1_xmit_frame(struct sk_buff *skb,
 		(u16) atomic_read(&tpd_ring->next_to_use));
 	memset(ptpd, 0, sizeof(struct tx_packet_desc));
 
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		vlan_tag = vlan_tx_tag_get(skb);
+=======
+	if (skb_vlan_tag_present(skb)) {
+		vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		vlan_tag = (vlan_tag << 4) | (vlan_tag >> 13) |
 			((vlan_tag >> 9) & 0x8);
 		ptpd->word3 |= 1 << TPD_INS_VL_TAG_SHIFT;
@@ -3122,7 +3207,12 @@ static void atl1_remove(struct pci_dev *pdev)
 	 * from the BIOS during POST.  If we've been messing with the MAC
 	 * address, we need to save the permanent one.
 	 */
+<<<<<<< HEAD
 	if (memcmp(adapter->hw.mac_addr, adapter->hw.perm_mac_addr, ETH_ALEN)) {
+=======
+	if (!ether_addr_equal_unaligned(adapter->hw.mac_addr,
+					adapter->hw.perm_mac_addr)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(adapter->hw.mac_addr, adapter->hw.perm_mac_addr,
 			ETH_ALEN);
 		atl1_set_mac_addr(&adapter->hw);
@@ -3145,6 +3235,7 @@ static struct pci_driver atl1_driver = {
 	.driver.pm = &atl1_pm_ops,
 };
 
+<<<<<<< HEAD
 /**
  * atl1_exit_module - Driver Exit Cleanup Routine
  *
@@ -3170,6 +3261,8 @@ static int __init atl1_init_module(void)
 module_init(atl1_init_module);
 module_exit(atl1_exit_module);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct atl1_stats {
 	char stat_string[ETH_GSTRING_LEN];
 	int sizeof_stat;
@@ -3276,8 +3369,13 @@ static int atl1_get_settings(struct net_device *netdev,
 		else
 			ecmd->duplex = DUPLEX_HALF;
 	} else {
+<<<<<<< HEAD
 		ethtool_cmd_speed_set(ecmd, -1);
 		ecmd->duplex = -1;
+=======
+		ethtool_cmd_speed_set(ecmd, SPEED_UNKNOWN);
+		ecmd->duplex = DUPLEX_UNKNOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (hw->media_type == MEDIA_TYPE_AUTO_SENSOR ||
 	    hw->media_type == MEDIA_TYPE_1000M_FULL)
@@ -3407,7 +3505,10 @@ static void atl1_get_drvinfo(struct net_device *netdev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->eedump_len = ATL1_EEDUMP_LEN;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void atl1_get_wol(struct net_device *netdev,
@@ -3705,3 +3806,8 @@ static const struct ethtool_ops atl1_ethtool_ops = {
 	.get_ethtool_stats	= atl1_get_ethtool_stats,
 	.get_sset_count		= atl1_get_sset_count,
 };
+<<<<<<< HEAD
+=======
+
+module_pci_driver(atl1_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

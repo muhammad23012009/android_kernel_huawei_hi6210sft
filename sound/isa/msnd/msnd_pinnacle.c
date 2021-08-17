@@ -82,10 +82,17 @@
 
 static void set_default_audio_parameters(struct snd_msnd *chip)
 {
+<<<<<<< HEAD
 	chip->play_sample_size = DEFSAMPLESIZE;
 	chip->play_sample_rate = DEFSAMPLERATE;
 	chip->play_channels = DEFCHANNELS;
 	chip->capture_sample_size = DEFSAMPLESIZE;
+=======
+	chip->play_sample_size = snd_pcm_format_width(DEFSAMPLESIZE);
+	chip->play_sample_rate = DEFSAMPLERATE;
+	chip->play_channels = DEFCHANNELS;
+	chip->capture_sample_size = snd_pcm_format_width(DEFSAMPLESIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->capture_sample_rate = DEFSAMPLERATE;
 	chip->capture_channels = DEFCHANNELS;
 }
@@ -170,11 +177,16 @@ static irqreturn_t snd_msnd_interrupt(int irq, void *dev_id)
 {
 	struct snd_msnd *chip = dev_id;
 	void *pwDSPQData = chip->mappedbase + DSPQ_DATA_BUFF;
+<<<<<<< HEAD
+=======
+	u16 head, tail, size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Send ack to DSP */
 	/* inb(chip->io + HP_RXL); */
 
 	/* Evaluate queued DSP messages */
+<<<<<<< HEAD
 	while (readw(chip->DSPQ + JQS_wTail) != readw(chip->DSPQ + JQS_wHead)) {
 		u16 wTmp;
 
@@ -187,6 +199,20 @@ static irqreturn_t snd_msnd_interrupt(int irq, void *dev_id)
 		else
 			writew(wTmp, chip->DSPQ + JQS_wHead);
 	}
+=======
+	head = readw(chip->DSPQ + JQS_wHead);
+	tail = readw(chip->DSPQ + JQS_wTail);
+	size = readw(chip->DSPQ + JQS_wSize);
+	if (head > size || tail > size)
+		goto out;
+	while (head != tail) {
+		snd_msnd_eval_dsp_msg(chip, readw(pwDSPQData + 2 * head));
+		if (++head > size)
+			head = 0;
+		writew(head, chip->DSPQ + JQS_wHead);
+	}
+ out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Send ack to DSP */
 	inb(chip->io + HP_RXL);
 	return IRQ_HANDLED;
@@ -582,7 +608,11 @@ static int snd_msnd_attach(struct snd_card *card)
 	if (err < 0)
 		goto err_release_region;
 
+<<<<<<< HEAD
 	err = snd_msnd_pcm(card, 0, NULL);
+=======
+	err = snd_msnd_pcm(card, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 		printk(KERN_ERR LOGNAME ": error creating new PCM device\n");
 		goto err_release_region;
@@ -627,8 +657,12 @@ static int snd_msnd_attach(struct snd_card *card)
 	return 0;
 
 err_release_region:
+<<<<<<< HEAD
 	if (chip->mappedbase)
 		iounmap(chip->mappedbase);
+=======
+	iounmap(chip->mappedbase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	release_mem_region(chip->base, BUFFSIZE);
 	release_region(chip->io, DSP_NUMIO);
 	free_irq(chip->irq, chip);
@@ -905,12 +939,20 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[idx], id[idx], THIS_MODULE,
 			      sizeof(struct snd_msnd), &card);
 	if (err < 0)
 		return err;
 
 	snd_card_set_dev(card, pdev);
+=======
+	err = snd_card_new(pdev, index[idx], id[idx], THIS_MODULE,
+			   sizeof(struct snd_msnd), &card);
+	if (err < 0)
+		return err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip = card->private_data;
 	chip->card = card;
 
@@ -1066,7 +1108,10 @@ cfg_error:
 static int snd_msnd_isa_remove(struct device *pdev, unsigned int dev)
 {
 	snd_msnd_unload(dev_get_drvdata(pdev));
+<<<<<<< HEAD
 	dev_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1123,14 +1168,23 @@ static int snd_msnd_pnp_detect(struct pnp_card_link *pcard,
 	 * Create a new ALSA sound card entry, in anticipation
 	 * of detecting our hardware ...
 	 */
+<<<<<<< HEAD
 	ret = snd_card_create(index[idx], id[idx], THIS_MODULE,
 			      sizeof(struct snd_msnd), &card);
+=======
+	ret = snd_card_new(&pcard->card->dev,
+			   index[idx], id[idx], THIS_MODULE,
+			   sizeof(struct snd_msnd), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
 	chip = card->private_data;
 	chip->card = card;
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pcard->card->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Read the correct parameters off the ISA PnP bus ...

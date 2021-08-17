@@ -54,7 +54,11 @@ static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
 	if (err)
 		goto acc_spi_read_error;
 
+<<<<<<< HEAD
 	memcpy(data, tb->rx_buf, len*sizeof(u8));
+=======
+	memcpy(data, tb->rx_buf, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&tb->buf_lock);
 	return len;
 
@@ -111,6 +115,10 @@ void st_sensors_spi_configure(struct iio_dev *indio_dev,
 	indio_dev->dev.parent = &spi->dev;
 	indio_dev->name = spi->modalias;
 
+<<<<<<< HEAD
+=======
+	sdata->dev = &spi->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sdata->tf = &st_sensors_tf_spi;
 	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
 }

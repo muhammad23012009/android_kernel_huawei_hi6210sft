@@ -20,7 +20,11 @@
 
 static struct dentry *uhci_debugfs_root;
 
+<<<<<<< HEAD
 #ifdef DEBUG
+=======
+#ifdef CONFIG_DYNAMIC_DEBUG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Handle REALLY large printks so we don't overflow buffers */
 static void lprintk(char *buf)
@@ -310,6 +314,7 @@ static int uhci_show_status(struct uhci_hcd *uhci, char *buf, int len)
 	unsigned short portsc1, portsc2;
 
 
+<<<<<<< HEAD
 	usbcmd    = uhci_readw(uhci, 0);
 	usbstat   = uhci_readw(uhci, 2);
 	usbint    = uhci_readw(uhci, 4);
@@ -318,6 +323,16 @@ static int uhci_show_status(struct uhci_hcd *uhci, char *buf, int len)
 	sof       = uhci_readb(uhci, 12);
 	portsc1   = uhci_readw(uhci, 16);
 	portsc2   = uhci_readw(uhci, 18);
+=======
+	usbcmd    = uhci_readw(uhci, USBCMD);
+	usbstat   = uhci_readw(uhci, USBSTS);
+	usbint    = uhci_readw(uhci, USBINTR);
+	usbfrnum  = uhci_readw(uhci, USBFRNUM);
+	flbaseadd = uhci_readl(uhci, USBFLBASEADD);
+	sof       = uhci_readb(uhci, USBSOF);
+	portsc1   = uhci_readw(uhci, USBPORTSC1);
+	portsc2   = uhci_readw(uhci, USBPORTSC2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	out += sprintf(out, "  usbcmd    =     %04x   %s%s%s%s%s%s%s%s\n",
 		usbcmd,
@@ -584,6 +599,7 @@ static int uhci_debug_open(struct inode *inode, struct file *file)
 
 static loff_t uhci_debug_lseek(struct file *file, loff_t off, int whence)
 {
+<<<<<<< HEAD
 	struct uhci_debug *up;
 	loff_t new = -1;
 
@@ -605,6 +621,10 @@ static loff_t uhci_debug_lseek(struct file *file, loff_t off, int whence)
 		return -EINVAL;
 
 	return (file->f_pos = new);
+=======
+	struct uhci_debug *up = file->private_data;
+	return no_seek_end_llseek_size(file, off, whence, up->size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t uhci_debug_read(struct file *file, char __user *buf,
@@ -635,7 +655,11 @@ static const struct file_operations uhci_debug_operations = {
 
 #endif	/* CONFIG_DEBUG_FS */
 
+<<<<<<< HEAD
 #else	/* DEBUG */
+=======
+#else	/* CONFIG_DYNAMIC_DEBUG*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void lprintk(char *buf)
 {}

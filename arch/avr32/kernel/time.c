@@ -18,6 +18,10 @@
 
 #include <mach/pm.h>
 
+<<<<<<< HEAD
+=======
+static bool disable_cpu_idle_poll;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static cycle_t read_cycle_count(struct clocksource *cs)
 {
@@ -59,7 +63,11 @@ static irqreturn_t timer_interrupt(int irq, void *dev_id)
 static struct irqaction timer_irqaction = {
 	.handler	= timer_interrupt,
 	/* Oprofile uses the same irq as the timer, so allow it to be shared */
+<<<<<<< HEAD
 	.flags		= IRQF_TIMER | IRQF_DISABLED | IRQF_SHARED,
+=======
+	.flags		= IRQF_TIMER | IRQF_SHARED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "avr32_comparator",
 };
 
@@ -80,6 +88,7 @@ static int comparator_next_event(unsigned long delta,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void comparator_mode(enum clock_event_mode mode,
 		struct clock_event_device *evdev)
 {
@@ -119,6 +128,47 @@ static struct clock_event_device comparator = {
 	.rating		= 50,
 	.set_next_event	= comparator_next_event,
 	.set_mode	= comparator_mode,
+=======
+static int comparator_shutdown(struct clock_event_device *evdev)
+{
+	pr_debug("%s: %s\n", __func__, evdev->name);
+	sysreg_write(COMPARE, 0);
+
+	if (disable_cpu_idle_poll) {
+		disable_cpu_idle_poll = false;
+		/*
+		 * Only disable idle poll if we have forced that
+		 * in a previous call.
+		 */
+		cpu_idle_poll_ctrl(false);
+	}
+	return 0;
+}
+
+static int comparator_set_oneshot(struct clock_event_device *evdev)
+{
+	pr_debug("%s: %s\n", __func__, evdev->name);
+
+	disable_cpu_idle_poll = true;
+	/*
+	 * If we're using the COUNT and COMPARE registers we
+	 * need to force idle poll.
+	 */
+	cpu_idle_poll_ctrl(true);
+
+	return 0;
+}
+
+static struct clock_event_device comparator = {
+	.name			= "avr32_comparator",
+	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.shift			= 16,
+	.rating			= 50,
+	.set_next_event		= comparator_next_event,
+	.set_state_shutdown	= comparator_shutdown,
+	.set_state_oneshot	= comparator_set_oneshot,
+	.tick_resume		= comparator_set_oneshot,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void read_persistent_clock(struct timespec *ts)

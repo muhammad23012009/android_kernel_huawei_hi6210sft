@@ -25,7 +25,11 @@
  * of doing things so that the old sfxload utility can be used.
  * Everything may change when there is an alsa way of doing things.
  */
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <sound/core.h>
@@ -1021,6 +1025,10 @@ load_guspatch(struct snd_sf_list *sflist, const char __user *data,
 			 data, count);
 		if (rc < 0) {
 			sf_sample_delete(sflist, sf, smp);
+<<<<<<< HEAD
+=======
+			kfree(zone);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return rc;
 		}
 		/* memory offset is updated after */

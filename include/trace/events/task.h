@@ -32,7 +32,11 @@ TRACE_EVENT(task_newtask,
 
 TRACE_EVENT(task_rename,
 
+<<<<<<< HEAD
 	TP_PROTO(struct task_struct *task, char *comm),
+=======
+	TP_PROTO(struct task_struct *task, const char *comm),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	TP_ARGS(task, comm),
 
@@ -46,7 +50,11 @@ TRACE_EVENT(task_rename,
 	TP_fast_assign(
 		__entry->pid = task->pid;
 		memcpy(entry->oldcomm, task->comm, TASK_COMM_LEN);
+<<<<<<< HEAD
 		memcpy(entry->newcomm, comm, TASK_COMM_LEN);
+=======
+		strlcpy(entry->newcomm, comm, TASK_COMM_LEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__entry->oom_score_adj = task->signal->oom_score_adj;
 	),
 

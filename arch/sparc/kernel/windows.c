@@ -10,8 +10,16 @@
 #include <linux/mm.h>
 #include <linux/smp.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
+=======
+#include <asm/cacheflush.h>
+#include <asm/uaccess.h>
+
+#include "kernel.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Do save's until all user register windows are out of the cpu. */
 void flush_user_windows(void)
 {

@@ -23,6 +23,7 @@
 #ifndef _PTP_CLASSIFY_H_
 #define _PTP_CLASSIFY_H_
 
+<<<<<<< HEAD
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
 #include <linux/ip.h>
@@ -32,6 +33,10 @@
 #else
 #include <netinet/in.h>
 #endif
+=======
+#include <linux/ip.h>
+#include <linux/skbuff.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PTP_CLASS_NONE  0x00 /* not a PTP event message */
 #define PTP_CLASS_V1    0x01 /* protocol version 1 */
@@ -39,20 +44,34 @@
 #define PTP_CLASS_VMASK 0x0f /* max protocol version is 15 */
 #define PTP_CLASS_IPV4  0x10 /* event in an IPV4 UDP packet */
 #define PTP_CLASS_IPV6  0x20 /* event in an IPV6 UDP packet */
+<<<<<<< HEAD
 #define PTP_CLASS_L2    0x30 /* event in a L2 packet */
 #define PTP_CLASS_VLAN  0x40 /* event in a VLAN tagged L2 packet */
 #define PTP_CLASS_PMASK 0xf0 /* mask for the packet type field */
 
 #define PTP_CLASS_V1_IPV4 (PTP_CLASS_V1 | PTP_CLASS_IPV4)
 #define PTP_CLASS_V1_IPV6 (PTP_CLASS_V1 | PTP_CLASS_IPV6) /*probably DNE*/
+=======
+#define PTP_CLASS_L2    0x40 /* event in a L2 packet */
+#define PTP_CLASS_PMASK	0x70 /* mask for the packet type field */
+#define PTP_CLASS_VLAN	0x80 /* event in a VLAN tagged packet */
+
+#define PTP_CLASS_V1_IPV4 (PTP_CLASS_V1 | PTP_CLASS_IPV4)
+#define PTP_CLASS_V1_IPV6 (PTP_CLASS_V1 | PTP_CLASS_IPV6) /* probably DNE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PTP_CLASS_V2_IPV4 (PTP_CLASS_V2 | PTP_CLASS_IPV4)
 #define PTP_CLASS_V2_IPV6 (PTP_CLASS_V2 | PTP_CLASS_IPV6)
 #define PTP_CLASS_V2_L2   (PTP_CLASS_V2 | PTP_CLASS_L2)
 #define PTP_CLASS_V2_VLAN (PTP_CLASS_V2 | PTP_CLASS_VLAN)
+<<<<<<< HEAD
+=======
+#define PTP_CLASS_L4      (PTP_CLASS_IPV4 | PTP_CLASS_IPV6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PTP_EV_PORT 319
 #define PTP_GEN_BIT 0x08 /* indicates general message, if set in message type */
 
+<<<<<<< HEAD
 #define OFF_ETYPE	12
 #define OFF_IHL		14
 #define OFF_FRAG	20
@@ -60,10 +79,13 @@
 #define OFF_NEXT	6
 #define OFF_UDP_DST	2
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
 #define OFF_PTP_SEQUENCE_ID	30
 #define OFF_PTP_CONTROL		32 /* PTPv1 only */
 
+<<<<<<< HEAD
 #define IPV4_HLEN(data) (((struct iphdr *)(data + OFF_IHL))->ihl << 2)
 
 #define IP6_HLEN	40
@@ -138,3 +160,31 @@ static inline int ptp_filter_init(struct sock_filter *f, int len)
 /*L6x*/	{OP_RETK,	0,   0, PTP_CLASS_NONE		},
 
 #endif
+=======
+/* Below defines should actually be removed at some point in time. */
+#define IP6_HLEN	40
+#define UDP_HLEN	8
+#define OFF_IHL		14
+#define IPV4_HLEN(data) (((struct iphdr *)(data + OFF_IHL))->ihl << 2)
+
+#if defined(CONFIG_NET_PTP_CLASSIFY)
+/**
+ * ptp_classify_raw - classify a PTP packet
+ * @skb: buffer
+ *
+ * Runs a minimal BPF dissector to classify a network packet to
+ * determine the PTP class. In case the skb does not contain any
+ * PTP protocol data, PTP_CLASS_NONE will be returned, otherwise
+ * PTP_CLASS_V1_IPV{4,6}, PTP_CLASS_V2_IPV{4,6} or
+ * PTP_CLASS_V2_{L2,VLAN}, depending on the packet content.
+ */
+unsigned int ptp_classify_raw(const struct sk_buff *skb);
+
+void __init ptp_classifier_init(void);
+#else
+static inline void ptp_classifier_init(void)
+{
+}
+#endif
+#endif /* _PTP_CLASSIFY_H_ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

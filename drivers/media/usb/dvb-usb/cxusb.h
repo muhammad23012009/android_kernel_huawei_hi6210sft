@@ -28,8 +28,20 @@
 #define CMD_ANALOG        0x50
 #define CMD_DIGITAL       0x51
 
+<<<<<<< HEAD
 struct cxusb_state {
 	u8 gpio_write_state[3];
+=======
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  80
+
+struct cxusb_state {
+	u8 gpio_write_state[3];
+	struct i2c_client *i2c_client_demod;
+	struct i2c_client *i2c_client_tuner;
+
+	unsigned char data[MAX_XFER_SIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif

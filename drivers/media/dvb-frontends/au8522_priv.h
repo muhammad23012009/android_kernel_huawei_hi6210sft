@@ -30,6 +30,10 @@
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-mc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 #include "au8522.h"
@@ -37,6 +41,10 @@
 
 #define AU8522_ANALOG_MODE 0
 #define AU8522_DIGITAL_MODE 1
+<<<<<<< HEAD
+=======
+#define AU8522_SUSPEND_MODE 2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct au8522_state {
 	struct i2c_client *c;
@@ -49,12 +57,20 @@ struct au8522_state {
 	struct list_head hybrid_tuner_instance_list;
 
 	/* configuration settings */
+<<<<<<< HEAD
 	const struct au8522_config *config;
+=======
+	struct au8522_config config;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct dvb_frontend frontend;
 
 	u32 current_frequency;
+<<<<<<< HEAD
 	fe_modulation_t current_modulation;
+=======
+	enum fe_modulation current_modulation;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u32 fe_status;
 	unsigned int led_state;
@@ -67,6 +83,13 @@ struct au8522_state {
 	u32 id;
 	u32 rev;
 	struct v4l2_ctrl_handler hdl;
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_MEDIA_CONTROLLER
+	struct media_pad pads[DEMOD_NUM_PADS];
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* These are routines shared by both the VSB/QAM demodulator and the analog
@@ -347,6 +370,10 @@ int au8522_led_ctrl(struct au8522_state *state, int led);
 /* Format control 2 */
 #define AU8522_TVDEC_FORMAT_CTRL2_REG062H_STD_AUTODETECT	0x00
 #define AU8522_TVDEC_FORMAT_CTRL2_REG062H_STD_NTSC		0x01
+<<<<<<< HEAD
+=======
+#define AU8522_TVDEC_FORMAT_CTRL2_REG062H_STD_PAL_M		0x02
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #define AU8522_INPUT_CONTROL_REG081H_ATSC               	0xC4

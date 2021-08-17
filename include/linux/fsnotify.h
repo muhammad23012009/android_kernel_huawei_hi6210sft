@@ -16,6 +16,7 @@
 #include <linux/slab.h>
 #include <linux/bug.h>
 
+<<<<<<< HEAD
 /*
  * fsnotify_d_instantiate - instantiate a dentry for inode
  */
@@ -25,6 +26,8 @@ static inline void fsnotify_d_instantiate(struct dentry *dentry,
 	__fsnotify_d_instantiate(dentry, inode);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Notify this dentry's parent about a child's events. */
 static inline int fsnotify_parent(struct path *path, struct dentry *dentry, __u32 mask)
 {
@@ -38,6 +41,13 @@ static inline int fsnotify_parent(struct path *path, struct dentry *dentry, __u3
 static inline int fsnotify_perm(struct file *file, int mask)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
+=======
+	/*
+	 * Do not use file_inode() here or anywhere in this file to get the
+	 * inode.  That would break *notity on overlayfs.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct inode *inode = path->dentry->d_inode;
 	__u32 fsnotify_mask = 0;
 	int ret;
@@ -61,6 +71,7 @@ static inline int fsnotify_perm(struct file *file, int mask)
 }
 
 /*
+<<<<<<< HEAD
  * fsnotify_d_move - dentry has been moved
  */
 static inline void fsnotify_d_move(struct dentry *dentry)
@@ -73,6 +84,8 @@ static inline void fsnotify_d_move(struct dentry *dentry)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * fsnotify_link_count - inode's link count changed
  */
 static inline void fsnotify_link_count(struct inode *inode)
@@ -246,7 +259,11 @@ static inline void fsnotify_open(struct file *file)
 static inline void fsnotify_close(struct file *file)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
 	struct inode *inode = file_inode(file);
+=======
+	struct inode *inode = path->dentry->d_inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fmode_t mode = file->f_mode;
 	__u32 mask = (mode & FMODE_WRITE) ? FS_CLOSE_WRITE : FS_CLOSE_NOWRITE;
 
@@ -310,6 +327,7 @@ static inline void fsnotify_change(struct dentry *dentry, unsigned int ia_valid)
 	}
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_FSNOTIFY)	/* notify helpers */
 
 /*
@@ -341,4 +359,6 @@ static inline void fsnotify_oldname_free(const unsigned char *old_name)
 
 #endif	/*  CONFIG_FSNOTIFY */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* _LINUX_FS_NOTIFY_H */

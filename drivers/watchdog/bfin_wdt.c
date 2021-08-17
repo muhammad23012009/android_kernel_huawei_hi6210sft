@@ -407,7 +407,10 @@ static struct platform_driver bfin_wdt_driver = {
 	.resume    = bfin_wdt_resume,
 	.driver    = {
 		.name  = WATCHDOG_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -465,7 +468,10 @@ module_exit(bfin_wdt_exit);
 MODULE_AUTHOR("Michele d'Amico, Mike Frysinger <vapier@gentoo.org>");
 MODULE_DESCRIPTION("Blackfin Watchdog Device Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_param(timeout, uint, 0);
 MODULE_PARM_DESC(timeout,

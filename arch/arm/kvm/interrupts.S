@@ -17,6 +17,7 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <linux/const.h>
 #include <asm/unified.h>
 #include <asm/page.h>
@@ -208,11 +209,20 @@ after_vfp_restore:
 #endif /* CONFIG_CPU_ENDIAN_BE8 */
 	bx	lr			@ return to IOCTL
 
+=======
+
+	.text
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /********************************************************************
  *  Call function in Hyp mode
  *
  *
+<<<<<<< HEAD
  * u64 kvm_call_hyp(void *hypfn, ...);
+=======
+ * unsigned long kvm_call_hyp(void *hypfn, ...);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This is not really a variadic function in the classic C-way and care must
  * be taken when calling this to ensure parameters are passed in registers
@@ -223,7 +233,11 @@ after_vfp_restore:
  * passed as r0, r1, and r2 (a maximum of 3 arguments in addition to the
  * function pointer can be passed).  The function being called must be mapped
  * in Hyp mode (see init_hyp_mode in arch/arm/kvm/arm.c).  Return values are
+<<<<<<< HEAD
  * passed in r0 and r1.
+=======
+ * passed in r0 (strictly 32bit).
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * A function pointer with a value of 0xffffffff has a special meaning,
  * and is used to implement __hyp_get_vectors in the same way as in
@@ -237,6 +251,7 @@ after_vfp_restore:
 ENTRY(kvm_call_hyp)
 	hvc	#0
 	bx	lr
+<<<<<<< HEAD
 
 /********************************************************************
  * Hypervisor exception vector and handlers
@@ -513,3 +528,6 @@ dabt_die_str:
 	.ascii	"unexpected data abort in Hyp mode at: %#08x\n"
 svc_die_str:
 	.ascii	"unexpected HVC/SVC trap in Hyp mode at: %#08x\n"
+=======
+ENDPROC(kvm_call_hyp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

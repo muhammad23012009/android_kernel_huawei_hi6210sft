@@ -30,13 +30,21 @@ static void v2r1_mem2diskdqb(void *dp, struct dquot *dquot);
 static void v2r1_disk2memdqb(struct dquot *dquot, void *dp);
 static int v2r1_is_id(void *dp, struct dquot *dquot);
 
+<<<<<<< HEAD
 static struct qtree_fmt_operations v2r0_qtree_ops = {
+=======
+static const struct qtree_fmt_operations v2r0_qtree_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mem2disk_dqblk = v2r0_mem2diskdqb,
 	.disk2mem_dqblk = v2r0_disk2memdqb,
 	.is_id = v2r0_is_id,
 };
 
+<<<<<<< HEAD
 static struct qtree_fmt_operations v2r1_qtree_ops = {
+=======
+static const struct qtree_fmt_operations v2r1_qtree_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mem2disk_dqblk = v2r1_mem2diskdqb,
 	.disk2mem_dqblk = v2r1_disk2memdqb,
 	.is_id = v2r1_is_id,
@@ -117,6 +125,7 @@ static int v2_read_file_info(struct super_block *sb, int type)
 	qinfo = info->dqi_priv;
 	if (version == 0) {
 		/* limits are stored as unsigned 32-bit data */
+<<<<<<< HEAD
 		info->dqi_maxblimit = 0xffffffff;
 		info->dqi_maxilimit = 0xffffffff;
 	} else {
@@ -127,6 +136,23 @@ static int v2_read_file_info(struct super_block *sb, int type)
 	info->dqi_bgrace = le32_to_cpu(dinfo.dqi_bgrace);
 	info->dqi_igrace = le32_to_cpu(dinfo.dqi_igrace);
 	info->dqi_flags = le32_to_cpu(dinfo.dqi_flags);
+=======
+		info->dqi_max_spc_limit = 0xffffffffLL << QUOTABLOCK_BITS;
+		info->dqi_max_ino_limit = 0xffffffff;
+	} else {
+		/*
+		 * Used space is stored as unsigned 64-bit value in bytes but
+		 * quota core supports only signed 64-bit values so use that
+		 * as a limit
+		 */
+		info->dqi_max_spc_limit = 0x7fffffffffffffffLL; /* 2^63-1 */
+		info->dqi_max_ino_limit = 0x7fffffffffffffffLL;
+	}
+	info->dqi_bgrace = le32_to_cpu(dinfo.dqi_bgrace);
+	info->dqi_igrace = le32_to_cpu(dinfo.dqi_igrace);
+	/* No flags currently supported */
+	info->dqi_flags = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	qinfo->dqi_sb = sb;
 	qinfo->dqi_type = type;
 	qinfo->dqi_blocks = le32_to_cpu(dinfo.dqi_blocks);
@@ -157,7 +183,12 @@ static int v2_write_file_info(struct super_block *sb, int type)
 	info->dqi_flags &= ~DQF_INFO_DIRTY;
 	dinfo.dqi_bgrace = cpu_to_le32(info->dqi_bgrace);
 	dinfo.dqi_igrace = cpu_to_le32(info->dqi_igrace);
+<<<<<<< HEAD
 	dinfo.dqi_flags = cpu_to_le32(info->dqi_flags & DQF_MASK);
+=======
+	/* No flags currently supported */
+	dinfo.dqi_flags = cpu_to_le32(0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&dq_data_lock);
 	dinfo.dqi_blocks = cpu_to_le32(qinfo->dqi_blocks);
 	dinfo.dqi_free_blk = cpu_to_le32(qinfo->dqi_free_blk);
@@ -260,6 +291,10 @@ static void v2r1_mem2diskdqb(void *dp, struct dquot *dquot)
 	d->dqb_curspace = cpu_to_le64(m->dqb_curspace);
 	d->dqb_btime = cpu_to_le64(m->dqb_btime);
 	d->dqb_id = cpu_to_le32(from_kqid(&init_user_ns, dquot->dq_id));
+<<<<<<< HEAD
+=======
+	d->dqb_pad = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (qtree_entry_unused(info, dp))
 		d->dqb_itime = cpu_to_le64(1);
 }
@@ -298,6 +333,14 @@ static int v2_free_file_info(struct super_block *sb, int type)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int v2_get_next_id(struct super_block *sb, struct kqid *qid)
+{
+	return qtree_get_next_id(sb_dqinfo(sb, qid->type)->dqi_priv, qid);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct quota_format_ops v2_format_ops = {
 	.check_quota_file	= v2_check_quota_file,
 	.read_file_info		= v2_read_file_info,
@@ -306,6 +349,10 @@ static const struct quota_format_ops v2_format_ops = {
 	.read_dqblk		= v2_read_dquot,
 	.commit_dqblk		= v2_write_dquot,
 	.release_dqblk		= v2_release_dquot,
+<<<<<<< HEAD
+=======
+	.get_next_id		= v2_get_next_id,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct quota_format_type v2r0_quota_format = {

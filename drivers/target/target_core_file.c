@@ -3,7 +3,11 @@
  *
  * This file contains the Storage Engine <-> FILEIO transport specific functions
  *
+<<<<<<< HEAD
  * (c) Copyright 2005-2012 RisingTide Systems LLC.
+=======
+ * (c) Copyright 2005-2013 Datera, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Nicholas A. Bellinger <nab@kernel.org>
  *
@@ -30,9 +34,15 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/falloc.h>
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
+=======
+#include <linux/vmalloc.h>
+#include <linux/falloc.h>
+#include <scsi/scsi_proto.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/unaligned.h>
 
 #include <target/target_core_base.h>
@@ -45,10 +55,13 @@ static inline struct fd_dev *FD_DEV(struct se_device *dev)
 	return container_of(dev, struct fd_dev, dev);
 }
 
+<<<<<<< HEAD
 /*	fd_attach_hba(): (Part of se_subsystem_api_t template)
  *
  *
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int fd_attach_hba(struct se_hba *hba, u32 host_id)
 {
 	struct fd_host *fd_host;
@@ -65,7 +78,11 @@ static int fd_attach_hba(struct se_hba *hba, u32 host_id)
 
 	pr_debug("CORE_HBA[%d] - TCM FILEIO HBA Driver %s on Generic"
 		" Target Core Stack %s\n", hba->hba_id, FD_VERSION,
+<<<<<<< HEAD
 		TARGET_CORE_MOD_VERSION);
+=======
+		TARGET_CORE_VERSION);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_debug("CORE_HBA[%d] - Attached FILEIO HBA: %u to Generic\n",
 		hba->hba_id, fd_host->fd_host_id);
 
@@ -164,6 +181,7 @@ static int fd_configure_device(struct se_device *dev)
 			" block_device blocks: %llu logical_block_size: %d\n",
 			dev_size, div_u64(dev_size, fd_dev->fd_block_size),
 			fd_dev->fd_block_size);
+<<<<<<< HEAD
 		/*
 		 * Check if the underlying struct block_device request_queue supports
 		 * the QUEUE_FLAG_DISCARD bit for UNMAP/WRITE_SAME in SCSI + TRIM
@@ -183,6 +201,12 @@ static int fd_configure_device(struct se_device *dev)
 			pr_debug("IFILE: BLOCK Discard support available,"
 					" disabled by default\n");
 		}
+=======
+
+		if (target_configure_unmap_from_queue(&dev->dev_attrib, q))
+			pr_debug("IFILE: BLOCK Discard support available,"
+				 " disabled by default\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Enable write same emulation for IBLOCK and use 0xFFFF as
 		 * the smaller WRITE_SAME(10) only has a two-byte block count.
@@ -245,6 +269,17 @@ fail:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void fd_dev_call_rcu(struct rcu_head *p)
+{
+	struct se_device *dev = container_of(p, struct se_device, rcu_head);
+	struct fd_dev *fd_dev = FD_DEV(dev);
+
+	kfree(fd_dev);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void fd_free_device(struct se_device *dev)
 {
 	struct fd_dev *fd_dev = FD_DEV(dev);
@@ -253,6 +288,7 @@ static void fd_free_device(struct se_device *dev)
 		filp_close(fd_dev->fd_file, NULL);
 		fd_dev->fd_file = NULL;
 	}
+<<<<<<< HEAD
 
 	kfree(fd_dev);
 }
@@ -271,11 +307,30 @@ static int fd_do_rw(struct se_cmd *cmd, struct scatterlist *sgl,
 
 	iov = kzalloc(sizeof(struct iovec) * sgl_nents, GFP_KERNEL);
 	if (!iov) {
+=======
+	call_rcu(&dev->rcu_head, fd_dev_call_rcu);
+}
+
+static int fd_do_rw(struct se_cmd *cmd, struct file *fd,
+		    u32 block_size, struct scatterlist *sgl,
+		    u32 sgl_nents, u32 data_length, int is_write)
+{
+	struct scatterlist *sg;
+	struct iov_iter iter;
+	struct bio_vec *bvec;
+	ssize_t len = 0;
+	loff_t pos = (cmd->t_task_lba * block_size);
+	int ret = 0, i;
+
+	bvec = kcalloc(sgl_nents, sizeof(struct bio_vec), GFP_KERNEL);
+	if (!bvec) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("Unable to allocate fd_do_readv iov[]\n");
 		return -ENOMEM;
 	}
 
 	for_each_sg(sgl, sg, sgl_nents, i) {
+<<<<<<< HEAD
 		iov[i].iov_len = sg->length;
 		iov[i].iov_base = kmap(sg_page(sg)) + sg->offset;
 	}
@@ -299,6 +354,26 @@ static int fd_do_rw(struct se_cmd *cmd, struct scatterlist *sgl,
 		if (ret < 0 || ret != cmd->data_length) {
 			pr_err("%s() write returned %d\n", __func__, ret);
 			return (ret < 0 ? ret : -EINVAL);
+=======
+		bvec[i].bv_page = sg_page(sg);
+		bvec[i].bv_len = sg->length;
+		bvec[i].bv_offset = sg->offset;
+
+		len += sg->length;
+	}
+
+	iov_iter_bvec(&iter, ITER_BVEC, bvec, sgl_nents, len);
+	if (is_write)
+		ret = vfs_iter_write(fd, &iter, &pos);
+	else
+		ret = vfs_iter_read(fd, &iter, &pos);
+
+	if (is_write) {
+		if (ret < 0 || ret != data_length) {
+			pr_err("%s() write returned %d\n", __func__, ret);
+			if (ret >= 0)
+				ret = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else {
 		/*
@@ -307,21 +382,49 @@ static int fd_do_rw(struct se_cmd *cmd, struct scatterlist *sgl,
 		 * block_device.
 		 */
 		if (S_ISBLK(file_inode(fd)->i_mode)) {
+<<<<<<< HEAD
 			if (ret < 0 || ret != cmd->data_length) {
 				pr_err("%s() returned %d, expecting %u for "
 						"S_ISBLK\n", __func__, ret,
 						cmd->data_length);
 				return (ret < 0 ? ret : -EINVAL);
+=======
+			if (ret < 0 || ret != data_length) {
+				pr_err("%s() returned %d, expecting %u for "
+						"S_ISBLK\n", __func__, ret,
+						data_length);
+				if (ret >= 0)
+					ret = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		} else {
 			if (ret < 0) {
 				pr_err("%s() returned %d for non S_ISBLK\n",
 						__func__, ret);
+<<<<<<< HEAD
 				return ret;
 			}
 		}
 	}
 	return 1;
+=======
+			} else if (ret != data_length) {
+				/*
+				 * Short read case:
+				 * Probably some one truncate file under us.
+				 * We must explicitly zero sg-pages to prevent
+				 * expose uninizialized pages to userspace.
+				 */
+				if (ret < data_length)
+					ret += iov_iter_zero(data_length - ret, &iter);
+				else
+					ret = -EINVAL;
+			}
+		}
+	}
+	kfree(bvec);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static sense_reason_t
@@ -349,7 +452,11 @@ fd_execute_sync_cache(struct se_cmd *cmd)
 	} else {
 		start = cmd->t_task_lba * dev->dev_attrib.block_size;
 		if (cmd->data_length)
+<<<<<<< HEAD
 			end = start + cmd->data_length;
+=======
+			end = start + cmd->data_length - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			end = LLONG_MAX;
 	}
@@ -369,6 +476,7 @@ fd_execute_sync_cache(struct se_cmd *cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned char *
 fd_setup_write_same_buf(struct se_cmd *cmd, struct scatterlist *sg,
 		    unsigned int len)
@@ -408,11 +516,14 @@ fd_setup_write_same_buf(struct se_cmd *cmd, struct scatterlist *sg,
 	return buf;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static sense_reason_t
 fd_execute_write_same(struct se_cmd *cmd)
 {
 	struct se_device *se_dev = cmd->se_dev;
 	struct fd_dev *fd_dev = FD_DEV(se_dev);
+<<<<<<< HEAD
 	struct file *f = fd_dev->fd_file;
 	struct scatterlist *sg;
 	struct iovec *iov;
@@ -422,21 +533,45 @@ fd_execute_write_same(struct se_cmd *cmd)
 	unsigned int len, len_tmp, iov_num;
 	int i, rc;
 	unsigned char *buf;
+=======
+	loff_t pos = cmd->t_task_lba * se_dev->dev_attrib.block_size;
+	sector_t nolb = sbc_get_write_same_sectors(cmd);
+	struct iov_iter iter;
+	struct bio_vec *bvec;
+	unsigned int len = 0, i;
+	ssize_t ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!nolb) {
 		target_complete_cmd(cmd, SAM_STAT_GOOD);
 		return 0;
 	}
+<<<<<<< HEAD
 	sg = &cmd->t_data_sg[0];
 
 	if (cmd->t_data_nents > 1 ||
 	    sg->length != cmd->se_dev->dev_attrib.block_size) {
 		pr_err("WRITE_SAME: Illegal SGL t_data_nents: %u length: %u"
 			" block_size: %u\n", cmd->t_data_nents, sg->length,
+=======
+	if (cmd->prot_op) {
+		pr_err("WRITE_SAME: Protection information with FILEIO"
+		       " backends not supported\n");
+		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+	}
+
+	if (cmd->t_data_nents > 1 ||
+	    cmd->t_data_sg[0].length != cmd->se_dev->dev_attrib.block_size) {
+		pr_err("WRITE_SAME: Illegal SGL t_data_nents: %u length: %u"
+			" block_size: %u\n",
+			cmd->t_data_nents,
+			cmd->t_data_sg[0].length,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cmd->se_dev->dev_attrib.block_size);
 		return TCM_INVALID_CDB_FIELD;
 	}
 
+<<<<<<< HEAD
 	len = len_tmp = nolb * se_dev->dev_attrib.block_size;
 	iov_num = DIV_ROUND_UP(len, PAGE_SIZE);
 
@@ -490,6 +625,109 @@ fd_do_unmap(struct se_cmd *cmd, void *priv, sector_t lba, sector_t nolb)
 
 		ret = blkdev_issue_discard(bdev, lba,
 				nolb, GFP_KERNEL, 0);
+=======
+	bvec = kcalloc(nolb, sizeof(struct bio_vec), GFP_KERNEL);
+	if (!bvec)
+		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+
+	for (i = 0; i < nolb; i++) {
+		bvec[i].bv_page = sg_page(&cmd->t_data_sg[0]);
+		bvec[i].bv_len = cmd->t_data_sg[0].length;
+		bvec[i].bv_offset = cmd->t_data_sg[0].offset;
+
+		len += se_dev->dev_attrib.block_size;
+	}
+
+	iov_iter_bvec(&iter, ITER_BVEC, bvec, nolb, len);
+	ret = vfs_iter_write(fd_dev->fd_file, &iter, &pos);
+
+	kfree(bvec);
+	if (ret < 0 || ret != len) {
+		pr_err("vfs_iter_write() returned %zd for write same\n", ret);
+		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+	}
+
+	target_complete_cmd(cmd, SAM_STAT_GOOD);
+	return 0;
+}
+
+static int
+fd_do_prot_fill(struct se_device *se_dev, sector_t lba, sector_t nolb,
+		void *buf, size_t bufsize)
+{
+	struct fd_dev *fd_dev = FD_DEV(se_dev);
+	struct file *prot_fd = fd_dev->fd_prot_file;
+	sector_t prot_length, prot;
+	loff_t pos = lba * se_dev->prot_length;
+
+	if (!prot_fd) {
+		pr_err("Unable to locate fd_dev->fd_prot_file\n");
+		return -ENODEV;
+	}
+
+	prot_length = nolb * se_dev->prot_length;
+
+	for (prot = 0; prot < prot_length;) {
+		sector_t len = min_t(sector_t, bufsize, prot_length - prot);
+		ssize_t ret = kernel_write(prot_fd, buf, len, pos + prot);
+
+		if (ret != len) {
+			pr_err("vfs_write to prot file failed: %zd\n", ret);
+			return ret < 0 ? ret : -ENODEV;
+		}
+		prot += ret;
+	}
+
+	return 0;
+}
+
+static int
+fd_do_prot_unmap(struct se_cmd *cmd, sector_t lba, sector_t nolb)
+{
+	void *buf;
+	int rc;
+
+	buf = (void *)__get_free_page(GFP_KERNEL);
+	if (!buf) {
+		pr_err("Unable to allocate FILEIO prot buf\n");
+		return -ENOMEM;
+	}
+	memset(buf, 0xff, PAGE_SIZE);
+
+	rc = fd_do_prot_fill(cmd->se_dev, lba, nolb, buf, PAGE_SIZE);
+
+	free_page((unsigned long)buf);
+
+	return rc;
+}
+
+static sense_reason_t
+fd_execute_unmap(struct se_cmd *cmd, sector_t lba, sector_t nolb)
+{
+	struct file *file = FD_DEV(cmd->se_dev)->fd_file;
+	struct inode *inode = file->f_mapping->host;
+	int ret;
+
+	if (!nolb) {
+		return 0;
+	}
+
+	if (cmd->se_dev->dev_attrib.pi_prot_type) {
+		ret = fd_do_prot_unmap(cmd, lba, nolb);
+		if (ret)
+			return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+	}
+
+	if (S_ISBLK(inode->i_mode)) {
+		/* The backend is block device, use discard */
+		struct block_device *bdev = inode->i_bdev;
+		struct se_device *dev = cmd->se_dev;
+
+		ret = blkdev_issue_discard(bdev,
+					   target_to_linux_sector(dev, lba),
+					   target_to_linux_sector(dev,  nolb),
+					   GFP_KERNEL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0) {
 			pr_warn("FILEIO: blkdev_issue_discard() failed: %d\n",
 				ret);
@@ -516,6 +754,7 @@ fd_do_unmap(struct se_cmd *cmd, void *priv, sector_t lba, sector_t nolb)
 }
 
 static sense_reason_t
+<<<<<<< HEAD
 fd_execute_write_same_unmap(struct se_cmd *cmd)
 {
 	struct se_device *se_dev = cmd->se_dev;
@@ -553,6 +792,16 @@ fd_execute_rw(struct se_cmd *cmd)
 	u32 sgl_nents = cmd->t_data_nents;
 	enum dma_data_direction data_direction = cmd->data_direction;
 	struct se_device *dev = cmd->se_dev;
+=======
+fd_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
+	      enum dma_data_direction data_direction)
+{
+	struct se_device *dev = cmd->se_dev;
+	struct fd_dev *fd_dev = FD_DEV(dev);
+	struct file *file = fd_dev->fd_file;
+	struct file *pfile = fd_dev->fd_prot_file;
+	sense_reason_t rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 	/*
 	 * We are currently limited by the number of iovecs (2048) per
@@ -560,7 +809,11 @@ fd_execute_rw(struct se_cmd *cmd)
 	 */
 	if (cmd->data_length > FD_MAX_BYTES) {
 		pr_err("FILEIO: Not able to process I/O of %u bytes due to"
+<<<<<<< HEAD
 		       "FD_MAX_BYTES: %u iovec count limitiation\n",
+=======
+		       "FD_MAX_BYTES: %u iovec count limitation\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cmd->data_length, FD_MAX_BYTES);
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
@@ -569,6 +822,7 @@ fd_execute_rw(struct se_cmd *cmd)
 	 * physical memory addresses to struct iovec virtual memory.
 	 */
 	if (data_direction == DMA_FROM_DEVICE) {
+<<<<<<< HEAD
 		ret = fd_do_rw(cmd, sgl, sgl_nents, 0);
 	} else {
 		ret = fd_do_rw(cmd, sgl, sgl_nents, 1);
@@ -587,13 +841,77 @@ fd_execute_rw(struct se_cmd *cmd)
 
 			vfs_fsync_range(fd_dev->fd_file, start, end, 1);
 		}
+=======
+		if (cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			ret = fd_do_rw(cmd, pfile, dev->prot_length,
+				       cmd->t_prot_sg, cmd->t_prot_nents,
+				       cmd->prot_length, 0);
+			if (ret < 0)
+				return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+		}
+
+		ret = fd_do_rw(cmd, file, dev->dev_attrib.block_size,
+			       sgl, sgl_nents, cmd->data_length, 0);
+
+		if (ret > 0 && cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			u32 sectors = cmd->data_length >>
+					ilog2(dev->dev_attrib.block_size);
+
+			rc = sbc_dif_verify(cmd, cmd->t_task_lba, sectors,
+					    0, cmd->t_prot_sg, 0);
+			if (rc)
+				return rc;
+		}
+	} else {
+		if (cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			u32 sectors = cmd->data_length >>
+					ilog2(dev->dev_attrib.block_size);
+
+			rc = sbc_dif_verify(cmd, cmd->t_task_lba, sectors,
+					    0, cmd->t_prot_sg, 0);
+			if (rc)
+				return rc;
+		}
+
+		ret = fd_do_rw(cmd, file, dev->dev_attrib.block_size,
+			       sgl, sgl_nents, cmd->data_length, 1);
+		/*
+		 * Perform implicit vfs_fsync_range() for fd_do_writev() ops
+		 * for SCSI WRITEs with Forced Unit Access (FUA) set.
+		 * Allow this to happen independent of WCE=0 setting.
+		 */
+		if (ret > 0 && (cmd->se_cmd_flags & SCF_FUA)) {
+			loff_t start = cmd->t_task_lba *
+				dev->dev_attrib.block_size;
+			loff_t end;
+
+			if (cmd->data_length)
+				end = start + cmd->data_length - 1;
+			else
+				end = LLONG_MAX;
+
+			vfs_fsync_range(fd_dev->fd_file, start, end, 1);
+		}
+
+		if (ret > 0 && cmd->prot_type && dev->dev_attrib.pi_prot_type) {
+			ret = fd_do_rw(cmd, pfile, dev->prot_length,
+				       cmd->t_prot_sg, cmd->t_prot_nents,
+				       cmd->prot_length, 1);
+			if (ret < 0)
+				return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (ret < 0)
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 
+<<<<<<< HEAD
 	if (ret)
 		target_complete_cmd(cmd, SAM_STAT_GOOD);
+=======
+	target_complete_cmd(cmd, SAM_STAT_GOOD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -644,10 +962,17 @@ static ssize_t fd_set_configfs_dev_params(struct se_device *dev,
 				ret = -ENOMEM;
 				break;
 			}
+<<<<<<< HEAD
 			ret = strict_strtoull(arg_p, 0, &fd_dev->fd_dev_size);
 			kfree(arg_p);
 			if (ret < 0) {
 				pr_err("strict_strtoull() failed for"
+=======
+			ret = kstrtoull(arg_p, 0, &fd_dev->fd_dev_size);
+			kfree(arg_p);
+			if (ret < 0) {
+				pr_err("kstrtoull() failed for"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						" fd_dev_size=\n");
 				goto out;
 			}
@@ -656,7 +981,13 @@ static ssize_t fd_set_configfs_dev_params(struct se_device *dev,
 			fd_dev->fbd_flags |= FBDF_HAS_SIZE;
 			break;
 		case Opt_fd_buffered_io:
+<<<<<<< HEAD
 			match_int(args, &arg);
+=======
+			ret = match_int(args, &arg);
+			if (ret)
+				goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (arg != 1) {
 				pr_err("bogus fd_buffered_io=%d value\n", arg);
 				ret = -EINVAL;
@@ -711,11 +1042,93 @@ static sector_t fd_get_blocks(struct se_device *dev)
 		       dev->dev_attrib.block_size);
 }
 
+<<<<<<< HEAD
+=======
+static int fd_init_prot(struct se_device *dev)
+{
+	struct fd_dev *fd_dev = FD_DEV(dev);
+	struct file *prot_file, *file = fd_dev->fd_file;
+	struct inode *inode;
+	int ret, flags = O_RDWR | O_CREAT | O_LARGEFILE | O_DSYNC;
+	char buf[FD_MAX_DEV_PROT_NAME];
+
+	if (!file) {
+		pr_err("Unable to locate fd_dev->fd_file\n");
+		return -ENODEV;
+	}
+
+	inode = file->f_mapping->host;
+	if (S_ISBLK(inode->i_mode)) {
+		pr_err("FILEIO Protection emulation only supported on"
+		       " !S_ISBLK\n");
+		return -ENOSYS;
+	}
+
+	if (fd_dev->fbd_flags & FDBD_HAS_BUFFERED_IO_WCE)
+		flags &= ~O_DSYNC;
+
+	snprintf(buf, FD_MAX_DEV_PROT_NAME, "%s.protection",
+		 fd_dev->fd_dev_name);
+
+	prot_file = filp_open(buf, flags, 0600);
+	if (IS_ERR(prot_file)) {
+		pr_err("filp_open(%s) failed\n", buf);
+		ret = PTR_ERR(prot_file);
+		return ret;
+	}
+	fd_dev->fd_prot_file = prot_file;
+
+	return 0;
+}
+
+static int fd_format_prot(struct se_device *dev)
+{
+	unsigned char *buf;
+	int unit_size = FDBD_FORMAT_UNIT_SIZE * dev->dev_attrib.block_size;
+	int ret;
+
+	if (!dev->dev_attrib.pi_prot_type) {
+		pr_err("Unable to format_prot while pi_prot_type == 0\n");
+		return -ENODEV;
+	}
+
+	buf = vzalloc(unit_size);
+	if (!buf) {
+		pr_err("Unable to allocate FILEIO prot buf\n");
+		return -ENOMEM;
+	}
+
+	pr_debug("Using FILEIO prot_length: %llu\n",
+		 (unsigned long long)(dev->transport->get_blocks(dev) + 1) *
+					dev->prot_length);
+
+	memset(buf, 0xff, unit_size);
+	ret = fd_do_prot_fill(dev, 0, dev->transport->get_blocks(dev) + 1,
+			      buf, unit_size);
+	vfree(buf);
+	return ret;
+}
+
+static void fd_free_prot(struct se_device *dev)
+{
+	struct fd_dev *fd_dev = FD_DEV(dev);
+
+	if (!fd_dev->fd_prot_file)
+		return;
+
+	filp_close(fd_dev->fd_prot_file, NULL);
+	fd_dev->fd_prot_file = NULL;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct sbc_ops fd_sbc_ops = {
 	.execute_rw		= fd_execute_rw,
 	.execute_sync_cache	= fd_execute_sync_cache,
 	.execute_write_same	= fd_execute_write_same,
+<<<<<<< HEAD
 	.execute_write_same_unmap = fd_execute_write_same_unmap,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.execute_unmap		= fd_execute_unmap,
 };
 
@@ -725,12 +1138,19 @@ fd_parse_cdb(struct se_cmd *cmd)
 	return sbc_parse_cdb(cmd, &fd_sbc_ops);
 }
 
+<<<<<<< HEAD
 static struct se_subsystem_api fileio_template = {
+=======
+static const struct target_backend_ops fileio_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name			= "fileio",
 	.inquiry_prod		= "FILEIO",
 	.inquiry_rev		= FD_VERSION,
 	.owner			= THIS_MODULE,
+<<<<<<< HEAD
 	.transport_type		= TRANSPORT_PLUGIN_VHBA_PDEV,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.attach_hba		= fd_attach_hba,
 	.detach_hba		= fd_detach_hba,
 	.alloc_device		= fd_alloc_device,
@@ -741,16 +1161,31 @@ static struct se_subsystem_api fileio_template = {
 	.show_configfs_dev_params = fd_show_configfs_dev_params,
 	.get_device_type	= sbc_get_device_type,
 	.get_blocks		= fd_get_blocks,
+<<<<<<< HEAD
+=======
+	.init_prot		= fd_init_prot,
+	.format_prot		= fd_format_prot,
+	.free_prot		= fd_free_prot,
+	.tb_dev_attrib_attrs	= sbc_attrib_attrs,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init fileio_module_init(void)
 {
+<<<<<<< HEAD
 	return transport_subsystem_register(&fileio_template);
+=======
+	return transport_backend_register(&fileio_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __exit fileio_module_exit(void)
 {
+<<<<<<< HEAD
 	transport_subsystem_release(&fileio_template);
+=======
+	target_backend_unregister(&fileio_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MODULE_DESCRIPTION("TCM FILEIO subsystem plugin");

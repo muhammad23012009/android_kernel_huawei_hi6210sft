@@ -10,15 +10,23 @@
 
 #include <asm/asm.h>
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/compiler.h>
+#include <asm/irqflags.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/regdef.h>
 #include <asm/mipsregs.h>
 #include <asm/stackframe.h>
 #include <asm/isadep.h>
 #include <asm/thread_info.h>
 #include <asm/war.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 #include <asm/mipsmtregs.h>
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef CONFIG_PREEMPT
 #define resume_kernel	restore_all
@@ -49,6 +57,14 @@ resume_userspace:
 	local_irq_disable		# make sure we dont miss an
 					# interrupt setting need_resched
 					# between sampling and return
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MIPSR2_TO_R6_EMULATOR
+	lw	k0, TI_R2_EMUL_RET($28)
+	bnez	k0, restore_all_from_r2_emul
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	LONG_L	a2, TI_FLAGS($28)	# current->work
 	andi	t0, a2, _TIF_WORK_MASK	# (ignoring syscall_trace)
 	bnez	t0, work_pending
@@ -89,6 +105,7 @@ FEXPORT(syscall_exit)
 	bnez	t0, syscall_exit_work
 
 restore_all:				# restore full frame
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 #ifdef CONFIG_MIPS_MT_SMTC_IM_BACKSTOP
 /* Re-arm any temporarily masked interrupts not explicitly "acked" */
@@ -124,6 +141,8 @@ restore_all:				# restore full frame
 	jal	deferred_smtc_ipi
 	LONG_S	s0, TI_REGS($28)
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set	noat
 	RESTORE_TEMP
 	RESTORE_AT
@@ -152,10 +171,30 @@ restore_partial:		# restore partial frame
 	RESTORE_SP_AND_RET
 	.set	at
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MIPSR2_TO_R6_EMULATOR
+restore_all_from_r2_emul:			# restore full frame
+	.set	noat
+	sw	zero, TI_R2_EMUL_RET($28)	# reset it
+	RESTORE_TEMP
+	RESTORE_AT
+	RESTORE_STATIC
+	RESTORE_SOME
+	LONG_L	sp, PT_R29(sp)
+	eretnc
+	.set	at
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 work_pending:
 	andi	t0, a2, _TIF_NEED_RESCHED # a2 is preloaded with TI_FLAGS
 	beqz	t0, work_notifysig
 work_resched:
+<<<<<<< HEAD
+=======
+	TRACE_IRQS_OFF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jal	schedule
 
 	local_irq_disable		# make sure need_resched and
@@ -192,11 +231,20 @@ syscall_exit_work:
 	beqz	t0, work_pending	# trace bit set?
 	local_irq_enable		# could let syscall_trace_leave()
 					# call schedule() instead
+<<<<<<< HEAD
+=======
+	TRACE_IRQS_ON
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	move	a0, sp
 	jal	syscall_trace_leave
 	b	resume_userspace
 
+<<<<<<< HEAD
 #if defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_MIPS_MT)
+=======
+#if defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_CPU_MIPSR6) || \
+    defined(CONFIG_MIPS_MT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * MIPS32R2 Instruction Hazard Barrier - must be called
@@ -204,9 +252,17 @@ syscall_exit_work:
  * For C code use the inline version named instruction_hazard().
  */
 LEAF(mips_ihb)
+<<<<<<< HEAD
 	.set	mips32r2
+=======
+	.set	MIPS_ISA_LEVEL_RAW
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jr.hb	ra
 	nop
 	END(mips_ihb)
 
+<<<<<<< HEAD
 #endif /* CONFIG_CPU_MIPSR2 or CONFIG_MIPS_MT */
+=======
+#endif /* CONFIG_CPU_MIPSR2 or CONFIG_CPU_MIPSR6 or CONFIG_MIPS_MT */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

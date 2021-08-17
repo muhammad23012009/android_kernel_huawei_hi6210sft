@@ -27,10 +27,17 @@
 #include <linux/platform_device.h>
 #include <linux/platform_data/dmtimer-omap.h>
 
+<<<<<<< HEAD
 #include <mach/irqs.h>
 
 #include <plat/dmtimer.h>
 
+=======
+#include <plat/dmtimer.h>
+
+#include "soc.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define OMAP1610_GPTIMER1_BASE		0xfffb1400
 #define OMAP1610_GPTIMER2_BASE		0xfffb1c00
 #define OMAP1610_GPTIMER3_BASE		0xfffb2400

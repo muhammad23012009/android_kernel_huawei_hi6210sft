@@ -3,6 +3,10 @@
 
 #include <linux/ip.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_vlan.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <net/inet_sock.h>
 #include <net/dsfield.h>
@@ -111,11 +115,33 @@ static inline void ipv4_copy_dscp(unsigned int dscp, struct iphdr *inner)
 
 struct ipv6hdr;
 
+<<<<<<< HEAD
 static inline int IP6_ECN_set_ce(struct ipv6hdr *iph)
 {
 	if (INET_ECN_is_not_ect(ipv6_get_dsfield(iph)))
 		return 0;
 	*(__be32*)iph |= htonl(INET_ECN_CE << 20);
+=======
+/* Note:
+ * IP_ECN_set_ce() has to tweak IPV4 checksum when setting CE,
+ * meaning both changes have no effect on skb->csum if/when CHECKSUM_COMPLETE
+ * In IPv6 case, no checksum compensates the change in IPv6 header,
+ * so we have to update skb->csum.
+ */
+static inline int IP6_ECN_set_ce(struct sk_buff *skb, struct ipv6hdr *iph)
+{
+	__be32 from, to;
+
+	if (INET_ECN_is_not_ect(ipv6_get_dsfield(iph)))
+		return 0;
+
+	from = *(__be32 *)iph;
+	to = from | htonl(INET_ECN_CE << 20);
+	*(__be32 *)iph = to;
+	if (skb->ip_summed == CHECKSUM_COMPLETE)
+		skb->csum = csum_add(csum_sub(skb->csum, (__force __wsum)from),
+				     (__force __wsum)to);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -134,13 +160,24 @@ static inline int INET_ECN_set_ce(struct sk_buff *skb)
 {
 	switch (skb->protocol) {
 	case cpu_to_be16(ETH_P_IP):
+<<<<<<< HEAD
 		if (skb->network_header + sizeof(struct iphdr) <= skb->tail)
+=======
+		if (skb_network_header(skb) + sizeof(struct iphdr) <=
+		    skb_tail_pointer(skb))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return IP_ECN_set_ce(ip_hdr(skb));
 		break;
 
 	case cpu_to_be16(ETH_P_IPV6):
+<<<<<<< HEAD
 		if (skb->network_header + sizeof(struct ipv6hdr) <= skb->tail)
 			return IP6_ECN_set_ce(ipv6_hdr(skb));
+=======
+		if (skb_network_header(skb) + sizeof(struct ipv6hdr) <=
+		    skb_tail_pointer(skb))
+			return IP6_ECN_set_ce(skb, ipv6_hdr(skb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -148,7 +185,11 @@ static inline int INET_ECN_set_ce(struct sk_buff *skb)
 }
 
 /*
+<<<<<<< HEAD
  * RFC 6080 4.2
+=======
+ * RFC 6040 4.2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  To decapsulate the inner header at the tunnel egress, a compliant
  *  tunnel egress MUST set the outgoing ECN field to the codepoint at the
  *  intersection of the appropriate arriving inner header (row) and outer

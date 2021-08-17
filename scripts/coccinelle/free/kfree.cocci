@@ -10,7 +10,11 @@
 // Copyright: (C) 2010-2012 Gilles Muller, INRIA/LiP6.  GPLv2.
 // URL: http://coccinelle.lip6.fr/
 // Comments:
+<<<<<<< HEAD
 // Options: -no_includes -include_headers
+=======
+// Options: --no-includes --include-headers
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 virtual org
 virtual report
@@ -20,7 +24,15 @@ expression E;
 position p1;
 @@
 
+<<<<<<< HEAD
 kfree@p1(E)
+=======
+(
+* kfree@p1(E)
+|
+* kzfree@p1(E)
+)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 @print expression@
 constant char [] c;
@@ -60,7 +72,15 @@ position ok;
 @@
 
 while (1) { ...
+<<<<<<< HEAD
   kfree@ok(E)
+=======
+(
+* kfree@ok(E)
+|
+* kzfree@ok(E)
+)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   ... when != break;
       when != goto l;
       when forall
@@ -74,7 +94,15 @@ statement S;
 position free.p1!=loop.ok,p2!={print.p,sz.p};
 @@
 
+<<<<<<< HEAD
 kfree@p1(E,...)
+=======
+(
+* kfree@p1(E,...)
+|
+* kzfree@p1(E,...)
+)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ...
 (
  iter(...,subE,...) S // no use

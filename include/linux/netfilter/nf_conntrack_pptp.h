@@ -4,7 +4,11 @@
 
 #include <linux/netfilter/nf_conntrack_common.h>
 
+<<<<<<< HEAD
 extern const char *const pptp_msg_name[];
+=======
+const char *pptp_msg_name(u_int16_t msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* state of the control session */
 enum pptp_ctrlsess_state {

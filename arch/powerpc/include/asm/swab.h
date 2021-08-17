@@ -9,6 +9,7 @@
 
 #include <uapi/asm/swab.h>
 
+<<<<<<< HEAD
 #ifdef __GNUC__
 #ifndef __powerpc64__
 #endif /* __powerpc64__ */
@@ -78,4 +79,6 @@ static inline __attribute_const__ __u32 __arch_swab32(__u32 value)
 #define __arch_swab32 __arch_swab32
 
 #endif /* __GNUC__ */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_POWERPC_SWAB_H */

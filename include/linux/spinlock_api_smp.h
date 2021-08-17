@@ -22,6 +22,11 @@ int in_lock_functions(unsigned long addr);
 void __lockfunc _raw_spin_lock(raw_spinlock_t *lock)		__acquires(lock);
 void __lockfunc _raw_spin_lock_nested(raw_spinlock_t *lock, int subclass)
 								__acquires(lock);
+<<<<<<< HEAD
+=======
+void __lockfunc _raw_spin_lock_bh_nested(raw_spinlock_t *lock, int subclass)
+								__acquires(lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __lockfunc
 _raw_spin_lock_nest_lock(raw_spinlock_t *lock, struct lockdep_map *map)
 								__acquires(lock);
@@ -131,8 +136,12 @@ static inline void __raw_spin_lock_irq(raw_spinlock_t *lock)
 
 static inline void __raw_spin_lock_bh(raw_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	local_bh_disable();
 	preempt_disable();
+=======
+	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
 	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 }
@@ -144,7 +153,11 @@ static inline void __raw_spin_lock(raw_spinlock_t *lock)
 	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_PREEMPT */
+=======
+#endif /* !CONFIG_GENERIC_LOCKBREAK || CONFIG_DEBUG_LOCK_ALLOC */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 {
@@ -174,20 +187,32 @@ static inline void __raw_spin_unlock_bh(raw_spinlock_t *lock)
 {
 	spin_release(&lock->dep_map, 1, _RET_IP_);
 	do_raw_spin_unlock(lock);
+<<<<<<< HEAD
 	preempt_enable_no_resched();
 	local_bh_enable_ip((unsigned long)__builtin_return_address(0));
+=======
+	__local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int __raw_spin_trylock_bh(raw_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	local_bh_disable();
 	preempt_disable();
+=======
+	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (do_raw_spin_trylock(lock)) {
 		spin_acquire(&lock->dep_map, 0, 1, _RET_IP_);
 		return 1;
 	}
+<<<<<<< HEAD
 	preempt_enable_no_resched();
 	local_bh_enable_ip((unsigned long)__builtin_return_address(0));
+=======
+	__local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

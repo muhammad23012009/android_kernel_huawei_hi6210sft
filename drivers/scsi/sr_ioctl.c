@@ -36,7 +36,10 @@ module_param(xa_test, int, S_IRUGO | S_IWUSR);
  * the status of the unchecked_isa_dma flag in the host structure */
 #define SR_GFP_DMA(cd) (((cd)->device->host->unchecked_isa_dma) ? GFP_DMA : 0)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int sr_read_tochdr(struct cdrom_device_info *cdi,
 		struct cdrom_tochdr *tochdr)
 {
@@ -188,6 +191,7 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 	struct scsi_device *SDev;
 	struct scsi_sense_hdr sshdr;
 	int result, err = 0, retries = 0;
+<<<<<<< HEAD
 	struct request_sense *sense = cgc->sense;
 
 	SDev = cd->device;
@@ -200,18 +204,36 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 		}
 	}
 
+=======
+	unsigned char sense_buffer[SCSI_SENSE_BUFFERSIZE];
+
+	SDev = cd->device;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
       retry:
 	if (!scsi_block_when_processing_errors(SDev)) {
 		err = -ENODEV;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	memset(sense, 0, sizeof(*sense));
 	result = scsi_execute(SDev, cgc->cmd, cgc->data_direction,
 			      cgc->buffer, cgc->buflen, (char *)sense,
 			      cgc->timeout, IOCTL_RETRIES, 0, NULL);
 
 	scsi_normalize_sense((char *)sense, sizeof(*sense), &sshdr);
+=======
+	memset(sense_buffer, 0, sizeof(sense_buffer));
+	result = scsi_execute(SDev, cgc->cmd, cgc->data_direction,
+			      cgc->buffer, cgc->buflen, sense_buffer,
+			      cgc->timeout, IOCTL_RETRIES, 0, NULL);
+
+	scsi_normalize_sense(sense_buffer, sizeof(sense_buffer), &sshdr);
+
+	if (cgc->sense)
+		memcpy(cgc->sense, sense_buffer, sizeof(*cgc->sense));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Minimal error checking.  Ignore cases we know about, and report the rest. */
 	if (driver_byte(result) != 0) {
@@ -219,7 +241,12 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 		case UNIT_ATTENTION:
 			SDev->changed = 1;
 			if (!cgc->quiet)
+<<<<<<< HEAD
 				printk(KERN_INFO "%s: disc change detected.\n", cd->cdi.name);
+=======
+				sr_printk(KERN_INFO, cd,
+					  "disc change detected.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (retries++ < 10)
 				goto retry;
 			err = -ENOMEDIUM;
@@ -229,7 +256,12 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 			    sshdr.ascq == 0x01) {
 				/* sense: Logical unit is in process of becoming ready */
 				if (!cgc->quiet)
+<<<<<<< HEAD
 					printk(KERN_INFO "%s: CDROM not ready yet.\n", cd->cdi.name);
+=======
+					sr_printk(KERN_INFO, cd,
+						  "CDROM not ready yet.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (retries++ < 10) {
 					/* sleep 2 sec and try again */
 					ssleep(2);
@@ -241,10 +273,16 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 				}
 			}
 			if (!cgc->quiet)
+<<<<<<< HEAD
 				printk(KERN_INFO "%s: CDROM not ready.  Make sure there is a disc in the drive.\n", cd->cdi.name);
 #ifdef DEBUG
 			scsi_print_sense_hdr("sr", &sshdr);
 #endif
+=======
+				sr_printk(KERN_INFO, cd,
+					  "CDROM not ready.  Make sure there "
+					  "is a disc in the drive.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -ENOMEDIUM;
 			break;
 		case ILLEGAL_REQUEST:
@@ -253,6 +291,7 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 			    sshdr.ascq == 0x00)
 				/* sense: Invalid command operation code */
 				err = -EDRIVE_CANT_DO_THIS;
+<<<<<<< HEAD
 #ifdef DEBUG
 			__scsi_print_command(cgc->cmd);
 			scsi_print_sense_hdr("sr", &sshdr);
@@ -262,14 +301,21 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 			printk(KERN_ERR "%s: CDROM (ioctl) error, command: ", cd->cdi.name);
 			__scsi_print_command(cgc->cmd);
 			scsi_print_sense_hdr("sr", &sshdr);
+=======
+			break;
+		default:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EIO;
 		}
 	}
 
 	/* Wake up a process waiting for device */
       out:
+<<<<<<< HEAD
 	if (!cgc->sense)
 		kfree(sense);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cgc->stat = err;
 	return err;
 }
@@ -491,8 +537,13 @@ static int sr_read_cd(Scsi_CD *cd, unsigned char *dest, int lba, int format, int
 	struct packet_command cgc;
 
 #ifdef DEBUG
+<<<<<<< HEAD
 	printk("%s: sr_read_cd lba=%d format=%d blksize=%d\n",
 	       cd->cdi.name, lba, format, blksize);
+=======
+	sr_printk(KERN_INFO, cd, "sr_read_cd lba=%d format=%d blksize=%d\n",
+		  lba, format, blksize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	memset(&cgc, 0, sizeof(struct packet_command));
@@ -539,7 +590,12 @@ static int sr_read_sector(Scsi_CD *cd, int lba, int blksize, unsigned char *dest
 		if (-EDRIVE_CANT_DO_THIS != rc)
 			return rc;
 		cd->readcd_known = 0;
+<<<<<<< HEAD
 		printk("CDROM does'nt support READ CD (0xbe) command\n");
+=======
+		sr_printk(KERN_INFO, cd,
+			  "CDROM does'nt support READ CD (0xbe) command\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* fall & retry the other way */
 	}
 	/* ... if this fails, we switch the blocksize using MODE SELECT */
@@ -548,7 +604,12 @@ static int sr_read_sector(Scsi_CD *cd, int lba, int blksize, unsigned char *dest
 			return rc;
 	}
 #ifdef DEBUG
+<<<<<<< HEAD
 	printk("%s: sr_read_sector lba=%d blksize=%d\n", cd->cdi.name, lba, blksize);
+=======
+	sr_printk(KERN_INFO, cd, "sr_read_sector lba=%d blksize=%d\n",
+		  lba, blksize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	memset(&cgc, 0, sizeof(struct packet_command));
@@ -592,7 +653,11 @@ int sr_is_xa(Scsi_CD *cd)
 	}
 	kfree(raw_sector);
 #ifdef DEBUG
+<<<<<<< HEAD
 	printk("%s: sr_is_xa: %d\n", cd->cdi.name, is_xa);
+=======
+	sr_printk(KERN_INFO, cd, "sr_is_xa: %d\n", is_xa);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	return is_xa;
 }

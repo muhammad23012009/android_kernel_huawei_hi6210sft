@@ -281,7 +281,11 @@ static int __init cpm_init(void)
 		printk(KERN_ERR "cpm: could not parse dcr property for %s\n",
 		       np->full_name);
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto node_put;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	cpm.dcr_host = dcr_map(np, dcr_base, dcr_len);
@@ -290,7 +294,11 @@ static int __init cpm_init(void)
 		printk(KERN_ERR "cpm: failed to map dcr property for %s\n",
 		       np->full_name);
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto node_put;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* All 4xx SoCs with a CPM controller have one of two
@@ -330,9 +338,15 @@ static int __init cpm_init(void)
 
 	if (cpm.standby || cpm.suspend)
 		suspend_set_ops(&cpm_suspend_ops);
+<<<<<<< HEAD
 out:
 	if (np)
 		of_node_put(np);
+=======
+node_put:
+	of_node_put(np);
+out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 

@@ -46,7 +46,11 @@ struct qtet_kcontrol_private {
 	unsigned int bit;
 	void (*set_register)(struct snd_ice1712 *ice, unsigned int val);
 	unsigned int (*get_register)(struct snd_ice1712 *ice);
+<<<<<<< HEAD
 	unsigned char * const texts[2];
+=======
+	const char * const texts[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum {
@@ -278,7 +282,11 @@ static void qtet_akm_write(struct snd_akm4xxx *ak, int chip,
 
 	if (snd_BUG_ON(chip < 0 || chip >= 4))
 		return;
+<<<<<<< HEAD
 	/*printk(KERN_DEBUG "Writing to AK4620: chip=%d, addr=0x%x,
+=======
+	/*dev_dbg(ice->card->dev, "Writing to AK4620: chip=%d, addr=0x%x,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  data=0x%x\n", chip, addr, data);*/
 	orig_dir = ice->gpio.get_dir(ice);
 	ice->gpio.set_dir(ice, orig_dir | GPIO_SPI_ALL);
@@ -484,7 +492,11 @@ static void set_cpld(struct snd_ice1712 *ice, unsigned int val)
 	reg_write(ice, GPIO_CPLD_CSN, val);
 	spec->cpld = val;
 }
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void proc_regs_read(struct snd_info_entry *entry,
 		struct snd_info_buffer *buffer)
 {
@@ -505,9 +517,12 @@ static void proc_init(struct snd_ice1712 *ice)
 	if (!snd_card_proc_new(ice->card, "quartet", &entry))
 		snd_info_set_text_ops(entry, ice, proc_regs_read);
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
 static void proc_init(struct snd_ice1712 *ice) {}
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int qtet_mute_get(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
@@ -552,6 +567,7 @@ static int qtet_ain12_enum_info(struct snd_kcontrol *kcontrol,
 {
 	static const char * const texts[3] =
 		{"Line In 1/2", "Mic", "Mic + Low-cut"};
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = ARRAY_SIZE(texts);
@@ -563,6 +579,9 @@ static int qtet_ain12_enum_info(struct snd_kcontrol *kcontrol,
 			texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(texts), texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int qtet_ain12_sw_get(struct snd_kcontrol *kcontrol,
@@ -704,6 +723,7 @@ static int qtet_enum_info(struct snd_kcontrol *kcontrol,
 {
 	struct qtet_kcontrol_private private =
 		qtet_privates[kcontrol->private_value];
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = ARRAY_SIZE(private.texts);
@@ -715,6 +735,10 @@ static int qtet_enum_info(struct snd_kcontrol *kcontrol,
 			private.texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(private.texts),
+				 private.texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int qtet_sw_get(struct snd_kcontrol *kcontrol,
@@ -850,11 +874,16 @@ static int qtet_add_controls(struct snd_ice1712 *ice)
 	if (err < 0)
 		return err;
 	/* only capture SPDIF over AK4113 */
+<<<<<<< HEAD
 	err = snd_ak4113_build(spec->ak4113,
 			ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
 	if (err < 0)
 		return err;
 	return 0;
+=======
+	return snd_ak4113_build(spec->ak4113,
+			ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int qtet_is_spdif_master(struct snd_ice1712 *ice)
@@ -896,7 +925,11 @@ static void qtet_set_rate(struct snd_ice1712 *ice, unsigned int rate)
 	new =  (get_cpld(ice) & ~CPLD_CKS_MASK) | get_cks_val(rate);
 	/* switch to internal clock, drop CPLD_SYNC_SEL */
 	new &= ~CPLD_SYNC_SEL;
+<<<<<<< HEAD
 	/* printk(KERN_DEBUG "QT - set_rate: old %x, new %x\n",
+=======
+	/* dev_dbg(ice->card->dev, "QT - set_rate: old %x, new %x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   get_cpld(ice), new); */
 	set_cpld(ice, new);
 }
@@ -976,7 +1009,11 @@ static void qtet_ak4113_change(struct ak4113 *ak4113, unsigned char c0,
 			c1) {
 		/* only for SPDIF master mode, rate was changed */
 		rate = snd_ak4113_external_rate(ak4113);
+<<<<<<< HEAD
 		/* printk(KERN_DEBUG "ak4113 - input rate changed to %d\n",
+=======
+		/* dev_dbg(ice->card->dev, "ak4113 - input rate changed to %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   rate); */
 		qtet_akm_set_rate_val(ice->akm, rate);
 	}

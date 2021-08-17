@@ -15,10 +15,14 @@ enum {
 	PM_QOS_CPU_DMA_LATENCY,
 	PM_QOS_NETWORK_LATENCY,
 	PM_QOS_NETWORK_THROUGHPUT,
+<<<<<<< HEAD
 	PM_QOS_MEMORY_THROUGHPUT,
 	PM_QOS_MEMORY_THROUGHPUT_UP_THRESHOLD,
 	PM_QOS_BUSLOW_MINFREQ,
 	PM_QOS_BUS_MINFREQ,
+=======
+	PM_QOS_MEMORY_BANDWIDTH,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* insert new class ID */
 	PM_QOS_NUM_CLASSES,
@@ -31,6 +35,7 @@ enum pm_qos_flags_status {
 	PM_QOS_FLAGS_ALL,
 };
 
+<<<<<<< HEAD
 
 /*DTS2013082604935 j00207786 2013-08-26 begin*/
 
@@ -46,16 +51,27 @@ enum  {
 
 #define PM_QOS_DEFAULT_VALUE -1
 #define PM_QOS_PWRCTRL_DFS_DEFAULT_VALUE    (0)
+=======
+#define PM_QOS_DEFAULT_VALUE -1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PM_QOS_CPU_DMA_LAT_DEFAULT_VALUE	(2000 * USEC_PER_SEC)
 #define PM_QOS_NETWORK_LAT_DEFAULT_VALUE	(2000 * USEC_PER_SEC)
 #define PM_QOS_NETWORK_THROUGHPUT_DEFAULT_VALUE	0
+<<<<<<< HEAD
 #define PM_QOS_MEMORY_THROUGHPUT_DEFAULT_VALUE	0
 #define PM_QOS_MEMORY_THROUGHPUT_UP_THRESHOLD_DEFAULT_VALUE	8000
 #define PM_QOS_DEV_LAT_DEFAULT_VALUE		0
 #define QOS_BUSLOW_MINPROFILE_DEFAULT_VALUE  (0)
 #define QOS_BUS_MINPROFILE_DEFAULT_VALUE  (0)
 
+=======
+#define PM_QOS_MEMORY_BANDWIDTH_DEFAULT_VALUE	0
+#define PM_QOS_RESUME_LATENCY_DEFAULT_VALUE	0
+#define PM_QOS_LATENCY_TOLERANCE_DEFAULT_VALUE	0
+#define PM_QOS_LATENCY_TOLERANCE_NO_CONSTRAINT	(-1)
+#define PM_QOS_LATENCY_ANY			((s32)(~(__u32)0 >> 1))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PM_QOS_FLAG_NO_POWER_OFF	(1 << 0)
 #define PM_QOS_FLAG_REMOTE_WAKEUP	(1 << 1)
@@ -72,7 +88,12 @@ struct pm_qos_flags_request {
 };
 
 enum dev_pm_qos_req_type {
+<<<<<<< HEAD
 	DEV_PM_QOS_LATENCY = 1,
+=======
+	DEV_PM_QOS_RESUME_LATENCY = 1,
+	DEV_PM_QOS_LATENCY_TOLERANCE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DEV_PM_QOS_FLAGS,
 };
 
@@ -89,7 +110,11 @@ enum pm_qos_type {
 	PM_QOS_UNITIALIZED,
 	PM_QOS_MAX,		/* return the largest value */
 	PM_QOS_MIN,		/* return the smallest value */
+<<<<<<< HEAD
 	PM_QOS_SUM
+=======
+	PM_QOS_SUM		/* return the sum */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -101,6 +126,10 @@ struct pm_qos_constraints {
 	struct plist_head list;
 	s32 target_value;	/* Do not change to 64 bit */
 	s32 default_value;
+<<<<<<< HEAD
+=======
+	s32 no_constraint_value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum pm_qos_type type;
 	struct blocking_notifier_head *notifiers;
 };
@@ -111,9 +140,17 @@ struct pm_qos_flags {
 };
 
 struct dev_pm_qos {
+<<<<<<< HEAD
 	struct pm_qos_constraints latency;
 	struct pm_qos_flags flags;
 	struct dev_pm_qos_request *latency_req;
+=======
+	struct pm_qos_constraints resume_latency;
+	struct pm_qos_constraints latency_tolerance;
+	struct pm_qos_flags flags;
+	struct dev_pm_qos_request *resume_latency_req;
+	struct dev_pm_qos_request *latency_tolerance_req;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dev_pm_qos_request *flags_req;
 };
 
@@ -166,7 +203,31 @@ int dev_pm_qos_remove_global_notifier(struct notifier_block *notifier);
 void dev_pm_qos_constraints_init(struct device *dev);
 void dev_pm_qos_constraints_destroy(struct device *dev);
 int dev_pm_qos_add_ancestor_request(struct device *dev,
+<<<<<<< HEAD
 				    struct dev_pm_qos_request *req, s32 value);
+=======
+				    struct dev_pm_qos_request *req,
+				    enum dev_pm_qos_req_type type, s32 value);
+int dev_pm_qos_expose_latency_limit(struct device *dev, s32 value);
+void dev_pm_qos_hide_latency_limit(struct device *dev);
+int dev_pm_qos_expose_flags(struct device *dev, s32 value);
+void dev_pm_qos_hide_flags(struct device *dev);
+int dev_pm_qos_update_flags(struct device *dev, s32 mask, bool set);
+s32 dev_pm_qos_get_user_latency_tolerance(struct device *dev);
+int dev_pm_qos_update_user_latency_tolerance(struct device *dev, s32 val);
+int dev_pm_qos_expose_latency_tolerance(struct device *dev);
+void dev_pm_qos_hide_latency_tolerance(struct device *dev);
+
+static inline s32 dev_pm_qos_requested_resume_latency(struct device *dev)
+{
+	return dev->power.qos->resume_latency_req->data.pnode.prio;
+}
+
+static inline s32 dev_pm_qos_requested_flags(struct device *dev)
+{
+	return dev->power.qos->flags_req->data.flr.flags;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline enum pm_qos_flags_status __dev_pm_qos_flags(struct device *dev,
 							  s32 mask)
@@ -209,6 +270,7 @@ static inline void dev_pm_qos_constraints_destroy(struct device *dev)
 	dev->power.power_state = PMSG_INVALID;
 }
 static inline int dev_pm_qos_add_ancestor_request(struct device *dev,
+<<<<<<< HEAD
 				    struct dev_pm_qos_request *req, s32 value)
 			{ return 0; }
 #endif
@@ -230,6 +292,12 @@ static inline s32 dev_pm_qos_requested_flags(struct device *dev)
 	return dev->power.qos->flags_req->data.flr.flags;
 }
 #else
+=======
+						  struct dev_pm_qos_request *req,
+						  enum dev_pm_qos_req_type type,
+						  s32 value)
+			{ return 0; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int dev_pm_qos_expose_latency_limit(struct device *dev, s32 value)
 			{ return 0; }
 static inline void dev_pm_qos_hide_latency_limit(struct device *dev) {}
@@ -238,8 +306,20 @@ static inline int dev_pm_qos_expose_flags(struct device *dev, s32 value)
 static inline void dev_pm_qos_hide_flags(struct device *dev) {}
 static inline int dev_pm_qos_update_flags(struct device *dev, s32 m, bool set)
 			{ return 0; }
+<<<<<<< HEAD
 
 static inline s32 dev_pm_qos_requested_latency(struct device *dev) { return 0; }
+=======
+static inline s32 dev_pm_qos_get_user_latency_tolerance(struct device *dev)
+			{ return PM_QOS_LATENCY_TOLERANCE_NO_CONSTRAINT; }
+static inline int dev_pm_qos_update_user_latency_tolerance(struct device *dev, s32 val)
+			{ return 0; }
+static inline int dev_pm_qos_expose_latency_tolerance(struct device *dev)
+			{ return 0; }
+static inline void dev_pm_qos_hide_latency_tolerance(struct device *dev) {}
+
+static inline s32 dev_pm_qos_requested_resume_latency(struct device *dev) { return 0; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline s32 dev_pm_qos_requested_flags(struct device *dev) { return 0; }
 #endif
 

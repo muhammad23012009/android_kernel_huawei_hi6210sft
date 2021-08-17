@@ -20,7 +20,11 @@
  * Try not to change the actual algorithm if possible for consistency.
  */
 
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.text
 
 	.align 4
@@ -92,3 +96,7 @@ $zerocount:
 	ret			# L0 :
 
 	.end strncat
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strncat)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

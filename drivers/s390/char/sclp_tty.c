@@ -84,8 +84,13 @@ sclp_tty_close(struct tty_struct *tty, struct file *filp)
  * to change as output buffers get emptied, or if the output flow
  * control is acted. This is not an exact number because not every
  * character needs the same space in the sccb. The worst case is
+<<<<<<< HEAD
  * a string of newlines. Every newlines creates a new mto which
  * needs 8 bytes.
+=======
+ * a string of newlines. Every newline creates a new message which
+ * needs 82 bytes.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int
 sclp_tty_write_room (struct tty_struct *tty)
@@ -97,9 +102,15 @@ sclp_tty_write_room (struct tty_struct *tty)
 	spin_lock_irqsave(&sclp_tty_lock, flags);
 	count = 0;
 	if (sclp_ttybuf != NULL)
+<<<<<<< HEAD
 		count = sclp_buffer_space(sclp_ttybuf) / sizeof(struct mto);
 	list_for_each(l, &sclp_tty_pages)
 		count += NR_EMPTY_MTO_PER_SCCB;
+=======
+		count = sclp_buffer_space(sclp_ttybuf) / sizeof(struct msg_buf);
+	list_for_each(l, &sclp_tty_pages)
+		count += NR_EMPTY_MSG_PER_SCCB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&sclp_tty_lock, flags);
 	return count;
 }
@@ -559,7 +570,11 @@ sclp_tty_init(void)
 	driver->subtype = SYSTEM_TYPE_TTY;
 	driver->init_termios = tty_std_termios;
 	driver->init_termios.c_iflag = IGNBRK | IGNPAR;
+<<<<<<< HEAD
 	driver->init_termios.c_oflag = ONLCR | XTABS;
+=======
+	driver->init_termios.c_oflag = ONLCR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	driver->init_termios.c_lflag = ISIG | ECHO;
 	driver->flags = TTY_DRIVER_REAL_RAW;
 	tty_set_operations(driver, &sclp_ops);

@@ -155,7 +155,10 @@ struct mon_str {
 #define LOWWAIT 	2
 #define EMPTYWAIT	3
 
+<<<<<<< HEAD
 #define SERIAL_DO_RESTART
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define WAKEUP_CHARS		256
 
@@ -913,7 +916,11 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
 
 	/* pci hot-un-plug support */
 	for (a = 0; a < brd->numPorts; a++)
+<<<<<<< HEAD
 		if (brd->ports[a].port.flags & ASYNC_INITIALIZED)
+=======
+		if (tty_port_initialized(&brd->ports[a].port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tty_port_tty_hangup(&brd->ports[a].port, false);
 
 	for (a = 0; a < MAX_PORTS_PER_BOARD; a++)
@@ -922,7 +929,11 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
 	while (1) {
 		opened = 0;
 		for (a = 0; a < brd->numPorts; a++)
+<<<<<<< HEAD
 			if (brd->ports[a].port.flags & ASYNC_INITIALIZED)
+=======
+			if (tty_port_initialized(&brd->ports[a].port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				opened++;
 		mutex_unlock(&moxa_openlock);
 		if (!opened)
@@ -1096,7 +1107,11 @@ static int __init moxa_init(void)
 				continue;
 			}
 
+<<<<<<< HEAD
 			printk(KERN_INFO "MOXA isa board found at 0x%.8lu and "
+=======
+			printk(KERN_INFO "MOXA isa board found at 0x%.8lx and "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					"ready (%u ports, firmware loaded)\n",
 					baseaddr[i], brd->numPorts);
 
@@ -1193,13 +1208,21 @@ static int moxa_open(struct tty_struct *tty, struct file *filp)
 	tty->driver_data = ch;
 	tty_port_tty_set(&ch->port, tty);
 	mutex_lock(&ch->port.mutex);
+<<<<<<< HEAD
 	if (!(ch->port.flags & ASYNC_INITIALIZED)) {
+=======
+	if (!tty_port_initialized(&ch->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ch->statusflags = 0;
 		moxa_set_tty_param(tty, &tty->termios);
 		MoxaPortLineCtrl(ch, 1, 1);
 		MoxaPortEnable(ch);
 		MoxaSetFifo(ch, ch->type == PORT_16550A);
+<<<<<<< HEAD
 		ch->port.flags |= ASYNC_INITIALIZED;
+=======
+		tty_port_set_initialized(&ch->port, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mutex_unlock(&ch->port.mutex);
 	mutex_unlock(&moxa_openlock);
@@ -1380,7 +1403,11 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
 {
 	struct tty_struct *tty = tty_port_tty_get(&p->port);
 	void __iomem *ofsAddr;
+<<<<<<< HEAD
 	unsigned int inited = p->port.flags & ASYNC_INITIALIZED;
+=======
+	unsigned int inited = tty_port_initialized(&p->port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 intr;
 
 	if (tty) {
@@ -1395,7 +1422,11 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
 			tty_wakeup(tty);
 		}
 
+<<<<<<< HEAD
 		if (inited && !test_bit(TTY_THROTTLED, &tty->flags) &&
+=======
+		if (inited && !tty_throttled(tty) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				MoxaPortRxQueue(p) > 0) { /* RX */
 			MoxaPortReadData(p);
 			tty_schedule_flip(&p->port);

@@ -70,10 +70,15 @@ unsigned long long kmap_generation;
 void __init mem_init(void)
 {
 	/*  No idea where this is actually declared.  Seems to evade LXR.  */
+<<<<<<< HEAD
 	totalram_pages += free_all_bootmem();
 	num_physpages = bootmem_lastpg-ARCH_PFN_OFFSET;
 
 	printk(KERN_INFO "totalram_pages = %ld\n", totalram_pages);
+=======
+	free_all_bootmem();
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *  To-Do:  someone somewhere should wipe out the bootmem map
@@ -95,7 +100,11 @@ void __init mem_init(void)
  * Todo:  free pages between __init_begin and __init_end; possibly
  * some devtree related stuff as well.
  */
+<<<<<<< HEAD
 void __init_refok free_initmem(void)
+=======
+void __ref free_initmem(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 

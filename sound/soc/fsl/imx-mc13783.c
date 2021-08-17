@@ -37,8 +37,12 @@ static int imx_mc13783_hifi_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	int ret;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0xfffffffc, 0xfffffffc,
 					4, 16);
+=======
+	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0x3, 0x3, 4, 16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -46,11 +50,15 @@ static int imx_mc13783_hifi_hw_params(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0x0, 0xfffffffc, 2, 16);
 	if (ret)
 		return ret;
 
 	return 0;
+=======
+	return snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 2, 16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct snd_soc_ops imx_mc13783_hifi_ops = {
@@ -64,7 +72,11 @@ static struct snd_soc_dai_link imx_mc13783_dai_mc13783[] = {
 		.codec_dai_name	 = "mc13783-hifi",
 		.codec_name	 = "mc13783-codec",
 		.cpu_dai_name	 = "imx-ssi.0",
+<<<<<<< HEAD
 		.platform_name	 = "imx-pcm-audio.0",
+=======
+		.platform_name	 = "imx-ssi.0",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops		 = &imx_mc13783_hifi_ops,
 		.symmetric_rates = 1,
 		.dai_fmt 	 = FMT_SSI,
@@ -90,6 +102,10 @@ static const struct snd_soc_dapm_route imx_mc13783_routes[] = {
 
 static struct snd_soc_card imx_mc13783 = {
 	.name		= "imx_mc13783",
+<<<<<<< HEAD
+=======
+	.owner		= THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link	= imx_mc13783_dai_mc13783,
 	.num_links	= ARRAY_SIZE(imx_mc13783_dai_mc13783),
 	.dapm_widgets	= imx_mc13783_widget,
@@ -111,7 +127,11 @@ static int imx_mc13783_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	if (machine_is_mx31_3ds()) {
+=======
+	if (machine_is_mx31_3ds() || machine_is_mx31moboard()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		imx_audmux_v2_configure_port(MX31_AUDMUX_PORT4_SSI_PINS_4,
 			IMX_AUDMUX_V2_PTCR_SYN,
 			IMX_AUDMUX_V2_PDCR_RXDSEL(MX31_AUDMUX_PORT1_SSI0) |
@@ -158,7 +178,10 @@ static int imx_mc13783_remove(struct platform_device *pdev)
 static struct platform_driver imx_mc13783_audio_driver = {
 	.driver = {
 		.name = "imx_mc13783",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = imx_mc13783_probe,
 	.remove = imx_mc13783_remove

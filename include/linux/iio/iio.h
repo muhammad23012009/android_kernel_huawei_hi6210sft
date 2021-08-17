@@ -13,6 +13,10 @@
 #include <linux/device.h>
 #include <linux/cdev.h>
 #include <linux/iio/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* IIO TODO LIST */
 /*
  * Provide means of adjusting timer accuracy.
@@ -31,11 +35,33 @@ enum iio_chan_info_enum {
 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
 	IIO_CHAN_INFO_AVERAGE_RAW,
 	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
+<<<<<<< HEAD
+=======
+	IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IIO_CHAN_INFO_SAMP_FREQ,
 	IIO_CHAN_INFO_FREQUENCY,
 	IIO_CHAN_INFO_PHASE,
 	IIO_CHAN_INFO_HARDWAREGAIN,
 	IIO_CHAN_INFO_HYSTERESIS,
+<<<<<<< HEAD
+=======
+	IIO_CHAN_INFO_INT_TIME,
+	IIO_CHAN_INFO_ENABLE,
+	IIO_CHAN_INFO_CALIBHEIGHT,
+	IIO_CHAN_INFO_CALIBWEIGHT,
+	IIO_CHAN_INFO_DEBOUNCE_COUNT,
+	IIO_CHAN_INFO_DEBOUNCE_TIME,
+	IIO_CHAN_INFO_CALIBEMISSIVITY,
+	IIO_CHAN_INFO_OVERSAMPLING_RATIO,
+};
+
+enum iio_shared_by {
+	IIO_SEPARATE,
+	IIO_SHARED_BY_TYPE,
+	IIO_SHARED_BY_DIR,
+	IIO_SHARED_BY_ALL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum iio_endian {
@@ -57,7 +83,11 @@ struct iio_dev;
  */
 struct iio_chan_spec_ext_info {
 	const char *name;
+<<<<<<< HEAD
 	bool shared;
+=======
+	enum iio_shared_by shared;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ssize_t (*read)(struct iio_dev *, uintptr_t private,
 			struct iio_chan_spec const *, char *buf);
 	ssize_t (*write)(struct iio_dev *, uintptr_t private,
@@ -125,12 +155,73 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
 #define IIO_ENUM_AVAILABLE(_name, _e) \
 { \
 	.name = (_name "_available"), \
+<<<<<<< HEAD
 	.shared = true, \
+=======
+	.shared = IIO_SHARED_BY_TYPE, \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read = iio_enum_available_read, \
 	.private = (uintptr_t)(_e), \
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * struct iio_mount_matrix - iio mounting matrix
+ * @rotation: 3 dimensional space rotation matrix defining sensor alignment with
+ *            main hardware
+ */
+struct iio_mount_matrix {
+	const char *rotation[9];
+};
+
+ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+			      const struct iio_chan_spec *chan, char *buf);
+int of_iio_read_mount_matrix(const struct device *dev, const char *propname,
+			     struct iio_mount_matrix *matrix);
+
+typedef const struct iio_mount_matrix *
+	(iio_get_mount_matrix_t)(const struct iio_dev *indio_dev,
+				 const struct iio_chan_spec *chan);
+
+/**
+ * IIO_MOUNT_MATRIX() - Initialize mount matrix extended channel attribute
+ * @_shared:	Whether the attribute is shared between all channels
+ * @_get:	Pointer to an iio_get_mount_matrix_t accessor
+ */
+#define IIO_MOUNT_MATRIX(_shared, _get) \
+{ \
+	.name = "mount_matrix", \
+	.shared = (_shared), \
+	.read = iio_show_mount_matrix, \
+	.private = (uintptr_t)(_get), \
+}
+
+/**
+ * struct iio_event_spec - specification for a channel event
+ * @type:		    Type of the event
+ * @dir:		    Direction of the event
+ * @mask_separate:	    Bit mask of enum iio_event_info values. Attributes
+ *			    set in this mask will be registered per channel.
+ * @mask_shared_by_type:    Bit mask of enum iio_event_info values. Attributes
+ *			    set in this mask will be shared by channel type.
+ * @mask_shared_by_dir:	    Bit mask of enum iio_event_info values. Attributes
+ *			    set in this mask will be shared by channel type and
+ *			    direction.
+ * @mask_shared_by_all:	    Bit mask of enum iio_event_info values. Attributes
+ *			    set in this mask will be shared by all channels.
+ */
+struct iio_event_spec {
+	enum iio_event_type type;
+	enum iio_event_direction dir;
+	unsigned long mask_separate;
+	unsigned long mask_shared_by_type;
+	unsigned long mask_shared_by_dir;
+	unsigned long mask_shared_by_all;
+};
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct iio_chan_spec - specification of a single channel
  * @type:		What type of measurement is the channel making.
  * @channel:		What number do we wish to assign the channel.
@@ -140,6 +231,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
  * @address:		Driver specific identifier.
  * @scan_index:		Monotonic index to give ordering in scans when read
  *			from a buffer.
+<<<<<<< HEAD
  * @scan_type:		Sign:		's' or 'u' to specify signed or unsigned
  *			realbits:	Number of valid bits of data
  *			storage_bits:	Realbits + padding
@@ -153,6 +245,31 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
  * @info_mask_shared_by_type: What information is to be exported that is shared
 *			by all channels of the same type.
  * @event_mask:		What events can this channel produce.
+=======
+ * @scan_type:		sign:		's' or 'u' to specify signed or unsigned
+ *			realbits:	Number of valid bits of data
+ *			storagebits:	Realbits + padding
+ *			shift:		Shift right by this before masking out
+ *					realbits.
+ *			repeat:		Number of times real/storage bits
+ *					repeats. When the repeat element is
+ *					more than 1, then the type element in
+ *					sysfs will show a repeat value.
+ *					Otherwise, the number of repetitions is
+ *					omitted.
+ *			endianness:	little or big endian
+ * @info_mask_separate: What information is to be exported that is specific to
+ *			this channel.
+ * @info_mask_shared_by_type: What information is to be exported that is shared
+ *			by all channels of the same type.
+ * @info_mask_shared_by_dir: What information is to be exported that is shared
+ *			by all channels of the same direction.
+ * @info_mask_shared_by_all: What information is to be exported that is shared
+ *			by all channels.
+ * @event_spec:		Array of events which should be registered for this
+ *			channel.
+ * @num_event_specs:	Size of the event_spec array.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @ext_info:		Array of extended info attributes for this channel.
  *			The array is NULL terminated, the last element should
  *			have its name field set to NULL.
@@ -184,12 +301,24 @@ struct iio_chan_spec {
 		u8	realbits;
 		u8	storagebits;
 		u8	shift;
+<<<<<<< HEAD
 		enum iio_endian endianness;
 	} scan_type;
 	long			info_mask;
 	long			info_mask_separate;
 	long			info_mask_shared_by_type;
 	long			event_mask;
+=======
+		u8	repeat;
+		enum iio_endian endianness;
+	} scan_type;
+	long			info_mask_separate;
+	long			info_mask_shared_by_type;
+	long			info_mask_shared_by_dir;
+	long			info_mask_shared_by_all;
+	const struct iio_event_spec *event_spec;
+	unsigned int		num_event_specs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct iio_chan_spec_ext_info *ext_info;
 	const char		*extend_name;
 	const char		*datasheet_name;
@@ -212,6 +341,7 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
 	enum iio_chan_info_enum type)
 {
 	return (chan->info_mask_separate & BIT(type)) |
+<<<<<<< HEAD
 	       (chan->info_mask_shared_by_type & BIT(type));
 }
 
@@ -244,6 +374,38 @@ static inline s64 iio_get_time_ns(void)
 
 #define INDIO_ALL_BUFFER_MODES					\
 	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
+=======
+		(chan->info_mask_shared_by_type & BIT(type)) |
+		(chan->info_mask_shared_by_dir & BIT(type)) |
+		(chan->info_mask_shared_by_all & BIT(type));
+}
+
+#define IIO_CHAN_SOFT_TIMESTAMP(_si) {					\
+	.type = IIO_TIMESTAMP,						\
+	.channel = -1,							\
+	.scan_index = _si,						\
+	.scan_type = {							\
+		.sign = 's',						\
+		.realbits = 64,					\
+		.storagebits = 64,					\
+		},							\
+}
+
+s64 iio_get_time_ns(const struct iio_dev *indio_dev);
+unsigned int iio_get_time_res(const struct iio_dev *indio_dev);
+
+/* Device operating modes */
+#define INDIO_DIRECT_MODE		0x01
+#define INDIO_BUFFER_TRIGGERED		0x02
+#define INDIO_BUFFER_SOFTWARE		0x04
+#define INDIO_BUFFER_HARDWARE		0x08
+#define INDIO_EVENT_TRIGGERED		0x10
+
+#define INDIO_ALL_BUFFER_MODES					\
+	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE | INDIO_BUFFER_SOFTWARE)
+
+#define INDIO_MAX_RAW_ELEMENTS		4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct iio_trigger; /* forward declaration */
 struct iio_dev;
@@ -259,6 +421,17 @@ struct iio_dev;
  *			the channel in question.  Return value will specify the
  *			type of value returned by the device. val and val2 will
  *			contain the elements making up the returned value.
+<<<<<<< HEAD
+=======
+ * @read_raw_multi:	function to return values from the device.
+ *			mask specifies which value. Note 0 means a reading of
+ *			the channel in question.  Return value will specify the
+ *			type of value returned by the device. vals pointer
+ *			contain the elements making up the returned value.
+ *			max_len specifies maximum number of elements
+ *			vals pointer can contain. val_len is used to return
+ *			length of valid elements in vals.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @write_raw:		function to write a value to the device.
  *			Parameters are the same as for read_raw.
  * @write_raw_get_fmt:	callback function to query the expected
@@ -266,15 +439,38 @@ struct iio_dev;
  *			returns IIO_VAL_INT_PLUS_MICRO.
  * @read_event_config:	find out if the event is enabled.
  * @write_event_config:	set if the event is enabled.
+<<<<<<< HEAD
  * @read_event_value:	read a value associated with the event. Meaning
  *			is event dependant. event_code specifies which event.
  * @write_event_value:	write the value associated with the event.
  *			Meaning is event dependent.
+=======
+ * @read_event_value:	read a configuration value associated with the event.
+ * @write_event_value:	write a configuration value for the event.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @validate_trigger:	function to validate the trigger when the
  *			current trigger gets changed.
  * @update_scan_mode:	function to configure device and scan buffer when
  *			channels have changed
  * @debugfs_reg_access:	function to read or write register value of device
+<<<<<<< HEAD
+=======
+ * @of_xlate:		function pointer to obtain channel specifier index.
+ *			When #iio-cells is greater than '0', the driver could
+ *			provide a custom of_xlate function that reads the
+ *			*args* and returns the appropriate index in registered
+ *			IIO channels array.
+ * @hwfifo_set_watermark: function pointer to set the current hardware
+ *			fifo watermark level; see hwfifo_* entries in
+ *			Documentation/ABI/testing/sysfs-bus-iio for details on
+ *			how the hardware fifo operates
+ * @hwfifo_flush_to_buffer: function pointer to flush the samples stored
+ *			in the hardware fifo to the device buffer. The driver
+ *			should not flush more than count samples. The function
+ *			must return the number of samples flushed, 0 if no
+ *			samples were flushed or a negative integer if no samples
+ *			were flushed and there was an error.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  **/
 struct iio_info {
 	struct module			*driver_module;
@@ -287,6 +483,16 @@ struct iio_info {
 			int *val2,
 			long mask);
 
+<<<<<<< HEAD
+=======
+	int (*read_raw_multi)(struct iio_dev *indio_dev,
+			struct iio_chan_spec const *chan,
+			int max_len,
+			int *vals,
+			int *val_len,
+			long mask);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*write_raw)(struct iio_dev *indio_dev,
 			 struct iio_chan_spec const *chan,
 			 int val,
@@ -298,6 +504,7 @@ struct iio_info {
 			 long mask);
 
 	int (*read_event_config)(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 				 u64 event_code);
 
 	int (*write_event_config)(struct iio_dev *indio_dev,
@@ -310,6 +517,30 @@ struct iio_info {
 	int (*write_event_value)(struct iio_dev *indio_dev,
 				 u64 event_code,
 				 int val);
+=======
+				 const struct iio_chan_spec *chan,
+				 enum iio_event_type type,
+				 enum iio_event_direction dir);
+
+	int (*write_event_config)(struct iio_dev *indio_dev,
+				  const struct iio_chan_spec *chan,
+				  enum iio_event_type type,
+				  enum iio_event_direction dir,
+				  int state);
+
+	int (*read_event_value)(struct iio_dev *indio_dev,
+				const struct iio_chan_spec *chan,
+				enum iio_event_type type,
+				enum iio_event_direction dir,
+				enum iio_event_info info, int *val, int *val2);
+
+	int (*write_event_value)(struct iio_dev *indio_dev,
+				 const struct iio_chan_spec *chan,
+				 enum iio_event_type type,
+				 enum iio_event_direction dir,
+				 enum iio_event_info info, int val, int val2);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*validate_trigger)(struct iio_dev *indio_dev,
 				struct iio_trigger *trig);
 	int (*update_scan_mode)(struct iio_dev *indio_dev,
@@ -317,6 +548,14 @@ struct iio_info {
 	int (*debugfs_reg_access)(struct iio_dev *indio_dev,
 				  unsigned reg, unsigned writeval,
 				  unsigned *readval);
+<<<<<<< HEAD
+=======
+	int (*of_xlate)(struct iio_dev *indio_dev,
+			const struct of_phandle_args *iiospec);
+	int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned val);
+	int (*hwfifo_flush_to_buffer)(struct iio_dev *indio_dev,
+				      unsigned count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -349,7 +588,11 @@ struct iio_buffer_setup_ops {
  * @buffer:		[DRIVER] any buffer present
  * @buffer_list:	[INTERN] list of all buffers currently attached
  * @scan_bytes:		[INTERN] num bytes captured to be fed to buffer demux
+<<<<<<< HEAD
  * @mlock:		[INTERN] lock used to prevent simultaneous device state
+=======
+ * @mlock:		[DRIVER] lock used to prevent simultaneous device state
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *			changes
  * @available_scan_masks: [DRIVER] optional array of allowed bitmasks
  * @masklength:		[INTERN] the length of the mask established from
@@ -358,7 +601,13 @@ struct iio_buffer_setup_ops {
  * @scan_timestamp:	[INTERN] set if any buffers have requested timestamp
  * @scan_index_timestamp:[INTERN] cache of the index to the timestamp
  * @trig:		[INTERN] current device trigger (buffer modes)
+<<<<<<< HEAD
  * @pollfunc:		[DRIVER] function run on trigger being received
+=======
+ * @trig_readonly	[INTERN] mark the current trigger immutable
+ * @pollfunc:		[DRIVER] function run on trigger being received
+ * @pollfunc_event:	[DRIVER] function run on events trigger being received
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @channels:		[DRIVER] channel specification structure table
  * @num_channels:	[DRIVER] number of channels specified in @channels.
  * @channel_attr_list:	[INTERN] keep track of automatically created channel
@@ -366,6 +615,10 @@ struct iio_buffer_setup_ops {
  * @chan_attr_group:	[INTERN] group for all attrs in base directory
  * @name:		[DRIVER] name of the device.
  * @info:		[DRIVER] callbacks and constant info from driver
+<<<<<<< HEAD
+=======
+ * @clock_id:		[INTERN] timestamping clock posix identifier
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @info_exist_lock:	[INTERN] lock to prevent use during removal
  * @setup_ops:		[DRIVER] callbacks to call before and after buffer
  *			enable/disable
@@ -396,7 +649,13 @@ struct iio_dev {
 	bool				scan_timestamp;
 	unsigned			scan_index_timestamp;
 	struct iio_trigger		*trig;
+<<<<<<< HEAD
 	struct iio_poll_func		*pollfunc;
+=======
+	bool				trig_readonly;
+	struct iio_poll_func		*pollfunc;
+	struct iio_poll_func		*pollfunc_event;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct iio_chan_spec const	*channels;
 	int				num_channels;
@@ -405,6 +664,10 @@ struct iio_dev {
 	struct attribute_group		chan_attr_group;
 	const char			*name;
 	const struct iio_info		*info;
+<<<<<<< HEAD
+=======
+	clockid_t			clock_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex			info_exist_lock;
 	const struct iio_buffer_setup_ops	*setup_ops;
 	struct cdev			chrdev;
@@ -419,6 +682,7 @@ struct iio_dev {
 #endif
 };
 
+<<<<<<< HEAD
 /**
  * iio_find_channel_from_si() - get channel from its scan index
  * @indio_dev:		device
@@ -446,18 +710,46 @@ void iio_device_unregister(struct iio_dev *indio_dev);
  * @timestamp:		When the event occurred
  **/
 int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
+=======
+const struct iio_chan_spec
+*iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
+int iio_device_register(struct iio_dev *indio_dev);
+void iio_device_unregister(struct iio_dev *indio_dev);
+int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
+void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
+int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
+int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
+void iio_device_release_direct_mode(struct iio_dev *indio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct bus_type iio_bus_type;
 
 /**
  * iio_device_put() - reference counted deallocation of struct device
+<<<<<<< HEAD
  * @indio_dev: 		IIO device structure containing the device
+=======
+ * @indio_dev: IIO device structure containing the device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  **/
 static inline void iio_device_put(struct iio_dev *indio_dev)
 {
 	if (indio_dev)
 		put_device(&indio_dev->dev);
+<<<<<<< HEAD
 };
+=======
+}
+
+/**
+ * iio_device_get_clock() - Retrieve current timestamping clock for the device
+ * @indio_dev: IIO device structure containing the device
+ */
+static inline clockid_t iio_device_get_clock(const struct iio_dev *indio_dev)
+{
+	return indio_dev->clock_id;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * dev_to_iio_dev() - Get IIO device struct from a device struct
@@ -508,10 +800,13 @@ static inline void *iio_device_get_drvdata(struct iio_dev *indio_dev)
 
 /* Can we make this smaller? */
 #define IIO_ALIGN L1_CACHE_BYTES
+<<<<<<< HEAD
 /**
  * iio_device_alloc() - allocate an iio_dev from a driver
  * @sizeof_priv: 	Space to allocate for private structure.
  **/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct iio_dev *iio_device_alloc(int sizeof_priv);
 
 static inline void *iio_priv(const struct iio_dev *indio_dev)
@@ -525,11 +820,21 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
 				  ALIGN(sizeof(struct iio_dev), IIO_ALIGN));
 }
 
+<<<<<<< HEAD
 /**
  * iio_device_free() - free an iio_dev from a driver
  * @indio_dev: 		the iio_dev associated with the device
  **/
 void iio_device_free(struct iio_dev *indio_dev);
+=======
+void iio_device_free(struct iio_dev *indio_dev);
+int devm_iio_device_match(struct device *dev, void *res, void *data);
+struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
+void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
+struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
+						const char *fmt, ...);
+void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * iio_buffer_enabled() - helper function to test if the buffer is enabled
@@ -538,8 +843,14 @@ void iio_device_free(struct iio_dev *indio_dev);
 static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
 {
 	return indio_dev->currentmode
+<<<<<<< HEAD
 		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE);
 };
+=======
+		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
+		   INDIO_BUFFER_SOFTWARE);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * iio_get_debugfs_dentry() - helper function to get the debugfs_dentry
@@ -549,14 +860,26 @@ static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
 static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
 {
 	return indio_dev->debugfs_dentry;
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
 {
 	return NULL;
+<<<<<<< HEAD
 };
 #endif
 
+=======
+}
+#endif
+
+ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
 	int *fract);
 

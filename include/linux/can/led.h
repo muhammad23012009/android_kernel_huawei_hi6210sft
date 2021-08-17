@@ -6,11 +6,20 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #ifndef CAN_LED_H
 #define CAN_LED_H
 
 #include <linux/if.h>
 #include <linux/leds.h>
+=======
+#ifndef _CAN_LED_H
+#define _CAN_LED_H
+
+#include <linux/if.h>
+#include <linux/leds.h>
+#include <linux/netdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum can_led_event {
 	CAN_LED_EVENT_OPEN,
@@ -21,8 +30,15 @@ enum can_led_event {
 
 #ifdef CONFIG_CAN_LEDS
 
+<<<<<<< HEAD
 /* keep space for interface name + "-tx"/"-rx" suffix and null terminator */
 #define CAN_LED_NAME_SZ (IFNAMSIZ + 4)
+=======
+/* keep space for interface name + "-tx"/"-rx"/"-rxtx"
+ * suffix and null terminator
+ */
+#define CAN_LED_NAME_SZ (IFNAMSIZ + 6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void can_led_event(struct net_device *netdev, enum can_led_event event);
 void devm_can_led_init(struct net_device *netdev);
@@ -48,4 +64,8 @@ static inline void can_led_notifier_exit(void)
 
 #endif
 
+<<<<<<< HEAD
 #endif
+=======
+#endif /* !_CAN_LED_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

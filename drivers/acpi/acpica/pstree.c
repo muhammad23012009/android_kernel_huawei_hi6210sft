@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -183,7 +187,10 @@ acpi_ps_append_arg(union acpi_parse_object *op, union acpi_parse_object *arg)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef ACPI_FUTURE_USAGE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ps_get_depth_next
@@ -308,11 +315,20 @@ union acpi_parse_object *acpi_ps_get_child(union acpi_parse_object *op)
 		break;
 
 	default:
+<<<<<<< HEAD
 		/* All others have no children */
+=======
+
+		/* All others have no children */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
 	return (child);
 }
 #endif
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

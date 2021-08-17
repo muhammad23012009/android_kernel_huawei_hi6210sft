@@ -23,7 +23,10 @@
 
 #include <linux/init.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <sound/core.h>
 #include "hda_codec.h"
@@ -32,6 +35,7 @@
 #include "hda_jack.h"
 #include "hda_generic.h"
 
+<<<<<<< HEAD
 #define NUM_PINS	11
 
 
@@ -565,6 +569,10 @@ static const struct hda_codec_ops cmi9880_patch_ops = {
 	.build_pcms = cmi9880_build_pcms,
 	.init = cmi9880_init,
 	.free = cmi9880_free,
+=======
+struct cmi_spec {
+	struct hda_gen_spec gen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -578,16 +586,33 @@ static const struct hda_codec_ops cmi_auto_patch_ops = {
 	.unsol_event = snd_hda_jack_unsol_event,
 };
 
+<<<<<<< HEAD
 static int cmi_parse_auto_config(struct hda_codec *codec)
 {
 	struct cmi_spec *spec = codec->spec;
 	struct auto_pin_cfg *cfg = &spec->gen.autocfg;
 	int err;
 
+=======
+static int patch_cmi9880(struct hda_codec *codec)
+{
+	struct cmi_spec *spec;
+	struct auto_pin_cfg *cfg;
+	int err;
+
+	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
+	if (spec == NULL)
+		return -ENOMEM;
+
+	codec->spec = spec;
+	codec->patch_ops = cmi_auto_patch_ops;
+	cfg = &spec->gen.autocfg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_hda_gen_spec_init(&spec->gen);
 
 	err = snd_hda_parse_pin_defcfg(codec, cfg, NULL, 0);
 	if (err < 0)
+<<<<<<< HEAD
 		return err;
 	err = snd_hda_gen_parse_auto_config(codec, cfg);
 	if (err < 0)
@@ -669,11 +694,69 @@ static int patch_cmi9880(struct hda_codec *codec)
 	codec->patch_ops = cmi9880_patch_ops;
 
 	return 0;
+=======
+		goto error;
+	err = snd_hda_gen_parse_auto_config(codec, cfg);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	snd_hda_gen_free(codec);
+	return err;
+}
+
+static int patch_cmi8888(struct hda_codec *codec)
+{
+	struct cmi_spec *spec;
+	struct auto_pin_cfg *cfg;
+	int err;
+
+	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
+	if (!spec)
+		return -ENOMEM;
+
+	codec->spec = spec;
+	codec->patch_ops = cmi_auto_patch_ops;
+	cfg = &spec->gen.autocfg;
+	snd_hda_gen_spec_init(&spec->gen);
+
+	/* mask NID 0x10 from the playback volume selection;
+	 * it's a headphone boost volume handled manually below
+	 */
+	spec->gen.out_vol_mask = (1ULL << 0x10);
+
+	err = snd_hda_parse_pin_defcfg(codec, cfg, NULL, 0);
+	if (err < 0)
+		goto error;
+	err = snd_hda_gen_parse_auto_config(codec, cfg);
+	if (err < 0)
+		goto error;
+
+	if (get_defcfg_device(snd_hda_codec_get_pincfg(codec, 0x10)) ==
+	    AC_JACK_HP_OUT) {
+		static const struct snd_kcontrol_new amp_kctl =
+			HDA_CODEC_VOLUME("Headphone Amp Playback Volume",
+					 0x10, 0, HDA_OUTPUT);
+		if (!snd_hda_gen_add_kctl(&spec->gen, NULL, &amp_kctl)) {
+			err = -ENOMEM;
+			goto error;
+		}
+	}
+
+	return 0;
+
+ error:
+	snd_hda_gen_free(codec);
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * patch entries
  */
+<<<<<<< HEAD
 static const struct hda_codec_preset snd_hda_preset_cmedia[] = {
 	{ .id = 0x13f69880, .name = "CMI9880", .patch = patch_cmi9880 },
  	{ .id = 0x434d4980, .name = "CMI9880", .patch = patch_cmi9880 },
@@ -682,10 +765,20 @@ static const struct hda_codec_preset snd_hda_preset_cmedia[] = {
 
 MODULE_ALIAS("snd-hda-codec-id:13f69880");
 MODULE_ALIAS("snd-hda-codec-id:434d4980");
+=======
+static const struct hda_device_id snd_hda_id_cmedia[] = {
+	HDA_CODEC_ENTRY(0x13f68888, "CMI8888", patch_cmi8888),
+	HDA_CODEC_ENTRY(0x13f69880, "CMI9880", patch_cmi9880),
+	HDA_CODEC_ENTRY(0x434d4980, "CMI9880", patch_cmi9880),
+	{} /* terminator */
+};
+MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_cmedia);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("C-Media HD-audio codec");
 
+<<<<<<< HEAD
 static struct hda_codec_preset_list cmedia_list = {
 	.preset = snd_hda_preset_cmedia,
 	.owner = THIS_MODULE,
@@ -703,3 +796,10 @@ static void __exit patch_cmedia_exit(void)
 
 module_init(patch_cmedia_init)
 module_exit(patch_cmedia_exit)
+=======
+static struct hda_codec_driver cmedia_driver = {
+	.id = snd_hda_id_cmedia,
+};
+
+module_hda_codec_driver(cmedia_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -5,7 +5,10 @@ source "virt/kvm/Kconfig"
 
 menuconfig VIRTUALIZATION
 	bool "Virtualization"
+<<<<<<< HEAD
 	depends on HAVE_KVM
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  Say Y here to get to see options for using your Linux host to run
 	  other operating systems inside virtual machines (guests).
@@ -18,9 +21,17 @@ if VIRTUALIZATION
 config KVM
 	tristate "Kernel-based Virtual Machine (KVM) support"
 	depends on HAVE_KVM
+<<<<<<< HEAD
 	select PREEMPT_NOTIFIERS
 	select ANON_INODES
 	select KVM_MMIO
+=======
+	select EXPORT_UASM
+	select PREEMPT_NOTIFIERS
+	select ANON_INODES
+	select KVM_MMIO
+	select SRCU
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  Support for hosting Guest kernels.
 	  Currently supported on MIPS32 processors.

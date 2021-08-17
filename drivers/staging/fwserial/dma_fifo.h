@@ -12,10 +12,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _DMA_FIFO_H_
@@ -49,9 +52,15 @@
 #define DMA_FIFO_GUARD 3   /* # of cache lines to reserve for the guard area */
 
 struct dma_fifo {
+<<<<<<< HEAD
 	unsigned	 in;
 	unsigned	 out;		/* updated when dma is pended         */
 	unsigned	 done;		/* updated upon dma completion        */
+=======
+	unsigned int	 in;
+	unsigned int	 out;		/* updated when dma is pended         */
+	unsigned int	 done;		/* updated upon dma completion        */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct {
 		unsigned corrupt:1;
 	};
@@ -59,7 +68,11 @@ struct dma_fifo {
 	int		 guard;		/* ofs of guard area		      */
 	int		 capacity;	/* size + reserved                    */
 	int		 avail;		/* # of unused bytes in fifo          */
+<<<<<<< HEAD
 	unsigned	 align;		/* must be power of 2                 */
+=======
+	unsigned int	 align;		/* must be power of 2                 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int		 tx_limit;	/* max # of bytes per dma transaction */
 	int		 open_limit;	/* max # of outstanding allowed       */
 	int		 open;		/* # of outstanding dma transactions  */
@@ -70,9 +83,15 @@ struct dma_fifo {
 struct dma_pending {
 	struct list_head link;
 	void		 *data;
+<<<<<<< HEAD
 	unsigned	 len;
 	unsigned         next;
 	unsigned         out;
+=======
+	unsigned int	 len;
+	unsigned int	 next;
+	unsigned int	 out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline void dp_mark_completed(struct dma_pending *dp)
@@ -85,6 +104,7 @@ static inline bool dp_is_completed(struct dma_pending *dp)
 	return (unsigned long)dp->data & 1UL;
 }
 
+<<<<<<< HEAD
 extern void dma_fifo_init(struct dma_fifo *fifo);
 extern int dma_fifo_alloc(struct dma_fifo *fifo, int size, unsigned align,
 			  int tx_limit, int open_limit, gfp_t gfp_mask);
@@ -94,6 +114,17 @@ extern int dma_fifo_in(struct dma_fifo *fifo, const void *src, int n);
 extern int dma_fifo_out_pend(struct dma_fifo *fifo, struct dma_pending *pended);
 extern int dma_fifo_out_complete(struct dma_fifo *fifo,
 				 struct dma_pending *complete);
+=======
+void dma_fifo_init(struct dma_fifo *fifo);
+int dma_fifo_alloc(struct dma_fifo *fifo, int size, unsigned int align,
+		   int tx_limit, int open_limit, gfp_t gfp_mask);
+void dma_fifo_free(struct dma_fifo *fifo);
+void dma_fifo_reset(struct dma_fifo *fifo);
+int dma_fifo_in(struct dma_fifo *fifo, const void *src, int n);
+int dma_fifo_out_pend(struct dma_fifo *fifo, struct dma_pending *pended);
+int dma_fifo_out_complete(struct dma_fifo *fifo,
+			  struct dma_pending *complete);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* returns the # of used bytes in the fifo */
 static inline int dma_fifo_level(struct dma_fifo *fifo)

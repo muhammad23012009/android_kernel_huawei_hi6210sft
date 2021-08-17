@@ -1,10 +1,19 @@
+<<<<<<< HEAD
 /// This removes an open coded simple_open() function
 /// and replaces file operations references to the function
+=======
+/// Remove an open coded simple_open() function
+/// and replace file operations references to the function
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /// with simple_open() instead.
 ///
 // Confidence: High
 // Comments:
+<<<<<<< HEAD
 // Options: -no_includes -include_headers
+=======
+// Options: --no-includes --include-headers
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 virtual patch
 virtual report

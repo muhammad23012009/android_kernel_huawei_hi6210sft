@@ -5,6 +5,10 @@ extern int cmd_set(int argc, const char **argv);
 extern int cmd_info(int argc, const char **argv);
 extern int cmd_freq_set(int argc, const char **argv);
 extern int cmd_freq_info(int argc, const char **argv);
+<<<<<<< HEAD
+=======
+extern int cmd_idle_set(int argc, const char **argv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int cmd_idle_info(int argc, const char **argv);
 extern int cmd_monitor(int argc, const char **argv);
 

@@ -147,15 +147,25 @@
 		or	r3, r0, NUM_TO_REG (regnum);
 
 	/* Shift right instruction depending on available configuration */
+<<<<<<< HEAD
 	#if CONFIG_XILINX_MICROBLAZE0_USE_BARREL > 0
 	#define BSRLI(rD, rA, imm)	\
 		bsrli rD, rA, imm
 	#else
 	#define BSRLI(rD, rA, imm) BSRLI ## imm (rD, rA)
+=======
+	#if CONFIG_XILINX_MICROBLAZE0_USE_BARREL == 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Only the used shift constants defined here - add more if needed */
 	#define BSRLI2(rD, rA)				\
 		srl rD, rA;		/* << 1 */	\
 		srl rD, rD;		/* << 2 */
+<<<<<<< HEAD
+=======
+	#define BSRLI4(rD, rA)		\
+		BSRLI2(rD, rA);		\
+		BSRLI2(rD, rD)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	#define BSRLI10(rD, rA)				\
 		srl rD, rA;		/* << 1 */	\
 		srl rD, rD;		/* << 2 */	\
@@ -170,7 +180,37 @@
 	#define BSRLI20(rD, rA)		\
 		BSRLI10(rD, rA);	\
 		BSRLI10(rD, rD)
+<<<<<<< HEAD
 	#endif
+=======
+
+	.macro	bsrli, rD, rA, IMM
+	.if (\IMM) == 2
+		BSRLI2(\rD, \rA)
+	.elseif (\IMM) == 10
+		BSRLI10(\rD, \rA)
+	.elseif (\IMM) == 12
+		BSRLI2(\rD, \rA)
+		BSRLI10(\rD, \rD)
+	.elseif (\IMM) == 14
+		BSRLI4(\rD, \rA)
+		BSRLI10(\rD, \rD)
+	.elseif (\IMM) == 20
+		BSRLI20(\rD, \rA)
+	.elseif (\IMM) == 24
+		BSRLI4(\rD, \rA)
+		BSRLI20(\rD, \rD)
+	.elseif (\IMM) == 28
+		BSRLI4(\rD, \rA)
+		BSRLI4(\rD, \rD)
+		BSRLI20(\rD, \rD)
+	.else
+	.error "BSRLI shift macros \IMM"
+	.endif
+	.endm
+	#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_MMU */
 
 .extern other_exception_handler /* Defined in exception.c */
@@ -193,8 +233,13 @@
  *      -                            W   S   REG   EXC
  *
  *
+<<<<<<< HEAD
  * STACK FRAME STRUCTURE (for NO_MMU)
  * ---------------------------------
+=======
+ * STACK FRAME STRUCTURE (for CONFIG_MMU=n)
+ * ----------------------------------------
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *      +-------------+         + 0
  *      |     MSR     |
@@ -604,7 +649,11 @@ ex_handler_done:
 	ex4:
 		tophys(r4,r4)
 		/* Create L1 (pgdir/pmd) address */
+<<<<<<< HEAD
 		BSRLI(r5,r3, PGDIR_SHIFT - 2)
+=======
+		bsrli	r5, r3, PGDIR_SHIFT - 2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		andi	r5, r5, PAGE_SIZE - 4
 /* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
 		or	r4, r4, r5
@@ -613,7 +662,11 @@ ex_handler_done:
 		beqi	r5, ex2			/* Bail if no table */
 
 		tophys(r5,r5)
+<<<<<<< HEAD
 		BSRLI(r6,r3,PTE_SHIFT) /* Compute PTE address */
+=======
+		bsrli	r6, r3, PTE_SHIFT /* Compute PTE address */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		andi	r6, r6, PAGE_SIZE - 4
 		or	r5, r5, r6
 		lwi	r4, r5, 0		/* Get Linux PTE */
@@ -705,7 +758,11 @@ ex_handler_done:
 	ex6:
 		tophys(r4,r4)
 		/* Create L1 (pgdir/pmd) address */
+<<<<<<< HEAD
 		BSRLI(r5,r3, PGDIR_SHIFT - 2)
+=======
+		bsrli	r5, r3, PGDIR_SHIFT - 2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		andi	r5, r5, PAGE_SIZE - 4
 /* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
 		or	r4, r4, r5
@@ -714,7 +771,11 @@ ex_handler_done:
 		beqi	r5, ex7			/* Bail if no table */
 
 		tophys(r5,r5)
+<<<<<<< HEAD
 		BSRLI(r6,r3,PTE_SHIFT) /* Compute PTE address */
+=======
+		bsrli	r6, r3, PTE_SHIFT /* Compute PTE address */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		andi	r6, r6, PAGE_SIZE - 4
 		or	r5, r5, r6
 		lwi	r4, r5, 0		/* Get Linux PTE */
@@ -776,7 +837,11 @@ ex_handler_done:
 	ex9:
 		tophys(r4,r4)
 		/* Create L1 (pgdir/pmd) address */
+<<<<<<< HEAD
 		BSRLI(r5,r3, PGDIR_SHIFT - 2)
+=======
+		bsrli	r5, r3, PGDIR_SHIFT - 2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		andi	r5, r5, PAGE_SIZE - 4
 /* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
 		or	r4, r4, r5
@@ -785,7 +850,11 @@ ex_handler_done:
 		beqi	r5, ex10		/* Bail if no table */
 
 		tophys(r5,r5)
+<<<<<<< HEAD
 		BSRLI(r6,r3,PTE_SHIFT) /* Compute PTE address */
+=======
+		bsrli	r6, r3, PTE_SHIFT /* Compute PTE address */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		andi	r6, r6, PAGE_SIZE - 4
 		or	r5, r5, r6
 		lwi	r4, r5, 0		/* Get Linux PTE */
@@ -922,7 +991,11 @@ ex_handler_done:
 .ent _unaligned_data_exception
 _unaligned_data_exception:
 	andi	r8, r3, 0x3E0;	/* Mask and extract the register operand */
+<<<<<<< HEAD
 	BSRLI(r8,r8,2);		/* r8 >> 2 = register operand * 8 */
+=======
+	bsrli   r8, r8, 2;		/* r8 >> 2 = register operand * 8 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	andi	r6, r3, 0x400;	/* Extract ESR[S] */
 	bneid	r6, ex_sw_vm;
 	andi	r6, r3, 0x800;	/* Extract ESR[W] - delay slot */

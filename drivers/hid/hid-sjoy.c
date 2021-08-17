@@ -166,6 +166,12 @@ static const struct hid_device_id sjoy_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_WISEGROUP, USB_DEVICE_ID_DUAL_USB_JOYPAD),
 		.driver_data = HID_QUIRK_MULTI_INPUT |
 			       HID_QUIRK_SKIP_OUTPUT_REPORTS },
+<<<<<<< HEAD
+=======
+	{ HID_USB_DEVICE(USB_VENDOR_ID_PLAYDOTCOM, USB_DEVICE_ID_PLAYDOTCOM_EMS_USBII),
+		.driver_data = HID_QUIRK_MULTI_INPUT |
+			       HID_QUIRK_SKIP_OUTPUT_REPORTS },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, sjoy_devices);

@@ -65,11 +65,14 @@
 /* Core SCSI definitions */
 #define AIC_LIB_PREFIX ahd
 
+<<<<<<< HEAD
 /* Name space conflict with BSD queue macros */
 #ifdef LIST_HEAD
 #undef LIST_HEAD
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "cam.h"
 #include "queue.h"
 #include "scsi_message.h"

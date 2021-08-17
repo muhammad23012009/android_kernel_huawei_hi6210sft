@@ -18,6 +18,10 @@
 #define MESH_PATH_TO_ROOT_TIMEOUT      6000
 #define MESH_ROOT_INTERVAL     5000
 #define MESH_ROOT_CONFIRMATION_INTERVAL 2000
+<<<<<<< HEAD
+=======
+#define MESH_DEFAULT_PLINK_TIMEOUT	1800 /* timeout in seconds */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Minimum interval between two consecutive PREQs originated by the same
@@ -75,6 +79,10 @@ const struct mesh_config default_mesh_config = {
 	.dot11MeshHWMPconfirmationInterval = MESH_ROOT_CONFIRMATION_INTERVAL,
 	.power_mode = NL80211_MESH_POWER_ACTIVE,
 	.dot11MeshAwakeWindowDuration = MESH_DEFAULT_AWAKE_WINDOW,
+<<<<<<< HEAD
+=======
+	.plink_timeout = MESH_DEFAULT_PLINK_TIMEOUT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 const struct mesh_setup default_mesh_setup = {
@@ -82,6 +90,10 @@ const struct mesh_setup default_mesh_setup = {
 	.sync_method = IEEE80211_SYNC_METHOD_NEIGHBOR_OFFSET,
 	.path_sel_proto = IEEE80211_PATH_PROTOCOL_HWMP,
 	.path_metric = IEEE80211_PATH_METRIC_AIRTIME,
+<<<<<<< HEAD
+=======
+	.auth_id = 0, /* open */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ie = NULL,
 	.ie_len = 0,
 	.is_secure = false,
@@ -125,9 +137,15 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 
 	if (!setup->chandef.chan) {
 		/* if we don't have that either, use the first usable channel */
+<<<<<<< HEAD
 		enum ieee80211_band band;
 
 		for (band = 0; band < IEEE80211_NUM_BANDS; band++) {
+=======
+		enum nl80211_band band;
+
+		for (band = 0; band < NUM_NL80211_BANDS; band++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct ieee80211_supported_band *sband;
 			struct ieee80211_channel *chan;
 			int i;
@@ -138,8 +156,12 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 
 			for (i = 0; i < sband->n_channels; i++) {
 				chan = &sband->channels[i];
+<<<<<<< HEAD
 				if (chan->flags & (IEEE80211_CHAN_NO_IBSS |
 						   IEEE80211_CHAN_PASSIVE_SCAN |
+=======
+				if (chan->flags & (IEEE80211_CHAN_NO_IR |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						   IEEE80211_CHAN_DISABLED |
 						   IEEE80211_CHAN_RADAR))
 					continue;
@@ -159,6 +181,7 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 		setup->chandef.center_freq1 = setup->chandef.chan->center_freq;
 	}
 
+<<<<<<< HEAD
 	if (!cfg80211_reg_can_beacon(&rdev->wiphy, &setup->chandef))
 		return -EINVAL;
 
@@ -166,12 +189,34 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 				    CHAN_MODE_SHARED);
 	if (err)
 		return err;
+=======
+	/*
+	 * check if basic rates are available otherwise use mandatory rates as
+	 * basic rates
+	 */
+	if (!setup->basic_rates) {
+		enum nl80211_bss_scan_width scan_width;
+		struct ieee80211_supported_band *sband =
+				rdev->wiphy.bands[setup->chandef.chan->band];
+		scan_width = cfg80211_chandef_to_scan_width(&setup->chandef);
+		setup->basic_rates = ieee80211_mandatory_rates(sband,
+							       scan_width);
+	}
+
+	if (!cfg80211_reg_can_beacon(&rdev->wiphy, &setup->chandef,
+				     NL80211_IFTYPE_MESH_POINT))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = rdev_join_mesh(rdev, dev, conf, setup);
 	if (!err) {
 		memcpy(wdev->ssid, setup->mesh_id, setup->mesh_id_len);
 		wdev->mesh_id_len = setup->mesh_id_len;
+<<<<<<< HEAD
 		wdev->channel = setup->chandef.chan;
+=======
+		wdev->chandef = setup->chandef;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return err;
@@ -185,11 +230,17 @@ int cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	int err;
 
+<<<<<<< HEAD
 	mutex_lock(&rdev->devlist_mtx);
 	wdev_lock(wdev);
 	err = __cfg80211_join_mesh(rdev, dev, setup, conf);
 	wdev_unlock(wdev);
 	mutex_unlock(&rdev->devlist_mtx);
+=======
+	wdev_lock(wdev);
+	err = __cfg80211_join_mesh(rdev, dev, setup, conf);
+	wdev_unlock(wdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -214,6 +265,7 @@ int cfg80211_set_mesh_channel(struct cfg80211_registered_device *rdev,
 		if (!netif_running(wdev->netdev))
 			return -ENETDOWN;
 
+<<<<<<< HEAD
 		err = cfg80211_can_use_chan(rdev, wdev, chandef->chan,
 					    CHAN_MODE_SHARED);
 		if (err)
@@ -223,6 +275,12 @@ int cfg80211_set_mesh_channel(struct cfg80211_registered_device *rdev,
 						     chandef->chan);
 		if (!err)
 			wdev->channel = chandef->chan;
+=======
+		err = rdev_libertas_set_mesh_channel(rdev, wdev->netdev,
+						     chandef->chan);
+		if (!err)
+			wdev->chandef = *chandef;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		return err;
 	}
@@ -234,8 +292,13 @@ int cfg80211_set_mesh_channel(struct cfg80211_registered_device *rdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __cfg80211_leave_mesh(struct cfg80211_registered_device *rdev,
 				 struct net_device *dev)
+=======
+int __cfg80211_leave_mesh(struct cfg80211_registered_device *rdev,
+			  struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	int err;
@@ -254,7 +317,12 @@ static int __cfg80211_leave_mesh(struct cfg80211_registered_device *rdev,
 	err = rdev_leave_mesh(rdev, dev);
 	if (!err) {
 		wdev->mesh_id_len = 0;
+<<<<<<< HEAD
 		wdev->channel = NULL;
+=======
+		memset(&wdev->chandef, 0, sizeof(wdev->chandef));
+		rdev_set_qos_map(rdev, dev, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return err;

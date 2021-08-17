@@ -27,6 +27,10 @@
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/mod_devicetable.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscore_ops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/prom.h>
 #include <asm/fsl_lbc.h>
 
@@ -214,10 +218,21 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 	struct fsl_lbc_ctrl *ctrl = data;
 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
 	u32 status;
+<<<<<<< HEAD
 
 	status = in_be32(&lbc->ltesr);
 	if (!status)
 		return IRQ_NONE;
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&fsl_lbc_lock, flags);
+	status = in_be32(&lbc->ltesr);
+	if (!status) {
+		spin_unlock_irqrestore(&fsl_lbc_lock, flags);
+		return IRQ_NONE;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	out_be32(&lbc->ltesr, LTESR_CLEAR);
 	out_be32(&lbc->lteatr, 0);
@@ -239,8 +254,11 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 	if (status & LTESR_CS)
 		dev_err(ctrl->dev, "Chip select error: "
 			"LTESR 0x%08X\n", status);
+<<<<<<< HEAD
 	if (status & LTESR_UPM)
 		;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (status & LTESR_FCT) {
 		dev_err(ctrl->dev, "FCM command time-out: "
 			"LTESR 0x%08X\n", status);
@@ -260,6 +278,10 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 	if (status & ~LTESR_MASK)
 		dev_err(ctrl->dev, "Unknown error: "
 			"LTESR 0x%08X\n", status);
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&fsl_lbc_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return IRQ_HANDLED;
 }
 
@@ -298,8 +320,13 @@ static int fsl_lbc_ctrl_probe(struct platform_device *dev)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	fsl_lbc_ctrl_dev->irq = irq_of_parse_and_map(dev->dev.of_node, 0);
 	if (fsl_lbc_ctrl_dev->irq == NO_IRQ) {
+=======
+	fsl_lbc_ctrl_dev->irq[0] = irq_of_parse_and_map(dev->dev.of_node, 0);
+	if (!fsl_lbc_ctrl_dev->irq[0]) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&dev->dev, "failed to get irq resource\n");
 		ret = -ENODEV;
 		goto err;
@@ -311,6 +338,7 @@ static int fsl_lbc_ctrl_probe(struct platform_device *dev)
 	if (ret < 0)
 		goto err;
 
+<<<<<<< HEAD
 	ret = request_irq(fsl_lbc_ctrl_dev->irq, fsl_lbc_ctrl_irq, 0,
 				"fsl-lbc", fsl_lbc_ctrl_dev);
 	if (ret != 0) {
@@ -320,11 +348,39 @@ static int fsl_lbc_ctrl_probe(struct platform_device *dev)
 		goto err;
 	}
 
+=======
+	ret = request_irq(fsl_lbc_ctrl_dev->irq[0], fsl_lbc_ctrl_irq, 0,
+				"fsl-lbc", fsl_lbc_ctrl_dev);
+	if (ret != 0) {
+		dev_err(&dev->dev, "failed to install irq (%d)\n",
+			fsl_lbc_ctrl_dev->irq[0]);
+		ret = fsl_lbc_ctrl_dev->irq[0];
+		goto err;
+	}
+
+	fsl_lbc_ctrl_dev->irq[1] = irq_of_parse_and_map(dev->dev.of_node, 1);
+	if (fsl_lbc_ctrl_dev->irq[1]) {
+		ret = request_irq(fsl_lbc_ctrl_dev->irq[1], fsl_lbc_ctrl_irq,
+				IRQF_SHARED, "fsl-lbc-err", fsl_lbc_ctrl_dev);
+		if (ret) {
+			dev_err(&dev->dev, "failed to install irq (%d)\n",
+					fsl_lbc_ctrl_dev->irq[1]);
+			ret = fsl_lbc_ctrl_dev->irq[1];
+			goto err1;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Enable interrupts for any detected events */
 	out_be32(&fsl_lbc_ctrl_dev->regs->lteir, LTEIR_ENABLE);
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err1:
+	free_irq(fsl_lbc_ctrl_dev->irq[0], fsl_lbc_ctrl_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	iounmap(fsl_lbc_ctrl_dev->regs);
 	kfree(fsl_lbc_ctrl_dev);
@@ -335,24 +391,59 @@ err:
 #ifdef CONFIG_SUSPEND
 
 /* save lbc registers */
+<<<<<<< HEAD
 static int fsl_lbc_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct fsl_lbc_ctrl *ctrl = dev_get_drvdata(&pdev->dev);
 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
+=======
+static int fsl_lbc_syscore_suspend(void)
+{
+	struct fsl_lbc_ctrl *ctrl;
+	struct fsl_lbc_regs __iomem *lbc;
+
+	ctrl = fsl_lbc_ctrl_dev;
+	if (!ctrl)
+		goto out;
+
+	lbc = ctrl->regs;
+	if (!lbc)
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ctrl->saved_regs = kmalloc(sizeof(struct fsl_lbc_regs), GFP_KERNEL);
 	if (!ctrl->saved_regs)
 		return -ENOMEM;
 
 	_memcpy_fromio(ctrl->saved_regs, lbc, sizeof(struct fsl_lbc_regs));
+<<<<<<< HEAD
+=======
+
+out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 /* restore lbc registers */
+<<<<<<< HEAD
 static int fsl_lbc_resume(struct platform_device *pdev)
 {
 	struct fsl_lbc_ctrl *ctrl = dev_get_drvdata(&pdev->dev);
 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
+=======
+static void fsl_lbc_syscore_resume(void)
+{
+	struct fsl_lbc_ctrl *ctrl;
+	struct fsl_lbc_regs __iomem *lbc;
+
+	ctrl = fsl_lbc_ctrl_dev;
+	if (!ctrl)
+		goto out;
+
+	lbc = ctrl->regs;
+	if (!lbc)
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ctrl->saved_regs) {
 		_memcpy_toio(lbc, ctrl->saved_regs,
@@ -360,7 +451,13 @@ static int fsl_lbc_resume(struct platform_device *pdev)
 		kfree(ctrl->saved_regs);
 		ctrl->saved_regs = NULL;
 	}
+<<<<<<< HEAD
 	return 0;
+=======
+
+out:
+	return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* CONFIG_SUSPEND */
 
@@ -372,20 +469,42 @@ static const struct of_device_id fsl_lbc_match[] = {
 	{},
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUSPEND
+static struct syscore_ops lbc_syscore_pm_ops = {
+	.suspend = fsl_lbc_syscore_suspend,
+	.resume = fsl_lbc_syscore_resume,
+};
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver fsl_lbc_ctrl_driver = {
 	.driver = {
 		.name = "fsl-lbc",
 		.of_match_table = fsl_lbc_match,
 	},
 	.probe = fsl_lbc_ctrl_probe,
+<<<<<<< HEAD
 #ifdef CONFIG_SUSPEND
 	.suspend     = fsl_lbc_suspend,
 	.resume      = fsl_lbc_resume,
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init fsl_lbc_init(void)
 {
+<<<<<<< HEAD
 	return platform_driver_register(&fsl_lbc_ctrl_driver);
 }
 module_init(fsl_lbc_init);
+=======
+#ifdef CONFIG_SUSPEND
+	register_syscore_ops(&lbc_syscore_pm_ops);
+#endif
+	return platform_driver_register(&fsl_lbc_ctrl_driver);
+}
+subsys_initcall(fsl_lbc_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

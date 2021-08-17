@@ -23,9 +23,13 @@
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  *     along with this program; if not, write to the Free Software
  *     Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *     MA 02111-1307 USA
+=======
+ *     along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  ********************************************************************/
 
@@ -78,8 +82,11 @@ int ircomm_open_tsap(struct ircomm_cb *self)
 {
 	notify_t notify;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Register callbacks */
 	irda_notify_init(&notify);
 	notify.data_indication       = ircomm_ttp_data_indication;
@@ -93,7 +100,11 @@ int ircomm_open_tsap(struct ircomm_cb *self)
 	self->tsap = irttp_open_tsap(LSAP_ANY, DEFAULT_INITIAL_CREDIT,
 				     &notify);
 	if (!self->tsap) {
+<<<<<<< HEAD
 		IRDA_DEBUG(0, "%sfailed to allocate tsap\n", __func__ );
+=======
+		pr_debug("%sfailed to allocate tsap\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	}
 	self->slsap_sel = self->tsap->stsap_sel;
@@ -121,8 +132,11 @@ static int ircomm_ttp_connect_request(struct ircomm_cb *self,
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Don't forget to refcount it - should be NULL anyway */
 	if(userdata)
 		skb_get(userdata);
@@ -145,8 +159,11 @@ static int ircomm_ttp_connect_response(struct ircomm_cb *self,
 {
 	int ret;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Don't forget to refcount it - should be NULL anyway */
 	if(userdata)
 		skb_get(userdata);
@@ -173,7 +190,11 @@ static int ircomm_ttp_data_request(struct ircomm_cb *self,
 
 	IRDA_ASSERT(skb != NULL, return -1;);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), clen=%d\n", __func__ , clen);
+=======
+	pr_debug("%s(), clen=%d\n", __func__ , clen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Insert clen field, currently we either send data only, or control
@@ -190,7 +211,11 @@ static int ircomm_ttp_data_request(struct ircomm_cb *self,
 
 	ret = irttp_data_request(self->tsap, skb);
 	if (ret) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), failed\n", __func__);
+=======
+		net_err_ratelimited("%s(), failed\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* irttp_data_request already free the packet */
 	}
 
@@ -208,8 +233,11 @@ static int ircomm_ttp_data_indication(void *instance, void *sap,
 {
 	struct ircomm_cb *self = (struct ircomm_cb *) instance;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return -1;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -1;);
 	IRDA_ASSERT(skb != NULL, return -1;);
@@ -231,16 +259,24 @@ static void ircomm_ttp_connect_confirm(void *instance, void *sap,
 	struct ircomm_cb *self = (struct ircomm_cb *) instance;
 	struct ircomm_info info;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 	IRDA_ASSERT(skb != NULL, return;);
 	IRDA_ASSERT(qos != NULL, goto out;);
 
 	if (max_sdu_size != TTP_SAR_DISABLE) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), SAR not allowed for IrCOMM!\n",
 			   __func__);
+=======
+		net_err_ratelimited("%s(), SAR not allowed for IrCOMM!\n",
+				    __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -272,16 +308,24 @@ static void ircomm_ttp_connect_indication(void *instance, void *sap,
 	struct ircomm_cb *self = (struct ircomm_cb *)instance;
 	struct ircomm_info info;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 	IRDA_ASSERT(skb != NULL, return;);
 	IRDA_ASSERT(qos != NULL, goto out;);
 
 	if (max_sdu_size != TTP_SAR_DISABLE) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), SAR not allowed for IrCOMM!\n",
 			   __func__);
+=======
+		net_err_ratelimited("%s(), SAR not allowed for IrCOMM!\n",
+				    __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -331,8 +375,11 @@ static void ircomm_ttp_disconnect_indication(void *instance, void *sap,
 	struct ircomm_cb *self = (struct ircomm_cb *) instance;
 	struct ircomm_info info;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 
@@ -356,8 +403,11 @@ static void ircomm_ttp_flow_indication(void *instance, void *sap,
 {
 	struct ircomm_cb *self = (struct ircomm_cb *) instance;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 

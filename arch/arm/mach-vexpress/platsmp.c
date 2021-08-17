@@ -12,20 +12,28 @@
 #include <linux/errno.h>
 #include <linux/smp.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/of_fdt.h>
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/vexpress.h>
 
 #include <asm/mcpm.h>
 #include <asm/smp_scu.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/motherboard.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/platsmp.h>
 
 #include "core.h"
 
+<<<<<<< HEAD
 #if defined(CONFIG_OF)
 
 static enum {
@@ -186,6 +194,39 @@ static void __init vexpress_smp_prepare_cpus(unsigned int max_cpus)
 		ct_desc->smp_enable(max_cpus);
 	else
 		vexpress_dt_smp_prepare_cpus(max_cpus);
+=======
+bool __init vexpress_smp_init_ops(void)
+{
+#ifdef CONFIG_MCPM
+	/*
+	 * The best way to detect a multi-cluster configuration at the moment
+	 * is to look for the presence of a CCI in the system.
+	 * Override the default vexpress_smp_ops if so.
+	 */
+	struct device_node *node;
+	node = of_find_compatible_node(NULL, NULL, "arm,cci-400");
+	if (node && of_device_is_available(node)) {
+		mcpm_smp_set_ops();
+		return true;
+	}
+#endif
+	return false;
+}
+
+static const struct of_device_id vexpress_smp_dt_scu_match[] __initconst = {
+	{ .compatible = "arm,cortex-a5-scu", },
+	{ .compatible = "arm,cortex-a9-scu", },
+	{}
+};
+
+static void __init vexpress_smp_dt_prepare_cpus(unsigned int max_cpus)
+{
+	struct device_node *scu = of_find_matching_node(NULL,
+			vexpress_smp_dt_scu_match);
+
+	if (scu)
+		scu_enable(of_iomap(scu, 0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Write the address of secondary startup into the
@@ -196,15 +237,21 @@ static void __init vexpress_smp_prepare_cpus(unsigned int max_cpus)
 	vexpress_flags_set(virt_to_phys(versatile_secondary_startup));
 }
 
+<<<<<<< HEAD
 struct smp_operations __initdata vexpress_smp_ops = {
 	.smp_init_cpus		= vexpress_smp_init_cpus,
 	.smp_prepare_cpus	= vexpress_smp_prepare_cpus,
+=======
+const struct smp_operations vexpress_smp_dt_ops __initconst = {
+	.smp_prepare_cpus	= vexpress_smp_dt_prepare_cpus,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.smp_secondary_init	= versatile_secondary_init,
 	.smp_boot_secondary	= versatile_boot_secondary,
 #ifdef CONFIG_HOTPLUG_CPU
 	.cpu_die		= vexpress_cpu_die,
 #endif
 };
+<<<<<<< HEAD
 
 bool __init vexpress_smp_init_ops(void)
 {
@@ -223,3 +270,5 @@ bool __init vexpress_smp_init_ops(void)
 #endif
 	return false;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

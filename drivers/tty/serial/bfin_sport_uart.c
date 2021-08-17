@@ -33,6 +33,10 @@
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/bfin_sport.h>
 #include <asm/delay.h>
@@ -161,11 +165,20 @@ static irqreturn_t sport_uart_rx_irq(int irq, void *dev_id)
 		if (!uart_handle_sysrq_char(&up->port, ch))
 			tty_insert_flip_char(port, ch, TTY_NORMAL);
 	}
+<<<<<<< HEAD
 	/* XXX this won't deadlock with lowlat? */
 	tty_flip_buffer_push(port);
 
 	spin_unlock(&up->port.lock);
 
+=======
+
+	spin_unlock(&up->port.lock);
+
+	/* XXX this won't deadlock with lowlat? */
+	tty_flip_buffer_push(port);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return IRQ_HANDLED;
 }
 
@@ -425,11 +438,14 @@ static void sport_stop_rx(struct uart_port *port)
 	SSYNC();
 }
 
+<<<<<<< HEAD
 static void sport_enable_ms(struct uart_port *port)
 {
 	pr_debug("%s enter\n", __func__);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sport_break_ctl(struct uart_port *port, int break_state)
 {
 	pr_debug("%s enter\n", __func__);
@@ -499,6 +515,16 @@ static void sport_set_termios(struct uart_port *port,
 
 	pr_debug("%s enter, c_cflag:%08x\n", __func__, termios->c_cflag);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SERIAL_BFIN_SPORT_CTSRTS
+	if (old == NULL && up->cts_pin != -1)
+		termios->c_cflag |= CRTSCTS;
+	else if (up->cts_pin == -1)
+		termios->c_cflag &= ~CRTSCTS;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (termios->c_cflag & CSIZE) {
 	case CS8:
 		up->csize = 8;
@@ -513,14 +539,23 @@ static void sport_set_termios(struct uart_port *port,
 		up->csize = 5;
 		break;
 	default:
+<<<<<<< HEAD
 		pr_warning("requested word length not supported\n");
+=======
+		pr_warn("requested word length not supported\n");
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (termios->c_cflag & CSTOPB) {
 		up->stopb = 1;
 	}
 	if (termios->c_cflag & PARENB) {
+<<<<<<< HEAD
 		pr_warning("PAREN bits is not supported yet\n");
+=======
+		pr_warn("PAREN bit is not supported yet\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* up->parib = 1; */
 	}
 
@@ -586,7 +621,10 @@ struct uart_ops sport_uart_ops = {
 	.stop_tx	= sport_stop_tx,
 	.start_tx	= sport_start_tx,
 	.stop_rx	= sport_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= sport_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl	= sport_break_ctl,
 	.startup	= sport_startup,
 	.shutdown	= sport_shutdown,
@@ -765,8 +803,13 @@ static int sport_uart_probe(struct platform_device *pdev)
 			return -ENOMEM;
 		}
 
+<<<<<<< HEAD
 		ret = peripheral_request_list(
 			(unsigned short *)pdev->dev.platform_data, DRV_NAME);
+=======
+		ret = peripheral_request_list(dev_get_platdata(&pdev->dev),
+						DRV_NAME);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret) {
 			dev_err(&pdev->dev,
 				"Fail to request SPORT peripherals\n");
@@ -812,10 +855,15 @@ static int sport_uart_probe(struct platform_device *pdev)
 		res = platform_get_resource(pdev, IORESOURCE_IO, 0);
 		if (res == NULL)
 			sport->cts_pin = -1;
+<<<<<<< HEAD
 		else {
 			sport->cts_pin = res->start;
 			sport->port.flags |= ASYNC_CTS_FLOW;
 		}
+=======
+		else
+			sport->cts_pin = res->start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		res = platform_get_resource(pdev, IORESOURCE_IO, 1);
 		if (res == NULL)
@@ -842,8 +890,12 @@ static int sport_uart_probe(struct platform_device *pdev)
 out_error_unmap:
 		iounmap(sport->port.membase);
 out_error_free_peripherals:
+<<<<<<< HEAD
 		peripheral_free_list(
 			(unsigned short *)pdev->dev.platform_data);
+=======
+		peripheral_free_list(dev_get_platdata(&pdev->dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_error_free_mem:
 		kfree(sport);
 		bfin_sport_uart_ports[pdev->id] = NULL;
@@ -862,8 +914,12 @@ static int sport_uart_remove(struct platform_device *pdev)
 	if (sport) {
 		uart_remove_one_port(&sport_uart_reg, &sport->port);
 		iounmap(sport->port.membase);
+<<<<<<< HEAD
 		peripheral_free_list(
 			(unsigned short *)pdev->dev.platform_data);
+=======
+		peripheral_free_list(dev_get_platdata(&pdev->dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(sport);
 		bfin_sport_uart_ports[pdev->id] = NULL;
 	}
@@ -883,7 +939,11 @@ static struct platform_driver sport_uart_driver = {
 };
 
 #ifdef CONFIG_SERIAL_BFIN_SPORT_CONSOLE
+<<<<<<< HEAD
 static __initdata struct early_platform_driver early_sport_uart_driver = {
+=======
+static struct early_platform_driver early_sport_uart_driver __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.class_str = CLASS_BFIN_SPORT_CONSOLE,
 	.pdrv = &sport_uart_driver,
 	.requested_id = EARLY_PLATFORM_ID_UNSET,

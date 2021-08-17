@@ -52,7 +52,11 @@ ENDPROC(fpsimd_load_state)
 ENTRY(fpsimd_save_partial_state)
 	fpsimd_save_partial x0, 1, 8, 9
 	ret
+<<<<<<< HEAD
 ENDPROC(fpsimd_load_partial_state)
+=======
+ENDPROC(fpsimd_save_partial_state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Load the bottom n FP registers.

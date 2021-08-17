@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config HI3xxx_CLK_CORE
 	bool "Core clock driver of Hi3xxx Soc"
 	default n if COMMON_CLK
@@ -33,3 +34,32 @@ config HISI_CLK_DEBUG
 	depends on COMMON_CLK_DEBUG
 	bool "HiSilicon clock driver debug"
 	default n
+=======
+config COMMON_CLK_HI3519
+	tristate "Hi3519 Clock Driver"
+	depends on ARCH_HISI || COMPILE_TEST
+	select RESET_HISI
+	default ARCH_HISI
+	help
+	  Build the clock driver for hi3519.
+
+config COMMON_CLK_HI6220
+	bool "Hi6220 Clock Driver"
+	depends on ARCH_HISI || COMPILE_TEST
+	default ARCH_HISI
+	help
+	  Build the Hisilicon Hi6220 clock driver based on the common clock framework.
+
+config RESET_HISI
+	bool "HiSilicon Reset Controller Driver"
+	depends on ARCH_HISI || COMPILE_TEST
+	select RESET_CONTROLLER
+	help
+	  Build reset controller driver for HiSilicon device chipsets.
+
+config STUB_CLK_HI6220
+	bool "Hi6220 Stub Clock Driver"
+	depends on COMMON_CLK_HI6220 && MAILBOX
+	help
+	  Build the Hisilicon Hi6220 stub clock driver.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

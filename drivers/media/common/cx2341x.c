@@ -27,7 +27,11 @@
 #include <linux/videodev2.h>
 
 #include <media/tuner.h>
+<<<<<<< HEAD
 #include <media/cx2341x.h>
+=======
+#include <media/drv-intf/cx2341x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-common.h>
 
 MODULE_DESCRIPTION("cx23415/6/8 driver");
@@ -931,6 +935,38 @@ static void cx2341x_calc_audio_properties(struct cx2341x_mpeg_params *params)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* Check for correctness of the ctrl's value based on the data from
+   struct v4l2_queryctrl and the available menu items. Note that
+   menu_items may be NULL, in that case it is ignored. */
+static int v4l2_ctrl_check(struct v4l2_ext_control *ctrl, struct v4l2_queryctrl *qctrl,
+		const char * const *menu_items)
+{
+	if (qctrl->flags & V4L2_CTRL_FLAG_DISABLED)
+		return -EINVAL;
+	if (qctrl->flags & V4L2_CTRL_FLAG_GRABBED)
+		return -EBUSY;
+	if (qctrl->type == V4L2_CTRL_TYPE_STRING)
+		return 0;
+	if (qctrl->type == V4L2_CTRL_TYPE_BUTTON ||
+	    qctrl->type == V4L2_CTRL_TYPE_INTEGER64 ||
+	    qctrl->type == V4L2_CTRL_TYPE_CTRL_CLASS)
+		return 0;
+	if (ctrl->value < qctrl->minimum || ctrl->value > qctrl->maximum)
+		return -ERANGE;
+	if (qctrl->type == V4L2_CTRL_TYPE_MENU && menu_items != NULL) {
+		if (menu_items[ctrl->value] == NULL ||
+		    menu_items[ctrl->value][0] == '\0')
+			return -EINVAL;
+	}
+	if (qctrl->type == V4L2_CTRL_TYPE_BITMASK &&
+			(ctrl->value & ~qctrl->maximum))
+		return -ERANGE;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int cx2341x_ext_ctrls(struct cx2341x_mpeg_params *params, int busy,
 		  struct v4l2_ext_controls *ctrls, unsigned int cmd)
 {
@@ -1490,6 +1526,10 @@ static struct v4l2_ctrl *cx2341x_ctrl_new_custom(struct v4l2_ctrl_handler *hdl,
 {
 	struct v4l2_ctrl_config cfg;
 
+<<<<<<< HEAD
+=======
+	memset(&cfg, 0, sizeof(cfg));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cx2341x_ctrl_fill(id, &cfg.name, &cfg.type, &min, &max, &step, &def, &cfg.flags);
 	cfg.ops = &cx2341x_ops;
 	cfg.id = id;

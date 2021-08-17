@@ -15,6 +15,7 @@
 #include <net/ip.h>
 #include <net/xfrm.h>
 
+<<<<<<< HEAD
 /* Informational hook. The decap is still done here. */
 static struct xfrm_tunnel __rcu *rcv_notify_handlers __read_mostly;
 static DEFINE_MUTEX(xfrm4_mode_tunnel_input_mutex);
@@ -74,6 +75,8 @@ int xfrm4_mode_tunnel_input_deregister(struct xfrm_tunnel *handler)
 }
 EXPORT_SYMBOL_GPL(xfrm4_mode_tunnel_input_deregister);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void ipip_ecn_decapsulate(struct sk_buff *skb)
 {
 	struct iphdr *inner_iph = ipip_hdr(skb);
@@ -122,11 +125,16 @@ static int xfrm4_mode_tunnel_output(struct xfrm_state *x, struct sk_buff *skb)
 
 	top_iph->saddr = x->props.saddr.a4;
 	top_iph->daddr = x->id.daddr.a4;
+<<<<<<< HEAD
 	ip_select_ident(skb, NULL);
+=======
+	ip_select_ident(dev_net(dst->dev), skb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #define for_each_input_rcu(head, handler)	\
 	for (handler = rcu_dereference(head);	\
 	     handler != NULL;			\
@@ -135,6 +143,10 @@ static int xfrm4_mode_tunnel_output(struct xfrm_state *x, struct sk_buff *skb)
 static int xfrm4_mode_tunnel_input(struct xfrm_state *x, struct sk_buff *skb)
 {
 	struct xfrm_tunnel *handler;
+=======
+static int xfrm4_mode_tunnel_input(struct xfrm_state *x, struct sk_buff *skb)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err = -EINVAL;
 
 	if (XFRM_MODE_SKB_CB(skb)->protocol != IPPROTO_IPIP)
@@ -143,9 +155,12 @@ static int xfrm4_mode_tunnel_input(struct xfrm_state *x, struct sk_buff *skb)
 	if (!pskb_may_pull(skb, sizeof(struct iphdr)))
 		goto out;
 
+<<<<<<< HEAD
 	for_each_input_rcu(rcv_notify_handlers, handler)
 		handler->handler(skb);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = skb_unclone(skb, GFP_ATOMIC);
 	if (err)
 		goto out;

@@ -21,6 +21,7 @@ unsigned long omap2xxx_sys_clk_recalc(struct clk_hw *clk,
 				      unsigned long parent_rate);
 unsigned long omap2_osc_clk_recalc(struct clk_hw *clk,
 				   unsigned long parent_rate);
+<<<<<<< HEAD
 unsigned long omap2_dpllcore_recalc(struct clk_hw *hw,
 				    unsigned long parent_rate);
 int omap2_reprogram_dpllcore(struct clk_hw *clk, unsigned long rate,
@@ -32,6 +33,10 @@ unsigned long omap2_clk_apll96_recalc(struct clk_hw *hw,
 				      unsigned long parent_rate);
 unsigned long omap2xxx_clk_get_core_rate(void);
 u32 omap2xxx_get_apll_clkin(void);
+=======
+void omap2xxx_clkt_dpllcore_init(struct clk_hw *hw);
+unsigned long omap2xxx_clk_get_core_rate(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u32 omap2xxx_get_sysclkdiv(void);
 void omap2xxx_clk_prepare_for_reboot(void);
 void omap2xxx_clkt_vps_check_bootloader_rates(void);
@@ -49,6 +54,7 @@ int omap2430_clk_init(void);
 #define omap2430_clk_init()	do { } while(0)
 #endif
 
+<<<<<<< HEAD
 extern void __iomem *prcm_clksrc_ctrl;
 
 extern struct clk_hw *dclk_hw;
@@ -58,5 +64,8 @@ int omap2_clk_apll96_enable(struct clk_hw *hw);
 int omap2_clk_apll54_enable(struct clk_hw *hw);
 void omap2_clk_apll96_disable(struct clk_hw *hw);
 void omap2_clk_apll54_disable(struct clk_hw *hw);
+=======
+extern struct clk_hw *dclk_hw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

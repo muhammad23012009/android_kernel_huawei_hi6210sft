@@ -29,10 +29,19 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 
+<<<<<<< HEAD
+=======
+#include "tegra_asoc_utils.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DRV_NAME "tegra-snd-wm9712"
 
 struct tegra_wm9712 {
 	struct platform_device *codec;
+<<<<<<< HEAD
+=======
+	struct tegra_asoc_utils_data util_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct snd_soc_dapm_widget tegra_wm9712_dapm_widgets[] = {
@@ -43,6 +52,7 @@ static const struct snd_soc_dapm_widget tegra_wm9712_dapm_widgets[] = {
 
 static int tegra_wm9712_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
@@ -50,12 +60,18 @@ static int tegra_wm9712_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_force_enable_pin(dapm, "Mic Bias");
 
 	return snd_soc_dapm_sync(dapm);
+=======
+	return snd_soc_dapm_force_enable_pin(&rtd->card->dapm, "Mic Bias");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct snd_soc_dai_link tegra_wm9712_dai = {
 	.name = "AC97 HiFi",
 	.stream_name = "AC97 HiFi",
+<<<<<<< HEAD
 	.cpu_dai_name = "tegra20-ac97",
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.codec_dai_name = "wm9712-hifi",
 	.codec_name = "wm9712-codec",
 	.init = tegra_wm9712_init,
@@ -63,6 +79,10 @@ static struct snd_soc_dai_link tegra_wm9712_dai = {
 
 static struct snd_soc_card snd_soc_tegra_wm9712 = {
 	.name = "tegra-wm9712",
+<<<<<<< HEAD
+=======
+	.driver_name = "tegra",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.owner = THIS_MODULE,
 	.dai_link = &tegra_wm9712_dai,
 	.num_links = 1,
@@ -119,15 +139,35 @@ static int tegra_wm9712_driver_probe(struct platform_device *pdev)
 
 	tegra_wm9712_dai.platform_of_node = tegra_wm9712_dai.cpu_of_node;
 
+<<<<<<< HEAD
+=======
+	ret = tegra_asoc_utils_init(&machine->util_data, &pdev->dev);
+	if (ret)
+		goto codec_unregister;
+
+	ret = tegra_asoc_utils_set_ac97_rate(&machine->util_data);
+	if (ret)
+		goto asoc_utils_fini;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = snd_soc_register_card(card);
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n",
 			ret);
+<<<<<<< HEAD
 		goto codec_unregister;
+=======
+		goto asoc_utils_fini;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+asoc_utils_fini:
+	tegra_asoc_utils_fini(&machine->util_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 codec_unregister:
 	platform_device_del(machine->codec);
 codec_put:
@@ -142,6 +182,11 @@ static int tegra_wm9712_driver_remove(struct platform_device *pdev)
 
 	snd_soc_unregister_card(card);
 
+<<<<<<< HEAD
+=======
+	tegra_asoc_utils_fini(&machine->util_data);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_unregister(machine->codec);
 
 	return 0;
@@ -155,7 +200,10 @@ static const struct of_device_id tegra_wm9712_of_match[] = {
 static struct platform_driver tegra_wm9712_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &snd_soc_pm_ops,
 		.of_match_table = tegra_wm9712_of_match,
 	},

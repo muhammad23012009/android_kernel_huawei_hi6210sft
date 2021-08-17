@@ -20,7 +20,11 @@
 #include <linux/i2c.h>
 #include <linux/i2c-algo-bit.h>
 #include <linux/i2c-gpio.h>
+<<<<<<< HEAD
 #include <linux/i2c/pca953x.h>
+=======
+#include <linux/platform_data/pca953x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
@@ -33,7 +37,11 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <mach/devices.h>
+=======
+#include "devices.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/gpio-ks8695.h>
 
 #include "generic.h"
@@ -92,7 +100,11 @@ static struct i2c_board_info acs5k_i2c_devs[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 static void acs5k_i2c_init(void)
+=======
+static void __init acs5k_i2c_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* The gpio interface */
 	platform_device_register(&acs5k_i2c_device);

@@ -18,6 +18,10 @@ unsigned long saved_max_pfn;
  * it under CONFIG_CRASH_DUMP and not CONFIG_PROC_VMCORE.
  */
 unsigned long long elfcorehdr_addr = ELFCORE_ADDR_MAX;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(elfcorehdr_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * stores the size of elf header of crash image

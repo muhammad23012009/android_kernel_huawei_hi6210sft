@@ -70,11 +70,14 @@ extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	enum pci_mmap_state mmap_state, int write_combine);
 extern void pcibios_set_master(struct pci_dev *dev);
 
+<<<<<<< HEAD
 static inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Dynamic DMA mapping stuff.
  * SuperH has everything mapped statically like x86.
  */
@@ -91,6 +94,7 @@ static inline void pcibios_penalize_isa_irq(int irq, int active)
  * direct memory write.
  */
 #define PCI_DISABLE_MWI
+<<<<<<< HEAD
 
 static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 					enum pci_dma_burst_strategy *strat,
@@ -109,6 +113,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 	*strat = PCI_DMA_BURST_MULTIPLE;
 	*strategy_parameter = cacheline_size;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* Board-specific fixup routines. */
@@ -128,9 +134,12 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 	return channel ? 15 : 14;
 }
 
+<<<<<<< HEAD
 /* generic DMA-mapping stuff */
 #include <asm-generic/pci-dma-compat.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 #endif /* __ASM_SH_PCI_H */
 

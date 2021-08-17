@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************
  * This file is part of the Emulex RoCE Device Driver for          *
  * RoCE (RDMA over Converged Ethernet) adapters.                   *
@@ -16,6 +17,41 @@
  * TO BE LEGALLY INVALID.  See the GNU General Public License for  *
  * more details, a copy of which can be found in the file COPYING  *
  * included with this package.                                     *
+=======
+/* This file is part of the Emulex RoCE Device Driver for
+ * RoCE (RDMA over Converged Ethernet) adapters.
+ * Copyright (C) 2012-2015 Emulex. All rights reserved.
+ * EMULEX and SLI are trademarks of Emulex.
+ * www.emulex.com
+ *
+ * This software is available to you under a choice of one of two licenses.
+ * You may choose to be licensed under the terms of the GNU General Public
+ * License (GPL) Version 2, available from the file COPYING in the main
+ * directory of this source tree, or the BSD license below:
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in
+ *   the documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Contact Information:
  * linux-drivers@emulex.com
@@ -23,13 +59,21 @@
  * Emulex
  * 3333 Susan Street
  * Costa Mesa, CA 92626
+<<<<<<< HEAD
  *******************************************************************/
+=======
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/module.h>
 #include <linux/idr.h>
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_user_verbs.h>
 #include <rdma/ib_addr.h>
+<<<<<<< HEAD
+=======
+#include <rdma/ib_mad.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/netdevice.h>
 #include <net/addrconf.h>
@@ -39,6 +83,7 @@
 #include "ocrdma_ah.h"
 #include "be_roce.h"
 #include "ocrdma_hw.h"
+<<<<<<< HEAD
 
 MODULE_VERSION(OCRDMA_ROCE_DEV_VERSION);
 MODULE_DESCRIPTION("Emulex RoCE HCA Driver");
@@ -51,6 +96,18 @@ static DEFINE_IDR(ocrdma_dev_id);
 
 static union ib_gid ocrdma_zero_sgid;
 
+=======
+#include "ocrdma_stats.h"
+#include <rdma/ocrdma-abi.h>
+
+MODULE_VERSION(OCRDMA_ROCE_DRV_VERSION);
+MODULE_DESCRIPTION(OCRDMA_ROCE_DRV_DESC " " OCRDMA_ROCE_DRV_VERSION);
+MODULE_AUTHOR("Emulex Corporation");
+MODULE_LICENSE("Dual BSD/GPL");
+
+static DEFINE_IDR(ocrdma_dev_id);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void ocrdma_get_guid(struct ocrdma_dev *dev, u8 *guid)
 {
 	u8 mac_addr[6];
@@ -65,6 +122,7 @@ void ocrdma_get_guid(struct ocrdma_dev *dev, u8 *guid)
 	guid[6] = mac_addr[4];
 	guid[7] = mac_addr[5];
 }
+<<<<<<< HEAD
 
 static void ocrdma_build_sgid_mac(union ib_gid *sgid, unsigned char *mac_addr,
 				  bool is_vlan, u16 vlan_id)
@@ -256,15 +314,59 @@ static enum rdma_link_layer ocrdma_link_layer(struct ib_device *device,
 					      u8 port_num)
 {
 	return IB_LINK_LAYER_ETHERNET;
+=======
+static enum rdma_link_layer ocrdma_link_layer(struct ib_device *device,
+					      u8 port_num)
+{
+	return IB_LINK_LAYER_ETHERNET;
+}
+
+static int ocrdma_port_immutable(struct ib_device *ibdev, u8 port_num,
+			         struct ib_port_immutable *immutable)
+{
+	struct ib_port_attr attr;
+	struct ocrdma_dev *dev;
+	int err;
+
+	dev = get_ocrdma_dev(ibdev);
+	err = ocrdma_query_port(ibdev, port_num, &attr);
+	if (err)
+		return err;
+
+	immutable->pkey_tbl_len = attr.pkey_tbl_len;
+	immutable->gid_tbl_len = attr.gid_tbl_len;
+	immutable->core_cap_flags = RDMA_CORE_PORT_IBA_ROCE;
+	if (ocrdma_is_udp_encap_supported(dev))
+		immutable->core_cap_flags |= RDMA_CORE_CAP_PROT_ROCE_UDP_ENCAP;
+	immutable->max_mad_size = IB_MGMT_MAD_SIZE;
+
+	return 0;
+}
+
+static void get_dev_fw_str(struct ib_device *device, char *str,
+			   size_t str_len)
+{
+	struct ocrdma_dev *dev = get_ocrdma_dev(device);
+
+	snprintf(str, str_len, "%s", &dev->attr.fw_ver[0]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ocrdma_register_device(struct ocrdma_dev *dev)
 {
 	strlcpy(dev->ibdev.name, "ocrdma%d", IB_DEVICE_NAME_MAX);
 	ocrdma_get_guid(dev, (u8 *)&dev->ibdev.node_guid);
+<<<<<<< HEAD
 	memcpy(dev->ibdev.node_desc, OCRDMA_NODE_DESC,
 	       sizeof(OCRDMA_NODE_DESC));
 	dev->ibdev.owner = THIS_MODULE;
+=======
+	BUILD_BUG_ON(sizeof(OCRDMA_NODE_DESC) > IB_DEVICE_NODE_DESC_MAX);
+	memcpy(dev->ibdev.node_desc, OCRDMA_NODE_DESC,
+	       sizeof(OCRDMA_NODE_DESC));
+	dev->ibdev.owner = THIS_MODULE;
+	dev->ibdev.uverbs_abi_ver = OCRDMA_ABI_VERSION;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->ibdev.uverbs_cmd_mask =
 	    OCRDMA_UVERBS(GET_CONTEXT) |
 	    OCRDMA_UVERBS(QUERY_DEVICE) |
@@ -294,13 +396,23 @@ static int ocrdma_register_device(struct ocrdma_dev *dev)
 
 	dev->ibdev.node_type = RDMA_NODE_IB_CA;
 	dev->ibdev.phys_port_cnt = 1;
+<<<<<<< HEAD
 	dev->ibdev.num_comp_vectors = 1;
+=======
+	dev->ibdev.num_comp_vectors = dev->eq_cnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* mandatory verbs. */
 	dev->ibdev.query_device = ocrdma_query_device;
 	dev->ibdev.query_port = ocrdma_query_port;
 	dev->ibdev.modify_port = ocrdma_modify_port;
 	dev->ibdev.query_gid = ocrdma_query_gid;
+<<<<<<< HEAD
+=======
+	dev->ibdev.get_netdev = ocrdma_get_netdev;
+	dev->ibdev.add_gid = ocrdma_add_gid;
+	dev->ibdev.del_gid = ocrdma_del_gid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->ibdev.get_link_layer = ocrdma_link_layer;
 	dev->ibdev.alloc_pd = ocrdma_alloc_pd;
 	dev->ibdev.dealloc_pd = ocrdma_dealloc_pd;
@@ -329,6 +441,12 @@ static int ocrdma_register_device(struct ocrdma_dev *dev)
 	dev->ibdev.dereg_mr = ocrdma_dereg_mr;
 	dev->ibdev.reg_user_mr = ocrdma_reg_user_mr;
 
+<<<<<<< HEAD
+=======
+	dev->ibdev.alloc_mr = ocrdma_alloc_mr;
+	dev->ibdev.map_mr_sg = ocrdma_map_mr_sg;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* mandatory to support user space verbs consumer. */
 	dev->ibdev.alloc_ucontext = ocrdma_alloc_ucontext;
 	dev->ibdev.dealloc_ucontext = ocrdma_dealloc_ucontext;
@@ -336,8 +454,15 @@ static int ocrdma_register_device(struct ocrdma_dev *dev)
 	dev->ibdev.dma_device = &dev->nic_info.pdev->dev;
 
 	dev->ibdev.process_mad = ocrdma_process_mad;
+<<<<<<< HEAD
 
 	if (dev->nic_info.dev_family == OCRDMA_GEN2_FAMILY) {
+=======
+	dev->ibdev.get_port_immutable = ocrdma_port_immutable;
+	dev->ibdev.get_dev_fw_str     = get_dev_fw_str;
+
+	if (ocrdma_get_asic_type(dev) == OCRDMA_ASIC_GEN_SKH_R) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev->ibdev.uverbs_cmd_mask |=
 		     OCRDMA_UVERBS(CREATE_SRQ) |
 		     OCRDMA_UVERBS(MODIFY_SRQ) |
@@ -357,12 +482,15 @@ static int ocrdma_register_device(struct ocrdma_dev *dev)
 static int ocrdma_alloc_resources(struct ocrdma_dev *dev)
 {
 	mutex_init(&dev->dev_lock);
+<<<<<<< HEAD
 	dev->sgid_tbl = kzalloc(sizeof(union ib_gid) *
 				OCRDMA_MAX_SGID, GFP_KERNEL);
 	if (!dev->sgid_tbl)
 		goto alloc_err;
 	spin_lock_init(&dev->sgid_lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->cq_tbl = kzalloc(sizeof(struct ocrdma_cq *) *
 			      OCRDMA_MAX_CQ, GFP_KERNEL);
 	if (!dev->cq_tbl)
@@ -374,29 +502,97 @@ static int ocrdma_alloc_resources(struct ocrdma_dev *dev)
 		if (!dev->qp_tbl)
 			goto alloc_err;
 	}
+<<<<<<< HEAD
+=======
+
+	dev->stag_arr = kzalloc(sizeof(u64) * OCRDMA_MAX_STAG, GFP_KERNEL);
+	if (dev->stag_arr == NULL)
+		goto alloc_err;
+
+	ocrdma_alloc_pd_pool(dev);
+
+	if (!ocrdma_alloc_stats_resources(dev)) {
+		pr_err("%s: stats resource allocation failed\n", __func__);
+		goto alloc_err;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_init(&dev->av_tbl.lock);
 	spin_lock_init(&dev->flush_q_lock);
 	return 0;
 alloc_err:
+<<<<<<< HEAD
 	ocrdma_err("%s(%d) error.\n", __func__, dev->id);
+=======
+	pr_err("%s(%d) error.\n", __func__, dev->id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENOMEM;
 }
 
 static void ocrdma_free_resources(struct ocrdma_dev *dev)
 {
+<<<<<<< HEAD
 	kfree(dev->qp_tbl);
 	kfree(dev->cq_tbl);
 	kfree(dev->sgid_tbl);
+=======
+	ocrdma_release_stats_resources(dev);
+	kfree(dev->stag_arr);
+	kfree(dev->qp_tbl);
+	kfree(dev->cq_tbl);
+}
+
+/* OCRDMA sysfs interface */
+static ssize_t show_rev(struct device *device, struct device_attribute *attr,
+			char *buf)
+{
+	struct ocrdma_dev *dev = dev_get_drvdata(device);
+
+	return scnprintf(buf, PAGE_SIZE, "0x%x\n", dev->nic_info.pdev->vendor);
+}
+
+static ssize_t show_hca_type(struct device *device,
+			     struct device_attribute *attr, char *buf)
+{
+	struct ocrdma_dev *dev = dev_get_drvdata(device);
+
+	return scnprintf(buf, PAGE_SIZE, "%s\n", &dev->model_number[0]);
+}
+
+static DEVICE_ATTR(hw_rev, S_IRUGO, show_rev, NULL);
+static DEVICE_ATTR(hca_type, S_IRUGO, show_hca_type, NULL);
+
+static struct device_attribute *ocrdma_attributes[] = {
+	&dev_attr_hw_rev,
+	&dev_attr_hca_type
+};
+
+static void ocrdma_remove_sysfiles(struct ocrdma_dev *dev)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(ocrdma_attributes); i++)
+		device_remove_file(&dev->ibdev.dev, ocrdma_attributes[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct ocrdma_dev *ocrdma_add(struct be_dev_info *dev_info)
 {
+<<<<<<< HEAD
 	int status = 0;
+=======
+	int status = 0, i;
+	u8 lstate = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ocrdma_dev *dev;
 
 	dev = (struct ocrdma_dev *)ib_alloc_device(sizeof(struct ocrdma_dev));
 	if (!dev) {
+<<<<<<< HEAD
 		ocrdma_err("Unable to allocate ib device\n");
+=======
+		pr_err("Unable to allocate ib device\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 	dev->mbx_cmd = kzalloc(sizeof(struct ocrdma_mqe_emb_cmd), GFP_KERNEL);
@@ -416,19 +612,50 @@ static struct ocrdma_dev *ocrdma_add(struct be_dev_info *dev_info)
 	if (status)
 		goto alloc_err;
 
+<<<<<<< HEAD
 	status = ocrdma_build_sgid_tbl(dev);
 	if (status)
 		goto alloc_err;
 
+=======
+	ocrdma_init_service_level(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	status = ocrdma_register_device(dev);
 	if (status)
 		goto alloc_err;
 
+<<<<<<< HEAD
 	spin_lock(&ocrdma_devlist_lock);
 	list_add_tail_rcu(&dev->entry, &ocrdma_dev_list);
 	spin_unlock(&ocrdma_devlist_lock);
 	return dev;
 
+=======
+	/* Query Link state and update */
+	status = ocrdma_mbx_get_link_speed(dev, NULL, &lstate);
+	if (!status)
+		ocrdma_update_link_state(dev, lstate);
+
+	for (i = 0; i < ARRAY_SIZE(ocrdma_attributes); i++)
+		if (device_create_file(&dev->ibdev.dev, ocrdma_attributes[i]))
+			goto sysfs_err;
+	/* Init stats */
+	ocrdma_add_port_stats(dev);
+	/* Interrupt Moderation */
+	INIT_DELAYED_WORK(&dev->eqd_work, ocrdma_eqd_set_task);
+	schedule_delayed_work(&dev->eqd_work, msecs_to_jiffies(1000));
+
+	pr_info("%s %s: %s \"%s\" port %d\n",
+		dev_name(&dev->nic_info.pdev->dev), hca_name(dev),
+		port_speed_string(dev), dev->model_number,
+		dev->hba_port_num);
+	pr_info("%s ocrdma%d driver loaded successfully\n",
+		dev_name(&dev->nic_info.pdev->dev), dev->id);
+	return dev;
+
+sysfs_err:
+	ocrdma_remove_sysfiles(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 alloc_err:
 	ocrdma_free_resources(dev);
 	ocrdma_cleanup_hw(dev);
@@ -437,6 +664,7 @@ init_err:
 idr_err:
 	kfree(dev->mbx_cmd);
 	ib_dealloc_device(&dev->ibdev);
+<<<<<<< HEAD
 	ocrdma_err("%s() leaving. ret=%d\n", __func__, status);
 	return NULL;
 }
@@ -447,6 +675,14 @@ static void ocrdma_remove_free(struct rcu_head *rcu)
 
 	ocrdma_free_resources(dev);
 	ocrdma_cleanup_hw(dev);
+=======
+	pr_err("%s() leaving. ret=%d\n", __func__, status);
+	return NULL;
+}
+
+static void ocrdma_remove_free(struct ocrdma_dev *dev)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	idr_remove(&ocrdma_dev_id, dev->id);
 	kfree(dev->mbx_cmd);
@@ -458,6 +694,7 @@ static void ocrdma_remove(struct ocrdma_dev *dev)
 	/* first unregister with stack to stop all the active traffic
 	 * of the registered clients.
 	 */
+<<<<<<< HEAD
 	ib_unregister_device(&dev->ibdev);
 
 	spin_lock(&ocrdma_devlist_lock);
@@ -467,6 +704,19 @@ static void ocrdma_remove(struct ocrdma_dev *dev)
 }
 
 static int ocrdma_open(struct ocrdma_dev *dev)
+=======
+	cancel_delayed_work_sync(&dev->eqd_work);
+	ocrdma_remove_sysfiles(dev);
+	ib_unregister_device(&dev->ibdev);
+
+	ocrdma_rem_port_stats(dev);
+	ocrdma_free_resources(dev);
+	ocrdma_cleanup_hw(dev);
+	ocrdma_remove_free(dev);
+}
+
+static int ocrdma_dispatch_port_active(struct ocrdma_dev *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ib_event port_event;
 
@@ -477,6 +727,7 @@ static int ocrdma_open(struct ocrdma_dev *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ocrdma_close(struct ocrdma_dev *dev)
 {
 	int i;
@@ -503,6 +754,11 @@ static int ocrdma_close(struct ocrdma_dev *dev)
 		}
 	}
 	mutex_unlock(&dev->dev_lock);
+=======
+static int ocrdma_dispatch_port_error(struct ocrdma_dev *dev)
+{
+	struct ib_event err_event;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err_event.event = IB_EVENT_PORT_ERR;
 	err_event.element.port_num = 1;
@@ -511,6 +767,15 @@ static int ocrdma_close(struct ocrdma_dev *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void ocrdma_shutdown(struct ocrdma_dev *dev)
+{
+	ocrdma_dispatch_port_error(dev);
+	ocrdma_remove(dev);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* event handling via NIC driver ensures that all the NIC specific
  * initialization done before RoCE driver notifies
  * event to stack.
@@ -518,6 +783,7 @@ static int ocrdma_close(struct ocrdma_dev *dev)
 static void ocrdma_event_handler(struct ocrdma_dev *dev, u32 event)
 {
 	switch (event) {
+<<<<<<< HEAD
 	case BE_DEV_UP:
 		ocrdma_open(dev);
 		break;
@@ -525,6 +791,28 @@ static void ocrdma_event_handler(struct ocrdma_dev *dev, u32 event)
 		ocrdma_close(dev);
 		break;
 	};
+=======
+	case BE_DEV_SHUTDOWN:
+		ocrdma_shutdown(dev);
+		break;
+	default:
+		break;
+	}
+}
+
+void ocrdma_update_link_state(struct ocrdma_dev *dev, u8 lstate)
+{
+	if (!(dev->flags & OCRDMA_FLAGS_LINK_STATUS_INIT)) {
+		dev->flags |= OCRDMA_FLAGS_LINK_STATUS_INIT;
+		if (!lstate)
+			return;
+	}
+
+	if (!lstate)
+		ocrdma_dispatch_port_error(dev);
+	else
+		ocrdma_dispatch_port_active(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct ocrdma_driver ocrdma_drv = {
@@ -532,6 +820,7 @@ static struct ocrdma_driver ocrdma_drv = {
 	.add			= ocrdma_add,
 	.remove			= ocrdma_remove,
 	.state_change_handler	= ocrdma_event_handler,
+<<<<<<< HEAD
 };
 
 static void ocrdma_unregister_inet6addr_notifier(void)
@@ -541,10 +830,16 @@ static void ocrdma_unregister_inet6addr_notifier(void)
 #endif
 }
 
+=======
+	.be_abi_version		= OCRDMA_BE_ROCE_ABI_VERSION,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init ocrdma_init_module(void)
 {
 	int status;
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_IPV6)
 	status = register_inet6addr_notifier(&ocrdma_inet6addr_notifier);
 	if (status)
@@ -554,6 +849,17 @@ static int __init ocrdma_init_module(void)
 	status = be_roce_register_driver(&ocrdma_drv);
 	if (status)
 		ocrdma_unregister_inet6addr_notifier();
+=======
+	ocrdma_init_debugfs();
+
+	status = be_roce_register_driver(&ocrdma_drv);
+	if (status)
+		goto err_be_reg;
+
+	return 0;
+
+err_be_reg:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return status;
 }
@@ -561,7 +867,12 @@ static int __init ocrdma_init_module(void)
 static void __exit ocrdma_exit_module(void)
 {
 	be_roce_unregister_driver(&ocrdma_drv);
+<<<<<<< HEAD
 	ocrdma_unregister_inet6addr_notifier();
+=======
+	ocrdma_rem_debugfs();
+	idr_destroy(&ocrdma_dev_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(ocrdma_init_module);

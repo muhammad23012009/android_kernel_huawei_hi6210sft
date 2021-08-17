@@ -21,8 +21,15 @@
 #define __HAVE_ARCH_MEMMOVE
 #define __HAVE_ARCH_STRCHR
 #define __HAVE_ARCH_STRLEN
+<<<<<<< HEAD
 
 extern __kernel_size_t strlen(const char *);
+=======
+#define __HAVE_ARCH_STRNLEN
+
+extern __kernel_size_t strlen(const char *);
+extern __kernel_size_t strnlen(const char *, __kernel_size_t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern char *strchr(const char *s, int c);
 extern void *memchr(const void *s, int c, size_t n);
 extern void *memset(void *, int, __kernel_size_t);

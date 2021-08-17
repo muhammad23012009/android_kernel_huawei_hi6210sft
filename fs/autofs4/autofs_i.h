@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 /* -*- c -*- ------------------------------------------------------------- *
  *   
  * linux/fs/autofs/autofs_i.h
  *
  *   Copyright 1997-1998 Transmeta Corporation - All Rights Reserved
  *   Copyright 2005-2006 Ian Kent <raven@themaw.net>
+=======
+/*
+ *  Copyright 1997-1998 Transmeta Corporation - All Rights Reserved
+ *  Copyright 2005-2006 Ian Kent <raven@themaw.net>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is part of the Linux kernel and is made available under
  * the terms of the GNU General Public License, version 2, or at your
  * option, any later version, incorporated herein by reference.
+<<<<<<< HEAD
  *
  * ----------------------------------------------------------------------- */
+=======
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Internal header file for autofs */
 
@@ -18,13 +28,22 @@
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <linux/magic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* This is the range of ioctl() numbers we claim as ours */
 #define AUTOFS_IOC_FIRST     AUTOFS_IOC_READY
 #define AUTOFS_IOC_COUNT     32
 
 #define AUTOFS_DEV_IOCTL_IOC_FIRST	(AUTOFS_DEV_IOCTL_VERSION)
+<<<<<<< HEAD
 #define AUTOFS_DEV_IOCTL_IOC_COUNT	(AUTOFS_IOC_COUNT - 11)
+=======
+#define AUTOFS_DEV_IOCTL_IOC_COUNT \
+	(AUTOFS_DEV_IOCTL_ISMOUNTPOINT_CMD - AUTOFS_DEV_IOCTL_VERSION_CMD)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -35,6 +54,7 @@
 #include <linux/mount.h>
 #include <linux/namei.h>
 #include <asm/current.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 /* #define DEBUG */
@@ -57,6 +77,23 @@
    flushed while the file exists.  All name lookups are dealt with at the
    dentry level, although the filesystem can interfere in the validation
    process.  Readdir is implemented by traversing the dentry lists. */
+=======
+#include <linux/uaccess.h>
+
+#ifdef pr_fmt
+#undef pr_fmt
+#endif
+#define pr_fmt(fmt) KBUILD_MODNAME ":pid:%d:%s: " fmt, current->pid, __func__
+
+/*
+ * Unified info structure.  This is pointed to by both the dentry and
+ * inode structures.  Each file in the filesystem has an instance of this
+ * structure.  It holds a reference to the dentry, so dentries are never
+ * flushed while the file exists.  All name lookups are dealt with at the
+ * dentry level, although the filesystem can interfere in the validation
+ * process.  Readdir is implemented by traversing the dentry lists.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct autofs_info {
 	struct dentry	*dentry;
 	struct inode	*inode;
@@ -78,7 +115,19 @@ struct autofs_info {
 	kgid_t gid;
 };
 
+<<<<<<< HEAD
 #define AUTOFS_INF_EXPIRING	(1<<0) /* dentry is in the process of expiring */
+=======
+#define AUTOFS_INF_EXPIRING	(1<<0) /* dentry in the process of expiring */
+#define AUTOFS_INF_WANT_EXPIRE	(1<<1) /* the dentry is being considered
+					* for expiry, so RCU_walk is
+					* not permitted.  If it progresses to
+					* actual expiry attempt, the flag is
+					* not cleared when EXPIRING is set -
+					* in that case it gets cleared only
+					* when it comes to clearing EXPIRING.
+					*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AUTOFS_INF_PENDING	(1<<2) /* dentry pending mount */
 
 struct autofs_wait_queue {
@@ -104,7 +153,11 @@ struct autofs_sb_info {
 	u32 magic;
 	int pipefd;
 	struct file *pipe;
+<<<<<<< HEAD
 	pid_t oz_pgrp;
+=======
+	struct pid *oz_pgrp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int catatonic;
 	int version;
 	int sub_version;
@@ -112,8 +165,11 @@ struct autofs_sb_info {
 	int max_proto;
 	unsigned long exp_timeout;
 	unsigned int type;
+<<<<<<< HEAD
 	int reghost_enabled;
 	int needs_reghost;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct super_block *sb;
 	struct mutex wq_mutex;
 	struct mutex pipe_mutex;
@@ -122,11 +178,20 @@ struct autofs_sb_info {
 	spinlock_t lookup_lock;
 	struct list_head active_list;
 	struct list_head expiring_list;
+<<<<<<< HEAD
+=======
+	struct rcu_head rcu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct autofs_sb_info *autofs4_sbi(struct super_block *sb)
 {
+<<<<<<< HEAD
 	return (struct autofs_sb_info *)(sb->s_fs_info);
+=======
+	return sb->s_magic != AUTOFS_SUPER_MAGIC ?
+		NULL : (struct autofs_sb_info *)(sb->s_fs_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline struct autofs_info *autofs4_dentry_ino(struct dentry *dentry)
@@ -135,6 +200,7 @@ static inline struct autofs_info *autofs4_dentry_ino(struct dentry *dentry)
 }
 
 /* autofs4_oz_mode(): do we see the man behind the curtain?  (The
+<<<<<<< HEAD
    processes which do manipulations for us in user space sees the raw
    filesystem without "magic".) */
 
@@ -154,6 +220,14 @@ static inline int autofs4_ispending(struct dentry *dentry)
 		return 1;
 
 	return 0;
+=======
+ * processes which do manipulations for us in user space sees the raw
+ * filesystem without "magic".)
+ */
+static inline int autofs4_oz_mode(struct autofs_sb_info *sbi)
+{
+	return sbi->catatonic || task_pgrp(current) == sbi->oz_pgrp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct inode *autofs4_get_inode(struct super_block *, umode_t);
@@ -161,6 +235,7 @@ void autofs4_free_ino(struct autofs_info *);
 
 /* Expiration */
 int is_autofs4_dentry(struct dentry *);
+<<<<<<< HEAD
 int autofs4_expire_wait(struct dentry *dentry);
 int autofs4_expire_run(struct super_block *, struct vfsmount *,
 			struct autofs_sb_info *,
@@ -169,6 +244,16 @@ int autofs4_do_expire_multi(struct super_block *sb, struct vfsmount *mnt,
 			    struct autofs_sb_info *sbi, int when);
 int autofs4_expire_multi(struct super_block *, struct vfsmount *,
 			struct autofs_sb_info *, int __user *);
+=======
+int autofs4_expire_wait(struct dentry *dentry, int rcu_walk);
+int autofs4_expire_run(struct super_block *, struct vfsmount *,
+		       struct autofs_sb_info *,
+		       struct autofs_packet_expire __user *);
+int autofs4_do_expire_multi(struct super_block *sb, struct vfsmount *mnt,
+			    struct autofs_sb_info *sbi, int when);
+int autofs4_expire_multi(struct super_block *, struct vfsmount *,
+			 struct autofs_sb_info *, int __user *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dentry *autofs4_expire_direct(struct super_block *sb,
 				     struct vfsmount *mnt,
 				     struct autofs_sb_info *sbi, int how);
@@ -190,6 +275,7 @@ extern const struct file_operations autofs4_root_operations;
 extern const struct dentry_operations autofs4_dentry_operations;
 
 /* VFS automount flags management functions */
+<<<<<<< HEAD
 
 static inline void __managed_dentry_set_automount(struct dentry *dentry)
 {
@@ -239,6 +325,8 @@ static inline void managed_dentry_clear_transit(struct dentry *dentry)
 	spin_unlock(&dentry->d_lock);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __managed_dentry_set_managed(struct dentry *dentry)
 {
 	dentry->d_flags |= (DCACHE_NEED_AUTOMOUNT|DCACHE_MANAGE_TRANSIT);
@@ -271,7 +359,11 @@ void autofs4_clean_ino(struct autofs_info *);
 
 static inline int autofs_prepare_pipe(struct file *pipe)
 {
+<<<<<<< HEAD
 	if (!pipe->f_op || !pipe->f_op->write)
+=======
+	if (!(pipe->f_mode & FMODE_CAN_WRITE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	if (!S_ISFIFO(file_inode(pipe)->i_mode))
 		return -EINVAL;
@@ -282,8 +374,13 @@ static inline int autofs_prepare_pipe(struct file *pipe)
 
 /* Queue management functions */
 
+<<<<<<< HEAD
 int autofs4_wait(struct autofs_sb_info *,struct dentry *, enum autofs_notify);
 int autofs4_wait_release(struct autofs_sb_info *,autofs_wqt_t,int);
+=======
+int autofs4_wait(struct autofs_sb_info *, struct dentry *, enum autofs_notify);
+int autofs4_wait_release(struct autofs_sb_info *, autofs_wqt_t, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void autofs4_catatonic_mode(struct autofs_sb_info *);
 
 static inline u32 autofs4_get_dev(struct autofs_sb_info *sbi)
@@ -293,49 +390,77 @@ static inline u32 autofs4_get_dev(struct autofs_sb_info *sbi)
 
 static inline u64 autofs4_get_ino(struct autofs_sb_info *sbi)
 {
+<<<<<<< HEAD
 	return sbi->sb->s_root->d_inode->i_ino;
 }
 
 static inline int simple_positive(struct dentry *dentry)
 {
 	return dentry->d_inode && !d_unhashed(dentry);
+=======
+	return d_inode(sbi->sb->s_root)->i_ino;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void __autofs4_add_expiring(struct dentry *dentry)
 {
 	struct autofs_sb_info *sbi = autofs4_sbi(dentry->d_sb);
 	struct autofs_info *ino = autofs4_dentry_ino(dentry);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ino) {
 		if (list_empty(&ino->expiring))
 			list_add(&ino->expiring, &sbi->expiring_list);
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void autofs4_add_expiring(struct dentry *dentry)
 {
 	struct autofs_sb_info *sbi = autofs4_sbi(dentry->d_sb);
 	struct autofs_info *ino = autofs4_dentry_ino(dentry);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ino) {
 		spin_lock(&sbi->lookup_lock);
 		if (list_empty(&ino->expiring))
 			list_add(&ino->expiring, &sbi->expiring_list);
 		spin_unlock(&sbi->lookup_lock);
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void autofs4_del_expiring(struct dentry *dentry)
 {
 	struct autofs_sb_info *sbi = autofs4_sbi(dentry->d_sb);
 	struct autofs_info *ino = autofs4_dentry_ino(dentry);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ino) {
 		spin_lock(&sbi->lookup_lock);
 		if (!list_empty(&ino->expiring))
 			list_del_init(&ino->expiring);
 		spin_unlock(&sbi->lookup_lock);
 	}
+<<<<<<< HEAD
 	return;
 }
 
 extern void autofs4_kill_sb(struct super_block *);
+=======
+}
+
+void autofs4_kill_sb(struct super_block *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -81,7 +81,11 @@ static inline void get_mmu_context(struct mm_struct *mm, unsigned int cpu)
 
 		/*
 		 * Fix version; Note that we avoid version #0
+<<<<<<< HEAD
 		 * to distingush NO_CONTEXT.
+=======
+		 * to distinguish NO_CONTEXT.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		if (!asid)
 			asid = MMU_CONTEXT_FIRST_VERSION;
@@ -99,7 +103,11 @@ static inline int init_new_context(struct task_struct *tsk,
 {
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < num_online_cpus(); i++)
+=======
+	for_each_online_cpu(i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cpu_context(i, mm) = NO_CONTEXT;
 
 	return 0;

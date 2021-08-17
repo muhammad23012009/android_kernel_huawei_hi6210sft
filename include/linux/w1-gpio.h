@@ -20,6 +20,10 @@ struct w1_gpio_platform_data {
 	unsigned int is_open_drain:1;
 	void (*enable_external_pullup)(int enable);
 	unsigned int ext_pullup_enable_pin;
+<<<<<<< HEAD
+=======
+	unsigned int pullup_duration;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* _LINUX_W1_GPIO_H */

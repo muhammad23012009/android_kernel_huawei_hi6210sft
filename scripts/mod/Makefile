@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+OBJECT_FILES_NON_STANDARD := y
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 hostprogs-y	:= modpost mk_elfconfig
 always		:= $(hostprogs-y) empty.o
 
@@ -5,6 +10,7 @@ modpost-objs	:= modpost.o file2alias.o sumversion.o
 
 devicetable-offsets-file := devicetable-offsets.h
 
+<<<<<<< HEAD
 define sed-y
 	"/^->/{s:->#\(.*\):/* \1 */:; \
 	s:^->\([^ ]*\) [\$$#]*\([-0-9]*\) \(.*\):#define \1 \2 /* \3 */:; \
@@ -38,6 +44,12 @@ $(obj)/$(devicetable-offsets-file): scripts/mod/devicetable-offsets.s
 	$(call cmd,offsets)
 
 targets += $(devicetable-offsets-file)
+=======
+$(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE
+	$(call filechk,offsets,__DEVICETABLE_OFFSETS_H__)
+
+targets += $(devicetable-offsets-file) devicetable-offsets.s
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # dependencies on generated files need to be listed explicitly
 

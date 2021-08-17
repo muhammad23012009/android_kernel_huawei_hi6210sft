@@ -62,6 +62,11 @@ enum {
 	TMF_NOT_FOUND,
 };
 
+<<<<<<< HEAD
+=======
+#define ISID_SIZE			6
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Connection suspend "bit" */
 #define ISCSI_SUSPEND_BIT		1
 
@@ -131,6 +136,13 @@ struct iscsi_task {
 	unsigned long		last_xfer;
 	unsigned long		last_timeout;
 	bool			have_checked_conn;
+<<<<<<< HEAD
+=======
+
+	/* T10 protection information */
+	bool			protected;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* state set/tested under session->lock */
 	int			state;
 	atomic_t		refcount;
@@ -138,6 +150,12 @@ struct iscsi_task {
 	void			*dd_data;	/* driver/transport data */
 };
 
+<<<<<<< HEAD
+=======
+/* invalid scsi_task pointer */
+#define	INVALID_SCSI_TASK	(struct iscsi_task *)-1l
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int iscsi_task_has_unsol_data(struct iscsi_task *task)
 {
 	return task->unsol_r2t.data_length > task->unsol_r2t.sent;
@@ -173,6 +191,10 @@ struct iscsi_conn {
 
 	/* iSCSI connection-wide sequencing */
 	uint32_t		exp_statsn;
+<<<<<<< HEAD
+=======
+	uint32_t		statsn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* control data */
 	int			id;		/* CID */
@@ -189,6 +211,10 @@ struct iscsi_conn {
 	struct iscsi_task	*task;		/* xmit task in progress */
 
 	/* xmit */
+<<<<<<< HEAD
+=======
+	spinlock_t		taskqueuelock;  /* protects the next three lists */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head	mgmtqueue;	/* mgmt (control) xmit queue */
 	struct list_head	cmdqueue;	/* data-path cmd queue */
 	struct list_head	requeue;	/* tasks needing another run */
@@ -213,6 +239,26 @@ struct iscsi_conn {
 	int			persistent_port;
 	char			*persistent_address;
 
+<<<<<<< HEAD
+=======
+	unsigned		max_segment_size;
+	unsigned		tcp_xmit_wsf;
+	unsigned		tcp_recv_wsf;
+	uint16_t		keepalive_tmo;
+	uint16_t		local_port;
+	uint8_t			tcp_timestamp_stat;
+	uint8_t			tcp_nagle_disable;
+	uint8_t			tcp_wsf_disable;
+	uint8_t			tcp_timer_scale;
+	uint8_t			tcp_timestamp_en;
+	uint8_t			fragment_disable;
+	uint8_t			ipv4_tos;
+	uint8_t			ipv6_traffic_class;
+	uint8_t			ipv6_flow_label;
+	uint8_t			is_fw_assigned_ipv6;
+	char			*local_ipaddr;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* MIB-statistics */
 	uint64_t		txdata_octets;
 	uint64_t		rxdata_octets;
@@ -287,16 +333,51 @@ struct iscsi_session {
 	char			*targetalias;
 	char			*ifacename;
 	char			*initiatorname;
+<<<<<<< HEAD
+=======
+	char			*boot_root;
+	char			*boot_nic;
+	char			*boot_target;
+	char			*portal_type;
+	char			*discovery_parent_type;
+	uint16_t		discovery_parent_idx;
+	uint16_t		def_taskmgmt_tmo;
+	uint16_t		tsid;
+	uint8_t			auto_snd_tgt_disable;
+	uint8_t			discovery_sess;
+	uint8_t			chap_auth_en;
+	uint8_t			discovery_logout_en;
+	uint8_t			bidi_chap_en;
+	uint8_t			discovery_auth_optional;
+	uint8_t			isid[ISID_SIZE];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* control data */
 	struct iscsi_transport	*tt;
 	struct Scsi_Host	*host;
 	struct iscsi_conn	*leadconn;	/* leading connection */
+<<<<<<< HEAD
 	spinlock_t		lock;		/* protects session state, *
 						 * sequence numbers,       *
 						 * session resources:      *
 						 * - cmdpool,		   *
 						 * - mgmtpool,		   *
 						 * - r2tpool		   */
+=======
+	/* Between the forward and the backward locks exists a strict locking
+	 * hierarchy. The mutual exclusion zone protected by the forward lock
+	 * can enclose the mutual exclusion zone protected by the backward lock
+	 * but not vice versa.
+	 */
+	spinlock_t		frwd_lock;	/* protects session state, *
+						 * cmdsn, queued_cmdsn     *
+						 * session resources:      *
+						 * - cmdpool kfifo_out ,   *
+						 * - mgmtpool,		   */
+	spinlock_t		back_lock;	/* protects cmdsn_exp      *
+						 * cmdsn_max,              *
+						 * cmdpool kfifo_in        */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			state;		/* session state           */
 	int			age;		/* counts session re-opens */
 
@@ -331,8 +412,11 @@ struct iscsi_host {
 /*
  * scsi host template
  */
+<<<<<<< HEAD
 extern int iscsi_change_queue_depth(struct scsi_device *sdev, int depth,
 				    int reason);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int iscsi_eh_abort(struct scsi_cmnd *sc);
 extern int iscsi_eh_recover_target(struct scsi_cmnd *sc);
 extern int iscsi_eh_session_reset(struct scsi_cmnd *sc);

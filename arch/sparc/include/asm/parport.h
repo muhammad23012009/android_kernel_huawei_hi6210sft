@@ -20,6 +20,10 @@
  */
 #define HAS_DMA
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PARPORT_PC_FIFO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEFINE_SPINLOCK(dma_spin_lock);
 
 #define claim_dma_lock() \
@@ -30,6 +34,10 @@ static DEFINE_SPINLOCK(dma_spin_lock);
 
 #define release_dma_lock(__flags) \
 	spin_unlock_irqrestore(&dma_spin_lock, __flags);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct sparc_ebus_info {
 	struct ebus_dma_info info;
@@ -238,7 +246,10 @@ static const struct of_device_id ecpp_match[] = {
 static struct platform_driver ecpp_driver = {
 	.driver = {
 		.name = "ecpp",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = ecpp_match,
 	},
 	.probe			= ecpp_probe,

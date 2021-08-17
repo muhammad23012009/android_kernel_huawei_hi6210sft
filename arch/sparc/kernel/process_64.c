@@ -31,6 +31,10 @@
 #include <linux/elfcore.h>
 #include <linux/sysrq.h>
 #include <linux/nmi.h>
+<<<<<<< HEAD
+=======
+#include <linux/context_tracking.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/uaccess.h>
 #include <asm/page.h>
@@ -87,7 +91,11 @@ void arch_cpu_idle(void)
 }
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 void arch_cpu_idle_dead()
+=======
+void arch_cpu_idle_dead(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sched_preempt_enable_no_resched();
 	cpu_play_dead();
@@ -102,7 +110,11 @@ static void show_regwindow32(struct pt_regs *regs)
 	mm_segment_t old_fs;
 	
 	__asm__ __volatile__ ("flushw");
+<<<<<<< HEAD
 	rw = compat_ptr((unsigned)regs->u_regs[14]);
+=======
+	rw = compat_ptr((unsigned int)regs->u_regs[14]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	old_fs = get_fs();
 	set_fs (USER_DS);
 	if (copy_from_user (&r_w, rw, sizeof(r_w))) {
@@ -238,7 +250,11 @@ static void __global_reg_poll(struct global_reg_snapshot *gp)
 	}
 }
 
+<<<<<<< HEAD
 void arch_trigger_all_cpu_backtrace(void)
+=======
+void arch_trigger_cpumask_backtrace(const cpumask_t *mask, bool exclude_self)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct thread_info *tp = current_thread_info();
 	struct pt_regs *regs = get_irq_regs();
@@ -250,6 +266,7 @@ void arch_trigger_all_cpu_backtrace(void)
 
 	spin_lock_irqsave(&global_cpu_snapshot_lock, flags);
 
+<<<<<<< HEAD
 	memset(global_cpu_snapshot, 0, sizeof(global_cpu_snapshot));
 
 	this_cpu = raw_smp_processor_id();
@@ -260,6 +277,24 @@ void arch_trigger_all_cpu_backtrace(void)
 
 	for_each_online_cpu(cpu) {
 		struct global_reg_snapshot *gp = &global_cpu_snapshot[cpu].reg;
+=======
+	this_cpu = raw_smp_processor_id();
+
+	memset(global_cpu_snapshot, 0, sizeof(global_cpu_snapshot));
+
+	if (cpumask_test_cpu(this_cpu, mask) && !exclude_self)
+		__global_reg_self(tp, regs, this_cpu);
+
+	smp_fetch_global_regs();
+
+	for_each_cpu(cpu, mask) {
+		struct global_reg_snapshot *gp;
+
+		if (exclude_self && cpu == this_cpu)
+			continue;
+
+		gp = &global_cpu_snapshot[cpu].reg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		__global_reg_poll(gp);
 
@@ -293,7 +328,11 @@ void arch_trigger_all_cpu_backtrace(void)
 
 static void sysrq_handle_globreg(int key)
 {
+<<<<<<< HEAD
 	arch_trigger_all_cpu_backtrace();
+=======
+	trigger_all_cpu_backtrace();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct sysrq_key_op sparc_globalreg_op = {
@@ -307,6 +346,12 @@ static void __global_pmu_self(int this_cpu)
 	struct global_pmu_snapshot *pp;
 	int i, num;
 
+<<<<<<< HEAD
+=======
+	if (!pcr_ops)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pp = &global_cpu_snapshot[this_cpu].pmu;
 
 	num = 1;
@@ -407,9 +452,15 @@ unsigned long thread_saved_pc(struct task_struct *tsk)
 }
 
 /* Free current thread data structures etc.. */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 	struct thread_info *t = current_thread_info();
+=======
+void exit_thread(struct task_struct *tsk)
+{
+	struct thread_info *t = task_thread_info(tsk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (t->utraps) {
 		if (t->utraps[0] < 2)
@@ -563,6 +614,10 @@ void fault_in_user_windows(void)
 
 barf:
 	set_thread_wsaved(window + 1);
+<<<<<<< HEAD
+=======
+	user_exit();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do_exit(SIGILL);
 }
 

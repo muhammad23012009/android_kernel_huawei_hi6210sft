@@ -106,7 +106,11 @@ unsigned int snd_dma_pointer(unsigned long dma, unsigned int size)
 		result = result1;
 #ifdef CONFIG_SND_DEBUG
 	if (result > size)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pointer (0x%x) for DMA #%ld is greater than transfer size (0x%x)\n", result, dma, size);
+=======
+		pr_err("ALSA: pointer (0x%x) for DMA #%ld is greater than transfer size (0x%x)\n", result, dma, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	if (result >= size || result == 0)
 		return 0;

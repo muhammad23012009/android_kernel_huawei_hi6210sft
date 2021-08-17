@@ -482,10 +482,15 @@ static int ili922x_probe(struct spi_device *spi)
 	u16 reg = 0;
 
 	ili = devm_kzalloc(&spi->dev, sizeof(*ili), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!ili) {
 		dev_err(&spi->dev, "cannot alloc priv data\n");
 		return -ENOMEM;
 	}
+=======
+	if (!ili)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ili->spi = spi;
 	spi_set_drvdata(spi, ili);
@@ -497,24 +502,43 @@ static int ili922x_probe(struct spi_device *spi)
 			"no LCD found: Chip ID 0x%x, ret %d\n",
 			reg, ret);
 		return -ENODEV;
+<<<<<<< HEAD
 	} else {
 		dev_info(&spi->dev, "ILI%x found, SPI freq %d, mode %d\n",
 			 reg, spi->max_speed_hz, spi->mode);
 	}
 
+=======
+	}
+
+	dev_info(&spi->dev, "ILI%x found, SPI freq %d, mode %d\n",
+		 reg, spi->max_speed_hz, spi->mode);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = ili922x_read_status(spi, &reg);
 	if (ret) {
 		dev_err(&spi->dev, "reading RS failed...\n");
 		return ret;
+<<<<<<< HEAD
 	} else
 		dev_dbg(&spi->dev, "status: 0x%x\n", reg);
+=======
+	}
+
+	dev_dbg(&spi->dev, "status: 0x%x\n", reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ili922x_display_init(spi);
 
 	ili->power = FB_BLANK_POWERDOWN;
 
+<<<<<<< HEAD
 	lcd = lcd_device_register("ili922xlcd", &spi->dev, ili,
 				  &ili922x_ops);
+=======
+	lcd = devm_lcd_device_register(&spi->dev, "ili922xlcd", &spi->dev, ili,
+					&ili922x_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(lcd)) {
 		dev_err(&spi->dev, "cannot register LCD\n");
 		return PTR_ERR(lcd);
@@ -530,17 +554,24 @@ static int ili922x_probe(struct spi_device *spi)
 
 static int ili922x_remove(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	struct ili922x *ili = spi_get_drvdata(spi);
 
 	ili922x_poweroff(spi);
 	lcd_device_unregister(ili->ld);
+=======
+	ili922x_poweroff(spi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct spi_driver ili922x_driver = {
 	.driver = {
 		.name = "ili922x",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = ili922x_probe,
 	.remove = ili922x_remove,

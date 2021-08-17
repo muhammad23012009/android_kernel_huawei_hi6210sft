@@ -1,10 +1,18 @@
 config SCSI_CXGB4_ISCSI
 	tristate "Chelsio T4 iSCSI support"
+<<<<<<< HEAD
 	depends on PCI && INET
+=======
+	depends on PCI && INET && (IPV6 || IPV6=n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select NETDEVICES
 	select ETHERNET
 	select NET_VENDOR_CHELSIO
 	select CHELSIO_T4
+<<<<<<< HEAD
+=======
+	select CHELSIO_LIB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select SCSI_ISCSI_ATTRS
 	---help---
 	  This driver supports iSCSI offload for the Chelsio T4 devices.

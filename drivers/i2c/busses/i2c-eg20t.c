@@ -9,16 +9,22 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/i2c.h>
 #include <linux/fs.h>
@@ -187,13 +193,21 @@ static DEFINE_MUTEX(pch_mutex);
 #define PCI_DEVICE_ID_ML7223_I2C	0x8010
 #define PCI_DEVICE_ID_ML7831_I2C	0x8817
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pch_pcidev_id) = {
+=======
+static const struct pci_device_id pch_pcidev_id[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_PCH_I2C),   1, },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_I2C), 2, },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7223_I2C), 1, },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7831_I2C), 1, },
 	{0,}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(pci, pch_pcidev_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static irqreturn_t pch_i2c_handler(int irq, void *pData);
 
@@ -312,6 +326,7 @@ static void pch_i2c_start(struct i2c_algo_pch_data *adap)
 }
 
 /**
+<<<<<<< HEAD
  * pch_i2c_getack() - to confirm ACK/NACK
  * @adap:	Pointer to struct i2c_algo_pch_data.
  */
@@ -330,6 +345,8 @@ static s32 pch_i2c_getack(struct i2c_algo_pch_data *adap)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * pch_i2c_stop() - generate stop condition in normal mode.
  * @adap:	Pointer to struct i2c_algo_pch_data.
  */
@@ -344,6 +361,10 @@ static void pch_i2c_stop(struct i2c_algo_pch_data *adap)
 static int pch_i2c_wait_for_check_xfer(struct i2c_algo_pch_data *adap)
 {
 	long ret;
+<<<<<<< HEAD
+=======
+	void __iomem *p = adap->pch_base_address;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = wait_event_timeout(pch_event,
 			(adap->pch_event_flag != 0), msecs_to_jiffies(1000));
@@ -366,10 +387,16 @@ static int pch_i2c_wait_for_check_xfer(struct i2c_algo_pch_data *adap)
 
 	adap->pch_event_flag = 0;
 
+<<<<<<< HEAD
 	if (pch_i2c_getack(adap)) {
 		pch_dbg(adap, "Receive NACK for slave address"
 			"setting\n");
 		return -EIO;
+=======
+	if (ioread32(p + PCH_I2CSR) & PCH_GETACK) {
+		pch_dbg(adap, "Receive NACK for slave address setting\n");
+		return -ENXIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -770,10 +797,15 @@ static int pch_i2c_probe(struct pci_dev *pdev,
 	pch_pci_dbg(pdev, "Entered.\n");
 
 	adap_info = kzalloc((sizeof(struct adapter_info)), GFP_KERNEL);
+<<<<<<< HEAD
 	if (adap_info == NULL) {
 		pch_pci_err(pdev, "Memory allocation FAILED\n");
 		return -ENOMEM;
 	}
+=======
+	if (adap_info == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = pci_enable_device(pdev);
 	if (ret) {
@@ -813,6 +845,10 @@ static int pch_i2c_probe(struct pci_dev *pdev,
 		/* base_addr + offset; */
 		adap_info->pch_data[i].pch_base_address = base_addr + 0x100 * i;
 
+<<<<<<< HEAD
+=======
+		pch_adap->dev.of_node = pdev->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pch_adap->dev.parent = &pdev->dev;
 	}
 

@@ -213,7 +213,11 @@ static bool tegra20_spdif_wr_rd_reg(struct device *dev, unsigned int reg)
 		return true;
 	default:
 		return false;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool tegra20_spdif_volatile_reg(struct device *dev, unsigned int reg)
@@ -234,7 +238,11 @@ static bool tegra20_spdif_volatile_reg(struct device *dev, unsigned int reg)
 		return true;
 	default:
 		return false;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool tegra20_spdif_precious_reg(struct device *dev, unsigned int reg)
@@ -247,7 +255,11 @@ static bool tegra20_spdif_precious_reg(struct device *dev, unsigned int reg)
 		return true;
 	default:
 		return false;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct regmap_config tegra20_spdif_regmap_config = {
@@ -259,13 +271,21 @@ static const struct regmap_config tegra20_spdif_regmap_config = {
 	.readable_reg = tegra20_spdif_wr_rd_reg,
 	.volatile_reg = tegra20_spdif_volatile_reg,
 	.precious_reg = tegra20_spdif_precious_reg,
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
+=======
+	.cache_type = REGCACHE_FLAT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int tegra20_spdif_platform_probe(struct platform_device *pdev)
 {
 	struct tegra20_spdif *spdif;
+<<<<<<< HEAD
 	struct resource *mem, *memregion, *dmareq;
+=======
+	struct resource *mem, *dmareq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *regs;
 	int ret;
 
@@ -273,6 +293,7 @@ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
 			     GFP_KERNEL);
 	if (!spdif) {
 		dev_err(&pdev->dev, "Can't allocate tegra20_spdif\n");
+<<<<<<< HEAD
 		ret = -ENOMEM;
 		goto err;
 	}
@@ -291,10 +312,28 @@ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
 		ret = -ENODEV;
 		goto err_clk_put;
 	}
+=======
+		return -ENOMEM;
+	}
+	dev_set_drvdata(&pdev->dev, spdif);
+
+	spdif->clk_spdif_out = devm_clk_get(&pdev->dev, "spdif_out");
+	if (IS_ERR(spdif->clk_spdif_out)) {
+		pr_err("Can't retrieve spdif clock\n");
+		ret = PTR_ERR(spdif->clk_spdif_out);
+		return ret;
+	}
+
+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	regs = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(regs))
+		return PTR_ERR(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dmareq = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!dmareq) {
 		dev_err(&pdev->dev, "No DMA resource\n");
+<<<<<<< HEAD
 		ret = -ENODEV;
 		goto err_clk_put;
 	}
@@ -312,6 +351,9 @@ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "ioremap failed\n");
 		ret = -ENOMEM;
 		goto err_clk_put;
+=======
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	spdif->regmap = devm_regmap_init_mmio(&pdev->dev, regs,
@@ -319,7 +361,11 @@ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
 	if (IS_ERR(spdif->regmap)) {
 		dev_err(&pdev->dev, "regmap init failed\n");
 		ret = PTR_ERR(spdif->regmap);
+<<<<<<< HEAD
 		goto err_clk_put;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	spdif->playback_dma_data.addr = mem->start + TEGRA20_SPDIF_DATA_OUT;
@@ -335,7 +381,11 @@ static int tegra20_spdif_platform_probe(struct platform_device *pdev)
 	}
 
 	ret = snd_soc_register_component(&pdev->dev, &tegra20_spdif_component,
+<<<<<<< HEAD
 				   &tegra20_spdif_dai, 1);
+=======
+					 &tegra20_spdif_dai, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(&pdev->dev, "Could not register DAI: %d\n", ret);
 		ret = -ENOMEM;
@@ -357,16 +407,23 @@ err_suspend:
 		tegra20_spdif_runtime_suspend(&pdev->dev);
 err_pm_disable:
 	pm_runtime_disable(&pdev->dev);
+<<<<<<< HEAD
 err_clk_put:
 	clk_put(spdif->clk_spdif_out);
 err:
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int tegra20_spdif_platform_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct tegra20_spdif *spdif = dev_get_drvdata(&pdev->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pm_runtime_disable(&pdev->dev);
 	if (!pm_runtime_status_suspended(&pdev->dev))
 		tegra20_spdif_runtime_suspend(&pdev->dev);
@@ -374,8 +431,11 @@ static int tegra20_spdif_platform_remove(struct platform_device *pdev)
 	tegra_pcm_platform_unregister(&pdev->dev);
 	snd_soc_unregister_component(&pdev->dev);
 
+<<<<<<< HEAD
 	clk_put(spdif->clk_spdif_out);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -387,7 +447,10 @@ static const struct dev_pm_ops tegra20_spdif_pm_ops = {
 static struct platform_driver tegra20_spdif_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &tegra20_spdif_pm_ops,
 	},
 	.probe = tegra20_spdif_platform_probe,

@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     ni_labpc.h
 
     Header for ni_labpc.c and ni_labpc_cs.c
@@ -20,20 +21,40 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 */
+=======
+ * Header for ni_labpc ISA/PCMCIA/PCI drivers
+ *
+ * Copyright (C) 2003 Frank Mori Hess <fmhess@users.sourceforge.net>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef _NI_LABPC_H
 #define _NI_LABPC_H
 
+<<<<<<< HEAD
 #define EEPROM_SIZE	256	/*  256 byte eeprom */
 #define NUM_AO_CHAN	2	/*  boards have two analog output channels */
 
 enum labpc_register_layout { labpc_plus_layout, labpc_1200_layout };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum transfer_type { fifo_not_empty_transfer, fifo_half_full_transfer,
 	isa_dma_transfer
 };
 
 struct labpc_boardinfo {
 	const char *name;
+<<<<<<< HEAD
 	int device_id;		/*  device id for pci and pcmcia boards */
 	int ai_speed;		/*  maximum input speed in nanoseconds */
 
@@ -56,6 +77,20 @@ struct labpc_private {
 	unsigned long long count;
 	/*  software copy of analog output values */
 	unsigned int ao_value[NUM_AO_CHAN];
+=======
+	int ai_speed;			/* maximum input speed in ns */
+	unsigned ai_scan_up:1;		/* can auto scan up in ai channels */
+	unsigned has_ao:1;		/* has analog outputs */
+	unsigned is_labpc1200:1;	/* has extra regs compared to pc+ */
+};
+
+struct labpc_private {
+	struct comedi_isadma *dma;
+	struct comedi_8254 *counter;
+
+	/*  number of data points left to be taken */
+	unsigned long long count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*  software copys of bits written to command registers */
 	unsigned int cmd1;
 	unsigned int cmd2;
@@ -66,6 +101,7 @@ struct labpc_private {
 	/*  store last read of board status registers */
 	unsigned int stat1;
 	unsigned int stat2;
+<<<<<<< HEAD
 	/*
 	 * value to load into board's counter a0 (conversion pacing) for timed
 	 * conversions
@@ -91,19 +127,33 @@ struct labpc_private {
 	unsigned int eeprom_data[EEPROM_SIZE];
 	/* stores settings of calibration dacs */
 	unsigned int caldac[16];
+=======
+
+	/* we are using dma/fifo-half-full/etc. */
+	enum transfer_type current_transfer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * function pointers so we can use inb/outb or readb/writeb as
 	 * appropriate
 	 */
+<<<<<<< HEAD
 	unsigned int (*read_byte) (unsigned long address);
 	void (*write_byte) (unsigned int byte, unsigned long address);
+=======
+	unsigned int (*read_byte)(struct comedi_device *, unsigned long reg);
+	void (*write_byte)(struct comedi_device *,
+			   unsigned int byte, unsigned long reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int labpc_common_attach(struct comedi_device *dev,
 			unsigned int irq, unsigned long isr_flags);
 void labpc_common_detach(struct comedi_device *dev);
 
+<<<<<<< HEAD
 extern const int labpc_1200_ai_gain_bits[];
 extern const struct comedi_lrange range_labpc_1200_ai;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _NI_LABPC_H */

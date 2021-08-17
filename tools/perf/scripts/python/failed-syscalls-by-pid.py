@@ -39,7 +39,11 @@ def trace_end():
 
 def raw_syscalls__sys_exit(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
+<<<<<<< HEAD
 	id, ret):
+=======
+	common_callchain, id, ret):
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (for_comm and common_comm != for_comm) or \
 	   (for_pid  and common_pid  != for_pid ):
 		return
@@ -50,6 +54,14 @@ def raw_syscalls__sys_exit(event_name, context, common_cpu,
 		except TypeError:
 			syscalls[common_comm][common_pid][id][ret] = 1
 
+<<<<<<< HEAD
+=======
+def syscalls__sys_exit(event_name, context, common_cpu,
+	common_secs, common_nsecs, common_pid, common_comm,
+	id, ret):
+	raw_syscalls__sys_exit(**locals())
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 def print_error_totals():
     if for_comm is not None:
 	    print "\nsyscall errors for %s:\n\n" % (for_comm),

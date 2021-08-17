@@ -20,7 +20,10 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 
 MODULE_DESCRIPTION("OmniVision ov7640 sensor driver");
@@ -59,7 +62,11 @@ static int ov7640_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	sd = kzalloc(sizeof(struct v4l2_subdev), GFP_KERNEL);
+=======
+	sd = devm_kzalloc(&client->dev, sizeof(*sd), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sd == NULL)
 		return -ENOMEM;
 	v4l2_i2c_subdev_init(sd, client, &ov7640_ops);
@@ -71,7 +78,10 @@ static int ov7640_probe(struct i2c_client *client,
 
 	if (write_regs(client, initial_registers) < 0) {
 		v4l_err(client, "error initializing OV7640\n");
+<<<<<<< HEAD
 		kfree(sd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 
@@ -84,7 +94,11 @@ static int ov7640_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 
 	v4l2_device_unregister_subdev(sd);
+<<<<<<< HEAD
 	kfree(sd);
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -96,7 +110,10 @@ MODULE_DEVICE_TABLE(i2c, ov7640_id);
 
 static struct i2c_driver ov7640_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "ov7640",
 	},
 	.probe = ov7640_probe,

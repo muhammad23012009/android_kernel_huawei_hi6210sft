@@ -26,7 +26,12 @@
 #include <linux/cpu.h>
 #include <linux/fs.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/console.h>
+#include <linux/screen_info.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/sections.h>
 #include <asm/div64.h>
@@ -38,6 +43,11 @@
 
 static const char *c6x_soc_name;
 
+<<<<<<< HEAD
+=======
+struct screen_info screen_info;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int c6x_num_cores;
 EXPORT_SYMBOL_GPL(c6x_num_cores);
 
@@ -60,6 +70,10 @@ unsigned char c6x_fuse_mac[6];
 
 unsigned long memory_start;
 unsigned long memory_end;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memory_end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned long ram_start;
 unsigned long ram_end;
@@ -68,6 +82,7 @@ unsigned long ram_end;
 static unsigned long dma_start __initdata;
 static unsigned long dma_size __initdata;
 
+<<<<<<< HEAD
 char c6x_command_line[COMMAND_LINE_SIZE];
 
 #if defined(CONFIG_CMDLINE_BOOL)
@@ -75,6 +90,8 @@ static const char default_command_line[COMMAND_LINE_SIZE] __section(.cmdline) =
 	CONFIG_CMDLINE;
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cpuinfo_c6x {
 	const char *cpu_name;
 	const char *cpu_voltage;
@@ -272,8 +289,13 @@ int __init c6x_add_memory(phys_addr_t start, unsigned long size)
  */
 notrace void __init machine_init(unsigned long dt_ptr)
 {
+<<<<<<< HEAD
 	struct boot_param_header *dtb = __va(dt_ptr);
 	struct boot_param_header *fdt = (struct boot_param_header *)_fdt_start;
+=======
+	void *dtb = __va(dt_ptr);
+	void *fdt = _fdt_start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* interrupts must be masked */
 	set_creg(IER, 2);
@@ -284,8 +306,11 @@ notrace void __init machine_init(unsigned long dt_ptr)
 	 */
 	set_ist(_vectors_start);
 
+<<<<<<< HEAD
 	lockdep_init();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * dtb is passed in from bootloader.
 	 * fdt is linked in blob.
@@ -294,10 +319,15 @@ notrace void __init machine_init(unsigned long dt_ptr)
 		fdt = dtb;
 
 	/* Do some early initialization based on the flat device tree */
+<<<<<<< HEAD
 	early_init_devtree(fdt);
 
 	/* parse_early_param needs a boot_command_line */
 	strlcpy(boot_command_line, c6x_command_line, COMMAND_LINE_SIZE);
+=======
+	early_init_dt_scan(fdt);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	parse_early_param();
 }
 
@@ -309,7 +339,11 @@ void __init setup_arch(char **cmdline_p)
 	printk(KERN_INFO "Initializing kernel\n");
 
 	/* Initialize command line */
+<<<<<<< HEAD
 	*cmdline_p = c6x_command_line;
+=======
+	*cmdline_p = boot_command_line;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memory_end = ram_end;
 	memory_end &= ~(PAGE_SIZE - 1);

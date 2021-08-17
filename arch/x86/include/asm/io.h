@@ -35,10 +35,19 @@
   */
 
 #define ARCH_HAS_IOREMAP_WC
+<<<<<<< HEAD
+=======
+#define ARCH_HAS_IOREMAP_WT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/string.h>
 #include <linux/compiler.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/early_ioremap.h>
+#include <asm/pgtable_types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define build_mmio_read(name, size, type, reg, barrier) \
 static inline type name(const volatile void __iomem *addr) \
@@ -73,6 +82,12 @@ build_mmio_write(__writel, "l", unsigned int, "r", )
 #define __raw_readw __readw
 #define __raw_readl __readl
 
+<<<<<<< HEAD
+=======
+#define writeb_relaxed(v, a) __writeb(v, a)
+#define writew_relaxed(v, a) __writew(v, a)
+#define writel_relaxed(v, a) __writel(v, a)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __raw_writeb __writeb
 #define __raw_writew __writew
 #define __raw_writel __writel
@@ -85,6 +100,10 @@ build_mmio_read(readq, "q", unsigned long, "=r", :"memory")
 build_mmio_write(writeq, "q", unsigned long, "r", :"memory")
 
 #define readq_relaxed(a)	readq(a)
+<<<<<<< HEAD
+=======
+#define writeq_relaxed(v, a)	writeq(v, a)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __raw_readq(a)		readq(a)
 #define __raw_writeq(val, addr)	writeq(val, addr)
@@ -172,6 +191,12 @@ static inline unsigned int isa_virt_to_bus(volatile void *address)
  * look at pci_iomap().
  */
 extern void __iomem *ioremap_nocache(resource_size_t offset, unsigned long size);
+<<<<<<< HEAD
+=======
+extern void __iomem *ioremap_uc(resource_size_t offset, unsigned long size);
+#define ioremap_uc ioremap_uc
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void __iomem *ioremap_cache(resource_size_t offset, unsigned long size);
 extern void __iomem *ioremap_prot(resource_size_t offset, unsigned long size,
 				unsigned long prot_val);
@@ -192,8 +217,11 @@ extern void set_iounmap_nonlazy(void);
 
 #include <asm-generic/iomap.h>
 
+<<<<<<< HEAD
 #include <linux/vmalloc.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Convert a virtual cached pointer to an uncached pointer
  */
@@ -237,7 +265,11 @@ memcpy_toio(volatile void __iomem *dst, const void *src, size_t count)
 
 static inline void flush_write_buffers(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_X86_OOSTORE) || defined(CONFIG_X86_PPRO_FENCE)
+=======
+#if defined(CONFIG_X86_PPRO_FENCE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	asm volatile("lock; addl $0,0(%%esp)": : :"memory");
 #endif
 }
@@ -309,6 +341,7 @@ BUILDIO(b, b, char)
 BUILDIO(w, w, short)
 BUILDIO(l, , int)
 
+<<<<<<< HEAD
 extern void *xlate_dev_mem_ptr(unsigned long phys);
 extern void unxlate_dev_mem_ptr(unsigned long phys, void *addr);
 
@@ -329,6 +362,16 @@ extern void __iomem *early_memremap(resource_size_t phys_addr,
 				    unsigned long size);
 extern void early_iounmap(void __iomem *addr, unsigned long size);
 extern void fixup_early_ioremap(void);
+=======
+extern void *xlate_dev_mem_ptr(phys_addr_t phys);
+extern void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr);
+
+extern int ioremap_change_attr(unsigned long vaddr, unsigned long size,
+				enum page_cache_mode pcm);
+extern void __iomem *ioremap_wc(resource_size_t offset, unsigned long size);
+extern void __iomem *ioremap_wt(resource_size_t offset, unsigned long size);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern bool is_early_ioremap_ptep(pte_t *ptep);
 
 #ifdef CONFIG_XEN
@@ -345,4 +388,23 @@ extern bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
 
 #define IO_SPACE_LIMIT 0xffff
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MTRR
+extern int __must_check arch_phys_wc_index(int handle);
+#define arch_phys_wc_index arch_phys_wc_index
+
+extern int __must_check arch_phys_wc_add(unsigned long base,
+					 unsigned long size);
+extern void arch_phys_wc_del(int handle);
+#define arch_phys_wc_add arch_phys_wc_add
+#endif
+
+#ifdef CONFIG_X86_PAT
+extern int arch_io_reserve_memtype_wc(resource_size_t start, resource_size_t size);
+extern void arch_io_free_memtype_wc(resource_size_t start, resource_size_t size);
+#define arch_io_reserve_memtype_wc arch_io_reserve_memtype_wc
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_X86_IO_H */

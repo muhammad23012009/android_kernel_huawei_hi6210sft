@@ -142,8 +142,12 @@ store_virtual_to_phys(struct device *dev, struct device_attribute *attr,
 	u64 virt_addr=simple_strtoull(buf, NULL, 16);
 	int ret;
 
+<<<<<<< HEAD
         ret = get_user_pages(current, current->mm, virt_addr,
                         1, VM_READ, 0, NULL, NULL);
+=======
+	ret = get_user_pages_fast(virt_addr, 1, FOLL_WRITE, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret<=0) {
 #ifdef ERR_INJ_DEBUG
 		printk("Virtual address %lx is not existing.\n",virt_addr);
@@ -225,17 +229,29 @@ static struct attribute_group err_inject_attr_group = {
 	.name = "err_inject"
 };
 /* Add/Remove err_inject interface for CPU device */
+<<<<<<< HEAD
 static int __cpuinit err_inject_add_dev(struct device * sys_dev)
+=======
+static int err_inject_add_dev(struct device *sys_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return sysfs_create_group(&sys_dev->kobj, &err_inject_attr_group);
 }
 
+<<<<<<< HEAD
 static int __cpuinit err_inject_remove_dev(struct device * sys_dev)
+=======
+static int err_inject_remove_dev(struct device *sys_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sysfs_remove_group(&sys_dev->kobj, &err_inject_attr_group);
 	return 0;
 }
+<<<<<<< HEAD
 static int __cpuinit err_inject_cpu_callback(struct notifier_block *nfb,
+=======
+static int err_inject_cpu_callback(struct notifier_block *nfb,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned long)hcpu;
@@ -256,7 +272,11 @@ static int __cpuinit err_inject_cpu_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static struct notifier_block __cpuinitdata err_inject_cpu_notifier =
+=======
+static struct notifier_block err_inject_cpu_notifier =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	.notifier_call = err_inject_cpu_callback,
 };
@@ -269,12 +289,24 @@ err_inject_init(void)
 #ifdef ERR_INJ_DEBUG
 	printk(KERN_INFO "Enter error injection driver.\n");
 #endif
+<<<<<<< HEAD
+=======
+
+	cpu_notifier_register_begin();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_online_cpu(i) {
 		err_inject_cpu_callback(&err_inject_cpu_notifier, CPU_ONLINE,
 				(void *)(long)i);
 	}
 
+<<<<<<< HEAD
 	register_hotcpu_notifier(&err_inject_cpu_notifier);
+=======
+	__register_hotcpu_notifier(&err_inject_cpu_notifier);
+
+	cpu_notifier_register_done();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -288,11 +320,24 @@ err_inject_exit(void)
 #ifdef ERR_INJ_DEBUG
 	printk(KERN_INFO "Exit error injection driver.\n");
 #endif
+<<<<<<< HEAD
+=======
+
+	cpu_notifier_register_begin();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_online_cpu(i) {
 		sys_dev = get_cpu_device(i);
 		sysfs_remove_group(&sys_dev->kobj, &err_inject_attr_group);
 	}
+<<<<<<< HEAD
 	unregister_hotcpu_notifier(&err_inject_cpu_notifier);
+=======
+
+	__unregister_hotcpu_notifier(&err_inject_cpu_notifier);
+
+	cpu_notifier_register_done();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(err_inject_init);

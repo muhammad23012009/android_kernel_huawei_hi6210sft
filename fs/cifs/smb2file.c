@@ -34,6 +34,7 @@
 #include "fscache.h"
 #include "smb2proto.h"
 
+<<<<<<< HEAD
 void
 smb2_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock)
 {
@@ -61,13 +62,25 @@ smb2_open_file(const unsigned int xid, struct cifs_tcon *tcon, const char *path,
 	       int disposition, int desired_access, int create_options,
 	       struct cifs_fid *fid, __u32 *oplock, FILE_ALL_INFO *buf,
 	       struct cifs_sb_info *cifs_sb)
+=======
+int
+smb2_open_file(const unsigned int xid, struct cifs_open_parms *oparms,
+	       __u32 *oplock, FILE_ALL_INFO *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int rc;
 	__le16 *smb2_path;
 	struct smb2_file_all_info *smb2_data = NULL;
 	__u8 smb2_oplock[17];
+<<<<<<< HEAD
 
 	smb2_path = cifs_convert_path_to_utf16(path, cifs_sb);
+=======
+	struct cifs_fid *fid = oparms->fid;
+	struct network_resiliency_req nr_ioctl_req;
+
+	smb2_path = cifs_convert_path_to_utf16(oparms->path, oparms->cifs_sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (smb2_path == NULL) {
 		rc = -ENOMEM;
 		goto out;
@@ -80,6 +93,7 @@ smb2_open_file(const unsigned int xid, struct cifs_tcon *tcon, const char *path,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	desired_access |= FILE_READ_ATTRIBUTES;
 	*smb2_oplock = SMB2_OPLOCK_LEVEL_EXCLUSIVE;
 
@@ -95,6 +109,39 @@ smb2_open_file(const unsigned int xid, struct cifs_tcon *tcon, const char *path,
 	if (buf) {
 		/* open response does not have IndexNumber field - get it */
 		rc = SMB2_get_srv_num(xid, tcon, fid->persistent_fid,
+=======
+	oparms->desired_access |= FILE_READ_ATTRIBUTES;
+	*smb2_oplock = SMB2_OPLOCK_LEVEL_BATCH;
+
+	if (oparms->tcon->ses->server->capabilities & SMB2_GLOBAL_CAP_LEASING)
+		memcpy(smb2_oplock + 1, fid->lease_key, SMB2_LEASE_KEY_SIZE);
+
+	rc = SMB2_open(xid, oparms, smb2_path, smb2_oplock, smb2_data, NULL);
+	if (rc)
+		goto out;
+
+
+	if (oparms->tcon->use_resilient) {
+		nr_ioctl_req.Timeout = 0; /* use server default (120 seconds) */
+		nr_ioctl_req.Reserved = 0;
+		rc = SMB2_ioctl(xid, oparms->tcon, fid->persistent_fid,
+			fid->volatile_fid, FSCTL_LMR_REQUEST_RESILIENCY, true,
+			(char *)&nr_ioctl_req, sizeof(nr_ioctl_req),
+			NULL, NULL /* no return info */);
+		if (rc == -EOPNOTSUPP) {
+			cifs_dbg(VFS,
+			     "resiliency not supported by server, disabling\n");
+			oparms->tcon->use_resilient = false;
+		} else if (rc)
+			cifs_dbg(FYI, "error %d setting resiliency\n", rc);
+
+		rc = 0;
+	}
+
+	if (buf) {
+		/* open response does not have IndexNumber field - get it */
+		rc = SMB2_get_srv_num(xid, oparms->tcon, fid->persistent_fid,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      fid->volatile_fid,
 				      &smb2_data->IndexNumber);
 		if (rc) {
@@ -120,7 +167,11 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 	unsigned int max_num, num = 0, max_buf;
 	struct smb2_lock_element *buf, *cur;
 	struct cifs_tcon *tcon = tlink_tcon(cfile->tlink);
+<<<<<<< HEAD
 	struct cifsInodeInfo *cinode = CIFS_I(cfile->dentry->d_inode);
+=======
+	struct cifsInodeInfo *cinode = CIFS_I(d_inode(cfile->dentry));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cifsLockInfo *li, *tmp;
 	__u64 length = 1 + flock->fl_end - flock->fl_start;
 	struct list_head tmp_llist;
@@ -129,6 +180,7 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 
 	/*
 	 * Accessing maxBuf is racy with cifs_reconnect - need to store value
+<<<<<<< HEAD
 	 * and check it for zero before using.
 	 */
 	max_buf = tcon->ses->server->maxBuf;
@@ -137,12 +189,28 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 
 	max_num = max_buf / sizeof(struct smb2_lock_element);
 	buf = kzalloc(max_num * sizeof(struct smb2_lock_element), GFP_KERNEL);
+=======
+	 * and check it before using.
+	 */
+	max_buf = tcon->ses->server->maxBuf;
+	if (max_buf < sizeof(struct smb2_lock_element))
+		return -EINVAL;
+
+	BUILD_BUG_ON(sizeof(struct smb2_lock_element) > PAGE_SIZE);
+	max_buf = min_t(unsigned int, max_buf, PAGE_SIZE);
+	max_num = max_buf / sizeof(struct smb2_lock_element);
+	buf = kcalloc(max_num, sizeof(struct smb2_lock_element), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!buf)
 		return -ENOMEM;
 
 	cur = buf;
 
+<<<<<<< HEAD
 	down_write(&cinode->lock_sem);
+=======
+	cifs_down_write(&cinode->lock_sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_for_each_entry_safe(li, tmp, &cfile->llist->locks, llist) {
 		if (flock->fl_start > li->offset ||
 		    (flock->fl_start + length) <
@@ -256,7 +324,11 @@ smb2_push_mandatory_locks(struct cifsFileInfo *cfile)
 	unsigned int xid;
 	unsigned int max_num, max_buf;
 	struct smb2_lock_element *buf;
+<<<<<<< HEAD
 	struct cifsInodeInfo *cinode = CIFS_I(cfile->dentry->d_inode);
+=======
+	struct cifsInodeInfo *cinode = CIFS_I(d_inode(cfile->dentry));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cifs_fid_locks *fdlocks;
 
 	xid = get_xid();
@@ -271,8 +343,15 @@ smb2_push_mandatory_locks(struct cifsFileInfo *cfile)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	max_num = max_buf / sizeof(struct smb2_lock_element);
 	buf = kzalloc(max_num * sizeof(struct smb2_lock_element), GFP_KERNEL);
+=======
+	BUILD_BUG_ON(sizeof(struct smb2_lock_element) > PAGE_SIZE);
+	max_buf = min_t(unsigned int, max_buf, PAGE_SIZE);
+	max_num = max_buf / sizeof(struct smb2_lock_element);
+	buf = kcalloc(max_num, sizeof(struct smb2_lock_element), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!buf) {
 		free_xid(xid);
 		return -ENOMEM;

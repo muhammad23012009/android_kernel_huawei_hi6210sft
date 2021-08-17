@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 #ifndef __ASM_AVR32_TERMBITS_H
 #define __ASM_AVR32_TERMBITS_H
+=======
+#ifndef _UAPI__ASM_AVR32_TERMBITS_H
+#define _UAPI__ASM_AVR32_TERMBITS_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/posix_types.h>
 
@@ -193,4 +198,8 @@ struct ktermios {
 #define	TCSADRAIN	1
 #define	TCSAFLUSH	2
 
+<<<<<<< HEAD
 #endif /* __ASM_AVR32_TERMBITS_H */
+=======
+#endif /* _UAPI__ASM_AVR32_TERMBITS_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

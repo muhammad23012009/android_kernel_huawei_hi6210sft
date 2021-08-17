@@ -20,12 +20,20 @@
 #include <linux/init.h>
 #include <linux/completion.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pm.h>
 #include <linux/i2c.h>
 #include <linux/regmap.h>
 #include <linux/slab.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/jack.h>
 #include <sound/pcm.h>
@@ -117,12 +125,19 @@ static const struct reg_default wm8903_reg_defaults[] = {
 struct wm8903_priv {
 	struct wm8903_platform_data *pdata;
 	struct device *dev;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct regmap *regmap;
 
 	int sysclk;
 	int irq;
 
+<<<<<<< HEAD
+=======
+	struct mutex lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int fs;
 	int deemph;
 
@@ -259,7 +274,11 @@ static int wm8903_cp_event(struct snd_soc_dapm_widget *w,
 static int wm8903_dcs_event(struct snd_soc_dapm_widget *w,
 			    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
 
 	switch (event) {
@@ -281,8 +300,12 @@ static int wm8903_dcs_event(struct snd_soc_dapm_widget *w,
 static void wm8903_seq_notifier(struct snd_soc_dapm_context *dapm,
 				enum snd_soc_dapm_type event, int subseq)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = container_of(dapm,
 						   struct snd_soc_codec, dapm);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
 	int dcs_mode = WM8903_DCS_MODE_WRITE_STOP;
 	int i, val;
@@ -364,9 +387,13 @@ static void wm8903_seq_notifier(struct snd_soc_dapm_context *dapm,
 static int wm8903_class_w_put(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_dapm_widget_list *wlist = snd_kcontrol_chip(kcontrol);
 	struct snd_soc_dapm_widget *widget = wlist->widgets[0];
 	struct snd_soc_codec *codec = widget->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
 	u16 reg;
 	int ret;
@@ -403,10 +430,15 @@ static int wm8903_class_w_put(struct snd_kcontrol *kcontrol,
 }
 
 #define SOC_DAPM_SINGLE_W(xname, reg, shift, max, invert) \
+<<<<<<< HEAD
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
 	.info = snd_soc_info_volsw, \
 	.get = snd_soc_dapm_get_volsw, .put = wm8903_class_w_put, \
 	.private_value =  SOC_SINGLE_VALUE(reg, shift, max, invert) }
+=======
+	SOC_SINGLE_EXT(xname, reg, shift, max, invert, \
+		snd_soc_dapm_get_volsw, wm8903_class_w_put)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 static int wm8903_deemph[] = { 0, 32000, 44100, 48000 };
@@ -443,7 +475,11 @@ static int wm8903_set_deemph(struct snd_soc_codec *codec)
 static int wm8903_get_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = wm8903->deemph;
@@ -454,15 +490,25 @@ static int wm8903_get_deemph(struct snd_kcontrol *kcontrol,
 static int wm8903_put_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
 	int deemph = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
+	unsigned int deemph = ucontrol->value.integer.value[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	if (deemph > 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
+=======
+	mutex_lock(&wm8903->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (wm8903->deemph != deemph) {
 		wm8903->deemph = deemph;
 
@@ -470,7 +516,11 @@ static int wm8903_put_deemph(struct snd_kcontrol *kcontrol,
 
 		ret = 1;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_unlock(&wm8903->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -493,28 +543,49 @@ static const char *hpf_mode_text[] = {
 	"Hi-fi", "Voice 1", "Voice 2", "Voice 3"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum hpf_mode =
 	SOC_ENUM_SINGLE(WM8903_ADC_DIGITAL_0, 5, 4, hpf_mode_text);
+=======
+static SOC_ENUM_SINGLE_DECL(hpf_mode,
+			    WM8903_ADC_DIGITAL_0, 5, hpf_mode_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *osr_text[] = {
 	"Low power", "High performance"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum adc_osr =
 	SOC_ENUM_SINGLE(WM8903_ANALOGUE_ADC_0, 0, 2, osr_text);
 
 static const struct soc_enum dac_osr =
 	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_1, 0, 2, osr_text);
+=======
+static SOC_ENUM_SINGLE_DECL(adc_osr,
+			    WM8903_ANALOGUE_ADC_0, 0, osr_text);
+
+static SOC_ENUM_SINGLE_DECL(dac_osr,
+			    WM8903_DAC_DIGITAL_1, 0, osr_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *drc_slope_text[] = {
 	"1", "1/2", "1/4", "1/8", "1/16", "0"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum drc_slope_r0 =
 	SOC_ENUM_SINGLE(WM8903_DRC_2, 3, 6, drc_slope_text);
 
 static const struct soc_enum drc_slope_r1 =
 	SOC_ENUM_SINGLE(WM8903_DRC_2, 0, 6, drc_slope_text);
+=======
+static SOC_ENUM_SINGLE_DECL(drc_slope_r0,
+			    WM8903_DRC_2, 3, drc_slope_text);
+
+static SOC_ENUM_SINGLE_DECL(drc_slope_r1,
+			    WM8903_DRC_2, 0, drc_slope_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *drc_attack_text[] = {
 	"instantaneous",
@@ -522,114 +593,195 @@ static const char *drc_attack_text[] = {
 	"46.4ms", "92.8ms", "185.6ms"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum drc_attack =
 	SOC_ENUM_SINGLE(WM8903_DRC_1, 12, 11, drc_attack_text);
+=======
+static SOC_ENUM_SINGLE_DECL(drc_attack,
+			    WM8903_DRC_1, 12, drc_attack_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *drc_decay_text[] = {
 	"186ms", "372ms", "743ms", "1.49s", "2.97s", "5.94s", "11.89s",
 	"23.87s", "47.56s"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum drc_decay =
 	SOC_ENUM_SINGLE(WM8903_DRC_1, 8, 9, drc_decay_text);
+=======
+static SOC_ENUM_SINGLE_DECL(drc_decay,
+			    WM8903_DRC_1, 8, drc_decay_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *drc_ff_delay_text[] = {
 	"5 samples", "9 samples"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum drc_ff_delay =
 	SOC_ENUM_SINGLE(WM8903_DRC_0, 5, 2, drc_ff_delay_text);
+=======
+static SOC_ENUM_SINGLE_DECL(drc_ff_delay,
+			    WM8903_DRC_0, 5, drc_ff_delay_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *drc_qr_decay_text[] = {
 	"0.725ms", "1.45ms", "5.8ms"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum drc_qr_decay =
 	SOC_ENUM_SINGLE(WM8903_DRC_1, 4, 3, drc_qr_decay_text);
+=======
+static SOC_ENUM_SINGLE_DECL(drc_qr_decay,
+			    WM8903_DRC_1, 4, drc_qr_decay_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *drc_smoothing_text[] = {
 	"Low", "Medium", "High"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum drc_smoothing =
 	SOC_ENUM_SINGLE(WM8903_DRC_0, 11, 3, drc_smoothing_text);
+=======
+static SOC_ENUM_SINGLE_DECL(drc_smoothing,
+			    WM8903_DRC_0, 11, drc_smoothing_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *soft_mute_text[] = {
 	"Fast (fs/2)", "Slow (fs/32)"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum soft_mute =
 	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_1, 10, 2, soft_mute_text);
+=======
+static SOC_ENUM_SINGLE_DECL(soft_mute,
+			    WM8903_DAC_DIGITAL_1, 10, soft_mute_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *mute_mode_text[] = {
 	"Hard", "Soft"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum mute_mode =
 	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_1, 9, 2, mute_mode_text);
+=======
+static SOC_ENUM_SINGLE_DECL(mute_mode,
+			    WM8903_DAC_DIGITAL_1, 9, mute_mode_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *companding_text[] = {
 	"ulaw", "alaw"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dac_companding =
 	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 0, 2, companding_text);
 
 static const struct soc_enum adc_companding =
 	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 2, 2, companding_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dac_companding,
+			    WM8903_AUDIO_INTERFACE_0, 0, companding_text);
+
+static SOC_ENUM_SINGLE_DECL(adc_companding,
+			    WM8903_AUDIO_INTERFACE_0, 2, companding_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *input_mode_text[] = {
 	"Single-Ended", "Differential Line", "Differential Mic"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum linput_mode_enum =
 	SOC_ENUM_SINGLE(WM8903_ANALOGUE_LEFT_INPUT_1, 0, 3, input_mode_text);
 
 static const struct soc_enum rinput_mode_enum =
 	SOC_ENUM_SINGLE(WM8903_ANALOGUE_RIGHT_INPUT_1, 0, 3, input_mode_text);
+=======
+static SOC_ENUM_SINGLE_DECL(linput_mode_enum,
+			    WM8903_ANALOGUE_LEFT_INPUT_1, 0, input_mode_text);
+
+static SOC_ENUM_SINGLE_DECL(rinput_mode_enum,
+			    WM8903_ANALOGUE_RIGHT_INPUT_1, 0, input_mode_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *linput_mux_text[] = {
 	"IN1L", "IN2L", "IN3L"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum linput_enum =
 	SOC_ENUM_SINGLE(WM8903_ANALOGUE_LEFT_INPUT_1, 2, 3, linput_mux_text);
 
 static const struct soc_enum linput_inv_enum =
 	SOC_ENUM_SINGLE(WM8903_ANALOGUE_LEFT_INPUT_1, 4, 3, linput_mux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(linput_enum,
+			    WM8903_ANALOGUE_LEFT_INPUT_1, 2, linput_mux_text);
+
+static SOC_ENUM_SINGLE_DECL(linput_inv_enum,
+			    WM8903_ANALOGUE_LEFT_INPUT_1, 4, linput_mux_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *rinput_mux_text[] = {
 	"IN1R", "IN2R", "IN3R"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum rinput_enum =
 	SOC_ENUM_SINGLE(WM8903_ANALOGUE_RIGHT_INPUT_1, 2, 3, rinput_mux_text);
 
 static const struct soc_enum rinput_inv_enum =
 	SOC_ENUM_SINGLE(WM8903_ANALOGUE_RIGHT_INPUT_1, 4, 3, rinput_mux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(rinput_enum,
+			    WM8903_ANALOGUE_RIGHT_INPUT_1, 2, rinput_mux_text);
+
+static SOC_ENUM_SINGLE_DECL(rinput_inv_enum,
+			    WM8903_ANALOGUE_RIGHT_INPUT_1, 4, rinput_mux_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 static const char *sidetone_text[] = {
 	"None", "Left", "Right"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum lsidetone_enum =
 	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_0, 2, 3, sidetone_text);
 
 static const struct soc_enum rsidetone_enum =
 	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_0, 0, 3, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(lsidetone_enum,
+			    WM8903_DAC_DIGITAL_0, 2, sidetone_text);
+
+static SOC_ENUM_SINGLE_DECL(rsidetone_enum,
+			    WM8903_DAC_DIGITAL_0, 0, sidetone_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *adcinput_text[] = {
 	"ADC", "DMIC"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum adcinput_enum =
 	SOC_ENUM_SINGLE(WM8903_CLOCK_RATE_TEST_4, 9, 2, adcinput_text);
+=======
+static SOC_ENUM_SINGLE_DECL(adcinput_enum,
+			    WM8903_CLOCK_RATE_TEST_4, 9, adcinput_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char *aif_text[] = {
 	"Left", "Right"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum lcapture_enum =
 	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 7, 2, aif_text);
 
@@ -641,6 +793,19 @@ static const struct soc_enum lplay_enum =
 
 static const struct soc_enum rplay_enum =
 	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 4, 2, aif_text);
+=======
+static SOC_ENUM_SINGLE_DECL(lcapture_enum,
+			    WM8903_AUDIO_INTERFACE_0, 7, aif_text);
+
+static SOC_ENUM_SINGLE_DECL(rcapture_enum,
+			    WM8903_AUDIO_INTERFACE_0, 6, aif_text);
+
+static SOC_ENUM_SINGLE_DECL(lplay_enum,
+			    WM8903_AUDIO_INTERFACE_0, 5, aif_text);
+
+static SOC_ENUM_SINGLE_DECL(rplay_enum,
+			    WM8903_AUDIO_INTERFACE_0, 4, aif_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new wm8903_snd_controls[] = {
 
@@ -1109,7 +1274,11 @@ static int wm8903_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			snd_soc_update_bits(codec, WM8903_BIAS_CONTROL_0,
 					    WM8903_POBCTRL | WM8903_ISEL_MASK |
 					    WM8903_STARTUP_BIAS_ENA |
@@ -1204,8 +1373,11 @@ static int wm8903_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1481,6 +1653,7 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 
 	aif1 &= ~WM8903_AIF_WL_MASK;
 	bclk = 2 * fs;
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		bclk *= 16;
@@ -1494,6 +1667,21 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 		aif1 |= 0x8;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		bclk *= 16;
+		break;
+	case 20:
+		bclk *= 20;
+		aif1 |= 0x4;
+		break;
+	case 24:
+		bclk *= 24;
+		aif1 |= 0x8;
+		break;
+	case 32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bclk *= 32;
 		aif1 |= 0xc;
 		break;
@@ -1762,6 +1950,7 @@ static struct snd_soc_dai_driver wm8903_dai = {
 	.symmetric_rates = 1,
 };
 
+<<<<<<< HEAD
 static int wm8903_suspend(struct snd_soc_codec *codec)
 {
 	wm8903_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -1769,23 +1958,31 @@ static int wm8903_suspend(struct snd_soc_codec *codec)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm8903_resume(struct snd_soc_codec *codec)
 {
 	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
 
 	regcache_sync(wm8903->regmap);
 
+<<<<<<< HEAD
 	wm8903_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 #ifdef CONFIG_GPIOLIB
+<<<<<<< HEAD
 static inline struct wm8903_priv *gpio_to_wm8903(struct gpio_chip *chip)
 {
 	return container_of(chip, struct wm8903_priv, gpio_chip);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm8903_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	if (offset >= WM8903_NUM_GPIO)
@@ -1796,7 +1993,11 @@ static int wm8903_gpio_request(struct gpio_chip *chip, unsigned offset)
 
 static int wm8903_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
+=======
+	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int mask, val;
 	int ret;
 
@@ -1814,18 +2015,30 @@ static int wm8903_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 
 static int wm8903_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
+=======
+	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int reg;
 
 	regmap_read(wm8903->regmap, WM8903_GPIO_CONTROL_1 + offset, &reg);
 
+<<<<<<< HEAD
 	return (reg & WM8903_GP1_LVL_MASK) >> WM8903_GP1_LVL_SHIFT;
+=======
+	return !!((reg & WM8903_GP1_LVL_MASK) >> WM8903_GP1_LVL_SHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int wm8903_gpio_direction_out(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
+=======
+	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int mask, val;
 	int ret;
 
@@ -1843,14 +2056,22 @@ static int wm8903_gpio_direction_out(struct gpio_chip *chip,
 
 static void wm8903_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
+=======
+	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	regmap_update_bits(wm8903->regmap, WM8903_GPIO_CONTROL_1 + offset,
 			   WM8903_GP1_LVL_MASK,
 			   !!value << WM8903_GP1_LVL_SHIFT);
 }
 
+<<<<<<< HEAD
 static struct gpio_chip wm8903_template_chip = {
+=======
+static const struct gpio_chip wm8903_template_chip = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.label			= "wm8903",
 	.owner			= THIS_MODULE,
 	.request		= wm8903_gpio_request,
@@ -1868,25 +2089,37 @@ static void wm8903_init_gpio(struct wm8903_priv *wm8903)
 
 	wm8903->gpio_chip = wm8903_template_chip;
 	wm8903->gpio_chip.ngpio = WM8903_NUM_GPIO;
+<<<<<<< HEAD
 	wm8903->gpio_chip.dev = wm8903->dev;
+=======
+	wm8903->gpio_chip.parent = wm8903->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pdata->gpio_base)
 		wm8903->gpio_chip.base = pdata->gpio_base;
 	else
 		wm8903->gpio_chip.base = -1;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&wm8903->gpio_chip);
+=======
+	ret = gpiochip_add_data(&wm8903->gpio_chip, wm8903);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret != 0)
 		dev_err(wm8903->dev, "Failed to add GPIOs: %d\n", ret);
 }
 
 static void wm8903_free_gpio(struct wm8903_priv *wm8903)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = gpiochip_remove(&wm8903->gpio_chip);
 	if (ret != 0)
 		dev_err(wm8903->dev, "Failed to remove GPIOs: %d\n", ret);
+=======
+	gpiochip_remove(&wm8903->gpio_chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else
 static void wm8903_init_gpio(struct wm8903_priv *wm8903)
@@ -1898,6 +2131,7 @@ static void wm8903_free_gpio(struct wm8903_priv *wm8903)
 }
 #endif
 
+<<<<<<< HEAD
 static int wm8903_probe(struct snd_soc_codec *codec)
 {
 	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
@@ -1939,6 +2173,22 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8903 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8903_dapm_widgets),
 	.dapm_routes = wm8903_intercon,
 	.num_dapm_routes = ARRAY_SIZE(wm8903_intercon),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8903 = {
+	.resume =	wm8903_resume,
+	.set_bias_level = wm8903_set_bias_level,
+	.seq_notifier = wm8903_seq_notifier,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8903_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8903_snd_controls),
+		.dapm_widgets		= wm8903_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8903_dapm_widgets),
+		.dapm_routes		= wm8903_intercon,
+		.num_dapm_routes	= ARRAY_SIZE(wm8903_intercon),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct regmap_config wm8903_regmap = {
@@ -2040,6 +2290,11 @@ static int wm8903_i2c_probe(struct i2c_client *i2c,
 			      GFP_KERNEL);
 	if (wm8903 == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
+=======
+
+	mutex_init(&wm8903->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wm8903->dev = &i2c->dev;
 
 	wm8903->regmap = devm_regmap_init_i2c(i2c, &wm8903_regmap);
@@ -2239,7 +2494,10 @@ MODULE_DEVICE_TABLE(i2c, wm8903_i2c_id);
 static struct i2c_driver wm8903_i2c_driver = {
 	.driver = {
 		.name = "wm8903",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = wm8903_of_match,
 	},
 	.probe =    wm8903_i2c_probe,

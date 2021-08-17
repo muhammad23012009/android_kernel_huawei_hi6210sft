@@ -177,7 +177,12 @@ int sierra_ms_init(struct us_data *us)
 
 		debug_swoc(&us->pusb_dev->dev, swocInfo);
 
+<<<<<<< HEAD
 		/* If there is not Linux software on the TRU-Install device
+=======
+		/*
+		 * If there is not Linux software on the TRU-Install device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * then switch to modem mode
 		 */
 		if (!containsFullLinuxPackage(swocInfo)) {

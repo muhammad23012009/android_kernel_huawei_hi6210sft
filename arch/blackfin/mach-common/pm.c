@@ -14,9 +14,16 @@
 #include <linux/slab.h>
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 
 #include <asm/cplb.h>
 #include <asm/gpio.h>
+=======
+#include <linux/delay.h>
+#include <linux/gpio.h>
+
+#include <asm/cplb.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/dma.h>
 #include <asm/dpmc.h>
 #include <asm/pm.h>
@@ -27,7 +34,11 @@ struct bfin_cpu_pm_fns *bfin_cpu_pm;
 
 void bfin_pm_suspend_standby_enter(void)
 {
+<<<<<<< HEAD
 #ifndef CONFIG_BF60x
+=======
+#if !BFIN_GPIO_PINT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bfin_pm_standby_setup();
 #endif
 
@@ -41,7 +52,11 @@ void bfin_pm_suspend_standby_enter(void)
 # endif
 #endif
 
+<<<<<<< HEAD
 #ifndef CONFIG_BF60x
+=======
+#if !BFIN_GPIO_PINT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bfin_pm_standby_restore();
 #endif
 
@@ -128,6 +143,10 @@ static void flushinv_all_dcache(void)
 					if ((status & 0x3) != 0x3)
 						continue;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					/* construct the address using the tag */
 					addr = (status & 0xFFFFC800) | (subbank << 12) | (set << 5);
 
@@ -140,11 +159,22 @@ static void flushinv_all_dcache(void)
 
 int bfin_pm_suspend_mem_enter(void)
 {
+<<<<<<< HEAD
 	int wakeup, ret;
 
 	unsigned char *memptr = kmalloc(L1_CODE_LENGTH + L1_DATA_A_LENGTH
 					 + L1_DATA_B_LENGTH + L1_SCRATCH_LENGTH,
 					  GFP_KERNEL);
+=======
+	int ret;
+#ifndef CONFIG_BF60x
+	int wakeup;
+#endif
+
+	unsigned char *memptr = kmalloc(L1_CODE_LENGTH + L1_DATA_A_LENGTH
+					 + L1_DATA_B_LENGTH + L1_SCRATCH_LENGTH,
+					  GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (memptr == NULL) {
 		panic("bf53x_suspend_l1_mem malloc failed");
@@ -170,14 +200,23 @@ int bfin_pm_suspend_mem_enter(void)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	bfin_gpio_pm_hibernate_suspend();
 
 #if BFIN_GPIO_PINT
 	bfin_pint_suspend();
+=======
+#ifdef CONFIG_GPIO_ADI
+	bfin_gpio_pm_hibernate_suspend();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #if defined(CONFIG_BFIN_EXTMEM_WRITEBACK) || defined(CONFIG_BFIN_L2_WRITEBACK)
 	flushinv_all_dcache();
+<<<<<<< HEAD
+=======
+	udelay(1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	_disable_dcplb();
 	_disable_icplb();
@@ -194,11 +233,17 @@ int bfin_pm_suspend_mem_enter(void)
 	_enable_icplb();
 	_enable_dcplb();
 
+<<<<<<< HEAD
 #if BFIN_GPIO_PINT
 	bfin_pint_resume();
 #endif
 
 	bfin_gpio_pm_hibernate_restore();
+=======
+#ifdef CONFIG_GPIO_ADI
+	bfin_gpio_pm_hibernate_restore();
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blackfin_dma_resume();
 
 	kfree(memptr);

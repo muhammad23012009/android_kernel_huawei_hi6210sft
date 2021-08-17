@@ -134,15 +134,35 @@
 /*
  * PXA2xx specific Core clock definitions
  */
+<<<<<<< HEAD
 #define CCCR		__REG(0x41300000)  /* Core Clock Configuration Register */
 #define CCSR		__REG(0x4130000C)  /* Core Clock Status Register */
 #define CKEN		__REG(0x41300004)  /* Clock Enable Register */
 #define OSCC		__REG(0x41300008)  /* Oscillator Configuration Register */
+=======
+#define CCCR		io_p2v(0x41300000)  /* Core Clock Configuration Register */
+#define CCSR		io_p2v(0x4130000C)  /* Core Clock Status Register */
+#define CKEN		io_p2v(0x41300004)  /* Clock Enable Register */
+#define OSCC		io_p2v(0x41300008)  /* Oscillator Configuration Register */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CCCR_N_MASK	0x0380	/* Run Mode Frequency to Turbo Mode Frequency Multiplier */
 #define CCCR_M_MASK	0x0060	/* Memory Frequency to Run Mode Frequency Multiplier */
 #define CCCR_L_MASK	0x001f	/* Crystal Frequency to Memory Frequency Multiplier */
 
+<<<<<<< HEAD
+=======
+#define CCCR_CPDIS_BIT	(31)
+#define CCCR_PPDIS_BIT	(30)
+#define CCCR_LCD_26_BIT	(27)
+#define CCCR_A_BIT	(25)
+
+#define CCSR_N2_MASK	CCCR_N_MASK
+#define CCSR_M_MASK	CCCR_M_MASK
+#define CCSR_L_MASK	CCCR_L_MASK
+#define CCSR_N2_SHIFT	7
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CKEN_AC97CONF   (31)    /* AC97 Controller Configuration */
 #define CKEN_CAMERA	(24)	/* Camera Interface Clock Enable */
 #define CKEN_SSP1	(23)	/* SSP1 Unit Clock Enable */

@@ -18,20 +18,34 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/prefetch.h>
 #include <linux/usb.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/usb/nop-usb-xceiv.h>
+=======
+#include <linux/device.h>
+#include <linux/platform_device.h>
+#include <linux/dma-mapping.h>
+#include <linux/usb/usb_phy_generic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "musb_core.h"
 
 struct tusb6010_glue {
 	struct device		*dev;
 	struct platform_device	*musb;
+<<<<<<< HEAD
+=======
+	struct platform_device	*phy;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void tusb_musb_set_vbus(struct musb *musb, int is_on);
@@ -43,7 +57,11 @@ static void tusb_musb_set_vbus(struct musb *musb, int is_on);
  * Checks the revision. We need to use the DMA register as 3.0 does not
  * have correct versions for TUSB_PRCM_REV or TUSB_INT_CTRL_REV.
  */
+<<<<<<< HEAD
 u8 tusb_get_revision(struct musb *musb)
+=======
+static u8 tusb_get_revision(struct musb *musb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem	*tbase = musb->ctrl_base;
 	u32		die_id;
@@ -59,14 +77,23 @@ u8 tusb_get_revision(struct musb *musb)
 
 	return rev;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(tusb_get_revision);
 
 static int tusb_print_revision(struct musb *musb)
+=======
+
+static void tusb_print_revision(struct musb *musb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem	*tbase = musb->ctrl_base;
 	u8		rev;
 
+<<<<<<< HEAD
 	rev = tusb_get_revision(musb);
+=======
+	rev = musb->tusb_revision;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_info("tusb: %s%i.%i %s%i.%i %s%i.%i %s%i.%i %s%i %s%i.%i\n",
 		"prcm",
@@ -85,8 +112,11 @@ static int tusb_print_revision(struct musb *musb)
 		TUSB_DIDR1_HI_CHIP_REV(musb_readl(tbase, TUSB_DIDR1_HI)),
 		"rev",
 		TUSB_REV_MAJOR(rev), TUSB_REV_MINOR(rev));
+<<<<<<< HEAD
 
 	return tusb_get_revision(musb);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define WBUS_QUIRK_MASK	(TUSB_PHY_OTG_CTRL_TESTM2 | TUSB_PHY_OTG_CTRL_TESTM1 \
@@ -128,6 +158,55 @@ static void tusb_wbus_quirk(struct musb *musb, int enabled)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static u32 tusb_fifo_offset(u8 epnum)
+{
+	return 0x200 + (epnum * 0x20);
+}
+
+static u32 tusb_ep_offset(u8 epnum, u16 offset)
+{
+	return 0x10 + offset;
+}
+
+/* TUSB mapping: "flat" plus ep0 special cases */
+static void tusb_ep_select(void __iomem *mbase, u8 epnum)
+{
+	musb_writeb(mbase, MUSB_INDEX, epnum);
+}
+
+/*
+ * TUSB6010 doesn't allow 8-bit access; 16-bit access is the minimum.
+ */
+static u8 tusb_readb(const void __iomem *addr, unsigned offset)
+{
+	u16 tmp;
+	u8 val;
+
+	tmp = __raw_readw(addr + (offset & ~1));
+	if (offset & 1)
+		val = (tmp >> 8);
+	else
+		val = tmp & 0xff;
+
+	return val;
+}
+
+static void tusb_writeb(void __iomem *addr, unsigned offset, u8 data)
+{
+	u16 tmp;
+
+	tmp = __raw_readw(addr + (offset & ~1));
+	if (offset & 1)
+		tmp = (data << 8) | (tmp & 0xff);
+	else
+		tmp = (tmp & 0xff00) | data;
+
+	__raw_writew(tmp, addr + (offset & ~1));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * TUSB 6010 may use a parallel bus that doesn't support byte ops;
  * so both loading and unloading FIFOs need explicit byte counts.
@@ -175,7 +254,11 @@ static inline void tusb_fifo_read_unaligned(void __iomem *fifo,
 	}
 }
 
+<<<<<<< HEAD
 void musb_write_fifo(struct musb_hw_ep *hw_ep, u16 len, const u8 *buf)
+=======
+static void tusb_write_fifo(struct musb_hw_ep *hw_ep, u16 len, const u8 *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct musb *musb = hw_ep->musb;
 	void __iomem	*ep_conf = hw_ep->conf;
@@ -225,7 +308,11 @@ void musb_write_fifo(struct musb_hw_ep *hw_ep, u16 len, const u8 *buf)
 		tusb_fifo_write_unaligned(fifo, buf, len);
 }
 
+<<<<<<< HEAD
 void musb_read_fifo(struct musb_hw_ep *hw_ep, u16 len, u8 *buf)
+=======
+static void tusb_read_fifo(struct musb_hw_ep *hw_ep, u16 len, u8 *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct musb *musb = hw_ep->musb;
 	void __iomem	*ep_conf = hw_ep->conf;
@@ -350,7 +437,11 @@ static void tusb_allow_idle(struct musb *musb, u32 wakeup_enables)
 	u32		reg;
 
 	if ((wakeup_enables & TUSB_PRCM_WBUS)
+<<<<<<< HEAD
 			&& (tusb_get_revision(musb) == TUSB_REV_30))
+=======
+			&& (musb->tusb_revision == TUSB_REV_30))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tusb_wbus_quirk(musb, 1);
 
 	tusb_set_clock_source(musb, 0);
@@ -417,13 +508,21 @@ static void musb_do_idle(unsigned long _musb)
 
 	spin_lock_irqsave(&musb->lock, flags);
 
+<<<<<<< HEAD
 	switch (musb->xceiv->state) {
+=======
+	switch (musb->xceiv->otg->state) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case OTG_STATE_A_WAIT_BCON:
 		if ((musb->a_wait_bcon != 0)
 			&& (musb->idle_timeout == 0
 				|| time_after(jiffies, musb->idle_timeout))) {
 			dev_dbg(musb->controller, "Nothing connected %s, turning off VBUS\n",
+<<<<<<< HEAD
 					usb_otg_state_string(musb->xceiv->state));
+=======
+					usb_otg_state_string(musb->xceiv->otg->state));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		/* FALLTHROUGH */
 	case OTG_STATE_A_IDLE:
@@ -435,7 +534,11 @@ static void musb_do_idle(unsigned long _musb)
 	if (!musb->is_active) {
 		u32	wakeups;
 
+<<<<<<< HEAD
 		/* wait until khubd handles port change status */
+=======
+		/* wait until hub_wq handles port change status */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (is_host_active(musb) && (musb->port1_status >> 16))
 			goto done;
 
@@ -476,9 +579,15 @@ static void tusb_musb_try_idle(struct musb *musb, unsigned long timeout)
 
 	/* Never idle if active, or when VBUS timeout is not set as host */
 	if (musb->is_active || ((musb->a_wait_bcon == 0)
+<<<<<<< HEAD
 			&& (musb->xceiv->state == OTG_STATE_A_WAIT_BCON))) {
 		dev_dbg(musb->controller, "%s active, deleting timer\n",
 			usb_otg_state_string(musb->xceiv->state));
+=======
+			&& (musb->xceiv->otg->state == OTG_STATE_A_WAIT_BCON))) {
+		dev_dbg(musb->controller, "%s active, deleting timer\n",
+			usb_otg_state_string(musb->xceiv->otg->state));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		del_timer(&musb_idle_timer);
 		last_timer = jiffies;
 		return;
@@ -495,7 +604,11 @@ static void tusb_musb_try_idle(struct musb *musb, unsigned long timeout)
 	last_timer = timeout;
 
 	dev_dbg(musb->controller, "%s inactive, for idle timer for %lu ms\n",
+<<<<<<< HEAD
 		usb_otg_state_string(musb->xceiv->state),
+=======
+		usb_otg_state_string(musb->xceiv->otg->state),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(unsigned long)jiffies_to_msecs(timeout - jiffies));
 	mod_timer(&musb_idle_timer, timeout);
 }
@@ -526,7 +639,11 @@ static void tusb_musb_set_vbus(struct musb *musb, int is_on)
 	if (is_on) {
 		timer = OTG_TIMER_MS(OTG_TIME_A_WAIT_VRISE);
 		otg->default_a = 1;
+<<<<<<< HEAD
 		musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
+=======
+		musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		devctl |= MUSB_DEVCTL_SESSION;
 
 		conf |= TUSB_DEV_CONF_USB_HOST_MODE;
@@ -539,6 +656,7 @@ static void tusb_musb_set_vbus(struct musb *musb, int is_on)
 		/* If ID pin is grounded, we want to be a_idle */
 		otg_stat = musb_readl(tbase, TUSB_DEV_OTG_STAT);
 		if (!(otg_stat & TUSB_DEV_OTG_STAT_ID_STATUS)) {
+<<<<<<< HEAD
 			switch (musb->xceiv->state) {
 			case OTG_STATE_A_WAIT_VRISE:
 			case OTG_STATE_A_WAIT_BCON:
@@ -549,6 +667,18 @@ static void tusb_musb_set_vbus(struct musb *musb, int is_on)
 				break;
 			default:
 				musb->xceiv->state = OTG_STATE_A_IDLE;
+=======
+			switch (musb->xceiv->otg->state) {
+			case OTG_STATE_A_WAIT_VRISE:
+			case OTG_STATE_A_WAIT_BCON:
+				musb->xceiv->otg->state = OTG_STATE_A_WAIT_VFALL;
+				break;
+			case OTG_STATE_A_WAIT_VFALL:
+				musb->xceiv->otg->state = OTG_STATE_A_IDLE;
+				break;
+			default:
+				musb->xceiv->otg->state = OTG_STATE_A_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			musb->is_active = 0;
 			otg->default_a = 1;
@@ -556,7 +686,11 @@ static void tusb_musb_set_vbus(struct musb *musb, int is_on)
 		} else {
 			musb->is_active = 0;
 			otg->default_a = 0;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_B_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			MUSB_DEV_MODE(musb);
 		}
 
@@ -571,7 +705,11 @@ static void tusb_musb_set_vbus(struct musb *musb, int is_on)
 	musb_writeb(musb->mregs, MUSB_DEVCTL, devctl);
 
 	dev_dbg(musb->controller, "VBUS %s, devctl %02x otg %3x conf %08x prcm %08x\n",
+<<<<<<< HEAD
 		usb_otg_state_string(musb->xceiv->state),
+=======
+		usb_otg_state_string(musb->xceiv->otg->state),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		musb_readb(musb->mregs, MUSB_DEVCTL),
 		musb_readl(tbase, TUSB_DEV_OTG_STAT),
 		conf, prcm);
@@ -670,14 +808,21 @@ tusb_otg_ints(struct musb *musb, u32 int_src, void __iomem *tbase)
 
 			if (otg_stat & TUSB_DEV_OTG_STAT_SESS_END) {
 				dev_dbg(musb->controller, "Forcing disconnect (no interrupt)\n");
+<<<<<<< HEAD
 				if (musb->xceiv->state != OTG_STATE_B_IDLE) {
 					/* INTR_DISCONNECT can hide... */
 					musb->xceiv->state = OTG_STATE_B_IDLE;
+=======
+				if (musb->xceiv->otg->state != OTG_STATE_B_IDLE) {
+					/* INTR_DISCONNECT can hide... */
+					musb->xceiv->otg->state = OTG_STATE_B_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					musb->int_usb |= MUSB_INTR_DISCONNECT;
 				}
 				musb->is_active = 0;
 			}
 			dev_dbg(musb->controller, "vbus change, %s, otg %03x\n",
+<<<<<<< HEAD
 				usb_otg_state_string(musb->xceiv->state), otg_stat);
 			idle_timeout = jiffies + (1 * HZ);
 			schedule_work(&musb->irq_work);
@@ -687,6 +832,17 @@ tusb_otg_ints(struct musb *musb, u32 int_src, void __iomem *tbase)
 				usb_otg_state_string(musb->xceiv->state), otg_stat);
 
 			switch (musb->xceiv->state) {
+=======
+				usb_otg_state_string(musb->xceiv->otg->state), otg_stat);
+			idle_timeout = jiffies + (1 * HZ);
+			schedule_delayed_work(&musb->irq_work, 0);
+
+		} else /* A-dev state machine */ {
+			dev_dbg(musb->controller, "vbus change, %s, otg %03x\n",
+				usb_otg_state_string(musb->xceiv->otg->state), otg_stat);
+
+			switch (musb->xceiv->otg->state) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			case OTG_STATE_A_IDLE:
 				dev_dbg(musb->controller, "Got SRP, turning on VBUS\n");
 				musb_platform_set_vbus(musb, 1);
@@ -733,9 +889,15 @@ tusb_otg_ints(struct musb *musb, u32 int_src, void __iomem *tbase)
 		u8	devctl;
 
 		dev_dbg(musb->controller, "%s timer, %03x\n",
+<<<<<<< HEAD
 			usb_otg_state_string(musb->xceiv->state), otg_stat);
 
 		switch (musb->xceiv->state) {
+=======
+			usb_otg_state_string(musb->xceiv->otg->state), otg_stat);
+
+		switch (musb->xceiv->otg->state) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case OTG_STATE_A_WAIT_VRISE:
 			/* VBUS has probably been valid for a while now,
 			 * but may well have bounced out of range a bit
@@ -747,7 +909,11 @@ tusb_otg_ints(struct musb *musb, u32 int_src, void __iomem *tbase)
 					dev_dbg(musb->controller, "devctl %02x\n", devctl);
 					break;
 				}
+<<<<<<< HEAD
 				musb->xceiv->state = OTG_STATE_A_WAIT_BCON;
+=======
+				musb->xceiv->otg->state = OTG_STATE_A_WAIT_BCON;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				musb->is_active = 0;
 				idle_timeout = jiffies
 					+ msecs_to_jiffies(musb->a_wait_bcon);
@@ -770,7 +936,11 @@ tusb_otg_ints(struct musb *musb, u32 int_src, void __iomem *tbase)
 			break;
 		}
 	}
+<<<<<<< HEAD
 	schedule_work(&musb->irq_work);
+=======
+	schedule_delayed_work(&musb->irq_work, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return idle_timeout;
 }
@@ -798,7 +968,11 @@ static irqreturn_t tusb_musb_interrupt(int irq, void *__hci)
 		u32	reg;
 		u32	i;
 
+<<<<<<< HEAD
 		if (tusb_get_revision(musb) == TUSB_REV_30)
+=======
+		if (musb->tusb_revision == TUSB_REV_30)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tusb_wbus_quirk(musb, 0);
 
 		/* there are issues re-locking the PLL on wakeup ... */
@@ -820,7 +994,11 @@ static irqreturn_t tusb_musb_interrupt(int irq, void *__hci)
 		musb_writel(tbase, TUSB_PRCM_WAKEUP_CLEAR, reg);
 		if (reg & ~TUSB_PRCM_WNORCS) {
 			musb->is_active = 1;
+<<<<<<< HEAD
 			schedule_work(&musb->irq_work);
+=======
+			schedule_delayed_work(&musb->irq_work, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		dev_dbg(musb->controller, "wake %sactive %02x\n",
 				musb->is_active ? "" : "in", reg);
@@ -846,7 +1024,11 @@ static irqreturn_t tusb_musb_interrupt(int irq, void *__hci)
 
 		dev_dbg(musb->controller, "DMA IRQ %08x\n", dma_src);
 		real_dma_src = ~real_dma_src & dma_src;
+<<<<<<< HEAD
 		if (tusb_dma_omap() && real_dma_src) {
+=======
+		if (tusb_dma_omap(musb) && real_dma_src) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			int	tx_source = (real_dma_src & 0xffff);
 			int	i;
 
@@ -1012,10 +1194,18 @@ static int tusb_musb_start(struct musb *musb)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	ret = tusb_print_revision(musb);
 	if (ret < 2) {
 		printk(KERN_ERR "tusb: Unsupported TUSB6010 revision %i\n",
 				ret);
+=======
+	musb->tusb_revision = tusb_get_revision(musb);
+	tusb_print_revision(musb);
+	if (musb->tusb_revision < 2) {
+		printk(KERN_ERR "tusb: Unsupported TUSB6010 revision %i\n",
+				musb->tusb_revision);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 
@@ -1066,7 +1256,10 @@ static int tusb_musb_init(struct musb *musb)
 	void __iomem		*sync = NULL;
 	int			ret;
 
+<<<<<<< HEAD
 	usb_nop_xceiv_register();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	musb->xceiv = usb_get_phy(USB_PHY_TYPE_USB2);
 	if (IS_ERR_OR_NULL(musb->xceiv))
 		return -EPROBE_DEFER;
@@ -1118,7 +1311,10 @@ done:
 			iounmap(sync);
 
 		usb_put_phy(musb->xceiv);
+<<<<<<< HEAD
 		usb_nop_xceiv_unregister();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return ret;
 }
@@ -1134,14 +1330,35 @@ static int tusb_musb_exit(struct musb *musb)
 	iounmap(musb->sync_va);
 
 	usb_put_phy(musb->xceiv);
+<<<<<<< HEAD
 	usb_nop_xceiv_unregister();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static const struct musb_platform_ops tusb_ops = {
+<<<<<<< HEAD
 	.init		= tusb_musb_init,
 	.exit		= tusb_musb_exit,
 
+=======
+	.quirks		= MUSB_DMA_TUSB_OMAP | MUSB_IN_TUSB,
+	.init		= tusb_musb_init,
+	.exit		= tusb_musb_exit,
+
+	.ep_offset	= tusb_ep_offset,
+	.ep_select	= tusb_ep_select,
+	.fifo_offset	= tusb_fifo_offset,
+	.readb		= tusb_readb,
+	.writeb		= tusb_writeb,
+	.read_fifo	= tusb_read_fifo,
+	.write_fifo	= tusb_write_fifo,
+#ifdef CONFIG_USB_TUSB_OMAP_DMA
+	.dma_init	= tusb_dma_controller_create,
+	.dma_exit	= tusb_dma_controller_destroy,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.enable		= tusb_musb_enable,
 	.disable	= tusb_musb_disable,
 
@@ -1152,6 +1369,7 @@ static const struct musb_platform_ops tusb_ops = {
 	.set_vbus	= tusb_musb_set_vbus,
 };
 
+<<<<<<< HEAD
 static u64 tusb_dmamask = DMA_BIT_MASK(32);
 
 static int tusb_probe(struct platform_device *pdev)
@@ -1214,6 +1432,67 @@ err1:
 
 err0:
 	return ret;
+=======
+static const struct platform_device_info tusb_dev_info = {
+	.name		= "musb-hdrc",
+	.id		= PLATFORM_DEVID_AUTO,
+	.dma_mask	= DMA_BIT_MASK(32),
+};
+
+static int tusb_probe(struct platform_device *pdev)
+{
+	struct resource musb_resources[3];
+	struct musb_hdrc_platform_data	*pdata = dev_get_platdata(&pdev->dev);
+	struct platform_device		*musb;
+	struct tusb6010_glue		*glue;
+	struct platform_device_info	pinfo;
+	int				ret;
+
+	glue = devm_kzalloc(&pdev->dev, sizeof(*glue), GFP_KERNEL);
+	if (!glue)
+		return -ENOMEM;
+
+	glue->dev			= &pdev->dev;
+
+	pdata->platform_ops		= &tusb_ops;
+
+	usb_phy_generic_register();
+	platform_set_drvdata(pdev, glue);
+
+	memset(musb_resources, 0x00, sizeof(*musb_resources) *
+			ARRAY_SIZE(musb_resources));
+
+	musb_resources[0].name = pdev->resource[0].name;
+	musb_resources[0].start = pdev->resource[0].start;
+	musb_resources[0].end = pdev->resource[0].end;
+	musb_resources[0].flags = pdev->resource[0].flags;
+
+	musb_resources[1].name = pdev->resource[1].name;
+	musb_resources[1].start = pdev->resource[1].start;
+	musb_resources[1].end = pdev->resource[1].end;
+	musb_resources[1].flags = pdev->resource[1].flags;
+
+	musb_resources[2].name = pdev->resource[2].name;
+	musb_resources[2].start = pdev->resource[2].start;
+	musb_resources[2].end = pdev->resource[2].end;
+	musb_resources[2].flags = pdev->resource[2].flags;
+
+	pinfo = tusb_dev_info;
+	pinfo.parent = &pdev->dev;
+	pinfo.res = musb_resources;
+	pinfo.num_res = ARRAY_SIZE(musb_resources);
+	pinfo.data = pdata;
+	pinfo.size_data = sizeof(*pdata);
+
+	glue->musb = musb = platform_device_register_full(&pinfo);
+	if (IS_ERR(musb)) {
+		ret = PTR_ERR(musb);
+		dev_err(&pdev->dev, "failed to register musb device: %d\n", ret);
+		return ret;
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int tusb_remove(struct platform_device *pdev)
@@ -1221,7 +1500,11 @@ static int tusb_remove(struct platform_device *pdev)
 	struct tusb6010_glue		*glue = platform_get_drvdata(pdev);
 
 	platform_device_unregister(glue->musb);
+<<<<<<< HEAD
 	kfree(glue);
+=======
+	usb_phy_generic_unregister(glue->phy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

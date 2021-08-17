@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -125,15 +129,25 @@ acpi_status acpi_ev_gpe_initialize(void)
 		/* GPE block 0 exists (has both length and address > 0) */
 
 		register_count0 = (u16)(acpi_gbl_FADT.gpe0_block_length / 2);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gpe_number_max =
 		    (register_count0 * ACPI_GPE_REGISTER_WIDTH) - 1;
 
 		/* Install GPE Block 0 */
 
 		status = acpi_ev_create_gpe_block(acpi_gbl_fadt_gpe_device,
+<<<<<<< HEAD
 						  &acpi_gbl_FADT.xgpe0_block,
 						  register_count0, 0,
+=======
+						  acpi_gbl_FADT.xgpe0_block.
+						  address,
+						  acpi_gbl_FADT.xgpe0_block.
+						  space_id, register_count0, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						  acpi_gbl_FADT.sci_interrupt,
 						  &acpi_gbl_gpe_fadt_blocks[0]);
 
@@ -170,8 +184,15 @@ acpi_status acpi_ev_gpe_initialize(void)
 
 			status =
 			    acpi_ev_create_gpe_block(acpi_gbl_fadt_gpe_device,
+<<<<<<< HEAD
 						     &acpi_gbl_FADT.xgpe1_block,
 						     register_count1,
+=======
+						     acpi_gbl_FADT.xgpe1_block.
+						     address,
+						     acpi_gbl_FADT.xgpe1_block.
+						     space_id, register_count1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						     acpi_gbl_FADT.gpe1_base,
 						     acpi_gbl_FADT.
 						     sci_interrupt,
@@ -204,6 +225,7 @@ acpi_status acpi_ev_gpe_initialize(void)
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
 	/* Check for Max GPE number out-of-range */
 
 	if (gpe_number_max > ACPI_GPE_MAX) {
@@ -215,6 +237,9 @@ acpi_status acpi_ev_gpe_initialize(void)
 	}
 
       cleanup:
+=======
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(AE_OK);
 }
@@ -288,7 +313,11 @@ void acpi_ev_update_gpes(acpi_owner_id table_owner_id)
 	}
 
 	if (walk_info.count) {
+<<<<<<< HEAD
 		ACPI_INFO((AE_INFO, "Enabled %u new GPEs", walk_info.count));
+=======
+		ACPI_INFO(("Enabled %u new GPEs", walk_info.count));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
@@ -330,7 +359,13 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	struct acpi_gpe_walk_info *walk_info =
 	    ACPI_CAST_PTR(struct acpi_gpe_walk_info, context);
 	struct acpi_gpe_event_info *gpe_event_info;
+<<<<<<< HEAD
 	u32 gpe_number;
+=======
+	acpi_status status;
+	u32 gpe_number;
+	u8 temp_gpe_number;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char name[ACPI_NAME_SIZE + 1];
 	u8 type;
 
@@ -363,14 +398,26 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	 */
 	switch (name[1]) {
 	case 'L':
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		type = ACPI_GPE_LEVEL_TRIGGERED;
 		break;
 
 	case 'E':
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		type = ACPI_GPE_EDGE_TRIGGERED;
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Unknown method type, just ignore it */
 
 		ACPI_DEBUG_PRINT((ACPI_DB_LOAD,
@@ -381,8 +428,13 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 
 	/* 4) The last two characters of the name are the hex GPE Number */
 
+<<<<<<< HEAD
 	gpe_number = ACPI_STRTOUL(&name[2], NULL, 16);
 	if (gpe_number == ACPI_UINT32_MAX) {
+=======
+	status = acpi_ut_ascii_to_hex_byte(&name[2], &temp_gpe_number);
+	if (ACPI_FAILURE(status)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Conversion failed; invalid method, just ignore it */
 
@@ -394,6 +446,10 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 
 	/* Ensure that we have a valid GPE number for this GPE block */
 
+<<<<<<< HEAD
+=======
+	gpe_number = (u32)temp_gpe_number;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpe_event_info =
 	    acpi_ev_low_get_gpe_info(gpe_number, walk_info->gpe_block);
 	if (!gpe_event_info) {
@@ -405,15 +461,26 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
 	    ACPI_GPE_DISPATCH_HANDLER) {
+=======
+	if ((ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_HANDLER) ||
+	    (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* If there is already a handler, ignore this GPE method */
 
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
+=======
+	if (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    ACPI_GPE_DISPATCH_METHOD) {
 		/*
 		 * If there is already a method, ignore this method. But check
@@ -428,6 +495,10 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	}
 
 	/* Disable the GPE in case it's been enabled already. */
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(void)acpi_hw_low_set_gpe(gpe_event_info, ACPI_GPE_DISABLE);
 
 	/*

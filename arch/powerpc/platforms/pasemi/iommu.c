@@ -27,6 +27,11 @@
 #include <asm/machdep.h>
 #include <asm/firmware.h>
 
+<<<<<<< HEAD
+=======
+#include "pasemi.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IOBMAP_PAGE_SHIFT	12
 #define IOBMAP_PAGE_SIZE	(1 << IOBMAP_PAGE_SHIFT)
 #define IOBMAP_PAGE_MASK	(IOBMAP_PAGE_SIZE - 1)
@@ -86,7 +91,11 @@ static int iommu_table_iobmap_inited;
 static int iobmap_build(struct iommu_table *tbl, long index,
 			 long npages, unsigned long uaddr,
 			 enum dma_data_direction direction,
+<<<<<<< HEAD
 			 struct dma_attrs *attrs)
+=======
+			 unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 *ip;
 	u32 rpn;
@@ -132,14 +141,29 @@ static void iobmap_free(struct iommu_table *tbl, long index,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static struct iommu_table_ops iommu_table_iobmap_ops = {
+	.set = iobmap_build,
+	.clear  = iobmap_free
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void iommu_table_iobmap_setup(void)
 {
 	pr_debug(" -> %s\n", __func__);
 	iommu_table_iobmap.it_busno = 0;
 	iommu_table_iobmap.it_offset = 0;
+<<<<<<< HEAD
 	/* it_size is in number of entries */
 	iommu_table_iobmap.it_size = 0x80000000 >> IOBMAP_PAGE_SHIFT;
+=======
+	iommu_table_iobmap.it_page_shift = IOBMAP_PAGE_SHIFT;
+
+	/* it_size is in number of entries */
+	iommu_table_iobmap.it_size =
+		0x80000000 >> iommu_table_iobmap.it_page_shift;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Initialize the common IOMMU code */
 	iommu_table_iobmap.it_base = (unsigned long)iob_l2_base;
@@ -148,6 +172,10 @@ static void iommu_table_iobmap_setup(void)
 	 * Should probably be 8 (64 bytes)
 	 */
 	iommu_table_iobmap.it_blocksize = 4;
+<<<<<<< HEAD
+=======
+	iommu_table_iobmap.it_ops = &iommu_table_iobmap_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iommu_init_table(&iommu_table_iobmap, 0);
 	pr_debug(" <- %s\n", __func__);
 }
@@ -177,6 +205,14 @@ static void pci_dma_dev_setup_pasemi(struct pci_dev *dev)
 	if (dev->vendor == 0x1959 && dev->device == 0xa007 &&
 	    !firmware_has_feature(FW_FEATURE_LPAR)) {
 		dev->dev.archdata.dma_ops = &dma_direct_ops;
+<<<<<<< HEAD
+=======
+		/*
+		 * Set the coherent DMA mask to prevent the iommu
+		 * being used unnecessarily
+		 */
+		dev->dev.coherent_dma_mask = DMA_BIT_MASK(44);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 #endif
@@ -184,7 +220,11 @@ static void pci_dma_dev_setup_pasemi(struct pci_dev *dev)
 	set_iommu_table_base(&dev->dev, &iommu_table_iobmap);
 }
 
+<<<<<<< HEAD
 int __init iob_init(struct device_node *dn)
+=======
+static int __init iob_init(struct device_node *dn)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 	u32 regword;
@@ -192,6 +232,14 @@ int __init iob_init(struct device_node *dn)
 
 	pr_debug(" -> %s\n", __func__);
 
+<<<<<<< HEAD
+=======
+	/* For 2G space, 8x64 pages (2^21 bytes) is max total l2 size */
+	iob_l2_base = (u32 *)__va(memblock_alloc_base(1UL<<21, 1UL<<21, 0x80000000));
+
+	printk(KERN_INFO "IOBMAP L2 allocated at: %p\n", iob_l2_base);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Allocate a spare page to map all invalid IOTLB pages. */
 	tmp = memblock_alloc(IOBMAP_PAGE_SIZE, IOBMAP_PAGE_SIZE);
 	if (!tmp)
@@ -245,6 +293,7 @@ void __init iommu_init_early_pasemi(void)
 
 	iob_init(NULL);
 
+<<<<<<< HEAD
 	ppc_md.pci_dma_dev_setup = pci_dma_dev_setup_pasemi;
 	ppc_md.pci_dma_bus_setup = pci_dma_bus_setup_pasemi;
 	ppc_md.tce_build = iobmap_build;
@@ -262,3 +311,10 @@ void __init alloc_iobmap_l2(void)
 
 	printk(KERN_INFO "IOBMAP L2 allocated at: %p\n", iob_l2_base);
 }
+=======
+	pasemi_pci_controller_ops.dma_dev_setup = pci_dma_dev_setup_pasemi;
+	pasemi_pci_controller_ops.dma_bus_setup = pci_dma_bus_setup_pasemi;
+	set_pci_dma_ops(&dma_iommu_ops);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

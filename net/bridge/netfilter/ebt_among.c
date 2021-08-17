@@ -28,7 +28,11 @@ static bool ebt_mac_wormhash_contains(const struct ebt_mac_wormhash *wh,
 	uint32_t cmp[2] = { 0, 0 };
 	int key = ((const unsigned char *)mac)[5];
 
+<<<<<<< HEAD
 	memcpy(((char *) cmp) + 2, mac, 6);
+=======
+	ether_addr_copy(((char *) cmp) + 2, mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	start = wh->table[key];
 	limit = wh->table[key + 1];
 	if (ip) {
@@ -172,11 +176,42 @@ ebt_among_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	return true;
 }
 
+<<<<<<< HEAD
+=======
+static bool poolsize_invalid(const struct ebt_mac_wormhash *w)
+{
+	return w && w->poolsize >= (INT_MAX / sizeof(struct ebt_mac_wormhash_tuple));
+}
+
+static bool wormhash_offset_invalid(int off, unsigned int len)
+{
+	if (off == 0) /* not present */
+		return false;
+
+	if (off < (int)sizeof(struct ebt_among_info) ||
+	    off % __alignof__(struct ebt_mac_wormhash))
+		return true;
+
+	off += sizeof(struct ebt_mac_wormhash);
+
+	return off > len;
+}
+
+static bool wormhash_sizes_valid(const struct ebt_mac_wormhash *wh, int a, int b)
+{
+	if (a == 0)
+		a = sizeof(struct ebt_among_info);
+
+	return ebt_mac_wormhash_size(wh) + a == b;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ebt_among_mt_check(const struct xt_mtchk_param *par)
 {
 	const struct ebt_among_info *info = par->matchinfo;
 	const struct ebt_entry_match *em =
 		container_of(par->matchinfo, const struct ebt_entry_match, data);
+<<<<<<< HEAD
 	int expected_length = sizeof(struct ebt_among_info);
 	const struct ebt_mac_wormhash *wh_dst, *wh_src;
 	int err;
@@ -184,6 +219,39 @@ static int ebt_among_mt_check(const struct xt_mtchk_param *par)
 	wh_dst = ebt_among_wh_dst(info);
 	wh_src = ebt_among_wh_src(info);
 	expected_length += ebt_mac_wormhash_size(wh_dst);
+=======
+	unsigned int expected_length = sizeof(struct ebt_among_info);
+	const struct ebt_mac_wormhash *wh_dst, *wh_src;
+	int err;
+
+	if (expected_length > em->match_size)
+		return -EINVAL;
+
+	if (wormhash_offset_invalid(info->wh_dst_ofs, em->match_size) ||
+	    wormhash_offset_invalid(info->wh_src_ofs, em->match_size))
+		return -EINVAL;
+
+	wh_dst = ebt_among_wh_dst(info);
+	if (poolsize_invalid(wh_dst))
+		return -EINVAL;
+
+	expected_length += ebt_mac_wormhash_size(wh_dst);
+	if (expected_length > em->match_size)
+		return -EINVAL;
+
+	wh_src = ebt_among_wh_src(info);
+	if (poolsize_invalid(wh_src))
+		return -EINVAL;
+
+	if (info->wh_src_ofs < info->wh_dst_ofs) {
+		if (!wormhash_sizes_valid(wh_src, info->wh_src_ofs, info->wh_dst_ofs))
+			return -EINVAL;
+	} else {
+		if (!wormhash_sizes_valid(wh_dst, info->wh_dst_ofs, info->wh_src_ofs))
+			return -EINVAL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	expected_length += ebt_mac_wormhash_size(wh_src);
 
 	if (em->match_size != EBT_ALIGN(expected_length)) {

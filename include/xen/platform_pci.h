@@ -46,6 +46,32 @@ static inline int xen_must_unplug_disks(void) {
 #endif
 }
 
+<<<<<<< HEAD
 extern int xen_platform_pci_unplug;
 
+=======
+#if defined(CONFIG_XEN_PVHVM)
+extern bool xen_has_pv_devices(void);
+extern bool xen_has_pv_disk_devices(void);
+extern bool xen_has_pv_nic_devices(void);
+extern bool xen_has_pv_and_legacy_disk_devices(void);
+#else
+static inline bool xen_has_pv_devices(void)
+{
+	return IS_ENABLED(CONFIG_XEN);
+}
+static inline bool xen_has_pv_disk_devices(void)
+{
+	return IS_ENABLED(CONFIG_XEN);
+}
+static inline bool xen_has_pv_nic_devices(void)
+{
+	return IS_ENABLED(CONFIG_XEN);
+}
+static inline bool xen_has_pv_and_legacy_disk_devices(void)
+{
+	return false;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _XEN_PLATFORM_PCI_H */

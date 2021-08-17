@@ -30,7 +30,11 @@
 
 #include "mpu401.h"
 
+<<<<<<< HEAD
 typedef struct uart401_devc
+=======
+struct uart401_devc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int             base;
 	int             irq;
@@ -41,14 +45,22 @@ typedef struct uart401_devc
 	int             my_dev;
 	int             share_irq;
 	spinlock_t	lock;
+<<<<<<< HEAD
 }
 uart401_devc;
+=======
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define	DATAPORT   (devc->base)
 #define	COMDPORT   (devc->base+1)
 #define	STATPORT   (devc->base+1)
 
+<<<<<<< HEAD
 static int uart401_status(uart401_devc * devc)
+=======
+static int uart401_status(struct uart401_devc *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return inb(STATPORT);
 }
@@ -56,17 +68,29 @@ static int uart401_status(uart401_devc * devc)
 #define input_avail(devc) (!(uart401_status(devc)&INPUT_AVAIL))
 #define output_ready(devc)	(!(uart401_status(devc)&OUTPUT_READY))
 
+<<<<<<< HEAD
 static void uart401_cmd(uart401_devc * devc, unsigned char cmd)
+=======
+static void uart401_cmd(struct uart401_devc *devc, unsigned char cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	outb((cmd), COMDPORT);
 }
 
+<<<<<<< HEAD
 static int uart401_read(uart401_devc * devc)
+=======
+static int uart401_read(struct uart401_devc *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return inb(DATAPORT);
 }
 
+<<<<<<< HEAD
 static void uart401_write(uart401_devc * devc, unsigned char byte)
+=======
+static void uart401_write(struct uart401_devc *devc, unsigned char byte)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	outb((byte), DATAPORT);
 }
@@ -77,10 +101,17 @@ static void uart401_write(uart401_devc * devc, unsigned char byte)
 #define	MPU_RESET	0xFF
 #define	UART_MODE_ON	0x3F
 
+<<<<<<< HEAD
 static int      reset_uart401(uart401_devc * devc);
 static void     enter_uart_mode(uart401_devc * devc);
 
 static void uart401_input_loop(uart401_devc * devc)
+=======
+static int      reset_uart401(struct uart401_devc *devc);
+static void     enter_uart_mode(struct uart401_devc *devc);
+
+static void uart401_input_loop(struct uart401_devc *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int work_limit=30000;
 	
@@ -99,7 +130,11 @@ static void uart401_input_loop(uart401_devc * devc)
 
 irqreturn_t uart401intr(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	uart401_devc *devc = dev_id;
+=======
+	struct uart401_devc *devc = dev_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (devc == NULL)
 	{
@@ -118,7 +153,12 @@ uart401_open(int dev, int mode,
 	     void            (*output) (int dev)
 )
 {
+<<<<<<< HEAD
 	uart401_devc *devc = (uart401_devc *) midi_devs[dev]->devc;
+=======
+	struct uart401_devc *devc = (struct uart401_devc *)
+				    midi_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (devc->opened)
 		return -EBUSY;
@@ -138,7 +178,12 @@ uart401_open(int dev, int mode,
 
 static void uart401_close(int dev)
 {
+<<<<<<< HEAD
 	uart401_devc *devc = (uart401_devc *) midi_devs[dev]->devc;
+=======
+	struct uart401_devc *devc = (struct uart401_devc *)
+				    midi_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	reset_uart401(devc);
 	devc->opened = 0;
@@ -148,7 +193,12 @@ static int uart401_out(int dev, unsigned char midi_byte)
 {
 	int timeout;
 	unsigned long flags;
+<<<<<<< HEAD
 	uart401_devc *devc = (uart401_devc *) midi_devs[dev]->devc;
+=======
+	struct uart401_devc *devc = (struct uart401_devc *)
+				    midi_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (devc->disabled)
 		return 1;
@@ -219,7 +269,11 @@ static const struct midi_operations uart401_operations =
 	.buffer_status	= uart401_buffer_status,
 };
 
+<<<<<<< HEAD
 static void enter_uart_mode(uart401_devc * devc)
+=======
+static void enter_uart_mode(struct uart401_devc *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ok, timeout;
 	unsigned long flags;
@@ -241,7 +295,11 @@ static void enter_uart_mode(uart401_devc * devc)
 	spin_unlock_irqrestore(&devc->lock,flags);
 }
 
+<<<<<<< HEAD
 static int reset_uart401(uart401_devc * devc)
+=======
+static int reset_uart401(struct uart401_devc *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ok, timeout, n;
 
@@ -274,6 +332,7 @@ static int reset_uart401(uart401_devc * devc)
 		}
 	}
 
+<<<<<<< HEAD
 
 	if (ok)
 	{
@@ -287,12 +346,24 @@ static int reset_uart401(uart401_devc * devc)
 						 * Flush input before enabling interrupts
 						 */
 
+=======
+	/* Flush input before enabling interrupts */
+	if (ok)
+		uart401_input_loop(devc);
+	else
+		DDB(printk("Reset UART401 failed - No hardware detected.\n"));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ok;
 }
 
 int probe_uart401(struct address_info *hw_config, struct module *owner)
 {
+<<<<<<< HEAD
 	uart401_devc *devc;
+=======
+	struct uart401_devc *devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *name = "MPU-401 (UART) MIDI";
 	int ok = 0;
 	unsigned long flags;
@@ -307,7 +378,11 @@ int probe_uart401(struct address_info *hw_config, struct module *owner)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	devc = kmalloc(sizeof(uart401_devc), GFP_KERNEL);
+=======
+	devc = kmalloc(sizeof(struct uart401_devc), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!devc) {
 		printk(KERN_WARNING "uart401: Can't allocate memory\n");
 		goto cleanup_region;
@@ -399,7 +474,11 @@ cleanup_region:
 
 void unload_uart401(struct address_info *hw_config)
 {
+<<<<<<< HEAD
 	uart401_devc *devc;
+=======
+	struct uart401_devc *devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int n=hw_config->slots[4];
 	
 	/* Not set up */
@@ -417,6 +496,7 @@ void unload_uart401(struct address_info *hw_config)
 
 	if (!devc->share_irq)
 		free_irq(devc->irq, devc);
+<<<<<<< HEAD
 	if (devc)
 	{
 		kfree(midi_devs[devc->my_dev]->converter);
@@ -424,6 +504,12 @@ void unload_uart401(struct address_info *hw_config)
 		kfree(devc);
 		devc = NULL;
 	}
+=======
+	kfree(midi_devs[devc->my_dev]->converter);
+	kfree(midi_devs[devc->my_dev]);
+	kfree(devc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* This kills midi_devs[x] */
 	sound_unload_mididev(hw_config->slots[4]);
 }

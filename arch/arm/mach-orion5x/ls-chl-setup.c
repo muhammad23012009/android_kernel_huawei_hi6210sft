@@ -22,9 +22,15 @@
 #include <linux/gpio.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*****************************************************************************
  * Linkstation LS-CHL Info
@@ -139,7 +145,11 @@ static struct mv_sata_platform_data lschl_sata_data = {
 
 static void lschl_power_off(void)
 {
+<<<<<<< HEAD
 	orion5x_restart('h', NULL);
+=======
+	orion5x_restart(REBOOT_HARD, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*****************************************************************************
@@ -294,8 +304,15 @@ static void __init lschl_init(void)
 	orion5x_uart0_init();
 	orion5x_xor_init();
 
+<<<<<<< HEAD
 	mvebu_mbus_add_window("devbus-boot", LSCHL_NOR_BOOT_BASE,
 			      LSCHL_NOR_BOOT_SIZE);
+=======
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    LSCHL_NOR_BOOT_BASE,
+				    LSCHL_NOR_BOOT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&lschl_nor_flash);
 
 	platform_device_register(&lschl_leds);
@@ -318,6 +335,10 @@ static void __init lschl_init(void)
 MACHINE_START(LINKSTATION_LSCHL, "Buffalo Linkstation LiveV3 (LS-CHL)")
 	/* Maintainer: Ash Hughes <ashley.hughes@blueyonder.co.uk> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= lschl_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,

@@ -2,9 +2,19 @@ menu "Kernel hacking"
 
 source "lib/Kconfig.debug"
 
+<<<<<<< HEAD
 config DEBUG_RODATA
        bool "Write protect kernel read-only data structures"
        depends on DEBUG_KERNEL
+=======
+config TRACE_IRQFLAGS_SUPPORT
+	def_bool y
+
+config DEBUG_RODATA
+       bool "Write protect kernel read-only data structures"
+       depends on DEBUG_KERNEL
+       default y
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
        help
          Mark the kernel read-only data as write-protected in the pagetables,
          in order to catch accidental (and incorrect) writes to such const
@@ -13,6 +23,7 @@ config DEBUG_RODATA
          If in doubt, say "N".
 
 endmenu
+<<<<<<< HEAD
 
 config DEBUG_STACKOVERFLOW
 	bool "Check for stack overflows"
@@ -24,3 +35,5 @@ config DEBUG_STACKOVERFLOW
 	  stacks in detail when free stack space drops below a certain
 	  limit.
 	  If in doubt, say "N".
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

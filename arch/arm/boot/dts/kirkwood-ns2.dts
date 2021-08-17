@@ -1,6 +1,11 @@
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "kirkwood-ns2-common.dtsi"
+=======
+#include <dt-bindings/leds/leds-ns2.h>
+#include "kirkwood-ns2-common.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "LaCie Network Space v2";
@@ -13,6 +18,11 @@
 
 	ocp@f1000000 {
 		sata@80000 {
+<<<<<<< HEAD
+=======
+			pinctrl-0 = <&pmx_ns2_sata0>;
+			pinctrl-names = "default";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "okay";
 			nr-ports = <1>;
 		};
@@ -25,6 +35,18 @@
 			label = "ns2:blue:sata";
 			slow-gpio = <&gpio0 29 0>;
 			cmd-gpio = <&gpio0 30 0>;
+<<<<<<< HEAD
 		};
 	};
 };
+=======
+			modes-map = <NS_V2_LED_OFF  1 0
+				     NS_V2_LED_ON   0 1
+				     NS_V2_LED_ON   1 1
+				     NS_V2_LED_SATA 0 0>;
+		};
+	};
+};
+
+&ethphy0 { reg = <8>; };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

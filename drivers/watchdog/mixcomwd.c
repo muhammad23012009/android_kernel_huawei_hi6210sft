@@ -315,4 +315,7 @@ MODULE_AUTHOR("Gergely Madarasz <gorgo@itc.hu>");
 MODULE_DESCRIPTION("MixCom Watchdog driver");
 MODULE_VERSION(VERSION);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

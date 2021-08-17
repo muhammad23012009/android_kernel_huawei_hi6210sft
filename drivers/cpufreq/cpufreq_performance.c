@@ -12,6 +12,7 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/cpufreq.h>
@@ -77,6 +78,16 @@ static int cpufreq_governor_performance(struct cpufreq_policy *policy,
 		break;
 	}
 	return 0;
+=======
+#include <linux/cpufreq.h>
+#include <linux/init.h>
+#include <linux/module.h>
+
+static void cpufreq_gov_performance_limits(struct cpufreq_policy *policy)
+{
+	pr_debug("setting to %u kHz\n", policy->max);
+	__cpufreq_driver_target(policy, policy->max, CPUFREQ_RELATION_H);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_CPU_FREQ_GOV_PERFORMANCE_MODULE
@@ -84,6 +95,7 @@ static
 #endif
 struct cpufreq_governor cpufreq_gov_performance = {
 	.name		= "performance",
+<<<<<<< HEAD
 	.governor	= cpufreq_governor_performance,
 	.owner		= THIS_MODULE,
 };
@@ -99,11 +111,37 @@ static int __init cpufreq_gov_performance_init(void)
 }
 
 
+=======
+	.owner		= THIS_MODULE,
+	.limits		= cpufreq_gov_performance_limits,
+};
+
+static int __init cpufreq_gov_performance_init(void)
+{
+	return cpufreq_register_governor(&cpufreq_gov_performance);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __exit cpufreq_gov_performance_exit(void)
 {
 	cpufreq_unregister_governor(&cpufreq_gov_performance);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+struct cpufreq_governor *cpufreq_default_governor(void)
+{
+	return &cpufreq_gov_performance;
+}
+#endif
+#ifndef CONFIG_CPU_FREQ_GOV_PERFORMANCE_MODULE
+struct cpufreq_governor *cpufreq_fallback_governor(void)
+{
+	return &cpufreq_gov_performance;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Dominik Brodowski <linux@brodo.de>");
 MODULE_DESCRIPTION("CPUfreq policy governor 'performance'");

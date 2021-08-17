@@ -11,6 +11,10 @@
    for the semaphore.  */
 
 #define __PA_LDCW_ALIGNMENT	16
+<<<<<<< HEAD
+=======
+#define __PA_LDCW_ALIGN_ORDER	4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __ldcw_align(a) ({					\
 	unsigned long __ret = (unsigned long) &(a)->lock[0];	\
 	__ret = (__ret + __PA_LDCW_ALIGNMENT - 1)		\
@@ -28,16 +32,35 @@
    ldcd). */
 
 #define __PA_LDCW_ALIGNMENT	4
+<<<<<<< HEAD
+=======
+#define __PA_LDCW_ALIGN_ORDER	2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __ldcw_align(a) (&(a)->slock)
 #define __LDCW	"ldcw,co"
 
 #endif /*!CONFIG_PA20*/
 
+<<<<<<< HEAD
 /* LDCW, the only atomic read-write operation PA-RISC has. *sigh*.  */
 #define __ldcw(a) ({						\
 	unsigned __ret;						\
 	__asm__ __volatile__(__LDCW " 0(%2),%0"			\
 		: "=r" (__ret), "+m" (*(a)) : "r" (a));		\
+=======
+/* LDCW, the only atomic read-write operation PA-RISC has. *sigh*.
+   We don't explicitly expose that "*a" may be written as reload
+   fails to find a register in class R1_REGS when "a" needs to be
+   reloaded when generating 64-bit PIC code.  Instead, we clobber
+   memory to indicate to the compiler that the assembly code reads
+   or writes to items other than those listed in the input and output
+   operands.  This may pessimize the code somewhat but __ldcw is
+   usually used within code blocks surrounded by memory barriers.  */
+#define __ldcw(a) ({						\
+	unsigned __ret;						\
+	__asm__ __volatile__(__LDCW " 0(%1),%0"			\
+		: "=r" (__ret) : "r" (a) : "memory");		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__ret;							\
 })
 

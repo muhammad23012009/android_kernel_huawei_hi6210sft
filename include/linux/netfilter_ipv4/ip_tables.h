@@ -24,10 +24,18 @@
 
 extern void ipt_init(void) __init;
 
+<<<<<<< HEAD
 extern struct xt_table *ipt_register_table(struct net *net,
 					   const struct xt_table *table,
 					   const struct ipt_replace *repl);
 extern void ipt_unregister_table(struct net *net, struct xt_table *table);
+=======
+int ipt_register_table(struct net *net, const struct xt_table *table,
+		       const struct ipt_replace *repl,
+		       const struct nf_hook_ops *ops, struct xt_table **res);
+void ipt_unregister_table(struct net *net, struct xt_table *table,
+			  const struct nf_hook_ops *ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Standard entry. */
 struct ipt_standard {
@@ -64,9 +72,13 @@ struct ipt_error {
 
 extern void *ipt_alloc_initial_table(const struct xt_table *);
 extern unsigned int ipt_do_table(struct sk_buff *skb,
+<<<<<<< HEAD
 				 unsigned int hook,
 				 const struct net_device *in,
 				 const struct net_device *out,
+=======
+				 const struct nf_hook_state *state,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 struct xt_table *table);
 
 #ifdef CONFIG_COMPAT

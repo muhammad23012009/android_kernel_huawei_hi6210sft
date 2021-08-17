@@ -28,6 +28,10 @@
 #include <asm/opcodes.h>
 
 #include "fault.h"
+<<<<<<< HEAD
+=======
+#include "mm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * 32-bit misaligned trap handler (c) 1998 San Mehat (CCC) -July 1998
@@ -76,12 +80,20 @@
 
 static unsigned long ai_user;
 static unsigned long ai_sys;
+<<<<<<< HEAD
+=======
+static void *ai_sys_last_pc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned long ai_skipped;
 static unsigned long ai_half;
 static unsigned long ai_word;
 static unsigned long ai_dword;
 static unsigned long ai_multi;
 static int ai_usermode;
+<<<<<<< HEAD
+=======
+static unsigned long cr_no_alignment;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 core_param(alignment, ai_usermode, int, 0600);
 
@@ -92,7 +104,11 @@ core_param(alignment, ai_usermode, int, 0600);
 /* Return true if and only if the ARMv6 unaligned access model is in use. */
 static bool cpu_is_v6_unaligned(void)
 {
+<<<<<<< HEAD
 	return cpu_architecture() >= CPU_ARCH_ARMv6 && (cr_alignment & CR_U);
+=======
+	return cpu_architecture() >= CPU_ARCH_ARMv6 && get_cr() & CR_U;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int safe_usermode(int new_usermode, bool warn)
@@ -110,7 +126,11 @@ static int safe_usermode(int new_usermode, bool warn)
 		new_usermode |= UM_FIXUP;
 
 		if (warn)
+<<<<<<< HEAD
 			printk(KERN_WARNING "alignment: ignoring faults is unsafe on this CPU.  Defaulting to fixup mode.\n");
+=======
+			pr_warn("alignment: ignoring faults is unsafe on this CPU.  Defaulting to fixup mode.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return new_usermode;
@@ -129,7 +149,11 @@ static const char *usermode_action[] = {
 static int alignment_proc_show(struct seq_file *m, void *v)
 {
 	seq_printf(m, "User:\t\t%lu\n", ai_user);
+<<<<<<< HEAD
 	seq_printf(m, "System:\t\t%lu\n", ai_sys);
+=======
+	seq_printf(m, "System:\t\t%lu (%pF)\n", ai_sys, ai_sys_last_pc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(m, "Skipped:\t%lu\n", ai_skipped);
 	seq_printf(m, "Half:\t\t%lu\n", ai_half);
 	seq_printf(m, "Word:\t\t%lu\n", ai_word);
@@ -198,7 +222,11 @@ union offset_union {
  THUMB(	"1:	"ins"	%1, [%2]\n"	)		\
  THUMB(	"	add	%2, %2, #1\n"	)		\
 	"2:\n"						\
+<<<<<<< HEAD
 	"	.pushsection .fixup,\"ax\"\n"		\
+=======
+	"	.pushsection .text.fixup,\"ax\"\n"	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	.align	2\n"				\
 	"3:	mov	%0, #1\n"			\
 	"	b	2b\n"				\
@@ -258,7 +286,11 @@ union offset_union {
 		"	mov	%1, %1, "NEXT_BYTE"\n"		\
 		"2:	"ins"	%1, [%2]\n"			\
 		"3:\n"						\
+<<<<<<< HEAD
 		"	.pushsection .fixup,\"ax\"\n"		\
+=======
+		"	.pushsection .text.fixup,\"ax\"\n"	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	.align	2\n"				\
 		"4:	mov	%0, #1\n"			\
 		"	b	3b\n"				\
@@ -298,7 +330,11 @@ union offset_union {
 		"	mov	%1, %1, "NEXT_BYTE"\n"		\
 		"4:	"ins"	%1, [%2]\n"			\
 		"5:\n"						\
+<<<<<<< HEAD
 		"	.pushsection .fixup,\"ax\"\n"		\
+=======
+		"	.pushsection .text.fixup,\"ax\"\n"	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	.align	2\n"				\
 		"6:	mov	%0, #1\n"			\
 		"	b	5b\n"				\
@@ -362,15 +398,30 @@ do_alignment_ldrhstrh(unsigned long addr, unsigned long instr, struct pt_regs *r
  user:
 	if (LDST_L_BIT(instr)) {
 		unsigned long val;
+<<<<<<< HEAD
 		get16t_unaligned_check(val, addr);
+=======
+		unsigned int __ua_flags = uaccess_save_and_enable();
+
+		get16t_unaligned_check(val, addr);
+		uaccess_restore(__ua_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* signed half-word? */
 		if (instr & 0x40)
 			val = (signed long)((signed short) val);
 
 		regs->uregs[rd] = val;
+<<<<<<< HEAD
 	} else
 		put16t_unaligned_check(regs->uregs[rd], addr);
+=======
+	} else {
+		unsigned int __ua_flags = uaccess_save_and_enable();
+		put16t_unaligned_check(regs->uregs[rd], addr);
+		uaccess_restore(__ua_flags);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return TYPE_LDST;
 
@@ -417,6 +468,7 @@ do_alignment_ldrdstrd(unsigned long addr, unsigned long instr,
 
  user:
 	if (load) {
+<<<<<<< HEAD
 		unsigned long val;
 		get32t_unaligned_check(val, addr);
 		regs->uregs[rd] = val;
@@ -425,6 +477,23 @@ do_alignment_ldrdstrd(unsigned long addr, unsigned long instr,
 	} else {
 		put32t_unaligned_check(regs->uregs[rd], addr);
 		put32t_unaligned_check(regs->uregs[rd2], addr + 4);
+=======
+		unsigned long val, val2;
+		unsigned int __ua_flags = uaccess_save_and_enable();
+
+		get32t_unaligned_check(val, addr);
+		get32t_unaligned_check(val2, addr + 4);
+
+		uaccess_restore(__ua_flags);
+
+		regs->uregs[rd] = val;
+		regs->uregs[rd2] = val2;
+	} else {
+		unsigned int __ua_flags = uaccess_save_and_enable();
+		put32t_unaligned_check(regs->uregs[rd], addr);
+		put32t_unaligned_check(regs->uregs[rd2], addr + 4);
+		uaccess_restore(__ua_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return TYPE_LDST;
@@ -455,10 +524,22 @@ do_alignment_ldrstr(unsigned long addr, unsigned long instr, struct pt_regs *reg
  trans:
 	if (LDST_L_BIT(instr)) {
 		unsigned int val;
+<<<<<<< HEAD
 		get32t_unaligned_check(val, addr);
 		regs->uregs[rd] = val;
 	} else
 		put32t_unaligned_check(regs->uregs[rd], addr);
+=======
+		unsigned int __ua_flags = uaccess_save_and_enable();
+		get32t_unaligned_check(val, addr);
+		uaccess_restore(__ua_flags);
+		regs->uregs[rd] = val;
+	} else {
+		unsigned int __ua_flags = uaccess_save_and_enable();
+		put32t_unaligned_check(regs->uregs[rd], addr);
+		uaccess_restore(__ua_flags);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return TYPE_LDST;
 
  fault:
@@ -520,7 +601,11 @@ do_alignment_ldmstm(unsigned long addr, unsigned long instr, struct pt_regs *reg
 	 * processor for us.
 	 */
 	if (addr != eaddr) {
+<<<<<<< HEAD
 		printk(KERN_ERR "LDMSTM: PC = %08lx, instr = %08lx, "
+=======
+		pr_err("LDMSTM: PC = %08lx, instr = %08lx, "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"addr = %08lx, eaddr = %08lx\n",
 			 instruction_pointer(regs), instr, addr, eaddr);
 		show_regs(regs);
@@ -528,6 +613,10 @@ do_alignment_ldmstm(unsigned long addr, unsigned long instr, struct pt_regs *reg
 #endif
 
 	if (user_mode(regs)) {
+<<<<<<< HEAD
+=======
+		unsigned int __ua_flags = uaccess_save_and_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (regbits = REGMASK_BITS(instr), rd = 0; regbits;
 		     regbits >>= 1, rd += 1)
 			if (regbits & 1) {
@@ -539,6 +628,10 @@ do_alignment_ldmstm(unsigned long addr, unsigned long instr, struct pt_regs *reg
 					put32t_unaligned_check(regs->uregs[rd], eaddr);
 				eaddr += 4;
 			}
+<<<<<<< HEAD
+=======
+		uaccess_restore(__ua_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		for (regbits = REGMASK_BITS(instr), rd = 0; regbits;
 		     regbits >>= 1, rd += 1)
@@ -564,7 +657,11 @@ fault:
 	return TYPE_FAULT;
 
 bad:
+<<<<<<< HEAD
 	printk(KERN_ERR "Alignment trap: not handling ldm with s-bit set\n");
+=======
+	pr_err("Alignment trap: not handling ldm with s-bit set\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return TYPE_ERROR;
 }
 
@@ -744,6 +841,7 @@ do_alignment_t32_to_handler(unsigned long *pinstr, struct pt_regs *regs,
 	return NULL;
 }
 
+<<<<<<< HEAD
 #define vmov_single(reg, val) \
 	__asm__( \
 	" .fpu vfp\n" \
@@ -845,6 +943,37 @@ do_ialignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 }
 #endif
 
+=======
+static int alignment_get_arm(struct pt_regs *regs, u32 *ip, unsigned long *inst)
+{
+	u32 instr = 0;
+	int fault;
+
+	if (user_mode(regs))
+		fault = get_user(instr, ip);
+	else
+		fault = probe_kernel_address(ip, instr);
+
+	*inst = __mem_to_opcode_arm(instr);
+
+	return fault;
+}
+
+static int alignment_get_thumb(struct pt_regs *regs, u16 *ip, u16 *inst)
+{
+	u16 instr = 0;
+	int fault;
+
+	if (user_mode(regs))
+		fault = get_user(instr, ip);
+	else
+		fault = probe_kernel_address(ip, instr);
+
+	*inst = __mem_to_opcode_thumb16(instr);
+
+	return fault;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int
 do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
@@ -853,10 +982,17 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	unsigned long instr = 0, instrptr;
 	int (*handler)(unsigned long addr, unsigned long instr, struct pt_regs *regs);
 	unsigned int type;
+<<<<<<< HEAD
 	unsigned int fault;
 	u16 tinstr = 0;
 	int isize = 4;
 	int thumb2_32b = 0;
+=======
+	u16 tinstr = 0;
+	int isize = 4;
+	int thumb2_32b = 0;
+	int fault;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (interrupts_enabled(regs))
 		local_irq_enable();
@@ -865,15 +1001,25 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 
 	if (thumb_mode(regs)) {
 		u16 *ptr = (u16 *)(instrptr & ~1);
+<<<<<<< HEAD
 		fault = probe_kernel_address(ptr, tinstr);
 		tinstr = __mem_to_opcode_thumb16(tinstr);
+=======
+
+		fault = alignment_get_thumb(regs, ptr, &tinstr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!fault) {
 			if (cpu_architecture() >= CPU_ARCH_ARMv7 &&
 			    IS_T32(tinstr)) {
 				/* Thumb-2 32-bit */
+<<<<<<< HEAD
 				u16 tinst2 = 0;
 				fault = probe_kernel_address(ptr + 1, tinst2);
 				tinst2 = __mem_to_opcode_thumb16(tinst2);
+=======
+				u16 tinst2;
+				fault = alignment_get_thumb(regs, ptr + 1, &tinst2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				instr = __opcode_thumb32_compose(tinstr, tinst2);
 				thumb2_32b = 1;
 			} else {
@@ -882,8 +1028,12 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 			}
 		}
 	} else {
+<<<<<<< HEAD
 		fault = probe_kernel_address(instrptr, instr);
 		instr = __mem_to_opcode_arm(instr);
+=======
+		fault = alignment_get_arm(regs, (void *)instrptr, &instr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (fault) {
@@ -895,6 +1045,10 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 		goto user;
 
 	ai_sys += 1;
+<<<<<<< HEAD
+=======
+	ai_sys_last_pc = (void *)instruction_pointer(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  fixup:
 
@@ -969,6 +1123,7 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 		}
 		break;
 
+<<<<<<< HEAD
 	case 0x0c000000:	/* vldr/flds */
 		if ((instr & 0xff300e00) == 0xed100a00) {
 			/*just deal with vldr/flds*/
@@ -977,6 +1132,8 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 			goto bad;
 		break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		goto bad;
 	}
@@ -1005,13 +1162,21 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	return 0;
 
  swp:
+<<<<<<< HEAD
 	printk(KERN_ERR "Alignment trap: not handling swp instruction\n");
+=======
+	pr_err("Alignment trap: not handling swp instruction\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  bad:
 	/*
 	 * Oops, we didn't handle the instruction.
 	 */
+<<<<<<< HEAD
 	printk(KERN_ERR "Alignment trap: not handling instruction "
+=======
+	pr_err("Alignment trap: not handling instruction "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"%0*lx at [<%08lx>]\n",
 		isize << 1,
 		isize == 2 ? tinstr : instr, instrptr);
@@ -1062,6 +1227,16 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __init noalign_setup(char *__unused)
+{
+	set_cr(__clear_cr(CR_A));
+	return 1;
+}
+__setup("noalign", noalign_setup);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This needs to be done after sysctl_init, otherwise sys/ will be
  * overwritten.  Actually, this shouldn't be in sys/ at all since
@@ -1079,6 +1254,7 @@ static int __init alignment_init(void)
 		return -ENOMEM;
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_CP15
 	if (cpu_is_v6_unaligned()) {
 		cr_alignment &= ~CR_A;
@@ -1087,15 +1263,26 @@ static int __init alignment_init(void)
 		ai_usermode = safe_usermode(ai_usermode, false);
 	}
 #endif
+=======
+	if (cpu_is_v6_unaligned()) {
+		set_cr(__clear_cr(CR_A));
+		ai_usermode = safe_usermode(ai_usermode, false);
+	}
+
+	cr_no_alignment = get_cr() & ~CR_A;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hook_fault_code(FAULT_CODE_ALIGNMENT, do_alignment, SIGBUS, BUS_ADRALN,
 			"alignment exception");
 
+<<<<<<< HEAD
 #ifdef CONFIG_FORCE_INSTRUCTION_ALIGNMENT
 	hook_ifault_code(FAULT_CODE_ALIGNMENT, do_ialignment, SIGBUS,
 			BUS_ADRALN, "alignment exception");
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * ARMv6K and ARMv7 use fault status 3 (0b00011) as Access Flag section
 	 * fault, not as alignment error.

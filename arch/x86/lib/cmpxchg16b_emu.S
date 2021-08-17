@@ -6,6 +6,7 @@
  *
  */
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/alternative-asm.h>
 #include <asm/frame.h>
 #include <asm/dwarf2.h>
@@ -15,6 +16,9 @@
 #else
 #define SEG_PREFIX
 #endif
+=======
+#include <asm/percpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .text
 
@@ -28,7 +32,10 @@
  * %al  : Operation successful
  */
 ENTRY(this_cpu_cmpxchg16b_emu)
+<<<<<<< HEAD
 CFI_STARTPROC
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # Emulate 'cmpxchg16b %gs:(%rsi)' except we return the result in %al not
@@ -39,6 +46,7 @@ CFI_STARTPROC
 # *atomic* on a single cpu (as provided by the this_cpu_xx class of
 # macros).
 #
+<<<<<<< HEAD
 this_cpu_cmpxchg16b_emu:
 	pushf
 	cli
@@ -62,4 +70,26 @@ this_cpu_cmpxchg16b_emu:
 
 CFI_ENDPROC
 
+=======
+	pushfq
+	cli
+
+	cmpq PER_CPU_VAR((%rsi)), %rax
+	jne .Lnot_same
+	cmpq PER_CPU_VAR(8(%rsi)), %rdx
+	jne .Lnot_same
+
+	movq %rbx, PER_CPU_VAR((%rsi))
+	movq %rcx, PER_CPU_VAR(8(%rsi))
+
+	popfq
+	mov $1, %al
+	ret
+
+.Lnot_same:
+	popfq
+	xor %al,%al
+	ret
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(this_cpu_cmpxchg16b_emu)

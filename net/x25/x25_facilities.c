@@ -21,6 +21,11 @@
  *					on response.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "X25: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/skbuff.h>
@@ -109,7 +114,11 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 			case X25_MARKER:
 				break;
 			default:
+<<<<<<< HEAD
 				printk(KERN_DEBUG "X.25: unknown facility "
+=======
+				pr_debug("unknown facility "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       "%02X, value %02X\n",
 				       p[0], p[1]);
 				break;
@@ -132,7 +141,11 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 				*vc_fac_mask |= X25_MASK_WINDOW_SIZE;
 				break;
 			default:
+<<<<<<< HEAD
 				printk(KERN_DEBUG "X.25: unknown facility "
+=======
+				pr_debug("unknown facility "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       "%02X, values %02X, %02X\n",
 				       p[0], p[1], p[2]);
 				break;
@@ -143,7 +156,11 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 		case X25_FAC_CLASS_C:
 			if (len < 4)
 				return -1;
+<<<<<<< HEAD
 			printk(KERN_DEBUG "X.25: unknown facility %02X, "
+=======
+			pr_debug("unknown facility %02X, "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       "values %02X, %02X, %02X\n",
 			       p[0], p[1], p[2], p[3]);
 			p   += 4;
@@ -156,6 +173,11 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 			case X25_FAC_CALLING_AE:
 				if (p[1] > X25_MAX_DTE_FACIL_LEN || p[1] <= 1)
 					return -1;
+<<<<<<< HEAD
+=======
+				if (p[2] > X25_MAX_AE_LEN)
+					return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dte_facs->calling_len = p[2];
 				memcpy(dte_facs->calling_ae, &p[3], p[1] - 1);
 				*vc_fac_mask |= X25_MASK_CALLING_AE;
@@ -163,12 +185,21 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 			case X25_FAC_CALLED_AE:
 				if (p[1] > X25_MAX_DTE_FACIL_LEN || p[1] <= 1)
 					return -1;
+<<<<<<< HEAD
+=======
+				if (p[2] > X25_MAX_AE_LEN)
+					return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dte_facs->called_len = p[2];
 				memcpy(dte_facs->called_ae, &p[3], p[1] - 1);
 				*vc_fac_mask |= X25_MASK_CALLED_AE;
 				break;
 			default:
+<<<<<<< HEAD
 				printk(KERN_DEBUG "X.25: unknown facility %02X,"
+=======
+				pr_debug("unknown facility %02X,"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					"length %d\n", p[0], p[1]);
 				break;
 			}
@@ -338,12 +369,20 @@ void x25_limit_facilities(struct x25_facilities *facilities,
 
 	if (!nb->extended) {
 		if (facilities->winsize_in  > 7) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG "X.25: incoming winsize limited to 7\n");
+=======
+			pr_debug("incoming winsize limited to 7\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			facilities->winsize_in = 7;
 		}
 		if (facilities->winsize_out > 7) {
 			facilities->winsize_out = 7;
+<<<<<<< HEAD
 			printk( KERN_DEBUG "X.25: outgoing winsize limited to 7\n");
+=======
+			pr_debug("outgoing winsize limited to 7\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }

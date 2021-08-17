@@ -22,7 +22,11 @@
 
 void omap1_nand_cmd_ctl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long mask;
 
 	if (cmd == NAND_CMD_NONE)

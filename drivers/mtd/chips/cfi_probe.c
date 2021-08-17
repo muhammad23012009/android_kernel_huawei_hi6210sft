@@ -168,10 +168,15 @@ static int __xipram cfi_chip_setup(struct map_info *map,
 		return 0;
 
 	cfi->cfiq = kmalloc(sizeof(struct cfi_ident) + num_erase_regions * 4, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!cfi->cfiq) {
 		printk(KERN_WARNING "%s: kmalloc failed for CFI ident structure\n", map->name);
 		return 0;
 	}
+=======
+	if (!cfi->cfiq)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(cfi->cfiq,0,sizeof(struct cfi_ident));
 

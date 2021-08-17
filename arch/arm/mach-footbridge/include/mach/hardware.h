@@ -51,11 +51,15 @@
 #define PCIMEM_SIZE		0x01000000
 #define PCIMEM_BASE		MMU_IO(0xf0000000, 0x80000000)
 
+<<<<<<< HEAD
 #define XBUS_LEDS		((volatile unsigned char *)(XBUS_BASE + 0x12000))
 #define XBUS_LED_AMBER		(1 << 0)
 #define XBUS_LED_GREEN		(1 << 1)
 #define XBUS_LED_RED		(1 << 2)
 #define XBUS_LED_TOGGLE		(1 << 8)
+=======
+#define XBUS_CS2		0x40012000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define XBUS_SWITCH		((volatile unsigned char *)(XBUS_BASE + 0x12000))
 #define XBUS_SWITCH_SWITCH	((*XBUS_SWITCH) & 15)
@@ -63,7 +67,11 @@
 #define XBUS_SWITCH_J17_11	((*XBUS_SWITCH) & (1 << 5))
 #define XBUS_SWITCH_J17_9	((*XBUS_SWITCH) & (1 << 6))
 
+<<<<<<< HEAD
 #define UNCACHEABLE_ADDR	(ARMCSR_BASE + 0x108)
+=======
+#define UNCACHEABLE_ADDR	(ARMCSR_BASE + 0x108)	/* CSR_ROMBASEMASK */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /* PIC irq control */

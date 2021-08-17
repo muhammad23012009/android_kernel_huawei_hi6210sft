@@ -13,6 +13,13 @@
 #include <linux/rtc.h>
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
+=======
+static int test_mmss64;
+module_param(test_mmss64, int, 0644);
+MODULE_PARM_DESC(test_mmss64, "Test struct rtc_class_ops.set_mmss64().");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device *test0 = NULL, *test1 = NULL;
 
 static int test_rtc_read_alarm(struct device *dev,
@@ -30,7 +37,17 @@ static int test_rtc_set_alarm(struct device *dev,
 static int test_rtc_read_time(struct device *dev,
 	struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	rtc_time_to_tm(get_seconds(), tm);
+=======
+	rtc_time64_to_tm(ktime_get_real_seconds(), tm);
+	return 0;
+}
+
+static int test_rtc_set_mmss64(struct device *dev, time64_t secs)
+{
+	dev_info(dev, "%s, secs = %lld\n", __func__, (long long)secs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -55,7 +72,11 @@ static int test_rtc_alarm_irq_enable(struct device *dev, unsigned int enable)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct rtc_class_ops test_rtc_ops = {
+=======
+static struct rtc_class_ops test_rtc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.proc = test_rtc_proc,
 	.read_time = test_rtc_read_time,
 	.read_alarm = test_rtc_read_alarm,
@@ -101,23 +122,43 @@ static int test_probe(struct platform_device *plat_dev)
 	int err;
 	struct rtc_device *rtc;
 
+<<<<<<< HEAD
 	rtc = devm_rtc_device_register(&plat_dev->dev, "test",
 				&test_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc)) {
 		err = PTR_ERR(rtc);
 		return err;
+=======
+	if (test_mmss64) {
+		test_rtc_ops.set_mmss64 = test_rtc_set_mmss64;
+		test_rtc_ops.set_mmss = NULL;
+	}
+
+	rtc = devm_rtc_device_register(&plat_dev->dev, "test",
+				&test_rtc_ops, THIS_MODULE);
+	if (IS_ERR(rtc)) {
+		return PTR_ERR(rtc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	err = device_create_file(&plat_dev->dev, &dev_attr_irq);
 	if (err)
+<<<<<<< HEAD
 		goto err;
+=======
+		dev_err(&plat_dev->dev, "Unable to create sysfs entry: %s\n",
+			dev_attr_irq.attr.name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(plat_dev, rtc);
 
 	return 0;
+<<<<<<< HEAD
 
 err:
 	return err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int test_remove(struct platform_device *plat_dev)
@@ -132,7 +173,10 @@ static struct platform_driver test_driver = {
 	.remove = test_remove,
 	.driver = {
 		.name = "rtc-test",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

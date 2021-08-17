@@ -207,7 +207,11 @@ static int iguanair_send(struct iguanair *ir, unsigned size)
 {
 	int rc;
 
+<<<<<<< HEAD
 	INIT_COMPLETION(ir->completion);
+=======
+	reinit_completion(&ir->completion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ir->urb_out->transfer_buffer_length = size;
 	rc = usb_submit_urb(ir->urb_out, GFP_KERNEL);
@@ -286,10 +290,17 @@ static int iguanair_receiver(struct iguanair *ir, bool enable)
 }
 
 /*
+<<<<<<< HEAD
  * The iguana ir creates the carrier by busy spinning after each pulse or
  * space. This is counted in CPU cycles, with the CPU running at 24MHz. It is
  * broken down into 7-cycles and 4-cyles delays, with a preference for
  * 4-cycle delays.
+=======
+ * The iguanair creates the carrier by busy spinning after each half period.
+ * This is counted in CPU cycles, with the CPU running at 24MHz. It is
+ * broken down into 7-cycles and 4-cyles delays, with a preference for
+ * 4-cycle delays, minus the overhead of the loop itself (cycle_overhead).
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int iguanair_set_tx_carrier(struct rc_dev *dev, uint32_t carrier)
 {
@@ -308,6 +319,7 @@ static int iguanair_set_tx_carrier(struct rc_dev *dev, uint32_t carrier)
 		cycles = DIV_ROUND_CLOSEST(24000000, carrier * 2) -
 							ir->cycle_overhead;
 
+<<<<<<< HEAD
 		/*  make up the the remainer of 4-cycle blocks */
 		switch (cycles & 3) {
 		case 0:
@@ -327,13 +339,35 @@ static int iguanair_set_tx_carrier(struct rc_dev *dev, uint32_t carrier)
 		fours = (cycles - sevens * 7) / 4;
 
 		/* magic happens here */
+=======
+		/*
+		 * Calculate minimum number of 7 cycles needed so
+		 * we are left with a multiple of 4; so we want to have
+		 * (sevens * 7) & 3 == cycles & 3
+		 */
+		sevens = (4 - cycles) & 3;
+		fours = (cycles - sevens * 7) / 4;
+
+		/*
+		 * The firmware interprets these values as a relative offset
+		 * for a branch. Immediately following the branches, there
+		 * 4 instructions of 7 cycles (2 bytes each) and 110
+		 * instructions of 4 cycles (1 byte each). A relative branch
+		 * of 0 will execute all of them, branch further for less
+		 * cycle burning.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ir->packet->busy7 = (4 - sevens) * 2;
 		ir->packet->busy4 = 110 - fours;
 	}
 
 	mutex_unlock(&ir->lock);
 
+<<<<<<< HEAD
 	return carrier;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int iguanair_set_tx_mask(struct rc_dev *dev, uint32_t mask)
@@ -364,6 +398,7 @@ static int iguanair_tx(struct rc_dev *dev, unsigned *txbuf, unsigned count)
 		periods = DIV_ROUND_CLOSEST(txbuf[i] * ir->carrier, 1000000);
 		bytes = DIV_ROUND_UP(periods, 127);
 		if (size + bytes > ir->bufsize) {
+<<<<<<< HEAD
 			count = i;
 			break;
 		}
@@ -381,6 +416,19 @@ static int iguanair_tx(struct rc_dev *dev, unsigned *txbuf, unsigned count)
 		goto out;
 	}
 
+=======
+			rc = -EINVAL;
+			goto out;
+		}
+		while (periods) {
+			unsigned p = min(periods, 127u);
+			ir->packet->payload[size++] = p | space;
+			periods -= p;
+		}
+		space ^= 0x80;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ir->packet->header.start = 0;
 	ir->packet->header.direction = DIR_OUT;
 	ir->packet->header.cmd = CMD_SEND;
@@ -439,6 +487,13 @@ static int iguanair_probe(struct usb_interface *intf,
 	int ret, pipein, pipeout;
 	struct usb_host_interface *idesc;
 
+<<<<<<< HEAD
+=======
+	idesc = intf->cur_altsetting;
+	if (idesc->desc.bNumEndpoints < 2)
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ir = kzalloc(sizeof(*ir), GFP_KERNEL);
 	rc = rc_allocate_device();
 	if (!ir || !rc) {
@@ -453,11 +508,18 @@ static int iguanair_probe(struct usb_interface *intf,
 	ir->urb_in = usb_alloc_urb(0, GFP_KERNEL);
 	ir->urb_out = usb_alloc_urb(0, GFP_KERNEL);
 
+<<<<<<< HEAD
 	if (!ir->buf_in || !ir->packet || !ir->urb_in || !ir->urb_out) {
+=======
+	if (!ir->buf_in || !ir->packet || !ir->urb_in || !ir->urb_out ||
+	    !usb_endpoint_is_int_in(&idesc->endpoint[0].desc) ||
+	    !usb_endpoint_is_int_out(&idesc->endpoint[1].desc)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	idesc = intf->altsetting;
 
 	if (idesc->desc.bNumEndpoints < 2) {
@@ -465,6 +527,8 @@ static int iguanair_probe(struct usb_interface *intf,
 		goto out;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ir->rc = rc;
 	ir->dev = &intf->dev;
 	ir->udev = udev;
@@ -504,7 +568,11 @@ static int iguanair_probe(struct usb_interface *intf,
 	usb_to_input_id(ir->udev, &rc->input_id);
 	rc->dev.parent = &intf->dev;
 	rc->driver_type = RC_DRIVER_IR_RAW;
+<<<<<<< HEAD
 	rc->allowed_protos = RC_BIT_ALL;
+=======
+	rc->allowed_protocols = RC_BIT_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc->priv = ir;
 	rc->open = iguanair_open;
 	rc->close = iguanair_close;

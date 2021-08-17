@@ -12,4 +12,8 @@ config RC_MAP
 	   The ir-keytable program, available at v4l-utils package
 	   provide the tool and the same RC maps for load from
 	   userspace. Its available at
+<<<<<<< HEAD
 			http://git.linuxtv.org/v4l-utils
+=======
+		http://git.linuxtv.org/cgit.cgi/v4l-utils.git/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

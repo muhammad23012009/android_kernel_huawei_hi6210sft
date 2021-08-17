@@ -34,7 +34,11 @@
 #include <asm/kvm_para.h>
 #include <asm/kvm_host.h>
 #include <asm/kvm_ppc.h>
+<<<<<<< HEAD
 #include "iodev.h"
+=======
+#include <kvm/iodev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MAX_CPU     32
 #define MAX_SRC     256
@@ -126,6 +130,11 @@ static int openpic_cpu_write_internal(void *opaque, gpa_t addr,
 				      u32 val, int idx);
 static int openpic_cpu_read_internal(void *opaque, gpa_t addr,
 				     u32 *ptr, int idx);
+<<<<<<< HEAD
+=======
+static inline void write_IRQreg_idr(struct openpic *opp, int n_IRQ,
+				    uint32_t val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum irq_type {
 	IRQ_TYPE_NORMAL = 0,
@@ -287,11 +296,14 @@ static inline void IRQ_resetbit(struct irq_queue *q, int n_IRQ)
 	clear_bit(n_IRQ, q->queue);
 }
 
+<<<<<<< HEAD
 static inline int IRQ_testbit(struct irq_queue *q, int n_IRQ)
 {
 	return test_bit(n_IRQ, q->queue);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void IRQ_check(struct openpic *opp, struct irq_queue *q)
 {
 	int irq = -1;
@@ -528,7 +540,10 @@ static void openpic_reset(struct openpic *opp)
 	/* Initialise IRQ sources */
 	for (i = 0; i < opp->max_irq; i++) {
 		opp->src[i].ivpr = opp->ivpr_reset;
+<<<<<<< HEAD
 		opp->src[i].idr = opp->idr_reset;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		switch (opp->src[i].type) {
 		case IRQ_TYPE_NORMAL:
@@ -543,6 +558,11 @@ static void openpic_reset(struct openpic *opp)
 		case IRQ_TYPE_FSLSPECIAL:
 			break;
 		}
+<<<<<<< HEAD
+=======
+
+		write_IRQreg_idr(opp, i, opp->idr_reset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* Initialise IRQ destinations */
 	for (i = 0; i < MAX_CPU; i++) {
@@ -1371,8 +1391,14 @@ static int kvm_mpic_write_internal(struct openpic *opp, gpa_t addr, u32 val)
 	return -ENXIO;
 }
 
+<<<<<<< HEAD
 static int kvm_mpic_read(struct kvm_io_device *this, gpa_t addr,
 			 int len, void *ptr)
+=======
+static int kvm_mpic_read(struct kvm_vcpu *vcpu,
+			 struct kvm_io_device *this,
+			 gpa_t addr, int len, void *ptr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct openpic *opp = container_of(this, struct openpic, mmio);
 	int ret;
@@ -1412,8 +1438,14 @@ static int kvm_mpic_read(struct kvm_io_device *this, gpa_t addr,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int kvm_mpic_write(struct kvm_io_device *this, gpa_t addr,
 			  int len, const void *ptr)
+=======
+static int kvm_mpic_write(struct kvm_vcpu *vcpu,
+			  struct kvm_io_device *this,
+			  gpa_t addr, int len, const void *ptr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct openpic *opp = container_of(this, struct openpic, mmio);
 	int ret;
@@ -1635,6 +1667,10 @@ static void mpic_destroy(struct kvm_device *dev)
 
 	dev->kvm->arch.mpic = NULL;
 	kfree(opp);
+<<<<<<< HEAD
+=======
+	kfree(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mpic_set_default_irq_routing(struct openpic *opp)
@@ -1822,7 +1858,12 @@ int kvm_set_msi(struct kvm_kernel_irq_routing_entry *e,
 	return 0;
 }
 
+<<<<<<< HEAD
 int kvm_set_routing_entry(struct kvm_kernel_irq_routing_entry *e,
+=======
+int kvm_set_routing_entry(struct kvm *kvm,
+			  struct kvm_kernel_irq_routing_entry *e,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  const struct kvm_irq_routing_entry *ue)
 {
 	int r = -EINVAL;

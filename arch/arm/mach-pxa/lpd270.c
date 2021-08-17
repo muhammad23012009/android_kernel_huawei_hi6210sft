@@ -23,7 +23,13 @@
 #include <linux/ioport.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
 #include <linux/pwm_backlight.h>
+=======
+#include <linux/pwm.h>
+#include <linux/pwm_backlight.h>
+#include <linux/smc91x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/types.h>
 #include <asm/setup.h>
@@ -38,8 +44,13 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/lpd270.h>
+=======
+#include "pxa27x.h"
+#include "lpd270.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/mmc-pxamci.h>
@@ -119,8 +130,14 @@ static struct irq_chip lpd270_irq_chip = {
 	.irq_unmask	= lpd270_unmask_irq,
 };
 
+<<<<<<< HEAD
 static void lpd270_irq_handler(unsigned int irq, struct irq_desc *desc)
 {
+=======
+static void lpd270_irq_handler(struct irq_desc *desc)
+{
+	unsigned int irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long pending;
 
 	pending = __raw_readw(LPD270_INT_STATUS) & lpd270_irq_enabled;
@@ -150,7 +167,11 @@ static void __init lpd270_init_irq(void)
 	for (irq = LPD270_IRQ(2); irq <= LPD270_IRQ(4); irq++) {
 		irq_set_chip_and_handler(irq, &lpd270_irq_chip,
 					 handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	irq_set_chained_handler(PXA_GPIO_TO_IRQ(0), lpd270_irq_handler);
 	irq_set_irq_type(PXA_GPIO_TO_IRQ(0), IRQ_TYPE_EDGE_FALLING);
@@ -189,15 +210,30 @@ static struct resource smc91x_resources[] = {
 	[1] = {
 		.start	= LPD270_ETHERNET_IRQ,
 		.end	= LPD270_ETHERNET_IRQ,
+<<<<<<< HEAD
 		.flags	= IORESOURCE_IRQ,
 	},
 };
 
+=======
+		.flags	= IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHEDGE,
+	},
+};
+
+struct smc91x_platdata smc91x_platdata = {
+	.flags = SMC91X_USE_16BIT | SMC91X_NOWAIT,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device smc91x_device = {
 	.name		= "smc91x",
 	.id		= 0,
 	.num_resources	= ARRAY_SIZE(smc91x_resources),
 	.resource	= smc91x_resources,
+<<<<<<< HEAD
+=======
+	.dev.platform_data = &smc91x_platdata,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource lpd270_flash_resources[] = {
@@ -264,11 +300,23 @@ static struct platform_device lpd270_flash_device[2] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct platform_pwm_backlight_data lpd270_backlight_data = {
 	.pwm_id		= 0,
 	.max_brightness	= 1,
 	.dft_brightness	= 1,
 	.pwm_period_ns	= 78770,
+=======
+static struct pwm_lookup lpd270_pwm_lookup[] = {
+	PWM_LOOKUP("pxa27x-pwm.0", 0, "pwm-backlight.0", NULL, 78770,
+		   PWM_POLARITY_NORMAL),
+};
+
+static struct platform_pwm_backlight_data lpd270_backlight_data = {
+	.max_brightness	= 1,
+	.dft_brightness	= 1,
+	.enable_gpio	= -1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device lpd270_backlight_device = {
@@ -415,6 +463,7 @@ static struct pxafb_mach_info *lpd270_lcd_to_use;
 
 static int __init lpd270_set_lcd(char *str)
 {
+<<<<<<< HEAD
 	if (!strnicmp(str, "lq057q3dc02", 11)) {
 		lpd270_lcd_to_use = &sharp_lq057q3dc02;
 	} else if (!strnicmp(str, "lq121s1dg31", 11)) {
@@ -426,6 +475,19 @@ static int __init lpd270_set_lcd(char *str)
 	} else if (!strnicmp(str, "lq10d368", 8)) {
 		lpd270_lcd_to_use = &sharp_lq10d368;
 	} else if (!strnicmp(str, "lq035q7db02-20", 14)) {
+=======
+	if (!strncasecmp(str, "lq057q3dc02", 11)) {
+		lpd270_lcd_to_use = &sharp_lq057q3dc02;
+	} else if (!strncasecmp(str, "lq121s1dg31", 11)) {
+		lpd270_lcd_to_use = &sharp_lq121s1dg31;
+	} else if (!strncasecmp(str, "lq036q1da01", 11)) {
+		lpd270_lcd_to_use = &sharp_lq036q1da01;
+	} else if (!strncasecmp(str, "lq64d343", 8)) {
+		lpd270_lcd_to_use = &sharp_lq64d343;
+	} else if (!strncasecmp(str, "lq10d368", 8)) {
+		lpd270_lcd_to_use = &sharp_lq10d368;
+	} else if (!strncasecmp(str, "lq035q7db02-20", 14)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lpd270_lcd_to_use = &sharp_lq035q7db02_20;
 	} else {
 		printk(KERN_INFO "lpd270: unknown lcd panel [%s]\n", str);
@@ -466,6 +528,10 @@ static void __init lpd270_init(void)
 	 */
 	ARB_CNTRL = ARB_CORE_PARK | 0x234;
 
+<<<<<<< HEAD
+=======
+	pwm_add_table(lpd270_pwm_lookup, ARRAY_SIZE(lpd270_pwm_lookup));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_add_devices(platform_devices, ARRAY_SIZE(platform_devices));
 
 	pxa_set_ac97_info(NULL);

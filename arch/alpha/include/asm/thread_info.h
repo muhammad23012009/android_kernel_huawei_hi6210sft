@@ -18,7 +18,10 @@ struct thread_info {
 	unsigned int		flags;		/* low level flags */
 	unsigned int		ieee_state;	/* see fpu.h */
 
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mm_segment_t		addr_limit;	/* thread address space */
 	unsigned		cpu;		/* current CPU */
 	int			preempt_count; /* 0 => preemptable, <0 => BUG */
@@ -27,8 +30,11 @@ struct thread_info {
 	int bpt_nsaved;
 	unsigned long bpt_addr[2];		/* breakpoint handling  */
 	unsigned int bpt_insn[2];
+<<<<<<< HEAD
 
 	struct restart_block	restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -37,12 +43,17 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
 	.addr_limit	= KERNEL_DS,		\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+	.addr_limit	= KERNEL_DS,		\
+	.preempt_count	= INIT_PREEMPT_COUNT,	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
@@ -58,8 +69,11 @@ register struct thread_info *__current_thread_info __asm__("$8");
 #define THREAD_SIZE_ORDER 1
 #define THREAD_SIZE (2*PAGE_SIZE)
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE		0x40000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Thread information flags:
  * - these are process state flags and used from assembly
@@ -72,13 +86,25 @@ register struct thread_info *__current_thread_info __asm__("$8");
 #define TIF_NOTIFY_RESUME	1	/* callback before returning to user */
 #define TIF_SIGPENDING		2	/* signal pending */
 #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
+<<<<<<< HEAD
 #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
 #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
+=======
+#define TIF_SYSCALL_AUDIT	4	/* syscall audit active */
+#define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
+#define TIF_MEMDIE		13	/* is terminating due to OOM killer */
+#define TIF_POLLING_NRFLAG	14	/* idle is polling for TIF_NEED_RESCHED */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _TIF_SYSCALL_TRACE	(1<<TIF_SYSCALL_TRACE)
 #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
 #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
+<<<<<<< HEAD
+=======
+#define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
+#define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Work to do on interrupt/exception return.  */
 #define _TIF_WORK_MASK		(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
@@ -91,6 +117,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
 #define TS_UAC_NOPRINT		0x0001	/* ! Preserve the following three */
 #define TS_UAC_NOFIX		0x0002	/* ! flags as they match          */
 #define TS_UAC_SIGBUS		0x0004	/* ! userspace part of 'osf_sysinfo' */
+<<<<<<< HEAD
 #define TS_RESTORE_SIGMASK	0x0008	/* restore signal mask in do_signal() */
 #define TS_POLLING		0x0010	/* idle task polling need_resched,
 					   skip sending interrupt */
@@ -120,6 +147,8 @@ static inline bool test_and_clear_restore_sigmask(void)
 	return true;
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SET_UNALIGN_CTL(task,value)	({				\
 	__u32 status = task_thread_info(task)->status & ~UAC_BITMASK;	\

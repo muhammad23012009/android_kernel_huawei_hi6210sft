@@ -1,6 +1,9 @@
 /*
+<<<<<<< HEAD
  * arch/arm/plat-omap/include/mach/mcbsp.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Defines for Multi-Channel Buffered Serial Port
  *
  * Copyright (C) 2002 RidgeRun, Inc.
@@ -21,8 +24,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  */
+<<<<<<< HEAD
 #ifndef __ASM_ARCH_OMAP_MCBSP_H
 #define __ASM_ARCH_OMAP_MCBSP_H
+=======
+#ifndef __ASOC_TI_MCBSP_H
+#define __ASOC_TI_MCBSP_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/spinlock.h>
 #include <linux/clk.h>
@@ -46,7 +54,11 @@ struct omap_mcbsp_platform_data {
 	/* McBSP platform and instance specific features */
 	bool has_wakeup; /* Wakeup capability */
 	bool has_ccr; /* Transceiver has configuration control registers */
+<<<<<<< HEAD
 	int (*enable_st_clock)(unsigned int, bool);
+=======
+	int (*force_ick_on)(struct clk *clk, bool force_on);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -57,4 +69,9 @@ struct omap_mcbsp_dev_attr {
 	const char *sidetone;
 };
 
+<<<<<<< HEAD
+=======
+void omap3_mcbsp_init_pdata_callback(struct omap_mcbsp_platform_data *pdata);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

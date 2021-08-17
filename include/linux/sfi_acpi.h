@@ -59,9 +59,16 @@
 #ifndef _LINUX_SFI_ACPI_H
 #define _LINUX_SFI_ACPI_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_SFI
 #include <acpi/acpi.h>		/* struct acpi_table_header */
 
+=======
+#include <linux/acpi.h>
+#include <linux/sfi.h>
+
+#ifdef CONFIG_SFI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int sfi_acpi_table_parse(char *signature, char *oem_id,
 				char *oem_table_id,
 				int (*handler)(struct acpi_table_header *));
@@ -75,7 +82,10 @@ static inline int __init acpi_sfi_table_parse(char *signature,
 	return sfi_acpi_table_parse(signature, NULL, NULL, handler);
 }
 #else /* !CONFIG_SFI */
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int sfi_acpi_table_parse(char *signature, char *oem_id,
 				char *oem_table_id,
 				int (*handler)(struct acpi_table_header *))

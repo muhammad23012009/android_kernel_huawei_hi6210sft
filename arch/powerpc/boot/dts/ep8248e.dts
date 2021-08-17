@@ -67,7 +67,10 @@
 			ranges;
 
 			mdio {
+<<<<<<< HEAD
 				device_type = "mdio";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				compatible = "fsl,ep8248e-mdio-bitbang";
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -76,13 +79,19 @@
 				PHY0: ethernet-phy@0 {
 					interrupt-parent = <&PIC>;
 					reg = <0>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				PHY1: ethernet-phy@1 {
 					interrupt-parent = <&PIC>;
 					reg = <1>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 		};

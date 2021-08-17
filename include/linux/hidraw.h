@@ -23,6 +23,10 @@ struct hidraw {
 	wait_queue_head_t wait;
 	struct hid_device *hid;
 	struct device *dev;
+<<<<<<< HEAD
+=======
+	spinlock_t list_lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head list;
 };
 

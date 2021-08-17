@@ -17,6 +17,7 @@
 #include <linux/interrupt.h>
 #include <linux/mv643xx_i2c.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_irq.h>
@@ -39,6 +40,27 @@
 #define	MV64XXX_I2C_REG_CONTROL_START			0x00000020
 #define	MV64XXX_I2C_REG_CONTROL_TWSIEN			0x00000040
 #define	MV64XXX_I2C_REG_CONTROL_INTEN			0x00000080
+=======
+#include <linux/reset.h>
+#include <linux/io.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/of_irq.h>
+#include <linux/clk.h>
+#include <linux/err.h>
+#include <linux/delay.h>
+
+#define MV64XXX_I2C_ADDR_ADDR(val)			((val & 0x7f) << 1)
+#define MV64XXX_I2C_BAUD_DIV_N(val)			(val & 0x7)
+#define MV64XXX_I2C_BAUD_DIV_M(val)			((val & 0xf) << 3)
+
+#define	MV64XXX_I2C_REG_CONTROL_ACK			BIT(2)
+#define	MV64XXX_I2C_REG_CONTROL_IFLG			BIT(3)
+#define	MV64XXX_I2C_REG_CONTROL_STOP			BIT(4)
+#define	MV64XXX_I2C_REG_CONTROL_START			BIT(5)
+#define	MV64XXX_I2C_REG_CONTROL_TWSIEN			BIT(6)
+#define	MV64XXX_I2C_REG_CONTROL_INTEN			BIT(7)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Ctlr status values */
 #define	MV64XXX_I2C_STATUS_BUS_ERR			0x00
@@ -59,6 +81,33 @@
 #define	MV64XXX_I2C_STATUS_MAST_RD_ADDR_2_NO_ACK	0xe8
 #define	MV64XXX_I2C_STATUS_NO_STATUS			0xf8
 
+<<<<<<< HEAD
+=======
+/* Register defines (I2C bridge) */
+#define	MV64XXX_I2C_REG_TX_DATA_LO			0xc0
+#define	MV64XXX_I2C_REG_TX_DATA_HI			0xc4
+#define	MV64XXX_I2C_REG_RX_DATA_LO			0xc8
+#define	MV64XXX_I2C_REG_RX_DATA_HI			0xcc
+#define	MV64XXX_I2C_REG_BRIDGE_CONTROL			0xd0
+#define	MV64XXX_I2C_REG_BRIDGE_STATUS			0xd4
+#define	MV64XXX_I2C_REG_BRIDGE_INTR_CAUSE		0xd8
+#define	MV64XXX_I2C_REG_BRIDGE_INTR_MASK		0xdC
+#define	MV64XXX_I2C_REG_BRIDGE_TIMING			0xe0
+
+/* Bridge Control values */
+#define	MV64XXX_I2C_BRIDGE_CONTROL_WR			BIT(0)
+#define	MV64XXX_I2C_BRIDGE_CONTROL_RD			BIT(1)
+#define	MV64XXX_I2C_BRIDGE_CONTROL_ADDR_SHIFT		2
+#define	MV64XXX_I2C_BRIDGE_CONTROL_ADDR_EXT		BIT(12)
+#define	MV64XXX_I2C_BRIDGE_CONTROL_TX_SIZE_SHIFT	13
+#define	MV64XXX_I2C_BRIDGE_CONTROL_RX_SIZE_SHIFT	16
+#define	MV64XXX_I2C_BRIDGE_CONTROL_ENABLE		BIT(19)
+#define	MV64XXX_I2C_BRIDGE_CONTROL_REPEATED_START	BIT(20)
+
+/* Bridge Status values */
+#define	MV64XXX_I2C_BRIDGE_STATUS_ERROR			BIT(0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Driver states */
 enum {
 	MV64XXX_I2C_STATE_INVALID,
@@ -75,7 +124,10 @@ enum {
 enum {
 	MV64XXX_I2C_ACTION_INVALID,
 	MV64XXX_I2C_ACTION_CONTINUE,
+<<<<<<< HEAD
 	MV64XXX_I2C_ACTION_SEND_START,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MV64XXX_I2C_ACTION_SEND_RESTART,
 	MV64XXX_I2C_ACTION_SEND_ADDR_1,
 	MV64XXX_I2C_ACTION_SEND_ADDR_2,
@@ -85,15 +137,35 @@ enum {
 	MV64XXX_I2C_ACTION_SEND_STOP,
 };
 
+<<<<<<< HEAD
 struct mv64xxx_i2c_data {
+=======
+struct mv64xxx_i2c_regs {
+	u8	addr;
+	u8	ext_addr;
+	u8	data;
+	u8	control;
+	u8	status;
+	u8	clock;
+	u8	soft_reset;
+};
+
+struct mv64xxx_i2c_data {
+	struct i2c_msg		*msgs;
+	int			num_msgs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			irq;
 	u32			state;
 	u32			action;
 	u32			aborting;
 	u32			cntl_bits;
 	void __iomem		*reg_base;
+<<<<<<< HEAD
 	u32			reg_base_p;
 	u32			reg_size;
+=======
+	struct mv64xxx_i2c_regs	reg_offsets;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32			addr1;
 	u32			addr2;
 	u32			bytes_left;
@@ -103,15 +175,72 @@ struct mv64xxx_i2c_data {
 	int			rc;
 	u32			freq_m;
 	u32			freq_n;
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
 	struct clk              *clk;
 #endif
+=======
+	struct clk              *clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wait_queue_head_t	waitq;
 	spinlock_t		lock;
 	struct i2c_msg		*msg;
 	struct i2c_adapter	adapter;
+<<<<<<< HEAD
 };
 
+=======
+	bool			offload_enabled;
+/* 5us delay in order to avoid repeated start timing violation */
+	bool			errata_delay;
+	struct reset_control	*rstc;
+	bool			irq_clear_inverted;
+	/* Clk div is 2 to the power n, not 2 to the power n + 1 */
+	bool			clk_n_base_0;
+};
+
+static struct mv64xxx_i2c_regs mv64xxx_i2c_regs_mv64xxx = {
+	.addr		= 0x00,
+	.ext_addr	= 0x10,
+	.data		= 0x04,
+	.control	= 0x08,
+	.status		= 0x0c,
+	.clock		= 0x0c,
+	.soft_reset	= 0x1c,
+};
+
+static struct mv64xxx_i2c_regs mv64xxx_i2c_regs_sun4i = {
+	.addr		= 0x00,
+	.ext_addr	= 0x04,
+	.data		= 0x08,
+	.control	= 0x0c,
+	.status		= 0x10,
+	.clock		= 0x14,
+	.soft_reset	= 0x18,
+};
+
+static void
+mv64xxx_i2c_prepare_for_io(struct mv64xxx_i2c_data *drv_data,
+	struct i2c_msg *msg)
+{
+	u32	dir = 0;
+
+	drv_data->cntl_bits = MV64XXX_I2C_REG_CONTROL_ACK |
+		MV64XXX_I2C_REG_CONTROL_INTEN | MV64XXX_I2C_REG_CONTROL_TWSIEN;
+
+	if (msg->flags & I2C_M_RD)
+		dir = 1;
+
+	if (msg->flags & I2C_M_TEN) {
+		drv_data->addr1 = 0xf0 | (((u32)msg->addr & 0x300) >> 7) | dir;
+		drv_data->addr2 = (u32)msg->addr & 0xff;
+	} else {
+		drv_data->addr1 = MV64XXX_I2C_ADDR_ADDR((u32)msg->addr) | dir;
+		drv_data->addr2 = 0;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *****************************************************************************
  *
@@ -124,6 +253,7 @@ struct mv64xxx_i2c_data {
 static void
 mv64xxx_i2c_hw_init(struct mv64xxx_i2c_data *drv_data)
 {
+<<<<<<< HEAD
 	writel(0, drv_data->reg_base + MV64XXX_I2C_REG_SOFT_RESET);
 	writel((((drv_data->freq_m & 0xf) << 3) | (drv_data->freq_n & 0x7)),
 		drv_data->reg_base + MV64XXX_I2C_REG_BAUD);
@@ -131,6 +261,24 @@ mv64xxx_i2c_hw_init(struct mv64xxx_i2c_data *drv_data)
 	writel(0, drv_data->reg_base + MV64XXX_I2C_REG_EXT_SLAVE_ADDR);
 	writel(MV64XXX_I2C_REG_CONTROL_TWSIEN | MV64XXX_I2C_REG_CONTROL_STOP,
 		drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
+=======
+	if (drv_data->offload_enabled) {
+		writel(0, drv_data->reg_base + MV64XXX_I2C_REG_BRIDGE_CONTROL);
+		writel(0, drv_data->reg_base + MV64XXX_I2C_REG_BRIDGE_TIMING);
+		writel(0, drv_data->reg_base +
+			MV64XXX_I2C_REG_BRIDGE_INTR_CAUSE);
+		writel(0, drv_data->reg_base +
+			MV64XXX_I2C_REG_BRIDGE_INTR_MASK);
+	}
+
+	writel(0, drv_data->reg_base + drv_data->reg_offsets.soft_reset);
+	writel(MV64XXX_I2C_BAUD_DIV_M(drv_data->freq_m) | MV64XXX_I2C_BAUD_DIV_N(drv_data->freq_n),
+		drv_data->reg_base + drv_data->reg_offsets.clock);
+	writel(0, drv_data->reg_base + drv_data->reg_offsets.addr);
+	writel(0, drv_data->reg_base + drv_data->reg_offsets.ext_addr);
+	writel(MV64XXX_I2C_REG_CONTROL_TWSIEN | MV64XXX_I2C_REG_CONTROL_STOP,
+		drv_data->reg_base + drv_data->reg_offsets.control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	drv_data->state = MV64XXX_I2C_STATE_IDLE;
 }
 
@@ -170,7 +318,11 @@ mv64xxx_i2c_fsm(struct mv64xxx_i2c_data *drv_data, u32 status)
 		if ((drv_data->bytes_left == 0)
 				|| (drv_data->aborting
 					&& (drv_data->byte_posn != 0))) {
+<<<<<<< HEAD
 			if (drv_data->send_stop) {
+=======
+			if (drv_data->send_stop || drv_data->aborting) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				drv_data->action = MV64XXX_I2C_ACTION_SEND_STOP;
 				drv_data->state = MV64XXX_I2C_STATE_IDLE;
 			} else {
@@ -227,7 +379,11 @@ mv64xxx_i2c_fsm(struct mv64xxx_i2c_data *drv_data, u32 status)
 		/* Doesn't seem to be a device at other end */
 		drv_data->action = MV64XXX_I2C_ACTION_SEND_STOP;
 		drv_data->state = MV64XXX_I2C_STATE_IDLE;
+<<<<<<< HEAD
 		drv_data->rc = -ENODEV;
+=======
+		drv_data->rc = -ENXIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:
@@ -242,64 +398,138 @@ mv64xxx_i2c_fsm(struct mv64xxx_i2c_data *drv_data, u32 status)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void mv64xxx_i2c_send_start(struct mv64xxx_i2c_data *drv_data)
+{
+	drv_data->msg = drv_data->msgs;
+	drv_data->byte_posn = 0;
+	drv_data->bytes_left = drv_data->msg->len;
+	drv_data->aborting = 0;
+	drv_data->rc = 0;
+
+	mv64xxx_i2c_prepare_for_io(drv_data, drv_data->msgs);
+	writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_START,
+	       drv_data->reg_base + drv_data->reg_offsets.control);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 mv64xxx_i2c_do_action(struct mv64xxx_i2c_data *drv_data)
 {
 	switch(drv_data->action) {
 	case MV64XXX_I2C_ACTION_SEND_RESTART:
+<<<<<<< HEAD
 		drv_data->cntl_bits |= MV64XXX_I2C_REG_CONTROL_START;
 		drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
 		drv_data->block = 0;
 		wake_up(&drv_data->waitq);
+=======
+		/* We should only get here if we have further messages */
+		BUG_ON(drv_data->num_msgs == 0);
+
+		drv_data->msgs++;
+		drv_data->num_msgs--;
+		mv64xxx_i2c_send_start(drv_data);
+
+		if (drv_data->errata_delay)
+			udelay(5);
+
+		/*
+		 * We're never at the start of the message here, and by this
+		 * time it's already too late to do any protocol mangling.
+		 * Thankfully, do not advertise support for that feature.
+		 */
+		drv_data->send_stop = drv_data->num_msgs == 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case MV64XXX_I2C_ACTION_CONTINUE:
 		writel(drv_data->cntl_bits,
+<<<<<<< HEAD
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
 		break;
 
 	case MV64XXX_I2C_ACTION_SEND_START:
 		writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_START,
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
+=======
+			drv_data->reg_base + drv_data->reg_offsets.control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case MV64XXX_I2C_ACTION_SEND_ADDR_1:
 		writel(drv_data->addr1,
+<<<<<<< HEAD
 			drv_data->reg_base + MV64XXX_I2C_REG_DATA);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
+=======
+			drv_data->reg_base + drv_data->reg_offsets.data);
+		writel(drv_data->cntl_bits,
+			drv_data->reg_base + drv_data->reg_offsets.control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case MV64XXX_I2C_ACTION_SEND_ADDR_2:
 		writel(drv_data->addr2,
+<<<<<<< HEAD
 			drv_data->reg_base + MV64XXX_I2C_REG_DATA);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
+=======
+			drv_data->reg_base + drv_data->reg_offsets.data);
+		writel(drv_data->cntl_bits,
+			drv_data->reg_base + drv_data->reg_offsets.control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case MV64XXX_I2C_ACTION_SEND_DATA:
 		writel(drv_data->msg->buf[drv_data->byte_posn++],
+<<<<<<< HEAD
 			drv_data->reg_base + MV64XXX_I2C_REG_DATA);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
+=======
+			drv_data->reg_base + drv_data->reg_offsets.data);
+		writel(drv_data->cntl_bits,
+			drv_data->reg_base + drv_data->reg_offsets.control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case MV64XXX_I2C_ACTION_RCV_DATA:
 		drv_data->msg->buf[drv_data->byte_posn++] =
+<<<<<<< HEAD
 			readl(drv_data->reg_base + MV64XXX_I2C_REG_DATA);
 		writel(drv_data->cntl_bits,
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
+=======
+			readl(drv_data->reg_base + drv_data->reg_offsets.data);
+		writel(drv_data->cntl_bits,
+			drv_data->reg_base + drv_data->reg_offsets.control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case MV64XXX_I2C_ACTION_RCV_DATA_STOP:
 		drv_data->msg->buf[drv_data->byte_posn++] =
+<<<<<<< HEAD
 			readl(drv_data->reg_base + MV64XXX_I2C_REG_DATA);
 		drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
 		writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_STOP,
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
 		drv_data->block = 0;
+=======
+			readl(drv_data->reg_base + drv_data->reg_offsets.data);
+		drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
+		writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_STOP,
+			drv_data->reg_base + drv_data->reg_offsets.control);
+		drv_data->block = 0;
+		if (drv_data->errata_delay)
+			udelay(5);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wake_up(&drv_data->waitq);
 		break;
 
@@ -309,17 +539,92 @@ mv64xxx_i2c_do_action(struct mv64xxx_i2c_data *drv_data)
 			"mv64xxx_i2c_do_action: Invalid action: %d\n",
 			drv_data->action);
 		drv_data->rc = -EIO;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* FALLTHRU */
 	case MV64XXX_I2C_ACTION_SEND_STOP:
 		drv_data->cntl_bits &= ~MV64XXX_I2C_REG_CONTROL_INTEN;
 		writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_STOP,
+<<<<<<< HEAD
 			drv_data->reg_base + MV64XXX_I2C_REG_CONTROL);
+=======
+			drv_data->reg_base + drv_data->reg_offsets.control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		drv_data->block = 0;
 		wake_up(&drv_data->waitq);
 		break;
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void
+mv64xxx_i2c_read_offload_rx_data(struct mv64xxx_i2c_data *drv_data,
+				 struct i2c_msg *msg)
+{
+	u32 buf[2];
+
+	buf[0] = readl(drv_data->reg_base + MV64XXX_I2C_REG_RX_DATA_LO);
+	buf[1] = readl(drv_data->reg_base + MV64XXX_I2C_REG_RX_DATA_HI);
+
+	memcpy(msg->buf, buf, msg->len);
+}
+
+static int
+mv64xxx_i2c_intr_offload(struct mv64xxx_i2c_data *drv_data)
+{
+	u32 cause, status;
+
+	cause = readl(drv_data->reg_base +
+		      MV64XXX_I2C_REG_BRIDGE_INTR_CAUSE);
+	if (!cause)
+		return IRQ_NONE;
+
+	status = readl(drv_data->reg_base +
+		       MV64XXX_I2C_REG_BRIDGE_STATUS);
+
+	if (status & MV64XXX_I2C_BRIDGE_STATUS_ERROR) {
+		drv_data->rc = -EIO;
+		goto out;
+	}
+
+	drv_data->rc = 0;
+
+	/*
+	 * Transaction is a one message read transaction, read data
+	 * for this message.
+	 */
+	if (drv_data->num_msgs == 1 && drv_data->msgs[0].flags & I2C_M_RD) {
+		mv64xxx_i2c_read_offload_rx_data(drv_data, drv_data->msgs);
+		drv_data->msgs++;
+		drv_data->num_msgs--;
+	}
+	/*
+	 * Transaction is a two messages write/read transaction, read
+	 * data for the second (read) message.
+	 */
+	else if (drv_data->num_msgs == 2 &&
+		 !(drv_data->msgs[0].flags & I2C_M_RD) &&
+		 drv_data->msgs[1].flags & I2C_M_RD) {
+		mv64xxx_i2c_read_offload_rx_data(drv_data, drv_data->msgs + 1);
+		drv_data->msgs += 2;
+		drv_data->num_msgs -= 2;
+	}
+
+out:
+	writel(0, drv_data->reg_base +	MV64XXX_I2C_REG_BRIDGE_CONTROL);
+	writel(0, drv_data->reg_base +
+	       MV64XXX_I2C_REG_BRIDGE_INTR_CAUSE);
+	drv_data->block = 0;
+
+	wake_up(&drv_data->waitq);
+
+	return IRQ_HANDLED;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static irqreturn_t
 mv64xxx_i2c_intr(int irq, void *dev_id)
 {
@@ -329,11 +634,28 @@ mv64xxx_i2c_intr(int irq, void *dev_id)
 	irqreturn_t	rc = IRQ_NONE;
 
 	spin_lock_irqsave(&drv_data->lock, flags);
+<<<<<<< HEAD
 	while (readl(drv_data->reg_base + MV64XXX_I2C_REG_CONTROL) &
 						MV64XXX_I2C_REG_CONTROL_IFLG) {
 		status = readl(drv_data->reg_base + MV64XXX_I2C_REG_STATUS);
 		mv64xxx_i2c_fsm(drv_data, status);
 		mv64xxx_i2c_do_action(drv_data);
+=======
+
+	if (drv_data->offload_enabled)
+		rc = mv64xxx_i2c_intr_offload(drv_data);
+
+	while (readl(drv_data->reg_base + drv_data->reg_offsets.control) &
+						MV64XXX_I2C_REG_CONTROL_IFLG) {
+		status = readl(drv_data->reg_base + drv_data->reg_offsets.status);
+		mv64xxx_i2c_fsm(drv_data, status);
+		mv64xxx_i2c_do_action(drv_data);
+
+		if (drv_data->irq_clear_inverted)
+			writel(drv_data->cntl_bits | MV64XXX_I2C_REG_CONTROL_IFLG,
+			       drv_data->reg_base + drv_data->reg_offsets.control);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = IRQ_HANDLED;
 	}
 	spin_unlock_irqrestore(&drv_data->lock, flags);
@@ -349,6 +671,7 @@ mv64xxx_i2c_intr(int irq, void *dev_id)
  *****************************************************************************
  */
 static void
+<<<<<<< HEAD
 mv64xxx_i2c_prepare_for_io(struct mv64xxx_i2c_data *drv_data,
 	struct i2c_msg *msg)
 {
@@ -375,6 +698,8 @@ mv64xxx_i2c_prepare_for_io(struct mv64xxx_i2c_data *drv_data,
 }
 
 static void
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 mv64xxx_i2c_wait_for_completion(struct mv64xxx_i2c_data *drv_data)
 {
 	long		time_left;
@@ -414,11 +739,16 @@ mv64xxx_i2c_wait_for_completion(struct mv64xxx_i2c_data *drv_data)
 
 static int
 mv64xxx_i2c_execute_msg(struct mv64xxx_i2c_data *drv_data, struct i2c_msg *msg,
+<<<<<<< HEAD
 				int is_first, int is_last)
+=======
+				int is_last)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long	flags;
 
 	spin_lock_irqsave(&drv_data->lock, flags);
+<<<<<<< HEAD
 	mv64xxx_i2c_prepare_for_io(drv_data, msg);
 
 	if (unlikely(msg->flags & I2C_M_NOSTART)) { /* Skip start/addr phases */
@@ -448,12 +778,132 @@ mv64xxx_i2c_execute_msg(struct mv64xxx_i2c_data *drv_data, struct i2c_msg *msg,
 	drv_data->send_stop = is_last;
 	drv_data->block = 1;
 	mv64xxx_i2c_do_action(drv_data);
+=======
+
+	drv_data->state = MV64XXX_I2C_STATE_WAITING_FOR_START_COND;
+
+	drv_data->send_stop = is_last;
+	drv_data->block = 1;
+	mv64xxx_i2c_send_start(drv_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&drv_data->lock, flags);
 
 	mv64xxx_i2c_wait_for_completion(drv_data);
 	return drv_data->rc;
 }
 
+<<<<<<< HEAD
+=======
+static void
+mv64xxx_i2c_prepare_tx(struct mv64xxx_i2c_data *drv_data)
+{
+	struct i2c_msg *msg = drv_data->msgs;
+	u32 buf[2];
+
+	memcpy(buf, msg->buf, msg->len);
+
+	writel(buf[0], drv_data->reg_base + MV64XXX_I2C_REG_TX_DATA_LO);
+	writel(buf[1], drv_data->reg_base + MV64XXX_I2C_REG_TX_DATA_HI);
+}
+
+static int
+mv64xxx_i2c_offload_xfer(struct mv64xxx_i2c_data *drv_data)
+{
+	struct i2c_msg *msgs = drv_data->msgs;
+	int num = drv_data->num_msgs;
+	unsigned long ctrl_reg;
+	unsigned long flags;
+
+	spin_lock_irqsave(&drv_data->lock, flags);
+
+	/* Build transaction */
+	ctrl_reg = MV64XXX_I2C_BRIDGE_CONTROL_ENABLE |
+		(msgs[0].addr << MV64XXX_I2C_BRIDGE_CONTROL_ADDR_SHIFT);
+
+	if (msgs[0].flags & I2C_M_TEN)
+		ctrl_reg |= MV64XXX_I2C_BRIDGE_CONTROL_ADDR_EXT;
+
+	/* Single write message transaction */
+	if (num == 1 && !(msgs[0].flags & I2C_M_RD)) {
+		size_t len = msgs[0].len - 1;
+
+		ctrl_reg |= MV64XXX_I2C_BRIDGE_CONTROL_WR |
+			(len << MV64XXX_I2C_BRIDGE_CONTROL_TX_SIZE_SHIFT);
+		mv64xxx_i2c_prepare_tx(drv_data);
+	}
+	/* Single read message transaction */
+	else if (num == 1 && msgs[0].flags & I2C_M_RD) {
+		size_t len = msgs[0].len - 1;
+
+		ctrl_reg |= MV64XXX_I2C_BRIDGE_CONTROL_RD |
+			(len << MV64XXX_I2C_BRIDGE_CONTROL_RX_SIZE_SHIFT);
+	}
+	/*
+	 * Transaction with one write and one read message. This is
+	 * guaranteed by the mv64xx_i2c_can_offload() checks.
+	 */
+	else if (num == 2) {
+		size_t lentx = msgs[0].len - 1;
+		size_t lenrx = msgs[1].len - 1;
+
+		ctrl_reg |=
+			MV64XXX_I2C_BRIDGE_CONTROL_RD |
+			MV64XXX_I2C_BRIDGE_CONTROL_WR |
+			(lentx << MV64XXX_I2C_BRIDGE_CONTROL_TX_SIZE_SHIFT) |
+			(lenrx << MV64XXX_I2C_BRIDGE_CONTROL_RX_SIZE_SHIFT) |
+			MV64XXX_I2C_BRIDGE_CONTROL_REPEATED_START;
+		mv64xxx_i2c_prepare_tx(drv_data);
+	}
+
+	/* Execute transaction */
+	drv_data->block = 1;
+	writel(ctrl_reg, drv_data->reg_base + MV64XXX_I2C_REG_BRIDGE_CONTROL);
+	spin_unlock_irqrestore(&drv_data->lock, flags);
+
+	mv64xxx_i2c_wait_for_completion(drv_data);
+
+	return drv_data->rc;
+}
+
+static bool
+mv64xxx_i2c_valid_offload_sz(struct i2c_msg *msg)
+{
+	return msg->len <= 8 && msg->len >= 1;
+}
+
+static bool
+mv64xxx_i2c_can_offload(struct mv64xxx_i2c_data *drv_data)
+{
+	struct i2c_msg *msgs = drv_data->msgs;
+	int num = drv_data->num_msgs;
+
+	if (!drv_data->offload_enabled)
+		return false;
+
+	/*
+	 * We can offload a transaction consisting of a single
+	 * message, as long as the message has a length between 1 and
+	 * 8 bytes.
+	 */
+	if (num == 1 && mv64xxx_i2c_valid_offload_sz(msgs))
+		return true;
+
+	/*
+	 * We can offload a transaction consisting of two messages, if
+	 * the first is a write and a second is a read, and both have
+	 * a length between 1 and 8 bytes.
+	 */
+	if (num == 2 &&
+	    mv64xxx_i2c_valid_offload_sz(msgs) &&
+	    mv64xxx_i2c_valid_offload_sz(msgs + 1) &&
+	    !(msgs[0].flags & I2C_M_RD) &&
+	    msgs[1].flags & I2C_M_RD)
+		return true;
+
+	return false;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *****************************************************************************
  *
@@ -471,6 +921,7 @@ static int
 mv64xxx_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
 {
 	struct mv64xxx_i2c_data *drv_data = i2c_get_adapdata(adap);
+<<<<<<< HEAD
 	int	i, rc;
 
 	for (i = 0; i < num; i++) {
@@ -481,6 +932,26 @@ mv64xxx_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
 	}
 
 	return num;
+=======
+	int rc, ret = num;
+
+	BUG_ON(drv_data->msgs != NULL);
+	drv_data->msgs = msgs;
+	drv_data->num_msgs = num;
+
+	if (mv64xxx_i2c_can_offload(drv_data))
+		rc = mv64xxx_i2c_offload_xfer(drv_data);
+	else
+		rc = mv64xxx_i2c_execute_msg(drv_data, &msgs[0], num == 1);
+
+	if (rc < 0)
+		ret = rc;
+
+	drv_data->num_msgs = 0;
+	drv_data->msgs = NULL;
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_algorithm mv64xxx_i2c_algo = {
@@ -495,6 +966,7 @@ static const struct i2c_algorithm mv64xxx_i2c_algo = {
  *
  *****************************************************************************
  */
+<<<<<<< HEAD
 static int
 mv64xxx_i2c_map_regs(struct platform_device *pd,
 	struct mv64xxx_i2c_data *drv_data)
@@ -539,17 +1011,51 @@ mv64xxx_calc_freq(const int tclk, const int n, const int m)
 static bool
 mv64xxx_find_baud_factors(const u32 req_freq, const u32 tclk, u32 *best_n,
 			  u32 *best_m)
+=======
+static const struct of_device_id mv64xxx_i2c_of_match_table[] = {
+	{ .compatible = "allwinner,sun4i-a10-i2c", .data = &mv64xxx_i2c_regs_sun4i},
+	{ .compatible = "allwinner,sun6i-a31-i2c", .data = &mv64xxx_i2c_regs_sun4i},
+	{ .compatible = "marvell,mv64xxx-i2c", .data = &mv64xxx_i2c_regs_mv64xxx},
+	{ .compatible = "marvell,mv78230-i2c", .data = &mv64xxx_i2c_regs_mv64xxx},
+	{ .compatible = "marvell,mv78230-a0-i2c", .data = &mv64xxx_i2c_regs_mv64xxx},
+	{}
+};
+MODULE_DEVICE_TABLE(of, mv64xxx_i2c_of_match_table);
+
+#ifdef CONFIG_OF
+static int
+mv64xxx_calc_freq(struct mv64xxx_i2c_data *drv_data,
+		  const int tclk, const int n, const int m)
+{
+	if (drv_data->clk_n_base_0)
+		return tclk / (10 * (m + 1) * (1 << n));
+	else
+		return tclk / (10 * (m + 1) * (2 << n));
+}
+
+static bool
+mv64xxx_find_baud_factors(struct mv64xxx_i2c_data *drv_data,
+			  const u32 req_freq, const u32 tclk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int freq, delta, best_delta = INT_MAX;
 	int m, n;
 
 	for (n = 0; n <= 7; n++)
 		for (m = 0; m <= 15; m++) {
+<<<<<<< HEAD
 			freq = mv64xxx_calc_freq(tclk, n, m);
 			delta = req_freq - freq;
 			if (delta >= 0 && delta < best_delta) {
 				*best_m = m;
 				*best_n = n;
+=======
+			freq = mv64xxx_calc_freq(drv_data, tclk, n, m);
+			delta = req_freq - freq;
+			if (delta >= 0 && delta < best_delta) {
+				drv_data->freq_m = m;
+				drv_data->freq_n = n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				best_delta = delta;
 			}
 			if (best_delta == 0)
@@ -562,8 +1068,15 @@ mv64xxx_find_baud_factors(const u32 req_freq, const u32 tclk, u32 *best_n,
 
 static int
 mv64xxx_of_config(struct mv64xxx_i2c_data *drv_data,
+<<<<<<< HEAD
 		  struct device_node *np)
 {
+=======
+		  struct device *dev)
+{
+	const struct of_device_id *device;
+	struct device_node *np = dev->of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 bus_freq, tclk;
 	int rc = 0;
 
@@ -571,35 +1084,100 @@ mv64xxx_of_config(struct mv64xxx_i2c_data *drv_data,
 	 * need to know tclk in order to calculate bus clock
 	 * factors.
 	 */
+<<<<<<< HEAD
 #if !defined(CONFIG_HAVE_CLK)
 	/* Have OF but no CLK */
 	return -ENODEV;
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(drv_data->clk)) {
 		rc = -ENODEV;
 		goto out;
 	}
 	tclk = clk_get_rate(drv_data->clk);
+<<<<<<< HEAD
 	of_property_read_u32(np, "clock-frequency", &bus_freq);
 	if (!mv64xxx_find_baud_factors(bus_freq, tclk,
 				       &drv_data->freq_n, &drv_data->freq_m)) {
+=======
+
+	if (of_property_read_u32(np, "clock-frequency", &bus_freq))
+		bus_freq = 100000; /* 100kHz by default */
+
+	if (of_device_is_compatible(np, "allwinner,sun4i-a10-i2c") ||
+	    of_device_is_compatible(np, "allwinner,sun6i-a31-i2c"))
+		drv_data->clk_n_base_0 = true;
+
+	if (!mv64xxx_find_baud_factors(drv_data, bus_freq, tclk)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -EINVAL;
 		goto out;
 	}
 	drv_data->irq = irq_of_parse_and_map(np, 0);
 
+<<<<<<< HEAD
+=======
+	drv_data->rstc = devm_reset_control_get_optional(dev, NULL);
+	if (IS_ERR(drv_data->rstc)) {
+		if (PTR_ERR(drv_data->rstc) == -EPROBE_DEFER) {
+			rc = -EPROBE_DEFER;
+			goto out;
+		}
+	} else {
+		reset_control_deassert(drv_data->rstc);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Its not yet defined how timeouts will be specified in device tree.
 	 * So hard code the value to 1 second.
 	 */
 	drv_data->adapter.timeout = HZ;
+<<<<<<< HEAD
 out:
 	return rc;
 #endif
+=======
+
+	device = of_match_device(mv64xxx_i2c_of_match_table, dev);
+	if (!device)
+		return -ENODEV;
+
+	memcpy(&drv_data->reg_offsets, device->data, sizeof(drv_data->reg_offsets));
+
+	/*
+	 * For controllers embedded in new SoCs activate the
+	 * Transaction Generator support and the errata fix.
+	 */
+	if (of_device_is_compatible(np, "marvell,mv78230-i2c")) {
+		drv_data->offload_enabled = true;
+		/* The delay is only needed in standard mode (100kHz) */
+		if (bus_freq <= 100000)
+			drv_data->errata_delay = true;
+	}
+
+	if (of_device_is_compatible(np, "marvell,mv78230-a0-i2c")) {
+		drv_data->offload_enabled = false;
+		/* The delay is only needed in standard mode (100kHz) */
+		if (bus_freq <= 100000)
+			drv_data->errata_delay = true;
+	}
+
+	if (of_device_is_compatible(np, "allwinner,sun6i-a31-i2c"))
+		drv_data->irq_clear_inverted = true;
+
+out:
+	return rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else /* CONFIG_OF */
 static int
 mv64xxx_of_config(struct mv64xxx_i2c_data *drv_data,
+<<<<<<< HEAD
 		  struct device_node *np)
+=======
+		  struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -ENODEV;
 }
@@ -609,12 +1187,18 @@ static int
 mv64xxx_i2c_probe(struct platform_device *pd)
 {
 	struct mv64xxx_i2c_data		*drv_data;
+<<<<<<< HEAD
 	struct mv64xxx_i2c_pdata	*pdata = pd->dev.platform_data;
+=======
+	struct mv64xxx_i2c_pdata	*pdata = dev_get_platdata(&pd->dev);
+	struct resource	*r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int	rc;
 
 	if ((!pdata && !pd->dev.of_node))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	drv_data = kzalloc(sizeof(struct mv64xxx_i2c_data), GFP_KERNEL);
 	if (!drv_data)
 		return -ENOMEM;
@@ -623,6 +1207,17 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 		rc = -ENODEV;
 		goto exit_kfree;
 	}
+=======
+	drv_data = devm_kzalloc(&pd->dev, sizeof(struct mv64xxx_i2c_data),
+				GFP_KERNEL);
+	if (!drv_data)
+		return -ENOMEM;
+
+	r = platform_get_resource(pd, IORESOURCE_MEM, 0);
+	drv_data->reg_base = devm_ioremap_resource(&pd->dev, r);
+	if (IS_ERR(drv_data->reg_base))
+		return PTR_ERR(drv_data->reg_base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	strlcpy(drv_data->adapter.name, MV64XXX_I2C_CTLR_NAME " adapter",
 		sizeof(drv_data->adapter.name));
@@ -630,6 +1225,7 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 	init_waitqueue_head(&drv_data->waitq);
 	spin_lock_init(&drv_data->lock);
 
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
 	/* Not all platforms have a clk */
 	drv_data->clk = clk_get(&pd->dev, NULL);
@@ -638,11 +1234,21 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 		clk_enable(drv_data->clk);
 	}
 #endif
+=======
+	/* Not all platforms have a clk */
+	drv_data->clk = devm_clk_get(&pd->dev, NULL);
+	if (IS_ERR(drv_data->clk) && PTR_ERR(drv_data->clk) == -EPROBE_DEFER)
+		return -EPROBE_DEFER;
+	if (!IS_ERR(drv_data->clk))
+		clk_prepare_enable(drv_data->clk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata) {
 		drv_data->freq_m = pdata->freq_m;
 		drv_data->freq_n = pdata->freq_n;
 		drv_data->irq = platform_get_irq(pd, 0);
 		drv_data->adapter.timeout = msecs_to_jiffies(pdata->timeout);
+<<<<<<< HEAD
 	} else if (pd->dev.of_node) {
 		rc = mv64xxx_of_config(drv_data, pd->dev.of_node);
 		if (rc)
@@ -651,12 +1257,28 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 	if (drv_data->irq < 0) {
 		rc = -ENXIO;
 		goto exit_unmap_regs;
+=======
+		drv_data->offload_enabled = false;
+		memcpy(&drv_data->reg_offsets, &mv64xxx_i2c_regs_mv64xxx, sizeof(drv_data->reg_offsets));
+	} else if (pd->dev.of_node) {
+		rc = mv64xxx_of_config(drv_data, &pd->dev);
+		if (rc)
+			goto exit_clk;
+	}
+	if (drv_data->irq < 0) {
+		rc = -ENXIO;
+		goto exit_reset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	drv_data->adapter.dev.parent = &pd->dev;
 	drv_data->adapter.algo = &mv64xxx_i2c_algo;
 	drv_data->adapter.owner = THIS_MODULE;
+<<<<<<< HEAD
 	drv_data->adapter.class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
+=======
+	drv_data->adapter.class = I2C_CLASS_DEPRECATED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	drv_data->adapter.nr = pd->id;
 	drv_data->adapter.dev.of_node = pd->dev.of_node;
 	platform_set_drvdata(pd, drv_data);
@@ -664,6 +1286,7 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 
 	mv64xxx_i2c_hw_init(drv_data);
 
+<<<<<<< HEAD
 	if (request_irq(drv_data->irq, mv64xxx_i2c_intr, 0,
 			MV64XXX_I2C_CTLR_NAME, drv_data)) {
 		dev_err(&drv_data->adapter.dev,
@@ -671,12 +1294,22 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 			drv_data->irq);
 		rc = -EINVAL;
 		goto exit_unmap_regs;
+=======
+	rc = request_irq(drv_data->irq, mv64xxx_i2c_intr, 0,
+			 MV64XXX_I2C_CTLR_NAME, drv_data);
+	if (rc) {
+		dev_err(&drv_data->adapter.dev,
+			"mv64xxx: Can't register intr handler irq%d: %d\n",
+			drv_data->irq, rc);
+		goto exit_reset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if ((rc = i2c_add_numbered_adapter(&drv_data->adapter)) != 0) {
 		dev_err(&drv_data->adapter.dev,
 			"mv64xxx: Can't add i2c adapter, rc: %d\n", -rc);
 		goto exit_free_irq;
 	}
 
+<<<<<<< HEAD
 	of_i2c_register_devices(&drv_data->adapter);
 
 	return 0;
@@ -694,6 +1327,20 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 		mv64xxx_i2c_unmap_regs(drv_data);
 	exit_kfree:
 		kfree(drv_data);
+=======
+	return 0;
+
+exit_free_irq:
+	free_irq(drv_data->irq, drv_data);
+exit_reset:
+	if (!IS_ERR_OR_NULL(drv_data->rstc))
+		reset_control_assert(drv_data->rstc);
+exit_clk:
+	/* Not all platforms have a clk */
+	if (!IS_ERR(drv_data->clk))
+		clk_disable_unprepare(drv_data->clk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
@@ -704,6 +1351,7 @@ mv64xxx_i2c_remove(struct platform_device *dev)
 
 	i2c_del_adapter(&drv_data->adapter);
 	free_irq(drv_data->irq, drv_data);
+<<<<<<< HEAD
 	mv64xxx_i2c_unmap_regs(drv_data);
 #if defined(CONFIG_HAVE_CLK)
 	/* Not all platforms have a clk */
@@ -713,23 +1361,38 @@ mv64xxx_i2c_remove(struct platform_device *dev)
 	}
 #endif
 	kfree(drv_data);
+=======
+	if (!IS_ERR_OR_NULL(drv_data->rstc))
+		reset_control_assert(drv_data->rstc);
+	/* Not all platforms have a clk */
+	if (!IS_ERR(drv_data->clk))
+		clk_disable_unprepare(drv_data->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct of_device_id mv64xxx_i2c_of_match_table[] = {
 	{ .compatible = "marvell,mv64xxx-i2c", },
 	{}
 };
 MODULE_DEVICE_TABLE(of, mv64xxx_i2c_of_match_table);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver mv64xxx_i2c_driver = {
 	.probe	= mv64xxx_i2c_probe,
 	.remove	= mv64xxx_i2c_remove,
 	.driver	= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.name	= MV64XXX_I2C_CTLR_NAME,
 		.of_match_table = of_match_ptr(mv64xxx_i2c_of_match_table),
+=======
+		.name	= MV64XXX_I2C_CTLR_NAME,
+		.of_match_table = mv64xxx_i2c_of_match_table,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

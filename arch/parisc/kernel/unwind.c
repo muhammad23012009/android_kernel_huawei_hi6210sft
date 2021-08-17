@@ -75,7 +75,14 @@ find_unwind_entry(unsigned long addr)
 	if (addr >= kernel_unwind_table.start && 
 	    addr <= kernel_unwind_table.end)
 		e = find_unwind_entry_in_table(&kernel_unwind_table, addr);
+<<<<<<< HEAD
 	else 
+=======
+	else {
+		unsigned long flags;
+
+		spin_lock_irqsave(&unwind_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_for_each_entry(table, &unwind_tables, list) {
 			if (addr >= table->start && 
 			    addr <= table->end)
@@ -86,6 +93,11 @@ find_unwind_entry(unsigned long addr)
 				break;
 			}
 		}
+<<<<<<< HEAD
+=======
+		spin_unlock_irqrestore(&unwind_lock, flags);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return e;
 }
@@ -168,7 +180,11 @@ void unwind_table_remove(struct unwind_table *table)
 }
 
 /* Called from setup_arch to import the kernel unwind info */
+<<<<<<< HEAD
 int unwind_init(void)
+=======
+int __init unwind_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	long start, stop;
 	register unsigned long gp __asm__ ("r27");
@@ -233,7 +249,10 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 	e = find_unwind_entry(info->ip);
 	if (e == NULL) {
 		unsigned long sp;
+<<<<<<< HEAD
 		extern char _stext[], _etext[];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		dbg("Cannot find unwind entry for 0x%lx; forced unwinding\n", info->ip);
 
@@ -281,8 +300,12 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 				break;
 			info->prev_ip = tmp;
 			sp = info->prev_sp;
+<<<<<<< HEAD
 		} while (info->prev_ip < (unsigned long)_stext ||
 			 info->prev_ip > (unsigned long)_etext);
+=======
+		} while (!kernel_text_address(info->prev_ip));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		info->rp = 0;
 
@@ -305,6 +328,7 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 
 			insn = *(unsigned int *)npc;
 
+<<<<<<< HEAD
 			if ((insn & 0xffffc000) == 0x37de0000 ||
 			    (insn & 0xffe00000) == 0x6fc00000) {
 				/* ldo X(sp), sp, or stwm X,D(sp) */
@@ -317,6 +341,18 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 				/* std,ma X,D(sp) */
 				frame_size += (insn & 0x1 ? -1 << 13 : 0) | 
 					(((insn >> 4) & 0x3ff) << 3);
+=======
+			if ((insn & 0xffffc001) == 0x37de0000 ||
+			    (insn & 0xffe00001) == 0x6fc00000) {
+				/* ldo X(sp), sp, or stwm X,D(sp) */
+				frame_size += (insn & 0x3fff) >> 1;
+				dbg("analyzing func @ %lx, insn=%08x @ "
+				    "%lx, frame_size = %ld\n", info->ip,
+				    insn, npc, frame_size);
+			} else if ((insn & 0xffe00009) == 0x73c00008) {
+				/* std,ma X,D(sp) */
+				frame_size += ((insn >> 4) & 0x3ff) << 3;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dbg("analyzing func @ %lx, insn=%08x @ "
 				    "%lx, frame_size = %ld\n", info->ip,
 				    insn, npc, frame_size);
@@ -335,6 +371,12 @@ static void unwind_frame_regs(struct unwind_frame_info *info)
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		if (frame_size > e->Total_frame_size << 3)
+			frame_size = e->Total_frame_size << 3;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!unwind_special(info, e->region_start, frame_size)) {
 			info->prev_sp = info->sp - frame_size;
 			if (e->Millicode)
@@ -435,9 +477,14 @@ unsigned long return_address(unsigned int level)
 	do {
 		if (unwind_once(&info) < 0 || info.ip == 0)
 			return 0;
+<<<<<<< HEAD
 		if (!__kernel_text_address(info.ip)) {
 			return 0;
 		}
+=======
+		if (!kernel_text_address(info.ip))
+			return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (info.ip && level--);
 
 	return info.ip;

@@ -52,8 +52,11 @@ static inline void *cpu_rmap_lookup_obj(struct cpu_rmap *rmap, unsigned int cpu)
 	return rmap->obj[rmap->near[cpu].index];
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_GENERIC_HARDIRQS
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * alloc_irq_cpu_rmap - allocate CPU affinity reverse-map for IRQs
  * @size: Number of objects to be mapped
@@ -68,5 +71,8 @@ extern void free_irq_cpu_rmap(struct cpu_rmap *rmap);
 
 extern int irq_cpu_rmap_add(struct cpu_rmap *rmap, int irq);
 
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __LINUX_CPU_RMAP_H */

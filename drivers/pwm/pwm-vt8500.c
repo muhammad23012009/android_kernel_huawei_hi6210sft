@@ -211,10 +211,15 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
 	}
 
 	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
+<<<<<<< HEAD
 	if (chip == NULL) {
 		dev_err(&pdev->dev, "failed to allocate memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (chip == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	chip->chip.dev = &pdev->dev;
 	chip->chip.ops = &vt8500_pwm_ops;
@@ -268,7 +273,10 @@ static struct platform_driver vt8500_pwm_driver = {
 	.remove		= vt8500_pwm_remove,
 	.driver		= {
 		.name	= "vt8500-pwm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = vt8500_pwm_dt_ids,
 	},
 };

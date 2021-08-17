@@ -128,7 +128,11 @@ void sport_done(struct sport_device *sport);
 /* note: multichannel is in units of 8 channels, tdm_count is number of channels
  *  NOT / 8 ! all channels are enabled by default */
 int sport_set_multichannel(struct sport_device *sport, int tdm_count,
+<<<<<<< HEAD
 		u32 mask, int packed);
+=======
+		u32 tx_mask, u32 rx_mask, int packed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int sport_config_rx(struct sport_device *sport,
 		unsigned int rcr1, unsigned int rcr2,

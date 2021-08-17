@@ -25,10 +25,16 @@
 #include <asm/uaccess.h>
 #include <asm/firmware.h>
 #include <linux/sort.h>
+<<<<<<< HEAD
 
 #include "setup.h"
 
 LIST_HEAD(module_bug_list);
+=======
+#include <asm/setup.h>
+
+static LIST_HEAD(module_bug_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const Elf_Shdr *find_section(const Elf_Ehdr *hdr,
 				    const Elf_Shdr *sechdrs,
@@ -48,6 +54,14 @@ int module_finalize(const Elf_Ehdr *hdr,
 		const Elf_Shdr *sechdrs, struct module *me)
 {
 	const Elf_Shdr *sect;
+<<<<<<< HEAD
+=======
+	int rc;
+
+	rc = module_finalize_ftrace(me, sechdrs);
+	if (rc)
+		return rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Apply feature fixups */
 	sect = find_section(hdr, sechdrs, "__ftr_fixup");
@@ -68,7 +82,19 @@ int module_finalize(const Elf_Ehdr *hdr,
 		do_feature_fixups(powerpc_firmware_features,
 				  (void *)sect->sh_addr,
 				  (void *)sect->sh_addr + sect->sh_size);
+<<<<<<< HEAD
 #endif
+=======
+#endif /* CONFIG_PPC64 */
+
+#ifdef CONFIG_PPC_BARRIER_NOSPEC
+	sect = find_section(hdr, sechdrs, "__spec_barrier_fixup");
+	if (sect != NULL)
+		do_barrier_nospec_fixups_range(barrier_nospec_enabled,
+				  (void *)sect->sh_addr,
+				  (void *)sect->sh_addr + sect->sh_size);
+#endif /* CONFIG_PPC_BARRIER_NOSPEC */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sect = find_section(hdr, sechdrs, "__lwsync_fixup");
 	if (sect != NULL)

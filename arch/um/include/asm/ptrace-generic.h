@@ -8,7 +8,10 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #include <asm/ptrace-abi.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sysdep/ptrace.h>
 
 struct pt_regs {
@@ -28,6 +31,11 @@ struct pt_regs {
 
 #define instruction_pointer(regs) PT_REGS_IP(regs)
 
+<<<<<<< HEAD
+=======
+#define PTRACE_OLDSETOPTIONS 21
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct task_struct;
 
 extern long subarch_ptrace(struct task_struct *child, long request,
@@ -37,7 +45,11 @@ extern int putreg(struct task_struct *child, int regno, unsigned long value);
 
 extern int arch_copy_tls(struct task_struct *new);
 extern void clear_flushed_tls(struct task_struct *task);
+<<<<<<< HEAD
 extern void syscall_trace_enter(struct pt_regs *regs);
+=======
+extern int syscall_trace_enter(struct pt_regs *regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void syscall_trace_leave(struct pt_regs *regs);
 
 #endif

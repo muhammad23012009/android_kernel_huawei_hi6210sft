@@ -20,6 +20,7 @@
 	compatible = "fsl,imx6q-sabreauto", "fsl,imx6q";
 };
 
+<<<<<<< HEAD
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
@@ -32,4 +33,8 @@
 			>;
 		};
 	};
+=======
+&sata {
+	status = "okay";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

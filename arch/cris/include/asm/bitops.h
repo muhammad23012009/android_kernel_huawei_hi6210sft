@@ -19,6 +19,7 @@
 #endif
 
 #include <arch/bitops.h>
+<<<<<<< HEAD
 #include <linux/atomic.h>
 #include <linux/compiler.h>
 
@@ -137,6 +138,12 @@ static inline int test_and_change_bit(int nr, volatile unsigned long *addr)
 	return retval;
 }
 
+=======
+#include <linux/compiler.h>
+#include <asm/barrier.h>
+
+#include <asm-generic/bitops/atomic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/bitops/non-atomic.h>
 
 /*
@@ -144,7 +151,11 @@ static inline int test_and_change_bit(int nr, volatile unsigned long *addr)
  * definition, which doesn't have the same semantics.  We don't want to
  * use -fno-builtin, so just hide the name ffs.
  */
+<<<<<<< HEAD
 #define ffs kernel_ffs
+=======
+#define ffs(x) kernel_ffs(x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm-generic/bitops/fls.h>
 #include <asm-generic/bitops/__fls.h>

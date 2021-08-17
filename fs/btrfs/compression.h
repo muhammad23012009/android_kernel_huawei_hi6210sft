@@ -45,6 +45,20 @@ int btrfs_submit_compressed_write(struct inode *inode, u64 start,
 				  unsigned long nr_pages);
 int btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
 				 int mirror_num, unsigned long bio_flags);
+<<<<<<< HEAD
+=======
+void btrfs_clear_biovec_end(struct bio_vec *bvec, int vcnt,
+				   unsigned long pg_index,
+				   unsigned long pg_offset);
+
+enum btrfs_compression_type {
+	BTRFS_COMPRESS_NONE  = 0,
+	BTRFS_COMPRESS_ZLIB  = 1,
+	BTRFS_COMPRESS_LZO   = 2,
+	BTRFS_COMPRESS_TYPES = 2,
+	BTRFS_COMPRESS_LAST  = 3,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct btrfs_compress_op {
 	struct list_head *(*alloc_workspace)(void);
@@ -75,7 +89,12 @@ struct btrfs_compress_op {
 			  size_t srclen, size_t destlen);
 };
 
+<<<<<<< HEAD
 extern struct btrfs_compress_op btrfs_zlib_compress;
 extern struct btrfs_compress_op btrfs_lzo_compress;
+=======
+extern const struct btrfs_compress_op btrfs_zlib_compress;
+extern const struct btrfs_compress_op btrfs_lzo_compress;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

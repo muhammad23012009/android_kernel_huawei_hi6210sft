@@ -82,7 +82,10 @@
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -219,7 +222,11 @@ static void pdc_error_handler(struct ata_port *ap);
 static void pdc_freeze(struct ata_port *ap);
 static void pdc_thaw(struct ata_port *ap);
 static int pdc_port_start(struct ata_port *ap);
+<<<<<<< HEAD
 static void pdc20621_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors pdc20621_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void pdc_tf_load_mmio(struct ata_port *ap, const struct ata_taskfile *tf);
 static void pdc_exec_command_mmio(struct ata_port *ap, const struct ata_taskfile *tf);
 static unsigned int pdc20621_dimm_init(struct ata_host *host);
@@ -547,7 +554,11 @@ static void pdc20621_nodata_prep(struct ata_queued_cmd *qc)
 	VPRINTK("ata pkt buf ofs %u, mmio copied\n", i);
 }
 
+<<<<<<< HEAD
 static void pdc20621_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors pdc20621_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	switch (qc->tf.protocol) {
 	case ATA_PROT_DMA:
@@ -559,6 +570,11 @@ static void pdc20621_qc_prep(struct ata_queued_cmd *qc)
 	default:
 		break;
 	}
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __pdc20621_push_hdma(struct ata_queued_cmd *qc,
@@ -1021,8 +1037,12 @@ static void pdc20621_get_from_dimm(struct ata_host *host, void *psource,
 	idx++;
 	dist = ((long) (window_size - (offset + size))) >= 0 ? size :
 		(long) (window_size - offset);
+<<<<<<< HEAD
 	memcpy_fromio((char *) psource, (char *) (dimm_mmio + offset / 4),
 		      dist);
+=======
+	memcpy_fromio(psource, dimm_mmio + offset / 4, dist);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	psource += dist;
 	size -= dist;
@@ -1031,8 +1051,12 @@ static void pdc20621_get_from_dimm(struct ata_host *host, void *psource,
 		readl(mmio + PDC_GENERAL_CTLR);
 		writel(((idx) << page_mask), mmio + PDC_DIMM_WINDOW_CTLR);
 		readl(mmio + PDC_DIMM_WINDOW_CTLR);
+<<<<<<< HEAD
 		memcpy_fromio((char *) psource, (char *) (dimm_mmio),
 			      window_size / 4);
+=======
+		memcpy_fromio(psource, dimm_mmio, window_size / 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		psource += window_size;
 		size -= window_size;
 		idx++;
@@ -1043,8 +1067,12 @@ static void pdc20621_get_from_dimm(struct ata_host *host, void *psource,
 		readl(mmio + PDC_GENERAL_CTLR);
 		writel(((idx) << page_mask), mmio + PDC_DIMM_WINDOW_CTLR);
 		readl(mmio + PDC_DIMM_WINDOW_CTLR);
+<<<<<<< HEAD
 		memcpy_fromio((char *) psource, (char *) (dimm_mmio),
 			      size / 4);
+=======
+		memcpy_fromio(psource, dimm_mmio, size / 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 #endif
@@ -1242,8 +1270,17 @@ static unsigned int pdc20621_prog_dimm_global(struct ata_host *host)
 	readl(mmio + PDC_SDRAM_CONTROL);
 
 	/* Turn on for ECC */
+<<<<<<< HEAD
 	pdc20621_i2c_read(host, PDC_DIMM0_SPD_DEV_ADDRESS,
 			  PDC_DIMM_SPD_TYPE, &spd0);
+=======
+	if (!pdc20621_i2c_read(host, PDC_DIMM0_SPD_DEV_ADDRESS,
+			       PDC_DIMM_SPD_TYPE, &spd0)) {
+		pr_err("Failed in i2c read: device=%#x, subaddr=%#x\n",
+		       PDC_DIMM0_SPD_DEV_ADDRESS, PDC_DIMM_SPD_TYPE);
+		return 1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (spd0 == 0x02) {
 		data |= (0x01 << 16);
 		writel(data, mmio + PDC_SDRAM_CONTROL);
@@ -1384,14 +1421,28 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 
 	/* ECC initiliazation. */
 
+<<<<<<< HEAD
 	pdc20621_i2c_read(host, PDC_DIMM0_SPD_DEV_ADDRESS,
 			  PDC_DIMM_SPD_TYPE, &spd0);
+=======
+	if (!pdc20621_i2c_read(host, PDC_DIMM0_SPD_DEV_ADDRESS,
+			       PDC_DIMM_SPD_TYPE, &spd0)) {
+		pr_err("Failed in i2c read: device=%#x, subaddr=%#x\n",
+		       PDC_DIMM0_SPD_DEV_ADDRESS, PDC_DIMM_SPD_TYPE);
+		return 1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (spd0 == 0x02) {
 		void *buf;
 		VPRINTK("Start ECC initialization\n");
 		addr = 0;
 		length = size * 1024 * 1024;
 		buf = kzalloc(ECC_ERASE_BUF_SZ, GFP_KERNEL);
+<<<<<<< HEAD
+=======
+		if (!buf)
+			return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while (addr < length) {
 			pdc20621_put_to_dimm(host, buf, addr,
 					     ECC_ERASE_BUF_SZ);
@@ -1480,10 +1531,17 @@ static int pdc_sata_init_one(struct pci_dev *pdev,
 	}
 
 	/* configure and activate */
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask(&pdev->dev, ATA_DMA_MASK);
+	if (rc)
+		return rc;
+	rc = dma_set_coherent_mask(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc)
 		return rc;
 

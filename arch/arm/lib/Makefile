@@ -13,6 +13,7 @@ lib-y		:= backtrace.o changebit.o csumipv6.o csumpartial.o   \
 		   ashldi3.o ashrdi3.o lshrdi3.o muldi3.o             \
 		   ucmpdi2.o lib1funcs.o div64.o                      \
 		   io-readsb.o io-writesb.o io-readsl.o io-writesl.o  \
+<<<<<<< HEAD
 		   call_with_stack.o
 
 mmu-y	:= clear_user.o copy_page.o getuser.o putuser.o
@@ -28,6 +29,12 @@ else
   mmu-y	+= uaccess.o
 endif
 endif
+=======
+		   call_with_stack.o bswapsdi2.o
+
+mmu-y		:= clear_user.o copy_page.o getuser.o putuser.o       \
+		   copy_from_user.o copy_to_user.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # using lib_ here won't override already available weak symbols
 obj-$(CONFIG_UACCESS_WITH_MEMCPY) += uaccess_with_memcpy.o
@@ -40,6 +47,7 @@ else
   lib-y	+= io-readsw-armv4.o io-writesw-armv4.o
 endif
 
+<<<<<<< HEAD
 ifeq ($(CONFIG_HISI_RDR),y)
   lib-y	+= backtrace_for_rdr.o
 endif
@@ -49,3 +57,18 @@ lib-$(CONFIG_ARCH_SHARK)	+= io-shark.o
 
 $(obj)/csumpartialcopy.o:	$(obj)/csumpartialcopygeneric.S
 $(obj)/csumpartialcopyuser.o:	$(obj)/csumpartialcopygeneric.S
+=======
+ifeq ($(CONFIG_ARCH_RPC),y)
+  lib-y				+= ecard.o io-acorn.o floppydma.o
+  AFLAGS_delay-loop.o		+= -march=armv4
+endif
+
+$(obj)/csumpartialcopy.o:	$(obj)/csumpartialcopygeneric.S
+$(obj)/csumpartialcopyuser.o:	$(obj)/csumpartialcopygeneric.S
+
+ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
+  NEON_FLAGS			:= -march=armv7-a -mfloat-abi=softfp -mfpu=neon
+  CFLAGS_xor-neon.o		+= $(NEON_FLAGS)
+  obj-$(CONFIG_XOR_BLOCKS)	+= xor-neon.o
+endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

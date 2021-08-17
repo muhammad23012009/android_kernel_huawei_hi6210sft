@@ -692,7 +692,11 @@ ahc_find_pci_device(ahc_dev_softc_t pci)
 	 * ID as valid.
 	 */
 	if (ahc_get_pci_function(pci) > 0
+<<<<<<< HEAD
 	 && ahc_9005_subdevinfo_valid(vendor, device, subvendor, subdevice)
+=======
+	 && ahc_9005_subdevinfo_valid(device, vendor, subdevice, subvendor)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 && SUBID_9005_MFUNCENB(subdevice) == 0)
 		return (NULL);
 

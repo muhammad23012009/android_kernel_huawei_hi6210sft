@@ -174,6 +174,16 @@ typedef struct compat_siginfo {
 			int _band;	/* POLL_IN, POLL_OUT, POLL_MSG */
 			int _fd;
 		} _sigpoll;
+<<<<<<< HEAD
+=======
+
+		/* SIGSYS */
+		struct {
+			unsigned int _call_addr; /* calling insn */
+			int _syscall;		 /* triggering system call number */
+			unsigned int _arch;	 /* AUDIT_ARCH_* of syscall */
+		} _sigsys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} _sifields;
 } compat_siginfo_t;
 
@@ -204,10 +214,18 @@ static inline void __user *arch_compat_alloc_user_space(long len)
 
 	/*
 	 * We can't access below the stack pointer in the 32bit ABI and
+<<<<<<< HEAD
 	 * can access 288 bytes in the 64bit ABI
 	 */
 	if (!is_32bit_task())
 		usp -= 288;
+=======
+	 * can access 288 bytes in the 64bit big-endian ABI,
+	 * or 512 bytes with the new ELFv2 little-endian ABI.
+	 */
+	if (!is_32bit_task())
+		usp -= USER_REDZONE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (void __user *) (usp - len);
 }

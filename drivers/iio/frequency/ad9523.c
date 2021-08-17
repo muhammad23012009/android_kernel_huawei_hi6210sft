@@ -284,7 +284,11 @@ struct ad9523_state {
 	} data[2] ____cacheline_aligned;
 };
 
+<<<<<<< HEAD
 static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
+=======
+static int ad9523_read(struct iio_dev *indio_dev, unsigned int addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	int ret;
@@ -318,7 +322,12 @@ static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
 	return ret;
 };
 
+<<<<<<< HEAD
 static int ad9523_write(struct iio_dev *indio_dev, unsigned addr, unsigned val)
+=======
+static int ad9523_write(struct iio_dev *indio_dev,
+		unsigned int addr, unsigned int val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	int ret;
@@ -351,11 +360,19 @@ static int ad9523_io_update(struct iio_dev *indio_dev)
 }
 
 static int ad9523_vco_out_map(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			      unsigned ch, unsigned out)
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	int ret;
 	unsigned mask;
+=======
+			      unsigned int ch, unsigned int out)
+{
+	struct ad9523_state *st = iio_priv(indio_dev);
+	int ret;
+	unsigned int mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (ch) {
 	case 0 ... 3:
@@ -405,7 +422,11 @@ static int ad9523_vco_out_map(struct iio_dev *indio_dev,
 }
 
 static int ad9523_set_clock_provider(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			      unsigned ch, unsigned long freq)
+=======
+			      unsigned int ch, unsigned long freq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
 	long tmp1, tmp2;
@@ -445,7 +466,11 @@ static int ad9523_store_eeprom(struct iio_dev *indio_dev)
 
 	tmp = 4;
 	do {
+<<<<<<< HEAD
 		msleep(16);
+=======
+		msleep(20);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = ad9523_read(indio_dev,
 				  AD9523_EEPROM_DATA_XFER_STATUS);
 		if (ret < 0)
@@ -507,7 +532,11 @@ static ssize_t ad9523_store(struct device *dev,
 		return ret;
 
 	if (!state)
+<<<<<<< HEAD
 		return 0;
+=======
+		return len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&indio_dev->mlock);
 	switch ((u32)this_attr->address) {
@@ -619,7 +648,11 @@ static int ad9523_read_raw(struct iio_dev *indio_dev,
 			   long m)
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	unsigned code;
+=======
+	unsigned int code;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	mutex_lock(&indio_dev->mlock);
@@ -641,7 +674,11 @@ static int ad9523_read_raw(struct iio_dev *indio_dev,
 		code = (AD9523_CLK_DIST_DIV_PHASE_REV(ret) * 3141592) /
 			AD9523_CLK_DIST_DIV_REV(ret);
 		*val = code / 1000000;
+<<<<<<< HEAD
 		*val2 = (code % 1000000) * 10;
+=======
+		*val2 = code % 1000000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return IIO_VAL_INT_PLUS_MICRO;
 	default:
 		return -EINVAL;
@@ -655,7 +692,11 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
 			    long mask)
 {
 	struct ad9523_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	unsigned reg;
+=======
+	unsigned int reg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret, tmp, code;
 
 	mutex_lock(&indio_dev->mlock);
@@ -709,8 +750,13 @@ out:
 }
 
 static int ad9523_reg_access(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			      unsigned reg, unsigned writeval,
 			      unsigned *readval)
+=======
+			      unsigned int reg, unsigned int writeval,
+			      unsigned int *readval)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 
@@ -961,17 +1007,29 @@ static int ad9523_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*st));
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (indio_dev == NULL)
 		return -ENOMEM;
 
 	st = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	st->reg = regulator_get(&spi->dev, "vcc");
 	if (!IS_ERR(st->reg)) {
 		ret = regulator_enable(st->reg);
 		if (ret)
 			goto error_put_reg;
+=======
+	st->reg = devm_regulator_get(&spi->dev, "vcc");
+	if (!IS_ERR(st->reg)) {
+		ret = regulator_enable(st->reg);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	spi_set_drvdata(spi, indio_dev);
@@ -1001,11 +1059,14 @@ static int ad9523_probe(struct spi_device *spi)
 error_disable_reg:
 	if (!IS_ERR(st->reg))
 		regulator_disable(st->reg);
+<<<<<<< HEAD
 error_put_reg:
 	if (!IS_ERR(st->reg))
 		regulator_put(st->reg);
 
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -1017,12 +1078,17 @@ static int ad9523_remove(struct spi_device *spi)
 
 	iio_device_unregister(indio_dev);
 
+<<<<<<< HEAD
 	if (!IS_ERR(st->reg)) {
 		regulator_disable(st->reg);
 		regulator_put(st->reg);
 	}
 
 	iio_device_free(indio_dev);
+=======
+	if (!IS_ERR(st->reg))
+		regulator_disable(st->reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1036,7 +1102,10 @@ MODULE_DEVICE_TABLE(spi, ad9523_id);
 static struct spi_driver ad9523_driver = {
 	.driver = {
 		.name	= "ad9523",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= ad9523_probe,
 	.remove		= ad9523_remove,

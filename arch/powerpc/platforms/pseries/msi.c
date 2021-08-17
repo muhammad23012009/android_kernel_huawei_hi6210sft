@@ -16,6 +16,12 @@
 #include <asm/rtas.h>
 #include <asm/hw_irq.h>
 #include <asm/ppc-pci.h>
+<<<<<<< HEAD
+=======
+#include <asm/machdep.h>
+
+#include "pseries.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int query_token, change_token;
 
@@ -115,8 +121,13 @@ static void rtas_teardown_msi_irqs(struct pci_dev *pdev)
 {
 	struct msi_desc *entry;
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, &pdev->msi_list, list) {
 		if (entry->irq == NO_IRQ)
+=======
+	for_each_pci_msi_entry(entry, pdev) {
+		if (!entry->irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		irq_set_msi_desc(entry->irq, NULL);
@@ -130,7 +141,12 @@ static int check_req(struct pci_dev *pdev, int nvec, char *prop_name)
 {
 	struct device_node *dn;
 	struct pci_dn *pdn;
+<<<<<<< HEAD
 	const u32 *req_msi;
+=======
+	const __be32 *p;
+	u32 req_msi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pdn = pci_get_pdn(pdev);
 	if (!pdn)
@@ -138,12 +154,18 @@ static int check_req(struct pci_dev *pdev, int nvec, char *prop_name)
 
 	dn = pdn->node;
 
+<<<<<<< HEAD
 	req_msi = of_get_property(dn, prop_name, NULL);
 	if (!req_msi) {
+=======
+	p = of_get_property(dn, prop_name, NULL);
+	if (!p) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_debug("rtas_msi: No %s on %s\n", prop_name, dn->full_name);
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	if (*req_msi < nvec) {
 		pr_debug("rtas_msi: %s requests < %d MSIs\n", prop_name, nvec);
 
@@ -151,6 +173,16 @@ static int check_req(struct pci_dev *pdev, int nvec, char *prop_name)
 			return -ENOSPC;
 
 		return *req_msi;
+=======
+	req_msi = be32_to_cpup(p);
+	if (req_msi < nvec) {
+		pr_debug("rtas_msi: %s requests < %d MSIs\n", prop_name, nvec);
+
+		if (req_msi == 0) /* Be paranoid */
+			return -ENOSPC;
+
+		return req_msi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -171,7 +203,11 @@ static int check_req_msix(struct pci_dev *pdev, int nvec)
 static struct device_node *find_pe_total_msi(struct pci_dev *dev, int *total)
 {
 	struct device_node *dn;
+<<<<<<< HEAD
 	const u32 *p;
+=======
+	const __be32 *p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dn = of_node_get(pci_device_to_OF_node(dev));
 	while (dn) {
@@ -179,7 +215,11 @@ static struct device_node *find_pe_total_msi(struct pci_dev *dev, int *total)
 		if (p) {
 			pr_debug("rtas_msi: found prop on dn %s\n",
 				dn->full_name);
+<<<<<<< HEAD
 			*total = *p;
+=======
+			*total = be32_to_cpup(p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return dn;
 		}
 
@@ -192,6 +232,10 @@ static struct device_node *find_pe_total_msi(struct pci_dev *dev, int *total)
 static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
 {
 	struct device_node *dn;
+<<<<<<< HEAD
+=======
+	struct pci_dn *pdn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct eeh_dev *edev;
 
 	/* Found our PE and assume 8 at that point. */
@@ -201,10 +245,18 @@ static struct device_node *find_pe_dn(struct pci_dev *dev, int *total)
 		return NULL;
 
 	/* Get the top level device in the PE */
+<<<<<<< HEAD
 	edev = of_node_to_eeh_dev(dn);
 	if (edev->pe)
 		edev = list_first_entry(&edev->pe->edevs, struct eeh_dev, list);
 	dn = eeh_dev_to_of_node(edev);
+=======
+	edev = pdn_to_eeh_dev(PCI_DN(dn));
+	if (edev->pe)
+		edev = list_first_entry(&edev->pe->edevs, struct eeh_dev, list);
+	pdn = eeh_dev_to_pdn(edev);
+	dn = pdn ? pdn->node : NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dn)
 		return NULL;
 
@@ -232,13 +284,21 @@ struct msi_counts {
 static void *count_non_bridge_devices(struct device_node *dn, void *data)
 {
 	struct msi_counts *counts = data;
+<<<<<<< HEAD
 	const u32 *p;
+=======
+	const __be32 *p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 class;
 
 	pr_debug("rtas_msi: counting %s\n", dn->full_name);
 
 	p = of_get_property(dn, "class-code", NULL);
+<<<<<<< HEAD
 	class = p ? *p : 0;
+=======
+	class = p ? be32_to_cpup(p) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((class >> 8) != PCI_CLASS_BRIDGE_PCI)
 		counts->num_devices++;
@@ -249,7 +309,11 @@ static void *count_non_bridge_devices(struct device_node *dn, void *data)
 static void *count_spare_msis(struct device_node *dn, void *data)
 {
 	struct msi_counts *counts = data;
+<<<<<<< HEAD
 	const u32 *p;
+=======
+	const __be32 *p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int req;
 
 	if (dn == counts->requestor)
@@ -260,11 +324,19 @@ static void *count_spare_msis(struct device_node *dn, void *data)
 		req = 0;
 		p = of_get_property(dn, "ibm,req#msi", NULL);
 		if (p)
+<<<<<<< HEAD
 			req = *p;
 
 		p = of_get_property(dn, "ibm,req#msi-x", NULL);
 		if (p)
 			req = max(req, (int)*p);
+=======
+			req = be32_to_cpup(p);
+
+		p = of_get_property(dn, "ibm,req#msi-x", NULL);
+		if (p)
+			req = max(req, (int)be32_to_cpup(p));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (req < counts->quota)
@@ -298,7 +370,11 @@ static int msi_quota_for_device(struct pci_dev *dev, int request)
 	memset(&counts, 0, sizeof(struct msi_counts));
 
 	/* Work out how many devices we have below this PE */
+<<<<<<< HEAD
 	traverse_pci_devices(pe_dn, count_non_bridge_devices, &counts);
+=======
+	pci_traverse_device_nodes(pe_dn, count_non_bridge_devices, &counts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (counts.num_devices == 0) {
 		pr_err("rtas_msi: found 0 devices under PE for %s\n",
@@ -313,7 +389,11 @@ static int msi_quota_for_device(struct pci_dev *dev, int request)
 	/* else, we have some more calculating to do */
 	counts.requestor = pci_device_to_OF_node(dev);
 	counts.request = request;
+<<<<<<< HEAD
 	traverse_pci_devices(pe_dn, count_spare_msis, &counts);
+=======
+	pci_traverse_device_nodes(pe_dn, count_spare_msis, &counts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If the quota isn't an integer multiple of the total, we can
 	 * use the remainder as spare MSIs for anyone that wants them. */
@@ -333,6 +413,7 @@ out:
 	return request;
 }
 
+<<<<<<< HEAD
 static int rtas_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 {
 	int quota, rc;
@@ -353,6 +434,8 @@ static int rtas_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int check_msix_entries(struct pci_dev *pdev)
 {
 	struct msi_desc *entry;
@@ -363,7 +446,11 @@ static int check_msix_entries(struct pci_dev *pdev)
 	 * So we must reject such requests. */
 
 	expected = 0;
+<<<<<<< HEAD
 	list_for_each_entry(entry, &pdev->msi_list, list) {
+=======
+	for_each_pci_msi_entry(entry, pdev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (entry->msi_attrib.entry_nr != expected) {
 			pr_debug("rtas_msi: bad MSI-X entries.\n");
 			return -EINVAL;
@@ -394,15 +481,34 @@ static void rtas_hack_32bit_msi_gen2(struct pci_dev *pdev)
 static int rtas_setup_msi_irqs(struct pci_dev *pdev, int nvec_in, int type)
 {
 	struct pci_dn *pdn;
+<<<<<<< HEAD
 	int hwirq, virq, i, rc;
+=======
+	int hwirq, virq, i, quota, rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct msi_desc *entry;
 	struct msi_msg msg;
 	int nvec = nvec_in;
 	int use_32bit_msi_hack = 0;
 
+<<<<<<< HEAD
 	pdn = pci_get_pdn(pdev);
 	if (!pdn)
 		return -ENODEV;
+=======
+	if (type == PCI_CAP_ID_MSIX)
+		rc = check_req_msix(pdev, nvec);
+	else
+		rc = check_req_msi(pdev, nvec);
+
+	if (rc)
+		return rc;
+
+	quota = msi_quota_for_device(pdev, nvec);
+
+	if (quota && quota < nvec)
+		return quota;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (type == PCI_CAP_ID_MSIX && check_msix_entries(pdev))
 		return -EINVAL;
@@ -413,12 +519,21 @@ static int rtas_setup_msi_irqs(struct pci_dev *pdev, int nvec_in, int type)
 	 */
 	if (type == PCI_CAP_ID_MSIX) {
 		int m = roundup_pow_of_two(nvec);
+<<<<<<< HEAD
 		int quota = msi_quota_for_device(pdev, m);
+=======
+		quota = msi_quota_for_device(pdev, m);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (quota >= m)
 			nvec = m;
 	}
 
+<<<<<<< HEAD
+=======
+	pdn = pci_get_pdn(pdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Try the new more explicit firmware interface, if that fails fall
 	 * back to the old interface. The old interface is known to never
@@ -464,7 +579,11 @@ again:
 	}
 
 	i = 0;
+<<<<<<< HEAD
 	list_for_each_entry(entry, &pdev->msi_list, list) {
+=======
+	for_each_pci_msi_entry(entry, pdev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hwirq = rtas_query_irq_number(pdn, i++);
 		if (hwirq < 0) {
 			pr_debug("rtas_msi: error (%d) getting hwirq\n", rc);
@@ -473,7 +592,11 @@ again:
 
 		virq = irq_create_mapping(NULL, hwirq);
 
+<<<<<<< HEAD
 		if (virq == NO_IRQ) {
+=======
+		if (!virq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_debug("rtas_msi: Failed mapping hwirq %d\n", hwirq);
 			return -ENOSPC;
 		}
@@ -482,7 +605,11 @@ again:
 		irq_set_msi_desc(virq, entry);
 
 		/* Read config space back so we can restore after reset */
+<<<<<<< HEAD
 		read_msi_msg(virq, &msg);
+=======
+		__pci_read_msi_msg(entry, &msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		entry->msg = msg;
 	}
 
@@ -492,7 +619,11 @@ again:
 static void rtas_msi_pci_irq_fixup(struct pci_dev *pdev)
 {
 	/* No LSI -> leave MSIs (if any) configured */
+<<<<<<< HEAD
 	if (pdev->irq == NO_IRQ) {
+=======
+	if (!pdev->irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(&pdev->dev, "rtas_msi: no LSI, nothing to do.\n");
 		return;
 	}
@@ -509,6 +640,11 @@ static void rtas_msi_pci_irq_fixup(struct pci_dev *pdev)
 
 static int rtas_msi_init(void)
 {
+<<<<<<< HEAD
+=======
+	struct pci_controller *phb;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	query_token  = rtas_token("ibm,query-interrupt-source-number");
 	change_token = rtas_token("ibm,change-msi");
 
@@ -520,15 +656,31 @@ static int rtas_msi_init(void)
 
 	pr_debug("rtas_msi: Registering RTAS MSI callbacks.\n");
 
+<<<<<<< HEAD
 	WARN_ON(ppc_md.setup_msi_irqs);
 	ppc_md.setup_msi_irqs = rtas_setup_msi_irqs;
 	ppc_md.teardown_msi_irqs = rtas_teardown_msi_irqs;
 	ppc_md.msi_check_device = rtas_msi_check_device;
+=======
+	WARN_ON(pseries_pci_controller_ops.setup_msi_irqs);
+	pseries_pci_controller_ops.setup_msi_irqs = rtas_setup_msi_irqs;
+	pseries_pci_controller_ops.teardown_msi_irqs = rtas_teardown_msi_irqs;
+
+	list_for_each_entry(phb, &hose_list, list_node) {
+		WARN_ON(phb->controller_ops.setup_msi_irqs);
+		phb->controller_ops.setup_msi_irqs = rtas_setup_msi_irqs;
+		phb->controller_ops.teardown_msi_irqs = rtas_teardown_msi_irqs;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	WARN_ON(ppc_md.pci_irq_fixup);
 	ppc_md.pci_irq_fixup = rtas_msi_pci_irq_fixup;
 
 	return 0;
 }
+<<<<<<< HEAD
 arch_initcall(rtas_msi_init);
 
+=======
+machine_arch_initcall(pseries, rtas_msi_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

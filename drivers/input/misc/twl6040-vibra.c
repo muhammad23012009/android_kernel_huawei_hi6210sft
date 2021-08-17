@@ -45,9 +45,14 @@
 struct vibra_info {
 	struct device *dev;
 	struct input_dev *input_dev;
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
 	struct work_struct play_work;
 	struct mutex mutex;
+=======
+	struct work_struct play_work;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int irq;
 
 	bool enabled;
@@ -182,8 +187,19 @@ static void vibra_play_work(struct work_struct *work)
 {
 	struct vibra_info *info = container_of(work,
 				struct vibra_info, play_work);
+<<<<<<< HEAD
 
 	mutex_lock(&info->mutex);
+=======
+	int ret;
+
+	/* Do not allow effect, while the routing is set to use audio */
+	ret = twl6040_get_vibralr_status(info->twl6040);
+	if (ret & TWL6040_VIBSEL) {
+		dev_info(info->dev, "Vibra is configured for audio\n");
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (info->weak_speed || info->strong_speed) {
 		if (!info->enabled)
@@ -193,13 +209,17 @@ static void vibra_play_work(struct work_struct *work)
 	} else if (info->enabled)
 		twl6040_vibra_disable(info);
 
+<<<<<<< HEAD
 	mutex_unlock(&info->mutex);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vibra_play(struct input_dev *input, void *data,
 		      struct ff_effect *effect)
 {
 	struct vibra_info *info = input_get_drvdata(input);
+<<<<<<< HEAD
 	int ret;
 
 	/* Do not allow effect, while the routing is set to use audio */
@@ -208,16 +228,22 @@ static int vibra_play(struct input_dev *input, void *data,
 		dev_info(&input->dev, "Vibra is configured for audio\n");
 		return -EBUSY;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	info->weak_speed = effect->u.rumble.weak_magnitude;
 	info->strong_speed = effect->u.rumble.strong_magnitude;
 	info->direction = effect->direction < EFFECT_DIR_180_DEG ? 1 : -1;
 
+<<<<<<< HEAD
 	ret = queue_work(info->workqueue, &info->play_work);
 	if (!ret) {
 		dev_info(&input->dev, "work is already on queue\n");
 		return ret;
 	}
+=======
+	schedule_work(&info->play_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -228,6 +254,7 @@ static void twl6040_vibra_close(struct input_dev *input)
 
 	cancel_work_sync(&info->play_work);
 
+<<<<<<< HEAD
 	mutex_lock(&info->mutex);
 
 	if (info->enabled)
@@ -238,25 +265,42 @@ static void twl6040_vibra_close(struct input_dev *input)
 
 #ifdef CONFIG_PM_SLEEP
 static int twl6040_vibra_suspend(struct device *dev)
+=======
+	if (info->enabled)
+		twl6040_vibra_disable(info);
+}
+
+static int __maybe_unused twl6040_vibra_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct vibra_info *info = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	mutex_lock(&info->mutex);
+=======
+	cancel_work_sync(&info->play_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (info->enabled)
 		twl6040_vibra_disable(info);
 
+<<<<<<< HEAD
 	mutex_unlock(&info->mutex);
 
 	return 0;
 }
 #endif
+=======
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(twl6040_vibra_pm_ops, twl6040_vibra_suspend, NULL);
 
 static int twl6040_vibra_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct twl6040_vibra_data *pdata = pdev->dev.platform_data;
 	struct device *twl6040_core_dev = pdev->dev.parent;
 	struct device_node *twl6040_core_node = NULL;
@@ -272,11 +316,28 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 
 	if (!pdata && !twl6040_core_node) {
 		dev_err(&pdev->dev, "platform_data not available\n");
+=======
+	struct device *twl6040_core_dev = pdev->dev.parent;
+	struct device_node *twl6040_core_node;
+	struct vibra_info *info;
+	int vddvibl_uV = 0;
+	int vddvibr_uV = 0;
+	int error;
+
+	twl6040_core_node = of_get_child_by_name(twl6040_core_dev->of_node,
+						 "vibra");
+	if (!twl6040_core_node) {
+		dev_err(&pdev->dev, "parent of node is missing?\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
 	if (!info) {
+<<<<<<< HEAD
+=======
+		of_node_put(twl6040_core_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&pdev->dev, "couldn't allocate memory\n");
 		return -ENOMEM;
 	}
@@ -284,6 +345,7 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 	info->dev = &pdev->dev;
 
 	info->twl6040 = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	if (pdata) {
 		info->vibldrv_res = pdata->vibldrv_res;
 		info->vibrdrv_res = pdata->vibrdrv_res;
@@ -305,6 +367,21 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 		of_property_read_u32(twl6040_core_node, "ti,vddvibr-uV",
 				     &vddvibr_uV);
 	}
+=======
+
+	of_property_read_u32(twl6040_core_node, "ti,vibldrv-res",
+			     &info->vibldrv_res);
+	of_property_read_u32(twl6040_core_node, "ti,vibrdrv-res",
+			     &info->vibrdrv_res);
+	of_property_read_u32(twl6040_core_node, "ti,viblmotor-res",
+			     &info->viblmotor_res);
+	of_property_read_u32(twl6040_core_node, "ti,vibrmotor-res",
+			     &info->vibrmotor_res);
+	of_property_read_u32(twl6040_core_node, "ti,vddvibl-uV", &vddvibl_uV);
+	of_property_read_u32(twl6040_core_node, "ti,vddvibr-uV", &vddvibr_uV);
+
+	of_node_put(twl6040_core_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((!info->vibldrv_res && !info->viblmotor_res) ||
 	    (!info->vibrdrv_res && !info->vibrmotor_res)) {
@@ -318,6 +395,7 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	mutex_init(&info->mutex);
 
 	ret = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
@@ -326,6 +404,15 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(info->dev, "VIB IRQ request failed: %d\n", ret);
 		return ret;
+=======
+	error = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
+					  twl6040_vib_irq_handler,
+					  IRQF_ONESHOT,
+					  "twl6040_irq_vib", info);
+	if (error) {
+		dev_err(info->dev, "VIB IRQ request failed: %d\n", error);
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	info->supplies[0].supply = "vddvibl";
@@ -334,6 +421,7 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 	 * When booted with Device tree the regulators are attached to the
 	 * parent device (twl6040 MFD core)
 	 */
+<<<<<<< HEAD
 	ret = regulator_bulk_get(pdata ? info->dev : twl6040_core_dev,
 				 ARRAY_SIZE(info->supplies), info->supplies);
 	if (ret) {
@@ -348,32 +436,66 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 			dev_err(info->dev, "failed to set VDDVIBL volt %d\n",
 				ret);
 			goto err_regulator;
+=======
+	error = devm_regulator_bulk_get(twl6040_core_dev,
+					ARRAY_SIZE(info->supplies),
+					info->supplies);
+	if (error) {
+		dev_err(info->dev, "couldn't get regulators %d\n", error);
+		return error;
+	}
+
+	if (vddvibl_uV) {
+		error = regulator_set_voltage(info->supplies[0].consumer,
+					      vddvibl_uV, vddvibl_uV);
+		if (error) {
+			dev_err(info->dev, "failed to set VDDVIBL volt %d\n",
+				error);
+			return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	if (vddvibr_uV) {
+<<<<<<< HEAD
 		ret = regulator_set_voltage(info->supplies[1].consumer,
 					    vddvibr_uV, vddvibr_uV);
 		if (ret) {
 			dev_err(info->dev, "failed to set VDDVIBR volt %d\n",
 				ret);
 			goto err_regulator;
+=======
+		error = regulator_set_voltage(info->supplies[1].consumer,
+					      vddvibr_uV, vddvibr_uV);
+		if (error) {
+			dev_err(info->dev, "failed to set VDDVIBR volt %d\n",
+				error);
+			return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	INIT_WORK(&info->play_work, vibra_play_work);
 
+<<<<<<< HEAD
 	info->input_dev = input_allocate_device();
 	if (info->input_dev == NULL) {
 		dev_err(info->dev, "couldn't allocate input device\n");
 		ret = -ENOMEM;
 		goto err_regulator;
+=======
+	info->input_dev = devm_input_allocate_device(&pdev->dev);
+	if (!info->input_dev) {
+		dev_err(info->dev, "couldn't allocate input device\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	input_set_drvdata(info->input_dev, info);
 
 	info->input_dev->name = "twl6040:vibrator";
 	info->input_dev->id.version = 1;
+<<<<<<< HEAD
 	info->input_dev->dev.parent = pdev->dev.parent;
 	info->input_dev->close = twl6040_vibra_close;
 	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
@@ -388,11 +510,27 @@ static int twl6040_vibra_probe(struct platform_device *pdev)
 	if (ret < 0) {
 		dev_err(info->dev, "couldn't register input device\n");
 		goto err_iff;
+=======
+	info->input_dev->close = twl6040_vibra_close;
+	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
+
+	error = input_ff_create_memless(info->input_dev, NULL, vibra_play);
+	if (error) {
+		dev_err(info->dev, "couldn't register vibrator to FF\n");
+		return error;
+	}
+
+	error = input_register_device(info->input_dev);
+	if (error) {
+		dev_err(info->dev, "couldn't register input device\n");
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, info);
 
 	return 0;
+<<<<<<< HEAD
 
 err_iff:
 	input_ff_destroy(info->input_dev);
@@ -411,14 +549,21 @@ static int twl6040_vibra_remove(struct platform_device *pdev)
 	regulator_bulk_free(ARRAY_SIZE(info->supplies), info->supplies);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver twl6040_vibra_driver = {
 	.probe		= twl6040_vibra_probe,
+<<<<<<< HEAD
 	.remove		= twl6040_vibra_remove,
 	.driver		= {
 		.name	= "twl6040-vibra",
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= "twl6040-vibra",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &twl6040_vibra_pm_ops,
 	},
 };

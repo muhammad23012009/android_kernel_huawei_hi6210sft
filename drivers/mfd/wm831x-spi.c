@@ -34,7 +34,10 @@ static int wm831x_spi_probe(struct spi_device *spi)
 	if (wm831x == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spi->bits_per_word = 16;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi->mode = SPI_MODE_0;
 
 	spi_set_drvdata(spi, wm831x);
@@ -67,16 +70,30 @@ static int wm831x_spi_suspend(struct device *dev)
 	return wm831x_device_suspend(wm831x);
 }
 
+<<<<<<< HEAD
 static void wm831x_spi_shutdown(struct spi_device *spi)
 {
 	struct wm831x *wm831x = spi_get_drvdata(spi);
 
 	wm831x_device_shutdown(wm831x);
+=======
+static int wm831x_spi_poweroff(struct device *dev)
+{
+	struct wm831x *wm831x = dev_get_drvdata(dev);
+
+	wm831x_device_shutdown(wm831x);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct dev_pm_ops wm831x_spi_pm = {
 	.freeze = wm831x_spi_suspend,
 	.suspend = wm831x_spi_suspend,
+<<<<<<< HEAD
+=======
+	.poweroff = wm831x_spi_poweroff,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct spi_device_id wm831x_spi_ids[] = {
@@ -94,13 +111,19 @@ MODULE_DEVICE_TABLE(spi, wm831x_spi_ids);
 static struct spi_driver wm831x_spi_driver = {
 	.driver = {
 		.name	= "wm831x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &wm831x_spi_pm,
 	},
 	.id_table	= wm831x_spi_ids,
 	.probe		= wm831x_spi_probe,
 	.remove		= wm831x_spi_remove,
+<<<<<<< HEAD
 	.shutdown	= wm831x_spi_shutdown,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init wm831x_spi_init(void)

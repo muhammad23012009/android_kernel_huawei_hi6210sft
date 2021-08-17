@@ -26,6 +26,10 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-mem2mem.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-image-sizes.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/videobuf2-dma-contig.h>
 
 #define VEU_STR 0x00 /* start register */
@@ -117,7 +121,10 @@ struct sh_veu_dev {
 	struct sh_veu_file *output;
 	struct mutex fop_lock;
 	void __iomem *base;
+<<<<<<< HEAD
 	struct vb2_alloc_ctx *alloc_ctx;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t lock;
 	bool is_2h;
 	unsigned int xaction;
@@ -135,9 +142,12 @@ enum sh_veu_fmt_idx {
 	SH_VEU_FMT_RGB24,
 };
 
+<<<<<<< HEAD
 #define VGA_WIDTH	640
 #define VGA_HEIGHT	480
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DEFAULT_IN_WIDTH	VGA_WIDTH
 #define DEFAULT_IN_HEIGHT	VGA_HEIGHT
 #define DEFAULT_IN_FMTIDX	SH_VEU_FMT_NV12
@@ -213,7 +223,11 @@ static enum v4l2_colorspace sh_veu_4cc2cspace(u32 fourcc)
 	case V4L2_PIX_FMT_NV12:
 	case V4L2_PIX_FMT_NV16:
 	case V4L2_PIX_FMT_NV24:
+<<<<<<< HEAD
 		return V4L2_COLORSPACE_JPEG;
+=======
+		return V4L2_COLORSPACE_SMPTE170M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case V4L2_PIX_FMT_RGB332:
 	case V4L2_PIX_FMT_RGB444:
 	case V4L2_PIX_FMT_RGB565:
@@ -244,6 +258,7 @@ static void sh_veu_job_abort(void *priv)
 	veu->aborting = true;
 }
 
+<<<<<<< HEAD
 static void sh_veu_lock(void *priv)
 {
 	struct sh_veu_dev *veu = priv;
@@ -258,6 +273,8 @@ static void sh_veu_unlock(void *priv)
 	mutex_unlock(&veu->fop_lock);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sh_veu_process(struct sh_veu_dev *veu,
 			   struct vb2_buffer *src_buf,
 			   struct vb2_buffer *dst_buf)
@@ -293,13 +310,21 @@ static void sh_veu_process(struct sh_veu_dev *veu,
 static void sh_veu_device_run(void *priv)
 {
 	struct sh_veu_dev *veu = priv;
+<<<<<<< HEAD
 	struct vb2_buffer *src_buf, *dst_buf;
+=======
+	struct vb2_v4l2_buffer *src_buf, *dst_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	src_buf = v4l2_m2m_next_src_buf(veu->m2m_ctx);
 	dst_buf = v4l2_m2m_next_dst_buf(veu->m2m_ctx);
 
 	if (src_buf && dst_buf)
+<<<<<<< HEAD
 		sh_veu_process(veu, src_buf, dst_buf);
+=======
+		sh_veu_process(veu, &src_buf->vb2_buf, &dst_buf->vb2_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 		/* ========== video ioctls ========== */
@@ -359,10 +384,14 @@ static int sh_veu_context_init(struct sh_veu_dev *veu)
 	veu->m2m_ctx = v4l2_m2m_ctx_init(veu->m2m_dev, veu,
 					 sh_veu_queue_init);
 
+<<<<<<< HEAD
 	if (IS_ERR(veu->m2m_ctx))
 		return PTR_ERR(veu->m2m_ctx);
 
 	return 0;
+=======
+	return PTR_ERR_OR_ZERO(veu->m2m_ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int sh_veu_querycap(struct file *file, void *priv,
@@ -428,7 +457,10 @@ static int sh_veu_g_fmt(struct sh_veu_file *veu_file, struct v4l2_format *f)
 	pix->bytesperline	= vfmt->bytesperline;
 	pix->sizeimage		= vfmt->bytesperline * pix->height *
 		vfmt->fmt->depth / vfmt->fmt->ydepth;
+<<<<<<< HEAD
 	pix->priv		= 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(veu->dev, "%s(): type: %d, size %u @ %ux%u, fmt %x\n", __func__,
 		f->type, pix->sizeimage, pix->width, pix->height, pix->pixelformat);
 
@@ -476,7 +508,10 @@ static int sh_veu_try_fmt(struct v4l2_format *f, const struct sh_veu_format *fmt
 
 	pix->pixelformat	= fmt->fourcc;
 	pix->colorspace		= sh_veu_4cc2cspace(pix->pixelformat);
+<<<<<<< HEAD
 	pix->priv		= 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("%s(): type: %d, size %u\n", __func__, f->type, pix->sizeimage);
 
@@ -886,6 +921,7 @@ static const struct v4l2_ioctl_ops sh_veu_ioctl_ops = {
 		/* ========== Queue operations ========== */
 
 static int sh_veu_queue_setup(struct vb2_queue *vq,
+<<<<<<< HEAD
 			      const struct v4l2_format *f,
 			      unsigned int *nbuffers, unsigned int *nplanes,
 			      unsigned int sizes[], void *alloc_ctxs[])
@@ -911,6 +947,16 @@ static int sh_veu_queue_setup(struct vb2_queue *vq,
 		vfmt = sh_veu_get_vfmt(veu, vq->type);
 		size = vfmt->bytesperline * vfmt->frame.height * vfmt->fmt->depth / vfmt->fmt->ydepth;
 	}
+=======
+			      unsigned int *nbuffers, unsigned int *nplanes,
+			      unsigned int sizes[], struct device *alloc_devs[])
+{
+	struct sh_veu_dev *veu = vb2_get_drv_priv(vq);
+	struct sh_veu_vfmt *vfmt = sh_veu_get_vfmt(veu, vq->type);
+	unsigned int count = *nbuffers;
+	unsigned int size = vfmt->bytesperline * vfmt->frame.height *
+		vfmt->fmt->depth / vfmt->fmt->ydepth;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (count < 2)
 		*nbuffers = count = 2;
@@ -920,9 +966,17 @@ static int sh_veu_queue_setup(struct vb2_queue *vq,
 		*nbuffers = count;
 	}
 
+<<<<<<< HEAD
 	*nplanes = 1;
 	sizes[0] = size;
 	alloc_ctxs[0] = veu->alloc_ctx;
+=======
+	if (*nplanes)
+		return sizes[0] < size ? -EINVAL : 0;
+
+	*nplanes = 1;
+	sizes[0] = size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(veu->dev, "get %d buffer(s) of size %d each.\n", count, size);
 
@@ -952,6 +1006,7 @@ static int sh_veu_buf_prepare(struct vb2_buffer *vb)
 
 static void sh_veu_buf_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	struct sh_veu_dev *veu = vb2_get_drv_priv(vb->vb2_queue);
 	dev_dbg(veu->dev, "%s(%d)\n", __func__, vb->v4l2_buf.type);
 	v4l2_m2m_buf_queue(veu->m2m_ctx, vb);
@@ -965,28 +1020,53 @@ static void sh_veu_wait_prepare(struct vb2_queue *q)
 static void sh_veu_wait_finish(struct vb2_queue *q)
 {
 	sh_veu_lock(vb2_get_drv_priv(q));
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct sh_veu_dev *veu = vb2_get_drv_priv(vb->vb2_queue);
+	dev_dbg(veu->dev, "%s(%d)\n", __func__, vb->type);
+	v4l2_m2m_buf_queue(veu->m2m_ctx, vbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct vb2_ops sh_veu_qops = {
 	.queue_setup	 = sh_veu_queue_setup,
 	.buf_prepare	 = sh_veu_buf_prepare,
 	.buf_queue	 = sh_veu_buf_queue,
+<<<<<<< HEAD
 	.wait_prepare	 = sh_veu_wait_prepare,
 	.wait_finish	 = sh_veu_wait_finish,
+=======
+	.wait_prepare	 = vb2_ops_wait_prepare,
+	.wait_finish	 = vb2_ops_wait_finish,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int sh_veu_queue_init(void *priv, struct vb2_queue *src_vq,
 			     struct vb2_queue *dst_vq)
 {
+<<<<<<< HEAD
+=======
+	struct sh_veu_dev *veu = priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	memset(src_vq, 0, sizeof(*src_vq));
 	src_vq->type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 	src_vq->io_modes = VB2_MMAP | VB2_USERPTR;
+<<<<<<< HEAD
 	src_vq->drv_priv = priv;
 	src_vq->buf_struct_size = sizeof(struct v4l2_m2m_buffer);
 	src_vq->ops = &sh_veu_qops;
 	src_vq->mem_ops = &vb2_dma_contig_memops;
+=======
+	src_vq->drv_priv = veu;
+	src_vq->buf_struct_size = sizeof(struct v4l2_m2m_buffer);
+	src_vq->ops = &sh_veu_qops;
+	src_vq->mem_ops = &vb2_dma_contig_memops;
+	src_vq->lock = &veu->fop_lock;
+	src_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+	src_vq->dev = veu->v4l2_dev.dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = vb2_queue_init(src_vq);
 	if (ret < 0)
@@ -995,10 +1075,20 @@ static int sh_veu_queue_init(void *priv, struct vb2_queue *src_vq,
 	memset(dst_vq, 0, sizeof(*dst_vq));
 	dst_vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	dst_vq->io_modes = VB2_MMAP | VB2_USERPTR;
+<<<<<<< HEAD
 	dst_vq->drv_priv = priv;
 	dst_vq->buf_struct_size = sizeof(struct v4l2_m2m_buffer);
 	dst_vq->ops = &sh_veu_qops;
 	dst_vq->mem_ops = &vb2_dma_contig_memops;
+=======
+	dst_vq->drv_priv = veu;
+	dst_vq->buf_struct_size = sizeof(struct v4l2_m2m_buffer);
+	dst_vq->ops = &sh_veu_qops;
+	dst_vq->mem_ops = &vb2_dma_contig_memops;
+	dst_vq->lock = &veu->fop_lock;
+	dst_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
+	dst_vq->dev = veu->v4l2_dev.dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return vb2_queue_init(dst_vq);
 }
@@ -1110,8 +1200,13 @@ static irqreturn_t sh_veu_bh(int irq, void *dev_id)
 static irqreturn_t sh_veu_isr(int irq, void *dev_id)
 {
 	struct sh_veu_dev *veu = dev_id;
+<<<<<<< HEAD
 	struct vb2_buffer *dst;
 	struct vb2_buffer *src;
+=======
+	struct vb2_v4l2_buffer *dst;
+	struct vb2_v4l2_buffer *src;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 status = sh_veu_reg_read(veu, VEU_EVTR);
 
 	/* bundle read mode not used */
@@ -1131,6 +1226,15 @@ static irqreturn_t sh_veu_isr(int irq, void *dev_id)
 	if (!src || !dst)
 		return IRQ_NONE;
 
+<<<<<<< HEAD
+=======
+	dst->vb2_buf.timestamp = src->vb2_buf.timestamp;
+	dst->flags &= ~V4L2_BUF_FLAG_TSTAMP_SRC_MASK;
+	dst->flags |=
+		src->flags & V4L2_BUF_FLAG_TSTAMP_SRC_MASK;
+	dst->timecode = src->timecode;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&veu->lock);
 	v4l2_m2m_buf_done(src, VB2_BUF_STATE_DONE);
 	v4l2_m2m_buf_done(dst, VB2_BUF_STATE_DONE);
@@ -1179,6 +1283,7 @@ static int sh_veu_probe(struct platform_device *pdev)
 
 	vdev = &veu->vdev;
 
+<<<<<<< HEAD
 	veu->alloc_ctx = vb2_dma_contig_init_ctx(&pdev->dev);
 	if (IS_ERR(veu->alloc_ctx)) {
 		ret = PTR_ERR(veu->alloc_ctx);
@@ -1186,6 +1291,10 @@ static int sh_veu_probe(struct platform_device *pdev)
 	}
 
 	*vdev = sh_veu_videodev;
+=======
+	*vdev = sh_veu_videodev;
+	vdev->v4l2_dev = &veu->v4l2_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_init(&veu->lock);
 	mutex_init(&veu->fop_lock);
 	vdev->lock = &veu->fop_lock;
@@ -1217,8 +1326,11 @@ evidreg:
 	pm_runtime_disable(&pdev->dev);
 	v4l2_m2m_release(veu->m2m_dev);
 em2minit:
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(veu->alloc_ctx);
 einitctx:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(&veu->v4l2_dev);
 	return ret;
 }
@@ -1232,7 +1344,10 @@ static int sh_veu_remove(struct platform_device *pdev)
 	video_unregister_device(&veu->vdev);
 	pm_runtime_disable(&pdev->dev);
 	v4l2_m2m_release(veu->m2m_dev);
+<<<<<<< HEAD
 	vb2_dma_contig_cleanup_ctx(veu->alloc_ctx);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(&veu->v4l2_dev);
 
 	return 0;
@@ -1242,7 +1357,10 @@ static struct platform_driver __refdata sh_veu_pdrv = {
 	.remove		= sh_veu_remove,
 	.driver		= {
 		.name	= "sh_veu",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

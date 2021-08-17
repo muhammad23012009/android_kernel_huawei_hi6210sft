@@ -17,6 +17,10 @@
 #include <linux/completion.h>
 #include <linux/workqueue.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/numa.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct device;
 
@@ -28,12 +32,46 @@ struct device;
 extern int edac_op_state;
 extern int edac_err_assert;
 extern atomic_t edac_handlers;
+<<<<<<< HEAD
 extern struct bus_type edac_subsys;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int edac_handler_set(void);
 extern void edac_atomic_assert_error(void);
 extern struct bus_type *edac_get_sysfs_subsys(void);
+<<<<<<< HEAD
 extern void edac_put_sysfs_subsys(void);
+=======
+
+enum {
+	EDAC_REPORTING_ENABLED,
+	EDAC_REPORTING_DISABLED,
+	EDAC_REPORTING_FORCE
+};
+
+extern int edac_report_status;
+#ifdef CONFIG_EDAC
+static inline int get_edac_report_status(void)
+{
+	return edac_report_status;
+}
+
+static inline void set_edac_report_status(int new)
+{
+	edac_report_status = new;
+}
+#else
+static inline int get_edac_report_status(void)
+{
+	return EDAC_REPORTING_DISABLED;
+}
+
+static inline void set_edac_report_status(int new)
+{
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void opstate_init(void)
 {
@@ -51,7 +89,11 @@ static inline void opstate_init(void)
 #define EDAC_MC_LABEL_LEN	31
 
 /* Maximum size of the location string */
+<<<<<<< HEAD
 #define LOCATION_SIZE 80
+=======
+#define LOCATION_SIZE 256
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Defines the maximum number of labels that can be reported */
 #define EDAC_MAX_LABELS		8
@@ -166,6 +208,13 @@ static inline char *mc_event_error_type(const unsigned int err_type)
  * @MEM_DDR3:		DDR3 RAM
  * @MEM_RDDR3:		Registered DDR3 RAM
  *			This is a variant of the DDR3 memories.
+<<<<<<< HEAD
+=======
+ * @MEM_LRDDR3		Load-Reduced DDR3 memory.
+ * @MEM_DDR4:		Unbuffered DDR4 RAM
+ * @MEM_RDDR4:		Registered DDR4 RAM
+ *			This is a variant of the DDR4 memories.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 enum mem_type {
 	MEM_EMPTY = 0,
@@ -185,6 +234,12 @@ enum mem_type {
 	MEM_XDR,
 	MEM_DDR3,
 	MEM_RDDR3,
+<<<<<<< HEAD
+=======
+	MEM_LRDDR3,
+	MEM_DDR4,
+	MEM_RDDR4,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define MEM_FLAG_EMPTY		BIT(MEM_EMPTY)
@@ -202,8 +257,15 @@ enum mem_type {
 #define MEM_FLAG_FB_DDR2        BIT(MEM_FB_DDR2)
 #define MEM_FLAG_RDDR2          BIT(MEM_RDDR2)
 #define MEM_FLAG_XDR            BIT(MEM_XDR)
+<<<<<<< HEAD
 #define MEM_FLAG_DDR3		 BIT(MEM_DDR3)
 #define MEM_FLAG_RDDR3		 BIT(MEM_RDDR3)
+=======
+#define MEM_FLAG_DDR3           BIT(MEM_DDR3)
+#define MEM_FLAG_RDDR3          BIT(MEM_RDDR3)
+#define MEM_FLAG_DDR4           BIT(MEM_DDR4)
+#define MEM_FLAG_RDDR4          BIT(MEM_RDDR4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * enum edac-type - Error Detection and Correction capabilities and mode
@@ -734,17 +796,28 @@ struct mem_ctl_info {
 	/* the internal state of this controller instance */
 	int op_state;
 
+<<<<<<< HEAD
 #ifdef CONFIG_EDAC_DEBUG
 	struct dentry *debugfs;
 	u8 fake_inject_layer[EDAC_MAX_LAYERS];
 	u32 fake_inject_ue;
 	u16 fake_inject_count;
 #endif
+=======
+	struct dentry *debugfs;
+	u8 fake_inject_layer[EDAC_MAX_LAYERS];
+	bool fake_inject_ue;
+	u16 fake_inject_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
  * Maximum number of memory controllers in the coherent fabric.
  */
+<<<<<<< HEAD
 #define EDAC_MAX_MCS	16
+=======
+#define EDAC_MAX_MCS	2 * MAX_NUMNODES
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

@@ -31,17 +31,21 @@ static unsigned long bigsmp_check_apicid_used(physid_mask_t *map, int apicid)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned long bigsmp_check_apicid_present(int bit)
 {
 	return 1;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int bigsmp_early_logical_apicid(int cpu)
 {
 	/* on bigsmp, logical apicid is the same as physical */
 	return early_per_cpu(x86_cpu_to_apicid, cpu);
 }
 
+<<<<<<< HEAD
 static inline unsigned long calculate_ldr(int cpu)
 {
 	unsigned long val, id;
@@ -68,6 +72,14 @@ static void bigsmp_init_apic_ldr(void)
 	apic_write(APIC_DFR, APIC_DFR_FLAT);
 	val = calculate_ldr(cpu);
 	apic_write(APIC_LDR, val);
+=======
+/*
+ * bigsmp enables physical destination mode
+ * and doesn't use LDR and DFR
+ */
+static void bigsmp_init_apic_ldr(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bigsmp_setup_apic_routing(void)
@@ -101,11 +113,14 @@ static int bigsmp_phys_pkg_id(int cpuid_apic, int index_msb)
 	return cpuid_apic >> index_msb;
 }
 
+<<<<<<< HEAD
 static inline void bigsmp_send_IPI_mask(const struct cpumask *mask, int vector)
 {
 	default_send_IPI_mask_sequence_phys(mask, vector);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void bigsmp_send_IPI_allbutself(int vector)
 {
 	default_send_IPI_mask_allbutself_phys(cpu_online_mask, vector);
@@ -113,7 +128,11 @@ static void bigsmp_send_IPI_allbutself(int vector)
 
 static void bigsmp_send_IPI_all(int vector)
 {
+<<<<<<< HEAD
 	bigsmp_send_IPI_mask(cpu_online_mask, vector);
+=======
+	default_send_IPI_mask_sequence_phys(cpu_online_mask, vector);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int dmi_bigsmp; /* can be set by dmi scanners */
@@ -152,7 +171,11 @@ static int probe_bigsmp(void)
 	return dmi_bigsmp;
 }
 
+<<<<<<< HEAD
 static struct apic apic_bigsmp = {
+=======
+static struct apic apic_bigsmp __ro_after_init = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.name				= "bigsmp",
 	.probe				= probe_bigsmp,
@@ -168,13 +191,17 @@ static struct apic apic_bigsmp = {
 	.disable_esr			= 1,
 	.dest_logical			= 0,
 	.check_apicid_used		= bigsmp_check_apicid_used,
+<<<<<<< HEAD
 	.check_apicid_present		= bigsmp_check_apicid_present,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.vector_allocation_domain	= default_vector_allocation_domain,
 	.init_apic_ldr			= bigsmp_init_apic_ldr,
 
 	.ioapic_phys_id_map		= bigsmp_ioapic_phys_id_map,
 	.setup_apic_routing		= bigsmp_setup_apic_routing,
+<<<<<<< HEAD
 	.multi_timer_check		= NULL,
 	.cpu_present_to_apicid		= bigsmp_cpu_present_to_apicid,
 	.apicid_to_cpu_present		= physid_set_mask_of_physid,
@@ -191,17 +218,34 @@ static struct apic apic_bigsmp = {
 	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
 
 	.send_IPI_mask			= bigsmp_send_IPI_mask,
+=======
+	.cpu_present_to_apicid		= bigsmp_cpu_present_to_apicid,
+	.apicid_to_cpu_present		= physid_set_mask_of_physid,
+	.check_phys_apicid_present	= bigsmp_check_phys_apicid_present,
+	.phys_pkg_id			= bigsmp_phys_pkg_id,
+
+	.get_apic_id			= bigsmp_get_apic_id,
+	.set_apic_id			= NULL,
+
+	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
+
+	.send_IPI			= default_send_IPI_single_phys,
+	.send_IPI_mask			= default_send_IPI_mask_sequence_phys,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.send_IPI_mask_allbutself	= NULL,
 	.send_IPI_allbutself		= bigsmp_send_IPI_allbutself,
 	.send_IPI_all			= bigsmp_send_IPI_all,
 	.send_IPI_self			= default_send_IPI_self,
 
+<<<<<<< HEAD
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
 
 	.wait_for_init_deassert		= default_wait_for_init_deassert,
 
 	.smp_callin_clear_local_apic	= NULL,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.inquire_remote_apic		= default_inquire_remote_apic,
 
 	.read				= native_apic_mem_read,

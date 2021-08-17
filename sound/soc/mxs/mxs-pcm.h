@@ -19,6 +19,7 @@
 #ifndef _MXS_PCM_H
 #define _MXS_PCM_H
 
+<<<<<<< HEAD
 #include <linux/fsl/mxs-dma.h>
 
 struct mxs_pcm_dma_params {
@@ -28,5 +29,8 @@ struct mxs_pcm_dma_params {
 
 int mxs_pcm_platform_register(struct device *dev);
 void mxs_pcm_platform_unregister(struct device *dev);
+=======
+int mxs_pcm_platform_register(struct device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

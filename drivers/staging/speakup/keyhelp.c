@@ -14,10 +14,13 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/keyboard.h>
@@ -64,6 +67,10 @@ static void build_key_data(void)
 	u_char *kp, counters[MAXFUNCS], ch, ch1;
 	u_short *p_key = key_data, key;
 	int i, offset = 1;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nstates = (int)(state_tbl[-1]);
 	memset(counters, 0, sizeof(counters));
 	memset(key_offsets, 0, sizeof(key_offsets));
@@ -73,7 +80,11 @@ static void build_key_data(void)
 		for (i = 0; i < nstates; i++, kp++) {
 			if (!*kp)
 				continue;
+<<<<<<< HEAD
 			if ((state_tbl[i]&16) != 0 && *kp == SPK_KEY)
+=======
+			if ((state_tbl[i] & 16) != 0 && *kp == SPK_KEY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 			counters[*kp]++;
 		}
@@ -82,7 +93,11 @@ static void build_key_data(void)
 		if (counters[i] == 0)
 			continue;
 		key_offsets[i] = offset;
+<<<<<<< HEAD
 		offset += (counters[i]+1);
+=======
+		offset += (counters[i] + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (offset >= MAXKEYS)
 			break;
 	}
@@ -96,7 +111,11 @@ static void build_key_data(void)
 			ch1 = *kp++;
 			if (!ch1)
 				continue;
+<<<<<<< HEAD
 			if ((state_tbl[i]&16) != 0 && ch1 == SPK_KEY)
+=======
+			if ((state_tbl[i] & 16) != 0 && ch1 == SPK_KEY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 			key = (state_tbl[i] << 8) + ch;
 			counters[ch1]--;
@@ -112,6 +131,10 @@ static void build_key_data(void)
 static void say_key(int key)
 {
 	int i, state = key >> 8;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	key &= 0xff;
 	for (i = 0; i < 6; i++) {
 		if (state & masks[i])
@@ -127,6 +150,7 @@ static int help_init(void)
 	char start = SPACE;
 	int i;
 	int num_funcs = MSG_FUNCNAMES_END - MSG_FUNCNAMES_START + 1;
+<<<<<<< HEAD
 state_tbl = spk_our_keys[0]+SHIFT_TBL_SIZE+2;
 	for (i = 0; i < num_funcs; i++) {
 		char *cur_funcname = spk_msg_get(MSG_FUNCNAMES_START + i);
@@ -134,6 +158,17 @@ state_tbl = spk_our_keys[0]+SHIFT_TBL_SIZE+2;
 			continue;
 		start = *cur_funcname;
 		letter_offsets[(start&31)-1] = i;
+=======
+
+	state_tbl = spk_our_keys[0] + SHIFT_TBL_SIZE + 2;
+	for (i = 0; i < num_funcs; i++) {
+		char *cur_funcname = spk_msg_get(MSG_FUNCNAMES_START + i);
+
+		if (start == *cur_funcname)
+			continue;
+		start = *cur_funcname;
+		letter_offsets[(start & 31) - 1] = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -144,6 +179,10 @@ int spk_handle_help(struct vc_data *vc, u_char type, u_char ch, u_short key)
 	char *name;
 	u_char func, *kp;
 	u_short *p_keys, val;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (letter_offsets[0] == -1)
 		help_init();
 	if (type == KT_LATIN) {
@@ -155,12 +194,20 @@ int spk_handle_help(struct vc_data *vc, u_char type, u_char ch, u_short key)
 		ch |= 32; /* lower case */
 		if (ch < 'a' || ch > 'z')
 			return -1;
+<<<<<<< HEAD
 		if (letter_offsets[ch-'a'] == -1) {
+=======
+		if (letter_offsets[ch - 'a'] == -1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			synth_printf(spk_msg_get(MSG_NO_COMMAND), ch);
 			synth_printf("\n");
 			return 1;
 		}
+<<<<<<< HEAD
 	cur_item = letter_offsets[ch-'a'];
+=======
+		cur_item = letter_offsets[ch - 'a'];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (type == KT_CUR) {
 		if (ch == 0
 		    && (MSG_FUNCNAMES_START + cur_item + 1) <=
@@ -181,7 +228,11 @@ int spk_handle_help(struct vc_data *vc, u_char type, u_char ch, u_short key)
 		name = NULL;
 		if ((type != KT_SPKUP) && (key > 0) && (key <= num_key_names)) {
 			synth_printf("%s\n",
+<<<<<<< HEAD
 				spk_msg_get(MSG_KEYNAMES_START + key-1));
+=======
+				spk_msg_get(MSG_KEYNAMES_START + key - 1));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 1;
 		}
 		for (i = 0; funcvals[i] != 0 && !name; i++) {
@@ -190,7 +241,11 @@ int spk_handle_help(struct vc_data *vc, u_char type, u_char ch, u_short key)
 		}
 		if (!name)
 			return -1;
+<<<<<<< HEAD
 		kp = spk_our_keys[key]+1;
+=======
+		kp = spk_our_keys[key] + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (i = 0; i < nstates; i++) {
 			if (ch == kp[i])
 				break;

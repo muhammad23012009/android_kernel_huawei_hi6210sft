@@ -7,9 +7,13 @@ config NET_VENDOR_NUVOTON
 	default y
 	depends on ARM && ARCH_W90X900
 	---help---
+<<<<<<< HEAD
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -22,7 +26,10 @@ config W90P910_ETH
 	tristate "Nuvoton w90p910 Ethernet support"
 	depends on ARM && ARCH_W90X900
 	select PHYLIB
+<<<<<<< HEAD
 	select NET_CORE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MII
 	---help---
 	  Say Y here if you want to use built-in Ethernet ports

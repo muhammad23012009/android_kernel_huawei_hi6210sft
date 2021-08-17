@@ -290,8 +290,11 @@ static int snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
 static int snd_sh_dac_remove(struct platform_device *devptr)
 {
 	snd_card_free(platform_get_drvdata(devptr));
+<<<<<<< HEAD
 	platform_set_drvdata(devptr, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -398,7 +401,11 @@ static int snd_sh_dac_probe(struct platform_device *devptr)
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&devptr->dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 			snd_printk(KERN_ERR "cannot allocate the card\n");
 			return err;
@@ -438,7 +445,10 @@ static struct platform_driver sh_dac_driver = {
 	.remove = snd_sh_dac_remove,
 	.driver = {
 		.name = "dac_audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

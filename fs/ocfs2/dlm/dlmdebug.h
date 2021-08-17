@@ -30,7 +30,10 @@ void dlm_print_one_mle(struct dlm_master_list_entry *mle);
 #ifdef CONFIG_DEBUG_FS
 
 struct dlm_debug_ctxt {
+<<<<<<< HEAD
 	struct kref debug_refcnt;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dentry *debug_state_dentry;
 	struct dentry *debug_lockres_dentry;
 	struct dentry *debug_mle_dentry;

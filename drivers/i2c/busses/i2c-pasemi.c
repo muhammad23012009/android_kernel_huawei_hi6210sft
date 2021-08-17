@@ -11,10 +11,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -401,7 +404,11 @@ static void pasemi_smb_remove(struct pci_dev *dev)
 	kfree(smbus);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pasemi_smb_ids) = {
+=======
+static const struct pci_device_id pasemi_smb_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(0x1959, 0xa003) },
 	{ 0, }
 };

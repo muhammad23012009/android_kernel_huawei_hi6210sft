@@ -10,6 +10,7 @@ config DCACHE_WORD_ACCESS
 
 if BLOCK
 
+<<<<<<< HEAD
 source "fs/ext2/Kconfig"
 source "fs/ext3/Kconfig"
 source "fs/ext4/Kconfig"
@@ -21,15 +22,27 @@ config FS_XIP
 	default y
 
 source "fs/jbd/Kconfig"
+=======
+config FS_IOMAP
+	bool
+
+source "fs/ext2/Kconfig"
+source "fs/ext4/Kconfig"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "fs/jbd2/Kconfig"
 
 config FS_MBCACHE
 # Meta block cache for Extended Attributes (ext2/ext3/ext4)
 	tristate
 	default y if EXT2_FS=y && EXT2_FS_XATTR
+<<<<<<< HEAD
 	default y if EXT3_FS=y && EXT3_FS_XATTR
 	default y if EXT4_FS=y
 	default m if EXT2_FS_XATTR || EXT3_FS_XATTR || EXT4_FS
+=======
+	default y if EXT4_FS=y
+	default m if EXT2_FS_XATTR || EXT4_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 source "fs/reiserfs/Kconfig"
 source "fs/jfs/Kconfig"
@@ -39,6 +52,33 @@ source "fs/gfs2/Kconfig"
 source "fs/ocfs2/Kconfig"
 source "fs/btrfs/Kconfig"
 source "fs/nilfs2/Kconfig"
+<<<<<<< HEAD
+=======
+source "fs/f2fs/Kconfig"
+
+config FS_DAX
+	bool "Direct Access (DAX) support"
+	depends on MMU
+	depends on !(ARM || MIPS || SPARC)
+	help
+	  Direct Access (DAX) can be used on memory-backed block devices.
+	  If the block device supports DAX and the filesystem supports DAX,
+	  then you can avoid using the pagecache to buffer I/Os.  Turning
+	  on this option will compile in support for DAX; you will need to
+	  mount the filesystem using the -o dax option.
+
+	  If you do not have a block device that is capable of using this,
+	  or if unsure, say N.  Saying Y will increase the size of the kernel
+	  by about 5kB.
+
+config FS_DAX_PMD
+	bool
+	default FS_DAX
+	depends on FS_DAX
+	depends on ZONE_DEVICE
+	depends on TRANSPARENT_HUGEPAGE
+	depends on BROKEN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endif # BLOCK
 
@@ -53,24 +93,56 @@ config FS_POSIX_ACL
 config EXPORTFS
 	tristate
 
+<<<<<<< HEAD
 config FILE_LOCKING
 	bool "Enable POSIX file locking API" if EXPERT
 	default y
+=======
+config EXPORTFS_BLOCK_OPS
+	bool "Enable filesystem export operations for block IO"
+	help
+	  This option enables the export operations for a filesystem to support
+	  external block IO.
+
+config FILE_LOCKING
+	bool "Enable POSIX file locking API" if EXPERT
+	default y
+	select PERCPU_RWSEM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  This option enables standard file locking support, required
           for filesystems like NFS and for the flock() system
           call. Disabling this option saves about 11k.
 
+<<<<<<< HEAD
+=======
+config MANDATORY_FILE_LOCKING
+	bool "Enable Mandatory file locking"
+	depends on FILE_LOCKING
+	default y
+	help
+	  This option enables files appropriately marked files on appropriely
+	  mounted filesystems to support mandatory locking.
+
+	  To the best of my knowledge this is dead code that no one cares about.
+
+source "fs/crypto/Kconfig"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "fs/notify/Kconfig"
 
 source "fs/quota/Kconfig"
 
 source "fs/autofs4/Kconfig"
 source "fs/fuse/Kconfig"
+<<<<<<< HEAD
 
 config GENERIC_ACL
 	bool
 	select FS_POSIX_ACL
+=======
+source "fs/overlayfs/Kconfig"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 menu "Caches"
 
@@ -92,7 +164,10 @@ if BLOCK
 menu "DOS/FAT/NT Filesystems"
 
 source "fs/fat/Kconfig"
+<<<<<<< HEAD
 source "fs/exfat/Kconfig"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "fs/ntfs/Kconfig"
 
 endmenu
@@ -101,6 +176,10 @@ endif # BLOCK
 menu "Pseudo filesystems"
 
 source "fs/proc/Kconfig"
+<<<<<<< HEAD
+=======
+source "fs/kernfs/Kconfig"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "fs/sysfs/Kconfig"
 
 config TMPFS
@@ -120,7 +199,11 @@ config TMPFS_POSIX_ACL
 	bool "Tmpfs POSIX Access Control Lists"
 	depends on TMPFS
 	select TMPFS_XATTR
+<<<<<<< HEAD
 	select GENERIC_ACL
+=======
+	select FS_POSIX_ACL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  POSIX Access Control Lists (ACLs) support additional access rights
 	  for users and groups beyond the standard owner/group/world scheme,
@@ -167,7 +250,15 @@ config HUGETLBFS
 config HUGETLB_PAGE
 	def_bool HUGETLBFS
 
+<<<<<<< HEAD
 source "fs/configfs/Kconfig"
+=======
+config ARCH_HAS_GIGANTIC_PAGE
+	bool
+
+source "fs/configfs/Kconfig"
+source "fs/efivarfs/Kconfig"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endmenu
 
@@ -186,6 +277,10 @@ menuconfig MISC_FILESYSTEMS
 
 if MISC_FILESYSTEMS
 
+<<<<<<< HEAD
+=======
+source "fs/orangefs/Kconfig"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "fs/adfs/Kconfig"
 source "fs/affs/Kconfig"
 source "fs/ecryptfs/Kconfig"
@@ -212,8 +307,11 @@ source "fs/pstore/Kconfig"
 source "fs/sysv/Kconfig"
 source "fs/ufs/Kconfig"
 source "fs/exofs/Kconfig"
+<<<<<<< HEAD
 source "fs/f2fs/Kconfig"
 source "fs/efivarfs/Kconfig"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endif # MISC_FILESYSTEMS
 
@@ -238,9 +336,19 @@ if NETWORK_FILESYSTEMS
 source "fs/nfs/Kconfig"
 source "fs/nfsd/Kconfig"
 
+<<<<<<< HEAD
 config LOCKD
 	tristate
 	depends on FILE_LOCKING
+=======
+config GRACE_PERIOD
+	tristate
+
+config LOCKD
+	tristate
+	depends on FILE_LOCKING
+	select GRACE_PERIOD
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config LOCKD_V4
 	bool
@@ -254,7 +362,11 @@ config NFS_ACL_SUPPORT
 
 config NFS_COMMON
 	bool
+<<<<<<< HEAD
 	depends on NFSD || NFS_FS
+=======
+	depends on NFSD || NFS_FS || LOCKD
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default y
 
 source "net/sunrpc/Kconfig"

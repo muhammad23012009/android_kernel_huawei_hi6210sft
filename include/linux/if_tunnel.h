@@ -13,6 +13,7 @@
 #define for_each_ip_tunnel_rcu(pos, start) \
 	for (pos = rcu_dereference(start); pos; pos = rcu_dereference(pos->next))
 
+<<<<<<< HEAD
 /* often modified stats are per cpu, other are shared (netdev->stats) */
 struct pcpu_tstats {
 	u64	rx_packets;
@@ -22,4 +23,6 @@ struct pcpu_tstats {
 	struct u64_stats_sync	syncp;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _IF_TUNNEL_H_ */

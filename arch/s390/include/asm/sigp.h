@@ -5,14 +5,29 @@
 #define SIGP_SENSE		      1
 #define SIGP_EXTERNAL_CALL	      2
 #define SIGP_EMERGENCY_SIGNAL	      3
+<<<<<<< HEAD
+=======
+#define SIGP_START		      4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SIGP_STOP		      5
 #define SIGP_RESTART		      6
 #define SIGP_STOP_AND_STORE_STATUS    9
 #define SIGP_INITIAL_CPU_RESET	     11
+<<<<<<< HEAD
 #define SIGP_SET_PREFIX		     13
 #define SIGP_STORE_STATUS_AT_ADDRESS 14
 #define SIGP_SET_ARCHITECTURE	     18
 #define SIGP_SENSE_RUNNING	     21
+=======
+#define SIGP_CPU_RESET		     12
+#define SIGP_SET_PREFIX		     13
+#define SIGP_STORE_STATUS_AT_ADDRESS 14
+#define SIGP_SET_ARCHITECTURE	     18
+#define SIGP_COND_EMERGENCY_SIGNAL   19
+#define SIGP_SENSE_RUNNING	     21
+#define SIGP_SET_MULTI_THREADING     22
+#define SIGP_STORE_ADDITIONAL_STATUS 23
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* SIGP condition codes */
 #define SIGP_CC_ORDER_CODE_ACCEPTED 0
@@ -22,6 +37,10 @@
 
 /* SIGP cpu status bits */
 
+<<<<<<< HEAD
+=======
+#define SIGP_STATUS_INVALID_ORDER	0x00000002UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SIGP_STATUS_CHECK_STOP		0x00000010UL
 #define SIGP_STATUS_STOPPED		0x00000040UL
 #define SIGP_STATUS_EXT_CALL_PENDING	0x00000080UL
@@ -29,4 +48,38 @@
 #define SIGP_STATUS_INCORRECT_STATE	0x00000200UL
 #define SIGP_STATUS_NOT_RUNNING		0x00000400UL
 
+<<<<<<< HEAD
+=======
+#ifndef __ASSEMBLY__
+
+static inline int ____pcpu_sigp(u16 addr, u8 order, unsigned long parm,
+				u32 *status)
+{
+	register unsigned long reg1 asm ("1") = parm;
+	int cc;
+
+	asm volatile(
+		"	sigp	%1,%2,0(%3)\n"
+		"	ipm	%0\n"
+		"	srl	%0,28\n"
+		: "=d" (cc), "+d" (reg1) : "d" (addr), "a" (order) : "cc");
+	*status = reg1;
+	return cc;
+}
+
+static inline int __pcpu_sigp(u16 addr, u8 order, unsigned long parm,
+			      u32 *status)
+{
+	u32 _status;
+	int cc;
+
+	cc = ____pcpu_sigp(addr, order, parm, &_status);
+	if (status && cc == 1)
+		*status = _status;
+	return cc;
+}
+
+#endif /* __ASSEMBLY__ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __S390_ASM_SIGP_H */

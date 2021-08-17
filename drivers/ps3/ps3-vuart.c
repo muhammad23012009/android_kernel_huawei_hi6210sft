@@ -151,11 +151,14 @@ static void __maybe_unused _dump_port_params(unsigned int port_number,
 #endif
 }
 
+<<<<<<< HEAD
 struct vuart_triggers {
 	unsigned long rx;
 	unsigned long tx;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ps3_vuart_get_triggers(struct ps3_system_bus_device *dev,
 	struct vuart_triggers *trig)
 {
@@ -699,8 +702,11 @@ int ps3_vuart_read_async(struct ps3_system_bus_device *dev, unsigned int bytes)
 
 	BUG_ON(!bytes);
 
+<<<<<<< HEAD
 	PREPARE_WORK(&priv->rx_list.work.work, ps3_vuart_work);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&priv->rx_list.lock, flags);
 	if (priv->rx_list.bytes_held >= bytes) {
 		dev_dbg(&dev->core, "%s:%d: schedule_work %xh bytes\n",
@@ -965,7 +971,11 @@ static int ps3_vuart_bus_interrupt_get(void)
 
 fail_request_irq:
 	ps3_vuart_irq_destroy(vuart_bus_priv.virq);
+<<<<<<< HEAD
 	vuart_bus_priv.virq = NO_IRQ;
+=======
+	vuart_bus_priv.virq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail_alloc_irq:
 	kfree(vuart_bus_priv.bmp);
 	vuart_bus_priv.bmp = NULL;
@@ -989,7 +999,11 @@ static int ps3_vuart_bus_interrupt_put(void)
 	free_irq(vuart_bus_priv.virq, &vuart_bus_priv);
 
 	ps3_vuart_irq_destroy(vuart_bus_priv.virq);
+<<<<<<< HEAD
 	vuart_bus_priv.virq = NO_IRQ;
+=======
+	vuart_bus_priv.virq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kfree(vuart_bus_priv.bmp);
 	vuart_bus_priv.bmp = NULL;
@@ -1007,12 +1021,19 @@ static int ps3_vuart_probe(struct ps3_system_bus_device *dev)
 	dev_dbg(&dev->core, "%s:%d\n", __func__, __LINE__);
 
 	drv = ps3_system_bus_dev_to_vuart_drv(dev);
+<<<<<<< HEAD
+=======
+	BUG_ON(!drv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&dev->core, "%s:%d: (%s)\n", __func__, __LINE__,
 		drv->core.core.name);
 
+<<<<<<< HEAD
 	BUG_ON(!drv);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dev->port_number >= PORT_COUNT) {
 		BUG();
 		return -EINVAL;
@@ -1052,7 +1073,11 @@ static int ps3_vuart_probe(struct ps3_system_bus_device *dev)
 	INIT_LIST_HEAD(&priv->rx_list.head);
 	spin_lock_init(&priv->rx_list.lock);
 
+<<<<<<< HEAD
 	INIT_WORK(&priv->rx_list.work.work, NULL);
+=======
+	INIT_WORK(&priv->rx_list.work.work, ps3_vuart_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->rx_list.work.trigger = 0;
 	priv->rx_list.work.dev = dev;
 

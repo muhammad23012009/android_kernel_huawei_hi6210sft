@@ -207,7 +207,11 @@ static void jsfd_do_request(struct request_queue *q)
 			goto end;
 		}
 
+<<<<<<< HEAD
 		jsfd_read(req->buffer, jdp->dbase + offset, len);
+=======
+		jsfd_read(bio_data(req->bio), jdp->dbase + offset, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = 0;
 	end:
 		if (!__blk_end_request_cur(req, err))
@@ -507,7 +511,10 @@ static int jsflash_init(void)
 	}
 
 	/* Let us be really paranoid for modifications to probing code. */
+<<<<<<< HEAD
 	/* extern enum sparc_cpu sparc_cpu_model; */ /* in <asm/system.h> */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sparc_cpu_model != sun4m) {
 		/* We must be on sun4m because we use MMU Bypass ASI. */
 		return -ENXIO;

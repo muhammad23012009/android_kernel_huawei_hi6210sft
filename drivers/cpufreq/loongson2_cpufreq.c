@@ -3,13 +3,23 @@
  *
  * The 2E revision of loongson processor not support this feature.
  *
+<<<<<<< HEAD
  * Copyright (C) 2006 - 2008 Lemote Inc. & Insititute of Computing Technology
+=======
+ * Copyright (C) 2006 - 2008 Lemote Inc. & Institute of Computing Technology
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Author: Yanhua, yanh@lemote.com
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 #include <linux/err.h>
@@ -20,12 +30,19 @@
 #include <asm/clock.h>
 #include <asm/idle.h>
 
+<<<<<<< HEAD
 #include <asm/mach-loongson/loongson.h>
 
 static uint nowait;
 
 static struct clk *cpuclk;
 
+=======
+#include <asm/mach-loongson64/loongson.h>
+
+static uint nowait;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void (*saved_cpu_wait) (void);
 
 static int loongson2_cpu_freq_notifier(struct notifier_block *nb,
@@ -44,15 +61,19 @@ static int loongson2_cpu_freq_notifier(struct notifier_block *nb,
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int loongson2_cpufreq_get(unsigned int cpu)
 {
 	return clk_get_rate(cpuclk);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Here we notify other drivers of the proposed change and the final change.
  */
 static int loongson2_cpufreq_target(struct cpufreq_policy *policy,
+<<<<<<< HEAD
 				     unsigned int target_freq,
 				     unsigned int relation)
 {
@@ -60,11 +81,18 @@ static int loongson2_cpufreq_target(struct cpufreq_policy *policy,
 	unsigned int newstate = 0;
 	cpumask_t cpus_allowed;
 	struct cpufreq_freqs freqs;
+=======
+				     unsigned int index)
+{
+	unsigned int cpu = policy->cpu;
+	cpumask_t cpus_allowed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int freq;
 
 	cpus_allowed = current->cpus_allowed;
 	set_cpus_allowed_ptr(current, cpumask_of(cpu));
 
+<<<<<<< HEAD
 	if (cpufreq_frequency_table_target
 	    (policy, &loongson2_clockmod_table[0], target_freq, relation,
 	     &newstate))
@@ -87,29 +115,46 @@ static int loongson2_cpufreq_target(struct cpufreq_policy *policy,
 
 	/* notifiers */
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+=======
+	freq =
+	    ((cpu_clock_freq / 1000) *
+	     loongson2_clockmod_table[index].driver_data) / 8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	set_cpus_allowed_ptr(current, &cpus_allowed);
 
 	/* setting the cpu frequency */
+<<<<<<< HEAD
 	clk_set_rate(cpuclk, freq);
 
 	/* notifiers */
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
 
 	pr_debug("cpufreq: set frequency %u kHz\n", freq);
+=======
+	clk_set_rate(policy->clk, freq * 1000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int loongson2_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
+=======
+	struct clk *cpuclk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	unsigned long rate;
 	int ret;
 
 	cpuclk = clk_get(NULL, "cpu_clk");
 	if (IS_ERR(cpuclk)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cpufreq: couldn't get CPU clk\n");
+=======
+		pr_err("couldn't get CPU clk\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return PTR_ERR(cpuclk);
 	}
 
@@ -125,12 +170,17 @@ static int loongson2_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	     i++)
 		loongson2_clockmod_table[i].frequency = (rate * i) / 8;
 
+<<<<<<< HEAD
 	ret = clk_set_rate(cpuclk, rate);
+=======
+	ret = clk_set_rate(cpuclk, rate * 1000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		clk_put(cpuclk);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	policy->cur = loongson2_cpufreq_get(policy->cpu);
 
 	cpufreq_frequency_table_get_attr(&loongson2_clockmod_table[0],
@@ -144,10 +194,15 @@ static int loongson2_cpufreq_verify(struct cpufreq_policy *policy)
 {
 	return cpufreq_frequency_table_verify(policy,
 					      &loongson2_clockmod_table[0]);
+=======
+	policy->clk = cpuclk;
+	return cpufreq_generic_init(policy, &loongson2_clockmod_table[0], 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int loongson2_cpufreq_exit(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	clk_put(cpuclk);
 	return 0;
 }
@@ -166,6 +221,20 @@ static struct cpufreq_driver loongson2_cpufreq_driver = {
 	.get = loongson2_cpufreq_get,
 	.exit = loongson2_cpufreq_exit,
 	.attr = loongson2_table_attr,
+=======
+	clk_put(policy->clk);
+	return 0;
+}
+
+static struct cpufreq_driver loongson2_cpufreq_driver = {
+	.name = "loongson2",
+	.init = loongson2_cpufreq_cpu_init,
+	.verify = cpufreq_generic_frequency_table_verify,
+	.target_index = loongson2_cpufreq_target,
+	.get = cpufreq_generic_get,
+	.exit = loongson2_cpufreq_exit,
+	.attr = cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device_id platform_device_ids[] = {
@@ -180,7 +249,10 @@ MODULE_DEVICE_TABLE(platform, platform_device_ids);
 static struct platform_driver platform_driver = {
 	.driver = {
 		.name = "loongson2_cpufreq",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table = platform_device_ids,
 };
@@ -198,9 +270,15 @@ static void loongson2_cpu_wait(void)
 	u32 cpu_freq;
 
 	spin_lock_irqsave(&loongson2_wait_lock, flags);
+<<<<<<< HEAD
 	cpu_freq = LOONGSON_CHIPCFG0;
 	LOONGSON_CHIPCFG0 &= ~0x7;	/* Put CPU into wait mode */
 	LOONGSON_CHIPCFG0 = cpu_freq;	/* Restore CPU state */
+=======
+	cpu_freq = LOONGSON_CHIPCFG(0);
+	LOONGSON_CHIPCFG(0) &= ~0x7;	/* Put CPU into wait mode */
+	LOONGSON_CHIPCFG(0) = cpu_freq;	/* Restore CPU state */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&loongson2_wait_lock, flags);
 	local_irq_enable();
 }
@@ -214,7 +292,11 @@ static int __init cpufreq_init(void)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	pr_info("cpufreq: Loongson-2F CPU frequency driver.\n");
+=======
+	pr_info("Loongson-2F CPU frequency driver\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cpufreq_register_notifier(&loongson2_cpufreq_notifier_block,
 				  CPUFREQ_TRANSITION_NOTIFIER);

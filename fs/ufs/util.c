@@ -118,7 +118,11 @@ void ubh_sync_block(struct ufs_buffer_head *ubh)
 		unsigned i;
 
 		for (i = 0; i < ubh->count; i++)
+<<<<<<< HEAD
 			write_dirty_buffer(ubh->bh[i], WRITE);
+=======
+			write_dirty_buffer(ubh->bh[i], 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for (i = 0; i < ubh->count; i++)
 			wait_on_buffer(ubh->bh[i]);
@@ -261,14 +265,22 @@ struct page *ufs_get_locked_page(struct address_space *mapping,
 		if (unlikely(page->mapping == NULL)) {
 			/* Truncate got there first */
 			unlock_page(page);
+<<<<<<< HEAD
 			page_cache_release(page);
+=======
+			put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			page = NULL;
 			goto out;
 		}
 
 		if (!PageUptodate(page) || PageError(page)) {
 			unlock_page(page);
+<<<<<<< HEAD
 			page_cache_release(page);
+=======
+			put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			printk(KERN_ERR "ufs_change_blocknr: "
 			       "can not read page: ino %lu, index: %lu\n",

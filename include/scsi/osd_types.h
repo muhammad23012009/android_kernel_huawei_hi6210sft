@@ -4,7 +4,11 @@
  * Copyright (C) 2008 Panasas Inc.  All rights reserved.
  *
  * Authors:
+<<<<<<< HEAD
  *   Boaz Harrosh <bharrosh@panasas.com>
+=======
+ *   Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *   Benny Halevy <bhalevy@panasas.com>
  *
  * This program is free software; you can redistribute it and/or modify

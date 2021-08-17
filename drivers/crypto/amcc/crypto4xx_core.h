@@ -24,6 +24,11 @@
 
 #include <crypto/internal/hash.h>
 
+<<<<<<< HEAD
+=======
+#define MODULE_NAME "crypto4xx"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PPC460SX_SDR0_SRST                      0x201
 #define PPC405EX_SDR0_SRST                      0x200
 #define PPC460EX_SDR0_SRST                      0x201
@@ -32,12 +37,21 @@
 #define PPC405EX_CE_RESET                       0x00000008
 
 #define CRYPTO4XX_CRYPTO_PRIORITY		300
+<<<<<<< HEAD
 #define PPC4XX_LAST_PD				63
 #define PPC4XX_NUM_PD				64
 #define PPC4XX_LAST_GD				1023
 #define PPC4XX_NUM_GD				1024
 #define PPC4XX_LAST_SD				63
 #define PPC4XX_NUM_SD				64
+=======
+#define PPC4XX_NUM_PD				256
+#define PPC4XX_LAST_PD				(PPC4XX_NUM_PD - 1)
+#define PPC4XX_NUM_GD				1024
+#define PPC4XX_LAST_GD				(PPC4XX_NUM_GD - 1)
+#define PPC4XX_NUM_SD				256
+#define PPC4XX_LAST_SD				(PPC4XX_NUM_SD - 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PPC4XX_SD_BUFFER_SIZE			2048
 
 #define PD_ENTRY_INUSE				1
@@ -72,6 +86,10 @@ struct crypto4xx_device {
 	char *name;
 	u64  ce_phy_address;
 	void __iomem *ce_base;
+<<<<<<< HEAD
+=======
+	void __iomem *trng_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	void *pdr;			/* base address of packet
 					descriptor ring */
@@ -106,6 +124,10 @@ struct crypto4xx_core_device {
 	struct device *device;
 	struct platform_device *ofdev;
 	struct crypto4xx_device *dev;
+<<<<<<< HEAD
+=======
+	struct hwrng *trng;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 int_status;
 	u32 irq;
 	struct tasklet_struct tasklet;

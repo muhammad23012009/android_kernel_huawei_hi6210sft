@@ -20,7 +20,14 @@ struct relocs {
 
 static struct relocs relocs16;
 static struct relocs relocs32;
+<<<<<<< HEAD
 static struct relocs relocs64;
+=======
+#if ELF_BITS == 64
+static struct relocs relocs32neg;
+static struct relocs relocs64;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct section {
 	Elf_Shdr       shdr;
@@ -69,8 +76,13 @@ static const char * const sym_regex_kernel[S_NSYMTYPES] = {
 	"__per_cpu_load|"
 	"init_per_cpu__.*|"
 	"__end_rodata_hpage_align|"
+<<<<<<< HEAD
 	"__vvar_page|"
 #endif
+=======
+#endif
+	"__vvar_page|"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"_end)$"
 };
 
@@ -695,7 +707,11 @@ static void walk_relocs(int (*process)(struct section *sec, Elf_Rel *rel,
  *
  */
 static int per_cpu_shndx	= -1;
+<<<<<<< HEAD
 Elf_Addr per_cpu_load_addr;
+=======
+static Elf_Addr per_cpu_load_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void percpu_init(void)
 {
@@ -722,15 +738,36 @@ static void percpu_init(void)
 
 /*
  * Check to see if a symbol lies in the .data..percpu section.
+<<<<<<< HEAD
  * For some as yet not understood reason the "__init_begin"
  * symbol which immediately preceeds the .data..percpu section
  * also shows up as it it were part of it so we do an explict
  * check for that symbol name and ignore it.
+=======
+ *
+ * The linker incorrectly associates some symbols with the
+ * .data..percpu section so we also need to check the symbol
+ * name to make sure that we classify the symbol correctly.
+ *
+ * The GNU linker incorrectly associates:
+ *	__init_begin
+ *	__per_cpu_load
+ *
+ * The "gold" linker incorrectly associates:
+ *	init_per_cpu__irq_stack_union
+ *	init_per_cpu__gdt_page
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int is_percpu_sym(ElfW(Sym) *sym, const char *symname)
 {
 	return (sym->st_shndx == per_cpu_shndx) &&
+<<<<<<< HEAD
 		strcmp(symname, "__init_begin");
+=======
+		strcmp(symname, "__init_begin") &&
+		strcmp(symname, "__per_cpu_load") &&
+		strncmp(symname, "init_per_cpu_", 13);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -752,11 +789,27 @@ static int do_reloc64(struct section *sec, Elf_Rel *rel, ElfW(Sym) *sym,
 
 	switch (r_type) {
 	case R_X86_64_NONE:
+<<<<<<< HEAD
 	case R_X86_64_PC32:
 		/*
 		 * NONE can be ignored and PC relative relocations don't
 		 * need to be adjusted.
 		 */
+=======
+		/* NONE can be ignored. */
+		break;
+
+	case R_X86_64_PC32:
+	case R_X86_64_PLT32:
+		/*
+		 * PC relative relocations don't need to be adjusted unless
+		 * referencing a percpu symbol.
+		 *
+		 * NB: R_X86_64_PLT32 can be treated as R_X86_64_PC32.
+		 */
+		if (is_percpu_sym(sym, symname))
+			add_reloc(&relocs32neg, offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case R_X86_64_32:
@@ -818,9 +871,17 @@ static int do_reloc32(struct section *sec, Elf_Rel *rel, Elf_Sym *sym,
 	case R_386_PC32:
 	case R_386_PC16:
 	case R_386_PC8:
+<<<<<<< HEAD
 		/*
 		 * NONE can be ignored and PC relative relocations don't
 		 * need to be adjusted.
+=======
+	case R_386_PLT32:
+		/*
+		 * NONE can be ignored and PC relative relocations don't need
+		 * to be adjusted. Because sym must be defined, R_386_PLT32 can
+		 * be treated the same way as R_386_PC32.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		break;
 
@@ -861,9 +922,17 @@ static int do_reloc_real(struct section *sec, Elf_Rel *rel, Elf_Sym *sym,
 	case R_386_PC32:
 	case R_386_PC16:
 	case R_386_PC8:
+<<<<<<< HEAD
 		/*
 		 * NONE can be ignored and PC relative relocations don't
 		 * need to be adjusted.
+=======
+	case R_386_PLT32:
+		/*
+		 * NONE can be ignored and PC relative relocations don't need
+		 * to be adjusted. Because sym must be defined, R_386_PLT32 can
+		 * be treated the same way as R_386_PC32.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		break;
 
@@ -974,9 +1043,19 @@ static void emit_relocs(int as_text, int use_real_mode)
 		die("Segment relocations found but --realmode not specified\n");
 
 	/* Order the relocations for more efficient processing */
+<<<<<<< HEAD
 	sort_relocs(&relocs16);
 	sort_relocs(&relocs32);
 	sort_relocs(&relocs64);
+=======
+	sort_relocs(&relocs32);
+#if ELF_BITS == 64
+	sort_relocs(&relocs32neg);
+	sort_relocs(&relocs64);
+#else
+	sort_relocs(&relocs16);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Print the relocations */
 	if (as_text) {
@@ -997,6 +1076,7 @@ static void emit_relocs(int as_text, int use_real_mode)
 		for (i = 0; i < relocs32.count; i++)
 			write_reloc(relocs32.offset[i], stdout);
 	} else {
+<<<<<<< HEAD
 		if (ELF_BITS == 64) {
 			/* Print a stop */
 			write_reloc(0, stdout);
@@ -1005,6 +1085,23 @@ static void emit_relocs(int as_text, int use_real_mode)
 			for (i = 0; i < relocs64.count; i++)
 				write_reloc(relocs64.offset[i], stdout);
 		}
+=======
+#if ELF_BITS == 64
+		/* Print a stop */
+		write_reloc(0, stdout);
+
+		/* Now print each relocation */
+		for (i = 0; i < relocs64.count; i++)
+			write_reloc(relocs64.offset[i], stdout);
+
+		/* Print a stop */
+		write_reloc(0, stdout);
+
+		/* Now print each inverse 32-bit relocation */
+		for (i = 0; i < relocs32neg.count; i++)
+			write_reloc(relocs32neg.offset[i], stdout);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Print a stop */
 		write_reloc(0, stdout);
@@ -1015,6 +1112,32 @@ static void emit_relocs(int as_text, int use_real_mode)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * As an aid to debugging problems with different linkers
+ * print summary information about the relocs.
+ * Since different linkers tend to emit the sections in
+ * different orders we use the section names in the output.
+ */
+static int do_reloc_info(struct section *sec, Elf_Rel *rel, ElfW(Sym) *sym,
+				const char *symname)
+{
+	printf("%s\t%s\t%s\t%s\n",
+		sec_name(sec->shdr.sh_info),
+		rel_type(ELF_R_TYPE(rel->r_info)),
+		symname,
+		sec_name(sym->st_shndx));
+	return 0;
+}
+
+static void print_reloc_info(void)
+{
+	printf("reloc section\treloc type\tsymbol\tsymbol section\n");
+	walk_relocs(do_reloc_info);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if ELF_BITS == 64
 # define process process_64
 #else
@@ -1022,7 +1145,12 @@ static void emit_relocs(int as_text, int use_real_mode)
 #endif
 
 void process(FILE *fp, int use_real_mode, int as_text,
+<<<<<<< HEAD
 	     int show_absolute_syms, int show_absolute_relocs)
+=======
+	     int show_absolute_syms, int show_absolute_relocs,
+	     int show_reloc_info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	regex_init(use_real_mode);
 	read_ehdr(fp);
@@ -1040,5 +1168,12 @@ void process(FILE *fp, int use_real_mode, int as_text,
 		print_absolute_relocs();
 		return;
 	}
+<<<<<<< HEAD
+=======
+	if (show_reloc_info) {
+		print_reloc_info();
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	emit_relocs(as_text, use_real_mode);
 }

@@ -16,7 +16,10 @@
 # ifndef __ASSEMBLY__
 extern char _ssbss[], _esbss[];
 extern unsigned long __ivt_start[], __ivt_end[];
+<<<<<<< HEAD
 extern char _etext[], _stext[];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern u32 _fdt_start[], _fdt_end[];
 

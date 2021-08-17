@@ -15,6 +15,10 @@
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
 #include <asm/fixmap.h>
+<<<<<<< HEAD
+=======
+#include <asm/early_ioremap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_MMU
 static int early_ioremap_debug __initdata;
@@ -102,7 +106,11 @@ __early_ioremap(resource_size_t phys_addr, unsigned long size, pgprot_t prot)
 	enum fixed_addresses idx;
 	int i, slot;
 
+<<<<<<< HEAD
 	WARN_ON(system_state != SYSTEM_BOOTING);
+=======
+	WARN_ON(system_state >= SYSTEM_RUNNING);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	slot = -1;
 	for (i = 0; i < FIX_BTMAPS_SLOTS; i++) {
@@ -125,7 +133,11 @@ __early_ioremap(resource_size_t phys_addr, unsigned long size, pgprot_t prot)
 	/*
 	 * Mappings have to be page-aligned
 	 */
+<<<<<<< HEAD
 	offset = phys_addr & ~PAGE_MASK;
+=======
+	offset = offset_in_page(phys_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	phys_addr &= PAGE_MASK;
 	size = PAGE_ALIGN(last_addr + 1) - phys_addr;
 
@@ -188,7 +200,11 @@ void __init early_iounmap(void __iomem *addr, unsigned long size)
 	if (WARN_ON(virt_addr < fix_to_virt(FIX_BTMAP_BEGIN)))
 		return;
 
+<<<<<<< HEAD
 	offset = virt_addr & ~PAGE_MASK;
+=======
+	offset = offset_in_page(virt_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nrpages = PAGE_ALIGN(offset + size) >> PAGE_SHIFT;
 
 	idx = FIX_BTMAP_BEGIN - NR_FIX_BTMAPS*slot;
@@ -217,6 +233,38 @@ early_memremap(resource_size_t phys_addr, unsigned long size)
 	return (__force void *)__early_ioremap(phys_addr, size,
 					       FIXMAP_PAGE_NORMAL);
 }
+<<<<<<< HEAD
+=======
+#ifdef FIXMAP_PAGE_RO
+void __init *
+early_memremap_ro(resource_size_t phys_addr, unsigned long size)
+{
+	return (__force void *)__early_ioremap(phys_addr, size, FIXMAP_PAGE_RO);
+}
+#endif
+
+#define MAX_MAP_CHUNK	(NR_FIX_BTMAPS << PAGE_SHIFT)
+
+void __init copy_from_early_mem(void *dest, phys_addr_t src, unsigned long size)
+{
+	unsigned long slop, clen;
+	char *p;
+
+	while (size) {
+		slop = offset_in_page(src);
+		clen = size;
+		if (clen > MAX_MAP_CHUNK - slop)
+			clen = MAX_MAP_CHUNK - slop;
+		p = early_memremap(src & PAGE_MASK, clen + slop);
+		memcpy(dest, p + slop, clen);
+		early_memunmap(p, clen + slop);
+		dest += clen;
+		src += clen;
+		size -= clen;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_MMU */
 
 void __init __iomem *
@@ -231,6 +279,14 @@ early_memremap(resource_size_t phys_addr, unsigned long size)
 {
 	return (void *)phys_addr;
 }
+<<<<<<< HEAD
+=======
+void __init *
+early_memremap_ro(resource_size_t phys_addr, unsigned long size)
+{
+	return (void *)phys_addr;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init early_iounmap(void __iomem *addr, unsigned long size)
 {

@@ -2,6 +2,12 @@
 # Makefile for x86 specific library files.
 #
 
+<<<<<<< HEAD
+=======
+# Produces uninteresting flaky coverage.
+KCOV_INSTRUMENT_delay.o	:= n
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 inat_tables_script = $(srctree)/arch/x86/tools/gen-insn-attr-x86.awk
 inat_tables_maps = $(srctree)/arch/x86/lib/x86-opcode-map.txt
 quiet_cmd_inat_tables = GEN     $@
@@ -16,6 +22,7 @@ clean-files := inat-tables.c
 
 obj-$(CONFIG_SMP) += msr-smp.o cache-smp.o
 
+<<<<<<< HEAD
 lib-y := delay.o
 lib-y += thunk_$(BITS).o
 lib-y += usercopy_$(BITS).o usercopy.o getuser.o putuser.o
@@ -25,6 +32,17 @@ lib-$(CONFIG_RWSEM_XCHGADD_ALGORITHM) += rwsem.o
 lib-$(CONFIG_INSTRUCTION_DECODER) += insn.o inat.o
 
 obj-y += msr.o msr-reg.o msr-reg-export.o
+=======
+lib-y := delay.o misc.o cmdline.o cpu.o
+lib-y += usercopy_$(BITS).o usercopy.o getuser.o putuser.o
+lib-y += memcpy_$(BITS).o
+lib-$(CONFIG_RWSEM_XCHGADD_ALGORITHM) += rwsem.o
+lib-$(CONFIG_INSTRUCTION_DECODER) += insn.o inat.o
+lib-$(CONFIG_RANDOMIZE_BASE) += kaslr.o
+lib-$(CONFIG_RETPOLINE) += retpoline.o
+
+obj-y += msr.o msr-reg.o msr-reg-export.o hweight.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ifeq ($(CONFIG_X86_32),y)
         obj-y += atomic64_32.o
@@ -39,8 +57,14 @@ endif
 else
         obj-y += iomap_copy_64.o
         lib-y += csum-partial_64.o csum-copy_64.o csum-wrappers_64.o
+<<<<<<< HEAD
         lib-y += thunk_64.o clear_page_64.o copy_page_64.o
         lib-y += memmove_64.o memset_64.o
         lib-y += copy_user_64.o copy_user_nocache_64.o
+=======
+        lib-y += clear_page_64.o copy_page_64.o
+        lib-y += memmove_64.o memset_64.o
+        lib-y += copy_user_64.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lib-y += cmpxchg16b_emu.o
 endif

@@ -9,7 +9,11 @@
  * option) any later version.
  */
 
+<<<<<<< HEAD
 /include/ "mpc5121.dtsi"
+=======
+#include <mpc5121.dtsi>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "mpc5121ads";
@@ -99,7 +103,11 @@
 			};
 
 			rtc@68 {
+<<<<<<< HEAD
 				compatible = "stm,m41t62";
+=======
+				compatible = "st,m41t62";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				reg = <0x68>;
 			};
 		};

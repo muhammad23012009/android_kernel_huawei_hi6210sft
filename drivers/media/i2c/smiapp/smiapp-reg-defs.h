@@ -14,6 +14,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -26,6 +27,14 @@
 #define SMIAPP_REG_MK_U32(r) ((SMIA_REG_32BIT << 16) | (r))
 
 #define SMIAPP_REG_MK_F32(r) (SMIA_REG_FLAG_FLOAT | (SMIA_REG_32BIT << 16) | (r))
+=======
+ */
+#define SMIAPP_REG_MK_U8(r) ((SMIAPP_REG_8BIT << 16) | (r))
+#define SMIAPP_REG_MK_U16(r) ((SMIAPP_REG_16BIT << 16) | (r))
+#define SMIAPP_REG_MK_U32(r) ((SMIAPP_REG_32BIT << 16) | (r))
+
+#define SMIAPP_REG_MK_F32(r) (SMIAPP_REG_FLAG_FLOAT | (SMIAPP_REG_32BIT << 16) | (r))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SMIAPP_REG_U16_MODEL_ID					SMIAPP_REG_MK_U16(0x0000)
 #define SMIAPP_REG_U8_REVISION_NUMBER_MAJOR			SMIAPP_REG_MK_U8(0x0002)

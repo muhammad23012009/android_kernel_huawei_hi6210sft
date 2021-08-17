@@ -57,7 +57,11 @@ static inline unsigned long __cmpxchg_u32(volatile int *m, unsigned long old,
 		"	brne	1b\n"
 		"2:\n"
 		: [ret] "=&r"(ret), [m] "=m"(*m)
+<<<<<<< HEAD
 		: "m"(m), [old] "ir"(old), [new] "r"(new)
+=======
+		: "m"(m), [old] "Ks21r"(old), [new] "r"(new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "memory", "cc");
 	return ret;
 }
@@ -70,8 +74,11 @@ extern unsigned long __cmpxchg_u64_unsupported_on_32bit_kernels(
    if something tries to do an invalid cmpxchg().  */
 extern void __cmpxchg_called_with_bad_pointer(void);
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 				      unsigned long new, int size)
 {

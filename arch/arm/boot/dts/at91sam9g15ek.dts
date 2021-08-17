@@ -7,10 +7,43 @@
  * Licensed under GPLv2 or later.
  */
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "at91sam9g15.dtsi"
 /include/ "at91sam9x5ek.dtsi"
+=======
+#include "at91sam9g15.dtsi"
+#include "at91sam9x5dm.dtsi"
+#include "at91sam9x5ek.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Atmel AT91SAM9G15-EK";
 	compatible = "atmel,at91sam9g15ek", "atmel,at91sam9x5ek", "atmel,at91sam9x5", "atmel,at91sam9";
+<<<<<<< HEAD
+=======
+
+	ahb {
+		apb {
+			hlcdc: hlcdc@f8038000 {
+				status = "okay";
+			};
+		};
+	};
+
+	backlight: backlight {
+		status = "okay";
+	};
+
+	bl_reg: backlight_regulator {
+		status = "okay";
+	};
+
+	panel: panel {
+		status = "okay";
+	};
+
+	panel_reg: panel_regulator {
+		status = "okay";
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

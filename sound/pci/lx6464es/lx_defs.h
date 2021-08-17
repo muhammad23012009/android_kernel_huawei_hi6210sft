@@ -175,7 +175,11 @@ enum buffer_flags {
 	BF_ZERO		= 0x00,	/* no flags (init).*/
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 *	Stream Flags definitions
 */
 enum stream_flags {

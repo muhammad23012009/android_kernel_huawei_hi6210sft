@@ -99,47 +99,83 @@ void mbus_to_pix(const struct v4l2_mbus_framefmt *mbus,
 			   struct v4l2_pix_format *pix)
 {
 	switch (mbus->code) {
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_UYVY8_2X8:
+=======
+	case MEDIA_BUS_FMT_UYVY8_2X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_UYVY;
 		pix->bytesperline = pix->width * 2;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_YUYV8_2X8:
+=======
+	case MEDIA_BUS_FMT_YUYV8_2X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_YUYV;
 		pix->bytesperline = pix->width * 2;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_YUYV10_1X20:
+=======
+	case MEDIA_BUS_FMT_YUYV10_1X20:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_UYVY;
 		pix->bytesperline = pix->width * 2;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_SGRBG12_1X12:
+=======
+	case MEDIA_BUS_FMT_SGRBG12_1X12:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_SBGGR16;
 		pix->bytesperline = pix->width * 2;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_SGRBG10_DPCM8_1X8:
+=======
+	case MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_SGRBG10DPCM8;
 		pix->bytesperline = pix->width;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_SGRBG10_ALAW8_1X8:
+=======
+	case MEDIA_BUS_FMT_SGRBG10_ALAW8_1X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_SGRBG10ALAW8;
 		pix->bytesperline = pix->width;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_YDYUYDYV8_1X16:
+=======
+	case MEDIA_BUS_FMT_YDYUYDYV8_1X16:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_NV12;
 		pix->bytesperline = pix->width;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_Y8_1X8:
+=======
+	case MEDIA_BUS_FMT_Y8_1X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_GREY;
 		pix->bytesperline = pix->width;
 		break;
 
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_UV8_1X8:
+=======
+	case MEDIA_BUS_FMT_UV8_1X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pix->pixelformat = V4L2_PIX_FMT_UV8;
 		pix->bytesperline = pix->width;
 		break;
@@ -226,12 +262,19 @@ static int vpfe_enable_clock(struct vpfe_device *vpfe_dev)
 	if (!vpfe_cfg->num_clocks)
 		return 0;
 
+<<<<<<< HEAD
 	vpfe_dev->clks = kzalloc(vpfe_cfg->num_clocks *
 				   sizeof(struct clock *), GFP_KERNEL);
 	if (vpfe_dev->clks == NULL) {
 		v4l2_err(vpfe_dev->pdev->driver, "Memory allocation failed\n");
 		return -ENOMEM;
 	}
+=======
+	vpfe_dev->clks = kcalloc(vpfe_cfg->num_clocks,
+				 sizeof(*vpfe_dev->clks), GFP_KERNEL);
+	if (vpfe_dev->clks == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < vpfe_cfg->num_clocks; i++) {
 		if (vpfe_cfg->clocks[i] == NULL) {
@@ -296,9 +339,15 @@ static void vpfe_detach_irq(struct vpfe_device *vpfe_dev)
  */
 static int vpfe_attach_irq(struct vpfe_device *vpfe_dev)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	ret = request_irq(vpfe_dev->ccdc_irq0, vpfe_isr, IRQF_DISABLED,
+=======
+	int ret;
+
+	ret = request_irq(vpfe_dev->ccdc_irq0, vpfe_isr, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  "vpfe_capture0", vpfe_dev);
 	if (ret < 0) {
 		v4l2_err(&vpfe_dev->v4l2_dev,
@@ -306,7 +355,11 @@ static int vpfe_attach_irq(struct vpfe_device *vpfe_dev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = request_irq(vpfe_dev->ccdc_irq1, vpfe_vdint1_isr, IRQF_DISABLED,
+=======
+	ret = request_irq(vpfe_dev->ccdc_irq1, vpfe_vdint1_isr, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  "vpfe_capture1", vpfe_dev);
 	if (ret < 0) {
 		v4l2_err(&vpfe_dev->v4l2_dev,
@@ -316,7 +369,11 @@ static int vpfe_attach_irq(struct vpfe_device *vpfe_dev)
 	}
 
 	ret = request_irq(vpfe_dev->imp_dma_irq, vpfe_imp_dma_isr,
+<<<<<<< HEAD
 			  IRQF_DISABLED, "Imp_Sdram_Irq", vpfe_dev);
+=======
+			  0, "Imp_Sdram_Irq", vpfe_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		v4l2_err(&vpfe_dev->v4l2_dev,
 			 "Error: requesting IMP IRQ interrupt\n");
@@ -348,12 +405,19 @@ static int register_i2c_devices(struct vpfe_device *vpfe_dev)
 	i2c_adap = i2c_get_adapter(1);
 	num_subdevs = vpfe_cfg->num_subdevs;
 	vpfe_dev->sd =
+<<<<<<< HEAD
 		  kzalloc(sizeof(struct v4l2_subdev *)*num_subdevs, GFP_KERNEL);
 	if (vpfe_dev->sd == NULL) {
 		v4l2_err(&vpfe_dev->v4l2_dev,
 			"unable to allocate memory for subdevice\n");
 		return -ENOMEM;
 	}
+=======
+		  kcalloc(num_subdevs, sizeof(struct v4l2_subdev *),
+			  GFP_KERNEL);
+	if (vpfe_dev->sd == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0, k = 0; i < num_subdevs; i++) {
 		sdinfo = &vpfe_cfg->sub_devs[i];
@@ -446,35 +510,60 @@ static int vpfe_register_entities(struct vpfe_device *vpfe_dev)
 
 	/* create links now, starting with external(i2c) entities */
 	for (i = 0; i < vpfe_dev->num_ext_subdevs; i++)
+<<<<<<< HEAD
 		/* if entity has no pads (ex: amplifier),
 		   cant establish link */
 		if (vpfe_dev->sd[i]->entity.num_pads) {
 			ret = media_entity_create_link(&vpfe_dev->sd[i]->entity,
+=======
+		/*
+		 * if entity has no pads (ex: amplifier),
+		 * cant establish link
+		 */
+		if (vpfe_dev->sd[i]->entity.num_pads) {
+			ret = media_create_pad_link(&vpfe_dev->sd[i]->entity,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				0, &vpfe_dev->vpfe_isif.subdev.entity,
 				0, flags);
 			if (ret < 0)
 				goto out_resizer_register;
 		}
 
+<<<<<<< HEAD
 	ret = media_entity_create_link(&vpfe_dev->vpfe_isif.subdev.entity, 1,
+=======
+	ret = media_create_pad_link(&vpfe_dev->vpfe_isif.subdev.entity, 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       &vpfe_dev->vpfe_ipipeif.subdev.entity,
 				       0, flags);
 	if (ret < 0)
 		goto out_resizer_register;
 
+<<<<<<< HEAD
 	ret = media_entity_create_link(&vpfe_dev->vpfe_ipipeif.subdev.entity, 1,
+=======
+	ret = media_create_pad_link(&vpfe_dev->vpfe_ipipeif.subdev.entity, 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       &vpfe_dev->vpfe_ipipe.subdev.entity,
 				       0, flags);
 	if (ret < 0)
 		goto out_resizer_register;
 
+<<<<<<< HEAD
 	ret = media_entity_create_link(&vpfe_dev->vpfe_ipipe.subdev.entity,
+=======
+	ret = media_create_pad_link(&vpfe_dev->vpfe_ipipe.subdev.entity,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			1, &vpfe_dev->vpfe_resizer.crop_resizer.subdev.entity,
 			0, flags);
 	if (ret < 0)
 		goto out_resizer_register;
 
+<<<<<<< HEAD
 	ret = media_entity_create_link(&vpfe_dev->vpfe_ipipeif.subdev.entity, 1,
+=======
+	ret = media_create_pad_link(&vpfe_dev->vpfe_ipipeif.subdev.entity, 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			&vpfe_dev->vpfe_resizer.crop_resizer.subdev.entity,
 			0, flags);
 	if (ret < 0)
@@ -582,11 +671,16 @@ static int vpfe_probe(struct platform_device *pdev)
 	int ret = -ENOMEM;
 
 	vpfe_dev = kzalloc(sizeof(*vpfe_dev), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!vpfe_dev) {
 		v4l2_err(pdev->dev.driver,
 			"Failed to allocate memory for vpfe_dev\n");
 		return ret;
 	}
+=======
+	if (!vpfe_dev)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pdev->dev.platform_data == NULL) {
 		v4l2_err(pdev->dev.driver, "Unable to get vpfe config\n");
@@ -715,7 +809,10 @@ static int vpfe_remove(struct platform_device *pdev)
 static struct platform_driver vpfe_driver = {
 	.driver = {
 		.name = CAPTURE_DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = vpfe_probe,
 	.remove = vpfe_remove,

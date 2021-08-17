@@ -35,6 +35,10 @@
 #include <asm/pgtable.h>
 #include <asm/reg.h>
 #include <asm/cell-regs.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "pervasive.h"
 

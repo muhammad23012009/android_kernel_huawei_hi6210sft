@@ -12,7 +12,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input.h>
 #include <linux/serio.h>
 #include <linux/interrupt.h>
@@ -25,9 +28,13 @@
 
 struct ps2if {
 	struct serio *io;
+<<<<<<< HEAD
 	struct resource *iomem_res;
 	void __iomem *base;
 	unsigned irq;
+=======
+	void __iomem *base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -38,7 +45,11 @@ static irqreturn_t altera_ps2_rxint(int irq, void *dev_id)
 {
 	struct ps2if *ps2if = dev_id;
 	unsigned int status;
+<<<<<<< HEAD
 	int handled = IRQ_NONE;
+=======
+	irqreturn_t handled = IRQ_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while ((status = readl(ps2if->base)) & 0xffff0000) {
 		serio_interrupt(ps2if->io, status & 0xff, 0);
@@ -75,7 +86,11 @@ static void altera_ps2_close(struct serio *io)
 {
 	struct ps2if *ps2if = io->port_data;
 
+<<<<<<< HEAD
 	writel(0, ps2if->base); /* disable rx irq */
+=======
+	writel(0, ps2if->base + 4); /* disable rx irq */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -84,6 +99,7 @@ static void altera_ps2_close(struct serio *io)
 static int altera_ps2_probe(struct platform_device *pdev)
 {
 	struct ps2if *ps2if;
+<<<<<<< HEAD
 	struct serio *serio;
 	int error, irq;
 
@@ -94,6 +110,36 @@ static int altera_ps2_probe(struct platform_device *pdev)
 		goto err_free_mem;
 	}
 
+=======
+	struct resource *res;
+	struct serio *serio;
+	int error, irq;
+
+	ps2if = devm_kzalloc(&pdev->dev, sizeof(struct ps2if), GFP_KERNEL);
+	if (!ps2if)
+		return -ENOMEM;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	ps2if->base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(ps2if->base))
+		return PTR_ERR(ps2if->base);
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return -ENXIO;
+
+	error = devm_request_irq(&pdev->dev, irq, altera_ps2_rxint, 0,
+				 pdev->name, ps2if);
+	if (error) {
+		dev_err(&pdev->dev, "could not request IRQ %d\n", irq);
+		return error;
+	}
+
+	serio = kzalloc(sizeof(struct serio), GFP_KERNEL);
+	if (!serio)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	serio->id.type		= SERIO_8042;
 	serio->write		= altera_ps2_write;
 	serio->open		= altera_ps2_open;
@@ -104,6 +150,7 @@ static int altera_ps2_probe(struct platform_device *pdev)
 	serio->dev.parent	= &pdev->dev;
 	ps2if->io		= serio;
 
+<<<<<<< HEAD
 	ps2if->iomem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (ps2if->iomem_res == NULL) {
 		error = -ENOENT;
@@ -139,11 +186,15 @@ static int altera_ps2_probe(struct platform_device *pdev)
 	}
 
 	dev_info(&pdev->dev, "base %p, irq %d\n", ps2if->base, ps2if->irq);
+=======
+	dev_info(&pdev->dev, "base %p, irq %d\n", ps2if->base, irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	serio_register_port(ps2if->io);
 	platform_set_drvdata(pdev, ps2if);
 
 	return 0;
+<<<<<<< HEAD
 
  err_unmap:
 	iounmap(ps2if->base);
@@ -154,6 +205,8 @@ static int altera_ps2_probe(struct platform_device *pdev)
 	kfree(ps2if);
 	kfree(serio);
 	return error;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -163,6 +216,7 @@ static int altera_ps2_remove(struct platform_device *pdev)
 {
 	struct ps2if *ps2if = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	serio_unregister_port(ps2if->io);
 	free_irq(ps2if->irq, ps2if);
@@ -170,6 +224,9 @@ static int altera_ps2_remove(struct platform_device *pdev)
 	release_mem_region(ps2if->iomem_res->start,
 			   resource_size(ps2if->iomem_res));
 	kfree(ps2if);
+=======
+	serio_unregister_port(ps2if->io);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -177,6 +234,10 @@ static int altera_ps2_remove(struct platform_device *pdev)
 #ifdef CONFIG_OF
 static const struct of_device_id altera_ps2_match[] = {
 	{ .compatible = "ALTR,ps2-1.0", },
+<<<<<<< HEAD
+=======
+	{ .compatible = "altr,ps2-1.0", },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 MODULE_DEVICE_TABLE(of, altera_ps2_match);
@@ -190,7 +251,10 @@ static struct platform_driver altera_ps2_driver = {
 	.remove		= altera_ps2_remove,
 	.driver	= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_match_ptr(altera_ps2_match),
 	},
 };

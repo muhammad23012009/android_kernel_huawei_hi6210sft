@@ -35,7 +35,11 @@ struct pipe_buffer {
  *	@tmp_page: cached released page
  *	@readers: number of current readers of this pipe
  *	@writers: number of current writers of this pipe
+<<<<<<< HEAD
  *	@files: number of struct file refering this pipe (protected by ->i_lock)
+=======
+ *	@files: number of struct file referring this pipe (protected by ->i_lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	@waiting_writers: number of writers blocked waiting for room
  *	@r_counter: reader counter
  *	@w_counter: writer counter
@@ -66,6 +70,7 @@ struct pipe_inode_info {
  *
  * ->confirm()
  *	->steal()
+<<<<<<< HEAD
  *	...
  *	->map()
  *	...
@@ -75,6 +80,12 @@ struct pipe_inode_info {
  * same goes for ->steal(). See below for the meaning of each
  * operation. Also see kerneldoc in fs/pipe.c for the pipe
  * and generic variants of these hooks.
+=======
+ *
+ * That is, ->steal() must be called on a confirmed buffer.
+ * See below for the meaning of each operation. Also see kerneldoc
+ * in fs/pipe.c for the pipe and generic variants of these hooks.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct pipe_buf_operations {
 	/*
@@ -85,6 +96,7 @@ struct pipe_buf_operations {
 	int can_merge;
 
 	/*
+<<<<<<< HEAD
 	 * ->map() returns a virtual address mapping of the pipe buffer.
 	 * The last integer flag reflects whether this should be an atomic
 	 * mapping or not. The atomic map is faster, however you can't take
@@ -102,6 +114,8 @@ struct pipe_buf_operations {
 	void (*unmap)(struct pipe_inode_info *, struct pipe_buffer *, void *);
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * ->confirm() verifies that the data in the pipe buffer is there
 	 * and that the contents are good. If the pages in the pipe belong
 	 * to a file system, we may need to wait for IO completion in this
@@ -129,9 +143,64 @@ struct pipe_buf_operations {
 	/*
 	 * Get a reference to the pipe buffer.
 	 */
+<<<<<<< HEAD
 	void (*get)(struct pipe_inode_info *, struct pipe_buffer *);
 };
 
+=======
+	bool (*get)(struct pipe_inode_info *, struct pipe_buffer *);
+};
+
+/**
+ * pipe_buf_get - get a reference to a pipe_buffer
+ * @pipe:	the pipe that the buffer belongs to
+ * @buf:	the buffer to get a reference to
+ *
+ * Return: %true if the reference was successfully obtained.
+ */
+static inline __must_check bool pipe_buf_get(struct pipe_inode_info *pipe,
+				struct pipe_buffer *buf)
+{
+	return buf->ops->get(pipe, buf);
+}
+
+/**
+ * pipe_buf_release - put a reference to a pipe_buffer
+ * @pipe:	the pipe that the buffer belongs to
+ * @buf:	the buffer to put a reference to
+ */
+static inline void pipe_buf_release(struct pipe_inode_info *pipe,
+				    struct pipe_buffer *buf)
+{
+	const struct pipe_buf_operations *ops = buf->ops;
+
+	buf->ops = NULL;
+	ops->release(pipe, buf);
+}
+
+/**
+ * pipe_buf_confirm - verify contents of the pipe buffer
+ * @pipe:	the pipe that the buffer belongs to
+ * @buf:	the buffer to confirm
+ */
+static inline int pipe_buf_confirm(struct pipe_inode_info *pipe,
+				   struct pipe_buffer *buf)
+{
+	return buf->ops->confirm(pipe, buf);
+}
+
+/**
+ * pipe_buf_steal - attempt to take ownership of a pipe_buffer
+ * @pipe:	the pipe that the buffer belongs to
+ * @buf:	the buffer to attempt to steal
+ */
+static inline int pipe_buf_steal(struct pipe_inode_info *pipe,
+				 struct pipe_buffer *buf)
+{
+	return buf->ops->steal(pipe, buf);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Differs from PIPE_BUF in that PIPE_SIZE is the length of the actual
    memory allocation, whereas PIPE_BUF makes atomicity guarantees.  */
 #define PIPE_SIZE		PAGE_SIZE
@@ -146,7 +215,10 @@ extern unsigned long pipe_user_pages_hard;
 extern unsigned long pipe_user_pages_soft;
 int pipe_proc_fn(struct ctl_table *, int, void __user *, size_t *, loff_t *);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Drop the inode semaphore and wait for a pipe event, atomically */
 void pipe_wait(struct pipe_inode_info *pipe);
 
@@ -154,12 +226,20 @@ struct pipe_inode_info *alloc_pipe_info(void);
 void free_pipe_info(struct pipe_inode_info *);
 
 /* Generic pipe buffer ops functions */
+<<<<<<< HEAD
 void *generic_pipe_buf_map(struct pipe_inode_info *, struct pipe_buffer *, int);
 void generic_pipe_buf_unmap(struct pipe_inode_info *, struct pipe_buffer *, void *);
 void generic_pipe_buf_get(struct pipe_inode_info *, struct pipe_buffer *);
 int generic_pipe_buf_confirm(struct pipe_inode_info *, struct pipe_buffer *);
 int generic_pipe_buf_steal(struct pipe_inode_info *, struct pipe_buffer *);
 void generic_pipe_buf_release(struct pipe_inode_info *, struct pipe_buffer *);
+=======
+bool generic_pipe_buf_get(struct pipe_inode_info *, struct pipe_buffer *);
+int generic_pipe_buf_confirm(struct pipe_inode_info *, struct pipe_buffer *);
+int generic_pipe_buf_steal(struct pipe_inode_info *, struct pipe_buffer *);
+void generic_pipe_buf_release(struct pipe_inode_info *, struct pipe_buffer *);
+void pipe_buf_mark_unmergeable(struct pipe_buffer *buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern const struct pipe_buf_operations nosteal_pipe_buf_ops;
 

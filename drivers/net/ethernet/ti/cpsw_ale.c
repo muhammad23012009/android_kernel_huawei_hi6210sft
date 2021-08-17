@@ -13,6 +13,10 @@
  * GNU General Public License for more details.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
@@ -25,8 +29,11 @@
 #include "cpsw_ale.h"
 
 #define BITMASK(bits)		(BIT(bits) - 1)
+<<<<<<< HEAD
 #define ALE_ENTRY_BITS		68
 #define ALE_ENTRY_WORDS	DIV_ROUND_UP(ALE_ENTRY_BITS, 32)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ALE_VERSION_MAJOR(rev)	((rev >> 8) & 0xff)
 #define ALE_VERSION_MINOR(rev)	(rev & 0xff)
@@ -148,7 +155,11 @@ static int cpsw_ale_write(struct cpsw_ale *ale, int idx, u32 *ale_entry)
 	return idx;
 }
 
+<<<<<<< HEAD
 int cpsw_ale_match_addr(struct cpsw_ale *ale, u8 *addr, u16 vid)
+=======
+static int cpsw_ale_match_addr(struct cpsw_ale *ale, u8 *addr, u16 vid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 ale_entry[ALE_ENTRY_WORDS];
 	int type, idx;
@@ -163,13 +174,21 @@ int cpsw_ale_match_addr(struct cpsw_ale *ale, u8 *addr, u16 vid)
 		if (cpsw_ale_get_vlan_id(ale_entry) != vid)
 			continue;
 		cpsw_ale_get_addr(ale_entry, entry_addr);
+<<<<<<< HEAD
 		if (memcmp(entry_addr, addr, 6) == 0)
+=======
+		if (ether_addr_equal(entry_addr, addr))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return idx;
 	}
 	return -ENOENT;
 }
 
+<<<<<<< HEAD
 int cpsw_ale_match_vlan(struct cpsw_ale *ale, u16 vid)
+=======
+static int cpsw_ale_match_vlan(struct cpsw_ale *ale, u16 vid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 ale_entry[ALE_ENTRY_WORDS];
 	int type, idx;
@@ -236,7 +255,11 @@ static void cpsw_ale_flush_mcast(struct cpsw_ale *ale, u32 *ale_entry,
 		cpsw_ale_set_entry_type(ale_entry, ALE_TYPE_FREE);
 }
 
+<<<<<<< HEAD
 int cpsw_ale_flush_multicast(struct cpsw_ale *ale, int port_mask)
+=======
+int cpsw_ale_flush_multicast(struct cpsw_ale *ale, int port_mask, int vid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 ale_entry[ALE_ENTRY_WORDS];
 	int ret, idx;
@@ -247,6 +270,17 @@ int cpsw_ale_flush_multicast(struct cpsw_ale *ale, int port_mask)
 		if (ret != ALE_TYPE_ADDR && ret != ALE_TYPE_VLAN_ADDR)
 			continue;
 
+<<<<<<< HEAD
+=======
+		/* if vid passed is -1 then remove all multicast entry from
+		 * the table irrespective of vlan id, if a valid vlan id is
+		 * passed then remove only multicast added to that vlan id.
+		 * if vlan id doesn't match then move on to next entry.
+		 */
+		if (vid != -1 && cpsw_ale_get_vlan_id(ale_entry) != vid)
+			continue;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (cpsw_ale_get_mcast(ale_entry)) {
 			u8 addr[6];
 
@@ -259,6 +293,7 @@ int cpsw_ale_flush_multicast(struct cpsw_ale *ale, int port_mask)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 static void cpsw_ale_flush_ucast(struct cpsw_ale *ale, u32 *ale_entry,
 				 int port_mask)
@@ -291,6 +326,9 @@ int cpsw_ale_flush(struct cpsw_ale *ale, int port_mask)
 	}
 	return 0;
 }
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_flush_multicast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void cpsw_ale_set_vlan_entry_type(u32 *ale_entry,
 						int flags, u16 vid)
@@ -328,6 +366,10 @@ int cpsw_ale_add_ucast(struct cpsw_ale *ale, u8 *addr, int port,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_add_ucast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpsw_ale_del_ucast(struct cpsw_ale *ale, u8 *addr, int port,
 		       int flags, u16 vid)
@@ -343,6 +385,10 @@ int cpsw_ale_del_ucast(struct cpsw_ale *ale, u8 *addr, int port,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_del_ucast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpsw_ale_add_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 		       int flags, u16 vid, int mcast_state)
@@ -374,6 +420,10 @@ int cpsw_ale_add_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_add_mcast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpsw_ale_del_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 		       int flags, u16 vid)
@@ -395,6 +445,10 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, u8 *addr, int port_mask,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_del_mcast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpsw_ale_add_vlan(struct cpsw_ale *ale, u16 vid, int port, int untag,
 		      int reg_mcast, int unreg_mcast)
@@ -424,6 +478,10 @@ int cpsw_ale_add_vlan(struct cpsw_ale *ale, u16 vid, int port, int untag,
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_add_vlan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port_mask)
 {
@@ -444,6 +502,40 @@ int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port_mask)
 	cpsw_ale_write(ale, idx, ale_entry);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_del_vlan);
+
+void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti)
+{
+	u32 ale_entry[ALE_ENTRY_WORDS];
+	int type, idx;
+	int unreg_mcast = 0;
+
+	/* Only bother doing the work if the setting is actually changing */
+	if (ale->allmulti == allmulti)
+		return;
+
+	/* Remember the new setting to check against next time */
+	ale->allmulti = allmulti;
+
+	for (idx = 0; idx < ale->params.ale_entries; idx++) {
+		cpsw_ale_read(ale, idx, ale_entry);
+		type = cpsw_ale_get_entry_type(ale_entry);
+		if (type != ALE_TYPE_VLAN)
+			continue;
+
+		unreg_mcast = cpsw_ale_get_vlan_unreg_mcast(ale_entry);
+		if (allmulti)
+			unreg_mcast |= 1;
+		else
+			unreg_mcast &= ~1;
+		cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_mcast);
+		cpsw_ale_write(ale, idx, ale_entry);
+	}
+}
+EXPORT_SYMBOL_GPL(cpsw_ale_set_allmulti);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct ale_control_info {
 	const char	*name;
@@ -477,6 +569,17 @@ static const struct ale_control_info ale_controls[ALE_NUM_CONTROLS] = {
 		.port_shift	= 0,
 		.bits		= 1,
 	},
+<<<<<<< HEAD
+=======
+	[ALE_P0_UNI_FLOOD]	= {
+		.name		= "port0_unicast_flood",
+		.offset		= ALE_CONTROL,
+		.port_offset	= 0,
+		.shift		= 8,
+		.port_shift	= 0,
+		.bits		= 1,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[ALE_VLAN_NOLEARN]	= {
 		.name		= "vlan_nolearn",
 		.offset		= ALE_CONTROL,
@@ -573,6 +676,17 @@ static const struct ale_control_info ale_controls[ALE_NUM_CONTROLS] = {
 		.port_shift	= 0,
 		.bits		= 1,
 	},
+<<<<<<< HEAD
+=======
+	[ALE_PORT_NO_SA_UPDATE]	= {
+		.name		= "no_source_update",
+		.offset		= ALE_PORTCTL,
+		.port_offset	= 4,
+		.shift		= 5,
+		.port_shift	= 0,
+		.bits		= 1,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[ALE_PORT_MCAST_LIMIT]	= {
 		.name		= "mcast_limit",
 		.offset		= ALE_PORTCTL,
@@ -653,6 +767,10 @@ int cpsw_ale_control_set(struct cpsw_ale *ale, int port, int control,
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_control_set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpsw_ale_control_get(struct cpsw_ale *ale, int port, int control)
 {
@@ -676,6 +794,10 @@ int cpsw_ale_control_get(struct cpsw_ale *ale, int port, int control)
 	tmp = __raw_readl(ale->params.ale_regs + offset) >> shift;
 	return tmp & BITMASK(info->bits);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_control_get);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void cpsw_ale_timer(unsigned long arg)
 {
@@ -689,6 +811,7 @@ static void cpsw_ale_timer(unsigned long arg)
 	}
 }
 
+<<<<<<< HEAD
 int cpsw_ale_set_ageout(struct cpsw_ale *ale, int ageout)
 {
 	del_timer_sync(&ale->timer);
@@ -700,6 +823,8 @@ int cpsw_ale_set_ageout(struct cpsw_ale *ale, int ageout)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void cpsw_ale_start(struct cpsw_ale *ale)
 {
 	u32 rev;
@@ -718,11 +843,19 @@ void cpsw_ale_start(struct cpsw_ale *ale)
 		add_timer(&ale->timer);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void cpsw_ale_stop(struct cpsw_ale *ale)
 {
 	del_timer_sync(&ale->timer);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_stop);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
 {
@@ -737,13 +870,39 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
 
 	return ale;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_create);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int cpsw_ale_destroy(struct cpsw_ale *ale)
 {
 	if (!ale)
 		return -EINVAL;
+<<<<<<< HEAD
 	cpsw_ale_stop(ale);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpsw_ale_control_set(ale, 0, ALE_ENABLE, 0);
 	kfree(ale);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cpsw_ale_destroy);
+
+void cpsw_ale_dump(struct cpsw_ale *ale, u32 *data)
+{
+	int i;
+
+	for (i = 0; i < ale->params.ale_entries; i++) {
+		cpsw_ale_read(ale, i, data);
+		data += ALE_ENTRY_WORDS;
+	}
+}
+EXPORT_SYMBOL_GPL(cpsw_ale_dump);
+
+MODULE_LICENSE("GPL v2");
+MODULE_DESCRIPTION("TI CPSW ALE driver");
+MODULE_AUTHOR("Texas Instruments");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

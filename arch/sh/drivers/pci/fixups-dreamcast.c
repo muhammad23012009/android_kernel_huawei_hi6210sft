@@ -31,6 +31,11 @@
 static void gapspci_fixup_resources(struct pci_dev *dev)
 {
 	struct pci_channel *p = dev->sysdata;
+<<<<<<< HEAD
+=======
+	struct resource res;
+	struct pci_bus_region region;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk(KERN_NOTICE "PCI: Fixing up device %s\n", pci_name(dev));
 
@@ -50,11 +55,29 @@ static void gapspci_fixup_resources(struct pci_dev *dev)
 
 		/*
 		 * Redirect dma memory allocations to special memory window.
+<<<<<<< HEAD
 		 */
 		BUG_ON(!dma_declare_coherent_memory(&dev->dev,
 						GAPSPCI_DMA_BASE,
 						GAPSPCI_DMA_BASE,
 						GAPSPCI_DMA_SIZE,
+=======
+		 *
+		 * If this GAPSPCI region were mapped by a BAR, the CPU
+		 * phys_addr_t would be pci_resource_start(), and the bus
+		 * address would be pci_bus_address(pci_resource_start()).
+		 * But apparently there's no BAR mapping it, so we just
+		 * "know" its CPU address is GAPSPCI_DMA_BASE.
+		 */
+		res.start = GAPSPCI_DMA_BASE;
+		res.end = GAPSPCI_DMA_BASE + GAPSPCI_DMA_SIZE - 1;
+		res.flags = IORESOURCE_MEM;
+		pcibios_resource_to_bus(dev->bus, &region, &res);
+		BUG_ON(!dma_declare_coherent_memory(&dev->dev,
+						res.start,
+						region.start,
+						resource_size(&res),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						DMA_MEMORY_MAP |
 						DMA_MEMORY_EXCLUSIVE));
 		break;

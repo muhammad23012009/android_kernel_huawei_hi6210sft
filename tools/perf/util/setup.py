@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/python2
+=======
+#!/usr/bin/env python2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 from distutils.core import setup, Extension
 from os import getenv
@@ -18,6 +22,7 @@ class install_lib(_install_lib):
         self.build_dir = build_lib
 
 
+<<<<<<< HEAD
 cflags = ['-fno-strict-aliasing', '-Wno-write-strings']
 cflags += getenv('CFLAGS', '').split()
 
@@ -25,15 +30,36 @@ build_lib = getenv('PYTHON_EXTBUILD_LIB')
 build_tmp = getenv('PYTHON_EXTBUILD_TMP')
 libtraceevent = getenv('LIBTRACEEVENT')
 liblk = getenv('LIBLK')
+=======
+cflags = getenv('CFLAGS', '').split()
+# switch off several checks (need to be at the end of cflags list)
+cflags += ['-fno-strict-aliasing', '-Wno-write-strings', '-Wno-unused-parameter' ]
+
+src_perf  = getenv('srctree') + '/tools/perf'
+build_lib = getenv('PYTHON_EXTBUILD_LIB')
+build_tmp = getenv('PYTHON_EXTBUILD_TMP')
+libtraceevent = getenv('LIBTRACEEVENT')
+libapikfs = getenv('LIBAPI')
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ext_sources = [f.strip() for f in file('util/python-ext-sources')
 				if len(f.strip()) > 0 and f[0] != '#']
 
+<<<<<<< HEAD
+=======
+# use full paths with source files
+ext_sources = map(lambda x: '%s/%s' % (src_perf, x) , ext_sources)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 perf = Extension('perf',
 		  sources = ext_sources,
 		  include_dirs = ['util/include'],
 		  extra_compile_args = cflags,
+<<<<<<< HEAD
 		  extra_objects = [libtraceevent, liblk],
+=======
+		  extra_objects = [libtraceevent, libapikfs],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                  )
 
 setup(name='perf',

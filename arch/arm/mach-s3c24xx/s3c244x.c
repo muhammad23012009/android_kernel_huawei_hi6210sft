@@ -17,7 +17,13 @@
 #include <linux/timer.h>
 #include <linux/init.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
+=======
+#include <linux/serial_s3c.h>
+#include <linux/platform_device.h>
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/device.h>
 #include <linux/syscore_ops.h>
 #include <linux/clk.h>
@@ -34,6 +40,7 @@
 #include <plat/cpu-freq.h>
 
 #include <mach/regs-clock.h>
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
 #include <mach/regs-gpio.h>
 
@@ -45,6 +52,16 @@
 #include <plat/nand-core.h>
 #include <plat/watchdog-reset.h>
 
+=======
+#include <mach/regs-gpio.h>
+
+#include <plat/devs.h>
+#include <plat/cpu.h>
+#include <plat/pm.h>
+
+#include "common.h"
+#include "nand-core.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "regs-dsc.h"
 
 static struct map_desc s3c244x_iodesc[] __initdata = {
@@ -73,6 +90,7 @@ void __init s3c244x_map_io(void)
 	s3c_nand_setname("s3c2440-nand");
 	s3c_device_ts.name = "s3c2440-ts";
 	s3c_device_usbgadget.name = "s3c2440-usbgadget";
+<<<<<<< HEAD
 }
 
 void __init_or_cpufreq s3c244x_setup_clocks(void)
@@ -133,6 +151,9 @@ void __init s3c244x_init_clocks(int xtal)
 	s3c24xx_register_baseclocks(xtal);
 	s3c244x_setup_clocks();
 	s3c2410_baseclk_add();
+=======
+	s3c2410_device_dclk.name = "s3c2440-dclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Since the S3C2442 and S3C2440 share items, put both subsystems here */
@@ -168,7 +189,11 @@ static int __init s3c2442_core_init(void)
 core_initcall(s3c2442_core_init);
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct sleep_save s3c244x_sleep[] = {
 	SAVE_ITEM(S3C2440_DSC0),
 	SAVE_ITEM(S3C2440_DSC1),
@@ -187,15 +212,19 @@ static void s3c244x_resume(void)
 {
 	s3c_pm_do_restore(s3c244x_sleep, ARRAY_SIZE(s3c244x_sleep));
 }
+<<<<<<< HEAD
 #else
 #define s3c244x_suspend NULL
 #define s3c244x_resume  NULL
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct syscore_ops s3c244x_pm_syscore_ops = {
 	.suspend	= s3c244x_suspend,
 	.resume		= s3c244x_resume,
 };
+<<<<<<< HEAD
 
 void s3c244x_restart(char mode, const char *cmd)
 {
@@ -207,3 +236,6 @@ void s3c244x_restart(char mode, const char *cmd)
 	/* we'll take a jump through zero as a poor second */
 	soft_restart(0);
 }
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

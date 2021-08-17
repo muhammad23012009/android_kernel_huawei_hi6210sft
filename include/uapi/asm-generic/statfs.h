@@ -13,7 +13,11 @@
  */
 #ifndef __statfs_word
 #if __BITS_PER_LONG == 64
+<<<<<<< HEAD
 #define __statfs_word long
+=======
+#define __statfs_word __kernel_long_t
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define __statfs_word __u32
 #endif

@@ -23,6 +23,10 @@
 #include "ctimap.h"
 #include <linux/spinlock.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <sound/core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Define the descriptor of a daio resource */
 enum DAIOTYP {
@@ -50,17 +54,29 @@ struct daio {
 
 struct dao {
 	struct daio daio;
+<<<<<<< HEAD
 	struct dao_rsc_ops *ops;	/* DAO specific operations */
 	struct imapper **imappers;
 	struct daio_mgr *mgr;
 	void *hw;
+=======
+	const struct dao_rsc_ops *ops;	/* DAO specific operations */
+	struct imapper **imappers;
+	struct daio_mgr *mgr;
+	struct hw *hw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *ctrl_blk;
 };
 
 struct dai {
 	struct daio daio;
+<<<<<<< HEAD
 	struct dai_rsc_ops *ops;	/* DAI specific operations */
 	void *hw;
+=======
+	const struct dai_rsc_ops *ops;	/* DAI specific operations */
+	struct hw *hw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *ctrl_blk;
 };
 
@@ -98,6 +114,10 @@ struct daio_desc {
 
 struct daio_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;	/* pointer to this card */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t mgr_lock;
 	spinlock_t imap_lock;
 	struct list_head imappers;
@@ -117,7 +137,11 @@ struct daio_mgr {
 };
 
 /* Constructor and destructor of daio resource manager */
+<<<<<<< HEAD
 int daio_mgr_create(void *hw, struct daio_mgr **rdaio_mgr);
+=======
+int daio_mgr_create(struct hw *hw, struct daio_mgr **rdaio_mgr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int daio_mgr_destroy(struct daio_mgr *daio_mgr);
 
 #endif /* CTDAIO_H */

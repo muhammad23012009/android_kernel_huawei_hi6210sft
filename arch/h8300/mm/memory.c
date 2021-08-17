@@ -29,16 +29,28 @@
 #include <asm/traps.h>
 #include <asm/io.h>
 
+<<<<<<< HEAD
 void cache_clear (unsigned long paddr, int len)
+=======
+void cache_clear(unsigned long paddr, int len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 
 
+<<<<<<< HEAD
 void cache_push (unsigned long paddr, int len)
 {
 }
 
 void cache_push_v (unsigned long vaddr, int len)
+=======
+void cache_push(unsigned long paddr, int len)
+{
+}
+
+void cache_push_v(unsigned long vaddr, int len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 
@@ -47,8 +59,15 @@ void cache_push_v (unsigned long vaddr, int len)
  */
 
 unsigned long kernel_map(unsigned long paddr, unsigned long size,
+<<<<<<< HEAD
 			 int nocacheflag, unsigned long *memavailp )
 {
 	return paddr;
 }
 
+=======
+			 int nocacheflag, unsigned long *memavailp)
+{
+	return paddr;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

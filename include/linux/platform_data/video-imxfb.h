@@ -61,15 +61,19 @@ struct imx_fb_platform_data {
 	struct imx_fb_videomode *mode;
 	int		num_modes;
 
+<<<<<<< HEAD
 	u_int		cmap_greyscale:1,
 			cmap_inverse:1,
 			cmap_static:1,
 			unused:29;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u_int		pwmr;
 	u_int		lscr1;
 	u_int		dmacr;
 
+<<<<<<< HEAD
 	u_char * fixed_screen_cpu;
 	dma_addr_t fixed_screen_dma;
 
@@ -81,4 +85,10 @@ struct imx_fb_platform_data {
 };
 
 void set_imx_fb_info(struct imx_fb_platform_data *);
+=======
+	int (*init)(struct platform_device *);
+	void (*exit)(struct platform_device *);
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* ifndef __MACH_IMXFB_H__ */

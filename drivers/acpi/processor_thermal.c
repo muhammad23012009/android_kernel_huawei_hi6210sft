@@ -19,10 +19,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -30,12 +33,18 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/cpufreq.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
 
 #include <acpi/acpi_bus.h>
 #include <acpi/processor.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/acpi.h>
+#include <acpi/processor.h>
+#include <asm/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PREFIX "ACPI: "
 
@@ -186,6 +195,7 @@ static int cpufreq_set_cur_state(unsigned int cpu, int state)
 
 #endif
 
+<<<<<<< HEAD
 int acpi_processor_get_limit_info(struct acpi_processor *pr)
 {
 
@@ -199,13 +209,20 @@ int acpi_processor_get_limit_info(struct acpi_processor *pr)
 }
 
 /* thermal coolign device callbacks */
+=======
+/* thermal cooling device callbacks */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int acpi_processor_max_state(struct acpi_processor *pr)
 {
 	int max_state = 0;
 
 	/*
 	 * There exists four states according to
+<<<<<<< HEAD
 	 * cpufreq_thermal_reduction_ptg. 0, 1, 2, 3
+=======
+	 * cpufreq_thermal_reduction_pctg. 0, 1, 2, 3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	max_state += cpufreq_get_max_state(pr->id);
 	if (pr->flags.throttling)

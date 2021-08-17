@@ -13,7 +13,11 @@
 #include <linux/rtc.h>
 #include <linux/types.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
 #include <linux/rtc-ds2404.h>
+=======
+#include <linux/platform_data/rtc-ds2404.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/gpio.h>
 #include <linux/slab.h>
@@ -48,7 +52,11 @@ struct ds2404_gpio {
 
 struct ds2404 {
 	struct ds2404_gpio *gpio;
+<<<<<<< HEAD
 	struct ds2404_chip_ops *ops;
+=======
+	const struct ds2404_chip_ops *ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rtc_device *rtc;
 };
 
@@ -95,7 +103,11 @@ static void ds2404_gpio_unmap(struct ds2404 *chip)
 		gpio_free(ds2404_gpio[i].gpio);
 }
 
+<<<<<<< HEAD
 static struct ds2404_chip_ops ds2404_gpio_ops = {
+=======
+static const struct ds2404_chip_ops ds2404_gpio_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map_io		= ds2404_gpio_map,
 	.unmap_io	= ds2404_gpio_unmap,
 };
@@ -224,7 +236,11 @@ static const struct rtc_class_ops ds2404_rtc_ops = {
 
 static int rtc_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct ds2404_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct ds2404_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ds2404 *chip;
 	int retval = -EBUSY;
 
@@ -274,7 +290,10 @@ static struct platform_driver rtc_device_driver = {
 	.remove = rtc_remove,
 	.driver = {
 		.name	= "ds2404",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(rtc_device_driver);

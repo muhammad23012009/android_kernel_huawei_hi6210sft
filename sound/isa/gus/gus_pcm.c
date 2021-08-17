@@ -849,7 +849,11 @@ static struct snd_pcm_ops snd_gf1_pcm_capture_ops = {
 	.pointer =	snd_gf1_pcm_capture_pointer,
 };
 
+<<<<<<< HEAD
 int snd_gf1_pcm_new(struct snd_gus_card * gus, int pcm_dev, int control_index, struct snd_pcm ** rpcm)
+=======
+int snd_gf1_pcm_new(struct snd_gus_card *gus, int pcm_dev, int control_index)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_card *card;
 	struct snd_kcontrol *kctl;
@@ -857,8 +861,11 @@ int snd_gf1_pcm_new(struct snd_gus_card * gus, int pcm_dev, int control_index, s
 	struct snd_pcm_substream *substream;
 	int capture, err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	card = gus->card;
 	capture = !gus->interwave && !gus->ess_flag && !gus->ace_flag ? 1 : 0;
 	err = snd_pcm_new(card,
@@ -903,8 +910,11 @@ int snd_gf1_pcm_new(struct snd_gus_card * gus, int pcm_dev, int control_index, s
 		return err;
 	kctl->id.index = control_index;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

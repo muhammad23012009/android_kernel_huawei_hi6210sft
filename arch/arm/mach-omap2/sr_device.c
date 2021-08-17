@@ -57,7 +57,11 @@ static void __init sr_set_nvalues(struct omap_volt_data *volt_data,
 
 		/*
 		 * In OMAP4 the efuse registers are 24 bit aligned.
+<<<<<<< HEAD
 		 * A __raw_readl will fail for non-32 bit aligned address
+=======
+		 * A readl_relaxed will fail for non-32 bit aligned address
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * and hence the 8-bit read and shift.
 		 */
 		if (cpu_is_omap44xx()) {
@@ -154,7 +158,11 @@ static int __init sr_dev_init(struct omap_hwmod *oh, void *user)
 
 	pdev = omap_device_build(name, i, oh, sr_data, sizeof(*sr_data));
 	if (IS_ERR(pdev))
+<<<<<<< HEAD
 		pr_warning("%s: Could not build omap_device for %s: %s.\n\n",
+=======
+		pr_warn("%s: Could not build omap_device for %s: %s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__, name, oh->name);
 exit:
 	i++;

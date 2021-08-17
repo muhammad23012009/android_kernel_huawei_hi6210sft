@@ -11,6 +11,7 @@
 
 #include <linux/compiler.h>
 
+<<<<<<< HEAD
 #define PCIE_PORT_DEVICE_MAXSERVICES   4
 /*
  * According to the PCI Express Base Specification 2.0, the indices of
@@ -19,6 +20,16 @@
 #define PCIE_PORT_MAX_MSIX_ENTRIES	32
 
 #define get_descriptor_id(type, service) (((type - 4) << 4) | service)
+=======
+#define PCIE_PORT_DEVICE_MAXSERVICES   5
+/*
+ * According to the PCI Express Base Specification 2.0, the indices of
+ * the MSI-X table entries used by port services must not exceed 31
+ */
+#define PCIE_PORT_MAX_MSIX_ENTRIES	32
+
+#define get_descriptor_id(type, service) (((type - 4) << 8) | service)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct bus_type pcie_port_bus_type;
 int pcie_port_device_register(struct pci_dev *dev);
@@ -67,6 +78,7 @@ static inline void pcie_pme_interrupt_enable(struct pci_dev *dev, bool en) {}
 #endif /* !CONFIG_PCIE_PME */
 
 #ifdef CONFIG_ACPI
+<<<<<<< HEAD
 int pcie_port_acpi_setup(struct pci_dev *port, int *mask);
 
 static inline int pcie_port_platform_notify(struct pci_dev *port, int *mask)
@@ -78,6 +90,16 @@ static inline int pcie_port_platform_notify(struct pci_dev *port, int *mask)
 {
 	return 0;
 }
+=======
+void pcie_port_acpi_setup(struct pci_dev *port, int *mask);
+
+static inline void pcie_port_platform_notify(struct pci_dev *port, int *mask)
+{
+	pcie_port_acpi_setup(port, mask);
+}
+#else /* !CONFIG_ACPI */
+static inline void pcie_port_platform_notify(struct pci_dev *port, int *mask){}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !CONFIG_ACPI */
 
 #endif /* _PORTDRV_H_ */

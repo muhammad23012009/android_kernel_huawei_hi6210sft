@@ -31,7 +31,10 @@ struct i2c_pnx_algo_data {
 	int			last;
 	struct clk		*clk;
 	struct i2c_adapter	adapter;
+<<<<<<< HEAD
 	phys_addr_t		base;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			irq;
 	u32			timeout;
 };

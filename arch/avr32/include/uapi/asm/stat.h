@@ -5,8 +5,13 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #ifndef __ASM_AVR32_STAT_H
 #define __ASM_AVR32_STAT_H
+=======
+#ifndef _UAPI__ASM_AVR32_STAT_H
+#define _UAPI__ASM_AVR32_STAT_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct __old_kernel_stat {
         unsigned short st_dev;
@@ -76,4 +81,8 @@ struct stat64 {
 	unsigned long	__unused2;
 };
 
+<<<<<<< HEAD
 #endif /* __ASM_AVR32_STAT_H */
+=======
+#endif /* _UAPI__ASM_AVR32_STAT_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

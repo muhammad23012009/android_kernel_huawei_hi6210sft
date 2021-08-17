@@ -7,7 +7,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -93,7 +96,11 @@ static struct pci_driver netcell_pci_driver = {
 	.id_table		= netcell_pci_tbl,
 	.probe			= netcell_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif

@@ -35,9 +35,12 @@ struct clk {
 #define CLK_ALWAYS_ENABLED	(1 << 0)
 #define CLK_RATE_PROPAGATES	(1 << 1)
 
+<<<<<<< HEAD
 /* Should be defined by processor-specific code */
 void arch_init_clk_ops(struct clk_ops **, int type);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int clk_init(void);
 
 int __clk_enable(struct clk *);

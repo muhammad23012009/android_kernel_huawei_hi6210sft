@@ -47,7 +47,11 @@
 
 struct fm3130 {
 	u8			reg_addr_time;
+<<<<<<< HEAD
 	u8 			reg_addr_alarm;
+=======
+	u8			reg_addr_alarm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8			regs[15];
 	struct i2c_msg		msg[4];
 	struct i2c_client	*client;
@@ -520,6 +524,7 @@ exit_free:
 	return err;
 }
 
+<<<<<<< HEAD
 static int fm3130_remove(struct i2c_client *client)
 {
 	return 0;
@@ -532,6 +537,13 @@ static struct i2c_driver fm3130_driver = {
 	},
 	.probe		= fm3130_probe,
 	.remove		= fm3130_remove,
+=======
+static struct i2c_driver fm3130_driver = {
+	.driver = {
+		.name	= "rtc-fm3130",
+	},
+	.probe		= fm3130_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= fm3130_id,
 };
 

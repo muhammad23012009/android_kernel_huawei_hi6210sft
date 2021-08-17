@@ -23,8 +23,12 @@ static struct ebt_entries initial_chain = {
 	.policy		= EBT_ACCEPT,
 };
 
+<<<<<<< HEAD
 static struct ebt_replace_kernel initial_table =
 {
+=======
+static struct ebt_replace_kernel initial_table = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "broute",
 	.valid_hooks	= 1 << NF_BR_BROUTING,
 	.entries_size	= sizeof(struct ebt_entries),
@@ -41,8 +45,12 @@ static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct ebt_table broute_table =
 {
+=======
+static const struct ebt_table broute_table = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "broute",
 	.table		= &initial_table,
 	.valid_hooks	= 1 << NF_BR_BROUTING,
@@ -52,10 +60,21 @@ static const struct ebt_table broute_table =
 
 static int ebt_broute(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = ebt_do_table(NF_BR_BROUTING, skb, skb->dev, NULL,
 			   dev_net(skb->dev)->xt.broute_table);
+=======
+	struct nf_hook_state state;
+	int ret;
+
+	nf_hook_state_init(&state, NULL, NF_BR_BROUTING, INT_MIN,
+			   NFPROTO_BRIDGE, skb->dev, NULL, NULL,
+			   dev_net(skb->dev), NULL);
+
+	ret = ebt_do_table(skb, &state, state.net->xt.broute_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret == NF_DROP)
 		return 1; /* route it */
 	return 0; /* bridge it */
@@ -64,7 +83,11 @@ static int ebt_broute(struct sk_buff *skb)
 static int __net_init broute_net_init(struct net *net)
 {
 	net->xt.broute_table = ebt_register_table(net, &broute_table);
+<<<<<<< HEAD
 	return PTR_RET(net->xt.broute_table);
+=======
+	return PTR_ERR_OR_ZERO(net->xt.broute_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __net_exit broute_net_exit(struct net *net)

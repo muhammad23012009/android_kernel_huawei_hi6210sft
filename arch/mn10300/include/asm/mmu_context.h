@@ -71,7 +71,11 @@ static inline unsigned long allocate_mmu_context(struct mm_struct *mm)
 		local_flush_tlb_all();
 
 		/* fix the TLB version if needed (we avoid version #0 so as to
+<<<<<<< HEAD
 		 * distingush MMU_NO_CONTEXT) */
+=======
+		 * distinguish MMU_NO_CONTEXT) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!mc)
 			*pmc = mc = MMU_CONTEXT_FIRST_VERSION;
 	}

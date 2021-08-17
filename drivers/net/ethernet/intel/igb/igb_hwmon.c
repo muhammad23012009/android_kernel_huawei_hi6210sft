@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel(R) Gigabit Ethernet Linux driver
@@ -24,6 +25,30 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* Intel(R) Gigabit Ethernet Linux driver
+ * Copyright(c) 2007-2014 Intel Corporation.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 2, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, see <http://www.gnu.org/licenses/>.
+ *
+ * The full GNU General Public License is included in this distribution in
+ * the file called "COPYING".
+ *
+ * Contact Information:
+ * e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
+ * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "igb.h"
 #include "e1000_82575.h"
@@ -117,29 +142,50 @@ static int igb_add_hwmon_attr(struct igb_adapter *adapter,
 	unsigned int n_attr;
 	struct hwmon_attr *igb_attr;
 
+<<<<<<< HEAD
 	n_attr = adapter->igb_hwmon_buff.n_hwmon;
 	igb_attr = &adapter->igb_hwmon_buff.hwmon_list[n_attr];
+=======
+	n_attr = adapter->igb_hwmon_buff->n_hwmon;
+	igb_attr = &adapter->igb_hwmon_buff->hwmon_list[n_attr];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (type) {
 	case IGB_HWMON_TYPE_LOC:
 		igb_attr->dev_attr.show = igb_hwmon_show_location;
 		snprintf(igb_attr->name, sizeof(igb_attr->name),
+<<<<<<< HEAD
 			 "temp%u_label", offset);
+=======
+			 "temp%u_label", offset + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case IGB_HWMON_TYPE_TEMP:
 		igb_attr->dev_attr.show = igb_hwmon_show_temp;
 		snprintf(igb_attr->name, sizeof(igb_attr->name),
+<<<<<<< HEAD
 			 "temp%u_input", offset);
+=======
+			 "temp%u_input", offset + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case IGB_HWMON_TYPE_CAUTION:
 		igb_attr->dev_attr.show = igb_hwmon_show_cautionthresh;
 		snprintf(igb_attr->name, sizeof(igb_attr->name),
+<<<<<<< HEAD
 			 "temp%u_max", offset);
+=======
+			 "temp%u_max", offset + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case IGB_HWMON_TYPE_MAX:
 		igb_attr->dev_attr.show = igb_hwmon_show_maxopthresh;
 		snprintf(igb_attr->name, sizeof(igb_attr->name),
+<<<<<<< HEAD
 			 "temp%u_crit", offset);
+=======
+			 "temp%u_crit", offset + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		rc = -EPERM;
@@ -154,16 +200,26 @@ static int igb_add_hwmon_attr(struct igb_adapter *adapter,
 	igb_attr->dev_attr.attr.mode = S_IRUGO;
 	igb_attr->dev_attr.attr.name = igb_attr->name;
 	sysfs_attr_init(&igb_attr->dev_attr.attr);
+<<<<<<< HEAD
 	rc = device_create_file(&adapter->pdev->dev,
 				&igb_attr->dev_attr);
 	if (rc == 0)
 		++adapter->igb_hwmon_buff.n_hwmon;
 
 	return rc;
+=======
+
+	adapter->igb_hwmon_buff->attrs[n_attr] = &igb_attr->dev_attr.attr;
+
+	++adapter->igb_hwmon_buff->n_hwmon;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void igb_sysfs_del_adapter(struct igb_adapter *adapter)
 {
+<<<<<<< HEAD
 	int i;
 
 	if (adapter == NULL)
@@ -178,6 +234,8 @@ static void igb_sysfs_del_adapter(struct igb_adapter *adapter)
 
 	if (adapter->igb_hwmon_buff.device)
 		hwmon_device_unregister(adapter->igb_hwmon_buff.device);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* called from igb_main.c */
@@ -189,11 +247,19 @@ void igb_sysfs_exit(struct igb_adapter *adapter)
 /* called from igb_main.c */
 int igb_sysfs_init(struct igb_adapter *adapter)
 {
+<<<<<<< HEAD
 	struct hwmon_buff *igb_hwmon = &adapter->igb_hwmon_buff;
 	unsigned int i;
 	int n_attrs;
 	int rc = 0;
 	struct i2c_client *client = NULL;
+=======
+	struct hwmon_buff *igb_hwmon;
+	struct i2c_client *client;
+	struct device *hwmon_dev;
+	unsigned int i;
+	int rc = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If this method isn't defined we don't support thermals */
 	if (adapter->hw.mac.ops.init_thermal_sensor_thresh == NULL)
@@ -201,6 +267,7 @@ int igb_sysfs_init(struct igb_adapter *adapter)
 
 	/* Don't create thermal hwmon interface if no sensors present */
 	rc = (adapter->hw.mac.ops.init_thermal_sensor_thresh(&adapter->hw));
+<<<<<<< HEAD
 		if (rc)
 			goto exit;
 
@@ -229,6 +296,18 @@ int igb_sysfs_init(struct igb_adapter *adapter)
 		rc = PTR_ERR(igb_hwmon->device);
 		goto err;
 	}
+=======
+	if (rc)
+		goto exit;
+
+	igb_hwmon = devm_kzalloc(&adapter->pdev->dev, sizeof(*igb_hwmon),
+				 GFP_KERNEL);
+	if (!igb_hwmon) {
+		rc = -ENOMEM;
+		goto exit;
+	}
+	adapter->igb_hwmon_buff = igb_hwmon;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < E1000_MAX_SENSORS; i++) {
 
@@ -240,11 +319,47 @@ int igb_sysfs_init(struct igb_adapter *adapter)
 
 		/* Bail if any hwmon attr struct fails to initialize */
 		rc = igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_CAUTION);
+<<<<<<< HEAD
 		rc |= igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_LOC);
 		rc |= igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_TEMP);
 		rc |= igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_MAX);
 		if (rc)
 			goto err;
+=======
+		if (rc)
+			goto exit;
+		rc = igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_LOC);
+		if (rc)
+			goto exit;
+		rc = igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_TEMP);
+		if (rc)
+			goto exit;
+		rc = igb_add_hwmon_attr(adapter, i, IGB_HWMON_TYPE_MAX);
+		if (rc)
+			goto exit;
+	}
+
+	/* init i2c_client */
+	client = i2c_new_device(&adapter->i2c_adap, &i350_sensor_info);
+	if (client == NULL) {
+		dev_info(&adapter->pdev->dev,
+			 "Failed to create new i2c device.\n");
+		rc = -ENODEV;
+		goto exit;
+	}
+	adapter->i2c_client = client;
+
+	igb_hwmon->groups[0] = &igb_hwmon->group;
+	igb_hwmon->group.attrs = igb_hwmon->attrs;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(&adapter->pdev->dev,
+							   client->name,
+							   igb_hwmon,
+							   igb_hwmon->groups);
+	if (IS_ERR(hwmon_dev)) {
+		rc = PTR_ERR(hwmon_dev);
+		goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	goto exit;

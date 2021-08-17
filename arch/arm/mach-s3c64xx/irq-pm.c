@@ -12,10 +12,18 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
+=======
+/*
+ * NOTE: Code in this file is not used when booting with Device Tree support.
+ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/syscore_ops.h>
 #include <linux/interrupt.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
 #include <linux/io.h>
 
@@ -23,6 +31,15 @@
 
 #include <plat/regs-serial.h>
 #include <plat/regs-timer.h>
+=======
+#include <linux/serial_s3c.h>
+#include <linux/irq.h>
+#include <linux/io.h>
+#include <linux/of.h>
+
+#include <mach/map.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/regs-gpio.h>
 #include <plat/cpu.h>
 #include <plat/pm.h>
@@ -43,7 +60,10 @@ static struct sleep_save irq_save[] = {
 	SAVE_ITEM(S3C64XX_EINT0FLTCON2),
 	SAVE_ITEM(S3C64XX_EINT0FLTCON3),
 	SAVE_ITEM(S3C64XX_EINT0MASK),
+<<<<<<< HEAD
 	SAVE_ITEM(S3C64XX_TINT_CSTAT),
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct irq_grp_save {
@@ -52,7 +72,17 @@ static struct irq_grp_save {
 	u32	mask;
 } eint_grp_save[5];
 
+<<<<<<< HEAD
 static u32 irq_uart_mask[CONFIG_SERIAL_SAMSUNG_UARTS];
+=======
+#ifndef CONFIG_SERIAL_SAMSUNG_UARTS
+#define SERIAL_SAMSUNG_UARTS 0
+#else
+#define	SERIAL_SAMSUNG_UARTS CONFIG_SERIAL_SAMSUNG_UARTS
+#endif
+
+static u32 irq_uart_mask[SERIAL_SAMSUNG_UARTS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int s3c64xx_irq_pm_suspend(void)
 {
@@ -63,7 +93,11 @@ static int s3c64xx_irq_pm_suspend(void)
 
 	s3c_pm_do_save(irq_save, ARRAY_SIZE(irq_save));
 
+<<<<<<< HEAD
 	for (i = 0; i < CONFIG_SERIAL_SAMSUNG_UARTS; i++)
+=======
+	for (i = 0; i < SERIAL_SAMSUNG_UARTS; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		irq_uart_mask[i] = __raw_readl(S3C_VA_UARTx(i) + S3C64XX_UINTM);
 
 	for (i = 0; i < ARRAY_SIZE(eint_grp_save); i++, grp++) {
@@ -84,7 +118,11 @@ static void s3c64xx_irq_pm_resume(void)
 
 	s3c_pm_do_restore(irq_save, ARRAY_SIZE(irq_save));
 
+<<<<<<< HEAD
 	for (i = 0; i < CONFIG_SERIAL_SAMSUNG_UARTS; i++)
+=======
+	for (i = 0; i < SERIAL_SAMSUNG_UARTS; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__raw_writel(irq_uart_mask[i], S3C_VA_UARTx(i) + S3C64XX_UINTM);
 
 	for (i = 0; i < ARRAY_SIZE(eint_grp_save); i++, grp++) {
@@ -103,6 +141,13 @@ static struct syscore_ops s3c64xx_irq_syscore_ops = {
 
 static __init int s3c64xx_syscore_init(void)
 {
+<<<<<<< HEAD
+=======
+	/* Appropriate drivers (pinctrl, uart) handle this when using DT. */
+	if (of_have_populated_dt() || !soc_is_s3c64xx())
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	register_syscore_ops(&s3c64xx_irq_syscore_ops);
 
 	return 0;

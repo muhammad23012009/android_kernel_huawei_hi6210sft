@@ -10,6 +10,15 @@ __NR_truncate,
 #ifdef __NR_truncate64
 __NR_truncate64,
 #endif
+<<<<<<< HEAD
+=======
+#ifdef __NR_ftruncate
+__NR_ftruncate,
+#endif
+#ifdef __NR_ftruncate64
+__NR_ftruncate64,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef __NR_bind
 __NR_bind,		/* bind can affect fs object only in one way... */
 #endif

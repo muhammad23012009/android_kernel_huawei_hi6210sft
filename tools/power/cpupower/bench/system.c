@@ -26,6 +26,10 @@
 #include <sched.h>
 
 #include <cpufreq.h>
+<<<<<<< HEAD
+=======
+#include <cpupower.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "config.h"
 #include "system.h"
@@ -60,7 +64,11 @@ int set_cpufreq_governor(char *governor, unsigned int cpu)
 
 	dprintf("set %s as cpufreq governor\n", governor);
 
+<<<<<<< HEAD
 	if (cpufreq_cpu_exists(cpu) != 0) {
+=======
+	if (cpupower_is_cpu_online(cpu) != 1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		perror("cpufreq_cpu_exists");
 		fprintf(stderr, "error: cpu %u does not exist\n", cpu);
 		return -1;

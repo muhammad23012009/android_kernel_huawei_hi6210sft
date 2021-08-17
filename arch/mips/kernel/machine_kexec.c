@@ -25,6 +25,10 @@ void (*_machine_crash_shutdown)(struct pt_regs *regs) = NULL;
 #ifdef CONFIG_SMP
 void (*relocated_kexec_smp_wait) (void *);
 atomic_t kexec_ready_to_reboot = ATOMIC_INIT(0);
+<<<<<<< HEAD
+=======
+void (*_crash_smp_send_stop)(void) = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 int
@@ -71,8 +75,17 @@ machine_kexec(struct kimage *image)
 	kexec_start_address =
 		(unsigned long) phys_to_virt(image->start);
 
+<<<<<<< HEAD
 	kexec_indirection_page =
 		(unsigned long) phys_to_virt(image->head & PAGE_MASK);
+=======
+	if (image->type == KEXEC_TYPE_DEFAULT) {
+		kexec_indirection_page =
+			(unsigned long) phys_to_virt(image->head & PAGE_MASK);
+	} else {
+		kexec_indirection_page = (unsigned long)&image->head;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memcpy((void*)reboot_code_buffer, relocate_new_kernel,
 	       relocate_new_kernel_size);
@@ -91,6 +104,12 @@ machine_kexec(struct kimage *image)
 			*ptr = (unsigned long) phys_to_virt(*ptr);
 	}
 
+<<<<<<< HEAD
+=======
+	/* Mark offline BEFORE disabling local irq. */
+	set_cpu_online(smp_processor_id(), false);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * we do not want to be bothered.
 	 */

@@ -13,6 +13,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>	/* symbol_get ; symbol_put */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/major.h>
@@ -33,7 +37,13 @@
 #include <linux/spi/pxa2xx_spi.h>
 #include <linux/mtd/sharpsl.h>
 #include <linux/input/matrix_keypad.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/gpio_keys.h>
+#include <linux/module.h>
+#include <linux/memblock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <video/w100fb.h>
 
 #include <asm/setup.h>
@@ -46,12 +56,21 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <mach/udc.h>
 #include <mach/corgi.h>
 #include <mach/sharpsl_pm.h>
+=======
+#include "pxa25x.h"
+#include <linux/platform_data/irda-pxaficp.h>
+#include <linux/platform_data/mmc-pxamci.h>
+#include "udc.h"
+#include <mach/corgi.h>
+#include "sharpsl_pm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/sharpsl_param.h>
 #include <asm/hardware/scoop.h>
@@ -406,6 +425,47 @@ static struct platform_device corgikbd_device = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct gpio_keys_button corgi_gpio_keys[] = {
+	{
+		.type	= EV_SW,
+		.code	= SW_LID,
+		.gpio	= CORGI_GPIO_SWA,
+		.desc	= "Lid close switch",
+		.debounce_interval = 500,
+	},
+	{
+		.type	= EV_SW,
+		.code	= SW_TABLET_MODE,
+		.gpio	= CORGI_GPIO_SWB,
+		.desc	= "Tablet mode switch",
+		.debounce_interval = 500,
+	},
+	{
+		.type	= EV_SW,
+		.code	= SW_HEADPHONE_INSERT,
+		.gpio	= CORGI_GPIO_AK_INT,
+		.desc	= "HeadPhone insert",
+		.debounce_interval = 500,
+	},
+};
+
+static struct gpio_keys_platform_data corgi_gpio_keys_platform_data = {
+	.buttons	= corgi_gpio_keys,
+	.nbuttons	= ARRAY_SIZE(corgi_gpio_keys),
+	.poll_interval	= 250,
+};
+
+static struct platform_device corgi_gpio_keys_device = {
+	.name	= "gpio-keys-polled",
+	.id	= -1,
+	.dev	= {
+		.platform_data	= &corgi_gpio_keys_platform_data,
+	},
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Corgi LEDs
  */
@@ -475,7 +535,11 @@ static struct pxa2xx_udc_mach_info udc_info __initdata = {
 	.gpio_pullup		= CORGI_GPIO_USB_PULLUP,
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_PXA2XX) || defined(CONFIG_SPI_PXA2XX_MASTER)
+=======
+#if IS_ENABLED(CONFIG_SPI_PXA2XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct pxa2xx_spi_master corgi_spi_info = {
 	.num_chipselect	= 3,
 };
@@ -647,6 +711,10 @@ static struct platform_device sharpsl_rom_device = {
 static struct platform_device *devices[] __initdata = {
 	&corgiscoop_device,
 	&corgifb_device,
+<<<<<<< HEAD
+=======
+	&corgi_gpio_keys_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&corgikbd_device,
 	&corgiled_device,
 	&corgi_audio_device,
@@ -664,16 +732,27 @@ static void corgi_poweroff(void)
 		/* Green LED off tells the bootloader to halt */
 		gpio_set_value(CORGI_GPIO_LED_GREEN, 0);
 
+<<<<<<< HEAD
 	pxa_restart('h', NULL);
 }
 
 static void corgi_restart(char mode, const char *cmd)
+=======
+	pxa_restart(REBOOT_HARD, NULL);
+}
+
+static void corgi_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!machine_is_corgi())
 		/* Green LED on tells the bootloader to reboot */
 		gpio_set_value(CORGI_GPIO_LED_GREEN, 1);
 
+<<<<<<< HEAD
 	pxa_restart('h', cmd);
+=======
+	pxa_restart(REBOOT_HARD, cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init corgi_init(void)
@@ -716,6 +795,7 @@ static void __init corgi_init(void)
 	regulator_has_full_constraints();
 }
 
+<<<<<<< HEAD
 static void __init fixup_corgi(struct tag *tags, char **cmdline,
 			       struct meminfo *mi)
 {
@@ -726,6 +806,15 @@ static void __init fixup_corgi(struct tag *tags, char **cmdline,
 		mi->bank[0].size = (32*1024*1024);
 	else
 		mi->bank[0].size = (64*1024*1024);
+=======
+static void __init fixup_corgi(struct tag *tags, char **cmdline)
+{
+	sharpsl_save_param();
+	if (machine_is_corgi())
+		memblock_add(0xa0000000, SZ_32M);
+	else
+		memblock_add(0xa0000000, SZ_64M);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_MACH_CORGI

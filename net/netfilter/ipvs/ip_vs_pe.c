@@ -37,8 +37,12 @@ struct ip_vs_pe *__ip_vs_pe_getbyname(const char *pe_name)
 			rcu_read_unlock();
 			return pe;
 		}
+<<<<<<< HEAD
 		if (pe->module)
 			module_put(pe->module);
+=======
+		module_put(pe->module);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	rcu_read_unlock();
 

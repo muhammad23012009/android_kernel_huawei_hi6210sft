@@ -13,6 +13,7 @@
 #include <linux/list.h>
 #include <linux/io.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/platform_data/mv_usb.h>
 
@@ -32,6 +33,27 @@
 
 #include "common.h"
 #include "clock.h"
+=======
+#include <linux/clk/mmp.h>
+#include <linux/platform_device.h>
+#include <linux/platform_data/mv_usb.h>
+#include <linux/dma-mapping.h>
+
+#include <asm/mach/time.h>
+#include <asm/system_misc.h>
+
+#include "addr-map.h"
+#include "clock.h"
+#include "common.h"
+#include "cputype.h"
+#include "devices.h"
+#include "irqs.h"
+#include "mfp.h"
+#include "pxa168.h"
+#include "regs-apbc.h"
+#include "regs-apmu.h"
+#include "regs-usb.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MFPR_VIRT_BASE	(APB_VIRT_BASE + 0x1e000)
 
@@ -55,8 +77,14 @@ static int __init pxa168_init(void)
 	if (cpu_is_pxa168()) {
 		mfp_init_base(MFPR_VIRT_BASE);
 		mfp_init_addr(pxa168_mfp_addr_map);
+<<<<<<< HEAD
 		pxa_init_dma(IRQ_PXA168_DMA_INT0, 32);
 		pxa168_clk_init();
+=======
+		pxa168_clk_init(APB_PHYS_BASE + 0x50000,
+				AXI_PHYS_BASE + 0x82800,
+				APB_PHYS_BASE + 0x15000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -172,7 +200,11 @@ int __init pxa168_add_usb_host(struct mv_usb_platform_data *pdata)
 	return platform_device_register(&pxa168_device_usb_host);
 }
 
+<<<<<<< HEAD
 void pxa168_restart(char mode, const char *cmd)
+=======
+void pxa168_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	soft_restart(0xffff0000);
 }

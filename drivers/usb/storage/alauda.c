@@ -42,6 +42,12 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-alauda"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Driver for Alauda-based card readers");
 MODULE_AUTHOR("Daniel Drake <dsd@gentoo.org>");
@@ -207,7 +213,12 @@ static struct alauda_card_info alauda_card_ids[] = {
 	{ 0,}
 };
 
+<<<<<<< HEAD
 static struct alauda_card_info *alauda_card_find_id(unsigned char id) {
+=======
+static struct alauda_card_info *alauda_card_find_id(unsigned char id)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	for (i = 0; alauda_card_ids[i].id != 0; i++)
@@ -223,7 +234,12 @@ static struct alauda_card_info *alauda_card_find_id(unsigned char id) {
 static unsigned char parity[256];
 static unsigned char ecc2[256];
 
+<<<<<<< HEAD
 static void nand_init_ecc(void) {
+=======
+static void nand_init_ecc(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, j, a;
 
 	parity[0] = 0;
@@ -247,6 +263,7 @@ static void nand_init_ecc(void) {
 }
 
 /* compute 3-byte ecc on 256 bytes */
+<<<<<<< HEAD
 static void nand_compute_ecc(unsigned char *data, unsigned char *ecc) {
 	int i, j, a;
 	unsigned char par, bit, bits[8];
@@ -254,6 +271,12 @@ static void nand_compute_ecc(unsigned char *data, unsigned char *ecc) {
 	par = 0;
 	for (j = 0; j < 8; j++)
 		bits[j] = 0;
+=======
+static void nand_compute_ecc(unsigned char *data, unsigned char *ecc)
+{
+	int i, j, a;
+	unsigned char par = 0, bit, bits[8] = {0};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* collect 16 checksum bits */
 	for (i = 0; i < 256; i++) {
@@ -274,11 +297,21 @@ static void nand_compute_ecc(unsigned char *data, unsigned char *ecc) {
 	ecc[2] = ecc2[par];
 }
 
+<<<<<<< HEAD
 static int nand_compare_ecc(unsigned char *data, unsigned char *ecc) {
 	return (data[0] == ecc[0] && data[1] == ecc[1] && data[2] == ecc[2]);
 }
 
 static void nand_store_ecc(unsigned char *data, unsigned char *ecc) {
+=======
+static int nand_compare_ecc(unsigned char *data, unsigned char *ecc)
+{
+	return (data[0] == ecc[0] && data[1] == ecc[1] && data[2] == ecc[2]);
+}
+
+static void nand_store_ecc(unsigned char *data, unsigned char *ecc)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(data, ecc, 3);
 }
 
@@ -419,6 +452,7 @@ static int alauda_init_media(struct us_data *us)
 	if (alauda_get_media_signature(us, data) != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
+<<<<<<< HEAD
 	usb_stor_dbg(us, "Media signature: %02X %02X %02X %02X\n",
 		     data[0], data[1], data[2], data[3]);
 	media_info = alauda_card_find_id(data[1]);
@@ -427,6 +461,13 @@ static int alauda_init_media(struct us_data *us)
 			"alauda_init_media: Unrecognised media signature: "
 			"%02X %02X %02X %02X\n",
 			data[0], data[1], data[2], data[3]);
+=======
+	usb_stor_dbg(us, "Media signature: %4ph\n", data);
+	media_info = alauda_card_find_id(data[1]);
+	if (media_info == NULL) {
+		pr_warn("alauda_init_media: Unrecognised media signature: %4ph\n",
+			data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -517,7 +558,11 @@ static int alauda_check_status2(struct us_data *us)
 	if (rc != USB_STOR_XFER_GOOD)
 		return rc;
 
+<<<<<<< HEAD
 	usb_stor_dbg(us, "%02X %02X %02X\n", data[0], data[1], data[2]);
+=======
+	usb_stor_dbg(us, "%3ph\n", data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (data[0] & ALAUDA_STATUS_ERROR)
 		return USB_STOR_XFER_ERROR;
 
@@ -828,8 +873,15 @@ static int alauda_write_lba(struct us_data *us, u16 lba,
 
 	pba = MEDIA_INFO(us).lba_to_pba[zone][lba_offset];
 	if (pba == 1) {
+<<<<<<< HEAD
 		/* Maybe it is impossible to write to PBA 1.
 		   Fake success, but don't do anything. */
+=======
+		/*
+		 * Maybe it is impossible to write to PBA 1.
+		 * Fake success, but don't do anything.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING
 		       "alauda_write_lba: avoid writing to pba 1\n");
 		return USB_STOR_TRANSPORT_GOOD;
@@ -936,10 +988,15 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
 
 	len = min(sectors, blocksize) * (pagesize + 64);
 	buffer = kmalloc(len, GFP_NOIO);
+<<<<<<< HEAD
 	if (buffer == NULL) {
 		printk(KERN_WARNING "alauda_read_data: Out of memory\n");
 		return USB_STOR_TRANSPORT_ERROR;
 	}
+=======
+	if (!buffer)
+		return USB_STOR_TRANSPORT_ERROR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Figure out the initial LBA and page */
 	lba = address >> blockshift;
@@ -976,10 +1033,19 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
 			usb_stor_dbg(us, "Read %d zero pages (LBA %d) page %d\n",
 				     pages, lba, page);
 
+<<<<<<< HEAD
 			/* This is not really an error. It just means
 			   that the block has never been written.
 			   Instead of returning USB_STOR_TRANSPORT_ERROR
 			   it is better to return all zero data. */
+=======
+			/*
+			 * This is not really an error. It just means
+			 * that the block has never been written.
+			 * Instead of returning USB_STOR_TRANSPORT_ERROR
+			 * it is better to return all zero data.
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			memset(buffer, 0, len);
 		} else {
@@ -1028,18 +1094,27 @@ static int alauda_write_data(struct us_data *us, unsigned long address,
 
 	len = min(sectors, blocksize) * pagesize;
 	buffer = kmalloc(len, GFP_NOIO);
+<<<<<<< HEAD
 	if (buffer == NULL) {
 		printk(KERN_WARNING "alauda_write_data: Out of memory\n");
 		return USB_STOR_TRANSPORT_ERROR;
 	}
+=======
+	if (!buffer)
+		return USB_STOR_TRANSPORT_ERROR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We also need a temporary block buffer, where we read in the old data,
 	 * overwrite parts with the new data, and manipulate the redundancy data
 	 */
 	blockbuffer = kmalloc((pagesize + 64) * blocksize, GFP_NOIO);
+<<<<<<< HEAD
 	if (blockbuffer == NULL) {
 		printk(KERN_WARNING "alauda_write_data: Out of memory\n");
+=======
+	if (!blockbuffer) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(buffer);
 		return USB_STOR_TRANSPORT_ERROR;
 	}
@@ -1221,8 +1296,15 @@ static int alauda_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == ALLOW_MEDIUM_REMOVAL) {
+<<<<<<< HEAD
 		/* sure.  whatever.  not like we can stop the user from popping
 		   the media out of the device (no locking doors, etc) */
+=======
+		/*
+		 * sure.  whatever.  not like we can stop the user from popping
+		 * the media out of the device (no locking doors, etc)
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 
@@ -1234,6 +1316,11 @@ static int alauda_transport(struct scsi_cmnd *srb, struct us_data *us)
 	return USB_STOR_TRANSPORT_FAILED;
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template alauda_host_template;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int alauda_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -1241,7 +1328,12 @@ static int alauda_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - alauda_usb_ids) + alauda_unusual_dev_list);
+=======
+			(id - alauda_usb_ids) + alauda_unusual_dev_list,
+			&alauda_host_template);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result)
 		return result;
 
@@ -1255,7 +1347,11 @@ static int alauda_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver alauda_driver = {
+<<<<<<< HEAD
 	.name =		"ums-alauda",
+=======
+	.name =		DRV_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe =	alauda_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -1268,4 +1364,8 @@ static struct usb_driver alauda_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(alauda_driver);
+=======
+module_usb_stor_driver(alauda_driver, alauda_host_template, DRV_NAME);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -75,7 +75,11 @@ int hfsplus_parse_options_remount(char *input, int *force)
 	int token;
 
 	if (!input)
+<<<<<<< HEAD
 		return 0;
+=======
+		return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while ((p = strsep(&input, ",")) != NULL) {
 		if (!*p)
@@ -173,9 +177,14 @@ int hfsplus_parse_options(char *input, struct hfsplus_sb_info *sbi)
 			if (p)
 				sbi->nls = load_nls(p);
 			if (!sbi->nls) {
+<<<<<<< HEAD
 				pr_err("unable to load "
 						"nls mapping \"%s\"\n",
 					p);
+=======
+				pr_err("unable to load nls mapping \"%s\"\n",
+				       p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				kfree(p);
 				return 0;
 			}
@@ -219,9 +228,15 @@ int hfsplus_show_options(struct seq_file *seq, struct dentry *root)
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(root->d_sb);
 
 	if (sbi->creator != HFSPLUS_DEF_CR_TYPE)
+<<<<<<< HEAD
 		seq_printf(seq, ",creator=%.4s", (char *)&sbi->creator);
 	if (sbi->type != HFSPLUS_DEF_CR_TYPE)
 		seq_printf(seq, ",type=%.4s", (char *)&sbi->type);
+=======
+		seq_show_option_n(seq, "creator", (char *)&sbi->creator, 4);
+	if (sbi->type != HFSPLUS_DEF_CR_TYPE)
+		seq_show_option_n(seq, "type", (char *)&sbi->type, 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(seq, ",umask=%o,uid=%u,gid=%u", sbi->umask,
 			from_kuid_munged(&init_user_ns, sbi->uid),
 			from_kgid_munged(&init_user_ns, sbi->gid));
@@ -232,8 +247,14 @@ int hfsplus_show_options(struct seq_file *seq, struct dentry *root)
 	if (sbi->nls)
 		seq_printf(seq, ",nls=%s", sbi->nls->charset);
 	if (test_bit(HFSPLUS_SB_NODECOMPOSE, &sbi->flags))
+<<<<<<< HEAD
 		seq_printf(seq, ",nodecompose");
 	if (test_bit(HFSPLUS_SB_NOBARRIER, &sbi->flags))
 		seq_printf(seq, ",nobarrier");
+=======
+		seq_puts(seq, ",nodecompose");
+	if (test_bit(HFSPLUS_SB_NOBARRIER, &sbi->flags))
+		seq_puts(seq, ",nobarrier");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }

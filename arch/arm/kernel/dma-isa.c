@@ -213,8 +213,13 @@ void __init isa_init_dma(void)
 		for (chan = 0; chan < 8; chan++) {
 			int ret = isa_dma_add(chan, &isa_dma[chan]);
 			if (ret)
+<<<<<<< HEAD
 				printk(KERN_ERR "ISADMA%u: unable to register: %d\n",
 					chan, ret);
+=======
+				pr_err("ISADMA%u: unable to register: %d\n",
+				       chan, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		request_dma(DMA_ISA_CASCADE, "cascade");

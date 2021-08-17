@@ -60,6 +60,7 @@ do {								\
 	switch (size) {						\
 	case 1:							\
 		retval = __put_user_asm_b((void *)&x,		\
+<<<<<<< HEAD
 					  (long)ptr);		\
 		break;						\
 	case 2:							\
@@ -73,6 +74,21 @@ do {								\
 	case 8:							\
 		retval = __put_user_asm_q((void *)&x,		\
 					  (long)ptr);		\
+=======
+					  (__force long)ptr);	\
+		break;						\
+	case 2:							\
+		retval = __put_user_asm_w((void *)&x,		\
+					  (__force long)ptr);	\
+		break;						\
+	case 4:							\
+		retval = __put_user_asm_l((void *)&x,		\
+					  (__force long)ptr);	\
+		break;						\
+	case 8:							\
+		retval = __put_user_asm_q((void *)&x,		\
+					  (__force long)ptr);	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;						\
 	default:						\
 		__put_user_unknown();				\

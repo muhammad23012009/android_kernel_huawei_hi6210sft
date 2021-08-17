@@ -2,17 +2,30 @@
 
 platforms += alchemy
 platforms += ar7
+<<<<<<< HEAD
 platforms += ath79
 platforms += bcm47xx
 platforms += bcm63xx
+=======
+platforms += ath25
+platforms += ath79
+platforms += bcm47xx
+platforms += bcm63xx
+platforms += bmips
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 platforms += cavium-octeon
 platforms += cobalt
 platforms += dec
 platforms += emma
+<<<<<<< HEAD
+=======
+platforms += generic
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 platforms += jazz
 platforms += jz4740
 platforms += lantiq
 platforms += lasat
+<<<<<<< HEAD
 platforms += loongson
 platforms += loongson1
 platforms += mti-malta
@@ -21,6 +34,17 @@ platforms += netlogic
 platforms += pmcs-msp71xx
 platforms += pnx833x
 platforms += powertv
+=======
+platforms += loongson32
+platforms += loongson64
+platforms += mti-malta
+platforms += netlogic
+platforms += paravirt
+platforms += pic32
+platforms += pistachio
+platforms += pmcs-msp71xx
+platforms += pnx833x
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 platforms += ralink
 platforms += rb532
 platforms += sgi-ip22
@@ -30,7 +54,11 @@ platforms += sibyte
 platforms += sni
 platforms += txx9
 platforms += vr41xx
+<<<<<<< HEAD
 platforms += wrppmc
+=======
+platforms += xilfpga
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # include the platform specific files
 include $(patsubst %, $(srctree)/arch/mips/%/Platform, $(platforms))

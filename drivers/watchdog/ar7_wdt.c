@@ -28,7 +28,10 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/miscdevice.h>
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
@@ -46,7 +49,10 @@
 MODULE_AUTHOR("Nicolas Thill <nico@openwrt.org>");
 MODULE_DESCRIPTION(LONGNAME);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int margin = 60;
 module_param(margin, int, 0);
@@ -280,11 +286,14 @@ static int ar7_wdt_probe(struct platform_device *pdev)
 
 	ar7_regs_wdt =
 		platform_get_resource_byname(pdev, IORESOURCE_MEM, "regs");
+<<<<<<< HEAD
 	if (!ar7_regs_wdt) {
 		pr_err("could not get registers resource\n");
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ar7_wdt = devm_ioremap_resource(&pdev->dev, ar7_regs_wdt);
 	if (IS_ERR(ar7_wdt))
 		return PTR_ERR(ar7_wdt);
@@ -331,7 +340,10 @@ static struct platform_driver ar7_wdt_driver = {
 	.remove = ar7_wdt_remove,
 	.shutdown = ar7_wdt_shutdown,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "ar7_wdt",
 	},
 };

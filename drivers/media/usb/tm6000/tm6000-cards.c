@@ -26,7 +26,11 @@
 #include <linux/slab.h>
 #include <media/v4l2-common.h>
 #include <media/tuner.h>
+<<<<<<< HEAD
 #include <media/tvaudio.h>
+=======
+#include <media/i2c/tvaudio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/i2c-addr.h>
 #include <media/rc-map.h>
 
@@ -1114,13 +1118,21 @@ static int tm6000_init_dev(struct tm6000_core *dev)
 	/* Default values for STD and resolutions */
 	dev->width = 720;
 	dev->height = 480;
+<<<<<<< HEAD
 	dev->norm = V4L2_STD_PAL_M;
+=======
+	dev->norm = V4L2_STD_NTSC_M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Configure tuner */
 	tm6000_config_tuner(dev);
 
 	/* Set video standard */
+<<<<<<< HEAD
 	v4l2_device_call_all(&dev->v4l2_dev, 0, core, s_std, dev->norm);
+=======
+	v4l2_device_call_all(&dev->v4l2_dev, 0, video, s_std, dev->norm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set tuner frequency - also loads firmware on xc2028/xc3028 */
 	f.tuner = 0;

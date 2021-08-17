@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -123,7 +127,11 @@ acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id,
 		      acpi_handle root_pci_device, acpi_handle pci_region)
 {
 	acpi_status status;
+<<<<<<< HEAD
 	struct acpi_pci_device *list_head = NULL;
+=======
+	struct acpi_pci_device *list_head;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ACPI_FUNCTION_TRACE(hw_derive_pci_id);
 
@@ -140,11 +148,20 @@ acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id,
 		/* Walk the list, updating the PCI device/function/bus numbers */
 
 		status = acpi_hw_process_pci_list(pci_id, list_head);
+<<<<<<< HEAD
 	}
 
 	/* Always delete the list */
 
 	acpi_hw_delete_pci_list(list_head);
+=======
+
+		/* Delete the list */
+
+		acpi_hw_delete_pci_list(list_head);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(status);
 }
 
@@ -176,37 +193,67 @@ acpi_hw_build_pci_list(acpi_handle root_pci_device,
 	acpi_handle parent_device;
 	acpi_status status;
 	struct acpi_pci_device *list_element;
+<<<<<<< HEAD
 	struct acpi_pci_device *list_head = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Ascend namespace branch until the root_pci_device is reached, building
 	 * a list of device nodes. Loop will exit when either the PCI device is
 	 * found, or the root of the namespace is reached.
 	 */
+<<<<<<< HEAD
+=======
+	*return_list_head = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	current_device = pci_region;
 	while (1) {
 		status = acpi_get_parent(current_device, &parent_device);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
+=======
+
+			/* Must delete the list before exit */
+
+			acpi_hw_delete_pci_list(*return_list_head);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return (status);
 		}
 
 		/* Finished when we reach the PCI root device (PNP0A03 or PNP0A08) */
 
 		if (parent_device == root_pci_device) {
+<<<<<<< HEAD
 			*return_list_head = list_head;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return (AE_OK);
 		}
 
 		list_element = ACPI_ALLOCATE(sizeof(struct acpi_pci_device));
 		if (!list_element) {
+<<<<<<< HEAD
+=======
+
+			/* Must delete the list before exit */
+
+			acpi_hw_delete_pci_list(*return_list_head);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return (AE_NO_MEMORY);
 		}
 
 		/* Put new element at the head of the list */
 
+<<<<<<< HEAD
 		list_element->next = list_head;
 		list_element->device = parent_device;
 		list_head = list_element;
+=======
+		list_element->next = *return_list_head;
+		list_element->device = parent_device;
+		*return_list_head = list_element;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		current_device = parent_device;
 	}

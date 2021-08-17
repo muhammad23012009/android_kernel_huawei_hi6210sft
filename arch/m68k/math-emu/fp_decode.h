@@ -130,7 +130,11 @@ do_fscc=0
 	bfextu	%d2{#13,#3},%d0
 .endm
 
+<<<<<<< HEAD
 | decode the 8bit diplacement from the brief extension word
+=======
+| decode the 8bit displacement from the brief extension word
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 .macro	fp_decode_disp8
 	move.b	%d2,%d0
 	ext.w	%d0

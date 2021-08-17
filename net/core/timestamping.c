@@ -23,6 +23,7 @@
 #include <linux/skbuff.h>
 #include <linux/export.h>
 
+<<<<<<< HEAD
 static struct sock_filter ptp_filter[] = {
 	PTP_FILTER
 };
@@ -33,6 +34,13 @@ static unsigned int classify(const struct sk_buff *skb)
 		   skb->dev->phydev &&
 		   skb->dev->phydev->drv))
 		return sk_run_filter(skb, ptp_filter);
+=======
+static unsigned int classify(const struct sk_buff *skb)
+{
+	if (likely(skb->dev && skb->dev->phydev &&
+		   skb->dev->phydev->drv))
+		return ptp_classify_raw(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		return PTP_CLASS_NONE;
 }
@@ -41,6 +49,7 @@ void skb_clone_tx_timestamp(struct sk_buff *skb)
 {
 	struct phy_device *phydev;
 	struct sk_buff *clone;
+<<<<<<< HEAD
 	struct sock *sk = skb->sk;
 	unsigned int type;
 
@@ -71,10 +80,28 @@ void skb_clone_tx_timestamp(struct sk_buff *skb)
 		break;
 	default:
 		break;
+=======
+	unsigned int type;
+
+	if (!skb->sk)
+		return;
+
+	type = classify(skb);
+	if (type == PTP_CLASS_NONE)
+		return;
+
+	phydev = skb->dev->phydev;
+	if (likely(phydev->drv->txtstamp)) {
+		clone = skb_clone_sk(skb);
+		if (!clone)
+			return;
+		phydev->drv->txtstamp(phydev, clone, type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 EXPORT_SYMBOL_GPL(skb_clone_tx_timestamp);
 
+<<<<<<< HEAD
 void skb_complete_tx_timestamp(struct sk_buff *skb,
 			       struct skb_shared_hwtstamps *hwtstamps)
 {
@@ -101,11 +128,14 @@ void skb_complete_tx_timestamp(struct sk_buff *skb,
 }
 EXPORT_SYMBOL_GPL(skb_complete_tx_timestamp);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 bool skb_defer_rx_timestamp(struct sk_buff *skb)
 {
 	struct phy_device *phydev;
 	unsigned int type;
 
+<<<<<<< HEAD
 	if (skb_headroom(skb) < ETH_HLEN)
 		return false;
 	__skb_push(skb, ETH_HLEN);
@@ -128,12 +158,35 @@ bool skb_defer_rx_timestamp(struct sk_buff *skb)
 	default:
 		break;
 	}
+=======
+	if (!skb->dev || !skb->dev->phydev || !skb->dev->phydev->drv)
+		return false;
+
+	if (skb_headroom(skb) < ETH_HLEN)
+		return false;
+
+	__skb_push(skb, ETH_HLEN);
+
+	type = ptp_classify_raw(skb);
+
+	__skb_pull(skb, ETH_HLEN);
+
+	if (type == PTP_CLASS_NONE)
+		return false;
+
+	phydev = skb->dev->phydev;
+	if (likely(phydev->drv->rxtstamp))
+		return phydev->drv->rxtstamp(phydev, skb, type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return false;
 }
 EXPORT_SYMBOL_GPL(skb_defer_rx_timestamp);
+<<<<<<< HEAD
 
 void __init skb_timestamping_init(void)
 {
 	BUG_ON(sk_chk_filter(ptp_filter, ARRAY_SIZE(ptp_filter)));
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

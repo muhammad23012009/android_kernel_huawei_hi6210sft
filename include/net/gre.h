@@ -4,15 +4,37 @@
 #include <linux/skbuff.h>
 #include <net/ip_tunnels.h>
 
+<<<<<<< HEAD
 #define GREPROTO_CISCO		0
 #define GREPROTO_PPTP		1
 #define GREPROTO_MAX		2
+=======
+struct gre_base_hdr {
+	__be16 flags;
+	__be16 protocol;
+} __packed;
+
+struct gre_full_hdr {
+	struct gre_base_hdr fixed_header;
+	__be16 csum;
+	__be16 reserved1;
+	__be32 key;
+	__be32 seq;
+} __packed;
+#define GRE_HEADER_SECTION 4
+
+#define GREPROTO_CISCO		0
+#define GREPROTO_PPTP		1
+#define GREPROTO_MAX		2
+#define GRE_IP_PROTO_MAX	2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct gre_protocol {
 	int  (*handler)(struct sk_buff *skb);
 	void (*err_handler)(struct sk_buff *skb, u32 info);
 };
 
+<<<<<<< HEAD
 struct gre_base_hdr {
 	__be16 flags;
 	__be16 protocol;
@@ -22,6 +44,29 @@ struct gre_base_hdr {
 int gre_add_protocol(const struct gre_protocol *proto, u8 version);
 int gre_del_protocol(const struct gre_protocol *proto, u8 version);
 
+=======
+int gre_add_protocol(const struct gre_protocol *proto, u8 version);
+int gre_del_protocol(const struct gre_protocol *proto, u8 version);
+
+struct net_device *gretap_fb_dev_create(struct net *net, const char *name,
+				       u8 name_assign_type);
+int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+		     bool *csum_err, __be16 proto, int nhs);
+
+static inline int gre_calc_hlen(__be16 o_flags)
+{
+	int addend = 4;
+
+	if (o_flags & TUNNEL_CSUM)
+		addend += 4;
+	if (o_flags & TUNNEL_KEY)
+		addend += 4;
+	if (o_flags & TUNNEL_SEQ)
+		addend += 4;
+	return addend;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline __be16 gre_flags_to_tnl_flags(__be16 flags)
 {
 	__be16 tflags = 0;
@@ -44,7 +89,11 @@ static inline __be16 gre_flags_to_tnl_flags(__be16 flags)
 	return tflags;
 }
 
+<<<<<<< HEAD
 static inline __be16 tnl_flags_to_gre_flags(__be16 tflags)
+=======
+static inline __be16 gre_tnl_flags_to_gre_flags(__be16 tflags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	__be16 flags = 0;
 
@@ -66,4 +115,52 @@ static inline __be16 tnl_flags_to_gre_flags(__be16 tflags)
 	return flags;
 }
 
+<<<<<<< HEAD
+=======
+static inline __sum16 gre_checksum(struct sk_buff *skb)
+{
+	__wsum csum;
+
+	if (skb->ip_summed == CHECKSUM_PARTIAL)
+		csum = lco_csum(skb);
+	else
+		csum = skb_checksum(skb, 0, skb->len, 0);
+	return csum_fold(csum);
+}
+
+static inline void gre_build_header(struct sk_buff *skb, int hdr_len,
+				    __be16 flags, __be16 proto,
+				    __be32 key, __be32 seq)
+{
+	struct gre_base_hdr *greh;
+
+	skb_push(skb, hdr_len);
+
+	skb_set_inner_protocol(skb, proto);
+	skb_reset_transport_header(skb);
+	greh = (struct gre_base_hdr *)skb->data;
+	greh->flags = gre_tnl_flags_to_gre_flags(flags);
+	greh->protocol = proto;
+
+	if (flags & (TUNNEL_KEY | TUNNEL_CSUM | TUNNEL_SEQ)) {
+		__be32 *ptr = (__be32 *)(((u8 *)greh) + hdr_len - 4);
+
+		if (flags & TUNNEL_SEQ) {
+			*ptr = seq;
+			ptr--;
+		}
+		if (flags & TUNNEL_KEY) {
+			*ptr = key;
+			ptr--;
+		}
+		if (flags & TUNNEL_CSUM &&
+		    !(skb_shinfo(skb)->gso_type &
+		      (SKB_GSO_GRE | SKB_GSO_GRE_CSUM))) {
+			*ptr = 0;
+			*(__sum16 *)ptr = gre_checksum(skb);
+		}
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

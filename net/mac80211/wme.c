@@ -1,5 +1,9 @@
 /*
  * Copyright 2004, Instant802 Networks, Inc.
+<<<<<<< HEAD
+=======
+ * Copyright 2013-2014  Intel Mobile Communications GmbH
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -52,11 +56,57 @@ static int wme_downgrade_ac(struct sk_buff *skb)
 	}
 }
 
+<<<<<<< HEAD
 static u16 ieee80211_downgrade_queue(struct ieee80211_sub_if_data *sdata,
 				     struct sk_buff *skb)
 {
 	/* in case we are a client verify acm is not set for this ac */
 	while (unlikely(sdata->wmm_acm & BIT(skb->priority))) {
+=======
+/**
+ * ieee80211_fix_reserved_tid - return the TID to use if this one is reserved
+ * @tid: the assumed-reserved TID
+ *
+ * Returns: the alternative TID to use, or 0 on error
+ */
+static inline u8 ieee80211_fix_reserved_tid(u8 tid)
+{
+	switch (tid) {
+	case 0:
+		return 3;
+	case 1:
+		return 2;
+	case 2:
+		return 1;
+	case 3:
+		return 0;
+	case 4:
+		return 5;
+	case 5:
+		return 4;
+	case 6:
+		return 7;
+	case 7:
+		return 6;
+	}
+
+	return 0;
+}
+
+static u16 ieee80211_downgrade_queue(struct ieee80211_sub_if_data *sdata,
+				     struct sta_info *sta, struct sk_buff *skb)
+{
+	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
+
+	/* in case we are a client verify acm is not set for this ac */
+	while (sdata->wmm_acm & BIT(skb->priority)) {
+		int ac = ieee802_1d_to_ac[skb->priority];
+
+		if (ifmgd->tx_tspec[ac].admitted_time &&
+		    skb->priority == ifmgd->tx_tspec[ac].up)
+			return ac;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (wme_downgrade_ac(skb)) {
 			/*
 			 * This should not really happen. The AP has marked all
@@ -68,6 +118,13 @@ static u16 ieee80211_downgrade_queue(struct ieee80211_sub_if_data *sdata,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* Check to see if this is a reserved TID */
+	if (sta && sta->reserved_tid == skb->priority)
+		skb->priority = ieee80211_fix_reserved_tid(skb->priority);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* look up which queue to use for frames with this 1d tag */
 	return ieee802_1d_to_ac[skb->priority];
 }
@@ -95,7 +152,11 @@ u16 ieee80211_select_queue_80211(struct ieee80211_sub_if_data *sdata,
 	p = ieee80211_get_qos_ctl(hdr);
 	skb->priority = *p & IEEE80211_QOS_CTL_TAG1D_MASK;
 
+<<<<<<< HEAD
 	return ieee80211_downgrade_queue(sdata, skb);
+=======
+	return ieee80211_downgrade_queue(sdata, NULL, skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Indicate which queue to use. */
@@ -106,6 +167,11 @@ u16 ieee80211_select_queue(struct ieee80211_sub_if_data *sdata,
 	struct sta_info *sta = NULL;
 	const u8 *ra = NULL;
 	bool qos = false;
+<<<<<<< HEAD
+=======
+	struct mac80211_qos_map *qos_map;
+	u16 ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (local->hw.queues < IEEE80211_NUM_ACS || skb->len < 6) {
 		skb->priority = 0; /* required for correct WPA/11i MIC */
@@ -117,7 +183,11 @@ u16 ieee80211_select_queue(struct ieee80211_sub_if_data *sdata,
 	case NL80211_IFTYPE_AP_VLAN:
 		sta = rcu_dereference(sdata->u.vlan.sta);
 		if (sta) {
+<<<<<<< HEAD
 			qos = test_sta_flag(sta, WLAN_STA_WME);
+=======
+			qos = sta->sta.wme;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	case NL80211_IFTYPE_AP:
@@ -132,11 +202,26 @@ u16 ieee80211_select_queue(struct ieee80211_sub_if_data *sdata,
 		break;
 #endif
 	case NL80211_IFTYPE_STATION:
+<<<<<<< HEAD
+=======
+		/* might be a TDLS station */
+		sta = sta_info_get(sdata, skb->data);
+		if (sta)
+			qos = sta->sta.wme;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ra = sdata->u.mgd.bssid;
 		break;
 	case NL80211_IFTYPE_ADHOC:
 		ra = skb->data;
 		break;
+<<<<<<< HEAD
+=======
+	case NL80211_IFTYPE_OCB:
+		/* all stations are required to support WME */
+		qos = true;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		break;
 	}
@@ -144,6 +229,7 @@ u16 ieee80211_select_queue(struct ieee80211_sub_if_data *sdata,
 	if (!sta && ra && !is_multicast_ether_addr(ra)) {
 		sta = sta_info_get(sdata, ra);
 		if (sta)
+<<<<<<< HEAD
 			qos = test_sta_flag(sta, WLAN_STA_WME);
 	}
 	rcu_read_unlock();
@@ -151,18 +237,43 @@ u16 ieee80211_select_queue(struct ieee80211_sub_if_data *sdata,
 	if (!qos) {
 		skb->priority = 0; /* required for correct WPA/11i MIC */
 		return IEEE80211_AC_BE;
+=======
+			qos = sta->sta.wme;
+	}
+
+	if (!qos) {
+		skb->priority = 0; /* required for correct WPA/11i MIC */
+		ret = IEEE80211_AC_BE;
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (skb->protocol == sdata->control_port_protocol) {
 		skb->priority = 7;
+<<<<<<< HEAD
 		return ieee80211_downgrade_queue(sdata, skb);
+=======
+		goto downgrade;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* use the data classifier to determine what 802.1d tag the
 	 * data frame has */
+<<<<<<< HEAD
 	skb->priority = cfg80211_classify8021d(skb);
 
 	return ieee80211_downgrade_queue(sdata, skb);
+=======
+	qos_map = rcu_dereference(sdata->qos_map);
+	skb->priority = cfg80211_classify8021d(skb, qos_map ?
+					       &qos_map->qos_map : NULL);
+
+ downgrade:
+	ret = ieee80211_downgrade_queue(sdata, sta, skb);
+ out:
+	rcu_read_unlock();
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

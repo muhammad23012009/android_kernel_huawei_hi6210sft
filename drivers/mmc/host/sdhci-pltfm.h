@@ -18,15 +18,27 @@
 struct sdhci_pltfm_data {
 	const struct sdhci_ops *ops;
 	unsigned int quirks;
+<<<<<<< HEAD
+=======
+	unsigned int quirks2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct sdhci_pltfm_host {
 	struct clk *clk;
+<<<<<<< HEAD
 	void *priv; /* to handle quirks across io-accessor calls */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* migrate from sdhci_of_host */
 	unsigned int clock;
 	u16 xfer_mode_shadow;
+<<<<<<< HEAD
+=======
+
+	unsigned long private[0] ____cacheline_aligned;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #ifdef CONFIG_MMC_SDHCI_BIG_ENDIAN_32BIT_BYTE_SWAPPER
@@ -91,20 +103,39 @@ static inline void sdhci_be32bs_writeb(struct sdhci_host *host, u8 val, int reg)
 extern void sdhci_get_of_property(struct platform_device *pdev);
 
 extern struct sdhci_host *sdhci_pltfm_init(struct platform_device *pdev,
+<<<<<<< HEAD
 					  const struct sdhci_pltfm_data *pdata);
 extern void sdhci_pltfm_free(struct platform_device *pdev);
 
 extern int sdhci_pltfm_register(struct platform_device *pdev,
 				const struct sdhci_pltfm_data *pdata);
+=======
+					  const struct sdhci_pltfm_data *pdata,
+					  size_t priv_size);
+extern void sdhci_pltfm_free(struct platform_device *pdev);
+
+extern int sdhci_pltfm_register(struct platform_device *pdev,
+				const struct sdhci_pltfm_data *pdata,
+				size_t priv_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int sdhci_pltfm_unregister(struct platform_device *pdev);
 
 extern unsigned int sdhci_pltfm_clk_get_max_clock(struct sdhci_host *host);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 extern const struct dev_pm_ops sdhci_pltfm_pmops;
 #define SDHCI_PLTFM_PMOPS (&sdhci_pltfm_pmops)
 #else
 #define SDHCI_PLTFM_PMOPS NULL
 #endif
+=======
+static inline void *sdhci_pltfm_priv(struct sdhci_pltfm_host *host)
+{
+	return (void *)host->private;
+}
+
+extern const struct dev_pm_ops sdhci_pltfm_pmops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _DRIVERS_MMC_SDHCI_PLTFM_H */

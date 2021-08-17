@@ -18,22 +18,33 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ----------------------------------------------------------------------------
  *
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
 #include <linux/clk.h>
+=======
+#include <linux/dmi.h>
+#include <linux/i2c.h>
+#include <linux/clk.h>
+#include <linux/clk-provider.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/sched.h>
 #include <linux/err.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/of_i2c.h>
 #include <linux/platform_device.h>
 #include <linux/pm.h>
@@ -47,29 +58,120 @@ static struct i2c_algorithm i2c_dw_algo = {
 	.master_xfer	= i2c_dw_xfer,
 	.functionality	= i2c_dw_func,
 };
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/pm.h>
+#include <linux/pm_runtime.h>
+#include <linux/property.h>
+#include <linux/io.h>
+#include <linux/slab.h>
+#include <linux/acpi.h>
+#include <linux/platform_data/i2c-designware.h>
+#include "i2c-designware-core.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u32 i2c_dw_get_clk_rate_khz(struct dw_i2c_dev *dev)
 {
 	return clk_get_rate(dev->clk)/1000;
 }
 
 #ifdef CONFIG_ACPI
+<<<<<<< HEAD
 static int dw_i2c_acpi_configure(struct platform_device *pdev)
 {
 	struct dw_i2c_dev *dev = platform_get_drvdata(pdev);
 
 	if (!ACPI_HANDLE(&pdev->dev))
 		return -ENODEV;
+=======
+/*
+ * The HCNT/LCNT information coming from ACPI should be the most accurate
+ * for given platform. However, some systems get it wrong. On such systems
+ * we get better results by calculating those based on the input clock.
+ */
+static const struct dmi_system_id dw_i2c_no_acpi_params[] = {
+	{
+		.ident = "Dell Inspiron 7348",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 7348"),
+		},
+	},
+	{ }
+};
+
+static void dw_i2c_acpi_params(struct platform_device *pdev, char method[],
+			       u16 *hcnt, u16 *lcnt, u32 *sda_hold)
+{
+	struct acpi_buffer buf = { ACPI_ALLOCATE_BUFFER };
+	acpi_handle handle = ACPI_HANDLE(&pdev->dev);
+	union acpi_object *obj;
+
+	if (dmi_check_system(dw_i2c_no_acpi_params))
+		return;
+
+	if (ACPI_FAILURE(acpi_evaluate_object(handle, method, NULL, &buf)))
+		return;
+
+	obj = (union acpi_object *)buf.pointer;
+	if (obj->type == ACPI_TYPE_PACKAGE && obj->package.count == 3) {
+		const union acpi_object *objs = obj->package.elements;
+
+		*hcnt = (u16)objs[0].integer.value;
+		*lcnt = (u16)objs[1].integer.value;
+		if (sda_hold)
+			*sda_hold = (u32)objs[2].integer.value;
+	}
+
+	kfree(buf.pointer);
+}
+
+static int dw_i2c_acpi_configure(struct platform_device *pdev)
+{
+	struct dw_i2c_dev *dev = platform_get_drvdata(pdev);
+	const struct acpi_device_id *id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->adapter.nr = -1;
 	dev->tx_fifo_depth = 32;
 	dev->rx_fifo_depth = 32;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Try to get SDA hold time and *CNT values from an ACPI method if
+	 * it exists for both supported speed modes.
+	 */
+	dw_i2c_acpi_params(pdev, "SSCN", &dev->ss_hcnt, &dev->ss_lcnt, NULL);
+	dw_i2c_acpi_params(pdev, "FMCN", &dev->fs_hcnt, &dev->fs_lcnt,
+			   &dev->sda_hold_time);
+	dw_i2c_acpi_params(pdev, "FPCN", &dev->fp_hcnt, &dev->fp_lcnt, NULL);
+	dw_i2c_acpi_params(pdev, "HSCN", &dev->hs_hcnt, &dev->hs_lcnt, NULL);
+
+	id = acpi_match_device(pdev->dev.driver->acpi_match_table, &pdev->dev);
+	if (id && id->driver_data)
+		dev->accessor_flags |= (u32)id->driver_data;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static const struct acpi_device_id dw_i2c_acpi_match[] = {
 	{ "INT33C2", 0 },
 	{ "INT33C3", 0 },
+<<<<<<< HEAD
 	{ "80860F41", 0 },
+=======
+	{ "INT3432", 0 },
+	{ "INT3433", 0 },
+	{ "80860F41", 0 },
+	{ "808622C1", 0 },
+	{ "AMD0010", ACCESS_INTR_MASK },
+	{ "AMDI0010", ACCESS_INTR_MASK },
+	{ "AMDI0510", 0 },
+	{ "APMC0D0F", 0 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 MODULE_DEVICE_TABLE(acpi, dw_i2c_acpi_match);
@@ -80,12 +182,31 @@ static inline int dw_i2c_acpi_configure(struct platform_device *pdev)
 }
 #endif
 
+<<<<<<< HEAD
 static int dw_i2c_probe(struct platform_device *pdev)
 {
+=======
+static int i2c_dw_plat_prepare_clk(struct dw_i2c_dev *i_dev, bool prepare)
+{
+	if (IS_ERR(i_dev->clk))
+		return PTR_ERR(i_dev->clk);
+
+	if (prepare)
+		return clk_prepare_enable(i_dev->clk);
+
+	clk_disable_unprepare(i_dev->clk);
+	return 0;
+}
+
+static int dw_i2c_plat_probe(struct platform_device *pdev)
+{
+	struct dw_i2c_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dw_i2c_dev *dev;
 	struct i2c_adapter *adap;
 	struct resource *mem;
 	int irq, r;
+<<<<<<< HEAD
 
 	/* NOTE: driver uses the static register mapping */
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -99,27 +220,81 @@ static int dw_i2c_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "no irq resource?\n");
 		return irq; /* -ENXIO */
 	}
+=======
+	u32 acpi_speed, ht = 0;
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev = devm_kzalloc(&pdev->dev, sizeof(struct dw_i2c_dev), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->base = devm_ioremap_resource(&pdev->dev, mem);
 	if (IS_ERR(dev->base))
 		return PTR_ERR(dev->base);
 
+<<<<<<< HEAD
 	init_completion(&dev->cmd_complete);
 	mutex_init(&dev->lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->dev = &pdev->dev;
 	dev->irq = irq;
 	platform_set_drvdata(pdev, dev);
 
+<<<<<<< HEAD
 	dev->clk = devm_clk_get(&pdev->dev, NULL);
 	dev->get_clk_rate_khz = i2c_dw_get_clk_rate_khz;
 
 	if (IS_ERR(dev->clk))
 		return PTR_ERR(dev->clk);
 	clk_prepare_enable(dev->clk);
+=======
+	/* fast mode by default because of legacy reasons */
+	dev->clk_freq = 400000;
+
+	if (pdata) {
+		dev->clk_freq = pdata->i2c_scl_freq;
+	} else {
+		device_property_read_u32(&pdev->dev, "i2c-sda-hold-time-ns",
+					 &ht);
+		device_property_read_u32(&pdev->dev, "i2c-sda-falling-time-ns",
+					 &dev->sda_falling_time);
+		device_property_read_u32(&pdev->dev, "i2c-scl-falling-time-ns",
+					 &dev->scl_falling_time);
+		device_property_read_u32(&pdev->dev, "clock-frequency",
+					 &dev->clk_freq);
+	}
+
+	acpi_speed = i2c_acpi_find_bus_speed(&pdev->dev);
+	if (acpi_speed)
+		dev->clk_freq = acpi_speed;
+
+	if (has_acpi_companion(&pdev->dev))
+		dw_i2c_acpi_configure(pdev);
+
+	/*
+	 * Only standard mode at 100kHz, fast mode at 400kHz,
+	 * fast mode plus at 1MHz and high speed mode at 3.4MHz are supported.
+	 */
+	if (dev->clk_freq != 100000 && dev->clk_freq != 400000
+	    && dev->clk_freq != 1000000 && dev->clk_freq != 3400000) {
+		dev_err(&pdev->dev,
+			"Only 100kHz, 400kHz, 1MHz and 3.4MHz supported");
+		return -EINVAL;
+	}
+
+	r = i2c_dw_eval_lock_support(dev);
+	if (r)
+		return r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->functionality =
 		I2C_FUNC_I2C |
@@ -128,18 +303,48 @@ static int dw_i2c_probe(struct platform_device *pdev)
 		I2C_FUNC_SMBUS_BYTE_DATA |
 		I2C_FUNC_SMBUS_WORD_DATA |
 		I2C_FUNC_SMBUS_I2C_BLOCK;
+<<<<<<< HEAD
 	dev->master_cfg =  DW_IC_CON_MASTER | DW_IC_CON_SLAVE_DISABLE |
 		DW_IC_CON_RESTART_EN | DW_IC_CON_SPEED_FAST;
 
 	/* Try first if we can configure the device from ACPI */
 	r = dw_i2c_acpi_configure(pdev);
 	if (r) {
+=======
+
+	dev->master_cfg = DW_IC_CON_MASTER | DW_IC_CON_SLAVE_DISABLE |
+			  DW_IC_CON_RESTART_EN;
+
+	switch (dev->clk_freq) {
+	case 100000:
+		dev->master_cfg |= DW_IC_CON_SPEED_STD;
+		break;
+	case 3400000:
+		dev->master_cfg |= DW_IC_CON_SPEED_HIGH;
+		break;
+	default:
+		dev->master_cfg |= DW_IC_CON_SPEED_FAST;
+	}
+
+	dev->clk = devm_clk_get(&pdev->dev, NULL);
+	if (!i2c_dw_plat_prepare_clk(dev, true)) {
+		dev->get_clk_rate_khz = i2c_dw_get_clk_rate_khz;
+
+		if (!dev->sda_hold_time && ht)
+			dev->sda_hold_time = div_u64(
+				(u64)dev->get_clk_rate_khz(dev) * ht + 500000,
+				1000000);
+	}
+
+	if (!dev->tx_fifo_depth) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u32 param1 = i2c_dw_read_comp_param(dev);
 
 		dev->tx_fifo_depth = ((param1 >> 16) & 0xff) + 1;
 		dev->rx_fifo_depth = ((param1 >> 8)  & 0xff) + 1;
 		dev->adapter.nr = pdev->id;
 	}
+<<<<<<< HEAD
 	r = i2c_dw_init(dev);
 	if (r)
 		return r;
@@ -179,6 +384,32 @@ static int dw_i2c_probe(struct platform_device *pdev)
 }
 
 static int dw_i2c_remove(struct platform_device *pdev)
+=======
+
+	adap = &dev->adapter;
+	adap->owner = THIS_MODULE;
+	adap->class = I2C_CLASS_DEPRECATED;
+	ACPI_COMPANION_SET(&adap->dev, ACPI_COMPANION(&pdev->dev));
+	adap->dev.of_node = pdev->dev.of_node;
+
+	if (dev->pm_runtime_disabled) {
+		pm_runtime_forbid(&pdev->dev);
+	} else {
+		pm_runtime_set_autosuspend_delay(&pdev->dev, 1000);
+		pm_runtime_use_autosuspend(&pdev->dev);
+		pm_runtime_set_active(&pdev->dev);
+		pm_runtime_enable(&pdev->dev);
+	}
+
+	r = i2c_dw_probe(dev);
+	if (r && !dev->pm_runtime_disabled)
+		pm_runtime_disable(&pdev->dev);
+
+	return r;
+}
+
+static int dw_i2c_plat_remove(struct platform_device *pdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dw_i2c_dev *dev = platform_get_drvdata(pdev);
 
@@ -188,8 +419,15 @@ static int dw_i2c_remove(struct platform_device *pdev)
 
 	i2c_dw_disable(dev);
 
+<<<<<<< HEAD
 	pm_runtime_put(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
+=======
+	pm_runtime_dont_use_autosuspend(&pdev->dev);
+	pm_runtime_put_sync(&pdev->dev);
+	if (!dev->pm_runtime_disabled)
+		pm_runtime_disable(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -202,22 +440,53 @@ static const struct of_device_id dw_i2c_of_match[] = {
 MODULE_DEVICE_TABLE(of, dw_i2c_of_match);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int dw_i2c_suspend(struct device *dev)
+=======
+#ifdef CONFIG_PM_SLEEP
+static int dw_i2c_plat_prepare(struct device *dev)
+{
+	return pm_runtime_suspended(dev);
+}
+
+static void dw_i2c_plat_complete(struct device *dev)
+{
+	if (dev->power.direct_complete)
+		pm_request_resume(dev);
+}
+#else
+#define dw_i2c_plat_prepare	NULL
+#define dw_i2c_plat_complete	NULL
+#endif
+
+#ifdef CONFIG_PM
+static int dw_i2c_plat_runtime_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct dw_i2c_dev *i_dev = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	clk_disable_unprepare(i_dev->clk);
+=======
+	i2c_dw_disable(i_dev);
+	i2c_dw_plat_prepare_clk(i_dev, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dw_i2c_resume(struct device *dev)
+=======
+static int dw_i2c_plat_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct dw_i2c_dev *i_dev = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	clk_prepare_enable(i_dev->clk);
 	i2c_dw_init(i_dev);
 
@@ -226,11 +495,43 @@ static int dw_i2c_resume(struct device *dev)
 #endif
 
 static SIMPLE_DEV_PM_OPS(dw_i2c_dev_pm_ops, dw_i2c_suspend, dw_i2c_resume);
+=======
+	i2c_dw_plat_prepare_clk(i_dev, true);
+
+	if (!i_dev->pm_runtime_disabled)
+		i2c_dw_init(i_dev);
+
+	return 0;
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int dw_i2c_plat_suspend(struct device *dev)
+{
+	pm_runtime_resume(dev);
+	return dw_i2c_plat_runtime_suspend(dev);
+}
+#endif
+
+static const struct dev_pm_ops dw_i2c_dev_pm_ops = {
+	.prepare = dw_i2c_plat_prepare,
+	.complete = dw_i2c_plat_complete,
+	SET_SYSTEM_SLEEP_PM_OPS(dw_i2c_plat_suspend, dw_i2c_plat_resume)
+	SET_RUNTIME_PM_OPS(dw_i2c_plat_runtime_suspend,
+			   dw_i2c_plat_resume,
+			   NULL)
+};
+
+#define DW_I2C_DEV_PMOPS (&dw_i2c_dev_pm_ops)
+#else
+#define DW_I2C_DEV_PMOPS NULL
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* work with hotplug and coldplug */
 MODULE_ALIAS("platform:i2c_designware");
 
 static struct platform_driver dw_i2c_driver = {
+<<<<<<< HEAD
 	.probe		= dw_i2c_probe,
 	.remove		= dw_i2c_remove,
 	.driver		= {
@@ -242,6 +543,29 @@ static struct platform_driver dw_i2c_driver = {
 	},
 };
 module_platform_driver(dw_i2c_driver);
+=======
+	.probe = dw_i2c_plat_probe,
+	.remove = dw_i2c_plat_remove,
+	.driver		= {
+		.name	= "i2c_designware",
+		.of_match_table = of_match_ptr(dw_i2c_of_match),
+		.acpi_match_table = ACPI_PTR(dw_i2c_acpi_match),
+		.pm	= DW_I2C_DEV_PMOPS,
+	},
+};
+
+static int __init dw_i2c_init_driver(void)
+{
+	return platform_driver_register(&dw_i2c_driver);
+}
+subsys_initcall(dw_i2c_init_driver);
+
+static void __exit dw_i2c_exit_driver(void)
+{
+	platform_driver_unregister(&dw_i2c_driver);
+}
+module_exit(dw_i2c_exit_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Baruch Siach <baruch@tkos.co.il>");
 MODULE_DESCRIPTION("Synopsys DesignWare I2C bus adapter");

@@ -19,9 +19,17 @@
 #include <asm/setup.h>
 #include <asm/processor-flags.h>
 #include <asm/msr-index.h>
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/percpu.h>
 #include <asm/nops.h>
+=======
+#include <asm/cpufeatures.h>
+#include <asm/percpu.h>
+#include <asm/nops.h>
+#include <asm/bootparam.h>
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Physical address */
 #define pa(X) ((X) - __PAGE_OFFSET)
@@ -33,7 +41,11 @@
 #define X86		new_cpu_data+CPUINFO_x86
 #define X86_VENDOR	new_cpu_data+CPUINFO_x86_vendor
 #define X86_MODEL	new_cpu_data+CPUINFO_x86_model
+<<<<<<< HEAD
 #define X86_MASK	new_cpu_data+CPUINFO_x86_mask
+=======
+#define X86_STEPPING	new_cpu_data+CPUINFO_x86_stepping
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define X86_HARD_MATH	new_cpu_data+CPUINFO_hard_math
 #define X86_CPUID	new_cpu_data+CPUINFO_cpuid_level
 #define X86_CAPABILITY	new_cpu_data+CPUINFO_x86_capability
@@ -61,9 +73,22 @@
 #define PAGE_TABLE_SIZE(pages) ((pages) / PTRS_PER_PGD)
 #endif
 
+<<<<<<< HEAD
 /* Number of possible pages in the lowmem region */
 LOWMEM_PAGES = (((1<<32) - __PAGE_OFFSET) >> PAGE_SHIFT)
 	
+=======
+/*
+ * Number of possible pages in the lowmem region.
+ *
+ * We shift 2 by 31 instead of 1 by 32 to the left in order to avoid a
+ * gas warning about overflowing shift count when gas has been compiled
+ * with only a host target support using a 32-bit type for internal
+ * representation.
+ */
+LOWMEM_PAGES = (((2<<31) - __PAGE_OFFSET) >> PAGE_SHIFT)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Enough space to fit pagetables for the low memory linear map */
 MAPPING_BEYOND_END = PAGE_TABLE_SIZE(LOWMEM_PAGES) << PAGE_SHIFT
 
@@ -86,11 +111,19 @@ RESERVE_BRK(pagetables, INIT_MAP_SIZE)
  */
 __HEAD
 ENTRY(startup_32)
+<<<<<<< HEAD
 	movl pa(stack_start),%ecx
 	
 	/* test KEEP_SEGMENTS flag to see if the bootloader is asking
 		us to not reload segments */
 	testb $(1<<6), BP_loadflags(%esi)
+=======
+	movl pa(initial_stack),%ecx
+	
+	/* test KEEP_SEGMENTS flag to see if the bootloader is asking
+		us to not reload segments */
+	testb $KEEP_SEGMENTS, BP_loadflags(%esi)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jnz 2f
 
 /*
@@ -144,7 +177,11 @@ ENTRY(startup_32)
 	movl %eax, pa(olpc_ofw_pgd)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MICROCODE_EARLY
+=======
+#ifdef CONFIG_MICROCODE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Early load ucode on BSP. */
 	call load_ucode_bsp
 #endif
@@ -278,7 +315,11 @@ num_subarch_entries = (. - subarch_entries) / 4
  * start_secondary().
  */
 ENTRY(start_cpu0)
+<<<<<<< HEAD
 	movl stack_start, %ecx
+=======
+	movl initial_stack, %ecx
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movl %ecx, %esp
 	jmp  *(initial_code)
 ENDPROC(start_cpu0)
@@ -292,7 +333,10 @@ ENDPROC(start_cpu0)
  * If cpu hotplug is not supported then this code can go in init section
  * which will be freed later
  */
+<<<<<<< HEAD
 __CPUINIT
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENTRY(startup_32_smp)
 	cld
 	movl $(__BOOT_DS),%eax
@@ -300,16 +344,27 @@ ENTRY(startup_32_smp)
 	movl %eax,%es
 	movl %eax,%fs
 	movl %eax,%gs
+<<<<<<< HEAD
 	movl pa(stack_start),%ecx
 	movl %eax,%ss
 	leal -__PAGE_OFFSET(%ecx),%esp
 
 #ifdef CONFIG_MICROCODE_EARLY
+=======
+	movl pa(initial_stack),%ecx
+	movl %eax,%ss
+	leal -__PAGE_OFFSET(%ecx),%esp
+
+#ifdef CONFIG_MICROCODE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Early load ucode on AP. */
 	call load_ucode_ap
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 default_entry:
 #define CR0_STATE	(X86_CR0_PE | X86_CR0_MP | X86_CR0_ET | \
 			 X86_CR0_NE | X86_CR0_WP | X86_CR0_AM | \
@@ -410,6 +465,10 @@ enable_paging:
 /*
  * Check if it is 486
  */
+<<<<<<< HEAD
+=======
+	movb $4,X86			# at least 486
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmpl $-1,X86_CPUID
 	je is486
 
@@ -433,18 +492,28 @@ enable_paging:
 	shrb $4,%al
 	movb %al,X86_MODEL
 	andb $0x0f,%cl		# mask mask revision
+<<<<<<< HEAD
 	movb %cl,X86_MASK
 	movl %edx,X86_CAPABILITY
 
 is486:
 	movb $4,X86
+=======
+	movb %cl,X86_STEPPING
+	movl %edx,X86_CAPABILITY
+
+is486:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movl $0x50022,%ecx	# set AM, WP, NE and MP
 	movl %cr0,%eax
 	andl $0x80000011,%eax	# Save PG,PE,ET
 	orl %ecx,%eax
 	movl %eax,%cr0
 
+<<<<<<< HEAD
 	call check_x87
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lgdt early_gdt_descr
 	lidt idt_descr
 	ljmp $(__KERNEL_CS),$1f
@@ -467,6 +536,7 @@ is486:
 	pushl $0		# fake return address for unwinder
 	jmp *(initial_code)
 
+<<<<<<< HEAD
 /*
  * We depend on ET to be correct. This checks for 287/387.
  */
@@ -487,6 +557,8 @@ check_x87:
 	ret
 
 	
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "verify_cpu.S"
 
 /*
@@ -570,6 +642,7 @@ early_idt_handler_common:
 	 */
 	cld
 
+<<<<<<< HEAD
 	cmpl $2,(%esp)		# X86_TRAP_NMI
 	je is_nmi		# Ignore NMI
 
@@ -626,6 +699,55 @@ ex_entry:
 	decl %ss:early_recursion_flag
 is_nmi:
 	addl $8,%esp		/* drop vector number and error code */
+=======
+	incl %ss:early_recursion_flag
+
+	/* The vector number is in pt_regs->gs */
+
+	cld
+	pushl	%fs		/* pt_regs->fs */
+	movw	$0, 2(%esp)	/* clear high bits (some CPUs leave garbage) */
+	pushl	%es		/* pt_regs->es */
+	movw	$0, 2(%esp)	/* clear high bits (some CPUs leave garbage) */
+	pushl	%ds		/* pt_regs->ds */
+	movw	$0, 2(%esp)	/* clear high bits (some CPUs leave garbage) */
+	pushl	%eax		/* pt_regs->ax */
+	pushl	%ebp		/* pt_regs->bp */
+	pushl	%edi		/* pt_regs->di */
+	pushl	%esi		/* pt_regs->si */
+	pushl	%edx		/* pt_regs->dx */
+	pushl	%ecx		/* pt_regs->cx */
+	pushl	%ebx		/* pt_regs->bx */
+
+	/* Fix up DS and ES */
+	movl	$(__KERNEL_DS), %ecx
+	movl	%ecx, %ds
+	movl	%ecx, %es
+
+	/* Load the vector number into EDX */
+	movl	PT_GS(%esp), %edx
+
+	/* Load GS into pt_regs->gs and clear high bits */
+	movw	%gs, PT_GS(%esp)
+	movw	$0, PT_GS+2(%esp)
+
+	movl	%esp, %eax	/* args are pt_regs (EAX), trapnr (EDX) */
+	call	early_fixup_exception
+
+	popl	%ebx		/* pt_regs->bx */
+	popl	%ecx		/* pt_regs->cx */
+	popl	%edx		/* pt_regs->dx */
+	popl	%esi		/* pt_regs->si */
+	popl	%edi		/* pt_regs->di */
+	popl	%ebp		/* pt_regs->bp */
+	popl	%eax		/* pt_regs->ax */
+	popl	%ds		/* pt_regs->ds */
+	popl	%es		/* pt_regs->es */
+	popl	%fs		/* pt_regs->fs */
+	popl	%gs		/* pt_regs->gs */
+	decl	%ss:early_recursion_flag
+	addl	$4, %esp	/* pop pt_regs->orig_ax */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iret
 ENDPROC(early_idt_handler_common)
 
@@ -662,10 +784,21 @@ ignore_int:
 	popl %eax
 #endif
 	iret
+<<<<<<< HEAD
 ENDPROC(ignore_int)
 __INITDATA
 	.align 4
 early_recursion_flag:
+=======
+
+hlt_loop:
+	hlt
+	jmp hlt_loop
+ENDPROC(ignore_int)
+__INITDATA
+	.align 4
+GLOBAL(early_recursion_flag)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long 0
 
 __REFDATA
@@ -684,15 +817,30 @@ __PAGE_ALIGNED_BSS
 initial_pg_pmd:
 	.fill 1024*KPMDS,4,0
 #else
+<<<<<<< HEAD
 ENTRY(initial_page_table)
+=======
+.globl initial_page_table
+initial_page_table:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fill 1024,4,0
 #endif
 initial_pg_fixmap:
 	.fill 1024,4,0
+<<<<<<< HEAD
 ENTRY(empty_zero_page)
 	.fill 4096,1,0
 ENTRY(swapper_pg_dir)
 	.fill 1024,4,0
+=======
+.globl empty_zero_page
+empty_zero_page:
+	.fill 4096,1,0
+.globl swapper_pg_dir
+swapper_pg_dir:
+	.fill 1024,4,0
+EXPORT_SYMBOL(empty_zero_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This starts the data section.
@@ -723,13 +871,18 @@ ENTRY(initial_page_table)
 
 .data
 .balign 4
+<<<<<<< HEAD
 ENTRY(stack_start)
+=======
+ENTRY(initial_stack)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long init_thread_union+THREAD_SIZE
 
 __INITRODATA
 int_msg:
 	.asciz "Unknown interrupt or fault at: %p %p %p\n"
 
+<<<<<<< HEAD
 fault_msg:
 /* fault info: */
 	.ascii "BUG: Int %d: CR2 %p\n"
@@ -743,6 +896,8 @@ fault_msg:
 	.ascii "       %p %p %p %p %p %p %p %p\n"
 	.asciz "       %p %p %p %p %p %p %p %p\n"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "../../x86/xen/xen-head.S"
 
 /*

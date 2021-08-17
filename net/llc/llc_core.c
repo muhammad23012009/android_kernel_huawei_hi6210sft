@@ -23,7 +23,11 @@
 #include <net/llc.h>
 
 LIST_HEAD(llc_sap_list);
+<<<<<<< HEAD
 DEFINE_SPINLOCK(llc_sap_list_lock);
+=======
+static DEFINE_SPINLOCK(llc_sap_list_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  *	llc_sap_alloc - allocates and initializes sap.
@@ -48,7 +52,11 @@ static struct llc_sap *llc_sap_alloc(void)
 
 static struct llc_sap *__llc_sap_find(unsigned char sap_value)
 {
+<<<<<<< HEAD
 	struct llc_sap* sap;
+=======
+	struct llc_sap *sap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each_entry(sap, &llc_sap_list, node)
 		if (sap->laddr.lsap == sap_value)
@@ -73,8 +81,13 @@ struct llc_sap *llc_sap_find(unsigned char sap_value)
 
 	rcu_read_lock_bh();
 	sap = __llc_sap_find(sap_value);
+<<<<<<< HEAD
 	if (sap)
 		llc_sap_hold(sap);
+=======
+	if (!sap || !llc_sap_hold_safe(sap))
+		sap = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_read_unlock_bh();
 	return sap;
 }
@@ -127,9 +140,13 @@ void llc_sap_close(struct llc_sap *sap)
 	list_del_rcu(&sap->node);
 	spin_unlock_bh(&llc_sap_list_lock);
 
+<<<<<<< HEAD
 	synchronize_rcu();
 
 	kfree(sap);
+=======
+	kfree_rcu(sap, rcu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct packet_type llc_packet_type __read_mostly = {
@@ -159,7 +176,10 @@ module_init(llc_init);
 module_exit(llc_exit);
 
 EXPORT_SYMBOL(llc_sap_list);
+<<<<<<< HEAD
 EXPORT_SYMBOL(llc_sap_list_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(llc_sap_find);
 EXPORT_SYMBOL(llc_sap_open);
 EXPORT_SYMBOL(llc_sap_close);

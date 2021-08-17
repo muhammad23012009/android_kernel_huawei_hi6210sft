@@ -2,6 +2,12 @@
  * platform-pci.c
  *
  * Xen platform PCI device driver
+<<<<<<< HEAD
+=======
+ *
+ * Authors: ssmith@xensource.com and stefano.stabellini@eu.citrix.com
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (c) 2005, Intel Corporation.
  * Copyright (c) 2007, XenSource Inc.
  * Copyright (c) 2010, Citrix
@@ -24,7 +30,11 @@
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 
 #include <xen/platform_pci.h>
@@ -36,16 +46,23 @@
 
 #define DRV_NAME    "xen-platform-pci"
 
+<<<<<<< HEAD
 MODULE_AUTHOR("ssmith@xensource.com and stefano.stabellini@eu.citrix.com");
 MODULE_DESCRIPTION("Xen platform PCI device");
 MODULE_LICENSE("GPL");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned long platform_mmio;
 static unsigned long platform_mmio_alloc;
 static unsigned long platform_mmiolen;
 static uint64_t callback_via;
 
+<<<<<<< HEAD
 unsigned long alloc_xen_mmio(unsigned long len)
+=======
+static unsigned long alloc_xen_mmio(unsigned long len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long addr;
 
@@ -84,7 +101,11 @@ static irqreturn_t do_hvm_evtchn_intr(int irq, void *dev_id)
 static int xen_allocate_irq(struct pci_dev *pdev)
 {
 	return request_irq(pdev->irq, do_hvm_evtchn_intr,
+<<<<<<< HEAD
 			IRQF_DISABLED | IRQF_NOBALANCING | IRQF_TRIGGER_RISING,
+=======
+			IRQF_NOBALANCING | IRQF_TRIGGER_RISING,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"xen-platform-pci", pdev);
 }
 
@@ -101,13 +122,22 @@ static int platform_pci_resume(struct pci_dev *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int platform_pci_init(struct pci_dev *pdev,
 			     const struct pci_device_id *ent)
+=======
+static int platform_pci_probe(struct pci_dev *pdev,
+			      const struct pci_device_id *ent)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, ret;
 	long ioaddr;
 	long mmio_addr, mmio_len;
 	unsigned int max_nr_gframes;
+<<<<<<< HEAD
+=======
+	unsigned long grant_frames;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!xen_domain())
 		return -ENODEV;
@@ -154,6 +184,7 @@ static int platform_pci_init(struct pci_dev *pdev,
 	}
 
 	max_nr_gframes = gnttab_max_grant_frames();
+<<<<<<< HEAD
 	xen_hvm_resume_frames = alloc_xen_mmio(PAGE_SIZE * max_nr_gframes);
 	ret = gnttab_init();
 	if (ret)
@@ -161,6 +192,19 @@ static int platform_pci_init(struct pci_dev *pdev,
 	xenbus_probe(NULL);
 	return 0;
 
+=======
+	grant_frames = alloc_xen_mmio(PAGE_SIZE * max_nr_gframes);
+	ret = gnttab_setup_auto_xlat_frames(grant_frames);
+	if (ret)
+		goto out;
+	ret = gnttab_init();
+	if (ret)
+		goto grant_out;
+	xenbus_probe(NULL);
+	return 0;
+grant_out:
+	gnttab_free_auto_xlat_frames();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	pci_release_region(pdev, 0);
 mem_out:
@@ -176,20 +220,34 @@ static struct pci_device_id platform_pci_tbl[] = {
 	{0,}
 };
 
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(pci, platform_pci_tbl);
 
 static struct pci_driver platform_driver = {
 	.name =           DRV_NAME,
 	.probe =          platform_pci_init,
+=======
+static struct pci_driver platform_driver = {
+	.name =           DRV_NAME,
+	.probe =          platform_pci_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table =       platform_pci_tbl,
 #ifdef CONFIG_PM
 	.resume_early =   platform_pci_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init platform_pci_module_init(void)
 {
 	return pci_register_driver(&platform_driver);
 }
 
 module_init(platform_pci_module_init);
+=======
+static int __init platform_pci_init(void)
+{
+	return pci_register_driver(&platform_driver);
+}
+device_initcall(platform_pci_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

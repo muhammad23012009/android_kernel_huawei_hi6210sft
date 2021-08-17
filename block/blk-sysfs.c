@@ -6,10 +6,20 @@
 #include <linux/module.h>
 #include <linux/bio.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/blktrace_api.h>
 
 #include "blk.h"
 #include "blk-cgroup.h"
+=======
+#include <linux/backing-dev.h>
+#include <linux/blktrace_api.h>
+#include <linux/blk-mq.h>
+#include <linux/blk-cgroup.h>
+
+#include "blk.h"
+#include "blk-mq.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct queue_sysfs_entry {
 	struct attribute attr;
@@ -29,7 +39,11 @@ queue_var_store(unsigned long *var, const char *page, size_t count)
 	int err;
 	unsigned long v;
 
+<<<<<<< HEAD
 	err = strict_strtoul(page, 10, &v);
+=======
+	err = kstrtoul(page, 10, &v);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err || v > UINT_MAX)
 		return -EINVAL;
 
@@ -46,11 +60,18 @@ static ssize_t queue_requests_show(struct request_queue *q, char *page)
 static ssize_t
 queue_requests_store(struct request_queue *q, const char *page, size_t count)
 {
+<<<<<<< HEAD
 	struct request_list *rl;
 	unsigned long nr;
 	int ret;
 
 	if (!q->request_fn)
+=======
+	unsigned long nr;
+	int ret, err;
+
+	if (!q->request_fn && !q->mq_ops)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	ret = queue_var_store(&nr, page, count);
@@ -60,6 +81,7 @@ queue_requests_store(struct request_queue *q, const char *page, size_t count)
 	if (nr < BLKDEV_MIN_RQ)
 		nr = BLKDEV_MIN_RQ;
 
+<<<<<<< HEAD
 	spin_lock_irq(q->queue_lock);
 	q->nr_requests = nr;
 	blk_queue_congestion_threshold(q);
@@ -94,13 +116,27 @@ queue_requests_store(struct request_queue *q, const char *page, size_t count)
 	}
 
 	spin_unlock_irq(q->queue_lock);
+=======
+	if (q->request_fn)
+		err = blk_update_nr_requests(q, nr);
+	else
+		err = blk_mq_update_nr_requests(q, nr);
+
+	if (err)
+		return err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static ssize_t queue_ra_show(struct request_queue *q, char *page)
 {
 	unsigned long ra_kb = q->backing_dev_info.ra_pages <<
+<<<<<<< HEAD
 					(PAGE_CACHE_SHIFT - 10);
+=======
+					(PAGE_SHIFT - 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return queue_var_show(ra_kb, (page));
 }
@@ -114,7 +150,11 @@ queue_ra_store(struct request_queue *q, const char *page, size_t count)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	q->backing_dev_info.ra_pages = ra_kb >> (PAGE_CACHE_SHIFT - 10);
+=======
+	q->backing_dev_info.ra_pages = ra_kb >> (PAGE_SHIFT - 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -141,7 +181,11 @@ static ssize_t queue_max_segment_size_show(struct request_queue *q, char *page)
 	if (blk_queue_cluster(q))
 		return queue_var_show(queue_max_segment_size(q), (page));
 
+<<<<<<< HEAD
 	return queue_var_show(PAGE_CACHE_SIZE, (page));
+=======
+	return queue_var_show(PAGE_SIZE, (page));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t queue_logical_block_size_show(struct request_queue *q, char *page)
@@ -169,12 +213,48 @@ static ssize_t queue_discard_granularity_show(struct request_queue *q, char *pag
 	return queue_var_show(q->limits.discard_granularity, page);
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t queue_discard_max_hw_show(struct request_queue *q, char *page)
+{
+
+	return sprintf(page, "%llu\n",
+		(unsigned long long)q->limits.max_hw_discard_sectors << 9);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t queue_discard_max_show(struct request_queue *q, char *page)
 {
 	return sprintf(page, "%llu\n",
 		       (unsigned long long)q->limits.max_discard_sectors << 9);
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t queue_discard_max_store(struct request_queue *q,
+				       const char *page, size_t count)
+{
+	unsigned long max_discard;
+	ssize_t ret = queue_var_store(&max_discard, page, count);
+
+	if (ret < 0)
+		return ret;
+
+	if (max_discard & (q->limits.discard_granularity - 1))
+		return -EINVAL;
+
+	max_discard >>= 9;
+	if (max_discard > UINT_MAX)
+		return -EINVAL;
+
+	if (max_discard > q->limits.max_hw_discard_sectors)
+		max_discard = q->limits.max_hw_discard_sectors;
+
+	q->limits.max_discard_sectors = max_discard;
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t queue_discard_zeroes_data_show(struct request_queue *q, char *page)
 {
 	return queue_var_show(queue_discard_zeroes_data(q), page);
@@ -192,12 +272,22 @@ queue_max_sectors_store(struct request_queue *q, const char *page, size_t count)
 {
 	unsigned long max_sectors_kb,
 		max_hw_sectors_kb = queue_max_hw_sectors(q) >> 1,
+<<<<<<< HEAD
 			page_kb = 1 << (PAGE_CACHE_SHIFT - 10);
+=======
+			page_kb = 1 << (PAGE_SHIFT - 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ssize_t ret = queue_var_store(&max_sectors_kb, page, count);
 
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	max_hw_sectors_kb = min_not_zero(max_hw_sectors_kb, (unsigned long)
+					 q->limits.max_dev_sectors >> 1);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (max_sectors_kb > max_hw_sectors_kb || max_sectors_kb < page_kb)
 		return -EINVAL;
 
@@ -287,7 +377,11 @@ static ssize_t
 queue_rq_affinity_store(struct request_queue *q, const char *page, size_t count)
 {
 	ssize_t ret = -EINVAL;
+<<<<<<< HEAD
 #if defined(CONFIG_USE_GENERIC_SMP_HELPERS)
+=======
+#ifdef CONFIG_SMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 
 	ret = queue_var_store(&val, page, count);
@@ -310,6 +404,74 @@ queue_rq_affinity_store(struct request_queue *q, const char *page, size_t count)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t queue_poll_show(struct request_queue *q, char *page)
+{
+	return queue_var_show(test_bit(QUEUE_FLAG_POLL, &q->queue_flags), page);
+}
+
+static ssize_t queue_poll_store(struct request_queue *q, const char *page,
+				size_t count)
+{
+	unsigned long poll_on;
+	ssize_t ret;
+
+	if (!q->mq_ops || !q->mq_ops->poll)
+		return -EINVAL;
+
+	ret = queue_var_store(&poll_on, page, count);
+	if (ret < 0)
+		return ret;
+
+	spin_lock_irq(q->queue_lock);
+	if (poll_on)
+		queue_flag_set(QUEUE_FLAG_POLL, q);
+	else
+		queue_flag_clear(QUEUE_FLAG_POLL, q);
+	spin_unlock_irq(q->queue_lock);
+
+	return ret;
+}
+
+static ssize_t queue_wc_show(struct request_queue *q, char *page)
+{
+	if (test_bit(QUEUE_FLAG_WC, &q->queue_flags))
+		return sprintf(page, "write back\n");
+
+	return sprintf(page, "write through\n");
+}
+
+static ssize_t queue_wc_store(struct request_queue *q, const char *page,
+			      size_t count)
+{
+	int set = -1;
+
+	if (!strncmp(page, "write back", 10))
+		set = 1;
+	else if (!strncmp(page, "write through", 13) ||
+		 !strncmp(page, "none", 4))
+		set = 0;
+
+	if (set == -1)
+		return -EINVAL;
+
+	spin_lock_irq(q->queue_lock);
+	if (set)
+		queue_flag_set(QUEUE_FLAG_WC, q);
+	else
+		queue_flag_clear(QUEUE_FLAG_WC, q);
+	spin_unlock_irq(q->queue_lock);
+
+	return count;
+}
+
+static ssize_t queue_dax_show(struct request_queue *q, char *page)
+{
+	return queue_var_show(blk_queue_dax(q), page);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct queue_sysfs_entry queue_requests_entry = {
 	.attr = {.name = "nr_requests", .mode = S_IRUGO | S_IWUSR },
 	.show = queue_requests_show,
@@ -384,9 +546,21 @@ static struct queue_sysfs_entry queue_discard_granularity_entry = {
 	.show = queue_discard_granularity_show,
 };
 
+<<<<<<< HEAD
 static struct queue_sysfs_entry queue_discard_max_entry = {
 	.attr = {.name = "discard_max_bytes", .mode = S_IRUGO },
 	.show = queue_discard_max_show,
+=======
+static struct queue_sysfs_entry queue_discard_max_hw_entry = {
+	.attr = {.name = "discard_max_hw_bytes", .mode = S_IRUGO },
+	.show = queue_discard_max_hw_show,
+};
+
+static struct queue_sysfs_entry queue_discard_max_entry = {
+	.attr = {.name = "discard_max_bytes", .mode = S_IRUGO | S_IWUSR },
+	.show = queue_discard_max_show,
+	.store = queue_discard_max_store,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct queue_sysfs_entry queue_discard_zeroes_data_entry = {
@@ -429,6 +603,26 @@ static struct queue_sysfs_entry queue_random_entry = {
 	.store = queue_store_random,
 };
 
+<<<<<<< HEAD
+=======
+static struct queue_sysfs_entry queue_poll_entry = {
+	.attr = {.name = "io_poll", .mode = S_IRUGO | S_IWUSR },
+	.show = queue_poll_show,
+	.store = queue_poll_store,
+};
+
+static struct queue_sysfs_entry queue_wc_entry = {
+	.attr = {.name = "write_cache", .mode = S_IRUGO | S_IWUSR },
+	.show = queue_wc_show,
+	.store = queue_wc_store,
+};
+
+static struct queue_sysfs_entry queue_dax_entry = {
+	.attr = {.name = "dax", .mode = S_IRUGO },
+	.show = queue_dax_show,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct attribute *default_attrs[] = {
 	&queue_requests_entry.attr,
 	&queue_ra_entry.attr,
@@ -445,6 +639,10 @@ static struct attribute *default_attrs[] = {
 	&queue_io_opt_entry.attr,
 	&queue_discard_granularity_entry.attr,
 	&queue_discard_max_entry.attr,
+<<<<<<< HEAD
+=======
+	&queue_discard_max_hw_entry.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&queue_discard_zeroes_data_entry.attr,
 	&queue_write_same_max_entry.attr,
 	&queue_nonrot_entry.attr,
@@ -452,6 +650,12 @@ static struct attribute *default_attrs[] = {
 	&queue_rq_affinity_entry.attr,
 	&queue_iostats_entry.attr,
 	&queue_random_entry.attr,
+<<<<<<< HEAD
+=======
+	&queue_poll_entry.attr,
+	&queue_wc_entry.attr,
+	&queue_dax_entry.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NULL,
 };
 
@@ -517,17 +721,27 @@ static void blk_free_queue_rcu(struct rcu_head *rcu_head)
  *     Currently, its primary task it to free all the &struct request
  *     structures that were allocated to the queue and the queue itself.
  *
+<<<<<<< HEAD
  * Caveat:
  *     Hopefully the low level driver will have finished any
  *     outstanding requests first...
+=======
+ * Note:
+ *     The low level driver must have finished any outstanding requests first
+ *     via blk_cleanup_queue().
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  **/
 static void blk_release_queue(struct kobject *kobj)
 {
 	struct request_queue *q =
 		container_of(kobj, struct request_queue, kobj);
 
+<<<<<<< HEAD
 	blk_sync_queue(q);
 
+=======
+	bdi_exit(&q->backing_dev_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blkcg_exit_queue(q);
 
 	if (q->elevator) {
@@ -542,9 +756,21 @@ static void blk_release_queue(struct kobject *kobj)
 	if (q->queue_tags)
 		__blk_queue_free_tags(q);
 
+<<<<<<< HEAD
 	blk_trace_shutdown(q);
 
 	bdi_destroy(&q->backing_dev_info);
+=======
+	if (!q->mq_ops)
+		blk_free_flush_queue(q->fq);
+	else
+		blk_mq_release(q);
+
+	blk_trace_shutdown(q);
+
+	if (q->bio_split)
+		bioset_free(q->bio_split);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ida_simple_remove(&blk_queue_ida, q->id);
 	call_rcu(&q->rcu_head, blk_free_queue_rcu);
@@ -571,10 +797,26 @@ int blk_register_queue(struct gendisk *disk)
 		return -ENXIO;
 
 	/*
+<<<<<<< HEAD
 	 * Initialization must be complete by now.  Finish the initial
 	 * bypass from queue allocation.
 	 */
 	blk_queue_bypass_end(q);
+=======
+	 * SCSI probing may synchronously create and destroy a lot of
+	 * request_queues for non-existent devices.  Shutting down a fully
+	 * functional queue takes measureable wallclock time as RCU grace
+	 * periods are involved.  To avoid excessive latency in these
+	 * cases, a request_queue starts out in a degraded mode which is
+	 * faster to shut down and is made fully functional here as
+	 * request_queues for non-existent devices never get registered.
+	 */
+	if (!blk_queue_init_done(q)) {
+		queue_flag_set_unlocked(QUEUE_FLAG_INIT_DONE, q);
+		percpu_ref_switch_to_percpu(&q->q_usage_counter);
+		blk_queue_bypass_end(q);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = blk_trace_init_sysfs(dev);
 	if (ret)
@@ -588,6 +830,12 @@ int blk_register_queue(struct gendisk *disk)
 
 	kobject_uevent(&q->kobj, KOBJ_ADD);
 
+<<<<<<< HEAD
+=======
+	if (q->mq_ops)
+		blk_mq_register_dev(dev, q);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!q->request_fn)
 		return 0;
 
@@ -610,6 +858,12 @@ void blk_unregister_queue(struct gendisk *disk)
 	if (WARN_ON(!q))
 		return;
 
+<<<<<<< HEAD
+=======
+	if (q->mq_ops)
+		blk_mq_unregister_dev(disk_to_dev(disk), q);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (q->request_fn)
 		elv_unregister_queue(q);
 

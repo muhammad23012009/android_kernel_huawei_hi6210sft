@@ -38,10 +38,46 @@ static const struct cifs_sid sid_everyone = {
 	1, 1, {0, 0, 0, 0, 0, 1}, {0} };
 /* security id for Authenticated Users system group */
 static const struct cifs_sid sid_authusers = {
+<<<<<<< HEAD
 	1, 1, {0, 0, 0, 0, 0, 5}, {__constant_cpu_to_le32(11)} };
 /* group users */
 static const struct cifs_sid sid_user = {1, 2 , {0, 0, 0, 0, 0, 5}, {} };
 
+=======
+	1, 1, {0, 0, 0, 0, 0, 5}, {cpu_to_le32(11)} };
+/* group users */
+static const struct cifs_sid sid_user = {1, 2 , {0, 0, 0, 0, 0, 5}, {} };
+
+/* S-1-22-1 Unmapped Unix users */
+static const struct cifs_sid sid_unix_users = {1, 1, {0, 0, 0, 0, 0, 22},
+		{cpu_to_le32(1), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+
+/* S-1-22-2 Unmapped Unix groups */
+static const struct cifs_sid sid_unix_groups = { 1, 1, {0, 0, 0, 0, 0, 22},
+		{cpu_to_le32(2), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+
+/*
+ * See http://technet.microsoft.com/en-us/library/hh509017(v=ws.10).aspx
+ */
+
+/* S-1-5-88 MS NFS and Apple style UID/GID/mode */
+
+/* S-1-5-88-1 Unix uid */
+static const struct cifs_sid sid_unix_NFS_users = { 1, 2, {0, 0, 0, 0, 0, 5},
+	{cpu_to_le32(88),
+	 cpu_to_le32(1), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+
+/* S-1-5-88-2 Unix gid */
+static const struct cifs_sid sid_unix_NFS_groups = { 1, 2, {0, 0, 0, 0, 0, 5},
+	{cpu_to_le32(88),
+	 cpu_to_le32(2), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+
+/* S-1-5-88-3 Unix mode */
+static const struct cifs_sid sid_unix_NFS_mode = { 1, 2, {0, 0, 0, 0, 0, 5},
+	{cpu_to_le32(88),
+	 cpu_to_le32(3), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct cred *root_cred;
 
 static int
@@ -58,6 +94,7 @@ cifs_idmap_key_instantiate(struct key *key, struct key_preparsed_payload *prep)
 	 * dereference payload.data!
 	 */
 	if (prep->datalen <= sizeof(key->payload)) {
+<<<<<<< HEAD
 		key->payload.value = 0;
 		memcpy(&key->payload.value, prep->data, prep->datalen);
 		key->datalen = prep->datalen;
@@ -68,6 +105,17 @@ cifs_idmap_key_instantiate(struct key *key, struct key_preparsed_payload *prep)
 		return -ENOMEM;
 
 	key->payload.data = payload;
+=======
+		key->payload.data[0] = NULL;
+		memcpy(&key->payload, prep->data, prep->datalen);
+	} else {
+		payload = kmemdup(prep->data, prep->datalen, GFP_KERNEL);
+		if (!payload)
+			return -ENOMEM;
+		key->payload.data[0] = payload;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	key->datalen = prep->datalen;
 	return 0;
 }
@@ -76,7 +124,11 @@ static inline void
 cifs_idmap_key_destroy(struct key *key)
 {
 	if (key->datalen > sizeof(key->payload))
+<<<<<<< HEAD
 		kfree(key->payload.data);
+=======
+		kfree(key->payload.data[0]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct key_type cifs_idmap_key_type = {
@@ -84,7 +136,10 @@ static struct key_type cifs_idmap_key_type = {
 	.instantiate = cifs_idmap_key_instantiate,
 	.destroy     = cifs_idmap_key_destroy,
 	.describe    = user_describe,
+<<<<<<< HEAD
 	.match       = user_match,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static char *
@@ -185,6 +240,65 @@ compare_sids(const struct cifs_sid *ctsid, const struct cifs_sid *cwsid)
 	return 0; /* sids compare/match */
 }
 
+<<<<<<< HEAD
+=======
+static bool
+is_well_known_sid(const struct cifs_sid *psid, uint32_t *puid, bool is_group)
+{
+	int i;
+	int num_subauth;
+	const struct cifs_sid *pwell_known_sid;
+
+	if (!psid || (puid == NULL))
+		return false;
+
+	num_subauth = psid->num_subauth;
+
+	/* check if Mac (or Windows NFS) vs. Samba format for Unix owner SID */
+	if (num_subauth == 2) {
+		if (is_group)
+			pwell_known_sid = &sid_unix_groups;
+		else
+			pwell_known_sid = &sid_unix_users;
+	} else if (num_subauth == 3) {
+		if (is_group)
+			pwell_known_sid = &sid_unix_NFS_groups;
+		else
+			pwell_known_sid = &sid_unix_NFS_users;
+	} else
+		return false;
+
+	/* compare the revision */
+	if (psid->revision != pwell_known_sid->revision)
+		return false;
+
+	/* compare all of the six auth values */
+	for (i = 0; i < NUM_AUTHS; ++i) {
+		if (psid->authority[i] != pwell_known_sid->authority[i]) {
+			cifs_dbg(FYI, "auth %d did not match\n", i);
+			return false;
+		}
+	}
+
+	if (num_subauth == 2) {
+		if (psid->sub_auth[0] != pwell_known_sid->sub_auth[0])
+			return false;
+
+		*puid = le32_to_cpu(psid->sub_auth[1]);
+	} else /* 3 subauths, ie Windows/Mac style */ {
+		*puid = le32_to_cpu(psid->sub_auth[0]);
+		if ((psid->sub_auth[0] != pwell_known_sid->sub_auth[0]) ||
+		    (psid->sub_auth[1] != pwell_known_sid->sub_auth[1]))
+			return false;
+
+		*puid = le32_to_cpu(psid->sub_auth[2]);
+	}
+
+	cifs_dbg(FYI, "Unix UID %d returned from SID\n", *puid);
+	return true; /* well known sid found, uid returned */
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 cifs_copy_sid(struct cifs_sid *dst, const struct cifs_sid *src)
 {
@@ -234,8 +348,13 @@ id_to_sid(unsigned int cid, uint sidtype, struct cifs_sid *ssid)
 	 * it could be.
 	 */
 	ksid = sidkey->datalen <= sizeof(sidkey->payload) ?
+<<<<<<< HEAD
 		(struct cifs_sid *)&sidkey->payload.value :
 		(struct cifs_sid *)sidkey->payload.data;
+=======
+		(struct cifs_sid *)&sidkey->payload :
+		(struct cifs_sid *)sidkey->payload.data[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ksid_size = CIFS_SID_BASE_SIZE + (ksid->num_subauth * sizeof(__le32));
 	if (ksid_size > sidkey->datalen) {
@@ -278,6 +397,46 @@ sid_to_id(struct cifs_sb_info *cifs_sb, struct cifs_sid *psid,
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	if (cifs_sb->mnt_cifs_flags & CIFS_MOUNT_UID_FROM_ACL) {
+		uint32_t unix_id;
+		bool is_group;
+
+		if (sidtype != SIDOWNER)
+			is_group = true;
+		else
+			is_group = false;
+
+		if (is_well_known_sid(psid, &unix_id, is_group) == false)
+			goto try_upcall_to_get_id;
+
+		if (is_group) {
+			kgid_t gid;
+			gid_t id;
+
+			id = (gid_t)unix_id;
+			gid = make_kgid(&init_user_ns, id);
+			if (gid_valid(gid)) {
+				fgid = gid;
+				goto got_valid_id;
+			}
+		} else {
+			kuid_t uid;
+			uid_t id;
+
+			id = (uid_t)unix_id;
+			uid = make_kuid(&init_user_ns, id);
+			if (uid_valid(uid)) {
+				fuid = uid;
+				goto got_valid_id;
+			}
+		}
+		/* If unable to find uid/gid easily from SID try via upcall */
+	}
+
+try_upcall_to_get_id:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sidstr = sid_to_key_str(psid, sidtype);
 	if (!sidstr)
 		return -ENOMEM;
@@ -308,14 +467,22 @@ sid_to_id(struct cifs_sb_info *cifs_sb, struct cifs_sid *psid,
 	if (sidtype == SIDOWNER) {
 		kuid_t uid;
 		uid_t id;
+<<<<<<< HEAD
 		memcpy(&id, &sidkey->payload.value, sizeof(uid_t));
+=======
+		memcpy(&id, &sidkey->payload.data[0], sizeof(uid_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		uid = make_kuid(&init_user_ns, id);
 		if (uid_valid(uid))
 			fuid = uid;
 	} else {
 		kgid_t gid;
 		gid_t id;
+<<<<<<< HEAD
 		memcpy(&id, &sidkey->payload.value, sizeof(gid_t));
+=======
+		memcpy(&id, &sidkey->payload.data[0], sizeof(gid_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gid = make_kgid(&init_user_ns, id);
 		if (gid_valid(gid))
 			fgid = gid;
@@ -331,6 +498,10 @@ out_revert_creds:
 	 * Note that we return 0 here unconditionally. If the mapping
 	 * fails then we just fall back to using the mnt_uid/mnt_gid.
 	 */
+<<<<<<< HEAD
+=======
+got_valid_id:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sidtype == SIDOWNER)
 		fattr->cf_uid = fuid;
 	else
@@ -362,7 +533,11 @@ init_cifs_idmap(void)
 				GLOBAL_ROOT_UID, GLOBAL_ROOT_GID, cred,
 				(KEY_POS_ALL & ~KEY_POS_SETATTR) |
 				KEY_USR_VIEW | KEY_USR_READ,
+<<<<<<< HEAD
 				KEY_ALLOC_NOT_IN_QUOTA, NULL);
+=======
+				KEY_ALLOC_NOT_IN_QUOTA, NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(keyring)) {
 		ret = PTR_ERR(keyring);
 		goto failed_put_cred;
@@ -482,7 +657,11 @@ static void access_flags_to_mode(__le32 ace_flags, int type, umode_t *pmode,
 			((flags & FILE_EXEC_RIGHTS) == FILE_EXEC_RIGHTS))
 		*pmode |= (S_IXUGO & (*pbits_to_set));
 
+<<<<<<< HEAD
 	cifs_dbg(NOISY, "access flags 0x%x mode now 0x%x\n", flags, *pmode);
+=======
+	cifs_dbg(NOISY, "access flags 0x%x mode now %04o\n", flags, *pmode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 }
 
@@ -511,7 +690,11 @@ static void mode_to_access_flags(umode_t mode, umode_t bits_to_use,
 	if (mode & S_IXUGO)
 		*pace_flags |= SET_FILE_EXEC_RIGHTS;
 
+<<<<<<< HEAD
 	cifs_dbg(NOISY, "mode: 0x%x, access flags now 0x%x\n",
+=======
+	cifs_dbg(NOISY, "mode: %04o, access flags now 0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 mode, *pace_flags);
 	return;
 }
@@ -865,8 +1048,13 @@ static int build_sec_desc(struct cifs_ntsd *pntsd, struct cifs_ntsd *pnntsd,
 	return rc;
 }
 
+<<<<<<< HEAD
 static struct cifs_ntsd *get_cifs_acl_by_fid(struct cifs_sb_info *cifs_sb,
 		__u16 fid, u32 *pacllen)
+=======
+struct cifs_ntsd *get_cifs_acl_by_fid(struct cifs_sb_info *cifs_sb,
+		const struct cifs_fid *cifsfid, u32 *pacllen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cifs_ntsd *pntsd = NULL;
 	unsigned int xid;
@@ -877,7 +1065,12 @@ static struct cifs_ntsd *get_cifs_acl_by_fid(struct cifs_sb_info *cifs_sb,
 		return ERR_CAST(tlink);
 
 	xid = get_xid();
+<<<<<<< HEAD
 	rc = CIFSSMBGetCIFSACL(xid, tlink_tcon(tlink), fid, &pntsd, pacllen);
+=======
+	rc = CIFSSMBGetCIFSACL(xid, tlink_tcon(tlink), cifsfid->netfid, &pntsd,
+				pacllen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_xid(xid);
 
 	cifs_put_tlink(tlink);
@@ -895,9 +1088,16 @@ static struct cifs_ntsd *get_cifs_acl_by_path(struct cifs_sb_info *cifs_sb,
 	int oplock = 0;
 	unsigned int xid;
 	int rc, create_options = 0;
+<<<<<<< HEAD
 	__u16 fid;
 	struct cifs_tcon *tcon;
 	struct tcon_link *tlink = cifs_sb_tlink(cifs_sb);
+=======
+	struct cifs_tcon *tcon;
+	struct tcon_link *tlink = cifs_sb_tlink(cifs_sb);
+	struct cifs_fid fid;
+	struct cifs_open_parms oparms;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (IS_ERR(tlink))
 		return ERR_CAST(tlink);
@@ -908,12 +1108,28 @@ static struct cifs_ntsd *get_cifs_acl_by_path(struct cifs_sb_info *cifs_sb,
 	if (backup_cred(cifs_sb))
 		create_options |= CREATE_OPEN_BACKUP_INTENT;
 
+<<<<<<< HEAD
 	rc = CIFSSMBOpen(xid, tcon, path, FILE_OPEN, READ_CONTROL,
 			create_options, &fid, &oplock, NULL, cifs_sb->local_nls,
 			cifs_sb->mnt_cifs_flags & CIFS_MOUNT_MAP_SPECIAL_CHR);
 	if (!rc) {
 		rc = CIFSSMBGetCIFSACL(xid, tcon, fid, &pntsd, pacllen);
 		CIFSSMBClose(xid, tcon, fid);
+=======
+	oparms.tcon = tcon;
+	oparms.cifs_sb = cifs_sb;
+	oparms.desired_access = READ_CONTROL;
+	oparms.create_options = create_options;
+	oparms.disposition = FILE_OPEN;
+	oparms.path = path;
+	oparms.fid = &fid;
+	oparms.reconnect = false;
+
+	rc = CIFS_open(xid, &oparms, &oplock, NULL);
+	if (!rc) {
+		rc = CIFSSMBGetCIFSACL(xid, tcon, fid.netfid, &pntsd, pacllen);
+		CIFSSMBClose(xid, tcon, fid.netfid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	cifs_put_tlink(tlink);
@@ -938,7 +1154,11 @@ struct cifs_ntsd *get_cifs_acl(struct cifs_sb_info *cifs_sb,
 	if (!open_file)
 		return get_cifs_acl_by_path(cifs_sb, path, pacllen);
 
+<<<<<<< HEAD
 	pntsd = get_cifs_acl_by_fid(cifs_sb, open_file->fid.netfid, pacllen);
+=======
+	pntsd = get_cifs_acl_by_fid(cifs_sb, &open_file->fid, pacllen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cifsFileInfo_put(open_file);
 	return pntsd;
 }
@@ -950,10 +1170,18 @@ int set_cifs_acl(struct cifs_ntsd *pnntsd, __u32 acllen,
 	int oplock = 0;
 	unsigned int xid;
 	int rc, access_flags, create_options = 0;
+<<<<<<< HEAD
 	__u16 fid;
 	struct cifs_tcon *tcon;
 	struct cifs_sb_info *cifs_sb = CIFS_SB(inode->i_sb);
 	struct tcon_link *tlink = cifs_sb_tlink(cifs_sb);
+=======
+	struct cifs_tcon *tcon;
+	struct cifs_sb_info *cifs_sb = CIFS_SB(inode->i_sb);
+	struct tcon_link *tlink = cifs_sb_tlink(cifs_sb);
+	struct cifs_fid fid;
+	struct cifs_open_parms oparms;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (IS_ERR(tlink))
 		return PTR_ERR(tlink);
@@ -969,18 +1197,38 @@ int set_cifs_acl(struct cifs_ntsd *pnntsd, __u32 acllen,
 	else
 		access_flags = WRITE_DAC;
 
+<<<<<<< HEAD
 	rc = CIFSSMBOpen(xid, tcon, path, FILE_OPEN, access_flags,
 			create_options, &fid, &oplock, NULL, cifs_sb->local_nls,
 			cifs_sb->mnt_cifs_flags & CIFS_MOUNT_MAP_SPECIAL_CHR);
+=======
+	oparms.tcon = tcon;
+	oparms.cifs_sb = cifs_sb;
+	oparms.desired_access = access_flags;
+	oparms.create_options = create_options;
+	oparms.disposition = FILE_OPEN;
+	oparms.path = path;
+	oparms.fid = &fid;
+	oparms.reconnect = false;
+
+	rc = CIFS_open(xid, &oparms, &oplock, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc) {
 		cifs_dbg(VFS, "Unable to open file to set ACL\n");
 		goto out;
 	}
 
+<<<<<<< HEAD
 	rc = CIFSSMBSetCIFSACL(xid, tcon, fid, pnntsd, acllen, aclflag);
 	cifs_dbg(NOISY, "SetCIFSACL rc = %d\n", rc);
 
 	CIFSSMBClose(xid, tcon, fid);
+=======
+	rc = CIFSSMBSetCIFSACL(xid, tcon, fid.netfid, pnntsd, acllen, aclflag);
+	cifs_dbg(NOISY, "SetCIFSACL rc = %d\n", rc);
+
+	CIFSSMBClose(xid, tcon, fid.netfid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	free_xid(xid);
 	cifs_put_tlink(tlink);
@@ -990,11 +1238,17 @@ out:
 /* Translate the CIFS ACL (simlar to NTFS ACL) for a file into mode bits */
 int
 cifs_acl_to_fattr(struct cifs_sb_info *cifs_sb, struct cifs_fattr *fattr,
+<<<<<<< HEAD
 		  struct inode *inode, const char *path, const __u16 *pfid)
+=======
+		  struct inode *inode, const char *path,
+		  const struct cifs_fid *pfid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cifs_ntsd *pntsd = NULL;
 	u32 acllen = 0;
 	int rc = 0;
+<<<<<<< HEAD
 
 	cifs_dbg(NOISY, "converting ACL to mode for %s\n", path);
 
@@ -1003,6 +1257,27 @@ cifs_acl_to_fattr(struct cifs_sb_info *cifs_sb, struct cifs_fattr *fattr,
 	else
 		pntsd = get_cifs_acl(cifs_sb, inode, path, &acllen);
 
+=======
+	struct tcon_link *tlink = cifs_sb_tlink(cifs_sb);
+	struct cifs_tcon *tcon;
+
+	cifs_dbg(NOISY, "converting ACL to mode for %s\n", path);
+
+	if (IS_ERR(tlink))
+		return PTR_ERR(tlink);
+	tcon = tlink_tcon(tlink);
+
+	if (pfid && (tcon->ses->server->ops->get_acl_by_fid))
+		pntsd = tcon->ses->server->ops->get_acl_by_fid(cifs_sb, pfid,
+							  &acllen);
+	else if (tcon->ses->server->ops->get_acl)
+		pntsd = tcon->ses->server->ops->get_acl(cifs_sb, inode, path,
+							&acllen);
+	else {
+		cifs_put_tlink(tlink);
+		return -EOPNOTSUPP;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* if we can retrieve the ACL, now parse Access Control Entries, ACEs */
 	if (IS_ERR(pntsd)) {
 		rc = PTR_ERR(pntsd);
@@ -1014,6 +1289,11 @@ cifs_acl_to_fattr(struct cifs_sb_info *cifs_sb, struct cifs_fattr *fattr,
 			cifs_dbg(VFS, "parse sec desc failed rc = %d\n", rc);
 	}
 
+<<<<<<< HEAD
+=======
+	cifs_put_tlink(tlink);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 

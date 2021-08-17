@@ -24,7 +24,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/interrupt.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/llist.h>
 
 
@@ -39,6 +42,7 @@
 bool llist_add_batch(struct llist_node *new_first, struct llist_node *new_last,
 		     struct llist_head *head)
 {
+<<<<<<< HEAD
 	struct llist_node *entry, *old_entry;
 
 	entry = head->first;
@@ -51,6 +55,15 @@ bool llist_add_batch(struct llist_node *new_first, struct llist_node *new_last,
 	}
 
 	return old_entry == NULL;
+=======
+	struct llist_node *first;
+
+	do {
+		new_last->next = first = ACCESS_ONCE(head->first);
+	} while (cmpxchg(&head->first, first, new_first) != first);
+
+	return !first;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(llist_add_batch);
 
@@ -72,12 +85,20 @@ struct llist_node *llist_del_first(struct llist_head *head)
 {
 	struct llist_node *entry, *old_entry, *next;
 
+<<<<<<< HEAD
 	entry = head->first;
+=======
+	entry = smp_load_acquire(&head->first);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (;;) {
 		if (entry == NULL)
 			return NULL;
 		old_entry = entry;
+<<<<<<< HEAD
 		next = entry->next;
+=======
+		next = READ_ONCE(entry->next);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		entry = cmpxchg(&head->first, old_entry, next);
 		if (entry == old_entry)
 			break;
@@ -86,3 +107,28 @@ struct llist_node *llist_del_first(struct llist_head *head)
 	return entry;
 }
 EXPORT_SYMBOL_GPL(llist_del_first);
+<<<<<<< HEAD
+=======
+
+/**
+ * llist_reverse_order - reverse order of a llist chain
+ * @head:	first item of the list to be reversed
+ *
+ * Reverse the order of a chain of llist entries and return the
+ * new first entry.
+ */
+struct llist_node *llist_reverse_order(struct llist_node *head)
+{
+	struct llist_node *new_head = NULL;
+
+	while (head) {
+		struct llist_node *tmp = head;
+		head = head->next;
+		tmp->next = new_head;
+		new_head = tmp;
+	}
+
+	return new_head;
+}
+EXPORT_SYMBOL_GPL(llist_reverse_order);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

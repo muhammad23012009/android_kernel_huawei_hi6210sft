@@ -23,21 +23,31 @@
 #include <linux/skbuff.h>
 #include <linux/icmpv6.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
 #include <net/ipv6.h>
 #include <net/tcp.h>
 #include <net/icmp.h>
 #include <net/ip6_checksum.h>
 #include <net/ip6_fib.h>
 #include <net/ip6_route.h>
+=======
+#include <net/icmp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/flow.h>
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/netfilter_ipv6/ip6t_REJECT.h>
 
+<<<<<<< HEAD
+=======
+#include <net/netfilter/ipv6/nf_reject.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Yasuyuki KOZAKAI <yasuyuki.kozakai@toshiba.co.jp>");
 MODULE_DESCRIPTION("Xtables: packet \"rejection\" target for IPv6");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 /* Send RST reply */
 static void send_reset(struct net *net, struct sk_buff *oldskb)
 {
@@ -191,10 +201,13 @@ send_unreach(struct net *net, struct sk_buff *skb_in, unsigned char code,
 #endif
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int
 reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ip6t_reject_info *reject = par->targinfo;
+<<<<<<< HEAD
 	struct net *net = dev_net((par->in != NULL) ? par->in : par->out);
 
 	pr_debug("%s: medium point\n", __func__);
@@ -213,15 +226,44 @@ reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 		break;
 	case IP6T_ICMP6_PORT_UNREACH:
 		send_unreach(net, skb, ICMPV6_PORT_UNREACH, par->hooknum);
+=======
+	struct net *net = par->net;
+
+	switch (reject->with) {
+	case IP6T_ICMP6_NO_ROUTE:
+		nf_send_unreach6(net, skb, ICMPV6_NOROUTE, par->hooknum);
+		break;
+	case IP6T_ICMP6_ADM_PROHIBITED:
+		nf_send_unreach6(net, skb, ICMPV6_ADM_PROHIBITED, par->hooknum);
+		break;
+	case IP6T_ICMP6_NOT_NEIGHBOUR:
+		nf_send_unreach6(net, skb, ICMPV6_NOT_NEIGHBOUR, par->hooknum);
+		break;
+	case IP6T_ICMP6_ADDR_UNREACH:
+		nf_send_unreach6(net, skb, ICMPV6_ADDR_UNREACH, par->hooknum);
+		break;
+	case IP6T_ICMP6_PORT_UNREACH:
+		nf_send_unreach6(net, skb, ICMPV6_PORT_UNREACH, par->hooknum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case IP6T_ICMP6_ECHOREPLY:
 		/* Do nothing */
 		break;
 	case IP6T_TCP_RESET:
+<<<<<<< HEAD
 		send_reset(net, skb);
 		break;
 	default:
 		net_info_ratelimited("case %u not handled yet\n", reject->with);
+=======
+		nf_send_reset6(net, skb, par->hooknum);
+		break;
+	case IP6T_ICMP6_POLICY_FAIL:
+		nf_send_unreach6(net, skb, ICMPV6_POLICY_FAIL, par->hooknum);
+		break;
+	case IP6T_ICMP6_REJECT_ROUTE:
+		nf_send_unreach6(net, skb, ICMPV6_REJECT_ROUTE, par->hooknum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -238,7 +280,12 @@ static int reject_tg6_check(const struct xt_tgchk_param *par)
 		return -EINVAL;
 	} else if (rejinfo->with == IP6T_TCP_RESET) {
 		/* Must specify that it's a TCP packet */
+<<<<<<< HEAD
 		if (e->ipv6.proto != IPPROTO_TCP ||
+=======
+		if (!(e->ipv6.flags & IP6T_F_PROTO) ||
+		    e->ipv6.proto != IPPROTO_TCP ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    (e->ipv6.invflags & XT_INV_PROTO)) {
 			pr_info("TCP_RESET illegal for non-tcp\n");
 			return -EINVAL;

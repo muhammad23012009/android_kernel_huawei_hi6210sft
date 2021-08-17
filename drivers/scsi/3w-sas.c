@@ -191,6 +191,7 @@ static ssize_t twl_show_stats(struct device *dev,
 	return len;
 } /* End twl_show_stats() */
 
+<<<<<<< HEAD
 /* This function will set a devices queue depth */
 static int twl_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 				  int reason)
@@ -204,6 +205,8 @@ static int twl_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 	return queue_depth;
 } /* End twl_change_queue_depth() */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* stats sysfs attribute initializer */
 static struct device_attribute twl_host_stats_attr = {
 	.attr = {
@@ -303,6 +306,7 @@ static int twl_post_command_packet(TW_Device_Extension *tw_dev, int request_id)
 	return 0;
 } /* End twl_post_command_packet() */
 
+<<<<<<< HEAD
 /* This function will perform a pci-dma mapping for a scatter gather list */
 static int twl_map_scsi_sg_data(TW_Device_Extension *tw_dev, int request_id)
 {
@@ -323,6 +327,8 @@ static int twl_map_scsi_sg_data(TW_Device_Extension *tw_dev, int request_id)
 	return use_sg;
 } /* End twl_map_scsi_sg_data() */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This function hands scsi cdb's to the firmware */
 static int twl_scsiop_execute_scsi(TW_Device_Extension *tw_dev, int request_id, char *cdb, int use_sg, TW_SG_Entry_ISO *sglistarg)
 {
@@ -370,8 +376,13 @@ static int twl_scsiop_execute_scsi(TW_Device_Extension *tw_dev, int request_id, 
 	if (!sglistarg) {
 		/* Map sglist from scsi layer to cmd packet */
 		if (scsi_sg_count(srb)) {
+<<<<<<< HEAD
 			sg_count = twl_map_scsi_sg_data(tw_dev, request_id);
 			if (sg_count == 0)
+=======
+			sg_count = scsi_dma_map(srb);
+			if (sg_count <= 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto out;
 
 			scsi_for_each_sg(srb, sg, sg_count, i) {
@@ -683,14 +694,22 @@ static int twl_allocate_memory(TW_Device_Extension *tw_dev, int size, int which)
 	unsigned long *cpu_addr;
 	int retval = 1;
 
+<<<<<<< HEAD
 	cpu_addr = pci_alloc_consistent(tw_dev->tw_pci_dev, size*TW_Q_LENGTH, &dma_handle);
+=======
+	cpu_addr = pci_zalloc_consistent(tw_dev->tw_pci_dev, size * TW_Q_LENGTH,
+					 &dma_handle);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!cpu_addr) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x5, "Memory allocation failed");
 		goto out;
 	}
 
+<<<<<<< HEAD
 	memset(cpu_addr, 0, size*TW_Q_LENGTH);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < TW_Q_LENGTH; i++) {
 		switch(which) {
 		case 0:
@@ -1116,6 +1135,7 @@ out:
 	return retval;
 } /* End twl_initialize_device_extension() */
 
+<<<<<<< HEAD
 /* This function will perform a pci-dma unmap */
 static void twl_unmap_scsi_data(TW_Device_Extension *tw_dev, int request_id)
 {
@@ -1125,6 +1145,8 @@ static void twl_unmap_scsi_data(TW_Device_Extension *tw_dev, int request_id)
 		scsi_dma_unmap(cmd);
 } /* End twl_unmap_scsi_data() */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This function will handle attention interrupts */
 static int twl_handle_attention_interrupt(TW_Device_Extension *tw_dev)
 {
@@ -1265,11 +1287,19 @@ static irqreturn_t twl_interrupt(int irq, void *dev_instance)
 			}
 
 			/* Now complete the io */
+<<<<<<< HEAD
 			tw_dev->state[request_id] = TW_S_COMPLETED;
 			twl_free_request_id(tw_dev, request_id);
 			tw_dev->posted_request_count--;
 			tw_dev->srb[request_id]->scsi_done(tw_dev->srb[request_id]);
 			twl_unmap_scsi_data(tw_dev, request_id);
+=======
+			scsi_dma_unmap(cmd);
+			cmd->scsi_done(cmd);
+			tw_dev->state[request_id] = TW_S_COMPLETED;
+			twl_free_request_id(tw_dev, request_id);
+			tw_dev->posted_request_count--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		/* Check for another response interrupt */
@@ -1414,10 +1444,19 @@ static int twl_reset_device_extension(TW_Device_Extension *tw_dev, int ioctl_res
 		if ((tw_dev->state[i] != TW_S_FINISHED) &&
 		    (tw_dev->state[i] != TW_S_INITIAL) &&
 		    (tw_dev->state[i] != TW_S_COMPLETED)) {
+<<<<<<< HEAD
 			if (tw_dev->srb[i]) {
 				tw_dev->srb[i]->result = (DID_RESET << 16);
 				tw_dev->srb[i]->scsi_done(tw_dev->srb[i]);
 				twl_unmap_scsi_data(tw_dev, i);
+=======
+			struct scsi_cmnd *cmd = tw_dev->srb[i];
+
+			if (cmd) {
+				cmd->result = (DID_RESET << 16);
+				scsi_dma_unmap(cmd);
+				cmd->scsi_done(cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
@@ -1521,9 +1560,12 @@ static int twl_scsi_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_
 	/* Save the scsi command for use by the ISR */
 	tw_dev->srb[request_id] = SCpnt;
 
+<<<<<<< HEAD
 	/* Initialize phase to zero */
 	SCpnt->SCp.phase = TW_PHASE_INITIAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	retval = twl_scsiop_execute_scsi(tw_dev, request_id, NULL, 0, NULL);
 	if (retval) {
 		tw_dev->state[request_id] = TW_S_COMPLETED;
@@ -1591,7 +1633,11 @@ static struct scsi_host_template driver_template = {
 	.queuecommand		= twl_scsi_queue,
 	.eh_host_reset_handler	= twl_scsi_eh_reset,
 	.bios_param		= twl_scsi_biosparam,
+<<<<<<< HEAD
 	.change_queue_depth	= twl_change_queue_depth,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.can_queue		= TW_Q_LENGTH-2,
 	.slave_configure	= twl_slave_configure,
 	.this_id		= -1,
@@ -1644,6 +1690,10 @@ static int twl_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 
 	if (twl_initialize_device_extension(tw_dev)) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x1a, "Failed to initialize device extension");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_free_device_extension;
 	}
 
@@ -1658,6 +1708,10 @@ static int twl_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 	tw_dev->base_addr = pci_iomap(pdev, 1, 0);
 	if (!tw_dev->base_addr) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x1c, "Failed to ioremap");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_release_mem_region;
 	}
 
@@ -1667,6 +1721,10 @@ static int twl_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 	/* Initialize the card */
 	if (twl_reset_sequence(tw_dev, 0)) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x1d, "Controller reset failed during probe");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_iounmap;
 	}
 

@@ -86,6 +86,9 @@
 #define MC13783_IRQ_HSL		43
 #define MC13783_IRQ_ALSPTH	44
 #define MC13783_IRQ_AHSSHORT	45
+<<<<<<< HEAD
 #define MC13783_NUM_IRQ		MC13XXX_NUM_IRQ
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* ifndef __LINUX_MFD_MC13783_H */

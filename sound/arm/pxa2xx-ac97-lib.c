@@ -117,8 +117,12 @@ static inline void pxa_ac97_warm_pxa25x(void)
 {
 	gsr_bits = 0;
 
+<<<<<<< HEAD
 	GCR |= GCR_WARM_RST | GCR_PRIRDY_IEN | GCR_SECRDY_IEN;
 	wait_event_timeout(gsr_wq, gsr_bits & (GSR_PCR | GSR_SCR), 1);
+=======
+	GCR |= GCR_WARM_RST;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void pxa_ac97_cold_pxa25x(void)
@@ -129,8 +133,11 @@ static inline void pxa_ac97_cold_pxa25x(void)
 	gsr_bits = 0;
 
 	GCR = GCR_COLD_RST;
+<<<<<<< HEAD
 	GCR |= GCR_CDONE_IE|GCR_SDONE_IE;
 	wait_event_timeout(gsr_wq, gsr_bits & (GSR_PCR | GSR_SCR), 1);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -149,14 +156,18 @@ static inline void pxa_ac97_warm_pxa27x(void)
 
 static inline void pxa_ac97_cold_pxa27x(void)
 {
+<<<<<<< HEAD
 	unsigned int timeout;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	GCR &=  GCR_COLD_RST;  /* clear everything but nCRST */
 	GCR &= ~GCR_COLD_RST;  /* then assert nCRST */
 
 	gsr_bits = 0;
 
 	/* PXA27x Developers Manual section 13.5.2.2.1 */
+<<<<<<< HEAD
 	clk_enable(ac97conf_clk);
 	udelay(5);
 	clk_disable(ac97conf_clk);
@@ -164,26 +175,41 @@ static inline void pxa_ac97_cold_pxa27x(void)
 	timeout = 100;     /* wait for the codec-ready bit to be set */
 	while (!((GSR | gsr_bits) & (GSR_PCR | GSR_SCR)) && timeout--)
 		mdelay(1);
+=======
+	clk_prepare_enable(ac97conf_clk);
+	udelay(5);
+	clk_disable_unprepare(ac97conf_clk);
+	GCR = GCR_COLD_RST | GCR_WARM_RST;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
 #ifdef CONFIG_PXA3xx
 static inline void pxa_ac97_warm_pxa3xx(void)
 {
+<<<<<<< HEAD
 	int timeout = 100;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gsr_bits = 0;
 
 	/* Can't use interrupts */
 	GCR |= GCR_WARM_RST;
+<<<<<<< HEAD
 	while (!((GSR | gsr_bits) & (GSR_PCR | GSR_SCR)) && timeout--)
 		mdelay(1);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void pxa_ac97_cold_pxa3xx(void)
 {
+<<<<<<< HEAD
 	int timeout = 1000;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Hold CLKBPB for 100us */
 	GCR = 0;
 	GCR = GCR_CLKBPB;
@@ -199,14 +225,21 @@ static inline void pxa_ac97_cold_pxa3xx(void)
 	GCR &= ~(GCR_PRIRDY_IEN|GCR_SECRDY_IEN);
 
 	GCR = GCR_WARM_RST | GCR_COLD_RST;
+<<<<<<< HEAD
 	while (!(GSR & (GSR_PCR | GSR_SCR)) && timeout--)
 		mdelay(10);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
 bool pxa2xx_ac97_try_warm_reset(struct snd_ac97 *ac97)
 {
 	unsigned long gsr;
+<<<<<<< HEAD
+=======
+	unsigned int timeout = 100;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PXA25x
 	if (cpu_is_pxa25x())
@@ -223,7 +256,15 @@ bool pxa2xx_ac97_try_warm_reset(struct snd_ac97 *ac97)
 		pxa_ac97_warm_pxa3xx();
 	else
 #endif
+<<<<<<< HEAD
 		BUG();
+=======
+		snd_BUG();
+
+	while (!((GSR | gsr_bits) & (GSR_PCR | GSR_SCR)) && timeout--)
+		mdelay(1);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gsr = GSR | gsr_bits;
 	if (!(gsr & (GSR_PCR | GSR_SCR))) {
 		printk(KERN_INFO "%s: warm reset timeout (GSR=%#lx)\n",
@@ -239,6 +280,10 @@ EXPORT_SYMBOL_GPL(pxa2xx_ac97_try_warm_reset);
 bool pxa2xx_ac97_try_cold_reset(struct snd_ac97 *ac97)
 {
 	unsigned long gsr;
+<<<<<<< HEAD
+=======
+	unsigned int timeout = 1000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PXA25x
 	if (cpu_is_pxa25x())
@@ -255,7 +300,14 @@ bool pxa2xx_ac97_try_cold_reset(struct snd_ac97 *ac97)
 		pxa_ac97_cold_pxa3xx();
 	else
 #endif
+<<<<<<< HEAD
 		BUG();
+=======
+		snd_BUG();
+
+	while (!((GSR | gsr_bits) & (GSR_PCR | GSR_SCR)) && timeout--)
+		mdelay(1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	gsr = GSR | gsr_bits;
 	if (!(gsr & (GSR_PCR | GSR_SCR))) {
@@ -306,14 +358,22 @@ static irqreturn_t pxa2xx_ac97_irq(int irq, void *dev_id)
 int pxa2xx_ac97_hw_suspend(void)
 {
 	GCR |= GCR_ACLINK_OFF;
+<<<<<<< HEAD
 	clk_disable(ac97_clk);
+=======
+	clk_disable_unprepare(ac97_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pxa2xx_ac97_hw_suspend);
 
 int pxa2xx_ac97_hw_resume(void)
 {
+<<<<<<< HEAD
 	clk_enable(ac97_clk);
+=======
+	clk_prepare_enable(ac97_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pxa2xx_ac97_hw_resume);
@@ -375,7 +435,11 @@ int pxa2xx_ac97_hw_probe(struct platform_device *dev)
 		goto err_clk;
 	}
 
+<<<<<<< HEAD
 	ret = clk_enable(ac97_clk);
+=======
+	ret = clk_prepare_enable(ac97_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto err_clk2;
 
@@ -410,7 +474,11 @@ void pxa2xx_ac97_hw_remove(struct platform_device *dev)
 		clk_put(ac97conf_clk);
 		ac97conf_clk = NULL;
 	}
+<<<<<<< HEAD
 	clk_disable(ac97_clk);
+=======
+	clk_disable_unprepare(ac97_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_put(ac97_clk);
 	ac97_clk = NULL;
 }

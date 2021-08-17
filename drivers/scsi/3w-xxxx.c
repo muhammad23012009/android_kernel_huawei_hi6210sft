@@ -216,6 +216,10 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
 #include <scsi/scsi_cmnd.h>
+<<<<<<< HEAD
+=======
+#include <scsi/scsi_eh.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "3w-xxxx.h"
 
 /* Globals */
@@ -522,6 +526,7 @@ static ssize_t tw_show_stats(struct device *dev, struct device_attribute *attr,
 	return len;
 } /* End tw_show_stats() */
 
+<<<<<<< HEAD
 /* This function will set a devices queue depth */
 static int tw_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 				 int reason)
@@ -535,6 +540,8 @@ static int tw_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 	return queue_depth;
 } /* End tw_change_queue_depth() */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Create sysfs 'stats' entry */
 static struct device_attribute tw_host_stats_attr = {
 	.attr = {
@@ -1046,6 +1053,12 @@ static int tw_chrdev_open(struct inode *inode, struct file *file)
 
 	dprintk(KERN_WARNING "3w-xxxx: tw_ioctl_open()\n");
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_SYS_ADMIN))
+		return -EACCES;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	minor_number = iminor(inode);
 	if (minor_number >= tw_device_extension_count)
 		return -ENODEV;
@@ -1057,6 +1070,12 @@ static int tw_chrdev_open(struct inode *inode, struct file *file)
 static const struct file_operations tw_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl	= tw_chrdev_ioctl,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+	.compat_ioctl   = tw_chrdev_ioctl,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= tw_chrdev_open,
 	.release	= NULL,
 	.llseek		= noop_llseek,
@@ -1283,6 +1302,7 @@ static int tw_initialize_device_extension(TW_Device_Extension *tw_dev)
 	return 0;
 } /* End tw_initialize_device_extension() */
 
+<<<<<<< HEAD
 static int tw_map_scsi_sg_data(struct pci_dev *pdev, struct scsi_cmnd *cmd)
 {
 	int use_sg;
@@ -1309,6 +1329,8 @@ static void tw_unmap_scsi_data(struct pci_dev *pdev, struct scsi_cmnd *cmd)
 		scsi_dma_unmap(cmd);
 } /* End tw_unmap_scsi_data() */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This function will reset a device extension */
 static int tw_reset_device_extension(TW_Device_Extension *tw_dev)
 {
@@ -1331,8 +1353,13 @@ static int tw_reset_device_extension(TW_Device_Extension *tw_dev)
 			srb = tw_dev->srb[i];
 			if (srb != NULL) {
 				srb->result = (DID_RESET << 16);
+<<<<<<< HEAD
 				tw_dev->srb[i]->scsi_done(tw_dev->srb[i]);
 				tw_unmap_scsi_data(tw_dev->tw_pci_dev, tw_dev->srb[i]);
+=======
+				scsi_dma_unmap(srb);
+				srb->scsi_done(srb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
@@ -1779,8 +1806,13 @@ static int tw_scsiop_read_write(TW_Device_Extension *tw_dev, int request_id)
 	command_packet->byte8.io.lba = lba;
 	command_packet->byte6.block_count = num_sectors;
 
+<<<<<<< HEAD
 	use_sg = tw_map_scsi_sg_data(tw_dev->tw_pci_dev, tw_dev->srb[request_id]);
 	if (!use_sg)
+=======
+	use_sg = scsi_dma_map(srb);
+	if (use_sg <= 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 
 	scsi_for_each_sg(tw_dev->srb[request_id], sg, use_sg, i) {
@@ -1967,9 +1999,12 @@ static int tw_scsi_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_c
 	/* Save the scsi command for use by the ISR */
 	tw_dev->srb[request_id] = SCpnt;
 
+<<<<<<< HEAD
 	/* Initialize phase to zero */
 	SCpnt->SCp.phase = TW_PHASE_INITIAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (*command) {
 		case READ_10:
 		case READ_6:
@@ -2009,7 +2044,12 @@ static int tw_scsi_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_c
 			printk(KERN_NOTICE "3w-xxxx: scsi%d: Unknown scsi opcode: 0x%x\n", tw_dev->host->host_no, *command);
 			tw_dev->state[request_id] = TW_S_COMPLETED;
 			tw_state_request_finish(tw_dev, request_id);
+<<<<<<< HEAD
 			SCpnt->result = (DID_BAD_TARGET << 16);
+=======
+			SCpnt->result = (DRIVER_SENSE << 24) | SAM_STAT_CHECK_CONDITION;
+			scsi_build_sense_buffer(1, SCpnt->sense_buffer, ILLEGAL_REQUEST, 0x20, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			done(SCpnt);
 			retval = 0;
 	}
@@ -2196,12 +2236,20 @@ static irqreturn_t tw_interrupt(int irq, void *dev_instance)
 
 				/* Now complete the io */
 				if ((error != TW_ISR_DONT_COMPLETE)) {
+<<<<<<< HEAD
 					tw_dev->state[request_id] = TW_S_COMPLETED;
 					tw_state_request_finish(tw_dev, request_id);
 					tw_dev->posted_request_count--;
 					tw_dev->srb[request_id]->scsi_done(tw_dev->srb[request_id]);
 					
 					tw_unmap_scsi_data(tw_dev->tw_pci_dev, tw_dev->srb[request_id]);
+=======
+					scsi_dma_unmap(tw_dev->srb[request_id]);
+					tw_dev->srb[request_id]->scsi_done(tw_dev->srb[request_id]);
+					tw_dev->state[request_id] = TW_S_COMPLETED;
+					tw_state_request_finish(tw_dev, request_id);
+					tw_dev->posted_request_count--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			}
 				
@@ -2268,7 +2316,11 @@ static struct scsi_host_template driver_template = {
 	.queuecommand		= tw_scsi_queue,
 	.eh_host_reset_handler	= tw_scsi_eh_reset,
 	.bios_param		= tw_scsi_biosparam,
+<<<<<<< HEAD
 	.change_queue_depth	= tw_change_queue_depth,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.can_queue		= TW_Q_LENGTH-2,
 	.slave_configure	= tw_slave_configure,
 	.this_id		= -1,
@@ -2316,6 +2368,10 @@ static int tw_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 
 	if (tw_initialize_device_extension(tw_dev)) {
 		printk(KERN_WARNING "3w-xxxx: Failed to initialize device extension.");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_free_device_extension;
 	}
 
@@ -2330,6 +2386,10 @@ static int tw_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 	tw_dev->base_addr = pci_resource_start(pdev, 0);
 	if (!tw_dev->base_addr) {
 		printk(KERN_WARNING "3w-xxxx: Failed to get io address.");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_release_mem_region;
 	}
 

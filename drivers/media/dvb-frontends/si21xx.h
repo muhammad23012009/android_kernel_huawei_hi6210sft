@@ -1,7 +1,10 @@
 #ifndef SI21XX_H
 #define SI21XX_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 #include "dvb_frontend.h"
 
@@ -13,7 +16,11 @@ struct si21xx_config {
 	int min_delay_ms;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_SI21XX)
+=======
+#if IS_REACHABLE(CONFIG_DVB_SI21XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *si21xx_attach(const struct si21xx_config *config,
 						struct i2c_adapter *i2c);
 #else

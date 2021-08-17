@@ -8,7 +8,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/list.h>
@@ -66,7 +69,11 @@ static int msi;
 module_param(msi, int, 0);
 MODULE_PARM_DESC(msi, "Turn on Message Signaled Interrupts.");
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ql3xxx_pci_tbl) = {
+=======
+static const struct pci_device_id ql3xxx_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, QL3022_DEVICE_ID)},
 	{PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, QL3032_DEVICE_ID)},
 	/* required last entry */
@@ -116,7 +123,11 @@ static int ql_sem_spinlock(struct ql3_adapter *qdev,
 		value = readl(&port_regs->CommonRegs.semaphoreReg);
 		if ((value & (sem_mask >> 16)) == sem_bits)
 			return 0;
+<<<<<<< HEAD
 		ssleep(1);
+=======
+		mdelay(1000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (--seconds);
 	return -1;
 }
@@ -147,10 +158,14 @@ static int ql_wait_for_drvr_lock(struct ql3_adapter *qdev)
 {
 	int i = 0;
 
+<<<<<<< HEAD
 	while (i < 10) {
 		if (i)
 			ssleep(1);
 
+=======
+	do {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ql_sem_lock(qdev,
 				QL_DRVR_SEM_MASK,
 				(QL_RESOURCE_BITS_BASE_CODE | (qdev->mac_index)
@@ -159,7 +174,12 @@ static int ql_wait_for_drvr_lock(struct ql3_adapter *qdev)
 				      "driver lock acquired\n");
 			return 1;
 		}
+<<<<<<< HEAD
 	}
+=======
+		mdelay(1000);
+	} while (++i < 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	netdev_err(qdev->ndev, "Timed out waiting for driver lock...\n");
 	return 0;
@@ -383,8 +403,11 @@ static void fm93c56a_select(struct ql3_adapter *qdev)
 
 	qdev->eeprom_cmd_data = AUBURN_EEPROM_CS_1;
 	ql_write_nvram_reg(qdev, spir, ISP_NVRAM_MASK | qdev->eeprom_cmd_data);
+<<<<<<< HEAD
 	ql_write_nvram_reg(qdev, spir,
 			   ((ISP_NVRAM_MASK << 16) | qdev->eeprom_cmd_data));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1739,8 +1762,11 @@ static void ql_get_drvinfo(struct net_device *ndev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(qdev->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->regdump_len = 0;
 	drvinfo->eedump_len = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u32 ql_get_msglevel(struct net_device *ndev)
@@ -2759,6 +2785,12 @@ static int ql_alloc_large_buffers(struct ql3_adapter *qdev)
 	int err;
 
 	for (i = 0; i < qdev->num_large_buffers; i++) {
+<<<<<<< HEAD
+=======
+		lrg_buf_cb = &qdev->lrg_buf[i];
+		memset(lrg_buf_cb, 0, sizeof(struct ql_rcv_buf_cb));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb = netdev_alloc_skb(qdev->ndev,
 				       qdev->lrg_buffer_len);
 		if (unlikely(!skb)) {
@@ -2769,11 +2801,15 @@ static int ql_alloc_large_buffers(struct ql3_adapter *qdev)
 			ql_free_large_buffers(qdev);
 			return -ENOMEM;
 		} else {
+<<<<<<< HEAD
 
 			lrg_buf_cb = &qdev->lrg_buf[i];
 			memset(lrg_buf_cb, 0, sizeof(struct ql_rcv_buf_cb));
 			lrg_buf_cb->index = i;
 			lrg_buf_cb->skb = skb;
+=======
+			lrg_buf_cb->index = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * We save some space to copy the ethhdr from first
 			 * buffer
@@ -2790,10 +2826,18 @@ static int ql_alloc_large_buffers(struct ql3_adapter *qdev)
 				netdev_err(qdev->ndev,
 					   "PCI mapping failed with error: %d\n",
 					   err);
+<<<<<<< HEAD
+=======
+				dev_kfree_skb_irq(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				ql_free_large_buffers(qdev);
 				return -ENOMEM;
 			}
 
+<<<<<<< HEAD
+=======
+			lrg_buf_cb->skb = skb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dma_unmap_addr_set(lrg_buf_cb, mapaddr, map);
 			dma_unmap_len_set(lrg_buf_cb, maplen,
 					  qdev->lrg_buffer_len -
@@ -3293,7 +3337,11 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
 		if ((value & ISP_CONTROL_SR) == 0)
 			break;
 
+<<<<<<< HEAD
 		ssleep(1);
+=======
+		mdelay(1000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while ((--max_wait_time));
 
 	/*
@@ -3329,7 +3377,11 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
 						   ispControlStatus);
 			if ((value & ISP_CONTROL_FSR) == 0)
 				break;
+<<<<<<< HEAD
 			ssleep(1);
+=======
+			mdelay(1000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} while ((--max_wait_time));
 	}
 	if (max_wait_time == 0)
@@ -3839,7 +3891,11 @@ static int ql3xxx_probe(struct pci_dev *pdev,
 
 	/* Set driver entry points */
 	ndev->netdev_ops = &ql3xxx_netdev_ops;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(ndev, &ql3xxx_ethtool_ops);
+=======
+	ndev->ethtool_ops = &ql3xxx_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ndev->watchdog_timeo = 5 * HZ;
 
 	netif_napi_add(ndev, &qdev->napi, ql_poll, 64);
@@ -3916,7 +3972,10 @@ err_out_free_regions:
 	pci_release_regions(pdev);
 err_out_disable_pdev:
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out:
 	return err;
 }
@@ -3939,7 +3998,10 @@ static void ql3xxx_remove(struct pci_dev *pdev)
 
 	iounmap(qdev->mem_map_registers);
 	pci_release_regions(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(ndev);
 }
 

@@ -5,7 +5,10 @@
 
 #include <linux/string.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 #include <linux/device.h>
 #include <linux/of_device.h>
@@ -407,6 +410,10 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 	}
 
 	num_pbm_ranges = i / sizeof(*pbm_ranges);
+<<<<<<< HEAD
+=======
+	memset(&pbm->mem64_space, 0, sizeof(struct resource));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < num_pbm_ranges; i++) {
 		const struct linux_prom_pci_ranges *pr = &pbm_ranges[i];
@@ -452,7 +459,16 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 			break;
 
 		case 3:
+<<<<<<< HEAD
 			/* XXX 64-bit MEM handling XXX */
+=======
+			/* 64-bit MEM handling */
+			pbm->mem64_space.start = a;
+			pbm->mem64_space.end = a + size - 1UL;
+			pbm->mem64_space.flags = IORESOURCE_MEM;
+			saw_mem = 1;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		default:
 			break;
@@ -466,6 +482,7 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 		prom_halt();
 	}
 
+<<<<<<< HEAD
 	printk("%s: PCI IO[%llx] MEM[%llx]\n",
 	       pbm->name,
 	       pbm->io_space.start,
@@ -475,6 +492,24 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 
 	request_resource(&ioport_resource, &pbm->io_space);
 	request_resource(&iomem_resource, &pbm->mem_space);
+=======
+	printk("%s: PCI IO[%llx] MEM[%llx]",
+	       pbm->name,
+	       pbm->io_space.start,
+	       pbm->mem_space.start);
+	if (pbm->mem64_space.flags)
+		printk(" MEM64[%llx]",
+		       pbm->mem64_space.start);
+	printk("\n");
+
+	pbm->io_space.name = pbm->mem_space.name = pbm->name;
+	pbm->mem64_space.name = pbm->name;
+
+	request_resource(&ioport_resource, &pbm->io_space);
+	request_resource(&iomem_resource, &pbm->mem_space);
+	if (pbm->mem64_space.flags)
+		request_resource(&iomem_resource, &pbm->mem64_space);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_register_legacy_regions(&pbm->io_space,
 				    &pbm->mem_space);

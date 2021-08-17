@@ -5,6 +5,7 @@
 # License.  See the file "COPYING" in the main directory of this archive
 # for more details.
 #
+<<<<<<< HEAD
 # (C) Copyright 2002,2003 Yoshinori Sato <ysato@users.sourceforge.jp>
 #
 
@@ -55,13 +56,55 @@ libs-y	+= arch/$(ARCH)/lib/ $(LIBGCC)
 boot := arch/h8300/boot
 
 export MODEL PLATFORM BOARD
+=======
+# (C) Copyright 2002-2015 Yoshinori Sato <ysato@users.sourceforge.jp>
+#
+
+cflags-$(CONFIG_CPU_H8300H)	:= -mh
+aflags-$(CONFIG_CPU_H8300H)	:= -mh -Wa,--mach=h8300h
+ldflags-$(CONFIG_CPU_H8300H)	:= -mh8300helf_linux
+cflags-$(CONFIG_CPU_H8S)	:= -ms
+aflags-$(CONFIG_CPU_H8S)	:= -ms -Wa,--mach=h8300s
+ldflags-$(CONFIG_CPU_H8S)	:= -mh8300self_linux
+
+KBUILD_CFLAGS += $(cflags-y)
+KBUILD_CFLAGS += -mint32 -fno-builtin
+KBUILD_CFLAGS += -D__linux__
+KBUILD_CFLAGS += -DUTS_SYSNAME=\"uClinux\"
+KBUILD_AFLAGS += $(aflags-y)
+LDFLAGS += $(ldflags-y)
+
+ifeq ($(CROSS_COMPILE),)
+CROSS_COMPILE := $(call cc-cross-prefix, h8300-unknown-linux- h8300-linux-)
+endif
+
+core-y	+= arch/$(ARCH)/kernel/ arch/$(ARCH)/mm/
+ifneq '$(CONFIG_H8300_BUILTIN_DTB)' '""'
+core-y += arch/h8300/boot/dts/
+endif
+
+libs-y	+= arch/$(ARCH)/lib/
+
+boot := arch/h8300/boot
+
+%.dtb %.dtb.S %.dtb.o: | scripts
+	$(Q)$(MAKE) $(build)=arch/h8300/boot/dts arch/h8300/boot/dts/$@
+
+PHONY += dtbs
+dtbs: scripts
+	$(Q)$(MAKE) $(build)=arch/h8300/boot/dts
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 archmrproper:
 
 archclean:
 	$(Q)$(MAKE) $(clean)=$(boot)
 
+<<<<<<< HEAD
 vmlinux.srec vmlinux.bin zImage: vmlinux
+=======
+vmlinux.srec vmlinux.bin zImage uImage.bin: vmlinux
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 
 define archhelp

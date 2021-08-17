@@ -72,7 +72,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -605,9 +608,15 @@ static void it821x_display_disk(int n, u8 *buf)
 {
 	unsigned char id[41];
 	int mode = 0;
+<<<<<<< HEAD
 	char *mtype = "";
 	char mbuf[8];
 	char *cbl = "(40 wire cable)";
+=======
+	const char *mtype = "";
+	char mbuf[8];
+	const char *cbl = "(40 wire cable)";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	static const char *types[5] = {
 		"RAID0", "RAID1", "RAID 0+1", "JBOD", "DISK"
@@ -904,7 +913,11 @@ static int it821x_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	};
 
 	const struct ata_port_info *ppi[] = { NULL, NULL };
+<<<<<<< HEAD
 	static char *mode[2] = { "pass through", "smart" };
+=======
+	static const char *mode[2] = { "pass through", "smart" };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = pcim_enable_device(pdev);
@@ -936,10 +949,17 @@ static int it821x_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return ata_pci_bmdma_init_one(pdev, ppi, &it821x_sht, NULL, 0);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int it821x_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int it821x_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -966,7 +986,11 @@ static struct pci_driver it821x_pci_driver = {
 	.id_table	= it821x,
 	.probe 		= it821x_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend	= ata_pci_device_suspend,
 	.resume		= it821x_reinit_one,
 #endif

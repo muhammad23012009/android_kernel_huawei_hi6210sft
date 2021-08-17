@@ -1352,7 +1352,11 @@ int asd_start_seqs(struct asd_ha_struct *asd_ha)
 	for_each_sequencer(lseq_mask, lseq_mask, lseq) {
 		err = asd_seq_start_lseq(asd_ha, lseq);
 		if (err) {
+<<<<<<< HEAD
 			asd_printk("coudln't start LSEQ %d for %s\n", lseq,
+=======
+			asd_printk("couldn't start LSEQ %d for %s\n", lseq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   pci_name(asd_ha->pcidev));
 			return err;
 		}

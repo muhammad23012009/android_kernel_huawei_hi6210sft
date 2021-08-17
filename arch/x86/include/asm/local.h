@@ -50,6 +50,7 @@ static inline void local_sub(long i, local_t *l)
  * true if the result is zero, or false for all
  * other cases.
  */
+<<<<<<< HEAD
 static inline int local_sub_and_test(long i, local_t *l)
 {
 	unsigned char c;
@@ -58,6 +59,11 @@ static inline int local_sub_and_test(long i, local_t *l)
 		     : "+m" (l->a.counter), "=qm" (c)
 		     : "ir" (i) : "memory");
 	return c;
+=======
+static inline bool local_sub_and_test(long i, local_t *l)
+{
+	GEN_BINARY_RMWcc(_ASM_SUB, l->a.counter, "er", i, "%0", e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -68,6 +74,7 @@ static inline int local_sub_and_test(long i, local_t *l)
  * returns true if the result is 0, or false for all other
  * cases.
  */
+<<<<<<< HEAD
 static inline int local_dec_and_test(local_t *l)
 {
 	unsigned char c;
@@ -76,6 +83,11 @@ static inline int local_dec_and_test(local_t *l)
 		     : "+m" (l->a.counter), "=qm" (c)
 		     : : "memory");
 	return c != 0;
+=======
+static inline bool local_dec_and_test(local_t *l)
+{
+	GEN_UNARY_RMWcc(_ASM_DEC, l->a.counter, "%0", e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -86,6 +98,7 @@ static inline int local_dec_and_test(local_t *l)
  * and returns true if the result is zero, or false for all
  * other cases.
  */
+<<<<<<< HEAD
 static inline int local_inc_and_test(local_t *l)
 {
 	unsigned char c;
@@ -94,6 +107,11 @@ static inline int local_inc_and_test(local_t *l)
 		     : "+m" (l->a.counter), "=qm" (c)
 		     : : "memory");
 	return c != 0;
+=======
+static inline bool local_inc_and_test(local_t *l)
+{
+	GEN_UNARY_RMWcc(_ASM_INC, l->a.counter, "%0", e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -105,6 +123,7 @@ static inline int local_inc_and_test(local_t *l)
  * if the result is negative, or false when
  * result is greater than or equal to zero.
  */
+<<<<<<< HEAD
 static inline int local_add_negative(long i, local_t *l)
 {
 	unsigned char c;
@@ -113,6 +132,11 @@ static inline int local_add_negative(long i, local_t *l)
 		     : "+m" (l->a.counter), "=qm" (c)
 		     : "ir" (i) : "memory");
 	return c;
+=======
+static inline bool local_add_negative(long i, local_t *l)
+{
+	GEN_BINARY_RMWcc(_ASM_ADD, l->a.counter, "er", i, "%0", s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

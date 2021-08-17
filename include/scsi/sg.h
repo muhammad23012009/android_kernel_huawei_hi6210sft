@@ -86,6 +86,12 @@ typedef struct sg_io_hdr
 #define SG_FLAG_MMAP_IO 4       /* request memory mapped IO */
 #define SG_FLAG_NO_DXFER 0x10000 /* no transfer of kernel buffers to/from */
 				/* user space (debug indirect IO) */
+<<<<<<< HEAD
+=======
+/* defaults:: for sg driver: Q_AT_HEAD; for block layer: Q_AT_TAIL */
+#define SG_FLAG_Q_AT_TAIL 0x10
+#define SG_FLAG_Q_AT_HEAD 0x20
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* following 'info' values are "or"-ed together */
 #define SG_INFO_OK_MASK 0x1
@@ -161,12 +167,22 @@ typedef struct sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
 
 /* Returns -EBUSY if occupied. 3rd argument pointer to int (see next) */
 #define SG_SCSI_RESET 0x2284
+<<<<<<< HEAD
 /* Associated values that can be given to SG_SCSI_RESET follow */
+=======
+/* Associated values that can be given to SG_SCSI_RESET follow.
+ * SG_SCSI_RESET_NO_ESCALATE may be OR-ed to the _DEVICE, _TARGET, _BUS
+ * or _HOST reset value so only that action is attempted. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define		SG_SCSI_RESET_NOTHING	0
 #define		SG_SCSI_RESET_DEVICE	1
 #define		SG_SCSI_RESET_BUS	2
 #define		SG_SCSI_RESET_HOST	3
 #define		SG_SCSI_RESET_TARGET	4
+<<<<<<< HEAD
+=======
+#define		SG_SCSI_RESET_NO_ESCALATE	0x100
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* synchronous SCSI command ioctl, (only in version 3 interface) */
 #define SG_IO 0x2285   /* similar effect as write() followed by read() */
@@ -191,7 +207,10 @@ typedef struct sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
 #define SG_DEFAULT_RETRIES 0
 
 /* Defaults, commented if they differ from original sg driver */
+<<<<<<< HEAD
 #define SG_DEF_FORCE_LOW_DMA 0  /* was 1 -> memory below 16MB on i386 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SG_DEF_FORCE_PACK_ID 0
 #define SG_DEF_KEEP_ORPHAN 0
 #define SG_DEF_RESERVED_SIZE SG_SCATTER_SZ /* load time option */

@@ -3,6 +3,11 @@
 #ifndef __IEEE80211_DEBUGFS_NETDEV_H
 #define __IEEE80211_DEBUGFS_NETDEV_H
 
+<<<<<<< HEAD
+=======
+#include "ieee80211_i.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MAC80211_DEBUGFS
 void ieee80211_debugfs_add_netdev(struct ieee80211_sub_if_data *sdata);
 void ieee80211_debugfs_remove_netdev(struct ieee80211_sub_if_data *sdata);

@@ -40,10 +40,17 @@ struct snd_seq_queue {
 	
 	struct snd_seq_timer *timer;	/* time keeper for this queue */
 	int	owner;		/* client that 'owns' the timer */
+<<<<<<< HEAD
 	unsigned int	locked:1,	/* timer is only accesibble by owner if set */
 		klocked:1,	/* kernel lock (after START) */	
 		check_again:1,
 		check_blocked:1;
+=======
+	bool	locked;		/* timer is only accesibble by owner if set */
+	bool	klocked;	/* kernel lock (after START) */
+	bool	check_again;	/* concurrent access happened during check */
+	bool	check_blocked;	/* queue being checked */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unsigned int flags;		/* status flags */
 	unsigned int info_flags;	/* info for sync */
@@ -71,7 +78,11 @@ void snd_seq_queues_delete(void);
 
 
 /* create new queue (constructor) */
+<<<<<<< HEAD
 int snd_seq_queue_alloc(int client, int locked, unsigned int flags);
+=======
+struct snd_seq_queue *snd_seq_queue_alloc(int client, int locked, unsigned int flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* delete queue (destructor) */
 int snd_seq_queue_delete(int client, int queueid);

@@ -95,6 +95,7 @@ struct dn_fib_table {
 /*
  * dn_fib.c
  */
+<<<<<<< HEAD
 extern void dn_fib_init(void);
 extern void dn_fib_cleanup(void);
 
@@ -110,18 +111,40 @@ extern void dn_fib_release_info(struct dn_fib_info *fi);
 extern void dn_fib_flush(void);
 extern void dn_fib_select_multipath(const struct flowidn *fld,
 					struct dn_fib_res *res);
+=======
+void dn_fib_init(void);
+void dn_fib_cleanup(void);
+
+int dn_fib_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+struct dn_fib_info *dn_fib_create_info(const struct rtmsg *r,
+				       struct nlattr *attrs[],
+				       const struct nlmsghdr *nlh, int *errp);
+int dn_fib_semantic_match(int type, struct dn_fib_info *fi,
+			  const struct flowidn *fld, struct dn_fib_res *res);
+void dn_fib_release_info(struct dn_fib_info *fi);
+void dn_fib_flush(void);
+void dn_fib_select_multipath(const struct flowidn *fld, struct dn_fib_res *res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * dn_tables.c
  */
+<<<<<<< HEAD
 extern struct dn_fib_table *dn_fib_get_table(u32 n, int creat);
 extern struct dn_fib_table *dn_fib_empty_table(void);
 extern void dn_fib_table_init(void);
 extern void dn_fib_table_cleanup(void);
+=======
+struct dn_fib_table *dn_fib_get_table(u32 n, int creat);
+struct dn_fib_table *dn_fib_empty_table(void);
+void dn_fib_table_init(void);
+void dn_fib_table_cleanup(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * dn_rules.c
  */
+<<<<<<< HEAD
 extern void dn_fib_rules_init(void);
 extern void dn_fib_rules_cleanup(void);
 extern unsigned int dnet_addr_type(__le16 addr);
@@ -130,6 +153,16 @@ extern int dn_fib_lookup(struct flowidn *fld, struct dn_fib_res *res);
 extern int dn_fib_dump(struct sk_buff *skb, struct netlink_callback *cb);
 
 extern void dn_fib_free_info(struct dn_fib_info *fi);
+=======
+void dn_fib_rules_init(void);
+void dn_fib_rules_cleanup(void);
+unsigned int dnet_addr_type(__le16 addr);
+int dn_fib_lookup(struct flowidn *fld, struct dn_fib_res *res);
+
+int dn_fib_dump(struct sk_buff *skb, struct netlink_callback *cb);
+
+void dn_fib_free_info(struct dn_fib_info *fi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void dn_fib_info_put(struct dn_fib_info *fi)
 {

@@ -33,10 +33,15 @@ struct snd_seq_fifo *snd_seq_fifo_new(int poolsize)
 	struct snd_seq_fifo *f;
 
 	f = kzalloc(sizeof(*f), GFP_KERNEL);
+<<<<<<< HEAD
 	if (f == NULL) {
 		snd_printd("malloc failed for snd_seq_fifo_new() \n");
 		return NULL;
 	}
+=======
+	if (!f)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	f->pool = snd_seq_pool_new(poolsize);
 	if (f->pool == NULL) {
@@ -125,9 +130,15 @@ int snd_seq_fifo_event_in(struct snd_seq_fifo *f,
 		return -EINVAL;
 
 	snd_use_lock_use(&f->use_lock);
+<<<<<<< HEAD
 	err = snd_seq_event_dup(f->pool, event, &cell, 1, NULL); /* always non-blocking */
 	if (err < 0) {
 		if (err == -ENOMEM)
+=======
+	err = snd_seq_event_dup(f->pool, event, &cell, 1, NULL, NULL); /* always non-blocking */
+	if (err < 0) {
+		if ((err == -ENOMEM) || (err == -EAGAIN))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			atomic_inc(&f->overflow);
 		snd_use_lock_free(&f->use_lock);
 		return err;
@@ -280,3 +291,23 @@ int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+/* get the number of unused cells safely */
+int snd_seq_fifo_unused_cells(struct snd_seq_fifo *f)
+{
+	unsigned long flags;
+	int cells;
+
+	if (!f)
+		return 0;
+
+	snd_use_lock_use(&f->use_lock);
+	spin_lock_irqsave(&f->lock, flags);
+	cells = snd_seq_unused_cells(f->pool);
+	spin_unlock_irqrestore(&f->lock, flags);
+	snd_use_lock_free(&f->use_lock);
+	return cells;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

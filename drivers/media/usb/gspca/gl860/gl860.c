@@ -438,7 +438,11 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 	s32 nToSkip =
 		sd->swapRB * (gspca_dev->cam.cam_mode[mode].bytesperline + 1);
 
+<<<<<<< HEAD
 	/* Test only against 0202h, so endianess does not matter */
+=======
+	/* Test only against 0202h, so endianness does not matter */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (*(s16 *) data) {
 	case 0x0202:		/* End of frame, start a new one */
 		gspca_frame_add(gspca_dev, LAST_PACKET, NULL, 0);

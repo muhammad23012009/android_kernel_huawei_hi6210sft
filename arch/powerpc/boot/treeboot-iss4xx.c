@@ -59,7 +59,11 @@ static void *iss_4xx_vmlinux_alloc(unsigned long size)
 	return (void *)ibm4xx_memstart;
 }
 
+<<<<<<< HEAD
 #define SPRN_PIR	0x11E	/* Processor Indentification Register */
+=======
+#define SPRN_PIR	0x11E	/* Processor Identification Register */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void platform_init(void)
 {
 	unsigned long end_of_ram = 0x08000000;

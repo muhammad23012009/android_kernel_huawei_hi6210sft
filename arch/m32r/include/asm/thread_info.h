@@ -24,7 +24,10 @@
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		flags;		/* low level flags */
 	unsigned long		status;		/* thread-synchronous flags */
 	__u32			cpu;		/* current CPU */
@@ -34,11 +37,15 @@ struct thread_info {
 					 	   0-0xBFFFFFFF for user-thread
 						   0-0xFFFFFFFF for kernel-thread
 						*/
+<<<<<<< HEAD
 	struct restart_block    restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__u8			supervisor_stack[0];
 };
 
+<<<<<<< HEAD
 #else /* !__ASSEMBLY__ */
 
 /* offsets into the thread_info struct for assembly code access */
@@ -54,6 +61,9 @@ struct thread_info {
 #endif
 
 #define PREEMPT_ACTIVE		0x10000000
+=======
+#endif /* !__ASSEMBLY__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define THREAD_SIZE		(PAGE_SIZE << 1)
 #define THREAD_SIZE_ORDER	1
@@ -65,14 +75,20 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 	.addr_limit	= KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)

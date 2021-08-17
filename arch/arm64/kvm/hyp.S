@@ -17,6 +17,7 @@
 
 #include <linux/linkage.h>
 
+<<<<<<< HEAD
 #include <asm/assembler.h>
 #include <asm/memory.h>
 #include <asm/asm-offsets.h>
@@ -1093,6 +1094,14 @@ __hyp_panic_str:
 
 /*
  * u64 kvm_call_hyp(void *hypfn, ...);
+=======
+#include <asm/alternative.h>
+#include <asm/assembler.h>
+#include <asm/cpufeature.h>
+
+/*
+ * u64 __kvm_call_hyp(void *hypfn, ...);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This is not really a variadic function in the classic C-way and care must
  * be taken when calling this to ensure parameters are passed in registers
@@ -1103,6 +1112,7 @@ __hyp_panic_str:
  * passed as x0, x1, and x2 (a maximum of 3 arguments in addition to the
  * function pointer can be passed).  The function being called must be mapped
  * in Hyp mode (see init_hyp_mode in arch/arm/kvm/arm.c).  Return values are
+<<<<<<< HEAD
  * passed in r0 and r1.
  *
  * A function pointer with a value of 0 has a special meaning, and is
@@ -1272,3 +1282,21 @@ ENTRY(__kvm_hyp_vector)
 ENDPROC(__kvm_hyp_vector)
 
 	.popsection
+=======
+ * passed in x0.
+ *
+ * A function pointer with a value less than 0xfff has a special meaning,
+ * and is used to implement __hyp_get_vectors in the same way as in
+ * arch/arm64/kernel/hyp_stub.S.
+ * HVC behaves as a 'bl' call and will clobber lr.
+ */
+ENTRY(__kvm_call_hyp)
+alternative_if_not ARM64_HAS_VIRT_HOST_EXTN
+	str     lr, [sp, #-16]!
+	hvc	#0
+	ldr     lr, [sp], #16
+	ret
+alternative_else_nop_endif
+	b	__vhe_hyp_call
+ENDPROC(__kvm_call_hyp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

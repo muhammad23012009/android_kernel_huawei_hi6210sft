@@ -158,7 +158,11 @@ static int stv6110_sleep(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32 carrier_width(u32 symbol_rate, fe_rolloff_t rolloff)
+=======
+static u32 carrier_width(u32 symbol_rate, enum fe_rolloff rolloff)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 rlf;
 
@@ -263,11 +267,17 @@ static int stv6110_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 static int stv6110_set_frequency(struct dvb_frontend *fe, u32 frequency)
 {
 	struct stv6110_priv *priv = fe->tuner_priv;
+<<<<<<< HEAD
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 	u8 ret = 0x04;
 	u32 divider, ref, p, presc, i, result_freq, vco_freq;
 	s32 p_calc, p_calc_opt = 1000, r_div, r_div_opt = 0, p_val;
 	s32 srate;
+=======
+	u8 ret = 0x04;
+	u32 divider, ref, p, presc, i, result_freq, vco_freq;
+	s32 p_calc, p_calc_opt = 1000, r_div, r_div_opt = 0, p_val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk("%s, freq=%d kHz, mclk=%d Hz\n", __func__,
 						frequency, priv->mclk);
@@ -278,6 +288,7 @@ static int stv6110_set_frequency(struct dvb_frontend *fe, u32 frequency)
 				((((priv->mclk / 1000000) - 16) & 0x1f) << 3);
 
 	/* BB_GAIN = db/2 */
+<<<<<<< HEAD
 	if (fe->ops.set_property && fe->ops.get_property) {
 		srate = c->symbol_rate;
 		dprintk("%s: Get Frontend parameters: srate=%d\n",
@@ -285,6 +296,8 @@ static int stv6110_set_frequency(struct dvb_frontend *fe, u32 frequency)
 	} else
 		srate = 15000000;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->regs[RSTV6110_CTRL2] &= ~0x0f;
 	priv->regs[RSTV6110_CTRL2] |= (priv->gain & 0x0f);
 
@@ -382,7 +395,11 @@ static int stv6110_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops stv6110_tuner_ops = {
+=======
+static const struct dvb_tuner_ops stv6110_tuner_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.info = {
 		.name = "ST STV6110",
 		.frequency_min = 950000,

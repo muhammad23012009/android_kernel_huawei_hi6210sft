@@ -1,7 +1,10 @@
 #ifndef ACPI_PNP_H
 #define ACPI_PNP_H
 
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/acpi.h>
 #include <linux/pnp.h>
 

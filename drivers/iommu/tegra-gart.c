@@ -63,11 +63,27 @@ struct gart_device {
 	struct device		*dev;
 };
 
+<<<<<<< HEAD
+=======
+struct gart_domain {
+	struct iommu_domain domain;		/* generic domain handle */
+	struct gart_device *gart;		/* link to gart device   */
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct gart_device *gart_handle; /* unique for a system */
 
 #define GART_PTE(_pfn)						\
 	(GART_ENTRY_PHYS_ADDR_VALID | ((_pfn) << PAGE_SHIFT))
 
+<<<<<<< HEAD
+=======
+static struct gart_domain *to_gart_domain(struct iommu_domain *dom)
+{
+	return container_of(dom, struct gart_domain, domain);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Any interaction between any block on PPSB and a block on APB or AHB
  * must have these read-back to ensure the APB/AHB bus transaction is
@@ -156,6 +172,7 @@ static inline bool gart_iova_range_valid(struct gart_device *gart,
 static int gart_iommu_attach_dev(struct iommu_domain *domain,
 				 struct device *dev)
 {
+<<<<<<< HEAD
 	struct gart_device *gart;
 	struct gart_client *client, *c;
 	int err = 0;
@@ -170,6 +187,13 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
 					gart->page_count * GART_PAGE_SIZE - 1;
 	domain->geometry.force_aperture = true;
 
+=======
+	struct gart_domain *gart_domain = to_gart_domain(domain);
+	struct gart_device *gart = gart_domain->gart;
+	struct gart_client *client, *c;
+	int err = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	client = devm_kzalloc(gart->dev, sizeof(*c), GFP_KERNEL);
 	if (!client)
 		return -ENOMEM;
@@ -198,7 +222,12 @@ fail:
 static void gart_iommu_detach_dev(struct iommu_domain *domain,
 				  struct device *dev)
 {
+<<<<<<< HEAD
 	struct gart_device *gart = domain->priv;
+=======
+	struct gart_domain *gart_domain = to_gart_domain(domain);
+	struct gart_device *gart = gart_domain->gart;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct gart_client *c;
 
 	spin_lock(&gart->client_lock);
@@ -216,6 +245,7 @@ out:
 	spin_unlock(&gart->client_lock);
 }
 
+<<<<<<< HEAD
 static int gart_iommu_domain_init(struct iommu_domain *domain)
 {
 	return 0;
@@ -237,12 +267,61 @@ static void gart_iommu_domain_destroy(struct iommu_domain *domain)
 	}
 	spin_unlock(&gart->client_lock);
 	domain->priv = NULL;
+=======
+static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
+{
+	struct gart_domain *gart_domain;
+	struct gart_device *gart;
+
+	if (type != IOMMU_DOMAIN_UNMANAGED)
+		return NULL;
+
+	gart = gart_handle;
+	if (!gart)
+		return NULL;
+
+	gart_domain = kzalloc(sizeof(*gart_domain), GFP_KERNEL);
+	if (!gart_domain)
+		return NULL;
+
+	gart_domain->gart = gart;
+	gart_domain->domain.geometry.aperture_start = gart->iovmm_base;
+	gart_domain->domain.geometry.aperture_end = gart->iovmm_base +
+					gart->page_count * GART_PAGE_SIZE - 1;
+	gart_domain->domain.geometry.force_aperture = true;
+
+	return &gart_domain->domain;
+}
+
+static void gart_iommu_domain_free(struct iommu_domain *domain)
+{
+	struct gart_domain *gart_domain = to_gart_domain(domain);
+	struct gart_device *gart = gart_domain->gart;
+
+	if (gart) {
+		spin_lock(&gart->client_lock);
+		if (!list_empty(&gart->client)) {
+			struct gart_client *c;
+
+			list_for_each_entry(c, &gart->client, list)
+				gart_iommu_detach_dev(domain, c->dev);
+		}
+		spin_unlock(&gart->client_lock);
+	}
+
+	kfree(gart_domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
 			  phys_addr_t pa, size_t bytes, int prot)
 {
+<<<<<<< HEAD
 	struct gart_device *gart = domain->priv;
+=======
+	struct gart_domain *gart_domain = to_gart_domain(domain);
+	struct gart_device *gart = gart_domain->gart;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned long pfn;
 
@@ -252,7 +331,11 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
 	spin_lock_irqsave(&gart->pte_lock, flags);
 	pfn = __phys_to_pfn(pa);
 	if (!pfn_valid(pfn)) {
+<<<<<<< HEAD
 		dev_err(gart->dev, "Invalid page: %08x\n", pa);
+=======
+		dev_err(gart->dev, "Invalid page: %pa\n", &pa);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irqrestore(&gart->pte_lock, flags);
 		return -EINVAL;
 	}
@@ -265,7 +348,12 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
 static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 			       size_t bytes)
 {
+<<<<<<< HEAD
 	struct gart_device *gart = domain->priv;
+=======
+	struct gart_domain *gart_domain = to_gart_domain(domain);
+	struct gart_device *gart = gart_domain->gart;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	if (!gart_iova_range_valid(gart, iova, bytes))
@@ -281,7 +369,12 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
 					   dma_addr_t iova)
 {
+<<<<<<< HEAD
 	struct gart_device *gart = domain->priv;
+=======
+	struct gart_domain *gart_domain = to_gart_domain(domain);
+	struct gart_device *gart = gart_domain->gart;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long pte;
 	phys_addr_t pa;
 	unsigned long flags;
@@ -295,14 +388,20 @@ static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
 
 	pa = (pte & GART_PAGE_MASK);
 	if (!pfn_valid(__phys_to_pfn(pa))) {
+<<<<<<< HEAD
 		dev_err(gart->dev, "No entry for %08llx:%08x\n",
 			 (unsigned long long)iova, pa);
+=======
+		dev_err(gart->dev, "No entry for %08llx:%pa\n",
+			 (unsigned long long)iova, &pa);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gart_dump_table(gart);
 		return -EINVAL;
 	}
 	return pa;
 }
 
+<<<<<<< HEAD
 static int gart_iommu_domain_has_cap(struct iommu_domain *domain,
 				     unsigned long cap)
 {
@@ -318,6 +417,23 @@ static struct iommu_ops gart_iommu_ops = {
 	.unmap		= gart_iommu_unmap,
 	.iova_to_phys	= gart_iommu_iova_to_phys,
 	.domain_has_cap	= gart_iommu_domain_has_cap,
+=======
+static bool gart_iommu_capable(enum iommu_cap cap)
+{
+	return false;
+}
+
+static const struct iommu_ops gart_iommu_ops = {
+	.capable	= gart_iommu_capable,
+	.domain_alloc	= gart_iommu_domain_alloc,
+	.domain_free	= gart_iommu_domain_free,
+	.attach_dev	= gart_iommu_attach_dev,
+	.detach_dev	= gart_iommu_detach_dev,
+	.map		= gart_iommu_map,
+	.map_sg		= default_iommu_map_sg,
+	.unmap		= gart_iommu_unmap,
+	.iova_to_phys	= gart_iommu_iova_to_phys,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
 };
 
@@ -351,7 +467,10 @@ static int tegra_gart_probe(struct platform_device *pdev)
 	struct gart_device *gart;
 	struct resource *res, *res_remap;
 	void __iomem *gart_regs;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *dev = &pdev->dev;
 
 	if (gart_handle)
@@ -376,8 +495,12 @@ static int tegra_gart_probe(struct platform_device *pdev)
 	gart_regs = devm_ioremap(dev, res->start, resource_size(res));
 	if (!gart_regs) {
 		dev_err(dev, "failed to remap GART registers\n");
+<<<<<<< HEAD
 		err = -ENXIO;
 		goto fail;
+=======
+		return -ENXIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	gart->dev = &pdev->dev;
@@ -391,14 +514,19 @@ static int tegra_gart_probe(struct platform_device *pdev)
 	gart->savedata = vmalloc(sizeof(u32) * gart->page_count);
 	if (!gart->savedata) {
 		dev_err(dev, "failed to allocate context save area\n");
+<<<<<<< HEAD
 		err = -ENOMEM;
 		goto fail;
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, gart);
 	do_gart_setup(gart, NULL);
 
 	gart_handle = gart;
+<<<<<<< HEAD
 	bus_set_iommu(&platform_bus_type, &gart_iommu_ops);
 	return 0;
 
@@ -409,29 +537,47 @@ fail:
 		vfree(gart->savedata);
 	devm_kfree(dev, gart);
 	return err;
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int tegra_gart_remove(struct platform_device *pdev)
 {
 	struct gart_device *gart = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct device *dev = gart->dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	writel(0, gart->regs + GART_CONFIG);
 	if (gart->savedata)
 		vfree(gart->savedata);
+<<<<<<< HEAD
 	if (gart->regs)
 		devm_iounmap(dev, gart->regs);
 	devm_kfree(dev, gart);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gart_handle = NULL;
 	return 0;
 }
 
+<<<<<<< HEAD
 const struct dev_pm_ops tegra_gart_pm_ops = {
+=======
+static const struct dev_pm_ops tegra_gart_pm_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend	= tegra_gart_suspend,
 	.resume		= tegra_gart_resume,
 };
 
+<<<<<<< HEAD
 static struct of_device_id tegra_gart_of_match[] = {
+=======
+static const struct of_device_id tegra_gart_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "nvidia,tegra20-gart", },
 	{ },
 };
@@ -441,7 +587,10 @@ static struct platform_driver tegra_gart_driver = {
 	.probe		= tegra_gart_probe,
 	.remove		= tegra_gart_remove,
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "tegra-gart",
 		.pm	= &tegra_gart_pm_ops,
 		.of_match_table = tegra_gart_of_match,

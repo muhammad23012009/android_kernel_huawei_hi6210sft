@@ -184,7 +184,11 @@ static int ili210x_i2c_probe(struct i2c_client *client,
 				       const struct i2c_device_id *id)
 {
 	struct device *dev = &client->dev;
+<<<<<<< HEAD
 	const struct ili210x_platform_data *pdata = dev->platform_data;
+=======
+	const struct ili210x_platform_data *pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ili210x *priv;
 	struct input_dev *input;
 	struct panel_info panel;
@@ -216,7 +220,11 @@ static int ili210x_i2c_probe(struct i2c_client *client,
 	/* get panel info */
 	error = ili210x_read_reg(client, REG_PANEL_INFO, &panel, sizeof(panel));
 	if (error) {
+<<<<<<< HEAD
 		dev_err(dev, "Failed to get panel informations, err: %d\n",
+=======
+		dev_err(dev, "Failed to get panel information, err: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			error);
 		return error;
 	}
@@ -276,7 +284,11 @@ static int ili210x_i2c_probe(struct i2c_client *client,
 
 	error = input_register_device(priv->input);
 	if (error) {
+<<<<<<< HEAD
 		dev_err(dev, "Cannot regiser input device, err: %d\n", error);
+=======
+		dev_err(dev, "Cannot register input device, err: %d\n", error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_remove_sysfs;
 	}
 
@@ -311,8 +323,12 @@ static int ili210x_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int ili210x_i2c_suspend(struct device *dev)
+=======
+static int __maybe_unused ili210x_i2c_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
@@ -322,7 +338,11 @@ static int ili210x_i2c_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ili210x_i2c_resume(struct device *dev)
+=======
+static int __maybe_unused ili210x_i2c_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
@@ -331,7 +351,10 @@ static int ili210x_i2c_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(ili210x_i2c_pm,
 			 ili210x_i2c_suspend, ili210x_i2c_resume);
@@ -345,7 +368,10 @@ MODULE_DEVICE_TABLE(i2c, ili210x_i2c_id);
 static struct i2c_driver ili210x_ts_driver = {
 	.driver = {
 		.name = "ili210x_i2c",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &ili210x_i2c_pm,
 	},
 	.id_table = ili210x_i2c_id,

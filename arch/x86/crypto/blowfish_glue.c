@@ -1,7 +1,11 @@
 /*
  * Glue Code for assembler optimized version of Blowfish
  *
+<<<<<<< HEAD
  * Copyright © 2011-2013 Jussi Kivilinna <jussi.kivilinna@iki.fi>
+=======
+ * Copyright (c) 2011 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * CBC & ECB parts based on code (crypto/cbc.c,ecb.c) by:
  *   Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
@@ -32,24 +36,59 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <crypto/algapi.h>
+<<<<<<< HEAD
 #include <asm/crypto/blowfish.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* regular block cipher functions */
 asmlinkage void __blowfish_enc_blk(struct bf_ctx *ctx, u8 *dst, const u8 *src,
 				   bool xor);
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(__blowfish_enc_blk);
 
 asmlinkage void blowfish_dec_blk(struct bf_ctx *ctx, u8 *dst, const u8 *src);
 EXPORT_SYMBOL_GPL(blowfish_dec_blk);
+=======
+asmlinkage void blowfish_dec_blk(struct bf_ctx *ctx, u8 *dst, const u8 *src);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* 4-way parallel cipher functions */
 asmlinkage void __blowfish_enc_blk_4way(struct bf_ctx *ctx, u8 *dst,
 					const u8 *src, bool xor);
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(__blowfish_enc_blk_4way);
 
 asmlinkage void blowfish_dec_blk_4way(struct bf_ctx *ctx, u8 *dst,
 				      const u8 *src);
 EXPORT_SYMBOL_GPL(blowfish_dec_blk_4way);
+=======
+asmlinkage void blowfish_dec_blk_4way(struct bf_ctx *ctx, u8 *dst,
+				      const u8 *src);
+
+static inline void blowfish_enc_blk(struct bf_ctx *ctx, u8 *dst, const u8 *src)
+{
+	__blowfish_enc_blk(ctx, dst, src, false);
+}
+
+static inline void blowfish_enc_blk_xor(struct bf_ctx *ctx, u8 *dst,
+					const u8 *src)
+{
+	__blowfish_enc_blk(ctx, dst, src, true);
+}
+
+static inline void blowfish_enc_blk_4way(struct bf_ctx *ctx, u8 *dst,
+					 const u8 *src)
+{
+	__blowfish_enc_blk_4way(ctx, dst, src, false);
+}
+
+static inline void blowfish_enc_blk_xor_4way(struct bf_ctx *ctx, u8 *dst,
+				      const u8 *src)
+{
+	__blowfish_enc_blk_4way(ctx, dst, src, true);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void blowfish_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 {
@@ -207,9 +246,12 @@ static unsigned int __cbc_decrypt(struct blkcipher_desc *desc,
 			src -= 1;
 			dst -= 1;
 		} while (nbytes >= bsize * 4);
+<<<<<<< HEAD
 
 		if (nbytes < bsize)
 			goto done;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Handle leftovers */

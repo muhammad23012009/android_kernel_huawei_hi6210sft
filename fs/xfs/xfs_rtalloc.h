@@ -18,6 +18,7 @@
 #ifndef __XFS_RTALLOC_H__
 #define	__XFS_RTALLOC_H__
 
+<<<<<<< HEAD
 struct xfs_mount;
 struct xfs_trans;
 
@@ -70,6 +71,13 @@ struct xfs_trans;
 
 #ifdef __KERNEL__
 
+=======
+/* kernel only definitions and functions */
+
+struct xfs_mount;
+struct xfs_trans;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_XFS_RT
 /*
  * Function prototypes for exported functions.
@@ -142,6 +150,35 @@ xfs_growfs_rt(
 	struct xfs_mount	*mp,	/* file system mount structure */
 	xfs_growfs_rt_t		*in);	/* user supplied growfs struct */
 
+<<<<<<< HEAD
+=======
+/*
+ * From xfs_rtbitmap.c
+ */
+int xfs_rtcheck_range(struct xfs_mount *mp, struct xfs_trans *tp,
+		      xfs_rtblock_t start, xfs_extlen_t len, int val,
+		      xfs_rtblock_t *new, int *stat);
+int xfs_rtfind_back(struct xfs_mount *mp, struct xfs_trans *tp,
+		    xfs_rtblock_t start, xfs_rtblock_t limit,
+		    xfs_rtblock_t *rtblock);
+int xfs_rtfind_forw(struct xfs_mount *mp, struct xfs_trans *tp,
+		    xfs_rtblock_t start, xfs_rtblock_t limit,
+		    xfs_rtblock_t *rtblock);
+int xfs_rtmodify_range(struct xfs_mount *mp, struct xfs_trans *tp,
+		       xfs_rtblock_t start, xfs_extlen_t len, int val);
+int xfs_rtmodify_summary_int(struct xfs_mount *mp, struct xfs_trans *tp,
+			     int log, xfs_rtblock_t bbno, int delta,
+			     xfs_buf_t **rbpp, xfs_fsblock_t *rsb,
+			     xfs_suminfo_t *sum);
+int xfs_rtmodify_summary(struct xfs_mount *mp, struct xfs_trans *tp, int log,
+			 xfs_rtblock_t bbno, int delta, xfs_buf_t **rbpp,
+			 xfs_fsblock_t *rsb);
+int xfs_rtfree_range(struct xfs_mount *mp, struct xfs_trans *tp,
+		     xfs_rtblock_t start, xfs_extlen_t len,
+		     struct xfs_buf **rbpp, xfs_fsblock_t *rsb);
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 # define xfs_rtallocate_extent(t,b,min,max,l,a,f,p,rb)  (ENOSYS)
 # define xfs_rtfree_extent(t,b,l)                       (ENOSYS)
@@ -155,12 +192,19 @@ xfs_rtmount_init(
 		return 0;
 
 	xfs_warn(mp, "Not built with CONFIG_XFS_RT");
+<<<<<<< HEAD
 	return ENOSYS;
+=======
+	return -ENOSYS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 # define xfs_rtmount_inodes(m)  (((mp)->m_sb.sb_rblocks == 0)? 0 : (ENOSYS))
 # define xfs_rtunmount_inodes(m)
 #endif	/* CONFIG_XFS_RT */
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* __XFS_RTALLOC_H__ */

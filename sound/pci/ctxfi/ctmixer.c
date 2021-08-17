@@ -854,8 +854,13 @@ static int ct_mixer_get_resources(struct ct_mixer *mixer)
 	for (i = 0; i < (NUM_CT_SUMS * CHN_NUM); i++) {
 		err = sum_mgr->get_sum(sum_mgr, &sum_desc, &sum);
 		if (err) {
+<<<<<<< HEAD
 			printk(KERN_ERR "ctxfi:Failed to get sum resources for "
 					  "front output!\n");
+=======
+			dev_err(mixer->atc->card->dev,
+				"Failed to get sum resources for front output!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		mixer->sums[i] = sum;
@@ -869,8 +874,13 @@ static int ct_mixer_get_resources(struct ct_mixer *mixer)
 	for (i = 0; i < (NUM_CT_AMIXERS * CHN_NUM); i++) {
 		err = amixer_mgr->get_amixer(amixer_mgr, &am_desc, &amixer);
 		if (err) {
+<<<<<<< HEAD
 			printk(KERN_ERR "ctxfi:Failed to get amixer resources "
 			       "for mixer obj!\n");
+=======
+			dev_err(mixer->atc->card->dev,
+				"Failed to get amixer resources for mixer obj!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		mixer->amixers[i] = amixer;

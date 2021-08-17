@@ -21,8 +21,11 @@
 #include <linux/list.h>
 #include <linux/spinlock.h>
 
+<<<<<<< HEAD
 #include "voltage.h"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Powerdomain basic power states */
 #define PWRDM_POWER_OFF		0x0
 #define PWRDM_POWER_RET		0x1
@@ -41,6 +44,10 @@
 #define PWRSTS_OFF_RET		(PWRSTS_OFF | PWRSTS_RET)
 #define PWRSTS_RET_ON		(PWRSTS_RET | PWRSTS_ON)
 #define PWRSTS_OFF_RET_ON	(PWRSTS_OFF_RET | PWRSTS_ON)
+<<<<<<< HEAD
+=======
+#define PWRSTS_INA_ON		(PWRSTS_INACTIVE | PWRSTS_ON)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*
@@ -75,6 +82,10 @@
 
 struct clockdomain;
 struct powerdomain;
+<<<<<<< HEAD
+=======
+struct voltagedomain;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct powerdomain - OMAP powerdomain
@@ -166,6 +177,10 @@ struct powerdomain {
  * @pwrdm_disable_hdwr_sar: Disable Hardware Save-Restore feature for a pd
  * @pwrdm_set_lowpwrstchange: Enable pd transitions from a shallow to deep sleep
  * @pwrdm_wait_transition: Wait for a pd state transition to complete
+<<<<<<< HEAD
+=======
+ * @pwrdm_has_voltdm: Check if a voltdm association is needed
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Regarding @pwrdm_set_lowpwrstchange: On the OMAP2 and 3-family
  * chips, a powerdomain's power state is not allowed to directly
@@ -196,6 +211,10 @@ struct pwrdm_ops {
 	int	(*pwrdm_disable_hdwr_sar)(struct powerdomain *pwrdm);
 	int	(*pwrdm_set_lowpwrstchange)(struct powerdomain *pwrdm);
 	int	(*pwrdm_wait_transition)(struct powerdomain *pwrdm);
+<<<<<<< HEAD
+=======
+	int	(*pwrdm_has_voltdm)(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int pwrdm_register_platform_funcs(struct pwrdm_ops *custom_funcs);
@@ -210,6 +229,7 @@ int pwrdm_for_each_nolock(int (*fn)(struct powerdomain *pwrdm, void *user),
 			void *user);
 
 int pwrdm_add_clkdm(struct powerdomain *pwrdm, struct clockdomain *clkdm);
+<<<<<<< HEAD
 int pwrdm_del_clkdm(struct powerdomain *pwrdm, struct clockdomain *clkdm);
 int pwrdm_for_each_clkdm(struct powerdomain *pwrdm,
 			 int (*fn)(struct powerdomain *pwrdm,
@@ -218,6 +238,14 @@ struct voltagedomain *pwrdm_get_voltdm(struct powerdomain *pwrdm);
 
 int pwrdm_get_mem_bank_count(struct powerdomain *pwrdm);
 
+=======
+
+int pwrdm_get_mem_bank_count(struct powerdomain *pwrdm);
+
+u8 pwrdm_get_valid_lp_state(struct powerdomain *pwrdm,
+			    bool is_logic_state, u8 req_state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int pwrdm_set_next_pwrst(struct powerdomain *pwrdm, u8 pwrst);
 int pwrdm_read_next_pwrst(struct powerdomain *pwrdm);
 int pwrdm_read_pwrst(struct powerdomain *pwrdm);
@@ -253,6 +281,12 @@ extern void omap243x_powerdomains_init(void);
 extern void omap3xxx_powerdomains_init(void);
 extern void am33xx_powerdomains_init(void);
 extern void omap44xx_powerdomains_init(void);
+<<<<<<< HEAD
+=======
+extern void omap54xx_powerdomains_init(void);
+extern void dra7xx_powerdomains_init(void);
+void am43xx_powerdomains_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct pwrdm_ops omap2_pwrdm_operations;
 extern struct pwrdm_ops omap3_pwrdm_operations;

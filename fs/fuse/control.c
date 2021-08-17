@@ -107,7 +107,11 @@ static ssize_t fuse_conn_max_background_read(struct file *file,
 	if (!fc)
 		return 0;
 
+<<<<<<< HEAD
 	val = fc->max_background;
+=======
+	val = READ_ONCE(fc->max_background);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fuse_conn_put(fc);
 
 	return fuse_conn_limit_read(file, buf, len, ppos, val);
@@ -144,7 +148,11 @@ static ssize_t fuse_conn_congestion_threshold_read(struct file *file,
 	if (!fc)
 		return 0;
 
+<<<<<<< HEAD
 	val = fc->congestion_threshold;
+=======
+	val = READ_ONCE(fc->congestion_threshold);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fuse_conn_put(fc);
 
 	return fuse_conn_limit_read(file, buf, len, ppos, val);
@@ -211,16 +219,28 @@ static struct dentry *fuse_ctl_add_dentry(struct dentry *parent,
 	if (!dentry)
 		return NULL;
 
+<<<<<<< HEAD
 	fc->ctl_dentry[fc->ctl_ndents++] = dentry;
 	inode = new_inode(fuse_control_sb);
 	if (!inode)
 		return NULL;
+=======
+	inode = new_inode(fuse_control_sb);
+	if (!inode) {
+		dput(dentry);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	inode->i_ino = get_next_ino();
 	inode->i_mode = mode;
 	inode->i_uid = fc->user_id;
 	inode->i_gid = fc->group_id;
+<<<<<<< HEAD
 	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* setting ->i_op to NULL is not allowed */
 	if (iop)
 		inode->i_op = iop;
@@ -228,6 +248,12 @@ static struct dentry *fuse_ctl_add_dentry(struct dentry *parent,
 	set_nlink(inode, nlink);
 	inode->i_private = fc;
 	d_add(dentry, inode);
+<<<<<<< HEAD
+=======
+
+	fc->ctl_dentry[fc->ctl_ndents++] = dentry;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return dentry;
 }
 
@@ -244,7 +270,11 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
 		return 0;
 
 	parent = fuse_control_sb->s_root;
+<<<<<<< HEAD
 	inc_nlink(parent->d_inode);
+=======
+	inc_nlink(d_inode(parent));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sprintf(name, "%u", fc->dev);
 	parent = fuse_ctl_add_dentry(parent, fc, name, S_IFDIR | 0500, 2,
 				     &simple_dir_inode_operations,
@@ -283,11 +313,22 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
 
 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
 		struct dentry *dentry = fc->ctl_dentry[i];
+<<<<<<< HEAD
 		dentry->d_inode->i_private = NULL;
 		d_drop(dentry);
 		dput(dentry);
 	}
 	drop_nlink(fuse_control_sb->s_root->d_inode);
+=======
+		d_inode(dentry)->i_private = NULL;
+		if (!i) {
+			/* Get rid of submounts: */
+			d_invalidate(dentry);
+		}
+		dput(dentry);
+	}
+	drop_nlink(d_inode(fuse_control_sb->s_root));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int fuse_ctl_fill_super(struct super_block *sb, void *data, int silent)
@@ -348,7 +389,11 @@ int __init fuse_ctl_init(void)
 	return register_filesystem(&fuse_ctl_fs_type);
 }
 
+<<<<<<< HEAD
 void fuse_ctl_cleanup(void)
+=======
+void __exit fuse_ctl_cleanup(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unregister_filesystem(&fuse_ctl_fs_type);
 }

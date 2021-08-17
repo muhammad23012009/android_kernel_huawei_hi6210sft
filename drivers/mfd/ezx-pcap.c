@@ -62,7 +62,11 @@ static int ezx_pcap_putget(struct pcap_chip *pcap, u32 *data)
 	struct spi_message m;
 	int status;
 
+<<<<<<< HEAD
 	memset(&t, 0, sizeof t);
+=======
+	memset(&t, 0, sizeof(t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_message_init(&m);
 	t.len = sizeof(u32);
 	spi_message_add_tail(&t, &m);
@@ -177,7 +181,11 @@ static void pcap_msr_work(struct work_struct *work)
 static void pcap_isr_work(struct work_struct *work)
 {
 	struct pcap_chip *pcap = container_of(work, struct pcap_chip, isr_work);
+<<<<<<< HEAD
 	struct pcap_platform_data *pdata = pcap->spi->dev.platform_data;
+=======
+	struct pcap_platform_data *pdata = dev_get_platdata(&pcap->spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 msr, isr, int_sel, service;
 	int irq;
 
@@ -205,6 +213,7 @@ static void pcap_isr_work(struct work_struct *work)
 	} while (gpio_get_value(pdata->gpio));
 }
 
+<<<<<<< HEAD
 static void pcap_irq_handler(unsigned int irq, struct irq_desc *desc)
 {
 	struct pcap_chip *pcap = irq_get_handler_data(irq);
@@ -212,6 +221,14 @@ static void pcap_irq_handler(unsigned int irq, struct irq_desc *desc)
 	desc->irq_data.chip->irq_ack(&desc->irq_data);
 	queue_work(pcap->workqueue, &pcap->isr_work);
 	return;
+=======
+static void pcap_irq_handler(struct irq_desc *desc)
+{
+	struct pcap_chip *pcap = irq_desc_get_handler_data(desc);
+
+	desc->irq_data.chip->irq_ack(&desc->irq_data);
+	queue_work(pcap->workqueue, &pcap->isr_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* ADC */
@@ -394,16 +411,23 @@ static int pcap_add_subdev(struct pcap_chip *pcap,
 static int ezx_pcap_remove(struct spi_device *spi)
 {
 	struct pcap_chip *pcap = spi_get_drvdata(spi);
+<<<<<<< HEAD
 	struct pcap_platform_data *pdata = spi->dev.platform_data;
 	int i, adc_irq;
+=======
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* remove all registered subdevs */
 	device_for_each_child(&spi->dev, NULL, pcap_remove_subdev);
 
 	/* cleanup ADC */
+<<<<<<< HEAD
 	adc_irq = pcap_to_irq(pcap, (pdata->config & PCAP_SECOND_PORT) ?
 				PCAP_IRQ_ADCDONE2 : PCAP_IRQ_ADCDONE);
 	devm_free_irq(&spi->dev, adc_irq, pcap);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&pcap->adc_mutex);
 	for (i = 0; i < PCAP_ADC_MAXQ; i++)
 		kfree(pcap->adc_queue[i]);
@@ -420,7 +444,11 @@ static int ezx_pcap_remove(struct spi_device *spi)
 
 static int ezx_pcap_probe(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	struct pcap_platform_data *pdata = spi->dev.platform_data;
+=======
+	struct pcap_platform_data *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pcap_chip *pcap;
 	int i, adc_irq;
 	int ret = -ENODEV;
@@ -468,11 +496,15 @@ static int ezx_pcap_probe(struct spi_device *spi)
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++) {
 		irq_set_chip_and_handler(i, &pcap_irq_chip, handle_simple_irq);
 		irq_set_chip_data(i, pcap);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 		set_irq_flags(i, IRQF_VALID);
 #else
 		irq_set_noprobe(i);
 #endif
+=======
+		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* mask/ack all PCAP interrupts */
@@ -481,8 +513,12 @@ static int ezx_pcap_probe(struct spi_device *spi)
 	pcap->msr = PCAP_MASK_ALL_INTERRUPT;
 
 	irq_set_irq_type(spi->irq, IRQ_TYPE_EDGE_RISING);
+<<<<<<< HEAD
 	irq_set_handler_data(spi->irq, pcap);
 	irq_set_chained_handler(spi->irq, pcap_irq_handler);
+=======
+	irq_set_chained_handler_and_data(spi->irq, pcap_irq_handler, pcap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq_set_irq_wake(spi->irq, 1);
 
 	/* ADC */
@@ -509,8 +545,11 @@ static int ezx_pcap_probe(struct spi_device *spi)
 
 remove_subdevs:
 	device_for_each_child(&spi->dev, NULL, pcap_remove_subdev);
+<<<<<<< HEAD
 /* free_adc: */
 	devm_free_irq(&spi->dev, adc_irq, pcap);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 free_irqchip:
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++)
 		irq_set_chip_and_handler(i, NULL, NULL);
@@ -525,7 +564,10 @@ static struct spi_driver ezxpcap_driver = {
 	.remove = ezx_pcap_remove,
 	.driver = {
 		.name	= "ezx-pcap",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

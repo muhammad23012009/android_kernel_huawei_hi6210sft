@@ -19,7 +19,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/jiffies.h>
 #include <linux/i2c.h>
@@ -40,11 +43,20 @@ enum max517_device_ids {
 	ID_MAX517,
 	ID_MAX518,
 	ID_MAX519,
+<<<<<<< HEAD
+=======
+	ID_MAX520,
+	ID_MAX521,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct max517_data {
 	struct i2c_client	*client;
+<<<<<<< HEAD
 	unsigned short		vref_mv[2];
+=======
+	unsigned short		vref_mv[8];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -82,15 +94,24 @@ static int max517_read_raw(struct iio_dev *indio_dev,
 			   long m)
 {
 	struct max517_data *data = iio_priv(indio_dev);
+<<<<<<< HEAD
 	unsigned int scale_uv;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (m) {
 	case IIO_CHAN_INFO_SCALE:
 		/* Corresponds to Vref / 2^(bits) */
+<<<<<<< HEAD
 		scale_uv = (data->vref_mv[chan->channel] * 1000) >> 8;
 		*val =  scale_uv / 1000000;
 		*val2 = scale_uv % 1000000;
 		return IIO_VAL_INT_PLUS_MICRO;
+=======
+		*val = data->vref_mv[chan->channel];
+		*val2 = 8;
+		return IIO_VAL_FRACTIONAL_LOG2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		break;
 	}
@@ -148,12 +169,25 @@ static const struct iio_info max517_info = {
 	.channel = (chan),				\
 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
 	BIT(IIO_CHAN_INFO_SCALE),			\
+<<<<<<< HEAD
 	.scan_type = IIO_ST('u', 8, 8, 0),		\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct iio_chan_spec max517_channels[] = {
 	MAX517_CHANNEL(0),
+<<<<<<< HEAD
 	MAX517_CHANNEL(1)
+=======
+	MAX517_CHANNEL(1),
+	MAX517_CHANNEL(2),
+	MAX517_CHANNEL(3),
+	MAX517_CHANNEL(4),
+	MAX517_CHANNEL(5),
+	MAX517_CHANNEL(6),
+	MAX517_CHANNEL(7),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int max517_probe(struct i2c_client *client,
@@ -162,6 +196,7 @@ static int max517_probe(struct i2c_client *client,
 	struct max517_data *data;
 	struct iio_dev *indio_dev;
 	struct max517_platform_data *platform_data = client->dev.platform_data;
+<<<<<<< HEAD
 	int err;
 
 	indio_dev = iio_device_alloc(sizeof(*data));
@@ -169,6 +204,13 @@ static int max517_probe(struct i2c_client *client,
 		err = -ENOMEM;
 		goto exit;
 	}
+=======
+	int chan;
+
+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+	if (!indio_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data = iio_priv(indio_dev);
 	i2c_set_clientdata(client, indio_dev);
 	data->client = client;
@@ -176,11 +218,29 @@ static int max517_probe(struct i2c_client *client,
 	/* establish that the iio_dev is a child of the i2c device */
 	indio_dev->dev.parent = &client->dev;
 
+<<<<<<< HEAD
 	/* reduced channel set for MAX517 */
 	if (id->driver_data == ID_MAX517)
 		indio_dev->num_channels = 1;
 	else
 		indio_dev->num_channels = 2;
+=======
+	switch (id->driver_data) {
+	case ID_MAX521:
+		indio_dev->num_channels = 8;
+		break;
+	case ID_MAX520:
+		indio_dev->num_channels = 4;
+		break;
+	case ID_MAX519:
+	case ID_MAX518:
+		indio_dev->num_channels = 2;
+		break;
+	default:  /* single channel for MAX517 */
+		indio_dev->num_channels = 1;
+		break;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	indio_dev->channels = max517_channels;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->info = &max517_info;
@@ -189,6 +249,7 @@ static int max517_probe(struct i2c_client *client,
 	 * Reference voltage on MAX518 and default is 5V, else take vref_mv
 	 * from platform_data
 	 */
+<<<<<<< HEAD
 	if (id->driver_data == ID_MAX518 || !platform_data) {
 		data->vref_mv[0] = data->vref_mv[1] = 5000; /* mV */
 	} else {
@@ -208,13 +269,26 @@ exit_free_device:
 	iio_device_free(indio_dev);
 exit:
 	return err;
+=======
+	for (chan = 0; chan < indio_dev->num_channels; chan++) {
+		if (id->driver_data == ID_MAX518 || !platform_data)
+			data->vref_mv[chan] = 5000; /* mV */
+		else
+			data->vref_mv[chan] = platform_data->vref_mv[chan];
+	}
+
+	return iio_device_register(indio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int max517_remove(struct i2c_client *client)
 {
 	iio_device_unregister(i2c_get_clientdata(client));
+<<<<<<< HEAD
 	iio_device_free(i2c_get_clientdata(client));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -222,6 +296,11 @@ static const struct i2c_device_id max517_id[] = {
 	{ "max517", ID_MAX517 },
 	{ "max518", ID_MAX518 },
 	{ "max519", ID_MAX519 },
+<<<<<<< HEAD
+=======
+	{ "max520", ID_MAX520 },
+	{ "max521", ID_MAX521 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, max517_id);
@@ -238,5 +317,9 @@ static struct i2c_driver max517_driver = {
 module_i2c_driver(max517_driver);
 
 MODULE_AUTHOR("Roland Stigge <stigge@antcom.de>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("MAX517/MAX518/MAX519 8-bit DAC");
+=======
+MODULE_DESCRIPTION("MAX517/518/519/520/521 8-bit DAC");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

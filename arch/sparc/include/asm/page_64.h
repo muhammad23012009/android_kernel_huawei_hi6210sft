@@ -15,30 +15,54 @@
 #define DCACHE_ALIASING_POSSIBLE
 #endif
 
+<<<<<<< HEAD
 #define HPAGE_SHIFT		22
+=======
+#define HPAGE_SHIFT		23
+#define REAL_HPAGE_SHIFT	22
+
+#define REAL_HPAGE_SIZE		(_AC(1,UL) << REAL_HPAGE_SHIFT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
 #define HPAGE_SIZE		(_AC(1,UL) << HPAGE_SHIFT)
 #define HPAGE_MASK		(~(HPAGE_SIZE - 1UL))
 #define HUGETLB_PAGE_ORDER	(HPAGE_SHIFT - PAGE_SHIFT)
 #define HAVE_ARCH_HUGETLB_UNMAPPED_AREA
+<<<<<<< HEAD
+=======
+#define REAL_HPAGE_PER_HPAGE	(_AC(1,UL) << (HPAGE_SHIFT - REAL_HPAGE_SHIFT))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifndef __ASSEMBLY__
 
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
 struct pt_regs;
+<<<<<<< HEAD
 extern void hugetlb_setup(struct pt_regs *regs);
+=======
+void hugetlb_setup(struct pt_regs *regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define WANT_PAGE_VIRTUAL
 
+<<<<<<< HEAD
 extern void _clear_page(void *page);
 #define clear_page(X)	_clear_page((void *)(X))
 struct page;
 extern void clear_user_page(void *addr, unsigned long vaddr, struct page *page);
 #define copy_page(X,Y)	memcpy((void *)(X), (void *)(Y), PAGE_SIZE)
 extern void copy_user_page(void *to, void *from, unsigned long vaddr, struct page *topage);
+=======
+void _clear_page(void *page);
+#define clear_page(X)	_clear_page((void *)(X))
+struct page;
+void clear_user_page(void *addr, unsigned long vaddr, struct page *page);
+#define copy_page(X,Y)	memcpy((void *)(X), (void *)(Y), PAGE_SIZE)
+void copy_user_page(void *to, void *from, unsigned long vaddr, struct page *topage);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Unlike sparc32, sparc64's parameter passing API is more
  * sane in that structures which as small enough are passed
@@ -53,19 +77,33 @@ extern void copy_user_page(void *to, void *from, unsigned long vaddr, struct pag
 /* These are used to make use of C type-checking.. */
 typedef struct { unsigned long pte; } pte_t;
 typedef struct { unsigned long iopte; } iopte_t;
+<<<<<<< HEAD
 typedef struct { unsigned int pmd; } pmd_t;
 typedef struct { unsigned int pgd; } pgd_t;
+=======
+typedef struct { unsigned long pmd; } pmd_t;
+typedef struct { unsigned long pud; } pud_t;
+typedef struct { unsigned long pgd; } pgd_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef struct { unsigned long pgprot; } pgprot_t;
 
 #define pte_val(x)	((x).pte)
 #define iopte_val(x)	((x).iopte)
 #define pmd_val(x)      ((x).pmd)
+<<<<<<< HEAD
+=======
+#define pud_val(x)      ((x).pud)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pgd_val(x)	((x).pgd)
 #define pgprot_val(x)	((x).pgprot)
 
 #define __pte(x)	((pte_t) { (x) } )
 #define __iopte(x)	((iopte_t) { (x) } )
 #define __pmd(x)        ((pmd_t) { (x) } )
+<<<<<<< HEAD
+=======
+#define __pud(x)        ((pud_t) { (x) } )
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __pgd(x)	((pgd_t) { (x) } )
 #define __pgprot(x)	((pgprot_t) { (x) } )
 
@@ -73,19 +111,33 @@ typedef struct { unsigned long pgprot; } pgprot_t;
 /* .. while these make it easier on the compiler */
 typedef unsigned long pte_t;
 typedef unsigned long iopte_t;
+<<<<<<< HEAD
 typedef unsigned int pmd_t;
 typedef unsigned int pgd_t;
+=======
+typedef unsigned long pmd_t;
+typedef unsigned long pud_t;
+typedef unsigned long pgd_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef unsigned long pgprot_t;
 
 #define pte_val(x)	(x)
 #define iopte_val(x)	(x)
 #define pmd_val(x)      (x)
+<<<<<<< HEAD
+=======
+#define pud_val(x)      (x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pgd_val(x)	(x)
 #define pgprot_val(x)	(x)
 
 #define __pte(x)	(x)
 #define __iopte(x)	(x)
 #define __pmd(x)        (x)
+<<<<<<< HEAD
+=======
+#define __pud(x)        (x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __pgd(x)	(x)
 #define __pgprot(x)	(x)
 
@@ -93,6 +145,7 @@ typedef unsigned long pgprot_t;
 
 typedef pte_t *pgtable_t;
 
+<<<<<<< HEAD
 #define TASK_UNMAPPED_BASE	(test_thread_flag(TIF_32BIT) ? \
 				 (_AC(0x0000000070000000,UL)) : \
 				 (_AC(0xfffff80000000000,UL) + (1UL << 32UL)))
@@ -105,6 +158,35 @@ typedef pte_t *pgtable_t;
  * but that does not make sense anymore.
  */
 #define PAGE_OFFSET		_AC(0xFFFFF80000000000,UL)
+=======
+extern unsigned long sparc64_va_hole_top;
+extern unsigned long sparc64_va_hole_bottom;
+
+/* The next two defines specify the actual exclusion region we
+ * enforce, wherein we use a 4GB red zone on each side of the VA hole.
+ */
+#define VA_EXCLUDE_START (sparc64_va_hole_bottom - (1UL << 32UL))
+#define VA_EXCLUDE_END   (sparc64_va_hole_top + (1UL << 32UL))
+
+#define TASK_UNMAPPED_BASE	(test_thread_flag(TIF_32BIT) ? \
+				 _AC(0x0000000070000000,UL) : \
+				 VA_EXCLUDE_END)
+
+#include <asm-generic/memory_model.h>
+
+extern unsigned long PAGE_OFFSET;
+
+#endif /* !(__ASSEMBLY__) */
+
+/* The maximum number of physical memory address bits we support.  The
+ * largest value we can support is whatever "KPGD_SHIFT + KPTE_BITS"
+ * evaluates to.
+ */
+#define MAX_PHYS_ADDRESS_BITS	53
+
+#define ILOG2_4MB		22
+#define ILOG2_256MB		28
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef __ASSEMBLY__
 

@@ -47,6 +47,88 @@
 #include "atmel-pcm.h"
 
 
+<<<<<<< HEAD
+=======
+static int atmel_pcm_preallocate_dma_buffer(struct snd_pcm *pcm,
+	int stream)
+{
+	struct snd_pcm_substream *substream = pcm->streams[stream].substream;
+	struct snd_dma_buffer *buf = &substream->dma_buffer;
+	size_t size = ATMEL_SSC_DMABUF_SIZE;
+
+	buf->dev.type = SNDRV_DMA_TYPE_DEV;
+	buf->dev.dev = pcm->card->dev;
+	buf->private_data = NULL;
+	buf->area = dma_alloc_coherent(pcm->card->dev, size,
+			&buf->addr, GFP_KERNEL);
+	pr_debug("atmel-pcm: alloc dma buffer: area=%p, addr=%p, size=%zu\n",
+			(void *)buf->area, (void *)(long)buf->addr, size);
+
+	if (!buf->area)
+		return -ENOMEM;
+
+	buf->bytes = size;
+	return 0;
+}
+
+static int atmel_pcm_mmap(struct snd_pcm_substream *substream,
+	struct vm_area_struct *vma)
+{
+	return remap_pfn_range(vma, vma->vm_start,
+		       substream->dma_buffer.addr >> PAGE_SHIFT,
+		       vma->vm_end - vma->vm_start, vma->vm_page_prot);
+}
+
+static int atmel_pcm_new(struct snd_soc_pcm_runtime *rtd)
+{
+	struct snd_card *card = rtd->card->snd_card;
+	struct snd_pcm *pcm = rtd->pcm;
+	int ret;
+
+	ret = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(32));
+	if (ret)
+		return ret;
+
+	if (pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream) {
+		pr_debug("atmel-pcm: allocating PCM playback DMA buffer\n");
+		ret = atmel_pcm_preallocate_dma_buffer(pcm,
+			SNDRV_PCM_STREAM_PLAYBACK);
+		if (ret)
+			goto out;
+	}
+
+	if (pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream) {
+		pr_debug("atmel-pcm: allocating PCM capture DMA buffer\n");
+		ret = atmel_pcm_preallocate_dma_buffer(pcm,
+			SNDRV_PCM_STREAM_CAPTURE);
+		if (ret)
+			goto out;
+	}
+ out:
+	return ret;
+}
+
+static void atmel_pcm_free(struct snd_pcm *pcm)
+{
+	struct snd_pcm_substream *substream;
+	struct snd_dma_buffer *buf;
+	int stream;
+
+	for (stream = 0; stream < 2; stream++) {
+		substream = pcm->streams[stream].substream;
+		if (!substream)
+			continue;
+
+		buf = &substream->dma_buffer;
+		if (!buf->area)
+			continue;
+		dma_free_coherent(pcm->card->dev, buf->bytes,
+				  buf->area, buf->addr);
+		buf->area = NULL;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*--------------------------------------------------------------------------*\
  * Hardware definition
 \*--------------------------------------------------------------------------*/
@@ -58,7 +140,10 @@ static const struct snd_pcm_hardware atmel_pcm_hardware = {
 				  SNDRV_PCM_INFO_MMAP_VALID |
 				  SNDRV_PCM_INFO_INTERLEAVED |
 				  SNDRV_PCM_INFO_PAUSE,
+<<<<<<< HEAD
 	.formats		= SNDRV_PCM_FMTBIT_S16_LE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 8192,
 	.periods_min		= 2,
@@ -77,12 +162,15 @@ struct atmel_runtime_data {
 	size_t period_size;
 
 	dma_addr_t period_ptr;		/* physical address of next period */
+<<<<<<< HEAD
 
 	/* PDC register save */
 	u32 pdc_xpr_save;
 	u32 pdc_xcr_save;
 	u32 pdc_xnpr_save;
 	u32 pdc_xncr_save;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*--------------------------------------------------------------------------*\
@@ -309,7 +397,11 @@ static int atmel_pcm_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops atmel_pcm_ops = {
+=======
+static const struct snd_pcm_ops atmel_pcm_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= atmel_pcm_open,
 	.close		= atmel_pcm_close,
 	.ioctl		= snd_pcm_lib_ioctl,
@@ -321,6 +413,7 @@ static struct snd_pcm_ops atmel_pcm_ops = {
 	.mmap		= atmel_pcm_mmap,
 };
 
+<<<<<<< HEAD
 
 /*--------------------------------------------------------------------------*\
  * ASoC platform driver
@@ -376,12 +469,17 @@ static int atmel_pcm_resume(struct snd_soc_dai *dai)
 #define atmel_pcm_resume	NULL
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_platform_driver atmel_soc_platform = {
 	.ops		= &atmel_pcm_ops,
 	.pcm_new	= atmel_pcm_new,
 	.pcm_free	= atmel_pcm_free,
+<<<<<<< HEAD
 	.suspend	= atmel_pcm_suspend,
 	.resume		= atmel_pcm_resume,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int atmel_pcm_pdc_platform_register(struct device *dev)

@@ -19,11 +19,19 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_device.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/tps6507x.h>
 
+<<<<<<< HEAD
 static struct mfd_cell tps6507x_devs[] = {
+=======
+static const struct mfd_cell tps6507x_devs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "tps6507x-pmic",
 	},
@@ -99,6 +107,7 @@ static int tps6507x_i2c_probe(struct i2c_client *i2c,
 	tps6507x->read_dev = tps6507x_i2c_read_device;
 	tps6507x->write_dev = tps6507x_i2c_write_device;
 
+<<<<<<< HEAD
 	return mfd_add_devices(tps6507x->dev, -1, tps6507x_devs,
 			       ARRAY_SIZE(tps6507x_devs), NULL, 0, NULL);
 }
@@ -114,11 +123,24 @@ static int tps6507x_i2c_remove(struct i2c_client *i2c)
 static const struct i2c_device_id tps6507x_i2c_id[] = {
        { "tps6507x", 0 },
        { }
+=======
+	return devm_mfd_add_devices(tps6507x->dev, -1, tps6507x_devs,
+				    ARRAY_SIZE(tps6507x_devs), NULL, 0, NULL);
+}
+
+static const struct i2c_device_id tps6507x_i2c_id[] = {
+	{ "tps6507x", 0 },
+	{ }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 MODULE_DEVICE_TABLE(i2c, tps6507x_i2c_id);
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id tps6507x_of_match[] = {
+=======
+static const struct of_device_id tps6507x_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{.compatible = "ti,tps6507x", },
 	{},
 };
@@ -128,11 +150,17 @@ MODULE_DEVICE_TABLE(of, tps6507x_of_match);
 static struct i2c_driver tps6507x_i2c_driver = {
 	.driver = {
 		   .name = "tps6507x",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   .of_match_table = of_match_ptr(tps6507x_of_match),
 	},
 	.probe = tps6507x_i2c_probe,
 	.remove = tps6507x_i2c_remove,
+=======
+		   .of_match_table = of_match_ptr(tps6507x_of_match),
+	},
+	.probe = tps6507x_i2c_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = tps6507x_i2c_id,
 };
 

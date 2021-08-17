@@ -19,6 +19,10 @@
 #ifndef __ASM_OPENRISC_SYSCALL_H__
 #define __ASM_OPENRISC_SYSCALL_H__
 
+<<<<<<< HEAD
+=======
+#include <uapi/linux/audit.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/err.h>
 #include <linux/sched.h>
 
@@ -71,4 +75,11 @@ syscall_set_arguments(struct task_struct *task, struct pt_regs *regs,
 	memcpy(&regs->gpr[3 + i], args, n * sizeof(args[0]));
 }
 
+<<<<<<< HEAD
+=======
+static inline int syscall_get_arch(void)
+{
+	return AUDIT_ARCH_OPENRISC;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

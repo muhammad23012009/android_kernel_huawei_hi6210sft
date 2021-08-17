@@ -75,6 +75,7 @@ static struct ux500_regulator_debug {
 	u8 *state_after_suspend;
 } rdebug;
 
+<<<<<<< HEAD
 void ux500_regulator_suspend_debug(void)
 {
 	int i;
@@ -101,6 +102,13 @@ static int ux500_regulator_power_state_cnt_print(struct seq_file *s, void *p)
 		power_state_active_get());
 	if (err < 0)
 		dev_err(dev, "seq_printf overflow\n");
+=======
+static int ux500_regulator_power_state_cnt_print(struct seq_file *s, void *p)
+{
+	/* print power state count */
+	seq_printf(s, "ux500-regulator power state count: %i\n",
+		   power_state_active_get());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -122,6 +130,7 @@ static const struct file_operations ux500_regulator_power_state_cnt_fops = {
 
 static int ux500_regulator_status_print(struct seq_file *s, void *p)
 {
+<<<<<<< HEAD
 	struct device *dev = s->private;
 	int err;
 	int i;
@@ -135,6 +144,13 @@ static int ux500_regulator_status_print(struct seq_file *s, void *p)
 		"before", "after");
 	if (err < 0)
 		dev_err(dev, "seq_printf overflow\n");
+=======
+	int i;
+
+	/* print dump header */
+	seq_puts(s, "ux500-regulator status:\n");
+	seq_printf(s, "%31s : %8s : %8s\n", "current", "before", "after");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < rdebug.num_regulators; i++) {
 		struct dbx500_regulator_info *info;
@@ -142,12 +158,20 @@ static int ux500_regulator_status_print(struct seq_file *s, void *p)
 		info = &rdebug.regulator_array[i];
 
 		/* print status */
+<<<<<<< HEAD
 		err = seq_printf(s, "%20s : %8s : %8s : %8s\n", info->desc.name,
 			info->is_enabled ? "enabled" : "disabled",
 			rdebug.state_before_suspend[i] ? "enabled" : "disabled",
 			rdebug.state_after_suspend[i] ? "enabled" : "disabled");
 		if (err < 0)
 			dev_err(dev, "seq_printf overflow\n");
+=======
+		seq_printf(s, "%20s : %8s : %8s : %8s\n",
+			   info->desc.name,
+			   info->is_enabled ? "enabled" : "disabled",
+			   rdebug.state_before_suspend[i] ? "enabled" : "disabled",
+			   rdebug.state_after_suspend[i] ? "enabled" : "disabled");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -202,6 +226,7 @@ ux500_regulator_debug_init(struct platform_device *pdev,
 	rdebug.num_regulators = num_regulators;
 
 	rdebug.state_before_suspend = kzalloc(num_regulators, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!rdebug.state_before_suspend) {
 		dev_err(&pdev->dev,
 			"could not allocate memory for saving state\n");
@@ -214,6 +239,14 @@ ux500_regulator_debug_init(struct platform_device *pdev,
 			"could not allocate memory for saving state\n");
 		goto exit_free;
 	}
+=======
+	if (!rdebug.state_before_suspend)
+		goto exit_destroy_power_state;
+
+	rdebug.state_after_suspend = kzalloc(num_regulators, GFP_KERNEL);
+	if (!rdebug.state_after_suspend)
+		goto exit_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dbx500_regulator_testcase(regulator_info, num_regulators);
 	return 0;

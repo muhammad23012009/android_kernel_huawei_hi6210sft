@@ -23,8 +23,11 @@
 #ifndef _LNBH24_H
 #define _LNBH24_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* system register bits */
 #define LNBH24_OLF	0x01
 #define LNBH24_OTF	0x02
@@ -37,7 +40,11 @@
 
 #include <linux/dvb/frontend.h>
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_LNBP21)
+=======
+#if IS_REACHABLE(CONFIG_DVB_LNBP21)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* override_set and override_clear control which
    system register bits (above) to always set & clear */
 extern struct dvb_frontend *lnbh24_attach(struct dvb_frontend *fe,

@@ -20,8 +20,11 @@ struct device;
 
 struct clk;
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMMON_CLK
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * DOC: clk notifier callback types
  *
@@ -78,10 +81,109 @@ struct clk_notifier_data {
 	unsigned long		new_rate;
 };
 
+<<<<<<< HEAD
 int clk_notifier_register(struct clk *clk, struct notifier_block *nb);
 
 int clk_notifier_unregister(struct clk *clk, struct notifier_block *nb);
 
+=======
+#ifdef CONFIG_COMMON_CLK
+
+/**
+ * clk_notifier_register: register a clock rate-change notifier callback
+ * @clk: clock whose rate we are interested in
+ * @nb: notifier block with callback function pointer
+ *
+ * ProTip: debugging across notifier chains can be frustrating. Make sure that
+ * your notifier callback function prints a nice big warning in case of
+ * failure.
+ */
+int clk_notifier_register(struct clk *clk, struct notifier_block *nb);
+
+/**
+ * clk_notifier_unregister: unregister a clock rate-change notifier callback
+ * @clk: clock whose rate we are no longer interested in
+ * @nb: notifier block which will be unregistered
+ */
+int clk_notifier_unregister(struct clk *clk, struct notifier_block *nb);
+
+/**
+ * clk_get_accuracy - obtain the clock accuracy in ppb (parts per billion)
+ *		      for a clock source.
+ * @clk: clock source
+ *
+ * This gets the clock source accuracy expressed in ppb.
+ * A perfect clock returns 0.
+ */
+long clk_get_accuracy(struct clk *clk);
+
+/**
+ * clk_set_phase - adjust the phase shift of a clock signal
+ * @clk: clock signal source
+ * @degrees: number of degrees the signal is shifted
+ *
+ * Shifts the phase of a clock signal by the specified degrees. Returns 0 on
+ * success, -EERROR otherwise.
+ */
+int clk_set_phase(struct clk *clk, int degrees);
+
+/**
+ * clk_get_phase - return the phase shift of a clock signal
+ * @clk: clock signal source
+ *
+ * Returns the phase shift of a clock node in degrees, otherwise returns
+ * -EERROR.
+ */
+int clk_get_phase(struct clk *clk);
+
+/**
+ * clk_is_match - check if two clk's point to the same hardware clock
+ * @p: clk compared against q
+ * @q: clk compared against p
+ *
+ * Returns true if the two struct clk pointers both point to the same hardware
+ * clock node. Put differently, returns true if struct clk *p and struct clk *q
+ * share the same struct clk_core object.
+ *
+ * Returns false otherwise. Note that two NULL clks are treated as matching.
+ */
+bool clk_is_match(const struct clk *p, const struct clk *q);
+
+#else
+
+static inline int clk_notifier_register(struct clk *clk,
+					struct notifier_block *nb)
+{
+	return -ENOTSUPP;
+}
+
+static inline int clk_notifier_unregister(struct clk *clk,
+					  struct notifier_block *nb)
+{
+	return -ENOTSUPP;
+}
+
+static inline long clk_get_accuracy(struct clk *clk)
+{
+	return -ENOTSUPP;
+}
+
+static inline long clk_set_phase(struct clk *clk, int phase)
+{
+	return -ENOTSUPP;
+}
+
+static inline long clk_get_phase(struct clk *clk)
+{
+	return -ENOTSUPP;
+}
+
+static inline bool clk_is_match(const struct clk *p, const struct clk *q)
+{
+	return p == q;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /**
@@ -207,7 +309,11 @@ void clk_put(struct clk *clk);
 
 /**
  * devm_clk_put	- "free" a managed clock source
+<<<<<<< HEAD
  * @dev: device used to acuqire the clock
+=======
+ * @dev: device used to acquire the clock
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @clk: clock source acquired with devm_clk_get()
  *
  * Note: drivers must ensure that all clk_enable calls made on this
@@ -228,6 +334,23 @@ void devm_clk_put(struct device *dev, struct clk *clk);
  * @clk: clock source
  * @rate: desired clock rate in Hz
  *
+<<<<<<< HEAD
+=======
+ * This answers the question "if I were to pass @rate to clk_set_rate(),
+ * what clock rate would I end up with?" without changing the hardware
+ * in any way.  In other words:
+ *
+ *   rate = clk_round_rate(clk, r);
+ *
+ * and:
+ *
+ *   clk_set_rate(clk, r);
+ *   rate = clk_get_rate(clk);
+ *
+ * are equivalent except the former does not modify the clock hardware
+ * in any way.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Returns rounded clock rate in Hz, or negative errno.
  */
 long clk_round_rate(struct clk *clk, unsigned long rate);
@@ -242,6 +365,49 @@ long clk_round_rate(struct clk *clk, unsigned long rate);
 int clk_set_rate(struct clk *clk, unsigned long rate);
 
 /**
+<<<<<<< HEAD
+=======
+ * clk_has_parent - check if a clock is a possible parent for another
+ * @clk: clock source
+ * @parent: parent clock source
+ *
+ * This function can be used in drivers that need to check that a clock can be
+ * the parent of another without actually changing the parent.
+ *
+ * Returns true if @parent is a possible parent for @clk, false otherwise.
+ */
+bool clk_has_parent(struct clk *clk, struct clk *parent);
+
+/**
+ * clk_set_rate_range - set a rate range for a clock source
+ * @clk: clock source
+ * @min: desired minimum clock rate in Hz, inclusive
+ * @max: desired maximum clock rate in Hz, inclusive
+ *
+ * Returns success (0) or negative errno.
+ */
+int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max);
+
+/**
+ * clk_set_min_rate - set a minimum clock rate for a clock source
+ * @clk: clock source
+ * @rate: desired minimum clock rate in Hz, inclusive
+ *
+ * Returns success (0) or negative errno.
+ */
+int clk_set_min_rate(struct clk *clk, unsigned long rate);
+
+/**
+ * clk_set_max_rate - set a maximum clock rate for a clock source
+ * @clk: clock source
+ * @rate: desired maximum clock rate in Hz, inclusive
+ *
+ * Returns success (0) or negative errno.
+ */
+int clk_set_max_rate(struct clk *clk, unsigned long rate);
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * clk_set_parent - set the parent clock source for this clock
  * @clk: clock source
  * @parent: parent clock source
@@ -314,6 +480,14 @@ static inline long clk_round_rate(struct clk *clk, unsigned long rate)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool clk_has_parent(struct clk *clk, struct clk *parent)
+{
+	return true;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int clk_set_parent(struct clk *clk, struct clk *parent)
 {
 	return 0;
@@ -324,6 +498,13 @@ static inline struct clk *clk_get_parent(struct clk *clk)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct clk *clk_get_sys(const char *dev_id, const char *con_id)
+{
+	return NULL;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* clk_prepare_enable helps cases using clk_enable in non-atomic context. */
@@ -348,6 +529,7 @@ static inline void clk_disable_unprepare(struct clk *clk)
 	clk_unprepare(clk);
 }
 
+<<<<<<< HEAD
 /**
  * clk_add_alias - add a new clock alias
  * @alias: name for clock alias
@@ -361,6 +543,8 @@ static inline void clk_disable_unprepare(struct clk *clk)
 int clk_add_alias(const char *alias, const char *alias_dev_name, char *id,
 			struct device *dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct device_node;
 struct of_phandle_args;
 

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,22 +92,42 @@ acpi_ex_system_memory_space_handler(u32 function,
 
 	switch (bit_width) {
 	case 8:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		length = 1;
 		break;
 
 	case 16:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		length = 2;
 		break;
 
 	case 32:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		length = 4;
 		break;
 
 	case 64:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		length = 8;
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ACPI_ERROR((AE_INFO, "Invalid SystemMemory width %u",
 			    bit_width));
 		return_ACPI_STATUS(AE_AML_OPERAND_VALUE);
@@ -160,8 +184,13 @@ acpi_ex_system_memory_space_handler(u32 function,
 		 * one page, which is similar to the original code that used a 4k
 		 * maximum window.
 		 */
+<<<<<<< HEAD
 		page_boundary_map_length =
 		    ACPI_ROUND_UP(address, ACPI_DEFAULT_PAGE_SIZE) - address;
+=======
+		page_boundary_map_length = (acpi_size)
+		    (ACPI_ROUND_UP(address, ACPI_DEFAULT_PAGE_SIZE) - address);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (page_boundary_map_length == 0) {
 			page_boundary_map_length = ACPI_DEFAULT_PAGE_SIZE;
 		}
@@ -172,12 +201,22 @@ acpi_ex_system_memory_space_handler(u32 function,
 
 		/* Create a new mapping starting at the address given */
 
+<<<<<<< HEAD
 		mem_info->mapped_logical_address = acpi_os_map_memory((acpi_physical_address) address, map_length);
 		if (!mem_info->mapped_logical_address) {
 			ACPI_ERROR((AE_INFO,
 				    "Could not map memory at 0x%8.8X%8.8X, size %u",
 				    ACPI_FORMAT_NATIVE_UINT(address),
 				    (u32) map_length));
+=======
+		mem_info->mapped_logical_address =
+		    acpi_os_map_memory(address, map_length);
+		if (!mem_info->mapped_logical_address) {
+			ACPI_ERROR((AE_INFO,
+				    "Could not map memory at 0x%8.8X%8.8X, size %u",
+				    ACPI_FORMAT_UINT64(address),
+				    (u32)map_length));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mem_info->mapped_length = 0;
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -197,8 +236,12 @@ acpi_ex_system_memory_space_handler(u32 function,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			  "System-Memory (width %u) R/W %u Address=%8.8X%8.8X\n",
+<<<<<<< HEAD
 			  bit_width, function,
 			  ACPI_FORMAT_NATIVE_UINT(address)));
+=======
+			  bit_width, function, ACPI_FORMAT_UINT64(address)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Perform the memory read or write
@@ -214,6 +257,7 @@ acpi_ex_system_memory_space_handler(u32 function,
 		*value = 0;
 		switch (bit_width) {
 		case 8:
+<<<<<<< HEAD
 			*value = (u64) ACPI_GET8(logical_addr_ptr);
 			break;
 
@@ -231,6 +275,31 @@ acpi_ex_system_memory_space_handler(u32 function,
 
 		default:
 			/* bit_width was already validated */
+=======
+
+			*value = (u64)ACPI_GET8(logical_addr_ptr);
+			break;
+
+		case 16:
+
+			*value = (u64)ACPI_GET16(logical_addr_ptr);
+			break;
+
+		case 32:
+
+			*value = (u64)ACPI_GET32(logical_addr_ptr);
+			break;
+
+		case 64:
+
+			*value = (u64)ACPI_GET64(logical_addr_ptr);
+			break;
+
+		default:
+
+			/* bit_width was already validated */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		break;
@@ -239,28 +308,54 @@ acpi_ex_system_memory_space_handler(u32 function,
 
 		switch (bit_width) {
 		case 8:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_SET8(logical_addr_ptr, *value);
 			break;
 
 		case 16:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_SET16(logical_addr_ptr, *value);
 			break;
 
 		case 32:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_SET32(logical_addr_ptr, *value);
 			break;
 
 		case 64:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_SET64(logical_addr_ptr, *value);
 			break;
 
 		default:
+<<<<<<< HEAD
 			/* bit_width was already validated */
+=======
+
+			/* bit_width was already validated */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = AE_BAD_PARAMETER;
 		break;
 	}
@@ -300,26 +395,43 @@ acpi_ex_system_io_space_handler(u32 function,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			  "System-IO (width %u) R/W %u Address=%8.8X%8.8X\n",
+<<<<<<< HEAD
 			  bit_width, function,
 			  ACPI_FORMAT_NATIVE_UINT(address)));
+=======
+			  bit_width, function, ACPI_FORMAT_UINT64(address)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Decode the function parameter */
 
 	switch (function) {
 	case ACPI_READ:
 
+<<<<<<< HEAD
 		status = acpi_hw_read_port((acpi_io_address) address,
+=======
+		status = acpi_hw_read_port((acpi_io_address)address,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   &value32, bit_width);
 		*value = value32;
 		break;
 
 	case ACPI_WRITE:
 
+<<<<<<< HEAD
 		status = acpi_hw_write_port((acpi_io_address) address,
 					    (u32) * value, bit_width);
 		break;
 
 	default:
+=======
+		status = acpi_hw_write_port((acpi_io_address)address,
+					    (u32)*value, bit_width);
+		break;
+
+	default:
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = AE_BAD_PARAMETER;
 		break;
 	}
@@ -374,21 +486,39 @@ acpi_ex_pci_config_space_handler(u32 function,
 	pci_register = (u16) (u32) address;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+<<<<<<< HEAD
 			  "Pci-Config %u (%u) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n",
+=======
+			  "Pci-Config %u (%u) Seg(%04x) Bus(%04x) "
+			  "Dev(%04x) Func(%04x) Reg(%04x)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  function, bit_width, pci_id->segment, pci_id->bus,
 			  pci_id->device, pci_id->function, pci_register));
 
 	switch (function) {
 	case ACPI_READ:
 
+<<<<<<< HEAD
 		status = acpi_os_read_pci_configuration(pci_id, pci_register,
 							value, bit_width);
+=======
+		*value = 0;
+		status =
+		    acpi_os_read_pci_configuration(pci_id, pci_register, value,
+						   bit_width);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case ACPI_WRITE:
 
+<<<<<<< HEAD
 		status = acpi_os_write_pci_configuration(pci_id, pci_register,
 							 *value, bit_width);
+=======
+		status =
+		    acpi_os_write_pci_configuration(pci_id, pci_register,
+						    *value, bit_width);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:
@@ -498,15 +628,25 @@ acpi_ex_data_table_space_handler(u32 function,
 	switch (function) {
 	case ACPI_READ:
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(ACPI_CAST_PTR(char, value),
 			    ACPI_PHYSADDR_TO_PTR(address),
 			    ACPI_DIV_8(bit_width));
+=======
+		memcpy(ACPI_CAST_PTR(char, value),
+		       ACPI_PHYSADDR_TO_PTR(address), ACPI_DIV_8(bit_width));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case ACPI_WRITE:
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(ACPI_PHYSADDR_TO_PTR(address),
 			    ACPI_CAST_PTR(char, value), ACPI_DIV_8(bit_width));
+=======
+		memcpy(ACPI_PHYSADDR_TO_PTR(address),
+		       ACPI_CAST_PTR(char, value), ACPI_DIV_8(bit_width));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:

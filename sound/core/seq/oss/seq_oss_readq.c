@@ -47,6 +47,7 @@ snd_seq_oss_readq_new(struct seq_oss_devinfo *dp, int maxlen)
 {
 	struct seq_oss_readq *q;
 
+<<<<<<< HEAD
 	if ((q = kzalloc(sizeof(*q), GFP_KERNEL)) == NULL) {
 		snd_printk(KERN_ERR "can't malloc read queue\n");
 		return NULL;
@@ -54,6 +55,14 @@ snd_seq_oss_readq_new(struct seq_oss_devinfo *dp, int maxlen)
 
 	if ((q->q = kcalloc(maxlen, sizeof(union evrec), GFP_KERNEL)) == NULL) {
 		snd_printk(KERN_ERR "can't malloc read queue buffer\n");
+=======
+	q = kzalloc(sizeof(*q), GFP_KERNEL);
+	if (!q)
+		return NULL;
+
+	q->q = kcalloc(maxlen, sizeof(union evrec), GFP_KERNEL);
+	if (!q->q) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(q);
 		return NULL;
 	}
@@ -92,8 +101,12 @@ snd_seq_oss_readq_clear(struct seq_oss_readq *q)
 		q->head = q->tail = 0;
 	}
 	/* if someone sleeping, wake'em up */
+<<<<<<< HEAD
 	if (waitqueue_active(&q->midi_sleep))
 		wake_up(&q->midi_sleep);
+=======
+	wake_up(&q->midi_sleep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	q->input_time = (unsigned long)-1;
 }
 
@@ -120,6 +133,38 @@ snd_seq_oss_readq_puts(struct seq_oss_readq *q, int dev, unsigned char *data, in
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * put MIDI sysex bytes; the event buffer may be chained, thus it has
+ * to be expanded via snd_seq_dump_var_event().
+ */
+struct readq_sysex_ctx {
+	struct seq_oss_readq *readq;
+	int dev;
+};
+
+static int readq_dump_sysex(void *ptr, void *buf, int count)
+{
+	struct readq_sysex_ctx *ctx = ptr;
+
+	return snd_seq_oss_readq_puts(ctx->readq, ctx->dev, buf, count);
+}
+
+int snd_seq_oss_readq_sysex(struct seq_oss_readq *q, int dev,
+			    struct snd_seq_event *ev)
+{
+	struct readq_sysex_ctx ctx = {
+		.readq = q,
+		.dev = dev
+	};
+
+	if ((ev->flags & SNDRV_SEQ_EVENT_LENGTH_MASK) != SNDRV_SEQ_EVENT_LENGTH_VARIABLE)
+		return 0;
+	return snd_seq_dump_var_event(ev, readq_dump_sysex, &ctx);
+}
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * copy an event to input queue:
  * return zero if enqueued
  */
@@ -139,8 +184,12 @@ snd_seq_oss_readq_put_event(struct seq_oss_readq *q, union evrec *ev)
 	q->qlen++;
 
 	/* wake up sleeper */
+<<<<<<< HEAD
 	if (waitqueue_active(&q->midi_sleep))
 		wake_up(&q->midi_sleep);
+=======
+	wake_up(&q->midi_sleep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_unlock_irqrestore(&q->lock, flags);
 
@@ -223,7 +272,11 @@ snd_seq_oss_readq_put_timestamp(struct seq_oss_readq *q, unsigned long curt, int
 }
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * proc interface
  */
@@ -234,4 +287,8 @@ snd_seq_oss_readq_info_read(struct seq_oss_readq *q, struct snd_info_buffer *buf
 		    (waitqueue_active(&q->midi_sleep) ? "sleeping":"running"),
 		    q->qlen, q->input_time);
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

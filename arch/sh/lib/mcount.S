@@ -92,6 +92,7 @@ mcount:
 	rts
 	 nop
 #else
+<<<<<<< HEAD
 #ifndef CONFIG_DYNAMIC_FTRACE
 	mov.l	.Lfunction_trace_stop, r0
 	mov.l	@r0, r0
@@ -99,6 +100,8 @@ mcount:
 	bf	ftrace_stub
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MCOUNT_ENTER()
 
 #ifdef CONFIG_DYNAMIC_FTRACE
@@ -174,11 +177,14 @@ ftrace_graph_call:
 
 	.globl ftrace_caller
 ftrace_caller:
+<<<<<<< HEAD
 	mov.l	.Lfunction_trace_stop, r0
 	mov.l	@r0, r0
 	tst	r0, r0
 	bf	ftrace_stub
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MCOUNT_ENTER()
 
 	.globl ftrace_call
@@ -196,8 +202,11 @@ ftrace_call:
 #endif /* CONFIG_DYNAMIC_FTRACE */
 
 	.align 2
+<<<<<<< HEAD
 .Lfunction_trace_stop:
 	.long	function_trace_stop
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * NOTE: From here on the locations of the .Lftrace_stub label and
@@ -217,12 +226,16 @@ ftrace_stub:
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 	.globl	ftrace_graph_caller
 ftrace_graph_caller:
+<<<<<<< HEAD
 	mov.l	2f, r0
 	mov.l	@r0, r0
 	tst	r0, r0
 	bt	1f
 
 	mov.l	3f, r1
+=======
+	mov.l	2f, r1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jmp	@r1
 	 nop
 1:
@@ -242,8 +255,12 @@ ftrace_graph_caller:
 	MCOUNT_LEAVE()
 
 	.align 2
+<<<<<<< HEAD
 2:	.long	function_trace_stop
 3:	.long	skip_trace
+=======
+2:	.long	skip_trace
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 .Lprepare_ftrace_return:
 	.long	prepare_ftrace_return
 

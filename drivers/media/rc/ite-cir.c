@@ -292,8 +292,19 @@ static irqreturn_t ite_cir_isr(int irq, void *data)
 	/* read the interrupt flags */
 	iflags = dev->params.get_irq_causes(dev);
 
+<<<<<<< HEAD
 	/* check for the receive interrupt */
 	if (iflags & (ITE_IRQ_RX_FIFO | ITE_IRQ_RX_FIFO_OVERRUN)) {
+=======
+	/* Check for RX overflow */
+	if (iflags & ITE_IRQ_RX_FIFO_OVERRUN) {
+		dev_warn(&dev->rdev->dev, "receive overflow\n");
+		ir_raw_event_reset(dev->rdev);
+	}
+
+	/* check for the receive interrupt */
+	if (iflags & ITE_IRQ_RX_FIFO) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* read the FIFO bytes */
 		rx_bytes =
 			dev->params.get_rx_bytes(dev, rx_buf,
@@ -1565,7 +1576,11 @@ static int ite_probe(struct pnp_dev *pdev, const struct pnp_device_id
 	/* set up ir-core props */
 	rdev->priv = itdev;
 	rdev->driver_type = RC_DRIVER_IR_RAW;
+<<<<<<< HEAD
 	rdev->allowed_protos = RC_BIT_ALL;
+=======
+	rdev->allowed_protocols = RC_BIT_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rdev->open = ite_open;
 	rdev->close = ite_close;
 	rdev->s_idle = ite_s_idle;
@@ -1668,7 +1683,10 @@ static int ite_suspend(struct pnp_dev *pdev, pm_message_t state)
 
 static int ite_resume(struct pnp_dev *pdev)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ite_dev *dev = pnp_get_drvdata(pdev);
 	unsigned long flags;
 
@@ -1683,7 +1701,11 @@ static int ite_resume(struct pnp_dev *pdev)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ite_shutdown(struct pnp_dev *pdev)
@@ -1711,6 +1733,7 @@ static struct pnp_driver ite_driver = {
 	.shutdown	= ite_shutdown,
 };
 
+<<<<<<< HEAD
 static int ite_init(void)
 {
 	return pnp_register_driver(&ite_driver);
@@ -1721,11 +1744,17 @@ static void ite_exit(void)
 	pnp_unregister_driver(&ite_driver);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DEVICE_TABLE(pnp, ite_ids);
 MODULE_DESCRIPTION("ITE Tech Inc. IT8712F/ITE8512F CIR driver");
 
 MODULE_AUTHOR("Juan J. Garcia de Soria <skandalfo@gmail.com>");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_init(ite_init);
 module_exit(ite_exit);
+=======
+module_pnp_driver(ite_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

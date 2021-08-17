@@ -18,7 +18,10 @@
  * 	- crash dumping code reserved region
  * 	- Kernel memory map built from EFI memory map
  * 	- ELF core header
+<<<<<<< HEAD
  *	- xen start info if CONFIG_XEN
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * More could be added if necessary
  */

@@ -20,7 +20,11 @@
 #include <linux/module.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
 #include <linux/opp.h>
+=======
+#include <linux/pm_opp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
@@ -100,7 +104,10 @@ struct exynos_dvfs_data {
 	struct resource *mem;
 	int irq;
 	struct clk *cpu_clk;
+<<<<<<< HEAD
 	unsigned int cur_frequency;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int latency;
 	struct cpufreq_frequency_table *freq_table;
 	unsigned int freq_count;
@@ -115,6 +122,7 @@ static struct cpufreq_freqs freqs;
 
 static int init_div_table(void)
 {
+<<<<<<< HEAD
 	struct cpufreq_frequency_table *freq_tbl = dvfs_info->freq_table;
 	unsigned int tmp, clk_div, ema_div, freq, volt_id;
 	int i = 0;
@@ -125,15 +133,33 @@ static int init_div_table(void)
 
 		opp = opp_find_freq_exact(dvfs_info->dev,
 					freq_tbl[i].frequency * 1000, true);
+=======
+	struct cpufreq_frequency_table *pos, *freq_tbl = dvfs_info->freq_table;
+	unsigned int tmp, clk_div, ema_div, freq, volt_id;
+	struct dev_pm_opp *opp;
+
+	rcu_read_lock();
+	cpufreq_for_each_entry(pos, freq_tbl) {
+		opp = dev_pm_opp_find_freq_exact(dvfs_info->dev,
+					pos->frequency * 1000, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (IS_ERR(opp)) {
 			rcu_read_unlock();
 			dev_err(dvfs_info->dev,
 				"failed to find valid OPP for %u KHZ\n",
+<<<<<<< HEAD
 				freq_tbl[i].frequency);
 			return PTR_ERR(opp);
 		}
 
 		freq = freq_tbl[i].frequency / 1000; /* In MHZ */
+=======
+				pos->frequency);
+			return PTR_ERR(opp);
+		}
+
+		freq = pos->frequency / 1000; /* In MHZ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clk_div = ((freq / CPU_DIV_FREQ_MAX) & P0_7_CPUCLKDEV_MASK)
 					<< P0_7_CPUCLKDEV_SHIFT;
 		clk_div |= ((freq / CPU_ATB_FREQ_MAX) & P0_7_ATBCLKDEV_MASK)
@@ -142,7 +168,11 @@ static int init_div_table(void)
 					<< P0_7_CSCLKDEV_SHIFT;
 
 		/* Calculate EMA */
+<<<<<<< HEAD
 		volt_id = opp_get_voltage(opp);
+=======
+		volt_id = dev_pm_opp_get_voltage(opp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		volt_id = (MAX_VOLTAGE - volt_id) / VOLTAGE_STEP;
 		if (volt_id < PMIC_HIGH_VOLT) {
 			ema_div = (CPUEMA_HIGH << P0_7_CPUEMA_SHIFT) |
@@ -158,17 +188,30 @@ static int init_div_table(void)
 		tmp = (clk_div | ema_div | (volt_id << P0_7_VDD_SHIFT)
 			| ((freq / FREQ_UNIT) << P0_7_FREQ_SHIFT));
 
+<<<<<<< HEAD
 		__raw_writel(tmp, dvfs_info->base + XMU_PMU_P0_7 + 4 * i);
+=======
+		__raw_writel(tmp, dvfs_info->base + XMU_PMU_P0_7 + 4 *
+						(pos - freq_tbl));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	rcu_read_unlock();
 	return 0;
 }
 
+<<<<<<< HEAD
 static void exynos_enable_dvfs(void)
 {
 	unsigned int tmp, i, cpu;
 	struct cpufreq_frequency_table *freq_table = dvfs_info->freq_table;
+=======
+static void exynos_enable_dvfs(unsigned int cur_frequency)
+{
+	unsigned int tmp, cpu;
+	struct cpufreq_frequency_table *freq_table = dvfs_info->freq_table;
+	struct cpufreq_frequency_table *pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Disable DVFS */
 	__raw_writel(0,	dvfs_info->base + XMU_DVFS_CTRL);
 
@@ -183,6 +226,7 @@ static void exynos_enable_dvfs(void)
 	 __raw_writel(tmp, dvfs_info->base + XMU_PMUIRQEN);
 
 	/* Set initial performance index */
+<<<<<<< HEAD
 	for (i = 0; freq_table[i].frequency != CPUFREQ_TABLE_END; i++)
 		if (freq_table[i].frequency == dvfs_info->cur_frequency)
 			break;
@@ -196,11 +240,30 @@ static void exynos_enable_dvfs(void)
 
 	dev_info(dvfs_info->dev, "Setting dvfs initial frequency = %uKHZ",
 						dvfs_info->cur_frequency);
+=======
+	cpufreq_for_each_entry(pos, freq_table)
+		if (pos->frequency == cur_frequency)
+			break;
+
+	if (pos->frequency == CPUFREQ_TABLE_END) {
+		dev_crit(dvfs_info->dev, "Boot up frequency not supported\n");
+		/* Assign the highest frequency */
+		pos = freq_table;
+		cur_frequency = pos->frequency;
+	}
+
+	dev_info(dvfs_info->dev, "Setting dvfs initial frequency = %uKHZ",
+						cur_frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (cpu = 0; cpu < CONFIG_NR_CPUS; cpu++) {
 		tmp = __raw_readl(dvfs_info->base + XMU_C0_3_PSTATE + cpu * 4);
 		tmp &= ~(P_VALUE_MASK << C0_3_PSTATE_NEW_SHIFT);
+<<<<<<< HEAD
 		tmp |= (i << C0_3_PSTATE_NEW_SHIFT);
+=======
+		tmp |= ((pos - freq_table) << C0_3_PSTATE_NEW_SHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__raw_writel(tmp, dvfs_info->base + XMU_C0_3_PSTATE + cpu * 4);
 	}
 
@@ -209,6 +272,7 @@ static void exynos_enable_dvfs(void)
 				dvfs_info->base + XMU_DVFS_CTRL);
 }
 
+<<<<<<< HEAD
 static int exynos_verify_speed(struct cpufreq_policy *policy)
 {
 	return cpufreq_frequency_table_verify(policy,
@@ -226,10 +290,17 @@ static int exynos_target(struct cpufreq_policy *policy,
 {
 	unsigned int index, tmp;
 	int ret = 0, i;
+=======
+static int exynos_target(struct cpufreq_policy *policy, unsigned int index)
+{
+	unsigned int tmp;
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cpufreq_frequency_table *freq_table = dvfs_info->freq_table;
 
 	mutex_lock(&cpufreq_lock);
 
+<<<<<<< HEAD
 	ret = cpufreq_frequency_table_target(policy, freq_table,
 					   target_freq, relation, &index);
 	if (ret)
@@ -239,6 +310,12 @@ static int exynos_target(struct cpufreq_policy *policy,
 	freqs.new = freq_table[index].frequency;
 
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+=======
+	freqs.old = policy->cur;
+	freqs.new = freq_table[index].frequency;
+
+	cpufreq_freq_transition_begin(policy, &freqs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set the target frequency in all C0_3_PSTATE register */
 	for_each_cpu(i, policy->cpus) {
@@ -248,9 +325,14 @@ static int exynos_target(struct cpufreq_policy *policy,
 
 		__raw_writel(tmp, dvfs_info->base + XMU_C0_3_PSTATE + i * 4);
 	}
+<<<<<<< HEAD
 out:
 	mutex_unlock(&cpufreq_lock);
 	return ret;
+=======
+	mutex_unlock(&cpufreq_lock);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void exynos_cpufreq_work(struct work_struct *work)
@@ -264,7 +346,11 @@ static void exynos_cpufreq_work(struct work_struct *work)
 		goto skip_work;
 
 	mutex_lock(&cpufreq_lock);
+<<<<<<< HEAD
 	freqs.old = dvfs_info->cur_frequency;
+=======
+	freqs.old = policy->cur;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cur_pstate = __raw_readl(dvfs_info->base + XMU_P_STATUS);
 	if (cur_pstate >> C0_3_PSTATE_VALID_SHIFT & 0x1)
@@ -274,12 +360,20 @@ static void exynos_cpufreq_work(struct work_struct *work)
 
 	if (likely(index < dvfs_info->freq_count)) {
 		freqs.new = freq_table[index].frequency;
+<<<<<<< HEAD
 		dvfs_info->cur_frequency = freqs.new;
 	} else {
 		dev_crit(dvfs_info->dev, "New frequency out of range\n");
 		freqs.new = dvfs_info->cur_frequency;
 	}
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+=======
+	} else {
+		dev_crit(dvfs_info->dev, "New frequency out of range\n");
+		freqs.new = freqs.old;
+	}
+	cpufreq_freq_transition_end(policy, &freqs, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cpufreq_cpu_put(policy);
 	mutex_unlock(&cpufreq_lock);
@@ -321,6 +415,7 @@ static void exynos_sort_descend_freq_table(void)
 
 static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = cpufreq_frequency_table_cpuinfo(policy, dvfs_info->freq_table);
@@ -345,6 +440,22 @@ static struct cpufreq_driver exynos_driver = {
 	.get		= exynos_getspeed,
 	.init		= exynos_cpufreq_cpu_init,
 	.name		= CPUFREQ_NAME,
+=======
+	policy->clk = dvfs_info->cpu_clk;
+	return cpufreq_generic_init(policy, dvfs_info->freq_table,
+			dvfs_info->latency);
+}
+
+static struct cpufreq_driver exynos_driver = {
+	.flags		= CPUFREQ_STICKY | CPUFREQ_ASYNC_NOTIFICATION |
+				CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= exynos_target,
+	.get		= cpufreq_generic_get,
+	.init		= exynos_cpufreq_cpu_init,
+	.name		= CPUFREQ_NAME,
+	.attr		= cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct of_device_id exynos_cpufreq_match[] = {
@@ -360,6 +471,10 @@ static int exynos_cpufreq_probe(struct platform_device *pdev)
 	int ret = -EINVAL;
 	struct device_node *np;
 	struct resource res;
+<<<<<<< HEAD
+=======
+	unsigned int cur_frequency;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	np =  pdev->dev.of_node;
 	if (!np)
@@ -390,12 +505,17 @@ static int exynos_cpufreq_probe(struct platform_device *pdev)
 		goto err_put_node;
 	}
 
+<<<<<<< HEAD
 	ret = of_init_opp_table(dvfs_info->dev);
+=======
+	ret = dev_pm_opp_of_add_table(dvfs_info->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(dvfs_info->dev, "failed to init OPP table: %d\n", ret);
 		goto err_put_node;
 	}
 
+<<<<<<< HEAD
 	ret = opp_init_cpufreq_table(dvfs_info->dev, &dvfs_info->freq_table);
 	if (ret) {
 		dev_err(dvfs_info->dev,
@@ -403,6 +523,16 @@ static int exynos_cpufreq_probe(struct platform_device *pdev)
 		goto err_put_node;
 	}
 	dvfs_info->freq_count = opp_get_opp_count(dvfs_info->dev);
+=======
+	ret = dev_pm_opp_init_cpufreq_table(dvfs_info->dev,
+					    &dvfs_info->freq_table);
+	if (ret) {
+		dev_err(dvfs_info->dev,
+			"failed to init cpufreq table: %d\n", ret);
+		goto err_free_opp;
+	}
+	dvfs_info->freq_count = dev_pm_opp_get_opp_count(dvfs_info->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	exynos_sort_descend_freq_table();
 
 	if (of_property_read_u32(np, "clock-latency", &dvfs_info->latency))
@@ -415,13 +545,22 @@ static int exynos_cpufreq_probe(struct platform_device *pdev)
 		goto err_free_table;
 	}
 
+<<<<<<< HEAD
 	dvfs_info->cur_frequency = clk_get_rate(dvfs_info->cpu_clk);
 	if (!dvfs_info->cur_frequency) {
+=======
+	cur_frequency = clk_get_rate(dvfs_info->cpu_clk);
+	if (!cur_frequency) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(dvfs_info->dev, "Failed to get clock rate\n");
 		ret = -EINVAL;
 		goto err_free_table;
 	}
+<<<<<<< HEAD
 	dvfs_info->cur_frequency /= 1000;
+=======
+	cur_frequency /= 1000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_WORK(&dvfs_info->irq_work, exynos_cpufreq_work);
 	ret = devm_request_irq(dvfs_info->dev, dvfs_info->irq,
@@ -438,7 +577,11 @@ static int exynos_cpufreq_probe(struct platform_device *pdev)
 		goto err_free_table;
 	}
 
+<<<<<<< HEAD
 	exynos_enable_dvfs();
+=======
+	exynos_enable_dvfs(cur_frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = cpufreq_register_driver(&exynos_driver);
 	if (ret) {
 		dev_err(dvfs_info->dev,
@@ -451,24 +594,41 @@ static int exynos_cpufreq_probe(struct platform_device *pdev)
 	return 0;
 
 err_free_table:
+<<<<<<< HEAD
 	opp_free_cpufreq_table(dvfs_info->dev, &dvfs_info->freq_table);
 err_put_node:
 	of_node_put(np);
 	dev_err(dvfs_info->dev, "%s: failed initialization\n", __func__);
+=======
+	dev_pm_opp_free_cpufreq_table(dvfs_info->dev, &dvfs_info->freq_table);
+err_free_opp:
+	dev_pm_opp_of_remove_table(dvfs_info->dev);
+err_put_node:
+	of_node_put(np);
+	dev_err(&pdev->dev, "%s: failed initialization\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int exynos_cpufreq_remove(struct platform_device *pdev)
 {
 	cpufreq_unregister_driver(&exynos_driver);
+<<<<<<< HEAD
 	opp_free_cpufreq_table(dvfs_info->dev, &dvfs_info->freq_table);
+=======
+	dev_pm_opp_free_cpufreq_table(dvfs_info->dev, &dvfs_info->freq_table);
+	dev_pm_opp_of_remove_table(dvfs_info->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver exynos_cpufreq_platdrv = {
 	.driver = {
 		.name	= "exynos5440-cpufreq",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = exynos_cpufreq_match,
 	},
 	.probe		= exynos_cpufreq_probe,

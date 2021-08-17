@@ -4,6 +4,10 @@
  * This file is released under the GPL.
  */
 
+<<<<<<< HEAD
+=======
+#include "dm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/device-mapper.h>
 
 #include <linux/module.h>
@@ -74,13 +78,24 @@ static int get_stripe(struct dm_target *ti, struct stripe_c *sc,
 {
 	unsigned long long start;
 	char dummy;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sscanf(argv[1], "%llu%c", &start, &dummy) != 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
 			  &sc->stripe[stripe].dev))
 		return -ENXIO;
+=======
+	ret = dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
+			    &sc->stripe[stripe].dev);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sc->stripe[stripe].physical_start = start;
 
@@ -158,8 +173,15 @@ static int stripe_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		sc->stripes_shift = __ffs(stripes);
 
 	r = dm_set_target_max_io_len(ti, chunk_size);
+<<<<<<< HEAD
 	if (r)
 		return r;
+=======
+	if (r) {
+		kfree(sc);
+		return r;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ti->num_flush_bios = stripes;
 	ti->num_discard_bios = stripes;
@@ -258,17 +280,32 @@ static int stripe_map_range(struct stripe_c *sc, struct bio *bio,
 {
 	sector_t begin, end;
 
+<<<<<<< HEAD
 	stripe_map_range_sector(sc, bio->bi_sector, target_stripe, &begin);
+=======
+	stripe_map_range_sector(sc, bio->bi_iter.bi_sector,
+				target_stripe, &begin);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stripe_map_range_sector(sc, bio_end_sector(bio),
 				target_stripe, &end);
 	if (begin < end) {
 		bio->bi_bdev = sc->stripe[target_stripe].dev->bdev;
+<<<<<<< HEAD
 		bio->bi_sector = begin + sc->stripe[target_stripe].physical_start;
 		bio->bi_size = to_bytes(end - begin);
 		return DM_MAPIO_REMAPPED;
 	} else {
 		/* The range doesn't map to the target stripe */
 		bio_endio(bio, 0);
+=======
+		bio->bi_iter.bi_sector = begin +
+			sc->stripe[target_stripe].physical_start;
+		bio->bi_iter.bi_size = to_bytes(end - begin);
+		return DM_MAPIO_REMAPPED;
+	} else {
+		/* The range doesn't map to the target stripe */
+		bio_endio(bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return DM_MAPIO_SUBMITTED;
 	}
 }
@@ -279,27 +316,69 @@ static int stripe_map(struct dm_target *ti, struct bio *bio)
 	uint32_t stripe;
 	unsigned target_bio_nr;
 
+<<<<<<< HEAD
 	if (bio->bi_rw & REQ_FLUSH) {
+=======
+	if (bio->bi_opf & REQ_PREFLUSH) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		target_bio_nr = dm_bio_get_target_bio_nr(bio);
 		BUG_ON(target_bio_nr >= sc->stripes);
 		bio->bi_bdev = sc->stripe[target_bio_nr].dev->bdev;
 		return DM_MAPIO_REMAPPED;
 	}
+<<<<<<< HEAD
 	if (unlikely(bio->bi_rw & REQ_DISCARD) ||
 	    unlikely(bio->bi_rw & REQ_WRITE_SAME)) {
+=======
+	if (unlikely(bio_op(bio) == REQ_OP_DISCARD) ||
+	    unlikely(bio_op(bio) == REQ_OP_WRITE_SAME)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		target_bio_nr = dm_bio_get_target_bio_nr(bio);
 		BUG_ON(target_bio_nr >= sc->stripes);
 		return stripe_map_range(sc, bio, target_bio_nr);
 	}
 
+<<<<<<< HEAD
 	stripe_map_sector(sc, bio->bi_sector, &stripe, &bio->bi_sector);
 
 	bio->bi_sector += sc->stripe[stripe].physical_start;
+=======
+	stripe_map_sector(sc, bio->bi_iter.bi_sector,
+			  &stripe, &bio->bi_iter.bi_sector);
+
+	bio->bi_iter.bi_sector += sc->stripe[stripe].physical_start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bio->bi_bdev = sc->stripe[stripe].dev->bdev;
 
 	return DM_MAPIO_REMAPPED;
 }
 
+<<<<<<< HEAD
+=======
+static long stripe_direct_access(struct dm_target *ti, sector_t sector,
+				 void **kaddr, pfn_t *pfn, long size)
+{
+	struct stripe_c *sc = ti->private;
+	uint32_t stripe;
+	struct block_device *bdev;
+	struct blk_dax_ctl dax = {
+		.size = size,
+	};
+	long ret;
+
+	stripe_map_sector(sc, sector, &stripe, &dax.sector);
+
+	dax.sector += sc->stripe[stripe].physical_start;
+	bdev = sc->stripe[stripe].dev->bdev;
+
+	ret = bdev_direct_access(bdev, &dax);
+	*kaddr = dax.addr;
+	*pfn = dax.pfn;
+
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Stripe status:
  *
@@ -352,7 +431,11 @@ static int stripe_end_io(struct dm_target *ti, struct bio *bio, int error)
 	if (!error)
 		return 0; /* I/O complete */
 
+<<<<<<< HEAD
 	if ((error == -EWOULDBLOCK) && (bio->bi_rw & REQ_RAHEAD))
+=======
+	if ((error == -EWOULDBLOCK) && (bio->bi_opf & REQ_RAHEAD))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return error;
 
 	if (error == -EOPNOTSUPP)
@@ -406,6 +489,7 @@ static void stripe_io_hints(struct dm_target *ti,
 	blk_limits_io_opt(limits, chunk_size * sc->stripes);
 }
 
+<<<<<<< HEAD
 static int stripe_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
 			struct bio_vec *biovec, int max_size)
 {
@@ -429,6 +513,11 @@ static int stripe_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
 static struct target_type stripe_target = {
 	.name   = "striped",
 	.version = {1, 5, 1},
+=======
+static struct target_type stripe_target = {
+	.name   = "striped",
+	.version = {1, 6, 0},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.module = THIS_MODULE,
 	.ctr    = stripe_ctr,
 	.dtr    = stripe_dtr,
@@ -437,7 +526,11 @@ static struct target_type stripe_target = {
 	.status = stripe_status,
 	.iterate_devices = stripe_iterate_devices,
 	.io_hints = stripe_io_hints,
+<<<<<<< HEAD
 	.merge  = stripe_merge,
+=======
+	.direct_access = stripe_direct_access,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int __init dm_stripe_init(void)
@@ -445,10 +538,15 @@ int __init dm_stripe_init(void)
 	int r;
 
 	r = dm_register_target(&stripe_target);
+<<<<<<< HEAD
 	if (r < 0) {
 		DMWARN("target registration failed");
 		return r;
 	}
+=======
+	if (r < 0)
+		DMWARN("target registration failed");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return r;
 }

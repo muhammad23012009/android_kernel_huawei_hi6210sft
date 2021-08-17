@@ -729,6 +729,7 @@ static struct platform_driver amiga_audio_driver = {
 	.remove = __exit_p(amiga_audio_remove),
 	.driver   = {
 		.name	= "amiga-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -746,6 +747,12 @@ static void __exit amiga_audio_exit(void)
 }
 
 module_exit(amiga_audio_exit);
+=======
+	},
+};
+
+module_platform_driver_probe(amiga_audio_driver, amiga_audio_probe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:amiga-audio");

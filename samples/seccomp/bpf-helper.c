@@ -10,6 +10,10 @@
  */
 
 #include <stdio.h>
+<<<<<<< HEAD
+=======
+#include <stdlib.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <string.h>
 
 #include "bpf-helper.h"
@@ -63,6 +67,14 @@ __u32 seccomp_bpf_label(struct bpf_labels *labels, const char *label)
 {
 	struct __bpf_label *begin = labels->labels, *end;
 	int id;
+<<<<<<< HEAD
+=======
+
+	if (labels->count == BPF_LABELS_MAX) {
+		fprintf(stderr, "Too many labels\n");
+		exit(1);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (labels->count == 0) {
 		begin->label = label;
 		begin->location = 0xffffffff;

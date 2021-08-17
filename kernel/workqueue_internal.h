@@ -9,6 +9,10 @@
 
 #include <linux/workqueue.h>
 #include <linux/kthread.h>
+<<<<<<< HEAD
+=======
+#include <linux/preempt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct worker_pool;
 
@@ -37,6 +41,11 @@ struct worker {
 	struct task_struct	*task;		/* I: worker task */
 	struct worker_pool	*pool;		/* I: the associated pool */
 						/* L: for rescuers */
+<<<<<<< HEAD
+=======
+	struct list_head	node;		/* A: anchored at pool->workers */
+						/* A: runs through worker->node */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unsigned long		last_active;	/* L: last active timestamp */
 	unsigned int		flags;		/* X: flags */
@@ -57,16 +66,27 @@ struct worker {
  */
 static inline struct worker *current_wq_worker(void)
 {
+<<<<<<< HEAD
 	if (current->flags & PF_WQ_WORKER)
+=======
+	if (in_task() && (current->flags & PF_WQ_WORKER))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return kthread_data(current);
 	return NULL;
 }
 
 /*
  * Scheduler hooks for concurrency managed workqueue.  Only to be used from
+<<<<<<< HEAD
  * sched.c and workqueue.c.
  */
 void wq_worker_waking_up(struct task_struct *task, int cpu);
 struct task_struct *wq_worker_sleeping(struct task_struct *task, int cpu);
+=======
+ * sched/core.c and workqueue.c.
+ */
+void wq_worker_waking_up(struct task_struct *task, int cpu);
+struct task_struct *wq_worker_sleeping(struct task_struct *task);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _KERNEL_WORKQUEUE_INTERNAL_H */

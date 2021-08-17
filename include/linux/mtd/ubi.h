@@ -23,22 +23,45 @@
 
 #include <linux/ioctl.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/scatterlist.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mtd/ubi-user.h>
 
 /* All voumes/LEBs */
 #define UBI_ALL -1
 
 /*
+<<<<<<< HEAD
+=======
+ * Maximum number of scatter gather list entries,
+ * we use only 64 to have a lower memory foot print.
+ */
+#define UBI_MAX_SG_COUNT 64
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * enum ubi_open_mode - UBI volume open mode constants.
  *
  * UBI_READONLY: read-only mode
  * UBI_READWRITE: read-write mode
  * UBI_EXCLUSIVE: exclusive mode
+<<<<<<< HEAD
+=======
+ * UBI_METAONLY: modify only the volume meta-data,
+ *  i.e. the data stored in the volume table, but not in any of volume LEBs.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 enum {
 	UBI_READONLY = 1,
 	UBI_READWRITE,
+<<<<<<< HEAD
 	UBI_EXCLUSIVE
+=======
+	UBI_EXCLUSIVE,
+	UBI_METAONLY
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -116,6 +139,38 @@ struct ubi_volume_info {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct ubi_sgl - UBI scatter gather list data structure.
+ * @list_pos: current position in @sg[]
+ * @page_pos: current position in @sg[@list_pos]
+ * @sg: the scatter gather list itself
+ *
+ * ubi_sgl is a wrapper around a scatter list which keeps track of the
+ * current position in the list and the current list item such that
+ * it can be used across multiple ubi_leb_read_sg() calls.
+ */
+struct ubi_sgl {
+	int list_pos;
+	int page_pos;
+	struct scatterlist sg[UBI_MAX_SG_COUNT];
+};
+
+/**
+ * ubi_sgl_init - initialize an UBI scatter gather list data structure.
+ * @usgl: the UBI scatter gather struct itself
+ *
+ * Please note that you still have to use sg_init_table() or any adequate
+ * function to initialize the unterlaying struct scatterlist.
+ */
+static inline void ubi_sgl_init(struct ubi_sgl *usgl)
+{
+	usgl->list_pos = 0;
+	usgl->page_pos = 0;
+}
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct ubi_device_info - UBI device description data structure.
  * @ubi_num: ubi device number
  * @leb_size: logical eraseblock size on this UBI device
@@ -210,6 +265,11 @@ int ubi_unregister_volume_notifier(struct notifier_block *nb);
 void ubi_close_volume(struct ubi_volume_desc *desc);
 int ubi_leb_read(struct ubi_volume_desc *desc, int lnum, char *buf, int offset,
 		 int len, int check);
+<<<<<<< HEAD
+=======
+int ubi_leb_read_sg(struct ubi_volume_desc *desc, int lnum, struct ubi_sgl *sgl,
+		   int offset, int len, int check);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 		  int offset, int len);
 int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
@@ -230,4 +290,17 @@ static inline int ubi_read(struct ubi_volume_desc *desc, int lnum, char *buf,
 {
 	return ubi_leb_read(desc, lnum, buf, offset, len, 0);
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * This function is the same as the 'ubi_leb_read_sg()' function, but it does
+ * not provide the checking capability.
+ */
+static inline int ubi_read_sg(struct ubi_volume_desc *desc, int lnum,
+			      struct ubi_sgl *sgl, int offset, int len)
+{
+	return ubi_leb_read_sg(desc, lnum, sgl, offset, len, 0);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !__LINUX_UBI_H__ */

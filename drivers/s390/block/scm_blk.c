@@ -10,6 +10,10 @@
 
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/mempool.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/blkdev.h>
 #include <linux/genhd.h>
@@ -20,13 +24,27 @@
 
 debug_info_t *scm_debug;
 static int scm_major;
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(list_lock);
 static LIST_HEAD(inactive_requests);
 static unsigned int nr_requests = 64;
+=======
+static mempool_t *aidaw_pool;
+static DEFINE_SPINLOCK(list_lock);
+static LIST_HEAD(inactive_requests);
+static unsigned int nr_requests = 64;
+static unsigned int nr_requests_per_io = 8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static atomic_t nr_devices = ATOMIC_INIT(0);
 module_param(nr_requests, uint, S_IRUGO);
 MODULE_PARM_DESC(nr_requests, "Number of parallel requests.");
 
+<<<<<<< HEAD
+=======
+module_param(nr_requests_per_io, uint, S_IRUGO);
+MODULE_PARM_DESC(nr_requests_per_io, "Number of requests per IO.");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("Block driver for s390 storage class memory.");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("scm:scmdev*");
@@ -36,8 +54,13 @@ static void __scm_free_rq(struct scm_request *scmrq)
 	struct aob_rq_header *aobrq = to_aobrq(scmrq);
 
 	free_page((unsigned long) scmrq->aob);
+<<<<<<< HEAD
 	free_page((unsigned long) scmrq->aidaw);
 	__scm_free_rq_cluster(scmrq);
+=======
+	__scm_free_rq_cluster(scmrq);
+	kfree(scmrq->request);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(aobrq);
 }
 
@@ -53,6 +76,11 @@ static void scm_free_rqs(void)
 		__scm_free_rq(scmrq);
 	}
 	spin_unlock_irq(&list_lock);
+<<<<<<< HEAD
+=======
+
+	mempool_destroy(aidaw_pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __scm_alloc_rq(void)
@@ -65,6 +93,7 @@ static int __scm_alloc_rq(void)
 		return -ENOMEM;
 
 	scmrq = (void *) aobrq->data;
+<<<<<<< HEAD
 	scmrq->aidaw = (void *) get_zeroed_page(GFP_DMA);
 	scmrq->aob = (void *) get_zeroed_page(GFP_DMA);
 	if (!scmrq->aob || !scmrq->aidaw) {
@@ -76,6 +105,19 @@ static int __scm_alloc_rq(void)
 		__scm_free_rq(scmrq);
 		return -ENOMEM;
 	}
+=======
+	scmrq->aob = (void *) get_zeroed_page(GFP_DMA);
+	if (!scmrq->aob)
+		goto free;
+
+	scmrq->request = kcalloc(nr_requests_per_io, sizeof(scmrq->request[0]),
+				 GFP_KERNEL);
+	if (!scmrq->request)
+		goto free;
+
+	if (__scm_alloc_rq_cluster(scmrq))
+		goto free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_LIST_HEAD(&scmrq->list);
 	spin_lock_irq(&list_lock);
@@ -83,12 +125,25 @@ static int __scm_alloc_rq(void)
 	spin_unlock_irq(&list_lock);
 
 	return 0;
+<<<<<<< HEAD
+=======
+free:
+	__scm_free_rq(scmrq);
+	return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int scm_alloc_rqs(unsigned int nrqs)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	aidaw_pool = mempool_create_page_pool(max(nrqs/8, 1U), 0);
+	if (!aidaw_pool)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (nrqs-- && !ret)
 		ret = __scm_alloc_rq();
 
@@ -112,12 +167,28 @@ out:
 static void scm_request_done(struct scm_request *scmrq)
 {
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	struct msb *msb;
+	u64 aidaw;
+	int i;
+
+	for (i = 0; i < nr_requests_per_io && scmrq->request[i]; i++) {
+		msb = &scmrq->aob->msb[i];
+		aidaw = msb->data_addr;
+
+		if ((msb->flags & MSB_FLAG_IDA) && aidaw &&
+		    IS_ALIGNED(aidaw, PAGE_SIZE))
+			mempool_free(virt_to_page(aidaw), aidaw_pool);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&list_lock, flags);
 	list_add(&scmrq->list, &inactive_requests);
 	spin_unlock_irqrestore(&list_lock, flags);
 }
 
+<<<<<<< HEAD
 static int scm_open(struct block_device *blkdev, fmode_t mode)
 {
 	return scm_get_ref();
@@ -168,10 +239,87 @@ static void scm_request_prepare(struct scm_request *scmrq)
 static inline void scm_request_init(struct scm_blk_dev *bdev,
 				    struct scm_request *scmrq,
 				    struct request *req)
+=======
+static bool scm_permit_request(struct scm_blk_dev *bdev, struct request *req)
+{
+	return rq_data_dir(req) != WRITE || bdev->state != SCM_WR_PROHIBIT;
+}
+
+static inline struct aidaw *scm_aidaw_alloc(void)
+{
+	struct page *page = mempool_alloc(aidaw_pool, GFP_ATOMIC);
+
+	return page ? page_address(page) : NULL;
+}
+
+static inline unsigned long scm_aidaw_bytes(struct aidaw *aidaw)
+{
+	unsigned long _aidaw = (unsigned long) aidaw;
+	unsigned long bytes = ALIGN(_aidaw, PAGE_SIZE) - _aidaw;
+
+	return (bytes / sizeof(*aidaw)) * PAGE_SIZE;
+}
+
+struct aidaw *scm_aidaw_fetch(struct scm_request *scmrq, unsigned int bytes)
+{
+	struct aidaw *aidaw;
+
+	if (scm_aidaw_bytes(scmrq->next_aidaw) >= bytes)
+		return scmrq->next_aidaw;
+
+	aidaw = scm_aidaw_alloc();
+	if (aidaw)
+		memset(aidaw, 0, PAGE_SIZE);
+	return aidaw;
+}
+
+static int scm_request_prepare(struct scm_request *scmrq)
+{
+	struct scm_blk_dev *bdev = scmrq->bdev;
+	struct scm_device *scmdev = bdev->gendisk->private_data;
+	int pos = scmrq->aob->request.msb_count;
+	struct msb *msb = &scmrq->aob->msb[pos];
+	struct request *req = scmrq->request[pos];
+	struct req_iterator iter;
+	struct aidaw *aidaw;
+	struct bio_vec bv;
+
+	aidaw = scm_aidaw_fetch(scmrq, blk_rq_bytes(req));
+	if (!aidaw)
+		return -ENOMEM;
+
+	msb->bs = MSB_BS_4K;
+	scmrq->aob->request.msb_count++;
+	msb->scm_addr = scmdev->address + ((u64) blk_rq_pos(req) << 9);
+	msb->oc = (rq_data_dir(req) == READ) ? MSB_OC_READ : MSB_OC_WRITE;
+	msb->flags |= MSB_FLAG_IDA;
+	msb->data_addr = (u64) aidaw;
+
+	rq_for_each_segment(bv, req, iter) {
+		WARN_ON(bv.bv_offset);
+		msb->blk_count += bv.bv_len >> 12;
+		aidaw->data_addr = (u64) page_address(bv.bv_page);
+		aidaw++;
+	}
+
+	scmrq->next_aidaw = aidaw;
+	return 0;
+}
+
+static inline void scm_request_set(struct scm_request *scmrq,
+				   struct request *req)
+{
+	scmrq->request[scmrq->aob->request.msb_count] = req;
+}
+
+static inline void scm_request_init(struct scm_blk_dev *bdev,
+				    struct scm_request *scmrq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct aob_rq_header *aobrq = to_aobrq(scmrq);
 	struct aob *aob = scmrq->aob;
 
+<<<<<<< HEAD
 	memset(aob, 0, sizeof(*aob));
 	memset(scmrq->aidaw, 0, PAGE_SIZE);
 	aobrq->scmdev = bdev->scmdev;
@@ -181,6 +329,19 @@ static inline void scm_request_init(struct scm_blk_dev *bdev,
 	scmrq->bdev = bdev;
 	scmrq->retries = 4;
 	scmrq->error = 0;
+=======
+	memset(scmrq->request, 0,
+	       nr_requests_per_io * sizeof(scmrq->request[0]));
+	memset(aob, 0, sizeof(*aob));
+	aobrq->scmdev = bdev->scmdev;
+	aob->request.cmd_code = ARQB_CMD_MOVE;
+	aob->request.data = (u64) aobrq;
+	scmrq->bdev = bdev;
+	scmrq->retries = 4;
+	scmrq->error = 0;
+	/* We don't use all msbs - place aidaws at the end of the aob page. */
+	scmrq->next_aidaw = (void *) &aob->msb[nr_requests_per_io];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	scm_request_cluster_init(scmrq);
 }
 
@@ -196,9 +357,18 @@ static void scm_ensure_queue_restart(struct scm_blk_dev *bdev)
 void scm_request_requeue(struct scm_request *scmrq)
 {
 	struct scm_blk_dev *bdev = scmrq->bdev;
+<<<<<<< HEAD
 
 	scm_release_cluster(scmrq);
 	blk_requeue_request(bdev->rq, scmrq->request);
+=======
+	int i;
+
+	scm_release_cluster(scmrq);
+	for (i = 0; i < nr_requests_per_io && scmrq->request[i]; i++)
+		blk_requeue_request(bdev->rq, scmrq->request[i]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_dec(&bdev->queued_reqs);
 	scm_request_done(scmrq);
 	scm_ensure_queue_restart(bdev);
@@ -207,17 +377,49 @@ void scm_request_requeue(struct scm_request *scmrq)
 void scm_request_finish(struct scm_request *scmrq)
 {
 	struct scm_blk_dev *bdev = scmrq->bdev;
+<<<<<<< HEAD
 
 	scm_release_cluster(scmrq);
 	blk_end_request_all(scmrq->request, scmrq->error);
+=======
+	int i;
+
+	scm_release_cluster(scmrq);
+	for (i = 0; i < nr_requests_per_io && scmrq->request[i]; i++)
+		blk_end_request_all(scmrq->request[i], scmrq->error);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_dec(&bdev->queued_reqs);
 	scm_request_done(scmrq);
 }
 
+<<<<<<< HEAD
+=======
+static int scm_request_start(struct scm_request *scmrq)
+{
+	struct scm_blk_dev *bdev = scmrq->bdev;
+	int ret;
+
+	atomic_inc(&bdev->queued_reqs);
+	if (!scmrq->aob->request.msb_count) {
+		scm_request_requeue(scmrq);
+		return -EINVAL;
+	}
+
+	ret = eadm_start_aob(scmrq->aob);
+	if (ret) {
+		SCM_LOG(5, "no subchannel");
+		scm_request_requeue(scmrq);
+	}
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void scm_blk_request(struct request_queue *rq)
 {
 	struct scm_device *scmdev = rq->queuedata;
 	struct scm_blk_dev *bdev = dev_get_drvdata(&scmdev->dev);
+<<<<<<< HEAD
 	struct scm_request *scmrq;
 	struct request *req;
 	int ret;
@@ -259,6 +461,77 @@ static void scm_blk_request(struct request_queue *rq)
 			return;
 		}
 	}
+=======
+	struct scm_request *scmrq = NULL;
+	struct request *req;
+
+	while ((req = blk_peek_request(rq))) {
+		if (req->cmd_type != REQ_TYPE_FS) {
+			blk_start_request(req);
+			blk_dump_rq_flags(req, KMSG_COMPONENT " bad request");
+			__blk_end_request_all(req, -EIO);
+			continue;
+		}
+
+		if (!scm_permit_request(bdev, req))
+			goto out;
+
+		if (!scmrq) {
+			scmrq = scm_request_fetch();
+			if (!scmrq) {
+				SCM_LOG(5, "no request");
+				goto out;
+			}
+			scm_request_init(bdev, scmrq);
+		}
+		scm_request_set(scmrq, req);
+
+		if (!scm_reserve_cluster(scmrq)) {
+			SCM_LOG(5, "cluster busy");
+			scm_request_set(scmrq, NULL);
+			if (scmrq->aob->request.msb_count)
+				goto out;
+
+			scm_request_done(scmrq);
+			return;
+		}
+
+		if (scm_need_cluster_request(scmrq)) {
+			if (scmrq->aob->request.msb_count) {
+				/* Start cluster requests separately. */
+				scm_request_set(scmrq, NULL);
+				if (scm_request_start(scmrq))
+					return;
+			} else {
+				atomic_inc(&bdev->queued_reqs);
+				blk_start_request(req);
+				scm_initiate_cluster_request(scmrq);
+			}
+			scmrq = NULL;
+			continue;
+		}
+
+		if (scm_request_prepare(scmrq)) {
+			SCM_LOG(5, "aidaw alloc failed");
+			scm_request_set(scmrq, NULL);
+			goto out;
+		}
+		blk_start_request(req);
+
+		if (scmrq->aob->request.msb_count < nr_requests_per_io)
+			continue;
+
+		if (scm_request_start(scmrq))
+			return;
+
+		scmrq = NULL;
+	}
+out:
+	if (scmrq)
+		scm_request_start(scmrq);
+	else
+		scm_ensure_queue_restart(bdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __scmrq_log_error(struct scm_request *scmrq)
@@ -316,7 +589,11 @@ static void scm_blk_handle_error(struct scm_request *scmrq)
 	}
 
 restart:
+<<<<<<< HEAD
 	if (!scm_start_aob(scmrq->aob))
+=======
+	if (!eadm_start_aob(scmrq->aob))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 requeue:
@@ -359,6 +636,13 @@ static void scm_blk_tasklet(struct scm_blk_dev *bdev)
 	blk_run_queue(bdev->rq);
 }
 
+<<<<<<< HEAD
+=======
+static const struct block_device_operations scm_blk_devops = {
+	.owner = THIS_MODULE,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int scm_blk_dev_setup(struct scm_blk_dev *bdev, struct scm_device *scmdev)
 {
 	struct request_queue *rq;
@@ -394,6 +678,10 @@ int scm_blk_dev_setup(struct scm_blk_dev *bdev, struct scm_device *scmdev)
 	blk_queue_max_hw_sectors(rq, nr_max_blk << 3); /* 8 * 512 = blk_size */
 	blk_queue_max_segments(rq, nr_max_blk);
 	queue_flag_set_unlocked(QUEUE_FLAG_NONROT, rq);
+<<<<<<< HEAD
+=======
+	queue_flag_clear_unlocked(QUEUE_FLAG_ADD_RANDOM, rq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	scm_blk_dev_cluster_setup(bdev);
 
 	bdev->gendisk = alloc_disk(SCM_NR_PARTS);
@@ -401,7 +689,10 @@ int scm_blk_dev_setup(struct scm_blk_dev *bdev, struct scm_device *scmdev)
 		goto out_queue;
 
 	rq->queuedata = scmdev;
+<<<<<<< HEAD
 	bdev->gendisk->driverfs_dev = &scmdev->dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bdev->gendisk->private_data = scmdev;
 	bdev->gendisk->fops = &scm_blk_devops;
 	bdev->gendisk->queue = rq;
@@ -420,7 +711,11 @@ int scm_blk_dev_setup(struct scm_blk_dev *bdev, struct scm_device *scmdev)
 
 	/* 512 byte sectors */
 	set_capacity(bdev->gendisk, scmdev->size >> 9);
+<<<<<<< HEAD
 	add_disk(bdev->gendisk);
+=======
+	device_add_disk(&scmdev->dev, bdev->gendisk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 out_queue:
@@ -450,11 +745,26 @@ void scm_blk_set_available(struct scm_blk_dev *bdev)
 	spin_unlock_irqrestore(&bdev->lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+static bool __init scm_blk_params_valid(void)
+{
+	if (!nr_requests_per_io || nr_requests_per_io > 64)
+		return false;
+
+	return scm_cluster_size_valid();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init scm_blk_init(void)
 {
 	int ret = -EINVAL;
 
+<<<<<<< HEAD
 	if (!scm_cluster_size_valid())
+=======
+	if (!scm_blk_params_valid())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 
 	ret = register_blkdev(0, "scm");

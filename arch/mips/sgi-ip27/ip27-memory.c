@@ -7,7 +7,11 @@
  * Copyright (C) 2000 by Silicon Graphics, Inc.
  * Copyright (C) 2004 by Christoph Hellwig
  *
+<<<<<<< HEAD
  * On SGI IP27 the ARC memory configuration data is completly bogus but
+=======
+ * On SGI IP27 the ARC memory configuration data is completely bogus but
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * alternate easier to use mechanisms are available.
  */
 #include <linux/init.h>
@@ -42,8 +46,12 @@ static int fine_mode;
 
 static int is_fine_dirmode(void)
 {
+<<<<<<< HEAD
 	return (((LOCAL_HUB_L(NI_STATUS_REV_ID) & NSRI_REGIONSIZE_MASK)
 		>> NSRI_REGIONSIZE_SHFT) & REGIONSIZE_FINE);
+=======
+	return ((LOCAL_HUB_L(NI_STATUS_REV_ID) & NSRI_REGIONSIZE_MASK) >> NSRI_REGIONSIZE_SHFT) & REGIONSIZE_FINE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static hubreg_t get_region(cnodeid_t cnode)
@@ -107,6 +115,10 @@ static void router_recurse(klrou_t *router_a, klrou_t *router_b, int depth)
 }
 
 unsigned char __node_distances[MAX_COMPACT_NODES][MAX_COMPACT_NODES];
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__node_distances);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init compute_node_distance(nasid_t nasid_a, nasid_t nasid_b)
 {
@@ -287,7 +299,11 @@ static unsigned long __init slot_psize_compute(cnodeid_t node, int slot)
 	if (size <= 128) {
 		if (slot % 4 == 0) {
 			size <<= 20;		/* size in bytes */
+<<<<<<< HEAD
 			return(size >> PAGE_SHIFT);
+=======
+			return size >> PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			return 0;
 	} else {
@@ -357,8 +373,11 @@ static void __init szmem(void)
 	int slot;
 	cnodeid_t node;
 
+<<<<<<< HEAD
 	num_physpages = 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_online_node(node) {
 		nodebytes = 0;
 		for (slot = 0; slot < MAX_MEM_SLOTS; slot++) {
@@ -381,7 +400,10 @@ static void __init szmem(void)
 				slot = MAX_MEM_SLOTS;
 				continue;
 			}
+<<<<<<< HEAD
 			num_physpages += slot_psize;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			memblock_add_node(PFN_PHYS(slot_getbasepfn(node, slot)),
 					  PFN_PHYS(slot_psize), node);
 		}
@@ -407,7 +429,11 @@ static void __init node_mem_init(cnodeid_t node)
 	NODE_DATA(node)->node_start_pfn = start_pfn;
 	NODE_DATA(node)->node_spanned_pages = end_pfn - start_pfn;
 
+<<<<<<< HEAD
 	cpus_clear(hub_data(node)->h_cpus);
+=======
+	cpumask_clear(&hub_data(node)->h_cpus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	slot_freepfn += PFN_UP(sizeof(struct pglist_data) +
 			       sizeof(struct hub_data));
@@ -480,6 +506,7 @@ void __init paging_init(void)
 
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	unsigned long codesize, datasize, initsize, tmp;
 	unsigned node;
 
@@ -508,4 +535,10 @@ void __init mem_init(void)
 	       datasize >> 10,
 	       initsize >> 10,
 	       totalhigh_pages << (PAGE_SHIFT-10));
+=======
+	high_memory = (void *) __va(get_num_physpages() << PAGE_SHIFT);
+	free_all_bootmem();
+	setup_zero_pages();	/* This comes from node 0 */
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

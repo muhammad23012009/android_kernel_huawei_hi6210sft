@@ -17,16 +17,30 @@ static void drop_pagecache_sb(struct super_block *sb, void *unused)
 {
 	struct inode *inode, *toput_inode = NULL;
 
+<<<<<<< HEAD
 	spin_lock(&inode_sb_list_lock);
 	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
 		spin_lock(&inode->i_lock);
 		if ((inode->i_state & (I_FREEING|I_WILL_FREE|I_NEW)) ||
 		    (inode->i_mapping->nrpages == 0)) {
+=======
+	spin_lock(&sb->s_inode_list_lock);
+	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
+		spin_lock(&inode->i_lock);
+		/*
+		 * We must skip inodes in unusual state. We may also skip
+		 * inodes without pages but we deliberately won't in case
+		 * we need to reschedule to avoid softlockups.
+		 */
+		if ((inode->i_state & (I_FREEING|I_WILL_FREE|I_NEW)) ||
+		    (inode->i_mapping->nrpages == 0 && !need_resched())) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_unlock(&inode->i_lock);
 			continue;
 		}
 		__iget(inode);
 		spin_unlock(&inode->i_lock);
+<<<<<<< HEAD
 		spin_unlock(&inode_sb_list_lock);
 		invalidate_mapping_pages(inode->i_mapping, 0, -1);
 		iput(toput_inode);
@@ -50,6 +64,22 @@ static void drop_slab(void)
 }
 
 int drop_caches_sysctl_handler(ctl_table *table, int write,
+=======
+		spin_unlock(&sb->s_inode_list_lock);
+
+		cond_resched();
+		invalidate_mapping_pages(inode->i_mapping, 0, -1);
+		iput(toput_inode);
+		toput_inode = inode;
+
+		spin_lock(&sb->s_inode_list_lock);
+	}
+	spin_unlock(&sb->s_inode_list_lock);
+	iput(toput_inode);
+}
+
+int drop_caches_sysctl_handler(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __user *buffer, size_t *length, loff_t *ppos)
 {
 	int ret;
@@ -58,10 +88,29 @@ int drop_caches_sysctl_handler(ctl_table *table, int write,
 	if (ret)
 		return ret;
 	if (write) {
+<<<<<<< HEAD
 		if (sysctl_drop_caches & 1)
 			iterate_supers(drop_pagecache_sb, NULL);
 		if (sysctl_drop_caches & 2)
 			drop_slab();
+=======
+		static int stfu;
+
+		if (sysctl_drop_caches & 1) {
+			iterate_supers(drop_pagecache_sb, NULL);
+			count_vm_event(DROP_PAGECACHE);
+		}
+		if (sysctl_drop_caches & 2) {
+			drop_slab();
+			count_vm_event(DROP_SLAB);
+		}
+		if (!stfu) {
+			pr_info("%s (%d): drop_caches: %d\n",
+				current->comm, task_pid_nr(current),
+				sysctl_drop_caches);
+		}
+		stfu |= sysctl_drop_caches & 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }

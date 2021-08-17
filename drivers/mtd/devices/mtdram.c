@@ -19,6 +19,10 @@
 
 static unsigned long total_size = CONFIG_MTDRAM_TOTAL_SIZE;
 static unsigned long erase_size = CONFIG_MTDRAM_ERASE_SIZE;
+<<<<<<< HEAD
+=======
+static unsigned long writebuf_size = 64;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MTDRAM_TOTAL_SIZE (total_size * 1024)
 #define MTDRAM_ERASE_SIZE (erase_size * 1024)
 
@@ -27,13 +31,44 @@ module_param(total_size, ulong, 0);
 MODULE_PARM_DESC(total_size, "Total device size in KiB");
 module_param(erase_size, ulong, 0);
 MODULE_PARM_DESC(erase_size, "Device erase block size in KiB");
+<<<<<<< HEAD
+=======
+module_param(writebuf_size, ulong, 0);
+MODULE_PARM_DESC(writebuf_size, "Device write buf size in Bytes (Default: 64)");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 // We could store these in the mtd structure, but we only support 1 device..
 static struct mtd_info *mtd_info;
 
+<<<<<<< HEAD
 static int ram_erase(struct mtd_info *mtd, struct erase_info *instr)
 {
+=======
+static int check_offs_len(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+{
+	int ret = 0;
+
+	/* Start address must align on block boundary */
+	if (mtd_mod_by_eb(ofs, mtd)) {
+		pr_debug("%s: unaligned address\n", __func__);
+		ret = -EINVAL;
+	}
+
+	/* Length must align on block boundary */
+	if (mtd_mod_by_eb(len, mtd)) {
+		pr_debug("%s: length not block aligned\n", __func__);
+		ret = -EINVAL;
+	}
+
+	return ret;
+}
+
+static int ram_erase(struct mtd_info *mtd, struct erase_info *instr)
+{
+	if (check_offs_len(mtd, instr->addr, instr->len))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset((char *)mtd->priv + instr->addr, 0xff, instr->len);
 	instr->state = MTD_ERASE_DONE;
 	mtd_erase_callback(instr);
@@ -92,7 +127,11 @@ static void __exit cleanup_mtdram(void)
 }
 
 int mtdram_init_device(struct mtd_info *mtd, void *mapped_address,
+<<<<<<< HEAD
 		unsigned long size, char *name)
+=======
+		unsigned long size, const char *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	memset(mtd, 0, sizeof(*mtd));
 
@@ -102,7 +141,11 @@ int mtdram_init_device(struct mtd_info *mtd, void *mapped_address,
 	mtd->flags = MTD_CAP_RAM;
 	mtd->size = size;
 	mtd->writesize = 1;
+<<<<<<< HEAD
 	mtd->writebufsize = 64; /* Mimic CFI NOR flashes */
+=======
+	mtd->writebufsize = writebuf_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mtd->erasesize = MTDRAM_ERASE_SIZE;
 	mtd->priv = mapped_address;
 

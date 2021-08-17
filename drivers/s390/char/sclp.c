@@ -50,16 +50,59 @@ static char sclp_init_sccb[PAGE_SIZE] __attribute__((__aligned__(PAGE_SIZE)));
 /* Suspend request */
 static DECLARE_COMPLETION(sclp_request_queue_flushed);
 
+<<<<<<< HEAD
+=======
+/* Number of console pages to allocate, used by sclp_con.c and sclp_vt220.c */
+int sclp_console_pages = SCLP_CONSOLE_PAGES;
+/* Flag to indicate if buffer pages are dropped on buffer full condition */
+int sclp_console_drop = 1;
+/* Number of times the console dropped buffer pages */
+unsigned long sclp_console_full;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sclp_suspend_req_cb(struct sclp_req *req, void *data)
 {
 	complete(&sclp_request_queue_flushed);
 }
 
+<<<<<<< HEAD
+=======
+static int __init sclp_setup_console_pages(char *str)
+{
+	int pages, rc;
+
+	rc = kstrtoint(str, 0, &pages);
+	if (!rc && pages >= SCLP_CONSOLE_PAGES)
+		sclp_console_pages = pages;
+	return 1;
+}
+
+__setup("sclp_con_pages=", sclp_setup_console_pages);
+
+static int __init sclp_setup_console_drop(char *str)
+{
+	int drop, rc;
+
+	rc = kstrtoint(str, 0, &drop);
+	if (!rc)
+		sclp_console_drop = drop;
+	return 1;
+}
+
+__setup("sclp_con_drop=", sclp_setup_console_drop);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct sclp_req sclp_suspend_req;
 
 /* Timer for request retries. */
 static struct timer_list sclp_request_timer;
 
+<<<<<<< HEAD
+=======
+/* Timer for queued requests. */
+static struct timer_list sclp_queue_timer;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Internal state: is the driver initialized? */
 static volatile enum sclp_init_state_t {
 	sclp_init_state_uninitialized,
@@ -117,6 +160,7 @@ static int sclp_init(void);
 int
 sclp_service_call(sclp_cmdw_t command, void *sccb)
 {
+<<<<<<< HEAD
 	int cc;
 
 	asm volatile(
@@ -125,6 +169,21 @@ sclp_service_call(sclp_cmdw_t command, void *sccb)
 		"	srl	%0,28"
 		: "=&d" (cc) : "d" (command), "a" (__pa(sccb))
 		: "cc", "memory");
+=======
+	int cc = 4; /* Initialize for program check handling */
+
+	asm volatile(
+		"0:	.insn	rre,0xb2200000,%1,%2\n"  /* servc %1,%2 */
+		"1:	ipm	%0\n"
+		"	srl	%0,28\n"
+		"2:\n"
+		EX_TABLE(0b, 2b)
+		EX_TABLE(1b, 2b)
+		: "+&d" (cc) : "d" (command), "a" (__pa(sccb))
+		: "cc", "memory");
+	if (cc == 4)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cc == 3)
 		return -EIO;
 	if (cc == 2)
@@ -179,6 +238,79 @@ sclp_request_timeout(unsigned long data)
 	sclp_process_queue();
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Returns the expire value in jiffies of the next pending request timeout,
+ * if any. Needs to be called with sclp_lock.
+ */
+static unsigned long __sclp_req_queue_find_next_timeout(void)
+{
+	unsigned long expires_next = 0;
+	struct sclp_req *req;
+
+	list_for_each_entry(req, &sclp_req_queue, list) {
+		if (!req->queue_expires)
+			continue;
+		if (!expires_next ||
+		   (time_before(req->queue_expires, expires_next)))
+				expires_next = req->queue_expires;
+	}
+	return expires_next;
+}
+
+/*
+ * Returns expired request, if any, and removes it from the list.
+ */
+static struct sclp_req *__sclp_req_queue_remove_expired_req(void)
+{
+	unsigned long flags, now;
+	struct sclp_req *req;
+
+	spin_lock_irqsave(&sclp_lock, flags);
+	now = jiffies;
+	/* Don't need list_for_each_safe because we break out after list_del */
+	list_for_each_entry(req, &sclp_req_queue, list) {
+		if (!req->queue_expires)
+			continue;
+		if (time_before_eq(req->queue_expires, now)) {
+			if (req->status == SCLP_REQ_QUEUED) {
+				req->status = SCLP_REQ_QUEUED_TIMEOUT;
+				list_del(&req->list);
+				goto out;
+			}
+		}
+	}
+	req = NULL;
+out:
+	spin_unlock_irqrestore(&sclp_lock, flags);
+	return req;
+}
+
+/*
+ * Timeout handler for queued requests. Removes request from list and
+ * invokes callback. This timer can be set per request in situations where
+ * waiting too long would be harmful to the system, e.g. during SE reboot.
+ */
+static void sclp_req_queue_timeout(unsigned long data)
+{
+	unsigned long flags, expires_next;
+	struct sclp_req *req;
+
+	do {
+		req = __sclp_req_queue_remove_expired_req();
+		if (req && req->callback)
+			req->callback(req, req->callback_data);
+	} while (req);
+
+	spin_lock_irqsave(&sclp_lock, flags);
+	expires_next = __sclp_req_queue_find_next_timeout();
+	if (expires_next)
+		mod_timer(&sclp_queue_timer, expires_next);
+	spin_unlock_irqrestore(&sclp_lock, flags);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Try to start a request. Return zero if the request was successfully
  * started or if it will be started at a later time. Return non-zero otherwise.
  * Called while sclp_lock is locked. */
@@ -281,6 +413,16 @@ sclp_add_request(struct sclp_req *req)
 	req->start_count = 0;
 	list_add_tail(&req->list, &sclp_req_queue);
 	rc = 0;
+<<<<<<< HEAD
+=======
+	if (req->queue_timeout) {
+		req->queue_expires = jiffies + req->queue_timeout * HZ;
+		if (!timer_pending(&sclp_queue_timer) ||
+		    time_after(sclp_queue_timer.expires, req->queue_expires))
+			mod_timer(&sclp_queue_timer, req->queue_expires);
+	} else
+		req->queue_expires = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Start if request is first in list */
 	if (sclp_running_state == sclp_running_state_idle &&
 	    req->list.prev == &sclp_req_queue) {
@@ -450,7 +592,11 @@ sclp_sync_wait(void)
 	timeout = 0;
 	if (timer_pending(&sclp_request_timer)) {
 		/* Get timeout TOD value */
+<<<<<<< HEAD
 		timeout = get_tod_clock() +
+=======
+		timeout = get_tod_clock_fast() +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  sclp_tod_from_jiffies(sclp_request_timer.expires -
 						jiffies);
 	}
@@ -463,16 +609,25 @@ sclp_sync_wait(void)
 	old_tick = local_tick_disable();
 	trace_hardirqs_on();
 	__ctl_store(cr0, 0, 0);
+<<<<<<< HEAD
 	cr0_sync = cr0;
 	cr0_sync &= 0xffff00a0;
 	cr0_sync |= 0x00000200;
+=======
+	cr0_sync = cr0 & ~CR0_IRQ_SUBCLASS_MASK;
+	cr0_sync |= 1UL << (63 - 54);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__ctl_load(cr0_sync, 0, 0);
 	__arch_local_irq_stosm(0x01);
 	/* Loop until driver state indicates finished request */
 	while (sclp_running_state != sclp_running_state_idle) {
 		/* Check for expired request timer */
 		if (timer_pending(&sclp_request_timer) &&
+<<<<<<< HEAD
 		    get_tod_clock() > timeout &&
+=======
+		    get_tod_clock_fast() > timeout &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    del_timer(&sclp_request_timer))
 			sclp_request_timer.function(sclp_request_timer.data);
 		cpu_relax();
@@ -549,7 +704,11 @@ sclp_state_change_cb(struct evbuf_header *evbuf)
 		sclp_send_mask = scbuf->sclp_send_mask;
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	if (scbuf->validity_sclp_active_facility_mask)
+<<<<<<< HEAD
 		sclp_facilities = scbuf->sclp_active_facility_mask;
+=======
+		sclp.facilities = scbuf->sclp_active_facility_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sclp_dispatch_state_change();
 }
 
@@ -856,7 +1015,11 @@ sclp_check_interface(void)
 
 	spin_lock_irqsave(&sclp_lock, flags);
 	/* Prepare init mask command */
+<<<<<<< HEAD
 	rc = register_external_interrupt(0x2401, sclp_check_handler);
+=======
+	rc = register_external_irq(EXT_IRQ_SERVICE_SIG, sclp_check_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc) {
 		spin_unlock_irqrestore(&sclp_lock, flags);
 		return rc;
@@ -874,12 +1037,20 @@ sclp_check_interface(void)
 		spin_unlock_irqrestore(&sclp_lock, flags);
 		/* Enable service-signal interruption - needs to happen
 		 * with IRQs enabled. */
+<<<<<<< HEAD
 		service_subclass_irq_register();
+=======
+		irq_subclass_register(IRQ_SUBCLASS_SERVICE_SIGNAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Wait for signal from interrupt or timeout */
 		sclp_sync_wait();
 		/* Disable service-signal interruption - needs to happen
 		 * with IRQs enabled. */
+<<<<<<< HEAD
 		service_subclass_irq_unregister();
+=======
+		irq_subclass_unregister(IRQ_SUBCLASS_SERVICE_SIGNAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_irqsave(&sclp_lock, flags);
 		del_timer(&sclp_request_timer);
 		if (sclp_init_req.status == SCLP_REQ_DONE &&
@@ -889,7 +1060,11 @@ sclp_check_interface(void)
 		} else
 			rc = -EBUSY;
 	}
+<<<<<<< HEAD
 	unregister_external_interrupt(0x2401, sclp_check_handler);
+=======
+	unregister_external_irq(EXT_IRQ_SERVICE_SIG, sclp_check_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	return rc;
 }
@@ -1013,11 +1188,54 @@ static const struct dev_pm_ops sclp_pm_ops = {
 	.restore	= sclp_restore,
 };
 
+<<<<<<< HEAD
 static struct platform_driver sclp_pdrv = {
 	.driver = {
 		.name	= "sclp",
 		.owner	= THIS_MODULE,
 		.pm	= &sclp_pm_ops,
+=======
+static ssize_t sclp_show_console_pages(struct device_driver *dev, char *buf)
+{
+	return sprintf(buf, "%i\n", sclp_console_pages);
+}
+
+static DRIVER_ATTR(con_pages, S_IRUSR, sclp_show_console_pages, NULL);
+
+static ssize_t sclp_show_con_drop(struct device_driver *dev, char *buf)
+{
+	return sprintf(buf, "%i\n", sclp_console_drop);
+}
+
+static DRIVER_ATTR(con_drop, S_IRUSR, sclp_show_con_drop, NULL);
+
+static ssize_t sclp_show_console_full(struct device_driver *dev, char *buf)
+{
+	return sprintf(buf, "%lu\n", sclp_console_full);
+}
+
+static DRIVER_ATTR(con_full, S_IRUSR, sclp_show_console_full, NULL);
+
+static struct attribute *sclp_drv_attrs[] = {
+	&driver_attr_con_pages.attr,
+	&driver_attr_con_drop.attr,
+	&driver_attr_con_full.attr,
+	NULL,
+};
+static struct attribute_group sclp_drv_attr_group = {
+	.attrs = sclp_drv_attrs,
+};
+static const struct attribute_group *sclp_drv_attr_groups[] = {
+	&sclp_drv_attr_group,
+	NULL,
+};
+
+static struct platform_driver sclp_pdrv = {
+	.driver = {
+		.name	= "sclp",
+		.pm	= &sclp_pm_ops,
+		.groups = sclp_drv_attr_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -1041,6 +1259,11 @@ sclp_init(void)
 	INIT_LIST_HEAD(&sclp_reg_list);
 	list_add(&sclp_state_change_event.list, &sclp_reg_list);
 	init_timer(&sclp_request_timer);
+<<<<<<< HEAD
+=======
+	init_timer(&sclp_queue_timer);
+	sclp_queue_timer.function = sclp_req_queue_timeout;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Check interface */
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	rc = sclp_check_interface();
@@ -1052,14 +1275,22 @@ sclp_init(void)
 	if (rc)
 		goto fail_init_state_uninitialized;
 	/* Register interrupt handler */
+<<<<<<< HEAD
 	rc = register_external_interrupt(0x2401, sclp_interrupt_handler);
+=======
+	rc = register_external_irq(EXT_IRQ_SERVICE_SIG, sclp_interrupt_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc)
 		goto fail_unregister_reboot_notifier;
 	sclp_init_state = sclp_init_state_initialized;
 	spin_unlock_irqrestore(&sclp_lock, flags);
 	/* Enable service-signal external interruption - needs to happen with
 	 * IRQs enabled. */
+<<<<<<< HEAD
 	service_subclass_irq_register();
+=======
+	irq_subclass_register(IRQ_SUBCLASS_SERVICE_SIGNAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sclp_init_mask(1);
 	return 0;
 
@@ -1096,10 +1327,19 @@ static __init int sclp_initcall(void)
 	rc = platform_driver_register(&sclp_pdrv);
 	if (rc)
 		return rc;
+<<<<<<< HEAD
 	sclp_pdev = platform_device_register_simple("sclp", -1, NULL, 0);
 	rc = IS_ERR(sclp_pdev) ? PTR_ERR(sclp_pdev) : 0;
 	if (rc)
 		goto fail_platform_driver_unregister;
+=======
+
+	sclp_pdev = platform_device_register_simple("sclp", -1, NULL, 0);
+	rc = PTR_ERR_OR_ZERO(sclp_pdev);
+	if (rc)
+		goto fail_platform_driver_unregister;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = atomic_notifier_chain_register(&panic_notifier_list,
 					    &sclp_on_panic_nb);
 	if (rc)

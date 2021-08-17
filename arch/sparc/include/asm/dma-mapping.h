@@ -7,10 +7,23 @@
 
 #define DMA_ERROR_CODE	(~(dma_addr_t)0x0)
 
+<<<<<<< HEAD
 extern int dma_supported(struct device *dev, u64 mask);
 
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
 #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
+=======
+#define HAVE_ARCH_DMA_SUPPORTED 1
+int dma_supported(struct device *dev, u64 mask);
+
+static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+				  enum dma_data_direction dir)
+{
+	/* Since dma_{alloc,free}_noncoherent() allocated coherent memory, this
+	 * routine can be a nop.
+	 */
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct dma_map_ops *dma_ops;
 extern struct dma_map_ops *leon_dma_ops;
@@ -20,15 +33,25 @@ extern struct bus_type pci_bus_type;
 
 static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_SPARC32) && defined(CONFIG_PCI)
 	if (sparc_cpu_model == sparc_leon)
 		return leon_dma_ops;
 	else if (dev->bus == &pci_bus_type)
+=======
+#ifdef CONFIG_SPARC_LEON
+	if (sparc_cpu_model == sparc_leon)
+		return leon_dma_ops;
+#endif
+#if defined(CONFIG_SPARC32) && defined(CONFIG_PCI)
+	if (dev->bus == &pci_bus_type)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return &pci32_dma_ops;
 #endif
 	return dma_ops;
 }
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
 #define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
@@ -76,4 +99,6 @@ static inline int dma_set_mask(struct device *dev, u64 mask)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

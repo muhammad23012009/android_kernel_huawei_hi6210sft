@@ -196,14 +196,22 @@ static u32 sbus_hme_read32(void __iomem *reg)
 static void sbus_hme_write_rxd(struct happy_meal_rxd *rxd, u32 flags, u32 addr)
 {
 	rxd->rx_addr = (__force hme32)addr;
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rxd->rx_flags = (__force hme32)flags;
 }
 
 static void sbus_hme_write_txd(struct happy_meal_txd *txd, u32 flags, u32 addr)
 {
 	txd->tx_addr = (__force hme32)addr;
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	txd->tx_flags = (__force hme32)flags;
 }
 
@@ -225,14 +233,22 @@ static u32 pci_hme_read32(void __iomem *reg)
 static void pci_hme_write_rxd(struct happy_meal_rxd *rxd, u32 flags, u32 addr)
 {
 	rxd->rx_addr = (__force hme32)cpu_to_le32(addr);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rxd->rx_flags = (__force hme32)cpu_to_le32(flags);
 }
 
 static void pci_hme_write_txd(struct happy_meal_txd *txd, u32 flags, u32 addr)
 {
 	txd->tx_addr = (__force hme32)cpu_to_le32(addr);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	txd->tx_flags = (__force hme32)cpu_to_le32(flags);
 }
 
@@ -268,12 +284,20 @@ static u32 pci_hme_read_desc32(hme32 *p)
 	sbus_readl(__reg)
 #define hme_write_rxd(__hp, __rxd, __flags, __addr) \
 do {	(__rxd)->rx_addr = (__force hme32)(u32)(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(__rxd)->rx_flags = (__force hme32)(u32)(__flags); \
 } while(0)
 #define hme_write_txd(__hp, __txd, __flags, __addr) \
 do {	(__txd)->tx_addr = (__force hme32)(u32)(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(__txd)->tx_flags = (__force hme32)(u32)(__flags); \
 } while(0)
 #define hme_read_desc32(__hp, __p)	((__force u32)(hme32)*(__p))
@@ -293,12 +317,20 @@ do {	(__txd)->tx_addr = (__force hme32)(u32)(__addr); \
 	readl(__reg)
 #define hme_write_rxd(__hp, __rxd, __flags, __addr) \
 do {	(__rxd)->rx_addr = (__force hme32)cpu_to_le32(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(__rxd)->rx_flags = (__force hme32)cpu_to_le32(__flags); \
 } while(0)
 #define hme_write_txd(__hp, __txd, __flags, __addr) \
 do {	(__txd)->tx_addr = (__force hme32)cpu_to_le32(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(__txd)->tx_flags = (__force hme32)cpu_to_le32(__flags); \
 } while(0)
 static inline u32 hme_read_desc32(struct happy_meal *hp, hme32 *p)
@@ -1262,6 +1294,10 @@ static void happy_meal_init_rings(struct happy_meal *hp)
 	HMD(("init rxring, "));
 	for (i = 0; i < RX_RING_SIZE; i++) {
 		struct sk_buff *skb;
+<<<<<<< HEAD
+=======
+		u32 mapping;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		skb = happy_meal_alloc_skb(RX_BUF_ALLOC_SIZE, GFP_ATOMIC);
 		if (!skb) {
@@ -1272,10 +1308,23 @@ static void happy_meal_init_rings(struct happy_meal *hp)
 
 		/* Because we reserve afterwards. */
 		skb_put(skb, (ETH_FRAME_LEN + RX_OFFSET + 4));
+<<<<<<< HEAD
 		hme_write_rxd(hp, &hb->happy_meal_rxd[i],
 			      (RXFLAG_OWN | ((RX_BUF_ALLOC_SIZE - RX_OFFSET) << 16)),
 			      dma_map_single(hp->dma_dev, skb->data, RX_BUF_ALLOC_SIZE,
 					     DMA_FROM_DEVICE));
+=======
+		mapping = dma_map_single(hp->dma_dev, skb->data, RX_BUF_ALLOC_SIZE,
+					 DMA_FROM_DEVICE);
+		if (dma_mapping_error(hp->dma_dev, mapping)) {
+			dev_kfree_skb_any(skb);
+			hme_write_rxd(hp, &hb->happy_meal_rxd[i], 0, 0);
+			continue;
+		}
+		hme_write_rxd(hp, &hb->happy_meal_rxd[i],
+			      (RXFLAG_OWN | ((RX_BUF_ALLOC_SIZE - RX_OFFSET) << 16)),
+			      mapping);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb_reserve(skb, RX_OFFSET);
 	}
 
@@ -2020,6 +2069,10 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 		skb = hp->rx_skbs[elem];
 		if (len > RX_COPY_THRESHOLD) {
 			struct sk_buff *new_skb;
+<<<<<<< HEAD
+=======
+			u32 mapping;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			/* Now refill the entry, if we can. */
 			new_skb = happy_meal_alloc_skb(RX_BUF_ALLOC_SIZE, GFP_ATOMIC);
@@ -2027,6 +2080,7 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 				drops++;
 				goto drop_it;
 			}
+<<<<<<< HEAD
 			dma_unmap_single(hp->dma_dev, dma_addr, RX_BUF_ALLOC_SIZE, DMA_FROM_DEVICE);
 			hp->rx_skbs[elem] = new_skb;
 			skb_put(new_skb, (ETH_FRAME_LEN + RX_OFFSET + 4));
@@ -2034,6 +2088,23 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 				      (RXFLAG_OWN|((RX_BUF_ALLOC_SIZE-RX_OFFSET)<<16)),
 				      dma_map_single(hp->dma_dev, new_skb->data, RX_BUF_ALLOC_SIZE,
 						     DMA_FROM_DEVICE));
+=======
+			skb_put(new_skb, (ETH_FRAME_LEN + RX_OFFSET + 4));
+			mapping = dma_map_single(hp->dma_dev, new_skb->data,
+						 RX_BUF_ALLOC_SIZE,
+						 DMA_FROM_DEVICE);
+			if (unlikely(dma_mapping_error(hp->dma_dev, mapping))) {
+				dev_kfree_skb_any(new_skb);
+				drops++;
+				goto drop_it;
+			}
+
+			dma_unmap_single(hp->dma_dev, dma_addr, RX_BUF_ALLOC_SIZE, DMA_FROM_DEVICE);
+			hp->rx_skbs[elem] = new_skb;
+			hme_write_rxd(hp, this,
+				      (RXFLAG_OWN|((RX_BUF_ALLOC_SIZE-RX_OFFSET)<<16)),
+				      mapping);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			skb_reserve(new_skb, RX_OFFSET);
 
 			/* Trim the original skb for the netif. */
@@ -2248,6 +2319,28 @@ static void happy_meal_tx_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
+=======
+static void unmap_partial_tx_skb(struct happy_meal *hp, u32 first_mapping,
+				 u32 first_len, u32 first_entry, u32 entry)
+{
+	struct happy_meal_txd *txbase = &hp->happy_block->happy_meal_txd[0];
+
+	dma_unmap_single(hp->dma_dev, first_mapping, first_len, DMA_TO_DEVICE);
+
+	first_entry = NEXT_TX(first_entry);
+	while (first_entry != entry) {
+		struct happy_meal_txd *this = &txbase[first_entry];
+		u32 addr, len;
+
+		addr = hme_read_desc32(hp, &this->tx_addr);
+		len = hme_read_desc32(hp, &this->tx_flags);
+		len &= TXFLAG_SIZE;
+		dma_unmap_page(hp->dma_dev, addr, len, DMA_TO_DEVICE);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 					 struct net_device *dev)
 {
@@ -2284,6 +2377,11 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 
 		len = skb->len;
 		mapping = dma_map_single(hp->dma_dev, skb->data, len, DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+		if (unlikely(dma_mapping_error(hp->dma_dev, mapping)))
+			goto out_dma_error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tx_flags |= (TXFLAG_SOP | TXFLAG_EOP);
 		hme_write_txd(hp, &hp->happy_block->happy_meal_txd[entry],
 			      (tx_flags | (len & TXFLAG_SIZE)),
@@ -2299,6 +2397,11 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 		first_len = skb_headlen(skb);
 		first_mapping = dma_map_single(hp->dma_dev, skb->data, first_len,
 					       DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+		if (unlikely(dma_mapping_error(hp->dma_dev, first_mapping)))
+			goto out_dma_error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		entry = NEXT_TX(entry);
 
 		for (frag = 0; frag < skb_shinfo(skb)->nr_frags; frag++) {
@@ -2308,6 +2411,14 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 			len = skb_frag_size(this_frag);
 			mapping = skb_frag_dma_map(hp->dma_dev, this_frag,
 						   0, len, DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+			if (unlikely(dma_mapping_error(hp->dma_dev, mapping))) {
+				unmap_partial_tx_skb(hp, first_mapping, first_len,
+						     first_entry, entry);
+				goto out_dma_error;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			this_txflags = tx_flags;
 			if (frag == skb_shinfo(skb)->nr_frags - 1)
 				this_txflags |= TXFLAG_EOP;
@@ -2333,6 +2444,17 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 
 	tx_add_log(hp, TXLOG_ACTION_TXMIT, 0);
 	return NETDEV_TX_OK;
+<<<<<<< HEAD
+=======
+
+out_dma_error:
+	hp->tx_skbs[hp->tx_new] = NULL;
+	spin_unlock_irq(&hp->happy_lock);
+
+	dev_kfree_skb_any(skb);
+	dev->stats.tx_dropped++;
+	return NETDEV_TX_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct net_device_stats *happy_meal_get_stats(struct net_device *dev)
@@ -2506,7 +2628,11 @@ static struct quattro *quattro_sbus_find(struct platform_device *child)
 	struct quattro *qp;
 
 	op = to_platform_device(parent);
+<<<<<<< HEAD
 	qp = dev_get_drvdata(&op->dev);
+=======
+	qp = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (qp)
 		return qp;
 
@@ -2521,7 +2647,11 @@ static struct quattro *quattro_sbus_find(struct platform_device *child)
 		qp->next = qfe_sbus_list;
 		qfe_sbus_list = qp;
 
+<<<<<<< HEAD
 		dev_set_drvdata(&op->dev, qp);
+=======
+		platform_set_drvdata(op, qp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return qp;
 }
@@ -2675,10 +2805,17 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
 
 		addr = of_get_property(dp, "local-mac-address", &len);
 
+<<<<<<< HEAD
 		if (qfe_slot != -1 && addr && len == 6)
 			memcpy(dev->dev_addr, addr, 6);
 		else
 			memcpy(dev->dev_addr, idprom->id_ethaddr, 6);
+=======
+		if (qfe_slot != -1 && addr && len == ETH_ALEN)
+			memcpy(dev->dev_addr, addr, ETH_ALEN);
+		else
+			memcpy(dev->dev_addr, idprom->id_ethaddr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	hp = netdev_priv(dev);
@@ -2798,7 +2935,11 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
 		goto err_out_free_coherent;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, hp);
+=======
+	platform_set_drvdata(op, hp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (qfe_slot != -1)
 		printk(KERN_INFO "%s: Quattro HME slot %d (SBUS) 10/100baseT Ethernet ",
@@ -3024,9 +3165,15 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
 		    (addr = of_get_property(dp, "local-mac-address", &len))
 			!= NULL &&
 		    len == 6) {
+<<<<<<< HEAD
 			memcpy(dev->dev_addr, addr, 6);
 		} else {
 			memcpy(dev->dev_addr, idprom->id_ethaddr, 6);
+=======
+			memcpy(dev->dev_addr, addr, ETH_ALEN);
+		} else {
+			memcpy(dev->dev_addr, idprom->id_ethaddr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 #else
 		get_hme_mac_nonsparc(pdev, &dev->dev_addr[0]);
@@ -3111,7 +3258,11 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
 		goto err_out_iounmap;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, hp);
+=======
+	pci_set_drvdata(pdev, hp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!qfe_slot) {
 		struct pci_dev *qpdev = qp->quattro_dev;
@@ -3159,7 +3310,11 @@ err_out:
 
 static void happy_meal_pci_remove(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct happy_meal *hp = dev_get_drvdata(&pdev->dev);
+=======
+	struct happy_meal *hp = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net_device *net_dev = hp->dev;
 
 	unregister_netdev(net_dev);
@@ -3170,11 +3325,17 @@ static void happy_meal_pci_remove(struct pci_dev *pdev)
 	pci_release_regions(hp->happy_dev);
 
 	free_netdev(net_dev);
+<<<<<<< HEAD
 
 	dev_set_drvdata(&pdev->dev, NULL);
 }
 
 static DEFINE_PCI_DEVICE_TABLE(happymeal_pci_ids) = {
+=======
+}
+
+static const struct pci_device_id happymeal_pci_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_SUN, PCI_DEVICE_ID_SUN_HAPPYMEAL) },
 	{ }			/* Terminating entry */
 };
@@ -3231,7 +3392,11 @@ static int hme_sbus_probe(struct platform_device *op)
 
 static int hme_sbus_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct happy_meal *hp = dev_get_drvdata(&op->dev);
+=======
+	struct happy_meal *hp = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net_device *net_dev = hp->dev;
 
 	unregister_netdev(net_dev);
@@ -3250,8 +3415,11 @@ static int hme_sbus_remove(struct platform_device *op)
 
 	free_netdev(net_dev);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -3275,7 +3443,10 @@ MODULE_DEVICE_TABLE(of, hme_sbus_match);
 static struct platform_driver hme_sbus_driver = {
 	.driver = {
 		.name = "hme",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = hme_sbus_match,
 	},
 	.probe		= hme_sbus_probe,

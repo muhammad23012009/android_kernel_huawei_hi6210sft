@@ -211,11 +211,14 @@ struct qdio_buffer_element {
 	u8 scount;
 	u8 sflags;
 	u32 length;
+<<<<<<< HEAD
 #ifdef CONFIG_32BIT
 	/* private: */
 	void *res2;
 	/* public: */
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *addr;
 } __attribute__ ((packed, aligned(16)));
 
@@ -232,11 +235,14 @@ struct qdio_buffer {
  * @sbal: absolute SBAL address
  */
 struct sl_element {
+<<<<<<< HEAD
 #ifdef CONFIG_32BIT
 	/* private: */
 	unsigned long reserved;
 	/* public: */
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long sbal;
 } __attribute__ ((packed));
 
@@ -271,7 +277,10 @@ struct qdio_outbuf_state {
 	void *user;
 };
 
+<<<<<<< HEAD
 #define QDIO_OUTBUF_STATE_FLAG_NONE	0x00
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define QDIO_OUTBUF_STATE_FLAG_PENDING	0x01
 
 #define CHSC_AC1_INITIATE_INPUTQ	0x80
@@ -336,7 +345,11 @@ typedef void qdio_handler_t(struct ccw_device *, unsigned int, int,
 #define QDIO_FLAG_CLEANUP_USING_HALT		0x02
 
 /**
+<<<<<<< HEAD
  * struct qdio_initialize - qdio initalization data
+=======
+ * struct qdio_initialize - qdio initialization data
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @cdev: associated ccw device
  * @q_format: queue format
  * @adapter_name: name for the adapter
@@ -378,6 +391,37 @@ struct qdio_initialize {
 	struct qdio_outbuf_state *output_sbal_state_array;
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * enum qdio_brinfo_entry_type - type of address entry for qdio_brinfo_desc()
+ * @l3_ipv6_addr: entry contains IPv6 address
+ * @l3_ipv4_addr: entry contains IPv4 address
+ * @l2_addr_lnid: entry contains MAC address and VLAN ID
+ */
+enum qdio_brinfo_entry_type {l3_ipv6_addr, l3_ipv4_addr, l2_addr_lnid};
+
+/**
+ * struct qdio_brinfo_entry_XXX - Address entry for qdio_brinfo_desc()
+ * @nit:  Network interface token
+ * @addr: Address of one of the three types
+ *
+ * The struct is passed to the callback function by qdio_brinfo_desc()
+ */
+struct qdio_brinfo_entry_l3_ipv6 {
+	u64 nit;
+	struct { unsigned char _s6_addr[16]; } addr;
+} __packed;
+struct qdio_brinfo_entry_l3_ipv4 {
+	u64 nit;
+	struct { uint32_t _s_addr; } addr;
+} __packed;
+struct qdio_brinfo_entry_l2 {
+	u64 nit;
+	struct { u8 mac[6]; u16 lnid; } addr_lnid;
+} __packed;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define QDIO_STATE_INACTIVE		0x00000002 /* after qdio_cleanup */
 #define QDIO_STATE_ESTABLISHED		0x00000004 /* after qdio_establish */
 #define QDIO_STATE_ACTIVE		0x00000008 /* after qdio_activate */
@@ -387,6 +431,13 @@ struct qdio_initialize {
 #define QDIO_FLAG_SYNC_OUTPUT		0x02
 #define QDIO_FLAG_PCI_OUT		0x10
 
+<<<<<<< HEAD
+=======
+int qdio_alloc_buffers(struct qdio_buffer **buf, unsigned int count);
+void qdio_free_buffers(struct qdio_buffer **buf, unsigned int count);
+void qdio_reset_buffers(struct qdio_buffer **buf, unsigned int count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int qdio_allocate(struct qdio_initialize *);
 extern int qdio_establish(struct qdio_initialize *);
 extern int qdio_activate(struct ccw_device *);
@@ -399,5 +450,13 @@ extern int qdio_get_next_buffers(struct ccw_device *, int, int *, int *);
 extern int qdio_shutdown(struct ccw_device *, int);
 extern int qdio_free(struct ccw_device *);
 extern int qdio_get_ssqd_desc(struct ccw_device *, struct qdio_ssqd_desc *);
+<<<<<<< HEAD
+=======
+extern int qdio_pnso_brinfo(struct subchannel_id schid,
+		int cnc, u16 *response,
+		void (*cb)(void *priv, enum qdio_brinfo_entry_type type,
+				void *entry),
+		void *priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __QDIO_H__ */

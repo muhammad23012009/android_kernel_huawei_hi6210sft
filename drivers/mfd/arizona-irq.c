@@ -30,11 +30,21 @@ static int arizona_map_irq(struct arizona *arizona, int irq)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = regmap_irq_get_virq(arizona->aod_irq_chip, irq);
 	if (ret < 0)
 		ret = regmap_irq_get_virq(arizona->irq_chip, irq);
 
 	return ret;
+=======
+	if (arizona->aod_irq_chip) {
+		ret = regmap_irq_get_virq(arizona->aod_irq_chip, irq);
+		if (ret >= 0)
+			return ret;
+	}
+
+	return regmap_irq_get_virq(arizona->irq_chip, irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int arizona_request_irq(struct arizona *arizona, int irq, char *name,
@@ -107,8 +117,25 @@ static irqreturn_t arizona_irq_thread(int irq, void *data)
 	do {
 		poll = false;
 
+<<<<<<< HEAD
 		/* Always handle the AoD domain */
 		handle_nested_irq(irq_find_mapping(arizona->virq, 0));
+=======
+		if (arizona->aod_irq_chip) {
+			/*
+			 * Check the AOD status register to determine whether
+			 * the nested IRQ handler should be called.
+			 */
+			ret = regmap_read(arizona->regmap,
+					  ARIZONA_AOD_IRQ1, &val);
+			if (ret)
+				dev_warn(arizona->dev,
+					"Failed to read AOD IRQ1 %d\n", ret);
+			else if (val)
+				handle_nested_irq(
+					irq_find_mapping(arizona->virq, 0));
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Check if one of the main interrupts is asserted and only
@@ -152,10 +179,21 @@ static void arizona_irq_disable(struct irq_data *data)
 {
 }
 
+<<<<<<< HEAD
+=======
+static int arizona_irq_set_wake(struct irq_data *data, unsigned int on)
+{
+	struct arizona *arizona = irq_data_get_irq_chip_data(data);
+
+	return irq_set_irq_wake(arizona->irq, on);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct irq_chip arizona_irq_chip = {
 	.name			= "arizona",
 	.irq_disable		= arizona_irq_disable,
 	.irq_enable		= arizona_irq_enable,
+<<<<<<< HEAD
 };
 
 static int arizona_irq_map(struct irq_domain *h, unsigned int virq,
@@ -174,11 +212,32 @@ static int arizona_irq_map(struct irq_domain *h, unsigned int virq,
 #else
 	irq_set_noprobe(virq);
 #endif
+=======
+	.irq_set_wake		= arizona_irq_set_wake,
+};
+
+static struct lock_class_key arizona_irq_lock_class;
+
+static int arizona_irq_map(struct irq_domain *h, unsigned int virq,
+			      irq_hw_number_t hw)
+{
+	struct arizona *data = h->host_data;
+
+	irq_set_chip_data(virq, data);
+	irq_set_lockdep_class(virq, &arizona_irq_lock_class);
+	irq_set_chip_and_handler(virq, &arizona_irq_chip, handle_simple_irq);
+	irq_set_nested_thread(virq, 1);
+	irq_set_noprobe(virq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops arizona_domain_ops = {
+=======
+static const struct irq_domain_ops arizona_domain_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map	= arizona_irq_map,
 	.xlate	= irq_domain_xlate_twocell,
 };
@@ -188,24 +247,77 @@ int arizona_irq_init(struct arizona *arizona)
 	int flags = IRQF_ONESHOT;
 	int ret, i;
 	const struct regmap_irq_chip *aod, *irq;
+<<<<<<< HEAD
 	bool ctrlif_error = true;
 	struct irq_data *irq_data;
 
+=======
+	struct irq_data *irq_data;
+
+	arizona->ctrlif_error = true;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (arizona->type) {
 #ifdef CONFIG_MFD_WM5102
 	case WM5102:
 		aod = &wm5102_aod;
 		irq = &wm5102_irq;
 
+<<<<<<< HEAD
 		ctrlif_error = false;
+=======
+		arizona->ctrlif_error = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 #endif
 #ifdef CONFIG_MFD_WM5110
 	case WM5110:
+<<<<<<< HEAD
 		aod = &wm5110_aod;
 		irq = &wm5110_irq;
 
 		ctrlif_error = false;
+=======
+	case WM8280:
+		aod = &wm5110_aod;
+
+		switch (arizona->rev) {
+		case 0 ... 2:
+			irq = &wm5110_irq;
+			break;
+		default:
+			irq = &wm5110_revd_irq;
+			break;
+		}
+
+		arizona->ctrlif_error = false;
+		break;
+#endif
+#ifdef CONFIG_MFD_CS47L24
+	case WM1831:
+	case CS47L24:
+		aod = NULL;
+		irq = &cs47l24_irq;
+
+		arizona->ctrlif_error = false;
+		break;
+#endif
+#ifdef CONFIG_MFD_WM8997
+	case WM8997:
+		aod = &wm8997_aod;
+		irq = &wm8997_irq;
+
+		arizona->ctrlif_error = false;
+		break;
+#endif
+#ifdef CONFIG_MFD_WM8998
+	case WM8998:
+	case WM1814:
+		aod = &wm8998_aod;
+		irq = &wm8998_irq;
+
+		arizona->ctrlif_error = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 #endif
 	default:
@@ -263,6 +375,7 @@ int arizona_irq_init(struct arizona *arizona)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	ret = regmap_add_irq_chip(arizona->regmap,
 				  irq_create_mapping(arizona->virq, 0),
 				  IRQF_ONESHOT, -1, aod,
@@ -270,10 +383,23 @@ int arizona_irq_init(struct arizona *arizona)
 	if (ret != 0) {
 		dev_err(arizona->dev, "Failed to add AOD IRQs: %d\n", ret);
 		goto err_domain;
+=======
+	if (aod) {
+		ret = regmap_add_irq_chip(arizona->regmap,
+					  irq_create_mapping(arizona->virq, 0),
+					  IRQF_ONESHOT, 0, aod,
+					  &arizona->aod_irq_chip);
+		if (ret != 0) {
+			dev_err(arizona->dev,
+				"Failed to add AOD IRQs: %d\n", ret);
+			goto err;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = regmap_add_irq_chip(arizona->regmap,
 				  irq_create_mapping(arizona->virq, 1),
+<<<<<<< HEAD
 				  IRQF_ONESHOT, -1, irq,
 				  &arizona->irq_chip);
 	if (ret != 0) {
@@ -305,6 +431,15 @@ int arizona_irq_init(struct arizona *arizona)
 		}
 	}
 
+=======
+				  IRQF_ONESHOT, 0, irq,
+				  &arizona->irq_chip);
+	if (ret != 0) {
+		dev_err(arizona->dev, "Failed to add main IRQs: %d\n", ret);
+		goto err_aod;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Used to emulate edge trigger and to work around broken pinmux */
 	if (arizona->pdata.irq_gpio) {
 		if (gpio_to_irq(arizona->pdata.irq_gpio) != arizona->irq) {
@@ -334,6 +469,7 @@ int arizona_irq_init(struct arizona *arizona)
 		goto err_main_irq;
 	}
 
+<<<<<<< HEAD
 	return 0;
 
 err_main_irq:
@@ -341,19 +477,61 @@ err_main_irq:
 err_ctrlif:
 	free_irq(arizona_map_irq(arizona, ARIZONA_IRQ_BOOT_DONE), arizona);
 err_boot_done:
+=======
+	/* Make sure the boot done IRQ is unmasked for resumes */
+	i = arizona_map_irq(arizona, ARIZONA_IRQ_BOOT_DONE);
+	ret = request_threaded_irq(i, NULL, arizona_boot_done, IRQF_ONESHOT,
+				   "Boot done", arizona);
+	if (ret != 0) {
+		dev_err(arizona->dev, "Failed to request boot done %d: %d\n",
+			arizona->irq, ret);
+		goto err_boot_done;
+	}
+
+	/* Handle control interface errors in the core */
+	if (arizona->ctrlif_error) {
+		i = arizona_map_irq(arizona, ARIZONA_IRQ_CTRLIF_ERR);
+		ret = request_threaded_irq(i, NULL, arizona_ctrlif_err,
+					   IRQF_ONESHOT,
+					   "Control interface error", arizona);
+		if (ret != 0) {
+			dev_err(arizona->dev,
+				"Failed to request CTRLIF_ERR %d: %d\n",
+				arizona->irq, ret);
+			goto err_ctrlif;
+		}
+	}
+
+	return 0;
+
+err_ctrlif:
+	free_irq(arizona_map_irq(arizona, ARIZONA_IRQ_BOOT_DONE), arizona);
+err_boot_done:
+	free_irq(arizona->irq, arizona);
+err_main_irq:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regmap_del_irq_chip(irq_create_mapping(arizona->virq, 1),
 			    arizona->irq_chip);
 err_aod:
 	regmap_del_irq_chip(irq_create_mapping(arizona->virq, 0),
 			    arizona->aod_irq_chip);
+<<<<<<< HEAD
 err_domain:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	return ret;
 }
 
 int arizona_irq_exit(struct arizona *arizona)
 {
+<<<<<<< HEAD
 	free_irq(arizona_map_irq(arizona, ARIZONA_IRQ_CTRLIF_ERR), arizona);
+=======
+	if (arizona->ctrlif_error)
+		free_irq(arizona_map_irq(arizona, ARIZONA_IRQ_CTRLIF_ERR),
+			 arizona);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_irq(arizona_map_irq(arizona, ARIZONA_IRQ_BOOT_DONE), arizona);
 	regmap_del_irq_chip(irq_create_mapping(arizona->virq, 1),
 			    arizona->irq_chip);

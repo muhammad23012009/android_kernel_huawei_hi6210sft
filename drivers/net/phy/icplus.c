@@ -48,48 +48,80 @@ MODULE_LICENSE("GPL");
 static int ip175c_config_init(struct phy_device *phydev)
 {
 	int err, i;
+<<<<<<< HEAD
 	static int full_reset_performed = 0;
+=======
+	static int full_reset_performed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (full_reset_performed == 0) {
 
 		/* master reset */
+<<<<<<< HEAD
 		err = mdiobus_write(phydev->bus, 30, 0, 0x175c);
+=======
+		err = mdiobus_write(phydev->mdio.bus, 30, 0, 0x175c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err < 0)
 			return err;
 
 		/* ensure no bus delays overlap reset period */
+<<<<<<< HEAD
 		err = mdiobus_read(phydev->bus, 30, 0);
+=======
+		err = mdiobus_read(phydev->mdio.bus, 30, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* data sheet specifies reset period is 2 msec */
 		mdelay(2);
 
 		/* enable IP175C mode */
+<<<<<<< HEAD
 		err = mdiobus_write(phydev->bus, 29, 31, 0x175c);
+=======
+		err = mdiobus_write(phydev->mdio.bus, 29, 31, 0x175c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err < 0)
 			return err;
 
 		/* Set MII0 speed and duplex (in PHY mode) */
+<<<<<<< HEAD
 		err = mdiobus_write(phydev->bus, 29, 22, 0x420);
+=======
+		err = mdiobus_write(phydev->mdio.bus, 29, 22, 0x420);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err < 0)
 			return err;
 
 		/* reset switch ports */
 		for (i = 0; i < 5; i++) {
+<<<<<<< HEAD
 			err = mdiobus_write(phydev->bus, i,
+=======
+			err = mdiobus_write(phydev->mdio.bus, i,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    MII_BMCR, BMCR_RESET);
 			if (err < 0)
 				return err;
 		}
 
 		for (i = 0; i < 5; i++)
+<<<<<<< HEAD
 			err = mdiobus_read(phydev->bus, i, MII_BMCR);
+=======
+			err = mdiobus_read(phydev->mdio.bus, i, MII_BMCR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		mdelay(2);
 
 		full_reset_performed = 1;
 	}
 
+<<<<<<< HEAD
 	if (phydev->addr != 4) {
+=======
+	if (phydev->mdio.addr != 4) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		phydev->state = PHY_RUNNING;
 		phydev->speed = SPEED_100;
 		phydev->duplex = DUPLEX_FULL;
@@ -139,10 +171,14 @@ static int ip1001_config_init(struct phy_device *phydev)
 	if (c < 0)
 		return c;
 
+<<<<<<< HEAD
 	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII) ||
 	    (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID) ||
 	    (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) ||
 	    (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)) {
+=======
+	if (phy_interface_is_rgmii(phydev)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		c = phy_read(phydev, IP10XX_SPEC_CTRL_STATUS);
 		if (c < 0)
@@ -187,7 +223,11 @@ static int ip101a_g_config_init(struct phy_device *phydev)
 
 static int ip175c_read_status(struct phy_device *phydev)
 {
+<<<<<<< HEAD
 	if (phydev->addr == 4) /* WAN port */
+=======
+	if (phydev->mdio.addr == 4) /* WAN port */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		genphy_read_status(phydev);
 	else
 		/* Don't need to read status for switch ports */
@@ -198,7 +238,11 @@ static int ip175c_read_status(struct phy_device *phydev)
 
 static int ip175c_config_aneg(struct phy_device *phydev)
 {
+<<<<<<< HEAD
 	if (phydev->addr == 4) /* WAN port */
+=======
+	if (phydev->mdio.addr == 4) /* WAN port */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		genphy_config_aneg(phydev);
 
 	return 0;
@@ -224,7 +268,10 @@ static struct phy_driver icplus_driver[] = {
 	.read_status	= &ip175c_read_status,
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
+<<<<<<< HEAD
 	.driver		= { .owner = THIS_MODULE,},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }, {
 	.phy_id		= 0x02430d90,
 	.name		= "ICPlus IP1001",
@@ -236,7 +283,10 @@ static struct phy_driver icplus_driver[] = {
 	.read_status	= &genphy_read_status,
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
+<<<<<<< HEAD
 	.driver		= { .owner = THIS_MODULE,},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }, {
 	.phy_id		= 0x02430c54,
 	.name		= "ICPlus IP101A/G",
@@ -250,6 +300,7 @@ static struct phy_driver icplus_driver[] = {
 	.read_status	= &genphy_read_status,
 	.suspend	= genphy_suspend,
 	.resume		= genphy_resume,
+<<<<<<< HEAD
 	.driver		= { .owner = THIS_MODULE,},
 } };
 
@@ -267,6 +318,11 @@ static void __exit icplus_exit(void)
 
 module_init(icplus_init);
 module_exit(icplus_exit);
+=======
+} };
+
+module_phy_driver(icplus_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct mdio_device_id __maybe_unused icplus_tbl[] = {
 	{ 0x02430d80, 0x0ffffff0 },

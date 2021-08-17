@@ -507,7 +507,11 @@ static int ushc_probe(struct usb_interface *intf, const struct usb_device_id *id
 		ret = -ENOMEM;
 		goto err;
 	}
+<<<<<<< HEAD
 	ushc->csw = kzalloc(sizeof(struct ushc_cbw), GFP_KERNEL);
+=======
+	ushc->csw = kzalloc(sizeof(struct ushc_csw), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ushc->csw == NULL) {
 		ret = -ENOMEM;
 		goto err;

@@ -3,6 +3,10 @@
 
 #include <uapi/asm/setup.h>
 
+<<<<<<< HEAD
+=======
+extern const struct machine_desc *setup_machine_fdt(void *dt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void per_cpu_trap_init(unsigned long);
 extern void __init dump_machine_table(void);
 #endif /* _ASM_METAG_SETUP_H */

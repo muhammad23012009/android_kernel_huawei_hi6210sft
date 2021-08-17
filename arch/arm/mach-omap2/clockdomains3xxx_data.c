@@ -247,7 +247,11 @@ static struct clockdomain neon_clkdm = {
 static struct clockdomain iva2_clkdm = {
 	.name		= "iva2_clkdm",
 	.pwrdm		= { .name = "iva2_pwrdm" },
+<<<<<<< HEAD
 	.flags		= CLKDM_CAN_HWSUP_SWSUP,
+=======
+	.flags		= CLKDM_CAN_SWSUP,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dep_bit	= OMAP3430_PM_WKDEP_MPU_EN_IVA2_SHIFT,
 	.wkdep_srcs	= iva2_wkdeps,
 	.clktrctrl_mask = OMAP3430_CLKTRCTRL_IVA2_MASK,

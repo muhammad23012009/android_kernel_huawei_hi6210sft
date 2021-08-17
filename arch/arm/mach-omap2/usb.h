@@ -58,7 +58,10 @@ struct usbhs_phy_data {
 	int reset_gpio;
 	int vcc_gpio;
 	bool vcc_polarity;	/* 1 active high, 0 active low */
+<<<<<<< HEAD
 	void *platform_data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern void usb_musb_init(struct omap_musb_board_data *board_data);
@@ -69,5 +72,8 @@ extern void am35x_musb_reset(void);
 extern void am35x_musb_phy_power(u8 on);
 extern void am35x_musb_clear_irq(void);
 extern void am35x_set_mode(u8 musb_mode);
+<<<<<<< HEAD
 extern void ti81xx_musb_phy_power(u8 on);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -82,6 +82,7 @@
  */
 #define fixup_tmp_permissions(x)	\
 	do {						\
+<<<<<<< HEAD
 		(x)->i_uid = SDCARDFS_I(x)->data->d_uid;	\
 		(x)->i_gid = AID_SDCARD_RW;	\
 		(x)->i_mode = ((x)->i_mode & S_IFMT) | 0775;\
@@ -112,6 +113,14 @@
 
 #define REVERT_CRED(saved_cred)	revert_fsids(saved_cred)
 
+=======
+		(x)->i_uid = make_kuid(&init_user_ns,	\
+				SDCARDFS_I(x)->data->d_uid);	\
+		(x)->i_gid = make_kgid(&init_user_ns, AID_SDCARD_RW);	\
+		(x)->i_mode = ((x)->i_mode & S_IFMT) | 0775;\
+	} while (0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Android 5.0 support */
 
 /* Permission mode for a specific node. Controls how file permissions
@@ -200,7 +209,10 @@ struct sdcardfs_inode_info {
 	struct sdcardfs_inode_data *data;
 
 	/* top folder for ownership */
+<<<<<<< HEAD
 	spinlock_t top_lock;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sdcardfs_inode_data *top_data;
 
 	struct inode vfs_inode;
@@ -219,8 +231,11 @@ struct sdcardfs_mount_options {
 	gid_t fs_low_gid;
 	userid_t fs_user_id;
 	bool multiuser;
+<<<<<<< HEAD
 	bool gid_derivation;
 	bool default_normal;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int reserved_mb;
 };
 
@@ -380,12 +395,16 @@ static inline struct sdcardfs_inode_data *data_get(
 static inline struct sdcardfs_inode_data *top_data_get(
 		struct sdcardfs_inode_info *info)
 {
+<<<<<<< HEAD
 	struct sdcardfs_inode_data *top_data;
 
 	spin_lock(&info->top_lock);
 	top_data = data_get(info->top_data);
 	spin_unlock(&info->top_lock);
 	return top_data;
+=======
+	return data_get(info->top_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 extern void data_release(struct kref *ref);
@@ -407,6 +426,7 @@ static inline void release_own_data(struct sdcardfs_inode_info *info)
 }
 
 static inline void set_top(struct sdcardfs_inode_info *info,
+<<<<<<< HEAD
 			struct sdcardfs_inode_info *top_owner)
 {
 	struct sdcardfs_inode_data *old_top;
@@ -431,6 +451,25 @@ static inline int get_gid(struct vfsmount *mnt,
 	struct sdcardfs_sb_info *sbi = SDCARDFS_SB(sb);
 
 	if (vfsopts->gid == AID_SDCARD_RW && !sbi->options.default_normal)
+=======
+			struct sdcardfs_inode_data *top)
+{
+	struct sdcardfs_inode_data *old_top = info->top_data;
+
+	if (top)
+		data_get(top);
+	info->top_data = top;
+	if (old_top)
+		data_put(old_top);
+}
+
+static inline int get_gid(struct vfsmount *mnt,
+		struct sdcardfs_inode_data *data)
+{
+	struct sdcardfs_vfsmount_options *opts = mnt->data;
+
+	if (opts->gid == AID_SDCARD_RW)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* As an optimization, certain trusted system components only run
 		 * as owner but operate across all users. Since we're now handing
 		 * out the sdcard_rw GID only to trusted apps, we're okay relaxing
@@ -439,7 +478,11 @@ static inline int get_gid(struct vfsmount *mnt,
 		 */
 		return AID_SDCARD_RW;
 	else
+<<<<<<< HEAD
 		return multiuser_get_uid(data->userid, vfsopts->gid);
+=======
+		return multiuser_get_uid(data->userid, opts->gid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int get_mode(struct vfsmount *mnt,
@@ -526,7 +569,12 @@ struct limit_search {
 };
 
 extern void setup_derived_state(struct inode *inode, perm_t perm,
+<<<<<<< HEAD
 			userid_t userid, uid_t uid);
+=======
+		userid_t userid, uid_t uid, bool under_android,
+		struct sdcardfs_inode_data *top);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void get_derived_permission(struct dentry *parent, struct dentry *dentry);
 extern void get_derived_permission_new(struct dentry *parent, struct dentry *dentry, const struct qstr *name);
 extern void fixup_perms_recursive(struct dentry *dentry, struct limit_search *limit);
@@ -543,13 +591,21 @@ static inline struct dentry *lock_parent(struct dentry *dentry)
 {
 	struct dentry *dir = dget_parent(dentry);
 
+<<<<<<< HEAD
 	mutex_lock_nested(&dir->d_inode->i_mutex, I_MUTEX_PARENT);
+=======
+	inode_lock_nested(d_inode(dir), I_MUTEX_PARENT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return dir;
 }
 
 static inline void unlock_dir(struct dentry *dir)
 {
+<<<<<<< HEAD
 	mutex_unlock(&dir->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(dir));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dput(dir);
 }
 
@@ -568,26 +624,43 @@ static inline int prepare_dir(const char *path_s, uid_t uid, gid_t gid, mode_t m
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	err = vfs_mkdir2(parent.mnt, parent.dentry->d_inode, dent, mode);
+=======
+	err = vfs_mkdir2(parent.mnt, d_inode(parent.dentry), dent, mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err) {
 		if (err == -EEXIST)
 			err = 0;
 		goto out_dput;
 	}
 
+<<<<<<< HEAD
 	attrs.ia_uid = uid;
 	attrs.ia_gid = gid;
 	attrs.ia_valid = ATTR_UID | ATTR_GID;
 	mutex_lock(&dent->d_inode->i_mutex);
 	notify_change2(parent.mnt, dent, &attrs);
 	mutex_unlock(&dent->d_inode->i_mutex);
+=======
+	attrs.ia_uid = make_kuid(&init_user_ns, uid);
+	attrs.ia_gid = make_kgid(&init_user_ns, gid);
+	attrs.ia_valid = ATTR_UID | ATTR_GID;
+	inode_lock(d_inode(dent));
+	notify_change2(parent.mnt, dent, &attrs, NULL);
+	inode_unlock(d_inode(dent));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out_dput:
 	dput(dent);
 
 out_unlock:
 	/* parent dentry locked by lookup_create */
+<<<<<<< HEAD
 	mutex_unlock(&parent.dentry->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(parent.dentry));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	path_put(&parent);
 	return err;
 }
@@ -643,11 +716,18 @@ static inline int check_min_free_space(struct dentry *dentry, size_t size, int d
  */
 static inline void sdcardfs_copy_and_fix_attrs(struct inode *dest, const struct inode *src)
 {
+<<<<<<< HEAD
 
 	dest->i_mode = (src->i_mode  & S_IFMT) | S_IRWXU | S_IRWXG |
 			S_IROTH | S_IXOTH; /* 0775 */
 	dest->i_uid = SDCARDFS_I(dest)->data->d_uid;
 	dest->i_gid = AID_SDCARD_RW;
+=======
+	dest->i_mode = (src->i_mode  & S_IFMT) | S_IRWXU | S_IRWXG |
+			S_IROTH | S_IXOTH; /* 0775 */
+	dest->i_uid = make_kuid(&init_user_ns, SDCARDFS_I(dest)->data->d_uid);
+	dest->i_gid = make_kgid(&init_user_ns, AID_SDCARD_RW);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dest->i_rdev = src->i_rdev;
 	dest->i_atime = src->i_atime;
 	dest->i_mtime = src->i_mtime;

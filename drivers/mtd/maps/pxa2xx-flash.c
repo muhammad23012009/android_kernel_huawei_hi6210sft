@@ -13,7 +13,10 @@
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
@@ -49,7 +52,11 @@ static const char * const probes[] = { "RedBoot", "cmdlinepart", NULL };
 
 static int pxa2xx_flash_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct flash_platform_data *flash = pdev->dev.platform_data;
+=======
+	struct flash_platform_data *flash = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pxa2xx_flash_info *info;
 	struct resource *res;
 
@@ -61,7 +68,11 @@ static int pxa2xx_flash_probe(struct platform_device *pdev)
 	if (!info)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	info->map.name = (char *) flash->name;
+=======
+	info->map.name = flash->name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->map.bankwidth = flash->width;
 	info->map.phys = res->start;
 	info->map.size = resource_size(res);
@@ -94,7 +105,11 @@ static int pxa2xx_flash_probe(struct platform_device *pdev)
 			iounmap(info->map.cached);
 		return -EIO;
 	}
+<<<<<<< HEAD
 	info->mtd->owner = THIS_MODULE;
+=======
+	info->mtd->dev.parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mtd_device_parse_register(info->mtd, probes, NULL, flash->parts,
 				  flash->nr_parts);
@@ -107,8 +122,11 @@ static int pxa2xx_flash_remove(struct platform_device *dev)
 {
 	struct pxa2xx_flash_info *info = platform_get_drvdata(dev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mtd_device_unregister(info->mtd);
 
 	map_destroy(info->mtd);
@@ -134,7 +152,10 @@ static void pxa2xx_flash_shutdown(struct platform_device *dev)
 static struct platform_driver pxa2xx_flash_driver = {
 	.driver = {
 		.name		= "pxa2xx-flash",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= pxa2xx_flash_probe,
 	.remove		= pxa2xx_flash_remove,

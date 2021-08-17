@@ -29,7 +29,10 @@
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/serio.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
@@ -169,7 +172,10 @@ static struct platform_driver rpckbd_driver = {
 	.remove		= rpckbd_remove,
 	.driver		= {
 		.name	= "kart",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(rpckbd_driver);

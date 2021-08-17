@@ -8,3 +8,8 @@ hostprogs-y := hid-example
 always := $(hostprogs-y)
 
 HOSTCFLAGS_hid-example.o += -I$(objtree)/usr/include
+<<<<<<< HEAD
+=======
+
+all: hid-example
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

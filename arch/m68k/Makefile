@@ -39,7 +39,10 @@ cpuflags-$(CONFIG_M68040)	:= -m68040
 endif
 cpuflags-$(CONFIG_M68030)	:=
 cpuflags-$(CONFIG_M68020)	:=
+<<<<<<< HEAD
 cpuflags-$(CONFIG_M68360)	:= -m68332
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cpuflags-$(CONFIG_M68000)	:= -m68000
 cpuflags-$(CONFIG_M5441x)	:= $(call cc-option,-mcpu=54455,-mcfv4e)
 cpuflags-$(CONFIG_M54xx)	:= $(call cc-option,-mcpu=5475,-m5200)
@@ -59,7 +62,14 @@ cpuflags-$(CONFIG_M5206e)	:= $(call cc-option,-mcpu=5206e,-m5200)
 cpuflags-$(CONFIG_M5206)	:= $(call cc-option,-mcpu=5206,-m5200)
 
 KBUILD_AFLAGS += $(cpuflags-y)
+<<<<<<< HEAD
 KBUILD_CFLAGS += $(cpuflags-y) -pipe
+=======
+KBUILD_CFLAGS += $(cpuflags-y)
+
+KBUILD_CFLAGS += -pipe -ffreestanding
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ifdef CONFIG_MMU
 # without -fno-strength-reduce the 53c7xx.c driver fails ;-(
 KBUILD_CFLAGS += -fno-strength-reduce -ffixed-a2
@@ -92,9 +102,14 @@ endif
 #
 head-y				:= arch/m68k/kernel/head.o
 head-$(CONFIG_SUN3)		:= arch/m68k/kernel/sun3-head.o
+<<<<<<< HEAD
 head-$(CONFIG_M68360)		:= arch/m68k/platform/68360/head.o
 head-$(CONFIG_M68000)		:= arch/m68k/platform/68000/head.o
 head-$(CONFIG_COLDFIRE)		:= arch/m68k/platform/coldfire/head.o
+=======
+head-$(CONFIG_M68000)		:= arch/m68k/68000/head.o
+head-$(CONFIG_COLDFIRE)		:= arch/m68k/coldfire/head.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 core-y				+= arch/m68k/kernel/	arch/m68k/mm/
 libs-y				+= arch/m68k/lib/
@@ -114,9 +129,14 @@ core-$(CONFIG_NATFEAT)		+= arch/m68k/emu/
 core-$(CONFIG_M68040)		+= arch/m68k/fpsp040/
 core-$(CONFIG_M68060)		+= arch/m68k/ifpsp060/
 core-$(CONFIG_M68KFPU_EMU)	+= arch/m68k/math-emu/
+<<<<<<< HEAD
 core-$(CONFIG_M68360)		+= arch/m68k/platform/68360/
 core-$(CONFIG_M68000)		+= arch/m68k/platform/68000/
 core-$(CONFIG_COLDFIRE)		+= arch/m68k/platform/coldfire/
+=======
+core-$(CONFIG_M68000)		+= arch/m68k/68000/
+core-$(CONFIG_COLDFIRE)		+= arch/m68k/coldfire/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 all:	zImage

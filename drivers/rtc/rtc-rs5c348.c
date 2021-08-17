@@ -25,8 +25,11 @@
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.2"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RS5C348_REG_SECS	0
 #define RS5C348_REG_MINS	1
 #define RS5C348_REG_HOURS	2
@@ -64,7 +67,11 @@ static int
 rs5c348_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct spi_device *spi = to_spi_device(dev);
+<<<<<<< HEAD
 	struct rs5c348_plat_data *pdata = spi->dev.platform_data;
+=======
+	struct rs5c348_plat_data *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 txbuf[5+7], *txp;
 	int ret;
 
@@ -100,7 +107,11 @@ static int
 rs5c348_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct spi_device *spi = to_spi_device(dev);
+<<<<<<< HEAD
 	struct rs5c348_plat_data *pdata = spi->dev.platform_data;
+=======
+	struct rs5c348_plat_data *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 txbuf[5], rxbuf[7];
 	int ret;
 
@@ -171,7 +182,10 @@ static int rs5c348_probe(struct spi_device *spi)
 		goto kfree_exit;
 	}
 
+<<<<<<< HEAD
 	dev_info(&spi->dev, "chip found, driver version " DRV_VERSION "\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&spi->dev, "spiclk %u KHz.\n",
 		 (spi->max_speed_hz + 500) / 1000);
 
@@ -218,6 +232,7 @@ static int rs5c348_probe(struct spi_device *spi)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int rs5c348_remove(struct spi_device *spi)
 {
 	return 0;
@@ -230,6 +245,13 @@ static struct spi_driver rs5c348_driver = {
 	},
 	.probe	= rs5c348_probe,
 	.remove	= rs5c348_remove,
+=======
+static struct spi_driver rs5c348_driver = {
+	.driver = {
+		.name	= "rtc-rs5c348",
+	},
+	.probe	= rs5c348_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_spi_driver(rs5c348_driver);
@@ -237,5 +259,8 @@ module_spi_driver(rs5c348_driver);
 MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
 MODULE_DESCRIPTION("Ricoh RS5C348 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS("spi:rtc-rs5c348");

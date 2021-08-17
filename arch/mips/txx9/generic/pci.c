@@ -29,12 +29,17 @@ static int __init
 early_read_config_word(struct pci_controller *hose,
 		       int top_bus, int bus, int devfn, int offset, u16 *value)
 {
+<<<<<<< HEAD
 	struct pci_dev fake_dev;
 	struct pci_bus fake_bus;
 
 	fake_dev.bus = &fake_bus;
 	fake_dev.sysdata = hose;
 	fake_dev.devfn = devfn;
+=======
+	struct pci_bus fake_bus;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fake_bus.number = bus;
 	fake_bus.sysdata = hose;
 	fake_bus.ops = hose->pci_ops;
@@ -45,7 +50,11 @@ early_read_config_word(struct pci_controller *hose,
 	else
 		fake_bus.parent = NULL;
 
+<<<<<<< HEAD
 	return pci_read_config_word(&fake_dev, offset, value);
+=======
+	return pci_bus_read_config_word(&fake_bus, devfn, offset, value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int __init txx9_pci66_check(struct pci_controller *hose, int top_bus,
@@ -268,7 +277,11 @@ static int txx9_i8259_irq_setup(int irq)
 	return err;
 }
 
+<<<<<<< HEAD
 static void quirk_slc90e66_bridge(struct pci_dev *dev)
+=======
+static void __ref quirk_slc90e66_bridge(struct pci_dev *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int irq;	/* PCI/ISA Bridge interrupt */
 	u8 reg_64;
@@ -331,7 +344,11 @@ static void quirk_slc90e66_ide(struct pci_dev *dev)
 	 * !!! DO NOT REMOVE THIS COMMENT IT IS REQUIRED BY SMSC !!!
 	 */
 	dat |= 0x01;
+<<<<<<< HEAD
 	pci_write_config_byte(dev, regs[i], dat);
+=======
+	pci_write_config_byte(dev, 0x5c, dat);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_read_config_byte(dev, 0x5c, &dat);
 	printk(KERN_CONT " REG5C %02x", dat);
 	printk(KERN_CONT "\n");

@@ -15,11 +15,16 @@
 #include "string.h"
 #include "stdio.h"
 #include "ops.h"
+<<<<<<< HEAD
 #include "gunzip_util.h"
 #include "reg.h"
 
 static struct gunzip_state gzstate;
 
+=======
+#include "reg.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct addr_range {
 	void *addr;
 	unsigned long size;
@@ -30,6 +35,7 @@ struct addr_range {
 static struct addr_range prep_kernel(void)
 {
 	char elfheader[256];
+<<<<<<< HEAD
 	void *vmlinuz_addr = _vmlinux_start;
 	unsigned long vmlinuz_size = _vmlinux_end - _vmlinux_start;
 	void *addr = 0;
@@ -39,6 +45,23 @@ static struct addr_range prep_kernel(void)
 	/* gunzip the ELF header of the kernel */
 	gunzip_start(&gzstate, vmlinuz_addr, vmlinuz_size);
 	gunzip_exactly(&gzstate, elfheader, sizeof(elfheader));
+=======
+	unsigned char *vmlinuz_addr = (unsigned char *)_vmlinux_start;
+	unsigned long vmlinuz_size = _vmlinux_end - _vmlinux_start;
+	void *addr = 0;
+	struct elf_info ei;
+	long len;
+	int uncompressed_image = 0;
+
+	len = partial_decompress(vmlinuz_addr, vmlinuz_size,
+		elfheader, sizeof(elfheader), 0);
+	/* assume uncompressed data if -1 is returned */
+	if (len == -1) {
+		uncompressed_image = 1;
+		memcpy(elfheader, vmlinuz_addr, sizeof(elfheader));
+		printf("No valid compressed data found, assume uncompressed data\n\r");
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!parse_elf64(elfheader, &ei) && !parse_elf32(elfheader, &ei))
 		fatal("Error: not a valid PPC32 or PPC64 ELF file!\n\r");
@@ -51,7 +74,11 @@ static struct addr_range prep_kernel(void)
 	 * the kernel bss must be claimed (it will be zero'd by the
 	 * kernel itself)
 	 */
+<<<<<<< HEAD
 	printf("Allocating 0x%lx bytes for kernel ...\n\r", ei.memsize);
+=======
+	printf("Allocating 0x%lx bytes for kernel...\n\r", ei.memsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (platform_ops.vmlinux_alloc) {
 		addr = platform_ops.vmlinux_alloc(ei.memsize);
@@ -71,6 +98,7 @@ static struct addr_range prep_kernel(void)
 					"device tree\n\r");
 	}
 
+<<<<<<< HEAD
 	/* Finally, gunzip the kernel */
 	printf("gunzipping (0x%p <- 0x%p:0x%p)...", addr,
 	       vmlinuz_addr, vmlinuz_addr+vmlinuz_size);
@@ -82,6 +110,31 @@ static struct addr_range prep_kernel(void)
 				len, ei.loadsize);
 	printf("done 0x%x bytes\n\r", len);
 
+=======
+	if (uncompressed_image) {
+		memcpy(addr, vmlinuz_addr + ei.elfoffset, ei.loadsize);
+		printf("0x%lx bytes of uncompressed data copied\n\r",
+		       ei.loadsize);
+		goto out;
+	}
+
+	/* Finally, decompress the kernel */
+	printf("Decompressing (0x%p <- 0x%p:0x%p)...\n\r", addr,
+	       vmlinuz_addr, vmlinuz_addr+vmlinuz_size);
+
+	len = partial_decompress(vmlinuz_addr, vmlinuz_size,
+		addr, ei.loadsize, ei.elfoffset);
+
+	if (len < 0)
+		fatal("Decompression failed with error code %ld\n\r", len);
+
+	if (len != ei.loadsize)
+		 fatal("Decompression error: got 0x%lx bytes, expected 0x%lx.\n\r",
+			 len, ei.loadsize);
+
+	printf("Done! Decompressed 0x%lx bytes\n\r", len);
+out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	flush_cache(addr, ei.loadsize);
 
 	return (struct addr_range){addr, ei.memsize};
@@ -139,11 +192,16 @@ static struct addr_range prep_initrd(struct addr_range vmlinux, void *chosen,
  * edit the command line passed to vmlinux (by setting /chosen/bootargs).
  * The buffer is put in it's own section so that tools may locate it easier.
  */
+<<<<<<< HEAD
 static char cmdline[COMMAND_LINE_SIZE]
+=======
+static char cmdline[BOOT_COMMAND_LINE_SIZE]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__attribute__((__section__("__builtin_cmdline")));
 
 static void prep_cmdline(void *chosen)
 {
+<<<<<<< HEAD
 	if (cmdline[0] == '\0')
 		getprop(chosen, "bootargs", cmdline, COMMAND_LINE_SIZE-1);
 
@@ -151,6 +209,26 @@ static void prep_cmdline(void *chosen)
 	/* If possible, edit the command line */
 	if (console_ops.edit_cmdline)
 		console_ops.edit_cmdline(cmdline, COMMAND_LINE_SIZE);
+=======
+	unsigned int getline_timeout = 5000;
+	int v;
+	int n;
+
+	/* Wait-for-input time */
+	n = getprop(chosen, "linux,cmdline-timeout", &v, sizeof(v));
+	if (n == sizeof(v))
+		getline_timeout = v;
+
+	if (cmdline[0] == '\0')
+		getprop(chosen, "bootargs", cmdline, BOOT_COMMAND_LINE_SIZE-1);
+
+	printf("\n\rLinux/PowerPC load: %s", cmdline);
+
+	/* If possible, edit the command line */
+	if (console_ops.edit_cmdline && getline_timeout)
+		console_ops.edit_cmdline(cmdline, BOOT_COMMAND_LINE_SIZE, getline_timeout);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printf("\n\r");
 
 	/* Put the command line back into the devtree for the kernel */
@@ -174,7 +252,11 @@ void start(void)
 	 * built-in command line wasn't set by an external tool */
 	if ((loader_info.cmdline_len > 0) && (cmdline[0] == '\0'))
 		memmove(cmdline, loader_info.cmdline,
+<<<<<<< HEAD
 			min(loader_info.cmdline_len, COMMAND_LINE_SIZE-1));
+=======
+			min(loader_info.cmdline_len, BOOT_COMMAND_LINE_SIZE-1));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (console_ops.open && (console_ops.open() < 0))
 		exit();
@@ -206,8 +288,17 @@ void start(void)
 		console_ops.close();
 
 	kentry = (kernel_entry_t) vmlinux.addr;
+<<<<<<< HEAD
 	if (ft_addr)
 		kentry(ft_addr, 0, NULL);
+=======
+	if (ft_addr) {
+		if(platform_ops.kentry)
+			platform_ops.kentry(ft_addr, vmlinux.addr);
+		else
+			kentry(ft_addr, 0, NULL);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		kentry((unsigned long)initrd.addr, initrd.size,
 		       loader_info.promptr);

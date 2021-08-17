@@ -20,6 +20,7 @@
 #if defined(__arm__)
 #define DUMMY_COLUMNS	screen_info.orig_video_cols
 #define DUMMY_ROWS	screen_info.orig_video_lines
+<<<<<<< HEAD
 #elif defined(__hppa__)
 /* set by Kconfig. Use 80x25 for 640x480 and 160x64 for 1280x1024 */
 #define DUMMY_COLUMNS	CONFIG_DUMMY_CONSOLE_COLUMNS
@@ -27,6 +28,12 @@
 #else
 #define DUMMY_COLUMNS	80
 #define DUMMY_ROWS	25
+=======
+#else
+/* set by Kconfig. Use 80x25 for 640x480 and 160x64 for 1280x1024 */
+#define DUMMY_COLUMNS	CONFIG_DUMMY_CONSOLE_COLUMNS
+#define DUMMY_ROWS	CONFIG_DUMMY_CONSOLE_ROWS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static const char *dummycon_startup(void)
@@ -67,6 +74,7 @@ const struct consw dummy_con = {
     .con_putcs =	DUMMY,
     .con_cursor =	DUMMY,
     .con_scroll =	DUMMY,
+<<<<<<< HEAD
     .con_bmove =	DUMMY,
     .con_switch =	DUMMY,
     .con_blank =	DUMMY,
@@ -77,3 +85,12 @@ const struct consw dummy_con = {
     .con_set_palette =	DUMMY,
     .con_scrolldelta =	DUMMY,
 };
+=======
+    .con_switch =	DUMMY,
+    .con_blank =	DUMMY,
+    .con_font_set =	DUMMY,
+    .con_font_default =	DUMMY,
+    .con_font_copy =	DUMMY,
+};
+EXPORT_SYMBOL_GPL(dummy_con);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

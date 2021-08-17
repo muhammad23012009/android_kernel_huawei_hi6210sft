@@ -83,10 +83,13 @@
 		regulator-always-on;
 	};
 
+<<<<<<< HEAD
 	clk32kg: regulator-clk32kg {
 		compatible = "ti,twl6030-clk32kg";
 	};
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	twl_usb_comparator: usb-comparator {
 		compatible = "ti,twl6030-usb";
 		interrupts = <4>, <10>;
@@ -103,4 +106,13 @@
 		compatible = "ti,twl6030-pwmled";
 		#pwm-cells = <2>;
 	};
+<<<<<<< HEAD
+=======
+
+	gpadc {
+		compatible = "ti,twl6030-gpadc";
+		interrupts = <3>;
+		#io-channel-cells = <1>;
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

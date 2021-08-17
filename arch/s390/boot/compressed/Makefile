@@ -4,6 +4,7 @@
 # create a compressed vmlinux image from the original vmlinux
 #
 
+<<<<<<< HEAD
 BITS := $(if $(CONFIG_64BIT),64,31)
 
 targets	:= vmlinux.lds vmlinux vmlinux.bin vmlinux.bin.gz vmlinux.bin.bz2 \
@@ -13,18 +14,39 @@ targets	:= vmlinux.lds vmlinux vmlinux.bin vmlinux.bin.gz vmlinux.bin.bz2 \
 KBUILD_CFLAGS := -m$(BITS) -D__KERNEL__ $(LINUX_INCLUDE) -O2
 KBUILD_CFLAGS += -DDISABLE_BRANCH_PROFILING
 KBUILD_CFLAGS += $(cflags-y)
+=======
+KCOV_INSTRUMENT := n
+
+targets	:= vmlinux.lds vmlinux vmlinux.bin vmlinux.bin.gz vmlinux.bin.bz2
+targets += vmlinux.bin.xz vmlinux.bin.lzma vmlinux.bin.lzo vmlinux.bin.lz4
+targets += misc.o piggy.o sizes.h head.o
+
+KBUILD_CFLAGS := -m64 -D__KERNEL__ $(LINUX_INCLUDE) -O2
+KBUILD_CFLAGS += -DDISABLE_BRANCH_PROFILING
+KBUILD_CFLAGS += $(cflags-y) -fno-delete-null-pointer-checks -msoft-float
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 KBUILD_CFLAGS += $(call cc-option,-mpacked-stack)
 KBUILD_CFLAGS += $(call cc-option,-ffreestanding)
 
 GCOV_PROFILE := n
+<<<<<<< HEAD
 
 OBJECTS := $(addprefix $(objtree)/arch/s390/kernel/, head.o sclp.o ebcdic.o)
 OBJECTS += $(obj)/head$(BITS).o $(obj)/misc.o $(obj)/piggy.o
+=======
+UBSAN_SANITIZE := n
+
+OBJECTS := $(addprefix $(objtree)/arch/s390/kernel/, head.o sclp.o ebcdic.o als.o)
+OBJECTS += $(obj)/head.o $(obj)/misc.o $(obj)/piggy.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 LDFLAGS_vmlinux := --oformat $(LD_BFD) -e startup -T
 $(obj)/vmlinux: $(obj)/vmlinux.lds $(OBJECTS)
 	$(call if_changed,ld)
+<<<<<<< HEAD
 	@:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 sed-sizes := -e 's/^\([0-9a-fA-F]*\) . \(__bss_start\|_end\)$$/\#define SZ\2 0x\1/p'
 
@@ -34,10 +56,17 @@ quiet_cmd_sizes = GEN $@
 $(obj)/sizes.h: vmlinux
 	$(call if_changed,sizes)
 
+<<<<<<< HEAD
 AFLAGS_head$(BITS).o += -I$(obj)
 $(obj)/head$(BITS).o: $(obj)/sizes.h
 
 CFLAGS_misc.o += -I$(obj)
+=======
+AFLAGS_head.o += -I$(objtree)/$(obj)
+$(obj)/head.o: $(obj)/sizes.h
+
+CFLAGS_misc.o += -I$(objtree)/$(obj)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 $(obj)/misc.o: $(obj)/sizes.h
 
 OBJCOPYFLAGS_vmlinux.bin :=  -R .comment -S
@@ -48,6 +77,10 @@ vmlinux.bin.all-y := $(obj)/vmlinux.bin
 
 suffix-$(CONFIG_KERNEL_GZIP)  := gz
 suffix-$(CONFIG_KERNEL_BZIP2) := bz2
+<<<<<<< HEAD
+=======
+suffix-$(CONFIG_KERNEL_LZ4)  := lz4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 suffix-$(CONFIG_KERNEL_LZMA)  := lzma
 suffix-$(CONFIG_KERNEL_LZO)  := lzo
 suffix-$(CONFIG_KERNEL_XZ)  := xz
@@ -56,6 +89,11 @@ $(obj)/vmlinux.bin.gz: $(vmlinux.bin.all-y)
 	$(call if_changed,gzip)
 $(obj)/vmlinux.bin.bz2: $(vmlinux.bin.all-y)
 	$(call if_changed,bzip2)
+<<<<<<< HEAD
+=======
+$(obj)/vmlinux.bin.lz4: $(vmlinux.bin.all-y)
+	$(call if_changed,lz4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 $(obj)/vmlinux.bin.lzma: $(vmlinux.bin.all-y)
 	$(call if_changed,lzma)
 $(obj)/vmlinux.bin.lzo: $(vmlinux.bin.all-y)

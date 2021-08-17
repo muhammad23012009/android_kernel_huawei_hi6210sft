@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Linaro Ltd. <ard.biesheuvel@linaro.org>
  *
+<<<<<<< HEAD
  * Based on arch/x86/crypto/ghash-pmullni-intel_asm.S
  *
  * Copyright (c) 2009 Intel Corp.
@@ -11,6 +12,8 @@
  *           Erdinc Ozturk
  *           Deniz Karakoyunlu
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
@@ -37,8 +40,13 @@
 	 *			   struct ghash_key const *k, const char *head)
 	 */
 ENTRY(pmull_ghash_update)
+<<<<<<< HEAD
 	ld1		{SHASH.16b}, [x3]
 	ld1		{XL.16b}, [x1]
+=======
+	ld1		{SHASH.2d}, [x3]
+	ld1		{XL.2d}, [x1]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movi		MASK.16b, #0xe1
 	ext		SHASH2.16b, SHASH.16b, SHASH.16b, #8
 	shl		MASK.2d, MASK.2d, #57
@@ -82,6 +90,10 @@ CPU_LE(	rev64		T1.16b, T1.16b	)
 
 	cbnz		w0, 0b
 
+<<<<<<< HEAD
 	st1		{XL.16b}, [x1]
+=======
+	st1		{XL.2d}, [x1]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret
 ENDPROC(pmull_ghash_update)

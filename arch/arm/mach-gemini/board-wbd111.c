@@ -15,7 +15,10 @@
 #include <linux/input.h>
 #include <linux/skbuff.h>
 #include <linux/gpio_keys.h>
+<<<<<<< HEAD
 #include <linux/mdio-gpio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <asm/mach-types.h>

@@ -284,7 +284,11 @@ EXPORT_SYMBOL(cma3000_resume);
 struct cma3000_accl_data *cma3000_init(struct device *dev, int irq,
 				       const struct cma3000_bus_ops *bops)
 {
+<<<<<<< HEAD
 	const struct cma3000_platform_data *pdata = dev->platform_data;
+=======
+	const struct cma3000_platform_data *pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cma3000_accl_data *data;
 	struct input_dev *input_dev;
 	int rev;

@@ -14,6 +14,7 @@
 #include <linux/types.h>
 
 #include <asm/cmpxchg.h>
+<<<<<<< HEAD
 #include <asm-generic/atomic64.h>
 
 
@@ -36,6 +37,39 @@ extern void atomic_set(atomic_t *, int);
 #define atomic_sub_return(i, v)	(__atomic_add_return(-(int)(i), (v)))
 #define atomic_inc_return(v)	(__atomic_add_return(        1, (v)))
 #define atomic_dec_return(v)	(__atomic_add_return(       -1, (v)))
+=======
+#include <asm/barrier.h>
+#include <asm-generic/atomic64.h>
+
+#define ATOMIC_INIT(i)  { (i) }
+
+int atomic_add_return(int, atomic_t *);
+int atomic_fetch_add(int, atomic_t *);
+int atomic_fetch_and(int, atomic_t *);
+int atomic_fetch_or(int, atomic_t *);
+int atomic_fetch_xor(int, atomic_t *);
+int atomic_cmpxchg(atomic_t *, int, int);
+int atomic_xchg(atomic_t *, int);
+int __atomic_add_unless(atomic_t *, int, int);
+void atomic_set(atomic_t *, int);
+
+#define atomic_read(v)          ACCESS_ONCE((v)->counter)
+
+#define atomic_add(i, v)	((void)atomic_add_return( (int)(i), (v)))
+#define atomic_sub(i, v)	((void)atomic_add_return(-(int)(i), (v)))
+#define atomic_inc(v)		((void)atomic_add_return(        1, (v)))
+#define atomic_dec(v)		((void)atomic_add_return(       -1, (v)))
+
+#define atomic_and(i, v)	((void)atomic_fetch_and((i), (v)))
+#define atomic_or(i, v)		((void)atomic_fetch_or((i), (v)))
+#define atomic_xor(i, v)	((void)atomic_fetch_xor((i), (v)))
+
+#define atomic_sub_return(i, v)	(atomic_add_return(-(int)(i), (v)))
+#define atomic_fetch_sub(i, v)  (atomic_fetch_add (-(int)(i), (v)))
+
+#define atomic_inc_return(v)	(atomic_add_return(        1, (v)))
+#define atomic_dec_return(v)	(atomic_add_return(       -1, (v)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define atomic_add_negative(a, v)	(atomic_add_return((a), (v)) < 0)
 
@@ -52,10 +86,13 @@ extern void atomic_set(atomic_t *, int);
 #define atomic_dec_and_test(v) (atomic_dec_return(v) == 0)
 #define atomic_sub_and_test(i, v) (atomic_sub_return(i, v) == 0)
 
+<<<<<<< HEAD
 /* Atomic operations are already serializing */
 #define smp_mb__before_atomic_dec()	barrier()
 #define smp_mb__after_atomic_dec()	barrier()
 #define smp_mb__before_atomic_inc()	barrier()
 #define smp_mb__after_atomic_inc()	barrier()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !(__ARCH_SPARC_ATOMIC__) */

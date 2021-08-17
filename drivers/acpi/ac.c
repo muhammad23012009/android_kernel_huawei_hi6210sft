@@ -16,10 +16,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -34,9 +37,16 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #endif
+<<<<<<< HEAD
 #include <linux/power_supply.h>
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/power_supply.h>
+#include <linux/acpi.h>
+#include "battery.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PREFIX "ACPI: "
 
@@ -55,11 +65,14 @@ MODULE_AUTHOR("Paul Diefenbaugh");
 MODULE_DESCRIPTION("ACPI AC Adapter Driver");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI_PROCFS_POWER
 extern struct proc_dir_entry *acpi_lock_ac_dir(void);
 extern void *acpi_unlock_ac_dir(struct proc_dir_entry *acpi_ac_dir);
 static int acpi_ac_open_fs(struct inode *inode, struct file *file);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int acpi_ac_add(struct acpi_device *device);
 static int acpi_ac_remove(struct acpi_device *device);
@@ -76,6 +89,16 @@ static int acpi_ac_resume(struct device *dev);
 #endif
 static SIMPLE_DEV_PM_OPS(acpi_ac_pm, NULL, acpi_ac_resume);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ACPI_PROCFS_POWER
+extern struct proc_dir_entry *acpi_lock_ac_dir(void);
+extern void *acpi_unlock_ac_dir(struct proc_dir_entry *acpi_ac_dir);
+static int acpi_ac_open_fs(struct inode *inode, struct file *file);
+#endif
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ac_sleep_before_get_state_ms;
 
 static struct acpi_driver acpi_ac_driver = {
@@ -92,12 +115,23 @@ static struct acpi_driver acpi_ac_driver = {
 };
 
 struct acpi_ac {
+<<<<<<< HEAD
 	struct power_supply charger;
 	struct acpi_device * device;
 	unsigned long long state;
 };
 
 #define to_acpi_ac(x) container_of(x, struct acpi_ac, charger)
+=======
+	struct power_supply *charger;
+	struct power_supply_desc charger_desc;
+	struct acpi_device * device;
+	unsigned long long state;
+	struct notifier_block battery_nb;
+};
+
+#define to_acpi_ac(x) power_supply_get_drvdata(x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_ACPI_PROCFS_POWER
 static const struct file_operations acpi_ac_fops = {
@@ -117,6 +151,7 @@ static int acpi_ac_get_state(struct acpi_ac *ac)
 {
 	acpi_status status = AE_OK;
 
+<<<<<<< HEAD
 
 	if (!ac)
 		return -EINVAL;
@@ -124,6 +159,16 @@ static int acpi_ac_get_state(struct acpi_ac *ac)
 	status = acpi_evaluate_integer(ac->device->handle, "_PSR", NULL, &ac->state);
 	if (ACPI_FAILURE(status)) {
 		ACPI_EXCEPTION((AE_INFO, status, "Error reading AC Adapter state"));
+=======
+	if (!ac)
+		return -EINVAL;
+
+	status = acpi_evaluate_integer(ac->device->handle, "_PSR", NULL,
+				       &ac->state);
+	if (ACPI_FAILURE(status)) {
+		ACPI_EXCEPTION((AE_INFO, status,
+				"Error reading AC Adapter state"));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ac->state = ACPI_AC_STATUS_UNKNOWN;
 		return -ENODEV;
 	}
@@ -201,28 +246,45 @@ static int acpi_ac_open_fs(struct inode *inode, struct file *file)
 	return single_open(file, acpi_ac_seq_show, PDE_DATA(inode));
 }
 
+<<<<<<< HEAD
 static int acpi_ac_add_fs(struct acpi_device *device)
+=======
+static int acpi_ac_add_fs(struct acpi_ac *ac)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct proc_dir_entry *entry = NULL;
 
 	printk(KERN_WARNING PREFIX "Deprecated procfs I/F for AC is loaded,"
 			" please retry with CONFIG_ACPI_PROCFS_POWER cleared\n");
+<<<<<<< HEAD
 	if (!acpi_device_dir(device)) {
 		acpi_device_dir(device) = proc_mkdir(acpi_device_bid(device),
 						     acpi_ac_dir);
 		if (!acpi_device_dir(device))
+=======
+	if (!acpi_device_dir(ac->device)) {
+		acpi_device_dir(ac->device) =
+			proc_mkdir(acpi_device_bid(ac->device), acpi_ac_dir);
+		if (!acpi_device_dir(ac->device))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENODEV;
 	}
 
 	/* 'state' [R] */
 	entry = proc_create_data(ACPI_AC_FILE_STATE,
+<<<<<<< HEAD
 				 S_IRUGO, acpi_device_dir(device),
 				 &acpi_ac_fops, acpi_driver_data(device));
+=======
+				 S_IRUGO, acpi_device_dir(ac->device),
+				 &acpi_ac_fops, ac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!entry)
 		return -ENODEV;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int acpi_ac_remove_fs(struct acpi_device *device)
 {
 
@@ -231,6 +293,16 @@ static int acpi_ac_remove_fs(struct acpi_device *device)
 
 		remove_proc_entry(acpi_device_bid(device), acpi_ac_dir);
 		acpi_device_dir(device) = NULL;
+=======
+static int acpi_ac_remove_fs(struct acpi_ac *ac)
+{
+
+	if (acpi_device_dir(ac->device)) {
+		remove_proc_entry(ACPI_AC_FILE_STATE,
+				  acpi_device_dir(ac->device));
+		remove_proc_entry(acpi_device_bid(ac->device), acpi_ac_dir);
+		acpi_device_dir(ac->device) = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -245,7 +317,10 @@ static void acpi_ac_notify(struct acpi_device *device, u32 event)
 {
 	struct acpi_ac *ac = acpi_driver_data(device);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ac)
 		return;
 
@@ -267,24 +342,58 @@ static void acpi_ac_notify(struct acpi_device *device, u32 event)
 			msleep(ac_sleep_before_get_state_ms);
 
 		acpi_ac_get_state(ac);
+<<<<<<< HEAD
 		acpi_bus_generate_proc_event(device, event, (u32) ac->state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		acpi_bus_generate_netlink_event(device->pnp.device_class,
 						  dev_name(&device->dev), event,
 						  (u32) ac->state);
 		acpi_notifier_call_chain(device, event, (u32) ac->state);
+<<<<<<< HEAD
 		kobject_uevent(&ac->charger.dev->kobj, KOBJ_CHANGE);
+=======
+		kobject_uevent(&ac->charger->dev.kobj, KOBJ_CHANGE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return;
 }
 
+<<<<<<< HEAD
+=======
+static int acpi_ac_battery_notify(struct notifier_block *nb,
+				  unsigned long action, void *data)
+{
+	struct acpi_ac *ac = container_of(nb, struct acpi_ac, battery_nb);
+	struct acpi_bus_event *event = (struct acpi_bus_event *)data;
+
+	/*
+	 * On HP Pavilion dv6-6179er AC status notifications aren't triggered
+	 * when adapter is plugged/unplugged. However, battery status
+	 * notifcations are triggered when battery starts charging or
+	 * discharging. Re-reading AC status triggers lost AC notifications,
+	 * if AC status has changed.
+	 */
+	if (strcmp(event->device_class, ACPI_BATTERY_CLASS) == 0 &&
+	    event->type == ACPI_BATTERY_NOTIFY_STATUS)
+		acpi_ac_get_state(ac);
+
+	return NOTIFY_OK;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int thinkpad_e530_quirk(const struct dmi_system_id *d)
 {
 	ac_sleep_before_get_state_ms = 1000;
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dmi_system_id ac_dmi_table[] = {
+=======
+static const struct dmi_system_id ac_dmi_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	.callback = thinkpad_e530_quirk,
 	.ident = "thinkpad e530",
@@ -298,6 +407,10 @@ static struct dmi_system_id ac_dmi_table[] = {
 
 static int acpi_ac_add(struct acpi_device *device)
 {
+<<<<<<< HEAD
+=======
+	struct power_supply_config psy_cfg = {};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int result = 0;
 	struct acpi_ac *ac = NULL;
 
@@ -318,6 +431,7 @@ static int acpi_ac_add(struct acpi_device *device)
 	if (result)
 		goto end;
 
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI_PROCFS_POWER
 	result = acpi_ac_add_fs(device);
 #endif
@@ -331,15 +445,44 @@ static int acpi_ac_add(struct acpi_device *device)
 	result = power_supply_register(&ac->device->dev, &ac->charger);
 	if (result)
 		goto end;
+=======
+	psy_cfg.drv_data = ac;
+
+	ac->charger_desc.name = acpi_device_bid(device);
+#ifdef CONFIG_ACPI_PROCFS_POWER
+	result = acpi_ac_add_fs(ac);
+	if (result)
+		goto end;
+#endif
+	ac->charger_desc.type = POWER_SUPPLY_TYPE_MAINS;
+	ac->charger_desc.properties = ac_props;
+	ac->charger_desc.num_properties = ARRAY_SIZE(ac_props);
+	ac->charger_desc.get_property = get_ac_property;
+	ac->charger = power_supply_register(&ac->device->dev,
+					    &ac->charger_desc, &psy_cfg);
+	if (IS_ERR(ac->charger)) {
+		result = PTR_ERR(ac->charger);
+		goto end;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk(KERN_INFO PREFIX "%s [%s] (%s)\n",
 	       acpi_device_name(device), acpi_device_bid(device),
 	       ac->state ? "on-line" : "off-line");
 
+<<<<<<< HEAD
       end:
 	if (result) {
 #ifdef CONFIG_ACPI_PROCFS_POWER
 		acpi_ac_remove_fs(device);
+=======
+	ac->battery_nb.notifier_call = acpi_ac_battery_notify;
+	register_acpi_notifier(&ac->battery_nb);
+end:
+	if (result) {
+#ifdef CONFIG_ACPI_PROCFS_POWER
+		acpi_ac_remove_fs(ac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 		kfree(ac);
 	}
@@ -365,9 +508,17 @@ static int acpi_ac_resume(struct device *dev)
 	if (acpi_ac_get_state(ac))
 		return 0;
 	if (old_state != ac->state)
+<<<<<<< HEAD
 		kobject_uevent(&ac->charger.dev->kobj, KOBJ_CHANGE);
 	return 0;
 }
+=======
+		kobject_uevent(&ac->charger->dev.kobj, KOBJ_CHANGE);
+	return 0;
+}
+#else
+#define acpi_ac_resume NULL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static int acpi_ac_remove(struct acpi_device *device)
@@ -380,10 +531,18 @@ static int acpi_ac_remove(struct acpi_device *device)
 
 	ac = acpi_driver_data(device);
 
+<<<<<<< HEAD
 	if (ac->charger.dev)
 		power_supply_unregister(&ac->charger);
 #ifdef CONFIG_ACPI_PROCFS_POWER
 	acpi_ac_remove_fs(device);
+=======
+	power_supply_unregister(ac->charger);
+	unregister_acpi_notifier(&ac->battery_nb);
+
+#ifdef CONFIG_ACPI_PROCFS_POWER
+	acpi_ac_remove_fs(ac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	kfree(ac);
@@ -404,6 +563,10 @@ static int __init acpi_ac_init(void)
 		return -ENODEV;
 #endif
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	result = acpi_bus_register_driver(&acpi_ac_driver);
 	if (result < 0) {
 #ifdef CONFIG_ACPI_PROCFS_POWER
@@ -417,6 +580,7 @@ static int __init acpi_ac_init(void)
 
 static void __exit acpi_ac_exit(void)
 {
+<<<<<<< HEAD
 
 	acpi_bus_unregister_driver(&acpi_ac_driver);
 
@@ -427,5 +591,12 @@ static void __exit acpi_ac_exit(void)
 	return;
 }
 
+=======
+	acpi_bus_unregister_driver(&acpi_ac_driver);
+#ifdef CONFIG_ACPI_PROCFS_POWER
+	acpi_unlock_ac_dir(acpi_ac_dir);
+#endif
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_init(acpi_ac_init);
 module_exit(acpi_ac_exit);

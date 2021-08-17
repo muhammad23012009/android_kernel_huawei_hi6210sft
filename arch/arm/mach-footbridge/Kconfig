@@ -52,6 +52,10 @@ config ARCH_EBSA285_HOST
 	select FOOTBRIDGE_HOST
 	select ISA
 	select ISA_DMA
+<<<<<<< HEAD
+=======
+	select ARCH_MAY_HAVE_PC_FDC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select PCI
 	help
 	  Say Y here if you intend to run this kernel on the EBSA285 card
@@ -67,7 +71,10 @@ config ARCH_NETWINDER
 	select ISA
 	select ISA_DMA
 	select PCI
+<<<<<<< HEAD
 	select VIRT_TO_BUS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y here if you intend to run this kernel on the Rebel.COM
 	  NetWinder.  Information about this machine can be found at:
@@ -85,6 +92,10 @@ config FOOTBRIDGE
 # Footbridge in host mode
 config FOOTBRIDGE_HOST
 	bool
+<<<<<<< HEAD
+=======
+	select ARCH_MIGHT_HAVE_PC_SERIO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Footbridge in addin mode
 config FOOTBRIDGE_ADDIN
@@ -93,6 +104,9 @@ config FOOTBRIDGE_ADDIN
 # EBSA285 board in either host or addin mode
 config ARCH_EBSA285
 	bool
+<<<<<<< HEAD
 	select ARCH_MAY_HAVE_PC_FDC
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endif

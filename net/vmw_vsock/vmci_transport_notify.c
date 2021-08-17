@@ -315,7 +315,11 @@ vmci_transport_handle_wrote(struct sock *sk,
 	struct vsock_sock *vsk = vsock_sk(sk);
 	PKT_FIELD(vsk, sent_waiting_read) = false;
 #endif
+<<<<<<< HEAD
 	sk->sk_data_ready(sk, 0);
+=======
+	sk->sk_data_ready(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void vmci_transport_notify_pkt_socket_init(struct sock *sk)
@@ -661,7 +665,11 @@ static void vmci_transport_notify_pkt_process_negotiate(struct sock *sk)
 }
 
 /* Socket control packet based operations. */
+<<<<<<< HEAD
 struct vmci_transport_notify_ops vmci_transport_notify_pkt_ops = {
+=======
+const struct vmci_transport_notify_ops vmci_transport_notify_pkt_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vmci_transport_notify_pkt_socket_init,
 	vmci_transport_notify_pkt_socket_destruct,
 	vmci_transport_notify_pkt_poll_in,

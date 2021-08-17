@@ -1,6 +1,11 @@
 #ifndef _UAPI__IP_SET_LIST_H
 #define _UAPI__IP_SET_LIST_H
 
+<<<<<<< HEAD
+=======
+#include <linux/netfilter/ipset/ip_set.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* List type specific error codes */
 enum {
 	/* Set name to be added/deleted/tested does not exist. */

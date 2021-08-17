@@ -7,6 +7,11 @@
  * of the GNU General Public License version 2.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -42,15 +47,24 @@ int gfs2_trans_begin(struct gfs2_sbd *sdp, unsigned int blocks,
 	if (!tr)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	tr->tr_ip = (unsigned long)__builtin_return_address(0);
 	tr->tr_blocks = blocks;
 	tr->tr_revokes = revokes;
 	tr->tr_reserved = 1;
+=======
+	tr->tr_ip = _RET_IP_;
+	tr->tr_blocks = blocks;
+	tr->tr_revokes = revokes;
+	tr->tr_reserved = 1;
+	tr->tr_alloced = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (blocks)
 		tr->tr_reserved += 6 + blocks;
 	if (revokes)
 		tr->tr_reserved += gfs2_struct2blk(sdp, revokes,
 						   sizeof(u64));
+<<<<<<< HEAD
 	sb_start_intwrite(sdp->sd_vfs);
 	gfs2_holder_init(sdp->sd_trans_gl, LM_ST_SHARED, 0, &tr->tr_t_gh);
 
@@ -61,22 +75,38 @@ int gfs2_trans_begin(struct gfs2_sbd *sdp, unsigned int blocks,
 	error = gfs2_log_reserve(sdp, tr->tr_reserved);
 	if (error)
 		goto fail_gunlock;
+=======
+	INIT_LIST_HEAD(&tr->tr_databuf);
+	INIT_LIST_HEAD(&tr->tr_buf);
+
+	sb_start_intwrite(sdp->sd_vfs);
+
+	error = gfs2_log_reserve(sdp, tr->tr_reserved);
+	if (error)
+		goto fail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	current->journal_info = tr;
 
 	return 0;
 
+<<<<<<< HEAD
 fail_gunlock:
 	gfs2_glock_dq(&tr->tr_t_gh);
 
 fail_holder_uninit:
 	sb_end_intwrite(sdp->sd_vfs);
 	gfs2_holder_uninit(&tr->tr_t_gh);
+=======
+fail:
+	sb_end_intwrite(sdp->sd_vfs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(tr);
 
 	return error;
 }
 
+<<<<<<< HEAD
 /**
  * gfs2_log_release - Release a given number of log blocks
  * @sdp: The GFS2 superblock
@@ -104,23 +134,46 @@ static void gfs2_print_trans(const struct gfs2_trans *tr)
 	       tr->tr_num_buf_new, tr->tr_num_buf_rm,
 	       tr->tr_num_databuf_new, tr->tr_num_databuf_rm,
 	       tr->tr_num_revoke, tr->tr_num_revoke_rm);
+=======
+static void gfs2_print_trans(const struct gfs2_trans *tr)
+{
+	pr_warn("Transaction created at: %pSR\n", (void *)tr->tr_ip);
+	pr_warn("blocks=%u revokes=%u reserved=%u touched=%u\n",
+		tr->tr_blocks, tr->tr_revokes, tr->tr_reserved, tr->tr_touched);
+	pr_warn("Buf %u/%u Databuf %u/%u Revoke %u/%u\n",
+		tr->tr_num_buf_new, tr->tr_num_buf_rm,
+		tr->tr_num_databuf_new, tr->tr_num_databuf_rm,
+		tr->tr_num_revoke, tr->tr_num_revoke_rm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void gfs2_trans_end(struct gfs2_sbd *sdp)
 {
 	struct gfs2_trans *tr = current->journal_info;
 	s64 nbuf;
+<<<<<<< HEAD
+=======
+	int alloced = tr->tr_alloced;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!tr);
 	current->journal_info = NULL;
 
 	if (!tr->tr_touched) {
 		gfs2_log_release(sdp, tr->tr_reserved);
+<<<<<<< HEAD
 		if (tr->tr_t_gh.gh_gl) {
 			gfs2_glock_dq(&tr->tr_t_gh);
 			gfs2_holder_uninit(&tr->tr_t_gh);
 			kfree(tr);
 		}
 		sb_end_intwrite(sdp->sd_vfs);
+=======
+		if (alloced) {
+			kfree(tr);
+			sb_end_intwrite(sdp->sd_vfs);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -133,6 +186,7 @@ void gfs2_trans_end(struct gfs2_sbd *sdp)
 		gfs2_print_trans(tr);
 
 	gfs2_log_commit(sdp, tr);
+<<<<<<< HEAD
 	if (tr->tr_t_gh.gh_gl) {
 		gfs2_glock_dq(&tr->tr_t_gh);
 		gfs2_holder_uninit(&tr->tr_t_gh);
@@ -144,6 +198,16 @@ void gfs2_trans_end(struct gfs2_sbd *sdp)
 	if (sdp->sd_vfs->s_flags & MS_SYNCHRONOUS)
 		gfs2_log_flush(sdp, NULL);
 	sb_end_intwrite(sdp->sd_vfs);
+=======
+	if (alloced && !tr->tr_attached)
+			kfree(tr);
+	up_read(&sdp->sd_log_flush_lock);
+
+	if (sdp->sd_vfs->s_flags & MS_SYNCHRONOUS)
+		gfs2_log_flush(sdp, NULL, NORMAL_FLUSH);
+	if (alloced)
+		sb_end_intwrite(sdp->sd_vfs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct gfs2_bufdata *gfs2_alloc_bufdata(struct gfs2_glock *gl,
@@ -182,7 +246,11 @@ static struct gfs2_bufdata *gfs2_alloc_bufdata(struct gfs2_glock *gl,
 void gfs2_trans_add_data(struct gfs2_glock *gl, struct buffer_head *bh)
 {
 	struct gfs2_trans *tr = current->journal_info;
+<<<<<<< HEAD
 	struct gfs2_sbd *sdp = gl->gl_sbd;
+=======
+	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct address_space *mapping = bh->b_page->mapping;
 	struct gfs2_inode *ip = GFS2_I(mapping->host);
 	struct gfs2_bufdata *bd;
@@ -200,6 +268,11 @@ void gfs2_trans_add_data(struct gfs2_glock *gl, struct buffer_head *bh)
 		unlock_buffer(bh);
 		if (bh->b_private == NULL)
 			bd = gfs2_alloc_bufdata(gl, bh, &gfs2_databuf_lops);
+<<<<<<< HEAD
+=======
+		else
+			bd = bh->b_private;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lock_buffer(bh);
 		gfs2_log_lock(sdp);
 	}
@@ -210,8 +283,12 @@ void gfs2_trans_add_data(struct gfs2_glock *gl, struct buffer_head *bh)
 		set_bit(GLF_DIRTY, &bd->bd_gl->gl_flags);
 		gfs2_pin(sdp, bd->bd_bh);
 		tr->tr_num_databuf_new++;
+<<<<<<< HEAD
 		sdp->sd_log_num_databuf++;
 		list_add_tail(&bd->bd_list, &sdp->sd_log_le_databuf);
+=======
+		list_add_tail(&bd->bd_list, &tr->tr_databuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	gfs2_log_unlock(sdp);
 	unlock_buffer(bh);
@@ -221,6 +298,10 @@ static void meta_lo_add(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd)
 {
 	struct gfs2_meta_header *mh;
 	struct gfs2_trans *tr;
+<<<<<<< HEAD
+=======
+	enum gfs2_freeze_state state = atomic_read(&sdp->sd_freeze_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tr = current->journal_info;
 	tr->tr_touched = 1;
@@ -230,6 +311,7 @@ static void meta_lo_add(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd)
 	set_bit(GLF_DIRTY, &bd->bd_gl->gl_flags);
 	mh = (struct gfs2_meta_header *)bd->bd_bh->b_data;
 	if (unlikely(mh->mh_magic != cpu_to_be32(GFS2_MAGIC))) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "Attempting to add uninitialised block to journal (inplace block=%lld)\n",
 		       (unsigned long long)bd->bd_bh->b_blocknr);
@@ -240,13 +322,31 @@ static void meta_lo_add(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd)
 	mh->mh_jid = cpu_to_be32(sdp->sd_jdesc->jd_jid);
 	sdp->sd_log_num_buf++;
 	list_add(&bd->bd_list, &sdp->sd_log_le_buf);
+=======
+		pr_err("Attempting to add uninitialised block to journal (inplace block=%lld)\n",
+		       (unsigned long long)bd->bd_bh->b_blocknr);
+		BUG();
+	}
+	if (unlikely(state == SFS_FROZEN)) {
+		printk(KERN_INFO "GFS2:adding buf while frozen\n");
+		gfs2_assert_withdraw(sdp, 0);
+	}
+	gfs2_pin(sdp, bd->bd_bh);
+	mh->__pad0 = cpu_to_be64(0);
+	mh->mh_jid = cpu_to_be32(sdp->sd_jdesc->jd_jid);
+	list_add(&bd->bd_list, &tr->tr_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tr->tr_num_buf_new++;
 }
 
 void gfs2_trans_add_meta(struct gfs2_glock *gl, struct buffer_head *bh)
 {
 
+<<<<<<< HEAD
 	struct gfs2_sbd *sdp = gl->gl_sbd;
+=======
+	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct gfs2_bufdata *bd;
 
 	lock_buffer(bh);
@@ -258,6 +358,11 @@ void gfs2_trans_add_meta(struct gfs2_glock *gl, struct buffer_head *bh)
 		lock_page(bh->b_page);
 		if (bh->b_private == NULL)
 			bd = gfs2_alloc_bufdata(gl, bh, &gfs2_buf_lops);
+<<<<<<< HEAD
+=======
+		else
+			bd = bh->b_private;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unlock_page(bh->b_page);
 		lock_buffer(bh);
 		gfs2_log_lock(sdp);
@@ -270,6 +375,7 @@ void gfs2_trans_add_meta(struct gfs2_glock *gl, struct buffer_head *bh)
 
 void gfs2_trans_add_revoke(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd)
 {
+<<<<<<< HEAD
 	struct gfs2_glock *gl = bd->bd_gl;
 	struct gfs2_trans *tr = current->journal_info;
 
@@ -283,6 +389,14 @@ void gfs2_trans_add_revoke(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd)
 	atomic_inc(&gl->gl_revokes);
 	set_bit(GLF_LFLUSH, &gl->gl_flags);
 	list_add(&bd->bd_list, &sdp->sd_log_le_revoke);
+=======
+	struct gfs2_trans *tr = current->journal_info;
+
+	BUG_ON(!list_empty(&bd->bd_list));
+	gfs2_add_revoke(sdp, bd);
+	tr->tr_touched = 1;
+	tr->tr_num_revoke++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void gfs2_trans_add_unrevoke(struct gfs2_sbd *sdp, u64 blkno, unsigned int len)

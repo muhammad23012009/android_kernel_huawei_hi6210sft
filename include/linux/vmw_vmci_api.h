@@ -24,6 +24,10 @@
 #define VMCI_KERNEL_API_VERSION_2 2
 #define VMCI_KERNEL_API_VERSION   VMCI_KERNEL_API_VERSION_2
 
+<<<<<<< HEAD
+=======
+struct msghdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef void (vmci_device_shutdown_fn) (void *device_registration,
 					void *user_data);
 
@@ -73,10 +77,17 @@ ssize_t vmci_qpair_dequeue(struct vmci_qp *qpair,
 ssize_t vmci_qpair_peek(struct vmci_qp *qpair, void *buf, size_t buf_size,
 			int mode);
 ssize_t vmci_qpair_enquev(struct vmci_qp *qpair,
+<<<<<<< HEAD
 			  void *iov, size_t iov_size, int mode);
 ssize_t vmci_qpair_dequev(struct vmci_qp *qpair,
 			  void *iov, size_t iov_size, int mode);
 ssize_t vmci_qpair_peekv(struct vmci_qp *qpair, void *iov, size_t iov_size,
+=======
+			  struct msghdr *msg, size_t iov_size, int mode);
+ssize_t vmci_qpair_dequev(struct vmci_qp *qpair,
+			  struct msghdr *msg, size_t iov_size, int mode);
+ssize_t vmci_qpair_peekv(struct vmci_qp *qpair, struct msghdr *msg, size_t iov_size,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 int mode);
 
 #endif /* !__VMW_VMCI_API_H__ */

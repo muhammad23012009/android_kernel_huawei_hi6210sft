@@ -250,6 +250,11 @@ static inline void dump_rawmsg(enum debuglevel level, const char *tag,
 	l -= 12;
 	if (l <= 0)
 		return;
+<<<<<<< HEAD
+=======
+	if (l > 64)
+		l = 64; /* arbitrary limit */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dbgline = kmalloc(3 * l, GFP_ATOMIC);
 	if (!dbgline)
 		return;
@@ -645,7 +650,17 @@ int gigaset_isdn_icall(struct at_state_t *at_state)
 					__func__);
 				break;
 			}
+<<<<<<< HEAD
 			capi_cmsg2message(&iif->hcmsg, __skb_put(skb, msgsize));
+=======
+			if (capi_cmsg2message(&iif->hcmsg,
+					      __skb_put(skb, msgsize))) {
+				dev_err(cs->dev, "%s: message parser failure\n",
+					__func__);
+				dev_kfree_skb_any(skb);
+				break;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dump_cmsg(DEBUG_CMD, __func__, &iif->hcmsg);
 
 			/* add to listeners on this B channel, update state */
@@ -691,7 +706,16 @@ static void send_disconnect_ind(struct bc_state *bcs,
 		dev_err(cs->dev, "%s: out of memory\n", __func__);
 		return;
 	}
+<<<<<<< HEAD
 	capi_cmsg2message(&iif->hcmsg, __skb_put(skb, CAPI_DISCONNECT_IND_LEN));
+=======
+	if (capi_cmsg2message(&iif->hcmsg,
+			      __skb_put(skb, CAPI_DISCONNECT_IND_LEN))) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->hcmsg);
 	capi_ctr_handle_message(&iif->ctr, ap->id, skb);
 }
@@ -721,8 +745,17 @@ static void send_disconnect_b3_ind(struct bc_state *bcs,
 		dev_err(cs->dev, "%s: out of memory\n", __func__);
 		return;
 	}
+<<<<<<< HEAD
 	capi_cmsg2message(&iif->hcmsg,
 			  __skb_put(skb, CAPI_DISCONNECT_B3_IND_BASELEN));
+=======
+	if (capi_cmsg2message(&iif->hcmsg,
+			  __skb_put(skb, CAPI_DISCONNECT_B3_IND_BASELEN))) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->hcmsg);
 	capi_ctr_handle_message(&iif->ctr, ap->id, skb);
 }
@@ -787,7 +820,15 @@ void gigaset_isdn_connD(struct bc_state *bcs)
 		dev_err(cs->dev, "%s: out of memory\n", __func__);
 		return;
 	}
+<<<<<<< HEAD
 	capi_cmsg2message(&iif->hcmsg, __skb_put(skb, msgsize));
+=======
+	if (capi_cmsg2message(&iif->hcmsg, __skb_put(skb, msgsize))) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->hcmsg);
 	capi_ctr_handle_message(&iif->ctr, ap->id, skb);
 }
@@ -887,7 +928,15 @@ void gigaset_isdn_connB(struct bc_state *bcs)
 		dev_err(cs->dev, "%s: out of memory\n", __func__);
 		return;
 	}
+<<<<<<< HEAD
 	capi_cmsg2message(&iif->hcmsg, __skb_put(skb, msgsize));
+=======
+	if (capi_cmsg2message(&iif->hcmsg, __skb_put(skb, msgsize))) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->hcmsg);
 	capi_ctr_handle_message(&iif->ctr, ap->id, skb);
 }
@@ -1094,13 +1143,26 @@ static void send_conf(struct gigaset_capi_ctr *iif,
 		      struct sk_buff *skb,
 		      u16 info)
 {
+<<<<<<< HEAD
+=======
+	struct cardstate *cs = iif->ctr.driverdata;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * _CONF replies always only have NCCI and Info parameters
 	 * so they'll fit into the _REQ message skb
 	 */
 	capi_cmsg_answer(&iif->acmsg);
 	iif->acmsg.Info = info;
+<<<<<<< HEAD
 	capi_cmsg2message(&iif->acmsg, skb->data);
+=======
+	if (capi_cmsg2message(&iif->acmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__skb_trim(skb, CAPI_STDCONF_LEN);
 	dump_cmsg(DEBUG_CMD, __func__, &iif->acmsg);
 	capi_ctr_handle_message(&iif->ctr, ap->id, skb);
@@ -1122,7 +1184,15 @@ static void do_facility_req(struct gigaset_capi_ctr *iif,
 	static u8 confparam[10];	/* max. 9 octets + length byte */
 
 	/* decode message */
+<<<<<<< HEAD
 	capi_message2cmsg(cmsg, skb->data);
+=======
+	if (capi_message2cmsg(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 
 	/*
@@ -1180,6 +1250,10 @@ static void do_facility_req(struct gigaset_capi_ctr *iif,
 				confparam[3] = 2;	/* length */
 				capimsg_setu16(confparam, 4,
 					       CapiSupplementaryServiceNotSupported);
+<<<<<<< HEAD
+=======
+				break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			info = CapiSuccess;
 			confparam[3] = 2;	/* length */
@@ -1220,6 +1294,10 @@ static void do_facility_req(struct gigaset_capi_ctr *iif,
 	}
 
 	/* send FACILITY_CONF with given Info and confirmation parameter */
+<<<<<<< HEAD
+=======
+	dev_kfree_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	capi_cmsg_answer(cmsg);
 	cmsg->Info = info;
 	cmsg->FacilityConfirmationParameter = confparam;
@@ -1229,7 +1307,15 @@ static void do_facility_req(struct gigaset_capi_ctr *iif,
 		dev_err(cs->dev, "%s: out of memory\n", __func__);
 		return;
 	}
+<<<<<<< HEAD
 	capi_cmsg2message(cmsg, __skb_put(cskb, msgsize));
+=======
+	if (capi_cmsg2message(cmsg, __skb_put(cskb, msgsize))) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(cskb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 	capi_ctr_handle_message(&iif->ctr, ap->id, cskb);
 }
@@ -1243,8 +1329,19 @@ static void do_listen_req(struct gigaset_capi_ctr *iif,
 			  struct gigaset_capi_appl *ap,
 			  struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	/* decode message */
 	capi_message2cmsg(&iif->acmsg, skb->data);
+=======
+	struct cardstate *cs = iif->ctr.driverdata;
+
+	/* decode message */
+	if (capi_message2cmsg(&iif->acmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->acmsg);
 
 	/* store listening parameters */
@@ -1261,8 +1358,19 @@ static void do_alert_req(struct gigaset_capi_ctr *iif,
 			 struct gigaset_capi_appl *ap,
 			 struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	/* decode message */
 	capi_message2cmsg(&iif->acmsg, skb->data);
+=======
+	struct cardstate *cs = iif->ctr.driverdata;
+
+	/* decode message */
+	if (capi_message2cmsg(&iif->acmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->acmsg);
 	send_conf(iif, ap, skb, CapiAlertAlreadySent);
 }
@@ -1287,7 +1395,15 @@ static void do_connect_req(struct gigaset_capi_ctr *iif,
 	u16 info;
 
 	/* decode message */
+<<<<<<< HEAD
 	capi_message2cmsg(cmsg, skb->data);
+=======
+	if (capi_message2cmsg(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 
 	/* get free B channel & construct PLCI */
@@ -1574,7 +1690,15 @@ static void do_connect_resp(struct gigaset_capi_ctr *iif,
 	int channel;
 
 	/* decode message */
+<<<<<<< HEAD
 	capi_message2cmsg(cmsg, skb->data);
+=======
+	if (capi_message2cmsg(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 	dev_kfree_skb_any(skb);
 
@@ -1740,7 +1864,15 @@ static void do_connect_b3_req(struct gigaset_capi_ctr *iif,
 	int channel;
 
 	/* decode message */
+<<<<<<< HEAD
 	capi_message2cmsg(cmsg, skb->data);
+=======
+	if (capi_message2cmsg(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 
 	/* extract and check channel number from PLCI */
@@ -1785,7 +1917,15 @@ static void do_connect_b3_resp(struct gigaset_capi_ctr *iif,
 	u8 command;
 
 	/* decode message */
+<<<<<<< HEAD
 	capi_message2cmsg(cmsg, skb->data);
+=======
+	if (capi_message2cmsg(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 
 	/* extract and check channel number and NCCI */
@@ -1825,7 +1965,15 @@ static void do_connect_b3_resp(struct gigaset_capi_ctr *iif,
 	capi_cmsg_header(cmsg, ap->id, command, CAPI_IND,
 			 ap->nextMessageNumber++, cmsg->adr.adrNCCI);
 	__skb_trim(skb, msgsize);
+<<<<<<< HEAD
 	capi_cmsg2message(cmsg, skb->data);
+=======
+	if (capi_cmsg2message(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 	capi_ctr_handle_message(&iif->ctr, ap->id, skb);
 }
@@ -1847,7 +1995,15 @@ static void do_disconnect_req(struct gigaset_capi_ctr *iif,
 	int channel;
 
 	/* decode message */
+<<<<<<< HEAD
 	capi_message2cmsg(cmsg, skb->data);
+=======
+	if (capi_message2cmsg(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 
 	/* extract and check channel number from PLCI */
@@ -1903,8 +2059,19 @@ static void do_disconnect_req(struct gigaset_capi_ctr *iif,
 			kfree(b3cmsg);
 			return;
 		}
+<<<<<<< HEAD
 		capi_cmsg2message(b3cmsg,
 				  __skb_put(b3skb, CAPI_DISCONNECT_B3_IND_BASELEN));
+=======
+		if (capi_cmsg2message(b3cmsg,
+				      __skb_put(b3skb, CAPI_DISCONNECT_B3_IND_BASELEN))) {
+			dev_err(cs->dev, "%s: message parser failure\n",
+				__func__);
+			kfree(b3cmsg);
+			dev_kfree_skb_any(b3skb);
+			return;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dump_cmsg(DEBUG_CMD, __func__, b3cmsg);
 		kfree(b3cmsg);
 		capi_ctr_handle_message(&iif->ctr, ap->id, b3skb);
@@ -1935,7 +2102,15 @@ static void do_disconnect_b3_req(struct gigaset_capi_ctr *iif,
 	int channel;
 
 	/* decode message */
+<<<<<<< HEAD
 	capi_message2cmsg(cmsg, skb->data);
+=======
+	if (capi_message2cmsg(cmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, cmsg);
 
 	/* extract and check channel number and NCCI */
@@ -2052,8 +2227,19 @@ static void do_reset_b3_req(struct gigaset_capi_ctr *iif,
 			    struct gigaset_capi_appl *ap,
 			    struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	/* decode message */
 	capi_message2cmsg(&iif->acmsg, skb->data);
+=======
+	struct cardstate *cs = iif->ctr.driverdata;
+
+	/* decode message */
+	if (capi_message2cmsg(&iif->acmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->acmsg);
 	send_conf(iif, ap, skb,
 		  CapiResetProcedureNotSupportedByCurrentProtocol);
@@ -2066,8 +2252,19 @@ static void do_unsupported(struct gigaset_capi_ctr *iif,
 			   struct gigaset_capi_appl *ap,
 			   struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	/* decode message */
 	capi_message2cmsg(&iif->acmsg, skb->data);
+=======
+	struct cardstate *cs = iif->ctr.driverdata;
+
+	/* decode message */
+	if (capi_message2cmsg(&iif->acmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->acmsg);
 	send_conf(iif, ap, skb, CapiMessageNotSupportedInCurrentState);
 }
@@ -2079,8 +2276,19 @@ static void do_nothing(struct gigaset_capi_ctr *iif,
 		       struct gigaset_capi_appl *ap,
 		       struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	/* decode message */
 	capi_message2cmsg(&iif->acmsg, skb->data);
+=======
+	struct cardstate *cs = iif->ctr.driverdata;
+
+	/* decode message */
+	if (capi_message2cmsg(&iif->acmsg, skb->data)) {
+		dev_err(cs->dev, "%s: message parser failure\n", __func__);
+		dev_kfree_skb_any(skb);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_cmsg(DEBUG_CMD, __func__, &iif->acmsg);
 	dev_kfree_skb_any(skb);
 }
@@ -2357,7 +2565,11 @@ int gigaset_isdn_regdev(struct cardstate *cs, const char *isdnid)
 	struct gigaset_capi_ctr *iif;
 	int rc;
 
+<<<<<<< HEAD
 	iif = kmalloc(sizeof(*iif), GFP_KERNEL);
+=======
+	iif = kzalloc(sizeof(*iif), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!iif) {
 		pr_err("%s: out of memory\n", __func__);
 		return -ENOMEM;
@@ -2366,7 +2578,11 @@ int gigaset_isdn_regdev(struct cardstate *cs, const char *isdnid)
 	/* prepare controller structure */
 	iif->ctr.owner         = THIS_MODULE;
 	iif->ctr.driverdata    = cs;
+<<<<<<< HEAD
 	strncpy(iif->ctr.name, isdnid, sizeof(iif->ctr.name));
+=======
+	strncpy(iif->ctr.name, isdnid, sizeof(iif->ctr.name) - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iif->ctr.driver_name   = "gigaset";
 	iif->ctr.load_firmware = NULL;
 	iif->ctr.reset_ctr     = NULL;

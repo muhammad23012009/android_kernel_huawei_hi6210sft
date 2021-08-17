@@ -71,7 +71,11 @@ static int __mc33880_set(struct mc33880 *mc, unsigned offset, int value)
 
 static void mc33880_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct mc33880 *mc = container_of(chip, struct mc33880, chip);
+=======
+	struct mc33880 *mc = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&mc->lock);
 
@@ -86,7 +90,11 @@ static int mc33880_probe(struct spi_device *spi)
 	struct mc33880_platform_data *pdata;
 	int ret;
 
+<<<<<<< HEAD
 	pdata = spi->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata || !pdata->base) {
 		dev_dbg(&spi->dev, "incorrect or missing platform data\n");
 		return -EINVAL;
@@ -115,8 +123,13 @@ static int mc33880_probe(struct spi_device *spi)
 	mc->chip.set = mc33880_set;
 	mc->chip.base = pdata->base;
 	mc->chip.ngpio = PIN_NUMBER;
+<<<<<<< HEAD
 	mc->chip.can_sleep = 1;
 	mc->chip.dev = &spi->dev;
+=======
+	mc->chip.can_sleep = true;
+	mc->chip.parent = &spi->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mc->chip.owner = THIS_MODULE;
 
 	mc->port_config = 0x00;
@@ -135,14 +148,21 @@ static int mc33880_probe(struct spi_device *spi)
 		goto exit_destroy;
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&mc->chip);
+=======
+	ret = gpiochip_add_data(&mc->chip, mc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto exit_destroy;
 
 	return ret;
 
 exit_destroy:
+<<<<<<< HEAD
 	spi_set_drvdata(spi, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_destroy(&mc->lock);
 	return ret;
 }
@@ -150,6 +170,7 @@ exit_destroy:
 static int mc33880_remove(struct spi_device *spi)
 {
 	struct mc33880 *mc;
+<<<<<<< HEAD
 	int ret;
 
 	mc = spi_get_drvdata(spi);
@@ -166,12 +187,26 @@ static int mc33880_remove(struct spi_device *spi)
 			ret);
 
 	return ret;
+=======
+
+	mc = spi_get_drvdata(spi);
+	if (!mc)
+		return -ENODEV;
+
+	gpiochip_remove(&mc->chip);
+	mutex_destroy(&mc->lock);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct spi_driver mc33880_driver = {
 	.driver = {
 		.name		= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= mc33880_probe,
 	.remove		= mc33880_remove,

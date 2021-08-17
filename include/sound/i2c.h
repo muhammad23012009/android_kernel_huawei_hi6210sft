@@ -66,7 +66,11 @@ struct snd_i2c_bus {
 		struct snd_i2c_bit_ops *bit;
 		void *ops;
 	} hw_ops;		/* lowlevel operations */
+<<<<<<< HEAD
 	struct snd_i2c_ops *ops;	/* midlevel operations */
+=======
+	const struct snd_i2c_ops *ops;	/* midlevel operations */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unsigned long private_value;
 	void *private_data;

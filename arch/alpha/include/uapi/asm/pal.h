@@ -46,6 +46,10 @@
 #define PAL_rdusp	58
 #define PAL_whami	60
 #define PAL_retsys	61
+<<<<<<< HEAD
+=======
+#define PAL_wtint	62
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PAL_rti		63
 
 

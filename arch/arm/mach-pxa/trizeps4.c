@@ -26,6 +26,10 @@
 #include <linux/dm9000.h>
 #include <linux/mtd/physmap.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/machine.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c/pxa-i2c.h>
 
 #include <asm/types.h>
@@ -40,7 +44,11 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/trizeps4.h>
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
@@ -332,8 +340,12 @@ static int trizeps4_mci_init(struct device *dev, irq_handler_t mci_detect_int,
 	int err;
 
 	err = request_irq(TRIZEPS4_MMC_IRQ, mci_detect_int,
+<<<<<<< HEAD
 			  IRQF_DISABLED | IRQF_TRIGGER_RISING,
 			  "MMC card detect", data);
+=======
+			  IRQF_TRIGGER_RISING, "MMC card detect", data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err) {
 		printk(KERN_ERR "trizeps4_mci_init: MMC/SD: can't request"
 						"MMC card detect IRQ\n");
@@ -535,6 +547,11 @@ static void __init trizeps4_init(void)
 
 	BCR_writew(trizeps_conxs_bcr);
 	board_backlight_power(1);
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init trizeps4_map_io(void)

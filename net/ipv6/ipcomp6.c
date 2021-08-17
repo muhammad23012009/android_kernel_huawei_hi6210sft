@@ -16,8 +16,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 /*
  * [Memo]
@@ -54,7 +58,11 @@
 #include <linux/icmpv6.h>
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 static void ipcomp6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+=======
+static int ipcomp6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				u8 type, u8 code, int offset, __be32 info)
 {
 	struct net *net = dev_net(skb->dev);
@@ -64,23 +72,41 @@ static void ipcomp6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 		(struct ip_comp_hdr *)(skb->data + offset);
 	struct xfrm_state *x;
 
+<<<<<<< HEAD
 	if (type != ICMPV6_DEST_UNREACH &&
 	    type != ICMPV6_PKT_TOOBIG &&
 	    type != NDISC_REDIRECT)
 		return;
+=======
+	if (type != ICMPV6_PKT_TOOBIG &&
+	    type != NDISC_REDIRECT)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spi = htonl(ntohs(ipcomph->cpi));
 	x = xfrm_state_lookup(net, skb->mark, (const xfrm_address_t *)&iph->daddr,
 			      spi, IPPROTO_COMP, AF_INET6);
 	if (!x)
+<<<<<<< HEAD
 		return;
 
 	if (type == NDISC_REDIRECT)
 		ip6_redirect(skb, net, 0, 0,
+=======
+		return 0;
+
+	if (type == NDISC_REDIRECT)
+		ip6_redirect(skb, net, skb->dev->ifindex, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     sock_net_uid(net, NULL));
 	else
 		ip6_update_pmtu(skb, net, info, 0, 0, sock_net_uid(net, NULL));
 	xfrm_state_put(x);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct xfrm_state *ipcomp6_tunnel_create(struct xfrm_state *x)
@@ -177,8 +203,17 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static const struct xfrm_type ipcomp6_type =
 {
+=======
+static int ipcomp6_rcv_cb(struct sk_buff *skb, int err)
+{
+	return 0;
+}
+
+static const struct xfrm_type ipcomp6_type = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.description	= "IPCOMP6",
 	.owner		= THIS_MODULE,
 	.proto		= IPPROTO_COMP,
@@ -189,11 +224,19 @@ static const struct xfrm_type ipcomp6_type =
 	.hdr_offset	= xfrm6_find_1stfragopt,
 };
 
+<<<<<<< HEAD
 static const struct inet6_protocol ipcomp6_protocol =
 {
 	.handler	= xfrm6_rcv,
 	.err_handler	= ipcomp6_err,
 	.flags		= INET6_PROTO_NOPOLICY,
+=======
+static struct xfrm6_protocol ipcomp6_protocol = {
+	.handler	= xfrm6_rcv,
+	.cb_handler	= ipcomp6_rcv_cb,
+	.err_handler	= ipcomp6_err,
+	.priority	= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init ipcomp6_init(void)
@@ -202,7 +245,11 @@ static int __init ipcomp6_init(void)
 		pr_info("%s: can't add xfrm type\n", __func__);
 		return -EAGAIN;
 	}
+<<<<<<< HEAD
 	if (inet6_add_protocol(&ipcomp6_protocol, IPPROTO_COMP) < 0) {
+=======
+	if (xfrm6_protocol_register(&ipcomp6_protocol, IPPROTO_COMP) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_info("%s: can't add protocol\n", __func__);
 		xfrm_unregister_type(&ipcomp6_type, AF_INET6);
 		return -EAGAIN;
@@ -212,7 +259,11 @@ static int __init ipcomp6_init(void)
 
 static void __exit ipcomp6_fini(void)
 {
+<<<<<<< HEAD
 	if (inet6_del_protocol(&ipcomp6_protocol, IPPROTO_COMP) < 0)
+=======
+	if (xfrm6_protocol_deregister(&ipcomp6_protocol, IPPROTO_COMP) < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_info("%s: can't remove protocol\n", __func__);
 	if (xfrm_unregister_type(&ipcomp6_type, AF_INET6) < 0)
 		pr_info("%s: can't remove xfrm type\n", __func__);

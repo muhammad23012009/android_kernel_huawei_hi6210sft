@@ -26,7 +26,15 @@ int parse_elf64(void *hdr, struct elf_info *info)
 	      elf64->e_ident[EI_MAG2]  == ELFMAG2	&&
 	      elf64->e_ident[EI_MAG3]  == ELFMAG3	&&
 	      elf64->e_ident[EI_CLASS] == ELFCLASS64	&&
+<<<<<<< HEAD
 	      elf64->e_ident[EI_DATA]  == ELFDATA2MSB	&&
+=======
+#ifdef __LITTLE_ENDIAN__
+	      elf64->e_ident[EI_DATA]  == ELFDATA2LSB	&&
+#else
+	      elf64->e_ident[EI_DATA]  == ELFDATA2MSB	&&
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	      (elf64->e_type            == ET_EXEC ||
 	       elf64->e_type            == ET_DYN)	&&
 	      elf64->e_machine         == EM_PPC64))

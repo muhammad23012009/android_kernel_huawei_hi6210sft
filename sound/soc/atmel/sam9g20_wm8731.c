@@ -37,8 +37,12 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 
 #include <linux/pinctrl/consumer.h>
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/atmel-ssc.h>
 
@@ -47,10 +51,13 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 
+<<<<<<< HEAD
 #include <asm/mach-types.h>
 #include <mach/hardware.h>
 #include <mach/gpio.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "../codecs/wm8731.h"
 #include "atmel-pcm.h"
 #include "atmel_ssc_dai.h"
@@ -66,6 +73,7 @@
 
 static struct clk *mclk;
 
+<<<<<<< HEAD
 static int at91sam9g20ek_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
@@ -93,6 +101,8 @@ static struct snd_soc_ops at91sam9g20ek_ops = {
 	.hw_params = at91sam9g20ek_hw_params,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
 					struct snd_soc_dapm_context *dapm,
 					enum snd_soc_bias_level level)
@@ -127,8 +137,14 @@ static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
 
 static const struct snd_soc_dapm_route intercon[] = {
 
+<<<<<<< HEAD
 	/* speaker connected to LHPOUT */
 	{"Ext Spk", NULL, "LHPOUT"},
+=======
+	/* speaker connected to LHPOUT/RHPOUT */
+	{"Ext Spk", NULL, "LHPOUT"},
+	{"Ext Spk", NULL, "RHPOUT"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* mic is connected to Mic Jack, with WM8731 Mic Bias */
 	{"MICIN", NULL, "Mic Bias"},
@@ -140,9 +156,13 @@ static const struct snd_soc_dapm_route intercon[] = {
  */
 static int at91sam9g20ek_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	printk(KERN_DEBUG
@@ -156,6 +176,7 @@ static int at91sam9g20ek_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	/* Add specific widgets */
 	snd_soc_dapm_new_controls(dapm, at91sam9g20ek_dapm_widgets,
 				  ARRAY_SIZE(at91sam9g20ek_dapm_widgets));
@@ -175,6 +196,12 @@ static int at91sam9g20ek_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 	/* always connected */
 	snd_soc_dapm_enable_pin(dapm, "Ext Spk");
 
+=======
+#ifndef ENABLE_MIC_INPUT
+	snd_soc_dapm_nc_pin(&rtd->card->dapm, "Int Mic");
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -186,7 +213,12 @@ static struct snd_soc_dai_link at91sam9g20ek_dai = {
 	.init = at91sam9g20ek_wm8731_init,
 	.platform_name = "at91rm9200_ssc.0",
 	.codec_name = "wm8731.0-001b",
+<<<<<<< HEAD
 	.ops = &at91sam9g20ek_ops,
+=======
+	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+		   SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_card snd_soc_at91sam9g20ek = {
@@ -195,6 +227,15 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
 	.dai_link = &at91sam9g20ek_dai,
 	.num_links = 1,
 	.set_bias_level = at91sam9g20ek_set_bias_level,
+<<<<<<< HEAD
+=======
+
+	.dapm_widgets = at91sam9g20ek_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
+	.dapm_routes = intercon,
+	.num_dapm_routes = ARRAY_SIZE(intercon),
+	.fully_routed = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
@@ -203,6 +244,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
 	struct device_node *codec_np, *cpu_np;
 	struct clk *pllb;
 	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
+<<<<<<< HEAD
 	struct pinctrl *pinctrl;
 	int ret;
 
@@ -216,6 +258,12 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
 		if (!(machine_is_at91sam9g20ek() ||
 			machine_is_at91sam9g20ek_2mmc()))
 			return -ENODEV;
+=======
+	int ret;
+
+	if (!np) {
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = atmel_ssc_set_audio(0);
@@ -252,6 +300,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
 	card->dev = &pdev->dev;
 
 	/* Parse device node info */
+<<<<<<< HEAD
 	if (np) {
 		ret = snd_soc_of_parse_card_name(card, "atmel,model");
 		if (ret)
@@ -285,6 +334,39 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
 		of_node_put(codec_np);
 		of_node_put(cpu_np);
 	}
+=======
+	ret = snd_soc_of_parse_card_name(card, "atmel,model");
+	if (ret)
+		goto err;
+
+	ret = snd_soc_of_parse_audio_routing(card,
+		"atmel,audio-routing");
+	if (ret)
+		goto err;
+
+	/* Parse codec info */
+	at91sam9g20ek_dai.codec_name = NULL;
+	codec_np = of_parse_phandle(np, "atmel,audio-codec", 0);
+	if (!codec_np) {
+		dev_err(&pdev->dev, "codec info missing\n");
+		return -EINVAL;
+	}
+	at91sam9g20ek_dai.codec_of_node = codec_np;
+
+	/* Parse dai and platform info */
+	at91sam9g20ek_dai.cpu_dai_name = NULL;
+	at91sam9g20ek_dai.platform_name = NULL;
+	cpu_np = of_parse_phandle(np, "atmel,ssc-controller", 0);
+	if (!cpu_np) {
+		dev_err(&pdev->dev, "dai and pcm info missing\n");
+		return -EINVAL;
+	}
+	at91sam9g20ek_dai.cpu_of_node = cpu_np;
+	at91sam9g20ek_dai.platform_of_node = cpu_np;
+
+	of_node_put(codec_np);
+	of_node_put(cpu_np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = snd_soc_register_card(card);
 	if (ret) {
@@ -324,7 +406,10 @@ MODULE_DEVICE_TABLE(of, at91sam9g20ek_wm8731_dt_ids);
 static struct platform_driver at91sam9g20ek_audio_driver = {
 	.driver = {
 		.name	= "at91sam9g20ek-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_match_ptr(at91sam9g20ek_wm8731_dt_ids),
 	},
 	.probe	= at91sam9g20ek_audio_probe,

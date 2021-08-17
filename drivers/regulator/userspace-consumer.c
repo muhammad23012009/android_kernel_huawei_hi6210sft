@@ -111,7 +111,11 @@ static int regulator_userspace_consumer_probe(struct platform_device *pdev)
 	struct userspace_consumer_data *drvdata;
 	int ret;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata)
 		return -EINVAL;
 

@@ -21,12 +21,18 @@
 #ifndef TDA18212_H
 #define TDA18212_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 #include "dvb_frontend.h"
 
 struct tda18212_config {
 	u8 i2c_address;
 
+=======
+#include "dvb_frontend.h"
+
+struct tda18212_config {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 if_dvbt_6;
 	u16 if_dvbt_7;
 	u16 if_dvbt_8;
@@ -35,6 +41,7 @@ struct tda18212_config {
 	u16 if_dvbt2_7;
 	u16 if_dvbt2_8;
 	u16 if_dvbc;
+<<<<<<< HEAD
 };
 
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_TDA18212)
@@ -48,5 +55,15 @@ static inline struct dvb_frontend *tda18212_attach(struct dvb_frontend *fe,
 	return NULL;
 }
 #endif
+=======
+	u16 if_atsc_vsb;
+	u16 if_atsc_qam;
+
+	/*
+	 * pointer to DVB frontend
+	 */
+	struct dvb_frontend *fe;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

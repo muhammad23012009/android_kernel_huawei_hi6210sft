@@ -72,7 +72,11 @@ set_ect_tcp(struct sk_buff *skb, const struct ipt_ECN_info *einfo)
 		tcph->cwr = einfo->proto.tcp.cwr;
 
 	inet_proto_csum_replace2(&tcph->check, skb,
+<<<<<<< HEAD
 				 oldval, ((__be16 *)tcph)[6], 0);
+=======
+				 oldval, ((__be16 *)tcph)[6], false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return true;
 }
 

@@ -10,7 +10,11 @@ extern int coda_hard;
 extern int coda_fake_statfs;
 
 void coda_destroy_inodecache(void);
+<<<<<<< HEAD
 int coda_init_inodecache(void);
+=======
+int __init coda_init_inodecache(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int coda_fsync(struct file *coda_file, loff_t start, loff_t end, int datasync);
 void coda_sysctl_init(void);
 void coda_sysctl_clean(void);

@@ -55,15 +55,24 @@
 
 #elif defined(CONFIG_ALPHA_DP264) || \
       defined(CONFIG_ALPHA_LYNX)  || \
+<<<<<<< HEAD
       defined(CONFIG_ALPHA_SHARK) || \
       defined(CONFIG_ALPHA_EIGER)
+=======
+      defined(CONFIG_ALPHA_SHARK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define NR_IRQS	64
 
 #elif defined(CONFIG_ALPHA_TITAN)
 #define NR_IRQS		80
 
 #elif defined(CONFIG_ALPHA_RAWHIDE) || \
+<<<<<<< HEAD
 	defined(CONFIG_ALPHA_TAKARA)
+=======
+      defined(CONFIG_ALPHA_TAKARA) || \
+      defined(CONFIG_ALPHA_EIGER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define NR_IRQS	128
 
 #elif defined(CONFIG_ALPHA_WILDFIRE)

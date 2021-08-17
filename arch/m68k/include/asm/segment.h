@@ -58,7 +58,11 @@ static inline mm_segment_t get_ds(void)
 #define set_fs(x)	(current_thread_info()->addr_limit = (x))
 #endif
 
+<<<<<<< HEAD
 #define segment_eq(a,b)	((a).seg == (b).seg)
+=======
+#define segment_eq(a, b) ((a).seg == (b).seg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASSEMBLY__ */
 

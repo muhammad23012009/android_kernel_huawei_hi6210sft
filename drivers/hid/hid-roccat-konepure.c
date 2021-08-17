@@ -15,6 +15,10 @@
  * Roccat KonePure is a smaller version of KoneXTD with less buttons and lights.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/device.h>
 #include <linux/input.h>
 #include <linux/hid.h>
@@ -23,6 +27,7 @@
 #include <linux/hid-roccat.h>
 #include "hid-ids.h"
 #include "hid-roccat-common.h"
+<<<<<<< HEAD
 #include "hid-roccat-konepure.h"
 
 static struct class *konepure_class;
@@ -147,12 +152,68 @@ static int konepure_init_konepure_device_struct(struct usb_device *usb_dev,
 
 	return 0;
 }
+=======
+
+enum {
+	KONEPURE_MOUSE_REPORT_NUMBER_BUTTON = 3,
+};
+
+struct konepure_mouse_report_button {
+	uint8_t report_number; /* always KONEPURE_MOUSE_REPORT_NUMBER_BUTTON */
+	uint8_t zero;
+	uint8_t type;
+	uint8_t data1;
+	uint8_t data2;
+	uint8_t zero2;
+	uint8_t unknown[2];
+} __packed;
+
+static struct class *konepure_class;
+
+ROCCAT_COMMON2_BIN_ATTRIBUTE_W(control, 0x04, 0x03);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(actual_profile, 0x05, 0x03);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(profile_settings, 0x06, 0x1f);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(profile_buttons, 0x07, 0x3b);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_W(macro, 0x08, 0x0822);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(info, 0x09, 0x06);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(tcu, 0x0c, 0x04);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_R(tcu_image, 0x0c, 0x0404);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(sensor, 0x0f, 0x06);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_W(talk, 0x10, 0x10);
+
+static struct bin_attribute *konepure_bin_attrs[] = {
+	&bin_attr_actual_profile,
+	&bin_attr_control,
+	&bin_attr_info,
+	&bin_attr_talk,
+	&bin_attr_macro,
+	&bin_attr_sensor,
+	&bin_attr_tcu,
+	&bin_attr_tcu_image,
+	&bin_attr_profile_settings,
+	&bin_attr_profile_buttons,
+	NULL,
+};
+
+static const struct attribute_group konepure_group = {
+	.bin_attrs = konepure_bin_attrs,
+};
+
+static const struct attribute_group *konepure_groups[] = {
+	&konepure_group,
+	NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int konepure_init_specials(struct hid_device *hdev)
 {
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
 	struct usb_device *usb_dev = interface_to_usbdev(intf);
+<<<<<<< HEAD
 	struct konepure_device *konepure;
+=======
+	struct roccat_common2_device *konepure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 
 	if (intf->cur_altsetting->desc.bInterfaceProtocol
@@ -168,9 +229,15 @@ static int konepure_init_specials(struct hid_device *hdev)
 	}
 	hid_set_drvdata(hdev, konepure);
 
+<<<<<<< HEAD
 	retval = konepure_init_konepure_device_struct(usb_dev, konepure);
 	if (retval) {
 		hid_err(hdev, "couldn't init struct konepure_device\n");
+=======
+	retval = roccat_common2_device_init_struct(usb_dev, konepure);
+	if (retval) {
+		hid_err(hdev, "couldn't init KonePure device\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit_free;
 	}
 
@@ -192,7 +259,11 @@ exit_free:
 static void konepure_remove_specials(struct hid_device *hdev)
 {
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
+<<<<<<< HEAD
 	struct konepure_device *konepure;
+=======
+	struct roccat_common2_device *konepure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (intf->cur_altsetting->desc.bInterfaceProtocol
 			!= USB_INTERFACE_PROTOCOL_MOUSE)
@@ -245,7 +316,11 @@ static int konepure_raw_event(struct hid_device *hdev,
 		struct hid_report *report, u8 *data, int size)
 {
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
+<<<<<<< HEAD
 	struct konepure_device *konepure = hid_get_drvdata(hdev);
+=======
+	struct roccat_common2_device *konepure = hid_get_drvdata(hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (intf->cur_altsetting->desc.bInterfaceProtocol
 			!= USB_INTERFACE_PROTOCOL_MOUSE)
@@ -283,7 +358,11 @@ static int __init konepure_init(void)
 	konepure_class = class_create(THIS_MODULE, "konepure");
 	if (IS_ERR(konepure_class))
 		return PTR_ERR(konepure_class);
+<<<<<<< HEAD
 	konepure_class->dev_bin_attrs = konepure_bin_attributes;
+=======
+	konepure_class->dev_groups = konepure_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = hid_register_driver(&konepure_driver);
 	if (retval)

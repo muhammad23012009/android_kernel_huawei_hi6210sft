@@ -8,6 +8,7 @@
 #define __ASM_SWITCH_TO_H
 
 #include <linux/thread_info.h>
+<<<<<<< HEAD
 
 extern struct task_struct *__switch_to(void *, void *);
 extern void update_per_regs(struct task_struct *task);
@@ -69,10 +70,24 @@ static inline void restore_fp_regs(s390_fp_regs *fpregs)
 static inline void save_access_regs(unsigned int *acrs)
 {
 	asm volatile("stam 0,15,%0" : "=Q" (*acrs));
+=======
+#include <asm/fpu/api.h>
+#include <asm/ptrace.h>
+
+extern struct task_struct *__switch_to(void *, void *);
+extern void update_cr_regs(struct task_struct *task);
+
+static inline void save_access_regs(unsigned int *acrs)
+{
+	typedef struct { int _[NUM_ACRS]; } acrstype;
+
+	asm volatile("stam 0,15,%0" : "=Q" (*(acrstype *)acrs));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void restore_access_regs(unsigned int *acrs)
 {
+<<<<<<< HEAD
 	asm volatile("lam 0,15,%0" : : "Q" (*acrs));
 }
 
@@ -95,4 +110,25 @@ static inline void restore_access_regs(unsigned int *acrs)
 	set_fs(current->thread.mm_segment);				     \
 } while (0)
 
+=======
+	typedef struct { int _[NUM_ACRS]; } acrstype;
+
+	asm volatile("lam 0,15,%0" : : "Q" (*(acrstype *)acrs));
+}
+
+#define switch_to(prev,next,last) do {					\
+	/* save_fpu_regs() sets the CIF_FPU flag, which enforces	\
+	 * a restore of the floating point / vector registers as	\
+	 * soon as the next task returns to user space			\
+	 */								\
+	save_fpu_regs();						\
+	save_access_regs(&prev->thread.acrs[0]);			\
+	save_ri_cb(prev->thread.ri_cb);					\
+	update_cr_regs(next);						\
+	restore_access_regs(&next->thread.acrs[0]);			\
+	restore_ri_cb(next->thread.ri_cb, prev->thread.ri_cb);		\
+	prev = __switch_to(prev,next);					\
+} while (0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_SWITCH_TO_H */

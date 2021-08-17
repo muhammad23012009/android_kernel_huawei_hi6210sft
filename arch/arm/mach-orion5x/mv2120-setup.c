@@ -21,9 +21,15 @@
 #include <linux/ata_platform.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MV2120_NOR_BOOT_BASE	0xf4000000
 #define MV2120_NOR_BOOT_SIZE	SZ_512K
@@ -204,8 +210,15 @@ static void __init mv2120_init(void)
 	orion5x_uart0_init();
 	orion5x_xor_init();
 
+<<<<<<< HEAD
 	mvebu_mbus_add_window("devbus-boot", MV2120_NOR_BOOT_BASE,
 			      MV2120_NOR_BOOT_SIZE);
+=======
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    MV2120_NOR_BOOT_BASE,
+				    MV2120_NOR_BOOT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&mv2120_nor_flash);
 
 	platform_device_register(&mv2120_button_device);
@@ -230,6 +243,10 @@ static void __init mv2120_init(void)
 MACHINE_START(MV2120, "HP Media Vault mv2120")
 	/* Maintainer: Martin Michlmayr <tbm@cyrius.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= mv2120_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,

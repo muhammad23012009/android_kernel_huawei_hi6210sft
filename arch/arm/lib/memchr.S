@@ -22,5 +22,9 @@ ENTRY(memchr)
 	bne	1b
 	sub	r0, r0, #1
 2:	movne	r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(memchr)

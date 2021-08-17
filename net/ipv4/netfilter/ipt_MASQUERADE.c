@@ -22,6 +22,10 @@
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter/x_tables.h>
 #include <net/netfilter/nf_nat.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/ipv4/nf_nat_masquerade.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
@@ -46,6 +50,7 @@ static int masquerade_tg_check(const struct xt_tgchk_param *par)
 static unsigned int
 masquerade_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
+<<<<<<< HEAD
 	struct nf_conn *ct;
 	struct nf_conn_nat *nat;
 	enum ip_conntrack_info ctinfo;
@@ -148,6 +153,19 @@ static struct notifier_block masq_inet_notifier = {
 	.notifier_call	= masq_inet_event,
 };
 
+=======
+	struct nf_nat_range range;
+	const struct nf_nat_ipv4_multi_range_compat *mr;
+
+	mr = par->targinfo;
+	range.flags = mr->range[0].flags;
+	range.min_proto = mr->range[0].min;
+	range.max_proto = mr->range[0].max;
+
+	return nf_nat_masquerade_ipv4(skb, par->hooknum, &range, par->out);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct xt_target masquerade_tg_reg __read_mostly = {
 	.name		= "MASQUERADE",
 	.family		= NFPROTO_IPV4,
@@ -165,12 +183,17 @@ static int __init masquerade_tg_init(void)
 
 	ret = xt_register_target(&masquerade_tg_reg);
 
+<<<<<<< HEAD
 	if (ret == 0) {
 		/* Register for device down reports */
 		register_netdevice_notifier(&masq_dev_notifier);
 		/* Register IP address change reports */
 		register_inetaddr_notifier(&masq_inet_notifier);
 	}
+=======
+	if (ret == 0)
+		nf_nat_masquerade_ipv4_register_notifier();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -178,8 +201,12 @@ static int __init masquerade_tg_init(void)
 static void __exit masquerade_tg_exit(void)
 {
 	xt_unregister_target(&masquerade_tg_reg);
+<<<<<<< HEAD
 	unregister_netdevice_notifier(&masq_dev_notifier);
 	unregister_inetaddr_notifier(&masq_inet_notifier);
+=======
+	nf_nat_masquerade_ipv4_unregister_notifier();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(masquerade_tg_init);

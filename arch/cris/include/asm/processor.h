@@ -47,7 +47,10 @@ struct task_struct;
  */
 
 #define task_pt_regs(task) user_regs(task_thread_info(task))
+<<<<<<< HEAD
 #define current_regs() task_pt_regs(current)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned long get_wchan(struct task_struct *p);
 
@@ -64,6 +67,10 @@ static inline void release_thread(struct task_struct *dead_task)
 #define init_stack      (init_thread_union.stack)
 
 #define cpu_relax()     barrier()
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void default_idle(void);
 

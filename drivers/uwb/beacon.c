@@ -117,6 +117,10 @@ int uwb_rc_beacon(struct uwb_rc *rc, int channel, unsigned bpst_offset)
 	int result;
 	struct device *dev = &rc->uwb_dev.dev;
 
+<<<<<<< HEAD
+=======
+	dev_dbg(dev, "%s: channel = %d\n", __func__, channel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (channel < 0)
 		channel = -1;
 	if (channel == -1)
@@ -124,8 +128,15 @@ int uwb_rc_beacon(struct uwb_rc *rc, int channel, unsigned bpst_offset)
 	else {
 		/* channel >= 0...dah */
 		result = uwb_rc_start_beacon(rc, bpst_offset, channel);
+<<<<<<< HEAD
 		if (result < 0)
 			return result;
+=======
+		if (result < 0) {
+			dev_err(dev, "Cannot start beaconing: %d\n", result);
+			return result;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (le16_to_cpu(rc->ies->wIELength) > 0) {
 			result = uwb_rc_set_ie(rc, rc->ies);
 			if (result < 0) {
@@ -184,7 +195,11 @@ out:
 
 /* Find a beacon by dev addr in the cache */
 static
+<<<<<<< HEAD
 struct uwb_beca_e *__uwb_beca_find_bymac(struct uwb_rc *rc, 
+=======
+struct uwb_beca_e *__uwb_beca_find_bymac(struct uwb_rc *rc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 const struct uwb_mac_addr *mac_addr)
 {
 	struct uwb_beca_e *bce, *next;
@@ -394,7 +409,10 @@ int uwbd_evt_handle_rc_beacon(struct uwb_event *evt)
 	struct uwb_rc_evt_beacon *be;
 	struct uwb_beacon_frame *bf;
 	struct uwb_beca_e *bce;
+<<<<<<< HEAD
 	unsigned long last_ts;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = evt->rc;
 	be = container_of(evt->notif.rceb, struct uwb_rc_evt_beacon, rceb);
@@ -438,8 +456,11 @@ int uwbd_evt_handle_rc_beacon(struct uwb_event *evt)
 	/* purge old beacon data */
 	kfree(bce->be);
 
+<<<<<<< HEAD
 	last_ts = bce->ts_jiffies;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Update commonly used fields */
 	bce->ts_jiffies = evt->ts_jiffies;
 	bce->be = be;
@@ -515,6 +536,7 @@ int uwbd_evt_handle_rc_bp_slot_change(struct uwb_event *evt)
 	}
 	bpsc = container_of(evt->notif.rceb, struct uwb_rc_evt_bp_slot_change, rceb);
 
+<<<<<<< HEAD
 	mutex_lock(&rc->uwb_dev.mutex);
 	if (uwb_rc_evt_bp_slot_change_no_slot(bpsc)) {
 		dev_info(dev, "stopped beaconing: No free slots in BP\n");
@@ -522,6 +544,15 @@ int uwbd_evt_handle_rc_bp_slot_change(struct uwb_event *evt)
 	} else
 		rc->uwb_dev.beacon_slot = uwb_rc_evt_bp_slot_change_slot_num(bpsc);
 	mutex_unlock(&rc->uwb_dev.mutex);
+=======
+	if (uwb_rc_evt_bp_slot_change_no_slot(bpsc)) {
+		dev_err(dev, "stopped beaconing: No free slots in BP\n");
+		mutex_lock(&rc->uwb_dev.mutex);
+		rc->beaconing = -1;
+		mutex_unlock(&rc->uwb_dev.mutex);
+	} else
+		rc->uwb_dev.beacon_slot = uwb_rc_evt_bp_slot_change_slot_num(bpsc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

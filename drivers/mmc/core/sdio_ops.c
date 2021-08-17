@@ -18,19 +18,25 @@
 
 #include "core.h"
 #include "sdio_ops.h"
+<<<<<<< HEAD
 #ifdef  CONFIG_HUAWEI_DSM
 #include <dsm/dsm_pub.h>
 extern void dw_mci_dsm_dump(struct dw_mci  *host, int err_num);
 
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int mmc_send_io_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 {
 	struct mmc_command cmd = {0};
 	int i, err = 0;
 
+<<<<<<< HEAD
 	BUG_ON(!host);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmd.opcode = SD_IO_SEND_OP_COND;
 	cmd.arg = ocr;
 	cmd.flags = MMC_RSP_SPI_R4 | MMC_RSP_R4 | MMC_CMD_BCR;
@@ -76,12 +82,18 @@ static int mmc_io_rw_direct_host(struct mmc_host *host, int write, unsigned fn,
 	struct mmc_command cmd = {0};
 	int err;
 
+<<<<<<< HEAD
 	BUG_ON(!host);
 	BUG_ON(fn > 7);
 #ifdef CONFIG_HUAWEI_DSM
 	if(addr & ~0x1FFFF)
 		dw_mci_dsm_dump(dev_get_drvdata(host->parent), DSM_SDIO_CDM52_INVELADE_ARGUMENT_ERR_NO);
 #endif
+=======
+	if (fn > 7)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* sanity check */
 	if (addr & ~0x1FFFF)
 		return -EINVAL;
@@ -101,6 +113,7 @@ static int mmc_io_rw_direct_host(struct mmc_host *host, int write, unsigned fn,
 	if (mmc_host_is_spi(host)) {
 		/* host driver already reported errors */
 	} else {
+<<<<<<< HEAD
 		if (cmd.resp[0] & R5_ERROR) {
 #ifdef CONFIG_HUAWEI_DSM
 			dw_mci_dsm_dump(dev_get_drvdata(host->parent), DSM_SDIO_CDM52_R5_ERR_NO);
@@ -120,6 +133,14 @@ static int mmc_io_rw_direct_host(struct mmc_host *host, int write, unsigned fn,
 			return -ERANGE;
 
 		}
+=======
+		if (cmd.resp[0] & R5_ERROR)
+			return -EIO;
+		if (cmd.resp[0] & R5_FUNCTION_NUMBER)
+			return -EINVAL;
+		if (cmd.resp[0] & R5_OUT_OF_RANGE)
+			return -ERANGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (out) {
@@ -135,7 +156,10 @@ static int mmc_io_rw_direct_host(struct mmc_host *host, int write, unsigned fn,
 int mmc_io_rw_direct(struct mmc_card *card, int write, unsigned fn,
 	unsigned addr, u8 in, u8 *out)
 {
+<<<<<<< HEAD
 	BUG_ON(!card);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return mmc_io_rw_direct_host(card->host, write, fn, addr, in, out);
 }
 
@@ -150,6 +174,7 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	unsigned int nents, left_size, i;
 	unsigned int seg_size = card->host->max_seg_size;
 
+<<<<<<< HEAD
 	BUG_ON(!card);
 	BUG_ON(fn > 7);
 	WARN_ON(blksz == 0);
@@ -158,6 +183,10 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	if(addr & ~0x1FFFF)
 		dw_mci_dsm_dump(dev_get_drvdata(card->host->parent), DSM_SDIO_CMD53_INVELADE_ARGUMENT_ERR_NO);
 #endif
+=======
+	WARN_ON(blksz == 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* sanity check */
 	if (addr & ~0x1FFFF)
 		return -EINVAL;
@@ -184,12 +213,18 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	left_size = data.blksz * data.blocks;
 	nents = (left_size - 1) / seg_size + 1;
 	if (nents > 1) {
+<<<<<<< HEAD
 		if (sg_alloc_table(&sgtable, nents, GFP_KERNEL)) {
  #ifdef CONFIG_HUAWEI_DSM
 			dw_mci_dsm_dump(dev_get_drvdata(card->host->parent), DSM_SDIO_CMD53_ALLOC_TABLE_ERR_NO);
 #endif
 			return -ENOMEM;
              }
+=======
+		if (sg_alloc_table(&sgtable, nents, GFP_KERNEL))
+			return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data.sg = sgtable.sgl;
 		data.sg_len = nents;
 
@@ -213,12 +248,15 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	if (nents > 1)
 		sg_free_table(&sgtable);
 
+<<<<<<< HEAD
 #ifdef CONFIG_HUAWEI_DSM
 	if (cmd.error)
 		dw_mci_dsm_dump(dev_get_drvdata(card->host->parent), DSM_SDIO_CMD53_CMD_ERR_NO);
 	if (data.error)
 		dw_mci_dsm_dump(dev_get_drvdata(card->host->parent), DSM_SDIO_CMD53_DATA_ERR_NO);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cmd.error)
 		return cmd.error;
 	if (data.error)
@@ -227,6 +265,7 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 	if (mmc_host_is_spi(card->host)) {
 		/* host driver already reported errors */
 	} else {
+<<<<<<< HEAD
 		if (cmd.resp[0] & R5_ERROR) {
 #ifdef CONFIG_HUAWEI_DSM
 			dw_mci_dsm_dump(dev_get_drvdata(card->host->parent), DSM_SDIO_CMD53_R5_ERR_NO);
@@ -245,6 +284,14 @@ int mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,
 #endif
 			return -ERANGE;
 		}
+=======
+		if (cmd.resp[0] & R5_ERROR)
+			return -EIO;
+		if (cmd.resp[0] & R5_FUNCTION_NUMBER)
+			return -EINVAL;
+		if (cmd.resp[0] & R5_OUT_OF_RANGE)
+			return -ERANGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -263,6 +310,12 @@ int sdio_reset(struct mmc_host *host)
 	else
 		abort |= 0x08;
 
+<<<<<<< HEAD
 	ret = mmc_io_rw_direct_host(host, 1, 0, SDIO_CCCR_ABORT, abort, NULL);
 	return ret;
 }
+=======
+	return mmc_io_rw_direct_host(host, 1, 0, SDIO_CCCR_ABORT, abort, NULL);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

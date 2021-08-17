@@ -80,6 +80,10 @@ void o2hb_fill_node_map(unsigned long *map,
 void o2hb_exit(void);
 int o2hb_init(void);
 int o2hb_check_node_heartbeating(u8 node_num);
+<<<<<<< HEAD
+=======
+int o2hb_check_node_heartbeating_no_sem(u8 node_num);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int o2hb_check_node_heartbeating_from_callback(u8 node_num);
 int o2hb_check_local_node_heartbeating(void);
 void o2hb_stop_all_regions(void);

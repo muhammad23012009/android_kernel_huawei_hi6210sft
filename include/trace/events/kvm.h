@@ -37,6 +37,31 @@ TRACE_EVENT(kvm_userspace_exit,
 		  __entry->errno < 0 ? -__entry->errno : __entry->reason)
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_vcpu_wakeup,
+	    TP_PROTO(__u64 ns, bool waited, bool valid),
+	    TP_ARGS(ns, waited, valid),
+
+	TP_STRUCT__entry(
+		__field(	__u64,		ns		)
+		__field(	bool,		waited		)
+		__field(	bool,		valid		)
+	),
+
+	TP_fast_assign(
+		__entry->ns		= ns;
+		__entry->waited		= waited;
+		__entry->valid		= valid;
+	),
+
+	TP_printk("%s time %lld ns, polling %s",
+		  __entry->waited ? "wait" : "poll",
+		  __entry->ns,
+		  __entry->valid ? "valid" : "invalid")
+);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_HAVE_KVM_IRQFD)
 TRACE_EVENT(kvm_set_irq,
 	TP_PROTO(unsigned int gsi, int level, int irq_source_id),
@@ -86,7 +111,11 @@ TRACE_EVENT(kvm_ioapic_set_irq,
 		__entry->coalesced	= coalesced;
 	),
 
+<<<<<<< HEAD
 	TP_printk("pin %u dst %x vec=%u (%s|%s|%s%s)%s",
+=======
+	TP_printk("pin %u dst %x vec %u (%s|%s|%s%s)%s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  __entry->pin, (u8)(__entry->e >> 56), (u8)__entry->e,
 		  __print_symbolic((__entry->e >> 8 & 0x7), kvm_deliver_mode),
 		  (__entry->e & (1<<11)) ? "logical" : "physical",
@@ -95,6 +124,29 @@ TRACE_EVENT(kvm_ioapic_set_irq,
 		  __entry->coalesced ? " (coalesced)" : "")
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_ioapic_delayed_eoi_inj,
+	    TP_PROTO(__u64 e),
+	    TP_ARGS(e),
+
+	TP_STRUCT__entry(
+		__field(	__u64,		e		)
+	),
+
+	TP_fast_assign(
+		__entry->e		= e;
+	),
+
+	TP_printk("dst %x vec %u (%s|%s|%s%s)",
+		  (u8)(__entry->e >> 56), (u8)__entry->e,
+		  __print_symbolic((__entry->e >> 8 & 0x7), kvm_deliver_mode),
+		  (__entry->e & (1<<11)) ? "logical" : "physical",
+		  (__entry->e & (1<<15)) ? "level" : "edge",
+		  (__entry->e & (1<<16)) ? "|masked" : "")
+);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 TRACE_EVENT(kvm_msi_set_irq,
 	    TP_PROTO(__u64 address, __u64 data),
 	    TP_ARGS(address, data),
@@ -109,8 +161,14 @@ TRACE_EVENT(kvm_msi_set_irq,
 		__entry->data		= data;
 	),
 
+<<<<<<< HEAD
 	TP_printk("dst %u vec %x (%s|%s|%s%s)",
 		  (u8)(__entry->address >> 12), (u8)__entry->data,
+=======
+	TP_printk("dst %llx vec %u (%s|%s|%s%s)",
+		  (u8)(__entry->address >> 12) | ((__entry->address >> 32) & 0xffffff00),
+		  (u8)__entry->data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  __print_symbolic((__entry->data >> 8 & 0x7), kvm_deliver_mode),
 		  (__entry->address & (1<<2)) ? "logical" : "physical",
 		  (__entry->data & (1<<15)) ? "level" : "edge",
@@ -126,6 +184,17 @@ TRACE_EVENT(kvm_msi_set_irq,
 
 #if defined(CONFIG_HAVE_KVM_IRQFD)
 
+<<<<<<< HEAD
+=======
+#ifdef kvm_irqchips
+#define kvm_ack_irq_string "irqchip %s pin %u"
+#define kvm_ack_irq_parm  __print_symbolic(__entry->irqchip, kvm_irqchips), __entry->pin
+#else
+#define kvm_ack_irq_string "irqchip %d pin %u"
+#define kvm_ack_irq_parm  __entry->irqchip, __entry->pin
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 TRACE_EVENT(kvm_ack_irq,
 	TP_PROTO(unsigned int irqchip, unsigned int pin),
 	TP_ARGS(irqchip, pin),
@@ -140,6 +209,7 @@ TRACE_EVENT(kvm_ack_irq,
 		__entry->pin		= pin;
 	),
 
+<<<<<<< HEAD
 #ifdef kvm_irqchips
 	TP_printk("irqchip %s pin %u",
 		  __print_symbolic(__entry->irqchip, kvm_irqchips),
@@ -147,6 +217,9 @@ TRACE_EVENT(kvm_ack_irq,
 #else
 	TP_printk("irqchip %d pin %u", __entry->irqchip, __entry->pin)
 #endif
+=======
+	TP_printk(kvm_ack_irq_string, kvm_ack_irq_parm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 );
 
 #endif /* defined(CONFIG_HAVE_KVM_IRQFD) */
@@ -163,7 +236,11 @@ TRACE_EVENT(kvm_ack_irq,
 	{ KVM_TRACE_MMIO_WRITE, "write" }
 
 TRACE_EVENT(kvm_mmio,
+<<<<<<< HEAD
 	TP_PROTO(int type, int len, u64 gpa, u64 val),
+=======
+	TP_PROTO(int type, int len, u64 gpa, void *val),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	TP_ARGS(type, len, gpa, val),
 
 	TP_STRUCT__entry(
@@ -177,7 +254,14 @@ TRACE_EVENT(kvm_mmio,
 		__entry->type		= type;
 		__entry->len		= len;
 		__entry->gpa		= gpa;
+<<<<<<< HEAD
 		__entry->val		= val;
+=======
+		__entry->val		= 0;
+		if (val)
+			memcpy(&__entry->val, val,
+			       min_t(u32, sizeof(__entry->val), len));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	),
 
 	TP_printk("mmio %s len %u gpa 0x%llx val 0x%llx",
@@ -205,16 +289,26 @@ TRACE_EVENT(kvm_fpu,
 );
 
 TRACE_EVENT(kvm_age_page,
+<<<<<<< HEAD
 	TP_PROTO(ulong hva, struct kvm_memory_slot *slot, int ref),
 	TP_ARGS(hva, slot, ref),
+=======
+	TP_PROTO(ulong gfn, int level, struct kvm_memory_slot *slot, int ref),
+	TP_ARGS(gfn, level, slot, ref),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	TP_STRUCT__entry(
 		__field(	u64,	hva		)
 		__field(	u64,	gfn		)
+<<<<<<< HEAD
+=======
+		__field(	u8,	level		)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__field(	u8,	referenced	)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->hva		= hva;
 		__entry->gfn		=
 		  slot->base_gfn + ((hva - slot->userspace_addr) >> PAGE_SHIFT);
@@ -223,6 +317,17 @@ TRACE_EVENT(kvm_age_page,
 
 	TP_printk("hva %llx gfn %llx %s",
 		  __entry->hva, __entry->gfn,
+=======
+		__entry->gfn		= gfn;
+		__entry->level		= level;
+		__entry->hva		= ((gfn - slot->base_gfn) <<
+					    PAGE_SHIFT) + slot->userspace_addr;
+		__entry->referenced	= ref;
+	),
+
+	TP_printk("hva %llx gfn %llx level %u %s",
+		  __entry->hva, __entry->gfn, __entry->level,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  __entry->referenced ? "YOUNG" : "OLD")
 );
 
@@ -315,6 +420,40 @@ TRACE_EVENT(
 
 #endif
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_halt_poll_ns,
+	TP_PROTO(bool grow, unsigned int vcpu_id, unsigned int new,
+		 unsigned int old),
+	TP_ARGS(grow, vcpu_id, new, old),
+
+	TP_STRUCT__entry(
+		__field(bool, grow)
+		__field(unsigned int, vcpu_id)
+		__field(unsigned int, new)
+		__field(unsigned int, old)
+	),
+
+	TP_fast_assign(
+		__entry->grow           = grow;
+		__entry->vcpu_id        = vcpu_id;
+		__entry->new            = new;
+		__entry->old            = old;
+	),
+
+	TP_printk("vcpu %u: halt_poll_ns %u (%s %u)",
+			__entry->vcpu_id,
+			__entry->new,
+			__entry->grow ? "grow" : "shrink",
+			__entry->old)
+);
+
+#define trace_kvm_halt_poll_ns_grow(vcpu_id, new, old) \
+	trace_kvm_halt_poll_ns(true, vcpu_id, new, old)
+#define trace_kvm_halt_poll_ns_shrink(vcpu_id, new, old) \
+	trace_kvm_halt_poll_ns(false, vcpu_id, new, old)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _TRACE_KVM_MAIN_H */
 
 /* This part must be outside protection */

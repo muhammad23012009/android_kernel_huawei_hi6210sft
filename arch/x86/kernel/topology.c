@@ -57,7 +57,11 @@ __setup("cpu0_hotplug", enable_cpu0_hotplug);
  *
  * This is only called for debugging CPU offline/online feature.
  */
+<<<<<<< HEAD
 int __ref _debug_hotplug_cpu(int cpu, int action)
+=======
+int _debug_hotplug_cpu(int cpu, int action)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device *dev = get_cpu_device(cpu);
 	int ret;
@@ -65,29 +69,50 @@ int __ref _debug_hotplug_cpu(int cpu, int action)
 	if (!cpu_is_hotpluggable(cpu))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cpu_hotplug_driver_lock();
+=======
+	lock_device_hotplug();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (action) {
 	case 0:
 		ret = cpu_down(cpu);
 		if (!ret) {
 			pr_info("CPU %u is now offline\n", cpu);
+<<<<<<< HEAD
+=======
+			dev->offline = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kobject_uevent(&dev->kobj, KOBJ_OFFLINE);
 		} else
 			pr_debug("Can't offline CPU%d.\n", cpu);
 		break;
 	case 1:
 		ret = cpu_up(cpu);
+<<<<<<< HEAD
 		if (!ret)
 			kobject_uevent(&dev->kobj, KOBJ_ONLINE);
 		else
 			pr_debug("Can't online CPU%d.\n", cpu);
+=======
+		if (!ret) {
+			dev->offline = false;
+			kobject_uevent(&dev->kobj, KOBJ_ONLINE);
+		} else {
+			pr_debug("Can't online CPU%d.\n", cpu);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		ret = -EINVAL;
 	}
 
+<<<<<<< HEAD
 	cpu_hotplug_driver_unlock();
+=======
+	unlock_device_hotplug();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -101,7 +126,11 @@ static int __init debug_hotplug_cpu(void)
 late_initcall_sync(debug_hotplug_cpu);
 #endif /* CONFIG_DEBUG_HOTPLUG_CPU0 */
 
+<<<<<<< HEAD
 int __ref arch_register_cpu(int num)
+=======
+int arch_register_cpu(int num)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cpuinfo_x86 *c = &cpu_data(num);
 

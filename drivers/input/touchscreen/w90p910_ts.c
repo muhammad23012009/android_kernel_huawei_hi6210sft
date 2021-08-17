@@ -318,8 +318,11 @@ static int w90x900ts_remove(struct platform_device *pdev)
 	input_unregister_device(w90p910_ts->input);
 	kfree(w90p910_ts);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -328,7 +331,10 @@ static struct platform_driver w90x900ts_driver = {
 	.remove		= w90x900ts_remove,
 	.driver		= {
 		.name	= "nuc900-ts",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(w90x900ts_driver);

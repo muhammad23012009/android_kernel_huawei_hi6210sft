@@ -55,7 +55,11 @@ static int write_sigio_thread(void *unused)
 	int i, n, respond_fd;
 	char c;
 
+<<<<<<< HEAD
 	signal(SIGWINCH, SIG_IGN);
+=======
+	os_fix_helper_signals();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fds = &current_poll;
 	while (1) {
 		n = poll(fds->poll, fds->used, -1);

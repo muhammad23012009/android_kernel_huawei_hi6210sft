@@ -70,6 +70,15 @@ static unsigned long read_pmc(int idx)
 	case 3:
 		val = mfpmr(PMRN_PMC3);
 		break;
+<<<<<<< HEAD
+=======
+	case 4:
+		val = mfpmr(PMRN_PMC4);
+		break;
+	case 5:
+		val = mfpmr(PMRN_PMC5);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		printk(KERN_ERR "oops trying to read PMC%d\n", idx);
 		val = 0;
@@ -95,6 +104,15 @@ static void write_pmc(int idx, unsigned long val)
 	case 3:
 		mtpmr(PMRN_PMC3, val);
 		break;
+<<<<<<< HEAD
+=======
+	case 4:
+		mtpmr(PMRN_PMC4, val);
+		break;
+	case 5:
+		mtpmr(PMRN_PMC5, val);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		printk(KERN_ERR "oops trying to write PMC%d\n", idx);
 	}
@@ -120,6 +138,15 @@ static void write_pmlca(int idx, unsigned long val)
 	case 3:
 		mtpmr(PMRN_PMLCA3, val);
 		break;
+<<<<<<< HEAD
+=======
+	case 4:
+		mtpmr(PMRN_PMLCA4, val);
+		break;
+	case 5:
+		mtpmr(PMRN_PMLCA5, val);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		printk(KERN_ERR "oops trying to write PMLCA%d\n", idx);
 	}
@@ -145,6 +172,15 @@ static void write_pmlcb(int idx, unsigned long val)
 	case 3:
 		mtpmr(PMRN_PMLCB3, val);
 		break;
+<<<<<<< HEAD
+=======
+	case 4:
+		mtpmr(PMRN_PMLCB4, val);
+		break;
+	case 5:
+		mtpmr(PMRN_PMLCB5, val);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		printk(KERN_ERR "oops trying to write PMLCB%d\n", idx);
 	}
@@ -186,7 +222,11 @@ static void fsl_emb_pmu_disable(struct pmu *pmu)
 	unsigned long flags;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	cpuhw = &__get_cpu_var(cpu_hw_events);
+=======
+	cpuhw = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!cpuhw->disabled) {
 		cpuhw->disabled = 1;
@@ -225,7 +265,11 @@ static void fsl_emb_pmu_enable(struct pmu *pmu)
 	unsigned long flags;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	cpuhw = &__get_cpu_var(cpu_hw_events);
+=======
+	cpuhw = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!cpuhw->disabled)
 		goto out;
 
@@ -306,9 +350,17 @@ static int fsl_emb_pmu_add(struct perf_event *event, int flags)
 	}
 	local64_set(&event->hw.prev_count, val);
 
+<<<<<<< HEAD
 	if (!(flags & PERF_EF_START)) {
 		event->hw.state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
 		val = 0;
+=======
+	if (unlikely(!(flags & PERF_EF_START))) {
+		event->hw.state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
+		val = 0;
+	} else {
+		event->hw.state &= ~(PERF_HES_STOPPED | PERF_HES_UPTODATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	write_pmc(i, val);
@@ -365,6 +417,10 @@ static void fsl_emb_pmu_del(struct perf_event *event, int flags)
 static void fsl_emb_pmu_start(struct perf_event *event, int ef_flags)
 {
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	unsigned long val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s64 left;
 
 	if (event->hw.idx < 0 || !event->hw.sample_period)
@@ -381,7 +437,14 @@ static void fsl_emb_pmu_start(struct perf_event *event, int ef_flags)
 
 	event->hw.state = 0;
 	left = local64_read(&event->hw.period_left);
+<<<<<<< HEAD
 	write_pmc(event->hw.idx, left);
+=======
+	val = 0;
+	if (left < 0x80000000L)
+		val = 0x80000000L - left;
+	write_pmc(event->hw.idx, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	perf_event_update_userpage(event);
 	perf_pmu_enable(event->pmu);
@@ -462,6 +525,15 @@ static int fsl_emb_pmu_event_init(struct perf_event *event)
 	int num_restricted;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (ppmu->n_counter > MAX_HWEVENTS) {
+		WARN(1, "No. of perf counters (%d) is higher than max array size(%d)\n",
+			ppmu->n_counter, MAX_HWEVENTS);
+		ppmu->n_counter = MAX_HWEVENTS;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (event->attr.type) {
 	case PERF_TYPE_HARDWARE:
 		ev = event->attr.config;
@@ -623,7 +695,11 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
 static void perf_event_interrupt(struct pt_regs *regs)
 {
 	int i;
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct perf_event *event;
 	unsigned long val;
 	int found = 0;

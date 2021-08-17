@@ -12,7 +12,11 @@
 #include <linux/err.h>
 #include <linux/gpio.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/core.h>
 #include <linux/mfd/intel_msic.h>
 #include <linux/platform_device.h>
@@ -27,7 +31,11 @@
 
 /*
  * MSIC interrupt tree is readable from SRAM at INTEL_MSIC_IRQ_PHYS_BASE.
+<<<<<<< HEAD
  * Since IRQ block starts from address 0x002 we need to substract that from
+=======
+ * Since IRQ block starts from address 0x002 we need to subtract that from
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * the actual IRQ status register address.
  */
 #define MSIC_IRQ_STATUS(x)	(INTEL_MSIC_IRQ_PHYS_BASE + ((x) - 2))
@@ -178,7 +186,11 @@ static struct mfd_cell msic_devs[] = {
  * These devices appear only after the MSIC driver itself is initialized so
  * we can guarantee that the SCU IPC interface is ready.
  */
+<<<<<<< HEAD
 static struct mfd_cell msic_other_devs[] = {
+=======
+static const struct mfd_cell msic_other_devs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Audio codec in the MSIC */
 	{
 		.id			= -1,
@@ -310,7 +322,11 @@ EXPORT_SYMBOL_GPL(intel_msic_irq_read);
 static int intel_msic_init_devices(struct intel_msic *msic)
 {
 	struct platform_device *pdev = msic->pdev;
+<<<<<<< HEAD
 	struct intel_msic_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct intel_msic_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret, i;
 
 	if (pdata->gpio) {
@@ -372,7 +388,11 @@ static void intel_msic_remove_devices(struct intel_msic *msic)
 
 static int intel_msic_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct intel_msic_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct intel_msic_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct intel_msic *msic;
 	struct resource *res;
 	u8 id0, id1;
@@ -438,7 +458,10 @@ static int intel_msic_remove(struct platform_device *pdev)
 	struct intel_msic *msic = platform_get_drvdata(pdev);
 
 	intel_msic_remove_devices(msic);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -448,6 +471,7 @@ static struct platform_driver intel_msic_driver = {
 	.remove		= intel_msic_remove,
 	.driver		= {
 		.name	= "intel_msic",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -457,3 +481,8 @@ module_platform_driver(intel_msic_driver);
 MODULE_DESCRIPTION("Driver for Intel MSIC");
 MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
 MODULE_LICENSE("GPL");
+=======
+	},
+};
+builtin_platform_driver(intel_msic_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

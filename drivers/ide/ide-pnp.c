@@ -96,6 +96,7 @@ static struct pnp_driver idepnp_driver = {
 	.remove		= idepnp_remove,
 };
 
+<<<<<<< HEAD
 static int __init pnpide_init(void)
 {
 	return pnp_register_driver(&idepnp_driver);
@@ -109,4 +110,7 @@ static void __exit pnpide_exit(void)
 module_init(pnpide_init);
 module_exit(pnpide_exit);
 
+=======
+module_pnp_driver(idepnp_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

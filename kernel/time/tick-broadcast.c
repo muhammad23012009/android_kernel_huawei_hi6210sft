@@ -33,12 +33,23 @@ static cpumask_var_t tick_broadcast_mask;
 static cpumask_var_t tick_broadcast_on;
 static cpumask_var_t tmpmask;
 static DEFINE_RAW_SPINLOCK(tick_broadcast_lock);
+<<<<<<< HEAD
 static int tick_broadcast_force;
 
 #ifdef CONFIG_TICK_ONESHOT
 static void tick_broadcast_clear_oneshot(int cpu);
 #else
 static inline void tick_broadcast_clear_oneshot(int cpu) { }
+=======
+static int tick_broadcast_forced;
+
+#ifdef CONFIG_TICK_ONESHOT
+static void tick_broadcast_clear_oneshot(int cpu);
+static void tick_resume_broadcast_oneshot(struct clock_event_device *bc);
+#else
+static inline void tick_broadcast_clear_oneshot(int cpu) { }
+static inline void tick_resume_broadcast_oneshot(struct clock_event_device *bc) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
@@ -70,6 +81,10 @@ static bool tick_check_broadcast_device(struct clock_event_device *curdev,
 					struct clock_event_device *newdev)
 {
 	if ((newdev->features & CLOCK_EVT_FEAT_DUMMY) ||
+<<<<<<< HEAD
+=======
+	    (newdev->features & CLOCK_EVT_FEAT_PERCPU) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    (newdev->features & CLOCK_EVT_FEAT_C3STOP))
 		return false;
 
@@ -119,6 +134,22 @@ int tick_is_broadcast_device(struct clock_event_device *dev)
 	return (dev && tick_broadcast_device.evtdev == dev);
 }
 
+<<<<<<< HEAD
+=======
+int tick_broadcast_update_freq(struct clock_event_device *dev, u32 freq)
+{
+	int ret = -ENODEV;
+
+	if (tick_is_broadcast_device(dev)) {
+		raw_spin_lock(&tick_broadcast_lock);
+		ret = __clockevents_update_freq(dev, freq);
+		raw_spin_unlock(&tick_broadcast_lock);
+	}
+	return ret;
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void err_broadcast(const struct cpumask *mask)
 {
 	pr_crit_once("Failed to broadcast timer tick. Some CPUs may be unresponsive.\n");
@@ -143,7 +174,11 @@ int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
 {
 	struct clock_event_device *bc = tick_broadcast_device.evtdev;
 	unsigned long flags;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
 
@@ -157,7 +192,14 @@ int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
 		dev->event_handler = tick_handle_periodic;
 		tick_device_setup_broadcast_func(dev);
 		cpumask_set_cpu(cpu, tick_broadcast_mask);
+<<<<<<< HEAD
 		tick_broadcast_start_periodic(bc);
+=======
+		if (tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC)
+			tick_broadcast_start_periodic(bc);
+		else
+			tick_broadcast_setup_oneshot(bc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = 1;
 	} else {
 		/*
@@ -202,6 +244,7 @@ int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
 			 * If we kept the cpu in the broadcast mask,
 			 * tell the caller to leave the per cpu device
 			 * in shutdown state. The periodic interrupt
+<<<<<<< HEAD
 			 * is delivered by the broadcast device.
 			 */
 			ret = cpumask_test_cpu(cpu, tick_broadcast_mask);
@@ -209,6 +252,16 @@ int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
 		default:
 			/* Nothing to do */
 			ret = 0;
+=======
+			 * is delivered by the broadcast device, if
+			 * the broadcast device exists and is not
+			 * hrtimer based.
+			 */
+			if (bc && !(bc->features & CLOCK_EVT_FEAT_HRTIMER))
+				ret = cpumask_test_cpu(cpu, tick_broadcast_mask);
+			break;
+		default:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
@@ -236,18 +289,45 @@ int tick_receive_broadcast(void)
 /*
  * Broadcast the event to the cpus, which are set in the mask (mangled).
  */
+<<<<<<< HEAD
 static void tick_do_broadcast(struct cpumask *mask)
 {
 	int cpu = smp_processor_id();
 	struct tick_device *td;
+=======
+static bool tick_do_broadcast(struct cpumask *mask)
+{
+	int cpu = smp_processor_id();
+	struct tick_device *td;
+	bool local = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Check, if the current cpu is in the mask
 	 */
 	if (cpumask_test_cpu(cpu, mask)) {
+<<<<<<< HEAD
 		cpumask_clear_cpu(cpu, mask);
 		td = &per_cpu(tick_cpu_device, cpu);
 		td->evtdev->event_handler(td->evtdev);
+=======
+		struct clock_event_device *bc = tick_broadcast_device.evtdev;
+
+		cpumask_clear_cpu(cpu, mask);
+		/*
+		 * We only run the local handler, if the broadcast
+		 * device is not hrtimer based. Otherwise we run into
+		 * a hrtimer recursion.
+		 *
+		 * local timer_interrupt()
+		 *   local_handler()
+		 *     expire_hrtimers()
+		 *       bc_handler()
+		 *         local_handler()
+		 *	     expire_hrtimers()
+		 */
+		local = !(bc->features & CLOCK_EVT_FEAT_HRTIMER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!cpumask_empty(mask)) {
@@ -260,12 +340,17 @@ static void tick_do_broadcast(struct cpumask *mask)
 		td = &per_cpu(tick_cpu_device, cpumask_first(mask));
 		td->evtdev->broadcast(mask);
 	}
+<<<<<<< HEAD
+=======
+	return local;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * Periodic broadcast:
  * - invoke the broadcast handlers
  */
+<<<<<<< HEAD
 static void tick_do_periodic_broadcast(void)
 {
 	raw_spin_lock(&tick_broadcast_lock);
@@ -274,6 +359,12 @@ static void tick_do_periodic_broadcast(void)
 	tick_do_broadcast(tmpmask);
 
 	raw_spin_unlock(&tick_broadcast_lock);
+=======
+static bool tick_do_periodic_broadcast(void)
+{
+	cpumask_and(tmpmask, cpu_online_mask, tick_broadcast_mask);
+	return tick_do_broadcast(tmpmask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -281,6 +372,7 @@ static void tick_do_periodic_broadcast(void)
  */
 static void tick_handle_periodic_broadcast(struct clock_event_device *dev)
 {
+<<<<<<< HEAD
 	ktime_t next;
 
 	tick_do_periodic_broadcast();
@@ -324,11 +416,62 @@ static void tick_do_broadcast_on_off(unsigned long *reason)
 	td = &per_cpu(tick_cpu_device, cpu);
 	dev = td->evtdev;
 	bc = tick_broadcast_device.evtdev;
+=======
+	struct tick_device *td = this_cpu_ptr(&tick_cpu_device);
+	bool bc_local;
+
+	raw_spin_lock(&tick_broadcast_lock);
+
+	/* Handle spurious interrupts gracefully */
+	if (clockevent_state_shutdown(tick_broadcast_device.evtdev)) {
+		raw_spin_unlock(&tick_broadcast_lock);
+		return;
+	}
+
+	bc_local = tick_do_periodic_broadcast();
+
+	if (clockevent_state_oneshot(dev)) {
+		ktime_t next = ktime_add(dev->next_event, tick_period);
+
+		clockevents_program_event(dev, next, true);
+	}
+	raw_spin_unlock(&tick_broadcast_lock);
+
+	/*
+	 * We run the handler of the local cpu after dropping
+	 * tick_broadcast_lock because the handler might deadlock when
+	 * trying to switch to oneshot mode.
+	 */
+	if (bc_local)
+		td->evtdev->event_handler(td->evtdev);
+}
+
+/**
+ * tick_broadcast_control - Enable/disable or force broadcast mode
+ * @mode:	The selected broadcast mode
+ *
+ * Called when the system enters a state where affected tick devices
+ * might stop. Note: TICK_BROADCAST_FORCE cannot be undone.
+ *
+ * Called with interrupts disabled, so clockevents_lock is not
+ * required here because the local clock event device cannot go away
+ * under us.
+ */
+void tick_broadcast_control(enum tick_broadcast_mode mode)
+{
+	struct clock_event_device *bc, *dev;
+	struct tick_device *td;
+	int cpu, bc_stopped;
+
+	td = this_cpu_ptr(&tick_cpu_device);
+	dev = td->evtdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Is the device not affected by the powerstate ?
 	 */
 	if (!dev || !(dev->features & CLOCK_EVT_FEAT_C3STOP))
+<<<<<<< HEAD
 		goto out;
 
 	if (!tick_device_is_functional(dev))
@@ -350,6 +493,40 @@ static void tick_do_broadcast_on_off(unsigned long *reason)
 		break;
 	case CLOCK_EVT_NOTIFY_BROADCAST_OFF:
 		if (tick_broadcast_force)
+=======
+		return;
+
+	if (!tick_device_is_functional(dev))
+		return;
+
+	raw_spin_lock(&tick_broadcast_lock);
+	cpu = smp_processor_id();
+	bc = tick_broadcast_device.evtdev;
+	bc_stopped = cpumask_empty(tick_broadcast_mask);
+
+	switch (mode) {
+	case TICK_BROADCAST_FORCE:
+		tick_broadcast_forced = 1;
+	case TICK_BROADCAST_ON:
+		cpumask_set_cpu(cpu, tick_broadcast_on);
+		if (!cpumask_test_and_set_cpu(cpu, tick_broadcast_mask)) {
+			/*
+			 * Only shutdown the cpu local device, if:
+			 *
+			 * - the broadcast device exists
+			 * - the broadcast device is not a hrtimer based one
+			 * - the broadcast device is in periodic mode to
+			 *   avoid a hickup during switch to oneshot mode
+			 */
+			if (bc && !(bc->features & CLOCK_EVT_FEAT_HRTIMER) &&
+			    tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC)
+				clockevents_shutdown(dev);
+		}
+		break;
+
+	case TICK_BROADCAST_OFF:
+		if (tick_broadcast_forced)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		cpumask_clear_cpu(cpu, tick_broadcast_on);
 		if (!tick_device_is_functional(dev))
@@ -362,6 +539,7 @@ static void tick_do_broadcast_on_off(unsigned long *reason)
 		break;
 	}
 
+<<<<<<< HEAD
 	if (cpumask_empty(tick_broadcast_mask)) {
 		if (!bc_stopped)
 			clockevents_shutdown(bc);
@@ -387,6 +565,22 @@ void tick_broadcast_on_off(unsigned long reason, int *oncpu)
 	else
 		tick_do_broadcast_on_off(&reason);
 }
+=======
+	if (bc) {
+		if (cpumask_empty(tick_broadcast_mask)) {
+			if (!bc_stopped)
+				clockevents_shutdown(bc);
+		} else if (bc_stopped) {
+			if (tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC)
+				tick_broadcast_start_periodic(bc);
+			else
+				tick_broadcast_setup_oneshot(bc);
+		}
+	}
+	raw_spin_unlock(&tick_broadcast_lock);
+}
+EXPORT_SYMBOL_GPL(tick_broadcast_control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Set the periodic handler depending on broadcast on/off
@@ -399,6 +593,7 @@ void tick_set_periodic_handler(struct clock_event_device *dev, int broadcast)
 		dev->event_handler = tick_handle_periodic_broadcast;
 }
 
+<<<<<<< HEAD
 /*
  * Remove a CPU from broadcasting
  */
@@ -407,6 +602,16 @@ void tick_shutdown_broadcast(unsigned int *cpup)
 	struct clock_event_device *bc;
 	unsigned long flags;
 	unsigned int cpu = *cpup;
+=======
+#ifdef CONFIG_HOTPLUG_CPU
+/*
+ * Remove a CPU from broadcasting
+ */
+void tick_shutdown_broadcast(unsigned int cpu)
+{
+	struct clock_event_device *bc;
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
 
@@ -421,6 +626,10 @@ void tick_shutdown_broadcast(unsigned int *cpup)
 
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void tick_suspend_broadcast(void)
 {
@@ -436,38 +645,77 @@ void tick_suspend_broadcast(void)
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
 
+<<<<<<< HEAD
 int tick_resume_broadcast(void)
 {
 	struct clock_event_device *bc;
 	unsigned long flags;
 	int broadcast = 0;
+=======
+/*
+ * This is called from tick_resume_local() on a resuming CPU. That's
+ * called from the core resume function, tick_unfreeze() and the magic XEN
+ * resume hackery.
+ *
+ * In none of these cases the broadcast device mode can change and the
+ * bit of the resuming CPU in the broadcast mask is safe as well.
+ */
+bool tick_resume_check_broadcast(void)
+{
+	if (tick_broadcast_device.mode == TICKDEV_MODE_ONESHOT)
+		return false;
+	else
+		return cpumask_test_cpu(smp_processor_id(), tick_broadcast_mask);
+}
+
+void tick_resume_broadcast(void)
+{
+	struct clock_event_device *bc;
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
 
 	bc = tick_broadcast_device.evtdev;
 
 	if (bc) {
+<<<<<<< HEAD
 		clockevents_set_mode(bc, CLOCK_EVT_MODE_RESUME);
+=======
+		clockevents_tick_resume(bc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		switch (tick_broadcast_device.mode) {
 		case TICKDEV_MODE_PERIODIC:
 			if (!cpumask_empty(tick_broadcast_mask))
 				tick_broadcast_start_periodic(bc);
+<<<<<<< HEAD
 			broadcast = cpumask_test_cpu(smp_processor_id(),
 						     tick_broadcast_mask);
 			break;
 		case TICKDEV_MODE_ONESHOT:
 			if (!cpumask_empty(tick_broadcast_mask))
 				broadcast = tick_resume_broadcast_oneshot(bc);
+=======
+			break;
+		case TICKDEV_MODE_ONESHOT:
+			if (!cpumask_empty(tick_broadcast_mask))
+				tick_resume_broadcast_oneshot(bc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
+<<<<<<< HEAD
 
 	return broadcast;
 }
 
 
+=======
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_TICK_ONESHOT
 
 static cpumask_var_t tick_broadcast_oneshot_mask;
@@ -510,6 +758,7 @@ static void tick_broadcast_set_affinity(struct clock_event_device *bc,
 	irq_set_affinity(bc->irq, bc->cpumask);
 }
 
+<<<<<<< HEAD
 static int tick_broadcast_set_event(struct clock_event_device *bc, int cpu,
 				    ktime_t expires, int force)
 {
@@ -528,16 +777,38 @@ int tick_resume_broadcast_oneshot(struct clock_event_device *bc)
 {
 	clockevents_set_mode(bc, CLOCK_EVT_MODE_ONESHOT);
 	return 0;
+=======
+static void tick_broadcast_set_event(struct clock_event_device *bc, int cpu,
+				     ktime_t expires)
+{
+	if (!clockevent_state_oneshot(bc))
+		clockevents_switch_state(bc, CLOCK_EVT_STATE_ONESHOT);
+
+	clockevents_program_event(bc, expires, 1);
+	tick_broadcast_set_affinity(bc, cpumask_of(cpu));
+}
+
+static void tick_resume_broadcast_oneshot(struct clock_event_device *bc)
+{
+	clockevents_switch_state(bc, CLOCK_EVT_STATE_ONESHOT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * Called from irq_enter() when idle was interrupted to reenable the
  * per cpu device.
  */
+<<<<<<< HEAD
 void tick_check_oneshot_broadcast(int cpu)
 {
 	if (cpumask_test_cpu(cpu, tick_broadcast_oneshot_mask)) {
 		struct tick_device *td = &per_cpu(tick_cpu_device, cpu);
+=======
+void tick_check_oneshot_broadcast_this_cpu(void)
+{
+	if (cpumask_test_cpu(smp_processor_id(), tick_broadcast_oneshot_mask)) {
+		struct tick_device *td = this_cpu_ptr(&tick_cpu_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * We might be in the middle of switching over from
@@ -545,8 +816,13 @@ void tick_check_oneshot_broadcast(int cpu)
 		 * switched over, leave the device alone.
 		 */
 		if (td->mode == TICKDEV_MODE_ONESHOT) {
+<<<<<<< HEAD
 			clockevents_set_mode(td->evtdev,
 					     CLOCK_EVT_MODE_ONESHOT);
+=======
+			clockevents_switch_state(td->evtdev,
+					      CLOCK_EVT_STATE_ONESHOT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }
@@ -559,15 +835,32 @@ static void tick_handle_oneshot_broadcast(struct clock_event_device *dev)
 	struct tick_device *td;
 	ktime_t now, next_event;
 	int cpu, next_cpu = 0;
+<<<<<<< HEAD
 
 	raw_spin_lock(&tick_broadcast_lock);
 again:
+=======
+	bool bc_local;
+
+	raw_spin_lock(&tick_broadcast_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->next_event.tv64 = KTIME_MAX;
 	next_event.tv64 = KTIME_MAX;
 	cpumask_clear(tmpmask);
 	now = ktime_get();
 	/* Find all expired events */
 	for_each_cpu(cpu, tick_broadcast_oneshot_mask) {
+<<<<<<< HEAD
+=======
+		/*
+		 * Required for !SMP because for_each_cpu() reports
+		 * unconditionally CPU0 as set on UP kernels.
+		 */
+		if (!IS_ENABLED(CONFIG_SMP) &&
+		    cpumask_empty(tick_broadcast_oneshot_mask))
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		td = &per_cpu(tick_cpu_device, cpu);
 		if (td->evtdev->next_event.tv64 <= now.tv64) {
 			cpumask_set_cpu(cpu, tmpmask);
@@ -603,7 +896,11 @@ again:
 	/*
 	 * Wakeup the cpus which have an expired event.
 	 */
+<<<<<<< HEAD
 	tick_do_broadcast(tmpmask);
+=======
+	bc_local = tick_do_broadcast(tmpmask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Two reasons for reprogram:
@@ -615,6 +912,7 @@ again:
 	 * - There are pending events on sleeping CPUs which were not
 	 * in the event mask
 	 */
+<<<<<<< HEAD
 	if (next_event.tv64 != KTIME_MAX) {
 		/*
 		 * Rearm the broadcast device. If event expired,
@@ -624,6 +922,17 @@ again:
 			goto again;
 	}
 	raw_spin_unlock(&tick_broadcast_lock);
+=======
+	if (next_event.tv64 != KTIME_MAX)
+		tick_broadcast_set_event(dev, next_cpu, next_event);
+
+	raw_spin_unlock(&tick_broadcast_lock);
+
+	if (bc_local) {
+		td = this_cpu_ptr(&tick_cpu_device);
+		td->evtdev->event_handler(td->evtdev);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int broadcast_needs_cpu(struct clock_event_device *bc, int cpu)
@@ -649,6 +958,7 @@ static void broadcast_shutdown_local(struct clock_event_device *bc,
 		if (dev->next_event.tv64 < bc->next_event.tv64)
 			return;
 	}
+<<<<<<< HEAD
 	clockevents_set_mode(dev, CLOCK_EVT_MODE_SHUTDOWN);
 }
 
@@ -700,12 +1010,66 @@ int tick_broadcast_oneshot_control(unsigned long reason)
 		if (!cpumask_test_and_set_cpu(cpu, tick_broadcast_oneshot_mask)) {
 			WARN_ON_ONCE(cpumask_test_cpu(cpu, tick_broadcast_pending_mask));
 			broadcast_shutdown_local(bc, dev);
+=======
+	clockevents_switch_state(dev, CLOCK_EVT_STATE_SHUTDOWN);
+}
+
+int __tick_broadcast_oneshot_control(enum tick_broadcast_state state)
+{
+	struct clock_event_device *bc, *dev;
+	int cpu, ret = 0;
+	ktime_t now;
+
+	/*
+	 * If there is no broadcast device, tell the caller not to go
+	 * into deep idle.
+	 */
+	if (!tick_broadcast_device.evtdev)
+		return -EBUSY;
+
+	dev = this_cpu_ptr(&tick_cpu_device)->evtdev;
+
+	raw_spin_lock(&tick_broadcast_lock);
+	bc = tick_broadcast_device.evtdev;
+	cpu = smp_processor_id();
+
+	if (state == TICK_BROADCAST_ENTER) {
+		/*
+		 * If the current CPU owns the hrtimer broadcast
+		 * mechanism, it cannot go deep idle and we do not add
+		 * the CPU to the broadcast mask. We don't have to go
+		 * through the EXIT path as the local timer is not
+		 * shutdown.
+		 */
+		ret = broadcast_needs_cpu(bc, cpu);
+		if (ret)
+			goto out;
+
+		/*
+		 * If the broadcast device is in periodic mode, we
+		 * return.
+		 */
+		if (tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC) {
+			/* If it is a hrtimer based broadcast, return busy */
+			if (bc->features & CLOCK_EVT_FEAT_HRTIMER)
+				ret = -EBUSY;
+			goto out;
+		}
+
+		if (!cpumask_test_and_set_cpu(cpu, tick_broadcast_oneshot_mask)) {
+			WARN_ON_ONCE(cpumask_test_cpu(cpu, tick_broadcast_pending_mask));
+
+			/* Conditionally shut down the local timer. */
+			broadcast_shutdown_local(bc, dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * We only reprogram the broadcast timer if we
 			 * did not mark ourself in the force mask and
 			 * if the cpu local event is earlier than the
 			 * broadcast event. If the current CPU is in
 			 * the force mask, then we are going to be
+<<<<<<< HEAD
 			 * woken by the IPI right away.
 			 */
 			if (!cpumask_test_cpu(cpu, tick_broadcast_force_mask) &&
@@ -725,6 +1089,33 @@ int tick_broadcast_oneshot_control(unsigned long reason)
 	} else {
 		if (cpumask_test_and_clear_cpu(cpu, tick_broadcast_oneshot_mask)) {
 			clockevents_set_mode(dev, CLOCK_EVT_MODE_ONESHOT);
+=======
+			 * woken by the IPI right away; we return
+			 * busy, so the CPU does not try to go deep
+			 * idle.
+			 */
+			if (cpumask_test_cpu(cpu, tick_broadcast_force_mask)) {
+				ret = -EBUSY;
+			} else if (dev->next_event.tv64 < bc->next_event.tv64) {
+				tick_broadcast_set_event(bc, cpu, dev->next_event);
+				/*
+				 * In case of hrtimer broadcasts the
+				 * programming might have moved the
+				 * timer to this cpu. If yes, remove
+				 * us from the broadcast mask and
+				 * return busy.
+				 */
+				ret = broadcast_needs_cpu(bc, cpu);
+				if (ret) {
+					cpumask_clear_cpu(cpu,
+						tick_broadcast_oneshot_mask);
+				}
+			}
+		}
+	} else {
+		if (cpumask_test_and_clear_cpu(cpu, tick_broadcast_oneshot_mask)) {
+			clockevents_switch_state(dev, CLOCK_EVT_STATE_ONESHOT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * The cpu which was handling the broadcast
 			 * timer marked this cpu in the broadcast
@@ -788,7 +1179,11 @@ int tick_broadcast_oneshot_control(unsigned long reason)
 		}
 	}
 out:
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
+=======
+	raw_spin_unlock(&tick_broadcast_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -828,7 +1223,11 @@ void tick_broadcast_setup_oneshot(struct clock_event_device *bc)
 
 	/* Set it up only once ! */
 	if (bc->event_handler != tick_handle_oneshot_broadcast) {
+<<<<<<< HEAD
 		int was_periodic = bc->mode == CLOCK_EVT_MODE_PERIODIC;
+=======
+		int was_periodic = clockevent_state_periodic(bc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		bc->event_handler = tick_handle_oneshot_broadcast;
 
@@ -844,10 +1243,17 @@ void tick_broadcast_setup_oneshot(struct clock_event_device *bc)
 			   tick_broadcast_oneshot_mask, tmpmask);
 
 		if (was_periodic && !cpumask_empty(tmpmask)) {
+<<<<<<< HEAD
 			clockevents_set_mode(bc, CLOCK_EVT_MODE_ONESHOT);
 			tick_broadcast_init_next_event(tmpmask,
 						       tick_next_period);
 			tick_broadcast_set_event(bc, cpu, tick_next_period, 1);
+=======
+			clockevents_switch_state(bc, CLOCK_EVT_STATE_ONESHOT);
+			tick_broadcast_init_next_event(tmpmask,
+						       tick_next_period);
+			tick_broadcast_set_event(bc, cpu, tick_next_period);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			bc->next_event.tv64 = KTIME_MAX;
 	} else {
@@ -880,14 +1286,38 @@ void tick_broadcast_switch_to_oneshot(void)
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HOTPLUG_CPU
+void hotplug_cpu__broadcast_tick_pull(int deadcpu)
+{
+	struct clock_event_device *bc;
+	unsigned long flags;
+
+	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
+	bc = tick_broadcast_device.evtdev;
+
+	if (bc && broadcast_needs_cpu(bc, deadcpu)) {
+		/* This moves the broadcast assignment to this CPU: */
+		clockevents_program_event(bc, bc->next_event, 1);
+	}
+	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Remove a dead CPU from broadcasting
  */
+<<<<<<< HEAD
 void tick_shutdown_broadcast_oneshot(unsigned int *cpup)
 {
 	unsigned long flags;
 	unsigned int cpu = *cpup;
+=======
+void tick_shutdown_broadcast_oneshot(unsigned int cpu)
+{
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
 
@@ -899,10 +1329,16 @@ void tick_shutdown_broadcast_oneshot(unsigned int *cpup)
 	cpumask_clear_cpu(cpu, tick_broadcast_pending_mask);
 	cpumask_clear_cpu(cpu, tick_broadcast_force_mask);
 
+<<<<<<< HEAD
 	broadcast_move_bc(cpu);
 
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
+=======
+	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Check, whether the broadcast device is in one shot mode
@@ -922,6 +1358,19 @@ bool tick_broadcast_oneshot_available(void)
 	return bc ? bc->features & CLOCK_EVT_FEAT_ONESHOT : false;
 }
 
+<<<<<<< HEAD
+=======
+#else
+int __tick_broadcast_oneshot_control(enum tick_broadcast_state state)
+{
+	struct clock_event_device *bc = tick_broadcast_device.evtdev;
+
+	if (!bc || (bc->features & CLOCK_EVT_FEAT_HRTIMER))
+		return -EBUSY;
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 void __init tick_broadcast_init(void)

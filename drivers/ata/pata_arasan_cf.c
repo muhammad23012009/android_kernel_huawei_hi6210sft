@@ -4,7 +4,11 @@
  * Arasan Compact Flash host controller source file
  *
  * Copyright (C) 2011 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -319,6 +323,10 @@ static int cf_init(struct arasan_cf_dev *acdev)
 	ret = clk_set_rate(acdev->clk, 166000000);
 	if (ret) {
 		dev_warn(acdev->host->dev, "clock set rate failed");
+<<<<<<< HEAD
+=======
+		clk_disable_unprepare(acdev->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 
@@ -355,7 +363,11 @@ static void cf_exit(struct arasan_cf_dev *acdev)
 
 static void dma_callback(void *dev)
 {
+<<<<<<< HEAD
 	struct arasan_cf_dev *acdev = (struct arasan_cf_dev *) dev;
+=======
+	struct arasan_cf_dev *acdev = dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	complete(&acdev->dma_completion);
 }
@@ -396,8 +408,12 @@ dma_xfer(struct arasan_cf_dev *acdev, dma_addr_t src, dma_addr_t dest, u32 len)
 	struct dma_async_tx_descriptor *tx;
 	struct dma_chan *chan = acdev->dma_chan;
 	dma_cookie_t cookie;
+<<<<<<< HEAD
 	unsigned long flags = DMA_PREP_INTERRUPT | DMA_COMPL_SKIP_SRC_UNMAP |
 		DMA_COMPL_SKIP_DEST_UNMAP;
+=======
+	unsigned long flags = DMA_PREP_INTERRUPT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	tx = chan->device->device_prep_dma_memcpy(chan, dest, src, len, flags);
@@ -420,7 +436,11 @@ dma_xfer(struct arasan_cf_dev *acdev, dma_addr_t src, dma_addr_t dest, u32 len)
 
 	/* Wait for DMA to complete */
 	if (!wait_for_completion_timeout(&acdev->dma_completion, TIMEOUT)) {
+<<<<<<< HEAD
 		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+=======
+		dmaengine_terminate_all(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(acdev->host->dev, "wait_for_completion_timeout\n");
 		return -ETIMEDOUT;
 	}
@@ -565,7 +585,11 @@ chan_request_fail:
 	qc->ap->hsm_task_state = HSM_ST_ERR;
 
 	cf_ctrl_reset(acdev);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(qc->ap->lock, flags);
+=======
+	spin_unlock_irqrestore(&acdev->host->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sff_intr:
 	dma_complete(acdev);
 }
@@ -654,7 +678,11 @@ static void arasan_cf_freeze(struct ata_port *ap)
 	ata_sff_freeze(ap);
 }
 
+<<<<<<< HEAD
 void arasan_cf_error_handler(struct ata_port *ap)
+=======
+static void arasan_cf_error_handler(struct ata_port *ap)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct arasan_cf_dev *acdev = ap->host->private_data;
 
@@ -683,7 +711,11 @@ static void arasan_cf_dma_start(struct arasan_cf_dev *acdev)
 	ata_sff_queue_work(&acdev->work);
 }
 
+<<<<<<< HEAD
 unsigned int arasan_cf_qc_issue(struct ata_queued_cmd *qc)
+=======
+static unsigned int arasan_cf_qc_issue(struct ata_queued_cmd *qc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ata_port *ap = qc->ap;
 	struct arasan_cf_dev *acdev = ap->host->private_data;
@@ -819,12 +851,28 @@ static int arasan_cf_probe(struct platform_device *pdev)
 	else
 		quirk = CF_BROKEN_UDMA; /* as it is on spear1340 */
 
+<<<<<<< HEAD
 	/* if irq is 0, support only PIO */
 	acdev->irq = platform_get_irq(pdev, 0);
 	if (acdev->irq)
 		irq_handler = arasan_cf_interrupt;
 	else
 		quirk |= CF_BROKEN_MWDMA | CF_BROKEN_UDMA;
+=======
+	/*
+	 * If there's an error getting IRQ (or we do get IRQ0),
+	 * support only PIO
+	 */
+	ret = platform_get_irq(pdev, 0);
+	if (ret > 0) {
+		acdev->irq = ret;
+		irq_handler = arasan_cf_interrupt;
+	} else	if (ret == -EPROBE_DEFER) {
+		return ret;
+	} else	{
+		quirk |= CF_BROKEN_MWDMA | CF_BROKEN_UDMA;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	acdev->pbase = res->start;
 	acdev->vbase = devm_ioremap_nocache(&pdev->dev, res->start,
@@ -834,7 +882,11 @@ static int arasan_cf_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	acdev->clk = clk_get(&pdev->dev, NULL);
+=======
+	acdev->clk = devm_clk_get(&pdev->dev, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(acdev->clk)) {
 		dev_warn(&pdev->dev, "Clock not found\n");
 		return PTR_ERR(acdev->clk);
@@ -843,9 +895,14 @@ static int arasan_cf_probe(struct platform_device *pdev)
 	/* allocate host */
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host) {
+<<<<<<< HEAD
 		ret = -ENOMEM;
 		dev_warn(&pdev->dev, "alloc host fail\n");
 		goto free_clk;
+=======
+		dev_warn(&pdev->dev, "alloc host fail\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ap = host->ports[0];
@@ -894,6 +951,7 @@ static int arasan_cf_probe(struct platform_device *pdev)
 
 	ret = cf_init(acdev);
 	if (ret)
+<<<<<<< HEAD
 		goto free_clk;
 
 	cf_card_detect(acdev, 0);
@@ -903,17 +961,37 @@ static int arasan_cf_probe(struct platform_device *pdev)
 
 free_clk:
 	clk_put(acdev->clk);
+=======
+		return ret;
+
+	cf_card_detect(acdev, 0);
+
+	ret = ata_host_activate(host, acdev->irq, irq_handler, 0,
+				&arasan_cf_sht);
+	if (!ret)
+		return 0;
+
+	cf_exit(acdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int arasan_cf_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct arasan_cf_dev *acdev = host->ports[0]->private_data;
 
 	ata_host_detach(host);
 	cf_exit(acdev);
+<<<<<<< HEAD
 	clk_put(acdev->clk);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -925,8 +1003,12 @@ static int arasan_cf_suspend(struct device *dev)
 	struct arasan_cf_dev *acdev = host->ports[0]->private_data;
 
 	if (acdev->dma_chan)
+<<<<<<< HEAD
 		acdev->dma_chan->device->device_control(acdev->dma_chan,
 				DMA_TERMINATE_ALL, 0);
+=======
+		dmaengine_terminate_all(acdev->dma_chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cf_exit(acdev);
 	return ata_host_suspend(host, PMSG_SUSPEND);
@@ -959,7 +1041,10 @@ static struct platform_driver arasan_cf_driver = {
 	.remove		= arasan_cf_remove,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &arasan_cf_pm_ops,
 		.of_match_table = of_match_ptr(arasan_cf_id_table),
 	},
@@ -967,7 +1052,11 @@ static struct platform_driver arasan_cf_driver = {
 
 module_platform_driver(arasan_cf_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Viresh Kumar <viresh.linux@gmail.com>");
+=======
+MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("Arasan ATA Compact Flash driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:" DRIVER_NAME);

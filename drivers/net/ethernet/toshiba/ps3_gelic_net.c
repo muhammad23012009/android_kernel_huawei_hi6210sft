@@ -102,6 +102,21 @@ static void gelic_card_get_ether_port_status(struct gelic_card *card,
 	}
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * gelic_descr_get_status -- returns the status of a descriptor
+ * @descr: descriptor to look at
+ *
+ * returns the status as in the dmac_cmd_status field of the descriptor
+ */
+static enum gelic_descr_dma_status
+gelic_descr_get_status(struct gelic_descr *descr)
+{
+	return be32_to_cpu(descr->dmac_cmd_status) & GELIC_DESCR_DMA_STAT_MASK;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int gelic_card_set_link_mode(struct gelic_card *card, int mode)
 {
 	int status;
@@ -278,6 +293,7 @@ void gelic_card_down(struct gelic_card *card)
 }
 
 /**
+<<<<<<< HEAD
  * gelic_descr_get_status -- returns the status of a descriptor
  * @descr: descriptor to look at
  *
@@ -290,6 +306,8 @@ gelic_descr_get_status(struct gelic_descr *descr)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * gelic_card_free_chain - free descriptor chain
  * @card: card structure
  * @descr_in: address of desc
@@ -845,9 +863,15 @@ static int gelic_card_kick_txdma(struct gelic_card *card,
  * @skb: packet to send out
  * @netdev: interface device structure
  *
+<<<<<<< HEAD
  * returns 0 on success, <0 on failure
  */
 int gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+=======
+ * returns NETDEV_TX_OK on success, NETDEV_TX_BUSY on failure
+ */
+netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct gelic_card *card = netdev_card(netdev);
 	struct gelic_descr *descr;
@@ -1065,7 +1089,11 @@ refill:
 
 	/*
 	 * this call can fail, but for now, just leave this
+<<<<<<< HEAD
 	 * decriptor without skb
+=======
+	 * descriptor without skb
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	gelic_descr_prepare_rx(card, descr);
 
@@ -1466,8 +1494,12 @@ static void gelic_ether_setup_netdev_ops(struct net_device *netdev,
 {
 	netdev->watchdog_timeo = GELIC_NET_WATCHDOG_TIMEOUT;
 	/* NAPI */
+<<<<<<< HEAD
 	netif_napi_add(netdev, napi,
 		       gelic_net_poll, GELIC_NET_NAPI_WEIGHT);
+=======
+	netif_napi_add(netdev, napi, gelic_net_poll, NAPI_POLL_WEIGHT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev->ethtool_ops = &gelic_ether_ethtool_ops;
 	netdev->netdev_ops = &gelic_netdevice_ops;
 }
@@ -1562,7 +1594,11 @@ static struct gelic_card *gelic_alloc_card_net(struct net_device **netdev)
 	 * alloc netdev
 	 */
 	*netdev = alloc_etherdev(sizeof(struct gelic_port));
+<<<<<<< HEAD
 	if (!netdev) {
+=======
+	if (!*netdev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(card->unalign);
 		return NULL;
 	}
@@ -1727,7 +1763,11 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 		goto fail_alloc_irq;
 	}
 	result = request_irq(card->irq, gelic_card_interrupt,
+<<<<<<< HEAD
 			     IRQF_DISABLED, netdev->name, card);
+=======
+			     0, netdev->name, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (result) {
 		dev_info(ctodev(card), "%s:request_irq failed (%d)\n",
@@ -1740,12 +1780,23 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 		GELIC_CARD_PORT_STATUS_CHANGED;
 
 
+<<<<<<< HEAD
 	if (gelic_card_init_chain(card, &card->tx_chain,
 			card->descr, GELIC_NET_TX_DESCRIPTORS))
 		goto fail_alloc_tx;
 	if (gelic_card_init_chain(card, &card->rx_chain,
 				 card->descr + GELIC_NET_TX_DESCRIPTORS,
 				 GELIC_NET_RX_DESCRIPTORS))
+=======
+	result = gelic_card_init_chain(card, &card->tx_chain,
+				       card->descr, GELIC_NET_TX_DESCRIPTORS);
+	if (result)
+		goto fail_alloc_tx;
+	result = gelic_card_init_chain(card, &card->rx_chain,
+				       card->descr + GELIC_NET_TX_DESCRIPTORS,
+				       GELIC_NET_RX_DESCRIPTORS);
+	if (result)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto fail_alloc_rx;
 
 	/* head of chain */
@@ -1755,7 +1806,12 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 		card->rx_top, card->tx_top, sizeof(struct gelic_descr),
 		GELIC_NET_RX_DESCRIPTORS);
 	/* allocate rx skbs */
+<<<<<<< HEAD
 	if (gelic_card_alloc_rx_skbs(card))
+=======
+	result = gelic_card_alloc_rx_skbs(card);
+	if (result)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto fail_alloc_skbs;
 
 	spin_lock_init(&card->tx_lock);
@@ -1767,13 +1823,22 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 	gelic_ether_setup_netdev_ops(netdev, &card->napi);
 	result = gelic_net_setup_netdev(netdev, card);
 	if (result) {
+<<<<<<< HEAD
 		dev_dbg(&dev->core, "%s: setup_netdev failed %d",
+=======
+		dev_dbg(&dev->core, "%s: setup_netdev failed %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__, result);
 		goto fail_setup_netdev;
 	}
 
 #ifdef CONFIG_GELIC_WIRELESS
+<<<<<<< HEAD
 	if (gelic_wl_driver_probe(card)) {
+=======
+	result = gelic_wl_driver_probe(card);
+	if (result) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(&dev->core, "%s: WL init failed\n", __func__);
 		goto fail_setup_netdev;
 	}
@@ -1788,7 +1853,11 @@ fail_alloc_rx:
 	gelic_card_free_chain(card, card->tx_chain.head);
 fail_alloc_tx:
 	free_irq(card->irq, card);
+<<<<<<< HEAD
 	netdev->irq = NO_IRQ;
+=======
+	netdev->irq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail_request_irq:
 	ps3_sb_event_receive_port_destroy(dev, card->irq);
 fail_alloc_irq:
@@ -1840,7 +1909,11 @@ static int ps3_gelic_driver_remove(struct ps3_system_bus_device *dev)
 	netdev0 = card->netdev[GELIC_PORT_ETHERNET_0];
 	/* disconnect event port */
 	free_irq(card->irq, card);
+<<<<<<< HEAD
 	netdev0->irq = NO_IRQ;
+=======
+	netdev0->irq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ps3_sb_event_receive_port_destroy(card->dev, card->irq);
 
 	wait_event(card->waitq,

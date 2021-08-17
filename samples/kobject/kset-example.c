@@ -120,12 +120,27 @@ static ssize_t foo_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
 static ssize_t foo_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
 			 const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	sscanf(buf, "%du", &foo_obj->foo);
 	return count;
 }
 
 static struct foo_attribute foo_attribute =
 	__ATTR(foo, 0666, foo_show, foo_store);
+=======
+	int ret;
+
+	ret = kstrtoint(buf, 10, &foo_obj->foo);
+	if (ret < 0)
+		return ret;
+
+	return count;
+}
+
+/* Sysfs attributes cannot be world-writable. */
+static struct foo_attribute foo_attribute =
+	__ATTR(foo, 0664, foo_show, foo_store);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * More complex function where we determine which variable is being accessed by
@@ -146,9 +161,18 @@ static ssize_t b_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
 static ssize_t b_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
 		       const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int var;
 
 	sscanf(buf, "%du", &var);
+=======
+	int var, ret;
+
+	ret = kstrtoint(buf, 10, &var);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (strcmp(attr->attr.name, "baz") == 0)
 		foo_obj->baz = var;
 	else
@@ -157,9 +181,15 @@ static ssize_t b_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
 }
 
 static struct foo_attribute baz_attribute =
+<<<<<<< HEAD
 	__ATTR(baz, 0666, b_show, b_store);
 static struct foo_attribute bar_attribute =
 	__ATTR(bar, 0666, b_show, b_store);
+=======
+	__ATTR(baz, 0664, b_show, b_store);
+static struct foo_attribute bar_attribute =
+	__ATTR(bar, 0664, b_show, b_store);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Create a group of attributes so that we can create and destroy them all
@@ -262,6 +292,10 @@ baz_error:
 bar_error:
 	destroy_foo_obj(foo_obj);
 foo_error:
+<<<<<<< HEAD
+=======
+	kset_unregister(example_kset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EINVAL;
 }
 
@@ -275,5 +309,9 @@ static void __exit example_exit(void)
 
 module_init(example_init);
 module_exit(example_exit);
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Greg Kroah-Hartman <greg@kroah.com>");

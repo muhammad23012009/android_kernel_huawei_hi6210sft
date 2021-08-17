@@ -239,6 +239,10 @@
 #include <asm/olpc.h>
 #include <asm/paravirt.h>
 #include <asm/reboot.h>
+<<<<<<< HEAD
+=======
+#include <asm/nospec-branch.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_APM_DISPLAY_BLANK) && defined(CONFIG_VT)
 extern int (*console_blank_hook)(int);
@@ -378,7 +382,10 @@ static struct cpuidle_driver apm_idle_driver = {
 		{ /* entry 1 is for APM idle */
 			.name = "APM",
 			.desc = "APM idle",
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.exit_latency = 250,	/* WAG */
 			.target_residency = 500,	/* WAG */
 			.enter = &apm_cpu_idle
@@ -614,11 +621,19 @@ static long __apm_bios_call(void *_call)
 	gdt[0x40 / 8] = bad_bios_desc;
 
 	apm_irq_save(flags);
+<<<<<<< HEAD
+=======
+	firmware_restrict_branch_speculation_start();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	APM_DO_SAVE_SEGS;
 	apm_bios_call_asm(call->func, call->ebx, call->ecx,
 			  &call->eax, &call->ebx, &call->ecx, &call->edx,
 			  &call->esi);
 	APM_DO_RESTORE_SEGS;
+<<<<<<< HEAD
+=======
+	firmware_restrict_branch_speculation_end();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	apm_irq_restore(flags);
 	gdt[0x40 / 8] = save_desc_40;
 	put_cpu();
@@ -690,10 +705,18 @@ static long __apm_bios_call_simple(void *_call)
 	gdt[0x40 / 8] = bad_bios_desc;
 
 	apm_irq_save(flags);
+<<<<<<< HEAD
+=======
+	firmware_restrict_branch_speculation_start();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	APM_DO_SAVE_SEGS;
 	error = apm_bios_call_simple_asm(call->func, call->ebx, call->ecx,
 					 &call->eax);
 	APM_DO_RESTORE_SEGS;
+<<<<<<< HEAD
+=======
+	firmware_restrict_branch_speculation_end();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	apm_irq_restore(flags);
 	gdt[0x40 / 8] = save_desc_40;
 	put_cpu();
@@ -841,6 +864,7 @@ static int apm_do_idle(void)
 	u32 eax;
 	u8 ret = 0;
 	int idled = 0;
+<<<<<<< HEAD
 	int polling;
 	int err = 0;
 
@@ -853,12 +877,19 @@ static int apm_do_idle(void)
 		 */
 		smp_mb();
 	}
+=======
+	int err = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!need_resched()) {
 		idled = 1;
 		ret = apm_bios_call_simple(APM_FUNC_IDLE, 0, 0, &eax, &err);
 	}
+<<<<<<< HEAD
 	if (polling)
 		current_thread_info()->status |= TS_POLLING;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!idled)
 		return 0;
@@ -932,7 +963,11 @@ recalc:
 	} else if (jiffies_since_last_check > idle_period) {
 		unsigned int idle_percentage;
 
+<<<<<<< HEAD
 		idle_percentage = stime - last_stime;
+=======
+		idle_percentage = cputime_to_jiffies(stime - last_stime);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		idle_percentage *= 100;
 		idle_percentage /= jiffies_since_last_check;
 		use_apm_idle = (idle_percentage > idle_threshold);
@@ -1055,8 +1090,16 @@ static int apm_get_power_status(u_short *status, u_short *bat, u_short *life)
 
 	if (apm_info.get_power_status_broken)
 		return APM_32_UNSUPPORTED;
+<<<<<<< HEAD
 	if (apm_bios_call(&call))
 		return call.err;
+=======
+	if (apm_bios_call(&call)) {
+		if (!call.err)
+			return APM_NO_ERROR;
+		return call.err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*status = call.ebx;
 	*bat = call.ecx;
 	if (apm_info.get_power_status_swabinminutes) {
@@ -1101,7 +1144,11 @@ static int apm_get_battery_status(u_short which, u_short *status,
  *	@device: identity of device
  *	@enable: on/off
  *
+<<<<<<< HEAD
  *	Activate or deactive power management on either a specific device
+=======
+ *	Activate or deactivate power management on either a specific device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	or the entire system (%APM_DEVICE_ALL).
  */
 
@@ -2280,7 +2327,11 @@ static int __init apm_init(void)
 
 	dmi_check_system(apm_dmi_table);
 
+<<<<<<< HEAD
 	if (apm_info.bios.version == 0 || paravirt_enabled() || machine_is_olpc()) {
+=======
+	if (apm_info.bios.version == 0 || machine_is_olpc()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO "apm: BIOS not found.\n");
 		return -ENODEV;
 	}

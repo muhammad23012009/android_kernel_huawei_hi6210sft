@@ -33,6 +33,10 @@
 struct snd_seq_user_client {
 	struct file *file;	/* file struct of client */
 	/* ... */
+<<<<<<< HEAD
+=======
+	struct pid *owner;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 	/* fifo */
 	struct snd_seq_fifo *fifo;	/* queue for incoming events */
@@ -41,6 +45,10 @@ struct snd_seq_user_client {
 
 struct snd_seq_kernel_client {
 	/* ... */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -59,6 +67,10 @@ struct snd_seq_client {
 	struct list_head ports_list_head;
 	rwlock_t ports_lock;
 	struct mutex ports_mutex;
+<<<<<<< HEAD
+=======
+	struct mutex ioctl_mutex;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int convert32;		/* convert 32->64bit */
 
 	/* output pool */

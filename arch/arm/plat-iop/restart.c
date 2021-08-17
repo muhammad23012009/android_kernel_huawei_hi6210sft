@@ -11,7 +11,11 @@
 #include <asm/system_misc.h>
 #include <mach/hardware.h>
 
+<<<<<<< HEAD
 void iop3xx_restart(char mode, const char *cmd)
+=======
+void iop3xx_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	*IOP3XX_PCSR = 0x30;
 

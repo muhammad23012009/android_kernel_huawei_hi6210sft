@@ -33,11 +33,14 @@
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_I2C_PNX0105
 /* Until i2c driver available in kernel.*/
 #include <linux/i2c-pnx0105.h>
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <irq.h>
 #include <irq-mapping.h>
 #include <pnx833x.h>
@@ -134,6 +137,7 @@ static struct platform_device pnx833x_usb_ehci_device = {
 	.resource	= pnx833x_usb_ehci_resources,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_I2C_PNX0105
 static struct resource pnx833x_i2c0_resources[] = {
 	{
@@ -198,6 +202,8 @@ static struct platform_device pnx833x_i2c1_device = {
 };
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u64 ethernet_dmamask = DMA_BIT_MASK(32);
 
 static struct resource pnx833x_ethernet_resources[] = {
@@ -206,11 +212,19 @@ static struct resource pnx833x_ethernet_resources[] = {
 		.end   = PNX8335_IP3902_PORTS_END,
 		.flags = IORESOURCE_MEM,
 	},
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SOC_PNX8335
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[1] = {
 		.start = PNX8335_PIC_ETHERNET_INT,
 		.end   = PNX8335_PIC_ETHERNET_INT,
 		.flags = IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device pnx833x_ethernet_device = {
@@ -247,7 +261,11 @@ static struct platform_device pnx833x_sata_device = {
 static void
 pnx833x_flash_nand_cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long nandaddr = (unsigned long)this->IO_ADDR_W;
 
 	if (cmd == NAND_CMD_NONE)
@@ -292,10 +310,13 @@ static struct platform_device pnx833x_flash_nand = {
 static struct platform_device *pnx833x_platform_devices[] __initdata = {
 	&pnx833x_uart_device,
 	&pnx833x_usb_ehci_device,
+<<<<<<< HEAD
 #ifdef CONFIG_I2C_PNX0105
 	&pnx833x_i2c0_device,
 	&pnx833x_i2c1_device,
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&pnx833x_ethernet_device,
 	&pnx833x_sata_device,
 	&pnx833x_flash_nand,
@@ -303,12 +324,17 @@ static struct platform_device *pnx833x_platform_devices[] __initdata = {
 
 static int __init pnx833x_platform_init(void)
 {
+<<<<<<< HEAD
 	int res;
 
 	res = platform_add_devices(pnx833x_platform_devices,
 				   ARRAY_SIZE(pnx833x_platform_devices));
 
 	return res;
+=======
+	return platform_add_devices(pnx833x_platform_devices,
+				    ARRAY_SIZE(pnx833x_platform_devices));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 arch_initcall(pnx833x_platform_init);

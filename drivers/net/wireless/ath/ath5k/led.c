@@ -53,7 +53,11 @@
 #define ATH_POLARITY(data) ((data) & 0xff)
 
 /* Devices we match on for LED config info (typically laptops) */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ath5k_led_devices) = {
+=======
+static const struct pci_device_id ath5k_led_devices[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* AR5211 */
 	{ PCI_VDEVICE(ATHEROS, PCI_DEVICE_ID_ATHEROS_AR5211), ATH_LED(0, 0) },
 	/* HP Compaq nc6xx, nc4000, nx6000 */
@@ -124,12 +128,20 @@ ath5k_led_brightness_set(struct led_classdev *led_dev,
 
 static int
 ath5k_register_led(struct ath5k_hw *ah, struct ath5k_led *led,
+<<<<<<< HEAD
 		   const char *name, char *trigger)
+=======
+		   const char *name, const char *trigger)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 
 	led->ah = ah;
 	strncpy(led->name, name, sizeof(led->name));
+<<<<<<< HEAD
+=======
+	led->name[sizeof(led->name)-1] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	led->led_dev.name = led->name;
 	led->led_dev.default_trigger = trigger;
 	led->led_dev.brightness_set = ath5k_led_brightness_set;
@@ -162,7 +174,11 @@ int ath5k_init_leds(struct ath5k_hw *ah)
 {
 	int ret = 0;
 	struct ieee80211_hw *hw = ah->hw;
+<<<<<<< HEAD
 #ifndef CONFIG_ATHEROS_AR231X
+=======
+#ifndef CONFIG_ATH5K_AHB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_dev *pdev = ah->pdev;
 #endif
 	char name[ATH5K_LED_MAX_NAME_LEN + 1];
@@ -171,7 +187,11 @@ int ath5k_init_leds(struct ath5k_hw *ah)
 	if (!ah->pdev)
 		return 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_ATHEROS_AR231X
+=======
+#ifdef CONFIG_ATH5K_AHB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	match = NULL;
 #else
 	match = pci_match_id(&ath5k_led_devices[0], pdev);

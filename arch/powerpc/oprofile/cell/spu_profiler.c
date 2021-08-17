@@ -43,7 +43,11 @@ static unsigned int profiling_interval;
 #define SPU_PC_MASK	     0xFFFF
 
 DEFINE_SPINLOCK(oprof_spu_smpl_arry_lck);
+<<<<<<< HEAD
 unsigned long oprof_spu_smpl_arry_lck_flags;
+=======
+static unsigned long oprof_spu_smpl_arry_lck_flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void set_spu_profiling_frequency(unsigned int freq_khz, unsigned int cycles_reset)
 {

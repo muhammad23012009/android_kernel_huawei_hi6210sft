@@ -63,9 +63,13 @@ struct driver_private {
  *	binding of drivers which were unable to get all the resources needed by
  *	the device; typically because it depends on another driver getting
  *	probed first.
+<<<<<<< HEAD
  * @driver_data - private pointer for driver specific info.  Will turn into a
  * list soon.
  * @device - pointer back to the struct class that this structure is
+=======
+ * @device - pointer back to the struct device that this structure is
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * associated with.
  *
  * Nothing outside of the driver core should ever touch these fields.
@@ -76,7 +80,10 @@ struct device_private {
 	struct klist_node knode_driver;
 	struct klist_node knode_bus;
 	struct list_head deferred_probe;
+<<<<<<< HEAD
 	void *driver_data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *device;
 };
 #define to_device_private_parent(obj)	\
@@ -100,6 +107,10 @@ static inline int hypervisor_init(void) { return 0; }
 #endif
 extern int platform_bus_init(void);
 extern void cpu_dev_init(void);
+<<<<<<< HEAD
+=======
+extern void container_dev_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct kobject *virtual_device_parent(struct device *dev);
 
@@ -118,13 +129,36 @@ static inline int driver_match_device(struct device_driver *drv,
 {
 	return drv->bus->match ? drv->bus->match(dev, drv) : 1;
 }
+<<<<<<< HEAD
+=======
+extern bool driver_allows_async_probing(struct device_driver *drv);
+
+extern int driver_add_groups(struct device_driver *drv,
+			     const struct attribute_group **groups);
+extern void driver_remove_groups(struct device_driver *drv,
+				 const struct attribute_group **groups);
+
+extern int device_add_groups(struct device *dev,
+			     const struct attribute_group **groups);
+extern void device_remove_groups(struct device *dev,
+				 const struct attribute_group **groups);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern char *make_class_name(const char *name, struct kobject *kobj);
 
 extern int devres_release_all(struct device *dev);
+<<<<<<< HEAD
 
 /* /sys/devices directory */
 extern struct kset *devices_kset;
+=======
+extern void device_block_probing(void);
+extern void device_unblock_probing(void);
+
+/* /sys/devices directory */
+extern struct kset *devices_kset;
+extern void devices_kset_move_last(struct device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_MODULES) && defined(CONFIG_SYSFS)
 extern void module_add_driver(struct module *mod, struct device_driver *drv);

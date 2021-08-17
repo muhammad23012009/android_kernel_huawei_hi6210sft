@@ -4,6 +4,10 @@
 # for more details.
 #
 # Copyright (C) 2001 - 2005  Tensilica Inc.
+<<<<<<< HEAD
+=======
+# Copyright (C) 2014 Cadence Design Systems Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # This file is included by the global makefile so that you can add your own
 # architecture-specific flags and dependencies. Remember to do have actions
@@ -13,11 +17,15 @@
 # Core configuration.
 # (Use VAR=<xtensa_config> to use another default compiler.)
 
+<<<<<<< HEAD
 variant-$(CONFIG_XTENSA_VARIANT_FSF)		:= fsf
 variant-$(CONFIG_XTENSA_VARIANT_DC232B)		:= dc232b
 variant-$(CONFIG_XTENSA_VARIANT_DC233C)		:= dc233c
 variant-$(CONFIG_XTENSA_VARIANT_S6000)		:= s6000
 variant-$(CONFIG_XTENSA_VARIANT_LINUX_CUSTOM)	:= custom
+=======
+variant-y := $(patsubst "%",%,$(CONFIG_XTENSA_VARIANT_NAME))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 VARIANT = $(variant-y)
 export VARIANT
@@ -38,7 +46,10 @@ endif
 
 platform-$(CONFIG_XTENSA_PLATFORM_XT2000)	:= xt2000
 platform-$(CONFIG_XTENSA_PLATFORM_ISS)		:= iss
+<<<<<<< HEAD
 platform-$(CONFIG_XTENSA_PLATFORM_S6105)	:= s6105
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 platform-$(CONFIG_XTENSA_PLATFORM_XTFPGA)	:= xtfpga
 
 PLATFORM = $(platform-y)
@@ -57,9 +68,17 @@ endif
 
 ifeq ($(shell echo __XTENSA_EB__ | $(CC) -E - | grep -v "\#"),1)
 CHECKFLAGS += -D__XTENSA_EB__
+<<<<<<< HEAD
 endif
 ifeq ($(shell echo __XTENSA_EL__ | $(CC) -E - | grep -v "\#"),1)
 CHECKFLAGS += -D__XTENSA_EL__
+=======
+KBUILD_CPPFLAGS += -DCONFIG_CPU_BIG_ENDIAN
+endif
+ifeq ($(shell echo __XTENSA_EL__ | $(CC) -E - | grep -v "\#"),1)
+CHECKFLAGS += -D__XTENSA_EL__
+KBUILD_CPPFLAGS += -DCONFIG_CPU_LITTLE_ENDIAN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif
 
 vardirs := $(patsubst %,arch/xtensa/variants/%/,$(variant-y))
@@ -105,6 +124,15 @@ zImage: vmlinux
 %.dtb:
 	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
 
+<<<<<<< HEAD
 define archhelp
   @echo '* zImage      - Compressed kernel image (arch/xtensa/boot/images/zImage.*)'
+=======
+dtbs: scripts
+	$(Q)$(MAKE) $(build)=$(boot)/dts
+
+define archhelp
+  @echo '* zImage      - Compressed kernel image (arch/xtensa/boot/images/zImage.*)'
+  @echo '  dtbs        - Build device tree blobs for enabled boards'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endef

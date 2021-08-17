@@ -10,4 +10,9 @@ obj-$(CONFIG_XILINX_VIRTEX_5_FXT) += virtex.o
 obj-$(CONFIG_XILINX_ML510) += virtex_ml510.o
 obj-$(CONFIG_ISS4xx)	+= iss4xx.o
 obj-$(CONFIG_CANYONLANDS)+= canyonlands.o
+<<<<<<< HEAD
 obj-$(CONFIG_CURRITUCK)	+= currituck.o
+=======
+obj-$(CONFIG_CURRITUCK)	+= ppc476.o
+obj-$(CONFIG_AKEBONO)	+= ppc476.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

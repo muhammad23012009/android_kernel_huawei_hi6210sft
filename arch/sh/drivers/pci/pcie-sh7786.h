@@ -145,9 +145,12 @@
 /*	PCIERMSGIER	*/
 #define	SH4A_PCIERMSGIER	(0x004040)	/* R/W - 0x0000 0000 32 */
 
+<<<<<<< HEAD
 /*	PCIEPHYCTLR	*/
 #define SH4A_PCIEPHYCTLR	(0x010000)	/* R/W - 0x0000 0000 32 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*	PCIEPHYADRR	*/
 #define	SH4A_PCIEPHYADRR	(0x010004)	/* R/W - 0x0000 0000 32 */
 #define		BITS_ACK	(24)			// Rev1.171

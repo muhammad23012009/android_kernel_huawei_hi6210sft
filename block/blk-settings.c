@@ -53,6 +53,7 @@ void blk_queue_unprep_rq(struct request_queue *q, unprep_rq_fn *ufn)
 }
 EXPORT_SYMBOL(blk_queue_unprep_rq);
 
+<<<<<<< HEAD
 /**
  * blk_queue_merge_bvec - set a merge_bvec function for queue
  * @q:		queue
@@ -75,6 +76,8 @@ void blk_queue_merge_bvec(struct request_queue *q, merge_bvec_fn *mbfn)
 }
 EXPORT_SYMBOL(blk_queue_merge_bvec);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void blk_queue_softirq_done(struct request_queue *q, softirq_done_fn *fn)
 {
 	q->softirq_done_fn = fn;
@@ -111,10 +114,21 @@ void blk_set_default_limits(struct queue_limits *lim)
 	lim->max_segments = BLK_MAX_SEGMENTS;
 	lim->max_integrity_segments = 0;
 	lim->seg_boundary_mask = BLK_SEG_BOUNDARY_MASK;
+<<<<<<< HEAD
 	lim->max_segment_size = BLK_MAX_SEGMENT_SIZE;
 	lim->max_sectors = lim->max_hw_sectors = BLK_SAFE_MAX_SECTORS;
 	lim->max_write_same_sectors = 0;
 	lim->max_discard_sectors = 0;
+=======
+	lim->virt_boundary_mask = 0;
+	lim->max_segment_size = BLK_MAX_SEGMENT_SIZE;
+	lim->max_sectors = lim->max_hw_sectors = BLK_SAFE_MAX_SECTORS;
+	lim->max_dev_sectors = 0;
+	lim->chunk_sectors = 0;
+	lim->max_write_same_sectors = 0;
+	lim->max_discard_sectors = 0;
+	lim->max_hw_discard_sectors = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lim->discard_granularity = 0;
 	lim->discard_alignment = 0;
 	lim->discard_misaligned = 0;
@@ -146,6 +160,10 @@ void blk_set_stacking_limits(struct queue_limits *lim)
 	lim->max_hw_sectors = UINT_MAX;
 	lim->max_segment_size = UINT_MAX;
 	lim->max_sectors = UINT_MAX;
+<<<<<<< HEAD
+=======
+	lim->max_dev_sectors = UINT_MAX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lim->max_write_same_sectors = UINT_MAX;
 }
 EXPORT_SYMBOL(blk_set_stacking_limits);
@@ -196,17 +214,29 @@ EXPORT_SYMBOL(blk_queue_make_request);
 /**
  * blk_queue_bounce_limit - set bounce buffer limit for queue
  * @q: the request queue for the device
+<<<<<<< HEAD
  * @dma_mask: the maximum address the device can handle
+=======
+ * @max_addr: the maximum address the device can handle
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Description:
  *    Different hardware can have different requirements as to what pages
  *    it can do I/O directly to. A low level driver can call
  *    blk_queue_bounce_limit to have lower memory pages allocated as bounce
+<<<<<<< HEAD
  *    buffers for doing I/O to pages residing above @dma_mask.
  **/
 void blk_queue_bounce_limit(struct request_queue *q, u64 dma_mask)
 {
 	unsigned long b_pfn = dma_mask >> PAGE_SHIFT;
+=======
+ *    buffers for doing I/O to pages residing above @max_addr.
+ **/
+void blk_queue_bounce_limit(struct request_queue *q, u64 max_addr)
+{
+	unsigned long b_pfn = max_addr >> PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int dma = 0;
 
 	q->bounce_gfp = GFP_NOIO;
@@ -233,30 +263,54 @@ void blk_queue_bounce_limit(struct request_queue *q, u64 dma_mask)
 EXPORT_SYMBOL(blk_queue_bounce_limit);
 
 /**
+<<<<<<< HEAD
  * blk_limits_max_hw_sectors - set hard and soft limit of max sectors for request
  * @limits: the queue limits
+=======
+ * blk_queue_max_hw_sectors - set max sectors for a request for this queue
+ * @q:  the request queue for the device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @max_hw_sectors:  max hardware sectors in the usual 512b unit
  *
  * Description:
  *    Enables a low level driver to set a hard upper limit,
  *    max_hw_sectors, on the size of requests.  max_hw_sectors is set by
+<<<<<<< HEAD
  *    the device driver based upon the combined capabilities of I/O
  *    controller and storage device.
+=======
+ *    the device driver based upon the capabilities of the I/O
+ *    controller.
+ *
+ *    max_dev_sectors is a hard limit imposed by the storage device for
+ *    READ/WRITE requests. It is set by the disk driver.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *    max_sectors is a soft limit imposed by the block layer for
  *    filesystem type requests.  This value can be overridden on a
  *    per-device basis in /sys/block/<device>/queue/max_sectors_kb.
  *    The soft limit can not exceed max_hw_sectors.
  **/
+<<<<<<< HEAD
 void blk_limits_max_hw_sectors(struct queue_limits *limits, unsigned int max_hw_sectors)
 {
 	if ((max_hw_sectors << 9) < PAGE_CACHE_SIZE) {
 		max_hw_sectors = 1 << (PAGE_CACHE_SHIFT - 9);
+=======
+void blk_queue_max_hw_sectors(struct request_queue *q, unsigned int max_hw_sectors)
+{
+	struct queue_limits *limits = &q->limits;
+	unsigned int max_sectors;
+
+	if ((max_hw_sectors << 9) < PAGE_SIZE) {
+		max_hw_sectors = 1 << (PAGE_SHIFT - 9);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO "%s: set to minimum %d\n",
 		       __func__, max_hw_sectors);
 	}
 
 	limits->max_hw_sectors = max_hw_sectors;
+<<<<<<< HEAD
 	limits->max_sectors = min_t(unsigned int, max_hw_sectors,
 				    BLK_DEF_MAX_SECTORS);
 }
@@ -275,6 +329,33 @@ void blk_queue_max_hw_sectors(struct request_queue *q, unsigned int max_hw_secto
 	blk_limits_max_hw_sectors(&q->limits, max_hw_sectors);
 }
 EXPORT_SYMBOL(blk_queue_max_hw_sectors);
+=======
+	max_sectors = min_not_zero(max_hw_sectors, limits->max_dev_sectors);
+	max_sectors = min_t(unsigned int, max_sectors, BLK_DEF_MAX_SECTORS);
+	limits->max_sectors = max_sectors;
+}
+EXPORT_SYMBOL(blk_queue_max_hw_sectors);
+
+/**
+ * blk_queue_chunk_sectors - set size of the chunk for this queue
+ * @q:  the request queue for the device
+ * @chunk_sectors:  chunk sectors in the usual 512b unit
+ *
+ * Description:
+ *    If a driver doesn't want IOs to cross a given chunk size, it can set
+ *    this limit and prevent merging across chunks. Note that the chunk size
+ *    must currently be a power-of-2 in sectors. Also note that the block
+ *    layer must accept a page worth of data at any offset. So if the
+ *    crossing of chunks is a hard limitation in the driver, it must still be
+ *    prepared to split single page bios.
+ **/
+void blk_queue_chunk_sectors(struct request_queue *q, unsigned int chunk_sectors)
+{
+	BUG_ON(!is_power_of_2(chunk_sectors));
+	q->limits.chunk_sectors = chunk_sectors;
+}
+EXPORT_SYMBOL(blk_queue_chunk_sectors);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * blk_queue_max_discard_sectors - set max sectors for a single discard
@@ -284,6 +365,10 @@ EXPORT_SYMBOL(blk_queue_max_hw_sectors);
 void blk_queue_max_discard_sectors(struct request_queue *q,
 		unsigned int max_discard_sectors)
 {
+<<<<<<< HEAD
+=======
+	q->limits.max_hw_discard_sectors = max_discard_sectors;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	q->limits.max_discard_sectors = max_discard_sectors;
 }
 EXPORT_SYMBOL(blk_queue_max_discard_sectors);
@@ -332,8 +417,13 @@ EXPORT_SYMBOL(blk_queue_max_segments);
  **/
 void blk_queue_max_segment_size(struct request_queue *q, unsigned int max_size)
 {
+<<<<<<< HEAD
 	if (max_size < PAGE_CACHE_SIZE) {
 		max_size = PAGE_CACHE_SIZE;
+=======
+	if (max_size < PAGE_SIZE) {
+		max_size = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO "%s: set to minimum %d\n",
 		       __func__, max_size);
 	}
@@ -352,7 +442,11 @@ EXPORT_SYMBOL(blk_queue_max_segment_size);
  *   storage device can address.  The default of 512 covers most
  *   hardware.
  **/
+<<<<<<< HEAD
 void blk_queue_logical_block_size(struct request_queue *q, unsigned short size)
+=======
+void blk_queue_logical_block_size(struct request_queue *q, unsigned int size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	q->limits.logical_block_size = size;
 
@@ -497,6 +591,17 @@ void blk_queue_stack_limits(struct request_queue *t, struct request_queue *b)
 }
 EXPORT_SYMBOL(blk_queue_stack_limits);
 
+<<<<<<< HEAD
+=======
+static unsigned int blk_round_down_sectors(unsigned int sectors, unsigned int lbs)
+{
+	sectors = round_down(sectors, lbs >> SECTOR_SHIFT);
+	if (sectors < PAGE_SIZE >> SECTOR_SHIFT)
+		sectors = PAGE_SIZE >> SECTOR_SHIFT;
+	return sectors;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * blk_stack_limits - adjust queue_limits for stacked devices
  * @t:	the stacking driver limits (top device)
@@ -525,12 +630,21 @@ int blk_stack_limits(struct queue_limits *t, struct queue_limits *b,
 
 	t->max_sectors = min_not_zero(t->max_sectors, b->max_sectors);
 	t->max_hw_sectors = min_not_zero(t->max_hw_sectors, b->max_hw_sectors);
+<<<<<<< HEAD
+=======
+	t->max_dev_sectors = min_not_zero(t->max_dev_sectors, b->max_dev_sectors);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	t->max_write_same_sectors = min(t->max_write_same_sectors,
 					b->max_write_same_sectors);
 	t->bounce_pfn = min_not_zero(t->bounce_pfn, b->bounce_pfn);
 
 	t->seg_boundary_mask = min_not_zero(t->seg_boundary_mask,
 					    b->seg_boundary_mask);
+<<<<<<< HEAD
+=======
+	t->virt_boundary_mask = min_not_zero(t->virt_boundary_mask,
+					    b->virt_boundary_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	t->max_segments = min_not_zero(t->max_segments, b->max_segments);
 	t->max_integrity_segments = min_not_zero(t->max_integrity_segments,
@@ -566,7 +680,11 @@ int blk_stack_limits(struct queue_limits *t, struct queue_limits *b,
 				     b->physical_block_size);
 
 	t->io_min = max(t->io_min, b->io_min);
+<<<<<<< HEAD
 	t->io_opt = lcm(t->io_opt, b->io_opt);
+=======
+	t->io_opt = lcm_not_zero(t->io_opt, b->io_opt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	t->cluster &= b->cluster;
 	t->discard_zeroes_data &= b->discard_zeroes_data;
@@ -592,8 +710,17 @@ int blk_stack_limits(struct queue_limits *t, struct queue_limits *b,
 		ret = -1;
 	}
 
+<<<<<<< HEAD
 	/* Find lowest common alignment_offset */
 	t->alignment_offset = lcm(t->alignment_offset, alignment)
+=======
+	t->raid_partial_stripes_expensive =
+		max(t->raid_partial_stripes_expensive,
+		    b->raid_partial_stripes_expensive);
+
+	/* Find lowest common alignment_offset */
+	t->alignment_offset = lcm_not_zero(t->alignment_offset, alignment)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		% max(t->physical_block_size, t->io_min);
 
 	/* Verify that new alignment_offset is on a logical block boundary */
@@ -602,6 +729,13 @@ int blk_stack_limits(struct queue_limits *t, struct queue_limits *b,
 		ret = -1;
 	}
 
+<<<<<<< HEAD
+=======
+	t->max_sectors = blk_round_down_sectors(t->max_sectors, t->logical_block_size);
+	t->max_hw_sectors = blk_round_down_sectors(t->max_hw_sectors, t->logical_block_size);
+	t->max_dev_sectors = blk_round_down_sectors(t->max_dev_sectors, t->logical_block_size);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Discard alignment and granularity */
 	if (b->discard_granularity) {
 		alignment = queue_limit_discard_alignment(b, start);
@@ -618,9 +752,17 @@ int blk_stack_limits(struct queue_limits *t, struct queue_limits *b,
 
 		t->max_discard_sectors = min_not_zero(t->max_discard_sectors,
 						      b->max_discard_sectors);
+<<<<<<< HEAD
 		t->discard_granularity = max(t->discard_granularity,
 					     b->discard_granularity);
 		t->discard_alignment = lcm(t->discard_alignment, alignment) %
+=======
+		t->max_hw_discard_sectors = min_not_zero(t->max_hw_discard_sectors,
+							 b->max_hw_discard_sectors);
+		t->discard_granularity = max(t->discard_granularity,
+					     b->discard_granularity);
+		t->discard_alignment = lcm_not_zero(t->discard_alignment, alignment) %
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			t->discard_granularity;
 	}
 
@@ -754,8 +896,13 @@ EXPORT_SYMBOL_GPL(blk_queue_dma_drain);
  **/
 void blk_queue_segment_boundary(struct request_queue *q, unsigned long mask)
 {
+<<<<<<< HEAD
 	if (mask < PAGE_CACHE_SIZE - 1) {
 		mask = PAGE_CACHE_SIZE - 1;
+=======
+	if (mask < PAGE_SIZE - 1) {
+		mask = PAGE_SIZE - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO "%s: set to minimum %lx\n",
 		       __func__, mask);
 	}
@@ -765,6 +912,20 @@ void blk_queue_segment_boundary(struct request_queue *q, unsigned long mask)
 EXPORT_SYMBOL(blk_queue_segment_boundary);
 
 /**
+<<<<<<< HEAD
+=======
+ * blk_queue_virt_boundary - set boundary rules for bio merging
+ * @q:  the request queue for the device
+ * @mask:  the memory boundary mask
+ **/
+void blk_queue_virt_boundary(struct request_queue *q, unsigned long mask)
+{
+	q->limits.virt_boundary_mask = mask;
+}
+EXPORT_SYMBOL(blk_queue_virt_boundary);
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * blk_queue_dma_alignment - set dma length and memory alignment
  * @q:     the request queue for the device
  * @mask:  alignment mask
@@ -803,6 +964,7 @@ void blk_queue_update_dma_alignment(struct request_queue *q, int mask)
 }
 EXPORT_SYMBOL(blk_queue_update_dma_alignment);
 
+<<<<<<< HEAD
 /**
  * blk_queue_flush - configure queue's cache flush capability
  * @q:		the request queue for the device
@@ -829,6 +991,42 @@ void blk_queue_flush_queueable(struct request_queue *q, bool queueable)
 }
 EXPORT_SYMBOL_GPL(blk_queue_flush_queueable);
 
+=======
+void blk_queue_flush_queueable(struct request_queue *q, bool queueable)
+{
+	spin_lock_irq(q->queue_lock);
+	if (queueable)
+		clear_bit(QUEUE_FLAG_FLUSH_NQ, &q->queue_flags);
+	else
+		set_bit(QUEUE_FLAG_FLUSH_NQ, &q->queue_flags);
+	spin_unlock_irq(q->queue_lock);
+}
+EXPORT_SYMBOL_GPL(blk_queue_flush_queueable);
+
+/**
+ * blk_queue_write_cache - configure queue's write cache
+ * @q:		the request queue for the device
+ * @wc:		write back cache on or off
+ * @fua:	device supports FUA writes, if true
+ *
+ * Tell the block layer about the write cache of @q.
+ */
+void blk_queue_write_cache(struct request_queue *q, bool wc, bool fua)
+{
+	spin_lock_irq(q->queue_lock);
+	if (wc)
+		queue_flag_set(QUEUE_FLAG_WC, q);
+	else
+		queue_flag_clear(QUEUE_FLAG_WC, q);
+	if (fua)
+		queue_flag_set(QUEUE_FLAG_FUA, q);
+	else
+		queue_flag_clear(QUEUE_FLAG_FUA, q);
+	spin_unlock_irq(q->queue_lock);
+}
+EXPORT_SYMBOL_GPL(blk_queue_write_cache);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init blk_settings_init(void)
 {
 	blk_max_low_pfn = max_low_pfn - 1;

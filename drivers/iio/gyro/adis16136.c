@@ -435,7 +435,13 @@ static int adis16136_initial_setup(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	sscanf(indio_dev->name, "adis%u\n", &device_id);
+=======
+	ret = sscanf(indio_dev->name, "adis%u\n", &device_id);
+	if (ret != 1)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (prod_id != device_id)
 		dev_warn(&indio_dev->dev, "Device ID(%u) and product ID(%u) do not match.",
@@ -473,6 +479,10 @@ enum adis16136_id {
 	ID_ADIS16133,
 	ID_ADIS16135,
 	ID_ADIS16136,
+<<<<<<< HEAD
+=======
+	ID_ADIS16137,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct adis16136_chip_info adis16136_chip_info[] = {
@@ -488,6 +498,13 @@ static const struct adis16136_chip_info adis16136_chip_info[] = {
 		.precision = IIO_DEGREE_TO_RAD(450),
 		.fullscale = 24623,
 	},
+<<<<<<< HEAD
+=======
+	[ID_ADIS16137] = {
+		.precision = IIO_DEGREE_TO_RAD(1000),
+		.fullscale = 24609,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int adis16136_probe(struct spi_device *spi)
@@ -497,7 +514,11 @@ static int adis16136_probe(struct spi_device *spi)
 	struct iio_dev *indio_dev;
 	int ret;
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*adis16136));
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adis16136));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (indio_dev == NULL)
 		return -ENOMEM;
 
@@ -515,11 +536,19 @@ static int adis16136_probe(struct spi_device *spi)
 
 	ret = adis_init(&adis16136->adis, indio_dev, spi, &adis16136_data);
 	if (ret)
+<<<<<<< HEAD
 		goto error_free_dev;
 
 	ret = adis_setup_buffer_and_trigger(&adis16136->adis, indio_dev, NULL);
 	if (ret)
 		goto error_free_dev;
+=======
+		return ret;
+
+	ret = adis_setup_buffer_and_trigger(&adis16136->adis, indio_dev, NULL);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = adis16136_initial_setup(indio_dev);
 	if (ret)
@@ -537,8 +566,11 @@ error_stop_device:
 	adis16136_stop_device(indio_dev);
 error_cleanup_buffer:
 	adis_cleanup_buffer_and_trigger(&adis16136->adis, indio_dev);
+<<<<<<< HEAD
 error_free_dev:
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -552,8 +584,11 @@ static int adis16136_remove(struct spi_device *spi)
 
 	adis_cleanup_buffer_and_trigger(&adis16136->adis, indio_dev);
 
+<<<<<<< HEAD
 	iio_device_free(indio_dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -561,6 +596,10 @@ static const struct spi_device_id adis16136_ids[] = {
 	{ "adis16133", ID_ADIS16133 },
 	{ "adis16135", ID_ADIS16135 },
 	{ "adis16136", ID_ADIS16136 },
+<<<<<<< HEAD
+=======
+	{ "adis16137", ID_ADIS16137 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 MODULE_DEVICE_TABLE(spi, adis16136_ids);
@@ -568,7 +607,10 @@ MODULE_DEVICE_TABLE(spi, adis16136_ids);
 static struct spi_driver adis16136_driver = {
 	.driver = {
 		.name = "adis16136",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table = adis16136_ids,
 	.probe = adis16136_probe,

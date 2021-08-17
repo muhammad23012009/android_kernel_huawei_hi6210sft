@@ -29,5 +29,9 @@ int match_token(char *, const match_table_t table, substring_t args[]);
 int match_int(substring_t *, int *result);
 int match_octal(substring_t *, int *result);
 int match_hex(substring_t *, int *result);
+<<<<<<< HEAD
+=======
+bool match_wildcard(const char *pattern, const char *str);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 size_t match_strlcpy(char *, const substring_t *, size_t);
 char *match_strdup(const substring_t *);

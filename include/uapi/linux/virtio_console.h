@@ -32,12 +32,20 @@
 #ifndef _UAPI_LINUX_VIRTIO_CONSOLE_H
 #define _UAPI_LINUX_VIRTIO_CONSOLE_H
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/virtio_types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/virtio_ids.h>
 #include <linux/virtio_config.h>
 
 /* Feature bits */
 #define VIRTIO_CONSOLE_F_SIZE	0	/* Does host provide console size? */
 #define VIRTIO_CONSOLE_F_MULTIPORT 1	/* Does host provide multiple ports? */
+<<<<<<< HEAD
+=======
+#define VIRTIO_CONSOLE_F_EMERG_WRITE 2 /* Does host support emergency write? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define VIRTIO_CONSOLE_BAD_ID		(~(__u32)0)
 
@@ -48,6 +56,11 @@ struct virtio_console_config {
 	__u16 rows;
 	/* max. number of ports this device can hold */
 	__u32 max_nr_ports;
+<<<<<<< HEAD
+=======
+	/* emergency write register */
+	__u32 emerg_wr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __attribute__((packed));
 
 /*
@@ -55,9 +68,15 @@ struct virtio_console_config {
  * particular port.
  */
 struct virtio_console_control {
+<<<<<<< HEAD
 	__u32 id;		/* Port number */
 	__u16 event;		/* The kind of control event (see below) */
 	__u16 value;		/* Extra information for the key */
+=======
+	__virtio32 id;		/* Port number */
+	__virtio16 event;	/* The kind of control event (see below) */
+	__virtio16 value;	/* Extra information for the key */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Some events for control messages */

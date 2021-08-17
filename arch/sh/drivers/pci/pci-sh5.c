@@ -20,7 +20,10 @@
 #include <linux/types.h>
 #include <linux/irq.h>
 #include <cpu/irq.h>
+<<<<<<< HEAD
 #include <asm/pci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include "pci-sh5.h"
 

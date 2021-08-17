@@ -9,8 +9,23 @@
  * need to be careful to avoid a name clashes.
  */
 
+<<<<<<< HEAD
 #ifndef __KERNEL__
 #include <asm-generic/int-l64.h>
+=======
+/*
+ * This is here because we used to use l64 for alpha
+ * and we don't want to impact user mode with our change to ll64
+ * in the kernel.
+ *
+ * However, some user programs are fine with this.  They can
+ * flag __SANE_USERSPACE_TYPES__ to get int-ll64.h here.
+ */
+#if !defined(__SANE_USERSPACE_TYPES__) && !defined(__KERNEL__)
+#include <asm-generic/int-l64.h>
+#else
+#include <asm-generic/int-ll64.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* _UAPI_ALPHA_TYPES_H */

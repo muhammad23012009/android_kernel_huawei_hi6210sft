@@ -34,7 +34,10 @@
 #include <linux/err.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <scsi/scsi_host.h>
 #include <linux/ata.h>
@@ -660,7 +663,11 @@ static void ep93xx_pata_dma_init(struct ep93xx_pata_data *drv_data)
 	 * start of new transfer.
 	 */
 	drv_data->dma_rx_data.port = EP93XX_DMA_IDE;
+<<<<<<< HEAD
 	drv_data->dma_rx_data.direction = DMA_FROM_DEVICE;
+=======
+	drv_data->dma_rx_data.direction = DMA_DEV_TO_MEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	drv_data->dma_rx_data.name = "ep93xx-pata-rx";
 	drv_data->dma_rx_channel = dma_request_channel(mask,
 		ep93xx_pata_dma_filter, &drv_data->dma_rx_data);
@@ -668,7 +675,11 @@ static void ep93xx_pata_dma_init(struct ep93xx_pata_data *drv_data)
 		return;
 
 	drv_data->dma_tx_data.port = EP93XX_DMA_IDE;
+<<<<<<< HEAD
 	drv_data->dma_tx_data.direction = DMA_TO_DEVICE;
+=======
+	drv_data->dma_tx_data.direction = DMA_MEM_TO_DEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	drv_data->dma_tx_data.name = "ep93xx-pata-tx";
 	drv_data->dma_tx_channel = dma_request_channel(mask,
 		ep93xx_pata_dma_filter, &drv_data->dma_tx_data);
@@ -679,7 +690,11 @@ static void ep93xx_pata_dma_init(struct ep93xx_pata_data *drv_data)
 
 	/* Configure receive channel direction and source address */
 	memset(&conf, 0, sizeof(conf));
+<<<<<<< HEAD
 	conf.direction = DMA_FROM_DEVICE;
+=======
+	conf.direction = DMA_DEV_TO_MEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	conf.src_addr = drv_data->udma_in_phys;
 	conf.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	if (dmaengine_slave_config(drv_data->dma_rx_channel, &conf)) {
@@ -690,7 +705,11 @@ static void ep93xx_pata_dma_init(struct ep93xx_pata_data *drv_data)
 
 	/* Configure transmit channel direction and destination address */
 	memset(&conf, 0, sizeof(conf));
+<<<<<<< HEAD
 	conf.direction = DMA_TO_DEVICE;
+=======
+	conf.direction = DMA_MEM_TO_DEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	conf.dst_addr = drv_data->udma_out_phys;
 	conf.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	if (dmaengine_slave_config(drv_data->dma_tx_channel, &conf)) {
@@ -709,8 +728,13 @@ static void ep93xx_pata_dma_start(struct ata_queued_cmd *qc)
 	struct dma_chan *channel = qc->dma_dir == DMA_TO_DEVICE
 		? drv_data->dma_tx_channel : drv_data->dma_rx_channel;
 
+<<<<<<< HEAD
 	txd = channel->device->device_prep_slave_sg(channel, qc->sg,
 		 qc->n_elem, qc->dma_dir, DMA_CTRL_ACK, NULL);
+=======
+	txd = dmaengine_prep_slave_sg(channel, qc->sg, qc->n_elem, qc->dma_dir,
+		DMA_CTRL_ACK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!txd) {
 		dev_err(qc->ap->dev, "failed to prepare slave for sg dma\n");
 		return;
@@ -916,7 +940,11 @@ static int ep93xx_pata_probe(struct platform_device *pdev)
 	struct ep93xx_pata_data *drv_data;
 	struct ata_host *host;
 	struct ata_port *ap;
+<<<<<<< HEAD
 	unsigned int irq;
+=======
+	int irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *mem_res;
 	void __iomem *ide_base;
 	int err;
@@ -928,7 +956,11 @@ static int ep93xx_pata_probe(struct platform_device *pdev)
 	/* INT[3] (IRQ_EP93XX_EXT3) line connected as pull down */
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
+<<<<<<< HEAD
 		err = -ENXIO;
+=======
+		err = irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_rel_gpio;
 	}
 
@@ -1022,7 +1054,10 @@ static int ep93xx_pata_remove(struct platform_device *pdev)
 static struct platform_driver ep93xx_pata_platform_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = ep93xx_pata_probe,
 	.remove = ep93xx_pata_remove,

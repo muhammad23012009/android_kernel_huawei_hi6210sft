@@ -28,6 +28,7 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/smp.h>
 #include <asm/bootinfo.h>
 #include <asm/fw/cfe/cfe_api.h>
@@ -124,6 +125,31 @@ static __init void prom_init_cmdline(void)
 			 arcs_cmdline, buf[4]);
 	}
 }
+=======
+#include <linux/ssb/ssb_driver_chipcommon.h>
+#include <linux/ssb/ssb_regs.h>
+#include <linux/smp.h>
+#include <asm/bootinfo.h>
+#include <bcm47xx.h>
+#include <bcm47xx_board.h>
+
+static char bcm47xx_system_type[20] = "Broadcom BCM47XX";
+
+const char *get_system_type(void)
+{
+	return bcm47xx_system_type;
+}
+
+__init void bcm47xx_set_system_type(u16 chip_id)
+{
+	snprintf(bcm47xx_system_type, sizeof(bcm47xx_system_type),
+		 (chip_id > 0x9999) ? "Broadcom BCM%d" :
+				      "Broadcom BCM%04X",
+		 chip_id);
+}
+
+static unsigned long lowmem __initdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static __init void prom_init_mem(void)
 {
@@ -143,6 +169,7 @@ static __init void prom_init_mem(void)
 	 * BCM47XX uses 128MB for addressing the ram, if the system contains
 	 * less that that amount of ram it remaps the ram more often into the
 	 * available space.
+<<<<<<< HEAD
 	 * Accessing memory after 128MB will cause an exception.
 	 * max contains the biggest possible address supported by the platform.
 	 * If the method wants to try something above we assume 128MB ram.
@@ -153,11 +180,30 @@ static __init void prom_init_mem(void)
 		if ((off + mem) > max) {
 			mem = (128 << 20);
 			printk(KERN_DEBUG "assume 128MB RAM\n");
+=======
+	 */
+
+	/* Physical address, without mapping to any kernel segment */
+	off = CPHYSADDR((unsigned long)prom_init);
+
+	/* Accessing memory after 128 MiB will cause an exception */
+	max = 128 << 20;
+
+	for (mem = 1 << 20; mem < max; mem += 1 << 20) {
+		/* Loop condition may be not enough, off may be over 1 MiB */
+		if (off + mem >= max) {
+			mem = max;
+			pr_debug("Assume 128MB RAM\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		if (!memcmp(prom_init, prom_init + mem, 32))
 			break;
 	}
+<<<<<<< HEAD
+=======
+	lowmem = mem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Ignoring the last page when ddr size is 128M. Cached
 	 * accesses to last page is causing the processor to prefetch
@@ -166,6 +212,7 @@ static __init void prom_init_mem(void)
 	 */
 	if (c->cputype == CPU_74K && (mem == (128  << 20)))
 		mem -= 0x1000;
+<<<<<<< HEAD
 
 	add_memory_region(0, mem, BOOT_MEM_RAM);
 }
@@ -176,8 +223,90 @@ void __init prom_init(void)
 	prom_init_console();
 	prom_init_cmdline();
 	prom_init_mem();
+=======
+	add_memory_region(0, mem, BOOT_MEM_RAM);
+}
+
+/*
+ * This is the first serial on the chip common core, it is at this position
+ * for sb (ssb) and ai (bcma) bus.
+ */
+#define BCM47XX_SERIAL_ADDR (SSB_ENUM_BASE + SSB_CHIPCO_UART0_DATA)
+
+void __init prom_init(void)
+{
+	prom_init_mem();
+	setup_8250_early_printk_port(CKSEG1ADDR(BCM47XX_SERIAL_ADDR), 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init prom_free_prom_memory(void)
 {
 }
+<<<<<<< HEAD
+=======
+
+#if defined(CONFIG_BCM47XX_BCMA) && defined(CONFIG_HIGHMEM)
+
+#define EXTVBASE	0xc0000000
+#define ENTRYLO(x)	((pte_val(pfn_pte((x) >> _PFN_SHIFT, PAGE_KERNEL_UNCACHED)) >> 6) | 1)
+
+#include <asm/tlbflush.h>
+
+/* Stripped version of tlb_init, with the call to build_tlb_refill_handler
+ * dropped. Calling it at this stage causes a hang.
+ */
+void early_tlb_init(void)
+{
+	write_c0_pagemask(PM_DEFAULT_MASK);
+	write_c0_wired(0);
+	temp_tlb_entry = current_cpu_data.tlbsize - 1;
+	local_flush_tlb_all();
+}
+
+void __init bcm47xx_prom_highmem_init(void)
+{
+	unsigned long off = (unsigned long)prom_init;
+	unsigned long extmem = 0;
+	bool highmem_region = false;
+
+	if (WARN_ON(bcm47xx_bus_type != BCM47XX_BUS_TYPE_BCMA))
+		return;
+
+	if (bcm47xx_bus.bcma.bus.chipinfo.id == BCMA_CHIP_ID_BCM4706)
+		highmem_region = true;
+
+	if (lowmem != 128 << 20 || !highmem_region)
+		return;
+
+	early_tlb_init();
+
+	/* Add one temporary TLB entry to map SDRAM Region 2.
+	 *      Physical        Virtual
+	 *      0x80000000      0xc0000000      (1st: 256MB)
+	 *      0x90000000      0xd0000000      (2nd: 256MB)
+	 */
+	add_temporary_entry(ENTRYLO(0x80000000),
+			    ENTRYLO(0x80000000 + (256 << 20)),
+			    EXTVBASE, PM_256M);
+
+	off = EXTVBASE + __pa(off);
+	for (extmem = 128 << 20; extmem < 512 << 20; extmem <<= 1) {
+		if (!memcmp(prom_init, (void *)(off + extmem), 16))
+			break;
+	}
+	extmem -= lowmem;
+
+	early_tlb_init();
+
+	if (!extmem)
+		return;
+
+	pr_warn("Found %lu MiB of extra memory, but highmem is unsupported yet!\n",
+		extmem >> 20);
+
+	/* TODO: Register extra memory */
+}
+
+#endif /* defined(CONFIG_BCM47XX_BCMA) && defined(CONFIG_HIGHMEM) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

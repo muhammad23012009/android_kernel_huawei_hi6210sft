@@ -163,7 +163,11 @@ good_area:
 	 * the fault.
 	 */
 
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -171,6 +175,11 @@ good_area:
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();

@@ -1,7 +1,11 @@
 /*
  * cxgb4i.h: Chelsio T4 iSCSI driver.
  *
+<<<<<<< HEAD
  * Copyright (c) 2010 Chelsio Communications, Inc.
+=======
+ * Copyright (c) 2010-2015 Chelsio Communications, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +27,7 @@
 #define CXGB4I_TX_HEADER_LEN \
 	(sizeof(struct fw_ofld_tx_data_wr) + sizeof(struct sge_opaque_hdr))
 
+<<<<<<< HEAD
 struct ulptx_idata {
 	__be32 cmd_more;
 	__be32 len;
@@ -40,4 +45,8 @@ struct cpl_rx_data_ddp {
 	__be32 ulp_crc;
 	__be32 ddpvld;
 };
+=======
+#define T5_ISS_VALID		(1 << 18)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* __CXGB4I_H__ */

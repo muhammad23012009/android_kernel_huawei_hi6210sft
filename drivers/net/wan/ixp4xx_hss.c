@@ -261,7 +261,11 @@ struct port {
 	struct hss_plat_info *plat;
 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
 	struct desc *desc_tab;	/* coherent */
+<<<<<<< HEAD
 	u32 desc_tab_phys;
+=======
+	dma_addr_t desc_tab_phys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int id;
 	unsigned int clock_type, clock_rate, loopback;
 	unsigned int initialized, carrier;
@@ -861,7 +865,11 @@ static int hss_hdlc_xmit(struct sk_buff *skb, struct net_device *dev)
 		dev->stats.tx_dropped++;
 		return NETDEV_TX_OK;
 	}
+<<<<<<< HEAD
 	memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
+=======
+	memcpy_swab32(mem, (u32 *)((uintptr_t)skb->data & ~3), bytes / 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_kfree_skb(skb);
 #endif
 
@@ -1384,7 +1392,10 @@ static int hss_remove_one(struct platform_device *pdev)
 	unregister_hdlc_device(port->netdev);
 	free_netdev(port->netdev);
 	npe_release(port->npe);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(port);
 	return 0;
 }

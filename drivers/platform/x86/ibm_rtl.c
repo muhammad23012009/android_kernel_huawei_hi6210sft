@@ -33,7 +33,11 @@
 #include <linux/mutex.h>
 #include <asm/bios_ebda.h>
 
+<<<<<<< HEAD
 #include <asm-generic/io-64-nonatomic-lo-hi.h>
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static bool force;
 module_param(force, bool, 0);

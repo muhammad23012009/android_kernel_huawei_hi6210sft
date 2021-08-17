@@ -119,6 +119,7 @@ ahc_format_transinfo(struct seq_file *m, struct ahc_transinfo *tinfo)
 
 	if (tinfo->width > 0) {
 		if (freq != 0) {
+<<<<<<< HEAD
 			seq_printf(m, ", ");
 		} else {
 			seq_printf(m, " (");
@@ -128,6 +129,17 @@ ahc_format_transinfo(struct seq_file *m, struct ahc_transinfo *tinfo)
 		seq_printf(m, ")");
 	}
 	seq_printf(m, "\n");
+=======
+			seq_puts(m, ", ");
+		} else {
+			seq_puts(m, " (");
+		}
+		seq_printf(m, "%dbit)", 8 * (0x01 << tinfo->width));
+	} else if (freq != 0) {
+		seq_putc(m, ')');
+	}
+	seq_putc(m, '\n');
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -145,15 +157,25 @@ ahc_dump_target_state(struct ahc_softc *ahc, struct seq_file *m,
 	if ((ahc->features & AHC_TWIN) != 0)
 		seq_printf(m, "Channel %c ", channel);
 	seq_printf(m, "Target %d Negotiation Settings\n", target_id);
+<<<<<<< HEAD
 	seq_printf(m, "\tUser: ");
+=======
+	seq_puts(m, "\tUser: ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahc_format_transinfo(m, &tinfo->user);
 	starget = ahc->platform_data->starget[target_offset];
 	if (!starget)
 		return;
 
+<<<<<<< HEAD
 	seq_printf(m, "\tGoal: ");
 	ahc_format_transinfo(m, &tinfo->goal);
 	seq_printf(m, "\tCurr: ");
+=======
+	seq_puts(m, "\tGoal: ");
+	ahc_format_transinfo(m, &tinfo->goal);
+	seq_puts(m, "\tCurr: ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahc_format_transinfo(m, &tinfo->curr);
 
 	for (lun = 0; lun < AHC_NUM_LUNS; lun++) {
@@ -175,7 +197,11 @@ ahc_dump_device_state(struct seq_file *m, struct scsi_device *sdev)
 
 	seq_printf(m, "\tChannel %c Target %d Lun %d Settings\n",
 		  sdev->sdev_target->channel + 'A',
+<<<<<<< HEAD
 		  sdev->sdev_target->id, sdev->lun);
+=======
+		   sdev->sdev_target->id, (u8)sdev->lun);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	seq_printf(m, "\t\tCommands Queued %ld\n", dev->commands_issued);
 	seq_printf(m, "\t\tCommands Active %d\n", dev->active);
@@ -303,19 +329,34 @@ ahc_linux_show_info(struct seq_file *m, struct Scsi_Host *shost)
 
 
 	if (ahc->seep_config == NULL)
+<<<<<<< HEAD
 		seq_printf(m, "No Serial EEPROM\n");
 	else {
 		seq_printf(m, "Serial EEPROM:\n");
 		for (i = 0; i < sizeof(*ahc->seep_config)/2; i++) {
 			if (((i % 8) == 0) && (i != 0)) {
 				seq_printf(m, "\n");
+=======
+		seq_puts(m, "No Serial EEPROM\n");
+	else {
+		seq_puts(m, "Serial EEPROM:\n");
+		for (i = 0; i < sizeof(*ahc->seep_config)/2; i++) {
+			if (((i % 8) == 0) && (i != 0)) {
+				seq_putc(m, '\n');
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			seq_printf(m, "0x%.4x ",
 				  ((uint16_t*)ahc->seep_config)[i]);
 		}
+<<<<<<< HEAD
 		seq_printf(m, "\n");
 	}
 	seq_printf(m, "\n");
+=======
+		seq_putc(m, '\n');
+	}
+	seq_putc(m, '\n');
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	max_targ = 16;
 	if ((ahc->features & (AHC_WIDE|AHC_TWIN)) == 0)

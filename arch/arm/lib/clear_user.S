@@ -9,17 +9,31 @@
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+<<<<<<< HEAD
 
 		.text
 
 /* Prototype: int __clear_user(void *addr, size_t sz)
+=======
+#include <asm/unwind.h>
+
+		.text
+
+/* Prototype: unsigned long arm_clear_user(void *addr, size_t sz)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Purpose  : clear some user memory
  * Params   : addr - user memory address to clear
  *          : sz   - number of bytes to clear
  * Returns  : number of bytes NOT cleared
  */
 ENTRY(__clear_user_std)
+<<<<<<< HEAD
 WEAK(__clear_user)
+=======
+WEAK(arm_clear_user)
+UNWIND(.fnstart)
+UNWIND(.save {r1, lr})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		stmfd	sp!, {r1, lr}
 		mov	r2, #0
 		cmp	r1, #4
@@ -44,10 +58,18 @@ WEAK(__clear_user)
 USER(		strnebt	r2, [r0])
 		mov	r0, #0
 		ldmfd	sp!, {r1, pc}
+<<<<<<< HEAD
 ENDPROC(__clear_user)
 ENDPROC(__clear_user_std)
 
 		.pushsection .fixup,"ax"
+=======
+UNWIND(.fnend)
+ENDPROC(arm_clear_user)
+ENDPROC(__clear_user_std)
+
+		.pushsection .text.fixup,"ax"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.align	0
 9001:		ldmfd	sp!, {r0, pc}
 		.popsection

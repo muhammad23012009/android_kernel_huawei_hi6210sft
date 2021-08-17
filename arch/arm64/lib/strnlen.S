@@ -168,4 +168,8 @@ CPU_LE( lsr	tmp2, tmp2, tmp4 )	/* Shift (tmp1 & 63).  */
 .Lhit_limit:
 	mov	len, limit
 	ret
+<<<<<<< HEAD
 ENDPROC(strnlen)
+=======
+ENDPIPROC(strnlen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

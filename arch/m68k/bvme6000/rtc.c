@@ -15,7 +15,11 @@
 #include <linux/init.h>
 #include <linux/poll.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/mc146818rtc.h>	/* For struct rtc_time and ioctls, etc */
+=======
+#include <linux/rtc.h>	/* For struct rtc_time and ioctls, etc */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/bcd.h>
 #include <asm/bvme6000hw.h>
 

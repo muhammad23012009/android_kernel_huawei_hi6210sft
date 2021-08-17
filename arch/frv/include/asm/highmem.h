@@ -62,8 +62,11 @@ extern void kunmap_high(struct page *page);
 extern void *kmap(struct page *page);
 extern void kunmap(struct page *page);
 
+<<<<<<< HEAD
 extern struct page *kmap_atomic_to_page(void *ptr);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !__ASSEMBLY__ */
 
 /*

@@ -53,7 +53,11 @@ static inline int ncp_read_bounce_size(__u32 size) {
 	return sizeof(struct ncp_reply_header) + 2 + 2 + size + 8;
 };
 int ncp_read_bounce(struct ncp_server *, const char *, __u32, __u16, 
+<<<<<<< HEAD
 		char __user *, int *, void* bounce, __u32 bouncelen);
+=======
+		struct iov_iter *, int *, void *bounce, __u32 bouncelen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ncp_read_kernel(struct ncp_server *, const char *, __u32, __u16, 
 		char *, int *);
 int ncp_write_kernel(struct ncp_server *, const char *, __u32, __u16,
@@ -184,6 +188,7 @@ ncp_new_dentry(struct dentry* dentry)
 	dentry->d_time = jiffies;
 }
 
+<<<<<<< HEAD
 static inline void
 ncp_renew_dentries(struct dentry *parent)
 {
@@ -224,6 +229,8 @@ ncp_invalidate_dircache_entries(struct dentry *parent)
 	spin_unlock(&parent->d_lock);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ncp_cache_head {
 	time_t		mtime;
 	unsigned long	time;	/* cache age */
@@ -231,7 +238,11 @@ struct ncp_cache_head {
 	int		eof;
 };
 
+<<<<<<< HEAD
 #define NCP_DIRCACHE_SIZE	((int)(PAGE_CACHE_SIZE/sizeof(struct dentry *)))
+=======
+#define NCP_DIRCACHE_SIZE	((int)(PAGE_SIZE/sizeof(struct dentry *)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 union ncp_dir_cache {
 	struct ncp_cache_head	head;
 	struct dentry		*dentry[NCP_DIRCACHE_SIZE];

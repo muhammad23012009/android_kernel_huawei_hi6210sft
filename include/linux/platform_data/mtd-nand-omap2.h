@@ -1,6 +1,9 @@
 /*
+<<<<<<< HEAD
  * arch/arm/plat-omap/include/mach/nand.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2006 Micron Technology Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,6 +26,7 @@ enum nand_io {
 };
 
 enum omap_ecc {
+<<<<<<< HEAD
 		/* 1-bit ecc: stored at end of spare area */
 	OMAP_ECC_HAMMING_CODE_DEFAULT = 0, /* Default, s/w method */
 	OMAP_ECC_HAMMING_CODE_HW, /* gpmc to detect the error */
@@ -34,6 +38,32 @@ enum omap_ecc {
 
 struct gpmc_nand_regs {
 	void __iomem	*gpmc_status;
+=======
+	/*
+	 * 1-bit ECC: calculation and correction by SW
+	 * ECC stored at end of spare area
+	 */
+	OMAP_ECC_HAM1_CODE_SW = 0,
+
+	/*
+	 * 1-bit ECC: calculation by GPMC, Error detection by Software
+	 * ECC layout compatible with ROM code layout
+	 */
+	OMAP_ECC_HAM1_CODE_HW,
+	/* 4-bit  ECC calculation by GPMC, Error detection by Software */
+	OMAP_ECC_BCH4_CODE_HW_DETECTION_SW,
+	/* 4-bit  ECC calculation by GPMC, Error detection by ELM */
+	OMAP_ECC_BCH4_CODE_HW,
+	/* 8-bit  ECC calculation by GPMC, Error detection by Software */
+	OMAP_ECC_BCH8_CODE_HW_DETECTION_SW,
+	/* 8-bit  ECC calculation by GPMC, Error detection by ELM */
+	OMAP_ECC_BCH8_CODE_HW,
+	/* 16-bit ECC calculation by GPMC, Error detection by ELM */
+	OMAP_ECC_BCH16_CODE_HW,
+};
+
+struct gpmc_nand_regs {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem	*gpmc_nand_command;
 	void __iomem	*gpmc_nand_address;
 	void __iomem	*gpmc_nand_data;
@@ -49,12 +79,21 @@ struct gpmc_nand_regs {
 	void __iomem	*gpmc_bch_result1[GPMC_BCH_NUM_REMAINDER];
 	void __iomem	*gpmc_bch_result2[GPMC_BCH_NUM_REMAINDER];
 	void __iomem	*gpmc_bch_result3[GPMC_BCH_NUM_REMAINDER];
+<<<<<<< HEAD
+=======
+	void __iomem	*gpmc_bch_result4[GPMC_BCH_NUM_REMAINDER];
+	void __iomem	*gpmc_bch_result5[GPMC_BCH_NUM_REMAINDER];
+	void __iomem	*gpmc_bch_result6[GPMC_BCH_NUM_REMAINDER];
+	/* Deprecated. Do not use */
+	void __iomem	*gpmc_status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct omap_nand_platform_data {
 	int			cs;
 	struct mtd_partition	*parts;
 	int			nr_parts;
+<<<<<<< HEAD
 	bool			dev_ready;
 	enum nand_io		xfer_type;
 	int			devsize;
@@ -63,5 +102,18 @@ struct omap_nand_platform_data {
 
 	/* for passing the partitions */
 	struct device_node	*of_node;
+=======
+	bool			flash_bbt;
+	enum nand_io		xfer_type;
+	int			devsize;
+	enum omap_ecc           ecc_opt;
+
+	struct device_node	*elm_of_node;
+
+	/* deprecated */
+	struct gpmc_nand_regs	reg;
+	struct device_node	*of_node;
+	bool			dev_ready;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #endif

@@ -24,5 +24,10 @@
 
 int ovs_is_internal_dev(const struct net_device *);
 struct vport *ovs_internal_dev_get_vport(struct net_device *);
+<<<<<<< HEAD
+=======
+int ovs_internal_dev_rtnl_link_register(void);
+void ovs_internal_dev_rtnl_link_unregister(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* vport-internal_dev.h */

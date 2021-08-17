@@ -15,6 +15,11 @@
 
 #include <linux/atomic.h>
 #include <asm/intrinsics.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+#include <asm/processor.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define arch_spin_lock_init(x)			((x)->lock = 0)
 
@@ -86,6 +91,11 @@ static __always_inline void __ticket_spin_unlock_wait(arch_spinlock_t *lock)
 			return;
 		cpu_relax();
 	}
+<<<<<<< HEAD
+=======
+
+	smp_acquire__after_ctrl_dep();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int __ticket_spin_is_locked(arch_spinlock_t *lock)
@@ -102,6 +112,14 @@ static inline int __ticket_spin_is_contended(arch_spinlock_t *lock)
 	return ((tmp - (tmp >> TICKET_SHIFT)) & TICKET_MASK) > 1;
 }
 
+<<<<<<< HEAD
+=======
+static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+{
+	return !(((lock.lock >> TICKET_SHIFT) ^ lock.lock) & TICKET_MASK);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int arch_spin_is_locked(arch_spinlock_t *lock)
 {
 	return __ticket_spin_is_locked(lock);

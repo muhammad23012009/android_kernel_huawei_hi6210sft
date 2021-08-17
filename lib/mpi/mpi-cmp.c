@@ -57,6 +57,7 @@ int mpi_cmp(MPI u, MPI v)
 	if (usize != vsize && !u->sign && !v->sign)
 		return usize - vsize;
 	if (usize != vsize && u->sign && v->sign)
+<<<<<<< HEAD
 		return vsize + usize;
 	if (!usize)
 		return 0;
@@ -66,5 +67,14 @@ int mpi_cmp(MPI u, MPI v)
 	if ((cmp < 0 ? 1 : 0) == (u->sign ? 1 : 0))
 		return 1;
 	return -1;
+=======
+		return vsize - usize;
+	if (!usize)
+		return 0;
+	cmp = mpihelp_cmp(u->d, v->d, usize);
+	if (u->sign)
+		return -cmp;
+	return cmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(mpi_cmp);

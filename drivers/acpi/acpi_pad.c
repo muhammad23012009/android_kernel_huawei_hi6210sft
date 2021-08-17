@@ -12,10 +12,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -26,11 +29,19 @@
 #include <linux/kthread.h>
 #include <linux/freezer.h>
 #include <linux/cpu.h>
+<<<<<<< HEAD
 #include <linux/clockchips.h>
 #include <linux/slab.h>
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 #include <asm/mwait.h>
+=======
+#include <linux/tick.h>
+#include <linux/slab.h>
+#include <linux/acpi.h>
+#include <asm/mwait.h>
+#include <xen/xen.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ACPI_PROCESSOR_AGGREGATOR_CLASS	"acpi_pad"
 #define ACPI_PROCESSOR_AGGREGATOR_DEVICE_NAME "Processor Aggregator"
@@ -42,8 +53,11 @@ static unsigned long power_saving_mwait_eax;
 
 static unsigned char tsc_detected_unstable;
 static unsigned char tsc_marked_unstable;
+<<<<<<< HEAD
 static unsigned char lapic_detected_unstable;
 static unsigned char lapic_marked_unstable;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void power_saving_mwait_init(void)
 {
@@ -83,6 +97,7 @@ static void power_saving_mwait_init(void)
 		 */
 		if (!boot_cpu_has(X86_FEATURE_NONSTOP_TSC))
 			tsc_detected_unstable = 1;
+<<<<<<< HEAD
 		if (!boot_cpu_has(X86_FEATURE_ARAT))
 			lapic_detected_unstable = 1;
 		break;
@@ -90,6 +105,12 @@ static void power_saving_mwait_init(void)
 		/* TSC & LAPIC could halt in idle */
 		tsc_detected_unstable = 1;
 		lapic_detected_unstable = 1;
+=======
+		break;
+	default:
+		/* TSC could halt in idle */
+		tsc_detected_unstable = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 }
@@ -111,13 +132,21 @@ static void round_robin_cpu(unsigned int tsk_index)
 	mutex_lock(&round_robin_lock);
 	cpumask_clear(tmp);
 	for_each_cpu(cpu, pad_busy_cpus)
+<<<<<<< HEAD
 		cpumask_or(tmp, tmp, topology_thread_cpumask(cpu));
+=======
+		cpumask_or(tmp, tmp, topology_sibling_cpumask(cpu));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpumask_andnot(tmp, cpu_online_mask, tmp);
 	/* avoid HT sibilings if possible */
 	if (cpumask_empty(tmp))
 		cpumask_andnot(tmp, cpu_online_mask, pad_busy_cpus);
 	if (cpumask_empty(tmp)) {
 		mutex_unlock(&round_robin_lock);
+<<<<<<< HEAD
+=======
+		free_cpumask_var(tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	for_each_cpu(cpu, tmp) {
@@ -135,6 +164,11 @@ static void round_robin_cpu(unsigned int tsk_index)
 	mutex_unlock(&round_robin_lock);
 
 	set_cpus_allowed_ptr(current, cpumask_of(preferred_cpu));
+<<<<<<< HEAD
+=======
+
+	free_cpumask_var(tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void exit_round_robin(unsigned int tsk_index)
@@ -156,6 +190,7 @@ static int power_saving_thread(void *data)
 	sched_setscheduler(current, SCHED_RR, &param);
 
 	while (!kthread_should_stop()) {
+<<<<<<< HEAD
 		int cpu;
 		u64 expire_time;
 
@@ -163,6 +198,13 @@ static int power_saving_thread(void *data)
 
 		/* round robin to cpus */
 		if (last_jiffies + round_robin_time * HZ < jiffies) {
+=======
+		unsigned long expire_time;
+
+		/* round robin to cpus */
+		expire_time = last_jiffies + round_robin_time * HZ;
+		if (time_before(expire_time, jiffies)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			last_jiffies = jiffies;
 			round_robin_cpu(tsk_index);
 		}
@@ -177,6 +219,7 @@ static int power_saving_thread(void *data)
 				mark_tsc_unstable("TSC halts in idle");
 				tsc_marked_unstable = 1;
 			}
+<<<<<<< HEAD
 			if (lapic_detected_unstable && !lapic_marked_unstable) {
 				int i;
 				/* LAPIC could halt in idle, so notify users */
@@ -205,6 +248,20 @@ static int power_saving_thread(void *data)
 			local_irq_enable();
 
 			if (jiffies > expire_time) {
+=======
+			local_irq_disable();
+			tick_broadcast_enable();
+			tick_broadcast_enter();
+			stop_critical_timings();
+
+			mwait_idle_with_hints(power_saving_mwait_eax, 1);
+
+			start_critical_timings();
+			tick_broadcast_exit();
+			local_irq_enable();
+
+			if (time_before(expire_time, jiffies)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				do_sleep = 1;
 				break;
 			}
@@ -219,8 +276,20 @@ static int power_saving_thread(void *data)
 		 * borrow CPU time from this CPU and cause RT task use > 95%
 		 * CPU time. To make 'avoid starvation' work, takes a nap here.
 		 */
+<<<<<<< HEAD
 		if (do_sleep)
 			schedule_timeout_killable(HZ * idle_pct / 100);
+=======
+		if (unlikely(do_sleep))
+			schedule_timeout_killable(HZ * idle_pct / 100);
+
+		/* If an external event has set the need_resched flag, then
+		 * we need to deal with it, or this loop will continue to
+		 * spin without calling __mwait().
+		 */
+		if (unlikely(need_resched()))
+			schedule();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	exit_round_robin(tsk_index);
@@ -231,16 +300,31 @@ static struct task_struct *ps_tsks[NR_CPUS];
 static unsigned int ps_tsk_num;
 static int create_power_saving_task(void)
 {
+<<<<<<< HEAD
 	int rc = -ENOMEM;
+=======
+	int rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ps_tsks[ps_tsk_num] = kthread_run(power_saving_thread,
 		(void *)(unsigned long)ps_tsk_num,
 		"acpi_pad/%d", ps_tsk_num);
+<<<<<<< HEAD
 	rc = PTR_RET(ps_tsks[ps_tsk_num]);
 	if (!rc)
 		ps_tsk_num++;
 	else
 		ps_tsks[ps_tsk_num] = NULL;
+=======
+
+	if (IS_ERR(ps_tsks[ps_tsk_num])) {
+		rc = PTR_ERR(ps_tsks[ps_tsk_num]);
+		ps_tsks[ps_tsk_num] = NULL;
+	} else {
+		rc = 0;
+		ps_tsk_num++;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }
@@ -343,12 +427,19 @@ static ssize_t acpi_pad_idlecpus_store(struct device *dev,
 static ssize_t acpi_pad_idlecpus_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	int n = 0;
 	n = cpumask_scnprintf(buf, PAGE_SIZE-2, to_cpumask(pad_busy_cpus_bits));
 	buf[n++] = '\n';
 	buf[n] = '\0';
 	return n;
 }
+=======
+	return cpumap_print_to_pagebuf(false, buf,
+				       to_cpumask(pad_busy_cpus_bits));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEVICE_ATTR(idlecpus, S_IRUGO|S_IWUSR,
 	acpi_pad_idlecpus_show,
 	acpi_pad_idlecpus_store);
@@ -409,6 +500,7 @@ static int acpi_pad_pur(acpi_handle handle)
 	return num;
 }
 
+<<<<<<< HEAD
 /* Notify firmware how many CPUs are idle */
 static void acpi_pad_ost(acpi_handle handle, int stat,
 	uint32_t idle_cpus)
@@ -427,10 +519,19 @@ static void acpi_pad_ost(acpi_handle handle, int stat,
 	acpi_evaluate_object(handle, "_OST", &arg_list, NULL);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void acpi_pad_handle_notify(acpi_handle handle)
 {
 	int num_cpus;
 	uint32_t idle_cpus;
+<<<<<<< HEAD
+=======
+	struct acpi_buffer param = {
+		.length = 4,
+		.pointer = (void *)&idle_cpus,
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&isolated_cpus_lock);
 	num_cpus = acpi_pad_pur(handle);
@@ -440,7 +541,11 @@ static void acpi_pad_handle_notify(acpi_handle handle)
 	}
 	acpi_pad_idle_cpus(num_cpus);
 	idle_cpus = acpi_pad_idle_cpus_num();
+<<<<<<< HEAD
 	acpi_pad_ost(handle, 0, idle_cpus);
+=======
+	acpi_evaluate_ost(handle, ACPI_PROCESSOR_AGGREGATOR_NOTIFY, 0, &param);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&isolated_cpus_lock);
 }
 
@@ -452,7 +557,10 @@ static void acpi_pad_notify(acpi_handle handle, u32 event,
 	switch (event) {
 	case ACPI_PROCESSOR_AGGREGATOR_NOTIFY:
 		acpi_pad_handle_notify(handle);
+<<<<<<< HEAD
 		acpi_bus_generate_proc_event(device, event, 0);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		acpi_bus_generate_netlink_event(device->pnp.device_class,
 			dev_name(&device->dev), event, 0);
 		break;
@@ -512,6 +620,13 @@ static struct acpi_driver acpi_pad_driver = {
 
 static int __init acpi_pad_init(void)
 {
+<<<<<<< HEAD
+=======
+	/* Xen ACPI PAD is used when running as Xen Dom0. */
+	if (xen_initial_domain())
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	power_saving_mwait_init();
 	if (power_saving_mwait_eax == 0)
 		return -EINVAL;

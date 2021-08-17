@@ -13,12 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>,
  *            Seiji Kihara <kihara@osrg.net>.
+=======
+ * Written by Ryusuke Konishi and Seiji Kihara.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _NILFS_PAGE_H
@@ -57,9 +61,15 @@ int nilfs_copy_dirty_pages(struct address_space *, struct address_space *);
 void nilfs_copy_back_pages(struct address_space *, struct address_space *);
 void nilfs_clear_dirty_page(struct page *, bool);
 void nilfs_clear_dirty_pages(struct address_space *, bool);
+<<<<<<< HEAD
 void nilfs_mapping_init(struct address_space *mapping, struct inode *inode,
 			struct backing_dev_info *bdi);
 unsigned nilfs_page_count_clean_buffers(struct page *, unsigned, unsigned);
+=======
+void nilfs_mapping_init(struct address_space *mapping, struct inode *inode);
+unsigned int nilfs_page_count_clean_buffers(struct page *, unsigned int,
+					    unsigned int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long nilfs_find_uncommitted_extent(struct inode *inode,
 					    sector_t start_blk,
 					    sector_t *blkoff);

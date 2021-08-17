@@ -12,6 +12,11 @@
 #ifndef __GEMINI_COMMON_H__
 #define __GEMINI_COMMON_H__
 
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mtd_partition;
 
 extern void gemini_map_io(void);
@@ -26,6 +31,10 @@ extern int platform_register_pflash(unsigned int size,
 				    struct mtd_partition *parts,
 				    unsigned int nr_parts);
 
+<<<<<<< HEAD
 extern void gemini_restart(char mode, const char *cmd);
+=======
+extern void gemini_restart(enum reboot_mode mode, const char *cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __GEMINI_COMMON_H__ */

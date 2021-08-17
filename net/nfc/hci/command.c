@@ -12,9 +12,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) "hci: %s: " fmt, __func__
@@ -28,6 +32,11 @@
 
 #include "hci.h"
 
+<<<<<<< HEAD
+=======
+#define MAX_FWI 4949
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int nfc_hci_execute_cmd_async(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
 			       const u8 *param, size_t param_len,
 			       data_exchange_cb_t cb, void *cb_context)
@@ -39,7 +48,11 @@ static int nfc_hci_execute_cmd_async(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
 	 * for all commands?
 	 */
 	return nfc_hci_hcp_message_tx(hdev, pipe, NFC_HCI_HCP_COMMAND, cmd,
+<<<<<<< HEAD
 				      param, param_len, cb, cb_context, 3000);
+=======
+				      param, param_len, cb, cb_context, MAX_FWI);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -84,7 +97,11 @@ static int nfc_hci_execute_cmd(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
 						    NFC_HCI_HCP_COMMAND, cmd,
 						    param, param_len,
 						    nfc_hci_execute_cb, &hcp_ew,
+<<<<<<< HEAD
 						    3000);
+=======
+						    MAX_FWI);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hcp_ew.exec_result < 0)
 		return hcp_ew.exec_result;
 
@@ -116,6 +133,7 @@ int nfc_hci_send_event(struct nfc_hci_dev *hdev, u8 gate, u8 event,
 }
 EXPORT_SYMBOL(nfc_hci_send_event);
 
+<<<<<<< HEAD
 int nfc_hci_send_response(struct nfc_hci_dev *hdev, u8 gate, u8 response,
 			  const u8 *param, size_t param_len)
 {
@@ -133,6 +151,8 @@ int nfc_hci_send_response(struct nfc_hci_dev *hdev, u8 gate, u8 response,
 }
 EXPORT_SYMBOL(nfc_hci_send_response);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Execute an hci command sent to gate.
  * skb will contain response data if success. skb can be NULL if you are not
@@ -331,7 +351,11 @@ int nfc_hci_disconnect_all_gates(struct nfc_hci_dev *hdev)
 	if (r < 0)
 		return r;
 
+<<<<<<< HEAD
 	memset(hdev->gate2pipe, NFC_HCI_INVALID_PIPE, sizeof(hdev->gate2pipe));
+=======
+	nfc_hci_reset_pipes(hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -345,6 +369,12 @@ int nfc_hci_connect_gate(struct nfc_hci_dev *hdev, u8 dest_host, u8 dest_gate,
 
 	pr_debug("\n");
 
+<<<<<<< HEAD
+=======
+	if (pipe == NFC_HCI_DO_NOT_CREATE_PIPE)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hdev->gate2pipe[dest_gate] != NFC_HCI_INVALID_PIPE)
 		return -EADDRINUSE;
 
@@ -377,6 +407,11 @@ open_pipe:
 		return r;
 	}
 
+<<<<<<< HEAD
+=======
+	hdev->pipes[pipe].gate = dest_gate;
+	hdev->pipes[pipe].dest_host = dest_host;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hdev->gate2pipe[dest_gate] = pipe;
 
 	return 0;

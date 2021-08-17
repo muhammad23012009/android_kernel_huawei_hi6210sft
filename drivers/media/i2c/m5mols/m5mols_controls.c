@@ -405,7 +405,11 @@ static int m5mols_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 	struct v4l2_subdev *sd = to_sd(ctrl);
 	struct m5mols_info *info = to_m5mols(sd);
 	int ret = 0;
+<<<<<<< HEAD
 	u8 status;
+=======
+	u8 status = REG_ISO_AUTO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	v4l2_dbg(1, m5mols_debug, sd, "%s: ctrl: %s (%d)\n",
 		 __func__, ctrl->name, info->isp_ready);
@@ -544,7 +548,11 @@ int m5mols_init_controls(struct v4l2_subdev *sd)
 	u16 zoom_step;
 	int ret;
 
+<<<<<<< HEAD
 	/* Determine the firmware dependant control range and step values */
+=======
+	/* Determine the firmware dependent control range and step values */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = m5mols_read_u16(sd, AE_MAX_GAIN_MON, &exposure_max);
 	if (ret < 0)
 		return ret;

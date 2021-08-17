@@ -30,6 +30,10 @@
 #include <linux/gfp.h>
 #include <linux/sched.h>
 #include <linux/sched/rt.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "cpupri.h"
 
 /* Convert between a 140 based task->prio, and our 102 based cpupri */
@@ -62,7 +66,11 @@ static int convert_prio(int prio)
  * any discrepancies created by racing against the uncertainty of the current
  * priority configuration.
  *
+<<<<<<< HEAD
  * Returns: (int)bool - CPUs were found
+=======
+ * Return: (int)bool - CPUs were found
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 int cpupri_find(struct cpupri *cp, struct task_struct *p,
 		struct cpumask *lowest_mask)
@@ -102,11 +110,19 @@ int cpupri_find(struct cpupri *cp, struct task_struct *p,
 		if (skip)
 			continue;
 
+<<<<<<< HEAD
 		if (cpumask_any_and(&p->cpus_allowed, vec->mask) >= nr_cpu_ids)
 			continue;
 
 		if (lowest_mask) {
 			cpumask_and(lowest_mask, &p->cpus_allowed, vec->mask);
+=======
+		if (cpumask_any_and(tsk_cpus_allowed(p), vec->mask) >= nr_cpu_ids)
+			continue;
+
+		if (lowest_mask) {
+			cpumask_and(lowest_mask, tsk_cpus_allowed(p), vec->mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			/*
 			 * We have to ensure that we have at least one bit
@@ -164,7 +180,11 @@ void cpupri_set(struct cpupri *cp, int cpu, int newpri)
 		 * do a write memory barrier, and then update the count, to
 		 * make sure the vector is visible when count is set.
 		 */
+<<<<<<< HEAD
 		smp_mb__before_atomic_inc();
+=======
+		smp_mb__before_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		atomic_inc(&(vec)->count);
 		do_mb = 1;
 	}
@@ -184,14 +204,22 @@ void cpupri_set(struct cpupri *cp, int cpu, int newpri)
 		 * the new priority vec.
 		 */
 		if (do_mb)
+<<<<<<< HEAD
 			smp_mb__after_atomic_inc();
+=======
+			smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * When removing from the vector, we decrement the counter first
 		 * do a memory barrier and then clear the mask.
 		 */
 		atomic_dec(&(vec)->count);
+<<<<<<< HEAD
 		smp_mb__after_atomic_inc();
+=======
+		smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cpumask_clear_cpu(cpu, vec->mask);
 	}
 
@@ -202,7 +230,11 @@ void cpupri_set(struct cpupri *cp, int cpu, int newpri)
  * cpupri_init - initialize the cpupri structure
  * @cp: The cpupri context
  *
+<<<<<<< HEAD
  * Returns: -ENOMEM if memory fails.
+=======
+ * Return: -ENOMEM on memory allocation failure.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 int cpupri_init(struct cpupri *cp)
 {
@@ -218,8 +250,18 @@ int cpupri_init(struct cpupri *cp)
 			goto cleanup;
 	}
 
+<<<<<<< HEAD
 	for_each_possible_cpu(i)
 		cp->cpu_to_pri[i] = CPUPRI_INVALID;
+=======
+	cp->cpu_to_pri = kcalloc(nr_cpu_ids, sizeof(int), GFP_KERNEL);
+	if (!cp->cpu_to_pri)
+		goto cleanup;
+
+	for_each_possible_cpu(i)
+		cp->cpu_to_pri[i] = CPUPRI_INVALID;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 cleanup:
@@ -236,6 +278,10 @@ void cpupri_cleanup(struct cpupri *cp)
 {
 	int i;
 
+<<<<<<< HEAD
+=======
+	kfree(cp->cpu_to_pri);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < CPUPRI_NR_PRIORITIES; i++)
 		free_cpumask_var(cp->pri_to_cpu[i].mask);
 }

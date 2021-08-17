@@ -18,7 +18,14 @@
 #include <linux/gpio.h>
 #include <linux/leds.h>
 #include <linux/atmel-mci.h>
+<<<<<<< HEAD
 #include <linux/atmel-pwm-bl.h>
+=======
+#include <linux/pwm.h>
+#include <linux/pwm_backlight.h>
+#include <linux/regulator/fixed.h>
+#include <linux/regulator/machine.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
 
@@ -33,6 +40,11 @@
 #include <mach/board.h>
 #include <mach/portmux.h>
 
+<<<<<<< HEAD
+=======
+#define PWM_BL_CH 2
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Oscillator frequencies. These are board-specific */
 unsigned long at32_board_osc_rates[3] = {
 	[0] = 32768,	/* 32.768 kHz on RTC osc */
@@ -125,7 +137,11 @@ static struct fb_monspecs __initdata favr32_default_monspecs = {
 	.dclkmax		= 28000000,
 };
 
+<<<<<<< HEAD
 struct atmel_lcdfb_info __initdata favr32_lcdc_data = {
+=======
+struct atmel_lcdfb_pdata __initdata favr32_lcdc_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.default_bpp		= 16,
 	.default_dmacon		= ATMEL_LCDC_DMAEN | ATMEL_LCDC_DMA2DEN,
 	.default_lcdcon2	= (ATMEL_LCDC_DISTYPE_TFT
@@ -227,6 +243,7 @@ void __init favr32_setup_leds(void)
 	platform_device_register(&favr32_led_dev);
 }
 
+<<<<<<< HEAD
 static struct atmel_pwm_bl_platform_data atmel_pwm_bl_pdata = {
 	.pwm_channel		= 2,
 	.pwm_frequency		= 200000,
@@ -243,13 +260,43 @@ static struct platform_device atmel_pwm_bl_dev = {
 	.id		= 0,
 	.dev		= {
 		.platform_data = &atmel_pwm_bl_pdata,
+=======
+static struct pwm_lookup pwm_lookup[] = {
+	PWM_LOOKUP("at91sam9rl-pwm", PWM_BL_CH, "pwm-backlight.0", NULL,
+		   5000, PWM_POLARITY_INVERSED),
+};
+
+static struct regulator_consumer_supply fixed_power_consumers[] = {
+	REGULATOR_SUPPLY("power", "pwm-backlight.0"),
+};
+
+static struct platform_pwm_backlight_data pwm_bl_data = {
+	.enable_gpio		= GPIO_PIN_PA(28),
+	.max_brightness		= 255,
+	.dft_brightness		= 255,
+	.lth_brightness		= 50,
+};
+
+static struct platform_device pwm_bl_device = {
+	.name = "pwm-backlight",
+	.dev = {
+		.platform_data = &pwm_bl_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
 static void __init favr32_setup_atmel_pwm_bl(void)
 {
+<<<<<<< HEAD
 	platform_device_register(&atmel_pwm_bl_dev);
 	at32_select_gpio(atmel_pwm_bl_pdata.gpio_on, 0);
+=======
+	pwm_add_table(pwm_lookup, ARRAY_SIZE(pwm_lookup));
+	regulator_register_always_on(0, "fixed", fixed_power_consumers,
+				    ARRAY_SIZE(fixed_power_consumers), 3300000);
+	platform_device_register(&pwm_bl_device);
+	at32_select_gpio(pwm_bl_data.enable_gpio, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init setup_board(void)
@@ -298,8 +345,15 @@ static int __init set_abdac_rate(struct platform_device *pdev)
 	 */
 	retval = clk_round_rate(pll1,
 			CONFIG_BOARD_FAVR32_ABDAC_RATE * 256 * 16);
+<<<<<<< HEAD
 	if (retval < 0)
 		goto out_abdac;
+=======
+	if (retval <= 0) {
+		retval = -EINVAL;
+		goto out_abdac;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = clk_set_rate(pll1, retval);
 	if (retval != 0)
@@ -337,7 +391,11 @@ static int __init favr32_init(void)
 
 	set_abdac_rate(at32_add_device_abdac(0, &abdac0_data));
 
+<<<<<<< HEAD
 	at32_add_device_pwm(1 << atmel_pwm_bl_pdata.pwm_channel);
+=======
+	at32_add_device_pwm(1 << PWM_BL_CH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	at32_add_device_spi(1, spi1_board_info, ARRAY_SIZE(spi1_board_info));
 	at32_add_device_mci(0, &mci0_data);
 	at32_add_device_usba(0, NULL);

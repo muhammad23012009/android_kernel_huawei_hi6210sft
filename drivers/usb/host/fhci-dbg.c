@@ -129,11 +129,16 @@ void fhci_dfs_destroy(struct fhci_hcd *fhci)
 	if (!fhci->dfs_root)
 		return;
 
+<<<<<<< HEAD
 	if (fhci->dfs_irq_stat)
 		debugfs_remove(fhci->dfs_irq_stat);
 
 	if (fhci->dfs_regs)
 		debugfs_remove(fhci->dfs_regs);
 
+=======
+	debugfs_remove(fhci->dfs_irq_stat);
+	debugfs_remove(fhci->dfs_regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	debugfs_remove(fhci->dfs_root);
 }

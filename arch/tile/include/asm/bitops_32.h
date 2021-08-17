@@ -16,12 +16,21 @@
 #define _ASM_TILE_BITOPS_32_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 #include <linux/atomic.h>
 
 /* Tile-specific routines to support <asm/bitops.h>. */
 unsigned long _atomic_or(volatile unsigned long *p, unsigned long mask);
 unsigned long _atomic_andn(volatile unsigned long *p, unsigned long mask);
 unsigned long _atomic_xor(volatile unsigned long *p, unsigned long mask);
+=======
+#include <asm/barrier.h>
+
+/* Tile-specific routines to support <asm/bitops.h>. */
+unsigned long _atomic_fetch_or(volatile unsigned long *p, unsigned long mask);
+unsigned long _atomic_fetch_andn(volatile unsigned long *p, unsigned long mask);
+unsigned long _atomic_fetch_xor(volatile unsigned long *p, unsigned long mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * set_bit - Atomically set a bit in memory
@@ -35,7 +44,11 @@ unsigned long _atomic_xor(volatile unsigned long *p, unsigned long mask);
  */
 static inline void set_bit(unsigned nr, volatile unsigned long *addr)
 {
+<<<<<<< HEAD
 	_atomic_or(addr + BIT_WORD(nr), BIT_MASK(nr));
+=======
+	_atomic_fetch_or(addr + BIT_WORD(nr), BIT_MASK(nr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -49,12 +62,21 @@ static inline void set_bit(unsigned nr, volatile unsigned long *addr)
  * restricted to acting on a single-word quantity.
  *
  * clear_bit() may not contain a memory barrier, so if it is used for
+<<<<<<< HEAD
  * locking purposes, you should call smp_mb__before_clear_bit() and/or
  * smp_mb__after_clear_bit() to ensure changes are visible on other cpus.
  */
 static inline void clear_bit(unsigned nr, volatile unsigned long *addr)
 {
 	_atomic_andn(addr + BIT_WORD(nr), BIT_MASK(nr));
+=======
+ * locking purposes, you should call smp_mb__before_atomic() and/or
+ * smp_mb__after_atomic() to ensure changes are visible on other cpus.
+ */
+static inline void clear_bit(unsigned nr, volatile unsigned long *addr)
+{
+	_atomic_fetch_andn(addr + BIT_WORD(nr), BIT_MASK(nr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -69,7 +91,11 @@ static inline void clear_bit(unsigned nr, volatile unsigned long *addr)
  */
 static inline void change_bit(unsigned nr, volatile unsigned long *addr)
 {
+<<<<<<< HEAD
 	_atomic_xor(addr + BIT_WORD(nr), BIT_MASK(nr));
+=======
+	_atomic_fetch_xor(addr + BIT_WORD(nr), BIT_MASK(nr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -85,7 +111,11 @@ static inline int test_and_set_bit(unsigned nr, volatile unsigned long *addr)
 	unsigned long mask = BIT_MASK(nr);
 	addr += BIT_WORD(nr);
 	smp_mb();  /* barrier for proper semantics */
+<<<<<<< HEAD
 	return (_atomic_or(addr, mask) & mask) != 0;
+=======
+	return (_atomic_fetch_or(addr, mask) & mask) != 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -101,7 +131,11 @@ static inline int test_and_clear_bit(unsigned nr, volatile unsigned long *addr)
 	unsigned long mask = BIT_MASK(nr);
 	addr += BIT_WORD(nr);
 	smp_mb();  /* barrier for proper semantics */
+<<<<<<< HEAD
 	return (_atomic_andn(addr, mask) & mask) != 0;
+=======
+	return (_atomic_fetch_andn(addr, mask) & mask) != 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -118,6 +152,7 @@ static inline int test_and_change_bit(unsigned nr,
 	unsigned long mask = BIT_MASK(nr);
 	addr += BIT_WORD(nr);
 	smp_mb();  /* barrier for proper semantics */
+<<<<<<< HEAD
 	return (_atomic_xor(addr, mask) & mask) != 0;
 }
 
@@ -125,6 +160,11 @@ static inline int test_and_change_bit(unsigned nr,
 #define smp_mb__before_clear_bit()	smp_mb()
 #define smp_mb__after_clear_bit()	do {} while (0)
 
+=======
+	return (_atomic_fetch_xor(addr, mask) & mask) != 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/bitops/ext2-atomic.h>
 
 #endif /* _ASM_TILE_BITOPS_32_H */

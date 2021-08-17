@@ -10,7 +10,11 @@
  */
 
 /* APF28Dev is a docking board for the APF28 SOM */
+<<<<<<< HEAD
 /include/ "imx28-apf28.dts"
+=======
+#include "imx28-apf28.dts"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Armadeus Systems APF28Dev docking/development board";
@@ -41,6 +45,7 @@
 				hog_pins_apf28dev: hog@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x1103 /* MX28_PAD_LCD_D16__GPIO_1_16 */
 						0x1113 /* MX28_PAD_LCD_D17__GPIO_1_17 */
 						0x1123 /* MX28_PAD_LCD_D18__GPIO_1_18 */
@@ -52,11 +57,26 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX28_PAD_LCD_D16__GPIO_1_16
+						MX28_PAD_LCD_D17__GPIO_1_17
+						MX28_PAD_LCD_D18__GPIO_1_18
+						MX28_PAD_LCD_D19__GPIO_1_19
+						MX28_PAD_LCD_D20__GPIO_1_20
+						MX28_PAD_LCD_D21__GPIO_1_21
+						MX28_PAD_LCD_D22__GPIO_1_22
+						MX28_PAD_GPMI_CE1N__GPIO_0_17
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				lcdif_pins_apf28dev: lcdif-apf28dev@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x1181 /* MX28_PAD_LCD_RD_E__LCD_VSYNC */
 						0x1191 /* MX28_PAD_LCD_WR_RWN__LCD_HSYNC */
 						0x11a1 /* MX28_PAD_LCD_RS__LCD_DOTCLK */
@@ -65,6 +85,26 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX28_PAD_LCD_RD_E__LCD_VSYNC
+						MX28_PAD_LCD_WR_RWN__LCD_HSYNC
+						MX28_PAD_LCD_RS__LCD_DOTCLK
+						MX28_PAD_LCD_CS__LCD_ENABLE
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+				};
+
+				usb0_otg_apf28dev: otg-apf28dev@0 {
+					reg = <0>;
+					fsl,pinmux-ids = <
+						MX28_PAD_LCD_D23__GPIO_1_23
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -72,10 +112,17 @@
 				pinctrl-names = "default";
 				pinctrl-0 = <&lcdif_16bit_pins_a
 						&lcdif_pins_apf28dev>;
+<<<<<<< HEAD
 				display = <&display>;
 				status = "okay";
 
 				display: display {
+=======
+				display = <&display0>;
+				status = "okay";
+
+				display0: display0 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					bits-per-pixel = <16>;
 					bus-width = <16>;
 
@@ -99,10 +146,24 @@
 					};
 				};
 			};
+<<<<<<< HEAD
+=======
+
+			can0: can@80032000 {
+				pinctrl-names = "default";
+				pinctrl-0 = <&can0_pins_a>;
+				xceiver-supply = <&reg_can0_vcc>;
+				status = "okay";
+			};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		apbx@80040000 {
 			lradc@80050000 {
+<<<<<<< HEAD
+=======
+				fsl,lradc-touchscreen-wires = <4>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "okay";
 			};
 
@@ -118,6 +179,16 @@
 				status = "okay";
 			};
 
+<<<<<<< HEAD
+=======
+			auart0: serial@8006a000 {
+				pinctrl-names = "default";
+				pinctrl-0 = <&auart0_pins_a>;
+				uart-has-rtscts;
+				status = "okay";
+			};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			usbphy0: usbphy@8007c000 {
 				status = "okay";
 			};
@@ -130,6 +201,12 @@
 
 	ahb@80080000 {
 		usb0: usb@80080000 {
+<<<<<<< HEAD
+=======
+			pinctrl-names = "default";
+			pinctrl-0 = <&usb0_otg_apf28dev
+					&usb0_id_pins_b>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vbus-supply = <&reg_usb0_vbus>;
 			status = "okay";
 		};
@@ -142,20 +219,45 @@
 			phy-mode = "rmii";
 			pinctrl-names = "default";
 			pinctrl-0 = <&mac1_pins_a>;
+<<<<<<< HEAD
 			phy-reset-gpios = <&gpio0 23 0>;
+=======
+			phy-reset-gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "okay";
 		};
 	};
 
 	regulators {
 		compatible = "simple-bus";
+<<<<<<< HEAD
 
 		reg_usb0_vbus: usb0_vbus {
 			compatible = "regulator-fixed";
+=======
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg_usb0_vbus: regulator@0 {
+			compatible = "regulator-fixed";
+			reg = <0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "usb0_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
 			gpio = <&gpio1 23 1>;
+<<<<<<< HEAD
+=======
+			enable-active-high;
+		};
+
+		reg_can0_vcc: regulator@1 {
+			compatible = "regulator-fixed";
+			reg = <1>;
+			regulator-name = "can0_vcc";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
@@ -176,4 +278,18 @@
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
 	};
+<<<<<<< HEAD
+=======
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		user-button {
+			label = "User button";
+			gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
+			linux,code = <0x100>;
+			wakeup-source;
+		};
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

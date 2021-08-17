@@ -9,11 +9,24 @@
 #include "bcache.h"
 #include "btree.h"
 #include "debug.h"
+<<<<<<< HEAD
 #include "request.h"
 
 #include <linux/buffer_head.h>
 #include <linux/debugfs.h>
 #include <linux/genhd.h>
+=======
+#include "extents.h"
+#include "request.h"
+#include "writeback.h"
+
+#include <linux/blkdev.h>
+#include <linux/buffer_head.h>
+#include <linux/debugfs.h>
+#include <linux/genhd.h>
+#include <linux/idr.h>
+#include <linux/kthread.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/random.h>
 #include <linux/reboot.h>
@@ -42,6 +55,7 @@ const char * const bch_cache_modes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 struct uuid_entry_v0 {
 	uint8_t		uuid[16];
 	uint8_t		label[32];
@@ -51,17 +65,25 @@ struct uuid_entry_v0 {
 	uint32_t	pad;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct kobject *bcache_kobj;
 struct mutex bch_register_lock;
 LIST_HEAD(bch_cache_sets);
 static LIST_HEAD(uncached_devices);
 
+<<<<<<< HEAD
 static int bcache_major, bcache_minor;
+=======
+static int bcache_major;
+static DEFINE_IDA(bcache_minor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static wait_queue_head_t unregister_wait;
 struct workqueue_struct *bcache_wq;
 
 #define BTREE_MAX_PAGES		(256 * 1024 / PAGE_SIZE)
 
+<<<<<<< HEAD
 static void bio_split_pool_free(struct bio_split_pool *p)
 {
 	if (p->bio_split_hook)
@@ -85,6 +107,8 @@ static int bio_split_pool_init(struct bio_split_pool *p)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Superblock */
 
 static const char *read_super(struct cache_sb *sb, struct block_device *bdev,
@@ -160,7 +184,10 @@ static const char *read_super(struct cache_sb *sb, struct block_device *bdev,
 	case BCACHE_SB_VERSION_CDEV:
 	case BCACHE_SB_VERSION_CDEV_WITH_UUID:
 		sb->nbuckets	= le64_to_cpu(s->nbuckets);
+<<<<<<< HEAD
 		sb->block_size	= le16_to_cpu(s->block_size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sb->bucket_size	= le16_to_cpu(s->bucket_size);
 
 		sb->nr_in_set	= le16_to_cpu(s->nr_in_set);
@@ -224,12 +251,20 @@ err:
 	return err;
 }
 
+<<<<<<< HEAD
 static void write_bdev_super_endio(struct bio *bio, int error)
+=======
+static void write_bdev_super_endio(struct bio *bio)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cached_dev *dc = bio->bi_private;
 	/* XXX: error checking */
 
+<<<<<<< HEAD
 	closure_put(&dc->sb_write.cl);
+=======
+	closure_put(&dc->sb_write);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __write_super(struct cache_sb *sb, struct bio *bio)
@@ -237,9 +272,15 @@ static void __write_super(struct cache_sb *sb, struct bio *bio)
 	struct cache_sb *out = page_address(bio->bi_io_vec[0].bv_page);
 	unsigned i;
 
+<<<<<<< HEAD
 	bio->bi_sector	= SB_SECTOR;
 	bio->bi_rw	= REQ_SYNC|REQ_META;
 	bio->bi_size	= SB_SIZE;
+=======
+	bio->bi_iter.bi_sector	= SB_SECTOR;
+	bio->bi_iter.bi_size	= SB_SIZE;
+	bio_set_op_attrs(bio, REQ_OP_WRITE, REQ_SYNC|REQ_META);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bch_bio_map(bio, NULL);
 
 	out->offset		= cpu_to_le64(sb->offset);
@@ -264,15 +305,34 @@ static void __write_super(struct cache_sb *sb, struct bio *bio)
 	pr_debug("ver %llu, flags %llu, seq %llu",
 		 sb->version, sb->flags, sb->seq);
 
+<<<<<<< HEAD
 	submit_bio(REQ_WRITE, bio);
+=======
+	submit_bio(bio);
+}
+
+static void bch_write_bdev_super_unlock(struct closure *cl)
+{
+	struct cached_dev *dc = container_of(cl, struct cached_dev, sb_write);
+
+	up(&dc->sb_write_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void bch_write_bdev_super(struct cached_dev *dc, struct closure *parent)
 {
+<<<<<<< HEAD
 	struct closure *cl = &dc->sb_write.cl;
 	struct bio *bio = &dc->sb_bio;
 
 	closure_lock(&dc->sb_write, parent);
+=======
+	struct closure *cl = &dc->sb_write;
+	struct bio *bio = &dc->sb_bio;
+
+	down(&dc->sb_write_mutex);
+	closure_init(cl, parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bio_reset(bio);
 	bio->bi_bdev	= dc->bdev;
@@ -282,6 +342,7 @@ void bch_write_bdev_super(struct cached_dev *dc, struct closure *parent)
 	closure_get(cl);
 	__write_super(&dc->sb, bio);
 
+<<<<<<< HEAD
 	closure_return(cl);
 }
 
@@ -291,15 +352,42 @@ static void write_super_endio(struct bio *bio, int error)
 
 	bch_count_io_errors(ca, error, "writing superblock");
 	closure_put(&ca->set->sb_write.cl);
+=======
+	closure_return_with_destructor(cl, bch_write_bdev_super_unlock);
+}
+
+static void write_super_endio(struct bio *bio)
+{
+	struct cache *ca = bio->bi_private;
+
+	bch_count_io_errors(ca, bio->bi_error, "writing superblock");
+	closure_put(&ca->set->sb_write);
+}
+
+static void bcache_write_super_unlock(struct closure *cl)
+{
+	struct cache_set *c = container_of(cl, struct cache_set, sb_write);
+
+	up(&c->sb_write_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void bcache_write_super(struct cache_set *c)
 {
+<<<<<<< HEAD
 	struct closure *cl = &c->sb_write.cl;
 	struct cache *ca;
 	unsigned i;
 
 	closure_lock(&c->sb_write, &c->cl);
+=======
+	struct closure *cl = &c->sb_write;
+	struct cache *ca;
+	unsigned i;
+
+	down(&c->sb_write_mutex);
+	closure_init(cl, &c->cl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	c->sb.seq++;
 
@@ -321,21 +409,35 @@ void bcache_write_super(struct cache_set *c)
 		__write_super(&ca->sb, bio);
 	}
 
+<<<<<<< HEAD
 	closure_return(cl);
+=======
+	closure_return_with_destructor(cl, bcache_write_super_unlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* UUID io */
 
+<<<<<<< HEAD
 static void uuid_endio(struct bio *bio, int error)
 {
 	struct closure *cl = bio->bi_private;
 	struct cache_set *c = container_of(cl, struct cache_set, uuid_write.cl);
 
 	cache_set_err_on(error, c, "accessing uuids");
+=======
+static void uuid_endio(struct bio *bio)
+{
+	struct closure *cl = bio->bi_private;
+	struct cache_set *c = container_of(cl, struct cache_set, uuid_write);
+
+	cache_set_err_on(bio->bi_error, c, "accessing uuids");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bch_bbio_free(bio, c);
 	closure_put(cl);
 }
 
+<<<<<<< HEAD
 static void uuid_io(struct cache_set *c, unsigned long rw,
 		    struct bkey *k, struct closure *parent)
 {
@@ -345,25 +447,63 @@ static void uuid_io(struct cache_set *c, unsigned long rw,
 
 	BUG_ON(!parent);
 	closure_lock(&c->uuid_write, parent);
+=======
+static void uuid_io_unlock(struct closure *cl)
+{
+	struct cache_set *c = container_of(cl, struct cache_set, uuid_write);
+
+	up(&c->uuid_write_mutex);
+}
+
+static void uuid_io(struct cache_set *c, int op, unsigned long op_flags,
+		    struct bkey *k, struct closure *parent)
+{
+	struct closure *cl = &c->uuid_write;
+	struct uuid_entry *u;
+	unsigned i;
+	char buf[80];
+
+	BUG_ON(!parent);
+	down(&c->uuid_write_mutex);
+	closure_init(cl, parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < KEY_PTRS(k); i++) {
 		struct bio *bio = bch_bbio_alloc(c);
 
+<<<<<<< HEAD
 		bio->bi_rw	= REQ_SYNC|REQ_META|rw;
 		bio->bi_size	= KEY_SIZE(k) << 9;
 
 		bio->bi_end_io	= uuid_endio;
 		bio->bi_private = cl;
+=======
+		bio->bi_opf = REQ_SYNC | REQ_META | op_flags;
+		bio->bi_iter.bi_size = KEY_SIZE(k) << 9;
+
+		bio->bi_end_io	= uuid_endio;
+		bio->bi_private = cl;
+		bio_set_op_attrs(bio, op, REQ_SYNC|REQ_META|op_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bch_bio_map(bio, c->uuids);
 
 		bch_submit_bbio(bio, c, k, i);
 
+<<<<<<< HEAD
 		if (!(rw & WRITE))
 			break;
 	}
 
 	pr_debug("%s UUIDs at %s", rw & REQ_WRITE ? "wrote" : "read",
 		 pkey(&c->uuid_bucket));
+=======
+		if (op != REQ_OP_WRITE)
+			break;
+	}
+
+	bch_extent_to_text(buf, sizeof(buf), k);
+	pr_debug("%s UUIDs at %s", op == REQ_OP_WRITE ? "wrote" : "read", buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (u = c->uuids; u < c->uuids + c->nr_uuids; u++)
 		if (!bch_is_zero(u->uuid, 16))
@@ -371,18 +511,30 @@ static void uuid_io(struct cache_set *c, unsigned long rw,
 				 u - c->uuids, u->uuid, u->label,
 				 u->first_reg, u->last_reg, u->invalidated);
 
+<<<<<<< HEAD
 	closure_return(cl);
+=======
+	closure_return_with_destructor(cl, uuid_io_unlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static char *uuid_read(struct cache_set *c, struct jset *j, struct closure *cl)
 {
 	struct bkey *k = &j->uuid_bucket;
 
+<<<<<<< HEAD
 	if (__bch_ptr_invalid(c, 1, k))
 		return "bad uuid pointer";
 
 	bkey_copy(&c->uuid_bucket, k);
 	uuid_io(c, READ_SYNC, k, cl);
+=======
+	if (__bch_btree_ptr_invalid(c, k))
+		return "bad uuid pointer";
+
+	bkey_copy(&c->uuid_bucket, k);
+	uuid_io(c, REQ_OP_READ, READ_SYNC, k, cl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (j->version < BCACHE_JSET_VERSION_UUIDv1) {
 		struct uuid_entry_v0	*u0 = (void *) c->uuids;
@@ -423,6 +575,7 @@ static int __uuid_write(struct cache_set *c)
 
 	lockdep_assert_held(&bch_register_lock);
 
+<<<<<<< HEAD
 	if (bch_bucket_alloc_set(c, WATERMARK_METADATA, &k.key, 1, &cl))
 		return 1;
 
@@ -432,6 +585,17 @@ static int __uuid_write(struct cache_set *c)
 
 	bkey_copy(&c->uuid_bucket, &k.key);
 	__bkey_put(c, &k.key);
+=======
+	if (bch_bucket_alloc_set(c, RESERVE_BTREE, &k.key, 1, true))
+		return 1;
+
+	SET_KEY_SIZE(&k.key, c->sb.bucket_size);
+	uuid_io(c, REQ_OP_WRITE, 0, &k.key, &cl);
+	closure_sync(&cl);
+
+	bkey_copy(&c->uuid_bucket, &k.key);
+	bkey_put(c, &k.key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -490,22 +654,36 @@ static struct uuid_entry *uuid_find_empty(struct cache_set *c)
  * disk.
  */
 
+<<<<<<< HEAD
 static void prio_endio(struct bio *bio, int error)
 {
 	struct cache *ca = bio->bi_private;
 
 	cache_set_err_on(error, ca->set, "accessing priorities");
+=======
+static void prio_endio(struct bio *bio)
+{
+	struct cache *ca = bio->bi_private;
+
+	cache_set_err_on(bio->bi_error, ca->set, "accessing priorities");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bch_bbio_free(bio, ca->set);
 	closure_put(&ca->prio);
 }
 
+<<<<<<< HEAD
 static void prio_io(struct cache *ca, uint64_t bucket, unsigned long rw)
+=======
+static void prio_io(struct cache *ca, uint64_t bucket, int op,
+		    unsigned long op_flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct closure *cl = &ca->prio;
 	struct bio *bio = bch_bbio_alloc(ca->set);
 
 	closure_init_stack(cl);
 
+<<<<<<< HEAD
 	bio->bi_sector	= bucket * ca->sb.bucket_size;
 	bio->bi_bdev	= ca->bdev;
 	bio->bi_rw	= REQ_SYNC|REQ_META|rw;
@@ -522,6 +700,21 @@ static void prio_io(struct cache *ca, uint64_t bucket, unsigned long rw)
 #define buckets_free(c)	"free %zu, free_inc %zu, unused %zu",		\
 	fifo_used(&c->free), fifo_used(&c->free_inc), fifo_used(&c->unused)
 
+=======
+	bio->bi_iter.bi_sector	= bucket * ca->sb.bucket_size;
+	bio->bi_bdev		= ca->bdev;
+	bio->bi_iter.bi_size	= bucket_bytes(ca);
+
+	bio->bi_end_io	= prio_endio;
+	bio->bi_private = ca;
+	bio_set_op_attrs(bio, op, REQ_SYNC|REQ_META|op_flags);
+	bch_bio_map(bio, ca->disk_buckets);
+
+	closure_bio_submit(bio, &ca->prio);
+	closure_sync(cl);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void bch_prio_write(struct cache *ca)
 {
 	int i;
@@ -532,18 +725,26 @@ void bch_prio_write(struct cache *ca)
 
 	lockdep_assert_held(&ca->set->bucket_lock);
 
+<<<<<<< HEAD
 	for (b = ca->buckets;
 	     b < ca->buckets + ca->sb.nbuckets; b++)
 		b->disk_gen = b->gen;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ca->disk_buckets->seq++;
 
 	atomic_long_add(ca->sb.bucket_size * prio_buckets(ca),
 			&ca->meta_sectors_written);
 
+<<<<<<< HEAD
 	pr_debug("free %zu, free_inc %zu, unused %zu", fifo_used(&ca->free),
 		 fifo_used(&ca->free_inc), fifo_used(&ca->unused));
 	blktrace_msg(ca, "Starting priorities: " buckets_free(ca));
+=======
+	//pr_debug("free %zu, free_inc %zu, unused %zu", fifo_used(&ca->free),
+	//	 fifo_used(&ca->free_inc), fifo_used(&ca->unused));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = prio_buckets(ca) - 1; i >= 0; --i) {
 		long bucket;
@@ -559,6 +760,7 @@ void bch_prio_write(struct cache *ca)
 		}
 
 		p->next_bucket	= ca->prio_buckets[i + 1];
+<<<<<<< HEAD
 		p->magic	= pset_magic(ca);
 		p->csum		= bch_crc64(&p->magic, bucket_bytes(ca) - 8);
 
@@ -567,6 +769,16 @@ void bch_prio_write(struct cache *ca)
 
 		mutex_unlock(&ca->set->bucket_lock);
 		prio_io(ca, bucket, REQ_WRITE);
+=======
+		p->magic	= pset_magic(&ca->sb);
+		p->csum		= bch_crc64(&p->magic, bucket_bytes(ca) - 8);
+
+		bucket = bch_bucket_alloc(ca, RESERVE_PRIO, true);
+		BUG_ON(bucket == -1);
+
+		mutex_unlock(&ca->set->bucket_lock);
+		prio_io(ca, bucket, REQ_OP_WRITE, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_lock(&ca->set->bucket_lock);
 
 		ca->prio_buckets[i] = bucket;
@@ -580,14 +792,27 @@ void bch_prio_write(struct cache *ca)
 
 	mutex_lock(&ca->set->bucket_lock);
 
+<<<<<<< HEAD
 	ca->need_save_prio = 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Don't want the old priorities to get garbage collected until after we
 	 * finish writing the new ones, and they're journalled
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < prio_buckets(ca); i++)
 		ca->prio_last_buckets[i] = ca->prio_buckets[i];
+=======
+	for (i = 0; i < prio_buckets(ca); i++) {
+		if (ca->prio_last_buckets[i])
+			__bch_bucket_free(ca,
+				&ca->buckets[ca->prio_last_buckets[i]]);
+
+		ca->prio_last_buckets[i] = ca->prio_buckets[i];
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void prio_read(struct cache *ca, uint64_t bucket)
@@ -605,12 +830,20 @@ static void prio_read(struct cache *ca, uint64_t bucket)
 			ca->prio_last_buckets[bucket_nr] = bucket;
 			bucket_nr++;
 
+<<<<<<< HEAD
 			prio_io(ca, bucket, READ_SYNC);
+=======
+			prio_io(ca, bucket, REQ_OP_READ, READ_SYNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (p->csum != bch_crc64(&p->magic, bucket_bytes(ca) - 8))
 				pr_warn("bad csum reading priorities");
 
+<<<<<<< HEAD
 			if (p->magic != pset_magic(ca))
+=======
+			if (p->magic != pset_magic(&ca->sb))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				pr_warn("bad magic reading priorities");
 
 			bucket = p->next_bucket;
@@ -618,7 +851,11 @@ static void prio_read(struct cache *ca, uint64_t bucket)
 		}
 
 		b->prio = le16_to_cpu(d->prio);
+<<<<<<< HEAD
 		b->gen = b->disk_gen = b->last_gc = b->gc_gen = d->gen;
+=======
+		b->gen = b->last_gc = d->gen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -627,7 +864,11 @@ static void prio_read(struct cache *ca, uint64_t bucket)
 static int open_dev(struct block_device *b, fmode_t mode)
 {
 	struct bcache_device *d = b->bd_disk->private_data;
+<<<<<<< HEAD
 	if (atomic_read(&d->closing))
+=======
+	if (test_bit(BCACHE_DEV_CLOSING, &d->flags))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENXIO;
 
 	closure_get(&d->cl);
@@ -656,12 +897,17 @@ static const struct block_device_operations bcache_ops = {
 
 void bcache_device_stop(struct bcache_device *d)
 {
+<<<<<<< HEAD
 	if (!atomic_xchg(&d->closing, 1))
+=======
+	if (!test_and_set_bit(BCACHE_DEV_CLOSING, &d->flags))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		closure_queue(&d->cl);
 }
 
 static void bcache_device_unlink(struct bcache_device *d)
 {
+<<<<<<< HEAD
 	unsigned i;
 	struct cache *ca;
 
@@ -670,6 +916,20 @@ static void bcache_device_unlink(struct bcache_device *d)
 
 	for_each_cache(ca, d->c, i)
 		bd_unlink_disk_holder(ca->bdev, d->disk);
+=======
+	lockdep_assert_held(&bch_register_lock);
+
+	if (d->c && !test_and_set_bit(BCACHE_DEV_UNLINK_DONE, &d->flags)) {
+		unsigned i;
+		struct cache *ca;
+
+		sysfs_remove_link(&d->c->kobj, d->name);
+		sysfs_remove_link(&d->kobj, "cache");
+
+		for_each_cache(ca, d->c, i)
+			bd_unlink_disk_holder(ca->bdev, d->disk);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bcache_device_link(struct bcache_device *d, struct cache_set *c,
@@ -687,25 +947,40 @@ static void bcache_device_link(struct bcache_device *d, struct cache_set *c,
 	WARN(sysfs_create_link(&d->kobj, &c->kobj, "cache") ||
 	     sysfs_create_link(&c->kobj, &d->kobj, d->name),
 	     "Couldn't create device <-> cache set symlinks");
+<<<<<<< HEAD
+=======
+
+	clear_bit(BCACHE_DEV_UNLINK_DONE, &d->flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bcache_device_detach(struct bcache_device *d)
 {
 	lockdep_assert_held(&bch_register_lock);
 
+<<<<<<< HEAD
 	if (atomic_read(&d->detaching)) {
+=======
+	if (test_bit(BCACHE_DEV_DETACHING, &d->flags)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct uuid_entry *u = d->c->uuids + d->id;
 
 		SET_UUID_FLASH_ONLY(u, 0);
 		memcpy(u->uuid, invalid_uuid, 16);
 		u->invalidated = cpu_to_le32(get_seconds());
 		bch_uuid_write(d->c);
+<<<<<<< HEAD
 
 		atomic_set(&d->detaching, 0);
 	}
 
 	if (!d->flush_done)
 		bcache_device_unlink(d);
+=======
+	}
+
+	bcache_device_unlink(d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	d->c->devices[d->id] = NULL;
 	closure_put(&d->c->caching);
@@ -715,8 +990,11 @@ static void bcache_device_detach(struct bcache_device *d)
 static void bcache_device_attach(struct bcache_device *d, struct cache_set *c,
 				 unsigned id)
 {
+<<<<<<< HEAD
 	BUG_ON(test_bit(CACHE_SET_STOPPING, &c->flags));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	d->id = id;
 	d->c = c;
 	c->devices[id] = d;
@@ -736,6 +1014,7 @@ static void bcache_device_free(struct bcache_device *d)
 		del_gendisk(d->disk);
 	if (d->disk && d->disk->queue)
 		blk_cleanup_queue(d->disk->queue);
+<<<<<<< HEAD
 	if (d->disk)
 		put_disk(d->disk);
 
@@ -744,10 +1023,22 @@ static void bcache_device_free(struct bcache_device *d)
 		mempool_destroy(d->unaligned_bvec);
 	if (d->bio_split)
 		bioset_free(d->bio_split);
+=======
+	if (d->disk) {
+		ida_simple_remove(&bcache_minor, d->disk->first_minor);
+		put_disk(d->disk);
+	}
+
+	if (d->bio_split)
+		bioset_free(d->bio_split);
+	kvfree(d->full_dirty_stripes);
+	kvfree(d->stripe_sectors_dirty);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	closure_debug_destroy(&d->cl);
 }
 
+<<<<<<< HEAD
 static int bcache_device_init(struct bcache_device *d, unsigned block_size)
 {
 	struct request_queue *q;
@@ -767,6 +1058,64 @@ static int bcache_device_init(struct bcache_device *d, unsigned block_size)
 	d->disk->fops		= &bcache_ops;
 	d->disk->private_data	= d;
 
+=======
+static int bcache_device_init(struct bcache_device *d, unsigned block_size,
+			      sector_t sectors)
+{
+	struct request_queue *q;
+	size_t n;
+	int minor;
+
+	if (!d->stripe_size)
+		d->stripe_size = 1 << 31;
+
+	d->nr_stripes = DIV_ROUND_UP_ULL(sectors, d->stripe_size);
+
+	if (!d->nr_stripes ||
+	    d->nr_stripes > INT_MAX ||
+	    d->nr_stripes > SIZE_MAX / sizeof(atomic_t)) {
+		pr_err("nr_stripes too large or invalid: %u (start sector beyond end of disk?)",
+			(unsigned)d->nr_stripes);
+		return -ENOMEM;
+	}
+
+	n = d->nr_stripes * sizeof(atomic_t);
+	d->stripe_sectors_dirty = n < PAGE_SIZE << 6
+		? kzalloc(n, GFP_KERNEL)
+		: vzalloc(n);
+	if (!d->stripe_sectors_dirty)
+		return -ENOMEM;
+
+	n = BITS_TO_LONGS(d->nr_stripes) * sizeof(unsigned long);
+	d->full_dirty_stripes = n < PAGE_SIZE << 6
+		? kzalloc(n, GFP_KERNEL)
+		: vzalloc(n);
+	if (!d->full_dirty_stripes)
+		return -ENOMEM;
+
+	minor = ida_simple_get(&bcache_minor, 0, MINORMASK + 1, GFP_KERNEL);
+	if (minor < 0)
+		return minor;
+
+	if (!(d->bio_split = bioset_create(4, offsetof(struct bbio, bio))) ||
+	    !(d->disk = alloc_disk(1))) {
+		ida_simple_remove(&bcache_minor, minor);
+		return -ENOMEM;
+	}
+
+	set_capacity(d->disk, sectors);
+	snprintf(d->disk->disk_name, DISK_NAME_LEN, "bcache%i", minor);
+
+	d->disk->major		= bcache_major;
+	d->disk->first_minor	= minor;
+	d->disk->fops		= &bcache_ops;
+	d->disk->private_data	= d;
+
+	q = blk_alloc_queue(GFP_KERNEL);
+	if (!q)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blk_queue_make_request(q, NULL);
 	d->disk->queue			= q;
 	q->queuedata			= d;
@@ -775,14 +1124,26 @@ static int bcache_device_init(struct bcache_device *d, unsigned block_size)
 	q->limits.max_sectors		= UINT_MAX;
 	q->limits.max_segment_size	= UINT_MAX;
 	q->limits.max_segments		= BIO_MAX_PAGES;
+<<<<<<< HEAD
 	q->limits.max_discard_sectors	= UINT_MAX;
+=======
+	blk_queue_max_discard_sectors(q, UINT_MAX);
+	q->limits.discard_granularity	= 512;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	q->limits.io_min		= block_size;
 	q->limits.logical_block_size	= block_size;
 	q->limits.physical_block_size	= block_size;
 	set_bit(QUEUE_FLAG_NONROT,	&d->disk->queue->queue_flags);
+<<<<<<< HEAD
 	set_bit(QUEUE_FLAG_DISCARD,	&d->disk->queue->queue_flags);
 
 	blk_queue_flush(q, REQ_FLUSH|REQ_FUA);
+=======
+	clear_bit(QUEUE_FLAG_ADD_RANDOM, &d->disk->queue->queue_flags);
+	set_bit(QUEUE_FLAG_DISCARD,	&d->disk->queue->queue_flags);
+
+	blk_queue_write_cache(q, true, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -803,9 +1164,29 @@ static void calc_cached_dev_sectors(struct cache_set *c)
 void bch_cached_dev_run(struct cached_dev *dc)
 {
 	struct bcache_device *d = &dc->disk;
+<<<<<<< HEAD
 
 	if (atomic_xchg(&dc->running, 1))
 		return;
+=======
+	char buf[SB_LABEL_SIZE + 1];
+	char *env[] = {
+		"DRIVER=bcache",
+		kasprintf(GFP_KERNEL, "CACHED_UUID=%pU", dc->sb.uuid),
+		NULL,
+		NULL,
+	};
+
+	memcpy(buf, dc->sb.label, SB_LABEL_SIZE);
+	buf[SB_LABEL_SIZE] = '\0';
+	env[2] = kasprintf(GFP_KERNEL, "CACHED_LABEL=%s", buf);
+
+	if (atomic_xchg(&dc->running, 1)) {
+		kfree(env[1]);
+		kfree(env[2]);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!d->c &&
 	    BDEV_STATE(&dc->sb) != BDEV_STATE_NONE) {
@@ -819,10 +1200,19 @@ void bch_cached_dev_run(struct cached_dev *dc)
 
 	add_disk(d->disk);
 	bd_link_disk_holder(dc->bdev, dc->disk.disk);
+<<<<<<< HEAD
 #if 0
 	char *env[] = { "SYMLINK=label" , NULL };
 	kobject_uevent_env(&disk_to_dev(d->disk)->kobj, KOBJ_CHANGE, env);
 #endif
+=======
+	/* won't show up in the uevent file, use udevadm monitor -e instead
+	 * only class / kset properties are persistent */
+	kobject_uevent_env(&disk_to_dev(d->disk)->kobj, KOBJ_CHANGE, env);
+	kfree(env[1]);
+	kfree(env[2]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sysfs_create_link(&d->kobj, &disk_to_dev(d->disk)->kobj, "dev") ||
 	    sysfs_create_link(&disk_to_dev(d->disk)->kobj, &d->kobj, "bcache"))
 		pr_debug("error creating sysfs link");
@@ -835,20 +1225,43 @@ static void cached_dev_detach_finish(struct work_struct *w)
 	struct closure cl;
 	closure_init_stack(&cl);
 
+<<<<<<< HEAD
 	BUG_ON(!atomic_read(&dc->disk.detaching));
+=======
+	BUG_ON(!test_bit(BCACHE_DEV_DETACHING, &dc->disk.flags));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(atomic_read(&dc->count));
 
 	mutex_lock(&bch_register_lock);
 
+<<<<<<< HEAD
+=======
+	cancel_delayed_work_sync(&dc->writeback_rate_update);
+	if (!IS_ERR_OR_NULL(dc->writeback_thread)) {
+		kthread_stop(dc->writeback_thread);
+		dc->writeback_thread = NULL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(&dc->sb.set_uuid, 0, 16);
 	SET_BDEV_STATE(&dc->sb, BDEV_STATE_NONE);
 
 	bch_write_bdev_super(dc, &cl);
 	closure_sync(&cl);
 
+<<<<<<< HEAD
 	bcache_device_detach(&dc->disk);
 	list_move(&dc->list, &uncached_devices);
 
+=======
+	calc_cached_dev_sectors(dc->disk.c);
+	bcache_device_detach(&dc->disk);
+	list_move(&dc->list, &uncached_devices);
+
+	clear_bit(BCACHE_DEV_DETACHING, &dc->disk.flags);
+	clear_bit(BCACHE_DEV_UNLINK_DONE, &dc->disk.flags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&bch_register_lock);
 
 	pr_info("Caching disabled for %s", bdevname(dc->bdev, buf));
@@ -861,10 +1274,17 @@ void bch_cached_dev_detach(struct cached_dev *dc)
 {
 	lockdep_assert_held(&bch_register_lock);
 
+<<<<<<< HEAD
 	if (atomic_read(&dc->disk.closing))
 		return;
 
 	if (atomic_xchg(&dc->disk.detaching, 1))
+=======
+	if (test_bit(BCACHE_DEV_CLOSING, &dc->disk.flags))
+		return;
+
+	if (test_and_set_bit(BCACHE_DEV_DETACHING, &dc->disk.flags))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/*
@@ -877,15 +1297,29 @@ void bch_cached_dev_detach(struct cached_dev *dc)
 	cached_dev_put(dc);
 }
 
+<<<<<<< HEAD
 int bch_cached_dev_attach(struct cached_dev *dc, struct cache_set *c)
+=======
+int bch_cached_dev_attach(struct cached_dev *dc, struct cache_set *c,
+			  uint8_t *set_uuid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	uint32_t rtime = cpu_to_le32(get_seconds());
 	struct uuid_entry *u;
 	char buf[BDEVNAME_SIZE];
+<<<<<<< HEAD
 
 	bdevname(dc->bdev, buf);
 
 	if (memcmp(dc->sb.set_uuid, c->sb.set_uuid, 16))
+=======
+	struct cached_dev *exist_dc, *t;
+
+	bdevname(dc->bdev, buf);
+
+	if ((set_uuid && memcmp(set_uuid, c->sb.set_uuid, 16)) ||
+	    (!set_uuid && memcmp(dc->sb.set_uuid, c->sb.set_uuid, 16)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOENT;
 
 	if (dc->disk.c) {
@@ -905,6 +1339,19 @@ int bch_cached_dev_attach(struct cached_dev *dc, struct cache_set *c)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Check whether already attached */
+	list_for_each_entry_safe(exist_dc, t, &c->cached_devs, list) {
+		if (!memcmp(dc->sb.uuid, exist_dc->sb.uuid, 16)) {
+			pr_err("Tried to attach %s but duplicate UUID already attached",
+				buf);
+
+			return -EINVAL;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u = uuid_find(c, dc->sb.uuid);
 
 	if (u &&
@@ -962,7 +1409,19 @@ int bch_cached_dev_attach(struct cached_dev *dc, struct cache_set *c)
 	 */
 	atomic_set(&dc->count, 1);
 
+<<<<<<< HEAD
 	if (BDEV_STATE(&dc->sb) == BDEV_STATE_DIRTY) {
+=======
+	/* Block writeback thread, but spawn it */
+	down_write(&dc->writeback_lock);
+	if (bch_cached_dev_writeback_start(dc)) {
+		up_write(&dc->writeback_lock);
+		return -ENOMEM;
+	}
+
+	if (BDEV_STATE(&dc->sb) == BDEV_STATE_DIRTY) {
+		bch_sectors_dirty_init(&dc->disk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		atomic_set(&dc->has_dirty, 1);
 		atomic_inc(&dc->count);
 		bch_writeback_queue(dc);
@@ -971,6 +1430,12 @@ int bch_cached_dev_attach(struct cached_dev *dc, struct cache_set *c)
 	bch_cached_dev_run(dc);
 	bcache_device_link(&dc->disk, c, "bdev");
 
+<<<<<<< HEAD
+=======
+	/* Allow the writeback thread to proceed */
+	up_write(&dc->writeback_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("Caching %s as %s on set %pU",
 		bdevname(dc->bdev, buf), dc->disk.disk->disk_name,
 		dc->disk.c->sb.set_uuid);
@@ -990,6 +1455,13 @@ static void cached_dev_free(struct closure *cl)
 	struct cached_dev *dc = container_of(cl, struct cached_dev, disk.cl);
 
 	cancel_delayed_work_sync(&dc->writeback_rate_update);
+<<<<<<< HEAD
+=======
+	if (!IS_ERR_OR_NULL(dc->writeback_thread))
+		kthread_stop(dc->writeback_thread);
+	if (dc->writeback_write_wq)
+		destroy_workqueue(dc->writeback_write_wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&bch_register_lock);
 
@@ -1000,12 +1472,17 @@ static void cached_dev_free(struct closure *cl)
 
 	mutex_unlock(&bch_register_lock);
 
+<<<<<<< HEAD
 	if (!IS_ERR_OR_NULL(dc->bdev)) {
 		if (dc->bdev->bd_disk)
 			blk_sync_queue(bdev_get_queue(dc->bdev));
 
 		blkdev_put(dc->bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
 	}
+=======
+	if (!IS_ERR_OR_NULL(dc->bdev))
+		blkdev_put(dc->bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wake_up(&unregister_wait);
 
@@ -1018,11 +1495,15 @@ static void cached_dev_flush(struct closure *cl)
 	struct bcache_device *d = &dc->disk;
 
 	mutex_lock(&bch_register_lock);
+<<<<<<< HEAD
 	d->flush_done = 1;
 
 	if (d->c)
 		bcache_device_unlink(d);
 
+=======
+	bcache_device_unlink(d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&bch_register_lock);
 
 	bch_cache_accounting_destroy(&dc->accounting);
@@ -1043,12 +1524,19 @@ static int cached_dev_init(struct cached_dev *dc, unsigned block_size)
 	set_closure_fn(&dc->disk.cl, cached_dev_flush, system_wq);
 	kobject_init(&dc->disk.kobj, &bch_cached_dev_ktype);
 	INIT_WORK(&dc->detach, cached_dev_detach_finish);
+<<<<<<< HEAD
 	closure_init_unlocked(&dc->sb_write);
+=======
+	sema_init(&dc->sb_write_mutex, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_LIST_HEAD(&dc->io_lru);
 	spin_lock_init(&dc->io_lock);
 	bch_cache_accounting_init(&dc->accounting, &dc->disk.cl);
 
+<<<<<<< HEAD
 	dc->sequential_merge		= true;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dc->sequential_cutoff		= 4 << 20;
 
 	for (io = dc->io; io < dc->io + RECENT_IO; io++) {
@@ -1056,7 +1544,18 @@ static int cached_dev_init(struct cached_dev *dc, unsigned block_size)
 		hlist_add_head(&io->hash, dc->io_hash + RECENT_IO);
 	}
 
+<<<<<<< HEAD
 	ret = bcache_device_init(&dc->disk, block_size);
+=======
+	dc->disk.stripe_size = q->limits.io_opt >> 9;
+
+	if (dc->disk.stripe_size)
+		dc->partial_stripes_expensive =
+			q->limits.raid_partial_stripes_expensive;
+
+	ret = bcache_device_init(&dc->disk, block_size,
+			 dc->bdev->bd_part->nr_sects - dc->sb.data_offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -1106,7 +1605,11 @@ static void register_bdev(struct cache_sb *sb, struct page *sb_page,
 
 	list_add(&dc->list, &uncached_devices);
 	list_for_each_entry(c, &bch_cache_sets, list)
+<<<<<<< HEAD
 		bch_cached_dev_attach(dc, c);
+=======
+		bch_cached_dev_attach(dc, c, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (BDEV_STATE(&dc->sb) == BDEV_STATE_NONE ||
 	    BDEV_STATE(&dc->sb) == BDEV_STATE_STALE)
@@ -1114,7 +1617,11 @@ static void register_bdev(struct cache_sb *sb, struct page *sb_page,
 
 	return;
 err:
+<<<<<<< HEAD
 	pr_notice("error opening %s: %s", bdevname(bdev, name), err);
+=======
+	pr_notice("error %s: %s", bdevname(bdev, name), err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bcache_device_stop(&dc->disk);
 }
 
@@ -1130,7 +1637,13 @@ void bch_flash_dev_release(struct kobject *kobj)
 static void flash_dev_free(struct closure *cl)
 {
 	struct bcache_device *d = container_of(cl, struct bcache_device, cl);
+<<<<<<< HEAD
 	bcache_device_free(d);
+=======
+	mutex_lock(&bch_register_lock);
+	bcache_device_free(d);
+	mutex_unlock(&bch_register_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kobject_put(&d->kobj);
 }
 
@@ -1138,7 +1651,13 @@ static void flash_dev_flush(struct closure *cl)
 {
 	struct bcache_device *d = container_of(cl, struct bcache_device, cl);
 
+<<<<<<< HEAD
 	bcache_device_unlink(d);
+=======
+	mutex_lock(&bch_register_lock);
+	bcache_device_unlink(d);
+	mutex_unlock(&bch_register_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kobject_del(&d->kobj);
 	continue_at(cl, flash_dev_free, system_wq);
 }
@@ -1155,11 +1674,19 @@ static int flash_dev_run(struct cache_set *c, struct uuid_entry *u)
 
 	kobject_init(&d->kobj, &bch_flash_dev_ktype);
 
+<<<<<<< HEAD
 	if (bcache_device_init(d, block_bytes(c)))
 		goto err;
 
 	bcache_device_attach(d, c, u - c->uuids);
 	set_capacity(d->disk, u->sectors);
+=======
+	if (bcache_device_init(d, block_bytes(c), u->sectors))
+		goto err;
+
+	bcache_device_attach(d, c, u - c->uuids);
+	bch_sectors_dirty_init(d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bch_flash_dev_request_init(d);
 	add_disk(d->disk);
 
@@ -1195,6 +1722,12 @@ int bch_flash_dev_create(struct cache_set *c, uint64_t size)
 	if (test_bit(CACHE_SET_STOPPING, &c->flags))
 		return -EINTR;
 
+<<<<<<< HEAD
+=======
+	if (!test_bit(CACHE_SET_RUNNING, &c->flags))
+		return -EPERM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u = uuid_find_empty(c);
 	if (!u) {
 		pr_err("Can't create volume, no room for UUID");
@@ -1220,7 +1753,12 @@ bool bch_cache_set_error(struct cache_set *c, const char *fmt, ...)
 {
 	va_list args;
 
+<<<<<<< HEAD
 	if (test_bit(CACHE_SET_STOPPING, &c->flags))
+=======
+	if (c->on_error != ON_ERROR_PANIC &&
+	    test_bit(CACHE_SET_STOPPING, &c->flags))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 
 	/* XXX: we can be called from atomic context
@@ -1235,6 +1773,12 @@ bool bch_cache_set_error(struct cache_set *c, const char *fmt, ...)
 
 	printk(", disabling caching\n");
 
+<<<<<<< HEAD
+=======
+	if (c->on_error == ON_ERROR_PANIC)
+		panic("panic forced after error\n");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bch_cache_set_unregister(c);
 	return true;
 }
@@ -1259,6 +1803,7 @@ static void cache_set_free(struct closure *cl)
 	bch_btree_cache_free(c);
 	bch_journal_free(c);
 
+<<<<<<< HEAD
 	for_each_cache(ca, c, i)
 		if (ca)
 			kobject_put(&ca->kobj);
@@ -1269,13 +1814,35 @@ static void cache_set_free(struct closure *cl)
 	kfree(c->fill_iter);
 	if (c->bio_split)
 		bioset_free(c->bio_split);
+=======
+	mutex_lock(&bch_register_lock);
+	for_each_cache(ca, c, i)
+		if (ca) {
+			ca->set = NULL;
+			c->cache[ca->sb.nr_this_dev] = NULL;
+			kobject_put(&ca->kobj);
+		}
+
+	bch_bset_sort_state_free(&c->sort);
+	free_pages((unsigned long) c->uuids, ilog2(bucket_pages(c)));
+
+	if (c->moving_gc_wq)
+		destroy_workqueue(c->moving_gc_wq);
+	if (c->bio_split)
+		bioset_free(c->bio_split);
+	if (c->fill_iter)
+		mempool_destroy(c->fill_iter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (c->bio_meta)
 		mempool_destroy(c->bio_meta);
 	if (c->search)
 		mempool_destroy(c->search);
 	kfree(c->devices);
 
+<<<<<<< HEAD
 	mutex_lock(&bch_register_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_del(&c->list);
 	mutex_unlock(&bch_register_lock);
 
@@ -1289,6 +1856,7 @@ static void cache_set_free(struct closure *cl)
 static void cache_set_flush(struct closure *cl)
 {
 	struct cache_set *c = container_of(cl, struct cache_set, caching);
+<<<<<<< HEAD
 	struct btree *b;
 
 	/* Shut down allocator threads */
@@ -1297,19 +1865,49 @@ static void cache_set_flush(struct closure *cl)
 
 	if (!c)
 		closure_return(cl);
+=======
+	struct cache *ca;
+	struct btree *b;
+	unsigned i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bch_cache_accounting_destroy(&c->accounting);
 
 	kobject_put(&c->internal);
 	kobject_del(&c->kobj);
 
+<<<<<<< HEAD
+=======
+	if (!IS_ERR_OR_NULL(c->gc_thread))
+		kthread_stop(c->gc_thread);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!IS_ERR_OR_NULL(c->root))
 		list_add(&c->root->list, &c->btree_cache);
 
 	/* Should skip this if we're unregistering because of an error */
+<<<<<<< HEAD
 	list_for_each_entry(b, &c->btree_cache, list)
 		if (btree_node_dirty(b))
 			bch_btree_write(b, true, NULL);
+=======
+	list_for_each_entry(b, &c->btree_cache, list) {
+		mutex_lock(&b->write_lock);
+		if (btree_node_dirty(b))
+			__bch_btree_node_write(b, NULL);
+		mutex_unlock(&b->write_lock);
+	}
+
+	for_each_cache(ca, c, i)
+		if (ca->alloc_thread)
+			kthread_stop(ca->alloc_thread);
+
+	if (c->journal.cur) {
+		cancel_delayed_work_sync(&c->journal.work);
+		/* flush last journal entry if needed */
+		c->journal.work.work.func(&c->journal.work.work);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	closure_return(cl);
 }
@@ -1352,7 +1950,11 @@ void bch_cache_set_unregister(struct cache_set *c)
 }
 
 #define alloc_bucket_pages(gfp, c)			\
+<<<<<<< HEAD
 	((void *) __get_free_pages(__GFP_ZERO|gfp, ilog2(bucket_pages(c))))
+=======
+	((void *) __get_free_pages(__GFP_ZERO|__GFP_COMP|gfp, ilog2(bucket_pages(c))))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cache_set *bch_cache_set_alloc(struct cache_sb *sb)
 {
@@ -1386,11 +1988,16 @@ struct cache_set *bch_cache_set_alloc(struct cache_sb *sb)
 	c->block_bits		= ilog2(sb->block_size);
 	c->nr_uuids		= bucket_bytes(c) / sizeof(struct uuid_entry);
 
+<<<<<<< HEAD
 	c->btree_pages		= c->sb.bucket_size / PAGE_SECTORS;
+=======
+	c->btree_pages		= bucket_pages(c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (c->btree_pages > BTREE_MAX_PAGES)
 		c->btree_pages = max_t(int, c->btree_pages / 4,
 				       BTREE_MAX_PAGES);
 
+<<<<<<< HEAD
 	init_waitqueue_head(&c->alloc_wait);
 	mutex_init(&c->bucket_lock);
 	mutex_init(&c->fill_lock);
@@ -1399,6 +2006,20 @@ struct cache_set *bch_cache_set_alloc(struct cache_sb *sb)
 	closure_init_unlocked(&c->sb_write);
 	closure_init_unlocked(&c->uuid_write);
 	spin_lock_init(&c->btree_read_time_lock);
+=======
+	sema_init(&c->sb_write_mutex, 1);
+	mutex_init(&c->bucket_lock);
+	init_waitqueue_head(&c->btree_cache_wait);
+	spin_lock_init(&c->btree_cannibalize_lock);
+	init_waitqueue_head(&c->bucket_wait);
+	init_waitqueue_head(&c->gc_wait);
+	sema_init(&c->uuid_write_mutex, 1);
+
+	spin_lock_init(&c->btree_gc_time.lock);
+	spin_lock_init(&c->btree_split_time.lock);
+	spin_lock_init(&c->btree_read_time.lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bch_moving_init_cache_set(c);
 
 	INIT_LIST_HEAD(&c->list);
@@ -1419,6 +2040,7 @@ struct cache_set *bch_cache_set_alloc(struct cache_sb *sb)
 	    !(c->bio_meta = mempool_create_kmalloc_pool(2,
 				sizeof(struct bbio) + sizeof(struct bio_vec) *
 				bucket_pages(c))) ||
+<<<<<<< HEAD
 	    !(c->bio_split = bioset_create(4, offsetof(struct bbio, bio))) ||
 	    !(c->fill_iter = kmalloc(iter_size, GFP_KERNEL)) ||
 	    !(c->sort = alloc_bucket_pages(GFP_KERNEL, c)) ||
@@ -1430,6 +2052,19 @@ struct cache_set *bch_cache_set_alloc(struct cache_sb *sb)
 
 	c->fill_iter->size = sb->bucket_size / sb->block_size;
 
+=======
+	    !(c->fill_iter = mempool_create_kmalloc_pool(1, iter_size)) ||
+	    !(c->bio_split = bioset_create(4, offsetof(struct bbio, bio))) ||
+	    !(c->uuids = alloc_bucket_pages(GFP_KERNEL, c)) ||
+	    !(c->moving_gc_wq = alloc_workqueue("bcache_gc",
+						WQ_MEM_RECLAIM, 0)) ||
+	    bch_journal_alloc(c) ||
+	    bch_btree_cache_alloc(c) ||
+	    bch_open_buckets_alloc(c) ||
+	    bch_bset_sort_state_init(&c->sort, ilog2(c->btree_pages)))
+		goto err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	c->congested_read_threshold_us	= 2000;
 	c->congested_write_threshold_us	= 20000;
 	c->error_limit	= 8 << IO_ERROR_SHIFT;
@@ -1440,11 +2075,16 @@ err:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void run_cache_set(struct cache_set *c)
+=======
+static int run_cache_set(struct cache_set *c)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const char *err = "cannot allocate memory";
 	struct cached_dev *dc, *t;
 	struct cache *ca;
+<<<<<<< HEAD
 	unsigned i;
 
 	struct btree_op op;
@@ -1453,6 +2093,16 @@ static void run_cache_set(struct cache_set *c)
 
 	for_each_cache(ca, c, i)
 		c->nbuckets += ca->sb.nbuckets;
+=======
+	struct closure cl;
+	unsigned i;
+
+	closure_init_stack(&cl);
+
+	for_each_cache(ca, c, i)
+		c->nbuckets += ca->sb.nbuckets;
+	set_gc_sectors(c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (CACHE_SYNC(&c->sb)) {
 		LIST_HEAD(journal);
@@ -1460,7 +2110,11 @@ static void run_cache_set(struct cache_set *c)
 		struct jset *j;
 
 		err = "cannot allocate memory for journal";
+<<<<<<< HEAD
 		if (bch_journal_read(c, &journal, &op))
+=======
+		if (bch_journal_read(c, &journal))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto err;
 
 		pr_debug("btree_journal_read() done");
@@ -1484,27 +2138,47 @@ static void run_cache_set(struct cache_set *c)
 		k = &j->btree_root;
 
 		err = "bad btree root";
+<<<<<<< HEAD
 		if (__bch_ptr_invalid(c, j->btree_level + 1, k))
 			goto err;
 
 		err = "error reading btree root";
 		c->root = bch_btree_node_get(c, k, j->btree_level, &op);
+=======
+		if (__bch_btree_ptr_invalid(c, k))
+			goto err;
+
+		err = "error reading btree root";
+		c->root = bch_btree_node_get(c, NULL, k, j->btree_level, true, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (IS_ERR_OR_NULL(c->root))
 			goto err;
 
 		list_del_init(&c->root->list);
 		rw_unlock(true, c->root);
 
+<<<<<<< HEAD
 		err = uuid_read(c, j, &op.cl);
+=======
+		err = uuid_read(c, j, &cl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)
 			goto err;
 
 		err = "error in recovery";
+<<<<<<< HEAD
 		if (bch_btree_check(c, &op))
 			goto err;
 
 		bch_journal_mark(c, &journal);
 		bch_btree_gc_finish(c);
+=======
+		if (bch_btree_check(c))
+			goto err;
+
+		bch_journal_mark(c, &journal);
+		bch_initial_gc_finish(c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_debug("btree_check() done");
 
 		/*
@@ -1514,9 +2188,16 @@ static void run_cache_set(struct cache_set *c)
 		 */
 		bch_journal_next(&c->journal);
 
+<<<<<<< HEAD
 		for_each_cache(ca, c, i)
 			closure_call(&ca->alloc, bch_allocator_thread,
 				     system_wq, &c->cl);
+=======
+		err = "error starting allocator thread";
+		for_each_cache(ca, c, i)
+			if (bch_cache_allocator_start(ca))
+				goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * First place it's safe to allocate: btree_check() and
@@ -1531,11 +2212,19 @@ static void run_cache_set(struct cache_set *c)
 		if (j->version < BCACHE_JSET_VERSION_UUID)
 			__uuid_write(c);
 
+<<<<<<< HEAD
 		bch_journal_replay(c, &journal, &op);
 	} else {
 		pr_notice("invalidating existing data");
 		/* Don't want invalidate_buckets() to queue a gc yet */
 		closure_lock(&c->gc, NULL);
+=======
+		err = "bcache: replay journal failed";
+		if (bch_journal_replay(c, &journal))
+			goto err;
+	} else {
+		pr_notice("invalidating existing data");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for_each_cache(ca, c, i) {
 			unsigned j;
@@ -1547,17 +2236,27 @@ static void run_cache_set(struct cache_set *c)
 				ca->sb.d[j] = ca->sb.first_bucket + j;
 		}
 
+<<<<<<< HEAD
 		bch_btree_gc_finish(c);
 
 		for_each_cache(ca, c, i)
 			closure_call(&ca->alloc, bch_allocator_thread,
 				     ca->alloc_workqueue, &c->cl);
+=======
+		bch_initial_gc_finish(c);
+
+		err = "error starting allocator thread";
+		for_each_cache(ca, c, i)
+			if (bch_cache_allocator_start(ca))
+				goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		mutex_lock(&c->bucket_lock);
 		for_each_cache(ca, c, i)
 			bch_prio_write(ca);
 		mutex_unlock(&c->bucket_lock);
 
+<<<<<<< HEAD
 		wake_up(&c->alloc_wait);
 
 		err = "cannot allocate new UUID bucket";
@@ -1571,6 +2270,21 @@ static void run_cache_set(struct cache_set *c)
 
 		bkey_copy_key(&c->root->key, &MAX_KEY);
 		bch_btree_write(c->root, true, &op);
+=======
+		err = "cannot allocate new UUID bucket";
+		if (__uuid_write(c))
+			goto err;
+
+		err = "cannot allocate new btree root";
+		c->root = __bch_btree_node_alloc(c, NULL, 0, true, NULL);
+		if (IS_ERR_OR_NULL(c->root))
+			goto err;
+
+		mutex_lock(&c->root->write_lock);
+		bkey_copy_key(&c->root->key, &MAX_KEY);
+		bch_btree_node_write(c->root, &cl);
+		mutex_unlock(&c->root->write_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		bch_btree_set_root(c->root);
 		rw_unlock(true, c->root);
@@ -1583,6 +2297,7 @@ static void run_cache_set(struct cache_set *c)
 		SET_CACHE_SYNC(&c->sb, true);
 
 		bch_journal_next(&c->journal);
+<<<<<<< HEAD
 		bch_journal_meta(c, &op.cl);
 
 		/* Unlock */
@@ -1591,10 +2306,21 @@ static void run_cache_set(struct cache_set *c)
 	}
 
 	closure_sync(&op.cl);
+=======
+		bch_journal_meta(c, &cl);
+	}
+
+	err = "error starting gc thread";
+	if (bch_gc_thread_start(c))
+		goto err;
+
+	closure_sync(&cl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	c->sb.last_mount = get_seconds();
 	bcache_write_super(c);
 
 	list_for_each_entry_safe(dc, t, &uncached_devices, list)
+<<<<<<< HEAD
 		bch_cached_dev_attach(dc, c);
 
 	flash_devs_run(c);
@@ -1607,12 +2333,30 @@ err:
 	closure_sync(&op.cl);
 	/* XXX: test this, it's broken */
 	bch_cache_set_error(c, err);
+=======
+		bch_cached_dev_attach(dc, c, NULL);
+
+	flash_devs_run(c);
+
+	set_bit(CACHE_SET_RUNNING, &c->flags);
+	return 0;
+err:
+	closure_sync(&cl);
+	/* XXX: test this, it's broken */
+	bch_cache_set_error(c, "%s", err);
+
+	return -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool can_attach_cache(struct cache *ca, struct cache_set *c)
 {
 	return ca->sb.block_size	== c->sb.block_size &&
+<<<<<<< HEAD
 		ca->sb.bucket_size	== c->sb.block_size &&
+=======
+		ca->sb.bucket_size	== c->sb.bucket_size &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ca->sb.nr_in_set	== c->sb.nr_in_set;
 }
 
@@ -1657,7 +2401,18 @@ found:
 	    sysfs_create_link(&c->kobj, &ca->kobj, buf))
 		goto err;
 
+<<<<<<< HEAD
 	if (ca->sb.seq > c->sb.seq) {
+=======
+	/*
+	 * A special case is both ca->sb.seq and c->sb.seq are 0,
+	 * such condition happens on a new created cache device whose
+	 * super block is never flushed yet. In this case c->sb.version
+	 * and other members should be updated too, otherwise we will
+	 * have a mistaken super block version in cache set.
+	 */
+	if (ca->sb.seq > c->sb.seq || c->sb.seq == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		c->sb.version		= ca->sb.version;
 		memcpy(c->sb.set_uuid, ca->sb.set_uuid, 16);
 		c->sb.flags             = ca->sb.flags;
@@ -1665,12 +2420,24 @@ found:
 		pr_debug("set version = %llu", c->sb.version);
 	}
 
+<<<<<<< HEAD
+=======
+	kobject_get(&ca->kobj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ca->set = c;
 	ca->set->cache[ca->sb.nr_this_dev] = ca;
 	c->cache_by_alloc[c->caches_loaded++] = ca;
 
+<<<<<<< HEAD
 	if (c->caches_loaded == c->sb.nr_in_set)
 		run_cache_set(c);
+=======
+	if (c->caches_loaded == c->sb.nr_in_set) {
+		err = "failed to run cache set";
+		if (run_cache_set(c) < 0)
+			goto err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return NULL;
 err:
@@ -1683,6 +2450,7 @@ err:
 void bch_cache_release(struct kobject *kobj)
 {
 	struct cache *ca = container_of(kobj, struct cache, kobj);
+<<<<<<< HEAD
 
 	if (ca->set)
 		ca->set->cache[ca->sb.nr_this_dev] = NULL;
@@ -1693,56 +2461,110 @@ void bch_cache_release(struct kobject *kobj)
 
 	if (ca->alloc_workqueue)
 		destroy_workqueue(ca->alloc_workqueue);
+=======
+	unsigned i;
+
+	if (ca->set) {
+		BUG_ON(ca->set->cache[ca->sb.nr_this_dev] != ca);
+		ca->set->cache[ca->sb.nr_this_dev] = NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	free_pages((unsigned long) ca->disk_buckets, ilog2(bucket_pages(ca)));
 	kfree(ca->prio_buckets);
 	vfree(ca->buckets);
 
 	free_heap(&ca->heap);
+<<<<<<< HEAD
 	free_fifo(&ca->unused);
 	free_fifo(&ca->free_inc);
 	free_fifo(&ca->free);
+=======
+	free_fifo(&ca->free_inc);
+
+	for (i = 0; i < RESERVE_NR; i++)
+		free_fifo(&ca->free[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ca->sb_bio.bi_inline_vecs[0].bv_page)
 		put_page(ca->sb_bio.bi_io_vec[0].bv_page);
 
+<<<<<<< HEAD
 	if (!IS_ERR_OR_NULL(ca->bdev)) {
 		blk_sync_queue(bdev_get_queue(ca->bdev));
 		blkdev_put(ca->bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
 	}
+=======
+	if (!IS_ERR_OR_NULL(ca->bdev))
+		blkdev_put(ca->bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kfree(ca);
 	module_put(THIS_MODULE);
 }
 
+<<<<<<< HEAD
 static int cache_alloc(struct cache_sb *sb, struct cache *ca)
 {
 	size_t free;
+=======
+static int cache_alloc(struct cache *ca)
+{
+	size_t free;
+	size_t btree_buckets;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bucket *b;
 
 	__module_get(THIS_MODULE);
 	kobject_init(&ca->kobj, &bch_cache_ktype);
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&ca->discards);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bio_init(&ca->journal.bio);
 	ca->journal.bio.bi_max_vecs = 8;
 	ca->journal.bio.bi_io_vec = ca->journal.bio.bi_inline_vecs;
 
+<<<<<<< HEAD
 	free = roundup_pow_of_two(ca->sb.nbuckets) >> 9;
 	free = max_t(size_t, free, (prio_buckets(ca) + 8) * 2);
 
 	if (!init_fifo(&ca->free,	free, GFP_KERNEL) ||
 	    !init_fifo(&ca->free_inc,	free << 2, GFP_KERNEL) ||
 	    !init_fifo(&ca->unused,	free << 2, GFP_KERNEL) ||
+=======
+	/*
+	 * when ca->sb.njournal_buckets is not zero, journal exists,
+	 * and in bch_journal_replay(), tree node may split,
+	 * so bucket of RESERVE_BTREE type is needed,
+	 * the worst situation is all journal buckets are valid journal,
+	 * and all the keys need to replay,
+	 * so the number of  RESERVE_BTREE type buckets should be as much
+	 * as journal buckets
+	 */
+	btree_buckets = ca->sb.njournal_buckets ?: 8;
+	free = roundup_pow_of_two(ca->sb.nbuckets) >> 10;
+
+	if (!init_fifo(&ca->free[RESERVE_BTREE], btree_buckets, GFP_KERNEL) ||
+	    !init_fifo_exact(&ca->free[RESERVE_PRIO], prio_buckets(ca), GFP_KERNEL) ||
+	    !init_fifo(&ca->free[RESERVE_MOVINGGC], free, GFP_KERNEL) ||
+	    !init_fifo(&ca->free[RESERVE_NONE], free, GFP_KERNEL) ||
+	    !init_fifo(&ca->free_inc,	free << 2, GFP_KERNEL) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    !init_heap(&ca->heap,	free << 3, GFP_KERNEL) ||
 	    !(ca->buckets	= vzalloc(sizeof(struct bucket) *
 					  ca->sb.nbuckets)) ||
 	    !(ca->prio_buckets	= kzalloc(sizeof(uint64_t) * prio_buckets(ca) *
 					  2, GFP_KERNEL)) ||
+<<<<<<< HEAD
 	    !(ca->disk_buckets	= alloc_bucket_pages(GFP_KERNEL, ca)) ||
 	    !(ca->alloc_workqueue = alloc_workqueue("bch_allocator", 0, 1)) ||
 	    bio_split_pool_init(&ca->bio_split_hook))
+=======
+	    !(ca->disk_buckets	= alloc_bucket_pages(GFP_KERNEL, ca)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 
 	ca->prio_last_buckets = ca->prio_buckets + prio_buckets(ca);
@@ -1750,6 +2572,7 @@ static int cache_alloc(struct cache_sb *sb, struct cache *ca)
 	for_each_bucket(b, ca)
 		atomic_set(&b->pin, 0);
 
+<<<<<<< HEAD
 	if (bch_cache_allocator_init(ca))
 		goto err;
 
@@ -1764,6 +2587,19 @@ static void register_cache(struct cache_sb *sb, struct page *sb_page,
 {
 	char name[BDEVNAME_SIZE];
 	const char *err = "cannot allocate memory";
+=======
+	return 0;
+}
+
+static int register_cache(struct cache_sb *sb, struct page *sb_page,
+				struct block_device *bdev, struct cache *ca)
+{
+	char name[BDEVNAME_SIZE];
+	const char *err = NULL; /* must be set for any error case */
+	int ret = 0;
+
+	bdevname(bdev, name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memcpy(&ca->sb, sb, sizeof(struct cache_sb));
 	ca->bdev = bdev;
@@ -1775,6 +2611,7 @@ static void register_cache(struct cache_sb *sb, struct page *sb_page,
 	ca->sb_bio.bi_io_vec[0].bv_page = sb_page;
 	get_page(sb_page);
 
+<<<<<<< HEAD
 	if (blk_queue_discard(bdev_get_queue(ca->bdev)))
 		ca->discard = CACHE_DISCARD(&ca->sb);
 
@@ -1794,6 +2631,46 @@ static void register_cache(struct cache_sb *sb, struct page *sb_page,
 err:
 	pr_notice("error opening %s: %s", bdevname(bdev, name), err);
 	kobject_put(&ca->kobj);
+=======
+	if (blk_queue_discard(bdev_get_queue(bdev)))
+		ca->discard = CACHE_DISCARD(&ca->sb);
+
+	ret = cache_alloc(ca);
+	if (ret != 0) {
+		blkdev_put(bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
+		if (ret == -ENOMEM)
+			err = "cache_alloc(): -ENOMEM";
+		else
+			err = "cache_alloc(): unknown error";
+		goto err;
+	}
+
+	if (kobject_add(&ca->kobj, &part_to_dev(bdev->bd_part)->kobj, "bcache")) {
+		err = "error calling kobject_add";
+		ret = -ENOMEM;
+		goto out;
+	}
+
+	mutex_lock(&bch_register_lock);
+	err = register_cache_set(ca);
+	mutex_unlock(&bch_register_lock);
+
+	if (err) {
+		ret = -ENODEV;
+		goto out;
+	}
+
+	pr_info("registered cache device %s", name);
+
+out:
+	kobject_put(&ca->kobj);
+
+err:
+	if (err)
+		pr_notice("error %s: %s", name, err);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Global interfaces/init */
@@ -1804,6 +2681,39 @@ static ssize_t register_bcache(struct kobject *, struct kobj_attribute *,
 kobj_attribute_write(register,		register_bcache);
 kobj_attribute_write(register_quiet,	register_bcache);
 
+<<<<<<< HEAD
+=======
+static bool bch_is_open_backing(struct block_device *bdev) {
+	struct cache_set *c, *tc;
+	struct cached_dev *dc, *t;
+
+	list_for_each_entry_safe(c, tc, &bch_cache_sets, list)
+		list_for_each_entry_safe(dc, t, &c->cached_devs, list)
+			if (dc->bdev == bdev)
+				return true;
+	list_for_each_entry_safe(dc, t, &uncached_devices, list)
+		if (dc->bdev == bdev)
+			return true;
+	return false;
+}
+
+static bool bch_is_open_cache(struct block_device *bdev) {
+	struct cache_set *c, *tc;
+	struct cache *ca;
+	unsigned i;
+
+	list_for_each_entry_safe(c, tc, &bch_cache_sets, list)
+		for_each_cache(ca, c, i)
+			if (ca->bdev == bdev)
+				return true;
+	return false;
+}
+
+static bool bch_is_open(struct block_device *bdev) {
+	return bch_is_open_cache(bdev) || bch_is_open_backing(bdev);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t register_bcache(struct kobject *k, struct kobj_attribute *attr,
 			       const char *buffer, size_t size)
 {
@@ -1817,8 +2727,11 @@ static ssize_t register_bcache(struct kobject *k, struct kobj_attribute *attr,
 	if (!try_module_get(THIS_MODULE))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	mutex_lock(&bch_register_lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(path = kstrndup(buffer, size, GFP_KERNEL)) ||
 	    !(sb = kmalloc(sizeof(struct cache_sb), GFP_KERNEL)))
 		goto err;
@@ -1828,8 +2741,24 @@ static ssize_t register_bcache(struct kobject *k, struct kobj_attribute *attr,
 				  FMODE_READ|FMODE_WRITE|FMODE_EXCL,
 				  sb);
 	if (IS_ERR(bdev)) {
+<<<<<<< HEAD
 		if (bdev == ERR_PTR(-EBUSY))
 			err = "device busy";
+=======
+		if (bdev == ERR_PTR(-EBUSY)) {
+			bdev = lookup_bdev(strim(path));
+			mutex_lock(&bch_register_lock);
+			if (!IS_ERR(bdev) && bch_is_open(bdev))
+				err = "device already registered";
+			else
+				err = "device busy";
+			mutex_unlock(&bch_register_lock);
+			if (!IS_ERR(bdev))
+				bdput(bdev);
+			if (attr == &ksysfs_register_quiet)
+				goto out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 
@@ -1841,33 +2770,55 @@ static ssize_t register_bcache(struct kobject *k, struct kobj_attribute *attr,
 	if (err)
 		goto err_close;
 
+<<<<<<< HEAD
+=======
+	err = "failed to register device";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (SB_IS_BDEV(sb)) {
 		struct cached_dev *dc = kzalloc(sizeof(*dc), GFP_KERNEL);
 		if (!dc)
 			goto err_close;
 
+<<<<<<< HEAD
 		register_bdev(sb, sb_page, bdev, dc);
+=======
+		mutex_lock(&bch_register_lock);
+		register_bdev(sb, sb_page, bdev, dc);
+		mutex_unlock(&bch_register_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		struct cache *ca = kzalloc(sizeof(*ca), GFP_KERNEL);
 		if (!ca)
 			goto err_close;
 
+<<<<<<< HEAD
 		register_cache(sb, sb_page, bdev, ca);
+=======
+		if (register_cache(sb, sb_page, bdev, ca) != 0)
+			goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 out:
 	if (sb_page)
 		put_page(sb_page);
 	kfree(sb);
 	kfree(path);
+<<<<<<< HEAD
 	mutex_unlock(&bch_register_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	module_put(THIS_MODULE);
 	return ret;
 
 err_close:
 	blkdev_put(bdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
 err:
+<<<<<<< HEAD
 	if (attr != &ksysfs_register_quiet)
 		pr_info("error opening %s: %s", path, err);
+=======
+	pr_info("error %s: %s", path, err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = -EINVAL;
 	goto out;
 }
@@ -1937,15 +2888,26 @@ static struct notifier_block reboot = {
 static void bcache_exit(void)
 {
 	bch_debug_exit();
+<<<<<<< HEAD
 	bch_writeback_exit();
 	bch_request_exit();
 	bch_btree_exit();
+=======
+	bch_request_exit();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bcache_kobj)
 		kobject_put(bcache_kobj);
 	if (bcache_wq)
 		destroy_workqueue(bcache_wq);
+<<<<<<< HEAD
 	unregister_blkdev(bcache_major, "bcache");
 	unregister_reboot_notifier(&reboot);
+=======
+	if (bcache_major)
+		unregister_blkdev(bcache_major, "bcache");
+	unregister_reboot_notifier(&reboot);
+	mutex_destroy(&bch_register_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init bcache_init(void)
@@ -1964,6 +2926,7 @@ static int __init bcache_init(void)
 	bcache_major = register_blkdev(0, "bcache");
 	if (bcache_major < 0) {
 		unregister_reboot_notifier(&reboot);
+<<<<<<< HEAD
 		return bcache_major;
 	}
 
@@ -1974,6 +2937,17 @@ static int __init bcache_init(void)
 	    bch_request_init() ||
 	    bch_writeback_init() ||
 	    bch_debug_init(bcache_kobj))
+=======
+		mutex_destroy(&bch_register_lock);
+		return bcache_major;
+	}
+
+	if (!(bcache_wq = alloc_workqueue("bcache", WQ_MEM_RECLAIM, 0)) ||
+	    !(bcache_kobj = kobject_create_and_add("bcache", fs_kobj)) ||
+	    bch_request_init() ||
+	    bch_debug_init(bcache_kobj) ||
+	    sysfs_create_files(bcache_kobj, files))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 
 	return 0;

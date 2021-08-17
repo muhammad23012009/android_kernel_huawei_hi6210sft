@@ -17,7 +17,11 @@
 
 #define mc_capable()    (1)
 
+<<<<<<< HEAD
 const struct cpumask *cpu_coregroup_mask(unsigned int cpu);
+=======
+const struct cpumask *cpu_coregroup_mask(int cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern cpumask_t cpu_core_map[NR_CPUS];
 

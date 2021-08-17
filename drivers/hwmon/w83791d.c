@@ -249,6 +249,7 @@ static u8 fan_to_reg(long rpm, int div)
  * the bottom 7 bits will always be zero
  */
 #define TEMP23_FROM_REG(val)	((val) / 128 * 500)
+<<<<<<< HEAD
 #define TEMP23_TO_REG(val)	((val) <= -128000 ? 0x8000 : \
 				 (val) >= 127500 ? 0x7F80 : \
 				 (val) < 0 ? ((val) - 250) / 500 * 128 : \
@@ -262,6 +263,18 @@ static u8 fan_to_reg(long rpm, int div)
 /* for thermal cruise temp tolerance, 4-bits, LSB = 1 degree Celsius */
 #define TOL_TEMP_TO_REG(val)		((val) >= 15000 ? 15 : \
 					((val) + 500) / 1000)
+=======
+#define TEMP23_TO_REG(val)	(DIV_ROUND_CLOSEST(clamp_val((val), -128000, \
+						   127500), 500) * 128)
+
+/* for thermal cruise target temp, 7-bits, LSB = 1 degree Celsius */
+#define TARGET_TEMP_TO_REG(val)	DIV_ROUND_CLOSEST(clamp_val((val), 0, 127000), \
+						  1000)
+
+/* for thermal cruise temp tolerance, 4-bits, LSB = 1 degree Celsius */
+#define TOL_TEMP_TO_REG(val)	DIV_ROUND_CLOSEST(clamp_val((val), 0, 15000), \
+						  1000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BEEP_MASK_TO_REG(val)		((val) & 0xffffff)
 #define BEEP_MASK_FROM_REG(val)		((val) & 0xffffff)
@@ -1043,7 +1056,11 @@ static struct sensor_device_attribute sda_temp_alarm[] = {
 	SENSOR_ATTR(temp3_alarm, S_IRUGO, show_alarm, NULL, 13),
 };
 
+<<<<<<< HEAD
 /* get reatime status of all sensors items: voltage, temp, fan */
+=======
+/* get realtime status of all sensors items: voltage, temp, fan */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t show_alarms_reg(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
@@ -1184,6 +1201,12 @@ static ssize_t store_vrm_reg(struct device *dev,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	if (val > 255)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->vrm = val;
 	return count;
 }

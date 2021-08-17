@@ -8,6 +8,11 @@
  * any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "MityOMAPL138: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/console.h>
@@ -15,7 +20,11 @@
 #include <linux/mtd/partitions.h>
 #include <linux/regulator/machine.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/at24.h>
+=======
+#include <linux/platform_data/at24.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/etherdevice.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
@@ -24,9 +33,16 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <mach/common.h>
+<<<<<<< HEAD
 #include <mach/cp_intc.h>
 #include <mach/da8xx.h>
 #include <linux/platform_data/mtd-davinci.h>
+=======
+#include "cp_intc.h"
+#include <mach/da8xx.h>
+#include <linux/platform_data/mtd-davinci.h>
+#include <linux/platform_data/mtd-davinci-aemif.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/mux.h>
 #include <linux/platform_data/spi-davinci.h>
 
@@ -48,6 +64,10 @@ struct factory_config {
 
 static struct factory_config factory_config;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_FREQ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct part_no_info {
 	const char	*part_no;	/* part number string of interest */
 	int		max_freq;	/* khz */
@@ -84,7 +104,10 @@ static struct part_no_info mityomapl138_pn_info[] = {
 	},
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void mityomapl138_cpufreq_init(const char *partnum)
 {
 	int i, ret;
@@ -106,47 +129,88 @@ static void mityomapl138_cpufreq_init(const char *partnum)
 
 	ret = da850_register_cpufreq("pll0_sysclk3");
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("cpufreq registration failed: %d\n", ret);
+=======
+		pr_warn("cpufreq registration failed: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else
 static void mityomapl138_cpufreq_init(const char *partnum) { }
 #endif
 
+<<<<<<< HEAD
 static void read_factory_config(struct memory_accessor *a, void *context)
+=======
+static void read_factory_config(struct nvmem_device *nvmem, void *context)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	const char *partnum = NULL;
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
 
+<<<<<<< HEAD
 	ret = a->read(a, (char *)&factory_config, 0, sizeof(factory_config));
 	if (ret != sizeof(struct factory_config)) {
 		pr_warning("MityOMAPL138: Read Factory Config Failed: %d\n",
 				ret);
+=======
+	if (!IS_BUILTIN(CONFIG_NVMEM)) {
+		pr_warn("Factory Config not available without CONFIG_NVMEM\n");
+		goto bad_config;
+	}
+
+	ret = nvmem_device_read(nvmem, 0, sizeof(factory_config),
+				&factory_config);
+	if (ret != sizeof(struct factory_config)) {
+		pr_warn("Read Factory Config Failed: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto bad_config;
 	}
 
 	if (factory_config.magic != FACTORY_CONFIG_MAGIC) {
+<<<<<<< HEAD
 		pr_warning("MityOMAPL138: Factory Config Magic Wrong (%X)\n",
 				factory_config.magic);
+=======
+		pr_warn("Factory Config Magic Wrong (%X)\n",
+			factory_config.magic);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto bad_config;
 	}
 
 	if (factory_config.version != FACTORY_CONFIG_VERSION) {
+<<<<<<< HEAD
 		pr_warning("MityOMAPL138: Factory Config Version Wrong (%X)\n",
 				factory_config.version);
 		goto bad_config;
 	}
 
 	pr_info("MityOMAPL138: Found MAC = %pM\n", factory_config.mac);
+=======
+		pr_warn("Factory Config Version Wrong (%X)\n",
+			factory_config.version);
+		goto bad_config;
+	}
+
+	pr_info("Found MAC = %pM\n", factory_config.mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (is_valid_ether_addr(factory_config.mac))
 		memcpy(soc_info->emac_pdata->mac_addr,
 			factory_config.mac, ETH_ALEN);
 	else
+<<<<<<< HEAD
 		pr_warning("MityOMAPL138: Invalid MAC found "
 				"in factory config block\n");
 
 	partnum = factory_config.partnum;
 	pr_info("MityOMAPL138: Part Number = %s\n", partnum);
+=======
+		pr_warn("Invalid MAC found in factory config block\n");
+
+	partnum = factory_config.partnum;
+	pr_info("Part Number = %s\n", partnum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 bad_config:
 	/* default maximum speed is valid for all platforms */
@@ -432,11 +496,18 @@ static void __init mityomapl138_setup_nand(void)
 {
 	platform_add_devices(mityomapl138_devices,
 				 ARRAY_SIZE(mityomapl138_devices));
+<<<<<<< HEAD
 }
 
 static struct davinci_uart_config mityomapl138_uart_config __initdata = {
 	.enabled_uarts = 0x7,
 };
+=======
+
+	if (davinci_aemif_setup(&mityomapl138_nandflash_device))
+		pr_warn("%s: Cannot configure AEMIF\n", __func__);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const short mityomap_mii_pins[] = {
 	DA850_MII_TXEN, DA850_MII_TXCLK, DA850_MII_COL, DA850_MII_TXD_3,
@@ -478,7 +549,11 @@ static void __init mityomapl138_config_emac(void)
 	}
 
 	if (ret) {
+<<<<<<< HEAD
 		pr_warning("mii/rmii mux setup failed: %d\n", ret);
+=======
+		pr_warn("mii/rmii mux setup failed: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -489,7 +564,11 @@ static void __init mityomapl138_config_emac(void)
 
 	ret = da8xx_register_emac();
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("emac registration failed: %d\n", ret);
+=======
+		pr_warn("emac registration failed: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct davinci_pm_config da850_pm_pdata = {
@@ -511,6 +590,7 @@ static void __init mityomapl138_init(void)
 	/* for now, no special EDMA channels are reserved */
 	ret = da850_register_edma(NULL);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("edma registration failed: %d\n", ret);
 
 	ret = da8xx_register_watchdog();
@@ -526,6 +606,23 @@ static void __init mityomapl138_init(void)
 	ret = pmic_tps65023_init();
 	if (ret)
 		pr_warning("TPS65023 PMIC init failed: %d\n", ret);
+=======
+		pr_warn("edma registration failed: %d\n", ret);
+
+	ret = da8xx_register_watchdog();
+	if (ret)
+		pr_warn("watchdog registration failed: %d\n", ret);
+
+	davinci_serial_init(da8xx_serial_device);
+
+	ret = da8xx_register_i2c(0, &mityomap_i2c_0_pdata);
+	if (ret)
+		pr_warn("i2c0 registration failed: %d\n", ret);
+
+	ret = pmic_tps65023_init();
+	if (ret)
+		pr_warn("TPS65023 PMIC init failed: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mityomapl138_setup_nand();
 
@@ -537,12 +634,17 @@ static void __init mityomapl138_init(void)
 	ret = da8xx_register_spi_bus(1,
 				     ARRAY_SIZE(mityomapl138_spi_flash_info));
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("spi 1 registration failed: %d\n", ret);
+=======
+		pr_warn("spi 1 registration failed: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mityomapl138_config_emac();
 
 	ret = da8xx_register_rtc();
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("rtc setup failed: %d\n", ret);
 
 	ret = da8xx_register_cpuidle();
@@ -553,6 +655,17 @@ static void __init mityomapl138_init(void)
 	if (ret)
 		pr_warning("da850_evm_init: suspend registration failed: %d\n",
 				ret);
+=======
+		pr_warn("rtc setup failed: %d\n", ret);
+
+	ret = da8xx_register_cpuidle();
+	if (ret)
+		pr_warn("cpuidle registration failed: %d\n", ret);
+
+	ret = da850_register_pm(&da850_pm_device);
+	if (ret)
+		pr_warn("suspend registration failed: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_SERIAL_8250_CONSOLE

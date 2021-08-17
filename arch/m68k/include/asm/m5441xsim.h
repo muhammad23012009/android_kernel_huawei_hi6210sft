@@ -10,6 +10,13 @@
 #define CPU_NAME		"COLDFIRE(m5441x)"
 #define CPU_INSTR_PER_JIFFY	2
 #define MCF_BUSCLK		(MCF_CLK / 2)
+<<<<<<< HEAD
+=======
+#define MACHINE			MACH_M5441X
+#define FPUTYPE			0
+#define IOMEMBASE		0xe0000000
+#define IOMEMSIZE		0x20000000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/m54xxacr.h>
 

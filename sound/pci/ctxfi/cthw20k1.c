@@ -1262,7 +1262,12 @@ static int hw_trn_init(struct hw *hw, const struct trn_conf *info)
 
 	/* Set up device page table */
 	if ((~0UL) == info->vm_pgt_phys) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Wrong device page table page address!\n");
+=======
+		dev_err(hw->card->dev,
+			"Wrong device page table page address!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	}
 
@@ -1321,7 +1326,11 @@ static int hw_pll_init(struct hw *hw, unsigned int rsr)
 		mdelay(40);
 	}
 	if (i >= 3) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "PLL initialization failed!!!\n");
+=======
+		dev_alert(hw->card->dev, "PLL initialization failed!!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -1345,7 +1354,11 @@ static int hw_auto_init(struct hw *hw)
 			break;
 	}
 	if (!get_field(gctl, GCTL_AID)) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "Card Auto-init failed!!!\n");
+=======
+		dev_alert(hw->card->dev, "Card Auto-init failed!!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -1796,7 +1809,11 @@ static int uaa_to_xfi(struct pci_dev *pci)
 	unsigned int is_uaa;
 	unsigned int data[4] = {0};
 	unsigned int io_base;
+<<<<<<< HEAD
 	void *mem_base;
+=======
+	void __iomem *mem_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	const u32 CTLX = CTLBITS('C', 'T', 'L', 'X');
 	const u32 CTL_ = CTLBITS('C', 'T', 'L', '-');
@@ -1935,7 +1952,12 @@ static int hw_card_start(struct hw *hw)
 		err = request_irq(pci->irq, ct_20k1_interrupt, IRQF_SHARED,
 				  KBUILD_MODNAME, hw);
 		if (err < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "XFi: Cannot get irq %d\n", pci->irq);
+=======
+			dev_err(hw->card->dev,
+				"XFi: Cannot get irq %d\n", pci->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto error2;
 		}
 		hw->irq = pci->irq;
@@ -1976,11 +1998,16 @@ static int hw_card_shutdown(struct hw *hw)
 		free_irq(hw->irq, hw);
 
 	hw->irq	= -1;
+<<<<<<< HEAD
 
 	if (hw->mem_base)
 		iounmap((void *)hw->mem_base);
 
 	hw->mem_base = (unsigned long)NULL;
+=======
+	iounmap(hw->mem_base);
+	hw->mem_base = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (hw->io_base)
 		pci_release_regions(hw->pci);
@@ -2090,20 +2117,26 @@ static int hw_suspend(struct hw *hw)
 		pci_write_config_dword(pci, UAA_CFG_SPACE_FLAG, 0x0);
 	}
 
+<<<<<<< HEAD
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int hw_resume(struct hw *hw, struct card_conf *info)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = hw->pci;
 
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Re-initialize card hardware. */
 	return hw_card_init(hw, info);
 }

@@ -292,8 +292,12 @@ scdrv_event_init(struct sysctl_data_s *scd)
 
 	/* hook event subchannel up to the system controller interrupt */
 	rv = request_irq(SGI_UART_VECTOR, scdrv_event_interrupt,
+<<<<<<< HEAD
 			 IRQF_SHARED | IRQF_DISABLED,
 			 "system controller events", event_sd);
+=======
+			 IRQF_SHARED, "system controller events", event_sd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rv) {
 		printk(KERN_WARNING "%s: irq request failed (%d)\n",
 		       __func__, rv);

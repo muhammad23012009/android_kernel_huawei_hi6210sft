@@ -54,7 +54,11 @@
 /**
  * struct ske_keypad  - data structure used by keypad driver
  * @irq:	irq no
+<<<<<<< HEAD
  * @reg_base:	ske regsiters base address
+=======
+ * @reg_base:	ske registers base address
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @input:	pointer to input device object
  * @board:	keypad platform device
  * @keymap:	matrix scan code table for keycodes
@@ -100,7 +104,11 @@ static int __init ske_keypad_chip_init(struct ske_keypad *keypad)
 	while ((readl(keypad->reg_base + SKE_RIS) != 0x00000000) && timeout--)
 		cpu_relax();
 
+<<<<<<< HEAD
 	if (!timeout)
+=======
+	if (timeout == -1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	/*
@@ -222,7 +230,12 @@ static irqreturn_t ske_keypad_irq(int irq, void *dev_id)
 
 static int __init ske_keypad_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	const struct ske_keypad_platform_data *plat = pdev->dev.platform_data;
+=======
+	const struct ske_keypad_platform_data *plat =
+			dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ske_keypad *keypad;
 	struct input_dev *input;
 	struct resource *res;
@@ -424,7 +437,10 @@ static SIMPLE_DEV_PM_OPS(ske_keypad_dev_pm_ops,
 static struct platform_driver ske_keypad_driver = {
 	.driver = {
 		.name = "nmk-ske-keypad",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &ske_keypad_dev_pm_ops,
 	},
 	.remove = ske_keypad_remove,

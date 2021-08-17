@@ -51,12 +51,21 @@ static LIST_HEAD(slot_list);
 #define dbg(format, arg...)					\
 	do {							\
 		if (debug)					\
+<<<<<<< HEAD
 			printk (KERN_DEBUG "%s: " format "\n",	\
 				MY_NAME , ## arg); 		\
 	} while (0)
 #define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME , ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME , ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME , ## arg)
+=======
+			printk(KERN_DEBUG "%s: " format "\n",	\
+				MY_NAME, ## arg);		\
+	} while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* local variables */
 static bool debug;
@@ -72,6 +81,7 @@ MODULE_LICENSE("GPL");
 module_param(debug, bool, 0644);
 MODULE_PARM_DESC(debug, "Debugging mode enabled or not");
 
+<<<<<<< HEAD
 static int enable_slot		(struct hotplug_slot *slot);
 static int disable_slot		(struct hotplug_slot *slot);
 static int set_attention_status (struct hotplug_slot *slot, u8 value);
@@ -80,6 +90,16 @@ static int get_power_status	(struct hotplug_slot *slot, u8 *value);
 static int get_attention_status	(struct hotplug_slot *slot, u8 *value);
 static int get_latch_status	(struct hotplug_slot *slot, u8 *value);
 static int get_adapter_status	(struct hotplug_slot *slot, u8 *value);
+=======
+static int enable_slot(struct hotplug_slot *slot);
+static int disable_slot(struct hotplug_slot *slot);
+static int set_attention_status(struct hotplug_slot *slot, u8 value);
+static int hardware_test(struct hotplug_slot *slot, u32 value);
+static int get_power_status(struct hotplug_slot *slot, u8 *value);
+static int get_attention_status(struct hotplug_slot *slot, u8 *value);
+static int get_latch_status(struct hotplug_slot *slot, u8 *value);
+static int get_adapter_status(struct hotplug_slot *slot, u8 *value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct hotplug_slot_ops skel_hotplug_slot_ops = {
 	.enable_slot =		enable_slot,
@@ -128,6 +148,7 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
 	dbg("%s - physical_slot = %s\n", __func__, hotplug_slot->name);
 
 	switch (status) {
+<<<<<<< HEAD
 		case 0:
 			/*
 			 * Fill in code here to turn light off
@@ -140,6 +161,20 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
 			 * Fill in code here to turn light on
 			 */
 			break;
+=======
+	case 0:
+		/*
+		 * Fill in code here to turn light off
+		 */
+		break;
+
+	case 1:
+	default:
+		/*
+		 * Fill in code here to turn light on
+		 */
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return retval;
@@ -153,12 +188,21 @@ static int hardware_test(struct hotplug_slot *hotplug_slot, u32 value)
 	dbg("%s - physical_slot = %s\n", __func__, hotplug_slot->name);
 
 	switch (value) {
+<<<<<<< HEAD
 		case 0:
 			/* Specify a test here */
 			break;
 		case 1:
 			/* Specify another test here */
 			break;
+=======
+	case 0:
+		/* Specify a test here */
+		break;
+	case 1:
+		/* Specify another test here */
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return retval;
@@ -287,7 +331,11 @@ static int __init init_slots(void)
 		hotplug_slot->release = &release_slot;
 		make_slot_name(slot);
 		hotplug_slot->ops = &skel_hotplug_slot_ops;
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Initialize the slot info structure with some known
 		 * good values.
@@ -296,7 +344,11 @@ static int __init init_slots(void)
 		get_attention_status(hotplug_slot, &info->attention_status);
 		get_latch_status(hotplug_slot, &info->latch_status);
 		get_adapter_status(hotplug_slot, &info->adapter_status);
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dbg("registering slot %d\n", i);
 		retval = pci_hp_register(slot->hotplug_slot);
 		if (retval) {
@@ -321,22 +373,34 @@ error:
 
 static void __exit cleanup_slots(void)
 {
+<<<<<<< HEAD
 	struct list_head *tmp;
 	struct list_head *next;
 	struct slot *slot;
+=======
+	struct slot *slot, *next;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Unregister all of our slots with the pci_hotplug subsystem.
 	 * Memory will be freed in release_slot() callback after slot's
 	 * lifespan is finished.
 	 */
+<<<<<<< HEAD
 	list_for_each_safe(tmp, next, &slot_list) {
 		slot = list_entry(tmp, struct slot, slot_list);
+=======
+	list_for_each_entry_safe(slot, next, &slot_list, slot_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_del(&slot->slot_list);
 		pci_hp_deregister(slot->hotplug_slot);
 	}
 }
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init pcihp_skel_init(void)
 {
 	int retval;

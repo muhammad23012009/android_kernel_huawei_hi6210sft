@@ -1,6 +1,9 @@
 /*
+<<<<<<< HEAD
  * arch/arm/plat-omap/include/mach/onenand.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2006 Nokia Corporation
  * Author: Juha Yrjola
  *

@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* linux/arch/arm/plat-samsung/include/plat/s3c64xx-spi.h
  *
+=======
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2009 Samsung Electronics Ltd.
  *	Jaswinder Singh <jassi.brar@samsung.com>
  *
@@ -8,8 +12,13 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #ifndef __S3C64XX_PLAT_SPI_H
 #define __S3C64XX_PLAT_SPI_H
+=======
+#ifndef __SPI_S3C64XX_H
+#define __SPI_S3C64XX_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/dmaengine.h>
 
@@ -39,8 +48,16 @@ struct s3c64xx_spi_csinfo {
 struct s3c64xx_spi_info {
 	int src_clk_nr;
 	int num_cs;
+<<<<<<< HEAD
 	int (*cfg_gpio)(void);
 	dma_filter_fn filter;
+=======
+	bool no_cs;
+	int (*cfg_gpio)(void);
+	dma_filter_fn filter;
+	void *dma_tx;
+	void *dma_rx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -68,4 +85,8 @@ extern int s3c64xx_spi2_cfg_gpio(void);
 extern struct s3c64xx_spi_info s3c64xx_spi0_pdata;
 extern struct s3c64xx_spi_info s3c64xx_spi1_pdata;
 extern struct s3c64xx_spi_info s3c64xx_spi2_pdata;
+<<<<<<< HEAD
 #endif /* __S3C64XX_PLAT_SPI_H */
+=======
+#endif /*__SPI_S3C64XX_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

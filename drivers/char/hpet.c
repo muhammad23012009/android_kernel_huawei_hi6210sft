@@ -12,7 +12,10 @@
  */
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/miscdevice.h>
@@ -34,11 +37,17 @@
 #include <linux/uaccess.h>
 #include <linux/slab.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/acpi.h>
+#include <linux/hpet.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/current.h>
 #include <asm/irq.h>
 #include <asm/div64.h>
 
+<<<<<<< HEAD
 #include <linux/acpi.h>
 #include <acpi/acpi_bus.h>
 #include <linux/hpet.h>
@@ -47,6 +56,12 @@
  * The High Precision Event Timer driver.
  * This driver is closely modelled after the rtc.c driver.
  * http://www.intel.com/hardwaredesign/hpetspec_1.pdf
+=======
+/*
+ * The High Precision Event Timer driver.
+ * This driver is closely modelled after the rtc.c driver.
+ * See HPET spec revision 1.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define	HPET_USER_FREQ	(64)
 #define	HPET_DRIFT	(500)
@@ -367,12 +382,38 @@ static unsigned int hpet_poll(struct file *file, poll_table * wait)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
 {
 #ifdef	CONFIG_HPET_MMAP
 	struct hpet_dev *devp;
 	unsigned long addr;
 
+=======
+#ifdef CONFIG_HPET_MMAP
+#ifdef CONFIG_HPET_MMAP_DEFAULT
+static int hpet_mmap_enabled = 1;
+#else
+static int hpet_mmap_enabled = 0;
+#endif
+
+static __init int hpet_mmap_enable(char *str)
+{
+	get_option(&str, &hpet_mmap_enabled);
+	pr_info("HPET mmap %s\n", hpet_mmap_enabled ? "enabled" : "disabled");
+	return 1;
+}
+__setup("hpet_mmap=", hpet_mmap_enable);
+
+static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
+{
+	struct hpet_dev *devp;
+	unsigned long addr;
+
+	if (!hpet_mmap_enabled)
+		return -EACCES;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	devp = file->private_data;
 	addr = devp->hd_hpets->hp_hpet_phys;
 
@@ -381,10 +422,20 @@ static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
 
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 	return vm_iomap_memory(vma, addr, PAGE_SIZE);
+<<<<<<< HEAD
 #else
 	return -ENOSYS;
 #endif
 }
+=======
+}
+#else
+static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
+{
+	return -ENOSYS;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int hpet_fasync(int fd, struct file *file, int on)
 {
@@ -486,8 +537,12 @@ static int hpet_ioctl_ieon(struct hpet_dev *devp)
 		}
 
 		sprintf(devp->hd_name, "hpet%d", (int)(devp - hpetp->hp_dev));
+<<<<<<< HEAD
 		irq_flags = devp->hd_flags & HPET_SHARED_IRQ
 						? IRQF_SHARED : IRQF_DISABLED;
+=======
+		irq_flags = devp->hd_flags & HPET_SHARED_IRQ ? IRQF_SHARED : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (request_irq(irq, hpet_interrupt, irq_flags,
 				devp->hd_name, (void *)devp)) {
 			printk(KERN_ERR "hpet: IRQ %d is not free\n", irq);
@@ -554,12 +609,20 @@ static inline unsigned long hpet_time_div(struct hpets *hpets,
 	unsigned long long m;
 
 	m = hpets->hp_tick_freq + (dis >> 1);
+<<<<<<< HEAD
 	do_div(m, dis);
 	return (unsigned long)m;
 }
 
 static int
 hpet_ioctl_common(struct hpet_dev *devp, int cmd, unsigned long arg,
+=======
+	return div64_ul(m, dis);
+}
+
+static int
+hpet_ioctl_common(struct hpet_dev *devp, unsigned int cmd, unsigned long arg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  struct hpet_info *info)
 {
 	struct hpet_timer __iomem *timer;
@@ -725,7 +788,11 @@ static int hpet_is_known(struct hpet_data *hdp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ctl_table hpet_table[] = {
+=======
+static struct ctl_table hpet_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 .procname = "max-user-freq",
 	 .data = &hpet_max_freq,
@@ -736,7 +803,11 @@ static ctl_table hpet_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 static ctl_table hpet_root[] = {
+=======
+static struct ctl_table hpet_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 .procname = "hpet",
 	 .maxlen = 0,
@@ -746,7 +817,11 @@ static ctl_table hpet_root[] = {
 	{}
 };
 
+<<<<<<< HEAD
 static ctl_table dev_root[] = {
+=======
+static struct ctl_table dev_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 .procname = "dev",
 	 .maxlen = 0,
@@ -960,8 +1035,15 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 	status = acpi_resource_to_address64(res, &addr);
 
 	if (ACPI_SUCCESS(status)) {
+<<<<<<< HEAD
 		hdp->hd_phys_address = addr.minimum;
 		hdp->hd_address = ioremap(addr.minimum, addr.address_length);
+=======
+		hdp->hd_phys_address = addr.address.minimum;
+		hdp->hd_address = ioremap(addr.address.minimum, addr.address.address_length);
+		if (!hdp->hd_address)
+			return AE_ERROR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (hpet_is_known(hdp)) {
 			iounmap(hdp->hd_address);
@@ -971,12 +1053,20 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 		struct acpi_resource_fixed_memory32 *fixmem32;
 
 		fixmem32 = &res->data.fixed_memory32;
+<<<<<<< HEAD
 		if (!fixmem32)
 			return AE_NO_MEMORY;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		hdp->hd_phys_address = fixmem32->address;
 		hdp->hd_address = ioremap(fixmem32->address,
 						HPET_RANGE_SIZE);
+<<<<<<< HEAD
+=======
+		if (!hdp->hd_address)
+			return AE_ERROR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (hpet_is_known(hdp)) {
 			iounmap(hdp->hd_address);
@@ -1029,24 +1119,33 @@ static int hpet_acpi_add(struct acpi_device *device)
 	return hpet_alloc(&data);
 }
 
+<<<<<<< HEAD
 static int hpet_acpi_remove(struct acpi_device *device)
 {
 	/* XXX need to unregister clocksource, dealloc mem, etc */
 	return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct acpi_device_id hpet_device_ids[] = {
 	{"PNP0103", 0},
 	{"", 0},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(acpi, hpet_device_ids);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct acpi_driver hpet_acpi_driver = {
 	.name = "hpet",
 	.ids = hpet_device_ids,
 	.ops = {
 		.add = hpet_acpi_add,
+<<<<<<< HEAD
 		.remove = hpet_acpi_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 };
 
@@ -1072,6 +1171,7 @@ static int __init hpet_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit hpet_exit(void)
 {
@@ -1088,3 +1188,11 @@ module_init(hpet_init);
 module_exit(hpet_exit);
 MODULE_AUTHOR("Bob Picco <Robert.Picco@hp.com>");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(hpet_init);
+
+/*
+MODULE_AUTHOR("Bob Picco <Robert.Picco@hp.com>");
+MODULE_LICENSE("GPL");
+*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -89,6 +89,16 @@ struct netns_sctp {
 	int pf_retrans;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Disable Potentially-Failed feature, the feature is enabled by default
+	 * pf_enable	-  0  : disable pf
+	 *		- >0  : enable pf
+	 */
+	int pf_enable;
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Policy for preforming sctp/socket accounting
 	 * 0   - do socket level accounting, all assocs share sk_sndbuf
 	 * 1   - do sctp accounting, each asoc may use sk_sndbuf bytes

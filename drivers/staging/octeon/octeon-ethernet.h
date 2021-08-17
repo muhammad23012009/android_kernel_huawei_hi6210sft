@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (c) 2003-2010 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -24,6 +30,9 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 **********************************************************************/
+=======
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * External interface for the Cavium Octeon ethernet driver.
@@ -33,6 +42,11 @@
 
 #include <linux/of.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/octeon/cvmx-helper-board.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * This is the definition of the Ethernet driver's private
  * driver state stored in netdev_priv(dev).
@@ -44,6 +58,11 @@ struct octeon_ethernet {
 	int queue;
 	/* Hardware fetch and add to count outstanding tx buffers */
 	int fau;
+<<<<<<< HEAD
+=======
+	/* My netdev. */
+	struct net_device *netdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Type of port. This is one of the enums in
 	 * cvmx_helper_interface_mode_t
@@ -53,6 +72,7 @@ struct octeon_ethernet {
 	struct sk_buff_head tx_free_list[16];
 	/* Device statistics */
 	struct net_device_stats stats;
+<<<<<<< HEAD
 	struct phy_device *phydev;
 	unsigned int last_link;
 	/* Last negotiated link state */
@@ -61,11 +81,21 @@ struct octeon_ethernet {
 	void (*poll) (struct net_device *dev);
 	struct delayed_work	port_periodic_work;
 	struct work_struct	port_work;	/* may be unused. */
+=======
+	unsigned int last_speed;
+	unsigned int last_link;
+	/* Last negotiated link state */
+	u64 link_info;
+	/* Called periodically to check link status */
+	void (*poll)(struct net_device *dev);
+	struct delayed_work	port_periodic_work;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_node	*of_node;
 };
 
 int cvm_oct_free_work(void *work_queue_entry);
 
+<<<<<<< HEAD
 extern int cvm_oct_rgmii_init(struct net_device *dev);
 extern void cvm_oct_rgmii_uninit(struct net_device *dev);
 extern int cvm_oct_rgmii_open(struct net_device *dev);
@@ -96,6 +126,34 @@ extern atomic_t cvm_oct_poll_queue_stopping;
 extern u64 cvm_oct_tx_poll_interval;
 
 extern int max_rx_cpus;
+=======
+int cvm_oct_rgmii_open(struct net_device *dev);
+
+int cvm_oct_sgmii_init(struct net_device *dev);
+int cvm_oct_sgmii_open(struct net_device *dev);
+
+int cvm_oct_spi_init(struct net_device *dev);
+void cvm_oct_spi_uninit(struct net_device *dev);
+
+int cvm_oct_common_init(struct net_device *dev);
+void cvm_oct_common_uninit(struct net_device *dev);
+void cvm_oct_adjust_link(struct net_device *dev);
+int cvm_oct_common_stop(struct net_device *dev);
+int cvm_oct_common_open(struct net_device *dev,
+			void (*link_poll)(struct net_device *));
+void cvm_oct_note_carrier(struct octeon_ethernet *priv,
+			  cvmx_helper_link_info_t li);
+void cvm_oct_link_poll(struct net_device *dev);
+
+extern int always_use_pow;
+extern int pow_send_group;
+extern int pow_receive_groups;
+extern char pow_send_list[];
+extern struct net_device *cvm_oct_device[];
+extern atomic_t cvm_oct_poll_queue_stopping;
+extern u64 cvm_oct_tx_poll_interval;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int rx_napi_weight;
 
 #endif

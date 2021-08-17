@@ -30,10 +30,15 @@ void can_led_event(struct net_device *netdev, enum can_led_event event)
 	case CAN_LED_EVENT_OPEN:
 		led_trigger_event(priv->tx_led_trig, LED_FULL);
 		led_trigger_event(priv->rx_led_trig, LED_FULL);
+<<<<<<< HEAD
+=======
+		led_trigger_event(priv->rxtx_led_trig, LED_FULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case CAN_LED_EVENT_STOP:
 		led_trigger_event(priv->tx_led_trig, LED_OFF);
 		led_trigger_event(priv->rx_led_trig, LED_OFF);
+<<<<<<< HEAD
 		break;
 	case CAN_LED_EVENT_TX:
 		if (led_delay)
@@ -44,6 +49,25 @@ void can_led_event(struct net_device *netdev, enum can_led_event event)
 		if (led_delay)
 			led_trigger_blink_oneshot(priv->rx_led_trig,
 						  &led_delay, &led_delay, 1);
+=======
+		led_trigger_event(priv->rxtx_led_trig, LED_OFF);
+		break;
+	case CAN_LED_EVENT_TX:
+		if (led_delay) {
+			led_trigger_blink_oneshot(priv->tx_led_trig,
+						  &led_delay, &led_delay, 1);
+			led_trigger_blink_oneshot(priv->rxtx_led_trig,
+						  &led_delay, &led_delay, 1);
+		}
+		break;
+	case CAN_LED_EVENT_RX:
+		if (led_delay) {
+			led_trigger_blink_oneshot(priv->rx_led_trig,
+						  &led_delay, &led_delay, 1);
+			led_trigger_blink_oneshot(priv->rxtx_led_trig,
+						  &led_delay, &led_delay, 1);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -55,6 +79,10 @@ static void can_led_release(struct device *gendev, void *res)
 
 	led_trigger_unregister_simple(priv->tx_led_trig);
 	led_trigger_unregister_simple(priv->rx_led_trig);
+<<<<<<< HEAD
+=======
+	led_trigger_unregister_simple(priv->rxtx_led_trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Register CAN LED triggers for a CAN device
@@ -76,11 +104,21 @@ void devm_can_led_init(struct net_device *netdev)
 		 "%s-tx", netdev->name);
 	snprintf(priv->rx_led_trig_name, sizeof(priv->rx_led_trig_name),
 		 "%s-rx", netdev->name);
+<<<<<<< HEAD
+=======
+	snprintf(priv->rxtx_led_trig_name, sizeof(priv->rxtx_led_trig_name),
+		 "%s-rxtx", netdev->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	led_trigger_register_simple(priv->tx_led_trig_name,
 				    &priv->tx_led_trig);
 	led_trigger_register_simple(priv->rx_led_trig_name,
 				    &priv->rx_led_trig);
+<<<<<<< HEAD
+=======
+	led_trigger_register_simple(priv->rxtx_led_trig_name,
+				    &priv->rxtx_led_trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	devres_add(&netdev->dev, res);
 }
@@ -88,21 +126,39 @@ EXPORT_SYMBOL_GPL(devm_can_led_init);
 
 /* NETDEV rename notifier to rename the associated led triggers too */
 static int can_led_notifier(struct notifier_block *nb, unsigned long msg,
+<<<<<<< HEAD
 			void *data)
 {
 	struct net_device *netdev = data;
+=======
+			    void *ptr)
+{
+	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct can_priv *priv = safe_candev_priv(netdev);
 	char name[CAN_LED_NAME_SZ];
 
 	if (!priv)
 		return NOTIFY_DONE;
 
+<<<<<<< HEAD
+=======
+	if (!priv->tx_led_trig || !priv->rx_led_trig || !priv->rxtx_led_trig)
+		return NOTIFY_DONE;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (msg == NETDEV_CHANGENAME) {
 		snprintf(name, sizeof(name), "%s-tx", netdev->name);
 		led_trigger_rename_static(name, priv->tx_led_trig);
 
 		snprintf(name, sizeof(name), "%s-rx", netdev->name);
 		led_trigger_rename_static(name, priv->rx_led_trig);
+<<<<<<< HEAD
+=======
+
+		snprintf(name, sizeof(name), "%s-rxtx", netdev->name);
+		led_trigger_rename_static(name, priv->rxtx_led_trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return NOTIFY_DONE;

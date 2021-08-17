@@ -21,7 +21,11 @@
  */
 
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/init.h>
@@ -67,7 +71,11 @@ static void remove_symbol (struct snd_cs46xx * chip, struct dsp_symbol_entry * s
 
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void cs46xx_dsp_proc_scb_info_read (struct snd_info_entry *entry,
 					   struct snd_info_buffer *buffer)
 {
@@ -228,13 +236,25 @@ void cs46xx_dsp_remove_scb (struct snd_cs46xx *chip, struct dsp_scb_descriptor *
 }
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void cs46xx_dsp_proc_free_scb_desc (struct dsp_scb_descriptor * scb)
 {
 	if (scb->proc_info) {
 		struct proc_scb_info * scb_info = scb->proc_info->private_data;
+<<<<<<< HEAD
 
 		snd_printdd("cs46xx_dsp_proc_free_scb_desc: freeing %s\n",scb->scb_name);
+=======
+		struct snd_cs46xx *chip = scb_info->chip;
+
+		dev_dbg(chip->card->dev,
+			"cs46xx_dsp_proc_free_scb_desc: freeing %s\n",
+			scb->scb_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		snd_info_free_entry(scb->proc_info);
 		scb->proc_info = NULL;
@@ -282,7 +302,11 @@ out:
 		scb->proc_info = entry;
 	}
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct dsp_scb_descriptor * 
 _dsp_create_generic_scb (struct snd_cs46xx *chip, char * name, u32 * scb_data, u32 dest,
@@ -305,7 +329,11 @@ _dsp_create_generic_scb (struct snd_cs46xx *chip, char * name, u32 * scb_data, u
 	scb_data[SCBfuncEntryPtr] &= 0xFFFF0000;
 	scb_data[SCBfuncEntryPtr] |= task_entry->address;
 
+<<<<<<< HEAD
 	snd_printdd("dsp_spos: creating SCB <%s>\n",name);
+=======
+	dev_dbg(chip->card->dev, "dsp_spos: creating SCB <%s>\n", name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	scb = cs46xx_dsp_create_scb(chip,name,scb_data,dest);
 
@@ -320,9 +348,21 @@ _dsp_create_generic_scb (struct snd_cs46xx *chip, char * name, u32 * scb_data, u
 	/* update parent SCB */
 	if (scb->parent_scb_ptr) {
 #if 0
+<<<<<<< HEAD
 		printk ("scb->parent_scb_ptr = %s\n",scb->parent_scb_ptr->scb_name);
 		printk ("scb->parent_scb_ptr->next_scb_ptr = %s\n",scb->parent_scb_ptr->next_scb_ptr->scb_name);
 		printk ("scb->parent_scb_ptr->sub_list_ptr = %s\n",scb->parent_scb_ptr->sub_list_ptr->scb_name);
+=======
+		dev_dbg(chip->card->dev,
+			"scb->parent_scb_ptr = %s\n",
+			scb->parent_scb_ptr->scb_name);
+		dev_dbg(chip->card->dev,
+			"scb->parent_scb_ptr->next_scb_ptr = %s\n",
+			scb->parent_scb_ptr->next_scb_ptr->scb_name);
+		dev_dbg(chip->card->dev,
+			"scb->parent_scb_ptr->sub_list_ptr = %s\n",
+			scb->parent_scb_ptr->sub_list_ptr->scb_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 		/* link to  parent SCB */
 		if (scb_child_type == SCB_ON_PARENT_NEXT_SCB) {
@@ -368,7 +408,12 @@ cs46xx_dsp_create_generic_scb (struct snd_cs46xx *chip, char * name, u32 * scb_d
 					       SYMBOL_CODE);
   
 	if (task_entry == NULL) {
+<<<<<<< HEAD
 		snd_printk (KERN_ERR "dsp_spos: symbol %s not found\n",task_entry_name);
+=======
+		dev_err(chip->card->dev,
+			"dsp_spos: symbol %s not found\n", task_entry_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
   
@@ -582,7 +627,12 @@ cs46xx_dsp_create_pcm_reader_scb(struct snd_cs46xx * chip, char * scb_name,
 								 SYMBOL_CODE);
     
 		if (ins->null_algorithm == NULL) {
+<<<<<<< HEAD
 			snd_printk (KERN_ERR "dsp_spos: symbol NULLALGORITHM not found\n");
+=======
+			dev_err(chip->card->dev,
+				"dsp_spos: symbol NULLALGORITHM not found\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return NULL;
 		}    
 	}
@@ -612,7 +662,12 @@ cs46xx_dsp_create_src_task_scb(struct snd_cs46xx * chip, char * scb_name,
 	unsigned int phiIncr;
 	unsigned int correctionPerGOF, correctionPerSec;
 
+<<<<<<< HEAD
 	snd_printdd( "dsp_spos: setting %s rate to %u\n",scb_name,rate);
+=======
+	dev_dbg(chip->card->dev, "dsp_spos: setting %s rate to %u\n",
+		scb_name, rate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *  Compute the values used to drive the actual sample rate conversion.
@@ -670,7 +725,12 @@ cs46xx_dsp_create_src_task_scb(struct snd_cs46xx * chip, char * scb_name,
 								 SYMBOL_CODE);
 			
 			if (ins->s16_up == NULL) {
+<<<<<<< HEAD
 				snd_printk (KERN_ERR "dsp_spos: symbol S16_UPSRC not found\n");
+=======
+				dev_err(chip->card->dev,
+					"dsp_spos: symbol S16_UPSRC not found\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return NULL;
 			}    
 		}
@@ -1265,7 +1325,11 @@ cs46xx_dsp_create_pcm_channel (struct snd_cs46xx * chip,
 		   the Sample Rate Converted (which could
 		   alter the raw data stream ...) */
 		if (sample_rate == 48000) {
+<<<<<<< HEAD
 			snd_printdd ("IEC958 pass through\n");
+=======
+			dev_dbg(chip->card->dev, "IEC958 pass through\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Hack to bypass creating a new SRC */
 			pass_through = 1;
 		}
@@ -1299,13 +1363,22 @@ cs46xx_dsp_create_pcm_channel (struct snd_cs46xx * chip,
 	}
 
 	if (pcm_index == -1) {
+<<<<<<< HEAD
 		snd_printk (KERN_ERR "dsp_spos: no free PCM channel\n");
+=======
+		dev_err(chip->card->dev, "dsp_spos: no free PCM channel\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 
 	if (src_scb == NULL) {
 		if (ins->nsrc_scb >= DSP_MAX_SRC_NR) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "dsp_spos: to many SRC instances\n!");
+=======
+			dev_err(chip->card->dev,
+				"dsp_spos: to many SRC instances\n!");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return NULL;
 		}
 
@@ -1331,7 +1404,12 @@ cs46xx_dsp_create_pcm_channel (struct snd_cs46xx * chip,
 
 		snprintf (scb_name,DSP_MAX_SCB_NAME,"SrcTask_SCB%d",src_index);
 		
+<<<<<<< HEAD
 		snd_printdd( "dsp_spos: creating SRC \"%s\"\n",scb_name);
+=======
+		dev_dbg(chip->card->dev,
+			"dsp_spos: creating SRC \"%s\"\n", scb_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		src_scb = cs46xx_dsp_create_src_task_scb(chip,scb_name,
 							 sample_rate,
 							 src_output_buffer_addr[src_index],
@@ -1343,7 +1421,12 @@ cs46xx_dsp_create_pcm_channel (struct snd_cs46xx * chip,
 							 pass_through);
 
 		if (!src_scb) {
+<<<<<<< HEAD
 			snd_printk (KERN_ERR "dsp_spos: failed to create SRCtaskSCB\n");
+=======
+			dev_err(chip->card->dev,
+				"dsp_spos: failed to create SRCtaskSCB\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return NULL;
 		}
 
@@ -1355,8 +1438,13 @@ cs46xx_dsp_create_pcm_channel (struct snd_cs46xx * chip,
   
 	snprintf (scb_name,DSP_MAX_SCB_NAME,"PCMReader_SCB%d",pcm_index);
 
+<<<<<<< HEAD
 	snd_printdd( "dsp_spos: creating PCM \"%s\" (%d)\n",scb_name,
                  pcm_channel_id);
+=======
+	dev_dbg(chip->card->dev, "dsp_spos: creating PCM \"%s\" (%d)\n",
+		scb_name, pcm_channel_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pcm_scb = cs46xx_dsp_create_pcm_reader_scb(chip,scb_name,
 						   pcm_reader_buffer_addr[pcm_index],
@@ -1369,7 +1457,12 @@ cs46xx_dsp_create_pcm_channel (struct snd_cs46xx * chip,
                            );
 
 	if (!pcm_scb) {
+<<<<<<< HEAD
 		snd_printk (KERN_ERR "dsp_spos: failed to create PCMreaderSCB\n");
+=======
+		dev_err(chip->card->dev,
+			"dsp_spos: failed to create PCMreaderSCB\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 	
@@ -1419,7 +1512,12 @@ int cs46xx_dsp_pcm_channel_set_period (struct snd_cs46xx * chip,
 		temp |= DMA_RQ_C1_SOURCE_MOD16;
 		break; 
 	default:
+<<<<<<< HEAD
 		snd_printdd ("period size (%d) not supported by HW\n", period_size);
+=======
+		dev_dbg(chip->card->dev,
+			"period size (%d) not supported by HW\n", period_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -1457,7 +1555,12 @@ int cs46xx_dsp_pcm_ostream_set_period (struct snd_cs46xx * chip,
 		temp |= DMA_RQ_C1_DEST_MOD16;
 		break; 
 	default:
+<<<<<<< HEAD
 		snd_printdd ("period size (%d) not supported by HW\n", period_size);
+=======
+		dev_dbg(chip->card->dev,
+			"period size (%d) not supported by HW\n", period_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -1723,7 +1826,11 @@ int cs46xx_iec958_pre_open (struct snd_cs46xx *chip)
 	struct dsp_spos_instance * ins = chip->dsp_spos_instance;
 
 	if ( ins->spdif_status_out & DSP_SPDIF_STATUS_OUTPUT_ENABLED ) {
+<<<<<<< HEAD
 		/* remove AsynchFGTxSCB and and PCMSerialInput_II */
+=======
+		/* remove AsynchFGTxSCB and PCMSerialInput_II */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cs46xx_dsp_disable_spdif_out (chip);
 
 		/* save state */

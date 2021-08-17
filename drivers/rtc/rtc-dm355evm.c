@@ -139,21 +139,28 @@ static int dm355evm_rtc_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dm355evm_rtc_remove(struct platform_device *pdev)
 {
 	platform_set_drvdata(pdev, NULL);
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * I2C is used to talk to the MSP430, but this platform device is
  * exposed by an MFD driver that manages I2C communications.
  */
 static struct platform_driver rtc_dm355evm_driver = {
 	.probe		= dm355evm_rtc_probe,
+<<<<<<< HEAD
 	.remove		= dm355evm_rtc_remove,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "rtc-dm355evm",
 	},
 };

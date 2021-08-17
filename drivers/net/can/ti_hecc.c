@@ -37,7 +37,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/interrupt.h>
@@ -286,6 +289,7 @@ static inline u32 hecc_get_bit(struct ti_hecc_priv *priv, int reg, u32 bit_mask)
 	return (hecc_read(priv, reg) & bit_mask) ? 1 : 0;
 }
 
+<<<<<<< HEAD
 static int ti_hecc_get_state(const struct net_device *ndev,
 	enum can_state *state)
 {
@@ -295,6 +299,8 @@ static int ti_hecc_get_state(const struct net_device *ndev,
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ti_hecc_set_btc(struct ti_hecc_priv *priv)
 {
 	struct can_bittiming *bit_timing = &priv->can.bittiming;
@@ -527,10 +533,17 @@ static netdev_tx_t ti_hecc_xmit(struct sk_buff *skb, struct net_device *ndev)
 		data = (cf->can_id & CAN_SFF_MASK) << 18;
 	hecc_write_mbx(priv, mbxno, HECC_CANMID, data);
 	hecc_write_mbx(priv, mbxno, HECC_CANMDL,
+<<<<<<< HEAD
 		be32_to_cpu(*(u32 *)(cf->data)));
 	if (cf->can_dlc > 4)
 		hecc_write_mbx(priv, mbxno, HECC_CANMDH,
 			be32_to_cpu(*(u32 *)(cf->data + 4)));
+=======
+		be32_to_cpu(*(__be32 *)(cf->data)));
+	if (cf->can_dlc > 4)
+		hecc_write_mbx(priv, mbxno, HECC_CANMDH,
+			be32_to_cpu(*(__be32 *)(cf->data + 4)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		*(u32 *)(cf->data + 4) = 0;
 	can_put_echo_skb(skb, ndev, mbxno);
@@ -578,12 +591,19 @@ static int ti_hecc_rx_pkt(struct ti_hecc_priv *priv, int mbxno)
 		cf->can_id |= CAN_RTR_FLAG;
 	cf->can_dlc = get_can_dlc(data & 0xF);
 	data = hecc_read_mbx(priv, mbxno, HECC_CANMDL);
+<<<<<<< HEAD
 	*(u32 *)(cf->data) = cpu_to_be32(data);
 	if (cf->can_dlc > 4) {
 		data = hecc_read_mbx(priv, mbxno, HECC_CANMDH);
 		*(u32 *)(cf->data + 4) = cpu_to_be32(data);
 	} else {
 		*(u32 *)(cf->data + 4) = 0;
+=======
+	*(__be32 *)(cf->data) = cpu_to_be32(data);
+	if (cf->can_dlc > 4) {
+		data = hecc_read_mbx(priv, mbxno, HECC_CANMDH);
+		*(__be32 *)(cf->data + 4) = cpu_to_be32(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_lock_irqsave(&priv->mbx_lock, flags);
 	hecc_clear_bit(priv, HECC_CANME, mbx_mask);
@@ -664,6 +684,12 @@ static int ti_hecc_rx_poll(struct napi_struct *napi, int quota)
 		mbx_mask = hecc_read(priv, HECC_CANMIM);
 		mbx_mask |= HECC_TX_MBOX_MASK;
 		hecc_write(priv, HECC_CANMIM, mbx_mask);
+<<<<<<< HEAD
+=======
+	} else {
+		/* repoll is done only if whole budget is used */
+		num_pkts = quota;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return num_pkts;
@@ -727,13 +753,20 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 		hecc_clear_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
 		/* Disable all interrupts in bus-off to avoid int hog */
 		hecc_write(priv, HECC_CANGIM, 0);
+<<<<<<< HEAD
+=======
+		++priv->can.can_stats.bus_off;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		can_bus_off(ndev);
 	}
 
 	if (err_status & HECC_BUS_ERROR) {
 		++priv->can.can_stats.bus_error;
 		cf->can_id |= CAN_ERR_BUSERROR | CAN_ERR_PROT;
+<<<<<<< HEAD
 		cf->data[2] |= CAN_ERR_PROT_UNSPEC;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err_status & HECC_CANES_FE) {
 			hecc_set_bit(priv, HECC_CANES, HECC_CANES_FE);
 			cf->data[2] |= CAN_ERR_PROT_FORM;
@@ -748,6 +781,7 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 		}
 		if (err_status & HECC_CANES_CRCE) {
 			hecc_set_bit(priv, HECC_CANES, HECC_CANES_CRCE);
+<<<<<<< HEAD
 			cf->data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ |
 					CAN_ERR_PROT_LOC_CRC_DEL;
 		}
@@ -761,6 +795,19 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 	netif_rx(skb);
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+			cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
+		}
+		if (err_status & HECC_CANES_ACKE) {
+			hecc_set_bit(priv, HECC_CANES, HECC_CANES_ACKE);
+			cf->data[3] = CAN_ERR_PROT_LOC_ACK;
+		}
+	}
+
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -883,6 +930,10 @@ static const struct net_device_ops ti_hecc_netdev_ops = {
 	.ndo_open		= ti_hecc_open,
 	.ndo_stop		= ti_hecc_close,
 	.ndo_start_xmit		= ti_hecc_xmit,
+<<<<<<< HEAD
+=======
+	.ndo_change_mtu		= can_change_mtu,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int ti_hecc_probe(struct platform_device *pdev)
@@ -894,7 +945,11 @@ static int ti_hecc_probe(struct platform_device *pdev)
 	void __iomem *addr;
 	int err = -ENODEV;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_err(&pdev->dev, "No platform data\n");
 		goto probe_exit;
@@ -940,7 +995,10 @@ static int ti_hecc_probe(struct platform_device *pdev)
 
 	priv->can.bittiming_const = &ti_hecc_bittiming_const;
 	priv->can.do_set_mode = ti_hecc_do_set_mode;
+<<<<<<< HEAD
 	priv->can.do_get_state = ti_hecc_get_state;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->can.do_get_berr_counter = ti_hecc_get_berr_counter;
 	priv->can.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES;
 
@@ -1006,7 +1064,10 @@ static int ti_hecc_remove(struct platform_device *pdev)
 	iounmap(priv->base);
 	release_mem_region(res->start, resource_size(res));
 	free_candev(ndev);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1060,7 +1121,10 @@ static int ti_hecc_resume(struct platform_device *pdev)
 static struct platform_driver ti_hecc_driver = {
 	.driver = {
 		.name    = DRV_NAME,
+<<<<<<< HEAD
 		.owner   = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = ti_hecc_probe,
 	.remove = ti_hecc_remove,

@@ -20,10 +20,18 @@
  * 02110-1301 USA
  */
 
+<<<<<<< HEAD
 
 #ifndef __HSI_CHAR_H
 #define __HSI_CHAR_H
 
+=======
+#ifndef __HSI_CHAR_H
+#define __HSI_CHAR_H
+
+#include <linux/types.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HSI_CHAR_MAGIC		'k'
 #define HSC_IOW(num, dtype)	_IOW(HSI_CHAR_MAGIC, num, dtype)
 #define HSC_IOR(num, dtype)	_IOR(HSI_CHAR_MAGIC, num, dtype)
@@ -48,6 +56,7 @@
 #define HSC_ARB_PRIO		1
 
 struct hsc_rx_config {
+<<<<<<< HEAD
 	uint32_t mode;
 	uint32_t flow;
 	uint32_t channels;
@@ -58,6 +67,18 @@ struct hsc_tx_config {
 	uint32_t channels;
 	uint32_t speed;
 	uint32_t arb_mode;
+=======
+	__u32 mode;
+	__u32 flow;
+	__u32 channels;
+};
+
+struct hsc_tx_config {
+	__u32 mode;
+	__u32 channels;
+	__u32 speed;
+	__u32 arb_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* __HSI_CHAR_H */

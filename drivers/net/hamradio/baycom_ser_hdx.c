@@ -490,7 +490,11 @@ static int ser12_open(struct net_device *dev)
 	outb(0, FCR(dev->base_addr));  /* disable FIFOs */
 	outb(0x0d, MCR(dev->base_addr));
 	outb(0, IER(dev->base_addr));
+<<<<<<< HEAD
 	if (request_irq(dev->irq, ser12_interrupt, IRQF_DISABLED | IRQF_SHARED,
+=======
+	if (request_irq(dev->irq, ser12_interrupt, IRQF_SHARED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"baycom_ser12", dev)) {
 		release_region(dev->base_addr, SER12_EXTENT);       
 		return -EBUSY;

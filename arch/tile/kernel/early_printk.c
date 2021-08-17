@@ -23,12 +23,25 @@
 
 static void early_hv_write(struct console *con, const char *s, unsigned n)
 {
+<<<<<<< HEAD
 	hv_console_write((HV_VirtAddr) s, n);
+=======
+	tile_console_write(s, n);
+
+	/*
+	 * Convert NL to NLCR (close enough to CRNL) during early boot.
+	 * We assume newlines are at the ends of strings, which turns out
+	 * to be good enough for early boot console output.
+	 */
+	if (n && s[n-1] == '\n')
+		tile_console_write("\r", 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct console early_hv_console = {
 	.name =		"earlyhv",
 	.write =	early_hv_write,
+<<<<<<< HEAD
 	.flags =	CON_PRINTBUFFER,
 	.index =	-1,
 };
@@ -45,26 +58,55 @@ void early_panic(const char *fmt, ...)
 	early_vprintk(fmt, ap);
 	early_console->write(early_console, "\n", 1);
 	va_end(ap);
+=======
+	.flags =	CON_PRINTBUFFER | CON_BOOT,
+	.index =	-1,
+};
+
+void early_panic(const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	arch_local_irq_disable_all();
+
+	va_start(args, fmt);
+
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	early_printk("Kernel panic - not syncing: %pV", &vaf);
+
+	va_end(args);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump_stack();
 	hv_halt();
 }
 
+<<<<<<< HEAD
 static int __initdata keep_early;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init setup_early_printk(char *str)
 {
 	if (early_console)
 		return 1;
 
+<<<<<<< HEAD
 	if (str != NULL && strncmp(str, "keep", 4) == 0)
 		keep_early = 1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	early_console = &early_hv_console;
 	register_console(early_console);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void __init disable_early_printk(void)
 {
 	early_console_complete = 1;
@@ -90,4 +132,6 @@ boot command line to see any diagnostic early console output.\n\
 ");
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 early_param("earlyprintk", setup_early_printk);

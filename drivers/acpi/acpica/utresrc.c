@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +51,12 @@
 
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utresrc")
+<<<<<<< HEAD
 #if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER)
+=======
+
+#if defined(ACPI_DEBUG_OUTPUT) || defined (ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Strings used to decode resource descriptors.
  * Used by both the disassembler and the debugger resource dump routines
@@ -86,7 +95,13 @@ const char *acpi_gbl_io_decode[] = {
 
 const char *acpi_gbl_ll_decode[] = {
 	"ActiveHigh",
+<<<<<<< HEAD
 	"ActiveLow"
+=======
+	"ActiveLow",
+	"ActiveBoth",
+	"Reserved"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 const char *acpi_gbl_max_decode[] = {
@@ -260,7 +275,11 @@ const char *acpi_gbl_bpb_decode[] = {
 /* UART serial bus stop bits */
 
 const char *acpi_gbl_sb_decode[] = {
+<<<<<<< HEAD
 	"StopBitsNone",
+=======
+	"StopBitsZero",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"StopBitsOne",
 	"StopBitsOnePlusHalf",
 	"StopBitsTwo"
@@ -438,8 +457,13 @@ acpi_ut_walk_aml_resources(struct acpi_walk_state *walk_state,
 		    acpi_ut_validate_resource(walk_state, aml, &resource_index);
 		if (ACPI_FAILURE(status)) {
 			/*
+<<<<<<< HEAD
 			 * Exit on failure. Cannot continue because the descriptor length
 			 * may be bogus also.
+=======
+			 * Exit on failure. Cannot continue because the descriptor
+			 * length may be bogus also.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 */
 			return_ACPI_STATUS(status);
 		}
@@ -565,8 +589,13 @@ acpi_ut_validate_resource(struct acpi_walk_state *walk_state,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Check validity of the resource type, via acpi_gbl_resource_types. Zero
 	 * indicates an invalid resource.
+=======
+	 * Check validity of the resource type, via acpi_gbl_resource_types.
+	 * Zero indicates an invalid resource.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	if (!acpi_gbl_resource_types[resource_index]) {
 		goto invalid_resource;
@@ -643,7 +672,11 @@ acpi_ut_validate_resource(struct acpi_walk_state *walk_state,
 
 	return (AE_OK);
 
+<<<<<<< HEAD
       invalid_resource:
+=======
+invalid_resource:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (walk_state) {
 		ACPI_ERROR((AE_INFO,
@@ -652,7 +685,11 @@ acpi_ut_validate_resource(struct acpi_walk_state *walk_state,
 	}
 	return (AE_AML_INVALID_RESOURCE_TYPE);
 
+<<<<<<< HEAD
       bad_resource_length:
+=======
+bad_resource_length:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (walk_state) {
 		ACPI_ERROR((AE_INFO,

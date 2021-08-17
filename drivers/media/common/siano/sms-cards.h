@@ -20,8 +20,14 @@
 #ifndef __SMS_CARDS_H__
 #define __SMS_CARDS_H__
 
+<<<<<<< HEAD
 #include <linux/usb.h>
 #include "smscoreapi.h"
+=======
+#include "smscoreapi.h"
+
+#include <linux/usb.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "smsir.h"
 
 #define SMS_BOARD_UNKNOWN 0
@@ -45,6 +51,10 @@
 #define SMS1XXX_BOARD_SIANO_RIO		18
 #define SMS1XXX_BOARD_SIANO_DENVER_1530	19
 #define SMS1XXX_BOARD_SIANO_DENVER_2160 20
+<<<<<<< HEAD
+=======
+#define SMS1XXX_BOARD_PCTV_77E		21
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct sms_board_gpio_cfg {
 	int lna_vhf_exist;

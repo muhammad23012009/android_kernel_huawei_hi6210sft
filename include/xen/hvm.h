@@ -44,8 +44,13 @@ static inline int hvm_get_parameter(int idx, uint64_t *value)
 	xhv.index = idx;
 	r = HYPERVISOR_hvm_op(HVMOP_get_param, &xhv);
 	if (r < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Cannot get hvm parameter %s (%d): %d!\n",
 			param_name(idx), idx, r);
+=======
+		pr_err("Cannot get hvm parameter %s (%d): %d!\n",
+		       param_name(idx), idx, r);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return r;
 	}
 	*value = xhv.value;

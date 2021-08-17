@@ -80,6 +80,19 @@ config SSB_SDIOHOST
 
 	  If unsure, say N
 
+<<<<<<< HEAD
+=======
+config SSB_HOST_SOC
+	bool "Support for SSB bus on SoC"
+	depends on SSB && BCM47XX_NVRAM
+	select SSB_SPROM
+	help
+	  Host interface for a SSB directly mapped into memory. This is
+	  for some Broadcom SoCs from the BCM47xx and BCM53xx lines.
+
+	  If unsure, say N
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config SSB_SILENT
 	bool "No SSB kernel messages"
 	depends on SSB && EXPERT
@@ -130,6 +143,10 @@ config SSB_DRIVER_MIPS
 	bool "SSB Broadcom MIPS core driver"
 	depends on SSB && MIPS
 	select SSB_SERIAL
+<<<<<<< HEAD
+=======
+	select SSB_SFLASH
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Driver for the Sonics Silicon Backplane attached
 	  Broadcom MIPS core.
@@ -138,13 +155,21 @@ config SSB_DRIVER_MIPS
 
 config SSB_SFLASH
 	bool "SSB serial flash support"
+<<<<<<< HEAD
 	depends on SSB_DRIVER_MIPS && BROKEN
+=======
+	depends on SSB_DRIVER_MIPS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default y
 
 # Assumption: We are on embedded, if we compile the MIPS core.
 config SSB_EMBEDDED
 	bool
+<<<<<<< HEAD
 	depends on SSB_DRIVER_MIPS
+=======
+	depends on SSB_DRIVER_MIPS && SSB_PCICORE_HOSTMODE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default y
 
 config SSB_DRIVER_EXTIF
@@ -168,6 +193,10 @@ config SSB_DRIVER_GIGE
 config SSB_DRIVER_GPIO
 	bool "SSB GPIO driver"
 	depends on SSB && GPIOLIB
+<<<<<<< HEAD
+=======
+	select IRQ_DOMAIN if SSB_EMBEDDED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Driver to provide access to the GPIO pins on the bus.
 

@@ -18,7 +18,11 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <asm/mach/irda.h>
+=======
+#include <linux/platform_data/irda-sa11x0.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/h3xxx.h>
 #include <mach/irqs.h>
@@ -28,6 +32,7 @@
 /*
  * helper for sa1100fb
  */
+<<<<<<< HEAD
 static void h3100_lcd_power(int enable)
 {
 	if (!gpio_request(H3XXX_EGPIO_LCD_ON, "LCD ON")) {
@@ -37,6 +42,37 @@ static void h3100_lcd_power(int enable)
 	} else {
 		pr_err("%s: can't request H3XXX_EGPIO_LCD_ON\n", __func__);
 	}
+=======
+static struct gpio h3100_lcd_gpio[] = {
+	{ H3100_GPIO_LCD_3V_ON, GPIOF_OUT_INIT_LOW, "LCD 3V" },
+	{ H3XXX_EGPIO_LCD_ON, GPIOF_OUT_INIT_LOW, "LCD ON" },
+};
+
+static bool h3100_lcd_request(void)
+{
+	static bool h3100_lcd_ok;
+	int rc;
+
+	if (h3100_lcd_ok)
+		return true;
+
+	rc = gpio_request_array(h3100_lcd_gpio, ARRAY_SIZE(h3100_lcd_gpio));
+	if (rc)
+		pr_err("%s: can't request GPIOs\n", __func__);
+	else
+		h3100_lcd_ok = true;
+
+	return h3100_lcd_ok;
+}
+
+static void h3100_lcd_power(int enable)
+{
+	if (!h3100_lcd_request())
+		return;
+
+	gpio_set_value(H3100_GPIO_LCD_3V_ON, enable);
+	gpio_set_value(H3XXX_EGPIO_LCD_ON, enable);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct sa1100fb_mach_info h3100_lcd_info = {
@@ -69,6 +105,14 @@ static void __init h3100_map_io(void)
 /*
  * This turns the IRDA power on or off on the Compaq H3100
  */
+<<<<<<< HEAD
+=======
+static struct gpio h3100_irda_gpio[] = {
+	{ H3100_GPIO_IR_ON,	GPIOF_OUT_INIT_LOW, "IrDA power" },
+	{ H3100_GPIO_IR_FSEL,	GPIOF_OUT_INIT_LOW, "IrDA fsel" },
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int h3100_irda_set_power(struct device *dev, unsigned int state)
 {
 	gpio_set_value(H3100_GPIO_IR_ON, state);
@@ -80,6 +124,7 @@ static void h3100_irda_set_speed(struct device *dev, unsigned int speed)
 	gpio_set_value(H3100_GPIO_IR_FSEL, !(speed < 4000000));
 }
 
+<<<<<<< HEAD
 static struct irda_platform_data h3100_irda_data = {
 	.set_power	= h3100_irda_set_power,
 	.set_speed	= h3100_irda_set_speed,
@@ -92,11 +137,31 @@ static struct gpio_default_state h3100_default_gpio[] = {
 	{ H3XXX_GPIO_COM_CTS,	GPIO_MODE_IN,	"COM CTS" },
 	{ H3XXX_GPIO_COM_RTS,	GPIO_MODE_OUT0,	"COM RTS" },
 	{ H3100_GPIO_LCD_3V_ON,	GPIO_MODE_OUT0,	"LCD 3v" },
+=======
+static int h3100_irda_startup(struct device *dev)
+{
+	return gpio_request_array(h3100_irda_gpio, sizeof(h3100_irda_gpio));
+}
+
+static void h3100_irda_shutdown(struct device *dev)
+{
+	return gpio_free_array(h3100_irda_gpio, sizeof(h3100_irda_gpio));
+}
+
+static struct irda_platform_data h3100_irda_data = {
+	.set_power	= h3100_irda_set_power,
+	.set_speed	= h3100_irda_set_speed,
+	.startup	= h3100_irda_startup,
+	.shutdown	= h3100_irda_shutdown,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void __init h3100_mach_init(void)
 {
+<<<<<<< HEAD
 	h3xxx_init_gpio(h3100_default_gpio, ARRAY_SIZE(h3100_default_gpio));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	h3xxx_mach_init();
 
 	sa11x0_register_lcd(&h3100_lcd_info);

@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -151,7 +155,11 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[16] = {
+=======
+struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
 	 ACPI_RS_SIZE(struct acpi_resource_i2c_serialbus),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_i2c_serial_bus)},
@@ -177,6 +185,14 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[16] = {
 	 AML_OFFSET(common_serial_bus.flags),
 	 1},
 
+<<<<<<< HEAD
+=======
+	{ACPI_RSC_1BITFLAG,
+	 ACPI_RS_OFFSET(data.common_serial_bus.connection_sharing),
+	 AML_OFFSET(common_serial_bus.flags),
+	 2},
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.type_revision_id),
 	 AML_OFFSET(common_serial_bus.type_revision_id),
@@ -237,7 +253,11 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[16] = {
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[20] = {
+=======
+struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
 	 ACPI_RS_SIZE(struct acpi_resource_spi_serialbus),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_spi_serial_bus)},
@@ -263,6 +283,14 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[20] = {
 	 AML_OFFSET(common_serial_bus.flags),
 	 1},
 
+<<<<<<< HEAD
+=======
+	{ACPI_RSC_1BITFLAG,
+	 ACPI_RS_OFFSET(data.common_serial_bus.connection_sharing),
+	 AML_OFFSET(common_serial_bus.flags),
+	 2},
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.type_revision_id),
 	 AML_OFFSET(common_serial_bus.type_revision_id),
@@ -339,7 +367,11 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[20] = {
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[22] = {
+=======
+struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
 	 ACPI_RS_SIZE(struct acpi_resource_uart_serialbus),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_uart_serial_bus)},
@@ -365,6 +397,14 @@ struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[22] = {
 	 AML_OFFSET(common_serial_bus.flags),
 	 1},
 
+<<<<<<< HEAD
+=======
+	{ACPI_RSC_1BITFLAG,
+	 ACPI_RS_OFFSET(data.common_serial_bus.connection_sharing),
+	 AML_OFFSET(common_serial_bus.flags),
+	 2},
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.type_revision_id),
 	 AML_OFFSET(common_serial_bus.type_revision_id),

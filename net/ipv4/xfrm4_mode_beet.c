@@ -48,7 +48,11 @@ static int xfrm4_beet_output(struct xfrm_state *x, struct sk_buff *skb)
 		hdrlen += IPV4_BEET_PHMAXLEN - (optlen & 4);
 
 	skb_set_network_header(skb, -x->props.header_len -
+<<<<<<< HEAD
 			            hdrlen + (XFRM_MODE_SKB_CB(skb)->ihl - sizeof(*top_iph)));
+=======
+				    hdrlen + (XFRM_MODE_SKB_CB(skb)->ihl - sizeof(*top_iph)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (x->sel.family != AF_INET6)
 		skb->network_header += IPV4_BEET_PHMAXLEN;
 	skb->mac_header = skb->network_header +

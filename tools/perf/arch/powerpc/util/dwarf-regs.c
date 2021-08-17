@@ -10,12 +10,22 @@
  */
 
 #include <stddef.h>
+<<<<<<< HEAD
 #include <dwarf-regs.h>
 
+=======
+#include <errno.h>
+#include <string.h>
+#include <dwarf-regs.h>
+#include <linux/ptrace.h>
+#include <linux/kernel.h>
+#include "util.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct pt_regs_dwarfnum {
 	const char *name;
 	unsigned int dwarfnum;
+<<<<<<< HEAD
 };
 
 #define STR(s) #s
@@ -23,6 +33,18 @@ struct pt_regs_dwarfnum {
 #define GPR_DWARFNUM_NAME(num)	\
 	{.name = STR(%gpr##num), .dwarfnum = num}
 #define REG_DWARFNUM_END {.name = NULL, .dwarfnum = 0}
+=======
+	unsigned int ptregs_offset;
+};
+
+#define REG_DWARFNUM_NAME(r, num)					\
+		{.name = STR(%)STR(r), .dwarfnum = num,			\
+		.ptregs_offset = offsetof(struct pt_regs, r)}
+#define GPR_DWARFNUM_NAME(num)						\
+		{.name = STR(%gpr##num), .dwarfnum = num,		\
+		.ptregs_offset = offsetof(struct pt_regs, gpr[num])}
+#define REG_DWARFNUM_END {.name = NULL, .dwarfnum = 0, .ptregs_offset = 0}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Reference:
@@ -61,12 +83,21 @@ static const struct pt_regs_dwarfnum regdwarfnum_table[] = {
 	GPR_DWARFNUM_NAME(29),
 	GPR_DWARFNUM_NAME(30),
 	GPR_DWARFNUM_NAME(31),
+<<<<<<< HEAD
 	REG_DWARFNUM_NAME("%msr",   66),
 	REG_DWARFNUM_NAME("%ctr",   109),
 	REG_DWARFNUM_NAME("%link",  108),
 	REG_DWARFNUM_NAME("%xer",   101),
 	REG_DWARFNUM_NAME("%dar",   119),
 	REG_DWARFNUM_NAME("%dsisr", 118),
+=======
+	REG_DWARFNUM_NAME(msr,   66),
+	REG_DWARFNUM_NAME(ctr,   109),
+	REG_DWARFNUM_NAME(link,  108),
+	REG_DWARFNUM_NAME(xer,   101),
+	REG_DWARFNUM_NAME(dar,   119),
+	REG_DWARFNUM_NAME(dsisr, 118),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	REG_DWARFNUM_END,
 };
 
@@ -86,3 +117,15 @@ const char *get_arch_regstr(unsigned int n)
 			return roff->name;
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+
+int regs_query_register_offset(const char *name)
+{
+	const struct pt_regs_dwarfnum *roff;
+	for (roff = regdwarfnum_table; roff->name != NULL; roff++)
+		if (!strcmp(roff->name, name))
+			return roff->ptregs_offset;
+	return -EINVAL;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

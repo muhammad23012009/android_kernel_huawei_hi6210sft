@@ -58,11 +58,24 @@ static int bells_set_bias_level(struct snd_soc_card *card,
 				struct snd_soc_dapm_context *dapm,
 				enum snd_soc_bias_level level)
 {
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = card->rtd[DAI_DSP_CODEC].codec_dai;
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct bells_drvdata *bells = card->drvdata;
 	int ret;
 
+=======
+	struct snd_soc_pcm_runtime *rtd;
+	struct snd_soc_dai *codec_dai;
+	struct snd_soc_codec *codec;
+	struct bells_drvdata *bells = card->drvdata;
+	int ret;
+
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[DAI_DSP_CODEC].name);
+	codec_dai = rtd->codec_dai;
+	codec = codec_dai->codec;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dapm->dev != codec_dai->dev)
 		return 0;
 
@@ -99,11 +112,24 @@ static int bells_set_bias_level_post(struct snd_soc_card *card,
 				     struct snd_soc_dapm_context *dapm,
 				     enum snd_soc_bias_level level)
 {
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = card->rtd[DAI_DSP_CODEC].codec_dai;
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct bells_drvdata *bells = card->drvdata;
 	int ret;
 
+=======
+	struct snd_soc_pcm_runtime *rtd;
+	struct snd_soc_dai *codec_dai;
+	struct snd_soc_codec *codec;
+	struct bells_drvdata *bells = card->drvdata;
+	int ret;
+
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[DAI_DSP_CODEC].name);
+	codec_dai = rtd->codec_dai;
+	codec = codec_dai->codec;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dapm->dev != codec_dai->dev)
 		return 0;
 
@@ -137,14 +163,31 @@ static int bells_set_bias_level_post(struct snd_soc_card *card,
 static int bells_late_probe(struct snd_soc_card *card)
 {
 	struct bells_drvdata *bells = card->drvdata;
+<<<<<<< HEAD
 	struct snd_soc_codec *wm0010 = card->rtd[DAI_AP_DSP].codec;
 	struct snd_soc_codec *codec = card->rtd[DAI_DSP_CODEC].codec;
 	struct snd_soc_dai *aif1_dai = card->rtd[DAI_DSP_CODEC].codec_dai;
+=======
+	struct snd_soc_pcm_runtime *rtd;
+	struct snd_soc_codec *wm0010;
+	struct snd_soc_codec *codec;
+	struct snd_soc_dai *aif1_dai;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_soc_dai *aif2_dai;
 	struct snd_soc_dai *aif3_dai;
 	struct snd_soc_dai *wm9081_dai;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[DAI_AP_DSP].name);
+	wm0010 = rtd->codec;
+
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[DAI_DSP_CODEC].name);
+	codec = rtd->codec;
+	aif1_dai = rtd->codec_dai;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = snd_soc_codec_set_sysclk(codec, ARIZONA_CLK_SYSCLK,
 				       ARIZONA_CLK_SRC_FLL1,
 				       bells->sysclk_rate,
@@ -181,7 +224,12 @@ static int bells_late_probe(struct snd_soc_card *card)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	aif2_dai = card->rtd[DAI_CODEC_CP].cpu_dai;
+=======
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[DAI_CODEC_CP].name);
+	aif2_dai = rtd->cpu_dai;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = snd_soc_dai_set_sysclk(aif2_dai, ARIZONA_CLK_ASYNCCLK, 0, 0);
 	if (ret != 0) {
@@ -192,8 +240,14 @@ static int bells_late_probe(struct snd_soc_card *card)
 	if (card->num_rtd == DAI_CODEC_SUB)
 		return 0;
 
+<<<<<<< HEAD
 	aif3_dai = card->rtd[DAI_CODEC_SUB].cpu_dai;
 	wm9081_dai = card->rtd[DAI_CODEC_SUB].codec_dai;
+=======
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[DAI_CODEC_SUB].name);
+	aif3_dai = rtd->cpu_dai;
+	wm9081_dai = rtd->codec_dai;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = snd_soc_dai_set_sysclk(aif3_dai, ARIZONA_CLK_SYSCLK, 0, 0);
 	if (ret != 0) {
@@ -350,8 +404,22 @@ static struct snd_soc_codec_conf bells_codec_conf[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dapm_route bells_routes[] = {
 	{ "Sub CLK_SYS", NULL, "OPCLK" },
+=======
+static struct snd_soc_dapm_widget bells_widgets[] = {
+	SND_SOC_DAPM_MIC("DMIC", NULL),
+};
+
+static struct snd_soc_dapm_route bells_routes[] = {
+	{ "Sub CLK_SYS", NULL, "OPCLK" },
+	{ "CLKIN", NULL, "OPCLK" },
+
+	{ "DMIC", NULL, "MICBIAS2" },
+	{ "IN2L", NULL, "DMIC" },
+	{ "IN2R", NULL, "DMIC" },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_card bells_cards[] = {
@@ -365,6 +433,11 @@ static struct snd_soc_card bells_cards[] = {
 
 		.late_probe = bells_late_probe,
 
+<<<<<<< HEAD
+=======
+		.dapm_widgets = bells_widgets,
+		.num_dapm_widgets = ARRAY_SIZE(bells_widgets),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.dapm_routes = bells_routes,
 		.num_dapm_routes = ARRAY_SIZE(bells_routes),
 
@@ -383,6 +456,11 @@ static struct snd_soc_card bells_cards[] = {
 
 		.late_probe = bells_late_probe,
 
+<<<<<<< HEAD
+=======
+		.dapm_widgets = bells_widgets,
+		.num_dapm_widgets = ARRAY_SIZE(bells_widgets),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.dapm_routes = bells_routes,
 		.num_dapm_routes = ARRAY_SIZE(bells_routes),
 
@@ -401,6 +479,11 @@ static struct snd_soc_card bells_cards[] = {
 
 		.late_probe = bells_late_probe,
 
+<<<<<<< HEAD
+=======
+		.dapm_widgets = bells_widgets,
+		.num_dapm_widgets = ARRAY_SIZE(bells_widgets),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.dapm_routes = bells_routes,
 		.num_dapm_routes = ARRAY_SIZE(bells_routes),
 
@@ -418,6 +501,7 @@ static int bells_probe(struct platform_device *pdev)
 
 	bells_cards[pdev->id].dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(&bells_cards[pdev->id]);
 	if (ret) {
 		dev_err(&pdev->dev,
@@ -434,16 +518,31 @@ static int bells_remove(struct platform_device *pdev)
 	snd_soc_unregister_card(&bells_cards[pdev->id]);
 
 	return 0;
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, &bells_cards[pdev->id]);
+	if (ret)
+		dev_err(&pdev->dev,
+			"snd_soc_register_card(%s) failed: %d\n",
+			bells_cards[pdev->id].name, ret);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver bells_driver = {
 	.driver = {
 		.name = "bells",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe = bells_probe,
 	.remove = bells_remove,
+=======
+		.pm = &snd_soc_pm_ops,
+	},
+	.probe = bells_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(bells_driver);

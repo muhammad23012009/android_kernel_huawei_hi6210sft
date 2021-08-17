@@ -553,7 +553,10 @@ static struct nls_table table = {
 	.charset	= "euc-jp",
 	.uni2char	= uni2char,
 	.char2uni	= char2uni,
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init init_nls_euc_jp(void)

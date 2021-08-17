@@ -11,8 +11,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
@@ -25,7 +28,11 @@
 #include <linux/mfd/smsc.h>
 #include <linux/of_platform.h>
 
+<<<<<<< HEAD
 static struct regmap_config smsc_regmap_config = {
+=======
+static const struct regmap_config smsc_regmap_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.reg_bits = 8,
 		.val_bits = 8,
 		.max_register = SMSC_VEN_ID_H,
@@ -37,7 +44,11 @@ static int smsc_i2c_probe(struct i2c_client *i2c,
 {
 	struct smsc *smsc;
 	int devid, rev, venid_l, venid_h;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	smsc = devm_kzalloc(&i2c->dev, sizeof(struct smsc),
 				GFP_KERNEL);
@@ -47,10 +58,15 @@ static int smsc_i2c_probe(struct i2c_client *i2c,
 	}
 
 	smsc->regmap = devm_regmap_init_i2c(i2c, &smsc_regmap_config);
+<<<<<<< HEAD
 	if (IS_ERR(smsc->regmap)) {
 		ret = PTR_ERR(smsc->regmap);
 		goto err;
 	}
+=======
+	if (IS_ERR(smsc->regmap))
+		return PTR_ERR(smsc->regmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	i2c_set_clientdata(i2c, smsc);
 	smsc->dev = &i2c->dev;
@@ -69,7 +85,11 @@ static int smsc_i2c_probe(struct i2c_client *i2c,
 
 	ret = regmap_write(smsc->regmap, SMSC_CLK_CTRL, smsc->clk);
 	if (ret)
+<<<<<<< HEAD
 		goto err;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_OF
 	if (i2c->dev.of_node)
@@ -77,6 +97,7 @@ static int smsc_i2c_probe(struct i2c_client *i2c,
 					   NULL, NULL, &i2c->dev);
 #endif
 
+<<<<<<< HEAD
 err:
 	return ret;
 }
@@ -90,15 +111,24 @@ static int smsc_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+=======
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct i2c_device_id smsc_i2c_id[] = {
 	{ "smscece1099", 0},
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(i2c, smsc_i2c_id);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct i2c_driver smsc_i2c_driver = {
 	.driver = {
 		   .name = "smsc",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 	},
 	.probe = smsc_i2c_probe,
@@ -111,3 +141,10 @@ module_i2c_driver(smsc_i2c_driver);
 MODULE_AUTHOR("Sourav Poddar <sourav.poddar@ti.com>");
 MODULE_DESCRIPTION("SMSC chip multi-function driver");
 MODULE_LICENSE("GPL v2");
+=======
+	},
+	.probe = smsc_i2c_probe,
+	.id_table = smsc_i2c_id,
+};
+builtin_i2c_driver(smsc_i2c_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

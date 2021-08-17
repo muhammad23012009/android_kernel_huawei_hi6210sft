@@ -29,7 +29,10 @@
 #include <linux/tty.h>
 #include <linux/gfp.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/serial.h>
 #include <linux/console.h>
 #include <linux/sysrq.h>
@@ -45,6 +48,10 @@
 #include <linux/kernel.h>
 
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "cpm_uart.h"
 

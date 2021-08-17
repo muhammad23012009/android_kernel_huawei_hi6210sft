@@ -69,6 +69,10 @@ static inline int xy_to_cpu(int x, int y)
 #define MSG_TAG_STOP_CPU		2
 #define MSG_TAG_CALL_FUNCTION_MANY	3
 #define MSG_TAG_CALL_FUNCTION_SINGLE	4
+<<<<<<< HEAD
+=======
+#define MSG_TAG_IRQ_WORK		5
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Hook for the generic smp_call_function_many() routine. */
 static inline void arch_send_call_function_ipi_mask(struct cpumask *mask)
@@ -101,10 +105,15 @@ void print_disabled_cpus(void);
 extern struct cpumask cpu_lotar_map;
 #define cpu_is_valid_lotar(cpu) cpumask_test_cpu((cpu), &cpu_lotar_map)
 
+<<<<<<< HEAD
 #if CHIP_HAS_CBOX_HOME_MAP()
 /* Which processors are used for hash-for-home mapping */
 extern struct cpumask hash_for_home_map;
 #endif
+=======
+/* Which processors are used for hash-for-home mapping */
+extern struct cpumask hash_for_home_map;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Which cpus can have their cache flushed by hv_flush_remote(). */
 extern struct cpumask cpu_cacheable_map;

@@ -30,6 +30,7 @@ module_param(fail_request, charp, 0);
 
 #endif /* CONFIG_FAIL_MMC_REQUEST */
 
+<<<<<<< HEAD
 /* <DTS2014010906937 h00211444 20140109 begin */
 /* Enum of power state */
 enum sd_type {
@@ -38,6 +39,8 @@ enum sd_type {
 };
 /* DTS2014010906937 h00211444 20140109 end> */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* The debugfs functions are optimized away when CONFIG_DEBUG_FS isn't set. */
 static int mmc_ios_show(struct seq_file *s, void *data)
 {
@@ -134,6 +137,15 @@ static int mmc_ios_show(struct seq_file *s, void *data)
 	case MMC_TIMING_SD_HS:
 		str = "sd high-speed";
 		break;
+<<<<<<< HEAD
+=======
+	case MMC_TIMING_UHS_SDR12:
+		str = "sd uhs SDR12";
+		break;
+	case MMC_TIMING_UHS_SDR25:
+		str = "sd uhs SDR25";
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case MMC_TIMING_UHS_SDR50:
 		str = "sd uhs SDR50";
 		break;
@@ -143,8 +155,20 @@ static int mmc_ios_show(struct seq_file *s, void *data)
 	case MMC_TIMING_UHS_DDR50:
 		str = "sd uhs DDR50";
 		break;
+<<<<<<< HEAD
 	case MMC_TIMING_MMC_HS200:
 		str = "mmc high-speed SDR200";
+=======
+	case MMC_TIMING_MMC_DDR52:
+		str = "mmc DDR52";
+		break;
+	case MMC_TIMING_MMC_HS200:
+		str = "mmc HS200";
+		break;
+	case MMC_TIMING_MMC_HS400:
+		str = mmc_card_hs400es(host->card) ?
+			"mmc HS400 enhanced strobe" : "mmc HS400";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		str = "invalid";
@@ -166,7 +190,30 @@ static int mmc_ios_show(struct seq_file *s, void *data)
 		str = "invalid";
 		break;
 	}
+<<<<<<< HEAD
 	seq_printf(s, "signal voltage:\t%u (%s)\n", ios->chip_select, str);
+=======
+	seq_printf(s, "signal voltage:\t%u (%s)\n", ios->signal_voltage, str);
+
+	switch (ios->drv_type) {
+	case MMC_SET_DRIVER_TYPE_A:
+		str = "driver type A";
+		break;
+	case MMC_SET_DRIVER_TYPE_B:
+		str = "driver type B";
+		break;
+	case MMC_SET_DRIVER_TYPE_C:
+		str = "driver type C";
+		break;
+	case MMC_SET_DRIVER_TYPE_D:
+		str = "driver type D";
+		break;
+	default:
+		str = "invalid";
+		break;
+	}
+	seq_printf(s, "driver type:\t%u (%s)\n", ios->drv_type, str);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -197,7 +244,11 @@ static int mmc_clock_opt_set(void *data, u64 val)
 	struct mmc_host *host = data;
 
 	/* We need this check due to input value is u64 */
+<<<<<<< HEAD
 	if (val > host->f_max)
+=======
+	if (val != 0 && (val > host->f_max || val < host->f_min))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	mmc_claim_host(host);
@@ -210,6 +261,7 @@ static int mmc_clock_opt_set(void *data, u64 val)
 DEFINE_SIMPLE_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
 	"%llu\n");
 
+<<<<<<< HEAD
 /* <DTS2014010906937 h00211444 20140109 begin */
 static int mmc_sdxc_opt_get(void *data, u64 *val)
 {
@@ -229,6 +281,8 @@ DEFINE_SIMPLE_ATTRIBUTE(mmc_sdxc_fops, mmc_sdxc_opt_get,
 			NULL, "%llu\n");
 /* DTS2014010906937 h00211444 20140109 end? */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void mmc_add_host_debugfs(struct mmc_host *host)
 {
 	struct dentry *root;
@@ -251,11 +305,14 @@ void mmc_add_host_debugfs(struct mmc_host *host)
 			&mmc_clock_fops))
 		goto err_node;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_CLKGATE
 	if (!debugfs_create_u32("clk_delay", (S_IRUSR | S_IWUSR),
 				root, &host->clk_delay))
 		goto err_node;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_FAIL_MMC_REQUEST
 	if (fail_request)
 		setup_fault_attr(&fail_default_attr, fail_request);
@@ -312,6 +369,7 @@ static int mmc_ext_csd_open(struct inode *inode, struct file *filp)
 	if (!buf)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ext_csd = kmalloc(512, GFP_KERNEL);
 	if (!ext_csd) {
 		err = -ENOMEM;
@@ -320,6 +378,10 @@ static int mmc_ext_csd_open(struct inode *inode, struct file *filp)
 
 	mmc_get_card(card);
 	err = mmc_send_ext_csd(card, ext_csd);
+=======
+	mmc_get_card(card);
+	err = mmc_get_ext_csd(card, &ext_csd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mmc_put_card(card);
 	if (err)
 		goto out_free;
@@ -335,7 +397,10 @@ static int mmc_ext_csd_open(struct inode *inode, struct file *filp)
 
 out_free:
 	kfree(buf);
+<<<<<<< HEAD
 	kfree(ext_csd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -361,6 +426,7 @@ static const struct file_operations mmc_dbg_ext_csd_fops = {
 	.llseek		= default_llseek,
 };
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_HW_MMC_TEST
 static int mmc_card_addr_open(struct inode *inode, struct file *filp)
@@ -445,10 +511,17 @@ void mmc_add_card_debugfs(struct mmc_card *card)
 	struct mmc_host	*host = card->host;
 	struct dentry	*root = NULL;
 	struct dentry   *sdxc_root = NULL;
+=======
+void mmc_add_card_debugfs(struct mmc_card *card)
+{
+	struct mmc_host	*host = card->host;
+	struct dentry	*root;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!host->debugfs_root)
 		return;
 
+<<<<<<< HEAD
         /* <DTS2014010906937 h00211444 20140109 begin */
         sdxc_root = debugfs_create_dir("sdxc_root", host->debugfs_root);
         if (IS_ERR(sdxc_root))
@@ -457,6 +530,8 @@ void mmc_add_card_debugfs(struct mmc_card *card)
             goto err;
         /* DTS2014010906937 h00211444 20140109 end> */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	root = debugfs_create_dir(mmc_card_id(card), host->debugfs_root);
 	if (IS_ERR(root))
 		/* Don't complain -- debugfs just isn't enabled */
@@ -466,9 +541,12 @@ void mmc_add_card_debugfs(struct mmc_card *card)
 		 * create the directory. */
 		goto err;
 
+<<<<<<< HEAD
         /* <DTS2014010906937 h00211444 20140109 begin */
         card->debugfs_sdxc = sdxc_root;
         /* DTS2014010906937 h00211444 20140109 end> */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	card->debugfs_root = root;
 
 	if (!debugfs_create_x32("state", S_IRUSR, root, &card->state))
@@ -484,6 +562,7 @@ void mmc_add_card_debugfs(struct mmc_card *card)
 					&mmc_dbg_ext_csd_fops))
 			goto err;
 
+<<<<<<< HEAD
         /* <DTS2014010906937 h00211444 20140109 begin */
 	if (mmc_card_sd(card))
 		if (!debugfs_create_file("sdxc", S_IRUSR, sdxc_root, card,
@@ -503,22 +582,31 @@ void mmc_add_card_debugfs(struct mmc_card *card)
             goto err;
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 
 err:
 	debugfs_remove_recursive(root);
+<<<<<<< HEAD
         /* <DTS2014010906937 h00211444 20140109 begin */
 	debugfs_remove_recursive(sdxc_root);
 	card->debugfs_root = NULL;
 	card->debugfs_sdxc = NULL;
         /* DTS2014010906937 h00211444 20140109 end> */
+=======
+	card->debugfs_root = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_err(&card->dev, "failed to initialize debugfs\n");
 }
 
 void mmc_remove_card_debugfs(struct mmc_card *card)
 {
 	debugfs_remove_recursive(card->debugfs_root);
+<<<<<<< HEAD
 	/* <DTS2014010906937 h00211444 20140109 begin */
 	debugfs_remove_recursive(card->debugfs_sdxc);
 	/* DTS2014010906937 h00211444 20140109 end> */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

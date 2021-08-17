@@ -1085,8 +1085,11 @@ static void s2io_txpic_intr_handle(struct s2io_nic *sp);
 static void tx_intr_handler(struct fifo_info *fifo_data);
 static void s2io_handle_errors(void * dev_id);
 
+<<<<<<< HEAD
 static int s2io_starter(void);
 static void s2io_closer(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void s2io_tx_watchdog(struct net_device *dev);
 static void s2io_set_multicast(struct net_device *dev);
 static int rx_osm_handler(struct ring_info *ring_data, struct RxD_t * rxdp);

@@ -29,6 +29,7 @@
 void jfs_set_inode_flags(struct inode *inode)
 {
 	unsigned int flags = JFS_IP(inode)->mode2;
+<<<<<<< HEAD
 
 	inode->i_flags &= ~(S_IMMUTABLE | S_APPEND |
 		S_NOATIME | S_DIRSYNC | S_SYNC);
@@ -43,6 +44,22 @@ void jfs_set_inode_flags(struct inode *inode)
 		inode->i_flags |= S_DIRSYNC;
 	if (flags & JFS_SYNC_FL)
 		inode->i_flags |= S_SYNC;
+=======
+	unsigned int new_fl = 0;
+
+	if (flags & JFS_IMMUTABLE_FL)
+		new_fl |= S_IMMUTABLE;
+	if (flags & JFS_APPEND_FL)
+		new_fl |= S_APPEND;
+	if (flags & JFS_NOATIME_FL)
+		new_fl |= S_NOATIME;
+	if (flags & JFS_DIRSYNC_FL)
+		new_fl |= S_DIRSYNC;
+	if (flags & JFS_SYNC_FL)
+		new_fl |= S_SYNC;
+	inode_set_flags(inode, new_fl, S_IMMUTABLE | S_APPEND | S_NOATIME |
+			S_DIRSYNC | S_SYNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void jfs_get_inode_flags(struct jfs_inode_info *jfs_ip)
@@ -109,7 +126,13 @@ struct inode *ialloc(struct inode *parent, umode_t mode)
 	/*
 	 * Allocate inode to quota.
 	 */
+<<<<<<< HEAD
 	dquot_initialize(inode);
+=======
+	rc = dquot_initialize(inode);
+	if (rc)
+		goto fail_drop;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = dquot_alloc_inode(inode);
 	if (rc)
 		goto fail_drop;
@@ -129,7 +152,11 @@ struct inode *ialloc(struct inode *parent, umode_t mode)
 	jfs_inode->mode2 |= inode->i_mode;
 
 	inode->i_blocks = 0;
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jfs_inode->otime = inode->i_ctime.tv_sec;
 	inode->i_generation = JFS_SBI(sb)->gengen++;
 
@@ -149,7 +176,11 @@ struct inode *ialloc(struct inode *parent, umode_t mode)
 	jfs_inode->xtlid = 0;
 	jfs_set_inode_flags(inode);
 
+<<<<<<< HEAD
 	jfs_info("ialloc returns inode = 0x%p\n", inode);
+=======
+	jfs_info("ialloc returns inode = 0x%p", inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return inode;
 

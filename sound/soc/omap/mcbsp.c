@@ -36,10 +36,17 @@ static void omap_mcbsp_write(struct omap_mcbsp *mcbsp, u16 reg, u32 val)
 
 	if (mcbsp->pdata->reg_size == 2) {
 		((u16 *)mcbsp->reg_cache)[reg] = (u16)val;
+<<<<<<< HEAD
 		__raw_writew((u16)val, addr);
 	} else {
 		((u32 *)mcbsp->reg_cache)[reg] = val;
 		__raw_writel(val, addr);
+=======
+		writew_relaxed((u16)val, addr);
+	} else {
+		((u32 *)mcbsp->reg_cache)[reg] = val;
+		writel_relaxed(val, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -48,22 +55,37 @@ static int omap_mcbsp_read(struct omap_mcbsp *mcbsp, u16 reg, bool from_cache)
 	void __iomem *addr = mcbsp->io_base + reg * mcbsp->pdata->reg_step;
 
 	if (mcbsp->pdata->reg_size == 2) {
+<<<<<<< HEAD
 		return !from_cache ? __raw_readw(addr) :
 				     ((u16 *)mcbsp->reg_cache)[reg];
 	} else {
 		return !from_cache ? __raw_readl(addr) :
+=======
+		return !from_cache ? readw_relaxed(addr) :
+				     ((u16 *)mcbsp->reg_cache)[reg];
+	} else {
+		return !from_cache ? readl_relaxed(addr) :
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     ((u32 *)mcbsp->reg_cache)[reg];
 	}
 }
 
 static void omap_mcbsp_st_write(struct omap_mcbsp *mcbsp, u16 reg, u32 val)
 {
+<<<<<<< HEAD
 	__raw_writel(val, mcbsp->st_data->io_base_st + reg);
+=======
+	writel_relaxed(val, mcbsp->st_data->io_base_st + reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int omap_mcbsp_st_read(struct omap_mcbsp *mcbsp, u16 reg)
 {
+<<<<<<< HEAD
 	return __raw_readl(mcbsp->st_data->io_base_st + reg);
+=======
+	return readl_relaxed(mcbsp->st_data->io_base_st + reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define MCBSP_READ(mcbsp, reg) \
@@ -221,7 +243,12 @@ void omap_mcbsp_config(struct omap_mcbsp *mcbsp,
 
 	/* Enable TX/RX sync error interrupts by default */
 	if (mcbsp->irq)
+<<<<<<< HEAD
 		MCBSP_WRITE(mcbsp, IRQEN, RSYNCERREN | XSYNCERREN);
+=======
+		MCBSP_WRITE(mcbsp, IRQEN, RSYNCERREN | XSYNCERREN |
+			    RUNDFLEN | ROVFLEN | XUNDFLEN | XOVFLEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -257,8 +284,17 @@ static void omap_st_on(struct omap_mcbsp *mcbsp)
 {
 	unsigned int w;
 
+<<<<<<< HEAD
 	if (mcbsp->pdata->enable_st_clock)
 		mcbsp->pdata->enable_st_clock(mcbsp->id, 1);
+=======
+	if (mcbsp->pdata->force_ick_on)
+		mcbsp->pdata->force_ick_on(mcbsp->st_data->mcbsp_iclk, true);
+
+	/* Disable Sidetone clock auto-gating for normal operation */
+	w = MCBSP_ST_READ(mcbsp, SYSCONFIG);
+	MCBSP_ST_WRITE(mcbsp, SYSCONFIG, w & ~(ST_AUTOIDLE));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable McBSP Sidetone */
 	w = MCBSP_READ(mcbsp, SSELCR);
@@ -279,8 +315,17 @@ static void omap_st_off(struct omap_mcbsp *mcbsp)
 	w = MCBSP_READ(mcbsp, SSELCR);
 	MCBSP_WRITE(mcbsp, SSELCR, w & ~(SIDETONEEN));
 
+<<<<<<< HEAD
 	if (mcbsp->pdata->enable_st_clock)
 		mcbsp->pdata->enable_st_clock(mcbsp->id, 0);
+=======
+	/* Enable Sidetone clock auto-gating to reduce power consumption */
+	w = MCBSP_ST_READ(mcbsp, SYSCONFIG);
+	MCBSP_ST_WRITE(mcbsp, SYSCONFIG, w | ST_AUTOIDLE);
+
+	if (mcbsp->pdata->force_ick_on)
+		mcbsp->pdata->force_ick_on(mcbsp->st_data->mcbsp_iclk, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void omap_st_fir_write(struct omap_mcbsp *mcbsp, s16 *fir)
@@ -621,8 +666,12 @@ void omap_mcbsp_free(struct omap_mcbsp *mcbsp)
 	mcbsp->reg_cache = NULL;
 	spin_unlock(&mcbsp->lock);
 
+<<<<<<< HEAD
 	if (reg_cache)
 		kfree(reg_cache);
+=======
+	kfree(reg_cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -781,7 +830,11 @@ static ssize_t prop##_store(struct device *dev,				\
 	unsigned long val;						\
 	int status;							\
 									\
+<<<<<<< HEAD
 	status = strict_strtoul(buf, 0, &val);				\
+=======
+	status = kstrtoul(buf, 0, &val);				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (status)							\
 		return status;						\
 									\
@@ -939,6 +992,16 @@ static int omap_st_add(struct omap_mcbsp *mcbsp, struct resource *res)
 	if (!st_data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	st_data->mcbsp_iclk = clk_get(mcbsp->dev, "ick");
+	if (IS_ERR(st_data->mcbsp_iclk)) {
+		dev_warn(mcbsp->dev,
+			 "Failed to get ick, sidetone might be broken\n");
+		st_data->mcbsp_iclk = NULL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	st_data->io_base_st = devm_ioremap(mcbsp->dev, res->start,
 					   resource_size(res));
 	if (!st_data->io_base_st)
@@ -966,6 +1029,7 @@ int omap_mcbsp_init(struct platform_device *pdev)
 	mcbsp->free = true;
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mpu");
+<<<<<<< HEAD
 	if (!res) {
 		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		if (!res) {
@@ -985,6 +1049,17 @@ int omap_mcbsp_init(struct platform_device *pdev)
 				      resource_size(res));
 	if (!mcbsp->io_base)
 		return -ENOMEM;
+=======
+	if (!res)
+		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+
+	mcbsp->io_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(mcbsp->io_base))
+		return PTR_ERR(mcbsp->io_base);
+
+	mcbsp->phys_base = res->start;
+	mcbsp->reg_cache_size = resource_size(res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dma");
 	if (!res)
@@ -1012,6 +1087,7 @@ int omap_mcbsp_init(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	res = platform_get_resource_byname(pdev, IORESOURCE_DMA, "rx");
 	if (!res) {
 		dev_err(&pdev->dev, "invalid rx DMA channel\n");
@@ -1034,6 +1110,35 @@ int omap_mcbsp_init(struct platform_device *pdev)
 	mcbsp->dma_data[0].addr = omap_mcbsp_dma_reg_params(mcbsp, 0);
 	mcbsp->dma_data[0].maxburst = 4;
 
+=======
+	if (!pdev->dev.of_node) {
+		res = platform_get_resource_byname(pdev, IORESOURCE_DMA, "tx");
+		if (!res) {
+			dev_err(&pdev->dev, "invalid tx DMA channel\n");
+			return -ENODEV;
+		}
+		mcbsp->dma_req[0] = res->start;
+		mcbsp->dma_data[0].filter_data = &mcbsp->dma_req[0];
+
+		res = platform_get_resource_byname(pdev, IORESOURCE_DMA, "rx");
+		if (!res) {
+			dev_err(&pdev->dev, "invalid rx DMA channel\n");
+			return -ENODEV;
+		}
+		mcbsp->dma_req[1] = res->start;
+		mcbsp->dma_data[1].filter_data = &mcbsp->dma_req[1];
+	} else {
+		mcbsp->dma_data[0].filter_data = "tx";
+		mcbsp->dma_data[1].filter_data = "rx";
+	}
+
+	mcbsp->dma_data[0].addr = omap_mcbsp_dma_reg_params(mcbsp, 0);
+	mcbsp->dma_data[0].maxburst = 4;
+
+	mcbsp->dma_data[1].addr = omap_mcbsp_dma_reg_params(mcbsp, 1);
+	mcbsp->dma_data[1].maxburst = 4;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mcbsp->fclk = clk_get(&pdev->dev, "fck");
 	if (IS_ERR(mcbsp->fclk)) {
 		ret = PTR_ERR(mcbsp->fclk);
@@ -1086,11 +1191,22 @@ err_thres:
 	return ret;
 }
 
+<<<<<<< HEAD
 void omap_mcbsp_sysfs_remove(struct omap_mcbsp *mcbsp)
+=======
+void omap_mcbsp_cleanup(struct omap_mcbsp *mcbsp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (mcbsp->pdata->buffer_size)
 		sysfs_remove_group(&mcbsp->dev->kobj, &additional_attr_group);
 
+<<<<<<< HEAD
 	if (mcbsp->st_data)
 		sysfs_remove_group(&mcbsp->dev->kobj, &sidetone_attr_group);
+=======
+	if (mcbsp->st_data) {
+		sysfs_remove_group(&mcbsp->dev->kobj, &sidetone_attr_group);
+		clk_put(mcbsp->st_data->mcbsp_iclk);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

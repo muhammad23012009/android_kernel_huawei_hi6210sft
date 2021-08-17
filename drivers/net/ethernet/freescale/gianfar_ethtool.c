@@ -22,7 +22,10 @@
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -45,10 +48,13 @@
 
 #include "gianfar.h"
 
+<<<<<<< HEAD
 extern void gfar_start(struct net_device *dev);
 extern int gfar_clean_rx_ring(struct gfar_priv_rx_q *rx_queue,
 			      int rx_work_limit);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define GFAR_MAX_COAL_USECS 0xffff
 #define GFAR_MAX_COAL_FRAMES 0xff
 static void gfar_fill_stats(struct net_device *dev, struct ethtool_stats *dummy,
@@ -66,6 +72,11 @@ static void gfar_gdrvinfo(struct net_device *dev,
 			  struct ethtool_drvinfo *drvinfo);
 
 static const char stat_gstrings[][ETH_GSTRING_LEN] = {
+<<<<<<< HEAD
+=======
+	/* extra stats */
+	"rx-allocation-errors",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"rx-large-frame-errors",
 	"rx-short-frame-errors",
 	"rx-non-octet-errors",
@@ -77,8 +88,13 @@ static const char stat_gstrings[][ETH_GSTRING_LEN] = {
 	"ethernet-bus-error",
 	"tx-babbling-errors",
 	"tx-underrun-errors",
+<<<<<<< HEAD
 	"rx-skb-missing-errors",
 	"tx-timeout-errors",
+=======
+	"tx-timeout-errors",
+	/* rmon stats */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"tx-rx-64-frames",
 	"tx-rx-65-127-frames",
 	"tx-rx-128-255-frames",
@@ -185,6 +201,7 @@ static void gfar_gdrvinfo(struct net_device *dev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->fw_version, "N/A", sizeof(drvinfo->fw_version));
 	strlcpy(drvinfo->bus_info, "N/A", sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->regdump_len = 0;
 	drvinfo->eedump_len = 0;
 }
@@ -221,6 +238,8 @@ static int gfar_gsettings(struct net_device *dev, struct ethtool_cmd *cmd)
 	cmd->maxrxpkt = get_icft_value(rx_queue->rxic);
 
 	return phy_ethtool_gset(phydev, cmd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Return the length of the register structure */
@@ -247,10 +266,19 @@ static void gfar_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 static unsigned int gfar_usecs2ticks(struct gfar_private *priv,
 				     unsigned int usecs)
 {
+<<<<<<< HEAD
 	unsigned int count;
 
 	/* The timer is different, depending on the interface speed */
 	switch (priv->phydev->speed) {
+=======
+	struct net_device *ndev = priv->ndev;
+	struct phy_device *phydev = ndev->phydev;
+	unsigned int count;
+
+	/* The timer is different, depending on the interface speed */
+	switch (phydev->speed) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SPEED_1000:
 		count = GFAR_GBIT_TIME;
 		break;
@@ -272,10 +300,19 @@ static unsigned int gfar_usecs2ticks(struct gfar_private *priv,
 static unsigned int gfar_ticks2usecs(struct gfar_private *priv,
 				     unsigned int ticks)
 {
+<<<<<<< HEAD
 	unsigned int count;
 
 	/* The timer is different, depending on the interface speed */
 	switch (priv->phydev->speed) {
+=======
+	struct net_device *ndev = priv->ndev;
+	struct phy_device *phydev = ndev->phydev;
+	unsigned int count;
+
+	/* The timer is different, depending on the interface speed */
+	switch (phydev->speed) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SPEED_1000:
 		count = GFAR_GBIT_TIME;
 		break;
@@ -309,7 +346,11 @@ static int gfar_gcoalesce(struct net_device *dev,
 	if (!(priv->device_flags & FSL_GIANFAR_DEV_HAS_COALESCE))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (NULL == priv->phydev)
+=======
+	if (!dev->phydev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	rx_queue = priv->rx_queue[0];
@@ -365,11 +406,16 @@ static int gfar_scoalesce(struct net_device *dev,
 			  struct ethtool_coalesce *cvals)
 {
 	struct gfar_private *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	int i = 0;
+=======
+	int i, err = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(priv->device_flags & FSL_GIANFAR_DEV_HAS_COALESCE))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	/* Set up rx coalescing */
 	/* As of now, we will enable/disable coalescing for all
 	 * queues together in case of eTSEC2, this will be modified
@@ -385,6 +431,9 @@ static int gfar_scoalesce(struct net_device *dev,
 	}
 
 	if (NULL == priv->phydev)
+=======
+	if (!dev->phydev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	/* Check the bounds of the values */
@@ -400,6 +449,35 @@ static int gfar_scoalesce(struct net_device *dev,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Check the bounds of the values */
+	if (cvals->tx_coalesce_usecs > GFAR_MAX_COAL_USECS) {
+		netdev_info(dev, "Coalescing is limited to %d microseconds\n",
+			    GFAR_MAX_COAL_USECS);
+		return -EINVAL;
+	}
+
+	if (cvals->tx_max_coalesced_frames > GFAR_MAX_COAL_FRAMES) {
+		netdev_info(dev, "Coalescing is limited to %d frames\n",
+			    GFAR_MAX_COAL_FRAMES);
+		return -EINVAL;
+	}
+
+	while (test_and_set_bit_lock(GFAR_RESETTING, &priv->state))
+		cpu_relax();
+
+	/* Set up rx coalescing */
+	if ((cvals->rx_coalesce_usecs == 0) ||
+	    (cvals->rx_max_coalesced_frames == 0)) {
+		for (i = 0; i < priv->num_rx_queues; i++)
+			priv->rx_queue[i]->rxcoalescing = 0;
+	} else {
+		for (i = 0; i < priv->num_rx_queues; i++)
+			priv->rx_queue[i]->rxcoalescing = 1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < priv->num_rx_queues; i++) {
 		priv->rx_queue[i]->rxic = mk_ic_value(
 			cvals->rx_max_coalesced_frames,
@@ -416,6 +494,7 @@ static int gfar_scoalesce(struct net_device *dev,
 			priv->tx_queue[i]->txcoalescing = 1;
 	}
 
+<<<<<<< HEAD
 	/* Check the bounds of the values */
 	if (cvals->tx_coalesce_usecs > GFAR_MAX_COAL_USECS) {
 		netdev_info(dev, "Coalescing is limited to %d microseconds\n",
@@ -429,15 +508,30 @@ static int gfar_scoalesce(struct net_device *dev,
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < priv->num_tx_queues; i++) {
 		priv->tx_queue[i]->txic = mk_ic_value(
 			cvals->tx_max_coalesced_frames,
 			gfar_usecs2ticks(priv, cvals->tx_coalesce_usecs));
 	}
 
+<<<<<<< HEAD
 	gfar_configure_coalescing_all(priv);
 
 	return 0;
+=======
+	if (dev->flags & IFF_UP) {
+		stop_gfar(dev);
+		err = startup_gfar(dev);
+	} else {
+		gfar_mac_reset(priv);
+	}
+
+	clear_bit_unlock(GFAR_RESETTING, &priv->state);
+
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Fills in rvals with the current ring parameters.  Currently,
@@ -468,15 +562,23 @@ static void gfar_gringparam(struct net_device *dev,
 }
 
 /* Change the current ring parameters, stopping the controller if
+<<<<<<< HEAD
  * necessary so that we don't mess things up while we're in
  * motion.  We wait for the ring to be clean before reallocating
  * the rings.
+=======
+ * necessary so that we don't mess things up while we're in motion.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int gfar_sringparam(struct net_device *dev,
 			   struct ethtool_ringparam *rvals)
 {
 	struct gfar_private *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	int err = 0, i = 0;
+=======
+	int err = 0, i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (rvals->rx_pending > GFAR_RX_MAX_RING_SIZE)
 		return -EINVAL;
@@ -494,6 +596,7 @@ static int gfar_sringparam(struct net_device *dev,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 
 	if (dev->flags & IFF_UP) {
 		unsigned long flags;
@@ -574,6 +677,135 @@ int gfar_set_features(struct net_device *dev, netdev_features_t features)
 		err = startup_gfar(dev);
 		netif_tx_wake_all_queues(dev);
 	}
+=======
+	while (test_and_set_bit_lock(GFAR_RESETTING, &priv->state))
+		cpu_relax();
+
+	if (dev->flags & IFF_UP)
+		stop_gfar(dev);
+
+	/* Change the sizes */
+	for (i = 0; i < priv->num_rx_queues; i++)
+		priv->rx_queue[i]->rx_ring_size = rvals->rx_pending;
+
+	for (i = 0; i < priv->num_tx_queues; i++)
+		priv->tx_queue[i]->tx_ring_size = rvals->tx_pending;
+
+	/* Rebuild the rings with the new size */
+	if (dev->flags & IFF_UP)
+		err = startup_gfar(dev);
+
+	clear_bit_unlock(GFAR_RESETTING, &priv->state);
+
+	return err;
+}
+
+static void gfar_gpauseparam(struct net_device *dev,
+			     struct ethtool_pauseparam *epause)
+{
+	struct gfar_private *priv = netdev_priv(dev);
+
+	epause->autoneg = !!priv->pause_aneg_en;
+	epause->rx_pause = !!priv->rx_pause_en;
+	epause->tx_pause = !!priv->tx_pause_en;
+}
+
+static int gfar_spauseparam(struct net_device *dev,
+			    struct ethtool_pauseparam *epause)
+{
+	struct gfar_private *priv = netdev_priv(dev);
+	struct phy_device *phydev = dev->phydev;
+	struct gfar __iomem *regs = priv->gfargrp[0].regs;
+	u32 oldadv, newadv;
+
+	if (!phydev)
+		return -ENODEV;
+
+	if (!(phydev->supported & SUPPORTED_Pause) ||
+	    (!(phydev->supported & SUPPORTED_Asym_Pause) &&
+	     (epause->rx_pause != epause->tx_pause)))
+		return -EINVAL;
+
+	priv->rx_pause_en = priv->tx_pause_en = 0;
+	if (epause->rx_pause) {
+		priv->rx_pause_en = 1;
+
+		if (epause->tx_pause) {
+			priv->tx_pause_en = 1;
+			/* FLOW_CTRL_RX & TX */
+			newadv = ADVERTISED_Pause;
+		} else  /* FLOW_CTLR_RX */
+			newadv = ADVERTISED_Pause | ADVERTISED_Asym_Pause;
+	} else if (epause->tx_pause) {
+		priv->tx_pause_en = 1;
+		/* FLOW_CTLR_TX */
+		newadv = ADVERTISED_Asym_Pause;
+	} else
+		newadv = 0;
+
+	if (epause->autoneg)
+		priv->pause_aneg_en = 1;
+	else
+		priv->pause_aneg_en = 0;
+
+	oldadv = phydev->advertising &
+		(ADVERTISED_Pause | ADVERTISED_Asym_Pause);
+	if (oldadv != newadv) {
+		phydev->advertising &=
+			~(ADVERTISED_Pause | ADVERTISED_Asym_Pause);
+		phydev->advertising |= newadv;
+		if (phydev->autoneg)
+			/* inform link partner of our
+			 * new flow ctrl settings
+			 */
+			return phy_start_aneg(phydev);
+
+		if (!epause->autoneg) {
+			u32 tempval;
+			tempval = gfar_read(&regs->maccfg1);
+			tempval &= ~(MACCFG1_TX_FLOW | MACCFG1_RX_FLOW);
+
+			priv->tx_actual_en = 0;
+			if (priv->tx_pause_en) {
+				priv->tx_actual_en = 1;
+				tempval |= MACCFG1_TX_FLOW;
+			}
+
+			if (priv->rx_pause_en)
+				tempval |= MACCFG1_RX_FLOW;
+			gfar_write(&regs->maccfg1, tempval);
+		}
+	}
+
+	return 0;
+}
+
+int gfar_set_features(struct net_device *dev, netdev_features_t features)
+{
+	netdev_features_t changed = dev->features ^ features;
+	struct gfar_private *priv = netdev_priv(dev);
+	int err = 0;
+
+	if (!(changed & (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+			 NETIF_F_RXCSUM)))
+		return 0;
+
+	while (test_and_set_bit_lock(GFAR_RESETTING, &priv->state))
+		cpu_relax();
+
+	dev->features = features;
+
+	if (dev->flags & IFF_UP) {
+		/* Now we take down the rings to rebuild them */
+		stop_gfar(dev);
+		err = startup_gfar(dev);
+	} else {
+		gfar_mac_reset(priv);
+	}
+
+	clear_bit_unlock(GFAR_RESETTING, &priv->state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -596,17 +828,35 @@ static void gfar_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct gfar_private *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (priv->device_flags & FSL_GIANFAR_DEV_HAS_MAGIC_PACKET) {
 		wol->supported = WAKE_MAGIC;
 		wol->wolopts = priv->wol_en ? WAKE_MAGIC : 0;
 	} else {
 		wol->supported = wol->wolopts = 0;
 	}
+=======
+	wol->supported = 0;
+	wol->wolopts = 0;
+
+	if (priv->wol_supported & GFAR_WOL_MAGIC)
+		wol->supported |= WAKE_MAGIC;
+
+	if (priv->wol_supported & GFAR_WOL_FILER_UCAST)
+		wol->supported |= WAKE_UCAST;
+
+	if (priv->wol_opts & GFAR_WOL_MAGIC)
+		wol->wolopts |= WAKE_MAGIC;
+
+	if (priv->wol_opts & GFAR_WOL_FILER_UCAST)
+		wol->wolopts |= WAKE_UCAST;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int gfar_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct gfar_private *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (!(priv->device_flags & FSL_GIANFAR_DEV_HAS_MAGIC_PACKET) &&
@@ -621,6 +871,32 @@ static int gfar_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	spin_lock_irqsave(&priv->bflock, flags);
 	priv->wol_en =  !!device_may_wakeup(&dev->dev);
 	spin_unlock_irqrestore(&priv->bflock, flags);
+=======
+	u16 wol_opts = 0;
+	int err;
+
+	if (!priv->wol_supported && wol->wolopts)
+		return -EINVAL;
+
+	if (wol->wolopts & ~(WAKE_MAGIC | WAKE_UCAST))
+		return -EINVAL;
+
+	if (wol->wolopts & WAKE_MAGIC) {
+		wol_opts |= GFAR_WOL_MAGIC;
+	} else {
+		if (wol->wolopts & WAKE_UCAST)
+			wol_opts |= GFAR_WOL_FILER_UCAST;
+	}
+
+	wol_opts &= priv->wol_supported;
+	priv->wol_opts = 0;
+
+	err = device_set_wakeup_enable(priv->dev, wol_opts);
+	if (err)
+		return err;
+
+	priv->wol_opts = wol_opts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -631,14 +907,22 @@ static void ethflow_to_filer_rules (struct gfar_private *priv, u64 ethflow)
 	u32 fcr = 0x0, fpr = FPR_FILER_MASK;
 
 	if (ethflow & RXH_L2DA) {
+<<<<<<< HEAD
 		fcr = RQFCR_PID_DAH |RQFCR_CMP_NOMATCH |
+=======
+		fcr = RQFCR_PID_DAH | RQFCR_CMP_NOMATCH |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      RQFCR_HASH | RQFCR_AND | RQFCR_HASHTBL_0;
 		priv->ftp_rqfpr[priv->cur_filer_idx] = fpr;
 		priv->ftp_rqfcr[priv->cur_filer_idx] = fcr;
 		gfar_write_filer(priv, priv->cur_filer_idx, fcr, fpr);
 		priv->cur_filer_idx = priv->cur_filer_idx - 1;
 
+<<<<<<< HEAD
 		fcr = RQFCR_PID_DAL | RQFCR_AND | RQFCR_CMP_NOMATCH |
+=======
+		fcr = RQFCR_PID_DAL | RQFCR_CMP_NOMATCH |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      RQFCR_HASH | RQFCR_AND | RQFCR_HASHTBL_0;
 		priv->ftp_rqfpr[priv->cur_filer_idx] = fpr;
 		priv->ftp_rqfcr[priv->cur_filer_idx] = fcr;
@@ -817,11 +1101,17 @@ static int gfar_set_hash_opts(struct gfar_private *priv,
 
 static int gfar_check_filer_hardware(struct gfar_private *priv)
 {
+<<<<<<< HEAD
 	struct gfar __iomem *regs = NULL;
 	u32 i;
 
 	regs = priv->gfargrp[0].regs;
 
+=======
+	struct gfar __iomem *regs = priv->gfargrp[0].regs;
+	u32 i;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Check if we are in FIFO mode */
 	i = gfar_read(&regs->ecntrl);
 	i &= ECNTRL_FIFM;
@@ -855,6 +1145,7 @@ static int gfar_check_filer_hardware(struct gfar_private *priv)
 	/* Sets the properties for arbitrary filer rule
 	 * to the first 4 Layer 4 Bytes
 	 */
+<<<<<<< HEAD
 	regs->rbifx = 0xC0C1C2C3;
 	return 0;
 }
@@ -880,6 +1171,12 @@ static void gfar_swap(void *a, void *b, int size)
 	swap(_a[3], _b[3]);
 }
 
+=======
+	gfar_write(&regs->rbifx, 0xC0C1C2C3);
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Write a mask to filer cache */
 static void gfar_set_mask(u32 mask, struct filer_table *tab)
 {
@@ -983,10 +1280,25 @@ static void gfar_set_basic_ip(struct ethtool_tcpip4_spec *value,
 			      struct ethtool_tcpip4_spec *mask,
 			      struct filer_table *tab)
 {
+<<<<<<< HEAD
 	gfar_set_attribute(value->ip4src, mask->ip4src, RQFCR_PID_SIA, tab);
 	gfar_set_attribute(value->ip4dst, mask->ip4dst, RQFCR_PID_DIA, tab);
 	gfar_set_attribute(value->pdst, mask->pdst, RQFCR_PID_DPT, tab);
 	gfar_set_attribute(value->psrc, mask->psrc, RQFCR_PID_SPT, tab);
+=======
+	gfar_set_attribute(be32_to_cpu(value->ip4src),
+			   be32_to_cpu(mask->ip4src),
+			   RQFCR_PID_SIA, tab);
+	gfar_set_attribute(be32_to_cpu(value->ip4dst),
+			   be32_to_cpu(mask->ip4dst),
+			   RQFCR_PID_DIA, tab);
+	gfar_set_attribute(be16_to_cpu(value->pdst),
+			   be16_to_cpu(mask->pdst),
+			   RQFCR_PID_DPT, tab);
+	gfar_set_attribute(be16_to_cpu(value->psrc),
+			   be16_to_cpu(mask->psrc),
+			   RQFCR_PID_SPT, tab);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gfar_set_attribute(value->tos, mask->tos, RQFCR_PID_TOS, tab);
 }
 
@@ -995,12 +1307,26 @@ static void gfar_set_user_ip(struct ethtool_usrip4_spec *value,
 			     struct ethtool_usrip4_spec *mask,
 			     struct filer_table *tab)
 {
+<<<<<<< HEAD
 	gfar_set_attribute(value->ip4src, mask->ip4src, RQFCR_PID_SIA, tab);
 	gfar_set_attribute(value->ip4dst, mask->ip4dst, RQFCR_PID_DIA, tab);
 	gfar_set_attribute(value->tos, mask->tos, RQFCR_PID_TOS, tab);
 	gfar_set_attribute(value->proto, mask->proto, RQFCR_PID_L4P, tab);
 	gfar_set_attribute(value->l4_4_bytes, mask->l4_4_bytes, RQFCR_PID_ARB,
 			   tab);
+=======
+	gfar_set_attribute(be32_to_cpu(value->ip4src),
+			   be32_to_cpu(mask->ip4src),
+			   RQFCR_PID_SIA, tab);
+	gfar_set_attribute(be32_to_cpu(value->ip4dst),
+			   be32_to_cpu(mask->ip4dst),
+			   RQFCR_PID_DIA, tab);
+	gfar_set_attribute(value->tos, mask->tos, RQFCR_PID_TOS, tab);
+	gfar_set_attribute(value->proto, mask->proto, RQFCR_PID_L4P, tab);
+	gfar_set_attribute(be32_to_cpu(value->l4_4_bytes),
+			   be32_to_cpu(mask->l4_4_bytes),
+			   RQFCR_PID_ARB, tab);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 }
 
@@ -1067,7 +1393,45 @@ static void gfar_set_ether(struct ethhdr *value, struct ethhdr *mask,
 		}
 	}
 
+<<<<<<< HEAD
 	gfar_set_attribute(value->h_proto, mask->h_proto, RQFCR_PID_ETY, tab);
+=======
+	gfar_set_attribute(be16_to_cpu(value->h_proto),
+			   be16_to_cpu(mask->h_proto),
+			   RQFCR_PID_ETY, tab);
+}
+
+static inline u32 vlan_tci_vid(struct ethtool_rx_flow_spec *rule)
+{
+	return be16_to_cpu(rule->h_ext.vlan_tci) & VLAN_VID_MASK;
+}
+
+static inline u32 vlan_tci_vidm(struct ethtool_rx_flow_spec *rule)
+{
+	return be16_to_cpu(rule->m_ext.vlan_tci) & VLAN_VID_MASK;
+}
+
+static inline u32 vlan_tci_cfi(struct ethtool_rx_flow_spec *rule)
+{
+	return be16_to_cpu(rule->h_ext.vlan_tci) & VLAN_CFI_MASK;
+}
+
+static inline u32 vlan_tci_cfim(struct ethtool_rx_flow_spec *rule)
+{
+	return be16_to_cpu(rule->m_ext.vlan_tci) & VLAN_CFI_MASK;
+}
+
+static inline u32 vlan_tci_prio(struct ethtool_rx_flow_spec *rule)
+{
+	return (be16_to_cpu(rule->h_ext.vlan_tci) & VLAN_PRIO_MASK) >>
+		VLAN_PRIO_SHIFT;
+}
+
+static inline u32 vlan_tci_priom(struct ethtool_rx_flow_spec *rule)
+{
+	return (be16_to_cpu(rule->m_ext.vlan_tci) & VLAN_PRIO_MASK) >>
+		VLAN_PRIO_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Convert a rule to binary filter format of gianfar */
@@ -1081,14 +1445,22 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 	u32 old_index = tab->index;
 
 	/* Check if vlan is wanted */
+<<<<<<< HEAD
 	if ((rule->flow_type & FLOW_EXT) && (rule->m_ext.vlan_tci != 0xFFFF)) {
 		if (!rule->m_ext.vlan_tci)
 			rule->m_ext.vlan_tci = 0xFFFF;
+=======
+	if ((rule->flow_type & FLOW_EXT) &&
+	    (rule->m_ext.vlan_tci != cpu_to_be16(0xFFFF))) {
+		if (!rule->m_ext.vlan_tci)
+			rule->m_ext.vlan_tci = cpu_to_be16(0xFFFF);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		vlan = RQFPR_VLN;
 		vlan_mask = RQFPR_VLN;
 
 		/* Separate the fields */
+<<<<<<< HEAD
 		id = rule->h_ext.vlan_tci & VLAN_VID_MASK;
 		id_mask = rule->m_ext.vlan_tci & VLAN_VID_MASK;
 		cfi = rule->h_ext.vlan_tci & VLAN_CFI_MASK;
@@ -1097,6 +1469,14 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 		       VLAN_PRIO_SHIFT;
 		prio_mask = (rule->m_ext.vlan_tci & VLAN_PRIO_MASK) >>
 			    VLAN_PRIO_SHIFT;
+=======
+		id = vlan_tci_vid(rule);
+		id_mask = vlan_tci_vidm(rule);
+		cfi = vlan_tci_cfi(rule);
+		cfi_mask = vlan_tci_cfim(rule);
+		prio = vlan_tci_prio(rule);
+		prio_mask = vlan_tci_priom(rule);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (cfi == VLAN_TAG_PRESENT && cfi_mask == VLAN_TAG_PRESENT) {
 			vlan |= RQFPR_CFI;
@@ -1183,6 +1563,7 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Copy size filer entries */
 static void gfar_copy_filer_entries(struct gfar_filer_entry dst[0],
 				    struct gfar_filer_entry src[0], s32 size)
@@ -1487,6 +1868,8 @@ end:	kfree(temp_table);
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Write the bit-pattern from software's buffer to hardware registers */
 static int gfar_write_filer_table(struct gfar_private *priv,
 				  struct filer_table *tab)
@@ -1495,6 +1878,7 @@ static int gfar_write_filer_table(struct gfar_private *priv,
 	if (tab->index > MAX_FILER_IDX - 1)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	/* Avoid inconsistent filer table to be processed */
 	lock_rx_qs(priv);
 
@@ -1504,14 +1888,24 @@ static int gfar_write_filer_table(struct gfar_private *priv,
 		gfar_write_filer(priv, i, tab->fe[i].ctrl, tab->fe[i].prop);
 	/* Fill the rest with fall-troughs */
 	for (; i < MAX_FILER_IDX - 1; i++)
+=======
+	/* Fill regular entries */
+	for (; i < MAX_FILER_IDX && (tab->fe[i].ctrl | tab->fe[i].prop); i++)
+		gfar_write_filer(priv, i, tab->fe[i].ctrl, tab->fe[i].prop);
+	/* Fill the rest with fall-troughs */
+	for (; i < MAX_FILER_IDX; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gfar_write_filer(priv, i, 0x60, 0xFFFFFFFF);
 	/* Last entry must be default accept
 	 * because that's what people expect
 	 */
 	gfar_write_filer(priv, i, 0x20, 0x0);
 
+<<<<<<< HEAD
 	unlock_rx_qs(priv);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1539,7 +1933,10 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 {
 	struct ethtool_flow_spec_container *j;
 	struct filer_table *tab;
+<<<<<<< HEAD
 	s32 i = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s32 ret = 0;
 
 	/* So index is set to zero, too! */
@@ -1564,6 +1961,7 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 		}
 	}
 
+<<<<<<< HEAD
 	i = tab->index;
 
 	/* Optimizations to save entries */
@@ -1575,6 +1973,8 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 		 "\tCompression rate: %d%%\n",
 		 tab->index, 100 - (100 * tab->index) / i);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Write everything to hardware */
 	ret = gfar_write_filer_table(priv, tab);
 	if (ret == -EBUSY) {
@@ -1594,10 +1994,17 @@ static void gfar_invert_masks(struct ethtool_rx_flow_spec *flow)
 	for (i = 0; i < sizeof(flow->m_u); i++)
 		flow->m_u.hdata[i] ^= 0xFF;
 
+<<<<<<< HEAD
 	flow->m_ext.vlan_etype ^= 0xFFFF;
 	flow->m_ext.vlan_tci ^= 0xFFFF;
 	flow->m_ext.data[0] ^= ~0;
 	flow->m_ext.data[1] ^= ~0;
+=======
+	flow->m_ext.vlan_etype ^= cpu_to_be16(0xFFFF);
+	flow->m_ext.vlan_tci ^= cpu_to_be16(0xFFFF);
+	flow->m_ext.data[0] ^= cpu_to_be32(~0);
+	flow->m_ext.data[1] ^= cpu_to_be32(~0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int gfar_add_cls(struct gfar_private *priv,
@@ -1640,6 +2047,7 @@ static int gfar_add_cls(struct gfar_private *priv,
 	}
 
 process:
+<<<<<<< HEAD
 	ret = gfar_process_filer_changes(priv);
 	if (ret)
 		goto clean_list;
@@ -1647,6 +2055,16 @@ process:
 	return ret;
 
 clean_list:
+=======
+	priv->rx_list.count++;
+	ret = gfar_process_filer_changes(priv);
+	if (ret)
+		goto clean_list;
+	return ret;
+
+clean_list:
+	priv->rx_list.count--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_del(&temp->list);
 clean_mem:
 	kfree(temp);
@@ -1716,6 +2134,12 @@ static int gfar_set_nfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
 	struct gfar_private *priv = netdev_priv(dev);
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (test_bit(GFAR_RESETTING, &priv->state))
+		return -EBUSY;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&priv->rx_queue_access);
 
 	switch (cmd->cmd) {
@@ -1796,8 +2220,11 @@ static int gfar_get_ts_info(struct net_device *dev,
 }
 
 const struct ethtool_ops gfar_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings = gfar_gsettings,
 	.set_settings = gfar_ssettings,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_drvinfo = gfar_gdrvinfo,
 	.get_regs_len = gfar_reglen,
 	.get_regs = gfar_get_regs,
@@ -1806,6 +2233,11 @@ const struct ethtool_ops gfar_ethtool_ops = {
 	.set_coalesce = gfar_scoalesce,
 	.get_ringparam = gfar_gringparam,
 	.set_ringparam = gfar_sringparam,
+<<<<<<< HEAD
+=======
+	.get_pauseparam = gfar_gpauseparam,
+	.set_pauseparam = gfar_spauseparam,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_strings = gfar_gstrings,
 	.get_sset_count = gfar_sset_count,
 	.get_ethtool_stats = gfar_fill_stats,
@@ -1818,4 +2250,9 @@ const struct ethtool_ops gfar_ethtool_ops = {
 	.set_rxnfc = gfar_set_nfc,
 	.get_rxnfc = gfar_get_nfc,
 	.get_ts_info = gfar_get_ts_info,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

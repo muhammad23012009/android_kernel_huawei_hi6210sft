@@ -76,23 +76,39 @@
 		compatible = "fsl,b4420-l3-cache-controller", "cache";
 	};
 
+<<<<<<< HEAD
 	corenet-cf@18000 {
 		compatible = "fsl,b4420-corenet-cf";
 	};
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	guts: global-utilities@e0000 {
 		compatible = "fsl,b4420-device-config", "fsl,qoriq-device-config-2.0";
 	};
 
+<<<<<<< HEAD
 	clockgen: global-utilities@e1000 {
 		compatible = "fsl,b4420-clockgen", "fsl,qoriq-clockgen-2.0";
+=======
+	global-utilities@e1000 {
+		compatible = "fsl,b4420-clockgen", "fsl,b4-clockgen",
+			      "fsl,qoriq-clockgen-2.0";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	rcpm: global-utilities@e2000 {
 		compatible = "fsl,b4420-rcpm", "fsl,qoriq-rcpm-2.0";
 	};
 
+<<<<<<< HEAD
 	L2: l2-cache-controller@c20000 {
 		compatible = "fsl,b4420-l2-cache-controller";
+=======
+	L2_1: l2-cache-controller@c20000 {
+		compatible = "fsl,b4420-l2-cache-controller";
+		reg = <0xc20000 0x40000>;
+		next-level-cache = <&cpc>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

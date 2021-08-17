@@ -7,6 +7,11 @@
  * 30 May 2002:	Cleanup, Robert M. Love <rml@tech9.net>
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/audit.h>
 #include <linux/capability.h>
 #include <linux/mm.h>
@@ -22,7 +27,10 @@
  */
 
 const kernel_cap_t __cap_empty_set = CAP_EMPTY_SET;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(__cap_empty_set);
 
 int file_caps_enabled = 1;
@@ -34,6 +42,10 @@ static int __init file_caps_disable(char *str)
 }
 __setup("no_file_caps", file_caps_disable);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MULTIUSER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * More recent versions of libcap are available from:
  *
@@ -42,6 +54,7 @@ __setup("no_file_caps", file_caps_disable);
 
 static void warn_legacy_capability_use(void)
 {
+<<<<<<< HEAD
 	static int warned;
 	if (!warned) {
 		char name[sizeof(current->comm)];
@@ -51,6 +64,12 @@ static void warn_legacy_capability_use(void)
 		       get_task_comm(name, current));
 		warned = 1;
 	}
+=======
+	char name[sizeof(current->comm)];
+
+	pr_info_once("warning: `%s' uses 32-bit capabilities (legacy support in use)\n",
+		     get_task_comm(name, current));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -71,6 +90,7 @@ static void warn_legacy_capability_use(void)
 
 static void warn_deprecated_v2(void)
 {
+<<<<<<< HEAD
 	static int warned;
 
 	if (!warned) {
@@ -81,6 +101,12 @@ static void warn_deprecated_v2(void)
 		       get_task_comm(name, current));
 		warned = 1;
 	}
+=======
+	char name[sizeof(current->comm)];
+
+	pr_info_once("warning: `%s' uses deprecated v2 capabilities in a way that may be insecure\n",
+		     get_task_comm(name, current));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -198,7 +224,11 @@ SYSCALL_DEFINE2(capget, cap_user_header_t, header, cap_user_data_t, dataptr)
 		 *
 		 * An alternative would be to return an error here
 		 * (-ERANGE), but that causes legacy applications to
+<<<<<<< HEAD
 		 * unexpectidly fail; the capget/modify/capset aborts
+=======
+		 * unexpectedly fail; the capget/modify/capset aborts
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * before modification is attempted and the application
 		 * fails.
 		 */
@@ -281,7 +311,11 @@ SYSCALL_DEFINE2(capset, cap_user_header_t, header, const cap_user_data_t, data)
 	if (ret < 0)
 		goto error;
 
+<<<<<<< HEAD
 	audit_log_capset(pid, new, current_cred());
+=======
+	audit_log_capset(new, current_cred());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return commit_creds(new);
 
@@ -370,6 +404,27 @@ bool has_capability_noaudit(struct task_struct *t, int cap)
 	return has_ns_capability_noaudit(t, &init_user_ns, cap);
 }
 
+<<<<<<< HEAD
+=======
+static bool ns_capable_common(struct user_namespace *ns, int cap, bool audit)
+{
+	int capable;
+
+	if (unlikely(!cap_valid(cap))) {
+		pr_crit("capable() called with invalid cap=%u\n", cap);
+		BUG();
+	}
+
+	capable = audit ? security_capable(current_cred(), ns, cap) :
+			  security_capable_noaudit(current_cred(), ns, cap);
+	if (capable == 0) {
+		current->flags |= PF_SUPERPRIV;
+		return true;
+	}
+	return false;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * ns_capable - Determine if the current task has a superior capability in effect
  * @ns:  The usernamespace we want the capability in
@@ -383,6 +438,7 @@ bool has_capability_noaudit(struct task_struct *t, int cap)
  */
 bool ns_capable(struct user_namespace *ns, int cap)
 {
+<<<<<<< HEAD
 	if (unlikely(!cap_valid(cap))) {
 		printk(KERN_CRIT "capable() called with invalid cap=%u\n", cap);
 		BUG();
@@ -393,10 +449,14 @@ bool ns_capable(struct user_namespace *ns, int cap)
 		return true;
 	}
 	return false;
+=======
+	return ns_capable_common(ns, cap, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(ns_capable);
 
 /**
+<<<<<<< HEAD
  * file_ns_capable - Determine if the file's opener had a capability in effect
  * @file:  The file we want to check
  * @ns:  The usernamespace we want the capability in
@@ -419,6 +479,24 @@ bool file_ns_capable(const struct file *file, struct user_namespace *ns, int cap
 	return false;
 }
 EXPORT_SYMBOL(file_ns_capable);
+=======
+ * ns_capable_noaudit - Determine if the current task has a superior capability
+ * (unaudited) in effect
+ * @ns:  The usernamespace we want the capability in
+ * @cap: The capability to be tested for
+ *
+ * Return true if the current task has the given superior capability currently
+ * available for use, false if not.
+ *
+ * This sets PF_SUPERPRIV on the task if the capability is available on the
+ * assumption that it's about to be used.
+ */
+bool ns_capable_noaudit(struct user_namespace *ns, int cap)
+{
+	return ns_capable_common(ns, cap, false);
+}
+EXPORT_SYMBOL(ns_capable_noaudit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * capable - Determine if the current task has a superior capability in effect
@@ -435,6 +513,7 @@ bool capable(int cap)
 	return ns_capable(&init_user_ns, cap);
 }
 EXPORT_SYMBOL(capable);
+<<<<<<< HEAD
 
 /**
  * nsown_capable - Check superior capability to one's own user_ns
@@ -446,6 +525,46 @@ EXPORT_SYMBOL(capable);
 bool nsown_capable(int cap)
 {
 	return ns_capable(current_user_ns(), cap);
+=======
+#endif /* CONFIG_MULTIUSER */
+
+/**
+ * file_ns_capable - Determine if the file's opener had a capability in effect
+ * @file:  The file we want to check
+ * @ns:  The usernamespace we want the capability in
+ * @cap: The capability to be tested for
+ *
+ * Return true if task that opened the file had a capability in effect
+ * when the file was opened.
+ *
+ * This does not set PF_SUPERPRIV because the caller may not
+ * actually be privileged.
+ */
+bool file_ns_capable(const struct file *file, struct user_namespace *ns,
+		     int cap)
+{
+	if (WARN_ON_ONCE(!cap_valid(cap)))
+		return false;
+
+	if (security_capable(file->f_cred, ns, cap) == 0)
+		return true;
+
+	return false;
+}
+EXPORT_SYMBOL(file_ns_capable);
+
+/**
+ * privileged_wrt_inode_uidgid - Do capabilities in the namespace work over the inode?
+ * @ns: The user namespace in question
+ * @inode: The inode in question
+ *
+ * Return true if the inode uid and gid are within the namespace.
+ */
+bool privileged_wrt_inode_uidgid(struct user_namespace *ns, const struct inode *inode)
+{
+	return kuid_has_mapping(ns, inode->i_uid) &&
+		kgid_has_mapping(ns, inode->i_gid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -461,6 +580,31 @@ bool capable_wrt_inode_uidgid(const struct inode *inode, int cap)
 {
 	struct user_namespace *ns = current_user_ns();
 
+<<<<<<< HEAD
 	return ns_capable(ns, cap) && kuid_has_mapping(ns, inode->i_uid) &&
 		kgid_has_mapping(ns, inode->i_gid);
+=======
+	return ns_capable(ns, cap) && privileged_wrt_inode_uidgid(ns, inode);
+}
+EXPORT_SYMBOL(capable_wrt_inode_uidgid);
+
+/**
+ * ptracer_capable - Determine if the ptracer holds CAP_SYS_PTRACE in the namespace
+ * @tsk: The task that may be ptraced
+ * @ns: The user namespace to search for CAP_SYS_PTRACE in
+ *
+ * Return true if the task that is ptracing the current task had CAP_SYS_PTRACE
+ * in the specified user namespace.
+ */
+bool ptracer_capable(struct task_struct *tsk, struct user_namespace *ns)
+{
+	int ret = 0;  /* An absent tracer adds no restrictions */
+	const struct cred *cred;
+	rcu_read_lock();
+	cred = rcu_dereference(tsk->ptracer_cred);
+	if (cred)
+		ret = security_capable_noaudit(cred, ns, CAP_SYS_PTRACE);
+	rcu_read_unlock();
+	return (ret == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

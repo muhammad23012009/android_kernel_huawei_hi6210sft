@@ -49,7 +49,11 @@ static void __iomem *bcsr_regs;
 /* there's more, can't be bothered typing them tho */
 
 
+<<<<<<< HEAD
 static __initdata struct of_device_id ep405_of_bus[] = {
+=======
+static const struct of_device_id ep405_of_bus[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "ibm,plb3", },
 	{ .compatible = "ibm,opb", },
 	{ .compatible = "ibm,ebc", },
@@ -105,9 +109,13 @@ static void __init ep405_setup_arch(void)
 
 static int __init ep405_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "ep405"))
+=======
+	if (!of_machine_is_compatible("ep405"))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	return 1;

@@ -19,6 +19,7 @@
 #ifndef VPIF_CAPTURE_H
 #define VPIF_CAPTURE_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 /* Header files */
@@ -27,6 +28,11 @@
 #include <media/v4l2-device.h>
 #include <media/videobuf2-dma-contig.h>
 #include <media/davinci/vpif_types.h>
+=======
+/* Header files */
+#include <media/videobuf2-dma-contig.h>
+#include <media/v4l2-device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "vpif.h"
 
@@ -57,7 +63,11 @@ struct video_obj {
 };
 
 struct vpif_cap_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head list;
 };
 
@@ -66,27 +76,36 @@ struct common_obj {
 	struct vpif_cap_buffer *cur_frm;
 	/* Pointer pointing to current v4l2_buffer */
 	struct vpif_cap_buffer *next_frm;
+<<<<<<< HEAD
 	/*
 	 * This field keeps track of type of buffer exchange mechanism
 	 * user has selected
 	 */
 	enum v4l2_memory memory;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Used to store pixel format */
 	struct v4l2_format fmt;
 	/* Buffer queue used in video-buf */
 	struct vb2_queue buffer_queue;
+<<<<<<< HEAD
 	/* allocator-specific contexts for each plane */
 	struct vb2_alloc_ctx *alloc_ctx;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Queue of filled frames */
 	struct list_head dma_queue;
 	/* Used in video-buf */
 	spinlock_t irqlock;
 	/* lock used to access this structure */
 	struct mutex lock;
+<<<<<<< HEAD
 	/* number of users performing IO */
 	u32 io_usrs;
 	/* Indicates whether streaming started */
 	u8 started;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Function pointer to set the addresses */
 	void (*set_addr) (unsigned long, unsigned long, unsigned long,
 			  unsigned long);
@@ -106,11 +125,15 @@ struct common_obj {
 
 struct channel_obj {
 	/* Identifies video device for this channel */
+<<<<<<< HEAD
 	struct video_device *video_dev;
 	/* Used to keep track of state of the priority */
 	struct v4l2_prio_state prio;
 	/* number of open instances of the channel */
 	int usrs;
+=======
+	struct video_device video_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Indicates id of the field which is being displayed */
 	u32 field_id;
 	/* flag to indicate whether decoder is initialized */
@@ -129,6 +152,7 @@ struct channel_obj {
 	struct video_obj video;
 };
 
+<<<<<<< HEAD
 /* File handle structure */
 struct vpif_fh {
 	/* pointer to channel object for opened device */
@@ -141,10 +165,13 @@ struct vpif_fh {
 	u8 initialized;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct vpif_device {
 	struct v4l2_device v4l2_dev;
 	struct channel_obj *dev[VPIF_CAPTURE_NUM_CHANNELS];
 	struct v4l2_subdev **sd;
+<<<<<<< HEAD
 };
 
 struct vpif_config_params {
@@ -159,4 +186,10 @@ struct vpif_config_params {
 };
 
 #endif				/* End of __KERNEL__ */
+=======
+	struct v4l2_async_notifier notifier;
+	struct vpif_capture_config *config;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/* VPIF_CAPTURE_H */

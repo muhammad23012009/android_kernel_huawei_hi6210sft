@@ -25,7 +25,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -243,16 +246,61 @@ static int qt1070_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+static int qt1070_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct qt1070_data *data = i2c_get_clientdata(client);
+
+	if (device_may_wakeup(dev))
+		enable_irq_wake(data->irq);
+
+	return 0;
+}
+
+static int qt1070_resume(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct qt1070_data *data = i2c_get_clientdata(client);
+
+	if (device_may_wakeup(dev))
+		disable_irq_wake(data->irq);
+
+	return 0;
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(qt1070_pm_ops, qt1070_suspend, qt1070_resume);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct i2c_device_id qt1070_id[] = {
 	{ "qt1070", 0 },
 	{ },
 };
 MODULE_DEVICE_TABLE(i2c, qt1070_id);
 
+<<<<<<< HEAD
 static struct i2c_driver qt1070_driver = {
 	.driver	= {
 		.name	= "qt1070",
 		.owner	= THIS_MODULE,
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id qt1070_of_match[] = {
+	{ .compatible = "qt1070", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, qt1070_of_match);
+#endif
+
+static struct i2c_driver qt1070_driver = {
+	.driver	= {
+		.name	= "qt1070",
+		.of_match_table = of_match_ptr(qt1070_of_match),
+		.pm	= &qt1070_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table	= qt1070_id,
 	.probe		= qt1070_probe,

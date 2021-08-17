@@ -7,7 +7,11 @@
  * defined; unless noted otherwise, they are optional, and can be
  * filled in with a null pointer.
  *
+<<<<<<< HEAD
  * struct tty_struct * (*lookup)(struct tty_driver *self, int idx)
+=======
+ * struct tty_struct * (*lookup)(struct tty_driver *self, struct file *, int idx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	Return the tty device corresponding to idx, NULL if there is not
  *	one currently in use and an ERR_PTR value on error. Called under
@@ -35,14 +39,23 @@
  * 	This routine is mandatory; if this routine is not filled in,
  * 	the attempted open will fail with ENODEV.
  *
+<<<<<<< HEAD
  *	Required method.
  *     
+=======
+ *	Required method. Called with tty lock held.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * void (*close)(struct tty_struct * tty, struct file * filp);
  *
  * 	This routine is called when a particular tty device is closed.
  *	Note: called even if the corresponding open() failed.
  *
+<<<<<<< HEAD
  *	Required method.
+=======
+ *	Required method. Called with tty lock held.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * void (*shutdown)(struct tty_struct * tty);
  *
@@ -152,6 +165,11 @@
  * 	This routine notifies the tty driver that it should stop
  * 	outputting characters to the tty device.  
  *
+<<<<<<< HEAD
+=======
+ *	Called with ->flow_lock held. Serialized with start() method.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	Optional:
  *
  *	Note: Call stop_tty not this method.
@@ -161,6 +179,11 @@
  * 	This routine notifies the tty driver that it resume sending
  *	characters to the tty device.
  *
+<<<<<<< HEAD
+=======
+ *	Called with ->flow_lock held. Serialized with stop() method.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	Optional:
  *
  *	Note: Call start_tty not this method.
@@ -172,6 +195,11 @@
  *
  *	Optional:
  *
+<<<<<<< HEAD
+=======
+ *	Called with tty lock held.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * int (*break_ctl)(struct tty_struct *tty, int state);
  *
  * 	This optional routine requests the tty driver to turn on or
@@ -229,7 +257,11 @@
  *
  *	Called when the device receives a TIOCGICOUNT ioctl. Passed a kernel
  *	structure to complete. This method is optional and will only be called
+<<<<<<< HEAD
  *	if provided (otherwise EINVAL will be returned).
+=======
+ *	if provided (otherwise ENOTTY will be returned).
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/export.h>
@@ -244,7 +276,11 @@ struct serial_icounter_struct;
 
 struct tty_operations {
 	struct tty_struct * (*lookup)(struct tty_driver *driver,
+<<<<<<< HEAD
 			struct inode *inode, int idx);
+=======
+			struct file *filp, int idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int  (*install)(struct tty_driver *driver, struct tty_struct *tty);
 	void (*remove)(struct tty_driver *driver, struct tty_struct *tty);
 	int  (*open)(struct tty_struct * tty, struct file * filp);
@@ -290,7 +326,11 @@ struct tty_operations {
 struct tty_driver {
 	int	magic;		/* magic number for this structure */
 	struct kref kref;	/* Reference management */
+<<<<<<< HEAD
 	struct cdev *cdevs;
+=======
+	struct cdev **cdevs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct module	*owner;
 	const char	*driver_name;
 	const char	*name;

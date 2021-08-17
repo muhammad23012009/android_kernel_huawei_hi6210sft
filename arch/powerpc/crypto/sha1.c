@@ -66,7 +66,11 @@ static int sha1_update(struct shash_desc *desc, const u8 *data,
 			src = data + done;
 		} while (done + 63 < len);
 
+<<<<<<< HEAD
 		memset(temp, 0, sizeof(temp));
+=======
+		memzero_explicit(temp, sizeof(temp));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		partial = 0;
 	}
 	memcpy(sctx->buffer + partial, src, len - done);

@@ -33,6 +33,10 @@
 #include <asm/ucontext.h>
 #include <asm/sigframe.h>
 #include <asm/syscalls.h>
+<<<<<<< HEAD
+=======
+#include <asm/vdso.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <arch/interrupts.h>
 
 #define DEBUG_SIG 0
@@ -44,11 +48,18 @@
 int restore_sigcontext(struct pt_regs *regs,
 		       struct sigcontext __user *sc)
 {
+<<<<<<< HEAD
 	int err = 0;
 	int i;
 
 	/* Always make any pending restarted system calls return -EINTR */
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	int err;
+
+	/* Always make any pending restarted system calls return -EINTR */
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Enforce that sigcontext is like pt_regs, and doesn't mess
@@ -56,9 +67,13 @@ int restore_sigcontext(struct pt_regs *regs,
 	 */
 	BUILD_BUG_ON(sizeof(struct sigcontext) != sizeof(struct pt_regs));
 	BUILD_BUG_ON(sizeof(struct sigcontext) % 8 != 0);
+<<<<<<< HEAD
 
 	for (i = 0; i < sizeof(struct pt_regs)/sizeof(long); ++i)
 		err |= __get_user(regs->regs[i], &sc->gregs[i]);
+=======
+	err = __copy_from_user(regs, sc, sizeof(*regs));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Ensure that the PL is always set to USER_PL. */
 	regs->ex1 = PL_ICS_EX1(USER_PL, EX1_ICS(regs->ex1));
@@ -109,12 +124,16 @@ badframe:
 
 int setup_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	int i, err = 0;
 
 	for (i = 0; i < sizeof(struct pt_regs)/sizeof(long); ++i)
 		err |= __put_user(regs->regs[i], &sc->gregs[i]);
 
 	return err;
+=======
+	return  __copy_to_user(sc, regs, sizeof(*regs));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -152,6 +171,7 @@ static inline void __user *get_sigframe(struct k_sigaction *ka,
 	return (void __user *) sp;
 }
 
+<<<<<<< HEAD
 static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 			   sigset_t *set, struct pt_regs *regs)
 {
@@ -178,6 +198,27 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		regs->flags |= PT_FLAGS_RESTORE_REGS;
 	} else {
 		err |= __put_user(info->si_signo, &frame->info.si_signo);
+=======
+static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+			  struct pt_regs *regs)
+{
+	unsigned long restorer;
+	struct rt_sigframe __user *frame;
+	int err = 0, sig = ksig->sig;
+
+	frame = get_sigframe(&ksig->ka, regs, sizeof(*frame));
+
+	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+		goto err;
+
+	/* Always write at least the signal number for the stack backtracer. */
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO) {
+		/* At sigreturn time, restore the callee-save registers too. */
+		err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+		regs->flags |= PT_FLAGS_RESTORE_REGS;
+	} else {
+		err |= __put_user(ksig->info.si_signo, &frame->info.si_signo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Create the ucontext.  */
@@ -188,11 +229,19 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	err |= setup_sigcontext(&frame->uc.uc_mcontext, regs);
 	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	restorer = VDSO_BASE;
 	if (ka->sa.sa_flags & SA_RESTORER)
 		restorer = (unsigned long) ka->sa.sa_restorer;
+=======
+		goto err;
+
+	restorer = VDSO_SYM(&__vdso_rt_sigreturn);
+	if (ksig->ka.sa.sa_flags & SA_RESTORER)
+		restorer = (unsigned long) ksig->ka.sa.sa_restorer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Set up registers for signal handler.
@@ -201,18 +250,32 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	 * We always pass siginfo and mcontext, regardless of SA_SIGINFO,
 	 * since some things rely on this (e.g. glibc's debug/segfault.c).
 	 */
+<<<<<<< HEAD
 	regs->pc = (unsigned long) ka->sa.sa_handler;
 	regs->ex1 = PL_ICS_EX1(USER_PL, 1); /* set crit sec in handler */
 	regs->sp = (unsigned long) frame;
 	regs->lr = restorer;
 	regs->regs[0] = (unsigned long) usig;
+=======
+	regs->pc = (unsigned long) ksig->ka.sa.sa_handler;
+	regs->ex1 = PL_ICS_EX1(USER_PL, 1); /* set crit sec in handler */
+	regs->sp = (unsigned long) frame;
+	regs->lr = restorer;
+	regs->regs[0] = (unsigned long) sig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->regs[1] = (unsigned long) &frame->info;
 	regs->regs[2] = (unsigned long) &frame->uc;
 	regs->flags |= PT_FLAGS_CALLER_SAVES;
 	return 0;
 
+<<<<<<< HEAD
 give_sigsegv:
 	signal_fault("bad setup frame", regs, frame, sig);
+=======
+err:
+	trace_unhandled_signal("bad sigreturn frame", regs,
+			      (unsigned long)frame, SIGSEGV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EFAULT;
 }
 
@@ -220,9 +283,13 @@ give_sigsegv:
  * OK, we're invoking a handler
  */
 
+<<<<<<< HEAD
 static void handle_signal(unsigned long sig, siginfo_t *info,
 			 struct k_sigaction *ka,
 			 struct pt_regs *regs)
+=======
+static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sigset_t *oldset = sigmask_to_save();
 	int ret;
@@ -237,7 +304,11 @@ static void handle_signal(unsigned long sig, siginfo_t *info,
 			break;
 
 		case -ERESTARTSYS:
+<<<<<<< HEAD
 			if (!(ka->sa.sa_flags & SA_RESTART)) {
+=======
+			if (!(ksig->ka.sa.sa_flags & SA_RESTART)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				regs->regs[0] = -EINTR;
 				break;
 			}
@@ -253,6 +324,7 @@ static void handle_signal(unsigned long sig, siginfo_t *info,
 	/* Set up the stack frame */
 #ifdef CONFIG_COMPAT
 	if (is_compat_task())
+<<<<<<< HEAD
 		ret = compat_setup_rt_frame(sig, ka, info, oldset, regs);
 	else
 #endif
@@ -261,6 +333,14 @@ static void handle_signal(unsigned long sig, siginfo_t *info,
 		return;
 	signal_delivered(sig, info, ka, regs,
 			test_thread_flag(TIF_SINGLESTEP));
+=======
+		ret = compat_setup_rt_frame(ksig, oldset, regs);
+	else
+#endif
+		ret = setup_rt_frame(ksig, oldset, regs);
+
+	signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -270,9 +350,13 @@ static void handle_signal(unsigned long sig, siginfo_t *info,
  */
 void do_signal(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 	int signr;
 	struct k_sigaction ka;
+=======
+	struct ksignal ksig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * i386 will check if we're coming from kernel mode and bail out
@@ -281,10 +365,16 @@ void do_signal(struct pt_regs *regs)
 	 * helpful, we can reinstate the check on "!user_mode(regs)".
 	 */
 
+<<<<<<< HEAD
 	signr = get_signal_to_deliver(&info, &ka, regs, NULL);
 	if (signr > 0) {
 		/* Whee! Actually deliver the signal.  */
 		handle_signal(signr, &info, &ka, regs);
+=======
+	if (get_signal(&ksig)) {
+		/* Whee! Actually deliver the signal.  */
+		handle_signal(&ksig, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto done;
 	}
 
@@ -320,6 +410,7 @@ int show_unhandled_signals = 1;
 
 static int __init crashinfo(char *str)
 {
+<<<<<<< HEAD
 	unsigned long val;
 	const char *word;
 
@@ -328,6 +419,15 @@ static int __init crashinfo(char *str)
 	else if (*str != '=' || strict_strtoul(++str, 0, &val) != 0)
 		return 0;
 	show_unhandled_signals = val;
+=======
+	const char *word;
+
+	if (*str == '\0')
+		show_unhandled_signals = 2;
+	else if (*str != '=' || kstrtoint(++str, 0, &show_unhandled_signals) != 0)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (show_unhandled_signals) {
 	case 0:
 		word = "No";
@@ -351,7 +451,10 @@ static void dump_mem(void __user *address)
 	int i, j, k;
 	int found_readable_mem = 0;
 
+<<<<<<< HEAD
 	pr_err("\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!access_ok(VERIFY_READ, address, 1)) {
 		pr_err("Not dumping at address 0x%lx (kernel address)\n",
 		       (unsigned long)address);
@@ -373,7 +476,11 @@ static void dump_mem(void __user *address)
 			       (unsigned long)address);
 			found_readable_mem = 1;
 		}
+<<<<<<< HEAD
 		j = sprintf(line, REGFMT":", (unsigned long)addr);
+=======
+		j = sprintf(line, REGFMT ":", (unsigned long)addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (k = 0; k < bytes_per_line; ++k)
 			j += sprintf(&line[j], " %02x", buf[k]);
 		pr_err("%s\n", line);
@@ -417,8 +524,12 @@ void trace_unhandled_signal(const char *type, struct pt_regs *regs,
 		case SIGFPE:
 		case SIGSEGV:
 		case SIGBUS:
+<<<<<<< HEAD
 			pr_err("User crash: signal %d,"
 			       " trap %ld, address 0x%lx\n",
+=======
+			pr_err("User crash: signal %d, trap %ld, address 0x%lx\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       sig, regs->faultnum, address);
 			show_regs(regs);
 			dump_mem((void __user *)address);

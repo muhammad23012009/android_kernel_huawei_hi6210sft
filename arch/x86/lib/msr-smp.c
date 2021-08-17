@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/preempt.h>
 #include <linux/smp.h>
 #include <asm/msr.h>
@@ -47,6 +51,24 @@ int rdmsr_on_cpu(unsigned int cpu, u32 msr_no, u32 *l, u32 *h)
 }
 EXPORT_SYMBOL(rdmsr_on_cpu);
 
+<<<<<<< HEAD
+=======
+int rdmsrl_on_cpu(unsigned int cpu, u32 msr_no, u64 *q)
+{
+	int err;
+	struct msr_info rv;
+
+	memset(&rv, 0, sizeof(rv));
+
+	rv.msr_no = msr_no;
+	err = smp_call_function_single(cpu, __rdmsr_on_cpu, &rv, 1);
+	*q = rv.reg.q;
+
+	return err;
+}
+EXPORT_SYMBOL(rdmsrl_on_cpu);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wrmsr_on_cpu(unsigned int cpu, u32 msr_no, u32 l, u32 h)
 {
 	int err;
@@ -63,6 +85,25 @@ int wrmsr_on_cpu(unsigned int cpu, u32 msr_no, u32 l, u32 h)
 }
 EXPORT_SYMBOL(wrmsr_on_cpu);
 
+<<<<<<< HEAD
+=======
+int wrmsrl_on_cpu(unsigned int cpu, u32 msr_no, u64 q)
+{
+	int err;
+	struct msr_info rv;
+
+	memset(&rv, 0, sizeof(rv));
+
+	rv.msr_no = msr_no;
+	rv.reg.q = q;
+
+	err = smp_call_function_single(cpu, __wrmsr_on_cpu, &rv, 1);
+
+	return err;
+}
+EXPORT_SYMBOL(wrmsrl_on_cpu);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __rwmsr_on_cpus(const struct cpumask *mask, u32 msr_no,
 			    struct msr *msrs,
 			    void (*msr_func) (void *info))
@@ -159,6 +200,40 @@ int wrmsr_safe_on_cpu(unsigned int cpu, u32 msr_no, u32 l, u32 h)
 }
 EXPORT_SYMBOL(wrmsr_safe_on_cpu);
 
+<<<<<<< HEAD
+=======
+int wrmsrl_safe_on_cpu(unsigned int cpu, u32 msr_no, u64 q)
+{
+	int err;
+	struct msr_info rv;
+
+	memset(&rv, 0, sizeof(rv));
+
+	rv.msr_no = msr_no;
+	rv.reg.q = q;
+
+	err = smp_call_function_single(cpu, __wrmsr_safe_on_cpu, &rv, 1);
+
+	return err ? err : rv.err;
+}
+EXPORT_SYMBOL(wrmsrl_safe_on_cpu);
+
+int rdmsrl_safe_on_cpu(unsigned int cpu, u32 msr_no, u64 *q)
+{
+	int err;
+	struct msr_info rv;
+
+	memset(&rv, 0, sizeof(rv));
+
+	rv.msr_no = msr_no;
+	err = smp_call_function_single(cpu, __rdmsr_safe_on_cpu, &rv, 1);
+	*q = rv.reg.q;
+
+	return err ? err : rv.err;
+}
+EXPORT_SYMBOL(rdmsrl_safe_on_cpu);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * These variants are significantly slower, but allows control over
  * the entire 32-bit GPR set.
@@ -177,7 +252,11 @@ static void __wrmsr_safe_regs_on_cpu(void *info)
 	rv->err = wrmsr_safe_regs(rv->regs);
 }
 
+<<<<<<< HEAD
 int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
+=======
+int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 	struct msr_regs_info rv;
@@ -190,7 +269,11 @@ int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
 }
 EXPORT_SYMBOL(rdmsr_safe_regs_on_cpu);
 
+<<<<<<< HEAD
 int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
+=======
+int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 	struct msr_regs_info rv;

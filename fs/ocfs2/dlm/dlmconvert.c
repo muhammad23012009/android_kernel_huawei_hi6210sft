@@ -123,7 +123,10 @@ static enum dlm_status __dlmconvert_master(struct dlm_ctxt *dlm,
 					   int *kick_thread)
 {
 	enum dlm_status status = DLM_NORMAL;
+<<<<<<< HEAD
 	struct list_head *iter;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dlm_lock *tmplock=NULL;
 
 	assert_spin_locked(&res->spinlock);
@@ -185,16 +188,24 @@ static enum dlm_status __dlmconvert_master(struct dlm_ctxt *dlm,
 
 	/* upconvert from here on */
 	status = DLM_NORMAL;
+<<<<<<< HEAD
 	list_for_each(iter, &res->granted) {
 		tmplock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(tmplock, &res->granted, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (tmplock == lock)
 			continue;
 		if (!dlm_lock_compatible(tmplock->ml.type, type))
 			goto switch_queues;
 	}
 
+<<<<<<< HEAD
 	list_for_each(iter, &res->converting) {
 		tmplock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(tmplock, &res->converting, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!dlm_lock_compatible(tmplock->ml.type, type))
 			goto switch_queues;
 		/* existing conversion requests take precedence */
@@ -215,6 +226,15 @@ grant:
 	if (lock->lksb->flags & DLM_LKSB_PUT_LVB)
 		memcpy(res->lvb, lock->lksb->lvb, DLM_LVB_LEN);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Move the lock to the tail because it may be the only lock which has
+	 * an invalid lvb.
+	 */
+	list_move_tail(&lock->list, &res->granted);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	status = DLM_NORMAL;
 	*call_ast = 1;
 	goto unlock_exit;
@@ -446,8 +466,13 @@ int dlm_convert_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 	struct dlm_ctxt *dlm = data;
 	struct dlm_convert_lock *cnv = (struct dlm_convert_lock *)msg->buf;
 	struct dlm_lock_resource *res = NULL;
+<<<<<<< HEAD
 	struct list_head *iter;
 	struct dlm_lock *lock = NULL;
+=======
+	struct dlm_lock *lock = NULL;
+	struct dlm_lock *tmp_lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dlm_lockstatus *lksb;
 	enum dlm_status status = DLM_NORMAL;
 	u32 flags;
@@ -493,6 +518,7 @@ int dlm_convert_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 		dlm_error(status);
 		goto leave;
 	}
+<<<<<<< HEAD
 	list_for_each(iter, &res->granted) {
 		lock = list_entry(iter, struct dlm_lock, list);
 		if (lock->ml.cookie == cnv->cookie &&
@@ -501,6 +527,15 @@ int dlm_convert_lock_handler(struct o2net_msg *msg, u32 len, void *data,
 			break;
 		}
 		lock = NULL;
+=======
+	list_for_each_entry(tmp_lock, &res->granted, list) {
+		if (tmp_lock->ml.cookie == cnv->cookie &&
+		    tmp_lock->ml.node == cnv->node_idx) {
+			lock = tmp_lock;
+			dlm_lock_get(lock);
+			break;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock(&res->spinlock);
 	if (!lock) {

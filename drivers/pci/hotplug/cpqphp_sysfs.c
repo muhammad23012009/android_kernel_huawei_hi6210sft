@@ -39,7 +39,11 @@
 #include "cpqphp.h"
 
 static DEFINE_MUTEX(cpqphp_mutex);
+<<<<<<< HEAD
 static int show_ctrl (struct controller *ctrl, char *buf)
+=======
+static int show_ctrl(struct controller *ctrl, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *out = buf;
 	int index;
@@ -77,9 +81,15 @@ static int show_ctrl (struct controller *ctrl, char *buf)
 	return out - buf;
 }
 
+<<<<<<< HEAD
 static int show_dev (struct controller *ctrl, char *buf)
 {
 	char * out = buf;
+=======
+static int show_dev(struct controller *ctrl, char *buf)
+{
+	char *out = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int index;
 	struct pci_resource *res;
 	struct pci_func *new_slot;
@@ -119,7 +129,11 @@ static int show_dev (struct controller *ctrl, char *buf)
 			out += sprintf(out, "start = %8.8x, length = %8.8x\n", res->base, res->length);
 			res = res->next;
 		}
+<<<<<<< HEAD
 		slot=slot->next;
+=======
+		slot = slot->next;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return out - buf;
@@ -167,6 +181,7 @@ exit:
 
 static loff_t lseek(struct file *file, loff_t off, int whence)
 {
+<<<<<<< HEAD
 	struct ctrl_dbg *dbg;
 	loff_t new = -1;
 
@@ -187,6 +202,10 @@ static loff_t lseek(struct file *file, loff_t off, int whence)
 	}
 	mutex_unlock(&cpqphp_mutex);
 	return (file->f_pos = new);
+=======
+	struct ctrl_dbg *dbg = file->private_data;
+	return fixed_size_llseek(file, off, whence, dbg->size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t read(struct file *file, char __user *buf,
@@ -234,8 +253,12 @@ void cpqhp_create_debugfs_files(struct controller *ctrl)
 
 void cpqhp_remove_debugfs_files(struct controller *ctrl)
 {
+<<<<<<< HEAD
 	if (ctrl->dentry)
 		debugfs_remove(ctrl->dentry);
+=======
+	debugfs_remove(ctrl->dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ctrl->dentry = NULL;
 }
 

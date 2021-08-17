@@ -1,6 +1,10 @@
 /* usb-urb.c is part of the DVB USB library.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * see dvb-usb-init.c for copyright information.
  *
  * This file keeps functions for initializing and handling the

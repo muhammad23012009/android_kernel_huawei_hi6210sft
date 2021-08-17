@@ -932,7 +932,11 @@ static const struct file_operations proc_palinfo_fops = {
 	.release	= single_release,
 };
 
+<<<<<<< HEAD
 static void __cpuinit
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 create_palinfo_proc_entries(unsigned int cpu)
 {
 	pal_func_cpu_u_t f;
@@ -962,7 +966,11 @@ remove_palinfo_proc_entries(unsigned int hcpu)
 	remove_proc_subtree(cpustr, palinfo_dir);
 }
 
+<<<<<<< HEAD
 static int __cpuinit palinfo_cpu_callback(struct notifier_block *nfb,
+=======
+static int palinfo_cpu_callback(struct notifier_block *nfb,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					unsigned long action, void *hcpu)
 {
 	unsigned int hotcpu = (unsigned long)hcpu;
@@ -996,13 +1004,24 @@ palinfo_init(void)
 	if (!palinfo_dir)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	cpu_notifier_register_begin();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Create palinfo dirs in /proc for all online cpus */
 	for_each_online_cpu(i) {
 		create_palinfo_proc_entries(i);
 	}
 
 	/* Register for future delivery via notify registration */
+<<<<<<< HEAD
 	register_hotcpu_notifier(&palinfo_cpu_notifier);
+=======
+	__register_hotcpu_notifier(&palinfo_cpu_notifier);
+
+	cpu_notifier_register_done();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

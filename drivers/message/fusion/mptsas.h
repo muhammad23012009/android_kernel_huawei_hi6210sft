@@ -110,7 +110,11 @@ struct fw_event_work {
 	MPT_ADAPTER	*ioc;
 	u32			event;
 	u8			retries;
+<<<<<<< HEAD
 	u8			__attribute__((aligned(4))) event_data[1];
+=======
+	char			event_data[0] __aligned(4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct mptsas_discovery_event {

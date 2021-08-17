@@ -21,6 +21,12 @@
 /* Bases of da830 McASP1 register banks */
 #define DAVINCI_DA830_MCASP1_REG_BASE	0x01D04000
 
+<<<<<<< HEAD
+=======
+/* Bases of da830 McASP2 register banks */
+#define DAVINCI_DA830_MCASP2_REG_BASE	0x01D08000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* EDMA channels of dm644x and dm355 */
 #define DAVINCI_DMA_ASP0_TX	2
 #define DAVINCI_DMA_ASP0_RX	3
@@ -40,6 +46,13 @@
 #define DAVINCI_DA830_DMA_MCASP1_AREVT	2
 #define DAVINCI_DA830_DMA_MCASP1_AXEVT	3
 
+<<<<<<< HEAD
+=======
+/* EDMA channels of da830 McASP2 */
+#define DAVINCI_DA830_DMA_MCASP2_AREVT	4
+#define DAVINCI_DA830_DMA_MCASP2_AXEVT	5
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Interrupts */
 #define DAVINCI_ASP0_RX_INT	IRQ_MBRINT
 #define DAVINCI_ASP0_TX_INT	IRQ_MBXINT

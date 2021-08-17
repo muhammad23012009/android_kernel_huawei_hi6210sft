@@ -26,7 +26,11 @@
 #include <gxio/kiorpc.h>
 #include <gxio/usb_host.h>
 
+<<<<<<< HEAD
 int gxio_usb_host_init(gxio_usb_host_context_t * context, int usb_index,
+=======
+int gxio_usb_host_init(gxio_usb_host_context_t *context, int usb_index,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       int is_ehci)
 {
 	char file[32];
@@ -63,7 +67,11 @@ int gxio_usb_host_init(gxio_usb_host_context_t * context, int usb_index,
 
 EXPORT_SYMBOL_GPL(gxio_usb_host_init);
 
+<<<<<<< HEAD
 int gxio_usb_host_destroy(gxio_usb_host_context_t * context)
+=======
+int gxio_usb_host_destroy(gxio_usb_host_context_t *context)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	iounmap((void __force __iomem *)(context->mmio_base));
 	hv_dev_close(context->fd);
@@ -76,14 +84,22 @@ int gxio_usb_host_destroy(gxio_usb_host_context_t * context)
 
 EXPORT_SYMBOL_GPL(gxio_usb_host_destroy);
 
+<<<<<<< HEAD
 void *gxio_usb_host_get_reg_start(gxio_usb_host_context_t * context)
+=======
+void *gxio_usb_host_get_reg_start(gxio_usb_host_context_t *context)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return context->mmio_base;
 }
 
 EXPORT_SYMBOL_GPL(gxio_usb_host_get_reg_start);
 
+<<<<<<< HEAD
 size_t gxio_usb_host_get_reg_len(gxio_usb_host_context_t * context)
+=======
+size_t gxio_usb_host_get_reg_len(gxio_usb_host_context_t *context)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return HV_USB_HOST_MMIO_SIZE;
 }

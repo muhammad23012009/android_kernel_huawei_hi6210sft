@@ -15,10 +15,13 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+<<<<<<< HEAD
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 /*
@@ -41,7 +44,10 @@
 #include <linux/stddef.h>
 #include <linux/ioport.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/acpi.h>
 #include <linux/io.h>
 
@@ -308,7 +314,11 @@ static const char* chipname[] = {
 	"nVidia nForce", "AMD8111",
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(amd756_ids) = {
+=======
+static const struct pci_device_id amd756_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_740B),
 	  .driver_data = AMD756 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_7413),
@@ -383,11 +393,16 @@ static int amd756_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		 amd756_ioport);
 
 	error = i2c_add_adapter(&amd756_smbus);
+<<<<<<< HEAD
 	if (error) {
 		dev_err(&pdev->dev,
 			"Adapter registration failed, module not inserted\n");
 		goto out_err;
 	}
+=======
+	if (error)
+		goto out_err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 

@@ -35,6 +35,16 @@ struct vmci_obj {
 	enum vmci_obj_type type;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * Needed by other components of this module.  It's okay to have one global
+ * instance of this because there can only ever be one VMCI device.  Our
+ * virtual hardware enforces this.
+ */
+extern struct pci_dev *vmci_pdev;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u32 vmci_get_context_id(void);
 int vmci_send_datagram(struct vmci_datagram *dg);
 

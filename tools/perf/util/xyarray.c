@@ -9,11 +9,25 @@ struct xyarray *xyarray__new(int xlen, int ylen, size_t entry_size)
 	if (xy != NULL) {
 		xy->entry_size = entry_size;
 		xy->row_size   = row_size;
+<<<<<<< HEAD
+=======
+		xy->entries    = xlen * ylen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return xy;
 }
 
+<<<<<<< HEAD
+=======
+void xyarray__reset(struct xyarray *xy)
+{
+	size_t n = xy->entries * xy->entry_size;
+
+	memset(xy->contents, 0, n);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void xyarray__delete(struct xyarray *xy)
 {
 	free(xy);

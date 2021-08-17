@@ -866,6 +866,11 @@ vfp_double_multiply_accumulate(int dd, int dn, int dm, u32 fpscr, u32 negate, ch
 		vdp.sign = vfp_sign_negate(vdp.sign);
 
 	vfp_double_unpack(&vdn, vfp_get_double(dd));
+<<<<<<< HEAD
+=======
+	if (vdn.exponent == 0 && vdn.significand)
+		vfp_double_normalise_denormal(&vdn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (negate & NEG_SUBTRACT)
 		vdn.sign = vfp_sign_negate(vdn.sign);
 

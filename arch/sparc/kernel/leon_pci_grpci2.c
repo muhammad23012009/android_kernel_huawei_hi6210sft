@@ -8,6 +8,10 @@
 #include <linux/of_device.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/export.h>
 #include <asm/io.h>
@@ -190,7 +194,11 @@ struct grpci2_cap_first {
 
 struct grpci2_priv {
 	struct leon_pci_info	info; /* must be on top of this structure */
+<<<<<<< HEAD
 	struct grpci2_regs	*regs;
+=======
+	struct grpci2_regs __iomem *regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char			irq;
 	char			irq_mode; /* IRQ Mode from CAPSTS REG */
 	char			bt_enabled;
@@ -214,10 +222,17 @@ struct grpci2_priv {
 	struct grpci2_barcfg	tgtbars[6];
 };
 
+<<<<<<< HEAD
 DEFINE_SPINLOCK(grpci2_dev_lock);
 struct grpci2_priv *grpci2priv;
 
 int grpci2_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+=======
+static DEFINE_SPINLOCK(grpci2_dev_lock);
+static struct grpci2_priv *grpci2priv;
+
+static int grpci2_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct grpci2_priv *priv = dev->bus->sysdata;
 	int irq_group;
@@ -269,7 +284,11 @@ static int grpci2_cfg_r32(struct grpci2_priv *priv, unsigned int bus,
 		*val = 0xffffffff;
 	} else {
 		/* Bus always little endian (unaffected by byte-swapping) */
+<<<<<<< HEAD
 		*val = flip_dword(tmp);
+=======
+		*val = swab32(tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -327,7 +346,11 @@ static int grpci2_cfg_w32(struct grpci2_priv *priv, unsigned int bus,
 
 	pci_conf = (unsigned int *) (priv->pci_conf |
 						(devfn << 8) | (where & 0xfc));
+<<<<<<< HEAD
 	LEON3_BYPASS_STORE_PA(pci_conf, flip_dword(val));
+=======
+	LEON3_BYPASS_STORE_PA(pci_conf, swab32(val));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Wait until GRPCI2 signals that CFG access is done, it should be
 	 * done instantaneously unless a DMA operation is ongoing...
@@ -497,7 +520,11 @@ static struct irq_chip grpci2_irq = {
 };
 
 /* Handle one or multiple IRQs from the PCI core */
+<<<<<<< HEAD
 static void grpci2_pci_flow_irq(unsigned int irq, struct irq_desc *desc)
+=======
+static void grpci2_pci_flow_irq(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct grpci2_priv *priv = grpci2priv;
 	int i, ack = 0;
@@ -560,10 +587,17 @@ out:
 	return virq;
 }
 
+<<<<<<< HEAD
 void grpci2_hw_init(struct grpci2_priv *priv)
 {
 	u32 ahbadr, pciadr, bar_sz, capptr, io_map, data;
 	struct grpci2_regs *regs = priv->regs;
+=======
+static void grpci2_hw_init(struct grpci2_priv *priv)
+{
+	u32 ahbadr, pciadr, bar_sz, capptr, io_map, data;
+	struct grpci2_regs __iomem *regs = priv->regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	struct grpci2_barcfg *barcfg = priv->tgtbars;
 
@@ -654,7 +688,11 @@ static irqreturn_t grpci2_jump_interrupt(int irq, void *arg)
 static irqreturn_t grpci2_err_interrupt(int irq, void *arg)
 {
 	struct grpci2_priv *priv = arg;
+<<<<<<< HEAD
 	struct grpci2_regs *regs = priv->regs;
+=======
+	struct grpci2_regs __iomem *regs = priv->regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int status;
 
 	status = REGLOAD(regs->sts_cap);
@@ -681,7 +719,11 @@ static irqreturn_t grpci2_err_interrupt(int irq, void *arg)
 
 static int grpci2_of_probe(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct grpci2_regs *regs;
+=======
+	struct grpci2_regs __iomem *regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct grpci2_priv *priv;
 	int err, i, len;
 	const int *tmp;
@@ -722,7 +764,10 @@ static int grpci2_of_probe(struct platform_device *ofdev)
 		err = -ENOMEM;
 		goto err1;
 	}
+<<<<<<< HEAD
 	memset(grpci2priv, 0, sizeof(*grpci2priv));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->regs = regs;
 	priv->irq = ofdev->archdata.irqs[0]; /* BASE IRQ */
 	priv->irq_mode = (capability & STS_IRQMODE) >> STS_IRQMODE_BIT;
@@ -877,7 +922,11 @@ err4:
 	release_resource(&priv->info.mem_space);
 err3:
 	err = -ENOMEM;
+<<<<<<< HEAD
 	iounmap((void *)priv->pci_io_va);
+=======
+	iounmap((void __iomem *)priv->pci_io_va);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err2:
 	kfree(priv);
 err1:
@@ -899,7 +948,10 @@ static struct of_device_id grpci2_of_match[] = {
 static struct platform_driver grpci2_of_driver = {
 	.driver = {
 		.name = "grpci2",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = grpci2_of_match,
 	},
 	.probe = grpci2_of_probe,

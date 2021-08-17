@@ -23,7 +23,11 @@ SECTIONS
 		*(.ResetVector.text)
 	}
 
+<<<<<<< HEAD
 	.image KERNELOFFSET: AT (LOAD_MEMORY_ADDRESS)
+=======
+	.image KERNELOFFSET: AT (CONFIG_KERNEL_LOAD_ADDRESS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		_image_start = .;
 		*(image)
@@ -40,6 +44,7 @@ SECTIONS
 		*(.bss)
 		__bss_end = .;
 	}
+<<<<<<< HEAD
 
 	/*
 	 * This is a remapped copy of the Reset Vector Code.
@@ -51,4 +56,6 @@ SECTIONS
 	{
 		*(.ResetVector.remapped_text)
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

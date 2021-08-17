@@ -4,6 +4,7 @@
 /*
  * This is the most generic implementation of unaligned accesses
  * and should work almost anywhere.
+<<<<<<< HEAD
  *
  * If an architecture can handle unaligned accesses in hardware,
  * it may want to use the linux/unaligned/access_ok.h implementation
@@ -14,12 +15,34 @@
 #if defined(__LITTLE_ENDIAN)
 # include <linux/unaligned/le_struct.h>
 # include <linux/unaligned/be_byteshift.h>
+=======
+ */
+#include <asm/byteorder.h>
+
+/* Set by the arch if it can handle unaligned accesses in hardware. */
+#ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+# include <linux/unaligned/access_ok.h>
+#endif
+
+#if defined(__LITTLE_ENDIAN)
+# ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+#  include <linux/unaligned/le_struct.h>
+#  include <linux/unaligned/be_byteshift.h>
+# endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # include <linux/unaligned/generic.h>
 # define get_unaligned	__get_unaligned_le
 # define put_unaligned	__put_unaligned_le
 #elif defined(__BIG_ENDIAN)
+<<<<<<< HEAD
 # include <linux/unaligned/be_struct.h>
 # include <linux/unaligned/le_byteshift.h>
+=======
+# ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+#  include <linux/unaligned/be_struct.h>
+#  include <linux/unaligned/le_byteshift.h>
+# endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # include <linux/unaligned/generic.h>
 # define get_unaligned	__get_unaligned_be
 # define put_unaligned	__put_unaligned_be

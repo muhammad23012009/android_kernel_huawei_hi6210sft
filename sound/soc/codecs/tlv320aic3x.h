@@ -169,6 +169,10 @@
 /* Audio serial data interface control register A bits */
 #define BIT_CLK_MASTER          0x80
 #define WORD_CLK_MASTER         0x40
+<<<<<<< HEAD
+=======
+#define DOUT_TRISTATE		0x20
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Codec Datapath setup register 7 */
 #define FSREF_44100		(1 << 7)

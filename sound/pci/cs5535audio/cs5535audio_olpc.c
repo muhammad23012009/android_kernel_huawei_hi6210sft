@@ -36,7 +36,12 @@ void olpc_analog_input(struct snd_ac97 *ac97, int on)
 	err = snd_ac97_update_bits(ac97, AC97_AD_TEST2,
 			1 << AC97_AD_HPFD_SHIFT, on << AC97_AD_HPFD_SHIFT);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "setting High Pass Filter - %d\n", err);
+=======
+		dev_err(ac97->bus->card->dev,
+			"setting High Pass Filter - %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -58,7 +63,11 @@ void olpc_mic_bias(struct snd_ac97 *ac97, int on)
 	err = snd_ac97_update_bits(ac97, AC97_AD_MISC,
 			1 << AC97_AD_VREFD_SHIFT, on << AC97_AD_VREFD_SHIFT);
 	if (err < 0)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "setting MIC Bias - %d\n", err);
+=======
+		dev_err(ac97->bus->card->dev, "setting MIC Bias - %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int olpc_dc_info(struct snd_kcontrol *kctl,
@@ -153,7 +162,11 @@ int olpc_quirks(struct snd_card *card, struct snd_ac97 *ac97)
 		return 0;
 
 	if (gpio_request(OLPC_GPIO_MIC_AC, DRV_NAME)) {
+<<<<<<< HEAD
 		printk(KERN_ERR DRV_NAME ": unable to allocate MIC GPIO\n");
+=======
+		dev_err(card->dev, "unable to allocate MIC GPIO\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 	gpio_direction_output(OLPC_GPIO_MIC_AC, 0);
@@ -161,13 +174,21 @@ int olpc_quirks(struct snd_card *card, struct snd_ac97 *ac97)
 	/* drop the original AD1888 HPF control */
 	memset(&elem, 0, sizeof(elem));
 	elem.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
+<<<<<<< HEAD
 	strncpy(elem.name, "High Pass Filter Enable", sizeof(elem.name));
+=======
+	strlcpy(elem.name, "High Pass Filter Enable", sizeof(elem.name));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_ctl_remove_id(card, &elem);
 
 	/* drop the original V_REFOUT control */
 	memset(&elem, 0, sizeof(elem));
 	elem.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
+<<<<<<< HEAD
 	strncpy(elem.name, "V_REFOUT Enable", sizeof(elem.name));
+=======
+	strlcpy(elem.name, "V_REFOUT Enable", sizeof(elem.name));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_ctl_remove_id(card, &elem);
 
 	/* add the OLPC-specific controls */

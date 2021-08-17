@@ -18,6 +18,82 @@
 #include <linux/iio/common/st_sensors_i2c.h>
 #include "st_accel.h"
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id st_accel_of_match[] = {
+	{
+		.compatible = "st,lis3lv02dl-accel",
+		.data = LIS3LV02DL_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm303dlh-accel",
+		.data = LSM303DLH_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm303dlhc-accel",
+		.data = LSM303DLHC_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lis3dh-accel",
+		.data = LIS3DH_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm330d-accel",
+		.data = LSM330D_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm330dl-accel",
+		.data = LSM330DL_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm330dlc-accel",
+		.data = LSM330DLC_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lis331dl-accel",
+		.data = LIS331DL_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lis331dlh-accel",
+		.data = LIS331DLH_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm303dl-accel",
+		.data = LSM303DL_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm303dlm-accel",
+		.data = LSM303DLM_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm330-accel",
+		.data = LSM330_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lsm303agr-accel",
+		.data = LSM303AGR_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,lis2dh12-accel",
+		.data = LIS2DH12_ACCEL_DEV_NAME,
+	},
+	{
+		.compatible = "st,h3lis331dl-accel",
+		.data = H3LIS331DL_DRIVER_NAME,
+	},
+	{
+		.compatible = "st,lis3l02dq",
+		.data = LIS3L02DQ_ACCEL_DEV_NAME,
+	},
+	{},
+};
+MODULE_DEVICE_TABLE(of, st_accel_of_match);
+#else
+#define st_accel_of_match NULL
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int st_accel_i2c_probe(struct i2c_client *client,
 						const struct i2c_device_id *id)
 {
@@ -25,6 +101,7 @@ static int st_accel_i2c_probe(struct i2c_client *client,
 	struct st_sensor_data *adata;
 	int err;
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*adata));
 	if (indio_dev == NULL) {
 		err = -ENOMEM;
@@ -33,11 +110,20 @@ static int st_accel_i2c_probe(struct i2c_client *client,
 
 	adata = iio_priv(indio_dev);
 	adata->dev = &client->dev;
+=======
+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*adata));
+	if (!indio_dev)
+		return -ENOMEM;
+
+	adata = iio_priv(indio_dev);
+	st_sensors_of_i2c_probe(client, st_accel_of_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	st_sensors_i2c_configure(indio_dev, client, adata);
 
 	err = st_accel_common_probe(indio_dev);
 	if (err < 0)
+<<<<<<< HEAD
 		goto st_accel_common_probe_error;
 
 	return 0;
@@ -46,6 +132,11 @@ st_accel_common_probe_error:
 	iio_device_free(indio_dev);
 iio_device_alloc_error:
 	return err;
+=======
+		return err;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int st_accel_i2c_remove(struct i2c_client *client)
@@ -66,14 +157,25 @@ static const struct i2c_device_id st_accel_id_table[] = {
 	{ LSM303DL_ACCEL_DEV_NAME },
 	{ LSM303DLM_ACCEL_DEV_NAME },
 	{ LSM330_ACCEL_DEV_NAME },
+<<<<<<< HEAD
+=======
+	{ LSM303AGR_ACCEL_DEV_NAME },
+	{ LIS2DH12_ACCEL_DEV_NAME },
+	{ LIS3L02DQ_ACCEL_DEV_NAME },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
 
 static struct i2c_driver st_accel_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.name = "st-accel-i2c",
+=======
+		.name = "st-accel-i2c",
+		.of_match_table = of_match_ptr(st_accel_of_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = st_accel_i2c_probe,
 	.remove = st_accel_i2c_remove,

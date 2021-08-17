@@ -33,7 +33,11 @@ enum ltc4215_cmd {
 };
 
 struct ltc4215_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex update_lock;
 	bool valid;
@@ -45,8 +49,13 @@ struct ltc4215_data {
 
 static struct ltc4215_data *ltc4215_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4215_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4215_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s32 val;
 	int i;
 
@@ -214,7 +223,11 @@ static SENSOR_DEVICE_ATTR(in2_min_alarm, S_IRUGO, ltc4215_show_alarm, NULL,
  * Finally, construct an array of pointers to members of the above objects,
  * as required for sysfs_create_group()
  */
+<<<<<<< HEAD
 static struct attribute *ltc4215_attributes[] = {
+=======
+static struct attribute *ltc4215_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_curr1_input.dev_attr.attr,
 	&sensor_dev_attr_curr1_max_alarm.dev_attr.attr,
 
@@ -229,31 +242,50 @@ static struct attribute *ltc4215_attributes[] = {
 
 	NULL,
 };
+<<<<<<< HEAD
 
 static const struct attribute_group ltc4215_group = {
 	.attrs = ltc4215_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(ltc4215);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int ltc4215_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = client->adapter;
+<<<<<<< HEAD
 	struct ltc4215_data *data;
 	int ret;
+=======
+	struct device *dev = &client->dev;
+	struct ltc4215_data *data;
+	struct device *hwmon_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+=======
+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&data->update_lock);
 
 	/* Initialize the LTC4215 chip */
 	i2c_smbus_write_byte_data(client, LTC4215_FAULT, 0x00);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	ret = sysfs_create_group(&client->dev.kobj, &ltc4215_group);
 	if (ret)
@@ -280,6 +312,12 @@ static int ltc4215_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &ltc4215_group);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   ltc4215_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id ltc4215_id[] = {
@@ -294,7 +332,10 @@ static struct i2c_driver ltc4215_driver = {
 		.name	= "ltc4215",
 	},
 	.probe		= ltc4215_probe,
+<<<<<<< HEAD
 	.remove		= ltc4215_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= ltc4215_id,
 };
 

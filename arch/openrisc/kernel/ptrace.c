@@ -187,8 +187,12 @@ asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
 		 */
 		ret = -1L;
 
+<<<<<<< HEAD
 	audit_syscall_entry(AUDIT_ARCH_OPENRISC, regs->gpr[11],
 			    regs->gpr[3], regs->gpr[4],
+=======
+	audit_syscall_entry(regs->gpr[11], regs->gpr[3], regs->gpr[4],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    regs->gpr[5], regs->gpr[6]);
 
 	return ret ? : regs->gpr[11];

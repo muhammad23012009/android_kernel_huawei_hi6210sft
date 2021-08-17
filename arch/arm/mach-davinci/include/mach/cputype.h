@@ -33,7 +33,10 @@ struct davinci_id {
 #define	DAVINCI_CPU_ID_DM365		0x03650000
 #define	DAVINCI_CPU_ID_DA830		0x08300000
 #define	DAVINCI_CPU_ID_DA850		0x08500000
+<<<<<<< HEAD
 #define	DAVINCI_CPU_ID_TNETV107X	0x0b8a0000
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IS_DAVINCI_CPU(type, id)					\
 static inline int is_davinci_ ##type(void)				\
@@ -47,7 +50,10 @@ IS_DAVINCI_CPU(dm355, DAVINCI_CPU_ID_DM355)
 IS_DAVINCI_CPU(dm365, DAVINCI_CPU_ID_DM365)
 IS_DAVINCI_CPU(da830, DAVINCI_CPU_ID_DA830)
 IS_DAVINCI_CPU(da850, DAVINCI_CPU_ID_DA850)
+<<<<<<< HEAD
 IS_DAVINCI_CPU(tnetv107x, DAVINCI_CPU_ID_TNETV107X)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_ARCH_DAVINCI_DM644x
 #define cpu_is_davinci_dm644x() is_davinci_dm644x()
@@ -85,10 +91,13 @@ IS_DAVINCI_CPU(tnetv107x, DAVINCI_CPU_ID_TNETV107X)
 #define cpu_is_davinci_da850() 0
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_DAVINCI_TNETV107X
 #define cpu_is_davinci_tnetv107x() is_davinci_tnetv107x()
 #else
 #define cpu_is_davinci_tnetv107x() 0
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

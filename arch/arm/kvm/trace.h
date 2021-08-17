@@ -25,18 +25,40 @@ TRACE_EVENT(kvm_entry,
 );
 
 TRACE_EVENT(kvm_exit,
+<<<<<<< HEAD
 	TP_PROTO(unsigned long vcpu_pc),
 	TP_ARGS(vcpu_pc),
 
 	TP_STRUCT__entry(
+=======
+	TP_PROTO(int idx, unsigned int exit_reason, unsigned long vcpu_pc),
+	TP_ARGS(idx, exit_reason, vcpu_pc),
+
+	TP_STRUCT__entry(
+		__field(	int,		idx		)
+		__field(	unsigned int,	exit_reason	)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__field(	unsigned long,	vcpu_pc		)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->vcpu_pc		= vcpu_pc;
 	),
 
 	TP_printk("PC: 0x%08lx", __entry->vcpu_pc)
+=======
+		__entry->idx			= idx;
+		__entry->exit_reason		= exit_reason;
+		__entry->vcpu_pc		= vcpu_pc;
+	),
+
+	TP_printk("%s: HSR_EC: 0x%04x (%s), PC: 0x%08lx",
+		  __print_symbolic(__entry->idx, kvm_arm_exception_type),
+		  __entry->exit_reason,
+		  __print_symbolic(__entry->exit_reason, kvm_arm_exception_class),
+		  __entry->vcpu_pc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 );
 
 TRACE_EVENT(kvm_guest_fault,
@@ -64,6 +86,24 @@ TRACE_EVENT(kvm_guest_fault,
 		  __entry->hxfar, __entry->vcpu_pc)
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_access_fault,
+	TP_PROTO(unsigned long ipa),
+	TP_ARGS(ipa),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	ipa		)
+	),
+
+	TP_fast_assign(
+		__entry->ipa		= ipa;
+	),
+
+	TP_printk("IPA: %lx", __entry->ipa)
+);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 TRACE_EVENT(kvm_irq_line,
 	TP_PROTO(unsigned int type, int vcpu_idx, int irq_num, int level),
 	TP_ARGS(type, vcpu_idx, irq_num, level),
@@ -140,19 +180,37 @@ TRACE_EVENT(kvm_emulate_cp15_imp,
 			__entry->CRm, __entry->Op2)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(kvm_wfi,
 	TP_PROTO(unsigned long vcpu_pc),
 	TP_ARGS(vcpu_pc),
 
 	TP_STRUCT__entry(
 		__field(	unsigned long,	vcpu_pc		)
+=======
+TRACE_EVENT(kvm_wfx,
+	TP_PROTO(unsigned long vcpu_pc, bool is_wfe),
+	TP_ARGS(vcpu_pc, is_wfe),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	vcpu_pc		)
+		__field(		 bool,	is_wfe		)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	),
 
 	TP_fast_assign(
 		__entry->vcpu_pc		= vcpu_pc;
+<<<<<<< HEAD
 	),
 
 	TP_printk("guest executed wfi at: 0x%08lx", __entry->vcpu_pc)
+=======
+		__entry->is_wfe			= is_wfe;
+	),
+
+	TP_printk("guest executed wf%c at: 0x%08lx",
+		__entry->is_wfe ? 'e' : 'i', __entry->vcpu_pc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 );
 
 TRACE_EVENT(kvm_unmap_hva,
@@ -203,6 +261,42 @@ TRACE_EVENT(kvm_set_spte_hva,
 	TP_printk("mmu notifier set pte hva: %#08lx", __entry->hva)
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_age_hva,
+	TP_PROTO(unsigned long start, unsigned long end),
+	TP_ARGS(start, end),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	start		)
+		__field(	unsigned long,	end		)
+	),
+
+	TP_fast_assign(
+		__entry->start		= start;
+		__entry->end		= end;
+	),
+
+	TP_printk("mmu notifier age hva: %#08lx -- %#08lx",
+		  __entry->start, __entry->end)
+);
+
+TRACE_EVENT(kvm_test_age_hva,
+	TP_PROTO(unsigned long hva),
+	TP_ARGS(hva),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	hva		)
+	),
+
+	TP_fast_assign(
+		__entry->hva		= hva;
+	),
+
+	TP_printk("mmu notifier test age hva: %#08lx", __entry->hva)
+);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 TRACE_EVENT(kvm_hvc,
 	TP_PROTO(unsigned long vcpu_pc, unsigned long r0, unsigned long imm),
 	TP_ARGS(vcpu_pc, r0, imm),
@@ -223,6 +317,48 @@ TRACE_EVENT(kvm_hvc,
 		  __entry->vcpu_pc, __entry->r0, __entry->imm)
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_set_way_flush,
+	    TP_PROTO(unsigned long vcpu_pc, bool cache),
+	    TP_ARGS(vcpu_pc, cache),
+
+	    TP_STRUCT__entry(
+		    __field(	unsigned long,	vcpu_pc		)
+		    __field(	bool,		cache		)
+	    ),
+
+	    TP_fast_assign(
+		    __entry->vcpu_pc		= vcpu_pc;
+		    __entry->cache		= cache;
+	    ),
+
+	    TP_printk("S/W flush at 0x%016lx (cache %s)",
+		      __entry->vcpu_pc, __entry->cache ? "on" : "off")
+);
+
+TRACE_EVENT(kvm_toggle_cache,
+	    TP_PROTO(unsigned long vcpu_pc, bool was, bool now),
+	    TP_ARGS(vcpu_pc, was, now),
+
+	    TP_STRUCT__entry(
+		    __field(	unsigned long,	vcpu_pc		)
+		    __field(	bool,		was		)
+		    __field(	bool,		now		)
+	    ),
+
+	    TP_fast_assign(
+		    __entry->vcpu_pc		= vcpu_pc;
+		    __entry->was		= was;
+		    __entry->now		= now;
+	    ),
+
+	    TP_printk("VM op at 0x%016lx (cache was %s, now %s)",
+		      __entry->vcpu_pc, __entry->was ? "on" : "off",
+		      __entry->now ? "on" : "off")
+);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _TRACE_KVM_H */
 
 #undef TRACE_INCLUDE_PATH

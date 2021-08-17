@@ -35,6 +35,13 @@
 						 * current value.*/
 #define MMC_CNTRL_PRESET		0x10
 #define MMC_CNTRL_FULL_HALF_PRESET	0x20
+<<<<<<< HEAD
+=======
+
+#define MMC_GMAC4_OFFSET		0x700
+#define MMC_GMAC3_X_OFFSET		0x100
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct stmmac_counters {
 	unsigned int mmc_tx_octetcount_gb;
 	unsigned int mmc_tx_framecount_gb;
@@ -68,7 +75,11 @@ struct stmmac_counters {
 	unsigned int mmc_rx_octetcount_g;
 	unsigned int mmc_rx_broadcastframe_g;
 	unsigned int mmc_rx_multicastframe_g;
+<<<<<<< HEAD
 	unsigned int mmc_rx_crc_errror;
+=======
+	unsigned int mmc_rx_crc_error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int mmc_rx_align_error;
 	unsigned int mmc_rx_run_error;
 	unsigned int mmc_rx_jabber_error;
@@ -128,8 +139,14 @@ struct stmmac_counters {
 	unsigned int mmc_rx_icmp_err_octets;
 };
 
+<<<<<<< HEAD
 extern void dwmac_mmc_ctrl(void __iomem *ioaddr, unsigned int mode);
 extern void dwmac_mmc_intr_all_mask(void __iomem *ioaddr);
 extern void dwmac_mmc_read(void __iomem *ioaddr, struct stmmac_counters *mmc);
+=======
+void dwmac_mmc_ctrl(void __iomem *ioaddr, unsigned int mode);
+void dwmac_mmc_intr_all_mask(void __iomem *ioaddr);
+void dwmac_mmc_read(void __iomem *ioaddr, struct stmmac_counters *mmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __MMC_H__ */

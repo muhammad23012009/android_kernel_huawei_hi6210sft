@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 include ../config/utilities.mak
 
 OUTPUT := ./
@@ -6,6 +7,10 @@ ifeq ("$(origin O)", "command line")
 	OUTPUT := $(O)/
   endif
 endif
+=======
+include ../../scripts/Makefile.include
+include ../../scripts/utilities.mak
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MAN1_TXT= \
 	$(filter-out $(addsuffix .txt, $(ARTICLES) $(SP_ARTICLES)), \
@@ -150,6 +155,7 @@ NO_SUBDIR = :
 endif
 
 ifneq ($(findstring $(MAKEFLAGS),s),s)
+<<<<<<< HEAD
 ifndef V
 	QUIET_ASCIIDOC	= @echo '   ' ASCIIDOC $@;
 	QUIET_XMLTO	= @echo '   ' XMLTO $@;
@@ -161,6 +167,20 @@ ifndef V
 	QUIET_STDERR	= 2> /dev/null
 	QUIET_SUBDIR0	= +@subdir=
 	QUIET_SUBDIR1	= ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
+=======
+ifneq ($(V),1)
+	QUIET_ASCIIDOC	= @echo '  ASCIIDOC '$@;
+	QUIET_XMLTO	= @echo '  XMLTO    '$@;
+	QUIET_DB2TEXI	= @echo '  DB2TEXI  '$@;
+	QUIET_MAKEINFO	= @echo '  MAKEINFO '$@;
+	QUIET_DBLATEX	= @echo '  DBLATEX  '$@;
+	QUIET_XSLTPROC	= @echo '  XSLTPROC '$@;
+	QUIET_GEN	= @echo '  GEN      '$@;
+	QUIET_STDERR	= 2> /dev/null
+	QUIET_SUBDIR0	= +@subdir=
+	QUIET_SUBDIR1	= ;$(NO_SUBDIR) \
+			   echo '  SUBDIR   ' $$subdir; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  $(MAKE) $(PRINT_DIR) -C $$subdir
 	export V
 endif
@@ -189,6 +209,7 @@ ifdef missing_tools
 endif
 
 do-install-man: man
+<<<<<<< HEAD
 	$(INSTALL) -d -m 755 $(DESTDIR)$(man1dir)
 #	$(INSTALL) -d -m 755 $(DESTDIR)$(man5dir)
 #	$(INSTALL) -d -m 755 $(DESTDIR)$(man7dir)
@@ -211,17 +232,51 @@ install-info: info
 	if test -r $(DESTDIR)$(infodir)/dir; then \
 	  $(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perf.info ;\
 	  $(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perfman.info ;\
+=======
+	$(call QUIET_INSTALL, Documentation-man) \
+		$(INSTALL) -d -m 755 $(DESTDIR)$(man1dir); \
+#		$(INSTALL) -d -m 755 $(DESTDIR)$(man5dir); \
+#		$(INSTALL) -d -m 755 $(DESTDIR)$(man7dir); \
+		$(INSTALL) -m 644 $(DOC_MAN1) $(DESTDIR)$(man1dir); \
+#		$(INSTALL) -m 644 $(DOC_MAN5) $(DESTDIR)$(man5dir); \
+#		$(INSTALL) -m 644 $(DOC_MAN7) $(DESTDIR)$(man7dir)
+
+install-man: check-man-tools man
+
+ifdef missing_tools
+  DO_INSTALL_MAN = $(warning Please install $(missing_tools) to have the man pages installed)
+else
+  DO_INSTALL_MAN = do-install-man
+endif
+
+try-install-man: $(DO_INSTALL_MAN)
+
+install-info: info
+	$(call QUIET_INSTALL, Documentation-info) \
+		$(INSTALL) -d -m 755 $(DESTDIR)$(infodir); \
+		$(INSTALL) -m 644 $(OUTPUT)perf.info $(OUTPUT)perfman.info $(DESTDIR)$(infodir); \
+	if test -r $(DESTDIR)$(infodir)/dir; then \
+		$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perf.info ;\
+		$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perfman.info ;\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else \
 	  echo "No directory found in $(DESTDIR)$(infodir)" >&2 ; \
 	fi
 
 install-pdf: pdf
+<<<<<<< HEAD
 	$(INSTALL) -d -m 755 $(DESTDIR)$(pdfdir)
 	$(INSTALL) -m 644 $(OUTPUT)user-manual.pdf $(DESTDIR)$(pdfdir)
+=======
+	$(call QUIET_INSTALL, Documentation-pdf) \
+		$(INSTALL) -d -m 755 $(DESTDIR)$(pdfdir); \
+		$(INSTALL) -m 644 $(OUTPUT)user-manual.pdf $(DESTDIR)$(pdfdir)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #install-html: html
 #	'$(SHELL_PATH_SQ)' ./install-webdoc.sh $(DESTDIR)$(htmldir)
 
+<<<<<<< HEAD
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),tags)
 $(OUTPUT)PERF-VERSION-FILE: .FORCE-PERF-VERSION-FILE
@@ -230,6 +285,8 @@ $(OUTPUT)PERF-VERSION-FILE: .FORCE-PERF-VERSION-FILE
 -include $(OUTPUT)PERF-VERSION-FILE
 endif
 endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # Determine "include::" file references in asciidoc files.
@@ -259,6 +316,7 @@ $(OUTPUT)cmd-list.made: cmd-list.perl ../command-list.txt $(MAN1_TXT)
 	$(PERL_PATH) ./cmd-list.perl ../command-list.txt $(QUIET_STDERR) && \
 	date >$@
 
+<<<<<<< HEAD
 clean:
 	$(RM) $(MAN_XML) $(addsuffix +,$(MAN_XML))
 	$(RM) $(MAN_HTML) $(addsuffix +,$(MAN_HTML))
@@ -268,6 +326,19 @@ clean:
 	$(RM) $(OUTPUT)howto-index.txt $(OUTPUT)howto/*.html $(OUTPUT)doc.dep
 	$(RM) $(OUTPUT)technical/api-*.html $(OUTPUT)technical/api-index.txt
 	$(RM) $(cmds_txt) $(OUTPUT)*.made
+=======
+CLEAN_FILES =									\
+	$(MAN_XML) $(addsuffix +,$(MAN_XML))					\
+	$(MAN_HTML) $(addsuffix +,$(MAN_HTML))					\
+	$(DOC_HTML) $(DOC_MAN1) $(DOC_MAN5) $(DOC_MAN7)				\
+	$(OUTPUT)*.texi $(OUTPUT)*.texi+ $(OUTPUT)*.texi++			\
+	$(OUTPUT)perf.info $(OUTPUT)perfman.info				\
+	$(OUTPUT)howto-index.txt $(OUTPUT)howto/*.html $(OUTPUT)doc.dep		\
+	$(OUTPUT)technical/api-*.html $(OUTPUT)technical/api-index.txt		\
+	$(cmds_txt) $(OUTPUT)*.made
+clean:
+	$(call QUIET_CLEAN, Documentation) $(RM) $(CLEAN_FILES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 $(MAN_HTML): $(OUTPUT)%.html : %.txt
 	$(QUIET_ASCIIDOC)$(RM) $@+ $@ && \
@@ -277,7 +348,11 @@ $(MAN_HTML): $(OUTPUT)%.html : %.txt
 
 $(OUTPUT)%.1 $(OUTPUT)%.5 $(OUTPUT)%.7 : $(OUTPUT)%.xml
 	$(QUIET_XMLTO)$(RM) $@ && \
+<<<<<<< HEAD
 	$(XMLTO) -o $(OUTPUT) -m $(MANPAGE_XSL) $(XMLTO_EXTRA) man $<
+=======
+	$(XMLTO) -o $(OUTPUT). -m $(MANPAGE_XSL) $(XMLTO_EXTRA) man $<
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 $(OUTPUT)%.xml : %.txt
 	$(QUIET_ASCIIDOC)$(RM) $@+ $@ && \
@@ -348,5 +423,8 @@ $(patsubst %.txt,%.html,$(wildcard howto/*.txt)): %.html : %.txt
 
 #quick-install-html:
 #	'$(SHELL_PATH_SQ)' ./install-doc-quick.sh $(HTML_REF) $(DESTDIR)$(htmldir)
+<<<<<<< HEAD
 
 .PHONY: .FORCE-PERF-VERSION-FILE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

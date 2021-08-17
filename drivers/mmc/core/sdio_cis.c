@@ -24,12 +24,23 @@
 #include "sdio_cis.h"
 #include "sdio_ops.h"
 
+<<<<<<< HEAD
+=======
+#define SDIO_READ_CIS_TIMEOUT_MS  (10 * 1000) /* 10s */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int cistpl_vers_1(struct mmc_card *card, struct sdio_func *func,
 			 const unsigned char *buf, unsigned size)
 {
 	unsigned i, nr_strings;
 	char **buffer, *string;
 
+<<<<<<< HEAD
+=======
+	if (size < 2)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Find all null-terminated (including zero length) strings in
 	   the TPLLV1_INFO field. Trailing garbage is ignored. */
 	buf += 2;
@@ -177,8 +188,18 @@ static int cistpl_funce_func(struct mmc_card *card, struct sdio_func *func,
 	vsn = func->card->cccr.sdio_vsn;
 	min_size = (vsn == SDIO_SDIO_REV_1_00) ? 28 : 42;
 
+<<<<<<< HEAD
 	if (size < min_size)
 		return -EINVAL;
+=======
+	if (size == 28 && vsn == SDIO_SDIO_REV_1_10) {
+		pr_warn("%s: card has broken SDIO 1.1 CIS, forcing SDIO 1.0\n",
+			mmc_hostname(card->host));
+		vsn = SDIO_SDIO_REV_1_00;
+	} else if (size < min_size) {
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* TPLFE_MAX_BLK_SIZE */
 	func->max_blksize = buf[12] | (buf[13] << 8);
@@ -223,6 +244,10 @@ static const struct cis_tpl cis_tpl_list[] = {
 	{	0x20,	4,	cistpl_manfid		},
 	{	0x21,	2,	/* cistpl_funcid */	},
 	{	0x22,	0,	cistpl_funce		},
+<<<<<<< HEAD
+=======
+	{	0x91,	2,	/* cistpl_sdio_std */	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
@@ -260,6 +285,11 @@ static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
 
 	do {
 		unsigned char tpl_code, tpl_link;
+<<<<<<< HEAD
+=======
+		unsigned long timeout = jiffies +
+			msecs_to_jiffies(SDIO_READ_CIS_TIMEOUT_MS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ret = mmc_io_rw_direct(card, 0, 0, ptr++, 0, &tpl_code);
 		if (ret)
@@ -312,6 +342,11 @@ static int sdio_read_cis(struct mmc_card *card, struct sdio_func *func)
 			prev = &this->next;
 
 			if (ret == -ENOENT) {
+<<<<<<< HEAD
+=======
+				if (time_after(jiffies, timeout))
+					break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/* warn about unknown tuples */
 				pr_warn_ratelimited("%s: queuing unknown"
 				       " CIS tuple 0x%02x (%u bytes)\n",

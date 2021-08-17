@@ -12,10 +12,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -31,7 +34,10 @@
 
 #include <linux/mtd/partitions.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This uses SPI to talk with an "AVR Butterfly", which is a $US20 card
  * with a battery powered AVR microcontroller and lots of goodies.  You
@@ -41,7 +47,10 @@
  * and use this custom parallel port cable.
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* DATA output bits (pins 2..9 == D0..D7) */
 #define	butterfly_nreset (1 << 1)		/* pin 3 */
 
@@ -56,14 +65,20 @@
 /* CONTROL output bits */
 #define	spi_cs_bit	PARPORT_CONTROL_SELECT	/* pin 17 */
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct butterfly *spidev_to_pp(struct spi_device *spi)
 {
 	return spi->controller_data;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct butterfly {
 	/* REVISIT ... for now, this must be first */
 	struct spi_bitbang	bitbang;
@@ -144,18 +159,30 @@ static void butterfly_chipselect(struct spi_device *spi, int value)
 	parport_frob_control(pp->port, spi_cs_bit, value ? spi_cs_bit : 0);
 }
 
+<<<<<<< HEAD
 
 /* we only needed to implement one mode here, and choose SPI_MODE_0 */
 
 #define	spidelay(X)	do{}while(0)
 //#define	spidelay	ndelay
+=======
+/* we only needed to implement one mode here, and choose SPI_MODE_0 */
+
+#define spidelay(X)	do { } while (0)
+/* #define spidelay	ndelay */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "spi-bitbang-txrx.h"
 
 static u32
+<<<<<<< HEAD
 butterfly_txrx_word_mode0(struct spi_device *spi,
 		unsigned nsecs,
 		u32 word, u8 bits)
+=======
+butterfly_txrx_word_mode0(struct spi_device *spi, unsigned nsecs, u32 word,
+			  u8 bits)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return bitbang_txrx_be_cpha0(spi, nsecs, 0, 0, word, bits);
 }
@@ -171,15 +198,26 @@ static struct mtd_partition partitions[] = { {
 	/* sector 0 = 8 pages * 264 bytes/page (1 block)
 	 * sector 1 = 248 pages * 264 bytes/page
 	 */
+<<<<<<< HEAD
 	.name		= "bookkeeping",	// 66 KB
 	.offset		= 0,
 	.size		= (8 + 248) * 264,
 //	.mask_flags	= MTD_WRITEABLE,
+=======
+	.name		= "bookkeeping",	/* 66 KB */
+	.offset		= 0,
+	.size		= (8 + 248) * 264,
+	/* .mask_flags	= MTD_WRITEABLE, */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }, {
 	/* sector 2 = 256 pages * 264 bytes/page
 	 * sectors 3-5 = 512 pages * 264 bytes/page
 	 */
+<<<<<<< HEAD
 	.name		= "filesystem",		// 462 KB
+=======
+	.name		= "filesystem",		/* 462 KB */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.offset		= MTDPART_OFS_APPEND,
 	.size		= MTDPART_SIZ_FULL,
 } };
@@ -190,7 +228,10 @@ static struct flash_platform_data flash = {
 	.nr_parts	= ARRAY_SIZE(partitions),
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* REVISIT remove this ugly global and its "only one" limitation */
 static struct butterfly *butterfly;
 
@@ -201,6 +242,10 @@ static void butterfly_attach(struct parport *p)
 	struct butterfly	*pp;
 	struct spi_master	*master;
 	struct device		*dev = p->physport->dev;
+<<<<<<< HEAD
+=======
+	struct pardev_cb	butterfly_cb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (butterfly || !dev)
 		return;
@@ -209,7 +254,11 @@ static void butterfly_attach(struct parport *p)
 	 * and no way to be selective about what it binds to.
 	 */
 
+<<<<<<< HEAD
 	master = spi_alloc_master(dev, sizeof *pp);
+=======
+	master = spi_alloc_master(dev, sizeof(*pp));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!master) {
 		status = -ENOMEM;
 		goto done;
@@ -225,7 +274,11 @@ static void butterfly_attach(struct parport *p)
 	master->bus_num = 42;
 	master->num_chipselect = 2;
 
+<<<<<<< HEAD
 	pp->bitbang.master = spi_master_get(master);
+=======
+	pp->bitbang.master = master;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pp->bitbang.chipselect = butterfly_chipselect;
 	pp->bitbang.txrx_word[SPI_MODE_0] = butterfly_txrx_word_mode0;
 
@@ -233,9 +286,15 @@ static void butterfly_attach(struct parport *p)
 	 * parport hookup
 	 */
 	pp->port = p;
+<<<<<<< HEAD
 	pd = parport_register_device(p, "spi_butterfly",
 			NULL, NULL, NULL,
 			0 /* FLAGS */, pp);
+=======
+	memset(&butterfly_cb, 0, sizeof(butterfly_cb));
+	butterfly_cb.private = pp;
+	pd = parport_register_dev_model(p, "spi_butterfly", &butterfly_cb, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pd) {
 		status = -ENOMEM;
 		goto clean0;
@@ -266,7 +325,10 @@ static void butterfly_attach(struct parport *p)
 	parport_write_data(pp->port, pp->lastbyte);
 	msleep(100);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Start SPI ... for now, hide that we're two physical busses.
 	 */
@@ -287,9 +349,14 @@ static void butterfly_attach(struct parport *p)
 	pp->dataflash = spi_new_device(pp->bitbang.master, &pp->info[0]);
 	if (pp->dataflash)
 		pr_debug("%s: dataflash at %s\n", p->name,
+<<<<<<< HEAD
 				dev_name(&pp->dataflash->dev));
 
 	// dev_info(_what?_, ...)
+=======
+			 dev_name(&pp->dataflash->dev));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("%s: AVR Butterfly\n", p->name);
 	butterfly = pp;
 	return;
@@ -302,7 +369,11 @@ clean2:
 clean1:
 	parport_unregister_device(pd);
 clean0:
+<<<<<<< HEAD
 	(void) spi_master_put(pp->bitbang.master);
+=======
+	spi_master_put(pp->bitbang.master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 done:
 	pr_debug("%s: butterfly probe, fail %d\n", p->name, status);
 }
@@ -310,7 +381,10 @@ done:
 static void butterfly_detach(struct parport *p)
 {
 	struct butterfly	*pp;
+<<<<<<< HEAD
 	int			status;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* FIXME this global is ugly ... but, how to quickly get from
 	 * the parport to the "struct butterfly" associated with it?
@@ -322,7 +396,11 @@ static void butterfly_detach(struct parport *p)
 	butterfly = NULL;
 
 	/* stop() unregisters child devices too */
+<<<<<<< HEAD
 	status = spi_bitbang_stop(&pp->bitbang);
+=======
+	spi_bitbang_stop(&pp->bitbang);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* turn off VCC */
 	parport_write_data(pp->port, 0);
@@ -331,16 +409,28 @@ static void butterfly_detach(struct parport *p)
 	parport_release(pp->pd);
 	parport_unregister_device(pp->pd);
 
+<<<<<<< HEAD
 	(void) spi_master_put(pp->bitbang.master);
+=======
+	spi_master_put(pp->bitbang.master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct parport_driver butterfly_driver = {
 	.name =		"spi_butterfly",
+<<<<<<< HEAD
 	.attach =	butterfly_attach,
 	.detach =	butterfly_detach,
 };
 
 
+=======
+	.match_port =	butterfly_attach,
+	.detach =	butterfly_detach,
+	.devmodel = true,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init butterfly_init(void)
 {
 	return parport_register_driver(&butterfly_driver);

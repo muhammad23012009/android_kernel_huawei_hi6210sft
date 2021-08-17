@@ -1,7 +1,11 @@
 /*
  * Kernel traps/events for Hexagon processor
  *
+<<<<<<< HEAD
  * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -423,7 +427,11 @@ void do_trap0(struct pt_regs *regs)
 			 */
 			info.si_code = TRAP_BRKPT;
 			info.si_addr = (void __user *) pt_elr(regs);
+<<<<<<< HEAD
 			send_sig_info(SIGTRAP, &info, current);
+=======
+			force_sig_info(SIGTRAP, &info, current);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 #ifdef CONFIG_KGDB
 			kgdb_handle_exception(pt_cause(regs), SIGTRAP,

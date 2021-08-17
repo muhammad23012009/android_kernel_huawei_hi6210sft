@@ -14,7 +14,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/i2c/mcs.h>
 #include <linux/interrupt.h>
@@ -162,10 +165,16 @@ static irqreturn_t mcs5000_ts_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data)
 {
 	const struct mcs_platform_data *platform_data =
 		data->platform_data;
+=======
+static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data,
+				 const struct mcs_platform_data *platform_data)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct i2c_client *client = data->client;
 
 	/* Touch reset & sleep mode */
@@ -188,6 +197,7 @@ static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data)
 }
 
 static int mcs5000_ts_probe(struct i2c_client *client,
+<<<<<<< HEAD
 		const struct i2c_device_id *id)
 {
 	struct mcs5000_ts_data *data;
@@ -210,6 +220,34 @@ static int mcs5000_ts_probe(struct i2c_client *client,
 	data->platform_data = client->dev.platform_data;
 
 	input_dev->name = "MELPAS MCS-5000 Touchscreen";
+=======
+			    const struct i2c_device_id *id)
+{
+	const struct mcs_platform_data *pdata;
+	struct mcs5000_ts_data *data;
+	struct input_dev *input_dev;
+	int error;
+
+	pdata = dev_get_platdata(&client->dev);
+	if (!pdata)
+		return -EINVAL;
+
+	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
+	if (!data) {
+		dev_err(&client->dev, "Failed to allocate memory\n");
+		return -ENOMEM;
+	}
+
+	data->client = client;
+
+	input_dev = devm_input_allocate_device(&client->dev);
+	if (!input_dev) {
+		dev_err(&client->dev, "Failed to allocate input device\n");
+		return -ENOMEM;
+	}
+
+	input_dev->name = "MELFAS MCS-5000 Touchscreen";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_dev->id.bustype = BUS_I2C;
 	input_dev->dev.parent = &client->dev;
 
@@ -220,6 +258,7 @@ static int mcs5000_ts_probe(struct i2c_client *client,
 	input_set_abs_params(input_dev, ABS_Y, 0, MCS5000_MAX_YC, 0, 0);
 
 	input_set_drvdata(input_dev, data);
+<<<<<<< HEAD
 
 	if (data->platform_data->cfg_pin)
 		data->platform_data->cfg_pin();
@@ -262,6 +301,35 @@ static int mcs5000_ts_remove(struct i2c_client *client)
 
 #ifdef CONFIG_PM
 static int mcs5000_ts_suspend(struct device *dev)
+=======
+	data->input_dev = input_dev;
+
+	if (pdata->cfg_pin)
+		pdata->cfg_pin();
+
+	error = devm_request_threaded_irq(&client->dev, client->irq,
+					  NULL, mcs5000_ts_interrupt,
+					  IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+					  "mcs5000_ts", data);
+	if (error) {
+		dev_err(&client->dev, "Failed to register interrupt\n");
+		return error;
+	}
+
+	error = input_register_device(data->input_dev);
+	if (error) {
+		dev_err(&client->dev, "Failed to register input device\n");
+		return error;
+	}
+
+	mcs5000_ts_phys_init(data, pdata);
+	i2c_set_clientdata(client, data);
+
+	return 0;
+}
+
+static int __maybe_unused mcs5000_ts_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
@@ -271,18 +339,31 @@ static int mcs5000_ts_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mcs5000_ts_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct mcs5000_ts_data *data = i2c_get_clientdata(client);
 
 	mcs5000_ts_phys_init(data);
+=======
+static int __maybe_unused mcs5000_ts_resume(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct mcs5000_ts_data *data = i2c_get_clientdata(client);
+	const struct mcs_platform_data *pdata = dev_get_platdata(dev);
+
+	mcs5000_ts_phys_init(data, pdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static SIMPLE_DEV_PM_OPS(mcs5000_ts_pm, mcs5000_ts_suspend, mcs5000_ts_resume);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct i2c_device_id mcs5000_ts_id[] = {
 	{ "mcs5000_ts", 0 },
@@ -292,12 +373,18 @@ MODULE_DEVICE_TABLE(i2c, mcs5000_ts_id);
 
 static struct i2c_driver mcs5000_ts_driver = {
 	.probe		= mcs5000_ts_probe,
+<<<<<<< HEAD
 	.remove		= mcs5000_ts_remove,
 	.driver = {
 		.name = "mcs5000_ts",
 #ifdef CONFIG_PM
 		.pm   = &mcs5000_ts_pm,
 #endif
+=======
+	.driver = {
+		.name = "mcs5000_ts",
+		.pm   = &mcs5000_ts_pm,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table	= mcs5000_ts_id,
 };

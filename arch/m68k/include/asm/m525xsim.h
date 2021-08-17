@@ -105,7 +105,11 @@
 /*
  *	QSPI module.
  */
+<<<<<<< HEAD
 #define MCFQSPI_BASE		(MCF_MBAR + 0x300)	/* Base address QSPI */
+=======
+#define MCFQSPI_BASE		(MCF_MBAR + 0x400)	/* Base address QSPI */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MCFQSPI_SIZE		0x40			/* Register set size */
 
 #ifdef CONFIG_M5249
@@ -123,10 +127,17 @@
 /*
  *	I2C module.
  */
+<<<<<<< HEAD
 #define MCFI2C_BASE0		(MCF_MBAR + 0x280)	/* Base addreess I2C0 */
 #define MCFI2C_SIZE0		0x20			/* Register set size */
 
 #define MCFI2C_BASE1		(MCF_MBAR2 + 0x440)	/* Base addreess I2C1 */
+=======
+#define MCFI2C_BASE0		(MCF_MBAR + 0x280)	/* Base address I2C0 */
+#define MCFI2C_SIZE0		0x20			/* Register set size */
+
+#define MCFI2C_BASE1		(MCF_MBAR2 + 0x440)	/* Base address I2C1 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MCFI2C_SIZE1		0x20			/* Register set size */
 
 /*

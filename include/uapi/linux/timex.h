@@ -63,6 +63,7 @@
  */
 struct timex {
 	unsigned int modes;	/* mode selector */
+<<<<<<< HEAD
 	long offset;		/* time offset (usec) */
 	long freq;		/* frequency offset (scaled ppm) */
 	long maxerror;		/* maximum error (usec) */
@@ -84,6 +85,29 @@ struct timex {
 	long calcnt;            /* calibration intervals (ro) */
 	long errcnt;            /* calibration errors (ro) */
 	long stbcnt;            /* stability limit exceeded (ro) */
+=======
+	__kernel_long_t offset;	/* time offset (usec) */
+	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
+	__kernel_long_t maxerror;/* maximum error (usec) */
+	__kernel_long_t esterror;/* estimated error (usec) */
+	int status;		/* clock command/status */
+	__kernel_long_t constant;/* pll time constant */
+	__kernel_long_t precision;/* clock precision (usec) (read only) */
+	__kernel_long_t tolerance;/* clock frequency tolerance (ppm)
+				   * (read only)
+				   */
+	struct timeval time;	/* (read only, except for ADJ_SETOFFSET) */
+	__kernel_long_t tick;	/* (modified) usecs between clock ticks */
+
+	__kernel_long_t ppsfreq;/* pps frequency (scaled ppm) (ro) */
+	__kernel_long_t jitter; /* pps jitter (us) (ro) */
+	int shift;              /* interval duration (s) (shift) (ro) */
+	__kernel_long_t stabil;            /* pps stability (scaled ppm) (ro) */
+	__kernel_long_t jitcnt; /* jitter limit exceeded (ro) */
+	__kernel_long_t calcnt; /* calibration intervals (ro) */
+	__kernel_long_t errcnt; /* calibration errors (ro) */
+	__kernel_long_t stbcnt; /* stability limit exceeded (ro) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int tai;		/* TAI offset (ro) */
 

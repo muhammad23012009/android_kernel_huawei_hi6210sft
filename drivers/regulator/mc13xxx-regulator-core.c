@@ -33,6 +33,7 @@ static int mc13xxx_regulator_enable(struct regulator_dev *rdev)
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	struct mc13xxx_regulator *mc13xxx_regulators = priv->mc13xxx_regulators;
 	int id = rdev_get_id(rdev);
+<<<<<<< HEAD
 	int ret;
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
@@ -44,6 +45,14 @@ static int mc13xxx_regulator_enable(struct regulator_dev *rdev)
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+
+	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
+
+	return mc13xxx_reg_rmw(priv->mc13xxx, mc13xxx_regulators[id].reg,
+			       mc13xxx_regulators[id].enable_bit,
+			       mc13xxx_regulators[id].enable_bit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mc13xxx_regulator_disable(struct regulator_dev *rdev)
@@ -51,6 +60,7 @@ static int mc13xxx_regulator_disable(struct regulator_dev *rdev)
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	struct mc13xxx_regulator *mc13xxx_regulators = priv->mc13xxx_regulators;
 	int id = rdev_get_id(rdev);
+<<<<<<< HEAD
 	int ret;
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
@@ -61,6 +71,13 @@ static int mc13xxx_regulator_disable(struct regulator_dev *rdev)
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+
+	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
+
+	return mc13xxx_reg_rmw(priv->mc13xxx, mc13xxx_regulators[id].reg,
+			       mc13xxx_regulators[id].enable_bit, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mc13xxx_regulator_is_enabled(struct regulator_dev *rdev)
@@ -70,10 +87,14 @@ static int mc13xxx_regulator_is_enabled(struct regulator_dev *rdev)
 	int ret, id = rdev_get_id(rdev);
 	unsigned int val;
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 	ret = mc13xxx_reg_read(priv->mc13xxx, mc13xxx_regulators[id].reg, &val);
 	mc13xxx_unlock(priv->mc13xxx);
 
+=======
+	ret = mc13xxx_reg_read(priv->mc13xxx, mc13xxx_regulators[id].reg, &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -86,6 +107,7 @@ static int mc13xxx_regulator_set_voltage_sel(struct regulator_dev *rdev,
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	struct mc13xxx_regulator *mc13xxx_regulators = priv->mc13xxx_regulators;
 	int id = rdev_get_id(rdev);
+<<<<<<< HEAD
 	int ret;
 
 	mc13xxx_lock(priv->mc13xxx);
@@ -95,6 +117,12 @@ static int mc13xxx_regulator_set_voltage_sel(struct regulator_dev *rdev,
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+
+	return mc13xxx_reg_rmw(priv->mc13xxx, mc13xxx_regulators[id].vsel_reg,
+			       mc13xxx_regulators[id].vsel_mask,
+			       selector << mc13xxx_regulators[id].vsel_shift);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mc13xxx_regulator_get_voltage(struct regulator_dev *rdev)
@@ -106,11 +134,16 @@ static int mc13xxx_regulator_get_voltage(struct regulator_dev *rdev)
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 	ret = mc13xxx_reg_read(priv->mc13xxx,
 				mc13xxx_regulators[id].vsel_reg, &val);
 	mc13xxx_unlock(priv->mc13xxx);
 
+=======
+	ret = mc13xxx_reg_read(priv->mc13xxx,
+				mc13xxx_regulators[id].vsel_reg, &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -167,8 +200,15 @@ int mc13xxx_get_num_regulators_dt(struct platform_device *pdev)
 	struct device_node *parent;
 	int num;
 
+<<<<<<< HEAD
 	of_node_get(pdev->dev.parent->of_node);
 	parent = of_find_node_by_name(pdev->dev.parent->of_node, "regulators");
+=======
+	if (!pdev->dev.parent->of_node)
+		return -ENODEV;
+
+	parent = of_get_child_by_name(pdev->dev.parent->of_node, "regulators");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!parent)
 		return -ENODEV;
 
@@ -187,8 +227,15 @@ struct mc13xxx_regulator_init_data *mc13xxx_parse_regulators_dt(
 	struct device_node *parent, *child;
 	int i, parsed = 0;
 
+<<<<<<< HEAD
 	of_node_get(pdev->dev.parent->of_node);
 	parent = of_find_node_by_name(pdev->dev.parent->of_node, "regulators");
+=======
+	if (!pdev->dev.parent->of_node)
+		return NULL;
+
+	parent = of_get_child_by_name(pdev->dev.parent->of_node, "regulators");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!parent)
 		return NULL;
 
@@ -211,7 +258,12 @@ struct mc13xxx_regulator_init_data *mc13xxx_parse_regulators_dt(
 					 regulators[i].desc.name)) {
 				p->id = i;
 				p->init_data = of_get_regulator_init_data(
+<<<<<<< HEAD
 							&pdev->dev, child);
+=======
+							&pdev->dev, child,
+							&regulators[i].desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				p->node = child;
 				p++;
 

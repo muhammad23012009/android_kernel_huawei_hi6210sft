@@ -47,6 +47,13 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
 	if (adis->trig == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	adis->trig->dev.parent = &adis->spi->dev;
+	adis->trig->ops = &adis_trigger_ops;
+	iio_trigger_set_drvdata(adis->trig, adis);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = request_irq(adis->spi->irq,
 			  &iio_trigger_generic_data_rdy_poll,
 			  IRQF_TRIGGER_RISING,
@@ -55,12 +62,18 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
 	if (ret)
 		goto error_free_trig;
 
+<<<<<<< HEAD
 	adis->trig->dev.parent = &adis->spi->dev;
 	adis->trig->ops = &adis_trigger_ops;
 	iio_trigger_set_drvdata(adis->trig, adis);
 	ret = iio_trigger_register(adis->trig);
 
 	indio_dev->trig = adis->trig;
+=======
+	ret = iio_trigger_register(adis->trig);
+
+	indio_dev->trig = iio_trigger_get(adis->trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto error_free_irq;
 

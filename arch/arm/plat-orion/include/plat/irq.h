@@ -12,5 +12,8 @@
 #define __PLAT_IRQ_H
 
 void orion_irq_init(unsigned int irq_start, void __iomem *maskaddr);
+<<<<<<< HEAD
 void __init orion_dt_init_irq(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

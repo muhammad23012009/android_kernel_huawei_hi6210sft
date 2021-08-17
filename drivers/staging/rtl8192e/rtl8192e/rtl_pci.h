@@ -2,7 +2,11 @@
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
  * Based on the r8180 driver, which is:
+<<<<<<< HEAD
  * Copyright 2004-2005 Andrea Merello <andreamrl@tiscali.it>, et al.
+=======
+ * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -12,10 +16,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -28,6 +35,7 @@
 #include <linux/types.h>
 #include <linux/pci.h>
 
+<<<<<<< HEAD
 static inline void NdisRawWritePortUlong(u32 port,  u32 val)
 {
 	outl(val, port);
@@ -99,5 +107,9 @@ struct rt_pci_capab_header {
 
 struct net_device;
 bool rtl8192_pci_findadapter(struct pci_dev *pdev, struct net_device *dev);
+=======
+struct net_device;
+bool rtl92e_check_adapter(struct pci_dev *pdev, struct net_device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

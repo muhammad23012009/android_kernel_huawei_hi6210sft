@@ -220,8 +220,13 @@ struct tm6000_core {
 	struct tm6000_fh		*resources;	/* Points to fh that is streaming */
 	bool				is_res_read;
 
+<<<<<<< HEAD
 	struct video_device		*vfd;
 	struct video_device		*radio_dev;
+=======
+	struct video_device		vfd;
+	struct video_device		radio_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tm6000_dmaqueue		vidq;
 	struct v4l2_device		v4l2_dev;
 	struct v4l2_ctrl_handler	ctrl_handler;

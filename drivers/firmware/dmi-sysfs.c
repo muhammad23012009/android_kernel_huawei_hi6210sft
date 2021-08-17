@@ -553,7 +553,11 @@ static const struct bin_attribute dmi_entry_raw_attr = {
 static void dmi_sysfs_entry_release(struct kobject *kobj)
 {
 	struct dmi_sysfs_entry *entry = to_entry(kobj);
+<<<<<<< HEAD
 	sysfs_remove_bin_file(&entry->kobj, &dmi_entry_raw_attr);
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&entry_list_lock);
 	list_del(&entry->list);
 	spin_unlock(&entry_list_lock);
@@ -566,7 +570,10 @@ static struct kobj_type dmi_sysfs_entry_ktype = {
 	.default_attrs = dmi_sysfs_entry_attrs,
 };
 
+<<<<<<< HEAD
 static struct kobject *dmi_kobj;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct kset *dmi_kset;
 
 /* Global count of all instances seen.  Only for setup */
@@ -648,6 +655,7 @@ static void cleanup_entry_list(void)
 
 static int __init dmi_sysfs_init(void)
 {
+<<<<<<< HEAD
 	int error = -ENOMEM;
 	int val;
 
@@ -659,6 +667,22 @@ static int __init dmi_sysfs_init(void)
 	dmi_kset = kset_create_and_add("entries", NULL, dmi_kobj);
 	if (!dmi_kset)
 		goto err;
+=======
+	int error;
+	int val;
+
+	if (!dmi_kobj) {
+		pr_err("dmi-sysfs: dmi entry is absent.\n");
+		error = -ENODATA;
+		goto err;
+	}
+
+	dmi_kset = kset_create_and_add("entries", NULL, dmi_kobj);
+	if (!dmi_kset) {
+		error = -ENOMEM;
+		goto err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	val = 0;
 	error = dmi_walk(dmi_sysfs_register_handle, &val);
@@ -675,7 +699,10 @@ static int __init dmi_sysfs_init(void)
 err:
 	cleanup_entry_list();
 	kset_unregister(dmi_kset);
+<<<<<<< HEAD
 	kobject_put(dmi_kobj);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return error;
 }
 
@@ -685,7 +712,10 @@ static void __exit dmi_sysfs_exit(void)
 	pr_debug("dmi-sysfs: unloading.\n");
 	cleanup_entry_list();
 	kset_unregister(dmi_kset);
+<<<<<<< HEAD
 	kobject_put(dmi_kobj);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(dmi_sysfs_init);

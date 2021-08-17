@@ -12,6 +12,7 @@
 
 #include "incore.h"
 
+<<<<<<< HEAD
 #define GFS2_POSIX_ACL_ACCESS		"posix_acl_access"
 #define GFS2_POSIX_ACL_DEFAULT		"posix_acl_default"
 #define GFS2_ACL_MAX_ENTRIES		25
@@ -20,5 +21,12 @@ extern struct posix_acl *gfs2_get_acl(struct inode *inode, int type);
 extern int gfs2_acl_create(struct gfs2_inode *dip, struct inode *inode);
 extern int gfs2_acl_chmod(struct gfs2_inode *ip, struct iattr *attr);
 extern const struct xattr_handler gfs2_xattr_system_handler;
+=======
+#define GFS2_ACL_MAX_ENTRIES(sdp) ((300 << (sdp)->sd_sb.sb_bsize_shift) >> 12)
+
+extern struct posix_acl *gfs2_get_acl(struct inode *inode, int type);
+extern int __gfs2_set_acl(struct inode *inode, struct posix_acl *acl, int type);
+extern int gfs2_set_acl(struct inode *inode, struct posix_acl *acl, int type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ACL_DOT_H__ */

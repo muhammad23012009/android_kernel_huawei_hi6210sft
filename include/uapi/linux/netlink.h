@@ -1,7 +1,11 @@
 #ifndef _UAPI__LINUX_NETLINK_H
 #define _UAPI__LINUX_NETLINK_H
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
+=======
+#include <linux/const.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/socket.h> /* for __kernel_sa_family_t */
 #include <linux/types.h>
 
@@ -27,6 +31,7 @@
 #define NETLINK_ECRYPTFS	19
 #define NETLINK_RDMA		20
 #define NETLINK_CRYPTO		21	/* Crypto layer */
+<<<<<<< HEAD
 /*DTS2014120900614 l00284158 20141209 begin*/
 #define NETLINK_CHR_EVENT_NL  23
 /*DTS2014120900614 l00284158 20141209 end*/
@@ -45,6 +50,11 @@
 #define NETLINK_HISI_WIFI_MSG  28
 #define NETLINK_HW_LOGCAT   29
 #define NETLINK_HW_KSTATE   30  /* kstate send event to user */
+=======
+
+#define NETLINK_INET_DIAG	NETLINK_SOCK_DIAG
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MAX_LINKS 32		
 
 struct sockaddr_nl {
@@ -69,6 +79,10 @@ struct nlmsghdr {
 #define NLM_F_ACK		4	/* Reply with ack, with zero or error code */
 #define NLM_F_ECHO		8	/* Echo this request 		*/
 #define NLM_F_DUMP_INTR		16	/* Dump was inconsistent due to sequence change */
+<<<<<<< HEAD
+=======
+#define NLM_F_DUMP_FILTERED	32	/* Dump was filtered as requested */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Modifiers to GET request */
 #define NLM_F_ROOT	0x100	/* specify tree	root	*/
@@ -116,6 +130,7 @@ struct nlmsgerr {
 	struct nlmsghdr msg;
 };
 
+<<<<<<< HEAD
 #define NETLINK_ADD_MEMBERSHIP	1
 #define NETLINK_DROP_MEMBERSHIP	2
 #define NETLINK_PKTINFO		3
@@ -123,6 +138,20 @@ struct nlmsgerr {
 #define NETLINK_NO_ENOBUFS	5
 #define NETLINK_RX_RING		6
 #define NETLINK_TX_RING		7
+=======
+#define NETLINK_ADD_MEMBERSHIP		1
+#define NETLINK_DROP_MEMBERSHIP		2
+#define NETLINK_PKTINFO			3
+#define NETLINK_BROADCAST_ERROR		4
+#define NETLINK_NO_ENOBUFS		5
+#ifndef __KERNEL__
+#define NETLINK_RX_RING			6
+#define NETLINK_TX_RING			7
+#endif
+#define NETLINK_LISTEN_ALL_NSID		8
+#define NETLINK_LIST_MEMBERSHIPS	9
+#define NETLINK_CAP_ACK			10
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct nl_pktinfo {
 	__u32	group;
@@ -145,6 +174,10 @@ struct nl_mmap_hdr {
 	__u32		nm_gid;
 };
 
+<<<<<<< HEAD
+=======
+#ifndef __KERNEL__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum nl_mmap_status {
 	NL_MMAP_STATUS_UNUSED,
 	NL_MMAP_STATUS_RESERVED,
@@ -156,6 +189,10 @@ enum nl_mmap_status {
 #define NL_MMAP_MSG_ALIGNMENT		NLMSG_ALIGNTO
 #define NL_MMAP_MSG_ALIGN(sz)		__ALIGN_KERNEL(sz, NL_MMAP_MSG_ALIGNMENT)
 #define NL_MMAP_HDRLEN			NL_MMAP_MSG_ALIGN(sizeof(struct nl_mmap_hdr))
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define NET_MAJOR 36		/* Major 36 is reserved for networking 						*/
 

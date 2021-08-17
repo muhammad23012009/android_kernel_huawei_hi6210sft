@@ -14,7 +14,11 @@
 #include <linux/mtd/partitions.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
+<<<<<<< HEAD
 #if defined(CONFIG_USB_ISP1362_HCD) || defined(CONFIG_USB_ISP1362_HCD_MODULE)
+=======
+#if IS_ENABLED(CONFIG_USB_ISP1362_HCD)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/usb/isp1362.h>
 #endif
 #include <linux/irq.h>
@@ -29,7 +33,11 @@
  */
 const char bfin_board_name[] = "HV Sistemas H8606";
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_DRV_BFIN) || defined(CONFIG_RTC_DRV_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_DRV_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device rtc_device = {
 	.name = "rtc-bfin",
 	.id   = -1,
@@ -39,7 +47,11 @@ static struct platform_device rtc_device = {
 /*
 *  Driver needs to know address, irq and flag pin.
  */
+<<<<<<< HEAD
  #if	defined(CONFIG_DM9000) || defined(CONFIG_DM9000_MODULE)
+=======
+#if IS_ENABLED(CONFIG_DM9000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct resource dm9000_resources[] = {
 	[0] = {
 		.start	= 0x20300000,
@@ -67,7 +79,11 @@ static struct platform_device dm9000_device = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SMC91X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/smc91x.h>
 
 static struct smc91x_platdata smc91x_info = {
@@ -104,7 +120,11 @@ static struct platform_device smc91x_device = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_NET2272) || defined(CONFIG_USB_NET2272_MODULE)
+=======
+#if IS_ENABLED(CONFIG_USB_NET2272)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct resource net2272_bfin_resources[] = {
 	{
 		.start = 0x20300000,
@@ -125,10 +145,17 @@ static struct platform_device net2272_bfin_device = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_BFIN5XX) || defined(CONFIG_SPI_BFIN5XX_MODULE)
 /* all SPI peripherals info goes here */
 
 #if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_BFIN5XX)
+/* all SPI peripherals info goes here */
+
+#if IS_ENABLED(CONFIG_MTD_M25P80)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct mtd_partition bfin_spi_flash_partitions[] = {
 	{
 		.name = "bootloader (spi)",
@@ -166,7 +193,11 @@ static struct bfin5xx_spi_chip spi_flash_chip_info = {
 /* Notice: for blackfin, the speed_hz is the value of register
  * SPI_BAUD, not the real baudrate */
 static struct spi_board_info bfin_spi_board_info[] __initdata = {
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_M25P80)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		/* the modalias must be the same as spi device driver name */
 		.modalias = "m25p80", /* Name of spi_driver for this device */
@@ -180,7 +211,11 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 	},
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_BF5XX_SOC_AD183X) || defined(CONFIG_SND_BF5XX_SOC_AD183X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SND_BF5XX_SOC_AD183X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.modalias = "ad183x",
 		.max_speed_hz = 16,
@@ -229,7 +264,11 @@ static struct platform_device bfin_spi0_device = {
 };
 #endif  /* spi master and devices */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 static struct resource bfin_uart0_resources[] = {
 	{
@@ -280,7 +319,11 @@ static struct platform_device bfin_uart0_device = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_BFIN_SIR) || defined(CONFIG_BFIN_SIR_MODULE)
+=======
+#if IS_ENABLED(CONFIG_BFIN_SIR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BFIN_SIR0
 static struct resource bfin_sir0_resources[] = {
 	{
@@ -309,7 +352,11 @@ static struct platform_device bfin_sir0_device = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_8250) || defined(CONFIG_SERIAL_8250_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_8250)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/serial_8250.h>
 #include <linux/serial.h>
@@ -353,7 +400,11 @@ static struct platform_device serial8250_device = {
 
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_KEYBOARD_OPENCORES) || defined(CONFIG_KEYBOARD_OPENCORES_MODULE)
+=======
+#if IS_ENABLED(CONFIG_KEYBOARD_OPENCORES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Configuration for one OpenCores keyboard controller in FPGA at address 0x20200030,
@@ -382,6 +433,7 @@ static struct platform_device opencores_kbd_device = {
 #endif
 
 static struct platform_device *h8606_devices[] __initdata = {
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_DRV_BFIN) || defined(CONFIG_RTC_DRV_BFIN_MODULE)
 	&rtc_device,
 #endif
@@ -403,22 +455,57 @@ static struct platform_device *h8606_devices[] __initdata = {
 #endif
 
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_DRV_BFIN)
+	&rtc_device,
+#endif
+
+#if IS_ENABLED(CONFIG_DM9000)
+	&dm9000_device,
+#endif
+
+#if IS_ENABLED(CONFIG_SMC91X)
+	&smc91x_device,
+#endif
+
+#if IS_ENABLED(CONFIG_USB_NET2272)
+	&net2272_bfin_device,
+#endif
+
+#if IS_ENABLED(CONFIG_SPI_BFIN5XX)
+	&bfin_spi0_device,
+#endif
+
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 	&bfin_uart0_device,
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_8250) || defined(CONFIG_SERIAL_8250_MODULE)
 	&serial8250_device,
 #endif
 
 #if defined(CONFIG_BFIN_SIR) || defined(CONFIG_BFIN_SIR_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_8250)
+	&serial8250_device,
+#endif
+
+#if IS_ENABLED(CONFIG_BFIN_SIR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BFIN_SIR0
 	&bfin_sir0_device,
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_KEYBOARD_OPENCORES) || defined(CONFIG_KEYBOARD_OPENCORES_MODULE)
+=======
+#if IS_ENABLED(CONFIG_KEYBOARD_OPENCORES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&opencores_kbd_device,
 #endif
 };
@@ -428,7 +515,11 @@ static int __init H8606_init(void)
 	printk(KERN_INFO "HV Sistemas H8606 board support by http://www.hvsistemas.com\n");
 	printk(KERN_INFO "%s(): registering device resources\n", __func__);
 	platform_add_devices(h8606_devices, ARRAY_SIZE(h8606_devices));
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_BFIN5XX) || defined(CONFIG_SPI_BFIN5XX_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_BFIN5XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_register_board_info(bfin_spi_board_info, ARRAY_SIZE(bfin_spi_board_info));
 #endif
 	return 0;

@@ -14,7 +14,10 @@
 #include <linux/types.h>
 #include <linux/pci.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 
 #include <loongson.h>

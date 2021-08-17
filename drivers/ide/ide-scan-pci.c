@@ -107,5 +107,9 @@ static int __init ide_scan_pcibus(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(ide_scan_pcibus);
+=======
+device_initcall(ide_scan_pcibus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

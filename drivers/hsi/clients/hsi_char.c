@@ -367,7 +367,11 @@ static int hsc_rx_set(struct hsi_client *cl, struct hsc_rx_config *rxc)
 		return -EINVAL;
 	tmp = cl->rx_cfg;
 	cl->rx_cfg.mode = rxc->mode;
+<<<<<<< HEAD
 	cl->rx_cfg.channels = rxc->channels;
+=======
+	cl->rx_cfg.num_hw_channels = rxc->channels;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cl->rx_cfg.flow = rxc->flow;
 	ret = hsi_setup(cl);
 	if (ret < 0) {
@@ -383,7 +387,11 @@ static int hsc_rx_set(struct hsi_client *cl, struct hsc_rx_config *rxc)
 static inline void hsc_rx_get(struct hsi_client *cl, struct hsc_rx_config *rxc)
 {
 	rxc->mode = cl->rx_cfg.mode;
+<<<<<<< HEAD
 	rxc->channels = cl->rx_cfg.channels;
+=======
+	rxc->channels = cl->rx_cfg.num_hw_channels;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rxc->flow = cl->rx_cfg.flow;
 }
 
@@ -402,7 +410,11 @@ static int hsc_tx_set(struct hsi_client *cl, struct hsc_tx_config *txc)
 		return -EINVAL;
 	tmp = cl->tx_cfg;
 	cl->tx_cfg.mode = txc->mode;
+<<<<<<< HEAD
 	cl->tx_cfg.channels = txc->channels;
+=======
+	cl->tx_cfg.num_hw_channels = txc->channels;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cl->tx_cfg.speed = txc->speed;
 	cl->tx_cfg.arb_mode = txc->arb_mode;
 	ret = hsi_setup(cl);
@@ -417,7 +429,11 @@ static int hsc_tx_set(struct hsi_client *cl, struct hsc_tx_config *txc)
 static inline void hsc_tx_get(struct hsi_client *cl, struct hsc_tx_config *txc)
 {
 	txc->mode = cl->tx_cfg.mode;
+<<<<<<< HEAD
 	txc->channels = cl->tx_cfg.channels;
+=======
+	txc->channels = cl->tx_cfg.num_hw_channels;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	txc->speed = cl->tx_cfg.speed;
 	txc->arb_mode = cl->tx_cfg.arb_mode;
 }
@@ -435,7 +451,11 @@ static ssize_t hsc_read(struct file *file, char __user *buf, size_t len,
 		return -EINVAL;
 	if (len > max_data_size)
 		len = max_data_size;
+<<<<<<< HEAD
 	if (channel->ch >= channel->cl->rx_cfg.channels)
+=======
+	if (channel->ch >= channel->cl->rx_cfg.num_hw_channels)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ECHRNG;
 	if (test_and_set_bit(HSC_CH_READ, &channel->flags))
 		return -EBUSY;
@@ -492,7 +512,11 @@ static ssize_t hsc_write(struct file *file, const char __user *buf, size_t len,
 		return -EINVAL;
 	if (len > max_data_size)
 		len = max_data_size;
+<<<<<<< HEAD
 	if (channel->ch >= channel->cl->tx_cfg.channels)
+=======
+	if (channel->ch >= channel->cl->tx_cfg.num_hw_channels)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ECHRNG;
 	if (test_and_set_bit(HSC_CH_WRITE, &channel->flags))
 		return -EBUSY;
@@ -705,7 +729,11 @@ static int hsc_probe(struct device *dev)
 	if (!hsc_major) {
 		ret = alloc_chrdev_region(&hsc_dev, hsc_baseminor,
 						HSC_DEVS, devname);
+<<<<<<< HEAD
 		if (ret > 0)
+=======
+		if (ret == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			hsc_major = MAJOR(hsc_dev);
 	} else {
 		hsc_dev = MKDEV(hsc_major, hsc_baseminor);

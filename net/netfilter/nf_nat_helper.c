@@ -20,12 +20,17 @@
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_ecache.h>
 #include <net/netfilter/nf_conntrack_expect.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_conntrack_seqadj.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/netfilter/nf_nat.h>
 #include <net/netfilter/nf_nat_l3proto.h>
 #include <net/netfilter/nf_nat_l4proto.h>
 #include <net/netfilter/nf_nat_core.h>
 #include <net/netfilter/nf_nat_helper.h>
 
+<<<<<<< HEAD
 #define DUMP_OFFSET(x) \
 	pr_debug("offset_before=%d, offset_after=%d, correction_pos=%u\n", \
 		 x->offset_before, x->offset_after, x->correction_pos);
@@ -88,6 +93,8 @@ s16 nf_nat_get_offset(const struct nf_conn *ct,
 	return offset;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Frobs data inside this packet, which is linear. */
 static void mangle_contents(struct sk_buff *skb,
 			    unsigned int dataoff,
@@ -104,7 +111,11 @@ static void mangle_contents(struct sk_buff *skb,
 	/* move post-replacement */
 	memmove(data + match_offset + rep_len,
 		data + match_offset + match_len,
+<<<<<<< HEAD
 		skb->tail - (skb->network_header + dataoff +
+=======
+		skb_tail_pointer(skb) - (skb_network_header(skb) + dataoff +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     match_offset + match_len));
 
 	/* insert data from buffer */
@@ -142,6 +153,7 @@ static int enlarge_skb(struct sk_buff *skb, unsigned int extra)
 	return 1;
 }
 
+<<<<<<< HEAD
 void nf_nat_set_seq_adjust(struct nf_conn *ct, enum ip_conntrack_info ctinfo,
 			   __be32 seq, s16 off)
 {
@@ -166,6 +178,8 @@ void nf_nat_tcp_seq_adjust(struct sk_buff *skb, struct nf_conn *ct,
 }
 EXPORT_SYMBOL_GPL(nf_nat_tcp_seq_adjust);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Generic function for mangling variable-length address changes inside
  * NATed TCP connections (like the PORT XXX,XXX,XXX,XXX,XXX,XXX
  * command in FTP).
@@ -210,8 +224,13 @@ int __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
 			     datalen, oldlen);
 
 	if (adjust && rep_len != match_len)
+<<<<<<< HEAD
 		nf_nat_set_seq_adjust(ct, ctinfo, tcph->seq,
 				      (int)rep_len - (int)match_len);
+=======
+		nf_ct_seqadj_set(ct, ctinfo, tcph->seq,
+				 (int)rep_len - (int)match_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 1;
 }
@@ -271,6 +290,7 @@ nf_nat_mangle_udp_packet(struct sk_buff *skb,
 }
 EXPORT_SYMBOL(nf_nat_mangle_udp_packet);
 
+<<<<<<< HEAD
 /* Adjust one found SACK option including checksum correction */
 static void
 sack_adjust(struct sk_buff *skb,
@@ -410,6 +430,8 @@ nf_nat_seq_adjust(struct sk_buff *skb,
 	return nf_nat_sack_adjust(skb, protoff, tcph, ct, ctinfo);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Setup NAT on this expected conntrack so it follows master. */
 /* If we fail to get a free NAT slot, we'll get dropped on confirm */
 void nf_nat_follow_master(struct nf_conn *ct,

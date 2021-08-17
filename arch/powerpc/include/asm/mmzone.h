@@ -41,6 +41,12 @@ u64 memory_hotplug_max(void);
 #else
 #define memory_hotplug_max() memblock_end_of_DRAM()
 #endif /* CONFIG_NEED_MULTIPLE_NODES */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_FA_DUMP
+#define __HAVE_ARCH_RESERVED_KERNEL_PAGES
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __KERNEL__ */
 #endif /* _ASM_MMZONE_H_ */

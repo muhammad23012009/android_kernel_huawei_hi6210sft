@@ -7,6 +7,11 @@
 #define do_extend_cmdline 0
 #endif
 
+<<<<<<< HEAD
+=======
+#define NR_BANKS 16
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int node_offset(void *fdt, const char *node_path)
 {
 	int offset = fdt_path_offset(fdt, node_path);

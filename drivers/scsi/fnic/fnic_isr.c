@@ -37,6 +37,12 @@ static irqreturn_t fnic_isr_legacy(int irq, void *data)
 	if (!pba)
 		return IRQ_NONE;
 
+<<<<<<< HEAD
+=======
+	fnic->fnic_stats.misc_stats.last_isr_time = jiffies;
+	atomic64_inc(&fnic->fnic_stats.misc_stats.isr_count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pba & (1 << FNIC_INTX_NOTIFY)) {
 		vnic_intr_return_all_credits(&fnic->intr[FNIC_INTX_NOTIFY]);
 		fnic_handle_link_event(fnic);
@@ -66,6 +72,12 @@ static irqreturn_t fnic_isr_msi(int irq, void *data)
 	struct fnic *fnic = data;
 	unsigned long work_done = 0;
 
+<<<<<<< HEAD
+=======
+	fnic->fnic_stats.misc_stats.last_isr_time = jiffies;
+	atomic64_inc(&fnic->fnic_stats.misc_stats.isr_count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	work_done += fnic_wq_copy_cmpl_handler(fnic, -1);
 	work_done += fnic_wq_cmpl_handler(fnic, -1);
 	work_done += fnic_rq_cmpl_handler(fnic, -1);
@@ -83,6 +95,12 @@ static irqreturn_t fnic_isr_msix_rq(int irq, void *data)
 	struct fnic *fnic = data;
 	unsigned long rq_work_done = 0;
 
+<<<<<<< HEAD
+=======
+	fnic->fnic_stats.misc_stats.last_isr_time = jiffies;
+	atomic64_inc(&fnic->fnic_stats.misc_stats.isr_count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rq_work_done = fnic_rq_cmpl_handler(fnic, -1);
 	vnic_intr_return_credits(&fnic->intr[FNIC_MSIX_RQ],
 				 rq_work_done,
@@ -97,6 +115,12 @@ static irqreturn_t fnic_isr_msix_wq(int irq, void *data)
 	struct fnic *fnic = data;
 	unsigned long wq_work_done = 0;
 
+<<<<<<< HEAD
+=======
+	fnic->fnic_stats.misc_stats.last_isr_time = jiffies;
+	atomic64_inc(&fnic->fnic_stats.misc_stats.isr_count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wq_work_done = fnic_wq_cmpl_handler(fnic, -1);
 	vnic_intr_return_credits(&fnic->intr[FNIC_MSIX_WQ],
 				 wq_work_done,
@@ -110,6 +134,12 @@ static irqreturn_t fnic_isr_msix_wq_copy(int irq, void *data)
 	struct fnic *fnic = data;
 	unsigned long wq_copy_work_done = 0;
 
+<<<<<<< HEAD
+=======
+	fnic->fnic_stats.misc_stats.last_isr_time = jiffies;
+	atomic64_inc(&fnic->fnic_stats.misc_stats.isr_count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wq_copy_work_done = fnic_wq_copy_cmpl_handler(fnic, -1);
 	vnic_intr_return_credits(&fnic->intr[FNIC_MSIX_WQ_COPY],
 				 wq_copy_work_done,
@@ -122,6 +152,12 @@ static irqreturn_t fnic_isr_msix_err_notify(int irq, void *data)
 {
 	struct fnic *fnic = data;
 
+<<<<<<< HEAD
+=======
+	fnic->fnic_stats.misc_stats.last_isr_time = jiffies;
+	atomic64_inc(&fnic->fnic_stats.misc_stats.isr_count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vnic_intr_return_all_credits(&fnic->intr[FNIC_MSIX_ERR_NOTIFY]);
 	fnic_log_q_error(fnic);
 	fnic_handle_link_event(fnic);
@@ -239,8 +275,13 @@ int fnic_set_intr_mode(struct fnic *fnic)
 	    fnic->raw_wq_count >= m &&
 	    fnic->wq_copy_count >= o &&
 	    fnic->cq_count >= n + m + o) {
+<<<<<<< HEAD
 		if (!pci_enable_msix(fnic->pdev, fnic->msix_entry,
 				    n + m + o + 1)) {
+=======
+		if (!pci_enable_msix_exact(fnic->pdev, fnic->msix_entry,
+					   n + m + o + 1)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			fnic->rq_count = n;
 			fnic->raw_wq_count = m;
 			fnic->wq_copy_count = o;

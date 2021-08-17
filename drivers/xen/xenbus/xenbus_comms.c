@@ -30,6 +30,11 @@
  * IN THE SOFTWARE.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/wait.h>
 #include <linux/interrupt.h>
 #include <linux/sched.h>
@@ -121,14 +126,22 @@ int xb_write(const void *data, unsigned len)
 			avail = len;
 
 		/* Must write data /after/ reading the consumer index. */
+<<<<<<< HEAD
 		mb();
+=======
+		virt_mb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		memcpy(dst, data, avail);
 		data += avail;
 		len -= avail;
 
 		/* Other side must not see new producer until data is there. */
+<<<<<<< HEAD
 		wmb();
+=======
+		virt_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		intf->req_prod += avail;
 
 		/* Implies mb(): other side will see the updated producer. */
@@ -178,14 +191,22 @@ int xb_read(void *data, unsigned len)
 			avail = len;
 
 		/* Must read data /after/ reading the producer index. */
+<<<<<<< HEAD
 		rmb();
+=======
+		virt_rmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		memcpy(data, src, avail);
 		data += avail;
 		len -= avail;
 
 		/* Other side must not see free space until we've copied out */
+<<<<<<< HEAD
 		mb();
+=======
+		virt_mb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		intf->rsp_cons += avail;
 
 		pr_debug("Finished read of %i bytes (%i to go)\n", avail, len);
@@ -205,6 +226,7 @@ int xb_init_comms(void)
 	struct xenstore_domain_interface *intf = xen_store_interface;
 
 	if (intf->req_prod != intf->req_cons)
+<<<<<<< HEAD
 		printk(KERN_ERR "XENBUS request ring is not quiescent "
 		       "(%08x:%08x)!\n", intf->req_cons, intf->req_prod);
 
@@ -212,6 +234,14 @@ int xb_init_comms(void)
 		printk(KERN_WARNING "XENBUS response ring is not quiescent "
 		       "(%08x:%08x): fixing up\n",
 		       intf->rsp_cons, intf->rsp_prod);
+=======
+		pr_err("request ring is not quiescent (%08x:%08x)!\n",
+		       intf->req_cons, intf->req_prod);
+
+	if (intf->rsp_prod != intf->rsp_cons) {
+		pr_warn("response ring is not quiescent (%08x:%08x): fixing up\n",
+			intf->rsp_cons, intf->rsp_prod);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* breaks kdump */
 		if (!reset_devices)
 			intf->rsp_cons = intf->rsp_prod;
@@ -225,7 +255,11 @@ int xb_init_comms(void)
 		err = bind_evtchn_to_irqhandler(xen_store_evtchn, wake_waiting,
 						0, "xenbus", &xb_waitq);
 		if (err < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "XENBUS request irq failed %i\n", err);
+=======
+			pr_err("request irq failed %i\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return err;
 		}
 

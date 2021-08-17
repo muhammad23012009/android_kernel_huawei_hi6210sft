@@ -28,6 +28,10 @@
 #include <linux/if_ether.h>
 #include <linux/ctype.h>
 #include <linux/dmi.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PHUB_STATUS 0x00		/* Status Register offset */
 #define PHUB_CONTROL 0x04		/* Control Register offset */
@@ -57,6 +61,10 @@
 
 /* CM-iTC */
 #define CLKCFG_UART_48MHZ			(1 << 16)
+<<<<<<< HEAD
+=======
+#define CLKCFG_UART_25MHZ			(2 << 16)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CLKCFG_BAUDDIV				(2 << 20)
 #define CLKCFG_PLL2VCO				(8 << 9)
 #define CLKCFG_UARTCLKSEL			(1 << 18)
@@ -158,6 +166,10 @@ static void pch_phub_read_modify_write_reg(struct pch_phub_reg *chip,
 	iowrite32(((ioread32(reg_addr) & ~mask)) | data, reg_addr);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* pch_phub_save_reg_conf - saves register configuration */
 static void pch_phub_save_reg_conf(struct pci_dev *pdev)
 {
@@ -280,6 +292,10 @@ static void pch_phub_restore_reg_conf(struct pci_dev *pdev)
 	if ((chip->ioh_type == 2) || (chip->ioh_type == 4))
 		iowrite32(chip->funcsel_reg, p + FUNCSEL_REG_OFFSET);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pch_phub_read_serial_rom() - Reading Serial ROM
@@ -501,8 +517,12 @@ static ssize_t pch_phub_bin_read(struct file *filp, struct kobject *kobj,
 	int err;
 	ssize_t rom_size;
 
+<<<<<<< HEAD
 	struct pch_phub_reg *chip =
 		dev_get_drvdata(container_of(kobj, struct device, kobj));
+=======
+	struct pch_phub_reg *chip = dev_get_drvdata(kobj_to_dev(kobj));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = mutex_lock_interruptible(&pch_phub_mutex);
 	if (ret) {
@@ -512,8 +532,15 @@ static ssize_t pch_phub_bin_read(struct file *filp, struct kobject *kobj,
 
 	/* Get Rom signature */
 	chip->pch_phub_extrom_base_address = pci_map_rom(chip->pdev, &rom_size);
+<<<<<<< HEAD
 	if (!chip->pch_phub_extrom_base_address)
 		goto exrom_map_err;
+=======
+	if (!chip->pch_phub_extrom_base_address) {
+		err = -ENODATA;
+		goto exrom_map_err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pch_phub_read_serial_rom(chip, chip->pch_opt_rom_start_address,
 				(unsigned char *)&rom_signature);
@@ -565,8 +592,12 @@ static ssize_t pch_phub_bin_write(struct file *filp, struct kobject *kobj,
 	unsigned int addr_offset;
 	int ret;
 	ssize_t rom_size;
+<<<<<<< HEAD
 	struct pch_phub_reg *chip =
 		dev_get_drvdata(container_of(kobj, struct device, kobj));
+=======
+	struct pch_phub_reg *chip = dev_get_drvdata(kobj_to_dev(kobj));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = mutex_lock_interruptible(&pch_phub_mutex);
 	if (ret)
@@ -633,6 +664,7 @@ static ssize_t show_pch_mac(struct device *dev, struct device_attribute *attr,
 static ssize_t store_pch_mac(struct device *dev, struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	u8 mac[6];
 	ssize_t rom_size;
 	struct pch_phub_reg *chip = dev_get_drvdata(dev);
@@ -644,12 +676,29 @@ static ssize_t store_pch_mac(struct device *dev, struct device_attribute *attr,
 		(u32 *)&mac[0], (u32 *)&mac[1], (u32 *)&mac[2], (u32 *)&mac[3],
 		(u32 *)&mac[4], (u32 *)&mac[5]);
 
+=======
+	u8 mac[ETH_ALEN];
+	ssize_t rom_size;
+	struct pch_phub_reg *chip = dev_get_drvdata(dev);
+	int ret;
+
+	if (!mac_pton(buf, mac))
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->pch_phub_extrom_base_address = pci_map_rom(chip->pdev, &rom_size);
 	if (!chip->pch_phub_extrom_base_address)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	pch_phub_write_gbe_mac_addr(chip, mac);
 	pci_unmap_rom(chip->pdev, chip->pch_phub_extrom_base_address);
+=======
+	ret = pch_phub_write_gbe_mac_addr(chip, mac);
+	pci_unmap_rom(chip->pdev, chip->pch_phub_extrom_base_address);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }
@@ -669,8 +718,11 @@ static struct bin_attribute pch_bin_attr = {
 static int pch_phub_probe(struct pci_dev *pdev,
 				    const struct pci_device_id *id)
 {
+<<<<<<< HEAD
 	int retval;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	struct pch_phub_reg *chip;
 
@@ -712,6 +764,7 @@ static int pch_phub_probe(struct pci_dev *pdev,
 
 	if (id->driver_data == 1) { /* EG20T PCH */
 		const char *board_name;
+<<<<<<< HEAD
 
 		retval = sysfs_create_file(&pdev->dev.kobj,
 					   &dev_attr_pch_mac.attr);
@@ -720,6 +773,22 @@ static int pch_phub_probe(struct pci_dev *pdev,
 
 		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (retval)
+=======
+		unsigned int prefetch = 0x000affaa;
+
+		if (pdev->dev.of_node)
+			of_property_read_u32(pdev->dev.of_node,
+						  "intel,eg20t-prefetch",
+						  &prefetch);
+
+		ret = sysfs_create_file(&pdev->dev.kobj,
+					&dev_attr_pch_mac.attr);
+		if (ret)
+			goto err_sysfs_create;
+
+		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
+		if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit_bin_attr;
 
 		pch_phub_read_modify_write_reg(chip,
@@ -737,14 +806,34 @@ static int pch_phub_probe(struct pci_dev *pdev,
 						CLKCFG_UART_MASK);
 
 		/* set the prefech value */
+<<<<<<< HEAD
 		iowrite32(0x000affaa, chip->pch_phub_base_address + 0x14);
+=======
+		iowrite32(prefetch, chip->pch_phub_base_address + 0x14);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* set the interrupt delay value */
 		iowrite32(0x25, chip->pch_phub_base_address + 0x44);
 		chip->pch_opt_rom_start_address = PCH_PHUB_ROM_START_ADDR_EG20T;
 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_EG20T;
+<<<<<<< HEAD
 	} else if (id->driver_data == 2) { /* ML7213 IOH */
 		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (retval)
+=======
+
+		/* quirk for MIPS Boston platform */
+		if (pdev->dev.of_node) {
+			if (of_machine_is_compatible("img,boston")) {
+				pch_phub_read_modify_write_reg(chip,
+					(unsigned int)CLKCFG_REG_OFFSET,
+					CLKCFG_UART_25MHZ,
+					CLKCFG_UART_MASK);
+			}
+		}
+	} else if (id->driver_data == 2) { /* ML7213 IOH */
+		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
+		if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto err_sysfs_create;
 		/* set the prefech value
 		 * Device2(USB OHCI #1/ USB EHCI #1/ USB Device):a
@@ -766,12 +855,21 @@ static int pch_phub_probe(struct pci_dev *pdev,
 						 PCH_PHUB_ROM_START_ADDR_ML7223;
 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_ML7223;
 	} else if (id->driver_data == 4) { /* ML7223 IOH Bus-n*/
+<<<<<<< HEAD
 		retval = sysfs_create_file(&pdev->dev.kobj,
 					   &dev_attr_pch_mac.attr);
 		if (retval)
 			goto err_sysfs_create;
 		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (retval)
+=======
+		ret = sysfs_create_file(&pdev->dev.kobj,
+					&dev_attr_pch_mac.attr);
+		if (ret)
+			goto err_sysfs_create;
+		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
+		if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit_bin_attr;
 		/* set the prefech value
 		 * Device2(USB OHCI #0,1,2,3/ USB EHCI #0):a
@@ -783,6 +881,7 @@ static int pch_phub_probe(struct pci_dev *pdev,
 						 PCH_PHUB_ROM_START_ADDR_ML7223;
 		chip->pch_mac_start_address = PCH_PHUB_MAC_START_ADDR_ML7223;
 	} else if (id->driver_data == 5) { /* ML7831 */
+<<<<<<< HEAD
 		retval = sysfs_create_file(&pdev->dev.kobj,
 					   &dev_attr_pch_mac.attr);
 		if (retval)
@@ -790,6 +889,15 @@ static int pch_phub_probe(struct pci_dev *pdev,
 
 		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
 		if (retval)
+=======
+		ret = sysfs_create_file(&pdev->dev.kobj,
+					&dev_attr_pch_mac.attr);
+		if (ret)
+			goto err_sysfs_create;
+
+		ret = sysfs_create_bin_file(&pdev->dev.kobj, &pch_bin_attr);
+		if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit_bin_attr;
 
 		/* set the prefech value */

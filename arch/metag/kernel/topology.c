@@ -19,6 +19,10 @@
 DEFINE_PER_CPU(struct cpuinfo_metag, cpu_data);
 
 cpumask_t cpu_core_map[NR_CPUS];
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(cpu_core_map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static cpumask_t cpu_coregroup_map(unsigned int cpu)
 {

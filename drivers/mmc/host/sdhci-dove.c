@@ -21,11 +21,15 @@
 
 #include <linux/clk.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/mmc/host.h>
 #include <linux/module.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_gpio.h>
 
 #include "sdhci-pltfm.h"
@@ -43,6 +47,11 @@ static irqreturn_t sdhci_dove_carddetect_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+=======
+
+#include "sdhci-pltfm.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u16 sdhci_dove_readw(struct sdhci_host *host, int reg)
 {
 	u16 ret;
@@ -60,8 +69,11 @@ static u16 sdhci_dove_readw(struct sdhci_host *host, int reg)
 
 static u32 sdhci_dove_readl(struct sdhci_host *host, int reg)
 {
+<<<<<<< HEAD
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
 	struct sdhci_dove_priv *priv = pltfm_host->priv;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 ret;
 
 	ret = readl(host->ioaddr + reg);
@@ -71,6 +83,7 @@ static u32 sdhci_dove_readl(struct sdhci_host *host, int reg)
 		/* Mask the support for 3.0V */
 		ret &= ~SDHCI_CAN_VDD_300;
 		break;
+<<<<<<< HEAD
 	case SDHCI_PRESENT_STATE:
 		if (gpio_is_valid(priv->gpio_cd)) {
 			if (gpio_get_value(priv->gpio_cd) == 0)
@@ -79,6 +92,8 @@ static u32 sdhci_dove_readl(struct sdhci_host *host, int reg)
 				ret &= ~SDHCI_CARD_PRESENT;
 		}
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return ret;
 }
@@ -86,6 +101,13 @@ static u32 sdhci_dove_readl(struct sdhci_host *host, int reg)
 static const struct sdhci_ops sdhci_dove_ops = {
 	.read_w	= sdhci_dove_readw,
 	.read_l	= sdhci_dove_readl,
+<<<<<<< HEAD
+=======
+	.set_clock = sdhci_set_clock,
+	.set_bus_width = sdhci_set_bus_width,
+	.reset = sdhci_reset,
+	.set_uhs_signaling = sdhci_set_uhs_signaling,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct sdhci_pltfm_data sdhci_dove_pdata = {
@@ -101,6 +123,7 @@ static int sdhci_dove_probe(struct platform_device *pdev)
 {
 	struct sdhci_host *host;
 	struct sdhci_pltfm_host *pltfm_host;
+<<<<<<< HEAD
 	struct sdhci_dove_priv *priv;
 	int ret;
 
@@ -143,11 +166,29 @@ static int sdhci_dove_probe(struct platform_device *pdev)
 		clk_prepare_enable(priv->clk);
 
 	sdhci_get_of_property(pdev);
+=======
+	int ret;
+
+	host = sdhci_pltfm_init(pdev, &sdhci_dove_pdata, 0);
+	if (IS_ERR(host))
+		return PTR_ERR(host);
+
+	pltfm_host = sdhci_priv(host);
+	pltfm_host->clk = devm_clk_get(&pdev->dev, NULL);
+
+	if (!IS_ERR(pltfm_host->clk))
+		clk_prepare_enable(pltfm_host->clk);
+
+	ret = mmc_of_parse(host->mmc);
+	if (ret)
+		goto err_sdhci_add;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = sdhci_add_host(host);
 	if (ret)
 		goto err_sdhci_add;
 
+<<<<<<< HEAD
 	/*
 	 * We must request the IRQ after sdhci_add_host(), as the tasklet only
 	 * gets setup in sdhci_add_host() and we oops.
@@ -197,6 +238,16 @@ static int sdhci_dove_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+	return 0;
+
+err_sdhci_add:
+	clk_disable_unprepare(pltfm_host->clk);
+	sdhci_pltfm_free(pdev);
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id sdhci_dove_of_match_table[] = {
 	{ .compatible = "marvell,dove-sdhci", },
 	{}
@@ -206,12 +257,20 @@ MODULE_DEVICE_TABLE(of, sdhci_dove_of_match_table);
 static struct platform_driver sdhci_dove_driver = {
 	.driver		= {
 		.name	= "sdhci-dove",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= SDHCI_PLTFM_PMOPS,
 		.of_match_table = of_match_ptr(sdhci_dove_of_match_table),
 	},
 	.probe		= sdhci_dove_probe,
 	.remove		= sdhci_dove_remove,
+=======
+		.pm	= &sdhci_pltfm_pmops,
+		.of_match_table = sdhci_dove_of_match_table,
+	},
+	.probe		= sdhci_dove_probe,
+	.remove		= sdhci_pltfm_unregister,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(sdhci_dove_driver);

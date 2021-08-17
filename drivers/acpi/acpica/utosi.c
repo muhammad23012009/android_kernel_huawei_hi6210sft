@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +51,34 @@
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utosi")
 
+<<<<<<< HEAD
+=======
+/******************************************************************************
+ *
+ * ACPICA policy for new _OSI strings:
+ *
+ * It is the stated policy of ACPICA that new _OSI strings will be integrated
+ * into this module as soon as possible after they are defined. It is strongly
+ * recommended that all ACPICA hosts mirror this policy and integrate any
+ * changes to this module as soon as possible. There are several historical
+ * reasons behind this policy:
+ *
+ * 1) New BIOSs tend to test only the case where the host responds TRUE to
+ *    the latest version of Windows, which would respond to the latest/newest
+ *    _OSI string. Not responding TRUE to the latest version of Windows will
+ *    risk executing untested code paths throughout the DSDT and SSDTs.
+ *
+ * 2) If a new _OSI string is recognized only after a significant delay, this
+ *    has the potential to cause problems on existing working machines because
+ *    of the possibility that a new and different path through the ASL code
+ *    will be executed.
+ *
+ * 3) New _OSI strings are tending to come out about once per year. A delay
+ *    in recognizing a new string for a significant amount of time risks the
+ *    release of another string which only compounds the initial problem.
+ *
+ *****************************************************************************/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Strings supported by the _OSI predefined control method (which is
  * implemented internally within this module.)
@@ -74,6 +106,7 @@ static struct acpi_interface_info acpi_default_supported_interfaces[] = {
 	{"Windows 2006 SP2", NULL, 0, ACPI_OSI_WIN_VISTA_SP2},	/* Windows Vista SP2 - Added 09/2010 */
 	{"Windows 2009", NULL, 0, ACPI_OSI_WIN_7},	/* Windows 7 and Server 2008 R2 - Added 09/2009 */
 	{"Windows 2012", NULL, 0, ACPI_OSI_WIN_8},	/* Windows 8 and Server 2012 - Added 08/2012 */
+<<<<<<< HEAD
 
 	/* Feature Group Strings */
 
@@ -92,6 +125,27 @@ static struct acpi_interface_info acpi_default_supported_interfaces[] = {
 	 * "3.0 _SCP Extensions"
 	 * "Processor Aggregator Device"
 	 */
+=======
+	{"Windows 2013", NULL, 0, ACPI_OSI_WIN_8},	/* Windows 8.1 and Server 2012 R2 - Added 01/2014 */
+	{"Windows 2015", NULL, 0, ACPI_OSI_WIN_10},	/* Windows 10 - Added 03/2015 */
+
+	/* Feature Group Strings */
+
+	{"Extended Address Space Descriptor", NULL, ACPI_OSI_FEATURE, 0},
+
+	/*
+	 * All "optional" feature group strings (features that are implemented
+	 * by the host) should be dynamically modified to VALID by the host via
+	 * acpi_install_interface or acpi_update_interfaces. Such optional feature
+	 * group strings are set as INVALID by default here.
+	 */
+
+	{"Module Device", NULL, ACPI_OSI_OPTIONAL_FEATURE, 0},
+	{"Processor Device", NULL, ACPI_OSI_OPTIONAL_FEATURE, 0},
+	{"3.0 Thermal Model", NULL, ACPI_OSI_OPTIONAL_FEATURE, 0},
+	{"3.0 _SCP Extensions", NULL, ACPI_OSI_OPTIONAL_FEATURE, 0},
+	{"Processor Aggregator Device", NULL, ACPI_OSI_OPTIONAL_FEATURE, 0}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*******************************************************************************
@@ -124,7 +178,11 @@ acpi_status acpi_ut_initialize_interfaces(void)
 	     i < (ACPI_ARRAY_LENGTH(acpi_default_supported_interfaces) - 1);
 	     i++) {
 		acpi_default_supported_interfaces[i].next =
+<<<<<<< HEAD
 		    &acpi_default_supported_interfaces[(acpi_size) i + 1];
+=======
+		    &acpi_default_supported_interfaces[(acpi_size)i + 1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	acpi_os_release_mutex(acpi_gbl_osi_mutex);
@@ -158,11 +216,28 @@ acpi_status acpi_ut_interface_terminate(void)
 	while (next_interface) {
 		acpi_gbl_supported_interfaces = next_interface->next;
 
+<<<<<<< HEAD
 		/* Only interfaces added at runtime can be freed */
 
 		if (next_interface->flags & ACPI_OSI_DYNAMIC) {
 			ACPI_FREE(next_interface->name);
 			ACPI_FREE(next_interface);
+=======
+		if (next_interface->flags & ACPI_OSI_DYNAMIC) {
+
+			/* Only interfaces added at runtime can be freed */
+
+			ACPI_FREE(next_interface->name);
+			ACPI_FREE(next_interface);
+		} else {
+			/* Interface is in static list. Reset it to invalid or valid. */
+
+			if (next_interface->flags & ACPI_OSI_DEFAULT_INVALID) {
+				next_interface->flags |= ACPI_OSI_INVALID;
+			} else {
+				next_interface->flags &= ~ACPI_OSI_INVALID;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		next_interface = acpi_gbl_supported_interfaces;
@@ -197,8 +272,12 @@ acpi_status acpi_ut_install_interface(acpi_string interface_name)
 		return (AE_NO_MEMORY);
 	}
 
+<<<<<<< HEAD
 	interface_info->name =
 	    ACPI_ALLOCATE_ZEROED(ACPI_STRLEN(interface_name) + 1);
+=======
+	interface_info->name = ACPI_ALLOCATE_ZEROED(strlen(interface_name) + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!interface_info->name) {
 		ACPI_FREE(interface_info);
 		return (AE_NO_MEMORY);
@@ -206,7 +285,11 @@ acpi_status acpi_ut_install_interface(acpi_string interface_name)
 
 	/* Initialize new info and insert at the head of the global list */
 
+<<<<<<< HEAD
 	ACPI_STRCPY(interface_info->name, interface_name);
+=======
+	strcpy(interface_info->name, interface_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	interface_info->flags = ACPI_OSI_DYNAMIC;
 	interface_info->next = acpi_gbl_supported_interfaces;
 
@@ -234,10 +317,18 @@ acpi_status acpi_ut_remove_interface(acpi_string interface_name)
 
 	previous_interface = next_interface = acpi_gbl_supported_interfaces;
 	while (next_interface) {
+<<<<<<< HEAD
 		if (!ACPI_STRCMP(interface_name, next_interface->name)) {
 
 			/* Found: name is in either the static list or was added at runtime */
 
+=======
+		if (!strcmp(interface_name, next_interface->name)) {
+			/*
+			 * Found: name is in either the static list
+			 * or was added at runtime
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (next_interface->flags & ACPI_OSI_DYNAMIC) {
 
 				/* Interface was added dynamically, remove and free it */
@@ -254,8 +345,13 @@ acpi_status acpi_ut_remove_interface(acpi_string interface_name)
 				ACPI_FREE(next_interface);
 			} else {
 				/*
+<<<<<<< HEAD
 				 * Interface is in static list. If marked invalid, then it
 				 * does not actually exist. Else, mark it invalid.
+=======
+				 * Interface is in static list. If marked invalid, then
+				 * it does not actually exist. Else, mark it invalid.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 */
 				if (next_interface->flags & ACPI_OSI_INVALID) {
 					return (AE_NOT_EXIST);
@@ -278,6 +374,52 @@ acpi_status acpi_ut_remove_interface(acpi_string interface_name)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * FUNCTION:    acpi_ut_update_interfaces
+ *
+ * PARAMETERS:  action              - Actions to be performed during the
+ *                                    update
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Update _OSI interface strings, disabling or enabling OS vendor
+ *              strings or/and feature group strings.
+ *              Caller MUST hold acpi_gbl_osi_mutex
+ *
+ ******************************************************************************/
+
+acpi_status acpi_ut_update_interfaces(u8 action)
+{
+	struct acpi_interface_info *next_interface;
+
+	next_interface = acpi_gbl_supported_interfaces;
+	while (next_interface) {
+		if (((next_interface->flags & ACPI_OSI_FEATURE) &&
+		     (action & ACPI_FEATURE_STRINGS)) ||
+		    (!(next_interface->flags & ACPI_OSI_FEATURE) &&
+		     (action & ACPI_VENDOR_STRINGS))) {
+			if (action & ACPI_DISABLE_INTERFACES) {
+
+				/* Mark the interfaces as invalid */
+
+				next_interface->flags |= ACPI_OSI_INVALID;
+			} else {
+				/* Mark the interfaces as valid */
+
+				next_interface->flags &= ~ACPI_OSI_INVALID;
+			}
+		}
+
+		next_interface = next_interface->next;
+	}
+
+	return (AE_OK);
+}
+
+/*******************************************************************************
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * FUNCTION:    acpi_ut_get_interface
  *
  * PARAMETERS:  interface_name      - The interface to find
@@ -295,7 +437,11 @@ struct acpi_interface_info *acpi_ut_get_interface(acpi_string interface_name)
 
 	next_interface = acpi_gbl_supported_interfaces;
 	while (next_interface) {
+<<<<<<< HEAD
 		if (!ACPI_STRCMP(interface_name, next_interface->name)) {
+=======
+		if (!strcmp(interface_name, next_interface->name)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return (next_interface);
 		}
 
@@ -312,21 +458,45 @@ struct acpi_interface_info *acpi_ut_get_interface(acpi_string interface_name)
  * PARAMETERS:  walk_state          - Current walk state
  *
  * RETURN:      Status
+<<<<<<< HEAD
+=======
+ *              Integer: TRUE (0) if input string is matched
+ *                       FALSE (-1) if string is not matched
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * DESCRIPTION: Implementation of the _OSI predefined control method. When
  *              an invocation of _OSI is encountered in the system AML,
  *              control is transferred to this function.
  *
+<<<<<<< HEAD
  ******************************************************************************/
 
 acpi_status acpi_ut_osi_implementation(struct acpi_walk_state * walk_state)
+=======
+ * (August 2016)
+ * Note:  _OSI is now defined to return "Ones" to indicate a match, for
+ * compatibility with other ACPI implementations. On a 32-bit DSDT, Ones
+ * is 0xFFFFFFFF. On a 64-bit DSDT, Ones is 0xFFFFFFFFFFFFFFFF
+ * (ACPI_UINT64_MAX).
+ *
+ * This function always returns ACPI_UINT64_MAX for TRUE, and later code
+ * will truncate this to 32 bits if necessary.
+ *
+ ******************************************************************************/
+
+acpi_status acpi_ut_osi_implementation(struct acpi_walk_state *walk_state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	union acpi_operand_object *string_desc;
 	union acpi_operand_object *return_desc;
 	struct acpi_interface_info *interface_info;
 	acpi_interface_handler interface_handler;
 	acpi_status status;
+<<<<<<< HEAD
 	u32 return_value;
+=======
+	u64 return_value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ACPI_FUNCTION_TRACE(ut_osi_implementation);
 
@@ -366,7 +536,11 @@ acpi_status acpi_ut_osi_implementation(struct acpi_walk_state * walk_state)
 			acpi_gbl_osi_data = interface_info->value;
 		}
 
+<<<<<<< HEAD
 		return_value = ACPI_UINT32_MAX;
+=======
+		return_value = ACPI_UINT64_MAX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	acpi_os_release_mutex(acpi_gbl_osi_mutex);
@@ -378,9 +552,16 @@ acpi_status acpi_ut_osi_implementation(struct acpi_walk_state * walk_state)
 	 */
 	interface_handler = acpi_gbl_interface_handler;
 	if (interface_handler) {
+<<<<<<< HEAD
 		return_value =
 		    interface_handler(string_desc->string.pointer,
 				      return_value);
+=======
+		if (interface_handler
+		    (string_desc->string.pointer, (u32)return_value)) {
+			return_value = ACPI_UINT64_MAX;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INFO,

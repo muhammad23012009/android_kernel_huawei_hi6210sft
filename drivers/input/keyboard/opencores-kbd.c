@@ -18,7 +18,10 @@
 
 struct opencores_kbd {
 	struct input_dev *input;
+<<<<<<< HEAD
 	struct resource *addr_res;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *addr;
 	int irq;
 	unsigned short keycodes[128];
@@ -56,6 +59,7 @@ static int opencores_kbd_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	opencores_kbd = kzalloc(sizeof(*opencores_kbd), GFP_KERNEL);
 	input = input_allocate_device();
 	if (!opencores_kbd || !input) {
@@ -85,6 +89,27 @@ static int opencores_kbd_probe(struct platform_device *pdev)
 	input->name = pdev->name;
 	input->phys = "opencores-kbd/input0";
 	input->dev.parent = &pdev->dev;
+=======
+	opencores_kbd = devm_kzalloc(&pdev->dev, sizeof(*opencores_kbd),
+				     GFP_KERNEL);
+	if (!opencores_kbd)
+		return -ENOMEM;
+
+	input = devm_input_allocate_device(&pdev->dev);
+	if (!input) {
+		dev_err(&pdev->dev, "failed to allocate input device\n");
+		return -ENOMEM;
+	}
+
+	opencores_kbd->input = input;
+
+	opencores_kbd->addr = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(opencores_kbd->addr))
+		return PTR_ERR(opencores_kbd->addr);
+
+	input->name = pdev->name;
+	input->phys = "opencores-kbd/input0";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input_set_drvdata(input, opencores_kbd);
 
@@ -109,22 +134,36 @@ static int opencores_kbd_probe(struct platform_device *pdev)
 	}
 	__clear_bit(KEY_RESERVED, input->keybit);
 
+<<<<<<< HEAD
 	error = request_irq(irq, &opencores_kbd_isr,
 			    IRQF_TRIGGER_RISING, pdev->name, opencores_kbd);
 	if (error) {
 		dev_err(&pdev->dev, "unable to claim irq %d\n", irq);
 		goto err_unmap_mem;
+=======
+	error = devm_request_irq(&pdev->dev, irq, &opencores_kbd_isr,
+				 IRQF_TRIGGER_RISING,
+				 pdev->name, opencores_kbd);
+	if (error) {
+		dev_err(&pdev->dev, "unable to claim irq %d\n", irq);
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&pdev->dev, "unable to register input device\n");
+<<<<<<< HEAD
 		goto err_free_irq;
+=======
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, opencores_kbd);
 
 	return 0;
+<<<<<<< HEAD
 
  err_free_irq:
 	free_irq(irq, opencores_kbd);
@@ -154,11 +193,16 @@ static int opencores_kbd_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver opencores_kbd_device_driver = {
 	.probe    = opencores_kbd_probe,
+<<<<<<< HEAD
 	.remove   = opencores_kbd_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.driver   = {
 		.name = "opencores-kbd",
 	},

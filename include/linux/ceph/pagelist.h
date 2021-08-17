@@ -1,7 +1,14 @@
 #ifndef __FS_CEPH_PAGELIST_H
 #define __FS_CEPH_PAGELIST_H
 
+<<<<<<< HEAD
 #include <linux/list.h>
+=======
+#include <asm/byteorder.h>
+#include <linux/atomic.h>
+#include <linux/list.h>
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct ceph_pagelist {
 	struct list_head head;
@@ -10,6 +17,10 @@ struct ceph_pagelist {
 	size_t room;
 	struct list_head free_list;
 	size_t num_pages_free;
+<<<<<<< HEAD
+=======
+	atomic_t refcnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ceph_pagelist_cursor {
@@ -26,9 +37,16 @@ static inline void ceph_pagelist_init(struct ceph_pagelist *pl)
 	pl->room = 0;
 	INIT_LIST_HEAD(&pl->free_list);
 	pl->num_pages_free = 0;
+<<<<<<< HEAD
 }
 
 extern int ceph_pagelist_release(struct ceph_pagelist *pl);
+=======
+	atomic_set(&pl->refcnt, 1);
+}
+
+extern void ceph_pagelist_release(struct ceph_pagelist *pl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int ceph_pagelist_append(struct ceph_pagelist *pl, const void *d, size_t l);
 

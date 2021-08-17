@@ -15,6 +15,10 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/machine.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
@@ -24,7 +28,13 @@
 #include <linux/power_supply.h>
 #include <linux/power/jz4740-battery.h>
 #include <linux/power/gpio-charger.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/pwm.h>
+
+#include <asm/mach-jz4740/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach-jz4740/jz4740_fb.h>
 #include <asm/mach-jz4740/jz4740_mmc.h>
 #include <asm/mach-jz4740/jz4740_nand.h>
@@ -32,14 +42,20 @@
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/machine.h>
 
+<<<<<<< HEAD
 #include <linux/leds_pwm.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach-jz4740/platform.h>
 
 #include "clock.h"
 
+<<<<<<< HEAD
 static bool is_avt2;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* GPIOs */
 #define QI_LB60_GPIO_SD_CD		JZ_GPIO_PORTD(0)
 #define QI_LB60_GPIO_SD_VCC_EN_N	JZ_GPIO_PORTD(2)
@@ -49,6 +65,7 @@ static bool is_avt2;
 #define QI_LB60_GPIO_KEYIN8		JZ_GPIO_PORTD(26)
 
 /* NAND */
+<<<<<<< HEAD
 static struct nand_ecclayout qi_lb60_ecclayout_1gb = {
 	.eccbytes = 36,
 	.eccpos = {
@@ -63,6 +80,8 @@ static struct nand_ecclayout qi_lb60_ecclayout_1gb = {
 		{ .offset = 42, .length = 22 }
 	},
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Early prototypes of the QI LB60 had only 1GB of NAND.
  * In order to support these devices as well the partition and ecc layout is
@@ -85,6 +104,7 @@ static struct mtd_partition qi_lb60_partitions_1gb[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct nand_ecclayout qi_lb60_ecclayout_2gb = {
 	.eccbytes = 72,
 	.eccpos = {
@@ -104,6 +124,8 @@ static struct nand_ecclayout qi_lb60_ecclayout_2gb = {
 	},
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct mtd_partition qi_lb60_partitions_2gb[] = {
 	{
 		.name = "NAND BOOT partition",
@@ -122,6 +144,7 @@ static struct mtd_partition qi_lb60_partitions_2gb[] = {
 	},
 };
 
+<<<<<<< HEAD
 static void qi_lb60_nand_ident(struct platform_device *pdev,
 		struct nand_chip *chip, struct mtd_partition **partitions,
 		int *num_partitions)
@@ -135,14 +158,92 @@ static void qi_lb60_nand_ident(struct platform_device *pdev,
 		*partitions = qi_lb60_partitions_1gb;
 		*num_partitions = ARRAY_SIZE(qi_lb60_partitions_1gb);
 	}
+=======
+static int qi_lb60_ooblayout_ecc(struct mtd_info *mtd, int section,
+				 struct mtd_oob_region *oobregion)
+{
+	if (section)
+		return -ERANGE;
+
+	oobregion->length = 36;
+	oobregion->offset = 6;
+
+	if (mtd->oobsize == 128) {
+		oobregion->length *= 2;
+		oobregion->offset *= 2;
+	}
+
+	return 0;
+}
+
+static int qi_lb60_ooblayout_free(struct mtd_info *mtd, int section,
+				  struct mtd_oob_region *oobregion)
+{
+	int eccbytes = 36, eccoff = 6;
+
+	if (section > 1)
+		return -ERANGE;
+
+	if (mtd->oobsize == 128) {
+		eccbytes *= 2;
+		eccoff *= 2;
+	}
+
+	if (!section) {
+		oobregion->offset = 2;
+		oobregion->length = eccoff - 2;
+	} else {
+		oobregion->offset = eccoff + eccbytes;
+		oobregion->length = mtd->oobsize - oobregion->offset;
+	}
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops qi_lb60_ooblayout_ops = {
+	.ecc = qi_lb60_ooblayout_ecc,
+	.free = qi_lb60_ooblayout_free,
+};
+
+static void qi_lb60_nand_ident(struct platform_device *pdev,
+		struct mtd_info *mtd, struct mtd_partition **partitions,
+		int *num_partitions)
+{
+	struct nand_chip *chip = mtd_to_nand(mtd);
+
+	if (chip->page_shift == 12) {
+		*partitions = qi_lb60_partitions_2gb;
+		*num_partitions = ARRAY_SIZE(qi_lb60_partitions_2gb);
+	} else {
+		*partitions = qi_lb60_partitions_1gb;
+		*num_partitions = ARRAY_SIZE(qi_lb60_partitions_1gb);
+	}
+
+	mtd_set_ooblayout(mtd, &qi_lb60_ooblayout_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct jz_nand_platform_data qi_lb60_nand_pdata = {
 	.ident_callback = qi_lb60_nand_ident,
+<<<<<<< HEAD
 	.busy_gpio = 94,
 	.banks = { 1 },
 };
 
+=======
+	.banks = { 1 },
+};
+
+static struct gpiod_lookup_table qi_lb60_nand_gpio_table = {
+	.dev_id = "jz4740-nand.0",
+	.table = {
+		GPIO_LOOKUP("Bank C", 30, "busy", 0),
+		{ },
+	},
+};
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Keyboard*/
 
 #define KEY_QI_QI	KEY_F13
@@ -358,6 +459,7 @@ static struct jz4740_mmc_platform_data qi_lb60_mmc_pdata = {
 	.power_active_low	= 1,
 };
 
+<<<<<<< HEAD
 /* OHCI */
 static struct regulator_consumer_supply avt2_usb_regulator_consumer =
 	REGULATOR_SUPPLY("vbus", "jz4740-ohci");
@@ -396,6 +498,17 @@ static struct platform_device qi_lb60_pwm_beeper = {
 	.dev = {
 		.platform_data = (void *)4,
 	},
+=======
+/* beeper */
+static struct pwm_lookup qi_lb60_pwm_lookup[] = {
+	PWM_LOOKUP("jz4740-pwm", 4, "pwm-beeper", NULL, 0,
+		   PWM_POLARITY_NORMAL),
+};
+
+static struct platform_device qi_lb60_pwm_beeper = {
+	.name = "pwm-beeper",
+	.id = -1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* charger */
@@ -425,8 +538,23 @@ static struct platform_device qi_lb60_audio_device = {
 	.id = -1,
 };
 
+<<<<<<< HEAD
 static struct platform_device *jz_platform_devices[] __initdata = {
 	&jz4740_udc_device,
+=======
+static struct gpiod_lookup_table qi_lb60_audio_gpio_table = {
+	.dev_id = "qi-lb60-audio",
+	.table = {
+		GPIO_LOOKUP("Bank B", 29, "snd", 0),
+		GPIO_LOOKUP("Bank D", 4, "amp", 0),
+		{ },
+	},
+};
+
+static struct platform_device *jz_platform_devices[] __initdata = {
+	&jz4740_udc_device,
+	&jz4740_udc_xceiv_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&jz4740_mmc_device,
 	&jz4740_nand_device,
 	&qi_lb60_keypad,
@@ -438,6 +566,10 @@ static struct platform_device *jz_platform_devices[] __initdata = {
 	&jz4740_rtc_device,
 	&jz4740_adc_device,
 	&jz4740_pwm_device,
+<<<<<<< HEAD
+=======
+	&jz4740_dma_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&qi_lb60_gpio_keys,
 	&qi_lb60_pwm_beeper,
 	&qi_lb60_charger_device,
@@ -459,21 +591,31 @@ static int __init qi_lb60_init_platform_devices(void)
 	jz4740_adc_device.dev.platform_data = &qi_lb60_battery_pdata;
 	jz4740_mmc_device.dev.platform_data = &qi_lb60_mmc_pdata;
 
+<<<<<<< HEAD
 	jz4740_serial_device_register();
+=======
+	gpiod_add_lookup_table(&qi_lb60_audio_gpio_table);
+	gpiod_add_lookup_table(&qi_lb60_nand_gpio_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spi_register_board_info(qi_lb60_spi_board_info,
 				ARRAY_SIZE(qi_lb60_spi_board_info));
 
+<<<<<<< HEAD
 	if (is_avt2) {
 		platform_device_register(&avt2_usb_regulator_device);
 		platform_device_register(&jz4740_usb_ohci_device);
 	}
+=======
+	pwm_add_table(qi_lb60_pwm_lookup, ARRAY_SIZE(qi_lb60_pwm_lookup));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return platform_add_devices(jz_platform_devices,
 					ARRAY_SIZE(jz_platform_devices));
 
 }
 
+<<<<<<< HEAD
 struct jz4740_clock_board_data jz4740_clock_bdata = {
 	.ext_rate = 12000000,
 	.rtc_rate = 32768,
@@ -492,6 +634,11 @@ static int __init qi_lb60_board_setup(void)
 {
 	printk(KERN_INFO "Qi Hardware JZ4740 QI %s setup\n",
 		is_avt2 ? "AVT2" : "LB60");
+=======
+static int __init qi_lb60_board_setup(void)
+{
+	printk(KERN_INFO "Qi Hardware JZ4740 QI LB60 setup\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	board_gpio_setup();
 

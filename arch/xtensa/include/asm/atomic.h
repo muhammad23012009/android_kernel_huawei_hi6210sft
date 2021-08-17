@@ -19,6 +19,10 @@
 #ifdef __KERNEL__
 #include <asm/processor.h>
 #include <asm/cmpxchg.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ATOMIC_INIT(i)	{ (i) }
 
@@ -28,7 +32,11 @@
  *
  * Locking interrupts looks like this:
  *
+<<<<<<< HEAD
  *    rsil a15, LOCKLEVEL
+=======
+ *    rsil a15, TOPLEVEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *    <code>
  *    wsr  a15, PS
  *    rsync
@@ -46,7 +54,11 @@
  *
  * Atomically reads the value of @v.
  */
+<<<<<<< HEAD
 #define atomic_read(v)		(*(volatile int *)&(v)->counter)
+=======
+#define atomic_read(v)		READ_ONCE((v)->counter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * atomic_set - set atomic variable
@@ -55,6 +67,7 @@
  *
  * Atomically sets the value of @v to @i.
  */
+<<<<<<< HEAD
 #define atomic_set(v,i)		((v)->counter = (i))
 
 /**
@@ -217,6 +230,149 @@ static inline int atomic_sub_return(int i, atomic_t * v)
 #endif
 }
 
+=======
+#define atomic_set(v,i)		WRITE_ONCE((v)->counter, (i))
+
+#if XCHAL_HAVE_S32C1I
+#define ATOMIC_OP(op)							\
+static inline void atomic_##op(int i, atomic_t * v)			\
+{									\
+	unsigned long tmp;						\
+	int result;							\
+									\
+	__asm__ __volatile__(						\
+			"1:     l32i    %1, %3, 0\n"			\
+			"       wsr     %1, scompare1\n"		\
+			"       " #op " %0, %1, %2\n"			\
+			"       s32c1i  %0, %3, 0\n"			\
+			"       bne     %0, %1, 1b\n"			\
+			: "=&a" (result), "=&a" (tmp)			\
+			: "a" (i), "a" (v)				\
+			: "memory"					\
+			);						\
+}									\
+
+#define ATOMIC_OP_RETURN(op)						\
+static inline int atomic_##op##_return(int i, atomic_t * v)		\
+{									\
+	unsigned long tmp;						\
+	int result;							\
+									\
+	__asm__ __volatile__(						\
+			"1:     l32i    %1, %3, 0\n"			\
+			"       wsr     %1, scompare1\n"		\
+			"       " #op " %0, %1, %2\n"			\
+			"       s32c1i  %0, %3, 0\n"			\
+			"       bne     %0, %1, 1b\n"			\
+			"       " #op " %0, %0, %2\n"			\
+			: "=&a" (result), "=&a" (tmp)			\
+			: "a" (i), "a" (v)				\
+			: "memory"					\
+			);						\
+									\
+	return result;							\
+}
+
+#define ATOMIC_FETCH_OP(op)						\
+static inline int atomic_fetch_##op(int i, atomic_t * v)		\
+{									\
+	unsigned long tmp;						\
+	int result;							\
+									\
+	__asm__ __volatile__(						\
+			"1:     l32i    %1, %3, 0\n"			\
+			"       wsr     %1, scompare1\n"		\
+			"       " #op " %0, %1, %2\n"			\
+			"       s32c1i  %0, %3, 0\n"			\
+			"       bne     %0, %1, 1b\n"			\
+			: "=&a" (result), "=&a" (tmp)			\
+			: "a" (i), "a" (v)				\
+			: "memory"					\
+			);						\
+									\
+	return result;							\
+}
+
+#else /* XCHAL_HAVE_S32C1I */
+
+#define ATOMIC_OP(op)							\
+static inline void atomic_##op(int i, atomic_t * v)			\
+{									\
+	unsigned int vval;						\
+									\
+	__asm__ __volatile__(						\
+			"       rsil    a15, "__stringify(TOPLEVEL)"\n"\
+			"       l32i    %0, %2, 0\n"			\
+			"       " #op " %0, %0, %1\n"			\
+			"       s32i    %0, %2, 0\n"			\
+			"       wsr     a15, ps\n"			\
+			"       rsync\n"				\
+			: "=&a" (vval)					\
+			: "a" (i), "a" (v)				\
+			: "a15", "memory"				\
+			);						\
+}									\
+
+#define ATOMIC_OP_RETURN(op)						\
+static inline int atomic_##op##_return(int i, atomic_t * v)		\
+{									\
+	unsigned int vval;						\
+									\
+	__asm__ __volatile__(						\
+			"       rsil    a15,"__stringify(TOPLEVEL)"\n"	\
+			"       l32i    %0, %2, 0\n"			\
+			"       " #op " %0, %0, %1\n"			\
+			"       s32i    %0, %2, 0\n"			\
+			"       wsr     a15, ps\n"			\
+			"       rsync\n"				\
+			: "=&a" (vval)					\
+			: "a" (i), "a" (v)				\
+			: "a15", "memory"				\
+			);						\
+									\
+	return vval;							\
+}
+
+#define ATOMIC_FETCH_OP(op)						\
+static inline int atomic_fetch_##op(int i, atomic_t * v)		\
+{									\
+	unsigned int tmp, vval;						\
+									\
+	__asm__ __volatile__(						\
+			"       rsil    a15,"__stringify(TOPLEVEL)"\n"	\
+			"       l32i    %0, %3, 0\n"			\
+			"       " #op " %1, %0, %2\n"			\
+			"       s32i    %1, %3, 0\n"			\
+			"       wsr     a15, ps\n"			\
+			"       rsync\n"				\
+			: "=&a" (vval), "=&a" (tmp)			\
+			: "a" (i), "a" (v)				\
+			: "a15", "memory"				\
+			);						\
+									\
+	return vval;							\
+}
+
+#endif /* XCHAL_HAVE_S32C1I */
+
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op) ATOMIC_OP_RETURN(op)
+
+ATOMIC_OPS(add)
+ATOMIC_OPS(sub)
+
+#undef ATOMIC_OPS
+#define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op)
+
+ATOMIC_OPS(and)
+ATOMIC_OPS(or)
+ATOMIC_OPS(xor)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+#undef ATOMIC_OP_RETURN
+#undef ATOMIC_OP
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * atomic_sub_and_test - subtract value from variable and test result
  * @i: integer value to subtract
@@ -318,6 +474,7 @@ static __inline__ int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
+<<<<<<< HEAD
 
 static inline void atomic_clear_mask(unsigned int mask, atomic_t *v)
 {
@@ -393,6 +550,8 @@ static inline void atomic_set_mask(unsigned int mask, atomic_t *v)
 #define smp_mb__before_atomic_inc()	barrier()
 #define smp_mb__after_atomic_inc()	barrier()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 
 #endif /* _XTENSA_ATOMIC_H */

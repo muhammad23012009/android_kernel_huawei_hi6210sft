@@ -38,6 +38,12 @@
  * Can probably alleviate this by reading the interrupt register on start, but
  * that is really just brushing the problem under the carpet.
  */
+<<<<<<< HEAD
+=======
+#ifndef _SCA3000
+#define _SCA3000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SCA3000_WRITE_REG(a) (((a) << 2) | 0x02)
 #define SCA3000_READ_REG(a) ((a) << 2)
 
@@ -65,7 +71,12 @@
 
 #define SCA3000_RING_BUF_ENABLE			0x80
 #define SCA3000_RING_BUF_8BIT			0x40
+<<<<<<< HEAD
 /* Free fall detection triggers an interrupt if the acceleration
+=======
+/*
+ * Free fall detection triggers an interrupt if the acceleration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * is below a threshold for equivalent of 25cm drop
  */
 #define SCA3000_FREE_FALL_DETECT		0x10
@@ -73,8 +84,14 @@
 #define SCA3000_MEAS_MODE_OP_1			0x01
 #define SCA3000_MEAS_MODE_OP_2			0x02
 
+<<<<<<< HEAD
 /* In motion detection mode the accelerations are band pass filtered
  * (aprox 1 - 25Hz) and then a programmable threshold used to trigger
+=======
+/*
+ * In motion detection mode the accelerations are band pass filtered
+ * (approx 1 - 25Hz) and then a programmable threshold used to trigger
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * and interrupt.
  */
 #define SCA3000_MEAS_MODE_MOT_DET		0x03
@@ -99,18 +116,35 @@
 #define SCA3000_REG_CTRL_SEL_MD_Y_TH		0x03
 #define SCA3000_REG_CTRL_SEL_MD_X_TH		0x04
 #define SCA3000_REG_CTRL_SEL_MD_Z_TH		0x05
+<<<<<<< HEAD
 /* BE VERY CAREFUL WITH THIS, IF 3 BITS ARE NOT SET the device
    will not function */
+=======
+/*
+ * BE VERY CAREFUL WITH THIS, IF 3 BITS ARE NOT SET the device
+ * will not function
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SCA3000_REG_CTRL_SEL_OUT_CTRL		0x0B
 #define SCA3000_OUT_CTRL_PROT_MASK		0xE0
 #define SCA3000_OUT_CTRL_BUF_X_EN		0x10
 #define SCA3000_OUT_CTRL_BUF_Y_EN		0x08
 #define SCA3000_OUT_CTRL_BUF_Z_EN		0x04
+<<<<<<< HEAD
 #define SCA3000_OUT_CTRL_BUF_DIV_4		0x02
 #define SCA3000_OUT_CTRL_BUF_DIV_2		0x01
 
 /* Control which motion detector interrupts are on.
  * For now only OR combinations are supported.x
+=======
+#define SCA3000_OUT_CTRL_BUF_DIV_MASK		0x03
+#define SCA3000_OUT_CTRL_BUF_DIV_4		0x02
+#define SCA3000_OUT_CTRL_BUF_DIV_2		0x01
+
+/*
+ * Control which motion detector interrupts are on.
+ * For now only OR combinations are supported.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define SCA3000_MD_CTRL_PROT_MASK		0xC0
 #define SCA3000_MD_CTRL_OR_Y			0x01
@@ -121,7 +155,12 @@
 #define SCA3000_MD_CTRL_AND_X			0x10
 #define SAC3000_MD_CTRL_AND_Z			0x20
 
+<<<<<<< HEAD
 /* Some control registers of complex access methods requiring this register to
+=======
+/*
+ * Some control registers of complex access methods requiring this register to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * be used to remove a lock.
  */
 #define SCA3000_REG_ADDR_UNLOCK			0x1e
@@ -139,7 +178,12 @@
 /* Values of multiplexed registers (write to ctrl_data after select) */
 #define SCA3000_REG_ADDR_CTRL_DATA		0x22
 
+<<<<<<< HEAD
 /* Measurement modes available on some sca3000 series chips. Code assumes others
+=======
+/*
+ * Measurement modes available on some sca3000 series chips. Code assumes others
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * may become available in the future.
  *
  * Bypass - Bypass the low-pass filter in the signal channel so as to increase
@@ -160,7 +204,10 @@
  * struct sca3000_state - device instance state information
  * @us:			the associated spi device
  * @info:			chip variant information
+<<<<<<< HEAD
  * @indio_dev:			device information used by the IIO core
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @interrupt_handler_ws:	event interrupt handler for all events
  * @last_timestamp:		the timestamp of the last event
  * @mo_det_use_count:		reference counter for the motion detection unit
@@ -266,4 +313,8 @@ static inline void sca3000_ring_int_process(u8 val, void *ring)
 }
 
 #endif
+<<<<<<< HEAD
 
+=======
+#endif /* _SCA3000 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

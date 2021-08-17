@@ -205,6 +205,7 @@ static int ks8695_gpio_to_irq(struct gpio_chip *gc, unsigned int pin)
 	return gpio_irq[pin];
 }
 
+<<<<<<< HEAD
 /*
  * Map IRQ number to GPIO line.
  */
@@ -217,6 +218,8 @@ int irq_to_gpio(unsigned int irq)
 }
 EXPORT_SYMBOL(irq_to_gpio);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* GPIOLIB interface */
 
 static struct gpio_chip ks8695_gpio_chip = {
@@ -228,13 +231,21 @@ static struct gpio_chip ks8695_gpio_chip = {
 	.to_irq			= ks8695_gpio_to_irq,
 	.base			= 0,
 	.ngpio			= 16,
+<<<<<<< HEAD
 	.can_sleep		= 0,
+=======
+	.can_sleep		= false,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Register the GPIOs */
 void ks8695_register_gpios(void)
 {
+<<<<<<< HEAD
 	if (gpiochip_add(&ks8695_gpio_chip))
+=======
+	if (gpiochip_add_data(&ks8695_gpio_chip, NULL))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "Unable to register core GPIOs\n");
 }
 
@@ -265,6 +276,7 @@ static int ks8695_gpio_show(struct seq_file *s, void *unused)
 				seq_printf(s, "EXT%i ", i);
 
 				switch ((ctrl & intmask[i]) >> (4 * i)) {
+<<<<<<< HEAD
 					case IOPC_TM_LOW:
 						seq_printf(s, "(Low)");		break;
 					case IOPC_TM_HIGH:
@@ -281,13 +293,35 @@ static int ks8695_gpio_show(struct seq_file *s, void *unused)
 				seq_printf(s, "GPIO\t");
 		}
 		else if (i <= KS8695_GPIO_5) {
+=======
+				case IOPC_TM_LOW:
+					seq_printf(s, "(Low)");		break;
+				case IOPC_TM_HIGH:
+					seq_printf(s, "(High)");	break;
+				case IOPC_TM_RISING:
+					seq_printf(s, "(Rising)");	break;
+				case IOPC_TM_FALLING:
+					seq_printf(s, "(Falling)");	break;
+				case IOPC_TM_EDGE:
+					seq_printf(s, "(Edges)");	break;
+				}
+			} else
+				seq_printf(s, "GPIO\t");
+		} else if (i <= KS8695_GPIO_5) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ctrl & enable[i])
 				seq_printf(s, "TOUT%i\t", i - KS8695_GPIO_4);
 			else
 				seq_printf(s, "GPIO\t");
+<<<<<<< HEAD
 		}
 		else
 			seq_printf(s, "GPIO\t");
+=======
+		} else {
+			seq_printf(s, "GPIO\t");
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		seq_printf(s, "\t");
 

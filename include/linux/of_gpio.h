@@ -29,6 +29,10 @@ struct device_node;
  */
 enum of_gpio_flags {
 	OF_GPIO_ACTIVE_LOW = 0x1,
+<<<<<<< HEAD
+=======
+	OF_GPIO_SINGLE_ENDED = 0x2,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #ifdef CONFIG_OF_GPIO
@@ -49,6 +53,7 @@ static inline struct of_mm_gpio_chip *to_of_mm_gpio_chip(struct gpio_chip *gc)
 
 extern int of_get_named_gpio_flags(struct device_node *np,
 		const char *list_name, int index, enum of_gpio_flags *flags);
+<<<<<<< HEAD
 extern int of_get_gpio_by_prop(struct device_node *np, const char *propname,
 			   int prop_index, int gpio_index, enum of_gpio_flags *flags);
 extern int of_mm_gpiochip_add(struct device_node *np,
@@ -56,6 +61,19 @@ extern int of_mm_gpiochip_add(struct device_node *np,
 
 extern void of_gpiochip_add(struct gpio_chip *gc);
 extern void of_gpiochip_remove(struct gpio_chip *gc);
+=======
+
+extern int of_mm_gpiochip_add_data(struct device_node *np,
+				   struct of_mm_gpio_chip *mm_gc,
+				   void *data);
+static inline int of_mm_gpiochip_add(struct device_node *np,
+				     struct of_mm_gpio_chip *mm_gc)
+{
+	return of_mm_gpiochip_add_data(np, mm_gc, NULL);
+}
+extern void of_mm_gpiochip_remove(struct of_mm_gpio_chip *mm_gc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int of_gpio_simple_xlate(struct gpio_chip *gc,
 				const struct of_phandle_args *gpiospec,
 				u32 *flags);
@@ -66,12 +84,18 @@ extern int of_gpio_simple_xlate(struct gpio_chip *gc,
 static inline int of_get_named_gpio_flags(struct device_node *np,
 		const char *list_name, int index, enum of_gpio_flags *flags)
 {
+<<<<<<< HEAD
 	return -ENOSYS;
 }
 
 static inline int of_get_gpio_by_prop(struct device_node *np, const char *propname,
 			   int prop_index, int gpio_index, enum of_gpio_flags *flags)
 {
+=======
+	if (flags)
+		*flags = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENOSYS;
 }
 
@@ -82,9 +106,12 @@ static inline int of_gpio_simple_xlate(struct gpio_chip *gc,
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline void of_gpiochip_add(struct gpio_chip *gc) { }
 static inline void of_gpiochip_remove(struct gpio_chip *gc) { }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_OF_GPIO */
 
 /**
@@ -123,6 +150,7 @@ static inline int of_gpio_count(struct device_node *np)
 	return of_gpio_named_count(np, "gpios");
 }
 
+<<<<<<< HEAD
 /**
  * of_get_gpio_flags() - Get a GPIO number and flags to use with GPIO API
  * @np:		device node to get GPIO from
@@ -133,6 +161,8 @@ static inline int of_gpio_count(struct device_node *np)
  * value on the error condition. If @flags is not NULL the function also fills
  * in flags for the GPIO.
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int of_get_gpio_flags(struct device_node *np, int index,
 		      enum of_gpio_flags *flags)
 {

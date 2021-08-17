@@ -106,7 +106,11 @@ static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)
 				if (!r->flags)
 					continue;
 				if (!r->start ||
+<<<<<<< HEAD
 				    pci_claim_resource(dev, idx) < 0) {
+=======
+				    pci_claim_bridge_resource(dev, idx) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					printk(KERN_ERR "PCI:"
 					       " Cannot allocate resource"
 					       " region %d of bridge %s\n",
@@ -183,6 +187,7 @@ static int __init pcibios_assign_resources(void)
 	struct pci_dev *dev = NULL;
 	struct resource *r;
 
+<<<<<<< HEAD
 	if (!(pci_probe & PCI_ASSIGN_ROMS)) {
 		/* Try to use BIOS settings for ROMs, otherwise let
 		   pci_assign_unassigned_resources() allocate the new
@@ -195,6 +200,18 @@ static int __init pcibios_assign_resources(void)
 				r->end -= r->start;
 				r->start = 0;
 			}
+=======
+	/* Try to use BIOS settings for ROMs, otherwise let
+	   pci_assign_unassigned_resources() allocate the new
+	   addresses. */
+	for_each_pci_dev(dev) {
+		r = &dev->resource[PCI_ROM_RESOURCE];
+		if (!r->flags || !r->start)
+			continue;
+		if (pci_claim_resource(dev, PCI_ROM_RESOURCE) < 0) {
+			r->end -= r->start;
+			r->start = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -221,7 +238,11 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	/* Leave vm_pgoff as-is, the PCI space address is the physical
 	 * address on this platform.
 	 */
+<<<<<<< HEAD
 	vma->vm_flags |= VM_LOCKED | VM_IO;
+=======
+	vma->vm_flags |= VM_LOCKED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	prot = pgprot_val(vma->vm_page_prot);
 	prot &= ~_PAGE_CACHE;

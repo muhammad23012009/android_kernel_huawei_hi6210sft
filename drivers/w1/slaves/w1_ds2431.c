@@ -96,9 +96,15 @@ static int w1_f2d_readblock(struct w1_slave *sl, int off, int count, char *buf)
 	return -1;
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f2d_read_bin(struct file *filp, struct kobject *kobj,
 			       struct bin_attribute *bin_attr,
 			       char *buf, loff_t off, size_t count)
+=======
+static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
+			   struct bin_attribute *bin_attr, char *buf,
+			   loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int todo = count;
@@ -202,9 +208,15 @@ retry:
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f2d_write_bin(struct file *filp, struct kobject *kobj,
 				struct bin_attribute *bin_attr,
 				char *buf, loff_t off, size_t count)
+=======
+static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
+			    struct bin_attribute *bin_attr, char *buf,
+			    loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int addr, len;
@@ -264,6 +276,7 @@ out_up:
 	return count;
 }
 
+<<<<<<< HEAD
 static struct bin_attribute w1_f2d_bin_attr = {
 	.attr = {
 		.name = "eeprom",
@@ -287,12 +300,33 @@ static void w1_f2d_remove_slave(struct w1_slave *sl)
 static struct w1_family_ops w1_f2d_fops = {
 	.add_slave      = w1_f2d_add_slave,
 	.remove_slave   = w1_f2d_remove_slave,
+=======
+static BIN_ATTR_RW(eeprom, W1_F2D_EEPROM_SIZE);
+
+static struct bin_attribute *w1_f2d_bin_attrs[] = {
+	&bin_attr_eeprom,
+	NULL,
+};
+
+static const struct attribute_group w1_f2d_group = {
+	.bin_attrs = w1_f2d_bin_attrs,
+};
+
+static const struct attribute_group *w1_f2d_groups[] = {
+	&w1_f2d_group,
+	NULL,
+};
+
+static struct w1_family_ops w1_f2d_fops = {
+	.groups		= w1_f2d_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct w1_family w1_family_2d = {
 	.fid = W1_EEPROM_DS2431,
 	.fops = &w1_f2d_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_f2d_init(void)
 {
@@ -306,7 +340,14 @@ static void __exit w1_f2d_fini(void)
 
 module_init(w1_f2d_init);
 module_exit(w1_f2d_fini);
+=======
+module_w1_family(w1_family_2d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Bernhard Weirich <bernhard.weirich@riedel.net>");
 MODULE_DESCRIPTION("w1 family 2d driver for DS2431, 1kb EEPROM");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("w1-family-" __stringify(W1_EEPROM_DS2431));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

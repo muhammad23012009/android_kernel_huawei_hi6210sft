@@ -23,7 +23,11 @@
 #include <linux/security.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <acpi/acpi.h>
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "tpm.h"
 #include "tpm_eventlog.h"
@@ -95,7 +99,11 @@ int read_log(struct tpm_bios_log *log)
 
 	log->bios_event_log_end = log->bios_event_log + len;
 
+<<<<<<< HEAD
 	virt = acpi_os_map_memory(start, len);
+=======
+	virt = acpi_os_map_iomem(start, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!virt) {
 		kfree(log->bios_event_log);
 		printk("%s: ERROR - Unable to map memory\n", __func__);
@@ -104,6 +112,10 @@ int read_log(struct tpm_bios_log *log)
 
 	memcpy_fromio(log->bios_event_log, virt, len);
 
+<<<<<<< HEAD
 	acpi_os_unmap_memory(virt, len);
+=======
+	acpi_os_unmap_iomem(virt, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }

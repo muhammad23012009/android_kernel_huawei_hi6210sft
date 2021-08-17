@@ -36,10 +36,15 @@
 #include <linux/types.h>
 #include <linux/pci.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
 
 #include <linux/thermal.h>
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/thermal.h>
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Thomas Sujith");
 MODULE_AUTHOR("Zhang Rui");
@@ -156,19 +161,29 @@ static struct thermal_cooling_device_ops memory_cooling_ops = {
 static int intel_menlow_memory_add(struct acpi_device *device)
 {
 	int result = -ENODEV;
+<<<<<<< HEAD
 	acpi_status status = AE_OK;
 	acpi_handle dummy;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct thermal_cooling_device *cdev;
 
 	if (!device)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	status = acpi_get_handle(device->handle, MEMORY_GET_BANDWIDTH, &dummy);
 	if (ACPI_FAILURE(status))
 		goto end;
 
 	status = acpi_get_handle(device->handle, MEMORY_SET_BANDWIDTH, &dummy);
 	if (ACPI_FAILURE(status))
+=======
+	if (!acpi_has_method(device->handle, MEMORY_GET_BANDWIDTH))
+		goto end;
+
+	if (!acpi_has_method(device->handle, MEMORY_SET_BANDWIDTH))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto end;
 
 	cdev = thermal_cooling_device_register("Memory controller", device,
@@ -312,13 +327,19 @@ static int sensor_set_auxtrip(acpi_handle handle, int index, int value)
 #define to_intel_menlow_attr(_attr)	\
 	container_of(_attr, struct intel_menlow_attribute, attr)
 
+<<<<<<< HEAD
 static ssize_t aux0_show(struct device *dev,
 			 struct device_attribute *dev_attr, char *buf)
+=======
+static ssize_t aux_show(struct device *dev, struct device_attribute *dev_attr,
+			char *buf, int idx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct intel_menlow_attribute *attr = to_intel_menlow_attr(dev_attr);
 	unsigned long long value;
 	int result;
 
+<<<<<<< HEAD
 	result = sensor_get_auxtrip(attr->handle, 0, &value);
 
 	return result ? result : sprintf(buf, "%lu", KELVIN_TO_CELSIUS(value));
@@ -339,6 +360,27 @@ static ssize_t aux1_show(struct device *dev,
 static ssize_t aux0_store(struct device *dev,
 			  struct device_attribute *dev_attr,
 			  const char *buf, size_t count)
+=======
+	result = sensor_get_auxtrip(attr->handle, idx, &value);
+
+	return result ? result : sprintf(buf, "%lu", DECI_KELVIN_TO_CELSIUS(value));
+}
+
+static ssize_t aux0_show(struct device *dev,
+			 struct device_attribute *dev_attr, char *buf)
+{
+	return aux_show(dev, dev_attr, buf, 0);
+}
+
+static ssize_t aux1_show(struct device *dev,
+			 struct device_attribute *dev_attr, char *buf)
+{
+	return aux_show(dev, dev_attr, buf, 1);
+}
+
+static ssize_t aux_store(struct device *dev, struct device_attribute *dev_attr,
+			 const char *buf, size_t count, int idx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct intel_menlow_attribute *attr = to_intel_menlow_attr(dev_attr);
 	int value;
@@ -351,6 +393,7 @@ static ssize_t aux0_store(struct device *dev,
 	if (value < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	result = sensor_set_auxtrip(attr->handle, 0, CELSIUS_TO_KELVIN(value));
 	return result ? result : count;
 }
@@ -372,6 +415,25 @@ static ssize_t aux1_store(struct device *dev,
 
 	result = sensor_set_auxtrip(attr->handle, 1, CELSIUS_TO_KELVIN(value));
 	return result ? result : count;
+=======
+	result = sensor_set_auxtrip(attr->handle, idx, 
+				    CELSIUS_TO_DECI_KELVIN(value));
+	return result ? result : count;
+}
+
+static ssize_t aux0_store(struct device *dev,
+			  struct device_attribute *dev_attr,
+			  const char *buf, size_t count)
+{
+	return aux_store(dev, dev_attr, buf, count, 0);
+}
+
+static ssize_t aux1_store(struct device *dev,
+			  struct device_attribute *dev_attr,
+			  const char *buf, size_t count)
+{
+	return aux_store(dev, dev_attr, buf, count, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* BIOS can enable/disable the thermal user application in dabney platform */

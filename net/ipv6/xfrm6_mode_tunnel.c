@@ -20,11 +20,18 @@
 
 static inline void ipip6_ecn_decapsulate(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	const struct ipv6hdr *outer_iph = ipv6_hdr(skb);
 	struct ipv6hdr *inner_iph = ipipv6_hdr(skb);
 
 	if (INET_ECN_is_ce(ipv6_get_dsfield(outer_iph)))
 		IP6_ECN_set_ce(inner_iph);
+=======
+	struct ipv6hdr *inner_iph = ipipv6_hdr(skb);
+
+	if (INET_ECN_is_ce(XFRM_MODE_SKB_CB(skb)->tos))
+		IP6_ECN_set_ce(skb, inner_iph);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Add encapsulation header.
@@ -63,6 +70,15 @@ static int xfrm6_mode_tunnel_output(struct xfrm_state *x, struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#define for_each_input_rcu(head, handler)	\
+	for (handler = rcu_dereference(head);	\
+	     handler != NULL;			\
+	     handler = rcu_dereference(handler->next))
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int xfrm6_mode_tunnel_input(struct xfrm_state *x, struct sk_buff *skb)
 {
 	int err = -EINVAL;

@@ -26,9 +26,12 @@ void btcx_sort_clips(struct v4l2_clip *clips, unsigned int nclips);
 void btcx_calc_skips(int line, int width, int *maxy,
 		     struct btcx_skiplist *skips, unsigned int *nskips,
 		     const struct v4l2_clip *clips, unsigned int nclips);
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

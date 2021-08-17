@@ -19,16 +19,26 @@ struct task_struct;
 struct mm_struct;
 
 struct thread_struct {
+<<<<<<< HEAD
 	struct task_struct *saved_task;
 	struct pt_regs regs;
+=======
+	struct pt_regs regs;
+	struct pt_regs *segv_regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int singlestep_syscall;
 	void *fault_addr;
 	jmp_buf *fault_catcher;
 	struct task_struct *prev_sched;
+<<<<<<< HEAD
 	unsigned long temp_stack;
 	struct arch_thread arch;
 	jmp_buf switch_buf;
 	int mm_count;
+=======
+	struct arch_thread arch;
+	jmp_buf switch_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct {
 		int op;
 		union {
@@ -52,7 +62,10 @@ struct thread_struct {
 	.regs		   	= EMPTY_REGS,	\
 	.fault_addr		= NULL, \
 	.prev_sched		= NULL, \
+<<<<<<< HEAD
 	.temp_stack		= 0, \
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.arch			= INIT_ARCH_THREAD, \
 	.request		= { 0 } \
 }
@@ -101,6 +114,7 @@ struct cpuinfo_um {
 
 extern struct cpuinfo_um boot_cpu_data;
 
+<<<<<<< HEAD
 #define my_cpu_data		cpu_data[smp_processor_id()]
 
 #ifdef CONFIG_SMP
@@ -111,6 +125,10 @@ extern struct cpuinfo_um cpu_data[];
 #define current_cpu_data boot_cpu_data
 #endif
 
+=======
+#define cpu_data (&boot_cpu_data)
+#define current_cpu_data boot_cpu_data
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define KSTK_REG(tsk, reg) get_thread_reg(reg, &tsk->thread.switch_buf)
 extern unsigned long get_wchan(struct task_struct *p);

@@ -22,7 +22,11 @@
 
 #define TRAPPED_PAGES_MAX 16
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_IOPORT
+=======
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 LIST_HEAD(trapped_io);
 EXPORT_SYMBOL_GPL(trapped_io);
 #endif
@@ -90,7 +94,11 @@ int register_trapped_io(struct trapped_io *tiop)
 	tiop->magic = IO_TRAPPED_MAGIC;
 	INIT_LIST_HEAD(&tiop->list);
 	spin_lock_irq(&trapped_lock);
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_IOPORT
+=======
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (flags & IORESOURCE_IO)
 		list_add(&tiop->list, &trapped_io);
 #endif

@@ -18,6 +18,16 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
+=======
+#include <linux/errno.h>
+#include <linux/types.h>
+#include <asm/brk-imm.h>
+#include <asm/esr.h>
+#include <asm/insn.h>
+#include <asm/ptrace.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Low-level stepping controls. */
 #define DBG_MDSCR_SS		(1 << 0)
 #define DBG_SPSR_SS		(1 << 21)
@@ -38,6 +48,7 @@
 /*
  * Break point instruction encoding
  */
+<<<<<<< HEAD
 #define BREAK_INSTR_SIZE		4
 
 /*
@@ -53,6 +64,9 @@
  */
 #define KGDB_DYN_DGB_BRK_IMM		0x400
 #define KDBG_COMPILED_DBG_BRK_IMM	0x401
+=======
+#define BREAK_INSTR_SIZE		AARCH64_INSN_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * BRK instruction encoding
@@ -61,6 +75,7 @@
 #define AARCH64_BREAK_MON	0xd4200000
 
 /*
+<<<<<<< HEAD
  * Extract byte from BRK instruction
  */
 #define KGDB_DYN_DGB_BRK_INS_BYTE(x) \
@@ -82,6 +97,23 @@
 
 #define CACHE_FLUSH_IS_SAFE		1
 
+=======
+ * BRK instruction for provoking a fault on purpose
+ * Unlike kgdb, #imm16 value with unallocated handler is used for faulting.
+ */
+#define AARCH64_BREAK_FAULT	(AARCH64_BREAK_MON | (FAULT_BRK_IMM << 5))
+
+#define AARCH64_BREAK_KGDB_DYN_DBG	\
+	(AARCH64_BREAK_MON | (KGDB_DYN_DBG_BRK_IMM << 5))
+
+#define CACHE_FLUSH_IS_SAFE		1
+
+/* kprobes BRK opcodes with ESR encoding  */
+#define BRK64_ESR_MASK		0xFFFF
+#define BRK64_ESR_KPROBES	0x0004
+#define BRK64_OPCODE_KPROBES	(AARCH64_BREAK_MON | (BRK64_ESR_KPROBES << 5))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* AArch32 */
 #define DBG_ESR_EVT_BKPT	0x4
 #define DBG_ESR_EVT_VECC	0x5
@@ -119,16 +151,30 @@ void unregister_break_hook(struct break_hook *hook);
 
 u8 debug_monitors_arch(void);
 
+<<<<<<< HEAD
 enum debug_el {
+=======
+enum dbg_active_el {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DBG_ACTIVE_EL0 = 0,
 	DBG_ACTIVE_EL1,
 };
 
+<<<<<<< HEAD
 void enable_debug_monitors(enum debug_el el);
 void disable_debug_monitors(enum debug_el el);
 
 void user_rewind_single_step(struct task_struct *task);
 void user_fastforward_single_step(struct task_struct *task);
+=======
+void enable_debug_monitors(enum dbg_active_el el);
+void disable_debug_monitors(enum dbg_active_el el);
+
+void user_rewind_single_step(struct task_struct *task);
+void user_fastforward_single_step(struct task_struct *task);
+void user_regs_reset_single_step(struct user_pt_regs *regs,
+				 struct task_struct *task);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void kernel_enable_single_step(struct pt_regs *regs);
 void kernel_disable_single_step(void);
@@ -143,6 +189,7 @@ static inline int reinstall_suspended_bps(struct pt_regs *regs)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 int aarch32_break_handler(struct pt_regs *regs);
 #else
@@ -151,6 +198,9 @@ static int aarch32_break_handler(struct pt_regs *regs)
 	return -EFAULT;
 }
 #endif
+=======
+int aarch32_break_handler(struct pt_regs *regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __ASSEMBLY */
 #endif	/* __KERNEL__ */

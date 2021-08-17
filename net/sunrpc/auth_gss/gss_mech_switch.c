@@ -46,7 +46,11 @@
 #include <linux/sunrpc/gss_api.h>
 #include <linux/sunrpc/clnt.h>
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define RPCDBG_FACILITY        RPCDBG_AUTH
 #endif
 
@@ -61,6 +65,11 @@ gss_mech_free(struct gss_api_mech *gm)
 
 	for (i = 0; i < gm->gm_pf_num; i++) {
 		pf = &gm->gm_pfs[i];
+<<<<<<< HEAD
+=======
+		if (pf->domain)
+			auth_domain_put(pf->domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(pf->auth_domain_name);
 		pf->auth_domain_name = NULL;
 	}
@@ -83,6 +92,10 @@ make_auth_domain_name(char *name)
 static int
 gss_mech_svc_setup(struct gss_api_mech *gm)
 {
+<<<<<<< HEAD
+=======
+	struct auth_domain *dom;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pf_desc *pf;
 	int i, status;
 
@@ -92,10 +105,20 @@ gss_mech_svc_setup(struct gss_api_mech *gm)
 		status = -ENOMEM;
 		if (pf->auth_domain_name == NULL)
 			goto out;
+<<<<<<< HEAD
 		status = svcauth_gss_register_pseudoflavor(pf->pseudoflavor,
 							pf->auth_domain_name);
 		if (status)
 			goto out;
+=======
+		dom = svcauth_gss_register_pseudoflavor(
+			pf->pseudoflavor, pf->auth_domain_name);
+		if (IS_ERR(dom)) {
+			status = PTR_ERR(dom);
+			goto out;
+		}
+		pf->domain = dom;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 out:
@@ -139,11 +162,19 @@ void gss_mech_unregister(struct gss_api_mech *gm)
 }
 EXPORT_SYMBOL_GPL(gss_mech_unregister);
 
+<<<<<<< HEAD
 static struct gss_api_mech *gss_mech_get(struct gss_api_mech *gm)
+=======
+struct gss_api_mech *gss_mech_get(struct gss_api_mech *gm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	__module_get(gm->gm_owner);
 	return gm;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(gss_mech_get);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct gss_api_mech *
 _gss_mech_get_by_name(const char *name)
@@ -217,10 +248,15 @@ static struct gss_api_mech *_gss_mech_get_by_pseudoflavor(u32 pseudoflavor)
 
 	spin_lock(&registered_mechs_lock);
 	list_for_each_entry(pos, &registered_mechs, gm_list) {
+<<<<<<< HEAD
 		if (!mech_supports_pseudoflavor(pos, pseudoflavor)) {
 			module_put(pos->gm_owner);
 			continue;
 		}
+=======
+		if (!mech_supports_pseudoflavor(pos, pseudoflavor))
+			continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (try_module_get(pos->gm_owner))
 			gm = pos;
 		break;
@@ -360,6 +396,22 @@ gss_pseudoflavor_to_service(struct gss_api_mech *gm, u32 pseudoflavor)
 	}
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(gss_pseudoflavor_to_service);
+
+bool
+gss_pseudoflavor_to_datatouch(struct gss_api_mech *gm, u32 pseudoflavor)
+{
+	int i;
+
+	for (i = 0; i < gm->gm_pf_num; i++) {
+		if (gm->gm_pfs[i].pseudoflavor == pseudoflavor)
+			return gm->gm_pfs[i].datatouch;
+	}
+	return false;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 char *
 gss_service_to_auth_domain_name(struct gss_api_mech *gm, u32 service)
@@ -379,6 +431,10 @@ gss_mech_put(struct gss_api_mech * gm)
 	if (gm)
 		module_put(gm->gm_owner);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(gss_mech_put);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* The mech could probably be determined from the token instead, but it's just
  * as easy for now to pass it in. */

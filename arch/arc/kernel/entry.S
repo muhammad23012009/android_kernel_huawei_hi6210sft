@@ -1,11 +1,19 @@
 /*
+<<<<<<< HEAD
  * Low Level Interrupts/Traps/Exceptions(non-TLB) Handling for ARC
  *
+=======
+ * Common Low Level Interrupts/Traps/Exceptions(non-TLB) Handling for ARC
+ * (included from entry-<isa>.S
+ *
+ * Copyright (C) 2014-15 Synopsys, Inc. (www.synopsys.com)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * vineetg: May 2011
  *  -Userspace unaligned access emulation
@@ -55,6 +63,8 @@
  *       team agrees for a dedicated reg, no other code is touched
  *
  * Amit Bhor, Rahul Trivedi, Kanika Nema, Sameer Dhavale : Codito Tech 2004
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*------------------------------------------------------------------
@@ -67,12 +77,16 @@
  *  Global Pointer (gp)                 r26
  *  Frame Pointer (fp)                  r27
  *  Stack Pointer (sp)                  r28
+<<<<<<< HEAD
  *  Interrupt link register (ilink1)    r29
  *  Interrupt link register (ilink2)    r30
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  Branch link register (blink)        r31
  *------------------------------------------------------------------
  */
 
+<<<<<<< HEAD
 	.cpu A7
 
 ;############################ Vector Table #################################
@@ -258,6 +272,44 @@ ARC_ENTRY handle_interrupt_level1
 
 	b   ret_from_exception
 ARC_EXIT handle_interrupt_level1
+=======
+;################### Special Sys Call Wrappers ##########################
+
+ENTRY(sys_clone_wrapper)
+	SAVE_CALLEE_SAVED_USER
+	bl  @sys_clone
+	DISCARD_CALLEE_SAVED_USER
+
+	GET_CURR_THR_INFO_FLAGS   r10
+	btst r10, TIF_SYSCALL_TRACE
+	bnz  tracesys_exit
+
+	b .Lret_from_system_call
+END(sys_clone_wrapper)
+
+ENTRY(ret_from_fork)
+	; when the forked child comes here from the __switch_to function
+	; r0 has the last task pointer.
+	; put last task in scheduler queue
+	jl   @schedule_tail
+
+	ld   r9, [sp, PT_status32]
+	brne r9, 0, 1f
+
+	jl.d [r14]		; kernel thread entry point
+	mov  r0, r13		; (see PF_KTHREAD block in copy_thread)
+
+1:
+	; Return to user space
+	; 1. Any forked task (Reach here via BRne above)
+	; 2. First ever init task (Reach here via return from JL above)
+	;    This is the historic "kernel_execve" use-case, to return to init
+	;    user mode, in a round about way since that is always done from
+	;    a kernel thread which is executed via JL above but always returns
+	;    out whenever kernel_execve (now inline do_fork()) is involved
+	b    ret_from_exception
+END(ret_from_fork)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ;################### Non TLB Exception Handling #############################
 
@@ -265,6 +317,7 @@ ARC_EXIT handle_interrupt_level1
 ; Instruction Error Exception Handler
 ; ---------------------------------------------
 
+<<<<<<< HEAD
 ARC_ENTRY instr_service
 
 	EXCPN_PROLOG_FREEUP_REG r9
@@ -304,11 +357,26 @@ ARC_ENTRY mem_service
 	bl  do_memory_error
 	b   ret_from_exception
 ARC_EXIT mem_service
+=======
+ENTRY(instr_service)
+
+	EXCEPTION_PROLOGUE
+
+	lr  r0, [efa]
+	mov r1, sp
+
+	FAKE_RET_FROM_EXCPN
+
+	bl  do_insterror_or_kprobe
+	b   ret_from_exception
+END(instr_service)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ; ---------------------------------------------
 ; Machine Check Exception Handler
 ; ---------------------------------------------
 
+<<<<<<< HEAD
 ARC_ENTRY EV_MachineCheck
 
 	EXCPN_PROLOG_FREEUP_REG r9
@@ -322,6 +390,26 @@ ARC_ENTRY EV_MachineCheck
 	mov r2, sp
 
 	brne    r0, 0x200100, 1f
+=======
+ENTRY(EV_MachineCheck)
+
+	EXCEPTION_PROLOGUE
+
+	lr  r2, [ecr]
+	lr  r0, [efa]
+	mov r1, sp
+
+	; hardware auto-disables MMU, re-enable it to allow kernel vaddr
+	; access for say stack unwinding of modules for crash dumps
+	lr	r3, [ARC_REG_PID]
+	or	r3, r3, MMU_ENABLE
+	sr	r3, [ARC_REG_PID]
+
+	lsr  	r3, r2, 8
+	bmsk 	r3, r3, 7
+	brne    r3, ECR_C_MCHK_DUP_TLB, 1f
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bl      do_tlb_overlap_fault
 	b       ret_from_exception
 
@@ -334,6 +422,7 @@ ARC_ENTRY EV_MachineCheck
 
 	j  do_machine_check_fault
 
+<<<<<<< HEAD
 ARC_EXIT EV_MachineCheck
 
 ; ---------------------------------------------
@@ -406,10 +495,14 @@ ARC_ENTRY EV_TLBProtV
 	b   ret_from_exception
 
 ARC_EXIT EV_TLBProtV
+=======
+END(EV_MachineCheck)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ; ---------------------------------------------
 ; Privilege Violation Exception Handler
 ; ---------------------------------------------
+<<<<<<< HEAD
 ARC_ENTRY EV_PrivilegeV
 
 	EXCPN_PROLOG_FREEUP_REG r9
@@ -428,10 +521,25 @@ ARC_ENTRY EV_PrivilegeV
 	bl  do_privilege_fault
 	b   ret_from_exception
 ARC_EXIT EV_PrivilegeV
+=======
+ENTRY(EV_PrivilegeV)
+
+	EXCEPTION_PROLOGUE
+
+	lr  r0, [efa]
+	mov r1, sp
+
+	FAKE_RET_FROM_EXCPN
+
+	bl  do_privilege_fault
+	b   ret_from_exception
+END(EV_PrivilegeV)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ; ---------------------------------------------
 ; Extension Instruction Exception Handler
 ; ---------------------------------------------
+<<<<<<< HEAD
 ARC_ENTRY EV_Extension
 
 	EXCPN_PROLOG_FREEUP_REG r9
@@ -449,6 +557,26 @@ ARC_EXIT EV_Extension
 
 ;######################### System Call Tracing #########################
 
+=======
+ENTRY(EV_Extension)
+
+	EXCEPTION_PROLOGUE
+
+	lr  r0, [efa]
+	mov r1, sp
+
+	FAKE_RET_FROM_EXCPN
+
+	bl  do_extension_fault
+	b   ret_from_exception
+END(EV_Extension)
+
+;################ Trap Handling (Syscall, Breakpoint) ##################
+
+; ---------------------------------------------
+; syscall Tracing
+; ---------------------------------------------
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 tracesys:
 	; save EFA in case tracer wants the PC of traced task
 	; using ERET won't work since next-PC has already committed
@@ -465,7 +593,11 @@ tracesys:
 
 	; Do the Sys Call as we normally would.
 	; Validate the Sys Call number
+<<<<<<< HEAD
 	cmp     r8,  NR_syscalls
+=======
+	cmp     r8,  NR_syscalls - 1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.hi  r0, -ENOSYS
 	bhi     tracesys_exit
 
@@ -491,6 +623,7 @@ tracesys_exit:
 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
 	; we'd done before calling post hook above
 
+<<<<<<< HEAD
 ;################### Break Point TRAP ##########################
 
 	; ======= (5b) Trap is due to Break-Point =========
@@ -507,6 +640,20 @@ trap_with_param:
 	; Now that we have read EFA, its safe to do "fake" rtie
 	;   and get out of CPU exception mode
 	FAKE_RET_FROM_EXCPN r11
+=======
+; ---------------------------------------------
+; Breakpoint TRAP
+; ---------------------------------------------
+trap_with_param:
+
+	; stop_pc info by gdb needs this info
+	lr  r0, [efa]
+	mov r1, sp
+
+	; Now that we have read EFA, it is safe to do "fake" rtie
+	;   and get out of CPU exception mode
+	FAKE_RET_FROM_EXCPN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	; Save callee regs in case gdb wants to have a look
 	; SP will grow up by size of CALLEE Reg-File
@@ -525,6 +672,7 @@ trap_with_param:
 
 	b   ret_from_exception
 
+<<<<<<< HEAD
 ;##################### Trap Handling ##############################
 ;
 ; EV_Trap caused by TRAP_S and TRAP0 instructions.
@@ -557,20 +705,52 @@ ARC_ENTRY EV_Trap
 	FAKE_RET_FROM_EXCPN r11
 
 	; If syscall tracing ongoing, invoke pre-pos-hooks
+=======
+; ---------------------------------------------
+; syscall TRAP
+; ABI: (r0-r7) upto 8 args, (r8) syscall number
+; ---------------------------------------------
+
+ENTRY(EV_Trap)
+
+	EXCEPTION_PROLOGUE
+
+	;============ TRAP 1   :breakpoints
+	; Check ECR for trap with arg (PROLOGUE ensures r9 has ECR)
+	bmsk.f 0, r9, 7
+	bnz    trap_with_param
+
+	;============ TRAP  (no param): syscall top level
+
+	; First return from Exception to pure K mode (Exception/IRQs renabled)
+	FAKE_RET_FROM_EXCPN
+
+	; If syscall tracing ongoing, invoke pre-post-hooks
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	GET_CURR_THR_INFO_FLAGS   r10
 	btst r10, TIF_SYSCALL_TRACE
 	bnz tracesys  ; this never comes back
 
+<<<<<<< HEAD
 	;============ This is normal System Call case ==========
 	; Sys-call num shd not exceed the total system calls avail
 	cmp     r8,  NR_syscalls
 	mov.hi  r0, -ENOSYS
 	bhi     ret_from_system_call
+=======
+	;============ Normal syscall case
+
+	; syscall num shd not exceed the total system calls avail
+	cmp     r8,  NR_syscalls - 1
+	mov.hi  r0, -ENOSYS
+	bhi     .Lret_from_system_call
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	; Offset into the syscall_table and call handler
 	ld.as   r9,[sys_call_table, r8]
 	jl      [r9]        ; Entry into Sys Call Handler
 
+<<<<<<< HEAD
 	; fall through to ret_from_system_call
 ARC_EXIT EV_Trap
 
@@ -579,12 +759,24 @@ ARC_ENTRY ret_from_system_call
 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
 
 	; fall through yet again to ret_from_exception
+=======
+.Lret_from_system_call:
+
+	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
+
+	; fall through to ret_from_exception
+END(EV_Trap)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ;############# Return from Intr/Excp/Trap (Linux Specifics) ##############
 ;
 ; If ret to user mode do we need to handle signals, schedule() et al.
 
+<<<<<<< HEAD
 ARC_ENTRY ret_from_exception
+=======
+ENTRY(ret_from_exception)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	; Pre-{IRQ,Trap,Exception} K/U mode from pt_regs->status32
 	ld  r8, [sp, PT_status32]   ; returning to User/Kernel Mode
@@ -603,12 +795,20 @@ resume_user_mode_begin:
 	; Fast Path return to user mode if no pending work
 	GET_CURR_THR_INFO_FLAGS   r9
 	and.f  0,  r9, _TIF_WORK_MASK
+<<<<<<< HEAD
 	bz     restore_regs
+=======
+	bz     .Lrestore_regs
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	; --- (Slow Path #1) task preemption ---
 	bbit0  r9, TIF_NEED_RESCHED, .Lchk_pend_signals
 	mov    blink, resume_user_mode_begin  ; tail-call to U mode ret chks
+<<<<<<< HEAD
 	b      @schedule 	; BTST+Bnz causes relo error in link
+=======
+	j      @schedule 	; BTST+Bnz causes relo error in link
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .Lchk_pend_signals:
 	IRQ_ENABLE	r10
@@ -616,6 +816,10 @@ resume_user_mode_begin:
 	; --- (Slow Path #2) pending signal  ---
 	mov r0, sp	; pt_regs for arg to do_signal()/do_notify_resume()
 
+<<<<<<< HEAD
+=======
+	GET_CURR_THR_INFO_FLAGS   r9
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bbit0  r9, TIF_SIGPENDING, .Lchk_notify_resume
 
 	; Normal Trap/IRQ entry only saves Scratch (caller-saved) regs
@@ -661,6 +865,7 @@ resume_kernel_mode:
 	; Can't preempt if preemption disabled
 	GET_CURR_THR_INFO_FROM_SP   r10
 	ld  r8, [r10, THREAD_INFO_PREEMPT_COUNT]
+<<<<<<< HEAD
 	brne  r8, 0, restore_regs
 
 	; check if this task's NEED_RESCHED flag set
@@ -669,10 +874,21 @@ resume_kernel_mode:
 
 	; Invoke PREEMPTION
 	bl      preempt_schedule_irq
+=======
+	brne  r8, 0, .Lrestore_regs
+
+	; check if this task's NEED_RESCHED flag set
+	ld  r9, [r10, THREAD_INFO_FLAGS]
+	bbit0  r9, TIF_NEED_RESCHED, .Lrestore_regs
+
+	; Invoke PREEMPTION
+	jl      preempt_schedule_irq
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	; preempt_schedule_irq() always returns with IRQ disabled
 #endif
 
+<<<<<<< HEAD
 	; fall through
 
 ;############# Return from Intr/Excp/Trap (ARC Specifics) ##############
@@ -812,3 +1028,9 @@ ARC_EXIT sys_clone_wrapper
 ; would not work after a clean build due to kernel build system dependencies.
 .section .debug_frame, "wa",@progbits
 #endif
+=======
+	b	.Lrestore_regs
+
+##### DONT ADD CODE HERE - .Lrestore_regs actually follows in entry-<isa>.S
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

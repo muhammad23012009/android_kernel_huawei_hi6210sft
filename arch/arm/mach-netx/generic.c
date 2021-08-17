@@ -24,6 +24,10 @@
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/irqchip/arm-vic.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/hardware.h>
 #include <asm/mach/map.h>
 #include <mach/netx-regs.h>
@@ -68,8 +72,12 @@ static struct platform_device *devices[] __initdata = {
 #define DEBUG_IRQ(fmt...)	while (0) {}
 #endif
 
+<<<<<<< HEAD
 static void
 netx_hif_demux_handler(unsigned int irq_unused, struct irq_desc *desc)
+=======
+static void netx_hif_demux_handler(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int irq = NETX_IRQ_HIF_CHAINED(0);
 	unsigned int stat;
@@ -173,7 +181,11 @@ void __init netx_init_irq(void)
 	for (irq = NETX_IRQ_HIF_CHAINED(0); irq <= NETX_IRQ_HIF_LAST; irq++) {
 		irq_set_chip_and_handler(irq, &netx_hif_chip,
 					 handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	writel(NETX_DPMAS_INT_EN_GLB_EN, NETX_DPMAS_INT_EN);
@@ -187,7 +199,11 @@ static int __init netx_init(void)
 
 subsys_initcall(netx_init);
 
+<<<<<<< HEAD
 void netx_restart(char mode, const char *cmd)
+=======
+void netx_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	writel(NETX_SYSTEM_RES_CR_FIRMW_RES_EN | NETX_SYSTEM_RES_CR_FIRMW_RES,
 	       NETX_SYSTEM_RES_CR);

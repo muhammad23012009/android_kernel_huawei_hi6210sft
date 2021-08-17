@@ -32,13 +32,21 @@ ENTRY(cpu_arm7tdmi_proc_init)
 ENTRY(cpu_arm7tdmi_do_idle)
 ENTRY(cpu_arm7tdmi_dcache_clean_area)
 ENTRY(cpu_arm7tdmi_switch_mm)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm7tdmi_proc_fin()
  */
 ENTRY(cpu_arm7tdmi_proc_fin)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Function: cpu_arm7tdmi_reset(loc)
@@ -47,6 +55,7 @@ ENTRY(cpu_arm7tdmi_proc_fin)
  */
 		.pushsection	.idmap.text, "ax"
 ENTRY(cpu_arm7tdmi_reset)
+<<<<<<< HEAD
 		mov	pc, r0
 ENDPROC(cpu_arm7tdmi_reset)
 		.popsection
@@ -56,6 +65,15 @@ ENDPROC(cpu_arm7tdmi_reset)
 		.type	__arm7tdmi_setup, #function
 __arm7tdmi_setup:
 		mov	pc, lr
+=======
+		ret	r0
+ENDPROC(cpu_arm7tdmi_reset)
+		.popsection
+
+		.type	__arm7tdmi_setup, #function
+__arm7tdmi_setup:
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.size	__arm7tdmi_setup, . - __arm7tdmi_setup
 
 		__INITDATA
@@ -78,7 +96,11 @@ __arm7tdmi_setup:
 
 		.align
 
+<<<<<<< HEAD
 		.section ".proc.info.init", #alloc, #execinstr
+=======
+		.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .macro arm7tdmi_proc_info name:req, cpu_val:req, cpu_mask:req, cpu_name:req, \
 	extra_hwcaps=0
@@ -88,7 +110,11 @@ __\name\()_proc_info:
 		.long	\cpu_mask
 		.long	0
 		.long	0
+<<<<<<< HEAD
 		b	__arm7tdmi_setup
+=======
+		initfn	__arm7tdmi_setup, __\name\()_proc_info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.long	cpu_arch_name
 		.long	cpu_elf_name
 		.long	HWCAP_SWP | HWCAP_26BIT | ( \extra_hwcaps )

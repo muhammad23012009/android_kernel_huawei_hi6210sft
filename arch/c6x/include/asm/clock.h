@@ -101,7 +101,11 @@ struct clk {
 #define CLK_PLL			BIT(2) /* PLL-derived clock */
 #define PRE_PLL			BIT(3) /* source is before PLL mult/div */
 #define FIXED_DIV_PLL		BIT(4) /* fixed divisor from PLL */
+<<<<<<< HEAD
 #define FIXED_RATE_PLL		BIT(5) /* fixed ouput rate PLL */
+=======
+#define FIXED_RATE_PLL		BIT(5) /* fixed output rate PLL */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MAX_PLL_SYSCLKS 16
 

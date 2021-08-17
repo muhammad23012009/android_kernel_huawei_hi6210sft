@@ -53,7 +53,10 @@ struct sd {
 	struct v4l2_ctrl *jpegqual;
 
 	struct work_struct work;
+<<<<<<< HEAD
 	struct workqueue_struct *work_thread;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u8 reg08;		/* webcam compression quality */
 
@@ -5942,23 +5945,38 @@ static void transfer_update(struct work_struct *work)
 	reg07 = 0;
 
 	good = 0;
+<<<<<<< HEAD
 	for (;;) {
+=======
+	while (1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		msleep(100);
 
 		/* To protect gspca_dev->usb_buf and gspca_dev->usb_err */
 		mutex_lock(&gspca_dev->usb_lock);
 #ifdef CONFIG_PM
 		if (gspca_dev->frozen)
+<<<<<<< HEAD
 			goto err;
 #endif
 		if (!gspca_dev->present || !gspca_dev->streaming)
 			goto err;
+=======
+			break;
+#endif
+		if (!gspca_dev->present || !gspca_dev->streaming)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Bit 0 of register 11 indicates FIFO overflow */
 		gspca_dev->usb_err = 0;
 		reg11 = reg_r(gspca_dev, 0x0011);
 		if (gspca_dev->usb_err)
+<<<<<<< HEAD
 			goto err;
+=======
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		change = reg11 & 0x01;
 		if (change) {				/* overflow */
@@ -5987,12 +6005,21 @@ static void transfer_update(struct work_struct *work)
 			gspca_dev->usb_err = 0;
 			reg_w(gspca_dev, reg07, 0x0007);
 			if (gspca_dev->usb_err)
+<<<<<<< HEAD
 				goto err;
 		}
 		mutex_unlock(&gspca_dev->usb_lock);
 	}
 	return;
 err:
+=======
+				break;
+		}
+		mutex_unlock(&gspca_dev->usb_lock);
+	}
+
+	/* Something went wrong. Unlock and return */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&gspca_dev->usb_lock);
 }
 
@@ -6360,7 +6387,11 @@ static int zcxx_s_ctrl(struct v4l2_ctrl *ctrl)
 			if (ctrl->val <= jpeg_qual[i])
 				break;
 		}
+<<<<<<< HEAD
 		if (i > 0 && i == qual && ctrl->val < jpeg_qual[i])
+=======
+		if (i == ARRAY_SIZE(jpeg_qual) || (i > 0 && i == qual && ctrl->val < jpeg_qual[i]))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			i--;
 
 		/* With high quality settings we need max bandwidth */
@@ -6700,7 +6731,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	};
 
 	/* create the JPEG header */
+<<<<<<< HEAD
 	jpeg_define(sd->jpeg_hdr, gspca_dev->height, gspca_dev->width,
+=======
+	jpeg_define(sd->jpeg_hdr, gspca_dev->pixfmt.height,
+			gspca_dev->pixfmt.width,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			0x21);		/* JPEG 422 */
 
 	mode = gspca_dev->cam.cam_mode[gspca_dev->curr_mode].priv;
@@ -6825,8 +6861,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		return gspca_dev->usb_err;
 
 	/* Start the transfer parameters update thread */
+<<<<<<< HEAD
 	sd->work_thread = create_singlethread_workqueue(KBUILD_MODNAME);
 	queue_work(sd->work_thread, &sd->work);
+=======
+	schedule_work(&sd->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -6837,12 +6877,18 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 
+<<<<<<< HEAD
 	if (sd->work_thread != NULL) {
 		mutex_unlock(&gspca_dev->usb_lock);
 		destroy_workqueue(sd->work_thread);
 		mutex_lock(&gspca_dev->usb_lock);
 		sd->work_thread = NULL;
 	}
+=======
+	mutex_unlock(&gspca_dev->usb_lock);
+	flush_work(&sd->work);
+	mutex_lock(&gspca_dev->usb_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!gspca_dev->present)
 		return;
 	send_unknown(gspca_dev, sd->sensor);
@@ -6904,7 +6950,11 @@ static int sd_get_jcomp(struct gspca_dev *gspca_dev,
 #if IS_ENABLED(CONFIG_INPUT)
 static int sd_int_pkt_scan(struct gspca_dev *gspca_dev,
 			u8 *data,		/* interrupt packet data */
+<<<<<<< HEAD
 			int len)		/* interrput packet length */
+=======
+			int len)		/* interrupt packet length */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (len == 8 && data[4] == 1) {
 		input_report_key(gspca_dev->input_dev, KEY_CAMERA, 1);

@@ -828,6 +828,10 @@ enum xp_retval
 xpc_allocate_msg_wait(struct xpc_channel *ch)
 {
 	enum xp_retval ret;
+<<<<<<< HEAD
+=======
+	DEFINE_WAIT(wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ch->flags & XPC_C_DISCONNECTING) {
 		DBUG_ON(ch->reason == xpInterrupted);
@@ -835,7 +839,13 @@ xpc_allocate_msg_wait(struct xpc_channel *ch)
 	}
 
 	atomic_inc(&ch->n_on_msg_allocate_wq);
+<<<<<<< HEAD
 	ret = interruptible_sleep_on_timeout(&ch->msg_allocate_wq, 1);
+=======
+	prepare_to_wait(&ch->msg_allocate_wq, &wait, TASK_INTERRUPTIBLE);
+	ret = schedule_timeout(1);
+	finish_wait(&ch->msg_allocate_wq, &wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_dec(&ch->n_on_msg_allocate_wq);
 
 	if (ch->flags & XPC_C_DISCONNECTING) {

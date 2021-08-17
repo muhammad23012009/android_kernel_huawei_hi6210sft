@@ -18,11 +18,19 @@
 #include <linux/init.h>
 #include <linux/i2c.h>
 #include <linux/i2c/pxa-i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/pca953x.h>
 #include <linux/gpio.h>
 
 #include <mach/pxa300.h>
 #include <mach/zylonite.h>
+=======
+#include <linux/platform_data/pca953x.h>
+#include <linux/gpio.h>
+
+#include "pxa300.h"
+#include "zylonite.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "generic.h"
 

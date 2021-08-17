@@ -46,7 +46,12 @@ static inline int debugger_break_match(struct pt_regs *regs) { return 0; }
 static inline int debugger_fault_handler(struct pt_regs *regs) { return 0; }
 #endif
 
+<<<<<<< HEAD
 int set_breakpoint(struct arch_hw_breakpoint *brk);
+=======
+void set_breakpoint(struct arch_hw_breakpoint *brk);
+void __set_breakpoint(struct arch_hw_breakpoint *brk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC_ADV_DEBUG_REGS
 extern void do_send_trap(struct pt_regs *regs, unsigned long address,
 			 unsigned long error_code, int signal_code, int brkpt);

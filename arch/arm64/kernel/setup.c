@@ -17,6 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/stddef.h>
@@ -25,14 +29,22 @@
 #include <linux/utsname.h>
 #include <linux/initrd.h>
 #include <linux/console.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/seq_file.h>
+=======
+#include <linux/cache.h>
+#include <linux/bootmem.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/screen_info.h>
 #include <linux/init.h>
 #include <linux/kexec.h>
 #include <linux/crash_dump.h>
 #include <linux/root_dev.h>
+<<<<<<< HEAD
 #include <linux/clk-provider.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpu.h>
 #include <linux/interrupt.h>
 #include <linux/smp.h>
@@ -40,6 +52,7 @@
 #include <linux/proc_fs.h>
 #include <linux/memblock.h>
 #include <linux/of_fdt.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/efi.h>
 
@@ -48,6 +61,20 @@
 #include <asm/elf.h>
 #include <asm/cputable.h>
 #include <asm/cpu_ops.h>
+=======
+#include <linux/efi.h>
+#include <linux/psci.h>
+
+#include <asm/acpi.h>
+#include <asm/fixmap.h>
+#include <asm/cpu.h>
+#include <asm/cputype.h>
+#include <asm/elf.h>
+#include <asm/cpufeature.h>
+#include <asm/cpu_ops.h>
+#include <asm/kasan.h>
+#include <asm/numa.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/sections.h>
 #include <asm/setup.h>
 #include <asm/smp_plat.h>
@@ -55,6 +82,7 @@
 #include <asm/tlbflush.h>
 #include <asm/traps.h>
 #include <asm/memblock.h>
+<<<<<<< HEAD
 #include <asm/psci.h>
 #include <asm/efi.h>
 
@@ -83,6 +111,11 @@ static const char *machine_name;
 char alter_hardware_name[MAX_HARDWARE_NAME]={0};
 EXPORT_SYMBOL(alter_hardware_name);
 #endif
+=======
+#include <asm/efi.h>
+#include <asm/xen/hypervisor.h>
+#include <asm/mmu_context.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 phys_addr_t __fdt_pointer __initdata;
 
@@ -94,19 +127,28 @@ static struct resource mem_res[] = {
 		.name = "Kernel code",
 		.start = 0,
 		.end = 0,
+<<<<<<< HEAD
 		.flags = IORESOURCE_MEM
+=======
+		.flags = IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.name = "Kernel data",
 		.start = 0,
 		.end = 0,
+<<<<<<< HEAD
 		.flags = IORESOURCE_MEM
+=======
+		.flags = IORESOURCE_SYSTEM_RAM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 
 #define kernel_code mem_res[0]
 #define kernel_data mem_res[1]
 
+<<<<<<< HEAD
 void __init early_print(const char *str, ...)
 {
 	char buf[256];
@@ -121,12 +163,28 @@ void __init early_print(const char *str, ...)
 
 void __init smp_setup_processor_id(void)
 {
+=======
+/*
+ * The recorded values of x0 .. x3 upon kernel entry.
+ */
+u64 __cacheline_aligned boot_args[4];
+
+void __init smp_setup_processor_id(void)
+{
+	u64 mpidr = read_cpuid_mpidr() & MPIDR_HWID_BITMASK;
+	cpu_logical_map(0) = mpidr;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * clear __my_cpu_offset on boot CPU to avoid hang caused by
 	 * using percpu variable early, for example, lockdep will
 	 * access percpu variable inside lock_release
 	 */
 	set_my_cpu_offset(0);
+<<<<<<< HEAD
+=======
+	pr_info("Booting Linux on physical CPU 0x%lx\n", (unsigned long)mpidr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
@@ -135,7 +193,10 @@ bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
 }
 
 struct mpidr_hash mpidr_hash;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * smp_build_mpidr_hash - Pre-compute shifts required at each affinity
  *			  level in order to build a linear index from an
@@ -199,6 +260,7 @@ static void __init smp_build_mpidr_hash(void)
 	 */
 	if (mpidr_hash_size() > 4 * num_possible_cpus())
 		pr_warn("Large number of MPIDR hash buckets detected\n");
+<<<<<<< HEAD
 	__flush_dcache_area(&mpidr_hash, sizeof(struct mpidr_hash));
 }
 #endif
@@ -285,10 +347,13 @@ static void __init setup_processor(void)
 	if (block && !(block & 0x8))
 		compat_elf_hwcap2 |= COMPAT_HWCAP2_CRC32;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
+<<<<<<< HEAD
 	struct boot_param_header *devtree;
 	unsigned long dt_root;
 
@@ -314,11 +379,22 @@ static void __init setup_machine_fdt(phys_addr_t dt_phys)
 			"\nPlease check your bootloader.\n",
 			dt_phys, devtree, OF_DT_HEADER,
 			be32_to_cpu(devtree->magic));
+=======
+	void *dt_virt = fixmap_remap_fdt(dt_phys);
+
+	if (!dt_virt || !early_init_dt_scan(dt_virt)) {
+		pr_crit("\n"
+			"Error: invalid device tree blob at physical address %pa (virtual address 0x%p)\n"
+			"The dtb must be 8-byte aligned and must not exceed 2 MB in size\n"
+			"\nPlease check your bootloader.",
+			&dt_phys, dt_virt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		while (true)
 			cpu_relax();
 	}
 
+<<<<<<< HEAD
 	initial_boot_params = devtree;
 	dt_root = of_get_flat_dt_root();
 
@@ -414,6 +490,10 @@ static int __init early_param_boottype(char * p)
 }
 early_param("normal_reset_type", early_param_boottype);
 #endif
+=======
+	dump_stack_set_arch_desc("%s (DT)", of_flat_dt_get_machine_name());
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __init request_standard_resources(void)
 {
@@ -421,16 +501,32 @@ static void __init request_standard_resources(void)
 	struct resource *res;
 
 	kernel_code.start   = virt_to_phys(_text);
+<<<<<<< HEAD
 	kernel_code.end     = virt_to_phys(_etext - 1);
+=======
+	kernel_code.end     = virt_to_phys(__init_begin - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kernel_data.start   = virt_to_phys(_sdata);
 	kernel_data.end     = virt_to_phys(_end - 1);
 
 	for_each_memblock(memory, region) {
 		res = alloc_bootmem_low(sizeof(*res));
+<<<<<<< HEAD
 		res->name  = "System RAM";
 		res->start = __pfn_to_phys(memblock_region_memory_base_pfn(region));
 		res->end = __pfn_to_phys(memblock_region_memory_end_pfn(region)) - 1;
 		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+=======
+		if (memblock_is_nomap(region)) {
+			res->name  = "reserved";
+			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+		} else {
+			res->name  = "System RAM";
+			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+		}
+		res->start = __pfn_to_phys(memblock_region_memory_base_pfn(region));
+		res->end = __pfn_to_phys(memblock_region_memory_end_pfn(region)) - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		request_resource(&iomem_resource, res);
 
@@ -447,10 +543,16 @@ u64 __cpu_logical_map[NR_CPUS] = { [0 ... NR_CPUS-1] = INVALID_HWID };
 
 void __init setup_arch(char **cmdline_p)
 {
+<<<<<<< HEAD
 	setup_processor();
 
 	setup_machine_fdt(__fdt_pointer);
 
+=======
+	pr_info("Boot CPU: AArch64 Processor [%08x]\n", read_cpuid_id());
+
+	sprintf(init_utsname()->machine, UTS_MACHINE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	init_mm.start_code = (unsigned long) _text;
 	init_mm.end_code   = (unsigned long) _etext;
 	init_mm.end_data   = (unsigned long) _edata;
@@ -458,14 +560,38 @@ void __init setup_arch(char **cmdline_p)
 
 	*cmdline_p = boot_command_line;
 
+<<<<<<< HEAD
 	early_ioremap_init();
 
 	parse_early_param();
 
+=======
+	early_fixmap_init();
+	early_ioremap_init();
+
+	setup_machine_fdt(__fdt_pointer);
+
+	parse_early_param();
+
+	/*
+	 *  Unmask asynchronous aborts after bringing up possible earlycon.
+	 * (Report possible System Errors once we can report this occurred)
+	 */
+	local_async_enable();
+
+	/*
+	 * TTBR0 is only used for the identity mapping at this stage. Make it
+	 * point to zero page to avoid speculatively fetching new entries.
+	 */
+	cpu_uninstall_idmap();
+
+	xen_early_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	efi_init();
 	arm64_memblock_init();
 
 	paging_init();
+<<<<<<< HEAD
 	request_standard_resources();
 
 	efi_idmap_init();
@@ -479,6 +605,41 @@ void __init setup_arch(char **cmdline_p)
 #ifdef CONFIG_SMP
 	smp_init_cpus();
 	smp_build_mpidr_hash();
+=======
+
+	acpi_table_upgrade();
+
+	/* Parse the ACPI tables for possible boot-time configuration */
+	acpi_boot_table_init();
+
+	if (acpi_disabled)
+		unflatten_device_tree();
+
+	bootmem_init();
+
+	kasan_init();
+
+	request_standard_resources();
+
+	early_ioremap_reset();
+
+	if (acpi_disabled)
+		psci_dt_init();
+	else
+		psci_acpi_init();
+
+	cpu_read_bootcpu_ops();
+	smp_init_cpus();
+	smp_build_mpidr_hash();
+
+#ifdef CONFIG_ARM64_SW_TTBR0_PAN
+	/*
+	 * Make sure init_thread_info.ttbr0 always generates translation
+	 * faults in case uaccess_enable() is inadvertently called by the init
+	 * thread.
+	 */
+	init_thread_info.ttbr0 = virt_to_phys(empty_zero_page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_VT
@@ -488,6 +649,7 @@ void __init setup_arch(char **cmdline_p)
 	conswitchp = &dummy_con;
 #endif
 #endif
+<<<<<<< HEAD
 }
 
 #ifdef CONFIG_HISILICON_PLATFORM
@@ -523,12 +685,30 @@ arch_initcall(arm64_device_init);
 
 static DEFINE_PER_CPU(struct cpu, cpu_data);
 
+=======
+	if (boot_args[1] || boot_args[2] || boot_args[3]) {
+		pr_err("WARNING: x1-x3 nonzero in violation of boot protocol:\n"
+			"\tx1: %016llx\n\tx2: %016llx\n\tx3: %016llx\n"
+			"This indicates a broken bootloader or old kernel\n",
+			boot_args[1], boot_args[2], boot_args[3]);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init topology_init(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	for_each_possible_cpu(i) {
 		struct cpu *cpu = &per_cpu(cpu_data, i);
+=======
+	for_each_online_node(i)
+		register_one_node(i);
+
+	for_each_possible_cpu(i) {
+		struct cpu *cpu = &per_cpu(cpu_data.cpu, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cpu->hotpluggable = 1;
 		register_cpu(cpu, i);
 	}
@@ -537,6 +717,7 @@ static int __init topology_init(void)
 }
 subsys_initcall(topology_init);
 
+<<<<<<< HEAD
 static const char *hwcap_str[] = {
 	"fp",
 	"asimd",
@@ -627,3 +808,33 @@ const struct seq_operations cpuinfo_op = {
 	.stop	= c_stop,
 	.show	= c_show
 };
+=======
+/*
+ * Dump out kernel offset information on panic.
+ */
+static int dump_kernel_offset(struct notifier_block *self, unsigned long v,
+			      void *p)
+{
+	u64 const kaslr_offset = kimage_vaddr - KIMAGE_VADDR;
+
+	if (IS_ENABLED(CONFIG_RANDOMIZE_BASE) && kaslr_offset > 0) {
+		pr_emerg("Kernel Offset: 0x%llx from 0x%lx\n",
+			 kaslr_offset, KIMAGE_VADDR);
+	} else {
+		pr_emerg("Kernel Offset: disabled\n");
+	}
+	return 0;
+}
+
+static struct notifier_block kernel_offset_notifier = {
+	.notifier_call = dump_kernel_offset
+};
+
+static int __init register_kernel_offset_dumper(void)
+{
+	atomic_notifier_chain_register(&panic_notifier_list,
+				       &kernel_offset_notifier);
+	return 0;
+}
+__initcall(register_kernel_offset_dumper);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -31,7 +31,10 @@ int uwbd_evt_handle_rc_ie_rcv(struct uwb_event *evt)
 	int result = -EINVAL;
 	struct device *dev = &evt->rc->uwb_dev.dev;
 	struct uwb_rc_evt_ie_rcv *iercv;
+<<<<<<< HEAD
 	size_t iesize;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Is there enough data to decode it? */
 	if (evt->notif.size < sizeof(*iercv)) {
@@ -41,7 +44,10 @@ int uwbd_evt_handle_rc_ie_rcv(struct uwb_event *evt)
 		goto error;
 	}
 	iercv = container_of(evt->notif.rceb, struct uwb_rc_evt_ie_rcv, rceb);
+<<<<<<< HEAD
 	iesize = le16_to_cpu(iercv->wIELength);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(dev, "IE received, element ID=%d\n", iercv->IEData[0]);
 

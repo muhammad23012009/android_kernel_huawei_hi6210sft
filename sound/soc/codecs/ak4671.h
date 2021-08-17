@@ -105,8 +105,11 @@
 #define AK4671_DIGITAL_MIXING_CONTROL2		0x59
 #define AK4671_SAR_ADC_CONTROL			0x5a
 
+<<<<<<< HEAD
 #define AK4671_CACHEREGNUM			(AK4671_SAR_ADC_CONTROL + 1)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Bitfield Definitions */
 
 /* AK4671_AD_DA_POWER_MANAGEMENT (0x00) Fields */

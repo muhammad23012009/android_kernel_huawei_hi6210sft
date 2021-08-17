@@ -44,7 +44,10 @@
 
 #include "upc.h"
 #include "tmacro.h"
+<<<<<<< HEAD
 #include "tether.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "mac.h"
 #include "srom.h"
 
@@ -73,7 +76,12 @@
  * Return Value: data read
  *
  */
+<<<<<<< HEAD
 unsigned char SROMbyReadEmbedded(unsigned long dwIoBase, unsigned char byContntOffset)
+=======
+unsigned char SROMbyReadEmbedded(void __iomem *dwIoBase,
+				 unsigned char byContntOffset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned short wDelay, wNoACK;
 	unsigned char byWait;
@@ -108,6 +116,7 @@ unsigned char SROMbyReadEmbedded(unsigned long dwIoBase, unsigned char byContntO
 }
 
 /*
+<<<<<<< HEAD
  * Description: Write a byte to EEPROM, by MAC I2C
  *
  * Parameters:
@@ -246,6 +255,8 @@ bool SROMbIsRegBitsOff(unsigned long dwIoBase, unsigned char byContntOffset, uns
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Description: Read all contents of eeprom to buffer
  *
  * Parameters:
@@ -257,6 +268,7 @@ bool SROMbIsRegBitsOff(unsigned long dwIoBase, unsigned char byContntOffset, uns
  * Return Value: none
  *
  */
+<<<<<<< HEAD
 void SROMvReadAllContents(unsigned long dwIoBase, unsigned char *pbyEepromRegs)
 {
 	int     ii;
@@ -282,12 +294,20 @@ void SROMvReadAllContents(unsigned long dwIoBase, unsigned char *pbyEepromRegs)
  *
  */
 void SROMvWriteAllContents(unsigned long dwIoBase, unsigned char *pbyEepromRegs)
+=======
+void SROMvReadAllContents(void __iomem *dwIoBase, unsigned char *pbyEepromRegs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int     ii;
 
 	/* ii = Rom Address */
 	for (ii = 0; ii < EEP_MAX_CONTEXT_SIZE; ii++) {
+<<<<<<< HEAD
 		SROMbWriteEmbedded(dwIoBase, (unsigned char)ii, *pbyEepromRegs);
+=======
+		*pbyEepromRegs = SROMbyReadEmbedded(dwIoBase,
+						    (unsigned char)ii);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pbyEepromRegs++;
 	}
 }
@@ -304,7 +324,12 @@ void SROMvWriteAllContents(unsigned long dwIoBase, unsigned char *pbyEepromRegs)
  * Return Value: none
  *
  */
+<<<<<<< HEAD
 void SROMvReadEtherAddress(unsigned long dwIoBase, unsigned char *pbyEtherAddress)
+=======
+void SROMvReadEtherAddress(void __iomem *dwIoBase,
+			   unsigned char *pbyEtherAddress)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned char ii;
 
@@ -314,6 +339,7 @@ void SROMvReadEtherAddress(unsigned long dwIoBase, unsigned char *pbyEtherAddres
 		pbyEtherAddress++;
 	}
 }
+<<<<<<< HEAD
 
 /*
  * Description: Write Ethernet Address from buffer to eeprom
@@ -403,3 +429,5 @@ bool SROMbAutoLoad(unsigned long dwIoBase)
 		return false;
 	return true;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

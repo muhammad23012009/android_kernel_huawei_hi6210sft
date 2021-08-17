@@ -125,7 +125,11 @@ static int ide_cmd_ioctl(ide_drive_t *drive, unsigned long arg)
 	if (NULL == (void *) arg) {
 		struct request *rq;
 
+<<<<<<< HEAD
 		rq = blk_get_request(drive->queue, READ, __GFP_WAIT);
+=======
+		rq = blk_get_request(drive->queue, READ, __GFP_RECLAIM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rq->cmd_type = REQ_TYPE_ATA_TASKFILE;
 		err = blk_execute_rq(drive->queue, NULL, rq, 0);
 		blk_put_request(rq);
@@ -141,8 +145,13 @@ static int ide_cmd_ioctl(ide_drive_t *drive, unsigned long arg)
 	if (args[0] == ATA_CMD_SMART) {
 		tf->nsect = args[3];
 		tf->lbal  = args[1];
+<<<<<<< HEAD
 		tf->lbam  = 0x4f;
 		tf->lbah  = 0xc2;
+=======
+		tf->lbam  = ATA_SMART_LBAM_PASS;
+		tf->lbah  = ATA_SMART_LBAH_PASS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cmd.valid.out.tf = IDE_VALID_OUT_TF;
 		cmd.valid.in.tf  = IDE_VALID_NSECT;
 	} else {
@@ -221,8 +230,13 @@ static int generic_drive_reset(ide_drive_t *drive)
 	struct request *rq;
 	int ret = 0;
 
+<<<<<<< HEAD
 	rq = blk_get_request(drive->queue, READ, __GFP_WAIT);
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq = blk_get_request(drive->queue, READ, __GFP_RECLAIM);
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rq->cmd_len = 1;
 	rq->cmd[0] = REQ_DRIVE_RESET;
 	if (blk_execute_rq(drive->queue, NULL, rq, 1))

@@ -6,8 +6,17 @@ extern void irq_ctx_init(int cpu);
 extern void irq_ctx_exit(int cpu);
 # define __ARCH_HAS_DO_SOFTIRQ
 #else
+<<<<<<< HEAD
 # define irq_ctx_init(cpu) do { } while (0)
 # define irq_ctx_exit(cpu) do { } while (0)
+=======
+static inline void irq_ctx_init(int cpu)
+{
+}
+static inline void irq_ctx_exit(int cpu)
+{
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 void tbi_startup_interrupt(int);
@@ -17,6 +26,10 @@ struct pt_regs;
 
 int tbisig_map(unsigned int hw);
 extern void do_IRQ(int irq, struct pt_regs *regs);
+<<<<<<< HEAD
+=======
+extern void init_IRQ(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_METAG_SUSPEND_MEM
 int traps_save_context(void);

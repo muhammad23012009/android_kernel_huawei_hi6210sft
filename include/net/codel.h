@@ -7,7 +7,11 @@
  *  Copyright (C) 2011-2012 Kathleen Nichols <nichols@pollere.com>
  *  Copyright (C) 2011-2012 Van Jacobson <van@pollere.net>
  *  Copyright (C) 2012 Michael D. Taht <dave.taht@bufferbloat.net>
+<<<<<<< HEAD
  *  Copyright (C) 2012 Eric Dumazet <edumazet@google.com>
+=======
+ *  Copyright (C) 2012,2015 Eric Dumazet <edumazet@google.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -46,7 +50,10 @@
 #include <linux/skbuff.h>
 #include <net/pkt_sched.h>
 #include <net/inet_ecn.h>
+<<<<<<< HEAD
 #include <linux/reciprocal_div.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Controlling Queue Delay (CoDel) algorithm
  * =========================================
@@ -67,11 +74,16 @@ typedef s32 codel_tdiff_t;
 
 static inline codel_time_t codel_get_time(void)
 {
+<<<<<<< HEAD
 	u64 ns = ktime_to_ns(ktime_get());
+=======
+	u64 ns = ktime_get_ns();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ns >> CODEL_SHIFT;
 }
 
+<<<<<<< HEAD
 #define codel_time_after(a, b)		((s32)(a) - (s32)(b) > 0)
 #define codel_time_after_eq(a, b)	((s32)(a) - (s32)(b) >= 0)
 #define codel_time_before(a, b)		((s32)(a) - (s32)(b) < 0)
@@ -97,6 +109,23 @@ static void codel_set_enqueue_time(struct sk_buff *skb)
 {
 	get_codel_cb(skb)->enqueue_time = codel_get_time();
 }
+=======
+/* Dealing with timer wrapping, according to RFC 1982, as desc in wikipedia:
+ *  https://en.wikipedia.org/wiki/Serial_number_arithmetic#General_Solution
+ * codel_time_after(a,b) returns true if the time a is after time b.
+ */
+#define codel_time_after(a, b)						\
+	(typecheck(codel_time_t, a) &&					\
+	 typecheck(codel_time_t, b) &&					\
+	 ((s32)((a) - (b)) > 0))
+#define codel_time_before(a, b) 	codel_time_after(b, a)
+
+#define codel_time_after_eq(a, b)					\
+	(typecheck(codel_time_t, a) &&					\
+	 typecheck(codel_time_t, b) &&					\
+	 ((s32)((a) - (b)) >= 0))
+#define codel_time_before_eq(a, b)	codel_time_after_eq(b, a)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline u32 codel_time_to_us(codel_time_t val)
 {
@@ -109,12 +138,24 @@ static inline u32 codel_time_to_us(codel_time_t val)
 /**
  * struct codel_params - contains codel parameters
  * @target:	target queue size (in time units)
+<<<<<<< HEAD
  * @interval:	width of moving time window
+=======
+ * @ce_threshold:  threshold for marking packets with ECN CE
+ * @interval:	width of moving time window
+ * @mtu:	device mtu, or minimal queue backlog in bytes.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @ecn:	is Explicit Congestion Notification enabled
  */
 struct codel_params {
 	codel_time_t	target;
+<<<<<<< HEAD
 	codel_time_t	interval;
+=======
+	codel_time_t	ce_threshold;
+	codel_time_t	interval;
+	u32		mtu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool		ecn;
 };
 
@@ -148,11 +189,18 @@ struct codel_vars {
  * struct codel_stats - contains codel shared variables and stats
  * @maxpacket:	largest packet we've seen so far
  * @drop_count:	temp count of dropped packets in dequeue()
+<<<<<<< HEAD
  * ecn_mark:	number of packets we ECN marked instead of dropping
+=======
+ * @drop_len:	bytes of dropped packets in dequeue()
+ * ecn_mark:	number of packets we ECN marked instead of dropping
+ * ce_mark:	number of packets CE marked because sojourn time was above ce_threshold
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct codel_stats {
 	u32		maxpacket;
 	u32		drop_count;
+<<<<<<< HEAD
 	u32		ecn_mark;
 };
 
@@ -343,4 +391,19 @@ static struct sk_buff *codel_dequeue(struct Qdisc *sch,
 end:
 	return skb;
 }
+=======
+	u32		drop_len;
+	u32		ecn_mark;
+	u32		ce_mark;
+};
+
+#define CODEL_DISABLED_THRESHOLD INT_MAX
+
+typedef u32 (*codel_skb_len_t)(const struct sk_buff *skb);
+typedef codel_time_t (*codel_skb_time_t)(const struct sk_buff *skb);
+typedef void (*codel_skb_drop_t)(struct sk_buff *skb, void *ctx);
+typedef struct sk_buff * (*codel_skb_dequeue_t)(struct codel_vars *vars,
+						void *ctx);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

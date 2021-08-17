@@ -2,7 +2,11 @@
 
 #include <linux/kernel.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <media/saa7146_vv.h>
+=======
+#include <media/drv-intf/saa7146_vv.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void calculate_output_format_register(struct saa7146_dev* saa, u32 palette, u32* clip_format)
 {
@@ -307,7 +311,11 @@ static int calculate_v_scale_registers(struct saa7146_dev *dev, enum v4l2_field 
 /* simple bubble-sort algorithm with duplicate elimination */
 static int sort_and_eliminate(u32* values, int* count)
 {
+<<<<<<< HEAD
 	int low = 0, high = 0, top = 0, temp = 0;
+=======
+	int low = 0, high = 0, top = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int cur = 0, next = 0;
 
 	/* sanity checks */
@@ -318,11 +326,16 @@ static int sort_and_eliminate(u32* values, int* count)
 	/* bubble sort the first @count items of the array @values */
 	for( top = *count; top > 0; top--) {
 		for( low = 0, high = 1; high < top; low++, high++) {
+<<<<<<< HEAD
 			if( values[low] > values[high] ) {
 				temp = values[low];
 				values[low] = values[high];
 				values[high] = temp;
 			}
+=======
+			if( values[low] > values[high] )
+				swap(values[low], values[high]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 

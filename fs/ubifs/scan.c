@@ -100,7 +100,11 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
 		if (pad_len < 0 ||
 		    offs + node_len + pad_len > c->leb_size) {
 			if (!quiet) {
+<<<<<<< HEAD
 				ubifs_err("bad pad node at LEB %d:%d",
+=======
+				ubifs_err(c, "bad pad node at LEB %d:%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  lnum, offs);
 				ubifs_dump_node(c, pad);
 			}
@@ -110,7 +114,11 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
 		/* Make the node pads to 8-byte boundary */
 		if ((node_len + pad_len) & 7) {
 			if (!quiet)
+<<<<<<< HEAD
 				ubifs_err("bad padding length %d - %d",
+=======
+				ubifs_err(c, "bad padding length %d - %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  offs, offs + node_len + pad_len);
 			return SCANNED_A_BAD_PAD_NODE;
 		}
@@ -131,7 +139,12 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
  * @offs: offset to start at (usually zero)
  * @sbuf: scan buffer (must be c->leb_size)
  *
+<<<<<<< HEAD
  * This function returns %0 on success and a negative error code on failure.
+=======
+ * This function returns the scanned information on success and a negative error
+ * code on failure.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct ubifs_scan_leb *ubifs_start_scan(const struct ubifs_info *c, int lnum,
 					int offs, void *sbuf)
@@ -151,15 +164,26 @@ struct ubifs_scan_leb *ubifs_start_scan(const struct ubifs_info *c, int lnum,
 
 	err = ubifs_leb_read(c, lnum, sbuf + offs, offs, c->leb_size - offs, 0);
 	if (err && err != -EBADMSG) {
+<<<<<<< HEAD
 		ubifs_err("cannot read %d bytes from LEB %d:%d, error %d",
+=======
+		ubifs_err(c, "cannot read %d bytes from LEB %d:%d, error %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->leb_size - offs, lnum, offs, err);
 		kfree(sleb);
 		return ERR_PTR(err);
 	}
 
+<<<<<<< HEAD
 	if (err == -EBADMSG)
 		sleb->ecc = 1;
 
+=======
+	/*
+	 * Note, we ignore integrity errors (EBASMSG) because all the nodes are
+	 * protected by CRC checksums.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return sleb;
 }
 
@@ -169,8 +193,11 @@ struct ubifs_scan_leb *ubifs_start_scan(const struct ubifs_info *c, int lnum,
  * @sleb: scanning information
  * @lnum: logical eraseblock number
  * @offs: offset to start at (usually zero)
+<<<<<<< HEAD
  *
  * This function returns %0 on success and a negative error code on failure.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void ubifs_end_scan(const struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 		    int lnum, int offs)
@@ -240,11 +267,19 @@ void ubifs_scanned_corruption(const struct ubifs_info *c, int lnum, int offs,
 {
 	int len;
 
+<<<<<<< HEAD
 	ubifs_err("corruption at LEB %d:%d", lnum, offs);
 	len = c->leb_size - offs;
 	if (len > 8192)
 		len = 8192;
 	ubifs_err("first %d bytes from LEB %d:%d", len, lnum, offs);
+=======
+	ubifs_err(c, "corruption at LEB %d:%d", lnum, offs);
+	len = c->leb_size - offs;
+	if (len > 8192)
+		len = 8192;
+	ubifs_err(c, "first %d bytes from LEB %d:%d", len, lnum, offs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 4, buf, len, 1);
 }
 
@@ -257,7 +292,11 @@ void ubifs_scanned_corruption(const struct ubifs_info *c, int lnum, int offs,
  * @quiet: print no messages
  *
  * This function scans LEB number @lnum and returns complete information about
+<<<<<<< HEAD
  * its contents. Returns the scaned information in case of success and,
+=======
+ * its contents. Returns the scanned information in case of success and,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * %-EUCLEAN if the LEB neads recovery, and other negative error codes in case
  * of failure.
  *
@@ -299,16 +338,27 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 
 		switch (ret) {
 		case SCANNED_GARBAGE:
+<<<<<<< HEAD
 			ubifs_err("garbage");
+=======
+			ubifs_err(c, "garbage");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto corrupted;
 		case SCANNED_A_NODE:
 			break;
 		case SCANNED_A_CORRUPT_NODE:
 		case SCANNED_A_BAD_PAD_NODE:
+<<<<<<< HEAD
 			ubifs_err("bad node");
 			goto corrupted;
 		default:
 			ubifs_err("unknown");
+=======
+			ubifs_err(c, "bad node");
+			goto corrupted;
+		default:
+			ubifs_err(c, "unknown");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EINVAL;
 			goto error;
 		}
@@ -325,7 +375,11 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 
 	if (offs % c->min_io_size) {
 		if (!quiet)
+<<<<<<< HEAD
 			ubifs_err("empty space starts at non-aligned offset %d",
+=======
+			ubifs_err(c, "empty space starts at non-aligned offset %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  offs);
 		goto corrupted;
 	}
@@ -338,7 +392,11 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 	for (; len; offs++, buf++, len--)
 		if (*(uint8_t *)buf != 0xff) {
 			if (!quiet)
+<<<<<<< HEAD
 				ubifs_err("corrupt empty space at LEB %d:%d",
+=======
+				ubifs_err(c, "corrupt empty space at LEB %d:%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  lnum, offs);
 			goto corrupted;
 		}
@@ -348,14 +406,22 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 corrupted:
 	if (!quiet) {
 		ubifs_scanned_corruption(c, lnum, offs, buf);
+<<<<<<< HEAD
 		ubifs_err("LEB %d scanning failed", lnum);
+=======
+		ubifs_err(c, "LEB %d scanning failed", lnum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	err = -EUCLEAN;
 	ubifs_scan_destroy(sleb);
 	return ERR_PTR(err);
 
 error:
+<<<<<<< HEAD
 	ubifs_err("LEB %d scanning failed, error %d", lnum, err);
+=======
+	ubifs_err(c, "LEB %d scanning failed, error %d", lnum, err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ubifs_scan_destroy(sleb);
 	return ERR_PTR(err);
 }

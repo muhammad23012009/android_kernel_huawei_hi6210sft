@@ -127,6 +127,10 @@ typedef __u32 int32;
  */
 struct cstate {
 	byte_t	cs_this;	/* connection id number (xmit) */
+<<<<<<< HEAD
+=======
+	bool	initialized;	/* true if initialized */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cstate *next;	/* next in ring (xmit) */
 	struct iphdr cs_ip;	/* ip/tcp hdr from most recent packet */
 	struct tcphdr cs_tcp;

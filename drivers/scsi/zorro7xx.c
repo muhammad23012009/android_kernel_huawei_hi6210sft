@@ -104,7 +104,11 @@ static int zorro7xx_init_one(struct zorro_dev *z,
 	if (ioaddr > 0x01000000)
 		hostdata->base = ioremap(ioaddr, zorro_resource_len(z));
 	else
+<<<<<<< HEAD
 		hostdata->base = (void __iomem *)ZTWO_VADDR(ioaddr);
+=======
+		hostdata->base = ZTWO_VADDR(ioaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hostdata->clock = 50;
 	hostdata->chip710 = 1;

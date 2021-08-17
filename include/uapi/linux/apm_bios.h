@@ -67,6 +67,11 @@ struct apm_bios_info {
 #define APM_USER_SUSPEND	0x000a
 #define APM_STANDBY_RESUME	0x000b
 #define APM_CAPABILITY_CHANGE	0x000c
+<<<<<<< HEAD
+=======
+#define APM_USER_HIBERNATION	0x000d
+#define APM_HIBERNATION_RESUME	0x000e
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Error codes

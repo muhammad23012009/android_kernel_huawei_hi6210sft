@@ -1,6 +1,10 @@
 /* ir-sanyo-decoder.c - handle SANYO IR Pulse/Space protocol
  *
+<<<<<<< HEAD
  * Copyright (C) 2011 by Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ * Copyright (C) 2011 by Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,9 +62,12 @@ static int ir_sanyo_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	u32 scancode;
 	u8 address, command, not_command;
 
+<<<<<<< HEAD
 	if (!(dev->enabled_protocols & RC_BIT_SANYO))
 		return 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!is_timing_event(ev)) {
 		if (ev.reset) {
 			IR_dprintk(1, "SANYO event reset received. reset to state 0\n");
@@ -167,7 +174,11 @@ static int ir_sanyo_decode(struct rc_dev *dev, struct ir_raw_event ev)
 
 		scancode = address << 8 | command;
 		IR_dprintk(1, "SANYO scancode: 0x%06x\n", scancode);
+<<<<<<< HEAD
 		rc_keydown(dev, scancode, 0);
+=======
+		rc_keydown(dev, RC_TYPE_SANYO, scancode, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data->state = STATE_INACTIVE;
 		return 0;
 	}
@@ -200,6 +211,10 @@ module_init(ir_sanyo_decode_init);
 module_exit(ir_sanyo_decode_exit);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Red Hat Inc. (http://www.redhat.com)");
 MODULE_DESCRIPTION("SANYO IR protocol decoder");

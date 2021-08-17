@@ -14,8 +14,12 @@
 #define _ASM_FRV_PCI_H
 
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
 #include <asm-generic/pci-dma-compat.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/pci.h>
 
 struct pci_dev;
@@ -24,8 +28,11 @@ struct pci_dev;
 
 extern void pcibios_set_master(struct pci_dev *dev);
 
+<<<<<<< HEAD
 extern void pcibios_penalize_isa_irq(int irq);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MMU
 extern void *consistent_alloc(gfp_t gfp, size_t size, dma_addr_t *dma_handle);
 extern void consistent_free(void *vaddr);
@@ -34,6 +41,7 @@ extern void consistent_sync_page(struct page *page, unsigned long offset,
 				 size_t size, int direction);
 #endif
 
+<<<<<<< HEAD
 extern void *pci_alloc_consistent(struct pci_dev *hwdev, size_t size,
 				  dma_addr_t *dma_handle);
 
@@ -53,6 +61,11 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+/* Return the index of the PCI controller for device PDEV. */
+#define pci_controller_num(PDEV)	(0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	These are pretty much arbitrary with the CoMEM implementation.
  *	We have the whole address space to ourselves.

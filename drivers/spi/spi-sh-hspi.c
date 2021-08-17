@@ -16,11 +16,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/clk.h>
@@ -46,8 +49,11 @@
 /* SPSR */
 #define RXFL	(1 << 2)
 
+<<<<<<< HEAD
 #define hspi2info(h)	(h->dev->platform_data)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct hspi_priv {
 	void __iomem *addr;
 	struct spi_master *master;
@@ -99,6 +105,7 @@ static int hspi_status_check_timeout(struct hspi_priv *hspi, u32 mask, u32 val)
 /*
  *		spi master function
  */
+<<<<<<< HEAD
 static int hspi_prepare_transfer(struct spi_master *master)
 {
 	struct hspi_priv *hspi = spi_master_get_devdata(master);
@@ -114,6 +121,8 @@ static int hspi_unprepare_transfer(struct spi_master *master)
 	pm_runtime_put_sync(hspi->dev);
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define hspi_hw_cs_enable(hspi)		hspi_hw_cs_ctrl(hspi, 0)
 #define hspi_hw_cs_disable(hspi)	hspi_hw_cs_ctrl(hspi, 1)
@@ -128,6 +137,7 @@ static void hspi_hw_setup(struct hspi_priv *hspi,
 {
 	struct spi_device *spi = msg->spi;
 	struct device *dev = hspi->dev;
+<<<<<<< HEAD
 	u32 target_rate;
 	u32 spcr, idiv_clk;
 	u32 rate, best_rate, min, tmp;
@@ -136,6 +146,11 @@ static void hspi_hw_setup(struct hspi_priv *hspi,
 	if (!target_rate)
 		target_rate = spi->max_speed_hz;
 
+=======
+	u32 spcr, idiv_clk;
+	u32 rate, best_rate, min, tmp;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * find best IDIV/CLKCx settings
 	 */
@@ -152,10 +167,17 @@ static void hspi_hw_setup(struct hspi_priv *hspi,
 			rate /= 16;
 
 		/* CLKCx calculation */
+<<<<<<< HEAD
 		rate /= (((idiv_clk & 0x1F) + 1) * 2) ;
 
 		/* save best settings */
 		tmp = abs(target_rate - rate);
+=======
+		rate /= (((idiv_clk & 0x1F) + 1) * 2);
+
+		/* save best settings */
+		tmp = abs(t->speed_hz - rate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (tmp < min) {
 			min = tmp;
 			spcr = idiv_clk;
@@ -168,7 +190,11 @@ static void hspi_hw_setup(struct hspi_priv *hspi,
 	if (spi->mode & SPI_CPOL)
 		spcr |= 1 << 6;
 
+<<<<<<< HEAD
 	dev_dbg(dev, "speed %d/%d\n", target_rate, best_rate);
+=======
+	dev_dbg(dev, "speed %d/%d\n", t->speed_hz, best_rate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hspi_write(hspi, SPCR, spcr);
 	hspi_write(hspi, SPSR, 0x0);
@@ -212,7 +238,11 @@ static int hspi_transfer_one_message(struct spi_master *master,
 
 			hspi_write(hspi, SPTBR, tx);
 
+<<<<<<< HEAD
 			/* wait recive */
+=======
+			/* wait receive */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = hspi_status_check_timeout(hspi, 0x4, 0x4);
 			if (ret < 0)
 				break;
@@ -245,6 +275,7 @@ static int hspi_transfer_one_message(struct spi_master *master,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int hspi_setup(struct spi_device *spi)
 {
 	struct hspi_priv *hspi = spi_master_get_devdata(spi->master);
@@ -268,6 +299,8 @@ static void hspi_cleanup(struct spi_device *spi)
 	dev_dbg(dev, "%s cleanup\n", spi->modalias);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int hspi_probe(struct platform_device *pdev)
 {
 	struct resource *res;
@@ -289,15 +322,25 @@ static int hspi_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	clk = clk_get(NULL, "shyway_clk");
 	if (IS_ERR(clk)) {
 		dev_err(&pdev->dev, "shyway_clk is required\n");
+=======
+	clk = clk_get(&pdev->dev, NULL);
+	if (IS_ERR(clk)) {
+		dev_err(&pdev->dev, "couldn't get clock\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 		goto error0;
 	}
 
 	hspi = spi_master_get_devdata(master);
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, hspi);
+=======
+	platform_set_drvdata(pdev, hspi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* init hspi */
 	hspi->master	= master;
@@ -311,6 +354,7 @@ static int hspi_probe(struct platform_device *pdev)
 		goto error1;
 	}
 
+<<<<<<< HEAD
 	master->num_chipselect	= 1;
 	master->bus_num		= pdev->id;
 	master->setup		= hspi_setup;
@@ -331,6 +375,27 @@ static int hspi_probe(struct platform_device *pdev)
 
 	return 0;
 
+=======
+	pm_runtime_enable(&pdev->dev);
+
+	master->bus_num		= pdev->id;
+	master->mode_bits	= SPI_CPOL | SPI_CPHA;
+	master->dev.of_node	= pdev->dev.of_node;
+	master->auto_runtime_pm = true;
+	master->transfer_one_message		= hspi_transfer_one_message;
+	master->bits_per_word_mask = SPI_BPW_MASK(8);
+
+	ret = devm_spi_register_master(&pdev->dev, master);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "spi_register_master error.\n");
+		goto error2;
+	}
+
+	return 0;
+
+ error2:
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  error1:
 	clk_put(clk);
  error0:
@@ -341,22 +406,42 @@ static int hspi_probe(struct platform_device *pdev)
 
 static int hspi_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct hspi_priv *hspi = dev_get_drvdata(&pdev->dev);
+=======
+	struct hspi_priv *hspi = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pm_runtime_disable(&pdev->dev);
 
 	clk_put(hspi->clk);
+<<<<<<< HEAD
 	spi_unregister_master(hspi->master);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id hspi_of_match[] = {
+	{ .compatible = "renesas,hspi", },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, hspi_of_match);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver hspi_driver = {
 	.probe = hspi_probe,
 	.remove = hspi_remove,
 	.driver = {
 		.name = "sh-hspi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table = hspi_of_match,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(hspi_driver);
@@ -364,4 +449,8 @@ module_platform_driver(hspi_driver);
 MODULE_DESCRIPTION("SuperH HSPI bus driver");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>");
+<<<<<<< HEAD
 MODULE_ALIAS("platform:sh_spi");
+=======
+MODULE_ALIAS("platform:sh-hspi");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

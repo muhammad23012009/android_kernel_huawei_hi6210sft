@@ -8,6 +8,10 @@
 
 #include <asm/uaccess.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/sclp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/ipl.h>
 #include "sizes.h"
 
@@ -47,6 +51,13 @@ static unsigned long free_mem_end_ptr;
 #include "../../../../lib/decompress_bunzip2.c"
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KERNEL_LZ4
+#include "../../../../lib/decompress_unlz4.c"
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_KERNEL_LZMA
 #include "../../../../lib/decompress_unlzma.c"
 #endif
@@ -59,8 +70,11 @@ static unsigned long free_mem_end_ptr;
 #include "../../../../lib/decompress_unxz.c"
 #endif
 
+<<<<<<< HEAD
 extern _sclp_print_early(const char *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int puts(const char *s)
 {
 	_sclp_print_early(s);
@@ -167,7 +181,11 @@ unsigned long decompress_kernel(void)
 	free_mem_end_ptr = free_mem_ptr + HEAP_SIZE;
 
 	puts("Uncompressing Linux... ");
+<<<<<<< HEAD
 	decompress(input_data, input_len, NULL, NULL, output, NULL, error);
+=======
+	__decompress(input_data, input_len, NULL, NULL, output, 0, NULL, error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	puts("Ok, booting the kernel.\n");
 	return (unsigned long) output;
 }

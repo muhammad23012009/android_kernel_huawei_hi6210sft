@@ -32,6 +32,10 @@
 #include <asm/cacheflush.h>
 #include <asm/processor.h>
 #include <asm/sigcontext.h>
+<<<<<<< HEAD
+=======
+#include <asm/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct hard_trap_info {
 	unsigned char tt;	/* Trap type code for MIPS R3xxx and R4xxx */
@@ -208,7 +212,18 @@ void arch_kgdb_breakpoint(void)
 
 static void kgdb_call_nmi_hook(void *ignored)
 {
+<<<<<<< HEAD
 	kgdb_nmicallback(raw_smp_processor_id(), NULL);
+=======
+	mm_segment_t old_fs;
+
+	old_fs = get_fs();
+	set_fs(get_ds());
+
+	kgdb_nmicallback(raw_smp_processor_id(), NULL);
+
+	set_fs(old_fs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void kgdb_roundup_cpus(unsigned long flags)
@@ -300,6 +315,10 @@ static int kgdb_mips_notify(struct notifier_block *self, unsigned long cmd,
 	struct die_args *args = (struct die_args *)ptr;
 	struct pt_regs *regs = args->regs;
 	int trap = (regs->cp0_cause & 0x7c) >> 2;
+<<<<<<< HEAD
+=======
+	mm_segment_t old_fs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_KPROBES
 	/*
@@ -314,11 +333,25 @@ static int kgdb_mips_notify(struct notifier_block *self, unsigned long cmd,
 	if (user_mode(regs))
 		return NOTIFY_DONE;
 
+<<<<<<< HEAD
 	if (atomic_read(&kgdb_active) != -1)
 		kgdb_nmicallback(smp_processor_id(), regs);
 
 	if (kgdb_handle_exception(trap, compute_signal(trap), cmd, regs))
 		return NOTIFY_DONE;
+=======
+	/* Kernel mode. Set correct address limit */
+	old_fs = get_fs();
+	set_fs(get_ds());
+
+	if (atomic_read(&kgdb_active) != -1)
+		kgdb_nmicallback(smp_processor_id(), regs);
+
+	if (kgdb_handle_exception(trap, compute_signal(trap), cmd, regs)) {
+		set_fs(old_fs);
+		return NOTIFY_DONE;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (atomic_read(&kgdb_setting_breakpoint))
 		if ((trap == 9) && (regs->cp0_epc == (unsigned long)breakinst))
@@ -328,6 +361,10 @@ static int kgdb_mips_notify(struct notifier_block *self, unsigned long cmd,
 	local_irq_enable();
 	__flush_cache_all();
 
+<<<<<<< HEAD
+=======
+	set_fs(old_fs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NOTIFY_STOP;
 }
 
@@ -380,10 +417,13 @@ int kgdb_arch_handle_exception(int vector, int signo, int err_code,
 
 struct kgdb_arch arch_kgdb_ops;
 
+<<<<<<< HEAD
 /*
  * We use kgdb_early_setup so that functions we need to call now don't
  * cause trouble when called again later.
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int kgdb_arch_init(void)
 {
 	union mips_instruction insn = {

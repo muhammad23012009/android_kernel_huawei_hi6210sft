@@ -18,6 +18,7 @@
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/cputype.h>
 #include <mach/addr-map.h>
@@ -43,6 +44,19 @@ int mmp2_set_wake(struct irq_data *d, unsigned int on)
 		if (desc->action)
 			desc->action->flags &= ~IRQF_NO_SUSPEND;
 	}
+=======
+
+#include "cputype.h"
+#include "addr-map.h"
+#include "pm-mmp2.h"
+#include "regs-icu.h"
+#include "irqs.h"
+
+int mmp2_set_wake(struct irq_data *d, unsigned int on)
+{
+	unsigned long data = 0;
+	int irq = d->irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* enable wakeup sources */
 	switch (irq) {

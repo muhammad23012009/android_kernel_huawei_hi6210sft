@@ -14,6 +14,11 @@ struct page;
 void *srmmu_get_nocache(int size, int align);
 void srmmu_free_nocache(void *addr, int size);
 
+<<<<<<< HEAD
+=======
+extern struct resource sparc_iomap;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define check_pgt_cache()	do { } while (0)
 
 pgd_t *get_pgd_fast(void);
@@ -27,9 +32,15 @@ static inline void free_pgd_fast(pgd_t *pgd)
 
 static inline void pgd_set(pgd_t * pgdp, pmd_t * pmdp)
 {
+<<<<<<< HEAD
 	unsigned long pa = __nocache_pa((unsigned long)pmdp);
 
 	set_pte((pte_t *)pgdp, (SRMMU_ET_PTD | (pa >> 4)));
+=======
+	unsigned long pa = __nocache_pa(pmdp);
+
+	set_pte((pte_t *)pgdp, __pte((SRMMU_ET_PTD | (pa >> 4))));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define pgd_populate(MM, PGD, PMD)      pgd_set(PGD, PMD)

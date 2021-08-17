@@ -1,6 +1,10 @@
 /***********************************************************************
  *
+<<<<<<< HEAD
  * Copyright(c) 2013 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ * Copyright(c) 2013 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +21,11 @@
  *
  ***********************************************************************/
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+=======
+#include "smscoreapi.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -31,8 +39,11 @@
 #include "dvb_demux.h"
 #include "dvb_frontend.h"
 
+<<<<<<< HEAD
 #include "smscoreapi.h"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "smsdvb.h"
 
 static struct dentry *smsdvb_debugfs_usb_root;
@@ -536,7 +547,11 @@ int smsdvb_debugfs_register(void)
 	 */
 	d = debugfs_create_dir("smsdvb", usb_debug_root);
 	if (IS_ERR_OR_NULL(d)) {
+<<<<<<< HEAD
 		sms_err("Couldn't create sysfs node for smsdvb");
+=======
+		pr_err("Couldn't create sysfs node for smsdvb\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return PTR_ERR(d);
 	} else {
 		smsdvb_debugfs_usb_root = d;

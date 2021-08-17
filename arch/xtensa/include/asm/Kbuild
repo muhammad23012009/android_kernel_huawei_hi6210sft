@@ -2,29 +2,52 @@ generic-y += bitsperlong.h
 generic-y += bug.h
 generic-y += clkdev.h
 generic-y += cputime.h
+<<<<<<< HEAD
 generic-y += device.h
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += div64.h
 generic-y += emergency-restart.h
 generic-y += errno.h
 generic-y += exec.h
 generic-y += fcntl.h
+<<<<<<< HEAD
 generic-y += futex.h
 generic-y += hardirq.h
 generic-y += ioctl.h
 generic-y += irq_regs.h
+=======
+generic-y += hardirq.h
+generic-y += ioctl.h
+generic-y += irq_regs.h
+generic-y += irq_work.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += kdebug.h
 generic-y += kmap_types.h
 generic-y += kvm_para.h
 generic-y += linkage.h
 generic-y += local.h
 generic-y += local64.h
+<<<<<<< HEAD
 generic-y += percpu.h
 generic-y += resource.h
 generic-y += scatterlist.h
+=======
+generic-y += mcs_spinlock.h
+generic-y += mm-arch-hooks.h
+generic-y += percpu.h
+generic-y += preempt.h
+generic-y += resource.h
+generic-y += rwsem.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += sections.h
 generic-y += siginfo.h
 generic-y += statfs.h
 generic-y += termios.h
 generic-y += topology.h
 generic-y += trace_clock.h
+<<<<<<< HEAD
+=======
+generic-y += word-at-a-time.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += xor.h

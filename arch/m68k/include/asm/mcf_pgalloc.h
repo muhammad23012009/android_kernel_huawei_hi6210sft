@@ -14,7 +14,11 @@ extern const char bad_pmd_string[];
 extern inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
 	unsigned long address)
 {
+<<<<<<< HEAD
 	unsigned long page = __get_free_page(GFP_DMA|__GFP_REPEAT);
+=======
+	unsigned long page = __get_free_page(GFP_DMA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!page)
 		return NULL;
@@ -43,6 +47,10 @@ extern inline pmd_t *pmd_alloc_kernel(pgd_t *pgd, unsigned long address)
 static inline void __pte_free_tlb(struct mmu_gather *tlb, pgtable_t page,
 				  unsigned long address)
 {
+<<<<<<< HEAD
+=======
+	pgtable_page_dtor(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__free_page(page);
 }
 
@@ -51,11 +59,22 @@ static inline void __pte_free_tlb(struct mmu_gather *tlb, pgtable_t page,
 static inline struct page *pte_alloc_one(struct mm_struct *mm,
 	unsigned long address)
 {
+<<<<<<< HEAD
 	struct page *page = alloc_pages(GFP_DMA|__GFP_REPEAT, 0);
+=======
+	struct page *page = alloc_pages(GFP_DMA, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pte_t *pte;
 
 	if (!page)
 		return NULL;
+<<<<<<< HEAD
+=======
+	if (!pgtable_page_ctor(page)) {
+		__free_page(page);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pte = kmap(page);
 	if (pte) {
@@ -69,8 +88,14 @@ static inline struct page *pte_alloc_one(struct mm_struct *mm,
 	return page;
 }
 
+<<<<<<< HEAD
 extern inline void pte_free(struct mm_struct *mm, struct page *page)
 {
+=======
+static inline void pte_free(struct mm_struct *mm, struct page *page)
+{
+	pgtable_page_dtor(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__free_page(page);
 }
 

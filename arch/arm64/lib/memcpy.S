@@ -36,6 +36,7 @@
  * Returns:
  *	x0 - dest
  */
+<<<<<<< HEAD
 dstin	.req	x0
 src	.req	x1
 count	.req	x2
@@ -201,3 +202,44 @@ ENTRY(memcpy)
 	b.ne	.Ltail63
 	ret
 ENDPROC(memcpy)
+=======
+	.macro ldrb1 ptr, regB, val
+	ldrb  \ptr, [\regB], \val
+	.endm
+
+	.macro strb1 ptr, regB, val
+	strb \ptr, [\regB], \val
+	.endm
+
+	.macro ldrh1 ptr, regB, val
+	ldrh  \ptr, [\regB], \val
+	.endm
+
+	.macro strh1 ptr, regB, val
+	strh \ptr, [\regB], \val
+	.endm
+
+	.macro ldr1 ptr, regB, val
+	ldr \ptr, [\regB], \val
+	.endm
+
+	.macro str1 ptr, regB, val
+	str \ptr, [\regB], \val
+	.endm
+
+	.macro ldp1 ptr, regB, regC, val
+	ldp \ptr, \regB, [\regC], \val
+	.endm
+
+	.macro stp1 ptr, regB, regC, val
+	stp \ptr, \regB, [\regC], \val
+	.endm
+
+	.weak memcpy
+ENTRY(__memcpy)
+ENTRY(memcpy)
+#include "copy_template.S"
+	ret
+ENDPIPROC(memcpy)
+ENDPROC(__memcpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

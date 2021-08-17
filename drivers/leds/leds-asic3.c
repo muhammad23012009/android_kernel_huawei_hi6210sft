@@ -7,7 +7,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/slab.h>
@@ -94,7 +97,11 @@ static int blink_set(struct led_classdev *cdev,
 
 static int asic3_led_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct asic3_led *led = pdev->dev.platform_data;
+=======
+	struct asic3_led *led = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	ret = mfd_cell_enable(pdev);
@@ -127,7 +134,11 @@ out:
 
 static int asic3_led_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct asic3_led *led = pdev->dev.platform_data;
+=======
+	struct asic3_led *led = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	led_classdev_unregister(led->cdev);
 
@@ -169,7 +180,10 @@ static struct platform_driver asic3_led_driver = {
 	.remove		= asic3_led_remove,
 	.driver		= {
 		.name	= "leds-asic3",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &asic3_led_pm_ops,
 	},
 };

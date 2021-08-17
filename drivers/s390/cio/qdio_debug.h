@@ -16,12 +16,15 @@
 extern debug_info_t *qdio_dbf_setup;
 extern debug_info_t *qdio_dbf_error;
 
+<<<<<<< HEAD
 /* sort out low debug levels early to avoid wasted sprints */
 static inline int qdio_dbf_passes(debug_info_t *dbf_grp, int level)
 {
 	return (level <= dbf_grp->level);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DBF_ERR		3	/* error conditions	*/
 #define DBF_WARN	4	/* warning conditions	*/
 #define DBF_INFO	6	/* informational	*/
@@ -65,7 +68,11 @@ static inline void DBF_ERROR_HEX(void *addr, int len)
 #define DBF_DEV_EVENT(level, device, text...) \
 	do { \
 		char debug_buffer[QDIO_DBF_LEN]; \
+<<<<<<< HEAD
 		if (qdio_dbf_passes(device->debug_area, level)) { \
+=======
+		if (debug_level_enabled(device->debug_area, level)) { \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			snprintf(debug_buffer, QDIO_DBF_LEN, text); \
 			debug_text_event(device->debug_area, level, debug_buffer); \
 		} \
@@ -81,7 +88,11 @@ static inline void DBF_DEV_HEX(struct qdio_irq *dev, void *addr,
 	}
 }
 
+<<<<<<< HEAD
 void qdio_allocate_dbf(struct qdio_initialize *init_data,
+=======
+int qdio_allocate_dbf(struct qdio_initialize *init_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       struct qdio_irq *irq_ptr);
 void qdio_setup_debug_entries(struct qdio_irq *irq_ptr,
 			      struct ccw_device *cdev);

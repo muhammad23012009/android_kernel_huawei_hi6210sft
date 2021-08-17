@@ -106,6 +106,7 @@ static inline int convert_error(struct zcrypt_device *zdev,
 	//   REP88_ERROR_MESSAGE_TYPE		// '20' CEX2A
 		/*
 		 * To sent a message of the wrong type is a bug in the
+<<<<<<< HEAD
 		 * device driver. Warn about it, disable the device
 		 * and then repeat the request.
 		 */
@@ -115,6 +116,18 @@ static inline int convert_error(struct zcrypt_device *zdev,
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
 			       zdev->ap_dev->qid,
 			       zdev->online, ehdr->reply_code);
+=======
+		 * device driver. Send error msg, disable the device
+		 * and then repeat the request.
+		 */
+		atomic_set(&zcrypt_rescan_req, 1);
+		zdev->online = 0;
+		pr_err("Cryptographic device %x failed and was set offline\n",
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
+			AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online,
+			ehdr->reply_code);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;
 	case REP82_ERROR_TRANSPORT_FAIL:
 	case REP82_ERROR_MACHINE_FAILURE:
@@ -122,6 +135,7 @@ static inline int convert_error(struct zcrypt_device *zdev,
 		/* If a card fails disable it and repeat the request. */
 		atomic_set(&zcrypt_rescan_req, 1);
 		zdev->online = 0;
+<<<<<<< HEAD
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
 			       zdev->ap_dev->qid,
 			       zdev->online, ehdr->reply_code);
@@ -131,6 +145,21 @@ static inline int convert_error(struct zcrypt_device *zdev,
 		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
 			       zdev->ap_dev->qid,
 			       zdev->online, ehdr->reply_code);
+=======
+		pr_err("Cryptographic device %x failed and was set offline\n",
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
+			AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online,
+			ehdr->reply_code);
+		return -EAGAIN;
+	default:
+		zdev->online = 0;
+		pr_err("Cryptographic device %x failed and was set offline\n",
+		       AP_QID_DEVICE(zdev->ap_dev->qid));
+		ZCRYPT_DBF_DEV(DBF_ERR, zdev, "dev%04xo%drc%d",
+			AP_QID_DEVICE(zdev->ap_dev->qid), zdev->online,
+			ehdr->reply_code);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;	/* repeat the request on a different device. */
 	}
 }

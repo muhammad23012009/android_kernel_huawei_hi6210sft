@@ -42,8 +42,13 @@ struct rds_page_remainder {
 	unsigned long	r_offset;
 };
 
+<<<<<<< HEAD
 static DEFINE_PER_CPU_SHARED_ALIGNED(struct rds_page_remainder,
 				     rds_page_remainders);
+=======
+static
+DEFINE_PER_CPU_SHARED_ALIGNED(struct rds_page_remainder, rds_page_remainders);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * returns 0 on success or -errno on failure.
@@ -135,8 +140,13 @@ int rds_page_remainder_alloc(struct scatterlist *scat, unsigned long bytes,
 			if (rem->r_offset != 0)
 				rds_stats_inc(s_page_remainder_hit);
 
+<<<<<<< HEAD
 			rem->r_offset += bytes;
 			if (rem->r_offset == PAGE_SIZE) {
+=======
+			rem->r_offset += ALIGN(bytes, 8);
+			if (rem->r_offset >= PAGE_SIZE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__free_page(rem->r_page);
 				rem->r_page = NULL;
 			}
@@ -179,6 +189,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(rds_page_remainder_alloc);
 
+<<<<<<< HEAD
 static int rds_page_remainder_cpu_notify(struct notifier_block *self,
 					 unsigned long action, void *hcpu)
 {
@@ -212,4 +223,20 @@ void rds_page_exit(void)
 		rds_page_remainder_cpu_notify(&rds_page_remainder_nb,
 					      (unsigned long)CPU_DEAD,
 					      (void *)(long)i);
+=======
+void rds_page_exit(void)
+{
+	unsigned int cpu;
+
+	for_each_possible_cpu(cpu) {
+		struct rds_page_remainder *rem;
+
+		rem = &per_cpu(rds_page_remainders, cpu);
+		rdsdebug("cpu %u\n", cpu);
+
+		if (rem->r_page)
+			__free_page(rem->r_page);
+		rem->r_page = NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

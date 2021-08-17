@@ -10,7 +10,10 @@
  * (at your option) any later version.
  */
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/serio.h>
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -80,7 +83,12 @@ static int amba_kmi_open(struct serio *io)
 	writeb(divisor, KMICLKDIV);
 	writeb(KMICR_EN, KMICR);
 
+<<<<<<< HEAD
 	ret = request_irq(kmi->irq, amba_kmi_int, 0, "kmi-pl050", kmi);
+=======
+	ret = request_irq(kmi->irq, amba_kmi_int, IRQF_SHARED, "kmi-pl050",
+			  kmi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		printk(KERN_ERR "kmi: failed to claim IRQ%d\n", kmi->irq);
 		writeb(0, KMICR);
@@ -167,8 +175,11 @@ static int amba_kmi_remove(struct amba_device *dev)
 {
 	struct amba_kmi_port *kmi = amba_get_drvdata(dev);
 
+<<<<<<< HEAD
 	amba_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	serio_unregister_port(kmi->io);
 	clk_put(kmi->clk);
 	iounmap(kmi->base);
@@ -177,9 +188,15 @@ static int amba_kmi_remove(struct amba_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int amba_kmi_resume(struct amba_device *dev)
 {
 	struct amba_kmi_port *kmi = amba_get_drvdata(dev);
+=======
+static int __maybe_unused amba_kmi_resume(struct device *dev)
+{
+	struct amba_kmi_port *kmi = dev_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* kick the serio layer to rescan this port */
 	serio_reconnect(kmi->io);
@@ -187,6 +204,11 @@ static int amba_kmi_resume(struct amba_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(amba_kmi_dev_pm_ops, NULL, amba_kmi_resume);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct amba_id amba_kmi_idtable[] = {
 	{
 		.id	= 0x00041050,
@@ -201,11 +223,18 @@ static struct amba_driver ambakmi_driver = {
 	.drv		= {
 		.name	= "kmi-pl050",
 		.owner	= THIS_MODULE,
+<<<<<<< HEAD
+=======
+		.pm	= &amba_kmi_dev_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table	= amba_kmi_idtable,
 	.probe		= amba_kmi_probe,
 	.remove		= amba_kmi_remove,
+<<<<<<< HEAD
 	.resume		= amba_kmi_resume,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_amba_driver(ambakmi_driver);

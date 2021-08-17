@@ -28,7 +28,11 @@
 #include <asm/cacheflush.h>
 #include <asm/grfioctl.h>
 
+<<<<<<< HEAD
 #include "../sticore.h"
+=======
+#include "../fbdev/sticore.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define STI_DRIVERVERSION "Version 0.9b"
 
@@ -488,7 +492,11 @@ static int sti_init_glob_cfg(struct sti_struct *sti, unsigned long rom_address,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_FONTS
+=======
+#ifdef CONFIG_FONT_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct sti_cooked_font *
 sti_select_fbfont(struct sti_cooked_rom *cooked_rom, const char *fbfont_name)
 {

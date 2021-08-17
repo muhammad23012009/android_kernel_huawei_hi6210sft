@@ -52,7 +52,11 @@ int arch_install_hw_breakpoint(struct perf_event *bp)
 	int i;
 
 	for (i = 0; i < sh_ubc->num_events; i++) {
+<<<<<<< HEAD
 		struct perf_event **slot = &__get_cpu_var(bp_per_reg[i]);
+=======
+		struct perf_event **slot = this_cpu_ptr(&bp_per_reg[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!*slot) {
 			*slot = bp;
@@ -84,7 +88,11 @@ void arch_uninstall_hw_breakpoint(struct perf_event *bp)
 	int i;
 
 	for (i = 0; i < sh_ubc->num_events; i++) {
+<<<<<<< HEAD
 		struct perf_event **slot = &__get_cpu_var(bp_per_reg[i]);
+=======
+		struct perf_event **slot = this_cpu_ptr(&bp_per_reg[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (*slot == bp) {
 			*slot = NULL;
@@ -160,6 +168,10 @@ int arch_bp_generic_fields(int sh_len, int sh_type,
 	switch (sh_type) {
 	case SH_BREAKPOINT_READ:
 		*gen_type = HW_BREAKPOINT_R;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SH_BREAKPOINT_WRITE:
 		*gen_type = HW_BREAKPOINT_W;
 		break;

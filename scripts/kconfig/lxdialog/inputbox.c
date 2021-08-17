@@ -42,7 +42,11 @@ static void print_buttons(WINDOW * dialog, int height, int width, int selected)
  * Display a dialog box for inputing a string
  */
 int dialog_inputbox(const char *title, const char *prompt, int height, int width,
+<<<<<<< HEAD
                     const char *init)
+=======
+		    const char *init)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, x, y, box_y, box_x, box_width;
 	int input_x = 0, key = 0, button = -1;
@@ -56,6 +60,7 @@ int dialog_inputbox(const char *title, const char *prompt, int height, int width
 		strcpy(instr, init);
 
 do_resize:
+<<<<<<< HEAD
 	if (getmaxy(stdscr) <= (height - 2))
 		return -ERRDISPLAYTOOSMALL;
 	if (getmaxx(stdscr) <= (width - 2))
@@ -64,6 +69,16 @@ do_resize:
 	/* center dialog box on screen */
 	x = (COLS - width) / 2;
 	y = (LINES - height) / 2;
+=======
+	if (getmaxy(stdscr) <= (height - INPUTBOX_HEIGTH_MIN))
+		return -ERRDISPLAYTOOSMALL;
+	if (getmaxx(stdscr) <= (width - INPUTBOX_WIDTH_MIN))
+		return -ERRDISPLAYTOOSMALL;
+
+	/* center dialog box on screen */
+	x = (getmaxx(stdscr) - width) / 2;
+	y = (getmaxy(stdscr) - height) / 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	draw_shadow(stdscr, y, x, height, width);
 
@@ -126,7 +141,12 @@ do_resize:
 			case KEY_DOWN:
 				break;
 			case KEY_BACKSPACE:
+<<<<<<< HEAD
 			case 127:
+=======
+			case 8:   /* ^H */
+			case 127: /* ^? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (pos) {
 					wattrset(dialog, dlg.inputbox.atr);
 					if (input_x == 0) {

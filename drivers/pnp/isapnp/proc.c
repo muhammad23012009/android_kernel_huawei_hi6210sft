@@ -21,7 +21,11 @@
 #include <linux/isapnp.h>
 #include <linux/proc_fs.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct pnp_protocol isapnp_protocol;
 
@@ -29,6 +33,7 @@ static struct proc_dir_entry *isapnp_proc_bus_dir = NULL;
 
 static loff_t isapnp_proc_bus_lseek(struct file *file, loff_t off, int whence)
 {
+<<<<<<< HEAD
 	loff_t new = -1;
 	struct inode *inode = file_inode(file);
 
@@ -50,6 +55,9 @@ static loff_t isapnp_proc_bus_lseek(struct file *file, loff_t off, int whence)
 		file->f_pos = new;
 	mutex_unlock(&inode->i_mutex);
 	return new;
+=======
+	return fixed_size_llseek(file, off, whence, 256);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t isapnp_proc_bus_read(struct file *file, char __user * buf,

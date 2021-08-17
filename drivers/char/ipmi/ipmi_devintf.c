@@ -157,12 +157,23 @@ static int ipmi_release(struct inode *inode, struct file *file)
 {
 	struct ipmi_file_private *priv = file->private_data;
 	int                      rv;
+<<<<<<< HEAD
+=======
+	struct  ipmi_recv_msg *msg, *next;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rv = ipmi_destroy_user(priv->user);
 	if (rv)
 		return rv;
 
+<<<<<<< HEAD
 	/* FIXME - free the messages in the list. */
+=======
+	list_for_each_entry_safe(msg, next, &priv->recv_msgs, link)
+		ipmi_free_recv_msg(msg);
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(priv);
 
 	return 0;
@@ -810,6 +821,10 @@ static long compat_ipmi_ioctl(struct file *filep, unsigned int cmd,
 		struct ipmi_recv   __user *precv64;
 		struct ipmi_recv   recv64;
 
+<<<<<<< HEAD
+=======
+		memset(&recv64, 0, sizeof(recv64));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (get_compat_ipmi_recv(&recv64, compat_ptr(arg)))
 			return -EFAULT;
 

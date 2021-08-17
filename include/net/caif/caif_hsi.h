@@ -195,6 +195,10 @@ enum ifla_caif_hsi {
 	__IFLA_CAIF_HSI_MAX
 };
 
+<<<<<<< HEAD
 extern struct cfhsi_ops *cfhsi_get_ops(void);
+=======
+struct cfhsi_ops *cfhsi_get_ops(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif		/* CAIF_HSI_H_ */

@@ -7,6 +7,13 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/segment.h>
+#include <asm/msr.h>
+#include <asm/processor-flags.h>
+#include <asm/page_types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SAVE_XMM			\
 	mov %rsp, %rax;			\
@@ -34,6 +41,7 @@
 	mov %rsi, %cr0;			\
 	mov (%rsp), %rsp
 
+<<<<<<< HEAD
 ENTRY(efi_call0)
 	SAVE_XMM
 	subq $32, %rsp
@@ -103,6 +111,13 @@ ENTRY(efi_call6)
 	SAVE_XMM
 	mov (%rsp), %rax
 	mov 8(%rax), %rax
+=======
+ENTRY(efi_call)
+	pushq %rbp
+	movq %rsp, %rbp
+	SAVE_XMM
+	mov 16(%rbp), %rax
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	subq $48, %rsp
 	mov %r9, 32(%rsp)
 	mov %rax, 40(%rsp)
@@ -112,5 +127,11 @@ ENTRY(efi_call6)
 	call *%rdi
 	addq $48, %rsp
 	RESTORE_XMM
+<<<<<<< HEAD
 	ret
 ENDPROC(efi_call6)
+=======
+	popq %rbp
+	ret
+ENDPROC(efi_call)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

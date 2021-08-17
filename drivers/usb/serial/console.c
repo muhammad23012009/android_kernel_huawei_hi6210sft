@@ -14,7 +14,11 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/console.h>
@@ -47,6 +51,11 @@ static struct console usbcons;
  * ------------------------------------------------------------
  */
 
+<<<<<<< HEAD
+=======
+static const struct tty_operations usb_console_fake_tty_ops = {
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The parsing of the command line works exactly like the
@@ -108,24 +117,40 @@ static int usb_console_setup(struct console *co, char *options)
 	 * no need to check the index here: if the index is wrong, console
 	 * code won't call us
 	 */
+<<<<<<< HEAD
 	serial = usb_serial_get_by_index(co->index);
 	if (serial == NULL) {
+=======
+	port = usb_serial_port_get_by_minor(co->index);
+	if (port == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* no device is connected yet, sorry :( */
 		pr_err("No USB device connected to ttyUSB%i\n", co->index);
 		return -ENODEV;
 	}
+<<<<<<< HEAD
+=======
+	serial = port->serial;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = usb_autopm_get_interface(serial->interface);
 	if (retval)
 		goto error_get_interface;
 
+<<<<<<< HEAD
 	port = serial->port[co->index - serial->minor];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tty_port_tty_set(&port->port, NULL);
 
 	info->port = port;
 
 	++port->port.count;
+<<<<<<< HEAD
 	if (!test_bit(ASYNCB_INITIALIZED, &port->port.flags)) {
+=======
+	if (!tty_port_initialized(&port->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (serial->type->set_termios) {
 			/*
 			 * allocate a fake tty so the driver can initialize
@@ -135,6 +160,7 @@ static int usb_console_setup(struct console *co, char *options)
 			tty = kzalloc(sizeof(*tty), GFP_KERNEL);
 			if (!tty) {
 				retval = -ENOMEM;
+<<<<<<< HEAD
 				dev_err(&port->dev, "no more memory\n");
 				goto reset_open_count;
 			}
@@ -147,15 +173,34 @@ static int usb_console_setup(struct console *co, char *options)
 				dev_err(&port->dev, "no more memory\n");
 				goto free_tty;
 			}
+=======
+				goto reset_open_count;
+			}
+			kref_init(&tty->kref);
+			tty->driver = usb_serial_tty_driver;
+			tty->index = co->index;
+			init_ldsem(&tty->ldisc_sem);
+			spin_lock_init(&tty->files_lock);
+			INIT_LIST_HEAD(&tty->tty_files);
+			kref_get(&tty->driver->kref);
+			__module_get(tty->driver->owner);
+			tty->ops = &usb_console_fake_tty_ops;
+			tty_init_termios(tty);
+			tty_port_tty_set(&port->port, tty);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		/* only call the device specific open if this
 		 * is the first time the port is opened */
+<<<<<<< HEAD
 		if (serial->type->open)
 			retval = serial->type->open(NULL, port);
 		else
 			retval = usb_serial_generic_open(NULL, port);
 
+=======
+		retval = serial->type->open(NULL, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (retval) {
 			dev_err(&port->dev, "could not open USB console port\n");
 			goto fail;
@@ -168,9 +213,15 @@ static int usb_console_setup(struct console *co, char *options)
 			serial->type->set_termios(tty, port, &dummy);
 
 			tty_port_tty_set(&port->port, NULL);
+<<<<<<< HEAD
 			kfree(tty);
 		}
 		set_bit(ASYNCB_INITIALIZED, &port->port.flags);
+=======
+			tty_kref_put(tty);
+		}
+		tty_port_set_initialized(&port->port, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* Now that any required fake tty operations are completed restore
 	 * the tty port count */
@@ -184,8 +235,12 @@ static int usb_console_setup(struct console *co, char *options)
 
  fail:
 	tty_port_tty_set(&port->port, NULL);
+<<<<<<< HEAD
  free_tty:
 	kfree(tty);
+=======
+	tty_kref_put(tty);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  reset_open_count:
 	port->port.count = 0;
 	info->port = NULL;
@@ -211,10 +266,17 @@ static void usb_console_write(struct console *co,
 	if (count == 0)
 		return;
 
+<<<<<<< HEAD
 	pr_debug("%s - port %d, %d byte(s)\n", __func__, port->number, count);
 
 	if (!port->port.console) {
 		pr_debug("%s - port not opened\n", __func__);
+=======
+	dev_dbg(&port->dev, "%s - %d byte(s)\n", __func__, count);
+
+	if (!port->port.console) {
+		dev_dbg(&port->dev, "%s - port not opened\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -231,6 +293,7 @@ static void usb_console_write(struct console *co,
 		}
 		/* pass on to the driver specific version of this function if
 		   it is available */
+<<<<<<< HEAD
 		if (serial->type->write)
 			retval = serial->type->write(NULL, port, buf, i);
 		else
@@ -246,6 +309,16 @@ static void usb_console_write(struct console *co,
 				retval = usb_serial_generic_write(NULL,
 								port, &cr, 1);
 			pr_debug("%s - return value : %d\n", __func__, retval);
+=======
+		retval = serial->type->write(NULL, port, buf, i);
+		dev_dbg(&port->dev, "%s - write: %d\n", __func__, retval);
+		if (lf) {
+			/* append CR after LF */
+			unsigned char cr = 13;
+			retval = serial->type->write(NULL, port, &cr, 1);
+			dev_dbg(&port->dev, "%s - write cr: %d\n",
+							__func__, retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		buf += i;
 		count -= i;

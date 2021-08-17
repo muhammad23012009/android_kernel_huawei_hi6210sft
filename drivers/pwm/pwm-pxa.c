@@ -8,7 +8,11 @@
  * published by the Free Software Foundation.
  *
  * 2008-02-13	initial version
+<<<<<<< HEAD
  * 		eric miao <eric.miao@marvell.com>
+=======
+ *		eric miao <eric.miao@marvell.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -19,6 +23,10 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/pwm.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/div64.h>
 
@@ -124,6 +132,49 @@ static struct pwm_ops pxa_pwm_ops = {
 	.owner = THIS_MODULE,
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+/*
+ * Device tree users must create one device instance for each PWM channel.
+ * Hence we dispense with the HAS_SECONDARY_PWM and "tell" the original driver
+ * code that this is a single channel pxa25x-pwm.  Currently all devices are
+ * supported identically.
+ */
+static const struct of_device_id pwm_of_match[] = {
+	{ .compatible = "marvell,pxa250-pwm", .data = &pwm_id_table[0]},
+	{ .compatible = "marvell,pxa270-pwm", .data = &pwm_id_table[0]},
+	{ .compatible = "marvell,pxa168-pwm", .data = &pwm_id_table[0]},
+	{ .compatible = "marvell,pxa910-pwm", .data = &pwm_id_table[0]},
+	{ }
+};
+MODULE_DEVICE_TABLE(of, pwm_of_match);
+#else
+#define pwm_of_match NULL
+#endif
+
+static const struct platform_device_id *pxa_pwm_get_id_dt(struct device *dev)
+{
+	const struct of_device_id *id = of_match_device(pwm_of_match, dev);
+
+	return id ? id->data : NULL;
+}
+
+static struct pwm_device *
+pxa_pwm_of_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
+{
+	struct pwm_device *pwm;
+
+	pwm = pwm_request_from_chip(pc, 0, NULL);
+	if (IS_ERR(pwm))
+		return pwm;
+
+	pwm->args.period = args->args[0];
+
+	return pwm;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pwm_probe(struct platform_device *pdev)
 {
 	const struct platform_device_id *id = platform_get_device_id(pdev);
@@ -131,11 +182,23 @@ static int pwm_probe(struct platform_device *pdev)
 	struct resource *r;
 	int ret = 0;
 
+<<<<<<< HEAD
 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
 	if (pwm == NULL) {
 		dev_err(&pdev->dev, "failed to allocate memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (IS_ENABLED(CONFIG_OF) && id == NULL)
+		id = pxa_pwm_get_id_dt(&pdev->dev);
+
+	if (id == NULL)
+		return -EINVAL;
+
+	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+	if (pwm == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pwm->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(pwm->clk))
@@ -146,6 +209,14 @@ static int pwm_probe(struct platform_device *pdev)
 	pwm->chip.base = -1;
 	pwm->chip.npwm = (id->driver_data & HAS_SECONDARY_PWM) ? 2 : 1;
 
+<<<<<<< HEAD
+=======
+	if (IS_ENABLED(CONFIG_OF)) {
+		pwm->chip.of_xlate = pxa_pwm_of_xlate;
+		pwm->chip.of_pwm_n_cells = 1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	pwm->mmio_base = devm_ioremap_resource(&pdev->dev, r);
 	if (IS_ERR(pwm->mmio_base))
@@ -175,13 +246,18 @@ static int pwm_remove(struct platform_device *pdev)
 static struct platform_driver pwm_driver = {
 	.driver		= {
 		.name	= "pxa25x-pwm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = pwm_of_match,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= pwm_probe,
 	.remove		= pwm_remove,
 	.id_table	= pwm_id_table,
 };
 
+<<<<<<< HEAD
 static int __init pwm_init(void)
 {
 	return platform_driver_register(&pwm_driver);
@@ -193,5 +269,8 @@ static void __exit pwm_exit(void)
 	platform_driver_unregister(&pwm_driver);
 }
 module_exit(pwm_exit);
+=======
+module_platform_driver(pwm_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL v2");

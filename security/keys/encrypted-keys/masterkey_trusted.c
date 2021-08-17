@@ -29,7 +29,11 @@
  * data, trusted key type data is not visible decrypted from userspace.
  */
 struct key *request_trusted_key(const char *trusted_desc,
+<<<<<<< HEAD
 				u8 **master_key, size_t *master_keylen)
+=======
+				const u8 **master_key, size_t *master_keylen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct trusted_key_payload *tpayload;
 	struct key *tkey;
@@ -39,7 +43,11 @@ struct key *request_trusted_key(const char *trusted_desc,
 		goto error;
 
 	down_read(&tkey->sem);
+<<<<<<< HEAD
 	tpayload = tkey->payload.data;
+=======
+	tpayload = tkey->payload.data[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*master_key = tpayload->key;
 	*master_keylen = tpayload->key_len;
 error:

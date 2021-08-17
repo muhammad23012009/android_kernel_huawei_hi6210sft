@@ -8,7 +8,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/of.h>
 #include <linux/i2c.h>
@@ -395,12 +398,20 @@ static struct mms114_platform_data *mms114_parse_dt(struct device *dev)
 	if (of_property_read_u32(np, "x-size", &pdata->x_size)) {
 		dev_err(dev, "failed to get x-size property\n");
 		return NULL;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (of_property_read_u32(np, "y-size", &pdata->y_size)) {
 		dev_err(dev, "failed to get y-size property\n");
 		return NULL;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	of_property_read_u32(np, "contact-threshold",
 				&pdata->contact_threshold);
@@ -457,7 +468,11 @@ static int mms114_probe(struct i2c_client *client,
 	data->input_dev = input_dev;
 	data->pdata = pdata;
 
+<<<<<<< HEAD
 	input_dev->name = "MELPAS MMS114 Touchscreen";
+=======
+	input_dev->name = "MELFAS MMS114 Touchscreen";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_dev->id.bustype = BUS_I2C;
 	input_dev->dev.parent = &client->dev;
 	input_dev->open = mms114_input_open;
@@ -516,8 +531,12 @@ static int mms114_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int mms114_suspend(struct device *dev)
+=======
+static int __maybe_unused mms114_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct mms114_data *data = i2c_get_clientdata(client);
@@ -541,7 +560,11 @@ static int mms114_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mms114_resume(struct device *dev)
+=======
+static int __maybe_unused mms114_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct mms114_data *data = i2c_get_clientdata(client);
@@ -560,7 +583,10 @@ static int mms114_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(mms114_pm_ops, mms114_suspend, mms114_resume);
 
@@ -571,16 +597,27 @@ static const struct i2c_device_id mms114_id[] = {
 MODULE_DEVICE_TABLE(i2c, mms114_id);
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id mms114_dt_match[] = {
 	{ .compatible = "melfas,mms114" },
 	{ }
 };
+=======
+static const struct of_device_id mms114_dt_match[] = {
+	{ .compatible = "melfas,mms114" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, mms114_dt_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct i2c_driver mms114_driver = {
 	.driver = {
 		.name	= "mms114",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &mms114_pm_ops,
 		.of_match_table = of_match_ptr(mms114_dt_match),
 	},

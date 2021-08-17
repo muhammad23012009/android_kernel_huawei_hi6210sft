@@ -558,7 +558,11 @@ SYM53C500_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 
 	DEB(printk("cmd=%02x, cmd_len=%02x, target=%02x, lun=%02x, bufflen=%d\n", 
 	    SCpnt->cmnd[0], SCpnt->cmd_len, SCpnt->device->id, 
+<<<<<<< HEAD
 	    SCpnt->device->lun,  scsi_bufflen(SCpnt)));
+=======
+		   (u8)SCpnt->device->lun,  scsi_bufflen(SCpnt)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	VDEB(for (i = 0; i < SCpnt->cmd_len; i++)
 	    printk("cmd[%d]=%02x  ", i, SCpnt->cmnd[i]));
@@ -680,7 +684,10 @@ static struct scsi_host_template sym53c500_driver_template = {
      .can_queue			= 1,
      .this_id			= 7,
      .sg_tablesize		= 32,
+<<<<<<< HEAD
      .cmd_per_lun		= 1,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
      .use_clustering		= ENABLE_CLUSTERING,
      .shost_attrs		= SYM53C500_shost_attrs
 };

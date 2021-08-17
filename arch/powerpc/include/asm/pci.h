@@ -13,16 +13,26 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 
 #include <asm/machdep.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/machdep.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/prom.h>
 #include <asm/pci-bridge.h>
 
+<<<<<<< HEAD
 #include <asm-generic/pci-dma-compat.h>
 
 /* Return values for ppc_md.pci_probe_mode function */
+=======
+/* Return values for pci_controller_ops.probe_mode function */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PCI_PROBE_NONE		-1	/* Don't look at this bus at all */
 #define PCI_PROBE_NORMAL	0	/* Do normal PCI probing */
 #define PCI_PROBE_DEVTREE	1	/* Instantiate from device tree */
@@ -46,11 +56,14 @@ struct pci_dev;
 #define pcibios_assign_all_busses() \
 	(pci_has_flag(PCI_REASSIGN_ALL_BUS))
 
+<<<<<<< HEAD
 static inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HAVE_ARCH_PCI_GET_LEGACY_IDE_IRQ
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {
@@ -76,6 +89,7 @@ extern struct dma_map_ops *get_pci_dma_ops(void);
  */
 #define PCI_DISABLE_MWI
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 					enum pci_dma_burst_strategy *strat,
@@ -106,6 +120,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 	*strategy_parameter = ~0UL;
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_PPC64 */
 
 extern int pci_domain_nr(struct pci_bus *bus);
@@ -113,11 +129,14 @@ extern int pci_domain_nr(struct pci_bus *bus);
 /* Decide whether to display the domain number in /proc */
 extern int pci_proc_domain(struct pci_bus *bus);
 
+<<<<<<< HEAD
 /* MSI arch hooks */
 #define arch_setup_msi_irqs arch_setup_msi_irqs
 #define arch_teardown_msi_irqs arch_teardown_msi_irqs
 #define arch_msi_check_device arch_msi_check_device
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct vm_area_struct;
 /* Map a range of PCI memory or I/O space for a device into user space */
 int pci_mmap_page_range(struct pci_dev *pdev, struct vm_area_struct *vma,
@@ -178,9 +197,12 @@ extern pgprot_t	pci_phys_mem_access_prot(struct file *file,
 					 pgprot_t prot);
 
 #define HAVE_ARCH_PCI_RESOURCE_TO_USER
+<<<<<<< HEAD
 extern void pci_resource_to_user(const struct pci_dev *dev, int bar,
 				 const struct resource *rsrc,
 				 resource_size_t *start, resource_size_t *end);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern resource_size_t pcibios_io_space_offset(struct pci_controller *hose);
 extern void pcibios_setup_bus_devices(struct pci_bus *bus);
@@ -189,4 +211,11 @@ extern void pcibios_setup_phb_io_space(struct pci_controller *hose);
 extern void pcibios_scan_phb(struct pci_controller *hose);
 
 #endif	/* __KERNEL__ */
+<<<<<<< HEAD
+=======
+
+extern struct pci_dev *pnv_pci_get_gpu_dev(struct pci_dev *npdev);
+extern struct pci_dev *pnv_pci_get_npu_dev(struct pci_dev *gpdev, int index);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_POWERPC_PCI_H */

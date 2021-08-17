@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +50,10 @@
 #include "acnamesp.h"
 #include "acdispat.h"
 #include "actables.h"
+<<<<<<< HEAD
+=======
+#include "acinterp.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsload")
@@ -78,6 +86,7 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 
 	ACPI_FUNCTION_TRACE(ns_load_table);
 
+<<<<<<< HEAD
 	/*
 	 * Parse the table and load the namespace with all named
 	 * objects found within. Control methods are NOT parsed
@@ -92,6 +101,8 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 		return_ACPI_STATUS(status);
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* If table already loaded into namespace, just return */
 
 	if (acpi_tb_is_table_loaded(table_index)) {
@@ -107,16 +118,48 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 		goto unlock;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Parse the table and load the namespace with all named
+	 * objects found within. Control methods are NOT parsed
+	 * at this time. In fact, the control methods cannot be
+	 * parsed until the entire namespace is loaded, because
+	 * if a control method makes a forward reference (call)
+	 * to another control method, we can't continue parsing
+	 * because we don't know how many arguments to parse next!
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	status = acpi_ns_parse_table(table_index, node);
 	if (ACPI_SUCCESS(status)) {
 		acpi_tb_set_table_loaded_flag(table_index, TRUE);
 	} else {
+<<<<<<< HEAD
 		(void)acpi_tb_release_owner_id(table_index);
 	}
 
       unlock:
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 
+=======
+		/*
+		 * On error, delete any namespace objects created by this table.
+		 * We cannot initialize these objects, so delete them. There are
+		 * a couple of expecially bad cases:
+		 * AE_ALREADY_EXISTS - namespace collision.
+		 * AE_NOT_FOUND - the target of a Scope operator does not
+		 * exist. This target of Scope must already exist in the
+		 * namespace, as per the ACPI specification.
+		 */
+		acpi_ns_delete_namespace_by_owner(acpi_gbl_root_table_list.
+						  tables[table_index].owner_id);
+
+		acpi_tb_release_owner_id(table_index);
+		return_ACPI_STATUS(status);
+	}
+
+unlock:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -128,12 +171,41 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 	 * parse trees.
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+<<<<<<< HEAD
 			  "**** Begin Table Method Parsing and Object Initialization\n"));
 
 	status = acpi_ds_initialize_objects(table_index, node);
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			  "**** Completed Table Method Parsing and Object Initialization\n"));
+=======
+			  "**** Begin Table Object Initialization\n"));
+
+	acpi_ex_enter_interpreter();
+	status = acpi_ds_initialize_objects(table_index, node);
+	acpi_ex_exit_interpreter();
+
+	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+			  "**** Completed Table Object Initialization\n"));
+
+	/*
+	 * Execute any module-level code that was detected during the table load
+	 * phase. Although illegal since ACPI 2.0, there are many machines that
+	 * contain this type of code. Each block of detected executable AML code
+	 * outside of any control method is wrapped with a temporary control
+	 * method object and placed on a global list. The methods on this list
+	 * are executed below.
+	 *
+	 * This case executes the module-level code for each table immediately
+	 * after the table has been loaded. This provides compatibility with
+	 * other ACPI implementations. Optionally, the execution can be deferred
+	 * until later, see acpi_initialize_objects.
+	 */
+	if (!acpi_gbl_parse_table_as_term_list
+	    && !acpi_gbl_group_module_level_code) {
+		acpi_ns_exec_module_code_list();
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return_ACPI_STATUS(status);
 }
@@ -307,7 +379,10 @@ acpi_status acpi_ns_unload_namespace(acpi_handle handle)
 	/* This function does the real work */
 
 	status = acpi_ns_delete_subtree(handle);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(status);
 }
 #endif

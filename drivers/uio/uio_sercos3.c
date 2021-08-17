@@ -188,7 +188,10 @@ static void sercos3_pci_remove(struct pci_dev *dev)
 	uio_unregister_device(info);
 	pci_release_regions(dev);
 	pci_disable_device(dev);
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < 5; i++) {
 		if (info->mem[i].internal_addr)
 			iounmap(info->mem[i].internal_addr);
@@ -226,6 +229,7 @@ static struct pci_driver sercos3_pci_driver = {
 	.remove = sercos3_pci_remove,
 };
 
+<<<<<<< HEAD
 static int __init sercos3_init_module(void)
 {
 	return pci_register_driver(&sercos3_pci_driver);
@@ -239,6 +243,9 @@ static void __exit sercos3_exit_module(void)
 module_init(sercos3_init_module);
 module_exit(sercos3_exit_module);
 
+=======
+module_pci_driver(sercos3_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("UIO driver for the Automata Sercos III PCI card");
 MODULE_AUTHOR("John Ogness <john.ogness@linutronix.de>");
 MODULE_LICENSE("GPL v2");

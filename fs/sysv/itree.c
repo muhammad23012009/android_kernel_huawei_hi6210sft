@@ -178,7 +178,11 @@ static inline int splice_branch(struct inode *inode,
 	*where->p = where->key;
 	write_unlock(&pointers_lock);
 
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* had we spliced it onto indirect block? */
 	if (where->bh)
@@ -418,7 +422,11 @@ do_indirects:
 		}
 		n++;
 	}
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_SYNC(inode))
 		sysv_sync_inode (inode);
 	else
@@ -443,7 +451,11 @@ static unsigned sysv_nblocks(struct super_block *s, loff_t size)
 int sysv_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 {
 	struct super_block *s = dentry->d_sb;
+<<<<<<< HEAD
 	generic_fillattr(dentry->d_inode, stat);
+=======
+	generic_fillattr(d_inode(dentry), stat);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stat->blocks = (s->s_blocksize / 512) * sysv_nblocks(s, stat->size);
 	stat->blksize = s->s_blocksize;
 	return 0;
@@ -469,7 +481,11 @@ static void sysv_write_failed(struct address_space *mapping, loff_t to)
 	struct inode *inode = mapping->host;
 
 	if (to > inode->i_size) {
+<<<<<<< HEAD
 		truncate_pagecache(inode, to, inode->i_size);
+=======
+		truncate_pagecache(inode, inode->i_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sysv_truncate(inode);
 	}
 }

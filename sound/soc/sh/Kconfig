@@ -34,6 +34,17 @@ config SND_SOC_SH4_SIU
 	select SH_DMAE
 	select FW_LOADER
 
+<<<<<<< HEAD
+=======
+config SND_SOC_RCAR
+	tristate "R-Car series SRU/SCU/SSIU/SSI support"
+	depends on COMMON_CLK
+	select SND_SIMPLE_CARD
+	select REGMAP_MMIO
+	help
+	  This option enables R-Car SRU/SCU/SSIU/SSI sound support
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ##
 ## Boards
 ##
@@ -49,7 +60,11 @@ config SND_SH7760_AC97
 
 config SND_SIU_MIGOR
 	tristate "SIU sound support on Migo-R"
+<<<<<<< HEAD
 	depends on SH_MIGOR
+=======
+	depends on SH_MIGOR && I2C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select SND_SOC_SH4_SIU
 	select SND_SOC_WM8978
 	help

@@ -11,7 +11,11 @@
  *     Define the pci_ops for TX3927.
  *
  * Much of the code is derived from the original DDB5074 port by
+<<<<<<< HEAD
  * Geert Uytterhoeven <geert@sonycom.com>
+=======
+ * Geert Uytterhoeven <geert@linux-m68k.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the

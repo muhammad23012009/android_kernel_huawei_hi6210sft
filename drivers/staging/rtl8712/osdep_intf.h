@@ -36,7 +36,11 @@ struct intf_priv {
 	/* when in USB, IO is through interrupt in/out endpoints */
 	struct usb_device *udev;
 	struct urb *piorw_urb;
+<<<<<<< HEAD
 	struct semaphore io_retevt;
+=======
+	struct completion io_retevt_comp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int r871x_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);

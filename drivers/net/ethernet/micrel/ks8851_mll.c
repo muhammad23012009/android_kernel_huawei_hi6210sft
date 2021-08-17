@@ -35,6 +35,12 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/ks8851_mll.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/of_net.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define	DRV_NAME	"ks8851_mll"
 
@@ -472,6 +478,7 @@ static int msg_enable;
  */
 
 /**
+<<<<<<< HEAD
  * ks_rdreg8 - read 8 bit register from device
  * @ks	  : The chip information
  * @offset: The register address
@@ -487,6 +494,49 @@ static u8 ks_rdreg8(struct ks_net *ks, int offset)
 	iowrite16(ks->cmd_reg_cache, ks->hw_addr_cmd);
 	data  = ioread16(ks->hw_addr);
 	return (u8)(data >> shift_data);
+=======
+ * ks_check_endian - Check whether endianness of the bus is correct
+ * @ks	  : The chip information
+ *
+ * The KS8851-16MLL EESK pin allows selecting the endianness of the 16bit
+ * bus. To maintain optimum performance, the bus endianness should be set
+ * such that it matches the endianness of the CPU.
+ */
+
+static int ks_check_endian(struct ks_net *ks)
+{
+	u16 cider;
+
+	/*
+	 * Read CIDER register first, however read it the "wrong" way around.
+	 * If the endian strap on the KS8851-16MLL in incorrect and the chip
+	 * is operating in different endianness than the CPU, then the meaning
+	 * of BE[3:0] byte-enable bits is also swapped such that:
+	 *    BE[3,2,1,0] becomes BE[1,0,3,2]
+	 *
+	 * Luckily for us, the byte-enable bits are the top four MSbits of
+	 * the address register and the CIDER register is at offset 0xc0.
+	 * Hence, by reading address 0xc0c0, which is not impacted by endian
+	 * swapping, we assert either BE[3:2] or BE[1:0] while reading the
+	 * CIDER register.
+	 *
+	 * If the bus configuration is correct, reading 0xc0c0 asserts
+	 * BE[3:2] and this read returns 0x0000, because to read register
+	 * with bottom two LSbits of address set to 0, BE[1:0] must be
+	 * asserted.
+	 *
+	 * If the bus configuration is NOT correct, reading 0xc0c0 asserts
+	 * BE[1:0] and this read returns non-zero 0x8872 value.
+	 */
+	iowrite16(BE3 | BE2 | KS_CIDER, ks->hw_addr_cmd);
+	cider = ioread16(ks->hw_addr);
+	if (!cider)
+		return 0;
+
+	netdev_err(ks->netdev, "incorrect EESK endian strap setting\n");
+
+	return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -505,6 +555,7 @@ static u16 ks_rdreg16(struct ks_net *ks, int offset)
 }
 
 /**
+<<<<<<< HEAD
  * ks_wrreg8 - write 8bit register value to chip
  * @ks: The chip information
  * @offset: The register address
@@ -521,6 +572,8 @@ static void ks_wrreg8(struct ks_net *ks, int offset, u8 value)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ks_wrreg16 - write 16bit register value to chip
  * @ks: The chip information
  * @offset: The register address
@@ -639,8 +692,12 @@ static void ks_read_config(struct ks_net *ks)
 	u16 reg_data = 0;
 
 	/* Regardless of bus width, 8 bit read should always work.*/
+<<<<<<< HEAD
 	reg_data = ks_rdreg8(ks, KS_CCR) & 0x00FF;
 	reg_data |= ks_rdreg8(ks, KS_CCR+1) << 8;
+=======
+	reg_data = ks_rdreg16(ks, KS_CCR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* addr/data bus are multiplexed */
 	ks->sharedbus = (reg_data & CCR_SHARED) == CCR_SHARED;
@@ -685,7 +742,11 @@ static void ks_soft_reset(struct ks_net *ks, unsigned op)
 }
 
 
+<<<<<<< HEAD
 void ks_enable_qmu(struct ks_net *ks)
+=======
+static void ks_enable_qmu(struct ks_net *ks)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u16 w;
 
@@ -744,7 +805,11 @@ static inline void ks_read_qmu(struct ks_net *ks, u16 *buf, u32 len)
 
 	/* 1. set sudo DMA mode */
 	ks_wrreg16(ks, KS_RXFDPR, RXFDPR_RXFPAI);
+<<<<<<< HEAD
 	ks_wrreg8(ks, KS_RXQCR, (ks->rc_rxqcr | RXQCR_SDA) & 0xff);
+=======
+	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr | RXQCR_SDA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* 2. read prepend data */
 	/**
@@ -761,7 +826,11 @@ static inline void ks_read_qmu(struct ks_net *ks, u16 *buf, u32 len)
 	ks_inblk(ks, buf, ALIGN(len, 4));
 
 	/* 4. reset sudo DMA Mode */
+<<<<<<< HEAD
 	ks_wrreg8(ks, KS_RXQCR, ks->rc_rxqcr);
+=======
+	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -863,14 +932,25 @@ static irqreturn_t ks_irq(int irq, void *pw)
 {
 	struct net_device *netdev = pw;
 	struct ks_net *ks = netdev_priv(netdev);
+<<<<<<< HEAD
 	u16 status;
 
+=======
+	unsigned long flags;
+	u16 status;
+
+	spin_lock_irqsave(&ks->statelock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*this should be the first in IRQ handler */
 	ks_save_cmd_reg(ks);
 
 	status = ks_rdreg16(ks, KS_ISR);
 	if (unlikely(!status)) {
 		ks_restore_cmd_reg(ks);
+<<<<<<< HEAD
+=======
+		spin_unlock_irqrestore(&ks->statelock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return IRQ_NONE;
 	}
 
@@ -896,6 +976,10 @@ static irqreturn_t ks_irq(int irq, void *pw)
 		ks->netdev->stats.rx_over_errors++;
 	/* this should be the last in IRQ handler*/
 	ks_restore_cmd_reg(ks);
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&ks->statelock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return IRQ_HANDLED;
 }
 
@@ -912,7 +996,11 @@ static int ks_net_open(struct net_device *netdev)
 	struct ks_net *ks = netdev_priv(netdev);
 	int err;
 
+<<<<<<< HEAD
 #define	KS_INT_FLAGS	(IRQF_DISABLED|IRQF_TRIGGER_LOW)
+=======
+#define	KS_INT_FLAGS	IRQF_TRIGGER_LOW
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* lock the card, even if we may not actually do anything
 	 * else at the moment.
 	 */
@@ -965,6 +1053,10 @@ static int ks_net_stop(struct net_device *netdev)
 
 	/* shutdown RX/TX QMU */
 	ks_disable_qmu(ks);
+<<<<<<< HEAD
+=======
+	ks_disable_int(ks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set powermode to soft power down to save power */
 	ks_set_powermode(ks, PMECR_PM_SOFTDOWN);
@@ -994,13 +1086,21 @@ static void ks_write_qmu(struct ks_net *ks, u8 *pdata, u16 len)
 	ks->txh.txw[1] = cpu_to_le16(len);
 
 	/* 1. set sudo-DMA mode */
+<<<<<<< HEAD
 	ks_wrreg8(ks, KS_RXQCR, (ks->rc_rxqcr | RXQCR_SDA) & 0xff);
+=======
+	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr | RXQCR_SDA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 2. write status/lenth info */
 	ks_outblk(ks, ks->txh.txw, 4);
 	/* 3. write pkt data */
 	ks_outblk(ks, (u16 *)pdata, ALIGN(len, 4));
 	/* 4. reset sudo-DMA mode */
+<<<<<<< HEAD
 	ks_wrreg8(ks, KS_RXQCR, ks->rc_rxqcr);
+=======
+	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 5. Enqueue Tx(move the pkt from TX buffer into TXQ) */
 	ks_wrreg16(ks, KS_TXQCR, TXQCR_METFE);
 	/* 6. wait until TXQCR_METFE is auto-cleared */
@@ -1017,6 +1117,7 @@ static void ks_write_qmu(struct ks_net *ks, u8 *pdata, u16 len)
  * spin_lock_irqsave is required because tx and rx should be mutual exclusive.
  * So while tx is in-progress, prevent IRQ interrupt from happenning.
  */
+<<<<<<< HEAD
 static int ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	int retv = NETDEV_TX_OK;
@@ -1025,6 +1126,15 @@ static int ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	disable_irq(netdev->irq);
 	ks_disable_int(ks);
 	spin_lock(&ks->statelock);
+=======
+static netdev_tx_t ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+{
+	netdev_tx_t retv = NETDEV_TX_OK;
+	struct ks_net *ks = netdev_priv(netdev);
+	unsigned long flags;
+
+	spin_lock_irqsave(&ks->statelock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Extra space are required:
 	*  4 byte for alignment, 4 for status/length, 4 for CRC
@@ -1038,9 +1148,13 @@ static int ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		dev_kfree_skb(skb);
 	} else
 		retv = NETDEV_TX_BUSY;
+<<<<<<< HEAD
 	spin_unlock(&ks->statelock);
 	ks_enable_int(ks);
 	enable_irq(netdev->irq);
+=======
+	spin_unlock_irqrestore(&ks->statelock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retv;
 }
 
@@ -1245,7 +1359,11 @@ static void ks_set_mac(struct ks_net *ks, u8 *data)
 	w = ((u & 0xFF) << 8) | ((u >> 8) & 0xFF);
 	ks_wrreg16(ks, KS_MARL, w);
 
+<<<<<<< HEAD
 	memcpy(ks->mac_addr, data, 6);
+=======
+	memcpy(ks->mac_addr, data, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ks->enabled)
 		ks_start_rx(ks);
@@ -1516,7 +1634,12 @@ static int ks_hw_init(struct ks_net *ks)
 	ks->all_mcast = 0;
 	ks->mcast_lst_size = 0;
 
+<<<<<<< HEAD
 	ks->frame_head_info = kmalloc(MHEADER_SIZE, GFP_KERNEL);
+=======
+	ks->frame_head_info = devm_kmalloc(&ks->pdev->dev, MHEADER_SIZE,
+					   GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ks->frame_head_info)
 		return false;
 
@@ -1524,14 +1647,29 @@ static int ks_hw_init(struct ks_net *ks)
 	return true;
 }
 
+<<<<<<< HEAD
 
 static int ks8851_probe(struct platform_device *pdev)
 {
 	int err = -ENOMEM;
+=======
+#if defined(CONFIG_OF)
+static const struct of_device_id ks8851_ml_dt_ids[] = {
+	{ .compatible = "micrel,ks8851-mll" },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, ks8851_ml_dt_ids);
+#endif
+
+static int ks8851_probe(struct platform_device *pdev)
+{
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *io_d, *io_c;
 	struct net_device *netdev;
 	struct ks_net *ks;
 	u16 id, data;
+<<<<<<< HEAD
 	struct ks8851_mll_platform_data *pdata;
 
 	io_d = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -1546,11 +1684,19 @@ static int ks8851_probe(struct platform_device *pdev)
 	netdev = alloc_etherdev(sizeof(struct ks_net));
 	if (!netdev)
 		goto err_alloc_etherdev;
+=======
+	const char *mac;
+
+	netdev = alloc_etherdev(sizeof(struct ks_net));
+	if (!netdev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	SET_NETDEV_DEV(netdev, &pdev->dev);
 
 	ks = netdev_priv(netdev);
 	ks->netdev = netdev;
+<<<<<<< HEAD
 	ks->hw_addr = ioremap(io_d->start, resource_size(io_d));
 
 	if (!ks->hw_addr)
@@ -1559,12 +1705,36 @@ static int ks8851_probe(struct platform_device *pdev)
 	ks->hw_addr_cmd = ioremap(io_c->start, resource_size(io_c));
 	if (!ks->hw_addr_cmd)
 		goto err_ioremap1;
+=======
+
+	io_d = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	ks->hw_addr = devm_ioremap_resource(&pdev->dev, io_d);
+	if (IS_ERR(ks->hw_addr)) {
+		err = PTR_ERR(ks->hw_addr);
+		goto err_free;
+	}
+
+	io_c = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	ks->hw_addr_cmd = devm_ioremap_resource(&pdev->dev, io_c);
+	if (IS_ERR(ks->hw_addr_cmd)) {
+		err = PTR_ERR(ks->hw_addr_cmd);
+		goto err_free;
+	}
+
+	err = ks_check_endian(ks);
+	if (err)
+		goto err_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	netdev->irq = platform_get_irq(pdev, 0);
 
 	if ((int)netdev->irq < 0) {
 		err = netdev->irq;
+<<<<<<< HEAD
 		goto err_get_irq;
+=======
+		goto err_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ks->pdev = pdev;
@@ -1594,18 +1764,30 @@ static int ks8851_probe(struct platform_device *pdev)
 	if ((ks_rdreg16(ks, KS_CIDER) & ~CIDER_REV_MASK) != CIDER_ID) {
 		netdev_err(netdev, "failed to read device ID\n");
 		err = -ENODEV;
+<<<<<<< HEAD
 		goto err_register;
+=======
+		goto err_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (ks_read_selftest(ks)) {
 		netdev_err(netdev, "failed to read device ID\n");
 		err = -ENODEV;
+<<<<<<< HEAD
 		goto err_register;
+=======
+		goto err_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	err = register_netdev(netdev);
 	if (err)
+<<<<<<< HEAD
 		goto err_register;
+=======
+		goto err_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, netdev);
 
@@ -1619,6 +1801,7 @@ static int ks8851_probe(struct platform_device *pdev)
 	ks_wrreg16(ks, KS_OBCR, data | OBCR_ODS_16MA);
 
 	/* overwriting the default MAC address */
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
 	if (!pdata) {
 		netdev_err(netdev, "No platform data\n");
@@ -1626,6 +1809,23 @@ static int ks8851_probe(struct platform_device *pdev)
 		goto err_pdata;
 	}
 	memcpy(ks->mac_addr, pdata->mac_addr, 6);
+=======
+	if (pdev->dev.of_node) {
+		mac = of_get_mac_address(pdev->dev.of_node);
+		if (mac)
+			memcpy(ks->mac_addr, mac, ETH_ALEN);
+	} else {
+		struct ks8851_mll_platform_data *pdata;
+
+		pdata = dev_get_platdata(&pdev->dev);
+		if (!pdata) {
+			netdev_err(netdev, "No platform data\n");
+			err = -ENODEV;
+			goto err_pdata;
+		}
+		memcpy(ks->mac_addr, pdata->mac_addr, ETH_ALEN);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!is_valid_ether_addr(ks->mac_addr)) {
 		/* Use random MAC address if none passed */
 		eth_random_addr(ks->mac_addr);
@@ -1633,7 +1833,11 @@ static int ks8851_probe(struct platform_device *pdev)
 	}
 	netdev_info(netdev, "Mac address is: %pM\n", ks->mac_addr);
 
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, ks->mac_addr, 6);
+=======
+	memcpy(netdev->dev_addr, ks->mac_addr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ks_set_mac(ks, netdev->dev_addr);
 
@@ -1645,6 +1849,7 @@ static int ks8851_probe(struct platform_device *pdev)
 
 err_pdata:
 	unregister_netdev(netdev);
+<<<<<<< HEAD
 err_register:
 err_get_irq:
 	iounmap(ks->hw_addr_cmd);
@@ -1657,12 +1862,17 @@ err_alloc_etherdev:
 err_mem_region1:
 	release_mem_region(io_d->start, resource_size(io_d));
 err_mem_region:
+=======
+err_free:
+	free_netdev(netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
 static int ks8851_remove(struct platform_device *pdev)
 {
 	struct net_device *netdev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct ks_net *ks = netdev_priv(netdev);
 	struct resource *iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
@@ -1672,6 +1882,11 @@ static int ks8851_remove(struct platform_device *pdev)
 	free_netdev(netdev);
 	release_mem_region(iomem->start, resource_size(iomem));
 	platform_set_drvdata(pdev, NULL);
+=======
+
+	unregister_netdev(netdev);
+	free_netdev(netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 }
@@ -1679,7 +1894,11 @@ static int ks8851_remove(struct platform_device *pdev)
 static struct platform_driver ks8851_platform_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table	= of_match_ptr(ks8851_ml_dt_ids),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = ks8851_probe,
 	.remove = ks8851_remove,

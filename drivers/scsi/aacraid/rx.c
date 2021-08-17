@@ -400,6 +400,7 @@ int aac_rx_deliver_producer(struct fib * fib)
 {
 	struct aac_dev *dev = fib->dev;
 	struct aac_queue *q = &dev->queues->queue[AdapNormCmdQueue];
+<<<<<<< HEAD
 	unsigned long qflags;
 	u32 Index;
 	unsigned long nointr = 0;
@@ -410,6 +411,15 @@ int aac_rx_deliver_producer(struct fib * fib)
 	q->numpending++;
 	*(q->headers.producer) = cpu_to_le32(Index + 1);
 	spin_unlock_irqrestore(q->lock, qflags);
+=======
+	u32 Index;
+	unsigned long nointr = 0;
+
+	aac_queue_get( dev, &Index, AdapNormCmdQueue, fib->hw_fib_va, 1, fib, &nointr);
+
+	atomic_inc(&q->numpending);
+	*(q->headers.producer) = cpu_to_le32(Index + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(nointr & aac_config.irq_mod))
 		aac_adapter_notify(dev, AdapNormCmdQueue);
 
@@ -426,15 +436,22 @@ static int aac_rx_deliver_message(struct fib * fib)
 {
 	struct aac_dev *dev = fib->dev;
 	struct aac_queue *q = &dev->queues->queue[AdapNormCmdQueue];
+<<<<<<< HEAD
 	unsigned long qflags;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 Index;
 	u64 addr;
 	volatile void __iomem *device;
 
 	unsigned long count = 10000000L; /* 50 seconds */
+<<<<<<< HEAD
 	spin_lock_irqsave(q->lock, qflags);
 	q->numpending++;
 	spin_unlock_irqrestore(q->lock, qflags);
+=======
+	atomic_inc(&q->numpending);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for(;;) {
 		Index = rx_readl(dev, MUnit.InboundQueue);
 		if (unlikely(Index == 0xFFFFFFFFL))
@@ -442,9 +459,13 @@ static int aac_rx_deliver_message(struct fib * fib)
 		if (likely(Index != 0xFFFFFFFFL))
 			break;
 		if (--count == 0) {
+<<<<<<< HEAD
 			spin_lock_irqsave(q->lock, qflags);
 			q->numpending--;
 			spin_unlock_irqrestore(q->lock, qflags);
+=======
+			atomic_dec(&q->numpending);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ETIMEDOUT;
 		}
 		udelay(5);
@@ -480,7 +501,11 @@ static int aac_rx_ioremap(struct aac_dev * dev, u32 size)
 
 static int aac_rx_restart_adapter(struct aac_dev *dev, int bled)
 {
+<<<<<<< HEAD
 	u32 var;
+=======
+	u32 var = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(dev->supplement_adapter_info.SupportedOptions2 &
 	  AAC_OPTION_MU_RESET) || (bled >= 0) || (bled == -2)) {
@@ -500,13 +525,23 @@ static int aac_rx_restart_adapter(struct aac_dev *dev, int bled)
 		if (bled && (bled != -ETIMEDOUT))
 			return -EINVAL;
 	}
+<<<<<<< HEAD
 	if (bled || (var == 0x3803000F)) { /* USE_OTHER_METHOD */
+=======
+	if (bled && (var == 0x3803000F)) { /* USE_OTHER_METHOD */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rx_writel(dev, MUnit.reserved2, 3);
 		msleep(5000); /* Delay 5 seconds */
 		var = 0x00000001;
 	}
+<<<<<<< HEAD
 	if (var != 0x00000001)
 		return -EINVAL;
+=======
+	if (bled && (var != 0x00000001))
+		return -EINVAL;
+	ssleep(5);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rx_readl(dev, MUnit.OMRx[0]) & KERNEL_PANIC)
 		return -ENODEV;
 	if (startup_timeout < 300)
@@ -630,6 +665,10 @@ int _aac_rx_init(struct aac_dev *dev)
 	dev->a_ops.adapter_sync_cmd = rx_sync_cmd;
 	dev->a_ops.adapter_check_health = aac_rx_check_health;
 	dev->a_ops.adapter_restart = aac_rx_restart_adapter;
+<<<<<<< HEAD
+=======
+	dev->a_ops.adapter_start = aac_rx_start_adapter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *	First clear out all interrupts.  Then enable the one's that we
@@ -646,7 +685,11 @@ int _aac_rx_init(struct aac_dev *dev)
 	dev->sync_mode = 0;	/* sync. mode not supported */
 	dev->msi = aac_msi && !pci_enable_msi(dev->pdev);
 	if (request_irq(dev->pdev->irq, dev->a_ops.adapter_intr,
+<<<<<<< HEAD
 			IRQF_SHARED|IRQF_DISABLED, "aacraid", dev) < 0) {
+=======
+			IRQF_SHARED, "aacraid", dev) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (dev->msi)
 			pci_disable_msi(dev->pdev);
 		printk(KERN_ERR "%s%d: Interrupt unavailable.\n",

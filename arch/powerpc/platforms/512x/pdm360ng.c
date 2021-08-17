@@ -14,6 +14,11 @@
 
 #include <linux/kernel.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_fdt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 
 #include <asm/machdep.h>
@@ -111,17 +116,31 @@ void __init pdm360ng_init(void)
 
 static int __init pdm360ng_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(root, "ifm,pdm360ng");
+=======
+	if (!of_machine_is_compatible("ifm,pdm360ng"))
+		return 0;
+
+	mpc512x_init_early();
+
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(pdm360ng) {
 	.name			= "PDM360NG",
 	.probe			= pdm360ng_probe,
+<<<<<<< HEAD
 	.setup_arch		= mpc512x_setup_diu,
 	.init			= pdm360ng_init,
 	.init_early		= mpc512x_init_diu,
+=======
+	.setup_arch		= mpc512x_setup_arch,
+	.init			= pdm360ng_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_IRQ		= mpc512x_init_IRQ,
 	.get_irq		= ipic_get_irq,
 	.calibrate_decr		= generic_calibrate_decr,

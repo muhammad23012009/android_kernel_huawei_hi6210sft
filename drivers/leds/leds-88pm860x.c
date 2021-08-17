@@ -11,13 +11,19 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
 #include <linux/leds.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/88pm860x.h>
 #include <linux/module.h>
 
@@ -34,7 +40,10 @@
 struct pm860x_led {
 	struct led_classdev cdev;
 	struct i2c_client *i2c;
+<<<<<<< HEAD
 	struct work_struct work;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pm860x_chip *chip;
 	struct mutex lock;
 	char name[MFD_NAME_SIZE];
@@ -70,17 +79,31 @@ static int led_power_set(struct pm860x_chip *chip, int port, int on)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void pm860x_led_work(struct work_struct *work)
 {
 
 	struct pm860x_led *led;
+=======
+static int pm860x_led_set(struct led_classdev *cdev,
+			   enum led_brightness value)
+{
+	struct pm860x_led *led = container_of(cdev, struct pm860x_led, cdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pm860x_chip *chip;
 	unsigned char buf[3];
 	int ret;
 
+<<<<<<< HEAD
 	led = container_of(work, struct pm860x_led, work);
 	chip = led->chip;
 	mutex_lock(&led->lock);
+=======
+	chip = led->chip;
+	mutex_lock(&led->lock);
+	led->brightness = value >> 3;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((led->current_brightness == 0) && led->brightness) {
 		led_power_set(chip, led->port, 1);
 		if (led->iset) {
@@ -113,6 +136,7 @@ static void pm860x_led_work(struct work_struct *work)
 	dev_dbg(chip->dev, "Update LED. (reg:%d, brightness:%d)\n",
 		led->reg_control, led->brightness);
 	mutex_unlock(&led->lock);
+<<<<<<< HEAD
 }
 
 static void pm860x_led_set(struct led_classdev *cdev,
@@ -122,6 +146,10 @@ static void pm860x_led_set(struct led_classdev *cdev,
 
 	data->brightness = value >> 3;
 	schedule_work(&data->work);
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_OF
@@ -131,10 +159,16 @@ static int pm860x_led_dt_init(struct platform_device *pdev,
 	struct device_node *nproot, *np;
 	int iset = 0;
 
+<<<<<<< HEAD
 	nproot = of_node_get(pdev->dev.parent->of_node);
 	if (!nproot)
 		return -ENODEV;
 	nproot = of_find_node_by_name(nproot, "leds");
+=======
+	if (!pdev->dev.parent->of_node)
+		return -ENODEV;
+	nproot = of_get_child_by_name(pdev->dev.parent->of_node, "leds");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!nproot) {
 		dev_err(&pdev->dev, "failed to find leds node\n");
 		return -ENODEV;
@@ -144,6 +178,10 @@ static int pm860x_led_dt_init(struct platform_device *pdev,
 			of_property_read_u32(np, "marvell,88pm860x-iset",
 					     &iset);
 			data->iset = PM8606_LED_CURRENT(iset);
+<<<<<<< HEAD
+=======
+			of_node_put(np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
@@ -157,7 +195,11 @@ static int pm860x_led_dt_init(struct platform_device *pdev,
 static int pm860x_led_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	struct pm860x_led_pdata *pdata = pdev->dev.platform_data;
+=======
+	struct pm860x_led_pdata *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pm860x_led *data;
 	struct resource *res;
 	int ret = 0;
@@ -204,7 +246,10 @@ static int pm860x_led_probe(struct platform_device *pdev)
 		sprintf(data->name, "led1-blue");
 		break;
 	}
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, data);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->chip = chip;
 	data->i2c = (chip->id == CHIP_PM8606) ? chip->client : chip->companion;
 	data->port = pdev->id;
@@ -214,9 +259,14 @@ static int pm860x_led_probe(struct platform_device *pdev)
 
 	data->current_brightness = 0;
 	data->cdev.name = data->name;
+<<<<<<< HEAD
 	data->cdev.brightness_set = pm860x_led_set;
 	mutex_init(&data->lock);
 	INIT_WORK(&data->work, pm860x_led_work);
+=======
+	data->cdev.brightness_set_blocking = pm860x_led_set;
+	mutex_init(&data->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = led_classdev_register(chip->dev, &data->cdev);
 	if (ret < 0) {
@@ -224,6 +274,12 @@ static int pm860x_led_probe(struct platform_device *pdev)
 		return ret;
 	}
 	pm860x_led_set(&data->cdev, 0);
+<<<<<<< HEAD
+=======
+
+	platform_set_drvdata(pdev, data);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -239,7 +295,10 @@ static int pm860x_led_remove(struct platform_device *pdev)
 static struct platform_driver pm860x_led_driver = {
 	.driver	= {
 		.name	= "88pm860x-led",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe	= pm860x_led_probe,
 	.remove	= pm860x_led_remove,

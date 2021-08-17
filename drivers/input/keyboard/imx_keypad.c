@@ -5,15 +5,21 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * <<Power management needs to be implemented>>.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input/matrix_keypad.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -416,7 +422,11 @@ open_err:
 }
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static struct of_device_id imx_keypad_of_match[] = {
+=======
+static const struct of_device_id imx_keypad_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,imx21-kpp", },
 	{ /* sentinel */ }
 };
@@ -425,7 +435,12 @@ MODULE_DEVICE_TABLE(of, imx_keypad_of_match);
 
 static int imx_keypad_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	const struct matrix_keymap_data *keymap_data = pdev->dev.platform_data;
+=======
+	const struct matrix_keymap_data *keymap_data =
+			dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct imx_keypad *keypad;
 	struct input_dev *input_dev;
 	struct resource *res;
@@ -439,6 +454,7 @@ static int imx_keypad_probe(struct platform_device *pdev)
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		dev_err(&pdev->dev, "no irq defined in platform data\n");
+<<<<<<< HEAD
 		return -EINVAL;
 	}
 
@@ -446,6 +462,9 @@ static int imx_keypad_probe(struct platform_device *pdev)
 	if (res == NULL) {
 		dev_err(&pdev->dev, "no I/O memory defined in platform data\n");
 		return -EINVAL;
+=======
+		return irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	input_dev = devm_input_allocate_device(&pdev->dev);
@@ -454,8 +473,12 @@ static int imx_keypad_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	keypad = devm_kzalloc(&pdev->dev, sizeof(struct imx_keypad),
 			     GFP_KERNEL);
+=======
+	keypad = devm_kzalloc(&pdev->dev, sizeof(*keypad), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!keypad) {
 		dev_err(&pdev->dev, "not enough memory for driver data\n");
 		return -ENOMEM;
@@ -468,6 +491,10 @@ static int imx_keypad_probe(struct platform_device *pdev)
 	setup_timer(&keypad->check_matrix_timer,
 		    imx_keypad_check_for_events, (unsigned long) keypad);
 
+<<<<<<< HEAD
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	keypad->mmio_base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(keypad->mmio_base))
 		return PTR_ERR(keypad->mmio_base);
@@ -512,7 +539,13 @@ static int imx_keypad_probe(struct platform_device *pdev)
 	input_set_drvdata(input_dev, keypad);
 
 	/* Ensure that the keypad will stay dormant until opened */
+<<<<<<< HEAD
 	clk_prepare_enable(keypad->clk);
+=======
+	error = clk_prepare_enable(keypad->clk);
+	if (error)
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx_keypad_inhibit(keypad);
 	clk_disable_unprepare(keypad->clk);
 
@@ -536,12 +569,20 @@ static int imx_keypad_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int imx_kbd_suspend(struct device *dev)
+=======
+static int __maybe_unused imx_kbd_noirq_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct imx_keypad *kbd = platform_get_drvdata(pdev);
 	struct input_dev *input_dev = kbd->input_dev;
+<<<<<<< HEAD
+=======
+	unsigned short reg_val = readw(kbd->mmio_base + KPSR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* imx kbd can wake up system even clock is disabled */
 	mutex_lock(&input_dev->mutex);
@@ -551,13 +592,29 @@ static int imx_kbd_suspend(struct device *dev)
 
 	mutex_unlock(&input_dev->mutex);
 
+<<<<<<< HEAD
 	if (device_may_wakeup(&pdev->dev))
 		enable_irq_wake(kbd->irq);
+=======
+	if (device_may_wakeup(&pdev->dev)) {
+		if (reg_val & KBD_STAT_KPKD)
+			reg_val |= KBD_STAT_KRIE;
+		if (reg_val & KBD_STAT_KPKR)
+			reg_val |= KBD_STAT_KDIE;
+		writew(reg_val, kbd->mmio_base + KPSR);
+
+		enable_irq_wake(kbd->irq);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int imx_kbd_resume(struct device *dev)
+=======
+static int __maybe_unused imx_kbd_noirq_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct imx_keypad *kbd = platform_get_drvdata(pdev);
@@ -580,14 +637,24 @@ err_clk:
 
 	return ret;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(imx_kbd_pm_ops, imx_kbd_suspend, imx_kbd_resume);
+=======
+
+static const struct dev_pm_ops imx_kbd_pm_ops = {
+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(imx_kbd_noirq_suspend, imx_kbd_noirq_resume)
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver imx_keypad_driver = {
 	.driver		= {
 		.name	= "imx-keypad",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &imx_kbd_pm_ops,
 		.of_match_table = of_match_ptr(imx_keypad_of_match),
 	},

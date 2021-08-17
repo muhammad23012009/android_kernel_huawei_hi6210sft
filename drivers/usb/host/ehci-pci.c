@@ -43,6 +43,27 @@ static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * This is the list of PCI IDs for the devices that have EHCI USB class and
+ * specific drivers for that. One of the example is a ChipIdea device installed
+ * on some Intel MID platforms.
+ */
+static const struct pci_device_id bypass_pci_id_table[] = {
+	/* ChipIdea on Intel MID platform */
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x0811), },
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x0829), },
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xe006), },
+	{}
+};
+
+static inline bool is_bypassed_id(struct pci_dev *pdev)
+{
+	return !!pci_match_id(bypass_pci_id_table, pdev);
+}
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * 0x84 is the offset of in/out threshold register,
  * and it is the same offset as the register of 'hostpc'.
  */
@@ -83,8 +104,11 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 	struct pci_dev		*pdev = to_pci_dev(hcd->self.controller);
+<<<<<<< HEAD
 	struct pci_dev		*p_smbus;
 	u8			rev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32			temp;
 	int			retval;
 
@@ -200,6 +224,7 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		/* SB600 and old version of SB700 have a bug in EHCI controller,
 		 * which causes usb devices lose response in some cases.
 		 */
+<<<<<<< HEAD
 		if ((pdev->device == 0x4386) || (pdev->device == 0x4396)) {
 			p_smbus = pci_get_device(PCI_VENDOR_ID_ATI,
 						 PCI_DEVICE_ID_ATI_SBX00_SMBUS,
@@ -216,6 +241,14 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 				pci_write_config_byte(pdev, 0x53, tmp | (1<<3));
 			}
 			pci_dev_put(p_smbus);
+=======
+		if ((pdev->device == 0x4386 || pdev->device == 0x4396) &&
+				usb_amd_hang_symptom_quirk()) {
+			u8 tmp;
+			ehci_info(ehci, "applying AMD SB600/SB700 USB freeze workaround\n");
+			pci_read_config_byte(pdev, 0x53, &tmp);
+			pci_write_config_byte(pdev, 0x53, tmp | (1<<3));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	case PCI_VENDOR_ID_NETMOS:
@@ -223,6 +256,16 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		ehci_info(ehci, "applying MosChip frame-index workaround\n");
 		ehci->frame_index_bug = 1;
 		break;
+<<<<<<< HEAD
+=======
+	case PCI_VENDOR_ID_HUAWEI:
+		/* Synopsys HC bug */
+		if (pdev->device == 0xa239) {
+			ehci_info(ehci, "applying Synopsys HC workaround\n");
+			ehci->has_synopsys_hc_bug = 1;
+		}
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* optional debug port, normally in the first BAR */
@@ -299,6 +342,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 	if (pdev->vendor == PCI_VENDOR_ID_STMICRO
 	    && pdev->device == PCI_DEVICE_ID_STMICRO_USB_HOST)
 		;	/* ConneXT has no sbrn register */
+<<<<<<< HEAD
+=======
+	else if (pdev->vendor == PCI_VENDOR_ID_HUAWEI
+			 && pdev->device == 0xa239)
+		;	/* HUAWEI Kunpeng920 USB EHCI has no sbrn register */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pci_read_config_byte(pdev, 0x60, &ehci->sbrn);
 
@@ -317,7 +366,11 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		}
 	}
 
+<<<<<<< HEAD
 #ifdef	CONFIG_PM_RUNTIME
+=======
+#ifdef	CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ehci->no_selective_suspend && device_can_wakeup(&pdev->dev))
 		ehci_warn(ehci, "selective suspend/wakeup unavailable\n");
 #endif
@@ -340,6 +393,7 @@ done:
  * Also they depend on separate root hub suspend/resume.
  */
 
+<<<<<<< HEAD
 static bool usb_is_intel_switchable_ehci(struct pci_dev *pdev)
 {
 	return pdev->class == PCI_CLASS_SERIAL_USB_EHCI &&
@@ -363,11 +417,14 @@ static void ehci_enable_xhci_companion(void)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ehci_pci_resume(struct usb_hcd *hcd, bool hibernated)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 	struct pci_dev		*pdev = to_pci_dev(hcd->self.controller);
 
+<<<<<<< HEAD
 	/* The BIOS on systems with the Intel Panther Point chipset may or may
 	 * not support xHCI natively.  That means that during system resume, it
 	 * may switch the ports back to EHCI so that users can use their
@@ -387,6 +444,8 @@ static int ehci_pci_resume(struct usb_hcd *hcd, bool hibernated)
 	if (usb_is_intel_switchable_ehci(pdev))
 		ehci_enable_xhci_companion();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ehci_resume(hcd, hibernated) != 0)
 		(void) ehci_pci_reinit(ehci, pdev);
 	return 0;
@@ -406,6 +465,22 @@ static const struct ehci_driver_overrides pci_overrides __initconst = {
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+static int ehci_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+{
+	if (is_bypassed_id(pdev))
+		return -ENODEV;
+	return usb_hcd_pci_probe(pdev, id);
+}
+
+static void ehci_pci_remove(struct pci_dev *pdev)
+{
+	pci_clear_mwi(pdev);
+	usb_hcd_pci_remove(pdev);	
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* PCI driver selection metadata; PCI hotplugging uses this */
 static const struct pci_device_id pci_ids [] = { {
 	/* handle any USB 2.0 EHCI controller */
@@ -424,8 +499,13 @@ static struct pci_driver ehci_pci_driver = {
 	.name =		(char *) hcd_name,
 	.id_table =	pci_ids,
 
+<<<<<<< HEAD
 	.probe =	usb_hcd_pci_probe,
 	.remove =	usb_hcd_pci_remove,
+=======
+	.probe =	ehci_pci_probe,
+	.remove =	ehci_pci_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.shutdown = 	usb_hcd_pci_shutdown,
 
 #ifdef CONFIG_PM

@@ -6,6 +6,10 @@ menuconfig L2TP
 	tristate "Layer Two Tunneling Protocol (L2TP)"
 	depends on (IPV6 || IPV6=n)
 	depends on INET
+<<<<<<< HEAD
+=======
+	select NET_UDP_TUNNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  Layer Two Tunneling Protocol
 

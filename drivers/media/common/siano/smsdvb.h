@@ -40,7 +40,11 @@ struct smsdvb_client_t {
 	struct dmxdev           dmxdev;
 	struct dvb_frontend     frontend;
 
+<<<<<<< HEAD
 	fe_status_t             fe_status;
+=======
+	enum fe_status          fe_status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct completion       tune_done;
 	struct completion       stats_done;
@@ -95,7 +99,11 @@ struct RECEPTION_STATISTICS_PER_SLICES_S {
 	u32 is_demod_locked;	/* 0 - not locked, 1 - locked */
 
 	u32 ber_bit_count;	/* Total number of SYNC bits. */
+<<<<<<< HEAD
 	u32 ber_error_count;	/* Number of erronous SYNC bits. */
+=======
+	u32 ber_error_count;	/* Number of erroneous SYNC bits. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	s32 MRC_SNR;		/* dB */
 	s32 mrc_in_band_pwr;	/* In band power in dBM */

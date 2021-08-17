@@ -18,8 +18,12 @@ EXPORT_SYMBOL(unblock_signals);
 /*
  * OK, we're invoking a handler
  */
+<<<<<<< HEAD
 static void handle_signal(struct pt_regs *regs, unsigned long signr,
 			 struct k_sigaction *ka, struct siginfo *info)
+=======
+static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sigset_t *oldset = sigmask_to_save();
 	int singlestep = 0;
@@ -39,7 +43,11 @@ static void handle_signal(struct pt_regs *regs, unsigned long signr,
 			break;
 
 		case -ERESTARTSYS:
+<<<<<<< HEAD
 			if (!(ka->sa.sa_flags & SA_RESTART)) {
+=======
+			if (!(ksig->ka.sa.sa_flags & SA_RESTART)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				PT_REGS_SYSCALL_RET(regs) = -EINTR;
 				break;
 			}
@@ -52,6 +60,7 @@ static void handle_signal(struct pt_regs *regs, unsigned long signr,
 	}
 
 	sp = PT_REGS_SP(regs);
+<<<<<<< HEAD
 	if ((ka->sa.sa_flags & SA_ONSTACK) && (sas_ss_flags(sp) == 0))
 		sp = current->sas_ss_sp + current->sas_ss_size;
 
@@ -78,6 +87,30 @@ static int kern_do_signal(struct pt_regs *regs)
 		handled_sig = 1;
 		/* Whee!  Actually deliver the signal.  */
 		handle_signal(regs, sig, &ka_copy, &info);
+=======
+	if ((ksig->ka.sa.sa_flags & SA_ONSTACK) && (sas_ss_flags(sp) == 0))
+		sp = current->sas_ss_sp + current->sas_ss_size;
+
+#ifdef CONFIG_ARCH_HAS_SC_SIGNALS
+	if (!(ksig->ka.sa.sa_flags & SA_SIGINFO))
+		err = setup_signal_stack_sc(sp, ksig, regs, oldset);
+	else
+#endif
+		err = setup_signal_stack_si(sp, ksig, regs, oldset);
+
+	signal_setup_done(err, ksig, singlestep);
+}
+
+void do_signal(struct pt_regs *regs)
+{
+	struct ksignal ksig;
+	int handled_sig = 0;
+
+	while (get_signal(&ksig)) {
+		handled_sig = 1;
+		/* Whee!  Actually deliver the signal.  */
+		handle_signal(&ksig, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Did we come from a system call? */
@@ -115,10 +148,13 @@ static int kern_do_signal(struct pt_regs *regs)
 	 */
 	if (!handled_sig)
 		restore_saved_sigmask();
+<<<<<<< HEAD
 	return handled_sig;
 }
 
 int do_signal(void)
 {
 	return kern_do_signal(&current->thread.regs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

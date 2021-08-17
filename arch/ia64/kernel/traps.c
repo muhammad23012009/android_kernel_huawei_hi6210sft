@@ -299,7 +299,11 @@ handle_fpu_swa (int fp_fault, struct pt_regs *regs, unsigned long isr)
 
 	if (!(current->thread.flags & IA64_THREAD_FPEMU_NOPRINT))  {
 		unsigned long count, current_jiffies = jiffies;
+<<<<<<< HEAD
 		struct fpu_swa_msg *cp = &__get_cpu_var(cpulast);
+=======
+		struct fpu_swa_msg *cp = this_cpu_ptr(&cpulast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (unlikely(current_jiffies > cp->time))
 			cp->count = 0;
@@ -548,6 +552,10 @@ ia64_fault (unsigned long vector, unsigned long isr, unsigned long ifa,
 			return;
 		}
 		switch (vector) {
+<<<<<<< HEAD
+=======
+		      default:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      case 29:
 			siginfo.si_code = TRAP_HWBKPT;
 #ifdef CONFIG_ITANIUM
@@ -630,7 +638,11 @@ ia64_fault (unsigned long vector, unsigned long isr, unsigned long ifa,
 		printk(KERN_ERR "  iip - 0x%lx, ifa - 0x%lx, isr - 0x%lx\n",
 		       iip, ifa, isr);
 		force_sig(SIGSEGV, current);
+<<<<<<< HEAD
 		break;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	      case 46:
 		printk(KERN_ERR "Unexpected IA-32 intercept trap (Trap 46)\n");

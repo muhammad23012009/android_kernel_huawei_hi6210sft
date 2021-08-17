@@ -4,7 +4,11 @@
  * see flexcop.c for copyright information
  */
 #ifndef __FLEXCOP_H__
+<<<<<<< HEAD
 #define __FLEXCOP_H___
+=======
+#define __FLEXCOP_H__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define FC_LOG_PREFIX "b2c2-flexcop"
 #include "flexcop-common.h"

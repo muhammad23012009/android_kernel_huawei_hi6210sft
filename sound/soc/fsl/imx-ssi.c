@@ -50,6 +50,10 @@
 #include <linux/platform_data/asoc-imx-ssi.h>
 
 #include "imx-ssi.h"
+<<<<<<< HEAD
+=======
+#include "fsl_utils.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SSI_SACNT_DEFAULT (SSI_SACNT_AC97EN | SSI_SACNT_FV)
 
@@ -73,8 +77,13 @@ static int imx_ssi_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 	sccr |= SSI_STCCR_DC(slots - 1);
 	writel(sccr, ssi->base + SSI_SRCCR);
 
+<<<<<<< HEAD
 	writel(tx_mask, ssi->base + SSI_STMSK);
 	writel(rx_mask, ssi->base + SSI_SRMSK);
+=======
+	writel(~tx_mask, ssi->base + SSI_STMSK);
+	writel(~rx_mask, ssi->base + SSI_SRMSK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -94,7 +103,12 @@ static int imx_ssi_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		/* data on rising edge of bclk, frame low 1clk before data */
+<<<<<<< HEAD
 		strcr |= SSI_STCR_TFSI | SSI_STCR_TEFS | SSI_STCR_TXBIT0;
+=======
+		strcr |= SSI_STCR_TXBIT0 | SSI_STCR_TSCKP | SSI_STCR_TFSI |
+			SSI_STCR_TEFS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		scr |= SSI_SCR_NET;
 		if (ssi->flags & IMX_SSI_USE_I2S_SLAVE) {
 			scr &= ~SSI_I2S_MODE_MASK;
@@ -103,6 +117,7 @@ static int imx_ssi_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
 		/* data on rising edge of bclk, frame high with data */
+<<<<<<< HEAD
 		strcr |= SSI_STCR_TXBIT0;
 		break;
 	case SND_SOC_DAIFMT_DSP_B:
@@ -112,12 +127,25 @@ static int imx_ssi_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_DSP_A:
 		/* data on rising edge of bclk, frame high 1clk before data */
 		strcr |= SSI_STCR_TFSL | SSI_STCR_TXBIT0 | SSI_STCR_TEFS;
+=======
+		strcr |= SSI_STCR_TXBIT0 | SSI_STCR_TSCKP;
+		break;
+	case SND_SOC_DAIFMT_DSP_B:
+		/* data on rising edge of bclk, frame high with data */
+		strcr |= SSI_STCR_TXBIT0 | SSI_STCR_TSCKP | SSI_STCR_TFSL;
+		break;
+	case SND_SOC_DAIFMT_DSP_A:
+		/* data on rising edge of bclk, frame high 1clk before data */
+		strcr |= SSI_STCR_TXBIT0 | SSI_STCR_TSCKP | SSI_STCR_TFSL |
+			SSI_STCR_TEFS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
 	/* DAI clock inversion */
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_IF:
+<<<<<<< HEAD
 		strcr |= SSI_STCR_TFSI;
 		strcr &= ~SSI_STCR_TSCKP;
 		break;
@@ -130,6 +158,17 @@ static int imx_ssi_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_NB_NF:
 		strcr &= ~SSI_STCR_TFSI;
 		strcr |= SSI_STCR_TSCKP;
+=======
+		strcr ^= SSI_STCR_TSCKP | SSI_STCR_TFSI;
+		break;
+	case SND_SOC_DAIFMT_IB_NF:
+		strcr ^= SSI_STCR_TSCKP;
+		break;
+	case SND_SOC_DAIFMT_NB_IF:
+		strcr ^= SSI_STCR_TFSI;
+		break;
+	case SND_SOC_DAIFMT_NB_NF:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -304,8 +343,12 @@ static int imx_ssi_trigger(struct snd_pcm_substream *substream, int cmd,
 			scr |= SSI_SCR_RE;
 		sier |= sier_bits;
 
+<<<<<<< HEAD
 		if (++ssi->enabled == 1)
 			scr |= SSI_SCR_SSIEN;
+=======
+		scr |= SSI_SCR_SSIEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		break;
 
@@ -318,7 +361,11 @@ static int imx_ssi_trigger(struct snd_pcm_substream *substream, int cmd,
 			scr &= ~SSI_SCR_RE;
 		sier &= ~sier_bits;
 
+<<<<<<< HEAD
 		if (--ssi->enabled == 0)
+=======
+		if (!(scr & (SSI_SCR_TE | SSI_SCR_RE)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			scr &= ~SSI_SCR_SSIEN;
 
 		break;
@@ -381,7 +428,11 @@ static struct snd_soc_dai_driver imx_ssi_dai = {
 
 static struct snd_soc_dai_driver imx_ac97_dai = {
 	.probe = imx_ssi_dai_probe,
+<<<<<<< HEAD
 	.ac97_control = 1,
+=======
+	.bus_control = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.playback = {
 		.stream_name = "AC97 Playback",
 		.channels_min = 2,
@@ -501,13 +552,20 @@ static void imx_ssi_ac97_warm_reset(struct snd_ac97 *ac97)
 	imx_ssi_ac97_read(ac97, 0);
 }
 
+<<<<<<< HEAD
 struct snd_ac97_bus_ops soc_ac97_ops = {
+=======
+static struct snd_ac97_bus_ops imx_ssi_ac97_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read		= imx_ssi_ac97_read,
 	.write		= imx_ssi_ac97_write,
 	.reset		= imx_ssi_ac97_reset,
 	.warm_reset	= imx_ssi_ac97_warm_reset
 };
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(soc_ac97_ops);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int imx_ssi_probe(struct platform_device *pdev)
 {
@@ -537,7 +595,13 @@ static int imx_ssi_probe(struct platform_device *pdev)
 			ret);
 		goto failed_clk;
 	}
+<<<<<<< HEAD
 	clk_prepare_enable(ssi->clk);
+=======
+	ret = clk_prepare_enable(ssi->clk);
+	if (ret)
+		goto failed_clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	ssi->base = devm_ioremap_resource(&pdev->dev, res);
@@ -572,17 +636,34 @@ static int imx_ssi_probe(struct platform_device *pdev)
 	res = platform_get_resource_byname(pdev, IORESOURCE_DMA, "tx0");
 	if (res) {
 		imx_pcm_dma_params_init_data(&ssi->filter_data_tx, res->start,
+<<<<<<< HEAD
 			false);
+=======
+			IMX_DMATYPE_SSI);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_DMA, "rx0");
 	if (res) {
 		imx_pcm_dma_params_init_data(&ssi->filter_data_rx, res->start,
+<<<<<<< HEAD
 			false);
+=======
+			IMX_DMATYPE_SSI);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, ssi);
 
+<<<<<<< HEAD
+=======
+	ret = snd_soc_set_ac97_ops(&imx_ssi_ac97_ops);
+	if (ret != 0) {
+		dev_err(&pdev->dev, "Failed to set AC'97 ops: %d\n", ret);
+		goto failed_register;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = snd_soc_register_component(&pdev->dev, &imx_component,
 					 dai, 1);
 	if (ret) {
@@ -590,6 +671,7 @@ static int imx_ssi_probe(struct platform_device *pdev)
 		goto failed_register;
 	}
 
+<<<<<<< HEAD
 	ssi->soc_platform_pdev_fiq = platform_device_alloc("imx-fiq-pcm-audio", pdev->id);
 	if (!ssi->soc_platform_pdev_fiq) {
 		ret = -ENOMEM;
@@ -614,10 +696,24 @@ static int imx_ssi_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev, "failed to add platform device\n");
 		goto failed_pdev_add;
+=======
+	ssi->fiq_params.irq = ssi->irq;
+	ssi->fiq_params.base = ssi->base;
+	ssi->fiq_params.dma_params_rx = &ssi->dma_params_rx;
+	ssi->fiq_params.dma_params_tx = &ssi->dma_params_tx;
+
+	ssi->fiq_init = imx_pcm_fiq_init(pdev, &ssi->fiq_params);
+	ssi->dma_init = imx_pcm_dma_init(pdev, IMX_SSI_DMABUF_SIZE);
+
+	if (ssi->fiq_init && ssi->dma_init) {
+		ret = ssi->fiq_init;
+		goto failed_pcm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 failed_pdev_add:
 	platform_device_put(ssi->soc_platform_pdev);
 failed_pdev_alloc:
@@ -630,25 +726,45 @@ failed_register:
 	release_mem_region(res->start, resource_size(res));
 	clk_disable_unprepare(ssi->clk);
 failed_clk:
+=======
+failed_pcm:
+	snd_soc_unregister_component(&pdev->dev);
+failed_register:
+	clk_disable_unprepare(ssi->clk);
+failed_clk:
+	snd_soc_set_ac97_ops(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
 static int imx_ssi_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	struct imx_ssi *ssi = platform_get_drvdata(pdev);
 
 	platform_device_unregister(ssi->soc_platform_pdev);
 	platform_device_unregister(ssi->soc_platform_pdev_fiq);
+=======
+	struct imx_ssi *ssi = platform_get_drvdata(pdev);
+
+	if (!ssi->fiq_init)
+		imx_pcm_fiq_exit(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	snd_soc_unregister_component(&pdev->dev);
 
 	if (ssi->flags & IMX_SSI_USE_AC97)
 		ac97_ssi = NULL;
 
+<<<<<<< HEAD
 	release_mem_region(res->start, resource_size(res));
 	clk_disable_unprepare(ssi->clk);
+=======
+	clk_disable_unprepare(ssi->clk);
+	snd_soc_set_ac97_ops(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -659,7 +775,10 @@ static struct platform_driver imx_ssi_driver = {
 
 	.driver = {
 		.name = "imx-ssi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

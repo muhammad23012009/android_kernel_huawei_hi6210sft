@@ -20,7 +20,10 @@
 #ifndef DVB_IX2505V_H
 #define DVB_IX2505V_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 
@@ -49,7 +52,11 @@ struct ix2505v_config {
 
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_IX2505V)
+=======
+#if IS_REACHABLE(CONFIG_DVB_IX2505V)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *ix2505v_attach(struct dvb_frontend *fe,
 	const struct ix2505v_config *config, struct i2c_adapter *i2c);
 #else

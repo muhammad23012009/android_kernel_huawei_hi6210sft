@@ -20,6 +20,19 @@
 		serial4 = &uart5;
 	};
 
+<<<<<<< HEAD
+=======
+	cpus {
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		cpu {
+			compatible = "arm,arm1136jf-s";
+			device_type = "cpu";
+		};
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	avic: interrupt-controller@68000000 {
 		compatible = "fsl,imx31-avic", "fsl,avic";
 		interrupt-controller;
@@ -59,6 +72,17 @@
 				status = "disabled";
 			};
 
+<<<<<<< HEAD
+=======
+			kpp: kpp@43fa8000 {
+				compatible = "fsl,imx31-kpp", "fsl,imx21-kpp";
+				reg = <0x43fa8000 0x4000>;
+				interrupts = <24>;
+				clocks = <&clks 46>;
+				status = "disabled";
+			};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			uart4: serial@43fb0000 {
 				compatible = "fsl,imx31-uart", "fsl,imx21-uart";
 				reg = <0x43fb0000 0x4000>;
@@ -93,6 +117,16 @@
 				clock-names = "ipg", "per";
 				status = "disabled";
 			};
+<<<<<<< HEAD
+=======
+
+			iim: iim@5001c000 {
+				compatible = "fsl,imx31-iim", "fsl,imx27-iim";
+				reg = <0x5001c000 0x1000>;
+				interrupts = <19>;
+				clocks = <&clks 25>;
+			};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		aips@53f00000 { /* AIPS2 */

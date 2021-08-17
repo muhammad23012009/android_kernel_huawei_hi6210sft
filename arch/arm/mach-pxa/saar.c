@@ -31,7 +31,11 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include <mach/pxa930.h>
+=======
+#include "pxa930.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/video-pxafb.h>
 
 #include "devices.h"

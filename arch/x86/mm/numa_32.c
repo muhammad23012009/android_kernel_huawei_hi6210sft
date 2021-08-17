@@ -24,7 +24,11 @@
 
 #include <linux/bootmem.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "numa_internal.h"
 
@@ -52,6 +56,11 @@ void memory_present(int nid, unsigned long start, unsigned long end)
 			nid, start, end);
 	printk(KERN_DEBUG "  Setting physnode_map array to node %d for pfns:\n", nid);
 	printk(KERN_DEBUG "  ");
+<<<<<<< HEAD
+=======
+	start = round_down(start, PAGES_PER_SECTION);
+	end = round_up(end, PAGES_PER_SECTION);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (pfn = start; pfn < end; pfn += PAGES_PER_SECTION) {
 		physnode_map[pfn / PAGES_PER_SECTION] = nid;
 		printk(KERN_CONT "%lx ", pfn);
@@ -83,10 +92,15 @@ void __init initmem_init(void)
 		highstart_pfn = max_low_pfn;
 	printk(KERN_NOTICE "%ldMB HIGHMEM available.\n",
 	       pages_to_mb(highend_pfn - highstart_pfn));
+<<<<<<< HEAD
 	num_physpages = highend_pfn;
 	high_memory = (void *) __va(highstart_pfn * PAGE_SIZE - 1) + 1;
 #else
 	num_physpages = max_low_pfn;
+=======
+	high_memory = (void *) __va(highstart_pfn * PAGE_SIZE - 1) + 1;
+#else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE - 1) + 1;
 #endif
 	printk(KERN_NOTICE "%ldMB LOWMEM available.\n",

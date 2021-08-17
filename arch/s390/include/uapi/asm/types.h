@@ -17,6 +17,13 @@
 typedef unsigned long addr_t; 
 typedef __signed__ long saddr_t;
 
+<<<<<<< HEAD
+=======
+typedef struct {
+	__u32 u[4];
+} __vector128;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASSEMBLY__ */
 
 #endif /* _UAPI_S390_TYPES_H */

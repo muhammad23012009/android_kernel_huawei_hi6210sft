@@ -2,7 +2,11 @@
 #define _LINUX_BYTEORDER_GENERIC_H
 
 /*
+<<<<<<< HEAD
  * linux/byteorder_generic.h
+=======
+ * linux/byteorder/generic.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Generic Byte-reordering support
  *
  * The "... p" macros, like le64_to_cpup, can be used with pointers

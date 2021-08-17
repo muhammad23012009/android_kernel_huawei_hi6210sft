@@ -36,7 +36,13 @@ int abx500_register_ops(struct device *dev, struct abx500_ops *ops)
 {
 	struct abx500_device_entry *dev_entry;
 
+<<<<<<< HEAD
 	dev_entry = kzalloc(sizeof(struct abx500_device_entry), GFP_KERNEL);
+=======
+	dev_entry = devm_kzalloc(dev,
+				 sizeof(struct abx500_device_entry),
+				 GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dev_entry) {
 		dev_err(dev, "register_ops kzalloc failed");
 		return -ENOMEM;
@@ -54,12 +60,17 @@ void abx500_remove_ops(struct device *dev)
 	struct abx500_device_entry *dev_entry, *tmp;
 
 	list_for_each_entry_safe(dev_entry, tmp, &abx500_list, list)
+<<<<<<< HEAD
 	{
 		if (dev_entry->dev == dev) {
 			list_del(&dev_entry->list);
 			kfree(dev_entry);
 		}
 	}
+=======
+		if (dev_entry->dev == dev)
+			list_del(&dev_entry->list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(abx500_remove_ops);
 
@@ -153,6 +164,7 @@ int abx500_startup_irq_enabled(struct device *dev, unsigned int irq)
 }
 EXPORT_SYMBOL(abx500_startup_irq_enabled);
 
+<<<<<<< HEAD
 void abx500_dump_all_banks(void)
 {
 	struct abx500_ops *ops;
@@ -169,6 +181,8 @@ void abx500_dump_all_banks(void)
 }
 EXPORT_SYMBOL(abx500_dump_all_banks);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Mattias Wallin <mattias.wallin@stericsson.com>");
 MODULE_DESCRIPTION("ABX500 core driver");
 MODULE_LICENSE("GPL");

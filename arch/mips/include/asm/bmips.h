@@ -46,6 +46,7 @@
 
 #include <linux/cpumask.h>
 #include <asm/r4kcache.h>
+<<<<<<< HEAD
 
 extern struct plat_smp_ops bmips_smp_ops;
 extern char bmips_reset_nmi_vec;
@@ -53,18 +54,63 @@ extern char bmips_reset_nmi_vec_end;
 extern char bmips_smp_movevec;
 extern char bmips_smp_int_vec;
 extern char bmips_smp_int_vec_end;
+=======
+#include <asm/smp-ops.h>
+
+extern struct plat_smp_ops bmips43xx_smp_ops;
+extern struct plat_smp_ops bmips5000_smp_ops;
+
+static inline int register_bmips_smp_ops(void)
+{
+#if IS_ENABLED(CONFIG_CPU_BMIPS) && IS_ENABLED(CONFIG_SMP)
+	switch (current_cpu_type()) {
+	case CPU_BMIPS32:
+	case CPU_BMIPS3300:
+		return register_up_smp_ops();
+	case CPU_BMIPS4350:
+	case CPU_BMIPS4380:
+		register_smp_ops(&bmips43xx_smp_ops);
+		break;
+	case CPU_BMIPS5000:
+		register_smp_ops(&bmips5000_smp_ops);
+		break;
+	default:
+		return -ENODEV;
+	}
+
+	return 0;
+#else
+	return -ENODEV;
+#endif
+}
+
+extern char bmips_reset_nmi_vec[];
+extern char bmips_reset_nmi_vec_end[];
+extern char bmips_smp_movevec[];
+extern char bmips_smp_int_vec[];
+extern char bmips_smp_int_vec_end[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int bmips_smp_enabled;
 extern int bmips_cpu_offset;
 extern cpumask_t bmips_booted_mask;
+<<<<<<< HEAD
 
 extern void bmips_ebase_setup(void);
 extern asmlinkage void plat_wired_tlb_setup(void);
+=======
+extern unsigned long bmips_tp1_irqs;
+
+extern void bmips_ebase_setup(void);
+extern asmlinkage void plat_wired_tlb_setup(void);
+extern void bmips_cpu_setup(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long bmips_read_zscm_reg(unsigned int offset)
 {
 	unsigned long ret;
 
+<<<<<<< HEAD
 	__asm__ __volatile__(
 		".set push\n"
 		".set noreorder\n"
@@ -83,11 +129,27 @@ static inline unsigned long bmips_read_zscm_reg(unsigned int offset)
 		: "=&r" (ret)
 		: "i" (Index_Load_Tag_S), "r" (ZSCM_REG_BASE + offset)
 		: "memory");
+=======
+	barrier();
+	cache_op(Index_Load_Tag_S, ZSCM_REG_BASE + offset);
+	__sync();
+	_ssnop();
+	_ssnop();
+	_ssnop();
+	_ssnop();
+	_ssnop();
+	_ssnop();
+	_ssnop();
+	ret = read_c0_ddatalo();
+	_ssnop();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static inline void bmips_write_zscm_reg(unsigned int offset, unsigned long data)
 {
+<<<<<<< HEAD
 	__asm__ __volatile__(
 		".set push\n"
 		".set noreorder\n"
@@ -103,6 +165,33 @@ static inline void bmips_write_zscm_reg(unsigned int offset, unsigned long data)
 		: "r" (data),
 		  "i" (Index_Store_Tag_S), "r" (ZSCM_REG_BASE + offset)
 		: "memory");
+=======
+	write_c0_ddatalo(data);
+	_ssnop();
+	_ssnop();
+	_ssnop();
+	cache_op(Index_Store_Tag_S, ZSCM_REG_BASE + offset);
+	_ssnop();
+	_ssnop();
+	_ssnop();
+	barrier();
+}
+
+static inline void bmips_post_dma_flush(struct device *dev)
+{
+	void __iomem *cbr = BMIPS_GET_CBR();
+	u32 cfg;
+
+	if (boot_cpu_type() != CPU_BMIPS3300 &&
+	    boot_cpu_type() != CPU_BMIPS4350 &&
+	    boot_cpu_type() != CPU_BMIPS4380)
+		return;
+
+	/* Flush stale data out of the readahead cache */
+	cfg = __raw_readl(cbr + BMIPS_RAC_CONFIG);
+	__raw_writel(cfg | 0x100, cbr + BMIPS_RAC_CONFIG);
+	__raw_readl(cbr + BMIPS_RAC_CONFIG);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* !defined(__ASSEMBLY__) */

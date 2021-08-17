@@ -11,6 +11,12 @@
 #ifndef _XTENSA_SPINLOCK_H
 #define _XTENSA_SPINLOCK_H
 
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+#include <asm/processor.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * spinlock
  *
@@ -28,6 +34,7 @@
  *    1         somebody owns the spinlock
  */
 
+<<<<<<< HEAD
 #define __raw_spin_is_locked(x) ((x)->slock != 0)
 #define __raw_spin_unlock_wait(lock) \
 	do { while (__raw_spin_is_locked(lock)) cpu_relax(); } while (0)
@@ -35,6 +42,18 @@
 #define __raw_spin_lock_flags(lock, flags) __raw_spin_lock(lock)
 
 static inline void __raw_spin_lock(raw_spinlock_t *lock)
+=======
+#define arch_spin_is_locked(x) ((x)->slock != 0)
+
+static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
+{
+	smp_cond_load_acquire(&lock->slock, !VAL);
+}
+
+#define arch_spin_lock_flags(lock, flags) arch_spin_lock(lock)
+
+static inline void arch_spin_lock(arch_spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 
@@ -51,7 +70,11 @@ static inline void __raw_spin_lock(raw_spinlock_t *lock)
 
 /* Returns 1 if the lock is obtained, 0 otherwise. */
 
+<<<<<<< HEAD
 static inline int __raw_spin_trylock(raw_spinlock_t *lock)
+=======
+static inline int arch_spin_trylock(arch_spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 
@@ -67,7 +90,11 @@ static inline int __raw_spin_trylock(raw_spinlock_t *lock)
 	return tmp == 0 ? 1 : 0;
 }
 
+<<<<<<< HEAD
 static inline void __raw_spin_unlock(raw_spinlock_t *lock)
+=======
+static inline void arch_spin_unlock(arch_spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 
@@ -96,9 +123,15 @@ static inline void __raw_spin_unlock(raw_spinlock_t *lock)
  *  0x80000000  one writer owns the rwlock, no other writers, no readers
  */
 
+<<<<<<< HEAD
 #define __raw_write_can_lock(x)  ((x)->lock == 0)
 
 static inline void __raw_write_lock(raw_rwlock_t *rw)
+=======
+#define arch_write_can_lock(x)  ((x)->lock == 0)
+
+static inline void arch_write_lock(arch_rwlock_t *rw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 
@@ -116,7 +149,11 @@ static inline void __raw_write_lock(raw_rwlock_t *rw)
 
 /* Returns 1 if the lock is obtained, 0 otherwise. */
 
+<<<<<<< HEAD
 static inline int __raw_write_trylock(raw_rwlock_t *rw)
+=======
+static inline int arch_write_trylock(arch_rwlock_t *rw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 
@@ -133,7 +170,11 @@ static inline int __raw_write_trylock(raw_rwlock_t *rw)
 	return tmp == 0 ? 1 : 0;
 }
 
+<<<<<<< HEAD
 static inline void __raw_write_unlock(raw_rwlock_t *rw)
+=======
+static inline void arch_write_unlock(arch_rwlock_t *rw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 
@@ -145,7 +186,11 @@ static inline void __raw_write_unlock(raw_rwlock_t *rw)
 			: "memory");
 }
 
+<<<<<<< HEAD
 static inline void __raw_read_lock(raw_rwlock_t *rw)
+=======
+static inline void arch_read_lock(arch_rwlock_t *rw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 	unsigned long result;
@@ -164,7 +209,11 @@ static inline void __raw_read_lock(raw_rwlock_t *rw)
 
 /* Returns 1 if the lock is obtained, 0 otherwise. */
 
+<<<<<<< HEAD
 static inline int __raw_read_trylock(raw_rwlock_t *rw)
+=======
+static inline int arch_read_trylock(arch_rwlock_t *rw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long result;
 	unsigned long tmp;
@@ -184,7 +233,11 @@ static inline int __raw_read_trylock(raw_rwlock_t *rw)
 	return result == 0;
 }
 
+<<<<<<< HEAD
 static inline void __raw_read_unlock(raw_rwlock_t *rw)
+=======
+static inline void arch_read_unlock(arch_rwlock_t *rw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp1, tmp2;
 
@@ -199,4 +252,10 @@ static inline void __raw_read_unlock(raw_rwlock_t *rw)
 			: "memory");
 }
 
+<<<<<<< HEAD
+=======
+#define arch_read_lock_flags(lock, flags)	arch_read_lock(lock)
+#define arch_write_lock_flags(lock, flags)	arch_write_lock(lock)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* _XTENSA_SPINLOCK_H */

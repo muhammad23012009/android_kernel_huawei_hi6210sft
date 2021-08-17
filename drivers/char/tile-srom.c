@@ -20,7 +20,10 @@
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>	/* printk() */
 #include <linux/slab.h>		/* kmalloc() */
 #include <linux/fs.h>		/* everything... */
@@ -28,7 +31,10 @@
 #include <linux/types.h>	/* size_t */
 #include <linux/proc_fs.h>
 #include <linux/fcntl.h>	/* O_ACCMODE */
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pagemap.h>
 #include <linux/hugetlb.h>
 #include <linux/uaccess.h>
@@ -77,6 +83,10 @@ MODULE_LICENSE("GPL");
 
 static int srom_devs;			/* Number of SROM partitions */
 static struct cdev srom_cdev;
+<<<<<<< HEAD
+=======
+static struct platform_device *srom_parent;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct class *srom_class;
 static struct srom_dev *srom_devices;
 
@@ -273,6 +283,7 @@ static ssize_t srom_write(struct file *filp, const char __user *buf,
 }
 
 /* Provide our own implementation so we can use srom->total_size. */
+<<<<<<< HEAD
 loff_t srom_llseek(struct file *filp, loff_t offset, int origin)
 {
 	struct srom_dev *srom = filp->private_data;
@@ -303,24 +314,49 @@ loff_t srom_llseek(struct file *filp, loff_t offset, int origin)
 
 static ssize_t total_show(struct device *dev,
 			  struct device_attribute *attr, char *buf)
+=======
+loff_t srom_llseek(struct file *file, loff_t offset, int origin)
+{
+	struct srom_dev *srom = file->private_data;
+	return fixed_size_llseek(file, offset, origin, srom->total_size);
+}
+
+static ssize_t total_size_show(struct device *dev,
+			       struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct srom_dev *srom = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", srom->total_size);
 }
+<<<<<<< HEAD
 
 static ssize_t sector_show(struct device *dev,
 			   struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(total_size);
+
+static ssize_t sector_size_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct srom_dev *srom = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", srom->sector_size);
 }
+<<<<<<< HEAD
 
 static ssize_t page_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(sector_size);
+
+static ssize_t page_size_show(struct device *dev,
+			      struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct srom_dev *srom = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", srom->page_size);
 }
+<<<<<<< HEAD
 
 static struct device_attribute srom_dev_attrs[] = {
 	__ATTR(total_size, S_IRUGO, total_show, NULL),
@@ -328,6 +364,17 @@ static struct device_attribute srom_dev_attrs[] = {
 	__ATTR(page_size, S_IRUGO, page_show, NULL),
 	__ATTR_NULL
 };
+=======
+static DEVICE_ATTR_RO(page_size);
+
+static struct attribute *srom_dev_attrs[] = {
+	&dev_attr_total_size.attr,
+	&dev_attr_sector_size.attr,
+	&dev_attr_page_size.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(srom_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static char *srom_devnode(struct device *dev, umode_t *mode)
 {
@@ -350,6 +397,7 @@ static const struct file_operations srom_fops = {
 /**
  * srom_setup_minor() - Initialize per-minor information.
  * @srom: Per-device SROM state.
+<<<<<<< HEAD
  * @index: Device to set up.
  */
 static int srom_setup_minor(struct srom_dev *srom, int index)
@@ -357,6 +405,13 @@ static int srom_setup_minor(struct srom_dev *srom, int index)
 	struct device *dev;
 	int devhdl = srom->hv_devhdl;
 
+=======
+ * @devhdl: Partition device handle.
+ */
+static int srom_setup_minor(struct srom_dev *srom, int devhdl)
+{
+	srom->hv_devhdl = devhdl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&srom->lock);
 
 	if (_srom_read(devhdl, &srom->total_size,
@@ -369,9 +424,13 @@ static int srom_setup_minor(struct srom_dev *srom, int index)
 		       SROM_PAGE_SIZE_OFF, sizeof(srom->page_size)) < 0)
 		return -EIO;
 
+<<<<<<< HEAD
 	dev = device_create(srom_class, &platform_bus,
 			    MKDEV(srom_major, index), srom, "%d", index);
 	return PTR_RET(dev);
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /** srom_init() - Initialize the driver's module. */
@@ -384,7 +443,11 @@ static int srom_init(void)
 	 * Start with a plausible number of partitions; the krealloc() call
 	 * below will yield about log(srom_devs) additional allocations.
 	 */
+<<<<<<< HEAD
 	srom_devices = kzalloc(4 * sizeof(struct srom_dev), GFP_KERNEL);
+=======
+	srom_devices = kmalloc(4 * sizeof(struct srom_dev), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Discover the number of srom partitions. */
 	for (i = 0; ; i++) {
@@ -392,7 +455,11 @@ static int srom_init(void)
 		char buf[20];
 		struct srom_dev *new_srom_devices =
 			krealloc(srom_devices, (i+1) * sizeof(struct srom_dev),
+<<<<<<< HEAD
 				 GFP_KERNEL | __GFP_ZERO);
+=======
+				 GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!new_srom_devices) {
 			result = -ENOMEM;
 			goto fail_mem;
@@ -406,7 +473,13 @@ static int srom_init(void)
 					  i, devhdl);
 			break;
 		}
+<<<<<<< HEAD
 		srom_devices[i].hv_devhdl = devhdl;
+=======
+		result = srom_setup_minor(&srom_devices[i], devhdl);
+		if (result != 0)
+			goto fail_mem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	srom_devs = i;
 
@@ -434,18 +507,41 @@ static int srom_init(void)
 	if (result < 0)
 		goto fail_chrdev;
 
+<<<<<<< HEAD
+=======
+	/* Create a parent device */
+	srom_parent = platform_device_register_simple("srom", -1, NULL, 0);
+	if (IS_ERR(srom_parent)) {
+		result = PTR_ERR(srom_parent);
+		goto fail_pdev;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Create a sysfs class. */
 	srom_class = class_create(THIS_MODULE, "srom");
 	if (IS_ERR(srom_class)) {
 		result = PTR_ERR(srom_class);
 		goto fail_cdev;
 	}
+<<<<<<< HEAD
 	srom_class->dev_attrs = srom_dev_attrs;
 	srom_class->devnode = srom_devnode;
 
 	/* Do per-partition initialization */
 	for (i = 0; i < srom_devs; i++) {
 		result = srom_setup_minor(srom_devices + i, i);
+=======
+	srom_class->dev_groups = srom_dev_groups;
+	srom_class->devnode = srom_devnode;
+
+	/* Create per-partition devices */
+	for (i = 0; i < srom_devs; i++) {
+		struct device *dev =
+			device_create(srom_class, &srom_parent->dev,
+				      MKDEV(srom_major, i), srom_devices + i,
+				      "%d", i);
+		result = PTR_ERR_OR_ZERO(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (result < 0)
 			goto fail_class;
 	}
@@ -457,6 +553,11 @@ fail_class:
 		device_destroy(srom_class, MKDEV(srom_major, i));
 	class_destroy(srom_class);
 fail_cdev:
+<<<<<<< HEAD
+=======
+	platform_device_unregister(srom_parent);
+fail_pdev:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cdev_del(&srom_cdev);
 fail_chrdev:
 	unregister_chrdev_region(dev, srom_devs);
@@ -473,6 +574,10 @@ static void srom_cleanup(void)
 		device_destroy(srom_class, MKDEV(srom_major, i));
 	class_destroy(srom_class);
 	cdev_del(&srom_cdev);
+<<<<<<< HEAD
+=======
+	platform_device_unregister(srom_parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unregister_chrdev_region(MKDEV(srom_major, 0), srom_devs);
 	kfree(srom_devices);
 }

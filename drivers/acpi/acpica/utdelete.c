@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,6 +79,10 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 	union acpi_operand_object *handler_desc;
 	union acpi_operand_object *second_desc;
 	union acpi_operand_object *next_desc;
+<<<<<<< HEAD
+=======
+	union acpi_operand_object *start_desc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	union acpi_operand_object **last_obj_ptr;
 
 	ACPI_FUNCTION_TRACE_PTR(ut_delete_internal_obj, object);
@@ -208,6 +216,13 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 			acpi_ut_delete_object_desc(object->method.mutex);
 			object->method.mutex = NULL;
 		}
+<<<<<<< HEAD
+=======
+
+		if (object->method.node) {
+			object->method.node = NULL;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case ACPI_TYPE_REGION:
@@ -235,10 +250,18 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 			if (handler_desc) {
 				next_desc =
 				    handler_desc->address_space.region_list;
+<<<<<<< HEAD
 				last_obj_ptr =
 				    &handler_desc->address_space.region_list;
 
 				/* Remove the region object from the handler's list */
+=======
+				start_desc = next_desc;
+				last_obj_ptr =
+				    &handler_desc->address_space.region_list;
+
+				/* Remove the region object from the handler list */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				while (next_desc) {
 					if (next_desc == object) {
@@ -247,10 +270,26 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 						break;
 					}
 
+<<<<<<< HEAD
 					/* Walk the linked list of handler */
 
 					last_obj_ptr = &next_desc->region.next;
 					next_desc = next_desc->region.next;
+=======
+					/* Walk the linked list of handlers */
+
+					last_obj_ptr = &next_desc->region.next;
+					next_desc = next_desc->region.next;
+
+					/* Prevent infinite loop if list is corrupted */
+
+					if (next_desc == start_desc) {
+						ACPI_ERROR((AE_INFO,
+							    "Circular region list in address handler object %p",
+							    handler_desc));
+						return_VOID;
+					}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 
 				if (handler_desc->address_space.handler_flags &
@@ -303,6 +342,10 @@ static void acpi_ut_delete_internal_obj(union acpi_operand_object *object)
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -500,15 +543,23 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 		}
 
 		/*
+<<<<<<< HEAD
 		 * All sub-objects must have their reference count incremented also.
 		 * Different object types have different subobjects.
+=======
+		 * All sub-objects must have their reference count incremented
+		 * also. Different object types have different subobjects.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		switch (object->common.type) {
 		case ACPI_TYPE_DEVICE:
 		case ACPI_TYPE_PROCESSOR:
 		case ACPI_TYPE_POWER:
 		case ACPI_TYPE_THERMAL:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Update the notify objects for these types (if present)
 			 * Two lists, system and device notify handlers.
@@ -576,11 +627,14 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 			next_object = object->buffer_field.buffer_obj;
 			break;
 
+<<<<<<< HEAD
 		case ACPI_TYPE_LOCAL_REGION_FIELD:
 
 			next_object = object->field.region_obj;
 			break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case ACPI_TYPE_LOCAL_BANK_FIELD:
 
 			next_object = object->bank_field.bank_obj;
@@ -621,8 +675,15 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 			}
 			break;
 
+<<<<<<< HEAD
 		case ACPI_TYPE_REGION:
 		default:
+=======
+		case ACPI_TYPE_LOCAL_REGION_FIELD:
+		case ACPI_TYPE_REGION:
+		default:
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;	/* No subobjects for all other types */
 		}
 
@@ -648,7 +709,11 @@ acpi_ut_update_object_reference(union acpi_operand_object *object, u16 action)
 
 	return (AE_OK);
 
+<<<<<<< HEAD
       error_exit:
+=======
+error_exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ACPI_EXCEPTION((AE_INFO, status,
 			"Could not update object reference count"));

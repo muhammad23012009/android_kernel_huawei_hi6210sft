@@ -5,13 +5,28 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 
+=======
+
+#include <linux/of_irq.h>
+#include <linux/of_platform.h>
+
+#include <asm/fsl_pm.h>
+#include <soc/fsl/qe/qe.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sysdev/cpm2_pic.h>
 
 #include "mpc85xx.h"
 
+<<<<<<< HEAD
 static struct of_device_id __initdata mpc85xx_common_ids[] = {
+=======
+const struct fsl_pm_ops *qoriq_pm_ops;
+
+static const struct of_device_id mpc85xx_common_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .type = "soc", },
 	{ .compatible = "soc", },
 	{ .compatible = "simple-bus", },
@@ -37,6 +52,10 @@ static struct of_device_id __initdata mpc85xx_common_ids[] = {
 	{ .compatible = "fsl,qoriq-pcie-v2.4", },
 	{ .compatible = "fsl,qoriq-pcie-v2.3", },
 	{ .compatible = "fsl,qoriq-pcie-v2.2", },
+<<<<<<< HEAD
+=======
+	{ .compatible = "fsl,fman", },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 
@@ -45,7 +64,11 @@ int __init mpc85xx_common_publish_devices(void)
 	return of_platform_bus_probe(NULL, mpc85xx_common_ids, NULL);
 }
 #ifdef CONFIG_CPM2
+<<<<<<< HEAD
 static void cpm2_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void cpm2_cascade(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	int cascade_irq;
@@ -69,7 +92,11 @@ void __init mpc85xx_cpm2_pic_init(void)
 		return;
 	}
 	irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (irq == NO_IRQ) {
+=======
+	if (!irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		of_node_put(np);
 		printk(KERN_ERR "PIC init: got no IRQ for cpm cascade\n");
 		return;
@@ -80,3 +107,48 @@ void __init mpc85xx_cpm2_pic_init(void)
 	irq_set_chained_handler(irq, cpm2_cascade);
 }
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_QUICC_ENGINE
+void __init mpc85xx_qe_init(void)
+{
+	struct device_node *np;
+
+	np = of_find_compatible_node(NULL, NULL, "fsl,qe");
+	if (!np) {
+		np = of_find_node_by_name(NULL, "qe");
+		if (!np) {
+			pr_err("%s: Could not find Quicc Engine node\n",
+					__func__);
+			return;
+		}
+	}
+
+	if (!of_device_is_available(np)) {
+		of_node_put(np);
+		return;
+	}
+
+	of_node_put(np);
+
+}
+
+void __init mpc85xx_qe_par_io_init(void)
+{
+	struct device_node *np;
+
+	np = of_find_node_by_name(NULL, "par_io");
+	if (np) {
+		struct device_node *ucc;
+
+		par_io_init(np);
+		of_node_put(np);
+
+		for_each_node_by_name(ucc, "ucc")
+			par_io_of_config(ucc);
+
+	}
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

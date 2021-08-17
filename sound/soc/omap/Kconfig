@@ -1,7 +1,12 @@
 config SND_OMAP_SOC
 	tristate "SoC Audio for the Texas Instruments OMAP chips"
+<<<<<<< HEAD
 	depends on ARCH_OMAP && DMA_OMAP
 	select SND_SOC_DMAENGINE_PCM
+=======
+	depends on (ARCH_OMAP && DMA_OMAP) || (ARM && COMPILE_TEST)
+	select SND_DMAENGINE_PCM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SND_OMAP_SOC_DMIC
 	tristate
@@ -12,8 +17,25 @@ config SND_OMAP_SOC_MCBSP
 config SND_OMAP_SOC_MCPDM
 	tristate
 
+<<<<<<< HEAD
 config SND_OMAP_SOC_HDMI
 	tristate
+=======
+config SND_OMAP_SOC_HDMI_AUDIO
+	tristate "HDMI audio support for OMAP4+ based SoCs"
+	depends on SND_OMAP_SOC
+	help
+	  For HDMI audio to work OMAPDSS HDMI support should be
+	  enabled.
+	  The hdmi audio driver implements cpu-dai component using the
+	  callbacks provided by OMAPDSS and registers the component
+	  under DSS HDMI device. Omap-pcm is registered for platform
+	  component also under DSS HDMI device. Dummy codec is used as
+	  as codec component. The hdmi audio driver implements also
+	  the card and registers it under its own platform device.
+	  The device for the driver is registered by OMAPDSS hdmi
+	  driver.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SND_OMAP_SOC_N810
 	tristate "SoC Audio support for Nokia N810"
@@ -25,6 +47,7 @@ config SND_OMAP_SOC_N810
 	  Say Y if you want to add support for SoC audio on Nokia N810.
 
 config SND_OMAP_SOC_RX51
+<<<<<<< HEAD
 	tristate "SoC Audio support for Nokia RX-51"
 	depends on SND_OMAP_SOC && MACH_NOKIA_RX51
 	select SND_OMAP_SOC_MCBSP
@@ -37,6 +60,21 @@ config SND_OMAP_SOC_RX51
 config SND_OMAP_SOC_AMS_DELTA
 	tristate "SoC Audio support for Amstrad E3 (Delta) videophone"
 	depends on SND_OMAP_SOC && MACH_AMS_DELTA
+=======
+	tristate "SoC Audio support for Nokia N900 (RX-51)"
+	depends on SND_OMAP_SOC && ARM && I2C
+	select SND_OMAP_SOC_MCBSP
+	select SND_SOC_TLV320AIC3X
+	select SND_SOC_TPA6130A2
+	depends on GPIOLIB
+	help
+	  Say Y if you want to add support for SoC audio on Nokia N900
+	  cellphone.
+
+config SND_OMAP_SOC_AMS_DELTA
+	tristate "SoC Audio support for Amstrad E3 (Delta) videophone"
+	depends on SND_OMAP_SOC && MACH_AMS_DELTA && TTY
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select SND_OMAP_SOC_MCBSP
 	select SND_SOC_CX20442
 	help
@@ -57,7 +95,11 @@ config SND_OMAP_SOC_OSK5912
 	tristate "SoC Audio support for omap osk5912"
 	depends on SND_OMAP_SOC && MACH_OMAP_OSK && I2C
 	select SND_OMAP_SOC_MCBSP
+<<<<<<< HEAD
 	select SND_SOC_TLV320AIC23
+=======
+	select SND_SOC_TLV320AIC23_I2C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y if you want to add support for SoC audio on osk5912.
 
@@ -65,7 +107,11 @@ config SND_OMAP_SOC_AM3517EVM
 	tristate "SoC Audio support for OMAP3517 / AM3517 EVM"
 	depends on SND_OMAP_SOC && MACH_OMAP3517EVM && I2C
 	select SND_OMAP_SOC_MCBSP
+<<<<<<< HEAD
 	select SND_SOC_TLV320AIC23
+=======
+	select SND_SOC_TLV320AIC23_I2C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y if you want to add support for SoC audio on the OMAP3517 / AM3517
 	  EVM.
@@ -87,17 +133,28 @@ config SND_OMAP_SOC_OMAP_TWL4030
 
 config SND_OMAP_SOC_OMAP_ABE_TWL6040
 	tristate "SoC Audio support for OMAP boards using ABE and twl6040 codec"
+<<<<<<< HEAD
 	depends on TWL6040_CORE && SND_OMAP_SOC && ARCH_OMAP4
+=======
+	depends on TWL6040_CORE && SND_OMAP_SOC && COMMON_CLK
+	depends on ARCH_OMAP4 || (SOC_OMAP5 && MFD_PALMAS) || COMPILE_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select SND_OMAP_SOC_DMIC
 	select SND_OMAP_SOC_MCPDM
 	select SND_SOC_TWL6040
 	select SND_SOC_DMIC
+<<<<<<< HEAD
+=======
+	select COMMON_CLK_PALMAS if (SOC_OMAP5 && MFD_PALMAS)
+	select CLK_TWL6040
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y if you want to add support for SoC audio on OMAP boards using
 	  ABE and twl6040 codec. This driver currently supports:
 	  - SDP4430/Blaze boards
 	  - PandaBoard (4430)
 	  - PandaBoardES (4460)
+<<<<<<< HEAD
 
 config SND_OMAP_SOC_OMAP_HDMI
 	tristate "SoC Audio support for Texas Instruments OMAP HDMI"
@@ -108,6 +165,9 @@ config SND_OMAP_SOC_OMAP_HDMI
 	help
 	  Say Y if you want to add support for SoC HDMI audio on Texas Instruments
 	  OMAP4 chips
+=======
+	  - omap5-uevm (5432)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SND_OMAP_SOC_OMAP3_PANDORA
 	tristate "SoC Audio support for OMAP3 Pandora"

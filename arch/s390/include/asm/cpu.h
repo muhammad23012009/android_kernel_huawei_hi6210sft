@@ -8,8 +8,11 @@
 #ifndef _ASM_S390_CPU_H
 #define _ASM_S390_CPU_H
 
+<<<<<<< HEAD
 #define MAX_CPU_ADDRESS 255
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __ASSEMBLY__
 
 #include <linux/types.h>

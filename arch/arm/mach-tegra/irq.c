@@ -17,16 +17,28 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/irqchip/arm-gic.h>
+=======
+#include <linux/cpu_pm.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+#include <linux/irqchip/arm-gic.h>
+#include <linux/irq.h>
+#include <linux/kernel.h>
+#include <linux/of_address.h>
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/syscore_ops.h>
 
 #include "board.h"
 #include "iomap.h"
+<<<<<<< HEAD
 
 #define ICTLR_CPU_IEP_VFIQ	0x08
 #define ICTLR_CPU_IEP_FIR	0x14
@@ -65,6 +77,14 @@ static u32 cpu_ier[TEGRA_MAX_NUM_ICTLRS];
 static u32 cpu_iep[TEGRA_MAX_NUM_ICTLRS];
 
 static u32 ictlr_wake_mask[TEGRA_MAX_NUM_ICTLRS];
+=======
+#include "irq.h"
+
+#define SGI_MASK 0xFFFF
+
+#ifdef CONFIG_PM_SLEEP
+static void __iomem *tegra_gic_cpu_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 bool tegra_pending_sgi(void)
@@ -80,6 +100,7 @@ bool tegra_pending_sgi(void)
 	return false;
 }
 
+<<<<<<< HEAD
 static inline void tegra_irq_write_mask(unsigned int irq, unsigned long reg)
 {
 	void __iomem *base;
@@ -252,4 +273,56 @@ void __init tegra_init_irq(void)
 	if (!of_have_populated_dt())
 		gic_init(0, 29, distbase,
 			IO_ADDRESS(TEGRA_ARM_PERIF_BASE + 0x100));
+=======
+#ifdef CONFIG_PM_SLEEP
+static int tegra_gic_notifier(struct notifier_block *self,
+			      unsigned long cmd, void *v)
+{
+	switch (cmd) {
+	case CPU_PM_ENTER:
+		writel_relaxed(0x1E0, tegra_gic_cpu_base + GIC_CPU_CTRL);
+		break;
+	}
+
+	return NOTIFY_OK;
+}
+
+static struct notifier_block tegra_gic_notifier_block = {
+	.notifier_call = tegra_gic_notifier,
+};
+
+static const struct of_device_id tegra114_dt_gic_match[] __initconst = {
+	{ .compatible = "arm,cortex-a15-gic" },
+	{ }
+};
+
+static void tegra114_gic_cpu_pm_registration(void)
+{
+	struct device_node *dn;
+
+	dn = of_find_matching_node(NULL, tegra114_dt_gic_match);
+	if (!dn)
+		return;
+
+	tegra_gic_cpu_base = of_iomap(dn, 1);
+
+	cpu_pm_register_notifier(&tegra_gic_notifier_block);
+}
+#else
+static void tegra114_gic_cpu_pm_registration(void) { }
+#endif
+
+static const struct of_device_id tegra_ictlr_match[] __initconst = {
+	{ .compatible = "nvidia,tegra20-ictlr" },
+	{ .compatible = "nvidia,tegra30-ictlr" },
+	{ }
+};
+
+void __init tegra_init_irq(void)
+{
+	if (WARN_ON(!of_find_matching_node(NULL, tegra_ictlr_match)))
+		pr_warn("Outdated DT detected, suspend/resume will NOT work\n");
+
+	tegra114_gic_cpu_pm_registration();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

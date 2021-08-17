@@ -16,11 +16,18 @@
 
 #include <linux/interrupt.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/ftrace.h>
 #include <linux/irq.h>
 #include <linux/export.h>
 #include <linux/irqdomain.h>
+=======
+#include <linux/ftrace.h>
+#include <linux/irq.h>
+#include <linux/irqchip.h>
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/irqflags.h>
 
 /* read interrupt enabled status */
@@ -37,6 +44,7 @@ void arch_local_irq_restore(unsigned long flags)
 }
 EXPORT_SYMBOL(arch_local_irq_restore);
 
+<<<<<<< HEAD
 
 /* OR1K PIC implementation */
 
@@ -169,10 +177,23 @@ static void __init or1k_irq_init(void)
 void __init init_IRQ(void)
 {
 	or1k_irq_init();
+=======
+void __init init_IRQ(void)
+{
+	irqchip_init();
+}
+
+static void (*handle_arch_irq)(struct pt_regs *);
+
+void __init set_handle_irq(void (*handle_irq)(struct pt_regs *))
+{
+	handle_arch_irq = handle_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __irq_entry do_IRQ(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	int irq = -1;
 	struct pt_regs *old_regs = set_irq_regs(regs);
 
@@ -183,4 +204,7 @@ void __irq_entry do_IRQ(struct pt_regs *regs)
 
 	irq_exit();
 	set_irq_regs(old_regs);
+=======
+	handle_arch_irq(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

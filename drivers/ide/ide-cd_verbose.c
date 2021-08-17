@@ -9,7 +9,13 @@
 #include <linux/kernel.h>
 #include <linux/blkdev.h>
 #include <linux/cdrom.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
+=======
+#include <linux/ide.h>
+#include <scsi/scsi.h>
+#include "ide-cd.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef CONFIG_BLK_DEV_IDECD_VERBOSE_ERRORS
 void ide_cd_log_error(const char *name, struct request *failed_command,

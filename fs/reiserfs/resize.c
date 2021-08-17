@@ -34,6 +34,10 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 	unsigned long int block_count, free_blocks;
 	int i;
 	int copy_size;
+<<<<<<< HEAD
+=======
+	int depth;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sb = SB_DISK_SUPER_BLOCK(s);
 
@@ -43,15 +47,28 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 	}
 
 	/* check the device size */
+<<<<<<< HEAD
 	bh = sb_bread(s, block_count_new - 1);
+=======
+	depth = reiserfs_write_unlock_nested(s);
+	bh = sb_bread(s, block_count_new - 1);
+	reiserfs_write_lock_nested(s, depth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!bh) {
 		printk("reiserfs_resize: can\'t read last block\n");
 		return -EINVAL;
 	}
 	bforget(bh);
 
+<<<<<<< HEAD
 	/* old disk layout detection; those partitions can be mounted, but
 	 * cannot be resized */
+=======
+	/*
+	 * old disk layout detection; those partitions can be mounted, but
+	 * cannot be resized
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (SB_BUFFER_WITH_SB(s)->b_blocknr * SB_BUFFER_WITH_SB(s)->b_size
 	    != REISERFS_DISK_OFFSET_IN_BYTES) {
 		printk
@@ -83,12 +100,23 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 			    ("reiserfs_resize: unable to allocate memory for journal bitmaps\n");
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		/* the new journal bitmaps are zero filled, now we copy in the bitmap
 		 ** node pointers from the old journal bitmap structs, and then
 		 ** transfer the new data structures into the journal struct.
 		 **
 		 ** using the copy_size var below allows this code to work for
 		 ** both shrinking and expanding the FS.
+=======
+		/*
+		 * the new journal bitmaps are zero filled, now we copy i
+		 * the bitmap node pointers from the old journal bitmap
+		 * structs, and then transfer the new data structures
+		 * into the journal struct.
+		 *
+		 * using the copy_size var below allows this code to work for
+		 * both shrinking and expanding the FS.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		copy_size = bmap_nr_new < bmap_nr ? bmap_nr_new : bmap_nr;
 		copy_size =
@@ -98,15 +126,23 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 			jb = SB_JOURNAL(s)->j_list_bitmap + i;
 			memcpy(jbitmap[i].bitmaps, jb->bitmaps, copy_size);
 
+<<<<<<< HEAD
 			/* just in case vfree schedules on us, copy the new
 			 ** pointer into the journal struct before freeing the
 			 ** old one
+=======
+			/*
+			 * just in case vfree schedules on us, copy the new
+			 * pointer into the journal struct before freeing the
+			 * old one
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 */
 			node_tmp = jb->bitmaps;
 			jb->bitmaps = jbitmap[i].bitmaps;
 			vfree(node_tmp);
 		}
 
+<<<<<<< HEAD
 		/* allocate additional bitmap blocks, reallocate array of bitmap
 		 * block pointers */
 		bitmap =
@@ -114,12 +150,26 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 		if (!bitmap) {
 			/* Journal bitmaps are still supersized, but the memory isn't
 			 * leaked, so I guess it's ok */
+=======
+		/*
+		 * allocate additional bitmap blocks, reallocate
+		 * array of bitmap block pointers
+		 */
+		bitmap =
+		    vzalloc(sizeof(struct reiserfs_bitmap_info) * bmap_nr_new);
+		if (!bitmap) {
+			/*
+			 * Journal bitmaps are still supersized, but the
+			 * memory isn't leaked, so I guess it's ok
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			printk("reiserfs_resize: unable to allocate memory.\n");
 			return -ENOMEM;
 		}
 		for (i = 0; i < bmap_nr; i++)
 			bitmap[i] = old_bitmap[i];
 
+<<<<<<< HEAD
 		/* This doesn't go through the journal, but it doesn't have to.
 		 * The changes are still atomic: We're synced up when the journal
 		 * transaction begins, and the new bitmaps don't matter if the
@@ -128,6 +178,23 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 			/* don't use read_bitmap_block since it will cache
 			 * the uninitialized bitmap */
 			bh = sb_bread(s, i * s->s_blocksize * 8);
+=======
+		/*
+		 * This doesn't go through the journal, but it doesn't have to.
+		 * The changes are still atomic: We're synced up when the
+		 * journal transaction begins, and the new bitmaps don't
+		 * matter if the transaction fails.
+		 */
+		for (i = bmap_nr; i < bmap_nr_new; i++) {
+			int depth;
+			/*
+			 * don't use read_bitmap_block since it will cache
+			 * the uninitialized bitmap
+			 */
+			depth = reiserfs_write_unlock_nested(s);
+			bh = sb_bread(s, i * s->s_blocksize * 8);
+			reiserfs_write_lock_nested(s, depth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!bh) {
 				vfree(bitmap);
 				return -EIO;
@@ -138,10 +205,17 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 
 			set_buffer_uptodate(bh);
 			mark_buffer_dirty(bh);
+<<<<<<< HEAD
 			reiserfs_write_unlock(s);
 			sync_dirty_buffer(bh);
 			reiserfs_write_lock(s);
 			// update bitmap_info stuff
+=======
+			depth = reiserfs_write_unlock_nested(s);
+			sync_dirty_buffer(bh);
+			reiserfs_write_lock_nested(s, depth);
+			/* update bitmap_info stuff */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			bitmap[i].free_count = sb_blocksize(sb) * 8 - 1;
 			brelse(bh);
 		}
@@ -150,9 +224,17 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 		vfree(old_bitmap);
 	}
 
+<<<<<<< HEAD
 	/* begin transaction, if there was an error, it's fine. Yes, we have
 	 * incorrect bitmaps now, but none of it is ever going to touch the
 	 * disk anyway. */
+=======
+	/*
+	 * begin transaction, if there was an error, it's fine. Yes, we have
+	 * incorrect bitmaps now, but none of it is ever going to touch the
+	 * disk anyway.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = journal_begin(&th, s, 10);
 	if (err)
 		return err;
@@ -161,7 +243,11 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 	info = SB_AP_BITMAP(s) + bmap_nr - 1;
 	bh = reiserfs_read_bitmap_block(s, bmap_nr - 1);
 	if (!bh) {
+<<<<<<< HEAD
 		int jerr = journal_end(&th, s, 10);
+=======
+		int jerr = journal_end(&th);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (jerr)
 			return jerr;
 		return -EIO;
@@ -172,14 +258,22 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 		reiserfs_clear_le_bit(i, bh->b_data);
 	info->free_count += s->s_blocksize * 8 - block_r;
 
+<<<<<<< HEAD
 	journal_mark_dirty(&th, s, bh);
+=======
+	journal_mark_dirty(&th, bh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	brelse(bh);
 
 	/* Correct new last bitmap block - It may not be full */
 	info = SB_AP_BITMAP(s) + bmap_nr_new - 1;
 	bh = reiserfs_read_bitmap_block(s, bmap_nr_new - 1);
 	if (!bh) {
+<<<<<<< HEAD
 		int jerr = journal_end(&th, s, 10);
+=======
+		int jerr = journal_end(&th);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (jerr)
 			return jerr;
 		return -EIO;
@@ -188,7 +282,11 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 	reiserfs_prepare_for_journal(s, bh, 1);
 	for (i = block_r_new; i < s->s_blocksize * 8; i++)
 		reiserfs_set_le_bit(i, bh->b_data);
+<<<<<<< HEAD
 	journal_mark_dirty(&th, s, bh);
+=======
+	journal_mark_dirty(&th, bh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	brelse(bh);
 
 	info->free_count -= s->s_blocksize * 8 - block_r_new;
@@ -201,8 +299,15 @@ int reiserfs_resize(struct super_block *s, unsigned long block_count_new)
 	PUT_SB_BLOCK_COUNT(s, block_count_new);
 	PUT_SB_BMAP_NR(s, bmap_would_wrap(bmap_nr_new) ? : bmap_nr_new);
 
+<<<<<<< HEAD
 	journal_mark_dirty(&th, s, SB_BUFFER_WITH_SB(s));
 
 	SB_JOURNAL(s)->j_must_wait = 1;
 	return journal_end(&th, s, 10);
+=======
+	journal_mark_dirty(&th, SB_BUFFER_WITH_SB(s));
+
+	SB_JOURNAL(s)->j_must_wait = 1;
+	return journal_end(&th);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

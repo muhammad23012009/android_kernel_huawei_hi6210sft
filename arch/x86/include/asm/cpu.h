@@ -16,8 +16,13 @@ extern void prefill_possible_map(void);
 static inline void prefill_possible_map(void) {}
 
 #define cpu_physical_id(cpu)			boot_cpu_physical_apicid
+<<<<<<< HEAD
 #define safe_smp_processor_id()			0
 #define stack_smp_processor_id()		0
+=======
+#define cpu_acpi_id(cpu)			0
+#define safe_smp_processor_id()			0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* CONFIG_SMP */
 
@@ -28,14 +33,26 @@ struct x86_cpu {
 #ifdef CONFIG_HOTPLUG_CPU
 extern int arch_register_cpu(int num);
 extern void arch_unregister_cpu(int);
+<<<<<<< HEAD
 extern void __cpuinit start_cpu0(void);
+=======
+extern void start_cpu0(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DEBUG_HOTPLUG_CPU0
 extern int _debug_hotplug_cpu(int cpu, int action);
 #endif
 #endif
 
+<<<<<<< HEAD
 DECLARE_PER_CPU(int, cpu_state);
 
 int mwait_usable(const struct cpuinfo_x86 *);
 
+=======
+int mwait_usable(const struct cpuinfo_x86 *);
+
+unsigned int x86_family(unsigned int sig);
+unsigned int x86_model(unsigned int sig);
+unsigned int x86_stepping(unsigned int sig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_X86_CPU_H */

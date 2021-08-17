@@ -108,8 +108,12 @@ struct cardinfo {
 				    * have been written
 				    */
 	struct bio	*bio, *currentbio, **biotail;
+<<<<<<< HEAD
 	int		current_idx;
 	sector_t	current_sector;
+=======
+	struct bvec_iter current_iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct request_queue *queue;
 
@@ -118,7 +122,11 @@ struct cardinfo {
 		struct mm_dma_desc	*desc;
 		int	 		cnt, headcnt;
 		struct bio		*bio, **biotail;
+<<<<<<< HEAD
 		int			idx;
+=======
+		struct bvec_iter	iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} mm_pages[2];
 #define DESC_PER_PAGE ((PAGE_SIZE*2)/sizeof(struct mm_dma_desc))
 
@@ -344,16 +352,24 @@ static int add_bio(struct cardinfo *card)
 	dma_addr_t dma_handle;
 	int offset;
 	struct bio *bio;
+<<<<<<< HEAD
 	struct bio_vec *vec;
 	int idx;
 	int rw;
 	int len;
+=======
+	struct bio_vec vec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bio = card->currentbio;
 	if (!bio && card->bio) {
 		card->currentbio = card->bio;
+<<<<<<< HEAD
 		card->current_idx = card->bio->bi_idx;
 		card->current_sector = card->bio->bi_sector;
+=======
+		card->current_iter = card->bio->bi_iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		card->bio = card->bio->bi_next;
 		if (card->bio == NULL)
 			card->biotail = &card->bio;
@@ -362,6 +378,7 @@ static int add_bio(struct cardinfo *card)
 	}
 	if (!bio)
 		return 0;
+<<<<<<< HEAD
 	idx = card->current_idx;
 
 	rw = bio_rw(bio);
@@ -375,13 +392,30 @@ static int add_bio(struct cardinfo *card)
 				  vec->bv_offset,
 				  len,
 				  (rw == READ) ?
+=======
+
+	if (card->mm_pages[card->Ready].cnt >= DESC_PER_PAGE)
+		return 0;
+
+	vec = bio_iter_iovec(bio, card->current_iter);
+
+	dma_handle = pci_map_page(card->dev,
+				  vec.bv_page,
+				  vec.bv_offset,
+				  vec.bv_len,
+				  bio_op(bio) == REQ_OP_READ ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE);
 
 	p = &card->mm_pages[card->Ready];
 	desc = &p->desc[p->cnt];
 	p->cnt++;
 	if (p->bio == NULL)
+<<<<<<< HEAD
 		p->idx = idx;
+=======
+		p->iter = card->current_iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((p->biotail) != &bio->bi_next) {
 		*(p->biotail) = bio;
 		p->biotail = &(bio->bi_next);
@@ -391,8 +425,13 @@ static int add_bio(struct cardinfo *card)
 	desc->data_dma_handle = dma_handle;
 
 	desc->pci_addr = cpu_to_le64((u64)desc->data_dma_handle);
+<<<<<<< HEAD
 	desc->local_addr = cpu_to_le64(card->current_sector << 9);
 	desc->transfer_size = cpu_to_le32(len);
+=======
+	desc->local_addr = cpu_to_le64(card->current_iter.bi_sector << 9);
+	desc->transfer_size = cpu_to_le32(vec.bv_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	offset = (((char *)&desc->sem_control_bits) - ((char *)p->desc));
 	desc->sem_addr = cpu_to_le64((u64)(p->page_dma+offset));
 	desc->zero1 = desc->zero2 = 0;
@@ -403,6 +442,7 @@ static int add_bio(struct cardinfo *card)
 					 DMASCR_CHAIN_EN |
 					 DMASCR_SEM_EN |
 					 pci_cmds);
+<<<<<<< HEAD
 	if (rw == WRITE)
 		desc->control_bits |= cpu_to_le32(DMASCR_TRANSFER_READ);
 	desc->sem_control_bits = desc->control_bits;
@@ -411,6 +451,15 @@ static int add_bio(struct cardinfo *card)
 	idx++;
 	card->current_idx = idx;
 	if (idx >= bio->bi_vcnt)
+=======
+	if (bio_op(bio) == REQ_OP_WRITE)
+		desc->control_bits |= cpu_to_le32(DMASCR_TRANSFER_READ);
+	desc->sem_control_bits = desc->control_bits;
+
+
+	bio_advance_iter(bio, &card->current_iter, vec.bv_len);
+	if (!card->current_iter.bi_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		card->currentbio = NULL;
 
 	return 1;
@@ -439,12 +488,17 @@ static void process_page(unsigned long data)
 		struct mm_dma_desc *desc = &page->desc[page->headcnt];
 		int control = le32_to_cpu(desc->sem_control_bits);
 		int last = 0;
+<<<<<<< HEAD
 		int idx;
+=======
+		struct bio_vec vec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!(control & DMASCR_DMA_COMPLETE)) {
 			control = dma_status;
 			last = 1;
 		}
+<<<<<<< HEAD
 		page->headcnt++;
 		idx = page->idx;
 		page->idx++;
@@ -456,17 +510,40 @@ static void process_page(unsigned long data)
 
 		pci_unmap_page(card->dev, desc->data_dma_handle,
 			       bio_iovec_idx(bio, idx)->bv_len,
+=======
+
+		page->headcnt++;
+		vec = bio_iter_iovec(bio, page->iter);
+		bio_advance_iter(bio, &page->iter, vec.bv_len);
+
+		if (!page->iter.bi_size) {
+			page->bio = bio->bi_next;
+			if (page->bio)
+				page->iter = page->bio->bi_iter;
+		}
+
+		pci_unmap_page(card->dev, desc->data_dma_handle,
+			       vec.bv_len,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 (control & DMASCR_TRANSFER_READ) ?
 				PCI_DMA_TODEVICE : PCI_DMA_FROMDEVICE);
 		if (control & DMASCR_HARD_ERROR) {
 			/* error */
+<<<<<<< HEAD
 			clear_bit(BIO_UPTODATE, &bio->bi_flags);
+=======
+			bio->bi_error = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_printk(KERN_WARNING, &card->dev->dev,
 				"I/O error on sector %d/%d\n",
 				le32_to_cpu(desc->local_addr)>>9,
 				le32_to_cpu(desc->transfer_size));
 			dump_dmastat(card, control);
+<<<<<<< HEAD
 		} else if ((bio->bi_rw & REQ_WRITE) &&
+=======
+		} else if (op_is_write(bio_op(bio)) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   le32_to_cpu(desc->local_addr) >> 9 ==
 				card->init_size) {
 			card->init_size += le32_to_cpu(desc->transfer_size) >> 9;
@@ -509,7 +586,11 @@ static void process_page(unsigned long data)
 
 		return_bio = bio->bi_next;
 		bio->bi_next = NULL;
+<<<<<<< HEAD
 		bio_endio(bio, 0);
+=======
+		bio_endio(bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -528,21 +609,40 @@ static int mm_check_plugged(struct cardinfo *card)
 	return !!blk_check_plugged(mm_unplug, card, sizeof(struct blk_plug_cb));
 }
 
+<<<<<<< HEAD
 static void mm_make_request(struct request_queue *q, struct bio *bio)
 {
 	struct cardinfo *card = q->queuedata;
 	pr_debug("mm_make_request %llu %u\n",
 		 (unsigned long long)bio->bi_sector, bio->bi_size);
+=======
+static blk_qc_t mm_make_request(struct request_queue *q, struct bio *bio)
+{
+	struct cardinfo *card = q->queuedata;
+	pr_debug("mm_make_request %llu %u\n",
+		 (unsigned long long)bio->bi_iter.bi_sector,
+		 bio->bi_iter.bi_size);
+
+	blk_queue_split(q, &bio, q->bio_split);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irq(&card->lock);
 	*card->biotail = bio;
 	bio->bi_next = NULL;
 	card->biotail = &bio->bi_next;
+<<<<<<< HEAD
 	if (bio->bi_rw & REQ_SYNC || !mm_check_plugged(card))
 		activate(card);
 	spin_unlock_irq(&card->lock);
 
 	return;
+=======
+	if (bio->bi_opf & REQ_SYNC || !mm_check_plugged(card))
+		activate(card);
+	spin_unlock_irq(&card->lock);
+
+	return BLK_QC_T_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static irqreturn_t mm_interrupt(int irq, void *__card)

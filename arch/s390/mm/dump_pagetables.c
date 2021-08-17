@@ -18,9 +18,13 @@ enum address_markers_idx {
 	KERNEL_END_NR,
 	VMEMMAP_NR,
 	VMALLOC_NR,
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	MODULES_NR,
 #endif
+=======
+	MODULES_NR,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct addr_marker address_markers[] = {
@@ -29,9 +33,13 @@ static struct addr_marker address_markers[] = {
 	[KERNEL_END_NR]	  = {(unsigned long)&_end, "Kernel Image End"},
 	[VMEMMAP_NR]	  = {0, "vmemmap Area"},
 	[VMALLOC_NR]	  = {0, "vmalloc Area"},
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	[MODULES_NR]	  = {0, "Modules Area"},
 #endif
+=======
+	[MODULES_NR]	  = {0, "Modules Area"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ -1, NULL }
 };
 
@@ -53,8 +61,12 @@ static void print_prot(struct seq_file *m, unsigned int pr, int level)
 		seq_printf(m, "I\n");
 		return;
 	}
+<<<<<<< HEAD
 	seq_printf(m, "%s", pr & _PAGE_RO ? "RO " : "RW ");
 	seq_printf(m, "%s", pr & _PAGE_CO ? "CO " : "   ");
+=======
+	seq_printf(m, "%s", pr & _PAGE_PROTECT ? "RO " : "RW ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_putc(m, '\n');
 }
 
@@ -105,12 +117,21 @@ static void note_page(struct seq_file *m, struct pg_state *st,
 }
 
 /*
+<<<<<<< HEAD
  * The actual page table walker functions. In order to keep the implementation
  * of print_prot() short, we only check and pass _PAGE_INVALID and _PAGE_RO
  * flags to note_page() if a region, segment or page table entry is invalid or
  * read-only.
  * After all it's just a hint that the current level being walked contains an
  * invalid or read-only entry.
+=======
+ * The actual page table walker functions. In order to keep the
+ * implementation of print_prot() short, we only check and pass
+ * _PAGE_INVALID and _PAGE_PROTECT flags to note_page() if a region,
+ * segment or page table entry is invalid or read-only.
+ * After all it's just a hint that the current level being walked
+ * contains an invalid or read-only entry.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static void walk_pte_level(struct seq_file *m, struct pg_state *st,
 			   pmd_t *pmd, unsigned long addr)
@@ -122,18 +143,25 @@ static void walk_pte_level(struct seq_file *m, struct pg_state *st,
 	for (i = 0; i < PTRS_PER_PTE && addr < max_addr; i++) {
 		st->current_address = addr;
 		pte = pte_offset_kernel(pmd, addr);
+<<<<<<< HEAD
 		prot = pte_val(*pte) & (_PAGE_RO | _PAGE_INVALID);
+=======
+		prot = pte_val(*pte) & (_PAGE_PROTECT | _PAGE_INVALID);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		note_page(m, st, prot, 4);
 		addr += PAGE_SIZE;
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define _PMD_PROT_MASK (_SEGMENT_ENTRY_RO | _SEGMENT_ENTRY_CO)
 #else
 #define _PMD_PROT_MASK 0
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void walk_pmd_level(struct seq_file *m, struct pg_state *st,
 			   pud_t *pud, unsigned long addr)
 {
@@ -146,7 +174,11 @@ static void walk_pmd_level(struct seq_file *m, struct pg_state *st,
 		pmd = pmd_offset(pud, addr);
 		if (!pmd_none(*pmd)) {
 			if (pmd_large(*pmd)) {
+<<<<<<< HEAD
 				prot = pmd_val(*pmd) & _PMD_PROT_MASK;
+=======
+				prot = pmd_val(*pmd) & _SEGMENT_ENTRY_PROTECT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				note_page(m, st, prot, 3);
 			} else
 				walk_pte_level(m, st, pmd, addr);
@@ -156,12 +188,15 @@ static void walk_pmd_level(struct seq_file *m, struct pg_state *st,
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define _PUD_PROT_MASK (_REGION3_ENTRY_RO | _REGION3_ENTRY_CO)
 #else
 #define _PUD_PROT_MASK 0
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void walk_pud_level(struct seq_file *m, struct pg_state *st,
 			   pgd_t *pgd, unsigned long addr)
 {
@@ -174,7 +209,11 @@ static void walk_pud_level(struct seq_file *m, struct pg_state *st,
 		pud = pud_offset(pgd, addr);
 		if (!pud_none(*pud))
 			if (pud_large(*pud)) {
+<<<<<<< HEAD
 				prot = pud_val(*pud) & _PUD_PROT_MASK;
+=======
+				prot = pud_val(*pud) & _REGION_ENTRY_PROTECT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				note_page(m, st, prot, 2);
 			} else
 				walk_pmd_level(m, st, pud, addr);
@@ -231,6 +270,7 @@ static int pt_dump_init(void)
 	 * kernel ASCE. We need this to keep the page table walker functions
 	 * from accessing non-existent entries.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_32BIT
 	max_addr = 1UL << 31;
 #else
@@ -238,6 +278,11 @@ static int pt_dump_init(void)
 	max_addr = 1UL << (max_addr * 11 + 31);
 	address_markers[MODULES_NR].start_address = MODULES_VADDR;
 #endif
+=======
+	max_addr = (S390_lowcore.kernel_asce & _REGION_ENTRY_TYPE_MASK) >> 2;
+	max_addr = 1UL << (max_addr * 11 + 31);
+	address_markers[MODULES_NR].start_address = MODULES_VADDR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	address_markers[VMEMMAP_NR].start_address = (unsigned long) vmemmap;
 	address_markers[VMALLOC_NR].start_address = VMALLOC_START;
 	debugfs_create_file("kernel_page_tables", 0400, NULL, NULL, &ptdump_fops);

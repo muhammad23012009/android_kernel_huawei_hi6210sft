@@ -38,6 +38,12 @@
 #define KIRKWOOD_RECCTL_SIZE_24		(1<<0)
 #define KIRKWOOD_RECCTL_SIZE_32		(0<<0)
 
+<<<<<<< HEAD
+=======
+#define KIRKWOOD_RECCTL_ENABLE_MASK		(KIRKWOOD_RECCTL_SPDIF_EN | \
+						 KIRKWOOD_RECCTL_I2S_EN)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define KIRKWOOD_REC_BUF_ADDR			0x1004
 #define KIRKWOOD_REC_BUF_SIZE			0x1008
 #define KIRKWOOD_REC_BYTE_COUNT			0x100C
@@ -54,7 +60,11 @@
 #define KIRKWOOD_PLAYCTL_MONO_OFF		(0<<5)
 #define KIRKWOOD_PLAYCTL_I2S_MUTE		(1<<7)
 #define KIRKWOOD_PLAYCTL_SPDIF_EN		(1<<4)
+<<<<<<< HEAD
 #define KIRKWOOD_PLAYCTL_I2S_EN		(1<<3)
+=======
+#define KIRKWOOD_PLAYCTL_I2S_EN			(1<<3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define KIRKWOOD_PLAYCTL_SIZE_MASK		(7<<0)
 #define KIRKWOOD_PLAYCTL_SIZE_16		(7<<0)
 #define KIRKWOOD_PLAYCTL_SIZE_16_C		(3<<0)
@@ -62,6 +72,12 @@
 #define KIRKWOOD_PLAYCTL_SIZE_24		(1<<0)
 #define KIRKWOOD_PLAYCTL_SIZE_32		(0<<0)
 
+<<<<<<< HEAD
+=======
+#define KIRKWOOD_PLAYCTL_ENABLE_MASK		(KIRKWOOD_PLAYCTL_SPDIF_EN | \
+						 KIRKWOOD_PLAYCTL_I2S_EN)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define KIRKWOOD_PLAY_BUF_ADDR			0x1104
 #define KIRKWOOD_PLAY_BUF_SIZE			0x1108
 #define KIRKWOOD_PLAY_BYTE_COUNT		0x110C
@@ -118,10 +134,19 @@
 
 /* Theses values come from the marvell alsa driver */
 /* need to find where they come from               */
+<<<<<<< HEAD
 #define KIRKWOOD_SND_MIN_PERIODS		8
 #define KIRKWOOD_SND_MAX_PERIODS		16
 #define KIRKWOOD_SND_MIN_PERIOD_BYTES		0x4000
 #define KIRKWOOD_SND_MAX_PERIOD_BYTES		0x4000
+=======
+#define KIRKWOOD_SND_MIN_PERIODS		2
+#define KIRKWOOD_SND_MAX_PERIODS		16
+#define KIRKWOOD_SND_MIN_PERIOD_BYTES		256
+#define KIRKWOOD_SND_MAX_PERIOD_BYTES		0x8000
+#define KIRKWOOD_SND_MAX_BUFFER_BYTES		(KIRKWOOD_SND_MAX_PERIOD_BYTES \
+						 * KIRKWOOD_SND_MAX_PERIODS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct kirkwood_dma_data {
 	void __iomem *io;
@@ -129,8 +154,18 @@ struct kirkwood_dma_data {
 	struct clk *extclk;
 	uint32_t ctl_play;
 	uint32_t ctl_rec;
+<<<<<<< HEAD
+=======
+	struct snd_pcm_substream *substream_play;
+	struct snd_pcm_substream *substream_rec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int irq;
 	int burst;
 };
 
+<<<<<<< HEAD
+=======
+extern struct snd_soc_platform_driver kirkwood_soc_platform;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

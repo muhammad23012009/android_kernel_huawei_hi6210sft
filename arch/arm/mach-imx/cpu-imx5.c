@@ -16,6 +16,11 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "hardware.h"
 #include "common.h"
@@ -24,10 +29,33 @@ static int mx5_cpu_rev = -1;
 
 #define IIM_SREV 0x24
 
+<<<<<<< HEAD
 static int get_mx51_srev(void)
 {
 	void __iomem *iim_base = MX51_IO_ADDRESS(MX51_IIM_BASE_ADDR);
 	u32 rev = readl(iim_base + IIM_SREV) & 0xff;
+=======
+static u32 imx5_read_srev_reg(const char *compat)
+{
+	void __iomem *iim_base;
+	struct device_node *np;
+	u32 srev;
+
+	np = of_find_compatible_node(NULL, NULL, compat);
+	iim_base = of_iomap(np, 0);
+	WARN_ON(!iim_base);
+
+	srev = readl(iim_base + IIM_SREV) & 0xff;
+
+	iounmap(iim_base);
+
+	return srev;
+}
+
+static int get_mx51_srev(void)
+{
+	u32 rev = imx5_read_srev_reg("fsl,imx51-iim");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (rev) {
 	case 0x0:
@@ -42,6 +70,7 @@ static int get_mx51_srev(void)
 /*
  * Returns:
  *	the silicon revision of the cpu
+<<<<<<< HEAD
  *	-EINVAL - not a mx51
  */
 int mx51_revision(void)
@@ -49,6 +78,11 @@ int mx51_revision(void)
 	if (!cpu_is_mx51())
 		return -EINVAL;
 
+=======
+ */
+int mx51_revision(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mx5_cpu_rev == -1)
 		mx5_cpu_rev = get_mx51_srev();
 
@@ -77,8 +111,12 @@ int __init mx51_neon_fixup(void)
 
 static int get_mx53_srev(void)
 {
+<<<<<<< HEAD
 	void __iomem *iim_base = MX51_IO_ADDRESS(MX53_IIM_BASE_ADDR);
 	u32 rev = readl(iim_base + IIM_SREV) & 0xff;
+=======
+	u32 rev = imx5_read_srev_reg("fsl,imx53-iim");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (rev) {
 	case 0x0:
@@ -95,6 +133,7 @@ static int get_mx53_srev(void)
 /*
  * Returns:
  *	the silicon revision of the cpu
+<<<<<<< HEAD
  *	-EINVAL - not a mx53
  */
 int mx53_revision(void)
@@ -102,6 +141,11 @@ int mx53_revision(void)
 	if (!cpu_is_mx53())
 		return -EINVAL;
 
+=======
+ */
+int mx53_revision(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mx5_cpu_rev == -1)
 		mx5_cpu_rev = get_mx53_srev();
 

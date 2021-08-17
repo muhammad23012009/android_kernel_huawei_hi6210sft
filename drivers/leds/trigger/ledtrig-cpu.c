@@ -19,13 +19,20 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/percpu.h>
 #include <linux/syscore_ops.h>
 #include <linux/rwsem.h>
+<<<<<<< HEAD
+=======
+#include <linux/cpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "../leds.h"
 
 #define MAX_NAME_LEN	8
@@ -46,7 +53,11 @@ static DEFINE_PER_CPU(struct led_trigger_cpu, cpu_trig);
  */
 void ledtrig_cpu(enum cpu_led_event ledevt)
 {
+<<<<<<< HEAD
 	struct led_trigger_cpu *trig = &__get_cpu_var(cpu_trig);
+=======
+	struct led_trigger_cpu *trig = this_cpu_ptr(&cpu_trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Locate the correct CPU LED */
 	switch (ledevt) {
@@ -92,9 +103,28 @@ static struct syscore_ops ledtrig_cpu_syscore_ops = {
 	.resume		= ledtrig_cpu_syscore_resume,
 };
 
+<<<<<<< HEAD
 static int __init ledtrig_cpu_init(void)
 {
 	int cpu;
+=======
+static int ledtrig_online_cpu(unsigned int cpu)
+{
+	ledtrig_cpu(CPU_LED_START);
+	return 0;
+}
+
+static int ledtrig_prepare_down_cpu(unsigned int cpu)
+{
+	ledtrig_cpu(CPU_LED_STOP);
+	return 0;
+}
+
+static int __init ledtrig_cpu_init(void)
+{
+	int cpu;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Supports up to 9999 cpu cores */
 	BUILD_BUG_ON(CONFIG_NR_CPUS > 9999);
@@ -114,10 +144,20 @@ static int __init ledtrig_cpu_init(void)
 
 	register_syscore_ops(&ledtrig_cpu_syscore_ops);
 
+<<<<<<< HEAD
+=======
+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "AP_LEDTRIG_STARTING",
+				ledtrig_online_cpu, ledtrig_prepare_down_cpu);
+	if (ret < 0)
+		pr_err("CPU hotplug notifier for ledtrig-cpu could not be registered: %d\n",
+		       ret);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("ledtrig-cpu: registered to indicate activity on CPUs\n");
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(ledtrig_cpu_init);
 
 static void __exit ledtrig_cpu_exit(void)
@@ -140,3 +180,6 @@ MODULE_AUTHOR("Linus Walleij <linus.walleij@linaro.org>");
 MODULE_AUTHOR("Bryan Wu <bryan.wu@canonical.com>");
 MODULE_DESCRIPTION("CPU LED trigger");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(ledtrig_cpu_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

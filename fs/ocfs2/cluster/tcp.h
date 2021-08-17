@@ -63,6 +63,10 @@ typedef void (o2net_post_msg_handler_func)(int status, void *data,
 #define O2NET_KEEPALIVE_DELAY_MS_DEFAULT	2000
 #define O2NET_IDLE_TIMEOUT_MS_DEFAULT		30000
 
+<<<<<<< HEAD
+=======
+#define O2NET_TCP_USER_TIMEOUT			0x7fffffff
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* TODO: figure this out.... */
 static inline int o2net_link_down(int err, struct socket *sock)

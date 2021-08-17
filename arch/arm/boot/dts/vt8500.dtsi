@@ -11,6 +11,26 @@
 / {
 	compatible = "via,vt8500";
 
+<<<<<<< HEAD
+=======
+	cpus {
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		cpu {
+			device_type = "cpu";
+			compatible = "arm,arm926ej-s";
+		};
+	};
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -111,32 +131,61 @@
 			reg = <0xd8050400 0x100>;
 		};
 
+<<<<<<< HEAD
 		uart@d8200000 {
+=======
+		uart0: serial@d8200000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd8200000 0x1040>;
 			interrupts = <32>;
 			clocks = <&clkuart0>;
+<<<<<<< HEAD
 		};
 
 		uart@d82b0000 {
+=======
+			status = "disabled";
+		};
+
+		uart1: serial@d82b0000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd82b0000 0x1040>;
 			interrupts = <33>;
 			clocks = <&clkuart1>;
+<<<<<<< HEAD
 		};
 
 		uart@d8210000 {
+=======
+			status = "disabled";
+		};
+
+		uart2: serial@d8210000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd8210000 0x1040>;
 			interrupts = <47>;
 			clocks = <&clkuart2>;
+<<<<<<< HEAD
 		};
 
 		uart@d82c0000 {
+=======
+			status = "disabled";
+		};
+
+		uart3: serial@d82c0000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd82c0000 0x1040>;
 			interrupts = <50>;
 			clocks = <&clkuart3>;
+<<<<<<< HEAD
+=======
+			status = "disabled";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		rtc@d8100000 {
@@ -144,5 +193,14 @@
 			reg = <0xd8100000 0x10000>;
 			interrupts = <48>;
 		};
+<<<<<<< HEAD
+=======
+
+		ethernet@d8004000 {
+			compatible = "via,vt8500-rhine";
+			reg = <0xd8004000 0x100>;
+			interrupts = <10>;
+		};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

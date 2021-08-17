@@ -13,7 +13,11 @@
 #define __LINUX_RT_MUTEX_H
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <linux/plist.h>
+=======
+#include <linux/rbtree.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock_types.h>
 
 extern int max_lock_depth; /* for sysctl */
@@ -22,12 +26,22 @@ extern int max_lock_depth; /* for sysctl */
  * The rt_mutex structure
  *
  * @wait_lock:	spinlock to protect the structure
+<<<<<<< HEAD
  * @wait_list:	pilist head to enqueue waiters in priority order
+=======
+ * @waiters:	rbtree root to enqueue waiters in priority order
+ * @waiters_leftmost: top waiter
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @owner:	the mutex owner
  */
 struct rt_mutex {
 	raw_spinlock_t		wait_lock;
+<<<<<<< HEAD
 	struct plist_head	wait_list;
+=======
+	struct rb_root          waiters;
+	struct rb_node          *waiters_leftmost;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct task_struct	*owner;
 #ifdef CONFIG_DEBUG_RT_MUTEXES
 	int			save_state;
@@ -66,7 +80,11 @@ struct hrtimer_sleeper;
 
 #define __RT_MUTEX_INITIALIZER(mutexname) \
 	{ .wait_lock = __RAW_SPIN_LOCK_UNLOCKED(mutexname.wait_lock) \
+<<<<<<< HEAD
 	, .wait_list = PLIST_HEAD_INIT(mutexname.wait_list) \
+=======
+	, .waiters = RB_ROOT \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	, .owner = NULL \
 	__DEBUG_RT_MUTEX_INITIALIZER(mutexname)}
 
@@ -96,6 +114,7 @@ extern int rt_mutex_trylock(struct rt_mutex *lock);
 
 extern void rt_mutex_unlock(struct rt_mutex *lock);
 
+<<<<<<< HEAD
 #ifdef CONFIG_RT_MUTEXES
 # define INIT_RT_MUTEXES(tsk)						\
 	.pi_waiters	= PLIST_HEAD_INIT(tsk.pi_waiters),	\
@@ -104,4 +123,6 @@ extern void rt_mutex_unlock(struct rt_mutex *lock);
 # define INIT_RT_MUTEXES(tsk)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

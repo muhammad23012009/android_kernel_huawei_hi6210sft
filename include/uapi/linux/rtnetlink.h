@@ -132,6 +132,21 @@ enum {
 	RTM_GETMDB = 86,
 #define RTM_GETMDB RTM_GETMDB
 
+<<<<<<< HEAD
+=======
+	RTM_NEWNSID = 88,
+#define RTM_NEWNSID RTM_NEWNSID
+	RTM_DELNSID = 89,
+#define RTM_DELNSID RTM_DELNSID
+	RTM_GETNSID = 90,
+#define RTM_GETNSID RTM_GETNSID
+
+	RTM_NEWSTATS = 92,
+#define RTM_NEWSTATS RTM_NEWSTATS
+	RTM_GETSTATS = 94,
+#define RTM_GETSTATS RTM_GETSTATS
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__RTM_MAX,
 #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
 };
@@ -153,7 +168,11 @@ struct rtattr {
 
 /* Macros to handle rtattributes */
 
+<<<<<<< HEAD
 #define RTA_ALIGNTO	4
+=======
+#define RTA_ALIGNTO	4U
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RTA_ALIGN(len) ( ((len)+RTA_ALIGNTO-1) & ~(RTA_ALIGNTO-1) )
 #define RTA_OK(rta,len) ((len) >= (int)sizeof(struct rtattr) && \
 			 (rta)->rta_len >= sizeof(struct rtattr) && \
@@ -235,6 +254,10 @@ enum {
 #define RTPROT_NTK	15	/* Netsukuku */
 #define RTPROT_DHCP	16      /* DHCP client */
 #define RTPROT_MROUTED	17      /* Multicast daemon */
+<<<<<<< HEAD
+=======
+#define RTPROT_BABEL	42      /* Babel daemon */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* rtm_scope
 
@@ -262,6 +285,10 @@ enum rt_scope_t {
 #define RTM_F_CLONED		0x200	/* This route is cloned		*/
 #define RTM_F_EQUALIZE		0x400	/* Multipath equalizer: NI	*/
 #define RTM_F_PREFIX		0x800	/* Prefix addresses		*/
+<<<<<<< HEAD
+=======
+#define RTM_F_LOOKUP_TABLE	0x1000	/* set rtm_table to FIB lookup result */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Reserved table identifiers */
 
@@ -297,6 +324,12 @@ enum rtattr_type_t {
 	RTA_TABLE,
 	RTA_MARK,
 	RTA_MFC_STATS,
+<<<<<<< HEAD
+=======
+	RTA_VIA,
+	RTA_NEWDST,
+	RTA_PREF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	RTA_ENCAP_TYPE,
 	RTA_ENCAP,
 	RTA_EXPIRES,
@@ -331,6 +364,13 @@ struct rtnexthop {
 #define RTNH_F_DEAD		1	/* Nexthop is dead (used by multipath)	*/
 #define RTNH_F_PERVASIVE	2	/* Do recursive gateway lookup	*/
 #define RTNH_F_ONLINK		4	/* Gateway is forced on link	*/
+<<<<<<< HEAD
+=======
+#define RTNH_F_OFFLOAD		8	/* offloaded route */
+#define RTNH_F_LINKDOWN		16	/* carrier-down on nexthop */
+
+#define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | RTNH_F_OFFLOAD)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Macros to handle hexthops */
 
@@ -343,6 +383,15 @@ struct rtnexthop {
 #define RTNH_SPACE(len)	RTNH_ALIGN(RTNH_LENGTH(len))
 #define RTNH_DATA(rtnh)   ((struct rtattr*)(((char*)(rtnh)) + RTNH_LENGTH(0)))
 
+<<<<<<< HEAD
+=======
+/* RTA_VIA */
+struct rtvia {
+	__kernel_sa_family_t	rtvia_family;
+	__u8			rtvia_addr[0];
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* RTM_CACHEINFO */
 
 struct rta_cacheinfo {
@@ -391,15 +440,32 @@ enum {
 #define RTAX_RTO_MIN RTAX_RTO_MIN
 	RTAX_INITRWND,
 #define RTAX_INITRWND RTAX_INITRWND
+<<<<<<< HEAD
+=======
+	RTAX_QUICKACK,
+#define RTAX_QUICKACK RTAX_QUICKACK
+	RTAX_CC_ALGO,
+#define RTAX_CC_ALGO RTAX_CC_ALGO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__RTAX_MAX
 };
 
 #define RTAX_MAX (__RTAX_MAX - 1)
 
+<<<<<<< HEAD
 #define RTAX_FEATURE_ECN	0x00000001
 #define RTAX_FEATURE_SACK	0x00000002
 #define RTAX_FEATURE_TIMESTAMP	0x00000004
 #define RTAX_FEATURE_ALLFRAG	0x00000008
+=======
+#define RTAX_FEATURE_ECN	(1 << 0)
+#define RTAX_FEATURE_SACK	(1 << 1)
+#define RTAX_FEATURE_TIMESTAMP	(1 << 2)
+#define RTAX_FEATURE_ALLFRAG	(1 << 3)
+
+#define RTAX_FEATURE_MASK	(RTAX_FEATURE_ECN | RTAX_FEATURE_SACK | \
+				 RTAX_FEATURE_TIMESTAMP | RTAX_FEATURE_ALLFRAG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct rta_session {
 	__u8	proto;
@@ -509,6 +575,10 @@ enum {
 	TCA_FCNT,
 	TCA_STATS2,
 	TCA_STAB,
+<<<<<<< HEAD
+=======
+	TCA_PAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__TCA_MAX
 };
 
@@ -618,6 +688,13 @@ enum rtnetlink_groups {
 #define RTNLGRP_IPV6_NETCONF	RTNLGRP_IPV6_NETCONF
 	RTNLGRP_MDB,
 #define RTNLGRP_MDB		RTNLGRP_MDB
+<<<<<<< HEAD
+=======
+	RTNLGRP_MPLS_ROUTE,
+#define RTNLGRP_MPLS_ROUTE	RTNLGRP_MPLS_ROUTE
+	RTNLGRP_NSID,
+#define RTNLGRP_NSID		RTNLGRP_NSID
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__RTNLGRP_MAX
 };
 #define RTNLGRP_MAX	(__RTNLGRP_MAX - 1)
@@ -636,6 +713,11 @@ struct tcamsg {
 /* New extended info filters for IFLA_EXT_MASK */
 #define RTEXT_FILTER_VF		(1 << 0)
 #define RTEXT_FILTER_BRVLAN	(1 << 1)
+<<<<<<< HEAD
+=======
+#define RTEXT_FILTER_BRVLAN_COMPRESSED	(1 << 2)
+#define	RTEXT_FILTER_SKIP_STATS	(1 << 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* End of information exported to user level */
 

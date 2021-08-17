@@ -20,6 +20,7 @@
 
 #undef memset
 #undef memcpy
+<<<<<<< HEAD
 #define memzero(s, n)     memset ((s), 0, (n))
 
 typedef unsigned char  uch;
@@ -80,10 +81,15 @@ static void error(char *m);
 int puts(const char *);
 
 extern int _text;		/* Defined in vmlinux.lds.S */
+=======
+#define memzero(s, n)     memset((s), (0), (n))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int _end;
 static unsigned long free_mem_ptr;
 static unsigned long free_mem_end_ptr;
 
+<<<<<<< HEAD
 #define HEAP_SIZE             0x10000
 
 #include "../../../../lib/inflate.c"
@@ -152,10 +158,45 @@ static void flush_window(void)
     bytes_out += (ulg)outcnt;
     output_ptr += (ulg)outcnt;
     outcnt = 0;
+=======
+extern char input_data[];
+extern int input_len;
+extern char output[];
+
+#define HEAP_SIZE             0x10000
+
+#ifdef CONFIG_KERNEL_GZIP
+#include "../../../../lib/decompress_inflate.c"
+#endif
+
+#ifdef CONFIG_KERNEL_LZO
+#include "../../../../lib/decompress_unlzo.c"
+#endif
+
+void *memset(void *s, int c, size_t n)
+{
+	int i;
+	char *ss = (char *)s;
+
+	for (i = 0; i < n; i++)
+		ss[i] = c;
+	return s;
+}
+
+void *memcpy(void *dest, const void *src, size_t n)
+{
+	int i;
+	char *d = (char *)dest, *s = (char *)src;
+
+	for (i = 0; i < n; i++)
+		d[i] = s[i];
+	return dest;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void error(char *x)
 {
+<<<<<<< HEAD
 	puts("\n\n");
 	puts(x);
 	puts("\n\n -- System halted");
@@ -178,4 +219,16 @@ void decompress_kernel(void)
 	puts("Uncompressing Linux... ");
 	gunzip();
 	puts("Ok, booting the kernel.\n");
+=======
+	while (1)
+		;	/* Halt */
+}
+
+void decompress_kernel(void)
+{
+	free_mem_ptr = (unsigned long)&_end;
+	free_mem_end_ptr = free_mem_ptr + HEAP_SIZE;
+
+	__decompress(input_data, input_len, NULL, NULL, output, 0, NULL, error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

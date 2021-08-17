@@ -6,6 +6,10 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hashtab.h"
 
 struct hashtab *hashtab_create(u32 (*hash_value)(struct hashtab *h, const void *key),
@@ -40,6 +44,11 @@ int hashtab_insert(struct hashtab *h, void *key, void *datum)
 	u32 hvalue;
 	struct hashtab_node *prev, *cur, *newnode;
 
+<<<<<<< HEAD
+=======
+	cond_resched();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!h || h->nel == HASHTAB_MAX_NODES)
 		return -EINVAL;
 

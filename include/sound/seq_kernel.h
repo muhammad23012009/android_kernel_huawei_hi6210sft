@@ -27,11 +27,16 @@
 typedef struct snd_seq_real_time snd_seq_real_time_t;
 typedef union snd_seq_timestamp snd_seq_timestamp_t;
 
+<<<<<<< HEAD
 /* maximum number of events dequeued per schedule interval */
 #define SNDRV_SEQ_MAX_DEQUEUE		50
 
 /* maximum number of queues */
 #define SNDRV_SEQ_MAX_QUEUES		8
+=======
+/* maximum number of queues */
+#define SNDRV_SEQ_MAX_QUEUES		32
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* max number of concurrent clients */
 #define SNDRV_SEQ_MAX_CLIENTS 		192
@@ -42,9 +47,12 @@ typedef union snd_seq_timestamp snd_seq_timestamp_t;
 /* max number of events in memory pool */
 #define SNDRV_SEQ_MAX_EVENTS		2000
 
+<<<<<<< HEAD
 /* default number of events in memory chunk */
 #define SNDRV_SEQ_DEFAULT_CHUNK_EVENTS	64
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* default number of events in memory pool */
 #define SNDRV_SEQ_DEFAULT_EVENTS	500
 
@@ -55,7 +63,12 @@ typedef union snd_seq_timestamp snd_seq_timestamp_t;
 #define SNDRV_SEQ_DEFAULT_CLIENT_EVENTS	200
 
 /* max delivery path length */
+<<<<<<< HEAD
 #define SNDRV_SEQ_MAX_HOPS		10
+=======
+/* NOTE: this shouldn't be greater than MAX_LOCKDEP_SUBCLASSES */
+#define SNDRV_SEQ_MAX_HOPS		8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* max size of event size */
 #define SNDRV_SEQ_MAX_EVENT_LEN		0x3fffffff
@@ -70,7 +83,10 @@ struct snd_seq_port_callback {
 	int (*unuse)(void *private_data, struct snd_seq_port_subscribe *info);
 	int (*event_input)(struct snd_seq_event *ev, int direct, void *private_data, int atomic, int hop);
 	void (*private_free)(void *private_data);
+<<<<<<< HEAD
 	unsigned int callback_all;	/* call subscribe callbacks at each connection/disconnection */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*...*/
 };
 
@@ -106,11 +122,19 @@ int snd_seq_event_port_attach(int client, struct snd_seq_port_callback *pcbp,
 int snd_seq_event_port_detach(int client, int port);
 
 #ifdef CONFIG_MODULES
+<<<<<<< HEAD
 void snd_seq_autoload_lock(void);
 void snd_seq_autoload_unlock(void);
 #else
 #define snd_seq_autoload_lock()
 #define snd_seq_autoload_unlock()
+=======
+void snd_seq_autoload_init(void);
+void snd_seq_autoload_exit(void);
+#else
+#define snd_seq_autoload_init()
+#define snd_seq_autoload_exit()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* __SOUND_SEQ_KERNEL_H */

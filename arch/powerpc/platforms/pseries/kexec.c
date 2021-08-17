@@ -14,6 +14,7 @@
 #include <asm/page.h>
 #include <asm/firmware.h>
 #include <asm/kexec.h>
+<<<<<<< HEAD
 #include <asm/mpic.h>
 #include <asm/xics.h>
 #include <asm/smp.h>
@@ -22,6 +23,15 @@
 #include "plpar_wrappers.h"
 
 static void pseries_kexec_cpu_down(int crash_shutdown, int secondary)
+=======
+#include <asm/xics.h>
+#include <asm/smp.h>
+#include <asm/plpar_wrappers.h>
+
+#include "pseries.h"
+
+void pseries_kexec_cpu_down(int crash_shutdown, int secondary)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* Don't risk a hypervisor call if we're crashing */
 	if (firmware_has_feature(FW_FEATURE_SPLPAR) && !crash_shutdown) {
@@ -51,6 +61,7 @@ static void pseries_kexec_cpu_down(int crash_shutdown, int secondary)
 			       "(hw %d) failed with %d\n", cpu, hwcpu, ret);
 		}
 	}
+<<<<<<< HEAD
 }
 
 static void pseries_kexec_cpu_down_mpic(int crash_shutdown, int secondary)
@@ -74,3 +85,8 @@ void __init setup_kexec_cpu_down_xics(void)
 {
 	ppc_md.kexec_cpu_down = pseries_kexec_cpu_down_xics;
 }
+=======
+
+	xics_kexec_teardown_cpu(secondary);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

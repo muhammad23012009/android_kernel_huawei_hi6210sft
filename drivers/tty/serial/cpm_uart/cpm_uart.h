@@ -19,7 +19,11 @@
 
 #if defined(CONFIG_CPM2)
 #include "cpm_uart_cpm2.h"
+<<<<<<< HEAD
 #elif defined(CONFIG_8xx)
+=======
+#elif defined(CONFIG_CPM1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "cpm_uart_cpm1.h"
 #endif
 

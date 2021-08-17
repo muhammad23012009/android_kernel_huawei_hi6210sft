@@ -29,7 +29,10 @@ ssize_t nfs_dns_resolve_name(struct net *net, char *name, size_t namelen,
 	kfree(ip_addr);
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(nfs_dns_resolve_name);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 
@@ -47,7 +50,13 @@ EXPORT_SYMBOL_GPL(nfs_dns_resolve_name);
 #include <linux/sunrpc/cache.h>
 #include <linux/sunrpc/svcauth.h>
 #include <linux/sunrpc/rpc_pipe_fs.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/nfs_fs.h>
+
+#include "nfs4_fs.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "dns_resolve.h"
 #include "cache_lib.h"
 #include "netns.h"
@@ -351,7 +360,10 @@ ssize_t nfs_dns_resolve_name(struct net *net, char *name,
 		ret = -ESRCH;
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(nfs_dns_resolve_name);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct cache_detail nfs_dns_resolve_template = {
 	.owner		= THIS_MODULE,
@@ -396,6 +408,24 @@ void nfs_dns_resolver_cache_destroy(struct net *net)
 	cache_destroy_net(nn->nfs_dns_resolve, net);
 }
 
+<<<<<<< HEAD
+=======
+static int nfs4_dns_net_init(struct net *net)
+{
+	return nfs_dns_resolver_cache_init(net);
+}
+
+static void nfs4_dns_net_exit(struct net *net)
+{
+	nfs_dns_resolver_cache_destroy(net);
+}
+
+static struct pernet_operations nfs4_dns_resolver_ops = {
+	.init = nfs4_dns_net_init,
+	.exit = nfs4_dns_net_exit,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int rpc_pipefs_event(struct notifier_block *nb, unsigned long event,
 			   void *ptr)
 {
@@ -432,11 +462,31 @@ static struct notifier_block nfs_dns_resolver_block = {
 
 int nfs_dns_resolver_init(void)
 {
+<<<<<<< HEAD
 	return rpc_pipefs_notifier_register(&nfs_dns_resolver_block);
+=======
+	int err;
+
+	err = register_pernet_subsys(&nfs4_dns_resolver_ops);
+	if (err < 0)
+		goto out;
+	err = rpc_pipefs_notifier_register(&nfs_dns_resolver_block);
+	if (err < 0)
+		goto out1;
+	return 0;
+out1:
+	unregister_pernet_subsys(&nfs4_dns_resolver_ops);
+out:
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void nfs_dns_resolver_destroy(void)
 {
 	rpc_pipefs_notifier_unregister(&nfs_dns_resolver_block);
+<<<<<<< HEAD
+=======
+	unregister_pernet_subsys(&nfs4_dns_resolver_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif

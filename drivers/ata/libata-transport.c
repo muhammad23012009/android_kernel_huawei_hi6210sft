@@ -37,7 +37,11 @@
 #include "libata.h"
 #include "libata-transport.h"
 
+<<<<<<< HEAD
 #define ATA_PORT_ATTRS		2
+=======
+#define ATA_PORT_ATTRS		3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ATA_LINK_ATTRS		3
 #define ATA_DEV_ATTRS		9
 
@@ -143,6 +147,10 @@ static struct {
 	{ ATA_DEV_PMP_UNSUP,		"pmp" },
 	{ ATA_DEV_SEMB,			"semb" },
 	{ ATA_DEV_SEMB_UNSUP,		"semb" },
+<<<<<<< HEAD
+=======
+	{ ATA_DEV_ZAC,			"zac" },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ ATA_DEV_NONE,			"none" }
 };
 ata_bitfield_name_search(class, ata_class_names)
@@ -216,13 +224,20 @@ static DEVICE_ATTR(name, S_IRUGO, show_ata_port_##name, NULL)
 
 ata_port_simple_attr(nr_pmp_links, nr_pmp_links, "%d\n", int);
 ata_port_simple_attr(stats.idle_irq, idle_irq, "%ld\n", unsigned long);
+<<<<<<< HEAD
+=======
+ata_port_simple_attr(local_port_no, port_no, "%u\n", unsigned int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DECLARE_TRANSPORT_CLASS(ata_port_class,
 			       "ata_port", NULL, NULL, NULL);
 
 static void ata_tport_release(struct device *dev)
 {
+<<<<<<< HEAD
 	put_device(dev->parent);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -282,10 +297,18 @@ int ata_tport_add(struct device *parent,
 	device_initialize(dev);
 	dev->type = &ata_port_type;
 
+<<<<<<< HEAD
 	dev->parent = get_device(parent);
 	dev->release = ata_tport_release;
 	dev_set_name(dev, "ata%d", ap->print_id);
 	transport_setup_device(dev);
+=======
+	dev->parent = parent;
+	dev->release = ata_tport_release;
+	dev_set_name(dev, "ata%d", ap->print_id);
+	transport_setup_device(dev);
+	ata_acpi_bind_port(ap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = device_add(dev);
 	if (error) {
 		goto tport_err;
@@ -345,7 +368,10 @@ static DECLARE_TRANSPORT_CLASS(ata_link_class,
 
 static void ata_tlink_release(struct device *dev)
 {
+<<<<<<< HEAD
 	put_device(dev->parent);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -407,7 +433,11 @@ int ata_tlink_add(struct ata_link *link)
 	int error;
 
 	device_initialize(dev);
+<<<<<<< HEAD
 	dev->parent = get_device(&ap->tdev);
+=======
+	dev->parent = &ap->tdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->release = ata_tlink_release;
 	if (ata_is_host_link(link))
 		dev_set_name(dev, "link%d", ap->print_id);
@@ -492,12 +522,22 @@ struct ata_show_ering_arg {
 static int ata_show_ering(struct ata_ering_entry *ent, void *void_arg)
 {
 	struct ata_show_ering_arg* arg = void_arg;
+<<<<<<< HEAD
 	struct timespec time;
 
 	jiffies_to_timespec(ent->timestamp,&time);
 	arg->written += sprintf(arg->buf + arg->written,
 			       "[%5lu.%06lu]",
 			       time.tv_sec, time.tv_nsec);
+=======
+	u64 seconds;
+	u32 rem;
+
+	seconds = div_u64_rem(ent->timestamp, HZ, &rem);
+	arg->written += sprintf(arg->buf + arg->written,
+			        "[%5llu.%09lu]", seconds,
+				rem * NSEC_PER_SEC / HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	arg->written += get_ata_err_names(ent->err_mask,
 					  arg->buf + arg->written);
 	return 0;
@@ -557,12 +597,41 @@ show_ata_dev_gscr(struct device *dev,
 
 static DEVICE_ATTR(gscr, S_IRUGO, show_ata_dev_gscr, NULL);
 
+<<<<<<< HEAD
+=======
+static ssize_t
+show_ata_dev_trim(struct device *dev,
+		  struct device_attribute *attr, char *buf)
+{
+	struct ata_device *ata_dev = transport_class_to_dev(dev);
+	unsigned char *mode;
+
+	if (!ata_id_has_trim(ata_dev->id))
+		mode = "unsupported";
+	else if (ata_dev->horkage & ATA_HORKAGE_NOTRIM)
+		mode = "forced_unsupported";
+	else if (ata_dev->horkage & ATA_HORKAGE_NO_NCQ_TRIM)
+			mode = "forced_unqueued";
+	else if (ata_fpdma_dsm_supported(ata_dev))
+		mode = "queued";
+	else
+		mode = "unqueued";
+
+	return snprintf(buf, 20, "%s\n", mode);
+}
+
+static DEVICE_ATTR(trim, S_IRUGO, show_ata_dev_trim, NULL);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DECLARE_TRANSPORT_CLASS(ata_dev_class,
 			       "ata_device", NULL, NULL, NULL);
 
 static void ata_tdev_release(struct device *dev)
 {
+<<<<<<< HEAD
 	put_device(dev->parent);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -635,7 +704,11 @@ static int ata_tdev_add(struct ata_device *ata_dev)
 	int error;
 
 	device_initialize(dev);
+<<<<<<< HEAD
 	dev->parent = get_device(&link->tdev);
+=======
+	dev->parent = &link->tdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->release = ata_tdev_release;
 	if (ata_is_host_link(link))
 		dev_set_name(dev, "dev%d.%d", ap->print_id,ata_dev->devno);
@@ -643,6 +716,10 @@ static int ata_tdev_add(struct ata_device *ata_dev)
 		dev_set_name(dev, "dev%d.%d.0", ap->print_id, link->pmp);
 
 	transport_setup_device(dev);
+<<<<<<< HEAD
+=======
+	ata_acpi_bind_dev(ata_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = device_add(dev);
 	if (error) {
 		ata_tdev_free(ata_dev);
@@ -709,6 +786,10 @@ struct scsi_transport_template *ata_attach_transport(void)
 	count = 0;
 	SETUP_PORT_ATTRIBUTE(nr_pmp_links);
 	SETUP_PORT_ATTRIBUTE(idle_irq);
+<<<<<<< HEAD
+=======
+	SETUP_PORT_ATTRIBUTE(port_no);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(count > ATA_PORT_ATTRS);
 	i->port_attrs[count] = NULL;
 
@@ -728,6 +809,10 @@ struct scsi_transport_template *ata_attach_transport(void)
 	SETUP_DEV_ATTRIBUTE(ering);
 	SETUP_DEV_ATTRIBUTE(id);
 	SETUP_DEV_ATTRIBUTE(gscr);
+<<<<<<< HEAD
+=======
+	SETUP_DEV_ATTRIBUTE(trim);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(count > ATA_DEV_ATTRS);
 	i->dev_attrs[count] = NULL;
 

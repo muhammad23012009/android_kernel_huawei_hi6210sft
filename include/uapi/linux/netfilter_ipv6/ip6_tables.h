@@ -17,6 +17,10 @@
 
 #include <linux/types.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/if.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netfilter_ipv6.h>
 
 #include <linux/netfilter/x_tables.h>

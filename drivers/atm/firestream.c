@@ -168,7 +168,11 @@ static char *res_strings[] = {
 	"reserved 14", 
 	"Unrecognized cell", 
 	"reserved 16", 
+<<<<<<< HEAD
 	"reassemby abort: AAL5 abort", 
+=======
+	"reassembly abort: AAL5 abort", 
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"packet purged", 
 	"packet ageing timeout", 
 	"channel ageing timeout", 
@@ -181,13 +185,24 @@ static char *res_strings[] = {
 	"reserved 27", 
 	"reserved 28", 
 	"reserved 29", 
+<<<<<<< HEAD
 	"reserved 30", 
+=======
+	"reserved 30", /* FIXME: The strings between 30-40 might be wrong. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"reassembly abort: no buffers", 
 	"receive buffer overflow", 
 	"change in GFC", 
 	"receive buffer full", 
 	"low priority discard - no receive descriptor", 
 	"low priority discard - missing end of packet", 
+<<<<<<< HEAD
+=======
+	"reserved 37",
+	"reserved 38",
+	"reserved 39",
+	"reseverd 40",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"reserved 41", 
 	"reserved 42", 
 	"reserved 43", 
@@ -736,8 +751,13 @@ static void process_txdone_queue (struct fs_dev *dev, struct queue *q)
       
 			skb = td->skb;
 			if (skb == FS_VCC (ATM_SKB(skb)->vcc)->last_skb) {
+<<<<<<< HEAD
 				wake_up_interruptible (& FS_VCC (ATM_SKB(skb)->vcc)->close_wait);
 				FS_VCC (ATM_SKB(skb)->vcc)->last_skb = NULL;
+=======
+				FS_VCC (ATM_SKB(skb)->vcc)->last_skb = NULL;
+				wake_up_interruptible (& FS_VCC (ATM_SKB(skb)->vcc)->close_wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			td->dev->ntxpckts--;
 
@@ -923,6 +943,10 @@ static int fs_open(struct atm_vcc *atm_vcc)
 			}
 			if (!to) {
 				printk ("No more free channels for FS50..\n");
+<<<<<<< HEAD
+=======
+				kfree(vcc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return -EBUSY;
 			}
 			vcc->channo = dev->channo;
@@ -933,6 +957,10 @@ static int fs_open(struct atm_vcc *atm_vcc)
 			if (((DO_DIRECTION(rxtp) && dev->atm_vccs[vcc->channo])) ||
 			    ( DO_DIRECTION(txtp) && test_bit (vcc->channo, dev->tx_inuse))) {
 				printk ("Channel is in use for FS155.\n");
+<<<<<<< HEAD
+=======
+				kfree(vcc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return -EBUSY;
 			}
 		}
@@ -946,6 +974,10 @@ static int fs_open(struct atm_vcc *atm_vcc)
 			    tc, sizeof (struct fs_transmit_config));
 		if (!tc) {
 			fs_dprintk (FS_DEBUG_OPEN, "fs: can't alloc transmit_config.\n");
+<<<<<<< HEAD
+=======
+			kfree(vcc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENOMEM;
 		}
 
@@ -1006,6 +1038,10 @@ static int fs_open(struct atm_vcc *atm_vcc)
 				error = make_rate (pcr, r, &tmc0, NULL);
 				if (error) {
 					kfree(tc);
+<<<<<<< HEAD
+=======
+					kfree(vcc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					return error;
 				}
 			}
@@ -1123,7 +1159,11 @@ static void fs_close(struct atm_vcc *atm_vcc)
 		   this sleep_on, we'll lose any reference to these packets. Memory leak!
 		   On the other hand, it's awfully convenient that we can abort a "close" that
 		   is taking too long. Maybe just use non-interruptible sleep on? -- REW */
+<<<<<<< HEAD
 		interruptible_sleep_on (& vcc->close_wait);
+=======
+		wait_event_interruptible(vcc->close_wait, !vcc->last_skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	txtp = &atm_vcc->qos.txtp;
@@ -2000,7 +2040,11 @@ static void firestream_remove_one(struct pci_dev *pdev)
 
 		fs_dprintk (FS_DEBUG_CLEANUP, "Freeing irq%d.\n", dev->irq);
 		free_irq (dev->irq, dev);
+<<<<<<< HEAD
 		del_timer (&dev->timer);
+=======
+		del_timer_sync (&dev->timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		atm_dev_deregister(dev->atm_dev);
 		free_queue (dev, &dev->hp_txq);

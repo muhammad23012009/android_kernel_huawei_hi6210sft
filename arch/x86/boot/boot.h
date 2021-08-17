@@ -16,19 +16,31 @@
 #ifndef BOOT_BOOT_H
 #define BOOT_BOOT_H
 
+<<<<<<< HEAD
 #define STACK_SIZE	512	/* Minimum number of bytes for stack */
+=======
+#define STACK_SIZE	1024	/* Minimum number of bytes for stack */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef __ASSEMBLY__
 
 #include <stdarg.h>
 #include <linux/types.h>
 #include <linux/edd.h>
+<<<<<<< HEAD
 #include <asm/boot.h>
 #include <asm/setup.h>
 #include "bitops.h"
 #include <asm/cpufeature.h>
 #include <asm/processor-flags.h>
 #include "ctype.h"
+=======
+#include <asm/setup.h>
+#include <asm/asm.h>
+#include "bitops.h"
+#include "ctype.h"
+#include "cpuflags.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Useful macros */
 #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
@@ -178,6 +190,7 @@ static inline void wrgs32(u32 v, addr_t addr)
 }
 
 /* Note: these only return true/false, not a signed return value! */
+<<<<<<< HEAD
 static inline int memcmp(const void *s1, const void *s2, size_t len)
 {
 	u8 diff;
@@ -198,6 +211,20 @@ static inline int memcmp_gs(const void *s1, addr_t s2, size_t len)
 	u8 diff;
 	asm volatile("gs; repe; cmpsb; setnz %0"
 		     : "=qm" (diff), "+D" (s1), "+S" (s2), "+c" (len));
+=======
+static inline bool memcmp_fs(const void *s1, addr_t s2, size_t len)
+{
+	bool diff;
+	asm volatile("fs; repe; cmpsb" CC_SET(nz)
+		     : CC_OUT(nz) (diff), "+D" (s1), "+S" (s2), "+c" (len));
+	return diff;
+}
+static inline bool memcmp_gs(const void *s1, addr_t s2, size_t len)
+{
+	bool diff;
+	asm volatile("gs; repe; cmpsb" CC_SET(nz)
+		     : CC_OUT(nz) (diff), "+D" (s1), "+S" (s2), "+c" (len));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return diff;
 }
 
@@ -229,11 +256,14 @@ void copy_to_fs(addr_t dst, void *src, size_t len);
 void *copy_from_fs(void *dst, addr_t src, size_t len);
 void copy_to_gs(addr_t dst, void *src, size_t len);
 void *copy_from_gs(void *dst, addr_t src, size_t len);
+<<<<<<< HEAD
 void *memcpy(void *dst, void *src, size_t len);
 void *memset(void *dst, int c, size_t len);
 
 #define memcpy(d,s,l) __builtin_memcpy(d,s,l)
 #define memset(d,c,l) __builtin_memset(d,c,l)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* a20.c */
 int enable_a20(void);
@@ -307,6 +337,7 @@ static inline int cmdline_find_option_bool(const char *option)
 	return __cmdline_find_option_bool(cmd_line_ptr, option);
 }
 
+<<<<<<< HEAD
 
 /* cpu.c, cpucheck.c */
 struct cpu_features {
@@ -316,6 +347,11 @@ struct cpu_features {
 };
 extern struct cpu_features cpu;
 int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr);
+=======
+/* cpu.c, cpucheck.c */
+int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr);
+int check_knl_erratum(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int validate_cpu(void);
 
 /* early_serial_console.c */
@@ -328,9 +364,12 @@ void query_edd(void);
 /* header.S */
 void __attribute__((noreturn)) die(void);
 
+<<<<<<< HEAD
 /* mca.c */
 int query_mca(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* memory.c */
 int detect_memory(void);
 
@@ -355,6 +394,10 @@ int strncmp(const char *cs, const char *ct, size_t count);
 size_t strnlen(const char *s, size_t maxlen);
 unsigned int atou(const char *s);
 unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base);
+<<<<<<< HEAD
+=======
+size_t strlen(const char *s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* tty.c */
 void puts(const char *);

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,12 +70,20 @@ static acpi_status acpi_ps_get_aml_opcode(struct acpi_walk_state *walk_state);
 
 static acpi_status acpi_ps_get_aml_opcode(struct acpi_walk_state *walk_state)
 {
+<<<<<<< HEAD
 
 	ACPI_FUNCTION_TRACE_PTR(ps_get_aml_opcode, walk_state);
 
 	walk_state->aml_offset =
 	    (u32)ACPI_PTR_DIFF(walk_state->parser_state.aml,
 			       walk_state->parser_state.aml_start);
+=======
+	u32 aml_offset;
+
+	ACPI_FUNCTION_TRACE_PTR(ps_get_aml_opcode, walk_state);
+
+	walk_state->aml = walk_state->parser_state.aml;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	walk_state->opcode = acpi_ps_peek_opcode(&(walk_state->parser_state));
 
 	/*
@@ -98,10 +110,21 @@ static acpi_status acpi_ps_get_aml_opcode(struct acpi_walk_state *walk_state)
 		/* The opcode is unrecognized. Complain and skip unknown opcodes */
 
 		if (walk_state->pass_number == 2) {
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO,
 				    "Unknown opcode 0x%.2X at table offset 0x%.4X, ignoring",
 				    walk_state->opcode,
 				    (u32)(walk_state->aml_offset +
+=======
+			aml_offset = (u32)ACPI_PTR_DIFF(walk_state->aml,
+							walk_state->
+							parser_state.aml_start);
+
+			ACPI_ERROR((AE_INFO,
+				    "Unknown opcode 0x%.2X at table offset 0x%.4X, ignoring",
+				    walk_state->opcode,
+				    (u32)(aml_offset +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  sizeof(struct acpi_table_header))));
 
 			ACPI_DUMP_BUFFER((walk_state->parser_state.aml - 16),
@@ -115,17 +138,41 @@ static acpi_status acpi_ps_get_aml_opcode(struct acpi_walk_state *walk_state)
 			acpi_os_printf
 			    ("/*\nError: Unknown opcode 0x%.2X at table offset 0x%.4X, context:\n",
 			     walk_state->opcode,
+<<<<<<< HEAD
 			     (u32)(walk_state->aml_offset +
 				   sizeof(struct acpi_table_header)));
 
+=======
+			     (u32)(aml_offset +
+				   sizeof(struct acpi_table_header)));
+
+			ACPI_ERROR((AE_INFO,
+				    "Aborting disassembly, AML byte code is corrupt"));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Dump the context surrounding the invalid opcode */
 
 			acpi_ut_dump_buffer(((u8 *)walk_state->parser_state.
 					     aml - 16), 48, DB_BYTE_DISPLAY,
+<<<<<<< HEAD
 					    (walk_state->aml_offset +
 					     sizeof(struct acpi_table_header) -
 					     16));
 			acpi_os_printf(" */\n");
+=======
+					    (aml_offset +
+					     sizeof(struct acpi_table_header) -
+					     16));
+			acpi_os_printf(" */\n");
+
+			/*
+			 * Just abort the disassembly, cannot continue because the
+			 * parser is essentially lost. The disassembler can then
+			 * randomly fail because an ill-constructed parse tree
+			 * can result.
+			 */
+			return_ACPI_STATUS(AE_AML_BAD_OPCODE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 		}
 
@@ -219,7 +266,14 @@ acpi_ps_build_named_op(struct acpi_walk_state *walk_state,
 
 	status = walk_state->descending_callback(walk_state, op);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		ACPI_EXCEPTION((AE_INFO, status, "During name lookup/catalog"));
+=======
+		if (status != AE_CTRL_TERMINATE) {
+			ACPI_EXCEPTION((AE_INFO, status,
+					"During name lookup/catalog"));
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return_ACPI_STATUS(status);
 	}
 
@@ -230,7 +284,11 @@ acpi_ps_build_named_op(struct acpi_walk_state *walk_state,
 	status = acpi_ps_next_parse_state(walk_state, *op, status);
 	if (ACPI_FAILURE(status)) {
 		if (status == AE_CTRL_PENDING) {
+<<<<<<< HEAD
 			return_ACPI_STATUS(AE_CTRL_PARSE_PENDING);
+=======
+			status = AE_CTRL_PARSE_PENDING;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		return_ACPI_STATUS(status);
 	}
@@ -287,11 +345,21 @@ acpi_ps_create_op(struct acpi_walk_state *walk_state,
 	if (status == AE_CTRL_PARSE_CONTINUE) {
 		return_ACPI_STATUS(AE_CTRL_PARSE_CONTINUE);
 	}
+<<<<<<< HEAD
+=======
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Create Op structure and append to parent's argument list */
 
 	walk_state->op_info = acpi_ps_get_opcode_info(walk_state->opcode);
+<<<<<<< HEAD
 	op = acpi_ps_alloc_op(walk_state->opcode);
+=======
+	op = acpi_ps_alloc_op(walk_state->opcode, aml_op_start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!op) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -402,6 +470,10 @@ acpi_ps_complete_op(struct acpi_walk_state *walk_state,
 
 	switch (status) {
 	case AE_OK:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case AE_CTRL_TRANSFER:

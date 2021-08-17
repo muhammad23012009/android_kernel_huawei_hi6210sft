@@ -61,8 +61,13 @@ struct lguest_data {
 	u32 tsc_khz;
 
 /* Fields initialized by the Guest at boot: */
+<<<<<<< HEAD
 	/* Instruction range to suppress interrupts even if enabled */
 	unsigned long noirq_start, noirq_end;
+=======
+	/* Instruction to suppress interrupts even if enabled */
+	unsigned long noirq_iret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Address above which page tables are all identical. */
 	unsigned long kernel_address;
 	/* The vector to try to use for system calls (0x40 or 0x80). */

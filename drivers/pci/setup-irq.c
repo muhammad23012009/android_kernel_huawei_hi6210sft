@@ -10,7 +10,10 @@
  */
 
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <linux/errno.h>
@@ -23,10 +26,16 @@ void __weak pcibios_update_irq(struct pci_dev *dev, int irq)
 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
 }
 
+<<<<<<< HEAD
 static void
 pdev_fixup_irq(struct pci_dev *dev,
 	       u8 (*swizzle)(struct pci_dev *, u8 *),
 	       int (*map_irq)(const struct pci_dev *, u8, u8))
+=======
+static void pdev_fixup_irq(struct pci_dev *dev,
+			   u8 (*swizzle)(struct pci_dev *, u8 *),
+			   int (*map_irq)(const struct pci_dev *, u8, u8))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 pin, slot;
 	int irq = 0;
@@ -59,6 +68,7 @@ pdev_fixup_irq(struct pci_dev *dev,
 	pcibios_update_irq(dev, irq);
 }
 
+<<<<<<< HEAD
 void
 pci_fixup_irqs(u8 (*swizzle)(struct pci_dev *, u8 *),
 	       int (*map_irq)(const struct pci_dev *, u8, u8))
@@ -67,3 +77,14 @@ pci_fixup_irqs(u8 (*swizzle)(struct pci_dev *, u8 *),
 	for_each_pci_dev(dev)
 		pdev_fixup_irq(dev, swizzle, map_irq);
 }
+=======
+void pci_fixup_irqs(u8 (*swizzle)(struct pci_dev *, u8 *),
+		    int (*map_irq)(const struct pci_dev *, u8, u8))
+{
+	struct pci_dev *dev = NULL;
+
+	for_each_pci_dev(dev)
+		pdev_fixup_irq(dev, swizzle, map_irq);
+}
+EXPORT_SYMBOL_GPL(pci_fixup_irqs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

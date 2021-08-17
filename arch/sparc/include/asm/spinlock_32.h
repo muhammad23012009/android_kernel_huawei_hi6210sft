@@ -9,12 +9,23 @@
 #ifndef __ASSEMBLY__
 
 #include <asm/psr.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h> /* for cpu_relax */
 
 #define arch_spin_is_locked(lock) (*((volatile unsigned char *)(lock)) != 0)
 
+<<<<<<< HEAD
 #define arch_spin_unlock_wait(lock) \
 	do { while (arch_spin_is_locked(lock)) cpu_relax(); } while (0)
+=======
+static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
+{
+	smp_cond_load_acquire(&lock->lock, !VAL);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void arch_spin_lock(arch_spinlock_t *lock)
 {
@@ -131,7 +142,11 @@ static inline void arch_write_lock(arch_rwlock_t *rw)
 	*(volatile __u32 *)&lp->lock = ~0U;
 }
 
+<<<<<<< HEAD
 static void inline arch_write_unlock(arch_rwlock_t *lock)
+=======
+static inline void arch_write_unlock(arch_rwlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	__asm__ __volatile__(
 "	st		%%g0, [%0]"

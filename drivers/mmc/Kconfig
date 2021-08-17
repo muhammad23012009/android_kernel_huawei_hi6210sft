@@ -19,6 +19,7 @@ config MMC_DEBUG
 	  This is an option for use by developers; most people should
 	  say N here.  This enables MMC core and driver debugging.
 
+<<<<<<< HEAD
 #/* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
  config HUAWEI_SDCARD_DSM
 	bool "Listen sdcard kernel err"
@@ -40,6 +41,8 @@ config HUAWEI_EMMC_DSM_ONLY_VDET
 	help
 	   use device radar only to record emmc vdet log
 #/* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 if MMC
 
 source "drivers/mmc/core/Kconfig"

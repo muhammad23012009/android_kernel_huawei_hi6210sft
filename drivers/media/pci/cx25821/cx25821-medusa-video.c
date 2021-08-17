@@ -438,7 +438,11 @@ void medusa_set_resolution(struct cx25821_dev *dev, int width,
 		decoder_count = decoder_select + 1;
 	} else {
 		decoder = 0;
+<<<<<<< HEAD
 		decoder_count = _num_decoders;
+=======
+		decoder_count = dev->_max_num_decoders;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	switch (width) {
@@ -506,8 +510,11 @@ static void medusa_set_decoderduration(struct cx25821_dev *dev, int decoder,
 		break;
 	}
 
+<<<<<<< HEAD
 	_display_field_cnt[decoder] = duration;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* update hardware */
 	fld_cnt = cx25821_i2c_read(&dev->i2c_bus[0], disp_cnt_reg, &tmp);
 
@@ -667,8 +674,11 @@ int medusa_video_init(struct cx25821_dev *dev)
 	int ret_val = 0;
 	int i = 0;
 
+<<<<<<< HEAD
 	_num_decoders = dev->_max_num_decoders;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* disable Auto source selection on all video decoders */
 	value = cx25821_i2c_read(&dev->i2c_bus[0], MON_A_CTRL, &tmp);
 	value &= 0xFFFFF0FF;
@@ -685,8 +695,19 @@ int medusa_video_init(struct cx25821_dev *dev)
 	if (ret_val < 0)
 		goto error;
 
+<<<<<<< HEAD
 	for (i = 0; i < _num_decoders; i++)
 		medusa_set_decoderduration(dev, i, _display_field_cnt[i]);
+=======
+	/*
+	 * FIXME: due to a coding bug the duration was always 0. It's
+	 * likely that it really should be something else, but due to the
+	 * lack of documentation I have no idea what it should be. For
+	 * now just fill in 0 as the duration.
+	 */
+	for (i = 0; i < dev->_max_num_decoders; i++)
+		medusa_set_decoderduration(dev, i, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Select monitor as DENC A input, power up the DAC */
 	value = cx25821_i2c_read(&dev->i2c_bus[0], DENC_AB_CTRL, &tmp);
@@ -717,7 +738,11 @@ int medusa_video_init(struct cx25821_dev *dev)
 	/* Turn on all of the data out and control output pins. */
 	value = cx25821_i2c_read(&dev->i2c_bus[0], PIN_OE_CTRL, &tmp);
 	value &= 0xFEF0FE00;
+<<<<<<< HEAD
 	if (_num_decoders == MAX_DECODERS) {
+=======
+	if (dev->_max_num_decoders == MAX_DECODERS) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Note: The octal board does not support control pins(bit16-19)
 		 * These bits are ignored in the octal board.

@@ -35,6 +35,7 @@
 struct task_struct;
 
 /*
+<<<<<<< HEAD
  *  CPU type and hardware bug flags. Kept separately for each CPU.
  */
 struct cpuinfo_frv {
@@ -51,6 +52,8 @@ extern struct cpuinfo_frv __nongprelbss boot_cpu_data;
 #define current_cpu_data	boot_cpu_data
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Bus types
  */
 #define EISA_bus 0
@@ -113,6 +116,7 @@ extern asmlinkage void *restore_user_regs(const struct user_context *target, ...
 #define forget_segments()		do { } while (0)
 
 /*
+<<<<<<< HEAD
  * Free current thread data structures etc..
  */
 static inline void exit_thread(void)
@@ -120,6 +124,8 @@ static inline void exit_thread(void)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Return saved PC of a blocked thread.
  */
 extern unsigned long thread_saved_pc(struct task_struct *tsk);
@@ -129,7 +135,12 @@ unsigned long get_wchan(struct task_struct *p);
 #define	KSTK_EIP(tsk)	((tsk)->thread.frame0->pc)
 #define	KSTK_ESP(tsk)	((tsk)->thread.frame0->sp)
 
+<<<<<<< HEAD
 #define cpu_relax()    barrier()
+=======
+#define cpu_relax() barrier()
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* data cache prefetch */
 #define ARCH_HAS_PREFETCH

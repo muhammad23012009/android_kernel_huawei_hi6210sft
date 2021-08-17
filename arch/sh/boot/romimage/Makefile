@@ -17,7 +17,10 @@ LDFLAGS_vmlinux := --oformat $(ld-bfd) -Ttext $(load-y) -e romstart \
 
 $(obj)/vmlinux: $(obj)/head.o $(obj-y) $(obj)/piggy.o FORCE
 	$(call if_changed,ld)
+<<<<<<< HEAD
 	@:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 OBJCOPYFLAGS += -j .empty_zero_page
 

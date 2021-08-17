@@ -77,7 +77,11 @@ extern void paging_init(void);
  */
 
 #define USER_PTRS_PER_PGD       (TASK_SIZE/PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS      0
+=======
+#define FIRST_USER_ADDRESS      0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Kernels own virtual memory area.
@@ -125,7 +129,10 @@ extern void paging_init(void);
 #define _PAGE_CC       0x001 /* software: pte contains a translation */
 #define _PAGE_CI       0x002 /* cache inhibit          */
 #define _PAGE_WBC      0x004 /* write back cache       */
+<<<<<<< HEAD
 #define _PAGE_FILE     0x004 /* set: pagecache, unset: swap (when !PRESENT) */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define _PAGE_WOM      0x008 /* weakly ordered memory  */
 
 #define _PAGE_A        0x010 /* accessed               */
@@ -240,7 +247,10 @@ static inline int pte_write(pte_t pte) { return pte_val(pte) & _PAGE_WRITE; }
 static inline int pte_exec(pte_t pte)  { return pte_val(pte) & _PAGE_EXEC; }
 static inline int pte_dirty(pte_t pte) { return pte_val(pte) & _PAGE_DIRTY; }
 static inline int pte_young(pte_t pte) { return pte_val(pte) & _PAGE_ACCESSED; }
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte)  { return pte_val(pte) & _PAGE_FILE; }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int pte_special(pte_t pte) { return 0; }
 static inline pte_t pte_mkspecial(pte_t pte) { return pte; }
 
@@ -438,6 +448,7 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)		((pte_t) { (x).val })
 
+<<<<<<< HEAD
 /* Encode and decode a nonlinear file mapping entry */
 
 #define PTE_FILE_MAX_BITS               26
@@ -449,6 +460,10 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 #define io_remap_pfn_range(vma, vaddr, pfn, size, prot)         \
 	remap_pfn_range(vma, vaddr, pfn, size, prot)
 
+=======
+#define kern_addr_valid(addr)           (1)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/pgtable.h>
 
 /*

@@ -23,6 +23,12 @@ static inline void arch_kgdb_breakpoint(void)
 	__asm__ __volatile__("brki r16, 0x18;");
 }
 
+<<<<<<< HEAD
+=======
+struct pt_regs;
+asmlinkage void microblaze_kgdb_break(struct pt_regs *regs);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASSEMBLY__ */
 #endif /* __MICROBLAZE_KGDB_H__ */
 #endif /* __KERNEL__ */

@@ -21,17 +21,26 @@
  * sys_pipe() is the normal C calling standard for creating
  * a pipe. It's not the way Unix traditionally does this, though.
  */
+<<<<<<< HEAD
 asmlinkage int sys_sh_pipe(unsigned long r4, unsigned long r5,
 	unsigned long r6, unsigned long r7,
 	struct pt_regs __regs)
 {
 	struct pt_regs *regs = RELOC_HIDE(&__regs, 0);
+=======
+asmlinkage int sys_sh_pipe(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int fd[2];
 	int error;
 
 	error = do_pipe_flags(fd, 0);
 	if (!error) {
+<<<<<<< HEAD
 		regs->regs[1] = fd[1];
+=======
+		current_pt_regs()->regs[1] = fd[1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return fd[0];
 	}
 	return error;

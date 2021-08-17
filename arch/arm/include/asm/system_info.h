@@ -11,11 +11,19 @@
 #define CPU_ARCH_ARMv5TEJ	7
 #define CPU_ARCH_ARMv6		8
 #define CPU_ARCH_ARMv7		9
+<<<<<<< HEAD
+=======
+#define CPU_ARCH_ARMv7M		10
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef __ASSEMBLY__
 
 /* information about the system we're running on */
 extern unsigned int system_rev;
+<<<<<<< HEAD
+=======
+extern const char *system_serial;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned int system_serial_low;
 extern unsigned int system_serial_high;
 extern unsigned int mem_fclk_21285;

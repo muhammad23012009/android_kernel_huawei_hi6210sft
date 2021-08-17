@@ -49,7 +49,11 @@ static void dcon_clear_irq(void)
 
 static int dcon_was_irq(void)
 {
+<<<<<<< HEAD
 	u_int8_t tmp;
+=======
+	u8 tmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* irq status will appear in PMIO_Rx50[6] on gpio12 */
 	tmp = inb(VX855_GPI_STATUS_CHG);

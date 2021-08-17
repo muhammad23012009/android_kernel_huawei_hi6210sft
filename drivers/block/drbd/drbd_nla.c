@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 #include "drbd_wrappers.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <net/netlink.h>
 #include <linux/drbd_genl_api.h>

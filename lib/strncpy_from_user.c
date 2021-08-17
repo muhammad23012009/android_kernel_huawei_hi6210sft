@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/compiler.h>
+#include <linux/export.h>
+#include <linux/kasan-checks.h>
+#include <linux/thread_info.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/uaccess.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -19,10 +26,18 @@
  * hit it), 'max' is the address space maximum (and we return
  * -EFAULT if we hit it).
  */
+<<<<<<< HEAD
 static inline long do_strncpy_from_user(char *dst, const char __user *src, long count, unsigned long max)
 {
 	const struct word_at_a_time constants = WORD_AT_A_TIME_CONSTANTS;
 	long res = 0;
+=======
+static inline long do_strncpy_from_user(char *dst, const char __user *src,
+					unsigned long count, unsigned long max)
+{
+	const struct word_at_a_time constants = WORD_AT_A_TIME_CONSTANTS;
+	unsigned long res = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Truncate 'max' to the user-specified limit, so that
@@ -38,8 +53,13 @@ static inline long do_strncpy_from_user(char *dst, const char __user *src, long 
 		unsigned long c, data;
 
 		/* Fall back to byte-at-a-time if we get a page fault */
+<<<<<<< HEAD
 		if (unlikely(__get_user(c,(unsigned long __user *)(src+res))))
 			break;
+=======
+		unsafe_get_user(c, (unsigned long __user *)(src+res), byte_at_a_time);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*(unsigned long *)(dst+res) = c;
 		if (has_zero(c, &data, &constants)) {
 			data = prep_zero_mask(c, data, &constants);
@@ -54,8 +74,12 @@ byte_at_a_time:
 	while (max) {
 		char c;
 
+<<<<<<< HEAD
 		if (unlikely(__get_user(c,src+res)))
 			return -EFAULT;
+=======
+		unsafe_get_user(c,src+res, efault);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dst[res] = c;
 		if (!c)
 			return res;
@@ -74,6 +98,10 @@ byte_at_a_time:
 	 * Nope: we hit the address space limit, and we still had more
 	 * characters the caller would have wanted. That's an EFAULT.
 	 */
+<<<<<<< HEAD
+=======
+efault:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EFAULT;
 }
 
@@ -106,7 +134,18 @@ long strncpy_from_user(char *dst, const char __user *src, long count)
 	src_addr = (unsigned long)src;
 	if (likely(src_addr < max_addr)) {
 		unsigned long max = max_addr - src_addr;
+<<<<<<< HEAD
 		return do_strncpy_from_user(dst, src, count, max);
+=======
+		long retval;
+
+		kasan_check_write(dst, count);
+		check_object_size(dst, count, false);
+		user_access_begin();
+		retval = do_strncpy_from_user(dst, src, count, max);
+		user_access_end();
+		return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return -EFAULT;
 }

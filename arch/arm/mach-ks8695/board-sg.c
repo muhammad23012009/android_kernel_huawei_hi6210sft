@@ -16,7 +16,11 @@
 #include <linux/mtd/partitions.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/devices.h>
+=======
+#include "devices.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "generic.h"
 
 /*

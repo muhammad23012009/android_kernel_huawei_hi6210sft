@@ -62,8 +62,11 @@ config SIR_BFIN_PIO
 	bool "PIO mode"
 endchoice
 
+<<<<<<< HEAD
 comment "Dongle support"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config SH_SIR
 	tristate "SuperH SIR on UART"
 	depends on IRDA && SUPERH && \
@@ -74,6 +77,11 @@ config SH_SIR
 	  Say Y here if your want to enable SIR function on SuperH UART
 	  devices.
 
+<<<<<<< HEAD
+=======
+comment "Dongle support"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config DONGLE
 	bool "Serial dongle support"
 	depends on IRTTY_SIR
@@ -210,6 +218,7 @@ config KINGSUN_DONGLE
 	  To compile it as a module, choose M here: the module will be called
 	  kingsun-sir.
 
+<<<<<<< HEAD
 config EP7211_DONGLE
 	tristate "Cirrus Logic clps711x I/R support"
 	depends on IRTTY_SIR && ARCH_CLPS711X && IRDA
@@ -217,6 +226,8 @@ config EP7211_DONGLE
 	  Say Y here if you want to build support for the Cirrus logic
 	  EP7211 chipset's infrared module.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config KSDAZZLE_DONGLE
 	tristate "KingSun Dazzle IrDA-USB dongle"
 	depends on IRDA && USB
@@ -401,11 +412,14 @@ config MCS_FIR
 	  To compile it as a module, choose M here: the module will be called
 	  mcs7780.
 
+<<<<<<< HEAD
 config SH_IRDA
 	tristate "SuperH IrDA driver"
 	depends on IRDA && ARCH_SHMOBILE
 	help
 	  Say Y here if your want to enable SuperH IrDA devices.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu
 

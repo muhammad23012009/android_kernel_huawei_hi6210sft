@@ -29,8 +29,12 @@
 #include "common.h"
 #include "common-board-devices.h"
 
+<<<<<<< HEAD
 #if defined(CONFIG_TOUCHSCREEN_ADS7846) || \
 	defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
+=======
+#if IS_ENABLED(CONFIG_TOUCHSCREEN_ADS7846)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct omap2_mcspi_device_config ads7846_mcspi_config = {
 	.turbo_mode	= 0,
 };

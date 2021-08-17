@@ -112,7 +112,11 @@ struct property *sym_get_env_prop(struct symbol *sym)
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct property *sym_get_default_prop(struct symbol *sym)
+=======
+static struct property *sym_get_default_prop(struct symbol *sym)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct property *prop;
 
@@ -136,7 +140,11 @@ static struct property *sym_get_range_prop(struct symbol *sym)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int sym_get_range_val(struct symbol *sym, int base)
+=======
+static long long sym_get_range_val(struct symbol *sym, int base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sym_calc_value(sym);
 	switch (sym->type) {
@@ -149,13 +157,22 @@ static int sym_get_range_val(struct symbol *sym, int base)
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	return strtol(sym->curr.val, NULL, base);
+=======
+	return strtoll(sym->curr.val, NULL, base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sym_validate_range(struct symbol *sym)
 {
 	struct property *prop;
+<<<<<<< HEAD
 	int base, val, val2;
+=======
+	int base;
+	long long val, val2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char str[64];
 
 	switch (sym->type) {
@@ -171,7 +188,11 @@ static void sym_validate_range(struct symbol *sym)
 	prop = sym_get_range_prop(sym);
 	if (!prop)
 		return;
+<<<<<<< HEAD
 	val = strtol(sym->curr.val, NULL, base);
+=======
+	val = strtoll(sym->curr.val, NULL, base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	val2 = sym_get_range_val(prop->expr->left.sym, base);
 	if (val >= val2) {
 		val2 = sym_get_range_val(prop->expr->right.sym, base);
@@ -179,6 +200,7 @@ static void sym_validate_range(struct symbol *sym)
 			return;
 	}
 	if (sym->type == S_INT)
+<<<<<<< HEAD
 		sprintf(str, "%d", val2);
 	else
 		sprintf(str, "0x%x", val2);
@@ -188,12 +210,62 @@ static void sym_validate_range(struct symbol *sym)
 static void sym_calc_visibility(struct symbol *sym)
 {
 	struct property *prop;
+=======
+		sprintf(str, "%lld", val2);
+	else
+		sprintf(str, "0x%llx", val2);
+	sym->curr.val = strdup(str);
+}
+
+static void sym_set_changed(struct symbol *sym)
+{
+	struct property *prop;
+
+	sym->flags |= SYMBOL_CHANGED;
+	for (prop = sym->prop; prop; prop = prop->next) {
+		if (prop->menu)
+			prop->menu->flags |= MENU_CHANGED;
+	}
+}
+
+static void sym_set_all_changed(void)
+{
+	struct symbol *sym;
+	int i;
+
+	for_all_symbols(i, sym)
+		sym_set_changed(sym);
+}
+
+static void sym_calc_visibility(struct symbol *sym)
+{
+	struct property *prop;
+	struct symbol *choice_sym = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tristate tri;
 
 	/* any prompt visible? */
 	tri = no;
+<<<<<<< HEAD
 	for_all_prompts(sym, prop) {
 		prop->visible.tri = expr_calc_value(prop->visible.expr);
+=======
+
+	if (sym_is_choice_value(sym))
+		choice_sym = prop_get_symbol(sym_get_choice_prop(sym));
+
+	for_all_prompts(sym, prop) {
+		prop->visible.tri = expr_calc_value(prop->visible.expr);
+		/*
+		 * Tristate choice_values with visibility 'mod' are
+		 * not visible if the corresponding choice's value is
+		 * 'yes'.
+		 */
+		if (choice_sym && sym->type == S_TRISTATE &&
+		    prop->visible.tri == mod && choice_sym->curr.tri == yes)
+			prop->visible.tri = no;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tri = EXPR_OR(tri, prop->visible.tri);
 	}
 	if (tri == mod && (sym->type != S_TRISTATE || modules_val == no))
@@ -446,6 +518,7 @@ void sym_clear_all_valid(void)
 	for_all_symbols(i, sym)
 		sym->flags &= ~SYMBOL_VALID;
 	sym_add_change_count(1);
+<<<<<<< HEAD
 	if (modules_sym)
 		sym_calc_value(modules_sym);
 }
@@ -468,6 +541,9 @@ void sym_set_all_changed(void)
 
 	for_all_symbols(i, sym)
 		sym_set_changed(sym);
+=======
+	sym_calc_value(modules_sym);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 bool sym_tristate_within_range(struct symbol *sym, tristate val)
@@ -594,7 +670,11 @@ bool sym_string_valid(struct symbol *sym, const char *str)
 bool sym_string_within_range(struct symbol *sym, const char *str)
 {
 	struct property *prop;
+<<<<<<< HEAD
 	int val;
+=======
+	long long val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (sym->type) {
 	case S_STRING:
@@ -605,7 +685,11 @@ bool sym_string_within_range(struct symbol *sym, const char *str)
 		prop = sym_get_range_prop(sym);
 		if (!prop)
 			return true;
+<<<<<<< HEAD
 		val = strtol(str, NULL, 10);
+=======
+		val = strtoll(str, NULL, 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return val >= sym_get_range_val(prop->expr->left.sym, 10) &&
 		       val <= sym_get_range_val(prop->expr->right.sym, 10);
 	case S_HEX:
@@ -614,7 +698,11 @@ bool sym_string_within_range(struct symbol *sym, const char *str)
 		prop = sym_get_range_prop(sym);
 		if (!prop)
 			return true;
+<<<<<<< HEAD
 		val = strtol(str, NULL, 16);
+=======
+		val = strtoll(str, NULL, 16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return val >= sym_get_range_val(prop->expr->left.sym, 16) &&
 		       val <= sym_get_range_val(prop->expr->right.sym, 16);
 	case S_BOOLEAN:
@@ -954,22 +1042,72 @@ const char *sym_escape_string_value(const char *in)
 	return res;
 }
 
+<<<<<<< HEAD
 struct symbol **sym_re_search(const char *pattern)
 {
 	struct symbol *sym, **sym_arr = NULL;
 	int i, cnt, size;
 	regex_t re;
+=======
+struct sym_match {
+	struct symbol	*sym;
+	off_t		so, eo;
+};
+
+/* Compare matched symbols as thus:
+ * - first, symbols that match exactly
+ * - then, alphabetical sort
+ */
+static int sym_rel_comp(const void *sym1, const void *sym2)
+{
+	const struct sym_match *s1 = sym1;
+	const struct sym_match *s2 = sym2;
+	int exact1, exact2;
+
+	/* Exact match:
+	 * - if matched length on symbol s1 is the length of that symbol,
+	 *   then this symbol should come first;
+	 * - if matched length on symbol s2 is the length of that symbol,
+	 *   then this symbol should come first.
+	 * Note: since the search can be a regexp, both symbols may match
+	 * exactly; if this is the case, we can't decide which comes first,
+	 * and we fallback to sorting alphabetically.
+	 */
+	exact1 = (s1->eo - s1->so) == strlen(s1->sym->name);
+	exact2 = (s2->eo - s2->so) == strlen(s2->sym->name);
+	if (exact1 && !exact2)
+		return -1;
+	if (!exact1 && exact2)
+		return 1;
+
+	/* As a fallback, sort symbols alphabetically */
+	return strcmp(s1->sym->name, s2->sym->name);
+}
+
+struct symbol **sym_re_search(const char *pattern)
+{
+	struct symbol *sym, **sym_arr = NULL;
+	struct sym_match *sym_match_arr = NULL;
+	int i, cnt, size;
+	regex_t re;
+	regmatch_t match[1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cnt = size = 0;
 	/* Skip if empty */
 	if (strlen(pattern) == 0)
 		return NULL;
+<<<<<<< HEAD
 	if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB|REG_ICASE))
+=======
+	if (regcomp(&re, pattern, REG_EXTENDED|REG_ICASE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	for_all_symbols(i, sym) {
 		if (sym->flags & SYMBOL_CONST || !sym->name)
 			continue;
+<<<<<<< HEAD
 		if (regexec(&re, sym->name, 0, NULL, 0))
 			continue;
 		if (cnt + 1 >= size) {
@@ -986,6 +1124,38 @@ struct symbol **sym_re_search(const char *pattern)
 	}
 	if (sym_arr)
 		sym_arr[cnt] = NULL;
+=======
+		if (regexec(&re, sym->name, 1, match, 0))
+			continue;
+		if (cnt >= size) {
+			void *tmp;
+			size += 16;
+			tmp = realloc(sym_match_arr, size * sizeof(struct sym_match));
+			if (!tmp)
+				goto sym_re_search_free;
+			sym_match_arr = tmp;
+		}
+		sym_calc_value(sym);
+		/* As regexec returned 0, we know we have a match, so
+		 * we can use match[0].rm_[se]o without further checks
+		 */
+		sym_match_arr[cnt].so = match[0].rm_so;
+		sym_match_arr[cnt].eo = match[0].rm_eo;
+		sym_match_arr[cnt++].sym = sym;
+	}
+	if (sym_match_arr) {
+		qsort(sym_match_arr, cnt, sizeof(struct sym_match), sym_rel_comp);
+		sym_arr = malloc((cnt+1) * sizeof(struct symbol));
+		if (!sym_arr)
+			goto sym_re_search_free;
+		for (i = 0; i < cnt; i++)
+			sym_arr[i] = sym_match_arr[i].sym;
+		sym_arr[cnt] = NULL;
+	}
+sym_re_search_free:
+	/* sym_match_arr can be NULL if no match, but free(NULL) is OK */
+	free(sym_match_arr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regfree(&re);
 
 	return sym_arr;
@@ -995,7 +1165,11 @@ struct symbol **sym_re_search(const char *pattern)
  * When we check for recursive dependencies we use a stack to save
  * current state so we can print out relevant info to user.
  * The entries are located on the call stack so no need to free memory.
+<<<<<<< HEAD
  * Note inser() remove() must always match to properly clear the stack.
+=======
+ * Note insert() remove() must always match to properly clear the stack.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static struct dep_stack {
 	struct dep_stack *prev, *next;
@@ -1065,6 +1239,11 @@ static void sym_check_print_recursive(struct symbol *last_sym)
 		if (stack->sym == last_sym)
 			fprintf(stderr, "%s:%d:error: recursive dependency detected!\n",
 				prop->file->name, prop->lineno);
+<<<<<<< HEAD
+=======
+			fprintf(stderr, "For a resolution refer to Documentation/kbuild/kconfig-language.txt\n");
+			fprintf(stderr, "subsection \"Kconfig recursive dependency limitations\"\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (stack->expr) {
 			fprintf(stderr, "%s:%d:\tsymbol %s %s value contains %s\n",
 				prop->file->name, prop->lineno,
@@ -1114,6 +1293,13 @@ static struct symbol *sym_check_expr_deps(struct expr *e)
 	case E_NOT:
 		return sym_check_expr_deps(e->left.expr);
 	case E_EQUAL:
+<<<<<<< HEAD
+=======
+	case E_GEQ:
+	case E_GTH:
+	case E_LEQ:
+	case E_LTH:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case E_UNEQUAL:
 		sym = sym_check_deps(e->left.sym);
 		if (sym)

@@ -11,6 +11,11 @@
 #ifndef __ARCH_MV78XX0_COMMON_H
 #define __ARCH_MV78XX0_COMMON_H
 
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mv643xx_eth_platform_data;
 struct mv_sata_platform_data;
 
@@ -45,7 +50,11 @@ void mv78xx0_uart1_init(void);
 void mv78xx0_uart2_init(void);
 void mv78xx0_uart3_init(void);
 void mv78xx0_i2c_init(void);
+<<<<<<< HEAD
 void mv78xx0_restart(char, const char *);
+=======
+void mv78xx0_restart(enum reboot_mode, const char *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void mv78xx0_timer_init(void);
 

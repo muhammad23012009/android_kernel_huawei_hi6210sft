@@ -105,7 +105,11 @@ static int etap_tramp(char *dev, char *gate, int control_me,
 	sprintf(data_fd_buf, "%d", data_remote);
 	sprintf(version_buf, "%d", UML_NET_VERSION);
 	if (gate != NULL) {
+<<<<<<< HEAD
 		strcpy(gate_buf, gate);
+=======
+		strncpy(gate_buf, gate, 15);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		args = setup_args;
 	}
 	else args = nosetup_args;

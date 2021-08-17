@@ -69,7 +69,11 @@ dccp_manip_pkt(struct sk_buff *skb,
 	l3proto->csum_update(skb, iphdroff, &hdr->dccph_checksum,
 			     tuple, maniptype);
 	inet_proto_csum_replace2(&hdr->dccph_checksum, skb, oldport, newport,
+<<<<<<< HEAD
 				 0);
+=======
+				 false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return true;
 }
 
@@ -78,7 +82,11 @@ static const struct nf_nat_l4proto nf_nat_l4proto_dccp = {
 	.manip_pkt		= dccp_manip_pkt,
 	.in_range		= nf_nat_l4proto_in_range,
 	.unique_tuple		= dccp_unique_tuple,
+<<<<<<< HEAD
 #if defined(CONFIG_NF_CT_NETLINK) || defined(CONFIG_NF_CT_NETLINK_MODULE)
+=======
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.nlattr_to_range	= nf_nat_l4proto_nlattr_to_range,
 #endif
 };

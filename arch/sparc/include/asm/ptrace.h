@@ -73,7 +73,11 @@ static inline long regs_return_value(struct pt_regs *regs)
 	return regs->u_regs[UREG_I0];
 }
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 extern unsigned long profile_pc(struct pt_regs *);
+=======
+unsigned long profile_pc(struct pt_regs *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define profile_pc(regs) instruction_pointer(regs)
 #endif

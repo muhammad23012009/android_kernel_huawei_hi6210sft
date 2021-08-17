@@ -1,6 +1,15 @@
 #ifndef _UFS_UFS_H
 #define _UFS_UFS_H 1
 
+<<<<<<< HEAD
+=======
+#ifdef pr_fmt
+#undef pr_fmt
+#endif
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define UFS_MAX_GROUP_LOADED 8
 #define UFS_CGNO_EMPTY ((unsigned)-1)
 
@@ -18,8 +27,11 @@ struct ufs_sb_info {
 	unsigned s_cgno[UFS_MAX_GROUP_LOADED];
 	unsigned short s_cg_loaded;
 	unsigned s_mount_opt;
+<<<<<<< HEAD
 	struct mutex mutex;
 	struct task_struct *mutex_owner;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct super_block *sb;
 	int work_queued; /* non-zero if the delayed work is queued */
 	struct delayed_work sync_work; /* FS sync delayed work */
@@ -40,6 +52,11 @@ struct ufs_inode_info {
 	__u32	i_oeftflag;
 	__u16	i_osync;
 	__u64	i_lastfrag;
+<<<<<<< HEAD
+=======
+	seqlock_t meta_lock;
+	struct mutex	truncate_mutex;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u32   i_dir_start_lookup;
 	struct inode vfs_inode;
 };
@@ -72,9 +89,15 @@ struct ufs_inode_info {
  */
 #ifdef CONFIG_UFS_DEBUG
 #	define UFSD(f, a...)	{					\
+<<<<<<< HEAD
 		printk ("UFSD (%s, %d): %s:",				\
 			__FILE__, __LINE__, __func__);		\
 		printk (f, ## a);					\
+=======
+		pr_debug("UFSD (%s, %d): %s:",				\
+			__FILE__, __LINE__, __func__);		\
+		pr_debug(f, ## a);					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #else
 #	define UFSD(f, a...)	/**/
@@ -100,7 +123,11 @@ extern int ufs_delete_entry(struct inode *, struct ufs_dir_entry *, struct page 
 extern int ufs_empty_dir (struct inode *);
 extern struct ufs_dir_entry *ufs_dotdot(struct inode *, struct page **);
 extern void ufs_set_link(struct inode *dir, struct ufs_dir_entry *de,
+<<<<<<< HEAD
 			 struct page *page, struct inode *inode);
+=======
+			 struct page *page, struct inode *inode, bool update_times);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* file.c */
 extern const struct inode_operations ufs_file_inode_operations;
@@ -116,7 +143,11 @@ extern struct inode *ufs_iget(struct super_block *, unsigned long);
 extern int ufs_write_inode (struct inode *, struct writeback_control *);
 extern int ufs_sync_inode (struct inode *);
 extern void ufs_evict_inode (struct inode *);
+<<<<<<< HEAD
 extern int ufs_getfrag_block (struct inode *inode, sector_t fragment, struct buffer_head *bh_result, int create);
+=======
+extern int ufs_setattr(struct dentry *dentry, struct iattr *attr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* namei.c */
 extern const struct file_operations ufs_dir_operations;
@@ -130,6 +161,7 @@ extern __printf(3, 4)
 void ufs_panic(struct super_block *, const char *, const char *, ...);
 void ufs_mark_sb_dirty(struct super_block *sb);
 
+<<<<<<< HEAD
 /* symlink.c */
 extern const struct inode_operations ufs_fast_symlink_inode_operations;
 extern const struct inode_operations ufs_symlink_inode_operations;
@@ -138,6 +170,8 @@ extern const struct inode_operations ufs_symlink_inode_operations;
 extern int ufs_truncate (struct inode *, loff_t);
 extern int ufs_setattr(struct dentry *dentry, struct iattr *attr);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct ufs_sb_info *UFS_SB(struct super_block *sb)
 {
 	return sb->s_fs_info;
@@ -164,7 +198,10 @@ static inline u32 ufs_dtogd(struct ufs_sb_private_info * uspi, u64 b)
 	return do_div(b, uspi->s_fpg);
 }
 
+<<<<<<< HEAD
 extern void lock_ufs(struct super_block *sb);
 extern void unlock_ufs(struct super_block *sb);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _UFS_UFS_H */

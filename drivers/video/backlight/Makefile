@@ -2,11 +2,14 @@
 
 obj-$(CONFIG_LCD_AMS369FG06)		+= ams369fg06.o
 obj-$(CONFIG_LCD_CLASS_DEVICE)		+= lcd.o
+<<<<<<< HEAD
 # /*BEGIN PN:DTS2014080200942, Modified by z00248697. 2014/08/08 */
 # /*BEGIN PN:DTS2014063002494, Added by z00248697. Add color temperature feature. 2014/06/30 */
 obj-$(CONFIG_LCD_TUNING_DEVICE)         += lcd_tuning.o
 # /*END PN:DTS2014063002494,  Added by y00248697. Add color temperature feature. 2014/06/30 */
 # /*END PN:DTS2014080200942,  Modified by y00248697. 2014/08/08 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_LCD_CORGI)			+= corgi_lcd.o
 obj-$(CONFIG_LCD_HP700)			+= jornada720_lcd.o
 obj-$(CONFIG_LCD_HX8357)		+= hx8357.o
@@ -30,28 +33,52 @@ obj-$(CONFIG_BACKLIGHT_ADP8860)		+= adp8860_bl.o
 obj-$(CONFIG_BACKLIGHT_ADP8870)		+= adp8870_bl.o
 obj-$(CONFIG_BACKLIGHT_APPLE)		+= apple_bl.o
 obj-$(CONFIG_BACKLIGHT_AS3711)		+= as3711_bl.o
+<<<<<<< HEAD
 obj-$(CONFIG_BACKLIGHT_ATMEL_PWM)	+= atmel-pwm-bl.o
+=======
+obj-$(CONFIG_BACKLIGHT_BD6107)		+= bd6107.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_BACKLIGHT_CARILLO_RANCH)	+= cr_bllcd.o
 obj-$(CONFIG_BACKLIGHT_CLASS_DEVICE)	+= backlight.o
 obj-$(CONFIG_BACKLIGHT_DA903X)		+= da903x_bl.o
 obj-$(CONFIG_BACKLIGHT_DA9052)		+= da9052_bl.o
 obj-$(CONFIG_BACKLIGHT_EP93XX)		+= ep93xx_bl.o
 obj-$(CONFIG_BACKLIGHT_GENERIC)		+= generic_bl.o
+<<<<<<< HEAD
 obj-$(CONFIG_BACKLIGHT_HP680)		+= hp680_bl.o
 obj-$(CONFIG_BACKLIGHT_HP700)		+= jornada720_bl.o
 obj-$(CONFIG_BACKLIGHT_LM3533)		+= lm3533_bl.o
 obj-$(CONFIG_BACKLIGHT_LM3630)		+= lm3630_bl.o
+=======
+obj-$(CONFIG_BACKLIGHT_GPIO)		+= gpio_backlight.o
+obj-$(CONFIG_BACKLIGHT_HP680)		+= hp680_bl.o
+obj-$(CONFIG_BACKLIGHT_HP700)		+= jornada720_bl.o
+obj-$(CONFIG_BACKLIGHT_IPAQ_MICRO)	+= ipaq_micro_bl.o
+obj-$(CONFIG_BACKLIGHT_LM3533)		+= lm3533_bl.o
+obj-$(CONFIG_BACKLIGHT_LM3630A)		+= lm3630a_bl.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_BACKLIGHT_LM3639)		+= lm3639_bl.o
 obj-$(CONFIG_BACKLIGHT_LOCOMO)		+= locomolcd.o
 obj-$(CONFIG_BACKLIGHT_LP855X)		+= lp855x_bl.o
 obj-$(CONFIG_BACKLIGHT_LP8788)		+= lp8788_bl.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_BACKLIGHT_LV5207LP)	+= lv5207lp.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_BACKLIGHT_MAX8925)		+= max8925_bl.o
 obj-$(CONFIG_BACKLIGHT_OMAP1)		+= omap1_bl.o
 obj-$(CONFIG_BACKLIGHT_OT200)		+= ot200_bl.o
 obj-$(CONFIG_BACKLIGHT_PANDORA)		+= pandora_bl.o
 obj-$(CONFIG_BACKLIGHT_PCF50633)	+= pcf50633-backlight.o
+<<<<<<< HEAD
 obj-$(CONFIG_BACKLIGHT_PWM)		+= pwm_bl.o
 obj-$(CONFIG_BACKLIGHT_SAHARA)		+= kb3886_bl.o
+=======
+obj-$(CONFIG_BACKLIGHT_PM8941_WLED)	+= pm8941-wled.o
+obj-$(CONFIG_BACKLIGHT_PWM)		+= pwm_bl.o
+obj-$(CONFIG_BACKLIGHT_SAHARA)		+= kb3886_bl.o
+obj-$(CONFIG_BACKLIGHT_SKY81452)	+= sky81452-backlight.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_BACKLIGHT_TOSA)		+= tosa_bl.o
 obj-$(CONFIG_BACKLIGHT_TPS65217)	+= tps65217_bl.o
 obj-$(CONFIG_BACKLIGHT_WM831X)		+= wm831x_bl.o

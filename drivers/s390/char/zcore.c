@@ -17,6 +17,11 @@
 #include <linux/miscdevice.h>
 #include <linux/debugfs.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/asm-offsets.h>
 #include <asm/ipl.h>
 #include <asm/sclp.h>
@@ -26,12 +31,20 @@
 #include <asm/processor.h>
 #include <asm/irqflags.h>
 #include <asm/checksum.h>
+<<<<<<< HEAD
+=======
+#include <asm/os_info.h>
+#include <asm/switch_to.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "sclp.h"
 
 #define TRACE(x...) debug_sprintf_event(zcore_dbf, 1, x)
 
+<<<<<<< HEAD
 #define TO_USER		0
 #define TO_KERNEL	1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CHUNK_INFO_SIZE	34 /* 2 16-byte char, each followed by blank */
 
 enum arch_id {
@@ -39,6 +52,7 @@ enum arch_id {
 	ARCH_S390X	= 1,
 };
 
+<<<<<<< HEAD
 /* dump system info */
 
 struct sys_info {
@@ -50,21 +64,30 @@ struct sys_info {
 	struct save_area lc_mask;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ipib_info {
 	unsigned long	ipib;
 	u32		checksum;
 }  __attribute__((packed));
 
+<<<<<<< HEAD
 static struct sys_info sys_info;
 static struct debug_info *zcore_dbf;
 static int hsa_available;
 static struct dentry *zcore_dir;
 static struct dentry *zcore_file;
+=======
+static struct debug_info *zcore_dbf;
+static int hsa_available;
+static struct dentry *zcore_dir;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct dentry *zcore_memmap_file;
 static struct dentry *zcore_reipl_file;
 static struct dentry *zcore_hsa_file;
 static struct ipl_parameter_block *ipl_block;
 
+<<<<<<< HEAD
 /*
  * Copy memory from HSA to kernel or user memory (not reentrant):
  *
@@ -146,10 +169,75 @@ static int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
 }
 
 static int __init init_cpu_info(enum arch_id arch)
+=======
+static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
+
+/*
+ * Copy memory from HSA to user memory (not reentrant):
+ *
+ * @dest:  User buffer where memory should be copied to
+ * @src:   Start address within HSA where data should be copied
+ * @count: Size of buffer, which should be copied
+ */
+int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
+{
+	unsigned long offset, bytes;
+
+	if (!hsa_available)
+		return -ENODATA;
+
+	while (count) {
+		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+			TRACE("sclp_sdias_copy() failed\n");
+			return -EIO;
+		}
+		offset = src % PAGE_SIZE;
+		bytes = min(PAGE_SIZE - offset, count);
+		if (copy_to_user(dest, hsa_buf + offset, bytes))
+			return -EFAULT;
+		src += bytes;
+		dest += bytes;
+		count -= bytes;
+	}
+	return 0;
+}
+
+/*
+ * Copy memory from HSA to kernel memory (not reentrant):
+ *
+ * @dest:  Kernel or user buffer where memory should be copied to
+ * @src:   Start address within HSA where data should be copied
+ * @count: Size of buffer, which should be copied
+ */
+int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+{
+	unsigned long offset, bytes;
+
+	if (!hsa_available)
+		return -ENODATA;
+
+	while (count) {
+		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+			TRACE("sclp_sdias_copy() failed\n");
+			return -EIO;
+		}
+		offset = src % PAGE_SIZE;
+		bytes = min(PAGE_SIZE - offset, count);
+		memcpy(dest, hsa_buf + offset, bytes);
+		src += bytes;
+		dest += bytes;
+		count -= bytes;
+	}
+	return 0;
+}
+
+static int __init init_cpu_info(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct save_area *sa;
 
 	/* get info for boot cpu from lowcore, stored in the HSA */
+<<<<<<< HEAD
 
 	sa = kmalloc(sizeof(*sa), GFP_KERNEL);
 	if (!sa)
@@ -277,6 +365,16 @@ static int zcore_add_lc(char __user *buf, unsigned long start, size_t count)
 next:
 		i++;
 	}
+=======
+	sa = save_area_boot_cpu();
+	if (!sa)
+		return -ENOMEM;
+	if (memcpy_hsa_kernel(hsa_buf, __LC_FPREGS_SAVE_AREA, 512) < 0) {
+		TRACE("could not copy from HSA\n");
+		return -EIO;
+	}
+	save_area_add_regs(sa, hsa_buf); /* vx registers are saved in smp.c */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -289,6 +387,7 @@ static void release_hsa(void)
 	hsa_available = 0;
 }
 
+<<<<<<< HEAD
 /*
  * Read routine for zcore character device
  * First 4K are dump header
@@ -409,15 +508,22 @@ static const struct file_operations zcore_fops = {
 	.release	= zcore_release,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t zcore_memmap_read(struct file *filp, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
 	return simple_read_from_buffer(buf, count, ppos, filp->private_data,
+<<<<<<< HEAD
 				       MEMORY_CHUNKS * CHUNK_INFO_SIZE);
+=======
+				       memblock.memory.cnt * CHUNK_INFO_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int zcore_memmap_open(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
 	int i;
 	char *buf;
 	struct mem_chunk *chunk_array;
@@ -440,6 +546,21 @@ static int zcore_memmap_open(struct inode *inode, struct file *filp)
 			break;
 	}
 	kfree(chunk_array);
+=======
+	struct memblock_region *reg;
+	char *buf;
+	int i = 0;
+
+	buf = kzalloc(memblock.memory.cnt * CHUNK_INFO_SIZE, GFP_KERNEL);
+	if (!buf) {
+		return -ENOMEM;
+	}
+	for_each_memblock(memory, reg) {
+		sprintf(buf + (i++ * CHUNK_INFO_SIZE), "%016llx %016llx ",
+			(unsigned long long) reg->base,
+			(unsigned long long) reg->size);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	filp->private_data = buf;
 	return nonseekable_open(inode, filp);
 }
@@ -463,7 +584,11 @@ static ssize_t zcore_reipl_write(struct file *filp, const char __user *buf,
 {
 	if (ipl_block) {
 		diag308(DIAG308_SET, ipl_block);
+<<<<<<< HEAD
 		diag308(DIAG308_IPL, NULL);
+=======
+		diag308(DIAG308_LOAD_CLEAR, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return count;
 }
@@ -492,7 +617,11 @@ static ssize_t zcore_hsa_read(struct file *filp, char __user *buf,
 	static char str[18];
 
 	if (hsa_available)
+<<<<<<< HEAD
 		snprintf(str, sizeof(str), "%lx\n", ZFCPDUMP_HSA_SIZE);
+=======
+		snprintf(str, sizeof(str), "%lx\n", sclp.hsa_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		snprintf(str, sizeof(str), "0\n");
 	return simple_read_from_buffer(buf, count, ppos, str, strlen(str));
@@ -521,6 +650,7 @@ static const struct file_operations zcore_hsa_fops = {
 	.llseek		= no_llseek,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_32BIT
 
 static void __init set_lc_mask(struct save_area *map)
@@ -597,10 +727,18 @@ static int __init check_sdias(void)
 	if (act_hsa_size < ZFCPDUMP_HSA_SIZE) {
 		TRACE("HSA size too small: %i\n", act_hsa_size);
 		return -EINVAL;
+=======
+static int __init check_sdias(void)
+{
+	if (!sclp.hsa_size) {
+		TRACE("Could not determine HSA size\n");
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __init get_mem_info(unsigned long *mem, unsigned long *end)
 {
 	int i;
@@ -647,6 +785,8 @@ static void __init zcore_header_init(int arch, struct zcore_header *hdr,
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Provide IPL parameter information block from either HSA or memory
  * for future reipl
@@ -664,7 +804,11 @@ static int __init zcore_reipl_init(void)
 	ipl_block = (void *) __get_free_page(GFP_KERNEL);
 	if (!ipl_block)
 		return -ENOMEM;
+<<<<<<< HEAD
 	if (ipib_info.ipib < ZFCPDUMP_HSA_SIZE)
+=======
+	if (ipib_info.ipib < sclp.hsa_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = memcpy_hsa_kernel(ipl_block, ipib_info.ipib, PAGE_SIZE);
 	else
 		rc = memcpy_real(ipl_block, (void *) ipib_info.ipib, PAGE_SIZE);
@@ -679,11 +823,17 @@ static int __init zcore_reipl_init(void)
 
 static int __init zcore_init(void)
 {
+<<<<<<< HEAD
 	unsigned long mem_size, mem_end;
 	unsigned char arch;
 	int rc;
 
 	mem_size = mem_end = 0;
+=======
+	unsigned char arch;
+	int rc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ipl_info.type != IPL_TYPE_FCP_DUMP)
 		return -ENODATA;
 	if (OLDMEM_BASE)
@@ -710,13 +860,17 @@ static int __init zcore_init(void)
 	if (rc)
 		goto fail;
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (arch == ARCH_S390) {
 		pr_alert("The 64-bit dump tool cannot be used for a "
 			 "32-bit system\n");
 		rc = -EINVAL;
 		goto fail;
 	}
+<<<<<<< HEAD
 #else /* CONFIG_64BIT */
 	if (arch == ARCH_S390X) {
 		pr_alert("The 32-bit dump tool cannot be used for a "
@@ -734,6 +888,13 @@ static int __init zcore_init(void)
 	if (rc)
 		goto fail;
 	zcore_header_init(arch, &zcore_header, mem_size);
+=======
+
+	pr_alert("DETECTED 'S390X (64 bit) OS'\n");
+	rc = init_cpu_info();
+	if (rc)
+		goto fail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = zcore_reipl_init();
 	if (rc)
@@ -744,17 +905,24 @@ static int __init zcore_init(void)
 		rc = -ENOMEM;
 		goto fail;
 	}
+<<<<<<< HEAD
 	zcore_file = debugfs_create_file("mem", S_IRUSR, zcore_dir, NULL,
 					 &zcore_fops);
 	if (!zcore_file) {
 		rc = -ENOMEM;
 		goto fail_dir;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	zcore_memmap_file = debugfs_create_file("memmap", S_IRUSR, zcore_dir,
 						NULL, &zcore_memmap_fops);
 	if (!zcore_memmap_file) {
 		rc = -ENOMEM;
+<<<<<<< HEAD
 		goto fail_file;
+=======
+		goto fail_dir;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	zcore_reipl_file = debugfs_create_file("reipl", S_IRUSR, zcore_dir,
 						NULL, &zcore_reipl_fops);
@@ -774,8 +942,11 @@ fail_reipl_file:
 	debugfs_remove(zcore_reipl_file);
 fail_memmap_file:
 	debugfs_remove(zcore_memmap_file);
+<<<<<<< HEAD
 fail_file:
 	debugfs_remove(zcore_file);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail_dir:
 	debugfs_remove(zcore_dir);
 fail:
@@ -791,7 +962,10 @@ static void __exit zcore_exit(void)
 	debugfs_remove(zcore_hsa_file);
 	debugfs_remove(zcore_reipl_file);
 	debugfs_remove(zcore_memmap_file);
+<<<<<<< HEAD
 	debugfs_remove(zcore_file);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	debugfs_remove(zcore_dir);
 	diag308(DIAG308_REL_HSA, NULL);
 }

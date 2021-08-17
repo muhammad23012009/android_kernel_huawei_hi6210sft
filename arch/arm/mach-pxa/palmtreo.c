@@ -31,20 +31,36 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/pxa27x-udc.h>
 #include <mach/audio.h>
 #include <mach/palmtreo.h>
+=======
+#include "pxa27x.h"
+#include "pxa27x-udc.h"
+#include <mach/audio.h>
+#include "palmtreo.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/keypad-pxa27x.h>
+<<<<<<< HEAD
 #include <mach/udc.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <mach/pxa2xx-regs.h>
 #include <linux/platform_data/asoc-palm27x.h>
 #include <linux/platform_data/camera-pxa.h>
 #include <mach/palm27x.h>
+=======
+#include "udc.h"
+#include <linux/platform_data/usb-ohci-pxa27x.h>
+#include <mach/pxa2xx-regs.h>
+#include <linux/platform_data/asoc-palm27x.h>
+#include <linux/platform_data/media/camera-pxa.h>
+#include "palm27x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/pxa2xx-lib.h>
 
@@ -168,7 +184,11 @@ static unsigned long centro685_pin_config[] __initdata = {
  * GPIO keyboard
  ******************************************************************************/
 #if IS_ENABLED(CONFIG_KEYBOARD_PXA27x)
+<<<<<<< HEAD
 static unsigned int treo680_matrix_keys[] = {
+=======
+static const unsigned int treo680_matrix_keys[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	KEY(0, 0, KEY_F8),		/* Red/Off/Power */
 	KEY(0, 1, KEY_LEFT),
 	KEY(0, 2, KEY_LEFTCTRL),	/* Alternate */
@@ -227,7 +247,11 @@ static unsigned int treo680_matrix_keys[] = {
 	KEY(7, 5, KEY_I),
 };
 
+<<<<<<< HEAD
 static unsigned int centro_matrix_keys[] = {
+=======
+static const unsigned int centro_matrix_keys[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	KEY(0, 0, KEY_F9),		/* Home */
 	KEY(0, 1, KEY_LEFT),
 	KEY(0, 2, KEY_LEFTCTRL),	/* Alternate */
@@ -286,11 +310,28 @@ static unsigned int centro_matrix_keys[] = {
 	KEY(7, 5, KEY_I),
 };
 
+<<<<<<< HEAD
 static struct pxa27x_keypad_platform_data treo680_keypad_pdata = {
 	.matrix_key_rows	= 8,
 	.matrix_key_cols	= 7,
 	.matrix_key_map		= treo680_matrix_keys,
 	.matrix_key_map_size	= ARRAY_SIZE(treo680_matrix_keys),
+=======
+static struct matrix_keymap_data treo680_matrix_keymap_data = {
+	.keymap			= treo680_matrix_keys,
+	.keymap_size		= ARRAY_SIZE(treo680_matrix_keys),
+};
+
+static struct matrix_keymap_data centro_matrix_keymap_data = {
+	.keymap			= centro_matrix_keys,
+	.keymap_size		= ARRAY_SIZE(centro_matrix_keys),
+};
+
+static struct pxa27x_keypad_platform_data treo680_keypad_pdata = {
+	.matrix_key_rows	= 8,
+	.matrix_key_cols	= 7,
+	.matrix_keymap_data	= &treo680_matrix_keymap_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.direct_key_map		= { KEY_CONNECT },
 	.direct_key_num		= 1,
 
@@ -301,10 +342,15 @@ static void __init palmtreo_kpc_init(void)
 {
 	static struct pxa27x_keypad_platform_data *data = &treo680_keypad_pdata;
 
+<<<<<<< HEAD
 	if (machine_is_centro()) {
 		data->matrix_key_map = centro_matrix_keys;
 		data->matrix_key_map_size = ARRAY_SIZE(centro_matrix_keys);
 	}
+=======
+	if (machine_is_centro())
+		data->matrix_keymap_data = &centro_matrix_keymap_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pxa_set_keypad_info(&treo680_keypad_pdata);
 }

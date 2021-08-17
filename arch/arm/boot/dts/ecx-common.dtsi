@@ -19,6 +19,17 @@
 		bootargs = "console=ttyAMA0";
 	};
 
+<<<<<<< HEAD
+=======
+	psci {
+		compatible	= "arm,psci";
+		method		= "smc";
+		cpu_suspend	= <0x84000002>;
+		cpu_off		= <0x84000004>;
+		cpu_on		= <0x84000006>;
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -33,6 +44,11 @@
 			calxeda,port-phys = <&combophy5 0 &combophy0 0
 					     &combophy0 1 &combophy0 2
 					     &combophy0 3>;
+<<<<<<< HEAD
+=======
+			calxeda,sgpio-gpio =<&gpioh 5 1 &gpioh 6 1 &gpioh 7 1>;
+			calxeda,led-order = <4 0 1 2 3>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		sdhci@ffe0e000 {
@@ -43,12 +59,15 @@
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		memory-controller@fff00000 {
 			compatible = "calxeda,hb-ddr-ctrl";
 			reg = <0xfff00000 0x1000>;
 			interrupts = <0 91 4>;
 		};
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ipc@fff20000 {
 			compatible = "arm,pl320", "arm,primecell";
 			reg = <0xfff20000 0x1000>;

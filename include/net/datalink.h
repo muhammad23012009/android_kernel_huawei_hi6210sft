@@ -15,4 +15,9 @@ struct datalink_proto {
 	struct list_head node;
 };
 
+<<<<<<< HEAD
+=======
+struct datalink_proto *make_EII_client(void);
+void destroy_EII_client(struct datalink_proto *dl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

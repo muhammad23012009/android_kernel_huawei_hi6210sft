@@ -1,5 +1,9 @@
 /*
  * Support for o32 Linux/MIPS ELF binaries.
+<<<<<<< HEAD
+=======
+ * Author: Ralf Baechle (ralf@linux-mips.org)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 1999, 2001 Ralf Baechle
  * Copyright (C) 1999, 2001 Silicon Graphics, Inc.
@@ -30,6 +34,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 /*
  * This is used to ensure we don't load something for the wrong architecture.
  */
+<<<<<<< HEAD
 #define elf_check_arch(hdr)						\
 ({									\
 	int __res = 1;							\
@@ -47,6 +52,9 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 									\
 	__res;								\
 })
+=======
+#define elf_check_arch elfo32_check_arch
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_KVM_GUEST
 #define TASK32_SIZE		0x3fff8000UL
@@ -58,6 +66,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 
 #include <asm/processor.h>
 
+<<<<<<< HEAD
 /* These MUST be defined before elf.h gets included */
 extern void elf32_core_copy_regs(elf_gregset_t grp, struct pt_regs *regs);
 #define ELF_CORE_COPY_REGS(_dest, _regs) elf32_core_copy_regs(_dest, _regs);
@@ -69,6 +78,8 @@ extern void elf32_core_copy_regs(elf_gregset_t grp, struct pt_regs *regs);
 })
 
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/elfcore.h>
 #include <linux/compat.h>
 #include <linux/math64.h>
@@ -125,6 +136,7 @@ jiffies_to_compat_timeval(unsigned long jiffies, struct compat_timeval *value)
 	value->tv_usec = rem / NSEC_PER_USEC;
 }
 
+<<<<<<< HEAD
 void elf32_core_copy_regs(elf_gregset_t grp, struct pt_regs *regs)
 {
 	int i;
@@ -153,6 +165,8 @@ MODULE_AUTHOR("Ralf Baechle (ralf@linux-mips.org)");
 #undef MODULE_DESCRIPTION
 #undef MODULE_AUTHOR
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef TASK_SIZE
 #define TASK_SIZE TASK_SIZE32
 

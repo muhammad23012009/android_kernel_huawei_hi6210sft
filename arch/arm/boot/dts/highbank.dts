@@ -86,6 +86,15 @@
 	soc {
 		ranges = <0x00000000 0x00000000 0xffffffff>;
 
+<<<<<<< HEAD
+=======
+		memory-controller@fff00000 {
+			compatible = "calxeda,hb-ddr-ctrl";
+			reg = <0xfff00000 0x1000>;
+			interrupts = <0 91 4>;
+		};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		timer@fff10600 {
 			compatible = "arm,cortex-a9-twd-timer";
 			reg = <0xfff10600 0x20>;

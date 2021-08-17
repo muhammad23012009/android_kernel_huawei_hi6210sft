@@ -65,9 +65,15 @@ void intc_set_prio_level(unsigned int irq, unsigned int level)
 	raw_spin_unlock_irqrestore(&intc_big_lock, flags);
 }
 
+<<<<<<< HEAD
 static void intc_redirect_irq(unsigned int irq, struct irq_desc *desc)
 {
 	generic_handle_irq((unsigned int)irq_get_handler_data(irq));
+=======
+static void intc_redirect_irq(struct irq_desc *desc)
+{
+	generic_handle_irq((unsigned int)irq_desc_get_handler_data(desc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init intc_register_irq(struct intc_desc *desc,
@@ -80,12 +86,15 @@ static void __init intc_register_irq(struct intc_desc *desc,
 	unsigned int data[2], primary;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	/*
 	 * Register the IRQ position with the global IRQ map, then insert
 	 * it in to the radix tree.
 	 */
 	irq_reserve_irq(irq);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	raw_spin_lock_irqsave(&intc_big_lock, flags);
 	radix_tree_insert(&d->tree, enum_id, intc_irq_xlate_get(irq));
 	raw_spin_unlock_irqrestore(&intc_big_lock, flags);
@@ -372,8 +381,14 @@ int __init register_intc_controller(struct intc_desc *desc)
 
 			/* redirect this interrupts to the first one */
 			irq_set_chip(irq2, &dummy_irq_chip);
+<<<<<<< HEAD
 			irq_set_chained_handler(irq2, intc_redirect_irq);
 			irq_set_handler_data(irq2, (void *)irq);
+=======
+			irq_set_chained_handler_and_data(irq2,
+							 intc_redirect_irq,
+							 (void *)irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 

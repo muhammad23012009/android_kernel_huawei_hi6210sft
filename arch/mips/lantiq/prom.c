@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  * Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/export.h>
@@ -14,6 +18,10 @@
 
 #include <asm/bootinfo.h>
 #include <asm/time.h>
+<<<<<<< HEAD
+=======
+#include <asm/prom.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <lantiq.h>
 
@@ -35,7 +43,16 @@ const char *get_system_type(void)
 	return soc_info.sys_type;
 }
 
+<<<<<<< HEAD
 void prom_free_prom_memory(void)
+=======
+int ltq_soc_type(void)
+{
+	return soc_info.type;
+}
+
+void __init prom_free_prom_memory(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 
@@ -59,6 +76,11 @@ static void __init prom_init_cmdline(void)
 
 void __init plat_mem_setup(void)
 {
+<<<<<<< HEAD
+=======
+	void *dtb;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ioport_resource.start = IOPORT_RESOURCE_START;
 	ioport_resource.end = IOPORT_RESOURCE_END;
 	iomem_resource.start = IOMEM_RESOURCE_START;
@@ -66,15 +88,31 @@ void __init plat_mem_setup(void)
 
 	set_io_port_base((unsigned long) KSEG1);
 
+<<<<<<< HEAD
 	/*
 	 * Load the builtin devicetree. This causes the chosen node to be
 	 * parsed resulting in our memory appearing
 	 */
 	__dt_setup_arch(&__dtb_start);
+=======
+	if (fw_passed_dtb) /* UHI interface */
+		dtb = (void *)fw_passed_dtb;
+	else if (__dtb_start != __dtb_end)
+		dtb = (void *)__dtb_start;
+	else
+		panic("no dtb found");
+
+	/*
+	 * Load the devicetree. This causes the chosen node to be
+	 * parsed resulting in our memory appearing
+	 */
+	__dt_setup_arch(dtb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init device_tree_init(void)
 {
+<<<<<<< HEAD
 	unsigned long base, size;
 
 	if (!initial_boot_params)
@@ -87,6 +125,9 @@ void __init device_tree_init(void)
 	reserve_bootmem(base, size, BOOTMEM_DEFAULT);
 
 	unflatten_device_tree();
+=======
+	unflatten_and_copy_device_tree();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init prom_init(void)
@@ -107,6 +148,7 @@ void __init prom_init(void)
 
 int __init plat_of_setup(void)
 {
+<<<<<<< HEAD
 	static struct of_device_id of_ids[3];
 
 	if (!of_have_populated_dt())
@@ -117,6 +159,9 @@ int __init plat_of_setup(void)
 	strncpy(of_ids[1].compatible, "simple-bus",
 		sizeof(of_ids[1].compatible));
 	return of_platform_populate(NULL, of_ids, NULL, NULL);
+=======
+	return __dt_register_buses(soc_info.compatible, "simple-bus");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 arch_initcall(plat_of_setup);

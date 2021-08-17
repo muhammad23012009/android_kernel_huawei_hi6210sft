@@ -1,7 +1,11 @@
 /*
  *
  *  Support for audio capture for tm5600/6000/6010
+<<<<<<< HEAD
  *    (c) 2007-2008 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ *    (c) 2007-2008 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  Based on cx88-alsa.c
  *
@@ -42,7 +46,11 @@
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 
+<<<<<<< HEAD
 static bool enable[SNDRV_CARDS] = {1, [1 ... (SNDRV_CARDS - 1)] = 1};
+=======
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable tm6000x soundcard. default enabled.");
@@ -56,7 +64,11 @@ MODULE_PARM_DESC(index, "Index value for tm6000x capture interface(s).");
  ****************************************************************************/
 
 MODULE_DESCRIPTION("ALSA driver module for tm5600/tm6000/tm6010 based TV cards");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");
 MODULE_SUPPORTED_DEVICE("{{Trident,tm5600},"
 			"{{Trident,tm6000},"
@@ -388,7 +400,11 @@ static struct page *snd_pcm_get_vmalloc_page(struct snd_pcm_substream *subs,
 /*
  * operators
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_tm6000_pcm_ops = {
+=======
+static const struct snd_pcm_ops snd_tm6000_pcm_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = snd_tm6000_pcm_open,
 	.close = snd_tm6000_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -431,7 +447,12 @@ static int tm6000_audio_init(struct tm6000_core *dev)
 	if (!enable[devnr])
 		return -ENOENT;
 
+<<<<<<< HEAD
 	rc = snd_card_create(index[devnr], "tm6000", THIS_MODULE, 0, &card);
+=======
+	rc = snd_card_new(&dev->udev->dev, index[devnr], "tm6000",
+			  THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc < 0) {
 		snd_printk(KERN_ERR "cannot create card instance %d\n", devnr);
 		return rc;
@@ -445,7 +466,10 @@ static int tm6000_audio_init(struct tm6000_core *dev)
 		le16_to_cpu(dev->udev->descriptor.idVendor),
 		le16_to_cpu(dev->udev->descriptor.idProduct));
 	snd_component_add(card, component);
+<<<<<<< HEAD
 	snd_card_set_dev(card, &dev->udev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	chip = kzalloc(sizeof(struct snd_tm6000_card), GFP_KERNEL);
 	if (!chip) {

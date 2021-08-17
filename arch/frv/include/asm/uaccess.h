@@ -20,8 +20,11 @@
 #include <asm/segment.h>
 #include <asm/sections.h>
 
+<<<<<<< HEAD
 #define HAVE_ARCH_UNMAPPED_AREA	/* we decide where to put mmaps */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __ptr(x) ((unsigned long __force *)(x))
 
 #define VERIFY_READ	0
@@ -286,14 +289,22 @@ clear_user(void __user *to, unsigned long n)
 static inline unsigned long __must_check
 __copy_to_user(void __user *to, const void *from, unsigned long n)
 {
+<<<<<<< HEAD
        might_sleep();
+=======
+       might_fault();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
        return __copy_to_user_inatomic(to, from, n);
 }
 
 static inline unsigned long
 __copy_from_user(void *to, const void __user *from, unsigned long n)
 {
+<<<<<<< HEAD
        might_sleep();
+=======
+       might_fault();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
        return __copy_from_user_inatomic(to, from, n);
 }
 

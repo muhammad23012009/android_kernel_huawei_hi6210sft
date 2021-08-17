@@ -23,10 +23,17 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include <linux/platform_data/mtd-orion_nand.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include <linux/platform_data/mtd-orion_nand.h>
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*****************************************************************************
  * DB-88F5281 on board devices
@@ -202,7 +209,11 @@ __initcall(db88f5281_7seg_init);
  * PCI
  ****************************************************************************/
 
+<<<<<<< HEAD
 void __init db88f5281_pci_preinit(void)
+=======
+static void __init db88f5281_pci_preinit(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int pin;
 
@@ -340,6 +351,7 @@ static void __init db88f5281_init(void)
 	orion5x_uart0_init();
 	orion5x_uart1_init();
 
+<<<<<<< HEAD
 	mvebu_mbus_add_window("devbus-boot", DB88F5281_NOR_BOOT_BASE,
 			      DB88F5281_NOR_BOOT_SIZE);
 	platform_device_register(&db88f5281_boot_flash);
@@ -353,6 +365,29 @@ static void __init db88f5281_init(void)
 
 	mvebu_mbus_add_window("devbus-cs2", DB88F5281_NAND_BASE,
 			      DB88F5281_NAND_SIZE);
+=======
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    DB88F5281_NOR_BOOT_BASE,
+				    DB88F5281_NOR_BOOT_SIZE);
+	platform_device_register(&db88f5281_boot_flash);
+
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_TARGET(0),
+				    ORION_MBUS_DEVBUS_ATTR(0),
+				    DB88F5281_7SEG_BASE,
+				    DB88F5281_7SEG_SIZE);
+
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_TARGET(1),
+				    ORION_MBUS_DEVBUS_ATTR(1),
+				    DB88F5281_NOR_BASE,
+				    DB88F5281_NOR_SIZE);
+	platform_device_register(&db88f5281_nor_flash);
+
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_TARGET(2),
+				    ORION_MBUS_DEVBUS_ATTR(2),
+				    DB88F5281_NAND_BASE,
+				    DB88F5281_NAND_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&db88f5281_nand_flash);
 
 	i2c_register_board_info(0, &db88f5281_i2c_rtc, 1);
@@ -361,6 +396,10 @@ static void __init db88f5281_init(void)
 MACHINE_START(DB88F5281, "Marvell Orion-2 Development Board")
 	/* Maintainer: Tzachi Perelstein <tzachi@marvell.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= db88f5281_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,

@@ -27,7 +27,11 @@ static struct snd_soc_dai_link simone_dai = {
 	.cpu_dai_name	= "ep93xx-ac97",
 	.codec_dai_name	= "ac97-hifi",
 	.codec_name	= "ac97-codec",
+<<<<<<< HEAD
 	.platform_name	= "ep93xx-pcm-audio",
+=======
+	.platform_name	= "ep93xx-ac97",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_card snd_soc_simone = {
@@ -74,7 +78,10 @@ static int simone_remove(struct platform_device *pdev)
 static struct platform_driver simone_driver = {
 	.driver		= {
 		.name	= "simone-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= simone_probe,
 	.remove		= simone_remove,

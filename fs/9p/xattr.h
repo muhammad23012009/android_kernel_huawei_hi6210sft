@@ -19,7 +19,10 @@
 #include <net/9p/client.h>
 
 extern const struct xattr_handler *v9fs_xattr_handlers[];
+<<<<<<< HEAD
 extern struct xattr_handler v9fs_xattr_user_handler;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const struct xattr_handler v9fs_xattr_acl_access_handler;
 extern const struct xattr_handler v9fs_xattr_acl_default_handler;
 

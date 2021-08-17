@@ -55,9 +55,14 @@ typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 /* A placeholder; OR32 does not have fp support yes, so no fp regs for now.  */
 typedef unsigned long elf_fpregset_t;
 
+<<<<<<< HEAD
 /* This should be moved to include/linux/elf.h */
 #define EM_OR32         0x8472
 #define EM_OPENRISC     92     /* OpenRISC 32-bit embedded processor */
+=======
+/* EM_OPENRISC is defined in linux/elf-em.h */
+#define EM_OR32         0x8472
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These are used to set parameters in the core dumps.

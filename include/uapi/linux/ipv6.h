@@ -1,6 +1,10 @@
 #ifndef _UAPI_IPV6_H
 #define _UAPI_IPV6_H
 
+<<<<<<< HEAD
+=======
+#include <linux/libc-compat.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/in6.h>
 #include <asm/byteorder.h>
@@ -15,16 +19,30 @@
  *	*under construction*
  */
 
+<<<<<<< HEAD
 
+=======
+#if __UAPI_DEF_IN6_PKTINFO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct in6_pktinfo {
 	struct in6_addr	ipi6_addr;
 	int		ipi6_ifindex;
 };
+<<<<<<< HEAD
 
+=======
+#endif
+
+#if __UAPI_DEF_IP6_MTUINFO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ip6_mtuinfo {
 	struct sockaddr_in6	ip6m_addr;
 	__u32			ip6m_mtu;
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct in6_ifreq {
 	struct in6_addr	ifr6_addr;
@@ -161,7 +179,30 @@ enum {
 	DEVCONF_FORCE_TLLAO,
 	DEVCONF_NDISC_NOTIFY,
 	DEVCONF_ACCEPT_RA_RT_TABLE,
+<<<<<<< HEAD
 	DEVCONF_USE_OPTIMISTIC,
+=======
+	DEVCONF_MLDV1_UNSOLICITED_REPORT_INTERVAL,
+	DEVCONF_MLDV2_UNSOLICITED_REPORT_INTERVAL,
+	DEVCONF_SUPPRESS_FRAG_NDISC,
+	DEVCONF_ACCEPT_RA_FROM_LOCAL,
+	DEVCONF_USE_OPTIMISTIC,
+	DEVCONF_ACCEPT_RA_MTU,
+	DEVCONF_STABLE_SECRET,
+	DEVCONF_USE_OIF_ADDRS_ONLY,
+	DEVCONF_ACCEPT_RA_MIN_HOP_LIMIT,
+	DEVCONF_IGNORE_ROUTES_WITH_LINKDOWN,
+	DEVCONF_DROP_UNICAST_IN_L2_MULTICAST,
+	DEVCONF_DROP_UNSOLICITED_NA,
+	DEVCONF_KEEP_ADDR_ON_DOWN,
+	DEVCONF_RTR_SOLICIT_MAX_INTERVAL,
+	DEVCONF_SEG6_ENABLED,
+	DEVCONF_SEG6_REQUIRE_HMAC,
+	DEVCONF_ENHANCED_DAD,
+	DEVCONF_ADDR_GEN_MODE,
+	DEVCONF_DISABLE_POLICY,
+	DEVCONF_ACCEPT_RA_RT_INFO_MIN_PLEN,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DEVCONF_MAX
 };
 

@@ -12,10 +12,17 @@
 #include <linux/delay.h>
 
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <mach/irqs.h>
 #include <mach/devices.h>
 #include <mach/cputype.h>
 #include <mach/regs-usb.h>
+=======
+#include "irqs.h"
+#include "devices.h"
+#include "cputype.h"
+#include "regs-usb.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int __init pxa_register_device(struct pxa_device_desc *desc,
 				void *data, size_t size)
@@ -72,7 +79,13 @@ int __init pxa_register_device(struct pxa_device_desc *desc,
 	return platform_device_add(pdev);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB) || defined(CONFIG_USB_GADGET)
+=======
+#if IS_ENABLED(CONFIG_USB) || IS_ENABLED(CONFIG_USB_GADGET)
+#if IS_ENABLED(CONFIG_USB_MV_UDC) || IS_ENABLED(CONFIG_USB_EHCI_MV)
+#if IS_ENABLED(CONFIG_CPU_PXA910) || IS_ENABLED(CONFIG_CPU_PXA168)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*****************************************************************************
  * The registers read/write routines
@@ -112,9 +125,12 @@ static void u2o_write(void __iomem *base, unsigned int offset,
 	readl_relaxed(base + offset);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_MV_UDC) || defined(CONFIG_USB_EHCI_MV)
 
 #if defined(CONFIG_CPU_PXA910) || defined(CONFIG_CPU_PXA168)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_MUTEX(phy_lock);
 static int phy_init_cnt;
@@ -238,10 +254,17 @@ void pxa_usb_phy_deinit(void __iomem *phy_reg)
 #endif
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_SUPPORT
 static u64 usb_dma_mask = ~(u32)0;
 
 #ifdef CONFIG_USB_MV_UDC
+=======
+#if IS_ENABLED(CONFIG_USB_SUPPORT)
+static u64 usb_dma_mask = ~(u32)0;
+
+#if IS_ENABLED(CONFIG_USB_MV_UDC)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct resource pxa168_u2o_resources[] = {
 	/* regbase */
 	[0] = {
@@ -276,7 +299,11 @@ struct platform_device pxa168_device_u2o = {
 };
 #endif /* CONFIG_USB_MV_UDC */
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_EHCI_MV_U2O
+=======
+#if IS_ENABLED(CONFIG_USB_EHCI_MV_U2O)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct resource pxa168_u2oehci_resources[] = {
 	/* regbase */
 	[0] = {
@@ -312,7 +339,11 @@ struct platform_device pxa168_device_u2oehci = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_MV_OTG)
+=======
+#if IS_ENABLED(CONFIG_USB_MV_OTG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct resource pxa168_u2ootg_resources[] = {
 	/* regbase */
 	[0] = {

@@ -12,6 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -189,14 +190,32 @@ void __init r8a73a4_add_standard_devices_dt(void)
 }
 
 static const char *r8a73a4_boards_compat_dt[] __initdata = {
+=======
+ */
+
+#include <linux/init.h>
+
+#include <asm/mach/arch.h>
+
+#include "common.h"
+
+static const char *const r8a73a4_boards_compat_dt[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"renesas,r8a73a4",
 	NULL,
 };
 
 DT_MACHINE_START(R8A73A4_DT, "Generic R8A73A4 (Flattened Device Tree)")
+<<<<<<< HEAD
 	.init_irq	= irqchip_init,
 	.init_machine	= r8a73a4_add_standard_devices_dt,
 	.init_time	= shmobile_timer_init,
 	.dt_compat	= r8a73a4_boards_compat_dt,
 MACHINE_END
 #endif /* CONFIG_USE_OF */
+=======
+	.init_early	= shmobile_init_delay,
+	.init_late	= shmobile_init_late,
+	.dt_compat	= r8a73a4_boards_compat_dt,
+MACHINE_END
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

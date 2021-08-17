@@ -13,16 +13,23 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
  * Driver: adl_pci8164
  * Description: Driver for the Adlink PCI-8164 4 Axes Motion Control board
+<<<<<<< HEAD
  * Devices: (ADLink) PCI-8164 [adl_pci8164]
+=======
+ * Devices: [ADLink] PCI-8164 (adl_pci8164)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Author: Michel Lachaine <mike@mikelachaine.ca>
  * Status: experimental
  * Updated: Mon, 14 Apr 2008 15:10:32 +0100
@@ -31,9 +38,15 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
 #include "../comedidev.h"
+=======
+#include <linux/module.h>
+
+#include "../comedi_pci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PCI8164_AXIS(x)		((x) * 0x08)
 #define PCI8164_CMD_MSTS_REG	0x00
@@ -72,7 +85,11 @@ static int adl_pci8164_insn_write(struct comedi_device *dev,
 }
 
 static int adl_pci8164_auto_attach(struct comedi_device *dev,
+<<<<<<< HEAD
 					     unsigned long context_unused)
+=======
+				   unsigned long context_unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *pcidev = comedi_to_pci_dev(dev);
 	struct comedi_subdevice *s;
@@ -138,7 +155,11 @@ static struct comedi_driver adl_pci8164_driver = {
 	.driver_name	= "adl_pci8164",
 	.module		= THIS_MODULE,
 	.auto_attach	= adl_pci8164_auto_attach,
+<<<<<<< HEAD
 	.detach		= comedi_pci_disable,
+=======
+	.detach		= comedi_pci_detach,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int adl_pci8164_pci_probe(struct pci_dev *dev,
@@ -148,7 +169,11 @@ static int adl_pci8164_pci_probe(struct pci_dev *dev,
 				      id->driver_data);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(adl_pci8164_pci_table) = {
+=======
+static const struct pci_device_id adl_pci8164_pci_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_ADLINK, 0x8164) },
 	{ 0 }
 };

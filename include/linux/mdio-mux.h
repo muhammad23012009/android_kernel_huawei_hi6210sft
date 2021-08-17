@@ -10,11 +10,20 @@
 #ifndef __LINUX_MDIO_MUX_H
 #define __LINUX_MDIO_MUX_H
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/phy.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int mdio_mux_init(struct device *dev,
 		  int (*switch_fn) (int cur, int desired, void *data),
 		  void **mux_handle,
+<<<<<<< HEAD
 		  void *data);
+=======
+		  void *data,
+		  struct mii_bus *mux_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void mdio_mux_uninit(void *mux_handle);
 

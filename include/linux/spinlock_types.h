@@ -81,6 +81,7 @@ typedef struct spinlock {
 #define __SPIN_LOCK_UNLOCKED(lockname) \
 	(spinlock_t ) __SPIN_LOCK_INITIALIZER(lockname)
 
+<<<<<<< HEAD
 /*
  * SPIN_LOCK_UNLOCKED defeats lockdep state tracking and is hence
  * deprecated.
@@ -89,6 +90,8 @@ typedef struct spinlock {
  */
 #define SPIN_LOCK_UNLOCKED	__SPIN_LOCK_UNLOCKED(old_style_spin_init)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DEFINE_SPINLOCK(x)	spinlock_t x = __SPIN_LOCK_UNLOCKED(x)
 
 #include <linux/rwlock_types.h>

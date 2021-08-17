@@ -6,7 +6,11 @@
  *
  *  Implemented on linux by :
  *  Copyright (C) 2012 Michael D. Taht <dave.taht@bufferbloat.net>
+<<<<<<< HEAD
  *  Copyright (C) 2012 Eric Dumazet <edumazet@google.com>
+=======
+ *  Copyright (C) 2012,2015 Eric Dumazet <edumazet@google.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,6 +53,11 @@
 #include <linux/prefetch.h>
 #include <net/pkt_sched.h>
 #include <net/codel.h>
+<<<<<<< HEAD
+=======
+#include <net/codel_impl.h>
+#include <net/codel_qdisc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #define DEFAULT_CODEL_LIMIT 1000
@@ -64,6 +73,7 @@ struct codel_sched_data {
  * to dequeue a packet from queue. Note: backlog is handled in
  * codel, we dont need to reduce it here.
  */
+<<<<<<< HEAD
 static struct sk_buff *dequeue(struct codel_vars *vars, struct Qdisc *sch)
 {
 	struct sk_buff *skb = __skb_dequeue(&sch->q);
@@ -72,11 +82,34 @@ static struct sk_buff *dequeue(struct codel_vars *vars, struct Qdisc *sch)
 	return skb;
 }
 
+=======
+static struct sk_buff *dequeue_func(struct codel_vars *vars, void *ctx)
+{
+	struct Qdisc *sch = ctx;
+	struct sk_buff *skb = __qdisc_dequeue_head(&sch->q);
+
+	if (skb) {
+		sch->qstats.backlog -= qdisc_pkt_len(skb);
+		prefetch(&skb->end); /* we'll need skb_shinfo() */
+	}
+	return skb;
+}
+
+static void drop_func(struct sk_buff *skb, void *ctx)
+{
+	struct Qdisc *sch = ctx;
+
+	kfree_skb(skb);
+	qdisc_qstats_drop(sch);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct sk_buff *codel_qdisc_dequeue(struct Qdisc *sch)
 {
 	struct codel_sched_data *q = qdisc_priv(sch);
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	skb = codel_dequeue(sch, &q->params, &q->vars, &q->stats, dequeue);
 
 	/* We cant call qdisc_tree_decrease_qlen() if our qlen is 0,
@@ -85,13 +118,31 @@ static struct sk_buff *codel_qdisc_dequeue(struct Qdisc *sch)
 	if (q->stats.drop_count && sch->q.qlen) {
 		qdisc_tree_decrease_qlen(sch, q->stats.drop_count);
 		q->stats.drop_count = 0;
+=======
+	skb = codel_dequeue(sch, &sch->qstats.backlog, &q->params, &q->vars,
+			    &q->stats, qdisc_pkt_len, codel_get_enqueue_time,
+			    drop_func, dequeue_func);
+
+	/* We cant call qdisc_tree_reduce_backlog() if our qlen is 0,
+	 * or HTB crashes. Defer it for next round.
+	 */
+	if (q->stats.drop_count && sch->q.qlen) {
+		qdisc_tree_reduce_backlog(sch, q->stats.drop_count, q->stats.drop_len);
+		q->stats.drop_count = 0;
+		q->stats.drop_len = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (skb)
 		qdisc_bstats_update(sch, skb);
 	return skb;
 }
 
+<<<<<<< HEAD
 static int codel_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch)
+=======
+static int codel_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+			       struct sk_buff **to_free)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct codel_sched_data *q;
 
@@ -101,7 +152,11 @@ static int codel_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	}
 	q = qdisc_priv(sch);
 	q->drop_overlimit++;
+<<<<<<< HEAD
 	return qdisc_drop(skb, sch);
+=======
+	return qdisc_drop(skb, sch, to_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct nla_policy codel_policy[TCA_CODEL_MAX + 1] = {
@@ -109,13 +164,21 @@ static const struct nla_policy codel_policy[TCA_CODEL_MAX + 1] = {
 	[TCA_CODEL_LIMIT]	= { .type = NLA_U32 },
 	[TCA_CODEL_INTERVAL]	= { .type = NLA_U32 },
 	[TCA_CODEL_ECN]		= { .type = NLA_U32 },
+<<<<<<< HEAD
+=======
+	[TCA_CODEL_CE_THRESHOLD]= { .type = NLA_U32 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int codel_change(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct codel_sched_data *q = qdisc_priv(sch);
 	struct nlattr *tb[TCA_CODEL_MAX + 1];
+<<<<<<< HEAD
 	unsigned int qlen;
+=======
+	unsigned int qlen, dropped = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	if (!opt)
@@ -133,6 +196,15 @@ static int codel_change(struct Qdisc *sch, struct nlattr *opt)
 		q->params.target = ((u64)target * NSEC_PER_USEC) >> CODEL_SHIFT;
 	}
 
+<<<<<<< HEAD
+=======
+	if (tb[TCA_CODEL_CE_THRESHOLD]) {
+		u64 val = nla_get_u32(tb[TCA_CODEL_CE_THRESHOLD]);
+
+		q->params.ce_threshold = (val * NSEC_PER_USEC) >> CODEL_SHIFT;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (tb[TCA_CODEL_INTERVAL]) {
 		u32 interval = nla_get_u32(tb[TCA_CODEL_INTERVAL]);
 
@@ -147,12 +219,22 @@ static int codel_change(struct Qdisc *sch, struct nlattr *opt)
 
 	qlen = sch->q.qlen;
 	while (sch->q.qlen > sch->limit) {
+<<<<<<< HEAD
 		struct sk_buff *skb = __skb_dequeue(&sch->q);
 
 		sch->qstats.backlog -= qdisc_pkt_len(skb);
 		qdisc_drop(skb, sch);
 	}
 	qdisc_tree_decrease_qlen(sch, qlen - sch->q.qlen);
+=======
+		struct sk_buff *skb = __qdisc_dequeue_head(&sch->q);
+
+		dropped += qdisc_pkt_len(skb);
+		qdisc_qstats_backlog_dec(sch, skb);
+		rtnl_qdisc_drop(skb, sch);
+	}
+	qdisc_tree_reduce_backlog(sch, qlen - sch->q.qlen, dropped);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sch_tree_unlock(sch);
 	return 0;
@@ -167,6 +249,10 @@ static int codel_init(struct Qdisc *sch, struct nlattr *opt)
 	codel_params_init(&q->params);
 	codel_vars_init(&q->vars);
 	codel_stats_init(&q->stats);
+<<<<<<< HEAD
+=======
+	q->params.mtu = psched_mtu(qdisc_dev(sch));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (opt) {
 		int err = codel_change(sch, opt);
@@ -201,7 +287,14 @@ static int codel_dump(struct Qdisc *sch, struct sk_buff *skb)
 	    nla_put_u32(skb, TCA_CODEL_ECN,
 			q->params.ecn))
 		goto nla_put_failure;
+<<<<<<< HEAD
 
+=======
+	if (q->params.ce_threshold != CODEL_DISABLED_THRESHOLD &&
+	    nla_put_u32(skb, TCA_CODEL_CE_THRESHOLD,
+			codel_time_to_us(q->params.ce_threshold)))
+		goto nla_put_failure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nla_nest_end(skb, opts);
 
 nla_put_failure:
@@ -220,6 +313,10 @@ static int codel_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
 		.ldelay		= codel_time_to_us(q->vars.ldelay),
 		.dropping	= q->vars.dropping,
 		.ecn_mark	= q->stats.ecn_mark,
+<<<<<<< HEAD
+=======
+		.ce_mark	= q->stats.ce_mark,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	if (q->vars.dropping) {

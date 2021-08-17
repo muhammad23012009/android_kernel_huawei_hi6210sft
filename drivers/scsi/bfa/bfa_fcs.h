@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -243,15 +252,23 @@ struct bfa_fcs_fabric_s;
  *  Symbolic Name.
  *
  *  Physical Port's symbolic name Format : (Total 128 bytes)
+<<<<<<< HEAD
  *  Adapter Model number/name : 12 bytes
  *  Driver Version     : 10 bytes
  *  Host Machine Name  : 30 bytes
  *  Host OS Info	   : 48 bytes
+=======
+ *  Adapter Model number/name : 16 bytes
+ *  Driver Version     : 10 bytes
+ *  Host Machine Name  : 30 bytes
+ *  Host OS Info	   : 44 bytes
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  Host OS PATCH Info : 16 bytes
  *  ( remaining 12 bytes reserved to be used for separator)
  */
 #define BFA_FCS_PORT_SYMBNAME_SEPARATOR			" | "
 
+<<<<<<< HEAD
 #define BFA_FCS_PORT_SYMBNAME_MODEL_SZ			12
 #define BFA_FCS_PORT_SYMBNAME_VERSION_SZ		10
 #define BFA_FCS_PORT_SYMBNAME_MACHINENAME_SZ		30
@@ -261,6 +278,14 @@ struct bfa_fcs_fabric_s;
 /* bb_scn value in 2^bb_scn */
 #define BFA_FCS_PORT_DEF_BB_SCN				3
 
+=======
+#define BFA_FCS_PORT_SYMBNAME_MODEL_SZ			16
+#define BFA_FCS_PORT_SYMBNAME_VERSION_SZ		10
+#define BFA_FCS_PORT_SYMBNAME_MACHINENAME_SZ		30
+#define BFA_FCS_PORT_SYMBNAME_OSINFO_SZ			44
+#define BFA_FCS_PORT_SYMBNAME_OSPATCH_SZ		16
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Get FC port ID for a logical port.
  */
@@ -631,9 +656,18 @@ void bfa_fcs_fcpim_uf_recv(struct bfa_fcs_itnim_s *itnim,
 
 #define BFA_FCS_FDMI_SUPP_SPEEDS_10G	FDMI_TRANS_SPEED_10G
 
+<<<<<<< HEAD
 /*
  * HBA Attribute Block : BFA internal representation. Note : Some variable
  * sizes have been trimmed to suit BFA For Ex : Model will be "Brocade". Based
+=======
+#define BFA_FCS_FDMI_VENDOR_INFO_LEN    8
+#define BFA_FCS_FDMI_FC4_TYPE_LEN       32
+
+/*
+ * HBA Attribute Block : BFA internal representation. Note : Some variable
+ * sizes have been trimmed to suit BFA For Ex : Model will be "QLogic ". Based
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * on this the size has been reduced to 16 bytes from the standard's 64 bytes.
  */
 struct bfa_fcs_fdmi_hba_attr_s {
@@ -641,25 +675,53 @@ struct bfa_fcs_fdmi_hba_attr_s {
 	u8         manufacturer[64];
 	u8         serial_num[64];
 	u8         model[16];
+<<<<<<< HEAD
 	u8         model_desc[256];
+=======
+	u8         model_desc[128];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8         hw_version[8];
 	u8         driver_version[BFA_VERSION_LEN];
 	u8         option_rom_ver[BFA_VERSION_LEN];
 	u8         fw_version[BFA_VERSION_LEN];
 	u8         os_name[256];
 	__be32        max_ct_pyld;
+<<<<<<< HEAD
+=======
+	struct      bfa_lport_symname_s node_sym_name;
+	u8     vendor_info[BFA_FCS_FDMI_VENDOR_INFO_LEN];
+	__be32    num_ports;
+	wwn_t       fabric_name;
+	u8     bios_ver[BFA_VERSION_LEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
  * Port Attribute Block
  */
 struct bfa_fcs_fdmi_port_attr_s {
+<<<<<<< HEAD
 	u8         supp_fc4_types[32];	/* supported FC4 types */
+=======
+	u8         supp_fc4_types[BFA_FCS_FDMI_FC4_TYPE_LEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__be32        supp_speed;	/* supported speed */
 	__be32        curr_speed;	/* current Speed */
 	__be32        max_frm_size;	/* max frame size */
 	u8         os_device_name[256];	/* OS device Name */
 	u8         host_name[256];	/* host name */
+<<<<<<< HEAD
+=======
+	wwn_t       port_name;
+	wwn_t       node_name;
+	struct      bfa_lport_symname_s port_sym_name;
+	__be32    port_type;
+	enum fc_cos    scos;
+	wwn_t       port_fabric_name;
+	u8     port_act_fc4_type[BFA_FCS_FDMI_FC4_TYPE_LEN];
+	__be32    port_state;
+	__be32    num_ports;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct bfa_fcs_stats_s {
@@ -684,8 +746,11 @@ struct bfa_fcs_s {
 	struct bfa_trc_mod_s  *trcmod;	/*  tracing module */
 	bfa_boolean_t	vf_enabled;	/*  VF mode is enabled */
 	bfa_boolean_t	fdmi_enabled;	/*  FDMI is enabled */
+<<<<<<< HEAD
 	bfa_boolean_t	bbscn_enabled;	/*  Driver Config Parameter */
 	bfa_boolean_t	bbscn_flogi_rjt;/*  FLOGI reject due to BB_SCN */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bfa_boolean_t min_cfg;		/* min cfg enabled/disabled */
 	u16	port_vfid;	/*  port default VF ID */
 	struct bfa_fcs_driver_info_s driver_info;
@@ -861,8 +926,13 @@ bfa_status_t bfa_fcb_rport_alloc(struct bfad_s *bfad,
 /*
  * itnim callbacks
  */
+<<<<<<< HEAD
 void bfa_fcb_itnim_alloc(struct bfad_s *bfad, struct bfa_fcs_itnim_s **itnim,
 			 struct bfad_itnim_s **itnim_drv);
+=======
+int bfa_fcb_itnim_alloc(struct bfad_s *bfad, struct bfa_fcs_itnim_s **itnim,
+			struct bfad_itnim_s **itnim_drv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void bfa_fcb_itnim_free(struct bfad_s *bfad,
 			struct bfad_itnim_s *itnim_drv);
 void bfa_fcb_itnim_online(struct bfad_itnim_s *itnim_drv);

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +71,11 @@
 typedef const struct acpi_exdump_info {
 	u8 opcode;
 	u8 offset;
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 } acpi_exdump_info;
 
@@ -87,6 +95,13 @@ typedef const struct acpi_exdump_info {
 #define ACPI_EXD_PACKAGE                11
 #define ACPI_EXD_FIELD                  12
 #define ACPI_EXD_REFERENCE              13
+<<<<<<< HEAD
+=======
+#define ACPI_EXD_LIST                   14	/* Operand object list */
+#define ACPI_EXD_HDLR_LIST              15	/* Address Handler list */
+#define ACPI_EXD_RGN_LIST               16	/* Region list */
+#define ACPI_EXD_NODE                   17	/* Namespace Node */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* restore default alignment */
 
@@ -127,6 +142,31 @@ void
 acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			u32 level, u32 index);
 
+<<<<<<< HEAD
+=======
+void
+acpi_ex_start_trace_method(struct acpi_namespace_node *method_node,
+			   union acpi_operand_object *obj_desc,
+			   struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_stop_trace_method(struct acpi_namespace_node *method_node,
+			  union acpi_operand_object *obj_desc,
+			  struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_start_trace_opcode(union acpi_parse_object *op,
+			   struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_stop_trace_opcode(union acpi_parse_object *op,
+			  struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_trace_point(acpi_trace_event_type type,
+		    u8 begin, u8 *aml, char *pathname);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * exfield - ACPI AML (p-code) execution - field manipulation
  */
@@ -344,7 +384,11 @@ acpi_ex_resolve_to_value(union acpi_operand_object **stack_ptr,
 acpi_status
 acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 			 union acpi_operand_object *operand,
+<<<<<<< HEAD
 			 acpi_object_type * return_type,
+=======
+			 acpi_object_type *return_type,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 union acpi_operand_object **return_desc);
 
 /*
@@ -371,12 +415,18 @@ void
 acpi_ex_dump_operands(union acpi_operand_object **operands,
 		      const char *opcode_name, u32 num_opcodes);
 
+<<<<<<< HEAD
 #ifdef	ACPI_FUTURE_USAGE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void
 acpi_ex_dump_object_descriptor(union acpi_operand_object *object, u32 flags);
 
 void acpi_ex_dump_namespace_node(struct acpi_namespace_node *node, u32 flags);
+<<<<<<< HEAD
 #endif				/* ACPI_FUTURE_USAGE */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * exnames - AML namestring support
@@ -454,10 +504,13 @@ void acpi_ex_enter_interpreter(void);
 
 void acpi_ex_exit_interpreter(void);
 
+<<<<<<< HEAD
 void acpi_ex_reacquire_interpreter(void);
 
 void acpi_ex_relinquish_interpreter(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u8 acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc);
 
 void acpi_ex_acquire_global_lock(u32 rule);
@@ -468,6 +521,11 @@ void acpi_ex_eisa_id_to_string(char *dest, u64 compressed_id);
 
 void acpi_ex_integer_to_string(char *dest, u64 value);
 
+<<<<<<< HEAD
+=======
+void acpi_ex_pci_cls_to_string(char *dest, u8 class_code[3]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u8 acpi_is_valid_space_id(u8 space_id);
 
 /*

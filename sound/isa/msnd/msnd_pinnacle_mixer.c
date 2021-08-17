@@ -55,12 +55,17 @@
 static int snd_msndmix_info_mux(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {
+=======
+	static const char * const texts[3] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"Analog", "MASS", "SPDIF",
 	};
 	struct snd_msnd *chip = snd_kcontrol_chip(kcontrol);
 	unsigned items = test_bit(F_HAVEDIGITAL, &chip->flags) ? 3 : 2;
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = items;
@@ -69,6 +74,9 @@ static int snd_msndmix_info_mux(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 		texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, items, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_msndmix_get_mux(struct snd_kcontrol *kcontrol,
@@ -313,11 +321,19 @@ int snd_msndmix_new(struct snd_card *card)
 	spin_lock_init(&chip->mixer_lock);
 	strcpy(card->mixername, "MSND Pinnacle Mixer");
 
+<<<<<<< HEAD
 	for (idx = 0; idx < ARRAY_SIZE(snd_msnd_controls); idx++)
+=======
+	for (idx = 0; idx < ARRAY_SIZE(snd_msnd_controls); idx++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = snd_ctl_add(card,
 				  snd_ctl_new1(snd_msnd_controls + idx, chip));
 		if (err < 0)
 			return err;
+<<<<<<< HEAD
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

@@ -1,5 +1,9 @@
 /****************************************************************************
+<<<<<<< HEAD
  * Driver for Solarflare Solarstorm network controllers and boards
+=======
+ * Driver for Solarflare network controllers and boards
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright 2006-2011 Solarflare Communications Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -418,7 +422,11 @@ static void txc_reset_logic_mmd(struct efx_nic *efx, int mmd)
 
 	val |= (1 << TXC_GLCMD_LMTSWRST_LBN);
 	efx_mdio_write(efx, mmd, TXC_GLRGS_GLCMD, val);
+<<<<<<< HEAD
 	while (tries--) {
+=======
+	while (--tries) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		val = efx_mdio_read(efx, mmd, TXC_GLRGS_GLCMD);
 		if (!(val & (1 << TXC_GLCMD_LMTSWRST_LBN)))
 			break;

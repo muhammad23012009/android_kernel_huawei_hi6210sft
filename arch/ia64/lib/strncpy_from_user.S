@@ -17,6 +17,10 @@
  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 GLOBAL_ENTRY(__strncpy_from_user)
 	alloc r2=ar.pfs,3,0,0,0
@@ -42,3 +46,7 @@ GLOBAL_ENTRY(__strncpy_from_user)
 [.Lexit:]
 	br.ret.sptk.many rp
 END(__strncpy_from_user)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__strncpy_from_user)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

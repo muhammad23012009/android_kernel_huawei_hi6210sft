@@ -16,7 +16,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/module.h>
@@ -157,6 +160,7 @@ static int fsg_led_probe(struct platform_device *pdev)
 	latch_value = 0xffff;
 	*latch_address = latch_value;
 
+<<<<<<< HEAD
 	ret = led_classdev_register(&pdev->dev, &fsg_wlan_led);
 	if (ret < 0)
 		goto failwlan;
@@ -194,10 +198,36 @@ static int fsg_led_probe(struct platform_device *pdev)
  failwan:
 	led_classdev_unregister(&fsg_wlan_led);
  failwlan:
+=======
+	ret = devm_led_classdev_register(&pdev->dev, &fsg_wlan_led);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_led_classdev_register(&pdev->dev, &fsg_wan_led);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_led_classdev_register(&pdev->dev, &fsg_sata_led);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_led_classdev_register(&pdev->dev, &fsg_usb_led);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_led_classdev_register(&pdev->dev, &fsg_sync_led);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_led_classdev_register(&pdev->dev, &fsg_ring_led);
+	if (ret < 0)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int fsg_led_remove(struct platform_device *pdev)
 {
 	led_classdev_unregister(&fsg_wlan_led);
@@ -214,6 +244,10 @@ static int fsg_led_remove(struct platform_device *pdev)
 static struct platform_driver fsg_led_driver = {
 	.probe		= fsg_led_probe,
 	.remove		= fsg_led_remove,
+=======
+static struct platform_driver fsg_led_driver = {
+	.probe		= fsg_led_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.driver		= {
 		.name		= "fsg-led",
 	},

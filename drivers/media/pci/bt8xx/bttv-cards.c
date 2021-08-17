@@ -41,7 +41,11 @@
 
 #include "bttvp.h"
 #include <media/v4l2-common.h>
+<<<<<<< HEAD
 #include <media/tvaudio.h>
+=======
+#include <media/i2c/tvaudio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "bttv-audio-hook.h"
 
 /* fwd decl */
@@ -52,6 +56,10 @@ static void osprey_eeprom(struct bttv *btv, const u8 ee[256]);
 static void modtec_eeprom(struct bttv *btv);
 static void init_PXC200(struct bttv *btv);
 static void init_RTV24(struct bttv *btv);
+<<<<<<< HEAD
+=======
+static void init_PCI8604PW(struct bttv *btv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void rv605_muxsel(struct bttv *btv, unsigned int input);
 static void eagle_muxsel(struct bttv *btv, unsigned int input);
@@ -83,8 +91,12 @@ static void gv800s_init(struct bttv *btv);
 static void td3116_muxsel(struct bttv *btv, unsigned int input);
 
 static int terratec_active_radio_upgrade(struct bttv *btv);
+<<<<<<< HEAD
 static int tea5757_read(struct bttv *btv);
 static int tea5757_write(struct bttv *btv, int value);
+=======
+static int tea575x_init(struct bttv *btv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void identify_by_eeprom(struct bttv *btv,
 			       unsigned char eeprom_data[256]);
 static int pvr_boot(struct bttv *btv);
@@ -131,7 +143,11 @@ MODULE_PARM_DESC(vsfx,"set VSFX pci config bit "
 		 "[yet another chipset flaw workaround]");
 MODULE_PARM_DESC(latency,"pci latency timer");
 MODULE_PARM_DESC(card,"specify TV/grabber card model, see CARDLIST file for a list");
+<<<<<<< HEAD
 MODULE_PARM_DESC(pll,"specify installed crystal (0=none, 28=28 MHz, 35=35 MHz)");
+=======
+MODULE_PARM_DESC(pll, "specify installed crystal (0=none, 28=28 MHz, 35=35 MHz, 14=14 MHz)");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_PARM_DESC(tuner,"specify installed tuner type");
 MODULE_PARM_DESC(autoload, "obsolete option, please do not use anymore");
 MODULE_PARM_DESC(audiodev, "specify audio device:\n"
@@ -2426,7 +2442,11 @@ struct tvcard bttv_tvcards[] = {
 	},
 		/* ---- card 0x87---------------------------------- */
 	[BTTV_BOARD_DVICO_FUSIONHDTV_5_LITE] = {
+<<<<<<< HEAD
 		/* Michael Krufky <mkrufky@m1k.net> */
+=======
+		/* Michael Krufky <mkrufky@linuxtv.org> */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name           = "DViCO FusionHDTV 5 Lite",
 		.tuner_type     = TUNER_LG_TDVS_H06XF, /* TDVS-H064F */
 		.tuner_addr	= ADDR_UNSET,
@@ -2705,7 +2725,11 @@ struct tvcard bttv_tvcards[] = {
 		.has_radio      = 1,
 		.has_remote     = 1,
 	},
+<<<<<<< HEAD
 		[BTTV_BOARD_VD012] = {
+=======
+	[BTTV_BOARD_VD012] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* D.Heer@Phytec.de */
 		.name           = "PHYTEC VD-012 (bt878)",
 		.video_inputs   = 4,
@@ -2718,7 +2742,11 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
+<<<<<<< HEAD
 		[BTTV_BOARD_VD012_X1] = {
+=======
+	[BTTV_BOARD_VD012_X1] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* D.Heer@Phytec.de */
 		.name           = "PHYTEC VD-012-X1 (bt878)",
 		.video_inputs   = 4,
@@ -2731,7 +2759,11 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
+<<<<<<< HEAD
 		[BTTV_BOARD_VD012_X2] = {
+=======
+	[BTTV_BOARD_VD012_X2] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* D.Heer@Phytec.de */
 		.name           = "PHYTEC VD-012-X2 (bt878)",
 		.video_inputs   = 4,
@@ -2744,7 +2776,11 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
+<<<<<<< HEAD
 		[BTTV_BOARD_GEOVISION_GV800S] = {
+=======
+	[BTTV_BOARD_GEOVISION_GV800S] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Bruno Christo <bchristo@inf.ufsm.br>
 		 *
 		 * GeoVision GV-800(S) has 4 Conexant Fusion 878A:
@@ -2771,7 +2807,11 @@ struct tvcard bttv_tvcards[] = {
 		.no_tda7432	= 1,
 		.muxsel_hook    = gv800s_muxsel,
 	},
+<<<<<<< HEAD
 		[BTTV_BOARD_GEOVISION_GV800S_SL] = {
+=======
+	[BTTV_BOARD_GEOVISION_GV800S_SL] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Bruno Christo <bchristo@inf.ufsm.br>
 		 *
 		 * GeoVision GV-800(S) has 4 Conexant Fusion 878A:
@@ -2808,6 +2848,10 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
+<<<<<<< HEAD
+=======
+	/* ---- card 0xa0---------------------------------- */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[BTTV_BOARD_TVT_TD3116] = {
 		.name           = "Tongwei Video Technology TD-3116",
 		.video_inputs   = 16,
@@ -2825,7 +2869,71 @@ struct tvcard bttv_tvcards[] = {
 		.muxsel         = MUXSEL(2, 3, 1, 0),
 		.tuner_type     = TUNER_ABSENT,
 	},
+<<<<<<< HEAD
 
+=======
+	[BTTV_BOARD_ADLINK_MPG24] = {
+		/* Adlink MPG24 */
+		.name           = "Adlink MPG24",
+		.video_inputs   = 1,
+		/* .audio_inputs= 1, */
+		.svhs           = NO_SVHS,
+		.muxsel         = MUXSEL(2, 2, 2, 2),
+		.tuner_type     = UNSET,
+		.tuner_addr	= ADDR_UNSET,
+		.pll            = PLL_28,
+	},
+	[BTTV_BOARD_BT848_CAP_14] = {
+		.name		= "Bt848 Capture 14MHz",
+		.video_inputs	= 4,
+		.svhs		= 2,
+		.muxsel		= MUXSEL(2, 3, 1, 0),
+		.pll		= PLL_14,
+		.tuner_type	= TUNER_ABSENT,
+	},
+	[BTTV_BOARD_CYBERVISION_CV06] = {
+		.name		= "CyberVision CV06 (SV)",
+		.video_inputs	= 4,
+		/* .audio_inputs= 0, */
+		.svhs		= NO_SVHS,
+		.muxsel		= MUXSEL(2, 3, 1, 0),
+		.pll		= PLL_28,
+		.tuner_type	= TUNER_ABSENT,
+		.tuner_addr	= ADDR_UNSET,
+	},
+	[BTTV_BOARD_KWORLD_VSTREAM_XPERT] = {
+		/* Pojar George <geoubuntu@gmail.com> */
+		.name           = "Kworld V-Stream Xpert TV PVR878",
+		.video_inputs   = 3,
+		/* .audio_inputs= 1, */
+		.svhs           = 2,
+		.gpiomask       = 0x001c0007,
+		.muxsel         = MUXSEL(2, 3, 1, 1),
+		.gpiomux        = { 0, 1, 2, 2 },
+		.gpiomute       = 3,
+		.pll            = PLL_28,
+		.tuner_type     = TUNER_TENA_9533_DI,
+		.tuner_addr    = ADDR_UNSET,
+		.has_remote     = 1,
+		.has_radio      = 1,
+	},
+	/* ---- card 0xa6---------------------------------- */
+	[BTTV_BOARD_PCI_8604PW] = {
+		/* PCI-8604PW with special unlock sequence */
+		.name           = "PCI-8604PW",
+		.video_inputs   = 2,
+		/* .audio_inputs= 0, */
+		.svhs           = NO_SVHS,
+		/* The second input is available on CN4, if populated.
+		 * The other 5x2 header (CN2?) connects to the same inputs
+		 * as the on-board BNCs */
+		.muxsel         = MUXSEL(2, 3),
+		.tuner_type     = TUNER_ABSENT,
+		.no_msp34xx	= 1,
+		.no_tda7432	= 1,
+		.pll            = PLL_35,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const unsigned int bttv_num_tvcards = ARRAY_SIZE(bttv_tvcards);
@@ -3023,12 +3131,21 @@ static void miro_pinnacle_gpio(struct bttv *btv)
 		if (0 == (gpio & 0x20)) {
 			btv->has_radio = 1;
 			if (!miro_fmtuner[id]) {
+<<<<<<< HEAD
 				btv->has_matchbox = 1;
 				btv->mbox_we    = (1<<6);
 				btv->mbox_most  = (1<<7);
 				btv->mbox_clk   = (1<<8);
 				btv->mbox_data  = (1<<9);
 				btv->mbox_mask  = (1<<6)|(1<<7)|(1<<8)|(1<<9);
+=======
+				btv->has_tea575x = 1;
+				btv->tea_gpio.wren = 6;
+				btv->tea_gpio.most = 7;
+				btv->tea_gpio.clk  = 8;
+				btv->tea_gpio.data = 9;
+				tea575x_init(btv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		} else {
 			btv->has_radio = 0;
@@ -3042,7 +3159,11 @@ static void miro_pinnacle_gpio(struct bttv *btv)
 		pr_info("%d: miro: id=%d tuner=%d radio=%s stereo=%s\n",
 			btv->c.nr, id+1, btv->tuner_type,
 			!btv->has_radio ? "no" :
+<<<<<<< HEAD
 			(btv->has_matchbox ? "matchbox" : "fmtuner"),
+=======
+			(btv->has_tea575x ? "tea575x" : "fmtuner"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			(-1 == msp) ? "no" : "yes");
 	} else {
 		/* new cards with microtune tuner */
@@ -3260,6 +3381,12 @@ void bttv_init_card1(struct bttv *btv)
 	case BTTV_BOARD_ADLINK_RTV24:
 		init_RTV24( btv );
 		break;
+<<<<<<< HEAD
+=======
+	case BTTV_BOARD_PCI_8604PW:
+		init_PCI8604PW(btv);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	}
 	if (!bttv_tvcards[btv->c.type].has_dvb)
@@ -3317,12 +3444,21 @@ void bttv_init_card2(struct bttv *btv)
 		break;
 	case BTTV_BOARD_VHX:
 		btv->has_radio    = 1;
+<<<<<<< HEAD
 		btv->has_matchbox = 1;
 		btv->mbox_we      = 0x20;
 		btv->mbox_most    = 0;
 		btv->mbox_clk     = 0x08;
 		btv->mbox_data    = 0x10;
 		btv->mbox_mask    = 0x38;
+=======
+		btv->has_tea575x  = 1;
+		btv->tea_gpio.wren = 5;
+		btv->tea_gpio.most = 6;
+		btv->tea_gpio.clk  = 3;
+		btv->tea_gpio.data = 4;
+		tea575x_init(btv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case BTTV_BOARD_VOBIS_BOOSTAR:
 	case BTTV_BOARD_TERRATV:
@@ -3390,6 +3526,13 @@ void bttv_init_card2(struct bttv *btv)
 			btv->pll.pll_ifreq=35468950;
 			btv->pll.pll_crystal=BT848_IFORM_XT1;
 		}
+<<<<<<< HEAD
+=======
+		if (PLL_14 == bttv_tvcards[btv->c.type].pll) {
+			btv->pll.pll_ifreq = 14318181;
+			btv->pll.pll_crystal = BT848_IFORM_XT0;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* insmod options can override */
 		switch (pll[btv->c.nr]) {
 		case 0: /* none */
@@ -3409,6 +3552,15 @@ void bttv_init_card2(struct bttv *btv)
 			btv->pll.pll_ofreq   = 0;
 			btv->pll.pll_crystal = BT848_IFORM_XT1;
 			break;
+<<<<<<< HEAD
+=======
+		case 3: /* 14 MHz */
+		case 14:
+			btv->pll.pll_ifreq   = 14318181;
+			btv->pll.pll_ofreq   = 0;
+			btv->pll.pll_crystal = BT848_IFORM_XT0;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	btv->pll.pll_current = -1;
@@ -3670,6 +3822,7 @@ static void hauppauge_eeprom(struct bttv *btv)
 		btv->radio_uses_msp_demodulator = 1;
 }
 
+<<<<<<< HEAD
 static int terratec_active_radio_upgrade(struct bttv *btv)
 {
 	int freq;
@@ -3681,11 +3834,110 @@ static int terratec_active_radio_upgrade(struct bttv *btv)
 	btv->mbox_clk     = 0x08;
 	btv->mbox_data    = 0x04;
 	btv->mbox_mask    = 0x3c;
+=======
+/* ----------------------------------------------------------------------- */
+
+static void bttv_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
+{
+	struct bttv *btv = tea->private_data;
+	struct bttv_tea575x_gpio gpio = btv->tea_gpio;
+	u16 val = 0;
+
+	val |= (pins & TEA575X_DATA) ? (1 << gpio.data) : 0;
+	val |= (pins & TEA575X_CLK)  ? (1 << gpio.clk)  : 0;
+	val |= (pins & TEA575X_WREN) ? (1 << gpio.wren) : 0;
+
+	gpio_bits((1 << gpio.data) | (1 << gpio.clk) | (1 << gpio.wren), val);
+	if (btv->mbox_ior) {
+		/* IOW and CSEL active */
+		gpio_bits(btv->mbox_iow | btv->mbox_csel, 0);
+		udelay(5);
+		/* all inactive */
+		gpio_bits(btv->mbox_ior | btv->mbox_iow | btv->mbox_csel,
+			  btv->mbox_ior | btv->mbox_iow | btv->mbox_csel);
+	}
+}
+
+static u8 bttv_tea575x_get_pins(struct snd_tea575x *tea)
+{
+	struct bttv *btv = tea->private_data;
+	struct bttv_tea575x_gpio gpio = btv->tea_gpio;
+	u8 ret = 0;
+	u16 val;
+
+	if (btv->mbox_ior) {
+		/* IOR and CSEL active */
+		gpio_bits(btv->mbox_ior | btv->mbox_csel, 0);
+		udelay(5);
+	}
+	val = gpio_read();
+	if (btv->mbox_ior) {
+		/* all inactive */
+		gpio_bits(btv->mbox_ior | btv->mbox_iow | btv->mbox_csel,
+			  btv->mbox_ior | btv->mbox_iow | btv->mbox_csel);
+	}
+
+	if (val & (1 << gpio.data))
+		ret |= TEA575X_DATA;
+	if (val & (1 << gpio.most))
+		ret |= TEA575X_MOST;
+
+	return ret;
+}
+
+static void bttv_tea575x_set_direction(struct snd_tea575x *tea, bool output)
+{
+	struct bttv *btv = tea->private_data;
+	struct bttv_tea575x_gpio gpio = btv->tea_gpio;
+	u32 mask = (1 << gpio.clk) | (1 << gpio.wren) | (1 << gpio.data) |
+		   (1 << gpio.most);
+
+	if (output)
+		gpio_inout(mask, (1 << gpio.data) | (1 << gpio.clk) |
+				 (1 << gpio.wren));
+	else
+		gpio_inout(mask, (1 << gpio.clk) | (1 << gpio.wren));
+}
+
+static const struct snd_tea575x_ops bttv_tea_ops = {
+	.set_pins = bttv_tea575x_set_pins,
+	.get_pins = bttv_tea575x_get_pins,
+	.set_direction = bttv_tea575x_set_direction,
+};
+
+static int tea575x_init(struct bttv *btv)
+{
+	btv->tea.private_data = btv;
+	btv->tea.ops = &bttv_tea_ops;
+	if (!snd_tea575x_hw_init(&btv->tea)) {
+		pr_info("%d: detected TEA575x radio\n", btv->c.nr);
+		btv->tea.mute = false;
+		return 0;
+	}
+
+	btv->has_tea575x = 0;
+	btv->has_radio = 0;
+
+	return -ENODEV;
+}
+
+/* ----------------------------------------------------------------------- */
+
+static int terratec_active_radio_upgrade(struct bttv *btv)
+{
+	btv->has_radio    = 1;
+	btv->has_tea575x  = 1;
+	btv->tea_gpio.wren = 4;
+	btv->tea_gpio.most = 5;
+	btv->tea_gpio.clk  = 3;
+	btv->tea_gpio.data = 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	btv->mbox_iow     = 1 <<  8;
 	btv->mbox_ior     = 1 <<  9;
 	btv->mbox_csel    = 1 << 10;
 
+<<<<<<< HEAD
 	freq=88000/62.5;
 	tea5757_write(btv, 5 * freq + 0x358); /* write 0x1ed8 */
 	if (0x1ed8 == tea5757_read(btv)) {
@@ -3697,6 +3949,13 @@ static int terratec_active_radio_upgrade(struct bttv *btv)
 		btv->has_radio    = 0;
 		btv->has_matchbox = 0;
 	}
+=======
+	if (!tea575x_init(btv)) {
+		pr_info("%d: Terratec Active Radio Upgrade found\n", btv->c.nr);
+		btv->has_saa6588 = 1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -3795,10 +4054,17 @@ static void osprey_eeprom(struct bttv *btv, const u8 ee[256])
 	} else {
 		unsigned short type;
 
+<<<<<<< HEAD
 		for (i = 4*16; i < 8*16; i += 16) {
 			u16 checksum = ip_compute_csum(ee + i, 16);
 
 			if ((checksum&0xff) + (checksum>>8) == 0xff)
+=======
+		for (i = 4 * 16; i < 8 * 16; i += 16) {
+			u16 checksum = (__force u16)ip_compute_csum(ee + i, 16);
+
+			if ((checksum & 0xff) + (checksum >> 8) == 0xff)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 		}
 		if (i >= 8*16)
@@ -4130,6 +4396,7 @@ init_RTV24 (struct bttv *btv)
 
 
 /* ----------------------------------------------------------------------- */
+<<<<<<< HEAD
 /* Miro Pro radio stuff -- the tea5757 is connected to some GPIO ports     */
 /*
  * Copyright (c) 1999 Csaba Halasz <qgehali@uni-miskolc.hu>
@@ -4300,6 +4567,93 @@ void tea5757_set_freq(struct bttv *btv, unsigned short freq)
 {
 	dprintk("tea5757_set_freq %d\n",freq);
 	tea5757_write(btv, 5 * freq + 0x358); /* add 10.7MHz (see docs) */
+=======
+/*
+ *  The PCI-8604PW contains a CPLD, probably an ispMACH 4A, that filters
+ *  the PCI REQ signals comming from the four BT878 chips. After power
+ *  up, the CPLD does not forward requests to the bus, which prevents
+ *  the BT878 from fetching RISC instructions from memory. While the
+ *  CPLD is connected to most of the GPIOs of PCI device 0xD, only
+ *  five appear to play a role in unlocking the REQ signal. The following
+ *  sequence has been determined by trial and error without access to the
+ *  original driver.
+ *
+ *  Eight GPIOs of device 0xC are provided on connector CN4 (4 in, 4 out).
+ *  Devices 0xE and 0xF do not appear to have anything connected to their
+ *  GPIOs.
+ *
+ *  The correct GPIO_OUT_EN value might have some more bits set. It should
+ *  be possible to derive it from a boundary scan of the CPLD. Its JTAG
+ *  pins are routed to test points.
+ *
+ */
+/* ----------------------------------------------------------------------- */
+static void
+init_PCI8604PW(struct bttv *btv)
+{
+	int state;
+
+	if ((PCI_SLOT(btv->c.pci->devfn) & ~3) != 0xC) {
+		pr_warn("This is not a PCI-8604PW\n");
+		return;
+	}
+
+	if (PCI_SLOT(btv->c.pci->devfn) != 0xD)
+		return;
+
+	btwrite(0x080002, BT848_GPIO_OUT_EN);
+
+	state = (btread(BT848_GPIO_DATA) >> 21) & 7;
+
+	for (;;) {
+		switch (state) {
+		case 1:
+		case 5:
+		case 6:
+		case 4:
+			pr_debug("PCI-8604PW in state %i, toggling pin\n",
+				 state);
+			btwrite(0x080000, BT848_GPIO_DATA);
+			msleep(1);
+			btwrite(0x000000, BT848_GPIO_DATA);
+			msleep(1);
+			break;
+		case 7:
+			pr_info("PCI-8604PW unlocked\n");
+			return;
+		case 0:
+			/* FIXME: If we are in state 7 and toggle GPIO[19] one
+			   more time, the CPLD goes into state 0, where PCI bus
+			   mastering is inhibited again. We have not managed to
+			   get out of that state. */
+
+			pr_err("PCI-8604PW locked until reset\n");
+			return;
+		default:
+			pr_err("PCI-8604PW in unknown state %i\n", state);
+			return;
+		}
+
+		state = (state << 4) | ((btread(BT848_GPIO_DATA) >> 21) & 7);
+
+		switch (state) {
+		case 0x15:
+		case 0x56:
+		case 0x64:
+		case 0x47:
+		/* The transition from state 7 to state 0 is, as explained
+		   above, valid but undesired and with this code impossible
+		   as we exit as soon as we are in state 7.
+		case 0x70: */
+			break;
+		default:
+			pr_err("PCI-8604PW invalid transition %i -> %i\n",
+			       state >> 4, state & 7);
+			return;
+		}
+		state &= 7;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* RemoteVision MX (rv605) muxsel helper [Miguel Freitas]
@@ -4401,9 +4755,13 @@ static void tibetCS16_init(struct bttv *btv)
  * is {3, 0, 2, 1}, i.e. the first controller to be detected is logical
  * unit 3, the second (which is the master) is logical unit 0, etc.
  * We need to maintain the status of the analog switch (which of the 16
+<<<<<<< HEAD
  * cameras is connected to which of the 4 controllers).  Rather than
  * add to the bttv structure for this, we use the data reserved for
  * the mbox (unused for this card type).
+=======
+ * cameras is connected to which of the 4 controllers) in sw_status array.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
@@ -4438,7 +4796,10 @@ static void kodicom4400r_write(struct bttv *btv,
  */
 static void kodicom4400r_muxsel(struct bttv *btv, unsigned int input)
 {
+<<<<<<< HEAD
 	char *sw_status;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int xaddr, yaddr;
 	struct bttv *mctlr;
 	static unsigned char map[4] = {3, 0, 2, 1};
@@ -4449,6 +4810,7 @@ static void kodicom4400r_muxsel(struct bttv *btv, unsigned int input)
 	}
 	yaddr = (btv->c.nr - mctlr->c.nr + 1) & 3; /* the '&' is for safety */
 	yaddr = map[yaddr];
+<<<<<<< HEAD
 	sw_status = (char *)(&mctlr->mbox_we);
 	xaddr = input & 0xf;
 	/* Check if the controller/camera pair has changed, else ignore */
@@ -4457,6 +4819,15 @@ static void kodicom4400r_muxsel(struct bttv *btv, unsigned int input)
 		/* "open" the old switch, "close" the new one, save the new */
 		kodicom4400r_write(mctlr, sw_status[yaddr], yaddr, 0);
 		sw_status[yaddr] = xaddr;
+=======
+	xaddr = input & 0xf;
+	/* Check if the controller/camera pair has changed, else ignore */
+	if (mctlr->sw_status[yaddr] != xaddr)
+	{
+		/* "open" the old switch, "close" the new one, save the new */
+		kodicom4400r_write(mctlr, mctlr->sw_status[yaddr], yaddr, 0);
+		mctlr->sw_status[yaddr] = xaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kodicom4400r_write(mctlr, xaddr, yaddr, 1);
 	}
 }
@@ -4469,7 +4840,10 @@ static void kodicom4400r_muxsel(struct bttv *btv, unsigned int input)
  */
 static void kodicom4400r_init(struct bttv *btv)
 {
+<<<<<<< HEAD
 	char *sw_status = (char *)(&btv->mbox_we);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ix;
 
 	gpio_inout(0x0003ff, 0x0003ff);
@@ -4477,7 +4851,11 @@ static void kodicom4400r_init(struct bttv *btv)
 	gpio_write(0);
 	/* Preset camera 0 to the 4 controllers */
 	for (ix = 0; ix < 4; ix++) {
+<<<<<<< HEAD
 		sw_status[ix] = ix;
+=======
+		btv->sw_status[ix] = ix;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kodicom4400r_write(btv, ix, ix, 1);
 	}
 	/*
@@ -4754,7 +5132,10 @@ static void gv800s_write(struct bttv *btv,
 static void gv800s_muxsel(struct bttv *btv, unsigned int input)
 {
 	struct bttv *mctlr;
+<<<<<<< HEAD
 	char *sw_status;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int xaddr, yaddr;
 	static unsigned int map[4][4] = { { 0x0, 0x4, 0xa, 0x6 },
 					  { 0x1, 0x5, 0xb, 0x7 },
@@ -4767,6 +5148,7 @@ static void gv800s_muxsel(struct bttv *btv, unsigned int input)
 		return;
 	}
 	yaddr = (btv->c.nr - mctlr->c.nr) & 3;
+<<<<<<< HEAD
 	sw_status = (char *)(&mctlr->mbox_we);
 	xaddr = map[yaddr][input] & 0xf;
 
@@ -4775,6 +5157,15 @@ static void gv800s_muxsel(struct bttv *btv, unsigned int input)
 		/* disable the old switch, enable the new one and save status */
 		gv800s_write(mctlr, sw_status[yaddr], yaddr, 0);
 		sw_status[yaddr] = xaddr;
+=======
+	xaddr = map[yaddr][input] & 0xf;
+
+	/* Check if the controller/camera pair has changed, ignore otherwise */
+	if (mctlr->sw_status[yaddr] != xaddr) {
+		/* disable the old switch, enable the new one and save status */
+		gv800s_write(mctlr, mctlr->sw_status[yaddr], yaddr, 0);
+		mctlr->sw_status[yaddr] = xaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gv800s_write(mctlr, xaddr, yaddr, 1);
 	}
 }
@@ -4782,7 +5173,10 @@ static void gv800s_muxsel(struct bttv *btv, unsigned int input)
 /* GeoVision GV-800(S) "master" chip init */
 static void gv800s_init(struct bttv *btv)
 {
+<<<<<<< HEAD
 	char *sw_status = (char *)(&btv->mbox_we);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ix;
 
 	gpio_inout(0xf107f, 0xf107f);
@@ -4791,7 +5185,11 @@ static void gv800s_init(struct bttv *btv)
 
 	/* Preset camera 0 to the 4 controllers */
 	for (ix = 0; ix < 4; ix++) {
+<<<<<<< HEAD
 		sw_status[ix] = ix;
+=======
+		btv->sw_status[ix] = ix;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gv800s_write(btv, ix, ix, 1);
 	}
 
@@ -4891,6 +5289,7 @@ int bttv_handle_chipset(struct bttv *btv)
 		pci_write_config_byte(btv->c.pci, PCI_LATENCY_TIMER, latency);
 	return 0;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -4898,3 +5297,5 @@ int bttv_handle_chipset(struct bttv *btv)
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

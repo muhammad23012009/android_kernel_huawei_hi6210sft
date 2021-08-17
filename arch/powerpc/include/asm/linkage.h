@@ -1,7 +1,13 @@
 #ifndef _ASM_POWERPC_LINKAGE_H
 #define _ASM_POWERPC_LINKAGE_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC64
+=======
+#include <asm/types.h>
+
+#ifdef PPC64_ELF_ABI_v1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cond_syscall(x) \
 	asm ("\t.weak " #x "\n\t.set " #x ", sys_ni_syscall\n"		\
 	     "\t.weak ." #x "\n\t.set ." #x ", .sys_ni_syscall\n")

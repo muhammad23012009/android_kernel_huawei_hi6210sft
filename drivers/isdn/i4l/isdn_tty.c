@@ -786,7 +786,11 @@ isdn_tty_suspend(char *id, modem_info *info, atemu *m)
 		cmd.parm.cmsg.para[3] = 4; /* 16 bit 0x0004 Suspend */
 		cmd.parm.cmsg.para[4] = 0;
 		cmd.parm.cmsg.para[5] = l;
+<<<<<<< HEAD
 		strncpy(&cmd.parm.cmsg.para[6], id, l);
+=======
+		strscpy(&cmd.parm.cmsg.para[6], id, l);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cmd.command = CAPI_PUT_MESSAGE;
 		cmd.driver = info->isdn_driver;
 		cmd.arg = info->isdn_channel;
@@ -1043,6 +1047,7 @@ isdn_tty_change_speed(modem_info *info)
 	if (!(cflag & PARODD))
 		cval |= UART_LCR_EPAR;
 
+<<<<<<< HEAD
 	/* CTS flow control flag and modem status interrupts */
 	if (cflag & CRTSCTS) {
 		port->flags |= ASYNC_CTS_FLOW;
@@ -1053,12 +1058,19 @@ isdn_tty_change_speed(modem_info *info)
 	else {
 		port->flags |= ASYNC_CHECK_CD;
 	}
+=======
+	tty_port_set_check_carrier(port, ~cflag & CLOCAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int
 isdn_tty_startup(modem_info *info)
 {
+<<<<<<< HEAD
 	if (info->port.flags & ASYNC_INITIALIZED)
+=======
+	if (tty_port_initialized(&info->port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	isdn_lock_drivers();
 #ifdef ISDN_DEBUG_MODEM_OPEN
@@ -1075,7 +1087,11 @@ isdn_tty_startup(modem_info *info)
 	 */
 	isdn_tty_change_speed(info);
 
+<<<<<<< HEAD
 	info->port.flags |= ASYNC_INITIALIZED;
+=======
+	tty_port_set_initialized(&info->port, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->msr |= (UART_MSR_DSR | UART_MSR_CTS);
 	info->send_outstanding = 0;
 	return 0;
@@ -1088,7 +1104,11 @@ isdn_tty_startup(modem_info *info)
 static void
 isdn_tty_shutdown(modem_info *info)
 {
+<<<<<<< HEAD
 	if (!(info->port.flags & ASYNC_INITIALIZED))
+=======
+	if (!tty_port_initialized(&info->port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 #ifdef ISDN_DEBUG_MODEM_OPEN
 	printk(KERN_DEBUG "Shutting down isdnmodem port %d ....\n", info->line);
@@ -1108,7 +1128,11 @@ isdn_tty_shutdown(modem_info *info)
 	if (info->port.tty)
 		set_bit(TTY_IO_ERROR, &info->port.tty->flags);
 
+<<<<<<< HEAD
 	info->port.flags &= ~ASYNC_INITIALIZED;
+=======
+	tty_port_set_initialized(&info->port, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* isdn_tty_write() is the main send-routine. It is called from the upper
@@ -1356,7 +1380,11 @@ isdn_tty_tiocmget(struct tty_struct *tty)
 
 	if (isdn_tty_paranoia_check(info, tty->name, __func__))
 		return -ENODEV;
+<<<<<<< HEAD
 	if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if (tty_io_error(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 	mutex_lock(&modem_info_mutex);
@@ -1383,7 +1411,11 @@ isdn_tty_tiocmset(struct tty_struct *tty,
 
 	if (isdn_tty_paranoia_check(info, tty->name, __func__))
 		return -ENODEV;
+<<<<<<< HEAD
 	if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if (tty_io_error(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 #ifdef ISDN_DEBUG_MODEM_IOCTL
@@ -1424,7 +1456,11 @@ isdn_tty_ioctl(struct tty_struct *tty, uint cmd, ulong arg)
 
 	if (isdn_tty_paranoia_check(info, tty->name, "isdn_tty_ioctl"))
 		return -ENODEV;
+<<<<<<< HEAD
 	if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+	if (tty_io_error(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	switch (cmd) {
 	case TCSBRK:   /* SVID version: non-zero arg --> no break */
@@ -1464,15 +1500,29 @@ isdn_tty_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
 {
 	modem_info *info = (modem_info *) tty->driver_data;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&modem_info_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!old_termios)
 		isdn_tty_change_speed(info);
 	else {
 		if (tty->termios.c_cflag == old_termios->c_cflag &&
 		    tty->termios.c_ispeed == old_termios->c_ispeed &&
+<<<<<<< HEAD
 		    tty->termios.c_ospeed == old_termios->c_ospeed)
 			return;
 		isdn_tty_change_speed(info);
 	}
+=======
+		    tty->termios.c_ospeed == old_termios->c_ospeed) {
+			mutex_unlock(&modem_info_mutex);
+			return;
+		}
+		isdn_tty_change_speed(info);
+	}
+	mutex_unlock(&modem_info_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1577,7 +1627,11 @@ isdn_tty_close(struct tty_struct *tty, struct file *filp)
 #endif
 		return;
 	}
+<<<<<<< HEAD
 	port->flags |= ASYNC_CLOSING;
+=======
+	info->closing = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tty->closing = 1;
 	/*
@@ -1586,8 +1640,13 @@ isdn_tty_close(struct tty_struct *tty, struct file *filp)
 	 * interrupt driver to stop checking the data ready bit in the
 	 * line status register.
 	 */
+<<<<<<< HEAD
 	if (port->flags & ASYNC_INITIALIZED) {
 		tty_wait_until_sent_from_close(tty, 3000);	/* 30 seconds timeout */
+=======
+	if (tty_port_initialized(port)) {
+		tty_wait_until_sent(tty, 3000);	/* 30 seconds timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Before we drop DTR, make sure the UART transmitter
 		 * has completely drained; this is especially
@@ -1608,6 +1667,10 @@ isdn_tty_close(struct tty_struct *tty, struct file *filp)
 	info->ncarrier = 0;
 
 	tty_port_close_end(port, tty);
+<<<<<<< HEAD
+=======
+	info->closing = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef ISDN_DEBUG_MODEM_OPEN
 	printk(KERN_DEBUG "isdn_tty_close normal exit\n");
 #endif
@@ -1626,7 +1689,11 @@ isdn_tty_hangup(struct tty_struct *tty)
 		return;
 	isdn_tty_shutdown(info);
 	port->count = 0;
+<<<<<<< HEAD
 	port->flags &= ~ASYNC_NORMAL_ACTIVE;
+=======
+	tty_port_set_active(port, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	port->tty = NULL;
 	wake_up_interruptible(&port->open_wait);
 }
@@ -1983,7 +2050,11 @@ isdn_tty_find_icall(int di, int ch, setup_parm *setup)
 #endif
 			if (
 #ifndef FIX_FILE_TRANSFER
+<<<<<<< HEAD
 				(info->port.flags & ASYNC_NORMAL_ACTIVE) &&
+=======
+			    tty_port_active(&info->port) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 				(info->isdn_driver == -1) &&
 				(info->isdn_channel == -1) &&
@@ -2022,8 +2093,11 @@ isdn_tty_find_icall(int di, int ch, setup_parm *setup)
 	return (wret == 2) ? 3 : 0;
 }
 
+<<<<<<< HEAD
 #define TTY_IS_ACTIVE(info)	(info->port.flags & ASYNC_NORMAL_ACTIVE)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int
 isdn_tty_stat_callback(int i, isdn_ctrl *c)
 {
@@ -2081,7 +2155,11 @@ isdn_tty_stat_callback(int i, isdn_ctrl *c)
 #ifdef ISDN_TTY_STAT_DEBUG
 			printk(KERN_DEBUG "tty_STAT_DCONN ttyI%d\n", info->line);
 #endif
+<<<<<<< HEAD
 			if (TTY_IS_ACTIVE(info)) {
+=======
+			if (tty_port_active(&info->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (info->dialing == 1) {
 					info->dialing = 2;
 					return 1;
@@ -2092,7 +2170,11 @@ isdn_tty_stat_callback(int i, isdn_ctrl *c)
 #ifdef ISDN_TTY_STAT_DEBUG
 			printk(KERN_DEBUG "tty_STAT_DHUP ttyI%d\n", info->line);
 #endif
+<<<<<<< HEAD
 			if (TTY_IS_ACTIVE(info)) {
+=======
+			if (tty_port_active(&info->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (info->dialing == 1)
 					isdn_tty_modem_result(RESULT_BUSY, info);
 				if (info->dialing > 1)
@@ -2122,7 +2204,11 @@ isdn_tty_stat_callback(int i, isdn_ctrl *c)
 			 * waiting for it and
 			 * set DCD-bit of its modem-status.
 			 */
+<<<<<<< HEAD
 			if (TTY_IS_ACTIVE(info) ||
+=======
+			if (tty_port_active(&info->port) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    (info->port.blocked_open &&
 			     (info->emu.mdmreg[REG_DCD] & BIT_DCD))) {
 				info->msr |= UART_MSR_DCD;
@@ -2149,7 +2235,11 @@ isdn_tty_stat_callback(int i, isdn_ctrl *c)
 #ifdef ISDN_TTY_STAT_DEBUG
 			printk(KERN_DEBUG "tty_STAT_BHUP ttyI%d\n", info->line);
 #endif
+<<<<<<< HEAD
 			if (TTY_IS_ACTIVE(info)) {
+=======
+			if (tty_port_active(&info->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef ISDN_DEBUG_MODEM_HUP
 				printk(KERN_DEBUG "Mhup in ISDN_STAT_BHUP\n");
 #endif
@@ -2161,7 +2251,11 @@ isdn_tty_stat_callback(int i, isdn_ctrl *c)
 #ifdef ISDN_TTY_STAT_DEBUG
 			printk(KERN_DEBUG "tty_STAT_NODCH ttyI%d\n", info->line);
 #endif
+<<<<<<< HEAD
 			if (TTY_IS_ACTIVE(info)) {
+=======
+			if (tty_port_active(&info->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (info->dialing) {
 					info->dialing = 0;
 					info->last_l2 = -1;
@@ -2187,14 +2281,22 @@ isdn_tty_stat_callback(int i, isdn_ctrl *c)
 			return 1;
 #ifdef CONFIG_ISDN_TTY_FAX
 		case ISDN_STAT_FAXIND:
+<<<<<<< HEAD
 			if (TTY_IS_ACTIVE(info)) {
+=======
+			if (tty_port_active(&info->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				isdn_tty_fax_command(info, c);
 			}
 			break;
 #endif
 #ifdef CONFIG_ISDN_AUDIO
 		case ISDN_STAT_AUDIO:
+<<<<<<< HEAD
 			if (TTY_IS_ACTIVE(info)) {
+=======
+			if (tty_port_active(&info->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				switch (c->parm.num[0]) {
 				case ISDN_AUDIO_DTMF:
 					if (info->vonline) {
@@ -2241,7 +2343,11 @@ isdn_tty_at_cout(char *msg, modem_info *info)
 	l = strlen(msg);
 
 	spin_lock_irqsave(&info->readlock, flags);
+<<<<<<< HEAD
 	if (port->flags & ASYNC_CLOSING) {
+=======
+	if (info->closing) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irqrestore(&info->readlock, flags);
 		return;
 	}
@@ -2391,13 +2497,21 @@ isdn_tty_modem_result(int code, modem_info *info)
 	case RESULT_NO_CARRIER:
 #ifdef ISDN_DEBUG_MODEM_HUP
 		printk(KERN_DEBUG "modem_result: NO CARRIER %d %d\n",
+<<<<<<< HEAD
 		       (info->port.flags & ASYNC_CLOSING),
 		       (!info->port.tty));
+=======
+		       info->closing, !info->port.tty);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 		m->mdmreg[REG_RINGCNT] = 0;
 		del_timer(&info->nc_timer);
 		info->ncarrier = 0;
+<<<<<<< HEAD
 		if ((info->port.flags & ASYNC_CLOSING) || (!info->port.tty))
+=======
+		if (info->closing || !info->port.tty)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 
 #ifdef CONFIG_ISDN_AUDIO
@@ -2530,10 +2644,17 @@ isdn_tty_modem_result(int code, modem_info *info)
 		}
 	}
 	if (code == RESULT_NO_CARRIER) {
+<<<<<<< HEAD
 		if ((info->port.flags & ASYNC_CLOSING) || (!info->port.tty))
 			return;
 
 		if (info->port.flags & ASYNC_CHECK_CD)
+=======
+		if (info->closing || (!info->port.tty))
+			return;
+
+		if (tty_port_check_carrier(&info->port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tty_hangup(info->port.tty);
 	}
 }

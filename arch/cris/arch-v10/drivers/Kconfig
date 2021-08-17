@@ -2,9 +2,13 @@ if ETRAX_ARCH_V10
 
 config ETRAX_ETHERNET
 	bool "Ethernet support"
+<<<<<<< HEAD
 	depends on ETRAX_ARCH_V10
 	select ETHERNET
 	select NET_CORE
+=======
+	depends on ETRAX_ARCH_V10 && NETDEVICES
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MII
 	help
 	  This option enables the ETRAX 100LX built-in 10/100Mbit Ethernet
@@ -419,6 +423,7 @@ config ETRAX_USB_HOST
 	   for CTRL and BULK traffic only, INTR traffic may work as well
 	   however (depending on the requirements of timeliness).
 
+<<<<<<< HEAD
 config ETRAX_USB_HOST_PORT1
 	bool "USB port 1 enabled"
 	depends on ETRAX_USB_HOST
@@ -429,6 +434,8 @@ config ETRAX_USB_HOST_PORT2
 	depends on ETRAX_USB_HOST
 	default n
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_PTABLE_SECTOR
 	int "Byte-offset of partition table sector"
 	depends on ETRAX_AXISFLASHMAP
@@ -529,6 +536,7 @@ config ETRAX_GPIO
 	  Remember that you need to setup the port directions appropriately in
 	  the General configuration.
 
+<<<<<<< HEAD
 config ETRAX_PA_BUTTON_BITMASK
 	hex "PA-buttons bitmask"
 	depends on ETRAX_GPIO
@@ -542,6 +550,8 @@ config ETRAX_PA_BUTTON_BITMASK
 	  If the bitmask is <> 00 a button driver will be included in the gpio
 	  driver. ETRAX general I/O support must be enabled.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ETRAX_PA_CHANGEABLE_DIR
 	hex "PA user changeable dir mask"
 	depends on ETRAX_GPIO
@@ -582,6 +592,7 @@ config ETRAX_PB_CHANGEABLE_BITS
 	  Bit set = changeable.
 	  You probably want 00 here.
 
+<<<<<<< HEAD
 config ETRAX_DS1302_RST_ON_GENERIC_PORT
 	bool "DS1302 RST on Generic Port"
 	depends on ETRAX_DS1302
@@ -629,4 +640,6 @@ config ETRAX_DS1302_TRICKLE_CHARGE
 	  4 = 1 diode, 8 = 2 diodes
 	  Allowed values are (increasing current): 0, 11, 10, 9, 7, 6, 5
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif

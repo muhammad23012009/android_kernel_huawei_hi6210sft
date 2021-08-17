@@ -582,7 +582,11 @@
 #define SPI_PL_BIT_R_R		(2<<7)	/* right channel = right */
 #define SPI_PL_BIT_R_C		(3<<7)	/* right channel = (L+R)/2 */
 #define SPI_IZD_REG		2
+<<<<<<< HEAD
 #define SPI_IZD_BIT		(1<<4)	/* infinite zero detect */
+=======
+#define SPI_IZD_BIT		(0<<4)	/* infinite zero detect */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SPI_FMT_REG		3
 #define SPI_FMT_BIT_RJ		(0<<0)	/* right justified mode */

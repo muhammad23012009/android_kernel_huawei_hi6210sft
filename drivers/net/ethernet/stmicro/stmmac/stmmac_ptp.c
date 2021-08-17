@@ -54,9 +54,15 @@ static int stmmac_adjust_freq(struct ptp_clock_info *ptp, s32 ppb)
 
 	spin_lock_irqsave(&priv->ptp_lock, flags);
 
+<<<<<<< HEAD
 	priv->hw->ptp->config_addend(priv->ioaddr, addend);
 
 	spin_unlock_irqrestore(&priv->lock, flags);
+=======
+	priv->hw->ptp->config_addend(priv->ptpaddr, addend);
+
+	spin_unlock_irqrestore(&priv->ptp_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -89,9 +95,16 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 
 	spin_lock_irqsave(&priv->ptp_lock, flags);
 
+<<<<<<< HEAD
 	priv->hw->ptp->adjust_systime(priv->ioaddr, sec, nsec, neg_adj);
 
 	spin_unlock_irqrestore(&priv->lock, flags);
+=======
+	priv->hw->ptp->adjust_systime(priv->ptpaddr, sec, nsec, neg_adj,
+				      priv->plat->has_gmac4);
+
+	spin_unlock_irqrestore(&priv->ptp_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -105,12 +118,17 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
  * Description: this function will read the current time from the
  * hardware clock and store it in @ts.
  */
+<<<<<<< HEAD
 static int stmmac_get_time(struct ptp_clock_info *ptp, struct timespec *ts)
+=======
+static int stmmac_get_time(struct ptp_clock_info *ptp, struct timespec64 *ts)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct stmmac_priv *priv =
 	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
 	unsigned long flags;
 	u64 ns;
+<<<<<<< HEAD
 	u32 reminder;
 
 	spin_lock_irqsave(&priv->ptp_lock, flags);
@@ -121,6 +139,16 @@ static int stmmac_get_time(struct ptp_clock_info *ptp, struct timespec *ts)
 
 	ts->tv_sec = div_u64_rem(ns, 1000000000ULL, &reminder);
 	ts->tv_nsec = reminder;
+=======
+
+	spin_lock_irqsave(&priv->ptp_lock, flags);
+
+	ns = priv->hw->ptp->get_systime(priv->ptpaddr);
+
+	spin_unlock_irqrestore(&priv->ptp_lock, flags);
+
+	*ts = ns_to_timespec64(ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -135,7 +163,11 @@ static int stmmac_get_time(struct ptp_clock_info *ptp, struct timespec *ts)
  * hardware clock.
  */
 static int stmmac_set_time(struct ptp_clock_info *ptp,
+<<<<<<< HEAD
 			   const struct timespec *ts)
+=======
+			   const struct timespec64 *ts)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct stmmac_priv *priv =
 	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
@@ -143,7 +175,11 @@ static int stmmac_set_time(struct ptp_clock_info *ptp,
 
 	spin_lock_irqsave(&priv->ptp_lock, flags);
 
+<<<<<<< HEAD
 	priv->hw->ptp->init_systime(priv->ioaddr, ts->tv_sec, ts->tv_nsec);
+=======
+	priv->hw->ptp->init_systime(priv->ptpaddr, ts->tv_sec, ts->tv_nsec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_unlock_irqrestore(&priv->ptp_lock, flags);
 
@@ -159,16 +195,29 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
 /* structure describing a PTP hardware clock */
 static struct ptp_clock_info stmmac_ptp_clock_ops = {
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
 	.name = "stmmac_ptp_clock",
+=======
+	.name = "stmmac ptp",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.max_adj = 62500000,
 	.n_alarm = 0,
 	.n_ext_ts = 0,
 	.n_per_out = 0,
+<<<<<<< HEAD
 	.pps = 0,
 	.adjfreq = stmmac_adjust_freq,
 	.adjtime = stmmac_adjust_time,
 	.gettime = stmmac_get_time,
 	.settime = stmmac_set_time,
+=======
+	.n_pins = 0,
+	.pps = 0,
+	.adjfreq = stmmac_adjust_freq,
+	.adjtime = stmmac_adjust_time,
+	.gettime64 = stmmac_get_time,
+	.settime64 = stmmac_set_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.enable = stmmac_enable,
 };
 
@@ -178,7 +227,11 @@ static struct ptp_clock_info stmmac_ptp_clock_ops = {
  * Description: this function will register the ptp clock driver
  * to kernel. It also does some house keeping work.
  */
+<<<<<<< HEAD
 int stmmac_ptp_register(struct stmmac_priv *priv)
+=======
+void stmmac_ptp_register(struct stmmac_priv *priv)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	spin_lock_init(&priv->ptp_lock);
 	priv->ptp_clock_ops = stmmac_ptp_clock_ops;
@@ -186,6 +239,7 @@ int stmmac_ptp_register(struct stmmac_priv *priv)
 	priv->ptp_clock = ptp_clock_register(&priv->ptp_clock_ops,
 					     priv->device);
 	if (IS_ERR(priv->ptp_clock)) {
+<<<<<<< HEAD
 		priv->ptp_clock = NULL;
 		pr_err("ptp_clock_register() failed on %s\n", priv->dev->name);
 	} else
@@ -193,6 +247,12 @@ int stmmac_ptp_register(struct stmmac_priv *priv)
 			 priv->dev->name);
 
 	return 0;
+=======
+		netdev_err(priv->dev, "ptp_clock_register failed\n");
+		priv->ptp_clock = NULL;
+	} else if (priv->ptp_clock)
+		netdev_info(priv->dev, "registered PTP clock\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -205,6 +265,10 @@ void stmmac_ptp_unregister(struct stmmac_priv *priv)
 {
 	if (priv->ptp_clock) {
 		ptp_clock_unregister(priv->ptp_clock);
+<<<<<<< HEAD
+=======
+		priv->ptp_clock = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_debug("Removed PTP HW clock successfully on %s\n",
 			 priv->dev->name);
 	}

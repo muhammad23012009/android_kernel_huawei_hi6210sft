@@ -51,7 +51,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/usb.h>
 #include <linux/usb/input.h>
 #include <linux/hid.h>
@@ -133,6 +136,10 @@ enum {
 	DEVTYPE_GUNZE,
 	DEVTYPE_DMC_TSC10,
 	DEVTYPE_IRTOUCH,
+<<<<<<< HEAD
+=======
+	DEVTYPE_IRTOUCH_HIRES,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DEVTYPE_IDEALTEK,
 	DEVTYPE_GENERAL_TOUCH,
 	DEVTYPE_GOTOP,
@@ -197,8 +204,15 @@ static const struct usb_device_id usbtouch_devices[] = {
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IRTOUCH
+<<<<<<< HEAD
 	{USB_DEVICE(0x595a, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
 	{USB_DEVICE(0x6615, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+=======
+	{USB_DEVICE(0x255e, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+	{USB_DEVICE(0x595a, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+	{USB_DEVICE(0x6615, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+	{USB_DEVICE(0x6615, 0x0012), .driver_info = DEVTYPE_IRTOUCH_HIRES},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IDEALTEK
@@ -264,7 +278,11 @@ static int e2i_init(struct usbtouch_usb *usbtouch)
 	int ret;
 	struct usb_device *udev = interface_to_usbdev(usbtouch->interface);
 
+<<<<<<< HEAD
 	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
+=======
+	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	                      0x01, 0x02, 0x0000, 0x0081,
 	                      NULL, 0, USB_CTRL_SET_TIMEOUT);
 
@@ -460,7 +478,11 @@ static int mtouch_init(struct usbtouch_usb *usbtouch)
 	int ret, i;
 	struct usb_device *udev = interface_to_usbdev(usbtouch->interface);
 
+<<<<<<< HEAD
 	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
+=======
+	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	                      MTOUCHUSB_RESET,
 	                      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 	                      1, 0, NULL, 0, USB_CTRL_SET_TIMEOUT);
@@ -472,7 +494,11 @@ static int mtouch_init(struct usbtouch_usb *usbtouch)
 	msleep(150);
 
 	for (i = 0; i < 3; i++) {
+<<<<<<< HEAD
 		ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
+=======
+		ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      MTOUCHUSB_ASYNC_REPORT,
 				      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 				      1, 1, NULL, 0, USB_CTRL_SET_TIMEOUT);
@@ -626,6 +652,12 @@ static int dmc_tsc10_init(struct usbtouch_usb *usbtouch)
 		goto err_out;
 	}
 
+<<<<<<< HEAD
+=======
+	/* TSC-25 data sheet specifies a delay after the RESET command */
+	msleep(150);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* set coordinate output rate */
 	buf[0] = buf[1] = 0xFF;
 	ret = usb_control_msg(dev, usb_rcvctrlpipe (dev, 0),
@@ -640,7 +672,11 @@ static int dmc_tsc10_init(struct usbtouch_usb *usbtouch)
 	}
 
 	/* start sending data */
+<<<<<<< HEAD
 	ret = usb_control_msg(dev, usb_rcvctrlpipe (dev, 0),
+=======
+	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	                      TSC10_CMD_DATA1,
 	                      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 	                      0, 0, NULL, 0, USB_CTRL_SET_TIMEOUT);
@@ -1178,6 +1214,18 @@ static struct usbtouch_device_info usbtouch_dev_info[] = {
 		.rept_size	= 8,
 		.read_data	= irtouch_read_data,
 	},
+<<<<<<< HEAD
+=======
+
+	[DEVTYPE_IRTOUCH_HIRES] = {
+		.min_xc		= 0x0,
+		.max_xc		= 0x7fff,
+		.min_yc		= 0x0,
+		.max_yc		= 0x7fff,
+		.rept_size	= 8,
+		.read_data	= irtouch_read_data,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IDEALTEK

@@ -173,7 +173,10 @@ int tegra_asoc_utils_init(struct tegra_asoc_utils_data *data,
 			  struct device *dev)
 {
 	int ret;
+<<<<<<< HEAD
 	bool new_clocks = false;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	data->dev = dev;
 
@@ -181,40 +184,60 @@ int tegra_asoc_utils_init(struct tegra_asoc_utils_data *data,
 		data->soc = TEGRA_ASOC_UTILS_SOC_TEGRA20;
 	else if (of_machine_is_compatible("nvidia,tegra30"))
 		data->soc = TEGRA_ASOC_UTILS_SOC_TEGRA30;
+<<<<<<< HEAD
 	else if (of_machine_is_compatible("nvidia,tegra114")) {
 		data->soc = TEGRA_ASOC_UTILS_SOC_TEGRA114;
 		new_clocks = true;
 	} else {
+=======
+	else if (of_machine_is_compatible("nvidia,tegra114"))
+		data->soc = TEGRA_ASOC_UTILS_SOC_TEGRA114;
+	else if (of_machine_is_compatible("nvidia,tegra124"))
+		data->soc = TEGRA_ASOC_UTILS_SOC_TEGRA124;
+	else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(data->dev, "SoC unknown to Tegra ASoC utils\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (new_clocks)
 		data->clk_pll_a = clk_get(dev, "pll_a");
 	else
 		data->clk_pll_a = clk_get_sys(NULL, "pll_a");
+=======
+	data->clk_pll_a = clk_get(dev, "pll_a");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(data->clk_pll_a)) {
 		dev_err(data->dev, "Can't retrieve clk pll_a\n");
 		ret = PTR_ERR(data->clk_pll_a);
 		goto err;
 	}
 
+<<<<<<< HEAD
 	if (new_clocks)
 		data->clk_pll_a_out0 = clk_get(dev, "pll_a_out0");
 	else
 		data->clk_pll_a_out0 = clk_get_sys(NULL, "pll_a_out0");
+=======
+	data->clk_pll_a_out0 = clk_get(dev, "pll_a_out0");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(data->clk_pll_a_out0)) {
 		dev_err(data->dev, "Can't retrieve clk pll_a_out0\n");
 		ret = PTR_ERR(data->clk_pll_a_out0);
 		goto err_put_pll_a;
 	}
 
+<<<<<<< HEAD
 	if (new_clocks)
 		data->clk_cdev1 = clk_get(dev, "mclk");
 	else if (data->soc == TEGRA_ASOC_UTILS_SOC_TEGRA20)
 		data->clk_cdev1 = clk_get_sys(NULL, "cdev1");
 	else
 		data->clk_cdev1 = clk_get_sys("extern1", NULL);
+=======
+	data->clk_cdev1 = clk_get(dev, "mclk");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(data->clk_cdev1)) {
 		dev_err(data->dev, "Can't retrieve clk cdev1\n");
 		ret = PTR_ERR(data->clk_cdev1);

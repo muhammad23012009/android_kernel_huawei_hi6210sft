@@ -254,12 +254,22 @@
 extern volatile __u8 *via1,*via2;
 extern int rbv_present,via_alt_mapping;
 
+<<<<<<< HEAD
+=======
+struct irq_desc;
+
+extern void via_l2_flush(int writeback);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void via_register_interrupts(void);
 extern void via_irq_enable(int);
 extern void via_irq_disable(int);
 extern void via_nubus_irq_startup(int irq);
 extern void via_nubus_irq_shutdown(int irq);
+<<<<<<< HEAD
 extern void via1_irq(unsigned int irq, struct irq_desc *desc);
+=======
+extern void via1_irq(struct irq_desc *desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void via1_set_head(int);
 extern int via2_scsi_drq_pending(void);
 

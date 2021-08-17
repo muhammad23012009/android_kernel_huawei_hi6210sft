@@ -21,6 +21,7 @@
 #include <linux/types.h>
 #include <linux/vmalloc.h>
 
+<<<<<<< HEAD
 #include <asm-generic/dma-coherent.h>
 
 #define DMA_ERROR_CODE	(~(dma_addr_t)0)
@@ -73,6 +74,63 @@ static inline int dma_set_mask(struct device *dev, u64 mask)
 	*dev->dma_mask = mask;
 
 	return 0;
+=======
+#include <xen/xen.h>
+#include <asm/xen/hypervisor.h>
+
+#define DMA_ERROR_CODE	(~(dma_addr_t)0)
+extern struct dma_map_ops dummy_dma_ops;
+
+static inline struct dma_map_ops *__generic_dma_ops(struct device *dev)
+{
+	if (dev && dev->archdata.dma_ops)
+		return dev->archdata.dma_ops;
+
+	/*
+	 * We expect no ISA devices, and all other DMA masters are expected to
+	 * have someone call arch_setup_dma_ops at device creation time.
+	 */
+	return &dummy_dma_ops;
+}
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	if (xen_initial_domain())
+		return xen_dma_ops;
+	else
+		return __generic_dma_ops(dev);
+}
+
+void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+			const struct iommu_ops *iommu, bool coherent);
+#define arch_setup_dma_ops	arch_setup_dma_ops
+
+#ifdef CONFIG_IOMMU_DMA
+void arch_teardown_dma_ops(struct device *dev);
+#define arch_teardown_dma_ops	arch_teardown_dma_ops
+#endif
+
+/* do not use this function in a driver */
+static inline bool is_device_dma_coherent(struct device *dev)
+{
+	if (!dev)
+		return false;
+	return dev->archdata.dma_coherent;
+}
+
+static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+{
+	dma_addr_t dev_addr = (dma_addr_t)paddr;
+
+	return dev_addr - ((dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
+}
+
+static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+{
+	phys_addr_t paddr = (phys_addr_t)dev_addr;
+
+	return paddr + ((phys_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
@@ -87,6 +145,7 @@ static inline void dma_mark_clean(void *addr, size_t size)
 {
 }
 
+<<<<<<< HEAD
 #define dma_alloc_coherent(d, s, h, f)	dma_alloc_attrs(d, s, h, f, NULL)
 #define dma_free_coherent(d, s, h, f)	dma_free_attrs(d, s, h, f, NULL)
 
@@ -131,6 +190,16 @@ static inline void dma_free_noncoherent(struct device *dev, size_t size,
 					void *cpu_addr, dma_addr_t handle)
 {
 }
+=======
+/* Override for dma_max_pfn() */
+static inline unsigned long dma_max_pfn(struct device *dev)
+{
+	dma_addr_t dma_max = (dma_addr_t)*dev->dma_mask;
+
+	return (ulong)dma_to_phys(dev, dma_max) >> PAGE_SHIFT;
+}
+#define dma_max_pfn(dev) dma_max_pfn(dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __KERNEL__ */
 #endif	/* __ASM_DMA_MAPPING_H */

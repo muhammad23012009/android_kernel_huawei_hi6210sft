@@ -27,7 +27,10 @@
 #include <linux/errno.h>
 #include <linux/miscdevice.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/timer.h>
 #include <linux/completion.h>
@@ -289,7 +292,10 @@ MODULE_AUTHOR("Heiko Ronsdorf <hero@ihg.uni-duisburg.de>");
 MODULE_DESCRIPTION("sma cpu5 watchdog driver");
 MODULE_SUPPORTED_DEVICE("sma cpu5 watchdog");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_param(port, int, 0);
 MODULE_PARM_DESC(port, "base address of watchdog card, default is 0x91");

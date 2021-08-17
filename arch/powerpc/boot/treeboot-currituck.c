@@ -80,7 +80,11 @@ static void ibm_currituck_fixups(void)
 	}
 }
 
+<<<<<<< HEAD
 #define SPRN_PIR	0x11E	/* Processor Indentification Register */
+=======
+#define SPRN_PIR	0x11E	/* Processor Identification Register */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void platform_init(void)
 {
 	unsigned long end_of_ram, avail_ram;

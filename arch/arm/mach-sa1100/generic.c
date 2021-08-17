@@ -19,9 +19,19 @@
 #include <linux/cpufreq.h>
 #include <linux/ioport.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 
 #include <video/sa1100fb.h>
 
+=======
+#include <linux/reboot.h>
+#include <linux/irqchip/irq-sa11x0.h>
+
+#include <video/sa1100fb.h>
+
+#include <soc/sa1100/pwer.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/div64.h>
 #include <asm/mach/map.h>
 #include <asm/mach/flash.h>
@@ -33,6 +43,10 @@
 #include <mach/reset.h>
 
 #include "generic.h"
+<<<<<<< HEAD
+=======
+#include <clocksource/pxa.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned int reset_status;
 EXPORT_SYMBOL(reset_status);
@@ -42,6 +56,7 @@ EXPORT_SYMBOL(reset_status);
 /*
  * This table is setup for a 3.6864MHz Crystal.
  */
+<<<<<<< HEAD
 static const unsigned short cclk_frequency_100khz[NR_FREQS] = {
 	 590,	/*  59.0 MHz */
 	 737,	/*  73.7 MHz */
@@ -105,11 +120,37 @@ int sa11x0_verify_speed(struct cpufreq_policy *policy)
 	return 0;
 }
 
+=======
+struct cpufreq_frequency_table sa11x0_freq_table[NR_FREQS+1] = {
+	{ .frequency = 59000,	/*  59.0 MHz */},
+	{ .frequency = 73700,	/*  73.7 MHz */},
+	{ .frequency = 88500,	/*  88.5 MHz */},
+	{ .frequency = 103200,	/* 103.2 MHz */},
+	{ .frequency = 118000,	/* 118.0 MHz */},
+	{ .frequency = 132700,	/* 132.7 MHz */},
+	{ .frequency = 147500,	/* 147.5 MHz */},
+	{ .frequency = 162200,	/* 162.2 MHz */},
+	{ .frequency = 176900,	/* 176.9 MHz */},
+	{ .frequency = 191700,	/* 191.7 MHz */},
+	{ .frequency = 206400,	/* 206.4 MHz */},
+	{ .frequency = 221200,	/* 221.2 MHz */},
+	{ .frequency = 235900,	/* 235.9 MHz */},
+	{ .frequency = 250700,	/* 250.7 MHz */},
+	{ .frequency = 265400,	/* 265.4 MHz */},
+	{ .frequency = 280200,	/* 280.2 MHz */},
+	{ .frequency = CPUFREQ_TABLE_END, },
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned int sa11x0_getspeed(unsigned int cpu)
 {
 	if (cpu)
 		return 0;
+<<<<<<< HEAD
 	return cclk_frequency_100khz[PPCR & 0xf] * 100;
+=======
+	return sa11x0_freq_table[PPCR & 0xf].frequency;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -132,10 +173,18 @@ static void sa1100_power_off(void)
 	PMCR = PMCR_SF;
 }
 
+<<<<<<< HEAD
 void sa11x0_restart(char mode, const char *cmd)
 {
 	clear_reset_status(RESET_STATUS_ALL);
 	if (mode == 's') {
+=======
+void sa11x0_restart(enum reboot_mode mode, const char *cmd)
+{
+	clear_reset_status(RESET_STATUS_ALL);
+
+	if (mode == REBOOT_SOFT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Jump into ROM at address 0 */
 		soft_restart(0);
 	} else {
@@ -413,6 +462,27 @@ void __init sa1100_map_io(void)
 	iotable_init(standard_io_desc, ARRAY_SIZE(standard_io_desc));
 }
 
+<<<<<<< HEAD
+=======
+void __init sa1100_timer_init(void)
+{
+	pxa_timer_nodt_init(IRQ_OST0, io_p2v(0x90000000), 3686400);
+}
+
+static struct resource irq_resource =
+	DEFINE_RES_MEM_NAMED(0x90050000, SZ_64K, "irqs");
+
+void __init sa1100_init_irq(void)
+{
+	request_resource(&iomem_resource, &irq_resource);
+
+	sa11x0_init_irq_nodt(IRQ_GPIO0_SC, irq_resource.start);
+
+	sa1100_init_gpio();
+	sa11xx_clk_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Disable the memory bus request/grant signals on the SA1110 to
  * ensure that we don't receive spurious memory requests.  We set
@@ -454,3 +524,28 @@ void sa1110_mb_enable(void)
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
+=======
+int sa11x0_gpio_set_wake(unsigned int gpio, unsigned int on)
+{
+	if (on)
+		PWER |= BIT(gpio);
+	else
+		PWER &= ~BIT(gpio);
+
+	return 0;
+}
+
+int sa11x0_sc_set_wake(unsigned int irq, unsigned int on)
+{
+	if (BIT(irq) != IC_RTCAlrm)
+		return -EINVAL;
+
+	if (on)
+		PWER |= PWER_RTC;
+	else
+		PWER &= ~PWER_RTC;
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

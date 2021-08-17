@@ -17,6 +17,7 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/memblock.h>
 #include <linux/sizes.h>
@@ -30,6 +31,23 @@ void *carveout_ptr;
 void *chunk_ptr;
 
 struct ion_platform_heap dummy_heaps[] = {
+=======
+#include <linux/init.h>
+#include <linux/bootmem.h>
+#include <linux/memblock.h>
+#include <linux/sizes.h>
+#include <linux/io.h>
+#include "ion.h"
+#include "ion_priv.h"
+
+static struct ion_device *idev;
+static struct ion_heap **heaps;
+
+static void *carveout_ptr;
+static void *chunk_ptr;
+
+static struct ion_platform_heap dummy_heaps[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{
 			.id	= ION_HEAP_TYPE_SYSTEM,
 			.type	= ION_HEAP_TYPE_SYSTEM,
@@ -56,8 +74,13 @@ struct ion_platform_heap dummy_heaps[] = {
 		},
 };
 
+<<<<<<< HEAD
 struct ion_platform_data dummy_ion_pdata = {
 	.nr = 4,
+=======
+static struct ion_platform_data dummy_ion_pdata = {
+	.nr = ARRAY_SIZE(dummy_heaps),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.heaps = dummy_heaps,
 };
 
@@ -66,10 +89,19 @@ static int __init ion_dummy_init(void)
 	int i, err;
 
 	idev = ion_device_create(NULL);
+<<<<<<< HEAD
 	heaps = kzalloc(sizeof(struct ion_heap *) * dummy_ion_pdata.nr,
 			GFP_KERNEL);
 	if (!heaps)
 		return PTR_ERR(heaps);
+=======
+	if (IS_ERR(idev))
+		return PTR_ERR(idev);
+	heaps = kcalloc(dummy_ion_pdata.nr, sizeof(struct ion_heap *),
+			GFP_KERNEL);
+	if (!heaps)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 	/* Allocate a dummy carveout heap */
@@ -95,7 +127,11 @@ static int __init ion_dummy_init(void)
 		struct ion_platform_heap *heap_data = &dummy_ion_pdata.heaps[i];
 
 		if (heap_data->type == ION_HEAP_TYPE_CARVEOUT &&
+<<<<<<< HEAD
 							!heap_data->base)
+=======
+		    !heap_data->base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		if (heap_data->type == ION_HEAP_TYPE_CHUNK && !heap_data->base)
@@ -110,24 +146,41 @@ static int __init ion_dummy_init(void)
 	}
 	return 0;
 err:
+<<<<<<< HEAD
 	for (i = 0; i < dummy_ion_pdata.nr; i++) {
 		if (heaps[i])
 			ion_heap_destroy(heaps[i]);
 	}
+=======
+	for (i = 0; i < dummy_ion_pdata.nr; ++i)
+		ion_heap_destroy(heaps[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(heaps);
 
 	if (carveout_ptr) {
 		free_pages_exact(carveout_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		carveout_ptr = NULL;
 	}
 	if (chunk_ptr) {
 		free_pages_exact(chunk_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		chunk_ptr = NULL;
 	}
 	return err;
 }
+<<<<<<< HEAD
+=======
+device_initcall(ion_dummy_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __exit ion_dummy_exit(void)
 {
@@ -141,11 +194,16 @@ static void __exit ion_dummy_exit(void)
 
 	if (carveout_ptr) {
 		free_pages_exact(carveout_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		carveout_ptr = NULL;
 	}
 	if (chunk_ptr) {
 		free_pages_exact(chunk_ptr,
+<<<<<<< HEAD
 				dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
 		chunk_ptr = NULL;
 	}
@@ -156,3 +214,10 @@ static void __exit ion_dummy_exit(void)
 module_init(ion_dummy_init);
 module_exit(ion_dummy_exit);
 
+=======
+				 dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
+		chunk_ptr = NULL;
+	}
+}
+__exitcall(ion_dummy_exit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

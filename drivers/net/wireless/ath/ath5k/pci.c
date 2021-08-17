@@ -28,7 +28,11 @@
 #include "reg.h"
 
 /* Known PCI ids */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ath5k_pci_id_table) = {
+=======
+static const struct pci_device_id ath5k_pci_id_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(ATHEROS, 0x0207) }, /* 5210 early */
 	{ PCI_VDEVICE(ATHEROS, 0x0007) }, /* 5210 */
 	{ PCI_VDEVICE(ATHEROS, 0x0011) }, /* 5311 - this is on AHB bus !*/

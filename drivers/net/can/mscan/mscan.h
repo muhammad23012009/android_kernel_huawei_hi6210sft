@@ -14,13 +14,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __MSCAN_H__
 #define __MSCAN_H__
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 
 /* MSCAN control register 0 (CANCTL0) bits */
@@ -283,6 +291,11 @@ struct mscan_priv {
 	unsigned int type; 	/* MSCAN type variants */
 	unsigned long flags;
 	void __iomem *reg_base;	/* ioremap'ed address to registers */
+<<<<<<< HEAD
+=======
+	struct clk *clk_ipg;	/* clock for registers */
+	struct clk *clk_can;	/* clock for bitrates */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 shadow_statflg;
 	u8 shadow_canrier;
 	u8 cur_pri;
@@ -294,8 +307,14 @@ struct mscan_priv {
 	struct napi_struct napi;
 };
 
+<<<<<<< HEAD
 extern struct net_device *alloc_mscandev(void);
 extern int register_mscandev(struct net_device *dev, int mscan_clksrc);
 extern void unregister_mscandev(struct net_device *dev);
+=======
+struct net_device *alloc_mscandev(void);
+int register_mscandev(struct net_device *dev, int mscan_clksrc);
+void unregister_mscandev(struct net_device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __MSCAN_H__ */

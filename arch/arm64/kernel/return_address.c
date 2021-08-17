@@ -36,16 +36,29 @@ void *return_address(unsigned int level)
 {
 	struct return_address_data data;
 	struct stackframe frame;
+<<<<<<< HEAD
 	register unsigned long current_sp asm ("sp");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	data.level = level + 2;
 	data.addr = NULL;
 
 	frame.fp = (unsigned long)__builtin_frame_address(0);
+<<<<<<< HEAD
 	frame.sp = current_sp;
 	frame.pc = (unsigned long)return_address; /* dummy */
 
 	walk_stackframe(&frame, save_return_addr, &data);
+=======
+	frame.sp = current_stack_pointer;
+	frame.pc = (unsigned long)return_address; /* dummy */
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+	frame.graph = current->curr_ret_stack;
+#endif
+
+	walk_stackframe(current, &frame, save_return_addr, &data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!data.level)
 		return data.addr;

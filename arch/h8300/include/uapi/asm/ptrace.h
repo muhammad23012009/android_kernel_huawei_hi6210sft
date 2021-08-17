@@ -10,11 +10,19 @@
 #define PT_ER5	   4
 #define PT_ER6	   5
 #define PT_ER0	   6
+<<<<<<< HEAD
 #define PT_ORIG_ER0	   7
 #define PT_CCR	   8
 #define PT_PC	   9
 #define PT_USP	   10
 #define PT_EXR     12
+=======
+#define PT_USP	   7
+#define PT_ORIG_ER0	   8
+#define PT_CCR	   9
+#define PT_PC	   10
+#define PT_EXR     11
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* this struct defines the way the registers are stored on the
    stack during a system call. */
@@ -28,6 +36,7 @@ struct pt_regs {
 	long     er2;
 	long     er1;
 	long     orig_er0;
+<<<<<<< HEAD
 	unsigned short ccr;
 	long     er0;
 	long     vector;
@@ -39,6 +48,17 @@ struct pt_regs {
 
 #define PTRACE_GETREGS            12
 #define PTRACE_SETREGS            13
+=======
+	long	 sp;
+	unsigned short	 ccr;
+	long     er0;
+	long     vector;
+#if defined(__H8300S__)
+	unsigned short	 exr;
+#endif
+	unsigned long  pc;
+} __attribute__((aligned(2), packed));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASSEMBLY__ */
 #endif /* _UAPI_H8300_PTRACE_H */

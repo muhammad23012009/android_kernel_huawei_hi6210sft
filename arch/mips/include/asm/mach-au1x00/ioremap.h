@@ -11,10 +11,17 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT_PHYS_ADDR) && defined(CONFIG_PCI)
 extern phys_t __fixup_bigphys_addr(phys_t, phys_t);
 #else
 static inline phys_t __fixup_bigphys_addr(phys_t phys_addr, phys_t size)
+=======
+#if defined(CONFIG_PHYS_ADDR_T_64BIT) && defined(CONFIG_PCI)
+extern phys_addr_t __fixup_bigphys_addr(phys_addr_t, phys_addr_t);
+#else
+static inline phys_addr_t __fixup_bigphys_addr(phys_addr_t phys_addr, phys_addr_t size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return phys_addr;
 }
@@ -23,12 +30,20 @@ static inline phys_t __fixup_bigphys_addr(phys_t phys_addr, phys_t size)
 /*
  * Allow physical addresses to be fixed up to help 36-bit peripherals.
  */
+<<<<<<< HEAD
 static inline phys_t fixup_bigphys_addr(phys_t phys_addr, phys_t size)
+=======
+static inline phys_addr_t fixup_bigphys_addr(phys_addr_t phys_addr, phys_addr_t size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return __fixup_bigphys_addr(phys_addr, size);
 }
 
+<<<<<<< HEAD
 static inline void __iomem *plat_ioremap(phys_t offset, unsigned long size,
+=======
+static inline void __iomem *plat_ioremap(phys_addr_t offset, unsigned long size,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags)
 {
 	return NULL;

@@ -32,6 +32,10 @@
 #include <asm/mach/map.h>
 
 #include "soc.h"
+<<<<<<< HEAD
+=======
+#include "display.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_OMAP2_VRFB
 
@@ -64,7 +68,11 @@ static const struct resource omap3_vrfb_resources[] = {
 	DEFINE_RES_MEM_NAMED(0xfc000000u, 0x4000000, "vrfb-area-11"),
 };
 
+<<<<<<< HEAD
 static int __init omap_init_vrfb(void)
+=======
+int __init omap_init_vrfb(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev;
 	const struct resource *res;
@@ -83,6 +91,7 @@ static int __init omap_init_vrfb(void)
 	pdev = platform_device_register_resndata(NULL, "omapvrfb", -1,
 			res, num_res, NULL, 0);
 
+<<<<<<< HEAD
 	if (IS_ERR(pdev))
 		return PTR_ERR(pdev);
 	else
@@ -93,6 +102,15 @@ omap_arch_initcall(omap_init_vrfb);
 #endif
 
 #if defined(CONFIG_FB_OMAP2) || defined(CONFIG_FB_OMAP2_MODULE)
+=======
+	return PTR_ERR_OR_ZERO(pdev);
+}
+#else
+int __init omap_init_vrfb(void) { return 0; }
+#endif
+
+#if IS_ENABLED(CONFIG_FB_OMAP2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static u64 omap_fb_dma_mask = ~(u32)0;
 static struct omapfb_platform_data omapfb_config;
@@ -108,6 +126,7 @@ static struct platform_device omap_fb_device = {
 	.num_resources = 0,
 };
 
+<<<<<<< HEAD
 static int __init omap_init_fb(void)
 {
 	return platform_device_register(&omap_fb_device);
@@ -115,4 +134,12 @@ static int __init omap_init_fb(void)
 
 omap_arch_initcall(omap_init_fb);
 
+=======
+int __init omap_init_fb(void)
+{
+	return platform_device_register(&omap_fb_device);
+}
+#else
+int __init omap_init_fb(void) { return 0; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

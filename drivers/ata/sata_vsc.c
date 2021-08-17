@@ -37,7 +37,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -388,10 +391,17 @@ static int vsc_sata_init_one(struct pci_dev *pdev,
 	/*
 	 * Use 32 bit DMA mask, because 64 bit address support is poor.
 	 */
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+	if (rc)
+		return rc;
+	rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc)
 		return rc;
 

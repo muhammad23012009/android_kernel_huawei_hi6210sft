@@ -19,10 +19,15 @@
 #include <net/netfilter/nf_nat.h>
 #include <net/addrconf.h>
 #include <net/ipv6.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/ipv6/nf_nat_masquerade.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned int
 masquerade_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 {
+<<<<<<< HEAD
 	const struct nf_nat_range *range = par->targinfo;
 	enum ip_conntrack_info ctinfo;
 	struct in6_addr src;
@@ -46,6 +51,9 @@ masquerade_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	newrange.max_proto	= range->max_proto;
 
 	return nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_SRC);
+=======
+	return nf_nat_masquerade_ipv6(skb, par->targinfo, par->out);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int masquerade_tg6_checkentry(const struct xt_tgchk_param *par)
@@ -57,6 +65,7 @@ static int masquerade_tg6_checkentry(const struct xt_tgchk_param *par)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int device_cmp(struct nf_conn *ct, void *ifindex)
 {
 	const struct nf_conn_nat *nat = nfct_nat(ct);
@@ -97,6 +106,8 @@ static struct notifier_block masq_inet_notifier = {
 	.notifier_call	= masq_inet_event,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct xt_target masquerade_tg6_reg __read_mostly = {
 	.name		= "MASQUERADE",
 	.family		= NFPROTO_IPV6,
@@ -113,17 +124,26 @@ static int __init masquerade_tg6_init(void)
 	int err;
 
 	err = xt_register_target(&masquerade_tg6_reg);
+<<<<<<< HEAD
 	if (err == 0) {
 		register_netdevice_notifier(&masq_dev_notifier);
 		register_inet6addr_notifier(&masq_inet_notifier);
 	}
+=======
+	if (err == 0)
+		nf_nat_masquerade_ipv6_register_notifier();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
 static void __exit masquerade_tg6_exit(void)
 {
+<<<<<<< HEAD
 	unregister_inet6addr_notifier(&masq_inet_notifier);
 	unregister_netdevice_notifier(&masq_dev_notifier);
+=======
+	nf_nat_masquerade_ipv6_unregister_notifier();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xt_unregister_target(&masquerade_tg6_reg);
 }
 

@@ -11,6 +11,12 @@
  * For further information, see the Documentation/hwmon/max197 file.
  */
 
+<<<<<<< HEAD
+=======
+#ifndef _PDATA_MAX197_H
+#define _PDATA_MAX197_H
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct max197_platform_data - MAX197 connectivity info
  * @convert:	Function used to start a conversion with control byte ctrl.
@@ -19,3 +25,8 @@
 struct max197_platform_data {
 	int (*convert)(u8 ctrl);
 };
+<<<<<<< HEAD
+=======
+
+#endif /* _PDATA_MAX197_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

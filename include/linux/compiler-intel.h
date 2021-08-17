@@ -14,10 +14,18 @@
  * It uses intrinsics to do the equivalent things.
  */
 #undef barrier
+<<<<<<< HEAD
+=======
+#undef barrier_data
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef RELOC_HIDE
 #undef OPTIMIZER_HIDE_VAR
 
 #define barrier() __memory_barrier()
+<<<<<<< HEAD
+=======
+#define barrier_data(ptr) barrier()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define RELOC_HIDE(ptr, off)					\
   ({ unsigned long __ptr;					\
@@ -41,3 +49,10 @@
 #define __builtin_bswap16 _bswap16
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * icc defines __GNUC__, but does not implement the builtin overflow checkers.
+ */
+#undef COMPILER_HAS_GENERIC_BUILTIN_OVERFLOW
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

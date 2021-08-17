@@ -4,7 +4,11 @@
 #include <linux/types.h>
 
 #define SOCK_DIAG_BY_FAMILY 20
+<<<<<<< HEAD
 #define SOCK_DESTROY_BACKPORT 21
+=======
+#define SOCK_DESTROY 21
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct sock_diag_req {
 	__u8	sdiag_family;
@@ -20,8 +24,25 @@ enum {
 	SK_MEMINFO_WMEM_QUEUED,
 	SK_MEMINFO_OPTMEM,
 	SK_MEMINFO_BACKLOG,
+<<<<<<< HEAD
+=======
+	SK_MEMINFO_DROPS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	SK_MEMINFO_VARS,
 };
 
+<<<<<<< HEAD
+=======
+enum sknetlink_groups {
+	SKNLGRP_NONE,
+	SKNLGRP_INET_TCP_DESTROY,
+	SKNLGRP_INET_UDP_DESTROY,
+	SKNLGRP_INET6_TCP_DESTROY,
+	SKNLGRP_INET6_UDP_DESTROY,
+	__SKNLGRP_MAX,
+};
+#define SKNLGRP_MAX	(__SKNLGRP_MAX - 1)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _UAPI__SOCK_DIAG_H__ */

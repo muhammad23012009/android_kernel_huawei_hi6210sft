@@ -20,6 +20,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
@@ -35,12 +36,47 @@
 
 #include "../comedidev.h"
 #include "comedi_fc.h"
+=======
+ */
+
+/*
+ * Driver: addi_apci_3501
+ * Description: ADDI-DATA APCI-3501 Analog output board
+ * Devices: [ADDI-DATA] APCI-3501 (addi_apci_3501)
+ * Author: H Hartley Sweeten <hsweeten@visionengravers.com>
+ * Updated: Mon, 20 Jun 2016 10:57:01 -0700
+ * Status: untested
+ *
+ * Configuration Options: not applicable, uses comedi PCI auto config
+ *
+ * This board has the following features:
+ *   - 4 or 8 analog output channels
+ *   - 2 optically isolated digital inputs
+ *   - 2 optically isolated digital outputs
+ *   - 1 12-bit watchdog/timer
+ *
+ * There are 2 versions of the APCI-3501:
+ *   - APCI-3501-4  4 analog output channels
+ *   - APCI-3501-8  8 analog output channels
+ *
+ * These boards use the same PCI Vendor/Device IDs. The number of output
+ * channels used by this driver is determined by reading the EEPROM on
+ * the board.
+ *
+ * The watchdog/timer subdevice is not currently supported.
+ */
+
+#include <linux/module.h>
+
+#include "../comedi_pci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "amcc_s5933.h"
 
 /*
  * PCI bar 1 register I/O map
  */
 #define APCI3501_AO_CTRL_STATUS_REG		0x00
+<<<<<<< HEAD
 #define APCI3501_AO_CTRL_BIPOLAR		(1 << 0)
 #define APCI3501_AO_STATUS_READY		(1 << 8)
 #define APCI3501_AO_DATA_REG			0x04
@@ -56,6 +92,16 @@
 #define APCI3501_TIMER_IRQ_REG			0x34
 #define APCI3501_TIMER_WARN_RELOAD_REG		0x38
 #define APCI3501_TIMER_WARN_TIMEBASE_REG	0x3c
+=======
+#define APCI3501_AO_CTRL_BIPOLAR		BIT(0)
+#define APCI3501_AO_STATUS_READY		BIT(8)
+#define APCI3501_AO_DATA_REG			0x04
+#define APCI3501_AO_DATA_CHAN(x)		((x) << 0)
+#define APCI3501_AO_DATA_VAL(x)			((x) << 8)
+#define APCI3501_AO_DATA_BIPOLAR		BIT(31)
+#define APCI3501_AO_TRIG_SCS_REG		0x08
+#define APCI3501_TIMER_BASE			0x20
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define APCI3501_DO_REG				0x40
 #define APCI3501_DI_REG				0x50
 
@@ -80,9 +126,14 @@
 #define EEPROM_TIMER_WATCHDOG_COUNTER	10
 
 struct apci3501_private {
+<<<<<<< HEAD
 	int i_IobaseAmcc;
 	struct task_struct *tsk_Current;
 	unsigned char b_TimerSelectMode;
+=======
+	unsigned long amcc;
+	unsigned char timer_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct comedi_lrange apci3501_ao_range = {
@@ -110,9 +161,15 @@ static int apci3501_ao_insn_write(struct comedi_device *dev,
 {
 	unsigned int chan = CR_CHAN(insn->chanspec);
 	unsigned int range = CR_RANGE(insn->chanspec);
+<<<<<<< HEAD
 	unsigned int val = 0;
 	int i;
 	int ret;
+=======
+	unsigned int cfg = APCI3501_AO_DATA_CHAN(chan);
+	int ret;
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * All analog output channels have the same output range.
@@ -123,14 +180,24 @@ static int apci3501_ao_insn_write(struct comedi_device *dev,
 	if (range) {
 		outl(0, dev->iobase + APCI3501_AO_CTRL_STATUS_REG);
 	} else {
+<<<<<<< HEAD
 		val |= APCI3501_AO_DATA_BIPOLAR;
+=======
+		cfg |= APCI3501_AO_DATA_BIPOLAR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		outl(APCI3501_AO_CTRL_BIPOLAR,
 		     dev->iobase + APCI3501_AO_CTRL_STATUS_REG);
 	}
 
+<<<<<<< HEAD
 	val |= APCI3501_AO_DATA_CHAN(chan);
 
 	for (i = 0; i < insn->n; i++) {
+=======
+	for (i = 0; i < insn->n; i++) {
+		unsigned int val = data[i];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (range == 1) {
 			if (data[i] > 0x1fff) {
 				dev_err(dev->class_dev,
@@ -143,15 +210,25 @@ static int apci3501_ao_insn_write(struct comedi_device *dev,
 		if (ret)
 			return ret;
 
+<<<<<<< HEAD
 		outl(val | APCI3501_AO_DATA_VAL(data[i]),
 		     dev->iobase + APCI3501_AO_DATA_REG);
+=======
+		outl(cfg | APCI3501_AO_DATA_VAL(val),
+		     dev->iobase + APCI3501_AO_DATA_REG);
+
+		s->readback[chan] = val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return insn->n;
 }
 
+<<<<<<< HEAD
 #include "addi-data/hwdrv_apci3501.c"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int apci3501_di_insn_bits(struct comedi_device *dev,
 				 struct comedi_subdevice *s,
 				 struct comedi_insn *insn,
@@ -167,6 +244,7 @@ static int apci3501_do_insn_bits(struct comedi_device *dev,
 				 struct comedi_insn *insn,
 				 unsigned int *data)
 {
+<<<<<<< HEAD
 	unsigned int mask = data[0];
 	unsigned int bits = data[1];
 
@@ -177,6 +255,12 @@ static int apci3501_do_insn_bits(struct comedi_device *dev,
 
 		outl(s->state, dev->iobase + APCI3501_DO_REG);
 	}
+=======
+	s->state = inl(dev->iobase + APCI3501_DO_REG);
+
+	if (comedi_dio_update_state(s, data))
+		outl(s->state, dev->iobase + APCI3501_DO_REG);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	data[1] = s->state;
 
@@ -213,7 +297,11 @@ static unsigned short apci3501_eeprom_readw(unsigned long iobase,
 		outb(NVCMD_LOAD_HIGH, iobase + AMCC_OP_REG_MCSR_NVCMD);
 		apci3501_eeprom_wait(iobase);
 		outb(((addr + i) >> 8) & 0xff,
+<<<<<<< HEAD
 			iobase + AMCC_OP_REG_MCSR_NVDATA);
+=======
+		     iobase + AMCC_OP_REG_MCSR_NVDATA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		apci3501_eeprom_wait(iobase);
 
 		/* Read the eeprom data byte */
@@ -234,11 +322,18 @@ static unsigned short apci3501_eeprom_readw(unsigned long iobase,
 static int apci3501_eeprom_get_ao_n_chan(struct comedi_device *dev)
 {
 	struct apci3501_private *devpriv = dev->private;
+<<<<<<< HEAD
 	unsigned long iobase = devpriv->i_IobaseAmcc;
 	unsigned char nfuncs;
 	int i;
 
 	nfuncs = apci3501_eeprom_readw(iobase, 10) & 0xff;
+=======
+	unsigned char nfuncs;
+	int i;
+
+	nfuncs = apci3501_eeprom_readw(devpriv->amcc, 10) & 0xff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Read functionality details */
 	for (i = 0; i < nfuncs; i++) {
@@ -247,11 +342,19 @@ static int apci3501_eeprom_get_ao_n_chan(struct comedi_device *dev)
 		unsigned char func;
 		unsigned short val;
 
+<<<<<<< HEAD
 		func = apci3501_eeprom_readw(iobase, 12 + offset) & 0x3f;
 		addr = apci3501_eeprom_readw(iobase, 14 + offset);
 
 		if (func == EEPROM_ANALOGOUTPUT) {
 			val = apci3501_eeprom_readw(iobase, addr + 10);
+=======
+		func = apci3501_eeprom_readw(devpriv->amcc, 12 + offset) & 0x3f;
+		addr = apci3501_eeprom_readw(devpriv->amcc, 14 + offset);
+
+		if (func == EEPROM_ANALOGOUTPUT) {
+			val = apci3501_eeprom_readw(devpriv->amcc, addr + 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return (val >> 4) & 0x3ff;
 		}
 	}
@@ -266,11 +369,16 @@ static int apci3501_eeprom_insn_read(struct comedi_device *dev,
 	struct apci3501_private *devpriv = dev->private;
 	unsigned short addr = CR_CHAN(insn->chanspec);
 
+<<<<<<< HEAD
 	data[0] = apci3501_eeprom_readw(devpriv->i_IobaseAmcc, 2 * addr);
+=======
+	data[0] = apci3501_eeprom_readw(devpriv->amcc, 2 * addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return insn->n;
 }
 
+<<<<<<< HEAD
 static irqreturn_t apci3501_interrupt(int irq, void *d)
 {
 	struct comedi_device *dev = d;
@@ -300,6 +408,8 @@ static irqreturn_t apci3501_interrupt(int irq, void *d)
 	return IRQ_HANDLED;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int apci3501_reset(struct comedi_device *dev)
 {
 	unsigned int val;
@@ -339,15 +449,22 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 	int ao_n_chan;
 	int ret;
 
+<<<<<<< HEAD
 	devpriv = kzalloc(sizeof(*devpriv), GFP_KERNEL);
 	if (!devpriv)
 		return -ENOMEM;
 	dev->private = devpriv;
+=======
+	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
+	if (!devpriv)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = comedi_pci_enable(dev);
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	dev->iobase = pci_resource_start(pcidev, 1);
 	devpriv->i_IobaseAmcc = pci_resource_start(pcidev, 0);
 
@@ -360,6 +477,13 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 			dev->irq = pcidev->irq;
 	}
 
+=======
+	devpriv->amcc = pci_resource_start(pcidev, 0);
+	dev->iobase = pci_resource_start(pcidev, 1);
+
+	ao_n_chan = apci3501_eeprom_get_ao_n_chan(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = comedi_alloc_subdevices(dev, 5);
 	if (ret)
 		return ret;
@@ -368,11 +492,22 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 	s = &dev->subdevices[0];
 	if (ao_n_chan) {
 		s->type		= COMEDI_SUBD_AO;
+<<<<<<< HEAD
 		s->subdev_flags	= SDF_WRITEABLE | SDF_GROUND | SDF_COMMON;
+=======
+		s->subdev_flags	= SDF_WRITABLE | SDF_GROUND | SDF_COMMON;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		s->n_chan	= ao_n_chan;
 		s->maxdata	= 0x3fff;
 		s->range_table	= &apci3501_ao_range;
 		s->insn_write	= apci3501_ao_insn_write;
+<<<<<<< HEAD
+=======
+
+		ret = comedi_alloc_subdev_readback(s);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		s->type		= COMEDI_SUBD_UNUSED;
 	}
@@ -389,12 +524,17 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 	/* Initialize the digital output subdevice */
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DO;
+<<<<<<< HEAD
 	s->subdev_flags	= SDF_WRITEABLE;
+=======
+	s->subdev_flags	= SDF_WRITABLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s->n_chan	= 2;
 	s->maxdata	= 1;
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci3501_do_insn_bits;
 
+<<<<<<< HEAD
 	/* Initialize the timer/watchdog subdevice */
 	s = &dev->subdevices[3];
 	s->type = COMEDI_SUBD_TIMER;
@@ -406,6 +546,11 @@ static int apci3501_auto_attach(struct comedi_device *dev,
 	s->insn_write = i_APCI3501_StartStopWriteTimerCounterWatchdog;
 	s->insn_read = i_APCI3501_ReadTimerCounterWatchdog;
 	s->insn_config = i_APCI3501_ConfigTimerCounterWatchdog;
+=======
+	/* Timer/Watchdog subdevice */
+	s = &dev->subdevices[3];
+	s->type		= COMEDI_SUBD_UNUSED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Initialize the eeprom subdevice */
 	s = &dev->subdevices[4];
@@ -423,9 +568,13 @@ static void apci3501_detach(struct comedi_device *dev)
 {
 	if (dev->iobase)
 		apci3501_reset(dev);
+<<<<<<< HEAD
 	if (dev->irq)
 		free_irq(dev->irq, dev);
 	comedi_pci_disable(dev);
+=======
+	comedi_pci_detach(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct comedi_driver apci3501_driver = {
@@ -441,7 +590,11 @@ static int apci3501_pci_probe(struct pci_dev *dev,
 	return comedi_pci_auto_config(dev, &apci3501_driver, id->driver_data);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(apci3501_pci_table) = {
+=======
+static const struct pci_device_id apci3501_pci_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_ADDIDATA, 0x3001) },
 	{ 0 }
 };

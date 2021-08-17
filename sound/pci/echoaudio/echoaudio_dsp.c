@@ -53,7 +53,11 @@ static int wait_handshake(struct echoaudio *chip)
 		udelay(1);
 	}
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "wait_handshake(): Timeout waiting for DSP\n");
+=======
+	dev_err(chip->card->dev, "wait_handshake(): Timeout waiting for DSP\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EBUSY;
 }
 
@@ -80,7 +84,11 @@ static int send_vector(struct echoaudio *chip, u32 command)
 		udelay(1);
 	}
 
+<<<<<<< HEAD
 	DE_ACT((KERN_ERR "timeout on send_vector\n"));
+=======
+	dev_err(chip->card->dev, "timeout on send_vector\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EBUSY;
 }
 
@@ -103,8 +111,13 @@ static int write_dsp(struct echoaudio *chip, u32 data)
 		cond_resched();
 	}
 
+<<<<<<< HEAD
 	chip->bad_board = TRUE;		/* Set TRUE until DSP re-loaded */
 	DE_ACT((KERN_ERR "write_dsp: Set bad_board to TRUE\n"));
+=======
+	chip->bad_board = true;		/* Set true until DSP re-loaded */
+	dev_dbg(chip->card->dev, "write_dsp: Set bad_board to true\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -126,8 +139,13 @@ static int read_dsp(struct echoaudio *chip, u32 *data)
 		cond_resched();
 	}
 
+<<<<<<< HEAD
 	chip->bad_board = TRUE;		/* Set TRUE until DSP re-loaded */
 	DE_INIT((KERN_ERR "read_dsp: Set bad_board to TRUE\n"));
+=======
+	chip->bad_board = true;		/* Set true until DSP re-loaded */
+	dev_err(chip->card->dev, "read_dsp: Set bad_board to true\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -149,12 +167,23 @@ static int read_sn(struct echoaudio *chip)
 
 	for (i = 0; i < 5; i++) {
 		if (read_dsp(chip, &sn[i])) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "Failed to read serial number\n");
 			return -EIO;
 		}
 	}
 	DE_INIT(("Read serial number %08x %08x %08x %08x %08x\n",
 		 sn[0], sn[1], sn[2], sn[3], sn[4]));
+=======
+			dev_err(chip->card->dev,
+				"Failed to read serial number\n");
+			return -EIO;
+		}
+	}
+	dev_dbg(chip->card->dev,
+		"Read serial number %08x %08x %08x %08x %08x\n",
+		 sn[0], sn[1], sn[2], sn[3], sn[4]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -164,7 +193,11 @@ static int read_sn(struct echoaudio *chip)
 /* This card has no ASIC, just return ok */
 static inline int check_asic_status(struct echoaudio *chip)
 {
+<<<<<<< HEAD
 	chip->asic_loaded = TRUE;
+=======
+	chip->asic_loaded = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -184,7 +217,11 @@ static int load_asic_generic(struct echoaudio *chip, u32 cmd, short asic)
 
 	err = get_firmware(&fw, chip, asic);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "Firmware not found !\n");
+=======
+		dev_warn(chip->card->dev, "Firmware not found !\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -204,6 +241,7 @@ static int load_asic_generic(struct echoaudio *chip, u32 cmd, short asic)
 			goto la_error;
 	}
 
+<<<<<<< HEAD
 	DE_INIT(("ASIC loaded\n"));
 	free_firmware(fw);
 	return 0;
@@ -211,6 +249,14 @@ static int load_asic_generic(struct echoaudio *chip, u32 cmd, short asic)
 la_error:
 	DE_INIT(("failed on write_dsp\n"));
 	free_firmware(fw);
+=======
+	free_firmware(fw, chip);
+	return 0;
+
+la_error:
+	dev_err(chip->card->dev, "failed on write_dsp\n");
+	free_firmware(fw, chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -240,14 +286,24 @@ static int install_resident_loader(struct echoaudio *chip)
 	loader is already installed, host flag 5 will be on. */
 	status = get_dsp_register(chip, CHI32_STATUS_REG);
 	if (status & CHI32_STATUS_REG_HF5) {
+<<<<<<< HEAD
 		DE_INIT(("Resident loader already installed; status is 0x%x\n",
 			 status));
+=======
+		dev_dbg(chip->card->dev,
+			"Resident loader already installed; status is 0x%x\n",
+			 status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
 	i = get_firmware(&fw, chip, FW_361_LOADER);
 	if (i < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "Firmware not found !\n");
+=======
+		dev_warn(chip->card->dev, "Firmware not found !\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return i;
 	}
 
@@ -282,12 +338,22 @@ static int install_resident_loader(struct echoaudio *chip)
 
 	/* Write the count to the DSP */
 	if (write_dsp(chip, words)) {
+<<<<<<< HEAD
 		DE_INIT(("install_resident_loader: Failed to write word count!\n"));
+=======
+		dev_err(chip->card->dev,
+			"install_resident_loader: Failed to write word count!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto irl_error;
 	}
 	/* Write the DSP address */
 	if (write_dsp(chip, address)) {
+<<<<<<< HEAD
 		DE_INIT(("install_resident_loader: Failed to write DSP address!\n"));
+=======
+		dev_err(chip->card->dev,
+			"install_resident_loader: Failed to write DSP address!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto irl_error;
 	}
 	/* Write out this block of code to the DSP */
@@ -296,7 +362,12 @@ static int install_resident_loader(struct echoaudio *chip)
 
 		data = ((u32)code[index] << 16) + code[index + 1];
 		if (write_dsp(chip, data)) {
+<<<<<<< HEAD
 			DE_INIT(("install_resident_loader: Failed to write DSP code\n"));
+=======
+			dev_err(chip->card->dev,
+				"install_resident_loader: Failed to write DSP code\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto irl_error;
 		}
 		index += 2;
@@ -311,6 +382,7 @@ static int install_resident_loader(struct echoaudio *chip)
 	}
 
 	if (i == 200) {
+<<<<<<< HEAD
 		DE_INIT(("Resident loader failed to set HF5\n"));
 		goto irl_error;
 	}
@@ -321,6 +393,18 @@ static int install_resident_loader(struct echoaudio *chip)
 
 irl_error:
 	free_firmware(fw);
+=======
+		dev_err(chip->card->dev, "Resident loader failed to set HF5\n");
+		goto irl_error;
+	}
+
+	dev_dbg(chip->card->dev, "Resident loader successfully installed\n");
+	free_firmware(fw, chip);
+	return 0;
+
+irl_error:
+	free_firmware(fw, chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -333,6 +417,7 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 	int index, words, i;
 
 	if (chip->dsp_code == code) {
+<<<<<<< HEAD
 		DE_INIT(("DSP is already loaded!\n"));
 		return 0;
 	}
@@ -341,6 +426,16 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 	chip->asic_loaded = FALSE;	/* Loading the DSP code will reset the ASIC */
 
 	DE_INIT(("load_dsp: Set bad_board to TRUE\n"));
+=======
+		dev_warn(chip->card->dev, "DSP is already loaded!\n");
+		return 0;
+	}
+	chip->bad_board = true;		/* Set true until DSP loaded */
+	chip->dsp_code = NULL;		/* Current DSP code not loaded */
+	chip->asic_loaded = false;	/* Loading the DSP code will reset the ASIC */
+
+	dev_dbg(chip->card->dev, "load_dsp: Set bad_board to true\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If this board requires a resident loader, install it. */
 #ifdef DSP_56361
@@ -350,7 +445,12 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 
 	/* Send software reset command */
 	if (send_vector(chip, DSP_VC_RESET) < 0) {
+<<<<<<< HEAD
 		DE_INIT(("LoadDsp: send_vector DSP_VC_RESET failed, Critical Failure\n"));
+=======
+		dev_err(chip->card->dev,
+			"LoadDsp: send_vector DSP_VC_RESET failed, Critical Failure\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 	/* Delay 10us */
@@ -365,7 +465,12 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 	}
 
 	if (i == 1000) {
+<<<<<<< HEAD
 		DE_INIT(("load_dsp: Timeout waiting for CHI32_STATUS_REG_HF3\n"));
+=======
+		dev_err(chip->card->dev,
+			"load_dsp: Timeout waiting for CHI32_STATUS_REG_HF3\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 
@@ -402,6 +507,7 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 		index += 2;
 
 		if (write_dsp(chip, words) < 0) {
+<<<<<<< HEAD
 			DE_INIT(("load_dsp: failed to write number of DSP words\n"));
 			return -EIO;
 		}
@@ -411,20 +517,44 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 		}
 		if (write_dsp(chip, mem_type) < 0) {
 			DE_INIT(("load_dsp: failed to write DSP memory type\n"));
+=======
+			dev_err(chip->card->dev,
+				"load_dsp: failed to write number of DSP words\n");
+			return -EIO;
+		}
+		if (write_dsp(chip, address) < 0) {
+			dev_err(chip->card->dev,
+				"load_dsp: failed to write DSP address\n");
+			return -EIO;
+		}
+		if (write_dsp(chip, mem_type) < 0) {
+			dev_err(chip->card->dev,
+				"load_dsp: failed to write DSP memory type\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EIO;
 		}
 		/* Code */
 		for (i = 0; i < words; i++, index+=2) {
 			data = ((u32)code[index] << 16) + code[index + 1];
 			if (write_dsp(chip, data) < 0) {
+<<<<<<< HEAD
 				DE_INIT(("load_dsp: failed to write DSP data\n"));
+=======
+				dev_err(chip->card->dev,
+					"load_dsp: failed to write DSP data\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return -EIO;
 			}
 		}
 	}
 
 	if (write_dsp(chip, 0) < 0) {	/* We're done!!! */
+<<<<<<< HEAD
 		DE_INIT(("load_dsp: Failed to write final zero\n"));
+=======
+		dev_err(chip->card->dev,
+			"load_dsp: Failed to write final zero\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 	udelay(10);
@@ -437,12 +567,22 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 					 get_dsp_register(chip, CHI32_CONTROL_REG) & ~0x1b00);
 
 			if (write_dsp(chip, DSP_FNC_SET_COMMPAGE_ADDR) < 0) {
+<<<<<<< HEAD
 				DE_INIT(("load_dsp: Failed to write DSP_FNC_SET_COMMPAGE_ADDR\n"));
+=======
+				dev_err(chip->card->dev,
+					"load_dsp: Failed to write DSP_FNC_SET_COMMPAGE_ADDR\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return -EIO;
 			}
 
 			if (write_dsp(chip, chip->comm_page_phys) < 0) {
+<<<<<<< HEAD
 				DE_INIT(("load_dsp: Failed to write comm page address\n"));
+=======
+				dev_err(chip->card->dev,
+					"load_dsp: Failed to write comm page address\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return -EIO;
 			}
 
@@ -451,19 +591,33 @@ static int load_dsp(struct echoaudio *chip, u16 *code)
 			We don't actually use the serial number but we have to
 			get it as part of the DSP init voodoo. */
 			if (read_sn(chip) < 0) {
+<<<<<<< HEAD
 				DE_INIT(("load_dsp: Failed to read serial number\n"));
+=======
+				dev_err(chip->card->dev,
+					"load_dsp: Failed to read serial number\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return -EIO;
 			}
 
 			chip->dsp_code = code;		/* Show which DSP code loaded */
+<<<<<<< HEAD
 			chip->bad_board = FALSE;	/* DSP OK */
 			DE_INIT(("load_dsp: OK!\n"));
+=======
+			chip->bad_board = false;	/* DSP OK */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 		udelay(100);
 	}
 
+<<<<<<< HEAD
 	DE_INIT(("load_dsp: DSP load timed out waiting for HF4\n"));
+=======
+	dev_err(chip->card->dev,
+		"load_dsp: DSP load timed out waiting for HF4\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -490,7 +644,11 @@ static int load_firmware(struct echoaudio *chip)
 	if (err < 0)
 		return err;
 	err = load_dsp(chip, (u16 *)fw->data);
+<<<<<<< HEAD
 	free_firmware(fw);
+=======
+	free_firmware(fw, chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -657,7 +815,10 @@ static void get_audio_meters(struct echoaudio *chip, long *meters)
 static int restore_dsp_rettings(struct echoaudio *chip)
 {
 	int i, o, err;
+<<<<<<< HEAD
 	DE_INIT(("restore_dsp_settings\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((err = check_asic_status(chip)) < 0)
 		return err;
@@ -754,7 +915,10 @@ static int restore_dsp_rettings(struct echoaudio *chip)
 	if (send_vector(chip, DSP_VC_UPDATE_FLAGS) < 0)
 		return -EIO;
 
+<<<<<<< HEAD
 	DE_INIT(("restore_dsp_rettings done\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -834,7 +998,12 @@ static void set_audio_format(struct echoaudio *chip, u16 pipe_index,
 			break;
 		}
 	}
+<<<<<<< HEAD
 	DE_ACT(("set_audio_format[%d] = %x\n", pipe_index, dsp_format));
+=======
+	dev_dbg(chip->card->dev,
+		 "set_audio_format[%d] = %x\n", pipe_index, dsp_format);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->comm_page->audio_format[pipe_index] = cpu_to_le16(dsp_format);
 }
 
@@ -847,7 +1016,10 @@ Same thing for pause_ and stop_ -trasport below. */
 static int start_transport(struct echoaudio *chip, u32 channel_mask,
 			   u32 cyclic_mask)
 {
+<<<<<<< HEAD
 	DE_ACT(("start_transport %x\n", channel_mask));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (wait_handshake(chip))
 		return -EIO;
@@ -865,7 +1037,11 @@ static int start_transport(struct echoaudio *chip, u32 channel_mask,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	DE_ACT(("start_transport: No pipes to start!\n"));
+=======
+	dev_err(chip->card->dev, "start_transport: No pipes to start!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EINVAL;
 }
 
@@ -873,7 +1049,10 @@ static int start_transport(struct echoaudio *chip, u32 channel_mask,
 
 static int pause_transport(struct echoaudio *chip, u32 channel_mask)
 {
+<<<<<<< HEAD
 	DE_ACT(("pause_transport %x\n", channel_mask));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (wait_handshake(chip))
 		return -EIO;
@@ -892,7 +1071,11 @@ static int pause_transport(struct echoaudio *chip, u32 channel_mask)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	DE_ACT(("pause_transport: No pipes to stop!\n"));
+=======
+	dev_warn(chip->card->dev, "pause_transport: No pipes to stop!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -900,7 +1083,10 @@ static int pause_transport(struct echoaudio *chip, u32 channel_mask)
 
 static int stop_transport(struct echoaudio *chip, u32 channel_mask)
 {
+<<<<<<< HEAD
 	DE_ACT(("stop_transport %x\n", channel_mask));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (wait_handshake(chip))
 		return -EIO;
@@ -919,7 +1105,11 @@ static int stop_transport(struct echoaudio *chip, u32 channel_mask)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	DE_ACT(("stop_transport: No pipes to stop!\n"));
+=======
+	dev_warn(chip->card->dev, "stop_transport: No pipes to stop!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -936,15 +1126,25 @@ static inline int is_pipe_allocated(struct echoaudio *chip, u16 pipe_index)
 stopped and unallocated. */
 static int rest_in_peace(struct echoaudio *chip)
 {
+<<<<<<< HEAD
 	DE_ACT(("rest_in_peace() open=%x\n", chip->pipe_alloc_mask));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Stops all active pipes (just to be sure) */
 	stop_transport(chip, chip->active_mask);
 
+<<<<<<< HEAD
 	set_meters_on(chip, FALSE);
 
 #ifdef ECHOCARD_HAS_MIDI
 	enable_midi_input(chip, FALSE);
+=======
+	set_meters_on(chip, false);
+
+#ifdef ECHOCARD_HAS_MIDI
+	enable_midi_input(chip, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* Go to sleep */
@@ -964,15 +1164,26 @@ static int init_dsp_comm_page(struct echoaudio *chip)
 {
 	/* Check if the compiler added extra padding inside the structure */
 	if (offsetof(struct comm_page, midi_output) != 0xbe0) {
+<<<<<<< HEAD
 		DE_INIT(("init_dsp_comm_page() - Invalid struct comm_page structure\n"));
+=======
+		dev_err(chip->card->dev,
+			"init_dsp_comm_page() - Invalid struct comm_page structure\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EPERM;
 	}
 
 	/* Init all the basic stuff */
 	chip->card_name = ECHOCARD_NAME;
+<<<<<<< HEAD
 	chip->bad_board = TRUE;	/* Set TRUE until DSP loaded */
 	chip->dsp_code = NULL;	/* Current DSP code not loaded */
 	chip->asic_loaded = FALSE;
+=======
+	chip->bad_board = true;	/* Set true until DSP loaded */
+	chip->dsp_code = NULL;	/* Current DSP code not loaded */
+	chip->asic_loaded = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(chip->comm_page, 0, sizeof(struct comm_page));
 
 	/* Init the comm page */
@@ -998,7 +1209,10 @@ static int init_dsp_comm_page(struct echoaudio *chip)
  */
 static int init_line_levels(struct echoaudio *chip)
 {
+<<<<<<< HEAD
 	DE_INIT(("init_line_levels\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(chip->output_gain, ECHOGAIN_MUTED, sizeof(chip->output_gain));
 	memset(chip->input_gain, ECHOGAIN_MUTED, sizeof(chip->input_gain));
 	memset(chip->monitor_gain, ECHOGAIN_MUTED, sizeof(chip->monitor_gain));
@@ -1050,7 +1264,12 @@ static int allocate_pipes(struct echoaudio *chip, struct audiopipe *pipe,
 	u32 channel_mask;
 	char is_cyclic;
 
+<<<<<<< HEAD
 	DE_ACT(("allocate_pipes: ch=%d int=%d\n", pipe_index, interleave));
+=======
+	dev_dbg(chip->card->dev,
+		"allocate_pipes: ch=%d int=%d\n", pipe_index, interleave);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (chip->bad_board)
 		return -EIO;
@@ -1060,7 +1279,12 @@ static int allocate_pipes(struct echoaudio *chip, struct audiopipe *pipe,
 	for (channel_mask = i = 0; i < interleave; i++)
 		channel_mask |= 1 << (pipe_index + i);
 	if (chip->pipe_alloc_mask & channel_mask) {
+<<<<<<< HEAD
 		DE_ACT(("allocate_pipes: channel already open\n"));
+=======
+		dev_err(chip->card->dev,
+			"allocate_pipes: channel already open\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;
 	}
 
@@ -1077,7 +1301,10 @@ static int allocate_pipes(struct echoaudio *chip, struct audiopipe *pipe,
 	it moves data. The DMA counter is in units of bytes, not samples. */
 	pipe->dma_counter = &chip->comm_page->position[pipe_index];
 	*pipe->dma_counter = 0;
+<<<<<<< HEAD
 	DE_ACT(("allocate_pipes: ok\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pipe_index;
 }
 
@@ -1088,7 +1315,10 @@ static int free_pipes(struct echoaudio *chip, struct audiopipe *pipe)
 	u32 channel_mask;
 	int i;
 
+<<<<<<< HEAD
 	DE_ACT(("free_pipes: Pipe %d\n", pipe->index));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (snd_BUG_ON(!is_pipe_allocated(chip, pipe->index)))
 		return -EINVAL;
 	if (snd_BUG_ON(pipe->state != PIPE_STATE_STOPPED))
@@ -1130,7 +1360,11 @@ static int sglist_add_mapping(struct echoaudio *chip, struct audiopipe *pipe,
 		list[head].size = cpu_to_le32(length);
 		pipe->sglist_head++;
 	} else {
+<<<<<<< HEAD
 		DE_ACT(("SGlist: too many fragments\n"));
+=======
+		dev_err(chip->card->dev, "SGlist: too many fragments\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 	return 0;

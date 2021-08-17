@@ -13,7 +13,10 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/bitops.h>
 #include <linux/platform_device.h>
@@ -166,7 +169,10 @@ static struct platform_driver sni_82596_driver = {
 	.remove	= sni_82596_driver_remove,
 	.driver	= {
 		.name	= sni_82596_string,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

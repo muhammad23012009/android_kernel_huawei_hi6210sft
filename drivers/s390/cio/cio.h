@@ -45,6 +45,21 @@ struct pmcw {
 				/*  ... in an operand exception.       */
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
+=======
+/* I/O-Interruption Code as stored by TEST PENDING INTERRUPTION (TPI). */
+struct tpi_info {
+	struct subchannel_id schid;
+	u32 intparm;
+	u32 adapter_IO:1;
+	u32 :1;
+	u32 isc:3;
+	u32 :27;
+	u32 type:3;
+	u32 :12;
+} __packed __aligned(4);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Target SCHIB configuration. */
 struct schib_config {
 	u64 mba;
@@ -102,6 +117,11 @@ struct subchannel {
 	struct schib_config config;
 } __attribute__ ((aligned(8)));
 
+<<<<<<< HEAD
+=======
+DECLARE_PER_CPU_ALIGNED(struct irb, cio_irb);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define to_subchannel(n) container_of(n, struct subchannel, dev)
 
 extern int cio_validate_subchannel (struct subchannel *, struct subchannel_id);
@@ -113,7 +133,10 @@ extern int cio_resume (struct subchannel *);
 extern int cio_halt (struct subchannel *);
 extern int cio_start (struct subchannel *, struct ccw1 *, __u8);
 extern int cio_start_key (struct subchannel *, struct ccw1 *, __u8, __u8);
+<<<<<<< HEAD
 extern int cio_cancel (struct subchannel *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int cio_set_options (struct subchannel *, int);
 extern int cio_update_schib(struct subchannel *sch);
 extern int cio_commit_config(struct subchannel *sch);
@@ -121,9 +144,12 @@ extern int cio_commit_config(struct subchannel *sch);
 int cio_tm_start_key(struct subchannel *sch, struct tcw *tcw, u8 lpm, u8 key);
 int cio_tm_intrg(struct subchannel *sch);
 
+<<<<<<< HEAD
 void do_adapter_IO(u8 isc);
 void do_IRQ(struct pt_regs *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Use with care. */
 #ifdef CONFIG_CCW_CONSOLE
 extern struct subchannel *cio_probe_console(void);

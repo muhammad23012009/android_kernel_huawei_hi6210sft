@@ -29,11 +29,19 @@
 #include <linux/module.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
+=======
+#include <asm/bootinfo-vme.h>
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/pgtable.h>
 #include <asm/setup.h>
 #include <asm/irq.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/machdep.h>
 #include <asm/mvme16xhw.h>
 
@@ -50,19 +58,29 @@ extern void mvme16x_reset (void);
 
 int bcd2int (unsigned char b);
 
+<<<<<<< HEAD
 /* Save tick handler routine pointer, will point to xtime_update() in
  * kernel/time/timekeeping.c, called via mvme16x_process_int() */
 
 static irq_handler_t tick_handler;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned short mvme16x_config;
 EXPORT_SYMBOL(mvme16x_config);
 
 
+<<<<<<< HEAD
 int mvme16x_parse_bootinfo(const struct bi_record *bi)
 {
 	if (bi->tag == BI_VME_TYPE || bi->tag == BI_VME_BRDINFO)
+=======
+int __init mvme16x_parse_bootinfo(const struct bi_record *bi)
+{
+	uint16_t tag = be16_to_cpu(bi->tag);
+	if (tag == BI_VME_TYPE || tag == BI_VME_BRDINFO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	else
 		return 1;
@@ -87,15 +105,25 @@ static void mvme16x_get_model(char *model)
     suf[3] = '\0';
     suf[0] = suf[1] ? '-' : '\0';
 
+<<<<<<< HEAD
     sprintf(model, "Motorola MVME%x%s", p->brdno, suf);
+=======
+    sprintf(model, "Motorola MVME%x%s", be16_to_cpu(p->brdno), suf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
 static void mvme16x_get_hardware_list(struct seq_file *m)
 {
+<<<<<<< HEAD
     p_bdid p = &mvme_bdid;
 
     if (p->brdno == 0x0162 || p->brdno == 0x0172)
+=======
+    uint16_t brdno = be16_to_cpu(mvme_bdid.brdno);
+
+    if (brdno == 0x0162 || brdno == 0x0172)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     {
 	unsigned char rev = *(unsigned char *)MVME162_VERSION_REG;
 
@@ -210,7 +238,11 @@ static void __init mvme16x_init_IRQ (void)
 #define CySCRH		(0x22)
 #define CyTFTC		(0x80)
 
+<<<<<<< HEAD
 static void cons_write(struct console *co, const char *str, unsigned count)
+=======
+void mvme16x_cons_write(struct console *co, const char *str, unsigned count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	volatile unsigned char *base_addr = (u_char *)CD2401_ADDR;
 	volatile u_char sink;
@@ -265,6 +297,7 @@ static void cons_write(struct console *co, const char *str, unsigned count)
 	base_addr[CyIER] = ier;
 }
 
+<<<<<<< HEAD
 static struct console cons_info =
 {
 	.name	= "sercon",
@@ -279,12 +312,18 @@ static void __init mvme16x_early_console(void)
 
 	printk(KERN_INFO "MVME16x: early console registered\n");
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 void __init config_mvme16x(void)
 {
     p_bdid p = &mvme_bdid;
     char id[40];
+<<<<<<< HEAD
+=======
+    uint16_t brdno = be16_to_cpu(p->brdno);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     mach_max_dma_address = 0xffffffff;
     mach_sched_init      = mvme16x_sched_init;
@@ -306,18 +345,30 @@ void __init config_mvme16x(void)
     }
     /* Board type is only set by newer versions of vmelilo/tftplilo */
     if (vme_brdtype == 0)
+<<<<<<< HEAD
 	vme_brdtype = p->brdno;
+=======
+	vme_brdtype = brdno;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     mvme16x_get_model(id);
     printk ("\nBRD_ID: %s   BUG %x.%x %02x/%02x/%02x\n", id, p->rev>>4,
 					p->rev&0xf, p->yr, p->mth, p->day);
+<<<<<<< HEAD
     if (p->brdno == 0x0162 || p->brdno == 0x172)
+=======
+    if (brdno == 0x0162 || brdno == 0x172)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     {
 	unsigned char rev = *(unsigned char *)MVME162_VERSION_REG;
 
 	mvme16x_config = rev | MVME16x_CONFIG_GOT_SCCA;
 
+<<<<<<< HEAD
 	printk ("MVME%x Hardware status:\n", p->brdno);
+=======
+	printk ("MVME%x Hardware status:\n", brdno);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk ("    CPU Type           68%s040\n",
 			rev & MVME16x_CONFIG_GOT_FPU ? "" : "LC");
 	printk ("    CPU clock          %dMHz\n",
@@ -332,6 +383,7 @@ void __init config_mvme16x(void)
     else
     {
 	mvme16x_config = MVME16x_CONFIG_GOT_LP | MVME16x_CONFIG_GOT_CD2401;
+<<<<<<< HEAD
 
 	/* Dont allow any interrupts from the CD2401 until the interrupt */
 	/* handlers are installed					 */
@@ -342,17 +394,28 @@ void __init config_mvme16x(void)
 #ifdef CONFIG_EARLY_PRINTK
 	mvme16x_early_console();
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 }
 
 static irqreturn_t mvme16x_abort_int (int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	p_bdid p = &mvme_bdid;
 	unsigned long *new = (unsigned long *)vectors;
 	unsigned long *old = (unsigned long *)0xffe00000;
 	volatile unsigned char uc, *ucp;
 
 	if (p->brdno == 0x0162 || p->brdno == 0x172)
+=======
+	unsigned long *new = (unsigned long *)vectors;
+	unsigned long *old = (unsigned long *)0xffe00000;
+	volatile unsigned char uc, *ucp;
+	uint16_t brdno = be16_to_cpu(mvme_bdid.brdno);
+
+	if (brdno == 0x0162 || brdno == 0x172)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		ucp = (volatile unsigned char *)0xfff42043;
 		uc = *ucp | 8;
@@ -366,7 +429,11 @@ static irqreturn_t mvme16x_abort_int (int irq, void *dev_id)
 	*(new+9) = *(old+9);		/* Trace */
 	*(new+47) = *(old+47);		/* Trap #15 */
 
+<<<<<<< HEAD
 	if (p->brdno == 0x0162 || p->brdno == 0x172)
+=======
+	if (brdno == 0x0162 || brdno == 0x172)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*(new+0x5e) = *(old+0x5e);	/* ABORT switch */
 	else
 		*(new+0x6e) = *(old+0x6e);	/* ABORT switch */
@@ -375,26 +442,52 @@ static irqreturn_t mvme16x_abort_int (int irq, void *dev_id)
 
 static irqreturn_t mvme16x_timer_int (int irq, void *dev_id)
 {
+<<<<<<< HEAD
     *(volatile unsigned char *)0xfff4201b |= 8;
     return tick_handler(irq, dev_id);
+=======
+	irq_handler_t timer_routine = dev_id;
+	unsigned long flags;
+
+	local_irq_save(flags);
+	*(volatile unsigned char *)0xfff4201b |= 8;
+	timer_routine(0, NULL);
+	local_irq_restore(flags);
+
+	return IRQ_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void mvme16x_sched_init (irq_handler_t timer_routine)
 {
+<<<<<<< HEAD
     p_bdid p = &mvme_bdid;
     int irq;
 
     tick_handler = timer_routine;
+=======
+    uint16_t brdno = be16_to_cpu(mvme_bdid.brdno);
+    int irq;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     /* Using PCCchip2 or MC2 chip tick timer 1 */
     *(volatile unsigned long *)0xfff42008 = 0;
     *(volatile unsigned long *)0xfff42004 = 10000;	/* 10ms */
     *(volatile unsigned char *)0xfff42017 |= 3;
     *(volatile unsigned char *)0xfff4201b = 0x16;
+<<<<<<< HEAD
     if (request_irq(MVME16x_IRQ_TIMER, mvme16x_timer_int, 0,
 				"timer", mvme16x_timer_int))
 	panic ("Couldn't register timer int");
 
     if (p->brdno == 0x0162 || p->brdno == 0x172)
+=======
+    if (request_irq(MVME16x_IRQ_TIMER, mvme16x_timer_int, 0, "timer",
+                    timer_routine))
+	panic ("Couldn't register timer int");
+
+    if (brdno == 0x0162 || brdno == 0x172)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq = MVME162_IRQ_ABORT;
     else
         irq = MVME167_IRQ_ABORT;

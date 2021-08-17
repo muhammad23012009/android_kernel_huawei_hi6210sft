@@ -199,7 +199,11 @@ static int intel_rng_init(struct hwrng *rng)
 	if ((hw_status & INTEL_RNG_ENABLED) == 0)
 		hw_status = hwstatus_set(mem, hw_status | INTEL_RNG_ENABLED);
 	if ((hw_status & INTEL_RNG_ENABLED) == 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "cannot enable RNG, aborting\n");
+=======
+		pr_err(PFX "cannot enable RNG, aborting\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	err = 0;
@@ -216,7 +220,11 @@ static void intel_rng_cleanup(struct hwrng *rng)
 	if (hw_status & INTEL_RNG_ENABLED)
 		hwstatus_set(mem, hw_status & ~INTEL_RNG_ENABLED);
 	else
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "unusual: RNG already disabled\n");
+=======
+		pr_warn(PFX "unusual: RNG already disabled\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -274,7 +282,11 @@ static int __init intel_rng_hw_init(void *_intel_rng_hw)
 	if (mfc != INTEL_FWH_MANUFACTURER_CODE ||
 	    (dvc != INTEL_FWH_DEVICE_CODE_8M &&
 	     dvc != INTEL_FWH_DEVICE_CODE_4M)) {
+<<<<<<< HEAD
 		printk(KERN_NOTICE PFX "FWH not detected\n");
+=======
+		pr_notice(PFX "FWH not detected\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 
@@ -306,7 +318,10 @@ static int __init intel_init_hw_struct(struct intel_rng_hw *intel_rng_hw,
 	     (BIOS_CNTL_LOCK_ENABLE_MASK|BIOS_CNTL_WRITE_ENABLE_MASK))
 	    == BIOS_CNTL_LOCK_ENABLE_MASK) {
 		static __initdata /*const*/ char warning[] =
+<<<<<<< HEAD
 			KERN_WARNING
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 PFX "Firmware space is locked read-only. If you can't or\n"
 PFX "don't want to disable this in firmware setup, and if\n"
 PFX "you are certain that your system has a functional\n"
@@ -314,7 +329,11 @@ PFX "RNG, try using the 'no_fwh_detect' option.\n";
 
 		if (no_fwh_detect)
 			return -ENODEV;
+<<<<<<< HEAD
 		printk(warning);
+=======
+		pr_warn("%s", warning);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -392,10 +411,17 @@ fwh_done:
 		goto out;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Intel 82802 RNG detected\n");
 	err = hwrng_register(&intel_rng);
 	if (err) {
 		printk(KERN_ERR PFX "RNG registering failed (%d)\n",
+=======
+	pr_info("Intel 82802 RNG detected\n");
+	err = hwrng_register(&intel_rng);
+	if (err) {
+		pr_err(PFX "RNG registering failed (%d)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       err);
 		iounmap(mem);
 	}

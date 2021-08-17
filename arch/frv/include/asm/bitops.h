@@ -25,6 +25,7 @@
 
 #include <asm-generic/bitops/ffz.h>
 
+<<<<<<< HEAD
 /*
  * clear_bit() doesn't provide any barrier for the compiler.
  */
@@ -118,22 +119,46 @@ static inline int test_and_clear_bit(unsigned long nr, volatile void *addr)
 	unsigned long mask = 1UL << (nr & 31);
 	ptr += nr >> 5;
 	return (atomic_test_and_ANDNOT_mask(mask, ptr) & mask) != 0;
+=======
+#include <asm/atomic.h>
+
+static inline int test_and_clear_bit(unsigned long nr, volatile void *addr)
+{
+	unsigned int *ptr = (void *)addr;
+	unsigned int mask = 1UL << (nr & 31);
+	ptr += nr >> 5;
+	return (__atomic32_fetch_and(~mask, ptr) & mask) != 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int test_and_set_bit(unsigned long nr, volatile void *addr)
 {
+<<<<<<< HEAD
 	volatile unsigned long *ptr = addr;
 	unsigned long mask = 1UL << (nr & 31);
 	ptr += nr >> 5;
 	return (atomic_test_and_OR_mask(mask, ptr) & mask) != 0;
+=======
+	unsigned int *ptr = (void *)addr;
+	unsigned int mask = 1UL << (nr & 31);
+	ptr += nr >> 5;
+	return (__atomic32_fetch_or(mask, ptr) & mask) != 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int test_and_change_bit(unsigned long nr, volatile void *addr)
 {
+<<<<<<< HEAD
 	volatile unsigned long *ptr = addr;
 	unsigned long mask = 1UL << (nr & 31);
 	ptr += nr >> 5;
 	return (atomic_test_and_XOR_mask(mask, ptr) & mask) != 0;
+=======
+	unsigned int *ptr = (void *)addr;
+	unsigned int mask = 1UL << (nr & 31);
+	ptr += nr >> 5;
+	return (__atomic32_fetch_xor(mask, ptr) & mask) != 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void clear_bit(unsigned long nr, volatile void *addr)

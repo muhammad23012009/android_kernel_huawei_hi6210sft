@@ -22,9 +22,13 @@
 #ifndef ZL10039_H
 #define ZL10039_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
 #if IS_ENABLED(CONFIG_DVB_ZL10039)
+=======
+#if IS_REACHABLE(CONFIG_DVB_ZL10039)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dvb_frontend *zl10039_attach(struct dvb_frontend *fe,
 					u8 i2c_addr,
 					struct i2c_adapter *i2c);

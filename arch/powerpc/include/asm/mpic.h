@@ -34,10 +34,13 @@
 #define		MPIC_GREG_GCONF_BASE_MASK		0x000fffff
 #define		MPIC_GREG_GCONF_MCK			0x08000000
 #define MPIC_GREG_GLOBAL_CONF_1		0x00030
+<<<<<<< HEAD
 #define		MPIC_GREG_GLOBAL_CONF_1_SIE		0x08000000
 #define		MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO_MASK	0x70000000
 #define		MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO(r)	\
 			(((r) << 28) & MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO_MASK)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MPIC_GREG_VENDOR_0		0x00040
 #define MPIC_GREG_VENDOR_1		0x00050
 #define MPIC_GREG_VENDOR_2		0x00060
@@ -339,6 +342,11 @@ struct mpic
 #endif
 };
 
+<<<<<<< HEAD
+=======
+extern struct bus_type mpic_subsys;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * MPIC flags (passed to mpic_alloc)
  *
@@ -393,6 +401,19 @@ struct mpic
 #define	MPIC_REGSET_STANDARD		MPIC_REGSET(0)	/* Original MPIC */
 #define	MPIC_REGSET_TSI108		MPIC_REGSET(1)	/* Tsi108/109 PIC */
 
+<<<<<<< HEAD
+=======
+/* Get the version of primary MPIC */
+#ifdef CONFIG_MPIC
+extern u32 fsl_mpic_primary_get_version(void);
+#else
+static inline u32 fsl_mpic_primary_get_version(void)
+{
+	return 0;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Allocate the controller structure and setup the linux irq descs
  * for the range if interrupts passed in. No HW initialization is
  * actually performed.
@@ -484,11 +505,14 @@ extern unsigned int mpic_get_coreint_irq(void);
 /* Fetch Machine Check interrupt from primary mpic */
 extern unsigned int mpic_get_mcirq(void);
 
+<<<<<<< HEAD
 /* Set the EPIC clock ratio */
 void mpic_set_clk_ratio(struct mpic *mpic, u32 clock_ratio);
 
 /* Enable/Disable EPIC serial interrupt mode */
 void mpic_set_serial_int(struct mpic *mpic, int enable);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 #endif	/* _ASM_POWERPC_MPIC_H */

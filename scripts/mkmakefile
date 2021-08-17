@@ -42,6 +42,7 @@ MAKEARGS += O=\$(if \$(patsubst /%,,\$(makedir)),\$(CURDIR)/)\$(patsubst %/,%,\$
 
 MAKEFLAGS += --no-print-directory
 
+<<<<<<< HEAD
 .PHONY: all \$(MAKECMDGOALS)
 
 all	:= \$(filter-out all Makefile,\$(MAKECMDGOALS))
@@ -55,5 +56,13 @@ Makefile:;
 	@:
 
 %/: all
+=======
+.PHONY: __sub-make \$(MAKECMDGOALS)
+
+__sub-make:
+	\$(Q)\$(MAKE) \$(MAKEARGS) \$(MAKECMDGOALS)
+
+\$(filter-out __sub-make, \$(MAKECMDGOALS)): __sub-make
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	@:
 EOF

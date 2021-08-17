@@ -22,7 +22,10 @@
 #include <asm/hwrpb.h>
 #include <asm/tlbflush.h>
 #include <asm/vga.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "proto.h"
 #include "err_impl.h"
@@ -317,8 +320,14 @@ marvel_init_irq(void)
 }
 
 static int 
+<<<<<<< HEAD
 marvel_map_irq(struct pci_dev *dev, u8 slot, u8 pin)
 {
+=======
+marvel_map_irq(const struct pci_dev *cdev, u8 slot, u8 pin)
+{
+	struct pci_dev *dev = (struct pci_dev *)cdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_controller *hose = dev->sysdata;
 	struct io7_port *io7_port = hose->sysdata;
 	struct io7 *io7 = io7_port->io7;
@@ -331,7 +340,11 @@ marvel_map_irq(struct pci_dev *dev, u8 slot, u8 pin)
 	pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &intline);
 	irq = intline;
 
+<<<<<<< HEAD
 	msi_loc = pci_find_capability(dev, PCI_CAP_ID_MSI);
+=======
+	msi_loc = dev->msi_cap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	msg_ctl = 0;
 	if (msi_loc) 
 		pci_read_config_word(dev, msi_loc + PCI_MSI_FLAGS, &msg_ctl);
@@ -399,6 +412,7 @@ marvel_init_rtc(void)
 	init_rtc_irq();
 }
 
+<<<<<<< HEAD
 struct marvel_rtc_time {
 	struct rtc_time *time;
 	int retval;
@@ -450,6 +464,8 @@ marvel_set_rtc_time(struct rtc_time *time)
 	return __set_rtc_time(time);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 marvel_smp_callin(void)
 {
@@ -491,8 +507,12 @@ struct alpha_machine_vector marvel_ev7_mv __initmv = {
 	.vector_name		= "MARVEL/EV7",
 	DO_EV7_MMU,
 	.rtc_port		= 0x70,
+<<<<<<< HEAD
 	.rtc_get_time		= marvel_get_rtc_time,
 	.rtc_set_time		= marvel_set_rtc_time,
+=======
+	.rtc_boot_cpu_only	= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DO_MARVEL_IO,
 	.machine_check		= marvel_machine_check,
 	.max_isa_dma_address	= ALPHA_MAX_ISA_DMA_ADDRESS,

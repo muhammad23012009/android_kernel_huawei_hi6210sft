@@ -1,6 +1,10 @@
 /*
  * Linux ARCnet driver - "raw mode" packet encapsulation (no soft headers)
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Written 1994-1999 by Avery Pennarun.
  * Derived from skeleton.c by Donald Becker.
  *
@@ -24,6 +28,11 @@
  * **********************
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/init.h>
@@ -31,6 +40,7 @@
 #include <net/arp.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/arcdevice.h>
 
 #define VERSION "arcnet: raw mode (`r') encapsulation support loaded.\n"
@@ -83,6 +93,9 @@ module_exit(arcnet_raw_exit);
 
 MODULE_LICENSE("GPL");
 
+=======
+#include "arcdevice.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* packet receiver */
 static void rx(struct net_device *dev, int bufnum,
@@ -93,7 +106,11 @@ static void rx(struct net_device *dev, int bufnum,
 	struct archdr *pkt = pkthdr;
 	int ofs;
 
+<<<<<<< HEAD
 	BUGMSG(D_DURING, "it's a raw packet (length=%d)\n", length);
+=======
+	arc_printk(D_DURING, dev, "it's a raw packet (length=%d)\n", length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (length > MTU)
 		ofs = 512 - length;
@@ -101,15 +118,23 @@ static void rx(struct net_device *dev, int bufnum,
 		ofs = 256 - length;
 
 	skb = alloc_skb(length + ARC_HDR_SIZE, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (skb == NULL) {
 		BUGMSG(D_NORMAL, "Memory squeeze, dropping packet.\n");
+=======
+	if (!skb) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev->stats.rx_dropped++;
 		return;
 	}
 	skb_put(skb, length + ARC_HDR_SIZE);
 	skb->dev = dev;
 
+<<<<<<< HEAD
 	pkt = (struct archdr *) skb->data;
+=======
+	pkt = (struct archdr *)skb->data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	skb_reset_mac_header(skb);
 	skb_pull(skb, ARC_HDR_SIZE);
@@ -121,21 +146,31 @@ static void rx(struct net_device *dev, int bufnum,
 				      pkt->soft.raw + sizeof(pkt->soft),
 				      length - sizeof(pkt->soft));
 
+<<<<<<< HEAD
 	BUGLVL(D_SKB) arcnet_dump_skb(dev, skb, "rx");
+=======
+	if (BUGLVL(D_SKB))
+		arcnet_dump_skb(dev, skb, "rx");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	skb->protocol = cpu_to_be16(ETH_P_ARCNET);
 	netif_rx(skb);
 }
 
+<<<<<<< HEAD
 
 /*
  * Create the ARCnet hard/soft headers for raw mode.
+=======
+/* Create the ARCnet hard/soft headers for raw mode.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * There aren't any soft headers in raw mode - not even the protocol id.
  */
 static int build_header(struct sk_buff *skb, struct net_device *dev,
 			unsigned short type, uint8_t daddr)
 {
 	int hdr_size = ARC_HDR_SIZE;
+<<<<<<< HEAD
 	struct archdr *pkt = (struct archdr *) skb_push(skb, hdr_size);
 
 	/*
@@ -144,15 +179,29 @@ static int build_header(struct sk_buff *skb, struct net_device *dev,
 	 * This is pretty pointless for most purposes, but it can help in
 	 * debugging.  ARCnet does not allow us to change the source address in
 	 * the actual packet sent)
+=======
+	struct archdr *pkt = (struct archdr *)skb_push(skb, hdr_size);
+
+	/* Set the source hardware address.
+	 *
+	 * This is pretty pointless for most purposes, but it can help in
+	 * debugging.  ARCnet does not allow us to change the source address
+	 * in the actual packet sent.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	pkt->hard.source = *dev->dev_addr;
 
 	/* see linux/net/ethernet/eth.c to see where I got the following */
 
 	if (dev->flags & (IFF_LOOPBACK | IFF_NOARP)) {
+<<<<<<< HEAD
 		/* 
 		 * FIXME: fill in the last byte of the dest ipaddr here to better
 		 * comply with RFC1051 in "noarp" mode.
+=======
+		/* FIXME: fill in the last byte of the dest ipaddr here
+		 * to better comply with RFC1051 in "noarp" mode.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 		pkt->hard.dest = 0;
 		return hdr_size;
@@ -163,7 +212,10 @@ static int build_header(struct sk_buff *skb, struct net_device *dev,
 	return hdr_size;	/* success */
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 		      int bufnum)
 {
@@ -171,6 +223,7 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 	struct arc_hardware *hard = &pkt->hard;
 	int ofs;
 
+<<<<<<< HEAD
 	BUGMSG(D_DURING, "prepare_tx: txbufs=%d/%d/%d\n",
 	       lp->next_tx, lp->cur_tx, bufnum);
 
@@ -180,6 +233,18 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 		/* should never happen! other people already check for this. */
 		BUGMSG(D_NORMAL, "Bug!  prepare_tx with size %d (> %d)\n",
 		       length, XMTU);
+=======
+	arc_printk(D_DURING, dev, "prepare_tx: txbufs=%d/%d/%d\n",
+		   lp->next_tx, lp->cur_tx, bufnum);
+
+	/* hard header is not included in packet length */
+	length -= ARC_HDR_SIZE;
+
+	if (length > XMTU) {
+		/* should never happen! other people already check for this. */
+		arc_printk(D_NORMAL, dev, "Bug!  prepare_tx with size %d (> %d)\n",
+			   length, XMTU);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		length = XMTU;
 	}
 	if (length >= MinTU) {
@@ -188,11 +253,20 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 	} else if (length > MTU) {
 		hard->offset[0] = 0;
 		hard->offset[1] = ofs = 512 - length - 3;
+<<<<<<< HEAD
 	} else
 		hard->offset[0] = ofs = 256 - length;
 
 	BUGMSG(D_DURING, "prepare_tx: length=%d ofs=%d\n",
 	       length,ofs);
+=======
+	} else {
+		hard->offset[0] = ofs = 256 - length;
+	}
+
+	arc_printk(D_DURING, dev, "prepare_tx: length=%d ofs=%d\n",
+		   length, ofs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	lp->hw.copy_to_card(dev, bufnum, 0, hard, ARC_HDR_SIZE);
 	lp->hw.copy_to_card(dev, bufnum, ofs, &pkt->soft, length);
@@ -201,3 +275,44 @@ static int prepare_tx(struct net_device *dev, struct archdr *pkt, int length,
 
 	return 1;		/* done */
 }
+<<<<<<< HEAD
+=======
+
+static struct ArcProto rawmode_proto = {
+	.suffix		= 'r',
+	.mtu		= XMTU,
+	.rx		= rx,
+	.build_header	= build_header,
+	.prepare_tx	= prepare_tx,
+	.continue_tx    = NULL,
+	.ack_tx         = NULL
+};
+
+static int __init arcnet_raw_init(void)
+{
+	int count;
+
+	pr_info("raw mode (`r') encapsulation support loaded\n");
+
+	for (count = 0; count < 256; count++)
+		if (arc_proto_map[count] == arc_proto_default)
+			arc_proto_map[count] = &rawmode_proto;
+
+	/* for raw mode, we only set the bcast proto if there's no better one */
+	if (arc_bcast_proto == arc_proto_default)
+		arc_bcast_proto = &rawmode_proto;
+
+	arc_proto_default = &rawmode_proto;
+	return 0;
+}
+
+static void __exit arcnet_raw_exit(void)
+{
+	arcnet_unregister_proto(&rawmode_proto);
+}
+
+module_init(arcnet_raw_init);
+module_exit(arcnet_raw_exit);
+
+MODULE_LICENSE("GPL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

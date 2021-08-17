@@ -23,6 +23,10 @@
  */
 
 #include <linux/thermal.h>
+<<<<<<< HEAD
+=======
+#include <trace/events/thermal.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "thermal_core.h"
 
@@ -33,7 +37,12 @@
 static int get_trip_level(struct thermal_zone_device *tz)
 {
 	int count = 0;
+<<<<<<< HEAD
 	unsigned long trip_temp;
+=======
+	int trip_temp;
+	enum thermal_trip_type trip_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (tz->trips == 0 || !tz->ops->get_trip_temp)
 		return 0;
@@ -43,21 +52,46 @@ static int get_trip_level(struct thermal_zone_device *tz)
 		if (tz->temperature < trip_temp)
 			break;
 	}
+<<<<<<< HEAD
+=======
+
+	/*
+	 * count > 0 only if temperature is greater than first trip
+	 * point, in which case, trip_point = count - 1
+	 */
+	if (count > 0) {
+		tz->ops->get_trip_type(tz, count - 1, &trip_type);
+		trace_thermal_zone_trip(tz, count - 1, trip_type);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return count;
 }
 
 static long get_target_state(struct thermal_zone_device *tz,
+<<<<<<< HEAD
 		struct thermal_cooling_device *cdev, int weight, int level)
+=======
+		struct thermal_cooling_device *cdev, int percentage, int level)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long max_state;
 
 	cdev->ops->get_max_state(cdev, &max_state);
 
+<<<<<<< HEAD
 	return (long)(weight * level * max_state) / (100 * tz->trips);
 }
 
 /**
  * fair_share_throttle - throttles devices asscciated with the given zone
+=======
+	return (long)(percentage * level * max_state) / (100 * tz->trips);
+}
+
+/**
+ * fair_share_throttle - throttles devices associated with the given zone
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @tz - thermal_zone_device
  *
  * Throttling Logic: This uses three parameters to calculate the new
@@ -65,7 +99,11 @@ static long get_target_state(struct thermal_zone_device *tz,
  *
  * Parameters used for Throttling:
  * P1. max_state: Maximum throttle state exposed by the cooling device.
+<<<<<<< HEAD
  * P2. weight[i]/100:
+=======
+ * P2. percentage[i]/100:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	How 'effective' the 'i'th device is, in cooling the given zone.
  * P3. cur_trip_level/max_no_of_trips:
  *	This describes the extent to which the devices should be throttled.
@@ -76,6 +114,7 @@ static long get_target_state(struct thermal_zone_device *tz,
  */
 static int fair_share_throttle(struct thermal_zone_device *tz, int trip)
 {
+<<<<<<< HEAD
 	const struct thermal_zone_params *tzp;
 	struct thermal_cooling_device *cdev;
 	struct thermal_instance *instance;
@@ -102,6 +141,45 @@ static int fair_share_throttle(struct thermal_zone_device *tz, int trip)
 		instance->cdev->updated = false;
 		thermal_cdev_update(cdev);
 	}
+=======
+	struct thermal_instance *instance;
+	int total_weight = 0;
+	int total_instance = 0;
+	int cur_trip_level = get_trip_level(tz);
+
+	mutex_lock(&tz->lock);
+
+	list_for_each_entry(instance, &tz->thermal_instances, tz_node) {
+		if (instance->trip != trip)
+			continue;
+
+		total_weight += instance->weight;
+		total_instance++;
+	}
+
+	list_for_each_entry(instance, &tz->thermal_instances, tz_node) {
+		int percentage;
+		struct thermal_cooling_device *cdev = instance->cdev;
+
+		if (instance->trip != trip)
+			continue;
+
+		if (!total_weight)
+			percentage = 100 / total_instance;
+		else
+			percentage = (instance->weight * 100) / total_weight;
+
+		instance->target = get_target_state(tz, cdev, percentage,
+						    cur_trip_level);
+
+		mutex_lock(&instance->cdev->lock);
+		instance->cdev->updated = false;
+		mutex_unlock(&instance->cdev->lock);
+		thermal_cdev_update(cdev);
+	}
+
+	mutex_unlock(&tz->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

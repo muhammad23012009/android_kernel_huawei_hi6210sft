@@ -22,7 +22,11 @@ extern void puv3_ps2_init(void);
 extern void pci_puv3_preinit(void);
 extern void __init puv3_init_gpio(void);
 
+<<<<<<< HEAD
 extern void setup_mm_for_reboot(char mode);
+=======
+extern void setup_mm_for_reboot(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern char __stubs_start[], __stubs_end[];
 extern char __vectors_start[], __vectors_end[];

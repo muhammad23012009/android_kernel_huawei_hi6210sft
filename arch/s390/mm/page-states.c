@@ -12,8 +12,11 @@
 #include <linux/mm.h>
 #include <linux/gfp.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/setup.h>
 #include <asm/ipl.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ESSA_SET_STABLE		1
 #define ESSA_SET_UNUSED		2
@@ -36,11 +39,16 @@ static int __init cmma(char *str)
 }
 __setup("cmma=", cmma);
 
+<<<<<<< HEAD
 void __init cmma_init(void)
+=======
+static inline int cmma_test_essa(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	register unsigned long tmp asm("0") = 0;
 	register int rc asm("1") = -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (!cmma_flag)
 		return;
 	/*
@@ -51,13 +59,26 @@ void __init cmma_init(void)
 		cmma_flag = 0;
 		return;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	asm volatile(
 		"       .insn rrf,0xb9ab0000,%1,%1,0,0\n"
 		"0:     la      %0,0\n"
 		"1:\n"
 		EX_TABLE(0b,1b)
 		: "+&d" (rc), "+&d" (tmp));
+<<<<<<< HEAD
 	if (rc)
+=======
+	return rc;
+}
+
+void __init cmma_init(void)
+{
+	if (!cmma_flag)
+		return;
+	if (cmma_test_essa())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cmma_flag = 0;
 }
 

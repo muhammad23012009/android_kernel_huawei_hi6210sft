@@ -24,9 +24,13 @@
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  *     along with this program; if not, write to the Free Software
  *     Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  *     MA 02111-1307 USA
+=======
+ *     along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  ********************************************************************/
 
@@ -54,8 +58,11 @@ static int ircomm_lmp_connect_request(struct ircomm_cb *self,
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Don't forget to refcount it - should be NULL anyway */
 	if(userdata)
 		skb_get(userdata);
@@ -76,8 +83,11 @@ static int ircomm_lmp_connect_response(struct ircomm_cb *self,
 {
 	struct sk_buff *tx_skb;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Any userdata supplied? */
 	if (userdata == NULL) {
 		tx_skb = alloc_skb(LMP_MAX_HEADER, GFP_ATOMIC);
@@ -109,8 +119,11 @@ static int ircomm_lmp_disconnect_request(struct ircomm_cb *self,
 	struct sk_buff *tx_skb;
 	int ret;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!userdata) {
 		tx_skb = alloc_skb(LMP_MAX_HEADER, GFP_ATOMIC);
 		if (!tx_skb)
@@ -146,13 +159,20 @@ static void ircomm_lmp_flow_control(struct sk_buff *skb)
 
 	cb = (struct irda_skb_cb *) skb->cb;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	line = cb->line;
 
 	self = (struct ircomm_cb *) hashbin_lock_find(ircomm, line, NULL);
 	if (!self) {
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "%s(), didn't find myself\n", __func__ );
+=======
+		pr_debug("%s(), didn't find myself\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -162,7 +182,11 @@ static void ircomm_lmp_flow_control(struct sk_buff *skb)
 	self->pkt_count--;
 
 	if ((self->pkt_count < 2) && (self->flow_status == FLOW_STOP)) {
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "%s(), asking TTY to start again!\n", __func__ );
+=======
+		pr_debug("%s(), asking TTY to start again!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		self->flow_status = FLOW_START;
 		if (self->notify.flow_indication)
 			self->notify.flow_indication(self->notify.instance,
@@ -189,7 +213,11 @@ static int ircomm_lmp_data_request(struct ircomm_cb *self,
 
 	cb->line = self->line;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s(), sending frame\n", __func__ );
+=======
+	pr_debug("%s(), sending frame\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Don't forget to refcount it - see ircomm_tty_do_softint() */
 	skb_get(skb);
@@ -198,7 +226,11 @@ static int ircomm_lmp_data_request(struct ircomm_cb *self,
 	skb->destructor = ircomm_lmp_flow_control;
 
 	if ((self->pkt_count++ > 7) && (self->flow_status == FLOW_START)) {
+<<<<<<< HEAD
 		IRDA_DEBUG(2, "%s(), asking TTY to slow down!\n", __func__ );
+=======
+		pr_debug("%s(), asking TTY to slow down!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		self->flow_status = FLOW_STOP;
 		if (self->notify.flow_indication)
 			self->notify.flow_indication(self->notify.instance,
@@ -206,7 +238,11 @@ static int ircomm_lmp_data_request(struct ircomm_cb *self,
 	}
 	ret = irlmp_data_request(self->lsap, skb);
 	if (ret) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), failed\n", __func__);
+=======
+		net_err_ratelimited("%s(), failed\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* irlmp_data_request already free the packet */
 	}
 
@@ -224,8 +260,11 @@ static int ircomm_lmp_data_indication(void *instance, void *sap,
 {
 	struct ircomm_cb *self = (struct ircomm_cb *) instance;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return -1;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return -1;);
 	IRDA_ASSERT(skb != NULL, return -1;);
@@ -254,8 +293,11 @@ static void ircomm_lmp_connect_confirm(void *instance, void *sap,
 	struct ircomm_cb *self = (struct ircomm_cb *) instance;
 	struct ircomm_info info;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 	IRDA_ASSERT(skb != NULL, return;);
@@ -287,8 +329,11 @@ static void ircomm_lmp_connect_indication(void *instance, void *sap,
 	struct ircomm_cb *self = (struct ircomm_cb *)instance;
 	struct ircomm_info info;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 	IRDA_ASSERT(skb != NULL, return;);
@@ -317,8 +362,11 @@ static void ircomm_lmp_disconnect_indication(void *instance, void *sap,
 	struct ircomm_cb *self = (struct ircomm_cb *) instance;
 	struct ircomm_info info;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IRDA_ASSERT(self != NULL, return;);
 	IRDA_ASSERT(self->magic == IRCOMM_MAGIC, return;);
 
@@ -340,8 +388,11 @@ int ircomm_open_lsap(struct ircomm_cb *self)
 {
 	notify_t notify;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s()\n", __func__ );
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Register callbacks */
 	irda_notify_init(&notify);
 	notify.data_indication       = ircomm_lmp_data_indication;
@@ -353,7 +404,11 @@ int ircomm_open_lsap(struct ircomm_cb *self)
 
 	self->lsap = irlmp_open_lsap(LSAP_ANY, &notify, 0);
 	if (!self->lsap) {
+<<<<<<< HEAD
 		IRDA_DEBUG(0,"%sfailed to allocate tsap\n", __func__ );
+=======
+		pr_debug("%sfailed to allocate tsap\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	}
 	self->slsap_sel = self->lsap->slsap_sel;

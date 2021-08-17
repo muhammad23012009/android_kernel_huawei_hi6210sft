@@ -23,6 +23,7 @@
 
 size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size)
 {
+<<<<<<< HEAD
 	float samples_per_sec = top->samples / top->delay_secs;
 	float ksamples_per_sec = top->kernel_samples / top->delay_secs;
 	float esamples_percent = (100.0 * top->exact_samples) / top->samples;
@@ -37,6 +38,33 @@ size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size)
 			       100.0 - (100.0 * ((samples_per_sec - ksamples_per_sec) /
 					samples_per_sec)),
 				esamples_percent);
+=======
+	float samples_per_sec;
+	float ksamples_per_sec;
+	float esamples_percent;
+	struct record_opts *opts = &top->record_opts;
+	struct target *target = &opts->target;
+	size_t ret = 0;
+
+	if (top->samples) {
+		samples_per_sec = top->samples / top->delay_secs;
+		ksamples_per_sec = top->kernel_samples / top->delay_secs;
+		esamples_percent = (100.0 * top->exact_samples) / top->samples;
+	} else {
+		samples_per_sec = ksamples_per_sec = esamples_percent = 0.0;
+	}
+
+	if (!perf_guest) {
+		float ksamples_percent = 0.0;
+
+		if (samples_per_sec)
+			ksamples_percent = (100.0 * ksamples_per_sec) /
+							samples_per_sec;
+		ret = SNPRINTF(bf, size,
+			       "   PerfTop:%8.0f irqs/sec  kernel:%4.1f%%"
+			       "  exact: %4.1f%% [", samples_per_sec,
+			       ksamples_percent, esamples_percent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		float us_samples_per_sec = top->us_samples / top->delay_secs;
 		float guest_kernel_samples_per_sec = top->guest_kernel_samples / top->delay_secs;

@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /* -*- mode: asm -*-
  *
  *  linux/arch/h8300/platform/h8300h/entry.S
+=======
+/*
+ *
+ *  linux/arch/h8300/kernel/entry.S
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  Yoshinori Sato <ysato@users.sourceforge.jp>
  *  David McCullough <davidm@snapgear.com>
@@ -87,6 +93,7 @@ INTERRUPTS = 128
 	bne	5f
 
 	/* user mode */
+<<<<<<< HEAD
 	mov.l	sp,@SYMBOL_NAME(sw_usp)
 	mov.l	@sp,er0				/* restore saved er0 */
 	orc	#0x10,ccr			/* switch kernel stack */
@@ -94,6 +101,15 @@ INTERRUPTS = 128
 	sub.l	#(LRET-LORIG),sp		/* allocate LORIG - LRET */
 	SAVEREGS
 	mov.l   @SYMBOL_NAME(sw_usp),er0
+=======
+	mov.l	sp,@_sw_usp
+	mov.l	@sp,er0				/* restore saved er0 */
+	orc	#0x10,ccr			/* switch kernel stack */
+	mov.l	@_sw_ksp,sp
+	sub.l	#(LRET-LORIG),sp		/* allocate LORIG - LRET */
+	SAVEREGS
+	mov.l   @_sw_usp,er0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l   @(USERRET:16,er0),er1           /* copy the RET addr */
 	mov.l   er1,@(LRET-LER3:16,sp)
 	SAVEEXR
@@ -107,12 +123,21 @@ INTERRUPTS = 128
 	/* kernel mode */
 	mov.l	@sp,er0				/* restore saved er0 */
 	subs	#2,sp				/* set dummy ccr */
+<<<<<<< HEAD
+=======
+	subs	#4,sp				/* set dummp sp */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SAVEREGS
 	mov.w	@(LRET-LER3:16,sp),r1		/* copy old ccr */
 6:
 	mov.b	r1h,r1l
 	mov.b	#0,r1h
 	mov.w	r1,@(LCCR-LER3:16,sp)		/* set ccr */
+<<<<<<< HEAD
+=======
+	mov.l	@_sw_usp,er2
+	mov.l	er2,@(LSP-LER3:16,sp)		/* set usp */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	er6,@-sp			/* syscall arg #6 */
 	mov.l	er5,@-sp			/* syscall arg #5 */
 	mov.l	er4,@-sp			/* syscall arg #4 */
@@ -127,8 +152,13 @@ INTERRUPTS = 128
 	btst	#4,r0l
 	bne	7f
 
+<<<<<<< HEAD
 	orc	#0x80,ccr
 	mov.l	@SYMBOL_NAME(sw_usp),er0
+=======
+	orc	#0xc0,ccr
+	mov.l	@(LSP-LER1:16,sp),er0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	@(LER0-LER1:16,sp),er1		/* restore ER0 */
 	mov.l	er1,@er0
 	RESTOREEXR
@@ -141,20 +171,29 @@ INTERRUPTS = 128
 
 	mov.l	@sp+,er1
 	add.l	#(LRET-LER1),sp			/* remove LORIG - LRET */
+<<<<<<< HEAD
 	mov.l	sp,@SYMBOL_NAME(sw_ksp)
+=======
+	mov.l	sp,@_sw_ksp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	andc	#0xef,ccr			/* switch to user mode */
 	mov.l	er0,sp
 	bra	8f
 7:
 	mov.l	@sp+,er1
+<<<<<<< HEAD
 	adds	#4,sp
 	adds	#2,sp
+=======
+	add.l	#10,sp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 8:
 	mov.l	@sp+,er0
 	adds	#4,sp				/* remove the sw created LVEC */
 	rte
 	.endm
 
+<<<<<<< HEAD
 .globl SYMBOL_NAME(system_call)
 .globl SYMBOL_NAME(ret_from_exception)
 .globl SYMBOL_NAME(ret_from_fork)
@@ -169,6 +208,23 @@ INTERRUPTS = 128
 #if defined(CONFIG_ROMKERNEL)
 	.section .int_redirect,"ax"
 SYMBOL_NAME_LABEL(interrupt_redirect_table)
+=======
+.globl _system_call
+.globl ret_from_exception
+.globl ret_from_fork
+.globl ret_from_kernel_thread
+.globl ret_from_interrupt
+.globl _interrupt_redirect_table
+.globl _sw_ksp,_sw_usp
+.globl _resume
+.globl _interrupt_entry
+.globl _trace_break
+.globl _nmi
+
+#if defined(CONFIG_ROMKERNEL)
+	.section .int_redirect,"ax"
+_interrupt_redirect_table:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_CPU_H8300H)
 	.rept	7
 	.long	0
@@ -178,6 +234,7 @@ SYMBOL_NAME_LABEL(interrupt_redirect_table)
 	.rept	5
 	.long	0
 	.endr
+<<<<<<< HEAD
 	jmp	@SYMBOL_NAME(trace_break)
 	.long	0
 #endif
@@ -195,33 +252,74 @@ SYMBOL_NAME_LABEL(interrupt_redirect_table)
 .globl SYMBOL_NAME(interrupt_redirect_table)
 	.section .bss
 SYMBOL_NAME_LABEL(interrupt_redirect_table)
+=======
+	jmp	@_trace_break
+	.long	0
+#endif
+
+	jsr	@_interrupt_entry		/* NMI */
+	jmp	@_system_call			/* TRAPA #0 (System call) */
+	.long	0
+#if defined(CONFIG_KGDB)
+	jmp	@_kgdb_trap
+#else
+	.long	0
+#endif
+	jmp	@_trace_break			/* TRAPA #3 (breakpoint) */
+	.rept	INTERRUPTS-12
+	jsr	@_interrupt_entry
+	.endr
+#endif
+#if defined(CONFIG_RAMKERNEL)
+.globl _interrupt_redirect_table
+	.section .bss
+_interrupt_redirect_table:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.space	4
 #endif
 
 	.section .text
 	.align	2
+<<<<<<< HEAD
 SYMBOL_NAME_LABEL(interrupt_entry)
 	SAVE_ALL
+=======
+_interrupt_entry:
+	SAVE_ALL
+/* r1l is saved ccr */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	sp,er0
 	add.l	#LVEC,er0
 	btst	#4,r1l
 	bne	1f
 	/* user LVEC */
+<<<<<<< HEAD
 	mov.l	@SYMBOL_NAME(sw_usp),er0
+=======
+	mov.l	@_sw_usp,er0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adds	#4,er0
 1:
 	mov.l	@er0,er0			/* LVEC address */
 #if defined(CONFIG_ROMKERNEL)
+<<<<<<< HEAD
 	sub.l	#SYMBOL_NAME(interrupt_redirect_table),er0
 #endif
 #if defined(CONFIG_RAMKERNEL)
 	mov.l	@SYMBOL_NAME(interrupt_redirect_table),er1
+=======
+	sub.l	#_interrupt_redirect_table,er0
+#endif
+#if defined(CONFIG_RAMKERNEL)
+	mov.l	@_interrupt_redirect_table,er1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sub.l	er1,er0
 #endif
 	SHLR2	er0
 	dec.l	#1,er0
 	mov.l	sp,er1
 	subs	#4,er1				/* adjust ret_pc */
+<<<<<<< HEAD
 	jsr	@SYMBOL_NAME(do_IRQ)
 	jmp	@SYMBOL_NAME(ret_from_interrupt)
 
@@ -229,10 +327,24 @@ SYMBOL_NAME_LABEL(system_call)
 	subs	#4,sp				/* dummy LVEC */
 	SAVE_ALL
 	andc	#0x7f,ccr
+=======
+#if defined(CONFIG_CPU_H8S)
+	orc	#7,exr
+#endif
+	jsr	@do_IRQ
+	jmp	@ret_from_interrupt
+
+_system_call:
+	subs	#4,sp				/* dummy LVEC */
+	SAVE_ALL
+	/* er0: syscall nr */
+	andc	#0xbf,ccr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	er0,er4
 
 	/* save top of frame */
 	mov.l	sp,er0
+<<<<<<< HEAD
 	jsr	@SYMBOL_NAME(set_esp0)
 	mov.l	sp,er2
 	and.w	#0xe000,r2
@@ -248,6 +360,25 @@ SYMBOL_NAME_LABEL(system_call)
 	add.l	er4,er0
 	mov.l	@er0,er4
 	beq	SYMBOL_NAME(ret_from_exception):16
+=======
+	jsr	@set_esp0
+	andc	#0x3f,ccr
+	mov.l	sp,er2
+	and.w	#0xe000,r2
+	mov.l	@(TI_FLAGS:16,er2),er2
+	and.w	#_TIF_WORK_SYSCALL_MASK,r2
+	beq	1f
+	mov.l	sp,er0
+	jsr	@do_syscall_trace_enter
+1:
+	cmp.l	#__NR_syscalls,er4
+	bcc	badsys
+	SHLL2	er4
+	mov.l	#_sys_call_table,er0
+	add.l	er4,er0
+	mov.l	@er0,er4
+	beq	ret_from_exception:16
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	@(LER1:16,sp),er0
 	mov.l	@(LER2:16,sp),er1
 	mov.l	@(LER3:16,sp),er2
@@ -255,6 +386,7 @@ SYMBOL_NAME_LABEL(system_call)
 	mov.l	er0,@(LER0:16,sp)		/* save the return value */
 	mov.l	sp,er2
 	and.w	#0xe000,r2
+<<<<<<< HEAD
 	mov.b	@((TI_FLAGS+3-(TIF_SYSCALL_TRACE >> 3)):16,er2),r2l
 	btst	#(TIF_SYSCALL_TRACE & 7),r2l
 	beq	2f
@@ -264,6 +396,15 @@ SYMBOL_NAME_LABEL(system_call)
 	jsr	@SYMBOL_NAME(syscall_print)
 #endif
 	orc	#0x80,ccr
+=======
+	mov.l	@(TI_FLAGS:16,er2),er2
+	and.w	#_TIF_WORK_SYSCALL_MASK,r2
+	beq	2f
+	mov.l	sp,er0
+	jsr	@do_syscall_trace_leave
+2:
+	orc	#0xc0,ccr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bra	resume_userspace
 
 badsys:
@@ -275,6 +416,7 @@ badsys:
 #define resume_kernel restore_all
 #endif
 
+<<<<<<< HEAD
 SYMBOL_NAME_LABEL(ret_from_exception)
 #if defined(CONFIG_PREEMPT)
 	orc	#0x80,ccr
@@ -285,6 +427,18 @@ SYMBOL_NAME_LABEL(ret_from_interrupt)
 	bne	resume_kernel:8		/* return from kernel */
 resume_userspace:
 	andc	#0x7f,ccr
+=======
+ret_from_exception:
+#if defined(CONFIG_PREEMPT)
+	orc	#0xc0,ccr
+#endif
+ret_from_interrupt:
+	mov.b	@(LCCR+1:16,sp),r0l
+	btst	#4,r0l
+	bne	resume_kernel:16	/* return from kernel */
+resume_userspace:
+	andc	#0xbf,ccr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	sp,er4
 	and.w	#0xe000,r4		/* er4 <- current thread info */
 	mov.l	@(TI_FLAGS:16,er4),er1
@@ -296,12 +450,21 @@ work_pending:
 	/* work notifysig */
 	mov.l	sp,er0
 	subs	#4,er0			/* er0: pt_regs */
+<<<<<<< HEAD
 	jsr	@SYMBOL_NAME(do_notify_resume)
 	bra	restore_all:8
 work_resched:
 	mov.l	sp,er0
 	jsr	@SYMBOL_NAME(set_esp0)
 	jsr	@SYMBOL_NAME(schedule)
+=======
+	jsr	@do_notify_resume
+	bra	resume_userspace:8
+work_resched:
+	mov.l	sp,er0
+	jsr	@set_esp0
+	jsr	@schedule
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bra	resume_userspace:8
 restore_all:
 	RESTORE_ALL			/* Does RTE */
@@ -316,6 +479,7 @@ need_resched:
 	beq	restore_all:8
 	mov.b	@(LCCR+1:16,sp),r0l	/* Interrupt Enabled? */
 	bmi	restore_all:8
+<<<<<<< HEAD
 	mov.l	#PREEMPT_ACTIVE,er0
 	mov.l	er0,@(TI_PRE_COUNT:16,er4)
 	andc	#0x7f,ccr
@@ -340,6 +504,28 @@ SYMBOL_NAME_LABEL(ret_from_kernel_thread)
 	jmp	@SYMBOL_NAME(ret_from_exception)
 
 SYMBOL_NAME_LABEL(resume)
+=======
+	mov.l	sp,er0
+	jsr	@set_esp0
+	jsr	@preempt_schedule_irq
+	bra	need_resched:8
+#endif
+
+ret_from_fork:
+	mov.l	er2,er0
+	jsr	@schedule_tail
+	jmp	@ret_from_exception
+
+ret_from_kernel_thread:
+	mov.l	er2,er0
+	jsr	@schedule_tail
+	mov.l	@(LER4:16,sp),er0
+	mov.l	@(LER5:16,sp),er1
+	jsr	@er1
+	jmp	@ret_from_exception
+
+_resume:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Beware - when entering resume, offset of tss is in d1,
 	 * prev (the current task) is in a0, next (the new task)
@@ -354,8 +540,13 @@ SYMBOL_NAME_LABEL(resume)
 	mov.w	r3,@(THREAD_CCR+2:16,er0)
 
 	/* disable interrupts */
+<<<<<<< HEAD
 	orc	#0x80,ccr
 	mov.l	@SYMBOL_NAME(sw_usp),er3
+=======
+	orc	#0xc0,ccr
+	mov.l	@_sw_usp,er3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	er3,@(THREAD_USP:16,er0)
 	mov.l	sp,@(THREAD_KSP:16,er0)
 
@@ -363,7 +554,11 @@ SYMBOL_NAME_LABEL(resume)
 	/* FIXME: what did we hack out of here, this does nothing! */
 
 	mov.l	@(THREAD_USP:16,er1),er0
+<<<<<<< HEAD
 	mov.l	er0,@SYMBOL_NAME(sw_usp)
+=======
+	mov.l	er0,@_sw_usp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	@(THREAD_KSP:16,er1),sp
 
 	/* restore status register */
@@ -372,15 +567,24 @@ SYMBOL_NAME_LABEL(resume)
 	ldc	r3l,ccr
 	rts
 
+<<<<<<< HEAD
 SYMBOL_NAME_LABEL(trace_break)
+=======
+_trace_break:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	subs	#4,sp
 	SAVE_ALL
 	sub.l	er1,er1
 	dec.l	#1,er1
 	mov.l	er1,@(LORIG,sp)
 	mov.l	sp,er0
+<<<<<<< HEAD
 	jsr	@SYMBOL_NAME(set_esp0)
 	mov.l	@SYMBOL_NAME(sw_usp),er0
+=======
+	jsr	@set_esp0
+	mov.l	@_sw_usp,er0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	@er0,er1
 	mov.w	@(-2:16,er1),r2
 	cmp.w	#0x5730,r2
@@ -390,6 +594,7 @@ SYMBOL_NAME_LABEL(trace_break)
 1:
 	and.w	#0xff,e1
 	mov.l	er1,er0
+<<<<<<< HEAD
 	jsr	@SYMBOL_NAME(trace_trap)
 	jmp	@SYMBOL_NAME(ret_from_exception)
 
@@ -397,6 +602,38 @@ SYMBOL_NAME_LABEL(trace_break)
 SYMBOL_NAME_LABEL(sw_ksp)
 	.space	4
 SYMBOL_NAME_LABEL(sw_usp)
+=======
+	jsr	@trace_trap
+	jmp	@ret_from_exception
+
+_nmi:
+	subs	#4, sp
+	mov.l	er0, @-sp
+	mov.l	@_interrupt_redirect_table, er0
+	add.l	#8*4, er0
+	mov.l	er0, @(4,sp)
+	mov.l	@sp+, er0
+	jmp	@_interrupt_entry
+
+#if defined(CONFIG_KGDB)
+_kgdb_trap:
+	subs	#4,sp
+	SAVE_ALL
+	mov.l	sp,er0
+	add.l	#LRET,er0
+	mov.l	er0,@(LSP,sp)
+	jsr	@set_esp0
+	mov.l	sp,er0
+	subs	#4,er0
+	jsr	@h8300_kgdb_trap
+	jmp	@ret_from_exception
+#endif
+
+	.section	.bss
+_sw_ksp:
+	.space	4
+_sw_usp:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.space	4
 
 	.end

@@ -26,7 +26,11 @@ struct s3cmci_host {
 	void __iomem		*base;
 	int			irq;
 	int			irq_cd;
+<<<<<<< HEAD
 	int			dma;
+=======
+	struct dma_chan		*dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unsigned long		clk_rate;
 	unsigned long		clk_div;
@@ -36,8 +40,11 @@ struct s3cmci_host {
 	int			is2440;
 	unsigned		sdiimsk;
 	unsigned		sdidata;
+<<<<<<< HEAD
 	int			dodma;
 	int			dmatogo;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bool			irq_disabled;
 	bool			irq_enabled;
@@ -76,7 +83,11 @@ struct s3cmci_host {
 	struct dentry		*debug_regs;
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ
+=======
+#ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct notifier_block	freq_transition;
 #endif
 };

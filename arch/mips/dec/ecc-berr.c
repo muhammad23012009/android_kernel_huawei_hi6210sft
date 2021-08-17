@@ -21,6 +21,10 @@
 #include <asm/addrspace.h>
 #include <asm/bootinfo.h>
 #include <asm/cpu.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu-type.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq_regs.h>
 #include <asm/processor.h>
 #include <asm/ptrace.h>

@@ -22,7 +22,11 @@
 #include "ad5624r.h"
 
 static int ad5624r_spi_write(struct spi_device *spi,
+<<<<<<< HEAD
 			     u8 cmd, u8 addr, u16 val, u8 len)
+=======
+			     u8 cmd, u8 addr, u16 val, u8 shift)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 data;
 	u8 msg[3];
@@ -35,7 +39,11 @@ static int ad5624r_spi_write(struct spi_device *spi,
 	 * 14-, 12-bit input code followed by 0, 2, or 4 don't care bits,
 	 * for the AD5664R, AD5644R, and AD5624R, respectively.
 	 */
+<<<<<<< HEAD
 	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << (16 - len));
+=======
+	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << shift);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	msg[0] = data >> 16;
 	msg[1] = data >> 8;
 	msg[2] = data;
@@ -50,6 +58,7 @@ static int ad5624r_read_raw(struct iio_dev *indio_dev,
 			   long m)
 {
 	struct ad5624r_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	unsigned long scale_uv;
 
 	switch (m) {
@@ -59,6 +68,14 @@ static int ad5624r_read_raw(struct iio_dev *indio_dev,
 		*val2 = (scale_uv % 1000) * 1000;
 		return IIO_VAL_INT_PLUS_MICRO;
 
+=======
+
+	switch (m) {
+	case IIO_CHAN_INFO_SCALE:
+		*val = st->vref_mv;
+		*val2 = chan->scan_type.realbits;
+		return IIO_VAL_FRACTIONAL_LOG2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return -EINVAL;
 }
@@ -70,7 +87,10 @@ static int ad5624r_write_raw(struct iio_dev *indio_dev,
 			       long mask)
 {
 	struct ad5624r_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
@@ -82,10 +102,15 @@ static int ad5624r_write_raw(struct iio_dev *indio_dev,
 				chan->address, val,
 				chan->scan_type.shift);
 	default:
+<<<<<<< HEAD
 		ret = -EINVAL;
 	}
 
 	return -EINVAL;
+=======
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const char * const ad5624r_powerdown_modes[] = {
@@ -163,8 +188,15 @@ static const struct iio_chan_spec_ext_info ad5624r_ext_info[] = {
 		.name = "powerdown",
 		.read = ad5624r_read_dac_powerdown,
 		.write = ad5624r_write_dac_powerdown,
+<<<<<<< HEAD
 	},
 	IIO_ENUM("powerdown_mode", true, &ad5624r_powerdown_mode_enum),
+=======
+		.shared = IIO_SEPARATE,
+	},
+	IIO_ENUM("powerdown_mode", IIO_SHARED_BY_TYPE,
+		 &ad5624r_powerdown_mode_enum),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5624r_powerdown_mode_enum),
 	{ },
 };
@@ -177,7 +209,16 @@ static const struct iio_chan_spec_ext_info ad5624r_ext_info[] = {
 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
 	.address = (_chan), \
+<<<<<<< HEAD
 	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)), \
+=======
+	.scan_type = { \
+		.sign = 'u', \
+		.realbits = (_bits), \
+		.storagebits = 16, \
+		.shift = 16 - (_bits), \
+	}, \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ext_info = ad5624r_ext_info, \
 }
 
@@ -226,6 +267,7 @@ static int ad5624r_probe(struct spi_device *spi)
 	struct iio_dev *indio_dev;
 	int ret, voltage_uv = 0;
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*st));
 	if (indio_dev == NULL) {
 		ret = -ENOMEM;
@@ -237,6 +279,17 @@ static int ad5624r_probe(struct spi_device *spi)
 		ret = regulator_enable(st->reg);
 		if (ret)
 			goto error_put_reg;
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+	if (!indio_dev)
+		return -ENOMEM;
+	st = iio_priv(indio_dev);
+	st->reg = devm_regulator_get(&spi->dev, "vcc");
+	if (!IS_ERR(st->reg)) {
+		ret = regulator_enable(st->reg);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ret = regulator_get_voltage(st->reg);
 		if (ret < 0)
@@ -277,11 +330,14 @@ static int ad5624r_probe(struct spi_device *spi)
 error_disable_reg:
 	if (!IS_ERR(st->reg))
 		regulator_disable(st->reg);
+<<<<<<< HEAD
 error_put_reg:
 	if (!IS_ERR(st->reg))
 		regulator_put(st->reg);
 	iio_device_free(indio_dev);
 error_ret:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -292,11 +348,16 @@ static int ad5624r_remove(struct spi_device *spi)
 	struct ad5624r_state *st = iio_priv(indio_dev);
 
 	iio_device_unregister(indio_dev);
+<<<<<<< HEAD
 	if (!IS_ERR(st->reg)) {
 		regulator_disable(st->reg);
 		regulator_put(st->reg);
 	}
 	iio_device_free(indio_dev);
+=======
+	if (!IS_ERR(st->reg))
+		regulator_disable(st->reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -315,7 +376,10 @@ MODULE_DEVICE_TABLE(spi, ad5624r_id);
 static struct spi_driver ad5624r_driver = {
 	.driver = {
 		   .name = "ad5624r",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   },
 	.probe = ad5624r_probe,
 	.remove = ad5624r_remove,

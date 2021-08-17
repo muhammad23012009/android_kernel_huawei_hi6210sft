@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012 Coraid, Inc.  See COPYING for GPL terms. */
+=======
+/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * aoenet.c
  * Ethernet portion of AoE driver
@@ -52,7 +56,11 @@ static struct sk_buff_head skbtxq;
 
 /* enters with txlock held */
 static int
+<<<<<<< HEAD
 tx(void) __must_hold(&txlock)
+=======
+tx(int id) __must_hold(&txlock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sk_buff *skb;
 	struct net_device *ifp;
@@ -205,7 +213,12 @@ aoenet_init(void)
 	kts.lock = &txlock;
 	kts.fn = tx;
 	kts.waitq = &txwq;
+<<<<<<< HEAD
 	kts.name = "aoe_tx";
+=======
+	kts.id = 0;
+	snprintf(kts.name, sizeof(kts.name), "aoe_tx%d", kts.id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (aoe_ktstart(&kts))
 		return -EAGAIN;
 	dev_add_pack(&aoe_pt);

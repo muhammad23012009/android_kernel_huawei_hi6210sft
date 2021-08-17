@@ -6,3 +6,7 @@ obj-$(CONFIG_CHELSIO_T1) += cxgb/
 obj-$(CONFIG_CHELSIO_T3) += cxgb3/
 obj-$(CONFIG_CHELSIO_T4) += cxgb4/
 obj-$(CONFIG_CHELSIO_T4VF) += cxgb4vf/
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_CHELSIO_LIB) += libcxgb/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -30,6 +30,11 @@
  * IN THE SOFTWARE.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DPRINTK(fmt, args...)				\
 	pr_debug("xenbus_probe (%s:%d) " fmt ".\n",	\
 		 __func__, __LINE__, ##args)
@@ -55,6 +60,10 @@
 #include <xen/xen.h>
 #include <xen/xenbus.h>
 #include <xen/events.h>
+<<<<<<< HEAD
+=======
+#include <xen/xen-ops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <xen/page.h>
 
 #include <xen/hvm.h>
@@ -72,7 +81,11 @@ EXPORT_SYMBOL_GPL(xen_store_interface);
 enum xenstore_init xen_store_domain_type;
 EXPORT_SYMBOL_GPL(xen_store_domain_type);
 
+<<<<<<< HEAD
 static unsigned long xen_store_mfn;
+=======
+static unsigned long xen_store_gfn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static BLOCKING_NOTIFIER_HEAD(xenstore_chain);
 
@@ -134,6 +147,10 @@ static int watch_otherend(struct xenbus_device *dev)
 		container_of(dev->dev.bus, struct xen_bus_type, bus);
 
 	return xenbus_watch_pathfmt(dev, &dev->otherend_watch,
+<<<<<<< HEAD
+=======
+				    bus->otherend_will_handle,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    bus->otherend_changed,
 				    "%s/%s", dev->otherend, "state");
 }
@@ -280,24 +297,44 @@ void xenbus_dev_shutdown(struct device *_dev)
 
 	get_device(&dev->dev);
 	if (dev->state != XenbusStateConnected) {
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: %s: %s != Connected, skipping\n", __func__,
 		       dev->nodename, xenbus_strstate(dev->state));
+=======
+		pr_info("%s: %s: %s != Connected, skipping\n",
+			__func__, dev->nodename, xenbus_strstate(dev->state));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	xenbus_switch_state(dev, XenbusStateClosing);
 	timeout = wait_for_completion_timeout(&dev->down, timeout);
 	if (!timeout)
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: %s timeout closing device\n",
 		       __func__, dev->nodename);
+=======
+		pr_info("%s: %s timeout closing device\n",
+			__func__, dev->nodename);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	put_device(&dev->dev);
 }
 EXPORT_SYMBOL_GPL(xenbus_dev_shutdown);
 
 int xenbus_register_driver_common(struct xenbus_driver *drv,
+<<<<<<< HEAD
 				  struct xen_bus_type *bus)
 {
 	drv->driver.bus = &bus->bus;
+=======
+				  struct xen_bus_type *bus,
+				  struct module *owner, const char *mod_name)
+{
+	drv->driver.name = drv->name ? drv->name : drv->ids[0].devicetype;
+	drv->driver.bus = &bus->bus;
+	drv->driver.owner = owner;
+	drv->driver.mod_name = mod_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return driver_register(&drv->driver);
 }
@@ -382,12 +419,20 @@ static ssize_t nodename_show(struct device *dev,
 {
 	return sprintf(buf, "%s\n", to_xenbus_device(dev)->nodename);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(nodename);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t devtype_show(struct device *dev,
 			    struct device_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%s\n", to_xenbus_device(dev)->devicetype);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(devtype);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t modalias_show(struct device *dev,
 			     struct device_attribute *attr, char *buf)
@@ -395,6 +440,7 @@ static ssize_t modalias_show(struct device *dev,
 	return sprintf(buf, "%s:%s\n", dev->bus->name,
 		       to_xenbus_device(dev)->devicetype);
 }
+<<<<<<< HEAD
 
 struct device_attribute xenbus_dev_attrs[] = {
 	__ATTR_RO(nodename),
@@ -403,6 +449,26 @@ struct device_attribute xenbus_dev_attrs[] = {
 	__ATTR_NULL
 };
 EXPORT_SYMBOL_GPL(xenbus_dev_attrs);
+=======
+static DEVICE_ATTR_RO(modalias);
+
+static struct attribute *xenbus_dev_attrs[] = {
+	&dev_attr_nodename.attr,
+	&dev_attr_devtype.attr,
+	&dev_attr_modalias.attr,
+	NULL,
+};
+
+static const struct attribute_group xenbus_dev_group = {
+	.attrs = xenbus_dev_attrs,
+};
+
+const struct attribute_group *xenbus_dev_groups[] = {
+	&xenbus_dev_group,
+	NULL,
+};
+EXPORT_SYMBOL_GPL(xenbus_dev_groups);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int xenbus_probe_node(struct xen_bus_type *bus,
 		      const char *type,
@@ -447,12 +513,24 @@ int xenbus_probe_node(struct xen_bus_type *bus,
 	if (err)
 		goto fail;
 
+<<<<<<< HEAD
 	dev_set_name(&xendev->dev, devname);
 
 	/* Register with generic device framework. */
 	err = device_register(&xendev->dev);
 	if (err)
 		goto fail;
+=======
+	dev_set_name(&xendev->dev, "%s", devname);
+
+	/* Register with generic device framework. */
+	err = device_register(&xendev->dev);
+	if (err) {
+		put_device(&xendev->dev);
+		xendev = NULL;
+		goto fail;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 fail:
@@ -579,8 +657,12 @@ int xenbus_dev_suspend(struct device *dev)
 	if (drv->suspend)
 		err = drv->suspend(xdev);
 	if (err)
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "xenbus: suspend %s failed: %i\n", dev_name(dev), err);
+=======
+		pr_warn("suspend %s failed: %i\n", dev_name(dev), err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL_GPL(xenbus_dev_suspend);
@@ -599,9 +681,14 @@ int xenbus_dev_resume(struct device *dev)
 	drv = to_xenbus_driver(dev->driver);
 	err = talk_to_otherend(xdev);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "xenbus: resume (talk_to_otherend) %s failed: %i\n",
 		       dev_name(dev), err);
+=======
+		pr_warn("resume (talk_to_otherend) %s failed: %i\n",
+			dev_name(dev), err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -610,18 +697,27 @@ int xenbus_dev_resume(struct device *dev)
 	if (drv->resume) {
 		err = drv->resume(xdev);
 		if (err) {
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "xenbus: resume %s failed: %i\n",
 			       dev_name(dev), err);
+=======
+			pr_warn("resume %s failed: %i\n", dev_name(dev), err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return err;
 		}
 	}
 
 	err = watch_otherend(xdev);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "xenbus_probe: resume (watch_otherend) %s failed: "
 		       "%d.\n", dev_name(dev), err);
+=======
+		pr_warn("resume (watch_otherend) %s failed: %d.\n",
+			dev_name(dev), err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -697,9 +793,13 @@ static int __init xenstored_local_init(void)
 	if (!page)
 		goto out_err;
 
+<<<<<<< HEAD
 	xen_store_mfn = xen_start_info->store_mfn =
 		pfn_to_mfn(virt_to_phys((void *)page) >>
 			   PAGE_SHIFT);
+=======
+	xen_store_gfn = xen_start_info->store_mfn = virt_to_gfn((void *)page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Next allocate a local port which xenstored can bind to */
 	alloc_unbound.dom        = DOMID_SELF;
@@ -722,6 +822,33 @@ static int __init xenstored_local_init(void)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int xenbus_resume_cb(struct notifier_block *nb,
+			    unsigned long action, void *data)
+{
+	int err = 0;
+
+	if (xen_hvm_domain()) {
+		uint64_t v = 0;
+
+		err = hvm_get_parameter(HVM_PARAM_STORE_EVTCHN, &v);
+		if (!err && v)
+			xen_store_evtchn = v;
+		else
+			pr_warn("Cannot update xenstore event channel: %d\n",
+				err);
+	} else
+		xen_store_evtchn = xen_start_info->store_evtchn;
+
+	return err;
+}
+
+static struct notifier_block xenbus_resume_nb = {
+	.notifier_call = xenbus_resume_cb,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init xenbus_init(void)
 {
 	int err = 0;
@@ -749,12 +876,21 @@ static int __init xenbus_init(void)
 		err = xenstored_local_init();
 		if (err)
 			goto out_error;
+<<<<<<< HEAD
 		xen_store_interface = mfn_to_virt(xen_store_mfn);
 		break;
 	case XS_PV:
 		xen_store_evtchn = xen_start_info->store_evtchn;
 		xen_store_mfn = xen_start_info->store_mfn;
 		xen_store_interface = mfn_to_virt(xen_store_mfn);
+=======
+		xen_store_interface = gfn_to_virt(xen_store_gfn);
+		break;
+	case XS_PV:
+		xen_store_evtchn = xen_start_info->store_evtchn;
+		xen_store_gfn = xen_start_info->store_mfn;
+		xen_store_interface = gfn_to_virt(xen_store_gfn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case XS_HVM:
 		err = hvm_get_parameter(HVM_PARAM_STORE_EVTCHN, &v);
@@ -764,9 +900,16 @@ static int __init xenbus_init(void)
 		err = hvm_get_parameter(HVM_PARAM_STORE_PFN, &v);
 		if (err)
 			goto out_error;
+<<<<<<< HEAD
 		xen_store_mfn = (unsigned long)v;
 		xen_store_interface =
 			xen_remap(xen_store_mfn << PAGE_SHIFT, PAGE_SIZE);
+=======
+		xen_store_gfn = (unsigned long)v;
+		xen_store_interface =
+			xen_remap(xen_store_gfn << XEN_PAGE_SHIFT,
+				  XEN_PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		pr_warn("Xenstore state unknown\n");
@@ -776,11 +919,22 @@ static int __init xenbus_init(void)
 	/* Initialize the interface to xenstore. */
 	err = xs_init();
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "XENBUS: Error initializing xenstore comms: %i\n", err);
 		goto out_error;
 	}
 
+=======
+		pr_warn("Error initializing xenstore comms: %i\n", err);
+		goto out_error;
+	}
+
+	if ((xen_store_domain_type != XS_LOCAL) &&
+	    (xen_store_domain_type != XS_UNKNOWN))
+		xen_resume_notifier_register(&xenbus_resume_nb);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_XEN_COMPAT_XENFS
 	/*
 	 * Create xenfs mountpoint in /proc for compatibility with

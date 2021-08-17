@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define TTB_IRGN_NC	(0 << 8)
 #define TTB_IRGN_WBWA	(1 << 8)
@@ -39,6 +43,17 @@
 #define TTB_FLAGS_SMP	(TTB_IRGN_WBWA|TTB_S|TTB_RGN_OC_WBWA)
 #define PMD_FLAGS_SMP	(PMD_SECT_WBWA|PMD_SECT_S)
 
+<<<<<<< HEAD
+=======
+#ifndef __ARMEB__
+#  define rpgdl	r0
+#  define rpgdh	r1
+#else
+#  define rpgdl	r1
+#  define rpgdh	r0
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * cpu_v7_switch_mm(pgd_phys, tsk)
  *
@@ -47,6 +62,7 @@
  */
 ENTRY(cpu_v7_switch_mm)
 #ifdef CONFIG_MMU
+<<<<<<< HEAD
 	mmid	r1, r1				@ get mm->context.id
 	asid	r3, r1
 	mov	r3, r3, lsl #(48 - 32)		@ ASID
@@ -54,6 +70,15 @@ ENTRY(cpu_v7_switch_mm)
 	isb
 #endif
 	mov	pc, lr
+=======
+	mmid	r2, r2
+	asid	r2, r2
+	orr	rpgdh, rpgdh, r2, lsl #(48 - 32)	@ upper 32-bits of pgd
+	mcrr	p15, 0, rpgdl, rpgdh, c2		@ set TTB 0
+	isb
+#endif
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(cpu_v7_switch_mm)
 
 #ifdef __ARMEB__
@@ -89,7 +114,11 @@ ENTRY(cpu_v7_set_pte_ext)
 	ALT_SMP(W(nop))
 	ALT_UP (mcr	p15, 0, r0, c7, c10, 1)		@ flush_pte
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(cpu_v7_set_pte_ext)
 
 	/*
@@ -117,16 +146,24 @@ ENDPROC(cpu_v7_set_pte_ext)
 	 * Macro for setting up the TTBRx and TTBCR registers.
 	 * - \ttbr1 updated.
 	 */
+<<<<<<< HEAD
 	.macro	v7_ttb_setup, zero, ttbr0, ttbr1, tmp
 	ldr	\tmp, =swapper_pg_dir		@ swapper_pg_dir virtual address
 	cmp	\ttbr1, \tmp			@ PHYS_OFFSET > PAGE_OFFSET? (branch below)
 	mrc	p15, 0, \tmp, c2, c0, 2		@ TTB control register
+=======
+	.macro	v7_ttb_setup, zero, ttbr0l, ttbr0h, ttbr1, tmp
+	ldr	\tmp, =swapper_pg_dir		@ swapper_pg_dir virtual address
+	cmp	\ttbr1, \tmp, lsr #12		@ PHYS_OFFSET > PAGE_OFFSET?
+	mrc	p15, 0, \tmp, c2, c0, 2		@ TTB control egister
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	orr	\tmp, \tmp, #TTB_EAE
 	ALT_SMP(orr	\tmp, \tmp, #TTB_FLAGS_SMP)
 	ALT_UP(orr	\tmp, \tmp, #TTB_FLAGS_UP)
 	ALT_SMP(orr	\tmp, \tmp, #TTB_FLAGS_SMP << 16)
 	ALT_UP(orr	\tmp, \tmp, #TTB_FLAGS_UP << 16)
 	/*
+<<<<<<< HEAD
 	 * TTBR0/TTBR1 split (PAGE_OFFSET):
 	 *   0x40000000: T0SZ = 2, T1SZ = 0 (not used)
 	 *   0x80000000: T0SZ = 0, T1SZ = 1
@@ -152,16 +189,38 @@ ENDPROC(cpu_v7_set_pte_ext)
 
 	__CPUINIT
 
+=======
+	 * Only use split TTBRs if PHYS_OFFSET <= PAGE_OFFSET (cmp above),
+	 * otherwise booting secondary CPUs would end up using TTBR1 for the
+	 * identity mapping set up in TTBR0.
+	 */
+	orrls	\tmp, \tmp, #TTBR1_SIZE				@ TTBCR.T1SZ
+	mcr	p15, 0, \tmp, c2, c0, 2				@ TTBCR
+	mov	\tmp, \ttbr1, lsr #20
+	mov	\ttbr1, \ttbr1, lsl #12
+	addls	\ttbr1, \ttbr1, #TTBR1_OFFSET
+	mcrr	p15, 1, \ttbr1, \tmp, c2			@ load TTBR1
+	.endm
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 *   AT
 	 *  TFR   EV X F   IHD LR    S
 	 * .EEE ..EE PUI. .TAT 4RVI ZWRS BLDP WCAM
 	 * rxxx rrxx xxx0 0101 xxxx xxxx x111 xxxx < forced
+<<<<<<< HEAD
 	 *   11    0 110    1  0011 1100 .111 1101 < we want
+=======
+	 *   11    0 110    0  0011 1100 .111 1101 < we want
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	.align	2
 	.type	v7_crval, #object
 v7_crval:
+<<<<<<< HEAD
 	crval	clear=0x0120c302, mmuset=0x30c23c7d, ucset=0x00c01c7c
 
 	.previous
+=======
+	crval	clear=0x0122c302, mmuset=0x30c03c7d, ucset=0x00c01c7c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

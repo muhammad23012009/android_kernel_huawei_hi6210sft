@@ -2,7 +2,10 @@
 #define _ASM_X86_SMP_H
 #ifndef __ASSEMBLY__
 #include <linux/cpumask.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/percpu.h>
 
 /*
@@ -17,11 +20,15 @@
 #endif
 #include <asm/thread_info.h>
 #include <asm/cpumask.h>
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int smp_num_siblings;
 extern unsigned int num_processors;
 
+<<<<<<< HEAD
 static inline bool cpu_has_ht_siblings(void)
 {
 	bool has_siblings = false;
@@ -31,6 +38,8 @@ static inline bool cpu_has_ht_siblings(void)
 	return has_siblings;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_sibling_map);
 DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_core_map);
 /* cpus sharing the last level cache: */
@@ -38,6 +47,7 @@ DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_llc_shared_map);
 DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_llc_id);
 DECLARE_PER_CPU_READ_MOSTLY(int, cpu_number);
 
+<<<<<<< HEAD
 static inline struct cpumask *cpu_sibling_mask(int cpu)
 {
 	return per_cpu(cpu_sibling_map, cpu);
@@ -48,20 +58,29 @@ static inline struct cpumask *cpu_core_mask(int cpu)
 	return per_cpu(cpu_core_map, cpu);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct cpumask *cpu_llc_shared_mask(int cpu)
 {
 	return per_cpu(cpu_llc_shared_map, cpu);
 }
 
 DECLARE_EARLY_PER_CPU_READ_MOSTLY(u16, x86_cpu_to_apicid);
+<<<<<<< HEAD
+=======
+DECLARE_EARLY_PER_CPU_READ_MOSTLY(u32, x86_cpu_to_acpiid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DECLARE_EARLY_PER_CPU_READ_MOSTLY(u16, x86_bios_cpu_apicid);
 #if defined(CONFIG_X86_LOCAL_APIC) && defined(CONFIG_X86_32)
 DECLARE_EARLY_PER_CPU_READ_MOSTLY(int, x86_cpu_to_logical_apicid);
 #endif
 
+<<<<<<< HEAD
 /* Static state in head.S used to set up a CPU */
 extern unsigned long stack_start; /* Initial stack pointer address */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct task_struct;
 
 struct smp_ops {
@@ -70,6 +89,10 @@ struct smp_ops {
 	void (*smp_cpus_done)(unsigned max_cpus);
 
 	void (*stop_other_cpus)(int wait);
+<<<<<<< HEAD
+=======
+	void (*crash_stop_other_cpus)(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*smp_send_reschedule)(int cpu);
 
 	int (*cpu_up)(unsigned cpu, struct task_struct *tidle);
@@ -85,9 +108,12 @@ struct smp_ops {
 extern void set_cpu_sibling_map(int cpu);
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 #ifndef CONFIG_PARAVIRT
 #define startup_ipi_hook(phys_apicid, start_eip, start_esp) do { } while (0)
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct smp_ops smp_ops;
 
 static inline void smp_send_stop(void)
@@ -154,9 +180,18 @@ void cpu_disable_common(void);
 void native_smp_prepare_boot_cpu(void);
 void native_smp_prepare_cpus(unsigned int max_cpus);
 void native_smp_cpus_done(unsigned int max_cpus);
+<<<<<<< HEAD
 int native_cpu_up(unsigned int cpunum, struct task_struct *tidle);
 int native_cpu_disable(void);
 void native_cpu_die(unsigned int cpu);
+=======
+void common_cpu_up(unsigned int cpunum, struct task_struct *tidle);
+int native_cpu_up(unsigned int cpunum, struct task_struct *tidle);
+int native_cpu_disable(void);
+int common_cpu_die(unsigned int cpu);
+void native_cpu_die(unsigned int cpu);
+void hlt_play_dead(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void native_play_dead(void);
 void play_dead_common(void);
 void wbinvd_on_cpu(int cpu);
@@ -169,6 +204,10 @@ void x86_idle_thread_init(unsigned int cpu, struct task_struct *idle);
 void smp_store_boot_cpu_info(void);
 void smp_store_cpu_info(int id);
 #define cpu_physical_id(cpu)	per_cpu(x86_cpu_to_apicid, cpu)
+<<<<<<< HEAD
+=======
+#define cpu_acpi_id(cpu)	per_cpu(x86_cpu_to_acpiid, cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else /* !CONFIG_SMP */
 #define wbinvd_on_cpu(cpu)     wbinvd()
@@ -179,7 +218,11 @@ static inline int wbinvd_on_all_cpus(void)
 }
 #endif /* CONFIG_SMP */
 
+<<<<<<< HEAD
 extern unsigned disabled_cpus __cpuinitdata;
+=======
+extern unsigned disabled_cpus;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_X86_32_SMP
 /*
@@ -193,17 +236,21 @@ extern int safe_smp_processor_id(void);
 #elif defined(CONFIG_X86_64_SMP)
 #define raw_smp_processor_id() (this_cpu_read(cpu_number))
 
+<<<<<<< HEAD
 #define stack_smp_processor_id()					\
 ({								\
 	struct thread_info *ti;						\
 	__asm__("andq %%rsp,%0; ":"=r" (ti) : "0" (CURRENT_MASK));	\
 	ti->cpu;							\
 })
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define safe_smp_processor_id()		smp_processor_id()
 
 #endif
 
 #ifdef CONFIG_X86_LOCAL_APIC
+<<<<<<< HEAD
 
 #ifndef CONFIG_X86_64
 static inline int logical_smp_processor_id(void)
@@ -214,6 +261,8 @@ static inline int logical_smp_processor_id(void)
 
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int hard_smp_processor_id(void);
 
 #else /* CONFIG_X86_LOCAL_APIC */

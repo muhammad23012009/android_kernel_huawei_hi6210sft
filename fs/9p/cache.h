@@ -21,6 +21,10 @@
  */
 
 #ifndef _9P_CACHE_H
+<<<<<<< HEAD
+=======
+#define _9P_CACHE_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_9P_FSCACHE
 #include <linux/fscache.h>
 #include <linux/spinlock.h>
@@ -101,6 +105,21 @@ static inline void v9fs_fscache_wait_on_page_write(struct inode *inode,
 
 #else /* CONFIG_9P_FSCACHE */
 
+<<<<<<< HEAD
+=======
+static inline void v9fs_cache_inode_get_cookie(struct inode *inode)
+{
+}
+
+static inline void v9fs_cache_inode_put_cookie(struct inode *inode)
+{
+}
+
+static inline void v9fs_cache_inode_set_cookie(struct inode *inode, struct file *file)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int v9fs_fscache_release_page(struct page *page,
 					    gfp_t gfp) {
 	return 1;

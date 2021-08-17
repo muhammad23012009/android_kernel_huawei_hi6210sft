@@ -36,14 +36,22 @@ static int ebt_log_tg_check(const struct xt_tgchk_param *par)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct tcpudphdr
 {
+=======
+struct tcpudphdr {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__be16 src;
 	__be16 dst;
 };
 
+<<<<<<< HEAD
 struct arppayload
 {
+=======
+struct arppayload {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char mac_src[ETH_ALEN];
 	unsigned char ip_src[4];
 	unsigned char mac_dst[ETH_ALEN];
@@ -93,10 +101,17 @@ ebt_log_packet(struct net *net, u_int8_t pf, unsigned int hooknum,
 	if (loginfo->type == NF_LOG_TYPE_LOG)
 		bitmask = loginfo->u.log.logflags;
 	else
+<<<<<<< HEAD
 		bitmask = NF_LOG_MASK;
 
 	if ((bitmask & EBT_LOG_IP) && eth_hdr(skb)->h_proto ==
 	   htons(ETH_P_IP)){
+=======
+		bitmask = NF_LOG_DEFAULT_MASK;
+
+	if ((bitmask & EBT_LOG_IP) && eth_hdr(skb)->h_proto ==
+	   htons(ETH_P_IP)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		const struct iphdr *ih;
 		struct iphdr _iph;
 
@@ -152,7 +167,12 @@ ebt_log_packet(struct net *net, u_int8_t pf, unsigned int hooknum,
 		       ntohs(ah->ar_op));
 
 		/* If it's for Ethernet and the lengths are OK,
+<<<<<<< HEAD
 		 * then log the ARP payload */
+=======
+		 * then log the ARP payload
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ah->ar_hrd == htons(1) &&
 		    ah->ar_hln == ETH_ALEN &&
 		    ah->ar_pln == sizeof(__be32)) {
@@ -180,12 +200,23 @@ ebt_log_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ebt_log_info *info = par->targinfo;
 	struct nf_loginfo li;
+<<<<<<< HEAD
 	struct net *net = dev_net(par->in ? par->in : par->out);
+=======
+	struct net *net = par->net;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	li.type = NF_LOG_TYPE_LOG;
 	li.u.log.level = info->loglevel;
 	li.u.log.logflags = info->bitmask;
 
+<<<<<<< HEAD
+=======
+	/* Remember that we have to use ebt_log_packet() not to break backward
+	 * compatibility. We cannot use the default bridge packet logger via
+	 * nf_log_packet() with NFT_LOG_TYPE_LOG here. --Pablo
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info->bitmask & EBT_LOG_NFLOG)
 		nf_log_packet(net, NFPROTO_BRIDGE, par->hooknum, skb,
 			      par->in, par->out, &li, "%s", info->prefix);
@@ -205,6 +236,7 @@ static struct xt_target ebt_log_tg_reg __read_mostly = {
 	.me		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static struct nf_logger ebt_log_logger __read_mostly = {
 	.name 		= "ebt_log",
 	.logfn		= &ebt_log_packet,
@@ -247,12 +279,20 @@ err_target:
 	unregister_pernet_subsys(&ebt_log_net_ops);
 err_pernet:
 	return ret;
+=======
+static int __init ebt_log_init(void)
+{
+	return xt_register_target(&ebt_log_tg_reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __exit ebt_log_fini(void)
 {
+<<<<<<< HEAD
 	unregister_pernet_subsys(&ebt_log_net_ops);
 	nf_log_unregister(&ebt_log_logger);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xt_unregister_target(&ebt_log_tg_reg);
 }
 

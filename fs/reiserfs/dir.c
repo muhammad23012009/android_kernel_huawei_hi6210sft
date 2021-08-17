@@ -9,18 +9,30 @@
 #include <linux/stat.h>
 #include <linux/buffer_head.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 extern const struct reiserfs_key MIN_KEY;
 
 static int reiserfs_readdir(struct file *, void *, filldir_t);
+=======
+#include <linux/uaccess.h>
+
+extern const struct reiserfs_key MIN_KEY;
+
+static int reiserfs_readdir(struct file *, struct dir_context *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int reiserfs_dir_fsync(struct file *filp, loff_t start, loff_t end,
 			      int datasync);
 
 const struct file_operations reiserfs_dir_operations = {
 	.llseek = generic_file_llseek,
 	.read = generic_read_dir,
+<<<<<<< HEAD
 	.readdir = reiserfs_readdir,
+=======
+	.iterate_shared = reiserfs_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fsync = reiserfs_dir_fsync,
 	.unlocked_ioctl = reiserfs_ioctl,
 #ifdef CONFIG_COMPAT
@@ -38,11 +50,19 @@ static int reiserfs_dir_fsync(struct file *filp, loff_t start, loff_t end,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	reiserfs_write_lock(inode->i_sb);
 	err = reiserfs_commit_for_inode(inode);
 	reiserfs_write_unlock(inode->i_sb);
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+	reiserfs_write_lock(inode->i_sb);
+	err = reiserfs_commit_for_inode(inode);
+	reiserfs_write_unlock(inode->i_sb);
+	inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	return 0;
@@ -50,6 +70,7 @@ static int reiserfs_dir_fsync(struct file *filp, loff_t start, loff_t end,
 
 #define store_ih(where,what) copy_item_head (where, what)
 
+<<<<<<< HEAD
 static inline bool is_privroot_deh(struct dentry *dir,
 				   struct reiserfs_de_head *deh)
 {
@@ -63,6 +84,21 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 {
 	struct inode *inode = dentry->d_inode;
 	struct cpu_key pos_key;	/* key of current position in the directory (key of directory entry) */
+=======
+static inline bool is_privroot_deh(struct inode *dir, struct reiserfs_de_head *deh)
+{
+	struct dentry *privroot = REISERFS_SB(dir->i_sb)->priv_root;
+	return (d_really_is_positive(privroot) &&
+	        deh->deh_objectid == INODE_PKEY(d_inode(privroot))->k_objectid);
+}
+
+int reiserfs_readdir_inode(struct inode *inode, struct dir_context *ctx)
+{
+
+	/* key of current position in the directory (key of directory entry) */
+	struct cpu_key pos_key;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INITIALIZE_PATH(path_to_entry);
 	struct buffer_head *bh;
 	int item_num, entry_num;
@@ -74,26 +110,53 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 	char small_buf[32];	/* avoid kmalloc if we can */
 	struct reiserfs_dir_entry de;
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	int depth;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	reiserfs_write_lock(inode->i_sb);
 
 	reiserfs_check_lock_depth(inode->i_sb, "readdir");
 
+<<<<<<< HEAD
 	/* form key for search the next directory entry using f_pos field of
 	   file structure */
 	make_cpu_key(&pos_key, inode, *pos ?: DOT_OFFSET, TYPE_DIRENTRY, 3);
+=======
+	/*
+	 * form key for search the next directory entry using
+	 * f_pos field of file structure
+	 */
+	make_cpu_key(&pos_key, inode, ctx->pos ?: DOT_OFFSET, TYPE_DIRENTRY, 3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	next_pos = cpu_key_k_offset(&pos_key);
 
 	path_to_entry.reada = PATH_READA;
 	while (1) {
+<<<<<<< HEAD
 	      research:
 		/* search the directory item, containing entry with specified key */
+=======
+research:
+		/*
+		 * search the directory item, containing entry with
+		 * specified key
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		search_res =
 		    search_by_entry_key(inode->i_sb, &pos_key, &path_to_entry,
 					&de);
 		if (search_res == IO_ERROR) {
+<<<<<<< HEAD
 			// FIXME: we could just skip part of directory which could
 			// not be read
+=======
+			/*
+			 * FIXME: we could just skip part of directory
+			 * which could not be read
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -EIO;
 			goto out;
 		}
@@ -104,13 +167,18 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 		store_ih(&tmp_ih, ih);
 
 		/* we must have found item, that is item of this directory, */
+<<<<<<< HEAD
 		RFALSE(COMP_SHORT_KEYS(&(ih->ih_key), &pos_key),
+=======
+		RFALSE(COMP_SHORT_KEYS(&ih->ih_key, &pos_key),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       "vs-9000: found item %h does not match to dir we readdir %K",
 		       ih, &pos_key);
 		RFALSE(item_num > B_NR_ITEMS(bh) - 1,
 		       "vs-9005 item_num == %d, item amount == %d",
 		       item_num, B_NR_ITEMS(bh));
 
+<<<<<<< HEAD
 		/* and entry must be not more than number of entries in the item */
 		RFALSE(I_ENTRY_COUNT(ih) < entry_num,
 		       "vs-9010: entry number is too big %d (%d)",
@@ -132,14 +200,49 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 
 				if (!de_visible(deh))
 					/* it is hidden entry */
+=======
+		/*
+		 * and entry must be not more than number of entries
+		 * in the item
+		 */
+		RFALSE(ih_entry_count(ih) < entry_num,
+		       "vs-9010: entry number is too big %d (%d)",
+		       entry_num, ih_entry_count(ih));
+
+		/*
+		 * go through all entries in the directory item beginning
+		 * from the entry, that has been found
+		 */
+		if (search_res == POSITION_FOUND
+		    || entry_num < ih_entry_count(ih)) {
+			struct reiserfs_de_head *deh =
+			    B_I_DEH(bh, ih) + entry_num;
+
+			for (; entry_num < ih_entry_count(ih);
+			     entry_num++, deh++) {
+				int d_reclen;
+				char *d_name;
+				ino_t d_ino;
+				loff_t cur_pos = deh_offset(deh);
+
+				/* it is hidden entry */
+				if (!de_visible(deh))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					continue;
 				d_reclen = entry_length(bh, ih, entry_num);
 				d_name = B_I_DEH_ENTRY_FILE_NAME(bh, ih, deh);
 
 				if (d_reclen <= 0 ||
 				    d_name + d_reclen > bh->b_data + bh->b_size) {
+<<<<<<< HEAD
 					/* There is corrupted data in entry,
 					 * We'd better stop here */
+=======
+					/*
+					 * There is corrupted data in entry,
+					 * We'd better stop here
+					 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					pathrelse(&path_to_entry);
 					ret = -EIO;
 					goto out;
@@ -148,19 +251,33 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 				if (!d_name[d_reclen - 1])
 					d_reclen = strlen(d_name);
 
+<<<<<<< HEAD
 				if (d_reclen >
 				    REISERFS_MAX_NAME(inode->i_sb->
 						      s_blocksize)) {
 					/* too big to send back to VFS */
+=======
+				/* too big to send back to VFS */
+				if (d_reclen >
+				    REISERFS_MAX_NAME(inode->i_sb->
+						      s_blocksize)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					continue;
 				}
 
 				/* Ignore the .reiserfs_priv entry */
+<<<<<<< HEAD
 				if (is_privroot_deh(dentry, deh))
 					continue;
 
 				d_off = deh_offset(deh);
 				*pos = d_off;
+=======
+				if (is_privroot_deh(inode, deh))
+					continue;
+
+				ctx->pos = deh_offset(deh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				d_ino = deh_objectid(deh);
 				if (d_reclen <= 32) {
 					local_buf = small_buf;
@@ -177,27 +294,50 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 						goto research;
 					}
 				}
+<<<<<<< HEAD
 				// Note, that we copy name to user space via temporary
 				// buffer (local_buf) because filldir will block if
 				// user space buffer is swapped out. At that time
 				// entry can move to somewhere else
+=======
+
+				/*
+				 * Note, that we copy name to user space via
+				 * temporary buffer (local_buf) because
+				 * filldir will block if user space buffer is
+				 * swapped out. At that time entry can move to
+				 * somewhere else
+				 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				memcpy(local_buf, d_name, d_reclen);
 
 				/*
 				 * Since filldir might sleep, we can release
 				 * the write lock here for other waiters
 				 */
+<<<<<<< HEAD
 				reiserfs_write_unlock(inode->i_sb);
 				if (filldir
 				    (dirent, local_buf, d_reclen, d_off, d_ino,
 				     DT_UNKNOWN) < 0) {
 					reiserfs_write_lock(inode->i_sb);
+=======
+				depth = reiserfs_write_unlock_nested(inode->i_sb);
+				if (!dir_emit
+				    (ctx, local_buf, d_reclen, d_ino,
+				     DT_UNKNOWN)) {
+					reiserfs_write_lock_nested(inode->i_sb, depth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					if (local_buf != small_buf) {
 						kfree(local_buf);
 					}
 					goto end;
 				}
+<<<<<<< HEAD
 				reiserfs_write_lock(inode->i_sb);
+=======
+				reiserfs_write_lock_nested(inode->i_sb, depth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (local_buf != small_buf) {
 					kfree(local_buf);
 				}
@@ -213,6 +353,7 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 			}	/* for */
 		}
 
+<<<<<<< HEAD
 		if (item_num != B_NR_ITEMS(bh) - 1)
 			// end of directory has been reached
 			goto end;
@@ -223,12 +364,33 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 		if (!comp_le_keys(rkey, &MIN_KEY)) {
 			/* set pos_key to key, that is the smallest and greater
 			   that key of the last entry in the item */
+=======
+		/* end of directory has been reached */
+		if (item_num != B_NR_ITEMS(bh) - 1)
+			goto end;
+
+		/*
+		 * item we went through is last item of node. Using right
+		 * delimiting key check is it directory end
+		 */
+		rkey = get_rkey(&path_to_entry, inode->i_sb);
+		if (!comp_le_keys(rkey, &MIN_KEY)) {
+			/*
+			 * set pos_key to key, that is the smallest and greater
+			 * that key of the last entry in the item
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			set_cpu_key_k_offset(&pos_key, next_pos);
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (COMP_SHORT_KEYS(rkey, &pos_key)) {
 			// end of directory has been reached
+=======
+		/* end of directory has been reached */
+		if (COMP_SHORT_KEYS(rkey, &pos_key)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto end;
 		}
 
@@ -239,7 +401,11 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 	}			/* while */
 
 end:
+<<<<<<< HEAD
 	*pos = next_pos;
+=======
+	ctx->pos = next_pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pathrelse(&path_to_entry);
 	reiserfs_check_path(&path_to_entry);
 out:
@@ -247,6 +413,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int reiserfs_readdir(struct file *file, void *dirent, filldir_t filldir)
 {
 	struct dentry *dentry = file->f_path.dentry;
@@ -286,12 +453,55 @@ void make_empty_dir_item_v1(char *body, __le32 dirid, __le32 objid,
 	/* copy ".." and "." */
 	memcpy(body + deh_location(&(deh[0])), ".", 1);
 	memcpy(body + deh_location(&(deh[1])), "..", 2);
+=======
+static int reiserfs_readdir(struct file *file, struct dir_context *ctx)
+{
+	return reiserfs_readdir_inode(file_inode(file), ctx);
+}
+
+/*
+ * compose directory item containing "." and ".." entries (entries are
+ * not aligned to 4 byte boundary)
+ */
+void make_empty_dir_item_v1(char *body, __le32 dirid, __le32 objid,
+			    __le32 par_dirid, __le32 par_objid)
+{
+	struct reiserfs_de_head *dot, *dotdot;
+
+	memset(body, 0, EMPTY_DIR_SIZE_V1);
+	dot = (struct reiserfs_de_head *)body;
+	dotdot = dot + 1;
+
+	/* direntry header of "." */
+	put_deh_offset(dot, DOT_OFFSET);
+	/* these two are from make_le_item_head, and are are LE */
+	dot->deh_dir_id = dirid;
+	dot->deh_objectid = objid;
+	dot->deh_state = 0;	/* Endian safe if 0 */
+	put_deh_location(dot, EMPTY_DIR_SIZE_V1 - strlen("."));
+	mark_de_visible(dot);
+
+	/* direntry header of ".." */
+	put_deh_offset(dotdot, DOT_DOT_OFFSET);
+	/* key of ".." for the root directory */
+	/* these two are from the inode, and are are LE */
+	dotdot->deh_dir_id = par_dirid;
+	dotdot->deh_objectid = par_objid;
+	dotdot->deh_state = 0;	/* Endian safe if 0 */
+	put_deh_location(dotdot, deh_location(dot) - strlen(".."));
+	mark_de_visible(dotdot);
+
+	/* copy ".." and "." */
+	memcpy(body + deh_location(dot), ".", 1);
+	memcpy(body + deh_location(dotdot), "..", 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* compose directory item containing "." and ".." entries */
 void make_empty_dir_item(char *body, __le32 dirid, __le32 objid,
 			 __le32 par_dirid, __le32 par_objid)
 {
+<<<<<<< HEAD
 	struct reiserfs_de_head *deh;
 
 	memset(body, 0, EMPTY_DIR_SIZE);
@@ -320,4 +530,34 @@ void make_empty_dir_item(char *body, __le32 dirid, __le32 objid,
 	/* copy ".." and "." */
 	memcpy(body + deh_location(&(deh[0])), ".", 1);
 	memcpy(body + deh_location(&(deh[1])), "..", 2);
+=======
+	struct reiserfs_de_head *dot, *dotdot;
+
+	memset(body, 0, EMPTY_DIR_SIZE);
+	dot = (struct reiserfs_de_head *)body;
+	dotdot = dot + 1;
+
+	/* direntry header of "." */
+	put_deh_offset(dot, DOT_OFFSET);
+	/* these two are from make_le_item_head, and are are LE */
+	dot->deh_dir_id = dirid;
+	dot->deh_objectid = objid;
+	dot->deh_state = 0;	/* Endian safe if 0 */
+	put_deh_location(dot, EMPTY_DIR_SIZE - ROUND_UP(strlen(".")));
+	mark_de_visible(dot);
+
+	/* direntry header of ".." */
+	put_deh_offset(dotdot, DOT_DOT_OFFSET);
+	/* key of ".." for the root directory */
+	/* these two are from the inode, and are are LE */
+	dotdot->deh_dir_id = par_dirid;
+	dotdot->deh_objectid = par_objid;
+	dotdot->deh_state = 0;	/* Endian safe if 0 */
+	put_deh_location(dotdot, deh_location(dot) - ROUND_UP(strlen("..")));
+	mark_de_visible(dotdot);
+
+	/* copy ".." and "." */
+	memcpy(body + deh_location(dot), ".", 1);
+	memcpy(body + deh_location(dotdot), "..", 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

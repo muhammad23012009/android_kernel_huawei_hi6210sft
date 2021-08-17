@@ -37,12 +37,19 @@
 #include <linux/io.h>
 
 #include <mach/hardware.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/atomic.h>
 #include <asm/irq.h>
 
 #include <mach/regs-clock.h>
 
+<<<<<<< HEAD
 #include <plat/clock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/cpu.h>
 #include <plat/pm.h>
 
@@ -52,6 +59,7 @@
 
 #include "common.h"
 
+<<<<<<< HEAD
 /* S3C2442 extended clock support */
 
 static unsigned long s3c2442_camif_upll_round(struct clk *clk,
@@ -163,6 +171,8 @@ static __init int s3c2442_clk_init(void)
 arch_initcall(s3c2442_clk_init);
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct device s3c2442_dev = {
 	.bus		= &s3c2442_subsys,
 };
@@ -171,11 +181,19 @@ int __init s3c2442_init(void)
 {
 	printk("S3C2442: Initialising architecture\n");
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	register_syscore_ops(&s3c2410_pm_syscore_ops);
 	register_syscore_ops(&s3c24xx_irq_syscore_ops);
 #endif
 	register_syscore_ops(&s3c244x_pm_syscore_ops);
+=======
+#ifdef CONFIG_PM_SLEEP
+	register_syscore_ops(&s3c2410_pm_syscore_ops);
+	register_syscore_ops(&s3c24xx_irq_syscore_ops);
+	register_syscore_ops(&s3c244x_pm_syscore_ops);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return device_register(&s3c2442_dev);
 }

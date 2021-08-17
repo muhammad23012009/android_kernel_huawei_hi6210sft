@@ -82,7 +82,10 @@
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_DESC "Driver for DEC VSXXX-AA and -GA mice and VSXXX-AB tablet"
 
@@ -129,7 +132,11 @@ static void vsxxxaa_drop_bytes(struct vsxxxaa *mouse, int num)
 	if (num >= mouse->count) {
 		mouse->count = 0;
 	} else {
+<<<<<<< HEAD
 		memmove(mouse->buf, mouse->buf + num - 1, BUFLEN - num);
+=======
+		memmove(mouse->buf, mouse->buf + num, BUFLEN - num);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mouse->count -= num;
 	}
 }

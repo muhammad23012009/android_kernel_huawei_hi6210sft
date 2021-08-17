@@ -16,7 +16,10 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/signal.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -127,7 +130,11 @@ MODULE_LICENSE("GPL v2");
  * CPC_MSG_TYPE_EXT_CAN_FRAME or CPC_MSG_TYPE_EXT_RTR_FRAME.
  */
 struct cpc_can_msg {
+<<<<<<< HEAD
 	u32 id;
+=======
+	__le32 id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 length;
 	u8 msg[8];
 };
@@ -204,8 +211,13 @@ struct __packed ems_cpc_msg {
 	u8 type;	/* type of message */
 	u8 length;	/* length of data within union 'msg' */
 	u8 msgid;	/* confirmation handle */
+<<<<<<< HEAD
 	u32 ts_sec;	/* timestamp in seconds */
 	u32 ts_nsec;	/* timestamp in nano seconds */
+=======
+	__le32 ts_sec;	/* timestamp in seconds */
+	__le32 ts_nsec;	/* timestamp in nano seconds */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	union {
 		u8 generic[64];
@@ -268,6 +280,11 @@ struct ems_usb {
 	unsigned int free_slots; /* remember number of available slots */
 
 	struct ems_cpc_msg active_params; /* active controller parameters */
+<<<<<<< HEAD
+=======
+	void *rxbuf[MAX_RX_URBS];
+	dma_addr_t rxbuf_dma[MAX_RX_URBS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void ems_usb_read_interrupt_callback(struct urb *urb)
@@ -282,15 +299,26 @@ static void ems_usb_read_interrupt_callback(struct urb *urb)
 	switch (urb->status) {
 	case 0:
 		dev->free_slots = dev->intr_in_buffer[1];
+<<<<<<< HEAD
 		if(dev->free_slots > CPC_TX_QUEUE_TRIGGER_HIGH){
 			if (netif_queue_stopped(netdev)){
 				netif_wake_queue(netdev);
 			}
 		}
+=======
+		if (dev->free_slots > CPC_TX_QUEUE_TRIGGER_HIGH &&
+		    netif_queue_stopped(netdev))
+			netif_wake_queue(netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case -ECONNRESET: /* unlink */
 	case -ENOENT:
+<<<<<<< HEAD
+=======
+	case -EPIPE:
+	case -EPROTO:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case -ESHUTDOWN:
 		return;
 
@@ -333,10 +361,16 @@ static void ems_usb_rx_can_msg(struct ems_usb *dev, struct ems_cpc_msg *msg)
 			cf->data[i] = msg->msg.can_msg.msg[i];
 	}
 
+<<<<<<< HEAD
 	netif_rx(skb);
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
@@ -356,6 +390,10 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
 			dev->can.state = CAN_STATE_BUS_OFF;
 			cf->can_id |= CAN_ERR_BUSOFF;
 
+<<<<<<< HEAD
+=======
+			dev->can.can_stats.bus_off++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			can_bus_off(dev->netdev);
 		} else if (state & SJA1000_SR_ES) {
 			dev->can.state = CAN_STATE_ERROR_WARNING;
@@ -386,7 +424,10 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
 			cf->data[2] |= CAN_ERR_PROT_STUFF;
 			break;
 		default:
+<<<<<<< HEAD
 			cf->data[2] |= CAN_ERR_PROT_UNSPEC;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cf->data[3] = ecc & SJA1000_ECC_SEG;
 			break;
 		}
@@ -408,10 +449,16 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
 		stats->rx_errors++;
 	}
 
+<<<<<<< HEAD
 	netif_rx(skb);
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -443,10 +490,16 @@ static void ems_usb_read_bulk_callback(struct urb *urb)
 	if (urb->actual_length > CPC_HEADER_SIZE) {
 		struct ems_cpc_msg *msg;
 		u8 *ibuf = urb->transfer_buffer;
+<<<<<<< HEAD
 		u8 msg_count, again, start;
 
 		msg_count = ibuf[0] & ~0x80;
 		again = ibuf[0] & 0x80;
+=======
+		u8 msg_count, start;
+
+		msg_count = ibuf[0] & ~0x80;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		start = CPC_HEADER_SIZE;
 
@@ -527,7 +580,11 @@ static void ems_usb_write_bulk_callback(struct urb *urb)
 	if (urb->status)
 		netdev_info(netdev, "Tx URB aborted (%d)\n", urb->status);
 
+<<<<<<< HEAD
 	netdev->trans_start = jiffies;
+=======
+	netif_trans_update(netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* transmission complete interrupt */
 	netdev->stats.tx_packets++;
@@ -602,17 +659,28 @@ static int ems_usb_start(struct ems_usb *dev)
 	for (i = 0; i < MAX_RX_URBS; i++) {
 		struct urb *urb = NULL;
 		u8 *buf = NULL;
+<<<<<<< HEAD
+=======
+		dma_addr_t buf_dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* create a URB, and a buffer for it */
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
+<<<<<<< HEAD
 			netdev_err(netdev, "No memory left for URBs\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -ENOMEM;
 			break;
 		}
 
 		buf = usb_alloc_coherent(dev->udev, RX_BUFFER_SIZE, GFP_KERNEL,
+<<<<<<< HEAD
 					 &urb->transfer_dma);
+=======
+					 &buf_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!buf) {
 			netdev_err(netdev, "No memory left for USB buffer\n");
 			usb_free_urb(urb);
@@ -620,6 +688,11 @@ static int ems_usb_start(struct ems_usb *dev)
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		urb->transfer_dma = buf_dma;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usb_fill_bulk_urb(urb, dev->udev, usb_rcvbulkpipe(dev->udev, 2),
 				  buf, RX_BUFFER_SIZE,
 				  ems_usb_read_bulk_callback, dev);
@@ -631,9 +704,19 @@ static int ems_usb_start(struct ems_usb *dev)
 			usb_unanchor_urb(urb);
 			usb_free_coherent(dev->udev, RX_BUFFER_SIZE, buf,
 					  urb->transfer_dma);
+<<<<<<< HEAD
 			break;
 		}
 
+=======
+			usb_free_urb(urb);
+			break;
+		}
+
+		dev->rxbuf[i] = buf;
+		dev->rxbuf_dma[i] = buf_dma;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Drop reference, USB core will take care of freeing it */
 		usb_free_urb(urb);
 	}
@@ -699,6 +782,13 @@ static void unlink_all_urbs(struct ems_usb *dev)
 
 	usb_kill_anchored_urbs(&dev->rx_submitted);
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < MAX_RX_URBS; ++i)
+		usb_free_coherent(dev->udev, RX_BUFFER_SIZE,
+				  dev->rxbuf[i], dev->rxbuf_dma[i]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_kill_anchored_urbs(&dev->tx_submitted);
 	atomic_set(&dev->active_tx_urbs, 0);
 
@@ -757,10 +847,15 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 
 	/* create a URB, and a buffer for it, and copy the data to the URB */
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!urb) {
 		netdev_err(netdev, "No memory left for URBs\n");
 		goto nomem;
 	}
+=======
+	if (!urb)
+		goto nomem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf = usb_alloc_coherent(dev->udev, size, GFP_ATOMIC, &urb->transfer_dma);
 	if (!buf) {
@@ -771,7 +866,11 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 
 	msg = (struct ems_cpc_msg *)&buf[CPC_HEADER_SIZE];
 
+<<<<<<< HEAD
 	msg->msg.can_msg.id = cf->can_id & CAN_ERR_MASK;
+=======
+	msg->msg.can_msg.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	msg->msg.can_msg.length = cf->can_dlc;
 
 	if (cf->can_id & CAN_RTR_FLAG) {
@@ -789,9 +888,12 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 		msg->length = CPC_CAN_MSG_MIN_SIZE + cf->can_dlc;
 	}
 
+<<<<<<< HEAD
 	/* Respect byte order */
 	msg->msg.can_msg.id = cpu_to_le32(msg->msg.can_msg.id);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < MAX_TX_URBS; i++) {
 		if (dev->tx_contexts[i].echo_index == MAX_TX_URBS) {
 			context = &dev->tx_contexts[i];
@@ -804,8 +906,13 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 	 * allowed (MAX_TX_URBS).
 	 */
 	if (!context) {
+<<<<<<< HEAD
 		usb_unanchor_urb(urb);
 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
+=======
+		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
+		usb_free_urb(urb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		netdev_warn(netdev, "couldn't find free context\n");
 
@@ -843,7 +950,11 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 			stats->tx_dropped++;
 		}
 	} else {
+<<<<<<< HEAD
 		netdev->trans_start = jiffies;
+=======
+		netif_trans_update(netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Slow down tx path */
 		if (atomic_read(&dev->active_tx_urbs) >= MAX_TX_URBS ||
@@ -889,6 +1000,10 @@ static const struct net_device_ops ems_usb_netdev_ops = {
 	.ndo_open = ems_usb_open,
 	.ndo_stop = ems_usb_close,
 	.ndo_start_xmit = ems_usb_start_xmit,
+<<<<<<< HEAD
+=======
+	.ndo_change_mtu = can_change_mtu,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct can_bittiming_const ems_usb_bittiming_const = {
@@ -1014,10 +1129,15 @@ static int ems_usb_probe(struct usb_interface *intf,
 		dev->tx_contexts[i].echo_index = MAX_TX_URBS;
 
 	dev->intr_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dev->intr_urb) {
 		dev_err(&intf->dev, "Couldn't alloc intr URB\n");
 		goto cleanup_candev;
 	}
+=======
+	if (!dev->intr_urb)
+		goto cleanup_candev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->intr_in_buffer = kzalloc(INTR_IN_BUFFER_SIZE, GFP_KERNEL);
 	if (!dev->intr_in_buffer)
@@ -1074,13 +1194,22 @@ static void ems_usb_disconnect(struct usb_interface *intf)
 
 	if (dev) {
 		unregister_netdev(dev->netdev);
+<<<<<<< HEAD
 		free_candev(dev->netdev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		unlink_all_urbs(dev);
 
 		usb_free_urb(dev->intr_urb);
 
 		kfree(dev->intr_in_buffer);
+<<<<<<< HEAD
+=======
+		kfree(dev->tx_msg_buffer);
+
+		free_candev(dev->netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

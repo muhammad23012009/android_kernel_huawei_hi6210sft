@@ -29,8 +29,12 @@ again:
 	index = bitmap_find_next_zero_area(map, size, start, nr, align_mask);
 	if (index < size) {
 		if (iommu_is_span_boundary(index, nr, shift, boundary_size)) {
+<<<<<<< HEAD
 			/* we could do more effectively */
 			start = index + 1;
+=======
+			start = ALIGN(shift + index, boundary_size) - shift;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto again;
 		}
 		bitmap_set(map, index, nr);

@@ -1584,6 +1584,14 @@ static void reg_r(struct gspca_dev *gspca_dev,
 	if (ret < 0) {
 		pr_err("reg_r err %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(gspca_dev->usb_buf, 0, USB_BUF_SZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	if (len == 1)
@@ -1708,7 +1716,11 @@ static void setautogain(struct gspca_dev *gspca_dev, s32 val)
 
 	reg_r(gspca_dev, 0x1004, 1);
 	if (gspca_dev->usb_buf[0] & 0x04) {	/* if AE_FULL_FRM */
+<<<<<<< HEAD
 		sd->ae_res = gspca_dev->width * gspca_dev->height;
+=======
+		sd->ae_res = gspca_dev->pixfmt.width * gspca_dev->pixfmt.height;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {				/* get the AE window size */
 		reg_r(gspca_dev, 0x1011, 8);
 		w = (gspca_dev->usb_buf[1] << 8) + gspca_dev->usb_buf[0]
@@ -1717,7 +1729,12 @@ static void setautogain(struct gspca_dev *gspca_dev, s32 val)
 		  - (gspca_dev->usb_buf[7] << 8) - gspca_dev->usb_buf[6];
 		sd->ae_res = h * w;
 		if (sd->ae_res == 0)
+<<<<<<< HEAD
 			sd->ae_res = gspca_dev->width * gspca_dev->height;
+=======
+			sd->ae_res = gspca_dev->pixfmt.width *
+					gspca_dev->pixfmt.height;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1856,21 +1873,33 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	reg_w_buf(gspca_dev, cmd);
 	switch (sd->webcam) {
 	case P35u:
+<<<<<<< HEAD
 		if (gspca_dev->width == 320)
+=======
+		if (gspca_dev->pixfmt.width == 320)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			reg_w_buf(gspca_dev, nw801_start_qvga);
 		else
 			reg_w_buf(gspca_dev, nw801_start_vga);
 		reg_w_buf(gspca_dev, nw801_start_2);
 		break;
 	case Kr651us:
+<<<<<<< HEAD
 		if (gspca_dev->width == 320)
+=======
+		if (gspca_dev->pixfmt.width == 320)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			reg_w_buf(gspca_dev, kr651_start_qvga);
 		else
 			reg_w_buf(gspca_dev, kr651_start_vga);
 		reg_w_buf(gspca_dev, kr651_start_2);
 		break;
 	case Proscope:
+<<<<<<< HEAD
 		if (gspca_dev->width == 320)
+=======
+		if (gspca_dev->pixfmt.width == 320)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			reg_w_buf(gspca_dev, proscope_start_qvga);
 		else
 			reg_w_buf(gspca_dev, proscope_start_vga);

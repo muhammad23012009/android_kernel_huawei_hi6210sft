@@ -27,6 +27,12 @@
 #include <linux/dma-mapping.h>
 #include <linux/platform_device.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/slab.h>
 #include <asm/dcr.h>
@@ -37,6 +43,10 @@
 #include "crypto4xx_reg_def.h"
 #include "crypto4xx_core.h"
 #include "crypto4xx_sa.h"
+<<<<<<< HEAD
+=======
+#include "crypto4xx_trng.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PPC4XX_SEC_VERSION_STR			"0.5"
 
@@ -204,7 +214,11 @@ static u32 crypto4xx_build_pdr(struct crypto4xx_device *dev)
 				  dev->pdr_pa);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	memset(dev->pdr, 0,  sizeof(struct ce_pd) * PPC4XX_NUM_PD);
+=======
+	memset(dev->pdr, 0, sizeof(struct ce_pd) * PPC4XX_NUM_PD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->shadow_sa_pool = dma_alloc_coherent(dev->core_dev->device,
 				   256 * PPC4XX_NUM_PD,
 				   &dev->shadow_sa_pool_pa,
@@ -237,6 +251,7 @@ static u32 crypto4xx_build_pdr(struct crypto4xx_device *dev)
 
 static void crypto4xx_destroy_pdr(struct crypto4xx_device *dev)
 {
+<<<<<<< HEAD
 	if (dev->pdr != NULL)
 		dma_free_coherent(dev->core_dev->device,
 				  sizeof(struct ce_pd) * PPC4XX_NUM_PD,
@@ -244,6 +259,17 @@ static void crypto4xx_destroy_pdr(struct crypto4xx_device *dev)
 	if (dev->shadow_sa_pool)
 		dma_free_coherent(dev->core_dev->device, 256 * PPC4XX_NUM_PD,
 				  dev->shadow_sa_pool, dev->shadow_sa_pool_pa);
+=======
+	if (dev->pdr)
+		dma_free_coherent(dev->core_dev->device,
+				  sizeof(struct ce_pd) * PPC4XX_NUM_PD,
+				  dev->pdr, dev->pdr_pa);
+
+	if (dev->shadow_sa_pool)
+		dma_free_coherent(dev->core_dev->device, 256 * PPC4XX_NUM_PD,
+				  dev->shadow_sa_pool, dev->shadow_sa_pool_pa);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dev->shadow_sr_pool)
 		dma_free_coherent(dev->core_dev->device,
 			sizeof(struct sa_state_record) * PPC4XX_NUM_PD,
@@ -394,12 +420,17 @@ static u32 crypto4xx_build_sdr(struct crypto4xx_device *dev)
 		dma_alloc_coherent(dev->core_dev->device,
 			dev->scatter_buffer_size * PPC4XX_NUM_SD,
 			&dev->scatter_buffer_pa, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!dev->scatter_buffer_va) {
 		dma_free_coherent(dev->core_dev->device,
 				  sizeof(struct ce_sd) * PPC4XX_NUM_SD,
 				  dev->sdr, dev->sdr_pa);
 		return -ENOMEM;
 	}
+=======
+	if (!dev->scatter_buffer_va)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sd_array = dev->sdr;
 
@@ -413,12 +444,20 @@ static u32 crypto4xx_build_sdr(struct crypto4xx_device *dev)
 
 static void crypto4xx_destroy_sdr(struct crypto4xx_device *dev)
 {
+<<<<<<< HEAD
 	if (dev->sdr != NULL)
+=======
+	if (dev->sdr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dma_free_coherent(dev->core_dev->device,
 				  sizeof(struct ce_sd) * PPC4XX_NUM_SD,
 				  dev->sdr, dev->sdr_pa);
 
+<<<<<<< HEAD
 	if (dev->scatter_buffer_va != NULL)
+=======
+	if (dev->scatter_buffer_va)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dma_free_coherent(dev->core_dev->device,
 				  dev->scatter_buffer_size * PPC4XX_NUM_SD,
 				  dev->scatter_buffer_va,
@@ -640,6 +679,18 @@ static u32 crypto4xx_ablkcipher_done(struct crypto4xx_device *dev,
 		addr = dma_map_page(dev->core_dev->device, sg_page(dst),
 				    dst->offset, dst->length, DMA_FROM_DEVICE);
 	}
+<<<<<<< HEAD
+=======
+
+	if (pd_uinfo->sa_va->sa_command_0.bf.save_iv == SA_SAVE_IV) {
+		struct crypto_skcipher *skcipher = crypto_skcipher_reqtfm(req);
+
+		crypto4xx_memcpy_from_le32((u32 *)req->iv,
+			pd_uinfo->sr_va->save_iv,
+			crypto_skcipher_ivsize(skcipher));
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	crypto4xx_ret_sg_desc(dev, pd_uinfo);
 	if (ablk_req->base.complete != NULL)
 		ablk_req->base.complete(&ablk_req->base, 0);
@@ -721,7 +772,10 @@ static void crypto4xx_stop_all(struct crypto4xx_core_device *core_dev)
 	crypto4xx_destroy_pdr(core_dev->dev);
 	crypto4xx_destroy_gdr(core_dev->dev);
 	crypto4xx_destroy_sdr(core_dev->dev);
+<<<<<<< HEAD
 	dev_set_drvdata(core_dev->device, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iounmap(core_dev->dev->ce_base);
 	kfree(core_dev->dev);
 	kfree(core_dev);
@@ -738,6 +792,7 @@ void crypto4xx_return_pd(struct crypto4xx_device *dev,
 	pd_uinfo->state = PD_ENTRY_FREE;
 }
 
+<<<<<<< HEAD
 /*
  * derive number of elements in scatterlist
  * Shamlessly copy from talitos.c
@@ -758,6 +813,8 @@ static int get_sg_count(struct scatterlist *sg_list, int nbytes)
 	return sg_nents;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u32 get_next_gd(u32 current)
 {
 	if (current != PPC4XX_LAST_GD)
@@ -798,7 +855,15 @@ u32 crypto4xx_build_pd(struct crypto_async_request *req,
 	u32 gd_idx = 0;
 
 	/* figure how many gd is needed */
+<<<<<<< HEAD
 	num_gd = get_sg_count(src, datalen);
+=======
+	num_gd = sg_nents_for_len(src, datalen);
+	if ((int)num_gd < 0) {
+		dev_err(dev->core_dev->device, "Invalid number of src SG.\n");
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (num_gd == 1)
 		num_gd = 0;
 
@@ -1047,12 +1112,19 @@ int crypto4xx_register_alg(struct crypto4xx_device *sec_dev,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (rc) {
 			list_del(&alg->entry);
 			kfree(alg);
 		} else {
 			list_add_tail(&alg->entry, &sec_dev->alg_list);
 		}
+=======
+		if (rc)
+			kfree(alg);
+		else
+			list_add_tail(&alg->entry, &sec_dev->alg_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -1111,7 +1183,11 @@ static irqreturn_t crypto4xx_ce_interrupt_handler(int irq, void *data)
 	struct device *dev = (struct device *)data;
 	struct crypto4xx_core_device *core_dev = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	if (core_dev->dev->ce_base == 0)
+=======
+	if (!core_dev->dev->ce_base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	writel(PPC4XX_INTERRUPT_CLR,
@@ -1153,7 +1229,11 @@ struct crypto4xx_alg_common crypto4xx_alg[] = {
 /**
  * Module Initialization Routine
  */
+<<<<<<< HEAD
 static int __init crypto4xx_probe(struct platform_device *ofdev)
+=======
+static int crypto4xx_probe(struct platform_device *ofdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int rc;
 	struct resource res;
@@ -1206,7 +1286,11 @@ static int __init crypto4xx_probe(struct platform_device *ofdev)
 
 	rc = crypto4xx_build_gdr(core_dev->dev);
 	if (rc)
+<<<<<<< HEAD
 		goto err_build_gdr;
+=======
+		goto err_build_pdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = crypto4xx_build_sdr(core_dev->dev);
 	if (rc)
@@ -1239,6 +1323,10 @@ static int __init crypto4xx_probe(struct platform_device *ofdev)
 	if (rc)
 		goto err_start_dev;
 
+<<<<<<< HEAD
+=======
+	ppc4xx_trng_probe(core_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 err_start_dev:
@@ -1248,12 +1336,20 @@ err_iomap:
 err_request_irq:
 	irq_dispose_mapping(core_dev->irq);
 	tasklet_kill(&core_dev->tasklet);
+<<<<<<< HEAD
 	crypto4xx_destroy_sdr(core_dev->dev);
 err_build_sdr:
 	crypto4xx_destroy_gdr(core_dev->dev);
 err_build_gdr:
 	crypto4xx_destroy_pdr(core_dev->dev);
 err_build_pdr:
+=======
+err_build_sdr:
+	crypto4xx_destroy_sdr(core_dev->dev);
+	crypto4xx_destroy_gdr(core_dev->dev);
+err_build_pdr:
+	crypto4xx_destroy_pdr(core_dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(core_dev->dev);
 err_alloc_dev:
 	kfree(core_dev);
@@ -1261,11 +1357,20 @@ err_alloc_dev:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int __exit crypto4xx_remove(struct platform_device *ofdev)
+=======
+static int crypto4xx_remove(struct platform_device *ofdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device *dev = &ofdev->dev;
 	struct crypto4xx_core_device *core_dev = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
+=======
+	ppc4xx_trng_remove(core_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_irq(core_dev->irq, dev);
 	irq_dispose_mapping(core_dev->irq);
 
@@ -1282,11 +1387,19 @@ static const struct of_device_id crypto4xx_match[] = {
 	{ .compatible      = "amcc,ppc4xx-crypto",},
 	{ },
 };
+<<<<<<< HEAD
 
 static struct platform_driver crypto4xx_driver = {
 	.driver = {
 		.name = "crypto4xx",
 		.owner = THIS_MODULE,
+=======
+MODULE_DEVICE_TABLE(of, crypto4xx_match);
+
+static struct platform_driver crypto4xx_driver = {
+	.driver = {
+		.name = MODULE_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = crypto4xx_match,
 	},
 	.probe		= crypto4xx_probe,
@@ -1298,4 +1411,7 @@ module_platform_driver(crypto4xx_driver);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("James Hsiao <jhsiao@amcc.com>");
 MODULE_DESCRIPTION("Driver for AMCC PPC4xx crypto accelerator");
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

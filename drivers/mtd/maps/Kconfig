@@ -66,6 +66,7 @@ config MTD_PHYSMAP_BANKWIDTH
 	  used internally by the CFI drivers.
 
 config MTD_PHYSMAP_OF
+<<<<<<< HEAD
 	tristate "Flash device in physical memory map based on OF description"
 	depends on OF && (MTD_CFI || MTD_JEDECPROBE || MTD_ROM)
 	help
@@ -74,6 +75,26 @@ config MTD_PHYSMAP_OF
 	  physically into the CPU's memory. The mapping description here is
 	  taken from OF device tree.
 
+=======
+	tristate "Memory device in physical memory map based on OF description"
+	depends on OF && (MTD_CFI || MTD_JEDECPROBE || MTD_ROM || MTD_RAM)
+	help
+	  This provides a 'mapping' driver which allows the NOR Flash, ROM
+	  and RAM driver code to communicate with chips which are mapped
+	  physically into the CPU's memory. The mapping description here is
+	  taken from OF device tree.
+
+config MTD_PHYSMAP_OF_VERSATILE
+	bool "Support ARM Versatile physmap OF"
+	depends on MTD_PHYSMAP_OF
+	depends on MFD_SYSCON
+	default y if (ARCH_INTEGRATOR || ARCH_VERSATILE || ARCH_REALVIEW)
+	help
+	  This provides some extra DT physmap parsing for the ARM Versatile
+	  platforms, basically to add a VPP (write protection) callback so
+	  the flash can be taken out of write protection.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config MTD_PMC_MSP_EVM
 	tristate "CFI Flash device mapped on PMC-Sierra MSP"
 	depends on PMC_MSP && MTD_CFI
@@ -108,7 +129,11 @@ config MTD_SUN_UFLASH
 
 config MTD_SC520CDP
 	tristate "CFI Flash device mapped on AMD SC520 CDP"
+<<<<<<< HEAD
 	depends on X86 && MTD_CFI
+=======
+	depends on (MELAN || COMPILE_TEST) && MTD_CFI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  The SC520 CDP board has two banks of CFI-compliant chips and one
 	  Dual-in-line JEDEC chip. This 'mapping' driver supports that
@@ -116,7 +141,11 @@ config MTD_SC520CDP
 
 config MTD_NETSC520
 	tristate "CFI Flash device mapped on AMD NetSc520"
+<<<<<<< HEAD
 	depends on X86 && MTD_CFI
+=======
+	depends on (MELAN || COMPILE_TEST) && MTD_CFI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  This enables access routines for the flash chips on the AMD NetSc520
 	  demonstration board. If you have one of these boards and would like
@@ -124,7 +153,11 @@ config MTD_NETSC520
 
 config MTD_TS5500
 	tristate "JEDEC Flash device mapped on Technologic Systems TS-5500"
+<<<<<<< HEAD
 	depends on X86
+=======
+	depends on TS5500 || COMPILE_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MTD_JEDECPROBE
 	select MTD_CFI_AMDSTD
 	help
@@ -157,6 +190,7 @@ config MTD_PXA2XX
 	help
 	  This provides a driver for the NOR flash attached to a PXA2xx chip.
 
+<<<<<<< HEAD
 config MTD_OCTAGON
 	tristate "JEDEC Flash device mapped on Octagon 5066 SBC"
 	depends on X86 && MTD_JEDEC && MTD_COMPLEX_MAPPINGS
@@ -175,6 +209,8 @@ config MTD_VMAX
 	  Board Computer. More information on the board is available at
 	  <http://www.tempustech.com/>.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config MTD_SCx200_DOCFLASH
 	tristate "Flash device mapped with DOCCS on NatSemi SCx200"
 	depends on SCx200 && MTD_CFI
@@ -260,14 +296,22 @@ config MTD_L440GX
 
 config MTD_CFI_FLAGADM
 	tristate "CFI Flash device mapping on FlagaDM"
+<<<<<<< HEAD
 	depends on 8xx && MTD_CFI
+=======
+	depends on PPC_8xx && MTD_CFI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Mapping for the Flaga digital module. If you don't have one, ignore
 	  this setting.
 
 config MTD_SOLUTIONENGINE
 	tristate "CFI Flash device mapped on Hitachi SolutionEngine"
+<<<<<<< HEAD
 	depends on SUPERH && SOLUTION_ENGINE && MTD_CFI && MTD_REDBOOT_PARTS
+=======
+	depends on SOLUTION_ENGINE && MTD_CFI && MTD_REDBOOT_PARTS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  This enables access to the flash chips on the Hitachi SolutionEngine and
 	  similar boards. Say 'Y' if you are building a kernel for such a board.
@@ -297,6 +341,7 @@ config MTD_IXP4XX
 	  IXDP425 and Coyote. If you have an IXP4xx based board and
 	  would like to use the flash chips on it, say 'Y'.
 
+<<<<<<< HEAD
 config MTD_AUTCPU12
 	bool "NV-RAM mapping AUTCPU12 board"
 	depends on ARCH_AUTCPU12
@@ -304,6 +349,8 @@ config MTD_AUTCPU12
 	  This enables access to the NV-RAM on autronix autcpu12 board.
 	  If you have such a board, say 'Y'.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config MTD_IMPA7
 	tristate "JEDEC Flash device mapped on impA7"
 	depends on ARM && MTD_JEDECPROBE
@@ -351,7 +398,11 @@ config MTD_BFIN_ASYNC
 
 config MTD_GPIO_ADDR
 	tristate "GPIO-assisted Flash Chip Support"
+<<<<<<< HEAD
 	depends on GPIOLIB
+=======
+	depends on GPIOLIB || COMPILE_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on MTD_COMPLEX_MAPPINGS
 	help
 	  Map driver which allows flashes to be partially physically addressed

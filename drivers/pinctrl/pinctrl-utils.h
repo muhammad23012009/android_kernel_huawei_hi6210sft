@@ -37,7 +37,11 @@ int pinctrl_utils_add_map_configs(struct pinctrl_dev *pctldev,
 int pinctrl_utils_add_config(struct pinctrl_dev *pctldev,
 		unsigned long **configs, unsigned *num_configs,
 		unsigned long config);
+<<<<<<< HEAD
 void pinctrl_utils_dt_free_map(struct pinctrl_dev *pctldev,
+=======
+void pinctrl_utils_free_map(struct pinctrl_dev *pctldev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct pinctrl_map *map, unsigned num_maps);
 
 #endif /* __PINCTRL_UTILS_H__ */

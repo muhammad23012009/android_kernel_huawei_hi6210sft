@@ -39,13 +39,20 @@ struct pinctrl_dev;
  *	name can be used with the generic @pinctrl_ops to retrieve the
  *	actual pins affected. The applicable groups will be returned in
  *	@groups and the number of groups in @num_groups
+<<<<<<< HEAD
  * @enable: enable a certain muxing function with a certain pin group. The
+=======
+ * @set_mux: enable a certain muxing function with a certain pin group. The
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	driver does not need to figure out whether enabling this function
  *	conflicts some other use of the pins in that group, such collisions
  *	are handled by the pinmux subsystem. The @func_selector selects a
  *	certain function whereas @group_selector selects a certain set of pins
  *	to be used. On simple controllers the latter argument may be ignored
+<<<<<<< HEAD
  * @disable: disable a certain muxing selector with a certain pin group
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @gpio_request_enable: requests and enables GPIO on a certain pin.
  *	Implement this only if you can mux every pin individually as GPIO. The
  *	affected GPIO range is passed along with an offset(pin number) into that
@@ -57,6 +64,12 @@ struct pinctrl_dev;
  *	depending on whether the GPIO is configured as input or output,
  *	a direction selector function may be implemented as a backing
  *	to the GPIO controllers that need pin muxing.
+<<<<<<< HEAD
+=======
+ * @strict: do not allow simultaneous use of the same pin for GPIO and another
+ *	function. Check both gpio_owner and mux_owner strictly before approving
+ *	the pin request.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct pinmux_ops {
 	int (*request) (struct pinctrl_dev *pctldev, unsigned offset);
@@ -67,11 +80,17 @@ struct pinmux_ops {
 	int (*get_function_groups) (struct pinctrl_dev *pctldev,
 				  unsigned selector,
 				  const char * const **groups,
+<<<<<<< HEAD
 				  unsigned * const num_groups);
 	int (*enable) (struct pinctrl_dev *pctldev, unsigned func_selector,
 		       unsigned group_selector);
 	void (*disable) (struct pinctrl_dev *pctldev, unsigned func_selector,
 			 unsigned group_selector);
+=======
+				  unsigned *num_groups);
+	int (*set_mux) (struct pinctrl_dev *pctldev, unsigned func_selector,
+			unsigned group_selector);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*gpio_request_enable) (struct pinctrl_dev *pctldev,
 				    struct pinctrl_gpio_range *range,
 				    unsigned offset);
@@ -82,6 +101,10 @@ struct pinmux_ops {
 				   struct pinctrl_gpio_range *range,
 				   unsigned offset,
 				   bool input);
+<<<<<<< HEAD
+=======
+	bool strict;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* CONFIG_PINMUX */

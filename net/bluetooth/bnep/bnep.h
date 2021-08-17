@@ -12,8 +12,12 @@
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+  along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 #ifndef _BNEP_H
@@ -112,6 +116,13 @@ struct bnep_ext_hdr {
 #define BNEPCONNDEL	_IOW('B', 201, int)
 #define BNEPGETCONNLIST	_IOR('B', 210, int)
 #define BNEPGETCONNINFO	_IOR('B', 211, int)
+<<<<<<< HEAD
+=======
+#define BNEPGETSUPPFEAT	_IOR('B', 212, int)
+
+#define BNEP_SETUP_RESPONSE	0
+#define BNEP_SETUP_RSP_SENT	10
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct bnep_connadd_req {
 	int   sock;		/* Connected socket */

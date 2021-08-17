@@ -54,7 +54,11 @@ DEFINE_PER_CPU(unsigned long, xen_mc_irq_flags);
 
 void xen_mc_flush(void)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct multicall_entry *mc;
 	int ret = 0;
 	unsigned long flags;
@@ -131,7 +135,11 @@ void xen_mc_flush(void)
 
 struct multicall_space __xen_mc_entry(size_t args)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct multicall_space ret;
 	unsigned argidx = roundup(b->argidx, sizeof(u64));
 
@@ -162,7 +170,11 @@ struct multicall_space __xen_mc_entry(size_t args)
 
 struct multicall_space xen_mc_extend_args(unsigned long op, size_t size)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct multicall_space ret = { NULL, NULL };
 
 	BUG_ON(preemptible());
@@ -192,7 +204,11 @@ out:
 
 void xen_mc_callback(void (*fn)(void *), void *data)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct callback *cb;
 
 	if (b->cbidx == MC_BATCH) {

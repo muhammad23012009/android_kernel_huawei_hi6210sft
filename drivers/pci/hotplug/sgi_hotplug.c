@@ -9,6 +9,10 @@
  * Work to add BIOS PROM support was completed by Mike Habeck.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,7 +33,10 @@
 #include <asm/sn/sn_feature_sets.h>
 #include <asm/sn/sn_sal.h>
 #include <asm/sn/types.h>
+<<<<<<< HEAD
 #include <linux/acpi.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/sn/acpi.h>
 
 #include "../pci.h"
@@ -99,7 +106,11 @@ static ssize_t path_show(struct pci_slot *pci_slot, char *buf)
 	if (!slot)
 		return retval;
 
+<<<<<<< HEAD
 	retval = sprintf (buf, "%s\n", slot->physical_path);
+=======
+	retval = sprintf(buf, "%s\n", slot->physical_path);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
@@ -188,7 +199,11 @@ static int sn_hp_slot_private_alloc(struct hotplug_slot *bss_hotplug_slot,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct hotplug_slot * sn_hp_destroy(void)
+=======
+static struct hotplug_slot *sn_hp_destroy(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct slot *slot;
 	struct pci_slot *pci_slot;
@@ -250,15 +265,23 @@ static int sn_slot_enable(struct hotplug_slot *bss_hotplug_slot,
 	}
 
 	if (rc == PCI_L1_ERR) {
+<<<<<<< HEAD
 		dev_dbg(&slot->pci_bus->self->dev,
 			"L1 failure %d with message: %s",
+=======
+		dev_dbg(&slot->pci_bus->self->dev, "L1 failure %d with message: %s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			resp.resp_sub_errno, resp.resp_l1_msg);
 		return -EPERM;
 	}
 
 	if (rc) {
+<<<<<<< HEAD
 		dev_dbg(&slot->pci_bus->self->dev,
 			"insert failed with error %d sub-error %d\n",
+=======
+		dev_dbg(&slot->pci_bus->self->dev, "insert failed with error %d sub-error %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rc, resp.resp_sub_errno);
 		return -EIO;
 	}
@@ -288,21 +311,33 @@ static int sn_slot_disable(struct hotplug_slot *bss_hotplug_slot,
 	}
 
 	if ((action == PCI_REQ_SLOT_ELIGIBLE) && (rc == PCI_EMPTY_33MHZ)) {
+<<<<<<< HEAD
 		dev_dbg(&slot->pci_bus->self->dev,
 			"Cannot remove last 33MHz card\n");
+=======
+		dev_dbg(&slot->pci_bus->self->dev, "Cannot remove last 33MHz card\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EPERM;
 	}
 
 	if ((action == PCI_REQ_SLOT_ELIGIBLE) && (rc == PCI_L1_ERR)) {
+<<<<<<< HEAD
 		dev_dbg(&slot->pci_bus->self->dev,
 			"L1 failure %d with message \n%s\n",
+=======
+		dev_dbg(&slot->pci_bus->self->dev, "L1 failure %d with message \n%s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			resp.resp_sub_errno, resp.resp_l1_msg);
 		return -EPERM;
 	}
 
 	if ((action == PCI_REQ_SLOT_ELIGIBLE) && rc) {
+<<<<<<< HEAD
 		dev_dbg(&slot->pci_bus->self->dev,
 			"remove failed with error %d sub-error %d\n",
+=======
+		dev_dbg(&slot->pci_bus->self->dev, "remove failed with error %d sub-error %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rc, resp.resp_sub_errno);
 		return -EIO;
 	}
@@ -318,7 +353,11 @@ static int sn_slot_disable(struct hotplug_slot *bss_hotplug_slot,
 	}
 
 	if ((action == PCI_REQ_SLOT_DISABLE) && rc) {
+<<<<<<< HEAD
 		dev_dbg(&slot->pci_bus->self->dev,"remove failed rc = %d\n", rc);
+=======
+		dev_dbg(&slot->pci_bus->self->dev, "remove failed rc = %d\n", rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return rc;
@@ -414,11 +453,18 @@ static int enable_slot(struct hotplug_slot *bss_hotplug_slot)
 		acpi_handle rethandle;
 		acpi_status ret;
 
+<<<<<<< HEAD
 		phandle = PCI_CONTROLLER(slot->pci_bus)->acpi_handle;
 
 		if (acpi_bus_get_device(phandle, &pdevice)) {
 			dev_dbg(&slot->pci_bus->self->dev,
 				"no parent device, assuming NULL\n");
+=======
+		phandle = acpi_device_handle(PCI_CONTROLLER(slot->pci_bus)->companion);
+
+		if (acpi_bus_get_device(phandle, &pdevice)) {
+			dev_dbg(&slot->pci_bus->self->dev, "no parent device, assuming NULL\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pdevice = NULL;
 		}
 
@@ -447,10 +493,15 @@ static int enable_slot(struct hotplug_slot *bss_hotplug_slot)
 
 				ret = acpi_bus_scan(chandle);
 				if (ACPI_FAILURE(ret)) {
+<<<<<<< HEAD
 					printk(KERN_ERR "%s: acpi_bus_scan "
 					       "failed (0x%x) for slot %d "
 					       "func %d\n", __func__,
 					       ret, (int)(adr>>16),
+=======
+					printk(KERN_ERR "%s: acpi_bus_scan failed (0x%x) for slot %d func %d\n",
+					       __func__, ret, (int)(adr>>16),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					       (int)(adr&0xffff));
 					/* try to continue on */
 				}
@@ -459,12 +510,18 @@ static int enable_slot(struct hotplug_slot *bss_hotplug_slot)
 		acpi_scan_lock_release();
 	}
 
+<<<<<<< HEAD
+=======
+	pci_lock_rescan_remove();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Call the driver for the new device */
 	pci_bus_add_devices(slot->pci_bus);
 	/* Call the drivers for the new devices subordinate to PPB */
 	if (new_ppb)
 		pci_bus_add_devices(new_bus);
 
+<<<<<<< HEAD
 	mutex_unlock(&sn_hotplug_mutex);
 
 	if (rc == 0)
@@ -473,6 +530,15 @@ static int enable_slot(struct hotplug_slot *bss_hotplug_slot)
 	else
 		dev_dbg(&slot->pci_bus->self->dev,
 			"insert operation failed rc = %d\n", rc);
+=======
+	pci_unlock_rescan_remove();
+	mutex_unlock(&sn_hotplug_mutex);
+
+	if (rc == 0)
+		dev_dbg(&slot->pci_bus->self->dev, "insert operation successful\n");
+	else
+		dev_dbg(&slot->pci_bus->self->dev, "insert operation failed rc = %d\n", rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }
@@ -482,7 +548,11 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 	struct slot *slot = bss_hotplug_slot->private;
 	struct pci_dev *dev, *temp;
 	int rc;
+<<<<<<< HEAD
 	acpi_owner_id ssdt_id = 0;
+=======
+	acpi_handle ssdt_hdl = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Acquire update access to the bus */
 	mutex_lock(&sn_hotplug_mutex);
@@ -495,7 +565,11 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 
 	/* free the ACPI resources for the slot */
 	if (SN_ACPI_BASE_SUPPORT() &&
+<<<<<<< HEAD
             PCI_CONTROLLER(slot->pci_bus)->acpi_handle) {
+=======
+		PCI_CONTROLLER(slot->pci_bus)->companion) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long long adr;
 		struct acpi_device *device;
 		acpi_handle phandle;
@@ -504,7 +578,11 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 		acpi_status ret;
 
 		/* Get the rootbus node pointer */
+<<<<<<< HEAD
 		phandle = PCI_CONTROLLER(slot->pci_bus)->acpi_handle;
+=======
+		phandle = acpi_device_handle(PCI_CONTROLLER(slot->pci_bus)->companion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		acpi_scan_lock_acquire();
 		/*
@@ -529,7 +607,11 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 			if (ACPI_SUCCESS(ret) &&
 			    (adr>>16) == (slot->device_num + 1)) {
 				/* retain the owner id */
+<<<<<<< HEAD
 				acpi_get_id(chandle, &ssdt_id);
+=======
+				ssdt_hdl = chandle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				ret = acpi_bus_get_device(chandle,
 							  &device);
@@ -540,6 +622,10 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 		acpi_scan_lock_release();
 	}
 
+<<<<<<< HEAD
+=======
+	pci_lock_rescan_remove();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Free the SN resources assigned to the Linux device.*/
 	list_for_each_entry_safe(dev, temp, &slot->pci_bus->devices, bus_list) {
 		if (PCI_SLOT(dev->devfn) != slot->device_num + 1)
@@ -550,6 +636,7 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 		pci_stop_and_remove_bus_device(dev);
 		pci_dev_put(dev);
 	}
+<<<<<<< HEAD
 
 	/* Remove the SSDT for the slot from the ACPI namespace */
 	if (SN_ACPI_BASE_SUPPORT() && ssdt_id) {
@@ -559,6 +646,18 @@ static int disable_slot(struct hotplug_slot *bss_hotplug_slot)
 			printk(KERN_ERR "%s: acpi_unload_table_id "
 			       "failed (0x%x) for id %d\n",
 			       __func__, ret, ssdt_id);
+=======
+	pci_unlock_rescan_remove();
+
+	/* Remove the SSDT for the slot from the ACPI namespace */
+	if (SN_ACPI_BASE_SUPPORT() && ssdt_hdl) {
+		acpi_status ret;
+		ret = acpi_unload_parent_table(ssdt_hdl);
+		if (ACPI_FAILURE(ret)) {
+			acpi_handle_err(ssdt_hdl,
+					"%s: acpi_unload_parent_table failed (0x%x)\n",
+					__func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* try to continue on */
 		}
 	}

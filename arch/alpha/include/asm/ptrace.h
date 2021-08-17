@@ -19,4 +19,12 @@
 
 #define force_successful_syscall_return() (current_pt_regs()->r0 = 0)
 
+<<<<<<< HEAD
+=======
+static inline unsigned long regs_return_value(struct pt_regs *regs)
+{
+	return regs->r0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

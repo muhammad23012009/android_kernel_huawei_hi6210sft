@@ -21,10 +21,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -121,6 +124,18 @@ int apei_hest_parse(apei_hest_func_t func, void *data)
 }
 EXPORT_SYMBOL_GPL(apei_hest_parse);
 
+<<<<<<< HEAD
+=======
+/*
+ * Check if firmware advertises firmware first mode. We need FF bit to be set
+ * along with a set of MC banks which work in FF mode.
+ */
+static int __init hest_parse_cmc(struct acpi_hest_header *hest_hdr, void *data)
+{
+	return arch_apei_enable_cmcff(hest_hdr, data);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ghes_arr {
 	struct platform_device **ghes_devs;
 	unsigned int count;
@@ -227,6 +242,12 @@ void __init acpi_hest_init(void)
 		goto err;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!acpi_disable_cmcff)
+		apei_hest_parse(hest_parse_cmc, NULL);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ghes_disable) {
 		rc = apei_hest_parse(hest_parse_ghes_count, &ghes_count);
 		if (rc)

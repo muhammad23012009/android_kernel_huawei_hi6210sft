@@ -6,7 +6,12 @@
  * Licensed under GPLv2 or later.
  */
 
+<<<<<<< HEAD
 /include/ "skeleton.dtsi"
+=======
+#include "skeleton.dtsi"
+#include "dt-bindings/clock/pxa-clock.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Marvell PXA2xx family SoC";
@@ -23,8 +28,16 @@
 	};
 
 	cpus {
+<<<<<<< HEAD
 		cpu@0 {
 			compatible = "arm,xscale";
+=======
+		#address-cells = <0>;
+		#size-cells = <0>;
+		cpu {
+			compatible = "marvell,xscale";
+			device_type = "cpu";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
@@ -76,6 +89,10 @@
 			compatible = "mrvl,pxa-uart";
 			reg = <0x40100000 0x30>;
 			interrupts = <22>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks CLK_FFUART>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "disabled";
 		};
 
@@ -83,6 +100,10 @@
 			compatible = "mrvl,pxa-uart";
 			reg = <0x40200000 0x30>;
 			interrupts = <21>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks CLK_BTUART>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "disabled";
 		};
 
@@ -90,6 +111,10 @@
 			compatible = "mrvl,pxa-uart";
 			reg = <0x40700000 0x30>;
 			interrupts = <20>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks CLK_STUART>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "disabled";
 		};
 
@@ -104,11 +129,16 @@
 			compatible = "mrvl,pxa-i2c";
 			reg = <0x40301680 0x30>;
 			interrupts = <18>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks CLK_I2C>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			#address-cells = <0x1>;
 			#size-cells = <0>;
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		usb0: ohci@4c000000 {
 			compatible = "mrvl,pxa-ohci";
 			reg = <0x4c000000 0x10000>;
@@ -120,6 +150,16 @@
 			compatible = "mrvl,pxa-mmc";
 			reg = <0x41100000 0x1000>;
 			interrupts = <23>;
+=======
+		mmc0: mmc@41100000 {
+			compatible = "marvell,pxa-mmc";
+			reg = <0x41100000 0x1000>;
+			interrupts = <23>;
+			clocks = <&clks CLK_MMC>;
+			dmas = <&pdma 21 3
+				&pdma 22 3>;
+			dma-names = "rx", "tx";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "disabled";
 		};
 
@@ -128,5 +168,16 @@
 			reg = <0x40900000 0x3c>;
 			interrupts = <30 31>;
 		};
+<<<<<<< HEAD
+=======
+
+		lcd-controller@40500000 {
+			compatible = "marvell,pxa2xx-lcdc";
+			reg = <0x44000000 0x10000>;
+			interrupts = <17>;
+			clocks = <&clks CLK_LCD>;
+			status = "disabled";
+		};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

@@ -15,7 +15,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i8253.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input.h>
 #include <linux/platform_device.h>
 #include <linux/timex.h>
@@ -100,7 +103,10 @@ static int pcspkr_remove(struct platform_device *dev)
 	struct input_dev *pcspkr_dev = platform_get_drvdata(dev);
 
 	input_unregister_device(pcspkr_dev);
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* turn off the speaker */
 	pcspkr_event(NULL, EV_SND, SND_BELL, 0);
 
@@ -127,7 +133,10 @@ static const struct dev_pm_ops pcspkr_pm_ops = {
 static struct platform_driver pcspkr_platform_driver = {
 	.driver		= {
 		.name	= "pcspkr",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &pcspkr_pm_ops,
 	},
 	.probe		= pcspkr_probe,

@@ -7,6 +7,10 @@
  *  zoned VM statistics
  *  Copyright (C) 2006 Silicon Graphics, Inc.,
  *		Christoph Lameter <christoph@lameter.com>
+<<<<<<< HEAD
+=======
+ *  Copyright (C) 2008-2014 Christoph Lameter
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/fs.h>
 #include <linux/mm.h>
@@ -14,11 +18,27 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/cpu.h>
+<<<<<<< HEAD
 #include <linux/vmstat.h>
+=======
+#include <linux/cpumask.h>
+#include <linux/vmstat.h>
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
+#include <linux/debugfs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <linux/math64.h>
 #include <linux/writeback.h>
 #include <linux/compaction.h>
+<<<<<<< HEAD
+=======
+#include <linux/mm_inline.h>
+#include <linux/page_ext.h>
+#include <linux/page_owner.h>
+
+#include "internal.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_VM_EVENT_COUNTERS
 DEFINE_PER_CPU(struct vm_event_state, vm_event_states) = {{0}};
@@ -76,8 +96,15 @@ void vm_events_fold_cpu(int cpu)
  *
  * vm_stat contains the global counters
  */
+<<<<<<< HEAD
 atomic_long_t vm_stat[NR_VM_ZONE_STAT_ITEMS] __cacheline_aligned_in_smp;
 EXPORT_SYMBOL(vm_stat);
+=======
+atomic_long_t vm_zone_stat[NR_VM_ZONE_STAT_ITEMS] __cacheline_aligned_in_smp;
+atomic_long_t vm_node_stat[NR_VM_NODE_STAT_ITEMS] __cacheline_aligned_in_smp;
+EXPORT_SYMBOL(vm_zone_stat);
+EXPORT_SYMBOL(vm_node_stat);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 
@@ -157,19 +184,50 @@ int calculate_normal_threshold(struct zone *zone)
  */
 void refresh_zone_stat_thresholds(void)
 {
+<<<<<<< HEAD
+=======
+	struct pglist_data *pgdat;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct zone *zone;
 	int cpu;
 	int threshold;
 
+<<<<<<< HEAD
 	for_each_populated_zone(zone) {
+=======
+	/* Zero current pgdat thresholds */
+	for_each_online_pgdat(pgdat) {
+		for_each_online_cpu(cpu) {
+			per_cpu_ptr(pgdat->per_cpu_nodestats, cpu)->stat_threshold = 0;
+		}
+	}
+
+	for_each_populated_zone(zone) {
+		struct pglist_data *pgdat = zone->zone_pgdat;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long max_drift, tolerate_drift;
 
 		threshold = calculate_normal_threshold(zone);
 
+<<<<<<< HEAD
 		for_each_online_cpu(cpu)
 			per_cpu_ptr(zone->pageset, cpu)->stat_threshold
 							= threshold;
 
+=======
+		for_each_online_cpu(cpu) {
+			int pgdat_threshold;
+
+			per_cpu_ptr(zone->pageset, cpu)->stat_threshold
+							= threshold;
+
+			/* Base nodestat threshold on the largest populated zone. */
+			pgdat_threshold = per_cpu_ptr(pgdat->per_cpu_nodestats, cpu)->stat_threshold;
+			per_cpu_ptr(pgdat->per_cpu_nodestats, cpu)->stat_threshold
+				= max(threshold, pgdat_threshold);
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Only set percpu_drift_mark if there is a danger that
 		 * NR_FREE_PAGES reports the low watermark is ok when in fact
@@ -197,17 +255,30 @@ void set_pgdat_percpu_threshold(pg_data_t *pgdat,
 			continue;
 
 		threshold = (*calculate_pressure)(zone);
+<<<<<<< HEAD
 		for_each_possible_cpu(cpu)
+=======
+		for_each_online_cpu(cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			per_cpu_ptr(zone->pageset, cpu)->stat_threshold
 							= threshold;
 	}
 }
 
 /*
+<<<<<<< HEAD
  * For use when we know that interrupts are disabled.
  */
 void __mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
 				int delta)
+=======
+ * For use when we know that interrupts are disabled,
+ * or when we know that preemption is disabled and that
+ * particular counter cannot be updated from interrupt context.
+ */
+void __mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
+			   long delta)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct per_cpu_pageset __percpu *pcp = zone->pageset;
 	s8 __percpu *p = pcp->vm_stat_diff + item;
@@ -226,6 +297,29 @@ void __mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
 }
 EXPORT_SYMBOL(__mod_zone_page_state);
 
+<<<<<<< HEAD
+=======
+void __mod_node_page_state(struct pglist_data *pgdat, enum node_stat_item item,
+				long delta)
+{
+	struct per_cpu_nodestat __percpu *pcp = pgdat->per_cpu_nodestats;
+	s8 __percpu *p = pcp->vm_node_stat_diff + item;
+	long x;
+	long t;
+
+	x = delta + __this_cpu_read(*p);
+
+	t = __this_cpu_read(pcp->stat_threshold);
+
+	if (unlikely(x > t || x < -t)) {
+		node_page_state_add(x, pgdat, item);
+		x = 0;
+	}
+	__this_cpu_write(*p, x);
+}
+EXPORT_SYMBOL(__mod_node_page_state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Optimized increment and decrement functions.
  *
@@ -265,12 +359,40 @@ void __inc_zone_state(struct zone *zone, enum zone_stat_item item)
 	}
 }
 
+<<<<<<< HEAD
+=======
+void __inc_node_state(struct pglist_data *pgdat, enum node_stat_item item)
+{
+	struct per_cpu_nodestat __percpu *pcp = pgdat->per_cpu_nodestats;
+	s8 __percpu *p = pcp->vm_node_stat_diff + item;
+	s8 v, t;
+
+	v = __this_cpu_inc_return(*p);
+	t = __this_cpu_read(pcp->stat_threshold);
+	if (unlikely(v > t)) {
+		s8 overstep = t >> 1;
+
+		node_page_state_add(v + overstep, pgdat, item);
+		__this_cpu_write(*p, -overstep);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __inc_zone_page_state(struct page *page, enum zone_stat_item item)
 {
 	__inc_zone_state(page_zone(page), item);
 }
 EXPORT_SYMBOL(__inc_zone_page_state);
 
+<<<<<<< HEAD
+=======
+void __inc_node_page_state(struct page *page, enum node_stat_item item)
+{
+	__inc_node_state(page_pgdat(page), item);
+}
+EXPORT_SYMBOL(__inc_node_page_state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __dec_zone_state(struct zone *zone, enum zone_stat_item item)
 {
 	struct per_cpu_pageset __percpu *pcp = zone->pageset;
@@ -287,12 +409,40 @@ void __dec_zone_state(struct zone *zone, enum zone_stat_item item)
 	}
 }
 
+<<<<<<< HEAD
+=======
+void __dec_node_state(struct pglist_data *pgdat, enum node_stat_item item)
+{
+	struct per_cpu_nodestat __percpu *pcp = pgdat->per_cpu_nodestats;
+	s8 __percpu *p = pcp->vm_node_stat_diff + item;
+	s8 v, t;
+
+	v = __this_cpu_dec_return(*p);
+	t = __this_cpu_read(pcp->stat_threshold);
+	if (unlikely(v < - t)) {
+		s8 overstep = t >> 1;
+
+		node_page_state_add(v - overstep, pgdat, item);
+		__this_cpu_write(*p, overstep);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __dec_zone_page_state(struct page *page, enum zone_stat_item item)
 {
 	__dec_zone_state(page_zone(page), item);
 }
 EXPORT_SYMBOL(__dec_zone_page_state);
 
+<<<<<<< HEAD
+=======
+void __dec_node_page_state(struct page *page, enum node_stat_item item)
+{
+	__dec_node_state(page_pgdat(page), item);
+}
+EXPORT_SYMBOL(__dec_node_page_state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_HAVE_CMPXCHG_LOCAL
 /*
  * If we have cmpxchg_local support then we do not need to incur the overhead
@@ -306,8 +456,13 @@ EXPORT_SYMBOL(__dec_zone_page_state);
  *     1       Overstepping half of threshold
  *     -1      Overstepping minus half of threshold
 */
+<<<<<<< HEAD
 static inline void mod_state(struct zone *zone,
        enum zone_stat_item item, int delta, int overstep_mode)
+=======
+static inline void mod_zone_state(struct zone *zone,
+       enum zone_stat_item item, long delta, int overstep_mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct per_cpu_pageset __percpu *pcp = zone->pageset;
 	s8 __percpu *p = pcp->vm_stat_diff + item;
@@ -345,6 +500,7 @@ static inline void mod_state(struct zone *zone,
 }
 
 void mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
+<<<<<<< HEAD
 					int delta)
 {
 	mod_state(zone, item, delta, 0);
@@ -359,20 +515,103 @@ void inc_zone_state(struct zone *zone, enum zone_stat_item item)
 void inc_zone_page_state(struct page *page, enum zone_stat_item item)
 {
 	mod_state(page_zone(page), item, 1, 1);
+=======
+			 long delta)
+{
+	mod_zone_state(zone, item, delta, 0);
+}
+EXPORT_SYMBOL(mod_zone_page_state);
+
+void inc_zone_page_state(struct page *page, enum zone_stat_item item)
+{
+	mod_zone_state(page_zone(page), item, 1, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(inc_zone_page_state);
 
 void dec_zone_page_state(struct page *page, enum zone_stat_item item)
 {
+<<<<<<< HEAD
 	mod_state(page_zone(page), item, -1, -1);
 }
 EXPORT_SYMBOL(dec_zone_page_state);
+=======
+	mod_zone_state(page_zone(page), item, -1, -1);
+}
+EXPORT_SYMBOL(dec_zone_page_state);
+
+static inline void mod_node_state(struct pglist_data *pgdat,
+       enum node_stat_item item, int delta, int overstep_mode)
+{
+	struct per_cpu_nodestat __percpu *pcp = pgdat->per_cpu_nodestats;
+	s8 __percpu *p = pcp->vm_node_stat_diff + item;
+	long o, n, t, z;
+
+	do {
+		z = 0;  /* overflow to node counters */
+
+		/*
+		 * The fetching of the stat_threshold is racy. We may apply
+		 * a counter threshold to the wrong the cpu if we get
+		 * rescheduled while executing here. However, the next
+		 * counter update will apply the threshold again and
+		 * therefore bring the counter under the threshold again.
+		 *
+		 * Most of the time the thresholds are the same anyways
+		 * for all cpus in a node.
+		 */
+		t = this_cpu_read(pcp->stat_threshold);
+
+		o = this_cpu_read(*p);
+		n = delta + o;
+
+		if (n > t || n < -t) {
+			int os = overstep_mode * (t >> 1) ;
+
+			/* Overflow must be added to node counters */
+			z = n + os;
+			n = -os;
+		}
+	} while (this_cpu_cmpxchg(*p, o, n) != o);
+
+	if (z)
+		node_page_state_add(z, pgdat, item);
+}
+
+void mod_node_page_state(struct pglist_data *pgdat, enum node_stat_item item,
+					long delta)
+{
+	mod_node_state(pgdat, item, delta, 0);
+}
+EXPORT_SYMBOL(mod_node_page_state);
+
+void inc_node_state(struct pglist_data *pgdat, enum node_stat_item item)
+{
+	mod_node_state(pgdat, item, 1, 1);
+}
+
+void inc_node_page_state(struct page *page, enum node_stat_item item)
+{
+	mod_node_state(page_pgdat(page), item, 1, 1);
+}
+EXPORT_SYMBOL(inc_node_page_state);
+
+void dec_node_page_state(struct page *page, enum node_stat_item item)
+{
+	mod_node_state(page_pgdat(page), item, -1, -1);
+}
+EXPORT_SYMBOL(dec_node_page_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 /*
  * Use interrupt disable to serialize counter updates
  */
 void mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
+<<<<<<< HEAD
 					int delta)
+=======
+			 long delta)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 
@@ -382,6 +621,7 @@ void mod_zone_page_state(struct zone *zone, enum zone_stat_item item,
 }
 EXPORT_SYMBOL(mod_zone_page_state);
 
+<<<<<<< HEAD
 void inc_zone_state(struct zone *zone, enum zone_stat_item item)
 {
 	unsigned long flags;
@@ -391,6 +631,8 @@ void inc_zone_state(struct zone *zone, enum zone_stat_item item)
 	local_irq_restore(flags);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void inc_zone_page_state(struct page *page, enum zone_stat_item item)
 {
 	unsigned long flags;
@@ -412,6 +654,7 @@ void dec_zone_page_state(struct page *page, enum zone_stat_item item)
 	local_irq_restore(flags);
 }
 EXPORT_SYMBOL(dec_zone_page_state);
+<<<<<<< HEAD
 #endif
 
 /*
@@ -420,6 +663,78 @@ EXPORT_SYMBOL(dec_zone_page_state);
  * The cpu specified must be either the current cpu or a processor that
  * is not online. If it is the current cpu then the execution thread must
  * be pinned to the current cpu.
+=======
+
+void inc_node_state(struct pglist_data *pgdat, enum node_stat_item item)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	__inc_node_state(pgdat, item);
+	local_irq_restore(flags);
+}
+EXPORT_SYMBOL(inc_node_state);
+
+void mod_node_page_state(struct pglist_data *pgdat, enum node_stat_item item,
+					long delta)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	__mod_node_page_state(pgdat, item, delta);
+	local_irq_restore(flags);
+}
+EXPORT_SYMBOL(mod_node_page_state);
+
+void inc_node_page_state(struct page *page, enum node_stat_item item)
+{
+	unsigned long flags;
+	struct pglist_data *pgdat;
+
+	pgdat = page_pgdat(page);
+	local_irq_save(flags);
+	__inc_node_state(pgdat, item);
+	local_irq_restore(flags);
+}
+EXPORT_SYMBOL(inc_node_page_state);
+
+void dec_node_page_state(struct page *page, enum node_stat_item item)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	__dec_node_page_state(page, item);
+	local_irq_restore(flags);
+}
+EXPORT_SYMBOL(dec_node_page_state);
+#endif
+
+/*
+ * Fold a differential into the global counters.
+ * Returns the number of counters updated.
+ */
+static int fold_diff(int *zone_diff, int *node_diff)
+{
+	int i;
+	int changes = 0;
+
+	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
+		if (zone_diff[i]) {
+			atomic_long_add(zone_diff[i], &vm_zone_stat[i]);
+			changes++;
+	}
+
+	for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++)
+		if (node_diff[i]) {
+			atomic_long_add(node_diff[i], &vm_node_stat[i]);
+			changes++;
+	}
+	return changes;
+}
+
+/*
+ * Update the zone counters for the current cpu.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Note that refresh_cpu_vm_stats strives to only access
  * node local memory. The per cpu pagesets on remote zones are placed
@@ -431,12 +746,107 @@ EXPORT_SYMBOL(dec_zone_page_state);
  * statistics in the remote zone struct as well as the global cachelines
  * with the global counters. These could cause remote node cache line
  * bouncing and will have to be only done when necessary.
+<<<<<<< HEAD
  */
 void refresh_cpu_vm_stats(int cpu)
 {
 	struct zone *zone;
 	int i;
 	int global_diff[NR_VM_ZONE_STAT_ITEMS] = { 0, };
+=======
+ *
+ * The function returns the number of global counters updated.
+ */
+static int refresh_cpu_vm_stats(bool do_pagesets)
+{
+	struct pglist_data *pgdat;
+	struct zone *zone;
+	int i;
+	int global_zone_diff[NR_VM_ZONE_STAT_ITEMS] = { 0, };
+	int global_node_diff[NR_VM_NODE_STAT_ITEMS] = { 0, };
+	int changes = 0;
+
+	for_each_populated_zone(zone) {
+		struct per_cpu_pageset __percpu *p = zone->pageset;
+
+		for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++) {
+			int v;
+
+			v = this_cpu_xchg(p->vm_stat_diff[i], 0);
+			if (v) {
+
+				atomic_long_add(v, &zone->vm_stat[i]);
+				global_zone_diff[i] += v;
+#ifdef CONFIG_NUMA
+				/* 3 seconds idle till flush */
+				__this_cpu_write(p->expire, 3);
+#endif
+			}
+		}
+#ifdef CONFIG_NUMA
+		if (do_pagesets) {
+			cond_resched();
+			/*
+			 * Deal with draining the remote pageset of this
+			 * processor
+			 *
+			 * Check if there are pages remaining in this pageset
+			 * if not then there is nothing to expire.
+			 */
+			if (!__this_cpu_read(p->expire) ||
+			       !__this_cpu_read(p->pcp.count))
+				continue;
+
+			/*
+			 * We never drain zones local to this processor.
+			 */
+			if (zone_to_nid(zone) == numa_node_id()) {
+				__this_cpu_write(p->expire, 0);
+				continue;
+			}
+
+			if (__this_cpu_dec_return(p->expire))
+				continue;
+
+			if (__this_cpu_read(p->pcp.count)) {
+				drain_zone_pages(zone, this_cpu_ptr(&p->pcp));
+				changes++;
+			}
+		}
+#endif
+	}
+
+	for_each_online_pgdat(pgdat) {
+		struct per_cpu_nodestat __percpu *p = pgdat->per_cpu_nodestats;
+
+		for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++) {
+			int v;
+
+			v = this_cpu_xchg(p->vm_node_stat_diff[i], 0);
+			if (v) {
+				atomic_long_add(v, &pgdat->vm_stat[i]);
+				global_node_diff[i] += v;
+			}
+		}
+	}
+
+	changes += fold_diff(global_zone_diff, global_node_diff);
+	return changes;
+}
+
+/*
+ * Fold the data for an offline cpu into the global array.
+ * There cannot be any access by the offline cpu and therefore
+ * synchronization is simplified.
+ */
+void cpu_vm_stats_fold(int cpu)
+{
+	struct pglist_data *pgdat;
+	struct zone *zone;
+	int i;
+	int global_zone_diff[NR_VM_ZONE_STAT_ITEMS] = { 0, };
+	int global_node_diff[NR_VM_NODE_STAT_ITEMS] = { 0, };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_each_populated_zone(zone) {
 		struct per_cpu_pageset *p;
@@ -445,6 +855,7 @@ void refresh_cpu_vm_stats(int cpu)
 
 		for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
 			if (p->vm_stat_diff[i]) {
+<<<<<<< HEAD
 				unsigned long flags;
 				int v;
 
@@ -491,6 +902,34 @@ void refresh_cpu_vm_stats(int cpu)
 	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
 		if (global_diff[i])
 			atomic_long_add(global_diff[i], &vm_stat[i]);
+=======
+				int v;
+
+				v = p->vm_stat_diff[i];
+				p->vm_stat_diff[i] = 0;
+				atomic_long_add(v, &zone->vm_stat[i]);
+				global_zone_diff[i] += v;
+			}
+	}
+
+	for_each_online_pgdat(pgdat) {
+		struct per_cpu_nodestat *p;
+
+		p = per_cpu_ptr(pgdat->per_cpu_nodestats, cpu);
+
+		for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++)
+			if (p->vm_node_stat_diff[i]) {
+				int v;
+
+				v = p->vm_node_stat_diff[i];
+				p->vm_node_stat_diff[i] = 0;
+				atomic_long_add(v, &pgdat->vm_stat[i]);
+				global_node_diff[i] += v;
+			}
+	}
+
+	fold_diff(global_zone_diff, global_node_diff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -506,13 +945,18 @@ void drain_zonestat(struct zone *zone, struct per_cpu_pageset *pset)
 			int v = pset->vm_stat_diff[i];
 			pset->vm_stat_diff[i] = 0;
 			atomic_long_add(v, &zone->vm_stat[i]);
+<<<<<<< HEAD
 			atomic_long_add(v, &vm_stat[i]);
+=======
+			atomic_long_add(v, &vm_zone_stat[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 }
 #endif
 
 #ifdef CONFIG_NUMA
 /*
+<<<<<<< HEAD
  * zonelist = the list of zones passed to the allocator
  * z 	    = the zone from which the allocation occurred.
  *
@@ -535,6 +979,37 @@ void zone_statistics(struct zone *preferred_zone, struct zone *z, gfp_t flags)
 		__inc_zone_state(z, NUMA_LOCAL);
 	else
 		__inc_zone_state(z, NUMA_OTHER);
+=======
+ * Determine the per node value of a stat item. This function
+ * is called frequently in a NUMA machine, so try to be as
+ * frugal as possible.
+ */
+unsigned long sum_zone_node_page_state(int node,
+				 enum zone_stat_item item)
+{
+	struct zone *zones = NODE_DATA(node)->node_zones;
+	int i;
+	unsigned long count = 0;
+
+	for (i = 0; i < MAX_NR_ZONES; i++)
+		count += zone_page_state(zones + i, item);
+
+	return count;
+}
+
+/*
+ * Determine the per node value of a stat item.
+ */
+unsigned long node_page_state(struct pglist_data *pgdat,
+				enum node_stat_item item)
+{
+	long x = atomic_long_read(&pgdat->vm_stat[item]);
+#ifdef CONFIG_SMP
+	if (x < 0)
+		x = 0;
+#endif
+	return x;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -618,6 +1093,7 @@ int fragmentation_index(struct zone *zone, unsigned int order)
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_PROC_FS) || defined(CONFIG_COMPACTION)
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -678,6 +1154,8 @@ static void walk_zones_in_node(struct seq_file *m, pg_data_t *pgdat,
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_PROC_FS) || defined(CONFIG_SYSFS) || defined(CONFIG_NUMA)
 #ifdef CONFIG_ZONE_DMA
 #define TEXT_FOR_DMA(xx) xx "_dma",
@@ -701,19 +1179,61 @@ static void walk_zones_in_node(struct seq_file *m, pg_data_t *pgdat,
 					TEXT_FOR_HIGHMEM(xx) xx "_movable",
 
 const char * const vmstat_text[] = {
+<<<<<<< HEAD
 	/* Zoned VM counters */
 	"nr_free_pages",
+=======
+	/* enum zone_stat_item countes */
+	"nr_free_pages",
+	"nr_zone_inactive_anon",
+	"nr_zone_active_anon",
+	"nr_zone_inactive_file",
+	"nr_zone_active_file",
+	"nr_zone_unevictable",
+	"nr_zone_write_pending",
+	"nr_mlock",
+	"nr_slab_reclaimable",
+	"nr_slab_unreclaimable",
+	"nr_page_table_pages",
+	"nr_kernel_stack",
+	"nr_overhead",
+	"nr_bounce",
+#if IS_ENABLED(CONFIG_ZSMALLOC)
+	"nr_zspages",
+#endif
+#ifdef CONFIG_NUMA
+	"numa_hit",
+	"numa_miss",
+	"numa_foreign",
+	"numa_interleave",
+	"numa_local",
+	"numa_other",
+#endif
+	"nr_free_cma",
+
+	/* Node-based counters */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"nr_inactive_anon",
 	"nr_active_anon",
 	"nr_inactive_file",
 	"nr_active_file",
 	"nr_unevictable",
+<<<<<<< HEAD
 	"nr_mlock",
+=======
+	"nr_isolated_anon",
+	"nr_isolated_file",
+	"nr_pages_scanned",
+	"workingset_refault",
+	"workingset_activate",
+	"workingset_nodereclaim",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"nr_anon_pages",
 	"nr_mapped",
 	"nr_file_pages",
 	"nr_dirty",
 	"nr_writeback",
+<<<<<<< HEAD
 	"nr_slab_reclaimable",
 	"nr_slab_unreclaimable",
 	"nr_page_table_pages",
@@ -739,16 +1259,39 @@ const char * const vmstat_text[] = {
 #endif
 	"nr_anon_transparent_hugepages",
 	"nr_free_cma",
+=======
+	"nr_writeback_temp",
+	"nr_shmem",
+	"nr_shmem_hugepages",
+	"nr_shmem_pmdmapped",
+	"nr_anon_transparent_hugepages",
+	"nr_unstable",
+	"nr_vmscan_write",
+	"nr_vmscan_immediate_reclaim",
+	"nr_dirtied",
+	"nr_written",
+
+	/* enum writeback_stat_item counters */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"nr_dirty_threshold",
 	"nr_dirty_background_threshold",
 
 #ifdef CONFIG_VM_EVENT_COUNTERS
+<<<<<<< HEAD
+=======
+	/* enum vm_event_item counters */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"pgpgin",
 	"pgpgout",
 	"pswpin",
 	"pswpout",
 
 	TEXTS_FOR_ZONES("pgalloc")
+<<<<<<< HEAD
+=======
+	TEXTS_FOR_ZONES("allocstall")
+	TEXTS_FOR_ZONES("pgskip")
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	"pgfree",
 	"pgactivate",
@@ -756,12 +1299,22 @@ const char * const vmstat_text[] = {
 
 	"pgfault",
 	"pgmajfault",
+<<<<<<< HEAD
 
 	TEXTS_FOR_ZONES("pgrefill")
 	TEXTS_FOR_ZONES("pgsteal_kswapd")
 	TEXTS_FOR_ZONES("pgsteal_direct")
 	TEXTS_FOR_ZONES("pgscan_kswapd")
 	TEXTS_FOR_ZONES("pgscan_direct")
+=======
+	"pglazyfreed",
+
+	"pgrefill",
+	"pgsteal_kswapd",
+	"pgsteal_direct",
+	"pgscan_kswapd",
+	"pgscan_direct",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"pgscan_direct_throttle",
 
 #ifdef CONFIG_NUMA
@@ -773,10 +1326,19 @@ const char * const vmstat_text[] = {
 	"kswapd_low_wmark_hit_quickly",
 	"kswapd_high_wmark_hit_quickly",
 	"pageoutrun",
+<<<<<<< HEAD
 	"allocstall",
 
 	"pgrotated",
 
+=======
+
+	"pgrotated",
+
+	"drop_pagecache",
+	"drop_slab",
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NUMA_BALANCING
 	"numa_pte_updates",
 	"numa_huge_pte_updates",
@@ -795,6 +1357,10 @@ const char * const vmstat_text[] = {
 	"compact_stall",
 	"compact_fail",
 	"compact_success",
+<<<<<<< HEAD
+=======
+	"compact_daemon_wake",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_HUGETLB_PAGE
@@ -814,16 +1380,95 @@ const char * const vmstat_text[] = {
 	"thp_fault_fallback",
 	"thp_collapse_alloc",
 	"thp_collapse_alloc_failed",
+<<<<<<< HEAD
 	"thp_split",
 	"thp_zero_page_alloc",
 	"thp_zero_page_alloc_failed",
 #endif
 
+=======
+	"thp_file_alloc",
+	"thp_file_mapped",
+	"thp_split_page",
+	"thp_split_page_failed",
+	"thp_deferred_split_page",
+	"thp_split_pmd",
+	"thp_zero_page_alloc",
+	"thp_zero_page_alloc_failed",
+#endif
+#ifdef CONFIG_MEMORY_BALLOON
+	"balloon_inflate",
+	"balloon_deflate",
+#ifdef CONFIG_BALLOON_COMPACTION
+	"balloon_migrate",
+#endif
+#endif /* CONFIG_MEMORY_BALLOON */
+#ifdef CONFIG_DEBUG_TLBFLUSH
+	"nr_tlb_remote_flush",
+	"nr_tlb_remote_flush_received",
+	"nr_tlb_local_flush_all",
+	"nr_tlb_local_flush_one",
+#endif /* CONFIG_DEBUG_TLBFLUSH */
+
+#ifdef CONFIG_DEBUG_VM_VMACACHE
+	"vmacache_find_calls",
+	"vmacache_find_hits",
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_VM_EVENTS_COUNTERS */
 };
 #endif /* CONFIG_PROC_FS || CONFIG_SYSFS || CONFIG_NUMA */
 
 
+<<<<<<< HEAD
+=======
+#if (defined(CONFIG_DEBUG_FS) && defined(CONFIG_COMPACTION)) || \
+     defined(CONFIG_PROC_FS)
+static void *frag_start(struct seq_file *m, loff_t *pos)
+{
+	pg_data_t *pgdat;
+	loff_t node = *pos;
+
+	for (pgdat = first_online_pgdat();
+	     pgdat && node;
+	     pgdat = next_online_pgdat(pgdat))
+		--node;
+
+	return pgdat;
+}
+
+static void *frag_next(struct seq_file *m, void *arg, loff_t *pos)
+{
+	pg_data_t *pgdat = (pg_data_t *)arg;
+
+	(*pos)++;
+	return next_online_pgdat(pgdat);
+}
+
+static void frag_stop(struct seq_file *m, void *arg)
+{
+}
+
+/* Walk all the zones in a node and print using a callback */
+static void walk_zones_in_node(struct seq_file *m, pg_data_t *pgdat,
+		void (*print)(struct seq_file *m, pg_data_t *, struct zone *))
+{
+	struct zone *zone;
+	struct zone *node_zones = pgdat->node_zones;
+	unsigned long flags;
+
+	for (zone = node_zones; zone - node_zones < MAX_NR_ZONES; ++zone) {
+		if (!populated_zone(zone))
+			continue;
+
+		spin_lock_irqsave(&zone->lock, flags);
+		print(m, pgdat, zone);
+		spin_unlock_irqrestore(&zone->lock, flags);
+	}
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PROC_FS
 static void frag_show_print(struct seq_file *m, pg_data_t *pgdat,
 						struct zone *zone)
@@ -866,6 +1511,12 @@ static void pagetypeinfo_showfree_print(struct seq_file *m,
 			list_for_each(curr, &area->free_list[mtype])
 				freecount++;
 			seq_printf(m, "%6lu ", freecount);
+<<<<<<< HEAD
+=======
+			spin_unlock_irq(&zone->lock);
+			cond_resched();
+			spin_lock_irq(&zone->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		seq_putc(m, '\n');
 	}
@@ -909,6 +1560,12 @@ static void pagetypeinfo_showblockcount_print(struct seq_file *m,
 		if (!memmap_valid_within(pfn, page, zone))
 			continue;
 
+<<<<<<< HEAD
+=======
+		if (page_zone(page) != zone)
+			continue;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mtype = get_pageblock_migratetype(page);
 
 		if (mtype < MIGRATE_TYPES)
@@ -938,6 +1595,34 @@ static int pagetypeinfo_showblockcount(struct seq_file *m, void *arg)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Print out the number of pageblocks for each migratetype that contain pages
+ * of other types. This gives an indication of how well fallbacks are being
+ * contained by rmqueue_fallback(). It requires information from PAGE_OWNER
+ * to determine what is going on
+ */
+static void pagetypeinfo_showmixedcount(struct seq_file *m, pg_data_t *pgdat)
+{
+#ifdef CONFIG_PAGE_OWNER
+	int mtype;
+
+	if (!static_branch_unlikely(&page_owner_inited))
+		return;
+
+	drain_all_pages(NULL);
+
+	seq_printf(m, "\n%-23s", "Number of mixed blocks ");
+	for (mtype = 0; mtype < MIGRATE_TYPES; mtype++)
+		seq_printf(m, "%12s ", migratetype_names[mtype]);
+	seq_putc(m, '\n');
+
+	walk_zones_in_node(m, pgdat, pagetypeinfo_showmixedcount_print);
+#endif /* CONFIG_PAGE_OWNER */
+}
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This prints out statistics in relation to grouping pages by mobility.
  * It is expensive to collect so do not constantly read the file.
  */
@@ -954,6 +1639,10 @@ static int pagetypeinfo_show(struct seq_file *m, void *arg)
 	seq_putc(m, '\n');
 	pagetypeinfo_showfree(m, pgdat);
 	pagetypeinfo_showblockcount(m, pgdat);
+<<<<<<< HEAD
+=======
+	pagetypeinfo_showmixedcount(m, pgdat);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -996,17 +1685,49 @@ static const struct file_operations pagetypeinfo_file_ops = {
 	.release	= seq_release,
 };
 
+<<<<<<< HEAD
+=======
+static bool is_zone_first_populated(pg_data_t *pgdat, struct zone *zone)
+{
+	int zid;
+
+	for (zid = 0; zid < MAX_NR_ZONES; zid++) {
+		struct zone *compare = &pgdat->node_zones[zid];
+
+		if (populated_zone(compare))
+			return zone == compare;
+	}
+
+	return false;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
 							struct zone *zone)
 {
 	int i;
 	seq_printf(m, "Node %d, zone %8s", pgdat->node_id, zone->name);
+<<<<<<< HEAD
+=======
+	if (is_zone_first_populated(pgdat, zone)) {
+		seq_printf(m, "\n  per-node stats");
+		for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++) {
+			seq_printf(m, "\n      %-12s %lu",
+				vmstat_text[i + NR_VM_ZONE_STAT_ITEMS],
+				node_page_state(pgdat, i));
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(m,
 		   "\n  pages free     %lu"
 		   "\n        min      %lu"
 		   "\n        low      %lu"
 		   "\n        high     %lu"
+<<<<<<< HEAD
 		   "\n        scanned  %lu"
+=======
+		   "\n   node_scanned  %lu"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   "\n        spanned  %lu"
 		   "\n        present  %lu"
 		   "\n        managed  %lu",
@@ -1014,11 +1735,16 @@ static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
 		   min_wmark_pages(zone),
 		   low_wmark_pages(zone),
 		   high_wmark_pages(zone),
+<<<<<<< HEAD
 		   zone->pages_scanned,
+=======
+		   node_page_state(zone->zone_pgdat, NR_PAGES_SCANNED),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   zone->spanned_pages,
 		   zone->present_pages,
 		   zone->managed_pages);
 
+<<<<<<< HEAD
 	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
 		seq_printf(m, "\n    %-12s %lu", vmstat_text[i],
 				zone_page_state(zone, i));
@@ -1031,6 +1757,26 @@ static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
 	seq_printf(m,
 		   ")"
 		   "\n  pagesets");
+=======
+	seq_printf(m,
+		   "\n        protection: (%ld",
+		   zone->lowmem_reserve[0]);
+	for (i = 1; i < ARRAY_SIZE(zone->lowmem_reserve); i++)
+		seq_printf(m, ", %ld", zone->lowmem_reserve[i]);
+	seq_putc(m, ')');
+
+	/* If unpopulated, no other information is useful */
+	if (!populated_zone(zone)) {
+		seq_putc(m, '\n');
+		return;
+	}
+
+	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++)
+		seq_printf(m, "\n      %-12s %lu", vmstat_text[i],
+				zone_page_state(zone, i));
+
+	seq_printf(m, "\n  pagesets");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_online_cpu(i) {
 		struct per_cpu_pageset *pageset;
 
@@ -1050,12 +1796,21 @@ static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
 #endif
 	}
 	seq_printf(m,
+<<<<<<< HEAD
 		   "\n  all_unreclaimable: %u"
 		   "\n  start_pfn:         %lu"
 		   "\n  inactive_ratio:    %u",
 		   zone->all_unreclaimable,
 		   zone->zone_start_pfn,
 		   zone->inactive_ratio);
+=======
+		   "\n  node_unreclaimable:  %u"
+		   "\n  start_pfn:           %lu"
+		   "\n  node_inactive_ratio: %u",
+		   pgdat->kswapd_failures >= MAX_RECLAIM_RETRIES,
+		   zone->zone_start_pfn,
+		   zone->zone_pgdat->inactive_ratio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_putc(m, '\n');
 }
 
@@ -1103,6 +1858,10 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
 	if (*pos >= ARRAY_SIZE(vmstat_text))
 		return NULL;
 	stat_items_size = NR_VM_ZONE_STAT_ITEMS * sizeof(unsigned long) +
+<<<<<<< HEAD
+=======
+			  NR_VM_NODE_STAT_ITEMS * sizeof(unsigned long) +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  NR_VM_WRITEBACK_STAT_ITEMS * sizeof(unsigned long);
 
 #ifdef CONFIG_VM_EVENT_COUNTERS
@@ -1117,6 +1876,13 @@ static void *vmstat_start(struct seq_file *m, loff_t *pos)
 		v[i] = global_page_state(i);
 	v += NR_VM_ZONE_STAT_ITEMS;
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++)
+		v[i] = global_node_page_state(i);
+	v += NR_VM_NODE_STAT_ITEMS;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	global_dirty_limits(v + NR_DIRTY_BG_THRESHOLD,
 			    v + NR_DIRTY_THRESHOLD);
 	v += NR_VM_WRITEBACK_STAT_ITEMS;
@@ -1142,7 +1908,13 @@ static int vmstat_show(struct seq_file *m, void *arg)
 	unsigned long *l = arg;
 	unsigned long off = l - (unsigned long *)m->private;
 
+<<<<<<< HEAD
 	seq_printf(m, "%s %lu\n", vmstat_text[off], *l);
+=======
+	seq_puts(m, vmstat_text[off]);
+	seq_put_decimal_ull(m, " ", *l);
+	seq_putc(m, '\n');
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1173,6 +1945,7 @@ static const struct file_operations proc_vmstat_file_operations = {
 #endif /* CONFIG_PROC_FS */
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
 int sysctl_stat_interval __read_mostly = HZ;
 
@@ -1189,13 +1962,212 @@ static void __cpuinit start_cpu_timer(int cpu)
 
 	INIT_DEFERRABLE_WORK(work, vmstat_update);
 	schedule_delayed_work_on(cpu, work, __round_jiffies_relative(HZ, cpu));
+=======
+static struct workqueue_struct *vmstat_wq;
+static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
+int sysctl_stat_interval __read_mostly = HZ;
+
+#ifdef CONFIG_PROC_FS
+static void refresh_vm_stats(struct work_struct *work)
+{
+	refresh_cpu_vm_stats(true);
+}
+
+int vmstat_refresh(struct ctl_table *table, int write,
+		   void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	long val;
+	int err;
+	int i;
+
+	/*
+	 * The regular update, every sysctl_stat_interval, may come later
+	 * than expected: leaving a significant amount in per_cpu buckets.
+	 * This is particularly misleading when checking a quantity of HUGE
+	 * pages, immediately after running a test.  /proc/sys/vm/stat_refresh,
+	 * which can equally be echo'ed to or cat'ted from (by root),
+	 * can be used to update the stats just before reading them.
+	 *
+	 * Oh, and since global_page_state() etc. are so careful to hide
+	 * transiently negative values, report an error here if any of
+	 * the stats is negative, so we know to go looking for imbalance.
+	 */
+	err = schedule_on_each_cpu(refresh_vm_stats);
+	if (err)
+		return err;
+	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++) {
+		val = atomic_long_read(&vm_zone_stat[i]);
+		if (val < 0) {
+			switch (i) {
+			case NR_PAGES_SCANNED:
+				/*
+				 * This is often seen to go negative in
+				 * recent kernels, but not to go permanently
+				 * negative.  Whilst it would be nicer not to
+				 * have exceptions, rooting them out would be
+				 * another task, of rather low priority.
+				 */
+				break;
+			default:
+				pr_warn("%s: %s %ld\n",
+					__func__, vmstat_text[i], val);
+				err = -EINVAL;
+				break;
+			}
+		}
+	}
+	if (err)
+		return err;
+	if (write)
+		*ppos += *lenp;
+	else
+		*lenp = 0;
+	return 0;
+}
+#endif /* CONFIG_PROC_FS */
+
+static void vmstat_update(struct work_struct *w)
+{
+	if (refresh_cpu_vm_stats(true)) {
+		/*
+		 * Counters were updated so we expect more updates
+		 * to occur in the future. Keep on running the
+		 * update worker thread.
+		 */
+		queue_delayed_work_on(smp_processor_id(), vmstat_wq,
+				this_cpu_ptr(&vmstat_work),
+				round_jiffies_relative(sysctl_stat_interval));
+	}
+}
+
+/*
+ * Switch off vmstat processing and then fold all the remaining differentials
+ * until the diffs stay at zero. The function is used by NOHZ and can only be
+ * invoked when tick processing is not active.
+ */
+/*
+ * Check if the diffs for a certain cpu indicate that
+ * an update is needed.
+ */
+static bool need_update(int cpu)
+{
+	struct zone *zone;
+
+	for_each_populated_zone(zone) {
+		struct per_cpu_pageset *p = per_cpu_ptr(zone->pageset, cpu);
+
+		BUILD_BUG_ON(sizeof(p->vm_stat_diff[0]) != 1);
+		/*
+		 * The fast way of checking if there are any vmstat diffs.
+		 * This works because the diffs are byte sized items.
+		 */
+		if (memchr_inv(p->vm_stat_diff, 0, NR_VM_ZONE_STAT_ITEMS))
+			return true;
+
+	}
+	return false;
+}
+
+/*
+ * Switch off vmstat processing and then fold all the remaining differentials
+ * until the diffs stay at zero. The function is used by NOHZ and can only be
+ * invoked when tick processing is not active.
+ */
+void quiet_vmstat(void)
+{
+	if (system_state != SYSTEM_RUNNING)
+		return;
+
+	if (!delayed_work_pending(this_cpu_ptr(&vmstat_work)))
+		return;
+
+	if (!need_update(smp_processor_id()))
+		return;
+
+	/*
+	 * Just refresh counters and do not care about the pending delayed
+	 * vmstat_update. It doesn't fire that often to matter and canceling
+	 * it would be too expensive from this path.
+	 * vmstat_shepherd will take care about that for us.
+	 */
+	refresh_cpu_vm_stats(false);
+}
+
+/*
+ * Shepherd worker thread that checks the
+ * differentials of processors that have their worker
+ * threads for vm statistics updates disabled because of
+ * inactivity.
+ */
+static void vmstat_shepherd(struct work_struct *w);
+
+static DECLARE_DEFERRABLE_WORK(shepherd, vmstat_shepherd);
+
+static void vmstat_shepherd(struct work_struct *w)
+{
+	int cpu;
+
+	get_online_cpus();
+	/* Check processors whose vmstat worker threads have been disabled */
+	for_each_online_cpu(cpu) {
+		struct delayed_work *dw = &per_cpu(vmstat_work, cpu);
+
+		if (!delayed_work_pending(dw) && need_update(cpu))
+			queue_delayed_work_on(cpu, vmstat_wq, dw, 0);
+	}
+	put_online_cpus();
+
+	schedule_delayed_work(&shepherd,
+		round_jiffies_relative(sysctl_stat_interval));
+}
+
+static void __init start_shepherd_timer(void)
+{
+	int cpu;
+
+	for_each_possible_cpu(cpu)
+		INIT_DEFERRABLE_WORK(per_cpu_ptr(&vmstat_work, cpu),
+			vmstat_update);
+
+	vmstat_wq = alloc_workqueue("vmstat", WQ_FREEZABLE|WQ_MEM_RECLAIM, 0);
+	schedule_delayed_work(&shepherd,
+		round_jiffies_relative(sysctl_stat_interval));
+}
+
+static void __init init_cpu_node_state(void)
+{
+	int cpu;
+
+	get_online_cpus();
+	for_each_online_cpu(cpu)
+		node_set_state(cpu_to_node(cpu), N_CPU);
+	put_online_cpus();
+}
+
+static void vmstat_cpu_dead(int node)
+{
+	int cpu;
+
+	get_online_cpus();
+	for_each_online_cpu(cpu)
+		if (cpu_to_node(cpu) == node)
+			goto end;
+
+	node_clear_state(node, N_CPU);
+end:
+	put_online_cpus();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * Use the cpu notifier to insure that the thresholds are recalculated
  * when necessary.
  */
+<<<<<<< HEAD
 static int __cpuinit vmstat_cpuup_callback(struct notifier_block *nfb,
+=======
+static int vmstat_cpuup_callback(struct notifier_block *nfb,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long action,
 		void *hcpu)
 {
@@ -1205,21 +2177,34 @@ static int __cpuinit vmstat_cpuup_callback(struct notifier_block *nfb,
 	case CPU_ONLINE:
 	case CPU_ONLINE_FROZEN:
 		refresh_zone_stat_thresholds();
+<<<<<<< HEAD
 		start_cpu_timer(cpu);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		node_set_state(cpu_to_node(cpu), N_CPU);
 		break;
 	case CPU_DOWN_PREPARE:
 	case CPU_DOWN_PREPARE_FROZEN:
 		cancel_delayed_work_sync(&per_cpu(vmstat_work, cpu));
+<<<<<<< HEAD
 		per_cpu(vmstat_work, cpu).work.func = NULL;
 		break;
 	case CPU_DOWN_FAILED:
 	case CPU_DOWN_FAILED_FROZEN:
 		start_cpu_timer(cpu);
+=======
+		break;
+	case CPU_DOWN_FAILED:
+	case CPU_DOWN_FAILED_FROZEN:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case CPU_DEAD:
 	case CPU_DEAD_FROZEN:
 		refresh_zone_stat_thresholds();
+<<<<<<< HEAD
+=======
+		vmstat_cpu_dead(cpu_to_node(cpu));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		break;
@@ -1227,13 +2212,18 @@ static int __cpuinit vmstat_cpuup_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static struct notifier_block __cpuinitdata vmstat_notifier =
+=======
+static struct notifier_block vmstat_notifier =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ &vmstat_cpuup_callback, NULL, 0 };
 #endif
 
 static int __init setup_vmstat(void)
 {
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	int cpu;
 
 	register_cpu_notifier(&vmstat_notifier);
@@ -1244,6 +2234,18 @@ static int __init setup_vmstat(void)
 #ifdef CONFIG_PROC_FS
 	proc_create("buddyinfo", S_IRUGO, NULL, &fragmentation_file_operations);
 	proc_create("pagetypeinfo", S_IRUGO, NULL, &pagetypeinfo_file_ops);
+=======
+	cpu_notifier_register_begin();
+	__register_cpu_notifier(&vmstat_notifier);
+	init_cpu_node_state();
+
+	start_shepherd_timer();
+	cpu_notifier_register_done();
+#endif
+#ifdef CONFIG_PROC_FS
+	proc_create("buddyinfo", S_IRUGO, NULL, &fragmentation_file_operations);
+	proc_create("pagetypeinfo", 0400, NULL, &pagetypeinfo_file_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	proc_create("vmstat", S_IRUGO, NULL, &proc_vmstat_file_operations);
 	proc_create("zoneinfo", S_IRUGO, NULL, &proc_zoneinfo_file_operations);
 #endif
@@ -1252,8 +2254,11 @@ static int __init setup_vmstat(void)
 module_init(setup_vmstat)
 
 #if defined(CONFIG_DEBUG_FS) && defined(CONFIG_COMPACTION)
+<<<<<<< HEAD
 #include <linux/debugfs.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Return an index indicating how much of the available free memory is

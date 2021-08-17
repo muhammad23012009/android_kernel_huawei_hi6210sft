@@ -193,8 +193,16 @@ static irqreturn_t tegra20_mc_isr(int irq, void *data)
 	mask &= stat;
 	if (!mask)
 		return IRQ_NONE;
+<<<<<<< HEAD
 	while ((bit = ffs(mask)) != 0)
 		tegra20_mc_decode(mc, bit - 1);
+=======
+	while ((bit = ffs(mask)) != 0) {
+		tegra20_mc_decode(mc, bit - 1);
+		mask &= ~BIT(bit - 1);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mc_writel(mc, stat, MC_INTSTATUS);
 	return IRQ_HANDLED;
 }
@@ -215,8 +223,11 @@ static int tegra20_mc_probe(struct platform_device *pdev)
 		struct resource *res;
 
 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+<<<<<<< HEAD
 		if (!res)
 			return -ENODEV;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mc->regs[i] = devm_ioremap_resource(&pdev->dev, res);
 		if (IS_ERR(mc->regs[i]))
 			return PTR_ERR(mc->regs[i]);
@@ -242,7 +253,10 @@ static struct platform_driver tegra20_mc_driver = {
 	.probe = tegra20_mc_probe,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = tegra20_mc_of_match,
 	},
 };

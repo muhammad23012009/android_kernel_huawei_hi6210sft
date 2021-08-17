@@ -29,7 +29,13 @@ typedef enum tristate {
 } tristate;
 
 enum expr_type {
+<<<<<<< HEAD
 	E_NONE, E_OR, E_AND, E_NOT, E_EQUAL, E_UNEQUAL, E_LIST, E_SYMBOL, E_RANGE
+=======
+	E_NONE, E_OR, E_AND, E_NOT,
+	E_EQUAL, E_UNEQUAL, E_LTH, E_LEQ, E_GTH, E_GEQ,
+	E_LIST, E_SYMBOL, E_RANGE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 union expr_data {
@@ -93,7 +99,11 @@ struct symbol {
 #define SYMBOL_CHOICEVAL  0x0020  /* used as a value in a choice block */
 #define SYMBOL_VALID      0x0080  /* set when symbol.curr is calculated */
 #define SYMBOL_OPTIONAL   0x0100  /* choice is optional - values can be 'n' */
+<<<<<<< HEAD
 #define SYMBOL_WRITE      0x0200  /* ? */
+=======
+#define SYMBOL_WRITE      0x0200  /* write symbol to file (KCONFIG_CONFIG) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SYMBOL_CHANGED    0x0400  /* ? */
 #define SYMBOL_AUTO       0x1000  /* value from environment variable */
 #define SYMBOL_CHECKED    0x2000  /* used during dependency checking */
@@ -109,6 +119,12 @@ struct symbol {
 /* choice values need to be set before calculating this symbol value */
 #define SYMBOL_NEED_SET_CHOICE_VALUES  0x100000
 
+<<<<<<< HEAD
+=======
+/* Set symbol to y if allnoconfig; used for symbols that hide others */
+#define SYMBOL_ALLNOCONFIG_Y 0x200000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SYMBOL_MAXLENGTH	256
 #define SYMBOL_HASHSIZE		9973
 
@@ -202,18 +218,26 @@ struct expr *expr_alloc_and(struct expr *e1, struct expr *e2);
 struct expr *expr_alloc_or(struct expr *e1, struct expr *e2);
 struct expr *expr_copy(const struct expr *org);
 void expr_free(struct expr *e);
+<<<<<<< HEAD
 int expr_eq(struct expr *e1, struct expr *e2);
 void expr_eliminate_eq(struct expr **ep1, struct expr **ep2);
 tristate expr_calc_value(struct expr *e);
 struct expr *expr_eliminate_yn(struct expr *e);
+=======
+void expr_eliminate_eq(struct expr **ep1, struct expr **ep2);
+tristate expr_calc_value(struct expr *e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct expr *expr_trans_bool(struct expr *e);
 struct expr *expr_eliminate_dups(struct expr *e);
 struct expr *expr_transform(struct expr *e);
 int expr_contains_symbol(struct expr *dep, struct symbol *sym);
 bool expr_depends_symbol(struct expr *dep, struct symbol *sym);
+<<<<<<< HEAD
 struct expr *expr_extract_eq_and(struct expr **ep1, struct expr **ep2);
 struct expr *expr_extract_eq_or(struct expr **ep1, struct expr **ep2);
 void expr_extract_eq(enum expr_type type, struct expr **ep, struct expr **ep1, struct expr **ep2);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symbol *sym);
 struct expr *expr_simplify_unmet_dep(struct expr *e1, struct expr *e2);
 

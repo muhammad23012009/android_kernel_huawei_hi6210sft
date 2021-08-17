@@ -91,6 +91,7 @@ static int hippi_header(struct sk_buff *skb, struct net_device *dev,
 
 
 /*
+<<<<<<< HEAD
  * Rebuild the HIPPI MAC header. This is called after an ARP has
  * completed on this sk_buff. We now let ARP fill in the other fields.
  */
@@ -118,6 +119,8 @@ static int hippi_rebuild_header(struct sk_buff *skb)
 
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	Determine the packet's protocol ID.
  */
 
@@ -172,21 +175,32 @@ EXPORT_SYMBOL(hippi_mac_addr);
 int hippi_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p)
 {
 	/* Never send broadcast/multicast ARP messages */
+<<<<<<< HEAD
 	p->mcast_probes = 0;
+=======
+	NEIGH_VAR_INIT(p, MCAST_PROBES, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* In IPv6 unicast probes are valid even on NBMA,
 	* because they are encapsulated in normal IPv6 protocol.
 	* Should be a generic flag.
 	*/
 	if (p->tbl->family != AF_INET6)
+<<<<<<< HEAD
 		p->ucast_probes = 0;
+=======
+		NEIGH_VAR_INIT(p, UCAST_PROBES, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL(hippi_neigh_setup_dev);
 
 static const struct header_ops hippi_header_ops = {
 	.create		= hippi_header,
+<<<<<<< HEAD
 	.rebuild	= hippi_rebuild_header,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -228,7 +242,12 @@ static void hippi_setup(struct net_device *dev)
 
 struct net_device *alloc_hippi_dev(int sizeof_priv)
 {
+<<<<<<< HEAD
 	return alloc_netdev(sizeof_priv, "hip%d", hippi_setup);
+=======
+	return alloc_netdev(sizeof_priv, "hip%d", NET_NAME_UNKNOWN,
+			    hippi_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 EXPORT_SYMBOL(alloc_hippi_dev);

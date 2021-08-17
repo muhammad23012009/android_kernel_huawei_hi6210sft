@@ -23,9 +23,13 @@ int version_string(LINUX_VERSION_CODE);
 #endif
 
 struct uts_namespace init_uts_ns = {
+<<<<<<< HEAD
 	.kref = {
 		.refcount	= ATOMIC_INIT(2),
 	},
+=======
+	.kref = KREF_INIT(2),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name = {
 		.sysname	= UTS_SYSNAME,
 		.nodename	= UTS_NODENAME,
@@ -35,7 +39,14 @@ struct uts_namespace init_uts_ns = {
 		.domainname	= UTS_DOMAINNAME,
 	},
 	.user_ns = &init_user_ns,
+<<<<<<< HEAD
 	.proc_inum = PROC_UTS_INIT_INO,
+=======
+	.ns.inum = PROC_UTS_INIT_INO,
+#ifdef CONFIG_UTS_NS
+	.ns.ops = &utsns_operations,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 EXPORT_SYMBOL_GPL(init_uts_ns);
 

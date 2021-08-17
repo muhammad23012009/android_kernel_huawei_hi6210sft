@@ -15,6 +15,10 @@
 #include <linux/writeback.h>
 #include <linux/buffer_head.h>
 #include <linux/falloc.h>
+<<<<<<< HEAD
+=======
+#include "internal.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/ioctls.h>
 
@@ -32,12 +36,20 @@
  *
  * Returns 0 on success, -errno on error.
  */
+<<<<<<< HEAD
 static long vfs_ioctl(struct file *filp, unsigned int cmd,
 		      unsigned long arg)
 {
 	int error = -ENOTTY;
 
 	if (!filp->f_op || !filp->f_op->unlocked_ioctl)
+=======
+long vfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	int error = -ENOTTY;
+
+	if (!filp->f_op->unlocked_ioctl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 
 	error = filp->f_op->unlocked_ioctl(filp, cmd, arg);
@@ -215,6 +227,32 @@ static int ioctl_fiemap(struct file *filp, unsigned long arg)
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+static long ioctl_file_clone(struct file *dst_file, unsigned long srcfd,
+			     u64 off, u64 olen, u64 destoff)
+{
+	struct fd src_file = fdget(srcfd);
+	int ret;
+
+	if (!src_file.file)
+		return -EBADF;
+	ret = vfs_clone_file_range(src_file.file, off, dst_file, destoff, olen);
+	fdput(src_file);
+	return ret;
+}
+
+static long ioctl_file_clone_range(struct file *file, void __user *argp)
+{
+	struct file_clone_range args;
+
+	if (copy_from_user(&args, argp, sizeof(args)))
+		return -EFAULT;
+	return ioctl_file_clone(file, args.src_fd, args.src_offset,
+				args.src_length, args.dest_offset);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_BLOCK
 
 static inline sector_t logical_to_blk(struct inode *inode, loff_t offset)
@@ -379,6 +417,14 @@ int __generic_block_fiemap(struct inode *inode,
 				past_eof = true;
 		}
 		cond_resched();
+<<<<<<< HEAD
+=======
+		if (fatal_signal_pending(current)) {
+			ret = -EINTR;
+			break;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (1);
 
 	/* If ret is 1 then we just hit the end of the extent array */
@@ -406,9 +452,15 @@ int generic_block_fiemap(struct inode *inode,
 			 u64 len, get_block_t *get_block)
 {
 	int ret;
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	ret = __generic_block_fiemap(inode, fieinfo, start, len, get_block);
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+	ret = __generic_block_fiemap(inode, fieinfo, start, len, get_block);
+	inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 EXPORT_SYMBOL(generic_block_fiemap);
@@ -443,7 +495,11 @@ int ioctl_preallocate(struct file *filp, void __user *argp)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	return do_fallocate(filp, FALLOC_FL_KEEP_SIZE, sr.l_start, sr.l_len);
+=======
+	return vfs_fallocate(filp, FALLOC_FL_KEEP_SIZE, sr.l_start, sr.l_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int file_ioctl(struct file *filp, unsigned int cmd,
@@ -501,7 +557,11 @@ static int ioctl_fioasync(unsigned int fd, struct file *filp,
 
 	/* Did FASYNC state change ? */
 	if ((flag ^ filp->f_flags) & FASYNC) {
+<<<<<<< HEAD
 		if (filp->f_op && filp->f_op->fasync)
+=======
+		if (filp->f_op->fasync)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* fasync() adjusts filp->f_flags */
 			error = filp->f_op->fasync(fd, filp, on);
 		else
@@ -518,10 +578,19 @@ static int ioctl_fsfreeze(struct file *filp)
 		return -EPERM;
 
 	/* If filesystem doesn't support freeze feature, return. */
+<<<<<<< HEAD
 	if (sb->s_op->freeze_fs == NULL)
 		return -EOPNOTSUPP;
 
 	/* Freeze */
+=======
+	if (sb->s_op->freeze_fs == NULL && sb->s_op->freeze_super == NULL)
+		return -EOPNOTSUPP;
+
+	/* Freeze */
+	if (sb->s_op->freeze_super)
+		return sb->s_op->freeze_super(sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return freeze_super(sb);
 }
 
@@ -533,9 +602,57 @@ static int ioctl_fsthaw(struct file *filp)
 		return -EPERM;
 
 	/* Thaw */
+<<<<<<< HEAD
 	return thaw_super(sb);
 }
 
+=======
+	if (sb->s_op->thaw_super)
+		return sb->s_op->thaw_super(sb);
+	return thaw_super(sb);
+}
+
+static int ioctl_file_dedupe_range(struct file *file, void __user *arg)
+{
+	struct file_dedupe_range __user *argp = arg;
+	struct file_dedupe_range *same = NULL;
+	int ret;
+	unsigned long size;
+	u16 count;
+
+	if (get_user(count, &argp->dest_count)) {
+		ret = -EFAULT;
+		goto out;
+	}
+
+	size = offsetof(struct file_dedupe_range __user, info[count]);
+	if (size > PAGE_SIZE) {
+		ret = -ENOMEM;
+		goto out;
+	}
+
+	same = memdup_user(argp, size);
+	if (IS_ERR(same)) {
+		ret = PTR_ERR(same);
+		same = NULL;
+		goto out;
+	}
+
+	same->dest_count = count;
+	ret = vfs_dedupe_file_range(file, same);
+	if (ret)
+		goto out;
+
+	ret = copy_to_user(argp, same, size);
+	if (ret)
+		ret = -EFAULT;
+
+out:
+	kfree(same);
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * When you add any new common ioctls to the switches above and below
  * please update compat_sys_ioctl() too.
@@ -591,6 +708,18 @@ int do_vfs_ioctl(struct file *filp, unsigned int fd, unsigned int cmd,
 	case FIGETBSZ:
 		return put_user(inode->i_sb->s_blocksize, argp);
 
+<<<<<<< HEAD
+=======
+	case FICLONE:
+		return ioctl_file_clone(filp, arg, 0, 0, 0);
+
+	case FICLONERANGE:
+		return ioctl_file_clone_range(filp, argp);
+
+	case FIDEDUPERANGE:
+		return ioctl_file_dedupe_range(filp, argp);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		if (S_ISREG(inode->i_mode))
 			error = file_ioctl(filp, cmd, arg);

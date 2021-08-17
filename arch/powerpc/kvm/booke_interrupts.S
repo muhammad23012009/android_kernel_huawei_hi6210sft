@@ -21,7 +21,10 @@
 #include <asm/ppc_asm.h>
 #include <asm/kvm_asm.h>
 #include <asm/reg.h>
+<<<<<<< HEAD
 #include <asm/mmu-44x.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/page.h>
 #include <asm/asm-offsets.h>
 
@@ -424,10 +427,13 @@ lightweight_exit:
 	mtspr	SPRN_PID1, r3
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_44x
 	iccci	0, 0 /* XXX hack */
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Load some guest volatiles. */
 	lwz	r0, VCPU_GPR(R0)(r4)
 	lwz	r2, VCPU_GPR(R2)(r4)

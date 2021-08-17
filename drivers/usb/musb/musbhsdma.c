@@ -37,6 +37,7 @@
 #include "musb_core.h"
 #include "musbhsdma.h"
 
+<<<<<<< HEAD
 static int dma_controller_start(struct dma_controller *c)
 {
 	/* nothing to do */
@@ -49,6 +50,12 @@ static int dma_controller_stop(struct dma_controller *c)
 {
 	struct musb_dma_controller *controller = container_of(c,
 			struct musb_dma_controller, controller);
+=======
+static void dma_channel_release(struct dma_channel *channel);
+
+static void dma_controller_stop(struct musb_dma_controller *controller)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct musb *musb = controller->private_data;
 	struct dma_channel *channel;
 	u8 bit;
@@ -67,8 +74,11 @@ static int dma_controller_stop(struct dma_controller *c)
 			}
 		}
 	}
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct dma_channel *dma_channel_allocate(struct dma_controller *c,
@@ -127,8 +137,13 @@ static void configure_channel(struct dma_channel *channel,
 	u8 bchannel = musb_channel->idx;
 	u16 csr = 0;
 
+<<<<<<< HEAD
 	dev_dbg(musb->controller, "%p, pkt_sz %d, addr 0x%x, len %d, mode %d\n",
 			channel, packet_sz, dma_addr, len, mode);
+=======
+	musb_dbg(musb, "%p, pkt_sz %d, addr %pad, len %d, mode %d",
+			channel, packet_sz, &dma_addr, len, mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mode) {
 		csr |= 1 << MUSB_HSDMA_MODE1_SHIFT;
@@ -162,10 +177,17 @@ static int dma_channel_program(struct dma_channel *channel,
 	struct musb_dma_controller *controller = musb_channel->controller;
 	struct musb *musb = controller->private_data;
 
+<<<<<<< HEAD
 	dev_dbg(musb->controller, "ep%d-%s pkt_sz %d, dma_addr 0x%x length %d, mode %d\n",
 		musb_channel->epnum,
 		musb_channel->transmit ? "Tx" : "Rx",
 		packet_sz, dma_addr, len, mode);
+=======
+	musb_dbg(musb, "ep%d-%s pkt_sz %d, dma_addr %pad length %d, mode %d",
+		musb_channel->epnum,
+		musb_channel->transmit ? "Tx" : "Rx",
+		packet_sz, &dma_addr, len, mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(channel->status == MUSB_DMA_STATUS_UNKNOWN ||
 		channel->status == MUSB_DMA_STATUS_BUSY);
@@ -205,6 +227,10 @@ static int dma_channel_abort(struct dma_channel *channel)
 {
 	struct musb_dma_channel *musb_channel = channel->private_data;
 	void __iomem *mbase = musb_channel->controller->base;
+<<<<<<< HEAD
+=======
+	struct musb *musb = musb_channel->controller->private_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u8 bchannel = musb_channel->idx;
 	int offset;
@@ -212,7 +238,11 @@ static int dma_channel_abort(struct dma_channel *channel)
 
 	if (channel->status == MUSB_DMA_STATUS_BUSY) {
 		if (musb_channel->transmit) {
+<<<<<<< HEAD
 			offset = MUSB_EP_OFFSET(musb_channel->epnum,
+=======
+			offset = musb->io.ep_offset(musb_channel->epnum,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						MUSB_TXCSR);
 
 			/*
@@ -225,7 +255,11 @@ static int dma_channel_abort(struct dma_channel *channel)
 			csr &= ~MUSB_TXCSR_DMAMODE;
 			musb_writew(mbase, offset, csr);
 		} else {
+<<<<<<< HEAD
 			offset = MUSB_EP_OFFSET(musb_channel->epnum,
+=======
+			offset = musb->io.ep_offset(musb_channel->epnum,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						MUSB_RXCSR);
 
 			csr = musb_readw(mbase, offset);
@@ -275,7 +309,11 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 #endif
 
 	if (!int_hsdma) {
+<<<<<<< HEAD
 		dev_dbg(musb->controller, "spurious DMA irq\n");
+=======
+		musb_dbg(musb, "spurious DMA irq");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for (bchannel = 0; bchannel < MUSB_HSDMA_CHANNELS; bchannel++) {
 			musb_channel = (struct musb_dma_channel *)
@@ -289,7 +327,11 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 			}
 		}
 
+<<<<<<< HEAD
 		dev_dbg(musb->controller, "int_hsdma = 0x%x\n", int_hsdma);
+=======
+		musb_dbg(musb, "int_hsdma = 0x%x", int_hsdma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!int_hsdma)
 			goto done;
@@ -316,7 +358,11 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 				channel->actual_len = addr
 					- musb_channel->start_addr;
 
+<<<<<<< HEAD
 				dev_dbg(musb->controller, "ch %p, 0x%x -> 0x%x (%zu / %d) %s\n",
+=======
+				musb_dbg(musb, "ch %p, 0x%x -> 0x%x (%zu / %d) %s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					channel, musb_channel->start_addr,
 					addr, channel->actual_len,
 					musb_channel->len,
@@ -329,6 +375,7 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 				channel->status = MUSB_DMA_STATUS_FREE;
 
 				/* completed */
+<<<<<<< HEAD
 				if ((devctl & MUSB_DEVCTL_HM)
 					&& (musb_channel->transmit)
 					&& ((channel->desired_mode == 0)
@@ -337,6 +384,14 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 				    ) {
 					u8  epnum  = musb_channel->epnum;
 					int offset = MUSB_EP_OFFSET(epnum,
+=======
+				if (musb_channel->transmit &&
+					(!channel->desired_mode ||
+					(channel->actual_len %
+					    musb_channel->max_packet_sz))) {
+					u8  epnum  = musb_channel->epnum;
+					int offset = musb->io.ep_offset(epnum,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 								    MUSB_TXCSR);
 					u16 txcsr;
 
@@ -346,11 +401,22 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 					 */
 					musb_ep_select(mbase, epnum);
 					txcsr = musb_readw(mbase, offset);
+<<<<<<< HEAD
 					txcsr &= ~(MUSB_TXCSR_DMAENAB
 							| MUSB_TXCSR_AUTOSET);
 					musb_writew(mbase, offset, txcsr);
 					/* Send out the packet */
 					txcsr &= ~MUSB_TXCSR_DMAMODE;
+=======
+					if (channel->desired_mode == 1) {
+						txcsr &= ~(MUSB_TXCSR_DMAENAB
+							| MUSB_TXCSR_AUTOSET);
+						musb_writew(mbase, offset, txcsr);
+						/* Send out the packet */
+						txcsr &= ~MUSB_TXCSR_DMAMODE;
+						txcsr |= MUSB_TXCSR_DMAENAB;
+					}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					txcsr |=  MUSB_TXCSR_TXPKTRDY;
 					musb_writew(mbase, offset, txcsr);
 				}
@@ -366,21 +432,36 @@ done:
 	return retval;
 }
 
+<<<<<<< HEAD
 void dma_controller_destroy(struct dma_controller *c)
+=======
+void musbhs_dma_controller_destroy(struct dma_controller *c)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct musb_dma_controller *controller = container_of(c,
 			struct musb_dma_controller, controller);
 
+<<<<<<< HEAD
 	if (!controller)
 		return;
+=======
+	dma_controller_stop(controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (controller->irq)
 		free_irq(controller->irq, c);
 
 	kfree(controller);
 }
+<<<<<<< HEAD
 
 struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *base)
+=======
+EXPORT_SYMBOL_GPL(musbhs_dma_controller_destroy);
+
+struct dma_controller *musbhs_dma_controller_create(struct musb *musb,
+						    void __iomem *base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct musb_dma_controller *controller;
 	struct device *dev = musb->controller;
@@ -400,17 +481,26 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 	controller->private_data = musb;
 	controller->base = base;
 
+<<<<<<< HEAD
 	controller->controller.start = dma_controller_start;
 	controller->controller.stop = dma_controller_stop;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	controller->controller.channel_alloc = dma_channel_allocate;
 	controller->controller.channel_release = dma_channel_release;
 	controller->controller.channel_program = dma_channel_program;
 	controller->controller.channel_abort = dma_channel_abort;
 
 	if (request_irq(irq, dma_controller_irq, 0,
+<<<<<<< HEAD
 			dev_name(musb->controller), &controller->controller)) {
 		dev_err(dev, "request_irq %d failed!\n", irq);
 		dma_controller_destroy(&controller->controller);
+=======
+			dev_name(musb->controller), controller)) {
+		dev_err(dev, "request_irq %d failed!\n", irq);
+		musb_dma_controller_destroy(&controller->controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		return NULL;
 	}
@@ -419,3 +509,7 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 
 	return &controller->controller;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(musbhs_dma_controller_create);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -38,16 +38,27 @@ static inline void gfs2_buffer_copy_tail(struct buffer_head *to_bh,
 }
 
 extern const struct address_space_operations gfs2_meta_aops;
+<<<<<<< HEAD
+=======
+extern const struct address_space_operations gfs2_rgrp_aops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline struct gfs2_sbd *gfs2_mapping2sbd(struct address_space *mapping)
 {
 	struct inode *inode = mapping->host;
 	if (mapping->a_ops == &gfs2_meta_aops)
+<<<<<<< HEAD
 		return (((struct gfs2_glock *)mapping) - 1)->gl_sbd;
+=======
+		return (((struct gfs2_glock *)mapping) - 1)->gl_name.ln_sbd;
+	else if (mapping->a_ops == &gfs2_rgrp_aops)
+		return container_of(mapping, struct gfs2_sbd, sd_aspace);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		return inode->i_sb->s_fs_info;
 }
 
+<<<<<<< HEAD
 void gfs2_meta_sync(struct gfs2_glock *gl);
 
 struct buffer_head *gfs2_meta_new(struct gfs2_glock *gl, u64 blkno);
@@ -63,6 +74,23 @@ void gfs2_meta_wipe(struct gfs2_inode *ip, u64 bstart, u32 blen);
 
 int gfs2_meta_indirect_buffer(struct gfs2_inode *ip, int height, u64 num,
 			      struct buffer_head **bhp);
+=======
+extern struct buffer_head *gfs2_meta_new(struct gfs2_glock *gl, u64 blkno);
+extern int gfs2_meta_read(struct gfs2_glock *gl, u64 blkno, int flags,
+			  int rahead, struct buffer_head **bhp);
+extern int gfs2_meta_wait(struct gfs2_sbd *sdp, struct buffer_head *bh);
+extern struct buffer_head *gfs2_getbuf(struct gfs2_glock *gl, u64 blkno,
+				       int create);
+enum {
+	REMOVE_JDATA = 0,
+	REMOVE_META = 1,
+};
+
+extern void gfs2_remove_from_journal(struct buffer_head *bh, int meta);
+extern void gfs2_meta_wipe(struct gfs2_inode *ip, u64 bstart, u32 blen);
+extern int gfs2_meta_indirect_buffer(struct gfs2_inode *ip, int height, u64 num,
+				     struct buffer_head **bhp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int gfs2_meta_inode_buffer(struct gfs2_inode *ip,
 					 struct buffer_head **bhp)

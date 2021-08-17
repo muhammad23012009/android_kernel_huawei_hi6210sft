@@ -56,7 +56,11 @@ static struct irq_chip hd64461_irq_chip = {
 	.irq_unmask	= hd64461_unmask_irq,
 };
 
+<<<<<<< HEAD
 static void hd64461_irq_demux(unsigned int irq, struct irq_desc *desc)
+=======
+static void hd64461_irq_demux(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned short intv = __raw_readw(HD64461_NIRR);
 	unsigned int ext_irq = HD64461_IRQBASE;

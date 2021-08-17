@@ -19,12 +19,21 @@
 #define ATIIXP_IDE_UDMA_CONTROL		0x54
 #define ATIIXP_IDE_UDMA_MODE		0x56
 
+<<<<<<< HEAD
 typedef struct {
 	u8 command_width;
 	u8 recover_width;
 } atiixp_ide_timing;
 
 static atiixp_ide_timing pio_timing[] = {
+=======
+struct atiixp_ide_timing {
+	u8 command_width;
+	u8 recover_width;
+};
+
+static struct atiixp_ide_timing pio_timing[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x05, 0x0d },
 	{ 0x04, 0x07 },
 	{ 0x03, 0x04 },
@@ -32,7 +41,11 @@ static atiixp_ide_timing pio_timing[] = {
 	{ 0x02, 0x00 },
 };
 
+<<<<<<< HEAD
 static atiixp_ide_timing mdma_timing[] = {
+=======
+static struct atiixp_ide_timing mdma_timing[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x07, 0x07 },
 	{ 0x02, 0x01 },
 	{ 0x02, 0x00 },

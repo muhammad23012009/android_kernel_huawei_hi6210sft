@@ -30,9 +30,18 @@
 #include <linux/slab.h>
 #include <linux/sysfs.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
 
 #define MAX_OBJ_NUM 1000
 
+=======
+#include <linux/module.h>
+
+#define MAX_OBJ_NUM 1000
+
+static void padata_free_pd(struct parallel_data *pd);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int padata_index_to_cpu(struct parallel_data *pd, int cpu_index)
 {
 	int cpu, target_cpu;
@@ -46,6 +55,10 @@ static int padata_index_to_cpu(struct parallel_data *pd, int cpu_index)
 
 static int padata_cpu_hash(struct parallel_data *pd)
 {
+<<<<<<< HEAD
+=======
+	unsigned int seq_nr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int cpu_index;
 
 	/*
@@ -53,10 +66,15 @@ static int padata_cpu_hash(struct parallel_data *pd)
 	 * seq_nr mod. number of cpus in use.
 	 */
 
+<<<<<<< HEAD
 	spin_lock(&pd->seq_lock);
 	cpu_index =  pd->seq_nr % cpumask_weight(pd->cpumask.pcpu);
 	pd->seq_nr++;
 	spin_unlock(&pd->seq_lock);
+=======
+	seq_nr = atomic_inc_return(&pd->seq_nr);
+	cpu_index = seq_nr % cpumask_weight(pd->cpumask.pcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return padata_index_to_cpu(pd, cpu_index);
 }
@@ -64,15 +82,21 @@ static int padata_cpu_hash(struct parallel_data *pd)
 static void padata_parallel_worker(struct work_struct *parallel_work)
 {
 	struct padata_parallel_queue *pqueue;
+<<<<<<< HEAD
 	struct parallel_data *pd;
 	struct padata_instance *pinst;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	LIST_HEAD(local_list);
 
 	local_bh_disable();
 	pqueue = container_of(parallel_work,
 			      struct padata_parallel_queue, work);
+<<<<<<< HEAD
 	pd = pqueue->pd;
 	pinst = pd->pinst;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock(&pqueue->parallel.lock);
 	list_replace_init(&pqueue->parallel.list, &local_list);
@@ -113,7 +137,11 @@ int padata_do_parallel(struct padata_instance *pinst,
 
 	rcu_read_lock_bh();
 
+<<<<<<< HEAD
 	pd = rcu_dereference(pinst->pd);
+=======
+	pd = rcu_dereference_bh(pinst->pd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = -EINVAL;
 	if (!(pinst->flags & PADATA_INIT) || pinst->flags & PADATA_INVALID)
@@ -135,6 +163,10 @@ int padata_do_parallel(struct padata_instance *pinst,
 	padata->cb_cpu = cb_cpu;
 
 	target_cpu = padata_cpu_hash(pd);
+<<<<<<< HEAD
+=======
+	padata->cpu = target_cpu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	queue = per_cpu_ptr(pd->pqueue, target_cpu);
 
 	spin_lock(&queue->parallel.lock);
@@ -158,8 +190,11 @@ EXPORT_SYMBOL(padata_do_parallel);
  * A pointer to the control struct of the next object that needs
  * serialization, if present in one of the percpu reorder queues.
  *
+<<<<<<< HEAD
  * NULL, if all percpu reorder queues are empty.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * -EINPROGRESS, if the next object that needs serialization will
  *  be parallel processed by another cpu and is not yet present in
  *  the cpu's reorder queue.
@@ -169,6 +204,7 @@ EXPORT_SYMBOL(padata_do_parallel);
  */
 static struct padata_priv *padata_get_next(struct parallel_data *pd)
 {
+<<<<<<< HEAD
 	int cpu, num_cpus;
 	unsigned int next_nr, next_index;
 	struct padata_parallel_queue *next_queue;
@@ -188,6 +224,14 @@ static struct padata_priv *padata_get_next(struct parallel_data *pd)
 
 	padata = NULL;
 
+=======
+	struct padata_parallel_queue *next_queue;
+	struct padata_priv *padata;
+	struct padata_list *reorder;
+	int cpu = pd->cpu;
+
+	next_queue = per_cpu_ptr(pd->pqueue, cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reorder = &next_queue->reorder;
 
 	spin_lock(&reorder->lock);
@@ -198,7 +242,12 @@ static struct padata_priv *padata_get_next(struct parallel_data *pd)
 		list_del_init(&padata->list);
 		atomic_dec(&pd->reorder_objects);
 
+<<<<<<< HEAD
 		pd->processed++;
+=======
+		pd->cpu = cpumask_next_wrap(cpu, pd->cpumask.pcpu, -1,
+					    false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		spin_unlock(&reorder->lock);
 		goto out;
@@ -221,6 +270,10 @@ static void padata_reorder(struct parallel_data *pd)
 	struct padata_priv *padata;
 	struct padata_serial_queue *squeue;
 	struct padata_instance *pinst = pd->pinst;
+<<<<<<< HEAD
+=======
+	struct padata_parallel_queue *next_queue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We need to ensure that only one cpu can work on dequeueing of
@@ -239,12 +292,20 @@ static void padata_reorder(struct parallel_data *pd)
 		padata = padata_get_next(pd);
 
 		/*
+<<<<<<< HEAD
 		 * All reorder queues are empty, or the next object that needs
 		 * serialization is parallel processed by another cpu and is
 		 * still on it's way to the cpu's reorder queue, nothing to
 		 * do for now.
 		 */
 		if (!padata || PTR_ERR(padata) == -EINPROGRESS)
+=======
+		 * If the next object that needs serialization is parallel
+		 * processed by another cpu and is still on it's way to the
+		 * cpu's reorder queue, nothing to do for now.
+		 */
+		if (PTR_ERR(padata) == -EINPROGRESS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		/*
@@ -253,7 +314,10 @@ static void padata_reorder(struct parallel_data *pd)
 		 * so exit immediately.
 		 */
 		if (PTR_ERR(padata) == -ENODATA) {
+<<<<<<< HEAD
 			del_timer(&pd->timer);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_unlock_bh(&pd->lock);
 			return;
 		}
@@ -272,6 +336,7 @@ static void padata_reorder(struct parallel_data *pd)
 
 	/*
 	 * The next object that needs serialization might have arrived to
+<<<<<<< HEAD
 	 * the reorder queues in the meantime, we will be called again
 	 * from the timer function if no one else cares for it.
 	 */
@@ -289,6 +354,29 @@ static void padata_reorder_timer(unsigned long arg)
 	struct parallel_data *pd = (struct parallel_data *)arg;
 
 	padata_reorder(pd);
+=======
+	 * the reorder queues in the meantime.
+	 *
+	 * Ensure reorder queue is read after pd->lock is dropped so we see
+	 * new objects from another task in padata_do_serial.  Pairs with
+	 * smp_mb__after_atomic in padata_do_serial.
+	 */
+	smp_mb();
+
+	next_queue = per_cpu_ptr(pd->pqueue, pd->cpu);
+	if (!list_empty(&next_queue->reorder.list))
+		queue_work(pinst->wq, &pd->reorder_work);
+}
+
+static void invoke_padata_reorder(struct work_struct *work)
+{
+	struct parallel_data *pd;
+
+	local_bh_disable();
+	pd = container_of(work, struct parallel_data, reorder_work);
+	padata_reorder(pd);
+	local_bh_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void padata_serial_worker(struct work_struct *serial_work)
@@ -296,6 +384,10 @@ static void padata_serial_worker(struct work_struct *serial_work)
 	struct padata_serial_queue *squeue;
 	struct parallel_data *pd;
 	LIST_HEAD(local_list);
+<<<<<<< HEAD
+=======
+	int cnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	local_bh_disable();
 	squeue = container_of(serial_work, struct padata_serial_queue, work);
@@ -305,6 +397,11 @@ static void padata_serial_worker(struct work_struct *serial_work)
 	list_replace_init(&squeue->serial.list, &local_list);
 	spin_unlock(&squeue->serial.lock);
 
+<<<<<<< HEAD
+=======
+	cnt = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (!list_empty(&local_list)) {
 		struct padata_priv *padata;
 
@@ -314,9 +411,18 @@ static void padata_serial_worker(struct work_struct *serial_work)
 		list_del_init(&padata->list);
 
 		padata->serial(padata);
+<<<<<<< HEAD
 		atomic_dec(&pd->refcnt);
 	}
 	local_bh_enable();
+=======
+		cnt++;
+	}
+	local_bh_enable();
+
+	if (atomic_sub_and_test(cnt, &pd->refcnt))
+		padata_free_pd(pd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -329,6 +435,7 @@ static void padata_serial_worker(struct work_struct *serial_work)
  */
 void padata_do_serial(struct padata_priv *padata)
 {
+<<<<<<< HEAD
 	int cpu;
 	struct padata_parallel_queue *pqueue;
 	struct parallel_data *pd;
@@ -344,6 +451,23 @@ void padata_do_serial(struct padata_priv *padata)
 	spin_unlock(&pqueue->reorder.lock);
 
 	put_cpu();
+=======
+	struct parallel_data *pd = padata->pd;
+	struct padata_parallel_queue *pqueue = per_cpu_ptr(pd->pqueue,
+							   padata->cpu);
+
+	spin_lock(&pqueue->reorder.lock);
+	list_add_tail(&padata->list, &pqueue->reorder.list);
+	atomic_inc(&pd->reorder_objects);
+	spin_unlock(&pqueue->reorder.lock);
+
+	/*
+	 * Ensure the addition to the reorder list is ordered correctly
+	 * with the trylock of pd->lock in padata_reorder.  Pairs with smp_mb
+	 * in padata_reorder.
+	 */
+	smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	padata_reorder(pd);
 }
@@ -358,7 +482,11 @@ static int padata_setup_cpumasks(struct parallel_data *pd,
 
 	cpumask_and(pd->cpumask.pcpu, pcpumask, cpu_online_mask);
 	if (!alloc_cpumask_var(&pd->cpumask.cbcpu, GFP_KERNEL)) {
+<<<<<<< HEAD
 		free_cpumask_var(pd->cpumask.cbcpu);
+=======
+		free_cpumask_var(pd->cpumask.pcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 
@@ -393,9 +521,20 @@ static void padata_init_pqueues(struct parallel_data *pd)
 	struct padata_parallel_queue *pqueue;
 
 	cpu_index = 0;
+<<<<<<< HEAD
 	for_each_cpu(cpu, pd->cpumask.pcpu) {
 		pqueue = per_cpu_ptr(pd->pqueue, cpu);
 		pqueue->pd = pd;
+=======
+	for_each_possible_cpu(cpu) {
+		pqueue = per_cpu_ptr(pd->pqueue, cpu);
+
+		if (!cpumask_test_cpu(cpu, pd->cpumask.pcpu)) {
+			pqueue->cpu_index = -1;
+			continue;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pqueue->cpu_index = cpu_index;
 		cpu_index++;
 
@@ -429,12 +568,22 @@ static struct parallel_data *padata_alloc_pd(struct padata_instance *pinst,
 
 	padata_init_pqueues(pd);
 	padata_init_squeues(pd);
+<<<<<<< HEAD
 	setup_timer(&pd->timer, padata_reorder_timer, (unsigned long)pd);
 	pd->seq_nr = 0;
 	atomic_set(&pd->reorder_objects, 0);
 	atomic_set(&pd->refcnt, 0);
 	pd->pinst = pinst;
 	spin_lock_init(&pd->lock);
+=======
+	atomic_set(&pd->seq_nr, -1);
+	atomic_set(&pd->reorder_objects, 0);
+	atomic_set(&pd->refcnt, 1);
+	pd->pinst = pinst;
+	spin_lock_init(&pd->lock);
+	pd->cpu = cpumask_first(pd->cpumask.pcpu);
+	INIT_WORK(&pd->reorder_work, invoke_padata_reorder);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return pd;
 
@@ -457,6 +606,7 @@ static void padata_free_pd(struct parallel_data *pd)
 	kfree(pd);
 }
 
+<<<<<<< HEAD
 /* Flush all objects out of the padata queues. */
 static void padata_flush_queues(struct parallel_data *pd)
 {
@@ -482,6 +632,8 @@ static void padata_flush_queues(struct parallel_data *pd)
 	BUG_ON(atomic_read(&pd->refcnt) != 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __padata_start(struct padata_instance *pinst)
 {
 	pinst->flags |= PADATA_INIT;
@@ -495,10 +647,13 @@ static void __padata_stop(struct padata_instance *pinst)
 	pinst->flags &= ~PADATA_INIT;
 
 	synchronize_rcu();
+<<<<<<< HEAD
 
 	get_online_cpus();
 	padata_flush_queues(pinst->pd);
 	put_online_cpus();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Replace the internal control structure with a new one. */
@@ -519,8 +674,13 @@ static void padata_replace(struct padata_instance *pinst,
 	if (!cpumask_equal(pd_old->cpumask.cbcpu, pd_new->cpumask.cbcpu))
 		notification_mask |= PADATA_CPU_SERIAL;
 
+<<<<<<< HEAD
 	padata_flush_queues(pd_old);
 	padata_free_pd(pd_old);
+=======
+	if (atomic_dec_and_test(&pd_old->refcnt))
+		padata_free_pd(pd_old);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (notification_mask)
 		blocking_notifier_call_chain(&pinst->cpumask_change_notifier,
@@ -609,6 +769,7 @@ out_replace:
 }
 
 /**
+<<<<<<< HEAD
  * padata_set_cpumasks - Set both parallel and serial cpumasks. The first
  *                       one is used by parallel workers and the second one
  *                       by the wokers doing serialization.
@@ -636,6 +797,8 @@ int padata_set_cpumasks(struct padata_instance *pinst, cpumask_var_t pcpumask,
 EXPORT_SYMBOL(padata_set_cpumasks);
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * padata_set_cpumask: Sets specified by @cpumask_type cpumask to the value
  *                     equivalent to @cpumask.
  *
@@ -650,8 +813,13 @@ int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
 	struct cpumask *serial_mask, *parallel_mask;
 	int err = -EINVAL;
 
+<<<<<<< HEAD
 	mutex_lock(&pinst->lock);
 	get_online_cpus();
+=======
+	get_online_cpus();
+	mutex_lock(&pinst->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (cpumask_type) {
 	case PADATA_CPU_PARALLEL:
@@ -669,13 +837,58 @@ int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
 	err =  __padata_set_cpumasks(pinst, parallel_mask, serial_mask);
 
 out:
+<<<<<<< HEAD
 	put_online_cpus();
 	mutex_unlock(&pinst->lock);
+=======
+	mutex_unlock(&pinst->lock);
+	put_online_cpus();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
 EXPORT_SYMBOL(padata_set_cpumask);
 
+<<<<<<< HEAD
+=======
+/**
+ * padata_start - start the parallel processing
+ *
+ * @pinst: padata instance to start
+ */
+int padata_start(struct padata_instance *pinst)
+{
+	int err = 0;
+
+	mutex_lock(&pinst->lock);
+
+	if (pinst->flags & PADATA_INVALID)
+		err = -EINVAL;
+
+	 __padata_start(pinst);
+
+	mutex_unlock(&pinst->lock);
+
+	return err;
+}
+EXPORT_SYMBOL(padata_start);
+
+/**
+ * padata_stop - stop the parallel processing
+ *
+ * @pinst: padata instance to stop
+ */
+void padata_stop(struct padata_instance *pinst)
+{
+	mutex_lock(&pinst->lock);
+	__padata_stop(pinst);
+	mutex_unlock(&pinst->lock);
+}
+EXPORT_SYMBOL(padata_stop);
+
+#ifdef CONFIG_HOTPLUG_CPU
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __padata_add_cpu(struct padata_instance *pinst, int cpu)
 {
 	struct parallel_data *pd;
@@ -696,6 +909,7 @@ static int __padata_add_cpu(struct padata_instance *pinst, int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
  /**
  * padata_add_cpu - add a cpu to one or both(parallel and serial)
  *                  padata cpumasks.
@@ -732,6 +946,8 @@ int padata_add_cpu(struct padata_instance *pinst, int cpu, int mask)
 }
 EXPORT_SYMBOL(padata_add_cpu);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __padata_remove_cpu(struct padata_instance *pinst, int cpu)
 {
 	struct parallel_data *pd = NULL;
@@ -791,6 +1007,7 @@ int padata_remove_cpu(struct padata_instance *pinst, int cpu, int mask)
 }
 EXPORT_SYMBOL(padata_remove_cpu);
 
+<<<<<<< HEAD
 /**
  * padata_start - start the parallel processing
  *
@@ -828,12 +1045,15 @@ EXPORT_SYMBOL(padata_stop);
 
 #ifdef CONFIG_HOTPLUG_CPU
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int pinst_has_cpu(struct padata_instance *pinst, int cpu)
 {
 	return cpumask_test_cpu(cpu, pinst->cpumask.pcpu) ||
 		cpumask_test_cpu(cpu, pinst->cpumask.cbcpu);
 }
 
+<<<<<<< HEAD
 
 static int padata_cpu_callback(struct notifier_block *nfb,
 			       unsigned long action, void *hcpu)
@@ -886,12 +1106,49 @@ static int padata_cpu_callback(struct notifier_block *nfb,
 
 	return NOTIFY_OK;
 }
+=======
+static int padata_cpu_online(unsigned int cpu, struct hlist_node *node)
+{
+	struct padata_instance *pinst;
+	int ret;
+
+	pinst = hlist_entry_safe(node, struct padata_instance, node);
+	if (!pinst_has_cpu(pinst, cpu))
+		return 0;
+
+	mutex_lock(&pinst->lock);
+	ret = __padata_add_cpu(pinst, cpu);
+	mutex_unlock(&pinst->lock);
+	return ret;
+}
+
+static int padata_cpu_prep_down(unsigned int cpu, struct hlist_node *node)
+{
+	struct padata_instance *pinst;
+	int ret;
+
+	pinst = hlist_entry_safe(node, struct padata_instance, node);
+	if (!pinst_has_cpu(pinst, cpu))
+		return 0;
+
+	mutex_lock(&pinst->lock);
+	ret = __padata_remove_cpu(pinst, cpu);
+	mutex_unlock(&pinst->lock);
+	return ret;
+}
+
+static enum cpuhp_state hp_online;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static void __padata_free(struct padata_instance *pinst)
 {
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	unregister_hotcpu_notifier(&pinst->cpu_notifier);
+=======
+	cpuhp_state_remove_instance_nocalls(hp_online, &pinst->node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	padata_stop(pinst);
@@ -931,6 +1188,7 @@ static ssize_t show_cpumask(struct padata_instance *pinst,
 	else
 		cpumask = pinst->cpumask.pcpu;
 
+<<<<<<< HEAD
 	len = bitmap_scnprintf(buf, PAGE_SIZE, cpumask_bits(cpumask),
 			       nr_cpu_ids);
 	if (PAGE_SIZE - len < 2)
@@ -940,6 +1198,12 @@ static ssize_t show_cpumask(struct padata_instance *pinst,
 
 	mutex_unlock(&pinst->lock);
 	return len;
+=======
+	len = snprintf(buf, PAGE_SIZE, "%*pb\n",
+		       nr_cpu_ids, cpumask_bits(cpumask));
+	mutex_unlock(&pinst->lock);
+	return len < PAGE_SIZE ? len : -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t store_cpumask(struct padata_instance *pinst,
@@ -1087,18 +1351,27 @@ struct padata_instance *padata_alloc(struct workqueue_struct *wq,
 
 	pinst->flags = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HOTPLUG_CPU
 	pinst->cpu_notifier.notifier_call = padata_cpu_callback;
 	pinst->cpu_notifier.priority = 0;
 	register_hotcpu_notifier(&pinst->cpu_notifier);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	put_online_cpus();
 
 	BLOCKING_INIT_NOTIFIER_HEAD(&pinst->cpumask_change_notifier);
 	kobject_init(&pinst->kobj, &padata_attr_type);
 	mutex_init(&pinst->lock);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HOTPLUG_CPU
+	cpuhp_state_add_instance_nocalls(hp_online, &pinst->node);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pinst;
 
 err_free_masks:
@@ -1110,7 +1383,10 @@ err_free_inst:
 err:
 	return NULL;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(padata_alloc);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * padata_free - free a padata instance
@@ -1122,3 +1398,29 @@ void padata_free(struct padata_instance *pinst)
 	kobject_put(&pinst->kobj);
 }
 EXPORT_SYMBOL(padata_free);
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_HOTPLUG_CPU
+
+static __init int padata_driver_init(void)
+{
+	int ret;
+
+	ret = cpuhp_setup_state_multi(CPUHP_AP_ONLINE_DYN, "padata:online",
+				      padata_cpu_online,
+				      padata_cpu_prep_down);
+	if (ret < 0)
+		return ret;
+	hp_online = ret;
+	return 0;
+}
+module_init(padata_driver_init);
+
+static __exit void padata_driver_exit(void)
+{
+	cpuhp_remove_multi_state(hp_online);
+}
+module_exit(padata_driver_exit);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

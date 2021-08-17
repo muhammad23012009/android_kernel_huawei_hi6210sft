@@ -29,7 +29,11 @@ config FUSION_SPI
 config FUSION_FC
 	tristate "Fusion MPT ScsiHost drivers for FC"
 	depends on PCI && SCSI
+<<<<<<< HEAD
 	select SCSI_FC_ATTRS
+=======
+	depends on SCSI_FC_ATTRS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  SCSI HOST support for a Fiber Channel host adapters.
 

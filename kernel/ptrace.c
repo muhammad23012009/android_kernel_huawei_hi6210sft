@@ -27,11 +27,51 @@
 #include <linux/cn_proc.h>
 #include <linux/compat.h>
 
+<<<<<<< HEAD
 
 static int ptrace_trapping_sleep_fn(void *flags)
 {
 	schedule();
 	return 0;
+=======
+/*
+ * Access another process' address space via ptrace.
+ * Source/target buffer must be kernel space,
+ * Do not walk the page table directly, use get_user_pages
+ */
+int ptrace_access_vm(struct task_struct *tsk, unsigned long addr,
+		     void *buf, int len, unsigned int gup_flags)
+{
+	struct mm_struct *mm;
+	int ret;
+
+	mm = get_task_mm(tsk);
+	if (!mm)
+		return 0;
+
+	if (!tsk->ptrace ||
+	    (current != tsk->parent) ||
+	    ((get_dumpable(mm) != SUID_DUMP_USER) &&
+	     !ptracer_capable(tsk, mm->user_ns))) {
+		mmput(mm);
+		return 0;
+	}
+
+	ret = __access_remote_vm(tsk, mm, addr, buf, len, gup_flags);
+	mmput(mm);
+
+	return ret;
+}
+
+
+void __ptrace_link(struct task_struct *child, struct task_struct *new_parent,
+		   const struct cred *ptracer_cred)
+{
+	BUG_ON(!list_empty(&child->ptrace_entry));
+	list_add(&child->ptrace_entry, &new_parent->ptraced);
+	child->parent = new_parent;
+	child->ptracer_cred = get_cred(ptracer_cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -40,11 +80,17 @@ static int ptrace_trapping_sleep_fn(void *flags)
  *
  * Must be called with the tasklist lock write-held.
  */
+<<<<<<< HEAD
 void __ptrace_link(struct task_struct *child, struct task_struct *new_parent)
 {
 	BUG_ON(!list_empty(&child->ptrace_entry));
 	list_add(&child->ptrace_entry, &new_parent->ptraced);
 	child->parent = new_parent;
+=======
+static void ptrace_link(struct task_struct *child, struct task_struct *new_parent)
+{
+	__ptrace_link(child, new_parent, current_cred());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -77,6 +123,7 @@ void __ptrace_link(struct task_struct *child, struct task_struct *new_parent)
  */
 void __ptrace_unlink(struct task_struct *child)
 {
+<<<<<<< HEAD
 	BUG_ON(!child->ptrace);
 
 	child->ptrace = 0;
@@ -85,6 +132,21 @@ void __ptrace_unlink(struct task_struct *child)
 
 	spin_lock(&child->sighand->siglock);
 
+=======
+	const struct cred *old_cred;
+	BUG_ON(!child->ptrace);
+
+	clear_tsk_thread_flag(child, TIF_SYSCALL_TRACE);
+
+	child->parent = child->real_parent;
+	list_del_init(&child->ptrace_entry);
+	old_cred = child->ptracer_cred;
+	child->ptracer_cred = NULL;
+	put_cred(old_cred);
+
+	spin_lock(&child->sighand->siglock);
+	child->ptrace = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Clear all pending traps and TRAPPING.  TRAPPING should be
 	 * cleared regardless of JOBCTL_STOP_PENDING.  Do it explicitly.
@@ -124,6 +186,24 @@ void __ptrace_unlink(struct task_struct *child)
 	spin_unlock(&child->sighand->siglock);
 }
 
+<<<<<<< HEAD
+=======
+static bool looks_like_a_spurious_pid(struct task_struct *task)
+{
+	if (task->exit_code != ((PTRACE_EVENT_EXEC << 8) | SIGTRAP))
+		return false;
+
+	if (task_pid_vnr(task) == task->ptrace_message)
+		return false;
+	/*
+	 * The tracee changed its pid but the PTRACE_EVENT_EXEC event
+	 * was not wait()'ed, most probably debugger targets the old
+	 * leader which was destroyed in de_thread().
+	 */
+	return true;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Ensure that nothing can wake it up, even SIGKILL */
 static bool ptrace_freeze_traced(struct task_struct *task)
 {
@@ -134,7 +214,12 @@ static bool ptrace_freeze_traced(struct task_struct *task)
 		return ret;
 
 	spin_lock_irq(&task->sighand->siglock);
+<<<<<<< HEAD
 	if (task_is_traced(task) && !__fatal_signal_pending(task)) {
+=======
+	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
+	    !__fatal_signal_pending(task)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		task->state = __TASK_TRACED;
 		ret = true;
 	}
@@ -221,6 +306,12 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
 
 static int ptrace_has_cap(struct user_namespace *ns, unsigned int mode)
 {
+<<<<<<< HEAD
+=======
+	if (mode & PTRACE_MODE_SCHED)
+		return false;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mode & PTRACE_MODE_NOAUDIT)
 		return has_ns_capability_noaudit(current, ns, CAP_SYS_PTRACE);
 	else
@@ -231,7 +322,11 @@ static int ptrace_has_cap(struct user_namespace *ns, unsigned int mode)
 static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 {
 	const struct cred *cred = current_cred(), *tcred;
+<<<<<<< HEAD
 	int dumpable = 0;
+=======
+	struct mm_struct *mm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kuid_t caller_uid;
 	kgid_t caller_gid;
 
@@ -253,7 +348,10 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 	if (same_thread_group(task, current))
 		return 0;
 	rcu_read_lock();
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mode & PTRACE_MODE_FSCREDS) {
 		caller_uid = cred->fsuid;
 		caller_gid = cred->fsgid;
@@ -283,6 +381,7 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 	return -EPERM;
 ok:
 	rcu_read_unlock();
+<<<<<<< HEAD
 	smp_rmb();
 	if (task->mm)
 		dumpable = get_dumpable(task->mm);
@@ -297,6 +396,34 @@ ok:
 	return security_ptrace_access_check(task, mode);
 }
 
+=======
+	/*
+	 * If a task drops privileges and becomes nondumpable (through a syscall
+	 * like setresuid()) while we are trying to access it, we must ensure
+	 * that the dumpability is read after the credentials; otherwise,
+	 * we may be able to attach to a task that we shouldn't be able to
+	 * attach to (as if the task had dropped privileges without becoming
+	 * nondumpable).
+	 * Pairs with a write barrier in commit_creds().
+	 */
+	smp_rmb();
+	mm = task->mm;
+	if (mm &&
+	    ((get_dumpable(mm) != SUID_DUMP_USER) &&
+	     !ptrace_has_cap(mm->user_ns, mode)))
+	    return -EPERM;
+
+	if (mode & PTRACE_MODE_SCHED)
+		return 0;
+	return security_ptrace_access_check(task, mode);
+}
+
+bool ptrace_may_access_sched(struct task_struct *task, unsigned int mode)
+{
+	return __ptrace_may_access(task, mode | PTRACE_MODE_SCHED);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 bool ptrace_may_access(struct task_struct *task, unsigned int mode)
 {
 	int err;
@@ -356,6 +483,7 @@ static int ptrace_attach(struct task_struct *task, long request,
 
 	if (seize)
 		flags |= PT_SEIZED;
+<<<<<<< HEAD
 	rcu_read_lock();
 	if (ns_capable(__task_cred(task)->user_ns, CAP_SYS_PTRACE))
 		flags |= PT_PTRACE_CAP;
@@ -363,6 +491,11 @@ static int ptrace_attach(struct task_struct *task, long request,
 	task->ptrace = flags;
 
 	__ptrace_link(task, current);
+=======
+	task->ptrace = flags;
+
+	ptrace_link(task, current);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* SEIZE doesn't trap tracee on attach */
 	if (!seize)
@@ -400,8 +533,19 @@ unlock_creds:
 	mutex_unlock(&task->signal->cred_guard_mutex);
 out:
 	if (!retval) {
+<<<<<<< HEAD
 		wait_on_bit(&task->jobctl, JOBCTL_TRAPPING_BIT,
 			    ptrace_trapping_sleep_fn, TASK_UNINTERRUPTIBLE);
+=======
+		/*
+		 * We do not bother to change retval or clear JOBCTL_TRAPPING
+		 * if wait_on_bit() was interrupted by SIGKILL. The tracer will
+		 * not return to user-mode, it will exit and clear this bit in
+		 * __ptrace_unlink() if it wasn't already cleared by the tracee;
+		 * and until then nobody can ptrace this task.
+		 */
+		wait_on_bit(&task->jobctl, JOBCTL_TRAPPING_BIT, TASK_KILLABLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		proc_ptrace_connector(task, PTRACE_ATTACH);
 	}
 
@@ -429,7 +573,11 @@ static int ptrace_traceme(void)
 		 */
 		if (!ret && !(current->real_parent->flags & PF_EXITING)) {
 			current->ptrace = PT_PTRACED;
+<<<<<<< HEAD
 			__ptrace_link(current, current->real_parent);
+=======
+			ptrace_link(current, current->real_parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	write_unlock_irq(&tasklist_lock);
@@ -492,13 +640,17 @@ static bool __ptrace_detach(struct task_struct *tracer, struct task_struct *p)
 
 static int ptrace_detach(struct task_struct *child, unsigned int data)
 {
+<<<<<<< HEAD
 	bool dead = false;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!valid_signal(data))
 		return -EIO;
 
 	/* Architecture-specific hardware disable .. */
 	ptrace_disable(child);
+<<<<<<< HEAD
 	clear_tsk_thread_flag(child, TIF_SYSCALL_TRACE);
 
 	write_lock_irq(&tasklist_lock);
@@ -515,12 +667,31 @@ static int ptrace_detach(struct task_struct *child, unsigned int data)
 	proc_ptrace_connector(child, PTRACE_DETACH);
 	if (unlikely(dead))
 		release_task(child);
+=======
+
+	write_lock_irq(&tasklist_lock);
+	/*
+	 * We rely on ptrace_freeze_traced(). It can't be killed and
+	 * untraced by another thread, it can't be a zombie.
+	 */
+	WARN_ON(!child->ptrace || child->exit_state);
+	/*
+	 * tasklist_lock avoids the race with wait_task_stopped(), see
+	 * the comment in ptrace_resume().
+	 */
+	child->exit_code = data;
+	__ptrace_detach(current, child);
+	write_unlock_irq(&tasklist_lock);
+
+	proc_ptrace_connector(child, PTRACE_DETACH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 /*
  * Detach all tasks we were using ptrace on. Called with tasklist held
+<<<<<<< HEAD
  * for writing, and returns with it held too. But note it can release
  * and reacquire the lock.
  */
@@ -533,12 +704,20 @@ void exit_ptrace(struct task_struct *tracer)
 
 	if (likely(list_empty(&tracer->ptraced)))
 		return;
+=======
+ * for writing.
+ */
+void exit_ptrace(struct task_struct *tracer, struct list_head *dead)
+{
+	struct task_struct *p, *n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each_entry_safe(p, n, &tracer->ptraced, ptrace_entry) {
 		if (unlikely(p->ptrace & PT_EXITKILL))
 			send_sig_info(SIGKILL, SEND_SIG_FORCED, p);
 
 		if (__ptrace_detach(tracer, p))
+<<<<<<< HEAD
 			list_add(&p->ptrace_entry, &ptrace_dead);
 	}
 
@@ -551,6 +730,10 @@ void exit_ptrace(struct task_struct *tracer)
 	}
 
 	write_lock_irq(&tasklist_lock);
+=======
+			list_add(&p->ptrace_entry, dead);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst, int len)
@@ -562,7 +745,12 @@ int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst
 		int this_len, retval;
 
 		this_len = (len > sizeof(buf)) ? sizeof(buf) : len;
+<<<<<<< HEAD
 		retval = access_process_vm(tsk, src, buf, this_len, 0);
+=======
+		retval = ptrace_access_vm(tsk, src, buf, this_len, FOLL_FORCE);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!retval) {
 			if (copied)
 				break;
@@ -589,7 +777,12 @@ int ptrace_writedata(struct task_struct *tsk, char __user *src, unsigned long ds
 		this_len = (len > sizeof(buf)) ? sizeof(buf) : len;
 		if (copy_from_user(buf, src, this_len))
 			return -EFAULT;
+<<<<<<< HEAD
 		retval = access_process_vm(tsk, dst, buf, this_len, 1);
+=======
+		retval = ptrace_access_vm(tsk, dst, buf, this_len,
+				FOLL_FORCE | FOLL_WRITE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!retval) {
 			if (copied)
 				break;
@@ -610,6 +803,22 @@ static int ptrace_setoptions(struct task_struct *child, unsigned long data)
 	if (data & ~(unsigned long)PTRACE_O_MASK)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
+		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
+		    !IS_ENABLED(CONFIG_SECCOMP))
+			return -EINVAL;
+
+		if (!capable(CAP_SYS_ADMIN))
+			return -EPERM;
+
+		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
+		    current->ptrace & PT_SUSPEND_SECCOMP)
+			return -EPERM;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Avoid intermediate state when all opts are cleared */
 	flags = child->ptrace;
 	flags &= ~(PTRACE_O_MASK << PT_OPT_FLAG_SHIFT);
@@ -671,6 +880,13 @@ static int ptrace_peek_siginfo(struct task_struct *child,
 	if (arg.nr < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	/* Ensure arg.off fits in an unsigned long */
+	if (arg.off > ULONG_MAX)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (arg.flags & PTRACE_PEEKSIGINFO_SHARED)
 		pending = &child->signal->shared_pending;
 	else
@@ -678,22 +894,39 @@ static int ptrace_peek_siginfo(struct task_struct *child,
 
 	for (i = 0; i < arg.nr; ) {
 		siginfo_t info;
+<<<<<<< HEAD
 		s32 off = arg.off + i;
+=======
+		unsigned long off = arg.off + i;
+		bool found = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		spin_lock_irq(&child->sighand->siglock);
 		list_for_each_entry(q, &pending->list, list) {
 			if (!off--) {
+<<<<<<< HEAD
+=======
+				found = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				copy_siginfo(&info, &q->info);
 				break;
 			}
 		}
 		spin_unlock_irq(&child->sighand->siglock);
 
+<<<<<<< HEAD
 		if (off >= 0) /* beyond the end of the list */
 			break;
 
 #ifdef CONFIG_COMPAT
 		if (unlikely(is_compat_task())) {
+=======
+		if (!found) /* beyond the end of the list */
+			break;
+
+#ifdef CONFIG_COMPAT
+		if (unlikely(in_compat_syscall())) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compat_siginfo_t __user *uinfo = compat_ptr(data);
 
 			if (copy_siginfo_to_user32(uinfo, &info) ||
@@ -750,6 +983,11 @@ static int ptrace_peek_siginfo(struct task_struct *child,
 static int ptrace_resume(struct task_struct *child, long request,
 			 unsigned long data)
 {
+<<<<<<< HEAD
+=======
+	bool need_siglock;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!valid_signal(data))
 		return -EIO;
 
@@ -777,8 +1015,31 @@ static int ptrace_resume(struct task_struct *child, long request,
 		user_disable_single_step(child);
 	}
 
+<<<<<<< HEAD
 	child->exit_code = data;
 	wake_up_state(child, __TASK_TRACED);
+=======
+	/*
+	 * Change ->exit_code and ->state under siglock to avoid the race
+	 * with wait_task_stopped() in between; a non-zero ->exit_code will
+	 * wrongly look like another report from tracee.
+	 *
+	 * Note that we need siglock even if ->exit_code == data and/or this
+	 * status was not reported yet, the new status must not be cleared by
+	 * wait_task_stopped() after resume.
+	 *
+	 * If data == 0 we do not care if wait_task_stopped() reports the old
+	 * status and clears the code too; this can't race with the tracee, it
+	 * takes siglock after resume.
+	 */
+	need_siglock = data && !thread_group_empty(current);
+	if (need_siglock)
+		spin_lock_irq(&child->sighand->siglock);
+	child->exit_code = data;
+	wake_up_state(child, __TASK_TRACED);
+	if (need_siglock)
+		spin_unlock_irq(&child->sighand->siglock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -875,6 +1136,50 @@ int ptrace_request(struct task_struct *child, long request,
 			ret = ptrace_setsiginfo(child, &siginfo);
 		break;
 
+<<<<<<< HEAD
+=======
+	case PTRACE_GETSIGMASK:
+		if (addr != sizeof(sigset_t)) {
+			ret = -EINVAL;
+			break;
+		}
+
+		if (copy_to_user(datavp, &child->blocked, sizeof(sigset_t)))
+			ret = -EFAULT;
+		else
+			ret = 0;
+
+		break;
+
+	case PTRACE_SETSIGMASK: {
+		sigset_t new_set;
+
+		if (addr != sizeof(sigset_t)) {
+			ret = -EINVAL;
+			break;
+		}
+
+		if (copy_from_user(&new_set, datavp, sizeof(sigset_t))) {
+			ret = -EFAULT;
+			break;
+		}
+
+		sigdelsetmask(&new_set, sigmask(SIGKILL)|sigmask(SIGSTOP));
+
+		/*
+		 * Every thread does recalc_sigpending() after resume, so
+		 * retarget_shared_pending() and recalc_sigpending() are not
+		 * called here.
+		 */
+		spin_lock_irq(&child->sighand->siglock);
+		child->blocked = new_set;
+		spin_unlock_irq(&child->sighand->siglock);
+
+		ret = 0;
+		break;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case PTRACE_INTERRUPT:
 		/*
 		 * Stop tracee without any side-effect on signal or job
@@ -979,8 +1284,12 @@ int ptrace_request(struct task_struct *child, long request,
 
 #ifdef CONFIG_HAVE_ARCH_TRACEHOOK
 	case PTRACE_GETREGSET:
+<<<<<<< HEAD
 	case PTRACE_SETREGSET:
 	{
+=======
+	case PTRACE_SETREGSET: {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct iovec kiov;
 		struct iovec __user *uiov = datavp;
 
@@ -997,6 +1306,14 @@ int ptrace_request(struct task_struct *child, long request,
 		break;
 	}
 #endif
+<<<<<<< HEAD
+=======
+
+	case PTRACE_SECCOMP_GET_FILTER:
+		ret = seccomp_get_filter(child, addr, datavp);
+		break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		break;
 	}
@@ -1074,7 +1391,11 @@ int generic_ptrace_peekdata(struct task_struct *tsk, unsigned long addr,
 	unsigned long tmp;
 	int copied;
 
+<<<<<<< HEAD
 	copied = access_process_vm(tsk, addr, &tmp, sizeof(tmp), 0);
+=======
+	copied = ptrace_access_vm(tsk, addr, &tmp, sizeof(tmp), FOLL_FORCE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (copied != sizeof(tmp))
 		return -EIO;
 	return put_user(tmp, (unsigned long __user *)data);
@@ -1085,12 +1406,20 @@ int generic_ptrace_pokedata(struct task_struct *tsk, unsigned long addr,
 {
 	int copied;
 
+<<<<<<< HEAD
 	copied = access_process_vm(tsk, addr, &data, sizeof(data), 1);
+=======
+	copied = ptrace_access_vm(tsk, addr, &data, sizeof(data),
+			FOLL_FORCE | FOLL_WRITE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (copied == sizeof(data)) ? 0 : -EIO;
 }
 
 #if defined CONFIG_COMPAT
+<<<<<<< HEAD
 #include <linux/compat.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int compat_ptrace_request(struct task_struct *child, compat_long_t request,
 			  compat_ulong_t addr, compat_ulong_t data)
@@ -1103,7 +1432,12 @@ int compat_ptrace_request(struct task_struct *child, compat_long_t request,
 	switch (request) {
 	case PTRACE_PEEKTEXT:
 	case PTRACE_PEEKDATA:
+<<<<<<< HEAD
 		ret = access_process_vm(child, addr, &word, sizeof(word), 0);
+=======
+		ret = ptrace_access_vm(child, addr, &word, sizeof(word),
+				FOLL_FORCE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret != sizeof(word))
 			ret = -EIO;
 		else
@@ -1112,7 +1446,12 @@ int compat_ptrace_request(struct task_struct *child, compat_long_t request,
 
 	case PTRACE_POKETEXT:
 	case PTRACE_POKEDATA:
+<<<<<<< HEAD
 		ret = access_process_vm(child, addr, &data, sizeof(data), 1);
+=======
+		ret = ptrace_access_vm(child, addr, &data, sizeof(data),
+				FOLL_FORCE | FOLL_WRITE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = (ret != sizeof(data) ? -EIO : 0);
 		break;
 
@@ -1170,8 +1509,13 @@ int compat_ptrace_request(struct task_struct *child, compat_long_t request,
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_ptrace(compat_long_t request, compat_long_t pid,
 				  compat_long_t addr, compat_long_t data)
+=======
+COMPAT_SYSCALL_DEFINE4(ptrace, compat_long_t, request, compat_long_t, pid,
+		       compat_long_t, addr, compat_long_t, data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct task_struct *child;
 	long ret;
@@ -1212,6 +1556,7 @@ asmlinkage long compat_sys_ptrace(compat_long_t request, compat_long_t pid,
 	return ret;
 }
 #endif	/* CONFIG_COMPAT */
+<<<<<<< HEAD
 
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 int ptrace_get_breakpoints(struct task_struct *tsk)
@@ -1228,3 +1573,5 @@ void ptrace_put_breakpoints(struct task_struct *tsk)
 		flush_ptrace_hw_breakpoint(tsk);
 }
 #endif /* CONFIG_HAVE_HW_BREAKPOINT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

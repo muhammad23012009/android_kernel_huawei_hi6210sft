@@ -137,7 +137,11 @@ isac_empty_fifo(struct IsdnCardState *cs, int count)
 
 		t += sprintf(t, "isac_empty_fifo cnt %d", count);
 		QuickHex(t, ptr, count);
+<<<<<<< HEAD
 		debugl1(cs, cs->dlog);
+=======
+		debugl1(cs, "%s", cs->dlog);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -179,7 +183,11 @@ isac_fill_fifo(struct IsdnCardState *cs)
 
 		t += sprintf(t, "isac_fill_fifo cnt %d", count);
 		QuickHex(t, ptr, count);
+<<<<<<< HEAD
 		debugl1(cs, cs->dlog);
+=======
+		debugl1(cs, "%s", cs->dlog);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -215,9 +223,17 @@ isac_interrupt(struct IsdnCardState *cs, u_char val)
 			if (count == 0)
 				count = 32;
 			isac_empty_fifo(cs, count);
+<<<<<<< HEAD
 			if ((count = cs->rcvidx) > 0) {
 				cs->rcvidx = 0;
 				if (!(skb = alloc_skb(count, GFP_ATOMIC)))
+=======
+			count = cs->rcvidx;
+			if (count > 0) {
+				cs->rcvidx = 0;
+				skb = alloc_skb(count, GFP_ATOMIC);
+				if (!skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					printk(KERN_WARNING "HiSax: D receive out of memory\n");
 				else {
 					memcpy(skb_put(skb, count), cs->rcvbuf, count);
@@ -251,7 +267,12 @@ isac_interrupt(struct IsdnCardState *cs, u_char val)
 				cs->tx_skb = NULL;
 			}
 		}
+<<<<<<< HEAD
 		if ((cs->tx_skb = skb_dequeue(&cs->sq))) {
+=======
+		cs->tx_skb = skb_dequeue(&cs->sq);
+		if (cs->tx_skb) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cs->tx_cnt = 0;
 			isac_fill_fifo(cs);
 		} else
@@ -313,7 +334,12 @@ afterXPR:
 #if ARCOFI_USE
 			if (v1 & 0x08) {
 				if (!cs->dc.isac.mon_rx) {
+<<<<<<< HEAD
 					if (!(cs->dc.isac.mon_rx = kmalloc(MAX_MON_FRAME, GFP_ATOMIC))) {
+=======
+					cs->dc.isac.mon_rx = kmalloc(MAX_MON_FRAME, GFP_ATOMIC);
+					if (!cs->dc.isac.mon_rx) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						if (cs->debug & L1_DEB_WARN)
 							debugl1(cs, "ISAC MON RX out of memory!");
 						cs->dc.isac.mocr &= 0xf0;
@@ -343,7 +369,12 @@ afterXPR:
 		afterMONR0:
 			if (v1 & 0x80) {
 				if (!cs->dc.isac.mon_rx) {
+<<<<<<< HEAD
 					if (!(cs->dc.isac.mon_rx = kmalloc(MAX_MON_FRAME, GFP_ATOMIC))) {
+=======
+					cs->dc.isac.mon_rx = kmalloc(MAX_MON_FRAME, GFP_ATOMIC);
+					if (!cs->dc.isac.mon_rx) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						if (cs->debug & L1_DEB_WARN)
 							debugl1(cs, "ISAC MON RX out of memory!");
 						cs->dc.isac.mocr &= 0x0f;

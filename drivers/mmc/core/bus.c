@@ -16,6 +16,10 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/stat.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pm_runtime.h>
 
 #include <linux/mmc/card.h>
@@ -27,7 +31,11 @@
 
 #define to_mmc_driver(d)	container_of(d, struct mmc_driver, drv)
 
+<<<<<<< HEAD
 static ssize_t mmc_type_show(struct device *dev,
+=======
+static ssize_t type_show(struct device *dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_attribute *attr, char *buf)
 {
 	struct mmc_card *card = mmc_dev_to_card(dev);
@@ -45,11 +53,21 @@ static ssize_t mmc_type_show(struct device *dev,
 		return -EFAULT;
 	}
 }
+<<<<<<< HEAD
 
 static struct device_attribute mmc_dev_attrs[] = {
 	__ATTR(type, S_IRUGO, mmc_type_show, NULL),
 	__ATTR_NULL,
 };
+=======
+static DEVICE_ATTR_RO(type);
+
+static struct attribute *mmc_dev_attrs[] = {
+	&dev_attr_type.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(mmc_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This currently matches any MMC driver to any MMC card - drivers
@@ -58,6 +76,7 @@ static struct device_attribute mmc_dev_attrs[] = {
  */
 static int mmc_bus_match(struct device *dev, struct device_driver *drv)
 {
+<<<<<<< HEAD
 /*Begin DTS2013041101544 added by c00217097 for add SD Lock Function 2013-4-10*/
 #ifdef CONFIG_MMC_PASSWORDS
 	struct mmc_card *card = mmc_dev_to_card(dev);
@@ -70,6 +89,8 @@ static int mmc_bus_match(struct device *dev, struct device_driver *drv)
     /*End DTS2013041101544 modify by x00186870 for add SD Lock Function 2013-5-15*/
 #endif
 /*End DTS2013041101544 added by c00217097 for add SD Lock Function 2013-4-10*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -96,6 +117,7 @@ mmc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
 	default:
 		type = NULL;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PASSWORDS
 	if (mmc_card_locked(card)) {
 		printk("[SDLOCK] %s MMC_LOCK=LOCKED", __func__);
@@ -104,6 +126,8 @@ mmc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
 			return retval;
 	}
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (type) {
 		retval = add_uevent_var(env, "MMC_TYPE=%s", type);
@@ -149,6 +173,7 @@ static void mmc_bus_shutdown(struct device *dev)
 	struct mmc_host *host = card->host;
 	int ret;
 
+<<<<<<< HEAD
 	printk("%s:%d ++\n", __func__, __LINE__);
 	if (dev->driver && drv->shutdown) {
 		ret = drv->shutdown(card);
@@ -168,50 +193,99 @@ static void mmc_bus_shutdown(struct device *dev)
 	printk("%s:%d --\n", __func__, __LINE__);
 
 	return;
+=======
+	if (dev->driver && drv->shutdown)
+		drv->shutdown(card);
+
+	if (host->bus_ops->shutdown) {
+		ret = host->bus_ops->shutdown(host);
+		if (ret)
+			pr_warn("%s: error %d during shutdown\n",
+				mmc_hostname(host), ret);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM_SLEEP
 static int mmc_bus_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct mmc_driver *drv = to_mmc_driver(dev->driver);
 	struct mmc_card *card = mmc_dev_to_card(dev);
 	int ret = 0;
 
 	if (dev->driver && drv->suspend)
 		ret = drv->suspend(card);
+=======
+	struct mmc_card *card = mmc_dev_to_card(dev);
+	struct mmc_host *host = card->host;
+	int ret;
+
+	ret = pm_generic_suspend(dev);
+	if (ret)
+		return ret;
+
+	ret = host->bus_ops->suspend(host);
+	if (ret)
+		pm_generic_resume(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int mmc_bus_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct mmc_driver *drv = to_mmc_driver(dev->driver);
 	struct mmc_card *card = mmc_dev_to_card(dev);
 	int ret = 0;
 
 	if (dev->driver && drv->resume)
 		ret = drv->resume(card);
+=======
+	struct mmc_card *card = mmc_dev_to_card(dev);
+	struct mmc_host *host = card->host;
+	int ret;
+
+	ret = host->bus_ops->resume(host);
+	if (ret)
+		pr_warn("%s: error %d during resume (card was removed?)\n",
+			mmc_hostname(host), ret);
+
+	ret = pm_generic_resume(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mmc_runtime_suspend(struct device *dev)
 {
 	struct mmc_card *card = mmc_dev_to_card(dev);
 	struct mmc_host *host = card->host;
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (host->bus_ops->runtime_suspend)
 		ret = host->bus_ops->runtime_suspend(host);
 
 	return ret;
+=======
+
+	return host->bus_ops->runtime_suspend(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mmc_runtime_resume(struct device *dev)
 {
 	struct mmc_card *card = mmc_dev_to_card(dev);
 	struct mmc_host *host = card->host;
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (host->bus_ops->runtime_resume)
@@ -230,12 +304,25 @@ static int mmc_runtime_idle(struct device *dev)
 static const struct dev_pm_ops mmc_bus_pm_ops = {
 	SET_RUNTIME_PM_OPS(mmc_runtime_suspend, mmc_runtime_resume,
 			mmc_runtime_idle)
+=======
+
+	return host->bus_ops->runtime_resume(host);
+}
+#endif /* !CONFIG_PM */
+
+static const struct dev_pm_ops mmc_bus_pm_ops = {
+	SET_RUNTIME_PM_OPS(mmc_runtime_suspend, mmc_runtime_resume, NULL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SET_SYSTEM_SLEEP_PM_OPS(mmc_bus_suspend, mmc_bus_resume)
 };
 
 static struct bus_type mmc_bus_type = {
 	.name		= "mmc",
+<<<<<<< HEAD
 	.dev_attrs	= mmc_dev_attrs,
+=======
+	.dev_groups	= mmc_dev_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.match		= mmc_bus_match,
 	.uevent		= mmc_bus_uevent,
 	.probe		= mmc_bus_probe,
@@ -284,8 +371,12 @@ static void mmc_release_card(struct device *dev)
 
 	sdio_free_common_cis(card);
 
+<<<<<<< HEAD
 	if (card->info)
 		kfree(card->info);
+=======
+	kfree(card->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kfree(card);
 }
@@ -358,13 +449,18 @@ int mmc_add_card(struct mmc_card *card)
 		break;
 	}
 
+<<<<<<< HEAD
 	if (mmc_sd_card_uhs(card) &&
+=======
+	if (mmc_card_uhs(card) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(card->sd_bus_speed < ARRAY_SIZE(uhs_speeds)))
 		uhs_bus_speed_mode = uhs_speeds[card->sd_bus_speed];
 
 	if (mmc_host_is_spi(card->host)) {
 		pr_info("%s: new %s%s%s card on SPI\n",
 			mmc_hostname(card->host),
+<<<<<<< HEAD
 			mmc_card_highspeed(card) ? "high speed " : "",
 			mmc_card_ddr_mode(card) ? "DDR " : "",
 			type);
@@ -378,6 +474,21 @@ int mmc_add_card(struct mmc_card *card)
 			mmc_card_ddr_mode(card) ? "DDR " : "",
 			uhs_bus_speed_mode, type, card->rca,card->cid.manfid,card->cid.year,card->cid.month);
     /* END PN:DTS2014112203072  , Modified by d00168349, 2014/11/22 */
+=======
+			mmc_card_hs(card) ? "high speed " : "",
+			mmc_card_ddr52(card) ? "DDR " : "",
+			type);
+	} else {
+		pr_info("%s: new %s%s%s%s%s%s card at address %04x\n",
+			mmc_hostname(card->host),
+			mmc_card_uhs(card) ? "ultra high speed " :
+			(mmc_card_hs(card) ? "high speed " : ""),
+			mmc_card_hs400(card) ? "HS400 " :
+			(mmc_card_hs200(card) ? "HS200 " : ""),
+			mmc_card_hs400es(card) ? "Enhanced strobe " : "",
+			mmc_card_ddr52(card) ? "DDR " : "",
+			uhs_bus_speed_mode, type, card->rca);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 #ifdef CONFIG_DEBUG_FS
@@ -385,6 +496,7 @@ int mmc_add_card(struct mmc_card *card)
 #endif
 	mmc_init_context_info(card->host);
 
+<<<<<<< HEAD
 	ret = device_add(&card->dev);
 	if (ret)
 		return ret;
@@ -397,6 +509,15 @@ int mmc_add_card(struct mmc_card *card)
 		 }
 	}
 #endif
+=======
+	card->dev.of_node = mmc_of_find_child_device(card->host, 0);
+
+	device_enable_async_suspend(&card->dev);
+
+	ret = device_add(&card->dev);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mmc_card_set_present(card);
 
@@ -421,11 +542,16 @@ void mmc_remove_card(struct mmc_card *card)
 			pr_info("%s: card %04x removed\n",
 				mmc_hostname(card->host), card->rca);
 		}
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_PASSWORDS		
 		if (card->host->bus_ops->sysfs_remove)
 			card->host->bus_ops->sysfs_remove(card->host, card);
 #endif
 		device_del(&card->dev);
+=======
+		device_del(&card->dev);
+		of_node_put(card->dev.of_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	put_device(&card->dev);

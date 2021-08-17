@@ -84,6 +84,10 @@ static void __init bootx_printf(const char *format, ...)
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else /* CONFIG_BOOTX_TEXT */
 static void __init bootx_printf(const char *format, ...) {}
@@ -246,7 +250,11 @@ static void __init bootx_scan_dt_build_strings(unsigned long base,
 		DBG(" detected display ! adding properties names !\n");
 		bootx_dt_add_string("linux,boot-display", mem_end);
 		bootx_dt_add_string("linux,opened", mem_end);
+<<<<<<< HEAD
 		strncpy(bootx_disp_path, namep, 255);
+=======
+		strlcpy(bootx_disp_path, namep, sizeof(bootx_disp_path));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* get and store all property names */
@@ -467,7 +475,11 @@ void __init bootx_init(unsigned long r3, unsigned long r4)
 	boot_infos_t *bi = (boot_infos_t *) r4;
 	unsigned long hdr;
 	unsigned long space;
+<<<<<<< HEAD
 	unsigned long ptr, x;
+=======
+	unsigned long ptr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *model;
 	unsigned long offset = reloc_offset();
 
@@ -561,6 +573,11 @@ void __init bootx_init(unsigned long r3, unsigned long r4)
 	 * MMU switched OFF, so this should not be useful anymore.
 	 */
 	if (bi->version < 4) {
+<<<<<<< HEAD
+=======
+		unsigned long x __maybe_unused;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bootx_printf("Touching pages...\n");
 
 		/*

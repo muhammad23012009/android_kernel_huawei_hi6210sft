@@ -27,7 +27,10 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -64,6 +67,10 @@ static const struct usb_device_id id_table_earthmate[] = {
 
 static const struct usb_device_id id_table_cyphidcomrs232[] = {
 	{ USB_DEVICE(VENDOR_ID_CYPRESS, PRODUCT_ID_CYPHIDCOM) },
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(VENDOR_ID_SAI, PRODUCT_ID_CYPHIDCOM) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ USB_DEVICE(VENDOR_ID_POWERCOM, PRODUCT_ID_UPS) },
 	{ USB_DEVICE(VENDOR_ID_FRWD, PRODUCT_ID_CYPHIDCOM_FRWD) },
 	{ }						/* Terminating entry */
@@ -78,6 +85,10 @@ static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(VENDOR_ID_DELORME, PRODUCT_ID_EARTHMATEUSB) },
 	{ USB_DEVICE(VENDOR_ID_DELORME, PRODUCT_ID_EARTHMATEUSB_LT20) },
 	{ USB_DEVICE(VENDOR_ID_CYPRESS, PRODUCT_ID_CYPHIDCOM) },
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(VENDOR_ID_SAI, PRODUCT_ID_CYPHIDCOM) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ USB_DEVICE(VENDOR_ID_POWERCOM, PRODUCT_ID_UPS) },
 	{ USB_DEVICE(VENDOR_ID_FRWD, PRODUCT_ID_CYPHIDCOM_FRWD) },
 	{ USB_DEVICE(VENDOR_ID_DAZZLE, PRODUCT_ID_CA42) },
@@ -113,7 +124,11 @@ struct cypress_private {
 	int baud_rate;			   /* stores current baud rate in
 					      integer form */
 	int isthrottled;		   /* if throttled, discard reads */
+<<<<<<< HEAD
 	char prev_status, diff_status;	   /* used for TIOCMIWAIT */
+=======
+	char prev_status;		   /* used for TIOCMIWAIT */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* we pass a pointer to this as the argument sent to
 	   cypress_set_termios old_termios */
 	struct ktermios tmp_termios; 	   /* stores the old termios settings */
@@ -136,7 +151,10 @@ static void cypress_set_termios(struct tty_struct *tty,
 static int  cypress_tiocmget(struct tty_struct *tty);
 static int  cypress_tiocmset(struct tty_struct *tty,
 			unsigned int set, unsigned int clear);
+<<<<<<< HEAD
 static int  cypress_tiocmiwait(struct tty_struct *tty, unsigned long arg);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int  cypress_chars_in_buffer(struct tty_struct *tty);
 static void cypress_throttle(struct tty_struct *tty);
 static void cypress_unthrottle(struct tty_struct *tty);
@@ -162,7 +180,11 @@ static struct usb_serial_driver cypress_earthmate_device = {
 	.set_termios =			cypress_set_termios,
 	.tiocmget =			cypress_tiocmget,
 	.tiocmset =			cypress_tiocmset,
+<<<<<<< HEAD
 	.tiocmiwait =			cypress_tiocmiwait,
+=======
+	.tiocmiwait =			usb_serial_generic_tiocmiwait,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.chars_in_buffer =		cypress_chars_in_buffer,
 	.throttle =		 	cypress_throttle,
 	.unthrottle =			cypress_unthrottle,
@@ -188,7 +210,11 @@ static struct usb_serial_driver cypress_hidcom_device = {
 	.set_termios =			cypress_set_termios,
 	.tiocmget =			cypress_tiocmget,
 	.tiocmset =			cypress_tiocmset,
+<<<<<<< HEAD
 	.tiocmiwait =			cypress_tiocmiwait,
+=======
+	.tiocmiwait =			usb_serial_generic_tiocmiwait,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.chars_in_buffer =		cypress_chars_in_buffer,
 	.throttle =			cypress_throttle,
 	.unthrottle =			cypress_unthrottle,
@@ -214,7 +240,11 @@ static struct usb_serial_driver cypress_ca42v2_device = {
 	.set_termios =			cypress_set_termios,
 	.tiocmget =			cypress_tiocmget,
 	.tiocmset =			cypress_tiocmset,
+<<<<<<< HEAD
 	.tiocmiwait =			cypress_tiocmiwait,
+=======
+	.tiocmiwait =			usb_serial_generic_tiocmiwait,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.chars_in_buffer =		cypress_chars_in_buffer,
 	.throttle =			cypress_throttle,
 	.unthrottle =			cypress_unthrottle,
@@ -281,7 +311,11 @@ static int analyze_baud_rate(struct usb_serial_port *port, speed_t new_rate)
 			 * the generic firmware, but are not used with
 			 * NMEA and SiRF protocols */
 			dev_dbg(&port->dev,
+<<<<<<< HEAD
 				"%s - failed setting baud rate, unsupported speed of %d on Earthmate GPS",
+=======
+				"%s - failed setting baud rate, unsupported speed of %d on Earthmate GPS\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__func__, new_rate);
 			return -1;
 		}
@@ -435,7 +469,11 @@ static void cypress_set_dead(struct usb_serial_port *port)
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	dev_err(&port->dev, "cypress_m8 suspending failing port %d - "
+<<<<<<< HEAD
 		"interval might be too short\n", port->number);
+=======
+		"interval might be too short\n", port->port_number);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -500,6 +538,11 @@ static int cypress_generic_port_probe(struct usb_serial_port *port)
 	}
 	usb_set_serial_port_data(port, priv);
 
+<<<<<<< HEAD
+=======
+	port->port.drain_delay = 256;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -624,7 +667,11 @@ static int cypress_open(struct tty_struct *tty, struct usb_serial_port *port)
 							__func__, result);
 		cypress_set_dead(port);
 	}
+<<<<<<< HEAD
 	port->port.drain_delay = 256;
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 } /* cypress_open */
 
@@ -666,7 +713,11 @@ static int cypress_write(struct tty_struct *tty, struct usb_serial_port *port,
 {
 	struct cypress_private *priv = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
 	dev_dbg(&port->dev, "%s - port %d, %d bytes\n", __func__, port->number, count);
+=======
+	dev_dbg(&port->dev, "%s - %d bytes\n", __func__, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* line control commands, which need to be executed immediately,
 	   are not put into the buffer for obvious reasons.
@@ -773,7 +824,11 @@ send:
 
 	usb_fill_int_urb(port->interrupt_out_urb, port->serial->dev,
 		usb_sndintpipe(port->serial->dev, port->interrupt_out_endpointAddress),
+<<<<<<< HEAD
 		port->interrupt_out_buffer, port->interrupt_out_size,
+=======
+		port->interrupt_out_buffer, actual_size,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cypress_write_int_callback, port, priv->write_urb_interval);
 	result = usb_submit_urb(port->interrupt_out_urb, GFP_ATOMIC);
 	if (result) {
@@ -861,6 +916,7 @@ static int cypress_tiocmset(struct tty_struct *tty,
 	return cypress_write(tty, port, NULL, 0);
 }
 
+<<<<<<< HEAD
 
 static int cypress_tiocmiwait(struct tty_struct *tty, unsigned long arg)
 {
@@ -900,6 +956,8 @@ static int cypress_tiocmiwait(struct tty_struct *tty, unsigned long arg)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void cypress_set_termios(struct tty_struct *tty,
 	struct usb_serial_port *port, struct ktermios *old_termios)
 {
@@ -1182,17 +1240,39 @@ static void cypress_read_int_callback(struct urb *urb)
 	spin_lock_irqsave(&priv->lock, flags);
 	/* check to see if status has changed */
 	if (priv->current_status != priv->prev_status) {
+<<<<<<< HEAD
 		priv->diff_status |= priv->current_status ^
 			priv->prev_status;
 		wake_up_interruptible(&port->port.delta_msr_wait);
+=======
+		u8 delta = priv->current_status ^ priv->prev_status;
+
+		if (delta & UART_MSR_MASK) {
+			if (delta & UART_CTS)
+				port->icount.cts++;
+			if (delta & UART_DSR)
+				port->icount.dsr++;
+			if (delta & UART_RI)
+				port->icount.rng++;
+			if (delta & UART_CD)
+				port->icount.dcd++;
+
+			wake_up_interruptible(&port->port.delta_msr_wait);
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		priv->prev_status = priv->current_status;
 	}
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	/* hangup, as defined in acm.c... this might be a bad place for it
 	 * though */
+<<<<<<< HEAD
 	if (tty && !(tty->termios.c_cflag & CLOCAL) &&
 			!(priv->current_status & UART_CD)) {
+=======
+	if (tty && !C_CLOCAL(tty) && !(priv->current_status & UART_CD)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(dev, "%s - calling hangup\n", __func__);
 		tty_hangup(tty);
 		goto continue_read;
@@ -1250,7 +1330,10 @@ static void cypress_write_int_callback(struct urb *urb)
 	struct usb_serial_port *port = urb->context;
 	struct cypress_private *priv = usb_get_serial_port_data(port);
 	struct device *dev = &urb->dev->dev;
+<<<<<<< HEAD
 	int result;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int status = urb->status;
 
 	switch (status) {
@@ -1265,6 +1348,7 @@ static void cypress_write_int_callback(struct urb *urb)
 			__func__, status);
 		priv->write_urb_in_use = 0;
 		return;
+<<<<<<< HEAD
 	case -EPIPE: /* no break needed; clear halt and resubmit */
 		if (!priv->comm_is_ok)
 			break;
@@ -1280,6 +1364,11 @@ static void cypress_write_int_callback(struct urb *urb)
 			__func__, result);
 		cypress_set_dead(port);
 		break;
+=======
+	case -EPIPE:
+		/* Cannot call usb_clear_halt while in_interrupt */
+		/* FALLTHROUGH */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		dev_err(dev, "%s - unexpected nonzero write status received: %d\n",
 			__func__, status);

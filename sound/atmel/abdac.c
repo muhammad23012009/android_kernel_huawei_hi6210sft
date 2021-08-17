@@ -9,7 +9,10 @@
  */
 #include <linux/clk.h>
 #include <linux/bitmap.h>
+<<<<<<< HEAD
 #include <linux/dw_dmac.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
@@ -25,6 +28,12 @@
 #include <sound/pcm_params.h>
 #include <sound/atmel-abdac.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/dma-dw.h>
+#include <linux/dma/dw.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* DAC register offsets */
 #define DAC_DATA                                0x0000
 #define DAC_CTRL                                0x0008
@@ -240,7 +249,11 @@ static int atmel_abdac_trigger(struct snd_pcm_substream *substream, int cmd)
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: /* fall through */
 	case SNDRV_PCM_TRIGGER_RESUME: /* fall through */
 	case SNDRV_PCM_TRIGGER_START:
+<<<<<<< HEAD
 		clk_enable(dac->sample_clk);
+=======
+		clk_prepare_enable(dac->sample_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = dw_dma_cyclic_start(dac->dma.chan);
 		if (retval)
 			goto out;
@@ -252,7 +265,11 @@ static int atmel_abdac_trigger(struct snd_pcm_substream *substream, int cmd)
 		dw_dma_cyclic_stop(dac->dma.chan);
 		dac_writel(dac, DATA, 0);
 		dac_writel(dac, CTRL, 0);
+<<<<<<< HEAD
 		clk_disable(dac->sample_clk);
+=======
+		clk_disable_unprepare(dac->sample_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		retval = -EINVAL;
@@ -354,10 +371,18 @@ static int set_sample_rates(struct atmel_abdac *dac)
 	/* we start at 192 kHz and work our way down to 5112 Hz */
 	while (new_rate >= RATE_MIN && index < (MAX_NUM_RATES + 1)) {
 		new_rate = clk_round_rate(dac->sample_clk, 256 * new_rate);
+<<<<<<< HEAD
 		if (new_rate < 0)
 			break;
 		/* make sure we are below the ABDAC clock */
 		if (new_rate <= clk_get_rate(dac->pclk)) {
+=======
+		if (new_rate <= 0)
+			break;
+		/* make sure we are below the ABDAC clock */
+		if (index < MAX_NUM_RATES &&
+		    new_rate <= clk_get_rate(dac->pclk)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dac->rates[index] = new_rate / 256;
 			index++;
 		}
@@ -426,10 +451,18 @@ static int atmel_abdac_probe(struct platform_device *pdev)
 		retval = PTR_ERR(sample_clk);
 		goto out_put_pclk;
 	}
+<<<<<<< HEAD
 	clk_enable(pclk);
 
 	retval = snd_card_create(SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
 			THIS_MODULE, sizeof(struct atmel_abdac), &card);
+=======
+	clk_prepare_enable(pclk);
+
+	retval = snd_card_new(&pdev->dev, SNDRV_DEFAULT_IDX1,
+			      SNDRV_DEFAULT_STR1, THIS_MODULE,
+			      sizeof(struct atmel_abdac), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval) {
 		dev_dbg(&pdev->dev, "could not create sound card device\n");
 		goto out_put_sample_clk;
@@ -466,8 +499,11 @@ static int atmel_abdac_probe(struct platform_device *pdev)
 		goto out_unmap_regs;
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata->dws.dma_dev) {
 		dma_cap_mask_t mask;
 
@@ -491,7 +527,11 @@ static int atmel_abdac_probe(struct platform_device *pdev)
 	if (!pdata->dws.dma_dev || !dac->dma.chan) {
 		dev_dbg(&pdev->dev, "DMA not available\n");
 		retval = -ENODEV;
+<<<<<<< HEAD
 		goto out_unset_card_dev;
+=======
+		goto out_unmap_regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	strcpy(card->driver, "Atmel ABDAC");
@@ -520,16 +560,23 @@ static int atmel_abdac_probe(struct platform_device *pdev)
 out_release_dma:
 	dma_release_channel(dac->dma.chan);
 	dac->dma.chan = NULL;
+<<<<<<< HEAD
 out_unset_card_dev:
 	snd_card_set_dev(card, NULL);
 	free_irq(irq, dac);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_unmap_regs:
 	iounmap(dac->regs);
 out_free_card:
 	snd_card_free(card);
 out_put_sample_clk:
 	clk_put(sample_clk);
+<<<<<<< HEAD
 	clk_disable(pclk);
+=======
+	clk_disable_unprepare(pclk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_put_pclk:
 	clk_put(pclk);
 	return retval;
@@ -542,8 +589,13 @@ static int atmel_abdac_suspend(struct device *pdev)
 	struct atmel_abdac *dac = card->private_data;
 
 	dw_dma_cyclic_stop(dac->dma.chan);
+<<<<<<< HEAD
 	clk_disable(dac->sample_clk);
 	clk_disable(dac->pclk);
+=======
+	clk_disable_unprepare(dac->sample_clk);
+	clk_disable_unprepare(dac->pclk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -553,8 +605,13 @@ static int atmel_abdac_resume(struct device *pdev)
 	struct snd_card *card = dev_get_drvdata(pdev);
 	struct atmel_abdac *dac = card->private_data;
 
+<<<<<<< HEAD
 	clk_enable(dac->pclk);
 	clk_enable(dac->sample_clk);
+=======
+	clk_prepare_enable(dac->pclk);
+	clk_prepare_enable(dac->sample_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (test_bit(DMA_READY, &dac->flags))
 		dw_dma_cyclic_start(dac->dma.chan);
 
@@ -573,12 +630,19 @@ static int atmel_abdac_remove(struct platform_device *pdev)
 	struct atmel_abdac *dac = get_dac(card);
 
 	clk_put(dac->sample_clk);
+<<<<<<< HEAD
 	clk_disable(dac->pclk);
+=======
+	clk_disable_unprepare(dac->pclk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_put(dac->pclk);
 
 	dma_release_channel(dac->dma.chan);
 	dac->dma.chan = NULL;
+<<<<<<< HEAD
 	snd_card_set_dev(card, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iounmap(dac->regs);
 	free_irq(dac->irq, dac);
 	snd_card_free(card);
@@ -590,7 +654,10 @@ static struct platform_driver atmel_abdac_driver = {
 	.remove		= atmel_abdac_remove,
 	.driver		= {
 		.name	= "atmel_abdac",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= ATMEL_ABDAC_PM_OPS,
 	},
 };

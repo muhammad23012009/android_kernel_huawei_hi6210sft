@@ -17,11 +17,17 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_CM_33XX_H
 #define __ARCH_ARM_MACH_OMAP2_CM_33XX_H
 
+<<<<<<< HEAD
 #include "common.h"
 
 #include "cm.h"
 #include "cm-regbits-33xx.h"
 #include "iomap.h"
+=======
+#include "cm.h"
+#include "cm-regbits-33xx.h"
+#include "prcm-common.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* CM base address */
 #define AM33XX_CM_BASE		0x44e00000
@@ -377,6 +383,7 @@
 
 
 #ifndef __ASSEMBLER__
+<<<<<<< HEAD
 extern bool am33xx_cm_is_clkdm_in_hwsup(s16 inst, u16 cdoffs);
 extern void am33xx_cm_clkdm_enable_hwsup(s16 inst, u16 cdoffs);
 extern void am33xx_cm_clkdm_disable_hwsup(s16 inst, u16 cdoffs);
@@ -413,5 +420,8 @@ static inline int am33xx_cm_wait_module_ready(u16 inst, s16 cdoffs,
 }
 #endif
 
+=======
+int am33xx_cm_init(const struct omap_prcm_init_data *data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* ASSEMBLER */
 #endif

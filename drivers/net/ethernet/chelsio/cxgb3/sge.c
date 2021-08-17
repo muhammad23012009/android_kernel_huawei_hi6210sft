@@ -298,7 +298,11 @@ static void free_tx_desc(struct adapter *adapter, struct sge_txq *q,
 			if (need_unmap)
 				unmap_skb(d->skb, q, cidx, pdev);
 			if (d->eop) {
+<<<<<<< HEAD
 				kfree_skb(d->skb);
+=======
+				dev_consume_skb_any(d->skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				d->skb = NULL;
 			}
 		}
@@ -422,7 +426,11 @@ static inline int add_one_rx_buf(void *va, unsigned int len,
 
 	d->addr_lo = cpu_to_be32(mapping);
 	d->addr_hi = cpu_to_be32((u64) mapping >> 32);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	d->len_gen = cpu_to_be32(V_FLD_GEN1(gen));
 	d->gen2 = cpu_to_be32(V_FLD_GEN2(gen));
 	return 0;
@@ -433,7 +441,11 @@ static inline int add_one_rx_chunk(dma_addr_t mapping, struct rx_desc *d,
 {
 	d->addr_lo = cpu_to_be32(mapping);
 	d->addr_hi = cpu_to_be32((u64) mapping >> 32);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	d->len_gen = cpu_to_be32(V_FLD_GEN1(gen));
 	d->gen2 = cpu_to_be32(V_FLD_GEN2(gen));
 	return 0;
@@ -579,7 +591,11 @@ static void recycle_rx_buf(struct adapter *adap, struct sge_fl *q,
 	q->sdesc[q->pidx] = q->sdesc[idx];
 	to->addr_lo = from->addr_lo;	/* already big endian */
 	to->addr_hi = from->addr_hi;	/* likewise */
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	to->len_gen = cpu_to_be32(V_FLD_GEN1(q->gen));
 	to->gen2 = cpu_to_be32(V_FLD_GEN2(q->gen));
 
@@ -1068,7 +1084,11 @@ static void write_wr_hdr_sgl(unsigned int ndesc, struct sk_buff *skb,
 		sd->eop = 1;
 		wrp->wr_hi = htonl(F_WR_SOP | F_WR_EOP | V_WR_DATATYPE(1) |
 				   V_WR_SGLSFLT(flits)) | wr_hi;
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wrp->wr_lo = htonl(V_WR_LEN(flits + sgl_flits) |
 				   V_WR_GEN(gen)) | wr_lo;
 		wr_gen2(d, gen);
@@ -1114,7 +1134,11 @@ static void write_wr_hdr_sgl(unsigned int ndesc, struct sk_buff *skb,
 		}
 		sd->eop = 1;
 		wrp->wr_hi |= htonl(F_WR_EOP);
+<<<<<<< HEAD
 		wmb();
+=======
+		dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wp->wr_lo = htonl(V_WR_LEN(WR_FLITS) | V_WR_GEN(ogen)) | wr_lo;
 		wr_gen2((struct tx_desc *)wp, ogen);
 		WARN_ON(ndesc != 0);
@@ -1148,8 +1172,13 @@ static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 	cpl->len = htonl(skb->len);
 	cntrl = V_TXPKT_INTF(pi->port_id);
 
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb))
 		cntrl |= F_TXPKT_VLAN_VLD | V_TXPKT_VLAN(vlan_tx_tag_get(skb));
+=======
+	if (skb_vlan_tag_present(skb))
+		cntrl |= F_TXPKT_VLAN_VLD | V_TXPKT_VLAN(skb_vlan_tag_get(skb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tso_info = V_LSO_MSS(skb_shinfo(skb)->gso_size);
 	if (tso_info) {
@@ -1184,11 +1213,19 @@ static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 			cpl->wr.wr_hi = htonl(V_WR_BCNTLFLT(skb->len & 7) |
 					      V_WR_OP(FW_WROPCODE_TUNNEL_TX_PKT)
 					      | F_WR_SOP | F_WR_EOP | compl);
+<<<<<<< HEAD
 			wmb();
 			cpl->wr.wr_lo = htonl(V_WR_LEN(flits) | V_WR_GEN(gen) |
 					      V_WR_TID(q->token));
 			wr_gen2(d, gen);
 			kfree_skb(skb);
+=======
+			dma_wmb();
+			cpl->wr.wr_lo = htonl(V_WR_LEN(flits) | V_WR_GEN(gen) |
+					      V_WR_TID(q->token));
+			wr_gen2(d, gen);
+			dev_consume_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 		}
 
@@ -1233,7 +1270,11 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	 * anything shorter than an Ethernet header.
 	 */
 	if (unlikely(skb->len < ETH_HLEN)) {
+<<<<<<< HEAD
 		dev_kfree_skb(skb);
+=======
+		dev_kfree_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NETDEV_TX_OK;
 	}
 
@@ -1282,7 +1323,11 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 		qs->port_stats[SGE_PSTAT_TX_CSUM]++;
 	if (skb_shinfo(skb)->gso_size)
 		qs->port_stats[SGE_PSTAT_TSO]++;
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb))
+=======
+	if (skb_vlan_tag_present(skb))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		qs->port_stats[SGE_PSTAT_VLANINS]++;
 
 	/*
@@ -1342,7 +1387,11 @@ static inline void write_imm(struct tx_desc *d, struct sk_buff *skb,
 
 	to->wr_hi = from->wr_hi | htonl(F_WR_SOP | F_WR_EOP |
 					V_WR_BCNTLFLT(len & 7));
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	to->wr_lo = from->wr_lo | htonl(V_WR_GEN(gen) |
 					V_WR_LEN((len + 7) / 8));
 	wr_gen2(d, gen);
@@ -1379,7 +1428,11 @@ static inline int check_desc_avail(struct adapter *adap, struct sge_txq *q,
 		struct sge_qset *qs = txq_to_qset(q, qid);
 
 		set_bit(qid, &qs->txq_stopped);
+<<<<<<< HEAD
 		smp_mb__after_clear_bit();
+=======
+		smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (should_restart_tx(q) &&
 		    test_and_clear_bit(qid, &qs->txq_stopped))
@@ -1492,7 +1545,11 @@ static void restart_ctrlq(unsigned long data)
 
 	if (!skb_queue_empty(&q->sendq)) {
 		set_bit(TXQ_CTRL, &qs->txq_stopped);
+<<<<<<< HEAD
 		smp_mb__after_clear_bit();
+=======
+		smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (should_restart_tx(q) &&
 		    test_and_clear_bit(TXQ_CTRL, &qs->txq_stopped))
@@ -1537,10 +1594,16 @@ static void deferred_unmap_destructor(struct sk_buff *skb)
 	dui = (struct deferred_unmap_info *)skb->head;
 	p = dui->addr;
 
+<<<<<<< HEAD
 	if (skb->tail - skb->transport_header)
 		pci_unmap_single(dui->pdev, *p++,
 				 skb->tail - skb->transport_header,
 				 PCI_DMA_TODEVICE);
+=======
+	if (skb_tail_pointer(skb) - skb_transport_header(skb))
+		pci_unmap_single(dui->pdev, *p++, skb_tail_pointer(skb) -
+				 skb_transport_header(skb), PCI_DMA_TODEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	si = skb_shinfo(skb);
 	for (i = 0; i < si->nr_frags; i++)
@@ -1628,7 +1691,11 @@ static inline unsigned int calc_tx_descs_ofld(const struct sk_buff *skb)
 
 	flits = skb_transport_offset(skb) / 8;	/* headers */
 	cnt = skb_shinfo(skb)->nr_frags;
+<<<<<<< HEAD
 	if (skb->tail != skb->transport_header)
+=======
+	if (skb_tail_pointer(skb) != skb_transport_header(skb))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cnt++;
 	return flits_to_desc(flits + sgl_len(cnt));
 }
@@ -1698,7 +1765,11 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 
 		if (unlikely(q->size - q->in_use < ndesc)) {
 			set_bit(TXQ_OFLD, &qs->txq_stopped);
+<<<<<<< HEAD
 			smp_mb__after_clear_bit();
+=======
+			smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (should_restart_tx(q) &&
 			    test_and_clear_bit(TXQ_OFLD, &qs->txq_stopped))
@@ -2272,7 +2343,11 @@ static int process_responses(struct adapter *adap, struct sge_qset *qs,
 		u32 len, flags;
 		__be32 rss_hi, rss_lo;
 
+<<<<<<< HEAD
 		rmb();
+=======
+		dma_rmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		eth = r->rss_hdr.opcode == CPL_RX_PKT;
 		rss_hi = *(const __be32 *)r;
 		rss_lo = r->rss_hdr.rss_hash_val;
@@ -2489,7 +2564,11 @@ static int process_pure_responses(struct adapter *adap, struct sge_qset *qs,
 		}
 		if (!is_new_response(r, q))
 			break;
+<<<<<<< HEAD
 		rmb();
+=======
+		dma_rmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (is_pure_response(r));
 
 	if (sleeping)
@@ -2524,7 +2603,11 @@ static inline int handle_responses(struct adapter *adap, struct sge_rspq *q)
 
 	if (!is_new_response(r, q))
 		return -1;
+<<<<<<< HEAD
 	rmb();
+=======
+	dma_rmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (is_pure_response(r) && process_pure_responses(adap, qs, r) == 0) {
 		t3_write_reg(adap, A_SG_GTS, V_RSPQ(q->cntxt_id) |
 			     V_NEWTIMER(q->holdoff_tmr) | V_NEWINDEX(q->cidx));
@@ -3112,6 +3195,10 @@ int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
 			  GFP_KERNEL | __GFP_COMP);
 	if (!avail) {
 		CH_ALERT(adapter, "free list queue 0 initialization failed\n");
+<<<<<<< HEAD
+=======
+		ret = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 	if (avail < q->fl[0].size)

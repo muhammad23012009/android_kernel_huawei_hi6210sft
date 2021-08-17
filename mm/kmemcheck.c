@@ -2,6 +2,10 @@
 #include <linux/mm_types.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include "slab.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kmemcheck.h>
 
 void kmemcheck_alloc_shadow(struct page *page, int order, gfp_t flags, int node)
@@ -19,8 +23,12 @@ void kmemcheck_alloc_shadow(struct page *page, int order, gfp_t flags, int node)
 	shadow = alloc_pages_node(node, flags | __GFP_NOTRACK, order);
 	if (!shadow) {
 		if (printk_ratelimit())
+<<<<<<< HEAD
 			printk(KERN_ERR "kmemcheck: failed to allocate "
 				"shadow bitmap\n");
+=======
+			pr_err("kmemcheck: failed to allocate shadow bitmap\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -59,6 +67,12 @@ void kmemcheck_free_shadow(struct page *page, int order)
 void kmemcheck_slab_alloc(struct kmem_cache *s, gfp_t gfpflags, void *object,
 			  size_t size)
 {
+<<<<<<< HEAD
+=======
+	if (unlikely(!object)) /* Skip object if allocation failed */
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Has already been memset(), which initializes the shadow for us
 	 * as well.

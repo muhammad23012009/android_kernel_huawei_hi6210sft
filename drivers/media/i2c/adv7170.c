@@ -36,7 +36,10 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Analog Devices ADV7170 video encoder driver");
 MODULE_AUTHOR("Maxim Yevtyushkin");
@@ -64,9 +67,15 @@ static inline struct adv7170 *to_adv7170(struct v4l2_subdev *sd)
 
 static char *inputs[] = { "pass_through", "play_back" };
 
+<<<<<<< HEAD
 static enum v4l2_mbus_pixelcode adv7170_codes[] = {
 	V4L2_MBUS_FMT_UYVY8_2X8,
 	V4L2_MBUS_FMT_UYVY8_1X16,
+=======
+static u32 adv7170_codes[] = {
+	MEDIA_BUS_FMT_UYVY8_2X8,
+	MEDIA_BUS_FMT_UYVY8_1X16,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----------------------------------------------------------------------- */
@@ -263,6 +272,7 @@ static int adv7170_s_routing(struct v4l2_subdev *sd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adv7170_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 				enum v4l2_mbus_pixelcode *code)
 {
@@ -282,6 +292,33 @@ static int adv7170_g_fmt(struct v4l2_subdev *sd,
 		mf->code = V4L2_MBUS_FMT_UYVY8_1X16;
 	else
 		mf->code = V4L2_MBUS_FMT_UYVY8_2X8;
+=======
+static int adv7170_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad || code->index >= ARRAY_SIZE(adv7170_codes))
+		return -EINVAL;
+
+	code->code = adv7170_codes[code->index];
+	return 0;
+}
+
+static int adv7170_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	u8 val = adv7170_read(sd, 0x7);
+
+	if (format->pad)
+		return -EINVAL;
+
+	if ((val & 0x40) == (1 << 6))
+		mf->code = MEDIA_BUS_FMT_UYVY8_1X16;
+	else
+		mf->code = MEDIA_BUS_FMT_UYVY8_2X8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mf->colorspace  = V4L2_COLORSPACE_SMPTE170M;
 	mf->width       = 0;
@@ -291,6 +328,7 @@ static int adv7170_g_fmt(struct v4l2_subdev *sd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adv7170_s_fmt(struct v4l2_subdev *sd,
 				struct v4l2_mbus_framefmt *mf)
 {
@@ -303,6 +341,25 @@ static int adv7170_s_fmt(struct v4l2_subdev *sd,
 		break;
 
 	case V4L2_MBUS_FMT_UYVY8_1X16:
+=======
+static int adv7170_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	u8 val = adv7170_read(sd, 0x7);
+	int ret = 0;
+
+	if (format->pad)
+		return -EINVAL;
+
+	switch (mf->code) {
+	case MEDIA_BUS_FMT_UYVY8_2X8:
+		val &= ~0x40;
+		break;
+
+	case MEDIA_BUS_FMT_UYVY8_1X16:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		val |= 0x40;
 		break;
 
@@ -312,11 +369,17 @@ static int adv7170_s_fmt(struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ret = adv7170_write(sd, 0x7, val);
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE)
+		ret = adv7170_write(sd, 0x7, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int adv7170_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -341,6 +404,24 @@ static const struct v4l2_subdev_video_ops adv7170_video_ops = {
 static const struct v4l2_subdev_ops adv7170_ops = {
 	.core = &adv7170_core_ops,
 	.video = &adv7170_video_ops,
+=======
+/* ----------------------------------------------------------------------- */
+
+static const struct v4l2_subdev_video_ops adv7170_video_ops = {
+	.s_std_output = adv7170_s_std_output,
+	.s_routing = adv7170_s_routing,
+};
+
+static const struct v4l2_subdev_pad_ops adv7170_pad_ops = {
+	.enum_mbus_code = adv7170_enum_mbus_code,
+	.get_fmt = adv7170_get_fmt,
+	.set_fmt = adv7170_set_fmt,
+};
+
+static const struct v4l2_subdev_ops adv7170_ops = {
+	.video = &adv7170_video_ops,
+	.pad = &adv7170_pad_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----------------------------------------------------------------------- */
@@ -359,7 +440,11 @@ static int adv7170_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	encoder = kzalloc(sizeof(struct adv7170), GFP_KERNEL);
+=======
+	encoder = devm_kzalloc(&client->dev, sizeof(*encoder), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (encoder == NULL)
 		return -ENOMEM;
 	sd = &encoder->sd;
@@ -384,7 +469,10 @@ static int adv7170_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 
 	v4l2_device_unregister_subdev(sd);
+<<<<<<< HEAD
 	kfree(to_adv7170(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -399,7 +487,10 @@ MODULE_DEVICE_TABLE(i2c, adv7170_id);
 
 static struct i2c_driver adv7170_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "adv7170",
 	},
 	.probe		= adv7170_probe,

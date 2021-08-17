@@ -71,15 +71,22 @@ static void __init highmem_init(void)
 	kmap_prot = PAGE_KERNEL;
 }
 
+<<<<<<< HEAD
 static unsigned long highmem_setup(void)
 {
 	unsigned long pfn;
 	unsigned long reservedpages = 0;
+=======
+static void highmem_setup(void)
+{
+	unsigned long pfn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (pfn = max_low_pfn; pfn < max_pfn; ++pfn) {
 		struct page *page = pfn_to_page(pfn);
 
 		/* FIXME not sure about */
+<<<<<<< HEAD
 		if (memblock_is_reserved(pfn << PAGE_SHIFT))
 			continue;
 		free_highmem_page(page);
@@ -89,6 +96,11 @@ static unsigned long highmem_setup(void)
 					totalhigh_pages << (PAGE_SHIFT-10));
 
 	return reservedpages;
+=======
+		if (!memblock_is_reserved(pfn << PAGE_SHIFT))
+			free_highmem_page(page);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* CONFIG_HIGHMEM */
 
@@ -167,13 +179,20 @@ void __init setup_memory(void)
 	 * min_low_pfn - the first page (mm/bootmem.c - node_boot_start)
 	 * max_low_pfn
 	 * max_mapnr - the first unused page (mm/bootmem.c - node_low_pfn)
+<<<<<<< HEAD
 	 * num_physpages - number of all pages
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 
 	/* memory start is from the kernel end (aligned) to higher addr */
 	min_low_pfn = memory_start >> PAGE_SHIFT; /* minimum for allocation */
 	/* RAM is assumed contiguous */
+<<<<<<< HEAD
 	num_physpages = max_mapnr = memory_size >> PAGE_SHIFT;
+=======
+	max_mapnr = memory_size >> PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	max_low_pfn = ((u64)memory_start + (u64)lowmem_size) >> PAGE_SHIFT;
 	max_pfn = ((u64)memory_start + (u64)memory_size) >> PAGE_SHIFT;
 
@@ -200,7 +219,12 @@ void __init setup_memory(void)
 		start_pfn = memblock_region_memory_base_pfn(reg);
 		end_pfn = memblock_region_memory_end_pfn(reg);
 		memblock_set_node(start_pfn << PAGE_SHIFT,
+<<<<<<< HEAD
 					(end_pfn - start_pfn) << PAGE_SHIFT, 0);
+=======
+				  (end_pfn - start_pfn) << PAGE_SHIFT,
+				  &memblock.memory, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* free bootmem is whole main memory */
@@ -235,17 +259,26 @@ void __init setup_memory(void)
 #ifdef CONFIG_BLK_DEV_INITRD
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	free_reserved_area(start, end, 0, "initrd");
+=======
+	free_reserved_area((void *)start, (void *)end, -1, "initrd");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
 void free_initmem(void)
 {
+<<<<<<< HEAD
 	free_initmem_default(0);
+=======
+	free_initmem_default(-1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	pg_data_t *pgdat;
 	unsigned long reservedpages = 0, codesize, initsize, datasize, bsssize;
 
@@ -286,6 +319,17 @@ void __init mem_init(void)
 		bsssize >> 10,
 		initsize >> 10);
 
+=======
+	high_memory = (void *)__va(memory_start + lowmem_size - 1);
+
+	/* this will put all memory onto the freelists */
+	free_all_bootmem();
+#ifdef CONFIG_HIGHMEM
+	highmem_setup();
+#endif
+
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MMU
 	pr_info("Kernel virtual memory layout:\n");
 	pr_info("  * 0x%08lx..0x%08lx  : fixmap\n", FIXADDR_START, FIXADDR_TOP);
@@ -407,7 +451,11 @@ asmlinkage void __init mmu_init(void)
 	if (initrd_start) {
 		unsigned long size;
 		size = initrd_end - initrd_start;
+<<<<<<< HEAD
 		memblock_reserve(virt_to_phys(initrd_start), size);
+=======
+		memblock_reserve(__virt_to_phys(initrd_start), size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif /* CONFIG_BLK_DEV_INITRD */
 
@@ -452,7 +500,11 @@ void __init *early_get_page(void)
 
 #endif /* CONFIG_MMU */
 
+<<<<<<< HEAD
 void * __init_refok alloc_maybe_bootmem(size_t size, gfp_t mask)
+=======
+void * __ref alloc_maybe_bootmem(size_t size, gfp_t mask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (mem_init_done)
 		return kmalloc(size, mask);
@@ -460,7 +512,11 @@ void * __init_refok alloc_maybe_bootmem(size_t size, gfp_t mask)
 		return alloc_bootmem(size);
 }
 
+<<<<<<< HEAD
 void * __init_refok zalloc_maybe_bootmem(size_t size, gfp_t mask)
+=======
+void * __ref zalloc_maybe_bootmem(size_t size, gfp_t mask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *p;
 

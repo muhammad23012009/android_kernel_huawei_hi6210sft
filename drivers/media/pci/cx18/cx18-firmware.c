@@ -130,7 +130,11 @@ static int load_cpu_fw_direct(const char *fn, u8 __iomem *mem, struct cx18 *cx)
 		}
 	}
 	if (!test_bit(CX18_F_I_LOADED_FW, &cx->i_flags))
+<<<<<<< HEAD
 		CX18_INFO("loaded %s firmware (%zd bytes)\n", fn, fw->size);
+=======
+		CX18_INFO("loaded %s firmware (%zu bytes)\n", fn, fw->size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	size = fw->size;
 	release_firmware(fw);
 	cx18_setup_page(cx, SCB_OFFSET);
@@ -164,7 +168,11 @@ static int load_apu_fw_direct(const char *fn, u8 __iomem *dst, struct cx18 *cx,
 
 	apu_version = (vers[0] << 24) | (vers[4] << 16) | vers[32];
 	while (offset + sizeof(seghdr) < fw->size) {
+<<<<<<< HEAD
 		const u32 *shptr = src + offset / 4;
+=======
+		const __le32 *shptr = (__force __le32 *)src + offset / 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		seghdr.sync1 = le32_to_cpu(shptr[0]);
 		seghdr.sync2 = le32_to_cpu(shptr[1]);
@@ -202,7 +210,11 @@ static int load_apu_fw_direct(const char *fn, u8 __iomem *dst, struct cx18 *cx,
 		offset += seghdr.size;
 	}
 	if (!test_bit(CX18_F_I_LOADED_FW, &cx->i_flags))
+<<<<<<< HEAD
 		CX18_INFO("loaded %s firmware V%08x (%zd bytes)\n",
+=======
+		CX18_INFO("loaded %s firmware V%08x (%zu bytes)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				fn, apu_version, fw->size);
 	size = fw->size;
 	release_firmware(fw);

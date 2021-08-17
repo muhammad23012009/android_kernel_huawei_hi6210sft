@@ -31,6 +31,10 @@
 #include <linux/dmi.h>
 #include <linux/nmi.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/debugfs.h>
 #include <linux/dmaengine.h>
@@ -232,7 +236,11 @@ struct eg20t_port {
 	unsigned int iobase;
 	struct pci_dev *pdev;
 	int fifo_size;
+<<<<<<< HEAD
 	int uartclk;
+=======
+	unsigned int uartclk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int start_tx;
 	int start_rx;
 	int tx_empty;
@@ -251,12 +259,21 @@ struct eg20t_port {
 	struct dma_chan			*chan_rx;
 	struct scatterlist		*sg_tx_p;
 	int				nent;
+<<<<<<< HEAD
+=======
+	int				orig_nent;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct scatterlist		sg_rx;
 	int				tx_dma_use;
 	void				*rx_buf_virt;
 	dma_addr_t			rx_buf_dma;
 
 	struct dentry	*debugfs;
+<<<<<<< HEAD
+=======
+#define IRQ_NAME_SIZE 17
+	char				irq_name[IRQ_NAME_SIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* protect the eg20t_port private structure and io access to membase */
 	spinlock_t lock;
@@ -373,14 +390,68 @@ static const struct file_operations port_regs_ops = {
 };
 #endif	/* CONFIG_DEBUG_FS */
 
+<<<<<<< HEAD
 /* Return UART clock, checking for board specific clocks. */
 static int pch_uart_get_uartclk(void)
 {
 	const char *cmp;
+=======
+static struct dmi_system_id pch_uart_dmi_table[] = {
+	{
+		.ident = "CM-iTC",
+		{
+			DMI_MATCH(DMI_BOARD_NAME, "CM-iTC"),
+		},
+		(void *)CMITC_UARTCLK,
+	},
+	{
+		.ident = "FRI2",
+		{
+			DMI_MATCH(DMI_BIOS_VERSION, "FRI2"),
+		},
+		(void *)FRI2_64_UARTCLK,
+	},
+	{
+		.ident = "Fish River Island II",
+		{
+			DMI_MATCH(DMI_PRODUCT_NAME, "Fish River Island II"),
+		},
+		(void *)FRI2_48_UARTCLK,
+	},
+	{
+		.ident = "COMe-mTT",
+		{
+			DMI_MATCH(DMI_BOARD_NAME, "COMe-mTT"),
+		},
+		(void *)NTC1_UARTCLK,
+	},
+	{
+		.ident = "nanoETXexpress-TT",
+		{
+			DMI_MATCH(DMI_BOARD_NAME, "nanoETXexpress-TT"),
+		},
+		(void *)NTC1_UARTCLK,
+	},
+	{
+		.ident = "MinnowBoard",
+		{
+			DMI_MATCH(DMI_BOARD_NAME, "MinnowBoard"),
+		},
+		(void *)MINNOW_UARTCLK,
+	},
+	{ }
+};
+
+/* Return UART clock, checking for board specific clocks. */
+static unsigned int pch_uart_get_uartclk(void)
+{
+	const struct dmi_system_id *d;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (user_uartclk)
 		return user_uartclk;
 
+<<<<<<< HEAD
 	cmp = dmi_get_system_info(DMI_BOARD_NAME);
 	if (cmp && strstr(cmp, "CM-iTC"))
 		return CMITC_UARTCLK;
@@ -402,6 +473,11 @@ static int pch_uart_get_uartclk(void)
 	cmp = dmi_get_system_info(DMI_BOARD_NAME);
 	if (cmp && strstr(cmp, "MinnowBoard"))
 		return MINNOW_UARTCLK;
+=======
+	d = dmi_first_match(pch_uart_dmi_table);
+	if (d)
+		return (unsigned long)d->driver_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return DEFAULT_UARTCLK;
 }
@@ -422,7 +498,11 @@ static void pch_uart_hal_disable_interrupt(struct eg20t_port *priv,
 	iowrite8(ier, priv->membase + UART_IER);
 }
 
+<<<<<<< HEAD
 static int pch_uart_hal_set_line(struct eg20t_port *priv, int baud,
+=======
+static int pch_uart_hal_set_line(struct eg20t_port *priv, unsigned int baud,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 unsigned int parity, unsigned int bits,
 				 unsigned int stb)
 {
@@ -457,7 +537,11 @@ static int pch_uart_hal_set_line(struct eg20t_port *priv, int baud,
 	lcr |= bits;
 	lcr |= stb;
 
+<<<<<<< HEAD
 	dev_dbg(priv->port.dev, "%s:baud = %d, div = %04x, lcr = %02x (%lu)\n",
+=======
+	dev_dbg(priv->port.dev, "%s:baud = %u, div = %04x, lcr = %02x (%lu)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 __func__, baud, div, lcr, jiffies);
 	iowrite8(PCH_UART_LCR_DLAB, priv->membase + UART_LCR);
 	iowrite8(dll, priv->membase + PCH_UART_DLL);
@@ -640,11 +724,15 @@ static int pop_tx_x(struct eg20t_port *priv, unsigned char *buf)
 
 static int dma_push_rx(struct eg20t_port *priv, int size)
 {
+<<<<<<< HEAD
 	struct tty_struct *tty;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int room;
 	struct uart_port *port = &priv->port;
 	struct tty_port *tport = &port->state->port;
 
+<<<<<<< HEAD
 	port = &priv->port;
 	tty = tty_port_tty_get(tport);
 	if (!tty) {
@@ -652,19 +740,28 @@ static int dma_push_rx(struct eg20t_port *priv, int size)
 		return 0;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	room = tty_buffer_request_room(tport, size);
 
 	if (room < size)
 		dev_warn(port->dev, "Rx overrun: dropping %u bytes\n",
 			 size - room);
 	if (!room)
+<<<<<<< HEAD
 		goto out;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tty_insert_flip_string(tport, sg_virt(&priv->sg_rx), size);
 
 	port->icount.rx += room;
+<<<<<<< HEAD
 out:
 	tty_kref_put(tty);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return room;
 }
@@ -717,9 +814,16 @@ static void pch_request_dma(struct uart_port *port)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
+<<<<<<< HEAD
 	dma_dev = pci_get_bus_and_slot(priv->pdev->bus->number,
 				       PCI_DEVFN(0xa, 0)); /* Get DMA's dev
 								information */
+=======
+	/* Get DMA's dev information */
+	dma_dev = pci_get_slot(priv->pdev->bus,
+			PCI_DEVFN(PCI_SLOT(priv->pdev->devfn), 0));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set Tx DMA */
 	param = &priv->param_tx;
 	param->dma_dev = &dma_dev->dev;
@@ -784,9 +888,16 @@ static void pch_dma_tx_complete(void *arg)
 	}
 	xmit->tail &= UART_XMIT_SIZE - 1;
 	async_tx_ack(priv->desc_tx);
+<<<<<<< HEAD
 	dma_unmap_sg(port->dev, sg, priv->nent, DMA_TO_DEVICE);
 	priv->tx_dma_use = 0;
 	priv->nent = 0;
+=======
+	dma_unmap_sg(port->dev, sg, priv->orig_nent, DMA_TO_DEVICE);
+	priv->tx_dma_use = 0;
+	priv->nent = 0;
+	priv->orig_nent = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(priv->sg_tx_p);
 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
 }
@@ -1011,6 +1122,10 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 		dev_err(priv->port.dev, "%s:dma_map_sg Failed\n", __func__);
 		return 0;
 	}
+<<<<<<< HEAD
+=======
+	priv->orig_nent = num;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->nent = nent;
 
 	for (i = 0; i < nent; i++, sg++) {
@@ -1028,7 +1143,11 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 					priv->sg_tx_p, nent, DMA_MEM_TO_DEV,
 					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
 	if (!desc) {
+<<<<<<< HEAD
 		dev_err(priv->port.dev, "%s:device_prep_slave_sg Failed\n",
+=======
+		dev_err(priv->port.dev, "%s:dmaengine_prep_slave_sg Failed\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__);
 		return 0;
 	}
@@ -1326,7 +1445,11 @@ static int pch_uart_startup(struct uart_port *port)
 		return ret;
 
 	ret = request_irq(priv->port.irq, pch_uart_interrupt, IRQF_SHARED,
+<<<<<<< HEAD
 			KBUILD_MODNAME, priv);
+=======
+			priv->irq_name, priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
@@ -1366,9 +1489,14 @@ static void pch_uart_shutdown(struct uart_port *port)
 static void pch_uart_set_termios(struct uart_port *port,
 				 struct ktermios *termios, struct ktermios *old)
 {
+<<<<<<< HEAD
 	int baud;
 	int rtn;
 	unsigned int parity, bits, stb;
+=======
+	int rtn;
+	unsigned int baud, parity, bits, stb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct eg20t_port *priv;
 	unsigned long flags;
 
@@ -1492,15 +1620,30 @@ static int pch_uart_verify_port(struct uart_port *port,
 			__func__);
 		return -EOPNOTSUPP;
 #endif
+<<<<<<< HEAD
 		dev_info(priv->port.dev, "PCH UART : Use DMA Mode\n");
 		if (!priv->use_dma)
 			pch_request_dma(port);
 		priv->use_dma = 1;
+=======
+		if (!priv->use_dma) {
+			pch_request_dma(port);
+			if (priv->chan_rx)
+				priv->use_dma = 1;
+		}
+		dev_info(priv->port.dev, "PCH UART: %s\n",
+				priv->use_dma ?
+				"Use DMA Mode" : "No DMA");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_PCH_UART_CONSOLE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	Wait for transmitter & holding register to empty
  */
@@ -1531,6 +1674,10 @@ static void wait_for_xmitr(struct eg20t_port *up, int bits)
 		}
 	}
 }
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_PCH_UART_CONSOLE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_CONSOLE_POLL
 /*
@@ -1566,6 +1713,7 @@ static void pch_uart_put_poll_char(struct uart_port *port,
 	wait_for_xmitr(priv, UART_LSR_THRE);
 	/*
 	 * Send the character out.
+<<<<<<< HEAD
 	 * If a LF, also do CR...
 	 */
 	iowrite8(c, priv->membase + PCH_UART_THR);
@@ -1573,6 +1721,10 @@ static void pch_uart_put_poll_char(struct uart_port *port,
 		wait_for_xmitr(priv, UART_LSR_THRE);
 		iowrite8(13, priv->membase + PCH_UART_THR);
 	}
+=======
+	 */
+	iowrite8(c, priv->membase + PCH_UART_THR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Finally, wait for transmitter to become empty
@@ -1583,7 +1735,11 @@ static void pch_uart_put_poll_char(struct uart_port *port,
 }
 #endif /* CONFIG_CONSOLE_POLL */
 
+<<<<<<< HEAD
 static struct uart_ops pch_uart_ops = {
+=======
+static const struct uart_ops pch_uart_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tx_empty = pch_uart_tx_empty,
 	.set_mctrl = pch_uart_set_mctrl,
 	.get_mctrl = pch_uart_get_mctrl,
@@ -1596,7 +1752,10 @@ static struct uart_ops pch_uart_ops = {
 	.shutdown = pch_uart_shutdown,
 	.set_termios = pch_uart_set_termios,
 /*	.pm		= pch_uart_pm,		Not supported yet */
+<<<<<<< HEAD
 /*	.set_wake	= pch_uart_set_wake,	Not supported yet */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type = pch_uart_type,
 	.release_port = pch_uart_release_port,
 	.request_port = pch_uart_request_port,
@@ -1741,7 +1900,13 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 	int fifosize;
 	int port_type;
 	struct pch_uart_driver_data *board;
+<<<<<<< HEAD
 	char name[32];	/* for debugfs file name */
+=======
+#ifdef CONFIG_DEBUG_FS
+	char name[32];	/* for debugfs file name */
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	board = &drv_dat[id->driver_data];
 	port_type = board->port_type;
@@ -1795,12 +1960,26 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 	priv->port.line = board->line_no;
 	priv->trigger = PCH_UART_HAL_TRIGGER_M;
 
+<<<<<<< HEAD
+=======
+	snprintf(priv->irq_name, IRQ_NAME_SIZE,
+		 KBUILD_MODNAME ":" PCH_UART_DRIVER_DEVICE "%d",
+		 priv->port.line);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_init(&priv->port.lock);
 
 	pci_set_drvdata(pdev, priv);
 	priv->trigger_level = 1;
 	priv->fcr = 0;
 
+<<<<<<< HEAD
+=======
+	if (pdev->dev.of_node)
+		of_property_read_u32(pdev->dev.of_node, "clock-frequency"
+					 , &user_uartclk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_PCH_UART_CONSOLE
 	pch_uart_ports[board->line_no] = priv;
 #endif
@@ -1836,7 +2015,10 @@ static void pch_uart_exit_port(struct eg20t_port *priv)
 		debugfs_remove(priv->debugfs);
 #endif
 	uart_remove_one_port(&pch_uart_driver, &priv->port);
+<<<<<<< HEAD
 	pci_set_drvdata(priv->pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_page((unsigned long)priv->rxbuf.buf);
 }
 
@@ -1890,7 +2072,11 @@ static int pch_uart_pci_resume(struct pci_dev *pdev)
 #define pch_uart_pci_resume NULL
 #endif
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pch_uart_pci_id) = {
+=======
+static const struct pci_device_id pch_uart_pci_id[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8811),
 	 .driver_data = pch_et20t_uart0},
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x8812),
@@ -1978,6 +2164,11 @@ module_exit(pch_uart_module_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("Intel EG20T PCH UART PCI Driver");
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(pci, pch_uart_pci_id);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(default_baud, uint, S_IRUGO);
 MODULE_PARM_DESC(default_baud,
                  "Default BAUD for initial driver state and console (default 9600)");

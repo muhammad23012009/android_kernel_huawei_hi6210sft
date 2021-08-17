@@ -26,7 +26,10 @@
 #include <linux/pci.h>
 #include <linux/string.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/io.h>
 #include <asm/pgtable.h>
@@ -66,6 +69,14 @@ int rtas_read_config(struct pci_dn *pdn, int where, int size, u32 *val)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 	if (!config_access_valid(pdn, where))
 		return PCIBIOS_BAD_REGISTER_NUMBER;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EEH
+	if (pdn->edev && pdn->edev->pe &&
+	    (pdn->edev->pe->state & EEH_PE_CFG_BLOCKED))
+		return PCIBIOS_SET_FAILED;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	addr = rtas_config_addr(pdn->busno, pdn->devfn, where);
 	buid = pdn->phb->buid;
@@ -80,10 +91,13 @@ int rtas_read_config(struct pci_dn *pdn, int where, int size, u32 *val)
 	if (ret)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
+<<<<<<< HEAD
 	if (returnval == EEH_IO_ERROR_VALUE(size) &&
 	    eeh_dev_check_failure(of_node_to_eeh_dev(pdn->node)))
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return PCIBIOS_SUCCESSFUL;
 }
 
@@ -92,6 +106,7 @@ static int rtas_pci_read_config(struct pci_bus *bus,
 				int where, int size, u32 *val)
 {
 	struct device_node *busdn, *dn;
+<<<<<<< HEAD
 
 	busdn = pci_bus_to_OF_node(bus);
 
@@ -104,6 +119,33 @@ static int rtas_pci_read_config(struct pci_bus *bus,
 	}
 
 	return PCIBIOS_DEVICE_NOT_FOUND;
+=======
+	struct pci_dn *pdn;
+	bool found = false;
+	int ret;
+
+	/* Search only direct children of the bus */
+	*val = 0xFFFFFFFF;
+	busdn = pci_bus_to_OF_node(bus);
+	for (dn = busdn->child; dn; dn = dn->sibling) {
+		pdn = PCI_DN(dn);
+		if (pdn && pdn->devfn == devfn
+		    && of_device_is_available(dn)) {
+			found = true;
+			break;
+		}
+	}
+
+	if (!found)
+		return PCIBIOS_DEVICE_NOT_FOUND;
+
+	ret = rtas_read_config(pdn, where, size, val);
+	if (*val == EEH_IO_ERROR_VALUE(size) &&
+	    eeh_dev_check_failure(pdn_to_eeh_dev(pdn)))
+		return PCIBIOS_DEVICE_NOT_FOUND;
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int rtas_write_config(struct pci_dn *pdn, int where, int size, u32 val)
@@ -115,6 +157,14 @@ int rtas_write_config(struct pci_dn *pdn, int where, int size, u32 val)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 	if (!config_access_valid(pdn, where))
 		return PCIBIOS_BAD_REGISTER_NUMBER;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EEH
+	if (pdn->edev && pdn->edev->pe &&
+	    (pdn->edev->pe->state & EEH_PE_CFG_BLOCKED))
+		return PCIBIOS_SET_FAILED;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	addr = rtas_config_addr(pdn->busno, pdn->devfn, where);
 	buid = pdn->phb->buid;
@@ -136,6 +186,7 @@ static int rtas_pci_write_config(struct pci_bus *bus,
 				 int where, int size, u32 val)
 {
 	struct device_node *busdn, *dn;
+<<<<<<< HEAD
 
 	busdn = pci_bus_to_OF_node(bus);
 
@@ -147,6 +198,26 @@ static int rtas_pci_write_config(struct pci_bus *bus,
 			return rtas_write_config(pdn, where, size, val);
 	}
 	return PCIBIOS_DEVICE_NOT_FOUND;
+=======
+	struct pci_dn *pdn;
+	bool found = false;
+
+	/* Search only direct children of the bus */
+	busdn = pci_bus_to_OF_node(bus);
+	for (dn = busdn->child; dn; dn = dn->sibling) {
+		pdn = PCI_DN(dn);
+		if (pdn && pdn->devfn == devfn
+		    && of_device_is_available(dn)) {
+			found = true;
+			break;
+		}
+	}
+
+	if (!found)
+		return PCIBIOS_DEVICE_NOT_FOUND;
+
+	return rtas_write_config(pdn, where, size, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pci_ops rtas_pci_ops = {
@@ -223,7 +294,11 @@ unsigned long get_phb_buid(struct device_node *phb)
 static int phb_set_bus_ranges(struct device_node *dev,
 			      struct pci_controller *phb)
 {
+<<<<<<< HEAD
 	const int *bus_range;
+=======
+	const __be32 *bus_range;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int len;
 
 	bus_range = of_get_property(dev, "bus-range", &len);
@@ -231,8 +306,13 @@ static int phb_set_bus_ranges(struct device_node *dev,
 		return 1;
  	}
 
+<<<<<<< HEAD
 	phb->first_busno =  bus_range[0];
 	phb->last_busno  =  bus_range[1];
+=======
+	phb->first_busno = be32_to_cpu(bus_range[0]);
+	phb->last_busno  = be32_to_cpu(bus_range[1]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -252,6 +332,7 @@ int rtas_setup_phb(struct pci_controller *phb)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 void __init find_and_init_phbs(void)
 {
@@ -299,3 +380,5 @@ void __init find_and_init_phbs(void)
 #endif /* CONFIG_PPC32 */
 	}
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

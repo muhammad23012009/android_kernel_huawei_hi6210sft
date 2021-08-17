@@ -4,6 +4,7 @@
 #include <uapi/linux/irqnr.h>
 
 
+<<<<<<< HEAD
 #ifndef CONFIG_GENERIC_HARDIRQS
 #include <asm/irq.h>
 
@@ -21,6 +22,8 @@
 
 #else /* CONFIG_GENERIC_HARDIRQS */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int nr_irqs;
 extern struct irq_desc *irq_to_desc(unsigned int irq);
 unsigned int irq_get_next_irq(unsigned int offset);
@@ -40,18 +43,24 @@ unsigned int irq_get_next_irq(unsigned int offset);
 			;						\
 		else
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 #define irq_node(irq)	(irq_get_irq_data(irq)->node)
 #else
 #define irq_node(irq)	0
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define for_each_active_irq(irq)			\
 	for (irq = irq_get_next_irq(0); irq < nr_irqs;	\
 	     irq = irq_get_next_irq(irq + 1))
 
+<<<<<<< HEAD
 #endif /* CONFIG_GENERIC_HARDIRQS */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define for_each_irq_nr(irq)                   \
        for (irq = 0; irq < nr_irqs; irq++)
 

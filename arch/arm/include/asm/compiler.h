@@ -8,8 +8,26 @@
  * This string is meant to be concatenated with the inline asm string and
  * will cause compilation to stop on mismatch.
  * (for details, see gcc PR 15089)
+<<<<<<< HEAD
  */
 #define __asmeq(x, y)  ".ifnc " x "," y " ; .err ; .endif\n\t"
+=======
+ * For compatibility with clang, we have to specifically take the equivalence
+ * of 'r11' <-> 'fp' and 'r12' <-> 'ip' into account as well.
+ */
+#define __asmeq(x, y)				\
+	".ifnc " x "," y "; "			\
+	  ".ifnc " x y ",fpr11; " 		\
+	    ".ifnc " x y ",r11fp; "		\
+	      ".ifnc " x y ",ipr12; " 		\
+	        ".ifnc " x y ",r12ip; "		\
+	          ".err; "			\
+	        ".endif; "			\
+	      ".endif; "			\
+	    ".endif; "				\
+	  ".endif; "				\
+	".endif\n\t"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #endif /* __ASM_ARM_COMPILER_H */

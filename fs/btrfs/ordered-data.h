@@ -26,6 +26,7 @@ struct btrfs_ordered_inode_tree {
 	struct rb_node *last;
 };
 
+<<<<<<< HEAD
 /*
  * these are used to collect checksums done just before bios submission.
  * They are attached via a list into the ordered extent, and
@@ -38,6 +39,8 @@ struct btrfs_sector_sum {
 	u32 sum;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct btrfs_ordered_sum {
 	/* bytenr is the start of this extent on disk */
 	u64 bytenr;
@@ -45,10 +48,17 @@ struct btrfs_ordered_sum {
 	/*
 	 * this is the length in bytes covered by the sums array below.
 	 */
+<<<<<<< HEAD
 	unsigned long len;
 	struct list_head list;
 	/* last field is a variable length array of btrfs_sector_sums */
 	struct btrfs_sector_sum sums[];
+=======
+	int len;
+	struct list_head list;
+	/* last field is a variable length array of csums */
+	u32 sums[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -70,7 +80,11 @@ struct btrfs_ordered_sum {
 
 #define BTRFS_ORDERED_COMPRESSED 3 /* writing a zlib compressed extent */
 
+<<<<<<< HEAD
 #define BTRFS_ORDERED_PREALLOC 4 /* set when writing to prealloced extent */
+=======
+#define BTRFS_ORDERED_PREALLOC 4 /* set when writing to preallocated extent */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BTRFS_ORDERED_DIRECT 5 /* set when we're doing DIO with this extent */
 
@@ -81,7 +95,16 @@ struct btrfs_ordered_sum {
 				       * the isize. */
 #define BTRFS_ORDERED_LOGGED_CSUM 8 /* We've logged the csums on this ordered
 				       ordered extent */
+<<<<<<< HEAD
 
+=======
+#define BTRFS_ORDERED_TRUNCATED 9 /* Set when we have to truncate an extent */
+
+#define BTRFS_ORDERED_LOGGED 10 /* Set when we've waited on this ordered extent
+				 * in the logging code. */
+#define BTRFS_ORDERED_PENDING 11 /* We are waiting for this ordered extent to
+				  * complete in the current transaction. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct btrfs_ordered_extent {
 	/* logical offset in the file */
 	u64 file_offset;
@@ -98,9 +121,12 @@ struct btrfs_ordered_extent {
 	/* number of bytes that still need writing */
 	u64 bytes_left;
 
+<<<<<<< HEAD
 	/* number of bytes that still need csumming */
 	u64 csum_bytes_left;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * the end of the ordered extent which is behind it but
 	 * didn't update disk_i_size. Please see the comment of
@@ -108,6 +134,15 @@ struct btrfs_ordered_extent {
 	 */
 	u64 outstanding_isize;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If we get truncated we need to adjust the file extent we enter for
+	 * this ordered extent so that we do not expose stale data.
+	 */
+	u64 truncated_len;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* flags (described above) */
 	unsigned long flags;
 
@@ -126,6 +161,12 @@ struct btrfs_ordered_extent {
 	/* If we need to wait on this to be done */
 	struct list_head log_list;
 
+<<<<<<< HEAD
+=======
+	/* If the transaction needs to wait on this ordered extent */
+	struct list_head trans_list;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* used to wait for the BTRFS_ORDERED_COMPLETE bit */
 	wait_queue_head_t wait;
 
@@ -149,11 +190,16 @@ struct btrfs_ordered_extent {
 static inline int btrfs_ordered_sum_size(struct btrfs_root *root,
 					 unsigned long bytes)
 {
+<<<<<<< HEAD
 	unsigned long num_sectors = (bytes + root->sectorsize - 1) /
 		root->sectorsize;
 	num_sectors++;
 	return sizeof(struct btrfs_ordered_sum) +
 		num_sectors * sizeof(struct btrfs_sector_sum);
+=======
+	int num_sectors = (int)DIV_ROUND_UP(bytes, root->sectorsize);
+	return sizeof(struct btrfs_ordered_sum) + num_sectors * sizeof(u32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
@@ -188,16 +234,27 @@ struct btrfs_ordered_extent *btrfs_lookup_ordered_extent(struct inode *inode,
 							 u64 file_offset);
 void btrfs_start_ordered_extent(struct inode *inode,
 				struct btrfs_ordered_extent *entry, int wait);
+<<<<<<< HEAD
 void btrfs_wait_ordered_range(struct inode *inode, u64 start, u64 len);
+=======
+int btrfs_wait_ordered_range(struct inode *inode, u64 start, u64 len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct btrfs_ordered_extent *
 btrfs_lookup_first_ordered_extent(struct inode * inode, u64 file_offset);
 struct btrfs_ordered_extent *btrfs_lookup_ordered_range(struct inode *inode,
 							u64 file_offset,
 							u64 len);
+<<<<<<< HEAD
+=======
+bool btrfs_have_ordered_extents_in_range(struct inode *inode,
+					 u64 file_offset,
+					 u64 len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int btrfs_ordered_update_i_size(struct inode *inode, u64 offset,
 				struct btrfs_ordered_extent *ordered);
 int btrfs_find_ordered_sum(struct inode *inode, u64 offset, u64 disk_bytenr,
 			   u32 *sum, int len);
+<<<<<<< HEAD
 int btrfs_run_ordered_operations(struct btrfs_trans_handle *trans,
 				 struct btrfs_root *root, int wait);
 void btrfs_add_ordered_operation(struct btrfs_trans_handle *trans,
@@ -206,6 +263,21 @@ void btrfs_add_ordered_operation(struct btrfs_trans_handle *trans,
 void btrfs_wait_ordered_extents(struct btrfs_root *root, int delay_iput);
 void btrfs_get_logged_extents(struct btrfs_root *log, struct inode *inode);
 void btrfs_wait_logged_extents(struct btrfs_root *log, u64 transid);
+=======
+int btrfs_wait_ordered_extents(struct btrfs_root *root, int nr,
+			       const u64 range_start, const u64 range_len);
+int btrfs_wait_ordered_roots(struct btrfs_fs_info *fs_info, int nr,
+			      const u64 range_start, const u64 range_len);
+void btrfs_get_logged_extents(struct inode *inode,
+			      struct list_head *logged_list,
+			      const loff_t start,
+			      const loff_t end);
+void btrfs_put_logged_extents(struct list_head *logged_list);
+void btrfs_submit_logged_extents(struct list_head *logged_list,
+				 struct btrfs_root *log);
+void btrfs_wait_logged_extents(struct btrfs_trans_handle *trans,
+			       struct btrfs_root *log, u64 transid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void btrfs_free_logged_extents(struct btrfs_root *log, u64 transid);
 int __init ordered_data_init(void);
 void ordered_data_exit(void);

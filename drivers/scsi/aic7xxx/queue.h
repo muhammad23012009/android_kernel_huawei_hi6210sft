@@ -246,7 +246,11 @@ struct {								\
 /*
  * List declarations.
  */
+<<<<<<< HEAD
 #define	LIST_HEAD(name, type)						\
+=======
+#define	BSD_LIST_HEAD(name, type)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct name {								\
 	struct type *lh_first;	/* first element */			\
 }

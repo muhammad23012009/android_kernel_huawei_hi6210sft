@@ -139,6 +139,10 @@
 #define ADIS16400_NO_BURST		BIT(1)
 #define ADIS16400_HAS_SLOW_MODE		BIT(2)
 #define ADIS16400_HAS_SERIAL_NUMBER	BIT(3)
+<<<<<<< HEAD
+=======
+#define ADIS16400_BURST_DIAG_STAT	BIT(4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct adis16400_state;
 
@@ -165,6 +169,10 @@ struct adis16400_state {
 	int				filt_int;
 
 	struct adis adis;
+<<<<<<< HEAD
+=======
+	unsigned long avail_scan_mask[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* At the moment triggers are only used for ring buffer

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,9 +97,16 @@
 #define AOPOBJ_AML_CONSTANT         0x01	/* Integer is an AML constant */
 #define AOPOBJ_STATIC_POINTER       0x02	/* Data is part of an ACPI table, don't delete */
 #define AOPOBJ_DATA_VALID           0x04	/* Object is initialized and data is valid */
+<<<<<<< HEAD
 #define AOPOBJ_OBJECT_INITIALIZED   0x08	/* Region is initialized, _REG was run */
 #define AOPOBJ_SETUP_COMPLETE       0x10	/* Region setup is complete */
 #define AOPOBJ_INVALID              0x20	/* Host OS won't allow a Region address */
+=======
+#define AOPOBJ_OBJECT_INITIALIZED   0x08	/* Region is initialized */
+#define AOPOBJ_REG_CONNECTED        0x10	/* _REG was run */
+#define AOPOBJ_SETUP_COMPLETE       0x20	/* Region setup is complete */
+#define AOPOBJ_INVALID              0x40	/* Host OS won't allow a Region address */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /******************************************************************************
  *
@@ -176,6 +187,10 @@ struct acpi_object_method {
 	u8 param_count;
 	u8 sync_level;
 	union acpi_operand_object *mutex;
+<<<<<<< HEAD
+=======
+	union acpi_operand_object *node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *aml_start;
 	union {
 		acpi_internal_method implementation;
@@ -193,7 +208,12 @@ struct acpi_object_method {
 #define ACPI_METHOD_INTERNAL_ONLY       0x02	/* Method is implemented internally (_OSI) */
 #define ACPI_METHOD_SERIALIZED          0x04	/* Method is serialized */
 #define ACPI_METHOD_SERIALIZED_PENDING  0x08	/* Method is to be marked serialized */
+<<<<<<< HEAD
 #define ACPI_METHOD_MODIFIED_NAMESPACE  0x10	/* Method modified the namespace */
+=======
+#define ACPI_METHOD_IGNORE_SYNC_LEVEL   0x10	/* Method was auto-serialized at table load time */
+#define ACPI_METHOD_MODIFIED_NAMESPACE  0x20	/* Method modified the namespace */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /******************************************************************************
  *
@@ -334,6 +354,10 @@ struct acpi_object_reference {
 	void *object;		/* name_op=>HANDLE to obj, index_op=>union acpi_operand_object */
 	struct acpi_namespace_node *node;	/* ref_of or Namepath */
 	union acpi_operand_object **where;	/* Target of Index */
+<<<<<<< HEAD
+=======
+	u8 *index_pointer;	/* Used for Buffers and Strings */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 value;		/* Used for Local/Arg/Index/ddb_handle */
 };
 

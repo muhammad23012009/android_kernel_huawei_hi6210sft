@@ -29,7 +29,11 @@
 #include <asm/irq.h>
 #include <asm/parisc-device.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_MAGIC_SYSRQ
+=======
+#if defined(CONFIG_SERIAL_MUX_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sysrq.h>
 #define SUPPORT_SYSRQ
 #endif
@@ -169,6 +173,7 @@ static void mux_stop_rx(struct uart_port *port)
 }
 
 /**
+<<<<<<< HEAD
  * mux_enable_ms - Enable modum status interrupts.
  * @port: Ptr to the uart_port.
  *
@@ -179,6 +184,8 @@ static void mux_enable_ms(struct uart_port *port)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * mux_break_ctl - Control the transmitssion of a break signal.
  * @port: Ptr to the uart_port.
  * @break_state: Raise/Lower the break signal.
@@ -422,6 +429,7 @@ static int mux_console_setup(struct console *co, char *options)
         return 0;
 }
 
+<<<<<<< HEAD
 struct tty_driver *mux_console_device(struct console *co, int *index)
 {
         *index = co->index;
@@ -435,6 +443,16 @@ static struct console mux_console = {
 	.setup =	mux_console_setup,
 	.flags =	CON_ENABLED | CON_PRINTBUFFER,
 	.index =	0,
+=======
+static struct console mux_console = {
+	.name =		"ttyB",
+	.write =	mux_console_write,
+	.device =	uart_console_device,
+	.setup =	mux_console_setup,
+	.flags =	CON_ENABLED | CON_PRINTBUFFER,
+	.index =	0,
+	.data =		&mux_driver,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define MUX_CONSOLE	&mux_console
@@ -449,7 +467,10 @@ static struct uart_ops mux_pops = {
 	.stop_tx =		mux_stop_tx,
 	.start_tx =		mux_start_tx,
 	.stop_rx =		mux_stop_rx,
+<<<<<<< HEAD
 	.enable_ms =		mux_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl =		mux_break_ctl,
 	.startup =		mux_startup,
 	.shutdown =		mux_shutdown,
@@ -613,7 +634,11 @@ static void __exit mux_exit(void)
 {
 	/* Delete the Mux timer. */
 	if(port_cnt > 0) {
+<<<<<<< HEAD
 		del_timer(&mux_timer);
+=======
+		del_timer_sync(&mux_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_MUX_CONSOLE
 		unregister_console(&mux_console);
 #endif

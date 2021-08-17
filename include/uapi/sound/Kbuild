@@ -1,11 +1,25 @@
 # UAPI Header export list
 header-y += asequencer.h
+<<<<<<< HEAD
+=======
+header-y += asoc.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += asound.h
 header-y += asound_fm.h
 header-y += compress_offload.h
 header-y += compress_params.h
 header-y += emu10k1.h
+<<<<<<< HEAD
+=======
+header-y += firewire.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += hdsp.h
 header-y += hdspm.h
 header-y += sb16_csp.h
 header-y += sfnt_info.h
+<<<<<<< HEAD
+=======
+header-y += tlv.h
+header-y += usb_stream.h
+header-y += snd_sst_tokens.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

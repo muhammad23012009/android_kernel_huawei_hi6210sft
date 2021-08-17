@@ -1,6 +1,11 @@
 #ifndef _ASM_ARM_XEN_HYPERVISOR_H
 #define _ASM_ARM_XEN_HYPERVISOR_H
 
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct shared_info *HYPERVISOR_shared_info;
 extern struct start_info *xen_start_info;
 
@@ -16,4 +21,25 @@ static inline enum paravirt_lazy_mode paravirt_get_lazy_mode(void)
 	return PARAVIRT_LAZY_NONE;
 }
 
+<<<<<<< HEAD
+=======
+extern struct dma_map_ops *xen_dma_ops;
+
+#ifdef CONFIG_XEN
+void __init xen_early_init(void);
+#else
+static inline void xen_early_init(void) { return; }
+#endif
+
+#ifdef CONFIG_HOTPLUG_CPU
+static inline void xen_arch_register_cpu(int num)
+{
+}
+
+static inline void xen_arch_unregister_cpu(int num)
+{
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_ARM_XEN_HYPERVISOR_H */

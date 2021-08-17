@@ -28,4 +28,10 @@ int s5p_mfc_wakeup(struct s5p_mfc_dev *dev);
 
 int s5p_mfc_reset(struct s5p_mfc_dev *dev);
 
+<<<<<<< HEAD
+=======
+int s5p_mfc_open_mfc_inst(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ctx);
+void s5p_mfc_close_mfc_inst(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ctx);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* S5P_MFC_CTRL_H */

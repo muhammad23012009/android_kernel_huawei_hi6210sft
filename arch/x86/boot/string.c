@@ -12,7 +12,30 @@
  * Very basic string functions
  */
 
+<<<<<<< HEAD
 #include "boot.h"
+=======
+#include <linux/types.h>
+#include "ctype.h"
+#include "string.h"
+
+/*
+ * Undef these macros so that the functions that we provide
+ * here will have the correct names regardless of how string.h
+ * may have chosen to #define them.
+ */
+#undef memcpy
+#undef memset
+#undef memcmp
+
+int memcmp(const void *s1, const void *s2, size_t len)
+{
+	bool diff;
+	asm("repe; cmpsb; setnz %0"
+	    : "=qm" (diff), "+D" (s1), "+S" (s2), "+c" (len));
+	return diff;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int strcmp(const char *str1, const char *str2)
 {
@@ -21,7 +44,11 @@ int strcmp(const char *str1, const char *str2)
 	int delta = 0;
 
 	while (*s1 || *s2) {
+<<<<<<< HEAD
 		delta = *s2 - *s1;
+=======
+		delta = *s1 - *s2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (delta)
 			return delta;
 		s1++;

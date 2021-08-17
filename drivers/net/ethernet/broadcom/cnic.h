@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /* cnic.h: Broadcom CNIC core network driver.
  *
  * Copyright (c) 2006-2011 Broadcom Corporation
+=======
+/* cnic.h: QLogic CNIC core network driver.
+ *
+ * Copyright (c) 2006-2014 Broadcom Corporation
+ * Copyright (c) 2014 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,6 +193,11 @@ struct kcq_info {
 	u16		(*hw_idx)(u16);
 };
 
+<<<<<<< HEAD
+=======
+#define UIO_USE_TX_DOORBELL 0x017855DB
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cnic_uio_dev {
 	struct uio_info		cnic_uinfo;
 	u32			uio_dev;
@@ -303,8 +315,11 @@ struct cnic_local {
 
 	u32			chip_id;
 	int			func;
+<<<<<<< HEAD
 	u32			pfid;
 	u8			port_mode;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u32			shmem_base;
 
@@ -364,6 +379,7 @@ struct bnx2x_bd_chain_next {
 
 #define BNX2X_FCOE_L5_CID_BASE		MAX_ISCSI_TBL_SZ
 
+<<<<<<< HEAD
 #define BNX2X_CHIP_NUM_57710		0x164e
 #define BNX2X_CHIP_NUM_57711		0x164f
 #define BNX2X_CHIP_NUM_57711E		0x1650
@@ -405,6 +421,9 @@ struct bnx2x_bd_chain_next {
 	(BNX2X_CHIP_IS_57800(x) || BNX2X_CHIP_IS_57810(x) || \
 	 BNX2X_CHIP_IS_57840(x))
 #define BNX2X_CHIP_IS_E2_PLUS(x) (BNX2X_CHIP_IS_E2(x) || BNX2X_CHIP_IS_E3(x))
+=======
+#define BNX2X_CHIP_IS_E2_PLUS(bp) (CHIP_IS_E2(bp) || CHIP_IS_E3(bp))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BNX2X_RX_DESC_CNT		(BNX2_PAGE_SIZE / \
 					 sizeof(struct eth_rx_bd))
@@ -439,6 +458,7 @@ struct bnx2x_bd_chain_next {
 #define ETH_MAX_RX_CLIENTS_E2 		ETH_MAX_RX_CLIENTS_E1H
 #endif
 
+<<<<<<< HEAD
 #define CNIC_PORT(cp)			((cp)->pfid & 1)
 #define CNIC_FUNC(cp)			((cp)->func)
 #define CNIC_PATH(cp)			(!BNX2X_CHIP_IS_E2_PLUS(cp->chip_id) ? \
@@ -464,6 +484,28 @@ struct bnx2x_bd_chain_next {
 #define CNIC_SUPPORTS_FCOE(cp)					\
 	(BNX2X_CHIP_IS_E2_PLUS((cp)->chip_id) &&		\
 	 !((cp)->ethdev->drv_state & CNIC_DRV_STATE_NO_FCOE))
+=======
+#define CNIC_FUNC(cp)			((cp)->func)
+
+#define BNX2X_HW_CID(bp, x)		((BP_PORT(bp) << 23) | \
+					 (BP_VN(bp) << 17) | (x))
+
+#define BNX2X_SW_CID(x)			(x & 0x1ffff)
+
+#define BNX2X_CL_QZONE_ID(bp, cli)					\
+		(BNX2X_CHIP_IS_E2_PLUS(bp) ? cli :			\
+		 cli + (BP_PORT(bp) * ETH_MAX_RX_CLIENTS_E1H))
+
+#ifndef MAX_STAT_COUNTER_ID
+#define MAX_STAT_COUNTER_ID						\
+	(CHIP_IS_E1H(bp) ? MAX_STAT_COUNTER_ID_E1H :			\
+	 ((BNX2X_CHIP_IS_E2_PLUS(bp)) ? MAX_STAT_COUNTER_ID_E2 :	\
+	  MAX_STAT_COUNTER_ID_E1))
+#endif
+
+#define CNIC_SUPPORTS_FCOE(cp)						\
+	(BNX2X_CHIP_IS_E2_PLUS(bp) && !NO_FCOE(bp))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CNIC_RAMROD_TMO			(HZ / 4)
 

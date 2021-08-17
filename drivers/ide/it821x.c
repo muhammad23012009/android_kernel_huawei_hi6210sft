@@ -508,7 +508,11 @@ static void it821x_quirkproc(ide_drive_t *drive)
 
 }
 
+<<<<<<< HEAD
 static struct ide_dma_ops it821x_pass_through_dma_ops = {
+=======
+static const struct ide_dma_ops it821x_pass_through_dma_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dma_host_set		= ide_dma_host_set,
 	.dma_setup		= ide_dma_setup,
 	.dma_start		= it821x_dma_start,

@@ -63,7 +63,11 @@
 #include "ivtv-cards.h"
 #include "ivtv-gpio.h"
 #include "ivtv-i2c.h"
+<<<<<<< HEAD
 #include <media/cx25840.h>
+=======
+#include <media/drv-intf/cx25840.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* i2c implementation for cx23415/6 chip, ivtv project.
  * Author: Kevin Thayer (nufan_wfk at yahoo.com)
@@ -148,7 +152,12 @@ static const char * const hw_devicenames[] = {
 	"ir_video",		/* IVTV_HW_I2C_IR_RX_ADAPTEC */
 };
 
+<<<<<<< HEAD
 static int get_key_adaptec(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw)
+=======
+static int get_key_adaptec(struct IR_i2c *ir, enum rc_type *protocol,
+			   u32 *scancode, u8 *toggle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned char keybuf[4];
 
@@ -167,9 +176,15 @@ static int get_key_adaptec(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw)
 	keybuf[2] &= 0x7f;
 	keybuf[3] |= 0x80;
 
+<<<<<<< HEAD
 	*ir_key = keybuf[3] | keybuf[2] << 8 | keybuf[1] << 16 |keybuf[0] << 24;
 	*ir_raw = *ir_key;
 
+=======
+	*protocol = RC_TYPE_UNKNOWN;
+	*scancode = keybuf[3] | keybuf[2] << 8 | keybuf[1] << 16 |keybuf[0] << 24;
+	*toggle = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -214,7 +229,12 @@ static int ivtv_i2c_new_ir(struct ivtv *itv, u32 hw, const char *type, u8 addr)
 		/* Default to grey remote */
 		init_data->ir_codes = RC_MAP_HAUPPAUGE;
 		init_data->internal_get_key_func = IR_KBD_GET_KEY_HAUP_XVR;
+<<<<<<< HEAD
 		init_data->type = RC_BIT_RC5;
+=======
+		init_data->type = RC_BIT_RC5 | RC_BIT_RC6_MCE |
+							RC_BIT_RC6_6A_32;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		init_data->name = itv->card_name;
 		break;
 	case IVTV_HW_I2C_IR_RX_ADAPTEC:
@@ -624,7 +644,11 @@ static u32 ivtv_functionality(struct i2c_adapter *adap)
 	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
 }
 
+<<<<<<< HEAD
 static struct i2c_algorithm ivtv_algo = {
+=======
+static const struct i2c_algorithm ivtv_algo = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.master_xfer   = ivtv_xfer,
 	.functionality = ivtv_functionality,
 };

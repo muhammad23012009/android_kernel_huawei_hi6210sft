@@ -39,10 +39,17 @@ int jffs2_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	/* Trigger GC to flush any pending writes for this inode */
 	jffs2_flush_wbuf_gc(c, inode->i_ino);
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+	/* Trigger GC to flush any pending writes for this inode */
+	jffs2_flush_wbuf_gc(c, inode->i_ino);
+	inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -51,10 +58,15 @@ const struct file_operations jffs2_file_operations =
 {
 	.llseek =	generic_file_llseek,
 	.open =		generic_file_open,
+<<<<<<< HEAD
  	.read =		do_sync_read,
  	.aio_read =	generic_file_aio_read,
  	.write =	do_sync_write,
  	.aio_write =	generic_file_aio_write,
+=======
+ 	.read_iter =	generic_file_read_iter,
+ 	.write_iter =	generic_file_write_iter,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unlocked_ioctl=jffs2_ioctl,
 	.mmap =		generic_file_readonly_mmap,
 	.fsync =	jffs2_fsync,
@@ -66,11 +78,17 @@ const struct file_operations jffs2_file_operations =
 const struct inode_operations jffs2_file_inode_operations =
 {
 	.get_acl =	jffs2_get_acl,
+<<<<<<< HEAD
 	.setattr =	jffs2_setattr,
 	.setxattr =	jffs2_setxattr,
 	.getxattr =	jffs2_getxattr,
 	.listxattr =	jffs2_listxattr,
 	.removexattr =	jffs2_removexattr
+=======
+	.set_acl =	jffs2_set_acl,
+	.setattr =	jffs2_setattr,
+	.listxattr =	jffs2_listxattr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 const struct address_space_operations jffs2_file_address_operations =
@@ -88,14 +106,23 @@ static int jffs2_do_readpage_nolock (struct inode *inode, struct page *pg)
 	int ret;
 
 	jffs2_dbg(2, "%s(): ino #%lu, page at offset 0x%lx\n",
+<<<<<<< HEAD
 		  __func__, inode->i_ino, pg->index << PAGE_CACHE_SHIFT);
+=======
+		  __func__, inode->i_ino, pg->index << PAGE_SHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(!PageLocked(pg));
 
 	pg_buf = kmap(pg);
 	/* FIXME: Can kmap fail? */
 
+<<<<<<< HEAD
 	ret = jffs2_read_inode_range(c, f, pg_buf, pg->index << PAGE_CACHE_SHIFT, PAGE_CACHE_SIZE);
+=======
+	ret = jffs2_read_inode_range(c, f, pg_buf, pg->index << PAGE_SHIFT,
+				     PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret) {
 		ClearPageUptodate(pg);
@@ -138,8 +165,13 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 	struct page *pg;
 	struct inode *inode = mapping->host;
 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
+<<<<<<< HEAD
 	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
 	uint32_t pageofs = index << PAGE_CACHE_SHIFT;
+=======
+	pgoff_t index = pos >> PAGE_SHIFT;
+	uint32_t pageofs = index << PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	pg = grab_cache_page_write_begin(mapping, index, flags);
@@ -231,7 +263,11 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 
 out_page:
 	unlock_page(pg);
+<<<<<<< HEAD
 	page_cache_release(pg);
+=======
+	put_page(pg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -246,14 +282,22 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
 	struct jffs2_raw_inode *ri;
+<<<<<<< HEAD
 	unsigned start = pos & (PAGE_CACHE_SIZE - 1);
+=======
+	unsigned start = pos & (PAGE_SIZE - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned end = start + copied;
 	unsigned aligned_start = start & ~3;
 	int ret = 0;
 	uint32_t writtenlen = 0;
 
 	jffs2_dbg(1, "%s(): ino #%lu, page at 0x%lx, range %d-%d, flags %lx\n",
+<<<<<<< HEAD
 		  __func__, inode->i_ino, pg->index << PAGE_CACHE_SHIFT,
+=======
+		  __func__, inode->i_ino, pg->index << PAGE_SHIFT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  start, end, pg->flags);
 
 	/* We need to avoid deadlock with page_cache_read() in
@@ -262,7 +306,11 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	   to re-lock it. */
 	BUG_ON(!PageUptodate(pg));
 
+<<<<<<< HEAD
 	if (end == PAGE_CACHE_SIZE) {
+=======
+	if (end == PAGE_SIZE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* When writing out the end of a page, write out the
 		   _whole_ page. This helps to reduce the number of
 		   nodes in files which have many short writes, like
@@ -276,7 +324,11 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 		jffs2_dbg(1, "%s(): Allocation of raw inode failed\n",
 			  __func__);
 		unlock_page(pg);
+<<<<<<< HEAD
 		page_cache_release(pg);
+=======
+		put_page(pg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 
@@ -293,7 +345,11 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	kmap(pg);
 
 	ret = jffs2_write_inode_range(c, f, ri, page_address(pg) + aligned_start,
+<<<<<<< HEAD
 				      (pg->index << PAGE_CACHE_SHIFT) + aligned_start,
+=======
+				      (pg->index << PAGE_SHIFT) + aligned_start,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      end - aligned_start, &writtenlen);
 
 	kunmap(pg);
@@ -330,6 +386,10 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	jffs2_dbg(1, "%s() returning %d\n",
 		  __func__, writtenlen > 0 ? writtenlen : ret);
 	unlock_page(pg);
+<<<<<<< HEAD
 	page_cache_release(pg);
+=======
+	put_page(pg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return writtenlen > 0 ? writtenlen : ret;
 }

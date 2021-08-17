@@ -1,4 +1,9 @@
 /*
+<<<<<<< HEAD
+=======
+ * BGRT boot graphic support
+ * Authors: Matthew Garrett, Josh Triplett <josh@joshtriplett.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright 2012 Red Hat, Inc <mjg@redhat.com>
  * Copyright 2012 Intel Corporation
  *
@@ -8,7 +13,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/device.h>
 #include <linux/sysfs.h>
@@ -51,13 +59,18 @@ static ssize_t show_yoffset(struct device *dev,
 }
 static DEVICE_ATTR(yoffset, S_IRUGO, show_yoffset, NULL);
 
+<<<<<<< HEAD
 static ssize_t show_image(struct file *file, struct kobject *kobj,
+=======
+static ssize_t image_read(struct file *file, struct kobject *kobj,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       struct bin_attribute *attr, char *buf, loff_t off, size_t count)
 {
 	memcpy(buf, attr->private + off, count);
 	return count;
 }
 
+<<<<<<< HEAD
 static struct bin_attribute image_attr = {
 	.attr = {
 		.name = "image",
@@ -65,6 +78,9 @@ static struct bin_attribute image_attr = {
 	},
 	.read = show_image,
 };
+=======
+static BIN_ATTR_RO(image, 0);	/* size gets filled in later */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct attribute *bgrt_attributes[] = {
 	&dev_attr_version.attr,
@@ -75,8 +91,19 @@ static struct attribute *bgrt_attributes[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group bgrt_attribute_group = {
 	.attrs = bgrt_attributes,
+=======
+static struct bin_attribute *bgrt_bin_attributes[] = {
+	&bin_attr_image,
+	NULL,
+};
+
+static struct attribute_group bgrt_attribute_group = {
+	.attrs = bgrt_attributes,
+	.bin_attrs = bgrt_bin_attributes,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init bgrt_init(void)
@@ -86,9 +113,14 @@ static int __init bgrt_init(void)
 	if (!bgrt_image)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	sysfs_bin_attr_init(&image_attr);
 	image_attr.private = bgrt_image;
 	image_attr.size = bgrt_image_size;
+=======
+	bin_attr_image.private = bgrt_image;
+	bin_attr_image.size = bgrt_image_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bgrt_kobj = kobject_create_and_add("bgrt", acpi_kobj);
 	if (!bgrt_kobj)
@@ -98,6 +130,7 @@ static int __init bgrt_init(void)
 	if (ret)
 		goto out_kobject;
 
+<<<<<<< HEAD
 	ret = sysfs_create_bin_file(bgrt_kobj, &image_attr);
 	if (ret)
 		goto out_group;
@@ -106,13 +139,21 @@ static int __init bgrt_init(void)
 
 out_group:
 	sysfs_remove_group(bgrt_kobj, &bgrt_attribute_group);
+=======
+	return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_kobject:
 	kobject_put(bgrt_kobj);
 	return ret;
 }
+<<<<<<< HEAD
 
 module_init(bgrt_init);
 
 MODULE_AUTHOR("Matthew Garrett, Josh Triplett <josh@joshtriplett.org>");
 MODULE_DESCRIPTION("BGRT boot graphic support");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(bgrt_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

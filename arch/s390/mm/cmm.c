@@ -253,12 +253,21 @@ static int cmm_skip_blanks(char *cp, char **endp)
 
 static struct ctl_table cmm_table[];
 
+<<<<<<< HEAD
 static int cmm_pages_handler(ctl_table *ctl, int write, void __user *buffer,
 			     size_t *lenp, loff_t *ppos)
 {
 	char buf[16], *p;
 	long nr;
 	int len;
+=======
+static int cmm_pages_handler(struct ctl_table *ctl, int write,
+			     void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	char buf[16], *p;
+	unsigned int len;
+	long nr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!*lenp || (*ppos && !write)) {
 		*lenp = 0;
@@ -293,12 +302,21 @@ static int cmm_pages_handler(ctl_table *ctl, int write, void __user *buffer,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cmm_timeout_handler(ctl_table *ctl, int write,  void __user *buffer,
 			       size_t *lenp, loff_t *ppos)
 {
 	char buf[64], *p;
 	long nr, seconds;
 	int len;
+=======
+static int cmm_timeout_handler(struct ctl_table *ctl, int write,
+			       void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	char buf[64], *p;
+	long nr, seconds;
+	unsigned int len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!*lenp || (*ppos && !write)) {
 		*lenp = 0;
@@ -306,16 +324,27 @@ static int cmm_timeout_handler(ctl_table *ctl, int write,  void __user *buffer,
 	}
 
 	if (write) {
+<<<<<<< HEAD
 		len = *lenp;
 		if (copy_from_user(buf, buffer,
 				   len > sizeof(buf) ? sizeof(buf) : len))
 			return -EFAULT;
 		buf[sizeof(buf) - 1] = '\0';
+=======
+		len = min(*lenp, sizeof(buf));
+		if (copy_from_user(buf, buffer, len))
+			return -EFAULT;
+		buf[len - 1] = '\0';
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cmm_skip_blanks(buf, &p);
 		nr = simple_strtoul(p, &p, 0);
 		cmm_skip_blanks(p, &p);
 		seconds = simple_strtoul(p, &p, 0);
 		cmm_set_timeout(nr, seconds);
+<<<<<<< HEAD
+=======
+		*ppos += *lenp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		len = sprintf(buf, "%ld %ld\n",
 			      cmm_timeout_pages, cmm_timeout_seconds);
@@ -323,9 +352,15 @@ static int cmm_timeout_handler(ctl_table *ctl, int write,  void __user *buffer,
 			len = *lenp;
 		if (copy_to_user(buffer, buf, len))
 			return -EFAULT;
+<<<<<<< HEAD
 	}
 	*lenp = len;
 	*ppos += len;
+=======
+		*lenp = len;
+		*ppos += len;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

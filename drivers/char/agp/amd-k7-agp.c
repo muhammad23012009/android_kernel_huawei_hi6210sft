@@ -11,7 +11,11 @@
 #include <linux/slab.h>
 #include "agp.h"
 
+<<<<<<< HEAD
 #define AMD_MMBASE	0x14
+=======
+#define AMD_MMBASE_BAR	1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AMD_APSIZE	0xac
 #define AMD_MODECNTL	0xb0
 #define AMD_MODECNTL2	0xb2
@@ -126,7 +130,10 @@ static int amd_create_gatt_table(struct agp_bridge_data *bridge)
 	unsigned long __iomem *cur_gatt;
 	unsigned long addr;
 	int retval;
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	value = A_SIZE_LVL2(agp_bridge->current_size);
@@ -149,8 +156,12 @@ static int amd_create_gatt_table(struct agp_bridge_data *bridge)
 	 * used to program the agp master not the cpu
 	 */
 
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	addr = pci_bus_address(agp_bridge->dev, AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	agp_bridge->gart_bus_addr = addr;
 
 	/* Calculate the agp offset */
@@ -207,6 +218,10 @@ static int amd_irongate_fetch_size(void)
 static int amd_irongate_configure(void)
 {
 	struct aper_size_info_lvl2 *current_size;
+<<<<<<< HEAD
+=======
+	phys_addr_t reg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 temp;
 	u16 enable_reg;
 
@@ -214,9 +229,14 @@ static int amd_irongate_configure(void)
 
 	if (!amd_irongate_private.registers) {
 		/* Get the memory mapped registers */
+<<<<<<< HEAD
 		pci_read_config_dword(agp_bridge->dev, AMD_MMBASE, &temp);
 		temp = (temp & PCI_BASE_ADDRESS_MEM_MASK);
 		amd_irongate_private.registers = (volatile u8 __iomem *) ioremap(temp, 4096);
+=======
+		reg = pci_resource_start(agp_bridge->dev, AMD_MMBASE_BAR);
+		amd_irongate_private.registers = (volatile u8 __iomem *) ioremap(reg, 4096);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!amd_irongate_private.registers)
 			return -ENOMEM;
 	}

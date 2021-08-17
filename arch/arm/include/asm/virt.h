@@ -29,6 +29,10 @@
 #define BOOT_CPU_MODE_MISMATCH	PSR_N_BIT
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
+=======
+#include <asm/cacheflush.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_ARM_VIRT_EXT
 /*
@@ -41,10 +45,27 @@
  */
 extern int __boot_cpu_mode;
 
+<<<<<<< HEAD
+=======
+static inline void sync_boot_mode(void)
+{
+	/*
+	 * As secondaries write to __boot_cpu_mode with caches disabled, we
+	 * must flush the corresponding cache entries to ensure the visibility
+	 * of their writes.
+	 */
+	sync_cache_r(&__boot_cpu_mode);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __hyp_set_vectors(unsigned long phys_vector_base);
 unsigned long __hyp_get_vectors(void);
 #else
 #define __boot_cpu_mode	(SVC_MODE)
+<<<<<<< HEAD
+=======
+#define sync_boot_mode()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifndef ZIMAGE
@@ -62,6 +83,22 @@ static inline bool is_hyp_mode_mismatched(void)
 {
 	return !!(__boot_cpu_mode & BOOT_CPU_MODE_MISMATCH);
 }
+<<<<<<< HEAD
+=======
+
+static inline bool is_kernel_in_hyp_mode(void)
+{
+	return false;
+}
+
+/* The section containing the hypervisor idmap text */
+extern char __hyp_idmap_text_start[];
+extern char __hyp_idmap_text_end[];
+
+/* The section containing the hypervisor text */
+extern char __hyp_text_start[];
+extern char __hyp_text_end[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* __ASSEMBLY__ */

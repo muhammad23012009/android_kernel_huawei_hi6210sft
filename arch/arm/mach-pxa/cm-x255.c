@@ -22,7 +22,11 @@
 #include <asm/mach-types.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
+=======
+#include "pxa25x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "generic.h"
 

@@ -88,8 +88,13 @@ simscsi_setup (char *s)
 	if (strlen(s) > MAX_ROOT_LEN) {
 		printk(KERN_ERR "simscsi_setup: prefix too long---using default %s\n",
 		       simscsi_root);
+<<<<<<< HEAD
 	}
 	simscsi_root = s;
+=======
+	} else
+		simscsi_root = s;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -368,6 +373,7 @@ simscsi_init(void)
 	scsi_host_put(host);
 	return error;
 }
+<<<<<<< HEAD
 
 static void __exit
 simscsi_exit(void)
@@ -378,3 +384,6 @@ simscsi_exit(void)
 
 module_init(simscsi_init);
 module_exit(simscsi_exit);
+=======
+device_initcall(simscsi_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

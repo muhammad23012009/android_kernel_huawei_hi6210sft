@@ -15,7 +15,11 @@
 
 #include "soc.h"
 #include "common.h"
+<<<<<<< HEAD
 #include "prm2xxx.h"
+=======
+#include "prm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * reset_virt_prcm_set_ck, reset_sys_ck: pointers to the virt_prcm_set
@@ -31,7 +35,11 @@ static struct clk *reset_virt_prcm_set_ck, *reset_sys_ck;
  * Set the DPLL to bypass so that reboot completes successfully.  No
  * return value.
  */
+<<<<<<< HEAD
 void omap2xxx_restart(char mode, const char *cmd)
+=======
+void omap2xxx_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 rate;
 
@@ -40,8 +48,12 @@ void omap2xxx_restart(char mode, const char *cmd)
 
 	/* XXX Should save the cmd argument for use after the reboot */
 
+<<<<<<< HEAD
 	omap2xxx_prm_dpll_reset(); /* never returns */
 	while (1);
+=======
+	omap_prm_reset_system();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -63,4 +75,8 @@ static int __init omap2xxx_common_look_up_clks_for_reset(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 omap_core_initcall(omap2xxx_common_look_up_clks_for_reset);
+=======
+omap_postcore_initcall(omap2xxx_common_look_up_clks_for_reset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

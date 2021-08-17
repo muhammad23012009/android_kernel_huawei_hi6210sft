@@ -10,18 +10,30 @@
 #include <linux/stddef.h>
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 
 #include <asm/mpic.h>
 #include <asm/i8259.h>
 
 #ifdef CONFIG_PPC_I8259
+<<<<<<< HEAD
 static void mpc86xx_8259_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void mpc86xx_8259_cascade(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
 
+<<<<<<< HEAD
 	if (cascade_irq != NO_IRQ)
+=======
+	if (cascade_irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);
@@ -57,7 +69,11 @@ void __init mpc86xx_init_irq(void)
 	}
 
 	cascade_irq = irq_of_parse_and_map(cascade_node, 0);
+<<<<<<< HEAD
 	if (cascade_irq == NO_IRQ) {
+=======
+	if (!cascade_irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "Failed to map cascade interrupt\n");
 		return;
 	}

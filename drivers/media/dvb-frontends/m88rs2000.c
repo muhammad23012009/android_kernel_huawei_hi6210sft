@@ -41,7 +41,11 @@ struct m88rs2000_state {
 	u8 no_lock_count;
 	u32 tuner_frequency;
 	u32 symbol_rate;
+<<<<<<< HEAD
 	fe_code_rate_t fec_inner;
+=======
+	enum fe_code_rate fec_inner;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 tuner_level;
 	int errmode;
 };
@@ -247,7 +251,11 @@ static int m88rs2000_send_diseqc_msg(struct dvb_frontend *fe,
 }
 
 static int m88rs2000_send_diseqc_burst(struct dvb_frontend *fe,
+<<<<<<< HEAD
 						fe_sec_mini_cmd_t burst)
+=======
+				       enum fe_sec_mini_cmd burst)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct m88rs2000_state *state = fe->demodulator_priv;
 	u8 reg0, reg1;
@@ -264,7 +272,12 @@ static int m88rs2000_send_diseqc_burst(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int m88rs2000_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+=======
+static int m88rs2000_set_tone(struct dvb_frontend *fe,
+			      enum fe_sec_tone_mode tone)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct m88rs2000_state *state = fe->demodulator_priv;
 	u8 reg0, reg1;
@@ -297,7 +310,11 @@ struct inittab {
 	u8 val;
 };
 
+<<<<<<< HEAD
 struct inittab m88rs2000_setup[] = {
+=======
+static struct inittab m88rs2000_setup[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{DEMOD_WRITE, 0x9a, 0x30},
 	{DEMOD_WRITE, 0x00, 0x01},
 	{WRITE_DELAY, 0x19, 0x00},
@@ -315,7 +332,11 @@ struct inittab m88rs2000_setup[] = {
 	{0xff, 0xaa, 0xff}
 };
 
+<<<<<<< HEAD
 struct inittab m88rs2000_shutdown[] = {
+=======
+static struct inittab m88rs2000_shutdown[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{DEMOD_WRITE, 0x9a, 0x30},
 	{DEMOD_WRITE, 0xb0, 0x00},
 	{DEMOD_WRITE, 0xf1, 0x89},
@@ -325,7 +346,11 @@ struct inittab m88rs2000_shutdown[] = {
 	{0xff, 0xaa, 0xff}
 };
 
+<<<<<<< HEAD
 struct inittab fe_reset[] = {
+=======
+static struct inittab fe_reset[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{DEMOD_WRITE, 0x00, 0x01},
 	{DEMOD_WRITE, 0x20, 0x81},
 	{DEMOD_WRITE, 0x21, 0x80},
@@ -363,7 +388,11 @@ struct inittab fe_reset[] = {
 	{0xff, 0xaa, 0xff}
 };
 
+<<<<<<< HEAD
 struct inittab fe_trigger[] = {
+=======
+static struct inittab fe_trigger[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{DEMOD_WRITE, 0x97, 0x04},
 	{DEMOD_WRITE, 0x99, 0x77},
 	{DEMOD_WRITE, 0x9b, 0x64},
@@ -412,7 +441,12 @@ static int m88rs2000_tab_set(struct m88rs2000_state *state,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int m88rs2000_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t volt)
+=======
+static int m88rs2000_set_voltage(struct dvb_frontend *fe,
+				 enum fe_sec_voltage volt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct m88rs2000_state *state = fe->demodulator_priv;
 	u8 data;
@@ -462,14 +496,23 @@ static int m88rs2000_sleep(struct dvb_frontend *fe)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int m88rs2000_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int m88rs2000_read_status(struct dvb_frontend *fe,
+				 enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct m88rs2000_state *state = fe->demodulator_priv;
 	u8 reg = m88rs2000_readreg(state, 0x8c);
 
 	*status = 0;
 
+<<<<<<< HEAD
 	if ((reg & 0x7) == 0x7) {
+=======
+	if ((reg & 0xee) == 0xee) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*status = FE_HAS_CARRIER | FE_HAS_SIGNAL | FE_HAS_VITERBI
 			| FE_HAS_SYNC | FE_HAS_LOCK;
 		if (state->config->set_ts_params)
@@ -539,6 +582,7 @@ static int m88rs2000_read_ucblocks(struct dvb_frontend *fe, u32 *ucblocks)
 }
 
 static int m88rs2000_set_fec(struct m88rs2000_state *state,
+<<<<<<< HEAD
 		fe_code_rate_t fec)
 {
 	u16 fec_set;
@@ -570,12 +614,51 @@ static int m88rs2000_set_fec(struct m88rs2000_state *state,
 
 
 static fe_code_rate_t m88rs2000_get_fec(struct m88rs2000_state *state)
+=======
+			     enum fe_code_rate fec)
+{
+	u8 fec_set, reg;
+	int ret;
+
+	switch (fec) {
+	case FEC_1_2:
+		fec_set = 0x8;
+		break;
+	case FEC_2_3:
+		fec_set = 0x10;
+		break;
+	case FEC_3_4:
+		fec_set = 0x20;
+		break;
+	case FEC_5_6:
+		fec_set = 0x40;
+		break;
+	case FEC_7_8:
+		fec_set = 0x80;
+		break;
+	case FEC_AUTO:
+	default:
+		fec_set = 0x0;
+	}
+
+	reg = m88rs2000_readreg(state, 0x70);
+	reg &= 0x7;
+	ret = m88rs2000_writereg(state, 0x70, reg | fec_set);
+
+	ret |= m88rs2000_writereg(state, 0x76, 0x8);
+
+	return ret;
+}
+
+static enum fe_code_rate m88rs2000_get_fec(struct m88rs2000_state *state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 reg;
 	m88rs2000_writereg(state, 0x9a, 0x30);
 	reg = m88rs2000_readreg(state, 0x76);
 	m88rs2000_writereg(state, 0x9a, 0xb0);
 
+<<<<<<< HEAD
 	switch (reg) {
 	case 0x88:
 		return FEC_1_2;
@@ -588,6 +671,22 @@ static fe_code_rate_t m88rs2000_get_fec(struct m88rs2000_state *state)
 	case 0x18:
 		return FEC_7_8;
 	case 0x08:
+=======
+	reg &= 0xf0;
+	reg >>= 5;
+
+	switch (reg) {
+	case 0x4:
+		return FEC_1_2;
+	case 0x3:
+		return FEC_2_3;
+	case 0x2:
+		return FEC_3_4;
+	case 0x1:
+		return FEC_5_6;
+	case 0x0:
+		return FEC_7_8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		break;
 	}
@@ -599,7 +698,11 @@ static int m88rs2000_set_frontend(struct dvb_frontend *fe)
 {
 	struct m88rs2000_state *state = fe->demodulator_priv;
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+<<<<<<< HEAD
 	fe_status_t status;
+=======
+	enum fe_status status = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, ret = 0;
 	u32 tuner_freq;
 	s16 offset = 0;
@@ -650,12 +753,17 @@ static int m88rs2000_set_frontend(struct dvb_frontend *fe)
 	if (ret < 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/* Unknown */
 	reg = m88rs2000_readreg(state, 0x70);
 	ret = m88rs2000_writereg(state, 0x70, reg);
 
 	/* Set FEC */
 	ret |= m88rs2000_set_fec(state, c->fec_inner);
+=======
+	/* Set FEC */
+	ret = m88rs2000_set_fec(state, c->fec_inner);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret |= m88rs2000_writereg(state, 0x85, 0x1);
 	ret |= m88rs2000_writereg(state, 0x8a, 0xbf);
 	ret |= m88rs2000_writereg(state, 0x8d, 0x1e);
@@ -677,7 +785,11 @@ static int m88rs2000_set_frontend(struct dvb_frontend *fe)
 
 	for (i = 0; i < 25; i++) {
 		reg = m88rs2000_readreg(state, 0x8c);
+<<<<<<< HEAD
 		if ((reg & 0x7) == 0x7) {
+=======
+		if ((reg & 0xee) == 0xee) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = FE_HAS_LOCK;
 			break;
 		}
@@ -702,10 +814,18 @@ static int m88rs2000_set_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int m88rs2000_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 	struct m88rs2000_state *state = fe->demodulator_priv;
+=======
+static int m88rs2000_get_frontend(struct dvb_frontend *fe,
+				  struct dtv_frontend_properties *c)
+{
+	struct m88rs2000_state *state = fe->demodulator_priv;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	c->fec_inner = state->fec_inner;
 	c->frequency = state->tuner_frequency;
 	c->symbol_rate = state->symbol_rate;

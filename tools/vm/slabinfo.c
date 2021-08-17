@@ -29,8 +29,13 @@ struct slabinfo {
 	int alias;
 	int refs;
 	int aliases, align, cache_dma, cpu_slabs, destroy_by_rcu;
+<<<<<<< HEAD
 	int hwcache_align, object_size, objs_per_slab;
 	int sanity_checks, slab_size, store_user, trace;
+=======
+	unsigned int hwcache_align, object_size, objs_per_slab;
+	unsigned int sanity_checks, slab_size, store_user, trace;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int order, poison, reclaim_account, red_zone;
 	unsigned long partial, objects, slabs, objects_partial, objects_total;
 	unsigned long alloc_fastpath, alloc_slowpath;
@@ -53,6 +58,7 @@ struct aliasinfo {
 	struct slabinfo *slab;
 } aliasinfo[MAX_ALIASES];
 
+<<<<<<< HEAD
 int slabs = 0;
 int actual_slabs = 0;
 int aliases = 0;
@@ -86,6 +92,45 @@ int redzone = 0;
 int poison = 0;
 int tracking = 0;
 int tracing = 0;
+=======
+int slabs;
+int actual_slabs;
+int aliases;
+int alias_targets;
+int highest_node;
+
+char buffer[4096];
+
+int show_empty;
+int show_report;
+int show_alias;
+int show_slab;
+int skip_zero = 1;
+int show_numa;
+int show_track;
+int show_first_alias;
+int validate;
+int shrink;
+int show_inverted;
+int show_single_ref;
+int show_totals;
+int sort_size;
+int sort_active;
+int set_debug;
+int show_ops;
+int show_activity;
+int output_lines = -1;
+int sort_loss;
+int extended_totals;
+int show_bytes;
+
+/* Debug options */
+int sanity;
+int redzone;
+int poison;
+int tracking;
+int tracing;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int page_size;
 
@@ -124,10 +169,21 @@ static void usage(void)
 		"-v|--validate          Validate slabs\n"
 		"-z|--zero              Include empty slabs\n"
 		"-1|--1ref              Single reference\n"
+<<<<<<< HEAD
 		"\nValid debug options (FZPUT may be combined)\n"
 		"a / A          Switch on all debug options (=FZUP)\n"
 		"-              Switch off all debug options\n"
 		"f / F          Sanity Checks (SLAB_DEBUG_FREE)\n"
+=======
+		"-N|--lines=K           Show the first K slabs\n"
+		"-L|--Loss              Sort by loss\n"
+		"-X|--Xtotals           Show extended summary information\n"
+		"-B|--Bytes             Show size in bytes\n"
+		"\nValid debug options (FZPUT may be combined)\n"
+		"a / A          Switch on all debug options (=FZUP)\n"
+		"-              Switch off all debug options\n"
+		"f / F          Sanity Checks (SLAB_CONSISTENCY_CHECKS)\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"z / Z          Redzoning\n"
 		"p / P          Poisoning\n"
 		"u / U          Tracking\n"
@@ -225,6 +281,7 @@ static int store_size(char *buffer, unsigned long value)
 	char trailer = 0;
 	int n;
 
+<<<<<<< HEAD
 	if (value > 1000000000UL) {
 		divisor = 100000000UL;
 		trailer = 'G';
@@ -234,6 +291,19 @@ static int store_size(char *buffer, unsigned long value)
 	} else if (value > 1000UL) {
 		divisor = 100;
 		trailer = 'K';
+=======
+	if (!show_bytes) {
+		if (value > 1000000000UL) {
+			divisor = 100000000UL;
+			trailer = 'G';
+		} else if (value > 1000000UL) {
+			divisor = 100000UL;
+			trailer = 'M';
+		} else if (value > 1000UL) {
+			divisor = 100;
+			trailer = 'K';
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	value /= divisor;
@@ -297,10 +367,19 @@ int line = 0;
 static void first_line(void)
 {
 	if (show_activity)
+<<<<<<< HEAD
 		printf("Name                   Objects      Alloc       Free   %%Fast Fallb O CmpX   UL\n");
 	else
 		printf("Name                   Objects Objsize    Space "
 			"Slabs/Part/Cpu  O/S O %%Fr %%Ef Flg\n");
+=======
+		printf("Name                   Objects      Alloc       Free"
+			"   %%Fast Fallb O CmpX   UL\n");
+	else
+		printf("Name                   Objects Objsize           %s "
+			"Slabs/Part/Cpu  O/S O %%Fr %%Ef Flg\n",
+			sort_loss ? " Loss" : "Space");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -333,6 +412,14 @@ static unsigned long slab_activity(struct slabinfo *s)
 		s->alloc_slowpath + s->free_slowpath;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned long slab_waste(struct slabinfo *s)
+{
+	return	slab_size(s) - s->objects * s->object_size;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void slab_numa(struct slabinfo *s, int mode)
 {
 	int node;
@@ -475,7 +562,11 @@ static void slab_stats(struct slabinfo *s)
 			s->deactivate_to_head + s->deactivate_to_tail + s->deactivate_bypass;
 
 	if (total) {
+<<<<<<< HEAD
 		printf("\nSlab Deactivation             Ocurrences  %%\n");
+=======
+		printf("\nSlab Deactivation             Occurrences %%\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printf("-------------------------------------------------\n");
 		printf("Slab full                     %7lu  %3lu%%\n",
 			s->deactivate_full, (s->deactivate_full * 100) / total);
@@ -505,7 +596,11 @@ static void report(struct slabinfo *s)
 	if (strcmp(s->name, "*") == 0)
 		return;
 
+<<<<<<< HEAD
 	printf("\nSlabcache: %-20s  Aliases: %2d Order : %2d Objects: %lu\n",
+=======
+	printf("\nSlabcache: %-15s  Aliases: %2d Order : %2d Objects: %lu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		s->name, s->aliases, s->order, s->objects);
 	if (s->hwcache_align)
 		printf("** Hardware cacheline aligned\n");
@@ -562,7 +657,14 @@ static void slabcache(struct slabinfo *s)
 	if (show_empty && s->slabs)
 		return;
 
+<<<<<<< HEAD
 	store_size(size_str, slab_size(s));
+=======
+	if (sort_loss == 0)
+		store_size(size_str, slab_size(s));
+	else
+		store_size(size_str, slab_waste(s));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snprintf(dist_str, 40, "%lu/%lu/%d", s->slabs - s->cpu_slabs,
 						s->partial, s->cpu_slabs);
 
@@ -603,15 +705,24 @@ static void slabcache(struct slabinfo *s)
 			total_free ? (s->free_fastpath * 100 / total_free) : 0,
 			s->order_fallback, s->order, s->cmpxchg_double_fail,
 			s->cmpxchg_double_cpu_fail);
+<<<<<<< HEAD
 	}
 	else
 		printf("%-21s %8ld %7d %8s %14s %4d %1d %3ld %3ld %s\n",
+=======
+	} else {
+		printf("%-21s %8ld %7d %15s %14s %4d %1d %3ld %3ld %s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			s->name, s->objects, s->object_size, size_str, dist_str,
 			s->objs_per_slab, s->order,
 			s->slabs ? (s->partial * 100) / s->slabs : 100,
 			s->slabs ? (s->objects * s->object_size * 100) /
 				(s->slabs * (page_size << s->order)) : 100,
 			flags);
+<<<<<<< HEAD
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -919,11 +1030,16 @@ static void totals(void)
 
 	printf("Slabcache Totals\n");
 	printf("----------------\n");
+<<<<<<< HEAD
 	printf("Slabcaches : %3d      Aliases  : %3d->%-3d Active: %3d\n",
+=======
+	printf("Slabcaches : %15d   Aliases  : %11d->%-3d  Active:    %3d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			slabs, aliases, alias_targets, used_slabs);
 
 	store_size(b1, total_size);store_size(b2, total_waste);
 	store_size(b3, total_waste * 100 / total_used);
+<<<<<<< HEAD
 	printf("Memory used: %6s   # Loss   : %6s   MRatio:%6s%%\n", b1, b2, b3);
 
 	store_size(b1, total_objects);store_size(b2, total_partobj);
@@ -937,47 +1053,93 @@ static void totals(void)
 	store_size(b1, avg_objects);store_size(b2, min_objects);
 	store_size(b3, max_objects);store_size(b4, total_objects);
 	printf("#Objects  %10s  %10s  %10s  %10s\n",
+=======
+	printf("Memory used: %15s   # Loss   : %15s   MRatio:%6s%%\n", b1, b2, b3);
+
+	store_size(b1, total_objects);store_size(b2, total_partobj);
+	store_size(b3, total_partobj * 100 / total_objects);
+	printf("# Objects  : %15s   # PartObj: %15s   ORatio:%6s%%\n", b1, b2, b3);
+
+	printf("\n");
+	printf("Per Cache         Average              "
+		"Min              Max            Total\n");
+	printf("---------------------------------------"
+		"-------------------------------------\n");
+
+	store_size(b1, avg_objects);store_size(b2, min_objects);
+	store_size(b3, max_objects);store_size(b4, total_objects);
+	printf("#Objects  %15s  %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 
 	store_size(b1, avg_slabs);store_size(b2, min_slabs);
 	store_size(b3, max_slabs);store_size(b4, total_slabs);
+<<<<<<< HEAD
 	printf("#Slabs    %10s  %10s  %10s  %10s\n",
+=======
+	printf("#Slabs    %15s  %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 
 	store_size(b1, avg_partial);store_size(b2, min_partial);
 	store_size(b3, max_partial);store_size(b4, total_partial);
+<<<<<<< HEAD
 	printf("#PartSlab %10s  %10s  %10s  %10s\n",
+=======
+	printf("#PartSlab %15s  %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 	store_size(b1, avg_ppart);store_size(b2, min_ppart);
 	store_size(b3, max_ppart);
 	store_size(b4, total_partial * 100  / total_slabs);
+<<<<<<< HEAD
 	printf("%%PartSlab%10s%% %10s%% %10s%% %10s%%\n",
+=======
+	printf("%%PartSlab%15s%% %15s%% %15s%% %15s%%\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 
 	store_size(b1, avg_partobj);store_size(b2, min_partobj);
 	store_size(b3, max_partobj);
 	store_size(b4, total_partobj);
+<<<<<<< HEAD
 	printf("PartObjs  %10s  %10s  %10s  %10s\n",
+=======
+	printf("PartObjs  %15s  %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 
 	store_size(b1, avg_ppartobj);store_size(b2, min_ppartobj);
 	store_size(b3, max_ppartobj);
 	store_size(b4, total_partobj * 100 / total_objects);
+<<<<<<< HEAD
 	printf("%% PartObj%10s%% %10s%% %10s%% %10s%%\n",
+=======
+	printf("%% PartObj%15s%% %15s%% %15s%% %15s%%\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 
 	store_size(b1, avg_size);store_size(b2, min_size);
 	store_size(b3, max_size);store_size(b4, total_size);
+<<<<<<< HEAD
 	printf("Memory    %10s  %10s  %10s  %10s\n",
+=======
+	printf("Memory    %15s  %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 
 	store_size(b1, avg_used);store_size(b2, min_used);
 	store_size(b3, max_used);store_size(b4, total_used);
+<<<<<<< HEAD
 	printf("Used      %10s  %10s  %10s  %10s\n",
+=======
+	printf("Used      %15s  %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3,	b4);
 
 	store_size(b1, avg_waste);store_size(b2, min_waste);
 	store_size(b3, max_waste);store_size(b4, total_waste);
+<<<<<<< HEAD
 	printf("Loss      %10s  %10s  %10s  %10s\n",
 			b1,	b2,	b3,	b4);
 
@@ -992,11 +1154,33 @@ static void totals(void)
 	store_size(b1, avg_objsize);store_size(b2, min_objsize);
 	store_size(b3, max_objsize);
 	printf("User      %10s  %10s  %10s\n",
+=======
+	printf("Loss      %15s  %15s  %15s  %15s\n",
+			b1,	b2,	b3,	b4);
+
+	printf("\n");
+	printf("Per Object        Average              "
+		"Min              Max\n");
+	printf("---------------------------------------"
+		"--------------------\n");
+
+	store_size(b1, avg_memobj);store_size(b2, min_memobj);
+	store_size(b3, max_memobj);
+	printf("Memory    %15s  %15s  %15s\n",
+			b1,	b2,	b3);
+	store_size(b1, avg_objsize);store_size(b2, min_objsize);
+	store_size(b3, max_objsize);
+	printf("User      %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3);
 
 	store_size(b1, avg_objwaste);store_size(b2, min_objwaste);
 	store_size(b3, max_objwaste);
+<<<<<<< HEAD
 	printf("Loss      %10s  %10s  %10s\n",
+=======
+	printf("Loss      %15s  %15s  %15s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			b1,	b2,	b3);
 }
 
@@ -1012,6 +1196,11 @@ static void sort_slabs(void)
 				result = slab_size(s1) < slab_size(s2);
 			else if (sort_active)
 				result = slab_activity(s1) < slab_activity(s2);
+<<<<<<< HEAD
+=======
+			else if (sort_loss)
+				result = slab_waste(s1) < slab_waste(s2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			else
 				result = strcasecmp(s1->name, s2->name);
 
@@ -1096,7 +1285,11 @@ static void alias(void)
 			active = a->slab->name;
 		}
 		else
+<<<<<<< HEAD
 			printf("%-20s -> %s\n", a->name, a->slab->name);
+=======
+			printf("%-15s -> %s\n", a->name, a->slab->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (active)
 		printf("\n");
@@ -1242,12 +1435,24 @@ static void read_slab_dir(void)
 static void output_slabs(void)
 {
 	struct slabinfo *slab;
+<<<<<<< HEAD
 
 	for (slab = slabinfo; slab < slabinfo + slabs; slab++) {
+=======
+	int lines = output_lines;
+
+	for (slab = slabinfo; (slab < slabinfo + slabs) &&
+			lines != 0; slab++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (slab->alias)
 			continue;
 
+<<<<<<< HEAD
+=======
+		if (lines != -1)
+			lines--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (show_numa)
 			slab_numa(slab, 0);
@@ -1268,6 +1473,7 @@ static void output_slabs(void)
 	}
 }
 
+<<<<<<< HEAD
 struct option opts[] = {
 	{ "aliases", 0, NULL, 'a' },
 	{ "activity", 0, NULL, 'A' },
@@ -1286,6 +1492,56 @@ struct option opts[] = {
 	{ "validate", 0, NULL, 'v' },
 	{ "zero", 0, NULL, 'z' },
 	{ "1ref", 0, NULL, '1'},
+=======
+static void xtotals(void)
+{
+	totals();
+
+	link_slabs();
+	rename_slabs();
+
+	printf("\nSlabs sorted by size\n");
+	printf("--------------------\n");
+	sort_loss = 0;
+	sort_size = 1;
+	sort_slabs();
+	output_slabs();
+
+	printf("\nSlabs sorted by loss\n");
+	printf("--------------------\n");
+	line = 0;
+	sort_loss = 1;
+	sort_size = 0;
+	sort_slabs();
+	output_slabs();
+	printf("\n");
+}
+
+struct option opts[] = {
+	{ "aliases", no_argument, NULL, 'a' },
+	{ "activity", no_argument, NULL, 'A' },
+	{ "debug", optional_argument, NULL, 'd' },
+	{ "display-activity", no_argument, NULL, 'D' },
+	{ "empty", no_argument, NULL, 'e' },
+	{ "first-alias", no_argument, NULL, 'f' },
+	{ "help", no_argument, NULL, 'h' },
+	{ "inverted", no_argument, NULL, 'i'},
+	{ "slabs", no_argument, NULL, 'l' },
+	{ "numa", no_argument, NULL, 'n' },
+	{ "ops", no_argument, NULL, 'o' },
+	{ "shrink", no_argument, NULL, 's' },
+	{ "report", no_argument, NULL, 'r' },
+	{ "Size", no_argument, NULL, 'S'},
+	{ "tracking", no_argument, NULL, 't'},
+	{ "Totals", no_argument, NULL, 'T'},
+	{ "validate", no_argument, NULL, 'v' },
+	{ "zero", no_argument, NULL, 'z' },
+	{ "1ref", no_argument, NULL, '1'},
+	{ "lines", required_argument, NULL, 'N'},
+	{ "Loss", no_argument, NULL, 'L'},
+	{ "Xtotals", no_argument, NULL, 'X'},
+	{ "Bytes", no_argument, NULL, 'B'},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ NULL, 0, NULL, 0 }
 };
 
@@ -1297,7 +1553,11 @@ int main(int argc, char *argv[])
 
 	page_size = getpagesize();
 
+<<<<<<< HEAD
 	while ((c = getopt_long(argc, argv, "aAd::Defhil1noprstvzTS",
+=======
+	while ((c = getopt_long(argc, argv, "aAd::Defhil1noprstvzTSN:LXB",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						opts, NULL)) != -1)
 		switch (c) {
 		case '1':
@@ -1359,7 +1619,29 @@ int main(int argc, char *argv[])
 		case 'S':
 			sort_size = 1;
 			break;
+<<<<<<< HEAD
 
+=======
+		case 'N':
+			if (optarg) {
+				output_lines = atoi(optarg);
+				if (output_lines < 1)
+					output_lines = 1;
+			}
+			break;
+		case 'L':
+			sort_loss = 1;
+			break;
+		case 'X':
+			if (output_lines == -1)
+				output_lines = 1;
+			extended_totals = 1;
+			show_bytes = 1;
+			break;
+		case 'B':
+			show_bytes = 1;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			fatal("%s: Invalid option '%c'\n", argv[0], optopt);
 
@@ -1379,12 +1661,22 @@ int main(int argc, char *argv[])
 		fatal("%s: Invalid pattern '%s' code %d\n",
 			argv[0], pattern_source, err);
 	read_slab_dir();
+<<<<<<< HEAD
 	if (show_alias)
 		alias();
 	else
 	if (show_totals)
 		totals();
 	else {
+=======
+	if (show_alias) {
+		alias();
+	} else if (extended_totals) {
+		xtotals();
+	} else if (show_totals) {
+		totals();
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		link_slabs();
 		rename_slabs();
 		sort_slabs();

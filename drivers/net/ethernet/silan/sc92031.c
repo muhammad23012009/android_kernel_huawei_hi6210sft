@@ -987,7 +987,11 @@ out_unlock:
 	spin_unlock(&priv->lock);
 
 out:
+<<<<<<< HEAD
 	dev_kfree_skb(skb);
+=======
+	dev_consume_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return NETDEV_TX_OK;
 }
@@ -1561,7 +1565,11 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(sc92031_pci_device_id_table) = {
+=======
+static const struct pci_device_id sc92031_pci_device_id_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_SILAN, 0x2031) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_SILAN, 0x8139) },
 	{ PCI_DEVICE(0x1088, 0x2031) },
@@ -1578,6 +1586,7 @@ static struct pci_driver sc92031_pci_driver = {
 	.resume		= sc92031_resume,
 };
 
+<<<<<<< HEAD
 static int __init sc92031_init(void)
 {
 	return pci_register_driver(&sc92031_pci_driver);
@@ -1591,6 +1600,9 @@ static void __exit sc92031_exit(void)
 module_init(sc92031_init);
 module_exit(sc92031_exit);
 
+=======
+module_pci_driver(sc92031_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Cesar Eduardo Barros <cesarb@cesarb.net>");
 MODULE_DESCRIPTION("Silan SC92031 PCI Fast Ethernet Adapter driver");

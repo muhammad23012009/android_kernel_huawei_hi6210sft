@@ -2,7 +2,10 @@
 #define __PERF_QUOTE_H
 
 #include <stddef.h>
+<<<<<<< HEAD
 #include <stdio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Help to copy the thing properly quoted for the shell safety.
  * any single quote is replaced with '\'', any exclamation point
@@ -24,6 +27,12 @@
  * sq_quote() in a real application.
  */
 
+<<<<<<< HEAD
 extern void sq_quote_argv(struct strbuf *, const char **argv, size_t maxlen);
+=======
+struct strbuf;
+
+int sq_quote_argv(struct strbuf *, const char **argv, size_t maxlen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __PERF_QUOTE_H */

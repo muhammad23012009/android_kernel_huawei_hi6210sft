@@ -28,8 +28,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/mach-types.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -57,8 +60,12 @@ static int tegra_wm8753_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct snd_soc_card *card = codec->card;
+=======
+	struct snd_soc_card *card = rtd->card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tegra_wm8753 *machine = snd_soc_card_get_drvdata(card);
 	int srate, mclk;
 	int err;
@@ -113,6 +120,10 @@ static struct snd_soc_dai_link tegra_wm8753_dai = {
 
 static struct snd_soc_card snd_soc_tegra_wm8753 = {
 	.name = "tegra-wm8753",
+<<<<<<< HEAD
+=======
+	.driver_name = "tegra",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.owner = THIS_MODULE,
 	.dai_link = &tegra_wm8753_dai,
 	.num_links = 1,
@@ -207,7 +218,10 @@ static const struct of_device_id tegra_wm8753_of_match[] = {
 static struct platform_driver tegra_wm8753_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &snd_soc_pm_ops,
 		.of_match_table = tegra_wm8753_of_match,
 	},

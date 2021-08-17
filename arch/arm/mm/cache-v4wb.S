@@ -9,6 +9,10 @@
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/memory.h>
 #include <asm/page.h>
 #include "proc-macros.S"
@@ -58,7 +62,11 @@ flush_base:
 ENTRY(v4wb_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(v4wb_flush_icache_all)
 
 /*
@@ -94,7 +102,11 @@ __flush_whole_cache:
 	blo	1b
 #endif
 	mcr	p15, 0, ip, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_user_cache_range(start, end, flags)
@@ -122,7 +134,11 @@ ENTRY(v4wb_flush_user_cache_range)
 	blo	1b
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -170,7 +186,11 @@ ENTRY(v4wb_coherent_user_range)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*
@@ -195,7 +215,11 @@ v4wb_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_clean_range(start, end)
@@ -212,7 +236,11 @@ v4wb_dma_clean_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_flush_range(start, end)
@@ -248,7 +276,11 @@ ENDPROC(v4wb_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(v4wb_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(v4wb_dma_unmap_area)
 
 	.globl	v4wb_flush_kern_cache_louis

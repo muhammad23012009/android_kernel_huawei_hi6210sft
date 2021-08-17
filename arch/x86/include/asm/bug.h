@@ -1,7 +1,10 @@
 #ifndef _ASM_X86_BUG_H
 #define _ASM_X86_BUG_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_BUG
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HAVE_ARCH_BUG
 
 #ifdef CONFIG_DEBUG_BUGVERBOSE
@@ -33,8 +36,11 @@ do {								\
 } while (0)
 #endif
 
+<<<<<<< HEAD
 #endif /* !CONFIG_BUG */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/bug.h>
 
 #endif /* _ASM_X86_BUG_H */

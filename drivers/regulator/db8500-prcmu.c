@@ -263,6 +263,11 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
 			.owner	= THIS_MODULE,
+<<<<<<< HEAD
+=======
+			.fixed_uV = 1800000,
+			.n_voltages = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 		.exclude_from_power_state = true,
 	},
@@ -431,17 +436,24 @@ static int db8500_regulator_register(struct platform_device *pdev,
 	config.of_node = np;
 
 	/* register with the regulator framework */
+<<<<<<< HEAD
 	info->rdev = regulator_register(&info->desc, &config);
+=======
+	info->rdev = devm_regulator_register(&pdev->dev, &info->desc, &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(info->rdev)) {
 		err = PTR_ERR(info->rdev);
 		dev_err(&pdev->dev, "failed to register %s: err %i\n",
 			info->desc.name, err);
+<<<<<<< HEAD
 
 		/* if failing, unregister all earlier regulators */
 		while (--id >= 0) {
 			info = &dbx500_regulator_info[id];
 			regulator_unregister(info->rdev);
 		}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -530,6 +542,7 @@ static int db8500_regulator_probe(struct platform_device *pdev)
 
 static int db8500_regulator_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int i;
 
 	ux500_regulator_debug_exit();
@@ -544,13 +557,20 @@ static int db8500_regulator_remove(struct platform_device *pdev)
 		regulator_unregister(info->rdev);
 	}
 
+=======
+	ux500_regulator_debug_exit();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver db8500_regulator_driver = {
 	.driver = {
 		.name = "db8500-prcmu-regulators",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = db8500_regulator_probe,
 	.remove = db8500_regulator_remove,

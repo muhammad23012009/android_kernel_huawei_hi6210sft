@@ -16,8 +16,13 @@
 #include "ade7854.h"
 
 static int ade7854_i2c_write_reg_8(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u8 value)
+=======
+				   u16 reg_address,
+				   u8 value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
@@ -35,8 +40,13 @@ static int ade7854_i2c_write_reg_8(struct device *dev,
 }
 
 static int ade7854_i2c_write_reg_16(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u16 value)
+=======
+				    u16 reg_address,
+				    u16 value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
@@ -55,8 +65,13 @@ static int ade7854_i2c_write_reg_16(struct device *dev,
 }
 
 static int ade7854_i2c_write_reg_24(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u32 value)
+=======
+				    u16 reg_address,
+				    u32 value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
@@ -76,8 +91,13 @@ static int ade7854_i2c_write_reg_24(struct device *dev,
 }
 
 static int ade7854_i2c_write_reg_32(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u32 value)
+=======
+				    u16 reg_address,
+				    u32 value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
@@ -98,8 +118,13 @@ static int ade7854_i2c_write_reg_32(struct device *dev,
 }
 
 static int ade7854_i2c_read_reg_8(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u8 *val)
+=======
+				  u16 reg_address,
+				  u8 *val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct ade7854_state *st = iio_priv(indio_dev);
@@ -124,8 +149,13 @@ out:
 }
 
 static int ade7854_i2c_read_reg_16(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u16 *val)
+=======
+				   u16 reg_address,
+				   u16 *val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct ade7854_state *st = iio_priv(indio_dev);
@@ -150,8 +180,13 @@ out:
 }
 
 static int ade7854_i2c_read_reg_24(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u32 *val)
+=======
+				   u16 reg_address,
+				   u32 *val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct ade7854_state *st = iio_priv(indio_dev);
@@ -176,8 +211,13 @@ out:
 }
 
 static int ade7854_i2c_read_reg_32(struct device *dev,
+<<<<<<< HEAD
 		u16 reg_address,
 		u32 *val)
+=======
+				   u16 reg_address,
+				   u32 *val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct ade7854_state *st = iio_priv(indio_dev);
@@ -195,13 +235,19 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
 	*val = (st->rx[0] << 24) | (st->rx[1] << 16) | (st->rx[2] << 8) | st->rx[3];
+=======
+	*val = (st->rx[0] << 24) | (st->rx[1] << 16) |
+		(st->rx[2] << 8) | st->rx[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	mutex_unlock(&st->buf_lock);
 	return ret;
 }
 
 static int ade7854_i2c_probe(struct i2c_client *client,
+<<<<<<< HEAD
 		const struct i2c_device_id *id)
 {
 	int ret;
@@ -210,6 +256,15 @@ static int ade7854_i2c_probe(struct i2c_client *client,
 
 	indio_dev = iio_device_alloc(sizeof(*st));
 	if (indio_dev == NULL)
+=======
+			     const struct i2c_device_id *id)
+{
+	struct ade7854_state *st;
+	struct iio_dev *indio_dev;
+
+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
+	if (!indio_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	st = iio_priv(indio_dev);
 	i2c_set_clientdata(client, indio_dev);
@@ -224,6 +279,7 @@ static int ade7854_i2c_probe(struct i2c_client *client,
 	st->i2c = client;
 	st->irq = client->irq;
 
+<<<<<<< HEAD
 	ret = ade7854_probe(indio_dev, &client->dev);
 	if (ret)
 		iio_device_free(indio_dev);
@@ -234,6 +290,9 @@ static int ade7854_i2c_probe(struct i2c_client *client,
 static int ade7854_i2c_remove(struct i2c_client *client)
 {
 	return ade7854_remove(i2c_get_clientdata(client));
+=======
+	return ade7854_probe(indio_dev, &client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id ade7854_id[] = {
@@ -250,7 +309,10 @@ static struct i2c_driver ade7854_i2c_driver = {
 		.name = "ade7854",
 	},
 	.probe    = ade7854_i2c_probe,
+<<<<<<< HEAD
 	.remove   = ade7854_i2c_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = ade7854_id,
 };
 module_i2c_driver(ade7854_i2c_driver);

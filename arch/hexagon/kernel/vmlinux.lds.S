@@ -1,7 +1,11 @@
 /*
  * Linker script for Hexagon kernel
  *
+<<<<<<< HEAD
  * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+=======
+ * Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -50,6 +54,10 @@ SECTIONS
 		_text = .;
 		TEXT_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
+=======
+		CPUIDLE_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LOCK_TEXT
 		KPROBES_TEXT
 		*(.fixup)
@@ -59,7 +67,11 @@ SECTIONS
 	INIT_DATA_SECTION(PAGE_SIZE)
 
 	_sdata = .;
+<<<<<<< HEAD
 		RW_DATA_SECTION(32,PAGE_SIZE,PAGE_SIZE)
+=======
+		RW_DATA_SECTION(32,PAGE_SIZE,_THREAD_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		RO_DATA_SECTION(PAGE_SIZE)
 	_edata = .;
 
@@ -70,6 +82,7 @@ SECTIONS
 
 	_end = .;
 
+<<<<<<< HEAD
 	/DISCARD/ : {
 		EXIT_TEXT
 		EXIT_DATA
@@ -79,4 +92,10 @@ SECTIONS
 	STABS_DEBUG
 	DWARF_DEBUG
 
+=======
+	STABS_DEBUG
+	DWARF_DEBUG
+
+	DISCARDS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

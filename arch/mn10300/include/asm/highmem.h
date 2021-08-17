@@ -70,11 +70,19 @@ static inline void kunmap(struct page *page)
  * be used in IRQ contexts, so in some (very limited) cases we need
  * it.
  */
+<<<<<<< HEAD
 static inline unsigned long kmap_atomic(struct page *page)
+=======
+static inline void *kmap_atomic(struct page *page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long vaddr;
 	int idx, type;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 	if (page < highmem_start_page)
 		return page_address(page);
@@ -89,7 +97,11 @@ static inline unsigned long kmap_atomic(struct page *page)
 	set_pte(kmap_pte - idx, mk_pte(page, kmap_prot));
 	local_flush_tlb_one(vaddr);
 
+<<<<<<< HEAD
 	return vaddr;
+=======
+	return (void *)vaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void __kunmap_atomic(unsigned long vaddr)
@@ -98,6 +110,10 @@ static inline void __kunmap_atomic(unsigned long vaddr)
 
 	if (vaddr < FIXADDR_START) { /* FIXME */
 		pagefault_enable();
+<<<<<<< HEAD
+=======
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -122,6 +138,10 @@ static inline void __kunmap_atomic(unsigned long vaddr)
 
 	kmap_atomic_idx_pop();
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* __KERNEL__ */
 

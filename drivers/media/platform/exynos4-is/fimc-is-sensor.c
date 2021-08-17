@@ -2,13 +2,17 @@
  * Samsung EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver
  *
  * Copyright (C) 2013 Samsung Electronics Co., Ltd.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -272,6 +276,17 @@ static const struct sensor_drv_data s5k6a3_drvdata = {
 };
 
 static const struct of_device_id fimc_is_sensor_of_match[] = {
+=======
+
+#include "fimc-is-sensor.h"
+
+static const struct sensor_drv_data s5k6a3_drvdata = {
+	.id		= FIMC_IS_SENSOR_ID_S5K6A3,
+	.open_timeout	= S5K6A3_OPEN_TIMEOUT,
+};
+
+static const struct of_device_id fimc_is_sensor_of_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.compatible	= "samsung,s5k6a3",
 		.data		= &s5k6a3_drvdata,
@@ -279,6 +294,7 @@ static const struct of_device_id fimc_is_sensor_of_match[] = {
 	{  }
 };
 
+<<<<<<< HEAD
 static struct i2c_driver fimc_is_sensor_driver = {
 	.driver = {
 		.of_match_table	= fimc_is_sensor_of_match,
@@ -303,3 +319,13 @@ void fimc_is_unregister_sensor_driver(void)
 MODULE_AUTHOR("Sylwester Nawrocki <s.nawrocki@samsung.com>");
 MODULE_DESCRIPTION("Exynos4x12 FIMC-IS image sensor subdev driver");
 MODULE_LICENSE("GPL");
+=======
+const struct sensor_drv_data *fimc_is_sensor_get_drvdata(
+			struct device_node *node)
+{
+	const struct of_device_id *of_id;
+
+	of_id = of_match_node(fimc_is_sensor_of_ids, node);
+	return of_id ? of_id->data : NULL;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

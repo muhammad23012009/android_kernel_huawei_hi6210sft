@@ -10,14 +10,24 @@
 #ifndef __LINUX_MUTEX_H
 #define __LINUX_MUTEX_H
 
+<<<<<<< HEAD
+=======
+#include <asm/current.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
 #include <linux/linkage.h>
 #include <linux/lockdep.h>
+<<<<<<< HEAD
 #ifdef CONFIG_ILOCKDEP
 #include <linux/ilockdep.h>
 #endif
 #include <linux/atomic.h>
+=======
+#include <linux/atomic.h>
+#include <asm/processor.h>
+#include <linux/osq_lock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Simple, straightforward mutexes with strict semantics:
@@ -52,6 +62,7 @@ struct mutex {
 	atomic_t		count;
 	spinlock_t		wait_lock;
 	struct list_head	wait_list;
+<<<<<<< HEAD
 #if defined(CONFIG_DEBUG_MUTEXES) || defined(CONFIG_SMP)
 	struct task_struct	*owner;
 #endif
@@ -60,14 +71,26 @@ struct mutex {
 #endif
 #ifdef CONFIG_DEBUG_MUTEXES
 	const char 		*name;
+=======
+#if defined(CONFIG_DEBUG_MUTEXES) || defined(CONFIG_MUTEX_SPIN_ON_OWNER)
+	struct task_struct	*owner;
+#endif
+#ifdef CONFIG_MUTEX_SPIN_ON_OWNER
+	struct optimistic_spin_queue osq; /* Spinner MCS lock */
+#endif
+#ifdef CONFIG_DEBUG_MUTEXES
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void			*magic;
 #endif
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	struct lockdep_map	dep_map;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_ILOCKDEP
 	struct ilockdep_map idep_map;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -110,6 +133,7 @@ static inline void mutex_destroy(struct mutex *lock) {}
 # define __DEP_MAP_MUTEX_INITIALIZER(lockname)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_ILOCKDEP
 # define __IDEP_MAP_MUTEX_INITIALIZER(lockname) \
 		, .idep_map = { .name = #lockname }
@@ -117,13 +141,19 @@ static inline void mutex_destroy(struct mutex *lock) {}
 # define __IDEP_MAP_MUTEX_INITIALIZER(lockname)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __MUTEX_INITIALIZER(lockname) \
 		{ .count = ATOMIC_INIT(1) \
 		, .wait_lock = __SPIN_LOCK_UNLOCKED(lockname.wait_lock) \
 		, .wait_list = LIST_HEAD_INIT(lockname.wait_list) \
 		__DEBUG_MUTEX_INITIALIZER(lockname) \
+<<<<<<< HEAD
 		__DEP_MAP_MUTEX_INITIALIZER(lockname) \
 		__IDEP_MAP_MUTEX_INITIALIZER(mutex) }
+=======
+		__DEP_MAP_MUTEX_INITIALIZER(lockname) }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DEFINE_MUTEX(mutexname) \
 	struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
@@ -143,12 +173,21 @@ static inline int mutex_is_locked(struct mutex *lock)
 }
 
 /*
+<<<<<<< HEAD
  * See kernel/mutex.c for detailed documentation of these APIs.
  * Also see Documentation/mutex-design.txt.
+=======
+ * See kernel/locking/mutex.c for detailed documentation of these APIs.
+ * Also see Documentation/locking/mutex-design.txt.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 extern void mutex_lock_nested(struct mutex *lock, unsigned int subclass);
 extern void _mutex_lock_nest_lock(struct mutex *lock, struct lockdep_map *nest_lock);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int __must_check mutex_lock_interruptible_nested(struct mutex *lock,
 					unsigned int subclass);
 extern int __must_check mutex_lock_killable_nested(struct mutex *lock,
@@ -160,7 +199,11 @@ extern int __must_check mutex_lock_killable_nested(struct mutex *lock,
 
 #define mutex_lock_nest_lock(lock, nest_lock)				\
 do {									\
+<<<<<<< HEAD
 	typecheck(struct lockdep_map *, &(nest_lock)->dep_map);		\
+=======
+	typecheck(struct lockdep_map *, &(nest_lock)->dep_map);	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_mutex_lock_nest_lock(lock, &(nest_lock)->dep_map);		\
 } while (0)
 
@@ -183,6 +226,7 @@ extern int __must_check mutex_lock_killable(struct mutex *lock);
  */
 extern int mutex_trylock(struct mutex *lock);
 extern void mutex_unlock(struct mutex *lock);
+<<<<<<< HEAD
 extern int atomic_dec_and_mutex_lock(atomic_t *cnt, struct mutex *lock);
 
 #ifndef CONFIG_HAVE_ARCH_MUTEX_CPU_RELAX
@@ -190,3 +234,9 @@ extern int atomic_dec_and_mutex_lock(atomic_t *cnt, struct mutex *lock);
 #endif
 
 #endif
+=======
+
+extern int atomic_dec_and_mutex_lock(atomic_t *cnt, struct mutex *lock);
+
+#endif /* __LINUX_MUTEX_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

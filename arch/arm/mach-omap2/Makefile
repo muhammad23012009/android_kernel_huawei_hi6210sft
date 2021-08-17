@@ -2,6 +2,7 @@
 # Makefile for the linux kernel.
 #
 
+<<<<<<< HEAD
 ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/$(src)/include \
 	-I$(srctree)/arch/arm/plat-omap/include
 
@@ -15,13 +16,34 @@ hwmod-common				= omap_hwmod.o omap_hwmod_reset.o \
 					  omap_hwmod_common_data.o
 clock-common				= clock.o clock_common_data.o \
 					  clkt_dpll.o clkt_clksel.o
+=======
+ccflags-y := -I$(srctree)/$(src)/include \
+	-I$(srctree)/arch/arm/plat-omap/include
+
+# Common support
+obj-y := id.o io.o control.o mux.o devices.o fb.o serial.o timer.o pm.o \
+	 common.o gpio.o dma.o wd_timer.o display.o i2c.o hdq1w.o omap_hwmod.o \
+	 omap_device.o omap-headsmp.o sram.o drm.o
+
+hwmod-common				= omap_hwmod.o omap_hwmod_reset.o \
+					  omap_hwmod_common_data.o
+clock-common				= clock.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 secure-common				= omap-smc.o omap-secure.o
 
 obj-$(CONFIG_ARCH_OMAP2) += $(omap-2-3-common) $(hwmod-common)
 obj-$(CONFIG_ARCH_OMAP3) += $(omap-2-3-common) $(hwmod-common) $(secure-common)
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_OMAP4) += prm44xx.o $(hwmod-common) $(secure-common)
 obj-$(CONFIG_SOC_AM33XX) += irq.o $(hwmod-common)
 obj-$(CONFIG_SOC_OMAP5)	 += prm44xx.o $(hwmod-common) $(secure-common)
+=======
+obj-$(CONFIG_ARCH_OMAP4) += $(hwmod-common) $(secure-common)
+obj-$(CONFIG_SOC_AM33XX) += $(hwmod-common)
+obj-$(CONFIG_SOC_OMAP5)	 += $(hwmod-common) $(secure-common)
+obj-$(CONFIG_SOC_AM43XX) += $(hwmod-common) $(secure-common)
+obj-$(CONFIG_SOC_DRA7XX) += $(hwmod-common) $(secure-common)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ifneq ($(CONFIG_SND_OMAP_SOC_MCBSP),)
 obj-y += mcbsp.o
@@ -32,12 +54,22 @@ obj-$(CONFIG_SOC_HAS_OMAP2_SDRC)	+= sdrc.o
 
 # SMP support ONLY available for OMAP4
 
+<<<<<<< HEAD
 smp-$(CONFIG_SMP)			+= omap-smp.o omap-headsmp.o
 smp-$(CONFIG_HOTPLUG_CPU)		+= omap-hotplug.o
 omap-4-5-common				=  omap4-common.o omap-wakeupgen.o \
 					   sleep44xx.o
 obj-$(CONFIG_ARCH_OMAP4)		+= $(omap-4-5-common) $(smp-y)
 obj-$(CONFIG_SOC_OMAP5)			+= $(omap-4-5-common) $(smp-y)
+=======
+smp-$(CONFIG_SMP)			+= omap-smp.o
+smp-$(CONFIG_HOTPLUG_CPU)		+= omap-hotplug.o
+omap-4-5-common				=  omap4-common.o omap-wakeupgen.o
+obj-$(CONFIG_ARCH_OMAP4)		+= $(omap-4-5-common) $(smp-y) sleep44xx.o
+obj-$(CONFIG_SOC_OMAP5)			+= $(omap-4-5-common) $(smp-y) sleep44xx.o
+obj-$(CONFIG_SOC_AM43XX)		+= $(omap-4-5-common)
+obj-$(CONFIG_SOC_DRA7XX)		+= $(omap-4-5-common) $(smp-y) sleep44xx.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 plus_sec := $(call as-instr,.arch_extension sec,+sec)
 AFLAGS_omap-headsmp.o			:=-Wa,-march=armv7-a$(plus_sec)
@@ -47,15 +79,22 @@ AFLAGS_sleep44xx.o			:=-Wa,-march=armv7-a$(plus_sec)
 # Functions loaded to SRAM
 obj-$(CONFIG_SOC_OMAP2420)		+= sram242x.o
 obj-$(CONFIG_SOC_OMAP2430)		+= sram243x.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_OMAP3)		+= sram34xx.o
 
 AFLAGS_sram242x.o			:=-Wa,-march=armv6
 AFLAGS_sram243x.o			:=-Wa,-march=armv6
 AFLAGS_sram34xx.o			:=-Wa,-march=armv7-a
+=======
+
+AFLAGS_sram242x.o			:=-Wa,-march=armv6
+AFLAGS_sram243x.o			:=-Wa,-march=armv6
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Restart code (OMAP4/5 currently in omap4-common.c)
 obj-$(CONFIG_SOC_OMAP2420)		+= omap2-restart.o
 obj-$(CONFIG_SOC_OMAP2430)		+= omap2-restart.o
+<<<<<<< HEAD
 obj-$(CONFIG_SOC_AM33XX)		+= am33xx-restart.o
 obj-$(CONFIG_ARCH_OMAP3)		+= omap3-restart.o
 
@@ -64,6 +103,18 @@ obj-$(CONFIG_SOC_OMAP2420)		+= mux2420.o
 obj-$(CONFIG_SOC_OMAP2430)		+= mux2430.o
 obj-$(CONFIG_ARCH_OMAP3)		+= mux34xx.o
 obj-$(CONFIG_ARCH_OMAP4)		+= mux44xx.o
+=======
+obj-$(CONFIG_SOC_TI81XX)		+= ti81xx-restart.o
+obj-$(CONFIG_SOC_AM33XX)		+= am33xx-restart.o
+obj-$(CONFIG_SOC_AM43XX)		+= omap4-restart.o
+obj-$(CONFIG_ARCH_OMAP3)		+= omap3-restart.o
+obj-$(CONFIG_ARCH_OMAP4)		+= omap4-restart.o
+obj-$(CONFIG_SOC_OMAP5)			+= omap4-restart.o
+obj-$(CONFIG_SOC_DRA7XX)		+= omap4-restart.o
+
+# Pin multiplexing
+obj-$(CONFIG_ARCH_OMAP3)		+= mux34xx.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # SMS/SDRC
 obj-$(CONFIG_ARCH_OMAP2)		+= sdrc2xxx.o
@@ -77,14 +128,27 @@ obj-$(CONFIG_ARCH_OMAP4)		+= opp4xxx_data.o
 endif
 
 # Power Management
+<<<<<<< HEAD
+=======
+omap-4-5-pm-common			= omap-mpuss-lowpower.o
+obj-$(CONFIG_ARCH_OMAP4)		+= $(omap-4-5-pm-common)
+obj-$(CONFIG_SOC_OMAP5)			+= $(omap-4-5-pm-common)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_OMAP_PM_NOOP)		+= omap-pm-noop.o
 
 ifeq ($(CONFIG_PM),y)
 obj-$(CONFIG_ARCH_OMAP2)		+= pm24xx.o
 obj-$(CONFIG_ARCH_OMAP2)		+= sleep24xx.o
 obj-$(CONFIG_ARCH_OMAP3)		+= pm34xx.o sleep34xx.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_OMAP4)		+= pm44xx.o omap-mpuss-lowpower.o
 obj-$(CONFIG_SOC_OMAP5)			+= omap-mpuss-lowpower.o
+=======
+omap-4-5-pm-common			+= pm44xx.o
+obj-$(CONFIG_ARCH_OMAP4)		+= $(omap-4-5-pm-common)
+obj-$(CONFIG_SOC_OMAP5)			+= $(omap-4-5-pm-common)
+obj-$(CONFIG_SOC_DRA7XX)		+= $(omap-4-5-pm-common)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_PM_DEBUG)			+= pm-debug.o
 
 obj-$(CONFIG_POWER_AVS_OMAP)		+= sr_device.o
@@ -93,15 +157,25 @@ obj-$(CONFIG_POWER_AVS_OMAP_CLASS3)    += smartreflex-class3.o
 AFLAGS_sleep24xx.o			:=-Wa,-march=armv6
 AFLAGS_sleep34xx.o			:=-Wa,-march=armv7-a$(plus_sec)
 
+<<<<<<< HEAD
 ifeq ($(CONFIG_PM_VERBOSE),y)
 CFLAGS_pm_bus.o				+= -DDEBUG
 endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif
 
 ifeq ($(CONFIG_CPU_IDLE),y)
 obj-$(CONFIG_ARCH_OMAP3)                += cpuidle34xx.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_OMAP4)                += cpuidle44xx.o
+=======
+omap-4-5-idle-common			=  cpuidle44xx.o
+obj-$(CONFIG_ARCH_OMAP4)		+= $(omap-4-5-idle-common)
+obj-$(CONFIG_SOC_OMAP5)			+= $(omap-4-5-idle-common)
+obj-$(CONFIG_SOC_DRA7XX)		+= $(omap-4-5-idle-common)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif
 
 # PRCM
@@ -109,12 +183,25 @@ obj-y					+= prm_common.o cm_common.o
 obj-$(CONFIG_ARCH_OMAP2)		+= prm2xxx_3xxx.o prm2xxx.o cm2xxx.o
 obj-$(CONFIG_ARCH_OMAP3)		+= prm2xxx_3xxx.o prm3xxx.o cm3xxx.o
 obj-$(CONFIG_ARCH_OMAP3)		+= vc3xxx_data.o vp3xxx_data.o
+<<<<<<< HEAD
 obj-$(CONFIG_SOC_AM33XX)		+= prm33xx.o cm33xx.o
 omap-prcm-4-5-common			=  cminst44xx.o cm44xx.o prm44xx.o \
+=======
+omap-prcm-4-5-common			=  cminst44xx.o prm44xx.o \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   prcm_mpu44xx.o prminst44xx.o \
 					   vc44xx_data.o vp44xx_data.o
 obj-$(CONFIG_ARCH_OMAP4)		+= $(omap-prcm-4-5-common)
 obj-$(CONFIG_SOC_OMAP5)			+= $(omap-prcm-4-5-common)
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SOC_DRA7XX)		+= $(omap-prcm-4-5-common)
+am33xx-43xx-prcm-common			+= prm33xx.o cm33xx.o
+obj-$(CONFIG_SOC_TI81XX)		+= $(am33xx-43xx-prcm-common)
+obj-$(CONFIG_SOC_AM33XX)		+= $(am33xx-43xx-prcm-common)
+obj-$(CONFIG_SOC_AM43XX)		+= $(omap-prcm-4-5-common) \
+					   $(am33xx-43xx-prcm-common)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # OMAP voltage domains
 voltagedomain-common			:= voltage.o vc.o vp.o
@@ -125,8 +212,15 @@ obj-$(CONFIG_ARCH_OMAP3)		+= voltagedomains3xxx_data.o
 obj-$(CONFIG_ARCH_OMAP4)		+= $(voltagedomain-common)
 obj-$(CONFIG_ARCH_OMAP4)		+= voltagedomains44xx_data.o
 obj-$(CONFIG_SOC_AM33XX)		+= $(voltagedomain-common)
+<<<<<<< HEAD
 obj-$(CONFIG_SOC_AM33XX)                += voltagedomains33xx_data.o
 obj-$(CONFIG_SOC_OMAP5)			+= $(voltagedomain-common)
+=======
+obj-$(CONFIG_SOC_AM43XX)		+= $(voltagedomain-common)
+obj-$(CONFIG_SOC_OMAP5)			+= $(voltagedomain-common)
+obj-$(CONFIG_SOC_OMAP5)                += voltagedomains54xx_data.o
+obj-$(CONFIG_SOC_DRA7XX)		+= $(voltagedomain-common)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # OMAP powerdomain framework
 powerdomain-common			+= powerdomain.o powerdomain-common.o
@@ -140,7 +234,16 @@ obj-$(CONFIG_ARCH_OMAP4)		+= $(powerdomain-common)
 obj-$(CONFIG_ARCH_OMAP4)		+= powerdomains44xx_data.o
 obj-$(CONFIG_SOC_AM33XX)		+= $(powerdomain-common)
 obj-$(CONFIG_SOC_AM33XX)		+= powerdomains33xx_data.o
+<<<<<<< HEAD
 obj-$(CONFIG_SOC_OMAP5)			+= $(powerdomain-common)
+=======
+obj-$(CONFIG_SOC_AM43XX)		+= $(powerdomain-common)
+obj-$(CONFIG_SOC_AM43XX)		+= powerdomains43xx_data.o
+obj-$(CONFIG_SOC_OMAP5)			+= $(powerdomain-common)
+obj-$(CONFIG_SOC_OMAP5)			+= powerdomains54xx_data.o
+obj-$(CONFIG_SOC_DRA7XX)		+= $(powerdomain-common)
+obj-$(CONFIG_SOC_DRA7XX)		+= powerdomains7xx_data.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # PRCM clockdomain control
 clockdomain-common			+= clockdomain.o
@@ -155,6 +258,7 @@ obj-$(CONFIG_ARCH_OMAP4)		+= $(clockdomain-common)
 obj-$(CONFIG_ARCH_OMAP4)		+= clockdomains44xx_data.o
 obj-$(CONFIG_SOC_AM33XX)		+= $(clockdomain-common)
 obj-$(CONFIG_SOC_AM33XX)		+= clockdomains33xx_data.o
+<<<<<<< HEAD
 obj-$(CONFIG_SOC_OMAP5)			+= $(clockdomain-common)
 
 # Clock framework
@@ -177,12 +281,38 @@ obj-$(CONFIG_SOC_AM33XX)		+= $(clock-common) dpll3xxx.o
 obj-$(CONFIG_SOC_AM33XX)		+= cclock33xx_data.o
 obj-$(CONFIG_SOC_OMAP5)			+= $(clock-common)
 obj-$(CONFIG_SOC_OMAP5)			+= dpll3xxx.o dpll44xx.o
+=======
+obj-$(CONFIG_SOC_TI81XX)		+= $(clockdomain-common)
+obj-$(CONFIG_SOC_TI81XX)		+= clockdomains81xx_data.o
+obj-$(CONFIG_SOC_AM43XX)		+= $(clockdomain-common)
+obj-$(CONFIG_SOC_AM43XX)		+= clockdomains43xx_data.o
+obj-$(CONFIG_SOC_OMAP5)			+= $(clockdomain-common)
+obj-$(CONFIG_SOC_OMAP5)			+= clockdomains54xx_data.o
+obj-$(CONFIG_SOC_DRA7XX)		+= $(clockdomain-common)
+obj-$(CONFIG_SOC_DRA7XX)		+= clockdomains7xx_data.o
+
+# Clock framework
+obj-$(CONFIG_ARCH_OMAP2)		+= $(clock-common)
+obj-$(CONFIG_ARCH_OMAP2)		+= clkt2xxx_dpllcore.o
+obj-$(CONFIG_ARCH_OMAP2)		+= clkt2xxx_virt_prcm_set.o
+obj-$(CONFIG_ARCH_OMAP2)		+= clkt2xxx_dpll.o
+obj-$(CONFIG_ARCH_OMAP3)		+= $(clock-common)
+obj-$(CONFIG_ARCH_OMAP4)		+= $(clock-common)
+obj-$(CONFIG_SOC_AM33XX)		+= $(clock-common)
+obj-$(CONFIG_SOC_OMAP5)			+= $(clock-common)
+obj-$(CONFIG_SOC_DRA7XX)		+= $(clock-common)
+obj-$(CONFIG_SOC_AM43XX)		+= $(clock-common)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # OMAP2 clock rate set data (old "OPP" data)
 obj-$(CONFIG_SOC_OMAP2420)		+= opp2420_data.o
 obj-$(CONFIG_SOC_OMAP2430)		+= opp2430_data.o
 
 # hwmod data
+<<<<<<< HEAD
+=======
+obj-y					+= omap_hwmod_common_ipblock_data.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_SOC_OMAP2420)		+= omap_hwmod_2xxx_ipblock_data.o
 obj-$(CONFIG_SOC_OMAP2420)		+= omap_hwmod_2xxx_3xxx_ipblock_data.o
 obj-$(CONFIG_SOC_OMAP2420)		+= omap_hwmod_2xxx_interconnect_data.o
@@ -197,11 +327,24 @@ obj-$(CONFIG_ARCH_OMAP3)		+= omap_hwmod_2xxx_3xxx_ipblock_data.o
 obj-$(CONFIG_ARCH_OMAP3)		+= omap_hwmod_2xxx_3xxx_interconnect_data.o
 obj-$(CONFIG_ARCH_OMAP3)		+= omap_hwmod_3xxx_data.o
 obj-$(CONFIG_SOC_AM33XX)		+= omap_hwmod_33xx_data.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_OMAP4)		+= omap_hwmod_44xx_data.o
+=======
+obj-$(CONFIG_SOC_AM33XX)		+= omap_hwmod_33xx_43xx_interconnect_data.o
+obj-$(CONFIG_SOC_AM33XX)		+= omap_hwmod_33xx_43xx_ipblock_data.o
+obj-$(CONFIG_SOC_AM43XX)		+= omap_hwmod_43xx_data.o
+obj-$(CONFIG_SOC_AM43XX)		+= omap_hwmod_33xx_43xx_interconnect_data.o
+obj-$(CONFIG_SOC_AM43XX)		+= omap_hwmod_33xx_43xx_ipblock_data.o
+obj-$(CONFIG_SOC_TI81XX)		+= omap_hwmod_81xx_data.o
+obj-$(CONFIG_ARCH_OMAP4)		+= omap_hwmod_44xx_data.o
+obj-$(CONFIG_SOC_OMAP5)			+= omap_hwmod_54xx_data.o
+obj-$(CONFIG_SOC_DRA7XX)		+= omap_hwmod_7xx_data.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # EMU peripherals
 obj-$(CONFIG_HW_PERF_EVENTS)		+= pmu.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_OMAP_MBOX_FWK)		+= mailbox_mach.o
 mailbox_mach-objs			:= mailbox.o
 
@@ -260,6 +403,14 @@ obj-$(CONFIG_MACH_CRANEBOARD)		+= board-am3517crane.o
 obj-$(CONFIG_MACH_SBC3530)		+= board-omap3stalker.o
 obj-$(CONFIG_MACH_TI8168EVM)		+= board-ti8168evm.o
 obj-$(CONFIG_MACH_TI8148EVM)		+= board-ti8168evm.o
+=======
+# OMAP2420 MSDI controller integration support ("MMC")
+obj-$(CONFIG_SOC_OMAP2420)		+= msdi.o
+
+# Specific board support
+obj-$(CONFIG_MACH_OMAP_GENERIC)		+= board-generic.o pdata-quirks.o
+obj-$(CONFIG_MACH_NOKIA_N8X0)		+= board-n8x0.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Platform specific device init code
 
@@ -282,6 +433,7 @@ obj-y					+= $(onenand-m) $(onenand-y)
 nand-$(CONFIG_MTD_NAND_OMAP2)		:= gpmc-nand.o
 obj-y					+= $(nand-m) $(nand-y)
 
+<<<<<<< HEAD
 smc91x-$(CONFIG_SMC91X)			:= gpmc-smc91x.o
 obj-y					+= $(smc91x-m) $(smc91x-y)
 
@@ -293,5 +445,9 @@ endif
 
 emac-$(CONFIG_TI_DAVINCI_EMAC)		:= am35xx-emac.o
 obj-y					+= $(emac-m) $(emac-y)
+=======
+smsc911x-$(CONFIG_SMSC911X)		:= gpmc-smsc911x.o
+obj-y					+= $(smsc911x-m) $(smsc911x-y)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-y					+= common-board-devices.o twl-common.o dss-common.o

@@ -84,8 +84,13 @@ static void ichxrom_cleanup(struct ichxrom_window *window)
 }
 
 
+<<<<<<< HEAD
 static int ichxrom_init_one(struct pci_dev *pdev,
 			    const struct pci_device_id *ent)
+=======
+static int __init ichxrom_init_one(struct pci_dev *pdev,
+				   const struct pci_device_id *ent)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static char *rom_probe_types[] = { "cfi_probe", "jedec_probe", NULL };
 	struct ichxrom_window *window = &ichxrom_window;
@@ -167,7 +172,11 @@ static int ichxrom_init_one(struct pci_dev *pdev,
 
 	/*
 	 * Try to reserve the window mem region.  If this fails then
+<<<<<<< HEAD
 	 * it is likely due to the window being "reseved" by the BIOS.
+=======
+	 * it is likely due to the window being "reserved" by the BIOS.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	window->rsrc.name = MOD_NAME;
 	window->rsrc.start = window->phys;

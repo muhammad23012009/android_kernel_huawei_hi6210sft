@@ -26,7 +26,11 @@
 #include <linux/vmalloc.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include "mixart.h"
 #include "mixart_mixer.h"
@@ -37,10 +41,18 @@
 /**
  * wait for a value on a peudo register, exit with a timeout
  *
+<<<<<<< HEAD
  * @param mgr pointer to miXart manager structure
  * @param offset unsigned pseudo_register base + offset of value
  * @param value value
  * @param timeout timeout in centisenconds
+=======
+ * @mgr: pointer to miXart manager structure
+ * @offset: unsigned pseudo_register base + offset of value
+ * @is_egal: wait for the equal value
+ * @value: value
+ * @timeout: timeout in centisenconds
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int mixart_wait_nice_for_register_value(struct mixart_mgr *mgr,
 					       u32 offset, int is_egal,
@@ -165,7 +177,12 @@ static int mixart_enum_connectors(struct mixart_mgr *mgr)
 
 	err = snd_mixart_send_msg(mgr, &request, sizeof(*connector), connector);
 	if((err < 0) || (connector->error_code) || (connector->uid_count > MIXART_MAX_PHYS_CONNECTORS)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "error MSG_SYSTEM_ENUM_PLAY_CONNECTOR\n");
+=======
+		dev_err(&mgr->pci->dev,
+			"error MSG_SYSTEM_ENUM_PLAY_CONNECTOR\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EINVAL;
 		goto __error;
 	}
@@ -184,7 +201,11 @@ static int mixart_enum_connectors(struct mixart_mgr *mgr)
 			pipe->uid_left_connector = connector->uid[k];    /* even */
 		}
 
+<<<<<<< HEAD
 		/* snd_printk(KERN_DEBUG "playback connector[%d].object_id = %x\n", k, connector->uid[k].object_id); */
+=======
+		/* dev_dbg(&mgr->pci->dev, "playback connector[%d].object_id = %x\n", k, connector->uid[k].object_id); */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* TODO: really need send_msg MSG_CONNECTOR_GET_AUDIO_INFO for each connector ? perhaps for analog level caps ? */
 		request.message_id = MSG_CONNECTOR_GET_AUDIO_INFO;
@@ -194,10 +215,18 @@ static int mixart_enum_connectors(struct mixart_mgr *mgr)
 
 		err = snd_mixart_send_msg(mgr, &request, sizeof(*audio_info), audio_info);
 		if( err < 0 ) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "error MSG_CONNECTOR_GET_AUDIO_INFO\n");
 			goto __error;
 		}
 		/*snd_printk(KERN_DEBUG "play  analog_info.analog_level_present = %x\n", audio_info->info.analog_info.analog_level_present);*/
+=======
+			dev_err(&mgr->pci->dev,
+				"error MSG_CONNECTOR_GET_AUDIO_INFO\n");
+			goto __error;
+		}
+		/*dev_dbg(&mgr->pci->dev, "play  analog_info.analog_level_present = %x\n", audio_info->info.analog_info.analog_level_present);*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	request.message_id = MSG_SYSTEM_ENUM_RECORD_CONNECTOR;
@@ -207,7 +236,12 @@ static int mixart_enum_connectors(struct mixart_mgr *mgr)
 
 	err = snd_mixart_send_msg(mgr, &request, sizeof(*connector), connector);
 	if((err < 0) || (connector->error_code) || (connector->uid_count > MIXART_MAX_PHYS_CONNECTORS)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "error MSG_SYSTEM_ENUM_RECORD_CONNECTOR\n");
+=======
+		dev_err(&mgr->pci->dev,
+			"error MSG_SYSTEM_ENUM_RECORD_CONNECTOR\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EINVAL;
 		goto __error;
 	}
@@ -226,7 +260,11 @@ static int mixart_enum_connectors(struct mixart_mgr *mgr)
 			pipe->uid_left_connector = connector->uid[k];    /* even */
 		}
 
+<<<<<<< HEAD
 		/* snd_printk(KERN_DEBUG "capture connector[%d].object_id = %x\n", k, connector->uid[k].object_id); */
+=======
+		/* dev_dbg(&mgr->pci->dev, "capture connector[%d].object_id = %x\n", k, connector->uid[k].object_id); */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* TODO: really need send_msg MSG_CONNECTOR_GET_AUDIO_INFO for each connector ? perhaps for analog level caps ? */
 		request.message_id = MSG_CONNECTOR_GET_AUDIO_INFO;
@@ -236,10 +274,18 @@ static int mixart_enum_connectors(struct mixart_mgr *mgr)
 
 		err = snd_mixart_send_msg(mgr, &request, sizeof(*audio_info), audio_info);
 		if( err < 0 ) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "error MSG_CONNECTOR_GET_AUDIO_INFO\n");
 			goto __error;
 		}
 		/*snd_printk(KERN_DEBUG "rec  analog_info.analog_level_present = %x\n", audio_info->info.analog_info.analog_level_present);*/
+=======
+			dev_err(&mgr->pci->dev,
+				"error MSG_CONNECTOR_GET_AUDIO_INFO\n");
+			goto __error;
+		}
+		/*dev_dbg(&mgr->pci->dev, "rec  analog_info.analog_level_present = %x\n", audio_info->info.analog_info.analog_level_present);*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	err = 0;
 
@@ -272,7 +318,13 @@ static int mixart_enum_physio(struct mixart_mgr *mgr)
 	err = snd_mixart_send_msg(mgr, &request, sizeof(console_mgr), &console_mgr);
 
 	if( (err < 0) || (console_mgr.error_code != 0) ) {
+<<<<<<< HEAD
 		snd_printk(KERN_DEBUG "error MSG_CONSOLE_GET_CLOCK_UID : err=%x\n", console_mgr.error_code);
+=======
+		dev_dbg(&mgr->pci->dev,
+			"error MSG_CONSOLE_GET_CLOCK_UID : err=%x\n",
+			console_mgr.error_code);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -286,7 +338,13 @@ static int mixart_enum_physio(struct mixart_mgr *mgr)
 
 	err = snd_mixart_send_msg(mgr, &request, sizeof(phys_io), &phys_io);
 	if( (err < 0) || ( phys_io.error_code != 0 ) ) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "error MSG_SYSTEM_ENUM_PHYSICAL_IO err(%x) error_code(%x)\n", err, phys_io.error_code );
+=======
+		dev_err(&mgr->pci->dev,
+			"error MSG_SYSTEM_ENUM_PHYSICAL_IO err(%x) error_code(%x)\n",
+			err, phys_io.error_code);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -322,7 +380,11 @@ static int mixart_first_init(struct mixart_mgr *mgr)
 	/* this command has no data. response is a 32 bit status */
 	err = snd_mixart_send_msg(mgr, &request, sizeof(k), &k);
 	if( (err < 0) || (k != 0) ) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "error MSG_SYSTEM_SEND_SYNCHRO_CMD\n");
+=======
+		dev_err(&mgr->pci->dev, "error MSG_SYSTEM_SEND_SYNCHRO_CMD\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err == 0 ? -EINVAL : err;
 	}
 
@@ -348,7 +410,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 
 	/* motherboard xilinx status 5 will say that the board is performing a reset */
 	if (status_xilinx == 5) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "miXart is resetting !\n");
+=======
+		dev_err(&mgr->pci->dev, "miXart is resetting !\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN; /* try again later */
 	}
 
@@ -357,12 +423,21 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 
 		/* xilinx already loaded ? */ 
 		if (status_xilinx == 4) {
+<<<<<<< HEAD
 			snd_printk(KERN_DEBUG "xilinx is already loaded !\n");
+=======
+			dev_dbg(&mgr->pci->dev, "xilinx is already loaded !\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 		/* the status should be 0 == "idle" */
 		if (status_xilinx != 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "xilinx load error ! status = %d\n",
+=======
+			dev_err(&mgr->pci->dev,
+				"xilinx load error ! status = %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   status_xilinx);
 			return -EIO; /* modprob -r may help ? */
 		}
@@ -393,13 +468,22 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 	case MIXART_MOTHERBOARD_ELF_INDEX:
 
 		if (status_elf == 4) {
+<<<<<<< HEAD
 			snd_printk(KERN_DEBUG "elf file already loaded !\n");
+=======
+			dev_dbg(&mgr->pci->dev, "elf file already loaded !\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 
 		/* the status should be 0 == "idle" */
 		if (status_elf != 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "elf load error ! status = %d\n",
+=======
+			dev_err(&mgr->pci->dev,
+				"elf load error ! status = %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   status_elf);
 			return -EIO; /* modprob -r may help ? */
 		}
@@ -407,7 +491,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 		/* wait for xilinx status == 4 */
 		err = mixart_wait_nice_for_register_value( mgr, MIXART_PSEUDOREG_MXLX_STATUS_OFFSET, 1, 4, 500); /* 5sec */
 		if (err < 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "xilinx was not loaded or "
+=======
+			dev_err(&mgr->pci->dev, "xilinx was not loaded or "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   "could not be started\n");
 			return err;
 		}
@@ -429,7 +517,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 		/* wait for elf status == 4 */
 		err = mixart_wait_nice_for_register_value( mgr, MIXART_PSEUDOREG_ELF_STATUS_OFFSET, 1, 4, 300); /* 3sec */
 		if (err < 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "elf could not be started\n");
+=======
+			dev_err(&mgr->pci->dev, "elf could not be started\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return err;
 		}
 
@@ -443,7 +535,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 
 		/* elf and xilinx should be loaded */
 		if (status_elf != 4 || status_xilinx != 4) {
+<<<<<<< HEAD
 			printk(KERN_ERR "xilinx or elf not "
+=======
+			dev_err(&mgr->pci->dev, "xilinx or elf not "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       "successfully loaded\n");
 			return -EIO; /* modprob -r may help ? */
 		}
@@ -451,7 +547,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 		/* wait for daughter detection != 0 */
 		err = mixart_wait_nice_for_register_value( mgr, MIXART_PSEUDOREG_DBRD_PRESENCE_OFFSET, 0, 0, 30); /* 300msec */
 		if (err < 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "error starting elf file\n");
+=======
+			dev_err(&mgr->pci->dev, "error starting elf file\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return err;
 		}
 
@@ -467,7 +567,12 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 
 		/* daughter should be idle */
 		if (status_daught != 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "daughter load error ! status = %d\n",
+=======
+			dev_err(&mgr->pci->dev,
+				"daughter load error ! status = %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       status_daught);
 			return -EIO; /* modprob -r may help ? */
 		}
@@ -487,7 +592,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 		/* wait for status == 2 */
 		err = mixart_wait_nice_for_register_value( mgr, MIXART_PSEUDOREG_DXLX_STATUS_OFFSET, 1, 2, 30); /* 300msec */
 		if (err < 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "daughter board load error\n");
+=======
+			dev_err(&mgr->pci->dev, "daughter board load error\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return err;
 		}
 
@@ -509,7 +618,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
         /* wait for daughter status == 3 */
         err = mixart_wait_nice_for_register_value( mgr, MIXART_PSEUDOREG_DXLX_STATUS_OFFSET, 1, 3, 300); /* 3sec */
         if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR
+=======
+		dev_err(&mgr->pci->dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   "daughter board could not be initialised\n");
 		return err;
 	}
@@ -520,7 +633,11 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 	/* first communication with embedded */
 	err = mixart_first_init(mgr);
         if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "miXart could not be set up\n");
+=======
+		dev_err(&mgr->pci->dev, "miXart could not be set up\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -540,7 +657,12 @@ static int mixart_dsp_load(struct mixart_mgr* mgr, int index, const struct firmw
 			return err;
 	}
 
+<<<<<<< HEAD
 	snd_printdd("miXart firmware downloaded and successfully set up\n");
+=======
+	dev_dbg(&mgr->pci->dev,
+		"miXart firmware downloaded and successfully set up\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -559,7 +681,12 @@ int snd_mixart_setup_firmware(struct mixart_mgr *mgr)
 	for (i = 0; i < 3; i++) {
 		sprintf(path, "mixart/%s", fw_files[i]);
 		if (request_firmware(&fw_entry, path, &mgr->pci->dev)) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "miXart: can't load firmware %s\n", path);
+=======
+			dev_err(&mgr->pci->dev,
+				"miXart: can't load firmware %s\n", path);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENOENT;
 		}
 		/* fake hwdep dsp record */

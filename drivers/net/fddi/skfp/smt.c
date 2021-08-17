@@ -900,7 +900,11 @@ static void smt_send_rdf(struct s_smc *smc, SMbuf *rej, int fc, int reason,
 	rdf->version.v_pad2 = 0 ;
 
 	/* set P13 */
+<<<<<<< HEAD
 	if ((unsigned) frame_len <= SMT_MAX_INFO_LEN - sizeof(*rdf) +
+=======
+	if ((unsigned int) frame_len <= SMT_MAX_INFO_LEN - sizeof(*rdf) +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		2*sizeof(struct smt_header))
 		len = frame_len ;
 	else
@@ -1736,6 +1740,7 @@ char *addr_to_string(struct fddi_addr *addr)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef	AM29K
 int smt_ifconfig(int argc, char *argv[])
 {
@@ -1748,6 +1753,8 @@ int smt_ifconfig(int argc, char *argv[])
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * return static mac index
  */

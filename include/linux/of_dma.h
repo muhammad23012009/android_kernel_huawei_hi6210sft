@@ -21,9 +21,17 @@ struct device_node;
 struct of_dma {
 	struct list_head	of_dma_controllers;
 	struct device_node	*of_node;
+<<<<<<< HEAD
 	int			of_dma_nbcells;
 	struct dma_chan		*(*of_dma_xlate)
 				(struct of_phandle_args *, struct of_dma *);
+=======
+	struct dma_chan		*(*of_dma_xlate)
+				(struct of_phandle_args *, struct of_dma *);
+	void			*(*of_dma_route_allocate)
+				(struct of_phandle_args *, struct of_dma *);
+	struct dma_router	*dma_router;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void			*of_dma_data;
 };
 
@@ -32,16 +40,36 @@ struct of_dma_filter_info {
 	dma_filter_fn	filter_fn;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
+=======
+#ifdef CONFIG_DMA_OF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int of_dma_controller_register(struct device_node *np,
 		struct dma_chan *(*of_dma_xlate)
 		(struct of_phandle_args *, struct of_dma *),
 		void *data);
 extern void of_dma_controller_free(struct device_node *np);
+<<<<<<< HEAD
+=======
+
+extern int of_dma_router_register(struct device_node *np,
+		void *(*of_dma_route_allocate)
+		(struct of_phandle_args *, struct of_dma *),
+		struct dma_router *dma_router);
+#define of_dma_router_free of_dma_controller_free
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dma_chan *of_dma_request_slave_channel(struct device_node *np,
 						     const char *name);
 extern struct dma_chan *of_dma_simple_xlate(struct of_phandle_args *dma_spec,
 		struct of_dma *ofdma);
+<<<<<<< HEAD
+=======
+extern struct dma_chan *of_dma_xlate_by_chan_id(struct of_phandle_args *dma_spec,
+		struct of_dma *ofdma);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline int of_dma_controller_register(struct device_node *np,
 		struct dma_chan *(*of_dma_xlate)
@@ -55,10 +83,27 @@ static inline void of_dma_controller_free(struct device_node *np)
 {
 }
 
+<<<<<<< HEAD
 static inline struct dma_chan *of_dma_request_slave_channel(struct device_node *np,
 						     const char *name)
 {
 	return NULL;
+=======
+static inline int of_dma_router_register(struct device_node *np,
+		void *(*of_dma_route_allocate)
+		(struct of_phandle_args *, struct of_dma *),
+		struct dma_router *dma_router)
+{
+	return -ENODEV;
+}
+
+#define of_dma_router_free of_dma_controller_free
+
+static inline struct dma_chan *of_dma_request_slave_channel(struct device_node *np,
+						     const char *name)
+{
+	return ERR_PTR(-ENODEV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline struct dma_chan *of_dma_simple_xlate(struct of_phandle_args *dma_spec,
@@ -67,6 +112,11 @@ static inline struct dma_chan *of_dma_simple_xlate(struct of_phandle_args *dma_s
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+#define of_dma_xlate_by_chan_id NULL
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* __LINUX_OF_DMA_H */

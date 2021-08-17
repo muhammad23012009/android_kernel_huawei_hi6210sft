@@ -27,8 +27,13 @@
  *    (On UP, there is no seqcount_t protection, a reader allowing interrupts could
  *     read partial values)
  *
+<<<<<<< HEAD
  * 7) For softirq uses, readers can use u64_stats_fetch_begin_bh() and
  *    u64_stats_fetch_retry_bh() helpers
+=======
+ * 7) For irq and softirq uses, readers can use u64_stats_fetch_begin_irq() and
+ *    u64_stats_fetch_retry_irq() helpers
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Usage :
  *
@@ -67,6 +72,18 @@ struct u64_stats_sync {
 #endif
 };
 
+<<<<<<< HEAD
+=======
+
+#if BITS_PER_LONG == 32 && defined(CONFIG_SMP)
+#define u64_stats_init(syncp)	seqcount_init(&(syncp)->seq)
+#else
+static inline void u64_stats_init(struct u64_stats_sync *syncp)
+{
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void u64_stats_update_begin(struct u64_stats_sync *syncp)
 {
 #if BITS_PER_LONG==32 && defined(CONFIG_SMP)
@@ -81,31 +98,68 @@ static inline void u64_stats_update_end(struct u64_stats_sync *syncp)
 #endif
 }
 
+<<<<<<< HEAD
 static inline unsigned int u64_stats_fetch_begin(const struct u64_stats_sync *syncp)
+=======
+static inline void u64_stats_update_begin_raw(struct u64_stats_sync *syncp)
+{
+#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
+	raw_write_seqcount_begin(&syncp->seq);
+#endif
+}
+
+static inline void u64_stats_update_end_raw(struct u64_stats_sync *syncp)
+{
+#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
+	raw_write_seqcount_end(&syncp->seq);
+#endif
+}
+
+static inline unsigned int __u64_stats_fetch_begin(const struct u64_stats_sync *syncp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #if BITS_PER_LONG==32 && defined(CONFIG_SMP)
 	return read_seqcount_begin(&syncp->seq);
 #else
+<<<<<<< HEAD
 #if BITS_PER_LONG==32
 	preempt_disable();
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 #endif
 }
 
+<<<<<<< HEAD
 static inline bool u64_stats_fetch_retry(const struct u64_stats_sync *syncp,
+=======
+static inline unsigned int u64_stats_fetch_begin(const struct u64_stats_sync *syncp)
+{
+#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
+	preempt_disable();
+#endif
+	return __u64_stats_fetch_begin(syncp);
+}
+
+static inline bool __u64_stats_fetch_retry(const struct u64_stats_sync *syncp,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 unsigned int start)
 {
 #if BITS_PER_LONG==32 && defined(CONFIG_SMP)
 	return read_seqcount_retry(&syncp->seq, start);
 #else
+<<<<<<< HEAD
 #if BITS_PER_LONG==32
 	preempt_enable();
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return false;
 #endif
 }
 
+<<<<<<< HEAD
 /*
  * In case softirq handlers can update u64 counters, readers can use following helpers
  * - SMP 32bit arches use seqcount protection, irq safe.
@@ -135,6 +189,38 @@ static inline bool u64_stats_fetch_retry_bh(const struct u64_stats_sync *syncp,
 #endif
 	return false;
 #endif
+=======
+static inline bool u64_stats_fetch_retry(const struct u64_stats_sync *syncp,
+					 unsigned int start)
+{
+#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
+	preempt_enable();
+#endif
+	return __u64_stats_fetch_retry(syncp, start);
+}
+
+/*
+ * In case irq handlers can update u64 counters, readers can use following helpers
+ * - SMP 32bit arches use seqcount protection, irq safe.
+ * - UP 32bit must disable irqs.
+ * - 64bit have no problem atomically reading u64 values, irq safe.
+ */
+static inline unsigned int u64_stats_fetch_begin_irq(const struct u64_stats_sync *syncp)
+{
+#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
+	local_irq_disable();
+#endif
+	return __u64_stats_fetch_begin(syncp);
+}
+
+static inline bool u64_stats_fetch_retry_irq(const struct u64_stats_sync *syncp,
+					     unsigned int start)
+{
+#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
+	local_irq_enable();
+#endif
+	return __u64_stats_fetch_retry(syncp, start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* _LINUX_U64_STATS_SYNC_H */

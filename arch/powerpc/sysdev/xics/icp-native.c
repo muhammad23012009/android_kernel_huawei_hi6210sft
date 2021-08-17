@@ -26,6 +26,10 @@
 #include <asm/errno.h>
 #include <asm/xics.h>
 #include <asm/kvm_ppc.h>
+<<<<<<< HEAD
+=======
+#include <asm/dbell.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct icp_ipl {
 	union {
@@ -123,10 +127,17 @@ static unsigned int icp_native_get_irq(void)
 	unsigned int irq;
 
 	if (vec == XICS_IRQ_SPURIOUS)
+<<<<<<< HEAD
 		return NO_IRQ;
 
 	irq = irq_find_mapping(xics_host, vec);
 	if (likely(irq != NO_IRQ)) {
+=======
+		return 0;
+
+	irq = irq_find_mapping(xics_host, vec);
+	if (likely(irq)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		xics_push_cppr(vec);
 		return irq;
 	}
@@ -137,7 +148,11 @@ static unsigned int icp_native_get_irq(void)
 	/* We might learn about it later, so EOI it */
 	icp_native_set_xirr(xirr);
 
+<<<<<<< HEAD
 	return NO_IRQ;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_SMP
@@ -145,9 +160,71 @@ static unsigned int icp_native_get_irq(void)
 static void icp_native_cause_ipi(int cpu, unsigned long data)
 {
 	kvmppc_set_host_ipi(cpu, 1);
+<<<<<<< HEAD
 	icp_native_set_qirr(cpu, IPI_PRIORITY);
 }
 
+=======
+#ifdef CONFIG_PPC_DOORBELL
+	if (cpu_has_feature(CPU_FTR_DBELL)) {
+		if (cpumask_test_cpu(cpu, cpu_sibling_mask(get_cpu()))) {
+			doorbell_cause_ipi(cpu, data);
+			put_cpu();
+			return;
+		}
+		put_cpu();
+	}
+#endif
+	icp_native_set_qirr(cpu, IPI_PRIORITY);
+}
+
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+void icp_native_cause_ipi_rm(int cpu)
+{
+	/*
+	 * Currently not used to send IPIs to another CPU
+	 * on the same core. Only caller is KVM real mode.
+	 * Need the physical address of the XICS to be
+	 * previously saved in kvm_hstate in the paca.
+	 */
+	unsigned long xics_phys;
+
+	/*
+	 * Just like the cause_ipi functions, it is required to
+	 * include a full barrier (out8 includes a sync) before
+	 * causing the IPI.
+	 */
+	xics_phys = paca[cpu].kvm_hstate.xics_phys;
+	out_rm8((u8 *)(xics_phys + XICS_MFRR), IPI_PRIORITY);
+}
+#endif
+
+/*
+ * Called when an interrupt is received on an off-line CPU to
+ * clear the interrupt, so that the CPU can go back to nap mode.
+ */
+void icp_native_flush_interrupt(void)
+{
+	unsigned int xirr = icp_native_get_xirr();
+	unsigned int vec = xirr & 0x00ffffff;
+
+	if (vec == XICS_IRQ_SPURIOUS)
+		return;
+	if (vec == XICS_IPI) {
+		/* Clear pending IPI */
+		int cpu = smp_processor_id();
+		kvmppc_set_host_ipi(cpu, 0);
+		icp_native_set_qirr(cpu, 0xff);
+	} else {
+		pr_err("XICS: hw interrupt 0x%x to offline cpu, disabling\n",
+		       vec);
+		xics_mask_unknown_vec(vec);
+	}
+	/* EOI the interrupt */
+	icp_native_set_xirr(xirr);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void xics_wake_cpu(int cpu)
 {
 	icp_native_set_qirr(cpu, IPI_PRIORITY);
@@ -216,7 +293,11 @@ static int __init icp_native_init_one_node(struct device_node *np,
 					   unsigned int *indx)
 {
 	unsigned int ilen;
+<<<<<<< HEAD
 	const u32 *ireg;
+=======
+	const __be32 *ireg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	int reg_tuple_size;
 	int num_servers = 0;

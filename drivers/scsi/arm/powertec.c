@@ -291,7 +291,11 @@ static struct scsi_host_template powertecscsi_template = {
 
 	.can_queue			= 8,
 	.this_id			= 7,
+<<<<<<< HEAD
 	.sg_tablesize			= SCSI_MAX_SG_CHAIN_SEGMENTS,
+=======
+	.sg_tablesize			= SG_MAX_SEGMENTS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dma_boundary			= IOMD_DMA_BOUNDARY,
 	.cmd_per_lun			= 2,
 	.use_clustering			= ENABLE_CLUSTERING,
@@ -358,7 +362,11 @@ static int powertecscsi_probe(struct expansion_card *ec,
 		goto out_free;
 
 	ret = request_irq(ec->irq, powertecscsi_intr,
+<<<<<<< HEAD
 			  IRQF_DISABLED, "powertec", info);
+=======
+			  0, "powertec", info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		printk("scsi%d: IRQ%d not free: %d\n",
 		       host->host_no, ec->irq, ret);
@@ -382,7 +390,11 @@ static int powertecscsi_probe(struct expansion_card *ec,
 
 	if (info->info.scsi.dma != NO_DMA)
 		free_dma(info->info.scsi.dma);
+<<<<<<< HEAD
 	free_irq(ec->irq, host);
+=======
+	free_irq(ec->irq, info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  out_release:
 	fas216_release(host);

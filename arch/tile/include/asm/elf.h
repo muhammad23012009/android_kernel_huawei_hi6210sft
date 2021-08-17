@@ -22,6 +22,10 @@
 #include <arch/chip.h>
 
 #include <linux/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <linux/elf-em.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/byteorder.h>
 #include <asm/page.h>
 
@@ -30,10 +34,13 @@ typedef unsigned long elf_greg_t;
 #define ELF_NGREG (sizeof(struct pt_regs) / sizeof(elf_greg_t))
 typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 
+<<<<<<< HEAD
 #define EM_TILE64  187
 #define EM_TILEPRO 188
 #define EM_TILEGX  191
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Provide a nominal data structure. */
 #define ELF_NFPREG	0
 typedef double elf_fpreg_t;
@@ -132,6 +139,19 @@ extern int dump_task_regs(struct task_struct *, elf_gregset_t *);
 struct linux_binprm;
 extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 				       int executable_stack);
+<<<<<<< HEAD
+=======
+/* update AT_VECTOR_SIZE_ARCH if the number of NEW_AUX_ENT entries changes */
+#define ARCH_DLINFO \
+do { \
+	NEW_AUX_ENT(AT_SYSINFO_EHDR, VDSO_BASE); \
+} while (0)
+
+struct mm_struct;
+extern unsigned long arch_randomize_brk(struct mm_struct *mm);
+#define arch_randomize_brk arch_randomize_brk
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_COMPAT
 
 #define COMPAT_ELF_PLATFORM "tilegx-m32"

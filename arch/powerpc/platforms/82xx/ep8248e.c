@@ -131,23 +131,32 @@ static int ep8248e_mdio_probe(struct platform_device *ofdev)
 	if (!bus)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (bus->irq == NULL) {
 		ret = -ENOMEM;
 		goto err_free_bus;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bus->name = "ep8248e-mdio-bitbang";
 	bus->parent = &ofdev->dev;
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%x", res.start);
 
 	ret = of_mdiobus_register(bus, ofdev->dev.of_node);
 	if (ret)
+<<<<<<< HEAD
 		goto err_free_irq;
 
 	return 0;
 err_free_irq:
 	kfree(bus->irq);
+=======
+		goto err_free_bus;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_free_bus:
 	free_mdio_bitbang(bus);
 	return ret;
@@ -169,7 +178,10 @@ static const struct of_device_id ep8248e_mdio_match[] = {
 static struct platform_driver ep8248e_mdio_driver = {
 	.driver = {
 		.name = "ep8248e-mdio-bitbang",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = ep8248e_mdio_match,
 	},
 	.probe = ep8248e_mdio_probe,
@@ -298,7 +310,11 @@ static void __init ep8248e_setup_arch(void)
 		ppc_md.progress("ep8248e_setup_arch(), finish", 0);
 }
 
+<<<<<<< HEAD
 static  __initdata struct of_device_id of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "simple-bus", },
 	{ .compatible = "fsl,ep8248e-bcsr", },
 	{},
@@ -307,7 +323,13 @@ static  __initdata struct of_device_id of_bus_ids[] = {
 static int __init declare_of_platform_devices(void)
 {
 	of_platform_bus_probe(NULL, of_bus_ids, NULL);
+<<<<<<< HEAD
 	platform_driver_register(&ep8248e_mdio_driver);
+=======
+
+	if (IS_ENABLED(CONFIG_MDIO_BITBANG))
+		platform_driver_register(&ep8248e_mdio_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -318,8 +340,12 @@ machine_device_initcall(ep8248e, declare_of_platform_devices);
  */
 static int __init ep8248e_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 	return of_flat_dt_is_compatible(root, "fsl,ep8248e");
+=======
+	return of_machine_is_compatible("fsl,ep8248e");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(ep8248e)

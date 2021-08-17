@@ -71,6 +71,10 @@ struct dm_disk_bitset {
 	uint64_t current_bits;
 
 	bool current_index_set:1;
+<<<<<<< HEAD
+=======
+	bool dirty:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*

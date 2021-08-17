@@ -10,6 +10,7 @@
 
 #include <linux/delay.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -17,6 +18,18 @@
 #include <linux/slab.h>
 #include <linux/spi/spi.h>
 #include <linux/sysfs.h>
+=======
+#include <linux/gpio/consumer.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/mutex.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/of_gpio.h>
+#include <linux/slab.h>
+#include <linux/spi/spi.h>
+#include <linux/nvmem-provider.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/eeprom_93xx46.h>
 
 #define OP_START	0x4
@@ -26,6 +39,7 @@
 #define ADDR_ERAL	0x20
 #define ADDR_EWEN	0x30
 
+<<<<<<< HEAD
 struct eeprom_93xx46_dev {
 	struct spi_device *spi;
 	struct eeprom_93xx46_platform_data *pdata;
@@ -93,13 +107,129 @@ eeprom_93xx46_bin_read(struct file *filp, struct kobject *kobj,
 	if (ret) {
 		dev_err(&edev->spi->dev, "read %zu bytes at %d: err. %d\n",
 			count, (int)off, ret);
+=======
+struct eeprom_93xx46_devtype_data {
+	unsigned int quirks;
+};
+
+static const struct eeprom_93xx46_devtype_data atmel_at93c46d_data = {
+	.quirks = EEPROM_93XX46_QUIRK_SINGLE_WORD_READ |
+		  EEPROM_93XX46_QUIRK_INSTRUCTION_LENGTH,
+};
+
+static const struct eeprom_93xx46_devtype_data microchip_93lc46b_data = {
+	.quirks = EEPROM_93XX46_QUIRK_EXTRA_READ_CYCLE,
+};
+
+struct eeprom_93xx46_dev {
+	struct spi_device *spi;
+	struct eeprom_93xx46_platform_data *pdata;
+	struct mutex lock;
+	struct nvmem_config nvmem_config;
+	struct nvmem_device *nvmem;
+	int addrlen;
+	int size;
+};
+
+static inline bool has_quirk_single_word_read(struct eeprom_93xx46_dev *edev)
+{
+	return edev->pdata->quirks & EEPROM_93XX46_QUIRK_SINGLE_WORD_READ;
+}
+
+static inline bool has_quirk_instruction_length(struct eeprom_93xx46_dev *edev)
+{
+	return edev->pdata->quirks & EEPROM_93XX46_QUIRK_INSTRUCTION_LENGTH;
+}
+
+static inline bool has_quirk_extra_read_cycle(struct eeprom_93xx46_dev *edev)
+{
+	return edev->pdata->quirks & EEPROM_93XX46_QUIRK_EXTRA_READ_CYCLE;
+}
+
+static int eeprom_93xx46_read(void *priv, unsigned int off,
+			      void *val, size_t count)
+{
+	struct eeprom_93xx46_dev *edev = priv;
+	char *buf = val;
+	int err = 0;
+
+	if (unlikely(off >= edev->size))
+		return 0;
+	if ((off + count) > edev->size)
+		count = edev->size - off;
+	if (unlikely(!count))
+		return count;
+
+	mutex_lock(&edev->lock);
+
+	if (edev->pdata->prepare)
+		edev->pdata->prepare(edev);
+
+	while (count) {
+		struct spi_message m;
+		struct spi_transfer t[2] = { { 0 } };
+		u16 cmd_addr = OP_READ << edev->addrlen;
+		size_t nbytes = count;
+		int bits;
+
+		if (edev->addrlen == 7) {
+			cmd_addr |= off & 0x7f;
+			bits = 10;
+			if (has_quirk_single_word_read(edev))
+				nbytes = 1;
+		} else {
+			cmd_addr |= (off >> 1) & 0x3f;
+			bits = 9;
+			if (has_quirk_single_word_read(edev))
+				nbytes = 2;
+		}
+
+		dev_dbg(&edev->spi->dev, "read cmd 0x%x, %d Hz\n",
+			cmd_addr, edev->spi->max_speed_hz);
+
+		if (has_quirk_extra_read_cycle(edev)) {
+			cmd_addr <<= 1;
+			bits += 1;
+		}
+
+		spi_message_init(&m);
+
+		t[0].tx_buf = (char *)&cmd_addr;
+		t[0].len = 2;
+		t[0].bits_per_word = bits;
+		spi_message_add_tail(&t[0], &m);
+
+		t[1].rx_buf = buf;
+		t[1].len = count;
+		t[1].bits_per_word = 8;
+		spi_message_add_tail(&t[1], &m);
+
+		err = spi_sync(edev->spi, &m);
+		/* have to wait at least Tcsl ns */
+		ndelay(250);
+
+		if (err) {
+			dev_err(&edev->spi->dev, "read %zu bytes at %d: err. %d\n",
+				nbytes, (int)off, err);
+			break;
+		}
+
+		buf += nbytes;
+		off += nbytes;
+		count -= nbytes;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (edev->pdata->finish)
 		edev->pdata->finish(edev);
 
 	mutex_unlock(&edev->lock);
+<<<<<<< HEAD
 	return ret ? : count;
+=======
+
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
@@ -118,7 +248,17 @@ static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
 		bits = 9;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(&edev->spi->dev, "ew cmd 0x%04x\n", cmd_addr);
+=======
+	if (has_quirk_instruction_length(edev)) {
+		cmd_addr <<= 2;
+		bits += 2;
+	}
+
+	dev_dbg(&edev->spi->dev, "ew%s cmd 0x%04x, %d bits\n",
+			is_on ? "en" : "ds", cmd_addr, bits);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spi_message_init(&m);
 	memset(&t, 0, sizeof(t));
@@ -163,7 +303,11 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 		bits = 10;
 		data_len = 1;
 	} else {
+<<<<<<< HEAD
 		cmd_addr |= off & 0x3f;
+=======
+		cmd_addr |= (off >> 1) & 0x3f;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bits = 9;
 		data_len = 2;
 	}
@@ -189,6 +333,7 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t
 eeprom_93xx46_bin_write(struct file *filp, struct kobject *kobj,
 			struct bin_attribute *bin_attr,
@@ -205,6 +350,19 @@ eeprom_93xx46_bin_write(struct file *filp, struct kobject *kobj,
 		return 0;
 	if ((off + count) > edev->bin.size)
 		count = edev->bin.size - off;
+=======
+static int eeprom_93xx46_write(void *priv, unsigned int off,
+				   void *val, size_t count)
+{
+	struct eeprom_93xx46_dev *edev = priv;
+	char *buf = val;
+	int i, ret, step = 1;
+
+	if (unlikely(off >= edev->size))
+		return -EFBIG;
+	if ((off + count) > edev->size)
+		count = edev->size - off;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(!count))
 		return count;
 
@@ -240,7 +398,11 @@ eeprom_93xx46_bin_write(struct file *filp, struct kobject *kobj,
 
 	/* erase/write disable */
 	eeprom_93xx46_ew(edev, 0);
+<<<<<<< HEAD
 	return ret ? : count;
+=======
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
@@ -260,6 +422,16 @@ static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
 		bits = 9;
 	}
 
+<<<<<<< HEAD
+=======
+	if (has_quirk_instruction_length(edev)) {
+		cmd_addr <<= 2;
+		bits += 2;
+	}
+
+	dev_dbg(&edev->spi->dev, "eral cmd 0x%04x, %d bits\n", cmd_addr, bits);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_message_init(&m);
 	memset(&t, 0, sizeof(t));
 
@@ -309,12 +481,107 @@ static ssize_t eeprom_93xx46_store_erase(struct device *dev,
 }
 static DEVICE_ATTR(erase, S_IWUSR, NULL, eeprom_93xx46_store_erase);
 
+<<<<<<< HEAD
+=======
+static void select_assert(void *context)
+{
+	struct eeprom_93xx46_dev *edev = context;
+
+	gpiod_set_value_cansleep(edev->pdata->select, 1);
+}
+
+static void select_deassert(void *context)
+{
+	struct eeprom_93xx46_dev *edev = context;
+
+	gpiod_set_value_cansleep(edev->pdata->select, 0);
+}
+
+static const struct of_device_id eeprom_93xx46_of_table[] = {
+	{ .compatible = "eeprom-93xx46", },
+	{ .compatible = "atmel,at93c46d", .data = &atmel_at93c46d_data, },
+	{ .compatible = "microchip,93lc46b", .data = &microchip_93lc46b_data, },
+	{}
+};
+MODULE_DEVICE_TABLE(of, eeprom_93xx46_of_table);
+
+static int eeprom_93xx46_probe_dt(struct spi_device *spi)
+{
+	const struct of_device_id *of_id =
+		of_match_device(eeprom_93xx46_of_table, &spi->dev);
+	struct device_node *np = spi->dev.of_node;
+	struct eeprom_93xx46_platform_data *pd;
+	u32 tmp;
+	int gpio;
+	enum of_gpio_flags of_flags;
+	int ret;
+
+	pd = devm_kzalloc(&spi->dev, sizeof(*pd), GFP_KERNEL);
+	if (!pd)
+		return -ENOMEM;
+
+	ret = of_property_read_u32(np, "data-size", &tmp);
+	if (ret < 0) {
+		dev_err(&spi->dev, "data-size property not found\n");
+		return ret;
+	}
+
+	if (tmp == 8) {
+		pd->flags |= EE_ADDR8;
+	} else if (tmp == 16) {
+		pd->flags |= EE_ADDR16;
+	} else {
+		dev_err(&spi->dev, "invalid data-size (%d)\n", tmp);
+		return -EINVAL;
+	}
+
+	if (of_property_read_bool(np, "read-only"))
+		pd->flags |= EE_READONLY;
+
+	gpio = of_get_named_gpio_flags(np, "select-gpios", 0, &of_flags);
+	if (gpio_is_valid(gpio)) {
+		unsigned long flags =
+			of_flags == OF_GPIO_ACTIVE_LOW ? GPIOF_ACTIVE_LOW : 0;
+
+		ret = devm_gpio_request_one(&spi->dev, gpio, flags,
+					    "eeprom_93xx46_select");
+		if (ret)
+			return ret;
+
+		pd->select = gpio_to_desc(gpio);
+		pd->prepare = select_assert;
+		pd->finish = select_deassert;
+
+		gpiod_direction_output(pd->select, 0);
+	}
+
+	if (of_id->data) {
+		const struct eeprom_93xx46_devtype_data *data = of_id->data;
+
+		pd->quirks = data->quirks;
+	}
+
+	spi->dev.platform_data = pd;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int eeprom_93xx46_probe(struct spi_device *spi)
 {
 	struct eeprom_93xx46_platform_data *pd;
 	struct eeprom_93xx46_dev *edev;
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (spi->dev.of_node) {
+		err = eeprom_93xx46_probe_dt(spi);
+		if (err < 0)
+			return err;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pd = spi->dev.platform_data;
 	if (!pd) {
 		dev_err(&spi->dev, "missing platform data\n");
@@ -337,6 +604,7 @@ static int eeprom_93xx46_probe(struct spi_device *spi)
 
 	mutex_init(&edev->lock);
 
+<<<<<<< HEAD
 	edev->spi = spi_dev_get(spi);
 	edev->pdata = pd;
 
@@ -353,6 +621,31 @@ static int eeprom_93xx46_probe(struct spi_device *spi)
 	err = sysfs_create_bin_file(&spi->dev.kobj, &edev->bin);
 	if (err)
 		goto fail;
+=======
+	edev->spi = spi;
+	edev->pdata = pd;
+
+	edev->size = 128;
+	edev->nvmem_config.name = dev_name(&spi->dev);
+	edev->nvmem_config.dev = &spi->dev;
+	edev->nvmem_config.read_only = pd->flags & EE_READONLY;
+	edev->nvmem_config.root_only = true;
+	edev->nvmem_config.owner = THIS_MODULE;
+	edev->nvmem_config.compat = true;
+	edev->nvmem_config.base_dev = &spi->dev;
+	edev->nvmem_config.reg_read = eeprom_93xx46_read;
+	edev->nvmem_config.reg_write = eeprom_93xx46_write;
+	edev->nvmem_config.priv = edev;
+	edev->nvmem_config.stride = 4;
+	edev->nvmem_config.word_size = 1;
+	edev->nvmem_config.size = edev->size;
+
+	edev->nvmem = nvmem_register(&edev->nvmem_config);
+	if (IS_ERR(edev->nvmem)) {
+		err = PTR_ERR(edev->nvmem);
+		goto fail;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&spi->dev, "%d-bit eeprom %s\n",
 		(pd->flags & EE_ADDR8) ? 8 : 16,
@@ -374,11 +667,19 @@ static int eeprom_93xx46_remove(struct spi_device *spi)
 {
 	struct eeprom_93xx46_dev *edev = spi_get_drvdata(spi);
 
+<<<<<<< HEAD
 	if (!(edev->pdata->flags & EE_READONLY))
 		device_remove_file(&spi->dev, &dev_attr_erase);
 
 	sysfs_remove_bin_file(&spi->dev.kobj, &edev->bin);
 	spi_set_drvdata(spi, NULL);
+=======
+	nvmem_unregister(edev->nvmem);
+
+	if (!(edev->pdata->flags & EE_READONLY))
+		device_remove_file(&spi->dev, &dev_attr_erase);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(edev);
 	return 0;
 }
@@ -386,7 +687,11 @@ static int eeprom_93xx46_remove(struct spi_device *spi)
 static struct spi_driver eeprom_93xx46_driver = {
 	.driver = {
 		.name	= "93xx46",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(eeprom_93xx46_of_table),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= eeprom_93xx46_probe,
 	.remove		= eeprom_93xx46_remove,
@@ -398,3 +703,7 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Driver for 93xx46 EEPROMs");
 MODULE_AUTHOR("Anatolij Gustschin <agust@denx.de>");
 MODULE_ALIAS("spi:93xx46");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("spi:eeprom-93xx46");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

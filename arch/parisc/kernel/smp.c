@@ -62,9 +62,15 @@ static int smp_debug_lvl = 0;
 volatile struct task_struct *smp_init_current_idle_task;
 
 /* track which CPU is booting */
+<<<<<<< HEAD
 static volatile int cpu_now_booting __cpuinitdata;
 
 static int parisc_max_cpus __cpuinitdata = 1;
+=======
+static volatile int cpu_now_booting;
+
+static int parisc_max_cpus = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_PER_CPU(spinlock_t, ipi_lock);
 
@@ -72,7 +78,10 @@ enum ipi_message_type {
 	IPI_NOP=0,
 	IPI_RESCHEDULE=1,
 	IPI_CALL_FUNC,
+<<<<<<< HEAD
 	IPI_CALL_FUNC_SINGLE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IPI_CPU_START,
 	IPI_CPU_STOP,
 	IPI_CPU_TEST
@@ -126,11 +135,14 @@ ipi_interrupt(int irq, void *dev_id)
 	unsigned long ops;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	/* Count this now; we may make a call that never returns. */
 	inc_irq_stat(irq_call_count);
 
 	mb();	/* Order interrupt and bit testing. */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (;;) {
 		spinlock_t *lock = &per_cpu(ipi_lock, this_cpu);
 		spin_lock_irqsave(lock, flags);
@@ -164,11 +176,14 @@ ipi_interrupt(int irq, void *dev_id)
 				generic_smp_call_function_interrupt();
 				break;
 
+<<<<<<< HEAD
 			case IPI_CALL_FUNC_SINGLE:
 				smp_debug(100, KERN_DEBUG "CPU%d IPI_CALL_FUNC_SINGLE\n", this_cpu);
 				generic_smp_call_function_single_interrupt();
 				break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			case IPI_CPU_START:
 				smp_debug(100, KERN_DEBUG "CPU%d IPI_CPU_START\n", this_cpu);
 				break;
@@ -241,9 +256,12 @@ send_IPI_allbutself(enum ipi_message_type op)
 inline void 
 smp_send_stop(void)	{ send_IPI_allbutself(IPI_CPU_STOP); }
 
+<<<<<<< HEAD
 static inline void
 smp_send_start(void)	{ send_IPI_allbutself(IPI_CPU_START); }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void 
 smp_send_reschedule(int cpu) { send_IPI_single(cpu, IPI_RESCHEDULE); }
 
@@ -260,7 +278,11 @@ void arch_send_call_function_ipi_mask(const struct cpumask *mask)
 
 void arch_send_call_function_single_ipi(int cpu)
 {
+<<<<<<< HEAD
 	send_IPI_single(cpu, IPI_CALL_FUNC_SINGLE);
+=======
+	send_IPI_single(cpu, IPI_CALL_FUNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -319,7 +341,11 @@ void __init smp_callin(void)
 
 	local_irq_enable();  /* Interrupts have been off until now */
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* NOTREACHED */
 	panic("smp_callin() AAAAaaaaahhhh....\n");
@@ -328,7 +354,11 @@ void __init smp_callin(void)
 /*
  * Bring one cpu online.
  */
+<<<<<<< HEAD
 int __cpuinit smp_boot_one_cpu(int cpuid, struct task_struct *idle)
+=======
+int smp_boot_one_cpu(int cpuid, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const struct cpuinfo_parisc *p = &per_cpu(cpu_data, cpuid);
 	long timeout;
@@ -424,10 +454,17 @@ void smp_cpus_done(unsigned int cpu_max)
 }
 
 
+<<<<<<< HEAD
 int __cpuinit __cpu_up(unsigned int cpu, struct task_struct *tidle)
 {
 	if (cpu != 0 && cpu < parisc_max_cpus)
 		smp_boot_one_cpu(cpu, tidle);
+=======
+int __cpu_up(unsigned int cpu, struct task_struct *tidle)
+{
+	if (cpu != 0 && cpu < parisc_max_cpus && smp_boot_one_cpu(cpu, tidle))
+		return -ENOSYS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return cpu_online(cpu) ? 0 : -ENOSYS;
 }

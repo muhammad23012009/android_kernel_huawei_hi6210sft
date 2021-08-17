@@ -33,9 +33,17 @@ SECTIONS {
 		EXIT_TEXT
 		EXIT_CALL
 		SCHED_TEXT
+<<<<<<< HEAD
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+=======
+		CPUIDLE_TEXT
+		LOCK_TEXT
+		KPROBES_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		. = ALIGN (4) ;
 		_etext = . ;
 	}
@@ -51,6 +59,10 @@ SECTIONS {
 	. = ALIGN(16);
 	RODATA
 	EXCEPTION_TABLE(16)
+<<<<<<< HEAD
+=======
+	NOTES
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * sdata2 section can go anywhere, but must be word aligned

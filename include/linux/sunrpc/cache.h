@@ -46,10 +46,19 @@
  * 
  */
 struct cache_head {
+<<<<<<< HEAD
 	struct cache_head * next;
 	time_t		expiry_time;	/* After time time, don't use the data */
 	time_t		last_refresh;   /* If CACHE_PENDING, this is when upcall 
 					 * was sent, else this is when update was received
+=======
+	struct hlist_node	cache_list;
+	time_t		expiry_time;	/* After time time, don't use the data */
+	time_t		last_refresh;   /* If CACHE_PENDING, this is when upcall was
+					 * sent, else this is when update was
+					 * received, though it is alway set to
+					 * be *after* ->flush_time.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 */
 	struct kref	ref;
 	unsigned long	flags;
@@ -57,6 +66,10 @@ struct cache_head {
 #define	CACHE_VALID	0	/* Entry contains valid data */
 #define	CACHE_NEGATIVE	1	/* Negative entry - there is no match for the key */
 #define	CACHE_PENDING	2	/* An upcall has been sent but no reply received yet*/
+<<<<<<< HEAD
+=======
+#define	CACHE_CLEANED	3	/* Entry has been cleaned from cache */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define	CACHE_NEW_EXPIRY 120	/* keep new things pending confirmation for 120 seconds */
 
@@ -72,11 +85,17 @@ struct cache_detail_pipefs {
 struct cache_detail {
 	struct module *		owner;
 	int			hash_size;
+<<<<<<< HEAD
 	struct cache_head **	hash_table;
 	rwlock_t		hash_lock;
 
 	atomic_t		inuse; /* active user-space update or lookup */
 
+=======
+	struct hlist_head *	hash_table;
+	rwlock_t		hash_lock;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char			*name;
 	void			(*cache_put)(struct kref *);
 
@@ -104,8 +123,17 @@ struct cache_detail {
 	/* fields below this comment are for internal use
 	 * and should not be touched by cache owners
 	 */
+<<<<<<< HEAD
 	time_t			flush_time;		/* flush all cache items with last_refresh
 							 * earlier than this */
+=======
+	time_t			flush_time;		/* flush all cache items with
+							 * last_refresh at or earlier
+							 * than this.  last_refresh
+							 * is never set at or earlier
+							 * than this.
+							 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head	others;
 	time_t			nextcheck;
 	int			entries;
@@ -148,6 +176,27 @@ struct cache_deferred_req {
 					   int too_many);
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * timestamps kept in the cache are expressed in seconds
+ * since boot.  This is the best for measuring differences in
+ * real time.
+ */
+static inline time_t seconds_since_boot(void)
+{
+	struct timespec boot;
+	getboottime(&boot);
+	return get_seconds() - boot.tv_sec;
+}
+
+static inline time_t convert_to_wallclock(time_t sinceboot)
+{
+	struct timespec boot;
+	getboottime(&boot);
+	return boot.tv_sec + sinceboot;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern const struct file_operations cache_file_operations_pipefs;
 extern const struct file_operations content_file_operations_pipefs;
@@ -181,6 +230,7 @@ static inline void cache_put(struct cache_head *h, struct cache_detail *cd)
 	kref_put(&h->ref, cd->cache_put);
 }
 
+<<<<<<< HEAD
 static inline int cache_valid(struct cache_head *h)
 {
 	/* If an item has been unhashed pending removal when
@@ -190,6 +240,12 @@ static inline int cache_valid(struct cache_head *h)
 	 * set.
 	 */
 	return (h->expiry_time != 0 && test_bit(CACHE_VALID, &h->flags));
+=======
+static inline int cache_is_expired(struct cache_detail *detail, struct cache_head *h)
+{
+	return  (h->expiry_time < seconds_since_boot()) ||
+		(detail->flush_time >= h->last_refresh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 extern int cache_check(struct cache_detail *detail,
@@ -210,6 +266,14 @@ extern int sunrpc_cache_register_pipefs(struct dentry *parent, const char *,
 					umode_t, struct cache_detail *);
 extern void sunrpc_cache_unregister_pipefs(struct cache_detail *);
 
+<<<<<<< HEAD
+=======
+/* Must store cache_detail in seq_file->private if using next three functions */
+extern void *cache_seq_start(struct seq_file *file, loff_t *pos);
+extern void *cache_seq_next(struct seq_file *file, void *p, loff_t *pos);
+extern void cache_seq_stop(struct seq_file *file, void *p);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void qword_add(char **bpp, int *lp, char *str);
 extern void qword_addhex(char **bpp, int *lp, char *buf, int blen);
 extern int qword_get(char **bpp, char *dest, int bufsize);
@@ -250,6 +314,7 @@ static inline int get_uint(char **bpp, unsigned int *anint)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * timestamps kept in the cache are expressed in seconds
  * since boot.  This is the best for measuring differences in
@@ -267,14 +332,39 @@ static inline time_t convert_to_wallclock(time_t sinceboot)
 	struct timespec boot;
 	getboottime(&boot);
 	return boot.tv_sec + sinceboot;
+=======
+static inline int get_time(char **bpp, time_t *time)
+{
+	char buf[50];
+	long long ll;
+	int len = qword_get(bpp, buf, sizeof(buf));
+
+	if (len < 0)
+		return -EINVAL;
+	if (len == 0)
+		return -ENOENT;
+
+	if (kstrtoll(buf, 0, &ll))
+		return -EINVAL;
+
+	*time = (time_t)ll;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline time_t get_expiry(char **bpp)
 {
+<<<<<<< HEAD
 	int rv;
 	struct timespec boot;
 
 	if (get_int(bpp, &rv))
+=======
+	time_t rv;
+	struct timespec boot;
+
+	if (get_time(bpp, &rv))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	if (rv < 0)
 		return 0;

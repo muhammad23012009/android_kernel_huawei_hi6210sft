@@ -14,13 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
 #include <linux/io.h>
 #include <linux/delay.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/tegra-soc.h>
+=======
+
+#include <soc/tegra/fuse.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "clk.h"
 
@@ -36,8 +44,11 @@ static DEFINE_SPINLOCK(periph_ref_lock);
 
 #define read_rst(gate) \
 	readl_relaxed(gate->clk_base + (gate->regs->rst_reg))
+<<<<<<< HEAD
 #define write_rst_set(val, gate) \
 	writel_relaxed(val, gate->clk_base + (gate->regs->rst_set_reg))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define write_rst_clr(val, gate) \
 	writel_relaxed(val, gate->clk_base + (gate->regs->rst_clr_reg))
 
@@ -123,6 +134,7 @@ static void clk_periph_disable(struct clk_hw *hw)
 	spin_unlock_irqrestore(&periph_ref_lock, flags);
 }
 
+<<<<<<< HEAD
 void tegra_periph_reset(struct tegra_clk_periph_gate *gate, bool assert)
 {
 	if (gate->flags & TEGRA_PERIPH_NO_RESET)
@@ -143,6 +155,8 @@ void tegra_periph_reset(struct tegra_clk_periph_gate *gate, bool assert)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const struct clk_ops tegra_clk_periph_gate_ops = {
 	.is_enabled = clk_periph_is_enabled,
 	.enable = clk_periph_enable,
@@ -151,12 +165,24 @@ const struct clk_ops tegra_clk_periph_gate_ops = {
 
 struct clk *tegra_clk_register_periph_gate(const char *name,
 		const char *parent_name, u8 gate_flags, void __iomem *clk_base,
+<<<<<<< HEAD
 		unsigned long flags, int clk_num,
 		struct tegra_clk_periph_regs *pregs, int *enable_refcnt)
+=======
+		unsigned long flags, int clk_num, int *enable_refcnt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct tegra_clk_periph_gate *gate;
 	struct clk *clk;
 	struct clk_init_data init;
+<<<<<<< HEAD
+=======
+	const struct tegra_clk_periph_regs *pregs;
+
+	pregs = get_reg_bank(clk_num);
+	if (!pregs)
+		return ERR_PTR(-EINVAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	gate = kzalloc(sizeof(*gate), GFP_KERNEL);
 	if (!gate) {

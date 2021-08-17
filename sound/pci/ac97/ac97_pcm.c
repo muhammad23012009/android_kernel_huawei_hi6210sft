@@ -604,7 +604,13 @@ int snd_ac97_pcm_open(struct ac97_pcm *pcm, unsigned int rate,
 		}
 		if (!ok_flag) {
 			spin_unlock_irq(&pcm->bus->bus_lock);
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "cannot find configuration for AC97 slot %i\n", i);
+=======
+			dev_err(bus->card->dev,
+				"cannot find configuration for AC97 slot %i\n",
+				i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EAGAIN;
 			goto error;
 		}
@@ -618,15 +624,31 @@ int snd_ac97_pcm_open(struct ac97_pcm *pcm, unsigned int rate,
 			if (pcm->r[r].rslots[cidx] & (1 << i)) {
 				reg = get_slot_reg(pcm, cidx, i, r);
 				if (reg == 0xff) {
+<<<<<<< HEAD
 					snd_printk(KERN_ERR "invalid AC97 slot %i?\n", i);
+=======
+					dev_err(bus->card->dev,
+						"invalid AC97 slot %i?\n", i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					continue;
 				}
 				if (reg_ok[cidx] & (1 << (reg - AC97_PCM_FRONT_DAC_RATE)))
 					continue;
+<<<<<<< HEAD
 				//printk(KERN_DEBUG "setting ac97 reg 0x%x to rate %d\n", reg, rate);
 				err = snd_ac97_set_rate(pcm->r[r].codec[cidx], reg, rate);
 				if (err < 0)
 					snd_printk(KERN_ERR "error in snd_ac97_set_rate: cidx=%d, reg=0x%x, rate=%d, err=%d\n", cidx, reg, rate, err);
+=======
+				dev_dbg(bus->card->dev,
+					"setting ac97 reg 0x%x to rate %d\n",
+					reg, rate);
+				err = snd_ac97_set_rate(pcm->r[r].codec[cidx], reg, rate);
+				if (err < 0)
+					dev_err(bus->card->dev,
+						"error in snd_ac97_set_rate: cidx=%d, reg=0x%x, rate=%d, err=%d\n",
+						cidx, reg, rate, err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				else
 					reg_ok[cidx] |= (1 << (reg - AC97_PCM_FRONT_DAC_RATE));
 			}

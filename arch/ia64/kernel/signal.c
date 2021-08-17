@@ -46,7 +46,11 @@ restore_sigcontext (struct sigcontext __user *sc, struct sigscratch *scr)
 	long err;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* restore scratch that always needs gets updated during signal delivery: */
 	err  = __get_user(flags, &sc->sc_flags);
@@ -105,7 +109,11 @@ restore_sigcontext (struct sigcontext __user *sc, struct sigscratch *scr)
 }
 
 int
+<<<<<<< HEAD
 copy_siginfo_to_user (siginfo_t __user *to, siginfo_t *from)
+=======
+copy_siginfo_to_user (siginfo_t __user *to, const siginfo_t *from)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!access_ok(VERIFY_WRITE, to, sizeof(siginfo_t)))
 		return -EFAULT;
@@ -309,12 +317,20 @@ force_sigsegv_info (int sig, void __user *addr)
 	si.si_uid = from_kuid_munged(current_user_ns(), current_uid());
 	si.si_addr = addr;
 	force_sig_info(SIGSEGV, &si, current);
+<<<<<<< HEAD
 	return 0;
 }
 
 static long
 setup_frame (int sig, struct k_sigaction *ka, siginfo_t *info, sigset_t *set,
 	     struct sigscratch *scr)
+=======
+	return 1;
+}
+
+static long
+setup_frame(struct ksignal *ksig, sigset_t *set, struct sigscratch *scr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	extern char __kernel_sigtramp[];
 	unsigned long tramp_addr, new_rbs = 0, new_sp;
@@ -323,7 +339,11 @@ setup_frame (int sig, struct k_sigaction *ka, siginfo_t *info, sigset_t *set,
 
 	new_sp = scr->pt.r12;
 	tramp_addr = (unsigned long) __kernel_sigtramp;
+<<<<<<< HEAD
 	if (ka->sa.sa_flags & SA_ONSTACK) {
+=======
+	if (ksig->ka.sa.sa_flags & SA_ONSTACK) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int onstack = sas_ss_flags(new_sp);
 
 		if (onstack == 0) {
@@ -347,29 +367,49 @@ setup_frame (int sig, struct k_sigaction *ka, siginfo_t *info, sigset_t *set,
 			 */
 			check_sp = (new_sp - sizeof(*frame)) & -STACK_ALIGN;
 			if (!likely(on_sig_stack(check_sp)))
+<<<<<<< HEAD
 				return force_sigsegv_info(sig, (void __user *)
+=======
+				return force_sigsegv_info(ksig->sig, (void __user *)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							  check_sp);
 		}
 	}
 	frame = (void __user *) ((new_sp - sizeof(*frame)) & -STACK_ALIGN);
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+<<<<<<< HEAD
 		return force_sigsegv_info(sig, frame);
 
 	err  = __put_user(sig, &frame->arg0);
+=======
+		return force_sigsegv_info(ksig->sig, frame);
+
+	err  = __put_user(ksig->sig, &frame->arg0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err |= __put_user(&frame->info, &frame->arg1);
 	err |= __put_user(&frame->sc, &frame->arg2);
 	err |= __put_user(new_rbs, &frame->sc.sc_rbs_base);
 	err |= __put_user(0, &frame->sc.sc_loadrs);	/* initialize to zero */
+<<<<<<< HEAD
 	err |= __put_user(ka->sa.sa_handler, &frame->handler);
 
 	err |= copy_siginfo_to_user(&frame->info, info);
+=======
+	err |= __put_user(ksig->ka.sa.sa_handler, &frame->handler);
+
+	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err |= __save_altstack(&frame->sc.sc_stack, scr->pt.r12);
 	err |= setup_sigcontext(&frame->sc, set, scr);
 
 	if (unlikely(err))
+<<<<<<< HEAD
 		return force_sigsegv_info(sig, frame);
+=======
+		return force_sigsegv_info(ksig->sig, frame);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	scr->pt.r12 = (unsigned long) frame - 16;	/* new stack pointer */
 	scr->pt.ar_fpsr = FPSR_DEFAULT;			/* reset fpsr for signal handler */
@@ -394,6 +434,7 @@ setup_frame (int sig, struct k_sigaction *ka, siginfo_t *info, sigset_t *set,
 
 #if DEBUG_SIG
 	printk("SIG deliver (%s:%d): sig=%d sp=%lx ip=%lx handler=%p\n",
+<<<<<<< HEAD
 	       current->comm, current->pid, sig, scr->pt.r12, frame->sc.sc_ip, frame->handler);
 #endif
 	return 1;
@@ -410,6 +451,22 @@ handle_signal (unsigned long sig, struct k_sigaction *ka, siginfo_t *info,
 				 test_thread_flag(TIF_SINGLESTEP));
 
 	return 1;
+=======
+	       current->comm, current->pid, ksig->sig, scr->pt.r12, frame->sc.sc_ip, frame->handler);
+#endif
+	return 0;
+}
+
+static long
+handle_signal (struct ksignal *ksig, struct sigscratch *scr)
+{
+	int ret = setup_frame(ksig, sigmask_to_save(), scr);
+
+	if (!ret)
+		signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP));
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -419,17 +476,27 @@ handle_signal (unsigned long sig, struct k_sigaction *ka, siginfo_t *info,
 void
 ia64_do_signal (struct sigscratch *scr, long in_syscall)
 {
+<<<<<<< HEAD
 	struct k_sigaction ka;
 	siginfo_t info;
 	long restart = in_syscall;
 	long errno = scr->pt.r8;
+=======
+	long restart = in_syscall;
+	long errno = scr->pt.r8;
+	struct ksignal ksig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * This only loops in the rare cases of handle_signal() failing, in which case we
 	 * need to push through a forced SIGSEGV.
 	 */
 	while (1) {
+<<<<<<< HEAD
 		int signr = get_signal_to_deliver(&info, &ka, &scr->pt, NULL);
+=======
+		get_signal(&ksig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * get_signal_to_deliver() may have run a debugger (via notify_parent())
@@ -446,7 +513,11 @@ ia64_do_signal (struct sigscratch *scr, long in_syscall)
 			 */
 			restart = 0;
 
+<<<<<<< HEAD
 		if (signr <= 0)
+=======
+		if (ksig.sig <= 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		if (unlikely(restart)) {
@@ -458,7 +529,11 @@ ia64_do_signal (struct sigscratch *scr, long in_syscall)
 				break;
 
 			      case ERESTARTSYS:
+<<<<<<< HEAD
 				if ((ka.sa.sa_flags & SA_RESTART) == 0) {
+=======
+				if ((ksig.ka.sa.sa_flags & SA_RESTART) == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					scr->pt.r8 = EINTR;
 					/* note: scr->pt.r10 is already -1 */
 					break;
@@ -473,7 +548,11 @@ ia64_do_signal (struct sigscratch *scr, long in_syscall)
 		 * Whee!  Actually deliver the signal.  If the delivery failed, we need to
 		 * continue to iterate in this loop so we can deliver the SIGSEGV...
 		 */
+<<<<<<< HEAD
 		if (handle_signal(signr, &ka, &info, scr))
+=======
+		if (handle_signal(&ksig, scr))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 	}
 

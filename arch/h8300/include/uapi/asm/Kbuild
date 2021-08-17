@@ -3,7 +3,10 @@ include include/uapi/asm-generic/Kbuild.asm
 
 header-y += auxvec.h
 header-y += bitsperlong.h
+<<<<<<< HEAD
 header-y += byteorder.h
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += errno.h
 header-y += fcntl.h
 header-y += ioctl.h
@@ -15,14 +18,21 @@ header-y += msgbuf.h
 header-y += param.h
 header-y += poll.h
 header-y += posix_types.h
+<<<<<<< HEAD
 header-y += ptrace.h
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += resource.h
 header-y += sembuf.h
 header-y += setup.h
 header-y += shmbuf.h
+<<<<<<< HEAD
 header-y += sigcontext.h
 header-y += siginfo.h
 header-y += signal.h
+=======
+header-y += siginfo.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += socket.h
 header-y += sockios.h
 header-y += stat.h

@@ -290,7 +290,11 @@ u32 vfp_estimate_sqrt_significand(u32 exponent, u32 significand)
 	u32 z, a;
 
 	if ((significand & 0xc0000000) != 0x40000000) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "VFP: estimate_sqrt: invalid significand\n");
+=======
+		pr_warn("VFP: estimate_sqrt: invalid significand\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	a = significand << 1;
@@ -915,6 +919,11 @@ vfp_single_multiply_accumulate(int sd, int sn, s32 m, u32 fpscr, u32 negate, cha
 	v = vfp_get_float(sd);
 	pr_debug("VFP: s%u = %08x\n", sd, v);
 	vfp_single_unpack(&vsn, v);
+<<<<<<< HEAD
+=======
+	if (vsn.exponent == 0 && vsn.significand)
+		vfp_single_normalise_denormal(&vsn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (negate & NEG_SUBTRACT)
 		vsn.sign = vfp_sign_negate(vsn.sign);
 

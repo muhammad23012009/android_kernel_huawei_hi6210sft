@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,6 +81,10 @@ void acpi_ds_scope_stack_clear(struct acpi_walk_state *walk_state)
 				  "Popped object type (%s)\n",
 				  acpi_ut_get_type_name(scope_info->common.
 							value)));
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		acpi_ut_delete_generic_state(scope_info);
 	}
 }

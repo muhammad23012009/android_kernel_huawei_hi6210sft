@@ -25,12 +25,18 @@ struct dccp6_sock {
 
 struct dccp6_request_sock {
 	struct dccp_request_sock  dccp;
+<<<<<<< HEAD
 	struct inet6_request_sock inet6;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct dccp6_timewait_sock {
 	struct inet_timewait_sock   inet;
+<<<<<<< HEAD
 	struct inet6_timewait_sock  tw6;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* _DCCP_IPV6_H */

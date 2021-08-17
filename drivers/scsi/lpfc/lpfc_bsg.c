@@ -1,7 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2009-2012 Emulex.  All rights reserved.           *
+=======
+ * Copyright (C) 2009-2015 Emulex.  All rights reserved.           *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
  *                                                                 *
@@ -317,6 +321,14 @@ lpfc_bsg_send_mgmt_cmd_cmp(struct lpfc_hba *phba,
 	}
 	spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
 
+<<<<<<< HEAD
+=======
+	/* Close the timeout handler abort window */
+	spin_lock_irqsave(&phba->hbalock, flags);
+	cmdiocbq->iocb_flag &= ~LPFC_IO_CMD_OUTSTANDING;
+	spin_unlock_irqrestore(&phba->hbalock, flags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iocb = &dd_data->context_un.iocb;
 	ndlp = iocb->ndlp;
 	rmp = iocb->rmp;
@@ -387,6 +399,10 @@ lpfc_bsg_send_mgmt_cmd(struct fc_bsg_job *job)
 	int request_nseg;
 	int reply_nseg;
 	struct bsg_job_data *dd_data;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t creg_val;
 	int rc = 0;
 	int iocb_stat;
@@ -501,6 +517,7 @@ lpfc_bsg_send_mgmt_cmd(struct fc_bsg_job *job)
 	}
 
 	iocb_stat = lpfc_sli_issue_iocb(phba, LPFC_ELS_RING, cmdiocbq, 0);
+<<<<<<< HEAD
 	if (iocb_stat == IOCB_SUCCESS)
 		return 0; /* done for now */
 	else if (iocb_stat == IOCB_BUSY)
@@ -509,6 +526,26 @@ lpfc_bsg_send_mgmt_cmd(struct fc_bsg_job *job)
 		rc = -EIO;
 
 	/* iocb failed so cleanup */
+=======
+
+	if (iocb_stat == IOCB_SUCCESS) {
+		spin_lock_irqsave(&phba->hbalock, flags);
+		/* make sure the I/O had not been completed yet */
+		if (cmdiocbq->iocb_flag & LPFC_IO_LIBDFC) {
+			/* open up abort window to timeout handler */
+			cmdiocbq->iocb_flag |= LPFC_IO_CMD_OUTSTANDING;
+		}
+		spin_unlock_irqrestore(&phba->hbalock, flags);
+		return 0; /* done for now */
+	} else if (iocb_stat == IOCB_BUSY) {
+		rc = -EAGAIN;
+	} else {
+		rc = -EIO;
+	}
+
+	/* iocb failed so cleanup */
+	job->dd_data = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 free_rmp:
 	lpfc_free_bsg_buffers(phba, rmp);
@@ -577,6 +614,14 @@ lpfc_bsg_rport_els_cmp(struct lpfc_hba *phba,
 	}
 	spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
 
+<<<<<<< HEAD
+=======
+	/* Close the timeout handler abort window */
+	spin_lock_irqsave(&phba->hbalock, flags);
+	cmdiocbq->iocb_flag &= ~LPFC_IO_CMD_OUTSTANDING;
+	spin_unlock_irqrestore(&phba->hbalock, flags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rsp = &rspiocbq->iocb;
 	pcmd = (struct lpfc_dmabuf *)cmdiocbq->context2;
 	prsp = (struct lpfc_dmabuf *)pcmd->list.next;
@@ -635,10 +680,17 @@ lpfc_bsg_rport_els(struct fc_bsg_job *job)
 	struct lpfc_nodelist *ndlp = rdata->pnode;
 	uint32_t elscmd;
 	uint32_t cmdsize;
+<<<<<<< HEAD
 	uint32_t rspsize;
 	struct lpfc_iocbq *cmdiocbq;
 	uint16_t rpi = 0;
 	struct bsg_job_data *dd_data;
+=======
+	struct lpfc_iocbq *cmdiocbq;
+	uint16_t rpi = 0;
+	struct bsg_job_data *dd_data;
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t creg_val;
 	int rc = 0;
 
@@ -665,7 +717,10 @@ lpfc_bsg_rport_els(struct fc_bsg_job *job)
 
 	elscmd = job->request->rqst_data.r_els.els_code;
 	cmdsize = job->request_payload.payload_len;
+<<<<<<< HEAD
 	rspsize = job->reply_payload.payload_len;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!lpfc_nlp_get(ndlp)) {
 		rc = -ENODEV;
@@ -721,6 +776,7 @@ lpfc_bsg_rport_els(struct fc_bsg_job *job)
 
 	rc = lpfc_sli_issue_iocb(phba, LPFC_ELS_RING, cmdiocbq, 0);
 
+<<<<<<< HEAD
 	if (rc == IOCB_SUCCESS)
 		return 0; /* done for now */
 	else if (rc == IOCB_BUSY)
@@ -730,6 +786,27 @@ lpfc_bsg_rport_els(struct fc_bsg_job *job)
 
 linkdown_err:
 
+=======
+	if (rc == IOCB_SUCCESS) {
+		spin_lock_irqsave(&phba->hbalock, flags);
+		/* make sure the I/O had not been completed/released */
+		if (cmdiocbq->iocb_flag & LPFC_IO_LIBDFC) {
+			/* open up abort window to timeout handler */
+			cmdiocbq->iocb_flag |= LPFC_IO_CMD_OUTSTANDING;
+		}
+		spin_unlock_irqrestore(&phba->hbalock, flags);
+		return 0; /* done for now */
+	} else if (rc == IOCB_BUSY) {
+		rc = -EAGAIN;
+	} else {
+		rc = -EIO;
+	}
+
+	/* iocb failed so cleanup */
+	job->dd_data = NULL;
+
+linkdown_err:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmdiocbq->context1 = ndlp;
 	lpfc_els_free_iocb(phba, cmdiocbq);
 
@@ -874,7 +951,10 @@ lpfc_bsg_ct_unsol_event(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 {
 	uint32_t evt_req_id = 0;
 	uint32_t cmd;
+<<<<<<< HEAD
 	uint32_t len;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lpfc_dmabuf *dmabuf = NULL;
 	struct lpfc_bsg_event *evt;
 	struct event_data *evt_dat = NULL;
@@ -916,7 +996,10 @@ lpfc_bsg_ct_unsol_event(struct lpfc_hba *phba, struct lpfc_sli_ring *pring,
 	ct_req = (struct lpfc_sli_ct_request *)dmabuf->virt;
 	evt_req_id = ct_req->FsType;
 	cmd = ct_req->CommandResponse.bits.CmdRsp;
+<<<<<<< HEAD
 	len = ct_req->CommandResponse.bits.Size;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(phba->sli3_options & LPFC_SLI3_HBQ_ENABLED))
 		lpfc_sli_ringpostbuf_put(phba, pring, dmabuf);
 
@@ -1249,7 +1332,11 @@ lpfc_bsg_hba_get_event(struct fc_bsg_job *job)
 	struct lpfc_hba *phba = vport->phba;
 	struct get_ct_event *event_req;
 	struct get_ct_event_reply *event_reply;
+<<<<<<< HEAD
 	struct lpfc_bsg_event *evt;
+=======
+	struct lpfc_bsg_event *evt, *evt_next;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct event_data *evt_dat = NULL;
 	unsigned long flags;
 	uint32_t rc = 0;
@@ -1269,7 +1356,11 @@ lpfc_bsg_hba_get_event(struct fc_bsg_job *job)
 	event_reply = (struct get_ct_event_reply *)
 		job->reply->reply_data.vendor_reply.vendor_rsp;
 	spin_lock_irqsave(&phba->ct_ev_lock, flags);
+<<<<<<< HEAD
 	list_for_each_entry(evt, &phba->ct_ev_waiters, node) {
+=======
+	list_for_each_entry_safe(evt, evt_next, &phba->ct_ev_waiters, node) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (evt->reg_id == event_req->ev_reg_id) {
 			if (list_empty(&evt->events_to_get))
 				break;
@@ -1370,6 +1461,14 @@ lpfc_issue_ct_rsp_cmp(struct lpfc_hba *phba,
 	}
 	spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
 
+<<<<<<< HEAD
+=======
+	/* Close the timeout handler abort window */
+	spin_lock_irqsave(&phba->hbalock, flags);
+	cmdiocbq->iocb_flag &= ~LPFC_IO_CMD_OUTSTANDING;
+	spin_unlock_irqrestore(&phba->hbalock, flags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ndlp = dd_data->context_un.iocb.ndlp;
 	cmp = cmdiocbq->context2;
 	bmp = cmdiocbq->context3;
@@ -1433,6 +1532,10 @@ lpfc_issue_ct_rsp(struct lpfc_hba *phba, struct fc_bsg_job *job, uint32_t tag,
 	int rc = 0;
 	struct lpfc_nodelist *ndlp = NULL;
 	struct bsg_job_data *dd_data;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t creg_val;
 
 	/* allocate our bsg tracking structure */
@@ -1542,8 +1645,24 @@ lpfc_issue_ct_rsp(struct lpfc_hba *phba, struct fc_bsg_job *job, uint32_t tag,
 
 	rc = lpfc_sli_issue_iocb(phba, LPFC_ELS_RING, ctiocb, 0);
 
+<<<<<<< HEAD
 	if (rc == IOCB_SUCCESS)
 		return 0; /* done for now */
+=======
+	if (rc == IOCB_SUCCESS) {
+		spin_lock_irqsave(&phba->hbalock, flags);
+		/* make sure the I/O had not been completed/released */
+		if (ctiocb->iocb_flag & LPFC_IO_LIBDFC) {
+			/* open up abort window to timeout handler */
+			ctiocb->iocb_flag |= LPFC_IO_CMD_OUTSTANDING;
+		}
+		spin_unlock_irqrestore(&phba->hbalock, flags);
+		return 0; /* done for now */
+	}
+
+	/* iocb failed so cleanup */
+	job->dd_data = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 issue_ct_rsp_exit:
 	lpfc_sli_release_iocbq(phba, ctiocb);
@@ -2202,7 +2321,10 @@ lpfc_sli4_bsg_diag_mode_end(struct fc_bsg_job *job)
 	i = 0;
 	while (phba->link_state != LPFC_LINK_DOWN) {
 		if (i++ > timeout) {
+<<<<<<< HEAD
 			rc = -ETIMEDOUT;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			lpfc_printf_log(phba, KERN_INFO, LOG_LIBDFC,
 					"3140 Timeout waiting for link to "
 					"diagnostic mode_end, timeout:%d ms\n",
@@ -2242,7 +2364,10 @@ lpfc_sli4_bsg_link_diag_test(struct fc_bsg_job *job)
 	LPFC_MBOXQ_t *pmboxq;
 	struct sli4_link_diag *link_diag_test_cmd;
 	uint32_t req_len, alloc_len;
+<<<<<<< HEAD
 	uint32_t timeout;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lpfc_mbx_run_link_diag_test *run_link_diag_test;
 	union lpfc_sli4_cfg_shdr *shdr;
 	uint32_t shdr_status, shdr_add_status;
@@ -2293,7 +2418,10 @@ lpfc_sli4_bsg_link_diag_test(struct fc_bsg_job *job)
 
 	link_diag_test_cmd = (struct sli4_link_diag *)
 			 job->request->rqst_data.h_vendor.vendor_cmd;
+<<<<<<< HEAD
 	timeout = link_diag_test_cmd->timeout * 100;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = lpfc_sli4_bsg_set_link_diag_state(phba, 1);
 
@@ -2498,7 +2626,11 @@ static int lpfcdiag_loop_get_xri(struct lpfc_hba *phba, uint16_t rpi,
 	struct lpfc_sli_ct_request *ctreq = NULL;
 	int ret_val = 0;
 	int time_left;
+<<<<<<< HEAD
 	int iocb_stat = 0;
+=======
+	int iocb_stat = IOCB_SUCCESS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	*txxri = 0;
@@ -2574,12 +2706,20 @@ static int lpfcdiag_loop_get_xri(struct lpfc_hba *phba, uint16_t rpi,
 
 	cmdiocbq->iocb_flag |= LPFC_IO_LIBDFC;
 	cmdiocbq->vport = phba->pport;
+<<<<<<< HEAD
+=======
+	cmdiocbq->iocb_cmpl = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iocb_stat = lpfc_sli_issue_iocb_wait(phba, LPFC_ELS_RING, cmdiocbq,
 				rspiocbq,
 				(phba->fc_ratov * 2)
 				+ LPFC_DRVR_TIMEOUT);
+<<<<<<< HEAD
 	if (iocb_stat) {
+=======
+	if ((iocb_stat != IOCB_SUCCESS) || (rsp->ulpStatus != IOSTAT_SUCCESS)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret_val = -EIO;
 		goto err_get_xri_exit;
 	}
@@ -2627,7 +2767,11 @@ err_get_xri_exit:
  * @phba: Pointer to HBA context object
  *
  * This function allocates BSG_MBOX_SIZE (4KB) page size dma buffer and.
+<<<<<<< HEAD
  * retruns the pointer to the buffer.
+=======
+ * returns the pointer to the buffer.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  **/
 static struct lpfc_dmabuf *
 lpfc_bsg_dma_page_alloc(struct lpfc_hba *phba)
@@ -2643,14 +2787,22 @@ lpfc_bsg_dma_page_alloc(struct lpfc_hba *phba)
 	INIT_LIST_HEAD(&dmabuf->list);
 
 	/* now, allocate dma buffer */
+<<<<<<< HEAD
 	dmabuf->virt = dma_alloc_coherent(&pcidev->dev, BSG_MBOX_SIZE,
 					  &(dmabuf->phys), GFP_KERNEL);
+=======
+	dmabuf->virt = dma_zalloc_coherent(&pcidev->dev, BSG_MBOX_SIZE,
+					   &(dmabuf->phys), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!dmabuf->virt) {
 		kfree(dmabuf);
 		return NULL;
 	}
+<<<<<<< HEAD
 	memset((uint8_t *)dmabuf->virt, 0, BSG_MBOX_SIZE);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return dmabuf;
 }
@@ -2778,8 +2930,15 @@ diag_cmd_data_alloc(struct lpfc_hba *phba,
 		size -= cnt;
 	}
 
+<<<<<<< HEAD
 	mlist->flag = i;
 	return mlist;
+=======
+	if (mlist) {
+		mlist->flag = i;
+		return mlist;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	diag_cmd_data_free(phba, mlist);
 	return NULL;
@@ -2942,7 +3101,10 @@ lpfc_bsg_diag_loopback_run(struct fc_bsg_job *job)
 {
 	struct lpfc_vport *vport = (struct lpfc_vport *)job->shost->hostdata;
 	struct lpfc_hba *phba = vport->phba;
+<<<<<<< HEAD
 	struct diag_mode_test *diag_mode;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lpfc_bsg_event *evt;
 	struct event_data *evdat;
 	struct lpfc_sli *psli = &phba->sli;
@@ -2963,7 +3125,11 @@ lpfc_bsg_diag_loopback_run(struct fc_bsg_job *job)
 	uint8_t *ptr = NULL, *rx_databuf = NULL;
 	int rc = 0;
 	int time_left;
+<<<<<<< HEAD
 	int iocb_stat;
+=======
+	int iocb_stat = IOCB_SUCCESS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	void *dataout = NULL;
 	uint32_t total_mem;
@@ -2985,8 +3151,11 @@ lpfc_bsg_diag_loopback_run(struct fc_bsg_job *job)
 		rc = -EINVAL;
 		goto loopback_test_exit;
 	}
+<<<<<<< HEAD
 	diag_mode = (struct diag_mode_test *)
 		job->request->rqst_data.h_vendor.vendor_cmd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((phba->link_state == LPFC_HBA_ERROR) ||
 	    (psli->sli_flag & LPFC_BLOCK_MGMT_IO) ||
@@ -3148,13 +3317,25 @@ lpfc_bsg_diag_loopback_run(struct fc_bsg_job *job)
 		cmd->unsli3.rcvsli3.ox_id = 0xffff;
 	}
 	cmdiocbq->iocb_flag |= LPFC_IO_LIBDFC;
+<<<<<<< HEAD
 	cmdiocbq->vport = phba->pport;
+=======
+	cmdiocbq->iocb_flag |= LPFC_IO_LOOPBACK;
+	cmdiocbq->vport = phba->pport;
+	cmdiocbq->iocb_cmpl = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iocb_stat = lpfc_sli_issue_iocb_wait(phba, LPFC_ELS_RING, cmdiocbq,
 					     rspiocbq, (phba->fc_ratov * 2) +
 					     LPFC_DRVR_TIMEOUT);
 
+<<<<<<< HEAD
 	if ((iocb_stat != IOCB_SUCCESS) || ((phba->sli_rev < LPFC_SLI_REV4) &&
 					   (rsp->ulpStatus != IOCB_SUCCESS))) {
+=======
+	if ((iocb_stat != IOCB_SUCCESS) ||
+	    ((phba->sli_rev < LPFC_SLI_REV4) &&
+	     (rsp->ulpStatus != IOSTAT_SUCCESS))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lpfc_printf_log(phba, KERN_ERR, LOG_LIBDFC,
 				"3126 Failed loopback test issue iocb: "
 				"iocb_stat:x%x\n", iocb_stat);
@@ -3209,7 +3390,11 @@ err_loopback_test_exit:
 	lpfc_bsg_event_unref(evt); /* delete */
 	spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
 
+<<<<<<< HEAD
 	if (cmdiocbq != NULL)
+=======
+	if ((cmdiocbq != NULL) && (iocb_stat != IOCB_TIMEDOUT))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lpfc_sli_release_iocbq(phba, cmdiocbq);
 
 	if (rspiocbq != NULL)
@@ -3244,7 +3429,10 @@ lpfc_bsg_get_dfc_rev(struct fc_bsg_job *job)
 {
 	struct lpfc_vport *vport = (struct lpfc_vport *)job->shost->hostdata;
 	struct lpfc_hba *phba = vport->phba;
+<<<<<<< HEAD
 	struct get_mgmt_rev *event_req;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct get_mgmt_rev_reply *event_reply;
 	int rc = 0;
 
@@ -3257,9 +3445,12 @@ lpfc_bsg_get_dfc_rev(struct fc_bsg_job *job)
 		goto job_error;
 	}
 
+<<<<<<< HEAD
 	event_req = (struct get_mgmt_rev *)
 		job->request->rqst_data.h_vendor.vendor_cmd;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	event_reply = (struct get_mgmt_rev_reply *)
 		job->reply->reply_data.vendor_reply.vendor_rsp;
 
@@ -3292,7 +3483,11 @@ job_error:
  * will wake up thread waiting on the wait queue pointed by context1
  * of the mailbox.
  **/
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 lpfc_bsg_issue_mbox_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmboxq)
 {
 	struct bsg_job_data *dd_data;
@@ -3392,6 +3587,10 @@ static int lpfc_bsg_check_cmd_access(struct lpfc_hba *phba,
 	case MBX_DOWN_LOAD:
 	case MBX_UPDATE_CFG:
 	case MBX_KILL_BOARD:
+<<<<<<< HEAD
+=======
+	case MBX_READ_TOPOLOGY:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case MBX_LOAD_AREA:
 	case MBX_LOAD_EXP_ROM:
 	case MBX_BEACON:
@@ -3422,7 +3621,10 @@ static int lpfc_bsg_check_cmd_access(struct lpfc_hba *phba,
 		}
 		break;
 	case MBX_READ_SPARM64:
+<<<<<<< HEAD
 	case MBX_READ_TOPOLOGY:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case MBX_REG_LOGIN:
 	case MBX_REG_LOGIN64:
 	case MBX_CONFIG_PORT:
@@ -4101,6 +4303,10 @@ lpfc_bsg_handle_sli_cfg_mbox(struct lpfc_hba *phba, struct fc_bsg_job *job,
 		if (subsys == SLI_CONFIG_SUBSYS_FCOE) {
 			switch (opcode) {
 			case FCOE_OPCODE_READ_FCF:
+<<<<<<< HEAD
+=======
+			case FCOE_OPCODE_GET_DPORT_RESULTS:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				lpfc_printf_log(phba, KERN_INFO, LOG_LIBDFC,
 						"2957 Handled SLI_CONFIG "
 						"subsys_fcoe, opcode:x%x\n",
@@ -4109,6 +4315,11 @@ lpfc_bsg_handle_sli_cfg_mbox(struct lpfc_hba *phba, struct fc_bsg_job *job,
 							nemb_mse, dmabuf);
 				break;
 			case FCOE_OPCODE_ADD_FCF:
+<<<<<<< HEAD
+=======
+			case FCOE_OPCODE_SET_DPORT_MODE:
+			case LPFC_MBOX_OPCODE_FCOE_LINK_DIAG_STATE:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				lpfc_printf_log(phba, KERN_INFO, LOG_LIBDFC,
 						"2958 Handled SLI_CONFIG "
 						"subsys_fcoe, opcode:x%x\n",
@@ -4128,6 +4339,10 @@ lpfc_bsg_handle_sli_cfg_mbox(struct lpfc_hba *phba, struct fc_bsg_job *job,
 			switch (opcode) {
 			case COMN_OPCODE_GET_CNTL_ADDL_ATTRIBUTES:
 			case COMN_OPCODE_GET_CNTL_ATTRIBUTES:
+<<<<<<< HEAD
+=======
+			case COMN_OPCODE_GET_PROFILE_CONFIG:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				lpfc_printf_log(phba, KERN_INFO, LOG_LIBDFC,
 						"3106 Handled SLI_CONFIG "
 						"subsys_comn, opcode:x%x\n",
@@ -4295,7 +4510,10 @@ static int
 lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 			struct lpfc_dmabuf *dmabuf)
 {
+<<<<<<< HEAD
 	struct lpfc_sli_config_mbox *sli_cfg_mbx;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bsg_job_data *dd_data = NULL;
 	LPFC_MBOXQ_t *pmboxq = NULL;
 	MAILBOX_t *pmb;
@@ -4309,6 +4527,7 @@ lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 	phba->mbox_ext_buf_ctx.seqNum++;
 	nemb_tp = phba->mbox_ext_buf_ctx.nembType;
 
+<<<<<<< HEAD
 	sli_cfg_mbx = (struct lpfc_sli_config_mbox *)
 			phba->mbox_ext_buf_ctx.mbx_dmabuf->virt;
 
@@ -4318,6 +4537,8 @@ lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 		goto job_error;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pbuf = (uint8_t *)dmabuf->virt;
 	size = job->request_payload.payload_len;
 	sg_copy_to_buffer(job->request_payload.sg_list,
@@ -4354,6 +4575,16 @@ lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 				"2968 SLI_CONFIG ext-buffer wr all %d "
 				"ebuffers received\n",
 				phba->mbox_ext_buf_ctx.numBuf);
+<<<<<<< HEAD
+=======
+
+		dd_data = kmalloc(sizeof(struct bsg_job_data), GFP_KERNEL);
+		if (!dd_data) {
+			rc = -ENOMEM;
+			goto job_error;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* mailbox command structure for base driver */
 		pmboxq = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 		if (!pmboxq) {
@@ -4401,6 +4632,11 @@ lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 	return SLI_CONFIG_HANDLED;
 
 job_error:
+<<<<<<< HEAD
+=======
+	if (pmboxq)
+		mempool_free(pmboxq, phba->mbox_mem_pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lpfc_bsg_dma_page_free(phba, dmabuf);
 	kfree(dd_data);
 
@@ -4538,7 +4774,11 @@ sli_cfg_ext_error:
  * being reset) and com-plete the job, otherwise issue the mailbox command and
  * let our completion handler finish the command.
  **/
+<<<<<<< HEAD
 static uint32_t
+=======
+static int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 lpfc_bsg_issue_mbox(struct lpfc_hba *phba, struct fc_bsg_job *job,
 	struct lpfc_vport *vport)
 {
@@ -4553,7 +4793,10 @@ lpfc_bsg_issue_mbox(struct lpfc_hba *phba, struct fc_bsg_job *job,
 	uint32_t transmit_length, receive_length, mode;
 	struct lpfc_mbx_sli4_config *sli4_config;
 	struct lpfc_mbx_nembed_cmd *nembed_sge;
+<<<<<<< HEAD
 	struct mbox_header *header;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ulp_bde64 *bde;
 	uint8_t *ext = NULL;
 	int rc = 0;
@@ -4751,8 +4994,11 @@ lpfc_bsg_issue_mbox(struct lpfc_hba *phba, struct fc_bsg_job *job,
 				/* rebuild the command for sli4 using our
 				 * own buffers like we do for biu diags
 				 */
+<<<<<<< HEAD
 				header = (struct mbox_header *)
 						&pmb->un.varWords[0];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				nembed_sge = (struct lpfc_mbx_nembed_cmd *)
 						&pmb->un.varWords[0];
 				receive_length = nembed_sge->sge[0].length;
@@ -4995,7 +5241,10 @@ lpfc_menlo_cmd(struct fc_bsg_job *job)
 	IOCB_t *cmd;
 	int rc = 0;
 	struct menlo_command *menlo_cmd;
+<<<<<<< HEAD
 	struct menlo_response *menlo_resp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lpfc_dmabuf *bmp = NULL, *cmp = NULL, *rmp = NULL;
 	int request_nseg;
 	int reply_nseg;
@@ -5035,9 +5284,12 @@ lpfc_menlo_cmd(struct fc_bsg_job *job)
 	menlo_cmd = (struct menlo_command *)
 		job->request->rqst_data.h_vendor.vendor_cmd;
 
+<<<<<<< HEAD
 	menlo_resp = (struct menlo_response *)
 		job->reply->reply_data.vendor_reply.vendor_rsp;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* allocate our bsg tracking structure */
 	dd_data = kmalloc(sizeof(struct bsg_job_data), GFP_KERNEL);
 	if (!dd_data) {
@@ -5282,9 +5534,21 @@ lpfc_bsg_timeout(struct fc_bsg_job *job)
 		 * remove it from the txq queue and call cancel iocbs.
 		 * Otherwise, call abort iotag
 		 */
+<<<<<<< HEAD
 
 		cmdiocb = dd_data->context_un.iocb.cmdiocbq;
 		spin_lock_irq(&phba->hbalock);
+=======
+		cmdiocb = dd_data->context_un.iocb.cmdiocbq;
+		spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
+
+		spin_lock_irqsave(&phba->hbalock, flags);
+		/* make sure the I/O abort window is still open */
+		if (!(cmdiocb->iocb_flag & LPFC_IO_CMD_OUTSTANDING)) {
+			spin_unlock_irqrestore(&phba->hbalock, flags);
+			return -EAGAIN;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_for_each_entry_safe(check_iocb, next_iocb, &pring->txq,
 					 list) {
 			if (check_iocb == cmdiocb) {
@@ -5294,8 +5558,12 @@ lpfc_bsg_timeout(struct fc_bsg_job *job)
 		}
 		if (list_empty(&completions))
 			lpfc_sli_issue_abort_iotag(phba, pring, cmdiocb);
+<<<<<<< HEAD
 		spin_unlock_irq(&phba->hbalock);
 		spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
+=======
+		spin_unlock_irqrestore(&phba->hbalock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!list_empty(&completions)) {
 			lpfc_sli_cancel_iocbs(phba, &completions,
 					      IOSTAT_LOCAL_REJECT,
@@ -5319,9 +5587,16 @@ lpfc_bsg_timeout(struct fc_bsg_job *job)
 		 * remove it from the txq queue and call cancel iocbs.
 		 * Otherwise, call abort iotag.
 		 */
+<<<<<<< HEAD
 
 		cmdiocb = dd_data->context_un.menlo.cmdiocbq;
 		spin_lock_irq(&phba->hbalock);
+=======
+		cmdiocb = dd_data->context_un.menlo.cmdiocbq;
+		spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
+
+		spin_lock_irqsave(&phba->hbalock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_for_each_entry_safe(check_iocb, next_iocb, &pring->txq,
 					 list) {
 			if (check_iocb == cmdiocb) {
@@ -5331,8 +5606,12 @@ lpfc_bsg_timeout(struct fc_bsg_job *job)
 		}
 		if (list_empty(&completions))
 			lpfc_sli_issue_abort_iotag(phba, pring, cmdiocb);
+<<<<<<< HEAD
 		spin_unlock_irq(&phba->hbalock);
 		spin_unlock_irqrestore(&phba->ct_ev_lock, flags);
+=======
+		spin_unlock_irqrestore(&phba->hbalock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!list_empty(&completions)) {
 			lpfc_sli_cancel_iocbs(phba, &completions,
 					      IOSTAT_LOCAL_REJECT,

@@ -15,6 +15,10 @@
 #include <linux/rtc.h>
 #include <linux/bcd.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Registers */
 #define EM3027_REG_ON_OFF_CTRL	0x00
@@ -131,22 +135,43 @@ static int em3027_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int em3027_remove(struct i2c_client *client)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct i2c_device_id em3027_id[] = {
 	{ "em3027", 0 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, em3027_id);
+
+#ifdef CONFIG_OF
+static const struct of_device_id em3027_of_match[] = {
+	{ .compatible = "emmicro,em3027", },
+	{}
+};
+MODULE_DEVICE_TABLE(of, em3027_of_match);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct i2c_driver em3027_driver = {
 	.driver = {
 		   .name = "rtc-em3027",
+<<<<<<< HEAD
 	},
 	.probe = &em3027_probe,
 	.remove = &em3027_remove,
+=======
+		   .of_match_table = of_match_ptr(em3027_of_match),
+	},
+	.probe = &em3027_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = em3027_id,
 };
 

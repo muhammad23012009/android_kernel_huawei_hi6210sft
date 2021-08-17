@@ -20,6 +20,15 @@
 
 /* AR9565 1.0 */
 
+<<<<<<< HEAD
+=======
+#define ar9565_1p0_mac_postamble ar9331_1p1_mac_postamble
+
+#define ar9565_1p0_Modes_lowest_ob_db_tx_gain_table ar9565_1p0_modes_low_ob_db_tx_gain_table
+
+#define ar9565_1p0_baseband_core_txfir_coeff_japan_2484 ar9300_2p2_baseband_core_txfir_coeff_japan_2484
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 ar9565_1p0_mac_core[][2] = {
 	/* Addr      allmodes  */
 	{0x00000008, 0x00000000},
@@ -182,6 +191,7 @@ static const u32 ar9565_1p0_mac_core[][2] = {
 	{0x000083d0, 0x800301ff},
 };
 
+<<<<<<< HEAD
 static const u32 ar9565_1p0_mac_postamble[][5] = {
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00001030, 0x00000230, 0x00000460, 0x000002c0, 0x00000160},
@@ -194,6 +204,8 @@ static const u32 ar9565_1p0_mac_postamble[][5] = {
 	{0x00008318, 0x00003e80, 0x00007d00, 0x00006880, 0x00003440},
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 ar9565_1p0_baseband_core[][2] = {
 	/* Addr      allmodes  */
 	{0x00009800, 0xafe68e30},
@@ -272,9 +284,15 @@ static const u32 ar9565_1p0_baseband_core[][2] = {
 	{0x0000a398, 0x001f0e0f},
 	{0x0000a39c, 0x0075393f},
 	{0x0000a3a0, 0xb79f6427},
+<<<<<<< HEAD
 	{0x0000a3a4, 0x00000000},
 	{0x0000a3a8, 0xaaaaaaaa},
 	{0x0000a3ac, 0x3c466478},
+=======
+	{0x0000a3a4, 0x00000011},
+	{0x0000a3a8, 0xaaaaaa6e},
+	{0x0000a3ac, 0x3c466455},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x0000a3c0, 0x20202020},
 	{0x0000a3c4, 0x22222220},
 	{0x0000a3c8, 0x20200020},
@@ -295,11 +313,19 @@ static const u32 ar9565_1p0_baseband_core[][2] = {
 	{0x0000a404, 0x00000000},
 	{0x0000a408, 0x0e79e5c6},
 	{0x0000a40c, 0x00820820},
+<<<<<<< HEAD
 	{0x0000a414, 0x1ce739ce},
 	{0x0000a418, 0x2d001dce},
 	{0x0000a41c, 0x1ce739ce},
 	{0x0000a420, 0x000001ce},
 	{0x0000a424, 0x1ce739ce},
+=======
+	{0x0000a414, 0x1ce739c5},
+	{0x0000a418, 0x2d001dce},
+	{0x0000a41c, 0x1ce739c5},
+	{0x0000a420, 0x000001ce},
+	{0x0000a424, 0x1ce739c5},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x0000a428, 0x000001ce},
 	{0x0000a42c, 0x1ce739ce},
 	{0x0000a430, 0x1ce739ce},
@@ -351,9 +377,15 @@ static const u32 ar9565_1p0_baseband_postamble[][5] = {
 	{0x00009e14, 0x37b95d5e, 0x37b9605e, 0x3379605e, 0x33795d5e},
 	{0x00009e18, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
 	{0x00009e1c, 0x0001cf9c, 0x0001cf9c, 0x00021f9c, 0x00021f9c},
+<<<<<<< HEAD
 	{0x00009e20, 0x000003b5, 0x000003b5, 0x000003ce, 0x000003ce},
 	{0x00009e2c, 0x0000001c, 0x0000001c, 0x00000021, 0x00000021},
 	{0x00009e3c, 0xcf946222, 0xcf946222, 0xcf946222, 0xcf946222},
+=======
+	{0x00009e20, 0x000003b5, 0x000003b5, 0x000003a4, 0x000003a4},
+	{0x00009e2c, 0x0000001c, 0x0000001c, 0x00000021, 0x00000021},
+	{0x00009e3c, 0xcf946220, 0xcf946220, 0xcf946220, 0xcf946220},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x00009e44, 0xfe321e27, 0xfe321e27, 0xfe291e27, 0xfe291e27},
 	{0x00009e48, 0x5030201a, 0x5030201a, 0x50302012, 0x50302012},
 	{0x00009fc8, 0x0003f000, 0x0003f000, 0x0001a000, 0x0001a000},
@@ -452,6 +484,10 @@ static const u32 ar9565_1p0_Common_rx_gain_table[][2] = {
 	/* Addr      allmodes  */
 	{0x00004050, 0x00300300},
 	{0x0000406c, 0x00100000},
+<<<<<<< HEAD
+=======
+	{0x00009e20, 0x000003b6},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x0000a000, 0x00010000},
 	{0x0000a004, 0x00030002},
 	{0x0000a008, 0x00050004},
@@ -710,6 +746,7 @@ static const u32 ar9565_1p0_Common_rx_gain_table[][2] = {
 	{0x0000b1fc, 0x00000196},
 };
 
+<<<<<<< HEAD
 static const u32 ar9565_1p0_Modes_lowest_ob_db_tx_gain_table[][5] = {
 	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0000a2dc, 0xfc0a9380, 0xfc0a9380, 0xfdab5b52, 0xfdab5b52},
@@ -770,6 +807,8 @@ static const u32 ar9565_1p0_Modes_lowest_ob_db_tx_gain_table[][5] = {
 	{0x00016054, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 ar9565_1p0_pciephy_clkreq_disable_L1[][2] = {
 	/* Addr      allmodes  */
 	{0x00018c00, 0x18212ede},

@@ -18,6 +18,7 @@
 		.irq = soc ## _INT_USB_ ## hs,				\
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX25
 const struct imx_mxc_ehci_data imx25_mxc_ehci_otg_data __initconst =
 	imx_mxc_ehci_data_entry_single(MX25, 0, OTG);
@@ -25,6 +26,8 @@ const struct imx_mxc_ehci_data imx25_mxc_ehci_hs_data __initconst =
 	imx_mxc_ehci_data_entry_single(MX25, 1, HS);
 #endif /* ifdef CONFIG_SOC_IMX25 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SOC_IMX27
 const struct imx_mxc_ehci_data imx27_mxc_ehci_otg_data __initconst =
 	imx_mxc_ehci_data_entry_single(MX27, 0, OTG);
@@ -50,6 +53,7 @@ const struct imx_mxc_ehci_data imx35_mxc_ehci_hs_data __initconst =
 	imx_mxc_ehci_data_entry_single(MX35, 1, HS);
 #endif /* ifdef CONFIG_SOC_IMX35 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX51
 const struct imx_mxc_ehci_data imx51_mxc_ehci_otg_data __initconst =
 	imx_mxc_ehci_data_entry_single(MX51, 0, OTG);
@@ -59,6 +63,8 @@ const struct imx_mxc_ehci_data imx51_mxc_ehci_hs_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX51 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct platform_device *__init imx_add_mxc_ehci(
 		const struct imx_mxc_ehci_data *data,
 		const struct mxc_usbh_platform_data *pdata)

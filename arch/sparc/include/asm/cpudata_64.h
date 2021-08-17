@@ -8,9 +8,12 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #include <linux/percpu.h>
 #include <linux/threads.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef struct {
 	/* Dcache line 1 */
 	unsigned int	__softirq_pending; /* must be 1st, see rtrap.S */
@@ -27,15 +30,26 @@ typedef struct {
 	unsigned int	icache_line_size;
 	unsigned int	ecache_size;
 	unsigned int	ecache_line_size;
+<<<<<<< HEAD
 	int		core_id;
 	int		proc_id;
+=======
+	unsigned short	sock_id;	/* physical package */
+	unsigned short	core_id;
+	unsigned short  max_cache_id;	/* groupings of highest shared cache */
+	signed short	proc_id;	/* strand (aka HW thread) id */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } cpuinfo_sparc;
 
 DECLARE_PER_CPU(cpuinfo_sparc, __cpu_data);
 #define cpu_data(__cpu)		per_cpu(__cpu_data, (__cpu))
+<<<<<<< HEAD
 #define local_cpu_data()	__get_cpu_var(__cpu_data)
 
 extern const struct seq_operations cpuinfo_op;
+=======
+#define local_cpu_data()	(*this_cpu_ptr(&__cpu_data))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !(__ASSEMBLY__) */
 

@@ -50,6 +50,23 @@ config IPMI_SI
 	 Currently, only KCS and SMIC are supported.  If
 	 you are using IPMI, you should probably say "y" here.
 
+<<<<<<< HEAD
+=======
+config IPMI_SSIF
+       tristate 'IPMI SMBus handler (SSIF)'
+       select I2C
+       help
+         Provides a driver for a SMBus interface to a BMC, meaning that you
+	 have a driver that must be accessed over an I2C bus instead of a
+	 standard interface.  This module requires I2C support.
+
+config IPMI_POWERNV
+       depends on PPC_POWERNV
+       tristate 'POWERNV (OPAL firmware) IPMI interface'
+       help
+         Provides a driver for OPAL firmware-based IPMI interfaces.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config IPMI_WATCHDOG
        tristate 'IPMI Watchdog Timer'
        help
@@ -62,3 +79,14 @@ config IPMI_POWEROFF
 	 the IPMI management controller is capable of this.
 
 endif # IPMI_HANDLER
+<<<<<<< HEAD
+=======
+
+config ASPEED_BT_IPMI_BMC
+	depends on ARCH_ASPEED
+	tristate "BT IPMI bmc driver"
+	help
+	  Provides a driver for the BT (Block Transfer) IPMI interface
+	  found on Aspeed SOCs (AST2400 and AST2500). The driver
+	  implements the BMC side of the BT interface.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

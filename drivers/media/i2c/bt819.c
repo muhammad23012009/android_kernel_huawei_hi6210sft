@@ -36,9 +36,14 @@
 #include <linux/videodev2.h>
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
 #include <media/v4l2-ctrls.h>
 #include <media/bt819.h>
+=======
+#include <media/v4l2-ctrls.h>
+#include <media/i2c/bt819.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Brooktree-819 video decoder driver");
 MODULE_AUTHOR("Mike Bernson & Dave Perks");
@@ -57,7 +62,10 @@ struct bt819 {
 	unsigned char reg[32];
 
 	v4l2_std_id norm;
+<<<<<<< HEAD
 	int ident;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int input;
 	int enable;
 };
@@ -217,6 +225,7 @@ static int bt819_status(struct v4l2_subdev *sd, u32 *pstatus, v4l2_std_id *pstd)
 	struct bt819 *decoder = to_bt819(sd);
 	int status = bt819_read(decoder, 0x00);
 	int res = V4L2_IN_ST_NO_SIGNAL;
+<<<<<<< HEAD
 	v4l2_std_id std;
 
 	if ((status & 0x80))
@@ -226,6 +235,19 @@ static int bt819_status(struct v4l2_subdev *sd, u32 *pstatus, v4l2_std_id *pstd)
 		std = V4L2_STD_PAL;
 	else
 		std = V4L2_STD_NTSC;
+=======
+	v4l2_std_id std = pstd ? *pstd : V4L2_STD_ALL;
+
+	if ((status & 0x80))
+		res = 0;
+	else
+		std = V4L2_STD_UNKNOWN;
+
+	if ((status & 0x10))
+		std &= V4L2_STD_PAL;
+	else
+		std &= V4L2_STD_NTSC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pstd)
 		*pstd = std;
 	if (pstatus)
@@ -373,6 +395,7 @@ static int bt819_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int bt819_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct bt819 *decoder = to_bt819(sd);
@@ -381,12 +404,15 @@ static int bt819_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident
 	return v4l2_chip_ident_i2c_client(client, chip, decoder->ident, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ----------------------------------------------------------------------- */
 
 static const struct v4l2_ctrl_ops bt819_ctrl_ops = {
 	.s_ctrl = bt819_s_ctrl,
 };
 
+<<<<<<< HEAD
 static const struct v4l2_subdev_core_ops bt819_core_ops = {
 	.g_chip_ident = bt819_g_chip_ident,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
@@ -400,6 +426,10 @@ static const struct v4l2_subdev_core_ops bt819_core_ops = {
 };
 
 static const struct v4l2_subdev_video_ops bt819_video_ops = {
+=======
+static const struct v4l2_subdev_video_ops bt819_video_ops = {
+	.s_std = bt819_s_std,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.s_routing = bt819_s_routing,
 	.s_stream = bt819_s_stream,
 	.querystd = bt819_querystd,
@@ -407,7 +437,10 @@ static const struct v4l2_subdev_video_ops bt819_video_ops = {
 };
 
 static const struct v4l2_subdev_ops bt819_ops = {
+<<<<<<< HEAD
 	.core = &bt819_core_ops,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.video = &bt819_video_ops,
 };
 
@@ -425,7 +458,11 @@ static int bt819_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	decoder = kzalloc(sizeof(struct bt819), GFP_KERNEL);
+=======
+	decoder = devm_kzalloc(&client->dev, sizeof(*decoder), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (decoder == NULL)
 		return -ENOMEM;
 	sd = &decoder->sd;
@@ -435,6 +472,7 @@ static int bt819_probe(struct i2c_client *client,
 	switch (ver & 0xf0) {
 	case 0x70:
 		name = "bt819a";
+<<<<<<< HEAD
 		decoder->ident = V4L2_IDENT_BT819A;
 		break;
 	case 0x60:
@@ -444,6 +482,14 @@ static int bt819_probe(struct i2c_client *client,
 	case 0x20:
 		name = "bt815a";
 		decoder->ident = V4L2_IDENT_BT815A;
+=======
+		break;
+	case 0x60:
+		name = "bt817a";
+		break;
+	case 0x20:
+		name = "bt815a";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		v4l2_dbg(1, debug, sd,
@@ -476,7 +522,10 @@ static int bt819_probe(struct i2c_client *client,
 		int err = decoder->hdl.error;
 
 		v4l2_ctrl_handler_free(&decoder->hdl);
+<<<<<<< HEAD
 		kfree(decoder);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 	v4l2_ctrl_handler_setup(&decoder->hdl);
@@ -490,7 +539,10 @@ static int bt819_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&decoder->hdl);
+<<<<<<< HEAD
 	kfree(decoder);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -506,7 +558,10 @@ MODULE_DEVICE_TABLE(i2c, bt819_id);
 
 static struct i2c_driver bt819_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "bt819",
 	},
 	.probe		= bt819_probe,

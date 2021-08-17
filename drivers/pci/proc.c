@@ -17,6 +17,7 @@
 
 static int proc_initialized;	/* = 0 */
 
+<<<<<<< HEAD
 static loff_t
 proc_bus_pci_lseek(struct file *file, loff_t off, int whence)
 {
@@ -45,6 +46,16 @@ proc_bus_pci_lseek(struct file *file, loff_t off, int whence)
 
 static ssize_t
 proc_bus_pci_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+=======
+static loff_t proc_bus_pci_lseek(struct file *file, loff_t off, int whence)
+{
+	struct pci_dev *dev = PDE_DATA(file_inode(file));
+	return fixed_size_llseek(file, off, whence, dev->cfg_size);
+}
+
+static ssize_t proc_bus_pci_read(struct file *file, char __user *buf,
+				 size_t nbytes, loff_t *ppos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *dev = PDE_DATA(file_inode(file));
 	unsigned int pos = *ppos;
@@ -127,8 +138,13 @@ proc_bus_pci_read(struct file *file, char __user *buf, size_t nbytes, loff_t *pp
 	return nbytes;
 }
 
+<<<<<<< HEAD
 static ssize_t
 proc_bus_pci_write(struct file *file, const char __user *buf, size_t nbytes, loff_t *ppos)
+=======
+static ssize_t proc_bus_pci_write(struct file *file, const char __user *buf,
+				  size_t nbytes, loff_t *ppos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct inode *ino = file_inode(file);
 	struct pci_dev *dev = PDE_DATA(ino);
@@ -241,7 +257,11 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 	default:
 		ret = -EINVAL;
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -251,23 +271,51 @@ static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct pci_dev *dev = PDE_DATA(file_inode(file));
 	struct pci_filp_private *fpriv = file->private_data;
+<<<<<<< HEAD
 	int i, ret;
+=======
+	int i, ret, write_combine = 0, res_bit;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!capable(CAP_SYS_RAWIO))
 		return -EPERM;
 
+<<<<<<< HEAD
 	/* Make sure the caller is mapping a real resource for this device */
 	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
 		if (pci_mmap_fits(dev, i, vma,  PCI_MMAP_PROCFS))
+=======
+	if (fpriv->mmap_state == pci_mmap_io)
+		res_bit = IORESOURCE_IO;
+	else
+		res_bit = IORESOURCE_MEM;
+
+	/* Make sure the caller is mapping a real resource for this device */
+	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
+		if (dev->resource[i].flags & res_bit &&
+		    pci_mmap_fits(dev, i, vma,  PCI_MMAP_PROCFS))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 	}
 
 	if (i >= PCI_ROM_RESOURCE)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	ret = pci_mmap_page_range(dev, vma,
 				  fpriv->mmap_state,
 				  fpriv->write_combine);
+=======
+	if (fpriv->mmap_state == pci_mmap_mem &&
+	    fpriv->write_combine) {
+		if (dev->resource[i].flags & IORESOURCE_PREFETCH)
+			write_combine = 1;
+		else
+			return -EINVAL;
+	}
+	ret = pci_mmap_page_range(dev, vma,
+				  fpriv->mmap_state, write_combine);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
@@ -432,7 +480,11 @@ int pci_proc_detach_device(struct pci_dev *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 int pci_proc_detach_bus(struct pci_bus* bus)
+=======
+int pci_proc_detach_bus(struct pci_bus *bus)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	proc_remove(bus->procdir);
 	return 0;
@@ -442,6 +494,10 @@ static int proc_bus_pci_dev_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &proc_bus_pci_devices_op);
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct file_operations proc_bus_pci_dev_operations = {
 	.owner		= THIS_MODULE,
 	.open		= proc_bus_pci_dev_open,
@@ -462,6 +518,10 @@ static int __init pci_proc_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 device_initcall(pci_proc_init);
 
+=======
+device_initcall(pci_proc_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

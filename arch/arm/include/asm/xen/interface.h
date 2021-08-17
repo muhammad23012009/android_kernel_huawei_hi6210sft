@@ -27,6 +27,11 @@
 		(hnd).p = val;				\
 	} while (0)
 
+<<<<<<< HEAD
+=======
+#define __HYPERVISOR_platform_op_raw __HYPERVISOR_platform_op
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __ASSEMBLY__
 /* Explicitly size integers that represent pfns in the interface with
  * Xen so that we can have one ABI that works for 32 and 64 bit guests.
@@ -40,6 +45,11 @@ typedef uint64_t xen_pfn_t;
 #define PRI_xen_pfn "llx"
 typedef uint64_t xen_ulong_t;
 #define PRI_xen_ulong "llx"
+<<<<<<< HEAD
+=======
+typedef int64_t xen_long_t;
+#define PRI_xen_long "llx"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Guest handles for primitive C types. */
 __DEFINE_GUEST_HANDLE(uchar, unsigned char);
 __DEFINE_GUEST_HANDLE(uint,  unsigned int);
@@ -74,6 +84,10 @@ struct pvclock_wall_clock {
 	u32   version;
 	u32   sec;
 	u32   nsec;
+<<<<<<< HEAD
+=======
+	u32   sec_hi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __attribute__((__packed__));
 #endif
 

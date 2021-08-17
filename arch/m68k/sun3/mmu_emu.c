@@ -6,6 +6,10 @@
 ** Started 1/16/98 @ 2:22 am
 */
 
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mman.h>
 #include <linux/mm.h>
 #include <linux/kernel.h>
@@ -122,7 +126,11 @@ void print_pte_vaddr (unsigned long vaddr)
 /*
  * Initialise the MMU emulator.
  */
+<<<<<<< HEAD
 void mmu_emu_init(unsigned long bootmem_end)
+=======
+void __init mmu_emu_init(unsigned long bootmem_end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long seg, num;
 	int i,j;

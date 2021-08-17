@@ -79,7 +79,11 @@ static int timeriomem_rng_data_read(struct hwrng *rng, u32 *data)
 	priv->expires = cur + delay;
 	priv->present = 0;
 
+<<<<<<< HEAD
 	INIT_COMPLETION(priv->completion);
+=======
+	reinit_completion(&priv->completion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mod_timer(&priv->timer, priv->expires);
 
 	return 4;
@@ -118,11 +122,18 @@ static int timeriomem_rng_probe(struct platform_device *pdev)
 	}
 
 	/* Allocate memory for the device structure (and zero it) */
+<<<<<<< HEAD
 	priv = kzalloc(sizeof(struct timeriomem_rng_private_data), GFP_KERNEL);
 	if (!priv) {
 		dev_err(&pdev->dev, "failed to allocate device structure.\n");
 		return -ENOMEM;
 	}
+=======
+	priv = devm_kzalloc(&pdev->dev,
+			sizeof(struct timeriomem_rng_private_data), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, priv);
 
@@ -134,17 +145,29 @@ static int timeriomem_rng_probe(struct platform_device *pdev)
 			period = i;
 		else {
 			dev_err(&pdev->dev, "missing period\n");
+<<<<<<< HEAD
 			err = -EINVAL;
 			goto out_free;
 		}
 	} else
 		period = pdata->period;
+=======
+			return -EINVAL;
+		}
+	} else {
+		period = pdata->period;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	priv->period = usecs_to_jiffies(period);
 	if (priv->period < 1) {
 		dev_err(&pdev->dev, "period is less than one jiffy\n");
+<<<<<<< HEAD
 		err = -EINVAL;
 		goto out_free;
+=======
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	priv->expires	= jiffies;
@@ -160,6 +183,7 @@ static int timeriomem_rng_probe(struct platform_device *pdev)
 	priv->timeriomem_rng_ops.data_read	= timeriomem_rng_data_read;
 	priv->timeriomem_rng_ops.priv		= (unsigned long)priv;
 
+<<<<<<< HEAD
 	if (!request_mem_region(res->start, resource_size(res),
 				dev_name(&pdev->dev))) {
 		dev_err(&pdev->dev, "request_mem_region failed\n");
@@ -178,6 +202,18 @@ static int timeriomem_rng_probe(struct platform_device *pdev)
 	if (err) {
 		dev_err(&pdev->dev, "problem registering\n");
 		goto out;
+=======
+	priv->io_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(priv->io_base)) {
+		err = PTR_ERR(priv->io_base);
+		goto out_timer;
+	}
+
+	err = hwrng_register(&priv->timeriomem_rng_ops);
+	if (err) {
+		dev_err(&pdev->dev, "problem registering\n");
+		goto out_timer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dev_info(&pdev->dev, "32bits from 0x%p @ %dus\n",
@@ -185,6 +221,7 @@ static int timeriomem_rng_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 out:
 	iounmap(priv->io_base);
 out_release_io:
@@ -194,23 +231,33 @@ out_timer:
 out_free:
 	platform_set_drvdata(pdev, NULL);
 	kfree(priv);
+=======
+out_timer:
+	del_timer_sync(&priv->timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
 static int timeriomem_rng_remove(struct platform_device *pdev)
 {
 	struct timeriomem_rng_private_data *priv = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct resource *res;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hwrng_unregister(&priv->timeriomem_rng_ops);
 
 	del_timer_sync(&priv->timer);
+<<<<<<< HEAD
 	iounmap(priv->io_base);
 	release_mem_region(res->start, resource_size(res));
 	platform_set_drvdata(pdev, NULL);
 	kfree(priv);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -224,7 +271,10 @@ MODULE_DEVICE_TABLE(of, timeriomem_rng_match);
 static struct platform_driver timeriomem_rng_driver = {
 	.driver = {
 		.name		= "timeriomem_rng",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table	= timeriomem_rng_match,
 	},
 	.probe		= timeriomem_rng_probe,

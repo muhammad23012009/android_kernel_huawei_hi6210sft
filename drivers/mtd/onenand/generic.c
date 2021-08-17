@@ -13,13 +13,20 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/platform_device.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/onenand.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Note: Driver name and platform data format have been updated!
@@ -38,7 +45,11 @@ struct onenand_info {
 static int generic_onenand_probe(struct platform_device *pdev)
 {
 	struct onenand_info *info;
+<<<<<<< HEAD
 	struct onenand_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct onenand_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *res = pdev->resource;
 	unsigned long size = resource_size(res);
 	int err;
@@ -58,12 +69,20 @@ static int generic_onenand_probe(struct platform_device *pdev)
 		goto out_release_mem_region;
 	}
 
+<<<<<<< HEAD
 	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : 0;
 	info->onenand.irq = platform_get_irq(pdev, 0);
 
 	info->mtd.name = dev_name(&pdev->dev);
 	info->mtd.priv = &info->onenand;
 	info->mtd.owner = THIS_MODULE;
+=======
+	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : NULL;
+	info->onenand.irq = platform_get_irq(pdev, 0);
+
+	info->mtd.dev.parent = &pdev->dev;
+	info->mtd.priv = &info->onenand;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (onenand_scan(&info->mtd, 1)) {
 		err = -ENXIO;
@@ -94,8 +113,11 @@ static int generic_onenand_remove(struct platform_device *pdev)
 	struct resource *res = pdev->resource;
 	unsigned long size = resource_size(res);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info) {
 		onenand_release(&info->mtd);
 		release_mem_region(res->start, size);
@@ -109,7 +131,10 @@ static int generic_onenand_remove(struct platform_device *pdev)
 static struct platform_driver generic_onenand_driver = {
 	.driver = {
 		.name		= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= generic_onenand_probe,
 	.remove		= generic_onenand_remove,

@@ -14,8 +14,11 @@
 extern const struct xattr_handler hfsplus_xattr_osx_handler;
 extern const struct xattr_handler hfsplus_xattr_user_handler;
 extern const struct xattr_handler hfsplus_xattr_trusted_handler;
+<<<<<<< HEAD
 /*extern const struct xattr_handler hfsplus_xattr_acl_access_handler;*/
 /*extern const struct xattr_handler hfsplus_xattr_acl_default_handler;*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const struct xattr_handler hfsplus_xattr_security_handler;
 
 extern const struct xattr_handler *hfsplus_xattr_handlers[];
@@ -23,6 +26,7 @@ extern const struct xattr_handler *hfsplus_xattr_handlers[];
 int __hfsplus_setxattr(struct inode *inode, const char *name,
 			const void *value, size_t size, int flags);
 
+<<<<<<< HEAD
 static inline int hfsplus_setxattr(struct dentry *dentry, const char *name,
 			const void *value, size_t size, int flags)
 {
@@ -35,10 +39,25 @@ ssize_t hfsplus_getxattr(struct dentry *dentry, const char *name,
 ssize_t hfsplus_listxattr(struct dentry *dentry, char *buffer, size_t size);
 
 int hfsplus_removexattr(struct dentry *dentry, const char *name);
+=======
+int hfsplus_setxattr(struct inode *inode, const char *name,
+				   const void *value, size_t size, int flags,
+				   const char *prefix, size_t prefixlen);
+
+ssize_t __hfsplus_getxattr(struct inode *inode, const char *name,
+			   void *value, size_t size);
+
+ssize_t hfsplus_getxattr(struct inode *inode, const char *name,
+			 void *value, size_t size,
+			 const char *prefix, size_t prefixlen);
+
+ssize_t hfsplus_listxattr(struct dentry *dentry, char *buffer, size_t size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int hfsplus_init_security(struct inode *inode, struct inode *dir,
 				const struct qstr *qstr);
 
+<<<<<<< HEAD
 static inline int hfsplus_init_acl(struct inode *inode, struct inode *dir)
 {
 	/*TODO: implement*/
@@ -56,5 +75,9 @@ static inline int hfsplus_init_inode_security(struct inode *inode,
 		err = hfsplus_init_security(inode, dir, qstr);
 	return err;
 }
+=======
+int hfsplus_init_inode_security(struct inode *inode, struct inode *dir,
+				const struct qstr *qstr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

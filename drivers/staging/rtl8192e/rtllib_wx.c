@@ -17,10 +17,13 @@
   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
   more details.
 
+<<<<<<< HEAD
   You should have received a copy of the GNU General Public License along with
   this program; if not, write to the Free Software Foundation, Inc., 59
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   The full GNU General Public License is included in this distribution in the
   file called LICENSE.
 
@@ -32,7 +35,11 @@
 #include <linux/wireless.h>
 #include <linux/kmod.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/etherdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "rtllib.h"
 struct modes_unit {
 	char *mode_string;
@@ -65,7 +72,11 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	/* First entry *MUST* be the AP MAC address */
 	iwe.cmd = SIOCGIWAP;
 	iwe.u.ap_addr.sa_family = ARPHRD_ETHER;
+<<<<<<< HEAD
 	memcpy(iwe.u.ap_addr.sa_data, network->bssid, ETH_ALEN);
+=======
+	ether_addr_copy(iwe.u.ap_addr.sa_data, network->bssid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	start = iwe_stream_add_event_rsl(info, start, stop,
 					 &iwe, IW_EV_ADDR_LEN);
 	/* Remaining entries will be displayed in the order we provide them */
@@ -74,7 +85,11 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	iwe.cmd = SIOCGIWESSID;
 	iwe.u.data.flags = 1;
 	if (network->ssid_len > 0) {
+<<<<<<< HEAD
 		iwe.u.data.length = min(network->ssid_len, (u8)32);
+=======
+		iwe.u.data.length = min_t(u8, network->ssid_len, 32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		start = iwe_stream_add_point_rsl(info, start, stop, &iwe,
 						 network->ssid);
 	} else if (network->hidden_ssid_len == 0) {
@@ -82,7 +97,11 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 		start = iwe_stream_add_point_rsl(info, start, stop,
 						 &iwe, "<hidden>");
 	} else {
+<<<<<<< HEAD
 		iwe.u.data.length = min(network->hidden_ssid_len, (u8)32);
+=======
+		iwe.u.data.length = min_t(u8, network->hidden_ssid_len, 32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		start = iwe_stream_add_point_rsl(info, start, stop, &iwe,
 						 network->hidden_ssid);
 	}
@@ -113,8 +132,11 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 
 	/* Add frequency/channel */
 	iwe.cmd = SIOCGIWFREQ;
+<<<<<<< HEAD
 /*	iwe.u.freq.m = rtllib_frequency(network->channel, network->mode);
 	iwe.u.freq.e = 3; */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iwe.u.freq.m = network->channel;
 	iwe.u.freq.e = 0;
 	iwe.u.freq.i = 0;
@@ -158,6 +180,10 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 		struct ht_capab_ele *ht_cap = NULL;
 		bool is40M = false, isShortGI = false;
 		u8 max_mcs = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!memcmp(network->bssht.bdHTCapBuf, EWC11NHTCap, 4))
 			ht_cap = (struct ht_capab_ele *)
 				 &network->bssht.bdHTCapBuf[4];
@@ -212,6 +238,10 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	memset(&iwe, 0, sizeof(iwe));
 	if (network->wpa_ie_len) {
 		char buf[MAX_WPA_IE_LEN];
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(buf, network->wpa_ie, network->wpa_ie_len);
 		iwe.cmd = IWEVGENIE;
 		iwe.u.data.length = network->wpa_ie_len;
@@ -220,6 +250,10 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	memset(&iwe, 0, sizeof(iwe));
 	if (network->rsn_ie_len) {
 		char buf[MAX_WPA_IE_LEN];
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(buf, network->rsn_ie, network->rsn_ie_len);
 		iwe.cmd = IWEVGENIE;
 		iwe.u.data.length = network->rsn_ie_len;
@@ -230,6 +264,10 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	memset(&iwe, 0, sizeof(iwe));
 	if (network->wzc_ie_len) {
 		char buf[MAX_WZC_IE_LEN];
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(buf, network->wzc_ie, network->wzc_ie_len);
 		iwe.cmd = IWEVGENIE;
 		iwe.u.data.length = network->wzc_ie_len;
@@ -237,7 +275,12 @@ static inline char *rtl819x_translate_scan(struct rtllib_device *ieee,
 	}
 
 	/* Add EXTRA: Age to display seconds since last beacon/probe response
+<<<<<<< HEAD
 	 * for given network. */
+=======
+	 * for given network.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iwe.cmd = IWEVCUSTOM;
 	p = custom;
 	p += snprintf(p, MAX_CUSTOM_LEN - (p - custom),
@@ -262,8 +305,14 @@ int rtllib_wx_get_scan(struct rtllib_device *ieee,
 	char *stop = ev + wrqu->data.length;
 	int i = 0;
 	int err = 0;
+<<<<<<< HEAD
 	RTLLIB_DEBUG_WX("Getting scan\n");
 	down(&ieee->wx_sem);
+=======
+
+	netdev_dbg(ieee->dev, "Getting scan\n");
+	mutex_lock(&ieee->wx_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	list_for_each_entry(network, &ieee->network_list, list) {
@@ -277,6 +326,7 @@ int rtllib_wx_get_scan(struct rtllib_device *ieee,
 			ev = rtl819x_translate_scan(ieee, ev, stop, network,
 						    info);
 		else
+<<<<<<< HEAD
 			RTLLIB_DEBUG_SCAN("Not showing network '%s ("
 				" %pM)' due to age (%lums).\n",
 				escape_essid(network->ssid,
@@ -291,6 +341,23 @@ int rtllib_wx_get_scan(struct rtllib_device *ieee,
 	wrqu->data.flags = 0;
 
 	RTLLIB_DEBUG_WX("exit: %d networks returned.\n", i);
+=======
+			netdev_dbg(ieee->dev,
+				   "Network '%s ( %pM)' hidden due to age (%lums).\n",
+				   escape_essid(network->ssid,
+						network->ssid_len),
+				   network->bssid,
+				   (jiffies - network->last_scanned) /
+				   (HZ / 100));
+	}
+
+	spin_unlock_irqrestore(&ieee->lock, flags);
+	mutex_unlock(&ieee->wx_mutex);
+	wrqu->data.length = ev -  extra;
+	wrqu->data.flags = 0;
+
+	netdev_dbg(ieee->dev, "%s(): %d networks returned.\n", __func__, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -308,7 +375,11 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 	int i, key, key_provided, len;
 	struct lib80211_crypt_data **crypt;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_WX("SET_ENCODE\n");
+=======
+	netdev_dbg(ieee->dev, "%s()\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	key = erq->flags & IW_ENCODE_INDEX;
 	if (key) {
@@ -321,11 +392,16 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 		key = ieee->crypt_info.tx_keyidx;
 	}
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_WX("Key: %d [%s]\n", key, key_provided ?
+=======
+	netdev_dbg(ieee->dev, "Key: %d [%s]\n", key, key_provided ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   "provided" : "default");
 	crypt = &ieee->crypt_info.crypt[key];
 	if (erq->flags & IW_ENCODE_DISABLED) {
 		if (key_provided && *crypt) {
+<<<<<<< HEAD
 			RTLLIB_DEBUG_WX("Disabling encryption on key %d.\n",
 					   key);
 			lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
@@ -334,12 +410,27 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 
 		/* Check all the keys to see if any are still configured,
 		 * and if no key index was provided, de-init them all */
+=======
+			netdev_dbg(ieee->dev,
+				   "Disabling encryption on key %d.\n", key);
+			lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
+		} else
+			netdev_dbg(ieee->dev, "Disabling encryption.\n");
+
+		/* Check all the keys to see if any are still configured,
+		 * and if no key index was provided, de-init them all
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (i = 0; i < NUM_WEP_KEYS; i++) {
 			if (ieee->crypt_info.crypt[i] != NULL) {
 				if (key_provided)
 					break;
 				lib80211_crypt_delayed_deinit(&ieee->crypt_info,
+<<<<<<< HEAD
 							    &ieee->crypt_info.crypt[i]);
+=======
+						    &ieee->crypt_info.crypt[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 
@@ -360,7 +451,12 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 	if (*crypt != NULL && (*crypt)->ops != NULL &&
 	    strcmp((*crypt)->ops->name, "R-WEP") != 0) {
 		/* changing to use WEP; deinit previously used algorithm
+<<<<<<< HEAD
 		 * on this key */
+=======
+		 * on this key
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lib80211_crypt_delayed_deinit(&ieee->crypt_info, crypt);
 	}
 
@@ -385,9 +481,15 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 			kfree(new_crypt);
 			new_crypt = NULL;
 
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: could not initialize WEP: "
 			       "load module rtllib_crypt_wep\n",
 			       dev->name);
+=======
+			netdev_warn(dev,
+				    "%s: could not initialize WEP: load module rtllib_crypt_wep\n",
+				    dev->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EOPNOTSUPP;
 		}
 		*crypt = new_crypt;
@@ -400,15 +502,26 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 		if (len > erq->length)
 			memset(sec.keys[key] + erq->length, 0,
 			       len - erq->length);
+<<<<<<< HEAD
 		RTLLIB_DEBUG_WX("Setting key %d to '%s' (%d:%d bytes)\n",
 				   key, escape_essid(sec.keys[key], len),
 				   erq->length, len);
+=======
+		netdev_dbg(ieee->dev, "Setting key %d to '%s' (%d:%d bytes)\n",
+			   key, escape_essid(sec.keys[key], len), erq->length,
+			   len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sec.key_sizes[key] = len;
 		(*crypt)->ops->set_key(sec.keys[key], len, NULL,
 				       (*crypt)->priv);
 		sec.flags |= (1 << key);
 		/* This ensures a key will be activated if no key is
+<<<<<<< HEAD
 		 * explicitly set */
+=======
+		 * explicitly set
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (key == sec.active_key)
 			sec.flags |= SEC_ACTIVE_KEY;
 		ieee->crypt_info.tx_keyidx = key;
@@ -418,11 +531,17 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 					     NULL, (*crypt)->priv);
 		if (len == 0) {
 			/* Set a default key of all 0 */
+<<<<<<< HEAD
 			printk(KERN_INFO "Setting key %d to all zero.\n",
 					   key);
 
 			RTLLIB_DEBUG_WX("Setting key %d to all zero.\n",
 					   key);
+=======
+			netdev_info(ieee->dev, "Setting key %d to all zero.\n",
+					   key);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			memset(sec.keys[key], 0, 13);
 			(*crypt)->ops->set_key(sec.keys[key], 13, NULL,
 					       (*crypt)->priv);
@@ -432,8 +551,13 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 
 		/* No key data - just set the default TX key index */
 		if (key_provided) {
+<<<<<<< HEAD
 			RTLLIB_DEBUG_WX(
 				"Setting key %d to default Tx key.\n", key);
+=======
+			netdev_dbg(ieee->dev,
+				   "Setting key %d as default Tx key.\n", key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ieee->crypt_info.tx_keyidx = key;
 			sec.active_key = key;
 			sec.flags |= SEC_ACTIVE_KEY;
@@ -445,11 +569,20 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 			  WLAN_AUTH_SHARED_KEY;
 	sec.auth_mode = ieee->open_wep ? WLAN_AUTH_OPEN : WLAN_AUTH_SHARED_KEY;
 	sec.flags |= SEC_AUTH_MODE;
+<<<<<<< HEAD
 	RTLLIB_DEBUG_WX("Auth: %s\n", sec.auth_mode == WLAN_AUTH_OPEN ?
 			   "OPEN" : "SHARED KEY");
 
 	/* For now we just support WEP, so only set that security level...
 	 * TODO: When WPA is added this is one place that needs to change */
+=======
+	netdev_dbg(ieee->dev, "Auth: %s\n", sec.auth_mode == WLAN_AUTH_OPEN ?
+			   "OPEN" : "SHARED KEY");
+
+	/* For now we just support WEP, so only set that security level...
+	 * TODO: When WPA is added this is one place that needs to change
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sec.flags |= SEC_LEVEL;
 	sec.level = SEC_LEVEL_1; /* 40 and 104 bit WEP */
 
@@ -460,11 +593,20 @@ int rtllib_wx_set_encode(struct rtllib_device *ieee,
 	 * generate new IEEE 802.11 authentication which may end up in looping
 	 * with IEEE 802.1X.  If your hardware requires a reset after WEP
 	 * configuration (for example... Prism2), implement the reset_port in
+<<<<<<< HEAD
 	 * the callbacks structures used to initialize the 802.11 stack. */
 	if (ieee->reset_on_keychange &&
 	    ieee->iw_mode != IW_MODE_INFRA &&
 	    ieee->reset_port && ieee->reset_port(dev)) {
 		printk(KERN_DEBUG "%s: reset_port failed\n", dev->name);
+=======
+	 * the callbacks structures used to initialize the 802.11 stack.
+	 */
+	if (ieee->reset_on_keychange &&
+	    ieee->iw_mode != IW_MODE_INFRA &&
+	    ieee->reset_port && ieee->reset_port(dev)) {
+		netdev_dbg(dev, "%s: reset_port failed\n", dev->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	return 0;
@@ -479,7 +621,11 @@ int rtllib_wx_get_encode(struct rtllib_device *ieee,
 	int len, key;
 	struct lib80211_crypt_data *crypt;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_WX("GET_ENCODE\n");
+=======
+	netdev_dbg(ieee->dev, "%s()\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ieee->iw_mode == IW_MODE_MONITOR)
 		return -1;
@@ -502,7 +648,12 @@ int rtllib_wx_get_encode(struct rtllib_device *ieee,
 		return 0;
 	}
 	len = crypt->ops->get_key(keybuf, SCM_KEY_LEN, NULL, crypt->priv);
+<<<<<<< HEAD
 	erq->length = (len >= 0 ? len : 0);
+=======
+
+	erq->length = max(len, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	erq->flags |= IW_ENCODE_ENABLED;
 
@@ -586,12 +737,20 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 		module = "rtllib_crypt_ccmp";
 		break;
 	default:
+<<<<<<< HEAD
 		RTLLIB_DEBUG_WX("%s: unknown crypto alg %d\n",
 				   dev->name, ext->alg);
 		ret = -EINVAL;
 		goto done;
 	}
 	printk(KERN_INFO "alg name:%s\n", alg);
+=======
+		netdev_dbg(ieee->dev, "Unknown crypto alg %d\n", ext->alg);
+		ret = -EINVAL;
+		goto done;
+	}
+	netdev_info(dev, "alg name:%s\n", alg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ops = lib80211_get_crypto_ops(alg);
 	if (ops == NULL) {
@@ -603,9 +762,13 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 		ops = lib80211_get_crypto_ops(alg);
 	}
 	if (ops == NULL) {
+<<<<<<< HEAD
 		RTLLIB_DEBUG_WX("%s: unknown crypto alg %d\n",
 				   dev->name, ext->alg);
 		printk(KERN_INFO "========>unknown crypto alg %d\n", ext->alg);
+=======
+		netdev_info(dev, "========>unknown crypto alg %d\n", ext->alg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 		goto done;
 	}
@@ -621,7 +784,11 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 			goto done;
 		}
 		new_crypt->ops = ops;
+<<<<<<< HEAD
 		if (new_crypt->ops)
+=======
+		if (new_crypt->ops && try_module_get(new_crypt->ops->owner))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			new_crypt->priv = new_crypt->ops->init(idx);
 
 		if (new_crypt->priv == NULL) {
@@ -636,8 +803,12 @@ int rtllib_wx_set_encode_ext(struct rtllib_device *ieee,
 	if (ext->key_len > 0 && (*crypt)->ops->set_key &&
 	    (*crypt)->ops->set_key(ext->key, ext->key_len, ext->rx_seq,
 				   (*crypt)->priv) < 0) {
+<<<<<<< HEAD
 		RTLLIB_DEBUG_WX("%s: key setting failed\n", dev->name);
 		printk(KERN_INFO "key setting failed\n");
+=======
+		netdev_info(dev, "key setting failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 		goto done;
 	}
@@ -670,13 +841,18 @@ done:
 	 if (ieee->reset_on_keychange &&
 	    ieee->iw_mode != IW_MODE_INFRA &&
 	    ieee->reset_port && ieee->reset_port(dev)) {
+<<<<<<< HEAD
 		RTLLIB_DEBUG_WX("%s: reset_port failed\n", dev->name);
+=======
+		netdev_dbg(ieee->dev, "Port reset failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	return ret;
 }
 EXPORT_SYMBOL(rtllib_wx_set_encode_ext);
 
+<<<<<<< HEAD
 int rtllib_wx_get_encode_ext(struct rtllib_device *ieee,
 			       struct iw_request_info *info,
 			       union iwreq_data *wrqu, char *extra)
@@ -734,6 +910,8 @@ int rtllib_wx_get_encode_ext(struct rtllib_device *ieee,
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 			       struct iw_request_info *info,
 			       union iwreq_data *wrqu, char *extra)
@@ -745,7 +923,11 @@ int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 	if (ieee->state != RTLLIB_LINKED)
 		return -ENOLINK;
 
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
+=======
+	mutex_lock(&ieee->wx_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (mlme->cmd) {
 	case IW_MLME_DEAUTH:
@@ -753,10 +935,17 @@ int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 		/* leave break out intentionly */
 
 	case IW_MLME_DISASSOC:
+<<<<<<< HEAD
 		if (deauth == true)
 			printk(KERN_INFO "disauth packet !\n");
 		else
 			printk(KERN_INFO "dis associate packet!\n");
+=======
+		if (deauth)
+			netdev_info(ieee->dev, "disauth packet !\n");
+		else
+			netdev_info(ieee->dev, "dis associate packet!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ieee->cannot_notify = true;
 
@@ -772,11 +961,19 @@ int rtllib_wx_set_mlme(struct rtllib_device *ieee,
 		ieee->current_network.ssid_len = 0;
 		break;
 	default:
+<<<<<<< HEAD
 		up(&ieee->wx_sem);
 		return -EOPNOTSUPP;
 	}
 
 	up(&ieee->wx_sem);
+=======
+		mutex_unlock(&ieee->wx_mutex);
+		return -EOPNOTSUPP;
+	}
+
+	mutex_unlock(&ieee->wx_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -792,8 +989,12 @@ int rtllib_wx_set_auth(struct rtllib_device *ieee,
 	case IW_AUTH_CIPHER_PAIRWISE:
 	case IW_AUTH_CIPHER_GROUP:
 	case IW_AUTH_KEY_MGMT:
+<<<<<<< HEAD
 		/*
 		 * Host AP driver does not use these parameters and allows
+=======
+		/* Host AP driver does not use these parameters and allows
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * wpa_supplicant to control them internally.
 		 */
 		break;
@@ -848,8 +1049,12 @@ int rtllib_wx_set_gen_ie(struct rtllib_device *ieee, u8 *ie, size_t len)
 		if ((eid == MFIE_TYPE_GENERIC) && (!memcmp(&ie[2],
 		     wps_oui, 4))) {
 
+<<<<<<< HEAD
 			ieee->wps_ie_len = (len < MAX_WZC_IE_LEN) ? (len) :
 					   (MAX_WZC_IE_LEN);
+=======
+			ieee->wps_ie_len = min_t(size_t, len, MAX_WZC_IE_LEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			buf = kmemdup(ie, ieee->wps_ie_len, GFP_KERNEL);
 			if (buf == NULL)
 				return -ENOMEM;

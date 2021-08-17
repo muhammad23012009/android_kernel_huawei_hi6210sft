@@ -18,7 +18,11 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
+<<<<<<< HEAD
 #include <mach/devices.h>
+=======
+#include "devices.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/regs-gpio.h>
 #include <mach/gpio-ks8695.h>
 #include "generic.h"
@@ -44,7 +48,12 @@ static void __init og_register_pci(void)
 	if (machine_is_im4004())
 		ks8695_gpio_interrupt(KS8695_GPIO_1, IRQ_TYPE_LEVEL_LOW);
 
+<<<<<<< HEAD
 	ks8695_init_pci(&og_pci);
+=======
+	if (IS_ENABLED(CONFIG_PCI))
+		ks8695_init_pci(&og_pci);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -79,7 +88,11 @@ static void __init og_pci_bus_reset(void)
 #define	S8250_VIRT	0xf4000000
 #define	S8250_SIZE	0x00100000
 
+<<<<<<< HEAD
 static struct __initdata map_desc og_io_desc[] = {
+=======
+static struct map_desc og_io_desc[] __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.virtual	= S8250_VIRT,
 		.pfn		= __phys_to_pfn(S8250_PHYS),

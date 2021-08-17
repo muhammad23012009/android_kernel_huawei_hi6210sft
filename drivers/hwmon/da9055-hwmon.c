@@ -36,7 +36,10 @@
 
 struct da9055_hwmon {
 	struct da9055	*da9055;
+<<<<<<< HEAD
 	struct device	*class_device;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex	hwmon_lock;
 	struct mutex	irq_lock;
 	struct completion done;
@@ -200,6 +203,7 @@ static ssize_t da9055_read_tjunc(struct device *dev,
 							+ 3076332, 10000));
 }
 
+<<<<<<< HEAD
 static ssize_t da9055_hwmon_show_name(struct device *dev,
 				      struct device_attribute *devattr,
 				      char *buf)
@@ -207,6 +211,8 @@ static ssize_t da9055_hwmon_show_name(struct device *dev,
 	return sprintf(buf, "da9055\n");
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t show_label(struct device *dev,
 			  struct device_attribute *devattr, char *buf)
 {
@@ -236,10 +242,14 @@ static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, da9055_read_tjunc, NULL,
 static SENSOR_DEVICE_ATTR(temp1_label, S_IRUGO, show_label, NULL,
 			  DA9055_ADC_TJUNC);
 
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, da9055_hwmon_show_name, NULL);
 
 static struct attribute *da9055_attr[] = {
 	&dev_attr_name.attr,
+=======
+static struct attribute *da9055_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in0_label.dev_attr.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
@@ -254,6 +264,7 @@ static struct attribute *da9055_attr[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group da9055_attr_group = {.attrs = da9055_attr};
 
 static int da9055_hwmon_probe(struct platform_device *pdev)
@@ -263,6 +274,18 @@ static int da9055_hwmon_probe(struct platform_device *pdev)
 
 	hwmon = devm_kzalloc(&pdev->dev, sizeof(struct da9055_hwmon),
 			     GFP_KERNEL);
+=======
+ATTRIBUTE_GROUPS(da9055);
+
+static int da9055_hwmon_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct da9055_hwmon *hwmon;
+	struct device *hwmon_dev;
+	int hwmon_irq, ret;
+
+	hwmon = devm_kzalloc(dev, sizeof(struct da9055_hwmon), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!hwmon)
 		return -ENOMEM;
 
@@ -272,16 +295,22 @@ static int da9055_hwmon_probe(struct platform_device *pdev)
 	init_completion(&hwmon->done);
 	hwmon->da9055 = dev_get_drvdata(pdev->dev.parent);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, hwmon);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hwmon_irq = platform_get_irq_byname(pdev, "HWMON");
 	if (hwmon_irq < 0)
 		return hwmon_irq;
 
+<<<<<<< HEAD
 	hwmon_irq = regmap_irq_get_virq(hwmon->da9055->irq_data, hwmon_irq);
 	if (hwmon_irq < 0)
 		return hwmon_irq;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = devm_request_threaded_irq(&pdev->dev, hwmon_irq,
 					NULL, da9055_auxadc_irq,
 					IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
@@ -292,6 +321,7 @@ static int da9055_hwmon_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = sysfs_create_group(&pdev->dev.kobj, &da9055_attr_group);
 	if (ret)
 		return ret;
@@ -317,14 +347,25 @@ static int da9055_hwmon_remove(struct platform_device *pdev)
 	hwmon_device_unregister(hwmon->class_device);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, "da9055",
+							   hwmon,
+							   da9055_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver da9055_hwmon_driver = {
 	.probe = da9055_hwmon_probe,
+<<<<<<< HEAD
 	.remove = da9055_hwmon_remove,
 	.driver = {
 		.name = "da9055-hwmon",
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.name = "da9055-hwmon",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

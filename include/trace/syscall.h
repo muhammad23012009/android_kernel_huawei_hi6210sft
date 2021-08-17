@@ -3,7 +3,11 @@
 
 #include <linux/tracepoint.h>
 #include <linux/unistd.h>
+<<<<<<< HEAD
 #include <linux/ftrace_event.h>
+=======
+#include <linux/trace_events.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/thread_info.h>
 
 #include <asm/ptrace.h>
@@ -17,6 +21,10 @@
  * @nb_args: number of parameters it takes
  * @types: list of types as strings
  * @args: list of args as strings (args[i] matches types[i])
+<<<<<<< HEAD
+=======
+ * @enter_fields: list of fields for syscall_enter trace event
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @enter_event: associated syscall_enter trace event
  * @exit_event: associated syscall_exit trace event
  */
@@ -28,8 +36,13 @@ struct syscall_metadata {
 	const char	**args;
 	struct list_head enter_fields;
 
+<<<<<<< HEAD
 	struct ftrace_event_call *enter_event;
 	struct ftrace_event_call *exit_event;
+=======
+	struct trace_event_call *enter_event;
+	struct trace_event_call *exit_event;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #if defined(CONFIG_TRACEPOINTS) && defined(CONFIG_HAVE_SYSCALL_TRACEPOINTS)

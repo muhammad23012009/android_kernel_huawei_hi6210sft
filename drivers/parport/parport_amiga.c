@@ -232,7 +232,10 @@ static int __exit amiga_parallel_remove(struct platform_device *pdev)
 	if (port->irq != PARPORT_IRQ_NONE)
 		free_irq(IRQ_AMIGA_CIAA_FLG, port);
 	parport_put_port(port);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -240,7 +243,10 @@ static struct platform_driver amiga_parallel_driver = {
 	.remove = __exit_p(amiga_parallel_remove),
 	.driver   = {
 		.name	= "amiga-parallel",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

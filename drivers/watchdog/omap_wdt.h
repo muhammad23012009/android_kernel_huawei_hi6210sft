@@ -50,5 +50,9 @@
 
 #define PTV			0	/* prescale */
 #define GET_WLDR_VAL(secs)	(0xffffffff - ((secs) * (32768/(1<<PTV))) + 1)
+<<<<<<< HEAD
+=======
+#define GET_WCCR_SECS(val)	((0xffffffff - (val) + 1) / (32768/(1<<PTV)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif				/* _OMAP_WATCHDOG_H */

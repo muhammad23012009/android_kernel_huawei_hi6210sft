@@ -42,6 +42,11 @@ static inline void cacheop_on_each_cpu(void (*func) (void *info), void *info,
 {
 	preempt_disable();
 
+<<<<<<< HEAD
+=======
+	/* Needing IPI for cross-core flush is SHX3-specific. */
+#ifdef CONFIG_CPU_SHX3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * It's possible that this gets called early on when IRQs are
 	 * still disabled due to ioremapping by the boot CPU, so don't
@@ -49,6 +54,10 @@ static inline void cacheop_on_each_cpu(void (*func) (void *info), void *info,
 	 */
 	if (num_online_cpus() > 1)
 		smp_call_function(func, info, wait);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	func(info);
 
@@ -59,7 +68,11 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		       unsigned long vaddr, void *dst, const void *src,
 		       unsigned long len)
 {
+<<<<<<< HEAD
 	if (boot_cpu_data.dcache.n_aliases && page_mapped(page) &&
+=======
+	if (boot_cpu_data.dcache.n_aliases && page_mapcount(page) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    test_bit(PG_dcache_clean, &page->flags)) {
 		void *vto = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(vto, src, len);
@@ -78,7 +91,11 @@ void copy_from_user_page(struct vm_area_struct *vma, struct page *page,
 			 unsigned long vaddr, void *dst, const void *src,
 			 unsigned long len)
 {
+<<<<<<< HEAD
 	if (boot_cpu_data.dcache.n_aliases && page_mapped(page) &&
+=======
+	if (boot_cpu_data.dcache.n_aliases && page_mapcount(page) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    test_bit(PG_dcache_clean, &page->flags)) {
 		void *vfrom = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(dst, vfrom, len);
@@ -97,7 +114,11 @@ void copy_user_highpage(struct page *to, struct page *from,
 
 	vto = kmap_atomic(to);
 
+<<<<<<< HEAD
 	if (boot_cpu_data.dcache.n_aliases && page_mapped(from) &&
+=======
+	if (boot_cpu_data.dcache.n_aliases && page_mapcount(from) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    test_bit(PG_dcache_clean, &from->flags)) {
 		vfrom = kmap_coherent(from, vaddr);
 		copy_page(vto, vfrom);
@@ -153,7 +174,11 @@ void __flush_anon_page(struct page *page, unsigned long vmaddr)
 	unsigned long addr = (unsigned long) page_address(page);
 
 	if (pages_do_alias(addr, vmaddr)) {
+<<<<<<< HEAD
 		if (boot_cpu_data.dcache.n_aliases && page_mapped(page) &&
+=======
+		if (boot_cpu_data.dcache.n_aliases && page_mapcount(page) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    test_bit(PG_dcache_clean, &page->flags)) {
 			void *kaddr;
 
@@ -229,6 +254,10 @@ void flush_icache_range(unsigned long start, unsigned long end)
 
 	cacheop_on_each_cpu(local_flush_icache_range, (void *)&data, 1);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(flush_icache_range);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void flush_icache_page(struct vm_area_struct *vma, struct page *page)
 {
@@ -243,7 +272,15 @@ void flush_cache_sigtramp(unsigned long address)
 
 static void compute_alias(struct cache_info *c)
 {
+<<<<<<< HEAD
 	c->alias_mask = ((c->sets - 1) << c->entry_shift) & ~(PAGE_SIZE - 1);
+=======
+#ifdef CONFIG_MMU
+	c->alias_mask = ((c->sets - 1) << c->entry_shift) & ~(PAGE_SIZE - 1);
+#else
+	c->alias_mask = 0;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	c->n_aliases = c->alias_mask ? (c->alias_mask >> PAGE_SHIFT) + 1 : 0;
 }
 
@@ -285,8 +322,13 @@ void __init cpu_cache_init(void)
 {
 	unsigned int cache_disabled = 0;
 
+<<<<<<< HEAD
 #ifdef CCR
 	cache_disabled = !(__raw_readl(CCR) & CCR_CACHE_ENABLE);
+=======
+#ifdef SH_CCR
+	cache_disabled = !(__raw_readl(SH_CCR) & CCR_CACHE_ENABLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	compute_alias(&boot_cpu_data.icache);
@@ -304,7 +346,15 @@ void __init cpu_cache_init(void)
 	if (unlikely(cache_disabled))
 		goto skip;
 
+<<<<<<< HEAD
 	if (boot_cpu_data.family == CPU_FAMILY_SH2) {
+=======
+	if (boot_cpu_data.type == CPU_J2) {
+		extern void __weak j2_cache_init(void);
+
+		j2_cache_init();
+	} else if (boot_cpu_data.family == CPU_FAMILY_SH2) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		extern void __weak sh2_cache_init(void);
 
 		sh2_cache_init();

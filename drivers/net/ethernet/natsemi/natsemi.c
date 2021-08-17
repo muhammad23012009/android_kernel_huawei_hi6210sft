@@ -247,7 +247,11 @@ static struct {
 	{ "NatSemi DP8381[56]", 0, 24 },
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(natsemi_pci_tbl) = {
+=======
+static const struct pci_device_id natsemi_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_NS, 0x0020, 0x12d9,     0x000c,     0, 0, 0 },
 	{ PCI_VENDOR_ID_NS, 0x0020, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 1 },
 	{ }	/* terminate list */
@@ -817,7 +821,11 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 		printk(version);
 #endif
 
+<<<<<<< HEAD
 	i = pci_enable_device(pdev);
+=======
+	i = pcim_enable_device(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (i) return i;
 
 	/* natsemi has a non-standard PM control register
@@ -850,7 +858,11 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 	ioaddr = ioremap(iostart, iosize);
 	if (!ioaddr) {
 		i = -ENOMEM;
+<<<<<<< HEAD
 		goto err_ioremap;
+=======
+		goto err_pci_request_regions;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Work around the dropped serial bit. */
@@ -927,7 +939,11 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 	dev->netdev_ops = &natsemi_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
 
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &ethtool_ops);
+=======
+	dev->ethtool_ops = &ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mtu)
 		dev->mtu = mtu;
@@ -968,10 +984,13 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
  err_register_netdev:
 	iounmap(ioaddr);
 
+<<<<<<< HEAD
  err_ioremap:
 	pci_release_regions(pdev);
 	pci_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  err_pci_request_regions:
 	free_netdev(dev);
 	return i;
@@ -1905,7 +1924,11 @@ static void ns_tx_timeout(struct net_device *dev)
 	spin_unlock_irq(&np->lock);
 	enable_irq(irq);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->stats.tx_errors++;
 	netif_wake_queue(dev);
 }
@@ -1938,6 +1961,15 @@ static void refill_rx(struct net_device *dev)
 				break; /* Better luck next round. */
 			np->rx_dma[entry] = pci_map_single(np->pci_dev,
 				skb->data, buflen, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
+=======
+			if (pci_dma_mapping_error(np->pci_dev,
+						  np->rx_dma[entry])) {
+				dev_kfree_skb_any(skb);
+				np->rx_skbuff[entry] = NULL;
+				break; /* Better luck next round. */
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			np->rx_ring[entry].addr = cpu_to_le32(np->rx_dma[entry]);
 		}
 		np->rx_ring[entry].cmd_status = cpu_to_le32(np->rx_buf_sz);
@@ -2094,6 +2126,15 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 	np->tx_skbuff[entry] = skb;
 	np->tx_dma[entry] = pci_map_single(np->pci_dev,
 				skb->data,skb->len, PCI_DMA_TODEVICE);
+<<<<<<< HEAD
+=======
+	if (pci_dma_mapping_error(np->pci_dev, np->tx_dma[entry])) {
+		np->tx_skbuff[entry] = NULL;
+		dev_kfree_skb_irq(skb);
+		dev->stats.tx_dropped++;
+		return NETDEV_TX_OK;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	np->tx_ring[entry].addr = cpu_to_le32(np->tx_dma[entry]);
 
@@ -3217,10 +3258,15 @@ static void natsemi_remove1(struct pci_dev *pdev)
 
 	NATSEMI_REMOVE_FILE(pdev, dspcfg_workaround);
 	unregister_netdev (dev);
+<<<<<<< HEAD
 	pci_release_regions (pdev);
 	iounmap(ioaddr);
 	free_netdev (dev);
 	pci_set_drvdata(pdev, NULL);
+=======
+	iounmap(ioaddr);
+	free_netdev (dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM

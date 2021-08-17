@@ -34,7 +34,10 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/stat.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sysctl.h>
 #include <linux/export.h>
 #include <net/ip.h>

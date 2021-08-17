@@ -32,6 +32,9 @@
 #define MAX9877_BYPASS			(1 << 6)
 #define MAX9877_SHDN			(1 << 7)
 
+<<<<<<< HEAD
 extern int max9877_add_controls(struct snd_soc_codec *codec);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

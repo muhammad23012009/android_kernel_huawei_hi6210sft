@@ -9,6 +9,10 @@ config TILE_NET
 	select CRC32
 	select TILE_GXIO_MPIPE if TILEGX
 	select HIGH_RES_TIMERS if TILEGX
+<<<<<<< HEAD
+=======
+	select PTP_1588_CLOCK if TILEGX
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  This is a standard Linux network device driver for the
 	  on-chip Tilera Gigabit Ethernet and XAUI interfaces.

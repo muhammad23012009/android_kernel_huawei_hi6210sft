@@ -21,7 +21,11 @@ struct sh_machine_vector {
 	int (*mv_irq_demux)(int irq);
 	void (*mv_init_irq)(void);
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_IOPORT
+=======
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *(*mv_ioport_map)(unsigned long port, unsigned int size);
 	void (*mv_ioport_unmap)(void __iomem *);
 #endif

@@ -33,7 +33,11 @@
 #include <linux/usb.h>
 #include <linux/workqueue.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <sound/tea575x-tuner.h>
+=======
+#include <media/drv-intf/tea575x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_LEDS_CLASS) || \
     (defined(CONFIG_LEDS_CLASS_MODULE) && defined(CONFIG_RADIO_SHARK_MODULE))
@@ -150,7 +154,11 @@ static u32 shark_read_val(struct snd_tea575x *tea)
 	return val;
 }
 
+<<<<<<< HEAD
 static struct snd_tea575x_ops shark_tea_ops = {
+=======
+static const struct snd_tea575x_ops shark_tea_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.write_val = shark_write_val,
 	.read_val  = shark_read_val,
 };
@@ -271,7 +279,11 @@ static void shark_unregister_leds(struct shark_device *shark)
 	cancel_work_sync(&shark->led_work);
 }
 
+<<<<<<< HEAD
 static void shark_resume_leds(struct shark_device *shark)
+=======
+static inline void shark_resume_leds(struct shark_device *shark)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (test_bit(BLUE_IS_PULSE, &shark->brightness_new))
 		set_bit(BLUE_PULSE_LED, &shark->brightness_new);

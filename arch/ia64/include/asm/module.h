@@ -18,12 +18,15 @@ struct mod_arch_specific {
 	struct elf64_shdr *got;		/* global offset table */
 	struct elf64_shdr *opd;		/* official procedure descriptors */
 	struct elf64_shdr *unwind;	/* unwind-table section */
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 	struct elf64_shdr *paravirt_bundles;
 					/* paravirt_alt_bundle_patch table */
 	struct elf64_shdr *paravirt_insts;
 					/* paravirt_alt_inst_patch table */
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long gp;		/* global-pointer for module */
 
 	void *core_unw_table;		/* core unwind-table cookie returned by unwinder */

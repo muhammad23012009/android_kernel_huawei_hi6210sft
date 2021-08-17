@@ -11,7 +11,10 @@ obj-$(CONFIG_PPC_IBM_CELL_POWERBUTTON)	+= cbe_powerbutton.o
 
 ifeq ($(CONFIG_SMP),y)
 obj-$(CONFIG_PPC_CELL_NATIVE)		+= smp.o
+<<<<<<< HEAD
 obj-$(CONFIG_PPC_CELL_QPACE)		+= smp.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif
 
 # needed only when building loadable spufs.ko
@@ -20,12 +23,17 @@ spu-manage-$(CONFIG_PPC_CELL_COMMON)	+= spu_manage.o
 
 obj-$(CONFIG_SPU_BASE)			+= spu_callbacks.o spu_base.o \
 					   spu_notify.o \
+<<<<<<< HEAD
 					   spu_syscalls.o spu_fault.o \
+=======
+					   spu_syscalls.o \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   $(spu-priv1-y) \
 					   $(spu-manage-y) \
 					   spufs/
 
 obj-$(CONFIG_AXON_MSI)			+= axon_msi.o
+<<<<<<< HEAD
 
 # qpace setup
 obj-$(CONFIG_PPC_CELL_QPACE)		+= qpace_setup.o
@@ -44,3 +52,5 @@ obj-$(CONFIG_PPC_UDBG_BEAT)		+= beat_udbg.o
 obj-$(CONFIG_SERIAL_TXX9)		+= celleb_scc_sio.o
 obj-$(CONFIG_SPU_BASE)			+= beat_spu_priv1.o
 endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

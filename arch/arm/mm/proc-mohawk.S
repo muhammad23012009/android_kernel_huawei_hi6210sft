@@ -45,7 +45,11 @@
  * cpu_mohawk_proc_init()
  */
 ENTRY(cpu_mohawk_proc_init)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_mohawk_proc_fin()
@@ -55,7 +59,11 @@ ENTRY(cpu_mohawk_proc_fin)
 	bic	r0, r0, #0x1800			@ ...iz...........
 	bic	r0, r0, #0x0006			@ .............ca.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_mohawk_reset(loc)
@@ -79,7 +87,11 @@ ENTRY(cpu_mohawk_reset)
 	bic	ip, ip, #0x0007			@ .............cam
 	bic	ip, ip, #0x1100			@ ...i...s........
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(cpu_mohawk_reset)
 	.popsection
 
@@ -93,7 +105,11 @@ ENTRY(cpu_mohawk_do_idle)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer
 	mcr	p15, 0, r0, c7, c0, 4		@ wait for interrupt
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_icache_all()
@@ -103,7 +119,11 @@ ENTRY(cpu_mohawk_do_idle)
 ENTRY(mohawk_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(mohawk_flush_icache_all)
 
 /*
@@ -128,7 +148,11 @@ __flush_whole_cache:
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 	mcrne	p15, 0, ip, c7, c10, 0		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_user_cache_range(start, end, flags)
@@ -158,7 +182,11 @@ ENTRY(mohawk_flush_user_cache_range)
 	blo	1b
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	coherent_kern_range(start, end)
@@ -194,7 +222,11 @@ ENTRY(mohawk_coherent_user_range)
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
 	mov	r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -214,7 +246,11 @@ ENTRY(mohawk_flush_kern_dcache_area)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_inv_range(start, end)
@@ -240,7 +276,11 @@ mohawk_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_clean_range(start, end)
@@ -259,7 +299,11 @@ mohawk_dma_clean_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_flush_range(start, end)
@@ -277,7 +321,11 @@ ENTRY(mohawk_dma_flush_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_map_area(start, size, dir)
@@ -300,7 +348,11 @@ ENDPROC(mohawk_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(mohawk_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(mohawk_dma_unmap_area)
 
 	.globl	mohawk_flush_kern_cache_louis
@@ -315,7 +367,11 @@ ENTRY(cpu_mohawk_dcache_clean_area)
 	subs	r1, r1, #CACHE_DLINESIZE
 	bhi	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_mohawk_switch_mm(pgd)
@@ -333,7 +389,11 @@ ENTRY(cpu_mohawk_switch_mm)
 	orr	r0, r0, #0x18			@ cache the page table in L2
 	mcr	p15, 0, r0, c2, c0, 0		@ load page table pointer
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_mohawk_set_pte_ext(ptep, pte, ext)
@@ -342,11 +402,20 @@ ENTRY(cpu_mohawk_switch_mm)
  */
 	.align	5
 ENTRY(cpu_mohawk_set_pte_ext)
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	armv3_set_pte_ext
 	mov	r0, r0
 	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .globl	cpu_mohawk_suspend_size
 .equ	cpu_mohawk_suspend_size, 4 * 6
@@ -383,8 +452,11 @@ ENTRY(cpu_mohawk_do_resume)
 ENDPROC(cpu_mohawk_do_resume)
 #endif
 
+<<<<<<< HEAD
 	__CPUINIT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type	__mohawk_setup, #function
 __mohawk_setup:
 	mov	r0, #0
@@ -402,7 +474,11 @@ __mohawk_setup:
 	mrc	p15, 0, r0, c1, c0		@ get control register
 	bic	r0, r0, r5
 	orr	r0, r0, r6
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.size	__mohawk_setup, . - __mohawk_setup
 
@@ -429,7 +505,11 @@ mohawk_crval:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.type	__88sv331x_proc_info,#object
 __88sv331x_proc_info:
@@ -445,7 +525,11 @@ __88sv331x_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
+<<<<<<< HEAD
 	b	__mohawk_setup
+=======
+	initfn	__mohawk_setup, __88sv331x_proc_info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP

@@ -30,7 +30,11 @@ void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev);
 static int iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
 {
 	return 0;
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * iio_device_unregister_trigger_consumer() - reverse the registration process
@@ -38,9 +42,15 @@ static int iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
  **/
 static void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
 {
+<<<<<<< HEAD
 };
 
 #endif /* CONFIG_TRIGGER_CONSUMER */
 
 
 
+=======
+}
+
+#endif /* CONFIG_TRIGGER_CONSUMER */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

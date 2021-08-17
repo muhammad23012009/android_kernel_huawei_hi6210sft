@@ -21,6 +21,10 @@
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <media/davinci/vpss.h>
 
@@ -404,9 +408,14 @@ EXPORT_SYMBOL(dm365_vpss_set_pg_frame_size);
 
 static int vpss_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource		*r1, *r2;
 	char *platform_name;
 	int status;
+=======
+	struct resource *res;
+	char *platform_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pdev->dev.platform_data) {
 		dev_err(&pdev->dev, "no platform data\n");
@@ -427,6 +436,7 @@ static int vpss_probe(struct platform_device *pdev)
 	}
 
 	dev_info(&pdev->dev, "%s vpss probed\n", platform_name);
+<<<<<<< HEAD
 	r1 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r1)
 		return -ENOENT;
@@ -459,6 +469,21 @@ static int vpss_probe(struct platform_device *pdev)
 			status = -EBUSY;
 			goto fail3;
 		}
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+
+	oper_cfg.vpss_regs_base0 = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(oper_cfg.vpss_regs_base0))
+		return PTR_ERR(oper_cfg.vpss_regs_base0);
+
+	if (oper_cfg.platform == DM355 || oper_cfg.platform == DM365) {
+		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+
+		oper_cfg.vpss_regs_base1 = devm_ioremap_resource(&pdev->dev,
+								 res);
+		if (IS_ERR(oper_cfg.vpss_regs_base1))
+			return PTR_ERR(oper_cfg.vpss_regs_base1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (oper_cfg.platform == DM355) {
@@ -493,6 +518,7 @@ static int vpss_probe(struct platform_device *pdev)
 
 	spin_lock_init(&oper_cfg.vpss_lock);
 	dev_info(&pdev->dev, "%s vpss probe success\n", platform_name);
+<<<<<<< HEAD
 	return 0;
 
 fail3:
@@ -502,10 +528,15 @@ fail2:
 fail1:
 	release_mem_region(r1->start, resource_size(r1));
 	return status;
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vpss_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource		*res;
 
 	pm_runtime_disable(&pdev->dev);
@@ -517,6 +548,9 @@ static int vpss_remove(struct platform_device *pdev)
 		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 		release_mem_region(res->start, resource_size(res));
 	}
+=======
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -540,7 +574,10 @@ static const struct dev_pm_ops vpss_pm_ops = {
 static struct platform_driver vpss_driver = {
 	.driver = {
 		.name	= "vpss",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &vpss_pm_ops,
 	},
 	.remove = vpss_remove,
@@ -556,14 +593,41 @@ static void vpss_exit(void)
 
 static int __init vpss_init(void)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!request_mem_region(VPSS_CLK_CTRL, 4, "vpss_clock_control"))
 		return -EBUSY;
 
 	oper_cfg.vpss_regs_base2 = ioremap(VPSS_CLK_CTRL, 4);
+<<<<<<< HEAD
 	writel(VPSS_CLK_CTRL_VENCCLKEN |
 		     VPSS_CLK_CTRL_DACCLKEN, oper_cfg.vpss_regs_base2);
 
 	return platform_driver_register(&vpss_driver);
+=======
+	if (unlikely(!oper_cfg.vpss_regs_base2)) {
+		ret = -ENOMEM;
+		goto err_ioremap;
+	}
+
+	writel(VPSS_CLK_CTRL_VENCCLKEN |
+	       VPSS_CLK_CTRL_DACCLKEN, oper_cfg.vpss_regs_base2);
+
+	ret = platform_driver_register(&vpss_driver);
+	if (ret)
+		goto err_pd_register;
+
+	return 0;
+
+err_pd_register:
+	iounmap(oper_cfg.vpss_regs_base2);
+err_ioremap:
+	release_mem_region(VPSS_CLK_CTRL, 4);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 subsys_initcall(vpss_init);
 module_exit(vpss_exit);

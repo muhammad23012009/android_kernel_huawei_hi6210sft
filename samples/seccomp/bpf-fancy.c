@@ -25,7 +25,13 @@
 
 int main(int argc, char **argv)
 {
+<<<<<<< HEAD
 	struct bpf_labels l;
+=======
+	struct bpf_labels l = {
+		.count = 0,
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	static const char msg1[] = "Please type something: ";
 	static const char msg2[] = "You typed: ";
 	char buf[256];

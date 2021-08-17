@@ -38,7 +38,11 @@
  */
 ENTRY(cpu_arm946_proc_init)
 ENTRY(cpu_arm946_switch_mm)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm946_proc_fin()
@@ -48,7 +52,11 @@ ENTRY(cpu_arm946_proc_fin)
 	bic	r0, r0, #0x00001000		@ i-cache
 	bic	r0, r0, #0x00000004		@ d-cache
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm946_reset(loc)
@@ -65,7 +73,11 @@ ENTRY(cpu_arm946_reset)
 	bic	ip, ip, #0x00000005		@ .............c.p
 	bic	ip, ip, #0x00001000		@ i-cache
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(cpu_arm946_reset)
 	.popsection
 
@@ -75,7 +87,11 @@ ENDPROC(cpu_arm946_reset)
 	.align	5
 ENTRY(cpu_arm946_do_idle)
 	mcr	p15, 0, r0, c7, c0, 4		@ Wait for interrupt
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_icache_all()
@@ -85,7 +101,11 @@ ENTRY(cpu_arm946_do_idle)
 ENTRY(arm946_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(arm946_flush_icache_all)
 
 /*
@@ -117,7 +137,11 @@ __flush_whole_cache:
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c5, 0		@ flush I cache
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_user_cache_range(start, end, flags)
@@ -156,7 +180,11 @@ ENTRY(arm946_flush_user_cache_range)
 	blo	1b
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	coherent_kern_range(start, end)
@@ -191,7 +219,11 @@ ENTRY(arm946_coherent_user_range)
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
 	mov	r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -212,7 +244,11 @@ ENTRY(arm946_flush_kern_dcache_area)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_inv_range(start, end)
@@ -239,7 +275,11 @@ arm946_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_clean_range(start, end)
@@ -260,7 +300,11 @@ arm946_dma_clean_range:
 	blo	1b
 #endif
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_flush_range(start, end)
@@ -284,7 +328,11 @@ ENTRY(arm946_dma_flush_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_map_area(start, size, dir)
@@ -307,7 +355,11 @@ ENDPROC(arm946_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(arm946_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(arm946_dma_unmap_area)
 
 	.globl	arm946_flush_kern_cache_louis
@@ -324,9 +376,13 @@ ENTRY(cpu_arm946_dcache_clean_area)
 	bhi	1b
 #endif
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
 
 	__CPUINIT
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.type	__arm946_setup, #function
 __arm946_setup:
@@ -345,6 +401,7 @@ __arm946_setup:
 	mcr	p15, 0, r0, c6,	c0, 0		@ set region 0, default
 
 	ldr	r0, =(CONFIG_DRAM_BASE & 0xFFFFF000) @ base[31:12] of RAM
+<<<<<<< HEAD
 	ldr	r1, =(CONFIG_DRAM_SIZE >> 12)	@ size of RAM (must be >= 4KB)
 	mov	r2, #10				@ 11 is the minimum (4KB)
 1:	add	r2, r2, #1			@ area size *= 2
@@ -363,6 +420,16 @@ __arm946_setup:
 	orr	r0, r0, r2, lsl #1		@ the region register value
 	orr	r0, r0, #1			@ set enable bit
 	mcr	p15, 0, r0, c6,	c2, 0		@ set region 2, ROM/FLASH
+=======
+	ldr	r7, =CONFIG_DRAM_SIZE		@ size of RAM (must be >= 4KB)
+	pr_val	r3, r0, r7, #1
+	mcr	p15, 0, r3, c6, c1, 0
+
+	ldr	r0, =(CONFIG_FLASH_MEM_BASE & 0xFFFFF000) @ base[31:12] of FLASH
+	ldr	r7, =CONFIG_FLASH_SIZE		@ size of FLASH (must be >= 4KB)
+	pr_val	r3, r0, r7, #1
+	mcr	p15, 0, r3, c6, c2, 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mov	r0, #0x06
 	mcr	p15, 0, r0, c2, c0, 0		@ region 1,2 d-cacheable
@@ -394,7 +461,11 @@ __arm946_setup:
 #ifdef CONFIG_CPU_CACHE_ROUND_ROBIN
 	orr	r0, r0, #0x00004000		@ .1.. .... .... ....
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.size	__arm946_setup, . - __arm946_setup
 
@@ -411,14 +482,22 @@ __arm946_setup:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type	__arm946_proc_info,#object
 __arm946_proc_info:
 	.long	0x41009460
 	.long	0xff00fff0
 	.long	0
 	.long	0
+<<<<<<< HEAD
 	b	__arm946_setup
+=======
+	initfn	__arm946_setup, __arm946_proc_info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

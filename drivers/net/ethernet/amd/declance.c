@@ -344,8 +344,13 @@ static void cp_to_buf(const int type, void *to, const void *from, int len)
 		}
 
 		clen = len & 1;
+<<<<<<< HEAD
 		rtp = tp;
 		rfp = fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while (clen--) {
 			*rtp++ = *rfp++;
 		}
@@ -372,8 +377,13 @@ static void cp_to_buf(const int type, void *to, const void *from, int len)
 		 * do the rest, if any.
 		 */
 		clen = len & 15;
+<<<<<<< HEAD
 		rtp = (unsigned char *) tp;
 		rfp = (unsigned char *) fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while (clen--) {
 			*rtp++ = *rfp++;
 		}
@@ -403,8 +413,13 @@ static void cp_from_buf(const int type, void *to, const void *from, int len)
 
 		clen = len & 1;
 
+<<<<<<< HEAD
 		rtp = tp;
 		rfp = fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		while (clen--) {
 			*rtp++ = *rfp++;
@@ -433,8 +448,13 @@ static void cp_from_buf(const int type, void *to, const void *from, int len)
 		 * do the rest, if any.
 		 */
 		clen = len & 15;
+<<<<<<< HEAD
 		rtp = (unsigned char *) tp;
 		rfp = (unsigned char *) fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while (clen--) {
 			*rtp++ = *rfp++;
 		}
@@ -475,7 +495,11 @@ static void lance_init_ring(struct net_device *dev)
 	*lib_ptr(ib, rx_ptr, lp->type) = leptr;
 	if (ZERO)
 		printk("RX ptr: %8.8x(%8.8x)\n",
+<<<<<<< HEAD
 		       leptr, lib_off(brx_ring, lp->type));
+=======
+		       leptr, (uint)lib_off(brx_ring, lp->type));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Setup tx descriptor pointer */
 	leptr = offsetof(struct lance_init_block, btx_ring);
@@ -484,7 +508,11 @@ static void lance_init_ring(struct net_device *dev)
 	*lib_ptr(ib, tx_ptr, lp->type) = leptr;
 	if (ZERO)
 		printk("TX ptr: %8.8x(%8.8x)\n",
+<<<<<<< HEAD
 		       leptr, lib_off(btx_ring, lp->type));
+=======
+		       leptr, (uint)lib_off(btx_ring, lp->type));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ZERO)
 		printk("TX rings:\n");
@@ -499,8 +527,13 @@ static void lance_init_ring(struct net_device *dev)
 						/* The ones required by tmd2 */
 		*lib_ptr(ib, btx_ring[i].misc, lp->type) = 0;
 		if (i < 3 && ZERO)
+<<<<<<< HEAD
 			printk("%d: 0x%8.8x(0x%8.8x)\n",
 			       i, leptr, (uint)lp->tx_buf_ptr_cpu[i]);
+=======
+			printk("%d: %8.8x(%p)\n",
+			       i, leptr, lp->tx_buf_ptr_cpu[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Setup the Rx ring entries */
@@ -516,8 +549,13 @@ static void lance_init_ring(struct net_device *dev)
 							     0xf000;
 		*lib_ptr(ib, brx_ring[i].mblength, lp->type) = 0;
 		if (i < 3 && ZERO)
+<<<<<<< HEAD
 			printk("%d: 0x%8.8x(0x%8.8x)\n",
 			       i, leptr, (uint)lp->rx_buf_ptr_cpu[i]);
+=======
+			printk("%d: %8.8x(%p)\n",
+			       i, leptr, lp->rx_buf_ptr_cpu[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	iob();
 }
@@ -811,7 +849,11 @@ static int lance_open(struct net_device *dev)
 	if (lp->dma_irq >= 0) {
 		unsigned long flags;
 
+<<<<<<< HEAD
 		if (request_irq(lp->dma_irq, lance_dma_merr_int, 0,
+=======
+		if (request_irq(lp->dma_irq, lance_dma_merr_int, IRQF_ONESHOT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				"lance error", dev)) {
 			free_irq(dev->irq, dev);
 			printk("%s: Can't get DMA IRQ %d\n", dev->name,
@@ -877,7 +919,11 @@ static inline int lance_reset(struct net_device *dev)
 
 	lance_init_ring(dev);
 	load_csrs(lp);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	status = init_restart_lance(lp);
 	return status;
 }
@@ -893,7 +939,11 @@ static void lance_tx_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static int lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct lance_private *lp = netdev_priv(dev);
 	volatile struct lance_regs *ll = lp->ll;
@@ -1030,6 +1080,10 @@ static int dec_lance_probe(struct device *bdev, const int type)
 	int i, ret;
 	unsigned long esar_base;
 	unsigned char *esar;
+<<<<<<< HEAD
+=======
+	const char *desc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (dec_lance_debug && version_printed++ == 0)
 		printk(version);
@@ -1215,6 +1269,7 @@ static int dec_lance_probe(struct device *bdev, const int type)
 	 */
 	switch (type) {
 	case ASIC_LANCE:
+<<<<<<< HEAD
 		printk("%s: IOASIC onboard LANCE", name);
 		break;
 	case PMAD_LANCE:
@@ -1222,12 +1277,26 @@ static int dec_lance_probe(struct device *bdev, const int type)
 		break;
 	case PMAX_LANCE:
 		printk("%s: PMAX onboard LANCE", name);
+=======
+		desc = "IOASIC onboard LANCE";
+		break;
+	case PMAD_LANCE:
+		desc = "PMAD-AA";
+		break;
+	case PMAX_LANCE:
+		desc = "PMAX onboard LANCE";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = esar[i * 4];
 
+<<<<<<< HEAD
 	printk(", addr = %pM, irq = %d\n", dev->dev_addr, dev->irq);
+=======
+	printk("%s: %s, addr = %pM, irq = %d\n",
+	       name, desc, dev->dev_addr, dev->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->netdev_ops = &lance_netdev_ops;
 	dev->watchdog_timeo = 5*HZ;

@@ -111,6 +111,7 @@ struct scm_driver {
 int scm_driver_register(struct scm_driver *scmdrv);
 void scm_driver_unregister(struct scm_driver *scmdrv);
 
+<<<<<<< HEAD
 int scm_start_aob(struct aob *aob);
 void scm_irq_handler(struct aob *aob, int error);
 
@@ -125,4 +126,9 @@ void scm_put_ref(void);
 void register_eadm_ops(struct eadm_ops *ops);
 void unregister_eadm_ops(struct eadm_ops *ops);
 
+=======
+int eadm_start_aob(struct aob *aob);
+void scm_irq_handler(struct aob *aob, int error);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_S390_EADM_H */

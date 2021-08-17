@@ -141,6 +141,7 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
 	const int plen = skb->len;
 	int dlen = IPCOMP_SCRATCH_SIZE;
 	u8 *start = skb->data;
+<<<<<<< HEAD
 	const int cpu = get_cpu();
 	u8 *scratch = *per_cpu_ptr(ipcomp_scratches, cpu);
 	struct crypto_comp *tfm = *per_cpu_ptr(ipcd->tfms, cpu);
@@ -149,6 +150,16 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
 	local_bh_disable();
 	err = crypto_comp_compress(tfm, start, plen, scratch, &dlen);
 	local_bh_enable();
+=======
+	struct crypto_comp *tfm;
+	u8 *scratch;
+	int err;
+
+	local_bh_disable();
+	scratch = *this_cpu_ptr(ipcomp_scratches);
+	tfm = *this_cpu_ptr(ipcd->tfms);
+	err = crypto_comp_compress(tfm, start, plen, scratch, &dlen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		goto out;
 
@@ -158,13 +169,21 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
 	}
 
 	memcpy(start + sizeof(struct ip_comp_hdr), scratch, dlen);
+<<<<<<< HEAD
 	put_cpu();
+=======
+	local_bh_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pskb_trim(skb, dlen + sizeof(struct ip_comp_hdr));
 	return 0;
 
 out:
+<<<<<<< HEAD
 	put_cpu();
+=======
+	local_bh_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -220,8 +239,13 @@ static void ipcomp_free_scratches(void)
 
 static void * __percpu *ipcomp_alloc_scratches(void)
 {
+<<<<<<< HEAD
 	int i;
 	void * __percpu *scratches;
+=======
+	void * __percpu *scratches;
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ipcomp_scratch_users++)
 		return ipcomp_scratches;
@@ -233,7 +257,13 @@ static void * __percpu *ipcomp_alloc_scratches(void)
 	ipcomp_scratches = scratches;
 
 	for_each_possible_cpu(i) {
+<<<<<<< HEAD
 		void *scratch = vmalloc(IPCOMP_SCRATCH_SIZE);
+=======
+		void *scratch;
+
+		scratch = vmalloc_node(IPCOMP_SCRATCH_SIZE, cpu_to_node(i));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!scratch)
 			return NULL;
 		*per_cpu_ptr(scratches, i) = scratch;
@@ -281,7 +311,11 @@ static struct crypto_comp * __percpu *ipcomp_alloc_tfms(const char *alg_name)
 		struct crypto_comp *tfm;
 
 		/* This can be any valid CPU ID so we don't need locking. */
+<<<<<<< HEAD
 		tfm = __this_cpu_read(*pos->tfms);
+=======
+		tfm = this_cpu_read(*pos->tfms);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!strcmp(crypto_comp_name(tfm), alg_name)) {
 			pos->users++;

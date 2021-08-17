@@ -12,10 +12,17 @@
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/spi/spi.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
+=======
+#include <linux/spi/spi.h>
+#include <linux/platform_device.h>
+#include <linux/delay.h>
+#include <asm/unaligned.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define FIRMWARE_NAME	"lattice-ecp3.bit"
 
@@ -79,6 +86,14 @@ static void firmware_load(const struct firmware *fw, void *context)
 	u32 jedec_id;
 	u32 status;
 
+<<<<<<< HEAD
+=======
+	if (fw == NULL) {
+		dev_err(&spi->dev, "Cannot load firmware, aborting\n");
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (fw->size == 0) {
 		dev_err(&spi->dev, "Error: Firmware size is 0!\n");
 		return;
@@ -92,8 +107,13 @@ static void firmware_load(const struct firmware *fw, void *context)
 	/* Trying to speak with the FPGA via SPI... */
 	txbuf[0] = FPGA_CMD_READ_ID;
 	ret = spi_write_then_read(spi, txbuf, 8, rxbuf, rx_len);
+<<<<<<< HEAD
 	dev_dbg(&spi->dev, "FPGA JTAG ID=%08x\n", *(u32 *)&rxbuf[4]);
 	jedec_id = *(u32 *)&rxbuf[4];
+=======
+	jedec_id = get_unaligned_be32(&rxbuf[4]);
+	dev_dbg(&spi->dev, "FPGA JTAG ID=%08x\n", jedec_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < ARRAY_SIZE(ecp3_dev); i++) {
 		if (jedec_id == ecp3_dev[i].jedec_id)
@@ -110,7 +130,12 @@ static void firmware_load(const struct firmware *fw, void *context)
 
 	txbuf[0] = FPGA_CMD_READ_STATUS;
 	ret = spi_write_then_read(spi, txbuf, 8, rxbuf, rx_len);
+<<<<<<< HEAD
 	dev_dbg(&spi->dev, "FPGA Status=%08x\n", *(u32 *)&rxbuf[4]);
+=======
+	status = get_unaligned_be32(&rxbuf[4]);
+	dev_dbg(&spi->dev, "FPGA Status=%08x\n", status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buffer = kzalloc(fw->size + 8, GFP_KERNEL);
 	if (!buffer) {
@@ -142,7 +167,11 @@ static void firmware_load(const struct firmware *fw, void *context)
 	for (i = 0; i < FPGA_CLEAR_LOOP_COUNT; i++) {
 		txbuf[0] = FPGA_CMD_READ_STATUS;
 		ret = spi_write_then_read(spi, txbuf, 8, rxbuf, rx_len);
+<<<<<<< HEAD
 		status = *(u32 *)&rxbuf[4];
+=======
+		status = get_unaligned_be32(&rxbuf[4]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (status == FPGA_STATUS_CLEARED)
 			break;
 
@@ -165,12 +194,21 @@ static void firmware_load(const struct firmware *fw, void *context)
 
 	txbuf[0] = FPGA_CMD_READ_STATUS;
 	ret = spi_write_then_read(spi, txbuf, 8, rxbuf, rx_len);
+<<<<<<< HEAD
 	dev_dbg(&spi->dev, "FPGA Status=%08x\n", *(u32 *)&rxbuf[4]);
 	status = *(u32 *)&rxbuf[4];
 
 	/* Check result */
 	if (status & FPGA_STATUS_DONE)
 		dev_info(&spi->dev, "FPGA succesfully configured!\n");
+=======
+	status = get_unaligned_be32(&rxbuf[4]);
+	dev_dbg(&spi->dev, "FPGA Status=%08x\n", status);
+
+	/* Check result */
+	if (status & FPGA_STATUS_DONE)
+		dev_info(&spi->dev, "FPGA successfully configured!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		dev_info(&spi->dev, "FPGA not configured (DONE not set)\n");
 
@@ -197,7 +235,11 @@ static int lattice_ecp3_probe(struct spi_device *spi)
 	spi_set_drvdata(spi, data);
 
 	init_completion(&data->fw_loaded);
+<<<<<<< HEAD
 	err = request_firmware_nowait(THIS_MODULE, FW_ACTION_NOHOTPLUG,
+=======
+	err = request_firmware_nowait(THIS_MODULE, FW_ACTION_HOTPLUG,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      FIRMWARE_NAME, &spi->dev,
 				      GFP_KERNEL, spi, firmware_load);
 	if (err) {
@@ -229,7 +271,10 @@ MODULE_DEVICE_TABLE(spi, lattice_ecp3_id);
 static struct spi_driver lattice_ecp3_driver = {
 	.driver = {
 		.name = "lattice-ecp3",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = lattice_ecp3_probe,
 	.remove = lattice_ecp3_remove,
@@ -241,3 +286,7 @@ module_spi_driver(lattice_ecp3_driver);
 MODULE_AUTHOR("Stefan Roese <sr@denx.de>");
 MODULE_DESCRIPTION("Lattice ECP3 FPGA configuration via SPI");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_FIRMWARE(FIRMWARE_NAME);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

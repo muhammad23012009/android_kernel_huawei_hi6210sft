@@ -11,6 +11,10 @@ static inline unsigned long bcm63xx_gpio_count(void)
 	switch (bcm63xx_get_cpu_id()) {
 	case BCM6328_CPU_ID:
 		return 32;
+<<<<<<< HEAD
+=======
+	case BCM3368_CPU_ID:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BCM6358_CPU_ID:
 		return 40;
 	case BCM6338_CPU_ID:

@@ -23,12 +23,20 @@
 #include <asm/mpc52xx.h>
 
 /* MPC5200 device tree match tables */
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_xlb_ids[] __initdata = {
+=======
+static const struct of_device_id mpc52xx_xlb_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-xlb", },
 	{ .compatible = "mpc5200-xlb", },
 	{}
 };
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_bus_ids[] __initdata = {
+=======
+static const struct of_device_id mpc52xx_bus_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-immr", },
 	{ .compatible = "fsl,mpc5200b-immr", },
 	{ .compatible = "simple-bus", },
@@ -108,21 +116,37 @@ void __init mpc52xx_declare_of_platform_devices(void)
 /*
  * match tables used by mpc52xx_map_common_devices()
  */
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_gpt_ids[] __initdata = {
+=======
+static const struct of_device_id mpc52xx_gpt_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-gpt", },
 	{ .compatible = "mpc5200-gpt", }, /* old */
 	{}
 };
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_cdm_ids[] __initdata = {
+=======
+static const struct of_device_id mpc52xx_cdm_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-cdm", },
 	{ .compatible = "mpc5200-cdm", }, /* old */
 	{}
 };
+<<<<<<< HEAD
 static const struct of_device_id mpc52xx_gpio_simple[] = {
 	{ .compatible = "fsl,mpc5200-gpio", },
 	{}
 };
 static const struct of_device_id mpc52xx_gpio_wkup[] = {
+=======
+static const struct of_device_id mpc52xx_gpio_simple[] __initconst = {
+	{ .compatible = "fsl,mpc5200-gpio", },
+	{}
+};
+static const struct of_device_id mpc52xx_gpio_wkup[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-gpio-wkup", },
 	{}
 };
@@ -243,8 +267,12 @@ EXPORT_SYMBOL(mpc52xx_get_xtal_freq);
 /**
  * mpc52xx_restart: ppc_md->restart hook for mpc5200 using the watchdog timer
  */
+<<<<<<< HEAD
 void
 mpc52xx_restart(char *cmd)
+=======
+void __noreturn mpc52xx_restart(char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	local_irq_disable();
 

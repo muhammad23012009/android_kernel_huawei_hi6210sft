@@ -1,6 +1,7 @@
 #ifndef _BCACHE_DEBUG_H
 #define _BCACHE_DEBUG_H
 
+<<<<<<< HEAD
 /* Btree/bkey debug printing */
 
 #define KEYHACK_SIZE 80
@@ -42,6 +43,29 @@ void bch_data_verify(struct search *);
 
 static inline void bch_btree_verify(struct btree *b, struct bset *i) {}
 static inline void bch_data_verify(struct search *s) {};
+=======
+struct bio;
+struct cached_dev;
+struct cache_set;
+
+#ifdef CONFIG_BCACHE_DEBUG
+
+void bch_btree_verify(struct btree *);
+void bch_data_verify(struct cached_dev *, struct bio *);
+
+#define expensive_debug_checks(c)	((c)->expensive_debug_checks)
+#define key_merging_disabled(c)		((c)->key_merging_disabled)
+#define bypass_torture_test(d)		((d)->bypass_torture_test)
+
+#else /* DEBUG */
+
+static inline void bch_btree_verify(struct btree *b) {}
+static inline void bch_data_verify(struct cached_dev *dc, struct bio *bio) {}
+
+#define expensive_debug_checks(c)	0
+#define key_merging_disabled(c)		0
+#define bypass_torture_test(d)		0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 

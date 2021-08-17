@@ -12,7 +12,10 @@
 
 #include <linux/regmap.h>
 #include <linux/spi/spi.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 
 #include "internal.h"
@@ -73,7 +76,12 @@ static int regmap_spi_async_write(void *context,
 
 	spi_message_init(&async->m);
 	spi_message_add_tail(&async->t[0], &async->m);
+<<<<<<< HEAD
 	spi_message_add_tail(&async->t[1], &async->m);
+=======
+	if (val)
+		spi_message_add_tail(&async->t[1], &async->m);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	async->m.complete = regmap_spi_complete;
 	async->m.context = async;
@@ -109,6 +117,7 @@ static struct regmap_bus regmap_spi = {
 	.async_alloc = regmap_spi_async_alloc,
 	.read = regmap_spi_read,
 	.read_flag_mask = 0x80,
+<<<<<<< HEAD
 };
 
 /**
@@ -143,5 +152,30 @@ struct regmap *devm_regmap_init_spi(struct spi_device *spi,
 	return devm_regmap_init(&spi->dev, &regmap_spi, &spi->dev, config);
 }
 EXPORT_SYMBOL_GPL(devm_regmap_init_spi);
+=======
+	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
+	.val_format_endian_default = REGMAP_ENDIAN_BIG,
+};
+
+struct regmap *__regmap_init_spi(struct spi_device *spi,
+				 const struct regmap_config *config,
+				 struct lock_class_key *lock_key,
+				 const char *lock_name)
+{
+	return __regmap_init(&spi->dev, &regmap_spi, &spi->dev, config,
+			     lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__regmap_init_spi);
+
+struct regmap *__devm_regmap_init_spi(struct spi_device *spi,
+				      const struct regmap_config *config,
+				      struct lock_class_key *lock_key,
+				      const char *lock_name)
+{
+	return __devm_regmap_init(&spi->dev, &regmap_spi, &spi->dev, config,
+				  lock_key, lock_name);
+}
+EXPORT_SYMBOL_GPL(__devm_regmap_init_spi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");

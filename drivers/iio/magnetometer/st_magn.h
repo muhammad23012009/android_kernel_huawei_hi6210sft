@@ -14,9 +14,17 @@
 #include <linux/types.h>
 #include <linux/iio/common/st_sensors.h>
 
+<<<<<<< HEAD
 #define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
 #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
 #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
+=======
+#define LSM303DLH_MAGN_DEV_NAME		"lsm303dlh_magn"
+#define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
+#define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
+#define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
+#define LSM303AGR_MAGN_DEV_NAME		"lsm303agr_magn"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int st_magn_common_probe(struct iio_dev *indio_dev);
 void st_magn_common_remove(struct iio_dev *indio_dev);
@@ -24,6 +32,11 @@ void st_magn_common_remove(struct iio_dev *indio_dev);
 #ifdef CONFIG_IIO_BUFFER
 int st_magn_allocate_ring(struct iio_dev *indio_dev);
 void st_magn_deallocate_ring(struct iio_dev *indio_dev);
+<<<<<<< HEAD
+=======
+int st_magn_trig_set_state(struct iio_trigger *trig, bool state);
+#define ST_MAGN_TRIGGER_SET_STATE (&st_magn_trig_set_state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_IIO_BUFFER */
 static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
 {
@@ -40,6 +53,10 @@ static inline int st_magn_allocate_ring(struct iio_dev *indio_dev)
 static inline void st_magn_deallocate_ring(struct iio_dev *indio_dev)
 {
 }
+<<<<<<< HEAD
+=======
+#define ST_MAGN_TRIGGER_SET_STATE NULL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_IIO_BUFFER */
 
 #endif /* ST_MAGN_H */

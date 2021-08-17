@@ -4,7 +4,11 @@
  */
 
 #ifndef S390_CHP_H
+<<<<<<< HEAD
 #define S390_CHP_H S390_CHP_H
+=======
+#define S390_CHP_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/types.h>
 #include <linux/device.h>
@@ -48,7 +52,11 @@ struct channel_path {
 	/* Channel-measurement related stuff: */
 	int cmg;
 	int shared;
+<<<<<<< HEAD
 	void *cmg_chars;
+=======
+	struct cmg_chars cmg_chars;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Return channel_path struct for given chpid. */
@@ -60,7 +68,11 @@ static inline struct channel_path *chpid_to_chp(struct chp_id chpid)
 int chp_get_status(struct chp_id chpid);
 u8 chp_get_sch_opm(struct subchannel *sch);
 int chp_is_registered(struct chp_id chpid);
+<<<<<<< HEAD
 void *chp_get_chp_desc(struct chp_id chpid);
+=======
+struct channel_path_desc *chp_get_chp_desc(struct chp_id chpid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void chp_remove_cmg_attr(struct channel_path *chp);
 int chp_add_cmg_attr(struct channel_path *chp);
 int chp_update_desc(struct channel_path *chp);

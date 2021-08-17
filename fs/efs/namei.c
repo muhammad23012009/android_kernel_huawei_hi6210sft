@@ -12,7 +12,12 @@
 #include "efs.h"
 
 
+<<<<<<< HEAD
 static efs_ino_t efs_find_entry(struct inode *inode, const char *name, int len) {
+=======
+static efs_ino_t efs_find_entry(struct inode *inode, const char *name, int len)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct buffer_head *bh;
 
 	int			slot, namelen;
@@ -23,25 +28,44 @@ static efs_ino_t efs_find_entry(struct inode *inode, const char *name, int len) 
 	efs_block_t		block;
  
 	if (inode->i_size & (EFS_DIRBSIZE-1))
+<<<<<<< HEAD
 		printk(KERN_WARNING "EFS: WARNING: find_entry(): directory size not a multiple of EFS_DIRBSIZE\n");
+=======
+		pr_warn("%s(): directory size not a multiple of EFS_DIRBSIZE\n",
+			__func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for(block = 0; block < inode->i_blocks; block++) {
 
 		bh = sb_bread(inode->i_sb, efs_bmap(inode, block));
 		if (!bh) {
+<<<<<<< HEAD
 			printk(KERN_ERR "EFS: find_entry(): failed to read dir block %d\n", block);
+=======
+			pr_err("%s(): failed to read dir block %d\n",
+			       __func__, block);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
     
 		dirblock = (struct efs_dir *) bh->b_data;
 
 		if (be16_to_cpu(dirblock->magic) != EFS_DIRBLK_MAGIC) {
+<<<<<<< HEAD
 			printk(KERN_ERR "EFS: find_entry(): invalid directory block\n");
 			brelse(bh);
 			return(0);
 		}
 
 		for(slot = 0; slot < dirblock->slots; slot++) {
+=======
+			pr_err("%s(): invalid directory block\n", __func__);
+			brelse(bh);
+			return 0;
+		}
+
+		for (slot = 0; slot < dirblock->slots; slot++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dirslot  = (struct efs_dentry *) (((char *) bh->b_data) + EFS_SLOTAT(dirblock, slot));
 
 			namelen  = dirslot->namelen;
@@ -50,12 +74,20 @@ static efs_ino_t efs_find_entry(struct inode *inode, const char *name, int len) 
 			if ((namelen == len) && (!memcmp(name, nameptr, len))) {
 				inodenum = be32_to_cpu(dirslot->inode);
 				brelse(bh);
+<<<<<<< HEAD
 				return(inodenum);
+=======
+				return inodenum;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		brelse(bh);
 	}
+<<<<<<< HEAD
 	return(0);
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct dentry *efs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
@@ -108,9 +140,15 @@ struct dentry *efs_get_parent(struct dentry *child)
 	struct dentry *parent = ERR_PTR(-ENOENT);
 	efs_ino_t ino;
 
+<<<<<<< HEAD
 	ino = efs_find_entry(child->d_inode, "..", 2);
 	if (ino)
 		parent = d_obtain_alias(efs_iget(child->d_inode->i_sb, ino));
+=======
+	ino = efs_find_entry(d_inode(child), "..", 2);
+	if (ino)
+		parent = d_obtain_alias(efs_iget(child->d_sb, ino));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return parent;
 }

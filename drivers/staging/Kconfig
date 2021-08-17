@@ -24,6 +24,7 @@ menuconfig STAGING
 
 if STAGING
 
+<<<<<<< HEAD
 source "drivers/staging/et131x/Kconfig"
 
 source "drivers/staging/slicoss/Kconfig"
@@ -36,22 +37,32 @@ source "drivers/staging/wlan-ng/Kconfig"
 
 source "drivers/staging/echo/Kconfig"
 
+=======
+source "drivers/staging/slicoss/Kconfig"
+
+source "drivers/staging/wlan-ng/Kconfig"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "drivers/staging/comedi/Kconfig"
 
 source "drivers/staging/olpc_dcon/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/staging/asus_oled/Kconfig"
 
 source "drivers/staging/panel/Kconfig"
 
 source "drivers/staging/rtl8187se/Kconfig"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "drivers/staging/rtl8192u/Kconfig"
 
 source "drivers/staging/rtl8192e/Kconfig"
 
 source "drivers/staging/rtl8712/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/staging/rts5139/Kconfig"
 
 source "drivers/staging/frontier/Kconfig"
@@ -63,11 +74,21 @@ source "drivers/staging/line6/Kconfig"
 source "drivers/staging/octeon/Kconfig"
 
 source "drivers/staging/serqt_usb2/Kconfig"
+=======
+source "drivers/staging/rtl8188eu/Kconfig"
+
+source "drivers/staging/rts5208/Kconfig"
+
+source "drivers/staging/octeon/Kconfig"
+
+source "drivers/staging/octeon-usb/Kconfig"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 source "drivers/staging/vt6655/Kconfig"
 
 source "drivers/staging/vt6656/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/staging/sep/Kconfig"
 
 source "drivers/staging/iio/Kconfig"
@@ -137,4 +158,62 @@ source "drivers/staging/netlogic/Kconfig"
 source "drivers/staging/dwc2/Kconfig"
 
 source "drivers/staging/pasr/Kconfig"
+=======
+source "drivers/staging/iio/Kconfig"
+
+source "drivers/staging/sm750fb/Kconfig"
+
+source "drivers/staging/xgifb/Kconfig"
+
+source "drivers/staging/emxx_udc/Kconfig"
+
+source "drivers/staging/speakup/Kconfig"
+
+source "drivers/staging/nvec/Kconfig"
+
+source "drivers/staging/media/Kconfig"
+
+source "drivers/staging/android/Kconfig"
+
+source "drivers/staging/board/Kconfig"
+
+source "drivers/staging/gdm724x/Kconfig"
+
+source "drivers/staging/fwserial/Kconfig"
+
+source "drivers/staging/goldfish/Kconfig"
+
+source "drivers/staging/netlogic/Kconfig"
+
+source "drivers/staging/mt29f_spinand/Kconfig"
+
+source "drivers/staging/lustre/Kconfig"
+
+source "drivers/staging/dgnc/Kconfig"
+
+source "drivers/staging/gs_fpgaboot/Kconfig"
+
+source "drivers/staging/skein/Kconfig"
+
+source "drivers/staging/unisys/Kconfig"
+
+source "drivers/staging/clocking-wizard/Kconfig"
+
+source "drivers/staging/fbtft/Kconfig"
+
+source "drivers/staging/fsl-mc/Kconfig"
+
+source "drivers/staging/wilc1000/Kconfig"
+
+source "drivers/staging/most/Kconfig"
+
+source "drivers/staging/i4l/Kconfig"
+
+source "drivers/staging/ks7010/Kconfig"
+
+source "drivers/staging/greybus/Kconfig"
+
+source "drivers/staging/vc04_services/Kconfig"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif # STAGING

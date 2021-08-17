@@ -31,8 +31,11 @@
 struct nfs_callback_data {
 	unsigned int users;
 	struct svc_serv *serv;
+<<<<<<< HEAD
 	struct svc_rqst *rqst;
 	struct task_struct *task;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct nfs_callback_data nfs_callback_info[NFS4_MAX_MINOR_VERSION + 1];
@@ -77,7 +80,14 @@ nfs4_callback_svc(void *vrqstp)
 
 	set_freezable();
 
+<<<<<<< HEAD
 	while (!kthread_should_stop()) {
+=======
+	while (!kthread_freezable_should_stop(NULL)) {
+
+		if (signal_pending(current))
+			flush_signals(current);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Listen for a request on the socket
 		 */
@@ -86,6 +96,7 @@ nfs4_callback_svc(void *vrqstp)
 			continue;
 		svc_process(rqstp);
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -110,6 +121,14 @@ static int nfs41_callback_up_net(struct svc_serv *serv, struct net *net)
 			      SVC_SOCK_ANONYMOUS);
 }
 
+=======
+	svc_exit_thread(rqstp);
+	module_put_and_exit(0);
+	return 0;
+}
+
+#if defined(CONFIG_NFS_V4_1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The callback service for NFSv4.1 callbacks
  */
@@ -124,11 +143,20 @@ nfs41_callback_svc(void *vrqstp)
 
 	set_freezable();
 
+<<<<<<< HEAD
 	while (!kthread_should_stop()) {
 		if (try_to_freeze())
 			continue;
 
 		prepare_to_wait(&serv->sv_cb_waitq, &wq, TASK_UNINTERRUPTIBLE);
+=======
+	while (!kthread_freezable_should_stop(NULL)) {
+
+		if (signal_pending(current))
+			flush_signals(current);
+
+		prepare_to_wait(&serv->sv_cb_waitq, &wq, TASK_INTERRUPTIBLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_bh(&serv->sv_cb_lock);
 		if (!list_empty(&serv->sv_cb_list)) {
 			req = list_first_entry(&serv->sv_cb_list,
@@ -142,6 +170,7 @@ nfs41_callback_svc(void *vrqstp)
 				error);
 		} else {
 			spin_unlock_bh(&serv->sv_cb_lock);
+<<<<<<< HEAD
 			/* schedule_timeout to game the hung task watchdog */
 			schedule_timeout(60 * HZ);
 			finish_wait(&serv->sv_cb_waitq, &wq);
@@ -178,6 +207,18 @@ static void nfs_minorversion_callback_svc_setup(struct svc_serv *serv,
 	*callback_svc = nfs41_callback_svc;
 }
 
+=======
+			if (!kthread_should_stop())
+				schedule();
+			finish_wait(&serv->sv_cb_waitq, &wq);
+		}
+	}
+	svc_exit_thread(rqstp);
+	module_put_and_exit(0);
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void nfs_callback_bc_serv(u32 minorversion, struct rpc_xprt *xprt,
 		struct svc_serv *serv)
 {
@@ -189,6 +230,7 @@ static inline void nfs_callback_bc_serv(u32 minorversion, struct rpc_xprt *xprt,
 		xprt->bc_serv = serv;
 }
 #else
+<<<<<<< HEAD
 static int nfs41_callback_up_net(struct svc_serv *serv, struct net *net)
 {
 	return 0;
@@ -201,6 +243,8 @@ static void nfs_minorversion_callback_svc_setup(struct svc_serv *serv,
 	*callback_svc = ERR_PTR(-ENOTSUPP);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void nfs_callback_bc_serv(u32 minorversion, struct rpc_xprt *xprt,
 		struct svc_serv *serv)
 {
@@ -210,14 +254,19 @@ static inline void nfs_callback_bc_serv(u32 minorversion, struct rpc_xprt *xprt,
 static int nfs_callback_start_svc(int minorversion, struct rpc_xprt *xprt,
 				  struct svc_serv *serv)
 {
+<<<<<<< HEAD
 	struct svc_rqst *rqstp;
 	int (*callback_svc)(void *vrqstp);
 	struct nfs_callback_data *cb_info = &nfs_callback_info[minorversion];
 	char svc_name[12];
+=======
+	int nrservs = nfs_callback_nr_threads;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	nfs_callback_bc_serv(minorversion, xprt, serv);
 
+<<<<<<< HEAD
 	if (cb_info->task)
 		return 0;
 
@@ -246,6 +295,17 @@ static int nfs_callback_start_svc(int minorversion, struct rpc_xprt *xprt,
 		svc_exit_thread(cb_info->rqst);
 		cb_info->rqst = NULL;
 		cb_info->task = NULL;
+=======
+	if (nrservs < NFS4_MIN_NR_CALLBACK_THREADS)
+		nrservs = NFS4_MIN_NR_CALLBACK_THREADS;
+
+	if (serv->sv_nrthreads-1 == nrservs)
+		return 0;
+
+	ret = serv->sv_ops->svo_setup(serv, NULL, nrservs);
+	if (ret) {
+		serv->sv_ops->svo_setup(serv, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 	dprintk("nfs_callback_up: service started\n");
@@ -263,7 +323,12 @@ static void nfs_callback_down_net(u32 minorversion, struct svc_serv *serv, struc
 	svc_shutdown_net(serv, net);
 }
 
+<<<<<<< HEAD
 static int nfs_callback_up_net(int minorversion, struct svc_serv *serv, struct net *net)
+=======
+static int nfs_callback_up_net(int minorversion, struct svc_serv *serv,
+			       struct net *net, struct rpc_xprt *xprt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct nfs_net *nn = net_generic(net, nfs_net_id);
 	int ret;
@@ -279,6 +344,7 @@ static int nfs_callback_up_net(int minorversion, struct svc_serv *serv, struct n
 		goto err_bind;
 	}
 
+<<<<<<< HEAD
 	switch (minorversion) {
 		case 0:
 			ret = nfs4_callback_up_net(serv, net);
@@ -292,6 +358,13 @@ static int nfs_callback_up_net(int minorversion, struct svc_serv *serv, struct n
 			ret = -EINVAL;
 			break;
 	}
+=======
+	ret = -EPROTONOSUPPORT;
+	if (!IS_ENABLED(CONFIG_NFS_V4_1) || minorversion == 0)
+		ret = nfs4_callback_up_net(serv, net);
+	else if (xprt->ops->bc_up)
+		ret = xprt->ops->bc_up(serv, net);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret < 0) {
 		printk(KERN_ERR "NFS: callback service start failed\n");
@@ -308,15 +381,51 @@ err_bind:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static struct svc_serv_ops nfs40_cb_sv_ops = {
+	.svo_function		= nfs4_callback_svc,
+	.svo_enqueue_xprt	= svc_xprt_do_enqueue,
+	.svo_setup		= svc_set_num_threads_sync,
+	.svo_module		= THIS_MODULE,
+};
+#if defined(CONFIG_NFS_V4_1)
+static struct svc_serv_ops nfs41_cb_sv_ops = {
+	.svo_function		= nfs41_callback_svc,
+	.svo_enqueue_xprt	= svc_xprt_do_enqueue,
+	.svo_setup		= svc_set_num_threads_sync,
+	.svo_module		= THIS_MODULE,
+};
+
+static struct svc_serv_ops *nfs4_cb_sv_ops[] = {
+	[0] = &nfs40_cb_sv_ops,
+	[1] = &nfs41_cb_sv_ops,
+};
+#else
+static struct svc_serv_ops *nfs4_cb_sv_ops[] = {
+	[0] = &nfs40_cb_sv_ops,
+	[1] = NULL,
+};
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct svc_serv *nfs_callback_create_svc(int minorversion)
 {
 	struct nfs_callback_data *cb_info = &nfs_callback_info[minorversion];
 	struct svc_serv *serv;
+<<<<<<< HEAD
+=======
+	struct svc_serv_ops *sv_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Check whether we're already up and running.
 	 */
+<<<<<<< HEAD
 	if (cb_info->task) {
+=======
+	if (cb_info->serv) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Note: increase service usage, because later in case of error
 		 * svc_destroy() will be called.
@@ -325,6 +434,20 @@ static struct svc_serv *nfs_callback_create_svc(int minorversion)
 		return cb_info->serv;
 	}
 
+<<<<<<< HEAD
+=======
+	switch (minorversion) {
+	case 0:
+		sv_ops = nfs4_cb_sv_ops[0];
+		break;
+	default:
+		sv_ops = nfs4_cb_sv_ops[1];
+	}
+
+	if (sv_ops == NULL)
+		return ERR_PTR(-ENOTSUPP);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Sanity check: if there's no task,
 	 * we should be the first user ...
@@ -333,11 +456,19 @@ static struct svc_serv *nfs_callback_create_svc(int minorversion)
 		printk(KERN_WARNING "nfs_callback_create_svc: no kthread, %d users??\n",
 			cb_info->users);
 
+<<<<<<< HEAD
 	serv = svc_create(&nfs4_callback_program, NFS4_CALLBACK_BUFSIZE, NULL);
+=======
+	serv = svc_create_pooled(&nfs4_callback_program, NFS4_CALLBACK_BUFSIZE, sv_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!serv) {
 		printk(KERN_ERR "nfs_callback_create_svc: create service failed\n");
 		return ERR_PTR(-ENOMEM);
 	}
+<<<<<<< HEAD
+=======
+	cb_info->serv = serv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* As there is only one thread we need to over-ride the
 	 * default maximum of 80 connections
 	 */
@@ -364,7 +495,11 @@ int nfs_callback_up(u32 minorversion, struct rpc_xprt *xprt)
 		goto err_create;
 	}
 
+<<<<<<< HEAD
 	ret = nfs_callback_up_net(minorversion, serv, net);
+=======
+	ret = nfs_callback_up_net(minorversion, serv, net, xprt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		goto err_net;
 
@@ -380,6 +515,11 @@ int nfs_callback_up(u32 minorversion, struct rpc_xprt *xprt)
 	 * thread exits.
 	 */
 err_net:
+<<<<<<< HEAD
+=======
+	if (!cb_info->users)
+		cb_info->serv = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	svc_destroy(serv);
 err_create:
 	mutex_unlock(&nfs_callback_mutex);
@@ -397,6 +537,7 @@ err_start:
 void nfs_callback_down(int minorversion, struct net *net)
 {
 	struct nfs_callback_data *cb_info = &nfs_callback_info[minorversion];
+<<<<<<< HEAD
 
 	mutex_lock(&nfs_callback_mutex);
 	nfs_callback_down_net(minorversion, cb_info->serv, net);
@@ -409,6 +550,20 @@ void nfs_callback_down(int minorversion, struct net *net)
 		cb_info->serv = NULL;
 		cb_info->rqst = NULL;
 		cb_info->task = NULL;
+=======
+	struct svc_serv *serv;
+
+	mutex_lock(&nfs_callback_mutex);
+	serv = cb_info->serv;
+	nfs_callback_down_net(minorversion, serv, net);
+	cb_info->users--;
+	if (cb_info->users == 0) {
+		svc_get(serv);
+		serv->sv_ops->svo_setup(serv, NULL, 0);
+		svc_destroy(serv);
+		dprintk("nfs_callback_down: service destroyed\n");
+		cb_info->serv = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mutex_unlock(&nfs_callback_mutex);
 }
@@ -432,6 +587,21 @@ check_gss_callback_principal(struct nfs_client *clp, struct svc_rqst *rqstp)
 	if (p == NULL)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Did we get the acceptor from userland during the SETCLIENID
+	 * negotiation?
+	 */
+	if (clp->cl_acceptor)
+		return !strcmp(p, clp->cl_acceptor);
+
+	/*
+	 * Otherwise try to verify it using the cl_hostname. Note that this
+	 * doesn't work if a non-canonical hostname was used in the devname.
+	 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Expect a GSS_C_NT_HOSTBASED_NAME like "nfs@serverhostname" */
 
 	if (memcmp(p, "nfs@", 4) != 0)
@@ -446,7 +616,11 @@ check_gss_callback_principal(struct nfs_client *clp, struct svc_rqst *rqstp)
  * pg_authenticate method for nfsv4 callback threads.
  *
  * The authflavor has been negotiated, so an incorrect flavor is a server
+<<<<<<< HEAD
  * bug. Drop packets with incorrect authflavor.
+=======
+ * bug. Deny packets with incorrect authflavor.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * All other checking done after NFS decoding where the nfs_client can be
  * found in nfs4_callback_compound
@@ -456,12 +630,20 @@ static int nfs_callback_authenticate(struct svc_rqst *rqstp)
 	switch (rqstp->rq_authop->flavour) {
 	case RPC_AUTH_NULL:
 		if (rqstp->rq_proc != CB_NULL)
+<<<<<<< HEAD
 			return SVC_DROP;
+=======
+			return SVC_DENIED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case RPC_AUTH_GSS:
 		/* No RPC_AUTH_GSS support yet in NFSv4.1 */
 		 if (svc_is_backchannel(rqstp))
+<<<<<<< HEAD
 			return SVC_DROP;
+=======
+			return SVC_DENIED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return SVC_OK;
 }

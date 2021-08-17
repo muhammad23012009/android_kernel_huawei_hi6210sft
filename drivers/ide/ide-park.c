@@ -31,10 +31,17 @@ static void issue_park_cmd(ide_drive_t *drive, unsigned long timeout)
 	}
 	spin_unlock_irq(&hwif->lock);
 
+<<<<<<< HEAD
 	rq = blk_get_request(q, READ, __GFP_WAIT);
 	rq->cmd[0] = REQ_PARK_HEADS;
 	rq->cmd_len = 1;
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq = blk_get_request(q, READ, __GFP_RECLAIM);
+	rq->cmd[0] = REQ_PARK_HEADS;
+	rq->cmd_len = 1;
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rq->special = &timeout;
 	rc = blk_execute_rq(q, NULL, rq, 1);
 	blk_put_request(rq);
@@ -46,12 +53,20 @@ static void issue_park_cmd(ide_drive_t *drive, unsigned long timeout)
 	 * timeout has expired, so power management will be reenabled.
 	 */
 	rq = blk_get_request(q, READ, GFP_NOWAIT);
+<<<<<<< HEAD
 	if (unlikely(!rq))
+=======
+	if (IS_ERR(rq))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 
 	rq->cmd[0] = REQ_UNPARK_HEADS;
 	rq->cmd_len = 1;
+<<<<<<< HEAD
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	elv_add_request(q, rq, ELEVATOR_INSERT_FRONT);
 
 out:
@@ -116,8 +131,15 @@ ssize_t ide_park_store(struct device *dev, struct device_attribute *attr,
 	long int input;
 	int rc;
 
+<<<<<<< HEAD
 	rc = strict_strtol(buf, 10, &input);
 	if (rc || input < -2)
+=======
+	rc = kstrtol(buf, 10, &input);
+	if (rc)
+		return rc;
+	if (input < -2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	if (input > MAX_PARK_TIMEOUT) {
 		input = MAX_PARK_TIMEOUT;

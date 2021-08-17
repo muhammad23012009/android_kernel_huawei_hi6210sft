@@ -28,6 +28,7 @@
 
 #include <linux/fsnotify_backend.h>
 #include "fsnotify.h"
+<<<<<<< HEAD
 #include "../mount.h"
 
 void fsnotify_clear_marks_by_mount(struct vfsmount *mnt)
@@ -58,6 +59,8 @@ void fsnotify_clear_marks_by_mount(struct vfsmount *mnt)
 		fsnotify_put_group(group);
 	}
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void fsnotify_clear_vfsmount_marks_by_group(struct fsnotify_group *group)
 {
@@ -65,6 +68,7 @@ void fsnotify_clear_vfsmount_marks_by_group(struct fsnotify_group *group)
 }
 
 /*
+<<<<<<< HEAD
  * Recalculate the mask of events relevant to a given vfsmount locked.
  */
 static void fsnotify_recalc_vfsmount_mask_locked(struct vfsmount *mnt)
@@ -81,25 +85,40 @@ static void fsnotify_recalc_vfsmount_mask_locked(struct vfsmount *mnt)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Recalculate the mnt->mnt_fsnotify_mask, or the mask of all FS_* event types
  * any notifier is interested in hearing for this mount point
  */
 void fsnotify_recalc_vfsmount_mask(struct vfsmount *mnt)
 {
+<<<<<<< HEAD
 	spin_lock(&mnt->mnt_root->d_lock);
 	fsnotify_recalc_vfsmount_mask_locked(mnt);
+=======
+	struct mount *m = real_mount(mnt);
+
+	spin_lock(&mnt->mnt_root->d_lock);
+	m->mnt_fsnotify_mask = fsnotify_recalc_mask(&m->mnt_fsnotify_marks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&mnt->mnt_root->d_lock);
 }
 
 void fsnotify_destroy_vfsmount_mark(struct fsnotify_mark *mark)
 {
+<<<<<<< HEAD
 	struct vfsmount *mnt = mark->m.mnt;
+=======
+	struct vfsmount *mnt = mark->mnt;
+	struct mount *m = real_mount(mnt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(!mutex_is_locked(&mark->group->mark_mutex));
 	assert_spin_locked(&mark->lock);
 
 	spin_lock(&mnt->mnt_root->d_lock);
 
+<<<<<<< HEAD
 	hlist_del_init_rcu(&mark->m.m_list);
 	mark->m.mnt = NULL;
 
@@ -125,6 +144,15 @@ static struct fsnotify_mark *fsnotify_find_vfsmount_mark_locked(struct fsnotify_
 	return NULL;
 }
 
+=======
+	hlist_del_init_rcu(&mark->obj_list);
+	mark->mnt = NULL;
+
+	m->mnt_fsnotify_mask = fsnotify_recalc_mask(&m->mnt_fsnotify_marks);
+	spin_unlock(&mnt->mnt_root->d_lock);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * given a group and vfsmount, find the mark associated with that combination.
  * if found take a reference to that mark and return it, else return NULL
@@ -132,10 +160,18 @@ static struct fsnotify_mark *fsnotify_find_vfsmount_mark_locked(struct fsnotify_
 struct fsnotify_mark *fsnotify_find_vfsmount_mark(struct fsnotify_group *group,
 						  struct vfsmount *mnt)
 {
+<<<<<<< HEAD
 	struct fsnotify_mark *mark;
 
 	spin_lock(&mnt->mnt_root->d_lock);
 	mark = fsnotify_find_vfsmount_mark_locked(group, mnt);
+=======
+	struct mount *m = real_mount(mnt);
+	struct fsnotify_mark *mark;
+
+	spin_lock(&mnt->mnt_root->d_lock);
+	mark = fsnotify_find_mark(&m->mnt_fsnotify_marks, group);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&mnt->mnt_root->d_lock);
 
 	return mark;
@@ -151,8 +187,12 @@ int fsnotify_add_vfsmount_mark(struct fsnotify_mark *mark,
 			       int allow_dups)
 {
 	struct mount *m = real_mount(mnt);
+<<<<<<< HEAD
 	struct fsnotify_mark *lmark, *last = NULL;
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mark->flags |= FSNOTIFY_MARK_FLAG_VFSMOUNT;
 
@@ -160,6 +200,7 @@ int fsnotify_add_vfsmount_mark(struct fsnotify_mark *mark,
 	assert_spin_locked(&mark->lock);
 
 	spin_lock(&mnt->mnt_root->d_lock);
+<<<<<<< HEAD
 
 	mark->m.mnt = mnt;
 
@@ -194,6 +235,11 @@ int fsnotify_add_vfsmount_mark(struct fsnotify_mark *mark,
 	hlist_add_after_rcu(&last->m.m_list, &mark->m.m_list);
 out:
 	fsnotify_recalc_vfsmount_mask_locked(mnt);
+=======
+	mark->mnt = mnt;
+	ret = fsnotify_add_mark_list(&m->mnt_fsnotify_marks, mark, allow_dups);
+	m->mnt_fsnotify_mask = fsnotify_recalc_mask(&m->mnt_fsnotify_marks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&mnt->mnt_root->d_lock);
 
 	return ret;

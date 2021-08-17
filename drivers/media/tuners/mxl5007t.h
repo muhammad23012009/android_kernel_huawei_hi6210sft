@@ -77,7 +77,11 @@ struct mxl5007t_config {
 	unsigned int clk_out_enable:1;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_MXL5007T)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_MXL5007T)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *mxl5007t_attach(struct dvb_frontend *fe,
 					    struct i2c_adapter *i2c, u8 addr,
 					    struct mxl5007t_config *cfg);
@@ -93,6 +97,7 @@ static inline struct dvb_frontend *mxl5007t_attach(struct dvb_frontend *fe,
 #endif
 
 #endif /* __MXL5007T_H__ */
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -102,3 +107,5 @@ static inline struct dvb_frontend *mxl5007t_attach(struct dvb_frontend *fe,
  * End:
  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

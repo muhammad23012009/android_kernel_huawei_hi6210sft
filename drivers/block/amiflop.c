@@ -343,7 +343,11 @@ static int fd_motor_on(int nr)
 		unit[nr].motor = 1;
 		fd_select(nr);
 
+<<<<<<< HEAD
 		INIT_COMPLETION(motor_on_completion);
+=======
+		reinit_completion(&motor_on_completion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		motor_on_timer.data = nr;
 		mod_timer(&motor_on_timer, jiffies + HZ/2);
 
@@ -1406,7 +1410,11 @@ next_segment:
 
 		track = block / (floppy->dtype->sects * floppy->type->sect_mult);
 		sector = block % (floppy->dtype->sects * floppy->type->sect_mult);
+<<<<<<< HEAD
 		data = rq->buffer + 512 * cnt;
+=======
+		data = bio_data(rq->bio) + 512 * cnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef DEBUG
 		printk("access to track %d, sector %d, with buffer at "
 		       "0x%08lx\n", track, sector, data);
@@ -1699,11 +1707,48 @@ static const struct block_device_operations floppy_fops = {
 	.check_events	= amiga_check_events,
 };
 
+<<<<<<< HEAD
+=======
+static struct gendisk *fd_alloc_disk(int drive)
+{
+	struct gendisk *disk;
+
+	disk = alloc_disk(1);
+	if (!disk)
+		goto out;
+
+	disk->queue = blk_init_queue(do_fd_request, &amiflop_lock);
+	if (IS_ERR(disk->queue)) {
+		disk->queue = NULL;
+		goto out_put_disk;
+	}
+
+	unit[drive].trackbuf = kmalloc(FLOPPY_MAX_SECTORS * 512, GFP_KERNEL);
+	if (!unit[drive].trackbuf)
+		goto out_cleanup_queue;
+
+	return disk;
+
+out_cleanup_queue:
+	blk_cleanup_queue(disk->queue);
+	disk->queue = NULL;
+out_put_disk:
+	put_disk(disk);
+out:
+	unit[drive].type->code = FD_NODRIVE;
+	return NULL;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init fd_probe_drives(void)
 {
 	int drive,drives,nomem;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "FD: probing units\nfound ");
+=======
+	pr_info("FD: probing units\nfound");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	drives=0;
 	nomem=0;
 	for(drive=0;drive<FD_MAX_UNITS;drive++) {
@@ -1711,6 +1756,7 @@ static int __init fd_probe_drives(void)
 		fd_probe(drive);
 		if (unit[drive].type->code == FD_NODRIVE)
 			continue;
+<<<<<<< HEAD
 		disk = alloc_disk(1);
 		if (!disk) {
 			unit[drive].type->code = FD_NODRIVE;
@@ -1732,6 +1778,19 @@ static int __init fd_probe_drives(void)
 			nomem = 1;
 		}
 		printk("fd%d ",drive);
+=======
+
+		disk = fd_alloc_disk(drive);
+		if (!disk) {
+			pr_cont(" no mem for fd%d", drive);
+			nomem = 1;
+			continue;
+		}
+		unit[drive].gendisk = disk;
+		drives++;
+
+		pr_cont(" fd%d",drive);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		disk->major = FLOPPY_MAJOR;
 		disk->first_minor = drive;
 		disk->fops = &floppy_fops;
@@ -1742,11 +1801,19 @@ static int __init fd_probe_drives(void)
 	}
 	if ((drives > 0) || (nomem == 0)) {
 		if (drives == 0)
+<<<<<<< HEAD
 			printk("no drives");
 		printk("\n");
 		return drives;
 	}
 	printk("\n");
+=======
+			pr_cont(" no drives");
+		pr_cont("\n");
+		return drives;
+	}
+	pr_cont("\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENOMEM;
 }
  
@@ -1837,6 +1904,7 @@ out_blkdev:
 	return ret;
 }
 
+<<<<<<< HEAD
 #if 0 /* not safe to unload */
 static int __exit amiga_floppy_remove(struct platform_device *pdev)
 {
@@ -1865,6 +1933,11 @@ static struct platform_driver amiga_floppy_driver = {
 	.driver   = {
 		.name	= "amiga-floppy",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver amiga_floppy_driver = {
+	.driver   = {
+		.name	= "amiga-floppy",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

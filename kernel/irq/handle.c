@@ -22,17 +22,32 @@
 
 /**
  * handle_bad_irq - handle spurious and unhandled irqs
+<<<<<<< HEAD
  * @irq:       the interrupt number
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @desc:      description of the interrupt
  *
  * Handles spurious and unhandled IRQ's. It also prints a debugmessage.
  */
+<<<<<<< HEAD
 void handle_bad_irq(unsigned int irq, struct irq_desc *desc)
 {
 	print_irq_desc(irq, desc);
 	kstat_incr_irqs_this_cpu(irq, desc);
 	ack_bad_irq(irq);
 }
+=======
+void handle_bad_irq(struct irq_desc *desc)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+
+	print_irq_desc(irq, desc);
+	kstat_incr_irqs_this_cpu(desc);
+	ack_bad_irq(irq);
+}
+EXPORT_SYMBOL_GPL(handle_bad_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Special, empty irq handler:
@@ -41,6 +56,10 @@ irqreturn_t no_action(int cpl, void *dev_id)
 {
 	return IRQ_NONE;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(no_action);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void warn_no_thread(unsigned int irq, struct irqaction *action)
 {
@@ -51,7 +70,11 @@ static void warn_no_thread(unsigned int irq, struct irqaction *action)
 	       "but no thread function available.", irq, action->name);
 }
 
+<<<<<<< HEAD
 static void irq_wake_thread(struct irq_desc *desc, struct irqaction *action)
+=======
+void __irq_wake_thread(struct irq_desc *desc, struct irqaction *action)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * In case the thread crashed and was killed we just pretend that
@@ -129,6 +152,7 @@ static void irq_wake_thread(struct irq_desc *desc, struct irqaction *action)
 	wake_up_process(action->thread);
 }
 
+<<<<<<< HEAD
 irqreturn_t
 handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 {
@@ -136,6 +160,15 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 	unsigned int flags = 0, irq = desc->irq_data.irq;
 
 	do {
+=======
+irqreturn_t __handle_irq_event_percpu(struct irq_desc *desc, unsigned int *flags)
+{
+	irqreturn_t retval = IRQ_NONE;
+	unsigned int irq = desc->irq_data.irq;
+	struct irqaction *action;
+
+	for_each_action_of_desc(desc, action) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		irqreturn_t res;
 
 		trace_irq_handler_entry(irq, action);
@@ -157,11 +190,19 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 				break;
 			}
 
+<<<<<<< HEAD
 			irq_wake_thread(desc, action);
 
 			/* Fall through to add to randomness */
 		case IRQ_HANDLED:
 			flags |= action->flags;
+=======
+			__irq_wake_thread(desc, action);
+
+			/* Fall through to add to randomness */
+		case IRQ_HANDLED:
+			*flags |= action->flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		default:
@@ -169,6 +210,7 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 		}
 
 		retval |= res;
+<<<<<<< HEAD
 		action = action->next;
 	} while (action);
 
@@ -176,19 +218,44 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 
 	if (!noirqdebug)
 		note_interrupt(irq, desc, retval);
+=======
+	}
+
+	return retval;
+}
+
+irqreturn_t handle_irq_event_percpu(struct irq_desc *desc)
+{
+	irqreturn_t retval;
+	unsigned int flags = 0;
+
+	retval = __handle_irq_event_percpu(desc, &flags);
+
+	add_interrupt_randomness(desc->irq_data.irq, flags);
+
+	if (!noirqdebug)
+		note_interrupt(desc, retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
 irqreturn_t handle_irq_event(struct irq_desc *desc)
 {
+<<<<<<< HEAD
 	struct irqaction *action = desc->action;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irqreturn_t ret;
 
 	desc->istate &= ~IRQS_PENDING;
 	irqd_set(&desc->irq_data, IRQD_IRQ_INPROGRESS);
 	raw_spin_unlock(&desc->lock);
 
+<<<<<<< HEAD
 	ret = handle_irq_event_percpu(desc, action);
+=======
+	ret = handle_irq_event_percpu(desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock(&desc->lock);
 	irqd_clear(&desc->irq_data, IRQD_IRQ_INPROGRESS);

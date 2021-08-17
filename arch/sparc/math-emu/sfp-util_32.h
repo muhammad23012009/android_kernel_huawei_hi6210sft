@@ -4,20 +4,34 @@
 #include <asm/byteorder.h>
 
 #define add_ssaaaa(sh, sl, ah, al, bh, bl) 				\
+<<<<<<< HEAD
   __asm__ ("addcc %r4,%5,%1\n\t"						\
 	   "addx %r2,%3,%0\n"						\
 	   : "=r" ((USItype)(sh)),					\
 	     "=&r" ((USItype)(sl))					\
+=======
+  __asm__ ("addcc %r4,%5,%1\n\t"					\
+	   "addx %r2,%3,%0\n"						\
+	   : "=r" (sh),							\
+	     "=&r" (sl)							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   : "%rJ" ((USItype)(ah)),					\
 	     "rI" ((USItype)(bh)),					\
 	     "%rJ" ((USItype)(al)),					\
 	     "rI" ((USItype)(bl))					\
 	   : "cc")
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) 				\
+<<<<<<< HEAD
   __asm__ ("subcc %r4,%5,%1\n\t"						\
 	   "subx %r2,%3,%0\n"						\
 	   : "=r" ((USItype)(sh)),					\
 	     "=&r" ((USItype)(sl))					\
+=======
+  __asm__ ("subcc %r4,%5,%1\n\t"					\
+	   "subx %r2,%3,%0\n"						\
+	   : "=r" (sh),							\
+	     "=&r" (sl)							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   : "rJ" ((USItype)(ah)),					\
 	     "rI" ((USItype)(bh)),					\
 	     "rJ" ((USItype)(al)),					\
@@ -65,8 +79,13 @@
 	"mulscc	%%g1,0,%%g1\n\t" 					\
 	"add	%%g1,%%g2,%0\n\t" 					\
 	"rd	%%y,%1\n"						\
+<<<<<<< HEAD
 	   : "=r" ((USItype)(w1)),					\
 	     "=r" ((USItype)(w0))					\
+=======
+	   : "=r" (w1),							\
+	     "=r" (w0)							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   : "%rI" ((USItype)(u)),					\
 	     "r" ((USItype)(v))						\
 	   : "%g1", "%g2", "cc")
@@ -98,8 +117,13 @@
 	   "sub	%1,%2,%1\n\t"						\
 	   "3:	xnor	%0,0,%0\n\t"					\
 	   "! End of inline udiv_qrnnd\n"				\
+<<<<<<< HEAD
 	   : "=&r" ((USItype)(q)),					\
 	     "=&r" ((USItype)(r))					\
+=======
+	   : "=&r" (q),							\
+	     "=&r" (r)							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   : "r" ((USItype)(d)),					\
 	     "1" ((USItype)(n1)),					\
 	     "0" ((USItype)(n0)) : "%g1", "cc")

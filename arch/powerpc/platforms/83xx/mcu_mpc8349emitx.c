@@ -11,13 +11,20 @@
  * (at your option) any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/mutex.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of.h>
 #include <linux/of_gpio.h>
 #include <linux/slab.h>
@@ -100,7 +107,11 @@ static void mcu_power_off(void)
 
 static void mcu_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 {
+<<<<<<< HEAD
 	struct mcu *mcu = container_of(gc, struct mcu, gc);
+=======
+	struct mcu *mcu = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 bit = 1 << (4 + gpio);
 
 	mutex_lock(&mcu->lock);
@@ -137,12 +148,21 @@ static int mcu_gpiochip_add(struct mcu *mcu)
 	gc->direction_output = mcu_gpio_dir_out;
 	gc->of_node = np;
 
+<<<<<<< HEAD
 	return gpiochip_add(gc);
+=======
+	return gpiochip_add_data(gc, mcu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mcu_gpiochip_remove(struct mcu *mcu)
 {
+<<<<<<< HEAD
 	return gpiochip_remove(&mcu->gc);
+=======
+	gpiochip_remove(&mcu->gc);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mcu_probe(struct i2c_client *client, const struct i2c_device_id *id)
@@ -167,10 +187,17 @@ static int mcu_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	if (ret)
 		goto err;
 
+<<<<<<< HEAD
 	/* XXX: this is potentially racy, but there is no lock for ppc_md */
 	if (!ppc_md.power_off) {
 		glob_mcu = mcu;
 		ppc_md.power_off = mcu_power_off;
+=======
+	/* XXX: this is potentially racy, but there is no lock for pm_power_off */
+	if (!pm_power_off) {
+		glob_mcu = mcu;
+		pm_power_off = mcu_power_off;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_info(&client->dev, "will provide power-off service\n");
 	}
 
@@ -197,14 +224,21 @@ static int mcu_remove(struct i2c_client *client)
 	device_remove_file(&client->dev, &dev_attr_status);
 
 	if (glob_mcu == mcu) {
+<<<<<<< HEAD
 		ppc_md.power_off = NULL;
+=======
+		pm_power_off = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		glob_mcu = NULL;
 	}
 
 	ret = mcu_gpiochip_remove(mcu);
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	i2c_set_clientdata(client, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(mcu);
 	return 0;
 }
@@ -215,7 +249,11 @@ static const struct i2c_device_id mcu_ids[] = {
 };
 MODULE_DEVICE_TABLE(i2c, mcu_ids);
 
+<<<<<<< HEAD
 static struct of_device_id mcu_of_match_table[] = {
+=======
+static const struct of_device_id mcu_of_match_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mcu-mpc8349emitx", },
 	{ },
 };
@@ -223,7 +261,10 @@ static struct of_device_id mcu_of_match_table[] = {
 static struct i2c_driver mcu_driver = {
 	.driver = {
 		.name = "mcu-mpc8349emitx",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mcu_of_match_table,
 	},
 	.probe = mcu_probe,
@@ -231,6 +272,7 @@ static struct i2c_driver mcu_driver = {
 	.id_table = mcu_ids,
 };
 
+<<<<<<< HEAD
 static int __init mcu_init(void)
 {
 	return i2c_add_driver(&mcu_driver);
@@ -242,6 +284,9 @@ static void __exit mcu_exit(void)
 	i2c_del_driver(&mcu_driver);
 }
 module_exit(mcu_exit);
+=======
+module_i2c_driver(mcu_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Power Management and GPIO expander driver for "
 		   "MPC8349E-mITX-compatible MCU");

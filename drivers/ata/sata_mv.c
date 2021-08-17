@@ -60,6 +60,10 @@
 #include <linux/dma-mapping.h>
 #include <linux/device.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/phy/phy.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/ata_platform.h>
 #include <linux/mbus.h>
@@ -305,6 +309,14 @@ enum {
 	MV5_PHY_CTL		= 0x0C,
 	SATA_IFCFG		= 0x050,
 	LP_PHY_CTL		= 0x058,
+<<<<<<< HEAD
+=======
+	LP_PHY_CTL_PIN_PU_PLL   = (1 << 0),
+	LP_PHY_CTL_PIN_PU_RX    = (1 << 1),
+	LP_PHY_CTL_PIN_PU_TX    = (1 << 2),
+	LP_PHY_CTL_GEN_TX_3G    = (1 << 5),
+	LP_PHY_CTL_GEN_RX_3G    = (1 << 9),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	MV_M2_PREAMP_MASK	= 0x7e0,
 
@@ -555,10 +567,28 @@ struct mv_host_priv {
 	u32			irq_mask_offset;
 	u32			unmask_all_irqs;
 
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
 	struct clk		*clk;
 	struct clk              **port_clks;
 #endif
+=======
+	/*
+	 * Needed on some devices that require their clocks to be enabled.
+	 * These are optional: if the platform device does not have any
+	 * clocks, they won't be used.  Also, if the underlying hardware
+	 * does not support the common clock framework (CONFIG_HAVE_CLK=n),
+	 * all the clock operations become no-ops (see clk.h).
+	 */
+	struct clk		*clk;
+	struct clk              **port_clks;
+	/*
+	 * Some devices have a SATA PHY which can be enabled/disabled
+	 * in order to save power. These are optional: if the platform
+	 * devices does not have any phy, they won't be used.
+	 */
+	struct phy		**port_phys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * These consistent DMA memory pools give us guaranteed
 	 * alignment for hardware-accessed data structures,
@@ -588,8 +618,13 @@ static int mv5_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 static int mv_port_start(struct ata_port *ap);
 static void mv_port_stop(struct ata_port *ap);
 static int mv_qc_defer(struct ata_queued_cmd *qc);
+<<<<<<< HEAD
 static void mv_qc_prep(struct ata_queued_cmd *qc);
 static void mv_qc_prep_iie(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors mv_qc_prep(struct ata_queued_cmd *qc);
+static enum ata_completion_errors mv_qc_prep_iie(struct ata_queued_cmd *qc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int mv_qc_issue(struct ata_queued_cmd *qc);
 static int mv_hardreset(struct ata_link *link, unsigned int *class,
 			unsigned long deadline);
@@ -969,7 +1004,11 @@ static inline void mv_write_cached_reg(void __iomem *addr, u32 *old, u32 new)
 		 * Looks like a lot of fuss, but it avoids an unnecessary
 		 * +1 usec read-after-write delay for unaffected registers.
 		 */
+<<<<<<< HEAD
 		laddr = (long)addr & 0xffff;
+=======
+		laddr = (unsigned long)addr & 0xffff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (laddr >= 0x300 && laddr <= 0x33c) {
 			laddr &= 0x000f;
 			if (laddr == 0x4 || laddr == 0xc) {
@@ -1379,10 +1418,24 @@ static int mv_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 				/*
 				 * Set PHY speed according to SControl speed.
 				 */
+<<<<<<< HEAD
 				if ((val & 0xf0) == 0x10)
 					writelfl(0x7, lp_phy_addr);
 				else
 					writelfl(0x227, lp_phy_addr);
+=======
+				u32 lp_phy_val =
+					LP_PHY_CTL_PIN_PU_PLL |
+					LP_PHY_CTL_PIN_PU_RX  |
+					LP_PHY_CTL_PIN_PU_TX;
+
+				if ((val & 0xf0) != 0x10)
+					lp_phy_val |=
+						LP_PHY_CTL_GEN_TX_3G |
+						LP_PHY_CTL_GEN_RX_3G;
+
+				writelfl(lp_phy_val, lp_phy_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		writelfl(val, addr);
@@ -1703,6 +1756,7 @@ static int mv_port_start(struct ata_port *ap)
 		return -ENOMEM;
 	ap->private_data = pp;
 
+<<<<<<< HEAD
 	pp->crqb = dma_pool_alloc(hpriv->crqb_pool, GFP_KERNEL, &pp->crqb_dma);
 	if (!pp->crqb)
 		return -ENOMEM;
@@ -1712,6 +1766,15 @@ static int mv_port_start(struct ata_port *ap)
 	if (!pp->crpb)
 		goto out_port_free_dma_mem;
 	memset(pp->crpb, 0, MV_CRPB_Q_SZ);
+=======
+	pp->crqb = dma_pool_zalloc(hpriv->crqb_pool, GFP_KERNEL, &pp->crqb_dma);
+	if (!pp->crqb)
+		return -ENOMEM;
+
+	pp->crpb = dma_pool_zalloc(hpriv->crpb_pool, GFP_KERNEL, &pp->crpb_dma);
+	if (!pp->crpb)
+		goto out_port_free_dma_mem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* 6041/6081 Rev. "C0" (and newer) are okay with async notify */
 	if (hpriv->hp_flags & MV_HP_ERRATA_60X1C0)
@@ -2022,7 +2085,11 @@ static void mv_rw_multi_errata_sata24(struct ata_queued_cmd *qc)
  *      LOCKING:
  *      Inherited from caller.
  */
+<<<<<<< HEAD
 static void mv_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors mv_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ata_port *ap = qc->ap;
 	struct mv_port_priv *pp = ap->private_data;
@@ -2034,15 +2101,25 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 	switch (tf->protocol) {
 	case ATA_PROT_DMA:
 		if (tf->command == ATA_CMD_DSM)
+<<<<<<< HEAD
 			return;
+=======
+			return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* fall-thru */
 	case ATA_PROT_NCQ:
 		break;	/* continue below */
 	case ATA_PROT_PIO:
 		mv_rw_multi_errata_sata24(qc);
+<<<<<<< HEAD
 		return;
 	default:
 		return;
+=======
+		return AC_ERR_OK;
+	default:
+		return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Fill in command request block
@@ -2089,12 +2166,19 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 		 * non-NCQ mode are: [RW] STREAM DMA and W DMA FUA EXT, none
 		 * of which are defined/used by Linux.  If we get here, this
 		 * driver needs work.
+<<<<<<< HEAD
 		 *
 		 * FIXME: modify libata to give qc_prep a return value and
 		 * return error here.
 		 */
 		BUG_ON(tf->command);
 		break;
+=======
+		 */
+		ata_port_err(ap, "%s: unsupported command: %.2x\n", __func__,
+				tf->command);
+		return AC_ERR_INVALID;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mv_crqb_pack_cmd(cw++, tf->nsect, ATA_REG_NSECT, 0);
 	mv_crqb_pack_cmd(cw++, tf->hob_lbal, ATA_REG_LBAL, 0);
@@ -2107,8 +2191,15 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 	mv_crqb_pack_cmd(cw++, tf->command, ATA_REG_CMD, 1);	/* last */
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
 	mv_fill_sg(qc);
+=======
+		return AC_ERR_OK;
+	mv_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -2123,7 +2214,11 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
  *      LOCKING:
  *      Inherited from caller.
  */
+<<<<<<< HEAD
 static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors mv_qc_prep_iie(struct ata_queued_cmd *qc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ata_port *ap = qc->ap;
 	struct mv_port_priv *pp = ap->private_data;
@@ -2134,9 +2229,15 @@ static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
 
 	if ((tf->protocol != ATA_PROT_DMA) &&
 	    (tf->protocol != ATA_PROT_NCQ))
+<<<<<<< HEAD
 		return;
 	if (tf->command == ATA_CMD_DSM)
 		return;  /* use bmdma for this */
+=======
+		return AC_ERR_OK;
+	if (tf->command == ATA_CMD_DSM)
+		return AC_ERR_OK;  /* use bmdma for this */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Fill in Gen IIE command request block */
 	if (!(tf->flags & ATA_TFLAG_WRITE))
@@ -2177,8 +2278,15 @@ static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
 		);
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
 	mv_fill_sg(qc);
+=======
+		return AC_ERR_OK;
+	mv_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -4047,9 +4155,13 @@ static int mv_platform_probe(struct platform_device *pdev)
 	struct resource *res;
 	int n_ports = 0, irq = 0;
 	int rc;
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
 	int port;
 #endif
+=======
+	int port;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ata_print_version_once(&pdev->dev, DRV_VERSION);
 
@@ -4070,6 +4182,7 @@ static int mv_platform_probe(struct platform_device *pdev)
 
 	/* allocate host */
 	if (pdev->dev.of_node) {
+<<<<<<< HEAD
 		of_property_read_u32(pdev->dev.of_node, "nr-ports", &n_ports);
 		irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
 	} else {
@@ -4077,21 +4190,59 @@ static int mv_platform_probe(struct platform_device *pdev)
 		n_ports = mv_platform_data->n_ports;
 		irq = platform_get_irq(pdev, 0);
 	}
+=======
+		rc = of_property_read_u32(pdev->dev.of_node, "nr-ports",
+					   &n_ports);
+		if (rc) {
+			dev_err(&pdev->dev,
+				"error parsing nr-ports property: %d\n", rc);
+			return rc;
+		}
+
+		if (n_ports <= 0) {
+			dev_err(&pdev->dev, "nr-ports must be positive: %d\n",
+				n_ports);
+			return -EINVAL;
+		}
+
+		irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+	} else {
+		mv_platform_data = dev_get_platdata(&pdev->dev);
+		n_ports = mv_platform_data->n_ports;
+		irq = platform_get_irq(pdev, 0);
+	}
+	if (irq < 0)
+		return irq;
+	if (!irq)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host = ata_host_alloc_pinfo(&pdev->dev, ppi, n_ports);
 	hpriv = devm_kzalloc(&pdev->dev, sizeof(*hpriv), GFP_KERNEL);
 
 	if (!host || !hpriv)
 		return -ENOMEM;
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hpriv->port_clks = devm_kzalloc(&pdev->dev,
 					sizeof(struct clk *) * n_ports,
 					GFP_KERNEL);
 	if (!hpriv->port_clks)
 		return -ENOMEM;
+<<<<<<< HEAD
 #endif
 	host->private_data = hpriv;
 	hpriv->n_ports = n_ports;
+=======
+	hpriv->port_phys = devm_kzalloc(&pdev->dev,
+					sizeof(struct phy *) * n_ports,
+					GFP_KERNEL);
+	if (!hpriv->port_phys)
+		return -ENOMEM;
+	host->private_data = hpriv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hpriv->board_idx = chip_soc;
 
 	host->iomap = NULL;
@@ -4102,7 +4253,10 @@ static int mv_platform_probe(struct platform_device *pdev)
 
 	hpriv->base -= SATAHC0_REG_BASE;
 
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hpriv->clk = clk_get(&pdev->dev, NULL);
 	if (IS_ERR(hpriv->clk))
 		dev_notice(&pdev->dev, "cannot get optional clkdev\n");
@@ -4115,8 +4269,30 @@ static int mv_platform_probe(struct platform_device *pdev)
 		hpriv->port_clks[port] = clk_get(&pdev->dev, port_number);
 		if (!IS_ERR(hpriv->port_clks[port]))
 			clk_prepare_enable(hpriv->port_clks[port]);
+<<<<<<< HEAD
 	}
 #endif
+=======
+
+		sprintf(port_number, "port%d", port);
+		hpriv->port_phys[port] = devm_phy_optional_get(&pdev->dev,
+							       port_number);
+		if (IS_ERR(hpriv->port_phys[port])) {
+			rc = PTR_ERR(hpriv->port_phys[port]);
+			hpriv->port_phys[port] = NULL;
+			if (rc != -EPROBE_DEFER)
+				dev_warn(&pdev->dev, "error getting phy %d", rc);
+
+			/* Cleanup only the initialized ports */
+			hpriv->n_ports = port;
+			goto err;
+		} else
+			phy_power_on(hpriv->port_phys[port]);
+	}
+
+	/* All the ports have been initialized */
+	hpriv->n_ports = n_ports;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * (Re-)program MBUS remapping windows if we are asked to.
@@ -4151,18 +4327,30 @@ static int mv_platform_probe(struct platform_device *pdev)
 		return 0;
 
 err:
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!IS_ERR(hpriv->clk)) {
 		clk_disable_unprepare(hpriv->clk);
 		clk_put(hpriv->clk);
 	}
+<<<<<<< HEAD
 	for (port = 0; port < n_ports; port++) {
+=======
+	for (port = 0; port < hpriv->n_ports; port++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!IS_ERR(hpriv->port_clks[port])) {
 			clk_disable_unprepare(hpriv->port_clks[port]);
 			clk_put(hpriv->port_clks[port]);
 		}
+<<<<<<< HEAD
 	}
 #endif
+=======
+		phy_power_off(hpriv->port_phys[port]);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }
@@ -4178,6 +4366,7 @@ err:
 static int mv_platform_remove(struct platform_device *pdev)
 {
 	struct ata_host *host = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
 	struct mv_host_priv *hpriv = host->private_data;
 	int port;
@@ -4185,6 +4374,12 @@ static int mv_platform_remove(struct platform_device *pdev)
 	ata_host_detach(host);
 
 #if defined(CONFIG_HAVE_CLK)
+=======
+	struct mv_host_priv *hpriv = host->private_data;
+	int port;
+	ata_host_detach(host);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!IS_ERR(hpriv->clk)) {
 		clk_disable_unprepare(hpriv->clk);
 		clk_put(hpriv->clk);
@@ -4194,12 +4389,21 @@ static int mv_platform_remove(struct platform_device *pdev)
 			clk_disable_unprepare(hpriv->port_clks[port]);
 			clk_put(hpriv->port_clks[port]);
 		}
+<<<<<<< HEAD
 	}
 #endif
 	return 0;
 }
 
 #ifdef CONFIG_PM
+=======
+		phy_power_off(hpriv->port_phys[port]);
+	}
+	return 0;
+}
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mv_platform_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct ata_host *host = platform_get_drvdata(pdev);
@@ -4257,7 +4461,10 @@ static struct platform_driver mv_platform_driver = {
 	.resume		= mv_platform_resume,
 	.driver		= {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_match_ptr(mv_sata_dt_ids),
 	},
 };
@@ -4266,7 +4473,11 @@ static struct platform_driver mv_platform_driver = {
 #ifdef CONFIG_PCI
 static int mv_pci_init_one(struct pci_dev *pdev,
 			   const struct pci_device_id *ent);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mv_pci_device_resume(struct pci_dev *pdev);
 #endif
 
@@ -4276,7 +4487,11 @@ static struct pci_driver mv_pci_driver = {
 	.id_table		= mv_pci_tbl,
 	.probe			= mv_pci_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= mv_pci_device_resume,
 #endif
@@ -4288,10 +4503,17 @@ static int pci_go_64(struct pci_dev *pdev)
 {
 	int rc;
 
+<<<<<<< HEAD
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
 		if (rc) {
 			rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+		if (rc) {
+			rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (rc) {
 				dev_err(&pdev->dev,
 					"64-bit DMA enable failed\n");
@@ -4299,12 +4521,20 @@ static int pci_go_64(struct pci_dev *pdev)
 			}
 		}
 	} else {
+<<<<<<< HEAD
 		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rc) {
 			dev_err(&pdev->dev, "32-bit DMA enable failed\n");
 			return rc;
 		}
+<<<<<<< HEAD
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rc) {
 			dev_err(&pdev->dev,
 				"32-bit consistent DMA enable failed\n");
@@ -4434,7 +4664,11 @@ static int mv_pci_init_one(struct pci_dev *pdev,
 				 IS_GEN_I(hpriv) ? &mv5_sht : &mv6_sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mv_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
@@ -4456,9 +4690,12 @@ static int mv_pci_device_resume(struct pci_dev *pdev)
 #endif
 #endif
 
+<<<<<<< HEAD
 static int mv_platform_probe(struct platform_device *pdev);
 static int mv_platform_remove(struct platform_device *pdev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init mv_init(void)
 {
 	int rc = -ENODEV;

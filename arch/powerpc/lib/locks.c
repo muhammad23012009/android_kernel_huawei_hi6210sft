@@ -32,7 +32,11 @@ void __spin_yield(arch_spinlock_t *lock)
 		return;
 	holder_cpu = lock_value & 0xffff;
 	BUG_ON(holder_cpu >= NR_CPUS);
+<<<<<<< HEAD
 	yield_count = lppaca_of(holder_cpu).yield_count;
+=======
+	yield_count = be32_to_cpu(lppaca_of(holder_cpu).yield_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((yield_count & 1) == 0)
 		return;		/* virtual cpu is currently running */
 	rmb();
@@ -41,6 +45,10 @@ void __spin_yield(arch_spinlock_t *lock)
 	plpar_hcall_norets(H_CONFER,
 		get_hard_smp_processor_id(holder_cpu), yield_count);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(__spin_yield);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Waiting for a read lock or a write lock on a rwlock...
@@ -57,7 +65,11 @@ void __rw_yield(arch_rwlock_t *rw)
 		return;		/* no write lock at present */
 	holder_cpu = lock_value & 0xffff;
 	BUG_ON(holder_cpu >= NR_CPUS);
+<<<<<<< HEAD
 	yield_count = lppaca_of(holder_cpu).yield_count;
+=======
+	yield_count = be32_to_cpu(lppaca_of(holder_cpu).yield_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((yield_count & 1) == 0)
 		return;		/* virtual cpu is currently running */
 	rmb();
@@ -67,6 +79,7 @@ void __rw_yield(arch_rwlock_t *rw)
 		get_hard_smp_processor_id(holder_cpu), yield_count);
 }
 #endif
+<<<<<<< HEAD
 
 void arch_spin_unlock_wait(arch_spinlock_t *lock)
 {
@@ -79,3 +92,5 @@ void arch_spin_unlock_wait(arch_spinlock_t *lock)
 }
 
 EXPORT_SYMBOL(arch_spin_unlock_wait);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

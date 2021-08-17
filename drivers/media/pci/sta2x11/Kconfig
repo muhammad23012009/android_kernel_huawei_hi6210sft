@@ -1,9 +1,17 @@
 config STA2X11_VIP
 	tristate "STA2X11 VIP Video For Linux"
 	depends on STA2X11
+<<<<<<< HEAD
 	select VIDEO_ADV7180 if MEDIA_SUBDRV_AUTOSELECT
 	select VIDEOBUF2_DMA_CONTIG
 	depends on PCI && VIDEO_V4L2 && VIRT_TO_BUS
+=======
+	depends on HAS_DMA
+	select VIDEO_ADV7180 if MEDIA_SUBDRV_AUTOSELECT
+	select VIDEOBUF2_DMA_CONTIG
+	depends on PCI && VIDEO_V4L2 && VIRT_TO_BUS
+	depends on VIDEO_V4L2_SUBDEV_API
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on I2C
 	help
 	  Say Y for support for STA2X11 VIP (Video Input Port) capture

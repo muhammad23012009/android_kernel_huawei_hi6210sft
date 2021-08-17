@@ -8,6 +8,7 @@
  * All enquiries to support@picochip.com
  */
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
 #include <linux/irqchip.h>
 #include <linux/irqdomain.h>
@@ -16,12 +17,20 @@
 #include <linux/of_irq.h>
 #include <linux/of_platform.h>
 #include <linux/dw_apb_timer.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include "common.h"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PHYS_TO_IO(x)			(((x) & 0x00ffffff) | 0xfe000000)
 #define PICOXCELL_PERIPH_BASE		0x80000000
 #define PICOXCELL_PERIPH_LENGTH		SZ_4M
@@ -60,7 +69,10 @@ static void __init picoxcell_map_io(void)
 
 static void __init picoxcell_init_machine(void)
 {
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	picoxcell_setup_restart();
 }
 
@@ -70,7 +82,11 @@ static const char *picoxcell_dt_match[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static void picoxcell_wdt_restart(char mode, const char *cmd)
+=======
+static void picoxcell_wdt_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * Configure the watchdog to reset with the shortest possible timeout
@@ -86,9 +102,12 @@ static void picoxcell_wdt_restart(char mode, const char *cmd)
 
 DT_MACHINE_START(PICOXCELL, "Picochip picoXcell")
 	.map_io		= picoxcell_map_io,
+<<<<<<< HEAD
 	.nr_irqs	= NR_IRQS_LEGACY,
 	.init_irq	= irqchip_init,
 	.init_time	= dw_apb_timer_init,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= picoxcell_init_machine,
 	.dt_compat	= picoxcell_dt_match,
 	.restart	= picoxcell_wdt_restart,

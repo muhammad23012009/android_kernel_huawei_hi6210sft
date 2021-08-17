@@ -41,6 +41,13 @@ const char *ceph_session_op_name(int op)
 	case CEPH_SESSION_RENEWCAPS: return "renewcaps";
 	case CEPH_SESSION_STALE: return "stale";
 	case CEPH_SESSION_RECALL_STATE: return "recall_state";
+<<<<<<< HEAD
+=======
+	case CEPH_SESSION_FLUSHMSG: return "flushmsg";
+	case CEPH_SESSION_FLUSHMSG_ACK: return "flushmsg_ack";
+	case CEPH_SESSION_FORCE_RO: return "force_ro";
+	case CEPH_SESSION_REJECT: return "reject";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return "???";
 }
@@ -52,6 +59,10 @@ const char *ceph_mds_op_name(int op)
 	case CEPH_MDS_OP_LOOKUPHASH:  return "lookuphash";
 	case CEPH_MDS_OP_LOOKUPPARENT:  return "lookupparent";
 	case CEPH_MDS_OP_LOOKUPINO:  return "lookupino";
+<<<<<<< HEAD
+=======
+	case CEPH_MDS_OP_LOOKUPNAME:  return "lookupname";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CEPH_MDS_OP_GETATTR:  return "getattr";
 	case CEPH_MDS_OP_SETXATTR: return "setxattr";
 	case CEPH_MDS_OP_SETATTR: return "setattr";
@@ -72,6 +83,10 @@ const char *ceph_mds_op_name(int op)
 	case CEPH_MDS_OP_LSSNAP: return "lssnap";
 	case CEPH_MDS_OP_MKSNAP: return "mksnap";
 	case CEPH_MDS_OP_RMSNAP: return "rmsnap";
+<<<<<<< HEAD
+=======
+	case CEPH_MDS_OP_RENAMESNAP: return "renamesnap";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CEPH_MDS_OP_SETFILELOCK: return "setfilelock";
 	case CEPH_MDS_OP_GETFILELOCK: return "getfilelock";
 	}

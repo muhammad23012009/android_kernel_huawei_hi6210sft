@@ -24,6 +24,10 @@
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_VSX
 #define __REST_32FPVSRS(n,c,base)					\
@@ -35,6 +39,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX);					\
 2:	REST_32VSRS(n,c,base);						\
 3:
 
+<<<<<<< HEAD
 #define __REST_32FPVSRS_TRANSACT(n,c,base)				\
 BEGIN_FTR_SECTION							\
 	b	2f;							\
@@ -44,6 +49,8 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX);					\
 2:	REST_32VSRS_TRANSACT(n,c,base);					\
 3:
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __SAVE_32FPVSRS(n,c,base)					\
 BEGIN_FTR_SECTION							\
 	b	2f;							\
@@ -54,6 +61,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX);					\
 3:
 #else
 #define __REST_32FPVSRS(n,b,base)	REST_32FPRS(n, base)
+<<<<<<< HEAD
 #define __REST_32FPVSRS_TRANSACT(n,b,base)	REST_32FPRS(n, base)
 #define __SAVE_32FPVSRS(n,b,base)	SAVE_32FPRS(n, base)
 #endif
@@ -115,6 +123,34 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 
 	blr
 #endif /* CONFIG_PPC_TRANSACTIONAL_MEM */
+=======
+#define __SAVE_32FPVSRS(n,b,base)	SAVE_32FPRS(n, base)
+#endif
+#define REST_32FPVSRS(n,c,base) __REST_32FPVSRS(n,__REG_##c,__REG_##base)
+#define SAVE_32FPVSRS(n,c,base) __SAVE_32FPVSRS(n,__REG_##c,__REG_##base)
+
+/*
+ * Load state from memory into FP registers including FPSCR.
+ * Assumes the caller has enabled FP in the MSR.
+ */
+_GLOBAL(load_fp_state)
+	lfd	fr0,FPSTATE_FPSCR(r3)
+	MTFSF_L(fr0)
+	REST_32FPVSRS(0, R4, R3)
+	blr
+EXPORT_SYMBOL(load_fp_state)
+
+/*
+ * Store FP state into memory, including FPSCR
+ * Assumes the caller has enabled FP in the MSR.
+ */
+_GLOBAL(store_fp_state)
+	SAVE_32FPVSRS(0, R4, R3)
+	mffs	fr0
+	stfd	fr0,FPSTATE_FPSCR(r3)
+	blr
+EXPORT_SYMBOL(store_fp_state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This task wants to use the FPU now.
@@ -122,6 +158,11 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX)
  * and save its floating-point registers in its thread_struct.
  * Load up this task's FP registers from its thread_struct,
  * enable the FPU for the current task and return to the task.
+<<<<<<< HEAD
+=======
+ * Note that on 32-bit this can only use registers that will be
+ * restored by fast_exception_return, i.e. r3 - r6, r10 and r11.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 _GLOBAL(load_up_fpu)
 	mfmsr	r5
@@ -134,6 +175,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 	SYNC
 	MTMSRD(r5)			/* enable use of fpu now */
 	isync
+<<<<<<< HEAD
 /*
  * For SMP, we don't do lazy FPU switching because it just gets too
  * horrendously complex, especially when a task switches from one CPU
@@ -161,6 +203,11 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 	/* enable use of FP after return */
 #ifdef CONFIG_PPC32
 	mfspr	r5,SPRN_SPRG_THREAD		/* current task's THREAD (phys) */
+=======
+	/* enable use of FP after return */
+#ifdef CONFIG_PPC32
+	mfspr	r5,SPRN_SPRG_THREAD	/* current task's THREAD (phys) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lwz	r4,THREAD_FPEXC_MODE(r5)
 	ori	r9,r9,MSR_FP		/* enable FP for current */
 	or	r9,r9,r4
@@ -172,6 +219,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 	or	r12,r12,r4
 	std	r12,_MSR(r1)
 #endif
+<<<<<<< HEAD
 	lfd	fr0,THREAD_FPSCR(r5)
 	MTFSF_L(fr0)
 	REST_32FPVSRS(0, R4, R5)
@@ -180,11 +228,22 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 	fromreal(r4)
 	PPC_STL	r4,ADDROFF(last_task_used_math)(r3)
 #endif /* CONFIG_SMP */
+=======
+	/* Don't care if r4 overflows, this is desired behaviour */
+	lbz	r4,THREAD_LOAD_FP(r5)
+	addi	r4,r4,1
+	stb	r4,THREAD_LOAD_FP(r5)
+	addi	r10,r5,THREAD_FPSTATE
+	lfd	fr0,FPSTATE_FPSCR(r10)
+	MTFSF_L(fr0)
+	REST_32FPVSRS(0, R4, R10)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* restore registers and return */
 	/* we haven't used ctr or xer or lr */
 	blr
 
 /*
+<<<<<<< HEAD
  * giveup_fpu(tsk)
  * Disable FP for the task given as the argument,
  * and save the floating-point registers in its thread_struct.
@@ -227,6 +286,22 @@ END_FTR_SECTION_IFSET(CPU_FTR_VSX)
 	LOAD_REG_ADDRBASE(r4,last_task_used_math)
 	PPC_STL	r5,ADDROFF(last_task_used_math)(r4)
 #endif /* CONFIG_SMP */
+=======
+ * save_fpu(tsk)
+ * Save the floating-point registers in its thread_struct.
+ * Enables the FPU for use in the kernel on return.
+ */
+_GLOBAL(save_fpu)
+	addi	r3,r3,THREAD	        /* want THREAD of task */
+	PPC_LL	r6,THREAD_FPSAVEAREA(r3)
+	PPC_LL	r5,PT_REGS(r3)
+	PPC_LCMPI	0,r6,0
+	bne	2f
+	addi	r6,r3,THREAD_FPSTATE
+2:	SAVE_32FPVSRS(0, R4, R6)
+	mffs	fr0
+	stfd	fr0,FPSTATE_FPSCR(r6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr
 
 /*

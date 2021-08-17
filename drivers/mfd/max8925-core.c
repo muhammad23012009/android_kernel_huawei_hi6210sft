@@ -45,7 +45,11 @@ static struct resource touch_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell touch_devs[] = {
+=======
+static const struct mfd_cell touch_devs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "max8925-touch",
 		.num_resources	= 1,
@@ -63,7 +67,11 @@ static struct resource power_supply_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell power_devs[] = {
+=======
+static const struct mfd_cell power_devs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "max8925-power",
 		.num_resources	= 1,
@@ -81,7 +89,11 @@ static struct resource rtc_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell rtc_devs[] = {
+=======
+static const struct mfd_cell rtc_devs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "max8925-rtc",
 		.num_resources	= 1,
@@ -104,7 +116,11 @@ static struct resource onkey_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell onkey_devs[] = {
+=======
+static const struct mfd_cell onkey_devs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "max8925-onkey",
 		.num_resources	= 2,
@@ -624,6 +640,10 @@ static void max8925_irq_sync_unlock(struct irq_data *data)
 static void max8925_irq_enable(struct irq_data *data)
 {
 	struct max8925_chip *chip = irq_data_get_irq_chip_data(data);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	max8925_irqs[data->irq - chip->irq_base].enable
 		= max8925_irqs[data->irq - chip->irq_base].offs;
 }
@@ -631,6 +651,10 @@ static void max8925_irq_enable(struct irq_data *data)
 static void max8925_irq_disable(struct irq_data *data)
 {
 	struct max8925_chip *chip = irq_data_get_irq_chip_data(data);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	max8925_irqs[data->irq - chip->irq_base].enable = 0;
 }
 
@@ -648,6 +672,7 @@ static int max8925_irq_domain_map(struct irq_domain *d, unsigned int virq,
 	irq_set_chip_data(virq, d->host_data);
 	irq_set_chip_and_handler(virq, &max8925_irq_chip, handle_edge_irq);
 	irq_set_nested_thread(virq, 1);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 	set_irq_flags(virq, IRQF_VALID);
 #else
@@ -657,6 +682,14 @@ static int max8925_irq_domain_map(struct irq_domain *d, unsigned int virq,
 }
 
 static struct irq_domain_ops max8925_irq_domain_ops = {
+=======
+	irq_set_noprobe(virq);
+
+	return 0;
+}
+
+static const struct irq_domain_ops max8925_irq_domain_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map	= max8925_irq_domain_map,
 	.xlate	= irq_domain_xlate_onetwocell,
 };

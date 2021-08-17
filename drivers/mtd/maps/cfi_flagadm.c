@@ -55,13 +55,21 @@
 #define FLASH_PARTITION3_SIZE 0x001C0000
 
 
+<<<<<<< HEAD
 struct map_info flagadm_map = {
+=======
+static struct map_info flagadm_map = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name =		"FlagaDM flash device",
 		.size =		FLASH_SIZE,
 		.bankwidth =	2,
 };
 
+<<<<<<< HEAD
 struct mtd_partition flagadm_parts[] = {
+=======
+static struct mtd_partition flagadm_parts[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name =		"Bootloader",
 		.offset	=	FLASH_PARTITION0_ADDR,
@@ -112,7 +120,11 @@ static int __init init_flagadm(void)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	iounmap((void *)flagadm_map.virt);
+=======
+	iounmap((void __iomem *)flagadm_map.virt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENXIO;
 }
 
@@ -123,8 +135,13 @@ static void __exit cleanup_flagadm(void)
 		map_destroy(mymtd);
 	}
 	if (flagadm_map.virt) {
+<<<<<<< HEAD
 		iounmap((void *)flagadm_map.virt);
 		flagadm_map.virt = 0;
+=======
+		iounmap((void __iomem *)flagadm_map.virt);
+		flagadm_map.virt = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

@@ -22,7 +22,10 @@
 #define cpu_has_3k_cache	0
 #define cpu_has_4k_cache	0
 #define cpu_has_tx39_cache	0
+<<<<<<< HEAD
 #define cpu_has_fpu		0
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cpu_has_counter		1
 #define cpu_has_watch		1
 #define cpu_has_divec		1
@@ -51,13 +54,21 @@
 #define cpu_has_mips32r2	0
 #define cpu_has_mips64r1	0
 #define cpu_has_mips64r2	1
+<<<<<<< HEAD
 #define cpu_has_mips_r2_exec_hazard 0
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cpu_has_dsp		0
 #define cpu_has_dsp2		0
 #define cpu_has_mipsmt		0
 #define cpu_has_vint		0
 #define cpu_has_veic		0
+<<<<<<< HEAD
 #define cpu_hwrena_impl_bits	0xc0000000
+=======
+#define cpu_hwrena_impl_bits	(MIPS_HWRENA_IMPL1 | MIPS_HWRENA_IMPL2)
+#define cpu_has_wsbh            1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define cpu_has_rixi		(cpu_data[0].cputype != CPU_CAVIUM_OCTEON)
 

@@ -77,15 +77,38 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
 
 #define pmd_pgtable(pmd) pmd_page(pmd)
 
+<<<<<<< HEAD
 #if PAGETABLE_LEVELS > 2
 static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long addr)
 {
 	return (pmd_t *)get_zeroed_page(GFP_KERNEL|__GFP_REPEAT);
+=======
+#if CONFIG_PGTABLE_LEVELS > 2
+static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long addr)
+{
+	struct page *page;
+	gfp_t gfp = GFP_KERNEL_ACCOUNT | __GFP_ZERO;
+
+	if (mm == &init_mm)
+		gfp &= ~__GFP_ACCOUNT;
+	page = alloc_pages(gfp, 0);
+	if (!page)
+		return NULL;
+	if (!pgtable_pmd_page_ctor(page)) {
+		__free_pages(page, 0);
+		return NULL;
+	}
+	return (pmd_t *)page_address(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void pmd_free(struct mm_struct *mm, pmd_t *pmd)
 {
 	BUG_ON((unsigned long)pmd & (PAGE_SIZE-1));
+<<<<<<< HEAD
+=======
+	pgtable_pmd_page_dtor(virt_to_page(pmd));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_page((unsigned long)pmd);
 }
 
@@ -107,7 +130,11 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
 }
 #endif	/* CONFIG_X86_PAE */
 
+<<<<<<< HEAD
 #if PAGETABLE_LEVELS > 3
+=======
+#if CONFIG_PGTABLE_LEVELS > 3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void pgd_populate(struct mm_struct *mm, pgd_t *pgd, pud_t *pud)
 {
 	paravirt_alloc_pud(mm, __pa(pud) >> PAGE_SHIFT);
@@ -116,7 +143,15 @@ static inline void pgd_populate(struct mm_struct *mm, pgd_t *pgd, pud_t *pud)
 
 static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long addr)
 {
+<<<<<<< HEAD
 	return (pud_t *)get_zeroed_page(GFP_KERNEL|__GFP_REPEAT);
+=======
+	gfp_t gfp = GFP_KERNEL_ACCOUNT;
+
+	if (mm == &init_mm)
+		gfp &= ~__GFP_ACCOUNT;
+	return (pud_t *)get_zeroed_page(gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void pud_free(struct mm_struct *mm, pud_t *pud)
@@ -133,7 +168,12 @@ static inline void __pud_free_tlb(struct mmu_gather *tlb, pud_t *pud,
 	___pud_free_tlb(tlb, pud);
 }
 
+<<<<<<< HEAD
 #endif	/* PAGETABLE_LEVELS > 3 */
 #endif	/* PAGETABLE_LEVELS > 2 */
+=======
+#endif	/* CONFIG_PGTABLE_LEVELS > 3 */
+#endif	/* CONFIG_PGTABLE_LEVELS > 2 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_X86_PGALLOC_H */

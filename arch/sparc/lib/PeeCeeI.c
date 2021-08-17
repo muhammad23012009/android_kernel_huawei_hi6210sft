@@ -15,7 +15,11 @@ void outsb(unsigned long __addr, const void *src, unsigned long count)
 	const u8 *p = src;
 
 	while (count--)
+<<<<<<< HEAD
 		outb(*p++, addr);
+=======
+		__raw_writeb(*p++, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(outsb);
 
@@ -93,21 +97,36 @@ void insb(unsigned long __addr, void *dst, unsigned long count)
 		u8 *pb = dst;
 
 		while ((((unsigned long)pb) & 0x3) && count--)
+<<<<<<< HEAD
 			*pb++ = inb(addr);
+=======
+			*pb++ = __raw_readb(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pi = (u32 *)pb;
 		while (count >= 4) {
 			u32 w;
 
+<<<<<<< HEAD
 			w  = (inb(addr) << 24);
 			w |= (inb(addr) << 16);
 			w |= (inb(addr) << 8);
 			w |= (inb(addr) << 0);
+=======
+			w  = (__raw_readb(addr) << 24);
+			w |= (__raw_readb(addr) << 16);
+			w |= (__raw_readb(addr) << 8);
+			w |= (__raw_readb(addr) << 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*pi++ = w;
 			count -= 4;
 		}
 		pb = (u8 *)pi;
 		while (count--)
+<<<<<<< HEAD
 			*pb++ = inb(addr);
+=======
+			*pb++ = __raw_readb(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 EXPORT_SYMBOL(insb);
@@ -121,21 +140,34 @@ void insw(unsigned long __addr, void *dst, unsigned long count)
 		u32 *pi;
 
 		if (((unsigned long)ps) & 0x2) {
+<<<<<<< HEAD
 			*ps++ = le16_to_cpu(inw(addr));
+=======
+			*ps++ = __raw_readw(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			count--;
 		}
 		pi = (u32 *)ps;
 		while (count >= 2) {
 			u32 w;
 
+<<<<<<< HEAD
 			w  = (le16_to_cpu(inw(addr)) << 16);
 			w |= (le16_to_cpu(inw(addr)) << 0);
+=======
+			w  = __raw_readw(addr) << 16;
+			w |= __raw_readw(addr) << 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*pi++ = w;
 			count -= 2;
 		}
 		ps = (u16 *)pi;
 		if (count)
+<<<<<<< HEAD
 			*ps = le16_to_cpu(inw(addr));
+=======
+			*ps = __raw_readw(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 EXPORT_SYMBOL(insw);
@@ -148,7 +180,11 @@ void insl(unsigned long __addr, void *dst, unsigned long count)
 		if ((((unsigned long)dst) & 0x3) == 0) {
 			u32 *pi = dst;
 			while (count--)
+<<<<<<< HEAD
 				*pi++ = le32_to_cpu(inl(addr));
+=======
+				*pi++ = __raw_readl(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			u32 l = 0, l2, *pi;
 			u16 *ps;
@@ -158,11 +194,19 @@ void insl(unsigned long __addr, void *dst, unsigned long count)
 			case 0x2:
 				ps = dst;
 				count -= 1;
+<<<<<<< HEAD
 				l = le32_to_cpu(inl(addr));
 				*ps++ = l;
 				pi = (u32 *)ps;
 				while (count--) {
 					l2 = le32_to_cpu(inl(addr));
+=======
+				l = __raw_readl(addr);
+				*ps++ = l;
+				pi = (u32 *)ps;
+				while (count--) {
+					l2 = __raw_readl(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					*pi++ = (l << 16) | (l2 >> 16);
 					l = l2;
 				}
@@ -173,13 +217,21 @@ void insl(unsigned long __addr, void *dst, unsigned long count)
 			case 0x1:
 				pb = dst;
 				count -= 1;
+<<<<<<< HEAD
 				l = le32_to_cpu(inl(addr));
+=======
+				l = __raw_readl(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				*pb++ = l >> 24;
 				ps = (u16 *)pb;
 				*ps++ = ((l >> 8) & 0xffff);
 				pi = (u32 *)ps;
 				while (count--) {
+<<<<<<< HEAD
 					l2 = le32_to_cpu(inl(addr));
+=======
+					l2 = __raw_readl(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					*pi++ = (l << 24) | (l2 >> 8);
 					l = l2;
 				}
@@ -190,11 +242,19 @@ void insl(unsigned long __addr, void *dst, unsigned long count)
 			case 0x3:
 				pb = (u8 *)dst;
 				count -= 1;
+<<<<<<< HEAD
 				l = le32_to_cpu(inl(addr));
 				*pb++ = l >> 24;
 				pi = (u32 *)pb;
 				while (count--) {
 					l2 = le32_to_cpu(inl(addr));
+=======
+				l = __raw_readl(addr);
+				*pb++ = l >> 24;
+				pi = (u32 *)pb;
+				while (count--) {
+					l2 = __raw_readl(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					*pi++ = (l << 8) | (l2 >> 24);
 					l = l2;
 				}

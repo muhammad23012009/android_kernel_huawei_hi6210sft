@@ -9,6 +9,7 @@
  *  publishhed by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
 #include <linux/of_irq.h>
@@ -68,12 +69,53 @@ DT_MACHINE_START(PXA168_DT, "Marvell PXA168 (Device Tree Support)")
 	.init_time	= mmp_dt_init_timer,
 	.init_machine	= pxa168_dt_init,
 	.dt_compat	= mmp_dt_board_compat,
+=======
+#include <linux/irqchip.h>
+#include <linux/of_platform.h>
+#include <linux/clk-provider.h>
+#include <asm/mach/arch.h>
+#include <asm/mach/time.h>
+#include <asm/hardware/cache-tauros2.h>
+
+#include "common.h"
+
+extern void __init mmp_dt_init_timer(void);
+
+static const char *const pxa168_dt_board_compat[] __initconst = {
+	"mrvl,pxa168-aspenite",
+	NULL,
+};
+
+static const char *const pxa910_dt_board_compat[] __initconst = {
+	"mrvl,pxa910-dkb",
+	NULL,
+};
+
+static void __init mmp_init_time(void)
+{
+#ifdef CONFIG_CACHE_TAUROS2
+	tauros2_init(0);
+#endif
+	mmp_dt_init_timer();
+	of_clk_init(NULL);
+}
+
+DT_MACHINE_START(PXA168_DT, "Marvell PXA168 (Device Tree Support)")
+	.map_io		= mmp_map_io,
+	.init_time	= mmp_init_time,
+	.dt_compat	= pxa168_dt_board_compat,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END
 
 DT_MACHINE_START(PXA910_DT, "Marvell PXA910 (Device Tree Support)")
 	.map_io		= mmp_map_io,
+<<<<<<< HEAD
 	.init_irq	= mmp_dt_irq_init,
 	.init_time	= mmp_dt_init_timer,
 	.init_machine	= pxa910_dt_init,
 	.dt_compat	= mmp_dt_board_compat,
+=======
+	.init_time	= mmp_init_time,
+	.dt_compat	= pxa910_dt_board_compat,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

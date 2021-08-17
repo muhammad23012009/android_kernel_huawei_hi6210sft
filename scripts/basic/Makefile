@@ -9,6 +9,10 @@
 # fixdep: 	 Used to generate dependency information during build process
 
 hostprogs-y	:= fixdep
+<<<<<<< HEAD
+=======
+hostprogs-$(CONFIG_BUILD_BIN2C)     += bin2c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 always		:= $(hostprogs-y)
 
 # fixdep is needed to compile other host programs

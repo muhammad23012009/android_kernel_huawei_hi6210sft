@@ -26,6 +26,7 @@
  */
 #include <asm/mem-layout.h>
 
+<<<<<<< HEAD
 /*
  * Full fixmap support involves set_fixmap() functions, but
  * these may not be needed if all we're after is an area for
@@ -65,6 +66,9 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 	BUG_ON(vaddr >= FIXADDR_TOP || vaddr < FIXADDR_START);
 	return __virt_to_fix(vaddr);
 }
+=======
+#include <asm-generic/fixmap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define kmap_get_fixmap_pte(vaddr) \
 	pte_offset_kernel(pmd_offset(pud_offset(pgd_offset_k(vaddr), \

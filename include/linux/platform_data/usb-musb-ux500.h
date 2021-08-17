@@ -9,14 +9,21 @@
 
 #include <linux/dmaengine.h>
 
+<<<<<<< HEAD
 #define UX500_MUSB_DMA_NUM_RX_CHANNELS 8
 #define UX500_MUSB_DMA_NUM_TX_CHANNELS 8
+=======
+#define UX500_MUSB_DMA_NUM_RX_TX_CHANNELS 8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct ux500_musb_board_data {
 	void	**dma_rx_param_array;
 	void	**dma_tx_param_array;
+<<<<<<< HEAD
 	u32	num_rx_channels;
 	u32	num_tx_channels;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool (*dma_filter)(struct dma_chan *chan, void *filter_param);
 };
 

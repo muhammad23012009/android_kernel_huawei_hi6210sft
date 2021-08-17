@@ -20,6 +20,7 @@
 #include <asm/page.h>
 #include <hv/hypervisor.h>
 
+<<<<<<< HEAD
 #define ___hvb	MEM_SV_INTRPT + HV_GLUE_START_CPA
 
 #define ___hv_dispatch(f) (___hvb + (HV_DISPATCH_ENTRY_SIZE * f))
@@ -29,6 +30,8 @@
 #define ___hv_reexec       ___hv_dispatch(HV_DISPATCH_REEXEC)
 #define ___hv_flush_remote ___hv_dispatch(HV_DISPATCH_FLUSH_REMOTE)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef RELOCATE_NEW_KERNEL_VERBOSE
 
 STD_ENTRY(relocate_new_kernel)
@@ -43,8 +46,13 @@ STD_ENTRY(relocate_new_kernel)
 	addi	sp, sp, -8
 	/* we now have a stack (whether we need one or not) */
 
+<<<<<<< HEAD
 	moveli	r40, lo16(___hv_console_putc)
 	auli	r40, r40, ha16(___hv_console_putc)
+=======
+	moveli	r40, lo16(hv_console_putc)
+	auli	r40, r40, ha16(hv_console_putc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef RELOCATE_NEW_KERNEL_VERBOSE
 	moveli	r0, 'r'
@@ -86,7 +94,10 @@ STD_ENTRY(relocate_new_kernel)
 	move	r30, sp
 	addi	sp, sp, -8
 
+<<<<<<< HEAD
 #if CHIP_HAS_CBOX_HOME_MAP()
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * On TILEPro, we need to flush all tiles' caches, since we may
 	 * have been doing hash-for-home caching there.  Note that we
@@ -114,6 +125,7 @@ STD_ENTRY(relocate_new_kernel)
 	}
 	{
 	 move	r8, zero	 /* asids */
+<<<<<<< HEAD
 	 moveli	r20, lo16(___hv_flush_remote)
 	}
 	{
@@ -123,6 +135,16 @@ STD_ENTRY(relocate_new_kernel)
 
 	jalr	r20
 #endif
+=======
+	 moveli	r20, lo16(hv_flush_remote)
+	}
+	{
+	 move	r9, zero	 /* asidcount */
+	 auli	r20, r20, ha16(hv_flush_remote)
+	}
+
+	jalr	r20
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* r33 is destination pointer, default to zero */
 
@@ -175,8 +197,13 @@ STD_ENTRY(relocate_new_kernel)
 	move	r0, r32
 	moveli	r1, 0		/* arg to hv_reexec is 64 bits */
 
+<<<<<<< HEAD
 	moveli	r41, lo16(___hv_reexec)
 	auli	r41, r41, ha16(___hv_reexec)
+=======
+	moveli	r41, lo16(hv_reexec)
+	auli	r41, r41, ha16(hv_reexec)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	jalr	r41
 
@@ -267,8 +294,13 @@ STD_ENTRY(relocate_new_kernel)
 	moveli	r0, '\n'
 	jalr	r40
 .Lhalt:
+<<<<<<< HEAD
 	moveli	r41, lo16(___hv_halt)
 	auli	r41, r41, ha16(___hv_halt)
+=======
+	moveli	r41, lo16(hv_halt)
+	auli	r41, r41, ha16(hv_halt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	jalr	r41
 	STD_ENDPROC(relocate_new_kernel)

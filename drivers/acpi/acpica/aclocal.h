@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +57,11 @@ typedef u32 acpi_mutex_handle;
 
 /* Total number of aml opcodes defined */
 
+<<<<<<< HEAD
 #define AML_NUM_OPCODES                 0x81
+=======
+#define AML_NUM_OPCODES                 0x82
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Forward declarations */
 
@@ -83,11 +91,17 @@ union acpi_parse_object;
 #define ACPI_MTX_EVENTS                 3	/* Data for ACPI events */
 #define ACPI_MTX_CACHES                 4	/* Internal caches, general purposes */
 #define ACPI_MTX_MEMORY                 5	/* Debug memory tracking lists */
+<<<<<<< HEAD
 #define ACPI_MTX_DEBUG_CMD_COMPLETE     6	/* AML debugger */
 #define ACPI_MTX_DEBUG_CMD_READY        7	/* AML debugger */
 
 #define ACPI_MAX_MUTEX                  7
 #define ACPI_NUM_MUTEX                  ACPI_MAX_MUTEX+1
+=======
+
+#define ACPI_MAX_MUTEX                  5
+#define ACPI_NUM_MUTEX                  (ACPI_MAX_MUTEX+1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Lock structure for reader/writer interfaces */
 
@@ -105,11 +119,27 @@ struct acpi_rw_lock {
 #define ACPI_LOCK_HARDWARE              1
 
 #define ACPI_MAX_LOCK                   1
+<<<<<<< HEAD
 #define ACPI_NUM_LOCK                   ACPI_MAX_LOCK+1
 
 /* This Thread ID means that the mutex is not in use (unlocked) */
 
 #define ACPI_MUTEX_NOT_ACQUIRED         (acpi_thread_id) 0
+=======
+#define ACPI_NUM_LOCK                   (ACPI_MAX_LOCK+1)
+
+/* This Thread ID means that the mutex is not in use (unlocked) */
+
+#define ACPI_MUTEX_NOT_ACQUIRED         ((acpi_thread_id) 0)
+
+/* This Thread ID means an invalid thread ID */
+
+#ifdef ACPI_OS_INVALID_THREAD_ID
+#define ACPI_INVALID_THREAD_ID          ACPI_OS_INVALID_THREAD_ID
+#else
+#define ACPI_INVALID_THREAD_ID          ((acpi_thread_id) 0xFFFFFFFF)
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Table for the global mutexes */
 
@@ -174,8 +204,17 @@ struct acpi_namespace_node {
 	 */
 #ifdef ACPI_LARGE_NAMESPACE_NODE
 	union acpi_parse_object *op;
+<<<<<<< HEAD
 	u32 value;
 	u32 length;
+=======
+	void *method_locals;
+	void *method_args;
+	u32 value;
+	u32 length;
+	u8 arg_count;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 };
 
@@ -209,10 +248,23 @@ struct acpi_table_list {
 #define ACPI_ROOT_ORIGIN_ALLOCATED      (1)
 #define ACPI_ROOT_ALLOW_RESIZE          (2)
 
+<<<<<<< HEAD
 /* Predefined (fixed) table indexes */
 
 #define ACPI_TABLE_INDEX_DSDT           (0)
 #define ACPI_TABLE_INDEX_FACS           (1)
+=======
+/* List to manage incoming ACPI tables */
+
+struct acpi_new_table_desc {
+	struct acpi_table_header *table;
+	struct acpi_new_table_desc *next;
+};
+
+/* Predefined table indexes */
+
+#define ACPI_INVALID_TABLE_INDEX        (0xFFFFFFFF)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct acpi_find_context {
 	char *search_for;
@@ -262,7 +314,11 @@ struct acpi_create_field_info {
 };
 
 typedef
+<<<<<<< HEAD
 acpi_status(*acpi_internal_method) (struct acpi_walk_state * walk_state);
+=======
+acpi_status (*acpi_internal_method) (struct acpi_walk_state * walk_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Bitmapped ACPI types. Used internally only
@@ -284,13 +340,26 @@ acpi_status(*acpi_internal_method) (struct acpi_walk_state * walk_state);
 #define ACPI_BTYPE_BUFFER_FIELD         0x00002000
 #define ACPI_BTYPE_DDB_HANDLE           0x00004000
 #define ACPI_BTYPE_DEBUG_OBJECT         0x00008000
+<<<<<<< HEAD
 #define ACPI_BTYPE_REFERENCE            0x00010000
 #define ACPI_BTYPE_RESOURCE             0x00020000
+=======
+#define ACPI_BTYPE_REFERENCE_OBJECT     0x00010000	/* From Index(), ref_of(), etc (type6_opcodes) */
+#define ACPI_BTYPE_RESOURCE             0x00020000
+#define ACPI_BTYPE_NAMED_REFERENCE      0x00040000	/* Generic unresolved Name or Namepath */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ACPI_BTYPE_COMPUTE_DATA         (ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER)
 
 #define ACPI_BTYPE_DATA                 (ACPI_BTYPE_COMPUTE_DATA  | ACPI_BTYPE_PACKAGE)
+<<<<<<< HEAD
 #define ACPI_BTYPE_DATA_REFERENCE       (ACPI_BTYPE_DATA | ACPI_BTYPE_REFERENCE | ACPI_BTYPE_DDB_HANDLE)
+=======
+
+	/* Used by Copy, de_ref_of, Store, Printf, Fprintf */
+
+#define ACPI_BTYPE_DATA_REFERENCE       (ACPI_BTYPE_DATA | ACPI_BTYPE_REFERENCE_OBJECT | ACPI_BTYPE_DDB_HANDLE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_BTYPE_DEVICE_OBJECTS       (ACPI_BTYPE_DEVICE | ACPI_BTYPE_THERMAL | ACPI_BTYPE_PROCESSOR)
 #define ACPI_BTYPE_OBJECTS_AND_REFS     0x0001FFFF	/* ARG or LOCAL */
 #define ACPI_BTYPE_ALL_OBJECTS          0x0000FFFF
@@ -352,17 +421,34 @@ struct acpi_package_info3 {
 	u16 reserved;
 };
 
+<<<<<<< HEAD
+=======
+struct acpi_package_info4 {
+	u8 type;
+	u8 object_type1;
+	u8 count1;
+	u8 sub_object_types;
+	u8 pkg_count;
+	u16 reserved;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 union acpi_predefined_info {
 	struct acpi_name_info info;
 	struct acpi_package_info ret_info;
 	struct acpi_package_info2 ret_info2;
 	struct acpi_package_info3 ret_info3;
+<<<<<<< HEAD
+=======
+	struct acpi_package_info4 ret_info4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Reset to default packing */
 
 #pragma pack()
 
+<<<<<<< HEAD
 /* Data block used during object validation */
 
 struct acpi_predefined_data {
@@ -386,6 +472,16 @@ typedef acpi_status(*acpi_object_converter) (union acpi_operand_object
 					     *original_object,
 					     union acpi_operand_object
 					     **converted_object);
+=======
+/* Return object auto-repair info */
+
+typedef acpi_status (*acpi_object_converter) (struct acpi_namespace_node *
+					      scope,
+					      union acpi_operand_object *
+					      original_object,
+					      union acpi_operand_object **
+					      converted_object);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct acpi_simple_repair_info {
 	char name[ACPI_NAME_SIZE];
@@ -410,20 +506,47 @@ struct acpi_simple_repair_info {
 
 #define ACPI_NUM_RTYPES                 5	/* Number of actual object types */
 
+<<<<<<< HEAD
+=======
+/* Info for running the _REG methods */
+
+struct acpi_reg_walk_info {
+	u32 function;
+	u32 reg_run_count;
+	acpi_adr_space_type space_id;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************************
  *
  * Event typedefs and structs
  *
  ****************************************************************************/
 
+<<<<<<< HEAD
+=======
+/* Dispatch info for each host-installed SCI handler */
+
+struct acpi_sci_handler_info {
+	struct acpi_sci_handler_info *next;
+	acpi_sci_handler address;	/* Address of handler */
+	void *context;		/* Context to be passed to handler */
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Dispatch info for each GPE -- either a method or handler, cannot be both */
 
 struct acpi_gpe_handler_info {
 	acpi_gpe_handler address;	/* Address of handler, if any */
 	void *context;		/* Context to be passed to handler */
 	struct acpi_namespace_node *method_node;	/* Method node for this GPE level (saved) */
+<<<<<<< HEAD
 	u8 original_flags;      /* Original (pre-handler) GPE info */
 	u8 originally_enabled;  /* True if GPE was originally enabled */
+=======
+	u8 original_flags;	/* Original (pre-handler) GPE info */
+	u8 originally_enabled;	/* True if GPE was originally enabled */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Notify info for implicit notify, multiple device objects */
@@ -453,6 +576,10 @@ struct acpi_gpe_event_info {
 	u8 flags;		/* Misc info about this GPE */
 	u8 gpe_number;		/* This GPE */
 	u8 runtime_count;	/* References to a run GPE */
+<<<<<<< HEAD
+=======
+	u8 disable_for_dispatch;	/* Masked during dispatching */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Information about a GPE register pair, one per each status/enable pair in an array */
@@ -460,9 +587,17 @@ struct acpi_gpe_event_info {
 struct acpi_gpe_register_info {
 	struct acpi_generic_address status_address;	/* Address of status reg */
 	struct acpi_generic_address enable_address;	/* Address of enable reg */
+<<<<<<< HEAD
 	u8 enable_for_wake;	/* GPEs to keep enabled when sleeping */
 	u8 enable_for_run;	/* GPEs to keep enabled when running */
 	u8 base_gpe_number;	/* Base GPE number for this register */
+=======
+	u16 base_gpe_number;	/* Base GPE number for this register */
+	u8 enable_for_wake;	/* GPEs to keep enabled when sleeping */
+	u8 enable_for_run;	/* GPEs to keep enabled when running */
+	u8 mask_for_run;	/* GPEs to keep masked when running */
+	u8 enable_mask;		/* Current mask of enabled GPEs */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -476,11 +611,20 @@ struct acpi_gpe_block_info {
 	struct acpi_gpe_xrupt_info *xrupt_block;	/* Backpointer to interrupt block */
 	struct acpi_gpe_register_info *register_info;	/* One per GPE register pair */
 	struct acpi_gpe_event_info *event_info;	/* One for each GPE */
+<<<<<<< HEAD
 	struct acpi_generic_address block_address;	/* Base address of the block */
 	u32 register_count;	/* Number of register pairs in block */
 	u16 gpe_count;		/* Number of individual GPEs in block */
 	u8 block_base_number;	/* Base GPE number for this block */
 	u8 initialized;         /* TRUE if this block is initialized */
+=======
+	u64 address;		/* Base address of the block */
+	u32 register_count;	/* Number of register pairs in block */
+	u16 gpe_count;		/* Number of individual GPEs in block */
+	u16 block_base_number;	/* Base GPE number for this block */
+	u8 space_id;
+	u8 initialized;		/* TRUE if this block is initialized */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Information about GPE interrupt handlers, one per each interrupt level used for GPEs */
@@ -507,10 +651,17 @@ struct acpi_gpe_device_info {
 	struct acpi_namespace_node *gpe_device;
 };
 
+<<<<<<< HEAD
 typedef acpi_status(*acpi_gpe_callback) (struct acpi_gpe_xrupt_info *
 					 gpe_xrupt_info,
 					 struct acpi_gpe_block_info *gpe_block,
 					 void *context);
+=======
+typedef acpi_status (*acpi_gpe_callback) (struct acpi_gpe_xrupt_info *
+					  gpe_xrupt_info,
+					  struct acpi_gpe_block_info *
+					  gpe_block, void *context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Information about each particular fixed event */
 
@@ -625,10 +776,18 @@ struct acpi_result_values {
 };
 
 typedef
+<<<<<<< HEAD
 acpi_status(*acpi_parse_downwards) (struct acpi_walk_state * walk_state,
 				    union acpi_parse_object ** out_op);
 
 typedef acpi_status(*acpi_parse_upwards) (struct acpi_walk_state * walk_state);
+=======
+acpi_status (*acpi_parse_downwards) (struct acpi_walk_state * walk_state,
+				     union acpi_parse_object ** out_op);
+
+typedef
+acpi_status (*acpi_parse_upwards) (struct acpi_walk_state * walk_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Global handlers for AML Notifies */
 
@@ -668,7 +827,12 @@ union acpi_generic_state {
  *
  ****************************************************************************/
 
+<<<<<<< HEAD
 typedef acpi_status(*acpi_execute_op) (struct acpi_walk_state * walk_state);
+=======
+typedef
+acpi_status (*acpi_execute_op) (struct acpi_walk_state * walk_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Address Range info block */
 
@@ -711,7 +875,11 @@ union acpi_parse_value {
 	union acpi_parse_object *arg;	/* arguments and contained ops */
 };
 
+<<<<<<< HEAD
 #ifdef ACPI_DISASSEMBLER
+=======
+#if defined(ACPI_DISASSEMBLER) || defined(ACPI_DEBUG_OUTPUT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_DISASM_ONLY_MEMBERS(a)     a;
 #else
 #define ACPI_DISASM_ONLY_MEMBERS(a)
@@ -722,7 +890,11 @@ union acpi_parse_value {
 	u8                              descriptor_type; /* To differentiate various internal objs */\
 	u8                              flags;          /* Type of Op */\
 	u16                             aml_opcode;     /* AML opcode */\
+<<<<<<< HEAD
 	u32                             aml_offset;     /* Offset of declaration in AML */\
+=======
+	u8                              *aml;           /* Address of declaration in AML */\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	union acpi_parse_object         *next;          /* Next op */\
 	struct acpi_namespace_node      *node;          /* For use by interpreter */\
 	union acpi_parse_value          value;          /* Value or args associated with the opcode */\
@@ -730,6 +902,10 @@ union acpi_parse_value {
 	ACPI_DISASM_ONLY_MEMBERS (\
 	u8                              disasm_flags;   /* Used during AML disassembly */\
 	u8                              disasm_opcode;  /* Subtype used for disassembly */\
+<<<<<<< HEAD
+=======
+	char                            *operator_symbol;/* Used for C-style operator name strings */\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char                            aml_op_name[16])	/* Op name (debug only) */
 
 /* Flags for disasm_flags field above */
@@ -739,11 +915,21 @@ union acpi_parse_value {
 #define ACPI_DASM_STRING                0x02	/* Buffer is a ASCII string */
 #define ACPI_DASM_UNICODE               0x03	/* Buffer is a Unicode string */
 #define ACPI_DASM_PLD_METHOD            0x04	/* Buffer is a _PLD method bit-packed buffer */
+<<<<<<< HEAD
 #define ACPI_DASM_EISAID                0x05	/* Integer is an EISAID */
 #define ACPI_DASM_MATCHOP               0x06	/* Parent opcode is a Match() operator */
 #define ACPI_DASM_LNOT_PREFIX           0x07	/* Start of a Lnot_equal (etc.) pair of opcodes */
 #define ACPI_DASM_LNOT_SUFFIX           0x08	/* End  of a Lnot_equal (etc.) pair of opcodes */
 #define ACPI_DASM_IGNORE                0x09	/* Not used at this time */
+=======
+#define ACPI_DASM_UUID                  0x05	/* Buffer is a UUID/GUID */
+#define ACPI_DASM_EISAID                0x06	/* Integer is an EISAID */
+#define ACPI_DASM_MATCHOP               0x07	/* Parent opcode is a Match() operator */
+#define ACPI_DASM_LNOT_PREFIX           0x08	/* Start of a Lnot_equal (etc.) pair of opcodes */
+#define ACPI_DASM_LNOT_SUFFIX           0x09	/* End  of a Lnot_equal (etc.) pair of opcodes */
+#define ACPI_DASM_HID_STRING            0x0A	/* String is a _HID or _CID */
+#define ACPI_DASM_IGNORE                0x0B	/* Not used at this time */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Generic operation (for example:  If, While, Store)
@@ -818,6 +1004,7 @@ struct acpi_parse_state {
 
 /* Parse object flags */
 
+<<<<<<< HEAD
 #define ACPI_PARSEOP_GENERIC            0x01
 #define ACPI_PARSEOP_NAMED              0x02
 #define ACPI_PARSEOP_DEFERRED           0x04
@@ -833,6 +1020,26 @@ struct acpi_parse_state {
 #define ACPI_PARSEOP_EMPTY_TERMLIST     0x04
 #define ACPI_PARSEOP_PREDEF_CHECKED     0x08
 #define ACPI_PARSEOP_SPECIAL            0x10
+=======
+#define ACPI_PARSEOP_GENERIC                0x01
+#define ACPI_PARSEOP_NAMED_OBJECT           0x02
+#define ACPI_PARSEOP_DEFERRED               0x04
+#define ACPI_PARSEOP_BYTELIST               0x08
+#define ACPI_PARSEOP_IN_STACK               0x10
+#define ACPI_PARSEOP_TARGET                 0x20
+#define ACPI_PARSEOP_IN_CACHE               0x80
+
+/* Parse object disasm_flags */
+
+#define ACPI_PARSEOP_IGNORE                 0x01
+#define ACPI_PARSEOP_PARAMETER_LIST         0x02
+#define ACPI_PARSEOP_EMPTY_TERMLIST         0x04
+#define ACPI_PARSEOP_PREDEFINED_CHECKED     0x08
+#define ACPI_PARSEOP_CLOSING_PAREN          0x10
+#define ACPI_PARSEOP_COMPOUND_ASSIGNMENT    0x20
+#define ACPI_PARSEOP_ASSIGNMENT             0x40
+#define ACPI_PARSEOP_ELSEIF                 0x80
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*****************************************************************************
  *
@@ -949,6 +1156,7 @@ struct acpi_bit_register_info {
 
 /* Structs and definitions for _OSI support and I/O port validation */
 
+<<<<<<< HEAD
 #define ACPI_OSI_WIN_2000               0x01
 #define ACPI_OSI_WIN_XP                 0x02
 #define ACPI_OSI_WIN_XP_SP1             0x03
@@ -962,6 +1170,8 @@ struct acpi_bit_register_info {
 #define ACPI_OSI_WIN_7                  0x0B
 #define ACPI_OSI_WIN_8                  0x0C
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_ALWAYS_ILLEGAL             0x00
 
 struct acpi_interface_info {
@@ -973,6 +1183,12 @@ struct acpi_interface_info {
 
 #define ACPI_OSI_INVALID                0x01
 #define ACPI_OSI_DYNAMIC                0x02
+<<<<<<< HEAD
+=======
+#define ACPI_OSI_FEATURE                0x04
+#define ACPI_OSI_DEFAULT_INVALID        0x08
+#define ACPI_OSI_OPTIONAL_FEATURE       (ACPI_OSI_FEATURE | ACPI_OSI_DEFAULT_INVALID | ACPI_OSI_INVALID)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct acpi_port_info {
 	char *name;
@@ -1058,14 +1274,27 @@ struct acpi_external_list {
 	struct acpi_external_list *next;
 	u32 value;
 	u16 length;
+<<<<<<< HEAD
 	u8 type;
 	u8 flags;
 	u8 resolved;
+=======
+	u16 flags;
+	u8 type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Values for Flags field above */
 
+<<<<<<< HEAD
 #define ACPI_IPATH_ALLOCATED    0x01
+=======
+#define ACPI_EXT_RESOLVED_REFERENCE         0x01	/* Object was resolved during cross ref */
+#define ACPI_EXT_ORIGIN_FROM_FILE           0x02	/* External came from a file */
+#define ACPI_EXT_INTERNAL_PATH_ALLOCATED    0x04	/* Deallocate internal path on completion */
+#define ACPI_EXT_EXTERNAL_EMITTED           0x08	/* External() statement has been emitted */
+#define ACPI_EXT_ORIGIN_FROM_OPCODE         0x10	/* External came from a External() opcode */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct acpi_external_file {
 	char *path;
@@ -1091,7 +1320,11 @@ struct acpi_db_method_info {
 	char *name;
 	u32 flags;
 	u32 num_loops;
+<<<<<<< HEAD
 	char pathname[128];
+=======
+	char pathname[ACPI_DB_LINE_BUFFER_SIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char **args;
 	acpi_object_type *types;
 
@@ -1102,6 +1335,12 @@ struct acpi_db_method_info {
 	 *   Index of current thread inside all them created.
 	 */
 	char init_args;
+<<<<<<< HEAD
+=======
+#ifdef ACPI_DEBUGGER
+	acpi_object_type arg_types[4];
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *arguments[4];
 	char num_threads_str[11];
 	char id_of_thread_str[11];
@@ -1113,10 +1352,21 @@ struct acpi_integrity_info {
 	u32 objects;
 };
 
+<<<<<<< HEAD
+=======
+#define ACPI_DB_DISABLE_OUTPUT          0x00
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_DB_REDIRECTABLE_OUTPUT     0x01
 #define ACPI_DB_CONSOLE_OUTPUT          0x02
 #define ACPI_DB_DUPLICATE_OUTPUT        0x03
 
+<<<<<<< HEAD
+=======
+struct acpi_object_info {
+	u32 types[ACPI_TOTAL_TYPES];
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************************
  *
  * Debug
@@ -1164,4 +1414,22 @@ struct ah_predefined_name {
 #endif
 };
 
+<<<<<<< HEAD
+=======
+struct ah_device_id {
+	char *name;
+	char *description;
+};
+
+struct ah_uuid {
+	char *description;
+	char *string;
+};
+
+struct ah_table {
+	char *signature;
+	char *description;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/* __ACLOCAL_H__ */

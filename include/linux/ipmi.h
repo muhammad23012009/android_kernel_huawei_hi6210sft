@@ -37,6 +37,10 @@
 
 #include <linux/list.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h> /* For acpi_handle */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct module;
 struct device;
@@ -237,7 +241,11 @@ int ipmi_set_maintenance_mode(ipmi_user_t user, int mode);
  * The first user that sets this to TRUE will receive all events that
  * have been queued while no one was waiting for events.
  */
+<<<<<<< HEAD
 int ipmi_set_gets_events(ipmi_user_t user, int val);
+=======
+int ipmi_set_gets_events(ipmi_user_t user, bool val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Called when a new SMI is registered.  This will also be called on
@@ -276,17 +284,32 @@ int ipmi_validate_addr(struct ipmi_addr *addr, int len);
  */
 enum ipmi_addr_src {
 	SI_INVALID = 0, SI_HOTMOD, SI_HARDCODED, SI_SPMI, SI_ACPI, SI_SMBIOS,
+<<<<<<< HEAD
 	SI_PCI,	SI_DEVICETREE, SI_DEFAULT
 };
 
 union ipmi_smi_info_union {
+=======
+	SI_PCI,	SI_DEVICETREE, SI_LAST
+};
+const char *ipmi_addr_src_to_str(enum ipmi_addr_src src);
+
+union ipmi_smi_info_union {
+#ifdef CONFIG_ACPI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * the acpi_info element is defined for the SI_ACPI
 	 * address type
 	 */
 	struct {
+<<<<<<< HEAD
 		void *acpi_handle;
 	} acpi_info;
+=======
+		acpi_handle acpi_handle;
+	} acpi_info;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ipmi_smi_info {

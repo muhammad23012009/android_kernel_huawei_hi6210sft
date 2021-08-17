@@ -47,6 +47,11 @@
  * runtime initialization.
  */
 
+<<<<<<< HEAD
+=======
+struct notifier_block;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef	int (*notifier_fn_t)(struct notifier_block *nb,
 			unsigned long action, void *data);
 
@@ -211,6 +216,7 @@ static inline int notifier_to_errno(int ret)
 
 extern struct blocking_notifier_head reboot_notifier_list;
 
+<<<<<<< HEAD
 /* DTS2013031107868 qidechun 2013-03-11 begin */
 #ifdef CONFIG_SRECORDER
 #ifdef CONFIG_POWERCOLLAPSE
@@ -220,5 +226,7 @@ extern struct raw_notifier_head emergency_reboot_notifier_list;
 #endif
 #endif /* CONFIG_SRECORDER */
 /* DTS2013031107868 qidechun 2013-03-11 end */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 #endif /* _LINUX_NOTIFIER_H */

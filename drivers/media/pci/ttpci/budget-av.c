@@ -30,7 +30,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org/ 
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -46,7 +50,11 @@
 #include "tda1004x.h"
 #include "tua6100.h"
 #include "dvb-pll.h"
+<<<<<<< HEAD
 #include <media/saa7146_vv.h>
+=======
+#include <media/drv-intf/saa7146_vv.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -68,7 +76,11 @@ DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
 struct budget_av {
 	struct budget budget;
+<<<<<<< HEAD
 	struct video_device *vd;
+=======
+	struct video_device vd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int cur_input;
 	int has_saa7113;
 	struct tasklet_struct ciintf_irq_tasklet;
@@ -1128,7 +1140,11 @@ static struct stb0899_config knc1_dvbs2_config = {
 //	.ts_pfbit_toggle	= STB0899_MPEG_NORMAL,	/* DirecTV, MPEG toggling seq	*/
 
 	.xtal_freq		= 27000000,
+<<<<<<< HEAD
 	.inversion		= IQ_SWAP_OFF, /* 1 */
+=======
+	.inversion		= IQ_SWAP_OFF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.lo_clk			= 76500000,
 	.hi_clk			= 90000000,
@@ -1508,7 +1524,11 @@ static int budget_av_attach(struct saa7146_dev *dev, struct saa7146_pci_extensio
 	if (i2c_readregs(&budget_av->budget.i2c_adap, 0xa0, 0x30, mac, 6)) {
 		pr_err("KNC1-%d: Could not read MAC from KNC1 card\n",
 		       budget_av->budget.dvb_adapter.num);
+<<<<<<< HEAD
 		memset(mac, 0, 6);
+=======
+		eth_zero_addr(mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		pr_info("KNC1-%d: MAC addr = %pM\n",
 			budget_av->budget.dvb_adapter.num, mac);

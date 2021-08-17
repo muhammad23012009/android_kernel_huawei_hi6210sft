@@ -13,15 +13,26 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/hardware.h>
 #include <linux/platform_data/i2c-davinci.h>
 #include <mach/irqs.h>
 #include <mach/cputype.h>
 #include <mach/mux.h>
+<<<<<<< HEAD
 #include <mach/edma.h>
 #include <linux/platform_data/mmc-davinci.h>
 #include <mach/time.h>
+=======
+#include <linux/platform_data/mmc-davinci.h>
+#include <mach/time.h>
+#include <linux/platform_data/edma.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "davinci.h"
 #include "clock.h"
@@ -34,6 +45,12 @@
 #define DM365_MMCSD0_BASE	     0x01D11000
 #define DM365_MMCSD1_BASE	     0x01D00000
 
+<<<<<<< HEAD
+=======
+#define DAVINCI_DMA_MMCRXEVT	26
+#define DAVINCI_DMA_MMCTXEVT	27
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __iomem  *davinci_sysmod_base;
 
 void davinci_map_sysmod(void)
@@ -139,6 +156,7 @@ static struct resource mmcsd0_resources[] = {
 		.start = IRQ_SDIOINT,
 		.flags = IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	/* DMA channels: RX, then TX */
 	{
 		.start = EDMA_CTLR_CHAN(0, DAVINCI_DMA_MMCRXEVT),
@@ -147,6 +165,8 @@ static struct resource mmcsd0_resources[] = {
 		.start = EDMA_CTLR_CHAN(0, DAVINCI_DMA_MMCTXEVT),
 		.flags = IORESOURCE_DMA,
 	},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device davinci_mmcsd0_device = {
@@ -176,6 +196,7 @@ static struct resource mmcsd1_resources[] = {
 		.start = IRQ_DM355_SDIOINT1,
 		.flags = IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	/* DMA channels: RX, then TX */
 	{
 		.start = EDMA_CTLR_CHAN(0, 30),	/* rx */
@@ -184,6 +205,8 @@ static struct resource mmcsd1_resources[] = {
 		.start = EDMA_CTLR_CHAN(0, 31),	/* tx */
 		.flags = IORESOURCE_DMA,
 	},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device davinci_mmcsd1_device = {
@@ -297,20 +320,47 @@ static struct resource wdt_resources[] = {
 };
 
 struct platform_device davinci_wdt_device = {
+<<<<<<< HEAD
 	.name		= "watchdog",
+=======
+	.name		= "davinci-wdt",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(wdt_resources),
 	.resource	= wdt_resources,
 };
 
+<<<<<<< HEAD
 void davinci_restart(char mode, const char *cmd)
+=======
+void davinci_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	davinci_watchdog_reset(&davinci_wdt_device);
 }
 
+<<<<<<< HEAD
 static void davinci_init_wdt(void)
 {
 	platform_device_register(&davinci_wdt_device);
+=======
+int davinci_init_wdt(void)
+{
+	return platform_device_register(&davinci_wdt_device);
+}
+
+static struct platform_device davinci_gpio_device = {
+	.name	= "davinci_gpio",
+	.id	= -1,
+};
+
+int davinci_gpio_register(struct resource *res, int size, void *pdata)
+{
+	davinci_gpio_device.resource = res;
+	davinci_gpio_device.num_resources = size;
+	davinci_gpio_device.dev.platform_data = pdata;
+	return platform_device_register(&davinci_gpio_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*-------------------------------------------------------------------------*/
@@ -330,6 +380,7 @@ struct davinci_timer_instance davinci_timer_instance[2] = {
 	},
 };
 
+<<<<<<< HEAD
 /*-------------------------------------------------------------------------*/
 
 static int __init davinci_init_devices(void)
@@ -343,3 +394,5 @@ static int __init davinci_init_devices(void)
 }
 arch_initcall(davinci_init_devices);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

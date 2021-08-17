@@ -20,7 +20,11 @@
 #include <linux/syscore_ops.h>
 
 #include <mach/hardware.h>
+<<<<<<< HEAD
 #include <mach/mfp-pxa3xx.h>
+=======
+#include "mfp-pxa3xx.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/pxa3xx-regs.h>
 
 #ifdef CONFIG_PM

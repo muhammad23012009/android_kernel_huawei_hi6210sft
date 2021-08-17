@@ -7,8 +7,15 @@
  * assume GCC is being used.
  */
 
+<<<<<<< HEAD
 typedef unsigned short		__kernel_mode_t;
 #define __kernel_mode_t __kernel_mode_t
+=======
+#ifndef __LP64__
+typedef unsigned short		__kernel_mode_t;
+#define __kernel_mode_t __kernel_mode_t
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef unsigned short		__kernel_ipc_pid_t;
 #define __kernel_ipc_pid_t __kernel_ipc_pid_t

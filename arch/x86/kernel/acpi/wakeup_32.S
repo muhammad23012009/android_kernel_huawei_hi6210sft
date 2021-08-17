@@ -12,11 +12,21 @@ ENTRY(wakeup_pmode_return)
 wakeup_pmode_return:
 	movw	$__KERNEL_DS, %ax
 	movw	%ax, %ss
+<<<<<<< HEAD
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %fs
 	movw	%ax, %gs
 
+=======
+	movw	%ax, %fs
+	movw	%ax, %gs
+
+	movw	$__USER_DS, %ax
+	movw	%ax, %ds
+	movw	%ax, %es
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	# reload the gdt, as we need the full 32 bit address
 	lidt	saved_idt
 	lldt	saved_ldt
@@ -73,7 +83,11 @@ ENTRY(do_suspend_lowlevel)
 	call	save_processor_state
 	call	save_registers
 	pushl	$3
+<<<<<<< HEAD
 	call	acpi_enter_sleep_state
+=======
+	call	x86_acpi_enter_sleep_state
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	addl	$4, %esp
 
 #	In case of S3 failure, we'll emerge here.  Jump

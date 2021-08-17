@@ -34,6 +34,7 @@
 #define GMAC_FLOW_CTRL		0x00000018	/* Flow Control */
 #define GMAC_VLAN_TAG		0x0000001c	/* VLAN Tag */
 #define GMAC_VERSION		0x00000020	/* GMAC CORE Version */
+<<<<<<< HEAD
 #define GMAC_WAKEUP_FILTER	0x00000028	/* Wake-up Frame Filter */
 
 #define GMAC_INT_STATUS		0x00000038	/* interrupt status register */
@@ -50,6 +51,32 @@ enum dwmac1000_irq_status {
 	rgmii_irq = 0x0001,
 };
 #define GMAC_INT_MASK		0x0000003c	/* interrupt mask register */
+=======
+#define GMAC_DEBUG		0x00000024	/* GMAC debug register */
+#define GMAC_WAKEUP_FILTER	0x00000028	/* Wake-up Frame Filter */
+
+#define GMAC_INT_STATUS		0x00000038	/* interrupt status register */
+#define GMAC_INT_STATUS_PMT	BIT(3)
+#define GMAC_INT_STATUS_MMCIS	BIT(4)
+#define GMAC_INT_STATUS_MMCRIS	BIT(5)
+#define GMAC_INT_STATUS_MMCTIS	BIT(6)
+#define GMAC_INT_STATUS_MMCCSUM	BIT(7)
+#define GMAC_INT_STATUS_TSTAMP	BIT(9)
+#define GMAC_INT_STATUS_LPIIS	BIT(10)
+
+/* interrupt mask register */
+#define	GMAC_INT_MASK		0x0000003c
+#define	GMAC_INT_DISABLE_RGMII		BIT(0)
+#define	GMAC_INT_DISABLE_PCSLINK	BIT(1)
+#define	GMAC_INT_DISABLE_PCSAN		BIT(2)
+#define	GMAC_INT_DISABLE_PMT		BIT(3)
+#define	GMAC_INT_DISABLE_TIMESTAMP	BIT(9)
+#define	GMAC_INT_DISABLE_PCS	(GMAC_INT_DISABLE_RGMII | \
+				 GMAC_INT_DISABLE_PCSLINK | \
+				 GMAC_INT_DISABLE_PCSAN)
+#define	GMAC_INT_DEFAULT_MASK	(GMAC_INT_DISABLE_TIMESTAMP | \
+				 GMAC_INT_DISABLE_PCS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* PMT Control and Status */
 #define GMAC_PMT		0x0000002c
@@ -83,6 +110,7 @@ enum power_event {
 #define LPI_CTRL_STATUS_TLPIEN	0x00000001	/* Transmit LPI Entry */
 
 /* GMAC HW ADDR regs */
+<<<<<<< HEAD
 #define GMAC_ADDR_HIGH(reg)	(((reg > 15) ? 0x00000800 : 0x00000040) + \
 				(reg * 8))
 #define GMAC_ADDR_LOW(reg)	(((reg > 15) ? 0x00000804 : 0x00000044) + \
@@ -131,6 +159,34 @@ enum power_event {
 #define GMAC_CONTROL_WD	0x00800000	/* Disable Watchdog on receive */
 
 /* GMAC Configuration defines */
+=======
+#define GMAC_ADDR_HIGH(reg)	((reg > 15) ? 0x00000800 + (reg - 16) * 8 : \
+				 0x00000040 + (reg * 8))
+#define GMAC_ADDR_LOW(reg)	((reg > 15) ? 0x00000804 + (reg - 16) * 8 : \
+				 0x00000044 + (reg * 8))
+#define GMAC_MAX_PERFECT_ADDRESSES	1
+
+#define GMAC_PCS_BASE		0x000000c0	/* PCS register base */
+#define GMAC_RGSMIIIS		0x000000d8	/* RGMII/SMII status */
+
+/* SGMII/RGMII status register */
+#define GMAC_RGSMIIIS_LNKMODE		BIT(0)
+#define GMAC_RGSMIIIS_SPEED		GENMASK(2, 1)
+#define GMAC_RGSMIIIS_SPEED_SHIFT	1
+#define GMAC_RGSMIIIS_LNKSTS		BIT(3)
+#define GMAC_RGSMIIIS_JABTO		BIT(4)
+#define GMAC_RGSMIIIS_FALSECARDET	BIT(5)
+#define GMAC_RGSMIIIS_SMIDRXS		BIT(16)
+/* LNKMOD */
+#define GMAC_RGSMIIIS_LNKMOD_MASK	0x1
+/* LNKSPEED */
+#define GMAC_RGSMIIIS_SPEED_125		0x2
+#define GMAC_RGSMIIIS_SPEED_25		0x1
+#define GMAC_RGSMIIIS_SPEED_2_5		0x0
+
+/* GMAC Configuration defines */
+#define GMAC_CONTROL_2K 0x08000000	/* IEEE 802.3as 2K packets */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define GMAC_CONTROL_TC	0x01000000	/* Transmit Conf. in RGMII/SGMII */
 #define GMAC_CONTROL_WD	0x00800000	/* Disable Watchdog on receive */
 #define GMAC_CONTROL_JD	0x00400000	/* Jabber disable */
@@ -156,7 +212,11 @@ enum inter_frame_gap {
 #define GMAC_CONTROL_RE		0x00000004	/* Receiver Enable */
 
 #define GMAC_CORE_INIT (GMAC_CONTROL_JD | GMAC_CONTROL_PS | GMAC_CONTROL_ACS | \
+<<<<<<< HEAD
 			GMAC_CONTROL_JE | GMAC_CONTROL_BE)
+=======
+			GMAC_CONTROL_BE | GMAC_CONTROL_DCRS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* GMAC Frame Filter defines */
 #define GMAC_FRAME_FILTER_PR	0x00000001	/* Promiscuous Mode */
@@ -175,13 +235,63 @@ enum inter_frame_gap {
 /* GMAC FLOW CTRL defines */
 #define GMAC_FLOW_CTRL_PT_MASK	0xffff0000	/* Pause Time Mask */
 #define GMAC_FLOW_CTRL_PT_SHIFT	16
+<<<<<<< HEAD
+=======
+#define GMAC_FLOW_CTRL_UP	0x00000008	/* Unicast pause frame enable */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define GMAC_FLOW_CTRL_RFE	0x00000004	/* Rx Flow Control Enable */
 #define GMAC_FLOW_CTRL_TFE	0x00000002	/* Tx Flow Control Enable */
 #define GMAC_FLOW_CTRL_FCB_BPA	0x00000001	/* Flow Control Busy ... */
 
+<<<<<<< HEAD
 /*--- DMA BLOCK defines ---*/
 /* DMA Bus Mode register defines */
 #define DMA_BUS_MODE_SFT_RESET	0x00000001	/* Software Reset */
+=======
+/* DEBUG Register defines */
+/* MTL TxStatus FIFO */
+#define GMAC_DEBUG_TXSTSFSTS	BIT(25)	/* MTL TxStatus FIFO Full Status */
+#define GMAC_DEBUG_TXFSTS	BIT(24) /* MTL Tx FIFO Not Empty Status */
+#define GMAC_DEBUG_TWCSTS	BIT(22) /* MTL Tx FIFO Write Controller */
+/* MTL Tx FIFO Read Controller Status */
+#define GMAC_DEBUG_TRCSTS_MASK	GENMASK(21, 20)
+#define GMAC_DEBUG_TRCSTS_SHIFT	20
+#define GMAC_DEBUG_TRCSTS_IDLE	0
+#define GMAC_DEBUG_TRCSTS_READ	1
+#define GMAC_DEBUG_TRCSTS_TXW	2
+#define GMAC_DEBUG_TRCSTS_WRITE	3
+#define GMAC_DEBUG_TXPAUSED	BIT(19) /* MAC Transmitter in PAUSE */
+/* MAC Transmit Frame Controller Status */
+#define GMAC_DEBUG_TFCSTS_MASK	GENMASK(18, 17)
+#define GMAC_DEBUG_TFCSTS_SHIFT	17
+#define GMAC_DEBUG_TFCSTS_IDLE	0
+#define GMAC_DEBUG_TFCSTS_WAIT	1
+#define GMAC_DEBUG_TFCSTS_GEN_PAUSE	2
+#define GMAC_DEBUG_TFCSTS_XFER	3
+/* MAC GMII or MII Transmit Protocol Engine Status */
+#define GMAC_DEBUG_TPESTS	BIT(16)
+#define GMAC_DEBUG_RXFSTS_MASK	GENMASK(9, 8) /* MTL Rx FIFO Fill-level */
+#define GMAC_DEBUG_RXFSTS_SHIFT	8
+#define GMAC_DEBUG_RXFSTS_EMPTY	0
+#define GMAC_DEBUG_RXFSTS_BT	1
+#define GMAC_DEBUG_RXFSTS_AT	2
+#define GMAC_DEBUG_RXFSTS_FULL	3
+#define GMAC_DEBUG_RRCSTS_MASK	GENMASK(6, 5) /* MTL Rx FIFO Read Controller */
+#define GMAC_DEBUG_RRCSTS_SHIFT	5
+#define GMAC_DEBUG_RRCSTS_IDLE	0
+#define GMAC_DEBUG_RRCSTS_RDATA	1
+#define GMAC_DEBUG_RRCSTS_RSTAT	2
+#define GMAC_DEBUG_RRCSTS_FLUSH	3
+#define GMAC_DEBUG_RWCSTS	BIT(4) /* MTL Rx FIFO Write Controller Active */
+/* MAC Receive Frame Controller FIFO Status */
+#define GMAC_DEBUG_RFCFCSTS_MASK	GENMASK(2, 1)
+#define GMAC_DEBUG_RFCFCSTS_SHIFT	1
+/* MAC GMII or MII Receive Protocol Engine Status */
+#define GMAC_DEBUG_RPESTS	BIT(0)
+
+/*--- DMA BLOCK defines ---*/
+/* DMA Bus Mode register defines */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DMA_BUS_MODE_DA		0x00000002	/* Arbitration scheme */
 #define DMA_BUS_MODE_DSL_MASK	0x0000007c	/* Descriptor Skip Length */
 #define DMA_BUS_MODE_DSL_SHIFT	2		/*   (in DWORDS)      */
@@ -201,7 +311,11 @@ enum rx_tx_priority_ratio {
 #define DMA_BUS_MODE_RPBL_MASK	0x003e0000	/* Rx-Programmable Burst Len */
 #define DMA_BUS_MODE_RPBL_SHIFT	17
 #define DMA_BUS_MODE_USP	0x00800000
+<<<<<<< HEAD
 #define DMA_BUS_MODE_PBL	0x01000000
+=======
+#define DMA_BUS_MODE_MAXPBL	0x01000000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DMA_BUS_MODE_AAL	0x02000000
 
 /* DMA CRS Control and Status Register Mapping */
@@ -249,6 +363,59 @@ enum ttc_control {
 #define DMA_CONTROL_FEF		0x00000080
 #define DMA_CONTROL_FUF		0x00000040
 
+<<<<<<< HEAD
+=======
+/* Receive flow control activation field
+ * RFA field in DMA control register, bits 23,10:9
+ */
+#define DMA_CONTROL_RFA_MASK	0x00800600
+
+/* Receive flow control deactivation field
+ * RFD field in DMA control register, bits 22,12:11
+ */
+#define DMA_CONTROL_RFD_MASK	0x00401800
+
+/* RFD and RFA fields are encoded as follows
+ *
+ *   Bit Field
+ *   0,00 - Full minus 1KB (only valid when rxfifo >= 4KB and EFC enabled)
+ *   0,01 - Full minus 2KB (only valid when rxfifo >= 4KB and EFC enabled)
+ *   0,10 - Full minus 3KB (only valid when rxfifo >= 4KB and EFC enabled)
+ *   0,11 - Full minus 4KB (only valid when rxfifo > 4KB and EFC enabled)
+ *   1,00 - Full minus 5KB (only valid when rxfifo > 8KB and EFC enabled)
+ *   1,01 - Full minus 6KB (only valid when rxfifo > 8KB and EFC enabled)
+ *   1,10 - Full minus 7KB (only valid when rxfifo > 8KB and EFC enabled)
+ *   1,11 - Reserved
+ *
+ * RFD should always be > RFA for a given FIFO size. RFD == RFA may work,
+ * but packet throughput performance may not be as expected.
+ *
+ * Be sure that bit 3 in GMAC Register 6 is set for Unicast Pause frame
+ * detection (IEEE Specification Requirement, Annex 31B, 31B.1, Pause
+ * Description).
+ *
+ * Be sure that DZPA (bit 7 in Flow Control Register, GMAC Register 6),
+ * is set to 0. This allows pause frames with a quanta of 0 to be sent
+ * as an XOFF message to the link peer.
+ */
+
+#define RFA_FULL_MINUS_1K	0x00000000
+#define RFA_FULL_MINUS_2K	0x00000200
+#define RFA_FULL_MINUS_3K	0x00000400
+#define RFA_FULL_MINUS_4K	0x00000600
+#define RFA_FULL_MINUS_5K	0x00800000
+#define RFA_FULL_MINUS_6K	0x00800200
+#define RFA_FULL_MINUS_7K	0x00800400
+
+#define RFD_FULL_MINUS_1K	0x00000000
+#define RFD_FULL_MINUS_2K	0x00000800
+#define RFD_FULL_MINUS_3K	0x00001000
+#define RFD_FULL_MINUS_4K	0x00001800
+#define RFD_FULL_MINUS_5K	0x00400000
+#define RFD_FULL_MINUS_6K	0x00400800
+#define RFD_FULL_MINUS_7K	0x00401000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum rtc_control {
 	DMA_CONTROL_RTC_64 = 0x00000000,
 	DMA_CONTROL_RTC_32 = 0x00000008,
@@ -264,6 +431,10 @@ enum rtc_control {
 #define GMAC_MMC_RX_INTR   0x104
 #define GMAC_MMC_TX_INTR   0x108
 #define GMAC_MMC_RX_CSUM_OFFLOAD   0x208
+<<<<<<< HEAD
+=======
+#define GMAC_EXTHASH_BASE  0x500
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern const struct stmmac_dma_ops dwmac1000_dma_ops;
 #endif /* __DWMAC1000_H__ */

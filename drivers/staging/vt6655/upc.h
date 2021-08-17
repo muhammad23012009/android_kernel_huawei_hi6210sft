@@ -30,6 +30,7 @@
 #define __UPC_H__
 
 #include "device.h"
+<<<<<<< HEAD
 #include "ttype.h"
 
 /*---------------------  Export Definitions -------------------------*/
@@ -134,6 +135,32 @@ do {						\
 
 #define PCBvOutPortD(dwIOAddress, dwData)	\
 	outl(dwData, dwIOAddress)
+=======
+
+/*---------------------  Export Definitions -------------------------*/
+
+
+/* For memory mapped IO */
+
+
+#define VNSvInPortB(dwIOAddress, pbyData) \
+	(*(pbyData) = ioread8(dwIOAddress))
+
+#define VNSvInPortW(dwIOAddress, pwData) \
+	(*(pwData) = ioread16(dwIOAddress))
+
+#define VNSvInPortD(dwIOAddress, pdwData) \
+	(*(pdwData) = ioread32(dwIOAddress))
+
+#define VNSvOutPortB(dwIOAddress, byData) \
+	iowrite8((u8)(byData), dwIOAddress)
+
+#define VNSvOutPortW(dwIOAddress, wData) \
+	iowrite16((u16)(wData), dwIOAddress)
+
+#define VNSvOutPortD(dwIOAddress, dwData) \
+	iowrite32((u32)(dwData), dwIOAddress)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PCAvDelayByIO(uDelayUnit)				\
 do {								\
@@ -154,4 +181,8 @@ do {								\
 
 /*---------------------  Export Functions  --------------------------*/
 
+<<<<<<< HEAD
 #endif // __UPC_H__
+=======
+#endif /* __UPC_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

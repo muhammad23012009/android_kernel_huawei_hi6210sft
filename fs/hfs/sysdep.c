@@ -21,7 +21,11 @@ static int hfs_revalidate_dentry(struct dentry *dentry, unsigned int flags)
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
+<<<<<<< HEAD
 	inode = dentry->d_inode;
+=======
+	inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if(!inode)
 		return 1;
 

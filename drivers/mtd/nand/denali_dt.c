@@ -30,6 +30,7 @@ struct denali_dt {
 	struct clk		*clk;
 };
 
+<<<<<<< HEAD
 static void __iomem *request_and_map(struct device *dev,
 				     const struct resource *res)
 {
@@ -48,6 +49,8 @@ static void __iomem *request_and_map(struct device *dev,
 	return ptr;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id denali_nand_dt_ids[] = {
 		{ .compatible = "denali,denali-nand-dt" },
 		{ /* sentinel */ }
@@ -78,6 +81,7 @@ static int denali_dt_probe(struct platform_device *ofdev)
 		return -ENOMEM;
 	denali = &dt->denali;
 
+<<<<<<< HEAD
 	denali_reg = platform_get_resource_byname(ofdev, IORESOURCE_MEM, "denali_reg");
 	nand_data = platform_get_resource_byname(ofdev, IORESOURCE_MEM, "nand_data");
 	if (!denali_reg || !nand_data) {
@@ -85,6 +89,8 @@ static int denali_dt_probe(struct platform_device *ofdev)
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	denali->platform = DT;
 	denali->dev = &ofdev->dev;
 	denali->irq = platform_get_irq(ofdev, 0);
@@ -93,6 +99,7 @@ static int denali_dt_probe(struct platform_device *ofdev)
 		return denali->irq;
 	}
 
+<<<<<<< HEAD
 	denali->flash_reg = request_and_map(&ofdev->dev, denali_reg);
 	if (!denali->flash_reg)
 		return -ENOMEM;
@@ -100,6 +107,17 @@ static int denali_dt_probe(struct platform_device *ofdev)
 	denali->flash_mem = request_and_map(&ofdev->dev, nand_data);
 	if (!denali->flash_mem)
 		return -ENOMEM;
+=======
+	denali_reg = platform_get_resource_byname(ofdev, IORESOURCE_MEM, "denali_reg");
+	denali->flash_reg = devm_ioremap_resource(&ofdev->dev, denali_reg);
+	if (IS_ERR(denali->flash_reg))
+		return PTR_ERR(denali->flash_reg);
+
+	nand_data = platform_get_resource_byname(ofdev, IORESOURCE_MEM, "nand_data");
+	denali->flash_mem = devm_ioremap_resource(&ofdev->dev, nand_data);
+	if (IS_ERR(denali->flash_mem))
+		return PTR_ERR(denali->flash_mem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!of_property_read_u32(ofdev->dev.of_node,
 		"dma-mask", (u32 *)&denali_dma_mask)) {
@@ -108,7 +126,11 @@ static int denali_dt_probe(struct platform_device *ofdev)
 		denali->dev->dma_mask = NULL;
 	}
 
+<<<<<<< HEAD
 	dt->clk = clk_get(&ofdev->dev, NULL);
+=======
+	dt->clk = devm_clk_get(&ofdev->dev, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(dt->clk)) {
 		dev_err(&ofdev->dev, "no clk available\n");
 		return PTR_ERR(dt->clk);
@@ -124,7 +146,10 @@ static int denali_dt_probe(struct platform_device *ofdev)
 
 out_disable_clk:
 	clk_disable_unprepare(dt->clk);
+<<<<<<< HEAD
 	clk_put(dt->clk);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -135,7 +160,10 @@ static int denali_dt_remove(struct platform_device *ofdev)
 
 	denali_remove(&dt->denali);
 	clk_disable(dt->clk);
+<<<<<<< HEAD
 	clk_put(dt->clk);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -145,7 +173,10 @@ static struct platform_driver denali_dt_driver = {
 	.remove		= denali_dt_remove,
 	.driver		= {
 		.name	= "denali-nand-dt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table	= denali_nand_dt_ids,
 	},
 };

@@ -132,7 +132,11 @@ static int is_valid_adc(uint16_t adc_val, uint16_t min, uint16_t max)
  * to achieve very close approximate temp value with less than
  * 0.5C error
  */
+<<<<<<< HEAD
 static int adc_to_temp(int direct, uint16_t adc_val, unsigned long *tp)
+=======
+static int adc_to_temp(int direct, uint16_t adc_val, int *tp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int temp;
 
@@ -174,14 +178,22 @@ static int adc_to_temp(int direct, uint16_t adc_val, unsigned long *tp)
  *
  * Can sleep
  */
+<<<<<<< HEAD
 static int mid_read_temp(struct thermal_zone_device *tzd, unsigned long *temp)
+=======
+static int mid_read_temp(struct thermal_zone_device *tzd, int *temp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct thermal_device_info *td_info = tzd->devdata;
 	uint16_t adc_val, addr;
 	uint8_t data = 0;
 	int ret;
+<<<<<<< HEAD
 	unsigned long curr_temp;
 
+=======
+	int curr_temp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	addr = td_info->chnl_addr;
 
@@ -416,6 +428,10 @@ static struct thermal_device_info *initialize_sensor(int index)
 	return td_info;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * mid_thermal_resume - resume routine
  * @dev: device structure
@@ -443,6 +459,10 @@ static int mid_thermal_suspend(struct device *dev)
 	 */
 	return configure_adc(0);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(mid_thermal_pm,
 			 mid_thermal_suspend, mid_thermal_resume);
@@ -453,7 +473,11 @@ static SIMPLE_DEV_PM_OPS(mid_thermal_pm,
  *
  * Can sleep
  */
+<<<<<<< HEAD
 static int read_curr_temp(struct thermal_zone_device *tzd, unsigned long *temp)
+=======
+static int read_curr_temp(struct thermal_zone_device *tzd, int *temp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	WARN_ON(tzd == NULL);
 	return mid_read_temp(tzd, temp);
@@ -481,7 +505,12 @@ static int mid_thermal_probe(struct platform_device *pdev)
 	int i;
 	struct platform_info *pinfo;
 
+<<<<<<< HEAD
 	pinfo = kzalloc(sizeof(struct platform_info), GFP_KERNEL);
+=======
+	pinfo = devm_kzalloc(&pdev->dev, sizeof(struct platform_info),
+			     GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pinfo)
 		return -ENOMEM;
 
@@ -489,7 +518,10 @@ static int mid_thermal_probe(struct platform_device *pdev)
 	ret = mid_initialize_adc(&pdev->dev);
 	if (ret) {
 		dev_err(&pdev->dev, "ADC init failed");
+<<<<<<< HEAD
 		kfree(pinfo);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 
@@ -520,7 +552,10 @@ err:
 		thermal_zone_device_unregister(pinfo->tzd[i]);
 	}
 	configure_adc(0);
+<<<<<<< HEAD
 	kfree(pinfo);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -541,9 +576,12 @@ static int mid_thermal_remove(struct platform_device *pdev)
 		thermal_zone_device_unregister(pinfo->tzd[i]);
 	}
 
+<<<<<<< HEAD
 	kfree(pinfo);
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Stop the ADC */
 	return configure_adc(0);
 }
@@ -555,11 +593,18 @@ static const struct platform_device_id therm_id_table[] = {
 	{ "msic_thermal", 1 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(platform, therm_id_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver mid_thermal_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &mid_thermal_pm,
 	},
 	.probe = mid_thermal_probe,

@@ -4,6 +4,11 @@
  * Copyright (C) 2003, Axis Communications AB
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ASSEMBLER_MACROS_ONLY
 
 /*
@@ -36,7 +41,11 @@
 	.global nand_boot
 	.global swapper_pg_dir
 
+<<<<<<< HEAD
 	.text
+=======
+	__HEAD
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 tstart:
 	;; This is the entry point of the kernel. The CPU is currently in
 	;; supervisor mode.
@@ -52,11 +61,14 @@ tstart:
 
 	GIO_INIT
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 secondary_cpu_entry: /* Entry point for secondary CPUs */
 	di
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	;; Setup and enable the MMU. Use same configuration for both the data
 	;; and the instruction MMU.
 	;;
@@ -164,6 +176,7 @@ secondary_cpu_entry: /* Entry point for secondary CPUs */
 	nop
 	nop
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	;; Read CPU ID
 	move    0, $srs
@@ -191,6 +204,8 @@ master_cpu:
 	move.d secondary_cpu_entry, $r1
 	move.d $r1, [$r0]
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	; Check if starting from DRAM (network->RAM boot or unpacked
 	; compressed kernel), or directly from flash.
 	lapcq	., $r0
@@ -209,7 +224,11 @@ _inflash0:
 
 	;; Put the following in a section so that storage for it can be
 	;; reclaimed after init is finished.
+<<<<<<< HEAD
 	.section ".init.text", "ax"
+=======
+	__INIT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 _inflash:
 
@@ -324,11 +343,15 @@ _no_romfs_in_flash:
 	;; For cramfs, partition starts with magic and length.
 	;; For jffs2, a jhead is prepended which contains with magic and length.
 	;; The jhead is not part of the jffs2 partition however.
+<<<<<<< HEAD
 #ifndef CONFIG_ETRAXFS_SIM
 	move.d	__bss_start, $r0
 #else
 	move.d	__end, $r0
 #endif
+=======
+	move.d	__bss_start, $r0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	move.d	[$r0], $r1
 	cmp.d	CRAMFS_MAGIC, $r1 ; cramfs magic?
 	beq	2f		  ; yes, jump

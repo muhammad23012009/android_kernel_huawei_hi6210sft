@@ -16,8 +16,15 @@
 #ifndef FS_ENET_PD_H
 #define FS_ENET_PD_H
 
+<<<<<<< HEAD
 #include <linux/string.h>
 #include <linux/of_mdio.h>
+=======
+#include <linux/clk.h>
+#include <linux/string.h>
+#include <linux/of_mdio.h>
+#include <linux/if_ether.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/types.h>
 
 #define FS_ENET_NAME	"fs_enet"
@@ -135,13 +142,23 @@ struct fs_platform_info {
 	const struct fs_mii_bus_info *bus_info;
 
 	int rx_ring, tx_ring;	/* number of buffers on rx     */
+<<<<<<< HEAD
 	__u8 macaddr[6];	/* mac address                 */
 	int rx_copybreak;	/* limit we copy small frames  */
 	int use_napi;		/* use NAPI                    */
+=======
+	__u8 macaddr[ETH_ALEN];	/* mac address                 */
+	int rx_copybreak;	/* limit we copy small frames  */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int napi_weight;	/* NAPI weight                 */
 
 	int use_rmii;		/* use RMII mode 	       */
 	int has_phy;            /* if the network is phy container as well...*/
+<<<<<<< HEAD
+=======
+
+	struct clk *clk_per;	/* 'per' clock for register access */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 struct fs_mii_fec_platform_info {
 	u32 irq[32];

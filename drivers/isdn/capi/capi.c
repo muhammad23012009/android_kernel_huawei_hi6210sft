@@ -687,6 +687,12 @@ capi_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos
 	if (!cdev->ap.applid)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (count < CAPIMSG_BASELEN)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb = alloc_skb(count, GFP_USER);
 	if (!skb)
 		return -ENOMEM;
@@ -697,7 +703,12 @@ capi_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos
 	}
 	mlen = CAPIMSG_LEN(skb->data);
 	if (CAPIMSG_CMD(skb->data) == CAPI_DATA_B3_REQ) {
+<<<<<<< HEAD
 		if ((size_t)(mlen + CAPIMSG_DATALEN(skb->data)) != count) {
+=======
+		if (count < CAPI_DATA_B3_REQ_LEN ||
+		    (size_t)(mlen + CAPIMSG_DATALEN(skb->data)) != count) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kfree_skb(skb);
 			return -EINVAL;
 		}
@@ -710,6 +721,13 @@ capi_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos
 	CAPIMSG_SETAPPID(skb->data, cdev->ap.applid);
 
 	if (CAPIMSG_CMD(skb->data) == CAPI_DISCONNECT_B3_RESP) {
+<<<<<<< HEAD
+=======
+		if (count < CAPI_DISCONNECT_B3_RESP_LEN) {
+			kfree_skb(skb);
+			return -EINVAL;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_lock(&cdev->lock);
 		capincci_free(cdev, CAPIMSG_NCCI(skb->data));
 		mutex_unlock(&cdev->lock);
@@ -1260,7 +1278,11 @@ static int __init capinc_tty_init(void)
 	if (capi_ttyminors <= 0)
 		capi_ttyminors = CAPINC_NR_PORTS;
 
+<<<<<<< HEAD
 	capiminors = kzalloc(sizeof(struct capi_minor *) * capi_ttyminors,
+=======
+	capiminors = kzalloc(sizeof(struct capiminor *) * capi_ttyminors,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     GFP_KERNEL);
 	if (!capiminors)
 		return -ENOMEM;
@@ -1271,7 +1293,11 @@ static int __init capinc_tty_init(void)
 		return -ENOMEM;
 	}
 	drv->driver_name = "capi_nc";
+<<<<<<< HEAD
 	drv->name = "capi";
+=======
+	drv->name = "capi!";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	drv->major = 0;
 	drv->minor_start = 0;
 	drv->type = TTY_DRIVER_TYPE_SERIAL;
@@ -1417,7 +1443,11 @@ static int __init capi_init(void)
 		return PTR_ERR(capi_class);
 	}
 
+<<<<<<< HEAD
 	device_create(capi_class, NULL, MKDEV(capi_major, 0), NULL, "capi");
+=======
+	device_create(capi_class, NULL, MKDEV(capi_major, 0), NULL, "capi20");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (capinc_tty_init() < 0) {
 		device_destroy(capi_class, MKDEV(capi_major, 0));

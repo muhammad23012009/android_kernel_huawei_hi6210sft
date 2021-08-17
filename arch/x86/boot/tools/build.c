@@ -5,6 +5,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This file builds a disk-image from two different files:
  *
  * - setup: 8086 machine code, sets up system parm
@@ -13,6 +14,17 @@
  * It does some checking that all files are of the correct type, and
  * just writes the result to stdout, removing headers and padding to
  * the right amount. It also writes some system data to stderr.
+=======
+ * This file builds a disk-image from three different files:
+ *
+ * - setup: 8086 machine code, sets up system parm
+ * - system: 80386 code for actual system
+ * - zoffset.h: header with ZO_* defines
+ *
+ * It does some checking that all files are of the correct type, and writes
+ * the result to the specified destination, removing headers and padding to
+ * the right amount. It also writes some system data to stdout.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
@@ -48,11 +60,19 @@ typedef unsigned int   u32;
 
 /* This must be large enough to hold the entire setup */
 u8 buf[SETUP_SECT_MAX*512];
+<<<<<<< HEAD
 int is_big_kernel;
 
 #define PECOFF_RELOC_RESERVE 0x20
 
 unsigned long efi_stub_entry;
+=======
+
+#define PECOFF_RELOC_RESERVE 0x20
+
+unsigned long efi32_stub_entry;
+unsigned long efi64_stub_entry;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long efi_pe_entry;
 unsigned long startup_64;
 
@@ -136,7 +156,11 @@ static void die(const char * str, ...)
 
 static void usage(void)
 {
+<<<<<<< HEAD
 	die("Usage: build setup system [zoffset.h] [> image]");
+=======
+	die("Usage: build setup system zoffset.h image");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_EFI_STUB
@@ -236,6 +260,57 @@ static void update_pecoff_bss(unsigned int file_sz, unsigned int init_sz)
 	update_pecoff_section_header_fields(".bss", file_sz, bss_sz, 0, 0);
 }
 
+<<<<<<< HEAD
+=======
+static int reserve_pecoff_reloc_section(int c)
+{
+	/* Reserve 0x20 bytes for .reloc section */
+	memset(buf+c, 0, PECOFF_RELOC_RESERVE);
+	return PECOFF_RELOC_RESERVE;
+}
+
+static void efi_stub_defaults(void)
+{
+	/* Defaults for old kernel */
+#ifdef CONFIG_X86_32
+	efi_pe_entry = 0x10;
+#else
+	efi_pe_entry = 0x210;
+	startup_64 = 0x200;
+#endif
+}
+
+static void efi_stub_entry_update(void)
+{
+	unsigned long addr = efi32_stub_entry;
+
+#ifdef CONFIG_X86_64
+	/* Yes, this is really how we defined it :( */
+	addr = efi64_stub_entry - 0x200;
+#endif
+
+#ifdef CONFIG_EFI_MIXED
+	if (efi32_stub_entry != addr)
+		die("32-bit and 64-bit EFI entry points do not match\n");
+#endif
+	put_unaligned_le32(addr, &buf[0x264]);
+}
+
+#else
+
+static inline void update_pecoff_setup_and_reloc(unsigned int size) {}
+static inline void update_pecoff_text(unsigned int text_start,
+				      unsigned int file_sz) {}
+static inline void update_pecoff_bss(unsigned int file_sz,
+				     unsigned int init_sz) {}
+static inline void efi_stub_defaults(void) {}
+static inline void efi_stub_entry_update(void) {}
+
+static inline int reserve_pecoff_reloc_section(int c)
+{
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_EFI_STUB */
 
 
@@ -261,12 +336,21 @@ static void parse_zoffset(char *fname)
 	c = fread(buf, 1, sizeof(buf) - 1, file);
 	if (ferror(file))
 		die("read-error on `zoffset.h'");
+<<<<<<< HEAD
+=======
+	fclose(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buf[c] = 0;
 
 	p = (char *)buf;
 
 	while (p && *p) {
+<<<<<<< HEAD
 		PARSE_ZOFS(p, efi_stub_entry);
+=======
+		PARSE_ZOFS(p, efi32_stub_entry);
+		PARSE_ZOFS(p, efi64_stub_entry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		PARSE_ZOFS(p, efi_pe_entry);
 		PARSE_ZOFS(p, startup_64);
 
@@ -278,6 +362,7 @@ static void parse_zoffset(char *fname)
 
 int main(int argc, char ** argv)
 {
+<<<<<<< HEAD
 	unsigned int i, sz, setup_sectors;
 	int c;
 	u32 sys_size;
@@ -304,6 +389,26 @@ int main(int argc, char ** argv)
 		parse_zoffset(argv[3]);
 	else if (argc != 3)
 		usage();
+=======
+	unsigned int i, sz, setup_sectors, init_sz;
+	int c;
+	u32 sys_size;
+	struct stat sb;
+	FILE *file, *dest;
+	int fd;
+	void *kernel;
+	u32 crc = 0xffffffffUL;
+
+	efi_stub_defaults();
+
+	if (argc != 5)
+		usage();
+	parse_zoffset(argv[3]);
+
+	dest = fopen(argv[4], "w");
+	if (!dest)
+		die("Unable to write `%s': %m", argv[4]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Copy the setup code */
 	file = fopen(argv[1], "r");
@@ -318,11 +423,15 @@ int main(int argc, char ** argv)
 		die("Boot block hasn't got boot flag (0xAA55)");
 	fclose(file);
 
+<<<<<<< HEAD
 #ifdef CONFIG_EFI_STUB
 	/* Reserve 0x20 bytes for .reloc section */
 	memset(buf+c, 0, PECOFF_RELOC_RESERVE);
 	c += PECOFF_RELOC_RESERVE;
 #endif
+=======
+	c += reserve_pecoff_reloc_section(c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Pad unused space with zeros */
 	setup_sectors = (c + 511) / 512;
@@ -331,14 +440,22 @@ int main(int argc, char ** argv)
 	i = setup_sectors*512;
 	memset(buf+c, 0, i-c);
 
+<<<<<<< HEAD
 #ifdef CONFIG_EFI_STUB
 	update_pecoff_setup_and_reloc(i);
 #endif
+=======
+	update_pecoff_setup_and_reloc(i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set the default root device */
 	put_unaligned_le16(DEFAULT_ROOT_DEV, &buf[508]);
 
+<<<<<<< HEAD
 	fprintf(stderr, "Setup is %d bytes (padded to %d bytes).\n", c, i);
+=======
+	printf("Setup is %d bytes (padded to %d bytes).\n", c, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Open and stat the kernel file */
 	fd = open(argv[2], O_RDONLY);
@@ -347,22 +464,40 @@ int main(int argc, char ** argv)
 	if (fstat(fd, &sb))
 		die("Unable to stat `%s': %m", argv[2]);
 	sz = sb.st_size;
+<<<<<<< HEAD
 	fprintf (stderr, "System is %d kB\n", (sz+1023)/1024);
+=======
+	printf("System is %d kB\n", (sz+1023)/1024);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kernel = mmap(NULL, sz, PROT_READ, MAP_SHARED, fd, 0);
 	if (kernel == MAP_FAILED)
 		die("Unable to mmap '%s': %m", argv[2]);
 	/* Number of 16-byte paragraphs, including space for a 4-byte CRC */
 	sys_size = (sz + 15 + 4) / 16;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EFI_STUB
+	/*
+	 * COFF requires minimum 32-byte alignment of sections, and
+	 * adding a signature is problematic without that alignment.
+	 */
+	sys_size = (sys_size + 1) & ~1;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Patch the setup code with the appropriate size parameters */
 	buf[0x1f1] = setup_sectors-1;
 	put_unaligned_le32(sys_size, &buf[0x1f4]);
 
+<<<<<<< HEAD
 #ifdef CONFIG_EFI_STUB
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	update_pecoff_text(setup_sectors * 512, i + (sys_size * 16));
 	init_sz = get_unaligned_le32(&buf[0x260]);
 	update_pecoff_bss(i + (sys_size * 16), init_sz);
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_64 /* Yes, this is really how we defined it :( */
 	efi_stub_entry -= 0x200;
 #endif
@@ -371,26 +506,52 @@ int main(int argc, char ** argv)
 
 	crc = partial_crc32(buf, i, crc);
 	if (fwrite(buf, 1, i, stdout) != i)
+=======
+	efi_stub_entry_update();
+
+	crc = partial_crc32(buf, i, crc);
+	if (fwrite(buf, 1, i, dest) != i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		die("Writing setup failed");
 
 	/* Copy the kernel code */
 	crc = partial_crc32(kernel, sz, crc);
+<<<<<<< HEAD
 	if (fwrite(kernel, 1, sz, stdout) != sz)
+=======
+	if (fwrite(kernel, 1, sz, dest) != sz)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		die("Writing kernel failed");
 
 	/* Add padding leaving 4 bytes for the checksum */
 	while (sz++ < (sys_size*16) - 4) {
 		crc = partial_crc32_one('\0', crc);
+<<<<<<< HEAD
 		if (fwrite("\0", 1, 1, stdout) != 1)
+=======
+		if (fwrite("\0", 1, 1, dest) != 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			die("Writing padding failed");
 	}
 
 	/* Write the CRC */
+<<<<<<< HEAD
 	fprintf(stderr, "CRC %x\n", crc);
 	put_unaligned_le32(crc, buf);
 	if (fwrite(buf, 1, 4, stdout) != 4)
 		die("Writing CRC failed");
 
+=======
+	printf("CRC %x\n", crc);
+	put_unaligned_le32(crc, buf);
+	if (fwrite(buf, 1, 4, dest) != 4)
+		die("Writing CRC failed");
+
+	/* Catch any delayed write failures */
+	if (fclose(dest))
+		die("Writing image failed");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	close(fd);
 
 	/* Everything is OK */

@@ -137,7 +137,11 @@ void wimax_id_table_release(void)
 #endif
 	spin_lock(&wimax_id_table_lock);
 	list_for_each_entry(wimax_dev, &wimax_id_table, id_table_node) {
+<<<<<<< HEAD
 		printk(KERN_ERR "BUG: %s wimax_dev %p ifindex %d not cleared\n",
+=======
+		pr_err("BUG: %s wimax_dev %p ifindex %d not cleared\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       __func__, wimax_dev, wimax_dev->net_dev->ifindex);
 		WARN_ON(1);
 	}

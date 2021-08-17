@@ -15,5 +15,9 @@
 #define KPF_OWNER_PRIVATE	37
 #define KPF_ARCH		38
 #define KPF_UNCACHED		39
+<<<<<<< HEAD
+=======
+#define KPF_SOFTDIRTY		40
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* LINUX_KERNEL_PAGE_FLAGS_H */

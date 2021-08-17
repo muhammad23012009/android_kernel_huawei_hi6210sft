@@ -8,6 +8,7 @@
  * This file is released under the GPLv2.
  */
 
+<<<<<<< HEAD
 #include <linux/lockdep.h>
 #include <linux/kobject_ns.h>
 #include <linux/fs.h>
@@ -135,10 +136,17 @@ struct sysfs_addrm_cxt {
 	struct sysfs_dirent	*parent_sd;
 	struct sysfs_dirent	*removed;
 };
+=======
+#ifndef __SYSFS_INTERNAL_H
+#define __SYSFS_INTERNAL_H
+
+#include <linux/sysfs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * mount.c
  */
+<<<<<<< HEAD
 
 /*
  * Each sb is associated with a set of namespace tags (i.e.
@@ -151,10 +159,14 @@ struct sysfs_super_info {
 #define sysfs_info(SB) ((struct sysfs_super_info *)(SB->s_fs_info))
 extern struct sysfs_dirent sysfs_root;
 extern struct kmem_cache *sysfs_dir_cachep;
+=======
+extern struct kernfs_node *sysfs_root_kn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * dir.c
  */
+<<<<<<< HEAD
 extern struct mutex sysfs_mutex;
 extern spinlock_t sysfs_assoc_lock;
 extern const struct dentry_operations sysfs_dentry_ops;
@@ -219,10 +231,16 @@ int sysfs_setxattr(struct dentry *dentry, const char *name, const void *value,
 		size_t size, int flags);
 int sysfs_hash_and_remove(struct sysfs_dirent *dir_sd, const void *ns, const char *name);
 int sysfs_inode_init(void);
+=======
+extern spinlock_t sysfs_symlink_target_lock;
+
+void sysfs_warn_dup(struct kernfs_node *parent, const char *name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * file.c
  */
+<<<<<<< HEAD
 extern const struct file_operations sysfs_file_operations;
 
 int sysfs_add_file(struct sysfs_dirent *dir_sd,
@@ -235,10 +253,24 @@ int sysfs_add_file_mode(struct sysfs_dirent *dir_sd,
  */
 extern const struct file_operations bin_fops;
 void unmap_bin_file(struct sysfs_dirent *attr_sd);
+=======
+int sysfs_add_file(struct kernfs_node *parent,
+		   const struct attribute *attr, bool is_bin);
+int sysfs_add_file_mode_ns(struct kernfs_node *parent,
+			   const struct attribute *attr, bool is_bin,
+			   umode_t amode, const void *ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * symlink.c
  */
+<<<<<<< HEAD
 extern const struct inode_operations sysfs_symlink_inode_operations;
 int sysfs_create_link_sd(struct sysfs_dirent *sd, struct kobject *target,
 			 const char *name);
+=======
+int sysfs_create_link_sd(struct kernfs_node *kn, struct kobject *target,
+			 const char *name);
+
+#endif	/* __SYSFS_INTERNAL_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

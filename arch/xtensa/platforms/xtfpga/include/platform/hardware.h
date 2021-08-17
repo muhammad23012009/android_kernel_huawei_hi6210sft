@@ -12,6 +12,7 @@
  * This file contains the hardware configuration of the XTAVNET boards.
  */
 
+<<<<<<< HEAD
 #ifndef __XTENSA_XTAVNET_HARDWARE_H
 #define __XTENSA_XTAVNET_HARDWARE_H
 
@@ -36,6 +37,32 @@
 #else
 #define DUART16552_INTNUM	XCHAL_EXTINT0_NUM
 #define OETH_IRQ		XCHAL_EXTINT1_NUM
+=======
+#include <asm/types.h>
+
+#ifndef __XTENSA_XTAVNET_HARDWARE_H
+#define __XTENSA_XTAVNET_HARDWARE_H
+
+/* Memory configuration. */
+
+#define PLATFORM_DEFAULT_MEM_START __XTENSA_UL(CONFIG_DEFAULT_MEM_START)
+#define PLATFORM_DEFAULT_MEM_SIZE  __XTENSA_UL(CONFIG_DEFAULT_MEM_SIZE)
+
+/* Interrupt configuration. */
+
+#define PLATFORM_NR_IRQS	0
+
+/* Default assignment of LX60 devices to external interrupts. */
+
+#ifdef CONFIG_XTENSA_MX
+#define DUART16552_INTNUM	XCHAL_EXTINT3_NUM
+#define OETH_IRQ		XCHAL_EXTINT4_NUM
+#define C67X00_IRQ		XCHAL_EXTINT8_NUM
+#else
+#define DUART16552_INTNUM	XCHAL_EXTINT0_NUM
+#define OETH_IRQ		XCHAL_EXTINT1_NUM
+#define C67X00_IRQ		XCHAL_EXTINT5_NUM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
@@ -44,9 +71,12 @@
 
 /* UART */
 #define DUART16552_PADDR	(XCHAL_KIO_PADDR + 0x0D050020)
+<<<<<<< HEAD
 /* LCD instruction and data addresses. */
 #define LCD_INSTR_ADDR		((char *)IOADDR(0x0D040000))
 #define LCD_DATA_ADDR		((char *)IOADDR(0x0D040004))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Misc. */
 #define XTFPGA_FPGAREGS_VADDR	IOADDR(0x0D020000)
@@ -66,4 +96,10 @@
 				/* 5*rx buffs + 5*tx buffs */
 #define OETH_SRAMBUFF_SIZE	(5 * 0x600 + 5 * 0x600)
 
+<<<<<<< HEAD
+=======
+#define C67X00_PADDR		(XCHAL_KIO_PADDR + 0x0D0D0000)
+#define C67X00_SIZE		0x10
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __XTENSA_XTAVNET_HARDWARE_H */

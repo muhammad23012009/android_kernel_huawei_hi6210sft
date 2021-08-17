@@ -27,6 +27,12 @@
 #include <linux/delay.h>
 #include <linux/bitops.h>
 #include <asm/uv/uv_hub.h>
+<<<<<<< HEAD
+=======
+
+#include <linux/nospec.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "gru.h"
 #include "grutables.h"
 #include "gruhandles.h"
@@ -78,11 +84,18 @@ static int gru_dump_tfm(struct gru_state *gru,
 		void __user *ubuf, void __user *ubufend)
 {
 	struct gru_tlb_fault_map *tfm;
+<<<<<<< HEAD
 	int i, ret, bytes;
 
 	bytes = GRU_NUM_TFM * GRU_CACHE_LINE_BYTES;
 	if (bytes > ubufend - ubuf)
 		ret = -EFBIG;
+=======
+	int i;
+
+	if (GRU_NUM_TFM * GRU_CACHE_LINE_BYTES > ubufend - ubuf)
+		return -EFBIG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < GRU_NUM_TFM; i++) {
 		tfm = get_tfm(gru->gs_gru_base_vaddr, i);
@@ -99,11 +112,18 @@ static int gru_dump_tgh(struct gru_state *gru,
 		void __user *ubuf, void __user *ubufend)
 {
 	struct gru_tlb_global_handle *tgh;
+<<<<<<< HEAD
 	int i, ret, bytes;
 
 	bytes = GRU_NUM_TGH * GRU_CACHE_LINE_BYTES;
 	if (bytes > ubufend - ubuf)
 		ret = -EFBIG;
+=======
+	int i;
+
+	if (GRU_NUM_TGH * GRU_CACHE_LINE_BYTES > ubufend - ubuf)
+		return -EFBIG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < GRU_NUM_TGH; i++) {
 		tgh = get_tgh(gru->gs_gru_base_vaddr, i);
@@ -139,8 +159,16 @@ static int gru_dump_context(struct gru_state *gru, int ctxnum,
 
 	ubuf += sizeof(hdr);
 	ubufcch = ubuf;
+<<<<<<< HEAD
 	if (gru_user_copy_handle(&ubuf, cch))
 		goto fail;
+=======
+	if (gru_user_copy_handle(&ubuf, cch)) {
+		if (cch_locked)
+			unlock_cch_handle(cch);
+		return -EFAULT;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cch_locked)
 		ubufcch->delresp = 0;
 	bytes = sizeof(hdr) + GRU_CACHE_LINE_BYTES;
@@ -175,6 +203,7 @@ static int gru_dump_context(struct gru_state *gru, int ctxnum,
 	hdr.cbrcnt = cbrcnt;
 	hdr.dsrcnt = dsrcnt;
 	hdr.cch_locked = cch_locked;
+<<<<<<< HEAD
 	if (!ret && copy_to_user((void __user *)uhdr, &hdr, sizeof(hdr)))
 		ret = -EFAULT;
 
@@ -183,6 +212,12 @@ static int gru_dump_context(struct gru_state *gru, int ctxnum,
 fail:
 	unlock_cch_handle(cch);
 	return -EFAULT;
+=======
+	if (copy_to_user(uhdr, &hdr, sizeof(hdr)))
+		return -EFAULT;
+
+	return bytes;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int gru_dump_chiplet_request(unsigned long arg)
@@ -197,8 +232,14 @@ int gru_dump_chiplet_request(unsigned long arg)
 		return -EFAULT;
 
 	/* Currently, only dump by gid is implemented */
+<<<<<<< HEAD
 	if (req.gid >= gru_max_gids || req.gid < 0)
 		return -EINVAL;
+=======
+	if (req.gid >= gru_max_gids)
+		return -EINVAL;
+	req.gid = array_index_nospec(req.gid, gru_max_gids);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	gru = GID_TO_GRU(req.gid);
 	ubuf = req.buf;

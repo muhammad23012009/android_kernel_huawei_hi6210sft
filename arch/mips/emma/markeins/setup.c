@@ -111,9 +111,12 @@ void __init plat_mem_setup(void)
 	iomem_resource.start = EMMA2RH_IO_BASE;
 	iomem_resource.end = EMMA2RH_ROM_BASE - 1;
 
+<<<<<<< HEAD
 	/* Reboot on panic */
 	panic_timeout = 180;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	markeins_sio_setup();
 }
 

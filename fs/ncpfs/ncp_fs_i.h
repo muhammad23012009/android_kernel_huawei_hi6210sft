@@ -22,6 +22,10 @@ struct ncp_inode_info {
 	int	access;
 	int	flags;
 #define NCPI_KLUDGE_SYMLINK	0x0001
+<<<<<<< HEAD
+=======
+#define NCPI_DIR_CACHE		0x0002
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8	file_handle[6];
 	struct inode vfs_inode;
 };

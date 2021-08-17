@@ -25,7 +25,11 @@
 MODULE_LICENSE("GPL");
 
 /* PCI core routines */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(i82092aa_pci_ids) = {
+=======
+static const struct pci_device_id i82092aa_pci_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82092AA_0) },
 	{ }
 };
@@ -105,6 +109,10 @@ static int i82092aa_pci_probe(struct pci_dev *dev, const struct pci_device_id *i
 	for (i = 0;i<socket_count;i++) {
 		sockets[i].card_state = 1; /* 1 = present but empty */
 		sockets[i].io_base = pci_resource_start(dev, 0);
+<<<<<<< HEAD
+=======
+		sockets[i].dev = dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sockets[i].socket.features |= SS_CAP_PCCARD;
 		sockets[i].socket.map_size = 0x1000;
 		sockets[i].socket.irq_mask = 0;
@@ -608,7 +616,11 @@ static int i82092aa_set_mem_map(struct pcmcia_socket *socket, struct pccard_mem_
 	
 	enter("i82092aa_set_mem_map");
 
+<<<<<<< HEAD
 	pcibios_resource_to_bus(sock_info->dev, &region, mem->res);
+=======
+	pcibios_resource_to_bus(sock_info->dev->bus, &region, mem->res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 	map = mem->map;
 	if (map > 4) {

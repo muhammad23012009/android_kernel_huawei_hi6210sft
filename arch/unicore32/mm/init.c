@@ -66,9 +66,12 @@ void show_mem(unsigned int filter)
 	printk(KERN_DEFAULT "Mem-info:\n");
 	show_free_areas(filter);
 
+<<<<<<< HEAD
 	if (filter & SHOW_MEM_FILTER_PAGE_COUNT)
 		return;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_bank(i, mi) {
 		struct membank *bank = &mi->bank[i];
 		unsigned int pfn1, pfn2;
@@ -383,15 +386,19 @@ static void __init free_unused_memmap(struct meminfo *mi)
  */
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	unsigned long reserved_pages, free_pages;
 	struct memblock_region *reg;
 	int i;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	max_mapnr   = pfn_to_page(max_pfn + PHYS_PFN_OFFSET) - mem_map;
 
 	free_unused_memmap(&meminfo);
 
 	/* this will put all unused low memory onto the freelists */
+<<<<<<< HEAD
 	totalram_pages += free_all_bootmem();
 
 	reserved_pages = free_pages = 0;
@@ -436,6 +443,11 @@ void __init mem_init(void)
 		reserved_pages << (PAGE_SHIFT-10),
 		totalhigh_pages << (PAGE_SHIFT-10));
 
+=======
+	free_all_bootmem();
+
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk(KERN_NOTICE "Virtual kernel memory layout:\n"
 		"    vector  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 		"    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
@@ -464,7 +476,11 @@ void __init mem_init(void)
 	BUILD_BUG_ON(TASK_SIZE				> MODULES_VADDR);
 	BUG_ON(TASK_SIZE				> MODULES_VADDR);
 
+<<<<<<< HEAD
 	if (PAGE_SIZE >= 16384 && num_physpages <= 128) {
+=======
+	if (PAGE_SIZE >= 16384 && get_num_physpages() <= 128) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * On a machine this small we won't get
 		 * anywhere without overcommit, so turn
@@ -476,7 +492,11 @@ void __init mem_init(void)
 
 void free_initmem(void)
 {
+<<<<<<< HEAD
 	free_initmem_default(0);
+=======
+	free_initmem_default(-1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_BLK_DEV_INITRD
@@ -486,7 +506,11 @@ static int keep_initrd;
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
 	if (!keep_initrd)
+<<<<<<< HEAD
 		free_reserved_area(start, end, 0, "initrd");
+=======
+		free_reserved_area((void *)start, (void *)end, -1, "initrd");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init keepinitrd_setup(char *__unused)

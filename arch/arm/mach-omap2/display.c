@@ -23,8 +23,18 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 
 #include <video/omapdss.h>
+=======
+#include <linux/of.h>
+#include <linux/of_platform.h>
+#include <linux/slab.h>
+#include <linux/mfd/syscon.h>
+#include <linux/regmap.h>
+
+#include <linux/platform_data/omapdss.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "omap_hwmod.h"
 #include "omap_device.h"
 #include "omap-pm.h"
@@ -32,7 +42,10 @@
 
 #include "soc.h"
 #include "iomap.h"
+<<<<<<< HEAD
 #include "mux.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "control.h"
 #include "display.h"
 #include "prm.h"
@@ -102,6 +115,7 @@ static const struct omap_dss_hwmod_data omap4_dss_hwmod_data[] __initconst = {
 	{ "dss_hdmi", "omapdss_hdmi", -1 },
 };
 
+<<<<<<< HEAD
 static void __init omap4_tpd12s015_mux_pads(void)
 {
 	omap_mux_init_signal("hdmi_cec",
@@ -130,12 +144,21 @@ static void __init omap4_hdmi_mux_pads(enum omap_hdmi_flags flags)
 			omap4_ctrl_pad_writel(reg, control_i2c_1);
 	}
 }
+=======
+#define OMAP4_DSIPHY_SYSCON_OFFSET		0x78
+
+static struct regmap *omap4_dsi_mux_syscon;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int omap4_dsi_mux_pads(int dsi_id, unsigned lanes)
 {
 	u32 enable_mask, enable_shift;
 	u32 pipd_mask, pipd_shift;
 	u32 reg;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (dsi_id == 0) {
 		enable_mask = OMAP4_DSI1_LANEENABLE_MASK;
@@ -151,7 +174,15 @@ static int omap4_dsi_mux_pads(int dsi_id, unsigned lanes)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	reg = omap4_ctrl_pad_readl(OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_DSIPHY);
+=======
+	ret = regmap_read(omap4_dsi_mux_syscon,
+					  OMAP4_DSIPHY_SYSCON_OFFSET,
+					  &reg);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	reg &= ~enable_mask;
 	reg &= ~pipd_mask;
@@ -159,6 +190,7 @@ static int omap4_dsi_mux_pads(int dsi_id, unsigned lanes)
 	reg |= (lanes << enable_shift) & enable_mask;
 	reg |= (lanes << pipd_shift) & pipd_mask;
 
+<<<<<<< HEAD
 	omap4_ctrl_pad_writel(reg, OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_DSIPHY);
 
 	return 0;
@@ -170,6 +202,9 @@ int __init omap_hdmi_init(enum omap_hdmi_flags flags)
 		omap4_hdmi_mux_pads(flags);
 		omap4_tpd12s015_mux_pads();
 	}
+=======
+	regmap_write(omap4_dsi_mux_syscon, OMAP4_DSIPHY_SYSCON_OFFSET, reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -316,6 +351,13 @@ static enum omapdss_version __init omap_display_get_version(void)
 		return OMAPDSS_VER_OMAP4;
 	else if (soc_is_omap54xx())
 		return OMAPDSS_VER_OMAP5;
+<<<<<<< HEAD
+=======
+	else if (soc_is_am43xx())
+		return OMAPDSS_VER_AM43xx;
+	else if (soc_is_dra7xx())
+		return OMAPDSS_VER_DRA7xx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		return OMAPDSS_VER_UNKNOWN;
 }
@@ -341,7 +383,10 @@ int __init omap_display_init(struct omap_dss_board_info *board_data)
 	board_data->version = ver;
 	board_data->dsi_enable_pads = omap_dsi_enable_pads;
 	board_data->dsi_disable_pads = omap_dsi_disable_pads;
+<<<<<<< HEAD
 	board_data->get_context_loss_count = omap_pm_get_dev_context_loss_count;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	board_data->set_min_bus_tput = omap_dss_set_min_bus_tput;
 
 	omap_display_device.dev.platform_data = board_data;
@@ -400,7 +445,11 @@ int __init omap_display_init(struct omap_dss_board_info *board_data)
 
 	/* Create devices for DPI and SDI */
 
+<<<<<<< HEAD
 	pdev = create_simple_dss_pdev("omapdss_dpi", -1,
+=======
+	pdev = create_simple_dss_pdev("omapdss_dpi", 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			board_data, sizeof(*board_data), dss_pdev);
 	if (IS_ERR(pdev)) {
 		pr_err("Could not build platform_device for omapdss_dpi\n");
@@ -408,7 +457,11 @@ int __init omap_display_init(struct omap_dss_board_info *board_data)
 	}
 
 	if (cpu_is_omap34xx()) {
+<<<<<<< HEAD
 		pdev = create_simple_dss_pdev("omapdss_sdi", -1,
+=======
+		pdev = create_simple_dss_pdev("omapdss_sdi", 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				board_data, sizeof(*board_data), dss_pdev);
 		if (IS_ERR(pdev)) {
 			pr_err("Could not build platform_device for omapdss_sdi\n");
@@ -416,6 +469,37 @@ int __init omap_display_init(struct omap_dss_board_info *board_data)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* create DRM device */
+	r = omap_init_drm();
+	if (r < 0) {
+		pr_err("Unable to register omapdrm device\n");
+		return r;
+	}
+
+	/* create vrfb device */
+	r = omap_init_vrfb();
+	if (r < 0) {
+		pr_err("Unable to register omapvrfb device\n");
+		return r;
+	}
+
+	/* create FB device */
+	r = omap_init_fb();
+	if (r < 0) {
+		pr_err("Unable to register omapfb device\n");
+		return r;
+	}
+
+	/* create V4L2 display device */
+	r = omap_init_vout();
+	if (r < 0) {
+		pr_err("Unable to register omap_vout device\n");
+		return r;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -552,7 +636,11 @@ int omap_dss_reset(struct omap_hwmod *oh)
 			MAX_MODULE_SOFTRESET_WAIT, c);
 
 	if (c == MAX_MODULE_SOFTRESET_WAIT)
+<<<<<<< HEAD
 		pr_warning("dss_core: waiting for reset to finish failed\n");
+=======
+		pr_warn("dss_core: waiting for reset to finish failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_debug("dss_core: softreset done\n");
 
@@ -564,3 +652,122 @@ int omap_dss_reset(struct omap_hwmod *oh)
 
 	return r;
 }
+<<<<<<< HEAD
+=======
+
+void __init omapdss_early_init_of(void)
+{
+
+}
+
+static const char * const omapdss_compat_names[] __initconst = {
+	"ti,omap2-dss",
+	"ti,omap3-dss",
+	"ti,omap4-dss",
+	"ti,omap5-dss",
+	"ti,dra7-dss",
+};
+
+struct device_node * __init omapdss_find_dss_of_node(void)
+{
+	struct device_node *node;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(omapdss_compat_names); ++i) {
+		node = of_find_compatible_node(NULL, NULL,
+			omapdss_compat_names[i]);
+		if (node)
+			return node;
+	}
+
+	return NULL;
+}
+
+int __init omapdss_init_of(void)
+{
+	int r;
+	enum omapdss_version ver;
+	struct device_node *node;
+	struct platform_device *pdev;
+
+	static struct omap_dss_board_info board_data = {
+		.dsi_enable_pads = omap_dsi_enable_pads,
+		.dsi_disable_pads = omap_dsi_disable_pads,
+		.set_min_bus_tput = omap_dss_set_min_bus_tput,
+	};
+
+	/* only create dss helper devices if dss is enabled in the .dts */
+
+	node = omapdss_find_dss_of_node();
+	if (!node)
+		return 0;
+
+	if (!of_device_is_available(node))
+		return 0;
+
+	ver = omap_display_get_version();
+
+	if (ver == OMAPDSS_VER_UNKNOWN) {
+		pr_err("DSS not supported on this SoC\n");
+		return -ENODEV;
+	}
+
+	pdev = of_find_device_by_node(node);
+
+	if (!pdev) {
+		pr_err("Unable to find DSS platform device\n");
+		return -ENODEV;
+	}
+
+	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
+	if (r) {
+		pr_err("Unable to populate DSS submodule devices\n");
+		return r;
+	}
+
+	board_data.version = ver;
+
+	omap_display_device.dev.platform_data = &board_data;
+
+	r = platform_device_register(&omap_display_device);
+	if (r < 0) {
+		pr_err("Unable to register omapdss device\n");
+		return r;
+	}
+
+	/* create DRM device */
+	r = omap_init_drm();
+	if (r < 0) {
+		pr_err("Unable to register omapdrm device\n");
+		return r;
+	}
+
+	/* create vrfb device */
+	r = omap_init_vrfb();
+	if (r < 0) {
+		pr_err("Unable to register omapvrfb device\n");
+		return r;
+	}
+
+	/* create FB device */
+	r = omap_init_fb();
+	if (r < 0) {
+		pr_err("Unable to register omapfb device\n");
+		return r;
+	}
+
+	/* create V4L2 display device */
+	r = omap_init_vout();
+	if (r < 0) {
+		pr_err("Unable to register omap_vout device\n");
+		return r;
+	}
+
+	/* add DSI info for omap4 */
+	node = of_find_node_by_name(NULL, "omap4_padconf_global");
+	if (node)
+		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

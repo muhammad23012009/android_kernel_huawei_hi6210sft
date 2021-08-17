@@ -19,6 +19,10 @@
 #include "sound_config.h"
 
 #include "midi_ctrl.h"
+<<<<<<< HEAD
+=======
+#include "sleep.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int      sequencer_ok;
 static struct sound_timer_operations *tmr;
@@ -100,8 +104,12 @@ int sequencer_read(int dev, struct file *file, char __user *buf, int count)
   			return -EAGAIN;
   		}
 
+<<<<<<< HEAD
  		interruptible_sleep_on_timeout(&midi_sleeper,
 					       pre_event_timeout);
+=======
+		oss_broken_sleep_on(&midi_sleeper, pre_event_timeout);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_irqsave(&lock,flags);
 		if (!iqlen)
 		{
@@ -216,8 +224,11 @@ int sequencer_write(int dev, struct file *file, const char __user *buf, int coun
 
 	dev = dev >> 4;
 
+<<<<<<< HEAD
 	DEB(printk("sequencer_write(dev=%d, count=%d)\n", dev, count));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mode == OPEN_READ)
 		return -EIO;
 
@@ -343,7 +354,11 @@ static int seq_queue(unsigned char *note, char nonblock)
 		/*
 		 * Sleep until there is enough space on the queue
 		 */
+<<<<<<< HEAD
 		interruptible_sleep_on(&seq_sleeper);
+=======
+		oss_broken_sleep_on(&seq_sleeper, MAX_SCHEDULE_TIMEOUT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (qlen >= SEQ_MAX_QUEUE)
 	{
@@ -683,6 +698,7 @@ static int seq_timing_event(unsigned char *event_rec)
 			break;
 
 		case TMR_ECHO:
+<<<<<<< HEAD
 			if (seq_mode == SEQ_2)
 				seq_copy_to_input(event_rec, 8);
 			else
@@ -690,6 +706,10 @@ static int seq_timing_event(unsigned char *event_rec)
 				parm = (parm << 8 | SEQ_ECHO);
 				seq_copy_to_input((unsigned char *) &parm, 4);
 			}
+=======
+			parm = (parm << 8 | SEQ_ECHO);
+			seq_copy_to_input((unsigned char *) &parm, 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		default:;
@@ -959,8 +979,11 @@ int sequencer_open(int dev, struct file *file)
 	dev = dev >> 4;
 	mode = translate_mode(file);
 
+<<<<<<< HEAD
 	DEB(printk("sequencer_open(dev=%d)\n", dev));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sequencer_ok)
 	{
 /*		printk("Sound card: sequencer not initialized\n");*/
@@ -1122,8 +1145,12 @@ static void seq_drain_midi_queues(void)
 		 */
 
  		if (n)
+<<<<<<< HEAD
  			interruptible_sleep_on_timeout(&seq_sleeper,
 						       HZ/10);
+=======
+			oss_broken_sleep_on(&seq_sleeper, HZ/10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1134,8 +1161,11 @@ void sequencer_release(int dev, struct file *file)
 
 	dev = dev >> 4;
 
+<<<<<<< HEAD
 	DEB(printk("sequencer_release(dev=%d)\n", dev));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Wait until the queue is empty (if we don't have nonblock)
 	 */
@@ -1145,8 +1175,12 @@ void sequencer_release(int dev, struct file *file)
 		while (!signal_pending(current) && qlen > 0)
 		{
   			seq_sync();
+<<<<<<< HEAD
  			interruptible_sleep_on_timeout(&seq_sleeper,
 						       3*HZ);
+=======
+			oss_broken_sleep_on(&seq_sleeper, 3*HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  			/* Extra delay */
 		}
 	}
@@ -1201,7 +1235,11 @@ static int seq_sync(void)
 		seq_startplay();
 
  	if (qlen > 0)
+<<<<<<< HEAD
  		interruptible_sleep_on_timeout(&seq_sleeper, HZ);
+=======
+		oss_broken_sleep_on(&seq_sleeper, HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return qlen;
 }
 
@@ -1224,7 +1262,11 @@ static void midi_outc(int dev, unsigned char data)
 
 	spin_lock_irqsave(&lock,flags);
  	while (n && !midi_devs[dev]->outputc(dev, data)) {
+<<<<<<< HEAD
  		interruptible_sleep_on_timeout(&seq_sleeper, HZ/25);
+=======
+		oss_broken_sleep_on(&seq_sleeper, HZ/25);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   		n--;
   	}
 	spin_unlock_irqrestore(&lock,flags);
@@ -1332,7 +1374,10 @@ int sequencer_ioctl(int dev, struct file *file, unsigned int cmd, void __user *a
 	int mode = translate_mode(file);
 	struct synth_info inf;
 	struct seq_event_rec event_rec;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int __user *p = arg;
 
 	orig_dev = dev = dev >> 4;
@@ -1487,9 +1532,13 @@ int sequencer_ioctl(int dev, struct file *file, unsigned int cmd, void __user *a
 		case SNDCTL_SEQ_OUTOFBAND:
 			if (copy_from_user(&event_rec, arg, sizeof(event_rec)))
 				return -EFAULT;
+<<<<<<< HEAD
 			spin_lock_irqsave(&lock,flags);
 			play_event(event_rec.arr);
 			spin_unlock_irqrestore(&lock,flags);
+=======
+			play_event(event_rec.arr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 
 		case SNDCTL_MIDI_INFO:

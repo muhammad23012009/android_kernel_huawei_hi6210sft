@@ -17,6 +17,10 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip/arm-gic-v3.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 #include <asm/virt.h>
@@ -56,8 +60,13 @@ ENTRY(__boot_cpu_mode)
 	ldr	\reg3, [\reg2]
 	ldr	\reg1, [\reg2, \reg3]
 	cmp	\mode, \reg1		@ matches primary CPU boot mode?
+<<<<<<< HEAD
 	orrne	r7, r7, #BOOT_CPU_MODE_MISMATCH
 	strne	r7, [r5, r6]		@ record what happened and give up
+=======
+	orrne	\reg1, \reg1, #BOOT_CPU_MODE_MISMATCH
+	strne	\reg1, [\reg2, \reg3]	@ record what happened and give up
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.endm
 
 #else	/* ZIMAGE */
@@ -99,7 +108,11 @@ ENTRY(__hyp_stub_install_secondary)
 	 * immediately.
 	 */
 	compare_cpu_mode_with_primary	r4, r5, r6, r7
+<<<<<<< HEAD
 	movne	pc, lr
+=======
+	retne	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Once we have given up on one CPU, we do not try to install the
@@ -111,7 +124,11 @@ ENTRY(__hyp_stub_install_secondary)
 	 */
 
 	cmp	r4, #HYP_MODE
+<<<<<<< HEAD
 	movne	pc, lr			@ give up if the CPU is not in HYP mode
+=======
+	retne	lr			@ give up if the CPU is not in HYP mode
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Configure HSCTLR to set correct exception endianness/instruction set
@@ -134,15 +151,35 @@ ENTRY(__hyp_stub_install_secondary)
 	mcr	p15, 4, r7, c1, c1, 3	@ HSTR
 
 THUMB(	orr	r7, #(1 << 30)	)	@ HSCTLR.TE
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_BIG_ENDIAN
 	orr	r7, #(1 << 9)		@ HSCTLR.EE
 #endif
+=======
+ARM_BE8(orr	r7, r7, #(1 << 25))     @ HSCTLR.EE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mcr	p15, 4, r7, c1, c0, 0	@ HSCTLR
 
 	mrc	p15, 4, r7, c1, c1, 1	@ HDCR
 	and	r7, #0x1f		@ Preserve HPMN
 	mcr	p15, 4, r7, c1, c1, 1	@ HDCR
 
+<<<<<<< HEAD
+=======
+	@ Make sure NS-SVC is initialised appropriately
+	mrc	p15, 0, r7, c1, c0, 0	@ SCTLR
+	orr	r7, #(1 << 5)		@ CP15 barriers enabled
+	bic	r7, #(3 << 7)		@ Clear SED/ITD for v8 (RES0 for v7)
+	bic	r7, #(3 << 19)		@ WXN and UWXN disabled
+	mcr	p15, 0, r7, c1, c0, 0	@ SCTLR
+
+	mrc	p15, 0, r7, c0, c0, 0	@ MIDR
+	mcr	p15, 4, r7, c0, c0, 0	@ VPIDR
+
+	mrc	p15, 0, r7, c0, c0, 5	@ MPIDR
+	mcr	p15, 4, r7, c0, c0, 5	@ VMPIDR
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if !defined(ZIMAGE) && defined(CONFIG_ARM_ARCH_TIMER)
 	@ make CNTP_* and CNTPCT accessible from PL1
 	mrc	p15, 0, r7, c0, c1, 1	@ ID_PFR1
@@ -155,9 +192,43 @@ THUMB(	orr	r7, #(1 << 30)	)	@ HSCTLR.TE
 	mcr	p15, 4, r7, c14, c1, 0	@ CNTHCTL
 	mov	r7, #0
 	mcrr	p15, 4, r7, r7, c14	@ CNTVOFF
+<<<<<<< HEAD
 1:
 #endif
 
+=======
+
+	@ Disable virtual timer in case it was counting
+	mrc	p15, 0, r7, c14, c3, 1	@ CNTV_CTL
+	bic	r7, #1			@ Clear ENABLE
+	mcr	p15, 0, r7, c14, c3, 1	@ CNTV_CTL
+1:
+#endif
+
+#ifdef CONFIG_ARM_GIC_V3
+	@ Check whether GICv3 system registers are available
+	mrc	p15, 0, r7, c0, c1, 1	@ ID_PFR1
+	ubfx	r7, r7, #28, #4
+	teq	r7, #0
+	beq	2f
+
+	@ Enable system register accesses
+	mrc	p15, 4, r7, c12, c9, 5	@ ICC_HSRE
+	orr	r7, r7, #(ICC_SRE_EL2_ENABLE | ICC_SRE_EL2_SRE)
+	mcr	p15, 4, r7, c12, c9, 5	@ ICC_HSRE
+	isb
+
+	@ SRE bit could be forced to 0 by firmware.
+	@ Check whether it sticks before accessing any other sysreg
+	mrc	p15, 4, r7, c12, c9, 5	@ ICC_HSRE
+	tst	r7, #ICC_SRE_EL2_SRE
+	beq	2f
+	mov	r7, #0
+	mcr	p15, 4, r7, c12, c11, 0	@ ICH_HCR
+2:
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bx	lr			@ The boot CPU mode is left in r4.
 ENDPROC(__hyp_stub_install_secondary)
 
@@ -196,7 +267,11 @@ ENDPROC(__hyp_get_vectors)
 	@ fall through
 ENTRY(__hyp_set_vectors)
 	__HVC(0)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(__hyp_set_vectors)
 
 #ifndef ZIMAGE

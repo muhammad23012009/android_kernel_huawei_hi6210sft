@@ -343,7 +343,11 @@ static void __init do_boot_cpu(int phys_id)
 	}
 }
 
+<<<<<<< HEAD
 int __cpuinit __cpu_up(unsigned int cpu_id, struct task_struct *tidle)
+=======
+int __cpu_up(unsigned int cpu_id, struct task_struct *tidle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int timeout;
 
@@ -376,7 +380,11 @@ void __init smp_cpus_done(unsigned int max_cpus)
 	if (!cpumask_equal(&cpu_callin_map, cpu_online_mask))
 		BUG();
 
+<<<<<<< HEAD
 	for (cpu_id = 0 ; cpu_id < num_online_cpus() ; cpu_id++)
+=======
+	for_each_online_cpu(cpu_id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		show_cpu_info(cpu_id);
 
 	/*
@@ -432,7 +440,11 @@ int __init start_secondary(void *unused)
 	 */
 	local_flush_tlb_all();
 
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

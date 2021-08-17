@@ -15,7 +15,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <scsi/scsi_host.h>
 #include <linux/ata.h>
@@ -100,6 +103,7 @@ static int pata_imx_probe(struct platform_device *pdev)
 	struct resource *io_res;
 	int ret;
 
+<<<<<<< HEAD
 	io_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (io_res == NULL)
 		return -EINVAL;
@@ -107,6 +111,11 @@ static int pata_imx_probe(struct platform_device *pdev)
 	irq = platform_get_irq(pdev, 0);
 	if (irq <= 0)
 		return -EINVAL;
+=======
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	priv = devm_kzalloc(&pdev->dev,
 				sizeof(struct pata_imx_priv), GFP_KERNEL);
@@ -119,7 +128,13 @@ static int pata_imx_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->clk);
 	}
 
+<<<<<<< HEAD
 	clk_prepare_enable(priv->clk);
+=======
+	ret = clk_prepare_enable(priv->clk);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host) {
@@ -134,11 +149,18 @@ static int pata_imx_probe(struct platform_device *pdev)
 	ap->pio_mask = ATA_PIO0;
 	ap->flags |= ATA_FLAG_SLAVE_POSS;
 
+<<<<<<< HEAD
 	priv->host_regs = devm_ioremap(&pdev->dev, io_res->start,
 		resource_size(io_res));
 	if (!priv->host_regs) {
 		dev_err(&pdev->dev, "failed to map IO/CTL base\n");
 		ret = -EBUSY;
+=======
+	io_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	priv->host_regs = devm_ioremap_resource(&pdev->dev, io_res);
+	if (IS_ERR(priv->host_regs)) {
+		ret = PTR_ERR(priv->host_regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 
@@ -177,7 +199,11 @@ err:
 
 static int pata_imx_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pata_imx_priv *priv = host->private_data;
 
 	ata_host_detach(host);
@@ -189,7 +215,11 @@ static int pata_imx_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pata_imx_suspend(struct device *dev)
 {
 	struct ata_host *host = dev_get_drvdata(dev);
@@ -212,7 +242,13 @@ static int pata_imx_resume(struct device *dev)
 	struct ata_host *host = dev_get_drvdata(dev);
 	struct pata_imx_priv *priv = host->private_data;
 
+<<<<<<< HEAD
 	clk_prepare_enable(priv->clk);
+=======
+	int ret = clk_prepare_enable(priv->clk);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__raw_writel(priv->ata_ctl, priv->host_regs + PATA_IMX_ATA_CONTROL);
 
@@ -223,6 +259,7 @@ static int pata_imx_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static const struct dev_pm_ops pata_imx_pm_ops = {
 	.suspend	= pata_imx_suspend,
@@ -230,6 +267,12 @@ static const struct dev_pm_ops pata_imx_pm_ops = {
 };
 #endif
 
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(pata_imx_pm_ops, pata_imx_suspend, pata_imx_resume);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id imx_pata_dt_ids[] = {
 	{
 		.compatible = "fsl,imx27-pata",
@@ -237,6 +280,10 @@ static const struct of_device_id imx_pata_dt_ids[] = {
 		/* sentinel */
 	}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, imx_pata_dt_ids);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver pata_imx_driver = {
 	.probe		= pata_imx_probe,
@@ -244,10 +291,14 @@ static struct platform_driver pata_imx_driver = {
 	.driver = {
 		.name		= DRV_NAME,
 		.of_match_table	= imx_pata_dt_ids,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 #ifdef CONFIG_PM
 		.pm		= &pata_imx_pm_ops,
 #endif
+=======
+		.pm		= &pata_imx_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

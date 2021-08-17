@@ -8,7 +8,11 @@
 #include "bcache.h"
 #include "btree.h"
 #include "debug.h"
+<<<<<<< HEAD
 #include "request.h"
+=======
+#include "extents.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/console.h>
 #include <linux/debugfs.h>
@@ -18,6 +22,7 @@
 
 static struct dentry *debug;
 
+<<<<<<< HEAD
 const char *bch_ptr_status(struct cache_set *c, const struct bkey *k)
 {
 	unsigned i;
@@ -170,11 +175,91 @@ void bch_btree_verify(struct btree *b, struct bset *new)
 			if (new->d[j] != v->sets[0].data->d[j])
 				break;
 
+=======
+#ifdef CONFIG_BCACHE_DEBUG
+
+#define for_each_written_bset(b, start, i)				\
+	for (i = (start);						\
+	     (void *) i < (void *) (start) + (KEY_SIZE(&b->key) << 9) &&\
+	     i->seq == (start)->seq;					\
+	     i = (void *) i + set_blocks(i, block_bytes(b->c)) *	\
+		 block_bytes(b->c))
+
+void bch_btree_verify(struct btree *b)
+{
+	struct btree *v = b->c->verify_data;
+	struct bset *ondisk, *sorted, *inmemory;
+	struct bio *bio;
+
+	if (!b->c->verify || !b->c->verify_ondisk)
+		return;
+
+	down(&b->io_mutex);
+	mutex_lock(&b->c->verify_lock);
+
+	ondisk = b->c->verify_ondisk;
+	sorted = b->c->verify_data->keys.set->data;
+	inmemory = b->keys.set->data;
+
+	bkey_copy(&v->key, &b->key);
+	v->written = 0;
+	v->level = b->level;
+	v->keys.ops = b->keys.ops;
+
+	bio = bch_bbio_alloc(b->c);
+	bio->bi_bdev		= PTR_CACHE(b->c, &b->key, 0)->bdev;
+	bio->bi_iter.bi_sector	= PTR_OFFSET(&b->key, 0);
+	bio->bi_iter.bi_size	= KEY_SIZE(&v->key) << 9;
+	bio_set_op_attrs(bio, REQ_OP_READ, REQ_META|READ_SYNC);
+	bch_bio_map(bio, sorted);
+
+	submit_bio_wait(bio);
+	bch_bbio_free(bio, b->c);
+
+	memcpy(ondisk, sorted, KEY_SIZE(&v->key) << 9);
+
+	bch_btree_node_read_done(v);
+	sorted = v->keys.set->data;
+
+	if (inmemory->keys != sorted->keys ||
+	    memcmp(inmemory->start,
+		   sorted->start,
+		   (void *) bset_bkey_last(inmemory) - (void *) inmemory->start)) {
+		struct bset *i;
+		unsigned j;
+
+		console_lock();
+
+		printk(KERN_ERR "*** in memory:\n");
+		bch_dump_bset(&b->keys, inmemory, 0);
+
+		printk(KERN_ERR "*** read back in:\n");
+		bch_dump_bset(&v->keys, sorted, 0);
+
+		for_each_written_bset(b, ondisk, i) {
+			unsigned block = ((void *) i - (void *) ondisk) /
+				block_bytes(b->c);
+
+			printk(KERN_ERR "*** on disk block %u:\n", block);
+			bch_dump_bset(&b->keys, i, block);
+		}
+
+		printk(KERN_ERR "*** block %zu not written\n",
+		       ((void *) i - (void *) ondisk) / block_bytes(b->c));
+
+		for (j = 0; j < inmemory->keys; j++)
+			if (inmemory->d[j] != sorted->d[j])
+				break;
+
+		printk(KERN_ERR "b->written %u\n", b->written);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		console_unlock();
 		panic("verify failed at %u\n", j);
 	}
 
 	mutex_unlock(&b->c->verify_lock);
+<<<<<<< HEAD
 }
 
 static void data_verify_endio(struct bio *bio, int error)
@@ -228,12 +313,51 @@ void bch_data_verify(struct search *s)
 
 	__bio_for_each_segment(bv, check, i, 0)
 		__free_page(bv->bv_page);
+=======
+	up(&b->io_mutex);
+}
+
+void bch_data_verify(struct cached_dev *dc, struct bio *bio)
+{
+	char name[BDEVNAME_SIZE];
+	struct bio *check;
+	struct bio_vec bv;
+	struct bvec_iter iter;
+
+	check = bio_clone(bio, GFP_NOIO);
+	if (!check)
+		return;
+	bio_set_op_attrs(check, REQ_OP_READ, READ_SYNC);
+
+	if (bio_alloc_pages(check, GFP_NOIO))
+		goto out_put;
+
+	submit_bio_wait(check);
+
+	bio_for_each_segment(bv, bio, iter) {
+		void *p1 = kmap_atomic(bv.bv_page);
+		void *p2 = page_address(check->bi_io_vec[iter.bi_idx].bv_page);
+
+		cache_set_err_on(memcmp(p1 + bv.bv_offset,
+					p2 + bv.bv_offset,
+					bv.bv_len),
+				 dc->disk.c,
+				 "verify failed at dev %s sector %llu",
+				 bdevname(dc->bdev, name),
+				 (uint64_t) bio->bi_iter.bi_sector);
+
+		kunmap_atomic(p1);
+	}
+
+	bio_free_pages(check);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_put:
 	bio_put(check);
 }
 
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_BCACHE_EDEBUG
 
 unsigned bch_count_data(struct btree *b)
@@ -316,6 +440,8 @@ bug:
 
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DEBUG_FS
 
 /* XXX: cache set refcounting */
@@ -337,6 +463,10 @@ static ssize_t bch_dump_read(struct file *file, char __user *buf,
 {
 	struct dump_iterator *i = file->private_data;
 	ssize_t ret = 0;
+<<<<<<< HEAD
+=======
+	char kbuf[80];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (size) {
 		struct keybuf_key *w;
@@ -355,11 +485,20 @@ static ssize_t bch_dump_read(struct file *file, char __user *buf,
 		if (i->bytes)
 			break;
 
+<<<<<<< HEAD
 		w = bch_keybuf_next_rescan(i->c, &i->keys, &MAX_KEY);
 		if (!w)
 			break;
 
 		i->bytes = snprintf(i->buf, PAGE_SIZE, "%s\n", pkey(&w->key));
+=======
+		w = bch_keybuf_next_rescan(i->c, &i->keys, &MAX_KEY, dump_pred);
+		if (!w)
+			break;
+
+		bch_extent_to_text(kbuf, sizeof(kbuf), &w->key);
+		i->bytes = snprintf(i->buf, PAGE_SIZE, "%s\n", kbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bch_keybuf_del(&i->keys, w);
 	}
 
@@ -377,7 +516,11 @@ static int bch_dump_open(struct inode *inode, struct file *file)
 
 	file->private_data = i;
 	i->c = c;
+<<<<<<< HEAD
 	bch_keybuf_init(&i->keys, dump_pred);
+=======
+	bch_keybuf_init(&i->keys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i->keys.last_scanned = KEY(0, 0, 0);
 
 	return 0;
@@ -409,6 +552,7 @@ void bch_debug_init_cache_set(struct cache_set *c)
 
 #endif
 
+<<<<<<< HEAD
 /* Fuzz tester has rotted: */
 #if 0
 
@@ -545,6 +689,8 @@ static ssize_t btree_fuzz(struct kobject *k, struct kobj_attribute *a,
 kobj_attribute_write(fuzz, btree_fuzz);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void bch_debug_exit(void)
 {
 	if (!IS_ERR_OR_NULL(debug))
@@ -554,11 +700,14 @@ void bch_debug_exit(void)
 int __init bch_debug_init(struct kobject *kobj)
 {
 	int ret = 0;
+<<<<<<< HEAD
 #if 0
 	ret = sysfs_create_file(kobj, &ksysfs_fuzz.attr);
 	if (ret)
 		return ret;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	debug = debugfs_create_dir("bcache", NULL);
 	return ret;

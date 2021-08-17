@@ -15,7 +15,11 @@
 static int ucb1400_gpio_dir_in(struct gpio_chip *gc, unsigned off)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
+=======
+	gpio = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ucb1400_gpio_set_direction(gpio->ac97, off, 0);
 	return 0;
 }
@@ -23,7 +27,11 @@ static int ucb1400_gpio_dir_in(struct gpio_chip *gc, unsigned off)
 static int ucb1400_gpio_dir_out(struct gpio_chip *gc, unsigned off, int val)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
+=======
+	gpio = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ucb1400_gpio_set_direction(gpio->ac97, off, 1);
 	ucb1400_gpio_set_value(gpio->ac97, off, val);
 	return 0;
@@ -32,20 +40,34 @@ static int ucb1400_gpio_dir_out(struct gpio_chip *gc, unsigned off, int val)
 static int ucb1400_gpio_get(struct gpio_chip *gc, unsigned off)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
 	return ucb1400_gpio_get_value(gpio->ac97, off);
+=======
+
+	gpio = gpiochip_get_data(gc);
+	return !!ucb1400_gpio_get_value(gpio->ac97, off);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ucb1400_gpio_set(struct gpio_chip *gc, unsigned off, int val)
 {
 	struct ucb1400_gpio *gpio;
+<<<<<<< HEAD
 	gpio = container_of(gc, struct ucb1400_gpio, gc);
+=======
+	gpio = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ucb1400_gpio_set_value(gpio->ac97, off, val);
 }
 
 static int ucb1400_gpio_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct ucb1400_gpio *ucb = dev->dev.platform_data;
+=======
+	struct ucb1400_gpio *ucb = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err = 0;
 
 	if (!(ucb && ucb->gpio_offset)) {
@@ -64,6 +86,7 @@ static int ucb1400_gpio_probe(struct platform_device *dev)
 	ucb->gc.direction_output = ucb1400_gpio_dir_out;
 	ucb->gc.get = ucb1400_gpio_get;
 	ucb->gc.set = ucb1400_gpio_set;
+<<<<<<< HEAD
 	ucb->gc.can_sleep = 1;
 
 	err = gpiochip_add(&ucb->gc);
@@ -71,6 +94,15 @@ static int ucb1400_gpio_probe(struct platform_device *dev)
 		goto err;
 
 	if (ucb && ucb->gpio_setup)
+=======
+	ucb->gc.can_sleep = true;
+
+	err = devm_gpiochip_add_data(&dev->dev, &ucb->gc, ucb);
+	if (err)
+		goto err;
+
+	if (ucb->gpio_setup)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = ucb->gpio_setup(&dev->dev, ucb->gc.ngpio);
 
 err:
@@ -89,7 +121,10 @@ static int ucb1400_gpio_remove(struct platform_device *dev)
 			return err;
 	}
 
+<<<<<<< HEAD
 	err = gpiochip_remove(&ucb->gc);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -105,3 +140,7 @@ module_platform_driver(ucb1400_gpio_driver);
 
 MODULE_DESCRIPTION("Philips UCB1400 GPIO driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:ucb1400_gpio");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -8,9 +8,17 @@
 #include <linux/security.h>
 #include <linux/file.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 
 #include <linux/proc_fs.h>
 
+=======
+#include <linux/fs.h>
+
+#include <linux/proc_fs.h>
+
+#include "../mount.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "internal.h"
 #include "fd.h"
 
@@ -29,7 +37,11 @@ static int seq_show(struct seq_file *m, void *v)
 	put_task_struct(task);
 
 	if (files) {
+<<<<<<< HEAD
 		int fd = proc_fd(m->private);
+=======
+		unsigned int fd = proc_fd(m->private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		spin_lock(&files->file_lock);
 		file = fcheck_files(files, fd);
@@ -47,6 +59,7 @@ static int seq_show(struct seq_file *m, void *v)
 		put_files_struct(files);
 	}
 
+<<<<<<< HEAD
 	if (!ret) {
                 seq_printf(m, "pos:\t%lli\nflags:\t0%o\n",
 			   (long long)file->f_pos, f_flags);
@@ -56,6 +69,25 @@ static int seq_show(struct seq_file *m, void *v)
 	}
 
 	return ret;
+=======
+	if (ret)
+		return ret;
+
+	seq_printf(m, "pos:\t%lli\nflags:\t0%o\nmnt_id:\t%i\n",
+		   (long long)file->f_pos, f_flags,
+		   real_mount(file->f_path.mnt)->mnt_id);
+
+	show_fd_locks(m, file, files);
+	if (seq_has_overflowed(m))
+		goto out;
+
+	if (file->f_op->show_fdinfo)
+		file->f_op->show_fdinfo(m, file);
+
+out:
+	fput(file);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int seq_fdinfo_open(struct inode *inode, struct file *file)
@@ -76,12 +108,20 @@ static int tid_fd_revalidate(struct dentry *dentry, unsigned int flags)
 	struct task_struct *task;
 	const struct cred *cred;
 	struct inode *inode;
+<<<<<<< HEAD
 	int fd;
+=======
+	unsigned int fd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
+<<<<<<< HEAD
 	inode = dentry->d_inode;
+=======
+	inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = get_proc_task(inode);
 	fd = proc_fd(inode);
 
@@ -127,8 +167,11 @@ static int tid_fd_revalidate(struct dentry *dentry, unsigned int flags)
 		}
 		put_task_struct(task);
 	}
+<<<<<<< HEAD
 
 	d_drop(dentry);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -143,14 +186,22 @@ static int proc_fd_link(struct dentry *dentry, struct path *path)
 	struct task_struct *task;
 	int ret = -ENOENT;
 
+<<<<<<< HEAD
 	task = get_proc_task(dentry->d_inode);
+=======
+	task = get_proc_task(d_inode(dentry));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (task) {
 		files = get_files_struct(task);
 		put_task_struct(task);
 	}
 
 	if (files) {
+<<<<<<< HEAD
 		int fd = proc_fd(dentry->d_inode);
+=======
+		unsigned int fd = proc_fd(d_inode(dentry));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct file *fd_file;
 
 		spin_lock(&files->file_lock);
@@ -167,11 +218,18 @@ static int proc_fd_link(struct dentry *dentry, struct path *path)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct dentry *
 proc_fd_instantiate(struct inode *dir, struct dentry *dentry,
 		    struct task_struct *task, const void *ptr)
 {
 	struct dentry *error = ERR_PTR(-ENOENT);
+=======
+static int
+proc_fd_instantiate(struct inode *dir, struct dentry *dentry,
+		    struct task_struct *task, const void *ptr)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned fd = (unsigned long)ptr;
 	struct proc_inode *ei;
 	struct inode *inode;
@@ -194,9 +252,15 @@ proc_fd_instantiate(struct inode *dir, struct dentry *dentry,
 
 	/* Close the race of the process dying before we return the dentry */
 	if (tid_fd_revalidate(dentry, 0))
+<<<<<<< HEAD
 		error = NULL;
  out:
 	return error;
+=======
+		return 0;
+ out:
+	return -ENOENT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct dentry *proc_lookupfd_common(struct inode *dir,
@@ -204,8 +268,13 @@ static struct dentry *proc_lookupfd_common(struct inode *dir,
 					   instantiate_t instantiate)
 {
 	struct task_struct *task = get_proc_task(dir);
+<<<<<<< HEAD
 	struct dentry *result = ERR_PTR(-ENOENT);
 	unsigned fd = name_to_int(dentry);
+=======
+	int result = -ENOENT;
+	unsigned fd = name_to_int(&dentry->d_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!task)
 		goto out_no_task;
@@ -216,6 +285,7 @@ static struct dentry *proc_lookupfd_common(struct inode *dir,
 out:
 	put_task_struct(task);
 out_no_task:
+<<<<<<< HEAD
 	return result;
 }
 
@@ -282,12 +352,68 @@ out_no_task:
 static int proc_readfd(struct file *filp, void *dirent, filldir_t filldir)
 {
 	return proc_readfd_common(filp, dirent, filldir, proc_fd_instantiate);
+=======
+	return ERR_PTR(result);
+}
+
+static int proc_readfd_common(struct file *file, struct dir_context *ctx,
+			      instantiate_t instantiate)
+{
+	struct task_struct *p = get_proc_task(file_inode(file));
+	struct files_struct *files;
+	unsigned int fd;
+
+	if (!p)
+		return -ENOENT;
+
+	if (!dir_emit_dots(file, ctx))
+		goto out;
+	files = get_files_struct(p);
+	if (!files)
+		goto out;
+
+	rcu_read_lock();
+	for (fd = ctx->pos - 2;
+	     fd < files_fdtable(files)->max_fds;
+	     fd++, ctx->pos++) {
+		char name[PROC_NUMBUF];
+		int len;
+
+		if (!fcheck_files(files, fd))
+			continue;
+		rcu_read_unlock();
+
+		len = snprintf(name, sizeof(name), "%u", fd);
+		if (!proc_fill_cache(file, ctx,
+				     name, len, instantiate, p,
+				     (void *)(unsigned long)fd))
+			goto out_fd_loop;
+		cond_resched();
+		rcu_read_lock();
+	}
+	rcu_read_unlock();
+out_fd_loop:
+	put_files_struct(files);
+out:
+	put_task_struct(p);
+	return 0;
+}
+
+static int proc_readfd(struct file *file, struct dir_context *ctx)
+{
+	return proc_readfd_common(file, ctx, proc_fd_instantiate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct file_operations proc_fd_operations = {
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= proc_readfd,
 	.llseek		= default_llseek,
+=======
+	.iterate_shared	= proc_readfd,
+	.llseek		= generic_file_llseek,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct dentry *proc_lookupfd(struct inode *dir, struct dentry *dentry,
@@ -324,11 +450,18 @@ const struct inode_operations proc_fd_inode_operations = {
 	.setattr	= proc_setattr,
 };
 
+<<<<<<< HEAD
 static struct dentry *
 proc_fdinfo_instantiate(struct inode *dir, struct dentry *dentry,
 			struct task_struct *task, const void *ptr)
 {
 	struct dentry *error = ERR_PTR(-ENOENT);
+=======
+static int
+proc_fdinfo_instantiate(struct inode *dir, struct dentry *dentry,
+			struct task_struct *task, const void *ptr)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned fd = (unsigned long)ptr;
 	struct proc_inode *ei;
 	struct inode *inode;
@@ -348,9 +481,15 @@ proc_fdinfo_instantiate(struct inode *dir, struct dentry *dentry,
 
 	/* Close the race of the process dying before we return the dentry */
 	if (tid_fd_revalidate(dentry, 0))
+<<<<<<< HEAD
 		error = NULL;
  out:
 	return error;
+=======
+		return 0;
+ out:
+	return -ENOENT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct dentry *
@@ -359,9 +498,15 @@ proc_lookupfdinfo(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	return proc_lookupfd_common(dir, dentry, proc_fdinfo_instantiate);
 }
 
+<<<<<<< HEAD
 static int proc_readfdinfo(struct file *filp, void *dirent, filldir_t filldir)
 {
 	return proc_readfd_common(filp, dirent, filldir,
+=======
+static int proc_readfdinfo(struct file *file, struct dir_context *ctx)
+{
+	return proc_readfd_common(file, ctx,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  proc_fdinfo_instantiate);
 }
 
@@ -372,6 +517,11 @@ const struct inode_operations proc_fdinfo_inode_operations = {
 
 const struct file_operations proc_fdinfo_operations = {
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= proc_readfdinfo,
 	.llseek		= default_llseek,
+=======
+	.iterate_shared	= proc_readfdinfo,
+	.llseek		= generic_file_llseek,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

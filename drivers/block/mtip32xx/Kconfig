@@ -4,6 +4,10 @@
 
 config BLK_DEV_PCIESSD_MTIP32XX
 	tristate "Block Device Driver for Micron PCIe SSDs"
+<<<<<<< HEAD
 	depends on PCI && GENERIC_HARDIRQS
+=======
+	depends on PCI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
           This enables the block driver for Micron PCIe SSDs.

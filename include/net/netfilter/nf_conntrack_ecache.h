@@ -12,6 +12,7 @@
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
 #include <net/netfilter/nf_conntrack_extend.h>
 
+<<<<<<< HEAD
 struct nf_conntrack_ecache {
 	unsigned long cache;	/* bitops want long */
 	unsigned long missed;	/* missed events */
@@ -19,6 +20,21 @@ struct nf_conntrack_ecache {
 	u16 expmask;		/* bitmask of expect events to be delivered */
 	u32 portid;		/* netlink portid of destroyer */
 	struct timer_list timeout;
+=======
+enum nf_ct_ecache_state {
+	NFCT_ECACHE_UNKNOWN,		/* destroy event not sent */
+	NFCT_ECACHE_DESTROY_FAIL,	/* tried but failed to send destroy event */
+	NFCT_ECACHE_DESTROY_SENT,	/* sent destroy event after failure */
+};
+
+struct nf_conntrack_ecache {
+	unsigned long cache;		/* bitops want long */
+	unsigned long missed;		/* missed events */
+	u16 ctmask;			/* bitmask of ct events to be delivered */
+	u16 expmask;			/* bitmask of expect events to be delivered */
+	u32 portid;			/* netlink portid of destroyer */
+	enum nf_ct_ecache_state state;	/* ecache state */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct nf_conntrack_ecache *
@@ -68,10 +84,21 @@ struct nf_ct_event_notifier {
 	int (*fcn)(unsigned int events, struct nf_ct_event *item);
 };
 
+<<<<<<< HEAD
 extern int nf_conntrack_register_notifier(struct net *net, struct nf_ct_event_notifier *nb);
 extern void nf_conntrack_unregister_notifier(struct net *net, struct nf_ct_event_notifier *nb);
 
 extern void nf_ct_deliver_cached_events(struct nf_conn *ct);
+=======
+int nf_conntrack_register_notifier(struct net *net,
+				   struct nf_ct_event_notifier *nb);
+void nf_conntrack_unregister_notifier(struct net *net,
+				      struct nf_ct_event_notifier *nb);
+
+void nf_ct_deliver_cached_events(struct nf_conn *ct);
+int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
+				  u32 portid, int report);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void
 nf_conntrack_event_cache(enum ip_conntrack_events event, struct nf_conn *ct)
@@ -90,6 +117,7 @@ nf_conntrack_event_cache(enum ip_conntrack_events event, struct nf_conn *ct)
 }
 
 static inline int
+<<<<<<< HEAD
 nf_conntrack_eventmask_report(unsigned int eventmask,
 			      struct nf_conn *ct,
 			      u32 portid,
@@ -147,12 +175,30 @@ static inline int
 nf_conntrack_event_report(enum ip_conntrack_events event, struct nf_conn *ct,
 			  u32 portid, int report)
 {
+=======
+nf_conntrack_event_report(enum ip_conntrack_events event, struct nf_conn *ct,
+			  u32 portid, int report)
+{
+	const struct net *net = nf_ct_net(ct);
+
+	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nf_conntrack_eventmask_report(1 << event, ct, portid, report);
 }
 
 static inline int
 nf_conntrack_event(enum ip_conntrack_events event, struct nf_conn *ct)
 {
+<<<<<<< HEAD
+=======
+	const struct net *net = nf_ct_net(ct);
+
+	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nf_conntrack_eventmask_report(1 << event, ct, 0, 0);
 }
 
@@ -166,6 +212,7 @@ struct nf_exp_event_notifier {
 	int (*fcn)(unsigned int events, struct nf_exp_event *item);
 };
 
+<<<<<<< HEAD
 extern int nf_ct_expect_register_notifier(struct net *net, struct nf_exp_event_notifier *nb);
 extern void nf_ct_expect_unregister_notifier(struct net *net, struct nf_exp_event_notifier *nb);
 
@@ -214,6 +261,39 @@ extern int nf_conntrack_ecache_init(void);
 extern void nf_conntrack_ecache_fini(void);
 #else /* CONFIG_NF_CONNTRACK_EVENTS */
 
+=======
+int nf_ct_expect_register_notifier(struct net *net,
+				   struct nf_exp_event_notifier *nb);
+void nf_ct_expect_unregister_notifier(struct net *net,
+				      struct nf_exp_event_notifier *nb);
+
+void nf_ct_expect_event_report(enum ip_conntrack_expect_events event,
+			       struct nf_conntrack_expect *exp,
+			       u32 portid, int report);
+
+int nf_conntrack_ecache_pernet_init(struct net *net);
+void nf_conntrack_ecache_pernet_fini(struct net *net);
+
+int nf_conntrack_ecache_init(void);
+void nf_conntrack_ecache_fini(void);
+
+static inline void nf_conntrack_ecache_delayed_work(struct net *net)
+{
+	if (!delayed_work_pending(&net->ct.ecache_dwork)) {
+		schedule_delayed_work(&net->ct.ecache_dwork, HZ);
+		net->ct.ecache_dwork_pending = true;
+	}
+}
+
+static inline void nf_conntrack_ecache_work(struct net *net)
+{
+	if (net->ct.ecache_dwork_pending) {
+		net->ct.ecache_dwork_pending = false;
+		mod_delayed_work(system_wq, &net->ct.ecache_dwork, 0);
+	}
+}
+#else /* CONFIG_NF_CONNTRACK_EVENTS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void nf_conntrack_event_cache(enum ip_conntrack_events event,
 					    struct nf_conn *ct) {}
 static inline int nf_conntrack_eventmask_report(unsigned int eventmask,
@@ -227,8 +307,11 @@ static inline int nf_conntrack_event_report(enum ip_conntrack_events event,
 					    u32 portid,
 					    int report) { return 0; }
 static inline void nf_ct_deliver_cached_events(const struct nf_conn *ct) {}
+<<<<<<< HEAD
 static inline void nf_ct_expect_event(enum ip_conntrack_expect_events event,
 				      struct nf_conntrack_expect *exp) {}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void nf_ct_expect_event_report(enum ip_conntrack_expect_events e,
 					     struct nf_conntrack_expect *exp,
  					     u32 portid,
@@ -251,6 +334,17 @@ static inline int nf_conntrack_ecache_init(void)
 static inline void nf_conntrack_ecache_fini(void)
 {
 }
+<<<<<<< HEAD
+=======
+
+static inline void nf_conntrack_ecache_delayed_work(struct net *net)
+{
+}
+
+static inline void nf_conntrack_ecache_work(struct net *net)
+{
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_NF_CONNTRACK_EVENTS */
 
 #endif /*_NF_CONNTRACK_ECACHE_H*/

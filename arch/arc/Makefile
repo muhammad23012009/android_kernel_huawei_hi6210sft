@@ -8,6 +8,7 @@
 
 UTS_MACHINE := arc
 
+<<<<<<< HEAD
 ifeq ($(CROSS_COMPILE),)
 CROSS_COMPILE := arc-elf32-
 endif
@@ -17,27 +18,69 @@ KBUILD_DEFCONFIG := fpga_defconfig
 cflags-y	+= -mA7 -fno-common -pipe -fno-builtin -D__linux__
 
 LINUXINCLUDE	+=  -include ${src}/arch/arc/include/asm/defines.h
+=======
+KBUILD_DEFCONFIG := nsim_hs_defconfig
+
+cflags-y	+= -fno-common -pipe -fno-builtin -mmedium-calls -D__linux__
+cflags-$(CONFIG_ISA_ARCOMPACT)	+= -mA7
+cflags-$(CONFIG_ISA_ARCV2)	+= -mcpu=archs
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ifdef CONFIG_ARC_CURR_IN_REG
 # For a global register defintion, make sure it gets passed to every file
 # We had a customer reported bug where some code built in kernel was NOT using
 # any kernel headers, and missing the r25 global register
+<<<<<<< HEAD
 # Can't do unconditionally (like above) because of recursive include issues
+=======
+# Can't do unconditionally because of recursive include issues
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # due to <linux/thread_info.h>
 LINUXINCLUDE	+=  -include ${src}/arch/arc/include/asm/current.h
 endif
 
+<<<<<<< HEAD
 atleast_gcc44 :=  $(call cc-ifversion, -gt, 0402, y)
+=======
+upto_gcc44    :=  $(call cc-ifversion, -le, 0404, y)
+atleast_gcc44 :=  $(call cc-ifversion, -ge, 0404, y)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cflags-$(atleast_gcc44)			+= -fsection-anchors
 
 cflags-$(CONFIG_ARC_HAS_LLSC)		+= -mlock
 cflags-$(CONFIG_ARC_HAS_SWAPE)		+= -mswape
+<<<<<<< HEAD
 cflags-$(CONFIG_ARC_HAS_RTSC)		+= -mrtsc
 cflags-$(CONFIG_ARC_DW2_UNWIND)		+= -fasynchronous-unwind-tables
 
 ifndef CONFIG_CC_OPTIMIZE_FOR_SIZE
 # Generic build system uses -O2, we want -O3
 cflags-y  += -O3
+=======
+
+ifdef CONFIG_ISA_ARCV2
+
+ifndef CONFIG_ARC_HAS_LL64
+cflags-y				+= -mno-ll64
+endif
+
+ifndef CONFIG_ARC_HAS_DIV_REM
+cflags-y				+= -mno-div-rem
+endif
+
+endif
+
+cfi := $(call as-instr,.cfi_startproc\n.cfi_endproc,-DARC_DW2_UNWIND_AS_CFI)
+cflags-$(CONFIG_ARC_DW2_UNWIND)		+= -fasynchronous-unwind-tables $(cfi)
+
+ifndef CONFIG_CC_OPTIMIZE_FOR_SIZE
+# Generic build system uses -O2, we want -O3
+# Note: No need to add to cflags-y as that happens anyways
+#
+# Disable the false maybe-uninitialized warings gcc spits out at -O3
+ARCH_CFLAGS += -O3 $(call cc-disable-warning,maybe-uninitialized,)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif
 
 # small data is default for elf32 tool-chain. If not usable, disable it
@@ -48,6 +91,7 @@ cflags-$(disable_small_data)		+= -mno-sdata -fcall-used-gp
 cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= -mbig-endian
 ldflags-$(CONFIG_CPU_BIG_ENDIAN)	+= -EB
 
+<<<<<<< HEAD
 # STAR 9000518362:
 # arc-linux-uclibc-ld (buildroot) or arceb-elf32-ld (EZChip) don't accept
 # --build-id w/o "-marclinux".
@@ -76,6 +120,17 @@ LIBGCC	:= $(shell $(CC) $(ARC_LIBGCC) $(cflags-y) --print-libgcc-file-name)
 
 # Modules with short calls might break for calls into builtin-kernel
 KBUILD_CFLAGS_MODULE	+= -mlong-calls
+=======
+# STAR 9000518362: (fixed with binutils shipping with gcc 4.8)
+# arc-linux-uclibc-ld (buildroot) or arceb-elf32-ld (EZChip) don't accept
+# --build-id w/o "-marclinux". Default arc-elf32-ld is OK
+ldflags-$(upto_gcc44)			+= -marclinux
+
+LIBGCC	= $(shell $(CC) $(cflags-y) --print-libgcc-file-name)
+
+# Modules with short calls might break for calls into builtin-kernel
+KBUILD_CFLAGS_MODULE	+= -mlong-calls -mno-millicode
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Finally dump eveything into kernel build system
 KBUILD_CFLAGS	+= $(cflags-y)
@@ -90,8 +145,19 @@ core-y		+= arch/arc/
 # w/o this dtb won't embed into kernel binary
 core-y		+= arch/arc/boot/dts/
 
+<<<<<<< HEAD
 core-$(CONFIG_ARC_PLAT_FPGA_LEGACY)	+= arch/arc/plat-arcfpga/
 core-$(CONFIG_ARC_PLAT_TB10X)		+= arch/arc/plat-tb10x/
+=======
+core-$(CONFIG_ARC_PLAT_SIM)	+= arch/arc/plat-sim/
+core-$(CONFIG_ARC_PLAT_TB10X)	+= arch/arc/plat-tb10x/
+core-$(CONFIG_ARC_PLAT_AXS10X)	+= arch/arc/plat-axs10x/
+core-$(CONFIG_ARC_PLAT_EZNPS)	+= arch/arc/plat-eznps/
+
+ifdef CONFIG_ARC_PLAT_EZNPS
+KBUILD_CPPFLAGS += -I$(srctree)/arch/arc/plat-eznps/include
+endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 drivers-$(CONFIG_OPROFILE)	+= arch/arc/oprofile/
 
@@ -99,7 +165,11 @@ libs-y		+= arch/arc/lib/ $(LIBGCC)
 
 boot		:= arch/arc/boot
 
+<<<<<<< HEAD
 #default target for make without any arguements.
+=======
+#default target for make without any arguments.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 KBUILD_IMAGE	:= bootpImage
 
 all:	$(KBUILD_IMAGE)
@@ -107,6 +177,10 @@ bootpImage: vmlinux
 
 boot_targets += uImage uImage.bin uImage.gz
 
+<<<<<<< HEAD
+=======
+PHONY += $(boot_targets)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 $(boot_targets): vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 
@@ -114,6 +188,7 @@ $(boot_targets): vmlinux
 	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
 
 dtbs: scripts
+<<<<<<< HEAD
 	$(Q)$(MAKE) $(build)=$(boot)/dts dtbs
 
 archclean:
@@ -131,3 +206,9 @@ export CFLAGS_initramfs.o = -mmedium-calls
 ifdef CONFIG_SMP
 export CFLAGS_core.o = -mmedium-calls
 endif
+=======
+	$(Q)$(MAKE) $(build)=$(boot)/dts
+
+archclean:
+	$(Q)$(MAKE) $(clean)=$(boot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

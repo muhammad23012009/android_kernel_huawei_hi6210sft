@@ -8,7 +8,10 @@
  * Carsten Langgaard, carstenl@mips.com
  * Copyright (C) 2002 MIPS Technologies, Inc.  All rights reserved.
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
@@ -195,7 +198,11 @@ void __update_tlb(struct vm_area_struct * vma, unsigned long address, pte_t pte)
 	if (current->active_mm != vma->vm_mm)
 		return;
 
+<<<<<<< HEAD
 	pid = read_c0_entryhi() & ASID_MASK;
+=======
+	pid = read_c0_entryhi() & cpu_asid_mask(&current_cpu_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	local_irq_save(flags);
 	address &= PAGE_MASK;
@@ -213,14 +220,22 @@ void __update_tlb(struct vm_area_struct * vma, unsigned long address, pte_t pte)
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
 static void __cpuinit probe_tlb(unsigned long config)
+=======
+static void probe_tlb(unsigned long config)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 
 	c->tlbsize = 3 * 128;		/* 3 sets each 128 entries */
 }
 
+<<<<<<< HEAD
 void __cpuinit tlb_init(void)
+=======
+void tlb_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int config = read_c0_config();
 	unsigned long status;

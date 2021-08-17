@@ -121,11 +121,14 @@ enum ssp_rx_level_trig {
 	SSP_RX_8_OR_MORE_ELEM,
 	SSP_RX_16_OR_MORE_ELEM,
 	SSP_RX_32_OR_MORE_ELEM
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_HI3630FPGA
 	,SSP_RX_64_OR_MORE_ELEM,
 	SSP_RX_128_OR_MORE_ELEM,
 	SSP_RX_224_OR_MORE_ELEM
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -138,10 +141,13 @@ enum ssp_tx_level_trig {
 	SSP_TX_8_OR_MORE_EMPTY_LOC,
 	SSP_TX_16_OR_MORE_EMPTY_LOC,
 	SSP_TX_32_OR_MORE_EMPTY_LOC
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_KIRIN)|| defined(CONFIG_ARCH_HI3630)
 	,SSP_TX_64_OR_MORE_EMPTY_LOC,
 	SSP_TX_128_OR_MORE_EMPTY_LOC
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**

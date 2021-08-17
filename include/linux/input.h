@@ -95,7 +95,11 @@ struct input_value {
  * @grab: input handle that currently has the device grabbed (via
  *	EVIOCGRAB ioctl). When a handle grabs a device it becomes sole
  *	recipient for all input events coming from the device
+<<<<<<< HEAD
  * @event_lock: this spinlock is is taken when input core receives
+=======
+ * @event_lock: this spinlock is taken when input core receives
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	and processes a new event for the device (in input_event()).
  *	Code that accesses and/or modifies parameters of a device
  *	(such as keymap or absmin, absmax, absfuzz, etc.) after device
@@ -469,6 +473,11 @@ int input_get_keycode(struct input_dev *dev, struct input_keymap_entry *ke);
 int input_set_keycode(struct input_dev *dev,
 		      const struct input_keymap_entry *ke);
 
+<<<<<<< HEAD
+=======
+void input_enable_softrepeat(struct input_dev *dev, int delay, int period);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct class input_class;
 
 /**
@@ -527,6 +536,10 @@ int input_ff_event(struct input_dev *dev, unsigned int type, unsigned int code, 
 
 int input_ff_upload(struct input_dev *dev, struct ff_effect *effect, struct file *file);
 int input_ff_erase(struct input_dev *dev, int effect_id, struct file *file);
+<<<<<<< HEAD
+=======
+int input_ff_flush(struct input_dev *dev, struct file *file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int input_ff_create_memless(struct input_dev *dev, void *data,
 		int (*play_effect)(struct input_dev *, void *, struct ff_effect *));

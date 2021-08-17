@@ -110,7 +110,10 @@ static int send_hcill_cmd(u8 cmd, struct hci_uart *hu)
 	/* prepare packet */
 	hcill_packet = (struct hcill_cmd *) skb_put(skb, 1);
 	hcill_packet->cmd = cmd;
+<<<<<<< HEAD
 	skb->dev = (void *) hu->hdev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* send packet */
 	skb_queue_tail(&ll->txq, skb);
@@ -308,7 +311,11 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	BT_DBG("hu %p skb %p", hu, skb);
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* lock hcill state */
 	spin_lock_irqsave(&ll->hcill_lock, flags);
@@ -346,14 +353,22 @@ static int ll_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int ll_check_data_len(struct ll_struct *ll, int len)
+=======
+static inline int ll_check_data_len(struct hci_dev *hdev, struct ll_struct *ll, int len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int room = skb_tailroom(ll->rx_skb);
 
 	BT_DBG("len %d room %d", len, room);
 
 	if (!len) {
+<<<<<<< HEAD
 		hci_recv_frame(ll->rx_skb);
+=======
+		hci_recv_frame(hdev, ll->rx_skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (len > room) {
 		BT_ERR("Data length is too large");
 		kfree_skb(ll->rx_skb);
@@ -371,10 +386,17 @@ static inline int ll_check_data_len(struct ll_struct *ll, int len)
 }
 
 /* Recv data */
+<<<<<<< HEAD
 static int ll_recv(struct hci_uart *hu, void *data, int count)
 {
 	struct ll_struct *ll = hu->priv;
 	char *ptr;
+=======
+static int ll_recv(struct hci_uart *hu, const void *data, int count)
+{
+	struct ll_struct *ll = hu->priv;
+	const char *ptr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hci_event_hdr *eh;
 	struct hci_acl_hdr   *ah;
 	struct hci_sco_hdr   *sh;
@@ -395,7 +417,11 @@ static int ll_recv(struct hci_uart *hu, void *data, int count)
 			switch (ll->rx_state) {
 			case HCILL_W4_DATA:
 				BT_DBG("Complete data");
+<<<<<<< HEAD
 				hci_recv_frame(ll->rx_skb);
+=======
+				hci_recv_frame(hu->hdev, ll->rx_skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				ll->rx_state = HCILL_W4_PACKET_TYPE;
 				ll->rx_skb = NULL;
@@ -406,7 +432,11 @@ static int ll_recv(struct hci_uart *hu, void *data, int count)
 
 				BT_DBG("Event header: evt 0x%2.2x plen %d", eh->evt, eh->plen);
 
+<<<<<<< HEAD
 				ll_check_data_len(ll, eh->plen);
+=======
+				ll_check_data_len(hu->hdev, ll, eh->plen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 
 			case HCILL_W4_ACL_HDR:
@@ -415,7 +445,11 @@ static int ll_recv(struct hci_uart *hu, void *data, int count)
 
 				BT_DBG("ACL header: dlen %d", dlen);
 
+<<<<<<< HEAD
 				ll_check_data_len(ll, dlen);
+=======
+				ll_check_data_len(hu->hdev, ll, dlen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 
 			case HCILL_W4_SCO_HDR:
@@ -423,7 +457,11 @@ static int ll_recv(struct hci_uart *hu, void *data, int count)
 
 				BT_DBG("SCO header: dlen %d", sh->dlen);
 
+<<<<<<< HEAD
 				ll_check_data_len(ll, sh->dlen);
+=======
+				ll_check_data_len(hu->hdev, ll, sh->dlen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 			}
 		}
@@ -494,8 +532,12 @@ static int ll_recv(struct hci_uart *hu, void *data, int count)
 			return -ENOMEM;
 		}
 
+<<<<<<< HEAD
 		ll->rx_skb->dev = (void *) hu->hdev;
 		bt_cb(ll->rx_skb)->pkt_type = type;
+=======
+		hci_skb_pkt_type(ll->rx_skb) = type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return count;
@@ -507,8 +549,14 @@ static struct sk_buff *ll_dequeue(struct hci_uart *hu)
 	return skb_dequeue(&ll->txq);
 }
 
+<<<<<<< HEAD
 static struct hci_uart_proto llp = {
 	.id		= HCI_UART_LL,
+=======
+static const struct hci_uart_proto llp = {
+	.id		= HCI_UART_LL,
+	.name		= "LL",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= ll_open,
 	.close		= ll_close,
 	.recv		= ll_recv,
@@ -519,6 +567,7 @@ static struct hci_uart_proto llp = {
 
 int __init ll_init(void)
 {
+<<<<<<< HEAD
 	int err = hci_uart_register_proto(&llp);
 
 	if (!err)
@@ -527,6 +576,9 @@ int __init ll_init(void)
 		BT_ERR("HCILL protocol registration failed");
 
 	return err;
+=======
+	return hci_uart_register_proto(&llp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int __exit ll_deinit(void)

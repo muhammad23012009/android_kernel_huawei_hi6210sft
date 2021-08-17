@@ -62,7 +62,11 @@ int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
 	struct spi_transfer t = {
 		.tx_buf		= data,
 		.len		= size + 1,
+<<<<<<< HEAD
 		.cs_change	= sigma_delta->bus_locked,
+=======
+		.cs_change	= sigma_delta->keep_cs_asserted,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 	struct spi_message m;
 	int ret;
@@ -121,6 +125,10 @@ static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
 	if (sigma_delta->info->has_registers) {
 		data[0] = reg << sigma_delta->info->addr_shift;
 		data[0] |= sigma_delta->info->read_mask;
+<<<<<<< HEAD
+=======
+		data[0] |= sigma_delta->comm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spi_message_add_tail(&t[0], &m);
 	}
 	spi_message_add_tail(&t[1], &m);
@@ -177,6 +185,37 @@ out:
 }
 EXPORT_SYMBOL_GPL(ad_sd_read_reg);
 
+<<<<<<< HEAD
+=======
+/**
+ * ad_sd_reset() - Reset the serial interface
+ *
+ * @sigma_delta: The sigma delta device
+ * @reset_length: Number of SCLKs with DIN = 1
+ *
+ * Returns 0 on success, an error code otherwise.
+ **/
+int ad_sd_reset(struct ad_sigma_delta *sigma_delta,
+	unsigned int reset_length)
+{
+	uint8_t *buf;
+	unsigned int size;
+	int ret;
+
+	size = DIV_ROUND_UP(reset_length, 8);
+	buf = kcalloc(size, sizeof(*buf), GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+	memset(buf, 0xff, size);
+	ret = spi_write(sigma_delta->spi, buf, size);
+	kfree(buf);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(ad_sd_reset);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
 	unsigned int mode, unsigned int channel)
 {
@@ -188,7 +227,12 @@ static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
 
 	spi_bus_lock(sigma_delta->spi->master);
 	sigma_delta->bus_locked = true;
+<<<<<<< HEAD
 	INIT_COMPLETION(sigma_delta->completion);
+=======
+	sigma_delta->keep_cs_asserted = true;
+	reinit_completion(&sigma_delta->completion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = ad_sigma_delta_set_mode(sigma_delta, mode);
 	if (ret < 0)
@@ -205,9 +249,16 @@ static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
 		ret = 0;
 	}
 out:
+<<<<<<< HEAD
 	sigma_delta->bus_locked = false;
 	spi_bus_unlock(sigma_delta->spi->master);
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+=======
+	sigma_delta->keep_cs_asserted = false;
+	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+	sigma_delta->bus_locked = false;
+	spi_bus_unlock(sigma_delta->spi->master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -259,7 +310,12 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
 
 	spi_bus_lock(sigma_delta->spi->master);
 	sigma_delta->bus_locked = true;
+<<<<<<< HEAD
 	INIT_COMPLETION(sigma_delta->completion);
+=======
+	sigma_delta->keep_cs_asserted = true;
+	reinit_completion(&sigma_delta->completion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_SINGLE);
 
@@ -268,9 +324,12 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
 	ret = wait_for_completion_interruptible_timeout(
 			&sigma_delta->completion, HZ);
 
+<<<<<<< HEAD
 	sigma_delta->bus_locked = false;
 	spi_bus_unlock(sigma_delta->spi->master);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret == 0)
 		ret = -EIO;
 	if (ret < 0)
@@ -286,7 +345,14 @@ out:
 		sigma_delta->irq_dis = true;
 	}
 
+<<<<<<< HEAD
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+=======
+	sigma_delta->keep_cs_asserted = false;
+	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+	sigma_delta->bus_locked = false;
+	spi_bus_unlock(sigma_delta->spi->master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&indio_dev->mlock);
 
 	if (ret)
@@ -323,6 +389,11 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
 
 	spi_bus_lock(sigma_delta->spi->master);
 	sigma_delta->bus_locked = true;
+<<<<<<< HEAD
+=======
+	sigma_delta->keep_cs_asserted = true;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_CONTINUOUS);
 	if (ret)
 		goto err_unlock;
@@ -343,7 +414,11 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
 {
 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
 
+<<<<<<< HEAD
 	INIT_COMPLETION(sigma_delta->completion);
+=======
+	reinit_completion(&sigma_delta->completion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wait_for_completion_timeout(&sigma_delta->completion, HZ);
 
 	if (!sigma_delta->irq_dis) {
@@ -351,6 +426,10 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
 		sigma_delta->irq_dis = true;
 	}
 
+<<<<<<< HEAD
+=======
+	sigma_delta->keep_cs_asserted = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
 
 	sigma_delta->bus_locked = false;
@@ -368,10 +447,13 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
 
 	memset(data, 0x00, 16);
 
+<<<<<<< HEAD
 	/* Guaranteed to be aligned with 8 byte boundary */
 	if (indio_dev->scan_timestamp)
 		((s64 *)data)[1] = pf->timestamp;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg_size = indio_dev->channels[0].scan_type.realbits +
 			indio_dev->channels[0].scan_type.shift;
 	reg_size = DIV_ROUND_UP(reg_size, 8);
@@ -391,7 +473,11 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
 		break;
 	}
 
+<<<<<<< HEAD
 	iio_push_to_buffers(indio_dev, (uint8_t *)data);
+=======
+	iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iio_trigger_notify_done(indio_dev->trig);
 	sigma_delta->irq_dis = false;
@@ -401,7 +487,10 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
 }
 
 static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
+<<<<<<< HEAD
 	.preenable = &iio_sw_buffer_preenable,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.postenable = &ad_sd_buffer_postenable,
 	.predisable = &iio_triggered_buffer_predisable,
 	.postdisable = &ad_sd_buffer_postdisable,
@@ -415,7 +504,11 @@ static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
 	complete(&sigma_delta->completion);
 	disable_irq_nosync(irq);
 	sigma_delta->irq_dis = true;
+<<<<<<< HEAD
 	iio_trigger_poll(sigma_delta->trig, iio_get_time_ns());
+=======
+	iio_trigger_poll(sigma_delta->trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_HANDLED;
 }

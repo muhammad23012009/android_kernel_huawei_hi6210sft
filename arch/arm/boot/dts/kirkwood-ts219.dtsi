@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 /include/ "kirkwood.dtsi"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 / {
 	model = "QNAP TS219 family";
 	compatible = "qnap,ts219", "marvell,kirkwood";
@@ -11,6 +14,10 @@
 
 	chosen {
 		bootargs = "console=ttyS0,115200n8";
+<<<<<<< HEAD
+=======
+		stdout-path = &uart0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	ocp@f1000000 {
@@ -24,6 +31,7 @@
 			};
 		};
 		serial@12000 {
+<<<<<<< HEAD
 			clock-frequency = <200000000>;
 			status = "okay";
 		};
@@ -31,13 +39,29 @@
 			clock-frequency = <200000000>;
 			status = "okay";
 		};
+=======
+			status = "okay";
+		};
+		serial@12100 {
+			status = "okay";
+		};
+		poweroff@12100 {
+			compatible = "qnap,power-off";
+			reg = <0x12100 0x100>;
+			clocks = <&gate_clk 7>;
+		};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spi@10600 {
 			status = "okay";
 
 			m25p128@0 {
 				#address-cells = <1>;
 				#size-cells = <1>;
+<<<<<<< HEAD
 				compatible = "m25p128";
+=======
+				compatible = "m25p128", "jedec,spi-nor";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				reg = <0>;
 				spi-max-frequency = <20000000>;
 				mode = <0>;
@@ -71,8 +95,39 @@
 			};
 		};
 		sata@80000 {
+<<<<<<< HEAD
+=======
+			pinctrl-0 = <&pmx_sata0 &pmx_sata1>;
+			pinctrl-names = "default";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "okay";
 			nr-ports = <2>;
 		};
 	};
 };
+<<<<<<< HEAD
+=======
+
+&mdio {
+	status = "okay";
+
+	ethphy0: ethernet-phy@X {
+                /* overwrite reg property in board file */
+	};
+};
+
+&eth0 {
+	status = "okay";
+	ethernet0-port@0 {
+		phy-handle = <&ethphy0>;
+	};
+};
+
+&pciec {
+        status = "okay";
+};
+
+&pcie0 {
+	status = "okay";
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -39,7 +39,11 @@
 
 enum cvmx_ipd_mode {
    CVMX_IPD_OPC_MODE_STT = 0LL,	  /* All blocks DRAM, not cached in L2 */
+<<<<<<< HEAD
    CVMX_IPD_OPC_MODE_STF = 1LL,	  /* All bloccks into  L2 */
+=======
+   CVMX_IPD_OPC_MODE_STF = 1LL,	  /* All blocks into  L2 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
    CVMX_IPD_OPC_MODE_STF1_STT = 2LL,   /* 1st block L2, rest DRAM */
    CVMX_IPD_OPC_MODE_STF2_STT = 3LL    /* 1st, 2nd blocks L2, rest DRAM */
 };

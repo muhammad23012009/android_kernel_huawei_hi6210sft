@@ -25,6 +25,7 @@
 #include <linux/atomic.h>
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_KGDB
 int kgdb_early_setup;
 #endif
@@ -66,6 +67,9 @@ void free_irqno(unsigned int irq)
 	clear_bit(irq, irq_map);
 	smp_mb__after_clear_bit();
 }
+=======
+void *irq_stack[NR_CPUS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * 'what should we do if we get a hw irq event on an illegal vector'.
@@ -73,7 +77,10 @@ void free_irqno(unsigned int irq)
  */
 void ack_bad_irq(unsigned int irq)
 {
+<<<<<<< HEAD
 	smtc_im_ack_irq(irq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk("unexpected IRQ # %d\n", irq);
 }
 
@@ -93,15 +100,20 @@ asmlinkage void spurious_interrupt(void)
 void __init init_IRQ(void)
 {
 	int i;
+<<<<<<< HEAD
 
 #ifdef CONFIG_KGDB
 	if (kgdb_early_setup)
 		return;
 #endif
+=======
+	unsigned int order = get_order(IRQ_STACK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < NR_IRQS; i++)
 		irq_set_noprobe(i);
 
+<<<<<<< HEAD
 	arch_init_irq();
 
 #ifdef CONFIG_KGDB
@@ -111,6 +123,23 @@ void __init init_IRQ(void)
 }
 
 #ifdef DEBUG_STACKOVERFLOW
+=======
+	if (cpu_has_veic)
+		clear_c0_status(ST0_IM);
+
+	arch_init_irq();
+
+	for_each_possible_cpu(i) {
+		void *s = (void *)__get_free_pages(GFP_KERNEL, order);
+
+		irq_stack[i] = s;
+		pr_debug("CPU%d IRQ stack at 0x%p - 0x%p\n", i,
+			irq_stack[i], irq_stack[i] + IRQ_STACK_SIZE);
+	}
+}
+
+#ifdef CONFIG_DEBUG_STACKOVERFLOW
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void check_stack_overflow(void)
 {
 	unsigned long sp;
@@ -142,6 +171,7 @@ void __irq_entry do_IRQ(unsigned int irq)
 {
 	irq_enter();
 	check_stack_overflow();
+<<<<<<< HEAD
 	if (!smtc_handle_on_other_cpu(irq))
 		generic_handle_irq(irq);
 	irq_exit();
@@ -157,8 +187,13 @@ void __irq_entry do_IRQ_no_affinity(unsigned int irq)
 {
 	irq_enter();
 	smtc_im_backstop(irq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	generic_handle_irq(irq);
 	irq_exit();
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_MIPS_MT_SMTC_IRQAFF */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -13,6 +13,10 @@
  *  published by the Free Software Foundation.
  */
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/machine.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/syscore_ops.h>
@@ -25,6 +29,10 @@
 #include <linux/mtd/partitions.h>
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pwm_backlight.h>
 #include <linux/smc91x.h>
 #include <linux/i2c/pxa-i2c.h>
@@ -44,7 +52,11 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/mainstone.h>
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
@@ -122,6 +134,7 @@ static unsigned long mainstone_pin_config[] = {
 	GPIO1_GPIO | WAKEUP_ON_EDGE_BOTH,
 };
 
+<<<<<<< HEAD
 static unsigned long mainstone_irq_enabled;
 
 static void mainstone_mask_irq(struct irq_data *d)
@@ -208,6 +221,8 @@ device_initcall(mainstone_irq_device_init);
 #endif
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct resource smc91x_resources[] = {
 	[0] = {
 		.start	= (MST_ETH_PHYS + 0x300),
@@ -333,11 +348,23 @@ static struct platform_device mst_flash_device[2] = {
 };
 
 #if defined(CONFIG_FB_PXA) || defined(CONFIG_FB_PXA_MODULE)
+<<<<<<< HEAD
 static struct platform_pwm_backlight_data mainstone_backlight_data = {
 	.pwm_id		= 0,
 	.max_brightness	= 1023,
 	.dft_brightness	= 1023,
 	.pwm_period_ns	= 78770,
+=======
+static struct pwm_lookup mainstone_pwm_lookup[] = {
+	PWM_LOOKUP("pxa27x-pwm.0", 0, "pwm-backlight.0", NULL, 78770,
+		   PWM_POLARITY_NORMAL),
+};
+
+static struct platform_pwm_backlight_data mainstone_backlight_data = {
+	.max_brightness	= 1023,
+	.dft_brightness	= 1023,
+	.enable_gpio	= -1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device mainstone_backlight_device = {
@@ -350,9 +377,22 @@ static struct platform_device mainstone_backlight_device = {
 
 static void __init mainstone_backlight_register(void)
 {
+<<<<<<< HEAD
 	int ret = platform_device_register(&mainstone_backlight_device);
 	if (ret)
 		printk(KERN_ERR "mainstone: failed to register backlight device: %d\n", ret);
+=======
+	int ret;
+
+	pwm_add_table(mainstone_pwm_lookup, ARRAY_SIZE(mainstone_pwm_lookup));
+
+	ret = platform_device_register(&mainstone_backlight_device);
+	if (ret) {
+		printk(KERN_ERR "mainstone: failed to register backlight device: %d\n", ret);
+		pwm_remove_table(mainstone_pwm_lookup,
+				 ARRAY_SIZE(mainstone_pwm_lookup));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else
 #define mainstone_backlight_register()	do { } while (0)
@@ -400,7 +440,11 @@ static int mainstone_mci_init(struct device *dev, irq_handler_t mstone_detect_in
 	 */
 	MST_MSCWR1 &= ~MST_MSCWR1_MS_SEL;
 
+<<<<<<< HEAD
 	err = request_irq(MAINSTONE_MMC_IRQ, mstone_detect_int, IRQF_DISABLED,
+=======
+	err = request_irq(MAINSTONE_MMC_IRQ, mstone_detect_int, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     "MMC card detect", data);
 	if (err)
 		printk(KERN_ERR "mainstone_mci_init: MMC/SD: can't request MMC card detect IRQ\n");
@@ -408,7 +452,11 @@ static int mainstone_mci_init(struct device *dev, irq_handler_t mstone_detect_in
 	return err;
 }
 
+<<<<<<< HEAD
 static void mainstone_mci_setpower(struct device *dev, unsigned int vdd)
+=======
+static int mainstone_mci_setpower(struct device *dev, unsigned int vdd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pxamci_platform_data* p_d = dev->platform_data;
 
@@ -420,6 +468,10 @@ static void mainstone_mci_setpower(struct device *dev, unsigned int vdd)
 		printk(KERN_DEBUG "%s: off\n", __func__);
 		MST_MSCWR1 &= ~MST_MSCWR1_MMC_ON;
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void mainstone_mci_exit(struct device *dev, void *data)
@@ -485,11 +537,43 @@ static struct platform_device mst_gpio_keys_device = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct resource mst_cplds_resources[] = {
+	[0] = {
+		.start	= MST_FPGA_PHYS + 0xc0,
+		.end	= MST_FPGA_PHYS + 0xe0 - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	[1] = {
+		.start	= PXA_GPIO_TO_IRQ(0),
+		.end	= PXA_GPIO_TO_IRQ(0),
+		.flags	= IORESOURCE_IRQ | IORESOURCE_IRQ_LOWEDGE,
+	},
+	[2] = {
+		.start	= MAINSTONE_IRQ(0),
+		.end	= MAINSTONE_IRQ(15),
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device mst_cplds_device = {
+	.name		= "pxa_cplds_irqs",
+	.id		= -1,
+	.resource	= &mst_cplds_resources[0],
+	.num_resources	= 3,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device *platform_devices[] __initdata = {
 	&smc91x_device,
 	&mst_flash_device[0],
 	&mst_flash_device[1],
 	&mst_gpio_keys_device,
+<<<<<<< HEAD
+=======
+	&mst_cplds_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct pxaohci_platform_data mainstone_ohci_platform_data = {
@@ -498,7 +582,11 @@ static struct pxaohci_platform_data mainstone_ohci_platform_data = {
 };
 
 #if defined(CONFIG_KEYBOARD_PXA27x) || defined(CONFIG_KEYBOARD_PXA27x_MODULE)
+<<<<<<< HEAD
 static unsigned int mainstone_matrix_keys[] = {
+=======
+static const unsigned int mainstone_matrix_keys[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	KEY(0, 0, KEY_A), KEY(1, 0, KEY_B), KEY(2, 0, KEY_C),
 	KEY(3, 0, KEY_D), KEY(4, 0, KEY_E), KEY(5, 0, KEY_F),
 	KEY(0, 1, KEY_G), KEY(1, 1, KEY_H), KEY(2, 1, KEY_I),
@@ -527,11 +615,23 @@ static unsigned int mainstone_matrix_keys[] = {
 	KEY(4, 6, KEY_SELECT),
 };
 
+<<<<<<< HEAD
 struct pxa27x_keypad_platform_data mainstone_keypad_info = {
 	.matrix_key_rows	= 6,
 	.matrix_key_cols	= 7,
 	.matrix_key_map		= mainstone_matrix_keys,
 	.matrix_key_map_size	= ARRAY_SIZE(mainstone_matrix_keys),
+=======
+static struct matrix_keymap_data mainstone_matrix_keymap_data = {
+	.keymap			= mainstone_matrix_keys,
+	.keymap_size		= ARRAY_SIZE(mainstone_matrix_keys),
+};
+
+struct pxa27x_keypad_platform_data mainstone_keypad_info = {
+	.matrix_key_rows	= 6,
+	.matrix_key_cols	= 7,
+	.matrix_keymap_data	= &mainstone_matrix_keymap_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.enable_rotary0		= 1,
 	.rotary0_up_key		= KEY_UP,
@@ -712,7 +812,11 @@ MACHINE_START(MAINSTONE, "Intel HCDDBBVA0 Development Platform (aka Mainstone)")
 	.atag_offset	= 0x100,	/* BLOB boot parameter setting */
 	.map_io		= mainstone_map_io,
 	.nr_irqs	= MAINSTONE_NR_IRQS,
+<<<<<<< HEAD
 	.init_irq	= mainstone_init_irq,
+=======
+	.init_irq	= pxa27x_init_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.handle_irq	= pxa27x_handle_irq,
 	.init_time	= pxa_timer_init,
 	.init_machine	= mainstone_init,

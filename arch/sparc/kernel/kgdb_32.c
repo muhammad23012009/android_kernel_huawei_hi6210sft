@@ -12,7 +12,12 @@
 #include <asm/irq.h>
 #include <asm/cacheflush.h>
 
+<<<<<<< HEAD
 extern unsigned long trapbase;
+=======
+#include "kernel.h"
+#include "entry.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void pt_regs_to_gdb_regs(unsigned long *gdb_regs, struct pt_regs *regs)
 {
@@ -133,21 +138,33 @@ int kgdb_arch_handle_exception(int e_vector, int signo, int err_code,
 	return -1;
 }
 
+<<<<<<< HEAD
 extern void do_hw_interrupt(struct pt_regs *regs, unsigned long type);
 
 asmlinkage void kgdb_trap(struct pt_regs *regs)
+=======
+asmlinkage void kgdb_trap(unsigned long trap_level, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 
 	if (user_mode(regs)) {
+<<<<<<< HEAD
 		do_hw_interrupt(regs, 0xfd);
+=======
+		do_hw_interrupt(regs, trap_level);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	flushw_all();
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	kgdb_handle_exception(0x172, SIGTRAP, 0, regs);
+=======
+	kgdb_handle_exception(trap_level, SIGTRAP, 0, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_restore(flags);
 }
 

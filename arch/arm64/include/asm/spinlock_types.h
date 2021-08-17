@@ -20,11 +20,26 @@
 # error "please don't include this file directly"
 #endif
 
+<<<<<<< HEAD
 #define TICKET_SHIFT	16
 
 typedef struct {
 	u16 owner;
 	u16 next;
+=======
+#include <linux/types.h>
+
+#define TICKET_SHIFT	16
+
+typedef struct {
+#ifdef __AARCH64EB__
+	u16 next;
+	u16 owner;
+#else
+	u16 owner;
+	u16 next;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __aligned(4) arch_spinlock_t;
 
 #define __ARCH_SPIN_LOCK_UNLOCKED	{ 0 , 0 }

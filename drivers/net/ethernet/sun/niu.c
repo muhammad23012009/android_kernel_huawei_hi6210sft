@@ -59,7 +59,11 @@ static void writeq(u64 val, void __iomem *reg)
 }
 #endif
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(niu_pci_tbl) = {
+=======
+static const struct pci_device_id niu_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_SUN, 0xabcd)},
 	{}
 };
@@ -2584,7 +2588,10 @@ static int niu_determine_phy_disposition(struct niu *np)
 				break;
 			default:
 				return -EINVAL;
+<<<<<<< HEAD
 				break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			phy_addr_off = niu_atca_port_num[np->port];
 			break;
@@ -3342,8 +3349,12 @@ static int niu_rbr_add_page(struct niu *np, struct rx_ring_info *rp,
 
 	niu_hash_page(rp, page, addr);
 	if (rp->rbr_blocks_per_page > 1)
+<<<<<<< HEAD
 		atomic_add(rp->rbr_blocks_per_page - 1,
 			   &compound_head(page)->_count);
+=======
+		page_ref_add(page, rp->rbr_blocks_per_page - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < rp->rbr_blocks_per_page; i++) {
 		__le32 *rbr = &rp->rbr[start_index + i];
@@ -3444,7 +3455,11 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 
 		len = (val & RCR_ENTRY_L2_LEN) >>
 			RCR_ENTRY_L2_LEN_SHIFT;
+<<<<<<< HEAD
 		len -= ETH_FCS_LEN;
+=======
+		append_size = len + ETH_HLEN + ETH_FCS_LEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		addr = (val & RCR_ENTRY_PKT_BUF_ADDR) <<
 			RCR_ENTRY_PKT_BUF_ADDR_SHIFT;
@@ -3454,7 +3469,10 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 					 RCR_ENTRY_PKTBUFSZ_SHIFT];
 
 		off = addr & ~PAGE_MASK;
+<<<<<<< HEAD
 		append_size = rcr_size;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (num_rcr == 1) {
 			int ptype;
 
@@ -3467,7 +3485,11 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 			else
 				skb_checksum_none_assert(skb);
 		} else if (!(val & RCR_ENTRY_MULTI))
+<<<<<<< HEAD
 			append_size = len - skb->len;
+=======
+			append_size = append_size - skb->len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		niu_rx_skb_append(skb, page, off, append_size, rcr_size);
 		if ((page->index + rp->rbr_block_size) - rcr_size == addr) {
@@ -3493,10 +3515,19 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 
 	rh = (struct rx_pkt_hdr1 *) skb->data;
 	if (np->dev->features & NETIF_F_RXHASH)
+<<<<<<< HEAD
 		skb->rxhash = ((u32)rh->hashval2_0 << 24 |
 			       (u32)rh->hashval2_1 << 16 |
 			       (u32)rh->hashval1_1 << 8 |
 			       (u32)rh->hashval1_2 << 0);
+=======
+		skb_set_hash(skb,
+			     ((u32)rh->hashval2_0 << 24 |
+			      (u32)rh->hashval2_1 << 16 |
+			      (u32)rh->hashval1_1 << 8 |
+			      (u32)rh->hashval1_2 << 0),
+			     PKT_HASH_TYPE_L3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_pull(skb, sizeof(*rh));
 
 	rp->rx_packets++;
@@ -3949,8 +3980,11 @@ static void niu_xmac_interrupt(struct niu *np)
 		mp->rx_mcasts += RXMAC_MC_FRM_CNT_COUNT;
 	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
 		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
+<<<<<<< HEAD
 	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
 		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (val & XRXMAC_STATUS_RXHIST1_CNT_EXP)
 		mp->rx_hist_cnt1 += RXMAC_HIST_CNT1_COUNT;
 	if (val & XRXMAC_STATUS_RXHIST2_CNT_EXP)
@@ -6431,7 +6465,11 @@ static int niu_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 static void niu_netif_stop(struct niu *np)
 {
+<<<<<<< HEAD
 	np->dev->trans_start = jiffies;	/* prevent tx timeout */
+=======
+	netif_trans_update(np->dev);	/* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	niu_disable_napi(np);
 
@@ -6650,6 +6688,7 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_BUSY;
 	}
 
+<<<<<<< HEAD
 	if (skb->len < ETH_ZLEN) {
 		unsigned int pad_bytes = ETH_ZLEN - skb->len;
 
@@ -6657,16 +6696,25 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 			goto out;
 		skb_put(skb, pad_bytes);
 	}
+=======
+	if (eth_skb_pad(skb))
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len = sizeof(struct tx_pkt_hdr) + 15;
 	if (skb_headroom(skb) < len) {
 		struct sk_buff *skb_new;
 
 		skb_new = skb_realloc_headroom(skb, len);
+<<<<<<< HEAD
 		if (!skb_new) {
 			rp->tx_errors++;
 			goto out_drop;
 		}
+=======
+		if (!skb_new)
+			goto out_drop;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree_skb(skb);
 		skb = skb_new;
 	} else
@@ -6994,10 +7042,17 @@ static int niu_class_to_ethflow(u64 class, int *flow_type)
 		*flow_type = IP_USER_FLOW;
 		break;
 	default:
+<<<<<<< HEAD
 		return 0;
 	}
 
 	return 1;
+=======
+		return -EINVAL;
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int niu_ethflow_to_class(int flow_type, u64 *class)
@@ -7203,11 +7258,17 @@ static int niu_get_ethtool_tcam_entry(struct niu *np,
 	class = (tp->key[0] & TCAM_V4KEY0_CLASS_CODE) >>
 		TCAM_V4KEY0_CLASS_CODE_SHIFT;
 	ret = niu_class_to_ethflow(class, &fsp->flow_type);
+<<<<<<< HEAD
 
 	if (ret < 0) {
 		netdev_info(np->dev, "niu%d: niu_class_to_ethflow failed\n",
 			    parent->index);
 		ret = -EINVAL;
+=======
+	if (ret < 0) {
+		netdev_info(np->dev, "niu%d: niu_class_to_ethflow failed\n",
+			    parent->index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -8131,6 +8192,11 @@ static int niu_pci_vpd_scan_props(struct niu *np, u32 start, u32 end)
 		start += 3;
 
 		prop_len = niu_pci_eeprom_read(np, start + 4);
+<<<<<<< HEAD
+=======
+		if (prop_len < 0)
+			return prop_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = niu_pci_vpd_get_propname(np, start + 5, namebuf, 64);
 		if (err < 0)
 			return err;
@@ -8175,8 +8241,17 @@ static int niu_pci_vpd_scan_props(struct niu *np, u32 start, u32 end)
 			netif_printk(np, probe, KERN_DEBUG, np->dev,
 				     "VPD_SCAN: Reading in property [%s] len[%d]\n",
 				     namebuf, prop_len);
+<<<<<<< HEAD
 			for (i = 0; i < prop_len; i++)
 				*prop_buf++ = niu_pci_eeprom_read(np, off + i);
+=======
+			for (i = 0; i < prop_len; i++) {
+				err =  niu_pci_eeprom_read(np, off + i);
+				if (err < 0)
+					return err;
+				*prop_buf++ = err;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		start += len;
@@ -8186,14 +8261,22 @@ static int niu_pci_vpd_scan_props(struct niu *np, u32 start, u32 end)
 }
 
 /* ESPC_PIO_EN_ENABLE must be set */
+<<<<<<< HEAD
 static void niu_pci_vpd_fetch(struct niu *np, u32 start)
+=======
+static int niu_pci_vpd_fetch(struct niu *np, u32 start)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 offset;
 	int err;
 
 	err = niu_pci_eeprom_read16_swp(np, start + 1);
 	if (err < 0)
+<<<<<<< HEAD
 		return;
+=======
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	offset = err + 3;
 
@@ -8202,12 +8285,23 @@ static void niu_pci_vpd_fetch(struct niu *np, u32 start)
 		u32 end;
 
 		err = niu_pci_eeprom_read(np, here);
+<<<<<<< HEAD
 		if (err != 0x90)
 			return;
 
 		err = niu_pci_eeprom_read16_swp(np, here + 1);
 		if (err < 0)
 			return;
+=======
+		if (err < 0)
+			return err;
+		if (err != 0x90)
+			return -EINVAL;
+
+		err = niu_pci_eeprom_read16_swp(np, here + 1);
+		if (err < 0)
+			return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		here = start + offset + 3;
 		end = start + offset + err;
@@ -8215,9 +8309,19 @@ static void niu_pci_vpd_fetch(struct niu *np, u32 start)
 		offset += err;
 
 		err = niu_pci_vpd_scan_props(np, here, end);
+<<<<<<< HEAD
 		if (err < 0 || err == 1)
 			return;
 	}
+=======
+		if (err < 0)
+			return err;
+		/* ret == 1 is not an error */
+		if (err == 1)
+			return 0;
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* ESPC_PIO_EN_ENABLE must be set */
@@ -8716,8 +8820,13 @@ static void niu_divide_channels(struct niu_parent *parent,
 			parent->txchan_per_port[i] = 1;
 	}
 	if (tot_rx < NIU_NUM_RXCHAN || tot_tx < NIU_NUM_TXCHAN) {
+<<<<<<< HEAD
 		pr_warning("niu%d: Driver bug, wasted channels, RX[%d] TX[%d]\n",
 			   parent->index, tot_rx, tot_tx);
+=======
+		pr_warn("niu%d: Driver bug, wasted channels, RX[%d] TX[%d]\n",
+			parent->index, tot_rx, tot_tx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -9039,7 +9148,11 @@ static void niu_try_msix(struct niu *np, u8 *ldg_num_map)
 	struct msix_entry msi_vec[NIU_NUM_LDG];
 	struct niu_parent *parent = np->parent;
 	struct pci_dev *pdev = np->pdev;
+<<<<<<< HEAD
 	int i, num_irqs, err;
+=======
+	int i, num_irqs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 first_ldg;
 
 	first_ldg = (NIU_NUM_LDG / parent->num_ports) * np->port;
@@ -9051,12 +9164,16 @@ static void niu_try_msix(struct niu *np, u8 *ldg_num_map)
 		    (np->port == 0 ? 3 : 1));
 	BUG_ON(num_irqs > (NIU_NUM_LDG / parent->num_ports));
 
+<<<<<<< HEAD
 retry:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < num_irqs; i++) {
 		msi_vec[i].vector = 0;
 		msi_vec[i].entry = i;
 	}
 
+<<<<<<< HEAD
 	err = pci_enable_msix(pdev, msi_vec, num_irqs);
 	if (err < 0) {
 		np->flags &= ~NIU_FLAGS_MSIX;
@@ -9066,6 +9183,13 @@ retry:
 		num_irqs = err;
 		goto retry;
 	}
+=======
+	num_irqs = pci_enable_msix_range(pdev, msi_vec, 1, num_irqs);
+	if (num_irqs < 0) {
+		np->flags &= ~NIU_FLAGS_MSIX;
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	np->flags |= NIU_FLAGS_MSIX;
 	for (i = 0; i < num_irqs; i++)
@@ -9315,8 +9439,16 @@ static int niu_get_invariants(struct niu *np)
 		offset = niu_pci_vpd_offset(np);
 		netif_printk(np, probe, KERN_DEBUG, np->dev,
 			     "%s() VPD offset [%08x]\n", __func__, offset);
+<<<<<<< HEAD
 		if (offset)
 			niu_pci_vpd_fetch(np, offset);
+=======
+		if (offset) {
+			err = niu_pci_vpd_fetch(np, offset);
+			if (err < 0)
+				return err;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nw64(ESPC_PIO_EN, 0);
 
 		if (np->flags & NIU_FLAGS_VPD_VALID) {
@@ -9360,7 +9492,11 @@ static ssize_t show_port_phy(struct device *dev,
 			     struct device_attribute *attr, char *buf)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 port_phy = p->port_phy;
 	char *orig_buf = buf;
 	int i;
@@ -9390,7 +9526,11 @@ static ssize_t show_plat_type(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char *type_str;
 
 	switch (p->plat_type) {
@@ -9419,7 +9559,11 @@ static ssize_t __show_chan_per_port(struct device *dev,
 				    int rx)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *orig_buf = buf;
 	u8 *arr;
 	int i;
@@ -9452,7 +9596,11 @@ static ssize_t show_num_ports(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return sprintf(buf, "%d\n", p->num_ports);
 }
@@ -9478,7 +9626,11 @@ static struct niu_parent *niu_new_parent(struct niu *np,
 	if (IS_ERR(plat_dev))
 		return NULL;
 
+<<<<<<< HEAD
 	for (i = 0; attr_name(niu_parent_attributes[i]); i++) {
+=======
+	for (i = 0; niu_parent_attributes[i].attr.name; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int err = device_create_file(&plat_dev->dev,
 					     &niu_parent_attributes[i]);
 		if (err)
@@ -9875,7 +10027,10 @@ err_out_free_res:
 
 err_out_disable_pdev:
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -9900,7 +10055,10 @@ static void niu_pci_remove_one(struct pci_dev *pdev)
 		free_netdev(dev);
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
+<<<<<<< HEAD
 		pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -10108,7 +10266,11 @@ static int niu_of_probe(struct platform_device *op)
 		goto err_out_iounmap;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, dev);
+=======
+	platform_set_drvdata(op, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	niu_device_announce(np);
 
@@ -10145,7 +10307,11 @@ err_out:
 
 static int niu_of_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct net_device *dev = dev_get_drvdata(&op->dev);
+=======
+	struct net_device *dev = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (dev) {
 		struct niu *np = netdev_priv(dev);
@@ -10175,7 +10341,10 @@ static int niu_of_remove(struct platform_device *op)
 		niu_put_parent(np);
 
 		free_netdev(dev);
+<<<<<<< HEAD
 		dev_set_drvdata(&op->dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -10192,7 +10361,10 @@ MODULE_DEVICE_TABLE(of, niu_match);
 static struct platform_driver niu_of_driver = {
 	.driver = {
 		.name = "niu",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = niu_match,
 	},
 	.probe		= niu_of_probe,

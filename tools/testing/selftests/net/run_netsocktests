@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/bin/bash
+=======
+#!/bin/sh
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 echo "--------------------"
 echo "running socket test"
@@ -6,7 +10,14 @@ echo "--------------------"
 ./socket
 if [ $? -ne 0 ]; then
 	echo "[FAIL]"
+<<<<<<< HEAD
 else
 	echo "[PASS]"
 fi
 
+=======
+	exit 1
+else
+	echo "[PASS]"
+fi
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

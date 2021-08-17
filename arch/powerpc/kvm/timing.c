@@ -110,7 +110,10 @@ void kvmppc_update_timing_stats(struct kvm_vcpu *vcpu)
 
 static const char *kvm_exit_names[__NUMBER_OF_KVM_EXIT_TYPES] = {
 	[MMIO_EXITS] =              "MMIO",
+<<<<<<< HEAD
 	[DCR_EXITS] =               "DCR",
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[SIGNAL_EXITS] =            "SIGNAL",
 	[ITLB_REAL_MISS_EXITS] =    "ITLBREAL",
 	[ITLB_VIRT_MISS_EXITS] =    "ITLBVIRT",

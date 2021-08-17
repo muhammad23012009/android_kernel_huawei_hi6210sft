@@ -16,17 +16,21 @@
 
 #define PCI_IRQ_NONE		0xffffffff
 
+<<<<<<< HEAD
 static inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Dynamic DMA mapping stuff.
  */
 #define PCI_DMA_BUS_IS_PHYS	(0)
 
 struct pci_dev;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 					enum pci_dma_burst_strategy *strat,
@@ -37,6 +41,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 
 #ifndef CONFIG_LEON_PCI

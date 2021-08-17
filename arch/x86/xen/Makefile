@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+OBJECT_FILES_NON_STANDARD_xen-asm_$(BITS).o := y
+OBJECT_FILES_NON_STANDARD_xen-pvh.o := y
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ifdef CONFIG_FUNCTION_TRACER
 # Do not profile debug and lowlevel utilities
 CFLAGS_REMOVE_spinlock.o = -pg
@@ -13,12 +19,22 @@ CFLAGS_mmu.o			:= $(nostackp)
 obj-y		:= enlighten.o setup.o multicalls.o mmu.o irq.o \
 			time.o xen-asm.o xen-asm_$(BITS).o \
 			grant-table.o suspend.o platform-pci-unplug.o \
+<<<<<<< HEAD
 			p2m.o
+=======
+			p2m.o apic.o pmu.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_EVENT_TRACING) += trace.o
 
 obj-$(CONFIG_SMP)		+= smp.o
 obj-$(CONFIG_PARAVIRT_SPINLOCKS)+= spinlock.o
 obj-$(CONFIG_XEN_DEBUG_FS)	+= debugfs.o
+<<<<<<< HEAD
 obj-$(CONFIG_XEN_DOM0)		+= apic.o vga.o
 obj-$(CONFIG_SWIOTLB_XEN)	+= pci-swiotlb-xen.o
+=======
+obj-$(CONFIG_XEN_DOM0)		+= vga.o
+obj-$(CONFIG_SWIOTLB_XEN)	+= pci-swiotlb-xen.o
+obj-$(CONFIG_XEN_EFI)		+= efi.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

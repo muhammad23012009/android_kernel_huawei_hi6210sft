@@ -59,7 +59,10 @@ static struct cpuidle_driver cpuidle_driver = {
 			.exit_latency = 1,
 			.target_residency = 1 * 2,
 			.power_usage = 3,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.enter = cpuidle_sleep_enter,
 			.name = "C1",
 			.desc = "SuperH Sleep Mode",
@@ -68,7 +71,10 @@ static struct cpuidle_driver cpuidle_driver = {
 			.exit_latency = 100,
 			.target_residency = 1 * 2,
 			.power_usage = 1,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.enter = cpuidle_sleep_enter,
 			.name = "C2",
 			.desc = "SuperH Sleep Mode [SF]",
@@ -78,7 +84,10 @@ static struct cpuidle_driver cpuidle_driver = {
 			.exit_latency = 2300,
 			.target_residency = 1 * 2,
 			.power_usage = 1,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.enter = cpuidle_sleep_enter,
 			.name = "C3",
 			.desc = "SuperH Mobile Standby Mode [SF]",
@@ -91,13 +100,20 @@ static struct cpuidle_driver cpuidle_driver = {
 
 int __init sh_mobile_setup_cpuidle(void)
 {
+<<<<<<< HEAD
 	int ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sh_mobile_sleep_supported & SUSP_SH_SF)
 		cpuidle_driver.states[1].disabled = false;
 
 	if (sh_mobile_sleep_supported & SUSP_SH_STANDBY)
 		cpuidle_driver.states[2].disabled = false;
 
+<<<<<<< HEAD
 	return cpuidle_register(&cpuidle_driver);
+=======
+	return cpuidle_register(&cpuidle_driver, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

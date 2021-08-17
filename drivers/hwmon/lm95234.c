@@ -1,7 +1,11 @@
 /*
  * Driver for Texas Instruments / National Semiconductor LM95234
  *
+<<<<<<< HEAD
  * Copyright (c) 2013 Guenter Roeck <linux@roeck-us.net>
+=======
+ * Copyright (c) 2013, 2014 Guenter Roeck <linux@roeck-us.net>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Derived from lm95241.c
  * Copyright (C) 2008, 2010 Davide Rizzo <elpa.rizzo@gmail.com>
@@ -30,7 +34,14 @@
 
 #define DRVNAME "lm95234"
 
+<<<<<<< HEAD
 static const unsigned short normal_i2c[] = { 0x18, 0x4d, 0x4e, I2C_CLIENT_END };
+=======
+enum chips { lm95233, lm95234 };
+
+static const unsigned short normal_i2c[] = {
+	0x18, 0x2a, 0x2b, 0x4d, 0x4e, I2C_CLIENT_END };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* LM95234 registers */
 #define LM95234_REG_MAN_ID		0xFE
@@ -53,11 +64,20 @@ static const unsigned short normal_i2c[] = { 0x18, 0x4d, 0x4e, I2C_CLIENT_END };
 #define LM95234_REG_TCRIT_HYST		0x5a
 
 #define NATSEMI_MAN_ID			0x01
+<<<<<<< HEAD
+=======
+#define LM95233_CHIP_ID			0x89
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define LM95234_CHIP_ID			0x79
 
 /* Client data (each client gets its own) */
 struct lm95234_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+	const struct attribute_group *groups[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex update_lock;
 	unsigned long last_updated, interval;	/* in jiffies */
 	bool valid;		/* false until following fields are valid */
@@ -114,9 +134,15 @@ static u16 update_intervals[] = { 143, 364, 1000, 2500 };
 
 /* Fill value cache. Must be called with update lock held. */
 
+<<<<<<< HEAD
 static int lm95234_fill_cache(struct i2c_client *client)
 {
 	struct lm95234_data *data = i2c_get_clientdata(client);
+=======
+static int lm95234_fill_cache(struct lm95234_data *data,
+			      struct i2c_client *client)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, ret;
 
 	ret = i2c_smbus_read_byte_data(client, LM95234_REG_CONVRATE);
@@ -157,9 +183,15 @@ static int lm95234_fill_cache(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lm95234_update_device(struct i2c_client *client,
 				 struct lm95234_data *data)
 {
+=======
+static int lm95234_update_device(struct lm95234_data *data)
+{
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	mutex_lock(&data->update_lock);
@@ -169,7 +201,11 @@ static int lm95234_update_device(struct i2c_client *client,
 		int i;
 
 		if (!data->valid) {
+<<<<<<< HEAD
 			ret = lm95234_fill_cache(client);
+=======
+			ret = lm95234_fill_cache(data, client);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ret < 0)
 				goto abort;
 		}
@@ -209,10 +245,16 @@ abort:
 static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
 			 char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -224,10 +266,16 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
 static ssize_t show_alarm(struct device *dev,
 			  struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	u32 mask = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	u32 mask = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -238,10 +286,16 @@ static ssize_t show_alarm(struct device *dev,
 static ssize_t show_type(struct device *dev, struct device_attribute *attr,
 			 char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	u8 mask = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	u8 mask = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -252,11 +306,18 @@ static ssize_t show_type(struct device *dev, struct device_attribute *attr,
 static ssize_t set_type(struct device *dev, struct device_attribute *attr,
 			const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	unsigned long val;
 	u8 mask = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	unsigned long val;
+	u8 mask = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -274,7 +335,11 @@ static ssize_t set_type(struct device *dev, struct device_attribute *attr,
 	else
 		data->sensor_type &= ~mask;
 	data->valid = false;
+<<<<<<< HEAD
 	i2c_smbus_write_byte_data(client, LM95234_REG_REM_MODEL,
+=======
+	i2c_smbus_write_byte_data(data->client, LM95234_REG_REM_MODEL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  data->sensor_type);
 	mutex_unlock(&data->update_lock);
 
@@ -284,10 +349,16 @@ static ssize_t set_type(struct device *dev, struct device_attribute *attr,
 static ssize_t show_tcrit2(struct device *dev, struct device_attribute *attr,
 			   char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -298,11 +369,18 @@ static ssize_t show_tcrit2(struct device *dev, struct device_attribute *attr,
 static ssize_t set_tcrit2(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	long val;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -315,7 +393,11 @@ static ssize_t set_tcrit2(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&data->update_lock);
 	data->tcrit2[index] = val;
+<<<<<<< HEAD
 	i2c_smbus_write_byte_data(client, LM95234_REG_TCRIT2(index), val);
+=======
+	i2c_smbus_write_byte_data(data->client, LM95234_REG_TCRIT2(index), val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&data->update_lock);
 
 	return count;
@@ -324,10 +406,16 @@ static ssize_t set_tcrit2(struct device *dev, struct device_attribute *attr,
 static ssize_t show_tcrit2_hyst(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -340,8 +428,12 @@ static ssize_t show_tcrit2_hyst(struct device *dev,
 static ssize_t show_tcrit1(struct device *dev, struct device_attribute *attr,
 			   char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int index = to_sensor_dev_attr(attr)->index;
 
 	return sprintf(buf, "%u", data->tcrit1[index] * 1000);
@@ -350,11 +442,18 @@ static ssize_t show_tcrit1(struct device *dev, struct device_attribute *attr,
 static ssize_t set_tcrit1(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+	long val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -367,7 +466,11 @@ static ssize_t set_tcrit1(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&data->update_lock);
 	data->tcrit1[index] = val;
+<<<<<<< HEAD
 	i2c_smbus_write_byte_data(client, LM95234_REG_TCRIT1(index), val);
+=======
+	i2c_smbus_write_byte_data(data->client, LM95234_REG_TCRIT1(index), val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&data->update_lock);
 
 	return count;
@@ -376,10 +479,16 @@ static ssize_t set_tcrit1(struct device *dev, struct device_attribute *attr,
 static ssize_t show_tcrit1_hyst(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -393,11 +502,18 @@ static ssize_t set_tcrit1_hyst(struct device *dev,
 			       struct device_attribute *attr,
 			       const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+	long val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -411,7 +527,11 @@ static ssize_t set_tcrit1_hyst(struct device *dev,
 
 	mutex_lock(&data->update_lock);
 	data->thyst = val;
+<<<<<<< HEAD
 	i2c_smbus_write_byte_data(client, LM95234_REG_TCRIT_HYST, val);
+=======
+	i2c_smbus_write_byte_data(data->client, LM95234_REG_TCRIT_HYST, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&data->update_lock);
 
 	return count;
@@ -420,10 +540,16 @@ static ssize_t set_tcrit1_hyst(struct device *dev,
 static ssize_t show_offset(struct device *dev, struct device_attribute *attr,
 			   char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -434,11 +560,18 @@ static ssize_t show_offset(struct device *dev, struct device_attribute *attr,
 static ssize_t set_offset(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int index = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int index = to_sensor_dev_attr(attr)->index;
+	int ret = lm95234_update_device(data);
+	long val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -452,7 +585,11 @@ static ssize_t set_offset(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&data->update_lock);
 	data->toffset[index] = val;
+<<<<<<< HEAD
 	i2c_smbus_write_byte_data(client, LM95234_REG_OFFSET(index), val);
+=======
+	i2c_smbus_write_byte_data(data->client, LM95234_REG_OFFSET(index), val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&data->update_lock);
 
 	return count;
@@ -461,9 +598,14 @@ static ssize_t set_offset(struct device *dev, struct device_attribute *attr,
 static ssize_t show_interval(struct device *dev, struct device_attribute *attr,
 			     char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int ret = lm95234_update_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -475,11 +617,18 @@ static ssize_t show_interval(struct device *dev, struct device_attribute *attr,
 static ssize_t set_interval(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm95234_data *data = i2c_get_clientdata(client);
 	unsigned long val;
 	u8 regval;
 	int ret = lm95234_update_device(client, data);
+=======
+	struct lm95234_data *data = dev_get_drvdata(dev);
+	int ret = lm95234_update_device(data);
+	unsigned long val;
+	u8 regval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret)
 		return ret;
@@ -495,7 +644,11 @@ static ssize_t set_interval(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&data->update_lock);
 	data->interval = msecs_to_jiffies(update_intervals[regval]);
+<<<<<<< HEAD
 	i2c_smbus_write_byte_data(client, LM95234_REG_CONVRATE, regval);
+=======
+	i2c_smbus_write_byte_data(data->client, LM95234_REG_CONVRATE, regval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&data->update_lock);
 
 	return count;
@@ -579,6 +732,7 @@ static SENSOR_DEVICE_ATTR(temp5_offset, S_IWUSR | S_IRUGO, show_offset,
 static DEVICE_ATTR(update_interval, S_IWUSR | S_IRUGO, show_interval,
 		   set_interval);
 
+<<<<<<< HEAD
 static struct attribute *lm95234_attributes[] = {
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_temp2_input.dev_attr.attr,
@@ -608,6 +762,25 @@ static struct attribute *lm95234_attributes[] = {
 	&sensor_dev_attr_temp3_max_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp4_max_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp5_max_alarm.dev_attr.attr,
+=======
+static struct attribute *lm95234_common_attrs[] = {
+	&sensor_dev_attr_temp1_input.dev_attr.attr,
+	&sensor_dev_attr_temp2_input.dev_attr.attr,
+	&sensor_dev_attr_temp3_input.dev_attr.attr,
+	&sensor_dev_attr_temp2_fault.dev_attr.attr,
+	&sensor_dev_attr_temp3_fault.dev_attr.attr,
+	&sensor_dev_attr_temp2_type.dev_attr.attr,
+	&sensor_dev_attr_temp3_type.dev_attr.attr,
+	&sensor_dev_attr_temp1_max.dev_attr.attr,
+	&sensor_dev_attr_temp2_max.dev_attr.attr,
+	&sensor_dev_attr_temp3_max.dev_attr.attr,
+	&sensor_dev_attr_temp1_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp2_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp3_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp1_max_alarm.dev_attr.attr,
+	&sensor_dev_attr_temp2_max_alarm.dev_attr.attr,
+	&sensor_dev_attr_temp3_max_alarm.dev_attr.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_temp2_crit.dev_attr.attr,
 	&sensor_dev_attr_temp3_crit.dev_attr.attr,
 	&sensor_dev_attr_temp2_crit_hyst.dev_attr.attr,
@@ -616,21 +789,58 @@ static struct attribute *lm95234_attributes[] = {
 	&sensor_dev_attr_temp3_crit_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp2_offset.dev_attr.attr,
 	&sensor_dev_attr_temp3_offset.dev_attr.attr,
+<<<<<<< HEAD
 	&sensor_dev_attr_temp4_offset.dev_attr.attr,
 	&sensor_dev_attr_temp5_offset.dev_attr.attr,
+	&dev_attr_update_interval.attr,
+=======
 	&dev_attr_update_interval.attr,
 	NULL
 };
 
+static const struct attribute_group lm95234_common_group = {
+	.attrs = lm95234_common_attrs,
+};
+
+static struct attribute *lm95234_attrs[] = {
+	&sensor_dev_attr_temp4_input.dev_attr.attr,
+	&sensor_dev_attr_temp5_input.dev_attr.attr,
+	&sensor_dev_attr_temp4_fault.dev_attr.attr,
+	&sensor_dev_attr_temp5_fault.dev_attr.attr,
+	&sensor_dev_attr_temp4_type.dev_attr.attr,
+	&sensor_dev_attr_temp5_type.dev_attr.attr,
+	&sensor_dev_attr_temp4_max.dev_attr.attr,
+	&sensor_dev_attr_temp5_max.dev_attr.attr,
+	&sensor_dev_attr_temp4_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp5_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp4_max_alarm.dev_attr.attr,
+	&sensor_dev_attr_temp5_max_alarm.dev_attr.attr,
+	&sensor_dev_attr_temp4_offset.dev_attr.attr,
+	&sensor_dev_attr_temp5_offset.dev_attr.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+	NULL
+};
+
 static const struct attribute_group lm95234_group = {
+<<<<<<< HEAD
 	.attrs = lm95234_attributes,
+=======
+	.attrs = lm95234_attrs,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int lm95234_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
 	struct i2c_adapter *adapter = client->adapter;
+<<<<<<< HEAD
 	int mfg_id, chip_id, val;
+=======
+	int address = client->addr;
+	u8 config_mask, model_mask;
+	int mfg_id, chip_id, val;
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
@@ -640,15 +850,40 @@ static int lm95234_detect(struct i2c_client *client,
 		return -ENODEV;
 
 	chip_id = i2c_smbus_read_byte_data(client, LM95234_REG_CHIP_ID);
+<<<<<<< HEAD
 	if (chip_id != LM95234_CHIP_ID)
 		return -ENODEV;
+=======
+	switch (chip_id) {
+	case LM95233_CHIP_ID:
+		if (address != 0x18 && address != 0x2a && address != 0x2b)
+			return -ENODEV;
+		config_mask = 0xbf;
+		model_mask = 0xf9;
+		name = "lm95233";
+		break;
+	case LM95234_CHIP_ID:
+		if (address != 0x18 && address != 0x4d && address != 0x4e)
+			return -ENODEV;
+		config_mask = 0xbc;
+		model_mask = 0xe1;
+		name = "lm95234";
+		break;
+	default:
+		return -ENODEV;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	val = i2c_smbus_read_byte_data(client, LM95234_REG_STATUS);
 	if (val & 0x30)
 		return -ENODEV;
 
 	val = i2c_smbus_read_byte_data(client, LM95234_REG_CONFIG);
+<<<<<<< HEAD
 	if (val & 0xbc)
+=======
+	if (val & config_mask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	val = i2c_smbus_read_byte_data(client, LM95234_REG_CONVRATE);
@@ -656,6 +891,7 @@ static int lm95234_detect(struct i2c_client *client,
 		return -ENODEV;
 
 	val = i2c_smbus_read_byte_data(client, LM95234_REG_REM_MODEL);
+<<<<<<< HEAD
 	if (val & 0xe1)
 		return -ENODEV;
 
@@ -664,6 +900,16 @@ static int lm95234_detect(struct i2c_client *client,
 		return -ENODEV;
 
 	strlcpy(info->type, "lm95234", I2C_NAME_SIZE);
+=======
+	if (val & model_mask)
+		return -ENODEV;
+
+	val = i2c_smbus_read_byte_data(client, LM95234_REG_REM_MODEL_STS);
+	if (val & model_mask)
+		return -ENODEV;
+
+	strlcpy(info->type, name, I2C_NAME_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -701,13 +947,21 @@ static int lm95234_probe(struct i2c_client *client,
 {
 	struct device *dev = &client->dev;
 	struct lm95234_data *data;
+<<<<<<< HEAD
+=======
+	struct device *hwmon_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	data = devm_kzalloc(dev, sizeof(struct lm95234_data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	i2c_set_clientdata(client, data);
+=======
+	data->client = client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&data->update_lock);
 
 	/* Initialize the LM95234 chip */
@@ -715,6 +969,7 @@ static int lm95234_probe(struct i2c_client *client,
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&dev->kobj, &lm95234_group);
 	if (err)
@@ -741,11 +996,25 @@ static int lm95234_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &lm95234_group);
 
 	return 0;
+=======
+	data->groups[0] = &lm95234_common_group;
+	if (id->driver_data == lm95234)
+		data->groups[1] = &lm95234_group;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, data->groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Driver data (common to all clients) */
 static const struct i2c_device_id lm95234_id[] = {
+<<<<<<< HEAD
 	{ "lm95234", 0 },
+=======
+	{ "lm95233", lm95233 },
+	{ "lm95234", lm95234 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, lm95234_id);
@@ -756,7 +1025,10 @@ static struct i2c_driver lm95234_driver = {
 		.name	= DRVNAME,
 	},
 	.probe		= lm95234_probe,
+<<<<<<< HEAD
 	.remove		= lm95234_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= lm95234_id,
 	.detect		= lm95234_detect,
 	.address_list	= normal_i2c,
@@ -765,5 +1037,9 @@ static struct i2c_driver lm95234_driver = {
 module_i2c_driver(lm95234_driver);
 
 MODULE_AUTHOR("Guenter Roeck <linux@roeck-us.net>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("LM95234 sensor driver");
+=======
+MODULE_DESCRIPTION("LM95233/LM95234 sensor driver");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

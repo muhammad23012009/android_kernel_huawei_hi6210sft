@@ -200,7 +200,11 @@ out:
 }
 
 /* host must be already claimed */
+<<<<<<< HEAD
 int ssb_sdio_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
+=======
+static int ssb_sdio_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 coreidx = dev->core_index;
 	u32 sbaddr;
@@ -411,7 +415,10 @@ static void ssb_sdio_block_write(struct ssb_device *dev, const void *buffer,
 	sdio_claim_host(bus->host_sdio);
 	if (unlikely(ssb_sdio_switch_core(bus, dev))) {
 		error = -EIO;
+<<<<<<< HEAD
 		memset((void *)buffer, 0xff, count);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out;
 	}
 	offset |= bus->sdio_sbaddr & 0xffff;

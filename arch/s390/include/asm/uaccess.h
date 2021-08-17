@@ -79,16 +79,20 @@ struct exception_table_entry
 	int insn, fixup;
 };
 
+<<<<<<< HEAD
 static inline unsigned long extable_insn(const struct exception_table_entry *x)
 {
 	return (unsigned long)&x->insn + x->insn;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long extable_fixup(const struct exception_table_entry *x)
 {
 	return (unsigned long)&x->fixup + x->fixup;
 }
 
+<<<<<<< HEAD
 #define ARCH_HAS_SORT_EXTABLE
 #define ARCH_HAS_SEARCH_EXTABLE
 
@@ -125,6 +129,151 @@ static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 	return size ? -EFAULT : size;
 }
 
+=======
+#define ARCH_HAS_RELATIVE_EXTABLE
+
+/**
+ * __copy_from_user: - Copy a block of data from user space, with less checking.
+ * @to:   Destination address, in kernel space.
+ * @from: Source address, in user space.
+ * @n:	  Number of bytes to copy.
+ *
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+ *
+ * Copy data from user space to kernel space.  Caller must check
+ * the specified block with access_ok() before calling this function.
+ *
+ * Returns number of bytes that could not be copied.
+ * On success, this will be zero.
+ *
+ * If some data could not be copied, this function will pad the copied
+ * data to the requested size using zero bytes.
+ */
+unsigned long __must_check __copy_from_user(void *to, const void __user *from,
+					    unsigned long n);
+
+/**
+ * __copy_to_user: - Copy a block of data into user space, with less checking.
+ * @to:   Destination address, in user space.
+ * @from: Source address, in kernel space.
+ * @n:	  Number of bytes to copy.
+ *
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+ *
+ * Copy data from kernel space to user space.  Caller must check
+ * the specified block with access_ok() before calling this function.
+ *
+ * Returns number of bytes that could not be copied.
+ * On success, this will be zero.
+ */
+unsigned long __must_check __copy_to_user(void __user *to, const void *from,
+					  unsigned long n);
+
+#define __copy_to_user_inatomic __copy_to_user
+#define __copy_from_user_inatomic __copy_from_user
+
+#ifdef CONFIG_HAVE_MARCH_Z10_FEATURES
+
+#define __put_get_user_asm(to, from, size, spec)		\
+({								\
+	register unsigned long __reg0 asm("0") = spec;		\
+	int __rc;						\
+								\
+	asm volatile(						\
+		"0:	mvcos	%1,%3,%2\n"			\
+		"1:	xr	%0,%0\n"			\
+		"2:\n"						\
+		".pushsection .fixup, \"ax\"\n"			\
+		"3:	lhi	%0,%5\n"			\
+		"	jg	2b\n"				\
+		".popsection\n"					\
+		EX_TABLE(0b,3b) EX_TABLE(1b,3b)			\
+		: "=d" (__rc), "+Q" (*(to))			\
+		: "d" (size), "Q" (*(from)),			\
+		  "d" (__reg0), "K" (-EFAULT)			\
+		: "cc");					\
+	__rc;							\
+})
+
+static __always_inline int __put_user_fn(void *x, void __user *ptr, unsigned long size)
+{
+	unsigned long spec = 0x810000UL;
+	int rc;
+
+	switch (size) {
+	case 1:
+		rc = __put_get_user_asm((unsigned char __user *)ptr,
+					(unsigned char *)x,
+					size, spec);
+		break;
+	case 2:
+		rc = __put_get_user_asm((unsigned short __user *)ptr,
+					(unsigned short *)x,
+					size, spec);
+		break;
+	case 4:
+		rc = __put_get_user_asm((unsigned int __user *)ptr,
+					(unsigned int *)x,
+					size, spec);
+		break;
+	case 8:
+		rc = __put_get_user_asm((unsigned long __user *)ptr,
+					(unsigned long *)x,
+					size, spec);
+		break;
+	};
+	return rc;
+}
+
+static __always_inline int __get_user_fn(void *x, const void __user *ptr, unsigned long size)
+{
+	unsigned long spec = 0x81UL;
+	int rc;
+
+	switch (size) {
+	case 1:
+		rc = __put_get_user_asm((unsigned char *)x,
+					(unsigned char __user *)ptr,
+					size, spec);
+		break;
+	case 2:
+		rc = __put_get_user_asm((unsigned short *)x,
+					(unsigned short __user *)ptr,
+					size, spec);
+		break;
+	case 4:
+		rc = __put_get_user_asm((unsigned int *)x,
+					(unsigned int __user *)ptr,
+					size, spec);
+		break;
+	case 8:
+		rc = __put_get_user_asm((unsigned long *)x,
+					(unsigned long __user *)ptr,
+					size, spec);
+		break;
+	};
+	return rc;
+}
+
+#else /* CONFIG_HAVE_MARCH_Z10_FEATURES */
+
+static inline int __put_user_fn(void *x, void __user *ptr, unsigned long size)
+{
+	size = __copy_to_user(ptr, x, size);
+	return size ? -EFAULT : 0;
+}
+
+static inline int __get_user_fn(void *x, const void __user *ptr, unsigned long size)
+{
+	size = __copy_from_user(x, ptr, size);
+	return size ? -EFAULT : 0;
+}
+
+#endif /* CONFIG_HAVE_MARCH_Z10_FEATURES */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * These are the main single-value transfer routines.  They automatically
  * use the right size if we just have the right pointer type.
@@ -139,14 +288,23 @@ static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 	case 2:							\
 	case 4:							\
 	case 8:							\
+<<<<<<< HEAD
 		__pu_err = __put_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
+=======
+		__pu_err = __put_user_fn(&__x, ptr,		\
+					 sizeof(*(ptr)));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;						\
 	default:						\
 		__put_user_bad();				\
 		break;						\
 	 }							\
+<<<<<<< HEAD
 	__pu_err;						\
+=======
+	__builtin_expect(__pu_err, 0);				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 
 #define put_user(x, ptr)					\
@@ -156,7 +314,11 @@ static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 })
 
 
+<<<<<<< HEAD
 extern int __put_user_bad(void) __attribute__((noreturn));
+=======
+int __put_user_bad(void) __attribute__((noreturn));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __get_user(x, ptr)					\
 ({								\
@@ -165,29 +327,49 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 	switch (sizeof(*(ptr))) {				\
 	case 1: {						\
 		unsigned char __x = 0;				\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
+=======
+		__gu_err = __get_user_fn(&__x, ptr,		\
+					 sizeof(*(ptr)));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 2: {						\
 		unsigned short __x = 0;				\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
+=======
+		__gu_err = __get_user_fn(&__x, ptr,		\
+					 sizeof(*(ptr)));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 4: {						\
 		unsigned int __x = 0;				\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
+=======
+		__gu_err = __get_user_fn(&__x, ptr,		\
+					 sizeof(*(ptr)));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 8: {						\
 		unsigned long long __x = 0;			\
+<<<<<<< HEAD
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
+=======
+		__gu_err = __get_user_fn(&__x, ptr,		\
+					 sizeof(*(ptr)));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
@@ -195,7 +377,11 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 		__get_user_bad();				\
 		break;						\
 	}							\
+<<<<<<< HEAD
 	__gu_err;						\
+=======
+	__builtin_expect(__gu_err, 0);				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 
 #define get_user(x, ptr)					\
@@ -204,11 +390,16 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 	__get_user(x, ptr);					\
 })
 
+<<<<<<< HEAD
 extern int __get_user_bad(void) __attribute__((noreturn));
+=======
+int __get_user_bad(void) __attribute__((noreturn));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __put_user_unaligned __put_user
 #define __get_user_unaligned __get_user
 
+<<<<<<< HEAD
 /**
  * __copy_to_user: - Copy a block of data into user space, with less checking.
  * @to:   Destination address, in user space.
@@ -235,13 +426,28 @@ __copy_to_user(void __user *to, const void *from, unsigned long n)
 #define __copy_to_user_inatomic __copy_to_user
 #define __copy_from_user_inatomic __copy_from_user
 
+=======
+extern void __compiletime_error("usercopy buffer size is too small")
+__bad_copy_user(void);
+
+static inline void copy_user_overflow(int size, unsigned long count)
+{
+	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * copy_to_user: - Copy a block of data into user space.
  * @to:   Destination address, in user space.
  * @from: Source address, in kernel space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copy data from kernel space to user space.
  *
@@ -256,6 +462,7 @@ copy_to_user(void __user *to, const void *from, unsigned long n)
 }
 
 /**
+<<<<<<< HEAD
  * __copy_from_user: - Copy a block of data from user space, with less checking.
  * @to:   Destination address, in kernel space.
  * @from: Source address, in user space.
@@ -288,12 +495,19 @@ __compiletime_warning("copy_from_user() buffer size is not provably correct")
 ;
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * copy_from_user: - Copy a block of data from user space.
  * @to:   Destination address, in kernel space.
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copy data from user space to kernel space.
  *
@@ -310,17 +524,29 @@ copy_from_user(void *to, const void __user *from, unsigned long n)
 
 	might_fault();
 	if (unlikely(sz != -1 && sz < n)) {
+<<<<<<< HEAD
 		copy_from_user_overflow();
+=======
+		if (!__builtin_constant_p(n))
+			copy_user_overflow(sz, n);
+		else
+			__bad_copy_user();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return n;
 	}
 	return __copy_from_user(to, from, n);
 }
 
+<<<<<<< HEAD
 static inline unsigned long __must_check
 __copy_in_user(void __user *to, const void __user *from, unsigned long n)
 {
 	return uaccess.copy_in_user(n, to, from);
 }
+=======
+unsigned long __must_check
+__copy_in_user(void __user *to, const void __user *from, unsigned long n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long __must_check
 copy_in_user(void __user *to, const void __user *from, unsigned long n)
@@ -332,10 +558,17 @@ copy_in_user(void __user *to, const void __user *from, unsigned long n)
 /*
  * Copy a null terminated string from userspace.
  */
+<<<<<<< HEAD
+=======
+
+long __strncpy_from_user(char *dst, const char __user *src, long count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline long __must_check
 strncpy_from_user(char *dst, const char __user *src, long count)
 {
 	might_fault();
+<<<<<<< HEAD
 	return uaccess.strncpy_from_user(count, src, dst);
 }
 
@@ -344,13 +577,29 @@ strnlen_user(const char __user * src, unsigned long n)
 {
 	might_fault();
 	return uaccess.strnlen_user(n, src);
+=======
+	return __strncpy_from_user(dst, src, count);
+}
+
+unsigned long __must_check __strnlen_user(const char __user *src, unsigned long count);
+
+static inline unsigned long strnlen_user(const char __user *src, unsigned long n)
+{
+	might_fault();
+	return __strnlen_user(src, n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * strlen_user: - Get the size of a string in user space.
  * @str: The string to measure.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Get the size of a NUL-terminated string in user space.
  *
@@ -365,6 +614,7 @@ strnlen_user(const char __user * src, unsigned long n)
 /*
  * Zero Userspace
  */
+<<<<<<< HEAD
 
 static inline unsigned long __must_check
 __clear_user(void __user *to, unsigned long n)
@@ -381,5 +631,17 @@ clear_user(void __user *to, unsigned long n)
 
 extern int copy_to_user_real(void __user *dest, void *src, size_t count);
 extern int copy_from_user_real(void *dest, void __user *src, size_t count);
+=======
+unsigned long __must_check __clear_user(void __user *to, unsigned long size);
+
+static inline unsigned long __must_check clear_user(void __user *to, unsigned long n)
+{
+	might_fault();
+	return __clear_user(to, n);
+}
+
+int copy_to_user_real(void __user *dest, void *src, unsigned long count);
+void s390_kernel_write(void *dst, const void *src, size_t size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __S390_UACCESS_H */

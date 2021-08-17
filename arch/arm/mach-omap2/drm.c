@@ -26,10 +26,16 @@
 #include <linux/platform_data/omap_drm.h>
 
 #include "soc.h"
+<<<<<<< HEAD
 #include "omap_device.h"
 #include "omap_hwmod.h"
 
 #if defined(CONFIG_DRM_OMAP) || (CONFIG_DRM_OMAP_MODULE)
+=======
+#include "display.h"
+
+#if IS_ENABLED(CONFIG_DRM_OMAP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct omap_drm_platform_data platform_data;
 
@@ -42,6 +48,7 @@ static struct platform_device omap_drm_device = {
 	.id = 0,
 };
 
+<<<<<<< HEAD
 static int __init omap_init_drm(void)
 {
 	struct omap_hwmod *oh = NULL;
@@ -56,12 +63,21 @@ static int __init omap_init_drm(void)
 			oh->name);
 	}
 
+=======
+int __init omap_init_drm(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_data.omaprev = GET_OMAP_TYPE;
 
 	return platform_device_register(&omap_drm_device);
 
 }
+<<<<<<< HEAD
 
 omap_arch_initcall(omap_init_drm);
 
+=======
+#else
+int __init omap_init_drm(void) { return 0; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

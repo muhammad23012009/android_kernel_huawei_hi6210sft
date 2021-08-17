@@ -31,6 +31,7 @@
 #include <mach/serial.h>
 #include <mach/cputype.h>
 
+<<<<<<< HEAD
 static inline unsigned int serial_read_reg(struct plat_serial8250_port *up,
 					   int offset)
 {
@@ -41,6 +42,8 @@ static inline unsigned int serial_read_reg(struct plat_serial8250_port *up,
 	return (unsigned int)__raw_readl(up->membase + offset);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void serial_write_reg(struct plat_serial8250_port *p, int offset,
 				    int value)
 {
@@ -70,6 +73,7 @@ static void __init davinci_serial_reset(struct plat_serial8250_port *p)
 				 UART_DM646X_SCR_TX_WATERMARK);
 }
 
+<<<<<<< HEAD
 /* Enable UART clock and obtain its rate */
 int __init davinci_serial_setup_clk(unsigned instance, unsigned int *rate)
 {
@@ -100,11 +104,20 @@ int __init davinci_serial_init(struct davinci_uart_config *info)
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
 	struct device *dev = &soc_info->serial_dev->dev;
 	struct plat_serial8250_port *p = dev->platform_data;
+=======
+int __init davinci_serial_init(struct platform_device *serial_dev)
+{
+	int i, ret = 0;
+	struct device *dev;
+	struct plat_serial8250_port *p;
+	struct clk *clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Make sure the serial ports are muxed on at this point.
 	 * You have to mux them off in device drivers later on if not needed.
 	 */
+<<<<<<< HEAD
 	for (i = 0; p->flags; i++, p++) {
 		if (!(info->enabled_uarts & (1 << i)))
 			continue;
@@ -113,6 +126,27 @@ int __init davinci_serial_init(struct davinci_uart_config *info)
 		if (ret)
 			continue;
 
+=======
+	for (i = 0; serial_dev[i].dev.platform_data != NULL; i++) {
+		dev = &serial_dev[i].dev;
+		p = dev->platform_data;
+
+		ret = platform_device_register(&serial_dev[i]);
+		if (ret)
+			continue;
+
+		clk = clk_get(dev, NULL);
+		if (IS_ERR(clk)) {
+			pr_err("%s:%d: failed to get UART%d clock\n",
+			       __func__, __LINE__, i);
+			continue;
+		}
+
+		clk_prepare_enable(clk);
+
+		p->uartclk = clk_get_rate(clk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!p->membase && p->mapbase) {
 			p->membase = ioremap(p->mapbase, SZ_4K);
 
@@ -125,6 +159,10 @@ int __init davinci_serial_init(struct davinci_uart_config *info)
 		if (p->membase && p->type != PORT_AR7)
 			davinci_serial_reset(p);
 	}
+<<<<<<< HEAD
 
 	return platform_device_register(soc_info->serial_dev);
+=======
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

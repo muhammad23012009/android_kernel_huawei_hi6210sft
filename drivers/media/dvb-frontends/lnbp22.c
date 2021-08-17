@@ -22,7 +22,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -48,7 +52,12 @@ struct lnbp22 {
 	struct i2c_adapter *i2c;
 };
 
+<<<<<<< HEAD
 static int lnbp22_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
+=======
+static int lnbp22_set_voltage(struct dvb_frontend *fe,
+			      enum fe_sec_voltage voltage)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct lnbp22 *lnbp22 = (struct lnbp22 *)fe->sec_priv;
 	struct i2c_msg msg = {

@@ -247,14 +247,21 @@ int ecryptfs_process_response(struct ecryptfs_daemon *daemon,
 		goto unlock;
 	}
 	msg_size = (sizeof(*msg) + msg->data_len);
+<<<<<<< HEAD
 	msg_ctx->msg = kmalloc(msg_size, GFP_KERNEL);
+=======
+	msg_ctx->msg = kmemdup(msg, msg_size, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!msg_ctx->msg) {
 		rc = -ENOMEM;
 		printk(KERN_ERR "%s: Failed to allocate [%zd] bytes of "
 		       "GFP_KERNEL memory\n", __func__, msg_size);
 		goto unlock;
 	}
+<<<<<<< HEAD
 	memcpy(msg_ctx->msg, msg, msg_size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	msg_ctx->state = ECRYPTFS_MSG_CTX_STATE_DONE;
 	wake_up_process(msg_ctx->task);
 	rc = 0;
@@ -398,6 +405,10 @@ int __init ecryptfs_init_messaging(void)
 					* ecryptfs_message_buf_len),
 				       GFP_KERNEL);
 	if (!ecryptfs_msg_ctx_arr) {
+<<<<<<< HEAD
+=======
+		kfree(ecryptfs_daemon_hash);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -ENOMEM;
 		printk(KERN_ERR "%s: Failed to allocate memory\n", __func__);
 		goto out;
@@ -435,8 +446,12 @@ void ecryptfs_release_messaging(void)
 		mutex_lock(&ecryptfs_msg_ctx_lists_mux);
 		for (i = 0; i < ecryptfs_message_buf_len; i++) {
 			mutex_lock(&ecryptfs_msg_ctx_arr[i].mux);
+<<<<<<< HEAD
 			if (ecryptfs_msg_ctx_arr[i].msg)
 				kfree(ecryptfs_msg_ctx_arr[i].msg);
+=======
+			kfree(ecryptfs_msg_ctx_arr[i].msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mutex_unlock(&ecryptfs_msg_ctx_arr[i].mux);
 		}
 		kfree(ecryptfs_msg_ctx_arr);
@@ -444,15 +459,25 @@ void ecryptfs_release_messaging(void)
 	}
 	if (ecryptfs_daemon_hash) {
 		struct ecryptfs_daemon *daemon;
+<<<<<<< HEAD
+=======
+		struct hlist_node *n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int i;
 
 		mutex_lock(&ecryptfs_daemon_hash_mux);
 		for (i = 0; i < (1 << ecryptfs_hash_bits); i++) {
 			int rc;
 
+<<<<<<< HEAD
 			hlist_for_each_entry(daemon,
 					     &ecryptfs_daemon_hash[i],
 					     euid_chain) {
+=======
+			hlist_for_each_entry_safe(daemon, n,
+						  &ecryptfs_daemon_hash[i],
+						  euid_chain) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				rc = ecryptfs_exorcise_daemon(daemon);
 				if (rc)
 					printk(KERN_ERR "%s: Error whilst "

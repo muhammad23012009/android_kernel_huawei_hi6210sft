@@ -33,6 +33,7 @@
 #include "debug-levels.h"
 
 
+<<<<<<< HEAD
 static const struct nla_policy wimax_gnl_state_get_policy[WIMAX_GNL_ATTR_MAX + 1] = {
 	[WIMAX_GNL_STGET_IFIDX] = {
 		.type = NLA_U32,
@@ -40,6 +41,8 @@ static const struct nla_policy wimax_gnl_state_get_policy[WIMAX_GNL_ATTR_MAX + 1
 };
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Exporting to user space over generic netlink
  *
@@ -48,7 +51,10 @@ static const struct nla_policy wimax_gnl_state_get_policy[WIMAX_GNL_ATTR_MAX + 1
  *
  * No attributes.
  */
+<<<<<<< HEAD
 static
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wimax_gnl_doit_state_get(struct sk_buff *skb, struct genl_info *info)
 {
 	int result, ifindex;
@@ -57,8 +63,12 @@ int wimax_gnl_doit_state_get(struct sk_buff *skb, struct genl_info *info)
 	d_fnstart(3, NULL, "(skb %p info %p)\n", skb, info);
 	result = -ENODEV;
 	if (info->attrs[WIMAX_GNL_STGET_IFIDX] == NULL) {
+<<<<<<< HEAD
 		printk(KERN_ERR "WIMAX_GNL_OP_STATE_GET: can't find IFIDX "
 			"attribute\n");
+=======
+		pr_err("WIMAX_GNL_OP_STATE_GET: can't find IFIDX attribute\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error_no_wimax_dev;
 	}
 	ifindex = nla_get_u32(info->attrs[WIMAX_GNL_STGET_IFIDX]);
@@ -72,6 +82,7 @@ error_no_wimax_dev:
 	d_fnend(3, NULL, "(skb %p info %p) = %d\n", skb, info, result);
 	return result;
 }
+<<<<<<< HEAD
 
 
 struct genl_ops wimax_gnl_state_get = {
@@ -81,3 +92,5 @@ struct genl_ops wimax_gnl_state_get = {
 	.doit = wimax_gnl_doit_state_get,
 	.dumpit = NULL,
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

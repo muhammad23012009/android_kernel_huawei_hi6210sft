@@ -21,17 +21,29 @@
 #include <linux/uaccess.h>
 #include <linux/hardirq.h>
 #include <asm/switch_to.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-prototypes.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int enter_vmx_usercopy(void)
 {
 	if (in_interrupt())
 		return 0;
 
+<<<<<<< HEAD
 	/* This acts as preempt_disable() as well and will make
 	 * enable_kernel_altivec(). We need to disable page faults
 	 * as they can call schedule and thus make us lose the VMX
 	 * context. So on page faults, we just fail which will cause
 	 * a fallback to the normal non-vmx copy.
+=======
+	preempt_disable();
+	/*
+	 * We need to disable page faults as they can call schedule and
+	 * thus make us lose the VMX context. So on page faults, we just
+	 * fail which will cause a fallback to the normal non-vmx copy.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	pagefault_disable();
 
@@ -46,7 +58,13 @@ int enter_vmx_usercopy(void)
  */
 int exit_vmx_usercopy(void)
 {
+<<<<<<< HEAD
 	pagefault_enable();
+=======
+	disable_kernel_altivec();
+	pagefault_enable();
+	preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -69,6 +87,10 @@ int enter_vmx_copy(void)
  */
 void *exit_vmx_copy(void *dest)
 {
+<<<<<<< HEAD
+=======
+	disable_kernel_altivec();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	preempt_enable();
 	return dest;
 }

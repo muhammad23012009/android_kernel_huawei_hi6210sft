@@ -176,7 +176,11 @@ static int cb710_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	struct cb710_chip *chip = pci_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	free_irq(pdev->irq, chip);
+=======
+	devm_free_irq(&pdev->dev, pdev->irq, chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_save_state(pdev);
 	pci_disable_device(pdev);
 	if (state.event & PM_EVENT_SLEEP)

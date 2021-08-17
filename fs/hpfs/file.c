@@ -7,6 +7,10 @@
  */
 
 #include "hpfs_fn.h"
+<<<<<<< HEAD
+=======
+#include <linux/mpage.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BLOCKS(size) (((size) + 511) >> 9)
 
@@ -34,7 +38,11 @@ int hpfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
  * so we must ignore such errors.
  */
 
+<<<<<<< HEAD
 static secno hpfs_bmap(struct inode *inode, unsigned file_secno)
+=======
+static secno hpfs_bmap(struct inode *inode, unsigned file_secno, unsigned *n_secs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct hpfs_inode_info *hpfs_inode = hpfs_i(inode);
 	unsigned n, disk_secno;
@@ -42,11 +50,27 @@ static secno hpfs_bmap(struct inode *inode, unsigned file_secno)
 	struct buffer_head *bh;
 	if (BLOCKS(hpfs_i(inode)->mmu_private) <= file_secno) return 0;
 	n = file_secno - hpfs_inode->i_file_sec;
+<<<<<<< HEAD
 	if (n < hpfs_inode->i_n_secs) return hpfs_inode->i_disk_sec + n;
+=======
+	if (n < hpfs_inode->i_n_secs) {
+		*n_secs = hpfs_inode->i_n_secs - n;
+		return hpfs_inode->i_disk_sec + n;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(fnode = hpfs_map_fnode(inode->i_sb, inode->i_ino, &bh))) return 0;
 	disk_secno = hpfs_bplus_lookup(inode->i_sb, inode, &fnode->btree, file_secno, bh);
 	if (disk_secno == -1) return 0;
 	if (hpfs_chk_sectors(inode->i_sb, disk_secno, 1, "bmap")) return 0;
+<<<<<<< HEAD
+=======
+	n = file_secno - hpfs_inode->i_file_sec;
+	if (n < hpfs_inode->i_n_secs) {
+		*n_secs = hpfs_inode->i_n_secs - n;
+		return hpfs_inode->i_disk_sec + n;
+	}
+	*n_secs = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return disk_secno;
 }
 
@@ -67,10 +91,26 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 {
 	int r;
 	secno s;
+<<<<<<< HEAD
 	hpfs_lock(inode->i_sb);
 	s = hpfs_bmap(inode, iblock);
 	if (s) {
 		map_bh(bh_result, inode->i_sb, s);
+=======
+	unsigned n_secs;
+	hpfs_lock(inode->i_sb);
+	s = hpfs_bmap(inode, iblock, &n_secs);
+	if (s) {
+		if (bh_result->b_size >> 9 < n_secs)
+			n_secs = bh_result->b_size >> 9;
+		n_secs = hpfs_search_hotfix_map_for_range(inode->i_sb, s, n_secs);
+		if (unlikely(!n_secs)) {
+			s = hpfs_search_hotfix_map(inode->i_sb, s);
+			n_secs = 1;
+		}
+		map_bh(bh_result, inode->i_sb, s);
+		bh_result->b_size = n_secs << 9;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto ret_0;
 	}
 	if (!create) goto ret_0;
@@ -87,7 +127,11 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 	inode->i_blocks++;
 	hpfs_i(inode)->mmu_private += 512;
 	set_buffer_new(bh_result);
+<<<<<<< HEAD
 	map_bh(bh_result, inode->i_sb, s);
+=======
+	map_bh(bh_result, inode->i_sb, hpfs_search_hotfix_map(inode->i_sb, s));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret_0:
 	r = 0;
 	ret_r:
@@ -95,6 +139,7 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 	return r;
 }
 
+<<<<<<< HEAD
 static int hpfs_writepage(struct page *page, struct writeback_control *wbc)
 {
 	return block_write_full_page(page,hpfs_get_block, wbc);
@@ -103,6 +148,28 @@ static int hpfs_writepage(struct page *page, struct writeback_control *wbc)
 static int hpfs_readpage(struct file *file, struct page *page)
 {
 	return block_read_full_page(page,hpfs_get_block);
+=======
+static int hpfs_readpage(struct file *file, struct page *page)
+{
+	return mpage_readpage(page, hpfs_get_block);
+}
+
+static int hpfs_writepage(struct page *page, struct writeback_control *wbc)
+{
+	return block_write_full_page(page, hpfs_get_block, wbc);
+}
+
+static int hpfs_readpages(struct file *file, struct address_space *mapping,
+			  struct list_head *pages, unsigned nr_pages)
+{
+	return mpage_readpages(mapping, pages, nr_pages, hpfs_get_block);
+}
+
+static int hpfs_writepages(struct address_space *mapping,
+			   struct writeback_control *wbc)
+{
+	return mpage_writepages(mapping, wbc, hpfs_get_block);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void hpfs_write_failed(struct address_space *mapping, loff_t to)
@@ -112,7 +179,11 @@ static void hpfs_write_failed(struct address_space *mapping, loff_t to)
 	hpfs_lock(inode->i_sb);
 
 	if (to > inode->i_size) {
+<<<<<<< HEAD
 		truncate_pagecache(inode, to, inode->i_size);
+=======
+		truncate_pagecache(inode, inode->i_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hpfs_truncate(inode);
 	}
 
@@ -155,12 +226,26 @@ static int hpfs_write_end(struct file *file, struct address_space *mapping,
 
 static sector_t _hpfs_bmap(struct address_space *mapping, sector_t block)
 {
+<<<<<<< HEAD
 	return generic_block_bmap(mapping,block,hpfs_get_block);
+=======
+	return generic_block_bmap(mapping, block, hpfs_get_block);
+}
+
+static int hpfs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo, u64 start, u64 len)
+{
+	return generic_block_fiemap(inode, fieinfo, start, len, hpfs_get_block);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct address_space_operations hpfs_aops = {
 	.readpage = hpfs_readpage,
 	.writepage = hpfs_writepage,
+<<<<<<< HEAD
+=======
+	.readpages = hpfs_readpages,
+	.writepages = hpfs_writepages,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.write_begin = hpfs_write_begin,
 	.write_end = hpfs_write_end,
 	.bmap = _hpfs_bmap
@@ -169,17 +254,30 @@ const struct address_space_operations hpfs_aops = {
 const struct file_operations hpfs_file_ops =
 {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= do_sync_read,
 	.aio_read	= generic_file_aio_read,
 	.write		= do_sync_write,
 	.aio_write	= generic_file_aio_write,
+=======
+	.read_iter	= generic_file_read_iter,
+	.write_iter	= generic_file_write_iter,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mmap		= generic_file_mmap,
 	.release	= hpfs_file_release,
 	.fsync		= hpfs_file_fsync,
 	.splice_read	= generic_file_splice_read,
+<<<<<<< HEAD
+=======
+	.unlocked_ioctl	= hpfs_ioctl,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 const struct inode_operations hpfs_file_iops =
 {
 	.setattr	= hpfs_setattr,
+<<<<<<< HEAD
+=======
+	.fiemap		= hpfs_fiemap,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

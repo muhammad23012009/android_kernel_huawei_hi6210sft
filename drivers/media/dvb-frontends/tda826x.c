@@ -129,7 +129,11 @@ static int tda826x_get_frequency(struct dvb_frontend *fe, u32 *frequency)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops tda826x_tuner_ops = {
+=======
+static const struct dvb_tuner_ops tda826x_tuner_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.info = {
 		.name = "Philips TDA826X",
 		.frequency_min = 950000,

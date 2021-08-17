@@ -382,6 +382,7 @@ error:
 static char *cpio_replace_env(char *new_location)
 {
 	char expanded[PATH_MAX + 1];
+<<<<<<< HEAD
 	char env_var[PATH_MAX + 1];
 	char *start;
 	char *end;
@@ -400,6 +401,17 @@ static char *cpio_replace_env(char *new_location)
 			new_location[PATH_MAX] = 0;
 		} else
 			break;
+=======
+	char *start, *end, *var;
+
+	while ((start = strstr(new_location, "${")) &&
+	       (end = strchr(start + 2, '}'))) {
+		*start = *end = 0;
+		var = getenv(start + 2);
+		snprintf(expanded, sizeof expanded, "%s%s%s",
+			 new_location, var ? var : "", end + 1);
+		strcpy(new_location, expanded);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return new_location;

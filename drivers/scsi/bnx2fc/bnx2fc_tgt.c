@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 /* bnx2fc_tgt.c: Broadcom NetXtreme II Linux FCoE offload driver.
  * Handles operations such as session offload/upload etc, and manages
  * session resources such as connection id and qp resources.
  *
  * Copyright (c) 2008 - 2013 Broadcom Corporation
+=======
+/* bnx2fc_tgt.c: QLogic Linux FCoE offload driver.
+ * Handles operations such as session offload/upload etc, and manages
+ * session resources such as connection id and qp resources.
+ *
+ * Copyright (c) 2008-2013 Broadcom Corporation
+ * Copyright (c) 2014-2015 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -386,6 +395,10 @@ static int bnx2fc_init_tgt(struct bnx2fc_rport *tgt,
 	tgt->rq_prod_idx = 0x8000;
 	tgt->rq_cons_idx = 0;
 	atomic_set(&tgt->num_active_ios, 0);
+<<<<<<< HEAD
+=======
+	tgt->retry_delay_timestamp = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (rdata->flags & FC_RP_FLAGS_RETRY &&
 	    rdata->ids.roles & FC_RPORT_ROLE_FCP_TARGET &&
@@ -558,12 +571,15 @@ void bnx2fc_rport_event_handler(struct fc_lport *lport,
 		    (hba->num_ofld_sess == 0)) {
 			wake_up_interruptible(&hba->shutdown_wait);
 		}
+<<<<<<< HEAD
 		if (test_bit(BNX2FC_FLAG_EXPL_LOGO, &tgt->flags)) {
 			printk(KERN_ERR PFX "Relogin to the tgt\n");
 			mutex_lock(&lport->disc.disc_mutex);
 			lport->tt.rport_login(rdata);
 			mutex_unlock(&lport->disc.disc_mutex);
 		}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&hba->hba_mutex);
 
 		break;
@@ -673,7 +689,12 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 
 	/* Allocate and map SQ */
 	tgt->sq_mem_size = tgt->max_sqes * BNX2FC_SQ_WQE_SIZE;
+<<<<<<< HEAD
 	tgt->sq_mem_size = (tgt->sq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+	tgt->sq_mem_size = (tgt->sq_mem_size + (CNIC_PAGE_SIZE - 1)) &
+			   CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->sq = dma_alloc_coherent(&hba->pcidev->dev, tgt->sq_mem_size,
 				     &tgt->sq_dma, GFP_KERNEL);
@@ -686,7 +707,12 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 
 	/* Allocate and map CQ */
 	tgt->cq_mem_size = tgt->max_cqes * BNX2FC_CQ_WQE_SIZE;
+<<<<<<< HEAD
 	tgt->cq_mem_size = (tgt->cq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+	tgt->cq_mem_size = (tgt->cq_mem_size + (CNIC_PAGE_SIZE - 1)) &
+			   CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->cq = dma_alloc_coherent(&hba->pcidev->dev, tgt->cq_mem_size,
 				     &tgt->cq_dma, GFP_KERNEL);
@@ -699,7 +725,12 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 
 	/* Allocate and map RQ and RQ PBL */
 	tgt->rq_mem_size = tgt->max_rqes * BNX2FC_RQ_WQE_SIZE;
+<<<<<<< HEAD
 	tgt->rq_mem_size = (tgt->rq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+	tgt->rq_mem_size = (tgt->rq_mem_size + (CNIC_PAGE_SIZE - 1)) &
+			   CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->rq = dma_alloc_coherent(&hba->pcidev->dev, tgt->rq_mem_size,
 					&tgt->rq_dma, GFP_KERNEL);
@@ -710,8 +741,14 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 	}
 	memset(tgt->rq, 0, tgt->rq_mem_size);
 
+<<<<<<< HEAD
 	tgt->rq_pbl_size = (tgt->rq_mem_size / PAGE_SIZE) * sizeof(void *);
 	tgt->rq_pbl_size = (tgt->rq_pbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+	tgt->rq_pbl_size = (tgt->rq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	tgt->rq_pbl_size = (tgt->rq_pbl_size + (CNIC_PAGE_SIZE - 1)) &
+			   CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->rq_pbl = dma_alloc_coherent(&hba->pcidev->dev, tgt->rq_pbl_size,
 					 &tgt->rq_pbl_dma, GFP_KERNEL);
@@ -722,7 +759,11 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 	}
 
 	memset(tgt->rq_pbl, 0, tgt->rq_pbl_size);
+<<<<<<< HEAD
 	num_pages = tgt->rq_mem_size / PAGE_SIZE;
+=======
+	num_pages = tgt->rq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = tgt->rq_dma;
 	pbl = (u32 *)tgt->rq_pbl;
 
@@ -731,13 +772,22 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 		pbl++;
 		*pbl = (u32)((u64)page >> 32);
 		pbl++;
+<<<<<<< HEAD
 		page += PAGE_SIZE;
+=======
+		page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Allocate and map XFERQ */
 	tgt->xferq_mem_size = tgt->max_sqes * BNX2FC_XFERQ_WQE_SIZE;
+<<<<<<< HEAD
 	tgt->xferq_mem_size = (tgt->xferq_mem_size + (PAGE_SIZE - 1)) &
 			       PAGE_MASK;
+=======
+	tgt->xferq_mem_size = (tgt->xferq_mem_size + (CNIC_PAGE_SIZE - 1)) &
+			       CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->xferq = dma_alloc_coherent(&hba->pcidev->dev, tgt->xferq_mem_size,
 					&tgt->xferq_dma, GFP_KERNEL);
@@ -750,8 +800,13 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 
 	/* Allocate and map CONFQ & CONFQ PBL */
 	tgt->confq_mem_size = tgt->max_sqes * BNX2FC_CONFQ_WQE_SIZE;
+<<<<<<< HEAD
 	tgt->confq_mem_size = (tgt->confq_mem_size + (PAGE_SIZE - 1)) &
 			       PAGE_MASK;
+=======
+	tgt->confq_mem_size = (tgt->confq_mem_size + (CNIC_PAGE_SIZE - 1)) &
+			       CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->confq = dma_alloc_coherent(&hba->pcidev->dev, tgt->confq_mem_size,
 					&tgt->confq_dma, GFP_KERNEL);
@@ -763,9 +818,15 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 	memset(tgt->confq, 0, tgt->confq_mem_size);
 
 	tgt->confq_pbl_size =
+<<<<<<< HEAD
 		(tgt->confq_mem_size / PAGE_SIZE) * sizeof(void *);
 	tgt->confq_pbl_size =
 		(tgt->confq_pbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+		(tgt->confq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	tgt->confq_pbl_size =
+		(tgt->confq_pbl_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->confq_pbl = dma_alloc_coherent(&hba->pcidev->dev,
 					    tgt->confq_pbl_size,
@@ -777,7 +838,11 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 	}
 
 	memset(tgt->confq_pbl, 0, tgt->confq_pbl_size);
+<<<<<<< HEAD
 	num_pages = tgt->confq_mem_size / PAGE_SIZE;
+=======
+	num_pages = tgt->confq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = tgt->confq_dma;
 	pbl = (u32 *)tgt->confq_pbl;
 
@@ -786,7 +851,11 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 		pbl++;
 		*pbl = (u32)((u64)page >> 32);
 		pbl++;
+<<<<<<< HEAD
 		page += PAGE_SIZE;
+=======
+		page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Allocate and map ConnDB */
@@ -805,8 +874,13 @@ static int bnx2fc_alloc_session_resc(struct bnx2fc_hba *hba,
 
 	/* Allocate and map LCQ */
 	tgt->lcq_mem_size = (tgt->max_sqes + 8) * BNX2FC_SQ_WQE_SIZE;
+<<<<<<< HEAD
 	tgt->lcq_mem_size = (tgt->lcq_mem_size + (PAGE_SIZE - 1)) &
 			     PAGE_MASK;
+=======
+	tgt->lcq_mem_size = (tgt->lcq_mem_size + (CNIC_PAGE_SIZE - 1)) &
+			     CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tgt->lcq = dma_alloc_coherent(&hba->pcidev->dev, tgt->lcq_mem_size,
 				      &tgt->lcq_dma, GFP_KERNEL);

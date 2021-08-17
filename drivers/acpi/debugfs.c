@@ -5,7 +5,13 @@
 #include <linux/export.h>
 #include <linux/init.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/acpi.h>
+
+#include "internal.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _COMPONENT		ACPI_SYSTEM_COMPONENT
 ACPI_MODULE_NAME("debugfs");

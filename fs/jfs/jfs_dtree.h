@@ -265,5 +265,9 @@ extern int dtDelete(tid_t tid, struct inode *ip, struct component_name * key,
 extern int dtModify(tid_t tid, struct inode *ip, struct component_name * key,
 		    ino_t * orig_ino, ino_t new_ino, int flag);
 
+<<<<<<< HEAD
 extern int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir);
+=======
+extern int jfs_readdir(struct file *file, struct dir_context *ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/* !_H_JFS_DTREE */

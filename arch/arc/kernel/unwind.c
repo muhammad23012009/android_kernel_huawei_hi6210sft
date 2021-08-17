@@ -111,6 +111,11 @@ UNW_REGISTER_INFO};
 #define DW_EH_PE_indirect 0x80
 #define DW_EH_PE_omit     0xff
 
+<<<<<<< HEAD
+=======
+#define CIE_ID	0
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef unsigned long uleb128_t;
 typedef signed long sleb128_t;
 
@@ -170,6 +175,21 @@ static struct unwind_table *find_table(unsigned long pc)
 
 static unsigned long read_pointer(const u8 **pLoc,
 				  const void *end, signed ptrType);
+<<<<<<< HEAD
+=======
+static void init_unwind_hdr(struct unwind_table *table,
+			    void *(*alloc) (unsigned long));
+
+/*
+ * wrappers for header alloc (vs. calling one vs. other at call site)
+ * to elide section mismatches warnings
+ */
+static void *__init unw_hdr_alloc_early(unsigned long sz)
+{
+	return __alloc_bootmem_nopanic(sz, sizeof(unsigned int),
+				       MAX_DMA_ADDRESS);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void init_unwind_table(struct unwind_table *table, const char *name,
 			      const void *core_start, unsigned long core_size,
@@ -209,10 +229,19 @@ void __init arc_unwind_init(void)
 			  __start_unwind, __end_unwind - __start_unwind,
 			  NULL, 0);
 	  /*__start_unwind_hdr, __end_unwind_hdr - __start_unwind_hdr);*/
+<<<<<<< HEAD
+=======
+
+	init_unwind_hdr(&root_table, unw_hdr_alloc_early);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const u32 bad_cie, not_fde;
 static const u32 *cie_for_fde(const u32 *fde, const struct unwind_table *);
+<<<<<<< HEAD
+=======
+static const u32 *__cie_for_fde(const u32 *fde);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static signed fde_pointer_type(const u32 *cie);
 
 struct eh_frame_hdr_table_entry {
@@ -241,8 +270,13 @@ static void swap_eh_frame_hdr_table_entries(void *p1, void *p2, int size)
 	e2->fde = v;
 }
 
+<<<<<<< HEAD
 static void __init setup_unwind_table(struct unwind_table *table,
 				      void *(*alloc) (unsigned long))
+=======
+static void init_unwind_hdr(struct unwind_table *table,
+			    void *(*alloc) (unsigned long))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const u8 *ptr;
 	unsigned long tableSize = table->size, hdrSize;
@@ -277,10 +311,17 @@ static void __init setup_unwind_table(struct unwind_table *table,
 		if (cie == &not_fde)
 			continue;
 		if (cie == NULL || cie == &bad_cie)
+<<<<<<< HEAD
 			return;
 		ptrType = fde_pointer_type(cie);
 		if (ptrType < 0)
 			return;
+=======
+			goto ret_err;
+		ptrType = fde_pointer_type(cie);
+		if (ptrType < 0)
+			goto ret_err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ptr = (const u8 *)(fde + 2);
 		if (!read_pointer(&ptr, (const u8 *)(fde + 1) + *fde,
@@ -289,11 +330,17 @@ static void __init setup_unwind_table(struct unwind_table *table,
 			 * instead of the initial loc addr
 			 * return;
 			 */
+<<<<<<< HEAD
+=======
+			WARN(1, "unwinder: FDE->initial_location NULL %p\n",
+				(const u8 *)(fde + 1) + *fde);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		++n;
 	}
 
 	if (tableSize || !n)
+<<<<<<< HEAD
 		return;
 
 	hdrSize = 4 + sizeof(unsigned long) + sizeof(unsigned int)
@@ -301,6 +348,17 @@ static void __init setup_unwind_table(struct unwind_table *table,
 	header = alloc(hdrSize);
 	if (!header)
 		return;
+=======
+		goto ret_err;
+
+	hdrSize = 4 + sizeof(unsigned long) + sizeof(unsigned int)
+	    + 2 * n * sizeof(unsigned long);
+
+	header = alloc(hdrSize);
+	if (!header)
+		goto ret_err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	header->version = 1;
 	header->eh_frame_ptr_enc = DW_EH_PE_abs | DW_EH_PE_native;
 	header->fde_count_enc = DW_EH_PE_abs | DW_EH_PE_data4;
@@ -315,10 +373,16 @@ static void __init setup_unwind_table(struct unwind_table *table,
 	for (fde = table->address, tableSize = table->size, n = 0;
 	     tableSize;
 	     tableSize -= sizeof(*fde) + *fde, fde += 1 + *fde / sizeof(*fde)) {
+<<<<<<< HEAD
 		/* const u32 *cie = fde + 1 - fde[1] / sizeof(*fde); */
 		const u32 *cie = (const u32 *)(fde[1]);
 
 		if (fde[1] == 0xffffffff)
+=======
+		const u32 *cie = __cie_for_fde(fde);
+
+		if (fde[1] == CIE_ID)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;	/* this is a CIE */
 		ptr = (const u8 *)(fde + 2);
 		header->table[n].start = read_pointer(&ptr,
@@ -338,6 +402,7 @@ static void __init setup_unwind_table(struct unwind_table *table,
 	table->hdrsz = hdrSize;
 	smp_wmb();
 	table->header = (const void *)header;
+<<<<<<< HEAD
 }
 
 static void *__init balloc(unsigned long sz)
@@ -354,6 +419,20 @@ void __init arc_unwind_setup(void)
 
 #ifdef CONFIG_MODULES
 
+=======
+	return;
+
+ret_err:
+	panic("Attention !!! Dwarf FDE parsing errors\n");;
+}
+
+#ifdef CONFIG_MODULES
+static void *unw_hdr_alloc(unsigned long sz)
+{
+	return kmalloc(sz, GFP_KERNEL);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct unwind_table *last_table;
 
 /* Must be called with module_mutex held. */
@@ -370,11 +449,21 @@ void *unwind_add_table(struct module *module, const void *table_start,
 		return NULL;
 
 	init_unwind_table(table, module->name,
+<<<<<<< HEAD
 			  module->module_core, module->core_size,
 			  module->module_init, module->init_size,
 			  table_start, table_size,
 			  NULL, 0);
 
+=======
+			  module->core_layout.base, module->core_layout.size,
+			  module->init_layout.base, module->init_layout.size,
+			  table_start, table_size,
+			  NULL, 0);
+
+	init_unwind_hdr(table, unw_hdr_alloc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef UNWIND_DEBUG
 	unw_debug("Table added for [%s] %lx %lx\n",
 		module->name, table->core.pc, table->core.range);
@@ -437,6 +526,10 @@ void unwind_remove_table(void *handle, int init_only)
 	info.init_only = init_only;
 
 	unlink_table(&info); /* XXX: SMP */
+<<<<<<< HEAD
+=======
+	kfree(table->header);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(table);
 }
 
@@ -486,6 +579,18 @@ static sleb128_t get_sleb128(const u8 **pcur, const u8 *end)
 	return value;
 }
 
+<<<<<<< HEAD
+=======
+static const u32 *__cie_for_fde(const u32 *fde)
+{
+	const u32 *cie;
+
+	cie = fde + 1 - fde[1] / sizeof(*fde);
+
+	return cie;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 *cie_for_fde(const u32 *fde, const struct unwind_table *table)
 {
 	const u32 *cie;
@@ -493,19 +598,31 @@ static const u32 *cie_for_fde(const u32 *fde, const struct unwind_table *table)
 	if (!*fde || (*fde & (sizeof(*fde) - 1)))
 		return &bad_cie;
 
+<<<<<<< HEAD
 	if (fde[1] == 0xffffffff)
+=======
+	if (fde[1] == CIE_ID)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return &not_fde;	/* this is a CIE */
 
 	if ((fde[1] & (sizeof(*fde) - 1)))
 /* || fde[1] > (unsigned long)(fde + 1) - (unsigned long)table->address) */
 		return NULL;	/* this is not a valid FDE */
 
+<<<<<<< HEAD
 	/* cie = fde + 1 - fde[1] / sizeof(*fde); */
 	cie = (u32 *) fde[1];
 
 	if (*cie <= sizeof(*cie) + 4 || *cie >= fde[1] - sizeof(*fde)
 	    || (*cie & (sizeof(*cie) - 1))
 	    || (cie[1] != 0xffffffff))
+=======
+	cie = __cie_for_fde(fde);
+
+	if (*cie <= sizeof(*cie) + 4 || *cie >= fde[1] - sizeof(*fde)
+	    || (*cie & (sizeof(*cie) - 1))
+	    || (cie[1] != CIE_ID))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;	/* this is not a (valid) CIE */
 	return cie;
 }
@@ -586,9 +703,12 @@ static signed fde_pointer_type(const u32 *cie)
 	const u8 *ptr = (const u8 *)(cie + 2);
 	unsigned version = *ptr;
 
+<<<<<<< HEAD
 	if (version != 1)
 		return -1;	/* unsupported */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (*++ptr) {
 		const char *aug;
 		const u8 *end = (const u8 *)(cie + 1) + *cie;
@@ -839,7 +959,11 @@ static int processCFI(const u8 *start, const u8 *end, unsigned long targetLoc,
 				break;
 			case DW_CFA_GNU_window_save:
 			default:
+<<<<<<< HEAD
 				unw_debug("UNKNOW OPCODE 0x%x\n", opcode);
+=======
+				unw_debug("UNKNOWN OPCODE 0x%x\n", opcode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				result = 0;
 				break;
 			}
@@ -1000,9 +1124,13 @@ int arc_unwind(struct unwind_frame_info *frame)
 		ptr = (const u8 *)(cie + 2);
 		end = (const u8 *)(cie + 1) + *cie;
 		frame->call_frame = 1;
+<<<<<<< HEAD
 		if ((state.version = *ptr) != 1)
 			cie = NULL;	/* unsupported version */
 		else if (*++ptr) {
+=======
+		if (*++ptr) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* check if augmentation size is first (thus present) */
 			if (*ptr == 'z') {
 				while (++ptr < end && *ptr) {

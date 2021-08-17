@@ -76,7 +76,11 @@ void ivtv_udma_fill_sg_array (struct ivtv_user_dma *dma, u32 buffer_offset, u32 
 	int i;
 	struct scatterlist *sg;
 
+<<<<<<< HEAD
 	for (i = 0, sg = dma->SGlist; i < dma->SG_length; i++, sg++) {
+=======
+	for (i = 0, sg = dma->SGlist; i < dma->SG_length; i++, sg = sg_next(sg)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dma->SGarray[i].size = cpu_to_le32(sg_dma_len(sg));
 		dma->SGarray[i].src = cpu_to_le32(sg_dma_address(sg));
 		dma->SGarray[i].dst = cpu_to_le32(buffer_offset);
@@ -124,10 +128,15 @@ int ivtv_udma_setup(struct ivtv *itv, unsigned long ivtv_dest_addr,
 	}
 
 	/* Get user pages for DMA Xfer */
+<<<<<<< HEAD
 	down_read(&current->mm->mmap_sem);
 	err = get_user_pages(current, current->mm,
 			user_dma.uaddr, user_dma.page_count, 0, 1, dma->map, NULL);
 	up_read(&current->mm->mmap_sem);
+=======
+	err = get_user_pages_unlocked(user_dma.uaddr, user_dma.page_count,
+			dma->map, FOLL_FORCE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (user_dma.page_count != err) {
 		IVTV_DEBUG_WARN("failed to map user pages, returned %d instead of %d\n",

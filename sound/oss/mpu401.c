@@ -316,6 +316,10 @@ static int mpu_input_scanner(struct mpu_config *devc, unsigned char midic)
 				case 0xf6:
 					/* printk( "tune_request\n"); */
 					devc->m_state = ST_INIT;
+<<<<<<< HEAD
+=======
+					break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 					/*
 					 *    Real time messages
@@ -567,7 +571,10 @@ static int mpu401_out(int dev, unsigned char midi_byte)
 static int mpu401_command(int dev, mpu_command_rec * cmd)
 {
 	int i, timeout, ok;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long   flags;
 	struct mpu_config *devc;
 
@@ -644,7 +651,10 @@ retry:
 			}
 		}
 	}
+<<<<<<< HEAD
 	ret = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmd->data[0] = 0;
 
 	if (cmd->nr_returns)
@@ -666,7 +676,11 @@ retry:
 		}
 	}
 	spin_unlock_irqrestore(&devc->lock,flags);
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mpu_cmd(int dev, int cmd, int data)
@@ -974,7 +988,10 @@ int attach_mpu401(struct address_info *hw_config, struct module *owner)
 	devc->m_busy = 0;
 	devc->m_state = ST_INIT;
 	devc->shared_irq = hw_config->always_detect;
+<<<<<<< HEAD
 	devc->irq = hw_config->irq;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_init(&devc->lock);
 
 	if (devc->irq < 0)

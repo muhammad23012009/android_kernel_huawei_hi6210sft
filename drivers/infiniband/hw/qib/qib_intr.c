@@ -74,7 +74,11 @@ static void signal_ib_event(struct qib_pportdata *ppd, enum ib_event_type ev)
 	struct ib_event event;
 	struct qib_devdata *dd = ppd->dd;
 
+<<<<<<< HEAD
 	event.device = &dd->verbs_dev.ibdev;
+=======
+	event.device = &dd->verbs_dev.rdi.ibdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	event.element.port_num = ppd->port;
 	event.event = ev;
 	ib_dispatch_event(&event);
@@ -168,7 +172,10 @@ skip_ibchange:
 	ppd->lastibcstat = ibcs;
 	if (ev)
 		signal_ib_event(ppd, ev);
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void qib_clear_symerror_on_linkup(unsigned long opaque)

@@ -97,6 +97,7 @@ ftrace_modify_code(unsigned long ip, unsigned char *old_code,
 	unsigned char replaced[MCOUNT_INSN_SIZE];
 
 	/*
+<<<<<<< HEAD
 	 * Note: Due to modules and __init, code can
 	 *  disappear and change, we need to protect against faulting
 	 *  as well as code changing. We do this by using the
@@ -104,6 +105,13 @@ ftrace_modify_code(unsigned long ip, unsigned char *old_code,
 	 *
 	 * No real locking needed, this code is run through
 	 * kstop_machine, or before SMP starts.
+=======
+	 * Note:
+	 * We are paranoid about modifying text, as if a bug was to happen, it
+	 * could cause us to read or write to someplace that could cause harm.
+	 * Carefully read and modify the code with probe_kernel_*(), and make
+	 * sure what we read is what we expected it to be before modifying it.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 
 	if (!do_check)
@@ -198,9 +206,14 @@ int ftrace_update_ftrace_func(ftrace_func_t func)
 }
 
 /* run from kstop_machine */
+<<<<<<< HEAD
 int __init ftrace_dyn_arch_init(void *data)
 {
 	*(unsigned long *)data = 0;
 
+=======
+int __init ftrace_dyn_arch_init(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }

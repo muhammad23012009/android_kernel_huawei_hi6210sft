@@ -16,7 +16,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/stddef.h>
 #include <linux/interrupt.h>
@@ -106,15 +109,23 @@ static const char rx_fw_stat_gstrings[][ETH_GSTRING_LEN] = {
 #define UEC_RX_FW_STATS_LEN ARRAY_SIZE(rx_fw_stat_gstrings)
 
 static int
+<<<<<<< HEAD
 uec_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
 {
 	struct ucc_geth_private *ugeth = netdev_priv(netdev);
 	struct phy_device *phydev = ugeth->phydev;
 	struct ucc_geth_info *ug_info = ugeth->ug_info;
+=======
+uec_get_ksettings(struct net_device *netdev, struct ethtool_link_ksettings *cmd)
+{
+	struct ucc_geth_private *ugeth = netdev_priv(netdev);
+	struct phy_device *phydev = ugeth->phydev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!phydev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	ecmd->maxtxpkt = 1;
 	ecmd->maxrxpkt = ug_info->interruptcoalescingmaxvalue[0];
 
@@ -123,6 +134,14 @@ uec_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
 
 static int
 uec_set_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
+=======
+	return phy_ethtool_ksettings_get(phydev, cmd);
+}
+
+static int
+uec_set_ksettings(struct net_device *netdev,
+		  const struct ethtool_link_ksettings *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ucc_geth_private *ugeth = netdev_priv(netdev);
 	struct phy_device *phydev = ugeth->phydev;
@@ -130,7 +149,11 @@ uec_set_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
 	if (!phydev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	return phy_ethtool_sset(phydev, ecmd);
+=======
+	return phy_ethtool_ksettings_set(phydev, cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -254,6 +277,7 @@ uec_set_ringparam(struct net_device *netdev,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ug_info->bdRingLenRx[queue] = ring->rx_pending;
 	ug_info->bdRingLenTx[queue] = ring->tx_pending;
 
@@ -262,6 +286,14 @@ uec_set_ringparam(struct net_device *netdev,
 		netdev_info(netdev, "Please re-open the interface\n");
 	}
 
+=======
+	if (netif_running(netdev))
+		return -EBUSY;
+
+	ug_info->bdRingLenRx[queue] = ring->rx_pending;
+	ug_info->bdRingLenTx[queue] = ring->tx_pending;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -352,8 +384,11 @@ uec_get_drvinfo(struct net_device *netdev,
 	strlcpy(drvinfo->version, DRV_VERSION, sizeof(drvinfo->version));
 	strlcpy(drvinfo->fw_version, "N/A", sizeof(drvinfo->fw_version));
 	strlcpy(drvinfo->bus_info, "QUICC ENGINE", sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->eedump_len = 0;
 	drvinfo->regdump_len = uec_get_regs_len(netdev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM
@@ -395,8 +430,11 @@ static int uec_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 #endif /* CONFIG_PM */
 
 static const struct ethtool_ops uec_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings           = uec_get_settings,
 	.set_settings           = uec_set_settings,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_drvinfo            = uec_get_drvinfo,
 	.get_regs_len           = uec_get_regs_len,
 	.get_regs               = uec_get_regs,
@@ -414,9 +452,18 @@ static const struct ethtool_ops uec_ethtool_ops = {
 	.get_wol		= uec_get_wol,
 	.set_wol		= uec_set_wol,
 	.get_ts_info		= ethtool_op_get_ts_info,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings	= uec_get_ksettings,
+	.set_link_ksettings	= uec_set_ksettings,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void uec_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &uec_ethtool_ops);
+=======
+	netdev->ethtool_ops = &uec_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

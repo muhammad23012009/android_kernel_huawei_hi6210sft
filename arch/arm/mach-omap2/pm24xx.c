@@ -25,6 +25,10 @@
 #include <linux/sysfs.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk-provider.h>
 #include <linux/irq.h>
 #include <linux/time.h>
@@ -62,6 +66,7 @@ static struct clockdomain *dsp_clkdm, *mpu_clkdm, *wkup_clkdm, *gfx_clkdm;
 
 static struct clk *osc_ck, *emul_ck;
 
+<<<<<<< HEAD
 static int omap2_fclks_active(void)
 {
 	u32 f1, f2;
@@ -72,6 +77,8 @@ static int omap2_fclks_active(void)
 	return (f1 | f2) ? 1 : 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int omap2_enter_full_retention(void)
 {
 	u32 l;
@@ -85,9 +92,15 @@ static int omap2_enter_full_retention(void)
 
 	/* Clear old wake-up events */
 	/* REVISIT: These write to reserved bits? */
+<<<<<<< HEAD
 	omap2_prm_write_mod_reg(0xffffffff, CORE_MOD, PM_WKST1);
 	omap2_prm_write_mod_reg(0xffffffff, CORE_MOD, OMAP24XX_PM_WKST2);
 	omap2_prm_write_mod_reg(0xffffffff, WKUP_MOD, PM_WKST);
+=======
+	omap_prm_clear_mod_irqs(CORE_MOD, PM_WKST1, ~0);
+	omap_prm_clear_mod_irqs(CORE_MOD, OMAP24XX_PM_WKST2, ~0);
+	omap_prm_clear_mod_irqs(WKUP_MOD, PM_WKST, ~0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pwrdm_set_next_pwrst(core_pwrdm, PWRDM_POWER_RET);
 	pwrdm_set_next_pwrst(mpu_pwrdm, PWRDM_POWER_RET);
@@ -114,6 +127,7 @@ no_sleep:
 	clk_enable(osc_ck);
 
 	/* clear CORE wake-up events */
+<<<<<<< HEAD
 	omap2_prm_write_mod_reg(0xffffffff, CORE_MOD, PM_WKST1);
 	omap2_prm_write_mod_reg(0xffffffff, CORE_MOD, OMAP24XX_PM_WKST2);
 
@@ -131,6 +145,18 @@ no_sleep:
 
 	/* Mask future PRCM-to-MPU interrupts */
 	omap2_prm_write_mod_reg(0x0, OCP_MOD, OMAP2_PRCM_IRQSTATUS_MPU_OFFSET);
+=======
+	omap_prm_clear_mod_irqs(CORE_MOD, PM_WKST1, ~0);
+	omap_prm_clear_mod_irqs(CORE_MOD, OMAP24XX_PM_WKST2, ~0);
+
+	/* wakeup domain events - bit 1: GPT1, bit5 GPIO */
+	omap_prm_clear_mod_irqs(WKUP_MOD, PM_WKST, 0x4 | 0x1);
+
+	/* MPU domain wake events */
+	omap_prm_clear_mod_irqs(OCP_MOD, OMAP2_PRCM_IRQSTATUS_MPU_OFFSET, 0x1);
+
+	omap_prm_clear_mod_irqs(OCP_MOD, OMAP2_PRCM_IRQSTATUS_MPU_OFFSET, 0x20);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pwrdm_set_next_pwrst(mpu_pwrdm, PWRDM_POWER_ON);
 	pwrdm_set_next_pwrst(core_pwrdm, PWRDM_POWER_ON);
@@ -142,6 +168,7 @@ static int sti_console_enabled;
 
 static int omap2_allow_mpu_retention(void)
 {
+<<<<<<< HEAD
 	u32 l;
 
 	/* Check for MMC, UART2, UART1, McSPI2, McSPI1 and DSS1. */
@@ -153,6 +180,9 @@ static int omap2_allow_mpu_retention(void)
 	/* Check for UART3. */
 	l = omap2_cm_read_mod_reg(CORE_MOD, OMAP24XX_CM_FCLKEN2);
 	if (l & OMAP24XX_EN_UART3_MASK)
+=======
+	if (!omap2xxx_cm_mpu_retention_allowed())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	if (sti_console_enabled)
 		return 0;
@@ -168,9 +198,15 @@ static void omap2_enter_mpu_retention(void)
 	 * it is in retention mode. */
 	if (omap2_allow_mpu_retention()) {
 		/* REVISIT: These write to reserved bits? */
+<<<<<<< HEAD
 		omap2_prm_write_mod_reg(0xffffffff, CORE_MOD, PM_WKST1);
 		omap2_prm_write_mod_reg(0xffffffff, CORE_MOD, OMAP24XX_PM_WKST2);
 		omap2_prm_write_mod_reg(0xffffffff, WKUP_MOD, PM_WKST);
+=======
+		omap_prm_clear_mod_irqs(CORE_MOD, PM_WKST1, ~0);
+		omap_prm_clear_mod_irqs(CORE_MOD, OMAP24XX_PM_WKST2, ~0);
+		omap_prm_clear_mod_irqs(WKUP_MOD, PM_WKST, ~0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Try to enter MPU retention */
 		pwrdm_set_next_pwrst(mpu_pwrdm, PWRDM_POWER_RET);
@@ -188,7 +224,11 @@ static void omap2_enter_mpu_retention(void)
 
 static int omap2_can_sleep(void)
 {
+<<<<<<< HEAD
 	if (omap2_fclks_active())
+=======
+	if (omap2xxx_cm_fclks_active())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	if (__clk_is_enabled(osc_ck))
 		return 0;
@@ -249,9 +289,13 @@ static void __init prcm_setup_regs(void)
 	clkdm_for_each(omap_pm_clkdms_setup, NULL);
 	clkdm_add_wkdep(mpu_clkdm, wkup_clkdm);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUSPEND
 	omap_pm_suspend = omap2_enter_full_retention;
 #endif
+=======
+	omap_common_suspend_init(omap2_enter_full_retention);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* REVISIT: Configure number of 32 kHz clock cycles for sys_clk
 	 * stabilisation */
@@ -271,6 +315,13 @@ static void __init prcm_setup_regs(void)
 	/* Enable wake-up events */
 	omap2_prm_write_mod_reg(OMAP24XX_EN_GPIOS_MASK | OMAP24XX_EN_GPT1_MASK,
 				WKUP_MOD, PM_WKEN);
+<<<<<<< HEAD
+=======
+
+	/* Enable SYS_CLKEN control when all domains idle */
+	omap2_prm_set_mod_reg_bits(OMAP_AUTOEXTCLKMODE_MASK, OMAP24XX_GR_MOD,
+				   OMAP2_PRCM_CLKSRC_CTRL_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int __init omap2_pm_init(void)

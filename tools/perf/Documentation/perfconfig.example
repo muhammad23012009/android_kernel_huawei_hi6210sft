@@ -5,7 +5,11 @@
 	medium = green, lightgray
 	normal = black, lightgray
 	selected = lightgray, magenta
+<<<<<<< HEAD
 	code = blue, lightgray
+=======
+	jump_arrows = blue, lightgray
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	addr = magenta, lightgray
 
 [tui]
@@ -27,3 +31,15 @@
 	use_offset = true
 	jump_arrows = true
 	show_nr_jumps = false
+<<<<<<< HEAD
+=======
+
+[report]
+
+	# Defaults
+	sort-order = comm,dso,symbol
+	percent-limit = 0
+	queue-size = 0
+	children = true
+	group = true
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -26,7 +26,11 @@ char *strchr(const char *s, int c)
 	const uint64_t *p = (const uint64_t *)(s_int & -8);
 
 	/* Create eight copies of the byte for which we are looking. */
+<<<<<<< HEAD
 	const uint64_t goal = 0x0101010101010101ULL * (uint8_t) c;
+=======
+	const uint64_t goal = copy_byte(c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Read the first aligned word, but force bytes before the string to
 	 * match neither zero nor goal (we make sure the high bit of each

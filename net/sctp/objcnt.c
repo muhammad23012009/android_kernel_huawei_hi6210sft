@@ -20,6 +20,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -36,6 +37,17 @@
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+ *
+ * Written or modified by:
+ *    Jon Grimm             <jgrimm@us.ibm.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -85,12 +97,22 @@ static sctp_dbg_objcnt_entry_t sctp_dbg_objcnt[] = {
  */
 static int sctp_objcnt_seq_show(struct seq_file *seq, void *v)
 {
+<<<<<<< HEAD
 	int i, len;
 
 	i = (int)*(loff_t *)v;
 	seq_printf(seq, "%s: %d%n", sctp_dbg_objcnt[i].label,
 				atomic_read(sctp_dbg_objcnt[i].counter), &len);
 	seq_printf(seq, "%*s\n", 127 - len, "");
+=======
+	int i;
+
+	i = (int)*(loff_t *)v;
+	seq_setwidth(seq, 127);
+	seq_printf(seq, "%s: %d", sctp_dbg_objcnt[i].label,
+				atomic_read(sctp_dbg_objcnt[i].counter));
+	seq_pad(seq, '\n');
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -103,7 +125,11 @@ static void sctp_objcnt_seq_stop(struct seq_file *seq, void *v)
 {
 }
 
+<<<<<<< HEAD
 static void * sctp_objcnt_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+=======
+static void *sctp_objcnt_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	++*pos;
 	return (*pos >= ARRAY_SIZE(sctp_dbg_objcnt)) ? NULL : (void *)pos;

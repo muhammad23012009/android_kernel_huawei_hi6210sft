@@ -14,12 +14,22 @@
 
 #include <asm-generic/module.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARC_DW2_UNWIND
 struct mod_arch_specific {
 	void *unw_info;
 	int unw_sec_idx;
 };
 #endif
+=======
+struct mod_arch_specific {
+#ifdef CONFIG_ARC_DW2_UNWIND
+	void *unw_info;
+	int unw_sec_idx;
+#endif
+	const char *secstr;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MODULE_PROC_FAMILY "ARC700"
 

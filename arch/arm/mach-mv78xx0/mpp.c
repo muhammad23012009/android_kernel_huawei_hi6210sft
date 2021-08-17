@@ -12,7 +12,11 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <plat/mpp.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
+=======
+#include "mv78xx0.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "common.h"
 #include "mpp.h"
 

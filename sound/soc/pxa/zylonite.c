@@ -71,13 +71,17 @@ static const struct snd_soc_dapm_route audio_map[] = {
 
 static int zylonite_wm9713_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (clk_pout)
 		snd_soc_dai_set_pll(rtd->codec_dai, 0, 0,
 				    clk_get_rate(pout), 0);
 
+<<<<<<< HEAD
 	snd_soc_dapm_new_controls(dapm, zylonite_dapm_widgets,
 				  ARRAY_SIZE(zylonite_dapm_widgets));
 
@@ -87,6 +91,8 @@ static int zylonite_wm9713_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_enable_pin(dapm, "Headphone");
 	snd_soc_dapm_enable_pin(dapm, "Headset Earpiece");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -142,6 +148,7 @@ static int zylonite_voice_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
 		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS);
 	if (ret < 0)
@@ -152,6 +159,8 @@ static int zylonite_voice_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -184,6 +193,11 @@ static struct snd_soc_dai_link zylonite_dai[] = {
 	.platform_name = "pxa-pcm-audio",
 	.cpu_dai_name = "pxa-ssp-dai.2",
 	.codec_dai_name = "wm9713-voice",
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+		   SND_SOC_DAIFMT_CBS_CFS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ops = &zylonite_voice_ops,
 },
 };
@@ -256,7 +270,15 @@ static struct snd_soc_card zylonite = {
 	.resume_pre = &zylonite_resume_pre,
 	.dai_link = zylonite_dai,
 	.num_links = ARRAY_SIZE(zylonite_dai),
+<<<<<<< HEAD
 	.owner = THIS_MODULE,
+=======
+
+	.dapm_widgets = zylonite_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(zylonite_dapm_widgets),
+	.dapm_routes = audio_map,
+	.num_dapm_routes = ARRAY_SIZE(audio_map),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device *zylonite_snd_ac97_device;

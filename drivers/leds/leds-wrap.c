@@ -76,6 +76,7 @@ static int wrap_led_probe(struct platform_device *pdev)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = led_classdev_register(&pdev->dev, &wrap_power_led);
 	if (ret < 0)
 		return ret;
@@ -104,14 +105,30 @@ static int wrap_led_remove(struct platform_device *pdev)
 	led_classdev_unregister(&wrap_error_led);
 	led_classdev_unregister(&wrap_extra_led);
 	return 0;
+=======
+	ret = devm_led_classdev_register(&pdev->dev, &wrap_power_led);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_led_classdev_register(&pdev->dev, &wrap_error_led);
+	if (ret < 0)
+		return ret;
+
+	return  devm_led_classdev_register(&pdev->dev, &wrap_extra_led);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver wrap_led_driver = {
 	.probe		= wrap_led_probe,
+<<<<<<< HEAD
 	.remove		= wrap_led_remove,
 	.driver		= {
 		.name		= DRVNAME,
 		.owner		= THIS_MODULE,
+=======
+	.driver		= {
+		.name		= DRVNAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

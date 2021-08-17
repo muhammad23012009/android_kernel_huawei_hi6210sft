@@ -61,6 +61,14 @@ struct ptrace_peeksiginfo_args {
 	__s32 nr;	/* how may siginfos to take */
 };
 
+<<<<<<< HEAD
+=======
+#define PTRACE_GETSIGMASK	0x420a
+#define PTRACE_SETSIGMASK	0x420b
+
+#define PTRACE_SECCOMP_GET_FILTER	0x420c
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Read signals from a shared (process wide) queue */
 #define PTRACE_PEEKSIGINFO_SHARED	(1 << 0)
 
@@ -86,9 +94,17 @@ struct ptrace_peeksiginfo_args {
 #define PTRACE_O_TRACESECCOMP	(1 << PTRACE_EVENT_SECCOMP)
 
 /* eventless options */
+<<<<<<< HEAD
 #define PTRACE_O_EXITKILL	(1 << 20)
 
 #define PTRACE_O_MASK		(0x000000ff | PTRACE_O_EXITKILL)
+=======
+#define PTRACE_O_EXITKILL		(1 << 20)
+#define PTRACE_O_SUSPEND_SECCOMP	(1 << 21)
+
+#define PTRACE_O_MASK		(\
+	0x000000ff | PTRACE_O_EXITKILL | PTRACE_O_SUSPEND_SECCOMP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/ptrace.h>
 

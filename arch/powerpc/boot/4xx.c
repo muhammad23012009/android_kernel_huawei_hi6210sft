@@ -232,7 +232,11 @@ void ibm4xx_denali_fixup_memsize(void)
 		dpath = 8; /* 64 bits */
 
 	/* get address pins (rows) */
+<<<<<<< HEAD
  	val = SDRAM0_READ(DDR0_42);
+=======
+	val = SDRAM0_READ(DDR0_42);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	row = DDR_GET_VAL(val, DDR_APIN, DDR_APIN_SHIFT);
 	if (row > max_row)

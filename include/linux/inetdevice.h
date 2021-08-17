@@ -5,12 +5,17 @@
 
 #include <linux/bitmap.h>
 #include <linux/if.h>
+<<<<<<< HEAD
+=======
+#include <linux/ip.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/rcupdate.h>
 #include <linux/timer.h>
 #include <linux/sysctl.h>
 #include <linux/rtnetlink.h>
 
+<<<<<<< HEAD
 enum
 {
 	IPV4_DEVCONF_FORWARDING=1,
@@ -44,18 +49,32 @@ enum
 
 #define IPV4_DEVCONF_MAX (__IPV4_DEVCONF_MAX - 1)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ipv4_devconf {
 	void	*sysctl;
 	int	data[IPV4_DEVCONF_MAX];
 	DECLARE_BITMAP(state, IPV4_DEVCONF_MAX);
 };
 
+<<<<<<< HEAD
+=======
+#define MC_HASH_SZ_LOG 9
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct in_device {
 	struct net_device	*dev;
 	atomic_t		refcnt;
 	int			dead;
 	struct in_ifaddr	*ifa_list;	/* IP ifaddr chain		*/
+<<<<<<< HEAD
 	struct ip_mc_list __rcu	*mc_list;	/* IP multicast filter chain    */
+=======
+
+	struct ip_mc_list __rcu	*mc_list;	/* IP multicast filter chain    */
+	struct ip_mc_list __rcu	* __rcu *mc_hash;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			mc_count;	/* Number of installed mcasts	*/
 	spinlock_t		mc_tomb_lock;
 	struct ip_mc_list	*mc_tomb;
@@ -147,6 +166,12 @@ static inline void ipv4_devconf_setall(struct in_device *in_dev)
 	 || (!IN_DEV_FORWARD(in_dev) && \
 	  IN_DEV_ORCONF((in_dev), ACCEPT_REDIRECTS)))
 
+<<<<<<< HEAD
+=======
+#define IN_DEV_IGNORE_ROUTES_WITH_LINKDOWN(in_dev) \
+	IN_DEV_CONF_GET((in_dev), IGNORE_ROUTES_WITH_LINKDOWN)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IN_DEV_ARPFILTER(in_dev)	IN_DEV_ORCONF((in_dev), ARPFILTER)
 #define IN_DEV_ARP_ACCEPT(in_dev)	IN_DEV_ORCONF((in_dev), ARP_ACCEPT)
 #define IN_DEV_ARP_ANNOUNCE(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_ANNOUNCE)
@@ -163,8 +188,13 @@ struct in_ifaddr {
 	__be32			ifa_mask;
 	__be32			ifa_broadcast;
 	unsigned char		ifa_scope;
+<<<<<<< HEAD
 	unsigned char		ifa_flags;
 	unsigned char		ifa_prefixlen;
+=======
+	unsigned char		ifa_prefixlen;
+	__u32			ifa_flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char			ifa_label[IFNAMSIZ];
 
 	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
@@ -174,6 +204,7 @@ struct in_ifaddr {
 	unsigned long		ifa_tstamp; /* updated timestamp */
 };
 
+<<<<<<< HEAD
 extern int register_inetaddr_notifier(struct notifier_block *nb);
 extern int unregister_inetaddr_notifier(struct notifier_block *nb);
 
@@ -181,11 +212,21 @@ extern void inet_netconf_notify_devconf(struct net *net, int type, int ifindex,
 					struct ipv4_devconf *devconf);
 
 extern struct net_device *__ip_dev_find(struct net *net, __be32 addr, bool devref);
+=======
+int register_inetaddr_notifier(struct notifier_block *nb);
+int unregister_inetaddr_notifier(struct notifier_block *nb);
+
+void inet_netconf_notify_devconf(struct net *net, int type, int ifindex,
+				 struct ipv4_devconf *devconf);
+
+struct net_device *__ip_dev_find(struct net *net, __be32 addr, bool devref);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct net_device *ip_dev_find(struct net *net, __be32 addr)
 {
 	return __ip_dev_find(net, addr, true);
 }
 
+<<<<<<< HEAD
 extern int		inet_addr_onlink(struct in_device *in_dev, __be32 a, __be32 b);
 extern int		devinet_ioctl(struct net *net, unsigned int cmd, void __user *);
 extern void		devinet_init(void);
@@ -195,6 +236,18 @@ extern __be32		inet_confirm_addr(struct in_device *in_dev, __be32 dst, __be32 lo
 extern struct in_ifaddr *inet_ifa_byprefix(struct in_device *in_dev, __be32 prefix, __be32 mask);
 
 static __inline__ int inet_ifa_match(__be32 addr, struct in_ifaddr *ifa)
+=======
+int inet_addr_onlink(struct in_device *in_dev, __be32 a, __be32 b);
+int devinet_ioctl(struct net *net, unsigned int cmd, void __user *);
+void devinet_init(void);
+struct in_device *inetdev_by_index(struct net *, int);
+__be32 inet_select_addr(const struct net_device *dev, __be32 dst, int scope);
+__be32 inet_confirm_addr(struct net *net, struct in_device *in_dev, __be32 dst,
+			 __be32 local, int scope);
+struct in_ifaddr *inet_ifa_byprefix(struct in_device *in_dev, __be32 prefix,
+				    __be32 mask);
+static __inline__ bool inet_ifa_match(__be32 addr, struct in_ifaddr *ifa)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return !((addr^ifa->ifa_address)&ifa->ifa_mask);
 }
@@ -203,6 +256,7 @@ static __inline__ int inet_ifa_match(__be32 addr, struct in_ifaddr *ifa)
  *	Check if a mask is acceptable.
  */
  
+<<<<<<< HEAD
 static __inline__ int bad_mask(__be32 mask, __be32 addr)
 {
 	__u32 hmask;
@@ -212,6 +266,17 @@ static __inline__ int bad_mask(__be32 mask, __be32 addr)
 	if (hmask & (hmask+1))
 		return 1;
 	return 0;
+=======
+static __inline__ bool bad_mask(__be32 mask, __be32 addr)
+{
+	__u32 hmask;
+	if (addr & (mask = ~mask))
+		return true;
+	hmask = ntohl(mask);
+	if (hmask & (hmask+1))
+		return true;
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define for_primary_ifa(in_dev)	{ struct in_ifaddr *ifa; \
@@ -245,7 +310,18 @@ static inline struct in_device *__in_dev_get_rtnl(const struct net_device *dev)
 	return rtnl_dereference(dev->ip_ptr);
 }
 
+<<<<<<< HEAD
 extern void in_dev_finish_destroy(struct in_device *idev);
+=======
+static inline struct neigh_parms *__in_dev_arp_parms_get_rcu(const struct net_device *dev)
+{
+	struct in_device *in_dev = __in_dev_get_rcu(dev);
+
+	return in_dev ? in_dev->arp_parms : NULL;
+}
+
+void in_dev_finish_destroy(struct in_device *idev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void in_dev_put(struct in_device *idev)
 {

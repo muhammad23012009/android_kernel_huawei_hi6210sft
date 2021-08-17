@@ -21,6 +21,10 @@ struct dev_archdata {
 #ifdef CONFIG_IOMMU_API
 	void *iommu;			/* private IOMMU data */
 #endif
+<<<<<<< HEAD
+=======
+	bool dma_coherent;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct pdev_archdata {

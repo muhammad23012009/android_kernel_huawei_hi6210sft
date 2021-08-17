@@ -214,8 +214,13 @@ static int snd_gusmax_probe(struct device *pdev, unsigned int dev)
 	struct snd_wss *wss;
 	struct snd_gusmax *maxcard;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_gusmax), &card);
+=======
+	err = snd_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+			   sizeof(struct snd_gusmax), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	card->private_free = snd_gusmax_free;
@@ -309,7 +314,11 @@ static int snd_gusmax_probe(struct device *pdev, unsigned int dev)
 	if (err < 0)
 		goto _err;
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(wss, 0, NULL);
+=======
+	err = snd_wss_pcm(wss, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		goto _err;
 
@@ -317,19 +326,31 @@ static int snd_gusmax_probe(struct device *pdev, unsigned int dev)
 	if (err < 0)
 		goto _err;
 
+<<<<<<< HEAD
 	err = snd_wss_timer(wss, 2, NULL);
+=======
+	err = snd_wss_timer(wss, 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		goto _err;
 
 	if (pcm_channels[dev] > 0) {
+<<<<<<< HEAD
 		if ((err = snd_gf1_pcm_new(gus, 1, 1, NULL)) < 0)
+=======
+		if ((err = snd_gf1_pcm_new(gus, 1, 1)) < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto _err;
 	}
 	err = snd_gusmax_mixer(wss);
 	if (err < 0)
 		goto _err;
 
+<<<<<<< HEAD
 	err = snd_gf1_rawmidi_new(gus, 0, NULL);
+=======
+	err = snd_gf1_rawmidi_new(gus, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		goto _err;
 
@@ -337,8 +358,11 @@ static int snd_gusmax_probe(struct device *pdev, unsigned int dev)
 	if (xdma2 >= 0)
 		sprintf(card->longname + strlen(card->longname), "&%i", xdma2);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, pdev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_card_register(card);
 	if (err < 0)
 		goto _err;
@@ -357,7 +381,10 @@ static int snd_gusmax_probe(struct device *pdev, unsigned int dev)
 static int snd_gusmax_remove(struct device *devptr, unsigned int dev)
 {
 	snd_card_free(dev_get_drvdata(devptr));
+<<<<<<< HEAD
 	dev_set_drvdata(devptr, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -373,6 +400,7 @@ static struct isa_driver snd_gusmax_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_gusmax_init(void)
 {
 	return isa_register_driver(&snd_gusmax_driver, SNDRV_CARDS);
@@ -385,3 +413,6 @@ static void __exit alsa_card_gusmax_exit(void)
 
 module_init(alsa_card_gusmax_init)
 module_exit(alsa_card_gusmax_exit)
+=======
+module_isa_driver(snd_gusmax_driver, SNDRV_CARDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

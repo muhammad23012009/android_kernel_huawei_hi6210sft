@@ -36,7 +36,13 @@
 #include <linux/uaccess.h>
 #include <linux/leds.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/acpi.h>
+#include <linux/i8042.h>
+#include <linux/serio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "../../misc/lis3lv02d/lis3lv02d.h"
 
 #define DRIVER_NAME     "hp_accel"
@@ -73,8 +79,20 @@ static inline void delayed_sysfs_set(struct led_classdev *led_cdev,
 
 /* HP-specific accelerometer driver ------------------------------------ */
 
+<<<<<<< HEAD
 /* For automatic insertion of the module */
 static struct acpi_device_id lis3lv02d_device_ids[] = {
+=======
+/* e0 25, e0 26, e0 27, e0 28 are scan codes that the accelerometer with acpi id
+ * HPQ6000 sends through the keyboard bus */
+#define ACCEL_1 0x25
+#define ACCEL_2 0x26
+#define ACCEL_3 0x27
+#define ACCEL_4 0x28
+
+/* For automatic insertion of the module */
+static const struct acpi_device_id lis3lv02d_device_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{"HPQ0004", 0}, /* HP Mobile Data Protection System PNP */
 	{"HPQ6000", 0}, /* HP Mobile Data Protection System PNP */
 	{"HPQ6007", 0}, /* HP Mobile Data Protection System PNP */
@@ -89,9 +107,18 @@ MODULE_DEVICE_TABLE(acpi, lis3lv02d_device_ids);
  *
  * Returns 0 on success.
  */
+<<<<<<< HEAD
 int lis3lv02d_acpi_init(struct lis3lv02d *lis3)
 {
 	struct acpi_device *dev = lis3->bus_priv;
+=======
+static int lis3lv02d_acpi_init(struct lis3lv02d *lis3)
+{
+	struct acpi_device *dev = lis3->bus_priv;
+	if (!lis3->init_required)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (acpi_evaluate_object(dev->handle, METHOD_NAME__INI,
 				 NULL, NULL) != AE_OK)
 		return -EINVAL;
@@ -107,7 +134,11 @@ int lis3lv02d_acpi_init(struct lis3lv02d *lis3)
  *
  * Returns 0 on success.
  */
+<<<<<<< HEAD
 int lis3lv02d_acpi_read(struct lis3lv02d *lis3, int reg, u8 *ret)
+=======
+static int lis3lv02d_acpi_read(struct lis3lv02d *lis3, int reg, u8 *ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_device *dev = lis3->bus_priv;
 	union acpi_object arg0 = { ACPI_TYPE_INTEGER };
@@ -118,8 +149,15 @@ int lis3lv02d_acpi_read(struct lis3lv02d *lis3, int reg, u8 *ret)
 	arg0.integer.value = reg;
 
 	status = acpi_evaluate_integer(dev->handle, "ALRD", &args, &lret);
+<<<<<<< HEAD
 	*ret = lret;
 	return (status != AE_OK) ? -EINVAL : 0;
+=======
+	if (ACPI_FAILURE(status))
+		return -EINVAL;
+	*ret = lret;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -130,7 +168,11 @@ int lis3lv02d_acpi_read(struct lis3lv02d *lis3, int reg, u8 *ret)
  *
  * Returns 0 on success.
  */
+<<<<<<< HEAD
 int lis3lv02d_acpi_write(struct lis3lv02d *lis3, int reg, u8 val)
+=======
+static int lis3lv02d_acpi_write(struct lis3lv02d *lis3, int reg, u8 val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_device *dev = lis3->bus_priv;
 	unsigned long long ret; /* Not used when writting */
@@ -164,6 +206,10 @@ static int lis3lv02d_dmi_matched(const struct dmi_system_id *dmi)
 DEFINE_CONV(normal, 1, 2, 3);
 DEFINE_CONV(y_inverted, 1, -2, 3);
 DEFINE_CONV(x_inverted, -1, 2, 3);
+<<<<<<< HEAD
+=======
+DEFINE_CONV(x_inverted_usd, -1, 2, -3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DEFINE_CONV(z_inverted, 1, 2, -3);
 DEFINE_CONV(xy_swap, 2, 1, 3);
 DEFINE_CONV(xy_rotated_left, -2, 1, 3);
@@ -192,7 +238,11 @@ DEFINE_CONV(xy_swap_yz_inverted, 2, -1, -3);
 	},						\
 	.driver_data = &lis3lv02d_axis_##_axis		\
 }
+<<<<<<< HEAD
 static struct dmi_system_id lis3lv02d_dmi_ids[] = {
+=======
+static const struct dmi_system_id lis3lv02d_dmi_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* product names are truncated to match all kinds of a same model */
 	AXIS_DMI_MATCH("NC64x0", "HP Compaq nc64", x_inverted),
 	AXIS_DMI_MATCH("NC84x0", "HP Compaq nc84", z_inverted),
@@ -227,6 +277,11 @@ static struct dmi_system_id lis3lv02d_dmi_ids[] = {
 	AXIS_DMI_MATCH("HP8710", "HP Compaq 8710", y_inverted),
 	AXIS_DMI_MATCH("HDX18", "HP HDX 18", x_inverted),
 	AXIS_DMI_MATCH("HPB432x", "HP ProBook 432", xy_rotated_left),
+<<<<<<< HEAD
+=======
+	AXIS_DMI_MATCH("HPB440G3", "HP ProBook 440 G3", x_inverted_usd),
+	AXIS_DMI_MATCH("HPB440G4", "HP ProBook 440 G4", x_inverted),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	AXIS_DMI_MATCH("HPB442x", "HP ProBook 442", xy_rotated_left),
 	AXIS_DMI_MATCH("HPB452x", "HP ProBook 452", y_inverted),
 	AXIS_DMI_MATCH("HPB522x", "HP ProBook 522", xy_swap),
@@ -295,6 +350,38 @@ static void lis3lv02d_enum_resources(struct acpi_device *device)
 		printk(KERN_DEBUG DRIVER_NAME ": Error getting resources\n");
 }
 
+<<<<<<< HEAD
+=======
+static bool hp_accel_i8042_filter(unsigned char data, unsigned char str,
+				  struct serio *port)
+{
+	static bool extended;
+
+	if (str & I8042_STR_AUXDATA)
+		return false;
+
+	if (data == 0xe0) {
+		extended = true;
+		return true;
+	} else if (unlikely(extended)) {
+		extended = false;
+
+		switch (data) {
+		case ACCEL_1:
+		case ACCEL_2:
+		case ACCEL_3:
+		case ACCEL_4:
+			return true;
+		default:
+			serio_interrupt(port, 0xe0, 0);
+			return false;
+		}
+	}
+
+	return false;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int lis3lv02d_add(struct acpi_device *device)
 {
 	int ret;
@@ -323,10 +410,22 @@ static int lis3lv02d_add(struct acpi_device *device)
 	}
 
 	/* call the core layer do its init */
+<<<<<<< HEAD
+=======
+	lis3_dev.init_required = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = lis3lv02d_init_device(&lis3_dev);
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	/* filter to remove HPQ6000 accelerometer data
+	 * from keyboard bus stream */
+	if (strstr(dev_name(&device->dev), "HPQ6000"))
+		i8042_install_filter(hp_accel_i8042_filter);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_WORK(&hpled_led.work, delayed_set_status_worker);
 	ret = led_classdev_register(NULL, &hpled_led.led_classdev);
 	if (ret) {
@@ -344,6 +443,10 @@ static int lis3lv02d_remove(struct acpi_device *device)
 	if (!device)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	i8042_remove_filter(hp_accel_i8042_filter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lis3lv02d_joystick_disable(&lis3_dev);
 	lis3lv02d_poweroff(&lis3_dev);
 
@@ -364,11 +467,34 @@ static int lis3lv02d_suspend(struct device *dev)
 
 static int lis3lv02d_resume(struct device *dev)
 {
+<<<<<<< HEAD
+=======
+	lis3_dev.init_required = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lis3lv02d_poweron(&lis3_dev);
 	return 0;
 }
 
+<<<<<<< HEAD
 static SIMPLE_DEV_PM_OPS(hp_accel_pm, lis3lv02d_suspend, lis3lv02d_resume);
+=======
+static int lis3lv02d_restore(struct device *dev)
+{
+	lis3_dev.init_required = true;
+	lis3lv02d_poweron(&lis3_dev);
+	return 0;
+}
+
+static const struct dev_pm_ops hp_accel_pm = {
+	.suspend = lis3lv02d_suspend,
+	.resume = lis3lv02d_resume,
+	.freeze = lis3lv02d_suspend,
+	.thaw = lis3lv02d_resume,
+	.poweroff = lis3lv02d_suspend,
+	.restore = lis3lv02d_restore,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HP_ACCEL_PM (&hp_accel_pm)
 #else
 #define HP_ACCEL_PM NULL

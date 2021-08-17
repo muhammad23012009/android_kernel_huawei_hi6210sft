@@ -4,7 +4,11 @@
  * This file contains AppArmor dfa based regular expression matching engine
  *
  * Copyright (C) 1998-2008 Novell/SUSE
+<<<<<<< HEAD
  * Copyright 2009-2010 Canonical Ltd.
+=======
+ * Copyright 2009-2012 Canonical Ltd.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +27,11 @@
 #include "include/apparmor.h"
 #include "include/match.h"
 
+<<<<<<< HEAD
+=======
+#define base_idx(X) ((X) & 0xffffff)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * unpack_table - unpack a dfa table (one of accept, default, base, next check)
  * @blob: data to unpack (NOT NULL)
@@ -30,7 +39,11 @@
  *
  * Returns: pointer to table else NULL on failure
  *
+<<<<<<< HEAD
  * NOTE: must be freed by kvfree (not kmalloc)
+=======
+ * NOTE: must be freed by kvfree (not kfree)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static struct table_header *unpack_table(char *blob, size_t bsize)
 {
@@ -59,7 +72,11 @@ static struct table_header *unpack_table(char *blob, size_t bsize)
 	if (bsize < tsize)
 		goto out;
 
+<<<<<<< HEAD
 	table = kvmalloc(tsize);
+=======
+	table = kvzalloc(tsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (table) {
 		table->td_id = th.td_id;
 		table->td_flags = th.td_flags;
@@ -141,8 +158,12 @@ static int verify_dfa(struct aa_dfa *dfa, int flags)
 		for (i = 0; i < state_count; i++) {
 			if (DEFAULT_TABLE(dfa)[i] >= state_count)
 				goto out;
+<<<<<<< HEAD
 			/* TODO: do check that DEF state recursion terminates */
 			if (BASE_TABLE(dfa)[i] + 255 >= trans_count) {
+=======
+			if (base_idx(BASE_TABLE(dfa)[i]) + 255 >= trans_count) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				printk(KERN_ERR "AppArmor DFA next/check upper "
 				       "bounds error\n");
 				goto out;
@@ -318,7 +339,11 @@ unsigned int aa_dfa_match_len(struct aa_dfa *dfa, unsigned int start,
 		u8 *equiv = EQUIV_TABLE(dfa);
 		/* default is direct to next state */
 		for (; len; len--) {
+<<<<<<< HEAD
 			pos = base[state] + equiv[(u8) *str++];
+=======
+			pos = base_idx(base[state]) + equiv[(u8) *str++];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (check[pos] == state)
 				state = next[pos];
 			else
@@ -327,7 +352,11 @@ unsigned int aa_dfa_match_len(struct aa_dfa *dfa, unsigned int start,
 	} else {
 		/* default is direct to next state */
 		for (; len; len--) {
+<<<<<<< HEAD
 			pos = base[state] + (u8) *str++;
+=======
+			pos = base_idx(base[state]) + (u8) *str++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (check[pos] == state)
 				state = next[pos];
 			else
@@ -368,7 +397,11 @@ unsigned int aa_dfa_match(struct aa_dfa *dfa, unsigned int start,
 		u8 *equiv = EQUIV_TABLE(dfa);
 		/* default is direct to next state */
 		while (*str) {
+<<<<<<< HEAD
 			pos = base[state] + equiv[(u8) *str++];
+=======
+			pos = base_idx(base[state]) + equiv[(u8) *str++];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (check[pos] == state)
 				state = next[pos];
 			else
@@ -377,7 +410,11 @@ unsigned int aa_dfa_match(struct aa_dfa *dfa, unsigned int start,
 	} else {
 		/* default is direct to next state */
 		while (*str) {
+<<<<<<< HEAD
 			pos = base[state] + (u8) *str++;
+=======
+			pos = base_idx(base[state]) + (u8) *str++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (check[pos] == state)
 				state = next[pos];
 			else
@@ -413,14 +450,22 @@ unsigned int aa_dfa_next(struct aa_dfa *dfa, unsigned int state,
 		u8 *equiv = EQUIV_TABLE(dfa);
 		/* default is direct to next state */
 
+<<<<<<< HEAD
 		pos = base[state] + equiv[(u8) c];
+=======
+		pos = base_idx(base[state]) + equiv[(u8) c];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (check[pos] == state)
 			state = next[pos];
 		else
 			state = def[state];
 	} else {
 		/* default is direct to next state */
+<<<<<<< HEAD
 		pos = base[state] + (u8) c;
+=======
+		pos = base_idx(base[state]) + (u8) c;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (check[pos] == state)
 			state = next[pos];
 		else

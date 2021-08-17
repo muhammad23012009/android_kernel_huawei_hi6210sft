@@ -18,11 +18,14 @@
 		.irq = soc ## _INT_USB_OTG,				\
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX25
 const struct imx_fsl_usb2_udc_data imx25_fsl_usb2_udc_data __initconst =
 	imx_fsl_usb2_udc_data_entry_single(MX25, "imx-udc-mx27");
 #endif /* ifdef CONFIG_SOC_IMX25 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SOC_IMX27
 const struct imx_fsl_usb2_udc_data imx27_fsl_usb2_udc_data __initconst =
 	imx_fsl_usb2_udc_data_entry_single(MX27, "imx-udc-mx27");
@@ -38,11 +41,14 @@ const struct imx_fsl_usb2_udc_data imx35_fsl_usb2_udc_data __initconst =
 	imx_fsl_usb2_udc_data_entry_single(MX35, "imx-udc-mx27");
 #endif /* ifdef CONFIG_SOC_IMX35 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX51
 const struct imx_fsl_usb2_udc_data imx51_fsl_usb2_udc_data __initconst =
 	imx_fsl_usb2_udc_data_entry_single(MX51, "imx-udc-mx51");
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct platform_device *__init imx_add_fsl_usb2_udc(
 		const struct imx_fsl_usb2_udc_data *data,
 		const struct fsl_usb2_platform_data *pdata)

@@ -23,7 +23,10 @@
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/miscdevice.h>
@@ -36,6 +39,10 @@
 #include <linux/err.h>
 #include <linux/of.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_NAME	"ath79-wdt"
 
@@ -266,7 +273,11 @@ static int ath79_wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(wdt_clk))
 		return PTR_ERR(wdt_clk);
 
+<<<<<<< HEAD
 	err = clk_enable(wdt_clk);
+=======
+	err = clk_prepare_enable(wdt_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 
@@ -297,14 +308,22 @@ static int ath79_wdt_probe(struct platform_device *pdev)
 	return 0;
 
 err_clk_disable:
+<<<<<<< HEAD
 	clk_disable(wdt_clk);
+=======
+	clk_disable_unprepare(wdt_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
 static int ath79_wdt_remove(struct platform_device *pdev)
 {
 	misc_deregister(&ath79_wdt_miscdev);
+<<<<<<< HEAD
 	clk_disable(wdt_clk);
+=======
+	clk_disable_unprepare(wdt_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -327,7 +346,10 @@ static struct platform_driver ath79_wdt_driver = {
 	.shutdown	= ath97_wdt_shutdown,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_match_ptr(ath79_wdt_match),
 	},
 };
@@ -339,4 +361,7 @@ MODULE_AUTHOR("Gabor Juhos <juhosg@openwrt.org");
 MODULE_AUTHOR("Imre Kaloz <kaloz@openwrt.org");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:" DRIVER_NAME);
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

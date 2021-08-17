@@ -7,7 +7,11 @@
 
 #include <linux/compiler.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/bpf_common.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Current version of the filter code architecture.
@@ -32,6 +36,7 @@ struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
 	struct sock_filter __user *filter;
 };
 
+<<<<<<< HEAD
 /*
  * Instruction classes
  */
@@ -82,6 +87,8 @@ struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
 #define         BPF_K           0x00
 #define         BPF_X           0x08
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ret - BPF_K and BPF_X also apply */
 #define BPF_RVAL(code)  ((code) & 0x18)
 #define         BPF_A           0x10
@@ -91,10 +98,13 @@ struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
 #define         BPF_TAX         0x00
 #define         BPF_TXA         0x80
 
+<<<<<<< HEAD
 #ifndef BPF_MAXINSNS
 #define BPF_MAXINSNS 4096
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Macros for filter block array initializers.
  */
@@ -130,9 +140,21 @@ struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
 #define SKF_AD_VLAN_TAG	44
 #define SKF_AD_VLAN_TAG_PRESENT 48
 #define SKF_AD_PAY_OFFSET	52
+<<<<<<< HEAD
 #define SKF_AD_MAX	56
 #define SKF_NET_OFF   (-0x100000)
 #define SKF_LL_OFF    (-0x200000)
 
+=======
+#define SKF_AD_RANDOM	56
+#define SKF_AD_VLAN_TPID	60
+#define SKF_AD_MAX	64
+
+#define SKF_NET_OFF	(-0x100000)
+#define SKF_LL_OFF	(-0x200000)
+
+#define BPF_NET_OFF	SKF_NET_OFF
+#define BPF_LL_OFF	SKF_LL_OFF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _UAPI__LINUX_FILTER_H__ */

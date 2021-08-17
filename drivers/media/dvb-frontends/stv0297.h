@@ -42,7 +42,11 @@ struct stv0297_config
 	u8 stop_during_read:1;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_STV0297)
+=======
+#if IS_REACHABLE(CONFIG_DVB_STV0297)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* stv0297_attach(const struct stv0297_config* config,
 					   struct i2c_adapter* i2c);
 #else

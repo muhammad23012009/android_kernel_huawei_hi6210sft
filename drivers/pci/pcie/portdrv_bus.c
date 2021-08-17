@@ -18,8 +18,13 @@
 static int pcie_port_bus_match(struct device *dev, struct device_driver *drv);
 
 struct bus_type pcie_port_bus_type = {
+<<<<<<< HEAD
 	.name 		= "pci_express",
 	.match 		= pcie_port_bus_match,
+=======
+	.name		= "pci_express",
+	.match		= pcie_port_bus_match,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 EXPORT_SYMBOL_GPL(pcie_port_bus_type);
 

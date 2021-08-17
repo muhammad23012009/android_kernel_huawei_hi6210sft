@@ -87,13 +87,21 @@ static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
 
 static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = kcb->prev_kprobe.kp;
+=======
+	__this_cpu_write(current_kprobe, kcb->prev_kprobe.kp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kcb->kprobe_status = kcb->prev_kprobe.status;
 }
 
 static inline void __kprobes set_current_kprobe(struct kprobe *p)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = p;
+=======
+	__this_cpu_write(current_kprobe, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __kprobes resume_execution(struct kprobe *p, unsigned long addr,
@@ -237,7 +245,11 @@ int __kprobes arc_kprobe_handler(unsigned long addr, struct pt_regs *regs)
 
 		return 1;
 	} else if (kprobe_running()) {
+<<<<<<< HEAD
 		p = __get_cpu_var(current_kprobe);
+=======
+		p = __this_cpu_read(current_kprobe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (p->break_handler && p->break_handler(p, regs)) {
 			setup_singlestep(p, regs);
 			kcb->kprobe_status = KPROBE_HIT_SS;
@@ -327,7 +339,11 @@ int __kprobes kprobe_fault_handler(struct pt_regs *regs, unsigned long trapnr)
 		 */
 
 		/* We increment the nmissed count for accounting,
+<<<<<<< HEAD
 		 * we can also use npre/npostfault count for accouting
+=======
+		 * we can also use npre/npostfault count for accounting
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * these specific fault cases.
 		 */
 		kprobes_inc_nmissed_count(cur);
@@ -517,8 +533,14 @@ int __kprobes arch_trampoline_kprobe(struct kprobe *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 void trap_is_kprobe(unsigned long cause, unsigned long address,
 		    struct pt_regs *regs)
 {
 	notify_die(DIE_TRAP, "kprobe_trap", regs, address, cause, SIGTRAP);
+=======
+void trap_is_kprobe(unsigned long address, struct pt_regs *regs)
+{
+	notify_die(DIE_TRAP, "kprobe_trap", regs, address, 0, SIGTRAP);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

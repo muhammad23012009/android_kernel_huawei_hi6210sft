@@ -28,5 +28,9 @@
 #define EBADTYPE	527	/* Type not supported by server */
 #define EJUKEBOX	528	/* Request initiated, but will not complete before timeout */
 #define EIOCBQUEUED	529	/* iocb queued, will get completion event */
+<<<<<<< HEAD
+=======
+#define ERECALLCONFLICT	530	/* conflict with recalled state */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

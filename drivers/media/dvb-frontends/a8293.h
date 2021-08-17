@@ -12,15 +12,19 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *    You should have received a copy of the GNU General Public License along
  *    with this program; if not, write to the Free Software Foundation, Inc.,
  *    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef A8293_H
 #define A8293_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
 struct a8293_config {
@@ -38,5 +42,21 @@ static inline struct dvb_frontend *a8293_attach(struct dvb_frontend *fe,
 	return NULL;
 }
 #endif
+=======
+#include "dvb_frontend.h"
+
+/*
+ * I2C address
+ * 0x08, 0x09, 0x0a, 0x0b
+ */
+
+/**
+ * struct a8293_platform_data - Platform data for the a8293 driver
+ * @dvb_frontend: DVB frontend.
+ */
+struct a8293_platform_data {
+	struct dvb_frontend *dvb_frontend;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* A8293_H */

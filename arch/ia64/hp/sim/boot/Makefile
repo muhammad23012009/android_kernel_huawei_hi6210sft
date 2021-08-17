@@ -33,5 +33,9 @@ $(obj)/vmlinux.bin: vmlinux FORCE
 LDFLAGS_bootloader = -static -T
 
 $(obj)/bootloader: $(src)/bootloader.lds $(obj)/bootloader.o $(obj)/boot_head.o $(obj)/fw-emu.o \
+<<<<<<< HEAD
                    lib/lib.a arch/ia64/lib/built-in.o arch/ia64/lib/lib.a FORCE
+=======
+                   lib/lib.a arch/ia64/lib/lib.a FORCE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	$(call if_changed,ld)

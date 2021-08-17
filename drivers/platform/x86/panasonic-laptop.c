@@ -125,12 +125,19 @@
 #include <linux/seq_file.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 #include <linux/input.h>
 #include <linux/input/sparse-keymap.h>
 
 
+=======
+#include <linux/acpi.h>
+#include <linux/input.h>
+#include <linux/input/sparse-keymap.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef ACPI_HOTKEY_COMPONENT
 #define ACPI_HOTKEY_COMPONENT	0x10000000
 #endif
@@ -451,6 +458,10 @@ static struct attribute_group pcc_attr_group = {
 
 /* hotkey input device driver */
 
+<<<<<<< HEAD
+=======
+static int sleep_keydown_seen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 {
 	struct input_dev *hotk_input_dev = pcc->input_dev;
@@ -465,7 +476,18 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 		return;
 	}
 
+<<<<<<< HEAD
 	acpi_bus_generate_proc_event(pcc->device, HKEY_NOTIFY, result);
+=======
+	/* hack: some firmware sends no key down for sleep / hibernate */
+	if ((result & 0xf) == 0x7 || (result & 0xf) == 0xa) {
+		if (result & 0x80)
+			sleep_keydown_seen = 1;
+		if (!sleep_keydown_seen)
+			sparse_keymap_report_event(hotk_input_dev,
+					result & 0xf, 0x80, false);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!sparse_keymap_report_event(hotk_input_dev,
 					result & 0xf, result & 0x80, false))
@@ -493,11 +515,16 @@ static int acpi_pcc_init_input(struct pcc_acpi *pcc)
 	int error;
 
 	input_dev = input_allocate_device();
+<<<<<<< HEAD
 	if (!input_dev) {
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "Couldn't allocate input device for hotkey"));
 		return -ENOMEM;
 	}
+=======
+	if (!input_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input_dev->name = ACPI_PCC_DRIVER_NAME;
 	input_dev->phys = ACPI_PCC_INPUT_PHYS;
@@ -646,6 +673,7 @@ out_hotkey:
 	return result;
 }
 
+<<<<<<< HEAD
 static int __init acpi_pcc_init(void)
 {
 	int result = 0;
@@ -663,6 +691,8 @@ static int __init acpi_pcc_init(void)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int acpi_pcc_hotkey_remove(struct acpi_device *device)
 {
 	struct pcc_acpi *pcc = acpi_driver_data(device);
@@ -682,6 +712,7 @@ static int acpi_pcc_hotkey_remove(struct acpi_device *device)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __exit acpi_pcc_exit(void)
 {
 	acpi_bus_unregister_driver(&acpi_pcc_driver);
@@ -689,3 +720,6 @@ static void __exit acpi_pcc_exit(void)
 
 module_init(acpi_pcc_init);
 module_exit(acpi_pcc_exit);
+=======
+module_acpi_driver(acpi_pcc_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -7,6 +7,7 @@ extern void iscsit_put_tiqn_for_login(struct iscsi_tiqn *);
 extern struct iscsi_tiqn *iscsit_add_tiqn(unsigned char *);
 extern void iscsit_del_tiqn(struct iscsi_tiqn *);
 extern int iscsit_access_np(struct iscsi_np *, struct iscsi_portal_group *);
+<<<<<<< HEAD
 extern int iscsit_deaccess_np(struct iscsi_np *, struct iscsi_portal_group *);
 extern bool iscsit_check_np_match(struct __kernel_sockaddr_storage *,
 				struct iscsi_np *, int);
@@ -14,6 +15,17 @@ extern struct iscsi_np *iscsit_add_np(struct __kernel_sockaddr_storage *,
 				char *, int);
 extern int iscsit_reset_np_thread(struct iscsi_np *, struct iscsi_tpg_np *,
 				struct iscsi_portal_group *);
+=======
+extern void iscsit_login_kref_put(struct kref *);
+extern int iscsit_deaccess_np(struct iscsi_np *, struct iscsi_portal_group *,
+				struct iscsi_tpg_np *);
+extern bool iscsit_check_np_match(struct sockaddr_storage *,
+				struct iscsi_np *, int);
+extern struct iscsi_np *iscsit_add_np(struct sockaddr_storage *,
+				int);
+extern int iscsit_reset_np_thread(struct iscsi_np *, struct iscsi_tpg_np *,
+				struct iscsi_portal_group *, bool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int iscsit_del_np(struct iscsi_np *);
 extern int iscsit_reject_cmd(struct iscsi_cmd *cmd, u8, unsigned char *);
 extern void iscsit_set_unsoliticed_dataout(struct iscsi_cmd *);
@@ -28,16 +40,26 @@ extern int iscsi_target_rx_thread(void *);
 extern int iscsit_close_connection(struct iscsi_conn *);
 extern int iscsit_close_session(struct iscsi_session *);
 extern void iscsit_fail_session(struct iscsi_session *);
+<<<<<<< HEAD
 extern int iscsit_free_session(struct iscsi_session *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void iscsit_stop_session(struct iscsi_session *, int, int);
 extern int iscsit_release_sessions_for_tpg(struct iscsi_portal_group *, int);
 
 extern struct iscsit_global *iscsit_global;
+<<<<<<< HEAD
 extern struct target_fabric_configfs *lio_target_fabric_configfs;
 
 extern struct kmem_cache *lio_dr_cache;
 extern struct kmem_cache *lio_ooo_cache;
 extern struct kmem_cache *lio_cmd_cache;
+=======
+extern const struct target_core_fabric_ops iscsi_ops;
+
+extern struct kmem_cache *lio_dr_cache;
+extern struct kmem_cache *lio_ooo_cache;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct kmem_cache *lio_qr_cache;
 extern struct kmem_cache *lio_r2t_cache;
 

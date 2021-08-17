@@ -12,11 +12,32 @@
 	compatible = "wm,wm8505";
 
 	cpus {
+<<<<<<< HEAD
 		cpu@0 {
 			compatible = "arm,arm926ejs";
 		};
 	};
 
+=======
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		cpu {
+			device_type = "cpu";
+			compatible = "arm,arm926ej-s";
+		};
+	};
+
+ 	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+		serial4 = &uart4;
+		serial5 = &uart5;
+ 	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -68,6 +89,16 @@
 					clock-frequency = <25000000>;
 				};
 
+<<<<<<< HEAD
+=======
+				plla: plla {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-pll-clock";
+					clocks = <&ref25>;
+					reg = <0x200>;
+				};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				pllb: pllb {
 					#clock-cells = <0>;
 					compatible = "via,vt8500-pll-clock";
@@ -75,6 +106,51 @@
 					reg = <0x204>;
 				};
 
+<<<<<<< HEAD
+=======
+				pllc: pllc {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-pll-clock";
+					clocks = <&ref25>;
+					reg = <0x208>;
+				};
+
+				plld: plld {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-pll-clock";
+					clocks = <&ref25>;
+					reg = <0x20c>;
+				};
+
+				clkarm: arm {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&plla>;
+					divisor-reg = <0x300>;
+				};
+
+				clkahb: ahb {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&pllb>;
+					divisor-reg = <0x304>;
+				};
+
+				clkapb: apb {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&pllb>;
+					divisor-reg = <0x350>;
+				};
+
+				clkddr: ddr {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&plld>;
+					divisor-reg = <0x310>;
+				};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				clkuart0: uart0 {
 					#clock-cells = <0>;
 					compatible = "via,vt8500-device-clock";
@@ -163,46 +239,89 @@
 			reg = <0xd8050400 0x100>;
 		};
 
+<<<<<<< HEAD
 		uart@d8200000 {
+=======
+		uart0: serial@d8200000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd8200000 0x1040>;
 			interrupts = <32>;
 			clocks = <&clkuart0>;
+<<<<<<< HEAD
 		};
 
 		uart@d82b0000 {
+=======
+			status = "disabled";
+		};
+
+		uart1: serial@d82b0000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd82b0000 0x1040>;
 			interrupts = <33>;
 			clocks = <&clkuart1>;
+<<<<<<< HEAD
 		};
 
 		uart@d8210000 {
+=======
+			status = "disabled";
+		};
+
+		uart2: serial@d8210000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd8210000 0x1040>;
 			interrupts = <47>;
 			clocks = <&clkuart2>;
+<<<<<<< HEAD
 		};
 
 		uart@d82c0000 {
+=======
+			status = "disabled";
+		};
+
+		uart3: serial@d82c0000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd82c0000 0x1040>;
 			interrupts = <50>;
 			clocks = <&clkuart3>;
+<<<<<<< HEAD
 		};
 
 		uart@d8370000 {
+=======
+			status = "disabled";
+		};
+
+		uart4: serial@d8370000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd8370000 0x1040>;
 			interrupts = <31>;
 			clocks = <&clkuart4>;
+<<<<<<< HEAD
 		};
 
 		uart@d8380000 {
+=======
+			status = "disabled";
+		};
+
+		uart5: serial@d8380000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd8380000 0x1040>;
 			interrupts = <30>;
 			clocks = <&clkuart5>;
+<<<<<<< HEAD
+=======
+			status = "disabled";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		rtc@d8100000 {
@@ -213,8 +332,13 @@
 
 		sdhc@d800a000 {
 			compatible = "wm,wm8505-sdhc";
+<<<<<<< HEAD
 			reg = <0xd800a000 0x1000>;
 			interrupts = <20 21>;
+=======
+			reg = <0xd800a000 0x400>;
+			interrupts = <20>, <21>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clocks = <&clksdhc>;
 			bus-width = <4>;
 		};

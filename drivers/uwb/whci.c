@@ -133,8 +133,12 @@ static void whci_del_cap(struct whci_card *card, int n)
 {
 	struct umc_dev *umc = card->devs[n];
 
+<<<<<<< HEAD
 	if (umc != NULL)
 		umc_device_unregister(umc);
+=======
+	umc_device_unregister(umc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int whci_n_caps(struct pci_dev *pci)
@@ -175,7 +179,11 @@ static int whci_probe(struct pci_dev *pci, const struct pci_device_id *id)
 
 	err = -ENOMEM;
 	card = kzalloc(sizeof(struct whci_card)
+<<<<<<< HEAD
 		       + sizeof(struct whci_dev *) * (n_caps + 1),
+=======
+		       + sizeof(struct umc_dev *) * (n_caps + 1),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       GFP_KERNEL);
 	if (card == NULL)
 		goto error_kzalloc;
@@ -253,6 +261,7 @@ static struct pci_driver whci_driver = {
 	.remove   = whci_remove,
 };
 
+<<<<<<< HEAD
 static int __init whci_init(void)
 {
 	return pci_register_driver(&whci_driver);
@@ -266,6 +275,9 @@ static void __exit whci_exit(void)
 module_init(whci_init);
 module_exit(whci_exit);
 
+=======
+module_pci_driver(whci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("WHCI UWB Multi-interface Controller enumerator");
 MODULE_AUTHOR("Cambridge Silicon Radio Ltd.");
 MODULE_LICENSE("GPL");

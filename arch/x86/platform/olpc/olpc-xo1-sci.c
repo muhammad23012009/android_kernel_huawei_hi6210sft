@@ -61,7 +61,11 @@ static void battery_status_changed(void)
 
 	if (psy) {
 		power_supply_changed(psy);
+<<<<<<< HEAD
 		put_device(psy->dev);
+=======
+		power_supply_put(psy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -71,7 +75,11 @@ static void ac_status_changed(void)
 
 	if (psy) {
 		power_supply_changed(psy);
+<<<<<<< HEAD
 		put_device(psy->dev);
+=======
+		power_supply_put(psy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

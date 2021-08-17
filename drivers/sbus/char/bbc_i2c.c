@@ -11,7 +11,10 @@
 #include <linux/sched.h>
 #include <linux/wait.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
@@ -414,7 +417,10 @@ MODULE_DEVICE_TABLE(of, bbc_i2c_match);
 static struct platform_driver bbc_i2c_driver = {
 	.driver = {
 		.name = "bbc_i2c",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = bbc_i2c_match,
 	},
 	.probe		= bbc_i2c_probe,

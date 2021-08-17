@@ -14,3 +14,7 @@ oprofile-$(CONFIG_CPU_R10000)		+= op_model_mipsxx.o
 oprofile-$(CONFIG_CPU_SB1)		+= op_model_mipsxx.o
 oprofile-$(CONFIG_CPU_XLR)		+= op_model_mipsxx.o
 oprofile-$(CONFIG_CPU_LOONGSON2)	+= op_model_loongson2.o
+<<<<<<< HEAD
+=======
+oprofile-$(CONFIG_CPU_LOONGSON3)	+= op_model_loongson3.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

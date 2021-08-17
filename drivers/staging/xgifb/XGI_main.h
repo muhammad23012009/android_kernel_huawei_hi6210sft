@@ -4,6 +4,7 @@
 #include "XGIfb.h"
 #include "vb_def.h"
 
+<<<<<<< HEAD
 #ifndef PCI_DEVICE_ID_XGI_42
 #define PCI_DEVICE_ID_XGI_42      0x042
 #endif
@@ -12,6 +13,12 @@
 #endif
 
 static DEFINE_PCI_DEVICE_TABLE(xgifb_pci_table) = {
+=======
+#define PCI_DEVICE_ID_XGI_42      0x042
+#define PCI_DEVICE_ID_XGI_27      0x027
+
+static const struct pci_device_id xgifb_pci_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_XGI, PCI_DEVICE_ID_XGI_20)},
 	{PCI_DEVICE(PCI_VENDOR_ID_XGI, PCI_DEVICE_ID_XGI_27)},
 	{PCI_DEVICE(PCI_VENDOR_ID_XGI, PCI_DEVICE_ID_XGI_40)},

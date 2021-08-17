@@ -31,7 +31,11 @@
 
 ENTRY(__raw_writesw)
 		teq	r2, #0
+<<<<<<< HEAD
 		moveq	pc, lr
+=======
+		reteq	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ands	r3, r1, #3
 		bne	.Loutsw_align
 
@@ -96,5 +100,9 @@ ENTRY(__raw_writesw)
 		tst	r2, #1
 3:		movne	ip, r3, lsr #8
 		strneh	ip, [r0]
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(__raw_writesw)

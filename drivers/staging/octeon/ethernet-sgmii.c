@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (c) 2003-2007 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -24,6 +30,11 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 **********************************************************************/
+=======
+ */
+
+#include <linux/phy.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/ratelimit.h>
@@ -34,6 +45,10 @@
 #include "ethernet-defines.h"
 #include "octeon-ethernet.h"
 #include "ethernet-util.h"
+<<<<<<< HEAD
+=======
+#include "ethernet-mdio.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/octeon/cvmx-helper.h>
 
@@ -41,6 +56,7 @@
 
 int cvm_oct_sgmii_open(struct net_device *dev)
 {
+<<<<<<< HEAD
 	union cvmx_gmxx_prtx_cfg gmx_cfg;
 	struct octeon_ethernet *priv = netdev_priv(dev);
 	int interface = INTERFACE(priv->port);
@@ -107,21 +123,31 @@ static void cvm_oct_sgmii_poll(struct net_device *dev)
 			netif_carrier_off(dev);
 		printk_ratelimited("%s: Link down\n", dev->name);
 	}
+=======
+	return cvm_oct_common_open(dev, cvm_oct_link_poll);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int cvm_oct_sgmii_init(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct octeon_ethernet *priv = netdev_priv(dev);
 	cvm_oct_common_init(dev);
 	dev->netdev_ops->ndo_stop(dev);
 	if (!octeon_is_simulation() && priv->phydev == NULL)
 		priv->poll = cvm_oct_sgmii_poll;
+=======
+	cvm_oct_common_init(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* FIXME: Need autoneg logic */
 	return 0;
 }
+<<<<<<< HEAD
 
 void cvm_oct_sgmii_uninit(struct net_device *dev)
 {
 	cvm_oct_common_uninit(dev);
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

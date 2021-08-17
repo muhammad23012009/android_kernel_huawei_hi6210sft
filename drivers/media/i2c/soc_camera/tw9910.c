@@ -26,8 +26,13 @@
 #include <linux/videodev2.h>
 
 #include <media/soc_camera.h>
+<<<<<<< HEAD
 #include <media/tw9910.h>
 #include <media/v4l2-chip-ident.h>
+=======
+#include <media/i2c/tw9910.h>
+#include <media/v4l2-clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-subdev.h>
 
 #define GET_ID(val)  ((val & 0xF8) >> 3)
@@ -228,6 +233,10 @@ struct tw9910_scale_ctrl {
 
 struct tw9910_priv {
 	struct v4l2_subdev		subdev;
+<<<<<<< HEAD
+=======
+	struct v4l2_clk			*clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tw9910_video_info	*info;
 	const struct tw9910_scale_ctrl	*scale;
 	v4l2_std_id			norm;
@@ -509,11 +518,20 @@ static int tw9910_s_std(struct v4l2_subdev *sd, v4l2_std_id norm)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct tw9910_priv *priv = to_tw9910(client);
+<<<<<<< HEAD
+=======
+	const unsigned hact = 720;
+	const unsigned hdelay = 15;
+	unsigned vact;
+	unsigned vdelay;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(norm & (V4L2_STD_NTSC | V4L2_STD_PAL)))
 		return -EINVAL;
 
 	priv->norm = norm;
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -528,6 +546,31 @@ static int tw9910_g_chip_ident(struct v4l2_subdev *sd,
 	id->revision = priv->revision;
 
 	return 0;
+=======
+	if (norm & V4L2_STD_525_60) {
+		vact = 240;
+		vdelay = 18;
+		ret = tw9910_mask_set(client, VVBI, 0x10, 0x10);
+	} else {
+		vact = 288;
+		vdelay = 24;
+		ret = tw9910_mask_set(client, VVBI, 0x10, 0x00);
+	}
+	if (!ret)
+		ret = i2c_smbus_write_byte_data(client, CROP_HI,
+			((vdelay >> 2) & 0xc0) |
+			((vact >> 4) & 0x30) |
+			((hdelay >> 6) & 0x0c) |
+			((hact >> 8) & 0x03));
+	if (!ret)
+		ret = i2c_smbus_write_byte_data(client, VDELAY_LO,
+			vdelay & 0xff);
+	if (!ret)
+		ret = i2c_smbus_write_byte_data(client, VACTIVE_LO,
+			vact & 0xff);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_VIDEO_ADV_DEBUG
@@ -540,6 +583,10 @@ static int tw9910_g_register(struct v4l2_subdev *sd,
 	if (reg->reg > 0xff)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	reg->size = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = i2c_smbus_read_byte_data(client, reg->reg);
 	if (ret < 0)
 		return ret;
@@ -570,8 +617,14 @@ static int tw9910_s_power(struct v4l2_subdev *sd, int on)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct soc_camera_subdev_desc *ssdd = soc_camera_i2c_to_desc(client);
+<<<<<<< HEAD
 
 	return soc_camera_set_power(&client->dev, ssdd, on);
+=======
+	struct tw9910_priv *priv = to_tw9910(client);
+
+	return soc_camera_set_power(&client->dev, ssdd, priv->clk, on);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int tw9910_set_frame(struct v4l2_subdev *sd, u32 *width, u32 *height)
@@ -659,11 +712,18 @@ tw9910_set_fmt_error:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int tw9910_g_crop(struct v4l2_subdev *sd, struct v4l2_crop *a)
+=======
+static int tw9910_get_selection(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_selection *sel)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct tw9910_priv *priv = to_tw9910(client);
 
+<<<<<<< HEAD
 	a->c.left	= 0;
 	a->c.top	= 0;
 	if (priv->norm & V4L2_STD_NTSC) {
@@ -706,6 +766,37 @@ static int tw9910_g_fmt(struct v4l2_subdev *sd,
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct tw9910_priv *priv = to_tw9910(client);
 
+=======
+	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
+		return -EINVAL;
+	/* Only CROP, CROP_DEFAULT and CROP_BOUNDS are supported */
+	if (sel->target > V4L2_SEL_TGT_CROP_BOUNDS)
+		return -EINVAL;
+
+	sel->r.left	= 0;
+	sel->r.top	= 0;
+	if (priv->norm & V4L2_STD_NTSC) {
+		sel->r.width	= 640;
+		sel->r.height	= 480;
+	} else {
+		sel->r.width	= 768;
+		sel->r.height	= 576;
+	}
+	return 0;
+}
+
+static int tw9910_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+	struct tw9910_priv *priv = to_tw9910(client);
+
+	if (format->pad)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!priv->scale) {
 		priv->scale = tw9910_select_norm(priv->norm, 640, 480);
 		if (!priv->scale)
@@ -714,8 +805,13 @@ static int tw9910_g_fmt(struct v4l2_subdev *sd,
 
 	mf->width	= priv->scale->width;
 	mf->height	= priv->scale->height;
+<<<<<<< HEAD
 	mf->code	= V4L2_MBUS_FMT_UYVY8_2X8;
 	mf->colorspace	= V4L2_COLORSPACE_JPEG;
+=======
+	mf->code	= MEDIA_BUS_FMT_UYVY8_2X8;
+	mf->colorspace	= V4L2_COLORSPACE_SMPTE170M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mf->field	= V4L2_FIELD_INTERLACED_BT;
 
 	return 0;
@@ -733,10 +829,17 @@ static int tw9910_s_fmt(struct v4l2_subdev *sd,
 	/*
 	 * check color format
 	 */
+<<<<<<< HEAD
 	if (mf->code != V4L2_MBUS_FMT_UYVY8_2X8)
 		return -EINVAL;
 
 	mf->colorspace = V4L2_COLORSPACE_JPEG;
+=======
+	if (mf->code != MEDIA_BUS_FMT_UYVY8_2X8)
+		return -EINVAL;
+
+	mf->colorspace = V4L2_COLORSPACE_SMPTE170M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = tw9910_set_frame(sd, &width, &height);
 	if (!ret) {
@@ -746,13 +849,27 @@ static int tw9910_s_fmt(struct v4l2_subdev *sd,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int tw9910_try_fmt(struct v4l2_subdev *sd,
 			  struct v4l2_mbus_framefmt *mf)
 {
+=======
+static int tw9910_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf = &format->format;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	struct tw9910_priv *priv = to_tw9910(client);
 	const struct tw9910_scale_ctrl *scale;
 
+<<<<<<< HEAD
+=======
+	if (format->pad)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (V4L2_FIELD_ANY == mf->field) {
 		mf->field = V4L2_FIELD_INTERLACED_BT;
 	} else if (V4L2_FIELD_INTERLACED_BT != mf->field) {
@@ -760,8 +877,13 @@ static int tw9910_try_fmt(struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	mf->code = V4L2_MBUS_FMT_UYVY8_2X8;
 	mf->colorspace = V4L2_COLORSPACE_JPEG;
+=======
+	mf->code = MEDIA_BUS_FMT_UYVY8_2X8;
+	mf->colorspace = V4L2_COLORSPACE_SMPTE170M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * select suitable norm
@@ -773,6 +895,12 @@ static int tw9910_try_fmt(struct v4l2_subdev *sd,
 	mf->width	= scale->width;
 	mf->height	= scale->height;
 
+<<<<<<< HEAD
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE)
+		return tw9910_s_fmt(sd, mf);
+	cfg->try_fmt = *mf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -816,6 +944,10 @@ static int tw9910_video_probe(struct i2c_client *client)
 		 "tw9910 Product ID %0x:%0x\n", id, priv->revision);
 
 	priv->norm = V4L2_STD_NTSC;
+<<<<<<< HEAD
+=======
+	priv->scale = &tw9910_ntsc_scales[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 done:
 	tw9910_s_power(&priv->subdev, 0);
@@ -823,9 +955,12 @@ done:
 }
 
 static struct v4l2_subdev_core_ops tw9910_subdev_core_ops = {
+<<<<<<< HEAD
 	.g_chip_ident	= tw9910_g_chip_ident,
 	.s_std		= tw9910_s_std,
 	.g_std		= tw9910_g_std,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.g_register	= tw9910_g_register,
 	.s_register	= tw9910_s_register,
@@ -833,6 +968,7 @@ static struct v4l2_subdev_core_ops tw9910_subdev_core_ops = {
 	.s_power	= tw9910_s_power,
 };
 
+<<<<<<< HEAD
 static int tw9910_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 			   enum v4l2_mbus_pixelcode *code)
 {
@@ -840,6 +976,16 @@ static int tw9910_enum_fmt(struct v4l2_subdev *sd, unsigned int index,
 		return -EINVAL;
 
 	*code = V4L2_MBUS_FMT_UYVY8_2X8;
+=======
+static int tw9910_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (code->pad || code->index)
+		return -EINVAL;
+
+	code->code = MEDIA_BUS_FMT_UYVY8_2X8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -882,6 +1028,7 @@ static int tw9910_s_mbus_config(struct v4l2_subdev *sd,
 	return i2c_smbus_write_byte_data(client, OUTCTR1, val);
 }
 
+<<<<<<< HEAD
 static struct v4l2_subdev_video_ops tw9910_subdev_video_ops = {
 	.s_stream	= tw9910_s_stream,
 	.g_mbus_fmt	= tw9910_g_fmt,
@@ -892,11 +1039,37 @@ static struct v4l2_subdev_video_ops tw9910_subdev_video_ops = {
 	.enum_mbus_fmt	= tw9910_enum_fmt,
 	.g_mbus_config	= tw9910_g_mbus_config,
 	.s_mbus_config	= tw9910_s_mbus_config,
+=======
+static int tw9910_g_tvnorms(struct v4l2_subdev *sd, v4l2_std_id *norm)
+{
+	*norm = V4L2_STD_NTSC | V4L2_STD_PAL;
+	return 0;
+}
+
+static struct v4l2_subdev_video_ops tw9910_subdev_video_ops = {
+	.s_std		= tw9910_s_std,
+	.g_std		= tw9910_g_std,
+	.s_stream	= tw9910_s_stream,
+	.g_mbus_config	= tw9910_g_mbus_config,
+	.s_mbus_config	= tw9910_s_mbus_config,
+	.g_tvnorms	= tw9910_g_tvnorms,
+};
+
+static const struct v4l2_subdev_pad_ops tw9910_subdev_pad_ops = {
+	.enum_mbus_code = tw9910_enum_mbus_code,
+	.get_selection	= tw9910_get_selection,
+	.get_fmt	= tw9910_get_fmt,
+	.set_fmt	= tw9910_set_fmt,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct v4l2_subdev_ops tw9910_subdev_ops = {
 	.core	= &tw9910_subdev_core_ops,
 	.video	= &tw9910_subdev_video_ops,
+<<<<<<< HEAD
+=======
+	.pad	= &tw9910_subdev_pad_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -912,6 +1085,10 @@ static int tw9910_probe(struct i2c_client *client,
 	struct i2c_adapter		*adapter =
 		to_i2c_adapter(client->dev.parent);
 	struct soc_camera_subdev_desc	*ssdd = soc_camera_i2c_to_desc(client);
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ssdd || !ssdd->drv_priv) {
 		dev_err(&client->dev, "TW9910: missing platform data!\n");
@@ -935,11 +1112,28 @@ static int tw9910_probe(struct i2c_client *client,
 
 	v4l2_i2c_subdev_init(&priv->subdev, client, &tw9910_subdev_ops);
 
+<<<<<<< HEAD
 	return tw9910_video_probe(client);
+=======
+	priv->clk = v4l2_clk_get(&client->dev, "mclk");
+	if (IS_ERR(priv->clk))
+		return PTR_ERR(priv->clk);
+
+	ret = tw9910_video_probe(client);
+	if (ret < 0)
+		v4l2_clk_put(priv->clk);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int tw9910_remove(struct i2c_client *client)
 {
+<<<<<<< HEAD
+=======
+	struct tw9910_priv *priv = to_tw9910(client);
+	v4l2_clk_put(priv->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -33,7 +33,10 @@
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "tea6420.h"
 
 MODULE_AUTHOR("Michael Hunold <michael@mihu.de>");
@@ -90,6 +93,7 @@ static int tea6420_s_routing(struct v4l2_subdev *sd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tea6420_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -103,12 +107,19 @@ static const struct v4l2_subdev_core_ops tea6420_core_ops = {
 	.g_chip_ident = tea6420_g_chip_ident,
 };
 
+=======
+/* ----------------------------------------------------------------------- */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_subdev_audio_ops tea6420_audio_ops = {
 	.s_routing = tea6420_s_routing,
 };
 
 static const struct v4l2_subdev_ops tea6420_ops = {
+<<<<<<< HEAD
 	.core = &tea6420_core_ops,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.audio = &tea6420_audio_ops,
 };
 
@@ -125,7 +136,11 @@ static int tea6420_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	sd = kzalloc(sizeof(struct v4l2_subdev), GFP_KERNEL);
+=======
+	sd = devm_kzalloc(&client->dev, sizeof(*sd), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sd == NULL)
 		return -ENOMEM;
 	v4l2_i2c_subdev_init(sd, client, &tea6420_ops);
@@ -146,7 +161,10 @@ static int tea6420_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 
 	v4l2_device_unregister_subdev(sd);
+<<<<<<< HEAD
 	kfree(sd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -158,7 +176,10 @@ MODULE_DEVICE_TABLE(i2c, tea6420_id);
 
 static struct i2c_driver tea6420_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "tea6420",
 	},
 	.probe		= tea6420_probe,

@@ -20,6 +20,10 @@
 #include <linux/module.h>
 
 #include "ath.h"
+<<<<<<< HEAD
+=======
+#include "trace.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Atheros Communications");
 MODULE_DESCRIPTION("Shared library for Atheros wireless LAN cards.");
@@ -59,6 +63,17 @@ struct sk_buff *ath_rxbuf_alloc(struct ath_common *common,
 }
 EXPORT_SYMBOL(ath_rxbuf_alloc);
 
+<<<<<<< HEAD
+=======
+bool ath_is_mybeacon(struct ath_common *common, struct ieee80211_hdr *hdr)
+{
+	return ieee80211_is_beacon(hdr->frame_control) &&
+		!is_zero_ether_addr(common->curbssid) &&
+		ether_addr_equal_64bits(hdr->addr3, common->curbssid);
+}
+EXPORT_SYMBOL(ath_is_mybeacon);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void ath_printk(const char *level, const struct ath_common* common,
 		const char *fmt, ...)
 {
@@ -70,11 +85,21 @@ void ath_printk(const char *level, const struct ath_common* common,
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
+<<<<<<< HEAD
 	if (common && common->hw && common->hw->wiphy)
 		printk("%sath: %s: %pV",
 		       level, wiphy_name(common->hw->wiphy), &vaf);
 	else
 		printk("%sath: %pV", level, &vaf);
+=======
+	if (common && common->hw && common->hw->wiphy) {
+		printk("%sath: %s: %pV",
+		       level, wiphy_name(common->hw->wiphy), &vaf);
+		trace_ath_log(common->hw->wiphy, &vaf);
+	} else {
+		printk("%sath: %pV", level, &vaf);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	va_end(args);
 }

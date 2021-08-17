@@ -90,8 +90,13 @@ struct flex_array *flex_array_alloc(int element_size, unsigned int total,
 {
 	struct flex_array *ret;
 	int elems_per_part = 0;
+<<<<<<< HEAD
 	int reciprocal_elems = 0;
 	int max_size = 0;
+=======
+	int max_size = 0;
+	struct reciprocal_value reciprocal_elems = { 0 };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (element_size) {
 		elems_per_part = FLEX_ARRAY_ELEMENTS_PER_PART(element_size);
@@ -119,6 +124,14 @@ EXPORT_SYMBOL(flex_array_alloc);
 static int fa_element_to_part_nr(struct flex_array *fa,
 					unsigned int element_nr)
 {
+<<<<<<< HEAD
+=======
+	/*
+	 * if element_size == 0 we don't get here, so we never touch
+	 * the zeroed fa->reciprocal_elems, which would yield invalid
+	 * results
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return reciprocal_divide(element_nr, fa->reciprocal_elems);
 }
 

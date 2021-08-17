@@ -18,9 +18,12 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/pinctrl/machine.h>
+<<<<<<< HEAD
 #include <linux/platform_data/omap4-keypad.h>
 #include <linux/platform_data/omap_ocp2scp.h>
 #include <linux/usb/omap_control_usb.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 #include <asm/mach/map.h>
@@ -30,14 +33,21 @@
 #include "iomap.h"
 #include "omap_hwmod.h"
 #include "omap_device.h"
+<<<<<<< HEAD
 #include "omap4-keypad.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "soc.h"
 #include "common.h"
 #include "mux.h"
 #include "control.h"
+<<<<<<< HEAD
 #include "devices.h"
 #include "dma.h"
+=======
+#include "display.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define L3_MODULES_MAX_LEN 12
 #define L3_MODULES 3
@@ -52,7 +62,11 @@ static int __init omap3_l3_init(void)
 	 * To avoid code running on other OMAPs in
 	 * multi-omap builds
 	 */
+<<<<<<< HEAD
 	if (!(cpu_is_omap34xx()))
+=======
+	if (!(cpu_is_omap34xx()) || of_have_populated_dt())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	snprintf(oh_name, L3_MODULES_MAX_LEN, "l3_main");
@@ -66,6 +80,7 @@ static int __init omap3_l3_init(void)
 
 	WARN(IS_ERR(pdev), "could not build omap_device for %s\n", oh_name);
 
+<<<<<<< HEAD
 	return IS_ERR(pdev) ? PTR_ERR(pdev) : 0;
 }
 omap_postcore_initcall(omap3_l3_init);
@@ -437,6 +452,15 @@ static inline void omap_init_hdmi_audio(void) {}
 #endif
 
 #if defined(CONFIG_SPI_OMAP24XX) || defined(CONFIG_SPI_OMAP24XX_MODULE)
+=======
+	return PTR_ERR_OR_ZERO(pdev);
+}
+omap_postcore_initcall(omap3_l3_init);
+
+static inline void omap_init_sti(void) {}
+
+#if IS_ENABLED(CONFIG_SPI_OMAP24XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/platform_data/spi-omap2-mcspi.h>
 
@@ -532,9 +556,14 @@ static void __init omap_init_aes(void)
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #if defined(CONFIG_VIDEO_OMAP2_VOUT) || \
 	defined(CONFIG_VIDEO_OMAP2_VOUT_MODULE)
 #if defined(CONFIG_FB_OMAP2) || defined(CONFIG_FB_OMAP2_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VIDEO_OMAP2_VOUT)
+#if IS_ENABLED(CONFIG_FB_OMAP2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct resource omap_vout_resource[3 - CONFIG_FB_OMAP2_NUM_FBS] = {
 };
 #else
@@ -548,6 +577,7 @@ static struct platform_device omap_vout_device = {
 	.resource 	= &omap_vout_resource[0],
 	.id		= -1,
 };
+<<<<<<< HEAD
 static void omap_init_vout(void)
 {
 	if (platform_device_register(&omap_vout_device) < 0)
@@ -631,6 +661,15 @@ static void __init omap_init_ocp2scp(void)
 }
 #else
 static inline void omap_init_ocp2scp(void) { }
+=======
+
+int __init omap_init_vout(void)
+{
+	return platform_device_register(&omap_vout_device);
+}
+#else
+int __init omap_init_vout(void) { return 0; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*-------------------------------------------------------------------------*/
@@ -641,6 +680,7 @@ static int __init omap2_init_devices(void)
 	if (!of_have_populated_dt())
 		pinctrl_provide_dummies();
 
+<<<<<<< HEAD
 	/*
 	 * please keep these calls, and their implementations above,
 	 * in alphabetical order so they're easier to sort through.
@@ -662,7 +702,50 @@ static int __init omap2_init_devices(void)
 	omap_init_rng();
 	omap_init_vout();
 	omap_init_ocp2scp();
+=======
+	/* If dtb is there, the devices will be created dynamically */
+	if (!of_have_populated_dt()) {
+		/*
+		 * please keep these calls, and their implementations above,
+		 * in alphabetical order so they're easier to sort through.
+		 */
+		omap_init_mcspi();
+		omap_init_sham();
+		omap_init_aes();
+		omap_init_rng();
+	}
+	omap_init_sti();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 omap_arch_initcall(omap2_init_devices);
+<<<<<<< HEAD
+=======
+
+static int __init omap_gpmc_init(void)
+{
+	struct omap_hwmod *oh;
+	struct platform_device *pdev;
+	char *oh_name = "gpmc";
+
+	/*
+	 * if the board boots up with a populated DT, do not
+	 * manually add the device from this initcall
+	 */
+	if (of_have_populated_dt())
+		return -ENODEV;
+
+	oh = omap_hwmod_lookup(oh_name);
+	if (!oh) {
+		pr_err("Could not look up %s\n", oh_name);
+		return -ENODEV;
+	}
+
+	pdev = omap_device_build("omap-gpmc", -1, oh, NULL, 0);
+	WARN(IS_ERR(pdev), "could not build omap_device for %s\n", oh_name);
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+omap_postcore_initcall(omap_gpmc_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

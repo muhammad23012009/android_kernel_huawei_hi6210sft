@@ -64,7 +64,10 @@
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/usb.h>
 #include <linux/device.h>
@@ -115,7 +118,10 @@ struct kingsun_cb {
 					   (usually 8) */
 
 	iobuff_t  	  rx_buff;	/* receive unwrap state machine */
+<<<<<<< HEAD
 	struct timeval	  rx_time;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t lock;
 	int receiving;
 
@@ -236,7 +242,10 @@ static void kingsun_rcv_irq(struct urb *urb)
 						  &kingsun->netdev->stats,
 						  &kingsun->rx_buff, bytes[i]);
 			}
+<<<<<<< HEAD
 			do_gettimeofday(&kingsun->rx_time);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kingsun->receiving =
 				(kingsun->rx_buff.state != OUTSIDE_FRAME)
 				? 1 : 0;
@@ -274,7 +283,10 @@ static int kingsun_net_open(struct net_device *netdev)
 
 	skb_reserve(kingsun->rx_buff.skb, 1);
 	kingsun->rx_buff.head = kingsun->rx_buff.skb->data;
+<<<<<<< HEAD
 	do_gettimeofday(&kingsun->rx_time);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kingsun->rx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!kingsun->rx_urb)
@@ -554,8 +566,13 @@ static int kingsun_probe(struct usb_interface *intf,
 	return 0;
 
 free_mem:
+<<<<<<< HEAD
 	if (kingsun->out_buf) kfree(kingsun->out_buf);
 	if (kingsun->in_buf) kfree(kingsun->in_buf);
+=======
+	kfree(kingsun->out_buf);
+	kfree(kingsun->in_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(net);
 err_out1:
 	return ret;

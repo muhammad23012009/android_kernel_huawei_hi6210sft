@@ -49,8 +49,13 @@ enum iw_cm_event_type {
 struct iw_cm_event {
 	enum iw_cm_event_type event;
 	int			 status;
+<<<<<<< HEAD
 	struct sockaddr_in local_addr;
 	struct sockaddr_in remote_addr;
+=======
+	struct sockaddr_storage local_addr;
+	struct sockaddr_storage remote_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *private_data;
 	void *provider_data;
 	u8 private_data_len;
@@ -83,14 +88,26 @@ struct iw_cm_id {
 	iw_cm_handler		cm_handler;      /* client callback function */
 	void		        *context;	 /* client cb context */
 	struct ib_device	*device;
+<<<<<<< HEAD
 	struct sockaddr_in      local_addr;
 	struct sockaddr_in	remote_addr;
+=======
+	struct sockaddr_storage local_addr;      /* local addr */
+	struct sockaddr_storage	remote_addr;
+	struct sockaddr_storage m_local_addr;	 /* nmapped local addr */
+	struct sockaddr_storage	m_remote_addr;	 /* nmapped rem addr */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void			*provider_data;	 /* provider private data */
 	iw_event_handler        event_handler;   /* cb for provider
 						    events */
 	/* Used by provider to add and remove refs on IW cm_id */
 	void (*add_ref)(struct iw_cm_id *);
 	void (*rem_ref)(struct iw_cm_id *);
+<<<<<<< HEAD
+=======
+	u8  tos;
+	bool mapped;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct iw_cm_conn_param {
@@ -122,6 +139,10 @@ struct iw_cm_verbs {
 					 int backlog);
 
 	int		(*destroy_listen)(struct iw_cm_id *cm_id);
+<<<<<<< HEAD
+=======
+	char		ifname[IFNAMSIZ];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**

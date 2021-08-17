@@ -49,7 +49,11 @@ static const struct ehci_driver_overrides ehci_mxc_overrides __initconst = {
 
 static int ehci_mxc_drv_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct mxc_usbh_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct mxc_usbh_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_hcd *hcd;
 	struct resource *res;
 	int irq, ret;
@@ -63,12 +67,18 @@ static int ehci_mxc_drv_probe(struct platform_device *pdev)
 	}
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
+=======
+	if (irq < 0)
+		return irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hcd = usb_create_hcd(&ehci_mxc_hc_driver, dev, dev_name(dev));
 	if (!hcd)
 		return -ENOMEM;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		dev_err(dev, "Found HC with no register addr. Check setup!\n");
 		ret = -ENODEV;
@@ -78,11 +88,18 @@ static int ehci_mxc_drv_probe(struct platform_device *pdev)
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
 		ret = PTR_ERR(hcd->regs);
 		goto err_alloc;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hcd->has_tt = 1;
 	ehci = hcd_to_ehci(hcd);
@@ -155,6 +172,10 @@ static int ehci_mxc_drv_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_add;
 
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 err_add:
@@ -174,7 +195,11 @@ err_alloc:
 
 static int ehci_mxc_drv_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct mxc_usbh_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct mxc_usbh_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
 	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
 	struct ehci_mxc_priv *priv = (struct ehci_mxc_priv *) ehci->priv;
@@ -194,6 +219,7 @@ static int ehci_mxc_drv_remove(struct platform_device *pdev)
 		clk_disable_unprepare(priv->phyclk);
 
 	usb_put_hcd(hcd);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	return 0;
 }
@@ -206,12 +232,21 @@ static void ehci_mxc_drv_shutdown(struct platform_device *pdev)
 		hcd->driver->shutdown(hcd);
 }
 
+=======
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS("platform:mxc-ehci");
 
 static struct platform_driver ehci_mxc_driver = {
 	.probe = ehci_mxc_drv_probe,
 	.remove = ehci_mxc_drv_remove,
+<<<<<<< HEAD
 	.shutdown = ehci_mxc_drv_shutdown,
+=======
+	.shutdown = usb_hcd_platform_shutdown,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.driver = {
 		   .name = "mxc-ehci",
 	},

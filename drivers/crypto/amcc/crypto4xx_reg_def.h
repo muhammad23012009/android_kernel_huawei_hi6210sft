@@ -125,6 +125,10 @@
 #define PPC4XX_INTERRUPT_CLR			0x3ffff
 #define PPC4XX_PRNG_CTRL_AUTO_EN		0x3
 #define PPC4XX_DC_3DES_EN			1
+<<<<<<< HEAD
+=======
+#define PPC4XX_TRNG_EN				0x00020000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PPC4XX_INT_DESCR_CNT			4
 #define PPC4XX_INT_TIMEOUT_CNT			0
 #define PPC4XX_INT_CFG				1

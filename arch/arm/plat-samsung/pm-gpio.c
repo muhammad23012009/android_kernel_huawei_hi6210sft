@@ -19,6 +19,11 @@
 #include <linux/io.h>
 #include <linux/gpio.h>
 
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/gpio-core.h>
 #include <plat/pm.h>
 
@@ -192,7 +197,11 @@ struct samsung_gpio_pm samsung_gpio_pm_2bit = {
 	.resume = samsung_gpio_pm_2bit_resume,
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_S3C64XX) || defined(CONFIG_PLAT_S5P)
+=======
+#if defined(CONFIG_ARCH_S3C64XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void samsung_gpio_pm_4bit_save(struct samsung_gpio_chip *chip)
 {
 	chip->pm_save[1] = __raw_readl(chip->base + OFFS_CON);
@@ -302,7 +311,11 @@ struct samsung_gpio_pm samsung_gpio_pm_4bit = {
 	.save	= samsung_gpio_pm_4bit_save,
 	.resume = samsung_gpio_pm_4bit_resume,
 };
+<<<<<<< HEAD
 #endif /* CONFIG_ARCH_S3C64XX || CONFIG_PLAT_S5P */
+=======
+#endif /* CONFIG_ARCH_S3C64XX */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * samsung_pm_save_gpio() - save gpio chip data for suspend

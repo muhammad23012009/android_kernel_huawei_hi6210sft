@@ -20,6 +20,10 @@
 #include <linux/module.h>
 #include <linux/crypto.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
+=======
+#include <linux/mm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/lzo.h>
 
 struct lzo_ctx {
@@ -30,7 +34,14 @@ static int lzo_init(struct crypto_tfm *tfm)
 {
 	struct lzo_ctx *ctx = crypto_tfm_ctx(tfm);
 
+<<<<<<< HEAD
 	ctx->lzo_comp_mem = vmalloc(LZO1X_MEM_COMPRESS);
+=======
+	ctx->lzo_comp_mem = kmalloc(LZO1X_MEM_COMPRESS,
+				    GFP_KERNEL | __GFP_NOWARN);
+	if (!ctx->lzo_comp_mem)
+		ctx->lzo_comp_mem = vmalloc(LZO1X_MEM_COMPRESS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ctx->lzo_comp_mem)
 		return -ENOMEM;
 
@@ -41,7 +52,11 @@ static void lzo_exit(struct crypto_tfm *tfm)
 {
 	struct lzo_ctx *ctx = crypto_tfm_ctx(tfm);
 
+<<<<<<< HEAD
 	vfree(ctx->lzo_comp_mem);
+=======
+	kvfree(ctx->lzo_comp_mem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int lzo_compress(struct crypto_tfm *tfm, const u8 *src,

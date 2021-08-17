@@ -33,6 +33,7 @@
 #include <linux/module.h>
 #include <rdma/rdma_cm.h>
 
+<<<<<<< HEAD
 #include "rdma_transport.h"
 
 static struct rdma_cm_id *rds_rdma_listen_id;
@@ -65,6 +66,14 @@ static char *rds_cm_event_str(enum rdma_cm_event_type type)
 			     ARRAY_SIZE(rds_cm_event_strings), type);
 };
 
+=======
+#include "rds_single_path.h"
+#include "rdma_transport.h"
+#include "ib.h"
+
+static struct rdma_cm_id *rds_rdma_listen_id;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rds_rdma_cm_event_handler(struct rdma_cm_id *cm_id,
 			      struct rdma_cm_event *event)
 {
@@ -74,11 +83,17 @@ int rds_rdma_cm_event_handler(struct rdma_cm_id *cm_id,
 	int ret = 0;
 
 	rdsdebug("conn %p id %p handling event %u (%s)\n", conn, cm_id,
+<<<<<<< HEAD
 		 event->event, rds_cm_event_str(event->event));
 
 	if (cm_id->device->node_type == RDMA_NODE_RNIC)
 		trans = &rds_iw_transport;
 	else
+=======
+		 event->event, rdma_event_msg(event->event));
+
+	if (cm_id->device->node_type == RDMA_NODE_IB_CA)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		trans = &rds_ib_transport;
 
 	/* Prevent shutdown from tearing down the connection
@@ -110,8 +125,23 @@ int rds_rdma_cm_event_handler(struct rdma_cm_id *cm_id,
 		break;
 
 	case RDMA_CM_EVENT_ROUTE_RESOLVED:
+<<<<<<< HEAD
 		/* XXX worry about racing with listen acceptance */
 		ret = trans->cm_initiate_connect(cm_id);
+=======
+		/* Connection could have been dropped so make sure the
+		 * cm_id is valid before proceeding
+		 */
+		if (conn) {
+			struct rds_ib_connection *ibic;
+
+			ibic = conn->c_transport_data;
+			if (ibic && ibic->i_cm_id == cm_id)
+				ret = trans->cm_initiate_connect(cm_id);
+			else
+				rds_conn_drop(conn);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case RDMA_CM_EVENT_ESTABLISHED:
@@ -136,10 +166,25 @@ int rds_rdma_cm_event_handler(struct rdma_cm_id *cm_id,
 		rds_conn_drop(conn);
 		break;
 
+<<<<<<< HEAD
 	default:
 		/* things like device disconnect? */
 		printk(KERN_ERR "RDS: unknown event %u (%s)!\n",
 		       event->event, rds_cm_event_str(event->event));
+=======
+	case RDMA_CM_EVENT_TIMEWAIT_EXIT:
+		if (conn) {
+			pr_info("RDS: RDMA_CM_EVENT_TIMEWAIT_EXIT event: dropping connection %pI4->%pI4\n",
+				&conn->c_laddr, &conn->c_faddr);
+			rds_conn_drop(conn);
+		}
+		break;
+
+	default:
+		/* things like device disconnect? */
+		printk(KERN_ERR "RDS: unknown event %u (%s)!\n",
+		       event->event, rdma_event_msg(event->event));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -148,7 +193,11 @@ out:
 		mutex_unlock(&conn->c_cm_lock);
 
 	rdsdebug("id %p event %u (%s) handling ret %d\n", cm_id, event->event,
+<<<<<<< HEAD
 		 rds_cm_event_str(event->event), ret);
+=======
+		 rdma_event_msg(event->event), ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -159,8 +208,13 @@ static int rds_rdma_listen_init(void)
 	struct rdma_cm_id *cm_id;
 	int ret;
 
+<<<<<<< HEAD
 	cm_id = rdma_create_id(rds_rdma_cm_event_handler, NULL, RDMA_PS_TCP,
 			       IB_QPT_RC);
+=======
+	cm_id = rdma_create_id(&init_net, rds_rdma_cm_event_handler, NULL,
+			       RDMA_PS_TCP, IB_QPT_RC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(cm_id)) {
 		ret = PTR_ERR(cm_id);
 		printk(KERN_ERR "RDS/RDMA: failed to setup listener, "
@@ -168,7 +222,11 @@ static int rds_rdma_listen_init(void)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	sin.sin_family = AF_INET,
+=======
+	sin.sin_family = AF_INET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sin.sin_addr.s_addr = (__force u32)htonl(INADDR_ANY);
 	sin.sin_port = (__force u16)htons(RDS_PORT);
 
@@ -217,10 +275,13 @@ static int rds_rdma_init(void)
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
 	ret = rds_iw_init();
 	if (ret)
 		goto err_iw_init;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = rds_ib_init();
 	if (ret)
 		goto err_ib_init;
@@ -228,8 +289,11 @@ static int rds_rdma_init(void)
 	goto out;
 
 err_ib_init:
+<<<<<<< HEAD
 	rds_iw_exit();
 err_iw_init:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rds_rdma_listen_stop();
 out:
 	return ret;
@@ -241,11 +305,18 @@ static void rds_rdma_exit(void)
 	/* stop listening first to ensure no new connections are attempted */
 	rds_rdma_listen_stop();
 	rds_ib_exit();
+<<<<<<< HEAD
 	rds_iw_exit();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 module_exit(rds_rdma_exit);
 
 MODULE_AUTHOR("Oracle Corporation <rds-devel@oss.oracle.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("RDS: IB/iWARP transport");
+=======
+MODULE_DESCRIPTION("RDS: IB transport");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("Dual BSD/GPL");
 

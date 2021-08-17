@@ -28,11 +28,17 @@ enum fixed_function {
   pinmux_timer
 };
 
+<<<<<<< HEAD
 int crisv32_pinmux_init(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int crisv32_pinmux_alloc(int port, int first_pin, int last_pin, enum pin_mode);
 int crisv32_pinmux_alloc_fixed(enum fixed_function function);
 int crisv32_pinmux_dealloc(int port, int first_pin, int last_pin);
 int crisv32_pinmux_dealloc_fixed(enum fixed_function function);
+<<<<<<< HEAD
 void crisv32_pinmux_dump(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

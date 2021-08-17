@@ -37,6 +37,10 @@
 #include <linux/moduleparam.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -44,7 +48,10 @@
 #include <sound/control.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq.h>
 #include <asm/prom.h>
 
@@ -956,6 +963,10 @@ static int snd_amd7930_create(struct snd_card *card,
 	if (!amd->regs) {
 		snd_printk(KERN_ERR
 			   "amd7930-%d: Unable to map chip registers.\n", dev);
+<<<<<<< HEAD
+=======
+		kfree(amd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 
@@ -1019,8 +1030,13 @@ static int amd7930_sbus_probe(struct platform_device *op)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev_num], id[dev_num], THIS_MODULE, 0,
 			      &card);
+=======
+	err = snd_card_new(&op->dev, index[dev_num], id[dev_num],
+			   THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -1063,11 +1079,18 @@ static const struct of_device_id amd7930_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, amd7930_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver amd7930_sbus_driver = {
 	.driver = {
 		.name = "audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = amd7930_match,
 	},
 	.probe		= amd7930_sbus_probe,

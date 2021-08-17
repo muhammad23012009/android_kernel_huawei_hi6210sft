@@ -27,6 +27,15 @@
 #ifndef __SIS_DRM_H__
 #define __SIS_DRM_H__
 
+<<<<<<< HEAD
+=======
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* SiS specific ioctls */
 #define NOT_USED_0_3
 #define DRM_SIS_FB_ALLOC	0x04
@@ -64,8 +73,14 @@ typedef struct {
 	unsigned long offset, size;
 } drm_sis_fb_t;
 
+<<<<<<< HEAD
 struct sis_file_private {
 	struct list_head obj_list;
 };
+=======
+#if defined(__cplusplus)
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif				/* __SIS_DRM_H__ */

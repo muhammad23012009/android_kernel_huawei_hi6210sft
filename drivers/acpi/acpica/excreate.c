@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -103,7 +107,10 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 	case ACPI_TYPE_BUFFER:
 	case ACPI_TYPE_PACKAGE:
 	case ACPI_TYPE_BUFFER_FIELD:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * These types open a new scope, so we need the NS node in order to access
 		 * any children.
@@ -113,7 +120,10 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 	case ACPI_TYPE_PROCESSOR:
 	case ACPI_TYPE_THERMAL:
 	case ACPI_TYPE_LOCAL_SCOPE:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * The new alias has the type ALIAS and points to the original
 		 * NS node, not the object itself.
@@ -124,7 +134,10 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 		break;
 
 	case ACPI_TYPE_METHOD:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Control method aliases need to be differentiated
 		 */
@@ -192,11 +205,19 @@ acpi_status acpi_ex_create_event(struct acpi_walk_state *walk_state)
 
 	/* Attach object to the Node */
 
+<<<<<<< HEAD
 	status =
 	    acpi_ns_attach_object((struct acpi_namespace_node *)walk_state->
 				  operands[0], obj_desc, ACPI_TYPE_EVENT);
 
       cleanup:
+=======
+	status = acpi_ns_attach_object((struct acpi_namespace_node *)
+				       walk_state->operands[0], obj_desc,
+				       ACPI_TYPE_EVENT);
+
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Remove local reference to the object (on error, will cause deletion
 	 * of both object and semaphore if present.)
@@ -251,7 +272,11 @@ acpi_status acpi_ex_create_mutex(struct acpi_walk_state *walk_state)
 	    acpi_ns_attach_object(obj_desc->mutex.node, obj_desc,
 				  ACPI_TYPE_MUTEX);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Remove local reference to the object (on error, will cause deletion
 	 * of both object and semaphore if present.)
@@ -329,9 +354,16 @@ acpi_ex_create_region(u8 * aml_start,
 	 * Remember location in AML stream of address & length
 	 * operands since they need to be evaluated at run time.
 	 */
+<<<<<<< HEAD
 	region_obj2 = obj_desc->common.next_object;
 	region_obj2->extra.aml_start = aml_start;
 	region_obj2->extra.aml_length = aml_length;
+=======
+	region_obj2 = acpi_ns_get_secondary_object(obj_desc);
+	region_obj2->extra.aml_start = aml_start;
+	region_obj2->extra.aml_length = aml_length;
+	region_obj2->extra.method_REG = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (walk_state->scope_info) {
 		region_obj2->extra.scope_node =
 		    walk_state->scope_info->scope.node;
@@ -345,12 +377,23 @@ acpi_ex_create_region(u8 * aml_start,
 	obj_desc->region.address = 0;
 	obj_desc->region.length = 0;
 	obj_desc->region.node = node;
+<<<<<<< HEAD
+=======
+	obj_desc->region.handler = NULL;
+	obj_desc->common.flags &=
+	    ~(AOPOBJ_SETUP_COMPLETE | AOPOBJ_REG_CONNECTED |
+	      AOPOBJ_OBJECT_INITIALIZED);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Install the new region object in the parent Node */
 
 	status = acpi_ns_attach_object(node, obj_desc, ACPI_TYPE_REGION);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Remove local reference to the object */
 
@@ -392,7 +435,11 @@ acpi_status acpi_ex_create_processor(struct acpi_walk_state *walk_state)
 	obj_desc->processor.proc_id = (u8) operand[1]->integer.value;
 	obj_desc->processor.length = (u8) operand[3]->integer.value;
 	obj_desc->processor.address =
+<<<<<<< HEAD
 	    (acpi_io_address) operand[2]->integer.value;
+=======
+	    (acpi_io_address)operand[2]->integer.value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Install the processor object in the parent Node */
 
@@ -489,15 +536,25 @@ acpi_ex_create_method(u8 * aml_start,
 
 	obj_desc->method.aml_start = aml_start;
 	obj_desc->method.aml_length = aml_length;
+<<<<<<< HEAD
+=======
+	obj_desc->method.node = operand[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Disassemble the method flags. Split off the arg_count, Serialized
 	 * flag, and sync_level for efficiency.
 	 */
+<<<<<<< HEAD
 	method_flags = (u8) operand[1]->integer.value;
 
 	obj_desc->method.param_count =
 	    (u8) (method_flags & AML_METHOD_ARG_COUNT);
+=======
+	method_flags = (u8)operand[1]->integer.value;
+	obj_desc->method.param_count = (u8)
+	    (method_flags & AML_METHOD_ARG_COUNT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Get the sync_level. If method is serialized, a mutex will be
@@ -523,7 +580,11 @@ acpi_ex_create_method(u8 * aml_start,
 
 	acpi_ut_remove_reference(obj_desc);
 
+<<<<<<< HEAD
       exit:
+=======
+exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Remove a reference to the operand */
 
 	acpi_ut_remove_reference(operand[1]);

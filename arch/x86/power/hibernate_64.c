@@ -11,12 +11,17 @@
 #include <linux/gfp.h>
 #include <linux/smp.h>
 #include <linux/suspend.h>
+<<<<<<< HEAD
+=======
+#include <linux/cpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/init.h>
 #include <asm/proto.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/mtrr.h>
+<<<<<<< HEAD
 #include <asm/suspend.h>
 
 /* References to section boundaries */
@@ -24,22 +29,79 @@ extern const void __nosave_begin, __nosave_end;
 
 /* Defined in hibernate_asm_64.S */
 extern int restore_image(void);
+=======
+#include <asm/sections.h>
+#include <asm/suspend.h>
+#include <asm/tlbflush.h>
+
+/* Defined in hibernate_asm_64.S */
+extern asmlinkage __visible int restore_image(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Address to jump to in the last phase of restore in order to get to the image
  * kernel's text (this value is passed in the image header).
  */
+<<<<<<< HEAD
 unsigned long restore_jump_address;
+=======
+unsigned long restore_jump_address __visible;
+unsigned long jump_address_phys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Value of the cr3 register from before the hibernation (this value is passed
  * in the image header).
  */
+<<<<<<< HEAD
 unsigned long restore_cr3;
 
 pgd_t *temp_level4_pgt;
 
 void *relocated_restore_code;
+=======
+unsigned long restore_cr3 __visible;
+
+unsigned long temp_level4_pgt __visible;
+
+unsigned long relocated_restore_code __visible;
+
+static int set_up_temporary_text_mapping(pgd_t *pgd)
+{
+	pmd_t *pmd;
+	pud_t *pud;
+
+	/*
+	 * The new mapping only has to cover the page containing the image
+	 * kernel's entry point (jump_address_phys), because the switch over to
+	 * it is carried out by relocated code running from a page allocated
+	 * specifically for this purpose and covered by the identity mapping, so
+	 * the temporary kernel text mapping is only needed for the final jump.
+	 * Moreover, in that mapping the virtual address of the image kernel's
+	 * entry point must be the same as its virtual address in the image
+	 * kernel (restore_jump_address), so the image kernel's
+	 * restore_registers() code doesn't find itself in a different area of
+	 * the virtual address space after switching over to the original page
+	 * tables used by the image kernel.
+	 */
+	pud = (pud_t *)get_safe_page(GFP_ATOMIC);
+	if (!pud)
+		return -ENOMEM;
+
+	pmd = (pmd_t *)get_safe_page(GFP_ATOMIC);
+	if (!pmd)
+		return -ENOMEM;
+
+	set_pmd(pmd + pmd_index(restore_jump_address),
+		__pmd((jump_address_phys & PMD_MASK) | __PAGE_KERNEL_LARGE_EXEC));
+	set_pud(pud + pud_index(restore_jump_address),
+		__pud(__pa(pmd) | _KERNPG_TABLE));
+	set_pgd(pgd + pgd_index(restore_jump_address),
+		__pgd(__pa(pud) | _KERNPG_TABLE));
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void *alloc_pgt_page(void *context)
 {
@@ -51,6 +113,7 @@ static int set_up_temporary_mappings(void)
 	struct x86_mapping_info info = {
 		.alloc_pgt_page	= alloc_pgt_page,
 		.pmd_flag	= __PAGE_KERNEL_LARGE_EXEC,
+<<<<<<< HEAD
 		.kernel_mapping = true,
 	};
 	unsigned long mstart, mend;
@@ -64,27 +127,89 @@ static int set_up_temporary_mappings(void)
 	/* It is safe to reuse the original kernel mapping */
 	set_pgd(temp_level4_pgt + pgd_index(__START_KERNEL_map),
 		init_level4_pgt[pgd_index(__START_KERNEL_map)]);
+=======
+		.offset		= __PAGE_OFFSET,
+	};
+	unsigned long mstart, mend;
+	pgd_t *pgd;
+	int result;
+	int i;
+
+	pgd = (pgd_t *)get_safe_page(GFP_ATOMIC);
+	if (!pgd)
+		return -ENOMEM;
+
+	/* Prepare a temporary mapping for the kernel text */
+	result = set_up_temporary_text_mapping(pgd);
+	if (result)
+		return result;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set up the direct mapping from scratch */
 	for (i = 0; i < nr_pfn_mapped; i++) {
 		mstart = pfn_mapped[i].start << PAGE_SHIFT;
 		mend   = pfn_mapped[i].end << PAGE_SHIFT;
 
+<<<<<<< HEAD
 		result = kernel_ident_mapping_init(&info, temp_level4_pgt,
 						   mstart, mend);
 
+=======
+		result = kernel_ident_mapping_init(&info, pgd, mstart, mend);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (result)
 			return result;
 	}
 
+<<<<<<< HEAD
 	return 0;
 }
 
 int swsusp_arch_resume(void)
+=======
+	temp_level4_pgt = __pa(pgd);
+	return 0;
+}
+
+static int relocate_restore_code(void)
+{
+	pgd_t *pgd;
+	pud_t *pud;
+
+	relocated_restore_code = get_safe_page(GFP_ATOMIC);
+	if (!relocated_restore_code)
+		return -ENOMEM;
+
+	memcpy((void *)relocated_restore_code, core_restore_code, PAGE_SIZE);
+
+	/* Make the page containing the relocated code executable */
+	pgd = (pgd_t *)__va(read_cr3()) + pgd_index(relocated_restore_code);
+	pud = pud_offset(pgd, relocated_restore_code);
+	if (pud_large(*pud)) {
+		set_pud(pud, __pud(pud_val(*pud) & ~_PAGE_NX));
+	} else {
+		pmd_t *pmd = pmd_offset(pud, relocated_restore_code);
+
+		if (pmd_large(*pmd)) {
+			set_pmd(pmd, __pmd(pmd_val(*pmd) & ~_PAGE_NX));
+		} else {
+			pte_t *pte = pte_offset_kernel(pmd, relocated_restore_code);
+
+			set_pte(pte, __pte(pte_val(*pte) & ~_PAGE_NX));
+		}
+	}
+	__flush_tlb_all();
+
+	return 0;
+}
+
+asmlinkage int swsusp_arch_resume(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int error;
 
 	/* We have got enough memory and from now on we cannot recover */
+<<<<<<< HEAD
 	if ((error = set_up_temporary_mappings()))
 		return error;
 
@@ -93,6 +218,15 @@ int swsusp_arch_resume(void)
 		return -ENOMEM;
 	memcpy(relocated_restore_code, &core_restore_code,
 	       &restore_registers - &core_restore_code);
+=======
+	error = set_up_temporary_mappings();
+	if (error)
+		return error;
+
+	error = relocate_restore_code();
+	if (error)
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	restore_image();
 	return 0;
@@ -111,11 +245,19 @@ int pfn_is_nosave(unsigned long pfn)
 
 struct restore_data_record {
 	unsigned long jump_address;
+<<<<<<< HEAD
+=======
+	unsigned long jump_address_phys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long cr3;
 	unsigned long magic;
 };
 
+<<<<<<< HEAD
 #define RESTORE_MAGIC	0x0123456789ABCDEFUL
+=======
+#define RESTORE_MAGIC	0x123456789ABCDEF0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  *	arch_hibernation_header_save - populate the architecture specific part
@@ -128,7 +270,12 @@ int arch_hibernation_header_save(void *addr, unsigned int max_size)
 
 	if (max_size < sizeof(struct restore_data_record))
 		return -EOVERFLOW;
+<<<<<<< HEAD
 	rdr->jump_address = restore_jump_address;
+=======
+	rdr->jump_address = (unsigned long)restore_registers;
+	rdr->jump_address_phys = __pa_symbol(restore_registers);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rdr->cr3 = restore_cr3;
 	rdr->magic = RESTORE_MAGIC;
 	return 0;
@@ -144,6 +291,45 @@ int arch_hibernation_header_restore(void *addr)
 	struct restore_data_record *rdr = addr;
 
 	restore_jump_address = rdr->jump_address;
+<<<<<<< HEAD
 	restore_cr3 = rdr->cr3;
 	return (rdr->magic == RESTORE_MAGIC) ? 0 : -EINVAL;
 }
+=======
+	jump_address_phys = rdr->jump_address_phys;
+	restore_cr3 = rdr->cr3;
+	return (rdr->magic == RESTORE_MAGIC) ? 0 : -EINVAL;
+}
+
+int arch_resume_nosmt(void)
+{
+	int ret = 0;
+	/*
+	 * We reached this while coming out of hibernation. This means
+	 * that SMT siblings are sleeping in hlt, as mwait is not safe
+	 * against control transition during resume (see comment in
+	 * hibernate_resume_nonboot_cpu_disable()).
+	 *
+	 * If the resumed kernel has SMT disabled, we have to take all the
+	 * SMT siblings out of hlt, and offline them again so that they
+	 * end up in mwait proper.
+	 *
+	 * Called with hotplug disabled.
+	 */
+	cpu_hotplug_enable();
+	if (cpu_smt_control == CPU_SMT_DISABLED ||
+			cpu_smt_control == CPU_SMT_FORCE_DISABLED) {
+		enum cpuhp_smt_control old = cpu_smt_control;
+
+		ret = cpuhp_smt_enable();
+		if (ret)
+			goto out;
+		ret = cpuhp_smt_disable(old);
+		if (ret)
+			goto out;
+	}
+out:
+	cpu_hotplug_disable();
+	return ret;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -126,7 +126,11 @@ hmark_hash(struct hmark_tuple *t, const struct xt_hmark_info *info)
 	hash = jhash_3words(src, dst, t->uports.v32, info->hashrnd);
 	hash = hash ^ (t->proto & info->proto_mask);
 
+<<<<<<< HEAD
 	return (((u64)hash * info->hmodulus) >> 32) + info->hoffset;
+=======
+	return reciprocal_scale(hash, info->hmodulus) + info->hoffset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void

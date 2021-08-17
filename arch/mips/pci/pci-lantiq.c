@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/types.h>
@@ -13,15 +17,21 @@
 #include <linux/delay.h>
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk.h>
 #include <linux/of_platform.h>
 #include <linux/of_gpio.h>
 #include <linux/of_irq.h>
 #include <linux/of_pci.h>
 
+<<<<<<< HEAD
 #include <asm/pci.h>
 #include <asm/gpio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/addrspace.h>
 
 #include <lantiq_soc.h>
@@ -89,7 +99,11 @@ static inline u32 ltq_calc_bar11mask(void)
 	u32 mem, bar11mask;
 
 	/* BAR11MASK value depends on available memory on system. */
+<<<<<<< HEAD
 	mem = num_physpages * PAGE_SIZE;
+=======
+	mem = get_num_physpages() * PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bar11mask = (0x0ffffff0 & ~((1 << (fls(mem) - 1)) - 1)) | 8;
 
 	return bar11mask;
@@ -215,6 +229,7 @@ static int ltq_pci_probe(struct platform_device *pdev)
 
 	pci_clear_flags(PCI_PROBE_ONLY);
 
+<<<<<<< HEAD
 	res_cfg = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	res_bridge = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (!res_cfg || !res_bridge) {
@@ -222,10 +237,17 @@ static int ltq_pci_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+=======
+	res_bridge = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ltq_pci_membase = devm_ioremap_resource(&pdev->dev, res_bridge);
 	if (IS_ERR(ltq_pci_membase))
 		return PTR_ERR(ltq_pci_membase);
 
+<<<<<<< HEAD
+=======
+	res_cfg = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ltq_pci_mapped_cfg = devm_ioremap_resource(&pdev->dev, res_cfg);
 	if (IS_ERR(ltq_pci_mapped_cfg))
 		return PTR_ERR(ltq_pci_mapped_cfg);
@@ -241,13 +263,19 @@ static const struct of_device_id ltq_pci_match[] = {
 	{ .compatible = "lantiq,pci-xway" },
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, ltq_pci_match);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver ltq_pci_driver = {
 	.probe = ltq_pci_probe,
 	.driver = {
 		.name = "pci-xway",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = ltq_pci_match,
 	},
 };

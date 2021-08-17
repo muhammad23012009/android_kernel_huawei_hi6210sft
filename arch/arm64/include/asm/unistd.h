@@ -14,6 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifdef CONFIG_COMPAT
+<<<<<<< HEAD
+=======
+#define __ARCH_WANT_COMPAT_SYS_GETDENTS64
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __ARCH_WANT_COMPAT_STAT64
 #define __ARCH_WANT_SYS_GETHOSTNAME
 #define __ARCH_WANT_SYS_PAUSE
@@ -25,7 +29,10 @@
 #define __ARCH_WANT_COMPAT_SYS_SENDFILE
 #define __ARCH_WANT_SYS_FORK
 #define __ARCH_WANT_SYS_VFORK
+<<<<<<< HEAD
 #define __ARCH_WANT_OLD_READDIR
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Compat syscall numbers used by the AArch64 kernel.
@@ -44,10 +51,21 @@
 #define __ARM_NR_compat_cacheflush	(__ARM_NR_COMPAT_BASE+2)
 #define __ARM_NR_compat_set_tls		(__ARM_NR_COMPAT_BASE+5)
 
+<<<<<<< HEAD
 #define __NR_compat_syscalls		384
 #endif
 
 #define __ARCH_WANT_SYS_CLONE
 #include <uapi/asm/unistd.h>
+=======
+#define __NR_compat_syscalls		394
+#endif
+
+#define __ARCH_WANT_SYS_CLONE
+
+#ifndef __COMPAT_SYSCALL_NR
+#include <uapi/asm/unistd.h>
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define NR_syscalls (__NR_syscalls)

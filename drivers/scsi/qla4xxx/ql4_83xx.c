@@ -1,6 +1,10 @@
 /*
  * QLogic iSCSI HBA Driver
+<<<<<<< HEAD
  * Copyright (c)   2003-2012 QLogic Corporation
+=======
+ * Copyright (c)   2003-2013 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * See LICENSE.qla4xxx for copyright and licensing details.
  */
@@ -46,11 +50,21 @@ int qla4_83xx_rd_reg_indirect(struct scsi_qla_host *ha, uint32_t addr,
 
 	ret_val = qla4_83xx_set_win_base(ha, addr);
 
+<<<<<<< HEAD
 	if (ret_val == QLA_SUCCESS)
 		*data = qla4_83xx_rd_reg(ha, QLA83XX_WILDCARD);
 	else
 		ql4_printk(KERN_ERR, ha, "%s: failed read of addr 0x%x!\n",
 			   __func__, addr);
+=======
+	if (ret_val == QLA_SUCCESS) {
+		*data = qla4_83xx_rd_reg(ha, QLA83XX_WILDCARD);
+	} else {
+		*data = 0xffffffff;
+		ql4_printk(KERN_ERR, ha, "%s: failed read of addr 0x%x!\n",
+			   __func__, addr);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret_val;
 }
@@ -249,6 +263,7 @@ void qla4_83xx_rom_lock_recovery(struct scsi_qla_host *ha)
 	qla4_83xx_flash_unlock(ha);
 }
 
+<<<<<<< HEAD
 /**
  * qla4_83xx_ms_mem_write_128b - Writes data to MS/off-chip memory
  * @ha: Pointer to adapter structure
@@ -353,6 +368,8 @@ exit_ms_mem_write:
 	return ret_val;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define INTENT_TO_RECOVER	0x01
 #define PROCEED_TO_RECOVER	0x02
 
@@ -465,7 +482,11 @@ int qla4_83xx_drv_lock(struct scsi_qla_host *ha)
 				}
 				/* Recovery Failed, some other function
 				 * has the lock, wait for 2secs and retry */
+<<<<<<< HEAD
 				ql4_printk(KERN_INFO, ha, "%s: IDC lock Recovery by %d failed, Retrying timout\n",
+=======
+				ql4_printk(KERN_INFO, ha, "%s: IDC lock Recovery by %d failed, Retrying timeout\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   __func__, ha->func_num);
 				timeout = 0;
 			}
@@ -760,7 +781,11 @@ static int qla4_83xx_copy_bootloader(struct scsi_qla_host *ha)
 			  __func__));
 
 	/* 128 bit/16 byte write to MS memory */
+<<<<<<< HEAD
 	ret_val = qla4_83xx_ms_mem_write_128b(ha, dest, (uint32_t *)p_cache,
+=======
+	ret_val = qla4_8xxx_ms_mem_write_128b(ha, dest, (uint32_t *)p_cache,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					      count);
 	if (ret_val == QLA_ERROR) {
 		ql4_printk(KERN_ERR, ha, "%s: Error writing firmware to MS\n",
@@ -932,7 +957,11 @@ void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 	ret_val = qla4_83xx_flash_read_u32(ha, addr, p_buff,
 					   tmplt_hdr_def_size);
 	if (ret_val != QLA_SUCCESS) {
+<<<<<<< HEAD
 		ql4_printk(KERN_ERR, ha, "%s: Failed to read reset tempelate\n",
+=======
+		ql4_printk(KERN_ERR, ha, "%s: Failed to read reset template\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   __func__);
 		goto exit_read_template_error;
 	}
@@ -1304,12 +1333,33 @@ static void qla4_83xx_process_init_seq(struct scsi_qla_host *ha)
 static int qla4_83xx_restart(struct scsi_qla_host *ha)
 {
 	int ret_val = QLA_SUCCESS;
+<<<<<<< HEAD
 
 	qla4_83xx_process_stop_seq(ha);
 
 	/* Collect minidump*/
 	if (!test_and_clear_bit(AF_83XX_NO_FW_DUMP, &ha->flags))
 		qla4_8xxx_get_minidump(ha);
+=======
+	uint32_t idc_ctrl;
+
+	qla4_83xx_process_stop_seq(ha);
+
+	/*
+	 * Collect minidump.
+	 * If IDC_CTRL BIT1 is set, clear it on going to INIT state and
+	 * don't collect minidump
+	 */
+	idc_ctrl = qla4_83xx_rd_reg(ha, QLA83XX_IDC_DRV_CTRL);
+	if (idc_ctrl & GRACEFUL_RESET_BIT1) {
+		qla4_83xx_wr_reg(ha, QLA83XX_IDC_DRV_CTRL,
+				 (idc_ctrl & ~GRACEFUL_RESET_BIT1));
+		ql4_printk(KERN_INFO, ha, "%s: Graceful RESET: Not collecting minidump\n",
+			   __func__);
+	} else {
+		qla4_8xxx_get_minidump(ha);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	qla4_83xx_process_init_seq(ha);
 
@@ -1473,9 +1523,15 @@ int qla4_83xx_isp_reset(struct scsi_qla_host *ha)
 				  __func__));
 	}
 
+<<<<<<< HEAD
 	/* For ISP8324, Reset owner is NIC, iSCSI or FCOE based on priority
 	 * and which drivers are present. Unlike ISP8022, the function setting
 	 * NEED_RESET, may not be the Reset owner. */
+=======
+	/* For ISP8324 and ISP8042, Reset owner is NIC, iSCSI or FCOE based on
+	 * priority and which drivers are present. Unlike ISP8022, the function
+	 * setting NEED_RESET, may not be the Reset owner. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (qla4_83xx_can_perform_reset(ha))
 		set_bit(AF_8XXX_RST_OWNER, &ha->flags);
 
@@ -1664,3 +1720,26 @@ void qla4_83xx_disable_pause(struct scsi_qla_host *ha)
 	__qla4_83xx_disable_pause(ha);
 	ha->isp_ops->idc_unlock(ha);
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * qla4_83xx_is_detached - Check if we are marked invisible.
+ * @ha: Pointer to host adapter structure.
+ **/
+int qla4_83xx_is_detached(struct scsi_qla_host *ha)
+{
+	uint32_t drv_active;
+
+	drv_active = qla4_8xxx_rd_direct(ha, QLA8XXX_CRB_DRV_ACTIVE);
+
+	if (test_bit(AF_INIT_DONE, &ha->flags) &&
+	    !(drv_active & (1 << ha->func_num))) {
+		DEBUG2(ql4_printk(KERN_INFO, ha, "%s: drv_active = 0x%X\n",
+				  __func__, drv_active));
+		return QLA_SUCCESS;
+	}
+
+	return QLA_ERROR;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

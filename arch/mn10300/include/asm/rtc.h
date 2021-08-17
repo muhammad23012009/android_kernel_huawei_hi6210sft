@@ -25,6 +25,9 @@ static inline void calibrate_clock(void)
 
 #endif /* !CONFIG_MN10300_RTC */
 
+<<<<<<< HEAD
 #include <asm-generic/rtc.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_RTC_H */

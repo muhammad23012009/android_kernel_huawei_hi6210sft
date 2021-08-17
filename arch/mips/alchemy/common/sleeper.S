@@ -95,7 +95,11 @@ LEAF(alchemy_sleep_au1000)
 
 	/* cache following instructions, as memory gets put to sleep */
 	la	t0, 1f
+<<<<<<< HEAD
 	.set	mips3
+=======
+	.set	arch=r4000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cache	0x14, 0(t0)
 	cache	0x14, 32(t0)
 	cache	0x14, 64(t0)
@@ -121,7 +125,11 @@ LEAF(alchemy_sleep_au1550)
 
 	/* cache following instructions, as memory gets put to sleep */
 	la	t0, 1f
+<<<<<<< HEAD
 	.set	mips3
+=======
+	.set	arch=r4000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cache	0x14, 0(t0)
 	cache	0x14, 32(t0)
 	cache	0x14, 64(t0)
@@ -163,7 +171,11 @@ LEAF(alchemy_sleep_au1300)
 	la	t1, 4f
 	subu	t2, t1, t0
 
+<<<<<<< HEAD
 	.set	mips3
+=======
+	.set	arch=r4000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 1:	cache	0x14, 0(t0)
 	subu	t2, t2, 32

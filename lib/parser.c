@@ -113,6 +113,10 @@ int match_token(char *s, const match_table_t table, substring_t args[])
 
 	return p->token;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(match_token);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * match_number: scan a number in the given base from a substring_t
@@ -163,6 +167,10 @@ int match_int(substring_t *s, int *result)
 {
 	return match_number(s, result, 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(match_int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * match_octal: - scan an octal representation of an integer from a substring_t
@@ -177,6 +185,10 @@ int match_octal(substring_t *s, int *result)
 {
 	return match_number(s, result, 8);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(match_octal);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * match_hex: - scan a hex representation of an integer from a substring_t
@@ -191,6 +203,61 @@ int match_hex(substring_t *s, int *result)
 {
 	return match_number(s, result, 16);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(match_hex);
+
+/**
+ * match_wildcard: - parse if a string matches given wildcard pattern
+ * @pattern: wildcard pattern
+ * @str: the string to be parsed
+ *
+ * Description: Parse the string @str to check if matches wildcard
+ * pattern @pattern. The pattern may contain two type wildcardes:
+ *   '*' - matches zero or more characters
+ *   '?' - matches one character
+ * If it's matched, return true, else return false.
+ */
+bool match_wildcard(const char *pattern, const char *str)
+{
+	const char *s = str;
+	const char *p = pattern;
+	bool star = false;
+
+	while (*s) {
+		switch (*p) {
+		case '?':
+			s++;
+			p++;
+			break;
+		case '*':
+			star = true;
+			str = s;
+			if (!*++p)
+				return true;
+			pattern = p;
+			break;
+		default:
+			if (*s == *p) {
+				s++;
+				p++;
+			} else {
+				if (!star)
+					return false;
+				str++;
+				s = str;
+				p = pattern;
+			}
+			break;
+		}
+	}
+
+	if (*p == '*')
+		++p;
+	return !*p;
+}
+EXPORT_SYMBOL(match_wildcard);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * match_strlcpy: - Copy the characters from a substring_t to a sized buffer
@@ -213,6 +280,10 @@ size_t match_strlcpy(char *dest, const substring_t *src, size_t size)
 	}
 	return ret;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(match_strlcpy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * match_strdup: - allocate a new string with the contents of a substring_t
@@ -230,10 +301,13 @@ char *match_strdup(const substring_t *s)
 		match_strlcpy(p, s, sz);
 	return p;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(match_token);
 EXPORT_SYMBOL(match_int);
 EXPORT_SYMBOL(match_octal);
 EXPORT_SYMBOL(match_hex);
 EXPORT_SYMBOL(match_strlcpy);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(match_strdup);

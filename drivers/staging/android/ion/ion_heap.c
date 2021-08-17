@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * drivers/gpu/ion/ion_heap.c
+=======
+ * drivers/staging/android/ion/ion_heap.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 2011 Google, Inc.
  *
@@ -22,12 +26,18 @@
 #include <linux/sched.h>
 #include <linux/scatterlist.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include "ion.h"
 #include "ion_priv.h"
 
 #include <linux/hisi/hisi-iommu.h>
 
+=======
+#include "ion.h"
+#include "ion_priv.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void *ion_heap_map_kernel(struct ion_heap *heap,
 			  struct ion_buffer *buffer)
 {
@@ -41,7 +51,11 @@ void *ion_heap_map_kernel(struct ion_heap *heap,
 	struct page **tmp = pages;
 
 	if (!pages)
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (buffer->flags & ION_FLAG_CACHED)
 		pgprot = PAGE_KERNEL;
@@ -59,7 +73,11 @@ void *ion_heap_map_kernel(struct ion_heap *heap,
 	vaddr = vmap(pages, npages, VM_MAP, pgprot);
 	vfree(pages);
 
+<<<<<<< HEAD
 	if (vaddr == NULL)
+=======
+	if (!vaddr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ERR_PTR(-ENOMEM);
 
 	return vaddr;
@@ -96,7 +114,11 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 		}
 		len = min(len, remainder);
 		ret = remap_pfn_range(vma, addr, page_to_pfn(page), len,
+<<<<<<< HEAD
 				vma->vm_page_prot);
+=======
+				      vma->vm_page_prot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 		addr += len;
@@ -106,6 +128,7 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 	return 0;
 }
 
+<<<<<<< HEAD
 int ion_heap_map_iommu(struct ion_buffer *buffer,
 			struct ion_iommu_map *map_data)
 {
@@ -133,19 +156,33 @@ void ion_heap_unmap_iommu(struct ion_iommu_map *map_data)
 static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
 {
 	void *addr = vm_map_ram(pages, num, -1, pgprot);
+=======
+static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
+{
+	void *addr = vmap(pages, num, VM_MAP, pgprot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!addr)
 		return -ENOMEM;
 	memset(addr, 0, PAGE_SIZE * num);
+<<<<<<< HEAD
 	vm_unmap_ram(addr, num);
+=======
+	vunmap(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #if 0
 
 int ion_heap_sglist_zero(struct scatterlist *sgl, unsigned int nents,
 						pgprot_t pgprot)
+=======
+static int ion_heap_sglist_zero(struct scatterlist *sgl, unsigned int nents,
+				pgprot_t pgprot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int p = 0;
 	int ret = 0;
@@ -167,6 +204,7 @@ int ion_heap_sglist_zero(struct scatterlist *sgl, unsigned int nents,
 	return ret;
 }
 
+<<<<<<< HEAD
 #else
 
 static int ion_heap_clear_pages_for_large_buffer(struct page **pages, int num, pgprot_t pgprot)
@@ -244,6 +282,19 @@ int ion_heap_buffer_zero(struct ion_buffer *buffer)
 	struct sg_table *table = buffer->sg_table;
 
 	return ion_heap_sglist_zero(table->sgl, table->nents, PAGE_KERNEL);
+=======
+int ion_heap_buffer_zero(struct ion_buffer *buffer)
+{
+	struct sg_table *table = buffer->sg_table;
+	pgprot_t pgprot;
+
+	if (buffer->flags & ION_FLAG_CACHED)
+		pgprot = PAGE_KERNEL;
+	else
+		pgprot = pgprot_writecombine(PAGE_KERNEL);
+
+	return ion_heap_sglist_zero(table->sgl, table->nents, pgprot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int ion_heap_pages_zero(struct page *page, size_t size, pgprot_t pgprot)
@@ -276,7 +327,11 @@ size_t ion_heap_freelist_size(struct ion_heap *heap)
 }
 
 static size_t _ion_heap_freelist_drain(struct ion_heap *heap, size_t size,
+<<<<<<< HEAD
 				bool skip_pools)
+=======
+				       bool skip_pools)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ion_buffer *buffer;
 	size_t total_drained = 0;
@@ -351,6 +406,7 @@ int ion_heap_init_deferred_free(struct ion_heap *heap)
 	init_waitqueue_head(&heap->waitqueue);
 	heap->task = kthread_run(ion_heap_deferred_free, heap,
 				 "%s", heap->name);
+<<<<<<< HEAD
 	sched_setscheduler(heap->task, SCHED_IDLE, &param);
 	if (IS_ERR(heap->task)) {
 		pr_err("%s: creating thread for deferred free failed\n",
@@ -361,15 +417,47 @@ int ion_heap_init_deferred_free(struct ion_heap *heap)
 }
 
 static int ion_heap_shrink(struct shrinker *shrinker, struct shrink_control *sc)
+=======
+	if (IS_ERR(heap->task)) {
+		pr_err("%s: creating thread for deferred free failed\n",
+		       __func__);
+		return PTR_ERR_OR_ZERO(heap->task);
+	}
+	sched_setscheduler(heap->task, SCHED_IDLE, &param);
+	return 0;
+}
+
+static unsigned long ion_heap_shrink_count(struct shrinker *shrinker,
+					   struct shrink_control *sc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ion_heap *heap = container_of(shrinker, struct ion_heap,
 					     shrinker);
 	int total = 0;
+<<<<<<< HEAD
+=======
+
+	total = ion_heap_freelist_size(heap) / PAGE_SIZE;
+	if (heap->ops->shrink)
+		total += heap->ops->shrink(heap, sc->gfp_mask, 0);
+	return total;
+}
+
+static unsigned long ion_heap_shrink_scan(struct shrinker *shrinker,
+					  struct shrink_control *sc)
+{
+	struct ion_heap *heap = container_of(shrinker, struct ion_heap,
+					     shrinker);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int freed = 0;
 	int to_scan = sc->nr_to_scan;
 
 	if (to_scan == 0)
+<<<<<<< HEAD
 		goto out;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * shrink the free list first, no point in zeroing the memory if we're
@@ -380,6 +468,7 @@ static int ion_heap_shrink(struct shrinker *shrinker, struct shrink_control *sc)
 				PAGE_SIZE;
 
 	to_scan -= freed;
+<<<<<<< HEAD
 	if (to_scan < 0)
 		to_scan = 0;
 
@@ -388,11 +477,24 @@ out:
 	if (heap->ops->shrink)
 		total += heap->ops->shrink(heap, sc->gfp_mask, to_scan);
 	return total;
+=======
+	if (to_scan <= 0)
+		return freed;
+
+	if (heap->ops->shrink)
+		freed += heap->ops->shrink(heap, sc->gfp_mask, to_scan);
+	return freed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void ion_heap_init_shrinker(struct ion_heap *heap)
 {
+<<<<<<< HEAD
 	heap->shrinker.shrink = ion_heap_shrink;
+=======
+	heap->shrinker.count_objects = ion_heap_shrink_count;
+	heap->shrinker.scan_objects = ion_heap_shrink_scan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	heap->shrinker.seeks = DEFAULT_SEEKS;
 	heap->shrinker.batch = 0;
 	register_shrinker(&heap->shrinker);
@@ -404,8 +506,14 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 
 	switch (heap_data->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
+<<<<<<< HEAD
 		heap = ion_system_contig_heap_create(heap_data);
 		break;
+=======
+		pr_err("%s: Heap type is disabled: %d\n", __func__,
+		       heap_data->type);
+		return ERR_PTR(-EINVAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case ION_HEAP_TYPE_SYSTEM:
 		heap = ion_system_heap_create(heap_data);
 		break;
@@ -418,9 +526,12 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 	case ION_HEAP_TYPE_DMA:
 		heap = ion_cma_heap_create(heap_data);
 		break;
+<<<<<<< HEAD
 	case ION_HEAP_TYPE_CPUDRAW:
 		heap = ion_cpudraw_heap_create(heap_data);
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		pr_err("%s: Invalid heap type %d\n", __func__,
 		       heap_data->type);
@@ -438,6 +549,10 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 	heap->id = heap_data->id;
 	return heap;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ion_heap_create);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void ion_heap_destroy(struct ion_heap *heap)
 {
@@ -446,7 +561,12 @@ void ion_heap_destroy(struct ion_heap *heap)
 
 	switch (heap->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
+<<<<<<< HEAD
 		ion_system_contig_heap_destroy(heap);
+=======
+		pr_err("%s: Heap type is disabled: %d\n", __func__,
+		       heap->type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case ION_HEAP_TYPE_SYSTEM:
 		ion_system_heap_destroy(heap);
@@ -460,11 +580,18 @@ void ion_heap_destroy(struct ion_heap *heap)
 	case ION_HEAP_TYPE_DMA:
 		ion_cma_heap_destroy(heap);
 		break;
+<<<<<<< HEAD
 	case ION_HEAP_TYPE_CPUDRAW:
 		ion_cpudraw_heap_destroy(heap);
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		pr_err("%s: Invalid heap type %d\n", __func__,
 		       heap->type);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ion_heap_destroy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

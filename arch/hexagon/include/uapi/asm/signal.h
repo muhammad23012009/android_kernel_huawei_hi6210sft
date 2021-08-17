@@ -19,8 +19,11 @@
 #ifndef _ASM_SIGNAL_H
 #define _ASM_SIGNAL_H
 
+<<<<<<< HEAD
 #include <uapi/asm/registers.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned long __rt_sigtramp_template[2];
 
 void do_signal(struct pt_regs *regs);

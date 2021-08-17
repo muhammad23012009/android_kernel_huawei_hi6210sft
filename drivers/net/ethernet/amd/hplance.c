@@ -27,9 +27,15 @@
 
 #include "hplance.h"
 
+<<<<<<< HEAD
 /* We have 16834 bytes of RAM for the init block and buffers. This places
  * an upper limit on the number of buffers we can use. NetBSD uses 8 Rx
  * buffers and 2 Tx buffers.
+=======
+/* We have 16392 bytes of RAM for the init block and buffers. This places
+ * an upper limit on the number of buffers we can use. NetBSD uses 8 Rx
+ * buffers and 2 Tx buffers, it takes (8 + 2) * 1544 bytes.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define LANCE_LOG_TX_BUFFERS 1
 #define LANCE_LOG_RX_BUFFERS 3
@@ -127,6 +133,7 @@ static void hplance_remove_one(struct dio_dev *d)
 /* Initialise a single lance board at the given DIO device */
 static void hplance_init(struct net_device *dev, struct dio_dev *d)
 {
+<<<<<<< HEAD
         unsigned long va = (d->resource.start + DIO_VIRADDRBASE);
         struct hplance_private *lp;
         int i;
@@ -162,6 +169,43 @@ static void hplance_init(struct net_device *dev, struct dio_dev *d)
         lp->lance.lance_log_tx_bufs = LANCE_LOG_TX_BUFFERS;
         lp->lance.rx_ring_mod_mask = RX_RING_MOD_MASK;
         lp->lance.tx_ring_mod_mask = TX_RING_MOD_MASK;
+=======
+	unsigned long va = (d->resource.start + DIO_VIRADDRBASE);
+	struct hplance_private *lp;
+	int i;
+
+	/* reset the board */
+	out_8(va + DIO_IDOFF, 0xff);
+	udelay(100);                              /* ariba! ariba! udelay! udelay! */
+
+	/* Fill the dev fields */
+	dev->base_addr = va;
+	dev->netdev_ops = &hplance_netdev_ops;
+	dev->dma = 0;
+
+	for (i = 0; i < 6; i++) {
+		/* The NVRAM holds our ethernet address, one nibble per byte,
+		 * at bytes NVRAMOFF+1,3,5,7,9...
+		 */
+		dev->dev_addr[i] = ((in_8(va + HPLANCE_NVRAMOFF + i*4 + 1) & 0xF) << 4)
+			| (in_8(va + HPLANCE_NVRAMOFF + i*4 + 3) & 0xF);
+	}
+
+	lp = netdev_priv(dev);
+	lp->lance.name = d->name;
+	lp->lance.base = va;
+	lp->lance.init_block = (struct lance_init_block *)(va + HPLANCE_MEMOFF); /* CPU addr */
+	lp->lance.lance_init_block = NULL;              /* LANCE addr of same RAM */
+	lp->lance.busmaster_regval = LE_C3_BSWP;        /* we're bigendian */
+	lp->lance.irq = d->ipl;
+	lp->lance.writerap = hplance_writerap;
+	lp->lance.writerdp = hplance_writerdp;
+	lp->lance.readrdp = hplance_readrdp;
+	lp->lance.lance_log_rx_bufs = LANCE_LOG_RX_BUFFERS;
+	lp->lance.lance_log_tx_bufs = LANCE_LOG_TX_BUFFERS;
+	lp->lance.rx_ring_mod_mask = RX_RING_MOD_MASK;
+	lp->lance.tx_ring_mod_mask = TX_RING_MOD_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* This is disgusting. We have to check the DIO status register for ack every
@@ -195,6 +239,7 @@ static unsigned short hplance_readrdp(void *priv)
 
 static int hplance_open(struct net_device *dev)
 {
+<<<<<<< HEAD
         int status;
         struct lance_private *lp = netdev_priv(dev);
 
@@ -205,15 +250,35 @@ static int hplance_open(struct net_device *dev)
         out_8(lp->base + HPLANCE_STATUS, LE_IE);
 
         return 0;
+=======
+	int status;
+	struct lance_private *lp = netdev_priv(dev);
+
+	status = lance_open(dev);                 /* call generic lance open code */
+	if (status)
+		return status;
+	/* enable interrupts at board level. */
+	out_8(lp->base + HPLANCE_STATUS, LE_IE);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int hplance_close(struct net_device *dev)
 {
+<<<<<<< HEAD
         struct lance_private *lp = netdev_priv(dev);
 
         out_8(lp->base + HPLANCE_STATUS, 0);	/* disable interrupts at boardlevel */
         lance_close(dev);
         return 0;
+=======
+	struct lance_private *lp = netdev_priv(dev);
+
+	out_8(lp->base + HPLANCE_STATUS, 0);	/* disable interrupts at boardlevel */
+	lance_close(dev);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init hplance_init_module(void)
@@ -223,7 +288,11 @@ static int __init hplance_init_module(void)
 
 static void __exit hplance_cleanup_module(void)
 {
+<<<<<<< HEAD
         dio_unregister_driver(&hplance_driver);
+=======
+	dio_unregister_driver(&hplance_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(hplance_init_module);

@@ -14,6 +14,10 @@
  *	David Mosberger-Tang <davidm@hpl.hp.com>
  */
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 GLOBAL_ENTRY(memcpy)
 
@@ -299,3 +303,7 @@ GLOBAL_ENTRY(memcpy)
 	COPY(56, 0)
 
 END(memcpy)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memcpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

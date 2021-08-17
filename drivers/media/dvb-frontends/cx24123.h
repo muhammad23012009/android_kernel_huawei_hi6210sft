@@ -21,7 +21,10 @@
 #ifndef CX24123_H
 #define CX24123_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 
 struct cx24123_config {
@@ -39,7 +42,11 @@ struct cx24123_config {
 	void (*agc_callback) (struct dvb_frontend *);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_CX24123)
+=======
+#if IS_REACHABLE(CONFIG_DVB_CX24123)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *cx24123_attach(const struct cx24123_config *config,
 					   struct i2c_adapter *i2c);
 extern struct i2c_adapter *cx24123_get_tuner_i2c_adapter(struct dvb_frontend *);
@@ -50,7 +57,11 @@ static inline struct dvb_frontend *cx24123_attach(
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
+<<<<<<< HEAD
 static struct i2c_adapter *
+=======
+static inline struct i2c_adapter *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cx24123_get_tuner_i2c_adapter(struct dvb_frontend *fe)
 {
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);

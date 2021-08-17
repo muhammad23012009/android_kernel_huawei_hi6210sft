@@ -123,7 +123,11 @@ void __irq_entry indy_8254timer_irq(void)
 	char c;
 
 	irq_enter();
+<<<<<<< HEAD
 	kstat_incr_irqs_this_cpu(irq, irq_to_desc(irq));
+=======
+	kstat_incr_irq_this_cpu(irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk(KERN_ALERT "Oops, got 8254 interrupt.\n");
 	ArcRead(0, &c, 1, &cnt);
 	ArcEnterInteractiveMode();

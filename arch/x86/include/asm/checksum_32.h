@@ -2,8 +2,12 @@
 #define _ASM_X86_CHECKSUM_32_H
 
 #include <linux/in6.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * computes the checksum of a memory block at buff, length len,
@@ -112,8 +116,12 @@ static inline __sum16 csum_fold(__wsum sum)
 }
 
 static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+<<<<<<< HEAD
 					unsigned short len,
 					unsigned short proto,
+=======
+					__u32 len, __u8 proto,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					__wsum sum)
 {
 	asm("addl %1, %0	;\n"
@@ -131,8 +139,12 @@ static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
  * returns a 16-bit checksum, already complemented
  */
 static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
+<<<<<<< HEAD
 					unsigned short len,
 					unsigned short proto,
+=======
+					__u32 len, __u8 proto,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					__wsum sum)
 {
 	return csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));
@@ -151,8 +163,12 @@ static inline __sum16 ip_compute_csum(const void *buff, int len)
 #define _HAVE_ARCH_IPV6_CSUM
 static inline __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 				      const struct in6_addr *daddr,
+<<<<<<< HEAD
 				      __u32 len, unsigned short proto,
 				      __wsum sum)
+=======
+				      __u32 len, __u8 proto, __wsum sum)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	asm("addl 0(%1), %0	;\n"
 	    "adcl 4(%1), %0	;\n"

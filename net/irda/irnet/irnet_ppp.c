@@ -305,7 +305,11 @@ irnet_ctrl_read(irnet_socket *	ap,
 
   /* Put ourselves on the wait queue to be woken up */
   add_wait_queue(&irnet_events.rwait, &wait);
+<<<<<<< HEAD
   current->state = TASK_INTERRUPTIBLE;
+=======
+  set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   for(;;)
     {
       /* If there is unread events */
@@ -321,7 +325,11 @@ irnet_ctrl_read(irnet_socket *	ap,
       /* Yield and wait to be woken up */
       schedule();
     }
+<<<<<<< HEAD
   current->state = TASK_RUNNING;
+=======
+  __set_current_state(TASK_RUNNING);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   remove_wait_queue(&irnet_events.rwait, &wait);
 
   /* Did we got it ? */

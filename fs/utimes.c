@@ -53,6 +53,10 @@ static int utimes_common(struct path *path, struct timespec *times)
 	int error;
 	struct iattr newattrs;
 	struct inode *inode = path->dentry->d_inode;
+<<<<<<< HEAD
+=======
+	struct inode *delegated_inode = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = mnt_want_write(path->mnt);
 	if (error)
@@ -80,12 +84,17 @@ static int utimes_common(struct path *path, struct timespec *times)
 			newattrs.ia_valid |= ATTR_MTIME_SET;
 		}
 		/*
+<<<<<<< HEAD
 		 * Tell inode_change_ok(), that this is an explicit time
+=======
+		 * Tell setattr_prepare(), that this is an explicit time
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * update, even if neither ATTR_ATIME_SET nor ATTR_MTIME_SET
 		 * were used.
 		 */
 		newattrs.ia_valid |= ATTR_TIMES_SET;
 	} else {
+<<<<<<< HEAD
 		/*
 		 * If times is NULL (or both times are UTIME_NOW),
 		 * then we need to check permissions, because
@@ -106,6 +115,20 @@ static int utimes_common(struct path *path, struct timespec *times)
 	mutex_unlock(&inode->i_mutex);
 
 mnt_drop_write_and_out:
+=======
+		newattrs.ia_valid |= ATTR_TOUCH;
+	}
+retry_deleg:
+	inode_lock(inode);
+	error = notify_change2(path->mnt, path->dentry, &newattrs, &delegated_inode);
+	inode_unlock(inode);
+	if (delegated_inode) {
+		error = break_deleg_wait(&delegated_inode);
+		if (!error)
+			goto retry_deleg;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mnt_drop_write(path->mnt);
 out:
 	return error;

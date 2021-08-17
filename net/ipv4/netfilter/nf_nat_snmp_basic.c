@@ -34,8 +34,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Author: James Morris <jmorris@intercode.com.au>
  *
@@ -462,6 +466,7 @@ static unsigned char asn1_oid_decode(struct asn1_ctx *ctx,
 	}
 
 	if (subid < 40) {
+<<<<<<< HEAD
 		optr [0] = 0;
 		optr [1] = subid;
 	} else if (subid < 80) {
@@ -470,6 +475,16 @@ static unsigned char asn1_oid_decode(struct asn1_ctx *ctx,
 	} else {
 		optr [0] = 2;
 		optr [1] = subid - 80;
+=======
+		optr[0] = 0;
+		optr[1] = subid;
+	} else if (subid < 80) {
+		optr[0] = 1;
+		optr[1] = subid - 40;
+	} else {
+		optr[0] = 2;
+		optr[1] = subid - 80;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	*len = 2;
@@ -1049,7 +1064,11 @@ static int snmp_parse_mangle(unsigned char *msg,
 	if (!asn1_uint_decode (&ctx, end, &vers))
 		return 0;
 	if (debug > 1)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "bsalg: snmp version: %u\n", vers + 1);
+=======
+		pr_debug("bsalg: snmp version: %u\n", vers + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (vers > 1)
 		return 1;
 
@@ -1065,10 +1084,17 @@ static int snmp_parse_mangle(unsigned char *msg,
 	if (debug > 1) {
 		unsigned int i;
 
+<<<<<<< HEAD
 		printk(KERN_DEBUG "bsalg: community: ");
 		for (i = 0; i < comm.len; i++)
 			printk("%c", comm.data[i]);
 		printk("\n");
+=======
+		pr_debug("bsalg: community: ");
+		for (i = 0; i < comm.len; i++)
+			pr_cont("%c", comm.data[i]);
+		pr_cont("\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	kfree(comm.data);
 
@@ -1092,9 +1118,15 @@ static int snmp_parse_mangle(unsigned char *msg,
 		};
 
 		if (pdutype > SNMP_PDU_TRAP2)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "bsalg: bad pdu type %u\n", pdutype);
 		else
 			printk(KERN_DEBUG "bsalg: pdu: %s\n", pdus[pdutype]);
+=======
+			pr_debug("bsalg: bad pdu type %u\n", pdutype);
+		else
+			pr_debug("bsalg: pdu: %s\n", pdus[pdutype]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (pdutype != SNMP_PDU_RESPONSE &&
 	    pdutype != SNMP_PDU_TRAP1 && pdutype != SNMP_PDU_TRAP2)
@@ -1120,7 +1152,11 @@ static int snmp_parse_mangle(unsigned char *msg,
 			return 0;
 
 		if (debug > 1)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "bsalg: request: id=0x%lx error_status=%u "
+=======
+			pr_debug("bsalg: request: id=0x%lx error_status=%u "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"error_index=%u\n", req.id, req.error_status,
 			req.error_index);
 	}
@@ -1146,6 +1182,7 @@ static int snmp_parse_mangle(unsigned char *msg,
 		}
 
 		if (debug > 1) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG "bsalg: object: ");
 			for (i = 0; i < obj->id_len; i++) {
 				if (i > 0)
@@ -1153,11 +1190,24 @@ static int snmp_parse_mangle(unsigned char *msg,
 				printk("%lu", obj->id[i]);
 			}
 			printk(": type=%u\n", obj->type);
+=======
+			pr_debug("bsalg: object: ");
+			for (i = 0; i < obj->id_len; i++) {
+				if (i > 0)
+					pr_cont(".");
+				pr_cont("%lu", obj->id[i]);
+			}
+			pr_cont(": type=%u\n", obj->type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		}
 
 		if (obj->type == SNMP_IPADDR)
+<<<<<<< HEAD
 			mangle_address(ctx.begin, ctx.pointer - 4 , map, check);
+=======
+			mangle_address(ctx.begin, ctx.pointer - 4, map, check);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		kfree(obj->id);
 		kfree(obj);
@@ -1199,8 +1249,13 @@ static int snmp_translate(struct nf_conn *ct,
 		map.to = NOCT1(&ct->tuplehash[!dir].tuple.dst.u3.ip);
 	} else {
 		/* DNAT replies */
+<<<<<<< HEAD
 		map.from = NOCT1(&ct->tuplehash[dir].tuple.src.u3.ip);
 		map.to = NOCT1(&ct->tuplehash[!dir].tuple.dst.u3.ip);
+=======
+		map.from = NOCT1(&ct->tuplehash[!dir].tuple.src.u3.ip);
+		map.to = NOCT1(&ct->tuplehash[dir].tuple.dst.u3.ip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (map.from == map.to)
@@ -1261,6 +1316,7 @@ static const struct nf_conntrack_expect_policy snmp_exp_policy = {
 	.timeout	= 180,
 };
 
+<<<<<<< HEAD
 static struct nf_conntrack_helper snmp_helper __read_mostly = {
 	.me			= THIS_MODULE,
 	.help			= help,
@@ -1271,6 +1327,8 @@ static struct nf_conntrack_helper snmp_helper __read_mostly = {
 	.tuple.dst.protonum	= IPPROTO_UDP,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct nf_conntrack_helper snmp_trap_helper __read_mostly = {
 	.me			= THIS_MODULE,
 	.help			= help,
@@ -1289,6 +1347,7 @@ static struct nf_conntrack_helper snmp_trap_helper __read_mostly = {
 
 static int __init nf_nat_snmp_basic_init(void)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	BUG_ON(nf_nat_snmp_hook != NULL);
@@ -1300,6 +1359,12 @@ static int __init nf_nat_snmp_basic_init(void)
 		return ret;
 	}
 	return ret;
+=======
+	BUG_ON(nf_nat_snmp_hook != NULL);
+	RCU_INIT_POINTER(nf_nat_snmp_hook, help);
+
+	return nf_conntrack_helper_register(&snmp_trap_helper);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __exit nf_nat_snmp_basic_fini(void)

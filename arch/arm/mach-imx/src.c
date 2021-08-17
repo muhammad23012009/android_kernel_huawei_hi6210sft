@@ -73,7 +73,11 @@ static int imx_src_reset_module(struct reset_controller_dev *rcdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct reset_control_ops imx_src_ops = {
+=======
+static const struct reset_control_ops imx_src_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reset = imx_src_reset_module,
 };
 
@@ -91,6 +95,10 @@ void imx_enable_cpu(int cpu, bool enable)
 	spin_lock(&scr_lock);
 	val = readl_relaxed(src_base + SRC_SCR);
 	val = enable ? val | mask : val & ~mask;
+<<<<<<< HEAD
+=======
+	val |= 1 << (BP_SRC_SCR_CORE1_RST + cpu - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writel_relaxed(val, src_base + SRC_SCR);
 	spin_unlock(&scr_lock);
 }
@@ -114,6 +122,7 @@ void imx_set_cpu_arg(int cpu, u32 arg)
 	writel_relaxed(arg, src_base + SRC_GPR1 + cpu * 8 + 4);
 }
 
+<<<<<<< HEAD
 void imx_src_prepare_restart(void)
 {
 	u32 val;
@@ -129,6 +138,8 @@ void imx_src_prepare_restart(void)
 	writel_relaxed(0, src_base + SRC_GPR1);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init imx_src_init(void)
 {
 	struct device_node *np;

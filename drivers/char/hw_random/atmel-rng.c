@@ -54,14 +54,18 @@ static int atmel_trng_probe(struct platform_device *pdev)
 	struct resource *res;
 	int ret;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	trng = devm_kzalloc(&pdev->dev, sizeof(*trng), GFP_KERNEL);
 	if (!trng)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (!devm_request_mem_region(&pdev->dev, res->start,
 				     resource_size(res), pdev->name))
 		return -EBUSY;
@@ -77,6 +81,20 @@ static int atmel_trng_probe(struct platform_device *pdev)
 	ret = clk_enable(trng->clk);
 	if (ret)
 		goto err_enable;
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	trng->base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(trng->base))
+		return PTR_ERR(trng->base);
+
+	trng->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(trng->clk))
+		return PTR_ERR(trng->clk);
+
+	ret = clk_prepare_enable(trng->clk);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	writel(TRNG_KEY | 1, trng->base + TRNG_CR);
 	trng->rng.name = pdev->name;
@@ -92,9 +110,12 @@ static int atmel_trng_probe(struct platform_device *pdev)
 
 err_register:
 	clk_disable(trng->clk);
+<<<<<<< HEAD
 err_enable:
 	clk_put(trng->clk);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -105,10 +126,14 @@ static int atmel_trng_remove(struct platform_device *pdev)
 	hwrng_unregister(&trng->rng);
 
 	writel(TRNG_KEY, trng->base + TRNG_CR);
+<<<<<<< HEAD
 	clk_disable(trng->clk);
 	clk_put(trng->clk);
 
 	platform_set_drvdata(pdev, NULL);
+=======
+	clk_disable_unprepare(trng->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -118,7 +143,11 @@ static int atmel_trng_suspend(struct device *dev)
 {
 	struct atmel_trng *trng = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	clk_disable(trng->clk);
+=======
+	clk_disable_unprepare(trng->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -127,7 +156,11 @@ static int atmel_trng_resume(struct device *dev)
 {
 	struct atmel_trng *trng = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return clk_enable(trng->clk);
+=======
+	return clk_prepare_enable(trng->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct dev_pm_ops atmel_trng_pm_ops = {
@@ -136,15 +169,31 @@ static const struct dev_pm_ops atmel_trng_pm_ops = {
 };
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id atmel_trng_dt_ids[] = {
+	{ .compatible = "atmel,at91sam9g45-trng" },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, atmel_trng_dt_ids);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver atmel_trng_driver = {
 	.probe		= atmel_trng_probe,
 	.remove		= atmel_trng_remove,
 	.driver		= {
 		.name	= "atmel-trng",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 #ifdef CONFIG_PM
 		.pm	= &atmel_trng_pm_ops,
 #endif /* CONFIG_PM */
+=======
+#ifdef CONFIG_PM
+		.pm	= &atmel_trng_pm_ops,
+#endif /* CONFIG_PM */
+		.of_match_table = atmel_trng_dt_ids,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

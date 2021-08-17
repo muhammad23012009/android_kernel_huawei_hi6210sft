@@ -25,8 +25,12 @@
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  *     along with this program; if not, write to the Free Software Foundation,
  *     Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ *     along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  ****************************************************************/
 
@@ -46,7 +50,10 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -267,8 +274,11 @@ static int kaweth_control(struct kaweth_device *kaweth,
 	struct usb_ctrlrequest *dr;
 	int retval;
 
+<<<<<<< HEAD
 	netdev_dbg(kaweth->net, "kaweth_control()\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if(in_interrupt()) {
 		netdev_dbg(kaweth->net, "in_interrupt()\n");
 		return -EBUSY;
@@ -302,8 +312,11 @@ static int kaweth_read_configuration(struct kaweth_device *kaweth)
 {
 	int retval;
 
+<<<<<<< HEAD
 	netdev_dbg(kaweth->net, "Reading kaweth configuration\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	retval = kaweth_control(kaweth,
 				usb_rcvctrlpipe(kaweth->dev, 0),
 				KAWETH_COMMAND_GET_ETHERNET_DESC,
@@ -453,8 +466,11 @@ static int kaweth_trigger_firmware(struct kaweth_device *kaweth,
 	kaweth->firmware_buf[6] = 0x00;
 	kaweth->firmware_buf[7] = 0x00;
 
+<<<<<<< HEAD
 	netdev_dbg(kaweth->net, "Triggering firmware\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return kaweth_control(kaweth,
 			      usb_sndctrlpipe(kaweth->dev, 0),
 			      KAWETH_COMMAND_SCAN,
@@ -473,7 +489,10 @@ static int kaweth_reset(struct kaweth_device *kaweth)
 {
 	int result;
 
+<<<<<<< HEAD
 	netdev_dbg(kaweth->net, "kaweth_reset(%p)\n", kaweth);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	result = usb_reset_configuration(kaweth->dev);
 	mdelay(10);
 
@@ -687,8 +706,11 @@ static int kaweth_open(struct net_device *net)
 	struct kaweth_device *kaweth = netdev_priv(net);
 	int res;
 
+<<<<<<< HEAD
 	netdev_dbg(kaweth->net, "Opening network device.\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res = usb_autopm_get_interface(kaweth->intf);
 	if (res) {
 		dev_err(&kaweth->intf->dev, "Interface cannot be resumed.\n");
@@ -814,6 +836,7 @@ static netdev_tx_t kaweth_start_xmit(struct sk_buff *skb,
 	}
 
 	/* We now decide whether we can put our special header into the sk_buff */
+<<<<<<< HEAD
 	if (skb_cloned(skb) || skb_headroom(skb) < 2) {
 		/* no such luck - we make our own */
 		struct sk_buff *copied_skb;
@@ -826,6 +849,14 @@ static netdev_tx_t kaweth_start_xmit(struct sk_buff *skb,
 			spin_unlock_irq(&kaweth->device_lock);
 			return NETDEV_TX_OK;
 		}
+=======
+	if (skb_cow_head(skb, 2)) {
+		kaweth->stats.tx_errors++;
+		netif_start_queue(net);
+		spin_unlock_irq(&kaweth->device_lock);
+		dev_kfree_skb_any(skb);
+		return NETDEV_TX_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	private_header = (__le16 *)__skb_push(skb, 2);
@@ -940,7 +971,11 @@ static void kaweth_tx_timeout(struct net_device *net)
 
 	dev_warn(&net->dev, "%s: Tx timed out. Resetting.\n", net->name);
 	kaweth->stats.tx_errors++;
+<<<<<<< HEAD
 	net->trans_start = jiffies;
+=======
+	netif_trans_update(net);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb_unlink_urb(kaweth->tx_urb);
 }
@@ -953,7 +988,10 @@ static int kaweth_suspend(struct usb_interface *intf, pm_message_t message)
 	struct kaweth_device *kaweth = usb_get_intfdata(intf);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dev_dbg(&intf->dev, "Suspending device\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&kaweth->device_lock, flags);
 	kaweth->status |= KAWETH_STATUS_SUSPENDING;
 	spin_unlock_irqrestore(&kaweth->device_lock, flags);
@@ -970,7 +1008,10 @@ static int kaweth_resume(struct usb_interface *intf)
 	struct kaweth_device *kaweth = usb_get_intfdata(intf);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dev_dbg(&intf->dev, "Resuming device\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&kaweth->device_lock, flags);
 	kaweth->status &= ~KAWETH_STATUS_SUSPENDING;
 	spin_unlock_irqrestore(&kaweth->device_lock, flags);
@@ -1011,6 +1052,10 @@ static int kaweth_probe(
 	struct net_device *netdev;
 	const eth_addr_t bcast_addr = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 	int result = 0;
+<<<<<<< HEAD
+=======
+	int rv = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(dev,
 		"Kawasaki Device Probe (Device number:%d): 0x%4.4x:0x%4.4x:0x%4.4x\n",
@@ -1051,6 +1096,13 @@ static int kaweth_probe(
 		/* Download the firmware */
 		dev_info(dev, "Downloading firmware...\n");
 		kaweth->firmware_buf = (__u8 *)__get_free_page(GFP_KERNEL);
+<<<<<<< HEAD
+=======
+		if (!kaweth->firmware_buf) {
+			rv = -ENOMEM;
+			goto err_free_netdev;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((result = kaweth_download_firmware(kaweth,
 						      "kaweth/new_code.bin",
 						      100,
@@ -1172,18 +1224,25 @@ err_fw:
 	netdev->netdev_ops = &kaweth_netdev_ops;
 	netdev->watchdog_timeo = KAWETH_TX_TIMEOUT;
 	netdev->mtu = le16_to_cpu(kaweth->configuration.segment_size);
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &ops);
+=======
+	netdev->ethtool_ops = &ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* kaweth is zeroed as part of alloc_netdev */
 	INIT_DELAYED_WORK(&kaweth->lowmem_work, kaweth_resubmit_tl);
 	usb_set_intfdata(intf, kaweth);
 
+<<<<<<< HEAD
 #if 0
 // dma_supported() is deeply broken on almost all architectures
 	if (dma_supported (dev, 0xffffffffffffffffULL))
 		kaweth->net->features |= NETIF_F_HIGHDMA;
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SET_NETDEV_DEV(netdev, dev);
 	if (register_netdev(netdev) != 0) {
 		dev_err(dev, "Error registering netdev.\n");
@@ -1193,8 +1252,11 @@ err_fw:
 	dev_info(dev, "kaweth interface created at %s\n",
 		 kaweth->net->name);
 
+<<<<<<< HEAD
 	dev_dbg(dev, "Kaweth probe returning.\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 err_intfdata:
@@ -1211,7 +1273,11 @@ err_only_tx:
 err_free_netdev:
 	free_netdev(netdev);
 
+<<<<<<< HEAD
 	return -EIO;
+=======
+	return rv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /****************************************************************
@@ -1222,8 +1288,11 @@ static void kaweth_disconnect(struct usb_interface *intf)
 	struct kaweth_device *kaweth = usb_get_intfdata(intf);
 	struct net_device *netdev;
 
+<<<<<<< HEAD
 	dev_info(&intf->dev, "Unregistering\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_set_intfdata(intf, NULL);
 	if (!kaweth) {
 		dev_warn(&intf->dev, "unregistering non-existent device\n");
@@ -1277,7 +1346,11 @@ static int usb_start_wait_urb(struct urb *urb, int timeout, int* actual_length)
         awd.done = 0;
 
         urb->context = &awd;
+<<<<<<< HEAD
         status = usb_submit_urb(urb, GFP_NOIO);
+=======
+        status = usb_submit_urb(urb, GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         if (status) {
                 // something went wrong
                 usb_free_urb(urb);

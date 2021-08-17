@@ -242,7 +242,11 @@ struct ioc {
 	struct pci_dev	*sac_only_dev;
 };
 
+<<<<<<< HEAD
 static struct ioc *ioc_list;
+=======
+static struct ioc *ioc_list, *ioc_found;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int reserve_sba_gart = 1;
 
 static SBA_INLINE void sba_mark_invalid(struct ioc *, dma_addr_t, size_t);
@@ -255,7 +259,11 @@ static u64 prefetch_spill_page;
 #endif
 
 #ifdef CONFIG_PCI
+<<<<<<< HEAD
 # define GET_IOC(dev)	(((dev)->bus == &pci_bus_type)						\
+=======
+# define GET_IOC(dev)	((dev_is_pci(dev))						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 ? ((struct ioc *) PCI_CONTROLLER(to_pci_dev(dev))->iommu) : NULL)
 #else
 # define GET_IOC(dev)	NULL
@@ -919,7 +927,11 @@ sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
 static dma_addr_t sba_map_page(struct device *dev, struct page *page,
 			       unsigned long poff, size_t size,
 			       enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ioc *ioc;
 	void *addr = page_address(page) + poff;
@@ -1005,7 +1017,11 @@ static dma_addr_t sba_map_page(struct device *dev, struct page *page,
 
 static dma_addr_t sba_map_single_attrs(struct device *dev, void *addr,
 				       size_t size, enum dma_data_direction dir,
+<<<<<<< HEAD
 				       struct dma_attrs *attrs)
+=======
+				       unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return sba_map_page(dev, virt_to_page(addr),
 			    (unsigned long)addr & ~PAGE_MASK, size, dir, attrs);
@@ -1046,7 +1062,11 @@ sba_mark_clean(struct ioc *ioc, dma_addr_t iova, size_t size)
  * See Documentation/DMA-API-HOWTO.txt
  */
 static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
+<<<<<<< HEAD
 			   enum dma_data_direction dir, struct dma_attrs *attrs)
+=======
+			   enum dma_data_direction dir, unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ioc *ioc;
 #if DELAYED_RESOURCE_CNT > 0
@@ -1115,7 +1135,11 @@ static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
 }
 
 void sba_unmap_single_attrs(struct device *dev, dma_addr_t iova, size_t size,
+<<<<<<< HEAD
 			    enum dma_data_direction dir, struct dma_attrs *attrs)
+=======
+			    enum dma_data_direction dir, unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sba_unmap_page(dev, iova, size, dir, attrs);
 }
@@ -1130,7 +1154,11 @@ void sba_unmap_single_attrs(struct device *dev, dma_addr_t iova, size_t size,
  */
 static void *
 sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
+<<<<<<< HEAD
 		   gfp_t flags, struct dma_attrs *attrs)
+=======
+		   gfp_t flags, unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ioc *ioc;
 	void *addr;
@@ -1141,10 +1169,15 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
 #ifdef CONFIG_NUMA
 	{
 		struct page *page;
+<<<<<<< HEAD
 		page = alloc_pages_exact_node(ioc->node == MAX_NUMNODES ?
 		                        numa_node_id() : ioc->node, flags,
 		                        get_order(size));
 
+=======
+
+		page = alloc_pages_node(ioc->node, flags, get_order(size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (unlikely(!page))
 			return NULL;
 
@@ -1177,7 +1210,11 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
 	 * device to map single to get an iova mapping.
 	 */
 	*dma_handle = sba_map_single_attrs(&ioc->sac_only_dev->dev, addr,
+<<<<<<< HEAD
 					   size, 0, NULL);
+=======
+					   size, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return addr;
 }
@@ -1193,9 +1230,15 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
  * See Documentation/DMA-API-HOWTO.txt
  */
 static void sba_free_coherent(struct device *dev, size_t size, void *vaddr,
+<<<<<<< HEAD
 			      dma_addr_t dma_handle, struct dma_attrs *attrs)
 {
 	sba_unmap_single_attrs(dev, dma_handle, size, 0, NULL);
+=======
+			      dma_addr_t dma_handle, unsigned long attrs)
+{
+	sba_unmap_single_attrs(dev, dma_handle, size, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_pages((unsigned long) vaddr, get_order(size));
 }
 
@@ -1444,7 +1487,11 @@ sba_coalesce_chunks(struct ioc *ioc, struct device *dev,
 
 static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
 			       int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs);
+=======
+			       unsigned long attrs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * sba_map_sg - map Scatter/Gather list
  * @dev: instance of PCI owned by the driver that's asking.
@@ -1457,7 +1504,11 @@ static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
  */
 static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
 			    int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			    struct dma_attrs *attrs)
+=======
+			    unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ioc *ioc;
 	int coalesced, filled = 0;
@@ -1553,7 +1604,11 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
  */
 static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
 			       int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef ASSERT_PDIR_SANITY
 	struct ioc *ioc;
@@ -1596,7 +1651,11 @@ static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
 *
 ***************************************************************/
 
+<<<<<<< HEAD
 static void __init
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ioc_iova_init(struct ioc *ioc)
 {
 	int tcnfg;
@@ -1807,6 +1866,7 @@ static struct ioc_iommu ioc_iommu_info[] __initdata = {
 	{ SX2000_IOC_ID, "sx2000", NULL },
 };
 
+<<<<<<< HEAD
 static struct ioc * __init
 ioc_init(unsigned long hpa, void *handle)
 {
@@ -1821,6 +1881,15 @@ ioc_init(unsigned long hpa, void *handle)
 	ioc_list = ioc;
 
 	ioc->handle = handle;
+=======
+static void ioc_init(unsigned long hpa, struct ioc *ioc)
+{
+	struct ioc_iommu *info;
+
+	ioc->next = ioc_list;
+	ioc_list = ioc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ioc->ioc_hpa = ioremap(hpa, 0x1000);
 
 	ioc->func_id = READ_REG(ioc->ioc_hpa + IOC_FUNC_ID);
@@ -1861,8 +1930,11 @@ ioc_init(unsigned long hpa, void *handle)
 		"%s %d.%d HPA 0x%lx IOVA space %dMb at 0x%lx\n",
 		ioc->name, (ioc->rev >> 4) & 0xF, ioc->rev & 0xF,
 		hpa, ioc->iov_size >> 20, ioc->ibase);
+<<<<<<< HEAD
 
 	return ioc;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -1914,7 +1986,11 @@ ioc_show(struct seq_file *s, void *v)
 	seq_printf(s, "Hewlett Packard %s IOC rev %d.%d\n",
 		ioc->name, ((ioc->rev >> 4) & 0xF), (ioc->rev & 0xF));
 #ifdef CONFIG_NUMA
+<<<<<<< HEAD
 	if (ioc->node != MAX_NUMNODES)
+=======
+	if (ioc->node != NUMA_NO_NODE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		seq_printf(s, "NUMA node       : %d\n", ioc->node);
 #endif
 	seq_printf(s, "IOVA size       : %ld MB\n", ((ioc->pdir_size >> 3) * iovp_size)/(1024*1024));
@@ -1992,7 +2068,11 @@ sba_connect_bus(struct pci_bus *bus)
 	if (PCI_CONTROLLER(bus)->iommu)
 		return;
 
+<<<<<<< HEAD
 	handle = PCI_CONTROLLER(bus)->acpi_handle;
+=======
+	handle = acpi_device_handle(PCI_CONTROLLER(bus)->companion);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!handle)
 		return;
 
@@ -2015,6 +2095,7 @@ sba_connect_bus(struct pci_bus *bus)
 	printk(KERN_WARNING "No IOC for PCI Bus %04x:%02x in ACPI\n", pci_domain_nr(bus), bus->number);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_NUMA
 static void __init
 sba_map_ioc_to_node(struct ioc *ioc, acpi_handle handle)
@@ -2045,10 +2126,30 @@ static int __init
 acpi_sba_ioc_add(struct acpi_device *device)
 {
 	struct ioc *ioc;
+=======
+static void __init
+sba_map_ioc_to_node(struct ioc *ioc, acpi_handle handle)
+{
+#ifdef CONFIG_NUMA
+	unsigned int node;
+
+	node = acpi_get_node(handle);
+	if (node != NUMA_NO_NODE && !node_online(node))
+		node = NUMA_NO_NODE;
+
+	ioc->node = node;
+#endif
+}
+
+static void acpi_sba_ioc_add(struct ioc *ioc)
+{
+	acpi_handle handle = ioc->handle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_status status;
 	u64 hpa, length;
 	struct acpi_device_info *adi;
 
+<<<<<<< HEAD
 	status = hp_acpi_csr_space(device->handle, &hpa, &length);
 	if (ACPI_FAILURE(status))
 		return 1;
@@ -2056,6 +2157,16 @@ acpi_sba_ioc_add(struct acpi_device *device)
 	status = acpi_get_object_info(device->handle, &adi);
 	if (ACPI_FAILURE(status))
 		return 1;
+=======
+	ioc_found = ioc->next;
+	status = hp_acpi_csr_space(handle, &hpa, &length);
+	if (ACPI_FAILURE(status))
+		goto err;
+
+	status = acpi_get_object_info(handle, &adi);
+	if (ACPI_FAILURE(status))
+		goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * For HWP0001, only SBA appears in ACPI namespace.  It encloses the PCI
@@ -2076,6 +2187,7 @@ acpi_sba_ioc_add(struct acpi_device *device)
 	if (!iovp_shift)
 		iovp_shift = 12;
 
+<<<<<<< HEAD
 	ioc = ioc_init(hpa, device->handle);
 	if (!ioc)
 		return 1;
@@ -2083,6 +2195,15 @@ acpi_sba_ioc_add(struct acpi_device *device)
 	/* setup NUMA node association */
 	sba_map_ioc_to_node(ioc, device->handle);
 	return 0;
+=======
+	ioc_init(hpa, ioc);
+	/* setup NUMA node association */
+	sba_map_ioc_to_node(ioc, handle);
+	return;
+
+ err:
+	kfree(ioc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct acpi_device_id hp_ioc_iommu_device_ids[] = {
@@ -2090,6 +2211,7 @@ static const struct acpi_device_id hp_ioc_iommu_device_ids[] = {
 	{"HWP0004", 0},
 	{"", 0},
 };
+<<<<<<< HEAD
 static struct acpi_driver acpi_sba_ioc_driver = {
 	.name		= "IOC IOMMU Driver",
 	.ids		= hp_ioc_iommu_device_ids,
@@ -2098,6 +2220,37 @@ static struct acpi_driver acpi_sba_ioc_driver = {
 	},
 };
 
+=======
+
+static int acpi_sba_ioc_attach(struct acpi_device *device,
+			       const struct acpi_device_id *not_used)
+{
+	struct ioc *ioc;
+
+	ioc = kzalloc(sizeof(*ioc), GFP_KERNEL);
+	if (!ioc)
+		return -ENOMEM;
+
+	ioc->next = ioc_found;
+	ioc_found = ioc;
+	ioc->handle = device->handle;
+	return 1;
+}
+
+
+static struct acpi_scan_handler acpi_sba_ioc_handler = {
+	.ids	= hp_ioc_iommu_device_ids,
+	.attach	= acpi_sba_ioc_attach,
+};
+
+static int __init acpi_sba_ioc_init_acpi(void)
+{
+	return acpi_scan_add_handler(&acpi_sba_ioc_handler);
+}
+/* This has to run before acpi_scan_init(). */
+arch_initcall(acpi_sba_ioc_init_acpi);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dma_map_ops swiotlb_dma_ops;
 
 static int __init
@@ -2122,7 +2275,17 @@ sba_init(void)
 	}
 #endif
 
+<<<<<<< HEAD
 	acpi_bus_register_driver(&acpi_sba_ioc_driver);
+=======
+	/*
+	 * ioc_found should be populated by the acpi_sba_ioc_handler's .attach()
+	 * routine, but that only happens if acpi_scan_init() has already run.
+	 */
+	while (ioc_found)
+		acpi_sba_ioc_add(ioc_found);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ioc_list) {
 #ifdef CONFIG_IA64_GENERIC
 		/*

@@ -410,6 +410,15 @@ struct fc_seq {
  * @fh_type:      The frame type
  * @class:        The class of service
  * @seq:          The sequence in use on this exchange
+<<<<<<< HEAD
+=======
+ * @resp_active:  Number of tasks that are concurrently executing @resp().
+ * @resp_task:    If @resp_active > 0, either the task executing @resp(), the
+ *                task that has been interrupted to execute the soft-IRQ
+ *                executing @resp() or NULL if more than one task is executing
+ *                @resp concurrently.
+ * @resp_wq:      Waitqueue for the tasks waiting on @resp_active.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @resp:         Callback for responses on this exchange
  * @destructor:   Called when destroying the exchange
  * @arg:          Passed as a void pointer to the resp() callback
@@ -441,6 +450,12 @@ struct fc_exch {
 	u32		    r_a_tov;
 	u32		    f_ctl;
 	struct fc_seq       seq;
+<<<<<<< HEAD
+=======
+	int		    resp_active;
+	struct task_struct  *resp_task;
+	wait_queue_head_t   resp_wq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void		    (*resp)(struct fc_seq *, struct fc_frame *, void *);
 	void		    *arg;
 	void		    (*destructor)(struct fc_seq *, void *);
@@ -869,6 +884,10 @@ struct fc_lport {
 	struct libfc_function_template tt;
 	u8			       link_up;
 	u8			       qfull;
+<<<<<<< HEAD
+=======
+	u16			       vlan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum fc_lport_state	       state;
 	unsigned long		       boot_time;
 	struct fc_host_statistics      host_stats;
@@ -1096,8 +1115,11 @@ int fc_eh_abort(struct scsi_cmnd *);
 int fc_eh_device_reset(struct scsi_cmnd *);
 int fc_eh_host_reset(struct scsi_cmnd *);
 int fc_slave_alloc(struct scsi_device *);
+<<<<<<< HEAD
 int fc_change_queue_depth(struct scsi_device *, int qdepth, int reason);
 int fc_change_queue_type(struct scsi_device *, int tag_type);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * ELS/CT interface

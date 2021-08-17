@@ -44,7 +44,12 @@ static void snd_emu10k1_pcm_interrupt(struct snd_emu10k1 *emu,
 	if (epcm->substream == NULL)
 		return;
 #if 0
+<<<<<<< HEAD
 	printk(KERN_DEBUG "IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
+=======
+	dev_dbg(emu->card->dev,
+		"IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			epcm->substream->runtime->hw->pointer(emu, epcm->substream),
 			snd_pcm_lib_period_bytes(epcm->substream),
 			snd_pcm_lib_buffer_bytes(epcm->substream));
@@ -147,7 +152,11 @@ static int snd_emu10k1_pcm_channel_alloc(struct snd_emu10k1_pcm * epcm, int voic
 					      &epcm->extra);
 		if (err < 0) {
 			/*
+<<<<<<< HEAD
 			printk(KERN_DEBUG "pcm_channel_alloc: "
+=======
+			dev_dbg(emu->card->dev, "pcm_channel_alloc: "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       "failed extra: voices=%d, frame=%d\n",
 			       voices, frame);
 			*/
@@ -379,7 +388,11 @@ static void snd_emu10k1_pcm_init_voice(struct snd_emu10k1 *emu,
 	snd_emu10k1_ptr_write(emu, Z1, voice, 0);
 	snd_emu10k1_ptr_write(emu, Z2, voice, 0);
 	/* invalidate maps */
+<<<<<<< HEAD
 	silent_page = ((unsigned int)emu->silent_page.addr << 1) | MAP_PTI_MASK;
+=======
+	silent_page = ((unsigned int)emu->silent_page.addr << emu->address_mode) | (emu->address_mode ? MAP_PTI_MASK1 : MAP_PTI_MASK0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_emu10k1_ptr_write(emu, MAPA, voice, silent_page);
 	snd_emu10k1_ptr_write(emu, MAPB, voice, silent_page);
 	/* modulation envelope */
@@ -761,7 +774,12 @@ static int snd_emu10k1_playback_trigger(struct snd_pcm_substream *substream,
 	int result = 0;
 
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "trigger - emu10k1 = 0x%x, cmd = %i, pointer = %i\n",
+=======
+	dev_dbg(emu->card->dev,
+		"trigger - emu10k1 = 0x%x, cmd = %i, pointer = %i\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       (int)emu, cmd, substream->ops->pointer(substream))
 	*/
 	spin_lock(&emu->reg_lock);
@@ -815,7 +833,11 @@ static int snd_emu10k1_capture_trigger(struct snd_pcm_substream *substream,
 		outl(epcm->capture_ipr, emu->port + IPR);
 		snd_emu10k1_intr_enable(emu, epcm->capture_inte);
 		/*
+<<<<<<< HEAD
 		printk(KERN_DEBUG "adccr = 0x%x, adcbs = 0x%x\n",
+=======
+		dev_dbg(emu->card->dev, "adccr = 0x%x, adcbs = 0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       epcm->adccr, epcm->adcbs);
 		*/
 		switch (epcm->type) {
@@ -826,7 +848,14 @@ static int snd_emu10k1_capture_trigger(struct snd_pcm_substream *substream,
 			if (emu->audigy) {
 				snd_emu10k1_ptr_write(emu, A_FXWC1, 0, epcm->capture_cr_val);
 				snd_emu10k1_ptr_write(emu, A_FXWC2, 0, epcm->capture_cr_val2);
+<<<<<<< HEAD
 				snd_printdd("cr_val=0x%x, cr_val2=0x%x\n", epcm->capture_cr_val, epcm->capture_cr_val2);
+=======
+				dev_dbg(emu->card->dev,
+					"cr_val=0x%x, cr_val2=0x%x\n",
+					epcm->capture_cr_val,
+					epcm->capture_cr_val2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else
 				snd_emu10k1_ptr_write(emu, FXWC, 0, epcm->capture_cr_val);
 			break;
@@ -889,7 +918,11 @@ static snd_pcm_uframes_t snd_emu10k1_playback_pointer(struct snd_pcm_substream *
 	}
 #endif
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG
+=======
+	dev_dbg(emu->card->dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       "ptr = 0x%lx, buffer_size = 0x%lx, period_size = 0x%lx\n",
 	       (long)ptr, (long)runtime->buffer_size,
 	       (long)runtime->period_size);
@@ -1359,7 +1392,11 @@ static int snd_emu10k1_capture_efx_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =			snd_emu10k1_playback_open,
 	.close =		snd_emu10k1_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
@@ -1371,7 +1408,11 @@ static struct snd_pcm_ops snd_emu10k1_playback_ops = {
 	.page =			snd_pcm_sgbuf_ops_page,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1_capture_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =			snd_emu10k1_capture_open,
 	.close =		snd_emu10k1_capture_close,
 	.ioctl =		snd_pcm_lib_ioctl,
@@ -1383,7 +1424,11 @@ static struct snd_pcm_ops snd_emu10k1_capture_ops = {
 };
 
 /* EFX playback */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_efx_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1_efx_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =			snd_emu10k1_efx_playback_open,
 	.close =		snd_emu10k1_efx_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
@@ -1395,15 +1440,22 @@ static struct snd_pcm_ops snd_emu10k1_efx_playback_ops = {
 	.page =			snd_pcm_sgbuf_ops_page,
 };
 
+<<<<<<< HEAD
 int snd_emu10k1_pcm(struct snd_emu10k1 *emu, int device, struct snd_pcm **rpcm)
+=======
+int snd_emu10k1_pcm(struct snd_emu10k1 *emu, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_pcm *pcm;
 	struct snd_pcm_substream *substream;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_pcm_new(emu->card, "emu10k1", device, 32, 1, &pcm)) < 0)
 		return err;
 
@@ -1424,6 +1476,7 @@ int snd_emu10k1_pcm(struct snd_emu10k1 *emu, int device, struct snd_pcm **rpcm)
 	for (substream = pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream; substream; substream = substream->next)
 		snd_pcm_lib_preallocate_pages(substream, SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(emu->pci), 64*1024, 64*1024);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 
@@ -1432,14 +1485,23 @@ int snd_emu10k1_pcm(struct snd_emu10k1 *emu, int device, struct snd_pcm **rpcm)
 
 int snd_emu10k1_pcm_multi(struct snd_emu10k1 *emu, int device,
 			  struct snd_pcm **rpcm)
+=======
+	return 0;
+}
+
+int snd_emu10k1_pcm_multi(struct snd_emu10k1 *emu, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_pcm *pcm;
 	struct snd_pcm_substream *substream;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_pcm_new(emu->card, "emu10k1", device, 1, 0, &pcm)) < 0)
 		return err;
 
@@ -1456,14 +1518,21 @@ int snd_emu10k1_pcm_multi(struct snd_emu10k1 *emu, int device,
 		if ((err = snd_pcm_lib_preallocate_pages(substream, SNDRV_DMA_TYPE_DEV_SG, snd_dma_pci_data(emu->pci), 64*1024, 64*1024)) < 0)
 			return err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_capture_mic_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1_capture_mic_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =			snd_emu10k1_capture_mic_open,
 	.close =		snd_emu10k1_capture_mic_close,
 	.ioctl =		snd_pcm_lib_ioctl,
@@ -1474,15 +1543,22 @@ static struct snd_pcm_ops snd_emu10k1_capture_mic_ops = {
 	.pointer =		snd_emu10k1_capture_pointer,
 };
 
+<<<<<<< HEAD
 int snd_emu10k1_pcm_mic(struct snd_emu10k1 *emu, int device,
 			struct snd_pcm **rpcm)
+=======
+int snd_emu10k1_pcm_mic(struct snd_emu10k1 *emu, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_pcm_new(emu->card, "emu10k1 mic", device, 0, 1, &pcm)) < 0)
 		return err;
 
@@ -1496,8 +1572,11 @@ int snd_emu10k1_pcm_mic(struct snd_emu10k1 *emu, int device,
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(emu->pci), 64*1024, 64*1024);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1564,7 +1643,11 @@ static struct snd_kcontrol_new snd_emu10k1_pcm_efx_voices_mask = {
 	.put = snd_emu10k1_pcm_efx_voices_mask_put
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_capture_efx_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1_capture_efx_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =			snd_emu10k1_capture_efx_open,
 	.close =		snd_emu10k1_capture_efx_close,
 	.ioctl =		snd_pcm_lib_ioctl,
@@ -1594,7 +1677,12 @@ static void snd_emu10k1_fx8010_playback_tram_poke1(unsigned short *dst_left,
 						   unsigned int tram_shift)
 {
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "tram_poke1: dst_left = 0x%p, dst_right = 0x%p, "
+=======
+	dev_dbg(emu->card->dev,
+		"tram_poke1: dst_left = 0x%p, dst_right = 0x%p, "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       "src = 0x%p, count = 0x%x\n",
 	       dst_left, dst_right, src, count);
 	*/
@@ -1675,7 +1763,11 @@ static int snd_emu10k1_fx8010_playback_prepare(struct snd_pcm_substream *substre
 	unsigned int i;
 	
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "prepare: etram_pages = 0x%p, dma_area = 0x%x, "
+=======
+	dev_dbg(emu->card->dev, "prepare: etram_pages = 0x%p, dma_area = 0x%x, "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       "buffer_size = 0x%x (0x%x)\n",
 	       emu->fx8010.etram_pages, runtime->dma_area,
 	       runtime->buffer_size, runtime->buffer_size << 2);
@@ -1804,7 +1896,11 @@ static int snd_emu10k1_fx8010_playback_close(struct snd_pcm_substream *substream
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_fx8010_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_emu10k1_fx8010_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =			snd_emu10k1_fx8010_playback_open,
 	.close =		snd_emu10k1_fx8010_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
@@ -1816,16 +1912,23 @@ static struct snd_pcm_ops snd_emu10k1_fx8010_playback_ops = {
 	.ack =			snd_emu10k1_fx8010_playback_transfer,
 };
 
+<<<<<<< HEAD
 int snd_emu10k1_pcm_efx(struct snd_emu10k1 *emu, int device,
 			struct snd_pcm **rpcm)
+=======
+int snd_emu10k1_pcm_efx(struct snd_emu10k1 *emu, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_pcm *pcm;
 	struct snd_kcontrol *kctl;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_pcm_new(emu->card, "emu10k1 efx", device, 8, 1, &pcm)) < 0)
 		return err;
 
@@ -1837,8 +1940,11 @@ int snd_emu10k1_pcm_efx(struct snd_emu10k1 *emu, int device,
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "Multichannel Capture/PT Playback");
 	emu->pcm_efx = pcm;
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* EFX capture - record the "FXBUS2" channels, by default we connect the EXTINs 
 	 * to these
@@ -1869,7 +1975,13 @@ int snd_emu10k1_pcm_efx(struct snd_emu10k1 *emu, int device,
 	if (!kctl)
 		return -ENOMEM;
 	kctl->id.device = device;
+<<<<<<< HEAD
 	snd_ctl_add(emu->card, kctl);
+=======
+	err = snd_ctl_add(emu->card, kctl);
+	if (err < 0)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(emu->pci), 64*1024, 64*1024);
 

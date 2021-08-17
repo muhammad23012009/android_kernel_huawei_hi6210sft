@@ -51,14 +51,22 @@
  */
 ENTRY(cpu_arm720_dcache_clean_area)
 ENTRY(cpu_arm720_proc_init)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ENTRY(cpu_arm720_proc_fin)
 		mrc	p15, 0, r0, c1, c0, 0
 		bic	r0, r0, #0x1000			@ ...i............
 		bic	r0, r0, #0x000e			@ ............wca.
 		mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Function: arm720_proc_do_idle(void)
@@ -66,7 +74,11 @@ ENTRY(cpu_arm720_proc_fin)
  * Purpose : put the processor in proper idle mode
  */
 ENTRY(cpu_arm720_do_idle)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Function: arm720_switch_mm(unsigned long pgd_phys)
@@ -81,7 +93,11 @@ ENTRY(cpu_arm720_switch_mm)
 		mcr	p15, 0, r0, c2, c0, 0		@ update page table ptr
 		mcr	p15, 0, r1, c8, c7, 0		@ flush TLB (v4)
 #endif
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Function: arm720_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext)
@@ -94,7 +110,11 @@ ENTRY(cpu_arm720_set_pte_ext)
 #ifdef CONFIG_MMU
 	armv3_set_pte_ext wc_disable=0
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Function: arm720_reset
@@ -112,12 +132,19 @@ ENTRY(cpu_arm720_reset)
 		bic	ip, ip, #0x000f			@ ............wcam
 		bic	ip, ip, #0x2100			@ ..v....s........
 		mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 		mov	pc, r0
 ENDPROC(cpu_arm720_reset)
 		.popsection
 
 	__CPUINIT
 
+=======
+		ret	r0
+ENDPROC(cpu_arm720_reset)
+		.popsection
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type	__arm710_setup, #function
 __arm710_setup:
 	mov	r0, #0
@@ -130,7 +157,11 @@ __arm710_setup:
 	bic	r0, r0, r5
 	ldr	r5, arm710_cr1_set
 	orr	r0, r0, r5
+<<<<<<< HEAD
 	mov	pc, lr				@ __ret (head.S)
+=======
+	ret	lr				@ __ret (head.S)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.size	__arm710_setup, . - __arm710_setup
 
 	/*
@@ -158,7 +189,11 @@ __arm720_setup:
 	mrc	p15, 0, r0, c1, c0		@ get control register
 	bic	r0, r0, r5
 	orr	r0, r0, r6
+<<<<<<< HEAD
 	mov	pc, lr				@ __ret (head.S)
+=======
+	ret	lr				@ __ret (head.S)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.size	__arm720_setup, . - __arm720_setup
 
 	/*
@@ -188,7 +223,11 @@ arm720_crval:
  * See <asm/procinfo.h> for a definition of this structure.
  */
 	
+<<<<<<< HEAD
 		.section ".proc.info.init", #alloc, #execinstr
+=======
+		.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .macro arm720_proc_info name:req, cpu_val:req, cpu_mask:req, cpu_name:req, cpu_flush:req
 		.type	__\name\()_proc_info,#object
@@ -205,7 +244,11 @@ __\name\()_proc_info:
 			PMD_BIT4 | \
 			PMD_SECT_AP_WRITE | \
 			PMD_SECT_AP_READ
+<<<<<<< HEAD
 		b	\cpu_flush				@ cpu_flush
+=======
+		initfn	\cpu_flush, __\name\()_proc_info	@ cpu_flush
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.long	cpu_arch_name				@ arch_name
 		.long	cpu_elf_name				@ elf_name
 		.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB	@ elf_hwcap

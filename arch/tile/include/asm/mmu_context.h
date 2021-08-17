@@ -45,7 +45,11 @@ static inline void __install_page_table(pgd_t *pgdir, int asid, pgprot_t prot)
 
 static inline void install_page_table(pgd_t *pgdir, int asid)
 {
+<<<<<<< HEAD
 	pte_t *ptep = virt_to_pte(NULL, (unsigned long)pgdir);
+=======
+	pte_t *ptep = virt_to_kpte((unsigned long)pgdir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__install_page_table(pgdir, asid, *ptep);
 }
 
@@ -84,7 +88,11 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *t)
 	 * clear any pending DMA interrupts.
 	 */
 	if (current->thread.tile_dma_state.enabled)
+<<<<<<< HEAD
 		install_page_table(mm->pgd, __get_cpu_var(current_asid));
+=======
+		install_page_table(mm->pgd, __this_cpu_read(current_asid));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 }
 
@@ -96,12 +104,20 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 		int cpu = smp_processor_id();
 
 		/* Pick new ASID. */
+<<<<<<< HEAD
 		int asid = __get_cpu_var(current_asid) + 1;
+=======
+		int asid = __this_cpu_read(current_asid) + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (asid > max_asid) {
 			asid = min_asid;
 			local_flush_tlb();
 		}
+<<<<<<< HEAD
 		__get_cpu_var(current_asid) = asid;
+=======
+		__this_cpu_write(current_asid, asid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Clear cpu from the old mm, and set it in the new one. */
 		cpumask_clear_cpu(cpu, mm_cpumask(prev));

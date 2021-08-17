@@ -200,8 +200,11 @@ typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 
 typedef struct user_i387_struct elf_fpregset_t;
 
+<<<<<<< HEAD
 #define task_pt_regs(t) (&(t)->thread.regs)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct task_struct;
 
 extern int elf_core_copy_fpregs(struct task_struct *t, elf_fpregset_t *fpu);
@@ -210,12 +213,19 @@ extern int elf_core_copy_fpregs(struct task_struct *t, elf_fpregset_t *fpu);
 
 #define ELF_EXEC_PAGESIZE 4096
 
+<<<<<<< HEAD
 #define ELF_ET_DYN_BASE (2 * TASK_SIZE / 3)
+=======
+#define ELF_ET_DYN_BASE (TASK_SIZE / 3 * 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern long elf_aux_hwcap;
 #define ELF_HWCAP (elf_aux_hwcap)
 
 #define SET_PERSONALITY(ex) do ; while(0)
+<<<<<<< HEAD
 #define __HAVE_ARCH_GATE_AREA 1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

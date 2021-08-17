@@ -911,6 +911,13 @@ struct is_region {
 	u32 shared[MAX_SHARED_COUNT];
 } __packed;
 
+<<<<<<< HEAD
+=======
+/* Offset to the ISP DMA2 output buffer address array. */
+#define DMA2_OUTPUT_ADDR_ARRAY_OFFS \
+	(offsetof(struct is_region, shared) + 32 * sizeof(u32))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct is_debug_frame_descriptor {
 	u32 sensor_frame_time;
 	u32 sensor_exposure_time;
@@ -988,6 +995,10 @@ struct sensor_open_extended {
 struct fimc_is;
 
 int fimc_is_hw_get_sensor_max_framerate(struct fimc_is *is);
+<<<<<<< HEAD
+=======
+int __fimc_is_hw_update_param(struct fimc_is *is, u32 offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void fimc_is_set_initial_params(struct fimc_is *is);
 unsigned int __get_pending_param_count(struct fimc_is *is);
 

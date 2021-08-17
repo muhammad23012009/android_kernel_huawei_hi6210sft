@@ -39,6 +39,10 @@ enum omap_mcbsp_div {
 	OMAP_MCBSP_CLKGDV,		/* Sample rate generator divider */
 };
 
+<<<<<<< HEAD
 int omap_mcbsp_st_add_controls(struct snd_soc_pcm_runtime *rtd);
+=======
+int omap_mcbsp_st_add_controls(struct snd_soc_pcm_runtime *rtd, int port_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

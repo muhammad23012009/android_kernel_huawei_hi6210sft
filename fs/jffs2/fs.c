@@ -190,6 +190,7 @@ int jffs2_do_setattr (struct inode *inode, struct iattr *iattr)
 
 int jffs2_setattr(struct dentry *dentry, struct iattr *iattr)
 {
+<<<<<<< HEAD
 	int rc;
 
 	rc = inode_change_ok(dentry->d_inode, iattr);
@@ -199,6 +200,18 @@ int jffs2_setattr(struct dentry *dentry, struct iattr *iattr)
 	rc = jffs2_do_setattr(dentry->d_inode, iattr);
 	if (!rc && (iattr->ia_valid & ATTR_MODE))
 		rc = jffs2_acl_chmod(dentry->d_inode);
+=======
+	struct inode *inode = d_inode(dentry);
+	int rc;
+
+	rc = setattr_prepare(dentry, iattr);
+	if (rc)
+		return rc;
+
+	rc = jffs2_do_setattr(inode, iattr);
+	if (!rc && (iattr->ia_valid & ATTR_MODE))
+		rc = posix_acl_chmod(inode, inode->i_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }
@@ -241,7 +254,11 @@ void jffs2_evict_inode (struct inode *inode)
 
 	jffs2_dbg(1, "%s(): ino #%lu mode %o\n",
 		  __func__, inode->i_ino, inode->i_mode);
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_inode(inode);
 	jffs2_do_clear_inode(c, f);
 }
@@ -271,12 +288,18 @@ struct inode *jffs2_iget(struct super_block *sb, unsigned long ino)
 	mutex_lock(&f->sem);
 
 	ret = jffs2_do_read_inode(c, f, inode->i_ino, &latest_node);
+<<<<<<< HEAD
 
 	if (ret) {
 		mutex_unlock(&f->sem);
 		iget_failed(inode);
 		return ERR_PTR(ret);
 	}
+=======
+	if (ret)
+		goto error;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	inode->i_mode = jemode_to_cpu(latest_node.mode);
 	i_uid_write(inode, je16_to_cpu(latest_node.uid));
 	i_gid_write(inode, je16_to_cpu(latest_node.gid));
@@ -293,6 +316,10 @@ struct inode *jffs2_iget(struct super_block *sb, unsigned long ino)
 
 	case S_IFLNK:
 		inode->i_op = &jffs2_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode->i_link = f->target;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case S_IFDIR:
@@ -362,7 +389,10 @@ error_io:
 	ret = -EIO;
 error:
 	mutex_unlock(&f->sem);
+<<<<<<< HEAD
 	jffs2_do_clear_inode(c, f);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iget_failed(inode);
 	return ERR_PTR(ret);
 }
@@ -456,12 +486,23 @@ struct inode *jffs2_new_inode (struct inode *dir_i, umode_t mode, struct jffs2_r
 	   The umask is only applied if there's no default ACL */
 	ret = jffs2_init_acl_pre(dir_i, inode, &mode);
 	if (ret) {
+<<<<<<< HEAD
 	    make_bad_inode(inode);
 	    iput(inode);
 	    return ERR_PTR(ret);
 	}
 	ret = jffs2_do_new_inode (c, f, mode, ri);
 	if (ret) {
+=======
+		mutex_unlock(&f->sem);
+		make_bad_inode(inode);
+		iput(inode);
+		return ERR_PTR(ret);
+	}
+	ret = jffs2_do_new_inode (c, f, mode, ri);
+	if (ret) {
+		mutex_unlock(&f->sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		make_bad_inode(inode);
 		iput(inode);
 		return ERR_PTR(ret);
@@ -471,13 +512,21 @@ struct inode *jffs2_new_inode (struct inode *dir_i, umode_t mode, struct jffs2_r
 	inode->i_mode = jemode_to_cpu(ri->mode);
 	i_gid_write(inode, je16_to_cpu(ri->gid));
 	i_uid_write(inode, je16_to_cpu(ri->uid));
+<<<<<<< HEAD
 	inode->i_atime = inode->i_ctime = inode->i_mtime = CURRENT_TIME_SEC;
+=======
+	inode->i_atime = inode->i_ctime = inode->i_mtime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ri->atime = ri->mtime = ri->ctime = cpu_to_je32(I_SEC(inode->i_mtime));
 
 	inode->i_blocks = 0;
 	inode->i_size = 0;
 
 	if (insert_inode_locked(inode) < 0) {
+<<<<<<< HEAD
+=======
+		mutex_unlock(&f->sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		make_bad_inode(inode);
 		iput(inode);
 		return ERR_PTR(-EINVAL);
@@ -515,6 +564,13 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
 
 	c = JFFS2_SB_INFO(sb);
 
+<<<<<<< HEAD
+=======
+	/* Do not support the MLC nand */
+	if (c->mtd->type == MTD_MLCNANDFLASH)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef CONFIG_JFFS2_FS_WRITEBUFFER
 	if (c->mtd->type == MTD_NANDFLASH) {
 		pr_err("Cannot operate on NAND flash unless jffs2 NAND support is compiled in\n");
@@ -580,8 +636,13 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
 		goto out_root;
 
 	sb->s_maxbytes = 0xFFFFFFFF;
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sb->s_magic = JFFS2_SUPER_MAGIC;
 	if (!(sb->s_flags & MS_RDONLY))
 		jffs2_start_garbage_collect_thread(c);
@@ -590,10 +651,14 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
 out_root:
 	jffs2_free_ino_caches(c);
 	jffs2_free_raw_node_refs(c);
+<<<<<<< HEAD
 	if (jffs2_blocks_use_vmalloc(c))
 		vfree(c->blocks);
 	else
 		kfree(c->blocks);
+=======
+	kvfree(c->blocks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out_inohash:
 	jffs2_clear_xattr_subsystem(c);
 	kfree(c->inocache_list);
@@ -682,7 +747,11 @@ unsigned char *jffs2_gc_fetch_page(struct jffs2_sb_info *c,
 	struct inode *inode = OFNI_EDONI_2SFFJ(f);
 	struct page *pg;
 
+<<<<<<< HEAD
 	pg = read_cache_page_async(inode->i_mapping, offset >> PAGE_CACHE_SHIFT,
+=======
+	pg = read_cache_page(inode->i_mapping, offset >> PAGE_SHIFT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     (void *)jffs2_do_readpage_unlock, inode);
 	if (IS_ERR(pg))
 		return (void *)pg;
@@ -698,7 +767,11 @@ void jffs2_gc_release_page(struct jffs2_sb_info *c,
 	struct page *pg = (void *)*priv;
 
 	kunmap(pg);
+<<<<<<< HEAD
 	page_cache_release(pg);
+=======
+	put_page(pg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int jffs2_flash_setup(struct jffs2_sb_info *c) {

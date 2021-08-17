@@ -7,6 +7,7 @@
 #include <asm/page.h>
 
 #define __HAVE_ARCH_MEMSET
+<<<<<<< HEAD
 extern void * memset(void * s, int c, size_t count);
 
 #define __HAVE_ARCH_MEMCPY
@@ -42,3 +43,13 @@ extern void * memcpy(void *d, const void *s, size_t count);
 #endif /* KERNEL */
 
 #endif /* _M68K_STRING_H_ */
+=======
+extern void *memset(void *s, int c, size_t count);
+
+#define __HAVE_ARCH_MEMCPY
+extern void *memcpy(void *d, const void *s, size_t count);
+
+#endif /* KERNEL */
+
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -32,7 +32,12 @@
 #include <asm/ptrace.h>
 #include <asm/branch.h>
 #include <asm/break.h>
+<<<<<<< HEAD
 #include <asm/inst.h>
+=======
+
+#include "probes-common.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const union mips_instruction breakpoint_insn = {
 	.b_format = {
@@ -55,6 +60,7 @@ DEFINE_PER_CPU(struct kprobe_ctlblk, kprobe_ctlblk);
 
 static int __kprobes insn_has_delayslot(union mips_instruction insn)
 {
+<<<<<<< HEAD
 	switch (insn.i_format.opcode) {
 
 		/*
@@ -112,6 +118,9 @@ static int __kprobes insn_has_delayslot(union mips_instruction insn)
 	}
 insn_ok:
 	return 0;
+=======
+	return __insn_has_delay_slot(insn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -161,6 +170,15 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	if (__insn_is_compact_branch(insn)) {
+		pr_notice("Kprobes for compact branches are not supported\n");
+		ret = -EINVAL;
+		goto out;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* insn: must be on special executable page on mips. */
 	p->ainsn.insn = get_insn_slot();
 	if (!p->ainsn.insn) {
@@ -224,7 +242,11 @@ static void save_previous_kprobe(struct kprobe_ctlblk *kcb)
 
 static void restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = kcb->prev_kprobe.kp;
+=======
+	__this_cpu_write(current_kprobe, kcb->prev_kprobe.kp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kcb->kprobe_status = kcb->prev_kprobe.status;
 	kcb->kprobe_old_SR = kcb->prev_kprobe.old_SR;
 	kcb->kprobe_saved_SR = kcb->prev_kprobe.saved_SR;
@@ -234,7 +256,11 @@ static void restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 static void set_current_kprobe(struct kprobe *p, struct pt_regs *regs,
 			       struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = p;
+=======
+	__this_cpu_write(current_kprobe, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kcb->kprobe_saved_SR = kcb->kprobe_old_SR = (regs->cp0_status & ST0_IE);
 	kcb->kprobe_saved_epc = regs->cp0_epc;
 }
@@ -385,7 +411,11 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 				ret = 1;
 				goto no_kprobe;
 			}
+<<<<<<< HEAD
 			p = __get_cpu_var(current_kprobe);
+=======
+			p = __this_cpu_read(current_kprobe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (p->break_handler && p->break_handler(p, regs))
 				goto ss_probe;
 		}

@@ -27,6 +27,10 @@
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/vmalloc.h>
 #include <linux/fs.h>
 #include <linux/errno.h>

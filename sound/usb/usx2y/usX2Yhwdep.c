@@ -132,7 +132,11 @@ static int snd_usX2Y_hwdep_dsp_status(struct snd_hwdep *hw,
 	info->num_dsps = 2;		// 0: Prepad Data, 1: FPGA Code
 	if (us428->chip_status & USX2Y_STAT_CHIP_INIT)
 		info->chip_ready = 1;
+<<<<<<< HEAD
  	info->version = USX2Y_DRIVER_VERSION; 
+=======
+	info->version = USX2Y_DRIVER_VERSION;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -12,6 +12,7 @@
  * any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/kernel.h>
 #include <linux/gfp.h>
@@ -84,11 +85,37 @@ static const struct ata_port_info ahci_port_info[] = {
 
 static struct scsi_host_template ahci_platform_sht = {
 	AHCI_SHT("ahci_platform"),
+=======
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/pm.h>
+#include <linux/device.h>
+#include <linux/of_device.h>
+#include <linux/platform_device.h>
+#include <linux/libata.h>
+#include <linux/ahci_platform.h>
+#include <linux/acpi.h>
+#include <linux/pci_ids.h>
+#include "ahci.h"
+
+#define DRV_NAME "ahci"
+
+static const struct ata_port_info ahci_port_info = {
+	.flags		= AHCI_FLAG_COMMON,
+	.pio_mask	= ATA_PIO4,
+	.udma_mask	= ATA_UDMA6,
+	.port_ops	= &ahci_platform_ops,
+};
+
+static struct scsi_host_template ahci_platform_sht = {
+	AHCI_SHT(DRV_NAME),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int ahci_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
+<<<<<<< HEAD
 	struct ahci_platform_data *pdata = dev_get_platdata(dev);
 	const struct platform_device_id *id = platform_get_device_id(pdev);
 	struct ata_port_info pi = ahci_port_info[id ? id->driver_data : 0];
@@ -327,20 +354,79 @@ static SIMPLE_DEV_PM_OPS(ahci_pm_ops, ahci_suspend, ahci_resume);
 
 static const struct of_device_id ahci_of_match[] = {
 	{ .compatible = "snps,spear-ahci", },
+=======
+	struct ahci_host_priv *hpriv;
+	int rc;
+
+	hpriv = ahci_platform_get_resources(pdev);
+	if (IS_ERR(hpriv))
+		return PTR_ERR(hpriv);
+
+	rc = ahci_platform_enable_resources(hpriv);
+	if (rc)
+		return rc;
+
+	of_property_read_u32(dev->of_node,
+			     "ports-implemented", &hpriv->force_port_map);
+
+	if (of_device_is_compatible(dev->of_node, "hisilicon,hisi-ahci"))
+		hpriv->flags |= AHCI_HFLAG_NO_FBS | AHCI_HFLAG_NO_NCQ;
+
+	rc = ahci_platform_init_host(pdev, hpriv, &ahci_port_info,
+				     &ahci_platform_sht);
+	if (rc)
+		goto disable_resources;
+
+	return 0;
+disable_resources:
+	ahci_platform_disable_resources(hpriv);
+	return rc;
+}
+
+static SIMPLE_DEV_PM_OPS(ahci_pm_ops, ahci_platform_suspend,
+			 ahci_platform_resume);
+
+static const struct of_device_id ahci_of_match[] = {
+	{ .compatible = "generic-ahci", },
+	/* Keep the following compatibles for device tree compatibility */
+	{ .compatible = "snps,spear-ahci", },
+	{ .compatible = "snps,exynos5440-ahci", },
+	{ .compatible = "ibm,476gtr-ahci", },
+	{ .compatible = "snps,dwc-ahci", },
+	{ .compatible = "hisilicon,hisi-ahci", },
+	{ .compatible = "cavium,octeon-7130-ahci", },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 MODULE_DEVICE_TABLE(of, ahci_of_match);
 
+<<<<<<< HEAD
+=======
+static const struct acpi_device_id ahci_acpi_match[] = {
+	{ ACPI_DEVICE_CLASS(PCI_CLASS_STORAGE_SATA_AHCI, 0xffffff) },
+	{},
+};
+MODULE_DEVICE_TABLE(acpi, ahci_acpi_match);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver ahci_driver = {
 	.probe = ahci_probe,
 	.remove = ata_platform_remove_one,
 	.driver = {
+<<<<<<< HEAD
 		.name = "ahci",
 		.owner = THIS_MODULE,
 		.of_match_table = ahci_of_match,
 		.pm = &ahci_pm_ops,
 	},
 	.id_table	= ahci_devtype,
+=======
+		.name = DRV_NAME,
+		.of_match_table = ahci_of_match,
+		.acpi_match_table = ahci_acpi_match,
+		.pm = &ahci_pm_ops,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 module_platform_driver(ahci_driver);
 

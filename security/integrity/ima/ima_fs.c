@@ -22,6 +22,7 @@
 #include <linux/rculist.h>
 #include <linux/rcupdate.h>
 #include <linux/parser.h>
+<<<<<<< HEAD
 
 #include "ima.h"
 
@@ -34,6 +35,23 @@ static ssize_t ima_show_htable_value(char __user *buf, size_t count,
 	ssize_t len;
 
 	len = scnprintf(tmpbuf, TMPBUFLEN, "%li\n", atomic_long_read(val));
+=======
+#include <linux/vmalloc.h>
+
+#include "ima.h"
+
+static DEFINE_MUTEX(ima_write_mutex);
+
+static int valid_policy = 1;
+
+static ssize_t ima_show_htable_value(char __user *buf, size_t count,
+				     loff_t *ppos, atomic_long_t *val)
+{
+	char tmpbuf[32];	/* greater than largest 'long' string value */
+	ssize_t len;
+
+	len = scnprintf(tmpbuf, sizeof(tmpbuf), "%li\n", atomic_long_read(val));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return simple_read_from_buffer(buf, count, ppos, tmpbuf, len);
 }
 
@@ -88,8 +106,12 @@ static void *ima_measurements_next(struct seq_file *m, void *v, loff_t *pos)
 	 * against concurrent list-extension
 	 */
 	rcu_read_lock();
+<<<<<<< HEAD
 	qe = list_entry_rcu(qe->later.next,
 			    struct ima_queue_entry, later);
+=======
+	qe = list_entry_rcu(qe->later.next, struct ima_queue_entry, later);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_read_unlock();
 	(*pos)++;
 
@@ -100,7 +122,11 @@ static void ima_measurements_stop(struct seq_file *m, void *v)
 {
 }
 
+<<<<<<< HEAD
 static void ima_putc(struct seq_file *m, void *data, int datalen)
+=======
+void ima_putc(struct seq_file *m, void *data, int datalen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	while (datalen--)
 		seq_putc(m, *(char *)data++);
@@ -111,6 +137,10 @@ static void ima_putc(struct seq_file *m, void *data, int datalen)
  *       char[20]=template digest
  *       32bit-le=template name size
  *       char[n]=template name
+<<<<<<< HEAD
+=======
+ *       [eventdata length]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *       eventdata[n]=template specific data
  */
 static int ima_measurements_show(struct seq_file *m, void *v)
@@ -118,14 +148,22 @@ static int ima_measurements_show(struct seq_file *m, void *v)
 	/* the list never shrinks, so we don't need a lock here */
 	struct ima_queue_entry *qe = v;
 	struct ima_template_entry *e;
+<<<<<<< HEAD
 	int namelen;
 	u32 pcr = CONFIG_IMA_MEASURE_PCR_IDX;
+=======
+	char *template_name;
+	int namelen;
+	bool is_ima_template = false;
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* get entry */
 	e = qe->entry;
 	if (e == NULL)
 		return -1;
 
+<<<<<<< HEAD
 	/*
 	 * 1st: PCRIndex
 	 * PCR used is always the same (config option) in
@@ -146,6 +184,47 @@ static int ima_measurements_show(struct seq_file *m, void *v)
 	/* 5th:  template specific data */
 	ima_template_show(m, (struct ima_template_data *)&e->template,
 			  IMA_SHOW_BINARY);
+=======
+	template_name = (e->template_desc->name[0] != '\0') ?
+	    e->template_desc->name : e->template_desc->fmt;
+
+	/*
+	 * 1st: PCRIndex
+	 * PCR used defaults to the same (config option) in
+	 * little-endian format, unless set in policy
+	 */
+	ima_putc(m, &e->pcr, sizeof(e->pcr));
+
+	/* 2nd: template digest */
+	ima_putc(m, e->digest, TPM_DIGEST_SIZE);
+
+	/* 3rd: template name size */
+	namelen = strlen(template_name);
+	ima_putc(m, &namelen, sizeof(namelen));
+
+	/* 4th:  template name */
+	ima_putc(m, template_name, namelen);
+
+	/* 5th:  template length (except for 'ima' template) */
+	if (strcmp(template_name, IMA_TEMPLATE_IMA_NAME) == 0)
+		is_ima_template = true;
+
+	if (!is_ima_template)
+		ima_putc(m, &e->template_data_len,
+			 sizeof(e->template_data_len));
+
+	/* 6th:  template specific data */
+	for (i = 0; i < e->template_desc->num_fields; i++) {
+		enum ima_show_type show = IMA_SHOW_BINARY;
+		struct ima_template_field *field = e->template_desc->fields[i];
+
+		if (is_ima_template && strcmp(field->field_id, "d") == 0)
+			show = IMA_SHOW_BINARY_NO_FIELD_LEN;
+		if (is_ima_template && strcmp(field->field_id, "n") == 0)
+			show = IMA_SHOW_BINARY_OLD_STRING_FMT;
+		field->field_show(m, show, &e->template_data[i]);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -168,6 +247,7 @@ static const struct file_operations ima_measurements_ops = {
 	.release = seq_release,
 };
 
+<<<<<<< HEAD
 static void ima_print_digest(struct seq_file *m, u8 *digest)
 {
 	int i;
@@ -197,18 +277,34 @@ void ima_template_show(struct seq_file *m, void *e, enum ima_show_type show)
 	}
 }
 
+=======
+void ima_print_digest(struct seq_file *m, u8 *digest, u32 size)
+{
+	u32 i;
+
+	for (i = 0; i < size; i++)
+		seq_printf(m, "%02x", *(digest + i));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* print in ascii */
 static int ima_ascii_measurements_show(struct seq_file *m, void *v)
 {
 	/* the list never shrinks, so we don't need a lock here */
 	struct ima_queue_entry *qe = v;
 	struct ima_template_entry *e;
+<<<<<<< HEAD
+=======
+	char *template_name;
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* get entry */
 	e = qe->entry;
 	if (e == NULL)
 		return -1;
 
+<<<<<<< HEAD
 	/* 1st: PCR used (config option) */
 	seq_printf(m, "%2d ", CONFIG_IMA_MEASURE_PCR_IDX);
 
@@ -221,6 +317,30 @@ static int ima_ascii_measurements_show(struct seq_file *m, void *v)
 	/* 4th:  template specific data */
 	ima_template_show(m, (struct ima_template_data *)&e->template,
 			  IMA_SHOW_ASCII);
+=======
+	template_name = (e->template_desc->name[0] != '\0') ?
+	    e->template_desc->name : e->template_desc->fmt;
+
+	/* 1st: PCR used (config option) */
+	seq_printf(m, "%2d ", e->pcr);
+
+	/* 2nd: SHA1 template hash */
+	ima_print_digest(m, e->digest, TPM_DIGEST_SIZE);
+
+	/* 3th:  template name */
+	seq_printf(m, " %s", template_name);
+
+	/* 4th:  template specific data */
+	for (i = 0; i < e->template_desc->num_fields; i++) {
+		seq_puts(m, " ");
+		if (e->template_data[i].len == 0)
+			continue;
+
+		e->template_desc->fields[i]->field_show(m, IMA_SHOW_ASCII,
+							&e->template_data[i]);
+	}
+	seq_puts(m, "\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -243,10 +363,54 @@ static const struct file_operations ima_ascii_measurements_ops = {
 	.release = seq_release,
 };
 
+<<<<<<< HEAD
 static ssize_t ima_write_policy(struct file *file, const char __user *buf,
 				size_t datalen, loff_t *ppos)
 {
 	char *data = NULL;
+=======
+static ssize_t ima_read_policy(char *path)
+{
+	void *data;
+	char *datap;
+	loff_t size;
+	int rc, pathlen = strlen(path);
+
+	char *p;
+
+	/* remove \n */
+	datap = path;
+	strsep(&datap, "\n");
+
+	rc = kernel_read_file_from_path(path, &data, &size, 0, READING_POLICY);
+	if (rc < 0) {
+		pr_err("Unable to open file: %s (%d)", path, rc);
+		return rc;
+	}
+
+	datap = data;
+	while (size > 0 && (p = strsep(&datap, "\n"))) {
+		pr_debug("rule: %s\n", p);
+		rc = ima_parse_add_rule(p);
+		if (rc < 0)
+			break;
+		size -= rc;
+	}
+
+	vfree(data);
+	if (rc < 0)
+		return rc;
+	else if (size)
+		return -EINVAL;
+	else
+		return pathlen;
+}
+
+static ssize_t ima_write_policy(struct file *file, const char __user *buf,
+				size_t datalen, loff_t *ppos)
+{
+	char *data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ssize_t result;
 
 	if (datalen >= PAGE_SIZE)
@@ -266,6 +430,7 @@ static ssize_t ima_write_policy(struct file *file, const char __user *buf,
 
 	result = -EFAULT;
 	if (copy_from_user(data, buf, datalen))
+<<<<<<< HEAD
 		goto out;
 
 	result = ima_parse_add_rule(data);
@@ -273,6 +438,32 @@ out:
 	if (result < 0)
 		valid_policy = 0;
 	kfree(data);
+=======
+		goto out_free;
+
+	result = mutex_lock_interruptible(&ima_write_mutex);
+	if (result < 0)
+		goto out_free;
+
+	if (data[0] == '/') {
+		result = ima_read_policy(data);
+	} else if (ima_appraise & IMA_APPRAISE_POLICY) {
+		pr_err("IMA: signed policy file (specified as an absolute pathname) required\n");
+		integrity_audit_msg(AUDIT_INTEGRITY_STATUS, NULL, NULL,
+				    "policy_update", "signed policy required",
+				    1, 0);
+		result = -EACCES;
+	} else {
+		result = ima_parse_add_rule(data);
+	}
+	mutex_unlock(&ima_write_mutex);
+out_free:
+	kfree(data);
+out:
+	if (result < 0)
+		valid_policy = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 
@@ -283,6 +474,7 @@ static struct dentry *runtime_measurements_count;
 static struct dentry *violations;
 static struct dentry *ima_policy;
 
+<<<<<<< HEAD
 static atomic_t policy_opencount = ATOMIC_INIT(1);
 /*
  * ima_open_policy: sequentialize access to the policy file
@@ -295,6 +487,42 @@ static int ima_open_policy(struct inode * inode, struct file * filp)
 	if (atomic_dec_and_test(&policy_opencount))
 		return 0;
 	return -EBUSY;
+=======
+enum ima_fs_flags {
+	IMA_FS_BUSY,
+};
+
+static unsigned long ima_fs_flags;
+
+#ifdef	CONFIG_IMA_READ_POLICY
+static const struct seq_operations ima_policy_seqops = {
+		.start = ima_policy_start,
+		.next = ima_policy_next,
+		.stop = ima_policy_stop,
+		.show = ima_policy_show,
+};
+#endif
+
+/*
+ * ima_open_policy: sequentialize access to the policy file
+ */
+static int ima_open_policy(struct inode *inode, struct file *filp)
+{
+	if (!(filp->f_flags & O_WRONLY)) {
+#ifndef	CONFIG_IMA_READ_POLICY
+		return -EACCES;
+#else
+		if ((filp->f_flags & O_ACCMODE) != O_RDONLY)
+			return -EACCES;
+		if (!capable(CAP_SYS_ADMIN))
+			return -EPERM;
+		return seq_open(filp, &ima_policy_seqops);
+#endif
+	}
+	if (test_and_set_bit(IMA_FS_BUSY, &ima_fs_flags))
+		return -EBUSY;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -306,6 +534,7 @@ static int ima_open_policy(struct inode * inode, struct file * filp)
  */
 static int ima_release_policy(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	if (!valid_policy) {
 		ima_delete_rules();
 		valid_policy = 1;
@@ -315,12 +544,46 @@ static int ima_release_policy(struct inode *inode, struct file *file)
 	ima_update_policy();
 	securityfs_remove(ima_policy);
 	ima_policy = NULL;
+=======
+	const char *cause = valid_policy ? "completed" : "failed";
+
+	if ((file->f_flags & O_ACCMODE) == O_RDONLY)
+		return seq_release(inode, file);
+
+	if (valid_policy && ima_check_policy() < 0) {
+		cause = "failed";
+		valid_policy = 0;
+	}
+
+	pr_info("IMA: policy update %s\n", cause);
+	integrity_audit_msg(AUDIT_INTEGRITY_STATUS, NULL, NULL,
+			    "policy_update", cause, !valid_policy, 0);
+
+	if (!valid_policy) {
+		ima_delete_rules();
+		valid_policy = 1;
+		clear_bit(IMA_FS_BUSY, &ima_fs_flags);
+		return 0;
+	}
+
+	ima_update_policy();
+#ifndef	CONFIG_IMA_WRITE_POLICY
+	securityfs_remove(ima_policy);
+	ima_policy = NULL;
+#else
+	clear_bit(IMA_FS_BUSY, &ima_fs_flags);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static const struct file_operations ima_measure_policy_ops = {
 	.open = ima_open_policy,
 	.write = ima_write_policy,
+<<<<<<< HEAD
+=======
+	.read = seq_read,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.release = ima_release_policy,
 	.llseek = generic_file_llseek,
 };
@@ -358,8 +621,12 @@ int __init ima_fs_init(void)
 	if (IS_ERR(violations))
 		goto out;
 
+<<<<<<< HEAD
 	ima_policy = securityfs_create_file("policy",
 					    S_IWUSR,
+=======
+	ima_policy = securityfs_create_file("policy", POLICY_FILE_FLAGS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    ima_dir, NULL,
 					    &ima_measure_policy_ops);
 	if (IS_ERR(ima_policy))

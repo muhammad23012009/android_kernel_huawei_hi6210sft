@@ -740,8 +740,13 @@ int ql_core_dump(struct ql_adapter *qdev, struct ql_mpi_coredump *mpi_coredump)
 	int i;
 
 	if (!mpi_coredump) {
+<<<<<<< HEAD
 		netif_err(qdev, drv, qdev->ndev, "No memory available\n");
 		return -ENOMEM;
+=======
+		netif_err(qdev, drv, qdev->ndev, "No memory allocated\n");
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Try to get the spinlock, but dont worry if
@@ -765,7 +770,11 @@ int ql_core_dump(struct ql_adapter *qdev, struct ql_mpi_coredump *mpi_coredump)
 		sizeof(struct mpi_coredump_global_header);
 	mpi_coredump->mpi_global_header.imageSize =
 		sizeof(struct ql_mpi_coredump);
+<<<<<<< HEAD
 	memcpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+=======
+	strncpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sizeof(mpi_coredump->mpi_global_header.idString));
 
 	/* Get generic NIC reg dump */
@@ -1242,8 +1251,13 @@ static void ql_get_core_dump(struct ql_adapter *qdev)
 	ql_queue_fw_error(qdev);
 }
 
+<<<<<<< HEAD
 void ql_gen_reg_dump(struct ql_adapter *qdev,
 			struct ql_reg_dump *mpi_coredump)
+=======
+static void ql_gen_reg_dump(struct ql_adapter *qdev,
+			    struct ql_reg_dump *mpi_coredump)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, status;
 
@@ -1255,7 +1269,11 @@ void ql_gen_reg_dump(struct ql_adapter *qdev,
 		sizeof(struct mpi_coredump_global_header);
 	mpi_coredump->mpi_global_header.imageSize =
 		sizeof(struct ql_reg_dump);
+<<<<<<< HEAD
 	memcpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+=======
+	strncpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sizeof(mpi_coredump->mpi_global_header.idString));
 
 

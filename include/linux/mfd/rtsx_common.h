@@ -1,6 +1,10 @@
 /* Driver for Realtek driver-based card reader
  *
+<<<<<<< HEAD
  * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.
+=======
+ * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,7 +21,10 @@
  *
  * Author:
  *   Wei WANG <wei_wang@realsil.com.cn>
+<<<<<<< HEAD
  *   No. 450, Shenhu Road, Suzhou Industry Park, Suzhou, China
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __RTSX_COMMON_H

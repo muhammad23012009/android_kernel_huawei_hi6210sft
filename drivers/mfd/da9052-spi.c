@@ -23,6 +23,10 @@
 
 static int da9052_spi_probe(struct spi_device *spi)
 {
+<<<<<<< HEAD
+=======
+	struct regmap_config config;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	const struct spi_device_id *id = spi_get_device_id(spi);
 	struct da9052 *da9052;
@@ -31,7 +35,11 @@ static int da9052_spi_probe(struct spi_device *spi)
 	if (!da9052)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spi->mode = SPI_MODE_0 | SPI_CPOL;
+=======
+	spi->mode = SPI_MODE_0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi->bits_per_word = 8;
 	spi_setup(spi);
 
@@ -40,10 +48,21 @@ static int da9052_spi_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, da9052);
 
+<<<<<<< HEAD
 	da9052_regmap_config.read_flag_mask = 1;
 	da9052_regmap_config.write_flag_mask = 0;
 
 	da9052->regmap = devm_regmap_init_spi(spi, &da9052_regmap_config);
+=======
+	config = da9052_regmap_config;
+	config.read_flag_mask = 1;
+	config.reg_bits = 7;
+	config.pad_bits = 1;
+	config.val_bits = 8;
+	config.use_single_rw = 1;
+
+	da9052->regmap = devm_regmap_init_spi(spi, &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(da9052->regmap)) {
 		ret = PTR_ERR(da9052->regmap);
 		dev_err(&spi->dev, "Failed to allocate register map: %d\n",
@@ -51,11 +70,15 @@ static int da9052_spi_probe(struct spi_device *spi)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = da9052_device_init(da9052, id->driver_data);
 	if (ret != 0)
 		return ret;
 
 	return 0;
+=======
+	return da9052_device_init(da9052, id->driver_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int da9052_spi_remove(struct spi_device *spi)
@@ -71,6 +94,10 @@ static struct spi_device_id da9052_spi_id[] = {
 	{"da9053-aa", DA9053_AA},
 	{"da9053-ba", DA9053_BA},
 	{"da9053-bb", DA9053_BB},
+<<<<<<< HEAD
+=======
+	{"da9053-bc", DA9053_BC},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{}
 };
 
@@ -80,7 +107,10 @@ static struct spi_driver da9052_spi_driver = {
 	.id_table = da9052_spi_id,
 	.driver = {
 		.name = "da9052",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

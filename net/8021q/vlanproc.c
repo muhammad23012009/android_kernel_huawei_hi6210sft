@@ -171,6 +171,11 @@ int vlan_proc_add_dev(struct net_device *vlandev)
 	struct vlan_dev_priv *vlan = vlan_dev_priv(vlandev);
 	struct vlan_net *vn = net_generic(dev_net(vlandev), vlan_net_id);
 
+<<<<<<< HEAD
+=======
+	if (!strcmp(vlandev->name, name_conf))
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vlan->dent =
 		proc_create_data(vlandev->name, S_IFREG|S_IRUSR|S_IWUSR,
 				 vn->proc_vlan_dir, &vlandev_fops, vlandev);
@@ -182,12 +187,19 @@ int vlan_proc_add_dev(struct net_device *vlandev)
 /*
  *	Delete directory entry for VLAN device.
  */
+<<<<<<< HEAD
 int vlan_proc_rem_dev(struct net_device *vlandev)
+=======
+void vlan_proc_rem_dev(struct net_device *vlandev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/** NOTE:  This will consume the memory pointed to by dent, it seems. */
 	proc_remove(vlan_dev_priv(vlandev)->dent);
 	vlan_dev_priv(vlandev)->dent = NULL;
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /****** Proc filesystem entry points ****************************************/

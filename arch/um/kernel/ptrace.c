@@ -8,9 +8,13 @@
 #include <linux/sched.h>
 #include <linux/tracehook.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
 #include <skas_ptrace.h>
 
 
+=======
+#include <asm/ptrace-abi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void user_enable_single_step(struct task_struct *child)
 {
@@ -104,6 +108,7 @@ long arch_ptrace(struct task_struct *child, long request,
 		ret = ptrace_set_thread_area(child, addr, vp);
 		break;
 
+<<<<<<< HEAD
 	case PTRACE_FAULTINFO: {
 		/*
 		 * Take the info from thread->arch->faultinfo,
@@ -133,6 +138,8 @@ long arch_ptrace(struct task_struct *child, long request,
 		break;
 	}
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		ret = ptrace_request(child, request, addr, data);
 		if (ret == -EIO)
@@ -163,19 +170,31 @@ static void send_sigtrap(struct task_struct *tsk, struct uml_pt_regs *regs,
  * XXX Check PT_DTRACE vs TIF_SINGLESTEP for singlestepping check and
  * PT_PTRACED vs TIF_SYSCALL_TRACE for syscall tracing check
  */
+<<<<<<< HEAD
 void syscall_trace_enter(struct pt_regs *regs)
 {
 	audit_syscall_entry(HOST_AUDIT_ARCH,
 			    UPT_SYSCALL_NR(&regs->regs),
+=======
+int syscall_trace_enter(struct pt_regs *regs)
+{
+	audit_syscall_entry(UPT_SYSCALL_NR(&regs->regs),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    UPT_SYSCALL_ARG1(&regs->regs),
 			    UPT_SYSCALL_ARG2(&regs->regs),
 			    UPT_SYSCALL_ARG3(&regs->regs),
 			    UPT_SYSCALL_ARG4(&regs->regs));
 
 	if (!test_thread_flag(TIF_SYSCALL_TRACE))
+<<<<<<< HEAD
 		return;
 
 	tracehook_report_syscall_entry(regs);
+=======
+		return 0;
+
+	return tracehook_report_syscall_entry(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void syscall_trace_leave(struct pt_regs *regs)

@@ -5,7 +5,11 @@
 
 dvb-ttpci-objs := av7110_hw.o av7110_v4l.o av7110_av.o av7110_ca.o av7110.o av7110_ipack.o
 
+<<<<<<< HEAD
 ifdef CONFIG_INPUT_EVDEV
+=======
+ifdef CONFIG_DVB_AV7110_IR
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 dvb-ttpci-objs += av7110_ir.o
 endif
 

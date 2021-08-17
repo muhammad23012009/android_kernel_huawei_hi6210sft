@@ -32,6 +32,10 @@
 #include <asm/bootinfo.h>
 #include <asm/reboot.h>
 #include <asm/mach-au1x00/au1000.h>
+<<<<<<< HEAD
+=======
+#include <asm/mach-au1x00/gpio-au1000.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach-au1x00/au1xxx_eth.h>
 #include <prom.h>
 
@@ -52,10 +56,15 @@ void __init prom_init(void)
 	prom_init_cmdline();
 
 	memsize_str = prom_getenv("memsize");
+<<<<<<< HEAD
 	if (!memsize_str)
 		memsize = 0x04000000;
 	else
 		strict_strtoul(memsize_str, 0, &memsize);
+=======
+	if (!memsize_str || kstrtoul(memsize_str, 0, &memsize))
+		memsize = 0x04000000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	add_memory_region(0, memsize, BOOT_MEM_RAM);
 }
 
@@ -87,10 +96,17 @@ void __init board_setup(void)
 #endif /* IS_ENABLED(CONFIG_USB_OHCI_HCD) */
 
 	/* Initialize sys_pinfunc */
+<<<<<<< HEAD
 	au_writel(SYS_PF_NI2, SYS_PINFUNC);
 
 	/* Initialize GPIO */
 	au_writel(~0, KSEG1ADDR(AU1000_SYS_PHYS_ADDR) + SYS_TRIOUTCLR);
+=======
+	alchemy_wrsys(SYS_PF_NI2, AU1000_SYS_PINFUNC);
+
+	/* Initialize GPIO */
+	alchemy_wrsys(~0, AU1000_SYS_TRIOUTCLR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	alchemy_gpio_direction_output(0, 0);	/* Disable M66EN (PCI 66MHz) */
 	alchemy_gpio_direction_output(3, 1);	/* Disable PCI CLKRUN# */
 	alchemy_gpio_direction_output(1, 1);	/* Enable EXT_IO3 */
@@ -276,7 +292,11 @@ static struct platform_device mtx1_pci_host = {
 	.resource	= alchemy_pci_host_res,
 };
 
+<<<<<<< HEAD
 static struct __initdata platform_device * mtx1_devs[] = {
+=======
+static struct platform_device *mtx1_devs[] __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&mtx1_pci_host,
 	&mtx1_gpio_leds,
 	&mtx1_wdt,

@@ -162,7 +162,10 @@ static int maceps2_remove(struct platform_device *dev)
 static struct platform_driver maceps2_driver = {
 	.driver		= {
 		.name	= "maceps2",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= maceps2_probe,
 	.remove		= maceps2_remove,

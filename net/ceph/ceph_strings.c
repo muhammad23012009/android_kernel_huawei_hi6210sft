@@ -15,10 +15,15 @@ const char *ceph_entity_type_name(int type)
 	default: return "unknown";
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ceph_entity_type_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 const char *ceph_osd_op_name(int op)
 {
 	switch (op) {
+<<<<<<< HEAD
 	case CEPH_OSD_OP_READ: return "read";
 	case CEPH_OSD_OP_STAT: return "stat";
 	case CEPH_OSD_OP_MAPEXT: return "mapext";
@@ -90,6 +95,30 @@ const char *ceph_osd_op_name(int op)
 	case CEPH_OSD_OP_OMAPRMKEYS: return "omap-rm-keys";
 	}
 	return "???";
+=======
+#define GENERATE_CASE(op, opcode, str)	case CEPH_OSD_OP_##op: return (str);
+__CEPH_FORALL_OSD_OPS(GENERATE_CASE)
+#undef GENERATE_CASE
+	default:
+		return "???";
+	}
+}
+
+const char *ceph_osd_watch_op_name(int o)
+{
+	switch (o) {
+	case CEPH_OSD_WATCH_OP_UNWATCH:
+		return "unwatch";
+	case CEPH_OSD_WATCH_OP_WATCH:
+		return "watch";
+	case CEPH_OSD_WATCH_OP_RECONNECT:
+		return "reconnect";
+	case CEPH_OSD_WATCH_OP_PING:
+		return "ping";
+	default:
+		return "???";
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const char *ceph_osd_state_name(int s)
@@ -107,6 +136,7 @@ const char *ceph_osd_state_name(int s)
 		return "???";
 	}
 }
+<<<<<<< HEAD
 
 const char *ceph_pool_op_name(int op)
 {
@@ -121,3 +151,5 @@ const char *ceph_pool_op_name(int op)
 	}
 	return "???";
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -159,7 +159,11 @@ typedef struct {
 /* Packet Descriptor Status bits */
 
 #define ST_TX_EOM     0x80	/* End of frame */
+<<<<<<< HEAD
 #define ST_TX_EOT     0x01	/* End of transmition */
+=======
+#define ST_TX_EOT     0x01	/* End of transmission */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ST_RX_EOM     0x80	/* End of frame */
 #define ST_RX_SHORT   0x40	/* Short frame */
@@ -211,7 +215,11 @@ typedef struct {
 
 #define CTL_NORTS     0x01
 #define CTL_IDLE      0x10	/* Transmit an idle pattern */
+<<<<<<< HEAD
 #define CTL_UDRNC     0x20	/* Idle after CRC or FCS+flag transmition */
+=======
+#define CTL_UDRNC     0x20	/* Idle after CRC or FCS+flag transmission */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ST0_TXRDY     0x02	/* TX ready */
 #define ST0_RXRDY     0x01	/* RX ready */

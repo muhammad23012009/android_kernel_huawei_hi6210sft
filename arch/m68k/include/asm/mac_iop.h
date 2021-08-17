@@ -48,7 +48,11 @@
 
 /* IOP message status codes */
 
+<<<<<<< HEAD
 #define IOP_MSGSTATUS_UNUSED	0	/* Unusued message structure       */
+=======
+#define IOP_MSGSTATUS_UNUSED	0	/* Unused message structure        */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IOP_MSGSTATUS_WAITING	1	/* waiting for channel             */
 #define IOP_MSGSTATUS_SENT	2	/* message sent, awaiting reply    */
 #define IOP_MSGSTATUS_COMPLETE	3	/* message complete and reply rcvd */

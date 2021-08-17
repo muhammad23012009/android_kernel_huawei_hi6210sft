@@ -13,6 +13,7 @@
 #include <asm/page.h>
 #include <asm/pci_io.h>
 
+<<<<<<< HEAD
 /*
  * Change virtual addresses to physical addresses and vv.
  * These are pretty trivial
@@ -38,6 +39,12 @@ static inline void * phys_to_virt(unsigned long address)
 void *xlate_dev_mem_ptr(unsigned long phys);
 #define xlate_dev_mem_ptr xlate_dev_mem_ptr
 void unxlate_dev_mem_ptr(unsigned long phys, void *addr);
+=======
+#define xlate_dev_mem_ptr xlate_dev_mem_ptr
+void *xlate_dev_mem_ptr(phys_addr_t phys);
+#define unxlate_dev_mem_ptr unxlate_dev_mem_ptr
+void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Convert a virtual cached pointer to an uncached pointer
@@ -50,6 +57,10 @@ void unxlate_dev_mem_ptr(unsigned long phys, void *addr);
 
 #define ioremap_nocache(addr, size)	ioremap(addr, size)
 #define ioremap_wc			ioremap_nocache
+<<<<<<< HEAD
+=======
+#define ioremap_wt			ioremap_nocache
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
 {
@@ -60,6 +71,18 @@ static inline void iounmap(volatile void __iomem *addr)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline void __iomem *ioport_map(unsigned long port, unsigned int nr)
+{
+	return NULL;
+}
+
+static inline void ioport_unmap(void __iomem *p)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * s390 needs a private implementation of pci_iomap since ioremap with its
  * offset parameter isn't sufficient. That's because BAR spaces are not
@@ -68,6 +91,11 @@ static inline void iounmap(volatile void __iomem *addr)
  */
 #define pci_iomap pci_iomap
 #define pci_iounmap pci_iounmap
+<<<<<<< HEAD
+=======
+#define pci_iomap_wc pci_iomap
+#define pci_iomap_wc_range pci_iomap_range
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define memcpy_fromio(dst, src, count)	zpci_memcpy_fromio(dst, src, count)
 #define memcpy_toio(dst, src, count)	zpci_memcpy_toio(dst, src, count)
@@ -82,11 +110,14 @@ static inline void iounmap(volatile void __iomem *addr)
 #define __raw_writel	zpci_write_u32
 #define __raw_writeq	zpci_write_u64
 
+<<<<<<< HEAD
 #define readb_relaxed	readb
 #define readw_relaxed	readw
 #define readl_relaxed	readl
 #define readq_relaxed	readq
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_PCI */
 
 #include <asm-generic/io.h>

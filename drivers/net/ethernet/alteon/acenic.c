@@ -61,7 +61,10 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/mm.h>
 #include <linux/highmem.h>
@@ -132,7 +135,11 @@
 #define PCI_DEVICE_ID_SGI_ACENIC	0x0009
 #endif
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(acenic_pci_tbl) = {
+=======
+static const struct pci_device_id acenic_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_ALTEON, PCI_DEVICE_ID_ALTEON_ACENIC_FIBRE,
 	  PCI_ANY_ID, PCI_ANY_ID, PCI_CLASS_NETWORK_ETHERNET << 8, 0xffff00, },
 	{ PCI_VENDOR_ID_ALTEON, PCI_DEVICE_ID_ALTEON_ACENIC_COPPER,
@@ -477,7 +484,11 @@ static int acenic_probe_one(struct pci_dev *pdev,
 	dev->watchdog_timeo = 5*HZ;
 
 	dev->netdev_ops = &ace_netdev_ops;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &ace_ethtool_ops);
+=======
+	dev->ethtool_ops = &ace_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* we only display this string ONCE */
 	if (!boards_found)
@@ -702,6 +713,7 @@ static struct pci_driver acenic_pci_driver = {
 	.remove		= acenic_remove_one,
 };
 
+<<<<<<< HEAD
 static int __init acenic_init(void)
 {
 	return pci_register_driver(&acenic_pci_driver);
@@ -715,6 +727,8 @@ static void __exit acenic_exit(void)
 module_init(acenic_init);
 module_exit(acenic_exit);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ace_free_descriptors(struct net_device *dev)
 {
 	struct ace_private *ap = netdev_priv(dev);
@@ -2443,9 +2457,15 @@ restart:
 		flagsize = (skb->len << 16) | (BD_FLG_END);
 		if (skb->ip_summed == CHECKSUM_PARTIAL)
 			flagsize |= BD_FLG_TCP_UDP_SUM;
+<<<<<<< HEAD
 		if (vlan_tx_tag_present(skb)) {
 			flagsize |= BD_FLG_VLAN_TAG;
 			vlan_tag = vlan_tx_tag_get(skb);
+=======
+		if (skb_vlan_tag_present(skb)) {
+			flagsize |= BD_FLG_VLAN_TAG;
+			vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		desc = ap->tx_ring + idx;
 		idx = (idx + 1) % ACE_TX_RING_ENTRIES(ap);
@@ -2464,9 +2484,15 @@ restart:
 		flagsize = (skb_headlen(skb) << 16);
 		if (skb->ip_summed == CHECKSUM_PARTIAL)
 			flagsize |= BD_FLG_TCP_UDP_SUM;
+<<<<<<< HEAD
 		if (vlan_tx_tag_present(skb)) {
 			flagsize |= BD_FLG_VLAN_TAG;
 			vlan_tag = vlan_tx_tag_get(skb);
+=======
+		if (skb_vlan_tag_present(skb)) {
+			flagsize |= BD_FLG_VLAN_TAG;
+			vlan_tag = skb_vlan_tag_get(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		ace_load_tx_bd(ap, ap->tx_ring + idx, mapping, flagsize, vlan_tag);
@@ -3199,3 +3225,8 @@ static int read_eeprom_byte(struct net_device *dev, unsigned long offset)
 	       ap->name, offset);
 	goto out;
 }
+<<<<<<< HEAD
+=======
+
+module_pci_driver(acenic_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

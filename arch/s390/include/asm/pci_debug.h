@@ -6,6 +6,7 @@
 extern debug_info_t *pci_debug_msg_id;
 extern debug_info_t *pci_debug_err_id;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI_DEBUG
 #define zpci_dbg(imp, fmt, args...)				\
 	debug_sprintf_event(pci_debug_msg_id, imp, fmt, ##args)
@@ -14,6 +15,11 @@ extern debug_info_t *pci_debug_err_id;
 #define zpci_dbg(imp, fmt, args...) do { } while (0)
 #endif
 
+=======
+#define zpci_dbg(imp, fmt, args...)				\
+	debug_sprintf_event(pci_debug_msg_id, imp, fmt, ##args)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define zpci_err(text...)							\
 	do {									\
 		char debug_buffer[16];						\

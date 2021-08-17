@@ -10,13 +10,20 @@ enum nf_ct_ext_id {
 #if defined(CONFIG_NF_NAT) || defined(CONFIG_NF_NAT_MODULE)
 	NF_CT_EXT_NAT,
 #endif
+<<<<<<< HEAD
+=======
+	NF_CT_EXT_SEQADJ,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NF_CT_EXT_ACCT,
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 	NF_CT_EXT_ECACHE,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_NF_CONNTRACK_ZONES
 	NF_CT_EXT_ZONE,
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NF_CONNTRACK_TIMESTAMP
 	NF_CT_EXT_TSTAMP,
 #endif
@@ -26,17 +33,33 @@ enum nf_ct_ext_id {
 #ifdef CONFIG_NF_CONNTRACK_LABELS
 	NF_CT_EXT_LABELS,
 #endif
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)
+	NF_CT_EXT_SYNPROXY,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NF_CT_EXT_NUM,
 };
 
 #define NF_CT_EXT_HELPER_TYPE struct nf_conn_help
 #define NF_CT_EXT_NAT_TYPE struct nf_conn_nat
+<<<<<<< HEAD
 #define NF_CT_EXT_ACCT_TYPE struct nf_conn_counter
 #define NF_CT_EXT_ECACHE_TYPE struct nf_conntrack_ecache
 #define NF_CT_EXT_ZONE_TYPE struct nf_conntrack_zone
 #define NF_CT_EXT_TSTAMP_TYPE struct nf_conn_tstamp
 #define NF_CT_EXT_TIMEOUT_TYPE struct nf_conn_timeout
 #define NF_CT_EXT_LABELS_TYPE struct nf_conn_labels
+=======
+#define NF_CT_EXT_SEQADJ_TYPE struct nf_conn_seqadj
+#define NF_CT_EXT_ACCT_TYPE struct nf_conn_acct
+#define NF_CT_EXT_ECACHE_TYPE struct nf_conntrack_ecache
+#define NF_CT_EXT_TSTAMP_TYPE struct nf_conn_tstamp
+#define NF_CT_EXT_TIMEOUT_TYPE struct nf_conn_timeout
+#define NF_CT_EXT_LABELS_TYPE struct nf_conn_labels
+#define NF_CT_EXT_SYNPROXY_TYPE struct nf_conn_synproxy
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Extensions: optional stuff which isn't permanently in struct. */
 struct nf_ct_ext {
@@ -67,7 +90,11 @@ static inline void *__nf_ct_ext_find(const struct nf_conn *ct, u8 id)
 	((id##_TYPE *)__nf_ct_ext_find((ext), (id)))
 
 /* Destroy all relationships */
+<<<<<<< HEAD
 extern void __nf_ct_ext_destroy(struct nf_conn *ct);
+=======
+void __nf_ct_ext_destroy(struct nf_conn *ct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void nf_ct_ext_destroy(struct nf_conn *ct)
 {
 	if (ct->ext)
@@ -97,9 +124,12 @@ void *__nf_ct_ext_add_length(struct nf_conn *ct, enum nf_ct_ext_id id,
 struct nf_ct_ext_type {
 	/* Destroys relationships (can be NULL). */
 	void (*destroy)(struct nf_conn *ct);
+<<<<<<< HEAD
 	/* Called when realloacted (can be NULL).
 	   Contents has already been moved. */
 	void (*move)(void *new, void *old);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	enum nf_ct_ext_id id;
 

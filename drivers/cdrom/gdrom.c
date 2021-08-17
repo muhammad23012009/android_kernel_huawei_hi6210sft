@@ -497,6 +497,12 @@ static struct cdrom_device_ops gdrom_ops = {
 static int gdrom_bdops_open(struct block_device *bdev, fmode_t mode)
 {
 	int ret;
+<<<<<<< HEAD
+=======
+
+	check_disk_change(bdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&gdrom_mutex);
 	ret = cdrom_open(gd.cd_info, bdev, mode);
 	mutex_unlock(&gdrom_mutex);
@@ -561,11 +567,19 @@ static int gdrom_set_interrupt_handlers(void)
 	int err;
 
 	err = request_irq(HW_EVENT_GDROM_CMD, gdrom_command_interrupt,
+<<<<<<< HEAD
 		IRQF_DISABLED, "gdrom_command", &gd);
 	if (err)
 		return err;
 	err = request_irq(HW_EVENT_GDROM_DMA, gdrom_dma_interrupt,
 		IRQF_DISABLED, "gdrom_dma", &gd);
+=======
+		0, "gdrom_command", &gd);
+	if (err)
+		return err;
+	err = request_irq(HW_EVENT_GDROM_DMA, gdrom_dma_interrupt,
+		0, "gdrom_dma", &gd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		free_irq(HW_EVENT_GDROM_CMD, &gd);
 	return err;
@@ -602,7 +616,11 @@ static void gdrom_readdisk_dma(struct work_struct *work)
 		spin_unlock(&gdrom_lock);
 		block = blk_rq_pos(req)/GD_TO_BLK + GD_SESSION_OFFSET;
 		block_cnt = blk_rq_sectors(req)/GD_TO_BLK;
+<<<<<<< HEAD
 		__raw_writel(virt_to_phys(req->buffer), GDROM_DMA_STARTADDR_REG);
+=======
+		__raw_writel(virt_to_phys(bio_data(req->bio)), GDROM_DMA_STARTADDR_REG);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__raw_writel(block_cnt * GDROM_HARD_SECTOR, GDROM_DMA_LENGTH_REG);
 		__raw_writel(1, GDROM_DMA_DIRECTION_REG);
 		__raw_writel(1, GDROM_DMA_ENABLE_REG);
@@ -770,6 +788,16 @@ static int probe_gdrom_setupqueue(void)
 static int probe_gdrom(struct platform_device *devptr)
 {
 	int err;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Ensure our "one" device is initialized properly in case of previous
+	 * usages of it
+	 */
+	memset(&gd, 0, sizeof(gd));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Start the device */
 	if (gdrom_execute_diagnostic() != 1) {
 		pr_warning("ATA Probe for GDROM failed\n");
@@ -830,9 +858,15 @@ probe_fail_cdrom_register:
 	del_gendisk(gd.disk);
 probe_fail_no_disk:
 	kfree(gd.cd_info);
+<<<<<<< HEAD
 	unregister_blkdev(gdrom_major, GDROM_DEV_NAME);
 	gdrom_major = 0;
 probe_fail_no_mem:
+=======
+probe_fail_no_mem:
+	unregister_blkdev(gdrom_major, GDROM_DEV_NAME);
+	gdrom_major = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_warning("Probe failed - error is 0x%X\n", err);
 	return err;
 }
@@ -847,6 +881,11 @@ static int remove_gdrom(struct platform_device *devptr)
 	if (gdrom_major)
 		unregister_blkdev(gdrom_major, GDROM_DEV_NAME);
 	unregister_cdrom(gd.cd_info);
+<<<<<<< HEAD
+=======
+	kfree(gd.cd_info);
+	kfree(gd.toc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -862,7 +901,11 @@ static struct platform_driver gdrom_driver = {
 static int __init init_gdrom(void)
 {
 	int rc;
+<<<<<<< HEAD
 	gd.toc = NULL;
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = platform_driver_register(&gdrom_driver);
 	if (rc)
 		return rc;
@@ -878,7 +921,10 @@ static void __exit exit_gdrom(void)
 {
 	platform_device_unregister(pd);
 	platform_driver_unregister(&gdrom_driver);
+<<<<<<< HEAD
 	kfree(gd.toc);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(init_gdrom);

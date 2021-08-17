@@ -544,6 +544,10 @@ do { \
 #define DCBS_P			0x04	/* L1 Data Cache Bank Select */
 #define PORT_PREF0_P		0x12	/* DAG0 Port Preference */
 #define PORT_PREF1_P		0x13	/* DAG1 Port Preference */
+<<<<<<< HEAD
+=======
+#define RDCHK			0x9	/* Enable L1 Parity Check */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Masks */
 #define ENDM               0x00000001	/* (doesn't really exist) Enable

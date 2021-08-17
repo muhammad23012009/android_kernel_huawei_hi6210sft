@@ -50,16 +50,28 @@ enum ATH6K_DEBUG_MASK {
 };
 
 extern unsigned int debug_mask;
+<<<<<<< HEAD
 extern __printf(2, 3)
 int ath6kl_printk(const char *level, const char *fmt, ...);
 extern __printf(1, 2) int ath6kl_info(const char *fmt, ...);
 extern __printf(1, 2) int ath6kl_err(const char *fmt, ...);
 extern __printf(1, 2) int ath6kl_warn(const char *fmt, ...);
+=======
+__printf(2, 3) void ath6kl_printk(const char *level, const char *fmt, ...);
+__printf(1, 2) void ath6kl_info(const char *fmt, ...);
+__printf(1, 2) void ath6kl_err(const char *fmt, ...);
+__printf(1, 2) void ath6kl_warn(const char *fmt, ...);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum ath6kl_war {
 	ATH6KL_WAR_INVALID_RATE,
 };
 
+<<<<<<< HEAD
+=======
+int ath6kl_read_tgt_stats(struct ath6kl *ar, struct ath6kl_vif *vif);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_ATH6KL_DEBUG
 
 void ath6kl_dbg(enum ATH6K_DEBUG_MASK mask, const char *fmt, ...);
@@ -82,10 +94,16 @@ int ath6kl_debug_init_fs(struct ath6kl *ar);
 void ath6kl_debug_cleanup(struct ath6kl *ar);
 
 #else
+<<<<<<< HEAD
 static inline int ath6kl_dbg(enum ATH6K_DEBUG_MASK dbg_mask,
 			     const char *fmt, ...)
 {
 	return 0;
+=======
+static inline void ath6kl_dbg(enum ATH6K_DEBUG_MASK dbg_mask,
+			      const char *fmt, ...)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void ath6kl_dbg_dump(enum ATH6K_DEBUG_MASK mask,
@@ -98,8 +116,13 @@ static inline void ath6kl_dump_registers(struct ath6kl_device *dev,
 		struct ath6kl_irq_proc_registers *irq_proc_reg,
 		struct ath6kl_irq_enable_reg *irq_en_reg)
 {
+<<<<<<< HEAD
 
 }
+=======
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void dump_cred_dist_stats(struct htc_target *target)
 {
 }

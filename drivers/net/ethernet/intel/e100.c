@@ -208,7 +208,11 @@ MODULE_PARM_DESC(use_io, "Force use of i/o access mode");
 #define INTEL_8255X_ETHERNET_DEVICE(device_id, ich) {\
 	PCI_VENDOR_ID_INTEL, device_id, PCI_ANY_ID, PCI_ANY_ID, \
 	PCI_CLASS_NETWORK_ETHERNET << 8, 0xFFFF00, ich }
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(e100_id_table) = {
+=======
+static const struct pci_device_id e100_id_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INTEL_8255X_ETHERNET_DEVICE(0x1029, 0),
 	INTEL_8255X_ETHERNET_DEVICE(0x1030, 0),
 	INTEL_8255X_ETHERNET_DEVICE(0x1031, 3),
@@ -414,7 +418,11 @@ enum cb_status {
 
 /**
  * cb_command - Command Block flags
+<<<<<<< HEAD
  * @cb_tx_nc:  0: controler does CRC (normal),  1: CRC from skb memory
+=======
+ * @cb_tx_nc:  0: controller does CRC (normal),  1: CRC from skb memory
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 enum cb_command {
 	cb_nop    = 0x0000,
@@ -874,7 +882,11 @@ static int e100_exec_cb(struct nic *nic, struct sk_buff *skb,
 {
 	struct cb *cb;
 	unsigned long flags;
+<<<<<<< HEAD
 	int err = 0;
+=======
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&nic->cb_lock, flags);
 
@@ -899,7 +911,11 @@ static int e100_exec_cb(struct nic *nic, struct sk_buff *skb,
 	/* Order is important otherwise we'll be in a race with h/w:
 	 * set S-bit in current first, then clear S-bit in previous. */
 	cb->command |= cpu_to_le16(cb_s);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cb->prev->command &= cpu_to_le16(~cb_s);
 
 	while (nic->cb_to_send != nic->cb_to_use) {
@@ -1175,6 +1191,7 @@ static int e100_configure(struct nic *nic, struct cb *cb, struct sk_buff *skb)
 		config->rx_discard_short_frames = 0x0;  /* 1=discard, 0=save */
 	}
 
+<<<<<<< HEAD
 	netif_printk(nic, hw, KERN_DEBUG, nic->netdev,
 		     "[00-07]=%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X\n",
 		     c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]);
@@ -1184,6 +1201,14 @@ static int e100_configure(struct nic *nic, struct cb *cb, struct sk_buff *skb)
 	netif_printk(nic, hw, KERN_DEBUG, nic->netdev,
 		     "[16-23]=%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X\n",
 		     c[16], c[17], c[18], c[19], c[20], c[21], c[22], c[23]);
+=======
+	netif_printk(nic, hw, KERN_DEBUG, nic->netdev, "[00-07]=%8ph\n",
+		     c + 0);
+	netif_printk(nic, hw, KERN_DEBUG, nic->netdev, "[08-15]=%8ph\n",
+		     c + 8);
+	netif_printk(nic, hw, KERN_DEBUG, nic->netdev, "[16-23]=%8ph\n",
+		     c + 16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1373,8 +1398,13 @@ static inline int e100_load_ucode_wait(struct nic *nic)
 
 	fw = e100_request_firmware(nic);
 	/* If it's NULL, then no ucode is required */
+<<<<<<< HEAD
 	if (!fw || IS_ERR(fw))
 		return PTR_ERR(fw);
+=======
+	if (IS_ERR_OR_NULL(fw))
+		return PTR_ERR_OR_ZERO(fw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((err = e100_exec_cb(nic, (void *)fw, e100_setup_ucode)))
 		netif_err(nic, probe, nic->netdev,
@@ -1426,7 +1456,11 @@ static int e100_phy_check_without_mii(struct nic *nic)
 	u8 phy_type;
 	int without_mii;
 
+<<<<<<< HEAD
 	phy_type = (nic->eeprom[eeprom_phy_iface] >> 8) & 0x0f;
+=======
+	phy_type = (le16_to_cpu(nic->eeprom[eeprom_phy_iface]) >> 8) & 0x0f;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (phy_type) {
 	case NoSuchPhy: /* Non-MII PHY; UNTESTED! */
@@ -1546,7 +1580,11 @@ static int e100_phy_init(struct nic *nic)
 		mdio_write(netdev, nic->mii.phy_id, MII_BMCR, bmcr);
 	} else if ((nic->mac >= mac_82550_D102) || ((nic->flags & ich) &&
 	   (mdio_read(netdev, nic->mii.phy_id, MII_TPISTATUS) & 0x8000) &&
+<<<<<<< HEAD
 		!(nic->eeprom[eeprom_cnfg_mdix] & eeprom_mdix_enabled))) {
+=======
+	   (le16_to_cpu(nic->eeprom[eeprom_cnfg_mdix]) & eeprom_mdix_enabled))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* enable/disable MDI/MDI-X auto-switching. */
 		mdio_write(netdev, nic->mii.phy_id, MII_NCONFIG,
 				nic->mii.force_media ? 0 : NCONFIG_AUTO_SWITCH);
@@ -1773,17 +1811,31 @@ static int e100_xmit_prepare(struct nic *nic, struct cb *cb,
 	dma_addr = pci_map_single(nic->pdev,
 				  skb->data, skb->len, PCI_DMA_TODEVICE);
 	/* If we can't map the skb, have the upper layer try later */
+<<<<<<< HEAD
 	if (pci_dma_mapping_error(nic->pdev, dma_addr))
 		return -ENOMEM;
+=======
+	if (pci_dma_mapping_error(nic->pdev, dma_addr)) {
+		dev_kfree_skb_any(skb);
+		skb = NULL;
+		return -ENOMEM;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Use the last 4 bytes of the SKB payload packet as the CRC, used for
 	 * testing, ie sending frames with bad CRC.
 	 */
 	if (unlikely(skb->no_fcs))
+<<<<<<< HEAD
 		cb->command |= __constant_cpu_to_le16(cb_tx_nc);
 	else
 		cb->command &= ~__constant_cpu_to_le16(cb_tx_nc);
+=======
+		cb->command |= cpu_to_le16(cb_tx_nc);
+	else
+		cb->command &= ~cpu_to_le16(cb_tx_nc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* interrupt every 16 packets regardless of delay */
 	if ((nic->cbs_avail & ~15) == nic->cbs_avail)
@@ -1846,7 +1898,11 @@ static int e100_tx_clean(struct nic *nic)
 	for (cb = nic->cb_to_clean;
 	    cb->status & cpu_to_le16(cb_complete);
 	    cb = nic->cb_to_clean = cb->next) {
+<<<<<<< HEAD
 		rmb(); /* read skb after status */
+=======
+		dma_rmb(); /* read skb after status */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		netif_printk(nic, tx_done, KERN_DEBUG, nic->netdev,
 			     "cb[%d]->status = 0x%04X\n",
 			     (int)(((void*)cb - (void*)nic->cbs)/sizeof(struct cb)),
@@ -1996,7 +2052,11 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
 
 	netif_printk(nic, rx_status, KERN_DEBUG, nic->netdev,
 		     "status=0x%04X\n", rfd_status);
+<<<<<<< HEAD
 	rmb(); /* read size after status bit */
+=======
+	dma_rmb(); /* read size after status bit */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If data isn't ready, nothing to indicate */
 	if (unlikely(!(rfd_status & cb_complete))) {
@@ -2298,9 +2358,15 @@ static int e100_asf(struct nic *nic)
 {
 	/* ASF can be enabled from eeprom */
 	return (nic->pdev->device >= 0x1050) && (nic->pdev->device <= 0x1057) &&
+<<<<<<< HEAD
 	   (nic->eeprom[eeprom_config_asf] & eeprom_asf) &&
 	   !(nic->eeprom[eeprom_config_asf] & eeprom_gcl) &&
 	   ((nic->eeprom[eeprom_smbus_addr] & 0xFF) != 0xFE);
+=======
+	   (le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_asf) &&
+	   !(le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_gcl) &&
+	   ((le16_to_cpu(nic->eeprom[eeprom_smbus_addr]) & 0xFF) != 0xFE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int e100_up(struct nic *nic)
@@ -2857,7 +2923,11 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	netdev->hw_features |= NETIF_F_RXALL;
 
 	netdev->netdev_ops = &e100_netdev_ops;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &e100_ethtool_ops);
+=======
+	netdev->ethtool_ops = &e100_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev->watchdog_timeo = E100_WATCHDOG_PERIOD;
 	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
 
@@ -2925,9 +2995,13 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
 	init_timer(&nic->watchdog);
 	nic->watchdog.function = e100_watchdog;
 	nic->watchdog.data = (unsigned long)nic;
+=======
+	setup_timer(&nic->watchdog, e100_watchdog, (unsigned long)nic);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_WORK(&nic->tx_timeout_task, e100_tx_timeout_task);
 
@@ -2954,7 +3028,11 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* Wol magic packet can be enabled from eeprom */
 	if ((nic->mac >= mac_82558_D101_A4) &&
+<<<<<<< HEAD
 	   (nic->eeprom[eeprom_id] & eeprom_id_wol)) {
+=======
+	   (le16_to_cpu(nic->eeprom[eeprom_id]) & eeprom_id_wol)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nic->flags |= wol_magic;
 		device_set_wakeup_enable(&pdev->dev, true);
 	}
@@ -2972,6 +3050,14 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			   nic->params.cbs.max * sizeof(struct cb),
 			   sizeof(u32),
 			   0);
+<<<<<<< HEAD
+=======
+	if (!nic->cbs_pool) {
+		netif_err(nic, probe, nic->netdev, "Cannot create DMA pool, aborting\n");
+		err = -ENOMEM;
+		goto err_out_pool;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_info(nic, probe, nic->netdev,
 		   "addr 0x%llx, irq %d, MAC addr %pM\n",
 		   (unsigned long long)pci_resource_start(pdev, use_io ? 1 : 0),
@@ -2979,6 +3065,11 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_out_pool:
+	unregister_netdev(netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out_free:
 	e100_free(nic);
 err_out_iounmap:
@@ -2988,7 +3079,10 @@ err_out_free_res:
 err_out_disable_pdev:
 	pci_disable_device(pdev);
 err_out_free_dev:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(netdev);
 	return err;
 }
@@ -3006,7 +3100,10 @@ static void e100_remove(struct pci_dev *pdev)
 		free_netdev(netdev);
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
+<<<<<<< HEAD
 		pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -3069,7 +3166,11 @@ static int e100_resume(struct pci_dev *pdev)
 	pci_set_power_state(pdev, PCI_D0);
 	pci_restore_state(pdev);
 	/* ack any pending wake events, disable PME */
+<<<<<<< HEAD
 	pci_enable_wake(pdev, 0, 0);
+=======
+	pci_enable_wake(pdev, PCI_D0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* disable reverse auto-negotiation */
 	if (nic->phy == phy_82552_v) {
@@ -3160,7 +3261,11 @@ static void e100_io_resume(struct pci_dev *pdev)
 	struct nic *nic = netdev_priv(netdev);
 
 	/* ack any pending wake events, disable PME */
+<<<<<<< HEAD
 	pci_enable_wake(pdev, 0, 0);
+=======
+	pci_enable_wake(pdev, PCI_D0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	netif_device_attach(netdev);
 	if (netif_running(netdev)) {

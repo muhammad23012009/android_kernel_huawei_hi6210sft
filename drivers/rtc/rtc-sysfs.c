@@ -25,6 +25,7 @@
  */
 
 static ssize_t
+<<<<<<< HEAD
 rtc_sysfs_show_name(struct device *dev, struct device_attribute *attr,
 		char *buf)
 {
@@ -34,6 +35,16 @@ rtc_sysfs_show_name(struct device *dev, struct device_attribute *attr,
 static ssize_t
 rtc_sysfs_show_date(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+name_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "%s\n", to_rtc_device(dev)->name);
+}
+static DEVICE_ATTR_RO(name);
+
+static ssize_t
+date_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ssize_t retval;
 	struct rtc_time tm;
@@ -46,10 +57,17 @@ rtc_sysfs_show_date(struct device *dev, struct device_attribute *attr,
 
 	return retval;
 }
+<<<<<<< HEAD
 
 static ssize_t
 rtc_sysfs_show_time(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static DEVICE_ATTR_RO(date);
+
+static ssize_t
+time_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ssize_t retval;
 	struct rtc_time tm;
@@ -62,10 +80,17 @@ rtc_sysfs_show_time(struct device *dev, struct device_attribute *attr,
 
 	return retval;
 }
+<<<<<<< HEAD
 
 static ssize_t
 rtc_sysfs_show_since_epoch(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static DEVICE_ATTR_RO(time);
+
+static ssize_t
+since_epoch_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ssize_t retval;
 	struct rtc_time tm;
@@ -79,20 +104,40 @@ rtc_sysfs_show_since_epoch(struct device *dev, struct device_attribute *attr,
 
 	return retval;
 }
+<<<<<<< HEAD
 
 static ssize_t
 rtc_sysfs_show_max_user_freq(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static DEVICE_ATTR_RO(since_epoch);
+
+static ssize_t
+max_user_freq_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return sprintf(buf, "%d\n", to_rtc_device(dev)->max_user_freq);
 }
 
 static ssize_t
+<<<<<<< HEAD
 rtc_sysfs_set_max_user_freq(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t n)
 {
 	struct rtc_device *rtc = to_rtc_device(dev);
 	unsigned long val = simple_strtoul(buf, NULL, 0);
+=======
+max_user_freq_store(struct device *dev, struct device_attribute *attr,
+		const char *buf, size_t n)
+{
+	struct rtc_device *rtc = to_rtc_device(dev);
+	unsigned long val;
+	int err;
+
+	err = kstrtoul(buf, 0, &val);
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (val >= 4096 || val == 0)
 		return -EINVAL;
@@ -101,6 +146,10 @@ rtc_sysfs_set_max_user_freq(struct device *dev, struct device_attribute *attr,
 
 	return n;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(max_user_freq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * rtc_sysfs_show_hctosys - indicate if the given RTC set the system time
@@ -109,8 +158,12 @@ rtc_sysfs_set_max_user_freq(struct device *dev, struct device_attribute *attr,
  * boot or resume event.
  */
 static ssize_t
+<<<<<<< HEAD
 rtc_sysfs_show_hctosys(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+hctosys_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef CONFIG_RTC_HCTOSYS_DEVICE
 	if (rtc_hctosys_ret == 0 &&
@@ -121,6 +174,7 @@ rtc_sysfs_show_hctosys(struct device *dev, struct device_attribute *attr,
 #endif
 		return sprintf(buf, "0\n");
 }
+<<<<<<< HEAD
 
 static struct device_attribute rtc_attrs[] = {
 	__ATTR(name, S_IRUGO, rtc_sysfs_show_name, NULL),
@@ -136,6 +190,12 @@ static struct device_attribute rtc_attrs[] = {
 static ssize_t
 rtc_sysfs_show_wakealarm(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static DEVICE_ATTR_RO(hctosys);
+
+static ssize_t
+wakealarm_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ssize_t retval;
 	unsigned long alarm;
@@ -159,14 +219,25 @@ rtc_sysfs_show_wakealarm(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
+<<<<<<< HEAD
 rtc_sysfs_set_wakealarm(struct device *dev, struct device_attribute *attr,
+=======
+wakealarm_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		const char *buf, size_t n)
 {
 	ssize_t retval;
 	unsigned long now, alarm;
+<<<<<<< HEAD
 	struct rtc_wkalrm alm;
 	struct rtc_device *rtc = to_rtc_device(dev);
 	char *buf_ptr;
+=======
+	unsigned long push = 0;
+	struct rtc_wkalrm alm;
+	struct rtc_device *rtc = to_rtc_device(dev);
+	const char *buf_ptr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int adjust = 0;
 
 	/* Only request alarms that trigger in the future.  Disable them
@@ -177,6 +248,7 @@ rtc_sysfs_set_wakealarm(struct device *dev, struct device_attribute *attr,
 		return retval;
 	rtc_tm_to_time(&alm.time, &now);
 
+<<<<<<< HEAD
 	buf_ptr = (char *)buf;
 	if (*buf_ptr == '+') {
 		buf_ptr++;
@@ -187,6 +259,24 @@ rtc_sysfs_set_wakealarm(struct device *dev, struct device_attribute *attr,
 		alarm += now;
 	}
 	if (alarm > now) {
+=======
+	buf_ptr = buf;
+	if (*buf_ptr == '+') {
+		buf_ptr++;
+		if (*buf_ptr == '=') {
+			buf_ptr++;
+			push = 1;
+		} else
+			adjust = 1;
+	}
+	retval = kstrtoul(buf_ptr, 0, &alarm);
+	if (retval)
+		return retval;
+	if (adjust) {
+		alarm += now;
+	}
+	if (alarm > now || push) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Avoid accidentally clobbering active alarms; we can't
 		 * entirely prevent that here, without even the minimal
 		 * locking from the /dev/rtcN api.
@@ -194,9 +284,20 @@ rtc_sysfs_set_wakealarm(struct device *dev, struct device_attribute *attr,
 		retval = rtc_read_alarm(rtc, &alm);
 		if (retval < 0)
 			return retval;
+<<<<<<< HEAD
 		if (alm.enabled)
 			return -EBUSY;
 
+=======
+		if (alm.enabled) {
+			if (push) {
+				rtc_tm_to_time(&alm.time, &push);
+				alarm += push;
+			} else
+				return -EBUSY;
+		} else if (push)
+			return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		alm.enabled = 1;
 	} else {
 		alm.enabled = 0;
@@ -211,15 +312,60 @@ rtc_sysfs_set_wakealarm(struct device *dev, struct device_attribute *attr,
 	retval = rtc_set_alarm(rtc, &alm);
 	return (retval < 0) ? retval : n;
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(wakealarm, S_IRUGO | S_IWUSR,
 		rtc_sysfs_show_wakealarm, rtc_sysfs_set_wakealarm);
 
+=======
+static DEVICE_ATTR_RW(wakealarm);
+
+static ssize_t
+offset_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	ssize_t retval;
+	long offset;
+
+	retval = rtc_read_offset(to_rtc_device(dev), &offset);
+	if (retval == 0)
+		retval = sprintf(buf, "%ld\n", offset);
+
+	return retval;
+}
+
+static ssize_t
+offset_store(struct device *dev, struct device_attribute *attr,
+	     const char *buf, size_t n)
+{
+	ssize_t retval;
+	long offset;
+
+	retval = kstrtol(buf, 10, &offset);
+	if (retval == 0)
+		retval = rtc_set_offset(to_rtc_device(dev), offset);
+
+	return (retval < 0) ? retval : n;
+}
+static DEVICE_ATTR_RW(offset);
+
+static struct attribute *rtc_attrs[] = {
+	&dev_attr_name.attr,
+	&dev_attr_date.attr,
+	&dev_attr_time.attr,
+	&dev_attr_since_epoch.attr,
+	&dev_attr_max_user_freq.attr,
+	&dev_attr_hctosys.attr,
+	&dev_attr_wakealarm.attr,
+	&dev_attr_offset.attr,
+	NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* The reason to trigger an alarm with no process watching it (via sysfs)
  * is its side effect:  waking from a system state like suspend-to-RAM or
  * suspend-to-disk.  So: no attribute unless that side effect is possible.
  * (Userspace may disable that mechanism later.)
  */
+<<<<<<< HEAD
 static inline int rtc_does_wakealarm(struct rtc_device *rtc)
 {
 	if (!device_can_wakeup(rtc->dev.parent))
@@ -252,4 +398,45 @@ void rtc_sysfs_del_device(struct rtc_device *rtc)
 void __init rtc_sysfs_init(struct class *rtc_class)
 {
 	rtc_class->dev_attrs = rtc_attrs;
+=======
+static bool rtc_does_wakealarm(struct rtc_device *rtc)
+{
+	if (!device_can_wakeup(rtc->dev.parent))
+		return false;
+
+	return rtc->ops->set_alarm != NULL;
+}
+
+static umode_t rtc_attr_is_visible(struct kobject *kobj,
+				   struct attribute *attr, int n)
+{
+	struct device *dev = container_of(kobj, struct device, kobj);
+	struct rtc_device *rtc = to_rtc_device(dev);
+	umode_t mode = attr->mode;
+
+	if (attr == &dev_attr_wakealarm.attr) {
+		if (!rtc_does_wakealarm(rtc))
+			mode = 0;
+	} else if (attr == &dev_attr_offset.attr) {
+		if (!rtc->ops->set_offset)
+			mode = 0;
+	}
+
+	return mode;
+}
+
+static struct attribute_group rtc_attr_group = {
+	.is_visible	= rtc_attr_is_visible,
+	.attrs		= rtc_attrs,
+};
+
+static const struct attribute_group *rtc_attr_groups[] = {
+	&rtc_attr_group,
+	NULL
+};
+
+const struct attribute_group **rtc_get_dev_attribute_groups(void)
+{
+	return rtc_attr_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

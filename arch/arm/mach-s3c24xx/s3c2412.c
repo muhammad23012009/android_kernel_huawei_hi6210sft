@@ -20,8 +20,15 @@
 #include <linux/device.h>
 #include <linux/syscore_ops.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/io.h>
+=======
+#include <linux/serial_s3c.h>
+#include <linux/platform_device.h>
+#include <linux/io.h>
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -35,6 +42,7 @@
 #include <mach/regs-clock.h>
 #include <mach/regs-gpio.h>
 
+<<<<<<< HEAD
 #include <plat/clock.h>
 #include <plat/cpu.h>
 #include <plat/cpu-freq.h>
@@ -52,6 +60,19 @@
 #define S3C2412_SWRST			(S3C24XX_VA_CLKPWR + 0x30)
 #define S3C2412_SWRST_RESET		(0x533C2412)
 
+=======
+#include <plat/cpu.h>
+#include <plat/cpu-freq.h>
+#include <plat/devs.h>
+#include <plat/pm.h>
+#include <plat/regs-spi.h>
+
+#include "common.h"
+#include "nand-core.h"
+#include "regs-dsc.h"
+#include "s3c2412-power.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef CONFIG_CPU_S3C2412_ONLY
 void __iomem *s3c24xx_va_gpio2 = S3C24XX_VA_GPIO;
 
@@ -129,6 +150,7 @@ static void s3c2412_idle(void)
 	cpu_do_idle();
 }
 
+<<<<<<< HEAD
 void s3c2412_restart(char mode, const char *cmd)
 {
 	if (mode == 's')
@@ -149,6 +171,8 @@ void s3c2412_restart(char mode, const char *cmd)
 	mdelay(1);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* s3c2412_map_io
  *
  * register the standard cpu IO areas, and any passed in from the
@@ -170,6 +194,7 @@ void __init s3c2412_map_io(void)
 	iotable_init(s3c2412_iodesc, ARRAY_SIZE(s3c2412_iodesc));
 }
 
+<<<<<<< HEAD
 void __init_or_cpufreq s3c2412_setup_clocks(void)
 {
 	struct clk *xtal_clk;
@@ -217,6 +242,8 @@ void __init s3c2412_init_clocks(int xtal)
 	s3c2412_baseclk_add();
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* need to register the subsystem before we actually register the device, and
  * we also need to ensure that it has been initialised before any of the
  * drivers even try to use it (even if not on an s3c2412 based system)
@@ -243,7 +270,11 @@ int __init s3c2412_init(void)
 {
 	printk("S3C2412: Initialising architecture\n");
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	register_syscore_ops(&s3c2412_pm_syscore_ops);
 	register_syscore_ops(&s3c24xx_irq_syscore_ops);
 #endif

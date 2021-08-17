@@ -25,11 +25,18 @@
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/phy.h>
+<<<<<<< HEAD
 #include <linux/phy_fixed.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spi/spi.h>
 #include <linux/fsl_devices.h>
 #include <linux/fs_enet_pd.h>
 #include <linux/fs_uart_pd.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/atomic.h>
 #include <asm/io.h>
@@ -178,6 +185,7 @@ u32 get_baudrate(void)
 EXPORT_SYMBOL(get_baudrate);
 #endif /* CONFIG_CPM2 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_FIXED_PHY
 static int __init of_add_fixed_phys(void)
 {
@@ -211,32 +219,68 @@ arch_initcall(of_add_fixed_phys);
 
 #if defined(CONFIG_FSL_SOC_BOOKE) || defined(CONFIG_PPC_86xx)
 static __be32 __iomem *rstcr;
+=======
+#if defined(CONFIG_FSL_SOC_BOOKE) || defined(CONFIG_PPC_86xx)
+static __be32 __iomem *rstcr;
+
+static int fsl_rstcr_restart(struct notifier_block *this,
+			     unsigned long mode, void *cmd)
+{
+	local_irq_disable();
+	/* set reset control register */
+	out_be32(rstcr, 0x2);	/* HRESET_REQ */
+
+	return NOTIFY_DONE;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init setup_rstcr(void)
 {
 	struct device_node *np;
 
+<<<<<<< HEAD
 	for_each_node_by_name(np, "global-utilities") {
 		if ((of_get_property(np, "fsl,has-rstcr", NULL))) {
 			rstcr = of_iomap(np, 0) + 0xb0;
 			if (!rstcr)
 				printk (KERN_ERR "Error: reset control "
 						"register not mapped!\n");
+=======
+	static struct notifier_block restart_handler = {
+		.notifier_call = fsl_rstcr_restart,
+		.priority = 128,
+	};
+
+	for_each_node_by_name(np, "global-utilities") {
+		if ((of_get_property(np, "fsl,has-rstcr", NULL))) {
+			rstcr = of_iomap(np, 0) + 0xb0;
+			if (!rstcr) {
+				printk (KERN_ERR "Error: reset control "
+						"register not mapped!\n");
+			} else {
+				register_restart_handler(&restart_handler);
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
 
+<<<<<<< HEAD
 	if (!rstcr && ppc_md.restart == fsl_rstcr_restart)
 		printk(KERN_ERR "No RSTCR register, warm reboot won't work\n");
 
 	if (np)
 		of_node_put(np);
+=======
+	of_node_put(np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 arch_initcall(setup_rstcr);
 
+<<<<<<< HEAD
 void fsl_rstcr_restart(char *cmd)
 {
 	local_irq_disable();
@@ -246,6 +290,8 @@ void fsl_rstcr_restart(char *cmd)
 
 	while (1) ;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #if defined(CONFIG_FB_FSL_DIU) || defined(CONFIG_FB_FSL_DIU_MODULE)
@@ -261,15 +307,24 @@ EXPORT_SYMBOL(diu_ops);
  * to initiate a partition restart when we're running under the Freescale
  * hypervisor.
  */
+<<<<<<< HEAD
 void fsl_hv_restart(char *cmd)
 {
 	pr_info("hv restart\n");
 	fh_partition_restart(-1);
+=======
+void __noreturn fsl_hv_restart(char *cmd)
+{
+	pr_info("hv restart\n");
+	fh_partition_restart(-1);
+	while (1) ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * Halt the current partition
  *
+<<<<<<< HEAD
  * This function should be assigned to the ppc_md.power_off and ppc_md.halt
  * function pointers, to shut down the partition when we're running under
  * the Freescale hypervisor.
@@ -278,5 +333,16 @@ void fsl_hv_halt(void)
 {
 	pr_info("hv exit\n");
 	fh_partition_stop(-1);
+=======
+ * This function should be assigned to the pm_power_off and ppc_md.halt
+ * function pointers, to shut down the partition when we're running under
+ * the Freescale hypervisor.
+ */
+void __noreturn fsl_hv_halt(void)
+{
+	pr_info("hv exit\n");
+	fh_partition_stop(-1);
+	while (1) ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif

@@ -645,17 +645,31 @@ static void
 release_io(struct inf_hw *hw)
 {
 	if (hw->cfg.mode) {
+<<<<<<< HEAD
 		if (hw->cfg.p) {
 			release_mem_region(hw->cfg.start, hw->cfg.size);
 			iounmap(hw->cfg.p);
+=======
+		if (hw->cfg.mode == AM_MEMIO) {
+			release_mem_region(hw->cfg.start, hw->cfg.size);
+			if (hw->cfg.p)
+				iounmap(hw->cfg.p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			release_region(hw->cfg.start, hw->cfg.size);
 		hw->cfg.mode = AM_NONE;
 	}
 	if (hw->addr.mode) {
+<<<<<<< HEAD
 		if (hw->addr.p) {
 			release_mem_region(hw->addr.start, hw->addr.size);
 			iounmap(hw->addr.p);
+=======
+		if (hw->addr.mode == AM_MEMIO) {
+			release_mem_region(hw->addr.start, hw->addr.size);
+			if (hw->addr.p)
+				iounmap(hw->addr.p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			release_region(hw->addr.start, hw->addr.size);
 		hw->addr.mode = AM_NONE;
@@ -685,9 +699,18 @@ setup_io(struct inf_hw *hw)
 				(ulong)hw->cfg.start, (ulong)hw->cfg.size);
 			return err;
 		}
+<<<<<<< HEAD
 		if (hw->ci->cfg_mode == AM_MEMIO)
 			hw->cfg.p = ioremap(hw->cfg.start, hw->cfg.size);
 		hw->cfg.mode = hw->ci->cfg_mode;
+=======
+		hw->cfg.mode = hw->ci->cfg_mode;
+		if (hw->ci->cfg_mode == AM_MEMIO) {
+			hw->cfg.p = ioremap(hw->cfg.start, hw->cfg.size);
+			if (!hw->cfg.p)
+				return -ENOMEM;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (debug & DEBUG_HW)
 			pr_notice("%s: IO cfg %lx (%lu bytes) mode%d\n",
 				  hw->name, (ulong)hw->cfg.start,
@@ -712,9 +735,18 @@ setup_io(struct inf_hw *hw)
 				(ulong)hw->addr.start, (ulong)hw->addr.size);
 			return err;
 		}
+<<<<<<< HEAD
 		if (hw->ci->addr_mode == AM_MEMIO)
 			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
 		hw->addr.mode = hw->ci->addr_mode;
+=======
+		hw->addr.mode = hw->ci->addr_mode;
+		if (hw->ci->addr_mode == AM_MEMIO) {
+			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
+			if (!hw->addr.p)
+				return -ENOMEM;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (debug & DEBUG_HW)
 			pr_notice("%s: IO addr %lx (%lu bytes) mode%d\n",
 				  hw->name, (ulong)hw->addr.start,
@@ -1092,7 +1124,11 @@ inf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 	card->ci = get_card_info(ent->driver_data);
 	if (!card->ci) {
+<<<<<<< HEAD
 		pr_info("mISDN: do not have informations about adapter at %s\n",
+=======
+		pr_info("mISDN: do not have information about adapter at %s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pci_name(pdev));
 		kfree(card);
 		pci_disable_device(pdev);

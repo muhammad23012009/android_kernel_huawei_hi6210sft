@@ -13,13 +13,20 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/mmzone.h>
+<<<<<<< HEAD
+=======
+#include <asm/sections.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Defined in hibernate_asm_32.S */
 extern int restore_image(void);
 
+<<<<<<< HEAD
 /* References to section boundaries */
 extern const void __nosave_begin, __nosave_end;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Pointer to the temporary resume page tables */
 pgd_t *resume_pg_dir;
 
@@ -108,7 +115,11 @@ static int resume_physical_mapping_init(pgd_t *pgd_base)
 			 * normal page tables.
 			 * NOTE: We can mark everything as executable here
 			 */
+<<<<<<< HEAD
 			if (cpu_has_pse) {
+=======
+			if (boot_cpu_has(X86_FEATURE_PSE)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				set_pmd(pmd, pfn_pmd(pfn, PAGE_KERNEL_LARGE_EXEC));
 				pfn += PTRS_PER_PTE;
 			} else {
@@ -144,7 +155,11 @@ static inline void resume_init_first_level_page_table(pgd_t *pg_dir)
 #endif
 }
 
+<<<<<<< HEAD
 int swsusp_arch_resume(void)
+=======
+asmlinkage int swsusp_arch_resume(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int error;
 

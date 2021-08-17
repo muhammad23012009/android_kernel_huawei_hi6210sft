@@ -147,6 +147,14 @@ static struct attribute_group input_polldev_attribute_group = {
 	.attrs = sysfs_attrs
 };
 
+<<<<<<< HEAD
+=======
+static const struct attribute_group *input_polldev_attribute_groups[] = {
+	&input_polldev_attribute_group,
+	NULL
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * input_allocate_polled_device - allocate memory for polled device
  *
@@ -171,6 +179,94 @@ struct input_polled_dev *input_allocate_polled_device(void)
 }
 EXPORT_SYMBOL(input_allocate_polled_device);
 
+<<<<<<< HEAD
+=======
+struct input_polled_devres {
+	struct input_polled_dev *polldev;
+};
+
+static int devm_input_polldev_match(struct device *dev, void *res, void *data)
+{
+	struct input_polled_devres *devres = res;
+
+	return devres->polldev == data;
+}
+
+static void devm_input_polldev_release(struct device *dev, void *res)
+{
+	struct input_polled_devres *devres = res;
+	struct input_polled_dev *polldev = devres->polldev;
+
+	dev_dbg(dev, "%s: dropping reference/freeing %s\n",
+		__func__, dev_name(&polldev->input->dev));
+
+	input_put_device(polldev->input);
+	kfree(polldev);
+}
+
+static void devm_input_polldev_unregister(struct device *dev, void *res)
+{
+	struct input_polled_devres *devres = res;
+	struct input_polled_dev *polldev = devres->polldev;
+
+	dev_dbg(dev, "%s: unregistering device %s\n",
+		__func__, dev_name(&polldev->input->dev));
+	input_unregister_device(polldev->input);
+
+	/*
+	 * Note that we are still holding extra reference to the input
+	 * device so it will stick around until devm_input_polldev_release()
+	 * is called.
+	 */
+}
+
+/**
+ * devm_input_allocate_polled_device - allocate managed polled device
+ * @dev: device owning the polled device being created
+ *
+ * Returns prepared &struct input_polled_dev or %NULL.
+ *
+ * Managed polled input devices do not need to be explicitly unregistered
+ * or freed as it will be done automatically when owner device unbinds
+ * from * its driver (or binding fails). Once such managed polled device
+ * is allocated, it is ready to be set up and registered in the same
+ * fashion as regular polled input devices (using
+ * input_register_polled_device() function).
+ *
+ * If you want to manually unregister and free such managed polled devices,
+ * it can be still done by calling input_unregister_polled_device() and
+ * input_free_polled_device(), although it is rarely needed.
+ *
+ * NOTE: the owner device is set up as parent of input device and users
+ * should not override it.
+ */
+struct input_polled_dev *devm_input_allocate_polled_device(struct device *dev)
+{
+	struct input_polled_dev *polldev;
+	struct input_polled_devres *devres;
+
+	devres = devres_alloc(devm_input_polldev_release, sizeof(*devres),
+			      GFP_KERNEL);
+	if (!devres)
+		return NULL;
+
+	polldev = input_allocate_polled_device();
+	if (!polldev) {
+		devres_free(devres);
+		return NULL;
+	}
+
+	polldev->input->dev.parent = dev;
+	polldev->devres_managed = true;
+
+	devres->polldev = polldev;
+	devres_add(dev, devres);
+
+	return polldev;
+}
+EXPORT_SYMBOL(devm_input_allocate_polled_device);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * input_free_polled_device - free memory allocated for polled device
  * @dev: device to free
@@ -181,7 +277,16 @@ EXPORT_SYMBOL(input_allocate_polled_device);
 void input_free_polled_device(struct input_polled_dev *dev)
 {
 	if (dev) {
+<<<<<<< HEAD
 		input_free_device(dev->input);
+=======
+		if (dev->devres_managed)
+			WARN_ON(devres_destroy(dev->input->dev.parent,
+						devm_input_polldev_release,
+						devm_input_polldev_match,
+						dev));
+		input_put_device(dev->input);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(dev);
 	}
 }
@@ -199,15 +304,35 @@ EXPORT_SYMBOL(input_free_polled_device);
  */
 int input_register_polled_device(struct input_polled_dev *dev)
 {
+<<<<<<< HEAD
 	struct input_dev *input = dev->input;
 	int error;
 
 	input_set_drvdata(input, dev);
 	INIT_DELAYED_WORK(&dev->work, input_polled_device_work);
+=======
+	struct input_polled_devres *devres = NULL;
+	struct input_dev *input = dev->input;
+	int error;
+
+	if (dev->devres_managed) {
+		devres = devres_alloc(devm_input_polldev_unregister,
+				      sizeof(*devres), GFP_KERNEL);
+		if (!devres)
+			return -ENOMEM;
+
+		devres->polldev = dev;
+	}
+
+	input_set_drvdata(input, dev);
+	INIT_DELAYED_WORK(&dev->work, input_polled_device_work);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dev->poll_interval)
 		dev->poll_interval = 500;
 	if (!dev->poll_interval_max)
 		dev->poll_interval_max = dev->poll_interval;
+<<<<<<< HEAD
 	input->open = input_open_polled_device;
 	input->close = input_close_polled_device;
 
@@ -219,6 +344,17 @@ int input_register_polled_device(struct input_polled_dev *dev)
 				   &input_polldev_attribute_group);
 	if (error) {
 		input_unregister_device(input);
+=======
+
+	input->open = input_open_polled_device;
+	input->close = input_close_polled_device;
+
+	input->dev.groups = input_polldev_attribute_groups;
+
+	error = input_register_device(input);
+	if (error) {
+		devres_free(devres);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return error;
 	}
 
@@ -231,6 +367,15 @@ int input_register_polled_device(struct input_polled_dev *dev)
 	 */
 	input_get_device(input);
 
+<<<<<<< HEAD
+=======
+	if (dev->devres_managed) {
+		dev_dbg(input->dev.parent, "%s: registering %s with devres.\n",
+			__func__, dev_name(&input->dev));
+		devres_add(input->dev.parent, devres);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL(input_register_polled_device);
@@ -245,8 +390,16 @@ EXPORT_SYMBOL(input_register_polled_device);
  */
 void input_unregister_polled_device(struct input_polled_dev *dev)
 {
+<<<<<<< HEAD
 	sysfs_remove_group(&dev->input->dev.kobj,
 			   &input_polldev_attribute_group);
+=======
+	if (dev->devres_managed)
+		WARN_ON(devres_destroy(dev->input->dev.parent,
+					devm_input_polldev_unregister,
+					devm_input_polldev_match,
+					dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input_unregister_device(dev->input);
 }

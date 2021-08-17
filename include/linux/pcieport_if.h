@@ -21,9 +21,17 @@
 #define PCIE_PORT_SERVICE_HP		(1 << PCIE_PORT_SERVICE_HP_SHIFT)
 #define PCIE_PORT_SERVICE_VC_SHIFT	3	/* Virtual Channel */
 #define PCIE_PORT_SERVICE_VC		(1 << PCIE_PORT_SERVICE_VC_SHIFT)
+<<<<<<< HEAD
 
 struct pcie_device {
 	int 		irq;	    /* Service IRQ/MSI/MSI-X Vector */
+=======
+#define PCIE_PORT_SERVICE_DPC_SHIFT	4	/* Downstream Port Containment */
+#define PCIE_PORT_SERVICE_DPC		(1 << PCIE_PORT_SERVICE_DPC_SHIFT)
+
+struct pcie_device {
+	int		irq;	    /* Service IRQ/MSI/MSI-X Vector */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_dev *port;	    /* Root/Upstream/Downstream Port */
 	u32		service;    /* Port service this device represents */
 	void		*priv_data; /* Service Private Data */

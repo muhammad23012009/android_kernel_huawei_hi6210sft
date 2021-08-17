@@ -15,7 +15,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ctype.h>
@@ -118,16 +121,27 @@ kalmia_init_and_get_ethernet_addr(struct usbnet *dev, u8 *ethernet_addr)
 	status = kalmia_send_init_packet(dev, usb_buf, sizeof(init_msg_1)
 		/ sizeof(init_msg_1[0]), usb_buf, 24);
 	if (status != 0)
+<<<<<<< HEAD
 		return status;
+=======
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memcpy(usb_buf, init_msg_2, 12);
 	status = kalmia_send_init_packet(dev, usb_buf, sizeof(init_msg_2)
 		/ sizeof(init_msg_2[0]), usb_buf, 28);
 	if (status != 0)
+<<<<<<< HEAD
 		return status;
 
 	memcpy(ethernet_addr, usb_buf + 10, ETH_ALEN);
 
+=======
+		goto out;
+
+	memcpy(ethernet_addr, usb_buf + 10, ETH_ALEN);
+out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(usb_buf);
 	return status;
 }
@@ -152,7 +166,11 @@ kalmia_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	status = kalmia_init_and_get_ethernet_addr(dev, ethernet_addr);
 
+<<<<<<< HEAD
 	if (status < 0) {
+=======
+	if (status) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usb_set_intfdata(intf, NULL);
 		usb_driver_release_interface(driver_of(intf), intf);
 		return status;
@@ -221,12 +239,18 @@ done:
 		memset(skb_put(skb, padlen), 0, padlen);
 	}
 
+<<<<<<< HEAD
 	netdev_dbg(
 		dev->net,
 		"Sending package with length %i and padding %i. Header: %02x:%02x:%02x:%02x:%02x:%02x.",
 		content_len, padlen, header_start[0], header_start[1],
 		header_start[2], header_start[3], header_start[4],
 		header_start[5]);
+=======
+	netdev_dbg(dev->net,
+		"Sending package with length %i and padding %i. Header: %6phC.",
+		content_len, padlen, header_start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return skb;
 }
@@ -263,6 +287,7 @@ kalmia_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 				sizeof(EXPECTED_UNKNOWN_HEADER_1)) || !memcmp(
 				header_start, EXPECTED_UNKNOWN_HEADER_2,
 				sizeof(EXPECTED_UNKNOWN_HEADER_2))) {
+<<<<<<< HEAD
 				netdev_dbg(
 					dev->net,
 					"Received expected unknown frame header: %02x:%02x:%02x:%02x:%02x:%02x. Package length: %i\n",
@@ -278,17 +303,34 @@ kalmia_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 					header_start[0], header_start[1],
 					header_start[2], header_start[3],
 					header_start[4], header_start[5],
+=======
+				netdev_dbg(dev->net,
+					"Received expected unknown frame header: %6phC. Package length: %i\n",
+					header_start,
+					skb->len - KALMIA_HEADER_LENGTH);
+			}
+			else {
+				netdev_err(dev->net,
+					"Received unknown frame header: %6phC. Package length: %i\n",
+					header_start,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					skb->len - KALMIA_HEADER_LENGTH);
 				return 0;
 			}
 		}
 		else
+<<<<<<< HEAD
 			netdev_dbg(
 				dev->net,
 				"Received header: %02x:%02x:%02x:%02x:%02x:%02x. Package length: %i\n",
 				header_start[0], header_start[1], header_start[2],
 				header_start[3], header_start[4], header_start[5],
 				skb->len - KALMIA_HEADER_LENGTH);
+=======
+			netdev_dbg(dev->net,
+				"Received header: %6phC. Package length: %i\n",
+				header_start, skb->len - KALMIA_HEADER_LENGTH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* subtract start header and end header */
 		usb_packet_length = skb->len - (2 * KALMIA_HEADER_LENGTH);
@@ -310,12 +352,18 @@ kalmia_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 				sizeof(HEADER_END_OF_USB_PACKET)) == 0);
 			if (!is_last) {
 				header_start = skb->data + ether_packet_length;
+<<<<<<< HEAD
 				netdev_dbg(
 					dev->net,
 					"End header: %02x:%02x:%02x:%02x:%02x:%02x. Package length: %i\n",
 					header_start[0], header_start[1],
 					header_start[2], header_start[3],
 					header_start[4], header_start[5],
+=======
+				netdev_dbg(dev->net,
+					"End header: %6phC. Package length: %i\n",
+					header_start,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					skb->len - KALMIA_HEADER_LENGTH);
 			}
 		}

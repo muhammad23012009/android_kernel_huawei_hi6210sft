@@ -10,6 +10,7 @@
  * Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -20,10 +21,18 @@
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
+=======
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/platform_device.h>
+#include <linux/mfd/core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "mc13xxx.h"
 
 #define MC13XXX_IRQSTAT0	0
+<<<<<<< HEAD
 #define MC13XXX_IRQSTAT0_ADCDONEI	(1 << 0)
 #define MC13XXX_IRQSTAT0_ADCBISDONEI	(1 << 1)
 #define MC13XXX_IRQSTAT0_TSI		(1 << 2)
@@ -110,6 +119,11 @@
 #define MC13783_IRQMASK1_HSLM		MC13783_IRQSTAT1_HSLI
 #define MC13783_IRQMASK1_ALSPTHM	MC13783_IRQSTAT1_ALSPTHI
 #define MC13783_IRQMASK1_AHSSHORTM	MC13783_IRQSTAT1_AHSSHORTI
+=======
+#define MC13XXX_IRQMASK0	1
+#define MC13XXX_IRQSTAT1	3
+#define MC13XXX_IRQMASK1	4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MC13XXX_REVISION	7
 #define MC13XXX_REVISION_REVMETAL	(0x07 <<  0)
@@ -124,6 +138,12 @@
 #define MC34708_REVISION_FIN		(0x07 <<  6)
 #define MC34708_REVISION_FAB		(0x07 <<  9)
 
+<<<<<<< HEAD
+=======
+#define MC13XXX_PWRCTRL		15
+#define MC13XXX_PWRCTRL_WDIRESET	(1 << 12)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MC13XXX_ADC1		44
 #define MC13XXX_ADC1_ADEN		(1 << 0)
 #define MC13XXX_ADC1_RAND		(1 << 1)
@@ -136,19 +156,31 @@
 void mc13xxx_lock(struct mc13xxx *mc13xxx)
 {
 	if (!mutex_trylock(&mc13xxx->lock)) {
+<<<<<<< HEAD
 		dev_dbg(mc13xxx->dev, "wait for %s from %pf\n",
+=======
+		dev_dbg(mc13xxx->dev, "wait for %s from %ps\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__func__, __builtin_return_address(0));
 
 		mutex_lock(&mc13xxx->lock);
 	}
+<<<<<<< HEAD
 	dev_dbg(mc13xxx->dev, "%s from %pf\n",
+=======
+	dev_dbg(mc13xxx->dev, "%s from %ps\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__, __builtin_return_address(0));
 }
 EXPORT_SYMBOL(mc13xxx_lock);
 
 void mc13xxx_unlock(struct mc13xxx *mc13xxx)
 {
+<<<<<<< HEAD
 	dev_dbg(mc13xxx->dev, "%s from %pf\n",
+=======
+	dev_dbg(mc13xxx->dev, "%s from %ps\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__, __builtin_return_address(0));
 	mutex_unlock(&mc13xxx->lock);
 }
@@ -158,11 +190,14 @@ int mc13xxx_reg_read(struct mc13xxx *mc13xxx, unsigned int offset, u32 *val)
 {
 	int ret;
 
+<<<<<<< HEAD
 	BUG_ON(!mutex_is_locked(&mc13xxx->lock));
 
 	if (offset > MC13XXX_NUMREGS)
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = regmap_read(mc13xxx->regmap, offset, val);
 	dev_vdbg(mc13xxx->dev, "[0x%02x] -> 0x%06x\n", offset, *val);
 
@@ -172,11 +207,17 @@ EXPORT_SYMBOL(mc13xxx_reg_read);
 
 int mc13xxx_reg_write(struct mc13xxx *mc13xxx, unsigned int offset, u32 val)
 {
+<<<<<<< HEAD
 	BUG_ON(!mutex_is_locked(&mc13xxx->lock));
 
 	dev_vdbg(mc13xxx->dev, "[0x%02x] <- 0x%06x\n", offset, val);
 
 	if (offset > MC13XXX_NUMREGS || val > 0xffffff)
+=======
+	dev_vdbg(mc13xxx->dev, "[0x%02x] <- 0x%06x\n", offset, val);
+
+	if (val >= BIT(24))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	return regmap_write(mc13xxx->regmap, offset, val);
@@ -186,7 +227,10 @@ EXPORT_SYMBOL(mc13xxx_reg_write);
 int mc13xxx_reg_rmw(struct mc13xxx *mc13xxx, unsigned int offset,
 		u32 mask, u32 val)
 {
+<<<<<<< HEAD
 	BUG_ON(!mutex_is_locked(&mc13xxx->lock));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(val & ~mask);
 	dev_vdbg(mc13xxx->dev, "[0x%02x] <- 0x%06x (mask: 0x%06x)\n",
 			offset, val, mask);
@@ -197,6 +241,7 @@ EXPORT_SYMBOL(mc13xxx_reg_rmw);
 
 int mc13xxx_irq_mask(struct mc13xxx *mc13xxx, int irq)
 {
+<<<<<<< HEAD
 	int ret;
 	unsigned int offmask = irq < 24 ? MC13XXX_IRQMASK0 : MC13XXX_IRQMASK1;
 	u32 irqbit = 1 << (irq < 24 ? irq : irq - 24);
@@ -214,11 +259,19 @@ int mc13xxx_irq_mask(struct mc13xxx *mc13xxx, int irq)
 		return 0;
 
 	return mc13xxx_reg_write(mc13xxx, offmask, mask | irqbit);
+=======
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	disable_irq_nosync(virq);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(mc13xxx_irq_mask);
 
 int mc13xxx_irq_unmask(struct mc13xxx *mc13xxx, int irq)
 {
+<<<<<<< HEAD
 	int ret;
 	unsigned int offmask = irq < 24 ? MC13XXX_IRQMASK0 : MC13XXX_IRQMASK1;
 	u32 irqbit = 1 << (irq < 24 ? irq : irq - 24);
@@ -236,6 +289,13 @@ int mc13xxx_irq_unmask(struct mc13xxx *mc13xxx, int irq)
 		return 0;
 
 	return mc13xxx_reg_write(mc13xxx, offmask, mask & ~irqbit);
+=======
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	enable_irq(virq);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(mc13xxx_irq_unmask);
 
@@ -247,7 +307,11 @@ int mc13xxx_irq_status(struct mc13xxx *mc13xxx, int irq,
 	unsigned int offstat = irq < 24 ? MC13XXX_IRQSTAT0 : MC13XXX_IRQSTAT1;
 	u32 irqbit = 1 << (irq < 24 ? irq : irq - 24);
 
+<<<<<<< HEAD
 	if (irq < 0 || irq >= MC13XXX_NUM_IRQ)
+=======
+	if (irq < 0 || irq >= ARRAY_SIZE(mc13xxx->irqs))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	if (enabled) {
@@ -274,6 +338,7 @@ int mc13xxx_irq_status(struct mc13xxx *mc13xxx, int irq,
 }
 EXPORT_SYMBOL(mc13xxx_irq_status);
 
+<<<<<<< HEAD
 int mc13xxx_irq_ack(struct mc13xxx *mc13xxx, int irq)
 {
 	unsigned int offstat = irq < 24 ? MC13XXX_IRQSTAT0 : MC13XXX_IRQSTAT1;
@@ -321,11 +386,21 @@ int mc13xxx_irq_request(struct mc13xxx *mc13xxx, int irq,
 	}
 
 	return 0;
+=======
+int mc13xxx_irq_request(struct mc13xxx *mc13xxx, int irq,
+		irq_handler_t handler, const char *name, void *dev)
+{
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	return devm_request_threaded_irq(mc13xxx->dev, virq, NULL, handler,
+					 IRQF_ONESHOT, name, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(mc13xxx_irq_request);
 
 int mc13xxx_irq_free(struct mc13xxx *mc13xxx, int irq, void *dev)
 {
+<<<<<<< HEAD
 	int ret;
 	BUG_ON(!mutex_is_locked(&mc13xxx->lock));
 
@@ -339,11 +414,17 @@ int mc13xxx_irq_free(struct mc13xxx *mc13xxx, int irq, void *dev)
 
 	mc13xxx->irqhandler[irq] = NULL;
 	mc13xxx->irqdata[irq] = NULL;
+=======
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	devm_free_irq(mc13xxx->dev, virq, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 EXPORT_SYMBOL(mc13xxx_irq_free);
 
+<<<<<<< HEAD
 static inline irqreturn_t mc13xxx_irqhandler(struct mc13xxx *mc13xxx, int irq)
 {
 	return mc13xxx->irqhandler[irq](irq, mc13xxx->irqdata[irq]);
@@ -415,6 +496,8 @@ static irqreturn_t mc13xxx_irq_thread(int irq, void *data)
 	return IRQ_RETVAL(handled);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define maskval(reg, mask)	(((reg) & (mask)) >> __ffs(mask))
 static void mc13xxx_print_revision(struct mc13xxx *mc13xxx, u32 revision)
 {
@@ -483,8 +566,11 @@ static irqreturn_t mc13xxx_handler_adcdone(int irq, void *data)
 {
 	struct mc13xxx_adcdone_data *adcdone_data = data;
 
+<<<<<<< HEAD
 	mc13xxx_irq_ack(adcdone_data->mc13xxx, irq);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	complete_all(&adcdone_data->done);
 
 	return IRQ_HANDLED;
@@ -514,9 +600,18 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 
 	mc13xxx->adcflags |= MC13XXX_ADC_WORKING;
 
+<<<<<<< HEAD
 	mc13xxx_reg_read(mc13xxx, MC13XXX_ADC0, &old_adc0);
 
 	adc0 = MC13XXX_ADC0_ADINC1 | MC13XXX_ADC0_ADINC2;
+=======
+	ret = mc13xxx_reg_read(mc13xxx, MC13XXX_ADC0, &old_adc0);
+	if (ret)
+		goto out;
+
+	adc0 = MC13XXX_ADC0_ADINC1 | MC13XXX_ADC0_ADINC2 |
+	       MC13XXX_ADC0_CHRGRAWDIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adc1 = MC13XXX_ADC1_ADEN | MC13XXX_ADC1_ADTRIGIGN | MC13XXX_ADC1_ASC;
 
 	if (channel > 7)
@@ -552,7 +647,10 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 	dev_dbg(mc13xxx->dev, "%s: request irq\n", __func__);
 	mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
 			mc13xxx_handler_adcdone, __func__, &adcdone_data);
+<<<<<<< HEAD
 	mc13xxx_irq_ack(mc13xxx, MC13XXX_IRQ_ADCDONE);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, adc0);
 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC1, adc1);
@@ -607,7 +705,12 @@ static int mc13xxx_add_subdevice_pdata(struct mc13xxx *mc13xxx,
 	if (!cell.name)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	return mfd_add_devices(mc13xxx->dev, -1, &cell, 1, NULL, 0, NULL);
+=======
+	return mfd_add_devices(mc13xxx->dev, -1, &cell, 1, NULL, 0,
+			       regmap_irq_get_domain(mc13xxx->irq_data));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mc13xxx_add_subdevice(struct mc13xxx *mc13xxx, const char *format)
@@ -623,6 +726,7 @@ static int mc13xxx_probe_flags_dt(struct mc13xxx *mc13xxx)
 	if (!np)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (of_get_property(np, "fsl,mc13xxx-uses-adc", NULL))
 		mc13xxx->flags |= MC13XXX_USE_ADC;
 
@@ -633,6 +737,18 @@ static int mc13xxx_probe_flags_dt(struct mc13xxx *mc13xxx)
 		mc13xxx->flags |= MC13XXX_USE_RTC;
 
 	if (of_get_property(np, "fsl,mc13xxx-uses-touch", NULL))
+=======
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-adc"))
+		mc13xxx->flags |= MC13XXX_USE_ADC;
+
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-codec"))
+		mc13xxx->flags |= MC13XXX_USE_CODEC;
+
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-rtc"))
+		mc13xxx->flags |= MC13XXX_USE_RTC;
+
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-touch"))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mc13xxx->flags |= MC13XXX_USE_TOUCHSCREEN;
 
 	return 0;
@@ -644,6 +760,7 @@ static inline int mc13xxx_probe_flags_dt(struct mc13xxx *mc13xxx)
 }
 #endif
 
+<<<<<<< HEAD
 int mc13xxx_common_init(struct mc13xxx *mc13xxx,
 		struct mc13xxx_platform_data *pdata, int irq)
 {
@@ -680,10 +797,55 @@ err_revision:
 	mc13xxx->irq = irq;
 
 	mc13xxx_unlock(mc13xxx);
+=======
+int mc13xxx_common_init(struct device *dev)
+{
+	struct mc13xxx_platform_data *pdata = dev_get_platdata(dev);
+	struct mc13xxx *mc13xxx = dev_get_drvdata(dev);
+	u32 revision;
+	int i, ret;
+
+	mc13xxx->dev = dev;
+
+	ret = mc13xxx_reg_read(mc13xxx, MC13XXX_REVISION, &revision);
+	if (ret)
+		return ret;
+
+	mc13xxx->variant->print_revision(mc13xxx, revision);
+
+	ret = mc13xxx_reg_rmw(mc13xxx, MC13XXX_PWRCTRL,
+			MC13XXX_PWRCTRL_WDIRESET, MC13XXX_PWRCTRL_WDIRESET);
+	if (ret)
+		return ret;
+
+	for (i = 0; i < ARRAY_SIZE(mc13xxx->irqs); i++) {
+		mc13xxx->irqs[i].reg_offset = i / MC13XXX_IRQ_PER_REG;
+		mc13xxx->irqs[i].mask = BIT(i % MC13XXX_IRQ_PER_REG);
+	}
+
+	mc13xxx->irq_chip.name = dev_name(dev);
+	mc13xxx->irq_chip.status_base = MC13XXX_IRQSTAT0;
+	mc13xxx->irq_chip.mask_base = MC13XXX_IRQMASK0;
+	mc13xxx->irq_chip.ack_base = MC13XXX_IRQSTAT0;
+	mc13xxx->irq_chip.irq_reg_stride = MC13XXX_IRQSTAT1 - MC13XXX_IRQSTAT0;
+	mc13xxx->irq_chip.init_ack_masked = true;
+	mc13xxx->irq_chip.use_ack = true;
+	mc13xxx->irq_chip.num_regs = MC13XXX_IRQ_REG_CNT;
+	mc13xxx->irq_chip.irqs = mc13xxx->irqs;
+	mc13xxx->irq_chip.num_irqs = ARRAY_SIZE(mc13xxx->irqs);
+
+	ret = regmap_add_irq_chip(mc13xxx->regmap, mc13xxx->irq, IRQF_ONESHOT,
+				  0, &mc13xxx->irq_chip, &mc13xxx->irq_data);
+	if (ret)
+		return ret;
+
+	mutex_init(&mc13xxx->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mc13xxx_probe_flags_dt(mc13xxx) < 0 && pdata)
 		mc13xxx->flags = pdata->flags;
 
+<<<<<<< HEAD
 	if (mc13xxx->flags & MC13XXX_USE_ADC)
 		mc13xxx_add_subdevice(mc13xxx, "%s-adc");
 
@@ -698,6 +860,8 @@ err_revision:
 		mc13xxx_add_subdevice_pdata(mc13xxx, "%s-ts",
 				&pdata->touch, sizeof(pdata->touch));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata) {
 		mc13xxx_add_subdevice_pdata(mc13xxx, "%s-regulator",
 			&pdata->regulators, sizeof(pdata->regulators));
@@ -705,16 +869,41 @@ err_revision:
 				pdata->leds, sizeof(*pdata->leds));
 		mc13xxx_add_subdevice_pdata(mc13xxx, "%s-pwrbutton",
 				pdata->buttons, sizeof(*pdata->buttons));
+<<<<<<< HEAD
+=======
+		if (mc13xxx->flags & MC13XXX_USE_CODEC)
+			mc13xxx_add_subdevice_pdata(mc13xxx, "%s-codec",
+				pdata->codec, sizeof(*pdata->codec));
+		if (mc13xxx->flags & MC13XXX_USE_TOUCHSCREEN)
+			mc13xxx_add_subdevice_pdata(mc13xxx, "%s-ts",
+				&pdata->touch, sizeof(pdata->touch));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		mc13xxx_add_subdevice(mc13xxx, "%s-regulator");
 		mc13xxx_add_subdevice(mc13xxx, "%s-led");
 		mc13xxx_add_subdevice(mc13xxx, "%s-pwrbutton");
+<<<<<<< HEAD
 	}
 
+=======
+		if (mc13xxx->flags & MC13XXX_USE_CODEC)
+			mc13xxx_add_subdevice(mc13xxx, "%s-codec");
+		if (mc13xxx->flags & MC13XXX_USE_TOUCHSCREEN)
+			mc13xxx_add_subdevice(mc13xxx, "%s-ts");
+	}
+
+	if (mc13xxx->flags & MC13XXX_USE_ADC)
+		mc13xxx_add_subdevice(mc13xxx, "%s-adc");
+
+	if (mc13xxx->flags & MC13XXX_USE_RTC)
+		mc13xxx_add_subdevice(mc13xxx, "%s-rtc");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mc13xxx_common_init);
 
+<<<<<<< HEAD
 void mc13xxx_common_cleanup(struct mc13xxx *mc13xxx)
 {
 	free_irq(mc13xxx->irq, mc13xxx);
@@ -722,6 +911,19 @@ void mc13xxx_common_cleanup(struct mc13xxx *mc13xxx)
 	mfd_remove_devices(mc13xxx->dev);
 }
 EXPORT_SYMBOL_GPL(mc13xxx_common_cleanup);
+=======
+int mc13xxx_common_exit(struct device *dev)
+{
+	struct mc13xxx *mc13xxx = dev_get_drvdata(dev);
+
+	mfd_remove_devices(dev);
+	regmap_del_irq_chip(mc13xxx->irq, mc13xxx->irq_data);
+	mutex_destroy(&mc13xxx->lock);
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(mc13xxx_common_exit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Core driver for Freescale MC13XXX PMIC");
 MODULE_AUTHOR("Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>");

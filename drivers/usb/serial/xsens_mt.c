@@ -9,7 +9,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/tty.h>
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -42,6 +45,7 @@ static const struct usb_device_id id_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
+<<<<<<< HEAD
 static int has_required_endpoints(const struct usb_host_interface *interface)
 {
 	__u8 i;
@@ -64,6 +68,15 @@ static int xsens_mt_probe(struct usb_serial *serial,
 	if (!has_required_endpoints(serial->interface->cur_altsetting))
 		return -ENODEV;
 	return 0;
+=======
+static int xsens_mt_probe(struct usb_serial *serial,
+					const struct usb_device_id *id)
+{
+	if (serial->interface->cur_altsetting->desc.bInterfaceNumber == 1)
+		return 0;
+
+	return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct usb_serial_driver xsens_mt_device = {
@@ -83,4 +96,9 @@ static struct usb_serial_driver * const serial_drivers[] = {
 
 module_usb_serial_driver(serial_drivers, id_table);
 
+<<<<<<< HEAD
+=======
+MODULE_AUTHOR("Frans Klaver <frans.klaver@xsens.com>");
+MODULE_DESCRIPTION("USB-serial driver for Xsens motion trackers");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

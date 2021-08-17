@@ -26,11 +26,15 @@
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
 	unsigned long		flags;
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mm_segment_t		addr_limit;	/* thread address space */
 	int			preempt_count;	/* 0 => preemptable, <0 => BUG */
 	__u32			cpu;		/* should always be 0 on m68k */
 	unsigned long		tp_value;	/* thread pointer */
+<<<<<<< HEAD
 	struct restart_block    restart_block;
 };
 #endif /* __ASSEMBLY__ */
@@ -46,6 +50,16 @@ struct thread_info {
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+};
+#endif /* __ASSEMBLY__ */
+
+#define INIT_THREAD_INFO(tsk)			\
+{						\
+	.task		= &tsk,			\
+	.addr_limit	= KERNEL_DS,		\
+	.preempt_count	= INIT_PREEMPT_COUNT,	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_stack		(init_thread_union.stack)

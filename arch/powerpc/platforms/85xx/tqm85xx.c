@@ -122,7 +122,11 @@ static const char * const board[] __initconst = {
  */
 static int __init tqm85xx_probe(void)
 {
+<<<<<<< HEAD
 	return of_flat_dt_match(of_get_flat_dt_root(), board);
+=======
+	return of_device_compatible_match(of_root, board);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(tqm85xx) {
@@ -132,7 +136,10 @@ define_machine(tqm85xx) {
 	.init_IRQ		= tqm85xx_pic_init,
 	.show_cpuinfo		= tqm85xx_show_cpuinfo,
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.calibrate_decr		= generic_calibrate_decr,
 	.progress		= udbg_progress,
 };

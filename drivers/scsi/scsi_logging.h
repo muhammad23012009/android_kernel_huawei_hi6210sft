@@ -51,6 +51,10 @@ do {								\
 		} while (0);					\
 } while (0)
 #else
+<<<<<<< HEAD
+=======
+#define SCSI_LOG_LEVEL(SHIFT, BITS) 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SCSI_CHECK_LOGGING(SHIFT, BITS, LEVEL, CMD)
 #endif /* CONFIG_SCSI_LOGGING */
 

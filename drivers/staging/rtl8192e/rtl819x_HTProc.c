@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -34,13 +37,21 @@ u16 MCS_DATA_RATE[2][2][77] = {
 	 468, 520, 0, 78, 104, 130, 117, 156, 195, 104, 130, 130, 156, 182,
 	 182, 208, 156, 195, 195, 234, 273, 273, 312, 130, 156, 181, 156,
 	 181, 208, 234, 208, 234, 260, 260, 286, 195, 234, 273, 234, 273,
+<<<<<<< HEAD
 	 312, 351, 312, 351, 390, 390, 429} ,
+=======
+	 312, 351, 312, 351, 390, 390, 429},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{14, 29, 43, 58, 87, 116, 130, 144, 29, 58, 87, 116, 173, 231, 260, 289,
 	 43, 87, 130, 173, 260, 347, 390, 433, 58, 116, 173, 231, 347, 462, 520,
 	 578, 0, 87, 116, 144, 130, 173, 217, 116, 144, 144, 173, 202, 202, 231,
 	 173, 217, 217, 260, 303, 303, 347, 144, 173, 202, 173, 202, 231, 260,
 	 231, 260, 289, 289, 318, 217, 260, 303, 260, 303, 347, 390, 347, 390,
+<<<<<<< HEAD
 	 433, 433, 477} } ,
+=======
+	 433, 433, 477} },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{{27, 54, 81, 108, 162, 216, 243, 270, 54, 108, 162, 216, 324, 432, 486,
 	 540, 81, 162, 243, 324, 486, 648, 729, 810, 108, 216, 324, 432, 648,
 	 864, 972, 1080, 12, 162, 216, 270, 243, 324, 405, 216, 270, 270, 324,
@@ -117,6 +128,7 @@ void HTUpdateDefaultSetting(struct rtllib_device *ieee)
 	pHTInfo->RxReorderPendingTime = 30;
 }
 
+<<<<<<< HEAD
 void HTDebugHTCapability(u8 *CapIE, u8 *TitleString)
 {
 
@@ -273,6 +285,9 @@ u16 HTHalfMcsToDataRate(struct rtllib_device *ieee, u8 nMcsRate)
 
 
 u16 HTMcsToDataRate(struct rtllib_device *ieee, u8 nMcsRate)
+=======
+static u16 HTMcsToDataRate(struct rtllib_device *ieee, u8 nMcsRate)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct rt_hi_throughput *pHTInfo = ieee->pHTInfo;
 
@@ -290,6 +305,7 @@ u16  TxCountToDataRate(struct rtllib_device *ieee, u8 nDataRate)
 	u8	is40MHz = 0;
 	u8	isShortGI = 0;
 
+<<<<<<< HEAD
 	if (nDataRate < 12) {
 		return CCKOFDMRate[nDataRate];
 	} else {
@@ -309,6 +325,24 @@ u16  TxCountToDataRate(struct rtllib_device *ieee, u8 nDataRate)
 		}
 		return MCS_DATA_RATE[is40MHz][isShortGI][nDataRate&0xf];
 	}
+=======
+	if (nDataRate < 12)
+		return CCKOFDMRate[nDataRate];
+	if (nDataRate >= 0x10 && nDataRate <= 0x1f) {
+		is40MHz = 0;
+		isShortGI = 0;
+	} else if (nDataRate >= 0x20  && nDataRate <= 0x2f) {
+		is40MHz = 1;
+		isShortGI = 0;
+	} else if (nDataRate >= 0x30  && nDataRate <= 0x3f) {
+		is40MHz = 0;
+		isShortGI = 1;
+	} else if (nDataRate >= 0x40  && nDataRate <= 0x4f) {
+		is40MHz = 1;
+		isShortGI = 1;
+	}
+	return MCS_DATA_RATE[is40MHz][isShortGI][nDataRate&0xf];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 bool IsHTHalfNmodeAPs(struct rtllib_device *ieee)
@@ -340,6 +374,10 @@ static void HTIOTPeerDetermine(struct rtllib_device *ieee)
 {
 	struct rt_hi_throughput *pHTInfo = ieee->pHTInfo;
 	struct rtllib_network *net = &ieee->current_network;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (net->bssht.bdRT2RTAggregation) {
 		pHTInfo->IOTPeer = HT_IOT_PEER_REALTEK;
 		if (net->bssht.RT2RT_HT_Mode & RT_HT_CAP_USE_92SE)
@@ -374,8 +412,12 @@ static void HTIOTPeerDetermine(struct rtllib_device *ieee)
 	else
 		pHTInfo->IOTPeer = HT_IOT_PEER_UNKNOWN;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG(RTLLIB_DL_IOT, "Joseph debug!! IOTPEER: %x\n",
 		     pHTInfo->IOTPeer);
+=======
+	netdev_dbg(ieee->dev, "IOTPEER: %x\n", pHTInfo->IOTPeer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u8 HTIOTActIsDisableMCS14(struct rtllib_device *ieee, u8 *PeerMacAddr)
@@ -386,9 +428,13 @@ static u8 HTIOTActIsDisableMCS14(struct rtllib_device *ieee, u8 *PeerMacAddr)
 
 static bool HTIOTActIsDisableMCS15(struct rtllib_device *ieee)
 {
+<<<<<<< HEAD
 	bool retValue = false;
 
 	return retValue;
+=======
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool HTIOTActIsDisableMCSTwoSpatialStream(struct rtllib_device *ieee)
@@ -396,7 +442,12 @@ static bool HTIOTActIsDisableMCSTwoSpatialStream(struct rtllib_device *ieee)
 	return false;
 }
 
+<<<<<<< HEAD
 static u8 HTIOTActIsDisableEDCATurbo(struct rtllib_device *ieee, u8 *PeerMacAddr)
+=======
+static u8 HTIOTActIsDisableEDCATurbo(struct rtllib_device *ieee,
+				     u8 *PeerMacAddr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return false;
 }
@@ -425,6 +476,10 @@ static u8 HTIOTActIsCCDFsync(struct rtllib_device *ieee)
 static void HTIOTActDetermineRaFunc(struct rtllib_device *ieee, bool bPeerRx2ss)
 {
 	struct rt_hi_throughput *pHTInfo = ieee->pHTInfo;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pHTInfo->IOTRaFunc &= HT_IOT_RAFUNC_DISABLE_ALL;
 
 	if (pHTInfo->IOTPeer == HT_IOT_PEER_RALINK && !bPeerRx2ss)
@@ -449,14 +504,23 @@ void HTConstructCapabilityElement(struct rtllib_device *ieee, u8 *posHTCap,
 	struct ht_capab_ele *pCapELE = NULL;
 
 	if ((posHTCap == NULL) || (pHT == NULL)) {
+<<<<<<< HEAD
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "posHTCap or pHTInfo can't be "
 			     "null in HTConstructCapabilityElement()\n");
+=======
+		netdev_warn(ieee->dev,
+			    "%s(): posHTCap and pHTInfo are null\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	memset(posHTCap, 0, *len);
 
 	if ((bAssoc) && (pHT->ePeerHTSpecVer == HT_SPEC_VER_EWC)) {
 		u8	EWC11NHTCap[] = {0x00, 0x90, 0x4c, 0x33};
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(posHTCap, EWC11NHTCap, sizeof(EWC11NHTCap));
 		pCapELE = (struct ht_capab_ele *)&(posHTCap[4]);
 		*len = 30 + 2;
@@ -485,9 +549,15 @@ void HTConstructCapabilityElement(struct rtllib_device *ieee, u8 *posHTCap,
 	pCapELE->LSigTxopProtect = 0;
 
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG(RTLLIB_DL_HT, "TX HT cap/info ele BW=%d MaxAMSDUSize:%d "
 		     "DssCCk:%d\n", pCapELE->ChlWidth, pCapELE->MaxAMSDUSize,
 		     pCapELE->DssCCk);
+=======
+	netdev_dbg(ieee->dev,
+		   "TX HT cap/info ele BW=%d MaxAMSDUSize:%d DssCCk:%d\n",
+		   pCapELE->ChlWidth, pCapELE->MaxAMSDUSize, pCapELE->DssCCk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (IsEncrypt) {
 		pCapELE->MPDUDensity	= 7;
@@ -521,7 +591,10 @@ void HTConstructCapabilityElement(struct rtllib_device *ieee, u8 *posHTCap,
 			pCapELE->MCS[1] = 0;
 		}
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void HTConstructInfoElement(struct rtllib_device *ieee, u8 *posHTInfo,
@@ -529,9 +602,17 @@ void HTConstructInfoElement(struct rtllib_device *ieee, u8 *posHTInfo,
 {
 	struct rt_hi_throughput *pHT = ieee->pHTInfo;
 	struct ht_info_ele *pHTInfoEle = (struct ht_info_ele *)posHTInfo;
+<<<<<<< HEAD
 	if ((posHTInfo == NULL) || (pHTInfoEle == NULL)) {
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "posHTInfo or pHTInfoEle can't be "
 			     "null in HTConstructInfoElement()\n");
+=======
+
+	if ((posHTInfo == NULL) || (pHTInfoEle == NULL)) {
+		netdev_warn(ieee->dev,
+			    "%s(): posHTInfo and pHTInfoEle are null\n",
+			    __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -564,15 +645,22 @@ void HTConstructInfoElement(struct rtllib_device *ieee, u8 *posHTInfo,
 	} else {
 		*len = 0;
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void HTConstructRT2RTAggElement(struct rtllib_device *ieee, u8 *posRT2RTAgg,
 				u8 *len)
 {
 	if (posRT2RTAgg == NULL) {
+<<<<<<< HEAD
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "posRT2RTAgg can't be null in "
 			     "HTConstructRT2RTAggElement()\n");
+=======
+		netdev_warn(ieee->dev, "%s(): posRT2RTAgg is null\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	memset(posRT2RTAgg, 0, *len);
@@ -588,16 +676,25 @@ void HTConstructRT2RTAggElement(struct rtllib_device *ieee, u8 *posRT2RTAgg,
 		*posRT2RTAgg |= RT_HT_CAP_USE_WOW;
 
 	*len = 6 + 2;
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u8 HT_PickMCSRate(struct rtllib_device *ieee, u8 *pOperateMCS)
 {
 	u8 i;
+<<<<<<< HEAD
 	if (pOperateMCS == NULL) {
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "pOperateMCS can't be null"
 			     " in HT_PickMCSRate()\n");
+=======
+
+	if (pOperateMCS == NULL) {
+		netdev_warn(ieee->dev, "%s(): pOperateMCS is null\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	}
 
@@ -629,9 +726,17 @@ u8 HTGetHighestMCSRate(struct rtllib_device *ieee, u8 *pMCSRateSet,
 	u8		bitMap;
 	u8		mcsRate = 0;
 	u8		availableMcsRate[16];
+<<<<<<< HEAD
 	if (pMCSRateSet == NULL || pMCSFilter == NULL) {
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "pMCSRateSet or pMCSFilter can't "
 			     "be null in HTGetHighestMCSRate()\n");
+=======
+
+	if (pMCSRateSet == NULL || pMCSFilter == NULL) {
+		netdev_warn(ieee->dev,
+			    "%s(): pMCSRateSet and pMCSFilter are null\n",
+			    __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	}
 	for (i = 0; i < 16; i++)
@@ -653,14 +758,23 @@ u8 HTGetHighestMCSRate(struct rtllib_device *ieee, u8 *pMCSRateSet,
 					    HTMcsToDataRate(ieee, mcsRate))
 						mcsRate = (8*i+j);
 				}
+<<<<<<< HEAD
 				bitMap = bitMap>>1;
+=======
+				bitMap >>= 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
 	return mcsRate | 0x80;
 }
 
+<<<<<<< HEAD
 u8 HTFilterMCSRate(struct rtllib_device *ieee, u8 *pSupportMCS, u8 *pOperateMCS)
+=======
+static u8 HTFilterMCSRate(struct rtllib_device *ieee, u8 *pSupportMCS,
+			  u8 *pOperateMCS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 
 	u8 i;
@@ -696,11 +810,18 @@ void HTOnAssocRsp(struct rtllib_device *ieee)
 	static u8 EWC11NHTInfo[] = {0x00, 0x90, 0x4c, 0x34};
 
 	if (pHTInfo->bCurrentHTSupport == false) {
+<<<<<<< HEAD
 		RTLLIB_DEBUG(RTLLIB_DL_ERR, "<=== HTOnAssocRsp(): "
 			     "HT_DISABLE\n");
 		return;
 	}
 	RTLLIB_DEBUG(RTLLIB_DL_HT, "===> HTOnAssocRsp_wq(): HT_ENABLE\n");
+=======
+		netdev_warn(ieee->dev, "%s(): HT_DISABLE\n", __func__);
+		return;
+	}
+	netdev_dbg(ieee->dev, "%s(): HT_ENABLE\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!memcmp(pHTInfo->PeerHTCapBuf, EWC11NHTCap, sizeof(EWC11NHTCap)))
 		pPeerHTCap = (struct ht_capab_ele *)(&pHTInfo->PeerHTCapBuf[4]);
@@ -713,8 +834,16 @@ void HTOnAssocRsp(struct rtllib_device *ieee)
 	else
 		pPeerHTInfo = (struct ht_info_ele *)(pHTInfo->PeerHTInfoBuf);
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_DATA(RTLLIB_DL_DATA | RTLLIB_DL_HT, pPeerHTCap,
 			  sizeof(struct ht_capab_ele));
+=======
+
+#ifdef VERBOSE_DEBUG
+	print_hex_dump_bytes("HTOnAssocRsp(): ", DUMP_PREFIX_NONE,
+			     pPeerHTCap, sizeof(struct ht_capab_ele));
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HTSetConnectBwMode(ieee, (enum ht_channel_width)(pPeerHTCap->ChlWidth),
 			  (enum ht_extchnl_offset)(pPeerHTInfo->ExtChlOffset));
 	pHTInfo->bCurTxBW40MHz = ((pPeerHTInfo->RecommemdedTxWidth == 1) ?
@@ -805,7 +934,11 @@ void HTInitializeHTInfo(struct rtllib_device *ieee)
 {
 	struct rt_hi_throughput *pHTInfo = ieee->pHTInfo;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG(RTLLIB_DL_HT, "===========>%s()\n", __func__);
+=======
+	netdev_vdbg(ieee->dev, "%s()\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pHTInfo->bCurrentHTSupport = false;
 
 	pHTInfo->bCurBW40MHz = false;
@@ -832,7 +965,10 @@ void HTInitializeHTInfo(struct rtllib_device *ieee)
 		sizeof(pHTInfo->PeerHTInfoBuf));
 
 	pHTInfo->bSwBwInProgress = false;
+<<<<<<< HEAD
 	pHTInfo->ChnlOp = CHNLOP_NONE;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pHTInfo->ePeerHTSpecVer = HT_SPEC_VER_IEEE;
 
@@ -846,6 +982,10 @@ void HTInitializeHTInfo(struct rtllib_device *ieee)
 
 	{
 		u8 *RegHTSuppRateSets = &(ieee->RegHTSuppRateSet[0]);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		RegHTSuppRateSets[0] = 0xFF;
 		RegHTSuppRateSets[1] = 0xFF;
 		RegHTSuppRateSets[4] = 0x01;
@@ -874,9 +1014,16 @@ void HTResetSelfAndSavePeerSetting(struct rtllib_device *ieee,
 	struct rt_hi_throughput *pHTInfo = ieee->pHTInfo;
 	u8	bIOTAction = 0;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG(RTLLIB_DL_HT, "==============>%s()\n", __func__);
 	/* unmark bEnableHT flag here is the same reason why unmarked in
 	 * function rtllib_softmac_new_net. WB 2008.09.10*/
+=======
+	netdev_vdbg(ieee->dev, "%s()\n", __func__);
+	/* unmark bEnableHT flag here is the same reason why unmarked in
+	 * function rtllib_softmac_new_net. WB 2008.09.10
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pNetwork->bssht.bdSupportHT) {
 		pHTInfo->bCurrentHTSupport = true;
 		pHTInfo->ePeerHTSpecVer = pNetwork->bssht.bdHTSpecVer;
@@ -991,15 +1138,22 @@ void HTUseDefaultSetting(struct rtllib_device *ieee)
 	} else {
 		pHTInfo->bCurrentHTSupport = false;
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 u8 HTCCheck(struct rtllib_device *ieee, u8 *pFrame)
 {
 	if (ieee->pHTInfo->bCurrentHTSupport) {
 		if ((IsQoSDataFrame(pFrame) && Frame_Order(pFrame)) == 1) {
+<<<<<<< HEAD
 			RTLLIB_DEBUG(RTLLIB_DL_HT, "HT CONTROL FILED "
 				     "EXIST!!\n");
+=======
+			netdev_dbg(ieee->dev, "HT CONTROL FILED EXIST!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return true;
 		}
 	}
@@ -1010,7 +1164,12 @@ static void HTSetConnectBwModeCallback(struct rtllib_device *ieee)
 {
 	struct rt_hi_throughput *pHTInfo = ieee->pHTInfo;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG(RTLLIB_DL_HT, "======>%s()\n", __func__);
+=======
+	netdev_vdbg(ieee->dev, "%s()\n", __func__);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pHTInfo->bCurBW40MHz) {
 		if (pHTInfo->CurSTAExtChnlOffset == HT_EXTCHNL_OFFSET_UPPER)
 			ieee->set_chan(ieee->dev,
@@ -1047,7 +1206,11 @@ void HTSetConnectBwMode(struct rtllib_device *ieee,
 		Bandwidth = HT_CHANNEL_WIDTH_20;
 
 	if (pHTInfo->bSwBwInProgress) {
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: bSwBwInProgress!!\n", __func__);
+=======
+		pr_info("%s: bSwBwInProgress!!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	if (Bandwidth == HT_CHANNEL_WIDTH_20_40) {
@@ -1067,7 +1230,11 @@ void HTSetConnectBwMode(struct rtllib_device *ieee,
 		pHTInfo->CurSTAExtChnlOffset = HT_EXTCHNL_OFFSET_NO_EXT;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s():pHTInfo->bCurBW40MHz:%x\n", __func__,
+=======
+	pr_info("%s():pHTInfo->bCurBW40MHz:%x\n", __func__,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       pHTInfo->bCurBW40MHz);
 
 	pHTInfo->bSwBwInProgress = true;

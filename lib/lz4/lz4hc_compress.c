@@ -131,7 +131,11 @@ static inline int lz4hc_insertandfindbestmatch(struct lz4hc_data *hc4,
 #endif
 	int nbattempts = MAX_NB_ATTEMPTS;
 	size_t repl = 0, ml = 0;
+<<<<<<< HEAD
 	u16 delta;
+=======
+	u16 delta = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* HC4 match finder */
 	lz4hc_insert(hc4, ip);
@@ -533,7 +537,13 @@ int lz4hc_compress(const unsigned char *src, size_t src_len,
 exit:
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(lz4hc_compress);
 
 MODULE_LICENSE("GPL");
+=======
+EXPORT_SYMBOL(lz4hc_compress);
+
+MODULE_LICENSE("Dual BSD/GPL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("LZ4HC compressor");

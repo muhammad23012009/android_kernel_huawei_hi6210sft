@@ -27,6 +27,7 @@ struct pvr2_hdw;
 int pvr2_eeprom_analyze(struct pvr2_hdw *);
 
 #endif /* __PVRUSB2_EEPROM_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -37,3 +38,5 @@ int pvr2_eeprom_analyze(struct pvr2_hdw *);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

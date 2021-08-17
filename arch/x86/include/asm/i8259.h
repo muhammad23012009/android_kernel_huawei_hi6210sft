@@ -2,6 +2,10 @@
 #define _ASM_X86_I8259_H
 
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <asm/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern unsigned int cached_irq_mask;
 
@@ -60,6 +64,10 @@ struct legacy_pic {
 	void (*mask_all)(void);
 	void (*restore_mask)(void);
 	void (*init)(int auto_eoi);
+<<<<<<< HEAD
+=======
+	int (*probe)(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*irq_pending)(unsigned int irq);
 	void (*make_irq)(unsigned int irq);
 };
@@ -67,4 +75,17 @@ struct legacy_pic {
 extern struct legacy_pic *legacy_pic;
 extern struct legacy_pic null_legacy_pic;
 
+<<<<<<< HEAD
+=======
+static inline bool has_legacy_pic(void)
+{
+	return legacy_pic != &null_legacy_pic;
+}
+
+static inline int nr_legacy_irqs(void)
+{
+	return legacy_pic->nr_legacy_irqs;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_X86_I8259_H */

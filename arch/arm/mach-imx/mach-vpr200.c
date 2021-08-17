@@ -29,11 +29,19 @@
 #include <asm/mach/time.h>
 
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/at24.h>
+=======
+#include <linux/platform_data/at24.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/mc13xxx.h>
 
 #include "common.h"
 #include "devices-imx35.h"
+<<<<<<< HEAD
+=======
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hardware.h"
 #include "iomux-mx35.h"
 
@@ -160,7 +168,11 @@ static struct i2c_board_info vpr200_i2c_devices[] = {
 	}
 };
 
+<<<<<<< HEAD
 static iomux_v3_cfg_t vpr200_pads[] = {
+=======
+static const iomux_v3_cfg_t vpr200_pads[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* UART1 */
 	MX35_PAD_TXD1__UART1_TXD_MUX,
 	MX35_PAD_RXD1__UART1_RXD_MUX,
@@ -267,6 +279,25 @@ static void __init vpr200_board_init(void)
 
 	imx35_add_fec(NULL);
 	imx35_add_imx2_wdt();
+<<<<<<< HEAD
+=======
+
+	imx35_add_imx_uart0(NULL);
+	imx35_add_imx_uart2(NULL);
+
+	imx35_add_ipu_core();
+	imx35_add_mx3_sdc_fb(&mx3fb_pdata);
+
+	imx35_add_fsl_usb2_udc(&otg_device_pdata);
+	imx35_add_mxc_ehci_hs(&usb_host_pdata);
+
+	imx35_add_mxc_nand(&vpr200_nand_board_info);
+	imx35_add_sdhci_esdhc_imx(0, NULL);
+}
+
+static void __init vpr200_late_init(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx_add_gpio_keys(&vpr200_gpio_keys_data);
 
 	platform_add_devices(devices, ARRAY_SIZE(devices));
@@ -281,6 +312,7 @@ static void __init vpr200_board_init(void)
 	else
 		gpio_direction_input(GPIO_PMIC_INT);
 
+<<<<<<< HEAD
 	imx35_add_imx_uart0(NULL);
 	imx35_add_imx_uart2(NULL);
 
@@ -293,6 +325,8 @@ static void __init vpr200_board_init(void)
 	imx35_add_mxc_nand(&vpr200_nand_board_info);
 	imx35_add_sdhci_esdhc_imx(0, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vpr200_i2c_devices[1].irq = gpio_to_irq(GPIO_PMIC_INT);
 	i2c_register_board_info(0, vpr200_i2c_devices,
 			ARRAY_SIZE(vpr200_i2c_devices));
@@ -310,8 +344,14 @@ MACHINE_START(VPR200, "VPR200")
 	.map_io = mx35_map_io,
 	.init_early = imx35_init_early,
 	.init_irq = mx35_init_irq,
+<<<<<<< HEAD
 	.handle_irq = imx35_handle_irq,
 	.init_time = vpr200_timer_init,
 	.init_machine = vpr200_board_init,
+=======
+	.init_time = vpr200_timer_init,
+	.init_machine = vpr200_board_init,
+	.init_late	= vpr200_late_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.restart	= mxc_restart,
 MACHINE_END

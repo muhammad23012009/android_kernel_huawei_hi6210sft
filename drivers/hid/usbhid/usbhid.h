@@ -52,6 +52,10 @@ struct usb_interface *usbhid_find_interface(int minor);
 #define HID_STARTED		8
 #define HID_KEYS_PRESSED	10
 #define HID_NO_BANDWIDTH	11
+<<<<<<< HEAD
+=======
+#define HID_RESUME_RUNNING	12
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * USB-specific HID struct, to be pointed to
@@ -92,6 +96,7 @@ struct usbhid_device {
 	unsigned int retry_delay;                                       /* Delay length in ms */
 	struct work_struct reset_work;                                  /* Task context for resets */
 	wait_queue_head_t wait;						/* For sleeping */
+<<<<<<< HEAD
 	int ledcount;							/* counting the number of active leds */
 
 	struct work_struct led_work;					/* Task context for setting LEDs */
@@ -99,6 +104,12 @@ struct usbhid_device {
 
 #define	hid_to_usb_dev(hid_dev) \
 	container_of(hid_dev->dev.parent->parent, struct usb_device, dev)
+=======
+};
+
+#define	hid_to_usb_dev(hid_dev) \
+	to_usb_device(hid_dev->dev.parent->parent)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 

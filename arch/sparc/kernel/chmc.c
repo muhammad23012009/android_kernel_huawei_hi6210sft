@@ -810,7 +810,10 @@ MODULE_DEVICE_TABLE(of, us3mc_match);
 static struct platform_driver us3mc_driver = {
 	.driver = {
 		.name = "us3mc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = us3mc_match,
 	},
 	.probe		= us3mc_probe,

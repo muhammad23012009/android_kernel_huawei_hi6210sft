@@ -17,6 +17,7 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -24,6 +25,8 @@
 #include <linux/i2c.h>
 #include <linux/i2c-pnx.h>
 #include <linux/io.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/map.h>
 #include <asm/system_info.h>
@@ -44,6 +47,7 @@ void lpc32xx_get_uid(u32 devid[4])
 }
 
 /*
+<<<<<<< HEAD
  * Returns SYSCLK source
  * 0 = PLL397, 1 = main oscillator
  */
@@ -71,6 +75,8 @@ static void lpc32xx_watchdog_reset(void)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Detects and returns IRAM size for the device variation
  */
 #define LPC32XX_IRAM_BANK_SIZE SZ_128K
@@ -99,6 +105,7 @@ u32 lpc32xx_return_iram_size(void)
 
 	return iram_size;
 }
+<<<<<<< HEAD
 
 /*
  * Computes PLL rate from PLL register and input clock
@@ -174,6 +181,9 @@ u32 clk_get_pclk_div(void)
 {
 	return 1 + ((__raw_readl(LPC32XX_CLKPWR_HCLK_DIV) >> 2) & 0x1F);
 }
+=======
+EXPORT_SYMBOL_GPL(lpc32xx_return_iram_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct map_desc lpc32xx_io_desc[] __initdata = {
 	{
@@ -207,6 +217,7 @@ void __init lpc32xx_map_io(void)
 	iotable_init(lpc32xx_io_desc, ARRAY_SIZE(lpc32xx_io_desc));
 }
 
+<<<<<<< HEAD
 void lpc23xx_restart(char mode, const char *cmd)
 {
 	switch (mode) {
@@ -225,6 +236,8 @@ void lpc23xx_restart(char mode, const char *cmd)
 		;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init lpc32xx_check_uid(void)
 {
 	u32 uid[4];

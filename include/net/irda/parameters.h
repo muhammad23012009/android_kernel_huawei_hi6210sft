@@ -22,9 +22,13 @@
  *     GNU General Public License for more details.
  * 
  *     You should have received a copy of the GNU General Public License 
+<<<<<<< HEAD
  *     along with this program; if not, write to the Free Software 
  *     Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
  *     MA 02111-1307 USA
+=======
+ *     along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *     Michel Dänzer <daenzer@debian.org>, 10/2001
  *     - simplify irda_pv_t to avoid endianness issues
@@ -73,17 +77,29 @@ typedef int (*PV_HANDLER)(void *self, __u8 *buf, int len, __u8 pi,
 			  PV_TYPE type, PI_HANDLER func);
 
 typedef struct {
+<<<<<<< HEAD
 	PI_HANDLER func;  /* Handler for this parameter identifier */
+=======
+	const PI_HANDLER func;  /* Handler for this parameter identifier */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PV_TYPE    type;  /* Data type for this parameter */
 } pi_minor_info_t;
 
 typedef struct {
+<<<<<<< HEAD
 	pi_minor_info_t *pi_minor_call_table;
+=======
+	const pi_minor_info_t *pi_minor_call_table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int len;
 } pi_major_info_t;
 
 typedef struct {
+<<<<<<< HEAD
 	pi_major_info_t *tables;
+=======
+	const pi_major_info_t *tables;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int              len;
 	__u8             pi_mask;
 	int              pi_major_offset;

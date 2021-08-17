@@ -18,6 +18,7 @@
 #include "common.h"
 #include "mx27.h"
 
+<<<<<<< HEAD
 static void __init imx27_dt_init(void)
 {
 	struct platform_device_info devinfo = { .name = "cpufreq-cpu0", };
@@ -27,23 +28,33 @@ static void __init imx27_dt_init(void)
 	platform_device_register_full(&devinfo);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const char * const imx27_dt_board_compat[] __initconst = {
 	"fsl,imx27",
 	NULL
 };
 
+<<<<<<< HEAD
 static void __init imx27_timer_init(void)
 {
 	mx27_clocks_init_dt();
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DT_MACHINE_START(IMX27_DT, "Freescale i.MX27 (Device Tree Support)")
 	.map_io		= mx27_map_io,
 	.init_early	= imx27_init_early,
 	.init_irq	= mx27_init_irq,
+<<<<<<< HEAD
 	.handle_irq	= imx27_handle_irq,
 	.init_time	= imx27_timer_init,
 	.init_machine	= imx27_dt_init,
 	.dt_compat	= imx27_dt_board_compat,
 	.restart	= mxc_restart,
+=======
+	.init_late	= imx27_pm_init,
+	.dt_compat	= imx27_dt_board_compat,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

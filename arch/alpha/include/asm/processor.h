@@ -44,6 +44,10 @@ struct task_struct;
 extern unsigned long thread_saved_pc(struct task_struct *);
 
 /* Do necessary setup to start up a newly executed thread.  */
+<<<<<<< HEAD
+=======
+struct pt_regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void start_thread(struct pt_regs *, unsigned long, unsigned long);
 
 /* Free all resources held by a thread. */
@@ -57,6 +61,10 @@ unsigned long get_wchan(struct task_struct *p);
   ((tsk) == current ? rdusp() : task_thread_info(tsk)->pcb.usp)
 
 #define cpu_relax()	barrier()
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ARCH_HAS_PREFETCH
 #define ARCH_HAS_PREFETCHW

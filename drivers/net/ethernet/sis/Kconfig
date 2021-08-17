@@ -7,9 +7,13 @@ config NET_VENDOR_SIS
 	default y
 	depends on PCI
 	---help---
+<<<<<<< HEAD
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -22,7 +26,10 @@ config SIS900
 	tristate "SiS 900/7016 PCI Fast Ethernet Adapter support"
 	depends on PCI
 	select CRC32
+<<<<<<< HEAD
 	select NET_CORE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MII
 	---help---
 	  This is a driver for the Fast Ethernet PCI network cards based on
@@ -39,7 +46,10 @@ config SIS190
 	tristate "SiS190/SiS191 gigabit ethernet support"
 	depends on PCI
 	select CRC32
+<<<<<<< HEAD
 	select NET_CORE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MII
 	---help---
 	  Say Y here if you have a SiS 190 PCI Fast Ethernet adapter or

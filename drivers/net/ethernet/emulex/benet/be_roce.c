@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2005 - 2013 Emulex
+=======
+ * Copyright (C) 2005 - 2016 Broadcom
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or
@@ -35,6 +39,15 @@ static void _be_roce_dev_add(struct be_adapter *adapter)
 
 	if (!ocrdma_drv)
 		return;
+<<<<<<< HEAD
+=======
+
+	if (ocrdma_drv->be_abi_version != BE_ROCE_ABI_VERSION) {
+		dev_warn(&pdev->dev, "Cannot initialize RoCE due to ocrdma ABI mismatch\n");
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdev->device == OC_DEVICE_ID5) {
 		/* only msix is supported on these devices */
 		if (!msix_enabled(adapter))
@@ -60,7 +73,11 @@ static void _be_roce_dev_add(struct be_adapter *adapter)
 		 */
 		num_vec = adapter->num_msix_vec + adapter->num_msix_roce_vec;
 		dev_info.intr_mode = BE_INTERRUPT_MODE_MSIX;
+<<<<<<< HEAD
 		dev_info.msix.num_vectors = min(num_vec, MAX_ROCE_MSIX_VECTORS);
+=======
+		dev_info.msix.num_vectors = min(num_vec, MAX_MSIX_VECTORS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* provide start index of the vector,
 		 * so in case of linear usage,
 		 * it can use the base as starting point.
@@ -93,7 +110,11 @@ void be_roce_dev_add(struct be_adapter *adapter)
 	}
 }
 
+<<<<<<< HEAD
 void _be_roce_dev_remove(struct be_adapter *adapter)
+=======
+static void _be_roce_dev_remove(struct be_adapter *adapter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (ocrdma_drv && ocrdma_drv->remove && adapter->ocrdma_dev)
 		ocrdma_drv->remove(adapter->ocrdma_dev);
@@ -110,6 +131,7 @@ void be_roce_dev_remove(struct be_adapter *adapter)
 	}
 }
 
+<<<<<<< HEAD
 void _be_roce_dev_open(struct be_adapter *adapter)
 {
 	if (ocrdma_drv && adapter->ocrdma_dev &&
@@ -138,6 +160,16 @@ void be_roce_dev_close(struct be_adapter *adapter)
 	if (be_roce_supported(adapter)) {
 		mutex_lock(&be_adapter_list_lock);
 		_be_roce_dev_close(adapter);
+=======
+void be_roce_dev_shutdown(struct be_adapter *adapter)
+{
+	if (be_roce_supported(adapter)) {
+		mutex_lock(&be_adapter_list_lock);
+		if (ocrdma_drv && adapter->ocrdma_dev &&
+		    ocrdma_drv->state_change_handler)
+			ocrdma_drv->state_change_handler(adapter->ocrdma_dev,
+							 BE_DEV_SHUTDOWN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&be_adapter_list_lock);
 	}
 }
@@ -154,10 +186,16 @@ int be_roce_register_driver(struct ocrdma_driver *drv)
 	ocrdma_drv = drv;
 	list_for_each_entry(dev, &be_adapter_list, entry) {
 		struct net_device *netdev;
+<<<<<<< HEAD
 		_be_roce_dev_add(dev);
 		netdev = dev->netdev;
 		if (netif_running(netdev) && netif_oper_up(netdev))
 			_be_roce_dev_open(dev);
+=======
+
+		_be_roce_dev_add(dev);
+		netdev = dev->netdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mutex_unlock(&be_adapter_list_lock);
 	return 0;

@@ -2,6 +2,10 @@
 #include <linux/cdrom.h>
 #include <linux/pm_runtime.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_qos.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <scsi/scsi_device.h>
 
 #include "libata.h"
@@ -33,7 +37,11 @@ struct zpodd {
 static int eject_tray(struct ata_device *dev)
 {
 	struct ata_taskfile tf;
+<<<<<<< HEAD
 	const char cdb[] = {  GPCMD_START_STOP_UNIT,
+=======
+	static const char cdb[ATAPI_CDB_LEN] = {  GPCMD_START_STOP_UNIT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		0, 0, 0,
 		0x02,     /* LoEj */
 		0, 0, 0, 0, 0, 0, 0,
@@ -50,6 +58,7 @@ static int eject_tray(struct ata_device *dev)
 /* Per the spec, only slot type and drawer type ODD can be supported */
 static enum odd_mech_type zpodd_get_mech_type(struct ata_device *dev)
 {
+<<<<<<< HEAD
 	char buf[16];
 	unsigned int ret;
 	struct rm_feature_desc *desc = (void *)(buf + 8);
@@ -62,10 +71,30 @@ static enum odd_mech_type zpodd_get_mech_type(struct ata_device *dev)
 			0, 0, 0,
 	};
 
+=======
+	char *buf;
+	unsigned int ret;
+	struct rm_feature_desc *desc;
+	struct ata_taskfile tf;
+	static const char cdb[ATAPI_CDB_LEN] = {  GPCMD_GET_CONFIGURATION,
+			2,      /* only 1 feature descriptor requested */
+			0, 3,   /* 3, removable medium feature */
+			0, 0, 0,/* reserved */
+			0, 16,
+			0, 0, 0,
+	};
+
+	buf = kzalloc(16, GFP_KERNEL);
+	if (!buf)
+		return ODD_MECH_TYPE_UNSUPPORTED;
+	desc = (void *)(buf + 8);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ata_tf_init(dev, &tf);
 	tf.flags = ATA_TFLAG_ISADDR | ATA_TFLAG_DEVICE;
 	tf.command = ATA_CMD_PACKET;
 	tf.protocol = ATAPI_PROT_PIO;
+<<<<<<< HEAD
 	tf.lbam = sizeof(buf);
 
 	ret = ata_exec_internal(dev, &tf, cdb, DMA_FROM_DEVICE,
@@ -99,6 +128,33 @@ static bool odd_can_poweroff(struct ata_device *ata_dev)
 		return false;
 
 	return acpi_device_can_poweroff(acpi_dev);
+=======
+	tf.lbam = 16;
+
+	ret = ata_exec_internal(dev, &tf, cdb, DMA_FROM_DEVICE,
+				buf, 16, 0);
+	if (ret) {
+		kfree(buf);
+		return ODD_MECH_TYPE_UNSUPPORTED;
+	}
+
+	if (be16_to_cpu(desc->feature_code) != 3) {
+		kfree(buf);
+		return ODD_MECH_TYPE_UNSUPPORTED;
+	}
+
+	if (desc->mech_type == 0 && desc->load == 0 && desc->eject == 1) {
+		kfree(buf);
+		return ODD_MECH_TYPE_SLOT;
+	} else if (desc->mech_type == 1 && desc->load == 0 &&
+		   desc->eject == 1) {
+		kfree(buf);
+		return ODD_MECH_TYPE_DRAWER;
+	} else {
+		kfree(buf);
+		return ODD_MECH_TYPE_UNSUPPORTED;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Test if ODD is zero power ready by sense code */
@@ -190,8 +246,13 @@ void zpodd_enable_run_wake(struct ata_device *dev)
 	sdev_disable_disk_events(dev->sdev);
 
 	zpodd->powered_off = true;
+<<<<<<< HEAD
 	device_set_run_wake(&dev->sdev->sdev_gendev, true);
 	acpi_pm_device_run_wake(&dev->sdev->sdev_gendev, true);
+=======
+	device_set_run_wake(&dev->tdev, true);
+	acpi_pm_device_run_wake(&dev->tdev, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Disable runtime wake capability if it is enabled */
@@ -200,8 +261,13 @@ void zpodd_disable_run_wake(struct ata_device *dev)
 	struct zpodd *zpodd = dev->zpodd;
 
 	if (zpodd->powered_off) {
+<<<<<<< HEAD
 		acpi_pm_device_run_wake(&dev->sdev->sdev_gendev, false);
 		device_set_run_wake(&dev->sdev->sdev_gendev, false);
+=======
+		acpi_pm_device_run_wake(&dev->tdev, false);
+		device_set_run_wake(&dev->tdev, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -262,12 +328,17 @@ static void ata_acpi_add_pm_notifier(struct ata_device *dev)
 
 static void ata_acpi_remove_pm_notifier(struct ata_device *dev)
 {
+<<<<<<< HEAD
 	acpi_handle handle = DEVICE_ACPI_HANDLE(&dev->sdev->sdev_gendev);
+=======
+	acpi_handle handle = ata_dev_acpi_handle(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_remove_notify_handler(handle, ACPI_SYSTEM_NOTIFY, zpodd_wake_dev);
 }
 
 void zpodd_init(struct ata_device *dev)
 {
+<<<<<<< HEAD
 	enum odd_mech_type mech_type;
 	struct zpodd *zpodd;
 
@@ -275,6 +346,13 @@ void zpodd_init(struct ata_device *dev)
 		return;
 
 	if (!odd_can_poweroff(dev))
+=======
+	struct acpi_device *adev = ACPI_COMPANION(&dev->tdev);
+	enum odd_mech_type mech_type;
+	struct zpodd *zpodd;
+
+	if (dev->zpodd || !adev || !acpi_device_can_poweroff(adev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	mech_type = zpodd_get_mech_type(dev);
@@ -290,6 +368,10 @@ void zpodd_init(struct ata_device *dev)
 	ata_acpi_add_pm_notifier(dev);
 	zpodd->dev = dev;
 	dev->zpodd = zpodd;
+<<<<<<< HEAD
+=======
+	dev_pm_qos_expose_flags(&dev->tdev, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void zpodd_exit(struct ata_device *dev)

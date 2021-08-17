@@ -227,11 +227,19 @@ snd_vortex_pcm_hw_params(struct snd_pcm_substream *substream,
 	err =
 	    snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Vortex: pcm page alloc failed!\n");
 		return err;
 	}
 	/*
 	   printk(KERN_INFO "Vortex: periods %d, period_bytes %d, channels = %d\n", params_periods(hw_params),
+=======
+		dev_err(chip->card->dev, "Vortex: pcm page alloc failed!\n");
+		return err;
+	}
+	/*
+	   pr_info( "Vortex: periods %d, period_bytes %d, channels = %d\n", params_periods(hw_params),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   params_period_bytes(hw_params), params_channels(hw_params));
 	 */
 	spin_lock_irq(&chip->lock);
@@ -332,7 +340,11 @@ static int snd_vortex_pcm_prepare(struct snd_pcm_substream *substream)
 		dir = 1;
 	else
 		dir = 0;
+<<<<<<< HEAD
 	fmt = vortex_alsafmt_aspfmt(runtime->format);
+=======
+	fmt = vortex_alsafmt_aspfmt(runtime->format, chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&chip->lock);
 	if (VORTEX_PCM_TYPE(substream->pcm) != VORTEX_PCM_WT) {
 		vortex_adbdma_setmode(chip, dma, 1, dir, fmt,
@@ -371,7 +383,11 @@ static int snd_vortex_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		}
 #ifndef CHIP_AU8810
 		else {
+<<<<<<< HEAD
 			printk(KERN_INFO "vortex: wt start %d\n", dma);
+=======
+			dev_info(chip->card->dev, "wt start %d\n", dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vortex_wtdma_startfifo(chip, dma);
 		}
 #endif
@@ -384,7 +400,11 @@ static int snd_vortex_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 			vortex_adbdma_stopfifo(chip, dma);
 #ifndef CHIP_AU8810
 		else {
+<<<<<<< HEAD
 			printk(KERN_INFO "vortex: wt stop %d\n", dma);
+=======
+			dev_info(chip->card->dev, "wt stop %d\n", dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vortex_wtdma_stopfifo(chip, dma);
 		}
 #endif
@@ -432,7 +452,14 @@ static snd_pcm_uframes_t snd_vortex_pcm_pointer(struct snd_pcm_substream *substr
 #endif
 	//printk(KERN_INFO "vortex: pointer = 0x%x\n", current_ptr);
 	spin_unlock(&chip->lock);
+<<<<<<< HEAD
 	return (bytes_to_frames(substream->runtime, current_ptr));
+=======
+	current_ptr = bytes_to_frames(substream->runtime, current_ptr);
+	if (current_ptr >= substream->runtime->buffer_size)
+		current_ptr = 0;
+	return current_ptr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* operators */
@@ -671,7 +698,11 @@ static int snd_vortex_new_pcm(vortex_t *chip, int idx, int nr)
 			return err;
 		break;
 #endif
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (VORTEX_PCM_TYPE(pcm) == VORTEX_PCM_SPDIF) {
 		for (i = 0; i < ARRAY_SIZE(snd_vortex_mixer_spdif); i++) {

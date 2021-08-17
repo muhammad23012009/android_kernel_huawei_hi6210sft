@@ -22,12 +22,21 @@ extern void _mcount(void);
 #define safe_load(load, src, dst, error)		\
 do {							\
 	asm volatile (					\
+<<<<<<< HEAD
 		"1: " load " %[" STR(dst) "], 0(%[" STR(src) "])\n"\
 		"   li %[" STR(error) "], 0\n"		\
 		"2:\n"					\
 							\
 		".section .fixup, \"ax\"\n"		\
 		"3: li %[" STR(error) "], 1\n"		\
+=======
+		"1: " load " %[tmp_dst], 0(%[tmp_src])\n"	\
+		"   li %[tmp_err], 0\n"			\
+		"2: .insn\n"				\
+							\
+		".section .fixup, \"ax\"\n"		\
+		"3: li %[tmp_err], 1\n"			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"   j 2b\n"				\
 		".previous\n"				\
 							\
@@ -35,8 +44,13 @@ do {							\
 		STR(PTR) "\t1b, 3b\n\t"			\
 		".previous\n"				\
 							\
+<<<<<<< HEAD
 		: [dst] "=&r" (dst), [error] "=r" (error)\
 		: [src] "r" (src)			\
+=======
+		: [tmp_dst] "=&r" (dst), [tmp_err] "=r" (error)\
+		: [tmp_src] "r" (src)			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "memory"				\
 	);						\
 } while (0)
@@ -44,12 +58,21 @@ do {							\
 #define safe_store(store, src, dst, error)	\
 do {						\
 	asm volatile (				\
+<<<<<<< HEAD
 		"1: " store " %[" STR(src) "], 0(%[" STR(dst) "])\n"\
 		"   li %[" STR(error) "], 0\n"	\
 		"2:\n"				\
 						\
 		".section .fixup, \"ax\"\n"	\
 		"3: li %[" STR(error) "], 1\n"	\
+=======
+		"1: " store " %[tmp_src], 0(%[tmp_dst])\n"\
+		"   li %[tmp_err], 0\n"		\
+		"2: .insn\n"			\
+						\
+		".section .fixup, \"ax\"\n"	\
+		"3: li %[tmp_err], 1\n"		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"   j 2b\n"			\
 		".previous\n"			\
 						\
@@ -57,8 +80,13 @@ do {						\
 		STR(PTR) "\t1b, 3b\n\t"		\
 		".previous\n"			\
 						\
+<<<<<<< HEAD
 		: [error] "=r" (error)		\
 		: [dst] "r" (dst), [src] "r" (src)\
+=======
+		: [tmp_err] "=r" (error)	\
+		: [tmp_dst] "r" (dst), [tmp_src] "r" (src)\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "memory"			\
 	);					\
 } while (0)

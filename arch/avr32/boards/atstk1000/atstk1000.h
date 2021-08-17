@@ -10,7 +10,11 @@
 #ifndef __ARCH_AVR32_BOARDS_ATSTK1000_ATSTK1000_H
 #define __ARCH_AVR32_BOARDS_ATSTK1000_ATSTK1000_H
 
+<<<<<<< HEAD
 extern struct atmel_lcdfb_info atstk1000_lcdc_data;
+=======
+extern struct atmel_lcdfb_pdata atstk1000_lcdc_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void atstk1000_setup_j2_leds(void);
 

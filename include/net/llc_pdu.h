@@ -15,9 +15,17 @@
 #include <linux/if_ether.h>
 
 /* Lengths of frame formats */
+<<<<<<< HEAD
 #define LLC_PDU_LEN_I	4       /* header and 2 control bytes */
 #define LLC_PDU_LEN_S	4
 #define LLC_PDU_LEN_U	3       /* header and 1 control byte */
+=======
+#define LLC_PDU_LEN_I		4       /* header and 2 control bytes */
+#define LLC_PDU_LEN_S		4
+#define LLC_PDU_LEN_U		3       /* header and 1 control byte */
+/* header and 1 control byte and XID info */
+#define LLC_PDU_LEN_U_XID	(LLC_PDU_LEN_U + sizeof(struct llc_xid_info))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Known SAP addresses */
 #define LLC_GLOBAL_SAP	0xFF
 #define LLC_NULL_SAP	0x00	/* not network-layer visible */
@@ -50,9 +58,16 @@
 #define LLC_PDU_TYPE_U_MASK    0x03	/* 8-bit control field */
 #define LLC_PDU_TYPE_MASK      0x03
 
+<<<<<<< HEAD
 #define LLC_PDU_TYPE_I	0	/* first bit */
 #define LLC_PDU_TYPE_S	1	/* first two bits */
 #define LLC_PDU_TYPE_U	3	/* first two bits */
+=======
+#define LLC_PDU_TYPE_I		0	/* first bit */
+#define LLC_PDU_TYPE_S		1	/* first two bits */
+#define LLC_PDU_TYPE_U		3	/* first two bits */
+#define LLC_PDU_TYPE_U_XID	4	/* private type for detecting XID commands */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define LLC_PDU_TYPE_IS_I(pdu) \
 	((!(pdu->ctrl_1 & LLC_PDU_TYPE_I_MASK)) ? 1 : 0)
@@ -142,7 +157,11 @@
 #define LLC_S_PF_IS_1(pdu)     ((pdu->ctrl_2 & LLC_S_PF_BIT_MASK) ? 1 : 0)
 
 #define PDU_SUPV_GET_Nr(pdu)   ((pdu->ctrl_2 & 0xFE) >> 1)
+<<<<<<< HEAD
 #define PDU_GET_NEXT_Vr(sn)    (++sn & ~LLC_2_SEQ_NBR_MODULO)
+=======
+#define PDU_GET_NEXT_Vr(sn)    (((sn) + 1) & ~LLC_2_SEQ_NBR_MODULO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* FRMR information field macros */
 
@@ -230,9 +249,24 @@ static inline struct llc_pdu_un *llc_pdu_un_hdr(struct sk_buff *skb)
 static inline void llc_pdu_header_init(struct sk_buff *skb, u8 type,
 				       u8 ssap, u8 dsap, u8 cr)
 {
+<<<<<<< HEAD
 	const int hlen = type == LLC_PDU_TYPE_U ? 3 : 4;
 	struct llc_pdu_un *pdu;
 
+=======
+	int hlen = 4; /* default value for I and S types */
+	struct llc_pdu_un *pdu;
+
+	switch (type) {
+	case LLC_PDU_TYPE_U:
+		hlen = 3;
+		break;
+	case LLC_PDU_TYPE_U_XID:
+		hlen = 6;
+		break;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_push(skb, hlen);
 	skb_reset_network_header(skb);
 	pdu = llc_pdu_un_hdr(skb);
@@ -374,7 +408,14 @@ static inline void llc_pdu_init_as_xid_cmd(struct sk_buff *skb,
 	xid_info->fmt_id = LLC_XID_FMT_ID;	/* 0x81 */
 	xid_info->type	 = svcs_supported;
 	xid_info->rw	 = rx_window << 1;	/* size of receive window */
+<<<<<<< HEAD
 	skb_put(skb, sizeof(struct llc_xid_info));
+=======
+
+	/* no need to push/put since llc_pdu_header_init() has already
+	 * pushed 3 + 3 bytes
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -410,6 +451,7 @@ struct llc_frmr_info {
 	u8  ind_bits;		/* indicator bits set with macro */
 } __packed;
 
+<<<<<<< HEAD
 extern void llc_pdu_set_cmd_rsp(struct sk_buff *skb, u8 type);
 extern void llc_pdu_set_pf_bit(struct sk_buff *skb, u8 bit_value);
 extern void llc_pdu_decode_pf_bit(struct sk_buff *skb, u8 *pf_bit);
@@ -427,4 +469,22 @@ extern void llc_pdu_init_as_rr_rsp(struct sk_buff *skb, u8 f_bit, u8 nr);
 extern void llc_pdu_init_as_rej_rsp(struct sk_buff *skb, u8 f_bit, u8 nr);
 extern void llc_pdu_init_as_rnr_rsp(struct sk_buff *skb, u8 f_bit, u8 nr);
 extern void llc_pdu_init_as_ua_rsp(struct sk_buff *skb, u8 f_bit);
+=======
+void llc_pdu_set_cmd_rsp(struct sk_buff *skb, u8 type);
+void llc_pdu_set_pf_bit(struct sk_buff *skb, u8 bit_value);
+void llc_pdu_decode_pf_bit(struct sk_buff *skb, u8 *pf_bit);
+void llc_pdu_init_as_disc_cmd(struct sk_buff *skb, u8 p_bit);
+void llc_pdu_init_as_i_cmd(struct sk_buff *skb, u8 p_bit, u8 ns, u8 nr);
+void llc_pdu_init_as_rej_cmd(struct sk_buff *skb, u8 p_bit, u8 nr);
+void llc_pdu_init_as_rnr_cmd(struct sk_buff *skb, u8 p_bit, u8 nr);
+void llc_pdu_init_as_rr_cmd(struct sk_buff *skb, u8 p_bit, u8 nr);
+void llc_pdu_init_as_sabme_cmd(struct sk_buff *skb, u8 p_bit);
+void llc_pdu_init_as_dm_rsp(struct sk_buff *skb, u8 f_bit);
+void llc_pdu_init_as_frmr_rsp(struct sk_buff *skb, struct llc_pdu_sn *prev_pdu,
+			      u8 f_bit, u8 vs, u8 vr, u8 vzyxw);
+void llc_pdu_init_as_rr_rsp(struct sk_buff *skb, u8 f_bit, u8 nr);
+void llc_pdu_init_as_rej_rsp(struct sk_buff *skb, u8 f_bit, u8 nr);
+void llc_pdu_init_as_rnr_rsp(struct sk_buff *skb, u8 f_bit, u8 nr);
+void llc_pdu_init_as_ua_rsp(struct sk_buff *skb, u8 f_bit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* LLC_PDU_H */

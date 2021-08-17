@@ -10,6 +10,7 @@
 #include <linux/device.h>
 #include <linux/of_mdio.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/phy.h>
 #include <linux/mdio-mux.h>
@@ -23,19 +24,37 @@
 struct mdio_mux_gpio_state {
 	int gpio[MDIO_MUX_GPIO_MAX_BITS];
 	unsigned int num_gpios;
+=======
+#include <linux/phy.h>
+#include <linux/mdio-mux.h>
+#include <linux/gpio/consumer.h>
+
+#define DRV_VERSION "1.1"
+#define DRV_DESCRIPTION "GPIO controlled MDIO bus multiplexer driver"
+
+struct mdio_mux_gpio_state {
+	struct gpio_descs *gpios;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *mux_handle;
 };
 
 static int mdio_mux_gpio_switch_fn(int current_child, int desired_child,
 				   void *data)
 {
+<<<<<<< HEAD
 	int change;
 	unsigned int n;
 	struct mdio_mux_gpio_state *s = data;
+=======
+	struct mdio_mux_gpio_state *s = data;
+	int values[s->gpios->ndescs];
+	unsigned int n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (current_child == desired_child)
 		return 0;
 
+<<<<<<< HEAD
 	change = current_child == -1 ? -1 : current_child ^ desired_child;
 
 	for (n = 0; n < s->num_gpios; n++) {
@@ -45,12 +64,20 @@ static int mdio_mux_gpio_switch_fn(int current_child, int desired_child,
 		change >>= 1;
 		desired_child >>= 1;
 	}
+=======
+	for (n = 0; n < s->gpios->ndescs; n++)
+		values[n] = (desired_child >> n) & 1;
+
+	gpiod_set_array_value_cansleep(s->gpios->ndescs, s->gpios->desc,
+				       values);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int mdio_mux_gpio_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	enum of_gpio_flags f;
 	struct mdio_mux_gpio_state *s;
 	int num_gpios;
@@ -64,10 +91,16 @@ static int mdio_mux_gpio_probe(struct platform_device *pdev)
 	if (num_gpios <= 0 || num_gpios > MDIO_MUX_GPIO_MAX_BITS)
 		return -ENODEV;
 
+=======
+	struct mdio_mux_gpio_state *s;
+	int r;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s = devm_kzalloc(&pdev->dev, sizeof(*s), GFP_KERNEL);
 	if (!s)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	s->num_gpios = num_gpios;
 
 	for (n = 0; n < num_gpios; ) {
@@ -102,16 +135,42 @@ err:
 		gpio_free(s->gpio[n]);
 	}
 	return r;
+=======
+	s->gpios = gpiod_get_array(&pdev->dev, NULL, GPIOD_OUT_LOW);
+	if (IS_ERR(s->gpios))
+		return PTR_ERR(s->gpios);
+
+	r = mdio_mux_init(&pdev->dev,
+			  mdio_mux_gpio_switch_fn, &s->mux_handle, s, NULL);
+
+	if (r != 0) {
+		gpiod_put_array(s->gpios);
+		return r;
+	}
+
+	pdev->dev.platform_data = s;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mdio_mux_gpio_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct mdio_mux_gpio_state *s = pdev->dev.platform_data;
 	mdio_mux_uninit(s->mux_handle);
 	return 0;
 }
 
 static struct of_device_id mdio_mux_gpio_match[] = {
+=======
+	struct mdio_mux_gpio_state *s = dev_get_platdata(&pdev->dev);
+	mdio_mux_uninit(s->mux_handle);
+	gpiod_put_array(s->gpios);
+	return 0;
+}
+
+static const struct of_device_id mdio_mux_gpio_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.compatible = "mdio-mux-gpio",
 	},
@@ -126,7 +185,10 @@ MODULE_DEVICE_TABLE(of, mdio_mux_gpio_match);
 static struct platform_driver mdio_mux_gpio_driver = {
 	.driver = {
 		.name		= "mdio-mux-gpio",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mdio_mux_gpio_match,
 	},
 	.probe		= mdio_mux_gpio_probe,

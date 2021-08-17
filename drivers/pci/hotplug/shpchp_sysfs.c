@@ -35,15 +35,26 @@
 
 /* A few routines that create sysfs entries for the hot plug controller */
 
+<<<<<<< HEAD
 static ssize_t show_ctrl (struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct pci_dev *pdev;
 	char * out = buf;
+=======
+static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	struct pci_dev *pdev;
+	char *out = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int index, busnr;
 	struct resource *res;
 	struct pci_bus *bus;
 
+<<<<<<< HEAD
 	pdev = container_of (dev, struct pci_dev, dev);
+=======
+	pdev = to_pci_dev(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bus = pdev->subordinate;
 
 	out += sprintf(buf, "Free resources: memory\n");
@@ -83,11 +94,19 @@ static ssize_t show_ctrl (struct device *dev, struct device_attribute *attr, cha
 
 	return out - buf;
 }
+<<<<<<< HEAD
 static DEVICE_ATTR (ctrl, S_IRUGO, show_ctrl, NULL);
 
 int shpchp_create_ctrl_files (struct controller *ctrl)
 {
 	return device_create_file (&ctrl->pci_dev->dev, &dev_attr_ctrl);
+=======
+static DEVICE_ATTR(ctrl, S_IRUGO, show_ctrl, NULL);
+
+int shpchp_create_ctrl_files(struct controller *ctrl)
+{
+	return device_create_file(&ctrl->pci_dev->dev, &dev_attr_ctrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void shpchp_remove_ctrl_files(struct controller *ctrl)

@@ -10,7 +10,10 @@
  */
 
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/msi.h>
 #include <asm/mpic.h>
 #include <asm/prom.h>
@@ -25,14 +28,22 @@ static struct mpic *msi_mpic;
 
 static void mpic_u3msi_mask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	mask_msi_irq(data);
+=======
+	pci_msi_mask_irq(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mpic_mask_irq(data);
 }
 
 static void mpic_u3msi_unmask_irq(struct irq_data *data)
 {
 	mpic_unmask_irq(data);
+<<<<<<< HEAD
 	unmask_msi_irq(data);
+=======
+	pci_msi_unmask_irq(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct irq_chip mpic_u3msi_chip = {
@@ -105,6 +116,7 @@ static u64 find_u4_magic_addr(struct pci_dev *pdev, unsigned int hwirq)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int u3msi_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 {
 	if (type == PCI_CAP_ID_MSIX)
@@ -121,13 +133,20 @@ static int u3msi_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void u3msi_teardown_msi_irqs(struct pci_dev *pdev)
 {
 	struct msi_desc *entry;
 	irq_hw_number_t hwirq;
 
+<<<<<<< HEAD
         list_for_each_entry(entry, &pdev->msi_list, list) {
 		if (entry->irq == NO_IRQ)
+=======
+	for_each_pci_msi_entry(entry, pdev) {
+		if (!entry->irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		hwirq = virq_to_hw(entry->irq);
@@ -147,7 +166,22 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 	u64 addr;
 	int hwirq;
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, &pdev->msi_list, list) {
+=======
+	if (type == PCI_CAP_ID_MSIX)
+		pr_debug("u3msi: MSI-X untested, trying anyway.\n");
+
+	/* If we can't find a magic address then MSI ain't gonna work */
+	if (find_ht_magic_addr(pdev, 0) == 0 &&
+	    find_u4_magic_addr(pdev, 0) == 0) {
+		pr_debug("u3msi: no magic address found for %s\n",
+			 pci_name(pdev));
+		return -ENXIO;
+	}
+
+	for_each_pci_msi_entry(entry, pdev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hwirq = msi_bitmap_alloc_hwirqs(&msi_mpic->msi_bitmap, 1);
 		if (hwirq < 0) {
 			pr_debug("u3msi: failed allocating hwirq\n");
@@ -161,7 +195,11 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 		msg.address_hi = addr >> 32;
 
 		virq = irq_create_mapping(msi_mpic->irqhost, hwirq);
+<<<<<<< HEAD
 		if (virq == NO_IRQ) {
+=======
+		if (!virq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_debug("u3msi: failed mapping hwirq 0x%x\n", hwirq);
 			msi_bitmap_free_hwirqs(&msi_mpic->msi_bitmap, hwirq, 1);
 			return -ENOSPC;
@@ -177,7 +215,11 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 		printk("u3msi: allocated virq 0x%x (hw 0x%x) addr 0x%lx\n",
 			  virq, hwirq, (unsigned long)addr);
 		msg.data = hwirq;
+<<<<<<< HEAD
 		write_msi_msg(virq, &msg);
+=======
+		pci_write_msi_msg(virq, &msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		hwirq++;
 	}
@@ -188,6 +230,10 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 int mpic_u3msi_init(struct mpic *mpic)
 {
 	int rc;
+<<<<<<< HEAD
+=======
+	struct pci_controller *phb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = mpic_msi_init_allocator(mpic);
 	if (rc) {
@@ -200,10 +246,18 @@ int mpic_u3msi_init(struct mpic *mpic)
 	BUG_ON(msi_mpic);
 	msi_mpic = mpic;
 
+<<<<<<< HEAD
 	WARN_ON(ppc_md.setup_msi_irqs);
 	ppc_md.setup_msi_irqs = u3msi_setup_msi_irqs;
 	ppc_md.teardown_msi_irqs = u3msi_teardown_msi_irqs;
 	ppc_md.msi_check_device = u3msi_msi_check_device;
+=======
+	list_for_each_entry(phb, &hose_list, list_node) {
+		WARN_ON(phb->controller_ops.setup_msi_irqs);
+		phb->controller_ops.setup_msi_irqs = u3msi_setup_msi_irqs;
+		phb->controller_ops.teardown_msi_irqs = u3msi_teardown_msi_irqs;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

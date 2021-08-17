@@ -478,7 +478,11 @@ static const uint8_t *copy_macs(struct mpoa_client *mpc,
 			return NULL;
 		}
 	}
+<<<<<<< HEAD
 	memcpy(mpc->mps_macs, router_mac, ETH_ALEN);
+=======
+	ether_addr_copy(mpc->mps_macs, router_mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tlvs += 20; if (device_type == MPS_AND_MPC) tlvs += 20;
 	if (mps_macs > 0)
 		memcpy(mpc->mps_macs, tlvs, mps_macs*ETH_ALEN);
@@ -599,7 +603,11 @@ static netdev_tx_t mpc_send_packet(struct sk_buff *skb,
 	}
 
 non_ip:
+<<<<<<< HEAD
 	return mpc->old_ops->ndo_start_xmit(skb, dev);
+=======
+	return __netdev_start_xmit(mpc->old_ops, skb, dev, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int atm_mpoa_vcc_attach(struct atm_vcc *vcc, void __user *arg)
@@ -706,7 +714,11 @@ static void mpc_push(struct atm_vcc *vcc, struct sk_buff *skb)
 		dprintk("(%s) control packet arrived\n", dev->name);
 		/* Pass control packets to daemon */
 		skb_queue_tail(&sk->sk_receive_queue, skb);
+<<<<<<< HEAD
 		sk->sk_data_ready(sk, skb->len);
+=======
+		sk->sk_data_ready(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -992,12 +1004,17 @@ int msg_to_mpoad(struct k_message *mesg, struct mpoa_client *mpc)
 
 	sk = sk_atm(mpc->mpoad_vcc);
 	skb_queue_tail(&sk->sk_receive_queue, skb);
+<<<<<<< HEAD
 	sk->sk_data_ready(sk, skb->len);
+=======
+	sk->sk_data_ready(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int mpoa_event_listener(struct notifier_block *mpoa_notifier,
+<<<<<<< HEAD
 			       unsigned long event, void *dev_ptr)
 {
 	struct net_device *dev;
@@ -1010,6 +1027,18 @@ static int mpoa_event_listener(struct notifier_block *mpoa_notifier,
 		return NOTIFY_DONE;
 
 	if (dev->name == NULL || strncmp(dev->name, "lec", 3))
+=======
+			       unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+	struct mpoa_client *mpc;
+	struct lec_priv *priv;
+
+	if (!net_eq(dev_net(dev), &init_net))
+		return NOTIFY_DONE;
+
+	if (strncmp(dev->name, "lec", 3))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NOTIFY_DONE; /* we are only interested in lec:s */
 
 	switch (event) {
@@ -1275,7 +1304,11 @@ static void purge_egress_shortcut(struct atm_vcc *vcc, eg_cache_entry *entry)
 
 	sk = sk_atm(vcc);
 	skb_queue_tail(&sk->sk_receive_queue, skb);
+<<<<<<< HEAD
 	sk->sk_data_ready(sk, skb->len);
+=======
+	sk->sk_data_ready(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dprintk("exiting\n");
 }
 
@@ -1494,7 +1527,11 @@ static void __exit atm_mpoa_cleanup(void)
 
 	mpc_proc_clean();
 
+<<<<<<< HEAD
 	del_timer(&mpc_timer);
+=======
+	del_timer_sync(&mpc_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unregister_netdevice_notifier(&mpoa_notifier);
 	deregister_atm_ioctl(&atm_ioctl_ops);
 

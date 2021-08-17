@@ -14,6 +14,10 @@
 #include <linux/init.h>
 #include <linux/debugfs.h>
 #include <asm/mce.h>
+<<<<<<< HEAD
+=======
+#include <asm/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "mce-internal.h"
 
@@ -29,8 +33,14 @@
  * panic situations)
  */
 
+<<<<<<< HEAD
 enum context { IN_KERNEL = 1, IN_USER = 2 };
 enum ser { SER_REQUIRED = 1, NO_SER = 2 };
+=======
+enum context { IN_KERNEL = 1, IN_USER = 2, IN_KERNEL_RECOV = 3 };
+enum ser { SER_REQUIRED = 1, NO_SER = 2 };
+enum exception { EXCP_CONTEXT = 1, NO_EXCP = 2 };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct severity {
 	u64 mask;
@@ -40,14 +50,26 @@ static struct severity {
 	unsigned char mcgres;
 	unsigned char ser;
 	unsigned char context;
+<<<<<<< HEAD
+=======
+	unsigned char excp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char covered;
 	char *msg;
 } severities[] = {
 #define MCESEV(s, m, c...) { .sev = MCE_ ## s ## _SEVERITY, .msg = m, ## c }
 #define  KERNEL		.context = IN_KERNEL
 #define  USER		.context = IN_USER
+<<<<<<< HEAD
 #define  SER		.ser = SER_REQUIRED
 #define  NOSER		.ser = NO_SER
+=======
+#define  KERNEL_RECOV	.context = IN_KERNEL_RECOV
+#define  SER		.ser = SER_REQUIRED
+#define  NOSER		.ser = NO_SER
+#define  EXCP		.excp = EXCP_CONTEXT
+#define  NOEXCP		.excp = NO_EXCP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define  BITCLR(x)	.mask = x, .result = 0
 #define  BITSET(x)	.mask = x, .result = x
 #define  MCGMASK(x, y)	.mcgmask = x, .mcgres = y
@@ -62,7 +84,11 @@ static struct severity {
 		),
 	MCESEV(
 		NO, "Not enabled",
+<<<<<<< HEAD
 		BITCLR(MCI_STATUS_EN)
+=======
+		EXCP, BITCLR(MCI_STATUS_EN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		),
 	MCESEV(
 		PANIC, "Processor context corrupt",
@@ -71,16 +97,36 @@ static struct severity {
 	/* When MCIP is not set something is very confused */
 	MCESEV(
 		PANIC, "MCIP not set in MCA handler",
+<<<<<<< HEAD
 		MCGMASK(MCG_STATUS_MCIP, 0)
+=======
+		EXCP, MCGMASK(MCG_STATUS_MCIP, 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		),
 	/* Neither return not error IP -- no chance to recover -> PANIC */
 	MCESEV(
 		PANIC, "Neither restart nor error IP",
+<<<<<<< HEAD
 		MCGMASK(MCG_STATUS_RIPV|MCG_STATUS_EIPV, 0)
 		),
 	MCESEV(
 		PANIC, "In kernel and no restart IP",
 		KERNEL, MCGMASK(MCG_STATUS_RIPV, 0)
+=======
+		EXCP, MCGMASK(MCG_STATUS_RIPV|MCG_STATUS_EIPV, 0)
+		),
+	MCESEV(
+		PANIC, "In kernel and no restart IP",
+		EXCP, KERNEL, MCGMASK(MCG_STATUS_RIPV, 0)
+		),
+	MCESEV(
+		PANIC, "In kernel and no restart IP",
+		EXCP, KERNEL_RECOV, MCGMASK(MCG_STATUS_RIPV, 0)
+		),
+	MCESEV(
+		DEFERRED, "Deferred error",
+		NOSER, MASK(MCI_STATUS_UC|MCI_STATUS_DEFERRED|MCI_STATUS_POISON, MCI_STATUS_DEFERRED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		),
 	MCESEV(
 		KEEP, "Corrected error",
@@ -89,7 +135,11 @@ static struct severity {
 
 	/* ignore OVER for UCNA */
 	MCESEV(
+<<<<<<< HEAD
 		KEEP, "Uncorrected no action required",
+=======
+		UCNA, "Uncorrected no action required",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		SER, MASK(MCI_UC_SAR, MCI_STATUS_UC)
 		),
 	MCESEV(
@@ -110,16 +160,31 @@ static struct severity {
 	/* known AR MCACODs: */
 #ifdef	CONFIG_MEMORY_FAILURE
 	MCESEV(
+<<<<<<< HEAD
 		KEEP, "HT thread notices Action required: data load error",
 		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_DATA),
 		MCGMASK(MCG_STATUS_EIPV, 0)
 		),
 	MCESEV(
 		AR, "Action required: data load error",
+=======
+		KEEP, "Action required but unaffected thread is continuable",
+		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR, MCI_UC_SAR|MCI_ADDR),
+		MCGMASK(MCG_STATUS_RIPV|MCG_STATUS_EIPV, MCG_STATUS_RIPV)
+		),
+	MCESEV(
+		AR, "Action required: data load in error recoverable area of kernel",
+		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_DATA),
+		KERNEL_RECOV
+		),
+	MCESEV(
+		AR, "Action required: data load error in a user process",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_DATA),
 		USER
 		),
 	MCESEV(
+<<<<<<< HEAD
 		KEEP, "HT thread notices Action required: instruction fetch error",
 		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_INSTR),
 		MCGMASK(MCG_STATUS_EIPV, 0)
@@ -128,6 +193,21 @@ static struct severity {
 		AR, "Action required: instruction fetch error",
 		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_INSTR),
 		USER
+=======
+		AR, "Action required: instruction fetch error in a user process",
+		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_INSTR),
+		USER
+		),
+	MCESEV(
+		PANIC, "Data load in unrecoverable area of kernel",
+		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_DATA),
+		KERNEL
+		),
+	MCESEV(
+		PANIC, "Instruction fetch error in kernel",
+		SER, MASK(MCI_STATUS_OVER|MCI_UC_SAR|MCI_ADDR|MCACOD, MCI_UC_SAR|MCI_ADDR|MCACOD_INSTR),
+		KERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		),
 #endif
 	MCESEV(
@@ -167,6 +247,12 @@ static struct severity {
 		)	/* always matches. keep at end */
 };
 
+<<<<<<< HEAD
+=======
+#define mc_recoverable(mcg) (((mcg) & (MCG_STATUS_RIPV|MCG_STATUS_EIPV)) == \
+				(MCG_STATUS_RIPV|MCG_STATUS_EIPV))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * If mcgstatus indicated that ip/cs on the stack were
  * no good, then "m->cs" will be zero and we will have
@@ -180,11 +266,107 @@ static struct severity {
  */
 static int error_context(struct mce *m)
 {
+<<<<<<< HEAD
 	return ((m->cs & 3) == 3) ? IN_USER : IN_KERNEL;
 }
 
 int mce_severity(struct mce *m, int tolerant, char **msg)
 {
+=======
+	if ((m->cs & 3) == 3)
+		return IN_USER;
+	if (mc_recoverable(m->mcgstatus) && ex_has_fault_handler(m->ip))
+		return IN_KERNEL_RECOV;
+	return IN_KERNEL;
+}
+
+static int mce_severity_amd_smca(struct mce *m, int err_ctx)
+{
+	u32 addr = MSR_AMD64_SMCA_MCx_CONFIG(m->bank);
+	u32 low, high;
+
+	/*
+	 * We need to look at the following bits:
+	 * - "succor" bit (data poisoning support), and
+	 * - TCC bit (Task Context Corrupt)
+	 * in MCi_STATUS to determine error severity.
+	 */
+	if (!mce_flags.succor)
+		return MCE_PANIC_SEVERITY;
+
+	if (rdmsr_safe(addr, &low, &high))
+		return MCE_PANIC_SEVERITY;
+
+	/* TCC (Task context corrupt). If set and if IN_KERNEL, panic. */
+	if ((low & MCI_CONFIG_MCAX) &&
+	    (m->status & MCI_STATUS_TCC) &&
+	    (err_ctx == IN_KERNEL))
+		return MCE_PANIC_SEVERITY;
+
+	 /* ...otherwise invoke hwpoison handler. */
+	return MCE_AR_SEVERITY;
+}
+
+/*
+ * See AMD Error Scope Hierarchy table in a newer BKDG. For example
+ * 49125_15h_Models_30h-3Fh_BKDG.pdf, section "RAS Features"
+ */
+static int mce_severity_amd(struct mce *m, int tolerant, char **msg, bool is_excp)
+{
+	enum context ctx = error_context(m);
+
+	/* Processor Context Corrupt, no need to fumble too much, die! */
+	if (m->status & MCI_STATUS_PCC)
+		return MCE_PANIC_SEVERITY;
+
+	if (m->status & MCI_STATUS_UC) {
+
+		if (ctx == IN_KERNEL)
+			return MCE_PANIC_SEVERITY;
+
+		/*
+		 * On older systems where overflow_recov flag is not present, we
+		 * should simply panic if an error overflow occurs. If
+		 * overflow_recov flag is present and set, then software can try
+		 * to at least kill process to prolong system operation.
+		 */
+		if (mce_flags.overflow_recov) {
+			if (mce_flags.smca)
+				return mce_severity_amd_smca(m, ctx);
+
+			/* kill current process */
+			return MCE_AR_SEVERITY;
+		} else {
+			/* at least one error was not logged */
+			if (m->status & MCI_STATUS_OVER)
+				return MCE_PANIC_SEVERITY;
+		}
+
+		/*
+		 * For any other case, return MCE_UC_SEVERITY so that we log the
+		 * error and exit #MC handler.
+		 */
+		return MCE_UC_SEVERITY;
+	}
+
+	/*
+	 * deferred error: poll handler catches these and adds to mce_ring so
+	 * memory-failure can take recovery actions.
+	 */
+	if (m->status & MCI_STATUS_DEFERRED)
+		return MCE_DEFERRED_SEVERITY;
+
+	/*
+	 * corrected error: poll handler catches these and passes responsibility
+	 * of decoding the error to EDAC
+	 */
+	return MCE_KEEP_SEVERITY;
+}
+
+static int mce_severity_intel(struct mce *m, int tolerant, char **msg, bool is_excp)
+{
+	enum exception excp = (is_excp ? EXCP_CONTEXT : NO_EXCP);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum context ctx = error_context(m);
 	struct severity *s;
 
@@ -199,6 +381,11 @@ int mce_severity(struct mce *m, int tolerant, char **msg)
 			continue;
 		if (s->context && ctx != s->context)
 			continue;
+<<<<<<< HEAD
+=======
+		if (s->excp && excp != s->excp)
+			continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (msg)
 			*msg = s->msg;
 		s->covered = 1;
@@ -210,6 +397,19 @@ int mce_severity(struct mce *m, int tolerant, char **msg)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* Default to mce_severity_intel */
+int (*mce_severity)(struct mce *m, int tolerant, char **msg, bool is_excp) =
+		    mce_severity_intel;
+
+void __init mcheck_vendor_init_severity(void)
+{
+	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD)
+		mce_severity = mce_severity_amd;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DEBUG_FS
 static void *s_start(struct seq_file *f, loff_t *pos)
 {

@@ -1,7 +1,10 @@
 #ifndef LINUX_BCM47XX_WDT_H_
 #define LINUX_BCM47XX_WDT_H_
 
+<<<<<<< HEAD
 #include <linux/notifier.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/timer.h>
 #include <linux/types.h>
 #include <linux/watchdog.h>
@@ -15,7 +18,10 @@ struct bcm47xx_wdt {
 	void *driver_data;
 
 	struct watchdog_device wdd;
+<<<<<<< HEAD
 	struct notifier_block notifier;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct timer_list soft_timer;
 	atomic_t soft_ticks;

@@ -304,7 +304,11 @@ struct snd_dbri {
 	spinlock_t lock;
 
 	struct dbri_dma *dma;	/* Pointer to our DMA block */
+<<<<<<< HEAD
 	u32 dma_dvma;		/* DBRI visible DMA address */
+=======
+	dma_addr_t dma_dvma;	/* DBRI visible DMA address */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	void __iomem *regs;	/* dbri HW regs */
 	int dbri_irqp;		/* intr queue pointer */
@@ -657,12 +661,21 @@ static void dbri_cmdwait(struct snd_dbri *dbri)
  */
 static s32 *dbri_cmdlock(struct snd_dbri *dbri, int len)
 {
+<<<<<<< HEAD
+=======
+	u32 dvma_addr = (u32)dbri->dma_dvma;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Space for 2 WAIT cmds (replaced later by 1 JUMP cmd) */
 	len += 2;
 	spin_lock(&dbri->cmdlock);
 	if (dbri->cmdptr - dbri->dma->cmd + len < DBRI_NO_CMDS - 2)
 		return dbri->cmdptr + 2;
+<<<<<<< HEAD
 	else if (len < sbus_readl(dbri->regs + REG8) - dbri->dma_dvma)
+=======
+	else if (len < sbus_readl(dbri->regs + REG8) - dvma_addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return dbri->dma->cmd;
 	else
 		printk(KERN_ERR "DBRI: no space for commands.");
@@ -680,6 +693,10 @@ static s32 *dbri_cmdlock(struct snd_dbri *dbri, int len)
  */
 static void dbri_cmdsend(struct snd_dbri *dbri, s32 *cmd, int len)
 {
+<<<<<<< HEAD
+=======
+	u32 dvma_addr = (u32)dbri->dma_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s32 tmp, addr;
 	static int wait_id = 0;
 
@@ -689,7 +706,11 @@ static void dbri_cmdsend(struct snd_dbri *dbri, s32 *cmd, int len)
 	*(cmd+1) = DBRI_CMD(D_WAIT, 1, wait_id);
 
 	/* Replace the last command with JUMP */
+<<<<<<< HEAD
 	addr = dbri->dma_dvma + (cmd - len - dbri->dma->cmd) * sizeof(s32);
+=======
+	addr = dvma_addr + (cmd - len - dbri->dma->cmd) * sizeof(s32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*(dbri->cmdptr+1) = addr;
 	*(dbri->cmdptr) = DBRI_CMD(D_JUMP, 0, 0);
 
@@ -747,6 +768,10 @@ static void dbri_reset(struct snd_dbri *dbri)
 /* Lock must not be held before calling this */
 static void dbri_initialize(struct snd_dbri *dbri)
 {
+<<<<<<< HEAD
+=======
+	u32 dvma_addr = (u32)dbri->dma_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s32 *cmd;
 	u32 dma_addr;
 	unsigned long flags;
@@ -764,7 +789,11 @@ static void dbri_initialize(struct snd_dbri *dbri)
 	/*
 	 * Initialize the interrupt ring buffer.
 	 */
+<<<<<<< HEAD
 	dma_addr = dbri->dma_dvma + dbri_dma_off(intr, 0);
+=======
+	dma_addr = dvma_addr + dbri_dma_off(intr, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dbri->dma->intr[0] = dma_addr;
 	dbri->dbri_irqp = 1;
 	/*
@@ -778,7 +807,11 @@ static void dbri_initialize(struct snd_dbri *dbri)
 	dbri->cmdptr = cmd;
 	*(cmd++) = DBRI_CMD(D_WAIT, 1, 0);
 	*(cmd++) = DBRI_CMD(D_WAIT, 1, 0);
+<<<<<<< HEAD
 	dma_addr = dbri->dma_dvma + dbri_dma_off(cmd, 0);
+=======
+	dma_addr = dvma_addr + dbri_dma_off(cmd, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sbus_writel(dma_addr, dbri->regs + REG8);
 	spin_unlock(&dbri->cmdlock);
 
@@ -1077,6 +1110,10 @@ static void recv_fixed(struct snd_dbri *dbri, int pipe, volatile __u32 *ptr)
 static int setup_descs(struct snd_dbri *dbri, int streamno, unsigned int period)
 {
 	struct dbri_streaminfo *info = &dbri->stream_info[streamno];
+<<<<<<< HEAD
+=======
+	u32 dvma_addr = (u32)dbri->dma_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u32 dvma_buffer;
 	int desc;
 	int len;
@@ -1177,7 +1214,11 @@ static int setup_descs(struct snd_dbri *dbri, int streamno, unsigned int period)
 		else {
 			dbri->next_desc[last_desc] = desc;
 			dbri->dma->desc[last_desc].nda =
+<<<<<<< HEAD
 			    dbri->dma_dvma + dbri_dma_off(desc, desc);
+=======
+			    dvma_addr + dbri_dma_off(desc, desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		last_desc = desc;
@@ -1192,7 +1233,11 @@ static int setup_descs(struct snd_dbri *dbri, int streamno, unsigned int period)
 	}
 
 	dbri->dma->desc[last_desc].nda =
+<<<<<<< HEAD
 	    dbri->dma_dvma + dbri_dma_off(desc, first_desc);
+=======
+	    dvma_addr + dbri_dma_off(desc, first_desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dbri->next_desc[last_desc] = first_desc;
 	dbri->pipes[info->pipe].first_desc = first_desc;
 	dbri->pipes[info->pipe].desc = first_desc;
@@ -1697,6 +1742,10 @@ interrupts are disabled.
 static void xmit_descs(struct snd_dbri *dbri)
 {
 	struct dbri_streaminfo *info;
+<<<<<<< HEAD
+=======
+	u32 dvma_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s32 *cmd;
 	unsigned long flags;
 	int first_td;
@@ -1704,6 +1753,10 @@ static void xmit_descs(struct snd_dbri *dbri)
 	if (dbri == NULL)
 		return;		/* Disabled */
 
+<<<<<<< HEAD
+=======
+	dvma_addr = (u32)dbri->dma_dvma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info = &dbri->stream_info[DBRI_REC];
 	spin_lock_irqsave(&dbri->lock, flags);
 
@@ -1718,7 +1771,11 @@ static void xmit_descs(struct snd_dbri *dbri)
 			*(cmd++) = DBRI_CMD(D_SDP, 0,
 					    dbri->pipes[info->pipe].sdp
 					    | D_SDP_P | D_SDP_EVERY | D_SDP_C);
+<<<<<<< HEAD
 			*(cmd++) = dbri->dma_dvma +
+=======
+			*(cmd++) = dvma_addr +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   dbri_dma_off(desc, first_td);
 			dbri_cmdsend(dbri, cmd, 2);
 
@@ -1740,7 +1797,11 @@ static void xmit_descs(struct snd_dbri *dbri)
 			*(cmd++) = DBRI_CMD(D_SDP, 0,
 					    dbri->pipes[info->pipe].sdp
 					    | D_SDP_P | D_SDP_EVERY | D_SDP_C);
+<<<<<<< HEAD
 			*(cmd++) = dbri->dma_dvma +
+=======
+			*(cmd++) = dvma_addr +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   dbri_dma_off(desc, first_td);
 			dbri_cmdsend(dbri, cmd, 2);
 
@@ -2534,6 +2595,7 @@ static int snd_dbri_create(struct snd_card *card,
 	dbri->op = op;
 	dbri->irq = irq;
 
+<<<<<<< HEAD
 	dbri->dma = dma_alloc_coherent(&op->dev,
 				       sizeof(struct dbri_dma),
 				       &dbri->dma_dvma, GFP_ATOMIC);
@@ -2542,6 +2604,14 @@ static int snd_dbri_create(struct snd_card *card,
 	memset((void *)dbri->dma, 0, sizeof(struct dbri_dma));
 
 	dprintk(D_GEN, "DMA Cmd Block 0x%p (0x%08x)\n",
+=======
+	dbri->dma = dma_zalloc_coherent(&op->dev, sizeof(struct dbri_dma),
+					&dbri->dma_dvma, GFP_ATOMIC);
+	if (!dbri->dma)
+		return -ENOMEM;
+
+	dprintk(D_GEN, "DMA Cmd Block 0x%p (%pad)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dbri->dma, dbri->dma_dvma);
 
 	/* Map the registers into memory. */
@@ -2615,8 +2685,13 @@ static int dbri_probe(struct platform_device *op)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_dbri), &card);
+=======
+	err = snd_card_new(&op->dev, index[dev], id[dev], THIS_MODULE,
+			   sizeof(struct snd_dbri), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -2670,8 +2745,11 @@ static int dbri_remove(struct platform_device *op)
 	snd_dbri_free(card->private_data);
 	snd_card_free(card);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2690,7 +2768,10 @@ MODULE_DEVICE_TABLE(of, dbri_match);
 static struct platform_driver dbri_sbus_driver = {
 	.driver = {
 		.name = "dbri",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = dbri_match,
 	},
 	.probe		= dbri_probe,

@@ -22,6 +22,10 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jean-Francois Dagenais <dagenaisj@sonatest.com>");
 MODULE_DESCRIPTION("w1 family 29 driver for DS2408 8 Pin IO");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("w1-family-" __stringify(W1_FAMILY_DS2408));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #define W1_F29_RETRIES		3
@@ -71,10 +75,16 @@ static int _read_reg(struct w1_slave *sl, u8 address, unsigned char* buf)
 	return 1;
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f29_read_state(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t state_read(struct file *filp, struct kobject *kobj,
+			  struct bin_attribute *bin_attr, char *buf, loff_t off,
+			  size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dev_dbg(&kobj_to_w1_slave(kobj)->dev,
 		"Reading %s kobj: %p, off: %0#10x, count: %zu, buff addr: %p",
@@ -84,10 +94,16 @@ static ssize_t w1_f29_read_state(
 	return _read_reg(kobj_to_w1_slave(kobj), W1_F29_REG_LOGIG_STATE, buf);
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f29_read_output(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t output_read(struct file *filp, struct kobject *kobj,
+			   struct bin_attribute *bin_attr, char *buf,
+			   loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dev_dbg(&kobj_to_w1_slave(kobj)->dev,
 		"Reading %s kobj: %p, off: %0#10x, count: %zu, buff addr: %p",
@@ -98,10 +114,16 @@ static ssize_t w1_f29_read_output(
 					 W1_F29_REG_OUTPUT_LATCH_STATE, buf);
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f29_read_activity(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t activity_read(struct file *filp, struct kobject *kobj,
+			     struct bin_attribute *bin_attr, char *buf,
+			     loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dev_dbg(&kobj_to_w1_slave(kobj)->dev,
 		"Reading %s kobj: %p, off: %0#10x, count: %zu, buff addr: %p",
@@ -112,10 +134,16 @@ static ssize_t w1_f29_read_activity(
 					 W1_F29_REG_ACTIVITY_LATCH_STATE, buf);
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f29_read_cond_search_mask(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t cond_search_mask_read(struct file *filp, struct kobject *kobj,
+				     struct bin_attribute *bin_attr, char *buf,
+				     loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dev_dbg(&kobj_to_w1_slave(kobj)->dev,
 		"Reading %s kobj: %p, off: %0#10x, count: %zu, buff addr: %p",
@@ -126,10 +154,17 @@ static ssize_t w1_f29_read_cond_search_mask(
 		W1_F29_REG_COND_SEARCH_SELECT_MASK, buf);
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f29_read_cond_search_polarity(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t cond_search_polarity_read(struct file *filp,
+					 struct kobject *kobj,
+					 struct bin_attribute *bin_attr,
+					 char *buf, loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (count != 1 || off != 0)
 		return -EFAULT;
@@ -137,10 +172,16 @@ static ssize_t w1_f29_read_cond_search_polarity(
 		W1_F29_REG_COND_SEARCH_POL_SELECT, buf);
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f29_read_status_control(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t status_control_read(struct file *filp, struct kobject *kobj,
+				   struct bin_attribute *bin_attr, char *buf,
+				   loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (count != 1 || off != 0)
 		return -EFAULT;
@@ -148,6 +189,7 @@ static ssize_t w1_f29_read_status_control(
 		W1_F29_REG_CONTROL_AND_STATUS, buf);
 }
 
+<<<<<<< HEAD
 
 
 
@@ -155,6 +197,11 @@ static ssize_t w1_f29_write_output(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t output_write(struct file *filp, struct kobject *kobj,
+			    struct bin_attribute *bin_attr, char *buf,
+			    loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	u8 w1_buf[3];
@@ -223,10 +270,16 @@ error:
 /**
  * Writing to the activity file resets the activity latches.
  */
+<<<<<<< HEAD
 static ssize_t w1_f29_write_activity(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t activity_write(struct file *filp, struct kobject *kobj,
+			      struct bin_attribute *bin_attr, char *buf,
+			      loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	unsigned int retries = W1_F29_RETRIES;
@@ -254,6 +307,7 @@ error:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f29_write_status_control(
 	struct file *filp,
 	struct kobject *kobj,
@@ -261,6 +315,11 @@ static ssize_t w1_f29_write_status_control(
 	char *buf,
 	loff_t off,
 	size_t count)
+=======
+static ssize_t status_control_write(struct file *filp, struct kobject *kobj,
+				    struct bin_attribute *bin_attr, char *buf,
+				    loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	u8 w1_buf[4];
@@ -301,6 +360,7 @@ error:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 
 
 static struct bin_attribute w1_f29_sysfs_bin_files[] = {
@@ -384,12 +444,72 @@ static void w1_f29_remove_slave(struct w1_slave *sl)
 static struct w1_family_ops w1_f29_fops = {
 	.add_slave      = w1_f29_add_slave,
 	.remove_slave   = w1_f29_remove_slave,
+=======
+/*
+ * This is a special sequence we must do to ensure the P0 output is not stuck
+ * in test mode. This is described in rev 2 of the ds2408's datasheet
+ * (http://datasheets.maximintegrated.com/en/ds/DS2408.pdf) under
+ * "APPLICATION INFORMATION/Power-up timing".
+ */
+static int w1_f29_disable_test_mode(struct w1_slave *sl)
+{
+	int res;
+	u8 magic[10] = {0x96, };
+	u64 rn = le64_to_cpu(*((u64*)&sl->reg_num));
+
+	memcpy(&magic[1], &rn, 8);
+	magic[9] = 0x3C;
+
+	mutex_lock(&sl->master->bus_mutex);
+
+	res = w1_reset_bus(sl->master);
+	if (res)
+		goto out;
+	w1_write_block(sl->master, magic, ARRAY_SIZE(magic));
+
+	res = w1_reset_bus(sl->master);
+out:
+	mutex_unlock(&sl->master->bus_mutex);
+	return res;
+}
+
+static BIN_ATTR_RO(state, 1);
+static BIN_ATTR_RW(output, 1);
+static BIN_ATTR_RW(activity, 1);
+static BIN_ATTR_RO(cond_search_mask, 1);
+static BIN_ATTR_RO(cond_search_polarity, 1);
+static BIN_ATTR_RW(status_control, 1);
+
+static struct bin_attribute *w1_f29_bin_attrs[] = {
+	&bin_attr_state,
+	&bin_attr_output,
+	&bin_attr_activity,
+	&bin_attr_cond_search_mask,
+	&bin_attr_cond_search_polarity,
+	&bin_attr_status_control,
+	NULL,
+};
+
+static const struct attribute_group w1_f29_group = {
+	.bin_attrs = w1_f29_bin_attrs,
+};
+
+static const struct attribute_group *w1_f29_groups[] = {
+	&w1_f29_group,
+	NULL,
+};
+
+static struct w1_family_ops w1_f29_fops = {
+	.add_slave      = w1_f29_disable_test_mode,
+	.groups		= w1_f29_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct w1_family w1_family_29 = {
 	.fid = W1_FAMILY_DS2408,
 	.fops = &w1_f29_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_f29_init(void)
 {
@@ -403,3 +523,6 @@ static void __exit w1_f29_exit(void)
 
 module_init(w1_f29_init);
 module_exit(w1_f29_exit);
+=======
+module_w1_family(w1_family_29);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

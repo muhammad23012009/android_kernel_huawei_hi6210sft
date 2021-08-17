@@ -25,7 +25,10 @@
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kthread.h>
 #include <linux/module.h>
 #include <linux/oom.h>
@@ -40,8 +43,12 @@
 #include <asm/pgalloc.h>
 #include <asm/uaccess.h>
 #include <linux/memory.h>
+<<<<<<< HEAD
 
 #include "plpar_wrappers.h"
+=======
+#include <asm/plpar_wrappers.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CMM_DRIVER_VERSION	"1.0.0"
 #define CMM_DEFAULT_DELAY	1
@@ -393,6 +400,13 @@ static struct bus_type cmm_subsys = {
 	.dev_name = "cmm",
 };
 
+<<<<<<< HEAD
+=======
+static void cmm_release_device(struct device *dev)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * cmm_sysfs_register - Register with sysfs
  *
@@ -408,6 +422,10 @@ static int cmm_sysfs_register(struct device *dev)
 
 	dev->id = 0;
 	dev->bus = &cmm_subsys;
+<<<<<<< HEAD
+=======
+	dev->release = cmm_release_device;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((rc = device_register(dev)))
 		goto subsys_unregister;
@@ -557,7 +575,10 @@ static int cmm_mem_going_offline(void *arg)
 				pa_last = pa_last->next;
 				free_page((unsigned long)cmm_page_list);
 				cmm_page_list = pa_last;
+<<<<<<< HEAD
 				continue;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		pa_curr = pa_curr->next;
@@ -577,7 +598,11 @@ static int cmm_mem_going_offline(void *arg)
 				cmm_dbg("Failed to allocate memory for list "
 						"management. Memory hotplug "
 						"failed.\n");
+<<<<<<< HEAD
 				return ENOMEM;
+=======
+				return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			memcpy(npa, pa_curr, PAGE_SIZE);
 			if (pa_curr == cmm_page_list)

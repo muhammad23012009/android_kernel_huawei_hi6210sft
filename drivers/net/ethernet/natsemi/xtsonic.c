@@ -95,8 +95,12 @@ static int xtsonic_open(struct net_device *dev)
 {
 	int retval;
 
+<<<<<<< HEAD
 	retval = request_irq(dev->irq, sonic_interrupt, IRQF_DISABLED,
 				"sonic", dev);
+=======
+	retval = request_irq(dev->irq, sonic_interrupt, 0, "sonic", dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval) {
 		printk(KERN_ERR "%s: unable to get IRQ %d.\n",
 		       dev->name, dev->irq);
@@ -265,6 +269,10 @@ int xtsonic_probe(struct platform_device *pdev)
 
 	lp = netdev_priv(dev);
 	lp->device = &pdev->dev;
+<<<<<<< HEAD
+=======
+	platform_set_drvdata(pdev, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	netdev_boot_setup_check(dev);
 

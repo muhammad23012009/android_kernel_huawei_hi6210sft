@@ -15,7 +15,10 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -153,6 +156,7 @@ static int tiny_spi_txrx_bufs(struct spi_device *spi, struct spi_transfer *t)
 		}
 
 		wait_for_completion(&hw->done);
+<<<<<<< HEAD
 	} else if (txp && rxp) {
 		/* we need to tighten the transfer loop */
 		writeb(*txp++, hw->base + TINY_SPI_TXDATA);
@@ -209,6 +213,24 @@ static int tiny_spi_txrx_bufs(struct spi_device *spi, struct spi_transfer *t)
 		}
 		tiny_spi_wait_txe(hw);
 	}
+=======
+	} else {
+		/* we need to tighten the transfer loop */
+		writeb(txp ? *txp++ : 0, hw->base + TINY_SPI_TXDATA);
+		for (i = 1; i < t->len; i++) {
+			writeb(txp ? *txp++ : 0, hw->base + TINY_SPI_TXDATA);
+
+			if (rxp || (i != t->len - 1))
+				tiny_spi_wait_txr(hw);
+			if (rxp)
+				*rxp++ = readb(hw->base + TINY_SPI_TXDATA);
+		}
+		tiny_spi_wait_txe(hw);
+		if (rxp)
+			*rxp++ = readb(hw->base + TINY_SPI_RXDATA);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return t->len;
 }
 
@@ -248,8 +270,12 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 	struct tiny_spi *hw = platform_get_drvdata(pdev);
 	struct device_node *np = pdev->dev.of_node;
 	unsigned int i;
+<<<<<<< HEAD
 	const __be32 *val;
 	int len;
+=======
+	u32 val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!np)
 		return 0;
@@ -267,6 +293,7 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 			return -ENODEV;
 	}
 	hw->bitbang.master->dev.of_node = pdev->dev.of_node;
+<<<<<<< HEAD
 	val = of_get_property(pdev->dev.of_node,
 			      "clock-frequency", &len);
 	if (val && len >= sizeof(__be32))
@@ -274,6 +301,12 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 	val = of_get_property(pdev->dev.of_node, "baud-width", &len);
 	if (val && len >= sizeof(__be32))
 		hw->baudwidth = be32_to_cpup(val);
+=======
+	if (!of_property_read_u32(np, "clock-frequency", &val))
+		hw->freq = val;
+	if (!of_property_read_u32(np, "baud-width", &val))
+		hw->baudwidth = val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 #else /* !CONFIG_OF */
@@ -285,7 +318,11 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 
 static int tiny_spi_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct tiny_spi_platform_data *platp = pdev->dev.platform_data;
+=======
+	struct tiny_spi_platform_data *platp = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tiny_spi *hw;
 	struct spi_master *master;
 	struct resource *res;
@@ -306,15 +343,20 @@ static int tiny_spi_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, hw);
 
 	/* setup the state for the bitbang driver */
+<<<<<<< HEAD
 	hw->bitbang.master = spi_master_get(master);
 	if (!hw->bitbang.master)
 		return err;
+=======
+	hw->bitbang.master = master;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hw->bitbang.setup_transfer = tiny_spi_setup_transfer;
 	hw->bitbang.chipselect = tiny_spi_chipselect;
 	hw->bitbang.txrx_bufs = tiny_spi_txrx_bufs;
 
 	/* find and map our resources */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res)
 		goto exit_busy;
 	if (!devm_request_mem_region(&pdev->dev, res->start, resource_size(res),
@@ -324,6 +366,13 @@ static int tiny_spi_probe(struct platform_device *pdev)
 					resource_size(res));
 	if (!hw->base)
 		goto exit_busy;
+=======
+	hw->base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(hw->base)) {
+		err = PTR_ERR(hw->base);
+		goto exit;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* irq is optional */
 	hw->irq = platform_get_irq(pdev, 0);
 	if (hw->irq >= 0) {
@@ -337,8 +386,15 @@ static int tiny_spi_probe(struct platform_device *pdev)
 	if (platp) {
 		hw->gpio_cs_count = platp->gpio_cs_count;
 		hw->gpio_cs = platp->gpio_cs;
+<<<<<<< HEAD
 		if (platp->gpio_cs_count && !platp->gpio_cs)
 			goto exit_busy;
+=======
+		if (platp->gpio_cs_count && !platp->gpio_cs) {
+			err = -EBUSY;
+			goto exit;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hw->freq = platp->freq;
 		hw->baudwidth = platp->baudwidth;
 	} else {
@@ -365,10 +421,14 @@ static int tiny_spi_probe(struct platform_device *pdev)
 exit_gpio:
 	while (i-- > 0)
 		gpio_free(hw->gpio_cs[i]);
+<<<<<<< HEAD
 exit_busy:
 	err = -EBUSY;
 exit:
 	platform_set_drvdata(pdev, NULL);
+=======
+exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_master_put(master);
 	return err;
 }
@@ -382,7 +442,10 @@ static int tiny_spi_remove(struct platform_device *pdev)
 	spi_bitbang_stop(&hw->bitbang);
 	for (i = 0; i < hw->gpio_cs_count; i++)
 		gpio_free(hw->gpio_cs[i]);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_master_put(master);
 	return 0;
 }
@@ -400,7 +463,10 @@ static struct platform_driver tiny_spi_driver = {
 	.remove = tiny_spi_remove,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = NULL,
 		.of_match_table = of_match_ptr(tiny_spi_match),
 	},

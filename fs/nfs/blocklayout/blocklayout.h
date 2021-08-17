@@ -36,6 +36,7 @@
 #include <linux/nfs_fs.h>
 #include <linux/sunrpc/rpc_pipe_fs.h>
 
+<<<<<<< HEAD
 #include "../pnfs.h"
 #include "../netns.h"
 
@@ -80,10 +81,94 @@ struct pnfs_inval_tracking {
 	struct list_head it_link;
 	int		 it_sector;
 	int		 it_tags;
+=======
+#include "../nfs4_fs.h"
+#include "../pnfs.h"
+#include "../netns.h"
+
+#define PAGE_CACHE_SECTORS (PAGE_SIZE >> SECTOR_SHIFT)
+#define PAGE_CACHE_SECTOR_SHIFT (PAGE_SHIFT - SECTOR_SHIFT)
+#define SECTOR_SIZE (1 << SECTOR_SHIFT)
+
+struct pnfs_block_dev;
+
+#define PNFS_BLOCK_MAX_UUIDS	4
+#define PNFS_BLOCK_MAX_DEVICES	64
+
+/*
+ * Random upper cap for the uuid length to avoid unbounded allocation.
+ * Not actually limited by the protocol.
+ */
+#define PNFS_BLOCK_UUID_LEN	128
+
+struct pnfs_block_volume {
+	enum pnfs_block_volume_type	type;
+	union {
+		struct {
+			int		len;
+			int		nr_sigs;
+			struct {
+				u64		offset;
+				u32		sig_len;
+				u8		sig[PNFS_BLOCK_UUID_LEN];
+			} sigs[PNFS_BLOCK_MAX_UUIDS];
+		} simple;
+		struct {
+			u64		start;
+			u64		len;
+			u32		volume;
+		} slice;
+		struct {
+			u32		volumes_count;
+			u32		volumes[PNFS_BLOCK_MAX_DEVICES];
+		} concat;
+		struct {
+			u64		chunk_size;
+			u32		volumes_count;
+			u32		volumes[PNFS_BLOCK_MAX_DEVICES];
+		} stripe;
+		struct {
+			enum scsi_code_set		code_set;
+			enum scsi_designator_type	designator_type;
+			int				designator_len;
+			u8				designator[256];
+			u64				pr_key;
+		} scsi;
+	};
+};
+
+struct pnfs_block_dev_map {
+	sector_t			start;
+	sector_t			len;
+
+	sector_t			disk_offset;
+	struct block_device		*bdev;
+};
+
+struct pnfs_block_dev {
+	struct nfs4_deviceid_node	node;
+
+	u64				start;
+	u64				len;
+
+	u32				nr_children;
+	struct pnfs_block_dev		*children;
+	u64				chunk_size;
+
+	struct block_device		*bdev;
+	u64				disk_offset;
+
+	u64				pr_key;
+	bool				pr_registered;
+
+	bool (*map)(struct pnfs_block_dev *dev, u64 offset,
+			struct pnfs_block_dev_map *map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* sector_t fields are all in 512-byte sectors */
 struct pnfs_block_extent {
+<<<<<<< HEAD
 	struct kref	be_refcnt;
 	struct list_head be_node;	/* link into lseg list */
 	struct nfs4_deviceid be_devid;  /* FIXME: could use device cache instead */
@@ -142,6 +227,31 @@ struct pnfs_block_layout {
 
 #define BLK_ID(lo) ((struct block_mount_id *)(NFS_SERVER(lo->plh_inode)->pnfs_ld_data))
 
+=======
+	union {
+		struct rb_node	be_node;
+		struct list_head be_list;
+	};
+	struct nfs4_deviceid_node *be_device;
+	sector_t	be_f_offset;	/* the starting offset in the file */
+	sector_t	be_length;	/* the size of the extent */
+	sector_t	be_v_offset;	/* the starting offset in the volume */
+	enum pnfs_block_extent_state be_state;	/* the state of this extent */
+#define EXTENT_WRITTEN		1
+#define EXTENT_COMMITTING	2
+	unsigned int	be_tag;
+};
+
+struct pnfs_block_layout {
+	struct pnfs_layout_hdr	bl_layout;
+	struct rb_root		bl_ext_rw;
+	struct rb_root		bl_ext_ro;
+	spinlock_t		bl_ext_lock;   /* Protects list manipulation */
+	bool			bl_scsi_layout;
+	u64			bl_lwb;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct pnfs_block_layout *
 BLK_LO2EXT(struct pnfs_layout_hdr *lo)
 {
@@ -170,6 +280,7 @@ struct bl_msg_hdr {
 #define BL_DEVICE_REQUEST_PROC         0x1 /* User level process succeeds */
 #define BL_DEVICE_REQUEST_ERR          0x2 /* User level process fails */
 
+<<<<<<< HEAD
 /* blocklayoutdev.c */
 ssize_t bl_pipe_downcall(struct file *, const char __user *, size_t);
 void bl_pipe_destroy_msg(struct rpc_pipe_msg *);
@@ -206,5 +317,29 @@ int bl_push_one_short_extent(struct pnfs_inval_markings *marks);
 struct pnfs_block_short_extent *
 bl_pop_one_short_extent(struct pnfs_inval_markings *marks);
 void bl_free_short_extents(struct pnfs_inval_markings *marks, int num_to_free);
+=======
+/* dev.c */
+struct nfs4_deviceid_node *bl_alloc_deviceid_node(struct nfs_server *server,
+		struct pnfs_device *pdev, gfp_t gfp_mask);
+void bl_free_deviceid_node(struct nfs4_deviceid_node *d);
+
+/* extent_tree.c */
+int ext_tree_insert(struct pnfs_block_layout *bl,
+		struct pnfs_block_extent *new);
+int ext_tree_remove(struct pnfs_block_layout *bl, bool rw, sector_t start,
+		sector_t end);
+int ext_tree_mark_written(struct pnfs_block_layout *bl, sector_t start,
+		sector_t len, u64 lwb);
+bool ext_tree_lookup(struct pnfs_block_layout *bl, sector_t isect,
+		struct pnfs_block_extent *ret, bool rw);
+int ext_tree_prepare_commit(struct nfs4_layoutcommit_args *arg);
+void ext_tree_mark_committed(struct nfs4_layoutcommit_args *arg, int status);
+
+/* rpc_pipefs.c */
+dev_t bl_resolve_deviceid(struct nfs_server *server,
+		struct pnfs_block_volume *b, gfp_t gfp_mask);
+int __init bl_init_pipefs(void);
+void bl_cleanup_pipefs(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* FS_NFS_NFS4BLOCKLAYOUT_H */

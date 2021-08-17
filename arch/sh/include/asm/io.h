@@ -122,7 +122,11 @@ __BUILD_MEMORY_STRING(__raw_, l, u32)
 
 __BUILD_MEMORY_STRING(__raw_, q, u64)
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_IOPORT
+=======
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Slowdown I/O port space accesses for antique hardware.
@@ -218,7 +222,11 @@ __BUILD_IOPORT_STRING(w, u16)
 __BUILD_IOPORT_STRING(l, u32)
 __BUILD_IOPORT_STRING(q, u64)
 
+<<<<<<< HEAD
 #else /* !CONFIG_HAS_IOPORT */
+=======
+#else /* !CONFIG_HAS_IOPORT_MAP */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/io_noioport.h>
 
@@ -342,6 +350,10 @@ ioremap_cache(phys_addr_t offset, unsigned long size)
 {
 	return __ioremap_mode(offset, size, PAGE_KERNEL);
 }
+<<<<<<< HEAD
+=======
+#define ioremap_cache ioremap_cache
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_HAVE_IOREMAP_PROT
 static inline void __iomem *
@@ -368,7 +380,16 @@ static inline int iounmap_fixed(void __iomem *addr) { return -EINVAL; }
 #endif
 
 #define ioremap_nocache	ioremap
+<<<<<<< HEAD
 #define iounmap		__iounmap
+=======
+#define ioremap_uc	ioremap
+
+static inline void iounmap(void __iomem *addr)
+{
+	__iounmap(addr);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Convert a physical pointer to a virtual kernel pointer for /dev/mem

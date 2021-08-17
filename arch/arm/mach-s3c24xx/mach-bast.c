@@ -19,6 +19,10 @@
 #include <linux/gpio.h>
 #include <linux/syscore_ops.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/dm9000.h>
 #include <linux/ata_platform.h>
@@ -48,13 +52,21 @@
 #include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
+<<<<<<< HEAD
 
 #include <plat/clock.h>
+=======
+#include <mach/gpio-samsung.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/cpu.h>
 #include <plat/cpu-freq.h>
 #include <plat/devs.h>
 #include <plat/gpio-cfg.h>
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/samsung-time.h>
 
 #include "bast.h"
@@ -522,6 +534,10 @@ static struct s3c_hwmon_pdata bast_hwmon_info = {
 // cat /sys/devices/platform/s3c24xx-adc/s3c-hwmon/in_0
 
 static struct platform_device *bast_devices[] __initdata = {
+<<<<<<< HEAD
+=======
+	&s3c2410_device_dclk,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&s3c_device_ohci,
 	&s3c_device_lcd,
 	&s3c_device_wdt,
@@ -536,6 +552,7 @@ static struct platform_device *bast_devices[] __initdata = {
 	&bast_sio,
 };
 
+<<<<<<< HEAD
 static struct clk *bast_clocks[] __initdata = {
 	&s3c24xx_dclk0,
 	&s3c24xx_dclk1,
@@ -544,6 +561,8 @@ static struct clk *bast_clocks[] __initdata = {
 	&s3c24xx_uclk,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct s3c_cpufreq_board __initdata bast_cpufreq = {
 	.refresh	= 7800, /* 7.8usec */
 	.auto_io	= 1,
@@ -557,6 +576,7 @@ static struct s3c24xx_audio_simtec_pdata __initdata bast_audio = {
 
 static void __init bast_map_io(void)
 {
+<<<<<<< HEAD
 	/* initialise the clocks */
 
 	s3c24xx_dclk0.parent = &clk_upll;
@@ -576,10 +596,24 @@ static void __init bast_map_io(void)
 
 	s3c24xx_init_io(bast_iodesc, ARRAY_SIZE(bast_iodesc));
 	s3c24xx_init_clocks(0);
+=======
+	s3c_hwmon_set_platdata(&bast_hwmon_info);
+
+	s3c24xx_init_io(bast_iodesc, ARRAY_SIZE(bast_iodesc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(bast_uartcfgs, ARRAY_SIZE(bast_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init bast_init_time(void)
+{
+	s3c2410_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init bast_init(void)
 {
 	register_syscore_ops(&bast_pm_syscore_ops);
@@ -607,6 +641,10 @@ MACHINE_START(BAST, "Simtec-BAST")
 	.map_io		= bast_map_io,
 	.init_irq	= s3c2410_init_irq,
 	.init_machine	= bast_init,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c2410_restart,
+=======
+	.init_time	= bast_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

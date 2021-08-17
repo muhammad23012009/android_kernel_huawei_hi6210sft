@@ -98,7 +98,11 @@ static int va1j5jf8007t_get_frontend_algo(struct dvb_frontend *fe)
 }
 
 static int
+<<<<<<< HEAD
 va1j5jf8007t_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+va1j5jf8007t_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct va1j5jf8007t_state *state;
 
@@ -266,7 +270,11 @@ static int
 va1j5jf8007t_tune(struct dvb_frontend *fe,
 		  bool re_tune,
 		  unsigned int mode_flags,  unsigned int *delay,
+<<<<<<< HEAD
 		  fe_status_t *status)
+=======
+		  enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct va1j5jf8007t_state *state;
 	int ret;

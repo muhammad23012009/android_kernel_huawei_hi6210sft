@@ -364,7 +364,11 @@ int cx18_stream_alloc(struct cx18_stream *s)
 					((char __iomem *)cx->scb->cpu_mdl));
 
 		CX18_ERR("Too many buffers, cannot fit in SCB area\n");
+<<<<<<< HEAD
 		CX18_ERR("Max buffers = %zd\n",
+=======
+		CX18_ERR("Max buffers = %zu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			bufsz / sizeof(struct cx18_mdl_ent));
 		return -ENOMEM;
 	}

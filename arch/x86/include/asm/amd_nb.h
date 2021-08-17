@@ -19,7 +19,11 @@ extern int amd_cache_northbridges(void);
 extern void amd_flush_garts(void);
 extern int amd_numa_init(void);
 extern int amd_get_subcaches(int);
+<<<<<<< HEAD
 extern int amd_set_subcaches(int, int);
+=======
+extern int amd_set_subcaches(int, unsigned long);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct amd_l3_cache {
 	unsigned indices;
@@ -27,6 +31,7 @@ struct amd_l3_cache {
 };
 
 struct threshold_block {
+<<<<<<< HEAD
 	unsigned int		block;
 	unsigned int		bank;
 	unsigned int		cpu;
@@ -36,6 +41,25 @@ struct threshold_block {
 	u16			threshold_limit;
 	struct kobject		kobj;
 	struct list_head	miscj;
+=======
+	unsigned int	 block;			/* Number within bank */
+	unsigned int	 bank;			/* MCA bank the block belongs to */
+	unsigned int	 cpu;			/* CPU which controls MCA bank */
+	u32		 address;		/* MSR address for the block */
+	u16		 interrupt_enable;	/* Enable/Disable APIC interrupt */
+	bool		 interrupt_capable;	/* Bank can generate an interrupt. */
+
+	u16		 threshold_limit;	/*
+						 * Value upon which threshold
+						 * interrupt is generated.
+						 */
+
+	struct kobject	 kobj;			/* sysfs object */
+	struct list_head miscj;			/*
+						 * List of threshold blocks
+						 * within a bank.
+						 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct threshold_bank {
@@ -81,7 +105,11 @@ static inline struct amd_northbridge *node_to_amd_nb(int node)
 	return (node < amd_northbridges.num) ? &amd_northbridges.nb[node] : NULL;
 }
 
+<<<<<<< HEAD
 static inline u16 amd_get_node_id(struct pci_dev *pdev)
+=======
+static inline u16 amd_pci_dev_to_node_id(struct pci_dev *pdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *misc;
 	int i;
@@ -98,11 +126,28 @@ static inline u16 amd_get_node_id(struct pci_dev *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool amd_gart_present(void)
+{
+	/* GART present only on Fam15h, upto model 0fh */
+	if (boot_cpu_data.x86 == 0xf || boot_cpu_data.x86 == 0x10 ||
+	    (boot_cpu_data.x86 == 0x15 && boot_cpu_data.x86_model < 0x10))
+		return true;
+
+	return false;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 
 #define amd_nb_num(x)		0
 #define amd_nb_has_feature(x)	false
 #define node_to_amd_nb(x)	NULL
+<<<<<<< HEAD
+=======
+#define amd_gart_present(x)	false
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 

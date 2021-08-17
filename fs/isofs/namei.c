@@ -18,6 +18,7 @@ static int
 isofs_cmp(struct dentry *dentry, const char *compare, int dlen)
 {
 	struct qstr qstr;
+<<<<<<< HEAD
 
 	if (!compare)
 		return 1;
@@ -39,6 +40,13 @@ isofs_cmp(struct dentry *dentry, const char *compare, int dlen)
 	qstr.len = dlen;
 	return dentry->d_op->d_compare(NULL, NULL, NULL, NULL,
 			dentry->d_name.len, dentry->d_name.name, &qstr);
+=======
+	qstr.name = compare;
+	qstr.len = dlen;
+	if (likely(!dentry->d_op))
+		return dentry->d_name.len != dlen || memcmp(dentry->d_name.name, compare, dlen);
+	return dentry->d_op->d_compare(NULL, dentry->d_name.len, dentry->d_name.name, &qstr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -117,6 +125,10 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 			printk(KERN_NOTICE "iso9660: Corrupted directory entry"
 			       " in block %lu of inode %lu\n", block,
 			       dir->i_ino);
+<<<<<<< HEAD
+=======
+			brelse(bh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 
@@ -147,7 +159,12 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 				(!(de->flags[-sbi->s_high_sierra] & 1))) &&
 			(sbi->s_showassoc ||
 				(!(de->flags[-sbi->s_high_sierra] & 4)))) {
+<<<<<<< HEAD
 			match = (isofs_cmp(dentry, dpnt, dlen) == 0);
+=======
+			if (dpnt && (dlen > 1 || dpnt[0] > 1))
+				match = (isofs_cmp(dentry, dpnt, dlen) == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		if (match) {
 			isofs_normalize_block_and_offset(de,

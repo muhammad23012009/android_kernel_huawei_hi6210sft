@@ -9,9 +9,15 @@
 #ifndef __ASM_TLB_MMU_V1_H__
 #define __ASM_TLB_MMU_V1_H__
 
+<<<<<<< HEAD
 #if defined(__ASSEMBLY__) && defined(CONFIG_ARC_MMU_VER == 1)
 
 #include <asm/tlb.h>
+=======
+#include <asm/mmu.h>
+
+#if defined(__ASSEMBLY__) && (CONFIG_ARC_MMU_VER == 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .macro TLB_WRITE_HEURISTICS
 

@@ -1,4 +1,8 @@
 /*
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014-15 Synopsys, Inc. (www.synopsys.com)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -9,6 +13,7 @@
 #ifndef __ASM_ARC_IRQFLAGS_H
 #define __ASM_ARC_IRQFLAGS_H
 
+<<<<<<< HEAD
 /* vineetg: March 2010 : local_irq_save( ) optimisation
  *  -Remove explicit mov of current status32 into reg, that is not needed
  *  -Use BIC  insn instead of INVERTED + AND
@@ -146,5 +151,12 @@ static inline void arch_unmask_irq(unsigned int irq)
 #endif	/* __ASSEMBLY__ */
 
 #endif	/* KERNEL */
+=======
+#ifdef CONFIG_ISA_ARCOMPACT
+#include <asm/irqflags-compact.h>
+#else
+#include <asm/irqflags-arcv2.h>
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

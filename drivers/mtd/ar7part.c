@@ -43,7 +43,11 @@ struct ar7_bin_rec {
 };
 
 static int create_mtd_partitions(struct mtd_info *master,
+<<<<<<< HEAD
 				 struct mtd_partition **pparts,
+=======
+				 const struct mtd_partition **pparts,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 struct mtd_part_parser_data *data)
 {
 	struct ar7_bin_rec header;
@@ -132,6 +136,7 @@ static int create_mtd_partitions(struct mtd_info *master,
 }
 
 static struct mtd_part_parser ar7_parser = {
+<<<<<<< HEAD
 	.owner = THIS_MODULE,
 	.parse_fn = create_mtd_partitions,
 	.name = "ar7part",
@@ -149,6 +154,12 @@ static void __exit ar7_parser_exit(void)
 
 module_init(ar7_parser_init);
 module_exit(ar7_parser_exit);
+=======
+	.parse_fn = create_mtd_partitions,
+	.name = "ar7part",
+};
+module_mtd_part_parser(ar7_parser);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR(	"Felix Fietkau <nbd@openwrt.org>, "

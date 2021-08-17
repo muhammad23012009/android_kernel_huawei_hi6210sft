@@ -367,6 +367,23 @@ void sas_remove_host(struct Scsi_Host *shost)
 EXPORT_SYMBOL(sas_remove_host);
 
 /**
+<<<<<<< HEAD
+=======
+ * sas_get_address - return the SAS address of the device
+ * @sdev: scsi device
+ *
+ * Returns the SAS address of the scsi device
+ */
+u64 sas_get_address(struct scsi_device *sdev)
+{
+	struct sas_end_device *rdev = sas_sdev_to_rdev(sdev);
+
+	return rdev->rphy.identify.sas_address;
+}
+EXPORT_SYMBOL(sas_get_address);
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * sas_tlr_supported - checking TLR bit in vpd 0x90
  * @sdev: scsi device struct
  *
@@ -1222,6 +1239,7 @@ show_sas_rphy_enclosure_identifier(struct device *dev,
 	u64 identifier;
 	int error;
 
+<<<<<<< HEAD
 	/*
 	 * Only devices behind an expander are supported, because the
 	 * enclosure identifier is a SMP feature.
@@ -1229,6 +1247,8 @@ show_sas_rphy_enclosure_identifier(struct device *dev,
 	if (scsi_is_sas_phy_local(phy))
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = i->f->get_enclosure_identifier(rphy, &identifier);
 	if (error)
 		return error;
@@ -1248,9 +1268,12 @@ show_sas_rphy_bay_identifier(struct device *dev,
 	struct sas_internal *i = to_sas_internal(shost->transportt);
 	int val;
 
+<<<<<<< HEAD
 	if (scsi_is_sas_phy_local(phy))
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	val = i->f->get_bay_identifier(rphy);
 	if (val < 0)
 		return val;
@@ -1266,6 +1289,10 @@ sas_rphy_protocol_attr(identify.target_port_protocols, target_port_protocols);
 sas_rphy_simple_attr(identify.sas_address, sas_address, "0x%016llx\n",
 		unsigned long long);
 sas_rphy_simple_attr(identify.phy_identifier, phy_identifier, "%d\n", u8);
+<<<<<<< HEAD
+=======
+sas_rphy_simple_attr(scsi_target_id, scsi_target_id, "%d\n", u32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* only need 8 bytes of data plus header (4 or 8) */
 #define BUF_SIZE 64
@@ -1593,7 +1620,12 @@ int sas_rphy_add(struct sas_rphy *rphy)
 		else
 			lun = 0;
 
+<<<<<<< HEAD
 		scsi_scan_target(&rphy->dev, 0, rphy->scsi_target_id, lun, 0);
+=======
+		scsi_scan_target(&rphy->dev, 0, rphy->scsi_target_id, lun,
+				 SCSI_SCAN_INITIAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -1621,8 +1653,11 @@ void sas_rphy_free(struct sas_rphy *rphy)
 	list_del(&rphy->list);
 	mutex_unlock(&sas_host->lock);
 
+<<<<<<< HEAD
 	sas_bsg_remove(shost, rphy);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	transport_destroy_device(dev);
 
 	put_device(dev);
@@ -1681,6 +1716,10 @@ sas_rphy_remove(struct sas_rphy *rphy)
 	}
 
 	sas_rphy_unlink(rphy);
+<<<<<<< HEAD
+=======
+	sas_bsg_remove(NULL, rphy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	transport_remove_device(dev);
 	device_del(dev);
 }
@@ -1706,7 +1745,11 @@ EXPORT_SYMBOL(scsi_is_sas_rphy);
  */
 
 static int sas_user_scan(struct Scsi_Host *shost, uint channel,
+<<<<<<< HEAD
 		uint id, uint lun)
+=======
+		uint id, u64 lun)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sas_host_attrs *sas_host = to_sas_host_attrs(shost);
 	struct sas_rphy *rphy;
@@ -1719,8 +1762,13 @@ static int sas_user_scan(struct Scsi_Host *shost, uint channel,
 
 		if ((channel == SCAN_WILD_CARD || channel == 0) &&
 		    (id == SCAN_WILD_CARD || id == rphy->scsi_target_id)) {
+<<<<<<< HEAD
 			scsi_scan_target(&rphy->dev, 0,
 					 rphy->scsi_target_id, lun, 1);
+=======
+			scsi_scan_target(&rphy->dev, 0, rphy->scsi_target_id,
+					 lun, SCSI_SCAN_MANUAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	mutex_unlock(&sas_host->lock);
@@ -1867,6 +1915,10 @@ sas_attach_transport(struct sas_function_template *ft)
 	SETUP_RPORT_ATTRIBUTE(rphy_device_type);
 	SETUP_RPORT_ATTRIBUTE(rphy_sas_address);
 	SETUP_RPORT_ATTRIBUTE(rphy_phy_identifier);
+<<<<<<< HEAD
+=======
+	SETUP_RPORT_ATTRIBUTE(rphy_scsi_target_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SETUP_OPTIONAL_RPORT_ATTRIBUTE(rphy_enclosure_identifier,
 				       get_enclosure_identifier);
 	SETUP_OPTIONAL_RPORT_ATTRIBUTE(rphy_bay_identifier,

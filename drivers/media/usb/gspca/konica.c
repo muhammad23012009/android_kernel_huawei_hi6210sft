@@ -127,6 +127,14 @@ static void reg_r(struct gspca_dev *gspca_dev, u16 value, u16 index)
 	if (ret < 0) {
 		pr_err("reg_r err %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(gspca_dev->usb_buf, 0, 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -188,6 +196,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	if (alt->desc.bNumEndpoints < 2)
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	packet_size = le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
 
 	n = gspca_dev->cam.cam_mode[gspca_dev->curr_mode].priv;
@@ -208,10 +222,15 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		packet_size =
 			le16_to_cpu(alt->endpoint[i].desc.wMaxPacketSize);
 		urb = usb_alloc_urb(SD_NPKT, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!urb) {
 			pr_err("usb_alloc_urb failed\n");
 			return -ENOMEM;
 		}
+=======
+		if (!urb)
+			return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gspca_dev->urb[n] = urb;
 		urb->transfer_buffer = usb_alloc_coherent(gspca_dev->dev,
 						packet_size * SD_NPKT,
@@ -243,7 +262,11 @@ static int sd_start(struct gspca_dev *gspca_dev)
 
 static void sd_stopN(struct gspca_dev *gspca_dev)
 {
+<<<<<<< HEAD
 	struct sd *sd = (struct sd *) gspca_dev;
+=======
+	struct sd *sd __maybe_unused = (struct sd *) gspca_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	konica_stream_off(gspca_dev);
 #if IS_ENABLED(CONFIG_INPUT)

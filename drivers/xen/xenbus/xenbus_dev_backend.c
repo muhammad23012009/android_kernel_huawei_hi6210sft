@@ -1,9 +1,18 @@
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/capability.h>
 
 #include <xen/xen.h>
@@ -16,8 +25,11 @@
 
 #include "xenbus_comms.h"
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int xenbus_backend_open(struct inode *inode, struct file *filp)
 {
 	if (!capable(CAP_SYS_ADMIN))
@@ -47,7 +59,11 @@ static long xenbus_alloc(domid_t domid)
 		goto out_err;
 
 	gnttab_grant_foreign_access_ref(GNTTAB_RESERVED_XENSTORE, domid,
+<<<<<<< HEAD
 			virt_to_mfn(xen_store_interface), 0 /* writable */);
+=======
+			virt_to_gfn(xen_store_interface), 0 /* writable */);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	arg.dom = DOMID_SELF;
 	arg.remote_dom = domid;
@@ -127,6 +143,7 @@ static int __init xenbus_backend_init(void)
 
 	err = misc_register(&xenbus_backend_dev);
 	if (err)
+<<<<<<< HEAD
 		printk(KERN_ERR "Could not register xenbus backend device\n");
 	return err;
 }
@@ -138,3 +155,9 @@ static void __exit xenbus_backend_exit(void)
 
 module_init(xenbus_backend_init);
 module_exit(xenbus_backend_exit);
+=======
+		pr_err("Could not register xenbus backend device\n");
+	return err;
+}
+device_initcall(xenbus_backend_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -36,7 +36,10 @@
 #include <linux/types.h>
 #include <linux/ctype.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
 #include <linux/mdio.h>
@@ -576,7 +579,11 @@ static inline int t3_mdio_write(struct cphy *phy, int mmd, int reg,
 
 /* Convenience initializer */
 static inline void cphy_init(struct cphy *phy, struct adapter *adapter,
+<<<<<<< HEAD
 			     int phy_addr, struct cphy_ops *phy_ops,
+=======
+			     int phy_addr, const struct cphy_ops *phy_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     const struct mdio_ops *mdio_ops,
 			      unsigned int caps, const char *desc)
 {

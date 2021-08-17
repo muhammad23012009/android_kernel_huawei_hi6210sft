@@ -11,16 +11,23 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/pch_dma.h>
@@ -360,6 +367,7 @@ static void pdc_chain_complete(struct pch_dma_chan *pd_chan,
 			       struct pch_dma_desc *desc)
 {
 	struct dma_async_tx_descriptor *txd = &desc->txd;
+<<<<<<< HEAD
 	dma_async_tx_callback callback = txd->callback;
 	void *param = txd->callback_param;
 
@@ -368,6 +376,15 @@ static void pdc_chain_complete(struct pch_dma_chan *pd_chan,
 
 	if (callback)
 		callback(param);
+=======
+	struct dmaengine_desc_callback cb;
+
+	dmaengine_desc_get_callback(txd, &cb);
+	list_splice_init(&desc->tx_list, &pd_chan->free_list);
+	list_move(&desc->desc_node, &pd_chan->free_list);
+
+	dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void pdc_complete_all(struct pch_dma_chan *pd_chan)
@@ -564,6 +581,7 @@ static void pd_free_chan_resources(struct dma_chan *chan)
 static enum dma_status pd_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 				    struct dma_tx_state *txstate)
 {
+<<<<<<< HEAD
 	struct pch_dma_chan *pd_chan = to_pd_chan(chan);
 	enum dma_status ret;
 
@@ -572,6 +590,9 @@ static enum dma_status pd_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 	spin_unlock_irq(&pd_chan->lock);
 
 	return ret;
+=======
+	return dma_cookie_status(chan, cookie, txstate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void pd_issue_pending(struct dma_chan *chan)
@@ -671,16 +692,23 @@ err_desc_get:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int pd_device_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 			     unsigned long arg)
+=======
+static int pd_device_terminate_all(struct dma_chan *chan)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pch_dma_chan *pd_chan = to_pd_chan(chan);
 	struct pch_dma_desc *desc, *_d;
 	LIST_HEAD(list);
 
+<<<<<<< HEAD
 	if (cmd != DMA_TERMINATE_ALL)
 		return -ENXIO;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&pd_chan->lock);
 
 	pdc_set_mode(&pd_chan->chan, DMA_CTL0_DISABLE);
@@ -867,6 +895,10 @@ static int pch_dma_probe(struct pci_dev *pdev,
 
 	if (!(pci_resource_flags(pdev, 1) & IORESOURCE_MEM)) {
 		dev_err(&pdev->dev, "Cannot find proper base address\n");
+<<<<<<< HEAD
+=======
+		err = -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_disable_pdev;
 	}
 
@@ -890,6 +922,10 @@ static int pch_dma_probe(struct pci_dev *pdev,
 	}
 
 	pci_set_master(pdev);
+<<<<<<< HEAD
+=======
+	pd->dma.dev = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = request_irq(pdev->irq, pd_irq, IRQF_SHARED, DRV_NAME, pd);
 	if (err) {
@@ -905,7 +941,10 @@ static int pch_dma_probe(struct pci_dev *pdev,
 		goto err_free_irq;
 	}
 
+<<<<<<< HEAD
 	pd->dma.dev = &pdev->dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_LIST_HEAD(&pd->dma.channels);
 
@@ -937,7 +976,11 @@ static int pch_dma_probe(struct pci_dev *pdev,
 	pd->dma.device_tx_status = pd_tx_status;
 	pd->dma.device_issue_pending = pd_issue_pending;
 	pd->dma.device_prep_slave_sg = pd_prep_slave_sg;
+<<<<<<< HEAD
 	pd->dma.device_control = pd_device_control;
+=======
+	pd->dma.device_terminate_all = pd_device_terminate_all;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = dma_async_device_register(&pd->dma);
 	if (err) {
@@ -958,6 +1001,10 @@ err_free_res:
 err_disable_pdev:
 	pci_disable_device(pdev);
 err_free_mem:
+<<<<<<< HEAD
+=======
+	kfree(pd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -970,16 +1017,27 @@ static void pch_dma_remove(struct pci_dev *pdev)
 	if (pd) {
 		dma_async_device_unregister(&pd->dma);
 
+<<<<<<< HEAD
+=======
+		free_irq(pdev->irq, pd);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_for_each_entry_safe(chan, _c, &pd->dma.channels,
 					 device_node) {
 			pd_chan = to_pd_chan(chan);
 
+<<<<<<< HEAD
 			tasklet_disable(&pd_chan->tasklet);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tasklet_kill(&pd_chan->tasklet);
 		}
 
 		pci_pool_destroy(pd->pool);
+<<<<<<< HEAD
 		free_irq(pdev->irq, pd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_iounmap(pdev, pd->membase);
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
@@ -1002,7 +1060,11 @@ static void pch_dma_remove(struct pci_dev *pdev)
 #define PCI_DEVICE_ID_ML7831_DMA1_8CH	0x8810
 #define PCI_DEVICE_ID_ML7831_DMA2_4CH	0x8815
 
+<<<<<<< HEAD
 DEFINE_PCI_DEVICE_TABLE(pch_dma_id_table) = {
+=======
+static const struct pci_device_id pch_dma_id_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_EG20T_PCH_DMA_8CH), 8 },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_EG20T_PCH_DMA_4CH), 4 },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA1_8CH), 8}, /* UART Video */
@@ -1035,3 +1097,7 @@ MODULE_DESCRIPTION("Intel EG20T PCH / LAPIS Semicon ML7213/ML7223/ML7831 IOH "
 		   "DMA controller driver");
 MODULE_AUTHOR("Yong Wang <yong.y.wang@intel.com>");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(pci, pch_dma_id_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

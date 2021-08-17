@@ -8,7 +8,11 @@
  * and HeungJun Kim <riverful.kim@samsung.com>.
  *
  * Based on mt9v011 Micron Digital Image Sensor driver
+<<<<<<< HEAD
  * Copyright (c) 2009 Mauro Carvalho Chehab (mchehab@redhat.com)
+=======
+ * Copyright (c) 2009 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +27,12 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/sr030pc30.h>
+=======
+#include <media/v4l2-ctrls.h>
+#include <media/i2c/sr030pc30.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int debug;
 module_param(debug, int, 0644);
@@ -142,6 +151,7 @@ module_param(debug, int, 0644);
 
 struct sr030pc30_info {
 	struct v4l2_subdev sd;
+<<<<<<< HEAD
 	const struct sr030pc30_platform_data *pdata;
 	const struct sr030pc30_format *curr_fmt;
 	const struct sr030pc30_frmsize *curr_win;
@@ -153,11 +163,35 @@ struct sr030pc30_info {
 	unsigned int exposure;
 	u8 blue_balance;
 	u8 red_balance;
+=======
+	struct v4l2_ctrl_handler hdl;
+	const struct sr030pc30_platform_data *pdata;
+	const struct sr030pc30_format *curr_fmt;
+	const struct sr030pc30_frmsize *curr_win;
+	unsigned int hflip:1;
+	unsigned int vflip:1;
+	unsigned int sleep:1;
+	struct {
+		/* auto whitebalance control cluster */
+		struct v4l2_ctrl *awb;
+		struct v4l2_ctrl *red;
+		struct v4l2_ctrl *blue;
+	};
+	struct {
+		/* auto exposure control cluster */
+		struct v4l2_ctrl *autoexp;
+		struct v4l2_ctrl *exp;
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 i2c_reg_page;
 };
 
 struct sr030pc30_format {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
+=======
+	u32 code;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum v4l2_colorspace colorspace;
 	u16 ispctl1_reg;
 };
@@ -173,6 +207,7 @@ struct i2c_regval {
 	u16 val;
 };
 
+<<<<<<< HEAD
 static const struct v4l2_queryctrl sr030pc30_ctrl[] = {
 	{
 		.id		= V4L2_CID_AUTO_WHITE_BALANCE,
@@ -219,6 +254,8 @@ static const struct v4l2_queryctrl sr030pc30_ctrl[] = {
 	}
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* supported resolutions */
 static const struct sr030pc30_frmsize sr030pc30_sizes[] = {
 	{
@@ -239,6 +276,7 @@ static const struct sr030pc30_frmsize sr030pc30_sizes[] = {
 /* supported pixel formats */
 static const struct sr030pc30_format sr030pc30_formats[] = {
 	{
+<<<<<<< HEAD
 		.code		= V4L2_MBUS_FMT_YUYV8_2X8,
 		.colorspace	= V4L2_COLORSPACE_JPEG,
 		.ispctl1_reg	= 0x03,
@@ -256,6 +294,25 @@ static const struct sr030pc30_format sr030pc30_formats[] = {
 		.ispctl1_reg	= 0x01,
 	}, {
 		.code		= V4L2_MBUS_FMT_RGB565_2X8_BE,
+=======
+		.code		= MEDIA_BUS_FMT_YUYV8_2X8,
+		.colorspace	= V4L2_COLORSPACE_JPEG,
+		.ispctl1_reg	= 0x03,
+	}, {
+		.code		= MEDIA_BUS_FMT_YVYU8_2X8,
+		.colorspace	= V4L2_COLORSPACE_JPEG,
+		.ispctl1_reg	= 0x02,
+	}, {
+		.code		= MEDIA_BUS_FMT_VYUY8_2X8,
+		.colorspace	= V4L2_COLORSPACE_JPEG,
+		.ispctl1_reg	= 0,
+	}, {
+		.code		= MEDIA_BUS_FMT_UYVY8_2X8,
+		.colorspace	= V4L2_COLORSPACE_JPEG,
+		.ispctl1_reg	= 0x01,
+	}, {
+		.code		= MEDIA_BUS_FMT_RGB565_2X8_BE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.colorspace	= V4L2_COLORSPACE_JPEG,
 		.ispctl1_reg	= 0x40,
 	},
@@ -394,6 +451,7 @@ static int sr030pc30_pwr_ctrl(struct v4l2_subdev *sd,
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline int sr030pc30_enable_autoexposure(struct v4l2_subdev *sd, int on)
 {
 	struct sr030pc30_info *info = to_sr030pc30(sd);
@@ -436,6 +494,8 @@ static int sr030pc30_enable_autowhitebalance(struct v4l2_subdev *sd, int on)
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int sr030pc30_set_flip(struct v4l2_subdev *sd)
 {
 	struct sr030pc30_info *info = to_sr030pc30(sd);
@@ -498,6 +558,7 @@ static int sr030pc30_try_frame_size(struct v4l2_mbus_framefmt *mf)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int sr030pc30_queryctrl(struct v4l2_subdev *sd,
 			       struct v4l2_queryctrl *qc)
 {
@@ -626,6 +687,87 @@ static int sr030pc30_g_fmt(struct v4l2_subdev *sd,
 		if (ret)
 			return ret;
 	}
+=======
+static int sr030pc30_s_ctrl(struct v4l2_ctrl *ctrl)
+{
+	struct sr030pc30_info *info =
+		container_of(ctrl->handler, struct sr030pc30_info, hdl);
+	struct v4l2_subdev *sd = &info->sd;
+	int ret = 0;
+
+	v4l2_dbg(1, debug, sd, "%s: ctrl_id: %d, value: %d\n",
+			 __func__, ctrl->id, ctrl->val);
+
+	switch (ctrl->id) {
+	case V4L2_CID_AUTO_WHITE_BALANCE:
+		if (ctrl->is_new) {
+			ret = cam_i2c_write(sd, AWB_CTL2_REG,
+					ctrl->val ? 0x2E : 0x2F);
+			if (!ret)
+				ret = cam_i2c_write(sd, AWB_CTL1_REG,
+						ctrl->val ? 0xFB : 0x7B);
+		}
+		if (!ret && info->blue->is_new)
+			ret = cam_i2c_write(sd, MWB_BGAIN_REG, info->blue->val);
+		if (!ret && info->red->is_new)
+			ret = cam_i2c_write(sd, MWB_RGAIN_REG, info->red->val);
+		return ret;
+
+	case V4L2_CID_EXPOSURE_AUTO:
+		/* auto anti-flicker is also enabled here */
+		if (ctrl->is_new)
+			ret = cam_i2c_write(sd, AE_CTL1_REG,
+				ctrl->val == V4L2_EXPOSURE_AUTO ? 0xDC : 0x0C);
+		if (info->exp->is_new) {
+			unsigned long expos = info->exp->val;
+
+			expos = expos * info->pdata->clk_rate / (8 * 1000);
+
+			if (!ret)
+				ret = cam_i2c_write(sd, EXP_TIMEH_REG,
+						expos >> 16 & 0xFF);
+			if (!ret)
+				ret = cam_i2c_write(sd, EXP_TIMEM_REG,
+						expos >> 8 & 0xFF);
+			if (!ret)
+				ret = cam_i2c_write(sd, EXP_TIMEL_REG,
+						expos & 0xFF);
+		}
+		return ret;
+	default:
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+static int sr030pc30_enum_mbus_code(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_mbus_code_enum *code)
+{
+	if (!code || code->pad ||
+	    code->index >= ARRAY_SIZE(sr030pc30_formats))
+		return -EINVAL;
+
+	code->code = sr030pc30_formats[code->index].code;
+	return 0;
+}
+
+static int sr030pc30_get_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *mf;
+	struct sr030pc30_info *info = to_sr030pc30(sd);
+
+	if (!format || format->pad)
+		return -EINVAL;
+
+	mf = &format->format;
+
+	if (!info->curr_win || !info->curr_fmt)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mf->width	= info->curr_win->width;
 	mf->height	= info->curr_win->height;
@@ -654,6 +796,7 @@ static const struct sr030pc30_format *try_fmt(struct v4l2_subdev *sd,
 }
 
 /* Return nearest media bus frame format. */
+<<<<<<< HEAD
 static int sr030pc30_try_fmt(struct v4l2_subdev *sd,
 			     struct v4l2_mbus_framefmt *mf)
 {
@@ -673,6 +816,30 @@ static int sr030pc30_s_fmt(struct v4l2_subdev *sd,
 		return -EINVAL;
 
 	info->curr_fmt = try_fmt(sd, mf);
+=======
+static int sr030pc30_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct sr030pc30_info *info = sd ? to_sr030pc30(sd) : NULL;
+	const struct sr030pc30_format *fmt;
+	struct v4l2_mbus_framefmt *mf;
+
+	if (!sd || !format)
+		return -EINVAL;
+
+	mf = &format->format;
+	if (format->pad)
+		return -EINVAL;
+
+	fmt = try_fmt(sd, mf);
+	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
+		cfg->try_fmt = *mf;
+		return 0;
+	}
+
+	info->curr_fmt = fmt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return sr030pc30_set_params(sd);
 }
@@ -752,6 +919,7 @@ static int sr030pc30_s_power(struct v4l2_subdev *sd, int on)
 	return ret;
 }
 
+<<<<<<< HEAD
 static const struct v4l2_subdev_core_ops sr030pc30_core_ops = {
 	.s_power	= sr030pc30_s_power,
 	.queryctrl	= sr030pc30_queryctrl,
@@ -764,11 +932,29 @@ static const struct v4l2_subdev_video_ops sr030pc30_video_ops = {
 	.s_mbus_fmt	= sr030pc30_s_fmt,
 	.try_mbus_fmt	= sr030pc30_try_fmt,
 	.enum_mbus_fmt	= sr030pc30_enum_fmt,
+=======
+static const struct v4l2_ctrl_ops sr030pc30_ctrl_ops = {
+	.s_ctrl = sr030pc30_s_ctrl,
+};
+
+static const struct v4l2_subdev_core_ops sr030pc30_core_ops = {
+	.s_power	= sr030pc30_s_power,
+};
+
+static const struct v4l2_subdev_pad_ops sr030pc30_pad_ops = {
+	.enum_mbus_code = sr030pc30_enum_mbus_code,
+	.get_fmt	= sr030pc30_get_fmt,
+	.set_fmt	= sr030pc30_set_fmt,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_subdev_ops sr030pc30_ops = {
 	.core	= &sr030pc30_core_ops,
+<<<<<<< HEAD
 	.video	= &sr030pc30_video_ops,
+=======
+	.pad	= &sr030pc30_pad_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -807,6 +993,10 @@ static int sr030pc30_probe(struct i2c_client *client,
 {
 	struct sr030pc30_info *info;
 	struct v4l2_subdev *sd;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler *hdl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct sr030pc30_platform_data *pdata
 		= client->dev.platform_data;
 	int ret;
@@ -820,7 +1010,11 @@ static int sr030pc30_probe(struct i2c_client *client,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
+=======
+	info = devm_kzalloc(&client->dev, sizeof(*info), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!info)
 		return -ENOMEM;
 
@@ -830,10 +1024,38 @@ static int sr030pc30_probe(struct i2c_client *client,
 
 	v4l2_i2c_subdev_init(sd, client, &sr030pc30_ops);
 
+<<<<<<< HEAD
 	info->i2c_reg_page	= -1;
 	info->hflip		= 1;
 	info->auto_exp		= 1;
 	info->exposure		= 30;
+=======
+	hdl = &info->hdl;
+	v4l2_ctrl_handler_init(hdl, 6);
+	info->awb = v4l2_ctrl_new_std(hdl, &sr030pc30_ctrl_ops,
+			V4L2_CID_AUTO_WHITE_BALANCE, 0, 1, 1, 1);
+	info->red = v4l2_ctrl_new_std(hdl, &sr030pc30_ctrl_ops,
+			V4L2_CID_RED_BALANCE, 0, 127, 1, 64);
+	info->blue = v4l2_ctrl_new_std(hdl, &sr030pc30_ctrl_ops,
+			V4L2_CID_BLUE_BALANCE, 0, 127, 1, 64);
+	info->autoexp = v4l2_ctrl_new_std(hdl, &sr030pc30_ctrl_ops,
+			V4L2_CID_EXPOSURE_AUTO, 0, 1, 1, 1);
+	info->exp = v4l2_ctrl_new_std(hdl, &sr030pc30_ctrl_ops,
+			V4L2_CID_EXPOSURE, EXPOS_MIN_MS, EXPOS_MAX_MS, 1, 30);
+	sd->ctrl_handler = hdl;
+	if (hdl->error) {
+		int err = hdl->error;
+
+		v4l2_ctrl_handler_free(hdl);
+		return err;
+	}
+	v4l2_ctrl_auto_cluster(3, &info->awb, 0, false);
+	v4l2_ctrl_auto_cluster(2, &info->autoexp, V4L2_EXPOSURE_MANUAL, false);
+	v4l2_ctrl_handler_setup(hdl);
+
+	info->i2c_reg_page	= -1;
+	info->hflip		= 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -841,10 +1063,16 @@ static int sr030pc30_probe(struct i2c_client *client,
 static int sr030pc30_remove(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
+<<<<<<< HEAD
 	struct sr030pc30_info *info = to_sr030pc30(sd);
 
 	v4l2_device_unregister_subdev(sd);
 	kfree(info);
+=======
+
+	v4l2_device_unregister_subdev(sd);
+	v4l2_ctrl_handler_free(sd->ctrl_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

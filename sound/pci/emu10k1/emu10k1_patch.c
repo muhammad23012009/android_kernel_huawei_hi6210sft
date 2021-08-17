@@ -50,7 +50,12 @@ snd_emu10k1_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 		return -EINVAL;
 
 	if (sp->v.size == 0) {
+<<<<<<< HEAD
 		snd_printd("emu: rom font for sample %d\n", sp->v.sample);
+=======
+		dev_dbg(emu->card->dev,
+			"emu: rom font for sample %d\n", sp->v.sample);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -92,7 +97,12 @@ snd_emu10k1_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 		blocksize *= 2;
 	sp->block = snd_emu10k1_synth_alloc(emu, blocksize);
 	if (sp->block == NULL) {
+<<<<<<< HEAD
 		snd_printd("emu10k1: synth malloc failed (size=%d)\n", blocksize);
+=======
+		dev_dbg(emu->card->dev,
+			"synth malloc failed (size=%d)\n", blocksize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* not ENOMEM (for compatibility with OSS) */
 		return -ENOSPC;
 	}

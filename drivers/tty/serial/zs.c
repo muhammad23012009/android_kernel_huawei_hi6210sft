@@ -923,7 +923,11 @@ static void zs_set_termios(struct uart_port *uport, struct ktermios *termios,
 	uport->read_status_mask = Rx_OVR;
 	if (termios->c_iflag & INPCK)
 		uport->read_status_mask |= FRM_ERR | PAR_ERR;
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		uport->read_status_mask |= Rx_BRK;
 
 	uport->ignore_status_mask = 0;
@@ -1181,6 +1185,13 @@ static void zs_console_write(struct console *co, const char *s,
 	if (txint & TxINT_ENAB) {
 		zport->regs[1] |= TxINT_ENAB;
 		write_zsreg(zport, R1, zport->regs[1]);
+<<<<<<< HEAD
+=======
+
+		/* Resume any transmission as the TxIP bit won't be set.  */
+		if (!zport->tx_stopped)
+			zs_raw_transmit_chars(zport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock_irqrestore(&scc->zlock, flags);
 }

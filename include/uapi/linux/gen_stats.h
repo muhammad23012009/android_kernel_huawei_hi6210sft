@@ -9,6 +9,11 @@ enum {
 	TCA_STATS_RATE_EST,
 	TCA_STATS_QUEUE,
 	TCA_STATS_APP,
+<<<<<<< HEAD
+=======
+	TCA_STATS_RATE_EST64,
+	TCA_STATS_PAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__TCA_STATS_MAX,
 };
 #define TCA_STATS_MAX (__TCA_STATS_MAX - 1)
@@ -38,6 +43,19 @@ struct gnet_stats_rate_est {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct gnet_stats_rate_est64 - rate estimator
+ * @bps: current byte rate
+ * @pps: current packet rate
+ */
+struct gnet_stats_rate_est64 {
+	__u64	bps;
+	__u64	pps;
+};
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct gnet_stats_queue - queuing statistics
  * @qlen: queue length
  * @backlog: backlog size of queue

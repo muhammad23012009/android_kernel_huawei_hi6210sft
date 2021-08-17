@@ -6,7 +6,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -222,6 +226,7 @@ void acpi_ns_detach_object(struct acpi_namespace_node *node)
 		}
 	}
 
+<<<<<<< HEAD
 	/* Clear the entry in all cases */
 
 	node->object = NULL;
@@ -231,6 +236,33 @@ void acpi_ns_detach_object(struct acpi_namespace_node *node)
 		    ((node->object)->common.type != ACPI_TYPE_LOCAL_DATA)) {
 			node->object = node->object->common.next_object;
 		}
+=======
+	/* Clear the Node entry in all cases */
+
+	node->object = NULL;
+	if (ACPI_GET_DESCRIPTOR_TYPE(obj_desc) == ACPI_DESC_TYPE_OPERAND) {
+
+		/* Unlink object from front of possible object list */
+
+		node->object = obj_desc->common.next_object;
+
+		/* Handle possible 2-descriptor object */
+
+		if (node->object &&
+		    (node->object->common.type != ACPI_TYPE_LOCAL_DATA)) {
+			node->object = node->object->common.next_object;
+		}
+
+		/*
+		 * Detach the object from any data objects (which are still held by
+		 * the namespace node)
+		 */
+		if (obj_desc->common.next_object &&
+		    ((obj_desc->common.next_object)->common.type ==
+		     ACPI_TYPE_LOCAL_DATA)) {
+			obj_desc->common.next_object = NULL;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Reset the node type to untyped */
@@ -383,7 +415,11 @@ acpi_ns_attach_data(struct acpi_namespace_node *node,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ns_detach_data(struct acpi_namespace_node * node,
+=======
+acpi_ns_detach_data(struct acpi_namespace_node *node,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    acpi_object_handler handler)
 {
 	union acpi_operand_object *obj_desc;
@@ -428,7 +464,11 @@ acpi_ns_detach_data(struct acpi_namespace_node * node,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ns_get_attached_data(struct acpi_namespace_node * node,
+=======
+acpi_ns_get_attached_data(struct acpi_namespace_node *node,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  acpi_object_handler handler, void **data)
 {
 	union acpi_operand_object *obj_desc;

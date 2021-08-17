@@ -7,7 +7,10 @@
  * Copyright (C) 1999, 2000, 04 Ralf Baechle (ralf@linux-mips.org)
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/pci.h>
@@ -42,7 +45,11 @@ int irq_to_slot[MAX_PCI_BUSSES * MAX_DEVICES_PER_PCIBUS];
 
 extern struct pci_ops bridge_pci_ops;
 
+<<<<<<< HEAD
 int __cpuinit bridge_probe(nasid_t nasid, int widget_id, int masterwid)
+=======
+int bridge_probe(nasid_t nasid, int widget_id, int masterwid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long offset = NODE_OFFSET(nasid);
 	struct bridge_controller *bc;
@@ -217,6 +224,10 @@ static void pci_fixup_ioc3(struct pci_dev *d)
 	pci_disable_swapping(d);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NUMA
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int pcibus_to_node(struct pci_bus *bus)
 {
 	struct bridge_controller *bc = BRIDGE_CONTROLLER(bus);
@@ -224,6 +235,10 @@ int pcibus_to_node(struct pci_bus *bus)
 	return bc->nasid;
 }
 EXPORT_SYMBOL(pcibus_to_node);
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_NUMA */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_SGI, PCI_DEVICE_ID_SGI_IOC3,
 	pci_fixup_ioc3);

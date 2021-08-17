@@ -31,9 +31,16 @@
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/wl12xx.h>
 #include <linux/pm_runtime.h>
 #include <linux/printk.h>
+=======
+#include <linux/pm_runtime.h>
+#include <linux/printk.h>
+#include <linux/of.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "wlcore.h"
 #include "wl12xx_80211.h"
@@ -214,6 +221,74 @@ static struct wl1271_if_operations sdio_ops = {
 	.set_block_size = wl1271_sdio_set_block_size,
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+
+static const struct wilink_family_data wl127x_data = {
+	.name = "wl127x",
+	.nvs_name = "ti-connectivity/wl127x-nvs.bin",
+};
+
+static const struct wilink_family_data wl128x_data = {
+	.name = "wl128x",
+	.nvs_name = "ti-connectivity/wl128x-nvs.bin",
+};
+
+static const struct wilink_family_data wl18xx_data = {
+	.name = "wl18xx",
+	.cfg_name = "ti-connectivity/wl18xx-conf.bin",
+};
+
+static const struct of_device_id wlcore_sdio_of_match_table[] = {
+	{ .compatible = "ti,wl1271", .data = &wl127x_data },
+	{ .compatible = "ti,wl1273", .data = &wl127x_data },
+	{ .compatible = "ti,wl1281", .data = &wl128x_data },
+	{ .compatible = "ti,wl1283", .data = &wl128x_data },
+	{ .compatible = "ti,wl1801", .data = &wl18xx_data },
+	{ .compatible = "ti,wl1805", .data = &wl18xx_data },
+	{ .compatible = "ti,wl1807", .data = &wl18xx_data },
+	{ .compatible = "ti,wl1831", .data = &wl18xx_data },
+	{ .compatible = "ti,wl1835", .data = &wl18xx_data },
+	{ .compatible = "ti,wl1837", .data = &wl18xx_data },
+	{ }
+};
+
+static int wlcore_probe_of(struct device *dev, int *irq,
+			   struct wlcore_platdev_data *pdev_data)
+{
+	struct device_node *np = dev->of_node;
+	const struct of_device_id *of_id;
+
+	of_id = of_match_node(wlcore_sdio_of_match_table, np);
+	if (!of_id)
+		return -ENODEV;
+
+	pdev_data->family = of_id->data;
+
+	*irq = irq_of_parse_and_map(np, 0);
+	if (!*irq) {
+		dev_err(dev, "No irq in platform data\n");
+		return -EINVAL;
+	}
+
+	/* optional clock frequency params */
+	of_property_read_u32(np, "ref-clock-frequency",
+			     &pdev_data->ref_clock_freq);
+	of_property_read_u32(np, "tcxo-clock-frequency",
+			     &pdev_data->tcxo_clock_freq);
+
+	return 0;
+}
+#else
+static int wlcore_probe_of(struct device *dev, int *irq,
+			   struct wlcore_platdev_data *pdev_data)
+{
+	return -ENODATA;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wl1271_probe(struct sdio_func *func,
 				  const struct sdio_device_id *id)
 {
@@ -222,12 +297,17 @@ static int wl1271_probe(struct sdio_func *func,
 	struct resource res[1];
 	mmc_pm_flag_t mmcflags;
 	int ret = -ENOMEM;
+<<<<<<< HEAD
+=======
+	int irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char *chip_family;
 
 	/* We are only able to handle the wlan function */
 	if (func->num != 0x02)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pdev_data = kzalloc(sizeof(*pdev_data), GFP_KERNEL);
 	if (!pdev_data)
 		goto out;
@@ -239,6 +319,17 @@ static int wl1271_probe(struct sdio_func *func,
 		dev_err(&func->dev, "can't allocate glue\n");
 		goto out_free_pdev_data;
 	}
+=======
+	pdev_data = devm_kzalloc(&func->dev, sizeof(*pdev_data), GFP_KERNEL);
+	if (!pdev_data)
+		return -ENOMEM;
+
+	pdev_data->if_ops = &sdio_ops;
+
+	glue = devm_kzalloc(&func->dev, sizeof(*glue), GFP_KERNEL);
+	if (!glue)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	glue->dev = &func->dev;
 
@@ -248,19 +339,29 @@ static int wl1271_probe(struct sdio_func *func,
 	/* Use block mode for transferring over one block size of data */
 	func->card->quirks |= MMC_QUIRK_BLKSZ_FOR_BYTE_MODE;
 
+<<<<<<< HEAD
 	pdev_data->pdata = wl12xx_get_platform_data();
 	if (IS_ERR(pdev_data->pdata)) {
 		ret = PTR_ERR(pdev_data->pdata);
 		dev_err(glue->dev, "missing wlan platform data: %d\n", ret);
 		goto out_free_glue;
 	}
+=======
+	ret = wlcore_probe_of(&func->dev, &irq, pdev_data);
+	if (ret)
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* if sdio can keep power while host is suspended, enable wow */
 	mmcflags = sdio_get_host_pm_caps(func);
 	dev_dbg(glue->dev, "sdio PM caps = 0x%x\n", mmcflags);
 
 	if (mmcflags & MMC_PM_KEEP_POWER)
+<<<<<<< HEAD
 		pdev_data->pdata->pwr_in_suspend = true;
+=======
+		pdev_data->pwr_in_suspend = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sdio_set_drvdata(func, glue);
 
@@ -282,15 +383,25 @@ static int wl1271_probe(struct sdio_func *func,
 	if (!glue->core) {
 		dev_err(glue->dev, "can't allocate platform_device");
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto out_free_glue;
+=======
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	glue->core->dev.parent = &func->dev;
 
 	memset(res, 0x00, sizeof(res));
 
+<<<<<<< HEAD
 	res[0].start = pdev_data->pdata->irq;
 	res[0].flags = IORESOURCE_IRQ;
+=======
+	res[0].start = irq;
+	res[0].flags = IORESOURCE_IRQ |
+		       irqd_get_trigger_type(irq_get_irq_data(irq));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res[0].name = "irq";
 
 	ret = platform_device_add_resources(glue->core, res, ARRAY_SIZE(res));
@@ -316,12 +427,15 @@ static int wl1271_probe(struct sdio_func *func,
 out_dev_put:
 	platform_device_put(glue->core);
 
+<<<<<<< HEAD
 out_free_glue:
 	kfree(glue);
 
 out_free_pdev_data:
 	kfree(pdev_data);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return ret;
 }
@@ -334,7 +448,10 @@ static void wl1271_remove(struct sdio_func *func)
 	pm_runtime_get_noresume(&func->dev);
 
 	platform_device_unregister(glue->core);
+<<<<<<< HEAD
 	kfree(glue);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM
@@ -348,6 +465,14 @@ static int wl1271_suspend(struct device *dev)
 	mmc_pm_flag_t sdio_flags;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!wl) {
+		dev_err(dev, "no wilink module was probed\n");
+		goto out;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(dev, "wl1271 suspend. wow_enabled: %d\n",
 		wl->wow_enabled);
 

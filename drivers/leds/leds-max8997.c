@@ -13,7 +13,10 @@
 #include <linux/module.h>
 #include <linux/err.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/leds.h>
 #include <linux/mfd/max8997.h>
 #include <linux/mfd/max8997-private.h>
@@ -229,6 +232,15 @@ static ssize_t max8997_led_store_mode(struct device *dev,
 
 static DEVICE_ATTR(mode, 0644, max8997_led_show_mode, max8997_led_store_mode);
 
+<<<<<<< HEAD
+=======
+static struct attribute *max8997_attrs[] = {
+	&dev_attr_mode.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(max8997);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int max8997_led_probe(struct platform_device *pdev)
 {
 	struct max8997_dev *iodev = dev_get_drvdata(pdev->dev.parent);
@@ -253,6 +265,10 @@ static int max8997_led_probe(struct platform_device *pdev)
 	led->cdev.brightness_set = max8997_led_brightness_set;
 	led->cdev.flags |= LED_CORE_SUSPENDRESUME;
 	led->cdev.brightness = 0;
+<<<<<<< HEAD
+=======
+	led->cdev.groups = max8997_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	led->iodev = iodev;
 
 	/* initialize mode and brightness according to platform_data */
@@ -275,6 +291,7 @@ static int max8997_led_probe(struct platform_device *pdev)
 
 	mutex_init(&led->mutex);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, led);
 
 	ret = led_classdev_register(&pdev->dev, &led->cdev);
@@ -299,16 +316,27 @@ static int max8997_led_remove(struct platform_device *pdev)
 	device_remove_file(led->cdev.dev, &dev_attr_mode);
 	led_classdev_unregister(&led->cdev);
 
+=======
+	ret = devm_led_classdev_register(&pdev->dev, &led->cdev);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver max8997_led_driver = {
 	.driver = {
 		.name  = "max8997-led",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe  = max8997_led_probe,
 	.remove = max8997_led_remove,
+=======
+	},
+	.probe  = max8997_led_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(max8997_led_driver);

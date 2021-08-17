@@ -11,9 +11,12 @@
 
 #include <linux/pci.h>
 
+<<<<<<< HEAD
 /* Some PCI cards require delays when accessing config space. */
 #define PCI_CONFIG_SPACE_DELAY 10000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The physical memory base mapped by BAR1.  256MB at the end of the
  * first 4GB.

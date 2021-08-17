@@ -30,7 +30,11 @@ struct seq_file;
  * @pin_config_set: configure an individual pin
  * @pin_config_group_get: get configurations for an entire pin group
  * @pin_config_group_set: configure all pins in a group
+<<<<<<< HEAD
  * @pin_config_group_dbg_set: optional debugfs to modify a pin configuration
+=======
+ * @pin_config_dbg_parse_modify: optional debugfs to modify a pin configuration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @pin_config_dbg_show: optional debugfs display hook that will provide
  *	per-device info for a certain pin in debugfs
  * @pin_config_group_dbg_show: optional debugfs display hook that will provide
@@ -47,21 +51,31 @@ struct pinconf_ops {
 			       unsigned long *config);
 	int (*pin_config_set) (struct pinctrl_dev *pctldev,
 			       unsigned pin,
+<<<<<<< HEAD
 			       unsigned long config);
 	int (*pin_config_set_bulk) (struct pinctrl_dev *pctldev,
 				    unsigned pin,
 				    unsigned long *configs,
 				    unsigned num_configs);
+=======
+			       unsigned long *configs,
+			       unsigned num_configs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*pin_config_group_get) (struct pinctrl_dev *pctldev,
 				     unsigned selector,
 				     unsigned long *config);
 	int (*pin_config_group_set) (struct pinctrl_dev *pctldev,
 				     unsigned selector,
+<<<<<<< HEAD
 				     unsigned long config);
 	int (*pin_config_group_set_bulk) (struct pinctrl_dev *pctldev,
 					  unsigned selector,
 					  unsigned long *configs,
 					  unsigned num_configs);
+=======
+				     unsigned long *configs,
+				     unsigned num_configs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*pin_config_dbg_parse_modify) (struct pinctrl_dev *pctldev,
 					   const char *arg,
 					   unsigned long *config);

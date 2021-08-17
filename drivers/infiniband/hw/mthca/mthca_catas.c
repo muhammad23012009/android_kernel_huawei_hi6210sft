@@ -187,7 +187,11 @@ int __init mthca_catas_init(void)
 {
 	INIT_WORK(&catas_work, catas_reset);
 
+<<<<<<< HEAD
 	catas_wq = create_singlethread_workqueue("mthca_catas");
+=======
+	catas_wq = alloc_ordered_workqueue("mthca_catas", WQ_MEM_RECLAIM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!catas_wq)
 		return -ENOMEM;
 

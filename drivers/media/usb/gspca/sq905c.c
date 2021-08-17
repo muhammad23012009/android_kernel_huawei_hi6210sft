@@ -272,7 +272,11 @@ static int sd_start(struct gspca_dev *gspca_dev)
 
 	dev->cap_mode = gspca_dev->cam.cam_mode;
 	/* "Open the shutter" and set size, to start capture */
+<<<<<<< HEAD
 	switch (gspca_dev->width) {
+=======
+	switch (gspca_dev->pixfmt.width) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 640:
 		PDEBUG(D_STREAM, "Start streaming at high resolution");
 		dev->cap_mode++;

@@ -33,7 +33,11 @@
  * performance by allocating more power or thermal budget to the CPU or GPU
  * based on available headroom and activity.
  *
+<<<<<<< HEAD
  * The basic algorithm is driven by a 5s moving average of tempurature.  If
+=======
+ * The basic algorithm is driven by a 5s moving average of temperature.  If
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * thermal headroom is available, the CPU and/or GPU power clamps may be
  * adjusted upwards.  If we hit the thermal ceiling or a thermal trigger,
  * we scale back the clamp.  Aside from trigger events (when we're critically
@@ -78,7 +82,11 @@
 #include <asm/processor.h>
 #include "intel_ips.h"
 
+<<<<<<< HEAD
 #include <asm-generic/io-64-nonatomic-lo-hi.h>
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PCI_DEVICE_ID_INTEL_THERMAL_SENSOR 0x3b32
 
@@ -269,7 +277,11 @@ struct ips_mcp_limits {
 
 /* Max temps are -10 degrees C to avoid PROCHOT# */
 
+<<<<<<< HEAD
 struct ips_mcp_limits ips_sv_limits = {
+=======
+static struct ips_mcp_limits ips_sv_limits = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mcp_power_limit = 35000,
 	.core_power_limit = 29000,
 	.mch_power_limit = 20000,
@@ -277,7 +289,11 @@ struct ips_mcp_limits ips_sv_limits = {
 	.mch_temp_limit = 90
 };
 
+<<<<<<< HEAD
 struct ips_mcp_limits ips_lv_limits = {
+=======
+static struct ips_mcp_limits ips_lv_limits = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mcp_power_limit = 25000,
 	.core_power_limit = 21000,
 	.mch_power_limit = 13000,
@@ -285,7 +301,11 @@ struct ips_mcp_limits ips_lv_limits = {
 	.mch_temp_limit = 90
 };
 
+<<<<<<< HEAD
 struct ips_mcp_limits ips_ulv_limits = {
+=======
+static struct ips_mcp_limits ips_ulv_limits = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mcp_power_limit = 18000,
 	.core_power_limit = 14000,
 	.mch_power_limit = 11000,
@@ -593,7 +613,11 @@ static void ips_disable_gpu_turbo(struct ips_driver *ips)
 		return;
 
 	if (!ips->gpu_turbo_disable())
+<<<<<<< HEAD
 		dev_err(&ips->dev->dev, "failed to disable graphis turbo\n");
+=======
+		dev_err(&ips->dev->dev, "failed to disable graphics turbo\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		ips->__gpu_turbo_on = false;
 }
@@ -1478,7 +1502,11 @@ ips_link_to_i915_driver(void)
 }
 EXPORT_SYMBOL_GPL(ips_link_to_i915_driver);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ips_id_table) = {
+=======
+static const struct pci_device_id ips_id_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL,
 		     PCI_DEVICE_ID_INTEL_THERMAL_SENSOR), },
 	{ 0, }
@@ -1731,6 +1759,7 @@ static struct pci_driver ips_pci_driver = {
 	.shutdown = ips_shutdown,
 };
 
+<<<<<<< HEAD
 static int __init ips_init(void)
 {
 	return pci_register_driver(&ips_pci_driver);
@@ -1743,6 +1772,9 @@ static void ips_exit(void)
 	return;
 }
 module_exit(ips_exit);
+=======
+module_pci_driver(ips_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jesse Barnes <jbarnes@virtuousgeek.org>");

@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* arch/arm/mach-s3c2410/include/mach/regs-ac97.h
  *
+=======
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (c) 2006 Simtec Electronics <linux@simtec.co.uk>
  *		http://www.simtec.co.uk/products/SWLINUX/
  *
@@ -10,8 +14,13 @@
  * S3C2440 AC97 Controller
 */
 
+<<<<<<< HEAD
 #ifndef __ASM_ARCH_REGS_AC97_H
 #define __ASM_ARCH_REGS_AC97_H __FILE__
+=======
+#ifndef __SAMSUNG_REGS_AC97_H__
+#define __SAMSUNG_REGS_AC97_H__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define S3C_AC97_GLBCTRL				(0x00)
 
@@ -64,4 +73,8 @@
 #define S3C_AC97_PCM_DATA				(0x18)
 #define S3C_AC97_MIC_DATA				(0x1C)
 
+<<<<<<< HEAD
 #endif /* __ASM_ARCH_REGS_AC97_H */
+=======
+#endif /* __SAMSUNG_REGS_AC97_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

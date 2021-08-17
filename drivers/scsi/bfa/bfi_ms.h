@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -276,8 +285,12 @@ struct bfi_fcport_enable_req_s {
 struct bfi_fcport_set_svc_params_req_s {
 	struct bfi_mhdr_s  mh;		/*  msg header */
 	__be16	   tx_bbcredit;	/*  Tx credits */
+<<<<<<< HEAD
 	u8	bb_scn;		/* BB_SC FC credit recovery */
 	u8	rsvd;
+=======
+	u8	rsvd[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -446,8 +459,13 @@ struct bfi_lps_login_rsp_s {
 	mac_t		fcf_mac;
 	u8		ext_status;
 	u8		brcd_switch;	/*  attached peer is brcd switch */
+<<<<<<< HEAD
 	u8		bb_scn;		/* atatched port's bb_scn */
 	u8		bfa_tag;
+=======
+	u8		bfa_tag;
+	u8		rsvd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct bfi_lps_logout_req_s {

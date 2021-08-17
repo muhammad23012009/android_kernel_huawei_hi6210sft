@@ -13,7 +13,12 @@ target_core_mod-y		:= target_core_configfs.o \
 				   target_core_spc.o \
 				   target_core_ua.o \
 				   target_core_rd.o \
+<<<<<<< HEAD
 				   target_core_stat.o
+=======
+				   target_core_stat.o \
+				   target_core_xcopy.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_TARGET_CORE)	+= target_core_mod.o
 
@@ -21,6 +26,10 @@ obj-$(CONFIG_TARGET_CORE)	+= target_core_mod.o
 obj-$(CONFIG_TCM_IBLOCK)	+= target_core_iblock.o
 obj-$(CONFIG_TCM_FILEIO)	+= target_core_file.o
 obj-$(CONFIG_TCM_PSCSI)		+= target_core_pscsi.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_TCM_USER2)		+= target_core_user.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Fabric modules
 obj-$(CONFIG_LOOPBACK_TARGET)	+= loopback/

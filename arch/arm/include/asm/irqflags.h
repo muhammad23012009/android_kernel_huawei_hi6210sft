@@ -8,19 +8,43 @@
 /*
  * CPU interrupt mask handling.
  */
+<<<<<<< HEAD
 #if __LINUX_ARM_ARCH__ >= 6
 
+=======
+#ifdef CONFIG_CPU_V7M
+#define IRQMASK_REG_NAME_R "primask"
+#define IRQMASK_REG_NAME_W "primask"
+#define IRQMASK_I_BIT	1
+#else
+#define IRQMASK_REG_NAME_R "cpsr"
+#define IRQMASK_REG_NAME_W "cpsr_c"
+#define IRQMASK_I_BIT	PSR_I_BIT
+#endif
+
+#if __LINUX_ARM_ARCH__ >= 6
+
+#define arch_local_irq_save arch_local_irq_save
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags;
 
 	asm volatile(
+<<<<<<< HEAD
 		"	mrs	%0, cpsr	@ arch_local_irq_save\n"
+=======
+		"	mrs	%0, " IRQMASK_REG_NAME_R "	@ arch_local_irq_save\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	cpsid	i"
 		: "=r" (flags) : : "memory", "cc");
 	return flags;
 }
 
+<<<<<<< HEAD
+=======
+#define arch_local_irq_enable arch_local_irq_enable
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_local_irq_enable(void)
 {
 	asm volatile(
@@ -30,6 +54,10 @@ static inline void arch_local_irq_enable(void)
 		: "memory", "cc");
 }
 
+<<<<<<< HEAD
+=======
+#define arch_local_irq_disable arch_local_irq_disable
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_local_irq_disable(void)
 {
 	asm volatile(
@@ -41,11 +69,26 @@ static inline void arch_local_irq_disable(void)
 
 #define local_fiq_enable()  __asm__("cpsie f	@ __stf" : : : "memory", "cc")
 #define local_fiq_disable() __asm__("cpsid f	@ __clf" : : : "memory", "cc")
+<<<<<<< HEAD
+=======
+
+#ifndef CONFIG_CPU_V7M
+#define local_abt_enable()  __asm__("cpsie a	@ __sta" : : : "memory", "cc")
+#define local_abt_disable() __asm__("cpsid a	@ __cla" : : : "memory", "cc")
+#else
+#define local_abt_enable()	do { } while (0)
+#define local_abt_disable()	do { } while (0)
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 
 /*
  * Save the current interrupt enable state & disable IRQs
  */
+<<<<<<< HEAD
+=======
+#define arch_local_irq_save arch_local_irq_save
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags, temp;
@@ -63,6 +106,10 @@ static inline unsigned long arch_local_irq_save(void)
 /*
  * Enable IRQs
  */
+<<<<<<< HEAD
+=======
+#define arch_local_irq_enable arch_local_irq_enable
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_local_irq_enable(void)
 {
 	unsigned long temp;
@@ -78,6 +125,10 @@ static inline void arch_local_irq_enable(void)
 /*
  * Disable IRQs
  */
+<<<<<<< HEAD
+=======
+#define arch_local_irq_disable arch_local_irq_disable
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_local_irq_disable(void)
 {
 	unsigned long temp;
@@ -120,16 +171,29 @@ static inline void arch_local_irq_disable(void)
 	: "memory", "cc");					\
 	})
 
+<<<<<<< HEAD
+=======
+#define local_abt_enable()	do { } while (0)
+#define local_abt_disable()	do { } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
  * Save the current interrupt enable state.
  */
+<<<<<<< HEAD
+=======
+#define arch_local_save_flags arch_local_save_flags
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long arch_local_save_flags(void)
 {
 	unsigned long flags;
 	asm volatile(
+<<<<<<< HEAD
 		"	mrs	%0, cpsr	@ local_save_flags"
+=======
+		"	mrs	%0, " IRQMASK_REG_NAME_R "	@ local_save_flags"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "=r" (flags) : : "memory", "cc");
 	return flags;
 }
@@ -137,15 +201,24 @@ static inline unsigned long arch_local_save_flags(void)
 /*
  * restore saved IRQ & FIQ state
  */
+<<<<<<< HEAD
 static inline void arch_local_irq_restore(unsigned long flags)
 {
 	asm volatile(
 		"	msr	cpsr_c, %0	@ local_irq_restore"
+=======
+#define arch_local_irq_restore arch_local_irq_restore
+static inline void arch_local_irq_restore(unsigned long flags)
+{
+	asm volatile(
+		"	msr	" IRQMASK_REG_NAME_W ", %0	@ local_irq_restore"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		:
 		: "r" (flags)
 		: "memory", "cc");
 }
 
+<<<<<<< HEAD
 static inline int arch_irqs_disabled_flags(unsigned long flags)
 {
 	return flags & PSR_I_BIT;
@@ -153,3 +226,15 @@ static inline int arch_irqs_disabled_flags(unsigned long flags)
 
 #endif
 #endif
+=======
+#define arch_irqs_disabled_flags arch_irqs_disabled_flags
+static inline int arch_irqs_disabled_flags(unsigned long flags)
+{
+	return flags & IRQMASK_I_BIT;
+}
+
+#include <asm-generic/irqflags.h>
+
+#endif /* ifdef __KERNEL__ */
+#endif /* ifndef __ASM_ARM_IRQFLAGS_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

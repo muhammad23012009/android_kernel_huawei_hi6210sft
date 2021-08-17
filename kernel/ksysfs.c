@@ -18,6 +18,12 @@
 #include <linux/stat.h>
 #include <linux/sched.h>
 #include <linux/capability.h>
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+
+#include <linux/rcupdate.h>	/* rcu_expedited and rcu_normal */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define KERNEL_ATTR_RO(_name) \
 static struct kobj_attribute _name##_attr = __ATTR_RO(_name)
@@ -34,6 +40,10 @@ static ssize_t uevent_seqnum_show(struct kobject *kobj,
 }
 KERNEL_ATTR_RO(uevent_seqnum);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_UEVENT_HELPER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* uevent helper program, used during early boot */
 static ssize_t uevent_helper_show(struct kobject *kobj,
 				  struct kobj_attribute *attr, char *buf)
@@ -53,7 +63,11 @@ static ssize_t uevent_helper_store(struct kobject *kobj,
 	return count;
 }
 KERNEL_ATTR_RW(uevent_helper);
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PROFILING
 static ssize_t profiling_show(struct kobject *kobj,
@@ -86,7 +100,11 @@ static ssize_t profiling_store(struct kobject *kobj,
 KERNEL_ATTR_RW(profiling);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t kexec_loaded_show(struct kobject *kobj,
 				 struct kobj_attribute *attr, char *buf)
 {
@@ -97,7 +115,11 @@ KERNEL_ATTR_RO(kexec_loaded);
 static ssize_t kexec_crash_loaded_show(struct kobject *kobj,
 				       struct kobj_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", !!kexec_crash_image);
+=======
+	return sprintf(buf, "%d\n", kexec_crash_loaded());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 KERNEL_ATTR_RO(kexec_crash_loaded);
 
@@ -113,7 +135,11 @@ static ssize_t kexec_crash_size_store(struct kobject *kobj,
 	unsigned long cnt;
 	int ret;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &cnt))
+=======
+	if (kstrtoul(buf, 0, &cnt))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	ret = crash_shrink_memory(cnt);
@@ -124,6 +150,7 @@ KERNEL_ATTR_RW(kexec_crash_size);
 static ssize_t vmcoreinfo_show(struct kobject *kobj,
 			       struct kobj_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%lx %x\n",
 		       paddr_vmcoreinfo_note(),
 		       (unsigned int)vmcoreinfo_max_size);
@@ -131,6 +158,15 @@ static ssize_t vmcoreinfo_show(struct kobject *kobj,
 KERNEL_ATTR_RO(vmcoreinfo);
 
 #endif /* CONFIG_KEXEC */
+=======
+	phys_addr_t vmcore_base = paddr_vmcoreinfo_note();
+	return sprintf(buf, "%pa %x\n", &vmcore_base,
+		       (unsigned int)sizeof(vmcoreinfo_note));
+}
+KERNEL_ATTR_RO(vmcoreinfo);
+
+#endif /* CONFIG_KEXEC_CORE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* whether file capabilities are enabled */
 static ssize_t fscaps_show(struct kobject *kobj,
@@ -140,11 +176,19 @@ static ssize_t fscaps_show(struct kobject *kobj,
 }
 KERNEL_ATTR_RO(fscaps);
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_TINY_RCU
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rcu_expedited;
 static ssize_t rcu_expedited_show(struct kobject *kobj,
 				  struct kobj_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", rcu_expedited);
+=======
+	return sprintf(buf, "%d\n", READ_ONCE(rcu_expedited));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static ssize_t rcu_expedited_store(struct kobject *kobj,
 				   struct kobj_attribute *attr,
@@ -157,11 +201,37 @@ static ssize_t rcu_expedited_store(struct kobject *kobj,
 }
 KERNEL_ATTR_RW(rcu_expedited);
 
+<<<<<<< HEAD
 /*
  * Make /sys/kernel/notes give the raw contents of our kernel .notes section.
  */
 extern const void __start_notes __attribute__((weak));
 extern const void __stop_notes __attribute__((weak));
+=======
+int rcu_normal;
+static ssize_t rcu_normal_show(struct kobject *kobj,
+			       struct kobj_attribute *attr, char *buf)
+{
+	return sprintf(buf, "%d\n", READ_ONCE(rcu_normal));
+}
+static ssize_t rcu_normal_store(struct kobject *kobj,
+				struct kobj_attribute *attr,
+				const char *buf, size_t count)
+{
+	if (kstrtoint(buf, 0, &rcu_normal))
+		return -EINVAL;
+
+	return count;
+}
+KERNEL_ATTR_RW(rcu_normal);
+#endif /* #ifndef CONFIG_TINY_RCU */
+
+/*
+ * Make /sys/kernel/notes give the raw contents of our kernel .notes section.
+ */
+extern const void __start_notes __weak;
+extern const void __stop_notes __weak;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	notes_size (&__stop_notes - &__start_notes)
 
 static ssize_t notes_read(struct file *filp, struct kobject *kobj,
@@ -186,17 +256,34 @@ EXPORT_SYMBOL_GPL(kernel_kobj);
 static struct attribute * kernel_attrs[] = {
 	&fscaps_attr.attr,
 	&uevent_seqnum_attr.attr,
+<<<<<<< HEAD
 	&uevent_helper_attr.attr,
 #ifdef CONFIG_PROFILING
 	&profiling_attr.attr,
 #endif
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_UEVENT_HELPER
+	&uevent_helper_attr.attr,
+#endif
+#ifdef CONFIG_PROFILING
+	&profiling_attr.attr,
+#endif
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&kexec_loaded_attr.attr,
 	&kexec_crash_loaded_attr.attr,
 	&kexec_crash_size_attr.attr,
 	&vmcoreinfo_attr.attr,
 #endif
+<<<<<<< HEAD
 	&rcu_expedited_attr.attr,
+=======
+#ifndef CONFIG_TINY_RCU
+	&rcu_expedited_attr.attr,
+	&rcu_normal_attr.attr,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NULL
 };
 

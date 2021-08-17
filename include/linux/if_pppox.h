@@ -19,6 +19,10 @@
 #include <linux/netdevice.h>
 #include <linux/ppp_channel.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <uapi/linux/if_pppox.h>
 
 static inline struct pppoe_hdr *pppoe_hdr(const struct sk_buff *skb)
@@ -32,6 +36,10 @@ struct pppoe_opt {
 	struct pppoe_addr	pa;	  /* what this socket is bound to*/
 	struct sockaddr_pppox	relay;	  /* what socket data will be
 					     relayed to (PPPoE relaying) */
+<<<<<<< HEAD
+=======
+	struct work_struct      padt_work;/* Work item for handling PADT */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct pptp_opt {
@@ -56,7 +64,11 @@ struct pppopns_opt {
 	__u16		remote;
 	__u32		recv_sequence;
 	__u32		xmit_sequence;
+<<<<<<< HEAD
 	void		(*data_ready)(struct sock *sk_raw, int length);
+=======
+	void		(*data_ready)(struct sock *sk_raw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int		(*backlog_rcv)(struct sock *sk_raw, struct sk_buff *skb);
 };
 
@@ -93,7 +105,11 @@ static inline struct sock *sk_pppox(struct pppox_sock *po)
 struct module;
 
 struct pppox_proto {
+<<<<<<< HEAD
 	int		(*create)(struct net *net, struct socket *sock);
+=======
+	int		(*create)(struct net *net, struct socket *sock, int kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int		(*ioctl)(struct socket *sock, unsigned int cmd,
 				 unsigned long arg);
 	struct module	*owner;
@@ -103,6 +119,12 @@ extern int register_pppox_proto(int proto_num, const struct pppox_proto *pp);
 extern void unregister_pppox_proto(int proto_num);
 extern void pppox_unbind_sock(struct sock *sk);/* delete ppp-channel binding */
 extern int pppox_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+<<<<<<< HEAD
+=======
+extern int pppox_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+
+#define PPPOEIOCSFWD32    _IOW(0xB1 ,0, compat_size_t)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* PPPoX socket states */
 enum {
@@ -110,7 +132,10 @@ enum {
     PPPOX_CONNECTED	= 1,  /* connection established ==TCP_ESTABLISHED */
     PPPOX_BOUND		= 2,  /* bound to ppp device */
     PPPOX_RELAY		= 4,  /* forwarding is enabled */
+<<<<<<< HEAD
     PPPOX_ZOMBIE	= 8,  /* dead, but still bound to ppp device */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     PPPOX_DEAD		= 16  /* dead, useless, please clean me up!*/
 };
 

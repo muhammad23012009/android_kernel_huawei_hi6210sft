@@ -26,6 +26,11 @@
  * pass it as an argument.
  */
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/hardirq.h>
+#include <linux/irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/types.h>
@@ -66,6 +71,10 @@ EXPORT_SYMBOL(kick_unregister_func);
 TBIRES
 kick_handler(TBIRES State, int SigNum, int Triggers, int Inst, PTBI pTBI)
 {
+<<<<<<< HEAD
+=======
+	struct pt_regs *old_regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct kick_irq_handler *kh;
 	struct list_head *lh;
 	int handled = 0;
@@ -79,6 +88,12 @@ kick_handler(TBIRES State, int SigNum, int Triggers, int Inst, PTBI pTBI)
 
 	trace_hardirqs_off();
 
+<<<<<<< HEAD
+=======
+	old_regs = set_irq_regs((struct pt_regs *)State.Sig.pCtx);
+	irq_enter();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * There is no need to disable interrupts here because we
 	 * can't nest KICK interrupts in a KICK interrupt handler.
@@ -97,5 +112,11 @@ kick_handler(TBIRES State, int SigNum, int Triggers, int Inst, PTBI pTBI)
 
 	WARN_ON(!handled);
 
+<<<<<<< HEAD
+=======
+	irq_exit();
+	set_irq_regs(old_regs);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return tail_end(ret);
 }

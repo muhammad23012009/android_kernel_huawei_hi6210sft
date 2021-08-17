@@ -33,6 +33,11 @@ void machine_restart(char *cmd)
 {
 }
 
+<<<<<<< HEAD
 void pm_power_off(void)
 {
 }
+=======
+void (*pm_power_off)(void) = NULL;
+EXPORT_SYMBOL(pm_power_off);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

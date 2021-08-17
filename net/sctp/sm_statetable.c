@@ -22,6 +22,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -32,6 +33,14 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -41,9 +50,12 @@
  *    Daisy Chang	    <daisyc@us.ibm.com>
  *    Ardelle Fan	    <ardelle.fan@intel.com>
  *    Sridhar Samudrala	    <sri@us.ibm.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -76,7 +88,11 @@ static const sctp_sm_table_entry_t bug = {
 	if ((event_subtype._type > (_max))) {				\
 		pr_warn("table %p possible attack: event %d exceeds max %d\n", \
 			_table, event_subtype._type, _max);		\
+<<<<<<< HEAD
 	        rtn = &bug;						\
+=======
+		rtn = &bug;						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else								\
 		rtn = &_table[event_subtype._type][(int)state];		\
 									\

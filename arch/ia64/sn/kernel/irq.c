@@ -209,8 +209,13 @@ static int sn_set_affinity_irq(struct irq_data *data,
 	nasid_t nasid;
 	int slice;
 
+<<<<<<< HEAD
 	nasid = cpuid_to_nasid(cpumask_first(mask));
 	slice = cpuid_to_slice(cpumask_first(mask));
+=======
+	nasid = cpuid_to_nasid(cpumask_first_and(mask, cpu_online_mask));
+	slice = cpuid_to_slice(cpumask_first_and(mask, cpu_online_mask));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each_entry_safe(sn_irq_info, sn_irq_info_safe,
 				 sn_irq_lh[irq], list)

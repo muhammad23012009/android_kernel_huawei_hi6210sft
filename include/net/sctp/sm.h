@@ -21,6 +21,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -31,6 +32,14 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email addresses:
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -42,9 +51,12 @@
  *    Daisy Chang <daisyc@us.ibm.com>
  *    Ardelle Fan <ardelle.fan@intel.com>
  *    Kevin Gao <kevin.gao@intel.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/types.h>
@@ -208,7 +220,11 @@ struct sctp_chunk *sctp_make_cwr(const struct sctp_association *,
 struct sctp_chunk * sctp_make_datafrag_empty(struct sctp_association *,
 					const struct sctp_sndrcvinfo *sinfo,
 					int len, const __u8 flags,
+<<<<<<< HEAD
 					__u16 ssn);
+=======
+					__u16 ssn, gfp_t gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct sctp_chunk *sctp_make_ecne(const struct sctp_association *,
 				  const __u32);
 struct sctp_chunk *sctp_make_sack(const struct sctp_association *);
@@ -226,7 +242,11 @@ struct sctp_chunk *sctp_make_abort_no_data(const struct sctp_association *,
 				      const struct sctp_chunk *,
 				      __u32 tsn);
 struct sctp_chunk *sctp_make_abort_user(const struct sctp_association *,
+<<<<<<< HEAD
 					const struct msghdr *, size_t msg_len);
+=======
+					struct msghdr *, size_t msg_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct sctp_chunk *sctp_make_abort_violation(const struct sctp_association *,
 				   const struct sctp_chunk *,
 				   const __u8 *,
@@ -314,6 +334,7 @@ static inline __u16 sctp_data_size(struct sctp_chunk *chunk)
 }
 
 /* Compare two TSNs */
+<<<<<<< HEAD
 
 /* RFC 1982 - Serial Number Arithmetic
  *
@@ -393,6 +414,29 @@ static inline int ADDIP_SERIAL_gte(__u16 s, __u16 t)
 {
 	return ((s) == (t)) || (((t) - (s)) & ADDIP_SERIAL_SIGN_BIT);
 }
+=======
+#define TSN_lt(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((a) - (b)) < 0))
+
+#define TSN_lte(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((a) - (b)) <= 0))
+
+/* Compare two SSNs */
+#define SSN_lt(a,b)		\
+	(typecheck(__u16, a) && \
+	 typecheck(__u16, b) && \
+	 ((__s16)((a) - (b)) < 0))
+
+/* ADDIP 3.1.1 */
+#define ADDIP_SERIAL_gte(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((b) - (a)) <= 0))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Check VTAG of the packet matches the sender's own tag. */
 static inline int

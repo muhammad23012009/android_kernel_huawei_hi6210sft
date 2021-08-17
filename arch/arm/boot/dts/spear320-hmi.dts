@@ -1,7 +1,11 @@
 /*
  * DTS file for SPEAr320 Evaluation Baord
  *
+<<<<<<< HEAD
  * Copyright 2012 Shiraz Hashim <shiraz.hashim@st.com>
+=======
+ * Copyright 2012 Shiraz Hashim <shiraz.linux.kernel@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The code contained herein is licensed under the GNU General Public
  * License. You may obtain a copy of the GNU General Public License
@@ -141,7 +145,11 @@
 				linux,code = <0x100>;
 				gpios = <&stmpegpio 3 0x4>;
 				debounce-interval = <20>;
+<<<<<<< HEAD
 				gpio-key,wakeup = <1>;
+=======
+				wakeup-source;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 
 			button@2 {
@@ -149,7 +157,11 @@
 				linux,code = <0x200>;
 				gpios = <&stmpegpio 2 0x4>;
 				debounce-interval = <20>;
+<<<<<<< HEAD
 				gpio-key,wakeup = <1>;
+=======
+				wakeup-source;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 		};
 

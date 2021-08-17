@@ -15,6 +15,10 @@
  */
 #include <asm/asmmacro.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define EK(y...) EX(y)
 
@@ -78,6 +82,10 @@ GLOBAL_ENTRY(memcpy)
 	br.cond.sptk .common_code
 	;;
 END(memcpy)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memcpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 GLOBAL_ENTRY(__copy_user)
 	.prologue
 // check dest alignment
@@ -664,3 +672,7 @@ EK(.ex_handler,  (p17)	st8	[dst1]=r39,8);						\
 
 /* end of McKinley specific optimization */
 END(__copy_user)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__copy_user)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

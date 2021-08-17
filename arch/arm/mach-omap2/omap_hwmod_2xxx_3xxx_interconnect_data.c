@@ -152,6 +152,7 @@ struct omap_hwmod_addr_space omap2_dma_system_addrs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 struct omap_hwmod_addr_space omap2_mailbox_addrs[] = {
 	{
 		.pa_start	= 0x48094000,
@@ -161,6 +162,8 @@ struct omap_hwmod_addr_space omap2_mailbox_addrs[] = {
 	{ }
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct omap_hwmod_addr_space omap2_mcbsp1_addrs[] = {
 	{
 		.name		= "mpu",

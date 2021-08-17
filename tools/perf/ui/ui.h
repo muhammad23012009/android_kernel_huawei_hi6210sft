@@ -6,13 +6,21 @@
 #include <linux/compiler.h>
 
 extern pthread_mutex_t ui__lock;
+<<<<<<< HEAD
+=======
+extern void *perf_gtk_handle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int use_browser;
 
 void setup_browser(bool fallback_to_pager);
 void exit_browser(bool wait_for_ok);
 
+<<<<<<< HEAD
 #ifdef SLANG_SUPPORT
+=======
+#ifdef HAVE_SLANG_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ui__init(void);
 void ui__exit(bool wait_for_ok);
 #else
@@ -23,6 +31,7 @@ static inline int ui__init(void)
 static inline void ui__exit(bool wait_for_ok __maybe_unused) {}
 #endif
 
+<<<<<<< HEAD
 #ifdef GTK2_SUPPORT
 int perf_gtk__init(void);
 void perf_gtk__exit(bool wait_for_ok);
@@ -36,4 +45,12 @@ static inline void perf_gtk__exit(bool wait_for_ok __maybe_unused) {}
 
 void ui__refresh_dimensions(bool force);
 
+=======
+void ui__refresh_dimensions(bool force);
+
+struct option;
+
+int stdio__config_color(const struct option *opt, const char *mode, int unset);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _PERF_UI_H_ */

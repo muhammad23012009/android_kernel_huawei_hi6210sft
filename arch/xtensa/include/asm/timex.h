@@ -1,16 +1,24 @@
 /*
+<<<<<<< HEAD
  * include/asm-xtensa/timex.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
  * Copyright (C) 2001 - 2008 Tensilica Inc.
+=======
+ * Copyright (C) 2001 - 2013 Tensilica Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _XTENSA_TIMEX_H
 #define _XTENSA_TIMEX_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 #include <asm/processor.h>
@@ -29,12 +37,28 @@
 # define LINUX_TIMER_INT XCHAL_TIMER1_INTERRUPT
 #elif XCHAL_NUM_TIMERS > 2 && \
 	INTLEVEL(XCHAL_TIMER2_INTERRUPT) <= XCHAL_EXCM_LEVEL
+=======
+#include <asm/processor.h>
+#include <linux/stringify.h>
+
+#if XCHAL_NUM_TIMERS > 0 && \
+	XTENSA_INT_LEVEL(XCHAL_TIMER0_INTERRUPT) <= XCHAL_EXCM_LEVEL
+# define LINUX_TIMER     0
+# define LINUX_TIMER_INT XCHAL_TIMER0_INTERRUPT
+#elif XCHAL_NUM_TIMERS > 1 && \
+	XTENSA_INT_LEVEL(XCHAL_TIMER1_INTERRUPT) <= XCHAL_EXCM_LEVEL
+# define LINUX_TIMER     1
+# define LINUX_TIMER_INT XCHAL_TIMER1_INTERRUPT
+#elif XCHAL_NUM_TIMERS > 2 && \
+	XTENSA_INT_LEVEL(XCHAL_TIMER2_INTERRUPT) <= XCHAL_EXCM_LEVEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define LINUX_TIMER     2
 # define LINUX_TIMER_INT XCHAL_TIMER2_INTERRUPT
 #else
 # error "Bad timer number for Linux configurations!"
 #endif
 
+<<<<<<< HEAD
 #define LINUX_TIMER_MASK        (1L << LINUX_TIMER_INT)
 
 #define CLOCK_TICK_RATE 	1193180	/* (everyone is using this value) */
@@ -61,6 +85,15 @@ extern cycles_t cacheflush_time;
 
 #define get_cycles()	(0)
 
+=======
+extern unsigned long ccount_freq;
+
+typedef unsigned long long cycles_t;
+
+#define get_cycles()	(0)
+
+void local_timer_setup(unsigned cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Register access.
@@ -95,5 +128,8 @@ static inline void set_linux_timer (unsigned long ccompare)
 	WSR_CCOMPARE(LINUX_TIMER, ccompare);
 }
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* _XTENSA_TIMEX_H */

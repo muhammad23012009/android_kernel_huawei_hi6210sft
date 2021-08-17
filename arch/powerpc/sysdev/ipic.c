@@ -20,7 +20,10 @@
 #include <linux/signal.h>
 #include <linux/syscore_ops.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock.h>
 #include <linux/fsl_devices.h>
 #include <asm/irq.h>
@@ -625,10 +628,17 @@ static int ipic_set_irq_type(struct irq_data *d, unsigned int flow_type)
 
 	irqd_set_trigger_type(d, flow_type);
 	if (flow_type & IRQ_TYPE_LEVEL_LOW)  {
+<<<<<<< HEAD
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 		d->chip = &ipic_level_irq_chip;
 	} else {
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
+=======
+		irq_set_handler_locked(d, handle_level_irq);
+		d->chip = &ipic_level_irq_chip;
+	} else {
+		irq_set_handler_locked(d, handle_edge_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		d->chip = &ipic_edge_irq_chip;
 	}
 
@@ -672,10 +682,19 @@ static struct irq_chip ipic_edge_irq_chip = {
 	.irq_set_type	= ipic_set_irq_type,
 };
 
+<<<<<<< HEAD
 static int ipic_host_match(struct irq_domain *h, struct device_node *node)
 {
 	/* Exact match, unless ipic node is NULL */
 	return h->of_node == NULL || h->of_node == node;
+=======
+static int ipic_host_match(struct irq_domain *h, struct device_node *node,
+			   enum irq_domain_bus_token bus_token)
+{
+	/* Exact match, unless ipic node is NULL */
+	struct device_node *of_node = irq_domain_get_of_node(h);
+	return of_node == NULL || of_node == node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ipic_host_map(struct irq_domain *h, unsigned int virq,
@@ -692,7 +711,11 @@ static int ipic_host_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops ipic_host_ops = {
+=======
+static const struct irq_domain_ops ipic_host_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.match	= ipic_host_match,
 	.map	= ipic_host_map,
 	.xlate	= irq_domain_xlate_onetwocell,
@@ -844,15 +867,26 @@ void ipic_disable_mcp(enum ipic_mcp_irq mcp_irq)
 
 u32 ipic_get_mcp_status(void)
 {
+<<<<<<< HEAD
 	return ipic_read(primary_ipic->regs, IPIC_SERMR);
+=======
+	return ipic_read(primary_ipic->regs, IPIC_SERSR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void ipic_clear_mcp_status(u32 mask)
 {
+<<<<<<< HEAD
 	ipic_write(primary_ipic->regs, IPIC_SERMR, mask);
 }
 
 /* Return an interrupt vector or NO_IRQ if no interrupt is pending. */
+=======
+	ipic_write(primary_ipic->regs, IPIC_SERSR, mask);
+}
+
+/* Return an interrupt vector or 0 if no interrupt is pending. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned int ipic_get_irq(void)
 {
 	int irq;
@@ -863,7 +897,11 @@ unsigned int ipic_get_irq(void)
 	irq = ipic_read(primary_ipic->regs, IPIC_SIVCR) & IPIC_SIVCR_VECTOR_MASK;
 
 	if (irq == 0)    /* 0 --> no irq is pending */
+<<<<<<< HEAD
 		return NO_IRQ;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return irq_linear_revmap(primary_ipic->irqhost, irq);
 }

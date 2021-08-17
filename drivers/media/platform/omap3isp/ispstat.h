@@ -13,6 +13,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef OMAP3_ISP_STAT_H
@@ -30,7 +33,10 @@
 
 #include <linux/types.h>
 #include <linux/omap3isp.h>
+<<<<<<< HEAD
 #include <linux/omap-dma.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-event.h>
 
 #include "isp.h"
@@ -43,6 +49,7 @@
 #define STAT_NO_BUF		1	/* An error has occurred */
 #define STAT_BUF_WAITING_DMA	2	/* Histogram only: DMA is running */
 
+<<<<<<< HEAD
 struct ispstat;
 
 struct ispstat_buffer {
@@ -51,6 +58,16 @@ struct ispstat_buffer {
 	void *virt_addr;
 	dma_addr_t dma_addr;
 	struct timespec ts;
+=======
+struct dma_chan;
+struct ispstat;
+
+struct ispstat_buffer {
+	struct sg_table sgt;
+	void *virt_addr;
+	dma_addr_t dma_addr;
+	struct timeval ts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 buf_size;
 	u32 frame_number;
 	u16 config_counter;
@@ -107,7 +124,10 @@ struct ispstat {
 	u8 inc_config;
 	atomic_t buf_err;
 	enum ispstat_state_t state;	/* enabling/disabling state */
+<<<<<<< HEAD
 	struct omap_dma_channel_params dma_config;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct isp_device *isp;
 	void *priv;		/* pointer to priv config struct */
 	void *recover_priv;	/* pointer to recover priv configuration */
@@ -121,7 +141,11 @@ struct ispstat {
 	u32 frame_number;
 	u32 buf_size;
 	u32 buf_alloc_size;
+<<<<<<< HEAD
 	int dma_ch;
+=======
+	struct dma_chan *dma_ch;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long event_type;
 	struct ispstat_buffer *buf;
 	struct ispstat_buffer *active_buf;

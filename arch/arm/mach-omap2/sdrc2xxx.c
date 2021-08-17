@@ -103,9 +103,15 @@ u32 omap2xxx_sdrc_reprogram(u32 level, u32 force)
 	 * prm2xxx.c function
 	 */
 	if (cpu_is_omap2420())
+<<<<<<< HEAD
 		__raw_writel(0xffff, OMAP2420_PRCM_VOLTSETUP);
 	else
 		__raw_writel(0xffff, OMAP2430_PRCM_VOLTSETUP);
+=======
+		writel_relaxed(0xffff, OMAP2420_PRCM_VOLTSETUP);
+	else
+		writel_relaxed(0xffff, OMAP2430_PRCM_VOLTSETUP);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap2_sram_reprogram_sdrc(level, dll_ctrl, m_type);
 	curr_perf_level = level;
 	local_irq_restore(flags);
@@ -164,6 +170,10 @@ void omap2xxx_sdrc_init_params(u32 force_lock_to_unlock_mode)
 	mem_timings.slow_dll_ctrl |=
 		((mem_timings.fast_dll_ctrl & 0xF) | (1 << 2));
 
+<<<<<<< HEAD
 	/* 90 degree phase for anything below 133Mhz + disable DLL filter */
+=======
+	/* 90 degree phase for anything below 133MHz + disable DLL filter */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mem_timings.slow_dll_ctrl |= ((1 << 1) | (3 << 8));
 }

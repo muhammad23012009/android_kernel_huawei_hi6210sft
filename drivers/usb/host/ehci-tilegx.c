@@ -61,7 +61,11 @@ static const struct hc_driver ehci_tilegx_hc_driver = {
 	 * Generic hardware linkage.
 	 */
 	.irq			= ehci_irq,
+<<<<<<< HEAD
 	.flags			= HCD_MEMORY | HCD_USB2,
+=======
+	.flags			= HCD_MEMORY | HCD_USB2 | HCD_BH,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Basic lifecycle operations.
@@ -101,7 +105,11 @@ static int ehci_hcd_tilegx_drv_probe(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd;
 	struct ehci_hcd *ehci;
+<<<<<<< HEAD
 	struct tilegx_usb_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct tilegx_usb_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pte_t pte = { 0 };
 	int my_cpu = smp_processor_id();
 	int ret;
@@ -142,8 +150,13 @@ static int ehci_hcd_tilegx_drv_probe(struct platform_device *pdev)
 	ehci->hcs_params = readl(&ehci->caps->hcs_params);
 
 	/* Create our IRQs and register them. */
+<<<<<<< HEAD
 	pdata->irq = create_irq();
 	if (pdata->irq < 0) {
+=======
+	pdata->irq = irq_alloc_hwirq(-1);
+	if (!pdata->irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENXIO;
 		goto err_no_irq;
 	}
@@ -170,11 +183,19 @@ static int ehci_hcd_tilegx_drv_probe(struct platform_device *pdev)
 	ret = usb_add_hcd(hcd, pdata->irq, IRQF_SHARED);
 	if (ret == 0) {
 		platform_set_drvdata(pdev, hcd);
+<<<<<<< HEAD
+=======
+		device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 
 err_have_irq:
+<<<<<<< HEAD
 	destroy_irq(pdata->irq);
+=======
+	irq_free_hwirq(pdata->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_no_irq:
 	tilegx_stop_ehc();
 	usb_put_hcd(hcd);
@@ -186,14 +207,22 @@ err_hcd:
 static int ehci_hcd_tilegx_drv_remove(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct tilegx_usb_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct tilegx_usb_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb_remove_hcd(hcd);
 	usb_put_hcd(hcd);
 	tilegx_stop_ehc();
 	gxio_usb_host_destroy(&pdata->usb_ctx);
+<<<<<<< HEAD
 	destroy_irq(pdata->irq);
 	platform_set_drvdata(pdev, NULL);
+=======
+	irq_free_hwirq(pdata->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -210,7 +239,10 @@ static struct platform_driver ehci_hcd_tilegx_driver = {
 	.shutdown	= ehci_hcd_tilegx_drv_shutdown,
 	.driver = {
 		.name	= "tilegx-ehci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 

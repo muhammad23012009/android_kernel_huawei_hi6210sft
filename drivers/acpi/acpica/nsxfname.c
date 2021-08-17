@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -77,7 +86,11 @@ static char *acpi_ns_copy_device_id(struct acpi_pnp_device_id *dest,
 
 acpi_status
 acpi_get_handle(acpi_handle parent,
+<<<<<<< HEAD
 		acpi_string pathname, acpi_handle * ret_handle)
+=======
+		acpi_string pathname, acpi_handle *ret_handle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status;
 	struct acpi_namespace_node *node = NULL;
@@ -113,7 +126,11 @@ acpi_get_handle(acpi_handle parent,
 
 		/* Special case for root-only, since we can't search for it */
 
+<<<<<<< HEAD
 		if (!ACPI_STRCMP(pathname, ACPI_NS_ROOT_PATH)) {
+=======
+		if (!strcmp(pathname, ACPI_NS_ROOT_PATH)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*ret_handle =
 			    ACPI_CAST_PTR(acpi_handle, acpi_gbl_root_node);
 			return (AE_OK);
@@ -154,10 +171,18 @@ ACPI_EXPORT_SYMBOL(acpi_get_handle)
  *
  ******************************************************************************/
 acpi_status
+<<<<<<< HEAD
 acpi_get_name(acpi_handle handle, u32 name_type, struct acpi_buffer * buffer)
 {
 	acpi_status status;
 	struct acpi_namespace_node *node;
+=======
+acpi_get_name(acpi_handle handle, u32 name_type, struct acpi_buffer *buffer)
+{
+	acpi_status status;
+	struct acpi_namespace_node *node;
+	const char *node_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Parameter validation */
 
@@ -170,11 +195,23 @@ acpi_get_name(acpi_handle handle, u32 name_type, struct acpi_buffer * buffer)
 		return (status);
 	}
 
+<<<<<<< HEAD
 	if (name_type == ACPI_FULL_PATHNAME) {
 
 		/* Get the full pathname (From the namespace root) */
 
 		status = acpi_ns_handle_to_pathname(handle, buffer);
+=======
+	if (name_type == ACPI_FULL_PATHNAME ||
+	    name_type == ACPI_FULL_PATHNAME_NO_TRAILING) {
+
+		/* Get the full pathname (From the namespace root) */
+
+		status = acpi_ns_handle_to_pathname(handle, buffer,
+						    name_type ==
+						    ACPI_FULL_PATHNAME ? FALSE :
+						    TRUE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return (status);
 	}
 
@@ -202,11 +239,20 @@ acpi_get_name(acpi_handle handle, u32 name_type, struct acpi_buffer * buffer)
 
 	/* Just copy the ACPI name from the Node and zero terminate it */
 
+<<<<<<< HEAD
 	ACPI_MOVE_NAME(buffer->pointer, acpi_ut_get_node_name(node));
 	((char *)buffer->pointer)[ACPI_NAME_SIZE] = 0;
 	status = AE_OK;
 
       unlock_and_exit:
+=======
+	node_name = acpi_ut_get_node_name(node);
+	ACPI_MOVE_NAME(buffer->pointer, node_name);
+	((char *)buffer->pointer)[ACPI_NAME_SIZE] = 0;
+	status = AE_OK;
+
+unlock_and_exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return (status);
@@ -231,7 +277,10 @@ static char *acpi_ns_copy_device_id(struct acpi_pnp_device_id *dest,
 				    struct acpi_pnp_device_id *source,
 				    char *string_area)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Create the destination PNP_DEVICE_ID */
 
 	dest->string = string_area;
@@ -239,7 +288,11 @@ static char *acpi_ns_copy_device_id(struct acpi_pnp_device_id *dest,
 
 	/* Copy actual string and return a pointer to the next string area */
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(string_area, source->string, source->length);
+=======
+	memcpy(string_area, source->string, source->length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (string_area + source->length);
 }
 
@@ -256,11 +309,26 @@ static char *acpi_ns_copy_device_id(struct acpi_pnp_device_id *dest,
  *              namespace node and possibly by running several standard
  *              control methods (Such as in the case of a device.)
  *
+<<<<<<< HEAD
  * For Device and Processor objects, run the Device _HID, _UID, _CID, _SUB,
  * _STA, _ADR, _sx_w, and _sx_d methods.
  *
  * Note: Allocates the return buffer, must be freed by the caller.
  *
+=======
+ * For Device and Processor objects, run the Device _HID, _UID, _CID, _STA,
+ * _CLS, _ADR, _sx_w, and _sx_d methods.
+ *
+ * Note: Allocates the return buffer, must be freed by the caller.
+ *
+ * Note: This interface is intended to be used during the initial device
+ * discovery namespace traversal. Therefore, no complex methods can be
+ * executed, especially those that access operation regions. Therefore, do
+ * not add any additional methods that could cause problems in this area.
+ * this was the fate of the _SUB method which was found to cause such
+ * problems and was removed (11/2015).
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  ******************************************************************************/
 
 acpi_status
@@ -272,12 +340,20 @@ acpi_get_object_info(acpi_handle handle,
 	struct acpi_pnp_device_id_list *cid_list = NULL;
 	struct acpi_pnp_device_id *hid = NULL;
 	struct acpi_pnp_device_id *uid = NULL;
+<<<<<<< HEAD
 	struct acpi_pnp_device_id *sub = NULL;
+=======
+	struct acpi_pnp_device_id *cls = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *next_id_string;
 	acpi_object_type type;
 	acpi_name name;
 	u8 param_count = 0;
+<<<<<<< HEAD
 	u8 valid = 0;
+=======
+	u16 valid = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 info_size;
 	u32 i;
 	acpi_status status;
@@ -317,7 +393,11 @@ acpi_get_object_info(acpi_handle handle,
 	if ((type == ACPI_TYPE_DEVICE) || (type == ACPI_TYPE_PROCESSOR)) {
 		/*
 		 * Get extra info for ACPI Device/Processor objects only:
+<<<<<<< HEAD
 		 * Run the Device _HID, _UID, _SUB, and _CID methods.
+=======
+		 * Run the Device _HID, _UID, _CLS, and _CID methods.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 *
 		 * Note: none of these methods are required, so they may or may
 		 * not be present for this device. The Info->Valid bitfield is used
@@ -340,6 +420,7 @@ acpi_get_object_info(acpi_handle handle,
 			valid |= ACPI_VALID_UID;
 		}
 
+<<<<<<< HEAD
 		/* Execute the Device._SUB method */
 
 		status = acpi_ut_execute_SUB(node, &sub);
@@ -348,6 +429,8 @@ acpi_get_object_info(acpi_handle handle,
 			valid |= ACPI_VALID_SUB;
 		}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Execute the Device._CID method */
 
 		status = acpi_ut_execute_CID(node, &cid_list);
@@ -360,6 +443,17 @@ acpi_get_object_info(acpi_handle handle,
 			     sizeof(struct acpi_pnp_device_id_list));
 			valid |= ACPI_VALID_CID;
 		}
+<<<<<<< HEAD
+=======
+
+		/* Execute the Device._CLS method */
+
+		status = acpi_ut_execute_CLS(node, &cls);
+		if (ACPI_SUCCESS(status)) {
+			info_size += cls->length;
+			valid |= ACPI_VALID_CLS;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -379,9 +473,20 @@ acpi_get_object_info(acpi_handle handle,
 		 * Get extra info for ACPI Device/Processor objects only:
 		 * Run the _STA, _ADR and, sx_w, and _sx_d methods.
 		 *
+<<<<<<< HEAD
 		 * Note: none of these methods are required, so they may or may
 		 * not be present for this device. The Info->Valid bitfield is used
 		 * to indicate which methods were found and run successfully.
+=======
+		 * Notes: none of these methods are required, so they may or may
+		 * not be present for this device. The Info->Valid bitfield is used
+		 * to indicate which methods were found and run successfully.
+		 *
+		 * For _STA, if the method does not exist, then (as per the ACPI
+		 * specification), the returned current_status flags will indicate
+		 * that the device is present/functional/enabled. Otherwise, the
+		 * current_status flags reflect the value returned from _STA.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 */
 
 		/* Execute the Device._STA method */
@@ -430,14 +535,23 @@ acpi_get_object_info(acpi_handle handle,
 		/* Point past the CID PNP_DEVICE_ID array */
 
 		next_id_string +=
+<<<<<<< HEAD
 		    ((acpi_size) cid_list->count *
+=======
+		    ((acpi_size)cid_list->count *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     sizeof(struct acpi_pnp_device_id));
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Copy the HID, UID, SUB, and CIDs to the return buffer.
 	 * The variable-length strings are copied to the reserved area
 	 * at the end of the buffer.
+=======
+	 * Copy the HID, UID, and CIDs to the return buffer. The variable-length
+	 * strings are copied to the reserved area at the end of the buffer.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 *
 	 * For HID and CID, check if the ID is a PCI Root Bridge.
 	 */
@@ -455,11 +569,14 @@ acpi_get_object_info(acpi_handle handle,
 							uid, next_id_string);
 	}
 
+<<<<<<< HEAD
 	if (sub) {
 		next_id_string = acpi_ns_copy_device_id(&info->subsystem_id,
 							sub, next_id_string);
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cid_list) {
 		info->compatible_id_list.count = cid_list->count;
 		info->compatible_id_list.list_size = cid_list->list_size;
@@ -478,6 +595,14 @@ acpi_get_object_info(acpi_handle handle,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (cls) {
+		next_id_string = acpi_ns_copy_device_id(&info->class_code,
+							cls, next_id_string);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Copy the fixed-length data */
 
 	info->info_size = info_size;
@@ -489,19 +614,32 @@ acpi_get_object_info(acpi_handle handle,
 	*return_buffer = info;
 	status = AE_OK;
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hid) {
 		ACPI_FREE(hid);
 	}
 	if (uid) {
 		ACPI_FREE(uid);
 	}
+<<<<<<< HEAD
 	if (sub) {
 		ACPI_FREE(sub);
 	}
 	if (cid_list) {
 		ACPI_FREE(cid_list);
 	}
+=======
+	if (cid_list) {
+		ACPI_FREE(cid_list);
+	}
+	if (cls) {
+		ACPI_FREE(cls);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (status);
 }
 
@@ -562,6 +700,10 @@ acpi_status acpi_install_method(u8 *buffer)
 	parser_state.aml += acpi_ps_get_opcode_size(opcode);
 	parser_state.pkg_end = acpi_ps_get_next_package_end(&parser_state);
 	path = acpi_ps_get_next_namestring(&parser_state);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	method_flags = *parser_state.aml++;
 	aml_start = parser_state.aml;
 	aml_length = ACPI_PTR_DIFF(parser_state.pkg_end, aml_start);
@@ -612,7 +754,11 @@ acpi_status acpi_install_method(u8 *buffer)
 
 	/* Copy the method AML to the local buffer */
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(aml_buffer, aml_start, aml_length);
+=======
+	memcpy(aml_buffer, aml_start, aml_length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Initialize the method object with the new method's information */
 

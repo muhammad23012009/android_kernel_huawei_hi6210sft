@@ -321,7 +321,12 @@ EXPORT_SYMBOL_GPL(dca_get_tag);
  * @ops - pointer to struct of dca operation function pointers
  * @priv_size - size of extra mem to be added for provider's needs
  */
+<<<<<<< HEAD
 struct dca_provider *alloc_dca_provider(struct dca_ops *ops, int priv_size)
+=======
+struct dca_provider *alloc_dca_provider(const struct dca_ops *ops,
+					int priv_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dca_provider *dca;
 	int alloc_size;

@@ -152,6 +152,7 @@ struct gpio_port_t {
 	unsigned long revid;
 };
 
+<<<<<<< HEAD
 struct gpio_port_s {
 	unsigned short fer;
 	unsigned short data;
@@ -160,6 +161,8 @@ struct gpio_port_s {
 	unsigned int mux;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #include <mach-common/ports-a.h>

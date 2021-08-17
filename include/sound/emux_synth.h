@@ -125,7 +125,11 @@ struct snd_emux {
 
 	struct snd_util_memhdr *memhdr;	/* memory chunk information */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_info_entry *proc;
 #endif
 

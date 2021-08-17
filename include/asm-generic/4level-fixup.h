@@ -4,6 +4,10 @@
 #define __ARCH_HAS_4LEVEL_HACK
 #define __PAGETABLE_PUD_FOLDED
 
+<<<<<<< HEAD
+=======
+#define PUD_SHIFT			PGDIR_SHIFT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PUD_SIZE			PGDIR_SIZE
 #define PUD_MASK			PGDIR_MASK
 #define PTRS_PER_PUD			1

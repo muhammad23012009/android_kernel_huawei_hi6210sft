@@ -9,10 +9,20 @@
 #ifndef _SIRFSOC_RTC_IOBRG_H_
 #define _SIRFSOC_RTC_IOBRG_H_
 
+<<<<<<< HEAD
+=======
+struct regmap_config;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void sirfsoc_rtc_iobrg_besyncing(void);
 
 extern u32 sirfsoc_rtc_iobrg_readl(u32 addr);
 
 extern void sirfsoc_rtc_iobrg_writel(u32 val, u32 addr);
+<<<<<<< HEAD
+=======
+struct regmap *devm_regmap_init_iobg(struct device *dev,
+				    const struct regmap_config *config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

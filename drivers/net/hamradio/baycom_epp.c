@@ -635,10 +635,17 @@ static int receive(struct net_device *dev, int cnt)
 
 #ifdef __i386__
 #include <asm/msr.h>
+<<<<<<< HEAD
 #define GETTICK(x)                                                \
 ({                                                                \
 	if (cpu_has_tsc)                                          \
 		rdtscl(x);                                        \
+=======
+#define GETTICK(x)						\
+({								\
+	if (boot_cpu_has(X86_FEATURE_TSC))			\
+		x = (unsigned int)rdtsc();			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 #else /* __i386__ */
 #define GETTICK(x)
@@ -772,13 +779,26 @@ static int baycom_send_packet(struct sk_buff *skb, struct net_device *dev)
 {
 	struct baycom_state *bc = netdev_priv(dev);
 
+<<<<<<< HEAD
+=======
+	if (skb->protocol == htons(ETH_P_IP))
+		return ax25_ip_xmit(skb);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (skb->data[0] != 0) {
 		do_kiss_params(bc, skb->data, skb->len);
 		dev_kfree_skb(skb);
 		return NETDEV_TX_OK;
 	}
+<<<<<<< HEAD
 	if (bc->skb)
 		return NETDEV_TX_LOCKED;
+=======
+	if (bc->skb) {
+		dev_kfree_skb(skb);
+		return NETDEV_TX_OK;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* strip KISS byte */
 	if (skb->len >= HDLCDRV_MAXFLEN+1 || skb->len < 3) {
 		dev_kfree_skb(skb);
@@ -1206,7 +1226,11 @@ static int __init init_baycomepp(void)
 		struct net_device *dev;
 		
 		dev = alloc_netdev(sizeof(struct baycom_state), "bce%d",
+<<<<<<< HEAD
 				   baycom_epp_dev_setup);
+=======
+				   NET_NAME_UNKNOWN, baycom_epp_dev_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!dev) {
 			printk(KERN_WARNING "bce%d : out of memory\n", i);

@@ -17,6 +17,7 @@
 #define __ASM_BITOPS_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 
 #include <asm/barrier.h>
 
@@ -28,6 +29,10 @@
 #define smp_mb__after_clear_bit()	smp_mb()
 #endif
 
+=======
+#include <asm/barrier.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef _LINUX_BITOPS_H
 #error only <linux/bitops.h> can be included directly
 #endif

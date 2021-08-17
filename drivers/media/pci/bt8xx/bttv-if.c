@@ -113,9 +113,12 @@ int bttv_write_gpio(unsigned int card, unsigned long mask, unsigned long data)
 		bttv_gpio_tracking(btv,"extern write");
 	return 0;
 }
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

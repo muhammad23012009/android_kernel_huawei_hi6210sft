@@ -13,4 +13,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+<<<<<<< HEAD
+=======
+
+#define __ARCH_WANT_RENAMEAT
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/unistd.h>

@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,6 +110,10 @@ struct acpi_namespace_node *acpi_ns_create_node(u32 name)
 void acpi_ns_delete_node(struct acpi_namespace_node *node)
 {
 	union acpi_operand_object *obj_desc;
+<<<<<<< HEAD
+=======
+	union acpi_operand_object *next_desc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ACPI_FUNCTION_NAME(ns_delete_node);
 
@@ -114,12 +122,22 @@ void acpi_ns_delete_node(struct acpi_namespace_node *node)
 	acpi_ns_detach_object(node);
 
 	/*
+<<<<<<< HEAD
 	 * Delete an attached data object if present (an object that was created
 	 * and attached via acpi_attach_data). Note: After any normal object is
 	 * detached above, the only possible remaining object is a data object.
 	 */
 	obj_desc = node->object;
 	if (obj_desc && (obj_desc->common.type == ACPI_TYPE_LOCAL_DATA)) {
+=======
+	 * Delete an attached data object list if present (objects that were
+	 * attached via acpi_attach_data). Note: After any normal object is
+	 * detached above, the only possible remaining object(s) are data
+	 * objects, in a linked list.
+	 */
+	obj_desc = node->object;
+	while (obj_desc && (obj_desc->common.type == ACPI_TYPE_LOCAL_DATA)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Invoke the attached data deletion handler if present */
 
@@ -127,7 +145,19 @@ void acpi_ns_delete_node(struct acpi_namespace_node *node)
 			obj_desc->data.handler(node, obj_desc->data.pointer);
 		}
 
+<<<<<<< HEAD
 		acpi_ut_remove_reference(obj_desc);
+=======
+		next_desc = obj_desc->common.next_object;
+		acpi_ut_remove_reference(obj_desc);
+		obj_desc = next_desc;
+	}
+
+	/* Special case for the statically allocated root node */
+
+	if (node == acpi_gbl_root_node) {
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Now we can delete the node */

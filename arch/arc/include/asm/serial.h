@@ -10,6 +10,7 @@
 #define _ASM_ARC_SERIAL_H
 
 /*
+<<<<<<< HEAD
  * early-8250 requires BASE_BAUD to be defined and includes this header.
  * We put in a typical value:
  * 	(core clk / 16) - i.e. UART samples 16 times per sec.
@@ -31,5 +32,15 @@
 #undef BASE_BAUD
 #define BASE_BAUD	(arc_get_core_freq() / 16 / 3)
 #endif
+=======
+ * early 8250 (now earlycon) requires BASE_BAUD to be defined in this header.
+ * However to still determine it dynamically (for multi-platform images)
+ * we do this in a helper by parsing the FDT early
+ */
+
+extern unsigned int __init arc_early_base_baud(void);
+
+#define BASE_BAUD	arc_early_base_baud()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_ARC_SERIAL_H */

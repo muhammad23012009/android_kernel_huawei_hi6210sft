@@ -226,7 +226,11 @@ geode_encrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 	op->dst = (void *) out;
 	op->mode = AES_MODE_ECB;
 	op->flags = 0;
+<<<<<<< HEAD
 	op->len = AES_MIN_BLOCK_SIZE;
+=======
+	op->len = AES_BLOCK_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	op->dir = AES_DIR_ENCRYPT;
 
 	geode_aes_crypt(op);
@@ -247,7 +251,11 @@ geode_decrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 	op->dst = (void *) out;
 	op->mode = AES_MODE_ECB;
 	op->flags = 0;
+<<<<<<< HEAD
 	op->len = AES_MIN_BLOCK_SIZE;
+=======
+	op->len = AES_BLOCK_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	op->dir = AES_DIR_DECRYPT;
 
 	geode_aes_crypt(op);
@@ -255,7 +263,11 @@ geode_decrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 
 static int fallback_init_cip(struct crypto_tfm *tfm)
 {
+<<<<<<< HEAD
 	const char *name = tfm->__crt_alg->cra_name;
+=======
+	const char *name = crypto_tfm_alg_name(tfm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct geode_aes_op *op = crypto_tfm_ctx(tfm);
 
 	op->fallback.cip = crypto_alloc_cipher(name, 0,
@@ -286,7 +298,11 @@ static struct crypto_alg geode_alg = {
 							CRYPTO_ALG_NEED_FALLBACK,
 	.cra_init			=	fallback_init_cip,
 	.cra_exit			=	fallback_exit_cip,
+<<<<<<< HEAD
 	.cra_blocksize		=	AES_MIN_BLOCK_SIZE,
+=======
+	.cra_blocksize		=	AES_BLOCK_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cra_ctxsize		=	sizeof(struct geode_aes_op),
 	.cra_module			=	THIS_MODULE,
 	.cra_u				=	{
@@ -320,7 +336,11 @@ geode_cbc_decrypt(struct blkcipher_desc *desc,
 		op->src = walk.src.virt.addr,
 		op->dst = walk.dst.virt.addr;
 		op->mode = AES_MODE_CBC;
+<<<<<<< HEAD
 		op->len = nbytes - (nbytes % AES_MIN_BLOCK_SIZE);
+=======
+		op->len = nbytes - (nbytes % AES_BLOCK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		op->dir = AES_DIR_DECRYPT;
 
 		ret = geode_aes_crypt(op);
@@ -352,7 +372,11 @@ geode_cbc_encrypt(struct blkcipher_desc *desc,
 		op->src = walk.src.virt.addr,
 		op->dst = walk.dst.virt.addr;
 		op->mode = AES_MODE_CBC;
+<<<<<<< HEAD
 		op->len = nbytes - (nbytes % AES_MIN_BLOCK_SIZE);
+=======
+		op->len = nbytes - (nbytes % AES_BLOCK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		op->dir = AES_DIR_ENCRYPT;
 
 		ret = geode_aes_crypt(op);
@@ -365,7 +389,11 @@ geode_cbc_encrypt(struct blkcipher_desc *desc,
 
 static int fallback_init_blk(struct crypto_tfm *tfm)
 {
+<<<<<<< HEAD
 	const char *name = tfm->__crt_alg->cra_name;
+=======
+	const char *name = crypto_tfm_alg_name(tfm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct geode_aes_op *op = crypto_tfm_ctx(tfm);
 
 	op->fallback.blk = crypto_alloc_blkcipher(name, 0,
@@ -396,7 +424,11 @@ static struct crypto_alg geode_cbc_alg = {
 						CRYPTO_ALG_NEED_FALLBACK,
 	.cra_init			=	fallback_init_blk,
 	.cra_exit			=	fallback_exit_blk,
+<<<<<<< HEAD
 	.cra_blocksize		=	AES_MIN_BLOCK_SIZE,
+=======
+	.cra_blocksize		=	AES_BLOCK_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cra_ctxsize		=	sizeof(struct geode_aes_op),
 	.cra_alignmask		=	15,
 	.cra_type			=	&crypto_blkcipher_type,
@@ -408,7 +440,11 @@ static struct crypto_alg geode_cbc_alg = {
 			.setkey			=	geode_setkey_blk,
 			.encrypt		=	geode_cbc_encrypt,
 			.decrypt		=	geode_cbc_decrypt,
+<<<<<<< HEAD
 			.ivsize			=	AES_IV_LENGTH,
+=======
+			.ivsize			=	AES_BLOCK_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 };
@@ -432,7 +468,11 @@ geode_ecb_decrypt(struct blkcipher_desc *desc,
 		op->src = walk.src.virt.addr,
 		op->dst = walk.dst.virt.addr;
 		op->mode = AES_MODE_ECB;
+<<<<<<< HEAD
 		op->len = nbytes - (nbytes % AES_MIN_BLOCK_SIZE);
+=======
+		op->len = nbytes - (nbytes % AES_BLOCK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		op->dir = AES_DIR_DECRYPT;
 
 		ret = geode_aes_crypt(op);
@@ -462,7 +502,11 @@ geode_ecb_encrypt(struct blkcipher_desc *desc,
 		op->src = walk.src.virt.addr,
 		op->dst = walk.dst.virt.addr;
 		op->mode = AES_MODE_ECB;
+<<<<<<< HEAD
 		op->len = nbytes - (nbytes % AES_MIN_BLOCK_SIZE);
+=======
+		op->len = nbytes - (nbytes % AES_BLOCK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		op->dir = AES_DIR_ENCRYPT;
 
 		ret = geode_aes_crypt(op);
@@ -482,7 +526,11 @@ static struct crypto_alg geode_ecb_alg = {
 						CRYPTO_ALG_NEED_FALLBACK,
 	.cra_init			=	fallback_init_blk,
 	.cra_exit			=	fallback_exit_blk,
+<<<<<<< HEAD
 	.cra_blocksize		=	AES_MIN_BLOCK_SIZE,
+=======
+	.cra_blocksize		=	AES_BLOCK_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cra_ctxsize		=	sizeof(struct geode_aes_op),
 	.cra_alignmask		=	15,
 	.cra_type			=	&crypto_blkcipher_type,
@@ -547,7 +595,11 @@ static int geode_aes_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (ret)
 		goto eecb;
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "geode-aes: GEODE AES engine enabled.\n");
+=======
+	dev_notice(&dev->dev, "GEODE AES engine enabled.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
  eecb:
@@ -565,7 +617,11 @@ static int geode_aes_probe(struct pci_dev *dev, const struct pci_device_id *id)
  eenable:
 	pci_disable_device(dev);
 
+<<<<<<< HEAD
 	printk(KERN_ERR "geode-aes:  GEODE AES initialization failed.\n");
+=======
+	dev_err(&dev->dev, "GEODE AES initialization failed.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 

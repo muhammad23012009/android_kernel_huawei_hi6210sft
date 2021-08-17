@@ -29,7 +29,11 @@
 #include <linux/delay.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/dma.h>
 #include <sound/core.h>
 #include <sound/wss.h>
@@ -875,10 +879,20 @@ static void snd_miro_write(struct snd_miro *chip, unsigned char reg,
 	spin_unlock_irqrestore(&chip->lock, flags);
 }
 
+<<<<<<< HEAD
 
 #define snd_miro_write_mask(chip, reg, value, mask)	\
 	snd_miro_write(chip, reg,			\
 		(snd_miro_read(chip, reg) & ~(mask)) | ((value) & (mask)))
+=======
+static inline void snd_miro_write_mask(struct snd_miro *chip,
+		unsigned char reg, unsigned char value, unsigned char mask)
+{
+	unsigned char oldval = snd_miro_read(chip, reg);
+
+	snd_miro_write(chip, reg, (oldval & ~mask) | (value & mask));
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *  Proc Interface
@@ -1270,8 +1284,11 @@ static int snd_miro_probe(struct snd_card *card)
 	int error;
 	struct snd_miro *miro = card->private_data;
 	struct snd_wss *codec;
+<<<<<<< HEAD
 	struct snd_timer *timer;
 	struct snd_pcm *pcm;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_rawmidi *rmidi;
 
 	if (!miro->res_mc_base) {
@@ -1310,7 +1327,11 @@ static int snd_miro_probe(struct snd_card *card)
 	if (error < 0)
 		return error;
 
+<<<<<<< HEAD
 	error = snd_wss_pcm(codec, 0, &pcm);
+=======
+	error = snd_wss_pcm(codec, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		return error;
 
@@ -1318,11 +1339,19 @@ static int snd_miro_probe(struct snd_card *card)
 	if (error < 0)
 		return error;
 
+<<<<<<< HEAD
 	error = snd_wss_timer(codec, 0, &timer);
 	if (error < 0)
 		return error;
 
 	miro->pcm = pcm;
+=======
+	error = snd_wss_timer(codec, 0);
+	if (error < 0)
+		return error;
+
+	miro->pcm = codec->pcm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = snd_miro_mixer(card, miro);
 	if (error < 0)
@@ -1356,8 +1385,13 @@ static int snd_miro_probe(struct snd_card *card)
 
 	strcpy(card->driver, "miro");
 	sprintf(card->longname, "%s: OPTi%s, %s at 0x%lx, irq %d, dma %d&%d",
+<<<<<<< HEAD
 		card->shortname, miro->name, pcm->name, miro->wss_base + 4,
 		miro->irq, miro->dma1, miro->dma2);
+=======
+		card->shortname, miro->name, codec->pcm->name,
+		miro->wss_base + 4, miro->irq, miro->dma1, miro->dma2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mpu_port <= 0 || mpu_port == SNDRV_AUTO_PORT)
 		rmidi = NULL;
@@ -1411,8 +1445,13 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	struct snd_miro *miro;
 	struct snd_card *card;
 
+<<<<<<< HEAD
 	error = snd_card_create(index, id, THIS_MODULE,
 				sizeof(struct snd_miro), &card);
+=======
+	error = snd_card_new(devptr, index, id, THIS_MODULE,
+			     sizeof(struct snd_miro), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		return error;
 
@@ -1479,8 +1518,11 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 		}
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, devptr);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = snd_miro_probe(card);
 	if (error < 0) {
 		snd_card_free(card);
@@ -1495,7 +1537,10 @@ static int snd_miro_isa_remove(struct device *devptr,
 			       unsigned int dev)
 {
 	snd_card_free(dev_get_drvdata(devptr));
+<<<<<<< HEAD
 	dev_set_drvdata(devptr, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1585,8 +1630,13 @@ static int snd_miro_pnp_probe(struct pnp_card_link *pcard,
 		return -EBUSY;
 	if (!isapnp)
 		return -ENODEV;
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE,
 				sizeof(struct snd_miro), &card);
+=======
+	err = snd_card_new(&pcard->card->dev, index, id, THIS_MODULE,
+			   sizeof(struct snd_miro), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -1613,7 +1663,10 @@ static int snd_miro_pnp_probe(struct pnp_card_link *pcard,
 		return err;
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pcard->card->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_miro_probe(card);
 	if (err < 0) {
 		snd_card_free(card);

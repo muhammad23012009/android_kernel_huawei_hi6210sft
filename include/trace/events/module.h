@@ -22,8 +22,15 @@ struct module;
 
 #define show_module_flags(flags) __print_flags(flags, "",	\
 	{ (1UL << TAINT_PROPRIETARY_MODULE),	"P" },		\
+<<<<<<< HEAD
 	{ (1UL << TAINT_FORCED_MODULE),		"F" },		\
 	{ (1UL << TAINT_CRAP),			"C" })
+=======
+	{ (1UL << TAINT_OOT_MODULE),		"O" },		\
+	{ (1UL << TAINT_FORCED_MODULE),		"F" },		\
+	{ (1UL << TAINT_CRAP),			"C" },		\
+	{ (1UL << TAINT_UNSIGNED_MODULE),	"E" })
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 TRACE_EVENT(module_load,
 
@@ -78,11 +85,19 @@ DECLARE_EVENT_CLASS(module_refcnt,
 
 	TP_fast_assign(
 		__entry->ip	= ip;
+<<<<<<< HEAD
 		__entry->refcnt	= __this_cpu_read(mod->refptr->incs) - __this_cpu_read(mod->refptr->decs);
 		__assign_str(name, mod->name);
 	),
 
 	TP_printk("%s call_site=%pf refcnt=%d",
+=======
+		__entry->refcnt	= atomic_read(&mod->refcnt);
+		__assign_str(name, mod->name);
+	),
+
+	TP_printk("%s call_site=%ps refcnt=%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  __get_str(name), (void *)__entry->ip, __entry->refcnt)
 );
 
@@ -119,7 +134,11 @@ TRACE_EVENT(module_request,
 		__assign_str(name, name);
 	),
 
+<<<<<<< HEAD
 	TP_printk("%s wait=%d call_site=%pf",
+=======
+	TP_printk("%s wait=%d call_site=%ps",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  __get_str(name), (int)__entry->wait, (void *)__entry->ip)
 );
 

@@ -137,7 +137,10 @@ void init_gssp_clnt(struct sunrpc_net *sn)
 {
 	mutex_init(&sn->gssp_lock);
 	sn->gssp_clnt = NULL;
+<<<<<<< HEAD
 	init_waitqueue_head(&sn->gssp_wq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int set_gssp_clnt(struct net *net)
@@ -154,7 +157,10 @@ int set_gssp_clnt(struct net *net)
 		sn->gssp_clnt = clnt;
 	}
 	mutex_unlock(&sn->gssp_lock);
+<<<<<<< HEAD
 	wake_up(&sn->gssp_wq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -219,6 +225,11 @@ static void gssp_free_receive_pages(struct gssx_arg_accept_sec_context *arg)
 
 	for (i = 0; i < arg->npages && arg->pages[i]; i++)
 		__free_page(arg->pages[i]);
+<<<<<<< HEAD
+=======
+
+	kfree(arg->pages);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int gssp_alloc_receive_pages(struct gssx_arg_accept_sec_context *arg)
@@ -298,7 +309,12 @@ int gssp_accept_sec_context_upcall(struct net *net,
 	if (res.context_handle) {
 		data->out_handle = rctxh.exported_context_token;
 		data->mech_oid.len = rctxh.mech.len;
+<<<<<<< HEAD
 		memcpy(data->mech_oid.data, rctxh.mech.data,
+=======
+		if (rctxh.mech.data)
+			memcpy(data->mech_oid.data, rctxh.mech.data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						data->mech_oid.len);
 		client_name = rctxh.src_name.display_name;
 	}
@@ -325,6 +341,12 @@ int gssp_accept_sec_context_upcall(struct net *net,
 	if (data->found_creds && client_name.data != NULL) {
 		char *c;
 
+<<<<<<< HEAD
+=======
+		data->creds.cr_raw_principal = kstrndup(client_name.data,
+						client_name.len, GFP_KERNEL);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data->creds.cr_principal = kstrndup(client_name.data,
 						client_name.len, GFP_KERNEL);
 		if (data->creds.cr_principal) {

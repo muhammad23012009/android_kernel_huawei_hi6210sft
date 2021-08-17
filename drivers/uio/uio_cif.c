@@ -106,7 +106,10 @@ static void hilscher_pci_remove(struct pci_dev *dev)
 	uio_unregister_device(info);
 	pci_release_regions(dev);
 	pci_disable_device(dev);
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iounmap(info->mem[0].internal_addr);
 
 	kfree (info);
@@ -135,6 +138,7 @@ static struct pci_driver hilscher_pci_driver = {
 	.remove = hilscher_pci_remove,
 };
 
+<<<<<<< HEAD
 static int __init hilscher_init_module(void)
 {
 	return pci_register_driver(&hilscher_pci_driver);
@@ -148,6 +152,9 @@ static void __exit hilscher_exit_module(void)
 module_init(hilscher_init_module);
 module_exit(hilscher_exit_module);
 
+=======
+module_pci_driver(hilscher_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DEVICE_TABLE(pci, hilscher_pci_ids);
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Hans J. Koch, Benedikt Spranger");

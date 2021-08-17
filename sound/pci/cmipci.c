@@ -20,7 +20,11 @@
 /* Does not work. Warning may block system in capture mode */
 /* #define USE_VAR48KRATE */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -796,7 +800,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	if (runtime->channels > 1)
 		rec->fmt |= 0x01;
 	if (rec->is_dac && set_dac_channels(cm, rec, runtime->channels) < 0) {
+<<<<<<< HEAD
 		snd_printd("cannot set dac channels\n");
+=======
+		dev_dbg(cm->card->dev, "cannot set dac channels\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -827,7 +835,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	else
 		cm->ctrl |= val;
 	snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl);
+<<<<<<< HEAD
 	//snd_printd("cmipci: functrl0 = %08x\n", cm->ctrl);
+=======
+	/* dev_dbg(cm->card->dev, "functrl0 = %08x\n", cm->ctrl); */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set sample rate */
 	freq = 0;
@@ -850,7 +862,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 		val |= (freq << CM_ASFC_SHIFT) & CM_ASFC_MASK;
 	}
 	snd_cmipci_write(cm, CM_REG_FUNCTRL1, val);
+<<<<<<< HEAD
 	//snd_printd("cmipci: functrl1 = %08x\n", val);
+=======
+	dev_dbg(cm->card->dev, "functrl1 = %08x\n", val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set format */
 	val = snd_cmipci_read(cm, CM_REG_CHFORMAT);
@@ -866,7 +882,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 		val |= freq_ext << (rec->ch * 2);
 	}
 	snd_cmipci_write(cm, CM_REG_CHFORMAT, val);
+<<<<<<< HEAD
 	//snd_printd("cmipci: chformat = %08x\n", val);
+=======
+	dev_dbg(cm->card->dev, "chformat = %08x\n", val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!rec->is_dac && cm->chip_version) {
 		if (runtime->rate > 44100)
@@ -904,7 +924,11 @@ static int snd_cmipci_pcm_trigger(struct cmipci *cm, struct cmipci_pcm *rec,
 		cm->ctrl |= chen;
 		/* enable channel */
 		snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl);
+<<<<<<< HEAD
 		//snd_printd("cmipci: functrl0 = %08x\n", cm->ctrl);
+=======
+		dev_dbg(cm->card->dev, "functrl0 = %08x\n", cm->ctrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 		rec->running = 0;
@@ -952,7 +976,11 @@ static snd_pcm_uframes_t snd_cmipci_pcm_pointer(struct cmipci *cm, struct cmipci
 		if (rem < rec->dma_size)
 			goto ok;
 	} 
+<<<<<<< HEAD
 	printk(KERN_ERR "cmipci: invalid PCM pointer: %#x\n", rem);
+=======
+	dev_err(cm->card->dev, "invalid PCM pointer: %#x\n", rem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return SNDRV_PCM_POS_XRUN;
 ok:
 	ptr = (rec->dma_size - (rem + 1)) >> rec->shift;
@@ -1838,7 +1866,11 @@ static int snd_cmipci_capture_spdif_close(struct snd_pcm_substream *substream)
 /*
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_cmipci_playback_open,
 	.close =	snd_cmipci_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1849,7 +1881,11 @@ static struct snd_pcm_ops snd_cmipci_playback_ops = {
 	.pointer =	snd_cmipci_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_capture_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_cmipci_capture_open,
 	.close =	snd_cmipci_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1860,7 +1896,11 @@ static struct snd_pcm_ops snd_cmipci_capture_ops = {
 	.pointer =	snd_cmipci_capture_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback2_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_playback2_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_cmipci_playback2_open,
 	.close =	snd_cmipci_playback2_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1871,7 +1911,11 @@ static struct snd_pcm_ops snd_cmipci_playback2_ops = {
 	.pointer =	snd_cmipci_capture_pointer,	/* channel B */
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_cmipci_playback_spdif_open,
 	.close =	snd_cmipci_playback_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -1882,7 +1926,11 @@ static struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
 	.pointer =	snd_cmipci_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
+=======
+static const struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_cmipci_capture_spdif_open,
 	.close =	snd_cmipci_capture_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -2062,7 +2110,11 @@ static int snd_cmipci_get_volume(struct snd_kcontrol *kcontrol,
 		val = (snd_cmipci_mixer_read(cm, reg.right_reg) >> reg.right_shift) & reg.mask;
 		if (reg.invert)
 			val = reg.mask - val;
+<<<<<<< HEAD
 		 ucontrol->value.integer.value[1] = val;
+=======
+		ucontrol->value.integer.value[1] = val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock_irq(&cm->reg_lock);
 	return 0;
@@ -2772,7 +2824,10 @@ static int snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_device)
  * proc interface
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void snd_cmipci_proc_read(struct snd_info_entry *entry, 
 				 struct snd_info_buffer *buffer)
 {
@@ -2798,12 +2853,17 @@ static void snd_cmipci_proc_init(struct cmipci *cm)
 	if (! snd_card_proc_new(cm->card, "cmipci", &entry))
 		snd_info_set_text_ops(entry, cm, snd_cmipci_proc_read);
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
 static inline void snd_cmipci_proc_init(struct cmipci *cm) {}
 #endif
 
 
 static DEFINE_PCI_DEVICE_TABLE(snd_cmipci_ids) = {
+=======
+
+static const struct pci_device_id snd_cmipci_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_VDEVICE(CMEDIA, PCI_DEVICE_ID_CMEDIA_CM8338A), 0},
 	{PCI_VDEVICE(CMEDIA, PCI_DEVICE_ID_CMEDIA_CM8338B), 0},
 	{PCI_VDEVICE(CMEDIA, PCI_DEVICE_ID_CMEDIA_CM8738), 0},
@@ -2889,13 +2949,21 @@ static int snd_cmipci_create_gameport(struct cmipci *cm, int dev)
 	}
 
 	if (!r) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "cmipci: cannot reserve joystick ports\n");
+=======
+		dev_warn(cm->card->dev, "cannot reserve joystick ports\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
 	cm->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cmipci: cannot allocate memory for gameport\n");
+=======
+		dev_err(cm->card->dev, "cannot allocate memory for gameport\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		release_and_free_resource(r);
 		return -ENOMEM;
 	}
@@ -2995,13 +3063,23 @@ static int snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
 
 		if (snd_opl3_create(cm->card, iosynth, iosynth + 2,
 				    OPL3_HW_OPL3, 0, &opl3) < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "cmipci: no OPL device at %#lx, "
 			       "skipping...\n", iosynth);
+=======
+			dev_err(cm->card->dev,
+				"no OPL device at %#lx, skipping...\n",
+				iosynth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto disable_fm;
 		}
 	}
 	if ((err = snd_opl3_hwdep_new(opl3, 0, 1, NULL)) < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cmipci: cannot create OPL3 hwdep\n");
+=======
+		dev_err(cm->card->dev, "cannot create OPL3 hwdep\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 	return 0;
@@ -3025,7 +3103,11 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	int integrated_midi = 0;
 	char modelstr[16];
 	int pcm_index, pcm_spdif_index;
+<<<<<<< HEAD
 	static DEFINE_PCI_DEVICE_TABLE(intel_82437vx) = {
+=======
+	static const struct pci_device_id intel_82437vx[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82437VX) },
 		{ },
 	};
@@ -3060,7 +3142,11 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 
 	if (request_irq(pci->irq, snd_cmipci_interrupt,
 			IRQF_SHARED, KBUILD_MODNAME, cm)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
+=======
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_cmipci_free(cm);
 		return -EBUSY;
 	}
@@ -3192,8 +3278,14 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 			/* enable UART */
 			snd_cmipci_set_bit(cm, CM_REG_FUNCTRL1, CM_UART_EN);
 			if (inb(iomidi + 1) == 0xff) {
+<<<<<<< HEAD
 				snd_printk(KERN_ERR "cannot enable MPU-401 port"
 					   " at %#lx\n", iomidi);
+=======
+				dev_err(cm->card->dev,
+					"cannot enable MPU-401 port at %#lx\n",
+					iomidi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1,
 						     CM_UART_EN);
 				iomidi = 0;
@@ -3237,7 +3329,12 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 						MPU401_INFO_INTEGRATED : 0) |
 					       MPU401_INFO_IRQ_HOOK,
 					       -1, &cm->rmidi)) < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "cmipci: no UART401 device at 0x%lx\n", iomidi);
+=======
+			dev_err(cm->card->dev,
+				"no UART401 device at 0x%lx\n", iomidi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -3254,8 +3351,11 @@ static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 	if (snd_cmipci_create_gameport(cm, dev) < 0)
 		snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1, CM_JYSTK_EN);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*rcmipci = cm;
 	return 0;
 }
@@ -3280,7 +3380,12 @@ static int snd_cmipci_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	
@@ -3317,7 +3422,10 @@ static int snd_cmipci_probe(struct pci_dev *pci,
 static void snd_cmipci_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
+<<<<<<< HEAD
 	pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -3346,7 +3454,10 @@ static unsigned char saved_mixers[] = {
 
 static int snd_cmipci_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct cmipci *cm = card->private_data;
 	int i;
@@ -3365,20 +3476,27 @@ static int snd_cmipci_suspend(struct device *dev)
 
 	/* disable ints */
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int snd_cmipci_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct cmipci *cm = card->private_data;
 	int i;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -3389,6 +3507,8 @@ static int snd_cmipci_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* reset / initialize to a sane state */
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
 	snd_cmipci_ch_reset(cm, CM_CH_PLAY);

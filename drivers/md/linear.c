@@ -10,10 +10,17 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
+<<<<<<< HEAD
    
    You should have received a copy of the GNU General Public License
    (for example /usr/src/linux/COPYING); if not, write to the Free
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
+=======
+
+   You should have received a copy of the GNU General Public License
+   (for example /usr/src/linux/COPYING); if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 #include <linux/blkdev.h>
@@ -25,7 +32,11 @@
 #include "linear.h"
 
 /*
+<<<<<<< HEAD
  * find which device holds a particular offset 
+=======
+ * find which device holds a particular offset
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static inline struct dev_info *which_dev(struct mddev *mddev, sector_t sector)
 {
@@ -34,7 +45,11 @@ static inline struct dev_info *which_dev(struct mddev *mddev, sector_t sector)
 
 	lo = 0;
 	hi = mddev->raid_disks - 1;
+<<<<<<< HEAD
 	conf = rcu_dereference(mddev->private);
+=======
+	conf = mddev->private;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Binary Search
@@ -52,6 +67,7 @@ static inline struct dev_info *which_dev(struct mddev *mddev, sector_t sector)
 	return conf->disks + lo;
 }
 
+<<<<<<< HEAD
 /**
  *	linear_mergeable_bvec -- tell bio layer if two requests can be merged
  *	@q: request queue
@@ -97,12 +113,15 @@ static int linear_mergeable_bvec(struct request_queue *q,
 		return maxsectors << 9;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * In linear_congested() conf->raid_disks is used as a copy of
  * mddev->raid_disks to iterate conf->disks[], because conf->raid_disks
  * and conf->disks[] are created in linear_conf(), they are always
  * consitent with each other, but mddev->raid_disks does not.
  */
+<<<<<<< HEAD
 static int linear_congested(void *data, int bits)
 {
 	struct mddev *mddev = data;
@@ -112,6 +131,13 @@ static int linear_congested(void *data, int bits)
 	if (mddev_congested(mddev, bits))
 		return 1;
 
+=======
+static int linear_congested(struct mddev *mddev, int bits)
+{
+	struct linear_conf *conf;
+	int i, ret = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_read_lock();
 	conf = rcu_dereference(mddev->private);
 
@@ -129,12 +155,19 @@ static sector_t linear_size(struct mddev *mddev, sector_t sectors, int raid_disk
 	struct linear_conf *conf;
 	sector_t array_sectors;
 
+<<<<<<< HEAD
 	rcu_read_lock();
 	conf = rcu_dereference(mddev->private);
 	WARN_ONCE(sectors || raid_disks,
 		  "%s does not support generic reshape\n", __func__);
 	array_sectors = conf->array_sectors;
 	rcu_read_unlock();
+=======
+	conf = mddev->private;
+	WARN_ONCE(sectors || raid_disks,
+		  "%s does not support generic reshape\n", __func__);
+	array_sectors = conf->array_sectors;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return array_sectors;
 }
@@ -236,10 +269,13 @@ static int linear_run (struct mddev *mddev)
 	mddev->private = conf;
 	md_set_array_sectors(mddev, linear_size(mddev, 0, 0));
 
+<<<<<<< HEAD
 	blk_queue_merge_bvec(mddev->queue, linear_mergeable_bvec);
 	mddev->queue->backing_dev_info.congested_fn = linear_congested;
 	mddev->queue->backing_dev_info.congested_data = mddev;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret =  md_integrity_register(mddev);
 	if (ret) {
 		kfree(conf);
@@ -277,20 +313,31 @@ static int linear_add(struct mddev *mddev, struct md_rdev *rdev)
 	 * in linear_congested(), therefore kfree_rcu() is used to free
 	 * oldconf until no one uses it anymore.
 	 */
+<<<<<<< HEAD
 	oldconf = rcu_dereference_protected(mddev->private,
 					    lockdep_is_held(
 						    &mddev->reconfig_mutex));
+=======
+	mddev_suspend(mddev);
+	oldconf = rcu_dereference_protected(mddev->private,
+			lockdep_is_held(&mddev->reconfig_mutex));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mddev->raid_disks++;
 	WARN_ONCE(mddev->raid_disks != newconf->raid_disks,
 		"copied raid_disks doesn't match mddev->raid_disks");
 	rcu_assign_pointer(mddev->private, newconf);
 	md_set_array_sectors(mddev, linear_size(mddev, 0, 0));
 	set_capacity(mddev->gendisk, mddev->array_sectors);
+<<<<<<< HEAD
+=======
+	mddev_resume(mddev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	revalidate_disk(mddev->gendisk);
 	kfree_rcu(oldconf, rcu);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int linear_stop (struct mddev *mddev)
 {
 	struct linear_conf *conf =
@@ -311,18 +358,35 @@ static int linear_stop (struct mddev *mddev)
 	mddev->private = NULL;
 
 	return 0;
+=======
+static void linear_free(struct mddev *mddev, void *priv)
+{
+	struct linear_conf *conf = priv;
+
+	kfree(conf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void linear_make_request(struct mddev *mddev, struct bio *bio)
 {
+<<<<<<< HEAD
 	struct dev_info *tmp_dev;
 	sector_t start_sector;
 
 	if (unlikely(bio->bi_rw & REQ_FLUSH)) {
+=======
+	char b[BDEVNAME_SIZE];
+	struct dev_info *tmp_dev;
+	struct bio *split;
+	sector_t start_sector, end_sector, data_offset;
+
+	if (unlikely(bio->bi_opf & REQ_PREFLUSH)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		md_flush_request(mddev, bio);
 		return;
 	}
 
+<<<<<<< HEAD
 	rcu_read_lock();
 	tmp_dev = which_dev(mddev, bio->bi_sector);
 	start_sector = tmp_dev->end_sector - tmp_dev->rdev->sectors;
@@ -374,6 +438,53 @@ static void linear_make_request(struct mddev *mddev, struct bio *bio)
 	}
 
 	generic_make_request(bio);
+=======
+	do {
+		tmp_dev = which_dev(mddev, bio->bi_iter.bi_sector);
+		start_sector = tmp_dev->end_sector - tmp_dev->rdev->sectors;
+		end_sector = tmp_dev->end_sector;
+		data_offset = tmp_dev->rdev->data_offset;
+		bio->bi_bdev = tmp_dev->rdev->bdev;
+
+		if (unlikely(bio->bi_iter.bi_sector >= end_sector ||
+			     bio->bi_iter.bi_sector < start_sector))
+			goto out_of_bounds;
+
+		if (unlikely(bio_end_sector(bio) > end_sector)) {
+			/* This bio crosses a device boundary, so we have to
+			 * split it.
+			 */
+			split = bio_split(bio, end_sector -
+					  bio->bi_iter.bi_sector,
+					  GFP_NOIO, fs_bio_set);
+			bio_chain(split, bio);
+		} else {
+			split = bio;
+		}
+
+		split->bi_iter.bi_sector = split->bi_iter.bi_sector -
+			start_sector + data_offset;
+
+		if (unlikely((bio_op(split) == REQ_OP_DISCARD) &&
+			 !blk_queue_discard(bdev_get_queue(split->bi_bdev)))) {
+			/* Just ignore it */
+			bio_endio(split);
+		} else
+			generic_make_request(split);
+	} while (split != bio);
+	return;
+
+out_of_bounds:
+	printk(KERN_ERR
+	       "md/linear:%s: make_request: Sector %llu out of bounds on "
+	       "dev %s: %llu sectors, offset %llu\n",
+	       mdname(mddev),
+	       (unsigned long long)bio->bi_iter.bi_sector,
+	       bdevname(tmp_dev->rdev->bdev, b),
+	       (unsigned long long)tmp_dev->rdev->sectors,
+	       (unsigned long long)start_sector);
+	bio_io_error(bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void linear_status (struct seq_file *seq, struct mddev *mddev)
@@ -382,6 +493,12 @@ static void linear_status (struct seq_file *seq, struct mddev *mddev)
 	seq_printf(seq, " %dk rounding", mddev->chunk_sectors / 2);
 }
 
+<<<<<<< HEAD
+=======
+static void linear_quiesce(struct mddev *mddev, int state)
+{
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct md_personality linear_personality =
 {
@@ -390,10 +507,19 @@ static struct md_personality linear_personality =
 	.owner		= THIS_MODULE,
 	.make_request	= linear_make_request,
 	.run		= linear_run,
+<<<<<<< HEAD
 	.stop		= linear_stop,
 	.status		= linear_status,
 	.hot_add_disk	= linear_add,
 	.size		= linear_size,
+=======
+	.free		= linear_free,
+	.status		= linear_status,
+	.hot_add_disk	= linear_add,
+	.size		= linear_size,
+	.quiesce	= linear_quiesce,
+	.congested	= linear_congested,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init linear_init (void)
@@ -406,7 +532,10 @@ static void linear_exit (void)
 	unregister_md_personality (&linear_personality);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_init(linear_init);
 module_exit(linear_exit);
 MODULE_LICENSE("GPL");

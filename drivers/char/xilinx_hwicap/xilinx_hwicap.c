@@ -661,6 +661,10 @@ static int hwicap_setup(struct device *dev, int id,
 	drvdata->base_address = ioremap(drvdata->mem_start, drvdata->mem_size);
 	if (!drvdata->base_address) {
 		dev_err(dev, "ioremap() failed\n");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto failed2;
 	}
 
@@ -721,7 +725,11 @@ static int hwicap_remove(struct device *dev)
 {
 	struct hwicap_drvdata *drvdata;
 
+<<<<<<< HEAD
 	drvdata = (struct hwicap_drvdata *)dev_get_drvdata(dev);
+=======
+	drvdata = dev_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!drvdata)
 		return 0;
@@ -731,7 +739,10 @@ static int hwicap_remove(struct device *dev)
 	iounmap(drvdata->base_address);
 	release_mem_region(drvdata->mem_start, drvdata->mem_size);
 	kfree(drvdata);
+<<<<<<< HEAD
 	dev_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&icap_sem);
 	probed_devices[MINOR(dev->devt)-XHWICAP_MINOR] = 0;
@@ -843,7 +854,10 @@ static struct platform_driver hwicap_platform_driver = {
 	.probe = hwicap_drv_probe,
 	.remove = hwicap_drv_remove,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = DRIVER_NAME,
 		.of_match_table = hwicap_of_match,
 	},

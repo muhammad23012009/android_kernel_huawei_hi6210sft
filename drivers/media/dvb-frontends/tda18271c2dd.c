@@ -1030,7 +1030,11 @@ static int ChannelConfiguration(struct tda_state *state,
 			state->m_Regs[EP4] = state->m_EP4 | state->m_IFLevelDigital;
 
 		if ((Standard == HF_FM_Radio) && state->m_bFMInput)
+<<<<<<< HEAD
 			state->m_Regs[EP4] |= 80;
+=======
+			state->m_Regs[EP4] |= 0x80;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		state->m_Regs[MPD] &= ~0x80;
 		if (Standard > HF_AnalogMax)
@@ -1217,7 +1221,11 @@ static int get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)
 }
 
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops tuner_ops = {
+=======
+static const struct dvb_tuner_ops tuner_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.info = {
 		.name = "NXP TDA18271C2D",
 		.frequency_min  =  47125000,

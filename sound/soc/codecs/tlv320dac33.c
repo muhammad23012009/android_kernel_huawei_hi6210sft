@@ -90,7 +90,10 @@ static const char *dac33_supply_names[DAC33_NUM_SUPPLIES] = {
 
 struct tlv320dac33_priv {
 	struct mutex mutex;
+<<<<<<< HEAD
 	struct workqueue_struct *dac33_wq;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct work_struct work;
 	struct snd_soc_codec *codec;
 	struct regulator_bulk_data supplies[DAC33_NUM_SUPPLIES];
@@ -122,7 +125,10 @@ struct tlv320dac33_priv {
 	unsigned int uthr;
 
 	enum dac33_state state;
+<<<<<<< HEAD
 	enum snd_soc_control_type control_type;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *control_data;
 };
 
@@ -424,17 +430,31 @@ exit:
 static int dac33_playback_event(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct tlv320dac33_priv *dac33 = snd_soc_codec_get_drvdata(w->codec);
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+	struct tlv320dac33_priv *dac33 = snd_soc_codec_get_drvdata(codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		if (likely(dac33->substream)) {
+<<<<<<< HEAD
 			dac33_calculate_times(dac33->substream, w->codec);
 			dac33_prepare_chip(dac33->substream, w->codec);
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		dac33_disable_digital(w->codec);
+=======
+			dac33_calculate_times(dac33->substream, codec);
+			dac33_prepare_chip(dac33->substream, codec);
+		}
+		break;
+	case SND_SOC_DAPM_POST_PMD:
+		dac33_disable_digital(codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 	return 0;
@@ -443,10 +463,17 @@ static int dac33_playback_event(struct snd_soc_dapm_widget *w,
 static int dac33_get_fifo_mode(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct tlv320dac33_priv *dac33 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = dac33->fifo_mode;
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+	struct tlv320dac33_priv *dac33 = snd_soc_codec_get_drvdata(codec);
+
+	ucontrol->value.enumerated.item[0] = dac33->fifo_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -454,6 +481,7 @@ static int dac33_get_fifo_mode(struct snd_kcontrol *kcontrol,
 static int dac33_set_fifo_mode(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct tlv320dac33_priv *dac33 = snd_soc_codec_get_drvdata(codec);
 	int ret = 0;
@@ -469,6 +497,22 @@ static int dac33_set_fifo_mode(struct snd_kcontrol *kcontrol,
 		ret = -EINVAL;
 	else
 		dac33->fifo_mode = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+	struct tlv320dac33_priv *dac33 = snd_soc_codec_get_drvdata(codec);
+	int ret = 0;
+
+	if (dac33->fifo_mode == ucontrol->value.enumerated.item[0])
+		return 0;
+	/* Do not allow changes while stream is running*/
+	if (snd_soc_codec_is_active(codec))
+		return -EPERM;
+
+	if (ucontrol->value.enumerated.item[0] >= DAC33_FIFO_LAST_MODE)
+		ret = -EINVAL;
+	else
+		dac33->fifo_mode = ucontrol->value.enumerated.item[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -478,9 +522,13 @@ static const char *dac33_fifo_mode_texts[] = {
 	"Bypass", "Mode 1", "Mode 7"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dac33_fifo_mode_enum =
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(dac33_fifo_mode_texts),
 			    dac33_fifo_mode_texts);
+=======
+static SOC_ENUM_SINGLE_EXT_DECL(dac33_fifo_mode_enum, dac33_fifo_mode_texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* L/R Line Output Gain */
 static const char *lr_lineout_gain_texts[] = {
@@ -488,6 +536,7 @@ static const char *lr_lineout_gain_texts[] = {
 	"Line 0dB DAC 12dB", "Line 6dB DAC 18dB",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum l_lineout_gain_enum =
 	SOC_ENUM_SINGLE(DAC33_LDAC_PWR_CTRL, 0,
 			ARRAY_SIZE(lr_lineout_gain_texts),
@@ -497,6 +546,15 @@ static const struct soc_enum r_lineout_gain_enum =
 	SOC_ENUM_SINGLE(DAC33_RDAC_PWR_CTRL, 0,
 			ARRAY_SIZE(lr_lineout_gain_texts),
 			lr_lineout_gain_texts);
+=======
+static SOC_ENUM_SINGLE_DECL(l_lineout_gain_enum,
+			    DAC33_LDAC_PWR_CTRL, 0,
+			    lr_lineout_gain_texts);
+
+static SOC_ENUM_SINGLE_DECL(r_lineout_gain_enum,
+			    DAC33_RDAC_PWR_CTRL, 0,
+			    lr_lineout_gain_texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * DACL/R digital volume control:
@@ -534,18 +592,30 @@ static const struct snd_kcontrol_new dac33_dapm_abypassr_control =
 /* LOP L/R invert selection */
 static const char *dac33_lr_lom_texts[] = {"DAC", "LOP"};
 
+<<<<<<< HEAD
 static const struct soc_enum dac33_left_lom_enum =
 	SOC_ENUM_SINGLE(DAC33_OUT_AMP_CTRL, 3,
 			ARRAY_SIZE(dac33_lr_lom_texts),
 			dac33_lr_lom_texts);
+=======
+static SOC_ENUM_SINGLE_DECL(dac33_left_lom_enum,
+			    DAC33_OUT_AMP_CTRL, 3,
+			    dac33_lr_lom_texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new dac33_dapm_left_lom_control =
 SOC_DAPM_ENUM("Route", dac33_left_lom_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum dac33_right_lom_enum =
 	SOC_ENUM_SINGLE(DAC33_OUT_AMP_CTRL, 2,
 			ARRAY_SIZE(dac33_lr_lom_texts),
 			dac33_lr_lom_texts);
+=======
+static SOC_ENUM_SINGLE_DECL(dac33_right_lom_enum,
+			    DAC33_OUT_AMP_CTRL, 2,
+			    dac33_lr_lom_texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new dac33_dapm_right_lom_control =
 SOC_DAPM_ENUM("Route", dac33_right_lom_enum);
@@ -639,7 +709,11 @@ static int dac33_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Coming from OFF, switch on the codec */
 			ret = dac33_hard_power(codec, 1);
 			if (ret != 0)
@@ -650,14 +724,21 @@ static int dac33_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	case SND_SOC_BIAS_OFF:
 		/* Do not power off, when the codec is already off */
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		ret = dac33_hard_power(codec, 0);
 		if (ret != 0)
 			return ret;
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -779,7 +860,11 @@ static irqreturn_t dac33_interrupt_handler(int irq, void *dev)
 
 	/* Do not schedule the workqueue in Mode7 */
 	if (dac33->fifo_mode != DAC33_FIFO_MODE7)
+<<<<<<< HEAD
 		queue_work(dac33->dac33_wq, &dac33->work);
+=======
+		schedule_work(&dac33->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_HANDLED;
 }
@@ -839,18 +924,32 @@ static int dac33_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		dac33->fifo_size = DAC33_FIFO_SIZE_16BIT;
 		dac33->burst_rate = CALC_BURST_RATE(dac33->burst_bclkdiv, 32);
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		dac33->fifo_size = DAC33_FIFO_SIZE_16BIT;
+		dac33->burst_rate = CALC_BURST_RATE(dac33->burst_bclkdiv, 32);
+		break;
+	case 32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dac33->fifo_size = DAC33_FIFO_SIZE_24BIT;
 		dac33->burst_rate = CALC_BURST_RATE(dac33->burst_bclkdiv, 64);
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "unsupported format %d\n",
 			params_format(params));
+=======
+		dev_err(codec->dev, "unsupported width %d\n",
+			params_width(params));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -1135,7 +1234,11 @@ static int dac33_pcm_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 		if (dac33->fifo_mode) {
 			dac33->state = DAC33_PREFILL;
+<<<<<<< HEAD
 			queue_work(dac33->dac33_wq, &dac33->work);
+=======
+			schedule_work(&dac33->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
@@ -1143,7 +1246,11 @@ static int dac33_pcm_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 		if (dac33->fifo_mode) {
 			dac33->state = DAC33_FLUSH;
+<<<<<<< HEAD
 			queue_work(dac33->dac33_wq, &dac33->work);
+=======
+			schedule_work(&dac33->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	default:
@@ -1411,13 +1518,18 @@ static int dac33_soc_probe(struct snd_soc_codec *codec)
 	if (dac33->irq >= 0) {
 		ret = request_irq(dac33->irq, dac33_interrupt_handler,
 				  IRQF_TRIGGER_RISING,
+<<<<<<< HEAD
 				  codec->name, codec);
+=======
+				  codec->component.name, codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0) {
 			dev_err(codec->dev, "Could not request IRQ%d (%d)\n",
 						dac33->irq, ret);
 			dac33->irq = -1;
 		}
 		if (dac33->irq != -1) {
+<<<<<<< HEAD
 			/* Setup work queue */
 			dac33->dac33_wq =
 				create_singlethread_workqueue("tlv320dac33");
@@ -1426,6 +1538,8 @@ static int dac33_soc_probe(struct snd_soc_codec *codec)
 				return -ENOMEM;
 			}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			INIT_WORK(&dac33->work, dac33_work);
 		}
 	}
@@ -1443,11 +1557,17 @@ static int dac33_soc_remove(struct snd_soc_codec *codec)
 {
 	struct tlv320dac33_priv *dac33 = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
 	dac33_set_bias_level(codec, SND_SOC_BIAS_OFF);
 
 	if (dac33->irq >= 0) {
 		free_irq(dac33->irq, dac33->codec);
 		destroy_workqueue(dac33->dac33_wq);
+=======
+	if (dac33->irq >= 0) {
+		free_irq(dac33->irq, dac33->codec);
+		flush_work(&dac33->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -1463,12 +1583,23 @@ static struct snd_soc_codec_driver soc_codec_dev_tlv320dac33 = {
 	.probe = dac33_soc_probe,
 	.remove = dac33_soc_remove,
 
+<<<<<<< HEAD
 	.controls = dac33_snd_controls,
 	.num_controls = ARRAY_SIZE(dac33_snd_controls),
 	.dapm_widgets = dac33_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(dac33_dapm_widgets),
 	.dapm_routes = audio_map,
 	.num_dapm_routes = ARRAY_SIZE(audio_map),
+=======
+	.component_driver = {
+		.controls		= dac33_snd_controls,
+		.num_controls		= ARRAY_SIZE(dac33_snd_controls),
+		.dapm_widgets		= dac33_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(dac33_dapm_widgets),
+		.dapm_routes		= audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(audio_map),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define DAC33_RATES	(SNDRV_PCM_RATE_44100 | \
@@ -1547,7 +1678,11 @@ static int dac33_i2c_probe(struct i2c_client *client,
 	for (i = 0; i < ARRAY_SIZE(dac33->supplies); i++)
 		dac33->supplies[i].supply = dac33_supply_names[i];
 
+<<<<<<< HEAD
 	ret = regulator_bulk_get(&client->dev, ARRAY_SIZE(dac33->supplies),
+=======
+	ret = devm_regulator_bulk_get(&client->dev, ARRAY_SIZE(dac33->supplies),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 dac33->supplies);
 
 	if (ret != 0) {
@@ -1558,11 +1693,17 @@ static int dac33_i2c_probe(struct i2c_client *client,
 	ret = snd_soc_register_codec(&client->dev,
 			&soc_codec_dev_tlv320dac33, &dac33_dai, 1);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err_register;
 
 	return ret;
 err_register:
 	regulator_bulk_free(ARRAY_SIZE(dac33->supplies), dac33->supplies);
+=======
+		goto err_get;
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_get:
 	if (dac33->power_gpio >= 0)
 		gpio_free(dac33->power_gpio);
@@ -1580,8 +1721,11 @@ static int dac33_i2c_remove(struct i2c_client *client)
 	if (dac33->power_gpio >= 0)
 		gpio_free(dac33->power_gpio);
 
+<<<<<<< HEAD
 	regulator_bulk_free(ARRAY_SIZE(dac33->supplies), dac33->supplies);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_soc_unregister_codec(&client->dev);
 	return 0;
 }
@@ -1598,7 +1742,10 @@ MODULE_DEVICE_TABLE(i2c, tlv320dac33_i2c_id);
 static struct i2c_driver tlv320dac33_i2c_driver = {
 	.driver = {
 		.name = "tlv320dac33-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= dac33_i2c_probe,
 	.remove		= dac33_i2c_remove,

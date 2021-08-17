@@ -176,8 +176,12 @@ static struct eisa_device_id sim710_eisa_ids[] = {
 };
 MODULE_DEVICE_TABLE(eisa, sim710_eisa_ids);
 
+<<<<<<< HEAD
 static __init int
 sim710_eisa_probe(struct device *dev)
+=======
+static int sim710_eisa_probe(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct eisa_device *edev = to_eisa_device(dev);
 	unsigned long io_addr = edev->base_addr;

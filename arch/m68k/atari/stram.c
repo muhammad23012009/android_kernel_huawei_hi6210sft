@@ -21,6 +21,10 @@
 #include <linux/mount.h>
 #include <linux/blkdev.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/ioport.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/setup.h>
 #include <asm/machdep.h>
@@ -47,6 +51,10 @@ static struct resource stram_pool = {
 
 static unsigned long pool_size = 1024*1024;
 
+<<<<<<< HEAD
+=======
+static unsigned long stram_virt_offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init atari_stram_setup(char *arg)
 {
@@ -67,14 +75,21 @@ early_param("stram_pool", atari_stram_setup);
 void __init atari_stram_init(void)
 {
 	int i;
+<<<<<<< HEAD
 	void *stram_start;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * determine whether kernel code resides in ST-RAM
 	 * (then ST-RAM is the first memory block at virtual 0x0)
 	 */
+<<<<<<< HEAD
 	stram_start = phys_to_virt(0);
 	kernel_in_stram = (stram_start == 0);
+=======
+	kernel_in_stram = (m68k_memory[0].addr == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < m68k_num_memory; ++i) {
 		if (m68k_memory[i].addr == 0) {
@@ -89,6 +104,7 @@ void __init atari_stram_init(void)
 
 /*
  * This function is called from setup_arch() to reserve the pages needed for
+<<<<<<< HEAD
  * ST-RAM management.
  */
 void __init atari_stram_reserve_pages(void *start_mem)
@@ -107,6 +123,64 @@ void __init atari_stram_reserve_pages(void *start_mem)
 	pr_debug("atari_stram pool: size = %lu bytes, resource = %pR\n",
 		 pool_size, &stram_pool);
 }
+=======
+ * ST-RAM management, if the kernel resides in ST-RAM.
+ */
+void __init atari_stram_reserve_pages(void *start_mem)
+{
+	if (kernel_in_stram) {
+		pr_debug("atari_stram pool: kernel in ST-RAM, using alloc_bootmem!\n");
+		stram_pool.start = (resource_size_t)alloc_bootmem_low_pages(pool_size);
+		stram_pool.end = stram_pool.start + pool_size - 1;
+		request_resource(&iomem_resource, &stram_pool);
+		stram_virt_offset = 0;
+		pr_debug("atari_stram pool: size = %lu bytes, resource = %pR\n",
+			pool_size, &stram_pool);
+		pr_debug("atari_stram pool: stram_virt_offset = %lx\n",
+			stram_virt_offset);
+	}
+}
+
+
+/*
+ * This function is called as arch initcall to reserve the pages needed for
+ * ST-RAM management, if the kernel does not reside in ST-RAM.
+ */
+int __init atari_stram_map_pages(void)
+{
+	if (!kernel_in_stram) {
+		/*
+		 * Skip page 0, as the fhe first 2 KiB are supervisor-only!
+		 */
+		pr_debug("atari_stram pool: kernel not in ST-RAM, using ioremap!\n");
+		stram_pool.start = PAGE_SIZE;
+		stram_pool.end = stram_pool.start + pool_size - 1;
+		request_resource(&iomem_resource, &stram_pool);
+		stram_virt_offset = (unsigned long) ioremap(stram_pool.start,
+				resource_size(&stram_pool)) - stram_pool.start;
+		pr_debug("atari_stram pool: size = %lu bytes, resource = %pR\n",
+			pool_size, &stram_pool);
+		pr_debug("atari_stram pool: stram_virt_offset = %lx\n",
+			stram_virt_offset);
+	}
+	return 0;
+}
+arch_initcall(atari_stram_map_pages);
+
+
+void *atari_stram_to_virt(unsigned long phys)
+{
+	return (void *)(phys + stram_virt_offset);
+}
+EXPORT_SYMBOL(atari_stram_to_virt);
+
+
+unsigned long atari_stram_to_phys(void *virt)
+{
+	return (unsigned long)(virt - stram_virt_offset);
+}
+EXPORT_SYMBOL(atari_stram_to_phys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 void *atari_stram_alloc(unsigned long size, const char *owner)
@@ -134,14 +208,22 @@ void *atari_stram_alloc(unsigned long size, const char *owner)
 	}
 
 	pr_debug("atari_stram_alloc: returning %pR\n", res);
+<<<<<<< HEAD
 	return (void *)res->start;
+=======
+	return atari_stram_to_virt(res->start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(atari_stram_alloc);
 
 
 void atari_stram_free(void *addr)
 {
+<<<<<<< HEAD
 	unsigned long start = (unsigned long)addr;
+=======
+	unsigned long start = atari_stram_to_phys(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *res;
 	unsigned long size;
 

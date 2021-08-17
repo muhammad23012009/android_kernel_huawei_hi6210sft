@@ -137,7 +137,11 @@ static void scrollscreen(void)
 }
 #endif /* ndef NO_SCROLL */
 
+<<<<<<< HEAD
 void btext_drawchar(char c)
+=======
+static void btext_drawchar(char c)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cline = 0;
 #ifdef NO_SCROLL

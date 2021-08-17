@@ -12,8 +12,12 @@
 
 extern void timer_tick(void);
 
+<<<<<<< HEAD
 struct timespec;
 typedef void (*clock_access_fn)(struct timespec *);
+=======
+typedef void (*clock_access_fn)(struct timespec64 *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int register_persistent_clock(clock_access_fn read_boot,
 				     clock_access_fn read_persistent);
 

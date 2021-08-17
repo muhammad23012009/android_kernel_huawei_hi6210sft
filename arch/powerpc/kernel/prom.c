@@ -29,10 +29,19 @@
 #include <linux/bitops.h>
 #include <linux/export.h>
 #include <linux/kexec.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
 #include <linux/irq.h>
 #include <linux/memblock.h>
 #include <linux/of.h>
+=======
+#include <linux/irq.h>
+#include <linux/memblock.h>
+#include <linux/of.h>
+#include <linux/of_fdt.h>
+#include <linux/libfdt.h>
+#include <linux/cpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/prom.h>
 #include <asm/rtas.h>
@@ -45,7 +54,10 @@
 #include <asm/mmu.h>
 #include <asm/paca.h>
 #include <asm/pgtable.h>
+<<<<<<< HEAD
 #include <asm/pci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/iommu.h>
 #include <asm/btext.h>
 #include <asm/sections.h>
@@ -55,6 +67,11 @@
 #include <asm/opal.h>
 #include <asm/fadump.h>
 #include <asm/debug.h>
+<<<<<<< HEAD
+=======
+#include <asm/epapr_hcalls.h>
+#include <asm/firmware.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mm/mmu_decl.h>
 
@@ -117,15 +134,24 @@ static void __init move_device_tree(void)
 	DBG("-> move_device_tree\n");
 
 	start = __pa(initial_boot_params);
+<<<<<<< HEAD
 	size = be32_to_cpu(initial_boot_params->totalsize);
+=======
+	size = fdt_totalsize(initial_boot_params);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((memory_limit && (start + size) > PHYSICAL_START + memory_limit) ||
 			overlaps_crashkernel(start, size) ||
 			overlaps_initrd(start, size)) {
 		p = __va(memblock_alloc(size, PAGE_SIZE));
 		memcpy(p, initial_boot_params, size);
+<<<<<<< HEAD
 		initial_boot_params = (struct boot_param_header *)p;
 		DBG("Moved device tree to 0x%p\n", p);
+=======
+		initial_boot_params = p;
+		DBG("Moved device tree to 0x%px\n", p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	DBG("<- move_device_tree\n");
@@ -148,10 +174,15 @@ static struct ibm_pa_feature {
 	unsigned long	cpu_features;	/* CPU_FTR_xxx bit */
 	unsigned long	mmu_features;	/* MMU_FTR_xxx bit */
 	unsigned int	cpu_user_ftrs;	/* PPC_FEATURE_xxx bit */
+<<<<<<< HEAD
+=======
+	unsigned int	cpu_user_ftrs2;	/* PPC_FEATURE2_xxx bit */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char	pabyte;		/* byte number in ibm,pa-features */
 	unsigned char	pabit;		/* bit number (big-endian) */
 	unsigned char	invert;		/* if 1, pa bit set => clear feature */
 } ibm_pa_features[] __initdata = {
+<<<<<<< HEAD
 	{0, 0, PPC_FEATURE_HAS_MMU,	0, 0, 0},
 	{0, 0, PPC_FEATURE_HAS_FPU,	0, 1, 0},
 	{0, MMU_FTR_SLB, 0,		0, 2, 0},
@@ -160,6 +191,23 @@ static struct ibm_pa_feature {
 	{CPU_FTR_NODSISRALIGN, 0, 0,	1, 1, 1},
 	{0, MMU_FTR_CI_LARGE_PAGE, 0,	1, 2, 0},
 	{CPU_FTR_REAL_LE, 0, PPC_FEATURE_TRUE_LE, 5, 0, 0},
+=======
+	{0, 0, PPC_FEATURE_HAS_MMU, 0,		0, 0, 0},
+	{0, 0, PPC_FEATURE_HAS_FPU, 0,		0, 1, 0},
+	{CPU_FTR_CTRL, 0, 0, 0,			0, 3, 0},
+	{CPU_FTR_NOEXECUTE, 0, 0, 0,		0, 6, 0},
+	{CPU_FTR_NODSISRALIGN, 0, 0, 0,		1, 1, 1},
+	{0, MMU_FTR_CI_LARGE_PAGE, 0, 0,		1, 2, 0},
+	{CPU_FTR_REAL_LE, 0, PPC_FEATURE_TRUE_LE, 0, 5, 0, 0},
+	/*
+	 * If the kernel doesn't support TM (ie CONFIG_PPC_TRANSACTIONAL_MEM=n),
+	 * we don't want to turn on TM here, so we use the *_COMP versions
+	 * which are 0 if the kernel doesn't support TM.
+	 */
+	{CPU_FTR_TM_COMP, 0, 0,
+	 PPC_FEATURE2_HTM_COMP|PPC_FEATURE2_HTM_NOSC_COMP, 22, 0, 0},
+	{0, MMU_FTR_TYPE_RADIX, 0, 0,		40, 0, 0},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void __init scan_features(unsigned long node, const unsigned char *ftrs,
@@ -190,10 +238,18 @@ static void __init scan_features(unsigned long node, const unsigned char *ftrs,
 		if (bit ^ fp->invert) {
 			cur_cpu_spec->cpu_features |= fp->cpu_features;
 			cur_cpu_spec->cpu_user_features |= fp->cpu_user_ftrs;
+<<<<<<< HEAD
+=======
+			cur_cpu_spec->cpu_user_features2 |= fp->cpu_user_ftrs2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cur_cpu_spec->mmu_features |= fp->mmu_features;
 		} else {
 			cur_cpu_spec->cpu_features &= ~fp->cpu_features;
 			cur_cpu_spec->cpu_user_features &= ~fp->cpu_user_ftrs;
+<<<<<<< HEAD
+=======
+			cur_cpu_spec->cpu_user_features2 &= ~fp->cpu_user_ftrs2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cur_cpu_spec->mmu_features &= ~fp->mmu_features;
 		}
 	}
@@ -213,6 +269,7 @@ static void __init check_cpu_pa_features(unsigned long node)
 }
 
 #ifdef CONFIG_PPC_STD_MMU_64
+<<<<<<< HEAD
 static void __init check_cpu_slb_size(unsigned long node)
 {
 	const __be32 *slb_size_ptr;
@@ -229,6 +286,20 @@ static void __init check_cpu_slb_size(unsigned long node)
 }
 #else
 #define check_cpu_slb_size(node) do { } while(0)
+=======
+static void __init init_mmu_slb_size(unsigned long node)
+{
+	const __be32 *slb_size_ptr;
+
+	slb_size_ptr = of_get_flat_dt_prop(node, "slb-size", NULL) ? :
+			of_get_flat_dt_prop(node, "ibm,slb-size", NULL);
+
+	if (slb_size_ptr)
+		mmu_slb_size = be32_to_cpup(slb_size_ptr);
+}
+#else
+#define init_mmu_slb_size(node) do { } while(0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct feature_property {
@@ -253,7 +324,11 @@ static struct feature_property {
 };
 
 #if defined(CONFIG_44x) && defined(CONFIG_PPC_FPU)
+<<<<<<< HEAD
 static inline void identical_pvr_fixup(unsigned long node)
+=======
+static __init void identical_pvr_fixup(unsigned long node)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int pvr;
 	const char *model = of_get_flat_dt_prop(node, "model", NULL);
@@ -279,11 +354,19 @@ static void __init check_cpu_feature_properties(unsigned long node)
 {
 	unsigned long i;
 	struct feature_property *fp = feature_properties;
+<<<<<<< HEAD
 	const u32 *prop;
 
 	for (i = 0; i < ARRAY_SIZE(feature_properties); ++i, ++fp) {
 		prop = of_get_flat_dt_prop(node, fp->name, NULL);
 		if (prop && *prop >= fp->min_value) {
+=======
+	const __be32 *prop;
+
+	for (i = 0; i < ARRAY_SIZE(feature_properties); ++i, ++fp) {
+		prop = of_get_flat_dt_prop(node, fp->name, NULL);
+		if (prop && be32_to_cpup(prop) >= fp->min_value) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cur_cpu_spec->cpu_features |= fp->cpu_feature;
 			cur_cpu_spec->cpu_user_features |= fp->cpu_user_ftr;
 		}
@@ -308,12 +391,19 @@ static int __init early_init_dt_scan_cpus(unsigned long node,
 
 	/* Get physical cpuid */
 	intserv = of_get_flat_dt_prop(node, "ibm,ppc-interrupt-server#s", &len);
+<<<<<<< HEAD
 	if (intserv) {
 		nthreads = len / sizeof(int);
 	} else {
 		intserv = of_get_flat_dt_prop(node, "reg", NULL);
 		nthreads = 1;
 	}
+=======
+	if (!intserv)
+		intserv = of_get_flat_dt_prop(node, "reg", &len);
+
+	nthreads = len / sizeof(int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Now see if any of these threads match our boot cpu.
@@ -324,8 +414,14 @@ static int __init early_init_dt_scan_cpus(unsigned long node,
 		 * version 2 of the kexec param format adds the phys cpuid of
 		 * booted proc.
 		 */
+<<<<<<< HEAD
 		if (initial_boot_params->version >= 2) {
 			if (intserv[i] == initial_boot_params->boot_cpuid_phys) {
+=======
+		if (fdt_version(initial_boot_params) >= 2) {
+			if (be32_to_cpu(intserv[i]) ==
+			    fdt_boot_cpuid_phys(initial_boot_params)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				found = boot_cpu_count;
 				found_thread = i;
 			}
@@ -345,6 +441,7 @@ static int __init early_init_dt_scan_cpus(unsigned long node,
 #endif
 	}
 
+<<<<<<< HEAD
 	if (found >= 0) {
 		DBG("boot cpu: logical %d physical %d\n", found,
 			intserv[found_thread]);
@@ -377,17 +474,62 @@ static int __init early_init_dt_scan_cpus(unsigned long node,
 	check_cpu_slb_size(node);
 
 #ifdef CONFIG_PPC_PSERIES
+=======
+	/* Not the boot CPU */
+	if (found < 0)
+		return 0;
+
+	DBG("boot cpu: logical %d physical %d\n", found,
+	    be32_to_cpu(intserv[found_thread]));
+	boot_cpuid = found;
+	set_hard_smp_processor_id(found, be32_to_cpu(intserv[found_thread]));
+
+	/*
+	 * PAPR defines "logical" PVR values for cpus that
+	 * meet various levels of the architecture:
+	 * 0x0f000001	Architecture version 2.04
+	 * 0x0f000002	Architecture version 2.05
+	 * If the cpu-version property in the cpu node contains
+	 * such a value, we call identify_cpu again with the
+	 * logical PVR value in order to use the cpu feature
+	 * bits appropriate for the architecture level.
+	 *
+	 * A POWER6 partition in "POWER6 architected" mode
+	 * uses the 0x0f000002 PVR value; in POWER5+ mode
+	 * it uses 0x0f000001.
+	 */
+	prop = of_get_flat_dt_prop(node, "cpu-version", NULL);
+	if (prop && (be32_to_cpup(prop) & 0xff000000) == 0x0f000000)
+		identify_cpu(0, be32_to_cpup(prop));
+
+	identical_pvr_fixup(node);
+
+	check_cpu_feature_properties(node);
+	check_cpu_pa_features(node);
+	init_mmu_slb_size(node);
+
+#ifdef CONFIG_PPC64
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (nthreads > 1)
 		cur_cpu_spec->cpu_features |= CPU_FTR_SMT;
 	else
 		cur_cpu_spec->cpu_features &= ~CPU_FTR_SMT;
 #endif
+<<<<<<< HEAD
 
 	return 0;
 }
 
 int __init early_init_dt_scan_chosen_ppc(unsigned long node, const char *uname,
 					 int depth, void *data)
+=======
+	return 0;
+}
+
+static int __init early_init_dt_scan_chosen_ppc(unsigned long node,
+						const char *uname,
+						int depth, void *data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const unsigned long *lprop; /* All these set by kernel, so no need to convert endian */
 
@@ -455,7 +597,11 @@ static int __init early_init_dt_scan_drconf_memory(unsigned long node)
 	if (dm == NULL || l < sizeof(__be32))
 		return 0;
 
+<<<<<<< HEAD
 	n = *dm++;	/* number of entries */
+=======
+	n = of_read_number(dm++, 1);	/* number of entries */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (l < (n * (dt_root_addr_cells + 4) + 1) * sizeof(__be32))
 		return 0;
 
@@ -467,12 +613,22 @@ static int __init early_init_dt_scan_drconf_memory(unsigned long node)
 
 	for (; n != 0; --n) {
 		base = dt_mem_next_cell(dt_root_addr_cells, &dm);
+<<<<<<< HEAD
 		flags = dm[3];
 		/* skip DRC index, pad, assoc. list index, flags */
 		dm += 4;
 		/* skip this block if the reserved bit is set in flags (0x80)
 		   or if the block is not assigned to this partition (0x8) */
 		if ((flags & 0x80) || !(flags & 0x8))
+=======
+		flags = of_read_number(&dm[3], 1);
+		/* skip DRC index, pad, assoc. list index, flags */
+		dm += 4;
+		/* skip this block if the reserved bit is set in flags
+		   or if the block is not assigned to this partition */
+		if ((flags & DRCONF_MEM_RESERVED) ||
+				!(flags & DRCONF_MEM_ASSIGNED))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		size = memblock_size;
 		rngs = 1;
@@ -522,6 +678,23 @@ static int __init early_init_dt_scan_memory_ppc(unsigned long node,
 	return early_init_dt_scan_memory(node, uname, depth, data);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * For a relocatable kernel, we need to get the memstart_addr first,
+ * then use it to calculate the virtual kernel start address. This has
+ * to happen at a very early stage (before machine_init). In this case,
+ * we just want to get the memstart_address and would not like to mess the
+ * memblock at this stage. So introduce a variable to skip the memblock_add()
+ * for this reason.
+ */
+#ifdef CONFIG_RELOCATABLE
+static int add_mem_to_memblock = 1;
+#else
+#define add_mem_to_memblock 1
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init early_init_dt_add_memory_arch(u64 base, u64 size)
 {
 #ifdef CONFIG_PPC64
@@ -542,6 +715,7 @@ void __init early_init_dt_add_memory_arch(u64 base, u64 size)
 	}
 
 	/* Add the chunk to the MEMBLOCK list */
+<<<<<<< HEAD
 	memblock_add(base, size);
 }
 
@@ -580,6 +754,62 @@ static void __init early_reserve_mem(void)
 		memblock_reserve(_ALIGN_DOWN(__pa(initrd_start), PAGE_SIZE),
 			_ALIGN_UP(initrd_end, PAGE_SIZE) -
 			_ALIGN_DOWN(initrd_start, PAGE_SIZE));
+=======
+	if (add_mem_to_memblock)
+		memblock_add(base, size);
+}
+
+static void __init early_reserve_mem_dt(void)
+{
+	unsigned long i, dt_root;
+	int len;
+	const __be32 *prop;
+
+	early_init_fdt_reserve_self();
+	early_init_fdt_scan_reserved_mem();
+
+	dt_root = of_get_flat_dt_root();
+
+	prop = of_get_flat_dt_prop(dt_root, "reserved-ranges", &len);
+
+	if (!prop)
+		return;
+
+	DBG("Found new-style reserved-ranges\n");
+
+	/* Each reserved range is an (address,size) pair, 2 cells each,
+	 * totalling 4 cells per range. */
+	for (i = 0; i < len / (sizeof(*prop) * 4); i++) {
+		u64 base, size;
+
+		base = of_read_number(prop + (i * 4) + 0, 2);
+		size = of_read_number(prop + (i * 4) + 2, 2);
+
+		if (size) {
+			DBG("reserving: %llx -> %llx\n", base, size);
+			memblock_reserve(base, size);
+		}
+	}
+}
+
+static void __init early_reserve_mem(void)
+{
+	__be64 *reserve_map;
+
+	reserve_map = (__be64 *)(((unsigned long)initial_boot_params) +
+			fdt_off_mem_rsvmap(initial_boot_params));
+
+	/* Look for the new "reserved-regions" property in the DT */
+	early_reserve_mem_dt();
+
+#ifdef CONFIG_BLK_DEV_INITRD
+	/* Then reserve the initrd, if any */
+	if (initrd_start && (initrd_end > initrd_start)) {
+		memblock_reserve(_ALIGN_DOWN(__pa(initrd_start), PAGE_SIZE),
+			_ALIGN_UP(initrd_end, PAGE_SIZE) -
+			_ALIGN_DOWN(initrd_start, PAGE_SIZE));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_BLK_DEV_INITRD */
 
 #ifdef CONFIG_PPC32
@@ -587,6 +817,7 @@ static void __init early_reserve_mem(void)
 	 * Handle the case where we might be booting from an old kexec
 	 * image that setup the mem_rsvmap as pairs of 32-bit values
 	 */
+<<<<<<< HEAD
 	if (*reserve_map > 0xffffffffull) {
 		u32 base_32, size_32;
 		u32 *reserve_map_32 = (u32 *)reserve_map;
@@ -599,12 +830,26 @@ static void __init early_reserve_mem(void)
 			/* skip if the reservation is for the blob */
 			if (base_32 == self_base && size_32 == self_size)
 				continue;
+=======
+	if (be64_to_cpup(reserve_map) > 0xffffffffull) {
+		u32 base_32, size_32;
+		__be32 *reserve_map_32 = (__be32 *)reserve_map;
+
+		DBG("Found old 32-bit reserve map\n");
+
+		while (1) {
+			base_32 = be32_to_cpup(reserve_map_32++);
+			size_32 = be32_to_cpup(reserve_map_32++);
+			if (size_32 == 0)
+				break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			DBG("reserving: %x -> %x\n", base_32, size_32);
 			memblock_reserve(base_32, size_32);
 		}
 		return;
 	}
 #endif
+<<<<<<< HEAD
 	while (1) {
 		base = *(reserve_map++);
 		size = *(reserve_map++);
@@ -613,16 +858,26 @@ static void __init early_reserve_mem(void)
 		DBG("reserving: %llx -> %llx\n", base, size);
 		memblock_reserve(base, size);
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init early_init_devtree(void *params)
 {
 	phys_addr_t limit;
 
+<<<<<<< HEAD
 	DBG(" -> early_init_devtree(%p)\n", params);
 
 	/* Setup flat device-tree pointer */
 	initial_boot_params = params;
+=======
+	DBG(" -> early_init_devtree(%px)\n", params);
+
+	/* Too early to BUG_ON(), do it by hand */
+	if (!early_init_dt_verify(params))
+		panic("BUG: Failed verifying flat device tree, bad version?");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PPC_RTAS
 	/* Some machines might need RTAS info for debugging, grab it now. */
@@ -639,6 +894,7 @@ void __init early_init_devtree(void *params)
 	of_scan_flat_dt(early_init_dt_scan_fw_dump, NULL);
 #endif
 
+<<<<<<< HEAD
 	/* Pre-initialize the cmd_line with the content of boot_commmand_line,
 	 * which will be empty except when the content of the variable has
 	 * been overriden by a bootloading mechanism. This happens typically
@@ -646,18 +902,27 @@ void __init early_init_devtree(void *params)
 	 */
 	strlcpy(cmd_line, boot_command_line, COMMAND_LINE_SIZE);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Retrieve various informations from the /chosen node of the
 	 * device-tree, including the platform type, initrd location and
 	 * size, TCE reserve, and more ...
 	 */
+<<<<<<< HEAD
 	of_scan_flat_dt(early_init_dt_scan_chosen_ppc, cmd_line);
+=======
+	of_scan_flat_dt(early_init_dt_scan_chosen_ppc, boot_command_line);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Scan memory nodes and rebuild MEMBLOCKs */
 	of_scan_flat_dt(early_init_dt_scan_root, NULL);
 	of_scan_flat_dt(early_init_dt_scan_memory_ppc, NULL);
 
+<<<<<<< HEAD
 	/* Save command line for /proc/cmdline and then parse parameters */
 	strlcpy(boot_command_line, cmd_line, COMMAND_LINE_SIZE);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	parse_early_param();
 
 	/* make sure we've parsed cmdline for mem= before this */
@@ -680,17 +945,25 @@ void __init early_init_devtree(void *params)
 		reserve_crashkernel();
 	early_reserve_mem();
 
+<<<<<<< HEAD
 	/*
 	 * Ensure that total memory size is page-aligned, because otherwise
 	 * mark_bootmem() gets upset.
 	 */
+=======
+	/* Ensure that total memory size is page-aligned. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	limit = ALIGN(memory_limit ?: memblock_phys_mem_size(), PAGE_SIZE);
 	memblock_enforce_memory_limit(limit);
 
 	memblock_allow_resize();
 	memblock_dump_all();
 
+<<<<<<< HEAD
 	DBG("Phys. mem: %llx\n", memblock_phys_mem_size());
+=======
+	DBG("Phys. mem: %llx\n", (unsigned long long)memblock_phys_mem_size());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We may need to relocate the flat tree, do it now.
 	 * FIXME .. and the initrd too? */
@@ -704,6 +977,13 @@ void __init early_init_devtree(void *params)
 	 * (altivec support, boot CPU ID, ...)
 	 */
 	of_scan_flat_dt(early_init_dt_scan_cpus, NULL);
+<<<<<<< HEAD
+=======
+	if (boot_cpuid < 0) {
+		printk("Failed to identify boot CPU !\n");
+		BUG();
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_SMP) && defined(CONFIG_PPC64)
 	/* We'll later wait for secondaries to check in; there are
@@ -712,9 +992,56 @@ void __init early_init_devtree(void *params)
 	spinning_secondaries = boot_cpu_count - 1;
 #endif
 
+<<<<<<< HEAD
 	DBG(" <- early_init_devtree()\n");
 }
 
+=======
+	mmu_early_init_devtree();
+
+#ifdef CONFIG_PPC_POWERNV
+	/* Scan and build the list of machine check recoverable ranges */
+	of_scan_flat_dt(early_init_dt_scan_recoverable_ranges, NULL);
+#endif
+	epapr_paravirt_early_init();
+
+	/* Now try to figure out if we are running on LPAR and so on */
+	pseries_probe_fw_features();
+
+#ifdef CONFIG_PPC_PS3
+	/* Identify PS3 firmware */
+	if (of_flat_dt_is_compatible(of_get_flat_dt_root(), "sony,ps3"))
+		powerpc_firmware_features |= FW_FEATURE_PS3_POSSIBLE;
+#endif
+
+	DBG(" <- early_init_devtree()\n");
+}
+
+#ifdef CONFIG_RELOCATABLE
+/*
+ * This function run before early_init_devtree, so we have to init
+ * initial_boot_params.
+ */
+void __init early_get_first_memblock_info(void *params, phys_addr_t *size)
+{
+	/* Setup flat device-tree pointer */
+	initial_boot_params = params;
+
+	/*
+	 * Scan the memory nodes and set add_mem_to_memblock to 0 to avoid
+	 * mess the memblock.
+	 */
+	add_mem_to_memblock = 0;
+	of_scan_flat_dt(early_init_dt_scan_root, NULL);
+	of_scan_flat_dt(early_init_dt_scan_memory_ppc, NULL);
+	add_mem_to_memblock = 1;
+
+	if (size)
+		*size = first_memblock_size;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******
  *
  * New implementation of the OF "find" APIs, return a refcounted
@@ -727,6 +1054,7 @@ void __init early_init_devtree(void *params)
  *******/
 
 /**
+<<<<<<< HEAD
  *	of_find_next_cache_node - Find a node's subsidiary cache
  *	@np:	node of type "cpu" or "cache"
  *
@@ -781,3 +1109,57 @@ static int __init export_flat_device_tree(void)
 }
 __initcall(export_flat_device_tree);
 #endif
+=======
+ * of_get_ibm_chip_id - Returns the IBM "chip-id" of a device
+ * @np: device node of the device
+ *
+ * This looks for a property "ibm,chip-id" in the node or any
+ * of its parents and returns its content, or -1 if it cannot
+ * be found.
+ */
+int of_get_ibm_chip_id(struct device_node *np)
+{
+	of_node_get(np);
+	while (np) {
+		u32 chip_id;
+
+		/*
+		 * Skiboot may produce memory nodes that contain more than one
+		 * cell in chip-id, we only read the first one here.
+		 */
+		if (!of_property_read_u32(np, "ibm,chip-id", &chip_id)) {
+			of_node_put(np);
+			return chip_id;
+		}
+
+		np = of_get_next_parent(np);
+	}
+	return -1;
+}
+EXPORT_SYMBOL(of_get_ibm_chip_id);
+
+/**
+ * cpu_to_chip_id - Return the cpus chip-id
+ * @cpu: The logical cpu number.
+ *
+ * Return the value of the ibm,chip-id property corresponding to the given
+ * logical cpu number. If the chip-id can not be found, returns -1.
+ */
+int cpu_to_chip_id(int cpu)
+{
+	struct device_node *np;
+
+	np = of_get_cpu_node(cpu, NULL);
+	if (!np)
+		return -1;
+
+	of_node_put(np);
+	return of_get_ibm_chip_id(np);
+}
+EXPORT_SYMBOL(cpu_to_chip_id);
+
+bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
+{
+	return (int)phys_id == get_hard_smp_processor_id(cpu);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

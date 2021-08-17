@@ -64,7 +64,13 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	unsigned long addr;
 	int ret;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	if (down_write_killable(&mm->mmap_sem))
+		return -EINTR;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	addr = get_unmapped_area(NULL, 0, PAGE_SIZE, 0, 0);
 	if (IS_ERR_VALUE(addr)) {
 		ret = addr;
@@ -92,6 +98,7 @@ const char *arch_vma_name(struct vm_area_struct *vma)
 
 	return NULL;
 }
+<<<<<<< HEAD
 
 struct vm_area_struct *get_gate_vma(struct mm_struct *mm)
 {
@@ -107,3 +114,5 @@ int in_gate_area_no_mm(unsigned long address)
 {
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

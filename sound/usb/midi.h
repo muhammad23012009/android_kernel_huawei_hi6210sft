@@ -39,6 +39,7 @@ struct snd_usb_midi_endpoint_info {
 
 /* for QUIRK_MIDI_AKAI, data is NULL */
 
+<<<<<<< HEAD
 int snd_usbmidi_create(struct snd_card *card,
 		       struct usb_interface *iface,
 		       struct list_head *midi_list,
@@ -46,5 +47,26 @@ int snd_usbmidi_create(struct snd_card *card,
 void snd_usbmidi_input_stop(struct list_head* p);
 void snd_usbmidi_input_start(struct list_head* p);
 void snd_usbmidi_disconnect(struct list_head *p);
+=======
+int __snd_usbmidi_create(struct snd_card *card,
+			 struct usb_interface *iface,
+			 struct list_head *midi_list,
+			 const struct snd_usb_audio_quirk *quirk,
+			 unsigned int usb_id);
+
+static inline int snd_usbmidi_create(struct snd_card *card,
+		       struct usb_interface *iface,
+		       struct list_head *midi_list,
+		       const struct snd_usb_audio_quirk *quirk)
+{
+	return __snd_usbmidi_create(card, iface, midi_list, quirk, 0);
+}
+
+void snd_usbmidi_input_stop(struct list_head *p);
+void snd_usbmidi_input_start(struct list_head *p);
+void snd_usbmidi_disconnect(struct list_head *p);
+void snd_usbmidi_suspend(struct list_head *p);
+void snd_usbmidi_resume(struct list_head *p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __USBMIDI_H */

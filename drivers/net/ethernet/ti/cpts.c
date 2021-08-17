@@ -26,15 +26,23 @@
 #include <linux/time.h>
 #include <linux/uaccess.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_ether.h>
+#include <linux/if_vlan.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "cpts.h"
 
 #ifdef CONFIG_TI_CPTS
 
+<<<<<<< HEAD
 static struct sock_filter ptp_filter[] = {
 	PTP_FILTER
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cpts_read32(c, r)	__raw_readl(&c->reg->r)
 #define cpts_write32(c, v, r)	__raw_writel(v, &c->reg->r)
 
@@ -159,23 +167,36 @@ static int cpts_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
 
 static int cpts_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 {
+<<<<<<< HEAD
 	s64 now;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	struct cpts *cpts = container_of(ptp, struct cpts, info);
 
 	spin_lock_irqsave(&cpts->lock, flags);
+<<<<<<< HEAD
 	now = timecounter_read(&cpts->tc);
 	now += delta;
 	timecounter_init(&cpts->tc, &cpts->cc, now);
+=======
+	timecounter_adjtime(&cpts->tc, delta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&cpts->lock, flags);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cpts_ptp_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
 {
 	u64 ns;
 	u32 remainder;
+=======
+static int cpts_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+{
+	u64 ns;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	struct cpts *cpts = container_of(ptp, struct cpts, info);
 
@@ -183,21 +204,33 @@ static int cpts_ptp_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
 	ns = timecounter_read(&cpts->tc);
 	spin_unlock_irqrestore(&cpts->lock, flags);
 
+<<<<<<< HEAD
 	ts->tv_sec = div_u64_rem(ns, 1000000000, &remainder);
 	ts->tv_nsec = remainder;
+=======
+	*ts = ns_to_timespec64(ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int cpts_ptp_settime(struct ptp_clock_info *ptp,
+<<<<<<< HEAD
 			    const struct timespec *ts)
+=======
+			    const struct timespec64 *ts)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u64 ns;
 	unsigned long flags;
 	struct cpts *cpts = container_of(ptp, struct cpts, info);
 
+<<<<<<< HEAD
 	ns = ts->tv_sec * 1000000000ULL;
 	ns += ts->tv_nsec;
+=======
+	ns = timespec64_to_ns(ts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&cpts->lock, flags);
 	timecounter_init(&cpts->tc, &cpts->cc, ns);
@@ -217,22 +250,36 @@ static struct ptp_clock_info cpts_info = {
 	.name		= "CTPS timer",
 	.max_adj	= 1000000,
 	.n_ext_ts	= 0,
+<<<<<<< HEAD
 	.pps		= 0,
 	.adjfreq	= cpts_ptp_adjfreq,
 	.adjtime	= cpts_ptp_adjtime,
 	.gettime	= cpts_ptp_gettime,
 	.settime	= cpts_ptp_settime,
+=======
+	.n_pins		= 0,
+	.pps		= 0,
+	.adjfreq	= cpts_ptp_adjfreq,
+	.adjtime	= cpts_ptp_adjtime,
+	.gettime64	= cpts_ptp_gettime,
+	.settime64	= cpts_ptp_settime,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.enable		= cpts_ptp_enable,
 };
 
 static void cpts_overflow_check(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+	struct timespec64 ts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cpts *cpts = container_of(work, struct cpts, overflow_work.work);
 
 	cpts_write32(cpts, CPTS_EN, control);
 	cpts_write32(cpts, TS_PEND_EN, int_enable);
 	cpts_ptp_gettime(&cpts->info, &ts);
+<<<<<<< HEAD
 	pr_debug("cpts overflow check at %ld.%09lu\n", ts.tv_sec, ts.tv_nsec);
 	schedule_delayed_work(&cpts->overflow_work, CPTS_OVERFLOW_PERIOD);
 }
@@ -244,6 +291,17 @@ static void cpts_clk_init(struct cpts *cpts)
 	cpts->refclk = clk_get(NULL, CPTS_REF_CLOCK_NAME);
 	if (IS_ERR(cpts->refclk)) {
 		pr_err("Failed to clk_get %s\n", CPTS_REF_CLOCK_NAME);
+=======
+	pr_debug("cpts overflow check at %lld.%09lu\n", ts.tv_sec, ts.tv_nsec);
+	schedule_delayed_work(&cpts->overflow_work, CPTS_OVERFLOW_PERIOD);
+}
+
+static void cpts_clk_init(struct device *dev, struct cpts *cpts)
+{
+	cpts->refclk = devm_clk_get(dev, "cpts");
+	if (IS_ERR(cpts->refclk)) {
+		dev_err(dev, "Failed to get cpts refclk\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cpts->refclk = NULL;
 		return;
 	}
@@ -253,13 +311,17 @@ static void cpts_clk_init(struct cpts *cpts)
 static void cpts_clk_release(struct cpts *cpts)
 {
 	clk_disable(cpts->refclk);
+<<<<<<< HEAD
 	clk_put(cpts->refclk);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int cpts_match(struct sk_buff *skb, unsigned int ptp_class,
 		      u16 ts_seqid, u8 ts_msgtype)
 {
 	u16 *seqid;
+<<<<<<< HEAD
 	unsigned int offset;
 	u8 *msgtype, *data = skb->data;
 
@@ -277,6 +339,23 @@ static int cpts_match(struct sk_buff *skb, unsigned int ptp_class,
 		break;
 	case PTP_CLASS_V2_VLAN:
 		offset = ETH_HLEN + VLAN_HLEN;
+=======
+	unsigned int offset = 0;
+	u8 *msgtype, *data = skb->data;
+
+	if (ptp_class & PTP_CLASS_VLAN)
+		offset += VLAN_HLEN;
+
+	switch (ptp_class & PTP_CLASS_PMASK) {
+	case PTP_CLASS_IPV4:
+		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
+		break;
+	case PTP_CLASS_IPV6:
+		offset += ETH_HLEN + IP6_HLEN + UDP_HLEN;
+		break;
+	case PTP_CLASS_L2:
+		offset += ETH_HLEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		return 0;
@@ -300,7 +379,11 @@ static u64 cpts_find_ts(struct cpts *cpts, struct sk_buff *skb, int ev_type)
 	u64 ns = 0;
 	struct cpts_event *event;
 	struct list_head *this, *next;
+<<<<<<< HEAD
 	unsigned int class = sk_run_filter(skb, ptp_filter);
+=======
+	unsigned int class = ptp_classify_raw(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u16 seqid;
 	u8 mtype;
@@ -371,10 +454,13 @@ int cpts_register(struct device *dev, struct cpts *cpts,
 	int err, i;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (ptp_filter_init(ptp_filter, ARRAY_SIZE(ptp_filter))) {
 		pr_err("cpts: bad ptp filter\n");
 		return -EINVAL;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpts->info = cpts_info;
 	cpts->clock = ptp_clock_register(&cpts->info, dev);
 	if (IS_ERR(cpts->clock)) {
@@ -395,7 +481,11 @@ int cpts_register(struct device *dev, struct cpts *cpts,
 	for (i = 0; i < CPTS_MAX_EVENTS; i++)
 		list_add(&cpts->pool_data[i].list, &cpts->pool);
 
+<<<<<<< HEAD
 	cpts_clk_init(cpts);
+=======
+	cpts_clk_init(dev, cpts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpts_write32(cpts, CPTS_EN, control);
 	cpts_write32(cpts, TS_PEND_EN, int_enable);
 

@@ -5,7 +5,11 @@
 
 /*
  * FMODE_EXEC is 0x20
+<<<<<<< HEAD
  * FMODE_NONOTIFY is 0x1000000
+=======
+ * FMODE_NONOTIFY is 0x4000000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * These cannot be used by userspace O_* until internal and external open
  * flags are split.
  * -Eric Paris
@@ -84,6 +88,17 @@
 #define O_PATH		010000000
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef __O_TMPFILE
+#define __O_TMPFILE	020000000
+#endif
+
+/* a horrid kludge trying to make sure that this will fail on old kernels */
+#define O_TMPFILE (__O_TMPFILE | O_DIRECTORY)
+#define O_TMPFILE_MASK (__O_TMPFILE | O_DIRECTORY | O_CREAT)      
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef O_NDELAY
 #define O_NDELAY	O_NONBLOCK
 #endif
@@ -124,6 +139,25 @@
 #define F_GETOWNER_UIDS	17
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * Open File Description Locks
+ *
+ * Usually record locks held by a process are released on *any* close and are
+ * not inherited across a fork().
+ *
+ * These cmd values will set locks that conflict with process-associated
+ * record  locks, but are "owned" by the open file description, not the
+ * process. This means that they are inherited across fork() like BSD (flock)
+ * locks, and they are only released automatically when the last reference to
+ * the the open file against which they were acquired is put.
+ */
+#define F_OFD_GETLK	36
+#define F_OFD_SETLK	37
+#define F_OFD_SETLKW	38
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define F_OWNER_TID	0
 #define F_OWNER_PID	1
 #define F_OWNER_PGRP	2
@@ -178,8 +212,11 @@ struct flock {
 };
 #endif
 
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef HAVE_ARCH_STRUCT_FLOCK64
 #ifndef __ARCH_FLOCK64_PAD
 #define __ARCH_FLOCK64_PAD
@@ -194,6 +231,9 @@ struct flock64 {
 	__ARCH_FLOCK64_PAD
 };
 #endif
+<<<<<<< HEAD
 #endif /* !CONFIG_64BIT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_GENERIC_FCNTL_H */

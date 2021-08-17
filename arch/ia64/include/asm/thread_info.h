@@ -11,9 +11,12 @@
 #include <asm/processor.h>
 #include <asm/ptrace.h>
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE_BIT 30
 #define PREEMPT_ACTIVE	(1 << PREEMPT_ACTIVE_BIT)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __ASSEMBLY__
 
 /*
@@ -23,14 +26,20 @@
  */
 struct thread_info {
 	struct task_struct *task;	/* XXX not really needed, except for dup_task_struct() */
+<<<<<<< HEAD
 	struct exec_domain *exec_domain;/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u32 flags;			/* thread_info flags (see TIF_*) */
 	__u32 cpu;			/* current CPU */
 	__u32 last_cpu;			/* Last CPU thread ran on */
 	__u32 status;			/* Thread synchronous flags */
 	mm_segment_t addr_limit;	/* user-level address space limit */
 	int preempt_count;		/* 0=premptable, <0=BUG; will also serve as bh-counter */
+<<<<<<< HEAD
 	struct restart_block restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
 	__u64 ac_stamp;
 	__u64 ac_leave;
@@ -44,19 +53,26 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.addr_limit	= KERNEL_DS,		\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
+<<<<<<< HEAD
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifndef ASM_OFFSETS_C
 /* how to get the thread information struct from C */
 #define current_thread_info()	((struct thread_info *) ((char *) current + IA64_TASK_SIZE))
+<<<<<<< HEAD
 #define alloc_thread_info_node(tsk, node)	\
 		((struct thread_info *) ((char *) (tsk) + IA64_TASK_SIZE))
 #define task_thread_info(tsk)	((struct thread_info *) ((char *) (tsk) + IA64_TASK_SIZE))
@@ -66,6 +82,17 @@ struct thread_info {
 #define task_thread_info(tsk)	((struct thread_info *) 0)
 #endif
 #define free_thread_info(ti)	/* nothing */
+=======
+#define alloc_thread_stack_node(tsk, node)	\
+		((unsigned long *) ((char *) (tsk) + IA64_TASK_SIZE))
+#define task_thread_info(tsk)	((struct thread_info *) ((char *) (tsk) + IA64_TASK_SIZE))
+#else
+#define current_thread_info()	((struct thread_info *) 0)
+#define alloc_thread_stack_node(tsk, node)	((unsigned long *) 0)
+#define task_thread_info(tsk)	((struct thread_info *) 0)
+#endif
+#define free_thread_stack(tsk)	/* nothing */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define task_stack_page(tsk)	((void *)(tsk))
 
 #define __HAVE_THREAD_FUNCTIONS
@@ -110,6 +137,10 @@ struct thread_info {
 #define TIF_MCA_INIT		18	/* this task is processing MCA or INIT */
 #define TIF_DB_DISABLED		19	/* debug trap disabled for fsyscall */
 #define TIF_RESTORE_RSE		21	/* user RBS is newer than kernel RBS */
+<<<<<<< HEAD
+=======
+#define TIF_POLLING_NRFLAG	22	/* idle is polling for TIF_NEED_RESCHED */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
 #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
@@ -121,6 +152,10 @@ struct thread_info {
 #define _TIF_MCA_INIT		(1 << TIF_MCA_INIT)
 #define _TIF_DB_DISABLED	(1 << TIF_DB_DISABLED)
 #define _TIF_RESTORE_RSE	(1 << TIF_RESTORE_RSE)
+<<<<<<< HEAD
+=======
+#define _TIF_POLLING_NRFLAG	(1 << TIF_POLLING_NRFLAG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* "work to do on user-return" bits */
 #define TIF_ALLWORK_MASK	(_TIF_SIGPENDING|_TIF_NOTIFY_RESUME|_TIF_SYSCALL_AUDIT|\
@@ -128,6 +163,7 @@ struct thread_info {
 /* like TIF_ALLWORK_BITS but sans TIF_SYSCALL_TRACE or TIF_SYSCALL_AUDIT */
 #define TIF_WORK_MASK		(TIF_ALLWORK_MASK&~(_TIF_SYSCALL_TRACE|_TIF_SYSCALL_AUDIT))
 
+<<<<<<< HEAD
 #define TS_POLLING		1 	/* true if in idle loop and not sleeping */
 #define TS_RESTORE_SIGMASK	2	/* restore signal mask in do_signal() */
 
@@ -157,4 +193,6 @@ static inline bool test_and_clear_restore_sigmask(void)
 }
 #endif	/* !__ASSEMBLY__ */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_IA64_THREAD_INFO_H */

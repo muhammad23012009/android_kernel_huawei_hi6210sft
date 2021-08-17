@@ -49,7 +49,10 @@
 
 #include "stackglue.h"
 #include "userdlm.h"
+<<<<<<< HEAD
 #include "dlmfsver.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MLOG_MASK_PREFIX ML_DLMFS
 #include "cluster/masklog.h"
@@ -209,10 +212,17 @@ static int dlmfs_file_release(struct inode *inode,
 static int dlmfs_file_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	int error;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 
 	attr->ia_valid &= ~ATTR_SIZE;
 	error = inode_change_ok(inode, attr);
+=======
+	struct inode *inode = d_inode(dentry);
+
+	attr->ia_valid &= ~ATTR_SIZE;
+	error = setattr_prepare(dentry, attr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error)
 		return error;
 
@@ -391,16 +401,20 @@ clear_fields:
 	ip->ip_conn = NULL;
 }
 
+<<<<<<< HEAD
 static struct backing_dev_info dlmfs_backing_dev_info = {
 	.name		= "ocfs2-dlmfs",
 	.ra_pages	= 0,	/* No readahead */
 	.capabilities	= BDI_CAP_NO_ACCT_AND_WRITEBACK,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct inode *dlmfs_get_root_inode(struct super_block *sb)
 {
 	struct inode *inode = new_inode(sb);
 	umode_t mode = S_IFDIR | 0755;
+<<<<<<< HEAD
 	struct dlmfs_inode_private *ip;
 
 	if (inode) {
@@ -410,6 +424,13 @@ static struct inode *dlmfs_get_root_inode(struct super_block *sb)
 		inode_init_owner(inode, NULL, mode);
 		inode->i_mapping->backing_dev_info = &dlmfs_backing_dev_info;
 		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+
+	if (inode) {
+		inode->i_ino = get_next_ino();
+		inode_init_owner(inode, NULL, mode);
+		inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inc_nlink(inode);
 
 		inode->i_fop = &simple_dir_operations;
@@ -432,8 +453,12 @@ static struct inode *dlmfs_get_inode(struct inode *parent,
 
 	inode->i_ino = get_next_ino();
 	inode_init_owner(inode, parent, mode);
+<<<<<<< HEAD
 	inode->i_mapping->backing_dev_info = &dlmfs_backing_dev_info;
 	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ip = DLMFS_I(inode);
 	ip->ip_conn = DLMFS_I(parent)->ip_conn;
@@ -481,7 +506,11 @@ static int dlmfs_mkdir(struct inode * dir,
 {
 	int status;
 	struct inode *inode = NULL;
+<<<<<<< HEAD
 	struct qstr *domain = &dentry->d_name;
+=======
+	const struct qstr *domain = &dentry->d_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dlmfs_inode_private *ip;
 	struct ocfs2_cluster_connection *conn;
 
@@ -530,7 +559,11 @@ static int dlmfs_create(struct inode *dir,
 {
 	int status = 0;
 	struct inode *inode;
+<<<<<<< HEAD
 	struct qstr *name = &dentry->d_name;
+=======
+	const struct qstr *name = &dentry->d_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mlog(0, "create %.*s\n", name->len, name->name);
 
@@ -561,7 +594,11 @@ static int dlmfs_unlink(struct inode *dir,
 			struct dentry *dentry)
 {
 	int status;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mlog(0, "unlink inode %lu\n", inode->i_ino);
 
@@ -569,8 +606,13 @@ static int dlmfs_unlink(struct inode *dir,
 	 * to acquire a lock, this basically destroys our lockres. */
 	status = user_dlm_destroy_lock(&DLMFS_I(inode)->ip_lockres);
 	if (status < 0) {
+<<<<<<< HEAD
 		mlog(ML_ERROR, "unlink %.*s, error %d from destroy\n",
 		     dentry->d_name.len, dentry->d_name.name, status);
+=======
+		mlog(ML_ERROR, "unlink %pd, error %d from destroy\n",
+		     dentry, status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto bail;
 	}
 	status = simple_unlink(dir, dentry);
@@ -583,8 +625,13 @@ static int dlmfs_fill_super(struct super_block * sb,
 			    int silent)
 {
 	sb->s_maxbytes = MAX_LFS_FILESIZE;
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sb->s_magic = DLMFS_MAGIC;
 	sb->s_op = &dlmfs_ops;
 	sb->s_root = d_make_root(dlmfs_get_root_inode(sb));
@@ -647,6 +694,7 @@ static int __init init_dlmfs_fs(void)
 	int status;
 	int cleanup_inode = 0, cleanup_worker = 0;
 
+<<<<<<< HEAD
 	dlmfs_print_version();
 
 	status = bdi_init(&dlmfs_backing_dev_info);
@@ -657,6 +705,12 @@ static int __init init_dlmfs_fs(void)
 				sizeof(struct dlmfs_inode_private),
 				0, (SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT|
 					SLAB_MEM_SPREAD),
+=======
+	dlmfs_inode_cache = kmem_cache_create("dlmfs_inode_cache",
+				sizeof(struct dlmfs_inode_private),
+				0, (SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT|
+					SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dlmfs_init_once);
 	if (!dlmfs_inode_cache) {
 		status = -ENOMEM;
@@ -664,7 +718,11 @@ static int __init init_dlmfs_fs(void)
 	}
 	cleanup_inode = 1;
 
+<<<<<<< HEAD
 	user_dlm_worker = create_singlethread_workqueue("user_dlm");
+=======
+	user_dlm_worker = alloc_workqueue("user_dlm", WQ_MEM_RECLAIM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!user_dlm_worker) {
 		status = -ENOMEM;
 		goto bail;
@@ -679,7 +737,10 @@ bail:
 			kmem_cache_destroy(dlmfs_inode_cache);
 		if (cleanup_worker)
 			destroy_workqueue(user_dlm_worker);
+<<<<<<< HEAD
 		bdi_destroy(&dlmfs_backing_dev_info);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		printk("OCFS2 User DLM kernel interface loaded\n");
 	return status;
@@ -699,11 +760,18 @@ static void __exit exit_dlmfs_fs(void)
 	rcu_barrier();
 	kmem_cache_destroy(dlmfs_inode_cache);
 
+<<<<<<< HEAD
 	bdi_destroy(&dlmfs_backing_dev_info);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MODULE_AUTHOR("Oracle");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("OCFS2 DLM-Filesystem");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_init(init_dlmfs_fs)
 module_exit(exit_dlmfs_fs)

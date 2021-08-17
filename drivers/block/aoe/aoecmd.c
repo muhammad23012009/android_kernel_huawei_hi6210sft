@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2012 Coraid, Inc.  See COPYING for GPL terms. */
+=======
+/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * aoecmd.c
  * Filesystem request handling methods
@@ -35,6 +39,7 @@ module_param(aoe_maxout, int, 0644);
 MODULE_PARM_DESC(aoe_maxout,
 	"Only aoe_maxout outstanding packets for every MAC on eX.Y.");
 
+<<<<<<< HEAD
 static wait_queue_head_t ktiowq;
 static struct ktstate kts;
 
@@ -43,6 +48,29 @@ static struct {
 	struct list_head head;
 	spinlock_t lock;
 } iocq;
+=======
+/* The number of online cpus during module initialization gives us a
+ * convenient heuristic cap on the parallelism used for ktio threads
+ * doing I/O completion.  It is not important that the cap equal the
+ * actual number of running CPUs at any given time, but because of CPU
+ * hotplug, we take care to use ncpus instead of using
+ * num_online_cpus() after module initialization.
+ */
+static int ncpus;
+
+/* mutex lock used for synchronization while thread spawning */
+static DEFINE_MUTEX(ktio_spawn_lock);
+
+static wait_queue_head_t *ktiowq;
+static struct ktstate *kts;
+
+/* io completion queue */
+struct iocq_ktio {
+	struct list_head head;
+	spinlock_t lock;
+};
+static struct iocq_ktio *iocq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct page *empty_page;
 
@@ -183,8 +211,12 @@ aoe_freetframe(struct frame *f)
 
 	t = f->t;
 	f->buf = NULL;
+<<<<<<< HEAD
 	f->lba = 0;
 	f->bv = NULL;
+=======
+	memset(&f->iter, 0, sizeof(f->iter));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	f->r_skb = NULL;
 	f->flags = 0;
 	list_add(&f->head, &t->ffree);
@@ -282,6 +314,7 @@ newframe(struct aoedev *d)
 }
 
 static void
+<<<<<<< HEAD
 skb_fillup(struct sk_buff *skb, struct bio_vec *bv, ulong off, ulong cnt)
 {
 	int frag = 0;
@@ -297,6 +330,16 @@ loop:
 	bv++;
 	off = bv->bv_offset;
 	goto loop;
+=======
+skb_fillup(struct sk_buff *skb, struct bio *bio, struct bvec_iter iter)
+{
+	int frag = 0;
+	struct bio_vec bv;
+
+	__bio_for_each_segment(bv, bio, iter, iter)
+		skb_fill_page_desc(skb, frag++, bv.bv_page,
+				   bv.bv_offset, bv.bv_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -333,12 +376,19 @@ ata_rw_frameinit(struct frame *f)
 	t->nout++;
 	f->waited = 0;
 	f->waited_total = 0;
+<<<<<<< HEAD
 	if (f->buf)
 		f->lba = f->buf->sector;
 
 	/* set up ata header */
 	ah->scnt = f->bcnt >> 9;
 	put_lba(ah, f->lba);
+=======
+
+	/* set up ata header */
+	ah->scnt = f->iter.bi_size >> 9;
+	put_lba(ah, f->iter.bi_sector);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (t->d->flags & DEVFL_EXT) {
 		ah->aflags |= AOEAFL_EXT;
 	} else {
@@ -347,11 +397,19 @@ ata_rw_frameinit(struct frame *f)
 		ah->lba3 |= 0xe0;	/* LBA bit + obsolete 0xa0 */
 	}
 	if (f->buf && bio_data_dir(f->buf->bio) == WRITE) {
+<<<<<<< HEAD
 		skb_fillup(skb, f->bv, f->bv_off, f->bcnt);
 		ah->aflags |= AOEAFL_WRITE;
 		skb->len += f->bcnt;
 		skb->data_len = f->bcnt;
 		skb->truesize += f->bcnt;
+=======
+		skb_fillup(skb, f->buf->bio, f->iter);
+		ah->aflags |= AOEAFL_WRITE;
+		skb->len += f->iter.bi_size;
+		skb->data_len = f->iter.bi_size;
+		skb->truesize += f->iter.bi_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		t->wpkts++;
 	} else {
 		t->rpkts++;
@@ -367,10 +425,15 @@ aoecmd_ata_rw(struct aoedev *d)
 {
 	struct frame *f;
 	struct buf *buf;
+<<<<<<< HEAD
 	struct aoetgt *t;
 	struct sk_buff *skb;
 	struct sk_buff_head queue;
 	ulong bcnt, fbcnt;
+=======
+	struct sk_buff *skb;
+	struct sk_buff_head queue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf = nextbuf(d);
 	if (buf == NULL)
@@ -378,6 +441,7 @@ aoecmd_ata_rw(struct aoedev *d)
 	f = newframe(d);
 	if (f == NULL)
 		return 0;
+<<<<<<< HEAD
 	t = *d->tgt;
 	bcnt = d->maxbcnt;
 	if (bcnt == 0)
@@ -412,6 +476,24 @@ aoecmd_ata_rw(struct aoedev *d)
 	/* mark all tracking fields and load out */
 	buf->nframesout += 1;
 	buf->sector += bcnt >> 9;
+=======
+
+	/* initialize the headers & frame */
+	f->buf = buf;
+	f->iter = buf->iter;
+	f->iter.bi_size = min_t(unsigned long,
+				d->maxbcnt ?: DEFAULTBCNT,
+				f->iter.bi_size);
+	bio_advance_iter(buf->bio, &buf->iter, f->iter.bi_size);
+
+	if (!buf->iter.bi_size)
+		d->ip.buf = NULL;
+
+	/* mark all tracking fields and load out */
+	buf->nframesout += 1;
+
+	ata_rw_frameinit(f);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	skb = skb_clone(f->skb, GFP_ATOMIC);
 	if (skb) {
@@ -472,7 +554,10 @@ resend(struct aoedev *d, struct frame *f)
 	struct sk_buff *skb;
 	struct sk_buff_head queue;
 	struct aoe_hdr *h;
+<<<<<<< HEAD
 	struct aoe_atahdr *ah;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct aoetgt *t;
 	char buf[128];
 	u32 n;
@@ -487,7 +572,10 @@ resend(struct aoedev *d, struct frame *f)
 		return;
 	}
 	h = (struct aoe_hdr *) skb_mac_header(skb);
+<<<<<<< HEAD
 	ah = (struct aoe_atahdr *) (h+1);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(f->flags & FFL_PROBE)) {
 		snprintf(buf, sizeof(buf),
@@ -604,10 +692,14 @@ reassign_frame(struct frame *f)
 	skb = nf->skb;
 	nf->skb = f->skb;
 	nf->buf = f->buf;
+<<<<<<< HEAD
 	nf->bcnt = f->bcnt;
 	nf->lba = f->lba;
 	nf->bv = f->bv;
 	nf->bv_off = f->bv_off;
+=======
+	nf->iter = f->iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nf->waited = 0;
 	nf->waited_total = f->waited_total;
 	nf->sent = f->sent;
@@ -639,19 +731,32 @@ probe(struct aoetgt *t)
 	}
 	f->flags |= FFL_PROBE;
 	ifrotate(t);
+<<<<<<< HEAD
 	f->bcnt = t->d->maxbcnt ? t->d->maxbcnt : DEFAULTBCNT;
 	ata_rw_frameinit(f);
 	skb = f->skb;
 	for (frag = 0, n = f->bcnt; n > 0; ++frag, n -= m) {
+=======
+	f->iter.bi_size = t->d->maxbcnt ? t->d->maxbcnt : DEFAULTBCNT;
+	ata_rw_frameinit(f);
+	skb = f->skb;
+	for (frag = 0, n = f->iter.bi_size; n > 0; ++frag, n -= m) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (n < PAGE_SIZE)
 			m = n;
 		else
 			m = PAGE_SIZE;
 		skb_fill_page_desc(skb, frag, empty_page, 0, m);
 	}
+<<<<<<< HEAD
 	skb->len += f->bcnt;
 	skb->data_len = f->bcnt;
 	skb->truesize += f->bcnt;
+=======
+	skb->len += f->iter.bi_size;
+	skb->data_len = f->iter.bi_size;
+	skb->truesize += f->iter.bi_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	skb = skb_clone(f->skb, GFP_ATOMIC);
 	if (skb) {
@@ -875,6 +980,7 @@ rqbiocnt(struct request *r)
 	return n;
 }
 
+<<<<<<< HEAD
 /* This can be removed if we are certain that no users of the block
  * layer will ever use zero-count pages in bios.  Otherwise we have to
  * protect against the put_page sometimes done by the network layer.
@@ -917,18 +1023,24 @@ bio_pagedec(struct bio *bio)
 		atomic_dec(&bv->bv_page->_count);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 bufinit(struct buf *buf, struct request *rq, struct bio *bio)
 {
 	memset(buf, 0, sizeof(*buf));
 	buf->rq = rq;
 	buf->bio = bio;
+<<<<<<< HEAD
 	buf->resid = bio->bi_size;
 	buf->sector = bio->bi_sector;
 	bio_pageinc(bio);
 	buf->bv = bio_iovec(bio);
 	buf->bv_resid = buf->bv->bv_len;
 	WARN_ON(buf->bv_resid == 0);
+=======
+	buf->iter = bio->bi_iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct buf *
@@ -993,9 +1105,15 @@ aoecmd_sleepwork(struct work_struct *work)
 		ssize = get_capacity(d->gd);
 		bd = bdget_disk(d->gd, 0);
 		if (bd) {
+<<<<<<< HEAD
 			mutex_lock(&bd->bd_inode->i_mutex);
 			i_size_write(bd->bd_inode, (loff_t)ssize<<9);
 			mutex_unlock(&bd->bd_inode->i_mutex);
+=======
+			inode_lock(bd->bd_inode);
+			i_size_write(bd->bd_inode, (loff_t)ssize<<9);
+			inode_unlock(bd->bd_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			bdput(bd);
 		}
 		spin_lock_irq(&d->lock);
@@ -1113,6 +1231,7 @@ gettgt(struct aoedev *d, char *addr)
 }
 
 static void
+<<<<<<< HEAD
 bvcpy(struct bio_vec *bv, ulong off, struct sk_buff *skb, long cnt)
 {
 	ulong fcnt;
@@ -1131,6 +1250,20 @@ loop:
 	bv++;
 	off = bv->bv_offset;
 	goto loop;
+=======
+bvcpy(struct sk_buff *skb, struct bio *bio, struct bvec_iter iter, long cnt)
+{
+	int soff = 0;
+	struct bio_vec bv;
+
+	iter.bi_size = cnt;
+
+	__bio_for_each_segment(bv, bio, iter, iter) {
+		char *p = page_address(bv.bv_page) + bv.bv_offset;
+		skb_copy_bits(skb, soff, p, bv.bv_len);
+		soff += bv.bv_len;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void
@@ -1145,8 +1278,13 @@ aoe_end_request(struct aoedev *d, struct request *rq, int fastfail)
 		d->ip.rq = NULL;
 	do {
 		bio = rq->bio;
+<<<<<<< HEAD
 		bok = !fastfail && test_bit(BIO_UPTODATE, &bio->bi_flags);
 	} while (__blk_end_request(rq, bok ? 0 : -EIO, bio->bi_size));
+=======
+		bok = !fastfail && !bio->bi_error;
+	} while (__blk_end_request(rq, bok ? 0 : -EIO, bio->bi_iter.bi_size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* cf. http://lkml.org/lkml/2006/10/31/28 */
 	if (!fastfail)
@@ -1162,7 +1300,10 @@ aoe_end_buf(struct aoedev *d, struct buf *buf)
 	if (buf == d->ip.buf)
 		d->ip.buf = NULL;
 	rq = buf->rq;
+<<<<<<< HEAD
 	bio_pagedec(buf->bio);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mempool_free(buf, d->bufpool);
 	n = (unsigned long) rq->special;
 	rq->special = (void *) --n;
@@ -1207,7 +1348,11 @@ ktiocomplete(struct frame *f)
 			ahout->cmdstat, ahin->cmdstat,
 			d->aoemajor, d->aoeminor);
 noskb:		if (buf)
+<<<<<<< HEAD
 			clear_bit(BIO_UPTODATE, &buf->bio->bi_flags);
+=======
+			buf->bio->bi_error = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -1220,10 +1365,25 @@ noskb:		if (buf)
 				"aoe: runt data size in read from",
 				(long) d->aoemajor, d->aoeminor,
 			       skb->len, n);
+<<<<<<< HEAD
 			clear_bit(BIO_UPTODATE, &buf->bio->bi_flags);
 			break;
 		}
 		bvcpy(f->bv, f->bv_off, skb, n);
+=======
+			buf->bio->bi_error = -EIO;
+			break;
+		}
+		if (n > f->iter.bi_size) {
+			pr_err_ratelimited("%s e%ld.%d.  bytes=%ld need=%u\n",
+				"aoe: too-large data size in read from",
+				(long) d->aoemajor, d->aoeminor,
+				n, f->iter.bi_size);
+			buf->bio->bi_error = -EIO;
+			break;
+		}
+		bvcpy(skb, f->buf->bio, f->iter, n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case ATA_CMD_PIO_WRITE:
 	case ATA_CMD_PIO_WRITE_EXT:
 		spin_lock_irq(&d->lock);
@@ -1266,7 +1426,11 @@ out:
 
 	aoe_freetframe(f);
 
+<<<<<<< HEAD
 	if (buf && --buf->nframesout == 0 && buf->resid == 0)
+=======
+	if (buf && --buf->nframesout == 0 && buf->iter.bi_size == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		aoe_end_buf(d, buf);
 
 	spin_unlock_irq(&d->lock);
@@ -1278,15 +1442,24 @@ out:
  * Returns true iff responses needing processing remain.
  */
 static int
+<<<<<<< HEAD
 ktio(void)
+=======
+ktio(int id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct frame *f;
 	struct list_head *pos;
 	int i;
+<<<<<<< HEAD
+=======
+	int actual_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; ; ++i) {
 		if (i == MAXIOC)
 			return 1;
+<<<<<<< HEAD
 		if (list_empty(&iocq.head))
 			return 0;
 		pos = iocq.head.next;
@@ -1295,6 +1468,28 @@ ktio(void)
 		f = list_entry(pos, struct frame, head);
 		ktiocomplete(f);
 		spin_lock_irq(&iocq.lock);
+=======
+		if (list_empty(&iocq[id].head))
+			return 0;
+		pos = iocq[id].head.next;
+		list_del(pos);
+		f = list_entry(pos, struct frame, head);
+		spin_unlock_irq(&iocq[id].lock);
+		ktiocomplete(f);
+
+		/* Figure out if extra threads are required. */
+		actual_id = f->t->d->aoeminor % ncpus;
+
+		if (!kts[actual_id].active) {
+			BUG_ON(id != 0);
+			mutex_lock(&ktio_spawn_lock);
+			if (!kts[actual_id].active
+				&& aoe_ktstart(&kts[actual_id]) == 0)
+				kts[actual_id].active = 1;
+			mutex_unlock(&ktio_spawn_lock);
+		}
+		spin_lock_irq(&iocq[id].lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1311,7 +1506,11 @@ kthread(void *vp)
 	complete(&k->rendez);	/* tell spawner we're running */
 	do {
 		spin_lock_irq(k->lock);
+<<<<<<< HEAD
 		more = k->fn();
+=======
+		more = k->fn(k->id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!more) {
 			add_wait_queue(k->waitq, &wait);
 			__set_current_state(TASK_INTERRUPTIBLE);
@@ -1340,7 +1539,11 @@ aoe_ktstart(struct ktstate *k)
 	struct task_struct *task;
 
 	init_completion(&k->rendez);
+<<<<<<< HEAD
 	task = kthread_run(kthread, k, k->name);
+=======
+	task = kthread_run(kthread, k, "%s", k->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (task == NULL || IS_ERR(task))
 		return -ENOMEM;
 	k->task = task;
@@ -1353,6 +1556,7 @@ aoe_ktstart(struct ktstate *k)
 static void
 ktcomplete(struct frame *f, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	ulong flags;
 
 	f->r_skb = skb;
@@ -1360,6 +1564,26 @@ ktcomplete(struct frame *f, struct sk_buff *skb)
 	list_add_tail(&f->head, &iocq.head);
 	spin_unlock_irqrestore(&iocq.lock, flags);
 	wake_up(&ktiowq);
+=======
+	int id;
+	ulong flags;
+
+	f->r_skb = skb;
+	id = f->t->d->aoeminor % ncpus;
+	spin_lock_irqsave(&iocq[id].lock, flags);
+	if (!kts[id].active) {
+		spin_unlock_irqrestore(&iocq[id].lock, flags);
+		/* The thread with id has not been spawned yet,
+		 * so delegate the work to the main thread and
+		 * try spawning a new thread.
+		 */
+		id = 0;
+		spin_lock_irqsave(&iocq[id].lock, flags);
+	}
+	list_add_tail(&f->head, &iocq[id].head);
+	spin_unlock_irqrestore(&iocq[id].lock, flags);
+	wake_up(&ktiowq[id]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct sk_buff *
@@ -1697,8 +1921,13 @@ aoe_failbuf(struct aoedev *d, struct buf *buf)
 {
 	if (buf == NULL)
 		return;
+<<<<<<< HEAD
 	buf->resid = 0;
 	clear_bit(BIO_UPTODATE, &buf->bio->bi_flags);
+=======
+	buf->iter.bi_size = 0;
+	buf->bio->bi_error = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (buf->nframesout == 0)
 		aoe_end_buf(d, buf);
 }
@@ -1706,6 +1935,20 @@ aoe_failbuf(struct aoedev *d, struct buf *buf)
 void
 aoe_flush_iocq(void)
 {
+<<<<<<< HEAD
+=======
+	int i;
+
+	for (i = 0; i < ncpus; i++) {
+		if (kts[i].active)
+			aoe_flush_iocq_by_index(i);
+	}
+}
+
+void
+aoe_flush_iocq_by_index(int id)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct frame *f;
 	struct aoedev *d;
 	LIST_HEAD(flist);
@@ -1713,9 +1956,15 @@ aoe_flush_iocq(void)
 	struct sk_buff *skb;
 	ulong flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&iocq.lock, flags);
 	list_splice_init(&iocq.head, &flist);
 	spin_unlock_irqrestore(&iocq.lock, flags);
+=======
+	spin_lock_irqsave(&iocq[id].lock, flags);
+	list_splice_init(&iocq[id].head, &flist);
+	spin_unlock_irqrestore(&iocq[id].lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (!list_empty(&flist)) {
 		pos = flist.next;
 		list_del(pos);
@@ -1738,13 +1987,22 @@ int __init
 aoecmd_init(void)
 {
 	void *p;
+<<<<<<< HEAD
 
 	/* get_zeroed_page returns page with ref count 1 */
 	p = (void *) get_zeroed_page(GFP_KERNEL | __GFP_REPEAT);
+=======
+	int i;
+	int ret;
+
+	/* get_zeroed_page returns page with ref count 1 */
+	p = (void *) get_zeroed_page(GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -ENOMEM;
 	empty_page = virt_to_page(p);
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&iocq.head);
 	spin_lock_init(&iocq.lock);
 	init_waitqueue_head(&ktiowq);
@@ -1753,14 +2011,80 @@ aoecmd_init(void)
 	kts.waitq = &ktiowq;
 	kts.lock = &iocq.lock;
 	return aoe_ktstart(&kts);
+=======
+	ncpus = num_online_cpus();
+
+	iocq = kcalloc(ncpus, sizeof(struct iocq_ktio), GFP_KERNEL);
+	if (!iocq)
+		return -ENOMEM;
+
+	kts = kcalloc(ncpus, sizeof(struct ktstate), GFP_KERNEL);
+	if (!kts) {
+		ret = -ENOMEM;
+		goto kts_fail;
+	}
+
+	ktiowq = kcalloc(ncpus, sizeof(wait_queue_head_t), GFP_KERNEL);
+	if (!ktiowq) {
+		ret = -ENOMEM;
+		goto ktiowq_fail;
+	}
+
+	mutex_init(&ktio_spawn_lock);
+
+	for (i = 0; i < ncpus; i++) {
+		INIT_LIST_HEAD(&iocq[i].head);
+		spin_lock_init(&iocq[i].lock);
+		init_waitqueue_head(&ktiowq[i]);
+		snprintf(kts[i].name, sizeof(kts[i].name), "aoe_ktio%d", i);
+		kts[i].fn = ktio;
+		kts[i].waitq = &ktiowq[i];
+		kts[i].lock = &iocq[i].lock;
+		kts[i].id = i;
+		kts[i].active = 0;
+	}
+	kts[0].active = 1;
+	if (aoe_ktstart(&kts[0])) {
+		ret = -ENOMEM;
+		goto ktstart_fail;
+	}
+	return 0;
+
+ktstart_fail:
+	kfree(ktiowq);
+ktiowq_fail:
+	kfree(kts);
+kts_fail:
+	kfree(iocq);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void
 aoecmd_exit(void)
 {
+<<<<<<< HEAD
 	aoe_ktstop(&kts);
 	aoe_flush_iocq();
 
+=======
+	int i;
+
+	for (i = 0; i < ncpus; i++)
+		if (kts[i].active)
+			aoe_ktstop(&kts[i]);
+
+	aoe_flush_iocq();
+
+	/* Free up the iocq and thread speicific configuration
+	* allocated during startup.
+	*/
+	kfree(iocq);
+	kfree(kts);
+	kfree(ktiowq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_page((unsigned long) page_address(empty_page));
 	empty_page = NULL;
 }

@@ -13,8 +13,11 @@
 #ifndef LINUX_RIO_IDS_H
 #define LINUX_RIO_IDS_H
 
+<<<<<<< HEAD
 #define RIO_ANY_ID			0xffff
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RIO_VID_FREESCALE		0x0002
 #define RIO_DID_MPC8560			0x0003
 
@@ -40,5 +43,10 @@
 #define RIO_DID_IDTVPS1616		0x0377
 #define RIO_DID_IDTSPS1616		0x0378
 #define RIO_DID_TSI721			0x80ab
+<<<<<<< HEAD
+=======
+#define RIO_DID_IDTRXS1632		0x80e5
+#define RIO_DID_IDTRXS2448		0x80e6
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif				/* LINUX_RIO_IDS_H */

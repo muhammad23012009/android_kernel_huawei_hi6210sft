@@ -9,6 +9,7 @@
 #include <linux/posix_acl_xattr.h>
 #include "xattr.h"
 #include "acl.h"
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 static int reiserfs_set_acl(struct reiserfs_transaction_handle *th,
@@ -43,12 +44,35 @@ posix_acl_set(struct dentry *dentry, const char *name, const void *value,
 
 	/* Pessimism: We can't assume that anything from the xattr root up
 	 * has been created. */
+=======
+#include <linux/uaccess.h>
+
+static int __reiserfs_set_acl(struct reiserfs_transaction_handle *th,
+			    struct inode *inode, int type,
+			    struct posix_acl *acl);
+
+
+int
+reiserfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
+{
+	int error, error2;
+	struct reiserfs_transaction_handle th;
+	size_t jcreate_blocks;
+	int size = acl ? posix_acl_xattr_size(acl->a_count) : 0;
+
+
+	/*
+	 * Pessimism: We can't assume that anything from the xattr root up
+	 * has been created.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	jcreate_blocks = reiserfs_xattr_jcreate_nblocks(inode) +
 			 reiserfs_xattr_nblocks(inode, size) * 2;
 
 	reiserfs_write_lock(inode->i_sb);
 	error = journal_begin(&th, inode->i_sb, jcreate_blocks);
+<<<<<<< HEAD
 	if (error == 0) {
 		error = reiserfs_set_acl(&th, inode, type, acl);
 		error2 = journal_end(&th, inode->i_sb, jcreate_blocks);
@@ -79,6 +103,24 @@ posix_acl_get(struct dentry *dentry, const char *name, void *buffer,
 		return -ENODATA;
 	error = posix_acl_to_xattr(&init_user_ns, acl, buffer, size);
 	posix_acl_release(acl);
+=======
+	reiserfs_write_unlock(inode->i_sb);
+	if (error == 0) {
+		if (type == ACL_TYPE_ACCESS && acl) {
+			error = posix_acl_update_mode(inode, &inode->i_mode,
+						      &acl);
+			if (error)
+				goto unlock;
+		}
+		error = __reiserfs_set_acl(&th, inode, type, acl);
+unlock:
+		reiserfs_write_lock(inode->i_sb);
+		error2 = journal_end(&th);
+		reiserfs_write_unlock(inode->i_sb);
+		if (error2)
+			error = error2;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return error;
 }
@@ -86,7 +128,11 @@ posix_acl_get(struct dentry *dentry, const char *name, void *buffer,
 /*
  * Convert from filesystem to in-memory representation.
  */
+<<<<<<< HEAD
 static struct posix_acl *posix_acl_from_disk(const void *value, size_t size)
+=======
+static struct posix_acl *reiserfs_posix_acl_from_disk(const void *value, size_t size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const char *end = (char *)value + size;
 	int n, count;
@@ -148,7 +194,11 @@ static struct posix_acl *posix_acl_from_disk(const void *value, size_t size)
 		goto fail;
 	return acl;
 
+<<<<<<< HEAD
       fail:
+=======
+fail:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	posix_acl_release(acl);
 	return ERR_PTR(-EINVAL);
 }
@@ -156,7 +206,11 @@ static struct posix_acl *posix_acl_from_disk(const void *value, size_t size)
 /*
  * Convert from in-memory to filesystem representation.
  */
+<<<<<<< HEAD
 static void *posix_acl_to_disk(const struct posix_acl *acl, size_t * size)
+=======
+static void *reiserfs_posix_acl_to_disk(const struct posix_acl *acl, size_t * size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	reiserfs_acl_header *ext_acl;
 	char *e;
@@ -201,7 +255,11 @@ static void *posix_acl_to_disk(const struct posix_acl *acl, size_t * size)
 	}
 	return (char *)ext_acl;
 
+<<<<<<< HEAD
       fail:
+=======
+fail:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(ext_acl);
 	return ERR_PTR(-EINVAL);
 }
@@ -219,6 +277,7 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type)
 	int size;
 	int retval;
 
+<<<<<<< HEAD
 	acl = get_cached_acl(inode, type);
 	if (acl != ACL_NOT_CACHED)
 		return acl;
@@ -229,6 +288,14 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type)
 		break;
 	case ACL_TYPE_DEFAULT:
 		name = POSIX_ACL_XATTR_DEFAULT;
+=======
+	switch (type) {
+	case ACL_TYPE_ACCESS:
+		name = XATTR_NAME_POSIX_ACL_ACCESS;
+		break;
+	case ACL_TYPE_DEFAULT:
+		name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		BUG();
@@ -236,10 +303,15 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type)
 
 	size = reiserfs_xattr_get(inode, name, NULL, 0);
 	if (size < 0) {
+<<<<<<< HEAD
 		if (size == -ENODATA || size == -ENOSYS) {
 			set_cached_acl(inode, type, NULL);
 			return NULL;
 		}
+=======
+		if (size == -ENODATA || size == -ENOSYS)
+			return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ERR_PTR(size);
 	}
 
@@ -249,16 +321,28 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type)
 
 	retval = reiserfs_xattr_get(inode, name, value, size);
 	if (retval == -ENODATA || retval == -ENOSYS) {
+<<<<<<< HEAD
 		/* This shouldn't actually happen as it should have
 		   been caught above.. but just in case */
+=======
+		/*
+		 * This shouldn't actually happen as it should have
+		 * been caught above.. but just in case
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		acl = NULL;
 	} else if (retval < 0) {
 		acl = ERR_PTR(retval);
 	} else {
+<<<<<<< HEAD
 		acl = posix_acl_from_disk(value, retval);
 	}
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
+=======
+		acl = reiserfs_posix_acl_from_disk(value, retval);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kfree(value);
 	return acl;
@@ -271,7 +355,11 @@ struct posix_acl *reiserfs_get_acl(struct inode *inode, int type)
  * BKL held [before 2.5.x]
  */
 static int
+<<<<<<< HEAD
 reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
+=======
+__reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 int type, struct posix_acl *acl)
 {
 	char *name;
@@ -279,6 +367,7 @@ reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	size_t size = 0;
 	int error;
 
+<<<<<<< HEAD
 	if (S_ISLNK(inode->i_mode))
 		return -EOPNOTSUPP;
 
@@ -293,6 +382,14 @@ reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 		break;
 	case ACL_TYPE_DEFAULT:
 		name = POSIX_ACL_XATTR_DEFAULT;
+=======
+	switch (type) {
+	case ACL_TYPE_ACCESS:
+		name = XATTR_NAME_POSIX_ACL_ACCESS;
+		break;
+	case ACL_TYPE_DEFAULT:
+		name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!S_ISDIR(inode->i_mode))
 			return acl ? -EACCES : 0;
 		break;
@@ -301,7 +398,11 @@ reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	}
 
 	if (acl) {
+<<<<<<< HEAD
 		value = posix_acl_to_disk(acl, &size);
+=======
+		value = reiserfs_posix_acl_to_disk(acl, &size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (IS_ERR(value))
 			return (int)PTR_ERR(value);
 	}
@@ -317,7 +418,11 @@ reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	if (error == -ENODATA) {
 		error = 0;
 		if (type == ACL_TYPE_ACCESS) {
+<<<<<<< HEAD
 			inode->i_ctime = CURRENT_TIME_SEC;
+=======
+			inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mark_inode_dirty(inode);
 		}
 	}
@@ -330,20 +435,32 @@ reiserfs_set_acl(struct reiserfs_transaction_handle *th, struct inode *inode,
 	return error;
 }
 
+<<<<<<< HEAD
 /* dir->i_mutex: locked,
  * inode is new and not released into the wild yet */
+=======
+/*
+ * dir->i_mutex: locked,
+ * inode is new and not released into the wild yet
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int
 reiserfs_inherit_default_acl(struct reiserfs_transaction_handle *th,
 			     struct inode *dir, struct dentry *dentry,
 			     struct inode *inode)
 {
+<<<<<<< HEAD
 	struct posix_acl *acl;
+=======
+	struct posix_acl *default_acl, *acl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err = 0;
 
 	/* ACLs only get applied to files and directories */
 	if (S_ISLNK(inode->i_mode))
 		return 0;
 
+<<<<<<< HEAD
 	/* ACLs can only be used on "new" objects, so if it's an old object
 	 * there is nothing to inherit from */
 	if (get_inode_sd_version(dir) == STAT_DATA_V1)
@@ -388,6 +505,45 @@ reiserfs_inherit_default_acl(struct reiserfs_transaction_handle *th,
 	}
 
 	return err;
+=======
+	/*
+	 * ACLs can only be used on "new" objects, so if it's an old object
+	 * there is nothing to inherit from
+	 */
+	if (get_inode_sd_version(dir) == STAT_DATA_V1)
+		goto apply_umask;
+
+	/*
+	 * Don't apply ACLs to objects in the .reiserfs_priv tree.. This
+	 * would be useless since permissions are ignored, and a pain because
+	 * it introduces locking cycles
+	 */
+	if (IS_PRIVATE(inode))
+		goto apply_umask;
+
+	err = posix_acl_create(dir, &inode->i_mode, &default_acl, &acl);
+	if (err)
+		return err;
+
+	if (default_acl) {
+		err = __reiserfs_set_acl(th, inode, ACL_TYPE_DEFAULT,
+					 default_acl);
+		posix_acl_release(default_acl);
+	}
+	if (acl) {
+		if (!err)
+			err = __reiserfs_set_acl(th, inode, ACL_TYPE_ACCESS,
+						 acl);
+		posix_acl_release(acl);
+	}
+
+	return err;
+
+apply_umask:
+	/* no ACL, apply umask */
+	inode->i_mode &= ~current_umask();
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* This is used to cache the default acl before a new object is created.
@@ -409,7 +565,11 @@ int reiserfs_cache_default_acl(struct inode *inode)
 	if (IS_PRIVATE(inode))
 		return 0;
 
+<<<<<<< HEAD
 	acl = reiserfs_get_acl(inode, ACL_TYPE_DEFAULT);
+=======
+	acl = get_acl(inode, ACL_TYPE_DEFAULT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (acl && !IS_ERR(acl)) {
 		int size = reiserfs_acl_size(acl->a_count);
@@ -431,6 +591,7 @@ int reiserfs_cache_default_acl(struct inode *inode)
 	return nblocks;
 }
 
+<<<<<<< HEAD
 int reiserfs_acl_chmod(struct inode *inode)
 {
 	struct reiserfs_transaction_handle th;
@@ -515,3 +676,18 @@ const struct xattr_handler reiserfs_posix_acl_default_handler = {
 	.set = posix_acl_set,
 	.list = posix_acl_default_list,
 };
+=======
+/*
+ * Called under i_mutex
+ */
+int reiserfs_acl_chmod(struct inode *inode)
+{
+	if (IS_PRIVATE(inode))
+		return 0;
+	if (get_inode_sd_version(inode) == STAT_DATA_V1 ||
+	    !reiserfs_posixacl(inode->i_sb))
+		return 0;
+
+	return posix_acl_chmod(inode, inode->i_mode);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

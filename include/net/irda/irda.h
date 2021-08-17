@@ -55,6 +55,7 @@ typedef __u32 magic_t;
 #endif
 
 #ifdef CONFIG_IRDA_DEBUG
+<<<<<<< HEAD
 
 extern unsigned int irda_debug;
 
@@ -65,6 +66,8 @@ extern unsigned int irda_debug;
 do {	if (irda_debug >= (n)) \
 		printk(KERN_DEBUG args); \
 } while (0)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IRDA_ASSERT(expr, func) \
 do { if(!(expr)) { \
 	printk( "Assertion failed! %s:%s:%d %s\n", \
@@ -72,15 +75,21 @@ do { if(!(expr)) { \
 	func } } while (0)
 #define IRDA_ASSERT_LABEL(label)	label
 #else
+<<<<<<< HEAD
 #define IRDA_DEBUG(n, args...) do { } while (0)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IRDA_ASSERT(expr, func) do { (void)(expr); } while (0)
 #define IRDA_ASSERT_LABEL(label)
 #endif /* CONFIG_IRDA_DEBUG */
 
+<<<<<<< HEAD
 #define IRDA_WARNING(args...) do { if (net_ratelimit()) printk(KERN_WARNING args); } while (0)
 #define IRDA_MESSAGE(args...) do { if (net_ratelimit()) printk(KERN_INFO args); } while (0)
 #define IRDA_ERROR(args...)   do { if (net_ratelimit()) printk(KERN_ERR args); } while (0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *  Magic numbers used by Linux-IrDA. Random numbers which must be unique to 
  *  give the best protection
@@ -112,6 +121,7 @@ do { if(!(expr)) { \
 struct net_device;
 struct packet_type;
 
+<<<<<<< HEAD
 extern void irda_proc_register(void);
 extern void irda_proc_unregister(void);
 
@@ -127,5 +137,21 @@ extern void irda_nl_unregister(void);
 extern int irlap_driver_rcv(struct sk_buff *skb, struct net_device *dev,
 			    struct packet_type *ptype,
 			    struct net_device *orig_dev);
+=======
+void irda_proc_register(void);
+void irda_proc_unregister(void);
+
+int irda_sysctl_register(void);
+void irda_sysctl_unregister(void);
+
+int irsock_init(void);
+void irsock_cleanup(void);
+
+int irda_nl_register(void);
+void irda_nl_unregister(void);
+
+int irlap_driver_rcv(struct sk_buff *skb, struct net_device *dev,
+		     struct packet_type *ptype, struct net_device *orig_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* NET_IRDA_H */

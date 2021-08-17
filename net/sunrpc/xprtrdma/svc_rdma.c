@@ -38,8 +38,12 @@
  *
  * Author: Tom Tucker <tom@opengridcomputing.com>
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/fs.h>
 #include <linux/sysctl.h>
@@ -56,6 +60,10 @@ unsigned int svcrdma_ord = RPCRDMA_ORD;
 static unsigned int min_ord = 1;
 static unsigned int max_ord = 4096;
 unsigned int svcrdma_max_requests = RPCRDMA_MAX_REQUESTS;
+<<<<<<< HEAD
+=======
+unsigned int svcrdma_max_bc_requests = RPCRDMA_MAX_BC_REQUESTS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int min_max_requests = 4;
 static unsigned int max_max_requests = 16384;
 unsigned int svcrdma_max_req_size = RPCRDMA_MAX_REQ_SIZE;
@@ -72,10 +80,13 @@ atomic_t rdma_stat_rq_prod;
 atomic_t rdma_stat_sq_poll;
 atomic_t rdma_stat_sq_prod;
 
+<<<<<<< HEAD
 /* Temporary NFS request map and context caches */
 struct kmem_cache *svc_rdma_map_cachep;
 struct kmem_cache *svc_rdma_ctxt_cachep;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct workqueue_struct *svc_rdma_wq;
 
 /*
@@ -84,7 +95,11 @@ struct workqueue_struct *svc_rdma_wq;
  * resets the associated statistic to zero. Any read returns it's
  * current value.
  */
+<<<<<<< HEAD
 static int read_reset_stat(ctl_table *table, int write,
+=======
+static int read_reset_stat(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   void __user *buffer, size_t *lenp,
 			   loff_t *ppos)
 {
@@ -119,7 +134,11 @@ static int read_reset_stat(ctl_table *table, int write,
 }
 
 static struct ctl_table_header *svcrdma_table_header;
+<<<<<<< HEAD
 static ctl_table svcrdma_parm_table[] = {
+=======
+static struct ctl_table svcrdma_parm_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "max_requests",
 		.data		= &svcrdma_max_requests,
@@ -214,7 +233,11 @@ static ctl_table svcrdma_parm_table[] = {
 	{ },
 };
 
+<<<<<<< HEAD
 static ctl_table svcrdma_table[] = {
+=======
+static struct ctl_table svcrdma_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "svc_rdma",
 		.mode		= 0555,
@@ -223,7 +246,11 @@ static ctl_table svcrdma_table[] = {
 	{ },
 };
 
+<<<<<<< HEAD
 static ctl_table svcrdma_root_table[] = {
+=======
+static struct ctl_table svcrdma_root_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "sunrpc",
 		.mode		= 0555,
@@ -240,18 +267,32 @@ void svc_rdma_cleanup(void)
 		unregister_sysctl_table(svcrdma_table_header);
 		svcrdma_table_header = NULL;
 	}
+<<<<<<< HEAD
 	svc_unreg_xprt_class(&svc_rdma_class);
 	kmem_cache_destroy(svc_rdma_map_cachep);
 	kmem_cache_destroy(svc_rdma_ctxt_cachep);
+=======
+#if defined(CONFIG_SUNRPC_BACKCHANNEL)
+	svc_unreg_xprt_class(&svc_rdma_bc_class);
+#endif
+	svc_unreg_xprt_class(&svc_rdma_class);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int svc_rdma_init(void)
 {
 	dprintk("SVCRDMA Module Init, register RPC RDMA transport\n");
 	dprintk("\tsvcrdma_ord      : %d\n", svcrdma_ord);
+<<<<<<< HEAD
 	dprintk("\tmax_requests     : %d\n", svcrdma_max_requests);
 	dprintk("\tsq_depth         : %d\n",
 		svcrdma_max_requests * RPCRDMA_SQ_DEPTH_MULT);
+=======
+	dprintk("\tmax_requests     : %u\n", svcrdma_max_requests);
+	dprintk("\tsq_depth         : %u\n",
+		svcrdma_max_requests * RPCRDMA_SQ_DEPTH_MULT);
+	dprintk("\tmax_bc_requests  : %u\n", svcrdma_max_bc_requests);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dprintk("\tmax_inline       : %d\n", svcrdma_max_req_size);
 
 	svc_rdma_wq = alloc_workqueue("svc_rdma", 0, 0);
@@ -262,6 +303,7 @@ int svc_rdma_init(void)
 		svcrdma_table_header =
 			register_sysctl_table(svcrdma_root_table);
 
+<<<<<<< HEAD
 	/* Create the temporary map cache */
 	svc_rdma_map_cachep = kmem_cache_create("svc_rdma_map_cache",
 						sizeof(struct svc_rdma_req_map),
@@ -300,3 +342,12 @@ MODULE_DESCRIPTION("SVC RDMA Transport");
 MODULE_LICENSE("Dual BSD/GPL");
 module_init(svc_rdma_init);
 module_exit(svc_rdma_cleanup);
+=======
+	/* Register RDMA with the SVC transport switch */
+	svc_reg_xprt_class(&svc_rdma_class);
+#if defined(CONFIG_SUNRPC_BACKCHANNEL)
+	svc_reg_xprt_class(&svc_rdma_bc_class);
+#endif
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

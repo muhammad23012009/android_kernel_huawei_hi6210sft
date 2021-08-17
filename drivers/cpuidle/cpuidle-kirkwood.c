@@ -21,7 +21,10 @@
 #include <linux/cpuidle.h>
 #include <linux/io.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/proc-fns.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cpuidle.h>
 
 #define KIRKWOOD_MAX_STATES	2
@@ -47,7 +50,10 @@ static struct cpuidle_driver kirkwood_idle_driver = {
 		.enter			= kirkwood_enter_idle,
 		.exit_latency		= 10,
 		.target_residency	= 100000,
+<<<<<<< HEAD
 		.flags			= CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name			= "DDR SR",
 		.desc			= "WFI and DDR Self Refresh",
 	},
@@ -60,9 +66,12 @@ static int kirkwood_cpuidle_probe(struct platform_device *pdev)
 	struct resource *res;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (res == NULL)
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ddr_operation_base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(ddr_operation_base))
 		return PTR_ERR(ddr_operation_base);
@@ -70,7 +79,11 @@ static int kirkwood_cpuidle_probe(struct platform_device *pdev)
 	return cpuidle_register(&kirkwood_idle_driver, NULL);
 }
 
+<<<<<<< HEAD
 int kirkwood_cpuidle_remove(struct platform_device *pdev)
+=======
+static int kirkwood_cpuidle_remove(struct platform_device *pdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	cpuidle_unregister(&kirkwood_idle_driver);
 	return 0;
@@ -81,7 +94,10 @@ static struct platform_driver kirkwood_cpuidle_driver = {
 	.remove = kirkwood_cpuidle_remove,
 	.driver = {
 		   .name = "kirkwood_cpuidle",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   },
 };
 

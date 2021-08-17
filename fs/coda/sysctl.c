@@ -14,7 +14,11 @@
 #ifdef CONFIG_SYSCTL
 static struct ctl_table_header *fs_table_header;
 
+<<<<<<< HEAD
 static ctl_table coda_table[] = {
+=======
+static struct ctl_table coda_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "timeout",
 		.data		= &coda_timeout,
@@ -39,7 +43,11 @@ static ctl_table coda_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 static ctl_table fs_table[] = {
+=======
+static struct ctl_table fs_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "coda",
 		.mode		= 0555,

@@ -42,7 +42,11 @@ static inline int pfn_to_nid(unsigned long pfn)
 
 #define kern_addr_valid(kaddr)	virt_addr_valid((void *)kaddr)
 
+<<<<<<< HEAD
 static inline int pfn_valid(int pfn)
+=======
+static inline int pfn_valid(unsigned long pfn)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int nid = pfn_to_nid(pfn);
 

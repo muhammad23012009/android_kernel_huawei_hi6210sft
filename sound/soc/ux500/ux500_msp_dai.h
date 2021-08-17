@@ -51,15 +51,21 @@ enum ux500_msp_clock_id {
 struct ux500_msp_i2s_drvdata {
 	struct ux500_msp *msp;
 	struct regulator *reg_vape;
+<<<<<<< HEAD
 	struct ux500_msp_dma_params playback_dma_data;
 	struct ux500_msp_dma_params capture_dma_data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int fmt;
 	unsigned int tx_mask;
 	unsigned int rx_mask;
 	int slots;
 	int slot_width;
+<<<<<<< HEAD
 	u8 configured;
 	int data_delay;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Clocks */
 	unsigned int master_clk;

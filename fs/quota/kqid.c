@@ -55,7 +55,11 @@ EXPORT_SYMBOL(qid_lt);
 /**
  *	from_kqid - Create a qid from a kqid user-namespace pair.
  *	@targ: The user namespace we want a qid in.
+<<<<<<< HEAD
  *	@kuid: The kernel internal quota identifier to start with.
+=======
+ *	@kqid: The kernel internal quota identifier to start with.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	Map @kqid into the user-namespace specified by @targ and
  *	return the resulting qid.

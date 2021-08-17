@@ -9,6 +9,13 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+/*
+ * NOTE: Code in this file is not used when booting with Device Tree support.
+ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/interrupt.h>
@@ -19,7 +26,13 @@
 #include <linux/io.h>
 #include <linux/device.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
+=======
+#include <linux/serial_s3c.h>
+#include <linux/platform_device.h>
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -29,17 +42,28 @@
 #include <asm/irq.h>
 
 #include <plat/cpu-freq.h>
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/regs-clock.h>
 
 #include <plat/cpu.h>
 #include <plat/devs.h>
+<<<<<<< HEAD
 #include <plat/clock.h>
 #include <plat/sdhci.h>
 #include <plat/iic-core.h>
 #include <plat/onenand-core.h>
 
 #include "common.h"
+=======
+#include <plat/sdhci.h>
+#include <plat/iic-core.h>
+
+#include "common.h"
+#include "onenand-core.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init s3c6400_map_io(void)
 {
@@ -58,12 +82,15 @@ void __init s3c6400_map_io(void)
 	s3c64xx_onenand1_setname("s3c6400-onenand");
 }
 
+<<<<<<< HEAD
 void __init s3c6400_init_clocks(int xtal)
 {
 	s3c64xx_register_clocks(xtal, S3C6400_CLKDIV0_ARM_MASK);
 	s3c64xx_setup_clocks();
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init s3c6400_init_irq(void)
 {
 	/* VIC0 does not have IRQS 5..7,
@@ -82,6 +109,13 @@ static struct device s3c6400_dev = {
 
 static int __init s3c6400_core_init(void)
 {
+<<<<<<< HEAD
+=======
+	/* Not applicable when using DT. */
+	if (of_have_populated_dt() || soc_is_s3c64xx())
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return subsys_system_register(&s3c6400_subsys, NULL);
 }
 

@@ -12,6 +12,10 @@
 #include <linux/threads.h>
 #include <linux/percpu.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/gfp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 
@@ -26,6 +30,7 @@ struct percpu_counter {
 
 extern int percpu_counter_batch;
 
+<<<<<<< HEAD
 int __percpu_counter_init(struct percpu_counter *fbc, s64 amount,
 			  struct lock_class_key *key);
 
@@ -34,13 +39,32 @@ int __percpu_counter_init(struct percpu_counter *fbc, s64 amount,
 		static struct lock_class_key __key;			\
 									\
 		__percpu_counter_init(fbc, value, &__key);		\
+=======
+int __percpu_counter_init(struct percpu_counter *fbc, s64 amount, gfp_t gfp,
+			  struct lock_class_key *key);
+
+#define percpu_counter_init(fbc, value, gfp)				\
+	({								\
+		static struct lock_class_key __key;			\
+									\
+		__percpu_counter_init(fbc, value, gfp, &__key);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	})
 
 void percpu_counter_destroy(struct percpu_counter *fbc);
 void percpu_counter_set(struct percpu_counter *fbc, s64 amount);
 void __percpu_counter_add(struct percpu_counter *fbc, s64 amount, s32 batch);
 s64 __percpu_counter_sum(struct percpu_counter *fbc);
+<<<<<<< HEAD
 int percpu_counter_compare(struct percpu_counter *fbc, s64 rhs);
+=======
+int __percpu_counter_compare(struct percpu_counter *fbc, s64 rhs, s32 batch);
+
+static inline int percpu_counter_compare(struct percpu_counter *fbc, s64 rhs)
+{
+	return __percpu_counter_compare(fbc, rhs, percpu_counter_batch);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void percpu_counter_add(struct percpu_counter *fbc, s64 amount)
 {
@@ -70,9 +94,15 @@ static inline s64 percpu_counter_read(struct percpu_counter *fbc)
  */
 static inline s64 percpu_counter_read_positive(struct percpu_counter *fbc)
 {
+<<<<<<< HEAD
 	s64 ret = fbc->count;
 
 	barrier();		/* Prevent reloads of fbc->count */
+=======
+	/* Prevent reloads of fbc->count */
+	s64 ret = READ_ONCE(fbc->count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret >= 0)
 		return ret;
 	return 0;
@@ -89,7 +119,12 @@ struct percpu_counter {
 	s64 count;
 };
 
+<<<<<<< HEAD
 static inline int percpu_counter_init(struct percpu_counter *fbc, s64 amount)
+=======
+static inline int percpu_counter_init(struct percpu_counter *fbc, s64 amount,
+				      gfp_t gfp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	fbc->count = amount;
 	return 0;
@@ -114,6 +149,15 @@ static inline int percpu_counter_compare(struct percpu_counter *fbc, s64 rhs)
 		return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline int
+__percpu_counter_compare(struct percpu_counter *fbc, s64 rhs, s32 batch)
+{
+	return percpu_counter_compare(fbc, rhs);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void
 percpu_counter_add(struct percpu_counter *fbc, s64 amount)
 {

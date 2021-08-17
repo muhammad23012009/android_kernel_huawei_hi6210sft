@@ -1,7 +1,11 @@
 #ifndef __NET_SYSFS_H__
 #define __NET_SYSFS_H__
 
+<<<<<<< HEAD
 int netdev_kobject_init(void);
+=======
+int __init netdev_kobject_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int netdev_register_kobject(struct net_device *);
 void netdev_unregister_kobject(struct net_device *);
 int net_rx_queue_update_kobjects(struct net_device *, int old_num, int new_num);

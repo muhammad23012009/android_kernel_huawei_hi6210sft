@@ -348,7 +348,11 @@ static void wm8958_dsp_apply(struct snd_soc_codec *codec, int path, int start)
 		aif = 1;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Invalid path %d\n", path);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -418,7 +422,11 @@ static void wm8958_dsp_apply(struct snd_soc_codec *codec, int path, int start)
 int wm8958_aif_ev(struct snd_soc_dapm_widget *w,
 		  struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	switch (event) {
@@ -456,7 +464,11 @@ static int wm8958_dsp2_busy(struct wm8994_priv *wm8994, int aif)
 static int wm8958_put_mbc_enum(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 	struct wm8994 *control = wm8994->wm8994;
 	int value = ucontrol->value.enumerated.item[0];
@@ -478,7 +490,11 @@ static int wm8958_put_mbc_enum(struct snd_kcontrol *kcontrol,
 static int wm8958_get_mbc_enum(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.enumerated.item[0] = wm8994->mbc_cfg;
@@ -500,7 +516,11 @@ static int wm8958_mbc_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int mbc = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = wm8994->mbc_ena[mbc];
@@ -512,7 +532,11 @@ static int wm8958_mbc_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int mbc = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (wm8994->mbc_ena[mbc] == ucontrol->value.integer.value[0])
@@ -546,7 +570,11 @@ static int wm8958_mbc_put(struct snd_kcontrol *kcontrol,
 static int wm8958_put_vss_enum(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 	struct wm8994 *control = wm8994->wm8994;
 	int value = ucontrol->value.enumerated.item[0];
@@ -568,7 +596,11 @@ static int wm8958_put_vss_enum(struct snd_kcontrol *kcontrol,
 static int wm8958_get_vss_enum(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.enumerated.item[0] = wm8994->vss_cfg;
@@ -579,7 +611,11 @@ static int wm8958_get_vss_enum(struct snd_kcontrol *kcontrol,
 static int wm8958_put_vss_hpf_enum(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 	struct wm8994 *control = wm8994->wm8994;
 	int value = ucontrol->value.enumerated.item[0];
@@ -601,7 +637,11 @@ static int wm8958_put_vss_hpf_enum(struct snd_kcontrol *kcontrol,
 static int wm8958_get_vss_hpf_enum(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.enumerated.item[0] = wm8994->vss_hpf_cfg;
@@ -623,7 +663,11 @@ static int wm8958_vss_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int vss = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = wm8994->vss_ena[vss];
@@ -635,7 +679,11 @@ static int wm8958_vss_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int vss = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (wm8994->vss_ena[vss] == ucontrol->value.integer.value[0])
@@ -684,7 +732,11 @@ static int wm8958_hpf_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int hpf = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (hpf < 3)
@@ -699,7 +751,11 @@ static int wm8958_hpf_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int hpf = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (hpf < 3) {
@@ -746,7 +802,11 @@ static int wm8958_hpf_put(struct snd_kcontrol *kcontrol,
 static int wm8958_put_enh_eq_enum(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 	struct wm8994 *control = wm8994->wm8994;
 	int value = ucontrol->value.enumerated.item[0];
@@ -768,7 +828,11 @@ static int wm8958_put_enh_eq_enum(struct snd_kcontrol *kcontrol,
 static int wm8958_get_enh_eq_enum(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.enumerated.item[0] = wm8994->enh_eq_cfg;
@@ -790,7 +854,11 @@ static int wm8958_enh_eq_get(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int eq = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = wm8994->enh_eq_ena[eq];
@@ -802,7 +870,11 @@ static int wm8958_enh_eq_put(struct snd_kcontrol *kcontrol,
 			  struct snd_ctl_elem_value *ucontrol)
 {
 	int eq = kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_codec *codec = snd_soc_kcontrol_codec(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (wm8994->enh_eq_ena[eq] == ucontrol->value.integer.value[0])
@@ -867,9 +939,15 @@ static void wm8958_enh_eq_loaded(const struct firmware *fw, void *context)
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (fw && (wm8958_dsp2_fw(codec, "ENH_EQ", fw, true) == 0)) {
+<<<<<<< HEAD
 		mutex_lock(&codec->mutex);
 		wm8994->enh_eq = fw;
 		mutex_unlock(&codec->mutex);
+=======
+		mutex_lock(&wm8994->fw_lock);
+		wm8994->enh_eq = fw;
+		mutex_unlock(&wm8994->fw_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -879,9 +957,15 @@ static void wm8958_mbc_vss_loaded(const struct firmware *fw, void *context)
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (fw && (wm8958_dsp2_fw(codec, "MBC+VSS", fw, true) == 0)) {
+<<<<<<< HEAD
 		mutex_lock(&codec->mutex);
 		wm8994->mbc_vss = fw;
 		mutex_unlock(&codec->mutex);
+=======
+		mutex_lock(&wm8994->fw_lock);
+		wm8994->mbc_vss = fw;
+		mutex_unlock(&wm8994->fw_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -891,9 +975,15 @@ static void wm8958_mbc_loaded(const struct firmware *fw, void *context)
 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
 
 	if (fw && (wm8958_dsp2_fw(codec, "MBC", fw, true) == 0)) {
+<<<<<<< HEAD
 		mutex_lock(&codec->mutex);
 		wm8994->mbc = fw;
 		mutex_unlock(&codec->mutex);
+=======
+		mutex_lock(&wm8994->fw_lock);
+		wm8994->mbc = fw;
+		mutex_unlock(&wm8994->fw_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -934,17 +1024,26 @@ void wm8958_dsp2_init(struct snd_soc_codec *codec)
 		/* We need an array of texts for the enum API */
 		wm8994->mbc_texts = kmalloc(sizeof(char *)
 					    * pdata->num_mbc_cfgs, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!wm8994->mbc_texts) {
 			dev_err(wm8994->hubs.codec->dev,
 				"Failed to allocate %d MBC config texts\n",
 				pdata->num_mbc_cfgs);
 			return;
 		}
+=======
+		if (!wm8994->mbc_texts)
+			return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for (i = 0; i < pdata->num_mbc_cfgs; i++)
 			wm8994->mbc_texts[i] = pdata->mbc_cfgs[i].name;
 
+<<<<<<< HEAD
 		wm8994->mbc_enum.max = pdata->num_mbc_cfgs;
+=======
+		wm8994->mbc_enum.items = pdata->num_mbc_cfgs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wm8994->mbc_enum.texts = wm8994->mbc_texts;
 
 		ret = snd_soc_add_codec_controls(wm8994->hubs.codec,
@@ -963,17 +1062,26 @@ void wm8958_dsp2_init(struct snd_soc_codec *codec)
 		/* We need an array of texts for the enum API */
 		wm8994->vss_texts = kmalloc(sizeof(char *)
 					    * pdata->num_vss_cfgs, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!wm8994->vss_texts) {
 			dev_err(wm8994->hubs.codec->dev,
 				"Failed to allocate %d VSS config texts\n",
 				pdata->num_vss_cfgs);
 			return;
 		}
+=======
+		if (!wm8994->vss_texts)
+			return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for (i = 0; i < pdata->num_vss_cfgs; i++)
 			wm8994->vss_texts[i] = pdata->vss_cfgs[i].name;
 
+<<<<<<< HEAD
 		wm8994->vss_enum.max = pdata->num_vss_cfgs;
+=======
+		wm8994->vss_enum.items = pdata->num_vss_cfgs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wm8994->vss_enum.texts = wm8994->vss_texts;
 
 		ret = snd_soc_add_codec_controls(wm8994->hubs.codec,
@@ -993,17 +1101,26 @@ void wm8958_dsp2_init(struct snd_soc_codec *codec)
 		/* We need an array of texts for the enum API */
 		wm8994->vss_hpf_texts = kmalloc(sizeof(char *)
 						* pdata->num_vss_hpf_cfgs, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!wm8994->vss_hpf_texts) {
 			dev_err(wm8994->hubs.codec->dev,
 				"Failed to allocate %d VSS HPF config texts\n",
 				pdata->num_vss_hpf_cfgs);
 			return;
 		}
+=======
+		if (!wm8994->vss_hpf_texts)
+			return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for (i = 0; i < pdata->num_vss_hpf_cfgs; i++)
 			wm8994->vss_hpf_texts[i] = pdata->vss_hpf_cfgs[i].name;
 
+<<<<<<< HEAD
 		wm8994->vss_hpf_enum.max = pdata->num_vss_hpf_cfgs;
+=======
+		wm8994->vss_hpf_enum.items = pdata->num_vss_hpf_cfgs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wm8994->vss_hpf_enum.texts = wm8994->vss_hpf_texts;
 
 		ret = snd_soc_add_codec_controls(wm8994->hubs.codec,
@@ -1024,17 +1141,26 @@ void wm8958_dsp2_init(struct snd_soc_codec *codec)
 		/* We need an array of texts for the enum API */
 		wm8994->enh_eq_texts = kmalloc(sizeof(char *)
 						* pdata->num_enh_eq_cfgs, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!wm8994->enh_eq_texts) {
 			dev_err(wm8994->hubs.codec->dev,
 				"Failed to allocate %d enhanced EQ config texts\n",
 				pdata->num_enh_eq_cfgs);
 			return;
 		}
+=======
+		if (!wm8994->enh_eq_texts)
+			return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for (i = 0; i < pdata->num_enh_eq_cfgs; i++)
 			wm8994->enh_eq_texts[i] = pdata->enh_eq_cfgs[i].name;
 
+<<<<<<< HEAD
 		wm8994->enh_eq_enum.max = pdata->num_enh_eq_cfgs;
+=======
+		wm8994->enh_eq_enum.items = pdata->num_enh_eq_cfgs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wm8994->enh_eq_enum.texts = wm8994->enh_eq_texts;
 
 		ret = snd_soc_add_codec_controls(wm8994->hubs.codec,

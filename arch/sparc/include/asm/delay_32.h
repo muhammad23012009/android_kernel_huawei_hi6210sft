@@ -20,8 +20,13 @@ static inline void __delay(unsigned long loops)
 }
 
 /* This is too messy with inline asm on the Sparc. */
+<<<<<<< HEAD
 extern void __udelay(unsigned long usecs, unsigned long lpj);
 extern void __ndelay(unsigned long nsecs, unsigned long lpj);
+=======
+void __udelay(unsigned long usecs, unsigned long lpj);
+void __ndelay(unsigned long nsecs, unsigned long lpj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 #define __udelay_val	cpu_data(smp_processor_id()).udelay_val

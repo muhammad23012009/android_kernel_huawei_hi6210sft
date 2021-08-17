@@ -3,11 +3,21 @@
  * Copyright (C) 1996,1997 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
  * Copyright (C) 1996 David S. Miller (davem@caip.rutgers.edu)
  *
+<<<<<<< HEAD
  * Returns 0, if ok, and number of bytes not yet set if exception
  * occurs and we were called as clear_user.
  */
 
 #include <asm/ptrace.h>
+=======
+ * Calls to memset returns initial %o0. Calls to bzero returns 0, if ok, and
+ * number of bytes not yet set if exception occurs and we were called as
+ * clear_user.
+ */
+
+#include <asm/ptrace.h>
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Work around cpp -rob */
 #define ALLOC #alloc
@@ -62,9 +72,19 @@ __bzero_begin:
 
 	.globl	__bzero
 	.globl	memset
+<<<<<<< HEAD
 	.globl	__memset_start, __memset_end
 __memset_start:
 memset:
+=======
+	EXPORT_SYMBOL(__bzero)
+	EXPORT_SYMBOL(memset)
+	.globl	__memset_start, __memset_end
+__memset_start:
+memset:
+	mov	%o0, %g1
+	mov	1, %g4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	and	%o1, 0xff, %g3
 	sll	%g3, 8, %g2
 	or	%g3, %g2, %g3
@@ -89,6 +109,10 @@ memset:
 	 sub	%o0, %o2, %o0
 
 __bzero:
+<<<<<<< HEAD
+=======
+	clr	%g4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov	%g0, %g3
 1:
 	cmp	%o1, 7
@@ -133,6 +157,10 @@ __bzero:
 	ZERO_LAST_BLOCKS(%o0, 0x48, %g2)
 	ZERO_LAST_BLOCKS(%o0, 0x08, %g2)
 13:
+<<<<<<< HEAD
+=======
+	EXT(12b, 13b, 21f)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	be	8f
 	 andcc	%o1, 4, %g0
 
@@ -151,8 +179,13 @@ __bzero:
 	bne,a	8f
 	 EX(stb	%g3, [%o0], and %o1, 1)
 8:
+<<<<<<< HEAD
 	retl
 	 clr	%o0
+=======
+	b	0f
+	 nop
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 7:
 	be	13b
 	 orcc	%o1, 0, %g0
@@ -164,6 +197,15 @@ __bzero:
 	bne	8b
 	 EX(stb	%g3, [%o0 - 1], add %o1, 1)
 0:
+<<<<<<< HEAD
+=======
+	andcc	%g4, 1, %g0
+	be	5f
+	 nop
+	retl
+	 mov	%g1, %o0
+5:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	retl
 	 clr	%o0
 __memset_end:

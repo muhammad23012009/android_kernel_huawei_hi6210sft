@@ -140,7 +140,11 @@ enum chips { smm465, smm665, smm665c, smm764, smm766 };
 struct smm665_data {
 	enum chips type;
 	int conversion_time;		/* ADC conversion time */
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex update_lock;
 	bool valid;
 	unsigned long last_updated;	/* in jiffies */
@@ -222,7 +226,11 @@ static int smm665_read_adc(struct smm665_data *data, int adc)
 	rv = i2c_smbus_read_word_swapped(client, 0);
 	if (rv < 0) {
 		dev_dbg(&client->dev, "Failed to read ADC value: error %d", rv);
+<<<<<<< HEAD
 		return -1;
+=======
+		return rv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/*
 	 * Validate/verify readback adc channel (in bit 11..14).
@@ -239,8 +247,13 @@ static int smm665_read_adc(struct smm665_data *data, int adc)
 
 static struct smm665_data *smm665_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct smm665_data *data = i2c_get_clientdata(client);
+=======
+	struct smm665_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct smm665_data *ret = data;
 
 	mutex_lock(&data->update_lock);
@@ -315,32 +328,48 @@ static int smm665_convert(u16 adcval, int index)
 
 static int smm665_get_min(struct device *dev, int index)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct smm665_data *data = i2c_get_clientdata(client);
+=======
+	struct smm665_data *data = dev_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return data->alarm_min_limit[index];
 }
 
 static int smm665_get_max(struct device *dev, int index)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct smm665_data *data = i2c_get_clientdata(client);
+=======
+	struct smm665_data *data = dev_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return data->alarm_max_limit[index];
 }
 
 static int smm665_get_lcrit(struct device *dev, int index)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct smm665_data *data = i2c_get_clientdata(client);
+=======
+	struct smm665_data *data = dev_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return data->critical_min_limit[index];
 }
 
 static int smm665_get_crit(struct device *dev, int index)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct smm665_data *data = i2c_get_clientdata(client);
+=======
+	struct smm665_data *data = dev_get_drvdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return data->critical_max_limit[index];
 }
@@ -486,7 +515,11 @@ SMM665_ATTR(temp1, crit_alarm, SMM665_FAULT_TEMP);
  * Finally, construct an array of pointers to members of the above objects,
  * as required for sysfs_create_group()
  */
+<<<<<<< HEAD
 static struct attribute *smm665_attributes[] = {
+=======
+static struct attribute *smm665_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in1_min.dev_attr.attr,
 	&sensor_dev_attr_in1_max.dev_attr.attr,
@@ -567,15 +600,23 @@ static struct attribute *smm665_attributes[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static const struct attribute_group smm665_group = {
 	.attrs = smm665_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(smm665);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int smm665_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = client->adapter;
 	struct smm665_data *data;
+<<<<<<< HEAD
+=======
+	struct device *hwmon_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, ret;
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA
@@ -592,6 +633,10 @@ static int smm665_probe(struct i2c_client *client,
 	i2c_set_clientdata(client, data);
 	mutex_init(&data->update_lock);
 
+<<<<<<< HEAD
+=======
+	data->client = client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->type = id->driver_data;
 	data->cmdreg = i2c_new_dummy(adapter, (client->addr & ~SMM665_REGMASK)
 				     | SMM665_CMDREG_BASE);
@@ -662,6 +707,7 @@ static int smm665_probe(struct i2c_client *client,
 			data->alarm_max_limit[i] = smm665_convert(val, i);
 	}
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	ret = sysfs_create_group(&client->dev.kobj, &smm665_group);
 	if (ret)
@@ -671,12 +717,23 @@ static int smm665_probe(struct i2c_client *client,
 	if (IS_ERR(data->hwmon_dev)) {
 		ret = PTR_ERR(data->hwmon_dev);
 		goto out_remove_group;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(&client->dev,
+							   client->name, data,
+							   smm665_groups);
+	if (IS_ERR(hwmon_dev)) {
+		ret = PTR_ERR(hwmon_dev);
+		goto out_unregister;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 out_remove_group:
 	sysfs_remove_group(&client->dev.kobj, &smm665_group);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_unregister:
 	i2c_unregister_device(data->cmdreg);
 	return ret;
@@ -687,9 +744,12 @@ static int smm665_remove(struct i2c_client *client)
 	struct smm665_data *data = i2c_get_clientdata(client);
 
 	i2c_unregister_device(data->cmdreg);
+<<<<<<< HEAD
 	hwmon_device_unregister(data->hwmon_dev);
 	sysfs_remove_group(&client->dev.kobj, &smm665_group);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

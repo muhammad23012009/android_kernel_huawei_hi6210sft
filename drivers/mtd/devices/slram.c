@@ -41,7 +41,11 @@
 #include <linux/fs.h>
 #include <linux/ioctl.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/mtd/mtd.h>
 
@@ -280,14 +284,20 @@ __setup("slram=", mtd_slram_setup);
 static int __init init_slram(void)
 {
 	char *devname;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef MODULE
 	char *devstart;
 	char *devlength;
 
+<<<<<<< HEAD
 	i = 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!map) {
 		E("slram: not enough parameters.\n");
 		return(-EINVAL);
@@ -314,6 +324,10 @@ static int __init init_slram(void)
 	}
 #else
 	int count;
+<<<<<<< HEAD
+=======
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (count = 0; count < SLRAM_MAX_DEVICES_PARAMS && map[count];
 			count++) {

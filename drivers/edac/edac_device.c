@@ -390,11 +390,17 @@ static void edac_device_workq_function(struct work_struct *work_req)
 	 * between integral seconds
 	 */
 	if (edac_dev->poll_msec == 1000)
+<<<<<<< HEAD
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				round_jiffies_relative(edac_dev->delay));
 	else
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				edac_dev->delay);
+=======
+		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
+	else
+		edac_queue_work(&edac_dev->work, edac_dev->delay);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -402,8 +408,13 @@ static void edac_device_workq_function(struct work_struct *work_req)
  *	initialize a workq item for this edac_device instance
  *	passing in the new delay period in msec
  */
+<<<<<<< HEAD
 void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 				unsigned msec)
+=======
+static void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
+				    unsigned msec)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	edac_dbg(0, "\n");
 
@@ -422,17 +433,24 @@ void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 	 * to fire together on the 1 second exactly
 	 */
 	if (edac_dev->poll_msec == 1000)
+<<<<<<< HEAD
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				round_jiffies_relative(edac_dev->delay));
 	else
 		queue_delayed_work(edac_workqueue, &edac_dev->work,
 				edac_dev->delay);
+=======
+		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
+	else
+		edac_queue_work(&edac_dev->work, edac_dev->delay);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * edac_device_workq_teardown
  *	stop the workq processing on this edac_dev
  */
+<<<<<<< HEAD
 void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 {
 	int status;
@@ -442,6 +460,16 @@ void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 		/* workq instance might be running, wait for it */
 		flush_workqueue(edac_workqueue);
 	}
+=======
+static void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
+{
+	if (!edac_dev->edac_check)
+		return;
+
+	edac_dev->op_state = OP_OFFLINE;
+
+	edac_stop_work(&edac_dev->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -454,6 +482,7 @@ void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
 					unsigned long value)
 {
+<<<<<<< HEAD
 	/* cancel the current workq request, without the mutex lock */
 	edac_device_workq_teardown(edac_dev);
 
@@ -464,6 +493,17 @@ void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
 	edac_device_workq_setup(edac_dev, value);
 
 	mutex_unlock(&device_ctls_mutex);
+=======
+	unsigned long jiffs = msecs_to_jiffies(value);
+
+	if (value == 1000)
+		jiffs = round_jiffies_relative(value);
+
+	edac_dev->poll_msec = value;
+	edac_dev->delay	    = jiffs;
+
+	edac_mod_work(&edac_dev->work, jiffs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -530,12 +570,18 @@ int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
 
 	/* Report action taken */
 	edac_device_printk(edac_dev, KERN_INFO,
+<<<<<<< HEAD
 				"Giving out device to module '%s' controller "
 				"'%s': DEV '%s' (%s)\n",
 				edac_dev->mod_name,
 				edac_dev->ctl_name,
 				edac_dev_name(edac_dev),
 				edac_op_state_to_string(edac_dev->op_state));
+=======
+		"Giving out device to module %s controller %s: DEV %s (%s)\n",
+		edac_dev->mod_name, edac_dev->ctl_name, edac_dev->dev_name,
+		edac_op_state_to_string(edac_dev->op_state));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&device_ctls_mutex);
 	return 0;

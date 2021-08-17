@@ -13,8 +13,11 @@
 #include <linux/crypto.h>
 #include "key.h"
 
+<<<<<<< HEAD
 u8 *ieee80211_tkip_add_iv(u8 *pos, struct ieee80211_key *key);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ieee80211_tkip_encrypt_data(struct crypto_cipher *tfm,
 				struct ieee80211_key *key,
 				struct sk_buff *skb,

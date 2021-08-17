@@ -220,9 +220,13 @@ static int __init omap_cf_probe(struct platform_device *pdev)
 	cf = kzalloc(sizeof *cf, GFP_KERNEL);
 	if (!cf)
 		return -ENOMEM;
+<<<<<<< HEAD
 	init_timer(&cf->timer);
 	cf->timer.function = omap_cf_timer;
 	cf->timer.data = (unsigned long) cf;
+=======
+	setup_timer(&cf->timer, omap_cf_timer, (unsigned long)cf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cf->pdev = pdev;
 	platform_set_drvdata(pdev, cf);
@@ -334,7 +338,10 @@ static int __exit omap_cf_remove(struct platform_device *pdev)
 static struct platform_driver omap_cf_driver = {
 	.driver = {
 		.name	= (char *) driver_name,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove		= __exit_p(omap_cf_remove),
 };

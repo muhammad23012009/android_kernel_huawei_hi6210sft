@@ -14,6 +14,7 @@
 
 #include "btree.h"
 
+<<<<<<< HEAD
 void hfs_bnode_read(struct hfs_bnode *node, void *buf,
 		int off, int len)
 {
@@ -24,6 +25,33 @@ void hfs_bnode_read(struct hfs_bnode *node, void *buf,
 
 	memcpy(buf, kmap(page) + off, len);
 	kunmap(page);
+=======
+void hfs_bnode_read(struct hfs_bnode *node, void *buf, int off, int len)
+{
+	struct page *page;
+	int pagenum;
+	int bytes_read;
+	int bytes_to_read;
+	void *vaddr;
+
+	off += node->page_offset;
+	pagenum = off >> PAGE_SHIFT;
+	off &= ~PAGE_MASK; /* compute page offset for the first page */
+
+	for (bytes_read = 0; bytes_read < len; bytes_read += bytes_to_read) {
+		if (pagenum >= node->tree->pages_per_bnode)
+			break;
+		page = node->page[pagenum];
+		bytes_to_read = min_t(int, len - bytes_read, PAGE_SIZE - off);
+
+		vaddr = kmap_atomic(page);
+		memcpy(buf + bytes_read, vaddr + off, bytes_to_read);
+		kunmap_atomic(vaddr);
+
+		pagenum++;
+		off = 0; /* page offset only applies to the first page */
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 u16 hfs_bnode_read_u16(struct hfs_bnode *node, int off)
@@ -278,14 +306,23 @@ static struct hfs_bnode *__hfs_bnode_create(struct hfs_btree *tree, u32 cnid)
 
 	mapping = tree->inode->i_mapping;
 	off = (loff_t)cnid * tree->node_size;
+<<<<<<< HEAD
 	block = off >> PAGE_CACHE_SHIFT;
 	node->page_offset = off & ~PAGE_CACHE_MASK;
+=======
+	block = off >> PAGE_SHIFT;
+	node->page_offset = off & ~PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < tree->pages_per_bnode; i++) {
 		page = read_mapping_page(mapping, block++, NULL);
 		if (IS_ERR(page))
 			goto fail;
 		if (PageError(page)) {
+<<<<<<< HEAD
 			page_cache_release(page);
+=======
+			put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto fail;
 		}
 		node->page[i] = page;
@@ -401,7 +438,11 @@ void hfs_bnode_free(struct hfs_bnode *node)
 
 	for (i = 0; i < node->tree->pages_per_bnode; i++)
 		if (node->page[i])
+<<<<<<< HEAD
 			page_cache_release(node->page[i]);
+=======
+			put_page(node->page[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(node);
 }
 
@@ -429,11 +470,19 @@ struct hfs_bnode *hfs_bnode_create(struct hfs_btree *tree, u32 num)
 
 	pagep = node->page;
 	memset(kmap(*pagep) + node->page_offset, 0,
+<<<<<<< HEAD
 	       min((int)PAGE_CACHE_SIZE, (int)tree->node_size));
 	set_page_dirty(*pagep);
 	kunmap(*pagep);
 	for (i = 1; i < tree->pages_per_bnode; i++) {
 		memset(kmap(*++pagep), 0, PAGE_CACHE_SIZE);
+=======
+	       min((int)PAGE_SIZE, (int)tree->node_size));
+	set_page_dirty(*pagep);
+	kunmap(*pagep);
+	for (i = 1; i < tree->pages_per_bnode; i++) {
+		memset(kmap(*++pagep), 0, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_page_dirty(*pagep);
 		kunmap(*pagep);
 	}

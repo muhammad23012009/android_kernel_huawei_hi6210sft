@@ -51,6 +51,13 @@
 	pr_warn("%s-%d: %16s (port %d): WARNING: " format, __func__, __LINE__,\
 	(group)->name, group->demux->port, ## arg)
 
+<<<<<<< HEAD
+=======
+#define mcg_debug_group(group, format, arg...) \
+	pr_debug("%s-%d: %16s (port %d): WARNING: " format, __func__, __LINE__,\
+		 (group)->name, (group)->demux->port, ## arg)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define mcg_error_group(group, format, arg...) \
 	pr_err("  %16s: " format, (group)->name, ## arg)
 
@@ -92,7 +99,11 @@ struct ib_sa_mcmember_data {
 	u8		scope_join_state;
 	u8		proxy_join;
 	u8		reserved[2];
+<<<<<<< HEAD
 };
+=======
+} __packed __aligned(4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct mcast_group {
 	struct ib_sa_mcmember_data rec;
@@ -206,6 +217,7 @@ static int send_mad_to_wire(struct mlx4_ib_demux_ctx *ctx, struct ib_mad *mad)
 {
 	struct mlx4_ib_dev *dev = ctx->dev;
 	struct ib_ah_attr	ah_attr;
+<<<<<<< HEAD
 
 	spin_lock(&dev->sm_lock);
 	if (!dev->sm_ah[ctx->port - 1]) {
@@ -217,6 +229,21 @@ static int send_mad_to_wire(struct mlx4_ib_demux_ctx *ctx, struct ib_mad *mad)
 	spin_unlock(&dev->sm_lock);
 	return mlx4_ib_send_to_wire(dev, mlx4_master_func_num(dev->dev), ctx->port,
 				    IB_QPT_GSI, 0, 1, IB_QP1_QKEY, &ah_attr, mad);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&dev->sm_lock, flags);
+	if (!dev->sm_ah[ctx->port - 1]) {
+		/* port is not yet Active, sm_ah not ready */
+		spin_unlock_irqrestore(&dev->sm_lock, flags);
+		return -EAGAIN;
+	}
+	mlx4_ib_query_ah(dev->sm_ah[ctx->port - 1], &ah_attr);
+	spin_unlock_irqrestore(&dev->sm_lock, flags);
+	return mlx4_ib_send_to_wire(dev, mlx4_master_func_num(dev->dev),
+				    ctx->port, IB_QPT_GSI, 0, 1, IB_QP1_QKEY,
+				    &ah_attr, NULL, 0xffff, mad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int send_mad_to_slave(int slave, struct mlx4_ib_demux_ctx *ctx,
@@ -741,6 +768,7 @@ static struct mcast_group *search_relocate_mgid0_group(struct mlx4_ib_demux_ctx 
 						       __be64 tid,
 						       union ib_gid *new_mgid)
 {
+<<<<<<< HEAD
 	struct mcast_group *group = NULL, *cur_group;
 	struct mcast_req *req;
 	struct list_head *pos;
@@ -749,6 +777,13 @@ static struct mcast_group *search_relocate_mgid0_group(struct mlx4_ib_demux_ctx 
 	mutex_lock(&ctx->mcg_table_lock);
 	list_for_each_safe(pos, n, &ctx->mcg_mgid0_list) {
 		group = list_entry(pos, struct mcast_group, mgid0_list);
+=======
+	struct mcast_group *group = NULL, *cur_group, *n;
+	struct mcast_req *req;
+
+	mutex_lock(&ctx->mcg_table_lock);
+	list_for_each_entry_safe(group, n, &ctx->mcg_mgid0_list, mgid0_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_lock(&group->lock);
 		if (group->last_req_tid == tid) {
 			if (memcmp(new_mgid, &mgid0, sizeof mgid0)) {
@@ -960,8 +995,13 @@ int mlx4_ib_mcg_multiplex_handler(struct ib_device *ibdev, int port,
 		mutex_lock(&group->lock);
 		if (group->func[slave].num_pend_reqs > MAX_PEND_REQS_PER_FUNC) {
 			mutex_unlock(&group->lock);
+<<<<<<< HEAD
 			mcg_warn_group(group, "Port %d, Func %d has too many pending requests (%d), dropping\n",
 				       port, slave, MAX_PEND_REQS_PER_FUNC);
+=======
+			mcg_debug_group(group, "Port %d, Func %d has too many pending requests (%d), dropping\n",
+					port, slave, MAX_PEND_REQS_PER_FUNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			release_group(group, 0);
 			kfree(req);
 			return -ENOMEM;
@@ -1042,7 +1082,11 @@ int mlx4_ib_mcg_port_init(struct mlx4_ib_demux_ctx *ctx)
 
 	atomic_set(&ctx->tid, 0);
 	sprintf(name, "mlx4_ib_mcg%d", ctx->port);
+<<<<<<< HEAD
 	ctx->mcg_wq = create_singlethread_workqueue(name);
+=======
+	ctx->mcg_wq = alloc_ordered_workqueue(name, WQ_MEM_RECLAIM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ctx->mcg_wq)
 		return -ENOMEM;
 
@@ -1099,7 +1143,12 @@ static void _mlx4_ib_mcg_port_cleanup(struct mlx4_ib_demux_ctx *ctx, int destroy
 	while ((p = rb_first(&ctx->mcg_table)) != NULL) {
 		group = rb_entry(p, struct mcast_group, node);
 		if (atomic_read(&group->refcount))
+<<<<<<< HEAD
 			mcg_warn_group(group, "group refcount %d!!! (pointer %p)\n", atomic_read(&group->refcount), group);
+=======
+			mcg_debug_group(group, "group refcount %d!!! (pointer %p)\n",
+					atomic_read(&group->refcount), group);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		force_clean_group(group);
 	}
@@ -1243,7 +1292,11 @@ void clean_vf_mcast(struct mlx4_ib_demux_ctx *ctx, int slave)
 
 int mlx4_ib_mcg_init(void)
 {
+<<<<<<< HEAD
 	clean_wq = create_singlethread_workqueue("mlx4_ib_mcg");
+=======
+	clean_wq = alloc_ordered_workqueue("mlx4_ib_mcg", WQ_MEM_RECLAIM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!clean_wq)
 		return -ENOMEM;
 

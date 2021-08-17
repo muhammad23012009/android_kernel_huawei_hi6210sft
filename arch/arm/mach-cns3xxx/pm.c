@@ -73,7 +73,10 @@ static void cns3xxx_pwr_soft_rst_force(unsigned int block)
 
 	__raw_writel(reg, PM_SOFT_RST_REG);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(cns3xxx_pwr_soft_rst_force);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void cns3xxx_pwr_soft_rst(unsigned int block)
 {
@@ -89,7 +92,11 @@ void cns3xxx_pwr_soft_rst(unsigned int block)
 }
 EXPORT_SYMBOL(cns3xxx_pwr_soft_rst);
 
+<<<<<<< HEAD
 void cns3xxx_restart(char mode, const char *cmd)
+=======
+void cns3xxx_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * To reset, we hit the on-board reset register

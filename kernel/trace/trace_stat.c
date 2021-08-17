@@ -12,7 +12,11 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/rbtree.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+#include <linux/tracefs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "trace_stat.h"
 #include "trace.h"
 
@@ -43,6 +47,7 @@ static DEFINE_MUTEX(all_stat_sessions_mutex);
 /* The root directory for all stat files */
 static struct dentry		*stat_dir;
 
+<<<<<<< HEAD
 /*
  * Iterate through the rbtree using a post order traversal path
  * to release the next node.
@@ -83,6 +88,17 @@ static void __reset_stat_session(struct stat_session *session)
 
 	while (node)
 		node = release_next(session->ts, node);
+=======
+static void __reset_stat_session(struct stat_session *session)
+{
+	struct stat_node *snode, *n;
+
+	rbtree_postorder_for_each_entry_safe(snode, n, &session->stat_root, node) {
+		if (session->ts->stat_release)
+			session->ts->stat_release(snode->stat);
+		kfree(snode);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	session->stat_root = RB_ROOT;
 }
@@ -96,7 +112,11 @@ static void reset_stat_session(struct stat_session *session)
 
 static void destroy_session(struct stat_session *session)
 {
+<<<<<<< HEAD
 	debugfs_remove(session->file);
+=======
+	tracefs_remove(session->file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__reset_stat_session(session);
 	mutex_destroy(&session->stat_mutex);
 	kfree(session);
@@ -307,6 +327,7 @@ static int tracing_stat_init(void)
 	struct dentry *d_tracing;
 
 	d_tracing = tracing_init_dentry();
+<<<<<<< HEAD
 	if (!d_tracing)
 		return 0;
 
@@ -314,15 +335,34 @@ static int tracing_stat_init(void)
 	if (!stat_dir)
 		pr_warning("Could not create debugfs "
 			   "'trace_stat' entry\n");
+=======
+	if (IS_ERR(d_tracing))
+		return -ENODEV;
+
+	stat_dir = tracefs_create_dir("trace_stat", d_tracing);
+	if (!stat_dir) {
+		pr_warn("Could not create tracefs 'trace_stat' entry\n");
+		return -ENOMEM;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int init_stat_file(struct stat_session *session)
 {
+<<<<<<< HEAD
 	if (!stat_dir && tracing_stat_init())
 		return -ENODEV;
 
 	session->file = debugfs_create_file(session->ts->name, 0644,
+=======
+	int ret;
+
+	if (!stat_dir && (ret = tracing_stat_init()))
+		return ret;
+
+	session->file = tracefs_create_file(session->ts->name, 0644,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    stat_dir,
 					    session, &tracing_stat_fops);
 	if (!session->file)
@@ -333,7 +373,11 @@ static int init_stat_file(struct stat_session *session)
 int register_stat_tracer(struct tracer_stat *trace)
 {
 	struct stat_session *session, *node;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!trace)
 		return -EINVAL;
@@ -344,6 +388,7 @@ int register_stat_tracer(struct tracer_stat *trace)
 	/* Already registered? */
 	mutex_lock(&all_stat_sessions_mutex);
 	list_for_each_entry(node, &all_stat_sessions, session_list) {
+<<<<<<< HEAD
 		if (node->ts == trace) {
 			mutex_unlock(&all_stat_sessions_mutex);
 			return -EINVAL;
@@ -355,6 +400,17 @@ int register_stat_tracer(struct tracer_stat *trace)
 	session = kzalloc(sizeof(*session), GFP_KERNEL);
 	if (!session)
 		return -ENOMEM;
+=======
+		if (node->ts == trace)
+			goto out;
+	}
+
+	ret = -ENOMEM;
+	/* Init the session */
+	session = kzalloc(sizeof(*session), GFP_KERNEL);
+	if (!session)
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	session->ts = trace;
 	INIT_LIST_HEAD(&session->session_list);
@@ -363,6 +419,7 @@ int register_stat_tracer(struct tracer_stat *trace)
 	ret = init_stat_file(session);
 	if (ret) {
 		destroy_session(session);
+<<<<<<< HEAD
 		return ret;
 	}
 
@@ -372,6 +429,18 @@ int register_stat_tracer(struct tracer_stat *trace)
 	mutex_unlock(&all_stat_sessions_mutex);
 
 	return 0;
+=======
+		goto out;
+	}
+
+	ret = 0;
+	/* Register */
+	list_add_tail(&session->session_list, &all_stat_sessions);
+ out:
+	mutex_unlock(&all_stat_sessions_mutex);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void unregister_stat_tracer(struct tracer_stat *trace)

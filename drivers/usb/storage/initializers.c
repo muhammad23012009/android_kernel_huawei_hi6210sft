@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Special Initializers for certain USB Mass Storage devices
+=======
+/*
+ * Special Initializers for certain USB Mass Storage devices
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Current development and maintenance by:
  *   (c) 1999, 2000 Matthew Dharm (mdharm-usb@one-eyed-alien.net)
@@ -42,24 +47,44 @@
 #include "debug.h"
 #include "transport.h"
 
+<<<<<<< HEAD
 /* This places the Shuttle/SCM USB<->SCSI bridge devices in multi-target
  * mode */
+=======
+/*
+ * This places the Shuttle/SCM USB<->SCSI bridge devices in multi-target
+ * mode
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int usb_stor_euscsi_init(struct us_data *us)
 {
 	int result;
 
 	usb_stor_dbg(us, "Attempting to init eUSCSI bridge...\n");
+<<<<<<< HEAD
 	us->iobuf[0] = 0x1;
 	result = usb_stor_control_msg(us, us->send_ctrl_pipe,
 			0x0C, USB_RECIP_INTERFACE | USB_TYPE_VENDOR,
 			0x01, 0x0, us->iobuf, 0x1, 5000);
+=======
+	result = usb_stor_control_msg(us, us->send_ctrl_pipe,
+			0x0C, USB_RECIP_INTERFACE | USB_TYPE_VENDOR,
+			0x01, 0x0, NULL, 0x0, 5 * HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_stor_dbg(us, "-- result is %d\n", result);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /* This function is required to activate all four slots on the UCR-61S2B
  * flash reader */
+=======
+/*
+ * This function is required to activate all four slots on the UCR-61S2B
+ * flash reader
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int usb_stor_ucr61s2b_init(struct us_data *us)
 {
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap*) us->iobuf;
@@ -100,7 +125,11 @@ int usb_stor_huawei_e220_init(struct us_data *us)
 	result = usb_stor_control_msg(us, us->send_ctrl_pipe,
 				      USB_REQ_SET_FEATURE,
 				      USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+<<<<<<< HEAD
 				      0x01, 0x0, NULL, 0x0, 1000);
+=======
+				      0x01, 0x0, NULL, 0x0, 1 * HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_stor_dbg(us, "Huawei mode set result is %d\n", result);
 	return 0;
 }

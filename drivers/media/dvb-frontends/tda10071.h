@@ -21,6 +21,7 @@
 #ifndef TDA10071_H
 #define TDA10071_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 #include <linux/dvb/frontend.h>
 
@@ -83,5 +84,37 @@ static inline struct dvb_frontend *tda10071_attach(
 	return NULL;
 }
 #endif
+=======
+#include <linux/dvb/frontend.h>
+
+/*
+ * I2C address
+ * 0x05, 0x55,
+ */
+
+/**
+ * struct tda10071_platform_data - Platform data for the tda10071 driver
+ * @clk: Clock frequency.
+ * @i2c_wr_max: Max bytes I2C adapter can write at once.
+ * @ts_mode: TS mode.
+ * @spec_inv: Input spectrum inversion.
+ * @pll_multiplier: PLL multiplier.
+ * @tuner_i2c_addr: CX24118A tuner I2C address (0x14, 0x54, ...).
+ * @get_dvb_frontend: Get DVB frontend.
+ */
+
+struct tda10071_platform_data {
+	u32 clk;
+	u16 i2c_wr_max;
+#define TDA10071_TS_SERIAL        0
+#define TDA10071_TS_PARALLEL      1
+	u8 ts_mode;
+	bool spec_inv;
+	u8 pll_multiplier;
+	u8 tuner_i2c_addr;
+
+	struct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* TDA10071_H */

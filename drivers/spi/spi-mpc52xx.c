@@ -12,7 +12,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/of_platform.h>
 #include <linux/interrupt.h>
@@ -235,7 +238,12 @@ static int mpc52xx_spi_fsmstate_transfer(int irq, struct mpc52xx_spi *ms,
 		dev_err(&ms->master->dev, "mode fault\n");
 		mpc52xx_spi_chipsel(ms, 0);
 		ms->message->status = -EIO;
+<<<<<<< HEAD
 		ms->message->complete(ms->message->context);
+=======
+		if (ms->message->complete)
+			ms->message->complete(ms->message->context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ms->state = mpc52xx_spi_fsmstate_idle;
 		return FSM_CONTINUE;
 	}
@@ -289,7 +297,12 @@ mpc52xx_spi_fsmstate_wait(int irq, struct mpc52xx_spi *ms, u8 status, u8 data)
 		ms->msg_count++;
 		mpc52xx_spi_chipsel(ms, 0);
 		ms->message->status = 0;
+<<<<<<< HEAD
 		ms->message->complete(ms->message->context);
+=======
+		if (ms->message->complete)
+			ms->message->complete(ms->message->context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ms->state = mpc52xx_spi_fsmstate_idle;
 		return FSM_CONTINUE;
 	}
@@ -357,6 +370,7 @@ static void mpc52xx_spi_wq(struct work_struct *work)
  * spi_master ops
  */
 
+<<<<<<< HEAD
 static int mpc52xx_spi_setup(struct spi_device *spi)
 {
 	if (spi->bits_per_word % 8)
@@ -371,6 +385,8 @@ static int mpc52xx_spi_setup(struct spi_device *spi)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mpc52xx_spi_transfer(struct spi_device *spi, struct spi_message *m)
 {
 	struct mpc52xx_spi *ms = spi_master_get_devdata(spi->master);
@@ -433,12 +449,21 @@ static int mpc52xx_spi_probe(struct platform_device *op)
 		goto err_alloc;
 	}
 
+<<<<<<< HEAD
 	master->setup = mpc52xx_spi_setup;
 	master->transfer = mpc52xx_spi_transfer;
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_LSB_FIRST;
 	master->dev.of_node = op->dev.of_node;
 
 	dev_set_drvdata(&op->dev, master);
+=======
+	master->transfer = mpc52xx_spi_transfer;
+	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_LSB_FIRST;
+	master->bits_per_word_mask = SPI_BPW_MASK(8);
+	master->dev.of_node = op->dev.of_node;
+
+	platform_set_drvdata(op, master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ms = spi_master_get_devdata(master);
 	ms->master = master;
@@ -529,7 +554,11 @@ static int mpc52xx_spi_probe(struct platform_device *op)
 
 static int mpc52xx_spi_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct spi_master *master = spi_master_get(dev_get_drvdata(&op->dev));
+=======
+	struct spi_master *master = spi_master_get(platform_get_drvdata(op));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mpc52xx_spi *ms = spi_master_get_devdata(master);
 	int i;
 
@@ -556,7 +585,10 @@ MODULE_DEVICE_TABLE(of, mpc52xx_spi_match);
 static struct platform_driver mpc52xx_spi_of_driver = {
 	.driver = {
 		.name = "mpc52xx-spi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mpc52xx_spi_match,
 	},
 	.probe = mpc52xx_spi_probe,

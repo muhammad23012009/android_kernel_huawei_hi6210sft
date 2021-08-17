@@ -16,7 +16,11 @@
 struct task_struct;
 struct thread_struct;
 
+<<<<<<< HEAD
 #if !defined(CONFIG_LAZY_SAVE_FPU)
+=======
+#if defined(CONFIG_FPU) && !defined(CONFIG_LAZY_SAVE_FPU)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct fpu_state_struct;
 extern asmlinkage void fpu_save(struct fpu_state_struct *);
 #define switch_fpu(prev, next)						\

@@ -54,10 +54,18 @@
  */
 #ifdef CONFIG_SUN3
 #define PTRS_PER_PTE   16
+<<<<<<< HEAD
+=======
+#define __PAGETABLE_PMD_FOLDED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PTRS_PER_PMD   1
 #define PTRS_PER_PGD   2048
 #elif defined(CONFIG_COLDFIRE)
 #define PTRS_PER_PTE	512
+<<<<<<< HEAD
+=======
+#define __PAGETABLE_PMD_FOLDED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PTRS_PER_PMD	1
 #define PTRS_PER_PGD	1024
 #else
@@ -66,7 +74,11 @@
 #define PTRS_PER_PGD	128
 #endif
 #define USER_PTRS_PER_PGD	(TASK_SIZE/PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Virtual address region for use by kernel_map() */
 #ifdef CONFIG_SUN3
@@ -135,9 +147,12 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 
 #define kern_addr_valid(addr)	(1)
 
+<<<<<<< HEAD
 #define io_remap_pfn_range(vma, vaddr, pfn, size, prot)		\
 		remap_pfn_range(vma, vaddr, pfn, size, prot)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* MMU-specific headers */
 
 #ifdef CONFIG_SUN3

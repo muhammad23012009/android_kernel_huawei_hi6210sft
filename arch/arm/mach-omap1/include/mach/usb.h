@@ -8,6 +8,7 @@
 #define	is_usb0_device(config)	0
 #endif
 
+<<<<<<< HEAD
 struct omap_usb_config {
 	/* Configure drivers according to the connectors on your board:
 	 *  - "A" connector (rectagular)
@@ -49,6 +50,13 @@ struct omap_usb_config {
 void omap_otg_init(struct omap_usb_config *config);
 
 #if defined(CONFIG_USB) || defined(CONFIG_USB_MODULE)
+=======
+#include <linux/platform_data/usb-omap1.h>
+
+void omap_otg_init(struct omap_usb_config *config);
+
+#if IS_ENABLED(CONFIG_USB)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void omap1_usb_init(struct omap_usb_config *pdata);
 #else
 static inline void omap1_usb_init(struct omap_usb_config *pdata)

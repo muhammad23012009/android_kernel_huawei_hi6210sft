@@ -16,6 +16,10 @@
 #include <linux/spinlock.h>
 #include <linux/mutex.h>
 #include <linux/io.h>		/* for inb_p, outb_p, inb, outb, etc... */
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum var_type_t {
 	VAR_NUM = 0,
@@ -39,10 +43,17 @@ enum var_id_t {
 	DELIM, REPEATS, EXNUMBER,
 	DELAY, TRIGGER, JIFFY, FULL, /* all timers must be together */
 	BLEEP_TIME, CURSOR_TIME, BELL_POS,
+<<<<<<< HEAD
 SAY_CONTROL, SAY_WORD_CTL, NO_INTERRUPT, KEY_ECHO,
 	SPELL_DELAY, PUNC_LEVEL, READING_PUNC,
 	ATTRIB_BLEEP, BLEEPS,
  RATE, PITCH, VOL, TONE, PUNCT, VOICE, FREQUENCY, LANG, DIRECT,
+=======
+	SAY_CONTROL, SAY_WORD_CTL, NO_INTERRUPT, KEY_ECHO,
+	SPELL_DELAY, PUNC_LEVEL, READING_PUNC,
+	ATTRIB_BLEEP, BLEEPS,
+	RATE, PITCH, VOL, TONE, PUNCT, VOICE, FREQUENCY, LANG, DIRECT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CAPS_START, CAPS_STOP, CHARTAB,
 	MAXVARS
 };
@@ -167,7 +178,12 @@ struct spk_synth {
 	int *default_vol;
 	int (*probe)(struct spk_synth *synth);
 	void (*release)(void);
+<<<<<<< HEAD
 	const char *(*synth_immediate)(struct spk_synth *synth, const char *buff);
+=======
+	const char *(*synth_immediate)(struct spk_synth *synth,
+					const char *buff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*catch_up)(struct spk_synth *synth);
 	void (*flush)(struct spk_synth *synth);
 	int (*is_alive)(struct spk_synth *synth);
@@ -179,6 +195,19 @@ struct spk_synth {
 	struct attribute_group attributes;
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * module_spk_synth() - Helper macro for registering a speakup driver
+ * @__spk_synth: spk_synth struct
+ * Helper macro for speakup drivers which do not do anything special in module
+ * init/exit. This eliminates a lot of boilerplate. Each module may only
+ * use this macro once, and calling it replaces module_init() and module_exit()
+ */
+#define module_spk_synth(__spk_synth) \
+	module_driver(__spk_synth, synth_add, synth_remove)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct speakup_info_t {
 	spinlock_t spinlock;
 	int port_tts;

@@ -215,7 +215,11 @@ static struct miscdevice geodewdt_miscdev = {
 	.fops = &geodewdt_fops,
 };
 
+<<<<<<< HEAD
 static int geodewdt_probe(struct platform_device *dev)
+=======
+static int __init geodewdt_probe(struct platform_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 
@@ -255,11 +259,17 @@ static void geodewdt_shutdown(struct platform_device *dev)
 }
 
 static struct platform_driver geodewdt_driver = {
+<<<<<<< HEAD
 	.probe		= geodewdt_probe,
 	.remove		= geodewdt_remove,
 	.shutdown	= geodewdt_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.remove		= geodewdt_remove,
+	.shutdown	= geodewdt_shutdown,
+	.driver		= {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= DRV_NAME,
 	},
 };
@@ -268,6 +278,7 @@ static int __init geodewdt_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = platform_driver_register(&geodewdt_driver);
 	if (ret)
 		return ret;
@@ -282,6 +293,20 @@ static int __init geodewdt_init(void)
 	return 0;
 err:
 	platform_driver_unregister(&geodewdt_driver);
+=======
+	geodewdt_platform_device = platform_device_register_simple(DRV_NAME,
+								-1, NULL, 0);
+	if (IS_ERR(geodewdt_platform_device))
+		return PTR_ERR(geodewdt_platform_device);
+
+	ret = platform_driver_probe(&geodewdt_driver, geodewdt_probe);
+	if (ret)
+		goto err;
+
+	return 0;
+err:
+	platform_device_unregister(geodewdt_platform_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -297,4 +322,7 @@ module_exit(geodewdt_exit);
 MODULE_AUTHOR("Advanced Micro Devices, Inc");
 MODULE_DESCRIPTION("Geode GX/LX Watchdog Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

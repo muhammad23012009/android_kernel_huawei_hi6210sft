@@ -26,16 +26,26 @@
 
 #include "vnic_dev.h"
 #include "vnic_wq.h"
+<<<<<<< HEAD
+=======
+#include "enic.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int vnic_wq_alloc_bufs(struct vnic_wq *wq)
 {
 	struct vnic_wq_buf *buf;
+<<<<<<< HEAD
 	struct vnic_dev *vdev;
 	unsigned int i, j, count = wq->ring.desc_count;
 	unsigned int blks = VNIC_WQ_BUF_BLKS_NEEDED(count);
 
 	vdev = wq->vdev;
 
+=======
+	unsigned int i, j, count = wq->ring.desc_count;
+	unsigned int blks = VNIC_WQ_BUF_BLKS_NEEDED(count);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < blks; i++) {
 		wq->bufs[i] = kzalloc(VNIC_WQ_BUF_BLK_SZ(count), GFP_ATOMIC);
 		if (!wq->bufs[i])
@@ -50,11 +60,22 @@ static int vnic_wq_alloc_bufs(struct vnic_wq *wq)
 				wq->ring.desc_size * buf->index;
 			if (buf->index + 1 == count) {
 				buf->next = wq->bufs[0];
+<<<<<<< HEAD
 				break;
 			} else if (j + 1 == VNIC_WQ_BUF_BLK_ENTRIES(count)) {
 				buf->next = wq->bufs[i + 1];
 			} else {
 				buf->next = buf + 1;
+=======
+				buf->next->prev = buf;
+				break;
+			} else if (j + 1 == VNIC_WQ_BUF_BLK_ENTRIES(count)) {
+				buf->next = wq->bufs[i + 1];
+				buf->next->prev = buf;
+			} else {
+				buf->next = buf + 1;
+				buf->next->prev = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				buf++;
 			}
 		}
@@ -94,7 +115,11 @@ int vnic_wq_alloc(struct vnic_dev *vdev, struct vnic_wq *wq, unsigned int index,
 
 	wq->ctrl = vnic_dev_get_res(vdev, RES_TYPE_WQ, index);
 	if (!wq->ctrl) {
+<<<<<<< HEAD
 		pr_err("Failed to hook WQ[%d] resource\n", index);
+=======
+		vdev_err(vdev, "Failed to hook WQ[%d] resource\n", index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -113,10 +138,34 @@ int vnic_wq_alloc(struct vnic_dev *vdev, struct vnic_wq *wq, unsigned int index,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void vnic_wq_init_start(struct vnic_wq *wq, unsigned int cq_index,
 	unsigned int fetch_index, unsigned int posted_index,
 	unsigned int error_interrupt_enable,
 	unsigned int error_interrupt_offset)
+=======
+int enic_wq_devcmd2_alloc(struct vnic_dev *vdev, struct vnic_wq *wq,
+			  unsigned int desc_count, unsigned int desc_size)
+{
+	int err;
+
+	wq->index = 0;
+	wq->vdev = vdev;
+
+	wq->ctrl = vnic_dev_get_res(vdev, RES_TYPE_DEVCMD2, 0);
+	if (!wq->ctrl)
+		return -EINVAL;
+	vnic_wq_disable(wq);
+	err = vnic_dev_alloc_desc_ring(vdev, &wq->ring, desc_count, desc_size);
+
+	return err;
+}
+
+void enic_wq_init_start(struct vnic_wq *wq, unsigned int cq_index,
+			unsigned int fetch_index, unsigned int posted_index,
+			unsigned int error_interrupt_enable,
+			unsigned int error_interrupt_offset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u64 paddr;
 	unsigned int count = wq->ring.desc_count;
@@ -140,7 +189,11 @@ void vnic_wq_init(struct vnic_wq *wq, unsigned int cq_index,
 	unsigned int error_interrupt_enable,
 	unsigned int error_interrupt_offset)
 {
+<<<<<<< HEAD
 	vnic_wq_init_start(wq, cq_index, 0, 0,
+=======
+	enic_wq_init_start(wq, cq_index, 0, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error_interrupt_enable,
 		error_interrupt_offset);
 }
@@ -158,6 +211,10 @@ void vnic_wq_enable(struct vnic_wq *wq)
 int vnic_wq_disable(struct vnic_wq *wq)
 {
 	unsigned int wait;
+<<<<<<< HEAD
+=======
+	struct vnic_dev *vdev = wq->vdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iowrite32(0, &wq->ctrl->enable);
 
@@ -168,7 +225,11 @@ int vnic_wq_disable(struct vnic_wq *wq)
 		udelay(10);
 	}
 
+<<<<<<< HEAD
 	pr_err("Failed to disable WQ[%d]\n", wq->index);
+=======
+	vdev_neterr(vdev, "Failed to disable WQ[%d]\n", wq->index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return -ETIMEDOUT;
 }

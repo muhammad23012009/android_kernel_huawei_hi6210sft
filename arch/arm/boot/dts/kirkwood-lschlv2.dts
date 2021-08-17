@@ -1,6 +1,10 @@
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "kirkwood-lsxl.dtsi"
+=======
+#include "kirkwood-lsxl.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Buffalo Linkstation LS-CHLv2";

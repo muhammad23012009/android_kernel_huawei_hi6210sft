@@ -6,9 +6,15 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <asm/linkage.h>
 
 ARC_ENTRY memcpy
+=======
+#include <linux/linkage.h>
+
+ENTRY_CFI(memcpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	or	r3,r0,r1
 	asl_s	r3,r3,30
 	mov_s	r5,r0
@@ -63,4 +69,8 @@ ARC_ENTRY memcpy
 .Lendbloop:
 	j_s.d	[blink]
 	stb	r12,[r5,0]
+<<<<<<< HEAD
 ARC_EXIT memcpy
+=======
+END_CFI(memcpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

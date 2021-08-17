@@ -40,8 +40,13 @@ struct ad1836_priv {
  */
 static const char *ad1836_deemp[] = {"None", "44.1kHz", "32kHz", "48kHz"};
 
+<<<<<<< HEAD
 static const struct soc_enum ad1836_deemp_enum =
 	SOC_ENUM_SINGLE(AD1836_DAC_CTRL1, 8, 4, ad1836_deemp);
+=======
+static SOC_ENUM_SINGLE_DECL(ad1836_deemp_enum,
+			    AD1836_DAC_CTRL1, 8, ad1836_deemp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define AD1836_DAC_VOLUME(x) \
 	SOC_DOUBLE_R("DAC" #x " Playback Volume", AD1836_DAC_L_VOL(x), \
@@ -168,6 +173,7 @@ static int ad1836_hw_params(struct snd_pcm_substream *substream,
 	int word_len = 0;
 
 	/* bit size */
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		word_len = AD1836_WORD_LEN_16;
@@ -179,6 +185,21 @@ static int ad1836_hw_params(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_FORMAT_S32_LE:
 		word_len = AD1836_WORD_LEN_24;
 		break;
+=======
+	switch (params_width(params)) {
+	case 16:
+		word_len = AD1836_WORD_LEN_16;
+		break;
+	case 20:
+		word_len = AD1836_WORD_LEN_20;
+		break;
+	case 24:
+	case 32:
+		word_len = AD1836_WORD_LEN_24;
+		break;
+	default:
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	regmap_update_bits(ad1836->regmap, AD1836_DAC_CTRL1,
@@ -249,7 +270,11 @@ static int ad1836_resume(struct snd_soc_codec *codec)
 static int ad1836_probe(struct snd_soc_codec *codec)
 {
 	struct ad1836_priv *ad1836 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int num_dacs, num_adcs;
 	int ret = 0;
 	int i;
@@ -325,12 +350,23 @@ static struct snd_soc_codec_driver soc_codec_dev_ad1836 = {
 	.suspend = ad1836_suspend,
 	.resume = ad1836_resume,
 
+<<<<<<< HEAD
 	.controls = ad183x_controls,
 	.num_controls = ARRAY_SIZE(ad183x_controls),
 	.dapm_widgets = ad183x_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(ad183x_dapm_widgets),
 	.dapm_routes = ad183x_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(ad183x_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= ad183x_controls,
+		.num_controls		= ARRAY_SIZE(ad183x_controls),
+		.dapm_widgets		= ad183x_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(ad183x_dapm_widgets),
+		.dapm_routes		= ad183x_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(ad183x_dapm_routes),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct reg_default ad1836_reg_defaults[] = {
@@ -402,7 +438,10 @@ MODULE_DEVICE_TABLE(spi, ad1836_ids);
 static struct spi_driver ad1836_spi_driver = {
 	.driver = {
 		.name	= "ad1836",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= ad1836_spi_probe,
 	.remove		= ad1836_spi_remove,

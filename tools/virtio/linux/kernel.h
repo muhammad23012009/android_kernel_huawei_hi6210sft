@@ -8,6 +8,10 @@
 #include <assert.h>
 #include <stdarg.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/printk.h>
 #include <linux/bug.h>
@@ -19,9 +23,18 @@
 
 #define PAGE_SIZE getpagesize()
 #define PAGE_MASK (~(PAGE_SIZE-1))
+<<<<<<< HEAD
 
 typedef unsigned long long dma_addr_t;
 typedef size_t __kernel_size_t;
+=======
+#define PAGE_ALIGN(x) ((x + PAGE_SIZE - 1) & PAGE_MASK)
+
+typedef unsigned long long phys_addr_t;
+typedef unsigned long long dma_addr_t;
+typedef size_t __kernel_size_t;
+typedef unsigned int __wsum;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct page {
 	unsigned long long dummy;
@@ -38,6 +51,7 @@ struct page {
 
 #define __printf(a,b) __attribute__((format(printf,a,b)))
 
+<<<<<<< HEAD
 typedef enum {
 	GFP_KERNEL,
 	GFP_ATOMIC,
@@ -45,6 +59,8 @@ typedef enum {
 	__GFP_HIGH
 } gfp_t;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 
 extern void *__kmalloc_fake, *__kfree_ignore_start, *__kfree_ignore_end;
@@ -54,6 +70,21 @@ static inline void *kmalloc(size_t s, gfp_t gfp)
 		return __kmalloc_fake;
 	return malloc(s);
 }
+<<<<<<< HEAD
+=======
+static inline void *kzalloc(size_t s, gfp_t gfp)
+{
+	void *p = kmalloc(s, gfp);
+
+	memset(p, 0, s);
+	return p;
+}
+
+static inline void *alloc_pages_exact(size_t s, gfp_t gfp)
+{
+	return kmalloc(s, gfp);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void kfree(void *p)
 {
@@ -62,6 +93,14 @@ static inline void kfree(void *p)
 	free(p);
 }
 
+<<<<<<< HEAD
+=======
+static inline void free_pages_exact(void *p, size_t s)
+{
+	kfree(p);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void *krealloc(void *p, size_t s, gfp_t gfp)
 {
 	return realloc(p, s);
@@ -103,10 +142,24 @@ static inline void free_page(unsigned long addr)
 #define dev_err(dev, format, ...) fprintf (stderr, format, ## __VA_ARGS__)
 #define dev_warn(dev, format, ...) fprintf (stderr, format, ## __VA_ARGS__)
 
+<<<<<<< HEAD
+=======
+#define WARN_ON_ONCE(cond) ((cond) && fprintf (stderr, "WARNING\n"))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define min(x, y) ({				\
 	typeof(x) _min1 = (x);			\
 	typeof(y) _min2 = (y);			\
 	(void) (&_min1 == &_min2);		\
 	_min1 < _min2 ? _min1 : _min2; })
 
+<<<<<<< HEAD
+=======
+/* TODO: empty stubs for now. Broken but enough for virtio_ring.c */
+#define list_add_tail(a, b) do {} while (0)
+#define list_del(a) do {} while (0)
+#define list_for_each_entry(a, b, c) while (0)
+/* end of stubs */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* KERNEL_H */

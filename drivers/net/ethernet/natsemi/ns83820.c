@@ -22,8 +22,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *
  * ChangeLog
@@ -135,7 +139,11 @@ static int lnksts = 0;		/* CFG_LNKSTS bit polarity */
 
 /* tunables */
 #define RX_BUF_SIZE	1500	/* 8192 */
+<<<<<<< HEAD
 #if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
+=======
+#if IS_ENABLED(CONFIG_VLAN_8021Q)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NS83820_VLAN_ACCEL_SUPPORT
 #endif
 
@@ -1123,12 +1131,20 @@ again:
 	}
 
 #ifdef NS83820_VLAN_ACCEL_SUPPORT
+<<<<<<< HEAD
 	if(vlan_tx_tag_present(skb)) {
+=======
+	if (skb_vlan_tag_present(skb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* fetch the vlan tag info out of the
 		 * ancillary data if the vlan code
 		 * is using hw vlan acceleration
 		 */
+<<<<<<< HEAD
 		short tag = vlan_tx_tag_get(skb);
+=======
+		short tag = skb_vlan_tag_get(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		extsts |= (EXTSTS_VPKT | htons(tag));
 	}
 #endif
@@ -2031,7 +2047,11 @@ static int ns83820_init_one(struct pci_dev *pci_dev,
 		pci_dev->subsystem_vendor, pci_dev->subsystem_device);
 
 	ndev->netdev_ops = &netdev_ops;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(ndev, &ops);
+=======
+	ndev->ethtool_ops = &ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ndev->watchdog_timeo = 5 * HZ;
 	pci_set_drvdata(pci_dev, ndev);
 
@@ -2236,7 +2256,10 @@ out_disable:
 	pci_disable_device(pci_dev);
 out_free:
 	free_netdev(ndev);
+<<<<<<< HEAD
 	pci_set_drvdata(pci_dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return err;
 }
@@ -2260,10 +2283,16 @@ static void ns83820_remove_one(struct pci_dev *pci_dev)
 			dev->rx_info.descs, dev->rx_info.phy_descs);
 	pci_disable_device(dev->pci_dev);
 	free_netdev(ndev);
+<<<<<<< HEAD
 	pci_set_drvdata(pci_dev, NULL);
 }
 
 static DEFINE_PCI_DEVICE_TABLE(ns83820_pci_tbl) = {
+=======
+}
+
+static const struct pci_device_id ns83820_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x100b, 0x0022, PCI_ANY_ID, PCI_ANY_ID, 0, .driver_data = 0, },
 	{ 0, },
 };

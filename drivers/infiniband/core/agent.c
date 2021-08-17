@@ -54,7 +54,11 @@ static DEFINE_SPINLOCK(ib_agent_port_list_lock);
 static LIST_HEAD(ib_agent_port_list);
 
 static struct ib_agent_port_private *
+<<<<<<< HEAD
 __ib_get_agent_port(struct ib_device *device, int port_num)
+=======
+__ib_get_agent_port(const struct ib_device *device, int port_num)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ib_agent_port_private *entry;
 
@@ -67,7 +71,11 @@ __ib_get_agent_port(struct ib_device *device, int port_num)
 }
 
 static struct ib_agent_port_private *
+<<<<<<< HEAD
 ib_get_agent_port(struct ib_device *device, int port_num)
+=======
+ib_get_agent_port(const struct ib_device *device, int port_num)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ib_agent_port_private *entry;
 	unsigned long flags;
@@ -78,9 +86,15 @@ ib_get_agent_port(struct ib_device *device, int port_num)
 	return entry;
 }
 
+<<<<<<< HEAD
 void agent_send_response(struct ib_mad *mad, struct ib_grh *grh,
 			 struct ib_wc *wc, struct ib_device *device,
 			 int port_num, int qpn)
+=======
+void agent_send_response(const struct ib_mad_hdr *mad_hdr, const struct ib_grh *grh,
+			 const struct ib_wc *wc, const struct ib_device *device,
+			 int port_num, int qpn, size_t resp_mad_len, bool opa)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ib_agent_port_private *port_priv;
 	struct ib_mad_agent *agent;
@@ -88,24 +102,37 @@ void agent_send_response(struct ib_mad *mad, struct ib_grh *grh,
 	struct ib_ah *ah;
 	struct ib_mad_send_wr_private *mad_send_wr;
 
+<<<<<<< HEAD
 	if (device->node_type == RDMA_NODE_IB_SWITCH)
+=======
+	if (rdma_cap_ib_switch(device))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port_priv = ib_get_agent_port(device, 0);
 	else
 		port_priv = ib_get_agent_port(device, port_num);
 
 	if (!port_priv) {
+<<<<<<< HEAD
 		printk(KERN_ERR SPFX "Unable to find port agent\n");
+=======
+		dev_err(&device->dev, "Unable to find port agent\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	agent = port_priv->agent[qpn];
 	ah = ib_create_ah_from_wc(agent->qp->pd, wc, grh, port_num);
 	if (IS_ERR(ah)) {
+<<<<<<< HEAD
 		printk(KERN_ERR SPFX "ib_create_ah_from_wc error %ld\n",
+=======
+		dev_err(&device->dev, "ib_create_ah_from_wc error %ld\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			PTR_ERR(ah));
 		return;
 	}
 
+<<<<<<< HEAD
 	send_buf = ib_create_send_mad(agent, wc->src_qp, wc->pkey_index, 0,
 				      IB_MGMT_MAD_HDR, IB_MGMT_MAD_DATA,
 				      GFP_KERNEL);
@@ -126,6 +153,33 @@ void agent_send_response(struct ib_mad *mad, struct ib_grh *grh,
 
 	if (ib_post_send_mad(send_buf, NULL)) {
 		printk(KERN_ERR SPFX "ib_post_send_mad error\n");
+=======
+	if (opa && mad_hdr->base_version != OPA_MGMT_BASE_VERSION)
+		resp_mad_len = IB_MGMT_MAD_SIZE;
+
+	send_buf = ib_create_send_mad(agent, wc->src_qp, wc->pkey_index, 0,
+				      IB_MGMT_MAD_HDR,
+				      resp_mad_len - IB_MGMT_MAD_HDR,
+				      GFP_KERNEL,
+				      mad_hdr->base_version);
+	if (IS_ERR(send_buf)) {
+		dev_err(&device->dev, "ib_create_send_mad error\n");
+		goto err1;
+	}
+
+	memcpy(send_buf->mad, mad_hdr, resp_mad_len);
+	send_buf->ah = ah;
+
+	if (rdma_cap_ib_switch(device)) {
+		mad_send_wr = container_of(send_buf,
+					   struct ib_mad_send_wr_private,
+					   send_buf);
+		mad_send_wr->send_wr.port_num = port_num;
+	}
+
+	if (ib_post_send_mad(send_buf, NULL)) {
+		dev_err(&device->dev, "ib_post_send_mad error\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err2;
 	}
 	return;
@@ -151,17 +205,29 @@ int ib_agent_port_open(struct ib_device *device, int port_num)
 	/* Create new device info */
 	port_priv = kzalloc(sizeof *port_priv, GFP_KERNEL);
 	if (!port_priv) {
+<<<<<<< HEAD
 		printk(KERN_ERR SPFX "No memory for ib_agent_port_private\n");
+=======
+		dev_err(&device->dev, "No memory for ib_agent_port_private\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 		goto error1;
 	}
 
+<<<<<<< HEAD
 	if (rdma_port_get_link_layer(device, port_num) == IB_LINK_LAYER_INFINIBAND) {
+=======
+	if (rdma_cap_ib_smi(device, port_num)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Obtain send only MAD agent for SMI QP */
 		port_priv->agent[0] = ib_register_mad_agent(device, port_num,
 							    IB_QPT_SMI, NULL, 0,
 							    &agent_send_handler,
+<<<<<<< HEAD
 							    NULL, NULL);
+=======
+							    NULL, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (IS_ERR(port_priv->agent[0])) {
 			ret = PTR_ERR(port_priv->agent[0]);
 			goto error2;
@@ -172,7 +238,11 @@ int ib_agent_port_open(struct ib_device *device, int port_num)
 	port_priv->agent[1] = ib_register_mad_agent(device, port_num,
 						    IB_QPT_GSI, NULL, 0,
 						    &agent_send_handler,
+<<<<<<< HEAD
 						    NULL, NULL);
+=======
+						    NULL, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(port_priv->agent[1])) {
 		ret = PTR_ERR(port_priv->agent[1]);
 		goto error3;
@@ -202,7 +272,11 @@ int ib_agent_port_close(struct ib_device *device, int port_num)
 	port_priv = __ib_get_agent_port(device, port_num);
 	if (port_priv == NULL) {
 		spin_unlock_irqrestore(&ib_agent_port_list_lock, flags);
+<<<<<<< HEAD
 		printk(KERN_ERR SPFX "Port %d not found\n", port_num);
+=======
+		dev_err(&device->dev, "Port %d not found\n", port_num);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 	list_del(&port_priv->port_list);

@@ -95,7 +95,11 @@ struct thread_struct {
 
 /* Return saved PC of a blocked thread. */
 struct task_struct;
+<<<<<<< HEAD
 extern unsigned long thread_saved_pc(struct task_struct *);
+=======
+unsigned long thread_saved_pc(struct task_struct *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* On Uniprocessor, even in RMO processes see TSO semantics */
 #ifdef CONFIG_SMP
@@ -194,14 +198,22 @@ do { \
 /* Free all resources held by a thread. */
 #define release_thread(tsk)		do { } while (0)
 
+<<<<<<< HEAD
 extern unsigned long get_wchan(struct task_struct *task);
+=======
+unsigned long get_wchan(struct task_struct *task);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define task_pt_regs(tsk) (task_thread_info(tsk)->kregs)
 #define KSTK_EIP(tsk)  (task_pt_regs(tsk)->tpc)
 #define KSTK_ESP(tsk)  (task_pt_regs(tsk)->u_regs[UREG_FP])
 
 /* Please see the commentary in asm/backoff.h for a description of
+<<<<<<< HEAD
  * what these instructions are doing and how they have been choosen.
+=======
+ * what these instructions are doing and how they have been chosen.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * To make a long story short, we are trying to yield the current cpu
  * strand during busy loops.
  */
@@ -216,6 +228,10 @@ extern unsigned long get_wchan(struct task_struct *task);
 				     "nop\n\t"				\
 				     ".previous"			\
 				     ::: "memory")
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Prefetch support.  This is tuned for UltraSPARC-III and later.
  * UltraSPARC-I will treat these as nops, and UltraSPARC-II has
@@ -253,6 +269,11 @@ static inline void prefetchw(const void *x)
 
 #define HAVE_ARCH_PICK_MMAP_LAYOUT
 
+<<<<<<< HEAD
+=======
+int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !(__ASSEMBLY__) */
 
 #endif /* !(__ASM_SPARC64_PROCESSOR_H) */

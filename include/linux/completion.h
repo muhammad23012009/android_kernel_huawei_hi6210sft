@@ -5,7 +5,11 @@
  * (C) Copyright 2001 Linus Torvalds
  *
  * Atomic wait-for-completion handler data structures.
+<<<<<<< HEAD
  * See kernel/sched.c for details.
+=======
+ * See kernel/sched/completion.c for details.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/wait.h>
@@ -19,8 +23,13 @@
  *
  * See also:  complete(), wait_for_completion() (and friends _timeout,
  * _interruptible, _interruptible_timeout, and _killable), init_completion(),
+<<<<<<< HEAD
  * and macros DECLARE_COMPLETION(), DECLARE_COMPLETION_ONSTACK(), and
  * INIT_COMPLETION().
+=======
+ * reinit_completion(), and macros DECLARE_COMPLETION(),
+ * DECLARE_COMPLETION_ONSTACK().
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct completion {
 	unsigned int done;
@@ -65,7 +74,11 @@ struct completion {
 
 /**
  * init_completion - Initialize a dynamically allocated completion
+<<<<<<< HEAD
  * @x:  completion structure that is to be initialized
+=======
+ * @x:  pointer to completion structure that is to be initialized
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This inline function will initialize a dynamically created completion
  * structure.
@@ -76,6 +89,21 @@ static inline void init_completion(struct completion *x)
 	init_waitqueue_head(&x->wait);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * reinit_completion - reinitialize a completion structure
+ * @x:  pointer to completion structure that is to be reinitialized
+ *
+ * This inline function should be used to reinitialize a completion structure so it can
+ * be reused. This is especially important after complete_all() is used.
+ */
+static inline void reinit_completion(struct completion *x)
+{
+	x->done = 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void wait_for_completion(struct completion *);
 extern void wait_for_completion_io(struct completion *);
 extern int wait_for_completion_interruptible(struct completion *x);
@@ -94,6 +122,7 @@ extern bool completion_done(struct completion *x);
 extern void complete(struct completion *);
 extern void complete_all(struct completion *);
 
+<<<<<<< HEAD
 /**
  * INIT_COMPLETION - reinitialize a completion structure
  * @x:  completion structure to be reinitialized
@@ -104,4 +133,6 @@ extern void complete_all(struct completion *);
 #define INIT_COMPLETION(x)	((x).done = 0)
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

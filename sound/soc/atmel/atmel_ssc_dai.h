@@ -115,6 +115,10 @@ struct atmel_ssc_info {
 	unsigned short rcmr_period;
 	struct atmel_pcm_dma_params *dma_params[2];
 	struct atmel_ssc_state ssc_state;
+<<<<<<< HEAD
+=======
+	unsigned long mck_rate;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int atmel_ssc_set_audio(int ssc_id);

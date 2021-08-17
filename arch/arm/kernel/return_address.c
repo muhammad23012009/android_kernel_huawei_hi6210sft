@@ -39,13 +39,20 @@ void *return_address(unsigned int level)
 {
 	struct return_address_data data;
 	struct stackframe frame;
+<<<<<<< HEAD
 	register unsigned long current_sp asm ("sp");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	data.level = level + 2;
 	data.addr = NULL;
 
 	frame.fp = (unsigned long)__builtin_frame_address(0);
+<<<<<<< HEAD
 	frame.sp = current_sp;
+=======
+	frame.sp = current_stack_pointer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	frame.lr = (unsigned long)__builtin_return_address(0);
 	frame.pc = (unsigned long)return_address;
 
@@ -57,6 +64,7 @@ void *return_address(unsigned int level)
 		return NULL;
 }
 
+<<<<<<< HEAD
 #else /* if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND) */
 
 #if defined(CONFIG_ARM_UNWIND)
@@ -69,5 +77,8 @@ void *return_address(unsigned int level)
 }
 
 #endif /* if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND) / else */
+=======
+#endif /* if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 EXPORT_SYMBOL_GPL(return_address);

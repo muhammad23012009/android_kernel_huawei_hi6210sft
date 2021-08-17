@@ -178,7 +178,11 @@ struct ump_interrupt {
 }  __attribute__((packed));
 
 
+<<<<<<< HEAD
 #define TIUMP_GET_PORT_FROM_CODE(c)	(((c) >> 4) - 3)
+=======
+#define TIUMP_GET_PORT_FROM_CODE(c)	(((c) >> 6) & 0x01)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TIUMP_GET_FUNC_FROM_CODE(c)	((c) & 0x0f)
 #define TIUMP_INTERRUPT_CODE_LSR	0x03
 #define TIUMP_INTERRUPT_CODE_MSR	0x04

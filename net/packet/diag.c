@@ -3,6 +3,10 @@
 #include <linux/net.h>
 #include <linux/netdevice.h>
 #include <linux/packet_diag.h>
+<<<<<<< HEAD
+=======
+#include <linux/percpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/net_namespace.h>
 #include <net/sock.h>
 
@@ -176,7 +180,12 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
 				     PACKET_DIAG_FILTER))
 		goto out_nlmsg_trim;
 
+<<<<<<< HEAD
 	return nlmsg_end(skb, nlh);
+=======
+	nlmsg_end(skb, nlh);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out_nlmsg_trim:
 	nlmsg_cancel(skb, nlh);

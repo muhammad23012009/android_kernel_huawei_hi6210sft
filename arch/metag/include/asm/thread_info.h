@@ -28,16 +28,24 @@
 /* This must be 8 byte aligned so we can ensure stack alignment. */
 struct thread_info {
 	struct task_struct *task;	/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain *exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;	/* low level flags */
 	unsigned long status;	/* thread-synchronous flags */
 	u32 cpu;		/* current CPU */
 	int preempt_count;	/* 0 => preemptable, <0 => BUG */
 
 	mm_segment_t addr_limit;	/* thread address space */
+<<<<<<< HEAD
 	struct restart_block restart_block;
 
 	u8 supervisor_stack[0];
+=======
+
+	u8 supervisor_stack[0] __aligned(8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #else /* !__ASSEMBLY__ */
@@ -46,8 +54,11 @@ struct thread_info {
 
 #endif
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE		0x10000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_4KSTACKS
 #define THREAD_SHIFT		12
 #else
@@ -71,14 +82,20 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 	.addr_limit	= KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
@@ -119,10 +136,15 @@ static inline int kstack_end(void *addr)
 #define TIF_SECCOMP		5	/* secure computing */
 #define TIF_RESTORE_SIGMASK	6	/* restore signal mask in do_signal() */
 #define TIF_NOTIFY_RESUME	7	/* callback before returning to user */
+<<<<<<< HEAD
 #define TIF_POLLING_NRFLAG      8	/* true if poll_idle() is polling
 					   TIF_NEED_RESCHED */
 #define TIF_MEMDIE		9	/* is terminating due to OOM killer */
 #define TIF_SYSCALL_TRACEPOINT  10	/* syscall tracepoint instrumentation */
+=======
+#define TIF_MEMDIE		8	/* is terminating due to OOM killer */
+#define TIF_SYSCALL_TRACEPOINT	9	/* syscall tracepoint instrumentation */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #define _TIF_SYSCALL_TRACE	(1<<TIF_SYSCALL_TRACE)

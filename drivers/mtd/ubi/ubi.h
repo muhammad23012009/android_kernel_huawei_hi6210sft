@@ -22,7 +22,10 @@
 #ifndef __UBI_UBI_H__
 #define __UBI_UBI_H__
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/rbtree.h>
@@ -50,6 +53,7 @@
 /* UBI name used for character devices, sysfs, etc */
 #define UBI_NAME_STR "ubi"
 
+<<<<<<< HEAD
 /* Normal UBI messages */
 #define ubi_msg(fmt, ...) pr_notice("UBI: " fmt "\n", ##__VA_ARGS__)
 /* UBI warning messages */
@@ -58,6 +62,21 @@
 /* UBI error messages */
 #define ubi_err(fmt, ...) pr_err("UBI error: %s: " fmt "\n",      \
 				 __func__, ##__VA_ARGS__)
+=======
+struct ubi_device;
+
+/* Normal UBI messages */
+__printf(2, 3)
+void ubi_msg(const struct ubi_device *ubi, const char *fmt, ...);
+
+/* UBI warning messages */
+__printf(2, 3)
+void ubi_warn(const struct ubi_device *ubi, const char *fmt, ...);
+
+/* UBI error messages */
+__printf(2, 3)
+void ubi_err(const struct ubi_device *ubi, const char *fmt, ...);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Background thread name pattern */
 #define UBI_BGT_NAME_PATTERN "ubi_bgt%dd"
@@ -151,6 +170,31 @@ enum {
 	UBI_BAD_FASTMAP,
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * Flags for emulate_power_cut in ubi_debug_info
+ *
+ * POWER_CUT_EC_WRITE: Emulate a power cut when writing an EC header
+ * POWER_CUT_VID_WRITE: Emulate a power cut when writing a VID header
+ */
+enum {
+	POWER_CUT_EC_WRITE = 0x01,
+	POWER_CUT_VID_WRITE = 0x02,
+};
+
+/**
+ * struct ubi_vid_io_buf - VID buffer used to read/write VID info to/from the
+ *			   flash.
+ * @hdr: a pointer to the VID header stored in buffer
+ * @buffer: underlying buffer
+ */
+struct ubi_vid_io_buf {
+	struct ubi_vid_hdr *hdr;
+	void *buffer;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct ubi_wl_entry - wear-leveling entry.
  * @u.rb: link in the corresponding (free/used) RB-tree
@@ -252,6 +296,24 @@ struct ubi_fm_pool {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct ubi_eba_leb_desc - EBA logical eraseblock descriptor
+ * @lnum: the logical eraseblock number
+ * @pnum: the physical eraseblock where the LEB can be found
+ *
+ * This structure is here to hide EBA's internal from other part of the
+ * UBI implementation.
+ *
+ * One can query the position of a LEB by calling ubi_eba_get_ldesc().
+ */
+struct ubi_eba_leb_desc {
+	int lnum;
+	int pnum;
+};
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct ubi_volume - UBI volume description data structure.
  * @dev: device object to make use of the the Linux device model
  * @cdev: character device object to create character device
@@ -261,6 +323,10 @@ struct ubi_fm_pool {
  * @readers: number of users holding this volume in read-only mode
  * @writers: number of users holding this volume in read-write mode
  * @exclusive: whether somebody holds this volume in exclusive mode
+<<<<<<< HEAD
+=======
+ * @metaonly: whether somebody is altering only meta data of this volume
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * @reserved_pebs: how many physical eraseblocks are reserved for this volume
  * @vol_type: volume type (%UBI_DYNAMIC_VOLUME or %UBI_STATIC_VOLUME)
@@ -309,6 +375,10 @@ struct ubi_volume {
 	int readers;
 	int writers;
 	int exclusive;
+<<<<<<< HEAD
+=======
+	int metaonly;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int reserved_pebs;
 	int vol_type;
@@ -327,7 +397,11 @@ struct ubi_volume {
 	long long upd_received;
 	void *upd_buf;
 
+<<<<<<< HEAD
 	int *eba_tbl;
+=======
+	struct ubi_eba_table *eba_tbl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int checked:1;
 	unsigned int corrupted:1;
 	unsigned int upd_marker:1;
@@ -339,7 +413,12 @@ struct ubi_volume {
 /**
  * struct ubi_volume_desc - UBI volume descriptor returned when it is opened.
  * @vol: reference to the corresponding volume description object
+<<<<<<< HEAD
  * @mode: open mode (%UBI_READONLY, %UBI_READWRITE, or %UBI_EXCLUSIVE)
+=======
+ * @mode: open mode (%UBI_READONLY, %UBI_READWRITE, %UBI_EXCLUSIVE
+ * or %UBI_METAONLY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct ubi_volume_desc {
 	struct ubi_volume *vol;
@@ -353,30 +432,72 @@ struct ubi_wl_entry;
  *
  * @chk_gen: if UBI general extra checks are enabled
  * @chk_io: if UBI I/O extra checks are enabled
+<<<<<<< HEAD
  * @disable_bgt: disable the background task for testing purposes
  * @emulate_bitflips: emulate bit-flips for testing purposes
  * @emulate_io_failures: emulate write/erase failures for testing purposes
+=======
+ * @chk_fastmap: if UBI fastmap extra checks are enabled
+ * @disable_bgt: disable the background task for testing purposes
+ * @emulate_bitflips: emulate bit-flips for testing purposes
+ * @emulate_io_failures: emulate write/erase failures for testing purposes
+ * @emulate_power_cut: emulate power cut for testing purposes
+ * @power_cut_counter: count down for writes left until emulated power cut
+ * @power_cut_min: minimum number of writes before emulating a power cut
+ * @power_cut_max: maximum number of writes until emulating a power cut
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @dfs_dir_name: name of debugfs directory containing files of this UBI device
  * @dfs_dir: direntry object of the UBI device debugfs directory
  * @dfs_chk_gen: debugfs knob to enable UBI general extra checks
  * @dfs_chk_io: debugfs knob to enable UBI I/O extra checks
+<<<<<<< HEAD
  * @dfs_disable_bgt: debugfs knob to disable the background task
  * @dfs_emulate_bitflips: debugfs knob to emulate bit-flips
  * @dfs_emulate_io_failures: debugfs knob to emulate write/erase failures
+=======
+ * @dfs_chk_fastmap: debugfs knob to enable UBI fastmap extra checks
+ * @dfs_disable_bgt: debugfs knob to disable the background task
+ * @dfs_emulate_bitflips: debugfs knob to emulate bit-flips
+ * @dfs_emulate_io_failures: debugfs knob to emulate write/erase failures
+ * @dfs_emulate_power_cut: debugfs knob to emulate power cuts
+ * @dfs_power_cut_min: debugfs knob for minimum writes before power cut
+ * @dfs_power_cut_max: debugfs knob for maximum writes until power cut
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct ubi_debug_info {
 	unsigned int chk_gen:1;
 	unsigned int chk_io:1;
+<<<<<<< HEAD
 	unsigned int disable_bgt:1;
 	unsigned int emulate_bitflips:1;
 	unsigned int emulate_io_failures:1;
+=======
+	unsigned int chk_fastmap:1;
+	unsigned int disable_bgt:1;
+	unsigned int emulate_bitflips:1;
+	unsigned int emulate_io_failures:1;
+	unsigned int emulate_power_cut:2;
+	unsigned int power_cut_counter;
+	unsigned int power_cut_min;
+	unsigned int power_cut_max;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char dfs_dir_name[UBI_DFS_DIR_LEN + 1];
 	struct dentry *dfs_dir;
 	struct dentry *dfs_chk_gen;
 	struct dentry *dfs_chk_io;
+<<<<<<< HEAD
 	struct dentry *dfs_disable_bgt;
 	struct dentry *dfs_emulate_bitflips;
 	struct dentry *dfs_emulate_io_failures;
+=======
+	struct dentry *dfs_chk_fastmap;
+	struct dentry *dfs_disable_bgt;
+	struct dentry *dfs_emulate_bitflips;
+	struct dentry *dfs_emulate_io_failures;
+	struct dentry *dfs_emulate_power_cut;
+	struct dentry *dfs_power_cut_min;
+	struct dentry *dfs_power_cut_max;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -390,7 +511,12 @@ struct ubi_debug_info {
  * @volumes_lock: protects @volumes, @rsvd_pebs, @avail_pebs, beb_rsvd_pebs,
  *                @beb_rsvd_level, @bad_peb_count, @good_peb_count, @vol_count,
  *                @vol->readers, @vol->writers, @vol->exclusive,
+<<<<<<< HEAD
  *                @vol->ref_count, @vol->mapping and @vol->eba_tbl.
+=======
+ *                @vol->metaonly, @vol->ref_count, @vol->mapping and
+ *                @vol->eba_tbl.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @ref_count: count of references on the UBI device
  * @image_seq: image sequence number recorded on EC headers
  *
@@ -422,11 +548,22 @@ struct ubi_debug_info {
  * @fm_pool: in-memory data structure of the fastmap pool
  * @fm_wl_pool: in-memory data structure of the fastmap pool used by the WL
  *		sub-system
+<<<<<<< HEAD
  * @fm_mutex: serializes ubi_update_fastmap() and protects @fm_buf
  * @fm_buf: vmalloc()'d buffer which holds the raw fastmap
  * @fm_size: fastmap size in bytes
  * @fm_sem: allows ubi_update_fastmap() to block EBA table changes
  * @fm_work: fastmap work queue
+=======
+ * @fm_protect: serializes ubi_update_fastmap(), protects @fm_buf and makes sure
+ * that critical sections cannot be interrupted by ubi_update_fastmap()
+ * @fm_buf: vmalloc()'d buffer which holds the raw fastmap
+ * @fm_size: fastmap size in bytes
+ * @fm_eba_sem: allows ubi_update_fastmap() to block EBA table changes
+ * @fm_work: fastmap work queue
+ * @fm_work_scheduled: non-zero if fastmap work was scheduled
+ * @fast_attach: non-zero if UBI was attached by fastmap
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * @used: RB-tree of used physical eraseblocks
  * @erroneous: RB-tree of erroneous used physical eraseblocks
@@ -438,9 +575,17 @@ struct ubi_debug_info {
  * @pq_head: protection queue head
  * @wl_lock: protects the @used, @free, @pq, @pq_head, @lookuptbl, @move_from,
  *	     @move_to, @move_to_put @erase_pending, @wl_scheduled, @works,
+<<<<<<< HEAD
  *	     @erroneous, and @erroneous_peb_count fields
  * @move_mutex: serializes eraseblock moves
  * @work_sem: synchronizes the WL worker with use tasks
+=======
+ *	     @erroneous, @erroneous_peb_count, @fm_work_scheduled, @fm_pool,
+ *	     and @fm_wl_pool fields
+ * @move_mutex: serializes eraseblock moves
+ * @work_sem: used to wait for all the scheduled works to finish and prevent
+ * new works from being submitted
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @wl_scheduled: non-zero if the wear-leveling was scheduled
  * @lookuptbl: a table to quickly find a &struct ubi_wl_entry object for any
  *             physical eraseblock
@@ -474,7 +619,11 @@ struct ubi_debug_info {
  * @vid_hdr_offset: starting offset of the volume identifier header (might be
  *                  unaligned)
  * @vid_hdr_aloffset: starting offset of the VID header aligned to
+<<<<<<< HEAD
  * @hdrs_min_io_size
+=======
+ *                    @hdrs_min_io_size
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @vid_hdr_shift: contains @vid_hdr_offset - @vid_hdr_aloffset
  * @bad_allowed: whether the MTD device admits of bad physical eraseblocks or
  *               not
@@ -527,11 +676,21 @@ struct ubi_device {
 	struct ubi_fastmap_layout *fm;
 	struct ubi_fm_pool fm_pool;
 	struct ubi_fm_pool fm_wl_pool;
+<<<<<<< HEAD
 	struct rw_semaphore fm_sem;
 	struct mutex fm_mutex;
 	void *fm_buf;
 	size_t fm_size;
 	struct work_struct fm_work;
+=======
+	struct rw_semaphore fm_eba_sem;
+	struct rw_semaphore fm_protect;
+	void *fm_buf;
+	size_t fm_size;
+	struct work_struct fm_work;
+	int fm_work_scheduled;
+	int fast_attach;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Wear-leveling sub-system's stuff */
 	struct rb_root used;
@@ -659,6 +818,11 @@ struct ubi_ainf_volume {
  * @erase: list of physical eraseblocks which have to be erased
  * @alien: list of physical eraseblocks which should not be used by UBI (e.g.,
  *         those belonging to "preserve"-compatible internal volumes)
+<<<<<<< HEAD
+=======
+ * @fastmap: list of physical eraseblocks which relate to fastmap (e.g.,
+ *           eraseblocks of the current and not yet erased old fastmap blocks)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @corr_peb_count: count of PEBs in the @corr list
  * @empty_peb_count: count of PEBs which are presumably empty (contain only
  *                   0xFF bytes)
@@ -669,6 +833,11 @@ struct ubi_ainf_volume {
  * @vols_found: number of volumes found
  * @highest_vol_id: highest volume ID
  * @is_empty: flag indicating whether the MTD device is empty or not
+<<<<<<< HEAD
+=======
+ * @force_full_scan: flag indicating whether we need to do a full scan and drop
+		     all existing Fastmap data structures
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @min_ec: lowest erase counter value
  * @max_ec: highest erase counter value
  * @max_sqnum: highest sequence number value
@@ -676,6 +845,11 @@ struct ubi_ainf_volume {
  * @ec_sum: a temporary variable used when calculating @mean_ec
  * @ec_count: a temporary variable used when calculating @mean_ec
  * @aeb_slab_cache: slab cache for &struct ubi_ainf_peb objects
+<<<<<<< HEAD
+=======
+ * @ech: temporary EC header. Only available during scan
+ * @vidh: temporary VID buffer. Only available during scan
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This data structure contains the result of attaching an MTD device and may
  * be used by other UBI sub-systems to build final UBI data structures, further
@@ -687,6 +861,10 @@ struct ubi_attach_info {
 	struct list_head free;
 	struct list_head erase;
 	struct list_head alien;
+<<<<<<< HEAD
+=======
+	struct list_head fastmap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int corr_peb_count;
 	int empty_peb_count;
 	int alien_peb_count;
@@ -695,6 +873,10 @@ struct ubi_attach_info {
 	int vols_found;
 	int highest_vol_id;
 	int is_empty;
+<<<<<<< HEAD
+=======
+	int force_full_scan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int min_ec;
 	int max_ec;
 	unsigned long long max_sqnum;
@@ -702,6 +884,11 @@ struct ubi_attach_info {
 	uint64_t ec_sum;
 	int ec_count;
 	struct kmem_cache *aeb_slab_cache;
+<<<<<<< HEAD
+=======
+	struct ubi_ec_hdr *ech;
+	struct ubi_vid_io_buf *vidb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -714,14 +901,25 @@ struct ubi_attach_info {
  * @torture: if the physical eraseblock has to be tortured
  * @anchor: produce a anchor PEB to by used by fastmap
  *
+<<<<<<< HEAD
  * The @func pointer points to the worker function. If the @cancel argument is
  * not zero, the worker has to free the resources and exit immediately. The
  * worker has to return zero in case of success and a negative error code in
+=======
+ * The @func pointer points to the worker function. If the @shutdown argument is
+ * not zero, the worker has to free the resources and exit immediately as the
+ * WL sub-system is shutting down.
+ * The worker has to return zero in case of success and a negative error code in
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * case of failure.
  */
 struct ubi_work {
 	struct list_head list;
+<<<<<<< HEAD
 	int (*func)(struct ubi_device *ubi, struct ubi_work *wrk, int cancel);
+=======
+	int (*func)(struct ubi_device *ubi, struct ubi_work *wrk, int shutdown);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* The below fields are only relevant to erasure works */
 	struct ubi_wl_entry *e;
 	int vol_id;
@@ -736,13 +934,26 @@ extern struct kmem_cache *ubi_wl_entry_slab;
 extern const struct file_operations ubi_ctrl_cdev_operations;
 extern const struct file_operations ubi_cdev_operations;
 extern const struct file_operations ubi_vol_cdev_operations;
+<<<<<<< HEAD
 extern struct class *ubi_class;
+=======
+extern struct class ubi_class;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct mutex ubi_devices_mutex;
 extern struct blocking_notifier_head ubi_notifiers;
 
 /* attach.c */
+<<<<<<< HEAD
 int ubi_add_to_av(struct ubi_device *ubi, struct ubi_attach_info *ai, int pnum,
 		  int ec, const struct ubi_vid_hdr *vid_hdr, int bitflips);
+=======
+struct ubi_ainf_peb *ubi_alloc_aeb(struct ubi_attach_info *ai, int pnum,
+				   int ec);
+void ubi_free_aeb(struct ubi_attach_info *ai, struct ubi_ainf_peb *aeb);
+int ubi_add_to_av(struct ubi_device *ubi, struct ubi_attach_info *ai, int pnum,
+		  int ec, const struct ubi_vid_hdr *vid_hdr, int bitflips);
+struct ubi_ainf_volume *ubi_add_av(struct ubi_attach_info *ai, int vol_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ubi_ainf_volume *ubi_find_av(const struct ubi_attach_info *ai,
 				    int vol_id);
 void ubi_remove_av(struct ubi_attach_info *ai, struct ubi_ainf_volume *av);
@@ -784,11 +995,35 @@ void ubi_update_reserved(struct ubi_device *ubi);
 void ubi_calculate_reserved(struct ubi_device *ubi);
 int ubi_check_pattern(const void *buf, uint8_t patt, int size);
 
+<<<<<<< HEAD
 /* eba.c */
+=======
+static inline bool ubi_leb_valid(struct ubi_volume *vol, int lnum)
+{
+	return lnum >= 0 && lnum < vol->reserved_pebs;
+}
+
+/* eba.c */
+struct ubi_eba_table *ubi_eba_create_table(struct ubi_volume *vol,
+					   int nentries);
+void ubi_eba_destroy_table(struct ubi_eba_table *tbl);
+void ubi_eba_copy_table(struct ubi_volume *vol, struct ubi_eba_table *dst,
+			int nentries);
+void ubi_eba_replace_table(struct ubi_volume *vol, struct ubi_eba_table *tbl);
+void ubi_eba_get_ldesc(struct ubi_volume *vol, int lnum,
+		       struct ubi_eba_leb_desc *ldesc);
+bool ubi_eba_is_mapped(struct ubi_volume *vol, int lnum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ubi_eba_unmap_leb(struct ubi_device *ubi, struct ubi_volume *vol,
 		      int lnum);
 int ubi_eba_read_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum,
 		     void *buf, int offset, int len, int check);
+<<<<<<< HEAD
+=======
+int ubi_eba_read_leb_sg(struct ubi_device *ubi, struct ubi_volume *vol,
+			struct ubi_sgl *sgl, int lnum, int offset, int len,
+			int check);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ubi_eba_write_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum,
 		      const void *buf, int offset, int len);
 int ubi_eba_write_leb_st(struct ubi_device *ubi, struct ubi_volume *vol,
@@ -796,7 +1031,11 @@ int ubi_eba_write_leb_st(struct ubi_device *ubi, struct ubi_volume *vol,
 int ubi_eba_atomic_leb_change(struct ubi_device *ubi, struct ubi_volume *vol,
 			      int lnum, const void *buf, int len);
 int ubi_eba_copy_leb(struct ubi_device *ubi, int from, int to,
+<<<<<<< HEAD
 		     struct ubi_vid_hdr *vid_hdr);
+=======
+		     struct ubi_vid_io_buf *vidb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ubi_eba_init(struct ubi_device *ubi, struct ubi_attach_info *ai);
 unsigned long long ubi_next_sqnum(struct ubi_device *ubi);
 int self_check_eba(struct ubi_device *ubi, struct ubi_attach_info *ai_fastmap,
@@ -831,9 +1070,15 @@ int ubi_io_read_ec_hdr(struct ubi_device *ubi, int pnum,
 int ubi_io_write_ec_hdr(struct ubi_device *ubi, int pnum,
 			struct ubi_ec_hdr *ec_hdr);
 int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
+<<<<<<< HEAD
 			struct ubi_vid_hdr *vid_hdr, int verbose);
 int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
 			 struct ubi_vid_hdr *vid_hdr);
+=======
+			struct ubi_vid_io_buf *vidb, int verbose);
+int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
+			 struct ubi_vid_io_buf *vidb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* build.c */
 int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
@@ -859,10 +1104,77 @@ int ubi_compare_lebs(struct ubi_device *ubi, const struct ubi_ainf_peb *aeb,
 		      int pnum, const struct ubi_vid_hdr *vid_hdr);
 
 /* fastmap.c */
+<<<<<<< HEAD
 size_t ubi_calc_fm_size(struct ubi_device *ubi);
 int ubi_update_fastmap(struct ubi_device *ubi);
 int ubi_scan_fastmap(struct ubi_device *ubi, struct ubi_attach_info *ai,
 		     int fm_anchor);
+=======
+#ifdef CONFIG_MTD_UBI_FASTMAP
+size_t ubi_calc_fm_size(struct ubi_device *ubi);
+int ubi_update_fastmap(struct ubi_device *ubi);
+int ubi_scan_fastmap(struct ubi_device *ubi, struct ubi_attach_info *ai,
+		     struct ubi_attach_info *scan_ai);
+#else
+static inline int ubi_update_fastmap(struct ubi_device *ubi) { return 0; }
+#endif
+
+/* block.c */
+#ifdef CONFIG_MTD_UBI_BLOCK
+int ubiblock_init(void);
+void ubiblock_exit(void);
+int ubiblock_create(struct ubi_volume_info *vi);
+int ubiblock_remove(struct ubi_volume_info *vi);
+#else
+static inline int ubiblock_init(void) { return 0; }
+static inline void ubiblock_exit(void) {}
+static inline int ubiblock_create(struct ubi_volume_info *vi)
+{
+	return -ENOSYS;
+}
+static inline int ubiblock_remove(struct ubi_volume_info *vi)
+{
+	return -ENOSYS;
+}
+#endif
+
+/*
+ * ubi_for_each_free_peb - walk the UBI free RB tree.
+ * @ubi: UBI device description object
+ * @e: a pointer to a ubi_wl_entry to use as cursor
+ * @pos: a pointer to RB-tree entry type to use as a loop counter
+ */
+#define ubi_for_each_free_peb(ubi, e, tmp_rb)	\
+	ubi_rb_for_each_entry((tmp_rb), (e), &(ubi)->free, u.rb)
+
+/*
+ * ubi_for_each_used_peb - walk the UBI used RB tree.
+ * @ubi: UBI device description object
+ * @e: a pointer to a ubi_wl_entry to use as cursor
+ * @pos: a pointer to RB-tree entry type to use as a loop counter
+ */
+#define ubi_for_each_used_peb(ubi, e, tmp_rb)	\
+	ubi_rb_for_each_entry((tmp_rb), (e), &(ubi)->used, u.rb)
+
+/*
+ * ubi_for_each_scub_peb - walk the UBI scub RB tree.
+ * @ubi: UBI device description object
+ * @e: a pointer to a ubi_wl_entry to use as cursor
+ * @pos: a pointer to RB-tree entry type to use as a loop counter
+ */
+#define ubi_for_each_scrub_peb(ubi, e, tmp_rb)	\
+	ubi_rb_for_each_entry((tmp_rb), (e), &(ubi)->scrub, u.rb)
+
+/*
+ * ubi_for_each_protected_peb - walk the UBI protection queue.
+ * @ubi: UBI device description object
+ * @i: a integer used as counter
+ * @e: a pointer to a ubi_wl_entry to use as cursor
+ */
+#define ubi_for_each_protected_peb(ubi, i, e)	\
+	for ((i) = 0; (i) < UBI_PROT_QUEUE_LEN; (i)++)	\
+		list_for_each_entry((e), &(ubi->pq[(i)]), u.list)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * ubi_rb_for_each_entry - walk an RB-tree.
@@ -894,6 +1206,7 @@ static inline void ubi_move_aeb_to_list(struct ubi_ainf_volume *av,
 }
 
 /**
+<<<<<<< HEAD
  * ubi_zalloc_vid_hdr - allocate a volume identifier header object.
  * @ubi: UBI device description object
  * @gfp_flags: GFP flags to allocate with
@@ -932,6 +1245,70 @@ static inline void ubi_free_vid_hdr(const struct ubi_device *ubi,
 		return;
 
 	kfree(p - ubi->vid_hdr_shift);
+=======
+ * ubi_init_vid_buf - Initialize a VID buffer
+ * @ubi: the UBI device
+ * @vidb: the VID buffer to initialize
+ * @buf: the underlying buffer
+ */
+static inline void ubi_init_vid_buf(const struct ubi_device *ubi,
+				    struct ubi_vid_io_buf *vidb,
+				    void *buf)
+{
+	if (buf)
+		memset(buf, 0, ubi->vid_hdr_alsize);
+
+	vidb->buffer = buf;
+	vidb->hdr = buf + ubi->vid_hdr_shift;
+}
+
+/**
+ * ubi_init_vid_buf - Allocate a VID buffer
+ * @ubi: the UBI device
+ * @gfp_flags: GFP flags to use for the allocation
+ */
+static inline struct ubi_vid_io_buf *
+ubi_alloc_vid_buf(const struct ubi_device *ubi, gfp_t gfp_flags)
+{
+	struct ubi_vid_io_buf *vidb;
+	void *buf;
+
+	vidb = kzalloc(sizeof(*vidb), gfp_flags);
+	if (!vidb)
+		return NULL;
+
+	buf = kmalloc(ubi->vid_hdr_alsize, gfp_flags);
+	if (!buf) {
+		kfree(vidb);
+		return NULL;
+	}
+
+	ubi_init_vid_buf(ubi, vidb, buf);
+
+	return vidb;
+}
+
+/**
+ * ubi_free_vid_buf - Free a VID buffer
+ * @vidb: the VID buffer to free
+ */
+static inline void ubi_free_vid_buf(struct ubi_vid_io_buf *vidb)
+{
+	if (!vidb)
+		return;
+
+	kfree(vidb->buffer);
+	kfree(vidb);
+}
+
+/**
+ * ubi_get_vid_hdr - Get the VID header attached to a VID buffer
+ * @vidb: VID buffer
+ */
+static inline struct ubi_vid_hdr *ubi_get_vid_hdr(struct ubi_vid_io_buf *vidb)
+{
+	return vidb->hdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -966,7 +1343,11 @@ static inline void ubi_ro_mode(struct ubi_device *ubi)
 {
 	if (!ubi->ro_mode) {
 		ubi->ro_mode = 1;
+<<<<<<< HEAD
 		ubi_warn("switch to read-only mode");
+=======
+		ubi_warn(ubi, "switch to read-only mode");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dump_stack();
 	}
 }
@@ -997,4 +1378,45 @@ static inline int idx2vol_id(const struct ubi_device *ubi, int idx)
 		return idx;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * ubi_is_fm_vol - check whether a volume ID is a Fastmap volume.
+ * @vol_id: volume ID
+ */
+static inline bool ubi_is_fm_vol(int vol_id)
+{
+	switch (vol_id) {
+		case UBI_FM_SB_VOLUME_ID:
+		case UBI_FM_DATA_VOLUME_ID:
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * ubi_find_fm_block - check whether a PEB is part of the current Fastmap.
+ * @ubi: UBI device description object
+ * @pnum: physical eraseblock to look for
+ *
+ * This function returns a wear leveling object if @pnum relates to the current
+ * fastmap, @NULL otherwise.
+ */
+static inline struct ubi_wl_entry *ubi_find_fm_block(const struct ubi_device *ubi,
+						     int pnum)
+{
+	int i;
+
+	if (ubi->fm) {
+		for (i = 0; i < ubi->fm->used_blocks; i++) {
+			if (ubi->fm->e[i]->pnum == pnum)
+				return ubi->fm->e[i];
+		}
+	}
+
+	return NULL;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !__UBI_UBI_H__ */

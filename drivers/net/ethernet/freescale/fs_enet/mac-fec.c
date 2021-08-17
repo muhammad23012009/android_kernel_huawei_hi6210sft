@@ -20,7 +20,10 @@
 #include <linux/errno.h>
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -31,7 +34,13 @@
 #include <linux/bitops.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_device.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/gfp.h>
 
 #include <asm/irq.h>
@@ -40,7 +49,10 @@
 #ifdef CONFIG_8xx
 #include <asm/8xx_immap.h>
 #include <asm/pgtable.h>
+<<<<<<< HEAD
 #include <asm/mpc8xx.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cpm1.h>
 #endif
 
@@ -98,8 +110,13 @@ static int do_pd_setup(struct fs_enet_private *fep)
 {
 	struct platform_device *ofdev = to_platform_device(fep->dev);
 
+<<<<<<< HEAD
 	fep->interrupt = of_irq_to_resource(ofdev->dev.of_node, 0, NULL);
 	if (fep->interrupt == NO_IRQ)
+=======
+	fep->interrupt = irq_of_parse_and_map(ofdev->dev.of_node, 0);
+	if (!fep->interrupt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	fep->fec.fecp = of_iomap(ofdev->dev.of_node, 0);
@@ -109,9 +126,14 @@ static int do_pd_setup(struct fs_enet_private *fep)
 	return 0;
 }
 
+<<<<<<< HEAD
 #define FEC_NAPI_RX_EVENT_MSK	(FEC_ENET_RXF | FEC_ENET_RXB)
 #define FEC_RX_EVENT		(FEC_ENET_RXF)
 #define FEC_TX_EVENT		(FEC_ENET_TXF)
+=======
+#define FEC_NAPI_EVENT_MSK	(FEC_ENET_RXF | FEC_ENET_RXB | FEC_ENET_TXF)
+#define FEC_EVENT		(FEC_ENET_RXF | FEC_ENET_TXF)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FEC_ERR_EVENT_MSK	(FEC_ENET_HBERR | FEC_ENET_BABR | \
 				 FEC_ENET_BABT | FEC_ENET_EBERR)
 
@@ -125,9 +147,14 @@ static int setup_data(struct net_device *dev)
 	fep->fec.hthi = 0;
 	fep->fec.htlo = 0;
 
+<<<<<<< HEAD
 	fep->ev_napi_rx = FEC_NAPI_RX_EVENT_MSK;
 	fep->ev_rx = FEC_RX_EVENT;
 	fep->ev_tx = FEC_TX_EVENT;
+=======
+	fep->ev_napi = FEC_NAPI_EVENT_MSK;
+	fep->ev = FEC_EVENT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fep->ev_err = FEC_ERR_EVENT_MSK;
 
 	return 0;
@@ -252,7 +279,11 @@ static void restart(struct net_device *dev)
 	int r;
 	u32 addrhi, addrlo;
 
+<<<<<<< HEAD
 	struct mii_bus* mii = fep->phydev->bus;
+=======
+	struct mii_bus *mii = dev->phydev->mdio.bus;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fec_info* fec_inf = mii->priv;
 
 	r = whack_reset(fep->fec.fecp);
@@ -331,7 +362,11 @@ static void restart(struct net_device *dev)
 	/*
 	 * adjust to duplex mode
 	 */
+<<<<<<< HEAD
 	if (fep->phydev->duplex) {
+=======
+	if (dev->phydev->duplex) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		FC(fecp, r_cntrl, FEC_RCNTRL_DRT);
 		FS(fecp, x_cntrl, FEC_TCNTRL_FDEN);	/* FD enable */
 	} else {
@@ -339,6 +374,12 @@ static void restart(struct net_device *dev)
 		FC(fecp, x_cntrl, FEC_TCNTRL_FDEN);	/* FD disable */
 	}
 
+<<<<<<< HEAD
+=======
+	/* Restore multicast and promiscuous settings */
+	set_multicast_list(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Enable interrupts we wish to service.
 	 */
@@ -358,7 +399,11 @@ static void stop(struct net_device *dev)
 	const struct fs_platform_info *fpi = fep->fpi;
 	struct fec __iomem *fecp = fep->fec.fecp;
 
+<<<<<<< HEAD
 	struct fec_info* feci= fep->phydev->bus->priv;
+=======
+	struct fec_info *feci = dev->phydev->mdio.bus->priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int i;
 
@@ -391,28 +436,50 @@ static void stop(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static void napi_clear_rx_event(struct net_device *dev)
+=======
+static void napi_clear_event_fs(struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	struct fec __iomem *fecp = fep->fec.fecp;
 
+<<<<<<< HEAD
 	FW(fecp, ievent, FEC_NAPI_RX_EVENT_MSK);
 }
 
 static void napi_enable_rx(struct net_device *dev)
+=======
+	FW(fecp, ievent, FEC_NAPI_EVENT_MSK);
+}
+
+static void napi_enable_fs(struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	struct fec __iomem *fecp = fep->fec.fecp;
 
+<<<<<<< HEAD
 	FS(fecp, imask, FEC_NAPI_RX_EVENT_MSK);
 }
 
 static void napi_disable_rx(struct net_device *dev)
+=======
+	FS(fecp, imask, FEC_NAPI_EVENT_MSK);
+}
+
+static void napi_disable_fs(struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	struct fec __iomem *fecp = fep->fec.fecp;
 
+<<<<<<< HEAD
 	FC(fecp, imask, FEC_NAPI_RX_EVENT_MSK);
+=======
+	FC(fecp, imask, FEC_NAPI_EVENT_MSK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void rx_bd_done(struct net_device *dev)
@@ -484,9 +551,15 @@ const struct fs_ops fs_fec_ops = {
 	.set_multicast_list	= set_multicast_list,
 	.restart		= restart,
 	.stop			= stop,
+<<<<<<< HEAD
 	.napi_clear_rx_event	= napi_clear_rx_event,
 	.napi_enable_rx		= napi_enable_rx,
 	.napi_disable_rx	= napi_disable_rx,
+=======
+	.napi_clear_event	= napi_clear_event_fs,
+	.napi_enable		= napi_enable_fs,
+	.napi_disable		= napi_disable_fs,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.rx_bd_done		= rx_bd_done,
 	.tx_kickstart		= tx_kickstart,
 	.get_int_events		= get_int_events,

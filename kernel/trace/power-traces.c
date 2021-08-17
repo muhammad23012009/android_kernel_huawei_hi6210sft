@@ -13,5 +13,12 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/power.h>
 
+<<<<<<< HEAD
 EXPORT_TRACEPOINT_SYMBOL_GPL(cpu_idle);
+=======
+EXPORT_TRACEPOINT_SYMBOL_GPL(suspend_resume);
+EXPORT_TRACEPOINT_SYMBOL_GPL(cpu_idle);
+EXPORT_TRACEPOINT_SYMBOL_GPL(cpu_frequency);
+EXPORT_TRACEPOINT_SYMBOL_GPL(powernv_throttle);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 

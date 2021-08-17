@@ -20,7 +20,11 @@
 #define TX        1  /* similar to USB_DIR_IN  but can be used as an index */
 
 /* DMA layout of transfer descriptors */
+<<<<<<< HEAD
 struct ci13xxx_td {
+=======
+struct ci_hw_td {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 0 */
 	u32 next;
 #define TD_TERMINATE          BIT(0)
@@ -43,24 +47,47 @@ struct ci13xxx_td {
 } __attribute__ ((packed, aligned(4)));
 
 /* DMA layout of queue heads */
+<<<<<<< HEAD
 struct ci13xxx_qh {
+=======
+struct ci_hw_qh {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 0 */
 	u32 cap;
 #define QH_IOS                BIT(15)
 #define QH_MAX_PKT            (0x07FFUL << 16)
 #define QH_ZLT                BIT(29)
 #define QH_MULT               (0x0003UL << 30)
+<<<<<<< HEAD
 	/* 1 */
 	u32 curr;
 	/* 2 - 8 */
 	struct ci13xxx_td        td;
+=======
+#define QH_ISO_MULT(x)		((x >> 11) & 0x03)
+	/* 1 */
+	u32 curr;
+	/* 2 - 8 */
+	struct ci_hw_td		td;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 9 */
 	u32 RESERVED;
 	struct usb_ctrlrequest   setup;
 } __attribute__ ((packed, aligned(4)));
 
+<<<<<<< HEAD
 /**
  * struct ci13xxx_req - usb request representation
+=======
+struct td_node {
+	struct list_head	td;
+	dma_addr_t		dma;
+	struct ci_hw_td		*ptr;
+};
+
+/**
+ * struct ci_hw_req - usb request representation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @req: request structure for gadget drivers
  * @queue: link to QH list
  * @ptr: transfer descriptor for this request
@@ -68,6 +95,7 @@ struct ci13xxx_qh {
  * @zptr: transfer descriptor for the zero packet
  * @zdma: dma address of the zero packet's transfer descriptor
  */
+<<<<<<< HEAD
 struct ci13xxx_req {
 	struct usb_request	req;
 	struct list_head	queue;
@@ -75,19 +103,42 @@ struct ci13xxx_req {
 	dma_addr_t		dma;
 	struct ci13xxx_td	*zptr;
 	dma_addr_t		zdma;
+=======
+struct ci_hw_req {
+	struct usb_request	req;
+	struct list_head	queue;
+	struct list_head	tds;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #ifdef CONFIG_USB_CHIPIDEA_UDC
 
+<<<<<<< HEAD
 int ci_hdrc_gadget_init(struct ci13xxx *ci);
 
 #else
 
 static inline int ci_hdrc_gadget_init(struct ci13xxx *ci)
+=======
+int ci_hdrc_gadget_init(struct ci_hdrc *ci);
+void ci_hdrc_gadget_destroy(struct ci_hdrc *ci);
+
+#else
+
+static inline int ci_hdrc_gadget_init(struct ci_hdrc *ci)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -ENXIO;
 }
 
+<<<<<<< HEAD
+=======
+static inline void ci_hdrc_gadget_destroy(struct ci_hdrc *ci)
+{
+
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* __DRIVERS_USB_CHIPIDEA_UDC_H */

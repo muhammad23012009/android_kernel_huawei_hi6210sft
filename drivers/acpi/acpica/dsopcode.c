@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -243,8 +247,14 @@ acpi_ds_init_buffer_field(u16 aml_opcode,
 	 * For field_flags, use LOCK_RULE = 0 (NO_LOCK),
 	 * UPDATE_RULE = 0 (UPDATE_PRESERVE)
 	 */
+<<<<<<< HEAD
 	status = acpi_ex_prep_common_field_object(obj_desc, field_flags, 0,
 						  bit_offset, bit_count);
+=======
+	status =
+	    acpi_ex_prep_common_field_object(obj_desc, field_flags, 0,
+					     bit_offset, bit_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		goto cleanup;
 	}
@@ -257,7 +267,11 @@ acpi_ds_init_buffer_field(u16 aml_opcode,
 	    (buffer_desc->common.reference_count +
 	     obj_desc->common.reference_count);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Always delete the operands */
 
@@ -330,8 +344,14 @@ acpi_ds_eval_buffer_field_operands(struct acpi_walk_state *walk_state,
 
 	/* Resolve the operands */
 
+<<<<<<< HEAD
 	status = acpi_ex_resolve_operands(op->common.aml_opcode,
 					  ACPI_WALK_OPERANDS, walk_state);
+=======
+	status =
+	    acpi_ex_resolve_operands(op->common.aml_opcode, ACPI_WALK_OPERANDS,
+				     walk_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		ACPI_ERROR((AE_INFO, "(%s) bad operand(s), status 0x%X",
 			    acpi_ps_get_opcode_name(op->common.aml_opcode),
@@ -414,8 +434,14 @@ acpi_ds_eval_region_operands(struct acpi_walk_state *walk_state,
 
 	/* Resolve the length and address operands to numbers */
 
+<<<<<<< HEAD
 	status = acpi_ex_resolve_operands(op->common.aml_opcode,
 					  ACPI_WALK_OPERANDS, walk_state);
+=======
+	status =
+	    acpi_ex_resolve_operands(op->common.aml_opcode, ACPI_WALK_OPERANDS,
+				     walk_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -446,13 +472,20 @@ acpi_ds_eval_region_operands(struct acpi_walk_state *walk_state,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "RgnObj %p Addr %8.8X%8.8X Len %X\n",
 			  obj_desc,
+<<<<<<< HEAD
 			  ACPI_FORMAT_NATIVE_UINT(obj_desc->region.address),
+=======
+			  ACPI_FORMAT_UINT64(obj_desc->region.address),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  obj_desc->region.length));
 
 	/* Now the address and length are valid for this opregion */
 
 	obj_desc->region.flags |= AOPOBJ_DATA_VALID;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(status);
 }
 
@@ -480,8 +513,13 @@ acpi_ds_eval_table_region_operands(struct acpi_walk_state *walk_state,
 	union acpi_operand_object **operand;
 	struct acpi_namespace_node *node;
 	union acpi_parse_object *next_op;
+<<<<<<< HEAD
 	u32 table_index;
 	struct acpi_table_header *table;
+=======
+	struct acpi_table_header *table;
+	u32 table_index;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ACPI_FUNCTION_TRACE_PTR(ds_eval_table_region_operands, op);
 
@@ -504,10 +542,16 @@ acpi_ds_eval_table_region_operands(struct acpi_walk_state *walk_state,
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
+=======
+	operand = &walk_state->operands[0];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Resolve the Signature string, oem_id string,
 	 * and oem_table_id string operands
 	 */
+<<<<<<< HEAD
 	status = acpi_ex_resolve_operands(op->common.aml_opcode,
 					  ACPI_WALK_OPERANDS, walk_state);
 	if (ACPI_FAILURE(status)) {
@@ -516,12 +560,22 @@ acpi_ds_eval_table_region_operands(struct acpi_walk_state *walk_state,
 
 	operand = &walk_state->operands[0];
 
+=======
+	status =
+	    acpi_ex_resolve_operands(op->common.aml_opcode, ACPI_WALK_OPERANDS,
+				     walk_state);
+	if (ACPI_FAILURE(status)) {
+		goto cleanup;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Find the ACPI table */
 
 	status = acpi_tb_find_table(operand[0]->string.pointer,
 				    operand[1]->string.pointer,
 				    operand[2]->string.pointer, &table_index);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		return_ACPI_STATUS(status);
 	}
 
@@ -532,26 +586,61 @@ acpi_ds_eval_table_region_operands(struct acpi_walk_state *walk_state,
 	status = acpi_get_table_by_index(table_index, &table);
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
+=======
+		if (status == AE_NOT_FOUND) {
+			ACPI_ERROR((AE_INFO,
+				    "ACPI Table [%4.4s] OEM:(%s, %s) not found in RSDT/XSDT",
+				    operand[0]->string.pointer,
+				    operand[1]->string.pointer,
+				    operand[2]->string.pointer));
+		}
+		goto cleanup;
+	}
+
+	status = acpi_get_table_by_index(table_index, &table);
+	if (ACPI_FAILURE(status)) {
+		goto cleanup;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	obj_desc = acpi_ns_get_attached_object(node);
 	if (!obj_desc) {
+<<<<<<< HEAD
 		return_ACPI_STATUS(AE_NOT_EXIST);
 	}
 
 	obj_desc->region.address =
 	    (acpi_physical_address) ACPI_TO_INTEGER(table);
+=======
+		status = AE_NOT_EXIST;
+		goto cleanup;
+	}
+
+	obj_desc->region.address = ACPI_PTR_TO_PHYSADDR(table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	obj_desc->region.length = table->length;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "RgnObj %p Addr %8.8X%8.8X Len %X\n",
 			  obj_desc,
+<<<<<<< HEAD
 			  ACPI_FORMAT_NATIVE_UINT(obj_desc->region.address),
+=======
+			  ACPI_FORMAT_UINT64(obj_desc->region.address),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  obj_desc->region.length));
 
 	/* Now the address and length are valid for this opregion */
 
 	obj_desc->region.flags |= AOPOBJ_DATA_VALID;
 
+<<<<<<< HEAD
+=======
+cleanup:
+	acpi_ut_remove_reference(operand[0]);
+	acpi_ut_remove_reference(operand[1]);
+	acpi_ut_remove_reference(operand[2]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(status);
 }
 
@@ -636,6 +725,10 @@ acpi_ds_eval_data_object_operands(struct acpi_walk_state *walk_state,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return_ACPI_STATUS(AE_AML_BAD_OPCODE);
 	}
 

@@ -16,7 +16,10 @@
 #include <linux/edac.h>
 #include <linux/atomic.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <asm/edac.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int edac_op_state = EDAC_OPSTATE_INVAL;
 EXPORT_SYMBOL_GPL(edac_op_state);
@@ -27,7 +30,28 @@ EXPORT_SYMBOL_GPL(edac_handlers);
 int edac_err_assert = 0;
 EXPORT_SYMBOL_GPL(edac_err_assert);
 
+<<<<<<< HEAD
 static atomic_t edac_subsys_valid = ATOMIC_INIT(0);
+=======
+int edac_report_status = EDAC_REPORTING_ENABLED;
+EXPORT_SYMBOL_GPL(edac_report_status);
+
+static int __init edac_report_setup(char *str)
+{
+	if (!str)
+		return -EINVAL;
+
+	if (!strncmp(str, "on", 2))
+		set_edac_report_status(EDAC_REPORTING_ENABLED);
+	else if (!strncmp(str, "off", 3))
+		set_edac_report_status(EDAC_REPORTING_DISABLED);
+	else if (!strncmp(str, "force", 5))
+		set_edac_report_status(EDAC_REPORTING_FORCE);
+
+	return 0;
+}
+__setup("edac_report=", edac_report_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * called to determine if there is an EDAC driver interested in
@@ -50,6 +74,7 @@ void edac_atomic_assert_error(void)
 	edac_err_assert++;
 }
 EXPORT_SYMBOL_GPL(edac_atomic_assert_error);
+<<<<<<< HEAD
 
 /*
  * sysfs object: /sys/devices/system/edac
@@ -89,3 +114,5 @@ void edac_put_sysfs_subsys(void)
 		bus_unregister(&edac_subsys);
 }
 EXPORT_SYMBOL_GPL(edac_put_sysfs_subsys);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

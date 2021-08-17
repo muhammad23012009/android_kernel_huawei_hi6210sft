@@ -48,7 +48,11 @@ struct dib0700_state {
 	u8 disable_streaming_master_mode;
 	u32 fw_version;
 	u32 nb_packet_buffer_size;
+<<<<<<< HEAD
 	int (*read_status)(struct dvb_frontend *, fe_status_t *);
+=======
+	int (*read_status)(struct dvb_frontend *, enum fe_status *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*sleep)(struct dvb_frontend* fe);
 	u8 buf[255];
 };
@@ -59,7 +63,11 @@ extern int dib0700_set_gpio(struct dvb_usb_device *, enum dib07x0_gpios gpio, u8
 extern int dib0700_ctrl_clock(struct dvb_usb_device *d, u32 clk_MHz, u8 clock_out_gp3);
 extern int dib0700_ctrl_rd(struct dvb_usb_device *d, u8 *tx, u8 txlen, u8 *rx, u8 rxlen);
 extern int dib0700_download_firmware(struct usb_device *udev, const struct firmware *fw);
+<<<<<<< HEAD
 extern int dib0700_rc_setup(struct dvb_usb_device *d);
+=======
+extern int dib0700_rc_setup(struct dvb_usb_device *d, struct usb_interface *intf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int dib0700_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff);
 extern struct i2c_algorithm dib0700_i2c_algo;
 extern int dib0700_identify_state(struct usb_device *udev, struct dvb_usb_device_properties *props,

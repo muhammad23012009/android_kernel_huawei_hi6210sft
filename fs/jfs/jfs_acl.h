@@ -21,8 +21,13 @@
 #ifdef CONFIG_JFS_POSIX_ACL
 
 struct posix_acl *jfs_get_acl(struct inode *inode, int type);
+<<<<<<< HEAD
 int jfs_init_acl(tid_t, struct inode *, struct inode *);
 int jfs_acl_chmod(struct inode *inode);
+=======
+int jfs_set_acl(struct inode *inode, struct posix_acl *acl, int type);
+int jfs_init_acl(tid_t, struct inode *, struct inode *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 
@@ -32,10 +37,13 @@ static inline int jfs_init_acl(tid_t tid, struct inode *inode,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int jfs_acl_chmod(struct inode *inode)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #endif		/* _H_JFS_ACL */

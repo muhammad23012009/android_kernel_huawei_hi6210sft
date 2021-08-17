@@ -21,7 +21,11 @@
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <asm/types.h>
+=======
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 enum lw_bits {
@@ -40,7 +44,11 @@ static DEFINE_SPINLOCK(lweventlist_lock);
 static unsigned char default_operstate(const struct net_device *dev)
 {
 	if (!netif_carrier_ok(dev))
+<<<<<<< HEAD
 		return (dev->ifindex != dev->iflink ?
+=======
+		return (dev->ifindex != dev_get_iflink(dev) ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			IF_OPER_LOWERLAYERDOWN : IF_OPER_DOWN);
 
 	if (netif_dormant(dev))
@@ -89,7 +97,14 @@ static bool linkwatch_urgent_event(struct net_device *dev)
 	if (!netif_running(dev))
 		return false;
 
+<<<<<<< HEAD
 	if (dev->ifindex != dev->iflink)
+=======
+	if (dev->ifindex != dev_get_iflink(dev))
+		return true;
+
+	if (dev->priv_flags & IFF_TEAM_PORT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return true;
 
 	return netif_carrier_ok(dev) &&	qdisc_tx_changing(dev);
@@ -144,7 +159,11 @@ static void linkwatch_do_dev(struct net_device *dev)
 	 * Make sure the above read is complete since it can be
 	 * rewritten as soon as we clear the bit below.
 	 */
+<<<<<<< HEAD
 	smp_mb__before_clear_bit();
+=======
+	smp_mb__before_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We are about to handle this device,
 	 * so new events can be accepted

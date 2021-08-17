@@ -346,7 +346,11 @@ static int bfin_rtc_probe(struct platform_device *pdev)
 {
 	struct bfin_rtc *rtc;
 	struct device *dev = &pdev->dev;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long timeout = jiffies + HZ;
 
 	dev_dbg_stamp(dev);
@@ -361,16 +365,28 @@ static int bfin_rtc_probe(struct platform_device *pdev)
 	/* Register our RTC with the RTC framework */
 	rtc->rtc_dev = devm_rtc_device_register(dev, pdev->name, &bfin_rtc_ops,
 						THIS_MODULE);
+<<<<<<< HEAD
 	if (unlikely(IS_ERR(rtc->rtc_dev))) {
 		ret = PTR_ERR(rtc->rtc_dev);
 		goto err;
 	}
+=======
+	if (IS_ERR(rtc->rtc_dev))
+		return PTR_ERR(rtc->rtc_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Grab the IRQ and init the hardware */
 	ret = devm_request_irq(dev, IRQ_RTC, bfin_rtc_interrupt, 0,
 				pdev->name, dev);
 	if (unlikely(ret))
+<<<<<<< HEAD
 		goto err;
+=======
+		dev_err(&pdev->dev,
+			"unable to request IRQ; alarm won't work, "
+			"and writes will be delayed\n");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* sometimes the bootloader touched things, but the write complete was not
 	 * enabled, so let's just do a quick timeout here since the IRQ will not fire ...
 	 */
@@ -381,9 +397,12 @@ static int bfin_rtc_probe(struct platform_device *pdev)
 	bfin_write_RTC_SWCNT(0);
 
 	return 0;
+<<<<<<< HEAD
 
 err:
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int bfin_rtc_remove(struct platform_device *pdev)
@@ -391,7 +410,10 @@ static int bfin_rtc_remove(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 
 	bfin_rtc_reset(dev, 0);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -437,7 +459,10 @@ static SIMPLE_DEV_PM_OPS(bfin_rtc_pm_ops, bfin_rtc_suspend, bfin_rtc_resume);
 static struct platform_driver bfin_rtc_driver = {
 	.driver		= {
 		.name	= "rtc-bfin",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &bfin_rtc_pm_ops,
 	},
 	.probe		= bfin_rtc_probe,

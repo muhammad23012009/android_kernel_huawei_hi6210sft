@@ -25,6 +25,10 @@
 #include <linux/module.h>
 #include <linux/syscalls.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
+=======
+#include <linux/binfmts.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/spu.h>
 
@@ -110,6 +114,10 @@ asmlinkage long sys_spu_run(int fd, __u32 __user *unpc, __u32 __user *ustatus)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COREDUMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int elf_coredump_extra_notes_size(void)
 {
 	struct spufs_calls *calls;
@@ -126,7 +134,11 @@ int elf_coredump_extra_notes_size(void)
 	return ret;
 }
 
+<<<<<<< HEAD
 int elf_coredump_extra_notes_write(struct file *file, loff_t *foffset)
+=======
+int elf_coredump_extra_notes_write(struct coredump_params *cprm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct spufs_calls *calls;
 	int ret;
@@ -135,12 +147,20 @@ int elf_coredump_extra_notes_write(struct file *file, loff_t *foffset)
 	if (!calls)
 		return 0;
 
+<<<<<<< HEAD
 	ret = calls->coredump_extra_notes_write(file, foffset);
+=======
+	ret = calls->coredump_extra_notes_write(cprm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spufs_calls_put(calls);
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void notify_spus_active(void)
 {
@@ -169,7 +189,11 @@ EXPORT_SYMBOL_GPL(register_spu_syscalls);
 void unregister_spu_syscalls(struct spufs_calls *calls)
 {
 	BUG_ON(spufs_calls->owner != calls->owner);
+<<<<<<< HEAD
 	rcu_assign_pointer(spufs_calls, NULL);
+=======
+	RCU_INIT_POINTER(spufs_calls, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	synchronize_rcu();
 }
 EXPORT_SYMBOL_GPL(unregister_spu_syscalls);

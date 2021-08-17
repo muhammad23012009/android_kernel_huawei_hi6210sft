@@ -53,6 +53,11 @@
 #include <linux/errno.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -60,6 +65,10 @@
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/in.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/skbuff.h>
 #include <linux/spinlock.h>
 #include <linux/string.h>
@@ -145,7 +154,10 @@ struct net_local {
 	int force;		/* force various values; see FORCE* above. */
 	spinlock_t lock;
 	void __iomem *virt_addr;/* CS89x0 virtual address. */
+<<<<<<< HEAD
 	unsigned long size;	/* Length of CS89x0 memory region. */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if ALLOW_DMA
 	int use_dma;		/* Flag: we're using dma */
 	int dma;		/* DMA channel */
@@ -239,13 +251,21 @@ writereg(struct net_device *dev, u16 regno, u16 value)
 static int __init
 wait_eeprom_ready(struct net_device *dev)
 {
+<<<<<<< HEAD
 	int timeout = jiffies;
+=======
+	unsigned long timeout = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* check to see if the EEPROM is ready,
 	 * a timeout is used just in case EEPROM is ready when
 	 * SI_BUSY in the PP_SelfST is clear
 	 */
 	while (readreg(dev, PP_SelfST) & SI_BUSY)
+<<<<<<< HEAD
 		if (jiffies - timeout >= 40)
+=======
+		if (time_after_eq(jiffies, timeout + 40))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -1;
 	return 0;
 }
@@ -486,7 +506,11 @@ control_dc_dc(struct net_device *dev, int on_not_off)
 {
 	struct net_local *lp = netdev_priv(dev);
 	unsigned int selfcontrol;
+<<<<<<< HEAD
 	int timenow = jiffies;
+=======
+	unsigned long timenow = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* control the DC to DC convertor in the SelfControl register.
 	 * Note: This is hooked up to a general purpose pin, might not
 	 * always be a DC to DC convertor.
@@ -500,7 +524,11 @@ control_dc_dc(struct net_device *dev, int on_not_off)
 	writereg(dev, PP_SelfCTL, selfcontrol);
 
 	/* Wait for the DC/DC converter to power up - 500ms */
+<<<<<<< HEAD
 	while (jiffies - timenow < HZ)
+=======
+	while (time_before(jiffies, timenow + HZ))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		;
 }
 
@@ -515,7 +543,11 @@ send_test_pkt(struct net_device *dev)
 		0, 0,		/* DSAP=0 & SSAP=0 fields */
 		0xf3, 0		/* Control (Test Req + P bit set) */
 	};
+<<<<<<< HEAD
 	long timenow = jiffies;
+=======
+	unsigned long timenow = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	writereg(dev, PP_LineCTL, readreg(dev, PP_LineCTL) | SERIAL_TX_ON);
 
@@ -526,10 +558,17 @@ send_test_pkt(struct net_device *dev)
 	iowrite16(ETH_ZLEN, lp->virt_addr + TX_LEN_PORT);
 
 	/* Test to see if the chip has allocated memory for the packet */
+<<<<<<< HEAD
 	while (jiffies - timenow < 5)
 		if (readreg(dev, PP_BusST) & READY_FOR_TX_NOW)
 			break;
 	if (jiffies - timenow >= 5)
+=======
+	while (time_before(jiffies, timenow + 5))
+		if (readreg(dev, PP_BusST) & READY_FOR_TX_NOW)
+			break;
+	if (time_after_eq(jiffies, timenow + 5))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;	/* this shouldn't happen */
 
 	/* Write the contents of the packet */
@@ -537,7 +576,11 @@ send_test_pkt(struct net_device *dev)
 
 	cs89_dbg(1, debug, "Sending test packet ");
 	/* wait a couple of jiffies for packet to be received */
+<<<<<<< HEAD
 	for (timenow = jiffies; jiffies - timenow < 3;)
+=======
+	for (timenow = jiffies; time_before(jiffies, timenow + 3);)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		;
 	if ((readreg(dev, PP_TxEvent) & TX_SEND_OK_BITS) == TX_OK) {
 		cs89_dbg(1, cont, "succeeded\n");
@@ -557,7 +600,11 @@ static int
 detect_tp(struct net_device *dev)
 {
 	struct net_local *lp = netdev_priv(dev);
+<<<<<<< HEAD
 	int timenow = jiffies;
+=======
+	unsigned long timenow = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int fdx;
 
 	cs89_dbg(1, debug, "%s: Attempting TP\n", dev->name);
@@ -575,7 +622,11 @@ detect_tp(struct net_device *dev)
 	/* Delay for the hardware to work out if the TP cable is present
 	 * - 150ms
 	 */
+<<<<<<< HEAD
 	for (timenow = jiffies; jiffies - timenow < 15;)
+=======
+	for (timenow = jiffies; time_before(jiffies, timenow + 15);)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		;
 	if ((readreg(dev, PP_LineST) & LINK_OK) == 0)
 		return DETECTED_NONE;
@@ -619,7 +670,11 @@ detect_tp(struct net_device *dev)
 		if ((lp->auto_neg_cnf & AUTO_NEG_BITS) == AUTO_NEG_ENABLE) {
 			pr_info("%s: negotiating duplex...\n", dev->name);
 			while (readreg(dev, PP_AutoNegST) & AUTO_NEG_BUSY) {
+<<<<<<< HEAD
 				if (jiffies - timenow > 4000) {
+=======
+				if (time_after(jiffies, timenow + 4000)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					pr_err("**** Full / half duplex auto-negotiation timed out ****\n");
 					break;
 				}
@@ -1174,7 +1229,11 @@ static netdev_tx_t net_send_packet(struct sk_buff *skb, struct net_device *dev)
 	writewords(lp, TX_FRAME_PORT, skb->data, (skb->len + 1) >> 1);
 	spin_unlock_irqrestore(&lp->lock, flags);
 	dev->stats.tx_bytes += skb->len;
+<<<<<<< HEAD
 	dev_kfree_skb(skb);
+=======
+	dev_consume_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We DO NOT call netif_wake_queue() here.
 	 * We also DO NOT call netif_start_queue().
@@ -1272,7 +1331,11 @@ static void __init reset_chip(struct net_device *dev)
 {
 #if !defined(CONFIG_MACH_MX31ADS)
 	struct net_local *lp = netdev_priv(dev);
+<<<<<<< HEAD
 	int reset_start_time;
+=======
+	unsigned long reset_start_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	writereg(dev, PP_SelfCTL, readreg(dev, PP_SelfCTL) | POWER_ON_RESET);
 
@@ -1295,7 +1358,11 @@ static void __init reset_chip(struct net_device *dev)
 	/* Wait until the chip is reset */
 	reset_start_time = jiffies;
 	while ((readreg(dev, PP_SelfST) & INIT_DONE) == 0 &&
+<<<<<<< HEAD
 	       jiffies - reset_start_time < 2)
+=======
+	       time_before(jiffies, reset_start_time + 2))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		;
 #endif /* !CONFIG_MACH_MX31ADS */
 }
@@ -1578,7 +1645,11 @@ out1:
 
 #ifndef CONFIG_CS89x0_PLATFORM
 /*
+<<<<<<< HEAD
  * This function converts the I/O port addres used by the cs89x0_probe() and
+=======
+ * This function converts the I/O port address used by the cs89x0_probe() and
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * init_module() functions to the I/O memory address used by the
  * cs89x0_probe1() function.
  */
@@ -1854,14 +1925,21 @@ static int __init cs89x0_platform_probe(struct platform_device *pdev)
 
 	lp = netdev_priv(dev);
 
+<<<<<<< HEAD
 	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	dev->irq = platform_get_irq(pdev, 0);
 	if (mem_res == NULL || dev->irq <= 0) {
 		dev_warn(&dev->dev, "memory/interrupt resource missing\n");
+=======
+	dev->irq = platform_get_irq(pdev, 0);
+	if (dev->irq <= 0) {
+		dev_warn(&dev->dev, "interrupt resource missing\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -ENXIO;
 		goto free;
 	}
 
+<<<<<<< HEAD
 	lp->size = resource_size(mem_res);
 	if (!request_mem_region(mem_res->start, lp->size, DRV_NAME)) {
 		dev_warn(&dev->dev, "request_mem_region() failed\n");
@@ -1880,15 +1958,31 @@ static int __init cs89x0_platform_probe(struct platform_device *pdev)
 	if (err) {
 		dev_warn(&dev->dev, "no cs8900 or cs8920 detected\n");
 		goto unmap;
+=======
+	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	virt_addr = devm_ioremap_resource(&pdev->dev, mem_res);
+	if (IS_ERR(virt_addr)) {
+		err = PTR_ERR(virt_addr);
+		goto free;
+	}
+
+	err = cs89x0_probe1(dev, virt_addr, 0);
+	if (err) {
+		dev_warn(&dev->dev, "no cs8900 or cs8920 detected\n");
+		goto free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, dev);
 	return 0;
 
+<<<<<<< HEAD
 unmap:
 	iounmap(virt_addr);
 release:
 	release_mem_region(mem_res->start, lp->size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 free:
 	free_netdev(dev);
 	return err;
@@ -1897,25 +1991,46 @@ free:
 static int cs89x0_platform_remove(struct platform_device *pdev)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct net_local *lp = netdev_priv(dev);
 	struct resource *mem_res;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* This platform_get_resource() call will not return NULL, because
 	 * the same call in cs89x0_platform_probe() has returned a non NULL
 	 * value.
 	 */
+<<<<<<< HEAD
 	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	unregister_netdev(dev);
 	iounmap(lp->virt_addr);
 	release_mem_region(mem_res->start, lp->size);
+=======
+	unregister_netdev(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(dev);
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_driver cs89x0_driver = {
 	.driver	= {
 		.name	= DRV_NAME,
 		.owner	= THIS_MODULE,
+=======
+static const struct __maybe_unused of_device_id cs89x0_match[] = {
+	{ .compatible = "cirrus,cs8900", },
+	{ .compatible = "cirrus,cs8920", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, cs89x0_match);
+
+static struct platform_driver cs89x0_driver = {
+	.driver	= {
+		.name		= DRV_NAME,
+		.of_match_table	= of_match_ptr(cs89x0_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove	= cs89x0_platform_remove,
 };

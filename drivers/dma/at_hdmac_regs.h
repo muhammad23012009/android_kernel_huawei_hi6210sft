@@ -112,6 +112,10 @@
 #define		ATC_SRC_WIDTH_BYTE	(0x0 << 24)
 #define		ATC_SRC_WIDTH_HALFWORD	(0x1 << 24)
 #define		ATC_SRC_WIDTH_WORD	(0x2 << 24)
+<<<<<<< HEAD
+=======
+#define		ATC_REG_TO_SRC_WIDTH(r)	(((r) >> 24) & 0x3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	ATC_DST_WIDTH_MASK	(0x3 << 28)	/* Destination Single Transfer Size */
 #define		ATC_DST_WIDTH(x)	((x) << 28)
 #define		ATC_DST_WIDTH_BYTE	(0x0 << 28)
@@ -181,7 +185,12 @@ struct at_lli {
  * @at_lli: hardware lli structure
  * @txd: support for the async_tx api
  * @desc_node: node on the channed descriptors list
+<<<<<<< HEAD
  * @len: total transaction bytecount
+=======
+ * @len: descriptor byte count
+ * @total_len: total transaction byte count
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct at_desc {
 	/* FIRST values the hardware uses */
@@ -192,6 +201,20 @@ struct at_desc {
 	struct dma_async_tx_descriptor	txd;
 	struct list_head		desc_node;
 	size_t				len;
+<<<<<<< HEAD
+=======
+	size_t				total_len;
+
+	/* Interleaved data */
+	size_t				boundary;
+	size_t				dst_hole;
+	size_t				src_hole;
+
+	/* Memset temporary buffer */
+	bool				memset_buffer;
+	dma_addr_t			memset_paddr;
+	int				*memset_vaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct at_desc *
@@ -228,7 +251,12 @@ enum atc_status {
  * @save_cfg: configuration register that is saved on suspend/resume cycle
  * @save_dscr: for cyclic operations, preserve next descriptor address in
  *             the cyclic list on suspend/resume cycle
+<<<<<<< HEAD
  * @dma_sconfig: configuration for slave transfers, passed via DMA_SLAVE_CONFIG
+=======
+ * @dma_sconfig: configuration for slave transfers, passed via
+ * .device_config
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @lock: serializes enqueue/dequeue operations to descriptors lists
  * @active_list: list of descriptors dmaengine is being running on
  * @queue: list of descriptors ready to be submitted to engine
@@ -321,6 +349,10 @@ struct at_dma {
 	u8			all_chan_mask;
 
 	struct dma_pool		*dma_desc_pool;
+<<<<<<< HEAD
+=======
+	struct dma_pool		*memset_pool;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* AT THE END channels table */
 	struct at_dma_chan	chan[0];
 };
@@ -342,10 +374,13 @@ static struct device *chan2dev(struct dma_chan *chan)
 {
 	return &chan->dev->device;
 }
+<<<<<<< HEAD
 static struct device *chan2parent(struct dma_chan *chan)
 {
 	return chan->dev->device.parent;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(VERBOSE_DEBUG)
 static void vdbg_dump_regs(struct at_dma_chan *atchan)
@@ -374,9 +409,15 @@ static void vdbg_dump_regs(struct at_dma_chan *atchan) {}
 static void atc_dump_lli(struct at_dma_chan *atchan, struct at_lli *lli)
 {
 	dev_crit(chan2dev(&atchan->chan_common),
+<<<<<<< HEAD
 		 "  desc: s0x%x d0x%x ctrl0x%x:0x%x l0x%x\n",
 		 lli->saddr, lli->daddr,
 		 lli->ctrla, lli->ctrlb, lli->dscr);
+=======
+		 "  desc: s%pad d%pad ctrl0x%x:0x%x l0x%pad\n",
+		 &lli->saddr, &lli->daddr,
+		 lli->ctrla, lli->ctrlb, &lli->dscr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 

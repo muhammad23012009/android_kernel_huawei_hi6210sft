@@ -3,5 +3,9 @@ command = record
 args    = -i kill >/dev/null 2>&1
 
 [event:base-record]
+<<<<<<< HEAD
 sample_type=259
+=======
+sample_type=263
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 inherit=0

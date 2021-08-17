@@ -3,10 +3,17 @@
 
 #include <linux/rbtree.h>
 
+<<<<<<< HEAD
 #define EXTENT_MAP_LAST_BYTE (u64)-4
 #define EXTENT_MAP_HOLE (u64)-3
 #define EXTENT_MAP_INLINE (u64)-2
 #define EXTENT_MAP_DELALLOC (u64)-1
+=======
+#define EXTENT_MAP_LAST_BYTE ((u64)-4)
+#define EXTENT_MAP_HOLE ((u64)-3)
+#define EXTENT_MAP_INLINE ((u64)-2)
+#define EXTENT_MAP_DELALLOC ((u64)-1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* bits for the flags field */
 #define EXTENT_FLAG_PINNED 0 /* this entry not yet on disk, don't free it */
@@ -15,6 +22,10 @@
 #define EXTENT_FLAG_PREALLOC 3 /* pre-allocated extent */
 #define EXTENT_FLAG_LOGGING 4 /* Logging this extent */
 #define EXTENT_FLAG_FILLING 5 /* Filling in a preallocated extent */
+<<<<<<< HEAD
+=======
+#define EXTENT_FLAG_FS_MAPPING 6 /* filesystem extent mapping type */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct extent_map {
 	struct rb_node rb_node;
@@ -31,9 +42,22 @@ struct extent_map {
 	u64 block_len;
 	u64 generation;
 	unsigned long flags;
+<<<<<<< HEAD
 	struct block_device *bdev;
 	atomic_t refs;
 	unsigned int in_tree;
+=======
+	union {
+		struct block_device *bdev;
+
+		/*
+		 * used for chunk mappings
+		 * flags & EXTENT_FLAG_FS_MAPPING must be set
+		 */
+		struct map_lookup *map_lookup;
+	};
+	atomic_t refs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int compress_type;
 	struct list_head list;
 };
@@ -44,6 +68,14 @@ struct extent_map_tree {
 	rwlock_t lock;
 };
 
+<<<<<<< HEAD
+=======
+static inline int extent_map_in_tree(const struct extent_map *em)
+{
+	return !RB_EMPTY_NODE(&em->rb_node);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline u64 extent_map_end(struct extent_map *em)
 {
 	if (em->start + em->len < em->start)
@@ -64,6 +96,13 @@ struct extent_map *lookup_extent_mapping(struct extent_map_tree *tree,
 int add_extent_mapping(struct extent_map_tree *tree,
 		       struct extent_map *em, int modified);
 int remove_extent_mapping(struct extent_map_tree *tree, struct extent_map *em);
+<<<<<<< HEAD
+=======
+void replace_extent_mapping(struct extent_map_tree *tree,
+			    struct extent_map *cur,
+			    struct extent_map *new,
+			    int modified);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct extent_map *alloc_extent_map(void);
 void free_extent_map(struct extent_map *em);

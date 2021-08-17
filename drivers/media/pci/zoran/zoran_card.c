@@ -50,7 +50,11 @@
 #include <linux/mutex.h>
 #include <linux/io.h>
 #include <media/v4l2-common.h>
+<<<<<<< HEAD
 #include <media/bt819.h>
+=======
+#include <media/i2c/bt819.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "videocodec.h"
 #include "zoran.h"
@@ -1049,8 +1053,14 @@ static int zr36057_init (struct zoran *zr)
 	/*
 	 *   Now add the template and register the device unit.
 	 */
+<<<<<<< HEAD
 	memcpy(zr->video_dev, &zoran_template, sizeof(zoran_template));
 	zr->video_dev->parent = &zr->pci_dev->dev;
+=======
+	*zr->video_dev = zoran_template;
+	zr->video_dev->v4l2_dev = &zr->v4l2_dev;
+	zr->video_dev->lock = &zr->lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	strcpy(zr->video_dev->name, ZR_DEVNAME(zr));
 	/* It's not a mem2mem device, but you can both capture and output from
 	   one and the same device. This should really be split up into two
@@ -1116,6 +1126,10 @@ static void zoran_remove(struct pci_dev *pdev)
 	pci_disable_device(zr->pci_dev);
 	video_unregister_device(zr->video_dev);
 exit_free:
+<<<<<<< HEAD
+=======
+	v4l2_ctrl_handler_free(&zr->hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(&zr->v4l2_dev);
 	kfree(zr);
 }
@@ -1219,9 +1233,17 @@ static int zoran_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	zr->pci_dev = pdev;
 	zr->id = nr;
 	snprintf(ZR_DEVNAME(zr), sizeof(ZR_DEVNAME(zr)), "MJPEG[%u]", zr->id);
+<<<<<<< HEAD
 	spin_lock_init(&zr->spinlock);
 	mutex_init(&zr->resource_lock);
 	mutex_init(&zr->other_lock);
+=======
+	if (v4l2_ctrl_handler_init(&zr->hdl, 10))
+		goto zr_unreg;
+	zr->v4l2_dev.ctrl_handler = &zr->hdl;
+	spin_lock_init(&zr->spinlock);
+	mutex_init(&zr->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pci_enable_device(pdev))
 		goto zr_unreg;
 	zr->revision = zr->pci_dev->revision;
@@ -1293,7 +1315,11 @@ static int zoran_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	result = request_irq(zr->pci_dev->irq, zoran_irq,
+<<<<<<< HEAD
 			     IRQF_SHARED | IRQF_DISABLED, ZR_DEVNAME(zr), zr);
+=======
+			     IRQF_SHARED, ZR_DEVNAME(zr), zr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result < 0) {
 		if (result == -EINVAL) {
 			dprintk(1,
@@ -1443,6 +1469,10 @@ zr_free_irq:
 zr_unmap:
 	iounmap(zr->zr36057_mem);
 zr_unreg:
+<<<<<<< HEAD
+=======
+	v4l2_ctrl_handler_free(&zr->hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(&zr->v4l2_dev);
 zr_free_mem:
 	kfree(zr);

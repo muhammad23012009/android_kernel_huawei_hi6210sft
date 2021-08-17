@@ -37,17 +37,27 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/usb.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <media/lirc.h>
 #include <media/lirc_dev.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MOD_AUTHOR	"Oliver Stabel <oliver.stabel@gmx.de>, " \
 			"Tim Davies <tim@opensystems.net.au>"
 #define MOD_DESC	"USB Driver for Sasem Remote Controller V1.1"
@@ -73,9 +83,15 @@ static void usb_tx_callback(struct urb *urb);
 
 /* VFD file_operations function prototypes */
 static int vfd_open(struct inode *inode, struct file *file);
+<<<<<<< HEAD
 static long vfd_ioctl(struct file *file, unsigned cmd, unsigned long arg);
 static int vfd_close(struct inode *inode, struct file *file);
 static ssize_t vfd_write(struct file *file, const char *buf,
+=======
+static long vfd_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
+static int vfd_close(struct inode *inode, struct file *file);
+static ssize_t vfd_write(struct file *file, const char __user *buf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				size_t n_bytes, loff_t *pos);
 
 /* LIRC driver function prototypes */
@@ -86,7 +102,10 @@ static void ir_close(void *data);
 #define SASEM_DATA_BUF_SZ	32
 
 struct sasem_context {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_device *dev;
 	int vfd_isopen;			/* VFD port has been opened */
 	unsigned int vfd_contrast;	/* VFD contrast */
@@ -112,7 +131,11 @@ struct sasem_context {
 	} tx;
 
 	/* for dealing with repeat codes (wish there was a toggle bit!) */
+<<<<<<< HEAD
 	struct timeval presstime;
+=======
+	ktime_t presstime;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char lastcode[8];
 	int codesaved;
 };
@@ -121,7 +144,11 @@ struct sasem_context {
 static const struct file_operations vfd_fops = {
 	.owner		= THIS_MODULE,
 	.open		= &vfd_open,
+<<<<<<< HEAD
 	.write		= &vfd_write,
+=======
+	.write		= vfd_write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unlocked_ioctl	= &vfd_ioctl,
 	.release	= &vfd_close,
 	.llseek		= noop_llseek,
@@ -156,7 +183,10 @@ static int debug;
 
 
 /*** M O D U L E   C O D E ***/
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR(MOD_AUTHOR);
 MODULE_DESCRIPTION(MOD_DESC);
 MODULE_LICENSE("GPL");
@@ -171,9 +201,12 @@ static void delete_context(struct sasem_context *context)
 	kfree(context->driver->rbuf);
 	kfree(context->driver);
 	kfree(context);
+<<<<<<< HEAD
 
 	if (debug)
 		pr_info("%s: context deleted\n", __func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void deregister_from_lirc(struct sasem_context *context)
@@ -183,11 +216,20 @@ static void deregister_from_lirc(struct sasem_context *context)
 
 	retval = lirc_unregister_driver(minor);
 	if (retval)
+<<<<<<< HEAD
 		pr_err("%s: unable to deregister from lirc (%d)\n",
 		       __func__, retval);
 	else
 		pr_info("Deregistered Sasem driver (minor:%d)\n", minor);
 
+=======
+		dev_err(&context->dev->dev,
+			"%s: unable to deregister from lirc (%d)\n",
+			__func__, retval);
+	else
+		dev_info(&context->dev->dev,
+			 "Deregistered Sasem driver (minor:%d)\n", minor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -215,9 +257,14 @@ static int vfd_open(struct inode *inode, struct file *file)
 	context = usb_get_intfdata(interface);
 
 	if (!context) {
+<<<<<<< HEAD
 		dev_err(&interface->dev,
 			"%s: no context found for minor %d\n",
 			__func__, subminor);
+=======
+		dev_err(&interface->dev, "no context found for minor %d\n",
+			subminor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = -ENODEV;
 		goto exit;
 	}
@@ -245,9 +292,15 @@ exit:
  * Called when the VFD device (e.g. /dev/usb/lcd)
  * is closed by the application.
  */
+<<<<<<< HEAD
 static long vfd_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 {
 	struct sasem_context *context = NULL;
+=======
+static long vfd_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	struct sasem_context *context;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	context = (struct sasem_context *) file->private_data;
 
@@ -299,7 +352,10 @@ static int vfd_close(struct inode *inode, struct file *file)
 		context->vfd_isopen = 0;
 		dev_info(&context->dev->dev, "VFD port closed\n");
 		if (!context->dev_present && !context->ir_isopen) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Device disconnected before close and IR port is
 			 * not open. If IR port is open, context will be
 			 * deleted by ir_close. */
@@ -333,6 +389,7 @@ static int send_packet(struct sasem_context *context)
 	context->tx_urb->actual_length = 0;
 
 	init_completion(&context->tx.finished);
+<<<<<<< HEAD
 	atomic_set(&(context->tx.busy), 1);
 
 	retval =  usb_submit_urb(context->tx_urb, GFP_KERNEL);
@@ -340,6 +397,15 @@ static int send_packet(struct sasem_context *context)
 		atomic_set(&(context->tx.busy), 0);
 		dev_err(&context->dev->dev, "%s: error submitting urb (%d)\n",
 			__func__, retval);
+=======
+	atomic_set(&context->tx.busy, 1);
+
+	retval =  usb_submit_urb(context->tx_urb, GFP_KERNEL);
+	if (retval) {
+		atomic_set(&context->tx.busy, 0);
+		dev_err(&context->dev->dev, "error submitting urb (%d)\n",
+			retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* Wait for transmission to complete (or abort) */
 		mutex_unlock(&context->ctx_lock);
@@ -349,8 +415,12 @@ static int send_packet(struct sasem_context *context)
 		retval = context->tx.status;
 		if (retval)
 			dev_err(&context->dev->dev,
+<<<<<<< HEAD
 				"%s: packet tx failed (%d)\n",
 				__func__, retval);
+=======
+				"packet tx failed (%d)\n", retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return retval;
@@ -361,7 +431,11 @@ static int send_packet(struct sasem_context *context)
  * and requires data in 9 consecutive USB interrupt packets,
  * each packet carrying 8 bytes.
  */
+<<<<<<< HEAD
 static ssize_t vfd_write(struct file *file, const char *buf,
+=======
+static ssize_t vfd_write(struct file *file, const char __user *buf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				size_t n_bytes, loff_t *pos)
 {
 	int i;
@@ -393,6 +467,10 @@ static ssize_t vfd_write(struct file *file, const char *buf,
 	data_buf = memdup_user(buf, n_bytes);
 	if (IS_ERR(data_buf)) {
 		retval = PTR_ERR(data_buf);
+<<<<<<< HEAD
+=======
+		data_buf = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit;
 	}
 
@@ -444,8 +522,12 @@ static ssize_t vfd_write(struct file *file, const char *buf,
 		retval = send_packet(context);
 		if (retval) {
 			dev_err(&context->dev->dev,
+<<<<<<< HEAD
 				"%s: send packet failed for packet #%d\n",
 				__func__, i);
+=======
+				"send packet failed for packet #%d\n", i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit;
 		}
 	}
@@ -475,8 +557,11 @@ static void usb_tx_callback(struct urb *urb)
 	/* notify waiters that write has finished */
 	atomic_set(&context->tx.busy, 0);
 	complete(&context->tx.finished);
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -490,7 +575,11 @@ static int ir_open(void *data)
 	/* prevent races with disconnect */
 	mutex_lock(&disconnect_lock);
 
+<<<<<<< HEAD
 	context = (struct sasem_context *) data;
+=======
+	context = data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&context->ctx_lock);
 
@@ -511,8 +600,12 @@ static int ir_open(void *data)
 
 	if (retval)
 		dev_err(&context->dev->dev,
+<<<<<<< HEAD
 			"%s: usb_submit_urb failed for ir_open (%d)\n",
 			__func__, retval);
+=======
+			"usb_submit_urb failed for ir_open (%d)\n", retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else {
 		context->ir_isopen = 1;
 		dev_info(&context->dev->dev, "IR port opened\n");
@@ -532,7 +625,11 @@ static void ir_close(void *data)
 {
 	struct sasem_context *context;
 
+<<<<<<< HEAD
 	context = (struct sasem_context *)data;
+=======
+	context = data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!context) {
 		pr_err("%s: no context for device\n", __func__);
 		return;
@@ -552,9 +649,13 @@ static void ir_close(void *data)
 		 * at disconnect time, so do it now.
 		 */
 		deregister_from_lirc(context);
+<<<<<<< HEAD
 
 		if (!context->vfd_isopen) {
 
+=======
+		if (!context->vfd_isopen) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mutex_unlock(&context->ctx_lock);
 			delete_context(context);
 			return;
@@ -563,7 +664,10 @@ static void ir_close(void *data)
 	}
 
 	mutex_unlock(&context->ctx_lock);
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -574,9 +678,14 @@ static void incoming_packet(struct sasem_context *context,
 {
 	int len = urb->actual_length;
 	unsigned char *buf = urb->transfer_buffer;
+<<<<<<< HEAD
 	long ms;
 	struct timeval tv;
 	int i;
+=======
+	u64 ns;
+	ktime_t kt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (len != 8) {
 		dev_warn(&context->dev->dev,
@@ -585,6 +694,7 @@ static void incoming_packet(struct sasem_context *context,
 		return;
 	}
 
+<<<<<<< HEAD
 	if (debug) {
 		printk(KERN_INFO "Incoming data: ");
 		for (i = 0; i < 8; ++i)
@@ -592,15 +702,24 @@ static void incoming_packet(struct sasem_context *context,
 		printk(KERN_CONT "\n");
 	}
 
+=======
+	if (debug)
+		dev_info(&context->dev->dev, "Incoming data: %*ph\n", len, buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Lirc could deal with the repeat code, but we really need to block it
 	 * if it arrives too late.  Otherwise we could repeat the wrong code.
 	 */
 
 	/* get the time since the last button press */
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 	ms = (tv.tv_sec - context->presstime.tv_sec) * 1000 +
 	     (tv.tv_usec - context->presstime.tv_usec) / 1000;
+=======
+	kt = ktime_get();
+	ns = ktime_to_ns(ktime_sub(kt, context->presstime));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (memcmp(buf, "\x08\0\0\0\0\0\0\0", 8) == 0) {
 		/*
@@ -614,10 +733,16 @@ static void incoming_packet(struct sasem_context *context,
 		 *   in that time and then get a false repeat of the previous
 		 *   press but it is long enough for a genuine repeat
 		 */
+<<<<<<< HEAD
 		if ((ms < 250) && (context->codesaved != 0)) {
 			memcpy(buf, &context->lastcode, 8);
 			context->presstime.tv_sec = tv.tv_sec;
 			context->presstime.tv_usec = tv.tv_usec;
+=======
+		if ((ns < 250 * NSEC_PER_MSEC) && (context->codesaved != 0)) {
+			memcpy(buf, &context->lastcode, 8);
+			context->presstime = kt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else {
 		/* save the current valid code for repeats */
@@ -627,8 +752,12 @@ static void incoming_packet(struct sasem_context *context,
 		 * just for safety reasons
 		 */
 		context->codesaved = 1;
+<<<<<<< HEAD
 		context->presstime.tv_sec = tv.tv_sec;
 		context->presstime.tv_usec = tv.tv_usec;
+=======
+		context->presstime = kt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	lirc_buffer_write(context->driver->rbuf, buf);
@@ -649,7 +778,10 @@ static void usb_rx_callback(struct urb *urb)
 		return;
 
 	switch (urb->status) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case -ENOENT:		/* usbcore unlink successful! */
 		return;
 
@@ -665,11 +797,16 @@ static void usb_rx_callback(struct urb *urb)
 	}
 
 	usb_submit_urb(context->rx_urb, GFP_ATOMIC);
+<<<<<<< HEAD
 	return;
 }
 
 
 
+=======
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * Callback function for USB core API: Probe
  */
@@ -712,6 +849,7 @@ static int sasem_probe(struct usb_interface *interface,
 	for (i = 0; i < num_endpoints && !(ir_ep_found && vfd_ep_found); ++i) {
 
 		struct usb_endpoint_descriptor *ep;
+<<<<<<< HEAD
 		int ep_dir;
 		int ep_type;
 		ep = &iface_desc->endpoint [i].desc;
@@ -721,6 +859,13 @@ static int sasem_probe(struct usb_interface *interface,
 		if (!ir_ep_found &&
 			ep_dir == USB_DIR_IN &&
 			ep_type == USB_ENDPOINT_XFER_INT) {
+=======
+
+		ep = &iface_desc->endpoint [i].desc;
+
+		if (!ir_ep_found &&
+			usb_endpoint_is_int_in(ep)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			rx_endpoint = ep;
 			ir_ep_found = 1;
@@ -729,9 +874,13 @@ static int sasem_probe(struct usb_interface *interface,
 					"%s: found IR endpoint\n", __func__);
 
 		} else if (!vfd_ep_found &&
+<<<<<<< HEAD
 			ep_dir == USB_DIR_OUT &&
 			ep_type == USB_ENDPOINT_XFER_INT) {
 
+=======
+			usb_endpoint_is_int_out(ep)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tx_endpoint = ep;
 			vfd_ep_found = 1;
 			if (debug)
@@ -757,17 +906,29 @@ static int sasem_probe(struct usb_interface *interface,
 	/* Allocate memory */
 	alloc_status = 0;
 
+<<<<<<< HEAD
 	context = kzalloc(sizeof(struct sasem_context), GFP_KERNEL);
+=======
+	context = kzalloc(sizeof(*context), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!context) {
 		alloc_status = 1;
 		goto alloc_status_switch;
 	}
+<<<<<<< HEAD
 	driver = kzalloc(sizeof(struct lirc_driver), GFP_KERNEL);
+=======
+	driver = kzalloc(sizeof(*driver), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!driver) {
 		alloc_status = 2;
 		goto alloc_status_switch;
 	}
+<<<<<<< HEAD
 	rbuf = kmalloc(sizeof(struct lirc_buffer), GFP_KERNEL);
+=======
+	rbuf = kmalloc(sizeof(*rbuf), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rbuf) {
 		alloc_status = 3;
 		goto alloc_status_switch;
@@ -780,17 +941,23 @@ static int sasem_probe(struct usb_interface *interface,
 	}
 	rx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!rx_urb) {
+<<<<<<< HEAD
 		dev_err(&interface->dev,
 			"%s: usb_alloc_urb failed for IR urb\n", __func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		alloc_status = 5;
 		goto alloc_status_switch;
 	}
 	if (vfd_ep_found) {
 		tx_urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!tx_urb) {
+<<<<<<< HEAD
 			dev_err(&interface->dev,
 				"%s: usb_alloc_urb failed for VFD urb",
 				__func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			alloc_status = 6;
 			goto alloc_status_switch;
 		}
@@ -866,6 +1033,7 @@ alloc_status_switch:
 			usb_free_urb(tx_urb);
 	case 6:
 		usb_free_urb(rx_urb);
+<<<<<<< HEAD
 	case 5:
 		lirc_buffer_free(rbuf);
 	case 4:
@@ -875,6 +1043,22 @@ alloc_status_switch:
 	case 2:
 		kfree(context);
 		context = NULL;
+=======
+		/* fall-through */
+	case 5:
+		lirc_buffer_free(rbuf);
+		/* fall-through */
+	case 4:
+		kfree(rbuf);
+		/* fall-through */
+	case 3:
+		kfree(driver);
+		/* fall-through */
+	case 2:
+		kfree(context);
+		context = NULL;
+		/* fall-through */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 1:
 		if (retval == 0)
 			retval = -ENOMEM;

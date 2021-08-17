@@ -2,6 +2,13 @@
 #define __LINUX_PAGEISOLATION_H
 
 #ifdef CONFIG_MEMORY_ISOLATION
+<<<<<<< HEAD
+=======
+static inline bool has_isolate_pageblock(struct zone *zone)
+{
+	return zone->nr_isolate_pageblock;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool is_migrate_isolate_page(struct page *page)
 {
 	return get_pageblock_migratetype(page) == MIGRATE_ISOLATE;
@@ -11,6 +18,13 @@ static inline bool is_migrate_isolate(int migratetype)
 	return migratetype == MIGRATE_ISOLATE;
 }
 #else
+<<<<<<< HEAD
+=======
+static inline bool has_isolate_pageblock(struct zone *zone)
+{
+	return false;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool is_migrate_isolate_page(struct page *page)
 {
 	return false;
@@ -57,11 +71,14 @@ undo_isolate_page_range(unsigned long start_pfn, unsigned long end_pfn,
 int test_pages_isolated(unsigned long start_pfn, unsigned long end_pfn,
 			bool skip_hwpoisoned_pages);
 
+<<<<<<< HEAD
 /*
  * Internal functions. Changes pageblock's migrate type.
  */
 int set_migratetype_isolate(struct page *page, bool skip_hwpoisoned_pages);
 void unset_migratetype_isolate(struct page *page, unsigned migratetype);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct page *alloc_migrate_target(struct page *page, unsigned long private,
 				int **resultp);
 

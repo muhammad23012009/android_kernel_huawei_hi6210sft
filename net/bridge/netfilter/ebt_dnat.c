@@ -22,7 +22,11 @@ ebt_dnat_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	if (!skb_make_writable(skb, 0))
 		return EBT_DROP;
 
+<<<<<<< HEAD
 	memcpy(eth_hdr(skb)->h_dest, info->mac, ETH_ALEN);
+=======
+	ether_addr_copy(eth_hdr(skb)->h_dest, info->mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return info->target;
 }
 

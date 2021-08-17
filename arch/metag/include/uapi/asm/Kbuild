@@ -4,11 +4,18 @@ include include/uapi/asm-generic/Kbuild.asm
 header-y += byteorder.h
 header-y += ech.h
 header-y += ptrace.h
+<<<<<<< HEAD
 header-y += resource.h
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += sigcontext.h
 header-y += siginfo.h
 header-y += swab.h
 header-y += unistd.h
 
 generic-y += mman.h
+<<<<<<< HEAD
+=======
+generic-y += resource.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += setup.h

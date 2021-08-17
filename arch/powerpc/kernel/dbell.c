@@ -17,6 +17,10 @@
 
 #include <asm/dbell.h>
 #include <asm/irq_regs.h>
+<<<<<<< HEAD
+=======
+#include <asm/kvm_ppc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 void doorbell_setup_this_cpu(void)
@@ -41,7 +45,12 @@ void doorbell_exception(struct pt_regs *regs)
 
 	may_hard_irq_enable();
 
+<<<<<<< HEAD
 	__get_cpu_var(irq_stat).doorbell_irqs++;
+=======
+	kvmppc_set_host_ipi(smp_processor_id(), 0);
+	__this_cpu_inc(irq_stat.doorbell_irqs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	smp_ipi_demux();
 

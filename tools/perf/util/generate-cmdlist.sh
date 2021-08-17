@@ -22,7 +22,11 @@ do
      }' "Documentation/perf-$cmd.txt"
 done
 
+<<<<<<< HEAD
 echo "#ifdef LIBELF_SUPPORT"
+=======
+echo "#ifdef HAVE_LIBELF_SUPPORT"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sed -n -e 's/^perf-\([^ 	]*\)[ 	].* full.*/\1/p' command-list.txt |
 sort |
 while read cmd
@@ -35,5 +39,24 @@ do
 	    p
      }' "Documentation/perf-$cmd.txt"
 done
+<<<<<<< HEAD
 echo "#endif /* LIBELF_SUPPORT */"
+=======
+echo "#endif /* HAVE_LIBELF_SUPPORT */"
+
+echo "#ifdef HAVE_LIBAUDIT_SUPPORT"
+sed -n -e 's/^perf-\([^ 	]*\)[ 	].* audit*/\1/p' command-list.txt |
+sort |
+while read cmd
+do
+     sed -n '
+     /^NAME/,/perf-'"$cmd"'/H
+     ${
+            x
+            s/.*perf-'"$cmd"' - \(.*\)/  {"'"$cmd"'", "\1"},/
+	    p
+     }' "Documentation/perf-$cmd.txt"
+done
+echo "#endif /* HAVE_LIBELF_SUPPORT */"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 echo "};"

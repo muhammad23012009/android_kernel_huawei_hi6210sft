@@ -43,7 +43,11 @@
 struct iounit_struct {
 	unsigned long		bmap[(IOUNIT_DMA_SIZE >> (PAGE_SHIFT + 3)) / sizeof(unsigned long)];
 	spinlock_t		lock;
+<<<<<<< HEAD
 	iopte_t			*page_table;
+=======
+	iopte_t __iomem		*page_table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		rotor[3];
 	unsigned long		limit[4];
 };

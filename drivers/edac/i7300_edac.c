@@ -5,7 +5,11 @@
  * GNU General Public License version 2 only.
  *
  * Copyright (c) 2010 by:
+<<<<<<< HEAD
  *	 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ *	 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Red Hat Inc. http://www.redhat.com
  *
@@ -1162,7 +1166,11 @@ static void i7300_remove_one(struct pci_dev *pdev)
  *
  * Has only 8086:360c PCI ID
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(i7300_pci_tbl) = {
+=======
+static const struct pci_device_id i7300_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I7300_MCH_ERR)},
 	{0,}			/* 0 terminated list. */
 };
@@ -1209,7 +1217,11 @@ module_init(i7300_init);
 module_exit(i7300_exit);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Red Hat Inc. (http://www.redhat.com)");
 MODULE_DESCRIPTION("MC Driver for Intel I7300 memory controllers - "
 		   I7300_REVISION);

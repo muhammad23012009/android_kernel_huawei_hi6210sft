@@ -14,9 +14,12 @@
 
 #ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS
 
+<<<<<<< HEAD
 extern void syscall_regfunc(void);
 extern void syscall_unregfunc(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 TRACE_EVENT_FN(sys_enter,
 
 	TP_PROTO(struct pt_regs *regs, long id),

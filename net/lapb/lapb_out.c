@@ -87,7 +87,12 @@ void lapb_kick(struct lapb_cb *lapb)
 		skb = skb_dequeue(&lapb->write_queue);
 
 		do {
+<<<<<<< HEAD
 			if ((skbn = skb_clone(skb, GFP_ATOMIC)) == NULL) {
+=======
+			skbn = skb_copy(skb, GFP_ATOMIC);
+			if (!skbn) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				skb_queue_head(&lapb->write_queue, skb);
 				break;
 			}
@@ -148,9 +153,13 @@ void lapb_transmit_buffer(struct lapb_cb *lapb, struct sk_buff *skb, int type)
 		}
 	}
 
+<<<<<<< HEAD
 	lapb_dbg(2, "(%p) S%d TX %02X %02X %02X\n",
 		 lapb->dev, lapb->state,
 		 skb->data[0], skb->data[1], skb->data[2]);
+=======
+	lapb_dbg(2, "(%p) S%d TX %3ph\n", lapb->dev, lapb->state, skb->data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!lapb_data_transmit(lapb, skb))
 		kfree_skb(skb);

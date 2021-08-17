@@ -18,7 +18,14 @@
 #include <linux/slab.h>
 #include <asm/uaccess.h>
 #include "internal.h"
+<<<<<<< HEAD
 
+=======
+#include <keys/user-type.h>
+
+static int request_key_auth_preparse(struct key_preparsed_payload *);
+static void request_key_auth_free_preparse(struct key_preparsed_payload *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int request_key_auth_instantiate(struct key *,
 					struct key_preparsed_payload *);
 static void request_key_auth_describe(const struct key *, struct seq_file *);
@@ -32,6 +39,11 @@ static long request_key_auth_read(const struct key *, char __user *, size_t);
 struct key_type key_type_request_key_auth = {
 	.name		= ".request_key_auth",
 	.def_datalen	= sizeof(struct request_key_auth),
+<<<<<<< HEAD
+=======
+	.preparse	= request_key_auth_preparse,
+	.free_preparse	= request_key_auth_free_preparse,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.instantiate	= request_key_auth_instantiate,
 	.describe	= request_key_auth_describe,
 	.revoke		= request_key_auth_revoke,
@@ -39,13 +51,29 @@ struct key_type key_type_request_key_auth = {
 	.read		= request_key_auth_read,
 };
 
+<<<<<<< HEAD
+=======
+static int request_key_auth_preparse(struct key_preparsed_payload *prep)
+{
+	return 0;
+}
+
+static void request_key_auth_free_preparse(struct key_preparsed_payload *prep)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Instantiate a request-key authorisation key.
  */
 static int request_key_auth_instantiate(struct key *key,
 					struct key_preparsed_payload *prep)
 {
+<<<<<<< HEAD
 	key->payload.data = (struct request_key_auth *)prep->data;
+=======
+	key->payload.data[0] = (struct request_key_auth *)prep->data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -55,11 +83,22 @@ static int request_key_auth_instantiate(struct key *key,
 static void request_key_auth_describe(const struct key *key,
 				      struct seq_file *m)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
 
 	seq_puts(m, "key:");
 	seq_puts(m, key->description);
 	if (key_is_instantiated(key))
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+
+	if (!rka)
+		return;
+
+	seq_puts(m, "key:");
+	seq_puts(m, key->description);
+	if (key_is_positive(key))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		seq_printf(m, " pid:%d ci:%zu", rka->pid, rka->callout_len);
 }
 
@@ -70,10 +109,20 @@ static void request_key_auth_describe(const struct key *key,
 static long request_key_auth_read(const struct key *key,
 				  char __user *buffer, size_t buflen)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
 	size_t datalen;
 	long ret;
 
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+	size_t datalen;
+	long ret;
+
+	if (!rka)
+		return -EKEYREVOKED;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	datalen = rka->callout_len;
 	ret = datalen;
 
@@ -96,7 +145,11 @@ static long request_key_auth_read(const struct key *key,
  */
 static void request_key_auth_revoke(struct key *key)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kenter("{%d}", key->serial);
 
@@ -111,7 +164,11 @@ static void request_key_auth_revoke(struct key *key)
  */
 static void request_key_auth_destroy(struct key *key)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
+=======
+	struct request_key_auth *rka = key->payload.data[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kenter("{%d}", key->serial);
 
@@ -165,7 +222,11 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 		if (test_bit(KEY_FLAG_REVOKED, &cred->request_key_auth->flags))
 			goto auth_key_revoked;
 
+<<<<<<< HEAD
 		irka = cred->request_key_auth->payload.data;
+=======
+		irka = cred->request_key_auth->payload.data[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rka->cred = get_cred(irka->cred);
 		rka->pid = irka->pid;
 
@@ -188,7 +249,11 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 	authkey = key_alloc(&key_type_request_key_auth, desc,
 			    cred->fsuid, cred->fsgid, cred,
 			    KEY_POS_VIEW | KEY_POS_READ | KEY_POS_SEARCH |
+<<<<<<< HEAD
 			    KEY_USR_VIEW, KEY_ALLOC_NOT_IN_QUOTA);
+=======
+			    KEY_USR_VIEW, KEY_ALLOC_NOT_IN_QUOTA, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(authkey)) {
 		ret = PTR_ERR(authkey);
 		goto error_alloc;
@@ -222,6 +287,7 @@ error_alloc:
 }
 
 /*
+<<<<<<< HEAD
  * See if an authorisation key is associated with a particular key.
  */
 static int key_get_instantiation_authkey_match(const struct key *key,
@@ -234,11 +300,14 @@ static int key_get_instantiation_authkey_match(const struct key *key,
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Search the current process's keyrings for the authorisation key for
  * instantiation of a key.
  */
 struct key *key_get_instantiation_authkey(key_serial_t target_id)
 {
+<<<<<<< HEAD
 	const struct cred *cred = current_cred();
 	struct key *authkey;
 	key_ref_t authkey_ref;
@@ -248,6 +317,24 @@ struct key *key_get_instantiation_authkey(key_serial_t target_id)
 		(void *) (unsigned long) target_id,
 		key_get_instantiation_authkey_match,
 		cred);
+=======
+	char description[16];
+	struct keyring_search_context ctx = {
+		.index_key.type		= &key_type_request_key_auth,
+		.index_key.description	= description,
+		.cred			= current_cred(),
+		.match_data.cmp		= key_default_cmp,
+		.match_data.raw_data	= description,
+		.match_data.lookup_type	= KEYRING_SEARCH_LOOKUP_DIRECT,
+		.flags			= KEYRING_SEARCH_DO_STATE_CHECK,
+	};
+	struct key *authkey;
+	key_ref_t authkey_ref;
+
+	ctx.index_key.desc_len = sprintf(description, "%x", target_id);
+
+	authkey_ref = search_process_keyrings(&ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (IS_ERR(authkey_ref)) {
 		authkey = ERR_CAST(authkey_ref);

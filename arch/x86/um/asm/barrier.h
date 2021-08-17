@@ -3,7 +3,11 @@
 
 #include <asm/asm.h>
 #include <asm/segment.h>
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
+=======
+#include <asm/cpufeatures.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cmpxchg.h>
 #include <asm/nops.h>
 
@@ -29,6 +33,7 @@
 
 #endif /* CONFIG_X86_32 */
 
+<<<<<<< HEAD
 #define read_barrier_depends()	do { } while (0)
 
 #ifdef CONFIG_SMP
@@ -68,4 +73,15 @@ static inline void rdtsc_barrier(void)
 	alternative(ASM_NOP3, "lfence", X86_FEATURE_LFENCE_RDTSC);
 }
 
+=======
+#ifdef CONFIG_X86_PPRO_FENCE
+#define dma_rmb()	rmb()
+#else /* CONFIG_X86_PPRO_FENCE */
+#define dma_rmb()	barrier()
+#endif /* CONFIG_X86_PPRO_FENCE */
+#define dma_wmb()	barrier()
+
+#include <asm-generic/barrier.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

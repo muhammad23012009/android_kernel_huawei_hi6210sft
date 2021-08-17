@@ -5,17 +5,24 @@
 #include <linux/seq_file.h>
 #include <linux/time.h>
 #include <linux/kernel_stat.h>
+<<<<<<< HEAD
 #include <asm/cputime.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int uptime_proc_show(struct seq_file *m, void *v)
 {
 	struct timespec uptime;
 	struct timespec idle;
+<<<<<<< HEAD
 	u64 idletime;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64 nsec;
 	u32 rem;
 	int i;
 
+<<<<<<< HEAD
 	idletime = 0;
 	for_each_possible_cpu(i)
 		idletime += (__force u64) kcpustat_cpu(i).cpustat[CPUTIME_IDLE];
@@ -23,6 +30,13 @@ static int uptime_proc_show(struct seq_file *m, void *v)
 	do_posix_clock_monotonic_gettime(&uptime);
 	monotonic_to_bootbased(&uptime);
 	nsec = cputime64_to_jiffies64(idletime) * TICK_NSEC;
+=======
+	nsec = 0;
+	for_each_possible_cpu(i)
+		nsec += (__force u64) kcpustat_cpu(i).cpustat[CPUTIME_IDLE];
+
+	get_monotonic_boottime(&uptime);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	idle.tv_sec = div_u64_rem(nsec, NSEC_PER_SEC, &rem);
 	idle.tv_nsec = rem;
 	seq_printf(m, "%lu.%02lu %lu.%02lu\n",
@@ -50,4 +64,8 @@ static int __init proc_uptime_init(void)
 	proc_create("uptime", 0, NULL, &uptime_proc_fops);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(proc_uptime_init);
+=======
+fs_initcall(proc_uptime_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -16,6 +16,10 @@
 #define IOPTE_WRITE   0x0000000000000002UL
 
 #define IOMMU_NUM_CTXS	4096
+<<<<<<< HEAD
+=======
+#include <linux/iommu-common.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct iommu_arena {
 	unsigned long	*map;
@@ -23,12 +27,48 @@ struct iommu_arena {
 	unsigned int	limit;
 };
 
+<<<<<<< HEAD
 struct iommu {
 	spinlock_t		lock;
 	struct iommu_arena	arena;
 	void			(*flush_all)(struct iommu *);
 	iopte_t			*page_table;
 	u32			page_table_map_base;
+=======
+#define ATU_64_SPACE_SIZE 0x800000000 /* 32G */
+
+/* Data structures for SPARC ATU architecture */
+struct atu_iotsb {
+	void	*table;		/* IOTSB table base virtual addr*/
+	u64	ra;		/* IOTSB table real addr */
+	u64	dvma_size;	/* ranges[3].size or OS slected 32G size */
+	u64	dvma_base;	/* ranges[3].base */
+	u64	table_size;	/* IOTSB table size */
+	u64	page_size;	/* IO PAGE size for IOTSB */
+	u32	iotsb_num;	/* tsbnum is same as iotsb_handle */
+};
+
+struct atu_ranges {
+	u64	base;
+	u64	size;
+};
+
+struct atu {
+	struct	atu_ranges	*ranges;
+	struct	atu_iotsb	*iotsb;
+	struct	iommu_map_table	tbl;
+	u64			base;
+	u64			size;
+	u64			dma_addr_mask;
+};
+
+struct iommu {
+	struct iommu_map_table	tbl;
+	struct atu		*atu;
+	spinlock_t		lock;
+	u32			dma_addr_mask;
+	iopte_t			*page_table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		iommu_control;
 	unsigned long		iommu_tsbbase;
 	unsigned long		iommu_flush;
@@ -40,7 +80,10 @@ struct iommu {
 	unsigned long		dummy_page_pa;
 	unsigned long		ctx_lowest_free;
 	DECLARE_BITMAP(ctx_bitmap, IOMMU_NUM_CTXS);
+<<<<<<< HEAD
 	u32			dma_addr_mask;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct strbuf {
@@ -58,8 +101,14 @@ struct strbuf {
 	volatile unsigned long	__flushflag_buf[(64+(64-1)) / sizeof(long)];
 };
 
+<<<<<<< HEAD
 extern int iommu_table_init(struct iommu *iommu, int tsbsize,
 			    u32 dma_offset, u32 dma_addr_mask,
 			    int numa_node);
+=======
+int iommu_table_init(struct iommu *iommu, int tsbsize,
+		     u32 dma_offset, u32 dma_addr_mask,
+		     int numa_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !(_SPARC64_IOMMU_H) */

@@ -2,6 +2,11 @@
 #define _XT_POLICY_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/in.h>
+#include <linux/in6.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define XT_POLICY_MAX_ELEM	4
 

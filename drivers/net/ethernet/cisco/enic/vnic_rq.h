@@ -21,6 +21,10 @@
 #define _VNIC_RQ_H_
 
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/netdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "vnic_dev.h"
 #include "vnic_cq.h"
@@ -72,6 +76,16 @@ struct vnic_rq_buf {
 	unsigned int len;
 	unsigned int index;
 	void *desc;
+<<<<<<< HEAD
+=======
+	uint64_t wr_id;
+};
+
+enum enic_poll_state {
+	ENIC_POLL_STATE_IDLE,
+	ENIC_POLL_STATE_NAPI,
+	ENIC_POLL_STATE_POLL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct vnic_rq {
@@ -84,6 +98,12 @@ struct vnic_rq {
 	struct vnic_rq_buf *to_clean;
 	void *os_buf_head;
 	unsigned int pkts_outstanding;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NET_RX_BUSY_POLL
+	atomic_t bpoll_state;
+#endif /* CONFIG_NET_RX_BUSY_POLL */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline unsigned int vnic_rq_desc_avail(struct vnic_rq *rq)
@@ -110,7 +130,12 @@ static inline unsigned int vnic_rq_next_index(struct vnic_rq *rq)
 
 static inline void vnic_rq_post(struct vnic_rq *rq,
 	void *os_buf, unsigned int os_buf_index,
+<<<<<<< HEAD
 	dma_addr_t dma_addr, unsigned int len)
+=======
+	dma_addr_t dma_addr, unsigned int len,
+	uint64_t wrid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct vnic_rq_buf *buf = rq->to_use;
 
@@ -118,6 +143,10 @@ static inline void vnic_rq_post(struct vnic_rq *rq,
 	buf->os_buf_index = os_buf_index;
 	buf->dma_addr = dma_addr;
 	buf->len = len;
+<<<<<<< HEAD
+=======
+	buf->wr_id = wrid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf = buf->next;
 	rq->to_use = buf;
@@ -194,6 +223,84 @@ static inline int vnic_rq_fill(struct vnic_rq *rq,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NET_RX_BUSY_POLL
+static inline void enic_busy_poll_init_lock(struct vnic_rq *rq)
+{
+	atomic_set(&rq->bpoll_state, ENIC_POLL_STATE_IDLE);
+}
+
+static inline bool enic_poll_lock_napi(struct vnic_rq *rq)
+{
+	int rc = atomic_cmpxchg(&rq->bpoll_state, ENIC_POLL_STATE_IDLE,
+				ENIC_POLL_STATE_NAPI);
+
+	return (rc == ENIC_POLL_STATE_IDLE);
+}
+
+static inline void enic_poll_unlock_napi(struct vnic_rq *rq,
+					 struct napi_struct *napi)
+{
+	WARN_ON(atomic_read(&rq->bpoll_state) != ENIC_POLL_STATE_NAPI);
+	napi_gro_flush(napi, false);
+	atomic_set(&rq->bpoll_state, ENIC_POLL_STATE_IDLE);
+}
+
+static inline bool enic_poll_lock_poll(struct vnic_rq *rq)
+{
+	int rc = atomic_cmpxchg(&rq->bpoll_state, ENIC_POLL_STATE_IDLE,
+				ENIC_POLL_STATE_POLL);
+
+	return (rc == ENIC_POLL_STATE_IDLE);
+}
+
+
+static inline void enic_poll_unlock_poll(struct vnic_rq *rq)
+{
+	WARN_ON(atomic_read(&rq->bpoll_state) != ENIC_POLL_STATE_POLL);
+	atomic_set(&rq->bpoll_state, ENIC_POLL_STATE_IDLE);
+}
+
+static inline bool enic_poll_busy_polling(struct vnic_rq *rq)
+{
+	return atomic_read(&rq->bpoll_state) & ENIC_POLL_STATE_POLL;
+}
+
+#else
+
+static inline void enic_busy_poll_init_lock(struct vnic_rq *rq)
+{
+}
+
+static inline bool enic_poll_lock_napi(struct vnic_rq *rq)
+{
+	return true;
+}
+
+static inline bool enic_poll_unlock_napi(struct vnic_rq *rq,
+					 struct napi_struct *napi)
+{
+	return false;
+}
+
+static inline bool enic_poll_lock_poll(struct vnic_rq *rq)
+{
+	return false;
+}
+
+static inline bool enic_poll_unlock_poll(struct vnic_rq *rq)
+{
+	return false;
+}
+
+static inline bool enic_poll_ll_polling(struct vnic_rq *rq)
+{
+	return false;
+}
+#endif /* CONFIG_NET_RX_BUSY_POLL */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void vnic_rq_free(struct vnic_rq *rq);
 int vnic_rq_alloc(struct vnic_dev *vdev, struct vnic_rq *rq, unsigned int index,
 	unsigned int desc_count, unsigned int desc_size);

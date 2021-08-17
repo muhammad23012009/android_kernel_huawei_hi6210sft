@@ -66,7 +66,11 @@ def trace_end():
 	print_drop_table()
 
 # called from perf, when it finds a correspoinding event
+<<<<<<< HEAD
 def skb__kfree_skb(name, context, cpu, sec, nsec, pid, comm,
+=======
+def skb__kfree_skb(name, context, cpu, sec, nsec, pid, comm, callchain,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   skbaddr, location, protocol):
 	slocation = str(location)
 	try:

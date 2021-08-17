@@ -21,6 +21,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/pwm.h>
 #include <linux/i2c/twl.h>

@@ -1,7 +1,11 @@
 /*
  *  mxl111sf-i2c.c - driver for the MaxLinear MXL111SF
  *
+<<<<<<< HEAD
  *  Copyright (C) 2010 Michael Krufky <mkrufky@kernellabs.com>
+=======
+ *  Copyright (C) 2010-2014 Michael Krufky <mkrufky@linuxtv.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -320,7 +324,11 @@ fail:
 static int mxl111sf_i2c_send_data(struct mxl111sf_state *state,
 				  u8 index, u8 *wdata)
 {
+<<<<<<< HEAD
 	int ret = mxl111sf_ctrl_msg(state->d, wdata[0],
+=======
+	int ret = mxl111sf_ctrl_msg(state, wdata[0],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    &wdata[1], 25, NULL, 0);
 	mxl_fail(ret);
 
@@ -330,7 +338,11 @@ static int mxl111sf_i2c_send_data(struct mxl111sf_state *state,
 static int mxl111sf_i2c_get_data(struct mxl111sf_state *state,
 				 u8 index, u8 *wdata, u8 *rdata)
 {
+<<<<<<< HEAD
 	int ret = mxl111sf_ctrl_msg(state->d, wdata[0],
+=======
+	int ret = mxl111sf_ctrl_msg(state, wdata[0],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    &wdata[1], 25, rdata, 24);
 	mxl_fail(ret);
 
@@ -842,9 +854,12 @@ int mxl111sf_i2c_xfer(struct i2c_adapter *adap,
 
 	return i == num ? num : -EREMOTEIO;
 }
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

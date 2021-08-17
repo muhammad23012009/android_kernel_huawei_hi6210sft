@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     comedi/drivers/ni_mio_cs.c
     Hardware driver for NI PCMCIA MIO E series cards
 
@@ -56,10 +57,56 @@ See the notes in the ni_atmio.o driver.
 #define ATMIO 1
 #undef PCIMIO
 
+=======
+ * Comedi driver for NI PCMCIA MIO E series cards
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 1997-2000 David A. Schleef <ds@schleef.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/*
+ * Driver: ni_mio_cs
+ * Description: National Instruments DAQCard E series
+ * Author: ds
+ * Status: works
+ * Devices: [National Instruments] DAQCard-AI-16XE-50 (ni_mio_cs),
+ *   DAQCard-AI-16E-4, DAQCard-6062E, DAQCard-6024E, DAQCard-6036E
+ * Updated: Thu Oct 23 19:43:17 CDT 2003
+ *
+ * See the notes in the ni_atmio.o driver.
+ */
+
+/*
+ * The real guts of the driver is in ni_mio_common.c, which is
+ * included by all the E series drivers.
+ *
+ * References for specifications:
+ *	341080a.pdf  DAQCard E Series Register Level Programmer Manual
+ */
+
+#include <linux/module.h>
+#include <linux/delay.h>
+
+#include "../comedi_pcmcia.h"
+#include "ni_stc.h"
+#include "8255.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *  AT specific setup
  */
 
+<<<<<<< HEAD
 #define NI_SIZE 0x20
 
 #define MAX_N_CALDACS 32
@@ -90,10 +137,37 @@ static const struct ni_board_struct ni_boards[] = {
 		.name		= "DAQCard-6062E",
 		.n_adchan	= 16,
 		.adbits		= 12,
+=======
+static const struct ni_board_struct ni_boards[] = {
+	{
+		.name		= "DAQCard-ai-16xe-50",
+		.device_id	= 0x010d,
+		.n_adchan	= 16,
+		.ai_maxdata	= 0xffff,
+		.ai_fifo_depth	= 1024,
+		.gainlkup	= ai_gain_8,
+		.ai_speed	= 5000,
+		.caldac		= { dac8800, dac8043 },
+	}, {
+		.name		= "DAQCard-ai-16e-4",
+		.device_id	= 0x010c,
+		.n_adchan	= 16,
+		.ai_maxdata	= 0x0fff,
+		.ai_fifo_depth	= 1024,
+		.gainlkup	= ai_gain_16,
+		.ai_speed	= 4000,
+		.caldac		= { mb88341 },		/* verified */
+	}, {
+		.name		= "DAQCard-6062E",
+		.device_id	= 0x02c4,
+		.n_adchan	= 16,
+		.ai_maxdata	= 0x0fff,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ai_fifo_depth	= 8192,
 		.gainlkup	= ai_gain_16,
 		.ai_speed	= 2000,
 		.n_aochan	= 2,
+<<<<<<< HEAD
 		.aobits		= 12,
 		.ao_fifo_depth	= 2048,
 		.ao_range_table	= &range_bipolar10,
@@ -106,10 +180,24 @@ static const struct ni_board_struct ni_boards[] = {
 		.name		= "DAQCard-6024E",
 		.n_adchan	= 16,
 		.adbits		= 12,
+=======
+		.ao_maxdata	= 0x0fff,
+		.ao_fifo_depth	= 2048,
+		.ao_range_table	= &range_bipolar10,
+		.ao_speed	= 1176,
+		.caldac		= { ad8804_debug },	/* verified */
+	 }, {
+		/* specs incorrect! */
+		.name		= "DAQCard-6024E",
+		.device_id	= 0x075e,
+		.n_adchan	= 16,
+		.ai_maxdata	= 0x0fff,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ai_fifo_depth	= 1024,
 		.gainlkup	= ai_gain_4,
 		.ai_speed	= 5000,
 		.n_aochan	= 2,
+<<<<<<< HEAD
 		.aobits		= 12,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 1000000,
@@ -121,30 +209,57 @@ static const struct ni_board_struct ni_boards[] = {
 		.name		= "DAQCard-6036E",
 		.n_adchan	= 16,
 		.adbits		= 16,
+=======
+		.ao_maxdata	= 0x0fff,
+		.ao_range_table	= &range_bipolar10,
+		.ao_speed	= 1000000,
+		.caldac		= { ad8804_debug },
+	}, {
+		/* specs incorrect! */
+		.name		= "DAQCard-6036E",
+		.device_id	= 0x0245,
+		.n_adchan	= 16,
+		.ai_maxdata	= 0xffff,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ai_fifo_depth	= 1024,
 		.alwaysdither	= 1,
 		.gainlkup	= ai_gain_4,
 		.ai_speed	= 5000,
 		.n_aochan	= 2,
+<<<<<<< HEAD
 		.aobits		= 16,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 1000000,
 		.num_p0_dio_channels = 8,
+=======
+		.ao_maxdata	= 0xffff,
+		.ao_range_table	= &range_bipolar10,
+		.ao_speed	= 1000000,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.caldac		= { ad8804_debug },
 	 },
 #if 0
 	{
+<<<<<<< HEAD
 		.device_id	= 0x0000,	/* unknown */
 		.name		= "DAQCard-6715",
 		.n_aochan	= 8,
 		.aobits		= 12,
 		.ao_671x	= 8192,
 		.num_p0_dio_channels = 8,
+=======
+		.name		= "DAQCard-6715",
+		.device_id	= 0x0000,	/* unknown */
+		.n_aochan	= 8,
+		.ao_maxdata	= 0x0fff,
+		.ao_671x	= 8192,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.caldac		= { mb88341, mb88341 },
 	},
 #endif
 };
 
+<<<<<<< HEAD
 #define interrupt_pin(a)	0
 
 #define IRQ_POLARITY 1
@@ -203,6 +318,8 @@ static uint16_t mio_cs_win_in(struct comedi_device *dev, int addr)
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "ni_mio_common.c"
 
 static const void *ni_getboardtype(struct comedi_device *dev,
@@ -240,7 +357,10 @@ static int mio_cs_auto_attach(struct comedi_device *dev,
 {
 	struct pcmcia_device *link = comedi_to_pcmcia_dev(dev);
 	static const struct ni_board_struct *board;
+<<<<<<< HEAD
 	struct ni_private *devpriv;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	board = ni_getboardtype(dev, link);
@@ -265,6 +385,7 @@ static int mio_cs_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	devpriv = dev->private;
 	devpriv->stc_writew	= mio_cs_win_out;
 	devpriv->stc_readw	= mio_cs_win_in;
@@ -272,6 +393,9 @@ static int mio_cs_auto_attach(struct comedi_device *dev,
 	devpriv->stc_readl	= win_in2;
 
 	return ni_E_init(dev);
+=======
+	return ni_E_init(dev, 0, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void mio_cs_detach(struct comedi_device *dev)

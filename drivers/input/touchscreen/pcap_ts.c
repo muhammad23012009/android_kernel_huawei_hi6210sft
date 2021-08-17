@@ -11,7 +11,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/fs.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -88,7 +91,11 @@ static void pcap_ts_read_xy(void *data, u16 res[2])
 
 static void pcap_ts_work(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct delayed_work *dw = container_of(work, struct delayed_work, work);
+=======
+	struct delayed_work *dw = to_delayed_work(work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pcap_ts *pcap_ts = container_of(dw, struct pcap_ts, work);
 	u8 ch[2];
 
@@ -248,7 +255,10 @@ static struct platform_driver pcap_ts_driver = {
 	.remove		= pcap_ts_remove,
 	.driver		= {
 		.name	= "pcap-ts",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= PCAP_TS_PM_OPS,
 	},
 };

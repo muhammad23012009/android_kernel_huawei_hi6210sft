@@ -28,7 +28,10 @@
 #ifdef CONFIG_PPC_PMAC
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/prom.h>
 #endif
 
@@ -180,6 +183,11 @@ static void ehci_wait_for_companions(struct pci_dev *pdev, struct usb_hcd *hcd,
  * through the hotplug entry's driver_data.
  *
  * Store this function in the HCD's struct pci_driver as probe().
+<<<<<<< HEAD
+=======
+ *
+ * Return: 0 if successful.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 {
@@ -199,13 +207,20 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 	if (pci_enable_device(dev) < 0)
 		return -ENODEV;
+<<<<<<< HEAD
 	dev->current_state = PCI_D0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The xHCI driver has its own irq management
 	 * make sure irq setup is not touched for xhci in generic hcd code
 	 */
+<<<<<<< HEAD
 	if ((driver->flags & HCD_MASK) != HCD_USB3) {
+=======
+	if ((driver->flags & HCD_MASK) < HCD_USB3) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!dev->irq) {
 			dev_err(&dev->dev,
 			"Found HC with no IRQ. Check BIOS/PCI %s setup!\n",
@@ -222,6 +237,12 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		goto disable_pci;
 	}
 
+<<<<<<< HEAD
+=======
+	hcd->amd_resume_bug = (usb_hcd_amd_remote_wakeup_quirk(dev) &&
+			driver->flags & (HCD_USB11 | HCD_USB3)) ? 1 : 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (driver->flags & HCD_MEMORY) {
 		/* EHCI, OHCI */
 		hcd->rsrc_start = pci_resource_start(dev, 0);
@@ -286,6 +307,10 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 	if (retval != 0)
 		goto unmap_registers;
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pci_dev_run_wake(dev))
 		pm_runtime_put_noidle(&dev->dev);
@@ -384,6 +409,11 @@ void usb_hcd_pci_shutdown(struct pci_dev *dev)
 	if (test_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags) &&
 			hcd->driver->shutdown) {
 		hcd->driver->shutdown(hcd);
+<<<<<<< HEAD
+=======
+		if (usb_hcd_is_primary_hcd(hcd) && hcd->irq > 0)
+			free_irq(hcd->irq, hcd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_disable_device(dev);
 	}
 }
@@ -431,7 +461,10 @@ static int check_root_hub_suspended(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int suspend_common(struct device *dev, bool do_wakeup)
 {
 	struct pci_dev		*pci_dev = to_pci_dev(dev);
@@ -523,14 +556,20 @@ static int resume_common(struct device *dev, int event)
 				event == PM_EVENT_RESTORE);
 		if (retval) {
 			dev_err(dev, "PCI post-resume error %d!\n", retval);
+<<<<<<< HEAD
 			if (hcd->shared_hcd)
 				usb_hc_died(hcd->shared_hcd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			usb_hc_died(hcd);
 		}
 	}
 	return retval;
 }
+<<<<<<< HEAD
 #endif	/* SLEEP || RUNTIME */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef	CONFIG_PM_SLEEP
 
@@ -609,8 +648,11 @@ static int hcd_pci_restore(struct device *dev)
 
 #endif	/* CONFIG_PM_SLEEP */
 
+<<<<<<< HEAD
 #ifdef	CONFIG_PM_RUNTIME
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int hcd_pci_runtime_suspend(struct device *dev)
 {
 	int	retval;
@@ -632,6 +674,7 @@ static int hcd_pci_runtime_resume(struct device *dev)
 	return retval;
 }
 
+<<<<<<< HEAD
 #else
 
 #define hcd_pci_runtime_suspend	NULL
@@ -639,6 +682,8 @@ static int hcd_pci_runtime_resume(struct device *dev)
 
 #endif	/* CONFIG_PM_RUNTIME */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const struct dev_pm_ops usb_hcd_pci_pm_ops = {
 	.suspend	= hcd_pci_suspend,
 	.suspend_noirq	= hcd_pci_suspend_noirq,

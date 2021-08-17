@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2006-2013 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2006-2016  B.A.T.M.A.N. contributors:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Simon Wunderlich, Marek Lindner
  *
@@ -12,14 +16,19 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _NET_BATMAN_ADV_HASH_H_
 #define _NET_BATMAN_ADV_HASH_H_
 
+<<<<<<< HEAD
 #include <linux/list.h>
 
 /* callback to a compare function.  should compare 2 element datas for their
@@ -33,16 +42,51 @@ typedef int (*batadv_hashdata_compare_cb)(const struct hlist_node *,
  * argument and the size the second
  */
 typedef uint32_t (*batadv_hashdata_choose_cb)(const void *, uint32_t);
+=======
+#include "main.h"
+
+#include <linux/compiler.h>
+#include <linux/list.h>
+#include <linux/rculist.h>
+#include <linux/spinlock.h>
+#include <linux/stddef.h>
+#include <linux/types.h>
+
+struct lock_class_key;
+
+/* callback to a compare function.  should compare 2 element datas for their
+ * keys
+ *
+ * Return: true if same and false if not same
+ */
+typedef bool (*batadv_hashdata_compare_cb)(const struct hlist_node *,
+					   const void *);
+
+/* the hashfunction
+ *
+ * Return: an index based on the key in the data of the first argument and the
+ * size the second
+ */
+typedef u32 (*batadv_hashdata_choose_cb)(const void *, u32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef void (*batadv_hashdata_free_cb)(struct hlist_node *, void *);
 
 struct batadv_hashtable {
 	struct hlist_head *table;   /* the hashtable itself with the buckets */
 	spinlock_t *list_locks;     /* spinlock for each hash list entry */
+<<<<<<< HEAD
 	uint32_t size;		    /* size of hashtable */
 };
 
 /* allocates and clears the hash */
 struct batadv_hashtable *batadv_hash_new(uint32_t size);
+=======
+	u32 size;		    /* size of hashtable */
+};
+
+/* allocates and clears the hash */
+struct batadv_hashtable *batadv_hash_new(u32 size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* set class key for all locks */
 void batadv_hash_set_lock_class(struct batadv_hashtable *hash,
@@ -62,7 +106,11 @@ static inline void batadv_hash_delete(struct batadv_hashtable *hash,
 	struct hlist_head *head;
 	struct hlist_node *node, *node_tmp;
 	spinlock_t *list_lock; /* spinlock to protect write access */
+<<<<<<< HEAD
 	uint32_t i;
+=======
+	u32 i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < hash->size; i++) {
 		head = &hash->table[i];
@@ -82,6 +130,7 @@ static inline void batadv_hash_delete(struct batadv_hashtable *hash,
 }
 
 /**
+<<<<<<< HEAD
  *	batadv_hash_bytes - hash some bytes and add them to the previous hash
  *	@hash: previous hash value
  *	@data: data to be hashed
@@ -104,6 +153,8 @@ static inline uint32_t batadv_hash_bytes(uint32_t hash, const void *data,
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	batadv_hash_add - adds data to the hashtable
  *	@hash: storage hash table
  *	@compare: callback to determine if 2 hash elements are identical
@@ -111,7 +162,11 @@ static inline uint32_t batadv_hash_bytes(uint32_t hash, const void *data,
  *	@data: data passed to the aforementioned callbacks as argument
  *	@data_node: to be added element
  *
+<<<<<<< HEAD
  *	Returns 0 on success, 1 if the element already is in the hash
+=======
+ *	Return: 0 on success, 1 if the element already is in the hash
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	and -1 on error.
  */
 static inline int batadv_hash_add(struct batadv_hashtable *hash,
@@ -120,7 +175,11 @@ static inline int batadv_hash_add(struct batadv_hashtable *hash,
 				  const void *data,
 				  struct hlist_node *data_node)
 {
+<<<<<<< HEAD
 	uint32_t index;
+=======
+	u32 index;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = -1;
 	struct hlist_head *head;
 	struct hlist_node *node;
@@ -154,17 +213,29 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 /* removes data from hash, if found. returns pointer do data on success, so you
  * can remove the used structure yourself, or NULL on error .  data could be the
  * structure you use with just the key filled, we just need the key for
  * comparing.
+=======
+/* removes data from hash, if found. data could be the structure you use with
+ * just the key filled, we just need the key for comparing.
+ *
+ * Return: returns pointer do data on success, so you can remove the used
+ * structure yourself, or NULL on error
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static inline void *batadv_hash_remove(struct batadv_hashtable *hash,
 				       batadv_hashdata_compare_cb compare,
 				       batadv_hashdata_choose_cb choose,
 				       void *data)
 {
+<<<<<<< HEAD
 	uint32_t index;
+=======
+	u32 index;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hlist_node *node;
 	struct hlist_head *head;
 	void *data_save = NULL;

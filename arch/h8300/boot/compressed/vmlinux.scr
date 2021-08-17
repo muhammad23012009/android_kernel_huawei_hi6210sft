@@ -1,9 +1,16 @@
 SECTIONS
 {
   .data : {
+<<<<<<< HEAD
 	_input_len = .;
 	LONG(_input_data_end - _input_data) _input_data = .;
 	*(.data)
 	_input_data_end = .;
+=======
+	input_len = .;
+	LONG(input_data_end - input_data) input_data = .;
+	*(.data)
+	input_data_end = .;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }

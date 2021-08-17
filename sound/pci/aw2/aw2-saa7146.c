@@ -27,7 +27,11 @@
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/initval.h>
 #include <sound/pcm.h>
@@ -204,8 +208,12 @@ void snd_aw2_saa7146_pcm_init_playback(struct snd_aw2_saa7146 *chip,
 		/* Define upper limit for DMA access */
 		WRITEREG(dma_addr + buffer_size, ProtA1_out);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "aw2: snd_aw2_saa7146_pcm_init_playback: "
+=======
+		pr_err("aw2: snd_aw2_saa7146_pcm_init_playback: "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       "Substream number is not 0 or 1 -> not managed\n");
 	}
 }
@@ -251,8 +259,12 @@ void snd_aw2_saa7146_pcm_init_capture(struct snd_aw2_saa7146 *chip,
 		/* Define upper limit for DMA access  */
 		WRITEREG(dma_addr + buffer_size, ProtA1_in);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "aw2: snd_aw2_saa7146_pcm_init_capture: "
+=======
+		pr_err("aw2: snd_aw2_saa7146_pcm_init_capture: "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       "Substream number is not 0 -> not managed\n");
 	}
 }

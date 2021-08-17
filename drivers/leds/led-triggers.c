@@ -11,9 +11,14 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+=======
+#include <linux/export.h>
+#include <linux/kernel.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/device.h>
@@ -27,7 +32,11 @@
  * Nests outside led_cdev->trigger_lock
  */
 static DECLARE_RWSEM(triggers_list_lock);
+<<<<<<< HEAD
 static LIST_HEAD(trigger_list);
+=======
+LIST_HEAD(trigger_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  /* Used by LED Class */
 
@@ -35,6 +44,7 @@ ssize_t led_trigger_store(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	char trigger_name[TRIG_NAME_MAX];
 	struct led_trigger *trig;
 	size_t len;
@@ -49,22 +59,54 @@ ssize_t led_trigger_store(struct device *dev, struct device_attribute *attr,
 	if (!strcmp(trigger_name, "none")) {
 		led_trigger_remove(led_cdev);
 		return count;
+=======
+	struct led_trigger *trig;
+	int ret = count;
+
+	mutex_lock(&led_cdev->led_access);
+
+	if (led_sysfs_is_disabled(led_cdev)) {
+		ret = -EBUSY;
+		goto unlock;
+	}
+
+	if (sysfs_streq(buf, "none")) {
+		led_trigger_remove(led_cdev);
+		goto unlock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	down_read(&triggers_list_lock);
 	list_for_each_entry(trig, &trigger_list, next_trig) {
+<<<<<<< HEAD
 		if (!strcmp(trigger_name, trig->name)) {
+=======
+		if (sysfs_streq(buf, trig->name)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			down_write(&led_cdev->trigger_lock);
 			led_trigger_set(led_cdev, trig);
 			up_write(&led_cdev->trigger_lock);
 
 			up_read(&triggers_list_lock);
+<<<<<<< HEAD
 			return count;
 		}
 	}
 	up_read(&triggers_list_lock);
 
 	return -EINVAL;
+=======
+			goto unlock;
+		}
+	}
+	/* we come here only if buf matches no trigger */
+	ret = -EINVAL;
+	up_read(&triggers_list_lock);
+
+unlock:
+	mutex_unlock(&led_cdev->led_access);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(led_trigger_store);
 
@@ -79,21 +121,39 @@ ssize_t led_trigger_show(struct device *dev, struct device_attribute *attr,
 	down_read(&led_cdev->trigger_lock);
 
 	if (!led_cdev->trigger)
+<<<<<<< HEAD
 		len += sprintf(buf+len, "[none] ");
 	else
 		len += sprintf(buf+len, "none ");
+=======
+		len += scnprintf(buf+len, PAGE_SIZE - len, "[none] ");
+	else
+		len += scnprintf(buf+len, PAGE_SIZE - len, "none ");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each_entry(trig, &trigger_list, next_trig) {
 		if (led_cdev->trigger && !strcmp(led_cdev->trigger->name,
 							trig->name))
+<<<<<<< HEAD
 			len += sprintf(buf+len, "[%s] ", trig->name);
 		else
 			len += sprintf(buf+len, "%s ", trig->name);
+=======
+			len += scnprintf(buf+len, PAGE_SIZE - len, "[%s] ",
+					 trig->name);
+		else
+			len += scnprintf(buf+len, PAGE_SIZE - len, "%s ",
+					 trig->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	up_read(&led_cdev->trigger_lock);
 	up_read(&triggers_list_lock);
 
+<<<<<<< HEAD
 	len += sprintf(len+buf, "\n");
+=======
+	len += scnprintf(len+buf, PAGE_SIZE - len, "\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return len;
 }
 EXPORT_SYMBOL_GPL(led_trigger_show);
@@ -106,6 +166,12 @@ void led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
 	char *envp[2];
 	const char *name;
 
+<<<<<<< HEAD
+=======
+	if (!led_cdev->trigger && !trig)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	name = trig ? trig->name : "none";
 	event = kasprintf(GFP_KERNEL, "TRIGGER=%s", name);
 
@@ -134,7 +200,13 @@ void led_trigger_set(struct led_classdev *led_cdev, struct led_trigger *trig)
 	if (event) {
 		envp[0] = event;
 		envp[1] = NULL;
+<<<<<<< HEAD
 		kobject_uevent_env(&led_cdev->dev->kobj, KOBJ_CHANGE, envp);
+=======
+		if (kobject_uevent_env(&led_cdev->dev->kobj, KOBJ_CHANGE, envp))
+			dev_err(led_cdev->dev,
+				"%s: Error sending uevent\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(event);
 	}
 }
@@ -220,9 +292,18 @@ void led_trigger_unregister(struct led_trigger *trig)
 {
 	struct led_classdev *led_cdev;
 
+<<<<<<< HEAD
 	/* Remove from the list of led triggers */
 	down_write(&triggers_list_lock);
 	list_del(&trig->next_trig);
+=======
+	if (list_empty_careful(&trig->next_trig))
+		return;
+
+	/* Remove from the list of led triggers */
+	down_write(&triggers_list_lock);
+	list_del_init(&trig->next_trig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	up_write(&triggers_list_lock);
 
 	/* Remove anyone actively using this trigger */
@@ -237,16 +318,53 @@ void led_trigger_unregister(struct led_trigger *trig)
 }
 EXPORT_SYMBOL_GPL(led_trigger_unregister);
 
+<<<<<<< HEAD
+=======
+static void devm_led_trigger_release(struct device *dev, void *res)
+{
+	led_trigger_unregister(*(struct led_trigger **)res);
+}
+
+int devm_led_trigger_register(struct device *dev,
+			      struct led_trigger *trig)
+{
+	struct led_trigger **dr;
+	int rc;
+
+	dr = devres_alloc(devm_led_trigger_release, sizeof(*dr),
+			  GFP_KERNEL);
+	if (!dr)
+		return -ENOMEM;
+
+	*dr = trig;
+
+	rc = led_trigger_register(trig);
+	if (rc)
+		devres_free(dr);
+	else
+		devres_add(dev, dr);
+
+	return rc;
+}
+EXPORT_SYMBOL_GPL(devm_led_trigger_register);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Simple LED Tigger Interface */
 
 void led_trigger_event(struct led_trigger *trig,
 			enum led_brightness brightness)
 {
+<<<<<<< HEAD
 	struct list_head *entry;
+=======
+	struct led_classdev *led_cdev;
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!trig)
 		return;
 
+<<<<<<< HEAD
 	read_lock(&trig->leddev_list_lock);
 	list_for_each(entry, &trig->led_cdevs) {
 		struct led_classdev *led_cdev;
@@ -255,6 +373,12 @@ void led_trigger_event(struct led_trigger *trig,
 		led_set_brightness(led_cdev, brightness);
 	}
 	read_unlock(&trig->leddev_list_lock);
+=======
+	read_lock_irqsave(&trig->leddev_list_lock, flags);
+	list_for_each_entry(led_cdev, &trig->led_cdevs, trig_list)
+		led_set_brightness(led_cdev, brightness);
+	read_unlock_irqrestore(&trig->leddev_list_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(led_trigger_event);
 
@@ -264,23 +388,37 @@ static void led_trigger_blink_setup(struct led_trigger *trig,
 			     int oneshot,
 			     int invert)
 {
+<<<<<<< HEAD
 	struct list_head *entry;
+=======
+	struct led_classdev *led_cdev;
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!trig)
 		return;
 
+<<<<<<< HEAD
 	read_lock(&trig->leddev_list_lock);
 	list_for_each(entry, &trig->led_cdevs) {
 		struct led_classdev *led_cdev;
 
 		led_cdev = list_entry(entry, struct led_classdev, trig_list);
+=======
+	read_lock_irqsave(&trig->leddev_list_lock, flags);
+	list_for_each_entry(led_cdev, &trig->led_cdevs, trig_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (oneshot)
 			led_blink_set_oneshot(led_cdev, delay_on, delay_off,
 					      invert);
 		else
 			led_blink_set(led_cdev, delay_on, delay_off);
 	}
+<<<<<<< HEAD
 	read_unlock(&trig->leddev_list_lock);
+=======
+	read_unlock_irqrestore(&trig->leddev_list_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void led_trigger_blink(struct led_trigger *trig,
@@ -331,7 +469,10 @@ void led_trigger_unregister_simple(struct led_trigger *trig)
 	kfree(trig);
 }
 EXPORT_SYMBOL_GPL(led_trigger_unregister_simple);
+<<<<<<< HEAD
 
 MODULE_AUTHOR("Richard Purdie");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("LED Triggers Core");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

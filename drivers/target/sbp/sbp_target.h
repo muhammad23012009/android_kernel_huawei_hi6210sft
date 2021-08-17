@@ -125,7 +125,11 @@ struct sbp_login_descriptor {
 	struct sbp_session *sess;
 	struct list_head link;
 
+<<<<<<< HEAD
 	struct se_lun *lun;
+=======
+	u32 login_lun;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u64 status_fifo_addr;
 	int exclusive;
@@ -151,6 +155,7 @@ struct sbp_session {
 	u64 reconnect_expires;
 };
 
+<<<<<<< HEAD
 struct sbp_nacl {
 	/* Initiator EUI-64 */
 	u64 guid;
@@ -160,6 +165,8 @@ struct sbp_nacl {
 	struct se_node_acl se_node_acl;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct sbp_tpg {
 	/* Target portal group tag for TCM */
 	u16 tport_tpgt;

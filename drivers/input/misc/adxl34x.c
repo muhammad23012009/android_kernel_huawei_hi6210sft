@@ -8,7 +8,10 @@
  */
 
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
@@ -158,7 +161,11 @@
 
 /* ORIENT ADXL346 only */
 #define ADXL346_2D_VALID		(1 << 6)
+<<<<<<< HEAD
 #define ADXL346_2D_ORIENT(x)		(((x) & 0x3) >> 4)
+=======
+#define ADXL346_2D_ORIENT(x)		(((x) & 0x30) >> 4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADXL346_3D_VALID		(1 << 3)
 #define ADXL346_3D_ORIENT(x)		((x) & 0x7)
 #define ADXL346_2D_PORTRAIT_POS		0	/* +X */
@@ -697,7 +704,11 @@ struct adxl34x *adxl34x_probe(struct device *dev, int irq,
 	struct input_dev *input_dev;
 	const struct adxl34x_platform_data *pdata;
 	int err, range, i;
+<<<<<<< HEAD
 	unsigned char revid;
+=======
+	int revid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!irq) {
 		dev_err(dev, "no IRQ?\n");
@@ -714,7 +725,11 @@ struct adxl34x *adxl34x_probe(struct device *dev, int irq,
 
 	ac->fifo_delay = fifo_delay_default;
 
+<<<<<<< HEAD
 	pdata = dev->platform_data;
+=======
+	pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_dbg(dev,
 			"No platform data: Using default initialization\n");

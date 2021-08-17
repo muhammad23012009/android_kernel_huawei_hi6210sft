@@ -5,6 +5,10 @@ obj-$(CONFIG_SECURITY_APPARMOR) += apparmor.o
 apparmor-y := apparmorfs.o audit.o capability.o context.o ipc.o lib.o match.o \
               path.o domain.o policy.o policy_unpack.o procattr.o lsm.o \
               resource.o sid.o file.o
+<<<<<<< HEAD
+=======
+apparmor-$(CONFIG_SECURITY_APPARMOR_HASH) += crypto.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 clean-files := capability_names.h rlim_names.h
 
@@ -18,7 +22,15 @@ quiet_cmd_make-caps = GEN     $@
 cmd_make-caps = echo "static const char *const capability_names[] = {" > $@ ;\
 	sed $< >>$@ -r -n -e '/CAP_FS_MASK/d' \
 	-e 's/^\#define[ \t]+CAP_([A-Z0-9_]+)[ \t]+([0-9]+)/[\2] = "\L\1",/p';\
+<<<<<<< HEAD
 	echo "};" >> $@
+=======
+	echo "};" >> $@ ;\
+	echo -n '\#define AA_FS_CAPS_MASK "' >> $@ ;\
+	sed $< -r -n -e '/CAP_FS_MASK/d' \
+	    -e 's/^\#define[ \t]+CAP_([A-Z0-9_]+)[ \t]+([0-9]+)/\L\1/p' | \
+	     tr '\n' ' ' | sed -e 's/ $$/"\n/' >> $@
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 # Build a lower case string table of rlimit names.

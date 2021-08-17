@@ -7,6 +7,7 @@
  */
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "omap34xx.dtsi"
 
 / {
@@ -71,4 +72,17 @@
 	usb-phy = <&usb2_phy>;
 	mode = <3>;
 	power = <50>;
+=======
+#include "omap34xx.dtsi"
+#include "omap3-evm-common.dtsi"
+
+/ {
+	model = "TI OMAP35XX EVM (TMDSEVM3530)";
+	compatible = "ti,omap3-evm", "ti,omap3";
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x10000000>; /* 256 MB */
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

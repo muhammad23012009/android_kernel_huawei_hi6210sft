@@ -71,7 +71,11 @@ static struct resource rtc_irqs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell lp8788_devs[] = {
+=======
+static const struct mfd_cell lp8788_devs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 4 bucks */
 	MFD_DEV_WITH_ID(BUCK, 1),
 	MFD_DEV_WITH_ID(BUCK, 2),
@@ -173,7 +177,11 @@ static const struct regmap_config lp8788_regmap_config = {
 static int lp8788_probe(struct i2c_client *cl, const struct i2c_device_id *id)
 {
 	struct lp8788 *lp;
+<<<<<<< HEAD
 	struct lp8788_platform_data *pdata = cl->dev.platform_data;
+=======
+	struct lp8788_platform_data *pdata = dev_get_platdata(&cl->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	lp = devm_kzalloc(&cl->dev, sizeof(struct lp8788), GFP_KERNEL);
@@ -221,7 +229,10 @@ MODULE_DEVICE_TABLE(i2c, lp8788_ids);
 static struct i2c_driver lp8788_driver = {
 	.driver = {
 		.name = "lp8788",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = lp8788_probe,
 	.remove = lp8788_remove,

@@ -41,17 +41,23 @@ MODULE_PARM_DESC(nowayout,
 
 static void indydog_start(void)
 {
+<<<<<<< HEAD
 	u32 mc_ctrl0;
 
 	spin_lock(&indydog_lock);
 	mc_ctrl0 = sgimc->cpuctrl0;
 	mc_ctrl0 = sgimc->cpuctrl0 | SGIMC_CCTRL0_WDOG;
 	sgimc->cpuctrl0 = mc_ctrl0;
+=======
+	spin_lock(&indydog_lock);
+	sgimc->cpuctrl0 |= SGIMC_CCTRL0_WDOG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&indydog_lock);
 }
 
 static void indydog_stop(void)
 {
+<<<<<<< HEAD
 	u32 mc_ctrl0;
 
 	spin_lock(&indydog_lock);
@@ -59,6 +65,10 @@ static void indydog_stop(void)
 	mc_ctrl0 = sgimc->cpuctrl0;
 	mc_ctrl0 &= ~SGIMC_CCTRL0_WDOG;
 	sgimc->cpuctrl0 = mc_ctrl0;
+=======
+	spin_lock(&indydog_lock);
+	sgimc->cpuctrl0 &= ~SGIMC_CCTRL0_WDOG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&indydog_lock);
 
 	pr_info("Stopped watchdog timer\n");
@@ -214,4 +224,7 @@ module_exit(watchdog_exit);
 MODULE_AUTHOR("Guido Guenther <agx@sigxcpu.org>");
 MODULE_DESCRIPTION("Hardware Watchdog Device for SGI IP22");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

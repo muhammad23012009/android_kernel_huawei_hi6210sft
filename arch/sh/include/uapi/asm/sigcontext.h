@@ -25,8 +25,11 @@ struct sigcontext {
 	unsigned long sc_mach;
 	unsigned long sc_macl;
 
+<<<<<<< HEAD
 #if defined(__SH4__) || defined(CONFIG_CPU_SH4) || \
     defined(__SH2A__) || defined(CONFIG_CPU_SH2A)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* FPU registers */
 	unsigned long sc_fpregs[16];
 	unsigned long sc_xfpregs[16];
@@ -34,7 +37,10 @@ struct sigcontext {
 	unsigned int sc_fpul;
 	unsigned int sc_ownedfp;
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* __ASM_SH_SIGCONTEXT_H */

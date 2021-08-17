@@ -79,7 +79,11 @@ static inline void hw_breakpoint_disable(void)
 	brk.address = 0;
 	brk.type = 0;
 	brk.len = 0;
+<<<<<<< HEAD
 	set_breakpoint(&brk);
+=======
+	__set_breakpoint(&brk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 extern void thread_change_pc(struct task_struct *tsk, struct pt_regs *regs);
 

@@ -17,12 +17,18 @@
 #include <linux/stddef.h>
 #include <linux/unistd.h>
 #include <linux/user.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/reboot.h>
 #include <linux/interrupt.h>
 #include <linux/kallsyms.h>
 #include <linux/init.h>
 #include <linux/cpu.h>
+=======
+#include <linux/interrupt.h>
+#include <linux/kallsyms.h>
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/elfcore.h>
 #include <linux/pm.h>
 #include <linux/tick.h>
@@ -30,6 +36,7 @@
 #include <linux/uaccess.h>
 #include <linux/random.h>
 #include <linux/hw_breakpoint.h>
+<<<<<<< HEAD
 #include <linux/cpuidle.h>
 #include <linux/leds.h>
 #include <linux/console.h>
@@ -47,6 +54,17 @@
 #include <linux/srecorder.h>
 #endif
 #endif /* CONFIG_SRECORDER */
+=======
+#include <linux/leds.h>
+
+#include <asm/processor.h>
+#include <asm/thread_notify.h>
+#include <asm/stacktrace.h>
+#include <asm/system_misc.h>
+#include <asm/mach/time.h>
+#include <asm/tls.h>
+#include <asm/vdso.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_CC_STACKPROTECTOR
 #include <linux/stackprotector.h>
@@ -54,6 +72,7 @@ unsigned long __stack_chk_guard __read_mostly;
 EXPORT_SYMBOL(__stack_chk_guard);
 #endif
 
+<<<<<<< HEAD
 static const char *processor_modes[] = {
   "USER_26", "FIQ_26" , "IRQ_26" , "SVC_26" , "UK4_26" , "UK5_26" , "UK6_26" , "UK7_26" ,
   "UK8_26" , "UK9_26" , "UK10_26", "UK11_26", "UK12_26", "UK13_26", "UK14_26", "UK15_26",
@@ -177,6 +196,30 @@ EXPORT_SYMBOL_GPL(arm_pm_restart);
 void (*arm_pm_idle)(void);
 
 static void default_idle(void)
+=======
+static const char *processor_modes[] __maybe_unused = {
+  "USER_26", "FIQ_26" , "IRQ_26" , "SVC_26" , "UK4_26" , "UK5_26" , "UK6_26" , "UK7_26" ,
+  "UK8_26" , "UK9_26" , "UK10_26", "UK11_26", "UK12_26", "UK13_26", "UK14_26", "UK15_26",
+  "USER_32", "FIQ_32" , "IRQ_32" , "SVC_32" , "UK4_32" , "UK5_32" , "MON_32" , "ABT_32" ,
+  "UK8_32" , "UK9_32" , "HYP_32", "UND_32" , "UK12_32", "UK13_32", "UK14_32", "SYS_32"
+};
+
+static const char *isa_modes[] __maybe_unused = {
+  "ARM" , "Thumb" , "Jazelle", "ThumbEE"
+};
+
+/*
+ * This is our default idle handler.
+ */
+
+void (*arm_pm_idle)(void);
+
+/*
+ * Called from the core idle loop.
+ */
+
+void arch_cpu_idle(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (arm_pm_idle)
 		arm_pm_idle();
@@ -205,6 +248,7 @@ void arch_cpu_idle_exit(void)
 	idle_notifier_call_chain(IDLE_END);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_HOTPLUG_CPU
 void arch_cpu_idle_dead(void)
 {
@@ -332,6 +376,8 @@ void machine_restart(char *cmd)
 	while (1);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * dump a block of kernel memory from around the given address
  */
@@ -407,6 +453,29 @@ void __show_regs(struct pt_regs *regs)
 {
 	unsigned long flags;
 	char buf[64];
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_CPU_V7M
+	unsigned int domain, fs;
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+	/*
+	 * Get the domain register for the parent context. In user
+	 * mode, we don't save the DACR, so lets use what it should
+	 * be. For other modes, we place it after the pt_regs struct.
+	 */
+	if (user_mode(regs)) {
+		domain = DACR_UACCESS_ENABLE;
+		fs = get_fs();
+	} else {
+		domain = to_svc_pt_regs(regs)->dacr;
+		fs = to_svc_pt_regs(regs)->addr_limit;
+	}
+#else
+	domain = get_domain();
+	fs = get_fs();
+#endif
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	show_regs_print_info(KERN_DEFAULT);
 
@@ -433,12 +502,37 @@ void __show_regs(struct pt_regs *regs)
 	buf[3] = flags & PSR_V_BIT ? 'V' : 'v';
 	buf[4] = '\0';
 
+<<<<<<< HEAD
 	printk("Flags: %s  IRQs o%s  FIQs o%s  Mode %s  ISA %s  Segment %s\n",
 		buf, interrupts_enabled(regs) ? "n" : "ff",
 		fast_interrupts_enabled(regs) ? "n" : "ff",
 		processor_modes[processor_mode(regs)],
 		isa_modes[isa_mode(regs)],
 		get_fs() == get_ds() ? "kernel" : "user");
+=======
+#ifndef CONFIG_CPU_V7M
+	{
+		const char *segment;
+
+		if ((domain & domain_mask(DOMAIN_USER)) ==
+		    domain_val(DOMAIN_USER, DOMAIN_NOACCESS))
+			segment = "none";
+		else if (fs == get_ds())
+			segment = "kernel";
+		else
+			segment = "user";
+
+		printk("Flags: %s  IRQs o%s  FIQs o%s  Mode %s  ISA %s  Segment %s\n",
+			buf, interrupts_enabled(regs) ? "n" : "ff",
+			fast_interrupts_enabled(regs) ? "n" : "ff",
+			processor_modes[processor_mode(regs)],
+			isa_modes[isa_mode(regs)], segment);
+	}
+#else
+	printk("xPSR: %08lx\n", regs->ARM_cpsr);
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_CPU_CP15
 	{
 		unsigned int ctrl;
@@ -446,12 +540,20 @@ void __show_regs(struct pt_regs *regs)
 		buf[0] = '\0';
 #ifdef CONFIG_CPU_CP15_MMU
 		{
+<<<<<<< HEAD
 			unsigned int transbase, dac;
 			asm("mrc p15, 0, %0, c2, c0\n\t"
 			    "mrc p15, 0, %1, c3, c0\n"
 			    : "=r" (transbase), "=r" (dac));
 			snprintf(buf, sizeof(buf), "  Table: %08x  DAC: %08x",
 			  	transbase, dac);
+=======
+			unsigned int transbase;
+			asm("mrc p15, 0, %0, c2, c0\n\t"
+			    : "=r" (transbase));
+			snprintf(buf, sizeof(buf), "  Table: %08x  DAC: %08x",
+				transbase, domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 #endif
 		asm("mrc p15, 0, %0, c1, c0\n" : "=r" (ctrl));
@@ -465,7 +567,10 @@ void __show_regs(struct pt_regs *regs)
 
 void show_regs(struct pt_regs * regs)
 {
+<<<<<<< HEAD
 	printk("\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__show_regs(regs);
 	dump_stack();
 }
@@ -477,9 +582,15 @@ EXPORT_SYMBOL_GPL(thread_notify_head);
 /*
  * Free current thread data structures etc..
  */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 	thread_notify(THREAD_NOTIFY_EXIT, current_thread_info());
+=======
+void exit_thread(struct task_struct *tsk)
+{
+	thread_notify(THREAD_NOTIFY_EXIT, task_thread_info(tsk));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void flush_thread(void)
@@ -493,6 +604,11 @@ void flush_thread(void)
 	memset(&tsk->thread.debug, 0, sizeof(struct debug_info));
 	memset(&thread->fpstate, 0, sizeof(union fp_state));
 
+<<<<<<< HEAD
+=======
+	flush_tls();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	thread_notify(THREAD_NOTIFY_FLUSH, thread);
 }
 
@@ -511,6 +627,19 @@ copy_thread(unsigned long clone_flags, unsigned long stack_start,
 
 	memset(&thread->cpu_context, 0, sizeof(struct cpu_context_save));
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_USE_DOMAINS
+	/*
+	 * Copy the initial value of the domain access control register
+	 * from the current thread: thread->addr_limit will have been
+	 * copied from the current thread via setup_thread_stack() in
+	 * kernel/fork.c
+	 */
+	thread->cpu_domain = get_domain();
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (likely(!(p->flags & PF_KTHREAD))) {
 		*childregs = *current_pt_regs();
 		childregs->ARM_r0 = 0;
@@ -586,8 +715,12 @@ unsigned long get_wchan(struct task_struct *p)
 
 unsigned long arch_randomize_brk(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	unsigned long range_end = mm->brk + 0x02000000;
 	return randomize_range(mm->brk, range_end, 0) ? : mm->brk;
+=======
+	return randomize_page(mm->brk, 0x02000000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_MMU
@@ -631,38 +764,120 @@ int in_gate_area_no_mm(unsigned long addr)
 
 const char *arch_vma_name(struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	return is_gate_vma(vma) ? "[vectors]" :
 		(vma->vm_mm && vma->vm_start == vma->vm_mm->context.sigpage) ?
 		 "[sigpage]" : NULL;
+=======
+	return is_gate_vma(vma) ? "[vectors]" : NULL;
+}
+
+/* If possible, provide a placement hint at a random offset from the
+ * stack for the sigpage and vdso pages.
+ */
+static unsigned long sigpage_addr(const struct mm_struct *mm,
+				  unsigned int npages)
+{
+	unsigned long offset;
+	unsigned long first;
+	unsigned long last;
+	unsigned long addr;
+	unsigned int slots;
+
+	first = PAGE_ALIGN(mm->start_stack);
+
+	last = TASK_SIZE - (npages << PAGE_SHIFT);
+
+	/* No room after stack? */
+	if (first > last)
+		return 0;
+
+	/* Just enough room? */
+	if (first == last)
+		return first;
+
+	slots = ((last - first) >> PAGE_SHIFT) + 1;
+
+	offset = get_random_int() % slots;
+
+	addr = first + (offset << PAGE_SHIFT);
+
+	return addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct page *signal_page;
 extern struct page *get_signal_page(void);
 
+<<<<<<< HEAD
 int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 {
 	struct mm_struct *mm = current->mm;
 	unsigned long addr;
 	int ret;
+=======
+static const struct vm_special_mapping sigpage_mapping = {
+	.name = "[sigpage]",
+	.pages = &signal_page,
+};
+
+int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+{
+	struct mm_struct *mm = current->mm;
+	struct vm_area_struct *vma;
+	unsigned long npages;
+	unsigned long addr;
+	unsigned long hint;
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!signal_page)
 		signal_page = get_signal_page();
 	if (!signal_page)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
 	addr = get_unmapped_area(NULL, 0, PAGE_SIZE, 0, 0);
+=======
+	npages = 1; /* for sigpage */
+	npages += vdso_total_pages;
+
+	if (down_write_killable(&mm->mmap_sem))
+		return -EINTR;
+	hint = sigpage_addr(mm, npages);
+	addr = get_unmapped_area(NULL, hint, npages << PAGE_SHIFT, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR_VALUE(addr)) {
 		ret = addr;
 		goto up_fail;
 	}
 
+<<<<<<< HEAD
 	ret = install_special_mapping(mm, addr, PAGE_SIZE,
 		VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC,
 		&signal_page);
 
 	if (ret == 0)
 		mm->context.sigpage = addr;
+=======
+	vma = _install_special_mapping(mm, addr, PAGE_SIZE,
+		VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC,
+		&sigpage_mapping);
+
+	if (IS_ERR(vma)) {
+		ret = PTR_ERR(vma);
+		goto up_fail;
+	}
+
+	mm->context.sigpage = addr;
+
+	/* Unlike the sigpage, failure to install the vdso is unlikely
+	 * to be fatal to the process, so no error check needed
+	 * here.
+	 */
+	arm_install_vdso(mm, addr + PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  up_fail:
 	up_write(&mm->mmap_sem);

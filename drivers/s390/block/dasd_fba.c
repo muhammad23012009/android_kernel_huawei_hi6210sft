@@ -29,6 +29,11 @@
 #endif				/* PRINTK_HEADER */
 #define PRINTK_HEADER "dasd(fba):"
 
+<<<<<<< HEAD
+=======
+#define FBA_DEFAULT_RETRIES 32
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DASD_FBA_CCW_WRITE 0x41
 #define DASD_FBA_CCW_READ 0x42
 #define DASD_FBA_CCW_LOCATE 0x43
@@ -123,6 +128,7 @@ locate_record(struct ccw1 * ccw, struct LO_fba_data *data, int rw,
 static int
 dasd_fba_check_characteristics(struct dasd_device *device)
 {
+<<<<<<< HEAD
 	struct dasd_block *block;
 	struct dasd_fba_private *private;
 	struct ccw_device *cdev = device->cdev;
@@ -130,6 +136,13 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 	int readonly;
 
 	private = (struct dasd_fba_private *) device->private;
+=======
+	struct dasd_fba_private *private = device->private;
+	struct ccw_device *cdev = device->cdev;
+	struct dasd_block *block;
+	int readonly, rc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!private) {
 		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA);
 		if (!private) {
@@ -138,7 +151,11 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 				 "data failed\n");
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		device->private = (void *) private;
+=======
+		device->private = private;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		memset(private, 0, sizeof(*private));
 	}
@@ -167,6 +184,10 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 	}
 
 	device->default_expires = DASD_EXPIRES;
+<<<<<<< HEAD
+=======
+	device->default_retries = FBA_DEFAULT_RETRIES;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	device->path_data.opm = LPM_ANYPATH;
 
 	readonly = dasd_device_is_ro(device);
@@ -189,10 +210,16 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 
 static int dasd_fba_do_analysis(struct dasd_block *block)
 {
+<<<<<<< HEAD
 	struct dasd_fba_private *private;
 	int sb, rc;
 
 	private = (struct dasd_fba_private *) block->base->private;
+=======
+	struct dasd_fba_private *private = block->base->private;
+	int sb, rc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = dasd_check_blocksize(private->rdc_data.blk_size);
 	if (rc) {
 		DBF_DEV_EVENT(DBF_WARNING, block->base, "unknown blocksize %d",
@@ -251,20 +278,31 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 					      struct dasd_block *block,
 					      struct request *req)
 {
+<<<<<<< HEAD
 	struct dasd_fba_private *private;
+=======
+	struct dasd_fba_private *private = block->base->private;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long *idaws;
 	struct LO_fba_data *LO_data;
 	struct dasd_ccw_req *cqr;
 	struct ccw1 *ccw;
 	struct req_iterator iter;
+<<<<<<< HEAD
 	struct bio_vec *bv;
+=======
+	struct bio_vec bv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *dst;
 	int count, cidaw, cplength, datasize;
 	sector_t recid, first_rec, last_rec;
 	unsigned int blksize, off;
 	unsigned char cmd;
 
+<<<<<<< HEAD
 	private = (struct dasd_fba_private *) block->base->private;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rq_data_dir(req) == READ) {
 		cmd = DASD_FBA_CCW_READ;
 	} else if (rq_data_dir(req) == WRITE) {
@@ -280,6 +318,7 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 	count = 0;
 	cidaw = 0;
 	rq_for_each_segment(bv, req, iter) {
+<<<<<<< HEAD
 		if (bv->bv_len & (blksize - 1))
 			/* Fba can only do full blocks. */
 			return ERR_PTR(-EINVAL);
@@ -288,6 +327,14 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 		if (idal_is_needed (page_address(bv->bv_page), bv->bv_len))
 			cidaw += bv->bv_len / blksize;
 #endif
+=======
+		if (bv.bv_len & (blksize - 1))
+			/* Fba can only do full blocks. */
+			return ERR_PTR(-EINVAL);
+		count += bv.bv_len >> (block->s2b_shift + 9);
+		if (idal_is_needed (page_address(bv.bv_page), bv.bv_len))
+			cidaw += bv.bv_len / blksize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* Paranoia. */
 	if (count != last_rec - first_rec + 1)
@@ -323,16 +370,28 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 	}
 	recid = first_rec;
 	rq_for_each_segment(bv, req, iter) {
+<<<<<<< HEAD
 		dst = page_address(bv->bv_page) + bv->bv_offset;
+=======
+		dst = page_address(bv.bv_page) + bv.bv_offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (dasd_page_cache) {
 			char *copy = kmem_cache_alloc(dasd_page_cache,
 						      GFP_DMA | __GFP_NOWARN);
 			if (copy && rq_data_dir(req) == WRITE)
+<<<<<<< HEAD
 				memcpy(copy + bv->bv_offset, dst, bv->bv_len);
 			if (copy)
 				dst = copy + bv->bv_offset;
 		}
 		for (off = 0; off < bv->bv_len; off += blksize) {
+=======
+				memcpy(copy + bv.bv_offset, dst, bv.bv_len);
+			if (copy)
+				dst = copy + bv.bv_offset;
+		}
+		for (off = 0; off < bv.bv_len; off += blksize) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Locate record for stupid devices. */
 			if (private->rdc_data.mode.bits.data_chain == 0) {
 				ccw[-1].flags |= CCW_FLAG_CC;
@@ -369,7 +428,11 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 	cqr->memdev = memdev;
 	cqr->block = block;
 	cqr->expires = memdev->default_expires * HZ;	/* default 5 minutes */
+<<<<<<< HEAD
 	cqr->retries = 32;
+=======
+	cqr->retries = memdev->default_retries;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cqr->buildclk = get_tod_clock();
 	cqr->status = DASD_CQR_FILLED;
 	return cqr;
@@ -378,17 +441,27 @@ static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
 static int
 dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 {
+<<<<<<< HEAD
 	struct dasd_fba_private *private;
 	struct ccw1 *ccw;
 	struct req_iterator iter;
 	struct bio_vec *bv;
+=======
+	struct dasd_fba_private *private = cqr->block->base->private;
+	struct ccw1 *ccw;
+	struct req_iterator iter;
+	struct bio_vec bv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *dst, *cda;
 	unsigned int blksize, off;
 	int status;
 
 	if (!dasd_page_cache)
 		goto out;
+<<<<<<< HEAD
 	private = (struct dasd_fba_private *) cqr->block->base->private;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blksize = cqr->block->bp_block;
 	ccw = cqr->cpaddr;
 	/* Skip over define extent & locate record. */
@@ -396,8 +469,13 @@ dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 	if (private->rdc_data.mode.bits.data_chain != 0)
 		ccw++;
 	rq_for_each_segment(bv, req, iter) {
+<<<<<<< HEAD
 		dst = page_address(bv->bv_page) + bv->bv_offset;
 		for (off = 0; off < bv->bv_len; off += blksize) {
+=======
+		dst = page_address(bv.bv_page) + bv.bv_offset;
+		for (off = 0; off < bv.bv_len; off += blksize) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Skip locate record. */
 			if (private->rdc_data.mode.bits.data_chain == 0)
 				ccw++;
@@ -408,7 +486,11 @@ dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 					cda = (char *)((addr_t) ccw->cda);
 				if (dst != cda) {
 					if (rq_data_dir(req) == READ)
+<<<<<<< HEAD
 						memcpy(dst, cda, bv->bv_len);
+=======
+						memcpy(dst, cda, bv.bv_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					kmem_cache_free(dasd_page_cache,
 					    (void *)((addr_t)cda & PAGE_MASK));
 				}
@@ -425,13 +507,21 @@ out:
 
 static void dasd_fba_handle_terminated_request(struct dasd_ccw_req *cqr)
 {
+<<<<<<< HEAD
 	cqr->status = DASD_CQR_FILLED;
+=======
+	if (cqr->retries < 0)
+		cqr->status = DASD_CQR_FAILED;
+	else
+		cqr->status = DASD_CQR_FILLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int
 dasd_fba_fill_info(struct dasd_device * device,
 		   struct dasd_information2_t * info)
 {
+<<<<<<< HEAD
 	info->label_block = 1;
 	info->FBA_layout = 1;
 	info->format = DASD_FORMAT_LDL;
@@ -439,6 +529,16 @@ dasd_fba_fill_info(struct dasd_device * device,
 	memcpy(info->characteristics,
 	       &((struct dasd_fba_private *) device->private)->rdc_data,
 	       sizeof (struct dasd_fba_characteristics));
+=======
+	struct dasd_fba_private *private = device->private;
+
+	info->label_block = 1;
+	info->FBA_layout = 1;
+	info->format = DASD_FORMAT_LDL;
+	info->characteristics_size = sizeof(private->rdc_data);
+	memcpy(info->characteristics, &private->rdc_data,
+	       sizeof(private->rdc_data));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->confdata_size = 0;
 	return 0;
 }

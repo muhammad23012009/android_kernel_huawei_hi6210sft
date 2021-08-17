@@ -453,7 +453,11 @@ ia64_peek (struct task_struct *child, struct switch_stack *child_stack,
 			return 0;
 		}
 	}
+<<<<<<< HEAD
 	copied = access_process_vm(child, addr, &ret, sizeof(ret), 0);
+=======
+	copied = access_process_vm(child, addr, &ret, sizeof(ret), FOLL_FORCE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (copied != sizeof(ret))
 		return -EIO;
 	*val = ret;
@@ -489,7 +493,12 @@ ia64_poke (struct task_struct *child, struct switch_stack *child_stack,
 				*ia64_rse_skip_regs(krbs, regnum) = val;
 			}
 		}
+<<<<<<< HEAD
 	} else if (access_process_vm(child, addr, &val, sizeof(val), 1)
+=======
+	} else if (access_process_vm(child, addr, &val, sizeof(val),
+				FOLL_FORCE | FOLL_WRITE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   != sizeof(val))
 		return -EIO;
 	return 0;
@@ -543,7 +552,12 @@ ia64_sync_user_rbs (struct task_struct *child, struct switch_stack *sw,
 		ret = ia64_peek(child, sw, user_rbs_end, addr, &val);
 		if (ret < 0)
 			return ret;
+<<<<<<< HEAD
 		if (access_process_vm(child, addr, &val, sizeof(val), 1)
+=======
+		if (access_process_vm(child, addr, &val, sizeof(val),
+				FOLL_FORCE | FOLL_WRITE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    != sizeof(val))
 			return -EIO;
 	}
@@ -559,7 +573,12 @@ ia64_sync_kernel_rbs (struct task_struct *child, struct switch_stack *sw,
 
 	/* now copy word for word from user rbs to kernel rbs: */
 	for (addr = user_rbs_start; addr < user_rbs_end; addr += 8) {
+<<<<<<< HEAD
 		if (access_process_vm(child, addr, &val, sizeof(val), 0)
+=======
+		if (access_process_vm(child, addr, &val, sizeof(val),
+				FOLL_FORCE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				!= sizeof(val))
 			return -EIO;
 
@@ -1156,7 +1175,12 @@ arch_ptrace (struct task_struct *child, long request,
 	case PTRACE_PEEKTEXT:
 	case PTRACE_PEEKDATA:
 		/* read word at location addr */
+<<<<<<< HEAD
 		if (access_process_vm(child, addr, &data, sizeof(data), 0)
+=======
+		if (ptrace_access_vm(child, addr, &data, sizeof(data),
+				FOLL_FORCE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    != sizeof(data))
 			return -EIO;
 		/* ensure return value is not mistaken for error code */
@@ -1219,7 +1243,11 @@ syscall_trace_enter (long arg0, long arg1, long arg2, long arg3,
 		ia64_sync_krbs();
 
 
+<<<<<<< HEAD
 	audit_syscall_entry(AUDIT_ARCH_IA64, regs.r15, arg0, arg1, arg2, arg3);
+=======
+	audit_syscall_entry(regs.r15, arg0, arg1, arg2, arg3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -2140,18 +2168,39 @@ static void syscall_get_set_args_cb(struct unw_frame_info *info, void *data)
 {
 	struct syscall_get_set_args *args = data;
 	struct pt_regs *pt = args->regs;
+<<<<<<< HEAD
 	unsigned long *krbs, cfm, ndirty;
+=======
+	unsigned long *krbs, cfm, ndirty, nlocals, nouts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, count;
 
 	if (unw_unwind_to_user(info) < 0)
 		return;
 
+<<<<<<< HEAD
 	cfm = pt->cr_ifs;
+=======
+	/*
+	 * We get here via a few paths:
+	 * - break instruction: cfm is shared with caller.
+	 *   syscall args are in out= regs, locals are non-empty.
+	 * - epsinstruction: cfm is set by br.call
+	 *   locals don't exist.
+	 *
+	 * For both cases argguments are reachable in cfm.sof - cfm.sol.
+	 * CFM: [ ... | sor: 17..14 | sol : 13..7 | sof : 6..0 ]
+	 */
+	cfm = pt->cr_ifs;
+	nlocals = (cfm >> 7) & 0x7f; /* aka sol */
+	nouts = (cfm & 0x7f) - nlocals; /* aka sof - sol */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	krbs = (unsigned long *)info->task + IA64_RBS_OFFSET/8;
 	ndirty = ia64_rse_num_regs(krbs, krbs + (pt->loadrs >> 19));
 
 	count = 0;
 	if (in_syscall(pt))
+<<<<<<< HEAD
 		count = min_t(int, args->n, cfm & 0x7f);
 
 	for (i = 0; i < count; i++) {
@@ -2161,6 +2210,17 @@ static void syscall_get_set_args_cb(struct unw_frame_info *info, void *data)
 		else
 			args->args[i] = *ia64_rse_skip_regs(krbs,
 				ndirty + i + args->i);
+=======
+		count = min_t(int, args->n, nouts);
+
+	/* Iterate over outs. */
+	for (i = 0; i < count; i++) {
+		int j = ndirty + nlocals + i + args->i;
+		if (args->rw)
+			*ia64_rse_skip_regs(krbs, j) = args->args[i];
+		else
+			args->args[i] = *ia64_rse_skip_regs(krbs, j);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!args->rw) {

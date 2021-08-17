@@ -5,12 +5,16 @@
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dma-debug.h>
 #include <linux/io.h>
 
 #define DMA_ERROR_CODE		(~(dma_addr_t) 0x0)
 
+<<<<<<< HEAD
 extern struct dma_map_ops s390_dma_ops;
 
 static inline struct dma_map_ops *get_dma_ops(struct device *dev)
@@ -20,11 +24,23 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 
 extern int dma_set_mask(struct device *dev, u64 mask);
 
+=======
+extern struct dma_map_ops s390_pci_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	if (dev && dev->archdata.dma_ops)
+		return dev->archdata.dma_ops;
+	return &dma_noop_ops;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 				  enum dma_data_direction direction)
 {
 }
 
+<<<<<<< HEAD
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
 #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
 
@@ -76,4 +92,13 @@ static inline void dma_free_coherent(struct device *dev, size_t size,
 	dma_ops->free(dev, size, cpu_addr, dma_handle, NULL);
 }
 
+=======
+static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+{
+	if (!dev->dma_mask)
+		return false;
+	return addr + size - 1 <= *dev->dma_mask;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_S390_DMA_MAPPING_H */

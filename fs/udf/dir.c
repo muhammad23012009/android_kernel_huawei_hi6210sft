@@ -30,21 +30,38 @@
 #include <linux/errno.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "udf_i.h"
 #include "udf_sb.h"
 
+<<<<<<< HEAD
 static int do_udf_readdir(struct inode *dir, struct file *filp,
 			  filldir_t filldir, void *dirent)
 {
+=======
+
+static int udf_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *dir = file_inode(file);
+	struct udf_inode_info *iinfo = UDF_I(dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct udf_fileident_bh fibh = { .sbh = NULL, .ebh = NULL};
 	struct fileIdentDesc *fi = NULL;
 	struct fileIdentDesc cfi;
 	int block, iblock;
+<<<<<<< HEAD
 	loff_t nf_pos = (filp->f_pos - 1) << 2;
 	int flen;
 	unsigned char *fname = NULL;
+=======
+	loff_t nf_pos;
+	int flen;
+	unsigned char *fname = NULL, *copy_name = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char *nameptr;
 	uint16_t liu;
 	uint8_t lfi;
@@ -54,10 +71,22 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 	uint32_t elen;
 	sector_t offset;
 	int i, num, ret = 0;
+<<<<<<< HEAD
 	unsigned int dt_type;
 	struct extent_position epos = { NULL, 0, {0, 0} };
 	struct udf_inode_info *iinfo;
 
+=======
+	struct extent_position epos = { NULL, 0, {0, 0} };
+	struct super_block *sb = dir->i_sb;
+
+	if (ctx->pos == 0) {
+		if (!dir_emit_dot(file, ctx))
+			return 0;
+		ctx->pos = 1;
+	}
+	nf_pos = (ctx->pos - 1) << 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (nf_pos >= size)
 		goto out;
 
@@ -70,17 +99,28 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 	if (nf_pos == 0)
 		nf_pos = udf_ext0_offset(dir);
 
+<<<<<<< HEAD
 	fibh.soffset = fibh.eoffset = nf_pos & (dir->i_sb->s_blocksize - 1);
 	iinfo = UDF_I(dir);
 	if (iinfo->i_alloc_type != ICBTAG_FLAG_AD_IN_ICB) {
 		if (inode_bmap(dir, nf_pos >> dir->i_sb->s_blocksize_bits,
+=======
+	fibh.soffset = fibh.eoffset = nf_pos & (sb->s_blocksize - 1);
+	if (iinfo->i_alloc_type != ICBTAG_FLAG_AD_IN_ICB) {
+		if (inode_bmap(dir, nf_pos >> sb->s_blocksize_bits,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    &epos, &eloc, &elen, &offset)
 		    != (EXT_RECORDED_ALLOCATED >> 30)) {
 			ret = -ENOENT;
 			goto out;
 		}
+<<<<<<< HEAD
 		block = udf_get_lb_pblock(dir->i_sb, &eloc, offset);
 		if ((++offset << dir->i_sb->s_blocksize_bits) < elen) {
+=======
+		block = udf_get_lb_pblock(sb, &eloc, offset);
+		if ((++offset << sb->s_blocksize_bits) < elen) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_SHORT)
 				epos.offset -= sizeof(struct short_ad);
 			else if (iinfo->i_alloc_type ==
@@ -90,11 +130,16 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 			offset = 0;
 		}
 
+<<<<<<< HEAD
 		if (!(fibh.sbh = fibh.ebh = udf_tread(dir->i_sb, block))) {
+=======
+		if (!(fibh.sbh = fibh.ebh = udf_tread(sb, block))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -EIO;
 			goto out;
 		}
 
+<<<<<<< HEAD
 		if (!(offset & ((16 >> (dir->i_sb->s_blocksize_bits - 9)) - 1))) {
 			i = 16 >> (dir->i_sb->s_blocksize_bits - 9);
 			if (i + offset > (elen >> dir->i_sb->s_blocksize_bits))
@@ -102,13 +147,26 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 			for (num = 0; i > 0; i--) {
 				block = udf_get_lb_pblock(dir->i_sb, &eloc, offset + i);
 				tmp = udf_tgetblk(dir->i_sb, block);
+=======
+		if (!(offset & ((16 >> (sb->s_blocksize_bits - 9)) - 1))) {
+			i = 16 >> (sb->s_blocksize_bits - 9);
+			if (i + offset > (elen >> sb->s_blocksize_bits))
+				i = (elen >> sb->s_blocksize_bits) - offset;
+			for (num = 0; i > 0; i--) {
+				block = udf_get_lb_pblock(sb, &eloc, offset + i);
+				tmp = udf_tgetblk(sb, block);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (tmp && !buffer_uptodate(tmp) && !buffer_locked(tmp))
 					bha[num++] = tmp;
 				else
 					brelse(tmp);
 			}
 			if (num) {
+<<<<<<< HEAD
 				ll_rw_block(READA, num, bha);
+=======
+				ll_rw_block(REQ_OP_READ, REQ_RAHEAD, num, bha);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				for (i = 0; i < num; i++)
 					brelse(bha[i]);
 			}
@@ -116,7 +174,13 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 	}
 
 	while (nf_pos < size) {
+<<<<<<< HEAD
 		filp->f_pos = (nf_pos >> 2) + 1;
+=======
+		struct kernel_lb_addr tloc;
+
+		ctx->pos = (nf_pos >> 2) + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		fi = udf_fileident_read(dir, &nf_pos, &fibh, &cfi, &epos, &eloc,
 					&elen, &offset);
@@ -136,7 +200,19 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 			if (poffset >= lfi) {
 				nameptr = (char *)(fibh.ebh->b_data + poffset - lfi);
 			} else {
+<<<<<<< HEAD
 				nameptr = fname;
+=======
+				if (!copy_name) {
+					copy_name = kmalloc(UDF_NAME_LEN,
+							    GFP_NOFS);
+					if (!copy_name) {
+						ret = -ENOMEM;
+						goto out;
+					}
+				}
+				nameptr = copy_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				memcpy(nameptr, fi->fileIdent + liu,
 				       lfi - poffset);
 				memcpy(nameptr + lfi - poffset,
@@ -145,16 +221,25 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 		}
 
 		if ((cfi.fileCharacteristics & FID_FILE_CHAR_DELETED) != 0) {
+<<<<<<< HEAD
 			if (!UDF_QUERY_FLAG(dir->i_sb, UDF_FLAG_UNDELETE))
+=======
+			if (!UDF_QUERY_FLAG(sb, UDF_FLAG_UNDELETE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 		}
 
 		if ((cfi.fileCharacteristics & FID_FILE_CHAR_HIDDEN) != 0) {
+<<<<<<< HEAD
 			if (!UDF_QUERY_FLAG(dir->i_sb, UDF_FLAG_UNHIDE))
+=======
+			if (!UDF_QUERY_FLAG(sb, UDF_FLAG_UNHIDE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 		}
 
 		if (cfi.fileCharacteristics & FID_FILE_CHAR_PARENT) {
+<<<<<<< HEAD
 			iblock = parent_ino(filp->f_path.dentry);
 			flen = 2;
 			memcpy(fname, "..", flen);
@@ -174,6 +259,24 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 	} /* end while */
 
 	filp->f_pos = (nf_pos >> 2) + 1;
+=======
+			if (!dir_emit_dotdot(file, ctx))
+				goto out;
+			continue;
+		}
+
+		flen = udf_get_filename(sb, nameptr, lfi, fname, UDF_NAME_LEN);
+		if (flen < 0)
+			continue;
+
+		tloc = lelb_to_cpu(cfi.icb.extLocation);
+		iblock = udf_get_lb_pblock(sb, &tloc, 0);
+		if (!dir_emit(ctx, fname, flen, iblock, DT_UNKNOWN))
+			goto out;
+	} /* end while */
+
+	ctx->pos = (nf_pos >> 2) + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out:
 	if (fibh.sbh != fibh.ebh)
@@ -181,10 +284,15 @@ out:
 	brelse(fibh.sbh);
 	brelse(epos.bh);
 	kfree(fname);
+<<<<<<< HEAD
+=======
+	kfree(copy_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int udf_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *dir = file_inode(filp);
@@ -201,11 +309,17 @@ static int udf_readdir(struct file *filp, void *dirent, filldir_t filldir)
  	return result;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* readdir and lookup functions */
 const struct file_operations udf_dir_operations = {
 	.llseek			= generic_file_llseek,
 	.read			= generic_read_dir,
+<<<<<<< HEAD
 	.readdir		= udf_readdir,
+=======
+	.iterate_shared		= udf_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unlocked_ioctl		= udf_ioctl,
 	.fsync			= generic_file_fsync,
 };

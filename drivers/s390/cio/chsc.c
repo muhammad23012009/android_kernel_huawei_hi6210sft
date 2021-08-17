@@ -14,12 +14,21 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 
 #include <asm/cio.h>
 #include <asm/chpid.h>
 #include <asm/chsc.h>
 #include <asm/crw.h>
+<<<<<<< HEAD
+=======
+#include <asm/isc.h>
+#include <asm/ebcdic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "css.h"
 #include "cio.h"
@@ -54,6 +63,10 @@ int chsc_error_from_response(int response)
 	case 0x0004:
 		return -EOPNOTSUPP;
 	case 0x000b:
+<<<<<<< HEAD
+=======
+	case 0x0107:		/* "Channel busy" for the op 0x003d */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	case 0x0100:
 	case 0x0102:
@@ -91,12 +104,20 @@ struct chsc_ssd_area {
 int chsc_get_ssd_info(struct subchannel_id schid, struct chsc_ssd_info *ssd)
 {
 	struct chsc_ssd_area *ssd_area;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ccode;
 	int ret;
 	int i;
 	int mask;
 
+<<<<<<< HEAD
 	spin_lock_irq(&chsc_page_lock);
+=======
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(chsc_page, 0, PAGE_SIZE);
 	ssd_area = chsc_page;
 	ssd_area->request.length = 0x0010;
@@ -140,10 +161,76 @@ int chsc_get_ssd_info(struct subchannel_id schid, struct chsc_ssd_info *ssd)
 			ssd->fla[i] = ssd_area->fla[i];
 	}
 out:
+<<<<<<< HEAD
 	spin_unlock_irq(&chsc_page_lock);
 	return ret;
 }
 
+=======
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+	return ret;
+}
+
+/**
+ * chsc_ssqd() - store subchannel QDIO data (SSQD)
+ * @schid: id of the subchannel on which SSQD is performed
+ * @ssqd: request and response block for SSQD
+ *
+ * Returns 0 on success.
+ */
+int chsc_ssqd(struct subchannel_id schid, struct chsc_ssqd_area *ssqd)
+{
+	memset(ssqd, 0, sizeof(*ssqd));
+	ssqd->request.length = 0x0010;
+	ssqd->request.code = 0x0024;
+	ssqd->first_sch = schid.sch_no;
+	ssqd->last_sch = schid.sch_no;
+	ssqd->ssid = schid.ssid;
+
+	if (chsc(ssqd))
+		return -EIO;
+
+	return chsc_error_from_response(ssqd->response.code);
+}
+EXPORT_SYMBOL_GPL(chsc_ssqd);
+
+/**
+ * chsc_sadc() - set adapter device controls (SADC)
+ * @schid: id of the subchannel on which SADC is performed
+ * @scssc: request and response block for SADC
+ * @summary_indicator_addr: summary indicator address
+ * @subchannel_indicator_addr: subchannel indicator address
+ *
+ * Returns 0 on success.
+ */
+int chsc_sadc(struct subchannel_id schid, struct chsc_scssc_area *scssc,
+	      u64 summary_indicator_addr, u64 subchannel_indicator_addr)
+{
+	memset(scssc, 0, sizeof(*scssc));
+	scssc->request.length = 0x0fe0;
+	scssc->request.code = 0x0021;
+	scssc->operation_code = 0;
+
+	scssc->summary_indicator_addr = summary_indicator_addr;
+	scssc->subchannel_indicator_addr = subchannel_indicator_addr;
+
+	scssc->ks = PAGE_DEFAULT_KEY >> 4;
+	scssc->kc = PAGE_DEFAULT_KEY >> 4;
+	scssc->isc = QDIO_AIRQ_ISC;
+	scssc->schid = schid;
+
+	/* enable the time delay disablement facility */
+	if (css_general_characteristics.aif_tdd)
+		scssc->word_with_d_bit = 0x10000000;
+
+	if (chsc(scssc))
+		return -EIO;
+
+	return chsc_error_from_response(scssc->response.code);
+}
+EXPORT_SYMBOL_GPL(chsc_sadc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int s390_subchannel_remove_chpid(struct subchannel *sch, void *data)
 {
 	spin_lock_irq(sch->lock);
@@ -162,8 +249,14 @@ out_unreg:
 
 void chsc_chp_offline(struct chp_id chpid)
 {
+<<<<<<< HEAD
 	char dbf_txt[15];
 	struct chp_link link;
+=======
+	struct channel_path *chp = chpid_to_chp(chpid);
+	struct chp_link link;
+	char dbf_txt[15];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sprintf(dbf_txt, "chpr%x.%02x", chpid.cssid, chpid.id);
 	CIO_TRACE_EVENT(2, dbf_txt);
@@ -174,6 +267,7 @@ void chsc_chp_offline(struct chp_id chpid)
 	link.chpid = chpid;
 	/* Wait until previous actions have settled. */
 	css_wait_for_slow_path();
+<<<<<<< HEAD
 	for_each_subchannel_staged(s390_subchannel_remove_chpid, NULL, &link);
 }
 
@@ -195,6 +289,14 @@ static int s390_process_res_acc_new_sch(struct subchannel_id schid, void *data)
 	/* Put it on the slow path. */
 	css_schedule_eval(schid);
 	return 0;
+=======
+
+	mutex_lock(&chp->lock);
+	chp_update_desc(chp);
+	mutex_unlock(&chp->lock);
+
+	for_each_subchannel_staged(s390_subchannel_remove_chpid, NULL, &link);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __s390_process_res_acc(struct subchannel *sch, void *data)
@@ -227,6 +329,7 @@ static void s390_process_res_acc(struct chp_link *link)
 	 * The more information we have (info), the less scanning
 	 * will we have to do.
 	 */
+<<<<<<< HEAD
 	for_each_subchannel_staged(__s390_process_res_acc,
 				   s390_process_res_acc_new_sch, link);
 }
@@ -259,6 +362,10 @@ __get_chpid_from_lir(void *data)
 	/* Byte 3 contains the chpid. Could also be CTCA, but we don't care */
 
 	return (u16) (lir->indesc[0]&0x000000ff);
+=======
+	for_each_subchannel_staged(__s390_process_res_acc, NULL, link);
+	css_schedule_reprobe();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct chsc_sei_nt0_area {
@@ -300,6 +407,7 @@ struct chsc_sei {
 	} u;
 } __packed;
 
+<<<<<<< HEAD
 static void chsc_process_sei_link_incident(struct chsc_sei_nt0_area *sei_area)
 {
 	struct chp_id chpid;
@@ -316,11 +424,143 @@ static void chsc_process_sei_link_incident(struct chsc_sei_nt0_area *sei_area)
 		chp_id_init(&chpid);
 		chpid.id = id;
 		chsc_chp_offline(chpid);
+=======
+/*
+ * Node Descriptor as defined in SA22-7204, "Common I/O-Device Commands"
+ */
+
+#define ND_VALIDITY_VALID	0
+#define ND_VALIDITY_OUTDATED	1
+#define ND_VALIDITY_INVALID	2
+
+struct node_descriptor {
+	/* Flags. */
+	union {
+		struct {
+			u32 validity:3;
+			u32 reserved:5;
+		} __packed;
+		u8 byte0;
+	} __packed;
+
+	/* Node parameters. */
+	u32 params:24;
+
+	/* Node ID. */
+	char type[6];
+	char model[3];
+	char manufacturer[3];
+	char plant[2];
+	char seq[12];
+	u16 tag;
+} __packed;
+
+/*
+ * Link Incident Record as defined in SA22-7202, "ESCON I/O Interface"
+ */
+
+#define LIR_IQ_CLASS_INFO		0
+#define LIR_IQ_CLASS_DEGRADED		1
+#define LIR_IQ_CLASS_NOT_OPERATIONAL	2
+
+struct lir {
+	struct {
+		u32 null:1;
+		u32 reserved:3;
+		u32 class:2;
+		u32 reserved2:2;
+	} __packed iq;
+	u32 ic:8;
+	u32 reserved:16;
+	struct node_descriptor incident_node;
+	struct node_descriptor attached_node;
+	u8 reserved2[32];
+} __packed;
+
+#define PARAMS_LEN	10	/* PARAMS=xx,xxxxxx */
+#define NODEID_LEN	35	/* NODEID=tttttt/mdl,mmm.ppssssssssssss,xxxx */
+
+/* Copy EBCIDC text, convert to ASCII and optionally add delimiter. */
+static char *store_ebcdic(char *dest, const char *src, unsigned long len,
+			  char delim)
+{
+	memcpy(dest, src, len);
+	EBCASC(dest, len);
+
+	if (delim)
+		dest[len++] = delim;
+
+	return dest + len;
+}
+
+/* Format node ID and parameters for output in LIR log message. */
+static void format_node_data(char *params, char *id, struct node_descriptor *nd)
+{
+	memset(params, 0, PARAMS_LEN);
+	memset(id, 0, NODEID_LEN);
+
+	if (nd->validity != ND_VALIDITY_VALID) {
+		strncpy(params, "n/a", PARAMS_LEN - 1);
+		strncpy(id, "n/a", NODEID_LEN - 1);
+		return;
+	}
+
+	/* PARAMS=xx,xxxxxx */
+	snprintf(params, PARAMS_LEN, "%02x,%06x", nd->byte0, nd->params);
+	/* NODEID=tttttt/mdl,mmm.ppssssssssssss,xxxx */
+	id = store_ebcdic(id, nd->type, sizeof(nd->type), '/');
+	id = store_ebcdic(id, nd->model, sizeof(nd->model), ',');
+	id = store_ebcdic(id, nd->manufacturer, sizeof(nd->manufacturer), '.');
+	id = store_ebcdic(id, nd->plant, sizeof(nd->plant), 0);
+	id = store_ebcdic(id, nd->seq, sizeof(nd->seq), ',');
+	sprintf(id, "%04X", nd->tag);
+}
+
+static void chsc_process_sei_link_incident(struct chsc_sei_nt0_area *sei_area)
+{
+	struct lir *lir = (struct lir *) &sei_area->ccdf;
+	char iuparams[PARAMS_LEN], iunodeid[NODEID_LEN], auparams[PARAMS_LEN],
+	     aunodeid[NODEID_LEN];
+
+	CIO_CRW_EVENT(4, "chsc: link incident (rs=%02x, rs_id=%04x, iq=%02x)\n",
+		      sei_area->rs, sei_area->rsid, sei_area->ccdf[0]);
+
+	/* Ignore NULL Link Incident Records. */
+	if (lir->iq.null)
+		return;
+
+	/* Inform user that a link requires maintenance actions because it has
+	 * become degraded or not operational. Note that this log message is
+	 * the primary intention behind a Link Incident Record. */
+
+	format_node_data(iuparams, iunodeid, &lir->incident_node);
+	format_node_data(auparams, aunodeid, &lir->attached_node);
+
+	switch (lir->iq.class) {
+	case LIR_IQ_CLASS_DEGRADED:
+		pr_warn("Link degraded: RS=%02x RSID=%04x IC=%02x "
+			"IUPARAMS=%s IUNODEID=%s AUPARAMS=%s AUNODEID=%s\n",
+			sei_area->rs, sei_area->rsid, lir->ic, iuparams,
+			iunodeid, auparams, aunodeid);
+		break;
+	case LIR_IQ_CLASS_NOT_OPERATIONAL:
+		pr_err("Link stopped: RS=%02x RSID=%04x IC=%02x "
+		       "IUPARAMS=%s IUNODEID=%s AUPARAMS=%s AUNODEID=%s\n",
+		       sei_area->rs, sei_area->rsid, lir->ic, iuparams,
+		       iunodeid, auparams, aunodeid);
+		break;
+	default:
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 static void chsc_process_sei_res_acc(struct chsc_sei_nt0_area *sei_area)
 {
+<<<<<<< HEAD
+=======
+	struct channel_path *chp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct chp_link link;
 	struct chp_id chpid;
 	int status;
@@ -333,10 +573,24 @@ static void chsc_process_sei_res_acc(struct chsc_sei_nt0_area *sei_area)
 	chpid.id = sei_area->rsid;
 	/* allocate a new channel path structure, if needed */
 	status = chp_get_status(chpid);
+<<<<<<< HEAD
 	if (status < 0)
 		chp_new(chpid);
 	else if (!status)
 		return;
+=======
+	if (!status)
+		return;
+
+	if (status < 0) {
+		chp_new(chpid);
+	} else {
+		chp = chpid_to_chp(chpid);
+		mutex_lock(&chp->lock);
+		chp_update_desc(chp);
+		mutex_unlock(&chp->lock);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(&link, 0, sizeof(struct chp_link));
 	link.chpid = chpid;
 	if ((sei_area->vf & 0xc0) != 0) {
@@ -568,8 +822,14 @@ static void chsc_process_crw(struct crw *crw0, struct crw *crw1, int overflow)
 
 void chsc_chp_online(struct chp_id chpid)
 {
+<<<<<<< HEAD
 	char dbf_txt[15];
 	struct chp_link link;
+=======
+	struct channel_path *chp = chpid_to_chp(chpid);
+	struct chp_link link;
+	char dbf_txt[15];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sprintf(dbf_txt, "cadd%x.%02x", chpid.cssid, chpid.id);
 	CIO_TRACE_EVENT(2, dbf_txt);
@@ -579,8 +839,19 @@ void chsc_chp_online(struct chp_id chpid)
 		link.chpid = chpid;
 		/* Wait until previous actions have settled. */
 		css_wait_for_slow_path();
+<<<<<<< HEAD
 		for_each_subchannel_staged(__s390_process_res_acc, NULL,
 					   &link);
+=======
+
+		mutex_lock(&chp->lock);
+		chp_update_desc(chp);
+		mutex_unlock(&chp->lock);
+
+		for_each_subchannel_staged(__s390_process_res_acc, NULL,
+					   &link);
+		css_schedule_reprobe();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -615,6 +886,7 @@ static int s390_subchannel_vary_chpid_on(struct subchannel *sch, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 __s390_vary_chpid_on(struct subchannel_id schid, void *data)
 {
@@ -628,6 +900,8 @@ __s390_vary_chpid_on(struct subchannel_id schid, void *data)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * chsc_chp_vary - propagate channel-path vary operation to subchannels
  * @chpid: channl-path ID
@@ -637,8 +911,11 @@ int chsc_chp_vary(struct chp_id chpid, int on)
 {
 	struct channel_path *chp = chpid_to_chp(chpid);
 
+<<<<<<< HEAD
 	/* Wait until previous actions have settled. */
 	css_wait_for_slow_path();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Redo PathVerification on the devices the chpid connects to
 	 */
@@ -646,7 +923,12 @@ int chsc_chp_vary(struct chp_id chpid, int on)
 		/* Try to update the channel path description. */
 		chp_update_desc(chp);
 		for_each_subchannel_staged(s390_subchannel_vary_chpid_on,
+<<<<<<< HEAD
 					   __s390_vary_chpid_on, &chpid);
+=======
+					   NULL, &chpid);
+		css_schedule_reprobe();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		for_each_subchannel_staged(s390_subchannel_vary_chpid_off,
 					   NULL, &chpid);
@@ -708,9 +990,16 @@ int __chsc_do_secm(struct channel_subsystem *css, int enable)
 		u32 fmt : 4;
 		u32 : 16;
 	} __attribute__ ((packed)) *secm_area;
+<<<<<<< HEAD
 	int ret, ccode;
 
 	spin_lock_irq(&chsc_page_lock);
+=======
+	unsigned long flags;
+	int ret, ccode;
+
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(chsc_page, 0, PAGE_SIZE);
 	secm_area = chsc_page;
 	secm_area->request.length = 0x0050;
@@ -740,7 +1029,11 @@ int __chsc_do_secm(struct channel_subsystem *css, int enable)
 		CIO_CRW_EVENT(2, "chsc: secm failed (rc=%04x)\n",
 			      secm_area->response.code);
 out:
+<<<<<<< HEAD
 	spin_unlock_irq(&chsc_page_lock);
+=======
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -783,7 +1076,12 @@ int chsc_determine_channel_path_desc(struct chp_id chpid, int fmt, int rfmt,
 	struct chsc_scpd *scpd_area;
 	int ccode, ret;
 
+<<<<<<< HEAD
 	if ((rfmt == 1) && !css_general_characteristics.fcs)
+=======
+	if ((rfmt == 1 || rfmt == 0) && c == 1 &&
+	    !css_general_characteristics.fcs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	if ((rfmt == 2) && !css_general_characteristics.cib)
 		return -EINVAL;
@@ -815,7 +1113,10 @@ EXPORT_SYMBOL_GPL(chsc_determine_channel_path_desc);
 int chsc_determine_base_channel_path_desc(struct chp_id chpid,
 					  struct channel_path_desc *desc)
 {
+<<<<<<< HEAD
 	struct chsc_response_struct *chsc_resp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct chsc_scpd *scpd_area;
 	unsigned long flags;
 	int ret;
@@ -825,8 +1126,13 @@ int chsc_determine_base_channel_path_desc(struct chp_id chpid,
 	ret = chsc_determine_channel_path_desc(chpid, 0, 0, 0, 0, scpd_area);
 	if (ret)
 		goto out;
+<<<<<<< HEAD
 	chsc_resp = (void *)&scpd_area->response;
 	memcpy(desc, &chsc_resp->data, sizeof(*desc));
+=======
+
+	memcpy(desc, scpd_area->data, sizeof(*desc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	spin_unlock_irqrestore(&chsc_page_lock, flags);
 	return ret;
@@ -835,18 +1141,29 @@ out:
 int chsc_determine_fmt1_channel_path_desc(struct chp_id chpid,
 					  struct channel_path_desc_fmt1 *desc)
 {
+<<<<<<< HEAD
 	struct chsc_response_struct *chsc_resp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct chsc_scpd *scpd_area;
 	unsigned long flags;
 	int ret;
 
 	spin_lock_irqsave(&chsc_page_lock, flags);
 	scpd_area = chsc_page;
+<<<<<<< HEAD
 	ret = chsc_determine_channel_path_desc(chpid, 0, 0, 1, 0, scpd_area);
 	if (ret)
 		goto out;
 	chsc_resp = (void *)&scpd_area->response;
 	memcpy(desc, &chsc_resp->data, sizeof(*desc));
+=======
+	ret = chsc_determine_channel_path_desc(chpid, 0, 1, 1, 0, scpd_area);
+	if (ret)
+		goto out;
+
+	memcpy(desc, scpd_area->data, sizeof(*desc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	spin_unlock_irqrestore(&chsc_page_lock, flags);
 	return ret;
@@ -856,6 +1173,7 @@ static void
 chsc_initialize_cmg_chars(struct channel_path *chp, u8 cmcv,
 			  struct cmg_chars *chars)
 {
+<<<<<<< HEAD
 	struct cmg_chars *cmg_chars;
 	int i, mask;
 
@@ -866,12 +1184,26 @@ chsc_initialize_cmg_chars(struct channel_path *chp, u8 cmcv,
 			cmg_chars->values[i] = chars->values[i];
 		else
 			cmg_chars->values[i] = 0;
+=======
+	int i, mask;
+
+	for (i = 0; i < NR_MEASUREMENT_CHARS; i++) {
+		mask = 0x80 >> (i + 3);
+		if (cmcv & mask)
+			chp->cmg_chars.values[i] = chars->values[i];
+		else
+			chp->cmg_chars.values[i] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 int chsc_get_channel_measurement_chars(struct channel_path *chp)
 {
+<<<<<<< HEAD
 	struct cmg_chars *cmg_chars;
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ccode, ret;
 
 	struct {
@@ -895,12 +1227,22 @@ int chsc_get_channel_measurement_chars(struct channel_path *chp)
 		u32 data[NR_MEASUREMENT_CHARS];
 	} __attribute__ ((packed)) *scmc_area;
 
+<<<<<<< HEAD
 	chp->cmg_chars = NULL;
 	cmg_chars = kmalloc(sizeof(*cmg_chars), GFP_KERNEL);
 	if (!cmg_chars)
 		return -ENOMEM;
 
 	spin_lock_irq(&chsc_page_lock);
+=======
+	chp->shared = -1;
+	chp->cmg = -1;
+
+	if (!css_chsc_characteristics.scmc || !css_chsc_characteristics.secm)
+		return -EINVAL;
+
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(chsc_page, 0, PAGE_SIZE);
 	scmc_area = chsc_page;
 	scmc_area->request.length = 0x0010;
@@ -920,17 +1262,24 @@ int chsc_get_channel_measurement_chars(struct channel_path *chp)
 			      scmc_area->response.code);
 		goto out;
 	}
+<<<<<<< HEAD
 	if (scmc_area->not_valid) {
 		chp->cmg = -1;
 		chp->shared = -1;
 		goto out;
 	}
+=======
+	if (scmc_area->not_valid)
+		goto out;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chp->cmg = scmc_area->cmg;
 	chp->shared = scmc_area->shared;
 	if (chp->cmg != 2 && chp->cmg != 3) {
 		/* No cmg-dependent data. */
 		goto out;
 	}
+<<<<<<< HEAD
 	chp->cmg_chars = cmg_chars;
 	chsc_initialize_cmg_chars(chp, scmc_area->cmcv,
 				  (struct cmg_chars *) &scmc_area->data);
@@ -939,6 +1288,12 @@ out:
 	if (!chp->cmg_chars)
 		kfree(cmg_chars);
 
+=======
+	chsc_initialize_cmg_chars(chp, scmc_area->cmcv,
+				  (struct cmg_chars *) &scmc_area->data);
+out:
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -969,6 +1324,7 @@ void __init chsc_init_cleanup(void)
 	free_page((unsigned long)sei_page);
 }
 
+<<<<<<< HEAD
 int chsc_enable_facility(int operation_code)
 {
 	unsigned long flags;
@@ -991,6 +1347,12 @@ int chsc_enable_facility(int operation_code)
 	spin_lock_irqsave(&chsc_page_lock, flags);
 	memset(chsc_page, 0, PAGE_SIZE);
 	sda_area = chsc_page;
+=======
+int __chsc_enable_facility(struct chsc_sda_area *sda_area, int operation_code)
+{
+	int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sda_area->request.length = 0x0400;
 	sda_area->request.code = 0x0031;
 	sda_area->operation_code = operation_code;
@@ -1008,10 +1370,32 @@ int chsc_enable_facility(int operation_code)
 	default:
 		ret = chsc_error_from_response(sda_area->response.code);
 	}
+<<<<<<< HEAD
 	if (ret != 0)
 		CIO_CRW_EVENT(2, "chsc: sda (oc=%x) failed (rc=%04x)\n",
 			      operation_code, sda_area->response.code);
 out:
+=======
+out:
+	return ret;
+}
+
+int chsc_enable_facility(int operation_code)
+{
+	struct chsc_sda_area *sda_area;
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&chsc_page_lock, flags);
+	memset(chsc_page, 0, PAGE_SIZE);
+	sda_area = chsc_page;
+
+	ret = __chsc_enable_facility(sda_area, operation_code);
+	if (ret != 0)
+		CIO_CRW_EVENT(2, "chsc: sda (oc=%x) failed (rc=%04x)\n",
+			      operation_code, sda_area->response.code);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&chsc_page_lock, flags);
 	return ret;
 }
@@ -1022,6 +1406,10 @@ struct css_chsc_char css_chsc_characteristics;
 int __init
 chsc_determine_css_characteristics(void)
 {
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int result;
 	struct {
 		struct chsc_header request;
@@ -1034,7 +1422,11 @@ chsc_determine_css_characteristics(void)
 		u32 chsc_char[508];
 	} __attribute__ ((packed)) *scsc_area;
 
+<<<<<<< HEAD
 	spin_lock_irq(&chsc_page_lock);
+=======
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(chsc_page, 0, PAGE_SIZE);
 	scsc_area = chsc_page;
 	scsc_area->request.length = 0x0010;
@@ -1056,14 +1448,22 @@ chsc_determine_css_characteristics(void)
 		CIO_CRW_EVENT(2, "chsc: scsc failed (rc=%04x)\n",
 			      scsc_area->response.code);
 exit:
+<<<<<<< HEAD
 	spin_unlock_irq(&chsc_page_lock);
+=======
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 
 EXPORT_SYMBOL_GPL(css_general_characteristics);
 EXPORT_SYMBOL_GPL(css_chsc_characteristics);
 
+<<<<<<< HEAD
 int chsc_sstpc(void *page, unsigned int op, u16 ctrl)
+=======
+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct {
 		struct chsc_header request;
@@ -1073,7 +1473,13 @@ int chsc_sstpc(void *page, unsigned int op, u16 ctrl)
 		unsigned int ctrl : 16;
 		unsigned int rsvd2[5];
 		struct chsc_header response;
+<<<<<<< HEAD
 		unsigned int rsvd3[7];
+=======
+		unsigned int rsvd3[3];
+		u64 clock_delta;
+		unsigned int rsvd4[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} __attribute__ ((packed)) *rr;
 	int rc;
 
@@ -1087,6 +1493,11 @@ int chsc_sstpc(void *page, unsigned int op, u16 ctrl)
 	if (rc)
 		return -EIO;
 	rc = (rr->response.code == 0x0001) ? 0 : -EIO;
+<<<<<<< HEAD
+=======
+	if (clock_delta)
+		*clock_delta = rr->clock_delta;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
@@ -1186,3 +1597,38 @@ out:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(chsc_scm_info);
+<<<<<<< HEAD
+=======
+
+/**
+ * chsc_pnso_brinfo() - Perform Network-Subchannel Operation, Bridge Info.
+ * @schid:		id of the subchannel on which PNSO is performed
+ * @brinfo_area:	request and response block for the operation
+ * @resume_token:	resume token for multiblock response
+ * @cnc:		Boolean change-notification control
+ *
+ * brinfo_area must be allocated by the caller with get_zeroed_page(GFP_KERNEL)
+ *
+ * Returns 0 on success.
+ */
+int chsc_pnso_brinfo(struct subchannel_id schid,
+		struct chsc_pnso_area *brinfo_area,
+		struct chsc_brinfo_resume_token resume_token,
+		int cnc)
+{
+	memset(brinfo_area, 0, sizeof(*brinfo_area));
+	brinfo_area->request.length = 0x0030;
+	brinfo_area->request.code = 0x003d; /* network-subchannel operation */
+	brinfo_area->m	   = schid.m;
+	brinfo_area->ssid  = schid.ssid;
+	brinfo_area->sch   = schid.sch_no;
+	brinfo_area->cssid = schid.cssid;
+	brinfo_area->oc    = 0; /* Store-network-bridging-information list */
+	brinfo_area->resume_token = resume_token;
+	brinfo_area->n	   = (cnc != 0);
+	if (chsc(brinfo_area))
+		return -EIO;
+	return chsc_error_from_response(brinfo_area->response.code);
+}
+EXPORT_SYMBOL_GPL(chsc_pnso_brinfo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

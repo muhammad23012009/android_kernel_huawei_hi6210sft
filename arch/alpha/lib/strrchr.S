@@ -5,7 +5,11 @@
  * Return the address of the last occurrence of a given character
  * within a null-terminated string, or null if it is not found.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/regdef.h>
 
 	.set noreorder
@@ -85,3 +89,7 @@ $retnull:
 	ret			# .. e1 :
 
 	.end strrchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strrchr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

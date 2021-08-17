@@ -75,6 +75,13 @@ extern void eeprom_93cx6_read(struct eeprom_93cx6 *eeprom,
 	const u8 word, u16 *data);
 extern void eeprom_93cx6_multiread(struct eeprom_93cx6 *eeprom,
 	const u8 word, __le16 *data, const u16 words);
+<<<<<<< HEAD
+=======
+extern void eeprom_93cx6_readb(struct eeprom_93cx6 *eeprom,
+	const u8 byte, u8 *data);
+extern void eeprom_93cx6_multireadb(struct eeprom_93cx6 *eeprom,
+	const u8 byte, u8 *data, const u16 bytes);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void eeprom_93cx6_wren(struct eeprom_93cx6 *eeprom, bool enable);
 

@@ -40,11 +40,14 @@
 /* convert irq_handler index to vector number */
 #define IRQ_SOURCE_TO_VECTOR(i)	((i) + ((i) < 8 ? 0x18 : (0x40-8)))
 
+<<<<<<< HEAD
 /* interrupt service types */
 #define IRQ_TYPE_SLOW     0
 #define IRQ_TYPE_FAST     1
 #define IRQ_TYPE_PRIO     2
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ST-MFP interrupts */
 #define IRQ_MFP_BUSY      (8)
 #define IRQ_MFP_DCD       (9)

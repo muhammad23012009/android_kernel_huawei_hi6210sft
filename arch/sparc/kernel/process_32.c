@@ -10,6 +10,10 @@
 
 #include <stdarg.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/elfcore.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -22,8 +26,13 @@
 #include <linux/reboot.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/slab.h>
+=======
+#include <linux/slab.h>
+#include <linux/cpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/auxio.h>
 #include <asm/oplib.h>
@@ -39,6 +48,11 @@
 #include <asm/unistd.h>
 #include <asm/setup.h>
 
+<<<<<<< HEAD
+=======
+#include "kernel.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* 
  * Power management idle function 
  * Set in pm platform drivers (apc.c and pmc.c)
@@ -103,8 +117,17 @@ void machine_restart(char * cmd)
 void machine_power_off(void)
 {
 	if (auxio_power_register &&
+<<<<<<< HEAD
 	    (strcmp(of_console_device->type, "serial") || scons_pwroff))
 		*auxio_power_register |= AUXIO_POWER_OFF;
+=======
+	    (strcmp(of_console_device->type, "serial") || scons_pwroff)) {
+		u8 power_register = sbus_readb(auxio_power_register);
+		power_register |= AUXIO_POWER_OFF;
+		sbus_writeb(power_register, auxio_power_register);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	machine_halt();
 }
 
@@ -177,6 +200,7 @@ unsigned long thread_saved_pc(struct task_struct *tsk)
 /*
  * Free current thread data structures etc..
  */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 #ifndef CONFIG_SMP
@@ -192,6 +216,23 @@ void exit_thread(void)
 		last_task_used_math = NULL;
 #else
 		clear_thread_flag(TIF_USEDFPU);
+=======
+void exit_thread(struct task_struct *tsk)
+{
+#ifndef CONFIG_SMP
+	if (last_task_used_math == tsk) {
+#else
+	if (test_ti_thread_flag(task_thread_info(tsk), TIF_USEDFPU)) {
+#endif
+		/* Keep process from leaving FPU in a bogon state. */
+		put_psr(get_psr() | PSR_EF);
+		fpsave(&tsk->thread.float_regs[0], &tsk->thread.fsr,
+		       &tsk->thread.fpqueue[0], &tsk->thread.fpqdepth);
+#ifndef CONFIG_SMP
+		last_task_used_math = NULL;
+#else
+		clear_ti_thread_flag(task_thread_info(tsk), TIF_USEDFPU);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	}
 }
@@ -326,11 +367,19 @@ int copy_thread(unsigned long clone_flags, unsigned long sp,
 	childregs = (struct pt_regs *) (new_stack + STACKFRAME_SZ);
 
 	/*
+<<<<<<< HEAD
 	 * A new process must start with interrupts closed in 2.5,
 	 * because this is how Mingo's scheduler works (see schedule_tail
 	 * and finish_arch_switch). If we do not do it, a timer interrupt hits
 	 * before we unlock, attempts to re-take the rq->lock, and then we die.
 	 * Thus, kpsr|=PSR_PIL.
+=======
+	 * A new process must start with interrupts disabled, see schedule_tail()
+	 * and finish_task_switch(). (If we do not do it and if a timer interrupt
+	 * hits before we unlock and attempts to take the rq->lock, we deadlock.)
+	 *
+	 * Thus, kpsr |= PSR_PIL.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	ti->ksp = (unsigned long) new_stack;
 	p->thread.kregs = childregs;

@@ -321,6 +321,7 @@ static int __init at32_wdt_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	wdt = kzalloc(sizeof(struct wdt_at32ap700x), GFP_KERNEL);
 	if (!wdt) {
 		dev_dbg(&pdev->dev, "no memory for wdt structure\n");
@@ -328,6 +329,14 @@ static int __init at32_wdt_probe(struct platform_device *pdev)
 	}
 
 	wdt->regs = ioremap(regs->start, resource_size(regs));
+=======
+	wdt = devm_kzalloc(&pdev->dev, sizeof(struct wdt_at32ap700x),
+			GFP_KERNEL);
+	if (!wdt)
+		return -ENOMEM;
+
+	wdt->regs = devm_ioremap(&pdev->dev, regs->start, resource_size(regs));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!wdt->regs) {
 		ret = -ENOMEM;
 		dev_dbg(&pdev->dev, "could not map I/O memory\n");
@@ -342,7 +351,11 @@ static int __init at32_wdt_probe(struct platform_device *pdev)
 		dev_info(&pdev->dev, "CPU must be reset with external "
 				"reset or POR due to silicon errata.\n");
 		ret = -EIO;
+<<<<<<< HEAD
 		goto err_iounmap;
+=======
+		goto err_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		wdt->users = 0;
 	}
@@ -364,7 +377,11 @@ static int __init at32_wdt_probe(struct platform_device *pdev)
 	ret = misc_register(&wdt->miscdev);
 	if (ret) {
 		dev_dbg(&pdev->dev, "failed to register wdt miscdev\n");
+<<<<<<< HEAD
 		goto err_register;
+=======
+		goto err_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dev_info(&pdev->dev,
@@ -373,12 +390,16 @@ static int __init at32_wdt_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 err_register:
 	platform_set_drvdata(pdev, NULL);
 err_iounmap:
 	iounmap(wdt->regs);
 err_free:
 	kfree(wdt);
+=======
+err_free:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wdt = NULL;
 	return ret;
 }
@@ -391,10 +412,14 @@ static int __exit at32_wdt_remove(struct platform_device *pdev)
 			at32_wdt_stop();
 
 		misc_deregister(&wdt->miscdev);
+<<<<<<< HEAD
 		iounmap(wdt->regs);
 		kfree(wdt);
 		wdt = NULL;
 		platform_set_drvdata(pdev, NULL);
+=======
+		wdt = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -431,7 +456,10 @@ static struct platform_driver at32_wdt_driver = {
 	.resume		= at32_wdt_resume,
 	.driver		= {
 		.name	= "at32_wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.shutdown	= at32_wdt_shutdown,
 };
@@ -441,4 +469,7 @@ module_platform_driver_probe(at32_wdt_driver, at32_wdt_probe);
 MODULE_AUTHOR("Hans-Christian Egtvedt <egtvedt@samfundet.no>");
 MODULE_DESCRIPTION("Watchdog driver for Atmel AT32AP700X");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -78,6 +78,11 @@ do {								\
 								\
 	if (is_dsp_enabled(prev))				\
 		__save_dsp(prev);				\
+<<<<<<< HEAD
+=======
+	if (is_dsp_enabled(next))				\
+		__restore_dsp(next);				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 								\
 	__ts1 = (u32 *)&prev->thread.sp;			\
 	__ts2 = (u32 *)&prev->thread.pc;			\
@@ -125,10 +130,13 @@ do {								\
 	last = __last;						\
 } while (0)
 
+<<<<<<< HEAD
 #define finish_arch_switch(prev)				\
 do {								\
 	if (is_dsp_enabled(prev))				\
 		__restore_dsp(prev);				\
 } while (0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_SH_SWITCH_TO_32_H */

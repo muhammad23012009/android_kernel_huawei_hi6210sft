@@ -19,7 +19,10 @@ LDFLAGS_vmlinux := -T
 
 $(obj)/vmlinux: $(obj)/vmlinux.lds $(OBJECTS) $(obj)/piggy.o FORCE
 	$(call if_changed,ld)
+<<<<<<< HEAD
 	@:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 $(obj)/vmlinux.bin: vmlinux FORCE
 	$(call if_changed,objcopy)

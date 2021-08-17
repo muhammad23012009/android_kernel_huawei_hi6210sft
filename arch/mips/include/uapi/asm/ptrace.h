@@ -9,6 +9,11 @@
 #ifndef _UAPI_ASM_PTRACE_H
 #define _UAPI_ASM_PTRACE_H
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* 0 - 31 are integer registers, 32 - 63 are fp registers.  */
 #define FPR_BASE	32
 #define PC		64
@@ -22,6 +27,7 @@
 #define DSP_CONTROL	77
 #define ACX		78
 
+<<<<<<< HEAD
 #ifndef __KERNEL__
 /*
  * This struct defines the way the registers are stored on the stack during a
@@ -40,6 +46,29 @@ struct pt_regs {
 	unsigned long cp0_epc;
 } __attribute__ ((aligned (8)));
 #endif /* __KERNEL__ */
+=======
+/*
+ * This struct defines the registers as used by PTRACE_{GET,SET}REGS. The
+ * format is the same for both 32- and 64-bit processes. Registers for 32-bit
+ * processes are sign extended.
+ */
+#ifdef __KERNEL__
+struct user_pt_regs {
+#else
+struct pt_regs {
+#endif
+	/* Saved main processor registers. */
+	__u64 regs[32];
+
+	/* Saved special registers. */
+	__u64 lo;
+	__u64 hi;
+	__u64 cp0_epc;
+	__u64 cp0_badvaddr;
+	__u64 cp0_status;
+	__u64 cp0_cause;
+} __attribute__ ((aligned (8)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Arbitrarily choose the same ptrace numbers as used by the Sparc code. */
 #define PTRACE_GETREGS		12

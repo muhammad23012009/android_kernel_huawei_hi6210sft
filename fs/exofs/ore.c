@@ -2,7 +2,11 @@
  * Copyright (C) 2005, 2006
  * Avishay Traeger (avishay@gmail.com)
  * Copyright (C) 2008, 2009
+<<<<<<< HEAD
  * Boaz Harrosh <bharrosh@panasas.com>
+=======
+ * Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is part of exofs.
  *
@@ -29,7 +33,11 @@
 
 #include "ore_raid.h"
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Boaz Harrosh <bharrosh@panasas.com>");
+=======
+MODULE_AUTHOR("Boaz Harrosh <ooo@electrozaur.com>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("Objects Raid Engine ore.ko");
 MODULE_LICENSE("GPL");
 
@@ -58,9 +66,18 @@ int ore_verify_layout(unsigned total_comps, struct ore_layout *layout)
 		layout->parity = 1;
 		break;
 	case PNFS_OSD_RAID_PQ:
+<<<<<<< HEAD
 	case PNFS_OSD_RAID_4:
 	default:
 		ORE_ERR("Only RAID_0/5 for now\n");
+=======
+		layout->parity = 2;
+		break;
+	case PNFS_OSD_RAID_4:
+	default:
+		ORE_ERR("Only RAID_0/5/6 for now received-enum=%d\n",
+			layout->raid_algorithm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	if (0 != (layout->stripe_unit & ~PAGE_MASK)) {
@@ -112,6 +129,11 @@ int ore_verify_layout(unsigned total_comps, struct ore_layout *layout)
 		layout->max_io_length /= stripe_length;
 		layout->max_io_length *= stripe_length;
 	}
+<<<<<<< HEAD
+=======
+	ORE_DBGMSG("max_io_length=0x%lx\n", layout->max_io_length);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL(ore_verify_layout);
@@ -431,8 +453,17 @@ int ore_check_io(struct ore_io_state *ios, ore_on_dev_error on_dev_error)
 		if (likely(!ret))
 			continue;
 
+<<<<<<< HEAD
 		if (OSD_ERR_PRI_CLEAR_PAGES == osi.osd_err_pri) {
 			/* start read offset passed endof file */
+=======
+		if ((OSD_ERR_PRI_CLEAR_PAGES == osi.osd_err_pri) &&
+		    per_dev->bio) {
+			/* start read offset passed endof file.
+			 * Note: if we do not have bio it means read-attributes
+			 * In this case we should return error to caller.
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			_clear_bio(per_dev->bio);
 			ORE_DBGMSG("start read offset passed end of file "
 				"offset=0x%llx, length=0x%llx\n",
@@ -541,21 +572,38 @@ void ore_calc_stripe_info(struct ore_layout *layout, u64 file_offset,
 
 	/* "H - (N * U)" is just "H % U" so it's bound to u32 */
 	u32	C = (u32)(H - (N * U)) / stripe_unit + G * group_width;
+<<<<<<< HEAD
+=======
+	u32 first_dev = C - C % group_width;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	div_u64_rem(file_offset, stripe_unit, &si->unit_off);
 
 	si->obj_offset = si->unit_off + (N * stripe_unit) +
 				  (M * group_depth * stripe_unit);
+<<<<<<< HEAD
+=======
+	si->cur_comp = C - first_dev;
+	si->cur_pg = si->unit_off / PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (parity) {
 		u32 LCMdP = lcm(group_width, parity) / parity;
 		/* R     = N % LCMdP; */
 		u32 RxP   = (N % LCMdP) * parity;
+<<<<<<< HEAD
 		u32 first_dev = C - C % group_width;
 
 		si->par_dev = (group_width + group_width - parity - RxP) %
 			      group_width + first_dev;
 		si->dev = (group_width + C - RxP) % group_width + first_dev;
+=======
+
+		si->par_dev = (group_width + group_width - parity - RxP) %
+			      group_width + first_dev;
+		si->dev = (group_width + group_width + C - RxP) %
+			  group_width + first_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		si->bytes_in_stripe = U;
 		si->first_stripe_start = M * S + G * T + N * U;
 	} else {
@@ -645,6 +693,46 @@ out:	/* we fail the complete unit on an error eg don't advance
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int _add_parity_units(struct ore_io_state *ios,
+			     struct ore_striping_info *si,
+			     unsigned dev, unsigned first_dev,
+			     unsigned mirrors_p1, unsigned devs_in_group,
+			     unsigned cur_len)
+{
+	unsigned do_parity;
+	int ret = 0;
+
+	for (do_parity = ios->layout->parity; do_parity; --do_parity) {
+		struct ore_per_dev_state *per_dev;
+
+		per_dev = &ios->per_dev[dev - first_dev];
+		if (!per_dev->length && !per_dev->offset) {
+			/* Only/always the parity unit of the first
+			 * stripe will be empty. So this is a chance to
+			 * initialize the per_dev info.
+			 */
+			per_dev->dev = dev;
+			per_dev->offset = si->obj_offset - si->unit_off;
+		}
+
+		ret = _ore_add_parity_unit(ios, si, per_dev, cur_len,
+					   do_parity == 1);
+		if (unlikely(ret))
+				break;
+
+		if (do_parity != 1) {
+			dev = ((dev + mirrors_p1) % devs_in_group) + first_dev;
+			si->cur_comp = (si->cur_comp + 1) %
+						       ios->layout->group_width;
+		}
+	}
+
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int _prepare_for_striping(struct ore_io_state *ios)
 {
 	struct ore_striping_info *si = &ios->si;
@@ -654,7 +742,10 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 	unsigned devs_in_group = group_width * mirrors_p1;
 	unsigned dev = si->dev;
 	unsigned first_dev = dev - (dev % devs_in_group);
+<<<<<<< HEAD
 	unsigned dev_order;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned cur_pg = ios->pages_consumed;
 	u64 length = ios->length;
 	int ret = 0;
@@ -666,6 +757,7 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 
 	BUG_ON(length > si->length);
 
+<<<<<<< HEAD
 	dev_order = _dev_order(devs_in_group, mirrors_p1, si->par_dev, dev);
 	si->cur_comp = dev_order;
 	si->cur_pg = si->unit_off / PAGE_SIZE;
@@ -676,6 +768,15 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 		unsigned cur_len, page_off = 0;
 
 		if (!per_dev->length) {
+=======
+	while (length) {
+		struct ore_per_dev_state *per_dev =
+						&ios->per_dev[dev - first_dev];
+		unsigned cur_len, page_off = 0;
+
+		if (!per_dev->length && !per_dev->offset) {
+			/* First time initialize the per_dev info. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			per_dev->dev = dev;
 			if (dev == si->dev) {
 				WARN_ON(dev == si->par_dev);
@@ -684,6 +785,7 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 				page_off = si->unit_off & ~PAGE_MASK;
 				BUG_ON(page_off && (page_off != ios->pgbase));
 			} else {
+<<<<<<< HEAD
 				if (si->cur_comp > dev_order)
 					per_dev->offset =
 						si->obj_offset - si->unit_off;
@@ -691,6 +793,9 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 					per_dev->offset =
 						si->obj_offset + stripe_unit -
 								   si->unit_off;
+=======
+				per_dev->offset = si->obj_offset - si->unit_off;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				cur_len = stripe_unit;
 			}
 		} else {
@@ -704,11 +809,17 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 		if (unlikely(ret))
 			goto out;
 
+<<<<<<< HEAD
 		dev += mirrors_p1;
 		dev = (dev % devs_in_group) + first_dev;
 
 		length -= cur_len;
 
+=======
+		length -= cur_len;
+
+		dev = ((dev + mirrors_p1) % devs_in_group) + first_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		si->cur_comp = (si->cur_comp + 1) % group_width;
 		if (unlikely((dev == si->par_dev) || (!length && ios->sp2d))) {
 			if (!length && ios->sp2d) {
@@ -716,6 +827,7 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 				 * stripe. then operate on parity dev.
 				 */
 				dev = si->par_dev;
+<<<<<<< HEAD
 			}
 			if (ios->sp2d)
 				/* In writes cur_len just means if it's the
@@ -733,6 +845,18 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 			}
 
 			ret = _ore_add_parity_unit(ios, si, per_dev, cur_len);
+=======
+				/* If last stripe operate on parity comp */
+				si->cur_comp = group_width - ios->layout->parity;
+			}
+
+			/* In writes cur_len just means if it's the
+			 * last one. See _ore_add_parity_unit.
+			 */
+			ret = _add_parity_units(ios, si, dev, first_dev,
+						mirrors_p1, devs_in_group,
+						ios->sp2d ? length : cur_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (unlikely(ret))
 					goto out;
 
@@ -743,6 +867,11 @@ static int _prepare_for_striping(struct ore_io_state *ios)
 			/* Next stripe, start fresh */
 			si->cur_comp = 0;
 			si->cur_pg = 0;
+<<<<<<< HEAD
+=======
+			si->obj_offset += cur_len;
+			si->unit_off = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 out:
@@ -846,7 +975,11 @@ static int _write_mirror(struct ore_io_state *ios, int cur_comp)
 			} else {
 				bio = master_dev->bio;
 				/* FIXME: bio_set_dir() */
+<<<<<<< HEAD
 				bio->bi_rw |= REQ_WRITE;
+=======
+				bio_set_op_attrs(bio, REQ_OP_WRITE, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 
 			osd_req_write(or, _ios_obj(ios, cur_comp),

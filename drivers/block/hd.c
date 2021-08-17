@@ -464,11 +464,19 @@ static void read_intr(void)
 
 ok_to_read:
 	req = hd_req;
+<<<<<<< HEAD
 	insw(HD_DATA, req->buffer, 256);
 #ifdef DEBUG
 	printk("%s: read: sector %ld, remaining = %u, buffer=%p\n",
 	       req->rq_disk->disk_name, blk_rq_pos(req) + 1,
 	       blk_rq_sectors(req) - 1, req->buffer+512);
+=======
+	insw(HD_DATA, bio_data(req->bio), 256);
+#ifdef DEBUG
+	printk("%s: read: sector %ld, remaining = %u, buffer=%p\n",
+	       req->rq_disk->disk_name, blk_rq_pos(req) + 1,
+	       blk_rq_sectors(req) - 1, bio_data(req->bio)+512);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	if (hd_end_request(0, 512)) {
 		SET_HANDLER(&read_intr);
@@ -505,7 +513,11 @@ static void write_intr(void)
 ok_to_write:
 	if (hd_end_request(0, 512)) {
 		SET_HANDLER(&write_intr);
+<<<<<<< HEAD
 		outsw(HD_DATA, req->buffer, 256);
+=======
+		outsw(HD_DATA, bio_data(req->bio), 256);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -624,7 +636,11 @@ repeat:
 	printk("%s: %sing: CHS=%d/%d/%d, sectors=%d, buffer=%p\n",
 		req->rq_disk->disk_name,
 		req_data_dir(req) == READ ? "read" : "writ",
+<<<<<<< HEAD
 		cyl, head, sec, nsect, req->buffer);
+=======
+		cyl, head, sec, nsect, bio_data(req->bio));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	if (req->cmd_type == REQ_TYPE_FS) {
 		switch (rq_data_dir(req)) {
@@ -643,7 +659,11 @@ repeat:
 				bad_rw_intr();
 				goto repeat;
 			}
+<<<<<<< HEAD
 			outsw(HD_DATA, req->buffer, 256);
+=======
+			outsw(HD_DATA, bio_data(req->bio), 256);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		default:
 			printk("unknown hd-command\n");
@@ -694,6 +714,7 @@ static const struct block_device_operations hd_fops = {
 	.getgeo =	hd_getgeo,
 };
 
+<<<<<<< HEAD
 /*
  * This is the hard disk IRQ description. The IRQF_DISABLED in sa_flags
  * means we run the IRQ-handler with interrupts disabled:  this is bad for
@@ -704,6 +725,8 @@ static const struct block_device_operations hd_fops = {
  * safe.
  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init hd_init(void)
 {
 	int drive;
@@ -761,7 +784,11 @@ static int __init hd_init(void)
 			p->cyl, p->head, p->sect);
 	}
 
+<<<<<<< HEAD
 	if (request_irq(HD_IRQ, hd_interrupt, IRQF_DISABLED, "hd", NULL)) {
+=======
+	if (request_irq(HD_IRQ, hd_interrupt, 0, "hd", NULL)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk("hd: unable to get IRQ%d for the hard disk driver\n",
 			HD_IRQ);
 		goto out1;

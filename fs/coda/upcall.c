@@ -27,7 +27,11 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/vmalloc.h>
 #include <linux/vfs.h>
 
@@ -353,7 +357,11 @@ int venus_readlink(struct super_block *sb, struct CodaFid *fid,
         char *result;
         
 	insize = max_t(unsigned int,
+<<<<<<< HEAD
 		     INSIZE(readlink), OUTSIZE(readlink)+ *length + 1);
+=======
+		     INSIZE(readlink), OUTSIZE(readlink)+ *length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	UPARG(CODA_READLINK);
 
         inp->coda_readlink.VFid = *fid;
@@ -361,8 +369,13 @@ int venus_readlink(struct super_block *sb, struct CodaFid *fid,
 	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
 	if (!error) {
 		retlen = outp->coda_readlink.count;
+<<<<<<< HEAD
 		if ( retlen > *length )
 			retlen = *length;
+=======
+		if (retlen >= *length)
+			retlen = *length - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*length = retlen;
 		result =  (char *)outp + (long)outp->coda_readlink.data;
 		memcpy(buffer, result, retlen);
@@ -446,8 +459,12 @@ int venus_fsync(struct super_block *sb, struct CodaFid *fid)
 	UPARG(CODA_FSYNC);
 
 	inp->coda_fsync.VFid = *fid;
+<<<<<<< HEAD
 	error = coda_upcall(coda_vcp(sb), sizeof(union inputArgs),
 			    &outsize, inp);
+=======
+	error = coda_upcall(coda_vcp(sb), insize, &outsize, inp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	CODA_FREE(inp, insize);
 	return error;
@@ -508,8 +525,13 @@ int venus_pioctl(struct super_block *sb, struct CodaFid *fid,
         inp->coda_ioctl.data = (char *)(INSIZE(ioctl));
      
         /* get the data out of user space */
+<<<<<<< HEAD
         if ( copy_from_user((char*)inp + (long)inp->coda_ioctl.data,
 			    data->vi.in, data->vi.in_size) ) {
+=======
+	if (copy_from_user((char *)inp + (long)inp->coda_ioctl.data,
+			   data->vi.in, data->vi.in_size)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error = -EINVAL;
 	        goto exit;
 	}
@@ -518,8 +540,13 @@ int venus_pioctl(struct super_block *sb, struct CodaFid *fid,
 			    &outsize, inp);
 
         if (error) {
+<<<<<<< HEAD
 	        printk("coda_pioctl: Venus returns: %d for %s\n", 
 		       error, coda_f2s(fid));
+=======
+		pr_warn("%s: Venus returns: %d for %s\n",
+			__func__, error, coda_f2s(fid));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit; 
 	}
 
@@ -675,7 +702,11 @@ static int coda_upcall(struct venus_comm *vcp,
 	mutex_lock(&vcp->vc_mutex);
 
 	if (!vcp->vc_inuse) {
+<<<<<<< HEAD
 		printk(KERN_NOTICE "coda: Venus dead, not sending upcall\n");
+=======
+		pr_notice("Venus dead, not sending upcall\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error = -ENXIO;
 		goto exit;
 	}
@@ -725,7 +756,11 @@ static int coda_upcall(struct venus_comm *vcp,
 
 	error = -EINTR;
 	if ((req->uc_flags & CODA_REQ_ABORT) || !signal_pending(current)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "coda: Unexpected interruption.\n");
+=======
+		pr_warn("Unexpected interruption.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit;
 	}
 
@@ -735,7 +770,11 @@ static int coda_upcall(struct venus_comm *vcp,
 
 	/* Venus saw the upcall, make sure we can send interrupt signal */
 	if (!vcp->vc_inuse) {
+<<<<<<< HEAD
 		printk(KERN_INFO "coda: Venus dead, not sending signal.\n");
+=======
+		pr_info("Venus dead, not sending signal.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit;
 	}
 
@@ -820,8 +859,13 @@ int coda_downcall(struct venus_comm *vcp, int opcode, union outputArgs *out)
 	case CODA_FLUSH:
 		coda_cache_clear_all(sb);
 		shrink_dcache_sb(sb);
+<<<<<<< HEAD
 		if (sb->s_root->d_inode)
 			coda_flag_inode(sb->s_root->d_inode, C_FLUSH);
+=======
+		if (d_really_is_positive(sb->s_root))
+			coda_flag_inode(d_inode(sb->s_root), C_FLUSH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case CODA_PURGEUSER:

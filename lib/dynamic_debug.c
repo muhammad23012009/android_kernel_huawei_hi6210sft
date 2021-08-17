@@ -8,6 +8,10 @@
  * By Greg Banks <gnb@melbourne.sgi.com>
  * Copyright (c) 2008 Silicon Graphics Inc.  All Rights Reserved.
  * Copyright (C) 2011 Bart Van Assche.  All Rights Reserved.
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2013 Du, Changbin <changbin.du@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
@@ -24,6 +28,10 @@
 #include <linux/sysctl.h>
 #include <linux/ctype.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/parser.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/string_helpers.h>
 #include <linux/uaccess.h>
 #include <linux/dynamic_debug.h>
@@ -40,7 +48,11 @@ extern struct _ddebug __stop___verbose[];
 
 struct ddebug_table {
 	struct list_head link;
+<<<<<<< HEAD
 	char *mod_name;
+=======
+	const char *mod_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int num_ddebugs;
 	struct _ddebug *ddebugs;
 };
@@ -83,6 +95,7 @@ static struct { unsigned flag:8; char opt_char; } opt_array[] = {
 	{ _DPRINTK_FLAGS_NONE, '_' },
 };
 
+<<<<<<< HEAD
 /* format a string into buf[] which describes the _ddebug's flags */
 static char *ddebug_describe_flags(struct _ddebug *dp, char *buf,
 				    size_t maxlen)
@@ -99,6 +112,24 @@ static char *ddebug_describe_flags(struct _ddebug *dp, char *buf,
 	*p = '\0';
 
 	return buf;
+=======
+struct flagsbuf { char buf[ARRAY_SIZE(opt_array)+1]; };
+
+/* format a string into buf[] which describes the _ddebug's flags */
+static char *ddebug_describe_flags(unsigned int flags, struct flagsbuf *fb)
+{
+	char *p = fb->buf;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(opt_array); ++i)
+		if (flags & opt_array[i].flag)
+			*p++ = opt_array[i].opt_char;
+	if (p == fb->buf)
+		*p++ = '_';
+	*p = '\0';
+
+	return fb->buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define vpr_info(fmt, ...)					\
@@ -140,14 +171,23 @@ static int ddebug_change(const struct ddebug_query *query,
 	struct ddebug_table *dt;
 	unsigned int newflags;
 	unsigned int nfound = 0;
+<<<<<<< HEAD
 	char flagbuf[10];
+=======
+	struct flagsbuf fbuf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* search for matching ddebugs */
 	mutex_lock(&ddebug_lock);
 	list_for_each_entry(dt, &ddebug_tables, link) {
 
 		/* match against the module name */
+<<<<<<< HEAD
 		if (query->module && strcmp(query->module, dt->mod_name))
+=======
+		if (query->module &&
+		    !match_wildcard(query->module, dt->mod_name))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		for (i = 0; i < dt->num_ddebugs; i++) {
@@ -155,14 +195,26 @@ static int ddebug_change(const struct ddebug_query *query,
 
 			/* match against the source filename */
 			if (query->filename &&
+<<<<<<< HEAD
 			    strcmp(query->filename, dp->filename) &&
 			    strcmp(query->filename, kbasename(dp->filename)) &&
 			    strcmp(query->filename, trim_prefix(dp->filename)))
+=======
+			    !match_wildcard(query->filename, dp->filename) &&
+			    !match_wildcard(query->filename,
+					   kbasename(dp->filename)) &&
+			    !match_wildcard(query->filename,
+					   trim_prefix(dp->filename)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 
 			/* match against the function */
 			if (query->function &&
+<<<<<<< HEAD
 			    strcmp(query->function, dp->function))
+=======
+			    !match_wildcard(query->function, dp->function))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 
 			/* match against the format */
@@ -183,12 +235,26 @@ static int ddebug_change(const struct ddebug_query *query,
 			newflags = (dp->flags & mask) | flags;
 			if (newflags == dp->flags)
 				continue;
+<<<<<<< HEAD
+=======
+#ifdef HAVE_JUMP_LABEL
+			if (dp->flags & _DPRINTK_FLAGS_PRINT) {
+				if (!(flags & _DPRINTK_FLAGS_PRINT))
+					static_branch_disable(&dp->key.dd_key_true);
+			} else if (flags & _DPRINTK_FLAGS_PRINT)
+				static_branch_enable(&dp->key.dd_key_true);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dp->flags = newflags;
 			vpr_info("changed %s:%d [%s]%s =%s\n",
 				 trim_prefix(dp->filename), dp->lineno,
 				 dt->mod_name, dp->function,
+<<<<<<< HEAD
 				 ddebug_describe_flags(dp, flagbuf,
 						       sizeof(flagbuf)));
+=======
+				 ddebug_describe_flags(dp->flags, &fbuf));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	mutex_unlock(&ddebug_lock);
@@ -263,14 +329,21 @@ static int ddebug_tokenize(char *buf, char *words[], int maxwords)
  */
 static inline int parse_lineno(const char *str, unsigned int *val)
 {
+<<<<<<< HEAD
 	char *end = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(str == NULL);
 	if (*str == '\0') {
 		*val = 0;
 		return 0;
 	}
+<<<<<<< HEAD
 	*val = simple_strtoul(str, &end, 10);
 	if (end == NULL || end == str || *end != '\0') {
+=======
+	if (kstrtouint(str, 10, val) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("bad line-number: %s\n", str);
 		return -EINVAL;
 	}
@@ -309,7 +382,11 @@ static int ddebug_parse_query(char *words[], int nwords,
 			struct ddebug_query *query, const char *modname)
 {
 	unsigned int i;
+<<<<<<< HEAD
 	int rc;
+=======
+	int rc = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check we have an even number of words */
 	if (nwords % 2 != 0) {
@@ -343,6 +420,7 @@ static int ddebug_parse_query(char *words[], int nwords,
 			}
 			if (last)
 				*last++ = '\0';
+<<<<<<< HEAD
 			if (parse_lineno(first, &query->first_lineno) < 0) {
 				pr_err("line-number is <0\n");
 				return -EINVAL;
@@ -351,6 +429,20 @@ static int ddebug_parse_query(char *words[], int nwords,
 				/* range <first>-<last> */
 				if (parse_lineno(last, &query->last_lineno)
 				    < query->first_lineno) {
+=======
+			if (parse_lineno(first, &query->first_lineno) < 0)
+				return -EINVAL;
+			if (last) {
+				/* range <first>-<last> */
+				if (parse_lineno(last, &query->last_lineno) < 0)
+					return -EINVAL;
+
+				/* special case for last lineno not specified */
+				if (query->last_lineno == 0)
+					query->last_lineno = UINT_MAX;
+
+				if (query->last_lineno < query->first_lineno) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					pr_err("last-line:%d < 1st-line:%d\n",
 						query->last_lineno,
 						query->first_lineno);
@@ -534,10 +626,16 @@ static char *dynamic_emit_prefix(const struct _ddebug *desc, char *buf)
 	return buf;
 }
 
+<<<<<<< HEAD
 int __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
 {
 	va_list args;
 	int res;
+=======
+void __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
+{
+	va_list args;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct va_format vaf;
 	char buf[PREFIX_SIZE];
 
@@ -549,6 +647,7 @@ int __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
+<<<<<<< HEAD
 	res = printk(KERN_DEBUG "%s%pV",
 		     dynamic_emit_prefix(descriptor, buf), &vaf);
 
@@ -559,11 +658,23 @@ int __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
 EXPORT_SYMBOL(__dynamic_pr_debug);
 
 int __dynamic_dev_dbg(struct _ddebug *descriptor,
+=======
+	printk(KERN_DEBUG "%s%pV", dynamic_emit_prefix(descriptor, buf), &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL(__dynamic_pr_debug);
+
+void __dynamic_dev_dbg(struct _ddebug *descriptor,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      const struct device *dev, const char *fmt, ...)
 {
 	struct va_format vaf;
 	va_list args;
+<<<<<<< HEAD
 	int res;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(!descriptor);
 	BUG_ON(!fmt);
@@ -574,6 +685,7 @@ int __dynamic_dev_dbg(struct _ddebug *descriptor,
 	vaf.va = &args;
 
 	if (!dev) {
+<<<<<<< HEAD
 		res = printk(KERN_DEBUG "(NULL device *): %pV", &vaf);
 	} else {
 		char buf[PREFIX_SIZE];
@@ -587,17 +699,38 @@ int __dynamic_dev_dbg(struct _ddebug *descriptor,
 	va_end(args);
 
 	return res;
+=======
+		printk(KERN_DEBUG "(NULL device *): %pV", &vaf);
+	} else {
+		char buf[PREFIX_SIZE];
+
+		dev_printk_emit(LOGLEVEL_DEBUG, dev, "%s%s %s: %pV",
+				dynamic_emit_prefix(descriptor, buf),
+				dev_driver_string(dev), dev_name(dev),
+				&vaf);
+	}
+
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__dynamic_dev_dbg);
 
 #ifdef CONFIG_NET
 
+<<<<<<< HEAD
 int __dynamic_netdev_dbg(struct _ddebug *descriptor,
 			 const struct net_device *dev, const char *fmt, ...)
 {
 	struct va_format vaf;
 	va_list args;
 	int res;
+=======
+void __dynamic_netdev_dbg(struct _ddebug *descriptor,
+			  const struct net_device *dev, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(!descriptor);
 	BUG_ON(!fmt);
@@ -610,6 +743,7 @@ int __dynamic_netdev_dbg(struct _ddebug *descriptor,
 	if (dev && dev->dev.parent) {
 		char buf[PREFIX_SIZE];
 
+<<<<<<< HEAD
 		res = dev_printk_emit(7, dev->dev.parent,
 				      "%s%s %s %s: %pV",
 				      dynamic_emit_prefix(descriptor, buf),
@@ -625,6 +759,23 @@ int __dynamic_netdev_dbg(struct _ddebug *descriptor,
 	va_end(args);
 
 	return res;
+=======
+		dev_printk_emit(LOGLEVEL_DEBUG, dev->dev.parent,
+				"%s%s %s %s%s: %pV",
+				dynamic_emit_prefix(descriptor, buf),
+				dev_driver_string(dev->dev.parent),
+				dev_name(dev->dev.parent),
+				netdev_name(dev), netdev_reg_state(dev),
+				&vaf);
+	} else if (dev) {
+		printk(KERN_DEBUG "%s%s: %pV", netdev_name(dev),
+		       netdev_reg_state(dev), &vaf);
+	} else {
+		printk(KERN_DEBUG "(NULL net_device): %pV", &vaf);
+	}
+
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__dynamic_netdev_dbg);
 
@@ -646,7 +797,11 @@ static __init int ddebug_setup_query(char *str)
 __setup("ddebug_query=", ddebug_setup_query);
 
 /*
+<<<<<<< HEAD
  * File_ops->write method for <debugfs>/dynamic_debug/conrol.  Gathers the
+=======
+ * File_ops->write method for <debugfs>/dynamic_debug/control.  Gathers the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * command text from userspace, parses and executes it.
  */
 #define USER_BUF_PAGE 4096
@@ -662,6 +817,7 @@ static ssize_t ddebug_proc_write(struct file *file, const char __user *ubuf,
 		pr_warn("expected <%d bytes into control\n", USER_BUF_PAGE);
 		return -E2BIG;
 	}
+<<<<<<< HEAD
 	tmpbuf = kmalloc(len + 1, GFP_KERNEL);
 	if (!tmpbuf)
 		return -ENOMEM;
@@ -670,6 +826,11 @@ static ssize_t ddebug_proc_write(struct file *file, const char __user *ubuf,
 		return -EFAULT;
 	}
 	tmpbuf[len] = '\0';
+=======
+	tmpbuf = memdup_user_nul(ubuf, len);
+	if (IS_ERR(tmpbuf))
+		return PTR_ERR(tmpbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vpr_info("read %d bytes from userspace\n", (int)len);
 
 	ret = ddebug_exec_queries(tmpbuf, NULL);
@@ -778,7 +939,11 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
 {
 	struct ddebug_iter *iter = m->private;
 	struct _ddebug *dp = p;
+<<<<<<< HEAD
 	char flagsbuf[10];
+=======
+	struct flagsbuf flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	vpr_info("called m=%p p=%p\n", m, p);
 
@@ -791,7 +956,11 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
 	seq_printf(m, "%s:%u [%s]%s =%s \"",
 		   trim_prefix(dp->filename), dp->lineno,
 		   iter->table->mod_name, dp->function,
+<<<<<<< HEAD
 		   ddebug_describe_flags(dp, flagsbuf, sizeof(flagsbuf)));
+=======
+		   ddebug_describe_flags(dp->flags, &flags));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_escape(m, dp->format, "\t\r\n\"");
 	seq_puts(m, "\"\n");
 
@@ -824,6 +993,7 @@ static const struct seq_operations ddebug_proc_seqops = {
  */
 static int ddebug_proc_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct ddebug_iter *iter;
 	int err;
 
@@ -840,6 +1010,11 @@ static int ddebug_proc_open(struct inode *inode, struct file *file)
 	}
 	((struct seq_file *)file->private_data)->private = iter;
 	return 0;
+=======
+	vpr_info("called\n");
+	return seq_open_private(file, &ddebug_proc_seqops,
+				sizeof(struct ddebug_iter));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ddebug_proc_fops = {
@@ -859,12 +1034,20 @@ int ddebug_add_module(struct _ddebug *tab, unsigned int n,
 			     const char *name)
 {
 	struct ddebug_table *dt;
+<<<<<<< HEAD
 	char *new_name;
+=======
+	const char *new_name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dt = kzalloc(sizeof(*dt), GFP_KERNEL);
 	if (dt == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	new_name = kstrdup(name, GFP_KERNEL);
+=======
+	new_name = kstrdup_const(name, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (new_name == NULL) {
 		kfree(dt);
 		return -ENOMEM;
@@ -905,7 +1088,11 @@ static int ddebug_dyndbg_param_cb(char *param, char *val,
 
 /* handle both dyndbg and $module.dyndbg params at boot */
 static int ddebug_dyndbg_boot_param_cb(char *param, char *val,
+<<<<<<< HEAD
 				const char *unused)
+=======
+				const char *unused, void *arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	vpr_info("%s=\"%s\"\n", param, val);
 	return ddebug_dyndbg_param_cb(param, val, NULL, 0);
@@ -925,7 +1112,11 @@ int ddebug_dyndbg_module_param_cb(char *param, char *val, const char *module)
 static void ddebug_table_free(struct ddebug_table *dt)
 {
 	list_del_init(&dt->link);
+<<<<<<< HEAD
 	kfree(dt->mod_name);
+=======
+	kfree_const(dt->mod_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(dt);
 }
 
@@ -1046,7 +1237,11 @@ static int __init dynamic_debug_init(void)
 	 */
 	cmdline = kstrdup(saved_command_line, GFP_KERNEL);
 	parse_args("dyndbg params", cmdline, NULL,
+<<<<<<< HEAD
 		   0, 0, 0, &ddebug_dyndbg_boot_param_cb);
+=======
+		   0, 0, 0, NULL, &ddebug_dyndbg_boot_param_cb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(cmdline);
 	return 0;
 

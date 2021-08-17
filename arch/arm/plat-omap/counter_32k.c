@@ -18,9 +18,15 @@
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/clocksource.h>
+<<<<<<< HEAD
 
 #include <asm/mach/time.h>
 #include <asm/sched_clock.h>
+=======
+#include <linux/sched_clock.h>
+
+#include <asm/mach/time.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <plat/counter-32k.h>
 
@@ -38,6 +44,7 @@
  */
 static void __iomem *sync32k_cnt_reg;
 
+<<<<<<< HEAD
 static u32 notrace omap_32k_read_sched_clock(void)
 {
 	return sync32k_cnt_reg ? __raw_readl(sync32k_cnt_reg) : 0;
@@ -65,15 +72,46 @@ static void omap_read_persistent_clock(struct timespec *ts)
 
 	last_cycles = cycles;
 	cycles = sync32k_cnt_reg ? __raw_readl(sync32k_cnt_reg) : 0;
+=======
+static u64 notrace omap_32k_read_sched_clock(void)
+{
+	return sync32k_cnt_reg ? readl_relaxed(sync32k_cnt_reg) : 0;
+}
+
+/**
+ * omap_read_persistent_clock64 -  Return time from a persistent clock.
+ *
+ * Reads the time from a source which isn't disabled during PM, the
+ * 32k sync timer.  Convert the cycles elapsed since last read into
+ * nsecs and adds to a monotonically increasing timespec64.
+ */
+static struct timespec64 persistent_ts;
+static cycles_t cycles;
+static unsigned int persistent_mult, persistent_shift;
+
+static void omap_read_persistent_clock64(struct timespec64 *ts)
+{
+	unsigned long long nsecs;
+	cycles_t last_cycles;
+
+	last_cycles = cycles;
+	cycles = sync32k_cnt_reg ? readl_relaxed(sync32k_cnt_reg) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nsecs = clocksource_cyc2ns(cycles - last_cycles,
 					persistent_mult, persistent_shift);
 
+<<<<<<< HEAD
 	timespec_add_ns(&persistent_ts, nsecs);
 
 	*ts = persistent_ts;
 
 	spin_unlock_irqrestore(&read_persistent_clock_lock, flags);
+=======
+	timespec64_add_ns(&persistent_ts, nsecs);
+
+	*ts = persistent_ts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -95,7 +133,11 @@ int __init omap_init_clocksource_32k(void __iomem *vbase)
 	 * The 'SCHEME' bits(30-31) of the revision register is used
 	 * to identify the version.
 	 */
+<<<<<<< HEAD
 	if (__raw_readl(vbase + OMAP2_32KSYNCNT_REV_OFF) &
+=======
+	if (readl_relaxed(vbase + OMAP2_32KSYNCNT_REV_OFF) &
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						OMAP2_32KSYNCNT_REV_SCHEME)
 		sync32k_cnt_reg = vbase + OMAP2_32KSYNCNT_CR_OFF_HIGH;
 	else
@@ -103,7 +145,11 @@ int __init omap_init_clocksource_32k(void __iomem *vbase)
 
 	/*
 	 * 120000 rough estimate from the calculations in
+<<<<<<< HEAD
 	 * __clocksource_updatefreq_scale.
+=======
+	 * __clocksource_update_freq_scale.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	clocks_calc_mult_shift(&persistent_mult, &persistent_shift,
 			32768, NSEC_PER_SEC, 120000);
@@ -115,8 +161,13 @@ int __init omap_init_clocksource_32k(void __iomem *vbase)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	setup_sched_clock(omap_32k_read_sched_clock, 32, 32768);
 	register_persistent_clock(NULL, omap_read_persistent_clock);
+=======
+	sched_clock_register(omap_32k_read_sched_clock, 32, 32768);
+	register_persistent_clock(NULL, omap_read_persistent_clock64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("OMAP clocksource: 32k_counter at 32768 Hz\n");
 
 	return 0;

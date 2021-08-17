@@ -23,7 +23,10 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -190,7 +193,11 @@ static int mct_u232_set_baud_rate(struct tty_struct *tty,
 		return -ENOMEM;
 
 	divisor = mct_u232_calculate_baud_rate(serial, value, &speed);
+<<<<<<< HEAD
 	put_unaligned_le32(cpu_to_le32(divisor), buf);
+=======
+	put_unaligned_le32(divisor, buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
 				MCT_U232_SET_BAUD_RATE_REQUEST,
 				MCT_U232_SET_REQUEST_TYPE,
@@ -323,8 +330,17 @@ static int mct_u232_get_modem_stat(struct usb_serial_port *port,
 			MCT_U232_GET_REQUEST_TYPE,
 			0, 0, buf, MCT_U232_GET_MODEM_STAT_SIZE,
 			WDR_TIMEOUT);
+<<<<<<< HEAD
 	if (rc < 0) {
 		dev_err(&port->dev, "Get MODEM STATus failed (error = %d)\n", rc);
+=======
+	if (rc < MCT_U232_GET_MODEM_STAT_SIZE) {
+		dev_err(&port->dev, "Get MODEM STATus failed (error = %d)\n", rc);
+
+		if (rc >= 0)
+			rc = -EIO;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*msr = 0;
 	} else {
 		*msr = buf[0];
@@ -436,7 +452,11 @@ static int  mct_u232_open(struct tty_struct *tty, struct usb_serial_port *port)
 	 * either.
 	 */
 	spin_lock_irqsave(&priv->lock, flags);
+<<<<<<< HEAD
 	if (tty && (tty->termios.c_cflag & CBAUD))
+=======
+	if (tty && C_BAUD(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		priv->control_state = TIOCM_DTR | TIOCM_RTS;
 	else
 		priv->control_state = 0;

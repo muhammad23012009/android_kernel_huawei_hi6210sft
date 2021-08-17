@@ -1,21 +1,49 @@
 #ifndef __LINUX_CACHE_H
 #define __LINUX_CACHE_H
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <asm/cache.h>
 
 #ifndef L1_CACHE_ALIGN
 #define L1_CACHE_ALIGN(x) ALIGN(x, L1_CACHE_BYTES)
+=======
+#include <uapi/linux/kernel.h>
+#include <asm/cache.h>
+
+#ifndef L1_CACHE_ALIGN
+#define L1_CACHE_ALIGN(x) __ALIGN_KERNEL(x, L1_CACHE_BYTES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifndef SMP_CACHE_BYTES
 #define SMP_CACHE_BYTES L1_CACHE_BYTES
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * __read_mostly is used to keep rarely changing variables out of frequently
+ * updated cachelines. If an architecture doesn't support it, ignore the
+ * hint.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __read_mostly
 #define __read_mostly
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * __ro_after_init is used to mark things that are read-only after init (i.e.
+ * after mark_rodata_ro() has been called). These are effectively read-only,
+ * but may get written to during init, so can't live in .rodata (via "const").
+ */
+#ifndef __ro_after_init
+#define __ro_after_init __attribute__((__section__(".data..ro_after_init")))
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef ____cacheline_aligned
 #define ____cacheline_aligned __attribute__((__aligned__(SMP_CACHE_BYTES)))
 #endif

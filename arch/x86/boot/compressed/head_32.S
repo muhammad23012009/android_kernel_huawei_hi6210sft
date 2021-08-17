@@ -29,6 +29,10 @@
 #include <asm/page_types.h>
 #include <asm/boot.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/bootparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The 32-bit x86 assembler in binutils 2.26 will generate R_386_GOT32X
@@ -47,16 +51,27 @@
  * Position Independent Executable (PIE) so that linker won't optimize
  * R_386_GOT32X relocation to its fixed symbol address.  Older
  * linkers generate R_386_32 relocations against locally defined symbols,
+<<<<<<< HEAD
  * _bss, _ebss, _got and _egot, in PIE.  It isn't wrong, just less
  * optimal than R_386_RELATIVE.  But the x86 kernel fails to properly handle
  * R_386_32 relocations when relocating the kernel.  To generate
  * R_386_RELATIVE relocations, we mark _bss, _ebss, _got and _egot as
+=======
+ * _bss, _ebss, _got, _egot and _end, in PIE.  It isn't wrong, just less
+ * optimal than R_386_RELATIVE.  But the x86 kernel fails to properly handle
+ * R_386_32 relocations when relocating the kernel.  To generate
+ * R_386_RELATIVE relocations, we mark _bss, _ebss, _got, _egot and _end as
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * hidden:
  */
 	.hidden _bss
 	.hidden _ebss
 	.hidden _got
 	.hidden _egot
+<<<<<<< HEAD
+=======
+	.hidden _end
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__HEAD
 ENTRY(startup_32)
@@ -70,6 +85,7 @@ ENTRY(startup_32)
 ENTRY(efi_pe_entry)
 	add	$0x4, %esp
 
+<<<<<<< HEAD
 	call	make_boot_params
 	cmpl	$0, %eax
 	je	1f
@@ -89,14 +105,63 @@ reloc:
 
 ENTRY(efi_stub_entry)
 	add	$0x4, %esp
+=======
+	call	1f
+1:	popl	%esi
+	subl	$1b, %esi
+
+	popl	%ecx
+	movl	%ecx, efi32_config(%esi)	/* Handle */
+	popl	%ecx
+	movl	%ecx, efi32_config+8(%esi)	/* EFI System table pointer */
+
+	/* Relocate efi_config->call() */
+	leal	efi32_config(%esi), %eax
+	add	%esi, 32(%eax)
+	pushl	%eax
+
+	call	make_boot_params
+	cmpl	$0, %eax
+	je	fail
+	movl	%esi, BP_code32_start(%eax)
+	popl	%ecx
+	pushl	%eax
+	pushl	%ecx
+	jmp	2f		/* Skip efi_config initialization */
+
+ENTRY(efi32_stub_entry)
+	add	$0x4, %esp
+	popl	%ecx
+	popl	%edx
+
+	call	1f
+1:	popl	%esi
+	subl	$1b, %esi
+
+	movl	%ecx, efi32_config(%esi)	/* Handle */
+	movl	%edx, efi32_config+8(%esi)	/* EFI System table pointer */
+
+	/* Relocate efi_config->call() */
+	leal	efi32_config(%esi), %eax
+	add	%esi, 32(%eax)
+	pushl	%eax
+2:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	call	efi_main
 	cmpl	$0, %eax
 	movl	%eax, %esi
 	jne	2f
+<<<<<<< HEAD
 1:
 	/* EFI init failed, so hang. */
 	hlt
 	jmp	1b
+=======
+fail:
+	/* EFI init failed, so hang. */
+	hlt
+	jmp	fail
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 2:
 	movl	BP_code32_start(%esi), %eax
 	leal	preferred_addr(%eax), %eax
@@ -109,7 +174,11 @@ preferred_addr:
 	 * Test KEEP_SEGMENTS flag to see if the bootloader is asking
 	 * us to not reload segments
 	 */
+<<<<<<< HEAD
 	testb	$(1<<6), BP_loadflags(%esi)
+=======
+	testb	$KEEP_SEGMENTS, BP_loadflags(%esi)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jnz	1f
 
 	cli
@@ -147,12 +216,25 @@ preferred_addr:
 	addl    %eax, %ebx
 	notl	%eax
 	andl    %eax, %ebx
+<<<<<<< HEAD
 #else
 	movl	$LOAD_PHYSICAL_ADDR, %ebx
 #endif
 
 	/* Target address to relocate to for decompression */
 	addl	$z_extract_offset, %ebx
+=======
+	cmpl	$LOAD_PHYSICAL_ADDR, %ebx
+	jae	1f
+#endif
+	movl	$LOAD_PHYSICAL_ADDR, %ebx
+1:
+
+	/* Target address to relocate to for decompression */
+	movl    BP_init_size(%esi), %eax
+	subl    $_end, %eax
+	addl    %eax, %ebx
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set up the stack */
 	leal	boot_stack_end(%ebx), %esp
@@ -209,17 +291,32 @@ relocated:
 2:
 
 /*
+<<<<<<< HEAD
  * Do the decompression, and jump to the new kernel..
  */
 	leal	z_extract_offset_negative(%ebx), %ebp
 				/* push arguments for decompress_kernel: */
 	pushl	%ebp		/* output address */
+=======
+ * Do the extraction, and jump to the new kernel..
+ */
+				/* push arguments for extract_kernel: */
+	pushl	$z_output_len	/* decompressed length, end of relocs */
+
+	movl    BP_init_size(%esi), %eax
+	subl    $_end, %eax
+	movl    %ebx, %ebp
+	subl    %eax, %ebp
+	pushl	%ebp		/* output address */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pushl	$z_input_len	/* input_len */
 	leal	input_data(%ebx), %eax
 	pushl	%eax		/* input_data */
 	leal	boot_heap(%ebx), %eax
 	pushl	%eax		/* heap area */
 	pushl	%esi		/* real mode pointer */
+<<<<<<< HEAD
 	call	decompress_kernel
 	addl	$20, %esp
 
@@ -256,6 +353,27 @@ relocated:
 	jmp	*%ebp
 
 /*
+=======
+	call	extract_kernel	/* returns kernel location in %eax */
+	addl	$24, %esp
+
+/*
+ * Jump to the extracted kernel.
+ */
+	xorl	%ebx, %ebx
+	jmp	*%eax
+
+#ifdef CONFIG_EFI_STUB
+	.data
+efi32_config:
+	.fill 4,8,0
+	.long efi_call_phys
+	.long 0
+	.byte 0
+#endif
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Stack and heap for uncompression
  */
 	.bss

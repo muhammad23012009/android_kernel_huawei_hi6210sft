@@ -4,9 +4,15 @@
  */
 
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/mmu_context.h>
 #include <linux/export.h>
 #include <linux/sched.h>
+=======
+#include <linux/sched.h>
+#include <linux/mmu_context.h>
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mmu_context.h>
 
@@ -31,6 +37,12 @@ void use_mm(struct mm_struct *mm)
 	tsk->mm = mm;
 	switch_mm(active_mm, mm, tsk);
 	task_unlock(tsk);
+<<<<<<< HEAD
+=======
+#ifdef finish_arch_post_lock_switch
+	finish_arch_post_lock_switch();
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (active_mm != mm)
 		mmdrop(active_mm);

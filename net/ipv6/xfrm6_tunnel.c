@@ -12,11 +12,18 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors	Mitsuru KANDA  <mk@linux-ipv6.org>
  * 		YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors	Mitsuru KANDA  <mk@linux-ipv6.org>
+ *		YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Based on net/ipv4/xfrm4_tunnel.c
  *
@@ -111,7 +118,10 @@ __be32 xfrm6_tunnel_spi_lookup(struct net *net, const xfrm_address_t *saddr)
 	rcu_read_unlock_bh();
 	return htonl(spi);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(xfrm6_tunnel_spi_lookup);
 
 static int __xfrm6_tunnel_spi_check(struct net *net, u32 spi)
@@ -146,6 +156,12 @@ static u32 __xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr)
 		index = __xfrm6_tunnel_spi_check(net, spi);
 		if (index >= 0)
 			goto alloc_spi;
+<<<<<<< HEAD
+=======
+
+		if (spi == XFRM6_TUNNEL_SPI_MAX)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	for (spi = XFRM6_TUNNEL_SPI_MIN; spi < xfrm6_tn->spi; spi++) {
 		index = __xfrm6_tunnel_spi_check(net, spi);
@@ -188,7 +204,10 @@ __be32 xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr)
 
 	return htonl(spi);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(xfrm6_tunnel_alloc_spi);
 
 static void x6spi_destroy_rcu(struct rcu_head *head)
@@ -239,7 +258,11 @@ static int xfrm6_tunnel_rcv(struct sk_buff *skb)
 	__be32 spi;
 
 	spi = xfrm6_tunnel_spi_lookup(net, (const xfrm_address_t *)&iph->saddr);
+<<<<<<< HEAD
 	return xfrm6_rcv_spi(skb, IPPROTO_IPV6, spi);
+=======
+	return xfrm6_rcv_spi(skb, IPPROTO_IPV6, spi, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int xfrm6_tunnel_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
@@ -391,6 +414,13 @@ static void __exit xfrm6_tunnel_fini(void)
 	xfrm6_tunnel_deregister(&xfrm6_tunnel_handler, AF_INET6);
 	xfrm_unregister_type(&xfrm6_tunnel_type, AF_INET6);
 	unregister_pernet_subsys(&xfrm6_tunnel_net_ops);
+<<<<<<< HEAD
+=======
+	/* Someone maybe has gotten the xfrm6_tunnel_spi.
+	 * So need to wait it.
+	 */
+	rcu_barrier();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kmem_cache_destroy(xfrm6_tunnel_spi_kmem);
 }
 

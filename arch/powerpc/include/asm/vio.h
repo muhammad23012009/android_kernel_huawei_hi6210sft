@@ -15,14 +15,23 @@
 #define _ASM_POWERPC_VIO_H
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
 #include <linux/mod_devicetable.h>
+<<<<<<< HEAD
 
 #include <asm/hvcall.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/hvcall.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Architecture-specific constants for drivers to

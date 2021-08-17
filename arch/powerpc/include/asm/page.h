@@ -12,6 +12,10 @@
 
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #include <asm/types.h>
 #endif
@@ -48,9 +52,12 @@ extern unsigned int HPAGE_SHIFT;
 #define HUGE_MAX_HSTATE		(MMU_PAGE_COUNT-1)
 #endif
 
+<<<<<<< HEAD
 /* We do define AT_SYSINFO_EHDR but don't use the gate mechanism */
 #define __HAVE_ARCH_GATE_AREA		1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Subtle: (1 << PAGE_SHIFT) is an int, not an unsigned long. So if we
  * assign PAGE_MASK to a larger type it gets extended the way we want
@@ -78,7 +85,11 @@ extern unsigned int HPAGE_SHIFT;
  *
  * Also, KERNELBASE >= PAGE_OFFSET and PHYSICAL_START >= MEMORY_START
  *
+<<<<<<< HEAD
  * There are two was to determine a physical address from a virtual one:
+=======
+ * There are two ways to determine a physical address from a virtual one:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * va = pa + PAGE_OFFSET - MEMORY_START
  * va = pa + KERNELBASE - PHYSICAL_START
  *
@@ -98,7 +109,11 @@ extern unsigned int HPAGE_SHIFT;
 extern phys_addr_t memstart_addr;
 extern phys_addr_t kernstart_addr;
 
+<<<<<<< HEAD
 #ifdef CONFIG_RELOCATABLE_PPC32
+=======
+#if defined(CONFIG_RELOCATABLE) && defined(CONFIG_PPC32)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern long long virt_phys_offset;
 #endif
 
@@ -110,12 +125,21 @@ extern long long virt_phys_offset;
 #endif
 
 /* See Description below for VIRT_PHYS_OFFSET */
+<<<<<<< HEAD
 #ifdef CONFIG_RELOCATABLE_PPC32
+=======
+#if defined(CONFIG_PPC32) && defined(CONFIG_BOOKE)
+#ifdef CONFIG_RELOCATABLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define VIRT_PHYS_OFFSET virt_phys_offset
 #else
 #define VIRT_PHYS_OFFSET (KERNELBASE - PHYSICAL_START)
 #endif
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PPC64
 #define MEMORY_START	0UL
@@ -130,18 +154,43 @@ extern long long virt_phys_offset;
 #define pfn_valid(pfn)		((pfn) >= ARCH_PFN_OFFSET && (pfn) < max_mapnr)
 #endif
 
+<<<<<<< HEAD
 #define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
 #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
 #define virt_addr_valid(kaddr)	pfn_valid(__pa(kaddr) >> PAGE_SHIFT)
+=======
+#define virt_to_pfn(kaddr)	(__pa(kaddr) >> PAGE_SHIFT)
+#define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+#define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
+
+#ifdef CONFIG_PPC_BOOK3S_64
+/*
+ * On hash the vmalloc and other regions alias to the kernel region when passed
+ * through __pa(), which virt_to_pfn() uses. That means virt_addr_valid() can
+ * return true for some vmalloc addresses, which is incorrect. So explicitly
+ * check that the address is in the kernel region.
+ */
+#define virt_addr_valid(kaddr) (REGION_ID(kaddr) == KERNEL_REGION_ID && \
+				pfn_valid(virt_to_pfn(kaddr)))
+#else
+#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * On Book-E parts we need __va to parse the device tree and we can't
  * determine MEMORY_START until then.  However we can determine PHYSICAL_START
  * from information at hand (program counter, TLB lookup).
  *
+<<<<<<< HEAD
  * On BookE with RELOCATABLE (RELOCATABLE_PPC32)
  *
  *   With RELOCATABLE_PPC32,  we support loading the kernel at any physical 
+=======
+ * On BookE with RELOCATABLE && PPC32
+ *
+ *   With RELOCATABLE && PPC32,  we support loading the kernel at any physical
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *   address without any restriction on the page alignment.
  *
  *   We find the runtime address of _stext and relocate ourselves based on 
@@ -207,7 +256,11 @@ extern long long virt_phys_offset;
  * On non-Book-E PPC64 PAGE_OFFSET and MEMORY_START are constants so use
  * the other definitions for __va & __pa.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_BOOKE
+=======
+#if defined(CONFIG_PPC32) && defined(CONFIG_BOOKE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) + VIRT_PHYS_OFFSET))
 #define __pa(x) ((unsigned long)(x) - VIRT_PHYS_OFFSET)
 #else
@@ -243,8 +296,13 @@ extern long long virt_phys_offset;
 #endif
 
 /* align addr on a size boundary - adjust address up/down if needed */
+<<<<<<< HEAD
 #define _ALIGN_UP(addr,size)	(((addr)+((size)-1))&(~((size)-1)))
 #define _ALIGN_DOWN(addr,size)	((addr)&(~((size)-1)))
+=======
+#define _ALIGN_UP(addr, size)   __ALIGN_KERNEL(addr, size)
+#define _ALIGN_DOWN(addr, size)	((addr)&(~((typeof(addr))(size)-1)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* align addr on a size boundary - adjust address up if needed */
 #define _ALIGN(addr,size)     _ALIGN_UP(addr,size)
@@ -271,6 +329,16 @@ extern long long virt_phys_offset;
 #else
 #define PD_HUGE 0x80000000
 #endif
+<<<<<<< HEAD
+=======
+
+#else	/* CONFIG_PPC_BOOK3S_64 */
+/*
+ * Book3S 64 stores real addresses in the hugepd entries to
+ * avoid overlaps with _PAGE_PRESENT and _PAGE_PTE.
+ */
+#define HUGEPD_ADDR_MASK	(0x0ffffffffffffffful & ~HUGEPD_SHIFT_MASK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_PPC_BOOK3S_64 */
 
 /*
@@ -281,6 +349,7 @@ extern long long virt_phys_offset;
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #undef STRICT_MM_TYPECHECKS
 
 #ifdef STRICT_MM_TYPECHECKS
@@ -361,10 +430,17 @@ typedef unsigned long pgprot_t;
 #define __pgd(x)	(x)
 #define __pgprot(x)	(x)
 
+=======
+#ifdef CONFIG_PPC_BOOK3S_64
+#include <asm/pgtable-be-types.h>
+#else
+#include <asm/pgtable-types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 typedef struct { signed long pd; } hugepd_t;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HUGETLB_PAGE
 #ifdef CONFIG_PPC_BOOK3S_64
 static inline int hugepd_ok(hugepd_t hpd)
@@ -389,6 +465,15 @@ int pgd_huge(pgd_t pgd);
 #define pgd_huge(pgd)			0
 #endif /* CONFIG_HUGETLB_PAGE */
 
+=======
+#ifndef CONFIG_HUGETLB_PAGE
+#define is_hugepd(pdep)		(0)
+#define pgd_huge(pgd)		(0)
+#endif /* CONFIG_HUGETLB_PAGE */
+
+#define __hugepd(x) ((hugepd_t) { (x) })
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct page;
 extern void clear_user_page(void *page, unsigned long vaddr, struct page *pg);
 extern void copy_user_page(void *to, void *from, unsigned long vaddr,
@@ -402,12 +487,28 @@ void arch_free_page(struct page *page, int order);
 #endif
 
 struct vm_area_struct;
+<<<<<<< HEAD
 
 #ifdef CONFIG_PPC_64K_PAGES
+=======
+#ifdef CONFIG_PPC_BOOK3S_64
+/*
+ * For BOOK3s 64 with 4k and 64K linux page size
+ * we want to use pointers, because the page table
+ * actually store pfn
+ */
+typedef pte_t *pgtable_t;
+#else
+#if defined(CONFIG_PPC_64K_PAGES) && defined(CONFIG_PPC64)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef pte_t *pgtable_t;
 #else
 typedef struct page *pgtable_t;
 #endif
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm-generic/memory_model.h>
 #endif /* __ASSEMBLY__ */

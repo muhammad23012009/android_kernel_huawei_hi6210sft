@@ -5,7 +5,11 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+<<<<<<< HEAD
  * Copyright (C) 2001 - 2007 Tensilica Inc.
+=======
+ * Copyright (C) 2001 - 2013 Tensilica Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _XTENSA_PGTABLE_H
@@ -13,12 +17,24 @@
 
 #include <asm-generic/pgtable-nopmd.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/kmem_layout.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * We only use two ring levels, user and kernel space.
  */
 
+<<<<<<< HEAD
 #define USER_RING		1	/* user ring level */
+=======
+#ifdef CONFIG_MMU
+#define USER_RING		1	/* user ring level */
+#else
+#define USER_RING		0
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define KERNEL_RING		0	/* kernel ring level */
 
 /*
@@ -57,17 +73,27 @@
 #define PTRS_PER_PGD		1024
 #define PGD_ORDER		0
 #define USER_PTRS_PER_PGD	(TASK_SIZE/PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FIRST_USER_PGD_NR	(FIRST_USER_ADDRESS >> PGDIR_SHIFT)
 
 /*
  * Virtual memory area. We keep a distance to other memory regions to be
  * on the safe side. We also use this area for cache aliasing.
  */
+<<<<<<< HEAD
 
 #define VMALLOC_START		0xC0000000
 #define VMALLOC_END		0xC7FEFFFF
 #define TLBTEMP_BASE_1		0xC7FF0000
+=======
+#define VMALLOC_START		(XCHAL_KSEG_CACHED_VADDR - 0x10000000)
+#define VMALLOC_END		(VMALLOC_START + 0x07FEFFFF)
+#define TLBTEMP_BASE_1		(VMALLOC_END + 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TLBTEMP_BASE_2		(TLBTEMP_BASE_1 + DCACHE_WAY_SIZE)
 #if 2 * DCACHE_WAY_SIZE > ICACHE_WAY_SIZE
 #define TLBTEMP_SIZE		(2 * DCACHE_WAY_SIZE)
@@ -76,6 +102,7 @@
 #endif
 
 /*
+<<<<<<< HEAD
  * Xtensa Linux config PTE layout (when present):
  *	31-12:	PPN
  *	11-6:	Software
@@ -99,11 +126,78 @@
 #define _PAGE_PROTNONE		(3<<0)	/* special case for VM_PROT_NONE */
 
 /* None of these cache modes include MP coherency:  */
+=======
+ * For the Xtensa architecture, the PTE layout is as follows:
+ *
+ *		31------12  11  10-9   8-6  5-4  3-2  1-0
+ *		+-----------------------------------------+
+ *		|           |   Software   |   HARDWARE   |
+ *		|    PPN    |          ADW | RI |Attribute|
+ *		+-----------------------------------------+
+ *   pte_none	|             MBZ          | 01 | 11 | 00 |
+ *		+-----------------------------------------+
+ *   present	|    PPN    | 0 | 00 | ADW | RI | CA | wx |
+ *		+- - - - - - - - - - - - - - - - - - - - -+
+ *   (PAGE_NONE)|    PPN    | 0 | 00 | ADW | 01 | 11 | 11 |
+ *		+-----------------------------------------+
+ *   swap	|     index     |   type   | 01 | 11 | 00 |
+ *		+-----------------------------------------+
+ *
+ * For T1050 hardware and earlier the layout differs for present and (PAGE_NONE)
+ *		+-----------------------------------------+
+ *   present	|    PPN    | 0 | 00 | ADW | RI | CA | w1 |
+ *		+-----------------------------------------+
+ *   (PAGE_NONE)|    PPN    | 0 | 00 | ADW | 01 | 01 | 00 |
+ *		+-----------------------------------------+
+ *
+ *  Legend:
+ *   PPN        Physical Page Number
+ *   ADW	software: accessed (young) / dirty / writable
+ *   RI         ring (0=privileged, 1=user, 2 and 3 are unused)
+ *   CA		cache attribute: 00 bypass, 01 writeback, 10 writethrough
+ *		(11 is invalid and used to mark pages that are not present)
+ *   w		page is writable (hw)
+ *   x		page is executable (hw)
+ *   index      swap offset / PAGE_SIZE (bit 11-31: 21 bits -> 8 GB)
+ *		(note that the index is always non-zero)
+ *   type       swap type (5 bits -> 32 types)
+ *
+ *  Notes:
+ *   - (PROT_NONE) is a special case of 'present' but causes an exception for
+ *     any access (read, write, and execute).
+ *   - 'multihit-exception' has the highest priority of all MMU exceptions,
+ *     so the ring must be set to 'RING_USER' even for 'non-present' pages.
+ *   - on older hardware, the exectuable flag was not supported and
+ *     used as a 'valid' flag, so it needs to be always set.
+ *   - we need to keep track of certain flags in software (dirty and young)
+ *     to do this, we use write exceptions and have a separate software w-flag.
+ *   - attribute value 1101 (and 1111 on T1050 and earlier) is reserved
+ */
+
+#define _PAGE_ATTRIB_MASK	0xf
+
+#define _PAGE_HW_EXEC		(1<<0)	/* hardware: page is executable */
+#define _PAGE_HW_WRITE		(1<<1)	/* hardware: page is writable */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define _PAGE_CA_BYPASS		(0<<2)	/* bypass, non-speculative */
 #define _PAGE_CA_WB		(1<<2)	/* write-back */
 #define _PAGE_CA_WT		(2<<2)	/* write-through */
 #define _PAGE_CA_MASK		(3<<2)
+<<<<<<< HEAD
 #define _PAGE_INVALID		(3<<2)
+=======
+#define _PAGE_CA_INVALID	(3<<2)
+
+/* We use invalid attribute values to distinguish special pte entries */
+#if XCHAL_HW_VERSION_MAJOR < 2000
+#define _PAGE_HW_VALID		0x01	/* older HW needed this bit set */
+#define _PAGE_NONE		0x04
+#else
+#define _PAGE_HW_VALID		0x00
+#define _PAGE_NONE		0x0f
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _PAGE_USER		(1<<4)	/* user access (ring=1) */
 
@@ -113,6 +207,7 @@
 #define _PAGE_DIRTY		(1<<7)	/* software: page dirty */
 #define _PAGE_ACCESSED		(1<<8)	/* software: page accessed (read) */
 
+<<<<<<< HEAD
 /* On older HW revisions, we always have to set bit 0 */
 #if XCHAL_HW_VERSION_MAJOR < 2000
 # define _PAGE_VALID		(1<<0)
@@ -126,6 +221,14 @@
 #ifdef CONFIG_MMU
 
 #define PAGE_NONE	   __pgprot(_PAGE_INVALID | _PAGE_USER | _PAGE_PROTNONE)
+=======
+#ifdef CONFIG_MMU
+
+#define _PAGE_CHG_MASK	   (PAGE_MASK | _PAGE_ACCESSED | _PAGE_DIRTY)
+#define _PAGE_PRESENT	   (_PAGE_HW_VALID | _PAGE_CA_WB | _PAGE_ACCESSED)
+
+#define PAGE_NONE	   __pgprot(_PAGE_NONE | _PAGE_USER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PAGE_COPY	   __pgprot(_PAGE_PRESENT | _PAGE_USER)
 #define PAGE_COPY_EXEC	   __pgprot(_PAGE_PRESENT | _PAGE_USER | _PAGE_HW_EXEC)
 #define PAGE_READONLY	   __pgprot(_PAGE_PRESENT | _PAGE_USER)
@@ -137,13 +240,23 @@
 #define PAGE_KERNEL_EXEC   __pgprot(_PAGE_PRESENT|_PAGE_HW_WRITE|_PAGE_HW_EXEC)
 
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
+<<<<<<< HEAD
 # define _PAGE_DIRECTORY (_PAGE_VALID | _PAGE_ACCESSED)
 #else
 # define _PAGE_DIRECTORY (_PAGE_VALID | _PAGE_ACCESSED | _PAGE_CA_WB)
+=======
+# define _PAGE_DIRECTORY   (_PAGE_HW_VALID | _PAGE_ACCESSED | _PAGE_CA_BYPASS)
+#else
+# define _PAGE_DIRECTORY   (_PAGE_HW_VALID | _PAGE_ACCESSED | _PAGE_CA_WB)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #else /* no mmu */
 
+<<<<<<< HEAD
+=======
+# define _PAGE_CHG_MASK  (PAGE_MASK | _PAGE_ACCESSED | _PAGE_DIRTY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define PAGE_NONE       __pgprot(0)
 # define PAGE_SHARED     __pgprot(0)
 # define PAGE_COPY       __pgprot(0)
@@ -191,12 +304,20 @@ extern unsigned long empty_zero_page[1024];
 #ifdef CONFIG_MMU
 extern pgd_t swapper_pg_dir[PAGE_SIZE/sizeof(pgd_t)];
 extern void paging_init(void);
+<<<<<<< HEAD
 extern void pgtable_cache_init(void);
 #else
 # define swapper_pg_dir NULL
 static inline void paging_init(void) { }
 static inline void pgtable_cache_init(void) { }
 #endif
+=======
+#else
+# define swapper_pg_dir NULL
+static inline void paging_init(void) { }
+#endif
+static inline void pgtable_cache_init(void) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The pmd contains the kernel virtual address of the pte page.
@@ -207,12 +328,25 @@ static inline void pgtable_cache_init(void) { }
 /*
  * pte status.
  */
+<<<<<<< HEAD
 #define pte_none(pte)	 (pte_val(pte) == _PAGE_INVALID)
 #define pte_present(pte)						\
 	(((pte_val(pte) & _PAGE_CA_MASK) != _PAGE_INVALID)		\
 	 || ((pte_val(pte) & _PAGE_PROTNONE) == _PAGE_PROTNONE))
 #define pte_clear(mm,addr,ptep)						\
 	do { update_pte(ptep, __pte(_PAGE_INVALID)); } while(0)
+=======
+# define pte_none(pte)	 (pte_val(pte) == (_PAGE_CA_INVALID | _PAGE_USER))
+#if XCHAL_HW_VERSION_MAJOR < 2000
+# define pte_present(pte) ((pte_val(pte) & _PAGE_CA_MASK) != _PAGE_CA_INVALID)
+#else
+# define pte_present(pte)						\
+	(((pte_val(pte) & _PAGE_CA_MASK) != _PAGE_CA_INVALID)		\
+	 || ((pte_val(pte) & _PAGE_ATTRIB_MASK) == _PAGE_NONE))
+#endif
+#define pte_clear(mm,addr,ptep)						\
+	do { update_pte(ptep, __pte(_PAGE_CA_INVALID | _PAGE_USER)); } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define pmd_none(pmd)	 (!pmd_val(pmd))
 #define pmd_present(pmd) (pmd_val(pmd) & PAGE_MASK)
@@ -222,7 +356,10 @@ static inline void pgtable_cache_init(void) { }
 static inline int pte_write(pte_t pte) { return pte_val(pte) & _PAGE_WRITABLE; }
 static inline int pte_dirty(pte_t pte) { return pte_val(pte) & _PAGE_DIRTY; }
 static inline int pte_young(pte_t pte) { return pte_val(pte) & _PAGE_ACCESSED; }
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte)  { return pte_val(pte) & _PAGE_FILE; }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int pte_special(pte_t pte) { return 0; }
 
 static inline pte_t pte_wrprotect(pte_t pte)	
@@ -240,6 +377,11 @@ static inline pte_t pte_mkwrite(pte_t pte)
 static inline pte_t pte_mkspecial(pte_t pte)
 	{ return pte; }
 
+<<<<<<< HEAD
+=======
+#define pgprot_noncached(prot) (__pgprot(pgprot_val(prot) & ~_PAGE_CA_MASK))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Conversion functions: convert a page and protection to a page entry,
  * and a page entry and page directory to the page they refer to.
@@ -278,6 +420,13 @@ set_pte_at(struct mm_struct *mm, unsigned long addr, pte_t *ptep, pte_t pteval)
 	update_pte(ptep, pteval);
 }
 
+<<<<<<< HEAD
+=======
+static inline void set_pte(pte_t *ptep, pte_t pteval)
+{
+	update_pte(ptep, pteval);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void
 set_pmd(pmd_t *pmdp, pmd_t pmdval)
@@ -333,6 +482,7 @@ ptep_set_wrprotect(struct mm_struct *mm, unsigned long addr, pte_t *ptep)
 
 
 /*
+<<<<<<< HEAD
  * Encode and decode a swap entry.
  *
  * Format of swap pte:
@@ -350,10 +500,17 @@ ptep_set_wrprotect(struct mm_struct *mm, unsigned long addr, pte_t *ptep)
  *  bits   4 -  5  ring protection (must be 01: _PAGE_USER)
  *  bits   6 - 31  file offset / PAGE_SIZE
  */
+=======
+ * Encode and decode a swap and file entry.
+ */
+#define SWP_TYPE_BITS		5
+#define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > SWP_TYPE_BITS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __swp_type(entry)	(((entry).val >> 6) & 0x1f)
 #define __swp_offset(entry)	((entry).val >> 11)
 #define __swp_entry(type,offs)	\
+<<<<<<< HEAD
 	((swp_entry_t) {((type) << 6) | ((offs) << 11) | _PAGE_INVALID})
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)	((pte_t) { (x).val })
@@ -363,6 +520,13 @@ ptep_set_wrprotect(struct mm_struct *mm, unsigned long addr, pte_t *ptep)
 #define pgoff_to_pte(off)	\
 	((pte_t) { ((off) << 4) | _PAGE_INVALID | _PAGE_FILE })
 
+=======
+	((swp_entry_t){((type) << 6) | ((offs) << 11) | \
+	 _PAGE_CA_INVALID | _PAGE_USER})
+#define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
+#define __swp_entry_to_pte(x)	((pte_t) { (x).val })
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /*  !defined (__ASSEMBLY__) */
 
 
@@ -398,6 +562,7 @@ ptep_set_wrprotect(struct mm_struct *mm, unsigned long addr, pte_t *ptep)
 extern  void update_mmu_cache(struct vm_area_struct * vma,
 			      unsigned long address, pte_t *ptep);
 
+<<<<<<< HEAD
 /*
  * remap a physical page `pfn' of size `size' with page protection `prot'
  * into virtual address `from'
@@ -406,6 +571,8 @@ extern  void update_mmu_cache(struct vm_area_struct * vma,
 #define io_remap_pfn_range(vma,from,pfn,size,prot) \
 	remap_pfn_range(vma, from, pfn, size, prot)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef pte_t *pte_addr_t;
 
 #endif /* !defined (__ASSEMBLY__) */

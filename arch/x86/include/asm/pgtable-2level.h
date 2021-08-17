@@ -55,6 +55,7 @@ static inline pmd_t native_pmdp_get_and_clear(pmd_t *xp)
 #define native_pmdp_get_and_clear(xp) native_local_pmdp_get_and_clear(xp)
 #endif
 
+<<<<<<< HEAD
 /*
  * Bits _PAGE_BIT_PRESENT, _PAGE_BIT_FILE and _PAGE_BIT_PROTNONE are taken,
  * split up the 29 bits of offset into this range:
@@ -96,6 +97,18 @@ static inline pmd_t native_pmdp_get_and_clear(pmd_t *xp)
 #define SWP_TYPE_BITS (_PAGE_BIT_PROTNONE - _PAGE_BIT_PRESENT - 1)
 #define SWP_OFFSET_SHIFT (_PAGE_BIT_FILE + 1)
 #endif
+=======
+/* Bit manipulation helper on pte/pgoff entry */
+static inline unsigned long pte_bitop(unsigned long value, unsigned int rightshift,
+				      unsigned long mask, unsigned int leftshift)
+{
+	return ((value >> rightshift) & mask) << leftshift;
+}
+
+/* Encode and de-code a swap entry */
+#define SWP_TYPE_BITS 5
+#define SWP_OFFSET_SHIFT (_PAGE_BIT_PROTNONE + 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > SWP_TYPE_BITS)
 
@@ -108,4 +121,24 @@ static inline pmd_t native_pmdp_get_and_clear(pmd_t *xp)
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { (pte).pte_low })
 #define __swp_entry_to_pte(x)		((pte_t) { .pte = (x).val })
 
+<<<<<<< HEAD
+=======
+/* No inverted PFNs on 2 level page tables */
+
+static inline u64 protnone_mask(u64 val)
+{
+	return 0;
+}
+
+static inline u64 flip_protnone_guard(u64 oldval, u64 val, u64 mask)
+{
+	return val;
+}
+
+static inline bool __pte_needs_invert(u64 val)
+{
+	return false;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_X86_PGTABLE_2LEVEL_H */

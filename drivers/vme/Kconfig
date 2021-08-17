@@ -3,7 +3,11 @@
 #
 
 menuconfig VME_BUS
+<<<<<<< HEAD
 	tristate "VME bridge support"
+=======
+	bool "VME bridge support"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on PCI
 	---help---
 	  If you say Y here you get support for the VME bridge Framework.

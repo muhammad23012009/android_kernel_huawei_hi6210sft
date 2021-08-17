@@ -35,12 +35,15 @@ extern unsigned long __nongprelbss memory_start;
 extern unsigned long __nongprelbss memory_end;
 extern unsigned long __nongprelbss rom_length;
 
+<<<<<<< HEAD
 /* determine if we're running from ROM */
 static inline int is_in_rom(unsigned long addr)
 {
 	return 0; /* default case: not in ROM */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #endif
 #endif /* _ASM_SECTIONS_H */

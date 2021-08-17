@@ -27,12 +27,19 @@
 #include <linux/init.h>
 #include <linux/linkage.h>
 #include <asm/segment.h>
+<<<<<<< HEAD
 #include <asm/pgtable_types.h>
 #include <asm/page_types.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/boot.h>
 #include <asm/msr.h>
 #include <asm/processor-flags.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/bootparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Locally defined symbols should be marked hidden:
@@ -41,6 +48,10 @@
 	.hidden _ebss
 	.hidden _got
 	.hidden _egot
+<<<<<<< HEAD
+=======
+	.hidden _end
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__HEAD
 	.code32
@@ -56,7 +67,11 @@ ENTRY(startup_32)
 	 * Test KEEP_SEGMENTS flag to see if the bootloader is asking
 	 * us to not reload segments
 	 */
+<<<<<<< HEAD
 	testb $(1<<6), BP_loadflags(%esi)
+=======
+	testb $KEEP_SEGMENTS, BP_loadflags(%esi)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jnz 1f
 
 	cli
@@ -104,12 +119,25 @@ ENTRY(startup_32)
 	addl	%eax, %ebx
 	notl	%eax
 	andl	%eax, %ebx
+<<<<<<< HEAD
 #else
 	movl	$LOAD_PHYSICAL_ADDR, %ebx
 #endif
 
 	/* Target address to relocate to for decompression */
 	addl	$z_extract_offset, %ebx
+=======
+	cmpl	$LOAD_PHYSICAL_ADDR, %ebx
+	jae	1f
+#endif
+	movl	$LOAD_PHYSICAL_ADDR, %ebx
+1:
+
+	/* Target address to relocate to for decompression */
+	movl	BP_init_size(%esi), %eax
+	subl	$_end, %eax
+	addl	%eax, %ebx
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Prepare for entering 64 bit mode
@@ -121,7 +149,12 @@ ENTRY(startup_32)
 	lgdt	gdt(%ebp)
 
 	/* Enable PAE mode */
+<<<<<<< HEAD
 	movl	$(X86_CR4_PAE), %eax
+=======
+	movl	%cr4, %eax
+	orl	$X86_CR4_PAE, %eax
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movl	%eax, %cr4
 
  /*
@@ -130,7 +163,11 @@ ENTRY(startup_32)
 	/* Initialize Page tables to 0 */
 	leal	pgtable(%ebx), %edi
 	xorl	%eax, %eax
+<<<<<<< HEAD
 	movl	$((4096*6)/4), %ecx
+=======
+	movl	$(BOOT_INIT_PGT_SIZE/4), %ecx
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rep	stosl
 
 	/* Build Level 4 */
@@ -171,7 +208,11 @@ ENTRY(startup_32)
 	/* After gdt is loaded */
 	xorl	%eax, %eax
 	lldt	%ax
+<<<<<<< HEAD
 	movl    $0x20, %eax
+=======
+	movl    $__BOOT_TSS, %eax
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ltr	%ax
 
 	/*
@@ -186,6 +227,16 @@ ENTRY(startup_32)
 	 */
 	pushl	$__KERNEL_CS
 	leal	startup_64(%ebp), %eax
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EFI_MIXED
+	movl	efi32_config(%ebp), %ebx
+	cmp	$0, %ebx
+	jz	1f
+	leal	handover_entry(%ebp), %eax
+1:
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pushl	%eax
 
 	/* Enter paged protected Mode, activating Long Mode */
@@ -196,6 +247,38 @@ ENTRY(startup_32)
 	lret
 ENDPROC(startup_32)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EFI_MIXED
+	.org 0x190
+ENTRY(efi32_stub_entry)
+	add	$0x4, %esp		/* Discard return address */
+	popl	%ecx
+	popl	%edx
+	popl	%esi
+
+	leal	(BP_scratch+4)(%esi), %esp
+	call	1f
+1:	pop	%ebp
+	subl	$1b, %ebp
+
+	movl	%ecx, efi32_config(%ebp)
+	movl	%edx, efi32_config+8(%ebp)
+	sgdtl	efi32_boot_gdt(%ebp)
+
+	leal	efi32_config(%ebp), %eax
+	movl	%eax, efi_config(%ebp)
+
+	/* Disable paging */
+	movl	%cr0, %eax
+	btrl	$X86_CR0_PG_BIT, %eax
+	movl	%eax, %cr0
+
+	jmp	startup_32
+ENDPROC(efi32_stub_entry)
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.code64
 	.org 0x200
 ENTRY(startup_64)
@@ -217,6 +300,7 @@ ENTRY(startup_64)
 	jmp	preferred_addr
 
 ENTRY(efi_pe_entry)
+<<<<<<< HEAD
 	mov	%rcx, %rdi
 	mov	%rdx, %rsi
 	pushq	%rdi
@@ -231,14 +315,59 @@ ENTRY(efi_pe_entry)
 	popq	%rdi
 
 ENTRY(efi_stub_entry)
+=======
+	movq	%rcx, efi64_config(%rip)	/* Handle */
+	movq	%rdx, efi64_config+8(%rip) /* EFI System table pointer */
+
+	leaq	efi64_config(%rip), %rax
+	movq	%rax, efi_config(%rip)
+
+	call	1f
+1:	popq	%rbp
+	subq	$1b, %rbp
+
+	/*
+	 * Relocate efi_config->call().
+	 */
+	addq	%rbp, efi64_config+32(%rip)
+
+	movq	%rax, %rdi
+	call	make_boot_params
+	cmpq	$0,%rax
+	je	fail
+	mov	%rax, %rsi
+	leaq	startup_32(%rip), %rax
+	movl	%eax, BP_code32_start(%rsi)
+	jmp	2f		/* Skip the relocation */
+
+handover_entry:
+	call	1f
+1:	popq	%rbp
+	subq	$1b, %rbp
+
+	/*
+	 * Relocate efi_config->call().
+	 */
+	movq	efi_config(%rip), %rax
+	addq	%rbp, 32(%rax)
+2:
+	movq	efi_config(%rip), %rdi
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	call	efi_main
 	movq	%rax,%rsi
 	cmpq	$0,%rax
 	jne	2f
+<<<<<<< HEAD
 1:
 	/* EFI init failed, so hang. */
 	hlt
 	jmp	1b
+=======
+fail:
+	/* EFI init failed, so hang. */
+	hlt
+	jmp	fail
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 2:
 	movl	BP_code32_start(%esi), %eax
 	leaq	preferred_addr(%rax), %rax
@@ -276,12 +405,25 @@ preferred_addr:
 	addq	%rax, %rbp
 	notq	%rax
 	andq	%rax, %rbp
+<<<<<<< HEAD
 #else
 	movq	$LOAD_PHYSICAL_ADDR, %rbp
 #endif
 
 	/* Target address to relocate to for decompression */
 	leaq	z_extract_offset(%rbp), %rbx
+=======
+	cmpq	$LOAD_PHYSICAL_ADDR, %rbp
+	jae	1f
+#endif
+	movq	$LOAD_PHYSICAL_ADDR, %rbp
+1:
+
+	/* Target address to relocate to for decompression */
+	movl	BP_init_size(%rsi), %ebx
+	subl	$_end, %ebx
+	addq	%rbp, %rbx
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set up the stack */
 	leaq	boot_stack_end(%rbx), %rsp
@@ -310,6 +452,23 @@ preferred_addr:
 	leaq	relocated(%rbx), %rax
 	jmp	*%rax
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EFI_STUB
+	.org 0x390
+ENTRY(efi64_stub_entry)
+	movq	%rdi, efi64_config(%rip)	/* Handle */
+	movq	%rsi, efi64_config+8(%rip) /* EFI System table pointer */
+
+	leaq	efi64_config(%rip), %rax
+	movq	%rax, efi_config(%rip)
+
+	movq	%rdx, %rsi
+	jmp	handover_entry
+ENDPROC(efi64_stub_entry)
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.text
 relocated:
 
@@ -337,7 +496,11 @@ relocated:
 2:
 	
 /*
+<<<<<<< HEAD
  * Do the decompression, and jump to the new kernel..
+=======
+ * Do the extraction, and jump to the new kernel..
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 	pushq	%rsi			/* Save the real mode argument */
 	movq	%rsi, %rdi		/* real mode address */
@@ -345,13 +508,22 @@ relocated:
 	leaq	input_data(%rip), %rdx  /* input_data */
 	movl	$z_input_len, %ecx	/* input_len */
 	movq	%rbp, %r8		/* output target address */
+<<<<<<< HEAD
 	call	decompress_kernel
+=======
+	movq	$z_output_len, %r9	/* decompressed length, end of relocs */
+	call	extract_kernel		/* returns kernel location in %rax */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	popq	%rsi
 
 /*
  * Jump to the decompressed kernel.
  */
+<<<<<<< HEAD
 	jmp	*%rbp
+=======
+	jmp	*%rax
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.code32
 no_longmode:
@@ -374,6 +546,28 @@ gdt:
 	.quad   0x0000000000000000	/* TS continued */
 gdt_end:
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EFI_STUB
+efi_config:
+	.quad	0
+
+#ifdef CONFIG_EFI_MIXED
+	.global efi32_config
+efi32_config:
+	.fill	4,8,0
+	.quad	efi64_thunk
+	.byte	0
+#endif
+
+	.global efi64_config
+efi64_config:
+	.fill	4,8,0
+	.quad	efi_call
+	.byte	1
+#endif /* CONFIG_EFI_STUB */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Stack and heap for uncompression
  */
@@ -391,4 +585,8 @@ boot_stack_end:
 	.section ".pgtable","a",@nobits
 	.balign 4096
 pgtable:
+<<<<<<< HEAD
 	.fill 6*4096, 1, 0
+=======
+	.fill BOOT_PGT_SIZE, 1, 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

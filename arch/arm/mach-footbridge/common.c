@@ -106,7 +106,11 @@ static void __init __fb_init_irq(void)
 
 	for (irq = _DC21285_IRQ(0); irq < _DC21285_IRQ(20); irq++) {
 		irq_set_chip_and_handler(irq, &fb_chip, handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -143,11 +147,14 @@ static struct map_desc fb_common_io_desc[] __initdata = {
 		.pfn		= __phys_to_pfn(DC21285_ARMCSR_BASE),
 		.length		= ARMCSR_SIZE,
 		.type		= MT_DEVICE,
+<<<<<<< HEAD
 	}, {
 		.virtual	= XBUS_BASE,
 		.pfn		= __phys_to_pfn(0x40000000),
 		.length		= XBUS_SIZE,
 		.type		= MT_DEVICE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 
@@ -201,9 +208,15 @@ void __init footbridge_map_io(void)
 	vga_base = PCIMEM_BASE;
 }
 
+<<<<<<< HEAD
 void footbridge_restart(char mode, const char *cmd)
 {
 	if (mode == 's') {
+=======
+void footbridge_restart(enum reboot_mode mode, const char *cmd)
+{
+	if (mode == REBOOT_SOFT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Jump into the ROM */
 		soft_restart(0x41000000);
 	} else {

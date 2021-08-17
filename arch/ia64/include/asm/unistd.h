@@ -11,7 +11,11 @@
 
 
 
+<<<<<<< HEAD
 #define NR_syscalls			312 /* length of syscall table */
+=======
+#define NR_syscalls			326 /* length of syscall table */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The following defines stop scripts/checksyscalls.sh from complaining about

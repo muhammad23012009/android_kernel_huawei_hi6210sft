@@ -392,7 +392,11 @@ read_dma(struct tiger_ch *bc, u32 idx, int cnt)
 	}
 	stat = bchannel_get_rxbuf(&bc->bch, cnt);
 	/* only transparent use the count here, HDLC overun is detected later */
+<<<<<<< HEAD
 	if (stat == ENOMEM) {
+=======
+	if (stat == -ENOMEM) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_warning("%s.B%d: No memory for %d bytes\n",
 			   card->name, bc->bch.nr, cnt);
 		return;
@@ -1114,7 +1118,10 @@ nj_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		card->typ = NETJET_S_TJ300;
 
 	card->base = pci_resource_start(pdev, 0);
+<<<<<<< HEAD
 	card->irq = pdev->irq;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_set_drvdata(pdev, card);
 	err = setup_instance(card);
 	if (err)

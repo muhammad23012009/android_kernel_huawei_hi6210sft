@@ -11,7 +11,11 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm, unsigned long ad
 {
 	pte_t *pte;
 
+<<<<<<< HEAD
 	pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+=======
+	pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_ZERO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pte) {
 		__flush_page_to_ram(pte);
 		flush_tlb_kernel_page(pte);
@@ -29,18 +33,34 @@ static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
 
 static inline pgtable_t pte_alloc_one(struct mm_struct *mm, unsigned long address)
 {
+<<<<<<< HEAD
 	struct page *page = alloc_pages(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO, 0);
 	pte_t *pte;
 
 	if(!page)
 		return NULL;
+=======
+	struct page *page;
+	pte_t *pte;
+
+	page = alloc_pages(GFP_KERNEL|__GFP_ZERO, 0);
+	if(!page)
+		return NULL;
+	if (!pgtable_page_ctor(page)) {
+		__free_page(page);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pte = kmap(page);
 	__flush_page_to_ram(pte);
 	flush_tlb_kernel_page(pte);
 	nocache_page(pte);
 	kunmap(page);
+<<<<<<< HEAD
 	pgtable_page_ctor(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return page;
 }
 

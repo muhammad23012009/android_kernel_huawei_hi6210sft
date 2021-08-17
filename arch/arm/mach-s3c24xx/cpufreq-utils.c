@@ -14,6 +14,10 @@
 #include <linux/errno.h>
 #include <linux/cpufreq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/map.h>
 #include <mach/regs-clock.h>
@@ -60,5 +64,10 @@ void s3c2410_cpufreq_setrefresh(struct s3c_cpufreq_config *cfg)
  */
 void s3c2410_set_fvco(struct s3c_cpufreq_config *cfg)
 {
+<<<<<<< HEAD
 	__raw_writel(cfg->pll.index, S3C2410_MPLLCON);
+=======
+	if (!IS_ERR(cfg->mpll))
+		clk_set_rate(cfg->mpll, cfg->pll.frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

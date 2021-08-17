@@ -30,8 +30,13 @@ config EP8248E
 	select 8272
 	select 8260
 	select FSL_SOC
+<<<<<<< HEAD
 	select PHYLIB
 	select MDIO_BITBANG
+=======
+	select PHYLIB if NETDEVICES
+	select MDIO_BITBANG if PHYLIB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  This enables support for the Embedded Planet EP8248E board.
 

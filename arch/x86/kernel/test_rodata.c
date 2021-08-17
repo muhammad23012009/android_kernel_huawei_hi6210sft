@@ -9,7 +9,10 @@
  * as published by the Free Software Foundation; version 2
  * of the License.
  */
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cacheflush.h>
 #include <asm/sections.h>
 #include <asm/asm.h>
@@ -57,7 +60,11 @@ int rodata_test(void)
 	/* test 3: check the value hasn't changed */
 	/* If this test fails, we managed to overwrite the data */
 	if (!rodata_test_data) {
+<<<<<<< HEAD
 		printk(KERN_ERR "rodata_test: Test 3 failes (end data)\n");
+=======
+		printk(KERN_ERR "rodata_test: Test 3 fails (end data)\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 	/* test 4: check if the rodata section is 4Kb aligned */
@@ -74,7 +81,10 @@ int rodata_test(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Testcase for the DEBUG_RODATA infrastructure");
 MODULE_AUTHOR("Arjan van de Ven <arjan@linux.intel.com>");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

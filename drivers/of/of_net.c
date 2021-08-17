@@ -12,6 +12,7 @@
 #include <linux/export.h>
 
 /**
+<<<<<<< HEAD
  * It maps 'enum phy_interface_t' found in include/linux/phy.h
  * into the device tree binding of 'phy-mode', so that Ethernet
  * device driver can get phy interface from device tree.
@@ -39,22 +40,53 @@ static const char *phy_modes[] = {
  * and return its index in phy_modes table, or errno in error case.
  */
 const int of_get_phy_mode(struct device_node *np)
+=======
+ * of_get_phy_mode - Get phy mode for given device_node
+ * @np:	Pointer to the given device_node
+ *
+ * The function gets phy interface string from property 'phy-mode' or
+ * 'phy-connection-type', and return its index in phy_modes table, or errno in
+ * error case.
+ */
+int of_get_phy_mode(struct device_node *np)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const char *pm;
 	int err, i;
 
 	err = of_property_read_string(np, "phy-mode", &pm);
 	if (err < 0)
+<<<<<<< HEAD
 		return err;
 
 	for (i = 0; i < ARRAY_SIZE(phy_modes); i++)
 		if (!strcasecmp(pm, phy_modes[i]))
+=======
+		err = of_property_read_string(np, "phy-connection-type", &pm);
+	if (err < 0)
+		return err;
+
+	for (i = 0; i < PHY_INTERFACE_MODE_MAX; i++)
+		if (!strcasecmp(pm, phy_modes(i)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return i;
 
 	return -ENODEV;
 }
 EXPORT_SYMBOL_GPL(of_get_phy_mode);
 
+<<<<<<< HEAD
+=======
+static const void *of_get_mac_addr(struct device_node *np, const char *name)
+{
+	struct property *pp = of_find_property(np, name, NULL);
+
+	if (pp && pp->length == ETH_ALEN && is_valid_ether_addr(pp->value))
+		return pp->value;
+	return NULL;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * Search the device tree for the best MAC address to use.  'mac-address' is
  * checked first, because that is supposed to contain to "most recent" MAC
@@ -75,6 +107,7 @@ EXPORT_SYMBOL_GPL(of_get_phy_mode);
 */
 const void *of_get_mac_address(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct property *pp;
 
 	pp = of_find_property(np, "mac-address", NULL);
@@ -90,5 +123,18 @@ const void *of_get_mac_address(struct device_node *np)
 		return pp->value;
 
 	return NULL;
+=======
+	const void *addr;
+
+	addr = of_get_mac_addr(np, "mac-address");
+	if (addr)
+		return addr;
+
+	addr = of_get_mac_addr(np, "local-mac-address");
+	if (addr)
+		return addr;
+
+	return of_get_mac_addr(np, "address");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(of_get_mac_address);

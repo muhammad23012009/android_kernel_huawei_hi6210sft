@@ -990,11 +990,18 @@ mptsas_queue_device_delete(MPT_ADAPTER *ioc,
 	MpiEventDataSasDeviceStatusChange_t *sas_event_data)
 {
 	struct fw_event_work *fw_event;
+<<<<<<< HEAD
 	int sz;
 
 	sz = offsetof(struct fw_event_work, event_data) +
 	    sizeof(MpiEventDataSasDeviceStatusChange_t);
 	fw_event = kzalloc(sz, GFP_ATOMIC);
+=======
+
+	fw_event = kzalloc(sizeof(*fw_event) +
+			   sizeof(MpiEventDataSasDeviceStatusChange_t),
+			   GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!fw_event) {
 		printk(MYIOC_s_WARN_FMT "%s: failed at (line=%d)\n",
 		    ioc->name, __func__, __LINE__);
@@ -1011,10 +1018,15 @@ static void
 mptsas_queue_rescan(MPT_ADAPTER *ioc)
 {
 	struct fw_event_work *fw_event;
+<<<<<<< HEAD
 	int sz;
 
 	sz = offsetof(struct fw_event_work, event_data);
 	fw_event = kzalloc(sz, GFP_ATOMIC);
+=======
+
+	fw_event = kzalloc(sizeof(*fw_event), GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!fw_event) {
 		printk(MYIOC_s_WARN_FMT "%s: failed at (line=%d)\n",
 		    ioc->name, __func__, __LINE__);
@@ -1206,6 +1218,7 @@ mptsas_taskmgmt_complete(MPT_ADAPTER *ioc, MPT_FRAME_HDR *mf, MPT_FRAME_HDR *mr)
 	    "(mf = %p, mr = %p)\n", ioc->name, mf, mr));
 
 	pScsiTmReply = (SCSITaskMgmtReply_t *)mr;
+<<<<<<< HEAD
 	if (pScsiTmReply) {
 		dtmprintk(ioc, printk(MYIOC_s_DEBUG_FMT
 		    "\tTaskMgmt completed: fw_channel = %d, fw_id = %d,\n"
@@ -1227,6 +1240,30 @@ mptsas_taskmgmt_complete(MPT_ADAPTER *ioc, MPT_FRAME_HDR *mf, MPT_FRAME_HDR *mr)
 	if (pScsiTmReply && (pScsiTmReply->TaskType ==
 	    MPI_SCSITASKMGMT_TASKTYPE_QUERY_TASK || pScsiTmReply->TaskType ==
 	     MPI_SCSITASKMGMT_TASKTYPE_ABRT_TASK_SET)) {
+=======
+	if (!pScsiTmReply)
+		return 0;
+
+	dtmprintk(ioc, printk(MYIOC_s_DEBUG_FMT
+	    "\tTaskMgmt completed: fw_channel = %d, fw_id = %d,\n"
+	    "\ttask_type = 0x%02X, iocstatus = 0x%04X "
+	    "loginfo = 0x%08X,\n\tresponse_code = 0x%02X, "
+	    "term_cmnds = %d\n", ioc->name,
+	    pScsiTmReply->Bus, pScsiTmReply->TargetID,
+	    pScsiTmReply->TaskType,
+	    le16_to_cpu(pScsiTmReply->IOCStatus),
+	    le32_to_cpu(pScsiTmReply->IOCLogInfo),
+	    pScsiTmReply->ResponseCode,
+	    le32_to_cpu(pScsiTmReply->TerminationCount)));
+
+	if (pScsiTmReply->ResponseCode)
+		mptscsih_taskmgmt_response_code(ioc,
+		pScsiTmReply->ResponseCode);
+
+	if (pScsiTmReply->TaskType ==
+	    MPI_SCSITASKMGMT_TASKTYPE_QUERY_TASK || pScsiTmReply->TaskType ==
+	     MPI_SCSITASKMGMT_TASKTYPE_ABRT_TASK_SET) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ioc->taskmgmt_cmds.status |= MPT_MGMT_STATUS_COMMAND_GOOD;
 		ioc->taskmgmt_cmds.status |= MPT_MGMT_STATUS_RF_VALID;
 		memcpy(ioc->taskmgmt_cmds.reply, mr,
@@ -1575,7 +1612,11 @@ mptsas_del_end_device(MPT_ADAPTER *ioc, struct mptsas_phyinfo *phy_info)
 	mptsas_port_delete(ioc, phy_info->port_details);
 }
 
+<<<<<<< HEAD
 struct mptsas_phyinfo *
+=======
+static struct mptsas_phyinfo *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 mptsas_refreshing_device_handles(MPT_ADAPTER *ioc,
 	struct mptsas_devinfo *sas_device)
 {
@@ -1896,7 +1937,11 @@ mptsas_slave_alloc(struct scsi_device *sdev)
 }
 
 static int
+<<<<<<< HEAD
 mptsas_qcmd_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
+=======
+mptsas_qcmd(struct Scsi_Host *shost, struct scsi_cmnd *SCpnt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	MPT_SCSI_HOST	*hd;
 	MPT_ADAPTER	*ioc;
@@ -1904,11 +1949,19 @@ mptsas_qcmd_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 
 	if (!vdevice || !vdevice->vtarget || vdevice->vtarget->deleted) {
 		SCpnt->result = DID_NO_CONNECT << 16;
+<<<<<<< HEAD
 		done(SCpnt);
 		return 0;
 	}
 
 	hd = shost_priv(SCpnt->device->host);
+=======
+		SCpnt->scsi_done(SCpnt);
+		return 0;
+	}
+
+	hd = shost_priv(shost);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ioc = hd->ioc;
 
 	if (ioc->sas_discovery_quiesce_io)
@@ -1917,11 +1970,17 @@ mptsas_qcmd_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 	if (ioc->debug_level & MPT_DEBUG_SCSI)
 		scsi_print_command(SCpnt);
 
+<<<<<<< HEAD
 	return mptscsih_qcmd(SCpnt,done);
 }
 
 static DEF_SCSI_QCMD(mptsas_qcmd)
 
+=======
+	return mptscsih_qcmd(SCpnt);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  *	mptsas_mptsas_eh_timed_out - resets the scsi_cmnd timeout
  *		if the device under question is currently in the
@@ -1998,6 +2057,10 @@ static struct scsi_host_template mptsas_driver_template = {
 	.cmd_per_lun			= 7,
 	.use_clustering			= ENABLE_CLUSTERING,
 	.shost_attrs			= mptscsih_host_attrs,
+<<<<<<< HEAD
+=======
+	.no_write_same			= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int mptsas_get_linkerrors(struct sas_phy *phy)
@@ -2235,10 +2298,17 @@ static int mptsas_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 	}
 
 	/* do we need to support multiple segments? */
+<<<<<<< HEAD
 	if (bio_segments(req->bio) > 1 || bio_segments(rsp->bio) > 1) {
 		printk(MYIOC_s_ERR_FMT "%s: multiple segments req %u %u, rsp %u %u\n",
 		    ioc->name, __func__, bio_segments(req->bio), blk_rq_bytes(req),
 		    bio_segments(rsp->bio), blk_rq_bytes(rsp));
+=======
+	if (bio_multiple_segments(req->bio) ||
+	    bio_multiple_segments(rsp->bio)) {
+		printk(MYIOC_s_ERR_FMT "%s: multiple segments req %u, rsp %u\n",
+		    ioc->name, __func__, blk_rq_bytes(req), blk_rq_bytes(rsp));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -2285,7 +2355,11 @@ static int mptsas_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 
 	dma_addr_out = pci_map_single(ioc->pcidev, bio_data(req->bio),
 				      blk_rq_bytes(req), PCI_DMA_BIDIRECTIONAL);
+<<<<<<< HEAD
 	if (!dma_addr_out)
+=======
+	if (pci_dma_mapping_error(ioc->pcidev, dma_addr_out))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto put_mf;
 	ioc->add_sge(psge, flagsLength, dma_addr_out);
 	psge += ioc->SGE_size;
@@ -2300,7 +2374,11 @@ static int mptsas_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 	flagsLength |= blk_rq_bytes(rsp) + 4;
 	dma_addr_in =  pci_map_single(ioc->pcidev, bio_data(rsp->bio),
 				      blk_rq_bytes(rsp), PCI_DMA_BIDIRECTIONAL);
+<<<<<<< HEAD
 	if (!dma_addr_in)
+=======
+	if (pci_dma_mapping_error(ioc->pcidev, dma_addr_in))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto unmap;
 	ioc->add_sge(psge, flagsLength, dma_addr_in);
 
@@ -3650,7 +3728,11 @@ mptsas_send_expander_event(struct fw_event_work *fw_event)
  * @handle:
  *
  */
+<<<<<<< HEAD
 struct mptsas_portinfo *
+=======
+static struct mptsas_portinfo *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 mptsas_expander_add(MPT_ADAPTER *ioc, u16 handle)
 {
 	struct mptsas_portinfo buffer, *port_info;
@@ -3765,7 +3847,11 @@ mptsas_send_link_status_event(struct fw_event_work *fw_event)
 						printk(MYIOC_s_DEBUG_FMT
 						"SDEV OUTSTANDING CMDS"
 						"%d\n", ioc->name,
+<<<<<<< HEAD
 						sdev->device_busy));
+=======
+						atomic_read(&sdev->device_busy)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 
 			}
@@ -3858,10 +3944,15 @@ retry_page:
 			phy_info = mptsas_find_phyinfo_by_sas_address(ioc,
 					sas_info->sas_address);
 
+<<<<<<< HEAD
 			if (phy_info) {
 				mptsas_del_end_device(ioc, phy_info);
 				goto redo_device_scan;
 			}
+=======
+			mptsas_del_end_device(ioc, phy_info);
+			goto redo_device_scan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			mptsas_volume_delete(ioc, sas_info->fw.id);
 	}
@@ -3872,9 +3963,14 @@ retry_page:
  redo_expander_scan:
 	list_for_each_entry(port_info, &ioc->sas_topology, list) {
 
+<<<<<<< HEAD
 		if (port_info->phy_info &&
 		    (!(port_info->phy_info[0].identify.device_info &
 		    MPI_SAS_DEVICE_INFO_SMP_TARGET)))
+=======
+		if (!(port_info->phy_info[0].identify.device_info &
+		    MPI_SAS_DEVICE_INFO_SMP_TARGET))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		found_expander = 0;
 		handle = 0xFFFF;
@@ -4096,7 +4192,11 @@ mptsas_handle_queue_full_event(struct fw_event_work *fw_event)
 					continue;
 				}
 				depth = scsi_track_queue_full(sdev,
+<<<<<<< HEAD
 				    current_depth - 1);
+=======
+					sdev->queue_depth - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (depth > 0)
 					sdev_printk(KERN_INFO, sdev,
 					"Queue depth reduced to (%d)\n",
@@ -4106,7 +4206,11 @@ mptsas_handle_queue_full_event(struct fw_event_work *fw_event)
 					"Tagged Command Queueing is being "
 					"disabled\n");
 				else if (depth == 0)
+<<<<<<< HEAD
 					sdev_printk(KERN_INFO, sdev,
+=======
+					sdev_printk(KERN_DEBUG, sdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					"Queue depth not changed yet\n");
 			}
 		}
@@ -4985,7 +5089,11 @@ static int
 mptsas_event_process(MPT_ADAPTER *ioc, EventNotificationReply_t *reply)
 {
 	u32 event = le32_to_cpu(reply->Event);
+<<<<<<< HEAD
 	int sz, event_data_sz;
+=======
+	int event_data_sz;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fw_event_work *fw_event;
 	unsigned long delay;
 
@@ -5095,8 +5203,12 @@ mptsas_event_process(MPT_ADAPTER *ioc, EventNotificationReply_t *reply)
 
 	event_data_sz = ((reply->MsgLength * 4) -
 	    offsetof(EventNotificationReply_t, Data));
+<<<<<<< HEAD
 	sz = offsetof(struct fw_event_work, event_data) + event_data_sz;
 	fw_event = kzalloc(sz, GFP_ATOMIC);
+=======
+	fw_event = kzalloc(sizeof(*fw_event) + event_data_sz, GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!fw_event) {
 		printk(MYIOC_s_WARN_FMT "%s: failed at (line=%d)\n", ioc->name,
 		 __func__, __LINE__);
@@ -5323,7 +5435,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	return error;
 }
 
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 mptsas_shutdown(struct pci_dev *pdev)
 {
 	MPT_ADAPTER *ioc = pci_get_drvdata(pdev);

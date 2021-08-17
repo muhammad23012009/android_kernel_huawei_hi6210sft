@@ -415,8 +415,13 @@
 					(cpu)*BCM1480_IMR_ALIAS_MAILBOX_SPACING)
 #define A_BCM1480_IMR_ALIAS_MAILBOX_REGISTER(cpu, reg) (A_BCM1480_IMR_ALIAS_MAILBOX(cpu)+(reg))
 
+<<<<<<< HEAD
 #define R_BCM1480_IMR_ALIAS_MAILBOX_0		0x0000		/* 0x0x0 */
 #define R_BCM1480_IMR_ALIAS_MAILBOX_0_SET	0x0008		/* 0x0x8 */
+=======
+#define R_BCM1480_IMR_ALIAS_MAILBOX_0		0x0000
+#define R_BCM1480_IMR_ALIAS_MAILBOX_0_SET	0x0008
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * these macros work together to build the address of a mailbox

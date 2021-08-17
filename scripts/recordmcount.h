@@ -326,7 +326,12 @@ static uint_t *sift_rel_mcount(uint_t *mlocp,
 		if (!mcountsym)
 			mcountsym = get_mcountsym(sym0, relp, str0);
 
+<<<<<<< HEAD
 		if (mcountsym == Elf_r_sym(relp) && !is_fake_mcount(relp)) {
+=======
+		if (mcountsym && mcountsym == Elf_r_sym(relp) &&
+				!is_fake_mcount(relp)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			uint_t const addend =
 				_w(_w(relp->r_offset) - recval + mcount_adjust);
 			mrelp->r_offset = _w(offbase

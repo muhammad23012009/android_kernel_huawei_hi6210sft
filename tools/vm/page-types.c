@@ -19,7 +19,12 @@
  * Authors: Wu Fengguang <fengguang.wu@intel.com>
  */
 
+<<<<<<< HEAD
 #define _LARGEFILE64_SOURCE
+=======
+#define _FILE_OFFSET_BITS 64
+#define _GNU_SOURCE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -29,14 +34,28 @@
 #include <getopt.h>
 #include <limits.h>
 #include <assert.h>
+<<<<<<< HEAD
+=======
+#include <ftw.h>
+#include <time.h>
+#include <setjmp.h>
+#include <signal.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <sys/fcntl.h>
 #include <sys/mount.h>
 #include <sys/statfs.h>
+<<<<<<< HEAD
 #include "../../include/uapi/linux/magic.h"
 #include "../../include/uapi/linux/kernel-page-flags.h"
 #include <lk/debugfs.h>
+=======
+#include <sys/mman.h>
+#include "../../include/uapi/linux/magic.h"
+#include "../../include/uapi/linux/kernel-page-flags.h"
+#include <api/fs/fs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef MAX_PATH
 # define MAX_PATH 256
@@ -51,6 +70,7 @@
  * pagemap kernel ABI bits
  */
 
+<<<<<<< HEAD
 #define PM_ENTRY_BYTES      sizeof(uint64_t)
 #define PM_STATUS_BITS      3
 #define PM_STATUS_OFFSET    (64 - PM_STATUS_BITS)
@@ -66,6 +86,19 @@
 #define PM_PRESENT          PM_STATUS(4LL)
 #define PM_SWAP             PM_STATUS(2LL)
 
+=======
+#define PM_ENTRY_BYTES		8
+#define PM_PFRAME_BITS		55
+#define PM_PFRAME_MASK		((1LL << PM_PFRAME_BITS) - 1)
+#define PM_PFRAME(x)		((x) & PM_PFRAME_MASK)
+#define MAX_SWAPFILES_SHIFT	5
+#define PM_SWAP_OFFSET(x)	(((x) & PM_PFRAME_MASK) >> MAX_SWAPFILES_SHIFT)
+#define PM_SOFT_DIRTY		(1ULL << 55)
+#define PM_MMAP_EXCLUSIVE	(1ULL << 56)
+#define PM_FILE			(1ULL << 61)
+#define PM_SWAP			(1ULL << 62)
+#define PM_PRESENT		(1ULL << 63)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * kernel page flags
@@ -73,6 +106,10 @@
 
 #define KPF_BYTES		8
 #define PROC_KPAGEFLAGS		"/proc/kpageflags"
+<<<<<<< HEAD
+=======
+#define PROC_KPAGECGROUP	"/proc/kpagecgroup"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* [32-] kernel hacking assistances */
 #define KPF_RESERVED		32
@@ -83,6 +120,10 @@
 #define KPF_OWNER_PRIVATE	37
 #define KPF_ARCH		38
 #define KPF_UNCACHED		39
+<<<<<<< HEAD
+=======
+#define KPF_SOFTDIRTY		40
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* [48-] take some arbitrary free slots for expanding overloaded flags
  * not part of kernel API
@@ -91,6 +132,12 @@
 #define KPF_SLOB_FREE		49
 #define KPF_SLUB_FROZEN		50
 #define KPF_SLUB_DEBUG		51
+<<<<<<< HEAD
+=======
+#define KPF_FILE		61
+#define KPF_SWAP		62
+#define KPF_MMAP_EXCLUSIVE	63
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define KPF_ALL_BITS		((uint64_t)~0ULL)
 #define KPF_HACKERS_BITS	(0xffffULL << 32)
@@ -123,6 +170,12 @@ static const char * const page_flag_names[] = {
 	[KPF_NOPAGE]		= "n:nopage",
 	[KPF_KSM]		= "x:ksm",
 	[KPF_THP]		= "t:thp",
+<<<<<<< HEAD
+=======
+	[KPF_BALLOON]		= "o:balloon",
+	[KPF_ZERO_PAGE]		= "z:zero_page",
+	[KPF_IDLE]              = "i:idle_page",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	[KPF_RESERVED]		= "r:reserved",
 	[KPF_MLOCKED]		= "m:mlocked",
@@ -132,11 +185,16 @@ static const char * const page_flag_names[] = {
 	[KPF_OWNER_PRIVATE]	= "O:owner_private",
 	[KPF_ARCH]		= "h:arch",
 	[KPF_UNCACHED]		= "c:uncached",
+<<<<<<< HEAD
+=======
+	[KPF_SOFTDIRTY]		= "f:softdirty",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	[KPF_READAHEAD]		= "I:readahead",
 	[KPF_SLOB_FREE]		= "P:slob_free",
 	[KPF_SLUB_FROZEN]	= "A:slub_frozen",
 	[KPF_SLUB_DEBUG]	= "E:slub_debug",
+<<<<<<< HEAD
 };
 
 
@@ -146,6 +204,15 @@ static const char * const debugfs_known_mountpoints[] = {
 	0,
 };
 
+=======
+
+	[KPF_FILE]		= "F:file",
+	[KPF_SWAP]		= "w:swap",
+	[KPF_MMAP_EXCLUSIVE]	= "1:mmap_exclusive",
+};
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * data structures
  */
@@ -154,6 +221,12 @@ static int		opt_raw;	/* for kernel developers */
 static int		opt_list;	/* list pages (in ranges) */
 static int		opt_no_summary;	/* don't show summary */
 static pid_t		opt_pid;	/* process to walk */
+<<<<<<< HEAD
+=======
+const char *		opt_file;	/* file or directory path */
+static uint64_t		opt_cgroup;	/* cgroup inode */
+static int		opt_list_cgroup;/* list page cgroup */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MAX_ADDR_RANGES	1024
 static int		nr_addr_ranges;
@@ -174,11 +247,19 @@ static int		page_size;
 
 static int		pagemap_fd;
 static int		kpageflags_fd;
+<<<<<<< HEAD
+=======
+static int		kpagecgroup_fd = -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int		opt_hwpoison;
 static int		opt_unpoison;
 
+<<<<<<< HEAD
 static char		*hwpoison_debug_fs;
+=======
+static const char	*hwpoison_debug_fs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int		hwpoison_inject_fd;
 static int		hwpoison_forget_fd;
 
@@ -249,12 +330,16 @@ static unsigned long do_u64_read(int fd, char *name,
 	if (index > ULONG_MAX / 8)
 		fatal("index overflow: %lu\n", index);
 
+<<<<<<< HEAD
 	if (lseek(fd, index * 8, SEEK_SET) < 0) {
 		perror(name);
 		exit(EXIT_FAILURE);
 	}
 
 	bytes = read(fd, buf, count * 8);
+=======
+	bytes = pread(fd, buf, count * 8, (off_t)index * 8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bytes < 0) {
 		perror(name);
 		exit(EXIT_FAILURE);
@@ -272,6 +357,19 @@ static unsigned long kpageflags_read(uint64_t *buf,
 	return do_u64_read(kpageflags_fd, PROC_KPAGEFLAGS, buf, index, pages);
 }
 
+<<<<<<< HEAD
+=======
+static unsigned long kpagecgroup_read(uint64_t *buf,
+				      unsigned long index,
+				      unsigned long pages)
+{
+	if (kpagecgroup_fd < 0)
+		return pages;
+
+	return do_u64_read(kpagecgroup_fd, PROC_KPAGEFLAGS, buf, index, pages);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned long pagemap_read(uint64_t *buf,
 				  unsigned long index,
 				  unsigned long pages)
@@ -291,6 +389,13 @@ static unsigned long pagemap_pfn(uint64_t val)
 	return pfn;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned long pagemap_swap_offset(uint64_t val)
+{
+	return val & PM_SWAP ? PM_SWAP_OFFSET(val) : 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * page flag names
@@ -339,28 +444,50 @@ static char *page_flag_longname(uint64_t flags)
  * page list and summary
  */
 
+<<<<<<< HEAD
 static void show_page_range(unsigned long voffset,
 			    unsigned long offset, uint64_t flags)
 {
 	static uint64_t      flags0;
+=======
+static void show_page_range(unsigned long voffset, unsigned long offset,
+			    unsigned long size, uint64_t flags, uint64_t cgroup)
+{
+	static uint64_t      flags0;
+	static uint64_t	     cgroup0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	static unsigned long voff;
 	static unsigned long index;
 	static unsigned long count;
 
+<<<<<<< HEAD
 	if (flags == flags0 && offset == index + count &&
 	    (!opt_pid || voffset == voff + count)) {
 		count++;
+=======
+	if (flags == flags0 && cgroup == cgroup0 && offset == index + count &&
+	    size && voffset == voff + count) {
+		count += size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	if (count) {
 		if (opt_pid)
 			printf("%lx\t", voff);
+<<<<<<< HEAD
+=======
+		if (opt_file)
+			printf("%lu\t", voff);
+		if (opt_list_cgroup)
+			printf("@%llu\t", (unsigned long long)cgroup0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printf("%lx\t%lx\t%s\n",
 				index, count, page_flag_name(flags0));
 	}
 
 	flags0 = flags;
+<<<<<<< HEAD
 	index  = offset;
 	voff   = voffset;
 	count  = 1;
@@ -371,6 +498,28 @@ static void show_page(unsigned long voffset,
 {
 	if (opt_pid)
 		printf("%lx\t", voffset);
+=======
+	cgroup0= cgroup;
+	index  = offset;
+	voff   = voffset;
+	count  = size;
+}
+
+static void flush_page_range(void)
+{
+	show_page_range(0, 0, 0, 0, 0);
+}
+
+static void show_page(unsigned long voffset, unsigned long offset,
+		      uint64_t flags, uint64_t cgroup)
+{
+	if (opt_pid)
+		printf("%lx\t", voffset);
+	if (opt_file)
+		printf("%lu\t", voffset);
+	if (opt_list_cgroup)
+		printf("@%llu\t", (unsigned long long)cgroup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printf("%lx\t%s\n", offset, page_flag_name(flags));
 }
 
@@ -417,7 +566,11 @@ static int bit_mask_ok(uint64_t flags)
 	return 1;
 }
 
+<<<<<<< HEAD
 static uint64_t expand_overloaded_flags(uint64_t flags)
+=======
+static uint64_t expand_overloaded_flags(uint64_t flags, uint64_t pme)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* SLOB/SLUB overload several page flags */
 	if (flags & BIT(SLAB)) {
@@ -433,6 +586,18 @@ static uint64_t expand_overloaded_flags(uint64_t flags)
 	if ((flags & (BIT(RECLAIM) | BIT(WRITEBACK))) == BIT(RECLAIM))
 		flags ^= BIT(RECLAIM) | BIT(READAHEAD);
 
+<<<<<<< HEAD
+=======
+	if (pme & PM_SOFT_DIRTY)
+		flags |= BIT(SOFTDIRTY);
+	if (pme & PM_FILE)
+		flags |= BIT(FILE);
+	if (pme & PM_SWAP)
+		flags |= BIT(SWAP);
+	if (pme & PM_MMAP_EXCLUSIVE)
+		flags |= BIT(MMAP_EXCLUSIVE);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return flags;
 }
 
@@ -448,11 +613,19 @@ static uint64_t well_known_flags(uint64_t flags)
 	return flags;
 }
 
+<<<<<<< HEAD
 static uint64_t kpageflags_flags(uint64_t flags)
 {
 	flags = expand_overloaded_flags(flags);
 
 	if (!opt_raw)
+=======
+static uint64_t kpageflags_flags(uint64_t flags, uint64_t pme)
+{
+	if (opt_raw)
+		flags = expand_overloaded_flags(flags, pme);
+	else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		flags = well_known_flags(flags);
 
 	return flags;
@@ -466,7 +639,11 @@ static void prepare_hwpoison_fd(void)
 {
 	char buf[MAX_PATH + 1];
 
+<<<<<<< HEAD
 	hwpoison_debug_fs = debugfs_mount(NULL);
+=======
+	hwpoison_debug_fs = debugfs__mount();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!hwpoison_debug_fs) {
 		perror("mount debugfs");
 		exit(EXIT_FAILURE);
@@ -544,23 +721,42 @@ static size_t hash_slot(uint64_t flags)
 	exit(EXIT_FAILURE);
 }
 
+<<<<<<< HEAD
 static void add_page(unsigned long voffset,
 		     unsigned long offset, uint64_t flags)
 {
 	flags = kpageflags_flags(flags);
+=======
+static void add_page(unsigned long voffset, unsigned long offset,
+		     uint64_t flags, uint64_t cgroup, uint64_t pme)
+{
+	flags = kpageflags_flags(flags, pme);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!bit_mask_ok(flags))
 		return;
 
+<<<<<<< HEAD
+=======
+	if (opt_cgroup && cgroup != (uint64_t)opt_cgroup)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (opt_hwpoison)
 		hwpoison_page(offset);
 	if (opt_unpoison)
 		unpoison_page(offset);
 
 	if (opt_list == 1)
+<<<<<<< HEAD
 		show_page_range(voffset, offset, flags);
 	else if (opt_list == 2)
 		show_page(voffset, offset, flags);
+=======
+		show_page_range(voffset, offset, 1, flags, cgroup);
+	else if (opt_list == 2)
+		show_page(voffset, offset, flags, cgroup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nr_pages[hash_slot(flags)]++;
 	total_pages++;
@@ -569,27 +765,78 @@ static void add_page(unsigned long voffset,
 #define KPAGEFLAGS_BATCH	(64 << 10)	/* 64k pages */
 static void walk_pfn(unsigned long voffset,
 		     unsigned long index,
+<<<<<<< HEAD
 		     unsigned long count)
 {
 	uint64_t buf[KPAGEFLAGS_BATCH];
+=======
+		     unsigned long count,
+		     uint64_t pme)
+{
+	uint64_t buf[KPAGEFLAGS_BATCH];
+	uint64_t cgi[KPAGEFLAGS_BATCH];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long batch;
 	unsigned long pages;
 	unsigned long i;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * kpagecgroup_read() reads only if kpagecgroup were opened, but
+	 * /proc/kpagecgroup might even not exist, so it's better to fill
+	 * them with zeros here.
+	 */
+	if (count == 1)
+		cgi[0] = 0;
+	else
+		memset(cgi, 0, sizeof cgi);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (count) {
 		batch = min_t(unsigned long, count, KPAGEFLAGS_BATCH);
 		pages = kpageflags_read(buf, index, batch);
 		if (pages == 0)
 			break;
 
+<<<<<<< HEAD
 		for (i = 0; i < pages; i++)
 			add_page(voffset + i, index + i, buf[i]);
+=======
+		if (kpagecgroup_read(cgi, index, pages) != pages)
+			fatal("kpagecgroup returned fewer pages than expected");
+
+		for (i = 0; i < pages; i++)
+			add_page(voffset + i, index + i, buf[i], cgi[i], pme);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		index += pages;
 		count -= pages;
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void walk_swap(unsigned long voffset, uint64_t pme)
+{
+	uint64_t flags = kpageflags_flags(0, pme);
+
+	if (!bit_mask_ok(flags))
+		return;
+
+	if (opt_cgroup)
+		return;
+
+	if (opt_list == 1)
+		show_page_range(voffset, pagemap_swap_offset(pme), 1, flags, 0);
+	else if (opt_list == 2)
+		show_page(voffset, pagemap_swap_offset(pme), flags, 0);
+
+	nr_pages[hash_slot(flags)]++;
+	total_pages++;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PAGEMAP_BATCH	(64 << 10)
 static void walk_vma(unsigned long index, unsigned long count)
 {
@@ -608,7 +855,13 @@ static void walk_vma(unsigned long index, unsigned long count)
 		for (i = 0; i < pages; i++) {
 			pfn = pagemap_pfn(buf[i]);
 			if (pfn)
+<<<<<<< HEAD
 				walk_pfn(index + i, pfn, 1);
+=======
+				walk_pfn(index + i, pfn, 1, buf[i]);
+			if (buf[i] & PM_SWAP)
+				walk_swap(index + i, buf[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		index += pages;
@@ -659,7 +912,11 @@ static void walk_addr_ranges(void)
 
 	for (i = 0; i < nr_addr_ranges; i++)
 		if (!opt_pid)
+<<<<<<< HEAD
 			walk_pfn(0, opt_offset[i], opt_size[i]);
+=======
+			walk_pfn(opt_offset[i], opt_offset[i], opt_size[i], 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			walk_task(opt_offset[i], opt_size[i]);
 
@@ -690,12 +947,21 @@ static void usage(void)
 "            -d|--describe flags        Describe flags\n"
 "            -a|--addr    addr-spec     Walk a range of pages\n"
 "            -b|--bits    bits-spec     Walk pages with specified bits\n"
+<<<<<<< HEAD
 "            -p|--pid     pid           Walk process address space\n"
 #if 0 /* planned features */
 "            -f|--file    filename      Walk file address space\n"
 #endif
 "            -l|--list                  Show page details in ranges\n"
 "            -L|--list-each             Show page details one by one\n"
+=======
+"            -c|--cgroup  path|@inode   Walk pages within memory cgroup\n"
+"            -p|--pid     pid           Walk process address space\n"
+"            -f|--file    filename      Walk file address space\n"
+"            -l|--list                  Show page details in ranges\n"
+"            -L|--list-each             Show page details one by one\n"
+"            -C|--list-cgroup           Show cgroup inode for pages\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 "            -N|--no-summary            Don't show summary info\n"
 "            -X|--hwpoison              hwpoison pages\n"
 "            -x|--unpoison              unpoison pages\n"
@@ -791,8 +1057,184 @@ static void parse_pid(const char *str)
 	fclose(file);
 }
 
+<<<<<<< HEAD
 static void parse_file(const char *name)
 {
+=======
+static void show_file(const char *name, const struct stat *st)
+{
+	unsigned long long size = st->st_size;
+	char atime[64], mtime[64];
+	long now = time(NULL);
+
+	printf("%s\tInode: %u\tSize: %llu (%llu pages)\n",
+			name, (unsigned)st->st_ino,
+			size, (size + page_size - 1) / page_size);
+
+	strftime(atime, sizeof(atime), "%c", localtime(&st->st_atime));
+	strftime(mtime, sizeof(mtime), "%c", localtime(&st->st_mtime));
+
+	printf("Modify: %s (%ld seconds ago)\nAccess: %s (%ld seconds ago)\n",
+			mtime, now - st->st_mtime,
+			atime, now - st->st_atime);
+}
+
+static sigjmp_buf sigbus_jmp;
+
+static void * volatile sigbus_addr;
+
+static void sigbus_handler(int sig, siginfo_t *info, void *ucontex)
+{
+	(void)sig;
+	(void)ucontex;
+	sigbus_addr = info ? info->si_addr : NULL;
+	siglongjmp(sigbus_jmp, 1);
+}
+
+static struct sigaction sigbus_action = {
+	.sa_sigaction = sigbus_handler,
+	.sa_flags = SA_SIGINFO,
+};
+
+static void walk_file(const char *name, const struct stat *st)
+{
+	uint8_t vec[PAGEMAP_BATCH];
+	uint64_t buf[PAGEMAP_BATCH], flags;
+	uint64_t cgroup = 0;
+	unsigned long nr_pages, pfn, i;
+	off_t off, end = st->st_size;
+	int fd;
+	ssize_t len;
+	void *ptr;
+	int first = 1;
+
+	fd = checked_open(name, O_RDONLY|O_NOATIME|O_NOFOLLOW);
+
+	for (off = 0; off < end; off += len) {
+		nr_pages = (end - off + page_size - 1) / page_size;
+		if (nr_pages > PAGEMAP_BATCH)
+			nr_pages = PAGEMAP_BATCH;
+		len = nr_pages * page_size;
+
+		ptr = mmap(NULL, len, PROT_READ, MAP_SHARED, fd, off);
+		if (ptr == MAP_FAILED)
+			fatal("mmap failed: %s", name);
+
+		/* determine cached pages */
+		if (mincore(ptr, len, vec))
+			fatal("mincore failed: %s", name);
+
+		/* turn off readahead */
+		if (madvise(ptr, len, MADV_RANDOM))
+			fatal("madvice failed: %s", name);
+
+		if (sigsetjmp(sigbus_jmp, 1)) {
+			end = off + sigbus_addr ? sigbus_addr - ptr : 0;
+			fprintf(stderr, "got sigbus at offset %lld: %s\n",
+					(long long)end, name);
+			goto got_sigbus;
+		}
+
+		/* populate ptes */
+		for (i = 0; i < nr_pages ; i++) {
+			if (vec[i] & 1)
+				(void)*(volatile int *)(ptr + i * page_size);
+		}
+got_sigbus:
+
+		/* turn off harvesting reference bits */
+		if (madvise(ptr, len, MADV_SEQUENTIAL))
+			fatal("madvice failed: %s", name);
+
+		if (pagemap_read(buf, (unsigned long)ptr / page_size,
+					nr_pages) != nr_pages)
+			fatal("cannot read pagemap");
+
+		munmap(ptr, len);
+
+		for (i = 0; i < nr_pages; i++) {
+			pfn = pagemap_pfn(buf[i]);
+			if (!pfn)
+				continue;
+			if (!kpageflags_read(&flags, pfn, 1))
+				continue;
+			if (!kpagecgroup_read(&cgroup, pfn, 1))
+				fatal("kpagecgroup_read failed");
+			if (first && opt_list) {
+				first = 0;
+				flush_page_range();
+				show_file(name, st);
+			}
+			add_page(off / page_size + i, pfn,
+				 flags, cgroup, buf[i]);
+		}
+	}
+
+	close(fd);
+}
+
+int walk_tree(const char *name, const struct stat *st, int type, struct FTW *f)
+{
+	(void)f;
+	switch (type) {
+	case FTW_F:
+		if (S_ISREG(st->st_mode))
+			walk_file(name, st);
+		break;
+	case FTW_DNR:
+		fprintf(stderr, "cannot read dir: %s\n", name);
+		break;
+	}
+	return 0;
+}
+
+static void walk_page_cache(void)
+{
+	struct stat st;
+
+	kpageflags_fd = checked_open(PROC_KPAGEFLAGS, O_RDONLY);
+	pagemap_fd = checked_open("/proc/self/pagemap", O_RDONLY);
+	sigaction(SIGBUS, &sigbus_action, NULL);
+
+	if (stat(opt_file, &st))
+		fatal("stat failed: %s\n", opt_file);
+
+	if (S_ISREG(st.st_mode)) {
+		walk_file(opt_file, &st);
+	} else if (S_ISDIR(st.st_mode)) {
+		/* do not follow symlinks and mountpoints */
+		if (nftw(opt_file, walk_tree, 64, FTW_MOUNT | FTW_PHYS) < 0)
+			fatal("nftw failed: %s\n", opt_file);
+	} else
+		fatal("unhandled file type: %s\n", opt_file);
+
+	close(kpageflags_fd);
+	close(pagemap_fd);
+	signal(SIGBUS, SIG_DFL);
+}
+
+static void parse_file(const char *name)
+{
+	opt_file = name;
+}
+
+static void parse_cgroup(const char *path)
+{
+	if (path[0] == '@') {
+		opt_cgroup = parse_number(path + 1);
+		return;
+	}
+
+	struct stat st;
+
+	if (stat(path, &st))
+		fatal("stat failed: %s: %m\n", path);
+
+	if (!S_ISDIR(st.st_mode))
+		fatal("cgroup supposed to be a directory: %s\n", path);
+
+	opt_cgroup = st.st_ino;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void parse_addr_range(const char *optarg)
@@ -918,9 +1360,17 @@ static const struct option opts[] = {
 	{ "file"      , 1, NULL, 'f' },
 	{ "addr"      , 1, NULL, 'a' },
 	{ "bits"      , 1, NULL, 'b' },
+<<<<<<< HEAD
 	{ "describe"  , 1, NULL, 'd' },
 	{ "list"      , 0, NULL, 'l' },
 	{ "list-each" , 0, NULL, 'L' },
+=======
+	{ "cgroup"    , 1, NULL, 'c' },
+	{ "describe"  , 1, NULL, 'd' },
+	{ "list"      , 0, NULL, 'l' },
+	{ "list-each" , 0, NULL, 'L' },
+	{ "list-cgroup", 0, NULL, 'C' },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "no-summary", 0, NULL, 'N' },
 	{ "hwpoison"  , 0, NULL, 'X' },
 	{ "unpoison"  , 0, NULL, 'x' },
@@ -935,7 +1385,11 @@ int main(int argc, char *argv[])
 	page_size = getpagesize();
 
 	while ((c = getopt_long(argc, argv,
+<<<<<<< HEAD
 				"rp:f:a:b:d:lLNXxh", opts, NULL)) != -1) {
+=======
+				"rp:f:a:b:d:c:ClLNXxh", opts, NULL)) != -1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (c) {
 		case 'r':
 			opt_raw = 1;
@@ -952,6 +1406,15 @@ int main(int argc, char *argv[])
 		case 'b':
 			parse_bits_mask(optarg);
 			break;
+<<<<<<< HEAD
+=======
+		case 'c':
+			parse_cgroup(optarg);
+			break;
+		case 'C':
+			opt_list_cgroup = 1;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case 'd':
 			describe_flags(optarg);
 			exit(0);
@@ -981,17 +1444,39 @@ int main(int argc, char *argv[])
 		}
 	}
 
+<<<<<<< HEAD
 	if (opt_list && opt_pid)
 		printf("voffset\t");
+=======
+	if (opt_cgroup || opt_list_cgroup)
+		kpagecgroup_fd = checked_open(PROC_KPAGECGROUP, O_RDONLY);
+
+	if (opt_list && opt_pid)
+		printf("voffset\t");
+	if (opt_list && opt_file)
+		printf("foffset\t");
+	if (opt_list && opt_list_cgroup)
+		printf("cgroup\t");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (opt_list == 1)
 		printf("offset\tlen\tflags\n");
 	if (opt_list == 2)
 		printf("offset\tflags\n");
 
+<<<<<<< HEAD
 	walk_addr_ranges();
 
 	if (opt_list == 1)
 		show_page_range(0, 0, 0);  /* drain the buffer */
+=======
+	if (opt_file)
+		walk_page_cache();
+	else
+		walk_addr_ranges();
+
+	if (opt_list == 1)
+		flush_page_range();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (opt_no_summary)
 		return 0;

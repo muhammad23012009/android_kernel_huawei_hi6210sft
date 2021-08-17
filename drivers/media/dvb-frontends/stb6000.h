@@ -23,7 +23,10 @@
 #ifndef __DVB_STB6000_H__
 #define __DVB_STB6000_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 
@@ -35,7 +38,11 @@
  * @param i2c i2c adapter to use.
  * @return FE pointer on success, NULL on failure.
  */
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_STB6000)
+=======
+#if IS_REACHABLE(CONFIG_DVB_STB6000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *stb6000_attach(struct dvb_frontend *fe, int addr,
 					   struct i2c_adapter *i2c);
 #else

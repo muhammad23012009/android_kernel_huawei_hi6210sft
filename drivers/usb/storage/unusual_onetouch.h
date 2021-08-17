@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Unusual Devices File for the Maxtor OneTouch USB hard drive's button
+=======
+/*
+ * Unusual Devices File for the Maxtor OneTouch USB hard drive's button
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,7 +23,12 @@
 #if defined(CONFIG_USB_STORAGE_ONETOUCH) || \
 		defined(CONFIG_USB_STORAGE_ONETOUCH_MODULE)
 
+<<<<<<< HEAD
 /* Submitted by: Nick Sillik <n.sillik@temple.edu>
+=======
+/*
+ * Submitted by: Nick Sillik <n.sillik@temple.edu>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Needed for OneTouch extension to usb-storage
  */
 UNUSUAL_DEV(  0x0d49, 0x7000, 0x0000, 0x9999,

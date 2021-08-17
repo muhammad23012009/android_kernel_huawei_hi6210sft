@@ -16,16 +16,26 @@
 #include <linux/platform_device.h>
 #include <linux/mv643xx_eth.h>
 #include <linux/ata_platform.h>
+<<<<<<< HEAD
 #include <linux/m48t86.h>
+=======
+#include <linux/platform_data/rtc-m48t86.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 #include <linux/timeriomem-rng.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "ts78xx-fpga.h"
 
 /*****************************************************************************
@@ -57,7 +67,11 @@ static struct map_desc ts78xx_io_desc[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 void __init ts78xx_map_io(void)
+=======
+static void __init ts78xx_map_io(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	orion5x_map_io();
 	iotable_init(ts78xx_io_desc, ARRAY_SIZE(ts78xx_io_desc));
@@ -176,7 +190,11 @@ static void ts78xx_ts_rtc_unload(void)
 static void ts78xx_ts_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 			unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ctrl & NAND_CTRL_CHANGE) {
 		unsigned char bits;
@@ -200,7 +218,11 @@ static int ts78xx_ts_nand_dev_ready(struct mtd_info *mtd)
 static void ts78xx_ts_nand_write_buf(struct mtd_info *mtd,
 			const uint8_t *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *io_base = chip->IO_ADDR_W;
 	unsigned long off = ((unsigned long)buf & 3);
 	int sz;
@@ -227,7 +249,11 @@ static void ts78xx_ts_nand_write_buf(struct mtd_info *mtd,
 static void ts78xx_ts_nand_read_buf(struct mtd_info *mtd,
 			uint8_t *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *io_base = chip->IO_ADDR_R;
 	unsigned long off = ((unsigned long)buf & 3);
 	int sz;
@@ -403,8 +429,13 @@ static void ts78xx_fpga_supports(void)
 		/* enable devices if magic matches */
 		switch ((ts78xx_fpga.id >> 8) & 0xffffff) {
 		case TS7800_FPGA_MAGIC:
+<<<<<<< HEAD
 			pr_warning("unrecognised FPGA revision 0x%.2x\n",
 					ts78xx_fpga.id & 0xff);
+=======
+			pr_warn("unrecognised FPGA revision 0x%.2x\n",
+				ts78xx_fpga.id & 0xff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ts78xx_fpga.supports.ts_rtc.present = 1;
 			ts78xx_fpga.supports.ts_nand.present = 1;
 			ts78xx_fpga.supports.ts_rng.present = 1;
@@ -615,6 +646,10 @@ static void __init ts78xx_init(void)
 MACHINE_START(TS78XX, "Technologic Systems TS-78xx SBC")
 	/* Maintainer: Alexander Clouter <alex@digriz.org.uk> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= ts78xx_init,
 	.map_io		= ts78xx_map_io,
 	.init_early	= orion5x_init_early,

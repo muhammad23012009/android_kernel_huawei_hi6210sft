@@ -56,10 +56,13 @@
 #define ISAPNP_DEVICE_ID(_va, _vb, _vc, _function) \
 		{ .vendor = ISAPNP_VENDOR(_va, _vb, _vc), .function = ISAPNP_FUNCTION(_function) }
 
+<<<<<<< HEAD
 /* export used IDs outside module */
 #define ISAPNP_CARD_TABLE(name) \
 		MODULE_GENERIC_TABLE(isapnp_card, name)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct isapnp_card_id {
 	unsigned long driver_data;	/* data private to the driver */
 	unsigned short card_vendor, card_device;

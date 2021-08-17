@@ -876,11 +876,14 @@ found:
 	if (useinput)
 		sonypi_report_input_event(event);
 
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI
 	if (sonypi_acpi_device)
 		acpi_bus_generate_proc_event(sonypi_acpi_device, 1, event);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfifo_in_locked(&sonypi_device.fifo, (unsigned char *)&event,
 			sizeof(event), &sonypi_device.fifo_lock);
 	kill_fasync(&sonypi_device.fifo_async, SIGIO, POLL_IN);
@@ -939,7 +942,11 @@ static ssize_t sonypi_misc_read(struct file *file, char __user *buf,
 
 	if (ret > 0) {
 		struct inode *inode = file_inode(file);
+<<<<<<< HEAD
 		inode->i_atime = current_fs_time(inode->i_sb);
+=======
+		inode->i_atime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return ret;
@@ -1487,7 +1494,10 @@ static void sonypi_shutdown(struct platform_device *dev)
 static struct platform_driver sonypi_driver = {
 	.driver		= {
 		.name	= "sonypi",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= SONYPI_PM,
 	},
 	.probe		= sonypi_probe,

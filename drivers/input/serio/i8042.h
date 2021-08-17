@@ -41,6 +41,7 @@
 #define I8042_CTL_TIMEOUT	10000
 
 /*
+<<<<<<< HEAD
  * Status register bits.
  */
 
@@ -65,6 +66,8 @@
 #define I8042_CTR_XLATE		0x40
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Return codes.
  */
 
@@ -97,6 +100,20 @@ static unsigned long i8042_start_time;
 			printk(KERN_DEBUG KBUILD_MODNAME ": [%d] " format,	\
 			       (int) (jiffies - i8042_start_time), ##arg);	\
 	} while (0)
+<<<<<<< HEAD
+=======
+
+#define filter_dbg(filter, data, format, args...)		\
+	do {							\
+		if (!i8042_debug)				\
+			break;					\
+								\
+		if (!filter || i8042_unmask_kbd_data)		\
+			dbg("%02x " format, data, ##args);	\
+		else						\
+			dbg("** " format, ##args);		\
+	} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define dbg_init() do { } while (0)
 #define dbg(format, arg...)							\
@@ -104,6 +121,11 @@ static unsigned long i8042_start_time;
 		if (0)								\
 			printk(KERN_DEBUG pr_fmt(format), ##arg);		\
 	} while (0)
+<<<<<<< HEAD
+=======
+
+#define filter_dbg(filter, data, format, args...) do { } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* _I8042_H */

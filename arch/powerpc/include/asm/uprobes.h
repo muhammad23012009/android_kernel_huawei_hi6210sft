@@ -36,8 +36,13 @@ typedef ppc_opcode_t uprobe_opcode_t;
 
 struct arch_uprobe {
 	union {
+<<<<<<< HEAD
 		u8	insn[MAX_UINSN_BYTES];
 		u32	ainsn;
+=======
+		u32	insn;
+		u32	ixol;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };
 
@@ -45,6 +50,7 @@ struct arch_uprobe_task {
 	unsigned long	saved_trap_nr;
 };
 
+<<<<<<< HEAD
 extern int  arch_uprobe_analyze_insn(struct arch_uprobe *aup, struct mm_struct *mm, unsigned long addr);
 extern int  arch_uprobe_pre_xol(struct arch_uprobe *aup, struct pt_regs *regs);
 extern int  arch_uprobe_post_xol(struct arch_uprobe *aup, struct pt_regs *regs);
@@ -52,4 +58,6 @@ extern bool arch_uprobe_xol_was_trapped(struct task_struct *tsk);
 extern int  arch_uprobe_exception_notify(struct notifier_block *self, unsigned long val, void *data);
 extern void arch_uprobe_abort_xol(struct arch_uprobe *aup, struct pt_regs *regs);
 extern unsigned long arch_uretprobe_hijack_return_addr(unsigned long trampoline_vaddr, struct pt_regs *regs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* _ASM_UPROBES_H */

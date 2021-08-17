@@ -28,8 +28,13 @@
 
 #include "ubifs.h"
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/random.h>
 #include <linux/math64.h>
+=======
+#include <linux/math64.h>
+#include <linux/uuid.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Default journal size in logical eraseblocks as a percent of total
@@ -332,8 +337,15 @@ static int create_default_filesystem(struct ubifs_info *c)
 	cs->ch.node_type = UBIFS_CS_NODE;
 	err = ubifs_write_node(c, cs, UBIFS_CS_NODE_SZ, UBIFS_LOG_LNUM, 0);
 	kfree(cs);
+<<<<<<< HEAD
 
 	ubifs_msg("default file-system created");
+=======
+	if (err)
+		return err;
+
+	ubifs_msg(c, "default file-system created");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -363,13 +375,21 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 	}
 
 	if (le32_to_cpu(sup->min_io_size) != c->min_io_size) {
+<<<<<<< HEAD
 		ubifs_err("min. I/O unit mismatch: %d in superblock, %d real",
+=======
+		ubifs_err(c, "min. I/O unit mismatch: %d in superblock, %d real",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  le32_to_cpu(sup->min_io_size), c->min_io_size);
 		goto failed;
 	}
 
 	if (le32_to_cpu(sup->leb_size) != c->leb_size) {
+<<<<<<< HEAD
 		ubifs_err("LEB size mismatch: %d in superblock, %d real",
+=======
+		ubifs_err(c, "LEB size mismatch: %d in superblock, %d real",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  le32_to_cpu(sup->leb_size), c->leb_size);
 		goto failed;
 	}
@@ -391,33 +411,53 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 	min_leb_cnt += c->lpt_lebs + c->orph_lebs + c->jhead_cnt + 6;
 
 	if (c->leb_cnt < min_leb_cnt || c->leb_cnt > c->vi.size) {
+<<<<<<< HEAD
 		ubifs_err("bad LEB count: %d in superblock, %d on UBI volume, %d minimum required",
+=======
+		ubifs_err(c, "bad LEB count: %d in superblock, %d on UBI volume, %d minimum required",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->leb_cnt, c->vi.size, min_leb_cnt);
 		goto failed;
 	}
 
 	if (c->max_leb_cnt < c->leb_cnt) {
+<<<<<<< HEAD
 		ubifs_err("max. LEB count %d less than LEB count %d",
+=======
+		ubifs_err(c, "max. LEB count %d less than LEB count %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->max_leb_cnt, c->leb_cnt);
 		goto failed;
 	}
 
 	if (c->main_lebs < UBIFS_MIN_MAIN_LEBS) {
+<<<<<<< HEAD
 		ubifs_err("too few main LEBs count %d, must be at least %d",
+=======
+		ubifs_err(c, "too few main LEBs count %d, must be at least %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->main_lebs, UBIFS_MIN_MAIN_LEBS);
 		goto failed;
 	}
 
 	max_bytes = (long long)c->leb_size * UBIFS_MIN_BUD_LEBS;
 	if (c->max_bud_bytes < max_bytes) {
+<<<<<<< HEAD
 		ubifs_err("too small journal (%lld bytes), must be at least %lld bytes",
+=======
+		ubifs_err(c, "too small journal (%lld bytes), must be at least %lld bytes",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->max_bud_bytes, max_bytes);
 		goto failed;
 	}
 
 	max_bytes = (long long)c->leb_size * c->main_lebs;
 	if (c->max_bud_bytes > max_bytes) {
+<<<<<<< HEAD
 		ubifs_err("too large journal size (%lld bytes), only %lld bytes available in the main area",
+=======
+		ubifs_err(c, "too large journal size (%lld bytes), only %lld bytes available in the main area",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->max_bud_bytes, max_bytes);
 		goto failed;
 	}
@@ -447,7 +487,11 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 		goto failed;
 	}
 
+<<<<<<< HEAD
 	if (c->default_compr < 0 || c->default_compr >= UBIFS_COMPR_TYPES_CNT) {
+=======
+	if (c->default_compr >= UBIFS_COMPR_TYPES_CNT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = 13;
 		goto failed;
 	}
@@ -466,7 +510,11 @@ static int validate_sb(struct ubifs_info *c, struct ubifs_sb_node *sup)
 	return 0;
 
 failed:
+<<<<<<< HEAD
 	ubifs_err("bad superblock, error %d", err);
+=======
+	ubifs_err(c, "bad superblock, error %d", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ubifs_dump_node(c, sup);
 	return -EINVAL;
 }
@@ -547,12 +595,20 @@ int ubifs_read_superblock(struct ubifs_info *c)
 		ubifs_assert(!c->ro_media || c->ro_mount);
 		if (!c->ro_mount ||
 		    c->ro_compat_version > UBIFS_RO_COMPAT_VERSION) {
+<<<<<<< HEAD
 			ubifs_err("on-flash format version is w%d/r%d, but software only supports up to version w%d/r%d",
+=======
+			ubifs_err(c, "on-flash format version is w%d/r%d, but software only supports up to version w%d/r%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  c->fmt_version, c->ro_compat_version,
 				  UBIFS_FORMAT_VERSION,
 				  UBIFS_RO_COMPAT_VERSION);
 			if (c->ro_compat_version <= UBIFS_RO_COMPAT_VERSION) {
+<<<<<<< HEAD
 				ubifs_msg("only R/O mounting is possible");
+=======
+				ubifs_msg(c, "only R/O mounting is possible");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				err = -EROFS;
 			} else
 				err = -EINVAL;
@@ -568,7 +624,11 @@ int ubifs_read_superblock(struct ubifs_info *c)
 	}
 
 	if (c->fmt_version < 3) {
+<<<<<<< HEAD
 		ubifs_err("on-flash format version %d is not supported",
+=======
+		ubifs_err(c, "on-flash format version %d is not supported",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->fmt_version);
 		err = -EINVAL;
 		goto out;
@@ -593,7 +653,11 @@ int ubifs_read_superblock(struct ubifs_info *c)
 		c->key_len = UBIFS_SK_LEN;
 		break;
 	default:
+<<<<<<< HEAD
 		ubifs_err("unsupported key format");
+=======
+		ubifs_err(c, "unsupported key format");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EINVAL;
 		goto out;
 	}
@@ -783,7 +847,11 @@ int ubifs_fixup_free_space(struct ubifs_info *c)
 	ubifs_assert(c->space_fixup);
 	ubifs_assert(!c->ro_mount);
 
+<<<<<<< HEAD
 	ubifs_msg("start fixing up free space");
+=======
+	ubifs_msg(c, "start fixing up free space");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = fixup_free_space(c);
 	if (err)
@@ -802,6 +870,10 @@ int ubifs_fixup_free_space(struct ubifs_info *c)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	ubifs_msg("free space fixup complete");
+=======
+	ubifs_msg(c, "free space fixup complete");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }

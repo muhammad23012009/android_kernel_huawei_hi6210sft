@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+obj-y += entry/
+
+obj-$(CONFIG_PERF_EVENTS) += events/
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_KVM) += kvm/
 
 # Xen paravirtualization support
@@ -11,8 +18,17 @@ obj-y += kernel/
 obj-y += mm/
 
 obj-y += crypto/
+<<<<<<< HEAD
 obj-y += vdso/
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_IA32_EMULATION) += ia32/
 
 obj-y += platform/
 obj-y += net/
+<<<<<<< HEAD
+=======
+
+obj-$(CONFIG_KEXEC_FILE) += purgatory/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

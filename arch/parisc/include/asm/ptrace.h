@@ -19,5 +19,12 @@
 #define user_stack_pointer(regs)	((regs)->gr[30])
 unsigned long profile_pc(struct pt_regs *);
 
+<<<<<<< HEAD
+=======
+static inline unsigned long regs_return_value(struct pt_regs *regs)
+{
+	return regs->gr[20];
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

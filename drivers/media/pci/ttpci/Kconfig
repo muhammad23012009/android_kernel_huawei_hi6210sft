@@ -1,8 +1,18 @@
+<<<<<<< HEAD
+=======
+config DVB_AV7110_IR
+	bool
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config DVB_AV7110
 	tristate "AV7110 cards"
 	depends on DVB_CORE && PCI && I2C
 	select TTPCI_EEPROM
 	select VIDEO_SAA7146_VV
+<<<<<<< HEAD
+=======
+	select DVB_AV7110_IR if INPUT_EVDEV=y || INPUT_EVDEV=DVB_AV7110
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on VIDEO_DEV	# dependencies of VIDEO_SAA7146_VV
 	select DVB_VES1820 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_VES1X93 if MEDIA_SUBDRV_AUTOSELECT

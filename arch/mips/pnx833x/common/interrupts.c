@@ -281,7 +281,11 @@ void __init arch_init_irq(void)
 	write_c0_status(read_c0_status() | IE_IRQ2);
 }
 
+<<<<<<< HEAD
 unsigned int __cpuinit get_c0_compare_int(void)
+=======
+unsigned int get_c0_compare_int(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (cpu_has_vint)
 		set_vi_handler(cp0_compare_irq, pnx833x_timer_dispatch);

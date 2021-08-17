@@ -10,7 +10,11 @@
 #include <linux/errno.h>
 #include <linux/mm.h>
 #include <linux/mman.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/personality.h>
 #include <linux/random.h>
 #include <linux/sched.h>
@@ -142,10 +146,28 @@ unsigned long arch_get_unmapped_area_topdown(struct file *filp,
 			addr0, len, pgoff, flags, DOWN);
 }
 
+<<<<<<< HEAD
+=======
+unsigned long arch_mmap_rnd(void)
+{
+	unsigned long rnd;
+
+	rnd = get_random_long();
+	rnd <<= PAGE_SHIFT;
+	if (TASK_IS_32BIT_ADDR)
+		rnd &= 0xfffffful;
+	else
+		rnd &= 0xffffffful;
+
+	return rnd;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void arch_pick_mmap_layout(struct mm_struct *mm)
 {
 	unsigned long random_factor = 0UL;
 
+<<<<<<< HEAD
 	if (current->flags & PF_RANDOMIZE) {
 		random_factor = get_random_long();
 		random_factor = random_factor << PAGE_SHIFT;
@@ -154,15 +176,25 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 		else
 			random_factor &= 0xffffffful;
 	}
+=======
+	if (current->flags & PF_RANDOMIZE)
+		random_factor = arch_mmap_rnd();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mmap_is_legacy()) {
 		mm->mmap_base = TASK_UNMAPPED_BASE + random_factor;
 		mm->get_unmapped_area = arch_get_unmapped_area;
+<<<<<<< HEAD
 		mm->unmap_area = arch_unmap_area;
 	} else {
 		mm->mmap_base = mmap_base(random_factor);
 		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
 		mm->unmap_area = arch_unmap_area_topdown;
+=======
+	} else {
+		mm->mmap_base = mmap_base(random_factor);
+		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

@@ -18,14 +18,23 @@
 #include <linux/of_fdt.h>
 #include <linux/of_irq.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
+=======
+#include <linux/smp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/cputype.h>
 #include <asm/setup.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <asm/prom.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/smp_plat.h>
 #include <asm/mach/arch.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 void __init early_init_dt_add_memory_arch(u64 base, u64 size)
 {
 	arm_add_memory(base, size);
@@ -62,6 +71,39 @@ void __init arm_dt_memblock_reserve(void)
 		memblock_reserve(base, size);
 	}
 }
+=======
+
+#ifdef CONFIG_SMP
+extern struct of_cpu_method __cpu_method_of_table[];
+
+static const struct of_cpu_method __cpu_method_of_table_sentinel
+	__used __section(__cpu_method_of_table_end);
+
+
+static int __init set_smp_ops_by_method(struct device_node *node)
+{
+	const char *method;
+	struct of_cpu_method *m = __cpu_method_of_table;
+
+	if (of_property_read_string(node, "enable-method", &method))
+		return 0;
+
+	for (; m->method; m++)
+		if (!strcmp(m->method, method)) {
+			smp_set_ops(m->ops);
+			return 1;
+		}
+
+	return 0;
+}
+#else
+static inline int set_smp_ops_by_method(struct device_node *node)
+{
+	return 1;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * arm_dt_init_cpu_maps - Function retrieves cpu nodes from the device tree
@@ -79,6 +121,10 @@ void __init arm_dt_init_cpu_maps(void)
 	 * read as 0.
 	 */
 	struct device_node *cpu, *cpus;
+<<<<<<< HEAD
+=======
+	int found_method = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 i, j, cpuidx = 1;
 	u32 mpidr = is_smp() ? read_cpuid_mpidr() & MPIDR_HWID_BITMASK : 0;
 
@@ -107,6 +153,10 @@ void __init arm_dt_init_cpu_maps(void)
 		if (!cell || prop_bytes < sizeof(*cell)) {
 			pr_debug(" * %s missing reg property\n",
 				     cpu->full_name);
+<<<<<<< HEAD
+=======
+			of_node_put(cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 		}
 
@@ -119,8 +169,15 @@ void __init arm_dt_init_cpu_maps(void)
 			prop_bytes -= sizeof(*cell);
 		} while (!hwid && prop_bytes > 0);
 
+<<<<<<< HEAD
 		if (prop_bytes || (hwid & ~MPIDR_HWID_BITMASK))
 			return;
+=======
+		if (prop_bytes || (hwid & ~MPIDR_HWID_BITMASK)) {
+			of_node_put(cpu);
+			return;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Duplicate MPIDRs are a recipe for disaster.
@@ -130,9 +187,17 @@ void __init arm_dt_init_cpu_maps(void)
 		 * to avoid matching valid MPIDR[23:0] values.
 		 */
 		for (j = 0; j < cpuidx; j++)
+<<<<<<< HEAD
 			if (WARN(tmp_map[j] == hwid, "Duplicate /cpu reg "
 						     "properties in the DT\n"))
 				return;
+=======
+			if (WARN(tmp_map[j] == hwid,
+				 "Duplicate /cpu reg properties in the DT\n")) {
+				of_node_put(cpu);
+				return;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Build a stashed array of MPIDR values. Numbering scheme
@@ -154,12 +219,31 @@ void __init arm_dt_init_cpu_maps(void)
 					       "max cores %u, capping them\n",
 					       cpuidx, nr_cpu_ids)) {
 			cpuidx = nr_cpu_ids;
+<<<<<<< HEAD
+=======
+			of_node_put(cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 
 		tmp_map[i] = hwid;
+<<<<<<< HEAD
 	}
 
+=======
+
+		if (!found_method)
+			found_method = set_smp_ops_by_method(cpu);
+	}
+
+	/*
+	 * Fallback to an enable-method in the cpus node if nothing found in
+	 * a cpu node.
+	 */
+	if (!found_method)
+		set_smp_ops_by_method(cpus);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!bootcpu_valid) {
 		pr_warn("DT missing boot CPU MPIDR[23:0], fall back to default cpu_logical_map\n");
 		return;
@@ -177,6 +261,27 @@ void __init arm_dt_init_cpu_maps(void)
 	}
 }
 
+<<<<<<< HEAD
+=======
+bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
+{
+	return phys_id == cpu_logical_map(cpu);
+}
+
+static const void * __init arch_get_next_mach(const char *const **match)
+{
+	static const struct machine_desc *mdesc = __arch_info_begin;
+	const struct machine_desc *m = mdesc;
+
+	if (m >= __arch_info_end)
+		return NULL;
+
+	mdesc++;
+	*match = m->dt_compat;
+	return m;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * setup_machine_fdt - Machine setup when an dtb was passed to the kernel
  * @dt_phys: physical address of dt blob
@@ -184,6 +289,7 @@ void __init arm_dt_init_cpu_maps(void)
  * If a dtb was passed to the kernel in r2, then use it to choose the
  * correct machine_desc and to setup the system.
  */
+<<<<<<< HEAD
 struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 {
 	struct boot_param_header *devtree;
@@ -221,10 +327,38 @@ struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 	if (!mdesc_best) {
 		const char *prop;
 		int size;
+=======
+const struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
+{
+	const struct machine_desc *mdesc, *mdesc_best = NULL;
+
+#if defined(CONFIG_ARCH_MULTIPLATFORM) || defined(CONFIG_ARM_SINGLE_ARMV7M)
+	DT_MACHINE_START(GENERIC_DT, "Generic DT based system")
+		.l2c_aux_val = 0x0,
+		.l2c_aux_mask = ~0x0,
+	MACHINE_END
+
+	mdesc_best = &__mach_desc_GENERIC_DT;
+#endif
+
+	if (!dt_phys || !early_init_dt_verify(phys_to_virt(dt_phys)))
+		return NULL;
+
+	mdesc = of_flat_dt_match_machine(mdesc_best, arch_get_next_mach);
+
+	if (!mdesc) {
+		const char *prop;
+		int size;
+		unsigned long dt_root;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		early_print("\nError: unrecognized/unsupported "
 			    "device tree compatible list:\n[ ");
 
+<<<<<<< HEAD
+=======
+		dt_root = of_get_flat_dt_root();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		prop = of_get_flat_dt_prop(dt_root, "compatible", &size);
 		while (size > 0) {
 			early_print("'%s' ", prop);
@@ -236,6 +370,7 @@ struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 		dump_machine_table(); /* does not return */
 	}
 
+<<<<<<< HEAD
 	model = of_get_flat_dt_prop(dt_root, "model", NULL);
 	if (!model)
 		model = of_get_flat_dt_prop(dt_root, "compatible", NULL);
@@ -254,4 +389,16 @@ struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 	__machine_arch_type = mdesc_best->nr;
 
 	return mdesc_best;
+=======
+	/* We really don't want to do this, but sometimes firmware provides buggy data */
+	if (mdesc->dt_fixup)
+		mdesc->dt_fixup();
+
+	early_init_dt_scan_nodes();
+
+	/* Change machine number to match the mdesc we're using */
+	__machine_arch_type = mdesc->nr;
+
+	return mdesc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

@@ -25,6 +25,7 @@
 struct memory_block {
 	unsigned long start_section_nr;
 	unsigned long end_section_nr;
+<<<<<<< HEAD
 	unsigned long state;
 	int section_count;
 
@@ -35,6 +36,11 @@ struct memory_block {
 	 * initialization.
 	 */
 	struct mutex state_mutex;
+=======
+	unsigned long state;		/* serialized by the dev->lock */
+	int section_count;		/* serialized by mem_sysfs_mutex */
+	int online_type;		/* for passing data to online routine */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int phys_device;		/* to which fru does this belong? */
 	void *hw;			/* optional pointer to fw/hw data */
 	int (*phys_callback)(struct memory_block *);
@@ -42,6 +48,10 @@ struct memory_block {
 };
 
 int arch_get_memory_phys_device(unsigned long start_pfn);
+<<<<<<< HEAD
+=======
+unsigned long memory_block_size_bytes(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* These states are exposed to userspace as text strings in sysfs */
 #define	MEM_ONLINE		(1<<0) /* exposed to userspace */
@@ -115,6 +125,12 @@ extern void unregister_memory_notifier(struct notifier_block *nb);
 extern int register_memory_isolate_notifier(struct notifier_block *nb);
 extern void unregister_memory_isolate_notifier(struct notifier_block *nb);
 extern int register_new_memory(int, struct mem_section *);
+<<<<<<< HEAD
+=======
+extern int memory_block_change_state(struct memory_block *mem,
+				     unsigned long to_state,
+				     unsigned long from_state_req);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MEMORY_HOTREMOVE
 extern int unregister_memory_section(struct mem_section *);
 #endif
@@ -125,7 +141,10 @@ extern struct memory_block *find_memory_block_hinted(struct mem_section *,
 							struct memory_block *);
 extern struct memory_block *find_memory_block(struct mem_section *);
 #define CONFIG_MEM_BLOCK_SIZE	(PAGES_PER_SECTION<<PAGE_SHIFT)
+<<<<<<< HEAD
 enum mem_add_context { BOOT, HOTPLUG };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_MEMORY_HOTPLUG_SPARSE */
 
 #ifdef CONFIG_MEMORY_HOTPLUG
@@ -144,6 +163,7 @@ enum mem_add_context { BOOT, HOTPLUG };
 #endif
 
 /*
+<<<<<<< HEAD
  * 'struct memory_accessor' is a generic interface to provide
  * in-kernel access to persistent memory such as i2c or SPI EEPROMs
  */
@@ -155,6 +175,8 @@ struct memory_accessor {
 };
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Kernel text modification mutex, used for code patching. Users of this lock
  * can sleep.
  */

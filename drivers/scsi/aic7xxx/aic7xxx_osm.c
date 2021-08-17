@@ -145,6 +145,7 @@ static struct scsi_transport_template *ahc_linux_transport_template = NULL;
 #endif
 
 /*
+<<<<<<< HEAD
  * Control collection of SCSI transfer statistics for the /proc filesystem.
  *
  * NOTE: Do NOT enable this when running on kernels version 1.2.x and below.
@@ -155,6 +156,8 @@ static struct scsi_transport_template *ahc_linux_transport_template = NULL;
 #endif
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * To change the default number of tagged transactions allowed per-device,
  * add a line to the lilo.conf file like:
  * append="aic7xxx=verbose,tag_info:{{32,32,32,32},{32,32,32,32}}"
@@ -1223,10 +1226,16 @@ ahc_platform_alloc(struct ahc_softc *ahc, void *platform_arg)
 {
 
 	ahc->platform_data =
+<<<<<<< HEAD
 	    kmalloc(sizeof(struct ahc_platform_data), GFP_ATOMIC);
 	if (ahc->platform_data == NULL)
 		return (ENOMEM);
 	memset(ahc->platform_data, 0, sizeof(struct ahc_platform_data));
+=======
+	    kzalloc(sizeof(struct ahc_platform_data), GFP_ATOMIC);
+	if (ahc->platform_data == NULL)
+		return (ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahc->platform_data->irq = AHC_LINUX_NOIRQ;
 	ahc_lockinit(ahc);
 	ahc->seltime = (aic7xxx_seltime & 0x3) << 4;
@@ -1344,12 +1353,18 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 	}
 	switch ((dev->flags & (AHC_DEV_Q_BASIC|AHC_DEV_Q_TAGGED))) {
 	case AHC_DEV_Q_BASIC:
+<<<<<<< HEAD
 		scsi_set_tag_type(sdev, MSG_SIMPLE_TAG);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
 		break;
 	case AHC_DEV_Q_TAGGED:
 		scsi_set_tag_type(sdev, MSG_ORDERED_TAG);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
+=======
+	case AHC_DEV_Q_TAGGED:
+		scsi_change_queue_depth(sdev,
+				dev->openings + dev->active);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		/*
@@ -1358,7 +1373,11 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 		 * serially on the controller/device.  This should
 		 * remove some latency.
 		 */
+<<<<<<< HEAD
 		scsi_deactivate_tcq(sdev, 2);
+=======
+		scsi_change_queue_depth(sdev, 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -1457,7 +1476,11 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	 * we are storing a full busy target *lun*
 	 * table in SCB space.
 	 */
+<<<<<<< HEAD
 	if (!blk_rq_tagged(cmd->request)
+=======
+	if (!(cmd->flags & SCMD_TAGGED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    && (ahc->features & AHC_SCB_BTT) == 0) {
 		int target_offset;
 
@@ -1511,6 +1534,7 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	}
 
 	if ((dev->flags & (AHC_DEV_Q_TAGGED|AHC_DEV_Q_BASIC)) != 0) {
+<<<<<<< HEAD
 		int	msg_bytes;
 		uint8_t tag_msgs[2];
 		
@@ -1520,6 +1544,9 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 			if (tag_msgs[0] == MSG_ORDERED_TASK)
 				dev->commands_since_idle_or_otag = 0;
 		} else if (dev->commands_since_idle_or_otag == AHC_OTAG_THRESH
+=======
+		if (dev->commands_since_idle_or_otag == AHC_OTAG_THRESH
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				&& (dev->flags & AHC_DEV_Q_TAGGED) != 0) {
 			hscb->control |= MSG_ORDERED_TASK;
 			dev->commands_since_idle_or_otag = 0;
@@ -2120,7 +2147,11 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		 */
 		printk("%s:%d:%d:%d: Is not an active device\n",
 		       ahc_name(ahc), cmd->device->channel, cmd->device->id,
+<<<<<<< HEAD
 		       cmd->device->lun);
+=======
+		       (u8)cmd->device->lun);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = SUCCESS;
 		goto no_cmd;
 	}
@@ -2128,11 +2159,19 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	if ((dev->flags & (AHC_DEV_Q_BASIC|AHC_DEV_Q_TAGGED)) == 0
 	 && ahc_search_untagged_queues(ahc, cmd, cmd->device->id,
 				       cmd->device->channel + 'A',
+<<<<<<< HEAD
 				       cmd->device->lun,
 				       CAM_REQ_ABORTED, SEARCH_COMPLETE) != 0) {
 		printk("%s:%d:%d:%d: Command found on untagged queue\n",
 		       ahc_name(ahc), cmd->device->channel, cmd->device->id,
 		       cmd->device->lun);
+=======
+				       (u8)cmd->device->lun,
+				       CAM_REQ_ABORTED, SEARCH_COMPLETE) != 0) {
+		printk("%s:%d:%d:%d: Command found on untagged queue\n",
+		       ahc_name(ahc), cmd->device->channel, cmd->device->id,
+		       (u8)cmd->device->lun);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = SUCCESS;
 		goto done;
 	}
@@ -2198,13 +2237,22 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 				       SEARCH_COMPLETE) > 0) {
 			printk("%s:%d:%d:%d: Cmd aborted from QINFIFO\n",
 			       ahc_name(ahc), cmd->device->channel,
+<<<<<<< HEAD
 					cmd->device->id, cmd->device->lun);
+=======
+			       cmd->device->id, (u8)cmd->device->lun);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			retval = SUCCESS;
 			goto done;
 		}
 	} else if (ahc_search_qinfifo(ahc, cmd->device->id,
 				      cmd->device->channel + 'A',
+<<<<<<< HEAD
 				      cmd->device->lun, pending_scb->hscb->tag,
+=======
+				      cmd->device->lun,
+				      pending_scb->hscb->tag,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      ROLE_INITIATOR, /*status*/0,
 				      SEARCH_COUNT) > 0) {
 		disconnected = FALSE;

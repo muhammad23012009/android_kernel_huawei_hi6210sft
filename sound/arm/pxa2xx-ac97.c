@@ -14,12 +14,21 @@
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+#include <linux/dma/pxa-dma.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/ac97_codec.h>
 #include <sound/initval.h>
 #include <sound/pxa2xx-lib.h>
+<<<<<<< HEAD
+=======
+#include <sound/dmaengine_pcm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/regs-ac97.h>
 #include <mach/audio.h>
@@ -41,6 +50,7 @@ static struct snd_ac97_bus_ops pxa2xx_ac97_ops = {
 	.reset	= pxa2xx_ac97_reset,
 };
 
+<<<<<<< HEAD
 static struct pxa2xx_pcm_dma_params pxa2xx_ac97_pcm_out = {
 	.name			= "AC97 PCM out",
 	.dev_addr		= __PREG(PCDR),
@@ -55,6 +65,30 @@ static struct pxa2xx_pcm_dma_params pxa2xx_ac97_pcm_in = {
 	.drcmr			= &DRCMR(11),
 	.dcmd			= DCMD_INCTRGADDR | DCMD_FLOWSRC |
 				  DCMD_BURST32 | DCMD_WIDTH4,
+=======
+static struct pxad_param pxa2xx_ac97_pcm_out_req = {
+	.prio = PXAD_PRIO_LOWEST,
+	.drcmr = 12,
+};
+
+static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_out = {
+	.addr		= __PREG(PCDR),
+	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+	.maxburst	= 32,
+	.filter_data	= &pxa2xx_ac97_pcm_out_req,
+};
+
+static struct pxad_param pxa2xx_ac97_pcm_in_req = {
+	.prio = PXAD_PRIO_LOWEST,
+	.drcmr = 11,
+};
+
+static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_in = {
+	.addr		= __PREG(PCDR),
+	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+	.maxburst	= 32,
+	.filter_data	= &pxa2xx_ac97_pcm_in_req,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_pcm *pxa2xx_ac97_pcm;
@@ -177,6 +211,7 @@ static int pxa2xx_ac97_probe(struct platform_device *dev)
 		goto err_dev;
 	}
 
+<<<<<<< HEAD
 	ret = snd_card_create(SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
 			      THIS_MODULE, 0, &card);
 	if (ret < 0)
@@ -184,6 +219,14 @@ static int pxa2xx_ac97_probe(struct platform_device *dev)
 
 	card->dev = &dev->dev;
 	strncpy(card->driver, dev->dev.driver->name, sizeof(card->driver));
+=======
+	ret = snd_card_new(&dev->dev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
+			   THIS_MODULE, 0, &card);
+	if (ret < 0)
+		goto err;
+
+	strlcpy(card->driver, dev->dev.driver->name, sizeof(card->driver));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = pxa2xx_pcm_new(card, &pxa2xx_ac97_pcm_client, &pxa2xx_ac97_pcm);
 	if (ret)
@@ -208,7 +251,10 @@ static int pxa2xx_ac97_probe(struct platform_device *dev)
 
 	if (pdata && pdata->codec_pdata[0])
 		snd_ac97_dev_add_pdata(ac97_bus->codec[0], pdata->codec_pdata[0]);
+<<<<<<< HEAD
 	snd_card_set_dev(card, &dev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = snd_card_register(card);
 	if (ret == 0) {
 		platform_set_drvdata(dev, card);
@@ -230,7 +276,10 @@ static int pxa2xx_ac97_remove(struct platform_device *dev)
 
 	if (card) {
 		snd_card_free(card);
+<<<<<<< HEAD
 		platform_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pxa2xx_ac97_hw_remove(dev);
 	}
 
@@ -242,7 +291,10 @@ static struct platform_driver pxa2xx_ac97_driver = {
 	.remove		= pxa2xx_ac97_remove,
 	.driver		= {
 		.name	= "pxa2xx-ac97",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM_SLEEP
 		.pm	= &pxa2xx_ac97_pm_ops,
 #endif

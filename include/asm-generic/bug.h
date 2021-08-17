@@ -47,12 +47,20 @@ struct bug_entry {
 #ifndef HAVE_ARCH_BUG
 #define BUG() do { \
 	printk("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
+<<<<<<< HEAD
+=======
+	barrier_before_unreachable(); \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	panic("BUG!"); \
 } while (0)
 #endif
 
 #ifndef HAVE_ARCH_BUG_ON
+<<<<<<< HEAD
 #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while(0)
+=======
+#define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
@@ -81,19 +89,32 @@ extern void warn_slowpath_null(const char *file, const int line);
 	do { printk(arg); __WARN_TAINT(taint); } while (0)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_HISI_RDR
 void rdr_warn_on_hook(void);
 #else
 #define rdr_warn_on_hook() do {} while (0)
 #endif
+=======
+/* used internally by panic.c */
+struct warn_args;
+
+void __warn(const char *file, int line, void *caller, unsigned taint,
+	    struct pt_regs *regs, struct warn_args *args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef WARN_ON
 #define WARN_ON(condition) ({						\
 	int __ret_warn_on = !!(condition);				\
+<<<<<<< HEAD
 	if (unlikely(__ret_warn_on)) {					\
 		__WARN();						\
 		rdr_warn_on_hook();					\
 	}								\
+=======
+	if (unlikely(__ret_warn_on))					\
+		__WARN();						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlikely(__ret_warn_on);					\
 })
 #endif
@@ -114,6 +135,7 @@ void rdr_warn_on_hook(void);
 	unlikely(__ret_warn_on);					\
 })
 
+<<<<<<< HEAD
 #else /* !CONFIG_BUG */
 #ifndef HAVE_ARCH_BUG
 #define BUG() do {} while(0)
@@ -121,6 +143,48 @@ void rdr_warn_on_hook(void);
 
 #ifndef HAVE_ARCH_BUG_ON
 #define BUG_ON(condition) do { if (condition) ; } while(0)
+=======
+#define WARN_ON_ONCE(condition)	({				\
+	static bool __section(.data.unlikely) __warned;		\
+	int __ret_warn_once = !!(condition);			\
+								\
+	if (unlikely(__ret_warn_once && !__warned)) {		\
+		__warned = true;				\
+		WARN_ON(1);					\
+	}							\
+	unlikely(__ret_warn_once);				\
+})
+
+#define WARN_ONCE(condition, format...)	({			\
+	static bool __section(.data.unlikely) __warned;		\
+	int __ret_warn_once = !!(condition);			\
+								\
+	if (unlikely(__ret_warn_once && !__warned)) {		\
+		__warned = true;				\
+		WARN(1, format);				\
+	}							\
+	unlikely(__ret_warn_once);				\
+})
+
+#define WARN_TAINT_ONCE(condition, taint, format...)	({	\
+	static bool __section(.data.unlikely) __warned;		\
+	int __ret_warn_once = !!(condition);			\
+								\
+	if (unlikely(__ret_warn_once && !__warned)) {		\
+		__warned = true;				\
+		WARN_TAINT(1, taint, format);			\
+	}							\
+	unlikely(__ret_warn_once);				\
+})
+
+#else /* !CONFIG_BUG */
+#ifndef HAVE_ARCH_BUG
+#define BUG() do {} while (1)
+#endif
+
+#ifndef HAVE_ARCH_BUG_ON
+#define BUG_ON(condition) do { if (condition) BUG(); } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifndef HAVE_ARCH_WARN_ON
@@ -133,10 +197,15 @@ void rdr_warn_on_hook(void);
 #ifndef WARN
 #define WARN(condition, format...) ({					\
 	int __ret_warn_on = !!(condition);				\
+<<<<<<< HEAD
+=======
+	no_printk(format);						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlikely(__ret_warn_on);					\
 })
 #endif
 
+<<<<<<< HEAD
 #define WARN_TAINT(condition, taint, format...) WARN_ON(condition)
 
 #endif
@@ -171,6 +240,15 @@ void rdr_warn_on_hook(void);
 	unlikely(__ret_warn_once);				\
 })
 
+=======
+#define WARN_ON_ONCE(condition) WARN_ON(condition)
+#define WARN_ONCE(condition, format...) WARN(condition, format)
+#define WARN_TAINT(condition, taint, format...) WARN(condition, format)
+#define WARN_TAINT_ONCE(condition, taint, format...) WARN(condition, format)
+
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * WARN_ON_SMP() is for cases that the warning is either
  * meaningless for !SMP or may even cause failures.

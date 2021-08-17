@@ -71,6 +71,10 @@ static int __init bcm63xx_detect_flash_type(void)
 	case BCM6348_CPU_ID:
 		/* no way to auto detect so assume parallel */
 		return BCM63XX_FLASH_TYPE_PARALLEL;
+<<<<<<< HEAD
+=======
+	case BCM3368_CPU_ID:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BCM6358_CPU_ID:
 		val = bcm_gpio_readl(GPIO_STRAPBUS_REG);
 		if (val & STRAPBUS_6358_BOOT_SEL_PARALLEL)

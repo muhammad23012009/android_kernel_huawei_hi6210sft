@@ -24,8 +24,12 @@
  * has an opportunity to return -EFAULT to the user if needed.
  * The 64-bit routines just return a "long long" with the value,
  * since they are only used from kernel space and don't expect to fault.
+<<<<<<< HEAD
  * Support for 16-bit ops is included in the framework but we don't provide
  * any (x86_64 has an atomic_inc_short(), so we might want to some day).
+=======
+ * Support for 16-bit ops is included in the framework but we don't provide any.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Note that the caller is advised to issue a suitable L1 or L2
  * prefetch on the address being manipulated to avoid extra stalls.
@@ -164,6 +168,10 @@ STD_ENTRY_SECTION(__atomic\name, .text.atomic)
 	STD_ENDPROC(__atomic\name)
 	.ifc \bitwidth,32
 	.pushsection __ex_table,"a"
+<<<<<<< HEAD
+=======
+	.align  4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.word   1b, __atomic\name
 	.word   2b, __atomic\name
 	.word   __atomic\name, __atomic_bad_address
@@ -171,6 +179,7 @@ STD_ENTRY_SECTION(__atomic\name, .text.atomic)
 	.endif
 	.endm
 
+<<<<<<< HEAD
 atomic_op _cmpxchg, 32, "seq r26, r22, r2; { bbns r26, 3f; move r24, r3 }"
 atomic_op _xchg, 32, "move r24, r2"
 atomic_op _xchg_add, 32, "add r24, r22, r2"
@@ -179,6 +188,22 @@ atomic_op _xchg_add_unless, 32, \
 atomic_op _or, 32, "or r24, r22, r2"
 atomic_op _andn, 32, "nor r2, r2, zero; and r24, r22, r2"
 atomic_op _xor, 32, "xor r24, r22, r2"
+=======
+
+/*
+ * Use __atomic32 prefix to avoid collisions with GCC builtin __atomic functions.
+ */
+
+atomic_op 32_cmpxchg, 32, "seq r26, r22, r2; { bbns r26, 3f; move r24, r3 }"
+atomic_op 32_xchg, 32, "move r24, r2"
+atomic_op 32_xchg_add, 32, "add r24, r22, r2"
+atomic_op 32_xchg_add_unless, 32, \
+	"sne r26, r22, r2; { bbns r26, 3f; add r24, r22, r3 }"
+atomic_op 32_fetch_or, 32, "or r24, r22, r2"
+atomic_op 32_fetch_and, 32, "and r24, r22, r2"
+atomic_op 32_fetch_andn, 32, "nor r2, r2, zero; and r24, r22, r2"
+atomic_op 32_fetch_xor, 32, "xor r24, r22, r2"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 atomic_op 64_cmpxchg, 64, "{ seq r26, r22, r2; seq r27, r23, r3 }; \
 	{ bbns r26, 3f; move r24, r4 }; { bbns r27, 3f; move r25, r5 }"
@@ -190,6 +215,12 @@ atomic_op 64_xchg_add_unless, 64, \
 	{ bbns r26, 3f; add r24, r22, r4 }; \
 	{ bbns r27, 3f; add r25, r23, r5 }; \
 	slt_u r26, r24, r22; add r25, r25, r26"
+<<<<<<< HEAD
+=======
+atomic_op 64_fetch_or, 64, "{ or r24, r22, r2; or r25, r23, r3 }"
+atomic_op 64_fetch_and, 64, "{ and r24, r22, r2; and r25, r23, r3 }"
+atomic_op 64_fetch_xor, 64, "{ xor r24, r22, r2; xor r25, r23, r3 }"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	jrp     lr              /* happy backtracer */
 

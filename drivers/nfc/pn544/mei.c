@@ -13,9 +13,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -29,7 +33,11 @@
 
 #define PN544_DRIVER_NAME "pn544"
 
+<<<<<<< HEAD
 static int pn544_mei_probe(struct mei_cl_device *device,
+=======
+static int pn544_mei_probe(struct mei_cl_device *cldev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       const struct mei_cl_device_id *id)
 {
 	struct nfc_mei_phy *phy;
@@ -37,7 +45,11 @@ static int pn544_mei_probe(struct mei_cl_device *device,
 
 	pr_info("Probing NFC pn544\n");
 
+<<<<<<< HEAD
 	phy = nfc_mei_phy_alloc(device);
+=======
+	phy = nfc_mei_phy_alloc(cldev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!phy) {
 		pr_err("Cannot allocate memory for pn544 mei phy.\n");
 		return -ENOMEM;
@@ -45,7 +57,11 @@ static int pn544_mei_probe(struct mei_cl_device *device,
 
 	r = pn544_hci_probe(phy, &mei_phy_ops, LLC_NOP_NAME,
 			    MEI_NFC_HEADER_SIZE, 0, MEI_NFC_MAX_HCI_PAYLOAD,
+<<<<<<< HEAD
 			    &phy->hdev);
+=======
+			    NULL, &phy->hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (r < 0) {
 		nfc_mei_phy_free(phy);
 
@@ -55,9 +71,15 @@ static int pn544_mei_probe(struct mei_cl_device *device,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pn544_mei_remove(struct mei_cl_device *device)
 {
 	struct nfc_mei_phy *phy = mei_cl_get_drvdata(device);
+=======
+static int pn544_mei_remove(struct mei_cl_device *cldev)
+{
+	struct nfc_mei_phy *phy = mei_cldev_get_drvdata(cldev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_info("Removing pn544\n");
 
@@ -69,7 +91,11 @@ static int pn544_mei_remove(struct mei_cl_device *device)
 }
 
 static struct mei_cl_device_id pn544_mei_tbl[] = {
+<<<<<<< HEAD
 	{ PN544_DRIVER_NAME },
+=======
+	{ PN544_DRIVER_NAME, MEI_NFC_UUID, MEI_CL_VERSION_ANY},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* required last entry */
 	{ }
@@ -90,7 +116,11 @@ static int pn544_mei_init(void)
 
 	pr_debug(DRIVER_DESC ": %s\n", __func__);
 
+<<<<<<< HEAD
 	r = mei_cl_driver_register(&pn544_driver);
+=======
+	r = mei_cldev_driver_register(&pn544_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (r) {
 		pr_err(PN544_DRIVER_NAME ": driver registration failed\n");
 		return r;
@@ -101,7 +131,11 @@ static int pn544_mei_init(void)
 
 static void pn544_mei_exit(void)
 {
+<<<<<<< HEAD
 	mei_cl_driver_unregister(&pn544_driver);
+=======
+	mei_cldev_driver_unregister(&pn544_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(pn544_mei_init);

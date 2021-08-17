@@ -68,7 +68,11 @@
 #define KN03CA_IO_SSR_ISDN_RST	(1<<12)		/* ~ISDN (Am79C30A) reset */
 
 #define KN03CA_IO_SSR_FLOPPY_RST (1<<7)		/* ~FDC (82077) reset */
+<<<<<<< HEAD
 #define KN03CA_IO_SSR_VIDEO_RST (1<<6)		/* ~framebuffer reset */
+=======
+#define KN03CA_IO_SSR_VIDEO_RST	(1<<6)		/* ~framebuffer reset */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define KN03CA_IO_SSR_AB_RST	(1<<5)		/* ACCESS.bus reset */
 #define KN03CA_IO_SSR_RES_4	(1<<4)		/* unused */
 #define KN03CA_IO_SSR_RES_3	(1<<4)		/* unused */

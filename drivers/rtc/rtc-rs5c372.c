@@ -16,9 +16,12 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.6"
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Ricoh has a family of I2C based RTCs, which differ only slightly from
  * each other.  Differences center on pinout (e.g. how many interrupts,
@@ -142,12 +145,20 @@ static int rs5c_get_regs(struct rs5c372 *rs5c)
 	}
 
 	dev_dbg(&client->dev,
+<<<<<<< HEAD
 		"%02x %02x %02x (%02x) %02x %02x %02x (%02x), "
 		"%02x %02x %02x, %02x %02x %02x; %02x %02x\n",
 		rs5c->regs[0],  rs5c->regs[1],  rs5c->regs[2],  rs5c->regs[3],
 		rs5c->regs[4],  rs5c->regs[5],  rs5c->regs[6],  rs5c->regs[7],
 		rs5c->regs[8],  rs5c->regs[9],  rs5c->regs[10], rs5c->regs[11],
 		rs5c->regs[12], rs5c->regs[13], rs5c->regs[14], rs5c->regs[15]);
+=======
+		"%3ph (%02x) %3ph (%02x), %3ph, %3ph; %02x %02x\n",
+		rs5c->regs + 0, rs5c->regs[3],
+		rs5c->regs + 4, rs5c->regs[7],
+		rs5c->regs + 8, rs5c->regs + 11,
+		rs5c->regs[14], rs5c->regs[15]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -241,11 +252,19 @@ static int rs5c372_set_datetime(struct i2c_client *client, struct rtc_time *tm)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_INTF_PROC) || defined(CONFIG_RTC_INTF_PROC_MODULE)
 #define	NEED_TRIM
 #endif
 
 #if defined(CONFIG_RTC_INTF_SYSFS) || defined(CONFIG_RTC_INTF_SYSFS_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_INTF_PROC)
+#define	NEED_TRIM
+#endif
+
+#if IS_ENABLED(CONFIG_RTC_INTF_SYSFS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	NEED_TRIM
 #endif
 
@@ -345,12 +364,15 @@ static int rs5c_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 	t->time.tm_sec = 0;
 	t->time.tm_min = bcd2bin(rs5c->regs[RS5C_REG_ALARM_A_MIN] & 0x7f);
 	t->time.tm_hour = rs5c_reg2hr(rs5c, rs5c->regs[RS5C_REG_ALARM_A_HOURS]);
+<<<<<<< HEAD
 	t->time.tm_mday = -1;
 	t->time.tm_mon = -1;
 	t->time.tm_year = -1;
 	t->time.tm_wday = -1;
 	t->time.tm_yday = -1;
 	t->time.tm_isdst = -1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* ... and status */
 	t->enabled = !!(rs5c->regs[RS5C_REG_CTRL1] & RS5C_CTRL1_AALE);
@@ -413,7 +435,11 @@ static int rs5c_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_INTF_PROC) || defined(CONFIG_RTC_INTF_PROC_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_INTF_PROC)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int rs5c372_rtc_proc(struct device *dev, struct seq_file *seq)
 {
@@ -442,7 +468,11 @@ static const struct rtc_class_ops rs5c372_rtc_ops = {
 	.alarm_irq_enable = rs5c_rtc_alarm_irq_enable,
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_INTF_SYSFS) || defined(CONFIG_RTC_INTF_SYSFS_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_INTF_SYSFS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t rs5c372_sysfs_show_trim(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -510,9 +540,15 @@ static int rs5c_oscillator_setup(struct rs5c372 *rs5c372)
 	int addr, i, ret = 0;
 
 	if (rs5c372->type == rtc_r2025sd) {
+<<<<<<< HEAD
 		if (!(rs5c372->regs[RS5C_REG_CTRL2] & R2025_CTRL2_XST))
 			return ret;
 		rs5c372->regs[RS5C_REG_CTRL2] &= ~R2025_CTRL2_XST;
+=======
+		if (rs5c372->regs[RS5C_REG_CTRL2] & R2025_CTRL2_XST)
+			return ret;
+		rs5c372->regs[RS5C_REG_CTRL2] |= R2025_CTRL2_XST;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		if (!(rs5c372->regs[RS5C_REG_CTRL2] & RS5C_CTRL2_XSTP))
 			return ret;
@@ -641,7 +677,11 @@ static int rs5c372_probe(struct i2c_client *client,
 	if (rs5c372_get_datetime(client, &tm) < 0)
 		dev_warn(&client->dev, "clock needs to be set\n");
 
+<<<<<<< HEAD
 	dev_info(&client->dev, "%s found, %s, driver version " DRV_VERSION "\n",
+=======
+	dev_info(&client->dev, "%s found, %s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			({ char *s; switch (rs5c372->type) {
 			case rtc_r2025sd:	s = "r2025sd"; break;
 			case rtc_r2221tl:	s = "r2221tl"; break;
@@ -697,4 +737,7 @@ MODULE_AUTHOR(
 		"Paul Mundt <lethal@linux-sh.org>");
 MODULE_DESCRIPTION("Ricoh RS5C372 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

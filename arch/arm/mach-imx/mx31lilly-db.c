@@ -43,6 +43,7 @@
  */
 
 static unsigned int lilly_db_board_pins[] __initdata = {
+<<<<<<< HEAD
 	MX31_PIN_CTS1__CTS1,
 	MX31_PIN_RTS1__RTS1,
 	MX31_PIN_TXD1__TXD1,
@@ -55,6 +56,8 @@ static unsigned int lilly_db_board_pins[] __initdata = {
 	MX31_PIN_CSPI3_MISO__TXD3,
 	MX31_PIN_CSPI3_SCLK__RTS3,
 	MX31_PIN_CSPI3_SPI_RDY__CTS3,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MX31_PIN_SD1_DATA3__SD1_DATA3,
 	MX31_PIN_SD1_DATA2__SD1_DATA2,
 	MX31_PIN_SD1_DATA1__SD1_DATA1,
@@ -86,11 +89,14 @@ static unsigned int lilly_db_board_pins[] __initdata = {
 	MX31_PIN_CONTRAST__CONTRAST,
 };
 
+<<<<<<< HEAD
 /* UART */
 static const struct imxuart_platform_data uart_pdata __initconst = {
 	.flags = IMXUART_HAVE_RTSCTS,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* MMC support */
 
 static int mxc_mmc1_get_ro(struct device *dev)
@@ -130,8 +136,12 @@ static int mxc_mmc1_init(struct device *dev,
 	gpio_direction_input(gpio_wp);
 
 	ret = request_irq(gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_1)),
+<<<<<<< HEAD
 			  detect_irq,
 			  IRQF_DISABLED | IRQF_TRIGGER_FALLING,
+=======
+			  detect_irq, IRQF_TRIGGER_FALLING,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  "MMC detect", data);
 	if (ret)
 		goto exit_free_wp;
@@ -204,9 +214,12 @@ void __init mx31lilly_db_init(void)
 	mxc_iomux_setup_multiple_pins(lilly_db_board_pins,
 					ARRAY_SIZE(lilly_db_board_pins),
 					"development board pins");
+<<<<<<< HEAD
 	imx31_add_imx_uart0(&uart_pdata);
 	imx31_add_imx_uart1(&uart_pdata);
 	imx31_add_imx_uart2(&uart_pdata);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx31_add_mxc_mmc(0, &mmc_pdata);
 	mx31lilly_init_fb();
 }

@@ -20,6 +20,10 @@
 #include <linux/err.h>
 #include <linux/fs.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -27,11 +31,18 @@
 #include <linux/rtc.h>
 #include <linux/spinlock.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/log2.h>
 
 #include <asm/div64.h>
 #include <asm/io.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/log2.h>
+
+#include <asm/div64.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Yoichi Yuasa <yuasa@linux-mips.org>");
 MODULE_DESCRIPTION("NEC VR4100 series RTC driver");
@@ -103,7 +114,11 @@ static inline unsigned long read_elapsed_second(void)
 		second_mid = rtc1_read(ETIMEMREG);
 		second_high = rtc1_read(ETIMEHREG);
 	} while (first_low != second_low || first_mid != second_mid ||
+<<<<<<< HEAD
 	         first_high != second_high);
+=======
+		 first_high != second_high);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (first_high << 17) | (first_mid << 1) | (first_low >> 15);
 }
@@ -154,7 +169,11 @@ static int vr41xx_rtc_set_time(struct device *dev, struct rtc_time *time)
 
 	epoch_sec = mktime(epoch, 1, 1, 0, 0, 0);
 	current_sec = mktime(time->tm_year + 1900, time->tm_mon + 1, time->tm_mday,
+<<<<<<< HEAD
 	                     time->tm_hour, time->tm_min, time->tm_sec);
+=======
+			     time->tm_hour, time->tm_min, time->tm_sec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	write_elapsed_second(current_sec - epoch_sec);
 
@@ -186,7 +205,11 @@ static int vr41xx_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 	struct rtc_time *time = &wkalrm->time;
 
 	alarm_sec = mktime(time->tm_year + 1900, time->tm_mon + 1, time->tm_mday,
+<<<<<<< HEAD
 	                   time->tm_hour, time->tm_min, time->tm_sec);
+=======
+			   time->tm_hour, time->tm_min, time->tm_sec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irq(&rtc_lock);
 
@@ -294,7 +317,11 @@ static int rtc_probe(struct platform_device *pdev)
 	if (!res)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	rtc1_base = ioremap(res->start, resource_size(res));
+=======
+	rtc1_base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rtc1_base)
 		return -EBUSY;
 
@@ -304,13 +331,22 @@ static int rtc_probe(struct platform_device *pdev)
 		goto err_rtc1_iounmap;
 	}
 
+<<<<<<< HEAD
 	rtc2_base = ioremap(res->start, resource_size(res));
+=======
+	rtc2_base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rtc2_base) {
 		retval = -EBUSY;
 		goto err_rtc1_iounmap;
 	}
 
+<<<<<<< HEAD
 	rtc = rtc_device_register(rtc_name, &pdev->dev, &vr41xx_rtc_ops, THIS_MODULE);
+=======
+	rtc = devm_rtc_device_register(&pdev->dev, rtc_name, &vr41xx_rtc_ops,
+					THIS_MODULE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rtc)) {
 		retval = PTR_ERR(rtc);
 		goto err_iounmap_all;
@@ -331,6 +367,7 @@ static int rtc_probe(struct platform_device *pdev)
 	aie_irq = platform_get_irq(pdev, 0);
 	if (aie_irq <= 0) {
 		retval = -EBUSY;
+<<<<<<< HEAD
 		goto err_device_unregister;
 	}
 
@@ -347,6 +384,26 @@ static int rtc_probe(struct platform_device *pdev)
 		             "rtclong1", pdev);
 	if (retval < 0)
 		goto err_free_irq;
+=======
+		goto err_iounmap_all;
+	}
+
+	retval = devm_request_irq(&pdev->dev, aie_irq, elapsedtime_interrupt, 0,
+				"elapsed_time", pdev);
+	if (retval < 0)
+		goto err_iounmap_all;
+
+	pie_irq = platform_get_irq(pdev, 1);
+	if (pie_irq <= 0) {
+		retval = -EBUSY;
+		goto err_iounmap_all;
+	}
+
+	retval = devm_request_irq(&pdev->dev, pie_irq, rtclong1_interrupt, 0,
+				"rtclong1", pdev);
+	if (retval < 0)
+		goto err_iounmap_all;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, rtc);
 
@@ -357,6 +414,7 @@ static int rtc_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 err_free_irq:
 	free_irq(aie_irq, pdev);
 
@@ -369,11 +427,18 @@ err_iounmap_all:
 
 err_rtc1_iounmap:
 	iounmap(rtc1_base);
+=======
+err_iounmap_all:
+	rtc2_base = NULL;
+
+err_rtc1_iounmap:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rtc1_base = NULL;
 
 	return retval;
 }
 
+<<<<<<< HEAD
 static int rtc_remove(struct platform_device *pdev)
 {
 	struct rtc_device *rtc;
@@ -394,15 +459,22 @@ static int rtc_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* work with hotplug and coldplug */
 MODULE_ALIAS("platform:RTC");
 
 static struct platform_driver rtc_platform_driver = {
 	.probe		= rtc_probe,
+<<<<<<< HEAD
 	.remove		= rtc_remove,
 	.driver		= {
 		.name	= rtc_name,
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= rtc_name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

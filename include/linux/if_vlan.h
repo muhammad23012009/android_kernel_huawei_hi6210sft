@@ -30,6 +30,11 @@
 #define VLAN_ETH_DATA_LEN	1500	/* Max. octets in payload	 */
 #define VLAN_ETH_FRAME_LEN	1518	/* Max. octets in frame sans FCS */
 
+<<<<<<< HEAD
+=======
+#define VLAN_MAX_DEPTH	8		/* Max. number of nested VLAN tags parsed */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * 	struct vlan_hdr - vlan header
  * 	@h_vlan_TCI: priority and VLAN ID
@@ -73,11 +78,16 @@ static inline struct vlan_ethhdr *vlan_eth_hdr(const struct sk_buff *skb)
 /* found in socket.c */
 extern void vlan_ioctl_set(int (*hook)(struct net *, void __user *));
 
+<<<<<<< HEAD
 static inline int is_vlan_dev(struct net_device *dev)
+=======
+static inline bool is_vlan_dev(const struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
         return dev->priv_flags & IFF_802_1Q_VLAN;
 }
 
+<<<<<<< HEAD
 #define vlan_tx_tag_present(__skb)	((__skb)->vlan_tci & VLAN_TAG_PRESENT)
 #define vlan_tx_tag_get(__skb)		((__skb)->vlan_tci & ~VLAN_TAG_PRESENT)
 #define vlan_tx_tag_get_id(__skb)	((__skb)->vlan_tci & VLAN_VID_MASK)
@@ -91,6 +101,118 @@ extern u16 vlan_dev_vlan_id(const struct net_device *dev);
 
 extern bool vlan_do_receive(struct sk_buff **skb);
 extern struct sk_buff *vlan_untag(struct sk_buff *skb);
+=======
+#define skb_vlan_tag_present(__skb)	((__skb)->vlan_tci & VLAN_TAG_PRESENT)
+#define skb_vlan_tag_get(__skb)		((__skb)->vlan_tci & ~VLAN_TAG_PRESENT)
+#define skb_vlan_tag_get_id(__skb)	((__skb)->vlan_tci & VLAN_VID_MASK)
+#define skb_vlan_tag_get_prio(__skb)	((__skb)->vlan_tci & VLAN_PRIO_MASK)
+
+/**
+ *	struct vlan_pcpu_stats - VLAN percpu rx/tx stats
+ *	@rx_packets: number of received packets
+ *	@rx_bytes: number of received bytes
+ *	@rx_multicast: number of received multicast packets
+ *	@tx_packets: number of transmitted packets
+ *	@tx_bytes: number of transmitted bytes
+ *	@syncp: synchronization point for 64bit counters
+ *	@rx_errors: number of rx errors
+ *	@tx_dropped: number of tx drops
+ */
+struct vlan_pcpu_stats {
+	u64			rx_packets;
+	u64			rx_bytes;
+	u64			rx_multicast;
+	u64			tx_packets;
+	u64			tx_bytes;
+	struct u64_stats_sync	syncp;
+	u32			rx_errors;
+	u32			tx_dropped;
+};
+
+#if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
+
+extern struct net_device *__vlan_find_dev_deep_rcu(struct net_device *real_dev,
+					       __be16 vlan_proto, u16 vlan_id);
+extern struct net_device *vlan_dev_real_dev(const struct net_device *dev);
+extern u16 vlan_dev_vlan_id(const struct net_device *dev);
+extern __be16 vlan_dev_vlan_proto(const struct net_device *dev);
+
+/**
+ *	struct vlan_priority_tci_mapping - vlan egress priority mappings
+ *	@priority: skb priority
+ *	@vlan_qos: vlan priority: (skb->priority << 13) & 0xE000
+ *	@next: pointer to next struct
+ */
+struct vlan_priority_tci_mapping {
+	u32					priority;
+	u16					vlan_qos;
+	struct vlan_priority_tci_mapping	*next;
+};
+
+struct proc_dir_entry;
+struct netpoll;
+
+/**
+ *	struct vlan_dev_priv - VLAN private device data
+ *	@nr_ingress_mappings: number of ingress priority mappings
+ *	@ingress_priority_map: ingress priority mappings
+ *	@nr_egress_mappings: number of egress priority mappings
+ *	@egress_priority_map: hash of egress priority mappings
+ *	@vlan_proto: VLAN encapsulation protocol
+ *	@vlan_id: VLAN identifier
+ *	@flags: device flags
+ *	@real_dev: underlying netdevice
+ *	@real_dev_addr: address of underlying netdevice
+ *	@dent: proc dir entry
+ *	@vlan_pcpu_stats: ptr to percpu rx stats
+ */
+struct vlan_dev_priv {
+	unsigned int				nr_ingress_mappings;
+	u32					ingress_priority_map[8];
+	unsigned int				nr_egress_mappings;
+	struct vlan_priority_tci_mapping	*egress_priority_map[16];
+
+	__be16					vlan_proto;
+	u16					vlan_id;
+	u16					flags;
+
+	struct net_device			*real_dev;
+	unsigned char				real_dev_addr[ETH_ALEN];
+
+	struct proc_dir_entry			*dent;
+	struct vlan_pcpu_stats __percpu		*vlan_pcpu_stats;
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	struct netpoll				*netpoll;
+#endif
+	unsigned int				nest_level;
+};
+
+static inline struct vlan_dev_priv *vlan_dev_priv(const struct net_device *dev)
+{
+	return netdev_priv(dev);
+}
+
+static inline u16
+vlan_dev_get_egress_qos_mask(struct net_device *dev, u32 skprio)
+{
+	struct vlan_priority_tci_mapping *mp;
+
+	smp_rmb(); /* coupled with smp_wmb() in vlan_dev_set_egress_priority() */
+
+	mp = vlan_dev_priv(dev)->egress_priority_map[(skprio & 0xF)];
+	while (mp) {
+		if (mp->priority == skprio) {
+			return mp->vlan_qos; /* This should already be shifted
+					      * to mask correctly with the
+					      * VLAN's TCI */
+		}
+		mp = mp->next;
+	}
+	return 0;
+}
+
+extern bool vlan_do_receive(struct sk_buff **skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid);
 extern void vlan_vid_del(struct net_device *dev, __be16 proto, u16 vid);
@@ -101,9 +223,21 @@ extern void vlan_vids_del_by_dev(struct net_device *dev,
 				 const struct net_device *by_dev);
 
 extern bool vlan_uses_dev(const struct net_device *dev);
+<<<<<<< HEAD
 #else
 static inline struct net_device *
 __vlan_find_dev_deep(struct net_device *real_dev,
+=======
+
+static inline int vlan_get_encap_level(struct net_device *dev)
+{
+	BUG_ON(!is_vlan_dev(dev));
+	return vlan_dev_priv(dev)->nest_level;
+}
+#else
+static inline struct net_device *
+__vlan_find_dev_deep_rcu(struct net_device *real_dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     __be16 vlan_proto, u16 vlan_id)
 {
 	return NULL;
@@ -121,6 +255,7 @@ static inline u16 vlan_dev_vlan_id(const struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline bool vlan_do_receive(struct sk_buff **skb)
 {
 	return false;
@@ -129,6 +264,23 @@ static inline bool vlan_do_receive(struct sk_buff **skb)
 static inline struct sk_buff *vlan_untag(struct sk_buff *skb)
 {
 	return skb;
+=======
+static inline __be16 vlan_dev_vlan_proto(const struct net_device *dev)
+{
+	BUG();
+	return 0;
+}
+
+static inline u16 vlan_dev_get_egress_qos_mask(struct net_device *dev,
+					       u32 skprio)
+{
+	return 0;
+}
+
+static inline bool vlan_do_receive(struct sk_buff **skb)
+{
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid)
@@ -155,8 +307,35 @@ static inline bool vlan_uses_dev(const struct net_device *dev)
 {
 	return false;
 }
+<<<<<<< HEAD
 #endif
 
+=======
+static inline int vlan_get_encap_level(struct net_device *dev)
+{
+	BUG();
+	return 0;
+}
+#endif
+
+/**
+ * eth_type_vlan - check for valid vlan ether type.
+ * @ethertype: ether type to check
+ *
+ * Returns true if the ether type is a vlan ether type.
+ */
+static inline bool eth_type_vlan(__be16 ethertype)
+{
+	switch (ethertype) {
+	case htons(ETH_P_8021Q):
+	case htons(ETH_P_8021AD):
+		return true;
+	default:
+		return false;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool vlan_hw_offload_capable(netdev_features_t features,
 					   __be16 proto)
 {
@@ -168,12 +347,17 @@ static inline bool vlan_hw_offload_capable(netdev_features_t features,
 }
 
 /**
+<<<<<<< HEAD
  * vlan_insert_tag - regular VLAN tag inserting
+=======
+ * __vlan_insert_tag - regular VLAN tag inserting
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @skb: skbuff to tag
  * @vlan_proto: VLAN encapsulation protocol
  * @vlan_tci: VLAN TCI to insert
  *
  * Inserts the VLAN tag into @skb as part of the payload
+<<<<<<< HEAD
  * Returns a VLAN tagged skb. If a new skb is created, @skb is freed.
  *
  * Following the skb_unshare() example, in case of error, the calling function
@@ -190,6 +374,20 @@ static inline struct sk_buff *vlan_insert_tag(struct sk_buff *skb,
 		kfree_skb(skb);
 		return NULL;
 	}
+=======
+ * Returns error if skb_cow_head failes.
+ *
+ * Does not change skb->protocol so this function can be used during receive.
+ */
+static inline int __vlan_insert_tag(struct sk_buff *skb,
+				    __be16 vlan_proto, u16 vlan_tci)
+{
+	struct vlan_ethhdr *veth;
+
+	if (skb_cow_head(skb, VLAN_HLEN) < 0)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	veth = (struct vlan_ethhdr *)skb_push(skb, VLAN_HLEN);
 
 	/* Move the mac addresses to the beginning of the new header. */
@@ -202,12 +400,22 @@ static inline struct sk_buff *vlan_insert_tag(struct sk_buff *skb,
 	/* now, the TCI */
 	veth->h_vlan_TCI = htons(vlan_tci);
 
+<<<<<<< HEAD
 	return skb;
 }
 
 /**
  * __vlan_put_tag - regular VLAN tag inserting
  * @skb: skbuff to tag
+=======
+	return 0;
+}
+
+/**
+ * vlan_insert_tag - regular VLAN tag inserting
+ * @skb: skbuff to tag
+ * @vlan_proto: VLAN encapsulation protocol
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @vlan_tci: VLAN TCI to insert
  *
  * Inserts the VLAN tag into @skb as part of the payload
@@ -215,6 +423,7 @@ static inline struct sk_buff *vlan_insert_tag(struct sk_buff *skb,
  *
  * Following the skb_unshare() example, in case of error, the calling function
  * doesn't have to worry about freeing the original skb.
+<<<<<<< HEAD
  */
 static inline struct sk_buff *__vlan_put_tag(struct sk_buff *skb,
 					     __be16 vlan_proto, u16 vlan_tci)
@@ -222,15 +431,35 @@ static inline struct sk_buff *__vlan_put_tag(struct sk_buff *skb,
 	skb = vlan_insert_tag(skb, vlan_proto, vlan_tci);
 	if (skb)
 		skb->protocol = vlan_proto;
+=======
+ *
+ * Does not change skb->protocol so this function can be used during receive.
+ */
+static inline struct sk_buff *vlan_insert_tag(struct sk_buff *skb,
+					      __be16 vlan_proto, u16 vlan_tci)
+{
+	int err;
+
+	err = __vlan_insert_tag(skb, vlan_proto, vlan_tci);
+	if (err) {
+		dev_kfree_skb_any(skb);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return skb;
 }
 
 /**
+<<<<<<< HEAD
  * __vlan_hwaccel_put_tag - hardware accelerated VLAN inserting
+=======
+ * vlan_insert_tag_set_proto - regular VLAN tag inserting
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @skb: skbuff to tag
  * @vlan_proto: VLAN encapsulation protocol
  * @vlan_tci: VLAN TCI to insert
  *
+<<<<<<< HEAD
  * Puts the VLAN TCI in @skb->vlan_tci and lets the device do the rest
  */
 static inline struct sk_buff *__vlan_hwaccel_put_tag(struct sk_buff *skb,
@@ -260,12 +489,81 @@ static inline struct sk_buff *vlan_put_tag(struct sk_buff *skb,
 	} else {
 		return __vlan_put_tag(skb, vlan_proto, vlan_tci);
 	}
+=======
+ * Inserts the VLAN tag into @skb as part of the payload
+ * Returns a VLAN tagged skb. If a new skb is created, @skb is freed.
+ *
+ * Following the skb_unshare() example, in case of error, the calling function
+ * doesn't have to worry about freeing the original skb.
+ */
+static inline struct sk_buff *vlan_insert_tag_set_proto(struct sk_buff *skb,
+							__be16 vlan_proto,
+							u16 vlan_tci)
+{
+	skb = vlan_insert_tag(skb, vlan_proto, vlan_tci);
+	if (skb)
+		skb->protocol = vlan_proto;
+	return skb;
+}
+
+/*
+ * __vlan_hwaccel_push_inside - pushes vlan tag to the payload
+ * @skb: skbuff to tag
+ *
+ * Pushes the VLAN tag from @skb->vlan_tci inside to the payload.
+ *
+ * Following the skb_unshare() example, in case of error, the calling function
+ * doesn't have to worry about freeing the original skb.
+ */
+static inline struct sk_buff *__vlan_hwaccel_push_inside(struct sk_buff *skb)
+{
+	skb = vlan_insert_tag_set_proto(skb, skb->vlan_proto,
+					skb_vlan_tag_get(skb));
+	if (likely(skb))
+		skb->vlan_tci = 0;
+	return skb;
+}
+/*
+ * vlan_hwaccel_push_inside - pushes vlan tag to the payload
+ * @skb: skbuff to tag
+ *
+ * Checks is tag is present in @skb->vlan_tci and if it is, it pushes the
+ * VLAN tag from @skb->vlan_tci inside to the payload.
+ *
+ * Following the skb_unshare() example, in case of error, the calling function
+ * doesn't have to worry about freeing the original skb.
+ */
+static inline struct sk_buff *vlan_hwaccel_push_inside(struct sk_buff *skb)
+{
+	if (skb_vlan_tag_present(skb))
+		skb = __vlan_hwaccel_push_inside(skb);
+	return skb;
+}
+
+/**
+ * __vlan_hwaccel_put_tag - hardware accelerated VLAN inserting
+ * @skb: skbuff to tag
+ * @vlan_proto: VLAN encapsulation protocol
+ * @vlan_tci: VLAN TCI to insert
+ *
+ * Puts the VLAN TCI in @skb->vlan_tci and lets the device do the rest
+ */
+static inline void __vlan_hwaccel_put_tag(struct sk_buff *skb,
+					  __be16 vlan_proto, u16 vlan_tci)
+{
+	skb->vlan_proto = vlan_proto;
+	skb->vlan_tci = VLAN_TAG_PRESENT | vlan_tci;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * __vlan_get_tag - get the VLAN ID that is part of the payload
  * @skb: skbuff to query
+<<<<<<< HEAD
  * @vlan_tci: buffer to store vlaue
+=======
+ * @vlan_tci: buffer to store value
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Returns error if the skb is not of VLAN type
  */
@@ -273,8 +571,12 @@ static inline int __vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
 {
 	struct vlan_ethhdr *veth = (struct vlan_ethhdr *)skb->data;
 
+<<<<<<< HEAD
 	if (veth->h_vlan_proto != htons(ETH_P_8021Q) &&
 	    veth->h_vlan_proto != htons(ETH_P_8021AD))
+=======
+	if (!eth_type_vlan(veth->h_vlan_proto))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	*vlan_tci = ntohs(veth->h_vlan_TCI);
@@ -284,15 +586,24 @@ static inline int __vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
 /**
  * __vlan_hwaccel_get_tag - get the VLAN ID that is in @skb->cb[]
  * @skb: skbuff to query
+<<<<<<< HEAD
  * @vlan_tci: buffer to store vlaue
+=======
+ * @vlan_tci: buffer to store value
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Returns error if @skb->vlan_tci is not set correctly
  */
 static inline int __vlan_hwaccel_get_tag(const struct sk_buff *skb,
 					 u16 *vlan_tci)
 {
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		*vlan_tci = vlan_tx_tag_get(skb);
+=======
+	if (skb_vlan_tag_present(skb)) {
+		*vlan_tci = skb_vlan_tag_get(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	} else {
 		*vlan_tci = 0;
@@ -305,7 +616,11 @@ static inline int __vlan_hwaccel_get_tag(const struct sk_buff *skb,
 /**
  * vlan_get_tag - get the VLAN ID from the skb
  * @skb: skbuff to query
+<<<<<<< HEAD
  * @vlan_tci: buffer to store vlaue
+=======
+ * @vlan_tci: buffer to store value
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Returns error if the skb is not VLAN tagged
  */
@@ -321,10 +636,16 @@ static inline int vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
 /**
  * vlan_get_protocol - get protocol EtherType.
  * @skb: skbuff to query
+<<<<<<< HEAD
+=======
+ * @type: first vlan protocol
+ * @depth: buffer to store length of eth and vlan tags in bytes
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Returns the EtherType of the packet, regardless of whether it is
  * vlan encapsulated (normal or hardware accelerated) or not.
  */
+<<<<<<< HEAD
 static inline __be16 vlan_get_protocol(const struct sk_buff *skb)
 {
 	__be16 protocol = 0;
@@ -342,6 +663,67 @@ static inline __be16 vlan_get_protocol(const struct sk_buff *skb)
 	}
 
 	return protocol;
+=======
+static inline __be16 __vlan_get_protocol(const struct sk_buff *skb, __be16 type,
+					 int *depth)
+{
+	unsigned int vlan_depth = skb->mac_len, parse_depth = VLAN_MAX_DEPTH;
+
+	/* if type is 802.1Q/AD then the header should already be
+	 * present at mac_len - VLAN_HLEN (if mac_len > 0), or at
+	 * ETH_HLEN otherwise
+	 */
+	if (eth_type_vlan(type)) {
+		if (vlan_depth) {
+			if (WARN_ON(vlan_depth < VLAN_HLEN))
+				return 0;
+			vlan_depth -= VLAN_HLEN;
+		} else {
+			vlan_depth = ETH_HLEN;
+		}
+		do {
+			struct vlan_hdr vhdr, *vh;
+
+			vh = skb_header_pointer(skb, vlan_depth, sizeof(vhdr), &vhdr);
+			if (unlikely(!vh || !--parse_depth))
+				return 0;
+
+			type = vh->h_vlan_encapsulated_proto;
+			vlan_depth += VLAN_HLEN;
+		} while (eth_type_vlan(type));
+	}
+
+	if (depth)
+		*depth = vlan_depth;
+
+	return type;
+}
+
+/**
+ * vlan_get_protocol - get protocol EtherType.
+ * @skb: skbuff to query
+ *
+ * Returns the EtherType of the packet, regardless of whether it is
+ * vlan encapsulated (normal or hardware accelerated) or not.
+ */
+static inline __be16 vlan_get_protocol(const struct sk_buff *skb)
+{
+	return __vlan_get_protocol(skb, skb->protocol, NULL);
+}
+
+/* A getter for the SKB protocol field which will handle VLAN tags consistently
+ * whether VLAN acceleration is enabled or not.
+ */
+static inline __be16 skb_protocol(const struct sk_buff *skb, bool skip_vlan)
+{
+	if (!skip_vlan)
+		/* VLAN acceleration strips the VLAN header from the skb and
+		 * moves it to skb->vlan_proto
+		 */
+		return skb_vlan_tag_present(skb) ? skb->vlan_proto : skb->protocol;
+
+	return vlan_get_protocol(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void vlan_set_encap_proto(struct sk_buff *skb,
@@ -356,7 +738,11 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
 	 */
 
 	proto = vhdr->h_vlan_encapsulated_proto;
+<<<<<<< HEAD
 	if (ntohs(proto) >= ETH_P_802_3_MIN) {
+=======
+	if (eth_proto_is_802_3(proto)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb->protocol = proto;
 		return;
 	}
@@ -377,4 +763,98 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
 		 */
 		skb->protocol = htons(ETH_P_802_2);
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * skb_vlan_tagged - check if skb is vlan tagged.
+ * @skb: skbuff to query
+ *
+ * Returns true if the skb is tagged, regardless of whether it is hardware
+ * accelerated or not.
+ */
+static inline bool skb_vlan_tagged(const struct sk_buff *skb)
+{
+	if (!skb_vlan_tag_present(skb) &&
+	    likely(!eth_type_vlan(skb->protocol)))
+		return false;
+
+	return true;
+}
+
+/**
+ * skb_vlan_tagged_multi - check if skb is vlan tagged with multiple headers.
+ * @skb: skbuff to query
+ *
+ * Returns true if the skb is tagged with multiple vlan headers, regardless
+ * of whether it is hardware accelerated or not.
+ */
+static inline bool skb_vlan_tagged_multi(struct sk_buff *skb)
+{
+	__be16 protocol = skb->protocol;
+
+	if (!skb_vlan_tag_present(skb)) {
+		struct vlan_ethhdr *veh;
+
+		if (likely(!eth_type_vlan(protocol)))
+			return false;
+
+		if (unlikely(!pskb_may_pull(skb, VLAN_ETH_HLEN)))
+			return false;
+
+		veh = (struct vlan_ethhdr *)skb->data;
+		protocol = veh->h_vlan_encapsulated_proto;
+	}
+
+	if (!eth_type_vlan(protocol))
+		return false;
+
+	return true;
+}
+
+/**
+ * vlan_features_check - drop unsafe features for skb with multiple tags.
+ * @skb: skbuff to query
+ * @features: features to be checked
+ *
+ * Returns features without unsafe ones if the skb has multiple tags.
+ */
+static inline netdev_features_t vlan_features_check(struct sk_buff *skb,
+						    netdev_features_t features)
+{
+	if (skb_vlan_tagged_multi(skb)) {
+		/* In the case of multi-tagged packets, use a direct mask
+		 * instead of using netdev_interesect_features(), to make
+		 * sure that only devices supporting NETIF_F_HW_CSUM will
+		 * have checksum offloading support.
+		 */
+		features &= NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_HW_CSUM |
+			    NETIF_F_FRAGLIST | NETIF_F_HW_VLAN_CTAG_TX |
+			    NETIF_F_HW_VLAN_STAG_TX;
+	}
+
+	return features;
+}
+
+/**
+ * compare_vlan_header - Compare two vlan headers
+ * @h1: Pointer to vlan header
+ * @h2: Pointer to vlan header
+ *
+ * Compare two vlan headers, returns 0 if equal.
+ *
+ * Please note that alignment of h1 & h2 are only guaranteed to be 16 bits.
+ */
+static inline unsigned long compare_vlan_header(const struct vlan_hdr *h1,
+						const struct vlan_hdr *h2)
+{
+#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
+	return *(u32 *)h1 ^ *(u32 *)h2;
+#else
+	return ((__force u32)h1->h_vlan_TCI ^ (__force u32)h2->h_vlan_TCI) |
+	       ((__force u32)h1->h_vlan_encapsulated_proto ^
+		(__force u32)h2->h_vlan_encapsulated_proto);
+#endif
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !(_LINUX_IF_VLAN_H_) */

@@ -24,6 +24,7 @@ int lg3ff_init(struct hid_device *hdev);
 static inline int lg3ff_init(struct hid_device *hdev) { return -1; }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_LOGIWHEELS_FF
 int lg4ff_adjust_input_event(struct hid_device *hid, struct hid_field *field,
 			     struct hid_usage *usage, __s32 value, struct lg_drv_data *drv_data);
@@ -36,4 +37,6 @@ static inline int lg4ff_init(struct hid_device *hdev) { return -1; }
 static inline int lg4ff_deinit(struct hid_device *hdev) { return -1; }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

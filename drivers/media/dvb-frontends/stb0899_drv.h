@@ -45,9 +45,14 @@ struct stb0899_s2_reg {
 };
 
 enum stb0899_inversion {
+<<<<<<< HEAD
 	IQ_SWAP_OFF	= 0,
 	IQ_SWAP_ON,
 	IQ_SWAP_AUTO
+=======
+	IQ_SWAP_OFF	= +1, /* inversion affects the sign of e. g. */
+	IQ_SWAP_ON	= -1, /* the derotator frequency register    */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define STB0899_GPIO00				0xf140
@@ -142,7 +147,11 @@ struct stb0899_config {
 	int (*tuner_set_rfsiggain)(struct dvb_frontend *fe, u32 rf_gain);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_STB0899)
+=======
+#if IS_REACHABLE(CONFIG_DVB_STB0899)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct dvb_frontend *stb0899_attach(struct stb0899_config *config,
 					   struct i2c_adapter *i2c);

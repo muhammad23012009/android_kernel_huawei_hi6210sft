@@ -19,7 +19,11 @@ static int __init topology_init(void)
 	for_each_present_cpu(i) {
 		struct cpu *c = &per_cpu(cpu_devices, i);
 
+<<<<<<< HEAD
 		c->hotpluggable = 1;
+=======
+		c->hotpluggable = !!i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = register_cpu(c, i);
 		if (ret)
 			printk(KERN_WARNING "topology_init: register_cpu %d "

@@ -21,10 +21,15 @@
 #include <linux/bitops.h>
 #include <linux/elf.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
+=======
+#include <linux/kasan.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/moduleloader.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <asm/insn.h>
 
 #define	AARCH64_INSN_IMM_MOVNZ		AARCH64_INSN_IMM_MAX
@@ -35,6 +40,46 @@ void *module_alloc(unsigned long size)
 	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
 				    GFP_KERNEL, PAGE_KERNEL_EXEC, -1,
 				    __builtin_return_address(0));
+=======
+#include <asm/alternative.h>
+#include <asm/insn.h>
+#include <asm/sections.h>
+
+void *module_alloc(unsigned long size)
+{
+	void *p;
+	u64 module_alloc_end = module_alloc_base + MODULES_VSIZE;
+
+	if (IS_ENABLED(CONFIG_KASAN))
+		/* don't exceed the static module region - see below */
+		module_alloc_end = MODULES_END;
+
+	p = __vmalloc_node_range(size, MODULE_ALIGN, module_alloc_base,
+				module_alloc_end, GFP_KERNEL, PAGE_KERNEL_EXEC, 0,
+				NUMA_NO_NODE, __builtin_return_address(0));
+
+	if (!p && IS_ENABLED(CONFIG_ARM64_MODULE_PLTS) &&
+	    !IS_ENABLED(CONFIG_KASAN))
+		/*
+		 * KASAN can only deal with module allocations being served
+		 * from the reserved module region, since the remainder of
+		 * the vmalloc region is already backed by zero shadow pages,
+		 * and punching holes into it is non-trivial. Since the module
+		 * region is not randomized when KASAN is enabled, it is even
+		 * less likely that the module region gets exhausted, so we
+		 * can simply omit this fallback in that case.
+		 */
+		p = __vmalloc_node_range(size, MODULE_ALIGN, VMALLOC_START,
+				VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_EXEC, 0,
+				NUMA_NO_NODE, __builtin_return_address(0));
+
+	if (p && (kasan_module_alloc(p, size) < 0)) {
+		vfree(p);
+		return NULL;
+	}
+
+	return p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 enum aarch64_reloc_op {
@@ -63,15 +108,28 @@ static u64 do_reloc(enum aarch64_reloc_op reloc_op, void *place, u64 val)
 
 static int reloc_data(enum aarch64_reloc_op op, void *place, u64 val, int len)
 {
+<<<<<<< HEAD
 	u64 imm_mask = (1 << len) - 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s64 sval = do_reloc(op, place, val);
 
 	switch (len) {
 	case 16:
 		*(s16 *)place = sval;
+<<<<<<< HEAD
 		break;
 	case 32:
 		*(s32 *)place = sval;
+=======
+		if (sval < S16_MIN || sval > U16_MAX)
+			return -ERANGE;
+		break;
+	case 32:
+		*(s32 *)place = sval;
+		if (sval < S32_MIN || sval > U32_MAX)
+			return -ERANGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case 64:
 		*(s64 *)place = sval;
@@ -80,6 +138,7 @@ static int reloc_data(enum aarch64_reloc_op op, void *place, u64 val, int len)
 		pr_err("Invalid length (%d) for data relocation\n", len);
 		return 0;
 	}
+<<<<<<< HEAD
 
 	/*
 	 * Extract the upper value bits (including the sign bit) and
@@ -102,12 +161,30 @@ static int reloc_insn_movw(enum aarch64_reloc_op op, void *place, u64 val,
 			   int lsb, enum aarch64_insn_imm_type imm_type)
 {
 	u64 imm, limit = 0;
+=======
+	return 0;
+}
+
+enum aarch64_insn_movw_imm_type {
+	AARCH64_INSN_IMM_MOVNZ,
+	AARCH64_INSN_IMM_MOVKZ,
+};
+
+static int reloc_insn_movw(enum aarch64_reloc_op op, void *place, u64 val,
+			   int lsb, enum aarch64_insn_movw_imm_type imm_type)
+{
+	u64 imm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s64 sval;
 	u32 insn = le32_to_cpu(*(u32 *)place);
 
 	sval = do_reloc(op, place, val);
+<<<<<<< HEAD
 	sval >>= lsb;
 	imm = sval & 0xffff;
+=======
+	imm = sval >> lsb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (imm_type == AARCH64_INSN_IMM_MOVNZ) {
 		/*
@@ -116,7 +193,11 @@ static int reloc_insn_movw(enum aarch64_reloc_op op, void *place, u64 val,
 		 * immediate is less than zero.
 		 */
 		insn &= ~(3 << 29);
+<<<<<<< HEAD
 		if ((s64)imm >= 0) {
+=======
+		if (sval >= 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* >=0: Set the instruction to MOVZ (opcode 10b). */
 			insn |= 2 << 29;
 		} else {
@@ -128,6 +209,7 @@ static int reloc_insn_movw(enum aarch64_reloc_op op, void *place, u64 val,
 			 */
 			imm = ~imm;
 		}
+<<<<<<< HEAD
 		imm_type = AARCH64_INSN_IMM_MOVK;
 	}
 
@@ -151,6 +233,15 @@ static int reloc_insn_movw(enum aarch64_reloc_op op, void *place, u64 val,
 
 	/* Check the upper bits depending on the sign of the immediate. */
 	if ((u64)sval > limit)
+=======
+	}
+
+	/* Update the instruction with the new encoding. */
+	insn = aarch64_insn_encode_immediate(AARCH64_INSN_IMM_16, insn, imm);
+	*(u32 *)place = cpu_to_le32(insn);
+
+	if (imm > U16_MAX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ERANGE;
 
 	return 0;
@@ -255,25 +346,41 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 			overflow_check = false;
 		case R_AARCH64_MOVW_UABS_G0:
 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 0,
+<<<<<<< HEAD
 					      AARCH64_INSN_IMM_16);
+=======
+					      AARCH64_INSN_IMM_MOVKZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case R_AARCH64_MOVW_UABS_G1_NC:
 			overflow_check = false;
 		case R_AARCH64_MOVW_UABS_G1:
 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 16,
+<<<<<<< HEAD
 					      AARCH64_INSN_IMM_16);
+=======
+					      AARCH64_INSN_IMM_MOVKZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case R_AARCH64_MOVW_UABS_G2_NC:
 			overflow_check = false;
 		case R_AARCH64_MOVW_UABS_G2:
 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 32,
+<<<<<<< HEAD
 					      AARCH64_INSN_IMM_16);
+=======
+					      AARCH64_INSN_IMM_MOVKZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case R_AARCH64_MOVW_UABS_G3:
 			/* We're using the top bits so we can't overflow. */
 			overflow_check = false;
 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 48,
+<<<<<<< HEAD
 					      AARCH64_INSN_IMM_16);
+=======
+					      AARCH64_INSN_IMM_MOVKZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case R_AARCH64_MOVW_SABS_G0:
 			ovf = reloc_insn_movw(RELOC_OP_ABS, loc, val, 0,
@@ -290,7 +397,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		case R_AARCH64_MOVW_PREL_G0_NC:
 			overflow_check = false;
 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 0,
+<<<<<<< HEAD
 					      AARCH64_INSN_IMM_MOVK);
+=======
+					      AARCH64_INSN_IMM_MOVKZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case R_AARCH64_MOVW_PREL_G0:
 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 0,
@@ -299,7 +410,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		case R_AARCH64_MOVW_PREL_G1_NC:
 			overflow_check = false;
 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 16,
+<<<<<<< HEAD
 					      AARCH64_INSN_IMM_MOVK);
+=======
+					      AARCH64_INSN_IMM_MOVKZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case R_AARCH64_MOVW_PREL_G1:
 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 16,
@@ -308,7 +423,11 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		case R_AARCH64_MOVW_PREL_G2_NC:
 			overflow_check = false;
 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 32,
+<<<<<<< HEAD
 					      AARCH64_INSN_IMM_MOVK);
+=======
+					      AARCH64_INSN_IMM_MOVKZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case R_AARCH64_MOVW_PREL_G2:
 			ovf = reloc_insn_movw(RELOC_OP_PREL, loc, val, 32,
@@ -330,12 +449,20 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 			ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 0, 21,
 					     AARCH64_INSN_IMM_ADR);
 			break;
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_ARM64_ERRATUM_843419
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case R_AARCH64_ADR_PREL_PG_HI21_NC:
 			overflow_check = false;
 		case R_AARCH64_ADR_PREL_PG_HI21:
 			ovf = reloc_insn_imm(RELOC_OP_PAGE, loc, val, 12, 21,
 					     AARCH64_INSN_IMM_ADR);
 			break;
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case R_AARCH64_ADD_ABS_LO12_NC:
 		case R_AARCH64_LDST8_ABS_LO12_NC:
 			overflow_check = false;
@@ -374,6 +501,16 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		case R_AARCH64_CALL26:
 			ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 2, 26,
 					     AARCH64_INSN_IMM_26);
+<<<<<<< HEAD
+=======
+
+			if (IS_ENABLED(CONFIG_ARM64_MODULE_PLTS) &&
+			    ovf == -ERANGE) {
+				val = module_emit_plt_entry(me, &rel[i], sym);
+				ovf = reloc_insn_imm(RELOC_OP_PREL, loc, val, 2,
+						     26, AARCH64_INSN_IMM_26);
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		default:
@@ -394,3 +531,23 @@ overflow:
 	       me->name, (int)ELF64_R_TYPE(rel[i].r_info), val);
 	return -ENOEXEC;
 }
+<<<<<<< HEAD
+=======
+
+int module_finalize(const Elf_Ehdr *hdr,
+		    const Elf_Shdr *sechdrs,
+		    struct module *me)
+{
+	const Elf_Shdr *s, *se;
+	const char *secstrs = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
+
+	for (s = sechdrs, se = sechdrs + hdr->e_shnum; s < se; s++) {
+		if (strcmp(".altinstructions", secstrs + s->sh_name) == 0) {
+			apply_alternatives((void *)s->sh_addr, s->sh_size);
+			return 0;
+		}
+	}
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

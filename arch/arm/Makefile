@@ -13,22 +13,38 @@
 # Ensure linker flags are correct
 LDFLAGS		:=
 
+<<<<<<< HEAD
 LDFLAGS_vmlinux	:=-p --no-undefined -X
+=======
+LDFLAGS_vmlinux	:=-p --no-undefined -X --pic-veneer
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ifeq ($(CONFIG_CPU_ENDIAN_BE8),y)
 LDFLAGS_vmlinux	+= --be8
 LDFLAGS_MODULE	+= --be8
 endif
 
+<<<<<<< HEAD
 OBJCOPYFLAGS	:=-O binary -R .comment -S
+=======
+ifeq ($(CONFIG_ARM_MODULE_PLTS),y)
+LDFLAGS_MODULE	+= -T $(srctree)/arch/arm/kernel/module.lds
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 GZFLAGS		:=-9
 #KBUILD_CFLAGS	+=-pipe
 
 # Never generate .eh_frame
 KBUILD_CFLAGS	+= $(call cc-option,-fno-dwarf2-cfi-asm)
 
+<<<<<<< HEAD
 # Do not use arch/arm/defconfig - it's always outdated.
 # Select a platform tht is kept up-to-date
 KBUILD_DEFCONFIG := versatile_defconfig
+=======
+# This should work on most of the modern platforms
+KBUILD_DEFCONFIG := multi_v7_defconfig
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # defines filename extension depending memory management type.
 ifeq ($(CONFIG_MMU),)
@@ -40,10 +56,13 @@ ifeq ($(CONFIG_FRAME_POINTER),y)
 KBUILD_CFLAGS	+=-fno-omit-frame-pointer -mapcs -mno-sched-prolog
 endif
 
+<<<<<<< HEAD
 ifeq ($(CONFIG_CC_STACKPROTECTOR),y)
 KBUILD_CFLAGS	+=-fstack-protector
 endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ifeq ($(CONFIG_CPU_BIG_ENDIAN),y)
 KBUILD_CPPFLAGS	+= -mbig-endian
 AS		+= -EB
@@ -54,8 +73,11 @@ AS		+= -EL
 LD		+= -EL
 endif
 
+<<<<<<< HEAD
 comma = ,
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # The Scalar Replacement of Aggregates (SRA) optimization pass in GCC 4.9 and
 # later may result in code being generated that handles signed short and signed
@@ -68,6 +90,7 @@ KBUILD_CFLAGS	+= $(call cc-option,-fno-ipa-sra)
 # Note that GCC does not numerically define an architecture version
 # macro, but instead defines a whole series of macros which makes
 # testing for a specific architecture or later rather impossible.
+<<<<<<< HEAD
 arch-$(CONFIG_CPU_32v7)		:=-D__LINUX_ARM_ARCH__=7 $(call cc-option,-march=armv7-a,-march=armv5t -Wa$(comma)-march=armv7-a)
 arch-$(CONFIG_CPU_32v6)		:=-D__LINUX_ARM_ARCH__=6 $(call cc-option,-march=armv6,-march=armv5t -Wa$(comma)-march=armv6)
 # Only override the compiler option if ARMv6. The ARMv6K extensions are
@@ -102,6 +125,49 @@ tune-$(CONFIG_CPU_V6K)		:=$(call cc-option,-mtune=arm1136j-s,-mtune=strongarm)
 
 ifeq ($(CONFIG_AEABI),y)
 CFLAGS_ABI	:=-mabi=aapcs-linux -mno-thumb-interwork
+=======
+arch-$(CONFIG_CPU_32v7M)	=-D__LINUX_ARM_ARCH__=7 -march=armv7-m -Wa,-march=armv7-m
+arch-$(CONFIG_CPU_32v7)		=-D__LINUX_ARM_ARCH__=7 $(call cc-option,-march=armv7-a,-march=armv5t -Wa$(comma)-march=armv7-a)
+arch-$(CONFIG_CPU_32v6)		=-D__LINUX_ARM_ARCH__=6 $(call cc-option,-march=armv6,-march=armv5t -Wa$(comma)-march=armv6)
+# Only override the compiler option if ARMv6. The ARMv6K extensions are
+# always available in ARMv7
+ifeq ($(CONFIG_CPU_32v6),y)
+arch-$(CONFIG_CPU_32v6K)	=-D__LINUX_ARM_ARCH__=6 $(call cc-option,-march=armv6k,-march=armv5t -Wa$(comma)-march=armv6k)
+endif
+arch-$(CONFIG_CPU_32v5)		=-D__LINUX_ARM_ARCH__=5 $(call cc-option,-march=armv5te,-march=armv4t)
+arch-$(CONFIG_CPU_32v4T)	=-D__LINUX_ARM_ARCH__=4 -march=armv4t
+arch-$(CONFIG_CPU_32v4)		=-D__LINUX_ARM_ARCH__=4 -march=armv4
+arch-$(CONFIG_CPU_32v3)		=-D__LINUX_ARM_ARCH__=3 -march=armv3
+
+# Evaluate arch cc-option calls now
+arch-y := $(arch-y)
+
+# This selects how we optimise for the processor.
+tune-$(CONFIG_CPU_ARM7TDMI)	=-mtune=arm7tdmi
+tune-$(CONFIG_CPU_ARM720T)	=-mtune=arm7tdmi
+tune-$(CONFIG_CPU_ARM740T)	=-mtune=arm7tdmi
+tune-$(CONFIG_CPU_ARM9TDMI)	=-mtune=arm9tdmi
+tune-$(CONFIG_CPU_ARM940T)	=-mtune=arm9tdmi
+tune-$(CONFIG_CPU_ARM946E)	=$(call cc-option,-mtune=arm9e,-mtune=arm9tdmi)
+tune-$(CONFIG_CPU_ARM920T)	=-mtune=arm9tdmi
+tune-$(CONFIG_CPU_ARM922T)	=-mtune=arm9tdmi
+tune-$(CONFIG_CPU_ARM925T)	=-mtune=arm9tdmi
+tune-$(CONFIG_CPU_ARM926T)	=-mtune=arm9tdmi
+tune-$(CONFIG_CPU_FA526)	=-mtune=arm9tdmi
+tune-$(CONFIG_CPU_SA110)	=-mtune=strongarm110
+tune-$(CONFIG_CPU_SA1100)	=-mtune=strongarm1100
+tune-$(CONFIG_CPU_XSCALE)	=$(call cc-option,-mtune=xscale,-mtune=strongarm110) -Wa,-mcpu=xscale
+tune-$(CONFIG_CPU_XSC3)		=$(call cc-option,-mtune=xscale,-mtune=strongarm110) -Wa,-mcpu=xscale
+tune-$(CONFIG_CPU_FEROCEON)	=$(call cc-option,-mtune=marvell-f,-mtune=xscale)
+tune-$(CONFIG_CPU_V6)		=$(call cc-option,-mtune=arm1136j-s,-mtune=strongarm)
+tune-$(CONFIG_CPU_V6K)		=$(call cc-option,-mtune=arm1136j-s,-mtune=strongarm)
+
+# Evaluate tune cc-option calls now
+tune-y := $(tune-y)
+
+ifeq ($(CONFIG_AEABI),y)
+CFLAGS_ABI	:=-mabi=aapcs-linux -mfpu=vfp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 else
 CFLAGS_ABI	:=$(call cc-option,-mapcs-32,-mabi=apcs-gnu) $(call cc-option,-mno-thumb-interwork,)
 endif
@@ -110,9 +176,17 @@ ifeq ($(CONFIG_ARM_UNWIND),y)
 CFLAGS_ABI	+=-funwind-tables
 endif
 
+<<<<<<< HEAD
 ifeq ($(CONFIG_THUMB2_KERNEL),y)
 AFLAGS_AUTOIT	:=$(call as-option,-Wa$(comma)-mimplicit-it=always,-Wa$(comma)-mauto-it)
 AFLAGS_NOWARN	:=$(call as-option,-Wa$(comma)-mno-warn-deprecated,-Wa$(comma)-W)
+=======
+# Accept old syntax despite ".syntax unified"
+AFLAGS_NOWARN	:=$(call as-option,-Wa$(comma)-mno-warn-deprecated,-Wa$(comma)-W)
+
+ifeq ($(CONFIG_THUMB2_KERNEL),y)
+AFLAGS_AUTOIT	:=$(call as-option,-Wa$(comma)-mimplicit-it=always,-Wa$(comma)-mauto-it)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 CFLAGS_ISA	:=-mthumb $(AFLAGS_AUTOIT) $(AFLAGS_NOWARN)
 AFLAGS_ISA	:=$(CFLAGS_ISA) -Wa$(comma)-mthumb
 # Work around buggy relocation from gas if requested:
@@ -120,7 +194,11 @@ ifeq ($(CONFIG_THUMB2_AVOID_R_ARM_THM_JUMP11),y)
 CFLAGS_MODULE	+=-fno-optimize-sibling-calls
 endif
 else
+<<<<<<< HEAD
 CFLAGS_ISA	:=$(call cc-option,-marm,)
+=======
+CFLAGS_ISA	:=$(call cc-option,-marm,) $(AFLAGS_NOWARN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 AFLAGS_ISA	:=$(CFLAGS_ISA)
 endif
 
@@ -132,18 +210,26 @@ CHECKFLAGS	+= -D__arm__
 
 #Default value
 head-y		:= arch/arm/kernel/head$(MMUEXT).o
+<<<<<<< HEAD
 textofs-y	:= 0x00008000
 textofs-$(CONFIG_ARCH_HI6XXX) := 0x00408000
 textofs-$(CONFIG_ARCH_HI3630FPGA) := 0x00208000
 textofs-$(CONFIG_ARCH_HI3630EMULATOR) := 0x00208000
 textofs-$(CONFIG_ARCH_HI3630) := 0x00608000
 textofs-$(CONFIG_ARCH_CLPS711X) := 0x00028000
+=======
+
+# Text offset. This list is sorted numerically by address in order to
+# provide a means to avoid/resolve conflicts in multi-arch kernels.
+textofs-y	:= 0x00008000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # We don't want the htc bootloader to corrupt kernel during resume
 textofs-$(CONFIG_PM_H1940)      := 0x00108000
 # SA1111 DMA bug: we don't want the kernel to live in precious DMA-able memory
 ifeq ($(CONFIG_ARCH_SA1100),y)
 textofs-$(CONFIG_SA1111) := 0x00208000
 endif
+<<<<<<< HEAD
 textofs-$(CONFIG_ARCH_MSM7X30) := 0x00208000
 textofs-$(CONFIG_ARCH_MSM8X60) := 0x00208000
 textofs-$(CONFIG_ARCH_MSM8960) := 0x00208000
@@ -162,12 +248,39 @@ machine-$(CONFIG_ARCH_EP93XX)		+= ep93xx
 machine-$(CONFIG_ARCH_GEMINI)		+= gemini
 machine-$(CONFIG_ARCH_HIGHBANK)		+= highbank
 machine-$(CONFIG_ARCH_HS)		+= hs
+=======
+textofs-$(CONFIG_ARCH_MSM8X60) := 0x00208000
+textofs-$(CONFIG_ARCH_MSM8960) := 0x00208000
+textofs-$(CONFIG_ARCH_AXXIA) := 0x00308000
+
+# Machine directory name.  This list is sorted alphanumerically
+# by CONFIG_* macro name.
+machine-$(CONFIG_ARCH_ALPINE)		+= alpine
+machine-$(CONFIG_ARCH_ARTPEC)		+= artpec
+machine-$(CONFIG_ARCH_AT91)		+= at91
+machine-$(CONFIG_ARCH_AXXIA)		+= axxia
+machine-$(CONFIG_ARCH_BCM)		+= bcm
+machine-$(CONFIG_ARCH_BERLIN)		+= berlin
+machine-$(CONFIG_ARCH_CLPS711X)		+= clps711x
+machine-$(CONFIG_ARCH_CNS3XXX)		+= cns3xxx
+machine-$(CONFIG_ARCH_DAVINCI)		+= davinci
+machine-$(CONFIG_ARCH_DIGICOLOR)	+= digicolor
+machine-$(CONFIG_ARCH_DOVE)		+= dove
+machine-$(CONFIG_ARCH_EBSA110)		+= ebsa110
+machine-$(CONFIG_ARCH_EFM32)		+= efm32
+machine-$(CONFIG_ARCH_EP93XX)		+= ep93xx
+machine-$(CONFIG_ARCH_EXYNOS)		+= exynos
+machine-$(CONFIG_ARCH_FOOTBRIDGE)	+= footbridge
+machine-$(CONFIG_ARCH_GEMINI)		+= gemini
+machine-$(CONFIG_ARCH_HIGHBANK)		+= highbank
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 machine-$(CONFIG_ARCH_HISI)		+= hisi
 machine-$(CONFIG_ARCH_INTEGRATOR)	+= integrator
 machine-$(CONFIG_ARCH_IOP13XX)		+= iop13xx
 machine-$(CONFIG_ARCH_IOP32X)		+= iop32x
 machine-$(CONFIG_ARCH_IOP33X)		+= iop33x
 machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
+<<<<<<< HEAD
 machine-$(CONFIG_ARCH_KIRKWOOD)		+= kirkwood
 machine-$(CONFIG_ARCH_KS8695)		+= ks8695
 machine-$(CONFIG_ARCH_LPC32XX)		+= lpc32xx
@@ -179,10 +292,29 @@ machine-$(CONFIG_ARCH_MXS)		+= mxs
 machine-$(CONFIG_ARCH_MVEBU)		+= mvebu
 machine-$(CONFIG_ARCH_NETX)		+= netx
 machine-$(CONFIG_ARCH_NOMADIK)		+= nomadik
+=======
+machine-$(CONFIG_ARCH_KEYSTONE)		+= keystone
+machine-$(CONFIG_ARCH_KS8695)		+= ks8695
+machine-$(CONFIG_ARCH_LPC18XX)		+= lpc18xx
+machine-$(CONFIG_ARCH_LPC32XX)		+= lpc32xx
+machine-$(CONFIG_ARCH_MESON)		+= meson
+machine-$(CONFIG_ARCH_MMP)		+= mmp
+machine-$(CONFIG_ARCH_MPS2)		+= vexpress
+machine-$(CONFIG_ARCH_MOXART)		+= moxart
+machine-$(CONFIG_ARCH_MV78XX0)		+= mv78xx0
+machine-$(CONFIG_ARCH_MVEBU)		+= mvebu
+machine-$(CONFIG_ARCH_MXC)		+= imx
+machine-$(CONFIG_ARCH_MEDIATEK)		+= mediatek
+machine-$(CONFIG_ARCH_MXS)		+= mxs
+machine-$(CONFIG_ARCH_NETX)		+= netx
+machine-$(CONFIG_ARCH_NOMADIK)		+= nomadik
+machine-$(CONFIG_ARCH_NSPIRE)		+= nspire
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 machine-$(CONFIG_ARCH_OMAP1)		+= omap1
 machine-$(CONFIG_ARCH_OMAP2PLUS)	+= omap2
 machine-$(CONFIG_ARCH_ORION5X)		+= orion5x
 machine-$(CONFIG_ARCH_PICOXCELL)	+= picoxcell
+<<<<<<< HEAD
 machine-$(CONFIG_ARCH_PRIMA2)		+= prima2
 machine-$(CONFIG_ARCH_PXA)		+= pxa
 machine-$(CONFIG_ARCH_REALVIEW)		+= realview
@@ -199,10 +331,33 @@ machine-$(CONFIG_ARCH_SHMOBILE) 	+= shmobile
 machine-$(CONFIG_ARCH_TEGRA)		+= tegra
 machine-$(CONFIG_ARCH_U300)		+= u300
 machine-$(CONFIG_ARCH_U8500)		+= ux500
+=======
+machine-$(CONFIG_ARCH_PXA)		+= pxa
+machine-$(CONFIG_ARCH_QCOM)		+= qcom
+machine-$(CONFIG_ARCH_REALVIEW)		+= realview
+machine-$(CONFIG_ARCH_ROCKCHIP)		+= rockchip
+machine-$(CONFIG_ARCH_RPC)		+= rpc
+machine-$(CONFIG_ARCH_S3C24XX)		+= s3c24xx
+machine-$(CONFIG_ARCH_S3C64XX)		+= s3c64xx
+machine-$(CONFIG_ARCH_S5PV210)		+= s5pv210
+machine-$(CONFIG_ARCH_SA1100)		+= sa1100
+machine-$(CONFIG_ARCH_SHMOBILE) 	+= shmobile
+machine-$(CONFIG_ARCH_SIRF)		+= prima2
+machine-$(CONFIG_ARCH_SOCFPGA)		+= socfpga
+machine-$(CONFIG_ARCH_STI)		+= sti
+machine-$(CONFIG_ARCH_STM32)		+= stm32
+machine-$(CONFIG_ARCH_SUNXI)		+= sunxi
+machine-$(CONFIG_ARCH_TANGO)		+= tango
+machine-$(CONFIG_ARCH_TEGRA)		+= tegra
+machine-$(CONFIG_ARCH_U300)		+= u300
+machine-$(CONFIG_ARCH_U8500)		+= ux500
+machine-$(CONFIG_ARCH_UNIPHIER)		+= uniphier
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 machine-$(CONFIG_ARCH_VERSATILE)	+= versatile
 machine-$(CONFIG_ARCH_VEXPRESS)		+= vexpress
 machine-$(CONFIG_ARCH_VT8500)		+= vt8500
 machine-$(CONFIG_ARCH_W90X900)		+= w90x900
+<<<<<<< HEAD
 machine-$(CONFIG_FOOTBRIDGE)		+= footbridge
 machine-$(CONFIG_ARCH_SOCFPGA)		+= socfpga
 machine-$(CONFIG_PLAT_SPEAR)		+= spear
@@ -214,11 +369,26 @@ machine-$(CONFIG_ARCH_SUNXI)		+= sunxi
 # by CONFIG_* macro name.
 plat-$(CONFIG_ARCH_OMAP)	+= omap
 plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
+=======
+machine-$(CONFIG_ARCH_ZX)		+= zx
+machine-$(CONFIG_ARCH_ZYNQ)		+= zynq
+machine-$(CONFIG_PLAT_SPEAR)		+= spear
+
+# Platform directory name.  This list is sorted alphanumerically
+# by CONFIG_* macro name.
+plat-$(CONFIG_ARCH_EXYNOS)	+= samsung
+plat-$(CONFIG_ARCH_OMAP)	+= omap
+plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
+plat-$(CONFIG_ARCH_S5PV210)	+= samsung
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 plat-$(CONFIG_PLAT_IOP)		+= iop
 plat-$(CONFIG_PLAT_ORION)	+= orion
 plat-$(CONFIG_PLAT_PXA)		+= pxa
 plat-$(CONFIG_PLAT_S3C24XX)	+= samsung
+<<<<<<< HEAD
 plat-$(CONFIG_PLAT_S5P)		+= samsung
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 plat-$(CONFIG_PLAT_VERSATILE)	+= versatile
 
 ifeq ($(CONFIG_ARCH_EBSA110),y)
@@ -242,15 +412,26 @@ MACHINE  :=
 endif
 
 machdirs := $(patsubst %,arch/arm/mach-%/,$(machine-y))
+<<<<<<< HEAD
 platdirs := $(patsubst %,arch/arm/plat-%/,$(plat-y))
 
 ifneq ($(CONFIG_ARCH_MULTIPLATFORM),y)
+=======
+platdirs := $(patsubst %,arch/arm/plat-%/,$(sort $(plat-y)))
+
+ifneq ($(CONFIG_ARCH_MULTIPLATFORM),y)
+ifneq ($(CONFIG_ARM_SINGLE_ARMV7M),y)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ifeq ($(KBUILD_SRC),)
 KBUILD_CPPFLAGS += $(patsubst %,-I%include,$(machdirs) $(platdirs))
 else
 KBUILD_CPPFLAGS += $(patsubst %,-I$(srctree)/%include,$(machdirs) $(platdirs))
 endif
 endif
+<<<<<<< HEAD
+=======
+endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 export	TEXT_OFFSET GZFLAGS MMUEXT
 
@@ -265,11 +446,22 @@ core-$(CONFIG_FPE_FASTFPE)	+= $(FASTFPE_OBJ)
 core-$(CONFIG_VFP)		+= arch/arm/vfp/
 core-$(CONFIG_XEN)		+= arch/arm/xen/
 core-$(CONFIG_KVM_ARM_HOST) 	+= arch/arm/kvm/
+<<<<<<< HEAD
 
 # If we have a machine-specific directory, then include it in the build.
 core-y				+= arch/arm/kernel/ arch/arm/mm/ arch/arm/common/
 core-y				+= arch/arm/net/
 core-y				+= arch/arm/crypto/
+=======
+core-$(CONFIG_VDSO)		+= arch/arm/vdso/
+
+# If we have a machine-specific directory, then include it in the build.
+core-y				+= arch/arm/kernel/ arch/arm/mm/ arch/arm/common/
+core-y				+= arch/arm/probes/
+core-y				+= arch/arm/net/
+core-y				+= arch/arm/crypto/
+core-y				+= arch/arm/firmware/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 core-y				+= $(machdirs) $(platdirs)
 
 drivers-$(CONFIG_OPROFILE)      += arch/arm/oprofile/
@@ -280,7 +472,11 @@ libs-y				:= arch/arm/lib/ $(libs-y)
 ifeq ($(CONFIG_XIP_KERNEL),y)
 KBUILD_IMAGE := xipImage
 else ifeq ($(CONFIG_BUILD_ARM_APPENDED_DTB_IMAGE),y)
+<<<<<<< HEAD
 KBUILD_IMAGE := zImage-dtb.$(CONFIG_BUILD_ARM_APPENDED_DTB_IMAGE_NAME)
+=======
+KBUILD_IMAGE := zImage-dtb
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 else
 KBUILD_IMAGE := zImage
 endif
@@ -290,7 +486,11 @@ ifeq ($(CONFIG_USE_OF),y)
 KBUILD_DTBS := dtbs
 endif
 
+<<<<<<< HEAD
 all:	$(KBUILD_IMAGE)
+=======
+all:	$(KBUILD_IMAGE) $(KBUILD_DTBS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 boot := arch/arm/boot
 
@@ -300,6 +500,7 @@ archprepare:
 # Convert bzImage to zImage
 bzImage: zImage
 
+<<<<<<< HEAD
 zImage Image xipImage bootpImage uImage: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) $(boot)/$@
 
@@ -311,6 +512,42 @@ zinstall uinstall install: vmlinux
 
 dtbs: scripts
 	$(Q)$(MAKE) $(build)=$(boot)/dts/auto-generate MACHINE=$(MACHINE) dtbs
+=======
+BOOT_TARGETS	= zImage Image xipImage bootpImage uImage
+INSTALL_TARGETS	= zinstall uinstall install
+
+PHONY += bzImage $(BOOT_TARGETS) $(INSTALL_TARGETS)
+
+bootpImage uImage: zImage
+zImage: Image
+
+$(BOOT_TARGETS): vmlinux
+	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) $(boot)/$@
+	@$(kecho) '  Kernel: $(boot)/$@ is ready'
+
+$(INSTALL_TARGETS):
+	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) $@
+
+%.dtb: | scripts
+	$(Q)$(MAKE) $(build)=$(boot)/dts MACHINE=$(MACHINE) $(boot)/dts/$@
+
+PHONY += dtbs dtbs_install
+
+dtbs: prepare scripts
+	$(Q)$(MAKE) $(build)=$(boot)/dts
+
+dtbs_install:
+	$(Q)$(MAKE) $(dtbinst)=$(boot)/dts
+
+PHONY += vdso_install
+vdso_install:
+ifeq ($(CONFIG_VDSO),y)
+	$(Q)$(MAKE) $(build)=arch/arm/vdso $@
+endif
+
+zImage-dtb: vmlinux scripts dtbs
+	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) $(boot)/$@
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # We use MRPROPER_FILES and CLEAN_FILES now
 archclean:
@@ -318,7 +555,10 @@ archclean:
 
 # My testing targets (bypasses dependencies)
 bp:;	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) $(boot)/bootpImage
+<<<<<<< HEAD
 i zi:;	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) $@
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 define archhelp
@@ -329,10 +569,18 @@ define archhelp
   echo  '  bootpImage    - Combined zImage and initial RAM disk'
   echo  '                  (supply initrd image via make variable INITRD=<path>)'
   echo  '* dtbs          - Build device tree blobs for enabled boards'
+<<<<<<< HEAD
+=======
+  echo  '  dtbs_install  - Install dtbs to $(INSTALL_DTBS_PATH)'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   echo  '  install       - Install uncompressed kernel'
   echo  '  zinstall      - Install compressed kernel'
   echo  '  uinstall      - Install U-Boot wrapped compressed kernel'
   echo  '                  Install using (your) ~/bin/$(INSTALLKERNEL) or'
   echo  '                  (distribution) /sbin/$(INSTALLKERNEL) or'
   echo  '                  install to $$(INSTALL_PATH) and run lilo'
+<<<<<<< HEAD
+=======
+  echo  '  vdso_install  - Install unstripped vdso.so to $$(INSTALL_MOD_PATH)/vdso'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endef

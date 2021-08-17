@@ -39,7 +39,11 @@ extern void *prom_early_alloc(unsigned long size);
 /* for building the device tree */
 extern void of_pdt_build_devicetree(phandle root_node, struct of_pdt_ops *ops);
 
+<<<<<<< HEAD
 extern void (*of_pdt_build_more)(struct device_node *dp,
 		struct device_node ***nextp);
+=======
+extern void (*of_pdt_build_more)(struct device_node *dp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _LINUX_OF_PDT_H */

@@ -5,9 +5,14 @@
 
 #include <linux/spinlock.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
 #include <asm/machvec.h>
 #include <asm-generic/pci-bridge.h>
+=======
+#include <linux/scatterlist.h>
+#include <asm/machvec.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The following structure is used to manage multiple PCI busses.
@@ -59,11 +64,14 @@ struct pci_controller {
 
 extern void pcibios_set_master(struct pci_dev *dev);
 
+<<<<<<< HEAD
 extern inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* IOMMU controls.  */
 
 /* The PCI address space does not equal the physical memory address space.
@@ -71,6 +79,7 @@ extern inline void pcibios_penalize_isa_irq(int irq, int active)
    decisions.  */
 #define PCI_DMA_BUS_IS_PHYS  0
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 
 /* implement the pci_ DMA API in terms of the generic device dma_ one */
@@ -94,6 +103,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* TODO: integrate with include/asm-generic/pci.h ? */
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {

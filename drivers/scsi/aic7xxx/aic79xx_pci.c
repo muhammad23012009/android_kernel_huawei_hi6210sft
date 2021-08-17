@@ -827,7 +827,11 @@ ahd_pci_intr(struct ahd_softc *ahd)
 		for (bit = 0; bit < 8; bit++) {
 
 			if ((pci_status[i] & (0x1 << bit)) != 0) {
+<<<<<<< HEAD
 				static const char *s;
+=======
+				const char *s;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				s = pci_status_strings[bit];
 				if (i == 7/*TARG*/ && bit == 3)
@@ -887,6 +891,7 @@ ahd_pci_split_intr(struct ahd_softc *ahd, u_int intstat)
 
 		for (bit = 0; bit < 8; bit++) {
 
+<<<<<<< HEAD
 			if ((split_status[i] & (0x1 << bit)) != 0) {
 				static const char *s;
 
@@ -894,16 +899,26 @@ ahd_pci_split_intr(struct ahd_softc *ahd, u_int intstat)
 				printk(s, ahd_name(ahd),
 				       split_status_source[i]);
 			}
+=======
+			if ((split_status[i] & (0x1 << bit)) != 0)
+				printk(split_status_strings[bit], ahd_name(ahd),
+				       split_status_source[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (i > 1)
 				continue;
 
+<<<<<<< HEAD
 			if ((sg_split_status[i] & (0x1 << bit)) != 0) {
 				static const char *s;
 
 				s = split_status_strings[bit];
 				printk(s, ahd_name(ahd), "SG");
 			}
+=======
+			if ((sg_split_status[i] & (0x1 << bit)) != 0)
+				printk(split_status_strings[bit], ahd_name(ahd), "SG");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	/*

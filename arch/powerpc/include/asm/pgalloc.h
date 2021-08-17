@@ -1,5 +1,6 @@
 #ifndef _ASM_POWERPC_PGALLOC_H
 #define _ASM_POWERPC_PGALLOC_H
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 #include <linux/mm.h>
@@ -21,4 +22,15 @@ static inline void tlb_flush_pgtable(struct mmu_gather *tlb,
 #endif
 
 #endif /* __KERNEL__ */
+=======
+
+#include <linux/mm.h>
+
+#ifdef CONFIG_PPC_BOOK3S
+#include <asm/book3s/pgalloc.h>
+#else
+#include <asm/nohash/pgalloc.h>
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_POWERPC_PGALLOC_H */

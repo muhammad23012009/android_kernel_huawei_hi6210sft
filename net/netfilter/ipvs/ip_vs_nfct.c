@@ -19,8 +19,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *
  * Authors:
@@ -63,6 +67,10 @@
 #include <net/ip_vs.h>
 #include <net/netfilter/nf_conntrack_core.h>
 #include <net/netfilter/nf_conntrack_expect.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_conntrack_seqadj.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 
@@ -93,10 +101,25 @@ ip_vs_update_conntrack(struct sk_buff *skb, struct ip_vs_conn *cp, int outin)
 	if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Never alter conntrack for OPS conns (no reply is expected) */
+	if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Alter reply only in original direction */
 	if (CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Applications may adjust TCP seqs */
+	if (cp->app && nf_ct_protonum(ct) == IPPROTO_TCP &&
+	    !nfct_seqadj(ct) && !nfct_seqadj_ext_add(ct))
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * The connection is not yet in the hashtable, so we update it.
 	 * CIP->VIP will remain the same, so leave the tuple in
@@ -156,7 +179,11 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 
 	/* RS->CLIENT */
 	orig = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
+<<<<<<< HEAD
 	ip_vs_conn_fill_param(net, exp->tuple.src.l3num, orig->dst.protonum,
+=======
+	ip_vs_conn_fill_param(net_ipvs(net), exp->tuple.src.l3num, orig->dst.protonum,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      &orig->src.u3, orig->src.u.tcp.port,
 			      &orig->dst.u3, orig->dst.u.tcp.port, &p);
 	cp = ip_vs_conn_out_get(&p);
@@ -269,6 +296,7 @@ void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
 		" for conn " FMT_CONN "\n",
 		__func__, ARG_TUPLE(&tuple), ARG_CONN(cp));
 
+<<<<<<< HEAD
 	h = nf_conntrack_find_get(ip_vs_conn_net(cp), NF_CT_DEFAULT_ZONE,
 				  &tuple);
 	if (h) {
@@ -280,6 +308,15 @@ void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
 				__func__, ct, ARG_TUPLE(&tuple));
 			if (ct->timeout.function)
 				ct->timeout.function(ct->timeout.data);
+=======
+	h = nf_conntrack_find_get(cp->ipvs->net, &nf_ct_zone_dflt, &tuple);
+	if (h) {
+		ct = nf_ct_tuplehash_to_ctrack(h);
+		if (nf_ct_kill(ct)) {
+			IP_VS_DBG(7, "%s: ct=%p, deleted conntrack for tuple="
+				FMT_TUPLE "\n",
+				__func__, ct, ARG_TUPLE(&tuple));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			IP_VS_DBG(7, "%s: ct=%p, no conntrack timer for tuple="
 				FMT_TUPLE "\n",

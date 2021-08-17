@@ -11,7 +11,11 @@
 #else
 # define SECTION_SIZE_BITS	28
 #endif
+<<<<<<< HEAD
 #define MAX_PHYSMEM_BITS	35
+=======
+#define MAX_PHYSMEM_BITS	48
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* CONFIG_SPARSEMEM */
 #endif /* _MIPS_SPARSEMEM_H */

@@ -18,6 +18,7 @@
 #ifndef	__XFS_INODE_ITEM_H__
 #define	__XFS_INODE_ITEM_H__
 
+<<<<<<< HEAD
 /*
  * This is the structure used to lay out an inode log item in the
  * log.  The size of the inline data/extents/b-tree root to be logged
@@ -128,13 +129,19 @@ static inline int xfs_ilog_fdata(int w)
 }
 
 #ifdef __KERNEL__
+=======
+/* kernel only definitions */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct xfs_buf;
 struct xfs_bmbt_rec;
 struct xfs_inode;
 struct xfs_mount;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef struct xfs_inode_log_item {
 	xfs_log_item_t		ili_item;	   /* common portion */
 	struct xfs_inode	*ili_inode;	   /* inode ptr */
@@ -144,6 +151,7 @@ typedef struct xfs_inode_log_item {
 	unsigned short		ili_logged;	   /* flushed logged data */
 	unsigned int		ili_last_fields;   /* fields when flushed */
 	unsigned int		ili_fields;	   /* fields to be logged */
+<<<<<<< HEAD
 	struct xfs_bmbt_rec	*ili_extents_buf;  /* array of logged
 						      data exts */
 	struct xfs_bmbt_rec	*ili_aextents_buf; /* array of logged
@@ -152,6 +160,11 @@ typedef struct xfs_inode_log_item {
 } xfs_inode_log_item_t;
 
 
+=======
+	unsigned int		ili_fsync_fields;  /* logged since last fsync */
+} xfs_inode_log_item_t;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int xfs_inode_clean(xfs_inode_t *ip)
 {
 	return !ip->i_itemp || !(ip->i_itemp->ili_fields & XFS_ILOG_ALL);
@@ -165,6 +178,10 @@ extern void xfs_iflush_abort(struct xfs_inode *, bool);
 extern int xfs_inode_item_format_convert(xfs_log_iovec_t *,
 					 xfs_inode_log_format_t *);
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
+=======
+extern struct kmem_zone	*xfs_ili_zone;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __XFS_INODE_ITEM_H__ */

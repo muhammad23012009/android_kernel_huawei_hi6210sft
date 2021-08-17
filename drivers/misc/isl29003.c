@@ -26,7 +26,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/mutex.h>
@@ -208,7 +211,15 @@ static ssize_t isl29003_store_range(struct device *dev,
 	unsigned long val;
 	int ret;
 
+<<<<<<< HEAD
 	if ((strict_strtoul(buf, 10, &val) < 0) || (val > 3))
+=======
+	ret = kstrtoul(buf, 10, &val);
+	if (ret)
+		return ret;
+
+	if (val > 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	ret = isl29003_set_range(client, val);
@@ -239,7 +250,15 @@ static ssize_t isl29003_store_resolution(struct device *dev,
 	unsigned long val;
 	int ret;
 
+<<<<<<< HEAD
 	if ((strict_strtoul(buf, 10, &val) < 0) || (val > 3))
+=======
+	ret = kstrtoul(buf, 10, &val);
+	if (ret)
+		return ret;
+
+	if (val > 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	ret = isl29003_set_resolution(client, val);
@@ -267,7 +286,15 @@ static ssize_t isl29003_store_mode(struct device *dev,
 	unsigned long val;
 	int ret;
 
+<<<<<<< HEAD
 	if ((strict_strtoul(buf, 10, &val) < 0) || (val > 2))
+=======
+	ret = kstrtoul(buf, 10, &val);
+	if (ret)
+		return ret;
+
+	if (val > 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	ret = isl29003_set_mode(client, val);
@@ -298,7 +325,15 @@ static ssize_t isl29003_store_power_state(struct device *dev,
 	unsigned long val;
 	int ret;
 
+<<<<<<< HEAD
 	if ((strict_strtoul(buf, 10, &val) < 0) || (val > 1))
+=======
+	ret = kstrtoul(buf, 10, &val);
+	if (ret)
+		return ret;
+
+	if (val > 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	ret = isl29003_set_power_state(client, val);
@@ -450,7 +485,10 @@ MODULE_DEVICE_TABLE(i2c, isl29003_id);
 static struct i2c_driver isl29003_driver = {
 	.driver = {
 		.name	= ISL29003_DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= ISL29003_PM_OPS,
 	},
 	.probe	= isl29003_probe,

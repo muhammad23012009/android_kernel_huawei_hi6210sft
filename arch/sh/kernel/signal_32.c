@@ -148,17 +148,27 @@ restore_sigcontext(struct pt_regs *regs, struct sigcontext __user *sc, int *r0_p
 	return err;
 }
 
+<<<<<<< HEAD
 asmlinkage int sys_sigreturn(unsigned long r4, unsigned long r5,
 			     unsigned long r6, unsigned long r7,
 			     struct pt_regs __regs)
 {
 	struct pt_regs *regs = RELOC_HIDE(&__regs, 0);
+=======
+asmlinkage int sys_sigreturn(void)
+{
+	struct pt_regs *regs = current_pt_regs();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sigframe __user *frame = (struct sigframe __user *)regs->regs[15];
 	sigset_t set;
 	int r0;
 
         /* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))
 		goto badframe;
@@ -180,17 +190,27 @@ badframe:
 	return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage int sys_rt_sigreturn(unsigned long r4, unsigned long r5,
 				unsigned long r6, unsigned long r7,
 				struct pt_regs __regs)
 {
 	struct pt_regs *regs = RELOC_HIDE(&__regs, 0);
+=======
+asmlinkage int sys_rt_sigreturn(void)
+{
+	struct pt_regs *regs = current_pt_regs();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rt_sigframe __user *frame = (struct rt_sigframe __user *)regs->regs[15];
 	sigset_t set;
 	int r0;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))
 		goto badframe;
@@ -266,6 +286,7 @@ get_sigframe(struct k_sigaction *ka, unsigned long sp, size_t frame_size)
 extern void __kernel_sigreturn(void);
 extern void __kernel_rt_sigreturn(void);
 
+<<<<<<< HEAD
 static int setup_frame(int sig, struct k_sigaction *ka,
 			sigset_t *set, struct pt_regs *regs)
 {
@@ -283,6 +304,18 @@ static int setup_frame(int sig, struct k_sigaction *ka,
 		&& sig < 32
 		? current_thread_info()->exec_domain->signal_invmap[sig]
 		: sig;
+=======
+static int setup_frame(struct ksignal *ksig, sigset_t *set,
+		       struct pt_regs *regs)
+{
+	struct sigframe __user *frame;
+	int err = 0, sig = ksig->sig;
+
+	frame = get_sigframe(&ksig->ka, regs->regs[15], sizeof(*frame));
+
+	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err |= setup_sigcontext(&frame->sc, regs, set->sig[0]);
 
@@ -292,8 +325,13 @@ static int setup_frame(int sig, struct k_sigaction *ka,
 
 	/* Set up to return from userspace.  If provided, use a stub
 	   already in userspace.  */
+<<<<<<< HEAD
 	if (ka->sa.sa_flags & SA_RESTORER) {
 		regs->pr = (unsigned long) ka->sa.sa_restorer;
+=======
+	if (ksig->ka.sa.sa_flags & SA_RESTORER) {
+		regs->pr = (unsigned long) ksig->ka.sa.sa_restorer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VSYSCALL
 	} else if (likely(current->mm->context.vdso)) {
 		regs->pr = VDSO_SYM(&__kernel_sigreturn);
@@ -313,32 +351,52 @@ static int setup_frame(int sig, struct k_sigaction *ka,
 	}
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	/* Set up registers for signal handler */
 	regs->regs[15] = (unsigned long) frame;
 	regs->regs[4] = signal; /* Arg for signal handler */
+=======
+		return -EFAULT;
+
+	/* Set up registers for signal handler */
+	regs->regs[15] = (unsigned long) frame;
+	regs->regs[4] = sig; /* Arg for signal handler */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->regs[5] = 0;
 	regs->regs[6] = (unsigned long) &frame->sc;
 
 	if (current->personality & FDPIC_FUNCPTRS) {
 		struct fdpic_func_descriptor __user *funcptr =
+<<<<<<< HEAD
 			(struct fdpic_func_descriptor __user *)ka->sa.sa_handler;
+=======
+			(struct fdpic_func_descriptor __user *)ksig->ka.sa.sa_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		err |= __get_user(regs->pc, &funcptr->text);
 		err |= __get_user(regs->regs[12], &funcptr->GOT);
 	} else
+<<<<<<< HEAD
 		regs->pc = (unsigned long)ka->sa.sa_handler;
 
 	if (err)
 		goto give_sigsegv;
 
 	set_fs(USER_DS);
+=======
+		regs->pc = (unsigned long)ksig->ka.sa.sa_handler;
+
+	if (err)
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("SIG deliver (%s:%d): sp=%p pc=%08lx pr=%08lx\n",
 		 current->comm, task_pid_nr(current), frame, regs->pc, regs->pr);
 
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
@@ -364,6 +422,22 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		: sig;
 
 	err |= copy_siginfo_to_user(&frame->info, info);
+=======
+}
+
+static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+			  struct pt_regs *regs)
+{
+	struct rt_sigframe __user *frame;
+	int err = 0, sig = ksig->sig;
+
+	frame = get_sigframe(&ksig->ka, regs->regs[15], sizeof(*frame));
+
+	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+		return -EFAULT;
+
+	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Create the ucontext.  */
 	err |= __put_user(0, &frame->uc.uc_flags);
@@ -375,8 +449,13 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 
 	/* Set up to return from userspace.  If provided, use a stub
 	   already in userspace.  */
+<<<<<<< HEAD
 	if (ka->sa.sa_flags & SA_RESTORER) {
 		regs->pr = (unsigned long) ka->sa.sa_restorer;
+=======
+	if (ksig->ka.sa.sa_flags & SA_RESTORER) {
+		regs->pr = (unsigned long) ksig->ka.sa.sa_restorer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VSYSCALL
 	} else if (likely(current->mm->context.vdso)) {
 		regs->pr = VDSO_SYM(&__kernel_rt_sigreturn);
@@ -396,36 +475,58 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	}
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	/* Set up registers for signal handler */
 	regs->regs[15] = (unsigned long) frame;
 	regs->regs[4] = signal; /* Arg for signal handler */
+=======
+		return -EFAULT;
+
+	/* Set up registers for signal handler */
+	regs->regs[15] = (unsigned long) frame;
+	regs->regs[4] = sig; /* Arg for signal handler */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->regs[5] = (unsigned long) &frame->info;
 	regs->regs[6] = (unsigned long) &frame->uc;
 
 	if (current->personality & FDPIC_FUNCPTRS) {
 		struct fdpic_func_descriptor __user *funcptr =
+<<<<<<< HEAD
 			(struct fdpic_func_descriptor __user *)ka->sa.sa_handler;
+=======
+			(struct fdpic_func_descriptor __user *)ksig->ka.sa.sa_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		err |= __get_user(regs->pc, &funcptr->text);
 		err |= __get_user(regs->regs[12], &funcptr->GOT);
 	} else
+<<<<<<< HEAD
 		regs->pc = (unsigned long)ka->sa.sa_handler;
 
 	if (err)
 		goto give_sigsegv;
 
 	set_fs(USER_DS);
+=======
+		regs->pc = (unsigned long)ksig->ka.sa.sa_handler;
+
+	if (err)
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("SIG deliver (%s:%d): sp=%p pc=%08lx pr=%08lx\n",
 		 current->comm, task_pid_nr(current), frame, regs->pc, regs->pr);
 
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
 	return -EFAULT;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
@@ -459,13 +560,18 @@ handle_syscall_restart(unsigned long save_r0, struct pt_regs *regs,
  * OK, we're invoking a handler
  */
 static void
+<<<<<<< HEAD
 handle_signal(unsigned long sig, struct k_sigaction *ka, siginfo_t *info,
 	      struct pt_regs *regs, unsigned int save_r0)
+=======
+handle_signal(struct ksignal *ksig, struct pt_regs *regs, unsigned int save_r0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sigset_t *oldset = sigmask_to_save();
 	int ret;
 
 	/* Set up the stack frame */
+<<<<<<< HEAD
 	if (ka->sa.sa_flags & SA_SIGINFO)
 		ret = setup_rt_frame(sig, ka, info, oldset, regs);
 	else
@@ -475,6 +581,14 @@ handle_signal(unsigned long sig, struct k_sigaction *ka, siginfo_t *info,
 		return;
 	signal_delivered(sig, info, ka, regs,
 			test_thread_flag(TIF_SINGLESTEP));
+=======
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO)
+		ret = setup_rt_frame(ksig, oldset, regs);
+	else
+		ret = setup_frame(ksig, oldset, regs);
+
+	signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -488,9 +602,13 @@ handle_signal(unsigned long sig, struct k_sigaction *ka, siginfo_t *info,
  */
 static void do_signal(struct pt_regs *regs, unsigned int save_r0)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 	int signr;
 	struct k_sigaction ka;
+=======
+	struct ksignal ksig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We want the common case to go fast, which
@@ -501,12 +619,20 @@ static void do_signal(struct pt_regs *regs, unsigned int save_r0)
 	if (!user_mode(regs))
 		return;
 
+<<<<<<< HEAD
 	signr = get_signal_to_deliver(&info, &ka, regs, NULL);
 	if (signr > 0) {
 		handle_syscall_restart(save_r0, regs, &ka.sa);
 
 		/* Whee!  Actually deliver the signal.  */
 		handle_signal(signr, &ka, &info, regs, save_r0);
+=======
+	if (get_signal(&ksig)) {
+		handle_syscall_restart(save_r0, regs, &ksig.ka.sa);
+
+		/* Whee!  Actually deliver the signal.  */
+		handle_signal(&ksig, regs, save_r0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 

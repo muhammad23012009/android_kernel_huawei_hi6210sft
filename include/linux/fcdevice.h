@@ -27,7 +27,11 @@
 #include <linux/if_fc.h>
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
 extern struct net_device *alloc_fcdev(int sizeof_priv);
+=======
+struct net_device *alloc_fcdev(int sizeof_priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif	/* _LINUX_FCDEVICE_H */

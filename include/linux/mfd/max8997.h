@@ -178,7 +178,10 @@ struct max8997_led_platform_data {
 struct max8997_platform_data {
 	/* IRQ */
 	int ono;
+<<<<<<< HEAD
 	int wakeup;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* ---- PMIC ---- */
 	struct max8997_regulator_data *regulators;

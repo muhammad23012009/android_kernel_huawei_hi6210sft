@@ -24,7 +24,10 @@
 
 unsigned int pci_probe = 1;
 
+<<<<<<< HEAD
 int pcibios_last_bus = -1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct pci_ops *pci_root_ops;
 
 /*
@@ -229,8 +232,13 @@ static int pci_ampci_write_config(struct pci_bus *bus, unsigned int devfn,
 }
 
 static struct pci_ops pci_direct_ampci = {
+<<<<<<< HEAD
 	pci_ampci_read_config,
 	pci_ampci_write_config,
+=======
+	.read = pci_ampci_read_config,
+	.write = pci_ampci_write_config,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -282,6 +290,7 @@ static int __init pci_check_direct(void)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static int is_valid_resource(struct pci_dev *dev, int idx)
 {
 	unsigned int i, type_mask = IORESOURCE_IO | IORESOURCE_MEM;
@@ -318,6 +327,39 @@ static void pcibios_fixup_device_resources(struct pci_dev *dev)
 
 		if (is_valid_resource(dev, i))
 			pci_claim_resource(dev, i);
+=======
+static void pcibios_fixup_device_resources(struct pci_dev *dev)
+{
+	int idx;
+
+	if (!dev->bus)
+		return;
+
+	for (idx = 0; idx < PCI_BRIDGE_RESOURCES; idx++) {
+		struct resource *r = &dev->resource[idx];
+
+		if (!r->flags || r->parent || !r->start)
+			continue;
+
+		pci_claim_resource(dev, idx);
+	}
+}
+
+static void pcibios_fixup_bridge_resources(struct pci_dev *dev)
+{
+	int idx;
+
+	if (!dev->bus)
+		return;
+
+	for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
+		struct resource *r = &dev->resource[idx];
+
+		if (!r->flags || r->parent || !r->start)
+			continue;
+
+		pci_claim_bridge_resource(dev, idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -331,7 +373,11 @@ void pcibios_fixup_bus(struct pci_bus *bus)
 
 	if (bus->self) {
 		pci_read_bridge_bases(bus);
+<<<<<<< HEAD
 		pcibios_fixup_device_resources(bus->self);
+=======
+		pcibios_fixup_bridge_resources(bus->self);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	list_for_each_entry(dev, &bus->devices, bus_list)
@@ -348,6 +394,10 @@ static int __init pcibios_init(void)
 {
 	resource_size_t io_offset, mem_offset;
 	LIST_HEAD(resources);
+<<<<<<< HEAD
+=======
+	struct pci_bus *bus;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ioport_resource.start	= 0xA0000000;
 	ioport_resource.end	= 0xDFFFFFFF;
@@ -377,11 +427,21 @@ static int __init pcibios_init(void)
 
 	pci_add_resource_offset(&resources, &pci_ioport_resource, io_offset);
 	pci_add_resource_offset(&resources, &pci_iomem_resource, mem_offset);
+<<<<<<< HEAD
 	pci_scan_root_bus(NULL, 0, &pci_direct_ampci, NULL, &resources);
+=======
+	bus = pci_scan_root_bus(NULL, 0, &pci_direct_ampci, NULL, &resources);
+	if (!bus)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pcibios_irq_init();
 	pcibios_fixup_irqs();
 	pcibios_resource_survey();
+<<<<<<< HEAD
+=======
+	pci_bus_add_devices(bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -392,10 +452,13 @@ char *__init pcibios_setup(char *str)
 	if (!strcmp(str, "off")) {
 		pci_probe = 0;
 		return NULL;
+<<<<<<< HEAD
 
 	} else if (!strncmp(str, "lastbus=", 8)) {
 		pcibios_last_bus = simple_strtol(str+8, NULL, 0);
 		return NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return str;

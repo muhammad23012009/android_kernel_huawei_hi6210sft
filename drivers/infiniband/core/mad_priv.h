@@ -41,9 +41,13 @@
 #include <linux/workqueue.h>
 #include <rdma/ib_mad.h>
 #include <rdma/ib_smi.h>
+<<<<<<< HEAD
 
 
 #define PFX "ib_mad: "
+=======
+#include <rdma/opa_smi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IB_MAD_QPS_CORE		2 /* Always QP0 and QP1 as a minimum */
 
@@ -59,13 +63,21 @@
 
 /* Registration table sizes */
 #define MAX_MGMT_CLASS		80
+<<<<<<< HEAD
 #define MAX_MGMT_VERSION	8
+=======
+#define MAX_MGMT_VERSION	0x83
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MAX_MGMT_OUI		8
 #define MAX_MGMT_VENDOR_RANGE2	(IB_MGMT_CLASS_VENDOR_RANGE2_END - \
 				IB_MGMT_CLASS_VENDOR_RANGE2_START + 1)
 
 struct ib_mad_list_head {
 	struct list_head list;
+<<<<<<< HEAD
+=======
+	struct ib_cqe cqe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ib_mad_queue *mad_queue;
 };
 
@@ -78,12 +90,18 @@ struct ib_mad_private_header {
 
 struct ib_mad_private {
 	struct ib_mad_private_header header;
+<<<<<<< HEAD
 	struct ib_grh grh;
 	union {
 		struct ib_mad mad;
 		struct ib_rmpp_mad rmpp_mad;
 		struct ib_smp smp;
 	} mad;
+=======
+	size_t mad_size;
+	struct ib_grh grh;
+	u8 mad[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __attribute__ ((packed));
 
 struct ib_rmpp_segment {
@@ -128,7 +146,11 @@ struct ib_mad_send_wr_private {
 	struct ib_mad_send_buf send_buf;
 	u64 header_mapping;
 	u64 payload_mapping;
+<<<<<<< HEAD
 	struct ib_send_wr send_wr;
+=======
+	struct ib_ud_wr send_wr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ib_sge sg_list[IB_MAD_SEND_REQ_MAX_SG];
 	__be64 tid;
 	unsigned long timeout;
@@ -153,6 +175,10 @@ struct ib_mad_local_private {
 	struct ib_mad_private *mad_priv;
 	struct ib_mad_agent_private *recv_mad_agent;
 	struct ib_mad_send_wr_private *mad_send_wr;
+<<<<<<< HEAD
+=======
+	size_t return_wc_byte_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ib_mad_mgmt_method_table {
@@ -203,21 +229,32 @@ struct ib_mad_port_private {
 	int port_num;
 	struct ib_cq *cq;
 	struct ib_pd *pd;
+<<<<<<< HEAD
 	struct ib_mr *mr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spinlock_t reg_lock;
 	struct ib_mad_mgmt_version_table version[MAX_MGMT_VERSION];
 	struct list_head agent_list;
 	struct workqueue_struct *wq;
+<<<<<<< HEAD
 	struct work_struct work;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ib_mad_qp_info qp_info[IB_MAD_QPS_CORE];
 };
 
 int ib_send_mad(struct ib_mad_send_wr_private *mad_send_wr);
 
 struct ib_mad_send_wr_private *
+<<<<<<< HEAD
 ib_find_send_mad(struct ib_mad_agent_private *mad_agent_priv,
 		 struct ib_mad_recv_wc *mad_recv_wc);
+=======
+ib_find_send_mad(const struct ib_mad_agent_private *mad_agent_priv,
+		 const struct ib_mad_recv_wc *mad_recv_wc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void ib_mad_complete_send_wr(struct ib_mad_send_wr_private *mad_send_wr,
 			     struct ib_mad_send_wc *mad_send_wc);

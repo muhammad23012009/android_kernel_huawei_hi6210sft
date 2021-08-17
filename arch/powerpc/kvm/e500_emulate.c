@@ -15,17 +15,32 @@
 #include <asm/kvm_ppc.h>
 #include <asm/disassemble.h>
 #include <asm/dbell.h>
+<<<<<<< HEAD
+=======
+#include <asm/reg_booke.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "booke.h"
 #include "e500.h"
 
+<<<<<<< HEAD
 #define XOP_MSGSND  206
 #define XOP_MSGCLR  238
+=======
+#define XOP_DCBTLS  166
+#define XOP_MSGSND  206
+#define XOP_MSGCLR  238
+#define XOP_MFTMR   366
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define XOP_TLBIVAX 786
 #define XOP_TLBSX   914
 #define XOP_TLBRE   946
 #define XOP_TLBWE   978
 #define XOP_TLBILX  18
+<<<<<<< HEAD
+=======
+#define XOP_EHPRIV  270
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_KVM_E500MC
 static int dbell2prio(ulong param)
@@ -82,8 +97,55 @@ static int kvmppc_e500_emul_msgsnd(struct kvm_vcpu *vcpu, int rb)
 }
 #endif
 
+<<<<<<< HEAD
 int kvmppc_core_emulate_op(struct kvm_run *run, struct kvm_vcpu *vcpu,
                            unsigned int inst, int *advance)
+=======
+static int kvmppc_e500_emul_ehpriv(struct kvm_run *run, struct kvm_vcpu *vcpu,
+				   unsigned int inst, int *advance)
+{
+	int emulated = EMULATE_DONE;
+
+	switch (get_oc(inst)) {
+	case EHPRIV_OC_DEBUG:
+		run->exit_reason = KVM_EXIT_DEBUG;
+		run->debug.arch.address = vcpu->arch.pc;
+		run->debug.arch.status = 0;
+		kvmppc_account_exit(vcpu, DEBUG_EXITS);
+		emulated = EMULATE_EXIT_USER;
+		*advance = 0;
+		break;
+	default:
+		emulated = EMULATE_FAIL;
+	}
+	return emulated;
+}
+
+static int kvmppc_e500_emul_dcbtls(struct kvm_vcpu *vcpu)
+{
+	struct kvmppc_vcpu_e500 *vcpu_e500 = to_e500(vcpu);
+
+	/* Always fail to lock the cache */
+	vcpu_e500->l1csr0 |= L1CSR0_CUL;
+	return EMULATE_DONE;
+}
+
+static int kvmppc_e500_emul_mftmr(struct kvm_vcpu *vcpu, unsigned int inst,
+				  int rt)
+{
+	/* Expose one thread per vcpu */
+	if (get_tmrn(inst) == TMRN_TMCFG0) {
+		kvmppc_set_gpr(vcpu, rt,
+			       1 | (1 << TMRN_TMCFG0_NATHRD_SHIFT));
+		return EMULATE_DONE;
+	}
+
+	return EMULATE_FAIL;
+}
+
+int kvmppc_core_emulate_op_e500(struct kvm_run *run, struct kvm_vcpu *vcpu,
+				unsigned int inst, int *advance)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int emulated = EMULATE_DONE;
 	int ra = get_ra(inst);
@@ -95,6 +157,13 @@ int kvmppc_core_emulate_op(struct kvm_run *run, struct kvm_vcpu *vcpu,
 	case 31:
 		switch (get_xop(inst)) {
 
+<<<<<<< HEAD
+=======
+		case XOP_DCBTLS:
+			emulated = kvmppc_e500_emul_dcbtls(vcpu);
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_KVM_E500MC
 		case XOP_MSGSND:
 			emulated = kvmppc_e500_emul_msgsnd(vcpu, rb);
@@ -130,6 +199,18 @@ int kvmppc_core_emulate_op(struct kvm_run *run, struct kvm_vcpu *vcpu,
 			emulated = kvmppc_e500_emul_tlbivax(vcpu, ea);
 			break;
 
+<<<<<<< HEAD
+=======
+		case XOP_MFTMR:
+			emulated = kvmppc_e500_emul_mftmr(vcpu, inst, rt);
+			break;
+
+		case XOP_EHPRIV:
+			emulated = kvmppc_e500_emul_ehpriv(run, vcpu, inst,
+							   advance);
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			emulated = EMULATE_FAIL;
 		}
@@ -146,7 +227,11 @@ int kvmppc_core_emulate_op(struct kvm_run *run, struct kvm_vcpu *vcpu,
 	return emulated;
 }
 
+<<<<<<< HEAD
 int kvmppc_core_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
+=======
+int kvmppc_core_emulate_mtspr_e500(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kvmppc_vcpu_e500 *vcpu_e500 = to_e500(vcpu);
 	int emulated = EMULATE_DONE;
@@ -196,6 +281,10 @@ int kvmppc_core_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 		break;
 	case SPRN_L1CSR1:
 		vcpu_e500->l1csr1 = spr_val;
+<<<<<<< HEAD
+=======
+		vcpu_e500->l1csr1 &= ~(L1CSR1_ICFI | L1CSR1_ICLFR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case SPRN_HID0:
 		vcpu_e500->hid0 = spr_val;
@@ -209,7 +298,27 @@ int kvmppc_core_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 				spr_val);
 		break;
 
+<<<<<<< HEAD
 	/* extra exceptions */
+=======
+	case SPRN_PWRMGTCR0:
+		/*
+		 * Guest relies on host power management configurations
+		 * Treat the request as a general store
+		 */
+		vcpu->arch.pwrmgtcr0 = spr_val;
+		break;
+
+	case SPRN_BUCSR:
+		/*
+		 * If we are here, it means that we have already flushed the
+		 * branch predictor, so just return to guest.
+		 */
+		break;
+
+	/* extra exceptions */
+#ifdef CONFIG_SPE_POSSIBLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SPRN_IVOR32:
 		vcpu->arch.ivor[BOOKE_IRQPRIO_SPE_UNAVAIL] = spr_val;
 		break;
@@ -219,6 +328,18 @@ int kvmppc_core_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 	case SPRN_IVOR34:
 		vcpu->arch.ivor[BOOKE_IRQPRIO_SPE_FP_ROUND] = spr_val;
 		break;
+<<<<<<< HEAD
+=======
+#endif
+#ifdef CONFIG_ALTIVEC
+	case SPRN_IVOR32:
+		vcpu->arch.ivor[BOOKE_IRQPRIO_ALTIVEC_UNAVAIL] = spr_val;
+		break;
+	case SPRN_IVOR33:
+		vcpu->arch.ivor[BOOKE_IRQPRIO_ALTIVEC_ASSIST] = spr_val;
+		break;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SPRN_IVOR35:
 		vcpu->arch.ivor[BOOKE_IRQPRIO_PERFORMANCE_MONITOR] = spr_val;
 		break;
@@ -237,7 +358,11 @@ int kvmppc_core_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, ulong spr_val)
 	return emulated;
 }
 
+<<<<<<< HEAD
 int kvmppc_core_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val)
+=======
+int kvmppc_core_emulate_mfspr_e500(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kvmppc_vcpu_e500 *vcpu_e500 = to_e500(vcpu);
 	int emulated = EMULATE_DONE;
@@ -327,7 +452,16 @@ int kvmppc_core_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val)
 		*spr_val = vcpu->arch.eptcfg;
 		break;
 
+<<<<<<< HEAD
 	/* extra exceptions */
+=======
+	case SPRN_PWRMGTCR0:
+		*spr_val = vcpu->arch.pwrmgtcr0;
+		break;
+
+	/* extra exceptions */
+#ifdef CONFIG_SPE_POSSIBLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SPRN_IVOR32:
 		*spr_val = vcpu->arch.ivor[BOOKE_IRQPRIO_SPE_UNAVAIL];
 		break;
@@ -337,6 +471,18 @@ int kvmppc_core_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, ulong *spr_val)
 	case SPRN_IVOR34:
 		*spr_val = vcpu->arch.ivor[BOOKE_IRQPRIO_SPE_FP_ROUND];
 		break;
+<<<<<<< HEAD
+=======
+#endif
+#ifdef CONFIG_ALTIVEC
+	case SPRN_IVOR32:
+		*spr_val = vcpu->arch.ivor[BOOKE_IRQPRIO_ALTIVEC_UNAVAIL];
+		break;
+	case SPRN_IVOR33:
+		*spr_val = vcpu->arch.ivor[BOOKE_IRQPRIO_ALTIVEC_ASSIST];
+		break;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SPRN_IVOR35:
 		*spr_val = vcpu->arch.ivor[BOOKE_IRQPRIO_PERFORMANCE_MONITOR];
 		break;

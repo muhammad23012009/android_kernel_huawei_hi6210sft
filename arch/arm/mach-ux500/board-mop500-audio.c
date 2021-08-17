@@ -7,15 +7,21 @@
 #include <linux/platform_device.h>
 #include <linux/init.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/platform_data/pinctrl-nomadik.h>
 #include <linux/platform_data/dma-ste-dma40.h>
 
 #include "devices.h"
 #include "irqs.h"
+=======
+#include <linux/platform_data/dma-ste-dma40.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/asoc-ux500-msp.h>
 
 #include "ste-dma40-db8500.h"
 #include "board-mop500.h"
+<<<<<<< HEAD
 #include "devices-db8500.h"
 #include "pins-db8500.h"
 
@@ -30,10 +36,18 @@ static struct stedma40_chan_cfg msp0_dma_rx = {
 	.dst_info.psize = STEDMA40_PSIZE_LOG_4,
 
 	/* data_width is set during configuration */
+=======
+
+static struct stedma40_chan_cfg msp0_dma_rx = {
+	.high_priority = true,
+	.dir = DMA_DEV_TO_MEM,
+	.dev_type = DB8500_DMA_DEV31_MSP0_SLIM0_CH0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct stedma40_chan_cfg msp0_dma_tx = {
 	.high_priority = true,
+<<<<<<< HEAD
 	.dir = STEDMA40_MEM_TO_PERIPH,
 
 	.src_dev_type = STEDMA40_DEV_DST_MEMORY,
@@ -47,12 +61,21 @@ static struct stedma40_chan_cfg msp0_dma_tx = {
 
 struct msp_i2s_platform_data msp0_platform_data = {
 	.id = MSP_I2S_0,
+=======
+	.dir = DMA_MEM_TO_DEV,
+	.dev_type = DB8500_DMA_DEV31_MSP0_SLIM0_CH0,
+};
+
+struct msp_i2s_platform_data msp0_platform_data = {
+	.id = 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.msp_i2s_dma_rx = &msp0_dma_rx,
 	.msp_i2s_dma_tx = &msp0_dma_tx,
 };
 
 static struct stedma40_chan_cfg msp1_dma_rx = {
 	.high_priority = true,
+<<<<<<< HEAD
 	.dir = STEDMA40_PERIPH_TO_MEM,
 
 	.src_dev_type = DB8500_DMA_DEV30_MSP3_RX,
@@ -62,10 +85,15 @@ static struct stedma40_chan_cfg msp1_dma_rx = {
 	.dst_info.psize = STEDMA40_PSIZE_LOG_4,
 
 	/* data_width is set during configuration */
+=======
+	.dir = DMA_DEV_TO_MEM,
+	.dev_type = DB8500_DMA_DEV30_MSP3,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct stedma40_chan_cfg msp1_dma_tx = {
 	.high_priority = true,
+<<<<<<< HEAD
 	.dir = STEDMA40_MEM_TO_PERIPH,
 
 	.src_dev_type = STEDMA40_DEV_DST_MEMORY,
@@ -79,12 +107,21 @@ static struct stedma40_chan_cfg msp1_dma_tx = {
 
 struct msp_i2s_platform_data msp1_platform_data = {
 	.id = MSP_I2S_1,
+=======
+	.dir = DMA_MEM_TO_DEV,
+	.dev_type = DB8500_DMA_DEV30_MSP1,
+};
+
+struct msp_i2s_platform_data msp1_platform_data = {
+	.id = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.msp_i2s_dma_rx = NULL,
 	.msp_i2s_dma_tx = &msp1_dma_tx,
 };
 
 static struct stedma40_chan_cfg msp2_dma_rx = {
 	.high_priority = true,
+<<<<<<< HEAD
 	.dir = STEDMA40_PERIPH_TO_MEM,
 
 	.src_dev_type = DB8500_DMA_DEV14_MSP2_RX,
@@ -95,10 +132,15 @@ static struct stedma40_chan_cfg msp2_dma_rx = {
 	.dst_info.psize = STEDMA40_PSIZE_LOG_1,
 
 	/* data_width is set during configuration */
+=======
+	.dir = DMA_DEV_TO_MEM,
+	.dev_type = DB8500_DMA_DEV14_MSP2,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct stedma40_chan_cfg msp2_dma_tx = {
 	.high_priority = true,
+<<<<<<< HEAD
 	.dir = STEDMA40_MEM_TO_PERIPH,
 
 	.src_dev_type = STEDMA40_DEV_DST_MEMORY,
@@ -149,11 +191,22 @@ static struct platform_device snd_soc_mop500 = {
 
 struct msp_i2s_platform_data msp2_platform_data = {
 	.id = MSP_I2S_2,
+=======
+	.dir = DMA_MEM_TO_DEV,
+	.dev_type = DB8500_DMA_DEV14_MSP2,
+	.use_fixed_channel = true,
+	.phy_channel = 1,
+};
+
+struct msp_i2s_platform_data msp2_platform_data = {
+	.id = 2,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.msp_i2s_dma_rx = &msp2_dma_rx,
 	.msp_i2s_dma_tx = &msp2_dma_tx,
 };
 
 struct msp_i2s_platform_data msp3_platform_data = {
+<<<<<<< HEAD
 	.id		= MSP_I2S_3,
 	.msp_i2s_dma_rx	= &msp1_dma_rx,
 	.msp_i2s_dma_tx	= NULL,
@@ -174,3 +227,9 @@ void mop500_audio_init(struct device *parent)
 	db8500_add_msp_i2s(parent, 3, U8500_MSP3_BASE, IRQ_DB8500_MSP1,
 			   &msp3_platform_data);
 }
+=======
+	.id		= 3,
+	.msp_i2s_dma_rx	= &msp1_dma_rx,
+	.msp_i2s_dma_tx	= NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

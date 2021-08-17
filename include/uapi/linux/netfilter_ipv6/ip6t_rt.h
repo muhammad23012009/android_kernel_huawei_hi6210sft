@@ -2,7 +2,11 @@
 #define _IP6T_RT_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 /*#include <linux/in6.h>*/
+=======
+#include <linux/in6.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IP6T_RT_HOPS 16
 

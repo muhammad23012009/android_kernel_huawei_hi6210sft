@@ -186,7 +186,11 @@ bool arch_uprobe_skip_sstep(struct arch_uprobe *auprobe, struct pt_regs *regs)
 	 * emulate_step() returns 1 if the insn was successfully emulated.
 	 * For all other cases, we need to single-step in hardware.
 	 */
+<<<<<<< HEAD
 	ret = emulate_step(regs, auprobe->ainsn);
+=======
+	ret = emulate_step(regs, auprobe->insn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret > 0)
 		return true;
 

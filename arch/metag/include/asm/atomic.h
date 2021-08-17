@@ -4,6 +4,10 @@
 #include <linux/compiler.h>
 #include <linux/types.h>
 #include <asm/cmpxchg.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_METAG_ATOMICITY_IRQSOFF)
 /* The simple UP case. */
@@ -40,11 +44,14 @@
 #define atomic_inc_not_zero(v) atomic_add_unless((v), 1, 0)
 #define atomic_dec_if_positive(v)       atomic_sub_if_positive(1, v)
 
+<<<<<<< HEAD
 #define smp_mb__before_atomic_dec()	barrier()
 #define smp_mb__after_atomic_dec()	barrier()
 #define smp_mb__before_atomic_inc()	barrier()
 #define smp_mb__after_atomic_inc()	barrier()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #include <asm-generic/atomic64.h>

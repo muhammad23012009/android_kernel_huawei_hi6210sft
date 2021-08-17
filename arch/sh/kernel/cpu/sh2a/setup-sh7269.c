@@ -248,6 +248,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7269", vectors, groups,
 			 mask_registers, prio_registers, NULL);
 
 static struct plat_sci_port scif0_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe8007000,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -261,12 +262,35 @@ static struct plat_sci_port scif0_platform_data = {
 static struct platform_device scif0_device = {
 	.name		= "sh-sci",
 	.id		= 0,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif0_resources[] = {
+	DEFINE_RES_MEM(0xe8007000, 0x100),
+	DEFINE_RES_IRQ(259),
+	DEFINE_RES_IRQ(260),
+	DEFINE_RES_IRQ(261),
+	DEFINE_RES_IRQ(258),
+};
+
+static struct platform_device scif0_device = {
+	.name		= "sh-sci",
+	.id		= 0,
+	.resource	= scif0_resources,
+	.num_resources	= ARRAY_SIZE(scif0_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif0_platform_data,
 	},
 };
 
 static struct plat_sci_port scif1_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe8007800,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -280,12 +304,35 @@ static struct plat_sci_port scif1_platform_data = {
 static struct platform_device scif1_device = {
 	.name		= "sh-sci",
 	.id		= 1,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif1_resources[] = {
+	DEFINE_RES_MEM(0xe8007800, 0x100),
+	DEFINE_RES_IRQ(263),
+	DEFINE_RES_IRQ(264),
+	DEFINE_RES_IRQ(265),
+	DEFINE_RES_IRQ(262),
+};
+
+static struct platform_device scif1_device = {
+	.name		= "sh-sci",
+	.id		= 1,
+	.resource	= scif1_resources,
+	.num_resources	= ARRAY_SIZE(scif1_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif1_platform_data,
 	},
 };
 
 static struct plat_sci_port scif2_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe8008000,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -299,12 +346,35 @@ static struct plat_sci_port scif2_platform_data = {
 static struct platform_device scif2_device = {
 	.name		= "sh-sci",
 	.id		= 2,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif2_resources[] = {
+	DEFINE_RES_MEM(0xe8008000, 0x100),
+	DEFINE_RES_IRQ(267),
+	DEFINE_RES_IRQ(268),
+	DEFINE_RES_IRQ(269),
+	DEFINE_RES_IRQ(266),
+};
+
+static struct platform_device scif2_device = {
+	.name		= "sh-sci",
+	.id		= 2,
+	.resource	= scif2_resources,
+	.num_resources	= ARRAY_SIZE(scif2_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif2_platform_data,
 	},
 };
 
 static struct plat_sci_port scif3_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe8008800,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -318,12 +388,35 @@ static struct plat_sci_port scif3_platform_data = {
 static struct platform_device scif3_device = {
 	.name		= "sh-sci",
 	.id		= 3,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif3_resources[] = {
+	DEFINE_RES_MEM(0xe8008800, 0x100),
+	DEFINE_RES_IRQ(271),
+	DEFINE_RES_IRQ(272),
+	DEFINE_RES_IRQ(273),
+	DEFINE_RES_IRQ(270),
+};
+
+static struct platform_device scif3_device = {
+	.name		= "sh-sci",
+	.id		= 3,
+	.resource	= scif3_resources,
+	.num_resources	= ARRAY_SIZE(scif3_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif3_platform_data,
 	},
 };
 
 static struct plat_sci_port scif4_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe8009000,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -337,12 +430,35 @@ static struct plat_sci_port scif4_platform_data = {
 static struct platform_device scif4_device = {
 	.name		= "sh-sci",
 	.id		= 4,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif4_resources[] = {
+	DEFINE_RES_MEM(0xe8009000, 0x100),
+	DEFINE_RES_IRQ(275),
+	DEFINE_RES_IRQ(276),
+	DEFINE_RES_IRQ(277),
+	DEFINE_RES_IRQ(274),
+};
+
+static struct platform_device scif4_device = {
+	.name		= "sh-sci",
+	.id		= 4,
+	.resource	= scif4_resources,
+	.num_resources	= ARRAY_SIZE(scif4_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif4_platform_data,
 	},
 };
 
 static struct plat_sci_port scif5_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe8009800,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -356,12 +472,35 @@ static struct plat_sci_port scif5_platform_data = {
 static struct platform_device scif5_device = {
 	.name		= "sh-sci",
 	.id		= 5,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif5_resources[] = {
+	DEFINE_RES_MEM(0xe8009800, 0x100),
+	DEFINE_RES_IRQ(279),
+	DEFINE_RES_IRQ(280),
+	DEFINE_RES_IRQ(281),
+	DEFINE_RES_IRQ(278),
+};
+
+static struct platform_device scif5_device = {
+	.name		= "sh-sci",
+	.id		= 5,
+	.resource	= scif5_resources,
+	.num_resources	= ARRAY_SIZE(scif5_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif5_platform_data,
 	},
 };
 
 static struct plat_sci_port scif6_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe800a000,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -375,12 +514,35 @@ static struct plat_sci_port scif6_platform_data = {
 static struct platform_device scif6_device = {
 	.name		= "sh-sci",
 	.id		= 6,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif6_resources[] = {
+	DEFINE_RES_MEM(0xe800a000, 0x100),
+	DEFINE_RES_IRQ(283),
+	DEFINE_RES_IRQ(284),
+	DEFINE_RES_IRQ(285),
+	DEFINE_RES_IRQ(282),
+};
+
+static struct platform_device scif6_device = {
+	.name		= "sh-sci",
+	.id		= 6,
+	.resource	= scif6_resources,
+	.num_resources	= ARRAY_SIZE(scif6_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif6_platform_data,
 	},
 };
 
 static struct plat_sci_port scif7_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xe800a800,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
@@ -394,11 +556,34 @@ static struct plat_sci_port scif7_platform_data = {
 static struct platform_device scif7_device = {
 	.name		= "sh-sci",
 	.id		= 7,
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_RE | SCSCR_TE |
+			  SCSCR_REIE | SCSCR_TOIE,
+	.type		= PORT_SCIF,
+	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+};
+
+static struct resource scif7_resources[] = {
+	DEFINE_RES_MEM(0xe800a800, 0x100),
+	DEFINE_RES_IRQ(287),
+	DEFINE_RES_IRQ(288),
+	DEFINE_RES_IRQ(289),
+	DEFINE_RES_IRQ(286),
+};
+
+static struct platform_device scif7_device = {
+	.name		= "sh-sci",
+	.id		= 7,
+	.resource	= scif7_resources,
+	.num_resources	= ARRAY_SIZE(scif7_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif7_platform_data,
 	},
 };
 
+<<<<<<< HEAD
 static struct sh_timer_config cmt0_platform_data = {
 	.channel_offset = 0x02,
 	.timer_bit = 0,
@@ -511,6 +696,39 @@ static struct platform_device mtu2_1_device = {
 	},
 	.resource	= mtu2_1_resources,
 	.num_resources	= ARRAY_SIZE(mtu2_1_resources),
+=======
+static struct sh_timer_config cmt_platform_data = {
+	.channels_mask = 3,
+};
+
+static struct resource cmt_resources[] = {
+	DEFINE_RES_MEM(0xfffec000, 0x10),
+	DEFINE_RES_IRQ(188),
+	DEFINE_RES_IRQ(189),
+};
+
+static struct platform_device cmt_device = {
+	.name		= "sh-cmt-16",
+	.id		= 0,
+	.dev = {
+		.platform_data	= &cmt_platform_data,
+	},
+	.resource	= cmt_resources,
+	.num_resources	= ARRAY_SIZE(cmt_resources),
+};
+
+static struct resource mtu2_resources[] = {
+	DEFINE_RES_MEM(0xfffe4000, 0x400),
+	DEFINE_RES_IRQ_NAMED(192, "tgi0a"),
+	DEFINE_RES_IRQ_NAMED(203, "tgi1a"),
+};
+
+static struct platform_device mtu2_device = {
+	.name		= "sh-mtu2",
+	.id		= -1,
+	.resource	= mtu2_resources,
+	.num_resources	= ARRAY_SIZE(mtu2_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource rtc_resources[] = {
@@ -573,10 +791,15 @@ static struct platform_device *sh7269_devices[] __initdata = {
 	&scif5_device,
 	&scif6_device,
 	&scif7_device,
+<<<<<<< HEAD
 	&cmt0_device,
 	&cmt1_device,
 	&mtu2_0_device,
 	&mtu2_1_device,
+=======
+	&cmt_device,
+	&mtu2_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&rtc_device,
 	&r8a66597_usb_host_device,
 };
@@ -602,10 +825,15 @@ static struct platform_device *sh7269_early_devices[] __initdata = {
 	&scif5_device,
 	&scif6_device,
 	&scif7_device,
+<<<<<<< HEAD
 	&cmt0_device,
 	&cmt1_device,
 	&mtu2_0_device,
 	&mtu2_1_device,
+=======
+	&cmt_device,
+	&mtu2_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void __init plat_early_device_setup(void)

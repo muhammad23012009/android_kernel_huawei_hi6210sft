@@ -12,11 +12,24 @@ SYNOPSIS
 
 DESCRIPTION
 -----------
+<<<<<<< HEAD
 "perf mem -t <TYPE> record" runs a command and gathers memory operation data
 from it, into perf.data. Perf record options are accepted and are passed through.
 
 "perf mem -t <TYPE> report" displays the result. It invokes perf report with the
 right set of options to display a memory access profile.
+=======
+"perf mem record" runs a command and gathers memory operation data
+from it, into perf.data. Perf record options are accepted and are passed through.
+
+"perf mem report" displays the result. It invokes perf report with the
+right set of options to display a memory access profile. By default, loads
+and stores are sampled. Use the -t option to limit to loads or stores.
+
+Note that on Intel systems the memory latency reported is the use-latency,
+not the pure load (or store latency). Use latency includes any pipeline
+queueing delays in addition to the memory subsystem latency.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 OPTIONS
 -------
@@ -25,7 +38,11 @@ OPTIONS
 
 -t::
 --type=::
+<<<<<<< HEAD
 	Select the memory operation type: load or store (default: load)
+=======
+	Select the memory operation type: load or store (default: load,store)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 -D::
 --dump-raw-samples=::
@@ -43,6 +60,20 @@ OPTIONS
 	option can be passed in record mode. It will be interpreted the same way as perf
 	record.
 
+<<<<<<< HEAD
+=======
+-K::
+--all-kernel::
+	Configure all used events to run in kernel space.
+
+-U::
+--all-user::
+	Configure all used events to run in user space.
+
+--ldload::
+	Specify desired latency for loads event.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 SEE ALSO
 --------
 linkperf:perf-record[1], linkperf:perf-report[1]

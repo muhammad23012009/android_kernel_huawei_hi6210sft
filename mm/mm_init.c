@@ -9,17 +9,31 @@
 #include <linux/init.h>
 #include <linux/kobject.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include "internal.h"
 
 #ifdef CONFIG_DEBUG_MEMORY_INIT
 int mminit_loglevel;
+=======
+#include <linux/memory.h>
+#include <linux/notifier.h>
+#include <linux/sched.h>
+#include "internal.h"
+
+#ifdef CONFIG_DEBUG_MEMORY_INIT
+int __meminitdata mminit_loglevel;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef SECTIONS_SHIFT
 #define SECTIONS_SHIFT	0
 #endif
 
 /* The zonelists are simply reported, validation is manual. */
+<<<<<<< HEAD
 void mminit_verify_zonelist(void)
+=======
+void __init mminit_verify_zonelist(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int nid;
 
@@ -52,6 +66,7 @@ void mminit_verify_zonelist(void)
 			/* Iterate the zonelist */
 			for_each_zone_zonelist(zone, z, zonelist, zoneid) {
 #ifdef CONFIG_NUMA
+<<<<<<< HEAD
 				printk(KERN_CONT "%d:%s ",
 					zone->node, zone->name);
 #else
@@ -59,6 +74,14 @@ void mminit_verify_zonelist(void)
 #endif /* CONFIG_NUMA */
 			}
 			printk(KERN_CONT "\n");
+=======
+				pr_cont("%d:%s ", zone->node, zone->name);
+#else
+				pr_cont("0:%s ", zone->name);
+#endif /* CONFIG_NUMA */
+			}
+			pr_cont("\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }
@@ -69,6 +92,7 @@ void __init mminit_verify_pageflags_layout(void)
 	unsigned long or_mask, add_mask;
 
 	shift = 8 * sizeof(unsigned long);
+<<<<<<< HEAD
 	width = shift - SECTIONS_WIDTH - NODES_WIDTH - ZONES_WIDTH - LAST_NID_SHIFT;
 	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_widths",
 		"Section %d Node %d Zone %d Lastnid %d Flags %d\n",
@@ -89,6 +113,28 @@ void __init mminit_verify_pageflags_layout(void)
 		(unsigned long)NODES_PGSHIFT,
 		(unsigned long)ZONES_PGSHIFT,
 		(unsigned long)LAST_NID_PGSHIFT);
+=======
+	width = shift - SECTIONS_WIDTH - NODES_WIDTH - ZONES_WIDTH - LAST_CPUPID_SHIFT;
+	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_widths",
+		"Section %d Node %d Zone %d Lastcpupid %d Flags %d\n",
+		SECTIONS_WIDTH,
+		NODES_WIDTH,
+		ZONES_WIDTH,
+		LAST_CPUPID_WIDTH,
+		NR_PAGEFLAGS);
+	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_shifts",
+		"Section %d Node %d Zone %d Lastcpupid %d\n",
+		SECTIONS_SHIFT,
+		NODES_SHIFT,
+		ZONES_SHIFT,
+		LAST_CPUPID_SHIFT);
+	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_pgshifts",
+		"Section %lu Node %lu Zone %lu Lastcpupid %lu\n",
+		(unsigned long)SECTIONS_PGSHIFT,
+		(unsigned long)NODES_PGSHIFT,
+		(unsigned long)ZONES_PGSHIFT,
+		(unsigned long)LAST_CPUPID_PGSHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_nodezoneid",
 		"Node/Zone ID: %lu -> %lu\n",
 		(unsigned long)(ZONEID_PGOFF + ZONEID_SHIFT),
@@ -100,9 +146,15 @@ void __init mminit_verify_pageflags_layout(void)
 	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_nodeflags",
 		"Node not in page flags");
 #endif
+<<<<<<< HEAD
 #ifdef LAST_NID_NOT_IN_PAGE_FLAGS
 	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_nodeflags",
 		"Last nid not in page flags");
+=======
+#ifdef LAST_CPUPID_NOT_IN_PAGE_FLAGS
+	mminit_dprintk(MMINIT_TRACE, "pageflags_layout_nodeflags",
+		"Last cpupid not in page flags");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	if (SECTIONS_WIDTH) {
@@ -128,6 +180,7 @@ void __init mminit_verify_pageflags_layout(void)
 	BUG_ON(or_mask != add_mask);
 }
 
+<<<<<<< HEAD
 void __meminit mminit_verify_page_links(struct page *page, enum zone_type zone,
 			unsigned long nid, unsigned long pfn)
 {
@@ -136,6 +189,8 @@ void __meminit mminit_verify_page_links(struct page *page, enum zone_type zone,
 	BUG_ON(page_to_pfn(page) != pfn);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __init int set_mminit_loglevel(char *str)
 {
 	get_option(&str, &mminit_loglevel);
@@ -147,6 +202,54 @@ early_param("mminit_loglevel", set_mminit_loglevel);
 struct kobject *mm_kobj;
 EXPORT_SYMBOL_GPL(mm_kobj);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+s32 vm_committed_as_batch = 32;
+
+static void __meminit mm_compute_batch(void)
+{
+	u64 memsized_batch;
+	s32 nr = num_present_cpus();
+	s32 batch = max_t(s32, nr*2, 32);
+
+	/* batch size set to 0.4% of (total memory/#cpus), or max int32 */
+	memsized_batch = min_t(u64, (totalram_pages/nr)/256, 0x7fffffff);
+
+	vm_committed_as_batch = max_t(s32, memsized_batch, batch);
+}
+
+static int __meminit mm_compute_batch_notifier(struct notifier_block *self,
+					unsigned long action, void *arg)
+{
+	switch (action) {
+	case MEM_ONLINE:
+	case MEM_OFFLINE:
+		mm_compute_batch();
+	default:
+		break;
+	}
+	return NOTIFY_OK;
+}
+
+static struct notifier_block compute_batch_nb __meminitdata = {
+	.notifier_call = mm_compute_batch_notifier,
+	.priority = IPC_CALLBACK_PRI, /* use lowest priority */
+};
+
+static int __init mm_compute_batch_init(void)
+{
+	mm_compute_batch();
+	register_hotmemory_notifier(&compute_batch_nb);
+
+	return 0;
+}
+
+__initcall(mm_compute_batch_init);
+
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init mm_sysfs_init(void)
 {
 	mm_kobj = kobject_create_and_add("mm", kernel_kobj);
@@ -155,5 +258,9 @@ static int __init mm_sysfs_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 __initcall(mm_sysfs_init);
+=======
+postcore_initcall(mm_sysfs_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

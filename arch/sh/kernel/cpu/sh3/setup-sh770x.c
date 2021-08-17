@@ -109,6 +109,7 @@ static struct platform_device rtc_device = {
 };
 
 static struct plat_sci_port scif0_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xfffffe80,
 	.port_reg	= 0xa4000136,
 	.flags		= UPF_BOOT_AUTOCONF,
@@ -116,13 +117,32 @@ static struct plat_sci_port scif0_platform_data = {
 	.scbrr_algo_id	= SCBRR_ALGO_2,
 	.type		= PORT_SCI,
 	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x4e0)),
+=======
+	.port_reg	= 0xa4000136,
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_TE | SCSCR_RE,
+	.type		= PORT_SCI,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ops		= &sh770x_sci_port_ops,
 	.regshift	= 1,
+};
+
+<<<<<<< HEAD
+static struct platform_device scif0_device = {
+	.name		= "sh-sci",
+	.id		= 0,
+=======
+static struct resource scif0_resources[] = {
+	DEFINE_RES_MEM(0xfffffe80, 0x10),
+	DEFINE_RES_IRQ(evt2irq(0x4e0)),
 };
 
 static struct platform_device scif0_device = {
 	.name		= "sh-sci",
 	.id		= 0,
+	.resource	= scif0_resources,
+	.num_resources	= ARRAY_SIZE(scif0_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif0_platform_data,
 	},
@@ -131,19 +151,38 @@ static struct platform_device scif0_device = {
     defined(CONFIG_CPU_SUBTYPE_SH7707) || \
     defined(CONFIG_CPU_SUBTYPE_SH7709)
 static struct plat_sci_port scif1_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xa4000150,
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_TE | SCSCR_RE,
 	.scbrr_algo_id	= SCBRR_ALGO_2,
 	.type		= PORT_SCIF,
 	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x900)),
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_TE | SCSCR_RE,
+	.type		= PORT_SCIF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ops		= &sh770x_sci_port_ops,
 	.regtype	= SCIx_SH3_SCIF_REGTYPE,
+};
+
+<<<<<<< HEAD
+static struct platform_device scif1_device = {
+	.name		= "sh-sci",
+	.id		= 1,
+=======
+static struct resource scif1_resources[] = {
+	DEFINE_RES_MEM(0xa4000150, 0x10),
+	DEFINE_RES_IRQ(evt2irq(0x900)),
 };
 
 static struct platform_device scif1_device = {
 	.name		= "sh-sci",
 	.id		= 1,
+	.resource	= scif1_resources,
+	.num_resources	= ARRAY_SIZE(scif1_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif1_platform_data,
 	},
@@ -152,6 +191,7 @@ static struct platform_device scif1_device = {
 #if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
     defined(CONFIG_CPU_SUBTYPE_SH7709)
 static struct plat_sci_port scif2_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xa4000140,
 	.port_reg	= SCIx_NOT_SUPPORTED,
 	.flags		= UPF_BOOT_AUTOCONF,
@@ -161,11 +201,28 @@ static struct plat_sci_port scif2_platform_data = {
 	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x880)),
 	.ops		= &sh770x_sci_port_ops,
 	.regshift	= 1,
+=======
+	.port_reg	= SCIx_NOT_SUPPORTED,
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_TE | SCSCR_RE,
+	.type		= PORT_IRDA,
+	.ops		= &sh770x_sci_port_ops,
+};
+
+static struct resource scif2_resources[] = {
+	DEFINE_RES_MEM(0xa4000140, 0x10),
+	DEFINE_RES_IRQ(evt2irq(0x880)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device scif2_device = {
 	.name		= "sh-sci",
 	.id		= 2,
+<<<<<<< HEAD
+=======
+	.resource	= scif2_resources,
+	.num_resources	= ARRAY_SIZE(scif2_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif2_platform_data,
 	},
@@ -173,6 +230,7 @@ static struct platform_device scif2_device = {
 #endif
 
 static struct sh_timer_config tmu0_platform_data = {
+<<<<<<< HEAD
 	.channel_offset = 0x02,
 	.timer_bit = 0,
 	.clockevent_rating = 200,
@@ -192,6 +250,20 @@ static struct resource tmu0_resources[] = {
 
 static struct platform_device tmu0_device = {
 	.name		= "sh_tmu",
+=======
+	.channels_mask = 7,
+};
+
+static struct resource tmu0_resources[] = {
+	DEFINE_RES_MEM(0xfffffe90, 0x2c),
+	DEFINE_RES_IRQ(evt2irq(0x400)),
+	DEFINE_RES_IRQ(evt2irq(0x420)),
+	DEFINE_RES_IRQ(evt2irq(0x440)),
+};
+
+static struct platform_device tmu0_device = {
+	.name		= "sh-tmu-sh3",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id		= 0,
 	.dev = {
 		.platform_data	= &tmu0_platform_data,
@@ -200,6 +272,7 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
+<<<<<<< HEAD
 static struct sh_timer_config tmu1_platform_data = {
 	.channel_offset = 0xe,
 	.timer_bit = 1,
@@ -255,6 +328,8 @@ static struct platform_device tmu2_device = {
 	.num_resources	= ARRAY_SIZE(tmu2_resources),
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device *sh770x_devices[] __initdata = {
 	&scif0_device,
 #if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
@@ -267,8 +342,11 @@ static struct platform_device *sh770x_devices[] __initdata = {
 	&scif2_device,
 #endif
 	&tmu0_device,
+<<<<<<< HEAD
 	&tmu1_device,
 	&tmu2_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&rtc_device,
 };
 
@@ -291,8 +369,11 @@ static struct platform_device *sh770x_early_devices[] __initdata = {
 	&scif2_device,
 #endif
 	&tmu0_device,
+<<<<<<< HEAD
 	&tmu1_device,
 	&tmu2_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void __init plat_early_device_setup(void)

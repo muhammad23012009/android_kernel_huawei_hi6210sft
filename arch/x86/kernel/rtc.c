@@ -12,8 +12,13 @@
 #include <asm/vsyscall.h>
 #include <asm/x86_init.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/mrst.h>
 #include <asm/rtc.h>
+=======
+#include <asm/intel-mid.h>
+#include <asm/setup.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_X86_32
 /*
@@ -38,13 +43,20 @@ EXPORT_SYMBOL(rtc_lock);
  * jump to the next second precisely 500 ms later. Check the Motorola
  * MC146818A or Dallas DS12887 data sheet for details.
  */
+<<<<<<< HEAD
 int mach_set_rtc_mmss(unsigned long nowtime)
 {
+=======
+int mach_set_rtc_mmss(const struct timespec *now)
+{
+	unsigned long nowtime = now->tv_sec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rtc_time tm;
 	int retval = 0;
 
 	rtc_time_to_tm(nowtime, &tm);
 	if (!rtc_valid_tm(&tm)) {
+<<<<<<< HEAD
 		retval = set_rtc_time(&tm);
 		if (retval)
 			printk(KERN_ERR "%s: RTC write failed with error %d\n",
@@ -53,12 +65,26 @@ int mach_set_rtc_mmss(unsigned long nowtime)
 		printk(KERN_ERR
 		       "%s: Invalid RTC value: write of %lx to RTC failed\n",
 			__FUNCTION__, nowtime);
+=======
+		retval = mc146818_set_time(&tm);
+		if (retval)
+			printk(KERN_ERR "%s: RTC write failed with error %d\n",
+			       __func__, retval);
+	} else {
+		printk(KERN_ERR
+		       "%s: Invalid RTC value: write of %lx to RTC failed\n",
+			__func__, nowtime);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = -EINVAL;
 	}
 	return retval;
 }
 
+<<<<<<< HEAD
 unsigned long mach_get_cmos_time(void)
+=======
+void mach_get_cmos_time(struct timespec *now)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int status, year, mon, day, hour, min, sec, century = 0;
 	unsigned long flags;
@@ -107,7 +133,12 @@ unsigned long mach_get_cmos_time(void)
 	} else
 		year += CMOS_YEARS_OFFS;
 
+<<<<<<< HEAD
 	return mktime(year, mon, day, hour, min, sec);
+=======
+	now->tv_sec = mktime(year, mon, day, hour, min, sec);
+	now->tv_nsec = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Routines for accessing the CMOS RAM/RTC. */
@@ -135,18 +166,26 @@ EXPORT_SYMBOL(rtc_cmos_write);
 
 int update_persistent_clock(struct timespec now)
 {
+<<<<<<< HEAD
 	return x86_platform.set_wallclock(now.tv_sec);
+=======
+	return x86_platform.set_wallclock(&now);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* not static: needed by APM */
 void read_persistent_clock(struct timespec *ts)
 {
+<<<<<<< HEAD
 	unsigned long retval;
 
 	retval = x86_platform.get_wallclock();
 
 	ts->tv_sec = retval;
 	ts->tv_nsec = 0;
+=======
+	x86_platform.get_wallclock(ts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -173,7 +212,11 @@ static struct platform_device rtc_device = {
 static __init int add_rtc_cmos(void)
 {
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 	static const char * const  const ids[] __initconst =
+=======
+	static const char * const ids[] __initconst =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    { "PNP0b00", "PNP0b01", "PNP0b02", };
 	struct pnp_dev *dev;
 	struct pnp_id *id;
@@ -188,11 +231,15 @@ static __init int add_rtc_cmos(void)
 		}
 	}
 #endif
+<<<<<<< HEAD
 	if (of_have_populated_dt())
 		return 0;
 
 	/* Intel MID platforms don't have ioport rtc */
 	if (mrst_identify_cpu())
+=======
+	if (!x86_platform.legacy.rtc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	platform_device_register(&rtc_device);

@@ -15,11 +15,20 @@
  * then is used by multiple filesystems.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/vmalloc.h>
 #include <linux/zlib.h>
+<<<<<<< HEAD
 #include <linux/cramfs_fs.h>
+=======
+#include "internal.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static z_stream stream;
 static int initialized;
@@ -37,7 +46,11 @@ int cramfs_uncompress_block(void *dst, int dstlen, void *src, int srclen)
 
 	err = zlib_inflateReset(&stream);
 	if (err != Z_OK) {
+<<<<<<< HEAD
 		printk("zlib_inflateReset error %d\n", err);
+=======
+		pr_err("zlib_inflateReset error %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		zlib_inflateEnd(&stream);
 		zlib_inflateInit(&stream);
 	}
@@ -48,8 +61,13 @@ int cramfs_uncompress_block(void *dst, int dstlen, void *src, int srclen)
 	return stream.total_out;
 
 err:
+<<<<<<< HEAD
 	printk("Error %d while decompressing!\n", err);
 	printk("%p(%d)->%p(%d)\n", src, srclen, dst, dstlen);
+=======
+	pr_err("Error %d while decompressing!\n", err);
+	pr_err("%p(%d)->%p(%d)\n", src, srclen, dst, dstlen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -57,7 +75,11 @@ int cramfs_uncompress_init(void)
 {
 	if (!initialized++) {
 		stream.workspace = vmalloc(zlib_inflate_workspacesize());
+<<<<<<< HEAD
 		if ( !stream.workspace ) {
+=======
+		if (!stream.workspace) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			initialized = 0;
 			return -ENOMEM;
 		}

@@ -1,6 +1,7 @@
 #ifndef _CONNTRACK_PROTO_GRE_H
 #define _CONNTRACK_PROTO_GRE_H
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 
 /* GRE PROTOCOL HEADER */
 
@@ -63,6 +64,10 @@ struct gre_hdr_pptp {
 	__be32 ack;		/* seq number of highest packet received by */
 				/*  sender in this session */
 };
+=======
+#include <net/gre.h>
+#include <net/pptp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct nf_ct_gre {
 	unsigned int stream_timeout;
@@ -87,8 +92,12 @@ int nf_ct_gre_keymap_add(struct nf_conn *ct, enum ip_conntrack_dir dir,
 /* delete keymap entries */
 void nf_ct_gre_keymap_destroy(struct nf_conn *ct);
 
+<<<<<<< HEAD
 extern void nf_ct_gre_keymap_flush(struct net *net);
 extern void nf_nat_need_gre(void);
+=======
+void nf_nat_need_gre(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __KERNEL__ */
 #endif /* _CONNTRACK_PROTO_GRE_H */

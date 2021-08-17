@@ -8,12 +8,19 @@ config SOC_CAMERA
 	  over a bus like PCI or USB. For example some i2c camera connected
 	  directly to the data bus of an SoC.
 
+<<<<<<< HEAD
+=======
+config SOC_CAMERA_SCALE_CROP
+	tristate
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config SOC_CAMERA_PLATFORM
 	tristate "platform camera support"
 	depends on SOC_CAMERA
 	help
 	  This is a generic SoC camera platform driver, useful for testing
 
+<<<<<<< HEAD
 config MX1_VIDEO
 	bool
 
@@ -80,6 +87,23 @@ config VIDEO_MX2
 config VIDEO_ATMEL_ISI
 	tristate "ATMEL Image Sensor Interface (ISI) support"
 	depends on VIDEO_DEV && SOC_CAMERA && ARCH_AT91
+=======
+config VIDEO_SH_MOBILE_CEU
+	tristate "SuperH Mobile CEU Interface driver"
+	depends on VIDEO_DEV && SOC_CAMERA && HAS_DMA && HAVE_CLK
+	depends on ARCH_SHMOBILE || COMPILE_TEST
+	depends on HAS_DMA
+	select VIDEOBUF2_DMA_CONTIG
+	select SOC_CAMERA_SCALE_CROP
+	---help---
+	  This is a v4l2 driver for the SuperH Mobile CEU Interface
+
+config VIDEO_ATMEL_ISI
+	tristate "ATMEL Image Sensor Interface (ISI) support"
+	depends on VIDEO_DEV && SOC_CAMERA
+	depends on ARCH_AT91 || COMPILE_TEST
+	depends on HAS_DMA
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select VIDEOBUF2_DMA_CONTIG
 	---help---
 	  This module makes the ATMEL Image Sensor Interface available

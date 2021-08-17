@@ -19,7 +19,11 @@
 #include <linux/videodev2.h>
 #include <linux/io.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-mem2mem.h>
@@ -45,6 +49,10 @@
 #define GSC_DST_FMT			(1 << 2)
 #define GSC_CTX_M2M			(1 << 3)
 #define GSC_CTX_STOP_REQ		(1 << 6)
+<<<<<<< HEAD
+=======
+#define	GSC_CTX_ABORT			(1 << 7)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum gsc_dev_flags {
 	/* for global */
@@ -116,7 +124,11 @@ enum gsc_yuv_fmt {
  * @flags: flags indicating which operation mode format applies to
  */
 struct gsc_fmt {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode mbus_code;
+=======
+	u32 mbus_code;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char	*name;
 	u32	pixelformat;
 	u32	color;
@@ -135,7 +147,11 @@ struct gsc_fmt {
  * @idx : index of G-Scaler input buffer
  */
 struct gsc_input_buf {
+<<<<<<< HEAD
 	struct vb2_buffer	vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head	list;
 	int			idx;
 };
@@ -326,7 +342,10 @@ struct gsc_driverdata {
  * @irq_queue:	interrupt handler waitqueue
  * @m2m:	memory-to-memory V4L2 device information
  * @state:	flags used to synchronize m2m and capture mode operation
+<<<<<<< HEAD
  * @alloc_ctx:	videobuf2 memory allocator context
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @vdev:	video device for G-Scaler instance
  */
 struct gsc_dev {
@@ -339,9 +358,13 @@ struct gsc_dev {
 	void __iomem			*regs;
 	wait_queue_head_t		irq_queue;
 	struct gsc_m2m_device		m2m;
+<<<<<<< HEAD
 	struct exynos_platform_gscaler	*pdata;
 	unsigned long			state;
 	struct vb2_alloc_ctx		*alloc_ctx;
+=======
+	unsigned long			state;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct video_device		vdev;
 	struct v4l2_device		v4l2_dev;
 };
@@ -465,6 +488,7 @@ static inline void gsc_hw_clear_irq(struct gsc_dev *dev, int irq)
 	writel(cfg, dev->regs + GSC_IRQ);
 }
 
+<<<<<<< HEAD
 static inline void gsc_lock(struct vb2_queue *vq)
 {
 	struct gsc_ctx *ctx = vb2_get_drv_priv(vq);
@@ -477,6 +501,8 @@ static inline void gsc_unlock(struct vb2_queue *vq)
 	mutex_unlock(&ctx->gsc_dev->lock);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool gsc_ctx_state_is_set(u32 mask, struct gsc_ctx *ctx)
 {
 	unsigned long flags;

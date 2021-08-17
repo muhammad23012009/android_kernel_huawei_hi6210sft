@@ -39,6 +39,7 @@ int pciehp_configure_device(struct slot *p_slot)
 	struct pci_dev *dev;
 	struct pci_dev *bridge = p_slot->ctrl->pcie->port;
 	struct pci_bus *parent = bridge->subordinate;
+<<<<<<< HEAD
 	int num;
 	struct controller *ctrl = p_slot->ctrl;
 
@@ -49,11 +50,26 @@ int pciehp_configure_device(struct slot *p_slot)
 			 pci_domain_nr(parent), parent->number);
 		pci_dev_put(dev);
 		return -EINVAL;
+=======
+	int num, ret = 0;
+	struct controller *ctrl = p_slot->ctrl;
+
+	pci_lock_rescan_remove();
+
+	dev = pci_get_slot(parent, PCI_DEVFN(0, 0));
+	if (dev) {
+		ctrl_err(ctrl, "Device %s already exists at %04x:%02x:00, cannot hot-add\n",
+			 pci_name(dev), pci_domain_nr(parent), parent->number);
+		pci_dev_put(dev);
+		ret = -EEXIST;
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	num = pci_scan_slot(parent, PCI_DEVFN(0, 0));
 	if (num == 0) {
 		ctrl_err(ctrl, "No new device found\n");
+<<<<<<< HEAD
 		return -ENODEV;
 	}
 
@@ -74,11 +90,32 @@ int pciehp_configure_device(struct slot *p_slot)
 	pci_bus_add_devices(parent);
 
 	return 0;
+=======
+		ret = -ENODEV;
+		goto out;
+	}
+
+	list_for_each_entry(dev, &parent->devices, bus_list)
+		if (pci_is_bridge(dev))
+			pci_hp_add_bridge(dev);
+
+	pci_assign_unassigned_bridge_resources(bridge);
+	pcie_bus_configure_settings(parent);
+	pci_bus_add_devices(parent);
+
+ out:
+	pci_unlock_rescan_remove();
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int pciehp_unconfigure_device(struct slot *p_slot)
 {
+<<<<<<< HEAD
 	int ret, rc = 0;
+=======
+	int rc = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 bctl = 0;
 	u8 presence = 0;
 	struct pci_dev *dev, *temp;
@@ -88,9 +125,15 @@ int pciehp_unconfigure_device(struct slot *p_slot)
 
 	ctrl_dbg(ctrl, "%s: domain:bus:dev = %04x:%02x:00\n",
 		 __func__, pci_domain_nr(parent), parent->number);
+<<<<<<< HEAD
 	ret = pciehp_get_adapter_status(p_slot, &presence);
 	if (ret)
 		presence = 0;
+=======
+	pciehp_get_adapter_status(p_slot, &presence);
+
+	pci_lock_rescan_remove();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Stopping an SR-IOV PF device removes all the associated VFs,
@@ -126,5 +169,9 @@ int pciehp_unconfigure_device(struct slot *p_slot)
 		pci_dev_put(dev);
 	}
 
+<<<<<<< HEAD
+=======
+	pci_unlock_rescan_remove();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }

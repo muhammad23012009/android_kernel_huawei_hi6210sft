@@ -39,10 +39,13 @@ static inline int kvm_para_available(void)
 	return 1;
 }
 
+<<<<<<< HEAD
 extern unsigned long kvm_hypercall(unsigned long *in,
 				   unsigned long *out,
 				   unsigned long nr);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 
 static inline int kvm_para_available(void)
@@ -50,6 +53,7 @@ static inline int kvm_para_available(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned long kvm_hypercall(unsigned long *in,
 				   unsigned long *out,
 				   unsigned long nr)
@@ -126,6 +130,10 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
 }
 
 
+=======
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned int kvm_arch_para_features(void)
 {
 	unsigned long r;
@@ -133,7 +141,11 @@ static inline unsigned int kvm_arch_para_features(void)
 	if (!kvm_para_available())
 		return 0;
 
+<<<<<<< HEAD
 	if(kvm_hypercall0_1(KVM_HC_FEATURES, &r))
+=======
+	if(epapr_hypercall0_1(KVM_HCALL_TOKEN(KVM_HC_FEATURES), &r))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	return r;

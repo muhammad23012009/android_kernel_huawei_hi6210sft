@@ -52,7 +52,11 @@ MODULE_PARM_DESC(enable, "Enable SiS7019 Audio Accelerator.");
 module_param(codecs, int, 0444);
 MODULE_PARM_DESC(codecs, "Set bit to indicate that codec number is expected to be present (default 1)");
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_sis7019_ids) = {
+=======
+static const struct pci_device_id snd_sis7019_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_SI, 0x7019) },
 	{ 0, }
 };
@@ -383,9 +387,15 @@ static void __sis_map_silence(struct sis7019 *sis)
 {
 	/* Helper function: must hold sis->voice_lock on entry */
 	if (!sis->silence_users)
+<<<<<<< HEAD
 		sis->silence_dma_addr = pci_map_single(sis->pci,
 						sis->suspend_state[0],
 						4096, PCI_DMA_TODEVICE);
+=======
+		sis->silence_dma_addr = dma_map_single(&sis->pci->dev,
+						sis->suspend_state[0],
+						4096, DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sis->silence_users++;
 }
 
@@ -394,8 +404,13 @@ static void __sis_unmap_silence(struct sis7019 *sis)
 	/* Helper function: must hold sis->voice_lock on entry */
 	sis->silence_users--;
 	if (!sis->silence_users)
+<<<<<<< HEAD
 		pci_unmap_single(sis->pci, sis->silence_dma_addr, 4096,
 					PCI_DMA_TODEVICE);
+=======
+		dma_unmap_single(&sis->pci->dev, sis->silence_dma_addr, 4096,
+					DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sis_free_voice(struct sis7019 *sis, struct voice *voice)
@@ -1064,12 +1079,18 @@ static int sis_chip_free(struct sis7019 *sis)
 	if (sis->irq >= 0)
 		free_irq(sis->irq, sis);
 
+<<<<<<< HEAD
 	if (sis->ioaddr)
 		iounmap(sis->ioaddr);
 
 	pci_release_regions(sis->pci);
 	pci_disable_device(sis->pci);
 
+=======
+	iounmap(sis->ioaddr);
+	pci_release_regions(sis->pci);
+	pci_disable_device(sis->pci);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sis_free_suspend(sis);
 	return 0;
 }
@@ -1211,7 +1232,10 @@ static int sis_chip_init(struct sis7019 *sis)
 #ifdef CONFIG_PM_SLEEP
 static int sis_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct sis7019 *sis = card->private_data;
 	void __iomem *ioaddr = sis->ioaddr;
@@ -1240,9 +1264,12 @@ static int sis_suspend(struct device *dev)
 		ioaddr += 4096;
 	}
 
+<<<<<<< HEAD
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1254,6 +1281,7 @@ static int sis_resume(struct device *dev)
 	void __iomem *ioaddr = sis->ioaddr;
 	int i;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 
@@ -1262,6 +1290,8 @@ static int sis_resume(struct device *dev)
 		goto error;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sis_chip_init(sis)) {
 		dev_err(&pci->dev, "unable to re-init controller\n");
 		goto error;
@@ -1284,7 +1314,10 @@ static int sis_resume(struct device *dev)
 	memset(sis->suspend_state[0], 0, 4096);
 
 	sis->irq = pci->irq;
+<<<<<<< HEAD
 	pci_set_master(pci);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sis->codecs_present & SIS_PRIMARY_CODEC_PRESENT)
 		snd_ac97_resume(sis->ac97[0]);
@@ -1341,7 +1374,11 @@ static int sis_chip_create(struct snd_card *card,
 	if (rc)
 		goto error_out;
 
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pci, DMA_BIT_MASK(30));
+=======
+	rc = dma_set_mask(&pci->dev, DMA_BIT_MASK(30));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc < 0) {
 		dev_err(&pci->dev, "architecture does not support 30-bit PCI busmaster DMA");
 		goto error_out_enabled;
@@ -1404,8 +1441,11 @@ static int sis_chip_create(struct snd_card *card,
 	if (rc)
 		goto error_out_cleanup;
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 error_out_cleanup:
@@ -1440,7 +1480,12 @@ static int snd_sis7019_probe(struct pci_dev *pci,
 	if (!codecs)
 		codecs = SIS_PRIMARY_CODEC_PRESENT;
 
+<<<<<<< HEAD
 	rc = snd_card_create(index, id, THIS_MODULE, sizeof(*sis), &card);
+=======
+	rc = snd_card_new(&pci->dev, index, id, THIS_MODULE,
+			  sizeof(*sis), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc < 0)
 		goto error_out;
 
@@ -1482,7 +1527,10 @@ error_out:
 static void snd_sis7019_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
+<<<<<<< HEAD
 	pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pci_driver sis7019_driver = {

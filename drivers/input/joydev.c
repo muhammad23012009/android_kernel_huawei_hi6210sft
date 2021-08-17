@@ -188,6 +188,7 @@ static void joydev_detach_client(struct joydev *joydev,
 	synchronize_rcu();
 }
 
+<<<<<<< HEAD
 static void joydev_refresh_state(struct joydev *joydev)
 {
 	struct input_dev *dev = joydev->handle.dev;
@@ -199,6 +200,8 @@ static void joydev_refresh_state(struct joydev *joydev)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int joydev_open_device(struct joydev *joydev)
 {
 	int retval;
@@ -213,8 +216,11 @@ static int joydev_open_device(struct joydev *joydev)
 		retval = input_open_device(&joydev->handle);
 		if (retval)
 			joydev->open--;
+<<<<<<< HEAD
 		else
 			joydev_refresh_state(joydev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_unlock(&joydev->mutex);
@@ -457,6 +463,7 @@ static int joydev_handle_JSIOCSAXMAP(struct joydev *joydev,
 	len = min(len, sizeof(joydev->abspam));
 
 	/* Validate the map. */
+<<<<<<< HEAD
 	abspam = kmalloc(len, GFP_KERNEL);
 	if (!abspam)
 		return -ENOMEM;
@@ -467,6 +474,13 @@ static int joydev_handle_JSIOCSAXMAP(struct joydev *joydev,
 	}
 
 	for (i = 0; i < joydev->nabs; i++) {
+=======
+	abspam = memdup_user(argp, len);
+	if (IS_ERR(abspam))
+		return PTR_ERR(abspam);
+
+	for (i = 0; i < len && i < joydev->nabs; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (abspam[i] > ABS_MAX) {
 			retval = -EINVAL;
 			goto out;
@@ -490,6 +504,7 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 	int i;
 	int retval = 0;
 
+<<<<<<< HEAD
 	len = min(len, sizeof(joydev->keypam));
 
 	/* Validate the map. */
@@ -503,6 +518,19 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 	}
 
 	for (i = 0; i < joydev->nkey; i++) {
+=======
+	if (len % sizeof(*keypam))
+		return -EINVAL;
+
+	len = min(len, sizeof(joydev->keypam));
+
+	/* Validate the map. */
+	keypam = memdup_user(argp, len);
+	if (IS_ERR(keypam))
+		return PTR_ERR(keypam);
+
+	for (i = 0; i < (len / 2) && i < joydev->nkey; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (keypam[i] > KEY_MAX || keypam[i] < BTN_MISC) {
 			retval = -EINVAL;
 			goto out;
@@ -512,7 +540,11 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 	memcpy(joydev->keypam, keypam, len);
 
 	for (i = 0; i < joydev->nkey; i++)
+<<<<<<< HEAD
 		joydev->keymap[keypam[i] - BTN_MISC] = i;
+=======
+		joydev->keymap[joydev->keypam[i] - BTN_MISC] = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  out:
 	kfree(keypam);
@@ -760,6 +792,66 @@ static void joydev_cleanup(struct joydev *joydev)
 		input_close_device(handle);
 }
 
+<<<<<<< HEAD
+=======
+static bool joydev_dev_is_absolute_mouse(struct input_dev *dev)
+{
+	DECLARE_BITMAP(jd_scratch, KEY_CNT);
+
+	BUILD_BUG_ON(ABS_CNT > KEY_CNT || EV_CNT > KEY_CNT);
+
+	/*
+	 * Virtualization (VMware, etc) and remote management (HP
+	 * ILO2) solutions use absolute coordinates for their virtual
+	 * pointing devices so that there is one-to-one relationship
+	 * between pointer position on the host screen and virtual
+	 * guest screen, and so their mice use ABS_X, ABS_Y and 3
+	 * primary button events. This clashes with what joydev
+	 * considers to be joysticks (a device with at minimum ABS_X
+	 * axis).
+	 *
+	 * Here we are trying to separate absolute mice from
+	 * joysticks. A device is, for joystick detection purposes,
+	 * considered to be an absolute mouse if the following is
+	 * true:
+	 *
+	 * 1) Event types are exactly EV_ABS, EV_KEY and EV_SYN.
+	 * 2) Absolute events are exactly ABS_X and ABS_Y.
+	 * 3) Keys are exactly BTN_LEFT, BTN_RIGHT and BTN_MIDDLE.
+	 * 4) Device is not on "Amiga" bus.
+	 */
+
+	bitmap_zero(jd_scratch, EV_CNT);
+	__set_bit(EV_ABS, jd_scratch);
+	__set_bit(EV_KEY, jd_scratch);
+	__set_bit(EV_SYN, jd_scratch);
+	if (!bitmap_equal(jd_scratch, dev->evbit, EV_CNT))
+		return false;
+
+	bitmap_zero(jd_scratch, ABS_CNT);
+	__set_bit(ABS_X, jd_scratch);
+	__set_bit(ABS_Y, jd_scratch);
+	if (!bitmap_equal(dev->absbit, jd_scratch, ABS_CNT))
+		return false;
+
+	bitmap_zero(jd_scratch, KEY_CNT);
+	__set_bit(BTN_LEFT, jd_scratch);
+	__set_bit(BTN_RIGHT, jd_scratch);
+	__set_bit(BTN_MIDDLE, jd_scratch);
+
+	if (!bitmap_equal(dev->keybit, jd_scratch, KEY_CNT))
+		return false;
+
+	/*
+	 * Amiga joystick (amijoy) historically uses left/middle/right
+	 * button events.
+	 */
+	if (dev->id.bustype == BUS_AMIGA)
+		return false;
+
+	return true;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static bool joydev_match(struct input_handler *handler, struct input_dev *dev)
 {
@@ -771,6 +863,13 @@ static bool joydev_match(struct input_handler *handler, struct input_dev *dev)
 	if (test_bit(EV_KEY, dev->evbit) && test_bit(BTN_DIGI, dev->keybit))
 		return false;
 
+<<<<<<< HEAD
+=======
+	/* Avoid absolute mice */
+	if (joydev_dev_is_absolute_mouse(dev))
+		return false;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return true;
 }
 
@@ -811,12 +910,20 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 	joydev->handle.handler = handler;
 	joydev->handle.private = joydev;
 
+<<<<<<< HEAD
 	for (i = 0; i < ABS_CNT; i++)
 		if (test_bit(i, dev->absbit)) {
 			joydev->absmap[i] = joydev->nabs;
 			joydev->abspam[joydev->nabs] = i;
 			joydev->nabs++;
 		}
+=======
+	for_each_set_bit(i, dev->absbit, ABS_CNT) {
+		joydev->absmap[i] = joydev->nabs;
+		joydev->abspam[joydev->nabs] = i;
+		joydev->nabs++;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = BTN_JOYSTICK - BTN_MISC; i < KEY_MAX - BTN_MISC + 1; i++)
 		if (test_bit(i + BTN_MISC, dev->keybit)) {
@@ -836,6 +943,10 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 		j = joydev->abspam[i];
 		if (input_abs_get_max(dev, j) == input_abs_get_min(dev, j)) {
 			joydev->corr[i].type = JS_CORR_NONE;
+<<<<<<< HEAD
+=======
+			joydev->abs[i] = input_abs_get_val(dev, j);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 		joydev->corr[i].type = JS_CORR_BROKEN;
@@ -850,6 +961,13 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 		if (t) {
 			joydev->corr[i].coef[2] = (1 << 29) / t;
 			joydev->corr[i].coef[3] = (1 << 29) / t;
+<<<<<<< HEAD
+=======
+
+			joydev->abs[i] =
+				joydev_correct(input_abs_get_val(dev, j),
+					       joydev->corr + i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -908,6 +1026,15 @@ static const struct input_device_id joydev_ids[] = {
 		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
 				INPUT_DEVICE_ID_MATCH_ABSBIT,
 		.evbit = { BIT_MASK(EV_ABS) },
+<<<<<<< HEAD
+=======
+		.absbit = { BIT_MASK(ABS_Z) },
+	},
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
+				INPUT_DEVICE_ID_MATCH_ABSBIT,
+		.evbit = { BIT_MASK(EV_ABS) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.absbit = { BIT_MASK(ABS_WHEEL) },
 	},
 	{

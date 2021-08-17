@@ -4,9 +4,14 @@
 
 config DM9000
 	tristate "DM9000 support"
+<<<<<<< HEAD
 	depends on ARM || BLACKFIN || MIPS || COLDFIRE
 	select CRC32
 	select NET_CORE
+=======
+	depends on ARM || BLACKFIN || MIPS || COLDFIRE || NIOS2
+	select CRC32
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MII
 	---help---
 	  Support for DM9000 chipset.

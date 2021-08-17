@@ -38,6 +38,7 @@ int kmalloc_ok = 0;
 /* Used during early boot */
 static unsigned long brk_end;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 static void setup_highmem(unsigned long highmem_start,
 			  unsigned long highmem_len)
@@ -51,6 +52,8 @@ static void setup_highmem(unsigned long highmem_start,
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init mem_init(void)
 {
 	/* clear the zero-page */
@@ -65,6 +68,7 @@ void __init mem_init(void)
 	uml_reserved = brk_end;
 
 	/* this will put all low memory onto the freelists */
+<<<<<<< HEAD
 	totalram_pages = free_all_bootmem();
 	max_low_pfn = totalram_pages;
 #ifdef CONFIG_HIGHMEM
@@ -74,6 +78,12 @@ void __init mem_init(void)
 	max_pfn = totalram_pages;
 	printk(KERN_INFO "Memory: %luk available\n",
 	       nr_free_pages() << (PAGE_SHIFT-10));
+=======
+	free_all_bootmem();
+	max_low_pfn = totalram_pages;
+	max_pfn = totalram_pages;
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kmalloc_ok = 1;
 }
 
@@ -129,6 +139,7 @@ static void __init fixrange_init(unsigned long start, unsigned long end,
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 pte_t *kmap_pte;
 pgprot_t kmap_prot;
@@ -172,6 +183,8 @@ static void __init init_highmem(void)
 }
 #endif /* CONFIG_HIGHMEM */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init fixaddr_user_init( void)
 {
 #ifdef CONFIG_ARCH_REUSE_HOST_VSYSCALL_AREA
@@ -213,9 +226,12 @@ void __init paging_init(void)
 
 	zones_size[ZONE_NORMAL] = (end_iomem >> PAGE_SHIFT) -
 		(uml_physmem >> PAGE_SHIFT);
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 	zones_size[ZONE_HIGHMEM] = highmem >> PAGE_SHIFT;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_area_init(zones_size);
 
 	/*
@@ -226,10 +242,13 @@ void __init paging_init(void)
 	fixrange_init(vaddr, FIXADDR_TOP, swapper_pg_dir);
 
 	fixaddr_user_init();
+<<<<<<< HEAD
 
 #ifdef CONFIG_HIGHMEM
 	init_highmem();
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -244,7 +263,11 @@ void free_initmem(void)
 #ifdef CONFIG_BLK_DEV_INITRD
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	free_reserved_area(start, end, 0, "initrd");
+=======
+	free_reserved_area((void *)start, (void *)end, -1, "initrd");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -272,7 +295,11 @@ pte_t *pte_alloc_one_kernel(struct mm_struct *mm, unsigned long address)
 {
 	pte_t *pte;
 
+<<<<<<< HEAD
 	pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+=======
+	pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_ZERO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pte;
 }
 
@@ -280,9 +307,19 @@ pgtable_t pte_alloc_one(struct mm_struct *mm, unsigned long address)
 {
 	struct page *pte;
 
+<<<<<<< HEAD
 	pte = alloc_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
 	if (pte)
 		pgtable_page_ctor(pte);
+=======
+	pte = alloc_page(GFP_KERNEL|__GFP_ZERO);
+	if (!pte)
+		return NULL;
+	if (!pgtable_page_ctor(pte)) {
+		__free_page(pte);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pte;
 }
 

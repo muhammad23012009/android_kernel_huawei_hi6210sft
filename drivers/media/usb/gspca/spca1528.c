@@ -84,6 +84,14 @@ static void reg_r(struct gspca_dev *gspca_dev,
 	if (ret < 0) {
 		pr_err("reg_r err %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(gspca_dev->usb_buf, 0, USB_BUF_SZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -255,7 +263,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	struct sd *sd = (struct sd *) gspca_dev;
 
 	/* initialize the JPEG header */
+<<<<<<< HEAD
 	jpeg_define(sd->jpeg_hdr, gspca_dev->height, gspca_dev->width,
+=======
+	jpeg_define(sd->jpeg_hdr, gspca_dev->pixfmt.height,
+			gspca_dev->pixfmt.width,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			0x22);		/* JPEG 411 */
 
 	/* the JPEG quality shall be 85% */

@@ -27,6 +27,19 @@ static ssize_t zfcp_sysfs_##_feat##_##_name##_show(struct device *dev,	       \
 static ZFCP_DEV_ATTR(_feat, _name, S_IRUGO,				       \
 		     zfcp_sysfs_##_feat##_##_name##_show, NULL);
 
+<<<<<<< HEAD
+=======
+#define ZFCP_DEFINE_ATTR_CONST(_feat, _name, _format, _value)		       \
+static ssize_t zfcp_sysfs_##_feat##_##_name##_show(struct device *dev,	       \
+						   struct device_attribute *at,\
+						   char *buf)		       \
+{									       \
+	return sprintf(buf, _format, _value);				       \
+}									       \
+static ZFCP_DEV_ATTR(_feat, _name, S_IRUGO,				       \
+		     zfcp_sysfs_##_feat##_##_name##_show, NULL);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ZFCP_DEFINE_A_ATTR(_name, _format, _value)			     \
 static ssize_t zfcp_sysfs_adapter_##_name##_show(struct device *dev,	     \
 						 struct device_attribute *at,\
@@ -63,9 +76,13 @@ ZFCP_DEFINE_ATTR(zfcp_port, port, status, "0x%08x\n",
 ZFCP_DEFINE_ATTR(zfcp_port, port, in_recovery, "%d\n",
 		 (atomic_read(&port->status) &
 		  ZFCP_STATUS_COMMON_ERP_INUSE) != 0);
+<<<<<<< HEAD
 ZFCP_DEFINE_ATTR(zfcp_port, port, access_denied, "%d\n",
 		 (atomic_read(&port->status) &
 		  ZFCP_STATUS_COMMON_ACCESS_DENIED) != 0);
+=======
+ZFCP_DEFINE_ATTR_CONST(port, access_denied, "%d\n", 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ZFCP_DEFINE_ATTR(zfcp_unit, unit, status, "0x%08x\n",
 		 zfcp_unit_sdev_status(unit));
@@ -75,12 +92,17 @@ ZFCP_DEFINE_ATTR(zfcp_unit, unit, in_recovery, "%d\n",
 ZFCP_DEFINE_ATTR(zfcp_unit, unit, access_denied, "%d\n",
 		 (zfcp_unit_sdev_status(unit) &
 		  ZFCP_STATUS_COMMON_ACCESS_DENIED) != 0);
+<<<<<<< HEAD
 ZFCP_DEFINE_ATTR(zfcp_unit, unit, access_shared, "%d\n",
 		 (zfcp_unit_sdev_status(unit) &
 		  ZFCP_STATUS_LUN_SHARED) != 0);
 ZFCP_DEFINE_ATTR(zfcp_unit, unit, access_readonly, "%d\n",
 		 (zfcp_unit_sdev_status(unit) &
 		  ZFCP_STATUS_LUN_READONLY) != 0);
+=======
+ZFCP_DEFINE_ATTR_CONST(unit, access_shared, "%d\n", 0);
+ZFCP_DEFINE_ATTR_CONST(unit, access_readonly, "%d\n", 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t zfcp_sysfs_port_failed_show(struct device *dev,
 					   struct device_attribute *attr,
@@ -101,7 +123,11 @@ static ssize_t zfcp_sysfs_port_failed_store(struct device *dev,
 	struct zfcp_port *port = container_of(dev, struct zfcp_port, dev);
 	unsigned long val;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &val) || val != 0)
+=======
+	if (kstrtoul(buf, 0, &val) || val != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	zfcp_erp_set_port_status(port, ZFCP_STATUS_COMMON_RUNNING);
@@ -140,7 +166,11 @@ static ssize_t zfcp_sysfs_unit_failed_store(struct device *dev,
 	unsigned long val;
 	struct scsi_device *sdev;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &val) || val != 0)
+=======
+	if (kstrtoul(buf, 0, &val) || val != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	sdev = zfcp_unit_sdev(unit);
@@ -190,7 +220,11 @@ static ssize_t zfcp_sysfs_adapter_failed_store(struct device *dev,
 	if (!adapter)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &val) || val != 0) {
+=======
+	if (kstrtoul(buf, 0, &val) || val != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = -EINVAL;
 		goto out;
 	}
@@ -217,9 +251,19 @@ static ssize_t zfcp_sysfs_port_rescan_store(struct device *dev,
 	if (!adapter)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/* sync the user-space- with the kernel-invocation of scan_work */
 	queue_work(adapter->work_queue, &adapter->scan_work);
 	flush_work(&adapter->scan_work);
+=======
+	/*
+	 * Users wish is our command: immediately schedule and flush a
+	 * worker to conduct a synchronous port scan, that is, neither
+	 * a random delay nor a rate limit is applied here.
+	 */
+	queue_delayed_work(adapter->work_queue, &adapter->scan_work, 0);
+	flush_delayed_work(&adapter->scan_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	zfcp_ccw_adapter_put(adapter);
 
 	return (ssize_t) count;
@@ -229,6 +273,56 @@ static ZFCP_DEV_ATTR(adapter, port_rescan, S_IWUSR, NULL,
 
 DEFINE_MUTEX(zfcp_sysfs_port_units_mutex);
 
+<<<<<<< HEAD
+=======
+static void zfcp_sysfs_port_set_removing(struct zfcp_port *const port)
+{
+	lockdep_assert_held(&zfcp_sysfs_port_units_mutex);
+	atomic_set(&port->units, -1);
+}
+
+bool zfcp_sysfs_port_is_removing(const struct zfcp_port *const port)
+{
+	lockdep_assert_held(&zfcp_sysfs_port_units_mutex);
+	return atomic_read(&port->units) == -1;
+}
+
+static bool zfcp_sysfs_port_in_use(struct zfcp_port *const port)
+{
+	struct zfcp_adapter *const adapter = port->adapter;
+	unsigned long flags;
+	struct scsi_device *sdev;
+	bool in_use = true;
+
+	mutex_lock(&zfcp_sysfs_port_units_mutex);
+	if (atomic_read(&port->units) > 0)
+		goto unlock_port_units_mutex; /* zfcp_unit(s) under port */
+
+	spin_lock_irqsave(adapter->scsi_host->host_lock, flags);
+	__shost_for_each_device(sdev, adapter->scsi_host) {
+		const struct zfcp_scsi_dev *zsdev = sdev_to_zfcp(sdev);
+
+		if (sdev->sdev_state == SDEV_DEL ||
+		    sdev->sdev_state == SDEV_CANCEL)
+			continue;
+		if (zsdev->port != port)
+			continue;
+		/* alive scsi_device under port of interest */
+		goto unlock_host_lock;
+	}
+
+	/* port is about to be removed, so no more unit_add or slave_alloc */
+	zfcp_sysfs_port_set_removing(port);
+	in_use = false;
+
+unlock_host_lock:
+	spin_unlock_irqrestore(adapter->scsi_host->host_lock, flags);
+unlock_port_units_mutex:
+	mutex_unlock(&zfcp_sysfs_port_units_mutex);
+	return in_use;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 					    struct device_attribute *attr,
 					    const char *buf, size_t count)
@@ -242,7 +336,11 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 	if (!adapter)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (strict_strtoull(buf, 0, (unsigned long long *) &wwpn))
+=======
+	if (kstrtoull(buf, 0, (unsigned long long *) &wwpn))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 
 	port = zfcp_get_port_by_wwpn(adapter, wwpn);
@@ -251,6 +349,7 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 	else
 		retval = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&zfcp_sysfs_port_units_mutex);
 	if (atomic_read(&port->units) > 0) {
 		retval = -EBUSY;
@@ -260,6 +359,13 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 	/* port is about to be removed, so no more unit_add */
 	atomic_set(&port->units, -1);
 	mutex_unlock(&zfcp_sysfs_port_units_mutex);
+=======
+	if (zfcp_sysfs_port_in_use(port)) {
+		retval = -EBUSY;
+		put_device(&port->dev); /* undo zfcp_get_port_by_wwpn() */
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	write_lock_irq(&adapter->port_list_lock);
 	list_del(&port->list);
@@ -268,7 +374,11 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 	put_device(&port->dev);
 
 	zfcp_erp_port_shutdown(port, 0, "syprs_1");
+<<<<<<< HEAD
 	zfcp_device_unregister(&port->dev, &zfcp_sysfs_port_attrs);
+=======
+	device_unregister(&port->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	zfcp_ccw_adapter_put(adapter);
 	return retval ? retval : (ssize_t) count;
@@ -303,7 +413,11 @@ static ssize_t zfcp_sysfs_unit_add_store(struct device *dev,
 	u64 fcp_lun;
 	int retval;
 
+<<<<<<< HEAD
 	if (strict_strtoull(buf, 0, (unsigned long long *) &fcp_lun))
+=======
+	if (kstrtoull(buf, 0, (unsigned long long *) &fcp_lun))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	retval = zfcp_unit_add(port, fcp_lun);
@@ -321,7 +435,11 @@ static ssize_t zfcp_sysfs_unit_remove_store(struct device *dev,
 	struct zfcp_port *port = container_of(dev, struct zfcp_port, dev);
 	u64 fcp_lun;
 
+<<<<<<< HEAD
 	if (strict_strtoull(buf, 0, (unsigned long long *) &fcp_lun))
+=======
+	if (kstrtoull(buf, 0, (unsigned long long *) &fcp_lun))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	if (zfcp_unit_remove(port, fcp_lun))
@@ -340,6 +458,7 @@ static struct attribute *zfcp_port_attrs[] = {
 	&dev_attr_port_access_denied.attr,
 	NULL
 };
+<<<<<<< HEAD
 
 /**
  * zfcp_sysfs_port_attrs - sysfs attributes for all other ports
@@ -347,6 +466,15 @@ static struct attribute *zfcp_port_attrs[] = {
 struct attribute_group zfcp_sysfs_port_attrs = {
 	.attrs = zfcp_port_attrs,
 };
+=======
+static struct attribute_group zfcp_port_attr_group = {
+	.attrs = zfcp_port_attrs,
+};
+const struct attribute_group *zfcp_port_attr_groups[] = {
+	&zfcp_port_attr_group,
+	NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct attribute *zfcp_unit_attrs[] = {
 	&dev_attr_unit_failed.attr,
@@ -357,10 +485,20 @@ static struct attribute *zfcp_unit_attrs[] = {
 	&dev_attr_unit_access_readonly.attr,
 	NULL
 };
+<<<<<<< HEAD
 
 struct attribute_group zfcp_sysfs_unit_attrs = {
 	.attrs = zfcp_unit_attrs,
 };
+=======
+static struct attribute_group zfcp_unit_attr_group = {
+	.attrs = zfcp_unit_attrs,
+};
+const struct attribute_group *zfcp_unit_attr_groups[] = {
+	&zfcp_unit_attr_group,
+	NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ZFCP_DEFINE_LATENCY_ATTR(_name) 				\
 static ssize_t								\
@@ -430,16 +568,25 @@ static ssize_t zfcp_sysfs_scsi_##_name##_show(struct device *dev,	\
 {                                                                        \
 	struct scsi_device *sdev = to_scsi_device(dev);			 \
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(sdev);		 \
+<<<<<<< HEAD
 	struct zfcp_port *port = zfcp_sdev->port;			 \
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 									 \
 	return sprintf(buf, _format, _value);                            \
 }                                                                        \
 static DEVICE_ATTR(_name, S_IRUGO, zfcp_sysfs_scsi_##_name##_show, NULL);
 
 ZFCP_DEFINE_SCSI_ATTR(hba_id, "%s\n",
+<<<<<<< HEAD
 		      dev_name(&port->adapter->ccw_device->dev));
 ZFCP_DEFINE_SCSI_ATTR(wwpn, "0x%016llx\n",
 		      (unsigned long long) port->wwpn);
+=======
+		      dev_name(&zfcp_sdev->port->adapter->ccw_device->dev));
+ZFCP_DEFINE_SCSI_ATTR(wwpn, "0x%016llx\n",
+		      (unsigned long long) zfcp_sdev->port->wwpn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t zfcp_sysfs_scsi_fcp_lun_show(struct device *dev,
 					    struct device_attribute *attr,
@@ -451,6 +598,52 @@ static ssize_t zfcp_sysfs_scsi_fcp_lun_show(struct device *dev,
 }
 static DEVICE_ATTR(fcp_lun, S_IRUGO, zfcp_sysfs_scsi_fcp_lun_show, NULL);
 
+<<<<<<< HEAD
+=======
+ZFCP_DEFINE_SCSI_ATTR(zfcp_access_denied, "%d\n",
+		      (atomic_read(&zfcp_sdev->status) &
+		       ZFCP_STATUS_COMMON_ACCESS_DENIED) != 0);
+
+static ssize_t zfcp_sysfs_scsi_zfcp_failed_show(struct device *dev,
+					   struct device_attribute *attr,
+					   char *buf)
+{
+	struct scsi_device *sdev = to_scsi_device(dev);
+	unsigned int status = atomic_read(&sdev_to_zfcp(sdev)->status);
+	unsigned int failed = status & ZFCP_STATUS_COMMON_ERP_FAILED ? 1 : 0;
+
+	return sprintf(buf, "%d\n", failed);
+}
+
+static ssize_t zfcp_sysfs_scsi_zfcp_failed_store(struct device *dev,
+					    struct device_attribute *attr,
+					    const char *buf, size_t count)
+{
+	struct scsi_device *sdev = to_scsi_device(dev);
+	unsigned long val;
+
+	if (kstrtoul(buf, 0, &val) || val != 0)
+		return -EINVAL;
+
+	zfcp_erp_set_lun_status(sdev, ZFCP_STATUS_COMMON_RUNNING);
+	zfcp_erp_lun_reopen(sdev, ZFCP_STATUS_COMMON_ERP_FAILED,
+			    "syufai3");
+	zfcp_erp_wait(sdev_to_zfcp(sdev)->port->adapter);
+
+	return count;
+}
+static DEVICE_ATTR(zfcp_failed, S_IWUSR | S_IRUGO,
+		   zfcp_sysfs_scsi_zfcp_failed_show,
+		   zfcp_sysfs_scsi_zfcp_failed_store);
+
+ZFCP_DEFINE_SCSI_ATTR(zfcp_in_recovery, "%d\n",
+		      (atomic_read(&zfcp_sdev->status) &
+		       ZFCP_STATUS_COMMON_ERP_INUSE) != 0);
+
+ZFCP_DEFINE_SCSI_ATTR(zfcp_status, "0x%08x\n",
+		      atomic_read(&zfcp_sdev->status));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct device_attribute *zfcp_sysfs_sdev_attrs[] = {
 	&dev_attr_fcp_lun,
 	&dev_attr_wwpn,
@@ -458,6 +651,13 @@ struct device_attribute *zfcp_sysfs_sdev_attrs[] = {
 	&dev_attr_read_latency,
 	&dev_attr_write_latency,
 	&dev_attr_cmd_latency,
+<<<<<<< HEAD
+=======
+	&dev_attr_zfcp_access_denied,
+	&dev_attr_zfcp_failed,
+	&dev_attr_zfcp_in_recovery,
+	&dev_attr_zfcp_status,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NULL
 };
 

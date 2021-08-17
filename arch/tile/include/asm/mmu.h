@@ -22,6 +22,10 @@ struct mm_context {
 	 * semaphore but atomically, but it is conservatively set.
 	 */
 	unsigned long priority_cached;
+<<<<<<< HEAD
+=======
+	unsigned long vdso_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 typedef struct mm_context mm_context_t;

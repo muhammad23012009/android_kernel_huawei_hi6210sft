@@ -65,13 +65,21 @@ static int __ocfs2_page_mkwrite(struct file *file, struct buffer_head *di_bh,
 	struct inode *inode = file_inode(file);
 	struct address_space *mapping = inode->i_mapping;
 	loff_t pos = page_offset(page);
+<<<<<<< HEAD
 	unsigned int len = PAGE_CACHE_SIZE;
+=======
+	unsigned int len = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pgoff_t last_index;
 	struct page *locked_page = NULL;
 	void *fsdata;
 	loff_t size = i_size_read(inode);
 
+<<<<<<< HEAD
 	last_index = (size - 1) >> PAGE_CACHE_SHIFT;
+=======
+	last_index = (size - 1) >> PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * There are cases that lead to the page no longer bebongs to the
@@ -102,10 +110,17 @@ static int __ocfs2_page_mkwrite(struct file *file, struct buffer_head *di_bh,
 	 * because the "write" would invalidate their data.
 	 */
 	if (page->index == last_index)
+<<<<<<< HEAD
 		len = ((size - 1) & ~PAGE_CACHE_MASK) + 1;
 
 	ret = ocfs2_write_begin_nolock(file, mapping, pos, len, 0, &locked_page,
 				       &fsdata, di_bh, page);
+=======
+		len = ((size - 1) & ~PAGE_MASK) + 1;
+
+	ret = ocfs2_write_begin_nolock(mapping, pos, len, OCFS2_WRITE_MMAP,
+				       &locked_page, &fsdata, di_bh, page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		if (ret != -ENOSPC)
 			mlog_errno(ret);
@@ -147,6 +162,13 @@ static int ocfs2_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 	ret = ocfs2_inode_lock(inode, &di_bh, 1);
 	if (ret < 0) {
 		mlog_errno(ret);
+<<<<<<< HEAD
+=======
+		if (ret == -ENOMEM)
+			ret = VM_FAULT_OOM;
+		else
+			ret = VM_FAULT_SIGBUS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -173,7 +195,10 @@ out:
 static const struct vm_operations_struct ocfs2_file_vm_ops = {
 	.fault		= ocfs2_fault,
 	.page_mkwrite	= ocfs2_page_mkwrite,
+<<<<<<< HEAD
 	.remap_pages	= generic_file_remap_pages,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int ocfs2_mmap(struct file *file, struct vm_area_struct *vma)

@@ -537,7 +537,11 @@ static int applesmc_init_index(struct applesmc_registers *s)
 static int applesmc_init_smcreg_try(void)
 {
 	struct applesmc_registers *s = &smcreg;
+<<<<<<< HEAD
 	bool left_light_sensor, right_light_sensor;
+=======
+	bool left_light_sensor = 0, right_light_sensor = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int count;
 	u8 tmp[1];
 	int ret;
@@ -676,7 +680,10 @@ static struct platform_driver applesmc_driver = {
 	.probe = applesmc_probe,
 	.driver	= {
 		.name = "applesmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &applesmc_pm_ops,
 	},
 };
@@ -759,15 +766,27 @@ static ssize_t applesmc_light_show(struct device *dev,
 	}
 
 	ret = applesmc_read_key(LIGHT_SENSOR_LEFT_KEY, buffer, data_length);
+<<<<<<< HEAD
+=======
+	if (ret)
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* newer macbooks report a single 10-bit bigendian value */
 	if (data_length == 10) {
 		left = be16_to_cpu(*(__be16 *)(buffer + 6)) >> 2;
 		goto out;
 	}
 	left = buffer[2];
+<<<<<<< HEAD
 	if (ret)
 		goto out;
 	ret = applesmc_read_key(LIGHT_SENSOR_RIGHT_KEY, buffer, data_length);
+=======
+
+	ret = applesmc_read_key(LIGHT_SENSOR_RIGHT_KEY, buffer, data_length);
+	if (ret)
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	right = buffer[2];
 
 out:
@@ -815,12 +834,20 @@ static ssize_t applesmc_show_fan_speed(struct device *dev,
 	sprintf(newkey, fan_speed_fmt[to_option(attr)], to_index(attr));
 
 	ret = applesmc_read_key(newkey, buffer, 2);
+<<<<<<< HEAD
 	speed = ((buffer[0] << 8 | buffer[1]) >> 2);
 
 	if (ret)
 		return ret;
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "%u\n", speed);
+=======
+	if (ret)
+		return ret;
+
+	speed = ((buffer[0] << 8 | buffer[1]) >> 2);
+	return snprintf(sysfsbuf, PAGE_SIZE, "%u\n", speed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t applesmc_store_fan_speed(struct device *dev,
@@ -855,12 +882,20 @@ static ssize_t applesmc_show_fan_manual(struct device *dev,
 	u8 buffer[2];
 
 	ret = applesmc_read_key(FANS_MANUAL, buffer, 2);
+<<<<<<< HEAD
 	manual = ((buffer[0] << 8 | buffer[1]) >> to_index(attr)) & 0x01;
 
 	if (ret)
 		return ret;
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", manual);
+=======
+	if (ret)
+		return ret;
+
+	manual = ((buffer[0] << 8 | buffer[1]) >> to_index(attr)) & 0x01;
+	return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", manual);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t applesmc_store_fan_manual(struct device *dev,
@@ -876,10 +911,18 @@ static ssize_t applesmc_store_fan_manual(struct device *dev,
 		return -EINVAL;
 
 	ret = applesmc_read_key(FANS_MANUAL, buffer, 2);
+<<<<<<< HEAD
 	val = (buffer[0] << 8 | buffer[1]);
 	if (ret)
 		goto out;
 
+=======
+	if (ret)
+		goto out;
+
+	val = (buffer[0] << 8 | buffer[1]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (input)
 		val = val | (0x01 << to_index(attr));
 	else
@@ -955,6 +998,7 @@ static ssize_t applesmc_key_count_show(struct device *dev,
 	u32 count;
 
 	ret = applesmc_read_key(KEY_COUNT_KEY, buffer, 4);
+<<<<<<< HEAD
 	count = ((u32)buffer[0]<<24) + ((u32)buffer[1]<<16) +
 						((u32)buffer[2]<<8) + buffer[3];
 
@@ -962,6 +1006,14 @@ static ssize_t applesmc_key_count_show(struct device *dev,
 		return ret;
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", count);
+=======
+	if (ret)
+		return ret;
+
+	count = ((u32)buffer[0]<<24) + ((u32)buffer[1]<<16) +
+						((u32)buffer[2]<<8) + buffer[3];
+	return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t applesmc_key_at_index_read_show(struct device *dev,
@@ -1139,7 +1191,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Create accelerometer ressources */
+=======
+/* Create accelerometer resources */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int applesmc_create_accelerometer(void)
 {
 	struct input_dev *idev;
@@ -1192,7 +1248,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Release all ressources used by the accelerometer */
+=======
+/* Release all resources used by the accelerometer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void applesmc_release_accelerometer(void)
 {
 	if (!smcreg.has_accelerometer)

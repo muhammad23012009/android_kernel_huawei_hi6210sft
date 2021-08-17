@@ -107,6 +107,7 @@ void do_page_fault(struct pt_regs *regs, unsigned long address,
 	if ((error_code & 0x13) == 0x13 || (error_code & 0x11) == 0x11)
 		is_write = 0;
 
+<<<<<<< HEAD
 	if (unlikely(in_atomic() || !mm)) {
 		if (kernel_mode(regs))
 			goto bad_area_nosemaphore;
@@ -115,6 +116,16 @@ void do_page_fault(struct pt_regs *regs, unsigned long address,
 		   as is current->mm == NULL. */
 		pr_emerg("Page fault in user mode with in_atomic(), mm = %p\n",
 									mm);
+=======
+	if (unlikely(faulthandler_disabled() || !mm)) {
+		if (kernel_mode(regs))
+			goto bad_area_nosemaphore;
+
+		/* faulthandler_disabled() in user mode is really bad,
+		   as is current->mm == NULL. */
+		pr_emerg("Page fault in user mode with faulthandler_disabled(), mm = %p\n",
+			 mm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_emerg("r15 = %lx  MSR = %lx\n",
 		       regs->r15, regs->msr);
 		die("Weird page fault", regs, SIGSEGV);
@@ -216,7 +227,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -224,6 +239,11 @@ good_area:
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();

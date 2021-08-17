@@ -1,4 +1,5 @@
 /* Copyright 2008-2013 Broadcom Corporation
+<<<<<<< HEAD
  *
  * Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -8,6 +9,19 @@
  * Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a
  * license other than the GPL, without Broadcom's express prior written
+=======
+ * Copyright (c) 2014 QLogic Corporation
+ * All rights reserved
+ *
+ * Unless you and QLogic execute a separate written software license
+ * agreement governing use of this software, this software is licensed to you
+ * under the terms of the GNU General Public License version 2, available
+ * at http://www.gnu.org/licenses/gpl-2.0.html (the "GPL").
+ *
+ * Notwithstanding the above, under no circumstances may you combine this
+ * software in any way with any other Qlogic software provided under a
+ * license other than the GPL, without Qlogic's express prior written
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * consent.
  *
  * Written by Yaniv Rosner
@@ -60,6 +74,10 @@
 #define SFP_EEPROM_DIAG_TYPE_ADDR		0x5c
 #define SFP_EEPROM_DIAG_TYPE_SIZE		1
 #define SFP_EEPROM_DIAG_ADDR_CHANGE_REQ		(1<<2)
+<<<<<<< HEAD
+=======
+#define SFP_EEPROM_DDM_IMPLEMENTED		(1<<6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SFP_EEPROM_SFF_8472_COMP_ADDR		0x5e
 #define SFP_EEPROM_SFF_8472_COMP_SIZE		1
 
@@ -323,6 +341,12 @@ struct link_params {
 #define LINK_FLAGS_INT_DISABLED		(1<<0)
 #define PHY_INITIALIZED		(1<<1)
 	u32 lfa_base;
+<<<<<<< HEAD
+=======
+
+	/* The same definitions as the shmem2 parameter */
+	u32 link_attr_sync;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Output parameters */
@@ -364,8 +388,11 @@ struct link_vars {
 	u8 rx_tx_asic_rst;
 	u8 turn_to_run_wc_rt;
 	u16 rsrv2;
+<<<<<<< HEAD
 	/* The same definitions as the shmem2 parameter */
 	u32 link_attr_sync;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /***********************************************************/
@@ -533,14 +560,19 @@ int bnx2x_ets_strict(const struct link_params *params, const u8 strict_cos);
 int bnx2x_ets_e3b0_config(const struct link_params *params,
 			 const struct link_vars *vars,
 			 struct bnx2x_ets_params *ets_params);
+<<<<<<< HEAD
 /* Read pfc statistic*/
 void bnx2x_pfc_statistic(struct link_params *params, struct link_vars *vars,
 						 u32 pfc_frames_sent[2],
 						 u32 pfc_frames_received[2]);
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void bnx2x_init_mod_abs_int(struct bnx2x *bp, struct link_vars *vars,
 			    u32 chip_id, u32 shmem_base, u32 shmem2_base,
 			    u8 port);
 
+<<<<<<< HEAD
 int bnx2x_sfp_module_detection(struct bnx2x_phy *phy,
 			       struct link_params *params);
 
@@ -548,4 +580,8 @@ void bnx2x_period_func(struct link_params *params, struct link_vars *vars);
 
 int bnx2x_check_half_open_conn(struct link_params *params,
 			       struct link_vars *vars, u8 notify);
+=======
+void bnx2x_period_func(struct link_params *params, struct link_vars *vars);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* BNX2X_LINK_H */

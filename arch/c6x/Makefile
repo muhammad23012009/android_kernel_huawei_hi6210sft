@@ -8,7 +8,11 @@
 
 KBUILD_DEFCONFIG := dsk6455_defconfig
 
+<<<<<<< HEAD
 cflags-y += -mno-dsbt -msdata=none
+=======
+cflags-y += -mno-dsbt -msdata=none -D__linux__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 cflags-$(CONFIG_C6X_BIG_KERNEL) += -mlong-calls
 

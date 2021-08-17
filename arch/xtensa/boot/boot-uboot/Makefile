@@ -4,11 +4,15 @@
 # for more details.
 #
 
+<<<<<<< HEAD
 ifdef CONFIG_INITIALIZE_XTENSA_MMU_INSIDE_VMLINUX
 UIMAGE_LOADADDR = 0x00003000
 else
 UIMAGE_LOADADDR = 0xd0003000
 endif
+=======
+UIMAGE_LOADADDR = $(CONFIG_KERNEL_LOAD_ADDRESS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 UIMAGE_COMPRESSION = gzip
 
 $(obj)/../uImage: vmlinux.bin.gz FORCE

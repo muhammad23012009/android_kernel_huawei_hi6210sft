@@ -35,7 +35,10 @@
 #include "ext2.h"
 #include "xattr.h"
 #include "acl.h"
+<<<<<<< HEAD
 #include "xip.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void ext2_sync_super(struct super_block *sb,
 			    struct ext2_super_block *es, int wait);
@@ -132,7 +135,14 @@ static void ext2_put_super (struct super_block * sb)
 
 	dquot_disable(sb, -1, DQUOT_USAGE_ENABLED | DQUOT_LIMITS_ENABLED);
 
+<<<<<<< HEAD
 	ext2_xattr_put_super(sb);
+=======
+	if (sbi->s_mb_cache) {
+		ext2_xattr_destroy_cache(sbi->s_mb_cache);
+		sbi->s_mb_cache = NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!(sb->s_flags & MS_RDONLY)) {
 		struct ext2_super_block *es = sbi->s_es;
 
@@ -161,11 +171,22 @@ static struct kmem_cache * ext2_inode_cachep;
 static struct inode *ext2_alloc_inode(struct super_block *sb)
 {
 	struct ext2_inode_info *ei;
+<<<<<<< HEAD
 	ei = (struct ext2_inode_info *)kmem_cache_alloc(ext2_inode_cachep, GFP_KERNEL);
+=======
+	ei = kmem_cache_alloc(ext2_inode_cachep, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ei)
 		return NULL;
 	ei->i_block_alloc_info = NULL;
 	ei->vfs_inode.i_version = 1;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_QUOTA
+	memset(&ei->i_dquot, 0, sizeof(ei->i_dquot));
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return &ei->vfs_inode;
 }
 
@@ -189,15 +210,29 @@ static void init_once(void *foo)
 	init_rwsem(&ei->xattr_sem);
 #endif
 	mutex_init(&ei->truncate_mutex);
+<<<<<<< HEAD
 	inode_init_once(&ei->vfs_inode);
 }
 
 static int init_inodecache(void)
+=======
+#ifdef CONFIG_FS_DAX
+	init_rwsem(&ei->dax_sem);
+#endif
+	inode_init_once(&ei->vfs_inode);
+}
+
+static int __init init_inodecache(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ext2_inode_cachep = kmem_cache_create("ext2_inode_cache",
 					     sizeof(struct ext2_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     init_once);
 	if (ext2_inode_cachep == NULL)
 		return -ENOMEM;
@@ -288,9 +323,17 @@ static int ext2_show_options(struct seq_file *seq, struct dentry *root)
 		seq_puts(seq, ",grpquota");
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_EXT2_FS_XIP)
 	if (sbi->s_mount_opt & EXT2_MOUNT_XIP)
 		seq_puts(seq, ",xip");
+=======
+#ifdef CONFIG_FS_DAX
+	if (sbi->s_mount_opt & EXT2_MOUNT_XIP)
+		seq_puts(seq, ",xip");
+	if (sbi->s_mount_opt & EXT2_MOUNT_DAX)
+		seq_puts(seq, ",dax");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	if (!test_opt(sb, RESERVATION))
@@ -303,6 +346,13 @@ static int ext2_show_options(struct seq_file *seq, struct dentry *root)
 #ifdef CONFIG_QUOTA
 static ssize_t ext2_quota_read(struct super_block *sb, int type, char *data, size_t len, loff_t off);
 static ssize_t ext2_quota_write(struct super_block *sb, int type, const char *data, size_t len, loff_t off);
+<<<<<<< HEAD
+=======
+static struct dquot **ext2_get_dquots(struct inode *inode)
+{
+	return EXT2_I(inode)->i_dquot;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static const struct super_operations ext2_sops = {
@@ -320,6 +370,10 @@ static const struct super_operations ext2_sops = {
 #ifdef CONFIG_QUOTA
 	.quota_read	= ext2_quota_read,
 	.quota_write	= ext2_quota_write,
+<<<<<<< HEAD
+=======
+	.get_dquots	= ext2_get_dquots,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 };
 
@@ -394,7 +448,11 @@ enum {
 	Opt_resgid, Opt_resuid, Opt_sb, Opt_err_cont, Opt_err_panic,
 	Opt_err_ro, Opt_nouid32, Opt_nocheck, Opt_debug,
 	Opt_oldalloc, Opt_orlov, Opt_nobh, Opt_user_xattr, Opt_nouser_xattr,
+<<<<<<< HEAD
 	Opt_acl, Opt_noacl, Opt_xip, Opt_ignore, Opt_err, Opt_quota,
+=======
+	Opt_acl, Opt_noacl, Opt_xip, Opt_dax, Opt_ignore, Opt_err, Opt_quota,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	Opt_usrquota, Opt_grpquota, Opt_reservation, Opt_noreservation
 };
 
@@ -423,6 +481,10 @@ static const match_table_t tokens = {
 	{Opt_acl, "acl"},
 	{Opt_noacl, "noacl"},
 	{Opt_xip, "xip"},
+<<<<<<< HEAD
+=======
+	{Opt_dax, "dax"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{Opt_grpquota, "grpquota"},
 	{Opt_ignore, "noquota"},
 	{Opt_quota, "quota"},
@@ -550,10 +612,23 @@ static int parse_options(char *options, struct super_block *sb)
 			break;
 #endif
 		case Opt_xip:
+<<<<<<< HEAD
 #ifdef CONFIG_EXT2_FS_XIP
 			set_opt (sbi->s_mount_opt, XIP);
 #else
 			ext2_msg(sb, KERN_INFO, "xip option not supported");
+=======
+			ext2_msg(sb, KERN_INFO, "use dax instead of xip");
+			set_opt(sbi->s_mount_opt, XIP);
+			/* Fall through */
+		case Opt_dax:
+#ifdef CONFIG_FS_DAX
+			ext2_msg(sb, KERN_WARNING,
+		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
+			set_opt(sbi->s_mount_opt, DAX);
+#else
+			ext2_msg(sb, KERN_INFO, "dax option not supported");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 			break;
 
@@ -701,7 +776,12 @@ static loff_t ext2_max_size(int bits)
 {
 	loff_t res = EXT2_NDIR_BLOCKS;
 	int meta_blocks;
+<<<<<<< HEAD
 	loff_t upper_limit;
+=======
+	unsigned int upper_limit;
+	unsigned int ppb = 1 << (bits-2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* This is calculated to be the largest file size for a
 	 * dense, file such that the total number of
@@ -715,6 +795,7 @@ static loff_t ext2_max_size(int bits)
 	/* total blocks in file system block size */
 	upper_limit >>= (bits - 9);
 
+<<<<<<< HEAD
 
 	/* indirect blocks */
 	meta_blocks = 1;
@@ -733,6 +814,36 @@ static loff_t ext2_max_size(int bits)
 	if (res > upper_limit)
 		res = upper_limit;
 
+=======
+	/* Compute how many blocks we can address by block tree */
+	res += 1LL << (bits-2);
+	res += 1LL << (2*(bits-2));
+	res += 1LL << (3*(bits-2));
+	/* Does block tree limit file size? */
+	if (res < upper_limit)
+		goto check_lfs;
+
+	res = upper_limit;
+	/* How many metadata blocks are needed for addressing upper_limit? */
+	upper_limit -= EXT2_NDIR_BLOCKS;
+	/* indirect blocks */
+	meta_blocks = 1;
+	upper_limit -= ppb;
+	/* double indirect blocks */
+	if (upper_limit < ppb * ppb) {
+		meta_blocks += 1 + DIV_ROUND_UP(upper_limit, ppb);
+		res -= meta_blocks;
+		goto check_lfs;
+	}
+	meta_blocks += 1 + ppb;
+	upper_limit -= ppb * ppb;
+	/* tripple indirect blocks for the rest */
+	meta_blocks += 1 + DIV_ROUND_UP(upper_limit, ppb) +
+		DIV_ROUND_UP(upper_limit, ppb*ppb);
+	res -= meta_blocks;
+check_lfs:
+	res <<= bits;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (res > MAX_LFS_FILESIZE)
 		res = MAX_LFS_FILESIZE;
 
@@ -867,9 +978,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
 	sb->s_flags = (sb->s_flags & ~MS_POSIXACL) |
 		((EXT2_SB(sb)->s_mount_opt & EXT2_MOUNT_POSIX_ACL) ?
 		 MS_POSIXACL : 0);
+<<<<<<< HEAD
 
 	ext2_xip_verify_sb(sb); /* see if bdev supports xip, unset
 				    EXT2_MOUNT_XIP if not */
+=======
+	sb->s_iflags |= SB_I_CGROUPWB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (le32_to_cpu(es->s_rev_level) == EXT2_GOOD_OLD_REV &&
 	    (EXT2_HAS_COMPAT_FEATURE(sb, ~0U) ||
@@ -900,11 +1015,18 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
 
 	blocksize = BLOCK_SIZE << le32_to_cpu(sbi->s_es->s_log_block_size);
 
+<<<<<<< HEAD
 	if (ext2_use_xip(sb) && blocksize != PAGE_SIZE) {
 		if (!silent)
 			ext2_msg(sb, KERN_ERR,
 				"error: unsupported blocksize for xip");
 		goto failed_mount;
+=======
+	if (sbi->s_mount_opt & EXT2_MOUNT_DAX) {
+		err = bdev_dax_supported(sb, blocksize);
+		if (err)
+			goto failed_mount;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* If the blocksize doesn't match, re-read the thing.. */
@@ -1016,9 +1138,15 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
 
 	if (EXT2_BLOCKS_PER_GROUP(sb) == 0)
 		goto cantfind_ext2;
+<<<<<<< HEAD
  	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
  				le32_to_cpu(es->s_first_data_block) - 1)
  					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
+=======
+	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
+				le32_to_cpu(es->s_first_data_block) - 1)
+					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
 		   EXT2_DESC_PER_BLOCK(sb);
 	sbi->s_group_desc = kmalloc (db_count * sizeof (struct buffer_head *), GFP_KERNEL);
@@ -1067,6 +1195,7 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
 	ext2_rsv_window_add(sb, &sbi->s_rsv_window_head);
 
 	err = percpu_counter_init(&sbi->s_freeblocks_counter,
+<<<<<<< HEAD
 				ext2_count_free_blocks(sb));
 	if (!err) {
 		err = percpu_counter_init(&sbi->s_freeinodes_counter,
@@ -1075,11 +1204,32 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
 	if (!err) {
 		err = percpu_counter_init(&sbi->s_dirs_counter,
 				ext2_count_dirs(sb));
+=======
+				ext2_count_free_blocks(sb), GFP_KERNEL);
+	if (!err) {
+		err = percpu_counter_init(&sbi->s_freeinodes_counter,
+				ext2_count_free_inodes(sb), GFP_KERNEL);
+	}
+	if (!err) {
+		err = percpu_counter_init(&sbi->s_dirs_counter,
+				ext2_count_dirs(sb), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (err) {
 		ext2_msg(sb, KERN_ERR, "error: insufficient memory");
 		goto failed_mount3;
 	}
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_EXT2_FS_XATTR
+	sbi->s_mb_cache = ext2_xattr_create_cache();
+	if (!sbi->s_mb_cache) {
+		ext2_msg(sb, KERN_ERR, "Failed to create an mb_cache");
+		goto failed_mount3;
+	}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * set up enough so that it can read an inode
 	 */
@@ -1090,6 +1240,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
 #ifdef CONFIG_QUOTA
 	sb->dq_op = &dquot_operations;
 	sb->s_qcop = &dquot_quotactl_ops;
+<<<<<<< HEAD
+=======
+	sb->s_quota_types = QTYPE_MASK_USR | QTYPE_MASK_GRP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	root = ext2_iget(sb, EXT2_ROOT_INO);
@@ -1124,6 +1278,11 @@ cantfind_ext2:
 			sb->s_id);
 	goto failed_mount;
 failed_mount3:
+<<<<<<< HEAD
+=======
+	if (sbi->s_mb_cache)
+		ext2_xattr_destroy_cache(sbi->s_mb_cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	percpu_counter_destroy(&sbi->s_freeblocks_counter);
 	percpu_counter_destroy(&sbi->s_freeinodes_counter);
 	percpu_counter_destroy(&sbi->s_dirs_counter);
@@ -1249,7 +1408,10 @@ static int ext2_remount (struct super_block * sb, int * flags, char * data)
 {
 	struct ext2_sb_info * sbi = EXT2_SB(sb);
 	struct ext2_super_block * es;
+<<<<<<< HEAD
 	unsigned long old_mount_opt = sbi->s_mount_opt;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ext2_mount_options old_opts;
 	unsigned long old_sb_flags;
 	int err;
@@ -1274,6 +1436,7 @@ static int ext2_remount (struct super_block * sb, int * flags, char * data)
 	sb->s_flags = (sb->s_flags & ~MS_POSIXACL) |
 		((sbi->s_mount_opt & EXT2_MOUNT_POSIX_ACL) ? MS_POSIXACL : 0);
 
+<<<<<<< HEAD
 	ext2_xip_verify_sb(sb); /* see if bdev supports xip, unset
 				    EXT2_MOUNT_XIP if not */
 
@@ -1290,6 +1453,13 @@ static int ext2_remount (struct super_block * sb, int * flags, char * data)
 			 "xip flag with busy inodes while remounting");
 		sbi->s_mount_opt &= ~EXT2_MOUNT_XIP;
 		sbi->s_mount_opt |= old_mount_opt & EXT2_MOUNT_XIP;
+=======
+	es = sbi->s_es;
+	if ((sbi->s_mount_opt ^ old_opts.s_mount_opt) & EXT2_MOUNT_DAX) {
+		ext2_msg(sb, KERN_WARNING, "warning: refusing change of "
+			 "dax flag with busy inodes while remounting");
+		sbi->s_mount_opt ^= EXT2_MOUNT_DAX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if ((*flags & MS_RDONLY) == (sb->s_flags & MS_RDONLY)) {
 		spin_unlock(&sbi->s_lock);
@@ -1524,7 +1694,11 @@ out:
 	if (inode->i_size < off+len-towrite)
 		i_size_write(inode, off+len-towrite);
 	inode->i_version++;
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(inode);
 	return len - towrite;
 }
@@ -1542,20 +1716,31 @@ MODULE_ALIAS_FS("ext2");
 
 static int __init init_ext2_fs(void)
 {
+<<<<<<< HEAD
 	int err = init_ext2_xattr();
 	if (err)
 		return err;
 	err = init_inodecache();
 	if (err)
 		goto out1;
+=======
+	int err;
+
+	err = init_inodecache();
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         err = register_filesystem(&ext2_fs_type);
 	if (err)
 		goto out;
 	return 0;
 out:
 	destroy_inodecache();
+<<<<<<< HEAD
 out1:
 	exit_ext2_xattr();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -1563,7 +1748,10 @@ static void __exit exit_ext2_fs(void)
 {
 	unregister_filesystem(&ext2_fs_type);
 	destroy_inodecache();
+<<<<<<< HEAD
 	exit_ext2_xattr();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MODULE_AUTHOR("Remy Card and others");

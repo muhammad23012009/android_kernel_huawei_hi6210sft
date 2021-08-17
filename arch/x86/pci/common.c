@@ -12,7 +12,10 @@
 #include <linux/dmi.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <asm-generic/pci-bridge.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/acpi.h>
 #include <asm/segment.h>
 #include <asm/io.h>
@@ -81,14 +84,22 @@ struct pci_ops pci_root_ops = {
  */
 DEFINE_RAW_SPINLOCK(pci_config_lock);
 
+<<<<<<< HEAD
 static int can_skip_ioresource_align(const struct dmi_system_id *d)
+=======
+static int __init can_skip_ioresource_align(const struct dmi_system_id *d)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	pci_probe |= PCI_CAN_SKIP_ISA_ALIGN;
 	printk(KERN_INFO "PCI: %s detected, can skip ISA alignment\n", d->ident);
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct dmi_system_id can_skip_pciprobe_dmi_table[] = {
+=======
+static const struct dmi_system_id can_skip_pciprobe_dmi_table[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Systems where PCI IO resource ISA alignment can be skipped
  * when the ISA enable bit in the bridge control is not set
@@ -134,7 +145,11 @@ static void pcibios_fixup_device_resources(struct pci_dev *dev)
 	if (pci_probe & PCI_NOASSIGN_BARS) {
 		/*
 		* If the BIOS did not assign the BAR, zero out the
+<<<<<<< HEAD
 		* resource so the kernel doesn't attmept to assign
+=======
+		* resource so the kernel doesn't attempt to assign
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		* it later on in pci_assign_unassigned_resources
 		*/
 		for (bar = 0; bar <= PCI_STD_RESOURCE_END; bar++) {
@@ -186,7 +201,11 @@ void pcibios_remove_bus(struct pci_bus *bus)
  * on the kernel command line (which was parsed earlier).
  */
 
+<<<<<<< HEAD
 static int set_bf_sort(const struct dmi_system_id *d)
+=======
+static int __init set_bf_sort(const struct dmi_system_id *d)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (pci_bf_sort == pci_bf_sort_default) {
 		pci_bf_sort = pci_dmi_bf;
@@ -195,8 +214,13 @@ static int set_bf_sort(const struct dmi_system_id *d)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void read_dmi_type_b1(const struct dmi_header *dm,
 				       void *private_data)
+=======
+static void __init read_dmi_type_b1(const struct dmi_header *dm,
+				    void *private_data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 *d = (u8 *)dm + 4;
 
@@ -217,7 +241,11 @@ static void read_dmi_type_b1(const struct dmi_header *dm,
 	}
 }
 
+<<<<<<< HEAD
 static int find_sort_method(const struct dmi_system_id *d)
+=======
+static int __init find_sort_method(const struct dmi_system_id *d)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dmi_walk(read_dmi_type_b1, NULL);
 
@@ -232,7 +260,11 @@ static int find_sort_method(const struct dmi_system_id *d)
  * Enable renumbering of PCI bus# ranges to reach all PCI busses (Cardbus)
  */
 #ifdef __i386__
+<<<<<<< HEAD
 static int assign_all_busses(const struct dmi_system_id *d)
+=======
+static int __init assign_all_busses(const struct dmi_system_id *d)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	pci_probe |= PCI_ASSIGN_ALL_BUSSES;
 	printk(KERN_INFO "%s detected: enabling PCI bus# renumbering"
@@ -241,7 +273,11 @@ static int assign_all_busses(const struct dmi_system_id *d)
 }
 #endif
 
+<<<<<<< HEAD
 static int set_scan_all(const struct dmi_system_id *d)
+=======
+static int __init set_scan_all(const struct dmi_system_id *d)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	printk(KERN_INFO "PCI: %s detected, enabling pci=pcie_scan_all\n",
 	       d->ident);
@@ -249,7 +285,11 @@ static int set_scan_all(const struct dmi_system_id *d)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct dmi_system_id pciprobe_dmi_table[] = {
+=======
+static const struct dmi_system_id pciprobe_dmi_table[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef __i386__
 /*
  * Laptops which need pci=assign-busses to see Cardbus cards
@@ -472,6 +512,7 @@ void __init dmi_check_pciprobe(void)
 	dmi_check_system(pciprobe_dmi_table);
 }
 
+<<<<<<< HEAD
 struct pci_bus *pcibios_scan_root(int busnum)
 {
 	struct pci_bus *bus = NULL;
@@ -485,6 +526,29 @@ struct pci_bus *pcibios_scan_root(int busnum)
 
 	return pci_scan_bus_on_node(busnum, &pci_root_ops,
 					get_mp_bus_to_node(busnum));
+=======
+void pcibios_scan_root(int busnum)
+{
+	struct pci_bus *bus;
+	struct pci_sysdata *sd;
+	LIST_HEAD(resources);
+
+	sd = kzalloc(sizeof(*sd), GFP_KERNEL);
+	if (!sd) {
+		printk(KERN_ERR "PCI: OOM, skipping PCI bus %02x\n", busnum);
+		return;
+	}
+	sd->node = x86_pci_root_bus_node(busnum);
+	x86_pci_root_bus_resources(busnum, &resources);
+	printk(KERN_DEBUG "PCI: Probing PCI hardware (bus %02x)\n", busnum);
+	bus = pci_scan_root_bus(NULL, busnum, &pci_root_ops, sd, &resources);
+	if (!bus) {
+		pci_free_resource_list(&resources);
+		kfree(sd);
+		return;
+	}
+	pci_bus_add_devices(bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init pcibios_set_cache_line_size(void)
@@ -509,7 +573,11 @@ void __init pcibios_set_cache_line_size(void)
 
 int __init pcibios_init(void)
 {
+<<<<<<< HEAD
 	if (!raw_pci_ops) {
+=======
+	if (!raw_pci_ops && !raw_pci_ext_ops) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING "PCI: System does not support PCI\n");
 		return 0;
 	}
@@ -522,7 +590,11 @@ int __init pcibios_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 char * __init pcibios_setup(char *str)
+=======
+char *__init pcibios_setup(char *str)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!strcmp(str, "off")) {
 		pci_probe = 0;
@@ -577,7 +649,10 @@ char * __init pcibios_setup(char *str)
 		pci_probe |= PCI_PROBE_NOEARLY;
 		return NULL;
 	}
+<<<<<<< HEAD
 #ifndef CONFIG_X86_VISWS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (!strcmp(str, "usepirqmask")) {
 		pci_probe |= PCI_USE_PIRQ_MASK;
 		return NULL;
@@ -587,9 +662,13 @@ char * __init pcibios_setup(char *str)
 	} else if (!strncmp(str, "lastbus=", 8)) {
 		pcibios_last_bus = simple_strtol(str+8, NULL, 0);
 		return NULL;
+<<<<<<< HEAD
 	}
 #endif
 	else if (!strcmp(str, "rom")) {
+=======
+	} else if (!strcmp(str, "rom")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_probe |= PCI_ASSIGN_ROMS;
 		return NULL;
 	} else if (!strcmp(str, "norom")) {
@@ -636,6 +715,52 @@ unsigned int pcibios_assign_all_busses(void)
 	return (pci_probe & PCI_ASSIGN_ALL_BUSSES) ? 1 : 0;
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_X86_DEV_DMA_OPS) && defined(CONFIG_PCI_DOMAINS)
+static LIST_HEAD(dma_domain_list);
+static DEFINE_SPINLOCK(dma_domain_list_lock);
+
+void add_dma_domain(struct dma_domain *domain)
+{
+	spin_lock(&dma_domain_list_lock);
+	list_add(&domain->node, &dma_domain_list);
+	spin_unlock(&dma_domain_list_lock);
+}
+EXPORT_SYMBOL_GPL(add_dma_domain);
+
+void del_dma_domain(struct dma_domain *domain)
+{
+	spin_lock(&dma_domain_list_lock);
+	list_del(&domain->node);
+	spin_unlock(&dma_domain_list_lock);
+}
+EXPORT_SYMBOL_GPL(del_dma_domain);
+
+static void set_dma_domain_ops(struct pci_dev *pdev)
+{
+	struct dma_domain *domain;
+
+	spin_lock(&dma_domain_list_lock);
+	list_for_each_entry(domain, &dma_domain_list, node) {
+		if (pci_domain_nr(pdev->bus) == domain->domain_nr) {
+			pdev->dev.archdata.dma_ops = domain->dma_ops;
+			break;
+		}
+	}
+	spin_unlock(&dma_domain_list_lock);
+}
+#else
+static void set_dma_domain_ops(struct pci_dev *pdev) {}
+#endif
+
+static void set_dev_domain_options(struct pci_dev *pdev)
+{
+	if (is_vmd(pdev->bus))
+		pdev->hotplug_user_indicators = 1;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int pcibios_add_device(struct pci_dev *dev)
 {
 	struct setup_data *data;
@@ -665,6 +790,11 @@ int pcibios_add_device(struct pci_dev *dev)
 		pa_data = data->next;
 		iounmap(data);
 	}
+<<<<<<< HEAD
+=======
+	set_dma_domain_ops(dev);
+	set_dev_domain_options(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -693,6 +823,7 @@ int pci_ext_cfg_avail(void)
 	else
 		return 0;
 }
+<<<<<<< HEAD
 
 struct pci_bus *pci_scan_bus_on_node(int busno, struct pci_ops *ops, int node)
 {
@@ -795,3 +926,5 @@ int get_mp_bus_to_node(int busnum)
 #endif /* CONFIG_X86_32 */
 
 #endif /* CONFIG_NUMA */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

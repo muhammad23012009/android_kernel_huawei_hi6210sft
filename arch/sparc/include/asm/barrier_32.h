@@ -1,6 +1,7 @@
 #ifndef __SPARC_BARRIER_H
 #define __SPARC_BARRIER_H
 
+<<<<<<< HEAD
 /* XXX Change this if we ever use a PSO mode kernel. */
 #define mb()	__asm__ __volatile__ ("" : : : "memory")
 #define rmb()	mb()
@@ -11,5 +12,8 @@
 #define smp_rmb()	__asm__ __volatile__("":::"memory")
 #define smp_wmb()	__asm__ __volatile__("":::"memory")
 #define smp_read_barrier_depends()	do { } while(0)
+=======
+#include <asm-generic/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !(__SPARC_BARRIER_H) */

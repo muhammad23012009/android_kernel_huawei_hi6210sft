@@ -44,9 +44,12 @@ struct da7213_platform_data {
 	enum da7213_dmic_data_sel dmic_data_sel;
 	enum da7213_dmic_samplephase dmic_samplephase;
 	enum da7213_dmic_clk_rate dmic_clk_rate;
+<<<<<<< HEAD
 
 	/* MCLK squaring config */
 	bool mclk_squaring;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* _DA7213_PDATA_H */

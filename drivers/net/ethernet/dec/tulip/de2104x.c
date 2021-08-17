@@ -91,7 +91,11 @@ MODULE_PARM_DESC (rx_copybreak, "de2104x Breakpoint at which Rx packets are copi
 #define DSL			CONFIG_DE2104X_DSL
 #endif
 
+<<<<<<< HEAD
 #define DE_RX_RING_SIZE		64
+=======
+#define DE_RX_RING_SIZE		128
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DE_TX_RING_SIZE		64
 #define DE_RING_BYTES		\
 		((sizeof(struct de_desc) * DE_RX_RING_SIZE) +	\
@@ -340,7 +344,11 @@ static void de21041_media_timer (unsigned long data);
 static unsigned int de_ok_to_advertise (struct de_private *de, u32 new_media);
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(de_pci_tbl) = {
+=======
+static const struct pci_device_id de_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_DEC, PCI_DEVICE_ID_DEC_TULIP,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 	{ PCI_VENDOR_ID_DEC, PCI_DEVICE_ID_DEC_TULIP_PLUS,
@@ -1597,7 +1605,10 @@ static void de_get_drvinfo (struct net_device *dev,struct ethtool_drvinfo *info)
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(de->pdev), sizeof(info->bus_info));
+<<<<<<< HEAD
 	info->eedump_len = DE_EEPROM_SIZE;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int de_get_regs_len(struct net_device *dev)
@@ -2110,7 +2121,10 @@ static void de_remove_one(struct pci_dev *pdev)
 	iounmap(de->regs);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(dev);
 }
 

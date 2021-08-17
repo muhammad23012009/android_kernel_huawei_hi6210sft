@@ -14,18 +14,30 @@
 
 extern struct workqueue_struct *gfs_recovery_wq;
 
+<<<<<<< HEAD
 static inline void gfs2_replay_incr_blk(struct gfs2_sbd *sdp, unsigned int *blk)
 {
 	if (++*blk == sdp->sd_jdesc->jd_blocks)
+=======
+static inline void gfs2_replay_incr_blk(struct gfs2_jdesc *jd, unsigned int *blk)
+{
+	if (++*blk == jd->jd_blocks)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	        *blk = 0;
 }
 
 extern int gfs2_replay_read_block(struct gfs2_jdesc *jd, unsigned int blk,
 			   struct buffer_head **bh);
 
+<<<<<<< HEAD
 extern int gfs2_revoke_add(struct gfs2_sbd *sdp, u64 blkno, unsigned int where);
 extern int gfs2_revoke_check(struct gfs2_sbd *sdp, u64 blkno, unsigned int where);
 extern void gfs2_revoke_clean(struct gfs2_sbd *sdp);
+=======
+extern int gfs2_revoke_add(struct gfs2_jdesc *jd, u64 blkno, unsigned int where);
+extern int gfs2_revoke_check(struct gfs2_jdesc *jd, u64 blkno, unsigned int where);
+extern void gfs2_revoke_clean(struct gfs2_jdesc *jd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int gfs2_find_jhead(struct gfs2_jdesc *jd,
 		    struct gfs2_log_header_host *head);

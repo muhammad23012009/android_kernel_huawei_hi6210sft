@@ -46,7 +46,11 @@
  * All kernel-specific stuff were moved to media/v4l2-dev.h, so
  * no #if __KERNEL tests are allowed here
  *
+<<<<<<< HEAD
  *	See http://linuxtv.org for more info
+=======
+ *	See https://linuxtv.org for more info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	Author: Bill Dirks <bill@thedirks.org>
  *		Justin Schoeman

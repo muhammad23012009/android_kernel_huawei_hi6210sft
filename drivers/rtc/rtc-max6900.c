@@ -17,8 +17,11 @@
 #include <linux/rtc.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.2"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * register indices
  */
@@ -164,6 +167,7 @@ static int max6900_i2c_read_time(struct i2c_client *client, struct rtc_time *tm)
 
 static int max6900_i2c_clear_write_protect(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	int rc;
 	rc = i2c_smbus_write_byte_data(client, MAX6900_REG_CONTROL_WRITE, 0);
 	if (rc < 0) {
@@ -172,6 +176,9 @@ static int max6900_i2c_clear_write_protect(struct i2c_client *client)
 		return -EIO;
 	}
 	return 0;
+=======
+	return i2c_smbus_write_byte_data(client, MAX6900_REG_CONTROL_WRITE, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int
@@ -212,11 +219,14 @@ static int max6900_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	return max6900_i2c_set_time(to_i2c_client(dev), tm);
 }
 
+<<<<<<< HEAD
 static int max6900_remove(struct i2c_client *client)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct rtc_class_ops max6900_rtc_ops = {
 	.read_time = max6900_rtc_read_time,
 	.set_time = max6900_rtc_set_time,
@@ -230,8 +240,11 @@ max6900_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rtc = devm_rtc_device_register(&client->dev, max6900_driver.driver.name,
 					&max6900_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc))
@@ -246,13 +259,20 @@ static struct i2c_device_id max6900_id[] = {
 	{ "max6900", 0 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(i2c, max6900_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct i2c_driver max6900_driver = {
 	.driver = {
 		   .name = "rtc-max6900",
 		   },
 	.probe = max6900_probe,
+<<<<<<< HEAD
 	.remove = max6900_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = max6900_id,
 };
 
@@ -261,4 +281,7 @@ module_i2c_driver(max6900_driver);
 MODULE_DESCRIPTION("Maxim MAX6900 RTC driver");
 MODULE_AUTHOR("Dale Farnsworth <dale@farnsworth.org>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

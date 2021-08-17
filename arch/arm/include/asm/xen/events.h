@@ -16,8 +16,21 @@ static inline int xen_irqs_disabled(struct pt_regs *regs)
 	return raw_irqs_disabled_flags(regs->ARM_cpsr);
 }
 
+<<<<<<< HEAD
 #define xchg_xen_ulong(ptr, val) atomic64_xchg(container_of((ptr),	\
 							    atomic64_t,	\
 							    counter), (val))
 
+=======
+#define xchg_xen_ulong(ptr, val) atomic64_xchg(container_of((long long*)(ptr),\
+							    atomic64_t,	\
+							    counter), (val))
+
+/* Rebind event channel is supported by default */
+static inline bool xen_support_evtchn_rebind(void)
+{
+	return true;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_ARM_XEN_EVENTS_H */

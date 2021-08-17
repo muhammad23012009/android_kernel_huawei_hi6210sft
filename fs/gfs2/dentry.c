@@ -48,9 +48,15 @@ static int gfs2_drevalidate(struct dentry *dentry, unsigned int flags)
 		return -ECHILD;
 
 	parent = dget_parent(dentry);
+<<<<<<< HEAD
 	sdp = GFS2_SB(parent->d_inode);
 	dip = GFS2_I(parent->d_inode);
 	inode = dentry->d_inode;
+=======
+	sdp = GFS2_SB(d_inode(parent));
+	dip = GFS2_I(d_inode(parent));
+	inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (inode) {
 		if (is_bad_inode(inode))
@@ -68,7 +74,11 @@ static int gfs2_drevalidate(struct dentry *dentry, unsigned int flags)
 			goto fail;
 	} 
 
+<<<<<<< HEAD
 	error = gfs2_dir_check(parent->d_inode, &dentry->d_name, ip);
+=======
+	error = gfs2_dir_check(d_inode(parent), &dentry->d_name, ip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (error) {
 	case 0:
 		if (!inode)
@@ -93,12 +103,15 @@ invalid_gunlock:
 	if (!had_lock)
 		gfs2_glock_dq_uninit(&d_gh);
 invalid:
+<<<<<<< HEAD
 	if (inode && S_ISDIR(inode->i_mode)) {
 		if (have_submounts(dentry))
 			goto valid;
 		shrink_dcache_parent(dentry);
 	}
 	d_drop(dentry);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dput(parent);
 	return 0;
 
@@ -109,8 +122,12 @@ fail:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int gfs2_dhash(const struct dentry *dentry, const struct inode *inode,
 		struct qstr *str)
+=======
+static int gfs2_dhash(const struct dentry *dentry, struct qstr *str)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	str->hash = gfs2_disk_hash(str->name, str->len);
 	return 0;
@@ -120,11 +137,19 @@ static int gfs2_dentry_delete(const struct dentry *dentry)
 {
 	struct gfs2_inode *ginode;
 
+<<<<<<< HEAD
 	if (!dentry->d_inode)
 		return 0;
 
 	ginode = GFS2_I(dentry->d_inode);
 	if (!ginode->i_iopen_gh.gh_gl)
+=======
+	if (d_really_is_negative(dentry))
+		return 0;
+
+	ginode = GFS2_I(d_inode(dentry));
+	if (!gfs2_holder_initialized(&ginode->i_iopen_gh))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	if (test_bit(GLF_DEMOTE, &ginode->i_iopen_gh.gh_gl->gl_flags))

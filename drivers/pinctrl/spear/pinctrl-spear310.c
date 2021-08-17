@@ -2,7 +2,11 @@
  * Driver for the ST Microelectronics SPEAr310 pinmux
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -371,7 +375,11 @@ static struct spear_function *spear310_functions[] = {
 	&tdm_function,
 };
 
+<<<<<<< HEAD
 static struct of_device_id spear310_pinctrl_of_match[] = {
+=======
+static const struct of_device_id spear310_pinctrl_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.compatible = "st,spear310-pinmux",
 	},
@@ -400,6 +408,7 @@ static int spear310_pinctrl_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int spear310_pinctrl_remove(struct platform_device *pdev)
 {
 	return spear_pinctrl_remove(pdev);
@@ -413,6 +422,14 @@ static struct platform_driver spear310_pinctrl_driver = {
 	},
 	.probe = spear310_pinctrl_probe,
 	.remove = spear310_pinctrl_remove,
+=======
+static struct platform_driver spear310_pinctrl_driver = {
+	.driver = {
+		.name = DRIVER_NAME,
+		.of_match_table = spear310_pinctrl_of_match,
+	},
+	.probe = spear310_pinctrl_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init spear310_pinctrl_init(void)
@@ -427,7 +444,14 @@ static void __exit spear310_pinctrl_exit(void)
 }
 module_exit(spear310_pinctrl_exit);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Viresh Kumar <viresh.linux@gmail.com>");
 MODULE_DESCRIPTION("ST Microelectronics SPEAr310 pinctrl driver");
 MODULE_LICENSE("GPL v2");
 MODULE_DEVICE_TABLE(of, SPEAr310_pinctrl_of_match);
+=======
+MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
+MODULE_DESCRIPTION("ST Microelectronics SPEAr310 pinctrl driver");
+MODULE_LICENSE("GPL v2");
+MODULE_DEVICE_TABLE(of, spear310_pinctrl_of_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

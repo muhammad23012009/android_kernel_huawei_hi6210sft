@@ -16,7 +16,10 @@
 #include <linux/input.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/serio.h>
 #include <linux/delay.h>
 #include <asm/io.h>
@@ -181,7 +184,10 @@ static void pcips2_remove(struct pci_dev *dev)
 	struct pcips2_data *ps2if = pci_get_drvdata(dev);
 
 	serio_unregister_port(ps2if->io);
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(ps2if);
 	pci_release_regions(dev);
 	pci_disable_device(dev);

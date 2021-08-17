@@ -36,14 +36,22 @@
 #define PMD_FLAGS_SMP	PMD_SECT_WBWA|PMD_SECT_S
 
 ENTRY(cpu_v6_proc_init)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ENTRY(cpu_v6_proc_fin)
 	mrc	p15, 0, r0, c1, c0, 0		@ ctrl register
 	bic	r0, r0, #0x1000			@ ...i............
 	bic	r0, r0, #0x0006			@ .............ca.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	cpu_v6_reset(loc)
@@ -62,7 +70,11 @@ ENTRY(cpu_v6_reset)
 	mcr	p15, 0, r1, c1, c0, 0		@ disable MMU
 	mov	r1, #0
 	mcr	p15, 0, r1, c7, c5, 4		@ ISB
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(cpu_v6_reset)
 	.popsection
 
@@ -77,14 +89,22 @@ ENTRY(cpu_v6_do_idle)
 	mov	r1, #0
 	mcr	p15, 0, r1, c7, c10, 4		@ DWB - WFI may enter a low-power mode
 	mcr	p15, 0, r1, c7, c0, 4		@ wait for interrupt
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ENTRY(cpu_v6_dcache_clean_area)
 1:	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 	add	r0, r0, #D_CACHE_LINE_SIZE
 	subs	r1, r1, #D_CACHE_LINE_SIZE
 	bhi	1b
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	cpu_v6_switch_mm(pgd_phys, tsk)
@@ -113,7 +133,11 @@ ENTRY(cpu_v6_switch_mm)
 #endif
 	mcr	p15, 0, r1, c13, c0, 1		@ set context ID
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	cpu_v6_set_pte_ext(ptep, pte, ext)
@@ -131,7 +155,11 @@ ENTRY(cpu_v6_set_pte_ext)
 #ifdef CONFIG_MMU
 	armv6_set_pte_ext cpu_v6
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Suspend/resume support: taken from arch/arm/mach-s3c64xx/sleep.S */
 .globl	cpu_v6_suspend_size
@@ -140,8 +168,15 @@ ENTRY(cpu_v6_set_pte_ext)
 ENTRY(cpu_v6_do_suspend)
 	stmfd	sp!, {r4 - r9, lr}
 	mrc	p15, 0, r4, c13, c0, 0	@ FCSE/PID
+<<<<<<< HEAD
 	mrc	p15, 0, r5, c3, c0, 0	@ Domain ID
 	mrc	p15, 0, r6, c2, c0, 1	@ Translation table base 1
+=======
+#ifdef CONFIG_MMU
+	mrc	p15, 0, r5, c3, c0, 0	@ Domain ID
+	mrc	p15, 0, r6, c2, c0, 1	@ Translation table base 1
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mrc	p15, 0, r7, c1, c0, 1	@ auxiliary control register
 	mrc	p15, 0, r8, c1, c0, 2	@ co-processor access control
 	mrc	p15, 0, r9, c1, c0, 0	@ control register
@@ -158,14 +193,25 @@ ENTRY(cpu_v6_do_resume)
 	mcr	p15, 0, ip, c13, c0, 1	@ set reserved context ID
 	ldmia	r0, {r4 - r9}
 	mcr	p15, 0, r4, c13, c0, 0	@ FCSE/PID
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mcr	p15, 0, r5, c3, c0, 0	@ Domain ID
 	ALT_SMP(orr	r1, r1, #TTB_FLAGS_SMP)
 	ALT_UP(orr	r1, r1, #TTB_FLAGS_UP)
 	mcr	p15, 0, r1, c2, c0, 0	@ Translation table base 0
 	mcr	p15, 0, r6, c2, c0, 1	@ Translation table base 1
+<<<<<<< HEAD
 	mcr	p15, 0, r7, c1, c0, 1	@ auxiliary control register
 	mcr	p15, 0, r8, c1, c0, 2	@ co-processor access control
 	mcr	p15, 0, ip, c2, c0, 2	@ TTB control register
+=======
+	mcr	p15, 0, ip, c2, c0, 2	@ TTB control register
+#endif
+	mcr	p15, 0, r7, c1, c0, 1	@ auxiliary control register
+	mcr	p15, 0, r8, c1, c0, 2	@ co-processor access control
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mcr	p15, 0, ip, c7, c5, 4	@ ISB
 	mov	r0, r9			@ control register
 	b	cpu_resume_mmu
@@ -176,8 +222,11 @@ ENDPROC(cpu_v6_do_resume)
 
 	.align
 
+<<<<<<< HEAD
 	__CPUINIT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	__v6_setup
  *
@@ -239,7 +288,11 @@ __v6_setup:
 	mcreq	p15, 0, r5, c1, c0, 1		@ write aux control reg
 	orreq	r0, r0, #(1 << 21)		@ low interrupt latency configuration
 #endif
+<<<<<<< HEAD
 	mov	pc, lr				@ return to head.S:__ret
+=======
+	ret	lr				@ return to head.S:__ret
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *         V X F   I D LR
@@ -262,7 +315,11 @@ v6_crval:
 	string	cpu_elf_name, "v6"
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Match any ARMv6 processor core.
@@ -285,7 +342,11 @@ __v6_proc_info:
 		PMD_SECT_XN | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
+<<<<<<< HEAD
 	b	__v6_setup
+=======
+	initfn	__v6_setup, __v6_proc_info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	/* See also feat_v6_fixup() for HWCAP_TLS */

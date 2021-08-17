@@ -17,11 +17,16 @@
 #include <linux/errno.h>
 #include <linux/delay.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/serial_core.h>
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 
 #include <asm/cacheflush.h>
 #include <asm/suspend.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/map.h>
 
@@ -29,6 +34,14 @@
 #include <mach/regs-clock.h>
 #include <mach/regs-irq.h>
 #include <mach/irqs.h>
+=======
+
+#include <mach/map.h>
+#include <mach/regs-clock.h>
+#include <mach/regs-irq.h>
+#include <mach/irqs.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq.h>
 
 #include <plat/pm.h>
@@ -38,6 +51,7 @@
 
 unsigned long s3c_pm_flags;
 
+<<<<<<< HEAD
 /* Debug code:
  *
  * This code supports debug output to the low level UARTs for use on
@@ -133,6 +147,8 @@ static void s3c_pm_save_uarts(void) { }
 static void s3c_pm_restore_uarts(void) { }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* The IRQ ext-int code goes here, it is too small to currently bother
  * with its own file. */
 
@@ -157,6 +173,7 @@ int s3c_irqext_wake(struct irq_data *data, unsigned int state)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* helper functions to save and restore register state */
 
 /**
@@ -233,6 +250,8 @@ static void __maybe_unused s3c_pm_show_resume_irqs(int start,
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void (*pm_cpu_prep)(void);
 int (*pm_cpu_sleep)(unsigned long);
 

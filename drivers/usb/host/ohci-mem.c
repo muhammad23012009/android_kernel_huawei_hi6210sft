@@ -28,6 +28,10 @@ static void ohci_hcd_init (struct ohci_hcd *ohci)
 	ohci->next_statechange = jiffies;
 	spin_lock_init (&ohci->lock);
 	INIT_LIST_HEAD (&ohci->pending);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&ohci->eds_in_use);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*-------------------------------------------------------------------------*/

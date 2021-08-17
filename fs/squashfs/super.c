@@ -80,7 +80,10 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 {
 	struct squashfs_sb_info *msblk;
 	struct squashfs_super_block *sblk = NULL;
+<<<<<<< HEAD
 	char b[BDEVNAME_SIZE];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct inode *root;
 	long long root_inode;
 	unsigned short flags;
@@ -124,8 +127,13 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 	sb->s_magic = le32_to_cpu(sblk->s_magic);
 	if (sb->s_magic != SQUASHFS_MAGIC) {
 		if (!silent)
+<<<<<<< HEAD
 			ERROR("Can't find a SQUASHFS superblock on %s\n",
 						bdevname(sb->s_bdev, b));
+=======
+			ERROR("Can't find a SQUASHFS superblock on %pg\n",
+						sb->s_bdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto failed_mount;
 	}
 
@@ -153,7 +161,11 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 	 * Check the system page size is not larger than the filesystem
 	 * block size (by default 128K).  This is currently not supported.
 	 */
+<<<<<<< HEAD
 	if (PAGE_CACHE_SIZE > msblk->block_size) {
+=======
+	if (PAGE_SIZE > msblk->block_size) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ERROR("Page size > filesystem block size (%d).  This is "
 			"currently not supported!\n", msblk->block_size);
 		goto failed_mount;
@@ -176,9 +188,17 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 	msblk->inode_table = le64_to_cpu(sblk->inode_table_start);
 	msblk->directory_table = le64_to_cpu(sblk->directory_table_start);
 	msblk->inodes = le32_to_cpu(sblk->inodes);
+<<<<<<< HEAD
 	flags = le16_to_cpu(sblk->flags);
 
 	TRACE("Found valid superblock on %s\n", bdevname(sb->s_bdev, b));
+=======
+	msblk->fragments = le32_to_cpu(sblk->fragments);
+	msblk->ids = le16_to_cpu(sblk->no_ids);
+	flags = le16_to_cpu(sblk->flags);
+
+	TRACE("Found valid superblock on %pg\n", sb->s_bdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	TRACE("Inodes are %scompressed\n", SQUASHFS_UNCOMPRESSED_INODES(flags)
 				? "un" : "");
 	TRACE("Data is %scompressed\n", SQUASHFS_UNCOMPRESSED_DATA(flags)
@@ -186,8 +206,13 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 	TRACE("Filesystem size %lld bytes\n", msblk->bytes_used);
 	TRACE("Block size %d\n", msblk->block_size);
 	TRACE("Number of inodes %d\n", msblk->inodes);
+<<<<<<< HEAD
 	TRACE("Number of fragments %d\n", le32_to_cpu(sblk->fragments));
 	TRACE("Number of ids %d\n", le16_to_cpu(sblk->no_ids));
+=======
+	TRACE("Number of fragments %d\n", msblk->fragments);
+	TRACE("Number of ids %d\n", msblk->ids);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	TRACE("sblk->inode_table_start %llx\n", msblk->inode_table);
 	TRACE("sblk->directory_table_start %llx\n", msblk->directory_table);
 	TRACE("sblk->fragment_table_start %llx\n",
@@ -244,8 +269,12 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 allocate_id_index_table:
 	/* Allocate and read id index table */
 	msblk->id_table = squashfs_read_id_index_table(sb,
+<<<<<<< HEAD
 		le64_to_cpu(sblk->id_table_start), next_table,
 		le16_to_cpu(sblk->no_ids));
+=======
+		le64_to_cpu(sblk->id_table_start), next_table, msblk->ids);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(msblk->id_table)) {
 		ERROR("unable to read id index table\n");
 		err = PTR_ERR(msblk->id_table);
@@ -273,7 +302,11 @@ allocate_id_index_table:
 	sb->s_export_op = &squashfs_export_ops;
 
 handle_fragments:
+<<<<<<< HEAD
 	fragments = le32_to_cpu(sblk->fragments);
+=======
+	fragments = msblk->fragments;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (fragments == 0)
 		goto check_directory_table;
 
@@ -420,7 +453,12 @@ static int __init init_inodecache(void)
 {
 	squashfs_inode_cachep = kmem_cache_create("squashfs_inode_cache",
 		sizeof(struct squashfs_inode_info), 0,
+<<<<<<< HEAD
 		SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT, init_once);
+=======
+		SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT|SLAB_ACCOUNT,
+		init_once);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return squashfs_inode_cachep ? 0 : -ENOMEM;
 }

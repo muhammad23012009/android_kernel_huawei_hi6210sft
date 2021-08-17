@@ -3,6 +3,10 @@ config CEPH_LIB
 	depends on INET
 	select LIBCRC32C
 	select CRYPTO_AES
+<<<<<<< HEAD
+=======
+	select CRYPTO_CBC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select CRYPTO
 	select KEYS
 	default n

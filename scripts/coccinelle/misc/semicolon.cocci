@@ -1,5 +1,9 @@
 ///
+<<<<<<< HEAD
 /// Removes unneeded semicolon.
+=======
+/// Remove unneeded semicolon.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ///
 // Confidence: Moderate
 // Copyright: (C) 2012 Peter Senna Tschudin, INRIA/LIP6.  GPLv2.

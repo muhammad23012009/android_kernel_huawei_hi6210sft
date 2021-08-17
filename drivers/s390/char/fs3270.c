@@ -217,7 +217,11 @@ fs3270_deactivate(struct raw3270_view *view)
 		fp->init->callback(fp->init, NULL);
 }
 
+<<<<<<< HEAD
 static int
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fs3270_irq(struct fs3270 *fp, struct raw3270_request *rq, struct irb *irb)
 {
 	/* Handle ATTN. Set indication and wake waiters for attention. */
@@ -233,7 +237,10 @@ fs3270_irq(struct fs3270 *fp, struct raw3270_request *rq, struct irb *irb)
 			/* Normal end. Copy residual count. */
 			rq->rescnt = irb->scsw.cmd.count;
 	}
+<<<<<<< HEAD
 	return RAW3270_IO_DONE;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -463,7 +470,12 @@ fs3270_open(struct inode *inode, struct file *filp)
 
 	init_waitqueue_head(&fp->wait);
 	fp->fs_pid = get_pid(task_pid(current));
+<<<<<<< HEAD
 	rc = raw3270_add_view(&fp->view, &fs3270_fn, minor);
+=======
+	rc = raw3270_add_view(&fp->view, &fs3270_fn, minor,
+			      RAW3270_VIEW_LOCK_BH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc) {
 		fs3270_free_view(&fp->view);
 		goto out;
@@ -524,20 +536,32 @@ static const struct file_operations fs3270_fops = {
 	.llseek		= no_llseek,
 };
 
+<<<<<<< HEAD
 void fs3270_create_cb(int minor)
+=======
+static void fs3270_create_cb(int minor)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	__register_chrdev(IBM_FS3270_MAJOR, minor, 1, "tub", &fs3270_fops);
 	device_create(class3270, NULL, MKDEV(IBM_FS3270_MAJOR, minor),
 		      NULL, "3270/tub%d", minor);
 }
 
+<<<<<<< HEAD
 void fs3270_destroy_cb(int minor)
+=======
+static void fs3270_destroy_cb(int minor)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	device_destroy(class3270, MKDEV(IBM_FS3270_MAJOR, minor));
 	__unregister_chrdev(IBM_FS3270_MAJOR, minor, 1, "tub");
 }
 
+<<<<<<< HEAD
 struct raw3270_notifier fs3270_notifier =
+=======
+static struct raw3270_notifier fs3270_notifier =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	.create = fs3270_create_cb,
 	.destroy = fs3270_destroy_cb,
@@ -564,6 +588,10 @@ static void __exit
 fs3270_exit(void)
 {
 	raw3270_unregister_notifier(&fs3270_notifier);
+<<<<<<< HEAD
+=======
+	device_destroy(class3270, MKDEV(IBM_FS3270_MAJOR, 0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__unregister_chrdev(IBM_FS3270_MAJOR, 0, 1, "fs3270");
 }
 

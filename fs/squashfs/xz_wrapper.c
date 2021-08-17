@@ -141,7 +141,11 @@ static int squashfs_xz_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	stream->buf.in_pos = 0;
 	stream->buf.in_size = 0;
 	stream->buf.out_pos = 0;
+<<<<<<< HEAD
 	stream->buf.out_size = PAGE_CACHE_SIZE;
+=======
+	stream->buf.out_size = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stream->buf.out = squashfs_first_page(output);
 
 	do {
@@ -158,7 +162,11 @@ static int squashfs_xz_uncompress(struct squashfs_sb_info *msblk, void *strm,
 			stream->buf.out = squashfs_next_page(output);
 			if (stream->buf.out != NULL) {
 				stream->buf.out_pos = 0;
+<<<<<<< HEAD
 				total += PAGE_CACHE_SIZE;
+=======
+				total += PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 

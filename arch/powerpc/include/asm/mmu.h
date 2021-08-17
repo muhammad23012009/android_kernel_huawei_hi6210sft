@@ -12,13 +12,18 @@
  */
 
 /*
+<<<<<<< HEAD
  * First half is MMU families
+=======
+ * MMU families
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define MMU_FTR_HPTE_TABLE		ASM_CONST(0x00000001)
 #define MMU_FTR_TYPE_8xx		ASM_CONST(0x00000002)
 #define MMU_FTR_TYPE_40x		ASM_CONST(0x00000004)
 #define MMU_FTR_TYPE_44x		ASM_CONST(0x00000008)
 #define MMU_FTR_TYPE_FSL_E		ASM_CONST(0x00000010)
+<<<<<<< HEAD
 #define MMU_FTR_TYPE_3E			ASM_CONST(0x00000020)
 #define MMU_FTR_TYPE_47x		ASM_CONST(0x00000040)
 
@@ -26,6 +31,29 @@
  * This is individual features
  */
 
+=======
+#define MMU_FTR_TYPE_47x		ASM_CONST(0x00000020)
+
+/* Radix page table supported and enabled */
+#define MMU_FTR_TYPE_RADIX		ASM_CONST(0x00000040)
+
+/*
+ * Individual features below.
+ */
+
+/*
+ * Kernel read only support.
+ * We added the ppp value 0b110 in ISA 2.04.
+ */
+#define MMU_FTR_KERNEL_RO		ASM_CONST(0x00004000)
+
+/*
+ * We need to clear top 16bits of va (from the remaining 64 bits )in
+ * tlbie* instructions
+ */
+#define MMU_FTR_TLBIE_CROP_VA		ASM_CONST(0x00008000)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Enable use of high BAT registers */
 #define MMU_FTR_USE_HIGH_BATS		ASM_CONST(0x00010000)
 
@@ -65,9 +93,15 @@
  */
 #define MMU_FTR_USE_PAIRED_MAS		ASM_CONST(0x01000000)
 
+<<<<<<< HEAD
 /* MMU is SLB-based
  */
 #define MMU_FTR_SLB			ASM_CONST(0x02000000)
+=======
+/* Doesn't support the B bit (1T segment) in SLBIE
+ */
+#define MMU_FTR_NO_SLBIE_B		ASM_CONST(0x02000000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Support 16M large pages
  */
@@ -89,23 +123,36 @@
  */
 #define MMU_FTR_1T_SEGMENT		ASM_CONST(0x40000000)
 
+<<<<<<< HEAD
 /* Doesn't support the B bit (1T segment) in SLBIE
  */
 #define MMU_FTR_NO_SLBIE_B		ASM_CONST(0x80000000)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* MMU feature bit sets for various CPUs */
 #define MMU_FTRS_DEFAULT_HPTE_ARCH_V2	\
 	MMU_FTR_HPTE_TABLE | MMU_FTR_PPCAS_ARCH_V2
 #define MMU_FTRS_POWER4		MMU_FTRS_DEFAULT_HPTE_ARCH_V2
+<<<<<<< HEAD
 #define MMU_FTRS_PPC970		MMU_FTRS_POWER4
 #define MMU_FTRS_POWER5		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE
 #define MMU_FTRS_POWER6		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE
 #define MMU_FTRS_POWER7		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE
 #define MMU_FTRS_POWER8		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE
+=======
+#define MMU_FTRS_PPC970		MMU_FTRS_POWER4 | MMU_FTR_TLBIE_CROP_VA
+#define MMU_FTRS_POWER5		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE
+#define MMU_FTRS_POWER6		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE | MMU_FTR_KERNEL_RO
+#define MMU_FTRS_POWER7		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE | MMU_FTR_KERNEL_RO
+#define MMU_FTRS_POWER8		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE | MMU_FTR_KERNEL_RO
+#define MMU_FTRS_POWER9		MMU_FTRS_POWER4 | MMU_FTR_LOCKLESS_TLBIE | MMU_FTR_KERNEL_RO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MMU_FTRS_CELL		MMU_FTRS_DEFAULT_HPTE_ARCH_V2 | \
 				MMU_FTR_CI_LARGE_PAGE
 #define MMU_FTRS_PA6T		MMU_FTRS_DEFAULT_HPTE_ARCH_V2 | \
 				MMU_FTR_CI_LARGE_PAGE | MMU_FTR_NO_SLBIE_B
+<<<<<<< HEAD
 #define MMU_FTRS_A2		MMU_FTR_TYPE_3E | MMU_FTR_USE_TLBILX | \
 				MMU_FTR_USE_TLBIVAX_BCAST | \
 				MMU_FTR_LOCK_BCAST_INVAL | \
@@ -114,6 +161,10 @@
 				MMU_FTR_TLBIEL | \
 				MMU_FTR_16M_PAGE
 #ifndef __ASSEMBLY__
+=======
+#ifndef __ASSEMBLY__
+#include <linux/bug.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cputable.h>
 
 #ifdef CONFIG_PPC_FSL_BOOK3E
@@ -121,13 +172,69 @@
 DECLARE_PER_CPU(int, next_tlbcam_idx);
 #endif
 
+<<<<<<< HEAD
 static inline int mmu_has_feature(unsigned long feature)
 {
 	return (cur_cpu_spec->mmu_features & feature);
+=======
+enum {
+	MMU_FTRS_POSSIBLE = MMU_FTR_HPTE_TABLE | MMU_FTR_TYPE_8xx |
+		MMU_FTR_TYPE_40x | MMU_FTR_TYPE_44x | MMU_FTR_TYPE_FSL_E |
+		MMU_FTR_TYPE_47x | MMU_FTR_USE_HIGH_BATS | MMU_FTR_BIG_PHYS |
+		MMU_FTR_USE_TLBIVAX_BCAST | MMU_FTR_USE_TLBILX |
+		MMU_FTR_LOCK_BCAST_INVAL | MMU_FTR_NEED_DTLB_SW_LRU |
+		MMU_FTR_USE_TLBRSRV | MMU_FTR_USE_PAIRED_MAS |
+		MMU_FTR_NO_SLBIE_B | MMU_FTR_16M_PAGE | MMU_FTR_TLBIEL |
+		MMU_FTR_LOCKLESS_TLBIE | MMU_FTR_CI_LARGE_PAGE |
+		MMU_FTR_1T_SEGMENT | MMU_FTR_TLBIE_CROP_VA |
+		MMU_FTR_KERNEL_RO |
+#ifdef CONFIG_PPC_RADIX_MMU
+		MMU_FTR_TYPE_RADIX |
+#endif
+		0,
+};
+
+static inline bool early_mmu_has_feature(unsigned long feature)
+{
+	return !!(MMU_FTRS_POSSIBLE & cur_cpu_spec->mmu_features & feature);
+}
+
+#ifdef CONFIG_JUMP_LABEL_FEATURE_CHECKS
+#include <linux/jump_label.h>
+
+#define NUM_MMU_FTR_KEYS	32
+
+extern struct static_key_true mmu_feature_keys[NUM_MMU_FTR_KEYS];
+
+extern void mmu_feature_keys_init(void);
+
+static __always_inline bool mmu_has_feature(unsigned long feature)
+{
+	int i;
+
+#ifndef __clang__ /* clang can't cope with this */
+	BUILD_BUG_ON(!__builtin_constant_p(feature));
+#endif
+
+#ifdef CONFIG_JUMP_LABEL_FEATURE_CHECK_DEBUG
+	if (!static_key_initialized) {
+		printk("Warning! mmu_has_feature() used prior to jump label init!\n");
+		dump_stack();
+		return early_mmu_has_feature(feature);
+	}
+#endif
+
+	if (!(MMU_FTRS_POSSIBLE & feature))
+		return false;
+
+	i = __builtin_ctzl(feature);
+	return static_branch_likely(&mmu_feature_keys[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void mmu_clear_feature(unsigned long feature)
 {
+<<<<<<< HEAD
 	cur_cpu_spec->mmu_features &= ~feature;
 }
 
@@ -139,12 +246,46 @@ extern void early_init_mmu_secondary(void);
 
 extern void setup_initial_memory_limit(phys_addr_t first_memblock_base,
 				       phys_addr_t first_memblock_size);
+=======
+	int i;
+
+	i = __builtin_ctzl(feature);
+	cur_cpu_spec->mmu_features &= ~feature;
+	static_branch_disable(&mmu_feature_keys[i]);
+}
+#else
+
+static inline void mmu_feature_keys_init(void)
+{
+
+}
+
+static inline bool mmu_has_feature(unsigned long feature)
+{
+	return early_mmu_has_feature(feature);
+}
+
+static inline void mmu_clear_feature(unsigned long feature)
+{
+	cur_cpu_spec->mmu_features &= ~feature;
+}
+#endif /* CONFIG_JUMP_LABEL */
+
+extern unsigned int __start___mmu_ftr_fixup, __stop___mmu_ftr_fixup;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PPC64
 /* This is our real memory area size on ppc64 server, on embedded, we
  * make it match the size our of bolted TLB area
  */
 extern u64 ppc64_rma_size;
+<<<<<<< HEAD
+=======
+
+/* Cleanup function used by kexec */
+extern void mmu_cleanup_all(void);
+extern void radix__mmu_cleanup_all(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_PPC64 */
 
 struct mm_struct;
@@ -156,6 +297,31 @@ static inline void assert_pte_locked(struct mm_struct *mm, unsigned long addr)
 }
 #endif /* !CONFIG_DEBUG_VM */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_RADIX_MMU
+static inline bool radix_enabled(void)
+{
+	return mmu_has_feature(MMU_FTR_TYPE_RADIX);
+}
+
+static inline bool early_radix_enabled(void)
+{
+	return early_mmu_has_feature(MMU_FTR_TYPE_RADIX);
+}
+#else
+static inline bool radix_enabled(void)
+{
+	return false;
+}
+
+static inline bool early_radix_enabled(void)
+{
+	return false;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !__ASSEMBLY__ */
 
 /* The kernel use the constants below to index in the page sizes array.
@@ -180,6 +346,7 @@ static inline void assert_pte_locked(struct mm_struct *mm, unsigned long addr)
 #define MMU_PAGE_64K_AP	3	/* "Admixed pages" (hash64 only) */
 #define MMU_PAGE_256K	4
 #define MMU_PAGE_1M	5
+<<<<<<< HEAD
 #define MMU_PAGE_4M	6
 #define MMU_PAGE_8M	7
 #define MMU_PAGE_16M	8
@@ -197,6 +364,38 @@ static inline void assert_pte_locked(struct mm_struct *mm, unsigned long addr)
 #elif defined(CONFIG_PPC_STD_MMU_32)
 /* 32-bit classic hash table MMU */
 #  include <asm/mmu-hash32.h>
+=======
+#define MMU_PAGE_2M	6
+#define MMU_PAGE_4M	7
+#define MMU_PAGE_8M	8
+#define MMU_PAGE_16M	9
+#define MMU_PAGE_64M	10
+#define MMU_PAGE_256M	11
+#define MMU_PAGE_1G	12
+#define MMU_PAGE_16G	13
+#define MMU_PAGE_64G	14
+
+/* N.B. we need to change the type of hpte_page_sizes if this gets to be > 16 */
+#define MMU_PAGE_COUNT	15
+
+#ifdef CONFIG_PPC_BOOK3S_64
+#include <asm/book3s/64/mmu.h>
+#else /* CONFIG_PPC_BOOK3S_64 */
+
+#ifndef __ASSEMBLY__
+/* MMU initialization */
+extern void early_init_mmu(void);
+extern void early_init_mmu_secondary(void);
+extern void setup_initial_memory_limit(phys_addr_t first_memblock_base,
+				       phys_addr_t first_memblock_size);
+static inline void mmu_early_init_devtree(void) { }
+#endif /* __ASSEMBLY__ */
+#endif
+
+#if defined(CONFIG_PPC_STD_MMU_32)
+/* 32-bit classic hash table MMU */
+#include <asm/book3s/32/mmu-hash.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif defined(CONFIG_40x)
 /* 40x-style software loaded TLB */
 #  include <asm/mmu-40x.h>
@@ -211,6 +410,9 @@ static inline void assert_pte_locked(struct mm_struct *mm, unsigned long addr)
 #  include <asm/mmu-8xx.h>
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 #endif /* _ASM_POWERPC_MMU_H_ */

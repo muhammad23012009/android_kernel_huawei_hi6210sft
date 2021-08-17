@@ -34,6 +34,10 @@ struct voltagedomain;
  * @cmd_ret_shift: RET field shift in PRM_VC_CMD_VAL_* register
  * @cmd_off_shift: OFF field shift in PRM_VC_CMD_VAL_* register
  * @i2c_cfg_reg: I2C configuration register offset
+<<<<<<< HEAD
+=======
+ * @i2c_cfg_clear_mask: high-speed mode bit clear mask in I2C config register
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @i2c_cfg_hsen_mask: high-speed mode bit field mask in I2C config register
  * @i2c_mcode_mask: MCODE field mask for I2C config register
  *
@@ -52,6 +56,10 @@ struct omap_vc_common {
 	u8 cmd_ret_shift;
 	u8 cmd_off_shift;
 	u8 i2c_cfg_reg;
+<<<<<<< HEAD
+=======
+	u8 i2c_cfg_clear_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 i2c_cfg_hsen_mask;
 	u8 i2c_mcode_mask;
 };
@@ -117,6 +125,12 @@ extern struct omap_vc_param omap4_mpu_vc_data;
 extern struct omap_vc_param omap4_iva_vc_data;
 extern struct omap_vc_param omap4_core_vc_data;
 
+<<<<<<< HEAD
+=======
+void omap3_vc_set_pmic_signaling(int core_next_state);
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void omap_vc_init_channel(struct voltagedomain *voltdm);
 int omap_vc_pre_scale(struct voltagedomain *voltdm,
 		      unsigned long target_volt,

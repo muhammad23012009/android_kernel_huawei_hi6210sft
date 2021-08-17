@@ -80,7 +80,11 @@ static int platform_lcd_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	int err;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_err(dev, "no platform data supplied\n");
 		return -EINVAL;
@@ -94,6 +98,7 @@ static int platform_lcd_probe(struct platform_device *pdev)
 
 	plcd = devm_kzalloc(&pdev->dev, sizeof(struct platform_lcd),
 			    GFP_KERNEL);
+<<<<<<< HEAD
 	if (!plcd) {
 		dev_err(dev, "no memory for state\n");
 		return -ENOMEM;
@@ -107,12 +112,25 @@ static int platform_lcd_probe(struct platform_device *pdev)
 		dev_err(dev, "cannot register lcd device\n");
 		err = PTR_ERR(plcd->lcd);
 		goto err;
+=======
+	if (!plcd)
+		return -ENOMEM;
+
+	plcd->us = dev;
+	plcd->pdata = pdata;
+	plcd->lcd = devm_lcd_device_register(&pdev->dev, dev_name(dev), dev,
+						plcd, &platform_lcd_ops);
+	if (IS_ERR(plcd->lcd)) {
+		dev_err(dev, "cannot register lcd device\n");
+		return PTR_ERR(plcd->lcd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, plcd);
 	platform_lcd_set_power(plcd->lcd, FB_BLANK_NORMAL);
 
 	return 0;
+<<<<<<< HEAD
 
  err:
 	return err;
@@ -125,6 +143,8 @@ static int platform_lcd_remove(struct platform_device *pdev)
 	lcd_device_unregister(plcd->lcd);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -163,12 +183,18 @@ MODULE_DEVICE_TABLE(of, platform_lcd_of_match);
 static struct platform_driver platform_lcd_driver = {
 	.driver		= {
 		.name	= "platform-lcd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &platform_lcd_pm_ops,
 		.of_match_table = of_match_ptr(platform_lcd_of_match),
 	},
 	.probe		= platform_lcd_probe,
+<<<<<<< HEAD
 	.remove		= platform_lcd_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(platform_lcd_driver);

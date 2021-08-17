@@ -44,7 +44,11 @@ static void instruction_dump(unsigned long *pc)
 #define __SAVE __asm__ __volatile__("save %sp, -0x40, %sp\n\t")
 #define __RESTORE __asm__ __volatile__("restore %g0, %g0, %g0\n\t")
 
+<<<<<<< HEAD
 void die_if_kernel(char *str, struct pt_regs *regs)
+=======
+void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static int die_counter;
 	int count = 0;
@@ -219,8 +223,11 @@ static unsigned long fake_fsr;
 static unsigned long fake_queue[32] __attribute__ ((aligned (8)));
 static unsigned long fake_depth;
 
+<<<<<<< HEAD
 extern int do_mathemu(struct pt_regs *, struct task_struct *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void do_fpe_trap(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 		 unsigned long psr)
 {
@@ -435,7 +442,10 @@ void trap_init(void)
 	/* Force linker to barf if mismatched */
 	if (TI_UWINMASK    != offsetof(struct thread_info, uwinmask) ||
 	    TI_TASK        != offsetof(struct thread_info, task) ||
+<<<<<<< HEAD
 	    TI_EXECDOMAIN  != offsetof(struct thread_info, exec_domain) ||
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    TI_FLAGS       != offsetof(struct thread_info, flags) ||
 	    TI_CPU         != offsetof(struct thread_info, cpu) ||
 	    TI_PREEMPT     != offsetof(struct thread_info, preempt_count) ||

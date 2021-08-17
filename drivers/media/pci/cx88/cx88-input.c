@@ -130,25 +130,58 @@ static void cx88_ir_handle_key(struct cx88_IR *ir)
 
 		data = (data << 4) | ((gpio_key & 0xf0) >> 4);
 
+<<<<<<< HEAD
 		rc_keydown(ir->dev, data, 0);
+=======
+		rc_keydown(ir->dev, RC_TYPE_UNKNOWN, data, 0);
+
+	} else if (ir->core->boardnr == CX88_BOARD_PROLINK_PLAYTVPVR ||
+		   ir->core->boardnr == CX88_BOARD_PIXELVIEW_PLAYTV_ULTRA_PRO) {
+		/* bit cleared on keydown, NEC scancode, 0xAAAACC, A = 0x866b */
+		u16 addr;
+		u8 cmd;
+		u32 scancode;
+
+		addr = (data >> 8) & 0xffff;
+		cmd  = (data >> 0) & 0x00ff;
+		scancode = RC_SCANCODE_NECX(addr, cmd);
+
+		if (0 == (gpio & ir->mask_keyup))
+			rc_keydown_notimeout(ir->dev, RC_TYPE_NECX, scancode,
+									0);
+		else
+			rc_keyup(ir->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	} else if (ir->mask_keydown) {
 		/* bit set on keydown */
 		if (gpio & ir->mask_keydown)
+<<<<<<< HEAD
 			rc_keydown_notimeout(ir->dev, data, 0);
+=======
+			rc_keydown_notimeout(ir->dev, RC_TYPE_UNKNOWN, data, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			rc_keyup(ir->dev);
 
 	} else if (ir->mask_keyup) {
 		/* bit cleared on keydown */
 		if (0 == (gpio & ir->mask_keyup))
+<<<<<<< HEAD
 			rc_keydown_notimeout(ir->dev, data, 0);
+=======
+			rc_keydown_notimeout(ir->dev, RC_TYPE_UNKNOWN, data, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			rc_keyup(ir->dev);
 
 	} else {
 		/* can't distinguish keydown/up :-/ */
+<<<<<<< HEAD
 		rc_keydown_notimeout(ir->dev, data, 0);
+=======
+		rc_keydown_notimeout(ir->dev, RC_TYPE_UNKNOWN, data, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc_keyup(ir->dev);
 	}
 }
@@ -329,6 +362,10 @@ int cx88_ir_init(struct cx88_core *core, struct pci_dev *pci)
 		 * 002-T mini RC, provided with newer PV hardware
 		 */
 		ir_codes = RC_MAP_PIXELVIEW_MK12;
+<<<<<<< HEAD
+=======
+		rc_type = RC_BIT_NECX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ir->gpio_addr = MO_GP1_IO;
 		ir->mask_keyup = 0x80;
 		ir->polling = 10; /* ms */
@@ -416,7 +453,10 @@ int cx88_ir_init(struct cx88_core *core, struct pci_dev *pci)
 		break;
 	case CX88_BOARD_TWINHAN_VP1027_DVBS:
 		ir_codes         = RC_MAP_TWINHAN_VP1027_DVBS;
+<<<<<<< HEAD
 		rc_type          = RC_BIT_NEC;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ir->sampling     = 0xff00; /* address */
 		break;
 	}
@@ -462,14 +502,22 @@ int cx88_ir_init(struct cx88_core *core, struct pci_dev *pci)
 	dev->priv = core;
 	dev->open = cx88_ir_open;
 	dev->close = cx88_ir_close;
+<<<<<<< HEAD
 	dev->scanmask = hardware_mask;
+=======
+	dev->scancode_mask = hardware_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ir->sampling) {
 		dev->driver_type = RC_DRIVER_IR_RAW;
 		dev->timeout = 10 * 1000 * 1000; /* 10 ms */
 	} else {
 		dev->driver_type = RC_DRIVER_SCANCODE;
+<<<<<<< HEAD
 		dev->allowed_protos = rc_type;
+=======
+		dev->allowed_protocols = rc_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ir->core = core;
@@ -539,7 +587,12 @@ void cx88_ir_irq(struct cx88_core *core)
 	ir_raw_event_handle(ir->dev);
 }
 
+<<<<<<< HEAD
 static int get_key_pvr2000(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw)
+=======
+static int get_key_pvr2000(struct IR_i2c *ir, enum rc_type *protocol,
+			   u32 *scancode, u8 *toggle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int flags, code;
 
@@ -563,8 +616,14 @@ static int get_key_pvr2000(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw)
 	dprintk("IR Key/Flags: (0x%02x/0x%02x)\n",
 		   code & 0xff, flags & 0xff);
 
+<<<<<<< HEAD
 	*ir_key = code & 0xff;
 	*ir_raw = code;
+=======
+	*protocol = RC_TYPE_UNKNOWN;
+	*scancode = code & 0xff;
+	*toggle = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -613,7 +672,12 @@ void cx88_i2c_init_ir(struct cx88_core *core)
 			/* Hauppauge XVR */
 			core->init_data.name = "cx88 Hauppauge XVR remote";
 			core->init_data.ir_codes = RC_MAP_HAUPPAUGE;
+<<<<<<< HEAD
 			core->init_data.type = RC_BIT_RC5;
+=======
+			core->init_data.type = RC_BIT_RC5 | RC_BIT_RC6_MCE |
+							RC_BIT_RC6_6A_32;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			core->init_data.internal_get_key_func = IR_KBD_GET_KEY_HAUP_XVR;
 
 			info.platform_data = &core->init_data;

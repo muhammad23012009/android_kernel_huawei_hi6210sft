@@ -50,6 +50,10 @@
 #include "3ds_debugboard.h"
 #include "common.h"
 #include "devices-imx35.h"
+<<<<<<< HEAD
+=======
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hardware.h"
 #include "iomux-mx35.h"
 
@@ -165,7 +169,11 @@ static struct platform_device *devices[] __initdata = {
 	&mx35pdk_flash,
 };
 
+<<<<<<< HEAD
 static iomux_v3_cfg_t mx35pdk_pads[] = {
+=======
+static const iomux_v3_cfg_t mx35pdk_pads[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* UART1 */
 	MX35_PAD_CTS1__UART1_CTS,
 	MX35_PAD_RTS1__UART1_RTS,
@@ -554,8 +562,11 @@ static const struct imxi2c_platform_data mx35_3ds_i2c0_data __initconst = {
  */
 static void __init mx35_3ds_init(void)
 {
+<<<<<<< HEAD
 	struct platform_device *imx35_fb_pdev;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx35_soc_init();
 
 	mxc_iomux_v3_setup_multiple_pads(mx35pdk_pads, ARRAY_SIZE(mx35pdk_pads));
@@ -578,9 +589,12 @@ static void __init mx35_3ds_init(void)
 	imx35_add_mxc_nand(&mx35pdk_nand_board_info);
 	imx35_add_sdhci_esdhc_imx(0, NULL);
 
+<<<<<<< HEAD
 	if (mxc_expio_init(MX35_CS5_BASE_ADDR, IMX_GPIO_NR(1, 1)))
 		pr_warn("Init of the debugboard failed, all "
 				"devices on the debugboard are unusable.\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx35_add_imx_i2c0(&mx35_3ds_i2c0_data);
 
 	i2c_register_board_info(
@@ -589,6 +603,18 @@ static void __init mx35_3ds_init(void)
 	imx35_add_ipu_core();
 	platform_device_register(&mx35_3ds_ov2640);
 	imx35_3ds_init_camera();
+<<<<<<< HEAD
+=======
+}
+
+static void __init mx35_3ds_late_init(void)
+{
+	struct platform_device *imx35_fb_pdev;
+
+	if (mxc_expio_init(MX35_CS5_BASE_ADDR, IMX_GPIO_NR(1, 1)))
+		pr_warn("Init of the debugboard failed, all "
+			"devices on the debugboard are unusable.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	imx35_fb_pdev = imx35_add_mx3_sdc_fb(&mx3fb_pdata);
 	mx35_3ds_lcd.dev.parent = &imx35_fb_pdev->dev;
@@ -615,9 +641,15 @@ MACHINE_START(MX35_3DS, "Freescale MX35PDK")
 	.map_io = mx35_map_io,
 	.init_early = imx35_init_early,
 	.init_irq = mx35_init_irq,
+<<<<<<< HEAD
 	.handle_irq = imx35_handle_irq,
 	.init_time	= mx35pdk_timer_init,
 	.init_machine = mx35_3ds_init,
+=======
+	.init_time	= mx35pdk_timer_init,
+	.init_machine = mx35_3ds_init,
+	.init_late	= mx35_3ds_late_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reserve = mx35_3ds_reserve,
 	.restart	= mxc_restart,
 MACHINE_END

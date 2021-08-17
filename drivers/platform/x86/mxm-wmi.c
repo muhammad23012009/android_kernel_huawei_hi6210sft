@@ -20,8 +20,13 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/mxm-wmi.h>
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Dave Airlie");
 MODULE_DESCRIPTION("MXM WMI Driver");

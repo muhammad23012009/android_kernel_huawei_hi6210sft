@@ -794,7 +794,11 @@ static void port_timeout(unsigned long data)
 		 * case stay in the stopped state.
 		 */
 		dev_err(sciport_to_dev(iport),
+<<<<<<< HEAD
 			"%s: SCIC Port 0x%p failed to stop before tiemout.\n",
+=======
+			"%s: SCIC Port 0x%p failed to stop before timeout.\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__,
 			iport);
 	} else if (current_state == SCI_PORT_STOPPING) {

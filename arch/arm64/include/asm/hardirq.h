@@ -24,9 +24,13 @@
 
 typedef struct {
 	unsigned int __softirq_pending;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	unsigned int ipi_irqs[NR_IPI];
 #endif
+=======
+	unsigned int ipi_irqs[NR_IPI];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } ____cacheline_aligned irq_cpustat_t;
 
 #include <linux/irq_cpustat.h>	/* Standard mappings for irq_cpustat_t above */
@@ -34,10 +38,15 @@ typedef struct {
 #define __inc_irq_stat(cpu, member)	__IRQ_STAT(cpu, member)++
 #define __get_irq_stat(cpu, member)	__IRQ_STAT(cpu, member)
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 u64 smp_irq_stat_cpu(unsigned int cpu);
 #define arch_irq_stat_cpu	smp_irq_stat_cpu
 #endif
+=======
+u64 smp_irq_stat_cpu(unsigned int cpu);
+#define arch_irq_stat_cpu	smp_irq_stat_cpu
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __ARCH_IRQ_EXIT_IRQS_DISABLED	1
 
@@ -47,6 +56,7 @@ static inline void ack_bad_irq(unsigned int irq)
 	irq_err_count++;
 }
 
+<<<<<<< HEAD
 extern void handle_IRQ(unsigned int, struct pt_regs *);
 
 /*
@@ -54,4 +64,6 @@ extern void handle_IRQ(unsigned int, struct pt_regs *);
  */
 #define set_irq_flags(irq, flags)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_HARDIRQ_H */

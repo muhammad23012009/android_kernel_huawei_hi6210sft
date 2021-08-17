@@ -101,6 +101,7 @@ static int bt878_mem_alloc(struct bt878 *bt)
 	if (!bt->buf_cpu) {
 		bt->buf_size = 128 * 1024;
 
+<<<<<<< HEAD
 		bt->buf_cpu =
 		    pci_alloc_consistent(bt->dev, bt->buf_size,
 					 &bt->buf_dma);
@@ -109,20 +110,34 @@ static int bt878_mem_alloc(struct bt878 *bt)
 			return -ENOMEM;
 
 		memset(bt->buf_cpu, 0, bt->buf_size);
+=======
+		bt->buf_cpu = pci_zalloc_consistent(bt->dev, bt->buf_size,
+						    &bt->buf_dma);
+		if (!bt->buf_cpu)
+			return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!bt->risc_cpu) {
 		bt->risc_size = PAGE_SIZE;
+<<<<<<< HEAD
 		bt->risc_cpu =
 		    pci_alloc_consistent(bt->dev, bt->risc_size,
 					 &bt->risc_dma);
 
+=======
+		bt->risc_cpu = pci_zalloc_consistent(bt->dev, bt->risc_size,
+						     &bt->risc_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!bt->risc_cpu) {
 			bt878_mem_free(bt);
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 
 		memset(bt->risc_cpu, 0, bt->risc_size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -424,17 +439,24 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	int result = 0;
 	unsigned char lat;
 	struct bt878 *bt;
+<<<<<<< HEAD
 #if defined(__powerpc__)
 	unsigned int cmd;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int cardid;
 
 	printk(KERN_INFO "bt878: Bt878 AUDIO function found (%d).\n",
 	       bt878_num);
 	if (bt878_num >= BT878_MAX) {
 		printk(KERN_ERR "bt878: Too many devices inserted\n");
+<<<<<<< HEAD
 		result = -ENOMEM;
 		goto fail0;
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (pci_enable_device(dev))
 		return -EIO;
@@ -469,6 +491,7 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	printk("irq: %d, latency: %d, memory: 0x%lx\n",
 	       bt->irq, lat, bt->bt878_adr);
 
+<<<<<<< HEAD
 
 #if defined(__powerpc__)
 	/* on OpenFirmware machines (PowerMac at least), PCI memory cycle */
@@ -478,6 +501,8 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	pci_write_config_dword(dev, PCI_COMMAND, cmd);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef __sparc__
 	bt->bt878_mem = (unsigned char *) bt->bt878_adr;
 #else
@@ -488,8 +513,12 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	btwrite(0, BT848_INT_MASK);
 
 	result = request_irq(bt->irq, bt878_irq,
+<<<<<<< HEAD
 			     IRQF_SHARED | IRQF_DISABLED, "bt878",
 			     (void *) bt);
+=======
+			     IRQF_SHARED, "bt878", (void *) bt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result == -EINVAL) {
 		printk(KERN_ERR "bt878(%d): Bad irq number or handler\n",
 		       bt878_num);
@@ -516,6 +545,12 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	btwrite(0, BT878_AINT_MASK);
 	bt878_num++;
 
+<<<<<<< HEAD
+=======
+	if (!bt->tasklet.func)
+		tasklet_disable(&bt->tasklet);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
       fail2:
@@ -563,7 +598,10 @@ static void bt878_remove(struct pci_dev *pci_dev)
 	bt->shutdown = 1;
 	bt878_mem_free(bt);
 
+<<<<<<< HEAD
 	pci_set_drvdata(pci_dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_disable_device(pci_dev);
 	return;
 }
@@ -600,9 +638,12 @@ module_init(bt878_init_module);
 module_exit(bt878_cleanup_module);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

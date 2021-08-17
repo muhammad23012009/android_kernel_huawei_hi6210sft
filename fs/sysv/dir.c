@@ -18,24 +18,36 @@
 #include <linux/swap.h>
 #include "sysv.h"
 
+<<<<<<< HEAD
 static int sysv_readdir(struct file *, void *, filldir_t);
+=======
+static int sysv_readdir(struct file *, struct dir_context *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 const struct file_operations sysv_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= sysv_readdir,
+=======
+	.iterate_shared	= sysv_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fsync		= generic_file_fsync,
 };
 
 static inline void dir_put_page(struct page *page)
 {
 	kunmap(page);
+<<<<<<< HEAD
 	page_cache_release(page);
 }
 
 static inline unsigned long dir_pages(struct inode *inode)
 {
 	return (inode->i_size+PAGE_CACHE_SIZE-1)>>PAGE_CACHE_SHIFT;
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int dir_commit_chunk(struct page *page, loff_t pos, unsigned len)
@@ -65,6 +77,7 @@ static struct page * dir_get_page(struct inode *dir, unsigned long n)
 	return page;
 }
 
+<<<<<<< HEAD
 static int sysv_readdir(struct file * filp, void * dirent, filldir_t filldir)
 {
 	unsigned long pos = filp->f_pos;
@@ -77,6 +90,23 @@ static int sysv_readdir(struct file * filp, void * dirent, filldir_t filldir)
 	pos = (pos + SYSV_DIRSIZE-1) & ~(SYSV_DIRSIZE-1);
 	if (pos >= inode->i_size)
 		goto done;
+=======
+static int sysv_readdir(struct file *file, struct dir_context *ctx)
+{
+	unsigned long pos = ctx->pos;
+	struct inode *inode = file_inode(file);
+	struct super_block *sb = inode->i_sb;
+	unsigned long npages = dir_pages(inode);
+	unsigned offset;
+	unsigned long n;
+
+	ctx->pos = pos = (pos + SYSV_DIRSIZE-1) & ~(SYSV_DIRSIZE-1);
+	if (pos >= inode->i_size)
+		return 0;
+
+	offset = pos & ~PAGE_MASK;
+	n = pos >> PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for ( ; n < npages; n++, offset = 0) {
 		char *kaddr, *limit;
@@ -87,14 +117,21 @@ static int sysv_readdir(struct file * filp, void * dirent, filldir_t filldir)
 			continue;
 		kaddr = (char *)page_address(page);
 		de = (struct sysv_dir_entry *)(kaddr+offset);
+<<<<<<< HEAD
 		limit = kaddr + PAGE_CACHE_SIZE - SYSV_DIRSIZE;
 		for ( ;(char*)de <= limit; de++) {
 			char *name = de->name;
 			int over;
+=======
+		limit = kaddr + PAGE_SIZE - SYSV_DIRSIZE;
+		for ( ;(char*)de <= limit; de++, ctx->pos += sizeof(*de)) {
+			char *name = de->name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (!de->inode)
 				continue;
 
+<<<<<<< HEAD
 			offset = (char *)de - kaddr;
 
 			over = filldir(dirent, name, strnlen(name,SYSV_NAMELEN),
@@ -104,13 +141,23 @@ static int sysv_readdir(struct file * filp, void * dirent, filldir_t filldir)
 			if (over) {
 				dir_put_page(page);
 				goto done;
+=======
+			if (!dir_emit(ctx, name, strnlen(name,SYSV_NAMELEN),
+					fs16_to_cpu(SYSV_SB(sb), de->inode),
+					DT_UNKNOWN)) {
+				dir_put_page(page);
+				return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		dir_put_page(page);
 	}
+<<<<<<< HEAD
 
 done:
 	filp->f_pos = ((loff_t)n << PAGE_CACHE_SHIFT) | offset;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -137,7 +184,11 @@ struct sysv_dir_entry *sysv_find_entry(struct dentry *dentry, struct page **res_
 {
 	const char * name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
+<<<<<<< HEAD
 	struct inode * dir = dentry->d_parent->d_inode;
+=======
+	struct inode * dir = d_inode(dentry->d_parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long start, n;
 	unsigned long npages = dir_pages(dir);
 	struct page *page = NULL;
@@ -156,7 +207,11 @@ struct sysv_dir_entry *sysv_find_entry(struct dentry *dentry, struct page **res_
 		if (!IS_ERR(page)) {
 			kaddr = (char*)page_address(page);
 			de = (struct sysv_dir_entry *) kaddr;
+<<<<<<< HEAD
 			kaddr += PAGE_CACHE_SIZE - SYSV_DIRSIZE;
+=======
+			kaddr += PAGE_SIZE - SYSV_DIRSIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			for ( ; (char *) de <= kaddr ; de++) {
 				if (!de->inode)
 					continue;
@@ -181,7 +236,11 @@ found:
 
 int sysv_add_link(struct dentry *dentry, struct inode *inode)
 {
+<<<<<<< HEAD
 	struct inode *dir = dentry->d_parent->d_inode;
+=======
+	struct inode *dir = d_inode(dentry->d_parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char * name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
 	struct page *page = NULL;
@@ -200,7 +259,11 @@ int sysv_add_link(struct dentry *dentry, struct inode *inode)
 			goto out;
 		kaddr = (char*)page_address(page);
 		de = (struct sysv_dir_entry *)kaddr;
+<<<<<<< HEAD
 		kaddr += PAGE_CACHE_SIZE - SYSV_DIRSIZE;
+=======
+		kaddr += PAGE_SIZE - SYSV_DIRSIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while ((char *)de <= kaddr) {
 			if (!de->inode)
 				goto got_it;
@@ -225,7 +288,11 @@ got_it:
 	memset (de->name + namelen, 0, SYSV_DIRSIZE - namelen - 2);
 	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), inode->i_ino);
 	err = dir_commit_chunk(page, pos, SYSV_DIRSIZE);
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
+=======
+	dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(dir);
 out_page:
 	dir_put_page(page);
@@ -249,7 +316,11 @@ int sysv_delete_entry(struct sysv_dir_entry *de, struct page *page)
 	de->inode = 0;
 	err = dir_commit_chunk(page, pos, SYSV_DIRSIZE);
 	dir_put_page(page);
+<<<<<<< HEAD
 	inode->i_ctime = inode->i_mtime = CURRENT_TIME_SEC;
+=======
+	inode->i_ctime = inode->i_mtime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(inode);
 	return err;
 }
@@ -271,7 +342,11 @@ int sysv_make_empty(struct inode *inode, struct inode *dir)
 	kmap(page);
 
 	base = (char*)page_address(page);
+<<<<<<< HEAD
 	memset(base, 0, PAGE_CACHE_SIZE);
+=======
+	memset(base, 0, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	de = (struct sysv_dir_entry *) base;
 	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), inode->i_ino);
@@ -283,7 +358,11 @@ int sysv_make_empty(struct inode *inode, struct inode *dir)
 	kunmap(page);
 	err = dir_commit_chunk(page, 0, 2 * SYSV_DIRSIZE);
 fail:
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -306,7 +385,11 @@ int sysv_empty_dir(struct inode * inode)
 
 		kaddr = (char *)page_address(page);
 		de = (struct sysv_dir_entry *)kaddr;
+<<<<<<< HEAD
 		kaddr += PAGE_CACHE_SIZE-SYSV_DIRSIZE;
+=======
+		kaddr += PAGE_SIZE-SYSV_DIRSIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for ( ;(char *)de <= kaddr; de++) {
 			if (!de->inode)
@@ -347,7 +430,11 @@ void sysv_set_link(struct sysv_dir_entry *de, struct page *page,
 	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), inode->i_ino);
 	err = dir_commit_chunk(page, pos, SYSV_DIRSIZE);
 	dir_put_page(page);
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
+=======
+	dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(dir);
 }
 

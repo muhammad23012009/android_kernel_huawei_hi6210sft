@@ -22,6 +22,10 @@
 extern const struct seq_operations cpuinfo_op;
 
 # define cpu_relax()		barrier()
+<<<<<<< HEAD
+=======
+# define cpu_relax_lowlatency()	cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define task_pt_regs(tsk) \
 		(((struct pt_regs *)(THREAD_SIZE + task_stack_page(tsk))) - 1)
@@ -69,11 +73,14 @@ static inline void release_thread(struct task_struct *dead_task)
 {
 }
 
+<<<<<<< HEAD
 /* Free all resources held by a thread. */
 static inline void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned long thread_saved_pc(struct task_struct *t);
 
 extern unsigned long get_wchan(struct task_struct *p);
@@ -122,12 +129,16 @@ struct thread_struct {
 }
 
 /* Free all resources held by a thread. */
+<<<<<<< HEAD
 extern inline void release_thread(struct task_struct *dead_task)
 {
 }
 
 /* Free current thread data structures etc.  */
 static inline void exit_thread(void)
+=======
+static inline void release_thread(struct task_struct *dead_task)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 

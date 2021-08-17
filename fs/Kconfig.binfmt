@@ -1,6 +1,10 @@
 config BINFMT_ELF
 	bool "Kernel support for ELF binaries"
 	depends on MMU && (BROKEN || !FRV)
+<<<<<<< HEAD
+=======
+	select ELFCORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default y
 	---help---
 	  ELF (Executable and Linkable Format) is a format for libraries and
@@ -26,14 +30,24 @@ config BINFMT_ELF
 config COMPAT_BINFMT_ELF
 	bool
 	depends on COMPAT && BINFMT_ELF
+<<<<<<< HEAD
 
 config ARCH_BINFMT_ELF_RANDOMIZE_PIE
+=======
+	select ELFCORE
+
+config ARCH_BINFMT_ELF_STATE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool
 
 config BINFMT_ELF_FDPIC
 	bool "Kernel support for FDPIC ELF binaries"
 	default y
 	depends on (FRV || BLACKFIN || (SUPERH32 && !MMU) || C6X)
+<<<<<<< HEAD
+=======
+	select ELFCORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  ELF FDPIC binaries are based on ELF, but allow the individual load
 	  segments of a binary to be located in memory independently of each
@@ -43,6 +57,14 @@ config BINFMT_ELF_FDPIC
 
 	  It is also possible to run FDPIC ELF binaries on MMU linux also.
 
+<<<<<<< HEAD
+=======
+config ELFCORE
+	bool
+	help
+	  This option enables kernel/elfcore.o.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config CORE_DUMP_DEFAULT_ELF_HEADERS
 	bool "Write ELF core dumps with partial segments"
 	default y
@@ -81,7 +103,12 @@ config BINFMT_SCRIPT
 
 config BINFMT_FLAT
 	bool "Kernel support for flat binaries"
+<<<<<<< HEAD
 	depends on !MMU && (!FRV || BROKEN)
+=======
+	depends on !MMU || ARM || M68K
+	depends on !FRV || BROKEN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Support uClinux FLAT format binaries.
 
@@ -146,6 +173,7 @@ config BINFMT_EM86
 	  later load the module when you want to use a Linux/Intel binary. The
 	  module will be called binfmt_em86. If unsure, say Y.
 
+<<<<<<< HEAD
 config BINFMT_SOM
 	tristate "Kernel support for SOM binaries"
 	depends on PARISC && HPUX
@@ -153,6 +181,8 @@ config BINFMT_SOM
 	  SOM is a binary executable format inherited from HP/UX.  Say
 	  Y here to be able to load and execute SOM binaries directly.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config BINFMT_MISC
 	tristate "Kernel support for MISC binaries"
 	---help---

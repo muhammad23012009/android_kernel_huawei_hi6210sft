@@ -8,9 +8,18 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #include <asm/thread_info.h>
 #include <asm/vfpmacros.h>
 #include "../kernel/entry-header.S"
+=======
+#include <linux/init.h>
+#include <linux/linkage.h>
+#include <asm/thread_info.h>
+#include <asm/vfpmacros.h>
+#include <asm/assembler.h>
+#include <asm/asm-offsets.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 @ VFP entry point.
 @
@@ -19,6 +28,7 @@
 @  r9  = normal "successful" return address
 @  r10 = this threads thread_info structure
 @  lr  = unrecognised instruction return address
+<<<<<<< HEAD
 @ IRQs enabled.
 @
 ENTRY(do_vfp)
@@ -27,6 +37,12 @@ ENTRY(do_vfp)
 	add	r11, r4, #1		@ increment it
 	str	r11, [r10, #TI_PREEMPT]
 #endif
+=======
+@  IRQs enabled.
+@
+ENTRY(do_vfp)
+	inc_preempt_count r10, r4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  	ldr	r4, .LCvfp
 	ldr	r11, [r10, #TI_CPU]	@ CPU number
 	add	r10, r10, #TI_VFPSTATE	@ r10 = workspace
@@ -34,6 +50,7 @@ ENTRY(do_vfp)
 ENDPROC(do_vfp)
 
 ENTRY(vfp_null_entry)
+<<<<<<< HEAD
 #ifdef CONFIG_PREEMPT_COUNT
 	get_thread_info	r10
 	ldr	r4, [r10, #TI_PREEMPT]	@ get preempt count
@@ -41,6 +58,10 @@ ENTRY(vfp_null_entry)
 	str	r11, [r10, #TI_PREEMPT]
 #endif
 	mov	pc, lr
+=======
+	dec_preempt_count_ti r10, r4
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(vfp_null_entry)
 
 	.align	2
@@ -52,6 +73,7 @@ ENDPROC(vfp_null_entry)
 
 	__INIT
 ENTRY(vfp_testing_entry)
+<<<<<<< HEAD
 #ifdef CONFIG_PREEMPT_COUNT
 	get_thread_info	r10
 	ldr	r4, [r10, #TI_PREEMPT]	@ get preempt count
@@ -61,6 +83,12 @@ ENTRY(vfp_testing_entry)
 	ldr	r0, VFP_arch_address
 	str	r0, [r0]		@ set to non-zero value
 	mov	pc, r9			@ we have handled the fault
+=======
+	dec_preempt_count_ti r10, r4
+	ldr	r0, VFP_arch_address
+	str	r0, [r0]		@ set to non-zero value
+	ret	r9			@ we have handled the fault
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(vfp_testing_entry)
 
 	.align	2

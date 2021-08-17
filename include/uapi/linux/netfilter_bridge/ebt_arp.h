@@ -2,6 +2,10 @@
 #define __LINUX_BRIDGE_EBT_ARP_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_ether.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define EBT_ARP_OPCODE 0x01
 #define EBT_ARP_HTYPE 0x02

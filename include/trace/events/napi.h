@@ -12,22 +12,43 @@
 
 TRACE_EVENT(napi_poll,
 
+<<<<<<< HEAD
 	TP_PROTO(struct napi_struct *napi),
 
 	TP_ARGS(napi),
+=======
+	TP_PROTO(struct napi_struct *napi, int work, int budget),
+
+	TP_ARGS(napi, work, budget),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	TP_STRUCT__entry(
 		__field(	struct napi_struct *,	napi)
 		__string(	dev_name, napi->dev ? napi->dev->name : NO_DEV)
+<<<<<<< HEAD
+=======
+		__field(	int,			work)
+		__field(	int,			budget)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	),
 
 	TP_fast_assign(
 		__entry->napi = napi;
 		__assign_str(dev_name, napi->dev ? napi->dev->name : NO_DEV);
+<<<<<<< HEAD
 	),
 
 	TP_printk("napi poll on napi struct %p for device %s",
 		__entry->napi, __get_str(dev_name))
+=======
+		__entry->work = work;
+		__entry->budget = budget;
+	),
+
+	TP_printk("napi poll on napi struct %p for device %s work %d budget %d",
+		  __entry->napi, __get_str(dev_name),
+		  __entry->work, __entry->budget)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 );
 
 #undef NO_DEV

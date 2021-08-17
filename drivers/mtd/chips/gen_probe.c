@@ -114,7 +114,10 @@ static struct cfi_private *genprobe_ident_chips(struct map_info *map, struct chi
 	mapsize = sizeof(long) * DIV_ROUND_UP(max_chips, BITS_PER_LONG);
 	chip_map = kzalloc(mapsize, GFP_KERNEL);
 	if (!chip_map) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: kmalloc failed for CFI chip map\n", map->name);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(cfi.cfiq);
 		return NULL;
 	}
@@ -139,7 +142,10 @@ static struct cfi_private *genprobe_ident_chips(struct map_info *map, struct chi
 	retcfi = kmalloc(sizeof(struct cfi_private) + cfi.numchips * sizeof(struct flchip), GFP_KERNEL);
 
 	if (!retcfi) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: kmalloc failed for CFI private structure\n", map->name);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(cfi.cfiq);
 		kfree(chip_map);
 		return NULL;
@@ -211,9 +217,13 @@ static inline struct mtd_info *cfi_cmdset_unknown(struct map_info *map,
 
 	probe_function = __symbol_get(probename);
 	if (!probe_function) {
+<<<<<<< HEAD
 		char modname[sizeof("cfi_cmdset_%4.4X")];
 		sprintf(modname, "cfi_cmdset_%4.4X", type);
 		request_module(modname);
+=======
+		request_module("cfi_cmdset_%4.4X", type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		probe_function = __symbol_get(probename);
 	}
 

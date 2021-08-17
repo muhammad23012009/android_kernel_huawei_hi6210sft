@@ -472,7 +472,11 @@ static void inic_fill_sg(struct inic_prd *prd, struct ata_queued_cmd *qc)
 	prd[-1].flags |= PRD_END;
 }
 
+<<<<<<< HEAD
 static void inic_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors inic_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct inic_port_priv *pp = qc->ap->private_data;
 	struct inic_pkt *pkt = pp->pkt;
@@ -532,6 +536,11 @@ static void inic_qc_prep(struct ata_queued_cmd *qc)
 		inic_fill_sg(prd, qc);
 
 	pp->cpb_tbl[0] = pp->pkt_dma;
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned int inic_qc_issue(struct ata_queued_cmd *qc)
@@ -785,10 +794,17 @@ static int init_controller(void __iomem *mmio_base, u16 hctl)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int inic_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int inic_pci_device_resume(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct inic_host_priv *hpriv = host->private_data;
 	int rc;
 
@@ -856,13 +872,21 @@ static int inic_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	/* Set dma_mask.  This devices doesn't support 64bit addressing. */
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc) {
 		dev_err(&pdev->dev, "32-bit DMA enable failed\n");
 		return rc;
 	}
 
+<<<<<<< HEAD
 	rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc) {
 		dev_err(&pdev->dev, "32-bit consistent DMA enable failed\n");
 		return rc;
@@ -898,7 +922,11 @@ static const struct pci_device_id inic_pci_tbl[] = {
 static struct pci_driver inic_pci_driver = {
 	.name 		= DRV_NAME,
 	.id_table	= inic_pci_tbl,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend	= ata_pci_device_suspend,
 	.resume		= inic_pci_device_resume,
 #endif

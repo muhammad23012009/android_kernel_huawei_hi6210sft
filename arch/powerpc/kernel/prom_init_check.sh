@@ -21,8 +21,12 @@ _end enter_prom memcpy memset reloc_offset __secondary_hold
 __secondary_hold_acknowledge __secondary_hold_spinloop __start
 strcmp strcpy strlcpy strlen strncmp strstr logo_linux_clut224
 reloc_got2 kernstart_addr memstart_addr linux_banner _stext
+<<<<<<< HEAD
 opal_query_takeover opal_do_takeover opal_enter_rtas opal_secondary_entry
 boot_command_line __prom_init_toc_start __prom_init_toc_end"
+=======
+__prom_init_toc_start __prom_init_toc_end btext_setup_display TOC."
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 NM="$1"
 OBJ="$2"
@@ -51,6 +55,7 @@ do
 	done
 
 	# ignore register save/restore funcitons
+<<<<<<< HEAD
 	if [ "${UNDEF:0:9}" = "_restgpr_" ]; then
 		OK=1
 	fi
@@ -69,6 +74,16 @@ do
 	if [ "${UNDEF:0:11}" = "_save32gpr_" ]; then
 		OK=1
 	fi
+=======
+	case $UNDEF in
+	_restgpr_*|_restgpr0_*|_rest32gpr_*)
+		OK=1
+		;;
+	_savegpr_*|_savegpr0_*|_save32gpr_*)
+		OK=1
+		;;
+	esac
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if [ $OK -eq 0 ]; then
 		ERROR=1

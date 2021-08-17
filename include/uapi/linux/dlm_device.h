@@ -26,7 +26,11 @@
 /* Version of the device interface */
 #define DLM_DEVICE_VERSION_MAJOR 6
 #define DLM_DEVICE_VERSION_MINOR 0
+<<<<<<< HEAD
 #define DLM_DEVICE_VERSION_PATCH 1
+=======
+#define DLM_DEVICE_VERSION_PATCH 2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* struct passed to the lock write */
 struct dlm_lock_params {

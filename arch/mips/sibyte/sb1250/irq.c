@@ -88,7 +88,11 @@ static int sb1250_set_affinity(struct irq_data *d, const struct cpumask *mask,
 	u64 cur_ints;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	i = cpumask_first(mask);
+=======
+	i = cpumask_first_and(mask, cpu_online_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Convert logical CPU to physical CPU */
 	cpu = cpu_logical_map(i);

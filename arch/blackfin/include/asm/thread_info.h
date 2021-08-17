@@ -37,12 +37,18 @@ typedef unsigned long mm_segment_t;
 
 struct thread_info {
 	struct task_struct *task;	/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain *exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;	/* low level flags */
 	int cpu;		/* cpu we're on */
 	int preempt_count;	/* 0 => preemptable, <0 => BUG */
 	mm_segment_t addr_limit;	/* address limit */
+<<<<<<< HEAD
 	struct restart_block restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef CONFIG_SMP
 	struct l1_scratch_task_info l1_task_info;
 #endif
@@ -54,6 +60,7 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
 	.flags		= 0,			\
 	.cpu		= 0,			\
@@ -61,6 +68,11 @@ struct thread_info {
 	.restart_block	= {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+	.flags		= 0,			\
+	.cpu		= 0,			\
+	.preempt_count	= INIT_PREEMPT_COUNT,	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #define init_thread_info	(init_thread_union.thread_info)
 #define init_stack		(init_thread_union.stack)
@@ -80,6 +92,7 @@ static inline struct thread_info *current_thread_info(void)
 #endif				/* __ASSEMBLY__ */
 
 /*
+<<<<<<< HEAD
  * Offsets in thread_info structure, used in assembly code
  */
 #define TI_TASK		0
@@ -91,6 +104,8 @@ static inline struct thread_info *current_thread_info(void)
 #define	PREEMPT_ACTIVE	0x4000000
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * thread information flag bit numbers
  */
 #define TIF_SYSCALL_TRACE	0	/* syscall trace active */

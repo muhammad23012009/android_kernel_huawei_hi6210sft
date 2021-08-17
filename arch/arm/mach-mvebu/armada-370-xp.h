@@ -15,6 +15,7 @@
 #ifndef __MACH_ARMADA_370_XP_H
 #define __MACH_ARMADA_370_XP_H
 
+<<<<<<< HEAD
 #define ARMADA_370_XP_REGS_PHYS_BASE	0xd0000000
 #define ARMADA_370_XP_REGS_VIRT_BASE	IOMEM(0xfec00000)
 #define ARMADA_370_XP_REGS_SIZE		SZ_1M
@@ -30,6 +31,11 @@
 
 void armada_mpic_send_doorbell(const struct cpumask *mask, unsigned int irq);
 void armada_xp_mpic_smp_cpu_init(void);
+=======
+#ifdef CONFIG_SMP
+void armada_xp_secondary_startup(void);
+extern const struct smp_operations armada_xp_smp_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* __MACH_ARMADA_370_XP_H */

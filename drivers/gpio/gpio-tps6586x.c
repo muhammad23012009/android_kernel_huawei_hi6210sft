@@ -24,7 +24,11 @@
 #include <linux/errno.h>
 #include <linux/gpio.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/tps6586x.h>
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
@@ -38,6 +42,7 @@ struct tps6586x_gpio {
 	struct device *parent;
 };
 
+<<<<<<< HEAD
 static inline struct tps6586x_gpio *to_tps6586x_gpio(struct gpio_chip *chip)
 {
 	return container_of(chip, struct tps6586x_gpio, gpio_chip);
@@ -46,6 +51,11 @@ static inline struct tps6586x_gpio *to_tps6586x_gpio(struct gpio_chip *chip)
 static int tps6586x_gpio_get(struct gpio_chip *gc, unsigned offset)
 {
 	struct tps6586x_gpio *tps6586x_gpio = to_tps6586x_gpio(gc);
+=======
+static int tps6586x_gpio_get(struct gpio_chip *gc, unsigned offset)
+{
+	struct tps6586x_gpio *tps6586x_gpio = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint8_t val;
 	int ret;
 
@@ -59,7 +69,11 @@ static int tps6586x_gpio_get(struct gpio_chip *gc, unsigned offset)
 static void tps6586x_gpio_set(struct gpio_chip *gc, unsigned offset,
 			      int value)
 {
+<<<<<<< HEAD
 	struct tps6586x_gpio *tps6586x_gpio = to_tps6586x_gpio(gc);
+=======
+	struct tps6586x_gpio *tps6586x_gpio = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tps6586x_update(tps6586x_gpio->parent, TPS6586X_GPIOSET2,
 			value << offset, 1 << offset);
@@ -68,7 +82,11 @@ static void tps6586x_gpio_set(struct gpio_chip *gc, unsigned offset,
 static int tps6586x_gpio_output(struct gpio_chip *gc, unsigned offset,
 				int value)
 {
+<<<<<<< HEAD
 	struct tps6586x_gpio *tps6586x_gpio = to_tps6586x_gpio(gc);
+=======
+	struct tps6586x_gpio *tps6586x_gpio = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint8_t val, mask;
 
 	tps6586x_gpio_set(gc, offset, value);
@@ -82,7 +100,11 @@ static int tps6586x_gpio_output(struct gpio_chip *gc, unsigned offset,
 
 static int tps6586x_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct tps6586x_gpio *tps6586x_gpio = to_tps6586x_gpio(gc);
+=======
+	struct tps6586x_gpio *tps6586x_gpio = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return tps6586x_irq_get_virq(tps6586x_gpio->parent,
 				TPS6586X_INT_PLDO_0 + offset);
@@ -97,18 +119,29 @@ static int tps6586x_gpio_probe(struct platform_device *pdev)
 	pdata = dev_get_platdata(pdev->dev.parent);
 	tps6586x_gpio = devm_kzalloc(&pdev->dev,
 				sizeof(*tps6586x_gpio), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!tps6586x_gpio) {
 		dev_err(&pdev->dev, "Could not allocate tps6586x_gpio\n");
 		return -ENOMEM;
 	}
+=======
+	if (!tps6586x_gpio)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tps6586x_gpio->parent = pdev->dev.parent;
 
 	tps6586x_gpio->gpio_chip.owner = THIS_MODULE;
 	tps6586x_gpio->gpio_chip.label = pdev->name;
+<<<<<<< HEAD
 	tps6586x_gpio->gpio_chip.dev = &pdev->dev;
 	tps6586x_gpio->gpio_chip.ngpio = 4;
 	tps6586x_gpio->gpio_chip.can_sleep = 1;
+=======
+	tps6586x_gpio->gpio_chip.parent = &pdev->dev;
+	tps6586x_gpio->gpio_chip.ngpio = 4;
+	tps6586x_gpio->gpio_chip.can_sleep = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* FIXME: add handling of GPIOs as dedicated inputs */
 	tps6586x_gpio->gpio_chip.direction_output = tps6586x_gpio_output;
@@ -124,7 +157,12 @@ static int tps6586x_gpio_probe(struct platform_device *pdev)
 	else
 		tps6586x_gpio->gpio_chip.base = -1;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&tps6586x_gpio->gpio_chip);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, &tps6586x_gpio->gpio_chip,
+				     tps6586x_gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Could not register gpiochip, %d\n", ret);
 		return ret;
@@ -135,6 +173,7 @@ static int tps6586x_gpio_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int tps6586x_gpio_remove(struct platform_device *pdev)
 {
 	struct tps6586x_gpio *tps6586x_gpio = platform_get_drvdata(pdev);
@@ -147,6 +186,11 @@ static struct platform_driver tps6586x_gpio_driver = {
 	.driver.owner	= THIS_MODULE,
 	.probe		= tps6586x_gpio_probe,
 	.remove		= tps6586x_gpio_remove,
+=======
+static struct platform_driver tps6586x_gpio_driver = {
+	.driver.name	= "tps6586x-gpio",
+	.probe		= tps6586x_gpio_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init tps6586x_gpio_init(void)
@@ -154,6 +198,7 @@ static int __init tps6586x_gpio_init(void)
 	return platform_driver_register(&tps6586x_gpio_driver);
 }
 subsys_initcall(tps6586x_gpio_init);
+<<<<<<< HEAD
 
 static void __exit tps6586x_gpio_exit(void)
 {
@@ -165,3 +210,5 @@ MODULE_ALIAS("platform:tps6586x-gpio");
 MODULE_DESCRIPTION("GPIO interface for TPS6586X PMIC");
 MODULE_AUTHOR("Laxman Dewangan <ldewangan@nvidia.com>");
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

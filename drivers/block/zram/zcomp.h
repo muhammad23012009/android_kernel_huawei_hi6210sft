@@ -10,6 +10,7 @@
 #ifndef _ZCOMP_H_
 #define _ZCOMP_H_
 
+<<<<<<< HEAD
 #include <linux/mutex.h>
 
 struct zcomp_strm {
@@ -37,10 +38,17 @@ struct zcomp_backend {
 	void (*destroy)(void *private);
 
 	const char *name;
+=======
+struct zcomp_strm {
+	/* compression/decompression buffer */
+	void *buffer;
+	struct crypto_comp *tfm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* dynamic per-device compression frontend */
 struct zcomp {
+<<<<<<< HEAD
 	void *stream;
 	struct zcomp_backend *backend;
 
@@ -48,11 +56,18 @@ struct zcomp {
 	void (*strm_release)(struct zcomp *comp, struct zcomp_strm *zstrm);
 	bool (*set_max_streams)(struct zcomp *comp, int num_strm);
 	void (*destroy)(struct zcomp *comp);
+=======
+	struct zcomp_strm * __percpu *stream;
+	struct notifier_block notifier;
+
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 ssize_t zcomp_available_show(const char *comp, char *buf);
 bool zcomp_available_algorithm(const char *comp);
 
+<<<<<<< HEAD
 struct zcomp *zcomp_create(const char *comp, int max_strm);
 void zcomp_destroy(struct zcomp *comp);
 
@@ -64,6 +79,19 @@ int zcomp_compress(struct zcomp *comp, struct zcomp_strm *zstrm,
 
 int zcomp_decompress(struct zcomp *comp, const unsigned char *src,
 		size_t src_len, unsigned char *dst);
+=======
+struct zcomp *zcomp_create(const char *comp);
+void zcomp_destroy(struct zcomp *comp);
+
+struct zcomp_strm *zcomp_stream_get(struct zcomp *comp);
+void zcomp_stream_put(struct zcomp *comp);
+
+int zcomp_compress(struct zcomp_strm *zstrm,
+		const void *src, unsigned int *dst_len);
+
+int zcomp_decompress(struct zcomp_strm *zstrm,
+		const void *src, unsigned int src_len, void *dst);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 bool zcomp_set_max_streams(struct zcomp *comp, int num_strm);
 #endif /* _ZCOMP_H_ */

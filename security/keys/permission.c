@@ -28,7 +28,11 @@
  * permissions bits or the LSM check.
  */
 int key_task_permission(const key_ref_t key_ref, const struct cred *cred,
+<<<<<<< HEAD
 			key_perm_t perm)
+=======
+			unsigned perm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct key *key;
 	key_perm_t kperm;
@@ -68,7 +72,11 @@ use_these_perms:
 	if (is_key_possessed(key_ref))
 		kperm |= key->perm >> 24;
 
+<<<<<<< HEAD
 	kperm = kperm & perm & KEY_ALL;
+=======
+	kperm = kperm & perm & KEY_NEED_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (kperm != perm)
 		return -EACCES;

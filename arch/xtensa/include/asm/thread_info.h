@@ -44,14 +44,20 @@ typedef struct xtregs_coprocessor {
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		flags;		/* low level flags */
 	unsigned long		status;		/* thread-synchronous flags */
 	__u32			cpu;		/* current CPU */
 	__s32			preempt_count;	/* 0 => preemptable,< 0 => BUG*/
 
 	mm_segment_t		addr_limit;	/* thread address space */
+<<<<<<< HEAD
 	struct restart_block    restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unsigned long		cpenable;
 
@@ -62,6 +68,7 @@ struct thread_info {
 	xtregs_user_t		xtregs_user;
 };
 
+<<<<<<< HEAD
 #else /* !__ASSEMBLY__ */
 
 /* offsets into the thread_info struct for assembly code access */
@@ -78,6 +85,10 @@ struct thread_info {
 
 #define PREEMPT_ACTIVE		0x10000000
 
+=======
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * macros/functions for gaining access to the thread information structure
  */
@@ -87,14 +98,20 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 	.addr_limit	= KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
@@ -131,6 +148,10 @@ static inline struct thread_info *current_thread_info(void)
 #define TIF_MEMDIE		5	/* is terminating due to OOM killer */
 #define TIF_RESTORE_SIGMASK	6	/* restore signal mask in do_signal() */
 #define TIF_NOTIFY_RESUME	7	/* callback before returning to user */
+<<<<<<< HEAD
+=======
+#define TIF_DB_DISABLED		8	/* debug trap disabled for syscall */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _TIF_SYSCALL_TRACE	(1<<TIF_SYSCALL_TRACE)
 #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)

@@ -4,6 +4,7 @@
 #include <asm/uaccess.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 static int __init parse_savemaxmem(char *p)
 {
 	if (p)
@@ -14,6 +15,8 @@ static int __init parse_savemaxmem(char *p)
 __setup("savemaxmem=", parse_savemaxmem);
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void *kdump_buf_page;
 
 /**
@@ -48,7 +51,11 @@ ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
 		kunmap_atomic(vaddr);
 	} else {
 		if (!kdump_buf_page) {
+<<<<<<< HEAD
 			pr_warning("Kdump: Kdump buffer page not allocated\n");
+=======
+			pr_warn("Kdump: Kdump buffer page not allocated\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			return -EFAULT;
 		}
@@ -67,7 +74,11 @@ static int __init kdump_buf_page_init(void)
 
 	kdump_buf_page = kmalloc(PAGE_SIZE, GFP_KERNEL);
 	if (!kdump_buf_page) {
+<<<<<<< HEAD
 		pr_warning("Kdump: Failed to allocate kdump buffer page\n");
+=======
+		pr_warn("Kdump: Failed to allocate kdump buffer page\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 	}
 

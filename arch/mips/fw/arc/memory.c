@@ -9,7 +9,11 @@
  * PROM library functions for acquiring/using memory descriptors given to us
  * from the ARCS firmware.  This is only used when CONFIG_ARC_MEMORY is set
  * because on some machines like SGI IP27 the ARC memory configuration data
+<<<<<<< HEAD
  * completly bogus and alternate easier to use mechanisms are available.
+=======
+ * completely bogus and alternate easier to use mechanisms are available.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/init.h>
 #include <linux/kernel.h>

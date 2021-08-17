@@ -26,6 +26,20 @@
 #include <asm/pgtable.h>
 #include <asm/vectors.h>
 
+<<<<<<< HEAD
+=======
+#if XCHAL_HAVE_PTP_MMU
+#define CA_BYPASS	(_PAGE_CA_BYPASS | _PAGE_HW_WRITE | _PAGE_HW_EXEC)
+#define CA_WRITEBACK	(_PAGE_CA_WB     | _PAGE_HW_WRITE | _PAGE_HW_EXEC)
+#else
+#define CA_WRITEBACK	(0x4)
+#endif
+
+#ifndef XCHAL_SPANNING_WAY
+#define XCHAL_SPANNING_WAY 0
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef __ASSEMBLY__
 
 #define XTENSA_HWVERSION_RC_2009_0 230000
@@ -66,6 +80,7 @@
 
 	.align	4
 1:	movi	a2, 0x10000000
+<<<<<<< HEAD
 	movi	a3, 0x18000000
 	add	a2, a2, a0
 9:	bgeu	a2, a3, 9b	/* PC is out of the expected range */
@@ -73,6 +88,18 @@
 	/* Step 1: invalidate mapping at 0x40000000..0x5FFFFFFF. */
 
 	movi	a2, 0x40000006
+=======
+
+#if CONFIG_KERNEL_LOAD_ADDRESS < 0x40000000ul
+#define TEMP_MAPPING_VADDR 0x40000000
+#else
+#define TEMP_MAPPING_VADDR 0x00000000
+#endif
+
+	/* Step 1: invalidate mapping at 0x40000000..0x5FFFFFFF. */
+
+	movi	a2, TEMP_MAPPING_VADDR | XCHAL_SPANNING_WAY
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	idtlb	a2
 	iitlb	a2
 	isync
@@ -80,20 +107,31 @@
 	/* Step 2: map 0x40000000..0x47FFFFFF to paddr containing this code
 	 * and jump to the new mapping.
 	 */
+<<<<<<< HEAD
 #define CA_BYPASS	(_PAGE_CA_BYPASS | _PAGE_HW_WRITE | _PAGE_HW_EXEC)
 #define CA_WRITEBACK	(_PAGE_CA_WB     | _PAGE_HW_WRITE | _PAGE_HW_EXEC)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	srli	a3, a0, 27
 	slli	a3, a3, 27
 	addi	a3, a3, CA_BYPASS
+<<<<<<< HEAD
 	addi	a7, a2, -1
+=======
+	addi	a7, a2, 5 - XCHAL_SPANNING_WAY
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wdtlb	a3, a7
 	witlb	a3, a7
 	isync
 
 	slli	a4, a0, 5
 	srli	a4, a4, 5
+<<<<<<< HEAD
 	addi	a5, a2, -6
+=======
+	addi	a5, a2, -XCHAL_SPANNING_WAY
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	add	a4, a4, a5
 	jx	a4
 
@@ -107,12 +145,18 @@
 	add	a5, a5, a4
 	bne	a5, a2, 3b
 
+<<<<<<< HEAD
 	/* Step 4: Setup MMU with the old V2 mappings. */
+=======
+	/* Step 4: Setup MMU with the requested static mappings. */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movi	a6, 0x01000000
 	wsr	a6, ITLBCFG
 	wsr	a6, DTLBCFG
 	isync
 
+<<<<<<< HEAD
 	movi	a5, 0xd0000005
 	movi	a4, CA_WRITEBACK
 	wdtlb	a4, a5
@@ -130,19 +174,57 @@
 
 	movi	a5, 0xf0000006
 	movi	a4, 0xf0000000 + CA_BYPASS
+=======
+	movi	a5, XCHAL_KSEG_CACHED_VADDR + XCHAL_KSEG_TLB_WAY
+	movi	a4, XCHAL_KSEG_PADDR + CA_WRITEBACK
+	wdtlb	a4, a5
+	witlb	a4, a5
+
+	movi	a5, XCHAL_KSEG_BYPASS_VADDR + XCHAL_KSEG_TLB_WAY
+	movi	a4, XCHAL_KSEG_PADDR + CA_BYPASS
+	wdtlb	a4, a5
+	witlb	a4, a5
+
+#ifdef CONFIG_XTENSA_KSEG_512M
+	movi	a5, XCHAL_KSEG_CACHED_VADDR + 0x10000000 + XCHAL_KSEG_TLB_WAY
+	movi	a4, XCHAL_KSEG_PADDR + 0x10000000 + CA_WRITEBACK
+	wdtlb	a4, a5
+	witlb	a4, a5
+
+	movi	a5, XCHAL_KSEG_BYPASS_VADDR + 0x10000000 + XCHAL_KSEG_TLB_WAY
+	movi	a4, XCHAL_KSEG_PADDR + 0x10000000 + CA_BYPASS
+	wdtlb	a4, a5
+	witlb	a4, a5
+#endif
+
+	movi	a5, XCHAL_KIO_CACHED_VADDR + XCHAL_KIO_TLB_WAY
+	movi	a4, XCHAL_KIO_DEFAULT_PADDR + CA_WRITEBACK
+	wdtlb	a4, a5
+	witlb	a4, a5
+
+	movi	a5, XCHAL_KIO_BYPASS_VADDR + XCHAL_KIO_TLB_WAY
+	movi	a4, XCHAL_KIO_DEFAULT_PADDR + CA_BYPASS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wdtlb	a4, a5
 	witlb	a4, a5
 
 	isync
 
+<<<<<<< HEAD
 	/* Jump to self, using MMU v2 mappings. */
+=======
+	/* Jump to self, using final mappings. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movi	a4, 1f
 	jx	a4
 
 1:
+<<<<<<< HEAD
 	movi    a2, VECBASE_RESET_VADDR
 	wsr	a2, vecbase
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Step 5: remove temporary mapping. */
 	idtlb	a7
 	iitlb	a7
@@ -155,6 +237,41 @@
 #endif /* defined(CONFIG_MMU) && XCHAL_HAVE_PTP_MMU &&
 	  XCHAL_HAVE_SPANNING_WAY */
 
+<<<<<<< HEAD
+=======
+#if !defined(CONFIG_MMU) && XCHAL_HAVE_TLBS && \
+		(XCHAL_DCACHE_SIZE || XCHAL_ICACHE_SIZE)
+	/* Enable data and instruction cache in the DEFAULT_MEMORY region
+	 * if the processor has DTLB and ITLB.
+	 */
+
+	movi	a5, PLATFORM_DEFAULT_MEM_START | XCHAL_SPANNING_WAY
+	movi	a6, ~_PAGE_ATTRIB_MASK
+	movi	a7, CA_WRITEBACK
+	movi	a8, 0x20000000
+	movi	a9, PLATFORM_DEFAULT_MEM_SIZE
+	j	2f
+1:
+	sub	a9, a9, a8
+2:
+#if XCHAL_DCACHE_SIZE
+	rdtlb1	a3, a5
+	and	a3, a3, a6
+	or	a3, a3, a7
+	wdtlb	a3, a5
+#endif
+#if XCHAL_ICACHE_SIZE
+	ritlb1	a4, a5
+	and	a4, a4, a6
+	or	a4, a4, a7
+	witlb	a4, a5
+#endif
+	add	a5, a5, a8
+	bltu	a8, a9, 1b
+
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.endm
 
 #endif /*__ASSEMBLY__*/

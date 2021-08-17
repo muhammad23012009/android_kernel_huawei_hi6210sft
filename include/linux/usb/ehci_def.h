@@ -19,6 +19,11 @@
 #ifndef __LINUX_USB_EHCI_DEF_H
 #define __LINUX_USB_EHCI_DEF_H
 
+<<<<<<< HEAD
+=======
+#include <linux/usb/ehci-dbgp.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* EHCI register interface, corresponds to EHCI Revision 0.95 specification */
 
 /* Section 2.2 Host Controller Capability Registers */
@@ -190,6 +195,7 @@ struct ehci_regs {
 #define USBMODE_EX_HC	(3<<0)		/* host controller mode */
 };
 
+<<<<<<< HEAD
 /* Appendix C, Debug port ... intended for use with special "debug devices"
  * that can help if there's no serial console.  (nonstandard enumeration.)
  */
@@ -253,4 +259,6 @@ static inline int dbgp_external_startup(struct usb_hcd *hcd)
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __LINUX_USB_EHCI_DEF_H */

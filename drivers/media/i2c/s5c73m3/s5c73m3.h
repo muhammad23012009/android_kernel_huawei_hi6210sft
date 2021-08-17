@@ -17,17 +17,30 @@
 #ifndef S5C73M3_H_
 #define S5C73M3_H_
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/regulator/consumer.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-subdev.h>
+<<<<<<< HEAD
 #include <media/s5c73m3.h>
 
 #define DRIVER_NAME			"S5C73M3"
 
 #define S5C73M3_ISP_FMT			V4L2_MBUS_FMT_VYUY8_2X8
 #define S5C73M3_JPEG_FMT		V4L2_MBUS_FMT_S5C_UYVY_JPEG_1X8
+=======
+#include <media/i2c/s5c73m3.h>
+
+#define DRIVER_NAME			"S5C73M3"
+
+#define S5C73M3_ISP_FMT			MEDIA_BUS_FMT_VYUY8_2X8
+#define S5C73M3_JPEG_FMT		MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Subdevs pad index definitions */
 enum s5c73m3_pads {
@@ -321,6 +334,10 @@ enum s5c73m3_oif_pads {
 
 
 #define S5C73M3_MAX_SUPPLIES			6
+<<<<<<< HEAD
+=======
+#define S5C73M3_DEFAULT_MCLK_FREQ		24000000U
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct s5c73m3_ctrls {
 	struct v4l2_ctrl_handler handler;
@@ -359,7 +376,11 @@ struct s5c73m3_ctrls {
 
 enum s5c73m3_gpio_id {
 	STBY,
+<<<<<<< HEAD
 	RST,
+=======
+	RSET,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	GPIO_NUM,
 };
 
@@ -391,14 +412,26 @@ struct s5c73m3 {
 	struct regulator_bulk_data supplies[S5C73M3_MAX_SUPPLIES];
 	struct s5c73m3_gpio gpio[GPIO_NUM];
 
+<<<<<<< HEAD
 	/* External master clock frequency */
 	u32 mclk_frequency;
 	/* Video bus type - MIPI-CSI2/paralell */
+=======
+	struct clk *clock;
+
+	/* External master clock frequency */
+	u32 mclk_frequency;
+	/* Video bus type - MIPI-CSI2/parallel */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum v4l2_mbus_type bus_type;
 
 	const struct s5c73m3_frame_size *sensor_pix_size[2];
 	const struct s5c73m3_frame_size *oif_pix_size[2];
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode mbus_code;
+=======
+	u32 mbus_code;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	const struct s5c73m3_interval *fiv;
 

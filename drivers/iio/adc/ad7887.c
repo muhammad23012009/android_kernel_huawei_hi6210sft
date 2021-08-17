@@ -15,6 +15,10 @@
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
@@ -25,6 +29,7 @@
 
 #include <linux/platform_data/ad7887.h>
 
+<<<<<<< HEAD
 #define AD7887_REF_DIS		(1 << 5) /* on-chip reference disable */
 #define AD7887_DUAL		(1 << 4) /* dual-channel mode */
 #define AD7887_CH_AIN1		(1 << 3) /* convert on channel 1, DUAL=1 */
@@ -33,6 +38,16 @@
 #define AD7887_PM_MODE2		(1)	 /* full on */
 #define AD7887_PM_MODE3		(2)	 /* auto shutdown after conversion */
 #define AD7887_PM_MODE4		(3)	 /* standby mode */
+=======
+#define AD7887_REF_DIS		BIT(5)	/* on-chip reference disable */
+#define AD7887_DUAL		BIT(4)	/* dual-channel mode */
+#define AD7887_CH_AIN1		BIT(3)	/* convert on channel 1, DUAL=1 */
+#define AD7887_CH_AIN0		0	/* convert on channel 0, DUAL=0,1 */
+#define AD7887_PM_MODE1		0	/* CS based shutdown */
+#define AD7887_PM_MODE2		1	/* full on */
+#define AD7887_PM_MODE3		2	/* auto shutdown after conversion */
+#define AD7887_PM_MODE4		3	/* standby mode */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum ad7887_channels {
 	AD7887_CH0,
@@ -40,8 +55,11 @@ enum ad7887_channels {
 	AD7887_CH1,
 };
 
+<<<<<<< HEAD
 #define RES_MASK(bits)	((1 << (bits)) - 1)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct ad7887_chip_info - chip specifc information
  * @int_vref_mv:	the internal reference voltage
@@ -78,11 +96,14 @@ enum ad7887_supported_device_ids {
 static int ad7887_ring_preenable(struct iio_dev *indio_dev)
 {
 	struct ad7887_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	int ret;
 
 	ret = iio_sw_buffer_preenable(indio_dev);
 	if (ret < 0)
 		return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We know this is a single long so can 'cheat' */
 	switch (*indio_dev->active_scan_mask) {
@@ -121,13 +142,17 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct ad7887_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	s64 time_ns;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int b_sent;
 
 	b_sent = spi_sync(st->spi, st->ring_msg);
 	if (b_sent)
 		goto done;
 
+<<<<<<< HEAD
 	time_ns = iio_get_time_ns();
 
 	if (indio_dev->scan_timestamp)
@@ -135,6 +160,10 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
 		       &time_ns, sizeof(time_ns));
 
 	iio_push_to_buffers(indio_dev, st->data);
+=======
+	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+		iio_get_time_ns(indio_dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 done:
 	iio_trigger_notify_done(indio_dev->trig);
 
@@ -168,17 +197,29 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
 
 	switch (m) {
 	case IIO_CHAN_INFO_RAW:
+<<<<<<< HEAD
 		mutex_lock(&indio_dev->mlock);
 		if (iio_buffer_enabled(indio_dev))
 			ret = -EBUSY;
 		else
 			ret = ad7887_scan_direct(st, chan->address);
 		mutex_unlock(&indio_dev->mlock);
+=======
+		ret = iio_device_claim_direct_mode(indio_dev);
+		if (ret)
+			return ret;
+		ret = ad7887_scan_direct(st, chan->address);
+		iio_device_release_direct_mode(indio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (ret < 0)
 			return ret;
 		*val = ret >> chan->scan_type.shift;
+<<<<<<< HEAD
 		*val &= RES_MASK(chan->scan_type.realbits);
+=======
+		*val &= GENMASK(chan->scan_type.realbits - 1, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
 		if (st->reg) {
@@ -249,16 +290,25 @@ static int ad7887_probe(struct spi_device *spi)
 {
 	struct ad7887_platform_data *pdata = spi->dev.platform_data;
 	struct ad7887_state *st;
+<<<<<<< HEAD
 	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
 	uint8_t mode;
 	int ret;
 
+=======
+	struct iio_dev *indio_dev;
+	uint8_t mode;
+	int ret;
+
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (indio_dev == NULL)
 		return -ENOMEM;
 
 	st = iio_priv(indio_dev);
 
 	if (!pdata || !pdata->use_onchip_ref) {
+<<<<<<< HEAD
 		st->reg = regulator_get(&spi->dev, "vref");
 		if (IS_ERR(st->reg)) {
 			ret = PTR_ERR(st->reg);
@@ -268,6 +318,15 @@ static int ad7887_probe(struct spi_device *spi)
 		ret = regulator_enable(st->reg);
 		if (ret)
 			goto error_put_reg;
+=======
+		st->reg = devm_regulator_get(&spi->dev, "vref");
+		if (IS_ERR(st->reg))
+			return PTR_ERR(st->reg);
+
+		ret = regulator_enable(st->reg);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	st->chip_info =
@@ -278,6 +337,10 @@ static int ad7887_probe(struct spi_device *spi)
 
 	/* Estabilish that the iio_dev is a child of the spi device */
 	indio_dev->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->dev.of_node = spi->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->info = &ad7887_info;
 	indio_dev->modes = INDIO_DIRECT_MODE;
@@ -343,11 +406,14 @@ error_unregister_ring:
 error_disable_reg:
 	if (st->reg)
 		regulator_disable(st->reg);
+<<<<<<< HEAD
 error_put_reg:
 	if (st->reg)
 		regulator_put(st->reg);
 error_free:
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -359,11 +425,16 @@ static int ad7887_remove(struct spi_device *spi)
 
 	iio_device_unregister(indio_dev);
 	iio_triggered_buffer_cleanup(indio_dev);
+<<<<<<< HEAD
 	if (st->reg) {
 		regulator_disable(st->reg);
 		regulator_put(st->reg);
 	}
 	iio_device_free(indio_dev);
+=======
+	if (st->reg)
+		regulator_disable(st->reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -377,7 +448,10 @@ MODULE_DEVICE_TABLE(spi, ad7887_id);
 static struct spi_driver ad7887_driver = {
 	.driver = {
 		.name	= "ad7887",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= ad7887_probe,
 	.remove		= ad7887_remove,

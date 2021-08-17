@@ -26,7 +26,10 @@
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <sys/utsname.h>
+<<<<<<< HEAD
 #include <linux/types.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,7 +37,10 @@
 #include <ctype.h>
 #include <errno.h>
 #include <arpa/inet.h>
+<<<<<<< HEAD
 #include <linux/connector.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/hyperv.h>
 #include <linux/netlink.h>
 #include <ifaddrs.h>
@@ -44,6 +50,10 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <net/if.h>
+<<<<<<< HEAD
+=======
+#include <getopt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * KVP protocol: The user mode component first registers with the
@@ -79,9 +89,12 @@ enum {
 	DNS
 };
 
+<<<<<<< HEAD
 static char kvp_send_buffer[4096];
 static char kvp_recv_buffer[4096 * 2];
 static struct sockaddr_nl addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int in_hand_shake = 1;
 
 static char *os_name = "";
@@ -91,6 +104,10 @@ static char *processor_arch;
 static char *os_build;
 static char *os_version;
 static char *lic_version = "Unknown version";
+<<<<<<< HEAD
+=======
+static char full_domain_name[HV_KVP_EXCHANGE_MAX_VALUE_SIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct utsname uts_buf;
 
 /*
@@ -127,7 +144,12 @@ static void kvp_acquire_lock(int pool)
 	fl.l_pid = getpid();
 
 	if (fcntl(kvp_file_info[pool].fd, F_SETLKW, &fl) == -1) {
+<<<<<<< HEAD
 		syslog(LOG_ERR, "Failed to acquire the lock pool: %d", pool);
+=======
+		syslog(LOG_ERR, "Failed to acquire the lock pool: %d; error: %d %s", pool,
+				errno, strerror(errno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		exit(EXIT_FAILURE);
 	}
 }
@@ -138,8 +160,13 @@ static void kvp_release_lock(int pool)
 	fl.l_pid = getpid();
 
 	if (fcntl(kvp_file_info[pool].fd, F_SETLK, &fl) == -1) {
+<<<<<<< HEAD
 		perror("fcntl");
 		syslog(LOG_ERR, "Failed to release the lock pool: %d", pool);
+=======
+		syslog(LOG_ERR, "Failed to release the lock pool: %d; error: %d %s", pool,
+				errno, strerror(errno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		exit(EXIT_FAILURE);
 	}
 }
@@ -147,7 +174,10 @@ static void kvp_release_lock(int pool)
 static void kvp_update_file(int pool)
 {
 	FILE *filep;
+<<<<<<< HEAD
 	size_t bytes_written;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We are going to write our in-memory registry out to
@@ -157,6 +187,7 @@ static void kvp_update_file(int pool)
 
 	filep = fopen(kvp_file_info[pool].fname, "we");
 	if (!filep) {
+<<<<<<< HEAD
 		kvp_release_lock(pool);
 		syslog(LOG_ERR, "Failed to open file, pool: %d", pool);
 		exit(EXIT_FAILURE);
@@ -164,6 +195,15 @@ static void kvp_update_file(int pool)
 
 	bytes_written = fwrite(kvp_file_info[pool].records,
 				sizeof(struct kvp_record),
+=======
+		syslog(LOG_ERR, "Failed to open file, pool: %d; error: %d %s", pool,
+				errno, strerror(errno));
+		kvp_release_lock(pool);
+		exit(EXIT_FAILURE);
+	}
+
+	fwrite(kvp_file_info[pool].records, sizeof(struct kvp_record),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				kvp_file_info[pool].num_records, filep);
 
 	if (ferror(filep) || fclose(filep)) {
@@ -188,18 +228,35 @@ static void kvp_update_mem_state(int pool)
 
 	filep = fopen(kvp_file_info[pool].fname, "re");
 	if (!filep) {
+<<<<<<< HEAD
 		kvp_release_lock(pool);
 		syslog(LOG_ERR, "Failed to open file, pool: %d", pool);
+=======
+		syslog(LOG_ERR, "Failed to open file, pool: %d; error: %d %s", pool,
+				errno, strerror(errno));
+		kvp_release_lock(pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		exit(EXIT_FAILURE);
 	}
 	for (;;) {
 		readp = &record[records_read];
 		records_read += fread(readp, sizeof(struct kvp_record),
+<<<<<<< HEAD
 					ENTRIES_PER_BLOCK * num_blocks,
 					filep);
 
 		if (ferror(filep)) {
 			syslog(LOG_ERR, "Failed to read file, pool: %d", pool);
+=======
+				ENTRIES_PER_BLOCK * num_blocks - records_read,
+				filep);
+
+		if (ferror(filep)) {
+			syslog(LOG_ERR,
+				"Failed to read file, pool: %d; error: %d %s",
+				 pool, errno, strerror(errno));
+			kvp_release_lock(pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			exit(EXIT_FAILURE);
 		}
 
@@ -212,6 +269,10 @@ static void kvp_update_mem_state(int pool)
 
 			if (record == NULL) {
 				syslog(LOG_ERR, "malloc failed");
+<<<<<<< HEAD
+=======
+				kvp_release_lock(pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				exit(EXIT_FAILURE);
 			}
 			continue;
@@ -226,6 +287,7 @@ static void kvp_update_mem_state(int pool)
 	fclose(filep);
 	kvp_release_lock(pool);
 }
+<<<<<<< HEAD
 static int kvp_file_init(void)
 {
 	int  fd;
@@ -235,26 +297,42 @@ static int kvp_file_init(void)
 	struct kvp_record *record;
 	struct kvp_record *readp;
 	int num_blocks;
+=======
+
+static int kvp_file_init(void)
+{
+	int  fd;
+	char *fname;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	int alloc_unit = sizeof(struct kvp_record) * ENTRIES_PER_BLOCK;
 
 	if (access(KVP_CONFIG_LOC, F_OK)) {
 		if (mkdir(KVP_CONFIG_LOC, 0755 /* rwxr-xr-x */)) {
+<<<<<<< HEAD
 			syslog(LOG_ERR, " Failed to create %s", KVP_CONFIG_LOC);
+=======
+			syslog(LOG_ERR, "Failed to create '%s'; error: %d %s", KVP_CONFIG_LOC,
+					errno, strerror(errno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			exit(EXIT_FAILURE);
 		}
 	}
 
 	for (i = 0; i < KVP_POOL_COUNT; i++) {
 		fname = kvp_file_info[i].fname;
+<<<<<<< HEAD
 		records_read = 0;
 		num_blocks = 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sprintf(fname, "%s/.kvp_pool_%d", KVP_CONFIG_LOC, i);
 		fd = open(fname, O_RDWR | O_CREAT | O_CLOEXEC, 0644 /* rw-r--r-- */);
 
 		if (fd == -1)
 			return 1;
 
+<<<<<<< HEAD
 
 		filep = fopen(fname, "re");
 		if (!filep)
@@ -298,12 +376,25 @@ static int kvp_file_init(void)
 		kvp_file_info[i].num_records = records_read;
 		fclose(filep);
 
+=======
+		kvp_file_info[i].fd = fd;
+		kvp_file_info[i].num_blocks = 1;
+		kvp_file_info[i].records = malloc(alloc_unit);
+		if (kvp_file_info[i].records == NULL)
+			return 1;
+		kvp_file_info[i].num_records = 0;
+		kvp_update_mem_state(i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int kvp_key_delete(int pool, const char *key, int key_size)
+=======
+static int kvp_key_delete(int pool, const __u8 *key, int key_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	int j, k;
@@ -325,7 +416,11 @@ static int kvp_key_delete(int pool, const char *key, int key_size)
 		 * Found a match; just move the remaining
 		 * entries up.
 		 */
+<<<<<<< HEAD
 		if (i == num_records) {
+=======
+		if (i == (num_records - 1)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kvp_file_info[pool].num_records--;
 			kvp_update_file(pool);
 			return 0;
@@ -346,8 +441,13 @@ static int kvp_key_delete(int pool, const char *key, int key_size)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int kvp_key_add_or_modify(int pool, const char *key, int key_size, const char *value,
 			int value_size)
+=======
+static int kvp_key_add_or_modify(int pool, const __u8 *key, int key_size,
+				 const __u8 *value, int value_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	int num_records;
@@ -400,7 +500,11 @@ static int kvp_key_add_or_modify(int pool, const char *key, int key_size, const 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int kvp_get_value(int pool, const char *key, int key_size, char *value,
+=======
+static int kvp_get_value(int pool, const __u8 *key, int key_size, __u8 *value,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			int value_size)
 {
 	int i;
@@ -432,8 +536,13 @@ static int kvp_get_value(int pool, const char *key, int key_size, char *value,
 	return 1;
 }
 
+<<<<<<< HEAD
 static int kvp_pool_enumerate(int pool, int index, char *key, int key_size,
 				char *value, int value_size)
+=======
+static int kvp_pool_enumerate(int pool, int index, __u8 *key, int key_size,
+				__u8 *value, int value_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kvp_record *record;
 
@@ -654,7 +763,11 @@ static char *kvp_if_name_to_mac(char *if_name)
 	char    *p, *x;
 	char    buf[256];
 	char addr_file[256];
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *mac_addr = NULL;
 
 	snprintf(addr_file, sizeof(addr_file), "%s%s%s", "/sys/class/net/",
@@ -693,7 +806,11 @@ static char *kvp_mac_to_if_name(char *mac)
 	char    buf[256];
 	char *kvp_net_dir = "/sys/class/net/";
 	char dev_id[256];
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dir = opendir(kvp_net_dir);
 	if (dir == NULL)
@@ -743,7 +860,11 @@ static char *kvp_mac_to_if_name(char *mac)
 
 
 static void kvp_process_ipconfig_file(char *cmd,
+<<<<<<< HEAD
 					char *config_buf, int len,
+=======
+					char *config_buf, unsigned int len,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					int element_size, int offset)
 {
 	char buf[256];
@@ -761,11 +882,21 @@ static void kvp_process_ipconfig_file(char *cmd,
 	if (offset == 0)
 		memset(config_buf, 0, len);
 	while ((p = fgets(buf, sizeof(buf), file)) != NULL) {
+<<<<<<< HEAD
 		if ((len - strlen(config_buf)) < (element_size + 1))
 			break;
 
 		x = strchr(p, '\n');
 		*x = '\0';
+=======
+		if (len < strlen(config_buf) + element_size + 1)
+			break;
+
+		x = strchr(p, '\n');
+		if (x)
+			*x = '\0';
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		strcat(config_buf, p);
 		strcat(config_buf, ";");
 	}
@@ -907,7 +1038,11 @@ static int kvp_process_ip_address(void *addrp,
 
 static int
 kvp_get_ip_info(int family, char *if_name, int op,
+<<<<<<< HEAD
 		 void  *out_buffer, int length)
+=======
+		 void  *out_buffer, unsigned int length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ifaddrs *ifap;
 	struct ifaddrs *curp;
@@ -915,7 +1050,11 @@ kvp_get_ip_info(int family, char *if_name, int op,
 	int sn_offset = 0;
 	int error = 0;
 	char *buffer;
+<<<<<<< HEAD
 	struct hv_kvp_ipaddr_value *ip_buffer;
+=======
+	struct hv_kvp_ipaddr_value *ip_buffer = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char cidr_mask[5]; /* /xyz */
 	int weight;
 	int i;
@@ -1010,8 +1149,12 @@ kvp_get_ip_info(int family, char *if_name, int op,
 					weight += hweight32(&w[i]);
 
 				sprintf(cidr_mask, "/%d", weight);
+<<<<<<< HEAD
 				if ((length - sn_offset) <
 					(strlen(cidr_mask) + 1))
+=======
+				if (length < sn_offset + strlen(cidr_mask) + 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					goto gather_ipaddr;
 
 				if (sn_offset == 0)
@@ -1275,7 +1418,12 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 	file = fopen(if_file, "w");
 
 	if (file == NULL) {
+<<<<<<< HEAD
 		syslog(LOG_ERR, "Failed to open config file");
+=======
+		syslog(LOG_ERR, "Failed to open config file; error: %d %s",
+				errno, strerror(errno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return HV_E_FAIL;
 	}
 
@@ -1290,6 +1438,10 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 	}
 
 	error = kvp_write_file(file, "HWADDR", "", mac_addr);
+<<<<<<< HEAD
+=======
+	free(mac_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error)
 		goto setval_error;
 
@@ -1297,16 +1449,28 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 	if (error)
 		goto setval_error;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The dhcp_enabled flag is only for IPv4. In the case the host only
+	 * injects an IPv6 address, the flag is true, but we still need to
+	 * proceed to parse and pass the IPv6 information to the
+	 * disto-specific script hv_set_ifconfig.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (new_val->dhcp_enabled) {
 		error = kvp_write_file(file, "BOOTPROTO", "", "dhcp");
 		if (error)
 			goto setval_error;
 
+<<<<<<< HEAD
 		/*
 		 * We are done!.
 		 */
 		goto setval_done;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		error = kvp_write_file(file, "BOOTPROTO", "", "none");
 		if (error)
@@ -1334,8 +1498,11 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 	if (error)
 		goto setval_error;
 
+<<<<<<< HEAD
 setval_done:
 	free(mac_addr);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fclose(file);
 
 	/*
@@ -1344,18 +1511,33 @@ setval_done:
 	 */
 
 	snprintf(cmd, sizeof(cmd), "%s %s", "hv_set_ifconfig", if_file);
+<<<<<<< HEAD
 	system(cmd);
+=======
+	if (system(cmd)) {
+		syslog(LOG_ERR, "Failed to execute cmd '%s'; error: %d %s",
+				cmd, errno, strerror(errno));
+		return HV_E_FAIL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 setval_error:
 	syslog(LOG_ERR, "Failed to write config file");
+<<<<<<< HEAD
 	free(mac_addr);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fclose(file);
 	return error;
 }
 
 
+<<<<<<< HEAD
 static int
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 kvp_get_domain_name(char *buffer, int length)
 {
 	struct addrinfo	hints, *info ;
@@ -1369,6 +1551,7 @@ kvp_get_domain_name(char *buffer, int length)
 
 	error = getaddrinfo(buffer, NULL, &hints, &info);
 	if (error != 0) {
+<<<<<<< HEAD
 		strcpy(buffer, "getaddrinfo failed\n");
 		return error;
 	}
@@ -1420,26 +1603,100 @@ int main(void)
 	struct cn_msg	*incoming_cn_msg;
 	struct hv_kvp_msg *hv_msg;
 	char	*p;
+=======
+		snprintf(buffer, length, "getaddrinfo failed: 0x%x %s",
+			error, gai_strerror(error));
+		return;
+	}
+	snprintf(buffer, length, "%s", info->ai_canonname);
+	freeaddrinfo(info);
+}
+
+void print_usage(char *argv[])
+{
+	fprintf(stderr, "Usage: %s [options]\n"
+		"Options are:\n"
+		"  -n, --no-daemon        stay in foreground, don't daemonize\n"
+		"  -h, --help             print this help\n", argv[0]);
+}
+
+int main(int argc, char *argv[])
+{
+	int kvp_fd, len;
+	int error;
+	struct pollfd pfd;
+	char    *p;
+	struct hv_kvp_msg hv_msg[1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char	*key_value;
 	char	*key_name;
 	int	op;
 	int	pool;
 	char	*if_name;
 	struct hv_kvp_ipaddr_value *kvp_ip_val;
+<<<<<<< HEAD
 
 	daemon(1, 0);
 	openlog("KVP", 0, LOG_USER);
 	syslog(LOG_INFO, "KVP starting; pid is:%d", getpid());
+=======
+	int daemonize = 1, long_index = 0, opt;
+
+	static struct option long_options[] = {
+		{"help",	no_argument,	   0,  'h' },
+		{"no-daemon",	no_argument,	   0,  'n' },
+		{0,		0,		   0,  0   }
+	};
+
+	while ((opt = getopt_long(argc, argv, "hn", long_options,
+				  &long_index)) != -1) {
+		switch (opt) {
+		case 'n':
+			daemonize = 0;
+			break;
+		case 'h':
+			print_usage(argv);
+			exit(0);
+		default:
+			print_usage(argv);
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	if (daemonize && daemon(1, 0))
+		return 1;
+
+	openlog("KVP", 0, LOG_USER);
+	syslog(LOG_INFO, "KVP starting; pid is:%d", getpid());
+
+	kvp_fd = open("/dev/vmbus/hv_kvp", O_RDWR | O_CLOEXEC);
+
+	if (kvp_fd < 0) {
+		syslog(LOG_ERR, "open /dev/vmbus/hv_kvp failed; error: %d %s",
+			errno, strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Retrieve OS release information.
 	 */
 	kvp_get_os_info();
+<<<<<<< HEAD
+=======
+	/*
+	 * Cache Fully Qualified Domain Name because getaddrinfo takes an
+	 * unpredictable amount of time to finish.
+	 */
+	kvp_get_domain_name(full_domain_name, sizeof(full_domain_name));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (kvp_file_init()) {
 		syslog(LOG_ERR, "Failed to initialize the pools");
 		exit(EXIT_FAILURE);
 	}
 
+<<<<<<< HEAD
 	fd = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_CONNECTOR);
 	if (fd < 0) {
 		syslog(LOG_ERR, "netlink socket creation failed; error:%d", fd);
@@ -1510,6 +1767,45 @@ int main(void)
 
 		incoming_cn_msg = (struct cn_msg *)NLMSG_DATA(incoming_msg);
 		hv_msg = (struct hv_kvp_msg *)incoming_cn_msg->data;
+=======
+	/*
+	 * Register ourselves with the kernel.
+	 */
+	hv_msg->kvp_hdr.operation = KVP_OP_REGISTER1;
+	len = write(kvp_fd, hv_msg, sizeof(struct hv_kvp_msg));
+	if (len != sizeof(struct hv_kvp_msg)) {
+		syslog(LOG_ERR, "registration to kernel failed; error: %d %s",
+		       errno, strerror(errno));
+		close(kvp_fd);
+		exit(EXIT_FAILURE);
+	}
+
+	pfd.fd = kvp_fd;
+
+	while (1) {
+		pfd.events = POLLIN;
+		pfd.revents = 0;
+
+		if (poll(&pfd, 1, -1) < 0) {
+			syslog(LOG_ERR, "poll failed; error: %d %s", errno, strerror(errno));
+			if (errno == EINVAL) {
+				close(kvp_fd);
+				exit(EXIT_FAILURE);
+			}
+			else
+				continue;
+		}
+
+		len = read(kvp_fd, hv_msg, sizeof(struct hv_kvp_msg));
+
+		if (len != sizeof(struct hv_kvp_msg)) {
+			syslog(LOG_ERR, "read failed; error:%d %s",
+			       errno, strerror(errno));
+
+			close(kvp_fd);
+			return EXIT_FAILURE;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * We will use the KVP header information to pass back
@@ -1531,7 +1827,11 @@ int main(void)
 			if (lic_version) {
 				strcpy(lic_version, p);
 				syslog(LOG_INFO, "KVP LIC Version: %s",
+<<<<<<< HEAD
 					lic_version);
+=======
+				       lic_version);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else {
 				syslog(LOG_ERR, "malloc failed");
 			}
@@ -1630,14 +1930,21 @@ int main(void)
 			goto kvp_done;
 		}
 
+<<<<<<< HEAD
 		hv_msg = (struct hv_kvp_msg *)incoming_cn_msg->data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		key_name = (char *)hv_msg->body.kvp_enum_data.data.key;
 		key_value = (char *)hv_msg->body.kvp_enum_data.data.value;
 
 		switch (hv_msg->body.kvp_enum_data.index) {
 		case FullyQualifiedDomainName:
+<<<<<<< HEAD
 			kvp_get_domain_name(key_value,
 					HV_KVP_EXCHANGE_MAX_VALUE_SIZE);
+=======
+			strcpy(key_value, full_domain_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			strcpy(key_name, "FullyQualifiedDomainName");
 			break;
 		case IntegrationServicesVersion:
@@ -1682,6 +1989,7 @@ int main(void)
 			hv_msg->error = HV_S_CONT;
 			break;
 		}
+<<<<<<< HEAD
 		/*
 		 * Send the value back to the kernel. The response is
 		 * already in the receive buffer. Update the cn_msg header to
@@ -1697,8 +2005,22 @@ kvp_done:
 		len = netlink_send(fd, incoming_cn_msg);
 		if (len < 0) {
 			syslog(LOG_ERR, "net_link send failed; error:%d", len);
+=======
+
+		/* Send the value back to the kernel. */
+kvp_done:
+		len = write(kvp_fd, hv_msg, sizeof(struct hv_kvp_msg));
+		if (len != sizeof(struct hv_kvp_msg)) {
+			syslog(LOG_ERR, "write failed; error: %d %s", errno,
+			       strerror(errno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			exit(EXIT_FAILURE);
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	close(kvp_fd);
+	exit(0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

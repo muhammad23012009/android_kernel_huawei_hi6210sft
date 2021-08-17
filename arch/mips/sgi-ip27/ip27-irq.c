@@ -29,7 +29,10 @@
 #include <asm/mipsregs.h>
 
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/pci/bridge.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/sn/addrs.h>
 #include <asm/sn/agent.h>
 #include <asm/sn/arch.h>
@@ -54,6 +57,7 @@
 
 extern asmlinkage void ip27_irq(void);
 
+<<<<<<< HEAD
 extern struct bridge_controller *irq_to_bridge[];
 extern int irq_to_slot[];
 
@@ -98,6 +102,8 @@ static inline int find_level(cpuid_t *cpunum, int irq)
 	panic("Could not identify cpu/level for irq %d", irq);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Find first bit set
  */
@@ -152,10 +158,21 @@ static void ip27_do_irq_mask0(void)
 		scheduler_ipi();
 	} else if (pend0 & (1UL << CPU_CALL_A_IRQ)) {
 		LOCAL_HUB_CLR_INTR(CPU_CALL_A_IRQ);
+<<<<<<< HEAD
 		smp_call_function_interrupt();
 	} else if (pend0 & (1UL << CPU_CALL_B_IRQ)) {
 		LOCAL_HUB_CLR_INTR(CPU_CALL_B_IRQ);
 		smp_call_function_interrupt();
+=======
+		irq_enter();
+		generic_smp_call_function_interrupt();
+		irq_exit();
+	} else if (pend0 & (1UL << CPU_CALL_B_IRQ)) {
+		LOCAL_HUB_CLR_INTR(CPU_CALL_B_IRQ);
+		irq_enter();
+		generic_smp_call_function_interrupt();
+		irq_exit();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 #endif
 	{
@@ -204,6 +221,7 @@ static void ip27_hub_error(void)
 	panic("CPU %d got a hub error interrupt", smp_processor_id());
 }
 
+<<<<<<< HEAD
 static int intr_connect_level(int cpu, int bit)
 {
 	nasid_t nasid = COMPACT_TO_NASID_NODEID(cpu_to_node(cpu));
@@ -373,6 +391,8 @@ int request_bridge_irq(struct bridge_controller *bc)
 	return irq;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 asmlinkage void plat_irq_dispatch(void)
 {
 	unsigned long pending = read_c0_cause() & read_c0_status();

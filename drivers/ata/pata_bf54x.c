@@ -36,8 +36,13 @@
 #include <scsi/scsi_host.h>
 #include <linux/libata.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <asm/dma.h>
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+#include <asm/dma.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/portmux.h>
 
 #define DRV_NAME		"pata-bf54x"
@@ -1596,7 +1601,11 @@ static int bfin_atapi_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, host);
+=======
+	platform_set_drvdata(pdev, host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1610,21 +1619,34 @@ static int bfin_atapi_probe(struct platform_device *pdev)
  */
 static int bfin_atapi_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct device *dev = &pdev->dev;
 	struct ata_host *host = dev_get_drvdata(dev);
 
 	ata_host_detach(host);
 	dev_set_drvdata(&pdev->dev, NULL);
+=======
+	struct ata_host *host = platform_get_drvdata(pdev);
+
+	ata_host_detach(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	peripheral_free_list(atapi_io_port);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int bfin_atapi_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int bfin_atapi_suspend(struct platform_device *pdev, pm_message_t state)
+{
+	struct ata_host *host = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (host)
 		return ata_host_suspend(host, state);
 	else
@@ -1633,7 +1655,11 @@ static int bfin_atapi_suspend(struct platform_device *pdev, pm_message_t state)
 
 static int bfin_atapi_resume(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	if (host) {
@@ -1659,7 +1685,10 @@ static struct platform_driver bfin_atapi_driver = {
 	.resume			= bfin_atapi_resume,
 	.driver = {
 		.name		= DRV_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

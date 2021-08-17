@@ -16,7 +16,10 @@
 
 #include <linux/cpufreq.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/jiffies.h>
 #include <linux/kthread.h>
 #include <linux/oprofile.h>
@@ -209,7 +212,11 @@ static void pm_rtas_reset_signals(u32 node)
 
 	/*
 	 * The debug bus is being set to the passthru disable state.
+<<<<<<< HEAD
 	 * However, the FW still expects atleast one legal signal routing
+=======
+	 * However, the FW still expects at least one legal signal routing
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * entry or it will return an error on the arguments.	If we don't
 	 * supply a valid entry, we must ignore all return values.  Ignoring
 	 * all return values means we might miss an error we should be
@@ -1009,7 +1016,11 @@ static int initial_lfsr[] = {
  *
  * To avoid the time to compute the LFSR, a lookup table is used.  The 24 bit
  * LFSR sequence is broken into four ranges.  The spacing of the precomputed
+<<<<<<< HEAD
  * values is adjusted in each range so the error between the user specifed
+=======
+ * values is adjusted in each range so the error between the user specified
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * number (N) of events between samples and the actual number of events based
  * on the precomputed value will be les then about 6.2%.  Note, if the user
  * specifies N < 2^16, the LFSR value that is 2^16 from the end will be used.
@@ -1122,8 +1133,12 @@ oprof_cpufreq_notify(struct notifier_block *nb, unsigned long val, void *data)
 	int ret = 0;
 	struct cpufreq_freqs *frq = data;
 	if ((val == CPUFREQ_PRECHANGE && frq->old < frq->new) ||
+<<<<<<< HEAD
 	    (val == CPUFREQ_POSTCHANGE && frq->old > frq->new) ||
 	    (val == CPUFREQ_RESUMECHANGE || val == CPUFREQ_SUSPENDCHANGE))
+=======
+	    (val == CPUFREQ_POSTCHANGE && frq->old > frq->new))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_spu_profiling_frequency(frq->new, spu_cycle_reset);
 	return ret;
 }

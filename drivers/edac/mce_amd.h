@@ -32,9 +32,12 @@
 #define R4(x)				(((x) >> 4) & 0xf)
 #define R4_MSG(x)			((R4(x) < 9) ?  rrrr_msgs[R4(x)] : "Wrong R4!")
 
+<<<<<<< HEAD
 #define MCI_STATUS_DEFERRED		BIT_64(44)
 #define MCI_STATUS_POISON		BIT_64(43)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const char * const pp_msgs[];
 
 enum tt_ids {

@@ -13,7 +13,10 @@
 #include <linux/errno.h>
 
 #include <asm/delay.h>
+<<<<<<< HEAD
 #include <asm/sched_clock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <clocksource/arm_arch_timer.h>
 
@@ -22,6 +25,7 @@ static unsigned long arch_timer_read_counter_long(void)
 	return arch_timer_read_counter();
 }
 
+<<<<<<< HEAD
 static u32 sched_clock_mult __read_mostly;
 
 /* as arch_timer is enabled in xloader, val is not zero now */
@@ -32,6 +36,8 @@ static unsigned long long notrace arch_timer_sched_clock(void)
 	return (arch_timer_read_counter() - arch_timer_init_val) * sched_clock_mult;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct delay_timer arch_delay_timer;
 
 static void __init arch_timer_delay_timer_register(void)
@@ -50,6 +56,7 @@ int __init arch_timer_arch_init(void)
 		return -ENXIO;
 
 	arch_timer_delay_timer_register();
+<<<<<<< HEAD
 	/* as the arch_timer is enabled in xloader */
 	arch_timer_init_val = arch_timer_read_counter();
 	/* Cache the sched_clock multiplier to save a divide in the hot path. */
@@ -57,6 +64,8 @@ int __init arch_timer_arch_init(void)
 	sched_clock_func = arch_timer_sched_clock;
 	pr_info("sched_clock: ARM arch timer >56 bits at %ukHz, resolution %uns\n",
 		arch_timer_rate / 1000, sched_clock_mult);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

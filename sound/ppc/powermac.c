@@ -58,7 +58,11 @@ static int snd_pmac_probe(struct platform_device *devptr)
 	char *name_ext;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&devptr->dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -90,7 +94,15 @@ static int snd_pmac_probe(struct platform_device *devptr)
 		sprintf(card->shortname, "PowerMac %s", name_ext);
 		sprintf(card->longname, "%s (Dev %d) Sub-frame %d",
 			card->shortname, chip->device_id, chip->subframe);
+<<<<<<< HEAD
 		if ( snd_pmac_tumbler_init(chip) < 0 || snd_pmac_tumbler_post_init() < 0)
+=======
+		err = snd_pmac_tumbler_init(chip);
+		if (err < 0)
+			goto __error;
+		err = snd_pmac_tumbler_post_init();
+		if (err < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto __error;
 		break;
 	case PMAC_AWACS:
@@ -122,8 +134,11 @@ static int snd_pmac_probe(struct platform_device *devptr)
 	if (enable_beep)
 		snd_pmac_attach_beep(chip);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &devptr->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_card_register(card)) < 0)
 		goto __error;
 
@@ -139,7 +154,10 @@ __error:
 static int snd_pmac_remove(struct platform_device *devptr)
 {
 	snd_card_free(platform_get_drvdata(devptr));
+<<<<<<< HEAD
 	platform_set_drvdata(devptr, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -171,7 +189,10 @@ static struct platform_driver snd_pmac_driver = {
 	.remove		= snd_pmac_remove,
 	.driver		= {
 		.name	= SND_PMAC_DRIVER,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= SND_PMAC_PM_OPS,
 	},
 };

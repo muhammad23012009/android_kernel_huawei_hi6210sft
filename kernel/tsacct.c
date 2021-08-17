@@ -31,6 +31,7 @@ void bacct_add_tsk(struct user_namespace *user_ns,
 		   struct taskstats *stats, struct task_struct *tsk)
 {
 	const struct cred *tcred;
+<<<<<<< HEAD
 	struct timespec uptime, ts;
 	cputime_t utime, stime, utimescaled, stimescaled;
 	u64 ac_etime;
@@ -45,6 +46,21 @@ void bacct_add_tsk(struct user_namespace *user_ns,
 	do_div(ac_etime, NSEC_PER_USEC);
 	stats->ac_etime = ac_etime;
 	stats->ac_btime = get_seconds() - ts.tv_sec;
+=======
+	cputime_t utime, stime, utimescaled, stimescaled;
+	u64 delta;
+
+	BUILD_BUG_ON(TS_COMM_LEN < TASK_COMM_LEN);
+
+	/* calculate task elapsed time in nsec */
+	delta = ktime_get_ns() - tsk->start_time;
+	/* Convert to micro seconds */
+	do_div(delta, NSEC_PER_USEC);
+	stats->ac_etime = delta;
+	/* Convert to seconds for btime */
+	do_div(delta, USEC_PER_SEC);
+	stats->ac_btime = get_seconds() - delta;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (thread_group_leader(tsk)) {
 		stats->ac_exitcode = tsk->exit_code;
 		if (tsk->flags & PF_FORKNOEXEC)
@@ -94,9 +110,17 @@ void xacct_add_tsk(struct taskstats *stats, struct task_struct *p)
 {
 	struct mm_struct *mm;
 
+<<<<<<< HEAD
 	/* convert pages-usec to Mbyte-usec */
 	stats->coremem = p->acct_rss_mem1 * PAGE_SIZE / MB;
 	stats->virtmem = p->acct_vm_mem1 * PAGE_SIZE / MB;
+=======
+	/* convert pages-nsec/1024 to Mbyte-usec, see __acct_update_integrals */
+	stats->coremem = p->acct_rss_mem1 * PAGE_SIZE;
+	do_div(stats->coremem, 1000 * KB);
+	stats->virtmem = p->acct_vm_mem1 * PAGE_SIZE;
+	do_div(stats->virtmem, 1000 * KB);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mm = get_task_mm(p);
 	if (mm) {
 		/* adjust to KB unit */
@@ -124,6 +148,7 @@ void xacct_add_tsk(struct taskstats *stats, struct task_struct *p)
 static void __acct_update_integrals(struct task_struct *tsk,
 				    cputime_t utime, cputime_t stime)
 {
+<<<<<<< HEAD
 	if (likely(tsk->mm)) {
 		cputime_t time, dtime;
 		struct timeval value;
@@ -145,6 +170,30 @@ static void __acct_update_integrals(struct task_struct *tsk,
 	out:
 		local_irq_restore(flags);
 	}
+=======
+	cputime_t time, dtime;
+	u64 delta;
+
+	if (!likely(tsk->mm))
+		return;
+
+	time = stime + utime;
+	dtime = time - tsk->acct_timexpd;
+	/* Avoid division: cputime_t is often in nanoseconds already. */
+	delta = cputime_to_nsecs(dtime);
+
+	if (delta < TICK_NSEC)
+		return;
+
+	tsk->acct_timexpd = time;
+	/*
+	 * Divide by 1024 to avoid overflow, and to avoid division.
+	 * The final unit reported to userspace is Mbyte-usecs,
+	 * the rest of the math is done in xacct_add_tsk.
+	 */
+	tsk->acct_rss_mem1 += delta * get_mm_rss(tsk->mm) >> 10;
+	tsk->acct_vm_mem1 += delta * tsk->mm->total_vm >> 10;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -154,9 +203,18 @@ static void __acct_update_integrals(struct task_struct *tsk,
 void acct_update_integrals(struct task_struct *tsk)
 {
 	cputime_t utime, stime;
+<<<<<<< HEAD
 
 	task_cputime(tsk, &utime, &stime);
 	__acct_update_integrals(tsk, utime, stime);
+=======
+	unsigned long flags;
+
+	local_irq_save(flags);
+	task_cputime(tsk, &utime, &stime);
+	__acct_update_integrals(tsk, utime, stime);
+	local_irq_restore(flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

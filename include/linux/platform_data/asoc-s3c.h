@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* arch/arm/plat-samsung/include/plat/audio.h
  *
+=======
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (c) 2009 Samsung Electronics Co. Ltd
  * Author: Jaswinder Singh <jassi.brar@samsung.com>
  *
@@ -14,6 +18,7 @@
  */
 #define S3C64XX_AC97_GPD  0
 #define S3C64XX_AC97_GPE  1
+<<<<<<< HEAD
 extern void s3c64xx_ac97_setup_gpio(int);
 
 /*
@@ -24,6 +29,12 @@ extern void s3c64xx_ac97_setup_gpio(int);
 #define S5PC100_SPDIF_GPD  0
 #define S5PC100_SPDIF_GPG3 1
 extern void s5pc100_spdif_setup_gpio(int);
+=======
+
+#include <linux/dmaengine.h>
+
+extern void s3c64xx_ac97_setup_gpio(int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct samsung_i2s {
 /* If the Primary DAI has 5.1 Channels */
@@ -36,6 +47,11 @@ struct samsung_i2s {
  */
 #define QUIRK_NO_MUXPSR		(1 << 2)
 #define QUIRK_NEED_RSTCLR	(1 << 3)
+<<<<<<< HEAD
+=======
+#define QUIRK_SUPPORTS_TDM	(1 << 4)
+#define QUIRK_SUPPORTS_IDMA	(1 << 5)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Quirks of the I2S controller */
 	u32 quirks;
 	dma_addr_t idma_addr;
@@ -47,6 +63,14 @@ struct samsung_i2s {
  */
 struct s3c_audio_pdata {
 	int (*cfg_gpio)(struct platform_device *);
+<<<<<<< HEAD
+=======
+	dma_filter_fn dma_filter;
+	void *dma_playback;
+	void *dma_capture;
+	void *dma_play_sec;
+	void *dma_capture_mic;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	union {
 		struct samsung_i2s i2s;
 	} type;

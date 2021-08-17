@@ -11,12 +11,20 @@
 #ifndef _ASM_PROCESSOR_H
 #define _ASM_PROCESSOR_H
 
+<<<<<<< HEAD
+=======
+#include <linux/atomic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpumask.h>
 #include <linux/threads.h>
 
 #include <asm/cachectl.h>
 #include <asm/cpu.h>
 #include <asm/cpu-info.h>
+<<<<<<< HEAD
+=======
+#include <asm/dsemul.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mipsregs.h>
 #include <asm/prefetch.h>
 
@@ -36,12 +44,15 @@ extern unsigned int vced_count, vcei_count;
  */
 #define HAVE_ARCH_PICK_MMAP_LAYOUT 1
 
+<<<<<<< HEAD
 /*
  * A special page (the vdso) is mapped into all processes at the very
  * top of the virtual memory space.
  */
 #define SPECIAL_PAGES_SIZE PAGE_SIZE
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_32BIT
 #ifdef CONFIG_KVM_GUEST
 /* User space process size is limited to 1GB in KVM Guest Mode */
@@ -54,9 +65,13 @@ extern unsigned int vced_count, vcei_count;
 #define TASK_SIZE	0x80000000UL
 #endif
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #define STACK_TOP_MAX	TASK_SIZE
 #endif
+=======
+#define STACK_TOP_MAX	TASK_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define TASK_IS_32BIT_ADDR 1
 
@@ -71,6 +86,7 @@ extern unsigned int vced_count, vcei_count;
  * 8192EB ...
  */
 #define TASK_SIZE32	0x7fff8000UL
+<<<<<<< HEAD
 #define TASK_SIZE64	0x10000000000UL
 #define TASK_SIZE (test_thread_flag(TIF_32BIT_ADDR) ? TASK_SIZE32 : TASK_SIZE64)
 
@@ -78,6 +94,15 @@ extern unsigned int vced_count, vcei_count;
 #define STACK_TOP_MAX	TASK_SIZE64
 #endif
 
+=======
+#ifdef CONFIG_MIPS_VA_BITS_48
+#define TASK_SIZE64     (0x1UL << ((cpu_data[0].vmbits>48)?48:cpu_data[0].vmbits))
+#else
+#define TASK_SIZE64     0x10000000000UL
+#endif
+#define TASK_SIZE (test_thread_flag(TIF_32BIT_ADDR) ? TASK_SIZE32 : TASK_SIZE64)
+#define STACK_TOP_MAX	TASK_SIZE64
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define TASK_SIZE_OF(tsk)						\
 	(test_tsk_thread_flag(tsk, TIF_32BIT_ADDR) ? TASK_SIZE32 : TASK_SIZE64)
@@ -86,7 +111,15 @@ extern unsigned int vced_count, vcei_count;
 
 #endif
 
+<<<<<<< HEAD
 #define STACK_TOP	((TASK_SIZE & PAGE_MASK) - SPECIAL_PAGES_SIZE)
+=======
+/*
+ * One page above the stack is used for branch delay slot "emulation".
+ * See dsemul.c for details.
+ */
+#define STACK_TOP	((TASK_SIZE & PAGE_MASK) - PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This decides where the kernel will search for a free chunk of vm
@@ -97,6 +130,7 @@ extern unsigned int vced_count, vcei_count;
 
 #define NUM_FPU_REGS	32
 
+<<<<<<< HEAD
 typedef __u64 fpureg_t;
 
 /*
@@ -109,11 +143,59 @@ typedef __u64 fpureg_t;
 struct mips_fpu_struct {
 	fpureg_t	fpr[NUM_FPU_REGS];
 	unsigned int	fcr31;
+=======
+#ifdef CONFIG_CPU_HAS_MSA
+# define FPU_REG_WIDTH	128
+#else
+# define FPU_REG_WIDTH	64
+#endif
+
+union fpureg {
+	__u32	val32[FPU_REG_WIDTH / 32];
+	__u64	val64[FPU_REG_WIDTH / 64];
+};
+
+#ifdef CONFIG_CPU_LITTLE_ENDIAN
+# define FPR_IDX(width, idx)	(idx)
+#else
+# define FPR_IDX(width, idx)	((idx) ^ ((64 / (width)) - 1))
+#endif
+
+#define BUILD_FPR_ACCESS(width) \
+static inline u##width get_fpr##width(union fpureg *fpr, unsigned idx)	\
+{									\
+	return fpr->val##width[FPR_IDX(width, idx)];			\
+}									\
+									\
+static inline void set_fpr##width(union fpureg *fpr, unsigned idx,	\
+				  u##width val)				\
+{									\
+	fpr->val##width[FPR_IDX(width, idx)] = val;			\
+}
+
+BUILD_FPR_ACCESS(32)
+BUILD_FPR_ACCESS(64)
+
+/*
+ * It would be nice to add some more fields for emulator statistics,
+ * the additional information is private to the FPU emulator for now.
+ * See arch/mips/include/asm/fpu_emulator.h.
+ */
+
+struct mips_fpu_struct {
+	union fpureg	fpr[NUM_FPU_REGS];
+	unsigned int	fcr31;
+	unsigned int	msacsr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define NUM_DSP_REGS   6
 
+<<<<<<< HEAD
 typedef __u32 dspreg_t;
+=======
+typedef unsigned long dspreg_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct mips_dsp_state {
 	dspreg_t	dspr[NUM_DSP_REGS];
@@ -137,7 +219,11 @@ union mips_watch_reg_state {
 	struct mips3264_watch_reg_state mips3264;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
+=======
+#if defined(CONFIG_CPU_CAVIUM_OCTEON)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct octeon_cop2_state {
 	/* DMFC2 rt, 0x0201 */
@@ -181,21 +267,54 @@ struct octeon_cop2_state {
 	unsigned long	cop2_gfm_poly;
 	/* DMFC2 rt, 0x025A; DMFC2 rt, 0x025B - Pass2 */
 	unsigned long	cop2_gfm_result[2];
+<<<<<<< HEAD
 };
 #define INIT_OCTEON_COP2 {0,}
+=======
+	/* DMFC2 rt, 0x24F, DMFC2 rt, 0x50, OCTEON III */
+	unsigned long	cop2_sha3[2];
+};
+#define COP2_INIT						\
+	.cp2			= {0,},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct octeon_cvmseg_state {
 	unsigned long cvmseg[CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE]
 			    [cpu_dcache_line_size() / sizeof(unsigned long)];
 };
 
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_CPU_XLP)
+struct nlm_cop2_state {
+	u64	rx[4];
+	u64	tx[4];
+	u32	tx_msg_status;
+	u32	rx_msg_status;
+};
+
+#define COP2_INIT						\
+	.cp2			= {{0}, {0}, 0, 0},
+#else
+#define COP2_INIT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 typedef struct {
 	unsigned long seg;
 } mm_segment_t;
 
+<<<<<<< HEAD
 #define ARCH_MIN_TASKALIGN	8
+=======
+#ifdef CONFIG_CPU_HAS_MSA
+# define ARCH_MIN_TASKALIGN	16
+# define FPU_ALIGN		__aligned(16)
+#else
+# define ARCH_MIN_TASKALIGN	8
+# define FPU_ALIGN
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct mips_abi;
 
@@ -212,7 +331,17 @@ struct thread_struct {
 	unsigned long cp0_status;
 
 	/* Saved fpu/fpu emulator stuff. */
+<<<<<<< HEAD
 	struct mips_fpu_struct fpu;
+=======
+	struct mips_fpu_struct fpu FPU_ALIGN;
+	/* Assigned branch delay slot 'emulation' frame */
+	atomic_t bd_emu_frame;
+	/* PC of the branch from a branch delay slot 'emulation' */
+	unsigned long bd_emu_branch_pc;
+	/* PC to continue from following a branch delay slot 'emulation' */
+	unsigned long bd_emu_cont_pc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* Emulated instruction count */
 	unsigned long emulated_fp;
@@ -230,9 +359,19 @@ struct thread_struct {
 	unsigned long cp0_badvaddr;	/* Last user fault */
 	unsigned long cp0_baduaddr;	/* Last kernel fault accessing USEG */
 	unsigned long error_code;
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
     struct octeon_cop2_state cp2 __attribute__ ((__aligned__(128)));
     struct octeon_cvmseg_state cvmseg __attribute__ ((__aligned__(128)));
+=======
+	unsigned long trap_nr;
+#ifdef CONFIG_CPU_CAVIUM_OCTEON
+	struct octeon_cop2_state cp2 __attribute__ ((__aligned__(128)));
+	struct octeon_cvmseg_state cvmseg __attribute__ ((__aligned__(128)));
+#endif
+#ifdef CONFIG_CPU_XLP
+	struct nlm_cop2_state cp2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	struct mips_abi *abi;
 };
@@ -245,6 +384,7 @@ struct thread_struct {
 #define FPAFF_INIT
 #endif /* CONFIG_MIPS_MT_FPAFF */
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 #define OCTEON_INIT						\
 	.cp2			= INIT_OCTEON_COP2,
@@ -252,6 +392,8 @@ struct thread_struct {
 #define OCTEON_INIT
 #endif /* CONFIG_CPU_CAVIUM_OCTEON */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define INIT_THREAD  {						\
 	/*							\
 	 * Saved main processor registers			\
@@ -275,13 +417,26 @@ struct thread_struct {
 	 * Saved FPU/FPU emulator stuff				\
 	 */							\
 	.fpu			= {				\
+<<<<<<< HEAD
 		.fpr		= {0,},				\
 		.fcr31		= 0,				\
+=======
+		.fpr		= {{{0,},},},			\
+		.fcr31		= 0,				\
+		.msacsr		= 0,				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},							\
 	/*							\
 	 * FPU affinity state (null if not FPAFF)		\
 	 */							\
 	FPAFF_INIT						\
+<<<<<<< HEAD
+=======
+	/* Delay slot emulation */				\
+	.bd_emu_frame = ATOMIC_INIT(BD_EMUFRAME_NONE),		\
+	.bd_emu_branch_pc = 0,					\
+	.bd_emu_cont_pc = 0,					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*							\
 	 * Saved DSP stuff					\
 	 */							\
@@ -299,10 +454,18 @@ struct thread_struct {
 	.cp0_badvaddr		= 0,				\
 	.cp0_baduaddr		= 0,				\
 	.error_code		= 0,				\
+<<<<<<< HEAD
 	/*							\
 	 * Cavium Octeon specifics (null if not Octeon)		\
 	 */							\
 	OCTEON_INIT						\
+=======
+	.trap_nr		= 0,				\
+	/*							\
+	 * Platform specific cop2 registers(null if no COP2)	\
+	 */							\
+	COP2_INIT						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct task_struct;
@@ -317,6 +480,13 @@ extern unsigned long thread_saved_pc(struct task_struct *tsk);
  */
 extern void start_thread(struct pt_regs * regs, unsigned long pc, unsigned long sp);
 
+<<<<<<< HEAD
+=======
+static inline void flush_thread(void)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long get_wchan(struct task_struct *p);
 
 #define __KSTK_TOS(tsk) ((unsigned long)task_stack_page(tsk) + \
@@ -327,6 +497,10 @@ unsigned long get_wchan(struct task_struct *p);
 #define KSTK_STATUS(tsk) (task_pt_regs(tsk)->cp0_status)
 
 #define cpu_relax()	barrier()
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Return_address is a replacement for __builtin_return_address(count)
@@ -350,6 +524,7 @@ unsigned long get_wchan(struct task_struct *p);
 #define ARCH_HAS_PREFETCHW
 #define prefetchw(x) __builtin_prefetch((x), 1, 1)
 
+<<<<<<< HEAD
 /*
  * See Documentation/scheduler/sched-arch.txt; prevents deadlock on SMP
  * systems.
@@ -357,5 +532,19 @@ unsigned long get_wchan(struct task_struct *p);
 #define __ARCH_WANT_UNLOCKED_CTXSW
 
 #endif
+=======
+#endif
+
+/*
+ * Functions & macros implementing the PR_GET_FP_MODE & PR_SET_FP_MODE options
+ * to the prctl syscall.
+ */
+extern int mips_get_process_fp_mode(struct task_struct *task);
+extern int mips_set_process_fp_mode(struct task_struct *task,
+				    unsigned int value);
+
+#define GET_FP_MODE(task)		mips_get_process_fp_mode(task)
+#define SET_FP_MODE(task,value)		mips_set_process_fp_mode(task, value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_PROCESSOR_H */

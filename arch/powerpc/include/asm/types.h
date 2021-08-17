@@ -15,6 +15,17 @@
 
 #include <uapi/asm/types.h>
 
+<<<<<<< HEAD
+=======
+#ifdef __powerpc64__
+#if defined(_CALL_ELF) && _CALL_ELF == 2
+#define PPC64_ELF_ABI_v2
+#else
+#define PPC64_ELF_ABI_v1
+#endif
+#endif /* __powerpc64__ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __ASSEMBLY__
 
 typedef __vector128 vector128;

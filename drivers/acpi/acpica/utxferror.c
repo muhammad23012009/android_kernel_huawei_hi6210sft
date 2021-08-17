@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,10 +45,17 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
+=======
+#define EXPORT_ACPI_INTERFACES
+
+#include <acpi/acpi.h>
+#include "accommon.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utxferror")
@@ -52,6 +63,7 @@ ACPI_MODULE_NAME("utxferror")
 /*
  * This module is used for the in-kernel ACPICA as well as the ACPICA
  * tools/applications.
+<<<<<<< HEAD
  *
  * For the iASL compiler case, the output is redirected to stderr so that
  * any of the various ACPI errors and warnings do not appear in the output
@@ -89,6 +101,10 @@ extern FILE *acpi_gbl_output_file;
  */
 #define ACPI_MSG_SUFFIX \
 	acpi_os_printf (" (%8.8X/%s-%u)\n", ACPI_CA_VERSION, module_name, line_number)
+=======
+ */
+#ifndef ACPI_NO_ERROR_MESSAGES	/* Entire module */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_error
@@ -142,8 +158,21 @@ acpi_exception(const char *module_name,
 	va_list arg_list;
 
 	ACPI_MSG_REDIRECT_BEGIN;
+<<<<<<< HEAD
 	acpi_os_printf(ACPI_MSG_EXCEPTION "%s, ",
 		       acpi_format_exception(status));
+=======
+
+	/* For AE_OK, just print the message */
+
+	if (ACPI_SUCCESS(status)) {
+		acpi_os_printf(ACPI_MSG_EXCEPTION);
+
+	} else {
+		acpi_os_printf(ACPI_MSG_EXCEPTION "%s, ",
+			       acpi_format_exception(status));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	va_start(arg_list, format);
 	acpi_os_vprintf(format, arg_list);
@@ -202,8 +231,12 @@ ACPI_EXPORT_SYMBOL(acpi_warning)
  * TBD: module_name and line_number args are not needed, should be removed.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 void ACPI_INTERNAL_VAR_XFACE
 acpi_info(const char *module_name, u32 line_number, const char *format, ...)
+=======
+void ACPI_INTERNAL_VAR_XFACE acpi_info(const char *format, ...)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	va_list arg_list;
 
@@ -285,6 +318,7 @@ acpi_bios_warning(const char *module_name,
 }
 
 ACPI_EXPORT_SYMBOL(acpi_bios_warning)
+<<<<<<< HEAD
 
 /*
  * The remainder of this module contains internal error functions that may
@@ -481,4 +515,6 @@ acpi_ut_method_error(const char *module_name,
 	ACPI_MSG_REDIRECT_END;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/* ACPI_NO_ERROR_MESSAGES */

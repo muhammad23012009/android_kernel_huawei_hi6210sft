@@ -19,8 +19,15 @@
 #include <linux/init.h>
 #include <linux/gpio.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/io.h>
+=======
+#include <linux/serial_s3c.h>
+#include <linux/platform_device.h>
+#include <linux/io.h>
+#include <linux/memblock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -33,15 +40,24 @@
 #include <asm/mach-types.h>
 
 //#include <asm/debug-ll.h>
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
 
 #include <linux/platform_data/usb-s3c2410_udc.h>
 #include <linux/platform_data/i2c-s3c2410.h>
+<<<<<<< HEAD
 #include <mach/fb.h>
 
 #include <plat/clock.h>
+=======
+#include <mach/gpio-samsung.h>
+#include <mach/fb.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/devs.h>
 #include <plat/cpu.h>
 #include <plat/samsung-time.h>
@@ -89,6 +105,7 @@ static struct platform_device *smdk2413_devices[] __initdata = {
 	&s3c_device_i2c0,
 	&s3c_device_iis,
 	&s3c_device_usbgadget,
+<<<<<<< HEAD
 };
 
 static void __init smdk2413_fixup(struct tag *tags, char **cmdline,
@@ -98,17 +115,38 @@ static void __init smdk2413_fixup(struct tag *tags, char **cmdline,
 		mi->nr_banks=1;
 		mi->bank[0].start = 0x30000000;
 		mi->bank[0].size = SZ_64M;
+=======
+	&s3c2412_device_dma,
+};
+
+static void __init smdk2413_fixup(struct tag *tags, char **cmdline)
+{
+	if (tags != phys_to_virt(S3C2410_SDRAM_PA + 0x100)) {
+		memblock_add(0x30000000, SZ_64M);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 static void __init smdk2413_map_io(void)
 {
 	s3c24xx_init_io(smdk2413_iodesc, ARRAY_SIZE(smdk2413_iodesc));
+<<<<<<< HEAD
 	s3c24xx_init_clocks(12000000);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(smdk2413_uartcfgs, ARRAY_SIZE(smdk2413_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init smdk2413_init_time(void)
+{
+	s3c2412_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init smdk2413_machine_init(void)
 {	/* Turn off suspend on both USB ports, and switch the
 	 * selectable USB port to USB device mode. */
@@ -134,7 +172,10 @@ MACHINE_START(S3C2413, "S3C2413")
 	.map_io		= smdk2413_map_io,
 	.init_machine	= smdk2413_machine_init,
 	.init_time	= samsung_timer_init,
+<<<<<<< HEAD
 	.restart	= s3c2412_restart,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END
 
 MACHINE_START(SMDK2412, "SMDK2412")
@@ -146,7 +187,10 @@ MACHINE_START(SMDK2412, "SMDK2412")
 	.map_io		= smdk2413_map_io,
 	.init_machine	= smdk2413_machine_init,
 	.init_time	= samsung_timer_init,
+<<<<<<< HEAD
 	.restart	= s3c2412_restart,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END
 
 MACHINE_START(SMDK2413, "SMDK2413")
@@ -157,6 +201,10 @@ MACHINE_START(SMDK2413, "SMDK2413")
 	.init_irq	= s3c2412_init_irq,
 	.map_io		= smdk2413_map_io,
 	.init_machine	= smdk2413_machine_init,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c2412_restart,
+=======
+	.init_time	= smdk2413_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

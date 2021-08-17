@@ -66,7 +66,10 @@ void __init mx27_map_io(void)
 void __init imx27_init_early(void)
 {
 	mxc_set_cpu_type(MXC_CPU_MX27);
+<<<<<<< HEAD
 	mxc_arch_reset_init(MX27_IO_ADDRESS(MX27_WDOG_BASE_ADDR));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx_iomuxv1_init(MX27_IO_ADDRESS(MX27_GPIO_BASE_ADDR),
 			MX27_NUM_GPIO_PORT);
 }
@@ -82,6 +85,10 @@ static const struct resource imx27_audmux_res[] __initconst = {
 
 void __init imx27_soc_init(void)
 {
+<<<<<<< HEAD
+=======
+	mxc_arch_reset_init(MX27_IO_ADDRESS(MX27_WDOG_BASE_ADDR));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mxc_device_init();
 
 	/* i.mx27 has the i.mx21 type gpio */
@@ -98,4 +105,9 @@ void __init imx27_soc_init(void)
 	/* imx27 has the imx21 type audmux */
 	platform_device_register_simple("imx21-audmux", 0, imx27_audmux_res,
 					ARRAY_SIZE(imx27_audmux_res));
+<<<<<<< HEAD
+=======
+
+	imx27_pm_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

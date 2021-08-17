@@ -1,11 +1,20 @@
 #ifndef _ASM_X86_SPINLOCK_H
 #define _ASM_X86_SPINLOCK_H
 
+<<<<<<< HEAD
+=======
+#include <linux/jump_label.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/atomic.h>
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <linux/compiler.h>
 #include <asm/paravirt.h>
+<<<<<<< HEAD
+=======
+#include <asm/bitops.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Your basic SMP spinlocks, allowing only a single CPU anywhere
  *
@@ -17,6 +26,7 @@
  * (the type definitions are in asm/spinlock_types.h)
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_32
 # define LOCK_PTR_REG "a"
 #else
@@ -136,6 +146,15 @@ static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
 	while (arch_spin_is_locked(lock))
 		cpu_relax();
 }
+=======
+/* How long a lock should spin before we consider blocking */
+#define SPIN_THRESHOLD	(1 << 15)
+
+extern struct static_key paravirt_ticketlocks_enabled;
+static __always_inline bool static_key_false(struct static_key *key);
+
+#include <asm/qspinlock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Read-write spinlocks, allowing multiple readers
@@ -147,6 +166,7 @@ static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
  * irq-safe write-lock, but readers can get non-irqsafe
  * read-locks.
  *
+<<<<<<< HEAD
  * On x86, we implement read-write locks as a 32-bit counter
  * with the high bit (sign) being the "contended" bit.
  */
@@ -219,16 +239,26 @@ static inline void arch_write_unlock(arch_rwlock_t *rw)
 	asm volatile(LOCK_PREFIX WRITE_LOCK_ADD(%1) "%0"
 		     : "+m" (rw->write) : "i" (RW_LOCK_BIAS) : "memory");
 }
+=======
+ * On x86, we implement read-write locks using the generic qrwlock with
+ * x86 specific optimization.
+ */
+
+#include <asm/qrwlock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define arch_read_lock_flags(lock, flags) arch_read_lock(lock)
 #define arch_write_lock_flags(lock, flags) arch_write_lock(lock)
 
+<<<<<<< HEAD
 #undef READ_LOCK_SIZE
 #undef READ_LOCK_ATOMIC
 #undef WRITE_LOCK_ADD
 #undef WRITE_LOCK_SUB
 #undef WRITE_LOCK_CMP
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define arch_spin_relax(lock)	cpu_relax()
 #define arch_read_relax(lock)	cpu_relax()
 #define arch_write_relax(lock)	cpu_relax()

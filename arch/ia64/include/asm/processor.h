@@ -19,7 +19,10 @@
 #include <asm/ptrace.h>
 #include <asm/ustack.h>
 
+<<<<<<< HEAD
 #define __ARCH_WANT_UNLOCKED_CTXSW
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ARCH_HAS_PREFETCH_SWITCH_STACK
 
 #define IA64_NUM_PHYS_STACK_REG	96
@@ -71,6 +74,10 @@
 #include <linux/compiler.h>
 #include <linux/threads.h>
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/fpu.h>
 #include <asm/page.h>
@@ -547,6 +554,10 @@ ia64_eoi (void)
 }
 
 #define cpu_relax()	ia64_hint(ia64_hint_pause)
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int
 ia64_get_irr(unsigned int vector)

@@ -1,3 +1,19 @@
+<<<<<<< HEAD
+=======
+/* bnx2fc_debug.c: QLogic Linux FCoE offload driver.
+ * Handles operations such as session offload/upload etc, and manages
+ * session resources such as connection id and qp resources.
+ *
+ * Copyright (c) 2008-2013 Broadcom Corporation
+ * Copyright (c) 2014-2015 QLogic Corporation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "bnx2fc.h"
 
 void BNX2FC_IO_DBG(const struct bnx2fc_cmd *io_req, const char *fmt, ...)

@@ -245,7 +245,11 @@ static int m920x_rc_core_query(struct dvb_usb_device *d)
 	else if (state == REMOTE_KEY_REPEAT)
 		rc_repeat(d->rc_dev);
 	else
+<<<<<<< HEAD
 		rc_keydown(d->rc_dev, rc_state[1], 0);
+=======
+		rc_keydown(d->rc_dev, RC_TYPE_UNKNOWN, rc_state[1], 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out:
 	kfree(rc_state);
@@ -1212,7 +1216,11 @@ static struct dvb_usb_device_properties vp7049_properties = {
 		.rc_interval    = 150,
 		.rc_codes       = RC_MAP_TWINHAN_VP1027_DVBS,
 		.rc_query       = m920x_rc_core_query,
+<<<<<<< HEAD
 		.allowed_protos = RC_TYPE_UNKNOWN,
+=======
+		.allowed_protos = RC_BIT_UNKNOWN,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 
 	.size_of_priv     = sizeof(struct m920x_state),
@@ -1269,8 +1277,11 @@ MODULE_AUTHOR("Aapo Tahkola <aet@rasterburn.org>");
 MODULE_DESCRIPTION("DVB Driver for ULI M920x");
 MODULE_VERSION("0.1");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

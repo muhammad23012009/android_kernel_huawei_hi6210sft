@@ -49,7 +49,11 @@ pmd_populate(struct mm_struct *mm, pmd_t *pmd, pgtable_t ptep)
 
 static inline int __get_order_pgd(void)
 {
+<<<<<<< HEAD
 	return get_order(PTRS_PER_PGD * 4);
+=======
+	return get_order(PTRS_PER_PGD * sizeof(pgd_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline pgd_t *pgd_alloc(struct mm_struct *mm)
@@ -87,7 +91,11 @@ static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
 
 static inline int __get_order_pte(void)
 {
+<<<<<<< HEAD
 	return get_order(PTRS_PER_PTE * 4);
+=======
+	return get_order(PTRS_PER_PTE * sizeof(pte_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
@@ -95,7 +103,11 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm,
 {
 	pte_t *pte;
 
+<<<<<<< HEAD
 	pte = (pte_t *) __get_free_pages(GFP_KERNEL | __GFP_REPEAT | __GFP_ZERO,
+=======
+	pte = (pte_t *) __get_free_pages(GFP_KERNEL | __GFP_ZERO,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 __get_order_pte());
 
 	return pte;
@@ -105,11 +117,24 @@ static inline pgtable_t
 pte_alloc_one(struct mm_struct *mm, unsigned long address)
 {
 	pgtable_t pte_pg;
+<<<<<<< HEAD
 
 	pte_pg = __get_free_pages(GFP_KERNEL | __GFP_REPEAT, __get_order_pte());
 	if (pte_pg) {
 		memzero((void *)pte_pg, PTRS_PER_PTE * 4);
 		pgtable_page_ctor(virt_to_page(pte_pg));
+=======
+	struct page *page;
+
+	pte_pg = (pgtable_t)__get_free_pages(GFP_KERNEL, __get_order_pte());
+	if (!pte_pg)
+		return 0;
+	memzero((void *)pte_pg, PTRS_PER_PTE * sizeof(pte_t));
+	page = virt_to_page(pte_pg);
+	if (!pgtable_page_ctor(page)) {
+		__free_page(page);
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return pte_pg;
@@ -123,12 +148,20 @@ static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
 static inline void pte_free(struct mm_struct *mm, pgtable_t ptep)
 {
 	pgtable_page_dtor(virt_to_page(ptep));
+<<<<<<< HEAD
 	free_pages(ptep, __get_order_pte());
+=======
+	free_pages((unsigned long)ptep, __get_order_pte());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define __pte_free_tlb(tlb, pte, addr)  pte_free((tlb)->mm, pte)
 
 #define check_pgt_cache()   do { } while (0)
+<<<<<<< HEAD
 #define pmd_pgtable(pmd) pmd_page_vaddr(pmd)
+=======
+#define pmd_pgtable(pmd)	((pgtable_t) pmd_page_vaddr(pmd))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_ARC_PGALLOC_H */

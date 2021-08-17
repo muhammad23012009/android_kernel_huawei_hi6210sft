@@ -8,10 +8,17 @@ config OPENRISC
 	select OF
 	select OF_EARLY_FLATTREE
 	select IRQ_DOMAIN
+<<<<<<< HEAD
 	select HAVE_MEMBLOCK
 	select ARCH_REQUIRE_GPIOLIB
         select HAVE_ARCH_TRACEHOOK
 	select HAVE_GENERIC_HARDIRQS
+=======
+	select HANDLE_DOMAIN_IRQ
+	select HAVE_MEMBLOCK
+	select GPIOLIB
+        select HAVE_ARCH_TRACEHOOK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select GENERIC_IRQ_CHIP
 	select GENERIC_IRQ_PROBE
 	select GENERIC_IRQ_SHOW
@@ -23,13 +30,22 @@ config OPENRISC
 	select GENERIC_STRNCPY_FROM_USER
 	select GENERIC_STRNLEN_USER
 	select MODULES_USE_ELF_RELA
+<<<<<<< HEAD
+=======
+	select HAVE_DEBUG_STACKOVERFLOW
+	select OR1K_PIC
+	select CPU_NO_EFFICIENT_FFS if !OPENRISC_HAVE_INST_FF1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config MMU
 	def_bool y
 
+<<<<<<< HEAD
 config HAVE_DMA_ATTRS
 	def_bool y
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config RWSEM_GENERIC_SPINLOCK
 	def_bool y
 
@@ -39,7 +55,11 @@ config RWSEM_XCHGADD_ALGORITHM
 config GENERIC_HWEIGHT
 	def_bool y
 
+<<<<<<< HEAD
 config NO_IOPORT
+=======
+config NO_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	def_bool y
 
 config TRACE_IRQFLAGS_SUPPORT
@@ -52,6 +72,10 @@ config GENERIC_CSUM
 
 source "init/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "kernel/Kconfig.freezer"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 menu "Processor type and features"
 
@@ -126,6 +150,7 @@ config CMDLINE
 
 menu "Debugging options"
 
+<<<<<<< HEAD
 config DEBUG_STACKOVERFLOW
 	bool "Check for kernel stack overflow"
 	default y
@@ -136,6 +161,8 @@ config DEBUG_STACKOVERFLOW
 
 	  Say Y if you are unsure.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config JUMP_UPON_UNHANDLED_EXCEPTION
 	bool "Try to die gracefully"
 	default y

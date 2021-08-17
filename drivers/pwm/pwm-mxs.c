@@ -16,7 +16,10 @@
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
 #include <linux/pinctrl/consumer.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/pwm.h>
 #include <linux/slab.h>
@@ -36,6 +39,13 @@
 #define  PERIOD_CDIV(div)	(((div) & 0x7) << 20)
 #define  PERIOD_CDIV_MAX	8
 
+<<<<<<< HEAD
+=======
+static const unsigned int cdiv[PERIOD_CDIV_MAX] = {
+	1, 2, 4, 8, 16, 64, 256, 1024
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mxs_pwm_chip {
 	struct pwm_chip chip;
 	struct clk *clk;
@@ -55,13 +65,21 @@ static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	rate = clk_get_rate(mxs->clk);
 	while (1) {
+<<<<<<< HEAD
 		c = rate / (1 << div);
+=======
+		c = rate / cdiv[div];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		c = c * period_ns;
 		do_div(c, 1000000000);
 		if (c < PERIOD_PERIOD_MAX)
 			break;
 		div++;
+<<<<<<< HEAD
 		if (div > PERIOD_CDIV_MAX)
+=======
+		if (div >= PERIOD_CDIV_MAX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 	}
 
@@ -74,7 +92,11 @@ static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	 * If the PWM channel is disabled, make sure to turn on the clock
 	 * before writing the register. Otherwise, keep it enabled.
 	 */
+<<<<<<< HEAD
 	if (!test_bit(PWMF_ENABLED, &pwm->flags)) {
+=======
+	if (!pwm_is_enabled(pwm)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = clk_prepare_enable(mxs->clk);
 		if (ret)
 			return ret;
@@ -89,7 +111,11 @@ static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	/*
 	 * If the PWM is not enabled, turn the clock off again to save power.
 	 */
+<<<<<<< HEAD
 	if (!test_bit(PWMF_ENABLED, &pwm->flags))
+=======
+	if (!pwm_is_enabled(pwm))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clk_disable_unprepare(mxs->clk);
 
 	return 0;
@@ -130,7 +156,10 @@ static int mxs_pwm_probe(struct platform_device *pdev)
 	struct device_node *np = pdev->dev.of_node;
 	struct mxs_pwm_chip *mxs;
 	struct resource *res;
+<<<<<<< HEAD
 	struct pinctrl *pinctrl;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	mxs = devm_kzalloc(&pdev->dev, sizeof(*mxs), GFP_KERNEL);
@@ -142,10 +171,13 @@ static int mxs_pwm_probe(struct platform_device *pdev)
 	if (IS_ERR(mxs->base))
 		return PTR_ERR(mxs->base);
 
+<<<<<<< HEAD
 	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
 	if (IS_ERR(pinctrl))
 		return PTR_ERR(pinctrl);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mxs->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(mxs->clk))
 		return PTR_ERR(mxs->clk);
@@ -153,6 +185,10 @@ static int mxs_pwm_probe(struct platform_device *pdev)
 	mxs->chip.dev = &pdev->dev;
 	mxs->chip.ops = &mxs_pwm_ops;
 	mxs->chip.base = -1;
+<<<<<<< HEAD
+=======
+	mxs->chip.can_sleep = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = of_property_read_u32(np, "fsl,pwm-number", &mxs->chip.npwm);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
@@ -167,9 +203,21 @@ static int mxs_pwm_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, mxs);
 
+<<<<<<< HEAD
 	stmp_reset_block(mxs->base);
 
 	return 0;
+=======
+	ret = stmp_reset_block(mxs->base);
+	if (ret)
+		goto pwm_remove;
+
+	return 0;
+
+pwm_remove:
+	pwmchip_remove(&mxs->chip);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mxs_pwm_remove(struct platform_device *pdev)
@@ -188,7 +236,11 @@ MODULE_DEVICE_TABLE(of, mxs_pwm_dt_ids);
 static struct platform_driver mxs_pwm_driver = {
 	.driver = {
 		.name = "mxs-pwm",
+<<<<<<< HEAD
 		.of_match_table = of_match_ptr(mxs_pwm_dt_ids),
+=======
+		.of_match_table = mxs_pwm_dt_ids,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = mxs_pwm_probe,
 	.remove = mxs_pwm_remove,

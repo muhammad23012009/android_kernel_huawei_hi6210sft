@@ -31,6 +31,10 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <mqueue.h>
+<<<<<<< HEAD
+=======
+#include <error.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static char *usage =
 "Usage:\n"
@@ -80,7 +84,12 @@ void shutdown(int exit_val, char *err_cause, int line_no)
 	if (in_shutdown++)
 		return;
 
+<<<<<<< HEAD
 	seteuid(0);
+=======
+	if (seteuid(0) == -1)
+		perror("seteuid() failed");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (queue != -1)
 		if (mq_close(queue))
@@ -292,8 +301,15 @@ int main(int argc, char *argv[])
 	/* Tell the user our initial state */
 	printf("\nInitial system state:\n");
 	printf("\tUsing queue path:\t\t%s\n", queue_path);
+<<<<<<< HEAD
 	printf("\tRLIMIT_MSGQUEUE(soft):\t\t%d\n", saved_limits.rlim_cur);
 	printf("\tRLIMIT_MSGQUEUE(hard):\t\t%d\n", saved_limits.rlim_max);
+=======
+	printf("\tRLIMIT_MSGQUEUE(soft):\t\t%ld\n",
+		(long) saved_limits.rlim_cur);
+	printf("\tRLIMIT_MSGQUEUE(hard):\t\t%ld\n",
+		(long) saved_limits.rlim_max);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printf("\tMaximum Message Size:\t\t%d\n", saved_max_msgsize);
 	printf("\tMaximum Queue Size:\t\t%d\n", saved_max_msgs);
 	if (default_settings) {
@@ -308,8 +324,13 @@ int main(int argc, char *argv[])
 	validate_current_settings();
 
 	printf("Adjusted system state for testing:\n");
+<<<<<<< HEAD
 	printf("\tRLIMIT_MSGQUEUE(soft):\t\t%d\n", cur_limits.rlim_cur);
 	printf("\tRLIMIT_MSGQUEUE(hard):\t\t%d\n", cur_limits.rlim_max);
+=======
+	printf("\tRLIMIT_MSGQUEUE(soft):\t\t%ld\n", (long) cur_limits.rlim_cur);
+	printf("\tRLIMIT_MSGQUEUE(hard):\t\t%ld\n", (long) cur_limits.rlim_max);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printf("\tMaximum Message Size:\t\t%d\n", cur_max_msgsize);
 	printf("\tMaximum Queue Size:\t\t%d\n", cur_max_msgs);
 	if (default_settings) {
@@ -454,7 +475,16 @@ int main(int argc, char *argv[])
 	else
 		printf("Queue open with total size > 2GB when euid = 0 "
 		       "failed:\t\t\tPASS\n");
+<<<<<<< HEAD
 	seteuid(99);
+=======
+
+	if (seteuid(99) == -1) {
+		perror("seteuid() failed");
+		exit(1);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	attr.mq_maxmsg = cur_max_msgs;
 	attr.mq_msgsize = cur_max_msgsize;
 	if (test_queue_fail(&attr, &result))

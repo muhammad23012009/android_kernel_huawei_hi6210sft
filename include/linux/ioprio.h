@@ -7,7 +7,10 @@
 /*
  * Gives us 8 prio classes with 13-bits of data for each class
  */
+<<<<<<< HEAD
 #define IOPRIO_BITS		(16)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IOPRIO_CLASS_SHIFT	(13)
 #define IOPRIO_PRIO_MASK	((1UL << IOPRIO_CLASS_SHIFT) - 1)
 

@@ -22,7 +22,10 @@
 #ifndef __ATBM8830_H__
 #define __ATBM8830_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 #include <linux/i2c.h>
 
@@ -61,7 +64,11 @@ struct atbm8830_config {
 	u8 agc_hold_loop;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_ATBM8830)
+=======
+#if IS_REACHABLE(CONFIG_DVB_ATBM8830)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *atbm8830_attach(const struct atbm8830_config *config,
 		struct i2c_adapter *i2c);
 #else

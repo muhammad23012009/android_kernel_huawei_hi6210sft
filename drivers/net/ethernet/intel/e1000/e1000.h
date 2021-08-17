@@ -36,7 +36,10 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mm.h>
 #include <linux/errno.h>
 #include <linux/ioport.h>
@@ -83,6 +86,14 @@ struct e1000_adapter;
 
 #define E1000_MAX_INTR			10
 
+<<<<<<< HEAD
+=======
+/*
+ * Count for polling __E1000_RESET condition every 10-20msec.
+ */
+#define E1000_CHECK_RESET_COUNT	50
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* TX/RX descriptor defines */
 #define E1000_DEFAULT_TXD		256
 #define E1000_MAX_TXD			256
@@ -144,6 +155,7 @@ struct e1000_adapter;
 /* wrapper around a pointer to a socket buffer,
  * so a DMA handle can be stored along with the buffer
  */
+<<<<<<< HEAD
 struct e1000_buffer {
 	struct sk_buff *skb;
 	dma_addr_t dma;
@@ -154,6 +166,25 @@ struct e1000_buffer {
 	unsigned int segs;
 	unsigned int bytecount;
 	u16 mapped_as_page;
+=======
+struct e1000_tx_buffer {
+	struct sk_buff *skb;
+	dma_addr_t dma;
+	unsigned long time_stamp;
+	u16 length;
+	u16 next_to_watch;
+	bool mapped_as_page;
+	unsigned short segs;
+	unsigned int bytecount;
+};
+
+struct e1000_rx_buffer {
+	union {
+		struct page *page; /* jumbo: alloc_page */
+		u8 *data; /* else, netdev_alloc_frag */
+	} rxbuf;
+	dma_addr_t dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct e1000_tx_ring {
@@ -170,7 +201,11 @@ struct e1000_tx_ring {
 	/* next descriptor to check for DD status bit */
 	unsigned int next_to_clean;
 	/* array of buffer information structs */
+<<<<<<< HEAD
 	struct e1000_buffer *buffer_info;
+=======
+	struct e1000_tx_buffer *buffer_info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u16 tdh;
 	u16 tdt;
@@ -191,7 +226,11 @@ struct e1000_rx_ring {
 	/* next descriptor to check for DD status bit */
 	unsigned int next_to_clean;
 	/* array of buffer information structs */
+<<<<<<< HEAD
 	struct e1000_buffer *buffer_info;
+=======
+	struct e1000_rx_buffer *buffer_info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *rx_skb_top;
 
 	/* cpu for rx queue */
@@ -202,8 +241,16 @@ struct e1000_rx_ring {
 };
 
 #define E1000_DESC_UNUSED(R)						\
+<<<<<<< HEAD
 	((((R)->next_to_clean > (R)->next_to_use)			\
 	  ? 0 : (R)->count) + (R)->next_to_clean - (R)->next_to_use - 1)
+=======
+({									\
+	unsigned int clean = smp_load_acquire(&(R)->next_to_clean);	\
+	unsigned int use = READ_ONCE((R)->next_to_use);			\
+	(clean > use ? 0 : (R)->count) + clean - use - 1;		\
+})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define E1000_RX_DESC_EXT(R, i)						\
 	(&(((union e1000_rx_desc_extended *)((R).desc))[i]))
@@ -312,20 +359,32 @@ struct e1000_adapter {
 	struct delayed_work watchdog_task;
 	struct delayed_work fifo_stall_task;
 	struct delayed_work phy_info_task;
+<<<<<<< HEAD
 
 	struct mutex mutex;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum e1000_state_t {
 	__E1000_TESTING,
 	__E1000_RESETTING,
+<<<<<<< HEAD
 	__E1000_DOWN
+=======
+	__E1000_DOWN,
+	__E1000_DISABLED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 extern struct net_device *e1000_get_hw_dev(struct e1000_hw *hw);
+=======
+struct net_device *e1000_get_hw_dev(struct e1000_hw *hw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define e_dbg(format, arg...) \
 	netdev_dbg(e1000_get_hw_dev(hw), format, ## arg)
 #define e_err(msglvl, format, arg...) \
@@ -346,6 +405,7 @@ extern struct net_device *e1000_get_hw_dev(struct e1000_hw *hw);
 extern char e1000_driver_name[];
 extern const char e1000_driver_version[];
 
+<<<<<<< HEAD
 extern int e1000_up(struct e1000_adapter *adapter);
 extern void e1000_down(struct e1000_adapter *adapter);
 extern void e1000_reinit_locked(struct e1000_adapter *adapter);
@@ -361,5 +421,24 @@ extern void e1000_power_up_phy(struct e1000_adapter *);
 extern void e1000_set_ethtool_ops(struct net_device *netdev);
 extern void e1000_check_options(struct e1000_adapter *adapter);
 extern char *e1000_get_hw_dev_name(struct e1000_hw *hw);
+=======
+int e1000_open(struct net_device *netdev);
+int e1000_close(struct net_device *netdev);
+int e1000_up(struct e1000_adapter *adapter);
+void e1000_down(struct e1000_adapter *adapter);
+void e1000_reinit_locked(struct e1000_adapter *adapter);
+void e1000_reset(struct e1000_adapter *adapter);
+int e1000_set_spd_dplx(struct e1000_adapter *adapter, u32 spd, u8 dplx);
+int e1000_setup_all_rx_resources(struct e1000_adapter *adapter);
+int e1000_setup_all_tx_resources(struct e1000_adapter *adapter);
+void e1000_free_all_rx_resources(struct e1000_adapter *adapter);
+void e1000_free_all_tx_resources(struct e1000_adapter *adapter);
+void e1000_update_stats(struct e1000_adapter *adapter);
+bool e1000_has_link(struct e1000_adapter *adapter);
+void e1000_power_up_phy(struct e1000_adapter *);
+void e1000_set_ethtool_ops(struct net_device *netdev);
+void e1000_check_options(struct e1000_adapter *adapter);
+char *e1000_get_hw_dev_name(struct e1000_hw *hw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _E1000_H_ */

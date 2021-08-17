@@ -13,6 +13,11 @@
 
 #undef DEBUG
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -24,7 +29,11 @@
 #include <linux/completion.h>
 #include <linux/mutex.h>
 #include <linux/time.h>
+<<<<<<< HEAD
 #include <linux/of.h>
+=======
+#include <linux/of_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DBG(fmt...) pr_debug(fmt)
 
@@ -59,6 +68,7 @@
 #define CPUFREQ_LOW                   1
 
 static struct cpufreq_frequency_table maple_cpu_freqs[] = {
+<<<<<<< HEAD
 	{CPUFREQ_HIGH,		0},
 	{CPUFREQ_LOW,		0},
 	{0,			CPUFREQ_TABLE_END},
@@ -67,6 +77,11 @@ static struct cpufreq_frequency_table maple_cpu_freqs[] = {
 static struct freq_attr *maple_cpu_freqs_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
+=======
+	{0, CPUFREQ_HIGH,		0},
+	{0, CPUFREQ_LOW,		0},
+	{0, 0,				CPUFREQ_TABLE_END},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Power mode data is an array of the 32 bits PCR values to use for
@@ -74,8 +89,11 @@ static struct freq_attr *maple_cpu_freqs_attr[] = {
  */
 static int maple_pmode_cur;
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(maple_switch_mutex);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 *maple_pmode_data;
 static int maple_pmode_max;
 
@@ -135,6 +153,7 @@ static int maple_scom_query_freq(void)
  * Common interface to the cpufreq core
  */
 
+<<<<<<< HEAD
 static int maple_cpufreq_verify(struct cpufreq_policy *policy)
 {
 	return cpufreq_frequency_table_verify(policy, maple_cpu_freqs);
@@ -166,6 +185,12 @@ static int maple_cpufreq_target(struct cpufreq_policy *policy,
 	mutex_unlock(&maple_switch_mutex);
 
 	return rc;
+=======
+static int maple_cpufreq_target(struct cpufreq_policy *policy,
+	unsigned int index)
+{
+	return maple_scom_switch_freq(index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned int maple_cpufreq_get_speed(unsigned int cpu)
@@ -175,6 +200,7 @@ static unsigned int maple_cpufreq_get_speed(unsigned int cpu)
 
 static int maple_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	policy->cpuinfo.transition_latency = 12000;
 	policy->cur = maple_cpu_freqs[maple_scom_query_freq()].frequency;
 	/* secondary CPUs are tied to the primary one by the
@@ -197,11 +223,27 @@ static struct cpufreq_driver maple_cpufreq_driver = {
 	.target		= maple_cpufreq_target,
 	.get		= maple_cpufreq_get_speed,
 	.attr		= maple_cpu_freqs_attr,
+=======
+	return cpufreq_generic_init(policy, maple_cpu_freqs, 12000);
+}
+
+static struct cpufreq_driver maple_cpufreq_driver = {
+	.name		= "maple",
+	.flags		= CPUFREQ_CONST_LOOPS,
+	.init		= maple_cpufreq_cpu_init,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= maple_cpufreq_target,
+	.get		= maple_cpufreq_get_speed,
+	.attr		= cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init maple_cpufreq_init(void)
 {
+<<<<<<< HEAD
 	struct device_node *cpus;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_node *cpunode;
 	unsigned int psize;
 	unsigned long max_freq;
@@ -217,6 +259,7 @@ static int __init maple_cpufreq_init(void)
 	    !of_machine_is_compatible("Momentum,Apache"))
 		return 0;
 
+<<<<<<< HEAD
 	cpus = of_find_node_by_path("/cpus");
 	if (cpus == NULL) {
 		DBG("No /cpus node !\n");
@@ -235,14 +278,25 @@ static int __init maple_cpufreq_init(void)
 	if (cpunode == NULL) {
 		printk(KERN_ERR "cpufreq: Can't find any CPU 0 node\n");
 		goto bail_cpus;
+=======
+	/* Get first CPU node */
+	cpunode = of_cpu_device_node_get(0);
+	if (cpunode == NULL) {
+		pr_err("Can't find any CPU 0 node\n");
+		goto bail_noprops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Check 970FX for now */
 	/* we actually don't care on which CPU to access PVR */
 	pvr_hi = PVR_VER(mfspr(SPRN_PVR));
 	if (pvr_hi != 0x3c && pvr_hi != 0x44) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cpufreq: Unsupported CPU version (%x)\n",
 				pvr_hi);
+=======
+		pr_err("Unsupported CPU version (%x)\n", pvr_hi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto bail_noprops;
 	}
 
@@ -281,8 +335,13 @@ static int __init maple_cpufreq_init(void)
 	maple_pmode_cur = -1;
 	maple_scom_switch_freq(maple_scom_query_freq());
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Registering Maple CPU frequency driver\n");
 	printk(KERN_INFO "Low: %d Mhz, High: %d Mhz, Cur: %d MHz\n",
+=======
+	pr_info("Registering Maple CPU frequency driver\n");
+	pr_info("Low: %d Mhz, High: %d Mhz, Cur: %d MHz\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		maple_cpu_freqs[1].frequency/1000,
 		maple_cpu_freqs[0].frequency/1000,
 		maple_cpu_freqs[maple_pmode_cur].frequency/1000);
@@ -290,14 +349,20 @@ static int __init maple_cpufreq_init(void)
 	rc = cpufreq_register_driver(&maple_cpufreq_driver);
 
 	of_node_put(cpunode);
+<<<<<<< HEAD
 	of_node_put(cpus);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 
 bail_noprops:
 	of_node_put(cpunode);
+<<<<<<< HEAD
 bail_cpus:
 	of_node_put(cpus);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }

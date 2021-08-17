@@ -28,7 +28,10 @@
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/watchdog.h>
+<<<<<<< HEAD
 #include <linux/miscdevice.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
@@ -268,6 +271,10 @@ static int ie6xx_wdt_probe(struct platform_device *pdev)
 
 	ie6xx_wdt_dev.timeout = timeout;
 	watchdog_set_nowayout(&ie6xx_wdt_dev, nowayout);
+<<<<<<< HEAD
+=======
+	ie6xx_wdt_dev.parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&ie6xx_wdt_data.unlock_sequence);
 
@@ -314,7 +321,10 @@ static struct platform_driver ie6xx_wdt_driver = {
 	.remove		= ie6xx_wdt_remove,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -344,5 +354,8 @@ module_exit(ie6xx_wdt_exit);
 MODULE_AUTHOR("Alexander Stein <alexander.stein@systec-electronic.com>");
 MODULE_DESCRIPTION("Intel Atom E6xx Watchdog Device Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS("platform:" DRIVER_NAME);

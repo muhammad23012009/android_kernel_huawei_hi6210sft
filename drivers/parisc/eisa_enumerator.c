@@ -91,7 +91,11 @@ static int configure_memory(const unsigned char *buf,
 	for (i=0;i<HPEE_MEMORY_MAX_ENT;i++) {
 		c = get_8(buf+len);
 		
+<<<<<<< HEAD
 		if (NULL != (res = kmalloc(sizeof(struct resource), GFP_KERNEL))) {
+=======
+		if (NULL != (res = kzalloc(sizeof(struct resource), GFP_KERNEL))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			int result;
 			
 			res->name = name;
@@ -183,7 +187,11 @@ static int configure_port(const unsigned char *buf, struct resource *io_parent,
 	for (i=0;i<HPEE_PORT_MAX_ENT;i++) {
 		c = get_8(buf+len);
 		
+<<<<<<< HEAD
 		if (NULL != (res = kmalloc(sizeof(struct resource), GFP_KERNEL))) {
+=======
+		if (NULL != (res = kzalloc(sizeof(struct resource), GFP_KERNEL))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			res->name = board;
 			res->start = get_16(buf+len+1);
 			res->end = get_16(buf+len+1)+(c&HPEE_PORT_SIZE_MASK)+1;
@@ -357,7 +365,11 @@ static int parse_slot_config(int slot,
 		}
 		if (flags & HPEE_FUNCTION_INFO_CFG_FREE_FORM) {
 			/* I have no idea how to handle this */
+<<<<<<< HEAD
 			printk("function %d have free-form confgiuration, skipping ",
+=======
+			printk("function %d have free-form configuration, skipping ",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				num_func);
 			pos = p0 + function_len;
 			continue;

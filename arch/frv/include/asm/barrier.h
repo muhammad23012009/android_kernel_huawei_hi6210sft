@@ -17,6 +17,7 @@
 #define mb()			asm volatile ("membar" : : :"memory")
 #define rmb()			asm volatile ("membar" : : :"memory")
 #define wmb()			asm volatile ("membar" : : :"memory")
+<<<<<<< HEAD
 #define read_barrier_depends()	do { } while (0)
 
 #define smp_mb()			barrier()
@@ -25,5 +26,9 @@
 #define smp_read_barrier_depends()	do {} while(0)
 #define set_mb(var, value) \
 	do { var = (value); barrier(); } while (0)
+=======
+
+#include <asm-generic/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_BARRIER_H */

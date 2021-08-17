@@ -63,8 +63,13 @@ static int ehea_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 		cmd->duplex = port->full_duplex == 1 ?
 						     DUPLEX_FULL : DUPLEX_HALF;
 	} else {
+<<<<<<< HEAD
 		speed = ~0;
 		cmd->duplex = -1;
+=======
+		speed = SPEED_UNKNOWN;
+		cmd->duplex = DUPLEX_UNKNOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	ethtool_cmd_speed_set(cmd, speed);
 
@@ -278,5 +283,9 @@ static const struct ethtool_ops ehea_ethtool_ops = {
 
 void ehea_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &ehea_ethtool_ops);
+=======
+	netdev->ethtool_ops = &ehea_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

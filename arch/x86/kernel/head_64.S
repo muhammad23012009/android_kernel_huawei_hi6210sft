@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  *  linux/arch/x86_64/kernel/head.S -- start in 32bit and switch to 64bit
+=======
+ *  linux/arch/x86/kernel/head_64.S -- start in 32bit and switch to 64bit
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  Copyright (C) 2000 Andrea Arcangeli <andrea@suse.de> SuSE
  *  Copyright (C) 2000 Pavel Machek <pavel@suse.cz>
@@ -20,6 +24,12 @@
 #include <asm/processor-flags.h>
 #include <asm/percpu.h>
 #include <asm/nops.h>
+<<<<<<< HEAD
+=======
+#include "../entry/calling.h"
+#include <asm/export.h>
+#include <asm/nospec-branch.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PARAVIRT
 #include <asm/asm-offsets.h>
@@ -37,8 +47,12 @@
 
 #define pud_index(x)	(((x) >> PUD_SHIFT) & (PTRS_PER_PUD-1))
 
+<<<<<<< HEAD
 L4_PAGE_OFFSET = pgd_index(__PAGE_OFFSET)
 L3_PAGE_OFFSET = pud_index(__PAGE_OFFSET)
+=======
+L4_PAGE_OFFSET = pgd_index(__PAGE_OFFSET_BASE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 L4_START_KERNEL = pgd_index(__START_KERNEL_map)
 L3_START_KERNEL = pud_index(__START_KERNEL_map)
 
@@ -56,7 +70,11 @@ startup_64:
 	 * %rsi holds a physical pointer to real_mode_data.
 	 *
 	 * We come here either directly from a 64bit bootloader, or from
+<<<<<<< HEAD
 	 * arch/x86_64/boot/compressed/head.S.
+=======
+	 * arch/x86/boot/compressed/head_64.S.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 *
 	 * We only come here initially at boot nothing else comes here.
 	 *
@@ -65,6 +83,17 @@ startup_64:
 	 * tables and then reload them.
 	 */
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Setup stack for verify_cpu(). "-8" because initial_stack is defined
+	 * this way, see below. Our best guess is a NULL ptr for stack
+	 * termination heuristics and we don't want to break anything which
+	 * might depend on it (kgdb, ...).
+	 */
+	leaq	(__end_init_task - 8)(%rip), %rsp
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Sanitize CPU configuration */
 	call verify_cpu
 
@@ -76,9 +105,13 @@ startup_64:
 	subq	$_text - __START_KERNEL_map, %rbp
 
 	/* Is the address not 2M aligned? */
+<<<<<<< HEAD
 	movq	%rbp, %rax
 	andl	$~PMD_PAGE_MASK, %eax
 	testl	%eax, %eax
+=======
+	testl	$~PMD_PAGE_MASK, %ebp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jnz	bad_address
 
 	/*
@@ -149,7 +182,11 @@ startup_64:
 	leaq	level2_kernel_pgt(%rip), %rdi
 	leaq	4096(%rdi), %r8
 	/* See if it is a valid page table entry */
+<<<<<<< HEAD
 1:	testq	$1, 0(%rdi)
+=======
+1:	testb	$1, 0(%rdi)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jz	2f
 	addq	%rbp, 0(%rdi)
 	/* Go to the next page */
@@ -183,8 +220,13 @@ ENTRY(secondary_startup_64)
 	movq	$(init_level4_pgt - __START_KERNEL_map), %rax
 1:
 
+<<<<<<< HEAD
 	/* Enable PAE mode and PGE */
 	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
+=======
+	/* Enable PAE and PSE, but defer PGE until kaiser_enabled is decided */
+	movl	$(X86_CR4_PAE | X86_CR4_PSE), %ecx
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movq	%rcx, %cr4
 
 	/* Setup early boot stage 4 level pagetables. */
@@ -193,6 +235,10 @@ ENTRY(secondary_startup_64)
 
 	/* Ensure I am executing from virtual addresses */
 	movq	$1f, %rax
+<<<<<<< HEAD
+=======
+	ANNOTATE_RETPOLINE_SAFE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jmp	*%rax
 1:
 
@@ -220,7 +266,11 @@ ENTRY(secondary_startup_64)
 	movq	%rax, %cr0
 
 	/* Setup a boot time stack */
+<<<<<<< HEAD
 	movq stack_start(%rip), %rsp
+=======
+	movq initial_stack(%rip), %rsp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* zero EFLAGS after setting rsp */
 	pushq $0
@@ -293,6 +343,10 @@ ENTRY(secondary_startup_64)
 	pushq	$__KERNEL_CS	# set correct cs
 	pushq	%rax		# target address in negative space
 	lretq
+<<<<<<< HEAD
+=======
+ENDPROC(secondary_startup_64)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "verify_cpu.S"
 
@@ -303,7 +357,11 @@ ENTRY(secondary_startup_64)
  * start_secondary().
  */
 ENTRY(start_cpu0)
+<<<<<<< HEAD
 	movq stack_start(%rip),%rsp
+=======
+	movq initial_stack(%rip),%rsp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movq	initial_code(%rip),%rax
 	pushq	$0		# fake return address to stop unwinder
 	pushq	$__KERNEL_CS	# set correct cs
@@ -312,17 +370,26 @@ ENTRY(start_cpu0)
 ENDPROC(start_cpu0)
 #endif
 
+<<<<<<< HEAD
 	/* SMP bootup changes these two */
+=======
+	/* Both SMP bootup and ACPI suspend change these variables */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__REFDATA
 	.balign	8
 	GLOBAL(initial_code)
 	.quad	x86_64_start_kernel
 	GLOBAL(initial_gs)
 	.quad	INIT_PER_CPU_VAR(irq_stack_union)
+<<<<<<< HEAD
 
 	GLOBAL(stack_start)
 	.quad  init_thread_union+THREAD_SIZE-8
 	.word  0
+=======
+	GLOBAL(initial_stack)
+	.quad  init_thread_union+THREAD_SIZE-8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__FINITDATA
 
 bad_address:
@@ -353,6 +420,7 @@ early_idt_handler_common:
 	 */
 	cld
 
+<<<<<<< HEAD
 	cmpl $2,(%rsp)		# X86_TRAP_NMI
 	je is_nmi		# Ignore NMI
 
@@ -422,11 +490,48 @@ early_idt_handler_common:
 is_nmi:
 	addq $16,%rsp		# drop vector number and error code
 	INTERRUPT_RETURN
+=======
+	incl early_recursion_flag(%rip)
+
+	/* The vector number is currently in the pt_regs->di slot. */
+	pushq %rsi				/* pt_regs->si */
+	movq 8(%rsp), %rsi			/* RSI = vector number */
+	movq %rdi, 8(%rsp)			/* pt_regs->di = RDI */
+	pushq %rdx				/* pt_regs->dx */
+	pushq %rcx				/* pt_regs->cx */
+	pushq %rax				/* pt_regs->ax */
+	pushq %r8				/* pt_regs->r8 */
+	pushq %r9				/* pt_regs->r9 */
+	pushq %r10				/* pt_regs->r10 */
+	pushq %r11				/* pt_regs->r11 */
+	pushq %rbx				/* pt_regs->bx */
+	pushq %rbp				/* pt_regs->bp */
+	pushq %r12				/* pt_regs->r12 */
+	pushq %r13				/* pt_regs->r13 */
+	pushq %r14				/* pt_regs->r14 */
+	pushq %r15				/* pt_regs->r15 */
+
+	cmpq $14,%rsi		/* Page fault? */
+	jnz 10f
+	GET_CR2_INTO(%rdi)	/* Can clobber any volatile register if pv */
+	call early_make_pgtable
+	andl %eax,%eax
+	jz 20f			/* All good */
+
+10:
+	movq %rsp,%rdi		/* RDI = pt_regs; RSI is already trapnr */
+	call early_fixup_exception
+
+20:
+	decl early_recursion_flag(%rip)
+	jmp restore_regs_and_iret
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(early_idt_handler_common)
 
 	__INITDATA
 
 	.balign 4
+<<<<<<< HEAD
 early_recursion_flag:
 	.long 0
 
@@ -437,10 +542,39 @@ early_idt_ripmsg:
 	.asciz "RIP %s\n"
 #endif /* CONFIG_EARLY_PRINTK */
 
+=======
+GLOBAL(early_recursion_flag)
+	.long 0
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NEXT_PAGE(name) \
 	.balign	PAGE_SIZE; \
 GLOBAL(name)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PAGE_TABLE_ISOLATION
+/*
+ * Each PGD needs to be 8k long and 8k aligned.  We do not
+ * ever go out to userspace with these, so we do not
+ * strictly *need* the second page, but this allows us to
+ * have a single set_pgd() implementation that does not
+ * need to worry about whether it has 4k or 8k to work
+ * with.
+ *
+ * This ensures PGDs are 8k long:
+ */
+#define KAISER_USER_PGD_FILL	512
+/* This ensures they are 8k-aligned: */
+#define NEXT_PGD_PAGE(name) \
+	.balign 2 * PAGE_SIZE; \
+GLOBAL(name)
+#else
+#define NEXT_PGD_PAGE(name) NEXT_PAGE(name)
+#define KAISER_USER_PGD_FILL	0
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Automate the creation of 1 to 1 mapping pmd entries */
 #define PMDS(START, PERM, COUNT)			\
 	i = 0 ;						\
@@ -450,9 +584,16 @@ GLOBAL(name)
 	.endr
 
 	__INITDATA
+<<<<<<< HEAD
 NEXT_PAGE(early_level4_pgt)
 	.fill	511,8,0
 	.quad	level3_kernel_pgt - __START_KERNEL_map + _PAGE_TABLE
+=======
+NEXT_PGD_PAGE(early_level4_pgt)
+	.fill	511,8,0
+	.quad	level3_kernel_pgt - __START_KERNEL_map + _PAGE_TABLE
+	.fill	KAISER_USER_PGD_FILL,8,0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 NEXT_PAGE(early_dynamic_pgts)
 	.fill	512*EARLY_DYNAMIC_PAGE_TABLES,8,0
@@ -460,16 +601,28 @@ NEXT_PAGE(early_dynamic_pgts)
 	.data
 
 #ifndef CONFIG_XEN
+<<<<<<< HEAD
 NEXT_PAGE(init_level4_pgt)
 	.fill	512,8,0
 #else
 NEXT_PAGE(init_level4_pgt)
+=======
+NEXT_PGD_PAGE(init_level4_pgt)
+	.fill	512,8,0
+	.fill	KAISER_USER_PGD_FILL,8,0
+#else
+NEXT_PGD_PAGE(init_level4_pgt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.quad   level3_ident_pgt - __START_KERNEL_map + _KERNPG_TABLE
 	.org    init_level4_pgt + L4_PAGE_OFFSET*8, 0
 	.quad   level3_ident_pgt - __START_KERNEL_map + _KERNPG_TABLE
 	.org    init_level4_pgt + L4_START_KERNEL*8, 0
 	/* (2^48-(2*1024*1024*1024))/(2^39) = 511 */
 	.quad   level3_kernel_pgt - __START_KERNEL_map + _PAGE_TABLE
+<<<<<<< HEAD
+=======
+	.fill	KAISER_USER_PGD_FILL,8,0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 NEXT_PAGE(level3_ident_pgt)
 	.quad	level2_ident_pgt - __START_KERNEL_map + _KERNPG_TABLE
@@ -480,6 +633,10 @@ NEXT_PAGE(level2_ident_pgt)
 	 */
 	PMDS(0, __PAGE_KERNEL_IDENT_LARGE_EXEC, PTRS_PER_PMD)
 #endif
+<<<<<<< HEAD
+=======
+	.fill	KAISER_USER_PGD_FILL,8,0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 NEXT_PAGE(level3_kernel_pgt)
 	.fill	L3_START_KERNEL,8,0
@@ -523,6 +680,7 @@ early_gdt_descr_base:
 ENTRY(phys_base)
 	/* This must match the first entry in level2_kernel_pgt */
 	.quad   0x0000000000000000
+<<<<<<< HEAD
 
 #include "../../x86/xen/xen-head.S"
 	
@@ -538,3 +696,14 @@ ENTRY(nmi_idt_table)
 	__PAGE_ALIGNED_BSS
 NEXT_PAGE(empty_zero_page)
 	.skip PAGE_SIZE
+=======
+EXPORT_SYMBOL(phys_base)
+
+#include "../../x86/xen/xen-head.S"
+	
+	__PAGE_ALIGNED_BSS
+NEXT_PAGE(empty_zero_page)
+	.skip PAGE_SIZE
+EXPORT_SYMBOL(empty_zero_page)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

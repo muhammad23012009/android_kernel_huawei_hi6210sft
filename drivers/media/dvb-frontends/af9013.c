@@ -39,7 +39,11 @@ struct af9013_state {
 	u32 ucblocks;
 	u16 snr;
 	u32 bandwidth_hz;
+<<<<<<< HEAD
 	fe_status_t fe_status;
+=======
+	enum fe_status fe_status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long set_frontend_jiffies;
 	unsigned long read_status_jiffies;
 	bool first_tune;
@@ -470,7 +474,10 @@ static int af9013_statistics_snr_result(struct dvb_frontend *fe)
 		break;
 	default:
 		goto err;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = 0; i < len; i++) {
@@ -606,6 +613,13 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		/* Return an error if can't find bandwidth or the right clock */
+		if (i == ARRAY_SIZE(coeff_lut))
+			return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = af9013_wr_regs(state, 0xae00, coeff_lut[i].val,
 			sizeof(coeff_lut[i].val));
 	}
@@ -684,7 +698,11 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 
 	switch (c->transmission_mode) {
 	case TRANSMISSION_MODE_AUTO:
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case TRANSMISSION_MODE_2K:
 		break;
@@ -694,12 +712,20 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 	default:
 		dev_dbg(&state->i2c->dev, "%s: invalid transmission_mode\n",
 				__func__);
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	switch (c->guard_interval) {
 	case GUARD_INTERVAL_AUTO:
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case GUARD_INTERVAL_1_32:
 		break;
@@ -715,12 +741,20 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 	default:
 		dev_dbg(&state->i2c->dev, "%s: invalid guard_interval\n",
 				__func__);
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	switch (c->hierarchy) {
 	case HIERARCHY_AUTO:
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case HIERARCHY_NONE:
 		break;
@@ -735,12 +769,20 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 		break;
 	default:
 		dev_dbg(&state->i2c->dev, "%s: invalid hierarchy\n", __func__);
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	switch (c->modulation) {
 	case QAM_AUTO:
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case QPSK:
 		break;
@@ -752,7 +794,11 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 		break;
 	default:
 		dev_dbg(&state->i2c->dev, "%s: invalid modulation\n", __func__);
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Use HP. How and which case we can switch to LP? */
@@ -760,7 +806,11 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 
 	switch (c->code_rate_HP) {
 	case FEC_AUTO:
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case FEC_1_2:
 		break;
@@ -779,12 +829,20 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 	default:
 		dev_dbg(&state->i2c->dev, "%s: invalid code_rate_HP\n",
 				__func__);
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	switch (c->code_rate_LP) {
 	case FEC_AUTO:
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case FEC_1_2:
 		break;
@@ -805,7 +863,11 @@ static int af9013_set_frontend(struct dvb_frontend *fe)
 	default:
 		dev_dbg(&state->i2c->dev, "%s: invalid code_rate_LP\n",
 				__func__);
+<<<<<<< HEAD
 		auto_mode = 1;
+=======
+		auto_mode = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	switch (c->bandwidth_hz) {
@@ -863,9 +925,15 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int af9013_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+=======
+static int af9013_get_frontend(struct dvb_frontend *fe,
+			       struct dtv_frontend_properties *c)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct af9013_state *state = fe->demodulator_priv;
 	int ret;
 	u8 buf[3];
@@ -980,7 +1048,11 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int af9013_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int af9013_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct af9013_state *state = fe->demodulator_priv;
 	int ret;
@@ -1341,6 +1413,13 @@ err:
 static void af9013_release(struct dvb_frontend *fe)
 {
 	struct af9013_state *state = fe->demodulator_priv;
+<<<<<<< HEAD
+=======
+
+	/* stop statistics polling */
+	cancel_delayed_work_sync(&state->statistics_work);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(state);
 }
 

@@ -32,6 +32,10 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/blktrans.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/major.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 struct mtdblk_dev {
@@ -44,8 +48,11 @@ struct mtdblk_dev {
 	enum { STATE_EMPTY, STATE_CLEAN, STATE_DIRTY } cache_state;
 };
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(mtdblks_lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Cache stuff...
  *
@@ -285,10 +292,15 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
 
 	pr_debug("mtdblock_open\n");
 
+<<<<<<< HEAD
 	mutex_lock(&mtdblks_lock);
 	if (mtdblk->count) {
 		mtdblk->count++;
 		mutex_unlock(&mtdblks_lock);
+=======
+	if (mtdblk->count) {
+		mtdblk->count++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -301,8 +313,11 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
 		mtdblk->cache_data = NULL;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&mtdblks_lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_debug("ok\n");
 
 	return 0;
@@ -314,8 +329,11 @@ static void mtdblock_release(struct mtd_blktrans_dev *mbd)
 
 	pr_debug("mtdblock_release\n");
 
+<<<<<<< HEAD
 	mutex_lock(&mtdblks_lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&mtdblk->cache_mutex);
 	write_cached_data(mtdblk);
 	mutex_unlock(&mtdblk->cache_mutex);
@@ -330,8 +348,11 @@ static void mtdblock_release(struct mtd_blktrans_dev *mbd)
 		vfree(mtdblk->cache_data);
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&mtdblks_lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_debug("ok\n");
 }
 
@@ -373,7 +394,11 @@ static void mtdblock_remove_dev(struct mtd_blktrans_dev *dev)
 
 static struct mtd_blktrans_ops mtdblock_tr = {
 	.name		= "mtdblock",
+<<<<<<< HEAD
 	.major		= 31,
+=======
+	.major		= MTD_BLOCK_MAJOR,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.part_bits	= 0,
 	.blksize 	= 512,
 	.open		= mtdblock_open,

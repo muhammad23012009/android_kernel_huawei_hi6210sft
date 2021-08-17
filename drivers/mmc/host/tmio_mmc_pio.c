@@ -1,6 +1,11 @@
 /*
  * linux/drivers/mmc/host/tmio_mmc_pio.c
  *
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2016 Sang Engineering, Wolfram Sang
+ * Copyright (C) 2015-16 Renesas Electronics Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2011 Guennadi Liakhovetski
  * Copyright (C) 2007 Ian Molton
  * Copyright (C) 2004 Ian Molton
@@ -37,13 +42,20 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/slot-gpio.h>
+<<<<<<< HEAD
 #include <linux/mmc/tmio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/pagemap.h>
 #include <linux/platform_device.h>
 #include <linux/pm_qos.h>
 #include <linux/pm_runtime.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
+=======
+#include <linux/mmc/sdio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/scatterlist.h>
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
@@ -53,18 +65,30 @@
 void tmio_mmc_enable_mmc_irqs(struct tmio_mmc_host *host, u32 i)
 {
 	host->sdcard_irq_mask &= ~(i & TMIO_MASK_IRQ);
+<<<<<<< HEAD
 	sd_ctrl_write32(host, CTL_IRQ_MASK, host->sdcard_irq_mask);
+=======
+	sd_ctrl_write32_as_16_and_16(host, CTL_IRQ_MASK, host->sdcard_irq_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void tmio_mmc_disable_mmc_irqs(struct tmio_mmc_host *host, u32 i)
 {
 	host->sdcard_irq_mask |= (i & TMIO_MASK_IRQ);
+<<<<<<< HEAD
 	sd_ctrl_write32(host, CTL_IRQ_MASK, host->sdcard_irq_mask);
+=======
+	sd_ctrl_write32_as_16_and_16(host, CTL_IRQ_MASK, host->sdcard_irq_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void tmio_mmc_ack_mmc_irqs(struct tmio_mmc_host *host, u32 i)
 {
+<<<<<<< HEAD
 	sd_ctrl_write32(host, CTL_STATUS, ~i);
+=======
+	sd_ctrl_write32_as_16_and_16(host, CTL_STATUS, ~i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void tmio_mmc_init_sg(struct tmio_mmc_host *host, struct mmc_data *data)
@@ -82,6 +106,11 @@ static int tmio_mmc_next_sg(struct tmio_mmc_host *host)
 	return --host->sg_len;
 }
 
+<<<<<<< HEAD
+=======
+#define CMDREQ_TIMEOUT	5000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MMC_DEBUG
 
 #define STATUS_TO_TEXT(a, status, i) \
@@ -129,11 +158,20 @@ static void tmio_mmc_enable_sdio_irq(struct mmc_host *mmc, int enable)
 {
 	struct tmio_mmc_host *host = mmc_priv(mmc);
 
+<<<<<<< HEAD
 	if (enable) {
+=======
+	if (enable && !host->sdio_irq_enabled) {
+		/* Keep device active while SDIO irq is enabled */
+		pm_runtime_get_sync(mmc_dev(mmc));
+		host->sdio_irq_enabled = true;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		host->sdio_irq_mask = TMIO_SDIO_MASK_ALL &
 					~TMIO_SDIO_STAT_IOIRQ;
 		sd_ctrl_write16(host, CTL_TRANSACTION_CTL, 0x0001);
 		sd_ctrl_write16(host, CTL_SDIO_IRQ_MASK, host->sdio_irq_mask);
+<<<<<<< HEAD
 	} else {
 		host->sdio_irq_mask = TMIO_SDIO_MASK_ALL;
 		sd_ctrl_write16(host, CTL_SDIO_IRQ_MASK, host->sdio_irq_mask);
@@ -157,18 +195,46 @@ static void tmio_mmc_set_clock(struct tmio_mmc_host *host, int new_clock)
 
 	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, clk & 0x1ff);
 	msleep(10);
+=======
+	} else if (!enable && host->sdio_irq_enabled) {
+		host->sdio_irq_mask = TMIO_SDIO_MASK_ALL;
+		sd_ctrl_write16(host, CTL_SDIO_IRQ_MASK, host->sdio_irq_mask);
+		sd_ctrl_write16(host, CTL_TRANSACTION_CTL, 0x0000);
+
+		host->sdio_irq_enabled = false;
+		pm_runtime_mark_last_busy(mmc_dev(mmc));
+		pm_runtime_put_autosuspend(mmc_dev(mmc));
+	}
+}
+
+static void tmio_mmc_clk_start(struct tmio_mmc_host *host)
+{
+	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, CLK_CTL_SCLKEN |
+		sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
+	msleep(host->pdata->flags & TMIO_MMC_MIN_RCAR2 ? 1 : 10);
+
+	if (host->pdata->flags & TMIO_MMC_HAVE_HIGH_REG) {
+		sd_ctrl_write16(host, CTL_CLK_AND_WAIT_CTL, 0x0100);
+		msleep(10);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void tmio_mmc_clk_stop(struct tmio_mmc_host *host)
 {
+<<<<<<< HEAD
 	struct resource *res = platform_get_resource(host->pdev, IORESOURCE_MEM, 0);
 
 	/* implicit BUG_ON(!res) */
 	if (resource_size(res) > 0x100) {
+=======
+	if (host->pdata->flags & TMIO_MMC_HAVE_HIGH_REG) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sd_ctrl_write16(host, CTL_CLK_AND_WAIT_CTL, 0x0000);
 		msleep(10);
 	}
 
+<<<<<<< HEAD
 	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, ~0x0100 &
 		sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
 	msleep(10);
@@ -187,10 +253,50 @@ static void tmio_mmc_clk_start(struct tmio_mmc_host *host)
 		sd_ctrl_write16(host, CTL_CLK_AND_WAIT_CTL, 0x0100);
 		msleep(10);
 	}
+=======
+	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, ~CLK_CTL_SCLKEN &
+		sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
+	msleep(host->pdata->flags & TMIO_MMC_MIN_RCAR2 ? 5 : 10);
+}
+
+static void tmio_mmc_set_clock(struct tmio_mmc_host *host,
+				unsigned int new_clock)
+{
+	u32 clk = 0, clock;
+
+	if (new_clock == 0) {
+		tmio_mmc_clk_stop(host);
+		return;
+	}
+
+	if (host->clk_update)
+		clock = host->clk_update(host, new_clock) / 512;
+	else
+		clock = host->mmc->f_min;
+
+	for (clk = 0x80000080; new_clock >= (clock << 1); clk >>= 1)
+		clock <<= 1;
+
+	/* 1/1 clock is option */
+	if ((host->pdata->flags & TMIO_MMC_CLK_ACTUAL) && ((clk >> 22) & 0x1))
+		clk |= 0xff;
+
+	if (host->set_clk_div)
+		host->set_clk_div(host->pdev, (clk >> 22) & 1);
+
+	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, ~CLK_CTL_SCLKEN &
+			sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL));
+	sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, clk & CLK_CTL_DIV_MASK);
+	if (!(host->pdata->flags & TMIO_MMC_MIN_RCAR2))
+		msleep(10);
+
+	tmio_mmc_clk_start(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void tmio_mmc_reset(struct tmio_mmc_host *host)
 {
+<<<<<<< HEAD
 	struct resource *res = platform_get_resource(host->pdev, IORESOURCE_MEM, 0);
 
 	/* FIXME - should we set stop clock reg here */
@@ -201,6 +307,15 @@ static void tmio_mmc_reset(struct tmio_mmc_host *host)
 	msleep(10);
 	sd_ctrl_write16(host, CTL_RESET_SD, 0x0001);
 	if (resource_size(res) > 0x100)
+=======
+	/* FIXME - should we set stop clock reg here */
+	sd_ctrl_write16(host, CTL_RESET_SD, 0x0000);
+	if (host->pdata->flags & TMIO_MMC_HAVE_HIGH_REG)
+		sd_ctrl_write16(host, CTL_RESET_SDIO, 0x0000);
+	msleep(10);
+	sd_ctrl_write16(host, CTL_RESET_SD, 0x0001);
+	if (host->pdata->flags & TMIO_MMC_HAVE_HIGH_REG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sd_ctrl_write16(host, CTL_RESET_SDIO, 0x0001);
 	msleep(10);
 }
@@ -222,7 +337,11 @@ static void tmio_mmc_reset_work(struct work_struct *work)
 	 */
 	if (IS_ERR_OR_NULL(mrq)
 	    || time_is_after_jiffies(host->last_req_ts +
+<<<<<<< HEAD
 		msecs_to_jiffies(2000))) {
+=======
+		msecs_to_jiffies(CMDREQ_TIMEOUT))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irqrestore(&host->lock, flags);
 		return;
 	}
@@ -301,6 +420,10 @@ static void tmio_mmc_done_work(struct work_struct *work)
 #define TRANSFER_READ  0x1000
 #define TRANSFER_MULTI 0x2000
 #define SECURITY_CMD   0x4000
+<<<<<<< HEAD
+=======
+#define NO_CMD12_ISSUE 0x4000 /* TMIO_MMC_HAVE_CMD12_CTRL */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int tmio_mmc_start_command(struct tmio_mmc_host *host, struct mmc_command *cmd)
 {
@@ -316,7 +439,13 @@ static int tmio_mmc_start_command(struct tmio_mmc_host *host, struct mmc_command
 
 	switch (mmc_resp_type(cmd)) {
 	case MMC_RSP_NONE: c |= RESP_NONE; break;
+<<<<<<< HEAD
 	case MMC_RSP_R1:   c |= RESP_R1;   break;
+=======
+	case MMC_RSP_R1:
+	case MMC_RSP_R1_NO_CRC:
+			   c |= RESP_R1;   break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case MMC_RSP_R1B:  c |= RESP_R1B;  break;
 	case MMC_RSP_R2:   c |= RESP_R2;   break;
 	case MMC_RSP_R3:   c |= RESP_R3;   break;
@@ -337,6 +466,17 @@ static int tmio_mmc_start_command(struct tmio_mmc_host *host, struct mmc_command
 		if (data->blocks > 1) {
 			sd_ctrl_write16(host, CTL_STOP_INTERNAL_ACTION, 0x100);
 			c |= TRANSFER_MULTI;
+<<<<<<< HEAD
+=======
+
+			/*
+			 * Disable auto CMD12 at IO_RW_EXTENDED when
+			 * multiple block transfer
+			 */
+			if ((host->pdata->flags & TMIO_MMC_HAVE_CMD12_CTRL) &&
+			    (cmd->opcode == SD_IO_RW_EXTENDED))
+				c |= NO_CMD12_ISSUE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		if (data->flags & MMC_DATA_READ)
 			c |= TRANSFER_READ;
@@ -347,12 +487,53 @@ static int tmio_mmc_start_command(struct tmio_mmc_host *host, struct mmc_command
 	tmio_mmc_enable_mmc_irqs(host, irq_mask);
 
 	/* Fire off the command */
+<<<<<<< HEAD
 	sd_ctrl_write32(host, CTL_ARG_REG, cmd->arg);
+=======
+	sd_ctrl_write32_as_16_and_16(host, CTL_ARG_REG, cmd->arg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sd_ctrl_write16(host, CTL_SD_CMD, c);
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void tmio_mmc_transfer_data(struct tmio_mmc_host *host,
+				   unsigned short *buf,
+				   unsigned int count)
+{
+	int is_read = host->data->flags & MMC_DATA_READ;
+	u8  *buf8;
+
+	/*
+	 * Transfer the data
+	 */
+	if (is_read)
+		sd_ctrl_read16_rep(host, CTL_SD_DATA_PORT, buf, count >> 1);
+	else
+		sd_ctrl_write16_rep(host, CTL_SD_DATA_PORT, buf, count >> 1);
+
+	/* if count was even number */
+	if (!(count & 0x1))
+		return;
+
+	/* if count was odd number */
+	buf8 = (u8 *)(buf + (count >> 1));
+
+	/*
+	 * FIXME
+	 *
+	 * driver and this function are assuming that
+	 * it is used as little endian
+	 */
+	if (is_read)
+		*buf8 = sd_ctrl_read16(host, CTL_SD_DATA_PORT) & 0xff;
+	else
+		sd_ctrl_write16(host, CTL_SD_DATA_PORT, *buf8);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This chip always returns (at least?) as much data as you ask for.
  * I'm unsure what happens if you ask for less than a block. This should be
@@ -385,10 +566,14 @@ static void tmio_mmc_pio_irq(struct tmio_mmc_host *host)
 		 count, host->sg_off, data->flags);
 
 	/* Transfer the data */
+<<<<<<< HEAD
 	if (data->flags & MMC_DATA_READ)
 		sd_ctrl_read16_rep(host, CTL_SD_DATA_PORT, buf, count >> 1);
 	else
 		sd_ctrl_write16_rep(host, CTL_SD_DATA_PORT, buf, count >> 1);
+=======
+	tmio_mmc_transfer_data(host, buf, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host->sg_off += count;
 
@@ -471,6 +656,12 @@ static void tmio_mmc_data_irq(struct tmio_mmc_host *host)
 		goto out;
 
 	if (host->chan_tx && (data->flags & MMC_DATA_WRITE) && !host->force_pio) {
+<<<<<<< HEAD
+=======
+		u32 status = sd_ctrl_read16_and_16_as_32(host, CTL_STATUS);
+		bool done = false;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Has all data been written out yet? Testing on SuperH showed,
 		 * that in most cases the first interrupt comes already with the
@@ -479,7 +670,19 @@ static void tmio_mmc_data_irq(struct tmio_mmc_host *host)
 		 * DATAEND interrupt with the BUSY bit set, in this cases
 		 * waiting for one more interrupt fixes the problem.
 		 */
+<<<<<<< HEAD
 		if (!(sd_ctrl_read32(host, CTL_STATUS) & TMIO_STAT_CMD_BUSY)) {
+=======
+		if (host->pdata->flags & TMIO_MMC_HAS_IDLE_WAIT) {
+			if (status & TMIO_STAT_SCLKDIVEN)
+				done = true;
+		} else {
+			if (!(status & TMIO_STAT_CMD_BUSY))
+				done = true;
+		}
+
+		if (done) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tmio_mmc_disable_mmc_irqs(host, TMIO_STAT_DATAEND);
 			tasklet_schedule(&host->dma_complete);
 		}
@@ -515,7 +718,11 @@ static void tmio_mmc_cmd_irq(struct tmio_mmc_host *host,
 	 */
 
 	for (i = 3, addr = CTL_RESPONSE ; i >= 0 ; i--, addr += 4)
+<<<<<<< HEAD
 		cmd->resp[i] = sd_ctrl_read32(host, addr);
+=======
+		cmd->resp[i] = sd_ctrl_read16_and_16_as_32(host, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cmd->flags &  MMC_RSP_136) {
 		cmd->resp[0] = (cmd->resp[0] << 8) | (cmd->resp[1] >> 24);
@@ -555,6 +762,7 @@ out:
 	spin_unlock(&host->lock);
 }
 
+<<<<<<< HEAD
 static void tmio_mmc_card_irq_status(struct tmio_mmc_host *host,
 				       int *ireg, int *status)
 {
@@ -565,6 +773,8 @@ static void tmio_mmc_card_irq_status(struct tmio_mmc_host *host,
 	pr_debug_status(*ireg);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static bool __tmio_mmc_card_detect_irq(struct tmio_mmc_host *host,
 				      int ireg, int status)
 {
@@ -584,6 +794,7 @@ static bool __tmio_mmc_card_detect_irq(struct tmio_mmc_host *host,
 	return false;
 }
 
+<<<<<<< HEAD
 irqreturn_t tmio_mmc_card_detect_irq(int irq, void *devid)
 {
 	unsigned int ireg, status;
@@ -596,6 +807,8 @@ irqreturn_t tmio_mmc_card_detect_irq(int irq, void *devid)
 }
 EXPORT_SYMBOL(tmio_mmc_card_detect_irq);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static bool __tmio_mmc_sdcard_irq(struct tmio_mmc_host *host,
 				 int ireg, int status)
 {
@@ -625,6 +838,7 @@ static bool __tmio_mmc_sdcard_irq(struct tmio_mmc_host *host,
 	return false;
 }
 
+<<<<<<< HEAD
 irqreturn_t tmio_mmc_sdcard_irq(int irq, void *devid)
 {
 	unsigned int ireg, status;
@@ -638,43 +852,85 @@ irqreturn_t tmio_mmc_sdcard_irq(int irq, void *devid)
 EXPORT_SYMBOL(tmio_mmc_sdcard_irq);
 
 irqreturn_t tmio_mmc_sdio_irq(int irq, void *devid)
+=======
+static bool tmio_mmc_sdio_irq(int irq, void *devid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct tmio_mmc_host *host = devid;
 	struct mmc_host *mmc = host->mmc;
 	struct tmio_mmc_data *pdata = host->pdata;
 	unsigned int ireg, status;
+<<<<<<< HEAD
 
 	if (!(pdata->flags & TMIO_MMC_SDIO_IRQ))
 		return IRQ_HANDLED;
+=======
+	unsigned int sdio_status;
+
+	if (!(pdata->flags & TMIO_MMC_SDIO_IRQ))
+		return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	status = sd_ctrl_read16(host, CTL_SDIO_STATUS);
 	ireg = status & TMIO_SDIO_MASK_ALL & ~host->sdcard_irq_mask;
 
+<<<<<<< HEAD
 	sd_ctrl_write16(host, CTL_SDIO_STATUS, status & ~TMIO_SDIO_MASK_ALL);
+=======
+	sdio_status = status & ~TMIO_SDIO_MASK_ALL;
+	if (pdata->flags & TMIO_MMC_SDIO_STATUS_QUIRK)
+		sdio_status |= 6;
+
+	sd_ctrl_write16(host, CTL_SDIO_STATUS, sdio_status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mmc->caps & MMC_CAP_SDIO_IRQ && ireg & TMIO_SDIO_STAT_IOIRQ)
 		mmc_signal_sdio_irq(mmc);
 
+<<<<<<< HEAD
 	return IRQ_HANDLED;
 }
 EXPORT_SYMBOL(tmio_mmc_sdio_irq);
+=======
+	return ireg;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 irqreturn_t tmio_mmc_irq(int irq, void *devid)
 {
 	struct tmio_mmc_host *host = devid;
 	unsigned int ireg, status;
 
+<<<<<<< HEAD
 	pr_debug("MMC IRQ begin\n");
 
 	tmio_mmc_card_irq_status(host, &ireg, &status);
+=======
+	status = sd_ctrl_read16_and_16_as_32(host, CTL_STATUS);
+	ireg = status & TMIO_MASK_IRQ & ~host->sdcard_irq_mask;
+
+	pr_debug_status(status);
+	pr_debug_status(ireg);
+
+	/* Clear the status except the interrupt status */
+	sd_ctrl_write32_as_16_and_16(host, CTL_STATUS, TMIO_MASK_IRQ);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (__tmio_mmc_card_detect_irq(host, ireg, status))
 		return IRQ_HANDLED;
 	if (__tmio_mmc_sdcard_irq(host, ireg, status))
 		return IRQ_HANDLED;
 
+<<<<<<< HEAD
 	tmio_mmc_sdio_irq(irq, devid);
 
 	return IRQ_HANDLED;
+=======
+	if (tmio_mmc_sdio_irq(irq, devid))
+		return IRQ_HANDLED;
+
+	return IRQ_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(tmio_mmc_irq);
 
@@ -686,12 +942,22 @@ static int tmio_mmc_start_data(struct tmio_mmc_host *host,
 	pr_debug("setup data transfer: blocksize %08x  nr_blocks %d\n",
 		 data->blksz, data->blocks);
 
+<<<<<<< HEAD
 	/* Some hardware cannot perform 2 byte requests in 4 bit mode */
 	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_4) {
 		int blksz_2bytes = pdata->flags & TMIO_MMC_BLKSZ_2BYTES;
 
 		if (data->blksz < 2 || (data->blksz < 4 && !blksz_2bytes)) {
 			pr_err("%s: %d byte block unsupported in 4 bit mode\n",
+=======
+	/* Some hardware cannot perform 2 byte requests in 4/8 bit mode */
+	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_4 ||
+	    host->mmc->ios.bus_width == MMC_BUS_WIDTH_8) {
+		int blksz_2bytes = pdata->flags & TMIO_MMC_BLKSZ_2BYTES;
+
+		if (data->blksz < 2 || (data->blksz < 4 && !blksz_2bytes)) {
+			pr_err("%s: %d byte block unsupported in 4/8 bit mode\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       mmc_hostname(host->mmc), data->blksz);
 			return -EINVAL;
 		}
@@ -743,7 +1009,11 @@ static void tmio_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	ret = tmio_mmc_start_command(host, mrq->cmd);
 	if (!ret) {
 		schedule_delayed_work(&host->delayed_reset_work,
+<<<<<<< HEAD
 				      msecs_to_jiffies(2000));
+=======
+				      msecs_to_jiffies(CMDREQ_TIMEOUT));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -754,6 +1024,7 @@ fail:
 	mmc_request_done(mmc, mrq);
 }
 
+<<<<<<< HEAD
 static int tmio_mmc_clk_update(struct mmc_host *mmc)
 {
 	struct tmio_mmc_host *host = mmc_priv(mmc);
@@ -768,6 +1039,14 @@ static int tmio_mmc_clk_update(struct mmc_host *mmc)
 		mmc->f_min = mmc->f_max / 512;
 
 	return ret;
+=======
+static int tmio_mmc_clk_enable(struct tmio_mmc_host *host)
+{
+	if (!host->clk_enable)
+		return -ENOTSUPP;
+
+	return host->clk_enable(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void tmio_mmc_power_on(struct tmio_mmc_host *host, unsigned short vdd)
@@ -795,9 +1074,19 @@ static void tmio_mmc_power_on(struct tmio_mmc_host *host, unsigned short vdd)
 	 * omap_hsmmc.c driver does.
 	 */
 	if (!IS_ERR(mmc->supply.vqmmc) && !ret) {
+<<<<<<< HEAD
 		regulator_enable(mmc->supply.vqmmc);
 		udelay(200);
 	}
+=======
+		ret = regulator_enable(mmc->supply.vqmmc);
+		udelay(200);
+	}
+
+	if (ret < 0)
+		dev_dbg(&host->pdev->dev, "Regulators failed to power up: %d\n",
+			ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void tmio_mmc_power_off(struct tmio_mmc_host *host)
@@ -814,6 +1103,24 @@ static void tmio_mmc_power_off(struct tmio_mmc_host *host)
 		host->set_pwr(host->pdev, 0);
 }
 
+<<<<<<< HEAD
+=======
+static void tmio_mmc_set_bus_width(struct tmio_mmc_host *host,
+				unsigned char bus_width)
+{
+	u16 reg = sd_ctrl_read16(host, CTL_SD_MEM_CARD_OPT)
+				& ~(CARD_OPT_WIDTH | CARD_OPT_WIDTH8);
+
+	/* reg now applies to MMC_BUS_WIDTH_4 */
+	if (bus_width == MMC_BUS_WIDTH_1)
+		reg |= CARD_OPT_WIDTH;
+	else if (bus_width == MMC_BUS_WIDTH_8)
+		reg |= CARD_OPT_WIDTH8;
+
+	sd_ctrl_write16(host, CTL_SD_MEM_CARD_OPT, reg);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Set MMC clock / power.
  * Note: This controller uses a simple divider scheme therefore it cannot
  * run a MMC card at full speed (20MHz). The max clock is 24MHz on SD, but as
@@ -852,6 +1159,7 @@ static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 	spin_unlock_irqrestore(&host->lock, flags);
 
+<<<<<<< HEAD
 	/*
 	 * host->power toggles between false and true in both cases - either
 	 * or not the controller can be runtime-suspended during inactivity.
@@ -893,6 +1201,22 @@ static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			sd_ctrl_write16(host, CTL_SD_MEM_CARD_OPT, 0x00e0);
 		break;
 		}
+=======
+	switch (ios->power_mode) {
+	case MMC_POWER_OFF:
+		tmio_mmc_power_off(host);
+		tmio_mmc_clk_stop(host);
+		break;
+	case MMC_POWER_UP:
+		tmio_mmc_power_on(host, ios->vdd);
+		tmio_mmc_set_clock(host, ios->clock);
+		tmio_mmc_set_bus_width(host, ios->bus_width);
+		break;
+	case MMC_POWER_ON:
+		tmio_mmc_set_clock(host, ios->clock);
+		tmio_mmc_set_bus_width(host, ios->bus_width);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Let things settle. delay taken from winCE driver */
@@ -904,6 +1228,11 @@ static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			ios->clock, ios->power_mode);
 	host->mrq = NULL;
 
+<<<<<<< HEAD
+=======
+	host->clk_cache = ios->clock;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&host->ios_lock);
 }
 
@@ -915,6 +1244,7 @@ static int tmio_mmc_get_ro(struct mmc_host *mmc)
 	if (ret >= 0)
 		return ret;
 
+<<<<<<< HEAD
 	return !((pdata->flags & TMIO_MMC_WRPROTECT_DISABLE) ||
 		 (sd_ctrl_read32(host, CTL_STATUS) & TMIO_STAT_WRPROTECT));
 }
@@ -942,16 +1272,60 @@ static const struct mmc_host_ops tmio_mmc_ops = {
 };
 
 static void tmio_mmc_init_ocr(struct tmio_mmc_host *host)
+=======
+	ret = !((pdata->flags & TMIO_MMC_WRPROTECT_DISABLE) ||
+		(sd_ctrl_read16_and_16_as_32(host, CTL_STATUS) & TMIO_STAT_WRPROTECT));
+
+	return ret;
+}
+
+static int tmio_multi_io_quirk(struct mmc_card *card,
+			       unsigned int direction, int blk_size)
+{
+	struct tmio_mmc_host *host = mmc_priv(card->host);
+
+	if (host->multi_io_quirk)
+		return host->multi_io_quirk(card, direction, blk_size);
+
+	return blk_size;
+}
+
+static struct mmc_host_ops tmio_mmc_ops = {
+	.request	= tmio_mmc_request,
+	.set_ios	= tmio_mmc_set_ios,
+	.get_ro         = tmio_mmc_get_ro,
+	.get_cd		= mmc_gpio_get_cd,
+	.enable_sdio_irq = tmio_mmc_enable_sdio_irq,
+	.multi_io_quirk	= tmio_multi_io_quirk,
+};
+
+static int tmio_mmc_init_ocr(struct tmio_mmc_host *host)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct tmio_mmc_data *pdata = host->pdata;
 	struct mmc_host *mmc = host->mmc;
 
 	mmc_regulator_get_supply(mmc);
 
+<<<<<<< HEAD
 	if (!mmc->ocr_avail)
 		mmc->ocr_avail = pdata->ocr_mask ? : MMC_VDD_32_33 | MMC_VDD_33_34;
 	else if (pdata->ocr_mask)
 		dev_warn(mmc_dev(mmc), "Platform OCR mask is ignored\n");
+=======
+	/* use ocr_mask if no regulator */
+	if (!mmc->ocr_avail)
+		mmc->ocr_avail =  pdata->ocr_mask;
+
+	/*
+	 * try again.
+	 * There is possibility that regulator has not been probed
+	 */
+	if (!mmc->ocr_avail)
+		return -EPROBE_DEFER;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void tmio_mmc_of_parse(struct platform_device *pdev,
@@ -965,12 +1339,44 @@ static void tmio_mmc_of_parse(struct platform_device *pdev,
 		pdata->flags |= TMIO_MMC_WRPROTECT_DISABLE;
 }
 
+<<<<<<< HEAD
 int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 				  struct platform_device *pdev,
 				  struct tmio_mmc_data *pdata)
 {
 	struct tmio_mmc_host *_host;
 	struct mmc_host *mmc;
+=======
+struct tmio_mmc_host*
+tmio_mmc_host_alloc(struct platform_device *pdev)
+{
+	struct tmio_mmc_host *host;
+	struct mmc_host *mmc;
+
+	mmc = mmc_alloc_host(sizeof(struct tmio_mmc_host), &pdev->dev);
+	if (!mmc)
+		return NULL;
+
+	host = mmc_priv(mmc);
+	host->mmc = mmc;
+	host->pdev = pdev;
+
+	return host;
+}
+EXPORT_SYMBOL(tmio_mmc_host_alloc);
+
+void tmio_mmc_host_free(struct tmio_mmc_host *host)
+{
+	mmc_free_host(host->mmc);
+}
+EXPORT_SYMBOL(tmio_mmc_host_free);
+
+int tmio_mmc_host_probe(struct tmio_mmc_host *_host,
+			struct tmio_mmc_data *pdata)
+{
+	struct platform_device *pdev = _host->pdev;
+	struct mmc_host *mmc = _host->mmc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *res_ctl;
 	int ret;
 	u32 irq_mask = TMIO_MASK_CMD;
@@ -978,12 +1384,17 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 	tmio_mmc_of_parse(pdev, pdata);
 
 	if (!(pdata->flags & TMIO_MMC_HAS_IDLE_WAIT))
+<<<<<<< HEAD
 		pdata->write16_hook = NULL;
+=======
+		_host->write16_hook = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res_ctl = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res_ctl)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	mmc = mmc_alloc_host(sizeof(struct tmio_mmc_host), &pdev->dev);
 	if (!mmc)
 		return -ENOMEM;
@@ -995,20 +1406,37 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 	_host->pdata = pdata;
 	_host->mmc = mmc;
 	_host->pdev = pdev;
+=======
+	ret = mmc_of_parse(mmc);
+	if (ret < 0)
+		goto host_free;
+
+	_host->pdata = pdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_set_drvdata(pdev, mmc);
 
 	_host->set_pwr = pdata->set_pwr;
 	_host->set_clk_div = pdata->set_clk_div;
 
+<<<<<<< HEAD
 	/* SD control register space size is 0x200, 0x400 for bus_shift=1 */
 	_host->bus_shift = resource_size(res_ctl) >> 10;
 
 	_host->ctl = ioremap(res_ctl->start, resource_size(res_ctl));
+=======
+	ret = tmio_mmc_init_ocr(_host);
+	if (ret < 0)
+		goto host_free;
+
+	_host->ctl = devm_ioremap(&pdev->dev,
+				  res_ctl->start, resource_size(res_ctl));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!_host->ctl) {
 		ret = -ENOMEM;
 		goto host_free;
 	}
 
+<<<<<<< HEAD
 	mmc->ops = &tmio_mmc_ops;
 	mmc->caps |= MMC_CAP_4_BIT_DATA | pdata->capabilities;
 	mmc->caps2 = pdata->capabilities2;
@@ -1032,11 +1460,42 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 		goto pm_disable;
 
 	if (tmio_mmc_clk_update(mmc) < 0) {
+=======
+	tmio_mmc_ops.card_busy = _host->card_busy;
+	tmio_mmc_ops.start_signal_voltage_switch = _host->start_signal_voltage_switch;
+	mmc->ops = &tmio_mmc_ops;
+
+	mmc->caps |= MMC_CAP_ERASE | MMC_CAP_4_BIT_DATA | pdata->capabilities;
+	mmc->caps2 |= pdata->capabilities2;
+	mmc->max_segs = 32;
+	mmc->max_blk_size = 512;
+	mmc->max_blk_count = (PAGE_SIZE / mmc->max_blk_size) *
+		mmc->max_segs;
+	mmc->max_req_size = mmc->max_blk_size * mmc->max_blk_count;
+	mmc->max_seg_size = mmc->max_req_size;
+
+	_host->native_hotplug = !(pdata->flags & TMIO_MMC_USE_GPIO_CD ||
+				  mmc->caps & MMC_CAP_NEEDS_POLL ||
+				  !mmc_card_is_removable(mmc) ||
+				  mmc->slot.cd_irq >= 0);
+
+	/*
+	 * On Gen2+, eMMC with NONREMOVABLE currently fails because native
+	 * hotplug gets disabled. It seems RuntimePM related yet we need further
+	 * research. Since we are planning a PM overhaul anyway, let's enforce
+	 * for now the device being active by enabling native hotplug always.
+	 */
+	if (pdata->flags & TMIO_MMC_MIN_RCAR2)
+		_host->native_hotplug = true;
+
+	if (tmio_mmc_clk_enable(_host) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mmc->f_max = pdata->hclk;
 		mmc->f_min = mmc->f_max / 512;
 	}
 
 	/*
+<<<<<<< HEAD
 	 * There are 4 different scenarios for the card detection:
 	 *  1) an external gpio irq handles the cd (best for power savings)
 	 *  2) internal sdhi irq handles the cd
@@ -1047,6 +1506,19 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 	 *  the mmc core activates us by calling an appropriate set_ios(), we
 	 *  must additionally ensure that in case 2) the tmio mmc hardware stays
 	 *  powered on during runtime for the card detection to work.
+=======
+	 * Check the sanity of mmc->f_min to prevent tmio_mmc_set_clock() from
+	 * looping forever...
+	 */
+	if (mmc->f_min == 0) {
+		ret = -EINVAL;
+		goto host_free;
+	}
+
+	/*
+	 * While using internal tmio hardware logic for card detection, we need
+	 * to ensure it stays powered for it to work.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	if (_host->native_hotplug)
 		pm_runtime_get_noresume(&pdev->dev);
@@ -1054,7 +1526,11 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 	tmio_mmc_clk_stop(_host);
 	tmio_mmc_reset(_host);
 
+<<<<<<< HEAD
 	_host->sdcard_irq_mask = sd_ctrl_read32(_host, CTL_IRQ_MASK);
+=======
+	_host->sdcard_irq_mask = sd_ctrl_read16_and_16_as_32(_host, CTL_IRQ_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tmio_mmc_disable_mmc_irqs(_host, TMIO_MASK_ALL);
 
 	/* Unmask the IRQs we want to know about */
@@ -1067,8 +1543,17 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 
 	_host->sdcard_irq_mask &= ~irq_mask;
 
+<<<<<<< HEAD
 	if (pdata->flags & TMIO_MMC_SDIO_IRQ)
 		tmio_mmc_enable_sdio_irq(mmc, 0);
+=======
+	_host->sdio_irq_enabled = false;
+	if (pdata->flags & TMIO_MMC_SDIO_IRQ) {
+		_host->sdio_irq_mask = TMIO_SDIO_MASK_ALL;
+		sd_ctrl_write16(_host, CTL_SDIO_IRQ_MASK, _host->sdio_irq_mask);
+		sd_ctrl_write16(_host, CTL_TRANSACTION_CTL, 0x0000);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&_host->lock);
 	mutex_init(&_host->ios_lock);
@@ -1080,9 +1565,18 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 	/* See if we also get DMA */
 	tmio_mmc_request_dma(_host, pdata);
 
+<<<<<<< HEAD
 	ret = mmc_add_host(mmc);
 	if (pdata->clk_disable)
 		pdata->clk_disable(pdev);
+=======
+	pm_runtime_set_active(&pdev->dev);
+	pm_runtime_set_autosuspend_delay(&pdev->dev, 50);
+	pm_runtime_use_autosuspend(&pdev->dev);
+	pm_runtime_enable(&pdev->dev);
+
+	ret = mmc_add_host(mmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		tmio_mmc_host_remove(_host);
 		return ret;
@@ -1091,11 +1585,16 @@ int tmio_mmc_host_probe(struct tmio_mmc_host **host,
 	dev_pm_qos_expose_latency_limit(&pdev->dev, 100);
 
 	if (pdata->flags & TMIO_MMC_USE_GPIO_CD) {
+<<<<<<< HEAD
 		ret = mmc_gpio_request_cd(mmc, pdata->cd_gpio);
+=======
+		ret = mmc_gpio_request_cd(mmc, pdata->cd_gpio, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0) {
 			tmio_mmc_host_remove(_host);
 			return ret;
 		}
+<<<<<<< HEAD
 	}
 
 	*host = _host;
@@ -1107,6 +1606,14 @@ pm_disable:
 	iounmap(_host->ctl);
 host_free:
 	mmc_free_host(mmc);
+=======
+		mmc_gpiod_request_cd_irq(mmc);
+	}
+
+	return 0;
+
+host_free:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -1129,13 +1636,17 @@ void tmio_mmc_host_remove(struct tmio_mmc_host *host)
 
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
+<<<<<<< HEAD
 
 	iounmap(host->ctl);
 	mmc_free_host(mmc);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(tmio_mmc_host_remove);
 
 #ifdef CONFIG_PM
+<<<<<<< HEAD
 int tmio_mmc_host_suspend(struct device *dev)
 {
 	struct mmc_host *mmc = dev_get_drvdata(dev);
@@ -1150,10 +1661,14 @@ int tmio_mmc_host_suspend(struct device *dev)
 EXPORT_SYMBOL(tmio_mmc_host_suspend);
 
 int tmio_mmc_host_resume(struct device *dev)
+=======
+int tmio_mmc_host_runtime_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mmc_host *mmc = dev_get_drvdata(dev);
 	struct tmio_mmc_host *host = mmc_priv(mmc);
 
+<<<<<<< HEAD
 	tmio_mmc_reset(host);
 	tmio_mmc_enable_dma(host, true);
 
@@ -1166,6 +1681,16 @@ EXPORT_SYMBOL(tmio_mmc_host_resume);
 
 int tmio_mmc_host_runtime_suspend(struct device *dev)
 {
+=======
+	tmio_mmc_disable_mmc_irqs(host, TMIO_MASK_ALL);
+
+	if (host->clk_cache)
+		tmio_mmc_clk_stop(host);
+
+	if (host->clk_disable)
+		host->clk_disable(host);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 EXPORT_SYMBOL(tmio_mmc_host_runtime_suspend);
@@ -1176,10 +1701,22 @@ int tmio_mmc_host_runtime_resume(struct device *dev)
 	struct tmio_mmc_host *host = mmc_priv(mmc);
 
 	tmio_mmc_reset(host);
+<<<<<<< HEAD
+=======
+	tmio_mmc_clk_enable(host);
+
+	if (host->clk_cache)
+		tmio_mmc_set_clock(host, host->clk_cache);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tmio_mmc_enable_dma(host, true);
 
 	return 0;
 }
 EXPORT_SYMBOL(tmio_mmc_host_runtime_resume);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL v2");

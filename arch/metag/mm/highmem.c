@@ -43,7 +43,11 @@ void *kmap_atomic(struct page *page)
 	unsigned long vaddr;
 	int type;
 
+<<<<<<< HEAD
 	/* even !CONFIG_PREEMPT needs this, for in_atomic in do_page_fault */
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 	if (!PageHighMem(page))
 		return page_address(page);
@@ -82,6 +86,10 @@ void __kunmap_atomic(void *kvaddr)
 	}
 
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__kunmap_atomic);
 
@@ -95,6 +103,10 @@ void *kmap_atomic_pfn(unsigned long pfn)
 	unsigned long vaddr;
 	int type;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 
 	type = kmap_atomic_idx_push();
@@ -109,6 +121,7 @@ void *kmap_atomic_pfn(unsigned long pfn)
 	return (void *)vaddr;
 }
 
+<<<<<<< HEAD
 struct page *kmap_atomic_to_page(void *ptr)
 {
 	unsigned long vaddr = (unsigned long)ptr;
@@ -123,6 +136,8 @@ struct page *kmap_atomic_to_page(void *ptr)
 	return pte_page(*pte);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init kmap_init(void)
 {
 	unsigned long kmap_vstart;

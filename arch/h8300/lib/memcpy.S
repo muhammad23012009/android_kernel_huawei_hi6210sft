@@ -2,6 +2,7 @@
 
 #include <asm/linkage.h>
 
+<<<<<<< HEAD
 #if defined(__H8300H__) 
 	.h8300h
 #endif
@@ -18,6 +19,23 @@ SYMBOL_NAME_LABEL(memcpy)
 	bne	1f
 	rts	
 1:	
+=======
+#if defined(CONFIG_CPU_H8300H)
+	.h8300h
+#endif
+#if defined(CONFIG_CPU_H8S)
+	.h8300s
+#endif
+	.text
+.global memcpy
+
+;;; void *memcpy(void *to, void *from, size_t n)
+memcpy:
+	mov.l	er2,er2
+	bne	1f
+	rts
+1:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	;; address check
 	bld	#0,r0l
 	bxor	#0,r1l
@@ -33,26 +51,43 @@ SYMBOL_NAME_LABEL(memcpy)
 	adds	#1,er0
 	dec.l	#1,er2
 	beq	3f
+<<<<<<< HEAD
 1:	
+=======
+1:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	;; n < sizeof(unsigned long) check
 	sub.l	er4,er4
 	adds	#4,er4		; loop count check value
 	cmp.l	er4,er2
 	blo	2f
 	;; unsigned long copy
+<<<<<<< HEAD
 1:	
+=======
+1:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	@er1,er3
 	mov.l	er3,@er0
 	adds	#4,er0
 	adds	#4,er1
 	subs	#4,er2
 	cmp.l	er4,er2
+<<<<<<< HEAD
 	bcc	1b	
 	;; rest
 2:	
 	mov.l	er2,er2
 	beq	3f
 1:	
+=======
+	bcc	1b
+	;; rest
+2:
+	mov.l	er2,er2
+	beq	3f
+1:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.b	@er1,r3l
 	mov.b	r3l,@er0
 	adds	#1,er1
@@ -65,7 +100,11 @@ SYMBOL_NAME_LABEL(memcpy)
 	rts
 
 	;; odd <- even / even <- odd
+<<<<<<< HEAD
 4:	
+=======
+4:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov.l	er4,er3
 	mov.l	er2,er4
 	mov.l	er5,er2
@@ -82,3 +121,8 @@ SYMBOL_NAME_LABEL(memcpy)
 	mov.l	er2,er5
 	mov.l	er3,er4
 	rts
+<<<<<<< HEAD
+=======
+
+	.end
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -30,6 +30,11 @@
 #endif
 #define current_text_addr() ({ void *pc; current_ia(pc); pc; })
 
+<<<<<<< HEAD
+=======
+#define HAVE_ARCH_PICK_MMAP_LAYOUT
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TASK_SIZE_OF(tsk)       ((tsk)->thread.task_size)
 #define TASK_SIZE	        TASK_SIZE_OF(current)
 #define TASK_UNMAPPED_BASE      (current->thread.map_base)
@@ -53,7 +58,14 @@
 #define STACK_TOP	TASK_SIZE
 #define STACK_TOP_MAX	DEFAULT_TASK_SIZE
 
+<<<<<<< HEAD
 #define STACK_SIZE_MAX	(1 << 30)	/* 1 GB */
+=======
+/* Allow bigger stacks for 64-bit processes */
+#define STACK_SIZE_MAX	(USER_WIDE_MODE					\
+			 ? (1 << 30)	/* 1 GB */			\
+			 : (CONFIG_MAX_STACK_SIZE_MB*1024*1024))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 
@@ -187,6 +199,7 @@ void show_trace(struct task_struct *task, unsigned long *stack);
  */
 typedef unsigned int elf_caddr_t;
 
+<<<<<<< HEAD
 #define start_thread_som(regs, new_pc, new_sp) do {	\
 	unsigned long *sp = (unsigned long *)new_sp;	\
 	__u32 spaceid = (__u32)current->mm->context;	\
@@ -214,6 +227,8 @@ typedef unsigned int elf_caddr_t;
 	get_user(regs->gr[23],&sp[-3]); 		\
 } while(0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* The ELF abi wants things done a "wee bit" differently than
  * som does.  Supporting this behavior here avoids
  * having our own version of create_elf_tables.
@@ -325,14 +340,18 @@ struct mm_struct;
 /* Free all resources held by a thread. */
 extern void release_thread(struct task_struct *);
 
+<<<<<<< HEAD
 extern void map_hpux_gateway_page(struct task_struct *tsk, struct mm_struct *mm);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned long get_wchan(struct task_struct *p);
 
 #define KSTK_EIP(tsk)	((tsk)->thread.regs.iaoq[0])
 #define KSTK_ESP(tsk)	((tsk)->thread.regs.gr[30])
 
 #define cpu_relax()	barrier()
+<<<<<<< HEAD
 
 /* Used as a macro to identify the combined VIPT/PIPT cached
  * CPUs which require a guarantee of coherency (no inequivalent
@@ -346,6 +365,23 @@ static inline int parisc_requires_coherency(void)
 	return 0;
 #endif
 }
+=======
+#define cpu_relax_lowlatency() cpu_relax()
+
+/*
+ * parisc_requires_coherency() is used to identify the combined VIPT/PIPT
+ * cached CPUs which require a guarantee of coherency (no inequivalent aliases
+ * with different data, whether clean or not) to operate
+ */
+#ifdef CONFIG_PA8X00
+extern int _parisc_requires_coherency;
+#define parisc_requires_coherency()	_parisc_requires_coherency
+#else
+#define parisc_requires_coherency()	(0)
+#endif
+
+extern int running_on_qemu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASSEMBLY__ */
 

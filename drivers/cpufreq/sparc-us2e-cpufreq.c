@@ -245,14 +245,21 @@ static unsigned int us2e_freq_get(unsigned int cpu)
 	return clock_tick / estar_to_divisor(estar);
 }
 
+<<<<<<< HEAD
 static void us2e_set_cpu_divider_index(struct cpufreq_policy *policy,
 		unsigned int index)
+=======
+static int us2e_freq_target(struct cpufreq_policy *policy, unsigned int index)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int cpu = policy->cpu;
 	unsigned long new_bits, new_freq;
 	unsigned long clock_tick, divisor, old_divisor, estar;
 	cpumask_t cpus_allowed;
+<<<<<<< HEAD
 	struct cpufreq_freqs freqs;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cpumask_copy(&cpus_allowed, tsk_cpus_allowed(current));
 	set_cpus_allowed_ptr(current, cpumask_of(cpu));
@@ -266,14 +273,18 @@ static void us2e_set_cpu_divider_index(struct cpufreq_policy *policy,
 
 	old_divisor = estar_to_divisor(estar);
 
+<<<<<<< HEAD
 	freqs.old = clock_tick / old_divisor;
 	freqs.new = new_freq;
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (old_divisor != divisor)
 		us2e_transition(estar, new_bits, clock_tick * 1000,
 				old_divisor, divisor);
 
+<<<<<<< HEAD
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
 
 	set_cpus_allowed_ptr(current, &cpus_allowed);
@@ -291,16 +302,22 @@ static int us2e_freq_target(struct cpufreq_policy *policy,
 		return -EINVAL;
 
 	us2e_set_cpu_divider_index(policy, new_index);
+=======
+	set_cpus_allowed_ptr(current, &cpus_allowed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int us2e_freq_verify(struct cpufreq_policy *policy)
 {
 	return cpufreq_frequency_table_verify(policy,
 					      &us2e_freq_table[policy->cpu].table[0]);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init us2e_freq_cpu_init(struct cpufreq_policy *policy)
 {
 	unsigned int cpu = policy->cpu;
@@ -308,6 +325,7 @@ static int __init us2e_freq_cpu_init(struct cpufreq_policy *policy)
 	struct cpufreq_frequency_table *table =
 		&us2e_freq_table[cpu].table[0];
 
+<<<<<<< HEAD
 	table[0].index = 0;
 	table[0].frequency = clock_tick / 1;
 	table[1].index = 1;
@@ -319,18 +337,39 @@ static int __init us2e_freq_cpu_init(struct cpufreq_policy *policy)
 	table[2].index = 4;
 	table[2].frequency = clock_tick / 8;
 	table[2].index = 5;
+=======
+	table[0].driver_data = 0;
+	table[0].frequency = clock_tick / 1;
+	table[1].driver_data = 1;
+	table[1].frequency = clock_tick / 2;
+	table[2].driver_data = 2;
+	table[2].frequency = clock_tick / 4;
+	table[2].driver_data = 3;
+	table[2].frequency = clock_tick / 6;
+	table[2].driver_data = 4;
+	table[2].frequency = clock_tick / 8;
+	table[2].driver_data = 5;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	table[3].frequency = CPUFREQ_TABLE_END;
 
 	policy->cpuinfo.transition_latency = 0;
 	policy->cur = clock_tick;
 
+<<<<<<< HEAD
 	return cpufreq_frequency_table_cpuinfo(policy, table);
+=======
+	return cpufreq_table_validate_and_show(policy, table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int us2e_freq_cpu_exit(struct cpufreq_policy *policy)
 {
 	if (cpufreq_us2e_driver)
+<<<<<<< HEAD
 		us2e_set_cpu_divider_index(policy, 0);
+=======
+		us2e_freq_target(policy, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -351,22 +390,37 @@ static int __init us2e_freq_init(void)
 		struct cpufreq_driver *driver;
 
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		driver = kzalloc(sizeof(struct cpufreq_driver), GFP_KERNEL);
 		if (!driver)
 			goto err_out;
 
 		us2e_freq_table = kzalloc(
 			(NR_CPUS * sizeof(struct us2e_freq_percpu_info)),
+=======
+		driver = kzalloc(sizeof(*driver), GFP_KERNEL);
+		if (!driver)
+			goto err_out;
+
+		us2e_freq_table = kzalloc((NR_CPUS * sizeof(*us2e_freq_table)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			GFP_KERNEL);
 		if (!us2e_freq_table)
 			goto err_out;
 
 		driver->init = us2e_freq_cpu_init;
+<<<<<<< HEAD
 		driver->verify = us2e_freq_verify;
 		driver->target = us2e_freq_target;
 		driver->get = us2e_freq_get;
 		driver->exit = us2e_freq_cpu_exit;
 		driver->owner = THIS_MODULE,
+=======
+		driver->verify = cpufreq_generic_frequency_table_verify;
+		driver->target_index = us2e_freq_target;
+		driver->get = us2e_freq_get;
+		driver->exit = us2e_freq_cpu_exit;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		strcpy(driver->name, "UltraSPARC-IIe");
 
 		cpufreq_us2e_driver = driver;

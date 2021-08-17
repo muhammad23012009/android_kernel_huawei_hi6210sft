@@ -7,14 +7,27 @@
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  */
+<<<<<<< HEAD
+=======
+#include <linux/jump_label.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/hvcall.h>
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 	
 #ifdef CONFIG_TRACEPOINTS
 
+=======
+
+	.section	".text"
+	
+#ifdef CONFIG_TRACEPOINTS
+
+#ifndef HAVE_JUMP_LABEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.section	".toc","aw"
 
 	.globl hcall_tracepoint_refcount
@@ -22,6 +35,7 @@ hcall_tracepoint_refcount:
 	.llong	0
 
 	.section	".text"
+<<<<<<< HEAD
 
 /*
  * precall must preserve all registers.  use unused STK_PARAM()
@@ -37,6 +51,15 @@ END_FTR_SECTION(0, 1);						\
 	std	r12,32(r1);					\
 	cmpdi	r12,0;						\
 	beq+	1f;						\
+=======
+#endif
+
+/*
+ * precall must preserve all registers.  use unused STK_PARAM()
+ * areas to save snapshots and opcode.
+ */
+#define HCALL_INST_PRECALL(FIRST_REG)				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mflr	r0;						\
 	std	r3,STK_PARAM(R3)(r1);				\
 	std	r4,STK_PARAM(R4)(r1);				\
@@ -49,6 +72,7 @@ END_FTR_SECTION(0, 1);						\
 	std	r0,16(r1);					\
 	addi	r4,r1,STK_PARAM(FIRST_REG);			\
 	stdu	r1,-STACK_FRAME_OVERHEAD(r1);			\
+<<<<<<< HEAD
 	bl	.__trace_hcall_entry;				\
 	addi	r1,r1,STACK_FRAME_OVERHEAD;			\
 	ld	r0,16(r1);					\
@@ -89,6 +113,32 @@ END_FTR_SECTION(0, 1);						\
 	ld	r3,STK_PARAM(R3)(r1);				\
 	mtlr	r0;						\
 1:
+=======
+	bl	__trace_hcall_entry;				\
+	ld	r3,STACK_FRAME_OVERHEAD+STK_PARAM(R3)(r1);	\
+	ld	r4,STACK_FRAME_OVERHEAD+STK_PARAM(R4)(r1);	\
+	ld	r5,STACK_FRAME_OVERHEAD+STK_PARAM(R5)(r1);	\
+	ld	r6,STACK_FRAME_OVERHEAD+STK_PARAM(R6)(r1);	\
+	ld	r7,STACK_FRAME_OVERHEAD+STK_PARAM(R7)(r1);	\
+	ld	r8,STACK_FRAME_OVERHEAD+STK_PARAM(R8)(r1);	\
+	ld	r9,STACK_FRAME_OVERHEAD+STK_PARAM(R9)(r1);	\
+	ld	r10,STACK_FRAME_OVERHEAD+STK_PARAM(R10)(r1)
+
+/*
+ * postcall is performed immediately before function return which
+ * allows liberal use of volatile registers.
+ */
+#define __HCALL_INST_POSTCALL					\
+	ld	r0,STACK_FRAME_OVERHEAD+STK_PARAM(R3)(r1);	\
+	std	r3,STACK_FRAME_OVERHEAD+STK_PARAM(R3)(r1);	\
+	mr	r4,r3;						\
+	mr	r3,r0;						\
+	bl	__trace_hcall_exit;				\
+	ld	r0,STACK_FRAME_OVERHEAD+16(r1);			\
+	addi	r1,r1,STACK_FRAME_OVERHEAD;			\
+	ld	r3,STK_PARAM(R3)(r1);				\
+	mtlr	r0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define HCALL_INST_POSTCALL_NORETS				\
 	li	r5,0;						\
@@ -98,19 +148,50 @@ END_FTR_SECTION(0, 1);						\
 	mr	r5,BUFREG;					\
 	__HCALL_INST_POSTCALL
 
+<<<<<<< HEAD
+=======
+#ifdef HAVE_JUMP_LABEL
+#define HCALL_BRANCH(LABEL)					\
+	ARCH_STATIC_BRANCH(LABEL, hcall_tracepoint_key)
+#else
+
+/*
+ * We branch around this in early init (eg when populating the MMU
+ * hashtable) by using an unconditional cpu feature.
+ */
+#define HCALL_BRANCH(LABEL)					\
+BEGIN_FTR_SECTION;						\
+	b	1f;						\
+END_FTR_SECTION(0, 1);						\
+	ld	r12,hcall_tracepoint_refcount@toc(r2);		\
+	std	r12,32(r1);					\
+	cmpdi	r12,0;						\
+	bne-	LABEL;						\
+1:
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define HCALL_INST_PRECALL(FIRST_ARG)
 #define HCALL_INST_POSTCALL_NORETS
 #define HCALL_INST_POSTCALL(BUFREG)
+<<<<<<< HEAD
 #endif
 
 	.text
 
 _GLOBAL(plpar_hcall_norets)
+=======
+#define HCALL_BRANCH(LABEL)
+#endif
+
+_GLOBAL_TOC(plpar_hcall_norets)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HMT_MEDIUM
 
 	mfcr	r0
 	stw	r0,8(r1)
+<<<<<<< HEAD
 
 	HCALL_INST_PRECALL(R4)
 
@@ -118,17 +199,40 @@ _GLOBAL(plpar_hcall_norets)
 
 	HCALL_INST_POSTCALL_NORETS
 
+=======
+	HCALL_BRANCH(plpar_hcall_norets_trace)
+	HVSC				/* invoke the hypervisor */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lwz	r0,8(r1)
 	mtcrf	0xff,r0
 	blr				/* return r3 = status */
 
+<<<<<<< HEAD
 _GLOBAL(plpar_hcall)
+=======
+#ifdef CONFIG_TRACEPOINTS
+plpar_hcall_norets_trace:
+	HCALL_INST_PRECALL(R4)
+	HVSC
+	HCALL_INST_POSTCALL_NORETS
+	lwz	r0,8(r1)
+	mtcrf	0xff,r0
+	blr
+#endif
+
+_GLOBAL_TOC(plpar_hcall)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HMT_MEDIUM
 
 	mfcr	r0
 	stw	r0,8(r1)
 
+<<<<<<< HEAD
 	HCALL_INST_PRECALL(R5)
+=======
+	HCALL_BRANCH(plpar_hcall_trace)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	std     r4,STK_PARAM(R4)(r1)     /* Save ret buffer */
 
@@ -147,12 +251,47 @@ _GLOBAL(plpar_hcall)
 	std	r6, 16(r12)
 	std	r7, 24(r12)
 
+<<<<<<< HEAD
+=======
+	lwz	r0,8(r1)
+	mtcrf	0xff,r0
+
+	blr				/* return r3 = status */
+
+#ifdef CONFIG_TRACEPOINTS
+plpar_hcall_trace:
+	HCALL_INST_PRECALL(R5)
+
+	std	r4,STK_PARAM(R4)(r1)
+	mr	r0,r4
+
+	mr	r4,r5
+	mr	r5,r6
+	mr	r6,r7
+	mr	r7,r8
+	mr	r8,r9
+	mr	r9,r10
+
+	HVSC
+
+	ld	r12,STK_PARAM(R4)(r1)
+	std	r4,0(r12)
+	std	r5,8(r12)
+	std	r6,16(r12)
+	std	r7,24(r12)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HCALL_INST_POSTCALL(r12)
 
 	lwz	r0,8(r1)
 	mtcrf	0xff,r0
 
+<<<<<<< HEAD
 	blr				/* return r3 = status */
+=======
+	blr
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * plpar_hcall_raw can be called in real mode. kexec/kdump need some
@@ -188,13 +327,21 @@ _GLOBAL(plpar_hcall_raw)
 
 	blr				/* return r3 = status */
 
+<<<<<<< HEAD
 _GLOBAL(plpar_hcall9)
+=======
+_GLOBAL_TOC(plpar_hcall9)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HMT_MEDIUM
 
 	mfcr	r0
 	stw	r0,8(r1)
 
+<<<<<<< HEAD
 	HCALL_INST_PRECALL(R5)
+=======
+	HCALL_BRANCH(plpar_hcall9_trace)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	std     r4,STK_PARAM(R4)(r1)     /* Save ret buffer */
 
@@ -222,12 +369,56 @@ _GLOBAL(plpar_hcall9)
 	std	r11,56(r12)
 	std	r0, 64(r12)
 
+<<<<<<< HEAD
+=======
+	lwz	r0,8(r1)
+	mtcrf	0xff,r0
+
+	blr				/* return r3 = status */
+
+#ifdef CONFIG_TRACEPOINTS
+plpar_hcall9_trace:
+	HCALL_INST_PRECALL(R5)
+
+	std	r4,STK_PARAM(R4)(r1)
+	mr	r0,r4
+
+	mr	r4,r5
+	mr	r5,r6
+	mr	r6,r7
+	mr	r7,r8
+	mr	r8,r9
+	mr	r9,r10
+	ld	r10,STACK_FRAME_OVERHEAD+STK_PARAM(R11)(r1)
+	ld	r11,STACK_FRAME_OVERHEAD+STK_PARAM(R12)(r1)
+	ld	r12,STACK_FRAME_OVERHEAD+STK_PARAM(R13)(r1)
+
+	HVSC
+
+	mr	r0,r12
+	ld	r12,STACK_FRAME_OVERHEAD+STK_PARAM(R4)(r1)
+	std	r4,0(r12)
+	std	r5,8(r12)
+	std	r6,16(r12)
+	std	r7,24(r12)
+	std	r8,32(r12)
+	std	r9,40(r12)
+	std	r10,48(r12)
+	std	r11,56(r12)
+	std	r0,64(r12)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HCALL_INST_POSTCALL(r12)
 
 	lwz	r0,8(r1)
 	mtcrf	0xff,r0
 
+<<<<<<< HEAD
 	blr				/* return r3 = status */
+=======
+	blr
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* See plpar_hcall_raw to see why this is needed */
 _GLOBAL(plpar_hcall9_raw)

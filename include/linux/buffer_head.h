@@ -36,13 +36,21 @@ enum bh_state_bits {
 	BH_Quiet,	/* Buffer Error Prinks to be quiet */
 	BH_Meta,	/* Buffer contains metadata */
 	BH_Prio,	/* Buffer should be submitted with REQ_PRIO */
+<<<<<<< HEAD
+=======
+	BH_Defer_Completion, /* Defer AIO completion to workqueue */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BH_PrivateStart,/* not a state bit, but the first bit available
 			 * for private allocation by other entities
 			 */
 };
 
+<<<<<<< HEAD
 #define MAX_BUF_PER_PAGE (PAGE_CACHE_SIZE / 512)
+=======
+#define MAX_BUF_PER_PAGE (PAGE_SIZE / 512)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct page;
 struct buffer_head;
@@ -81,6 +89,7 @@ struct buffer_head {
  * and buffer_foo() functions.
  */
 #define BUFFER_FNS(bit, name)						\
+<<<<<<< HEAD
 static inline void set_buffer_##name(struct buffer_head *bh)		\
 {									\
 	set_bit(BH_##bit, &(bh)->b_state);				\
@@ -90,6 +99,17 @@ static inline void clear_buffer_##name(struct buffer_head *bh)		\
 	clear_bit(BH_##bit, &(bh)->b_state);				\
 }									\
 static inline int buffer_##name(const struct buffer_head *bh)		\
+=======
+static __always_inline void set_buffer_##name(struct buffer_head *bh)	\
+{									\
+	set_bit(BH_##bit, &(bh)->b_state);				\
+}									\
+static __always_inline void clear_buffer_##name(struct buffer_head *bh)	\
+{									\
+	clear_bit(BH_##bit, &(bh)->b_state);				\
+}									\
+static __always_inline int buffer_##name(const struct buffer_head *bh)	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {									\
 	return test_bit(BH_##bit, &(bh)->b_state);			\
 }
@@ -98,11 +118,19 @@ static inline int buffer_##name(const struct buffer_head *bh)		\
  * test_set_buffer_foo() and test_clear_buffer_foo()
  */
 #define TAS_BUFFER_FNS(bit, name)					\
+<<<<<<< HEAD
 static inline int test_set_buffer_##name(struct buffer_head *bh)	\
 {									\
 	return test_and_set_bit(BH_##bit, &(bh)->b_state);		\
 }									\
 static inline int test_clear_buffer_##name(struct buffer_head *bh)	\
+=======
+static __always_inline int test_set_buffer_##name(struct buffer_head *bh) \
+{									\
+	return test_and_set_bit(BH_##bit, &(bh)->b_state);		\
+}									\
+static __always_inline int test_clear_buffer_##name(struct buffer_head *bh) \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {									\
 	return test_and_clear_bit(BH_##bit, &(bh)->b_state);		\
 }									\
@@ -128,6 +156,10 @@ BUFFER_FNS(Write_EIO, write_io_error)
 BUFFER_FNS(Unwritten, unwritten)
 BUFFER_FNS(Meta, meta)
 BUFFER_FNS(Prio, prio)
+<<<<<<< HEAD
+=======
+BUFFER_FNS(Defer_Completion, defer_completion)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define bh_offset(bh)		((unsigned long)(bh)->b_data & ~PAGE_MASK)
 
@@ -139,6 +171,12 @@ BUFFER_FNS(Prio, prio)
 	})
 #define page_has_buffers(page)	PagePrivate(page)
 
+<<<<<<< HEAD
+=======
+void buffer_check_dirty_writeback(struct page *page,
+				     bool *dirty, bool *writeback);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Declarations
  */
@@ -170,23 +208,43 @@ void __wait_on_buffer(struct buffer_head *);
 wait_queue_head_t *bh_waitq_head(struct buffer_head *bh);
 struct buffer_head *__find_get_block(struct block_device *bdev, sector_t block,
 			unsigned size);
+<<<<<<< HEAD
 struct buffer_head *__getblk(struct block_device *bdev, sector_t block,
 			unsigned size);
 void __brelse(struct buffer_head *);
 void __bforget(struct buffer_head *);
 void __breadahead(struct block_device *, sector_t block, unsigned int size);
 struct buffer_head *__bread(struct block_device *, sector_t block, unsigned size);
+=======
+struct buffer_head *__getblk_gfp(struct block_device *bdev, sector_t block,
+				  unsigned size, gfp_t gfp);
+void __brelse(struct buffer_head *);
+void __bforget(struct buffer_head *);
+void __breadahead(struct block_device *, sector_t block, unsigned int size);
+struct buffer_head *__bread_gfp(struct block_device *,
+				sector_t block, unsigned size, gfp_t gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void invalidate_bh_lrus(void);
 struct buffer_head *alloc_buffer_head(gfp_t gfp_flags);
 void free_buffer_head(struct buffer_head * bh);
 void unlock_buffer(struct buffer_head *bh);
 void __lock_buffer(struct buffer_head *bh);
+<<<<<<< HEAD
 void ll_rw_block(int, int, struct buffer_head * bh[]);
 int sync_dirty_buffer(struct buffer_head *bh);
 int __sync_dirty_buffer(struct buffer_head *bh, int rw);
 void write_dirty_buffer(struct buffer_head *bh, int rw);
 int _submit_bh(int rw, struct buffer_head *bh, unsigned long bio_flags);
 int submit_bh(int, struct buffer_head *);
+=======
+void ll_rw_block(int, int, int, struct buffer_head * bh[]);
+int sync_dirty_buffer(struct buffer_head *bh);
+int __sync_dirty_buffer(struct buffer_head *bh, int op_flags);
+void write_dirty_buffer(struct buffer_head *bh, int op_flags);
+int _submit_bh(int op, int op_flags, struct buffer_head *bh,
+	       unsigned long bio_flags);
+int submit_bh(int, int, struct buffer_head *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void write_boundary_block(struct block_device *bdev,
 			sector_t bblock, unsigned blocksize);
 int bh_uptodate_or_lock(struct buffer_head *bh);
@@ -198,6 +256,7 @@ extern int buffer_heads_over_limit;
  * Generic address_space_operations implementations for buffer_head-backed
  * address_spaces.
  */
+<<<<<<< HEAD
 void block_invalidatepage(struct page *page, unsigned long offset);
 int block_write_full_page(struct page *page, get_block_t *get_block,
 				struct writeback_control *wbc);
@@ -206,6 +265,18 @@ int block_write_full_page_endio(struct page *page, get_block_t *get_block,
 int block_read_full_page(struct page*, get_block_t*);
 int block_is_partially_uptodate(struct page *page, read_descriptor_t *desc,
 				unsigned long from);
+=======
+void block_invalidatepage(struct page *page, unsigned int offset,
+			  unsigned int length);
+int block_write_full_page(struct page *page, get_block_t *get_block,
+				struct writeback_control *wbc);
+int __block_write_full_page(struct inode *inode, struct page *page,
+			get_block_t *get_block, struct writeback_control *wbc,
+			bh_end_io_t *handler);
+int block_read_full_page(struct page*, get_block_t*);
+int block_is_partially_uptodate(struct page *page, unsigned long from,
+				unsigned long count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int block_write_begin(struct address_space *mapping, loff_t pos, unsigned len,
 		unsigned flags, struct page **pagep, get_block_t *get_block);
 int __block_write_begin(struct page *page, loff_t pos, unsigned len,
@@ -217,13 +288,20 @@ int generic_write_end(struct file *, struct address_space *,
 				loff_t, unsigned, unsigned,
 				struct page *, void *);
 void page_zero_new_buffers(struct page *page, unsigned from, unsigned to);
+<<<<<<< HEAD
+=======
+void clean_page_buffers(struct page *page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int cont_write_begin(struct file *, struct address_space *, loff_t,
 			unsigned, unsigned, struct page **, void **,
 			get_block_t *, loff_t *);
 int generic_cont_expand_simple(struct inode *inode, loff_t size);
 int block_commit_write(struct page *page, unsigned from, unsigned to);
+<<<<<<< HEAD
 int __block_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf,
 				get_block_t get_block);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int block_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf,
 				get_block_t get_block);
 /* Convert errno to return value from ->page_mkwrite() call */
@@ -231,12 +309,19 @@ static inline int block_page_mkwrite_return(int err)
 {
 	if (err == 0)
 		return VM_FAULT_LOCKED;
+<<<<<<< HEAD
 	if (err == -EFAULT)
 		return VM_FAULT_NOPAGE;
 	if (err == -ENOMEM)
 		return VM_FAULT_OOM;
 	if (err == -EAGAIN)
 		return VM_FAULT_RETRY;
+=======
+	if (err == -EFAULT || err == -EAGAIN)
+		return VM_FAULT_NOPAGE;
+	if (err == -ENOMEM)
+		return VM_FAULT_OOM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* -ENOSPC, -EDQUOT, -EIO ... */
 	return VM_FAULT_SIGBUS;
 }
@@ -260,7 +345,11 @@ void buffer_init(void);
 static inline void attach_page_buffers(struct page *page,
 		struct buffer_head *head)
 {
+<<<<<<< HEAD
 	page_cache_get(page);
+=======
+	get_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SetPagePrivate(page);
 	set_page_private(page, (unsigned long)head);
 }
@@ -272,7 +361,11 @@ static inline void get_bh(struct buffer_head *bh)
 
 static inline void put_bh(struct buffer_head *bh)
 {
+<<<<<<< HEAD
         smp_mb__before_atomic_dec();
+=======
+        smp_mb__before_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         atomic_dec(&bh->b_count);
 }
 
@@ -291,7 +384,17 @@ static inline void bforget(struct buffer_head *bh)
 static inline struct buffer_head *
 sb_bread(struct super_block *sb, sector_t block)
 {
+<<<<<<< HEAD
 	return __bread(sb->s_bdev, block, sb->s_blocksize);
+=======
+	return __bread_gfp(sb->s_bdev, block, sb->s_blocksize, __GFP_MOVABLE);
+}
+
+static inline struct buffer_head *
+sb_bread_unmovable(struct super_block *sb, sector_t block)
+{
+	return __bread_gfp(sb->s_bdev, block, sb->s_blocksize, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
@@ -303,7 +406,18 @@ sb_breadahead(struct super_block *sb, sector_t block)
 static inline struct buffer_head *
 sb_getblk(struct super_block *sb, sector_t block)
 {
+<<<<<<< HEAD
 	return __getblk(sb->s_bdev, block, sb->s_blocksize);
+=======
+	return __getblk_gfp(sb->s_bdev, block, sb->s_blocksize, __GFP_MOVABLE);
+}
+
+
+static inline struct buffer_head *
+sb_getblk_gfp(struct super_block *sb, sector_t block, gfp_t gfp)
+{
+	return __getblk_gfp(sb->s_bdev, block, sb->s_blocksize, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline struct buffer_head *
@@ -340,6 +454,39 @@ static inline void lock_buffer(struct buffer_head *bh)
 		__lock_buffer(bh);
 }
 
+<<<<<<< HEAD
+=======
+static inline struct buffer_head *getblk_unmovable(struct block_device *bdev,
+						   sector_t block,
+						   unsigned size)
+{
+	return __getblk_gfp(bdev, block, size, 0);
+}
+
+static inline struct buffer_head *__getblk(struct block_device *bdev,
+					   sector_t block,
+					   unsigned size)
+{
+	return __getblk_gfp(bdev, block, size, __GFP_MOVABLE);
+}
+
+/**
+ *  __bread() - reads a specified block and returns the bh
+ *  @bdev: the block_device to read from
+ *  @block: number of block
+ *  @size: size (in bytes) to read
+ *
+ *  Reads a specified block, and returns buffer head that contains it.
+ *  The page cache is allocated from movable area so that it can be migrated.
+ *  It returns NULL if the block was unreadable.
+ */
+static inline struct buffer_head *
+__bread(struct block_device *bdev, sector_t block, unsigned size)
+{
+	return __bread_gfp(bdev, block, size, __GFP_MOVABLE);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int __set_page_dirty_buffers(struct page *page);
 
 #else /* CONFIG_BLOCK */

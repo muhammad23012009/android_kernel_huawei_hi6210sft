@@ -3,7 +3,11 @@
  * These devices include an I2C master which can be controlled over the
  * serial port.
  *
+<<<<<<< HEAD
  * Copyright (C) 2007 Jean Delvare <khali@linux-fr.org>
+=======
+ * Copyright (C) 2007 Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,10 +17,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/delay.h>
@@ -134,7 +141,17 @@ static int taos_smbus_xfer(struct i2c_adapter *adapter, u16 addr,
 			return 0;
 	} else {
 		if (p[0] == 'x') {
+<<<<<<< HEAD
 			data->byte = simple_strtol(p + 1, NULL, 16);
+=======
+			/*
+			 * Voluntarily dropping error code of kstrtou8 since all
+			 * error code that it could return are invalid according
+			 * to Documentation/i2c/fault-codes.
+			 */
+			if (kstrtou8(p + 1, 16, &data->byte))
+				return -EPROTO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 	}
@@ -311,6 +328,7 @@ static struct serio_driver taos_drv = {
 	.interrupt	= taos_interrupt,
 };
 
+<<<<<<< HEAD
 static int __init taos_init(void)
 {
 	return serio_register_driver(&taos_drv);
@@ -327,3 +345,10 @@ MODULE_LICENSE("GPL");
 
 module_init(taos_init);
 module_exit(taos_exit);
+=======
+module_serio_driver(taos_drv);
+
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+MODULE_DESCRIPTION("TAOS evaluation module driver");
+MODULE_LICENSE("GPL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

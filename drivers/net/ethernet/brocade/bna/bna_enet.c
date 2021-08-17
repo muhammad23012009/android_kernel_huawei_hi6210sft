@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include "bna.h"
 
@@ -107,7 +118,12 @@ bna_bfi_ethport_admin_rsp(struct bna_ethport *ethport,
 {
 	struct bfi_enet_enable_req *admin_req =
 		&ethport->bfi_enet_cmd.admin_req;
+<<<<<<< HEAD
 	struct bfi_enet_rsp *rsp = (struct bfi_enet_rsp *)msghdr;
+=======
+	struct bfi_enet_rsp *rsp =
+		container_of(msghdr, struct bfi_enet_rsp, mh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (admin_req->enable) {
 	case BNA_STATUS_T_ENABLED:
@@ -133,7 +149,12 @@ bna_bfi_ethport_lpbk_rsp(struct bna_ethport *ethport,
 {
 	struct bfi_enet_diag_lb_req *diag_lb_req =
 		&ethport->bfi_enet_cmd.lpbk_req;
+<<<<<<< HEAD
 	struct bfi_enet_rsp *rsp = (struct bfi_enet_rsp *)msghdr;
+=======
+	struct bfi_enet_rsp *rsp =
+		container_of(msghdr, struct bfi_enet_rsp, mh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (diag_lb_req->enable) {
 	case BNA_STATUS_T_ENABLED:
@@ -161,7 +182,12 @@ static void
 bna_bfi_attr_get_rsp(struct bna_ioceth *ioceth,
 			struct bfi_msgq_mhdr *msghdr)
 {
+<<<<<<< HEAD
 	struct bfi_enet_attr_rsp *rsp = (struct bfi_enet_attr_rsp *)msghdr;
+=======
+	struct bfi_enet_attr_rsp *rsp =
+		container_of(msghdr, struct bfi_enet_attr_rsp, mh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/**
 	 * Store only if not set earlier, since BNAD can override the HW
@@ -203,7 +229,11 @@ bna_bfi_stats_get_rsp(struct bna *bna, struct bfi_msgq_mhdr *msghdr)
 	for (i = 0; i < BFI_ENET_CFG_MAX; i++) {
 		stats_dst = (u64 *)&(bna->stats.hw_stats.rxf_stats[i]);
 		memset(stats_dst, 0, sizeof(struct bfi_enet_stats_rxf));
+<<<<<<< HEAD
 		if (rx_enet_mask & ((u32)(1 << i))) {
+=======
+		if (rx_enet_mask & BIT(i)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			int k;
 			count = sizeof(struct bfi_enet_stats_rxf) /
 				sizeof(u64);
@@ -218,7 +248,11 @@ bna_bfi_stats_get_rsp(struct bna *bna, struct bfi_msgq_mhdr *msghdr)
 	for (i = 0; i < BFI_ENET_CFG_MAX; i++) {
 		stats_dst = (u64 *)&(bna->stats.hw_stats.txf_stats[i]);
 		memset(stats_dst, 0, sizeof(struct bfi_enet_stats_txf));
+<<<<<<< HEAD
 		if (tx_enet_mask & ((u32)(1 << i))) {
+=======
+		if (tx_enet_mask & BIT(i)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			int k;
 			count = sizeof(struct bfi_enet_stats_txf) /
 				sizeof(u64);
@@ -298,7 +332,10 @@ bna_msgq_rsp_handler(void *arg, struct bfi_msgq_mhdr *msghdr)
 	case BFI_ENET_I2H_RSS_ENABLE_RSP:
 	case BFI_ENET_I2H_RX_PROMISCUOUS_RSP:
 	case BFI_ENET_I2H_RX_DEFAULT_RSP:
+<<<<<<< HEAD
 	case BFI_ENET_I2H_MAC_UCAST_SET_RSP:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BFI_ENET_I2H_MAC_UCAST_CLR_RSP:
 	case BFI_ENET_I2H_MAC_UCAST_ADD_RSP:
 	case BFI_ENET_I2H_MAC_UCAST_DEL_RSP:
@@ -311,6 +348,15 @@ bna_msgq_rsp_handler(void *arg, struct bfi_msgq_mhdr *msghdr)
 			bna_bfi_rxf_cfg_rsp(&rx->rxf, msghdr);
 		break;
 
+<<<<<<< HEAD
+=======
+	case BFI_ENET_I2H_MAC_UCAST_SET_RSP:
+		bna_rx_from_rid(bna, msghdr->enet_id, rx);
+		if (rx)
+			bna_bfi_rxf_ucast_set_rsp(&rx->rxf, msghdr);
+		break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BFI_ENET_I2H_MAC_MCAST_ADD_RSP:
 		bna_rx_from_rid(bna, msghdr->enet_id, rx);
 		if (rx)
@@ -875,6 +921,7 @@ do {									\
 	}								\
 } while (0)
 
+<<<<<<< HEAD
 #define call_enet_pause_cbfn(enet)					\
 do {									\
 	if ((enet)->pause_cbfn) {					\
@@ -885,6 +932,8 @@ do {									\
 	}								\
 } while (0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define call_enet_mtu_cbfn(enet)					\
 do {									\
 	if ((enet)->mtu_cbfn) {						\
@@ -916,7 +965,10 @@ bfa_fsm_state_decl(bna_enet, chld_stop_wait, struct bna_enet,
 static void
 bna_enet_sm_stopped_entry(struct bna_enet *enet)
 {
+<<<<<<< HEAD
 	call_enet_pause_cbfn(enet);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	call_enet_mtu_cbfn(enet);
 	call_enet_stop_cbfn(enet);
 }
@@ -938,7 +990,10 @@ bna_enet_sm_stopped(struct bna_enet *enet, enum bna_enet_event event)
 		break;
 
 	case ENET_E_PAUSE_CFG:
+<<<<<<< HEAD
 		call_enet_pause_cbfn(enet);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case ENET_E_MTU_CFG:
@@ -1030,7 +1085,10 @@ bna_enet_sm_started_entry(struct bna_enet *enet)
 	 * NOTE: Do not call bna_enet_chld_start() here, since it will be
 	 * inadvertently called during cfg_wait->started transition as well
 	 */
+<<<<<<< HEAD
 	call_enet_pause_cbfn(enet);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	call_enet_mtu_cbfn(enet);
 }
 
@@ -1202,8 +1260,11 @@ bna_enet_init(struct bna_enet *enet, struct bna *bna)
 	enet->stop_cbfn = NULL;
 	enet->stop_cbarg = NULL;
 
+<<<<<<< HEAD
 	enet->pause_cbfn = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enet->mtu_cbfn = NULL;
 
 	bfa_fsm_set_state(enet, bna_enet_sm_stopped);
@@ -1299,6 +1360,7 @@ bna_enet_disable(struct bna_enet *enet, enum bna_cleanup_type type,
 
 void
 bna_enet_pause_config(struct bna_enet *enet,
+<<<<<<< HEAD
 		      struct bna_pause_config *pause_config,
 		      void (*cbfn)(struct bnad *))
 {
@@ -1306,6 +1368,12 @@ bna_enet_pause_config(struct bna_enet *enet,
 
 	enet->pause_cbfn = cbfn;
 
+=======
+		      struct bna_pause_config *pause_config)
+{
+	enet->pause_config = *pause_config;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bfa_fsm_send_event(enet, ENET_E_PAUSE_CFG);
 }
 
@@ -1321,9 +1389,15 @@ bna_enet_mtu_set(struct bna_enet *enet, int mtu,
 }
 
 void
+<<<<<<< HEAD
 bna_enet_perm_mac_get(struct bna_enet *enet, mac_t *mac)
 {
 	*mac = bfa_nw_ioc_get_mac(&enet->bna->ioceth.ioc);
+=======
+bna_enet_perm_mac_get(struct bna_enet *enet, u8 *mac)
+{
+	bfa_nw_ioc_get_mac(&enet->bna->ioceth.ioc, mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* IOCETH */
@@ -1801,10 +1875,20 @@ bna_ucam_mod_init(struct bna_ucam_mod *ucam_mod, struct bna *bna,
 	res_info[BNA_MOD_RES_MEM_T_UCMAC_ARRAY].res_u.mem_info.mdl[0].kva;
 
 	INIT_LIST_HEAD(&ucam_mod->free_q);
+<<<<<<< HEAD
 	for (i = 0; i < bna->ioceth.attr.num_ucmac; i++) {
 		bfa_q_qe_init(&ucam_mod->ucmac[i].qe);
 		list_add_tail(&ucam_mod->ucmac[i].qe, &ucam_mod->free_q);
 	}
+=======
+	for (i = 0; i < bna->ioceth.attr.num_ucmac; i++)
+		list_add_tail(&ucam_mod->ucmac[i].qe, &ucam_mod->free_q);
+
+	/* A separate queue to allow synchronous setting of a list of MACs */
+	INIT_LIST_HEAD(&ucam_mod->del_q);
+	for (i = i; i < (bna->ioceth.attr.num_ucmac * 2); i++)
+		list_add_tail(&ucam_mod->ucmac[i].qe, &ucam_mod->del_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ucam_mod->bna = bna;
 }
@@ -1812,12 +1896,15 @@ bna_ucam_mod_init(struct bna_ucam_mod *ucam_mod, struct bna *bna,
 static void
 bna_ucam_mod_uninit(struct bna_ucam_mod *ucam_mod)
 {
+<<<<<<< HEAD
 	struct list_head *qe;
 	int i = 0;
 
 	list_for_each(qe, &ucam_mod->free_q)
 		i++;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ucam_mod->bna = NULL;
 }
 
@@ -1831,20 +1918,36 @@ bna_mcam_mod_init(struct bna_mcam_mod *mcam_mod, struct bna *bna,
 	res_info[BNA_MOD_RES_MEM_T_MCMAC_ARRAY].res_u.mem_info.mdl[0].kva;
 
 	INIT_LIST_HEAD(&mcam_mod->free_q);
+<<<<<<< HEAD
 	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++) {
 		bfa_q_qe_init(&mcam_mod->mcmac[i].qe);
 		list_add_tail(&mcam_mod->mcmac[i].qe, &mcam_mod->free_q);
 	}
+=======
+	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++)
+		list_add_tail(&mcam_mod->mcmac[i].qe, &mcam_mod->free_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mcam_mod->mchandle = (struct bna_mcam_handle *)
 	res_info[BNA_MOD_RES_MEM_T_MCHANDLE_ARRAY].res_u.mem_info.mdl[0].kva;
 
 	INIT_LIST_HEAD(&mcam_mod->free_handle_q);
+<<<<<<< HEAD
 	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++) {
 		bfa_q_qe_init(&mcam_mod->mchandle[i].qe);
 		list_add_tail(&mcam_mod->mchandle[i].qe,
 				&mcam_mod->free_handle_q);
 	}
+=======
+	for (i = 0; i < bna->ioceth.attr.num_mcmac; i++)
+		list_add_tail(&mcam_mod->mchandle[i].qe,
+			      &mcam_mod->free_handle_q);
+
+	/* A separate queue to allow synchronous setting of a list of MACs */
+	INIT_LIST_HEAD(&mcam_mod->del_q);
+	for (i = i; i < (bna->ioceth.attr.num_mcmac * 2); i++)
+		list_add_tail(&mcam_mod->mcmac[i].qe, &mcam_mod->del_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mcam_mod->bna = bna;
 }
@@ -1852,6 +1955,7 @@ bna_mcam_mod_init(struct bna_mcam_mod *mcam_mod, struct bna *bna,
 static void
 bna_mcam_mod_uninit(struct bna_mcam_mod *mcam_mod)
 {
+<<<<<<< HEAD
 	struct list_head *qe;
 	int i;
 
@@ -1861,6 +1965,8 @@ bna_mcam_mod_uninit(struct bna_mcam_mod *mcam_mod)
 	i = 0;
 	list_for_each(qe, &mcam_mod->free_handle_q) i++;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mcam_mod->bna = NULL;
 }
 
@@ -1971,7 +2077,11 @@ bna_mod_res_req(struct bna *bna, struct bna_res_info *res_info)
 		BNA_MEM_T_KVA;
 	res_info[BNA_MOD_RES_MEM_T_UCMAC_ARRAY].res_u.mem_info.num = 1;
 	res_info[BNA_MOD_RES_MEM_T_UCMAC_ARRAY].res_u.mem_info.len =
+<<<<<<< HEAD
 		attr->num_ucmac * sizeof(struct bna_mac);
+=======
+		(attr->num_ucmac * 2) * sizeof(struct bna_mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Virtual memory for Multicast MAC address - stored by mcam module */
 	res_info[BNA_MOD_RES_MEM_T_MCMAC_ARRAY].res_type = BNA_RES_T_MEM;
@@ -1979,7 +2089,11 @@ bna_mod_res_req(struct bna *bna, struct bna_res_info *res_info)
 		BNA_MEM_T_KVA;
 	res_info[BNA_MOD_RES_MEM_T_MCMAC_ARRAY].res_u.mem_info.num = 1;
 	res_info[BNA_MOD_RES_MEM_T_MCMAC_ARRAY].res_u.mem_info.len =
+<<<<<<< HEAD
 		attr->num_mcmac * sizeof(struct bna_mac);
+=======
+		(attr->num_mcmac * 2) * sizeof(struct bna_mac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Virtual memory for Multicast handle - stored by mcam module */
 	res_info[BNA_MOD_RES_MEM_T_MCHANDLE_ARRAY].res_type = BNA_RES_T_MEM;
@@ -2075,6 +2189,7 @@ bna_num_rxp_set(struct bna *bna, int num_rxp)
 }
 
 struct bna_mac *
+<<<<<<< HEAD
 bna_ucam_mod_mac_get(struct bna_ucam_mod *ucam_mod)
 {
 	struct list_head *qe;
@@ -2110,11 +2225,23 @@ void
 bna_mcam_mod_mac_put(struct bna_mcam_mod *mcam_mod, struct bna_mac *mac)
 {
 	list_add_tail(&mac->qe, &mcam_mod->free_q);
+=======
+bna_cam_mod_mac_get(struct list_head *head)
+{
+	struct bna_mac *mac;
+
+	mac = list_first_entry_or_null(head, struct bna_mac, qe);
+	if (mac)
+		list_del(&mac->qe);
+
+	return mac;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct bna_mcam_handle *
 bna_mcam_mod_handle_get(struct bna_mcam_mod *mcam_mod)
 {
+<<<<<<< HEAD
 	struct list_head *qe;
 
 	if (list_empty(&mcam_mod->free_handle_q))
@@ -2123,6 +2250,16 @@ bna_mcam_mod_handle_get(struct bna_mcam_mod *mcam_mod)
 	bfa_q_deq(&mcam_mod->free_handle_q, &qe);
 
 	return (struct bna_mcam_handle *)qe;
+=======
+	struct bna_mcam_handle *handle;
+
+	handle = list_first_entry_or_null(&mcam_mod->free_handle_q,
+					  struct bna_mcam_handle, qe);
+	if (handle)
+		list_del(&handle->qe);
+
+	return handle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void

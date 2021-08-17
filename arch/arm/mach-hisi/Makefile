@@ -1,4 +1,5 @@
 #
+<<<<<<< HEAD
 # Makefile for Hisilicon HI3630FPGA line
 #
 subdir-ccflags-y                += -I$(BALONG_TOPDIR)/config/product/$(OBB_PRODUCT_NAME)/config
@@ -33,3 +34,13 @@ obj-$(CONFIG_HISI_SR_DEBUG) += hisi_lpregs.o
 obj-$(CONFIG_HISI_LPM3_VIEWER)	+= hisi_lpm3_viewer.o
 
 #obj-$(CONFIG_HISI_UDP_BOARDID)		+= hisi_udp_board_id.o
+=======
+# Makefile for Hisilicon processors family
+#
+
+CFLAGS_platmcpm.o	:= -march=armv7-a
+
+obj-y	+= hisilicon.o
+obj-$(CONFIG_MCPM)		+= platmcpm.o
+obj-$(CONFIG_SMP)		+= platsmp.o hotplug.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

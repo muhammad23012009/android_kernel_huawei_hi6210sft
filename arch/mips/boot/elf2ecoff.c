@@ -49,7 +49,12 @@
 /*
  * Some extra ELF definitions
  */
+<<<<<<< HEAD
 #define PT_MIPS_REGINFO 0x70000000	/* Register usage information */
+=======
+#define PT_MIPS_REGINFO 	0x70000000	/* Register usage information */
+#define PT_MIPS_ABIFLAGS	0x70000003	/* Records ABI related flags  */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* -------------------------------------------------------------------- */
 
@@ -267,7 +272,10 @@ int main(int argc, char *argv[])
 	Elf32_Ehdr ex;
 	Elf32_Phdr *ph;
 	Elf32_Shdr *sh;
+<<<<<<< HEAD
 	char *shstrtab;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, pad;
 	struct sect text, data, bss;
 	struct filehdr efh;
@@ -335,9 +343,12 @@ int main(int argc, char *argv[])
 				     "sh");
 	if (must_convert_endian)
 		convert_elf_shdrs(sh, ex.e_shnum);
+<<<<<<< HEAD
 	/* Read in the section string table. */
 	shstrtab = saveRead(infile, sh[ex.e_shstrndx].sh_offset,
 			    sh[ex.e_shstrndx].sh_size, "shstrtab");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Figure out if we can cram the program header into an ECOFF
 	   header...  Basically, we can't handle anything but loadable
@@ -349,6 +360,7 @@ int main(int argc, char *argv[])
 
 	for (i = 0; i < ex.e_phnum; i++) {
 		/* Section types we can ignore... */
+<<<<<<< HEAD
 		if (ph[i].p_type == PT_NULL || ph[i].p_type == PT_NOTE ||
 		    ph[i].p_type == PT_PHDR
 		    || ph[i].p_type == PT_MIPS_REGINFO)
@@ -382,6 +394,48 @@ int main(int argc, char *argv[])
 		/* Remember the lowest segment start address. */
 		if (ph[i].p_vaddr < cur_vma)
 			cur_vma = ph[i].p_vaddr;
+=======
+		switch (ph[i].p_type) {
+		case PT_NULL:
+		case PT_NOTE:
+		case PT_PHDR:
+		case PT_MIPS_REGINFO:
+		case PT_MIPS_ABIFLAGS:
+			continue;
+
+		case PT_LOAD:
+			/* Writable (data) segment? */
+			if (ph[i].p_flags & PF_W) {
+				struct sect ndata, nbss;
+
+				ndata.vaddr = ph[i].p_vaddr;
+				ndata.len = ph[i].p_filesz;
+				nbss.vaddr = ph[i].p_vaddr + ph[i].p_filesz;
+				nbss.len = ph[i].p_memsz - ph[i].p_filesz;
+
+				combine(&data, &ndata, 0);
+				combine(&bss, &nbss, 1);
+			} else {
+				struct sect ntxt;
+
+				ntxt.vaddr = ph[i].p_vaddr;
+				ntxt.len = ph[i].p_filesz;
+
+				combine(&text, &ntxt, 0);
+			}
+			/* Remember the lowest segment start address. */
+			if (ph[i].p_vaddr < cur_vma)
+				cur_vma = ph[i].p_vaddr;
+			break;
+
+		default:
+			/* Section types we can't handle... */
+			fprintf(stderr,
+				"Program header %d type %d can't be converted.\n",
+				ex.e_phnum, ph[i].p_type);
+			exit(1);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Sections must be in order to be converted... */

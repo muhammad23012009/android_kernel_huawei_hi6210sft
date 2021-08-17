@@ -2,7 +2,11 @@
  * SPEAr platform SPI chipselect abstraction over gpiolib
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Shiraz Hashim <shiraz.hashim@st.com>
+=======
+ * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -12,7 +16,11 @@
 #include <linux/err.h>
 #include <linux/gpio.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/types.h>
@@ -62,8 +70,12 @@ static int spics_get_value(struct gpio_chip *chip, unsigned offset)
 
 static void spics_set_value(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct spear_spics *spics = container_of(chip, struct spear_spics,
 			chip);
+=======
+	struct spear_spics *spics = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 tmp;
 
 	/* select chip select from register */
@@ -94,8 +106,12 @@ static int spics_direction_output(struct gpio_chip *chip, unsigned offset,
 
 static int spics_request(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct spear_spics *spics = container_of(chip, struct spear_spics,
 			chip);
+=======
+	struct spear_spics *spics = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 tmp;
 
 	if (!spics->use_count++) {
@@ -110,8 +126,12 @@ static int spics_request(struct gpio_chip *chip, unsigned offset)
 
 static void spics_free(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct spear_spics *spics = container_of(chip, struct spear_spics,
 			chip);
+=======
+	struct spear_spics *spics = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 tmp;
 
 	if (!--spics->use_count) {
@@ -128,6 +148,7 @@ static int spics_gpio_probe(struct platform_device *pdev)
 	struct resource *res;
 	int ret;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "invalid IORESOURCE_MEM\n");
@@ -140,6 +161,13 @@ static int spics_gpio_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+=======
+	spics = devm_kzalloc(&pdev->dev, sizeof(*spics), GFP_KERNEL);
+	if (!spics)
+		return -ENOMEM;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spics->base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(spics->base))
 		return PTR_ERR(spics->base);
@@ -171,11 +199,19 @@ static int spics_gpio_probe(struct platform_device *pdev)
 	spics->chip.get = spics_get_value;
 	spics->chip.set = spics_set_value;
 	spics->chip.label = dev_name(&pdev->dev);
+<<<<<<< HEAD
 	spics->chip.dev = &pdev->dev;
 	spics->chip.owner = THIS_MODULE;
 	spics->last_off = -1;
 
 	ret = gpiochip_add(&spics->chip);
+=======
+	spics->chip.parent = &pdev->dev;
+	spics->chip.owner = THIS_MODULE;
+	spics->last_off = -1;
+
+	ret = devm_gpiochip_add_data(&pdev->dev, &spics->chip, spics);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(&pdev->dev, "unable to add gpio chip\n");
 		return ret;
@@ -193,12 +229,18 @@ static const struct of_device_id spics_gpio_of_match[] = {
 	{ .compatible = "st,spear-spics-gpio" },
 	{}
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, spics_gpio_of_match);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver spics_gpio_driver = {
 	.probe = spics_gpio_probe,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "spear-spics-gpio",
 		.of_match_table = spics_gpio_of_match,
 	},
@@ -209,7 +251,10 @@ static int __init spics_gpio_init(void)
 	return platform_driver_register(&spics_gpio_driver);
 }
 subsys_initcall(spics_gpio_init);
+<<<<<<< HEAD
 
 MODULE_AUTHOR("Shiraz Hashim <shiraz.hashim@st.com>");
 MODULE_DESCRIPTION("ST Microlectronics SPEAr SPI Chip Select Abstraction");
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

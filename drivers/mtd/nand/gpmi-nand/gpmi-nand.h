@@ -26,8 +26,11 @@
 struct resources {
 	void __iomem  *gpmi_regs;
 	void __iomem  *bch_regs;
+<<<<<<< HEAD
 	unsigned int  bch_low_interrupt;
 	unsigned int  bch_high_interrupt;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int  dma_low_channel;
 	unsigned int  dma_high_channel;
 	struct clk    *clock[GPMI_CLK_MAX];
@@ -121,11 +124,31 @@ struct nand_timing {
 	int8_t  tRHOH_in_ns;
 };
 
+<<<<<<< HEAD
+=======
+enum gpmi_type {
+	IS_MX23,
+	IS_MX28,
+	IS_MX6Q,
+	IS_MX6SX
+};
+
+struct gpmi_devdata {
+	enum gpmi_type type;
+	int bch_max_ecc_strength;
+	int max_chain_delay; /* See the async EDO mode */
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct gpmi_nand_data {
 	/* flags */
 #define GPMI_ASYNC_EDO_ENABLED	(1 << 0)
 #define GPMI_TIMING_INIT_OK	(1 << 1)
 	int			flags;
+<<<<<<< HEAD
+=======
+	const struct gpmi_devdata *devdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* System Interface */
 	struct device		*dev;
@@ -148,7 +171,10 @@ struct gpmi_nand_data {
 
 	/* MTD / NAND */
 	struct nand_chip	nand;
+<<<<<<< HEAD
 	struct mtd_info		mtd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* General-use Variables */
 	int			current_chip;
@@ -177,6 +203,11 @@ struct gpmi_nand_data {
 	void			*auxiliary_virt;
 	dma_addr_t		auxiliary_phys;
 
+<<<<<<< HEAD
+=======
+	void			*raw_buffer;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* DMA channels */
 #define DMA_CHANS		8
 	struct dma_chan		*dma_chans[DMA_CHANS];
@@ -278,11 +309,19 @@ extern int gpmi_send_page(struct gpmi_nand_data *,
 extern int gpmi_read_page(struct gpmi_nand_data *,
 			dma_addr_t payload, dma_addr_t auxiliary);
 
+<<<<<<< HEAD
+=======
+void gpmi_copy_bits(u8 *dst, size_t dst_bit_off,
+		    const u8 *src, size_t src_bit_off,
+		    size_t nbits);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* BCH : Status Block Completion Codes */
 #define STATUS_GOOD		0x00
 #define STATUS_ERASED		0xff
 #define STATUS_UNCORRECTABLE	0xfe
 
+<<<<<<< HEAD
 /* BCH's bit correction capability. */
 #define MXS_ECC_STRENGTH_MAX	20	/* mx23 and mx28 */
 #define MX6_ECC_STRENGTH_MAX	40
@@ -294,4 +333,13 @@ extern int gpmi_read_page(struct gpmi_nand_data *,
 #define GPMI_IS_MX23(x)		((x)->pdev->id_entry->driver_data == IS_MX23)
 #define GPMI_IS_MX28(x)		((x)->pdev->id_entry->driver_data == IS_MX28)
 #define GPMI_IS_MX6Q(x)		((x)->pdev->id_entry->driver_data == IS_MX6Q)
+=======
+/* Use the devdata to distinguish different Archs. */
+#define GPMI_IS_MX23(x)		((x)->devdata->type == IS_MX23)
+#define GPMI_IS_MX28(x)		((x)->devdata->type == IS_MX28)
+#define GPMI_IS_MX6Q(x)		((x)->devdata->type == IS_MX6Q)
+#define GPMI_IS_MX6SX(x)	((x)->devdata->type == IS_MX6SX)
+
+#define GPMI_IS_MX6(x)		(GPMI_IS_MX6Q(x) || GPMI_IS_MX6SX(x))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

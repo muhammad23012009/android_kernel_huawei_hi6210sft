@@ -18,6 +18,10 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_NAME "memstick"
 
@@ -153,12 +157,18 @@ static ssize_t name##_show(struct device *dev, struct device_attribute *attr, \
 	struct memstick_dev *card = container_of(dev, struct memstick_dev,    \
 						 dev);                        \
 	return sprintf(buf, format, card->id.name);                           \
+<<<<<<< HEAD
 }
+=======
+}                                                                             \
+static DEVICE_ATTR_RO(name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MEMSTICK_ATTR(type, "%02X");
 MEMSTICK_ATTR(category, "%02X");
 MEMSTICK_ATTR(class, "%02X");
 
+<<<<<<< HEAD
 #define MEMSTICK_ATTR_RO(name) __ATTR(name, S_IRUGO, name##_show, NULL)
 
 static struct device_attribute memstick_dev_attrs[] = {
@@ -171,6 +181,19 @@ static struct device_attribute memstick_dev_attrs[] = {
 static struct bus_type memstick_bus_type = {
 	.name           = "memstick",
 	.dev_attrs      = memstick_dev_attrs,
+=======
+static struct attribute *memstick_dev_attrs[] = {
+	&dev_attr_type.attr,
+	&dev_attr_category.attr,
+	&dev_attr_class.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(memstick_dev);
+
+static struct bus_type memstick_bus_type = {
+	.name           = "memstick",
+	.dev_groups	= memstick_dev_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.match          = memstick_bus_match,
 	.uevent         = memstick_uevent,
 	.probe          = memstick_device_probe,
@@ -253,7 +276,11 @@ void memstick_new_req(struct memstick_host *host)
 {
 	if (host->card) {
 		host->retries = cmd_retries;
+<<<<<<< HEAD
 		INIT_COMPLETION(host->card->mrq_complete);
+=======
+		reinit_completion(&host->card->mrq_complete);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		host->request(host);
 	}
 }
@@ -436,6 +463,10 @@ static void memstick_check(struct work_struct *work)
 	struct memstick_dev *card;
 
 	dev_dbg(&host->dev, "memstick_check started\n");
+<<<<<<< HEAD
+=======
+	pm_runtime_get_noresume(host->dev.parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&host->lock);
 	if (!host->card) {
 		if (memstick_power_on(host))
@@ -467,7 +498,10 @@ static void memstick_check(struct work_struct *work)
 			host->card = card;
 			if (device_register(&card->dev)) {
 				put_device(&card->dev);
+<<<<<<< HEAD
 				kfree(host->card);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				host->card = NULL;
 			}
 		} else
@@ -479,6 +513,10 @@ out_power_off:
 		host->set_param(host, MEMSTICK_POWER, MEMSTICK_POWER_OFF);
 
 	mutex_unlock(&host->lock);
+<<<<<<< HEAD
+=======
+	pm_runtime_put(host->dev.parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(&host->dev, "memstick_check finished\n");
 }
 
@@ -626,6 +664,7 @@ static int __init memstick_init(void)
 		return -ENOMEM;
 
 	rc = bus_register(&memstick_bus_type);
+<<<<<<< HEAD
 	if (!rc)
 		rc = class_register(&memstick_host_class);
 
@@ -633,6 +672,20 @@ static int __init memstick_init(void)
 		return 0;
 
 	bus_unregister(&memstick_bus_type);
+=======
+	if (rc)
+		goto error_destroy_workqueue;
+
+	rc = class_register(&memstick_host_class);
+	if (rc)
+		goto error_bus_unregister;
+
+	return 0;
+
+error_bus_unregister:
+	bus_unregister(&memstick_bus_type);
+error_destroy_workqueue:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	destroy_workqueue(workqueue);
 
 	return rc;

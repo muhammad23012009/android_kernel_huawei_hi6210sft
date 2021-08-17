@@ -36,19 +36,28 @@ SCHED_FEAT(CACHE_HOT_BUDDY, true)
  */
 SCHED_FEAT(WAKEUP_PREEMPTION, true)
 
+<<<<<<< HEAD
 /*
  * Use arch dependent cpu power functions
  */
 SCHED_FEAT(ARCH_POWER, true)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 SCHED_FEAT(HRTICK, false)
 SCHED_FEAT(DOUBLE_TICK, false)
 SCHED_FEAT(LB_BIAS, true)
 
 /*
+<<<<<<< HEAD
  * Decrement CPU power based on time not spent running tasks
  */
 SCHED_FEAT(NONTASK_POWER, true)
+=======
+ * Decrement CPU capacity based on time not spent running tasks
+ */
+SCHED_FEAT(NONTASK_CAPACITY, true)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Queue remote wakeups on the target CPU and process them
@@ -56,6 +65,7 @@ SCHED_FEAT(NONTASK_POWER, true)
  */
 SCHED_FEAT(TTWU_QUEUE, true)
 
+<<<<<<< HEAD
 SCHED_FEAT(FORCE_SD_OVERLAP, false)
 SCHED_FEAT(RT_RUNTIME_SHARE, true)
 SCHED_FEAT(LB_MIN, false)
@@ -69,4 +79,37 @@ SCHED_FEAT(LB_MIN, false)
 #ifdef CONFIG_NUMA_BALANCING
 SCHED_FEAT(NUMA,	false)
 SCHED_FEAT(NUMA_FORCE,	false)
+=======
+/*
+ * When doing wakeups, attempt to limit superfluous scans of the LLC domain.
+ */
+SCHED_FEAT(SIS_AVG_CPU, false)
+
+#ifdef HAVE_RT_PUSH_IPI
+/*
+ * In order to avoid a thundering herd attack of CPUs that are
+ * lowering their priorities at the same time, and there being
+ * a single CPU that has an RT task that can migrate and is waiting
+ * to run, where the other CPUs will try to take that CPUs
+ * rq lock and possibly create a large contention, sending an
+ * IPI to that CPU and let that CPU push the RT task to where
+ * it should go may be a better scenario.
+ */
+SCHED_FEAT(RT_PUSH_IPI, true)
+#endif
+
+SCHED_FEAT(FORCE_SD_OVERLAP, false)
+SCHED_FEAT(RT_RUNTIME_SHARE, true)
+SCHED_FEAT(LB_MIN, false)
+SCHED_FEAT(ATTACH_AGE_LOAD, true)
+
+/*
+ * Energy aware scheduling. Use platform energy model to guide scheduling
+ * decisions optimizing for energy efficiency.
+ */
+#ifdef CONFIG_DEFAULT_USE_ENERGY_AWARE
+SCHED_FEAT(ENERGY_AWARE, true)
+#else
+SCHED_FEAT(ENERGY_AWARE, false)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

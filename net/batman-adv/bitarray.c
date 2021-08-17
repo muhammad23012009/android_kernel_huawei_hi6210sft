@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (C) 2006-2013 B.A.T.M.A.N. contributors:
+=======
+/* Copyright (C) 2006-2016  B.A.T.M.A.N. contributors:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Simon Wunderlich, Marek Lindner
  *
@@ -12,6 +16,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA
@@ -24,6 +29,20 @@
 
 /* shift the packet array by n places. */
 static void batadv_bitmap_shift_left(unsigned long *seq_bits, int32_t n)
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "bitarray.h"
+#include "main.h"
+
+#include <linux/bitmap.h>
+
+#include "log.h"
+
+/* shift the packet array by n places. */
+static void batadv_bitmap_shift_left(unsigned long *seq_bits, s32 n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (n <= 0 || n >= BATADV_TQ_LOCAL_WINDOW_SIZE)
 		return;
@@ -31,6 +50,7 @@ static void batadv_bitmap_shift_left(unsigned long *seq_bits, int32_t n)
 	bitmap_shift_left(seq_bits, seq_bits, n, BATADV_TQ_LOCAL_WINDOW_SIZE);
 }
 
+<<<<<<< HEAD
 
 /* receive and process one packet within the sequence number window.
  *
@@ -40,6 +60,22 @@ static void batadv_bitmap_shift_left(unsigned long *seq_bits, int32_t n)
  */
 int batadv_bit_get_packet(void *priv, unsigned long *seq_bits,
 			  int32_t seq_num_diff, int set_mark)
+=======
+/**
+ * batadv_bit_get_packet - receive and process one packet within the sequence
+ *  number window
+ * @priv: the bat priv with all the soft interface information
+ * @seq_bits: pointer to the sequence number receive packet
+ * @seq_num_diff: difference between the current/received sequence number and
+ *  the last sequence number
+ * @set_mark: whether this packet should be marked in seq_bits
+ *
+ * Return: true if the window was moved (either new or very old),
+ *  false if the window was not moved/shifted.
+ */
+bool batadv_bit_get_packet(void *priv, unsigned long *seq_bits,
+			   s32 seq_num_diff, int set_mark)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct batadv_priv *bat_priv = priv;
 
@@ -49,7 +85,11 @@ int batadv_bit_get_packet(void *priv, unsigned long *seq_bits,
 	if (seq_num_diff <= 0 && seq_num_diff > -BATADV_TQ_LOCAL_WINDOW_SIZE) {
 		if (set_mark)
 			batadv_set_bit(seq_bits, -seq_num_diff);
+<<<<<<< HEAD
 		return 0;
+=======
+		return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* sequence number is slightly newer, so we shift the window and
@@ -60,7 +100,11 @@ int batadv_bit_get_packet(void *priv, unsigned long *seq_bits,
 
 		if (set_mark)
 			batadv_set_bit(seq_bits, 0);
+<<<<<<< HEAD
 		return 1;
+=======
+		return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* sequence number is much newer, probably missed a lot of packets */
@@ -72,7 +116,11 @@ int batadv_bit_get_packet(void *priv, unsigned long *seq_bits,
 		bitmap_zero(seq_bits, BATADV_TQ_LOCAL_WINDOW_SIZE);
 		if (set_mark)
 			batadv_set_bit(seq_bits, 0);
+<<<<<<< HEAD
 		return 1;
+=======
+		return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* received a much older packet. The other host either restarted
@@ -91,5 +139,9 @@ int batadv_bit_get_packet(void *priv, unsigned long *seq_bits,
 	if (set_mark)
 		batadv_set_bit(seq_bits, 0);
 
+<<<<<<< HEAD
 	return 1;
+=======
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

@@ -25,6 +25,12 @@
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <asm/machdep.h>
+
+#include "pseries.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned long rtas_poweron_auto; /* default and normal state is 0 */
 
@@ -71,11 +77,19 @@ static int __init pm_init(void)
 		return -ENOMEM;
 	return sysfs_create_group(power_kobj, &attr_group);
 }
+<<<<<<< HEAD
 core_initcall(pm_init);
+=======
+machine_core_initcall(pseries, pm_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static int __init apo_pm_init(void)
 {
 	return (sysfs_create_file(power_kobj, &auto_poweron_attr.attr));
 }
+<<<<<<< HEAD
 __initcall(apo_pm_init);
+=======
+machine_device_initcall(pseries, apo_pm_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

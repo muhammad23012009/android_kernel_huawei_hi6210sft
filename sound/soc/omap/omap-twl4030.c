@@ -53,12 +53,16 @@ static int omap_twl4030_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_card *card = codec->card;
 	unsigned int fmt;
 	int ret;
+=======
+	unsigned int fmt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (params_channels(params)) {
 	case 2: /* Stereo I2S mode */
@@ -75,6 +79,7 @@ static int omap_twl4030_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* Set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, fmt);
 	if (ret < 0) {
@@ -90,6 +95,9 @@ static int omap_twl4030_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	return 0;
+=======
+	return snd_soc_runtime_set_dai_fmt(rtd, fmt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct snd_soc_ops omap_twl4030_ops = {
@@ -178,9 +186,14 @@ static inline void twl4030_disconnect_pin(struct snd_soc_dapm_context *dapm,
 
 static int omap_twl4030_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_card *card = codec->card;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+	struct snd_soc_card *card = rtd->card;
+	struct snd_soc_dapm_context *dapm = &card->dapm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_tw4030_pdata *pdata = dev_get_platdata(card->dev);
 	struct omap_twl4030 *priv = snd_soc_card_get_drvdata(card);
 	int ret = 0;
@@ -189,6 +202,7 @@ static int omap_twl4030_init(struct snd_soc_pcm_runtime *rtd)
 	if (priv->jack_detect > 0) {
 		hs_jack_gpios[0].gpio = priv->jack_detect;
 
+<<<<<<< HEAD
 		ret = snd_soc_jack_new(codec, "Headset Jack", SND_JACK_HEADSET,
 				       &priv->hs_jack);
 		if (ret)
@@ -197,6 +211,12 @@ static int omap_twl4030_init(struct snd_soc_pcm_runtime *rtd)
 		ret = snd_soc_jack_add_pins(&priv->hs_jack,
 					    ARRAY_SIZE(hs_jack_pins),
 					    hs_jack_pins);
+=======
+		ret = snd_soc_card_jack_new(rtd->card, "Headset Jack",
+					    SND_JACK_HEADSET, &priv->hs_jack,
+					    hs_jack_pins,
+					    ARRAY_SIZE(hs_jack_pins));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 
@@ -232,6 +252,21 @@ static int omap_twl4030_init(struct snd_soc_pcm_runtime *rtd)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int omap_twl4030_card_remove(struct snd_soc_card *card)
+{
+	struct omap_twl4030 *priv = snd_soc_card_get_drvdata(card);
+
+	if (priv->jack_detect > 0)
+		snd_soc_jack_free_gpios(&priv->hs_jack,
+					ARRAY_SIZE(hs_jack_gpios),
+					hs_jack_gpios);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Digital audio interface glue - connects codec <--> CPU */
 static struct snd_soc_dai_link omap_twl4030_dai_links[] = {
 	{
@@ -239,7 +274,11 @@ static struct snd_soc_dai_link omap_twl4030_dai_links[] = {
 		.stream_name = "TWL4030 HiFi",
 		.cpu_dai_name = "omap-mcbsp.2",
 		.codec_dai_name = "twl4030-hifi",
+<<<<<<< HEAD
 		.platform_name = "omap-pcm-audio",
+=======
+		.platform_name = "omap-mcbsp.2",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.codec_name = "twl4030-codec",
 		.init = omap_twl4030_init,
 		.ops = &omap_twl4030_ops,
@@ -249,7 +288,11 @@ static struct snd_soc_dai_link omap_twl4030_dai_links[] = {
 		.stream_name = "TWL4030 Voice",
 		.cpu_dai_name = "omap-mcbsp.3",
 		.codec_dai_name = "twl4030-voice",
+<<<<<<< HEAD
 		.platform_name = "omap-pcm-audio",
+=======
+		.platform_name = "omap-mcbsp.3",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.codec_name = "twl4030-codec",
 		.dai_fmt = SND_SOC_DAIFMT_DSP_A | SND_SOC_DAIFMT_IB_NF |
 			   SND_SOC_DAIFMT_CBM_CFM,
@@ -259,6 +302,10 @@ static struct snd_soc_dai_link omap_twl4030_dai_links[] = {
 /* Audio machine driver */
 static struct snd_soc_card omap_twl4030_card = {
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.remove = omap_twl4030_card_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link = omap_twl4030_dai_links,
 	.num_links = ARRAY_SIZE(omap_twl4030_dai_links),
 
@@ -299,12 +346,24 @@ static int omap_twl4030_probe(struct platform_device *pdev)
 		omap_twl4030_dai_links[0].cpu_dai_name  = NULL;
 		omap_twl4030_dai_links[0].cpu_of_node = dai_node;
 
+<<<<<<< HEAD
+=======
+		omap_twl4030_dai_links[0].platform_name  = NULL;
+		omap_twl4030_dai_links[0].platform_of_node = dai_node;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dai_node = of_parse_phandle(node, "ti,mcbsp-voice", 0);
 		if (!dai_node) {
 			card->num_links = 1;
 		} else {
 			omap_twl4030_dai_links[1].cpu_dai_name  = NULL;
 			omap_twl4030_dai_links[1].cpu_of_node = dai_node;
+<<<<<<< HEAD
+=======
+
+			omap_twl4030_dai_links[1].platform_name  = NULL;
+			omap_twl4030_dai_links[1].platform_of_node = dai_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		priv->jack_detect = of_get_named_gpio(node,
@@ -338,9 +397,15 @@ static int omap_twl4030_probe(struct platform_device *pdev)
 	}
 
 	snd_soc_card_set_drvdata(card, priv);
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+	if (ret) {
+		dev_err(&pdev->dev, "devm_snd_soc_register_card() failed: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret);
 		return ret;
 	}
@@ -348,6 +413,7 @@ static int omap_twl4030_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int omap_twl4030_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -362,6 +428,8 @@ static int omap_twl4030_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id omap_twl4030_of_match[] = {
 	{.compatible = "ti,omap-twl4030", },
 	{ },
@@ -371,12 +439,18 @@ MODULE_DEVICE_TABLE(of, omap_twl4030_of_match);
 static struct platform_driver omap_twl4030_driver = {
 	.driver = {
 		.name = "omap-twl4030",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &snd_soc_pm_ops,
 		.of_match_table = omap_twl4030_of_match,
 	},
 	.probe = omap_twl4030_probe,
+<<<<<<< HEAD
 	.remove = omap_twl4030_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(omap_twl4030_driver);

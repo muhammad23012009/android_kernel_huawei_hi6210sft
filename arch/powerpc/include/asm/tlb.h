@@ -27,6 +27,10 @@
 
 #define tlb_start_vma(tlb, vma)	do { } while (0)
 #define tlb_end_vma(tlb, vma)	do { } while (0)
+<<<<<<< HEAD
+=======
+#define __tlb_remove_tlb_entry	__tlb_remove_tlb_entry
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void tlb_flush(struct mmu_gather *tlb);
 
@@ -45,5 +49,33 @@ static inline void __tlb_remove_tlb_entry(struct mmu_gather *tlb, pte_t *ptep,
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+static inline int mm_is_core_local(struct mm_struct *mm)
+{
+	return cpumask_subset(mm_cpumask(mm),
+			      topology_sibling_cpumask(smp_processor_id()));
+}
+
+static inline int mm_is_thread_local(struct mm_struct *mm)
+{
+	return cpumask_equal(mm_cpumask(mm),
+			      cpumask_of(smp_processor_id()));
+}
+
+#else
+static inline int mm_is_core_local(struct mm_struct *mm)
+{
+	return 1;
+}
+
+static inline int mm_is_thread_local(struct mm_struct *mm)
+{
+	return 1;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __KERNEL__ */
 #endif /* __ASM_POWERPC_TLB_H */

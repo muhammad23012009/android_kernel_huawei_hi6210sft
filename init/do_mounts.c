@@ -26,6 +26,11 @@
 #include <linux/async.h>
 #include <linux/fs_struct.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/ramfs.h>
+#include <linux/shmem_fs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/nfs_fs.h>
 #include <linux/nfs_fs_sb.h>
@@ -100,13 +105,21 @@ no_match:
 
 /**
  * devt_from_partuuid - looks up the dev_t of a partition by its UUID
+<<<<<<< HEAD
  * @uuid:	char array containing ascii UUID
+=======
+ * @uuid_str:	char array containing ascii UUID
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The function will return the first partition which contains a matching
  * UUID value in its partition_meta_info struct.  This does not search
  * by filesystem UUIDs.
  *
+<<<<<<< HEAD
  * If @uuid is followed by a "/PARTNROFF=%d", then the number will be
+=======
+ * If @uuid_str is followed by a "/PARTNROFF=%d", then the number will be
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * extracted and used as an offset from the partition identified by the UUID.
  *
  * Returns the matching dev_t on success or 0 on failure.
@@ -180,7 +193,12 @@ done:
 /*
  *	Convert a name into device number.  We accept the following variants:
  *
+<<<<<<< HEAD
  *	1) device number in hexadecimal	represents itself
+=======
+ *	1) <hex_major><hex_minor> device number in hexadecimal represents itself
+ *         no leading 0x, for example b302.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	2) /dev/nfs represents Root_NFS (0xff)
  *	3) /dev/<disk_name> represents the device number of disk
  *	4) /dev/<disk_name><decimal> represents the device number
@@ -195,6 +213,11 @@ done:
  *	   is a zero-filled hex representation of the 1-based partition number.
  *	7) PARTUUID=<UUID>/PARTNROFF=<int> to select a partition in relation to
  *	   a partition with a known unique id.
+<<<<<<< HEAD
+=======
+ *	8) <major>:<minor> major and minor number of the device separated by
+ *	   a colon.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	If name doesn't have fall into the categories above, we return (0,0).
  *	block_class is used to check if something is a disk name. If the disk
@@ -202,7 +225,11 @@ done:
  *	bangs.
  */
 
+<<<<<<< HEAD
 dev_t name_to_dev_t(char *name)
+=======
+dev_t name_to_dev_t(const char *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char s[32];
 	char *p;
@@ -220,9 +247,17 @@ dev_t name_to_dev_t(char *name)
 #endif
 
 	if (strncmp(name, "/dev/", 5) != 0) {
+<<<<<<< HEAD
 		unsigned maj, min;
 
 		if (sscanf(name, "%u:%u", &maj, &min) == 2) {
+=======
+		unsigned maj, min, offset;
+		char dummy;
+
+		if ((sscanf(name, "%u:%u%c", &maj, &min, &dummy) == 2) ||
+		    (sscanf(name, "%u:%u:%u:%c", &maj, &min, &offset, &dummy) == 3)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			res = MKDEV(maj, min);
 			if (maj != MAJOR(res) || min != MINOR(res))
 				goto fail;
@@ -281,6 +316,10 @@ fail:
 done:
 	return res;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(name_to_dev_t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init root_dev_setup(char *line)
 {
@@ -390,8 +429,11 @@ retry:
 			case 0:
 				goto out;
 			case -EACCES:
+<<<<<<< HEAD
 				flags |= MS_RDONLY;
 				goto retry;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			case -EINVAL:
 				continue;
 		}
@@ -414,6 +456,13 @@ retry:
 #endif
 		panic("VFS: Unable to mount root fs on %s", b);
 	}
+<<<<<<< HEAD
+=======
+	if (!(flags & MS_RDONLY)) {
+		flags |= MS_RDONLY;
+		goto retry;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk("List of all partitions:\n");
 	printk_all_partitions();
@@ -523,8 +572,18 @@ void __init mount_root(void)
 	}
 #endif
 #ifdef CONFIG_BLOCK
+<<<<<<< HEAD
 	create_dev("/dev/root", ROOT_DEV);
 	mount_block_root("/dev/root", root_mountflags);
+=======
+	{
+		int err = create_dev("/dev/root", ROOT_DEV);
+
+		if (err < 0)
+			pr_emerg("Failed to create /dev/root: %d\n", err);
+		mount_block_root("/dev/root", root_mountflags);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 }
 
@@ -536,7 +595,11 @@ void __init prepare_namespace(void)
 	int is_floppy;
 
 	if (root_delay) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Waiting %dsec before mounting root device...\n",
+=======
+		printk(KERN_INFO "Waiting %d sec before mounting root device...\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       root_delay);
 		ssleep(root_delay);
 	}
@@ -551,6 +614,10 @@ void __init prepare_namespace(void)
 	wait_for_device_probe();
 
 	md_run_setup();
+<<<<<<< HEAD
+=======
+	dm_run_setup();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (saved_root_name[0]) {
 		root_device_name = saved_root_name;
@@ -588,3 +655,49 @@ out:
 	sys_mount(".", "/", NULL, MS_MOVE, NULL);
 	sys_chroot(".");
 }
+<<<<<<< HEAD
+=======
+
+static bool is_tmpfs;
+static struct dentry *rootfs_mount(struct file_system_type *fs_type,
+	int flags, const char *dev_name, void *data)
+{
+	static unsigned long once;
+	void *fill = ramfs_fill_super;
+
+	if (test_and_set_bit(0, &once))
+		return ERR_PTR(-ENODEV);
+
+	if (IS_ENABLED(CONFIG_TMPFS) && is_tmpfs)
+		fill = shmem_fill_super;
+
+	return mount_nodev(fs_type, flags, data, fill);
+}
+
+static struct file_system_type rootfs_fs_type = {
+	.name		= "rootfs",
+	.mount		= rootfs_mount,
+	.kill_sb	= kill_litter_super,
+};
+
+int __init init_rootfs(void)
+{
+	int err = register_filesystem(&rootfs_fs_type);
+
+	if (err)
+		return err;
+
+	if (IS_ENABLED(CONFIG_TMPFS) && !saved_root_name[0] &&
+		(!root_fs_names || strstr(root_fs_names, "tmpfs"))) {
+		err = shmem_init();
+		is_tmpfs = true;
+	} else {
+		err = init_ramfs_fs();
+	}
+
+	if (err)
+		unregister_filesystem(&rootfs_fs_type);
+
+	return err;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

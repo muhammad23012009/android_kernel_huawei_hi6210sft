@@ -51,6 +51,10 @@
 #define elf_prstatus	compat_elf_prstatus
 #define elf_prpsinfo	compat_elf_prpsinfo
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ELF_CORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Compat version of cputime_to_compat_timeval, perhaps this
  * should be an inline in <linux/compat.h>.
@@ -63,6 +67,10 @@ static void cputime_to_compat_timeval(const cputime_t cputime,
 	value->tv_sec = tv.tv_sec;
 	value->tv_usec = tv.tv_usec;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #undef cputime_to_timeval
 #define cputime_to_timeval cputime_to_compat_timeval

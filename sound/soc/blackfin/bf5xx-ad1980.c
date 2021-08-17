@@ -46,9 +46,12 @@
 #include <linux/gpio.h>
 #include <asm/portmux.h>
 
+<<<<<<< HEAD
 #include "../codecs/ad1980.h"
 
 #include "bf5xx-ac97-pcm.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "bf5xx-ac97.h"
 
 static struct snd_soc_card bf5xx_board;

@@ -32,7 +32,10 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/threads.h>
 
@@ -49,10 +52,18 @@
 #include <asm/netlogic/xlr/iomap.h>
 #include <asm/netlogic/xlr/pic.h>
 
+<<<<<<< HEAD
 int __cpuinit xlr_wakeup_secondary_cpus(void)
 {
 	struct nlm_soc_info *nodep;
 	unsigned int i, j, boot_cpu;
+=======
+int xlr_wakeup_secondary_cpus(void)
+{
+	struct nlm_soc_info *nodep;
+	unsigned int i, j, boot_cpu;
+	volatile u32 *cpu_ready = nlm_get_boot_data(BOOT_CPU_READY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *  In case of RMI boot, hit with NMI to get the cores
@@ -69,9 +80,15 @@ int __cpuinit xlr_wakeup_secondary_cpus(void)
 
 	/* Fill up the coremask early */
 	nodep->coremask = 1;
+<<<<<<< HEAD
 	for (i = 1; i < NLM_CORES_PER_NODE; i++) {
 		for (j = 1000000; j > 0; j--) {
 			if (nlm_cpu_ready[i * NLM_THREADS_PER_CORE])
+=======
+	for (i = 1; i < nlm_cores_per_node(); i++) {
+		for (j = 1000000; j > 0; j--) {
+			if (cpu_ready[i * NLM_THREADS_PER_CORE])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			udelay(10);
 		}

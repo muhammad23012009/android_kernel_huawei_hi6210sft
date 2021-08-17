@@ -22,6 +22,26 @@
 #ifndef C_CAN_H
 #define C_CAN_H
 
+<<<<<<< HEAD
+=======
+/* message object split */
+#define C_CAN_NO_OF_OBJECTS	32
+#define C_CAN_MSG_OBJ_RX_NUM	16
+#define C_CAN_MSG_OBJ_TX_NUM	16
+
+#define C_CAN_MSG_OBJ_RX_FIRST	1
+#define C_CAN_MSG_OBJ_RX_LAST	(C_CAN_MSG_OBJ_RX_FIRST + \
+				C_CAN_MSG_OBJ_RX_NUM - 1)
+
+#define C_CAN_MSG_OBJ_TX_FIRST	(C_CAN_MSG_OBJ_RX_LAST + 1)
+#define C_CAN_MSG_OBJ_TX_LAST	(C_CAN_MSG_OBJ_TX_FIRST + \
+				C_CAN_MSG_OBJ_TX_NUM - 1)
+
+#define C_CAN_MSG_OBJ_RX_SPLIT	9
+#define C_CAN_MSG_RX_LOW_LAST	(C_CAN_MSG_OBJ_RX_SPLIT - 1)
+#define RECEIVE_OBJECT_BITS	0x0000ffff
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum reg {
 	C_CAN_CTRL_REG = 0,
 	C_CAN_CTRL_EX_REG,
@@ -61,6 +81,10 @@ enum reg {
 	C_CAN_INTPND2_REG,
 	C_CAN_MSGVAL1_REG,
 	C_CAN_MSGVAL2_REG,
+<<<<<<< HEAD
+=======
+	C_CAN_FUNCTION_REG,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const u16 reg_map_c_can[] = {
@@ -112,6 +136,10 @@ static const u16 reg_map_d_can[] = {
 	[C_CAN_BRPEXT_REG]	= 0x0E,
 	[C_CAN_INT_REG]		= 0x10,
 	[C_CAN_TEST_REG]	= 0x14,
+<<<<<<< HEAD
+=======
+	[C_CAN_FUNCTION_REG]	= 0x18,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[C_CAN_TXRQST1_REG]	= 0x88,
 	[C_CAN_TXRQST2_REG]	= 0x8A,
 	[C_CAN_NEWDAT1_REG]	= 0x9C,
@@ -150,12 +178,38 @@ enum c_can_dev_id {
 	BOSCH_D_CAN,
 };
 
+<<<<<<< HEAD
+=======
+struct raminit_bits {
+	u8 start;
+	u8 done;
+};
+
+struct c_can_driver_data {
+	enum c_can_dev_id id;
+
+	/* RAMINIT register description. Optional. */
+	const struct raminit_bits *raminit_bits; /* Array of START/DONE bit positions */
+	u8 raminit_num;		/* Number of CAN instances on the SoC */
+	bool raminit_pulse;	/* If set, sets and clears START bit (pulse) */
+};
+
+/* Out of band RAMINIT register access via syscon regmap */
+struct c_can_raminit {
+	struct regmap *syscon;	/* for raminit ctrl. reg. access */
+	unsigned int reg;	/* register index within syscon */
+	struct raminit_bits bits;
+	bool needs_pulse;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* c_can private data structure */
 struct c_can_priv {
 	struct can_priv can;	/* must be the first member */
 	struct napi_struct napi;
 	struct net_device *dev;
 	struct device *device;
+<<<<<<< HEAD
 	int tx_object;
 	int current_status;
 	int last_status;
@@ -172,6 +226,25 @@ struct c_can_priv {
 	u32 __iomem *raminit_ctrlreg;
 	unsigned int instance;
 	void (*raminit) (const struct c_can_priv *priv, bool enable);
+=======
+	atomic_t tx_active;
+	atomic_t sie_pending;
+	unsigned long tx_dir;
+	int last_status;
+	u16 (*read_reg) (const struct c_can_priv *priv, enum reg index);
+	void (*write_reg) (const struct c_can_priv *priv, enum reg index, u16 val);
+	u32 (*read_reg32) (const struct c_can_priv *priv, enum reg index);
+	void (*write_reg32) (const struct c_can_priv *priv, enum reg index, u32 val);
+	void __iomem *base;
+	const u16 *regs;
+	void *priv;		/* for board-specific data */
+	enum c_can_dev_id type;
+	struct c_can_raminit raminit_sys;	/* RAMINIT via syscon regmap */
+	void (*raminit) (const struct c_can_priv *priv, bool enable);
+	u32 comm_rcv_high;
+	u32 rxmasked;
+	u32 dlc[C_CAN_MSG_OBJ_TX_NUM];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct net_device *alloc_c_can_dev(void);

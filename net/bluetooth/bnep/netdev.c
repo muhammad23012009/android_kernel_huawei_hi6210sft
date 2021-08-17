@@ -188,7 +188,11 @@ static netdev_tx_t bnep_net_xmit(struct sk_buff *skb,
 	 * So we have to queue them and wake up session thread which is sleeping
 	 * on the sk_sleep(sk).
 	 */
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_queue_tail(&sk->sk_write_queue, skb);
 	wake_up_interruptible(sk_sleep(sk));
 
@@ -218,7 +222,11 @@ static const struct net_device_ops bnep_netdev_ops = {
 void bnep_net_setup(struct net_device *dev)
 {
 
+<<<<<<< HEAD
 	memset(dev->broadcast, 0xff, ETH_ALEN);
+=======
+	eth_broadcast_addr(dev->broadcast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->addr_len = ETH_ALEN;
 
 	ether_setup(dev);

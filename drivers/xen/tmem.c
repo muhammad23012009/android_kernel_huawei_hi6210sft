@@ -5,6 +5,11 @@
  * Author: Dan Magenheimer
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -15,8 +20,13 @@
 
 #include <xen/xen.h>
 #include <xen/interface/xen.h>
+<<<<<<< HEAD
 #include <asm/xen/hypercall.h>
 #include <asm/xen/page.h>
+=======
+#include <xen/page.h>
+#include <asm/xen/hypercall.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/xen/hypervisor.h>
 #include <xen/tmem.h>
 
@@ -127,6 +137,7 @@ static int xen_tmem_new_pool(struct tmem_pool_uuid uuid,
 /* xen generic tmem ops */
 
 static int xen_tmem_put_page(u32 pool_id, struct tmem_oid oid,
+<<<<<<< HEAD
 			     u32 index, unsigned long pfn)
 {
 	unsigned long gmfn = xen_pv_domain() ? pfn_to_mfn(pfn) : pfn;
@@ -142,6 +153,19 @@ static int xen_tmem_get_page(u32 pool_id, struct tmem_oid oid,
 
 	return xen_tmem_op(TMEM_GET_PAGE, pool_id, oid, index,
 		gmfn, 0, 0, 0);
+=======
+			     u32 index, struct page *page)
+{
+	return xen_tmem_op(TMEM_PUT_PAGE, pool_id, oid, index,
+			   xen_page_to_gfn(page), 0, 0, 0);
+}
+
+static int xen_tmem_get_page(u32 pool_id, struct tmem_oid oid,
+			     u32 index, struct page *page)
+{
+	return xen_tmem_op(TMEM_GET_PAGE, pool_id, oid, index,
+			   xen_page_to_gfn(page), 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int xen_tmem_flush_page(u32 pool_id, struct tmem_oid oid, u32 index)
@@ -171,14 +195,21 @@ static void tmem_cleancache_put_page(int pool, struct cleancache_filekey key,
 {
 	u32 ind = (u32) index;
 	struct tmem_oid oid = *(struct tmem_oid *)&key;
+<<<<<<< HEAD
 	unsigned long pfn = page_to_pfn(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pool < 0)
 		return;
 	if (ind != index)
 		return;
 	mb(); /* ensure page is quiescent; tmem may address it with an alias */
+<<<<<<< HEAD
 	(void)xen_tmem_put_page((u32)pool, oid, ind, pfn);
+=======
+	(void)xen_tmem_put_page((u32)pool, oid, ind, page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int tmem_cleancache_get_page(int pool, struct cleancache_filekey key,
@@ -186,7 +217,10 @@ static int tmem_cleancache_get_page(int pool, struct cleancache_filekey key,
 {
 	u32 ind = (u32) index;
 	struct tmem_oid oid = *(struct tmem_oid *)&key;
+<<<<<<< HEAD
 	unsigned long pfn = page_to_pfn(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	/* translate return values to linux semantics */
@@ -194,7 +228,11 @@ static int tmem_cleancache_get_page(int pool, struct cleancache_filekey key,
 		return -1;
 	if (ind != index)
 		return -1;
+<<<<<<< HEAD
 	ret = xen_tmem_get_page((u32)pool, oid, ind, pfn);
+=======
+	ret = xen_tmem_get_page((u32)pool, oid, ind, page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret == 1)
 		return 0;
 	else
@@ -246,7 +284,11 @@ static int tmem_cleancache_init_shared_fs(char *uuid, size_t pagesize)
 	return xen_tmem_new_pool(shared_uuid, TMEM_POOL_SHARED, pagesize);
 }
 
+<<<<<<< HEAD
 static struct cleancache_ops tmem_cleancache_ops = {
+=======
+static const struct cleancache_ops tmem_cleancache_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.put_page = tmem_cleancache_put_page,
 	.get_page = tmem_cleancache_get_page,
 	.invalidate_page = tmem_cleancache_flush_page,
@@ -285,7 +327,10 @@ static int tmem_frontswap_store(unsigned type, pgoff_t offset,
 {
 	u64 ind64 = (u64)offset;
 	u32 ind = (u32)offset;
+<<<<<<< HEAD
 	unsigned long pfn = page_to_pfn(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int pool = tmem_frontswap_poolid;
 	int ret;
 
@@ -294,7 +339,11 @@ static int tmem_frontswap_store(unsigned type, pgoff_t offset,
 	if (ind64 != ind)
 		return -1;
 	mb(); /* ensure page is quiescent; tmem may address it with an alias */
+<<<<<<< HEAD
 	ret = xen_tmem_put_page(pool, oswiz(type, ind), iswiz(ind), pfn);
+=======
+	ret = xen_tmem_put_page(pool, oswiz(type, ind), iswiz(ind), page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* translate Xen tmem return values to linux semantics */
 	if (ret == 1)
 		return 0;
@@ -311,7 +360,10 @@ static int tmem_frontswap_load(unsigned type, pgoff_t offset,
 {
 	u64 ind64 = (u64)offset;
 	u32 ind = (u32)offset;
+<<<<<<< HEAD
 	unsigned long pfn = page_to_pfn(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int pool = tmem_frontswap_poolid;
 	int ret;
 
@@ -319,7 +371,11 @@ static int tmem_frontswap_load(unsigned type, pgoff_t offset,
 		return -1;
 	if (ind64 != ind)
 		return -1;
+<<<<<<< HEAD
 	ret = xen_tmem_get_page(pool, oswiz(type, ind), iswiz(ind), pfn);
+=======
+	ret = xen_tmem_get_page(pool, oswiz(type, ind), iswiz(ind), page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* translate Xen tmem return values to linux semantics */
 	if (ret == 1)
 		return 0;
@@ -372,13 +428,18 @@ static struct frontswap_ops tmem_frontswap_ops = {
 };
 #endif
 
+<<<<<<< HEAD
 static int xen_tmem_init(void)
+=======
+static int __init xen_tmem_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!xen_domain())
 		return 0;
 #ifdef CONFIG_FRONTSWAP
 	if (tmem_enabled && frontswap) {
 		char *s = "";
+<<<<<<< HEAD
 		struct frontswap_ops *old_ops;
 
 		tmem_frontswap_poolid = -1;
@@ -402,6 +463,27 @@ static int xen_tmem_init(void)
 			s = " (WARNING: cleancache_ops overridden)";
 		printk(KERN_INFO "cleancache enabled, RAM provided by "
 				 "Xen Transcendent Memory%s\n", s);
+=======
+
+		tmem_frontswap_poolid = -1;
+		frontswap_register_ops(&tmem_frontswap_ops);
+		pr_info("frontswap enabled, RAM provided by Xen Transcendent Memory%s\n",
+			s);
+	}
+#endif
+#ifdef CONFIG_CLEANCACHE
+	BUILD_BUG_ON(sizeof(struct cleancache_filekey) != sizeof(struct tmem_oid));
+	if (tmem_enabled && cleancache) {
+		int err;
+
+		err = cleancache_register_ops(&tmem_cleancache_ops);
+		if (err)
+			pr_warn("xen-tmem: failed to enable cleancache: %d\n",
+				err);
+		else
+			pr_info("cleancache enabled, RAM provided by "
+				"Xen Transcendent Memory\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 #ifdef CONFIG_XEN_SELFBALLOONING

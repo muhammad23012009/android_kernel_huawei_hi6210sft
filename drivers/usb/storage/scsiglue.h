@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SCSI Connecting Glue Header File
  *
  * Current development and maintenance by:
@@ -41,8 +46,15 @@
 
 extern void usb_stor_report_device_reset(struct us_data *us);
 extern void usb_stor_report_bus_reset(struct us_data *us);
+<<<<<<< HEAD
 
 extern unsigned char usb_stor_sense_invalidCDB[18];
 extern struct scsi_host_template usb_stor_host_template;
+=======
+extern void usb_stor_host_template_init(struct scsi_host_template *sht,
+					const char *name, struct module *owner);
+
+extern unsigned char usb_stor_sense_invalidCDB[18];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

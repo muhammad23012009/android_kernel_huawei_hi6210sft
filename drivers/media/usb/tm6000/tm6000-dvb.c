@@ -32,7 +32,11 @@
 #include "xc5000.h"
 
 MODULE_DESCRIPTION("DVB driver extension module for tm5600/6000/6010 based TV cards");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");
 
 MODULE_SUPPORTED_DEVICE("{{Trident, tm5600},"
@@ -111,6 +115,10 @@ static void tm6000_urb_received(struct urb *urb)
 			printk(KERN_ERR "tm6000:  error %s\n", __func__);
 			kfree(urb->transfer_buffer);
 			usb_free_urb(urb);
+<<<<<<< HEAD
+=======
+			dev->dvb->bulk_urb = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }
@@ -129,10 +137,15 @@ static int tm6000_start_stream(struct tm6000_core *dev)
 	}
 
 	dvb->bulk_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (dvb->bulk_urb == NULL) {
 		printk(KERN_ERR "tm6000: couldn't allocate urb\n");
 		return -ENOMEM;
 	}
+=======
+	if (dvb->bulk_urb == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pipe = usb_rcvbulkpipe(dev->udev, dev->bulk_in.endp->desc.bEndpointAddress
 							  & USB_ENDPOINT_NUMBER_MASK);
@@ -143,6 +156,10 @@ static int tm6000_start_stream(struct tm6000_core *dev)
 	dvb->bulk_urb->transfer_buffer = kzalloc(size, GFP_KERNEL);
 	if (dvb->bulk_urb->transfer_buffer == NULL) {
 		usb_free_urb(dvb->bulk_urb);
+<<<<<<< HEAD
+=======
+		dvb->bulk_urb = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "tm6000: couldn't allocate transfer buffer!\n");
 		return -ENOMEM;
 	}
@@ -156,6 +173,13 @@ static int tm6000_start_stream(struct tm6000_core *dev)
 	if (ret < 0) {
 		printk(KERN_ERR "tm6000: error %i in %s during pipe reset\n",
 							ret, __func__);
+<<<<<<< HEAD
+=======
+
+		kfree(dvb->bulk_urb->transfer_buffer);
+		usb_free_urb(dvb->bulk_urb);
+		dvb->bulk_urb = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	} else
 		printk(KERN_ERR "tm6000: pipe resetted\n");
@@ -170,6 +194,10 @@ static int tm6000_start_stream(struct tm6000_core *dev)
 
 		kfree(dvb->bulk_urb->transfer_buffer);
 		usb_free_urb(dvb->bulk_urb);
+<<<<<<< HEAD
+=======
+		dvb->bulk_urb = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 
@@ -275,6 +303,14 @@ static int register_dvb(struct tm6000_core *dev)
 
 	ret = dvb_register_adapter(&dvb->adapter, "Trident TVMaster 6000 DVB-T",
 					THIS_MODULE, &dev->udev->dev, adapter_nr);
+<<<<<<< HEAD
+=======
+	if (ret < 0) {
+		pr_err("tm6000: couldn't register the adapter!\n");
+		goto err;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dvb->adapter.priv = dev;
 
 	if (dvb->frontend) {

@@ -36,6 +36,14 @@ typedef enum {
 	PSMOUSE_FULL_PACKET
 } psmouse_ret_t;
 
+<<<<<<< HEAD
+=======
+enum psmouse_scale {
+	PSMOUSE_SCALE11,
+	PSMOUSE_SCALE21
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct psmouse {
 	void *private;
 	struct input_dev *dev;
@@ -67,6 +75,10 @@ struct psmouse {
 	psmouse_ret_t (*protocol_handler)(struct psmouse *psmouse);
 	void (*set_rate)(struct psmouse *psmouse, unsigned int rate);
 	void (*set_resolution)(struct psmouse *psmouse, unsigned int resolution);
+<<<<<<< HEAD
+=======
+	void (*set_scale)(struct psmouse *psmouse, enum psmouse_scale scale);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int (*reconnect)(struct psmouse *psmouse);
 	void (*disconnect)(struct psmouse *psmouse);
@@ -96,6 +108,12 @@ enum psmouse_type {
 	PSMOUSE_FSP,
 	PSMOUSE_SYNAPTICS_RELATIVE,
 	PSMOUSE_CYPRESS,
+<<<<<<< HEAD
+=======
+	PSMOUSE_FOCALTECH,
+	PSMOUSE_VMMOUSE,
+	PSMOUSE_BYD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PSMOUSE_AUTO		/* This one should always be last */
 };
 
@@ -108,6 +126,10 @@ void psmouse_set_resolution(struct psmouse *psmouse, unsigned int resolution);
 psmouse_ret_t psmouse_process_byte(struct psmouse *psmouse);
 int psmouse_activate(struct psmouse *psmouse);
 int psmouse_deactivate(struct psmouse *psmouse);
+<<<<<<< HEAD
+=======
+bool psmouse_matches_pnp_id(struct psmouse *psmouse, const char * const ids[]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct psmouse_attribute {
 	struct device_attribute dattr;

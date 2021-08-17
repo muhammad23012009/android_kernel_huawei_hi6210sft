@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -164,8 +168,13 @@ static acpi_status acpi_ex_name_segment(u8 ** in_aml_address, char *name_string)
 	ACPI_FUNCTION_TRACE(ex_name_segment);
 
 	/*
+<<<<<<< HEAD
 	 * If first character is a digit, then we know that we aren't looking at a
 	 * valid name segment
+=======
+	 * If first character is a digit, then we know that we aren't looking
+	 * at a valid name segment
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	char_buf[0] = *aml_address;
 
@@ -178,7 +187,11 @@ static acpi_status acpi_ex_name_segment(u8 ** in_aml_address, char *name_string)
 
 	for (index = 0;
 	     (index < ACPI_NAME_SIZE)
+<<<<<<< HEAD
 	     && (acpi_ut_valid_acpi_char(*aml_address, 0)); index++) {
+=======
+	     && (acpi_ut_valid_name_char(*aml_address, 0)); index++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		char_buf[index] = *aml_address++;
 		ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "%c\n", char_buf[index]));
 	}
@@ -192,7 +205,11 @@ static acpi_status acpi_ex_name_segment(u8 ** in_aml_address, char *name_string)
 		char_buf[4] = '\0';
 
 		if (name_string) {
+<<<<<<< HEAD
 			ACPI_STRCAT(name_string, char_buf);
+=======
+			strcat(name_string, char_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 					  "Appended to - %s\n", name_string));
 		} else {

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/python
+=======
+#!/usr/bin/env python3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # Copyright 2004 Matt Mackall <mpm@selenic.com>
 #
@@ -8,6 +12,12 @@
 # of the GNU General Public License, incorporated herein by reference.
 
 import sys, os, re
+<<<<<<< HEAD
+=======
+from signal import signal, SIGPIPE, SIG_DFL
+
+signal(SIGPIPE, SIG_DFL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 if len(sys.argv) != 3:
     sys.stderr.write("usage: %s file1 file2\n" % sys.argv[0])
@@ -19,9 +29,18 @@ def getsizes(file):
         size, type, name = l[:-1].split()
         if type in "tTdDbBrR":
             # strip generated symbols
+<<<<<<< HEAD
             if name[:6] == "__mod_": continue
             # function names begin with '.' on 64-bit powerpc
             if "." in name[1:]: name = "static." + name.split(".")[0]
+=======
+            if name.startswith("__mod_"): continue
+            if name.startswith("SyS_"): continue
+            if name.startswith("compat_SyS_"): continue
+            if name == "linux_banner": continue
+            # statics and some other optimizations adds random .NUMBER
+            name = re.sub(r'\.[0-9]+', '', name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
             sym[name] = sym.get(name, 0) + int(size, 16)
     return sym
 
@@ -29,18 +48,30 @@ old = getsizes(sys.argv[1])
 new = getsizes(sys.argv[2])
 grow, shrink, add, remove, up, down = 0, 0, 0, 0, 0, 0
 delta, common = [], {}
+<<<<<<< HEAD
+=======
+otot, ntot = 0, 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 for a in old:
     if a in new:
         common[a] = 1
 
 for name in old:
+<<<<<<< HEAD
+=======
+    otot += old[name]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if name not in common:
         remove += 1
         down += old[name]
         delta.append((-old[name], name))
 
 for name in new:
+<<<<<<< HEAD
+=======
+    ntot += new[name]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if name not in common:
         add += 1
         up += new[name]
@@ -60,3 +91,9 @@ print("add/remove: %s/%s grow/shrink: %s/%s up/down: %s/%s (%s)" % \
 print("%-40s %7s %7s %+7s" % ("function", "old", "new", "delta"))
 for d, n in delta:
     if d: print("%-40s %7s %7s %+7d" % (n, old.get(n,"-"), new.get(n,"-"), d))
+<<<<<<< HEAD
+=======
+
+print("Total: Before=%d, After=%d, chg %+.2f%%" % \
+    (otot, ntot, (ntot - otot)*100.0/otot))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

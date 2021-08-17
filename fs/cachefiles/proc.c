@@ -93,7 +93,10 @@ static int cachefiles_histogram_open(struct inode *inode, struct file *file)
 }
 
 static const struct file_operations cachefiles_histogram_fops = {
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= cachefiles_histogram_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,

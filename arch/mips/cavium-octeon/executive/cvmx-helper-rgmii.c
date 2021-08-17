@@ -33,8 +33,11 @@
 
 #include <asm/octeon/cvmx-config.h>
 
+<<<<<<< HEAD
 
 #include <asm/octeon/cvmx-mdio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/octeon/cvmx-pko.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-board.h>
@@ -243,8 +246,12 @@ int __cvmx_helper_rgmii_enable(int interface)
 	/* enable the ports now */
 	for (port = 0; port < num_ports; port++) {
 		union cvmx_gmxx_prtx_cfg gmx_cfg;
+<<<<<<< HEAD
 		cvmx_helper_link_autoconf(cvmx_helper_get_ipd_port
 					  (interface, port));
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gmx_cfg.u64 =
 		    cvmx_read_csr(CVMX_GMXX_PRTX_CFG(port, interface));
 		gmx_cfg.s.en = 1;

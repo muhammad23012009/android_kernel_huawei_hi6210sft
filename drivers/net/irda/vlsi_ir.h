@@ -18,9 +18,13 @@
  *	GNU General Public License for more details.
  *
  *	You should have received a copy of the GNU General Public License 
+<<<<<<< HEAD
  *	along with this program; if not, write to the Free Software 
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
  *	MA 02111-1307 USA
+=======
+ *	along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  ********************************************************************/
 
@@ -617,7 +621,12 @@ static inline void rd_set_addr_status(struct ring_descr *rd, dma_addr_t a, u8 s)
 	 */
 
 	if ((a & ~DMA_MASK_MSTRPAGE)>>24 != MSTRPAGE_VALUE) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s: pci busaddr inconsistency!\n", __func__);
+=======
+		net_err_ratelimited("%s: pci busaddr inconsistency!\n",
+				    __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dump_stack();
 		return;
 	}
@@ -724,7 +733,11 @@ typedef struct vlsi_irda_dev {
 	void			*virtaddr;
 	struct vlsi_ring	*tx_ring, *rx_ring;
 
+<<<<<<< HEAD
 	struct timeval		last_rx;
+=======
+	ktime_t			last_rx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spinlock_t		lock;
 	struct mutex		mtx;

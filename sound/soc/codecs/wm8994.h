@@ -13,6 +13,10 @@
 #include <linux/firmware.h>
 #include <linux/completion.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "wm_hubs.h"
 
@@ -134,6 +138,12 @@ struct wm8994_priv {
 	struct mutex accdet_lock;
 	struct wm8994_micdet micdet[2];
 	struct delayed_work mic_work;
+<<<<<<< HEAD
+=======
+	struct delayed_work open_circuit_work;
+	struct delayed_work mic_complete_work;
+	u16 mic_status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool mic_detecting;
 	bool jack_mic;
 	int btn_mask;
@@ -153,6 +163,10 @@ struct wm8994_priv {
 	unsigned int aif1clk_disable:1;
 	unsigned int aif2clk_disable:1;
 
+<<<<<<< HEAD
+=======
+	struct mutex fw_lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int dsp_active;
 	const struct firmware *cur_fw;
 	const struct firmware *mbc;

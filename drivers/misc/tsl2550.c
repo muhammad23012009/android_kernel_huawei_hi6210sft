@@ -20,7 +20,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/mutex.h>
@@ -178,7 +181,11 @@ static int tsl2550_calculate_lux(u8 ch0, u8 ch1)
 		} else
 			lux = 0;
 	else
+<<<<<<< HEAD
 		return -EAGAIN;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* LUX range check */
 	return lux > TSL2550_MAX_LUX ? TSL2550_MAX_LUX : lux;
@@ -204,7 +211,11 @@ static ssize_t tsl2550_store_power_state(struct device *dev,
 	unsigned long val = simple_strtoul(buf, NULL, 10);
 	int ret;
 
+<<<<<<< HEAD
 	if (val < 0 || val > 1)
+=======
+	if (val > 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	mutex_lock(&data->update_lock);
@@ -236,7 +247,11 @@ static ssize_t tsl2550_store_operating_mode(struct device *dev,
 	unsigned long val = simple_strtoul(buf, NULL, 10);
 	int ret;
 
+<<<<<<< HEAD
 	if (val < 0 || val > 1)
+=======
+	if (val > 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	if (data->power_state == 0)
@@ -447,7 +462,10 @@ MODULE_DEVICE_TABLE(i2c, tsl2550_id);
 static struct i2c_driver tsl2550_driver = {
 	.driver = {
 		.name	= TSL2550_DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= TSL2550_PM_OPS,
 	},
 	.probe	= tsl2550_probe,

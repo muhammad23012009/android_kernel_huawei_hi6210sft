@@ -18,15 +18,21 @@
  *  ANY THEORY OF LIABILITY, WHETHER IN  CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the  GNU General Public License along
  *  with this program; if not, write  to the Free Software Foundation, Inc.,
  *  675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -153,6 +159,7 @@ static inline u32 pmcmsptwi_clock_to_reg(
 	return ((clock->filter & 0xf) << 12) | (clock->clock & 0x03ff);
 }
 
+<<<<<<< HEAD
 static inline void pmcmsptwi_reg_to_clock(
 			u32 reg, struct pmcmsptwi_clock *clock)
 {
@@ -160,6 +167,8 @@ static inline void pmcmsptwi_reg_to_clock(
 	clock->clock = reg & 0x03ff;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline u32 pmcmsptwi_cfg_to_reg(const struct pmcmsptwi_cfg *cfg)
 {
 	return ((cfg->arbf & 0xf) << 12) |
@@ -341,10 +350,15 @@ static int pmcmsptwi_probe(struct platform_device *pldev)
 	i2c_set_adapdata(&pmcmsptwi_adapter, &pmcmsptwi_data);
 
 	rc = i2c_add_adapter(&pmcmsptwi_adapter);
+<<<<<<< HEAD
 	if (rc) {
 		dev_err(&pldev->dev, "Unable to register I2C adapter\n");
 		goto ret_unmap;
 	}
+=======
+	if (rc)
+		goto ret_unmap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -468,6 +482,7 @@ static enum pmcmsptwi_xfer_result pmcmsptwi_xfer_cmd(
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (cmd->read_len > MSP_MAX_BYTES_PER_RW ||
 	    cmd->write_len > MSP_MAX_BYTES_PER_RW) {
 		dev_err(&pmcmsptwi_adapter.dev,
@@ -476,6 +491,8 @@ static enum pmcmsptwi_xfer_result pmcmsptwi_xfer_cmd(
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&data->lock);
 	dev_dbg(&pmcmsptwi_adapter.dev,
 		"Setting address to 0x%04x\n", cmd->addr);
@@ -532,6 +549,7 @@ static int pmcmsptwi_master_xfer(struct i2c_adapter *adap,
 	struct pmcmsptwi_cfg oldcfg, newcfg;
 	int ret;
 
+<<<<<<< HEAD
 	if (num > 2) {
 		dev_dbg(&adap->dev, "%d messages unsupported\n", num);
 		return -EINVAL;
@@ -551,6 +569,16 @@ static int pmcmsptwi_master_xfer(struct i2c_adapter *adap,
 				"Non write-read dual messages unsupported\n");
 			return -EINVAL;
 		}
+=======
+	if (num == 2) {
+		struct i2c_msg *nextmsg = msg + 1;
+
+		cmd.type = MSP_TWI_CMD_WRITE_READ;
+		cmd.write_len = msg->len;
+		cmd.write_data = msg->buf;
+		cmd.read_len = nextmsg->len;
+		cmd.read_data = nextmsg->buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (msg->flags & I2C_M_RD) {
 		cmd.type = MSP_TWI_CMD_READ;
 		cmd.read_len = msg->len;
@@ -610,6 +638,17 @@ static u32 pmcmsptwi_i2c_func(struct i2c_adapter *adapter)
 		I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_PROC_CALL;
 }
 
+<<<<<<< HEAD
+=======
+static struct i2c_adapter_quirks pmcmsptwi_i2c_quirks = {
+	.flags = I2C_AQ_COMB_WRITE_THEN_READ,
+	.max_write_len = MSP_MAX_BYTES_PER_RW,
+	.max_read_len = MSP_MAX_BYTES_PER_RW,
+	.max_comb_1st_msg_len = MSP_MAX_BYTES_PER_RW,
+	.max_comb_2nd_msg_len = MSP_MAX_BYTES_PER_RW,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* -- Initialization -- */
 
 static struct i2c_algorithm pmcmsptwi_algo = {
@@ -621,6 +660,10 @@ static struct i2c_adapter pmcmsptwi_adapter = {
 	.owner		= THIS_MODULE,
 	.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
 	.algo		= &pmcmsptwi_algo,
+<<<<<<< HEAD
+=======
+	.quirks		= &pmcmsptwi_i2c_quirks,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= DRV_NAME,
 };
 
@@ -629,7 +672,10 @@ static struct platform_driver pmcmsptwi_driver = {
 	.remove	= pmcmsptwi_remove,
 	.driver = {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

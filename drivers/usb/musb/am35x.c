@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Texas Instruments AM35x "glue layer"
  *
@@ -26,14 +30,21 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/usb/nop-usb-xceiv.h>
+=======
+#include <linux/usb/usb_phy_generic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/usb-omap.h>
 
 #include "musb_core.h"
@@ -86,10 +97,17 @@
 struct am35x_glue {
 	struct device		*dev;
 	struct platform_device	*musb;
+<<<<<<< HEAD
 	struct clk		*phy_clk;
 	struct clk		*clk;
 };
 #define glue_to_musb(g)		platform_get_drvdata(g->musb)
+=======
+	struct platform_device	*phy;
+	struct clk		*phy_clk;
+	struct clk		*clk;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * am35x_musb_enable - enable interrupts
@@ -149,25 +167,43 @@ static void otg_timer(unsigned long _musb)
 	 */
 	devctl = musb_readb(mregs, MUSB_DEVCTL);
 	dev_dbg(musb->controller, "Poll devctl %02x (%s)\n", devctl,
+<<<<<<< HEAD
 		usb_otg_state_string(musb->xceiv->state));
 
 	spin_lock_irqsave(&musb->lock, flags);
 	switch (musb->xceiv->state) {
+=======
+		usb_otg_state_string(musb->xceiv->otg->state));
+
+	spin_lock_irqsave(&musb->lock, flags);
+	switch (musb->xceiv->otg->state) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case OTG_STATE_A_WAIT_BCON:
 		devctl &= ~MUSB_DEVCTL_SESSION;
 		musb_writeb(musb->mregs, MUSB_DEVCTL, devctl);
 
 		devctl = musb_readb(musb->mregs, MUSB_DEVCTL);
 		if (devctl & MUSB_DEVCTL_BDEVICE) {
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_B_IDLE;
 			MUSB_DEV_MODE(musb);
 		} else {
 			musb->xceiv->state = OTG_STATE_A_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
+			MUSB_DEV_MODE(musb);
+		} else {
+			musb->xceiv->otg->state = OTG_STATE_A_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			MUSB_HST_MODE(musb);
 		}
 		break;
 	case OTG_STATE_A_WAIT_VFALL:
+<<<<<<< HEAD
 		musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
+=======
+		musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		musb_writel(musb->ctrl_base, CORE_INTR_SRC_SET_REG,
 			    MUSB_INTR_VBUSERROR << AM35X_INTR_USB_SHIFT);
 		break;
@@ -176,7 +212,11 @@ static void otg_timer(unsigned long _musb)
 		if (devctl & MUSB_DEVCTL_BDEVICE)
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 		else
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		break;
@@ -193,9 +233,15 @@ static void am35x_musb_try_idle(struct musb *musb, unsigned long timeout)
 
 	/* Never idle if active, or when VBUS timeout is not set as host */
 	if (musb->is_active || (musb->a_wait_bcon == 0 &&
+<<<<<<< HEAD
 				musb->xceiv->state == OTG_STATE_A_WAIT_BCON)) {
 		dev_dbg(musb->controller, "%s active, deleting timer\n",
 			usb_otg_state_string(musb->xceiv->state));
+=======
+				musb->xceiv->otg->state == OTG_STATE_A_WAIT_BCON)) {
+		dev_dbg(musb->controller, "%s active, deleting timer\n",
+			usb_otg_state_string(musb->xceiv->otg->state));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		del_timer(&otg_workaround);
 		last_timer = jiffies;
 		return;
@@ -208,7 +254,11 @@ static void am35x_musb_try_idle(struct musb *musb, unsigned long timeout)
 	last_timer = timeout;
 
 	dev_dbg(musb->controller, "%s inactive, starting idle timer for %u ms\n",
+<<<<<<< HEAD
 		usb_otg_state_string(musb->xceiv->state),
+=======
+		usb_otg_state_string(musb->xceiv->otg->state),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		jiffies_to_msecs(timeout - jiffies));
 	mod_timer(&otg_workaround, timeout);
 }
@@ -218,7 +268,11 @@ static irqreturn_t am35x_musb_interrupt(int irq, void *hci)
 	struct musb  *musb = hci;
 	void __iomem *reg_base = musb->ctrl_base;
 	struct device *dev = musb->controller;
+<<<<<<< HEAD
 	struct musb_hdrc_platform_data *plat = dev->platform_data;
+=======
+	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_musb_board_data *data = plat->board_data;
 	struct usb_otg *otg = musb->xceiv->otg;
 	unsigned long flags;
@@ -278,27 +332,43 @@ static irqreturn_t am35x_musb_interrupt(int irq, void *hci)
 			 * devctl.
 			 */
 			musb->int_usb &= ~MUSB_INTR_VBUSERROR;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_WAIT_VFALL;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_WAIT_VFALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 			WARNING("VBUS error workaround (delay coming)\n");
 		} else if (drvvbus) {
 			MUSB_HST_MODE(musb);
 			otg->default_a = 1;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			portstate(musb->port1_status |= USB_PORT_STAT_POWER);
 			del_timer(&otg_workaround);
 		} else {
 			musb->is_active = 0;
 			MUSB_DEV_MODE(musb);
 			otg->default_a = 0;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_B_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			portstate(musb->port1_status &= ~USB_PORT_STAT_POWER);
 		}
 
 		/* NOTE: this must complete power-on within 100 ms. */
 		dev_dbg(musb->controller, "VBUS %s (%s)%s, devctl %02x\n",
 				drvvbus ? "on" : "off",
+<<<<<<< HEAD
 				usb_otg_state_string(musb->xceiv->state),
+=======
+				usb_otg_state_string(musb->xceiv->otg->state),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				err ? " ERROR" : "",
 				devctl);
 		ret = IRQ_HANDLED;
@@ -324,7 +394,11 @@ eoi:
 	}
 
 	/* Poll for ID change */
+<<<<<<< HEAD
 	if (musb->xceiv->state == OTG_STATE_B_IDLE)
+=======
+	if (musb->xceiv->otg->state == OTG_STATE_B_IDLE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 
 	spin_unlock_irqrestore(&musb->lock, flags);
@@ -335,7 +409,11 @@ eoi:
 static int am35x_musb_set_mode(struct musb *musb, u8 musb_mode)
 {
 	struct device *dev = musb->controller;
+<<<<<<< HEAD
 	struct musb_hdrc_platform_data *plat = dev->platform_data;
+=======
+	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_musb_board_data *data = plat->board_data;
 	int     retval = 0;
 
@@ -350,7 +428,11 @@ static int am35x_musb_set_mode(struct musb *musb, u8 musb_mode)
 static int am35x_musb_init(struct musb *musb)
 {
 	struct device *dev = musb->controller;
+<<<<<<< HEAD
 	struct musb_hdrc_platform_data *plat = dev->platform_data;
+=======
+	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_musb_board_data *data = plat->board_data;
 	void __iomem *reg_base = musb->ctrl_base;
 	u32 rev;
@@ -362,7 +444,10 @@ static int am35x_musb_init(struct musb *musb)
 	if (!rev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	usb_nop_xceiv_register();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	musb->xceiv = usb_get_phy(USB_PHY_TYPE_USB2);
 	if (IS_ERR_OR_NULL(musb->xceiv))
 		return -EPROBE_DEFER;
@@ -394,7 +479,11 @@ static int am35x_musb_init(struct musb *musb)
 static int am35x_musb_exit(struct musb *musb)
 {
 	struct device *dev = musb->controller;
+<<<<<<< HEAD
 	struct musb_hdrc_platform_data *plat = dev->platform_data;
+=======
+	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_musb_board_data *data = plat->board_data;
 
 	del_timer_sync(&otg_workaround);
@@ -404,13 +493,20 @@ static int am35x_musb_exit(struct musb *musb)
 		data->set_phy_power(0);
 
 	usb_put_phy(musb->xceiv);
+<<<<<<< HEAD
 	usb_nop_xceiv_unregister();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 /* AM35x supports only 32bit read operation */
+<<<<<<< HEAD
 void musb_read_fifo(struct musb_hw_ep *hw_ep, u16 len, u8 *dst)
+=======
+static void am35x_read_fifo(struct musb_hw_ep *hw_ep, u16 len, u8 *dst)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem *fifo = hw_ep->fifo;
 	u32		val;
@@ -440,9 +536,21 @@ void musb_read_fifo(struct musb_hw_ep *hw_ep, u16 len, u8 *dst)
 }
 
 static const struct musb_platform_ops am35x_ops = {
+<<<<<<< HEAD
 	.init		= am35x_musb_init,
 	.exit		= am35x_musb_exit,
 
+=======
+	.quirks		= MUSB_DMA_INVENTRA | MUSB_INDEXED_EP,
+	.init		= am35x_musb_init,
+	.exit		= am35x_musb_exit,
+
+	.read_fifo	= am35x_read_fifo,
+#ifdef CONFIG_USB_INVENTRA_DMA
+	.dma_init	= musbhs_dma_controller_create,
+	.dma_exit	= musbhs_dma_controller_destroy,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.enable		= am35x_musb_enable,
 	.disable	= am35x_musb_disable,
 
@@ -452,6 +560,7 @@ static const struct musb_platform_ops am35x_ops = {
 	.set_vbus	= am35x_musb_set_vbus,
 };
 
+<<<<<<< HEAD
 static u64 am35x_dmamask = DMA_BIT_MASK(32);
 
 static int am35x_probe(struct platform_device *pdev)
@@ -460,12 +569,27 @@ static int am35x_probe(struct platform_device *pdev)
 	struct platform_device		*musb;
 	struct am35x_glue		*glue;
 
+=======
+static const struct platform_device_info am35x_dev_info = {
+	.name		= "musb-hdrc",
+	.id		= PLATFORM_DEVID_AUTO,
+	.dma_mask	= DMA_BIT_MASK(32),
+};
+
+static int am35x_probe(struct platform_device *pdev)
+{
+	struct musb_hdrc_platform_data	*pdata = dev_get_platdata(&pdev->dev);
+	struct platform_device		*musb;
+	struct am35x_glue		*glue;
+	struct platform_device_info	pinfo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct clk			*phy_clk;
 	struct clk			*clk;
 
 	int				ret = -ENOMEM;
 
 	glue = kzalloc(sizeof(*glue), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!glue) {
 		dev_err(&pdev->dev, "failed to allocate glue context\n");
 		goto err0;
@@ -476,6 +600,10 @@ static int am35x_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to allocate musb device\n");
 		goto err1;
 	}
+=======
+	if (!glue)
+		goto err0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	phy_clk = clk_get(&pdev->dev, "fck");
 	if (IS_ERR(phy_clk)) {
@@ -503,17 +631,22 @@ static int am35x_probe(struct platform_device *pdev)
 		goto err6;
 	}
 
+<<<<<<< HEAD
 	musb->dev.parent		= &pdev->dev;
 	musb->dev.dma_mask		= &am35x_dmamask;
 	musb->dev.coherent_dma_mask	= am35x_dmamask;
 
 	glue->dev			= &pdev->dev;
 	glue->musb			= musb;
+=======
+	glue->dev			= &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	glue->phy_clk			= phy_clk;
 	glue->clk			= clk;
 
 	pdata->platform_ops		= &am35x_ops;
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, glue);
 
 	ret = platform_device_add_resources(musb, pdev->resource,
@@ -533,10 +666,37 @@ static int am35x_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register musb device\n");
 		goto err7;
+=======
+	glue->phy = usb_phy_generic_register();
+	if (IS_ERR(glue->phy)) {
+		ret = PTR_ERR(glue->phy);
+		goto err7;
+	}
+	platform_set_drvdata(pdev, glue);
+
+	pinfo = am35x_dev_info;
+	pinfo.parent = &pdev->dev;
+	pinfo.res = pdev->resource;
+	pinfo.num_res = pdev->num_resources;
+	pinfo.data = pdata;
+	pinfo.size_data = sizeof(*pdata);
+
+	glue->musb = musb = platform_device_register_full(&pinfo);
+	if (IS_ERR(musb)) {
+		ret = PTR_ERR(musb);
+		dev_err(&pdev->dev, "failed to register musb device: %d\n", ret);
+		goto err8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err8:
+	usb_phy_generic_unregister(glue->phy);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err7:
 	clk_disable(clk);
 
@@ -550,9 +710,12 @@ err4:
 	clk_put(phy_clk);
 
 err3:
+<<<<<<< HEAD
 	platform_device_put(musb);
 
 err1:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(glue);
 
 err0:
@@ -564,6 +727,10 @@ static int am35x_remove(struct platform_device *pdev)
 	struct am35x_glue	*glue = platform_get_drvdata(pdev);
 
 	platform_device_unregister(glue->musb);
+<<<<<<< HEAD
+=======
+	usb_phy_generic_unregister(glue->phy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_disable(glue->clk);
 	clk_disable(glue->phy_clk);
 	clk_put(glue->clk);
@@ -573,11 +740,19 @@ static int am35x_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int am35x_suspend(struct device *dev)
 {
 	struct am35x_glue	*glue = dev_get_drvdata(dev);
 	struct musb_hdrc_platform_data *plat = dev->platform_data;
+=======
+#ifdef CONFIG_PM_SLEEP
+static int am35x_suspend(struct device *dev)
+{
+	struct am35x_glue	*glue = dev_get_drvdata(dev);
+	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_musb_board_data *data = plat->board_data;
 
 	/* Shutdown the on-chip PHY and its PLL. */
@@ -593,7 +768,11 @@ static int am35x_suspend(struct device *dev)
 static int am35x_resume(struct device *dev)
 {
 	struct am35x_glue	*glue = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	struct musb_hdrc_platform_data *plat = dev->platform_data;
+=======
+	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct omap_musb_board_data *data = plat->board_data;
 	int			ret;
 
@@ -615,6 +794,7 @@ static int am35x_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static struct dev_pm_ops am35x_pm_ops = {
 	.suspend	= am35x_suspend,
@@ -626,12 +806,22 @@ static struct dev_pm_ops am35x_pm_ops = {
 #define DEV_PM_OPS	NULL
 #endif
 
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(am35x_pm_ops, am35x_suspend, am35x_resume);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver am35x_driver = {
 	.probe		= am35x_probe,
 	.remove		= am35x_remove,
 	.driver		= {
 		.name	= "musb-am35x",
+<<<<<<< HEAD
 		.pm	= DEV_PM_OPS,
+=======
+		.pm	= &am35x_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

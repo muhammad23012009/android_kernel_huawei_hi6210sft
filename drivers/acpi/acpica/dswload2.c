@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -335,7 +339,11 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 
 		/* Create a new op */
 
+<<<<<<< HEAD
 		op = acpi_ps_alloc_op(walk_state->opcode);
+=======
+		op = acpi_ps_alloc_op(walk_state->opcode, walk_state->aml);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!op) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -490,8 +498,13 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 
 			status =
 			    acpi_ds_create_index_field(op,
+<<<<<<< HEAD
 						       (acpi_handle) arg->
 						       common.node, walk_state);
+=======
+						       (acpi_handle)arg->common.
+						       node, walk_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case AML_BANK_FIELD_OP:
@@ -509,6 +522,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* All NAMED_FIELD opcodes must be handled above */
 			break;
 		}
@@ -548,6 +565,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Unknown opcode */
 
 			status = AE_OK;
@@ -596,6 +617,7 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 				 * Executing a method: initialize the region and unlock
 				 * the interpreter
 				 */
+<<<<<<< HEAD
 				status =
 				    acpi_ex_create_region(op->named.data,
 							  op->named.length,
@@ -606,14 +628,26 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 				}
 
 				acpi_ex_exit_interpreter();
+=======
+				status = acpi_ex_create_region(op->named.data,
+							       op->named.length,
+							       region_space,
+							       walk_state);
+				if (ACPI_FAILURE(status)) {
+					return_ACPI_STATUS(status);
+				}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 
 			status =
 			    acpi_ev_initialize_region
 			    (acpi_ns_get_attached_object(node), FALSE);
+<<<<<<< HEAD
 			if (walk_state->method_node) {
 				acpi_ex_enter_interpreter();
 			}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (ACPI_FAILURE(status)) {
 				/*
@@ -662,6 +696,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 								  length,
 								  walk_state);
 				}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				walk_state->operands[0] = NULL;
 				walk_state->num_operands = 0;
 
@@ -674,6 +712,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 #endif				/* ACPI_NO_METHOD_EXECUTION */
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* All NAMED_COMPLEX opcodes must be handled above */
 			break;
 		}
@@ -721,10 +763,18 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 		break;
 
 	default:
+<<<<<<< HEAD
 		break;
 	}
 
       cleanup:
+=======
+
+		break;
+	}
+
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Remove the Node pushed at the very beginning */
 

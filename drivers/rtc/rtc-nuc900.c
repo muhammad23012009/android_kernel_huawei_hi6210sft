@@ -99,7 +99,11 @@ static int *check_rtc_access_enable(struct nuc900_rtc *nuc900_rtc)
 	if (!timeout)
 		return ERR_PTR(-EPERM);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int nuc900_rtc_bcd2bin(unsigned int timereg,
@@ -214,7 +218,11 @@ static int nuc900_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops nuc900_rtc_ops = {
+=======
+static const struct rtc_class_ops nuc900_rtc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read_time = nuc900_rtc_read_time,
 	.set_time = nuc900_rtc_set_time,
 	.read_alarm = nuc900_rtc_read_alarm,
@@ -229,10 +237,16 @@ static int __init nuc900_rtc_probe(struct platform_device *pdev)
 
 	nuc900_rtc = devm_kzalloc(&pdev->dev, sizeof(struct nuc900_rtc),
 				GFP_KERNEL);
+<<<<<<< HEAD
 	if (!nuc900_rtc) {
 		dev_err(&pdev->dev, "kzalloc nuc900_rtc failed\n");
 		return -ENOMEM;
 	}
+=======
+	if (!nuc900_rtc)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	nuc900_rtc->rtc_reg = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(nuc900_rtc->rtc_reg))
@@ -260,6 +274,7 @@ static int __init nuc900_rtc_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __exit nuc900_rtc_remove(struct platform_device *pdev)
 {
 	platform_set_drvdata(pdev, NULL);
@@ -272,6 +287,11 @@ static struct platform_driver nuc900_rtc_driver = {
 	.driver		= {
 		.name	= "nuc900-rtc",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver nuc900_rtc_driver = {
+	.driver		= {
+		.name	= "nuc900-rtc",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

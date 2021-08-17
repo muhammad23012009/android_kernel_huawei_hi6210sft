@@ -12,6 +12,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/delay.h>
 #include <media/v4l2-common.h>
@@ -88,6 +91,7 @@ static void csi2_recv_config(struct isp_device *isp,
 }
 
 static const unsigned int csi2_input_fmts[] = {
+<<<<<<< HEAD
 	V4L2_MBUS_FMT_SGRBG10_1X10,
 	V4L2_MBUS_FMT_SGRBG10_DPCM8_1X8,
 	V4L2_MBUS_FMT_SRGGB10_1X10,
@@ -97,6 +101,17 @@ static const unsigned int csi2_input_fmts[] = {
 	V4L2_MBUS_FMT_SGBRG10_1X10,
 	V4L2_MBUS_FMT_SGBRG10_DPCM8_1X8,
 	V4L2_MBUS_FMT_YUYV8_2X8,
+=======
+	MEDIA_BUS_FMT_SGRBG10_1X10,
+	MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8,
+	MEDIA_BUS_FMT_SRGGB10_1X10,
+	MEDIA_BUS_FMT_SRGGB10_DPCM8_1X8,
+	MEDIA_BUS_FMT_SBGGR10_1X10,
+	MEDIA_BUS_FMT_SBGGR10_DPCM8_1X8,
+	MEDIA_BUS_FMT_SGBRG10_1X10,
+	MEDIA_BUS_FMT_SGBRG10_DPCM8_1X8,
+	MEDIA_BUS_FMT_YUYV8_2X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* To set the format on the CSI2 requires a mapping function that takes
@@ -181,6 +196,7 @@ static u16 csi2_ctx_map_format(struct isp_csi2_device *csi2)
 	int fmtidx, destidx, is_3630;
 
 	switch (fmt->code) {
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_SGRBG10_1X10:
 	case V4L2_MBUS_FMT_SRGGB10_1X10:
 	case V4L2_MBUS_FMT_SBGGR10_1X10:
@@ -194,6 +210,21 @@ static u16 csi2_ctx_map_format(struct isp_csi2_device *csi2)
 		fmtidx = 1;
 		break;
 	case V4L2_MBUS_FMT_YUYV8_2X8:
+=======
+	case MEDIA_BUS_FMT_SGRBG10_1X10:
+	case MEDIA_BUS_FMT_SRGGB10_1X10:
+	case MEDIA_BUS_FMT_SBGGR10_1X10:
+	case MEDIA_BUS_FMT_SGBRG10_1X10:
+		fmtidx = 0;
+		break;
+	case MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8:
+	case MEDIA_BUS_FMT_SRGGB10_DPCM8_1X8:
+	case MEDIA_BUS_FMT_SBGGR10_DPCM8_1X8:
+	case MEDIA_BUS_FMT_SGBRG10_DPCM8_1X8:
+		fmtidx = 1;
+		break;
+	case MEDIA_BUS_FMT_YUYV8_2X8:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fmtidx = 2;
 		break;
 	default:
@@ -558,7 +589,12 @@ int omap3isp_csi2_reset(struct isp_csi2_device *csi2)
 
 static int csi2_configure(struct isp_csi2_device *csi2)
 {
+<<<<<<< HEAD
 	const struct isp_v4l2_subdevs_group *pdata;
+=======
+	struct isp_pipeline *pipe = to_isp_pipeline(&csi2->subdev.entity);
+	const struct isp_bus_cfg *buscfg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct isp_device *isp = csi2->isp;
 	struct isp_csi2_timing_cfg *timing = &csi2->timing[0];
 	struct v4l2_subdev *sensor;
@@ -573,16 +609,33 @@ static int csi2_configure(struct isp_csi2_device *csi2)
 	if (csi2->contexts[0].enabled || csi2->ctrl.if_enable)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	pad = media_entity_remote_source(&csi2->pads[CSI2_PAD_SINK]);
 	sensor = media_entity_to_v4l2_subdev(pad->entity);
 	pdata = sensor->host_priv;
+=======
+	pad = media_entity_remote_pad(&csi2->pads[CSI2_PAD_SINK]);
+	sensor = media_entity_to_v4l2_subdev(pad->entity);
+	buscfg = sensor->host_priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	csi2->frame_skip = 0;
 	v4l2_subdev_call(sensor, sensor, g_skip_frames, &csi2->frame_skip);
 
+<<<<<<< HEAD
 	csi2->ctrl.vp_out_ctrl = pdata->bus.csi2.vpclk_div;
 	csi2->ctrl.frame_mode = ISP_CSI2_FRAME_IMMEDIATE;
 	csi2->ctrl.ecc_enable = pdata->bus.csi2.crc;
+=======
+	csi2->ctrl.vp_out_ctrl =
+		clamp_t(unsigned int, pipe->l3_ick / pipe->external_rate - 1,
+			1, 3);
+	dev_dbg(isp->dev, "%s: l3_ick %lu, external_rate %u, vp_out_ctrl %u\n",
+		__func__, pipe->l3_ick,  pipe->external_rate,
+		csi2->ctrl.vp_out_ctrl);
+	csi2->ctrl.frame_mode = ISP_CSI2_FRAME_IMMEDIATE;
+	csi2->ctrl.ecc_enable = buscfg->bus.csi2.crc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	timing->ionum = 1;
 	timing->force_rx_mode = 1;
@@ -695,7 +748,11 @@ static void csi2_isr_buffer(struct isp_csi2_device *csi2)
 	if (buffer == NULL)
 		return;
 
+<<<<<<< HEAD
 	csi2_set_outaddr(csi2, buffer->isp_addr);
+=======
+	csi2_set_outaddr(csi2, buffer->dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	csi2_ctx_enable(isp, csi2, 0, 1);
 }
 
@@ -812,7 +869,11 @@ static int csi2_queue(struct isp_video *video, struct isp_buffer *buffer)
 	struct isp_device *isp = video->isp;
 	struct isp_csi2_device *csi2 = &isp->isp_csi2a;
 
+<<<<<<< HEAD
 	csi2_set_outaddr(csi2, buffer->isp_addr);
+=======
+	csi2_set_outaddr(csi2, buffer->dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * If streaming was enabled before there was a buffer queued
@@ -839,21 +900,37 @@ static const struct isp_video_operations csi2_ispvideo_ops = {
  */
 
 static struct v4l2_mbus_framefmt *
+<<<<<<< HEAD
 __csi2_get_format(struct isp_csi2_device *csi2, struct v4l2_subdev_fh *fh,
 		  unsigned int pad, enum v4l2_subdev_format_whence which)
 {
 	if (which == V4L2_SUBDEV_FORMAT_TRY)
 		return v4l2_subdev_get_try_format(fh, pad);
+=======
+__csi2_get_format(struct isp_csi2_device *csi2, struct v4l2_subdev_pad_config *cfg,
+		  unsigned int pad, enum v4l2_subdev_format_whence which)
+{
+	if (which == V4L2_SUBDEV_FORMAT_TRY)
+		return v4l2_subdev_get_try_format(&csi2->subdev, cfg, pad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		return &csi2->formats[pad];
 }
 
 static void
+<<<<<<< HEAD
 csi2_try_format(struct isp_csi2_device *csi2, struct v4l2_subdev_fh *fh,
 		unsigned int pad, struct v4l2_mbus_framefmt *fmt,
 		enum v4l2_subdev_format_whence which)
 {
 	enum v4l2_mbus_pixelcode pixelcode;
+=======
+csi2_try_format(struct isp_csi2_device *csi2, struct v4l2_subdev_pad_config *cfg,
+		unsigned int pad, struct v4l2_mbus_framefmt *fmt,
+		enum v4l2_subdev_format_whence which)
+{
+	u32 pixelcode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct v4l2_mbus_framefmt *format;
 	const struct isp_format_info *info;
 	unsigned int i;
@@ -868,7 +945,11 @@ csi2_try_format(struct isp_csi2_device *csi2, struct v4l2_subdev_fh *fh,
 
 		/* If not found, use SGRBG10 as default */
 		if (i >= ARRAY_SIZE(csi2_input_fmts))
+<<<<<<< HEAD
 			fmt->code = V4L2_MBUS_FMT_SGRBG10_1X10;
+=======
+			fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		fmt->width = clamp_t(u32, fmt->width, 1, 8191);
 		fmt->height = clamp_t(u32, fmt->height, 1, 8191);
@@ -879,7 +960,11 @@ csi2_try_format(struct isp_csi2_device *csi2, struct v4l2_subdev_fh *fh,
 		 * compression.
 		 */
 		pixelcode = fmt->code;
+<<<<<<< HEAD
 		format = __csi2_get_format(csi2, fh, CSI2_PAD_SINK, which);
+=======
+		format = __csi2_get_format(csi2, cfg, CSI2_PAD_SINK, which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(fmt, format, sizeof(*fmt));
 
 		/*
@@ -900,12 +985,20 @@ csi2_try_format(struct isp_csi2_device *csi2, struct v4l2_subdev_fh *fh,
 /*
  * csi2_enum_mbus_code - Handle pixel format enumeration
  * @sd     : pointer to v4l2 subdev structure
+<<<<<<< HEAD
  * @fh     : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad configuration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @code   : pointer to v4l2_subdev_mbus_code_enum structure
  * return -EINVAL or zero on success
  */
 static int csi2_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			       struct v4l2_subdev_fh *fh,
+=======
+			       struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       struct v4l2_subdev_mbus_code_enum *code)
 {
 	struct isp_csi2_device *csi2 = v4l2_get_subdevdata(sd);
@@ -918,8 +1011,13 @@ static int csi2_enum_mbus_code(struct v4l2_subdev *sd,
 
 		code->code = csi2_input_fmts[code->index];
 	} else {
+<<<<<<< HEAD
 		format = __csi2_get_format(csi2, fh, CSI2_PAD_SINK,
 					   V4L2_SUBDEV_FORMAT_TRY);
+=======
+		format = __csi2_get_format(csi2, cfg, CSI2_PAD_SINK,
+					   code->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (code->index) {
 		case 0:
 			/* Passthrough sink pad code */
@@ -942,7 +1040,11 @@ static int csi2_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int csi2_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				struct v4l2_subdev_fh *fh,
+=======
+				struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct v4l2_subdev_frame_size_enum *fse)
 {
 	struct isp_csi2_device *csi2 = v4l2_get_subdevdata(sd);
@@ -954,7 +1056,11 @@ static int csi2_enum_frame_size(struct v4l2_subdev *sd,
 	format.code = fse->code;
 	format.width = 1;
 	format.height = 1;
+<<<<<<< HEAD
 	csi2_try_format(csi2, fh, fse->pad, &format, V4L2_SUBDEV_FORMAT_TRY);
+=======
+	csi2_try_format(csi2, cfg, fse->pad, &format, fse->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fse->min_width = format.width;
 	fse->min_height = format.height;
 
@@ -964,7 +1070,11 @@ static int csi2_enum_frame_size(struct v4l2_subdev *sd,
 	format.code = fse->code;
 	format.width = -1;
 	format.height = -1;
+<<<<<<< HEAD
 	csi2_try_format(csi2, fh, fse->pad, &format, V4L2_SUBDEV_FORMAT_TRY);
+=======
+	csi2_try_format(csi2, cfg, fse->pad, &format, fse->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fse->max_width = format.width;
 	fse->max_height = format.height;
 
@@ -974,17 +1084,29 @@ static int csi2_enum_frame_size(struct v4l2_subdev *sd,
 /*
  * csi2_get_format - Handle get format by pads subdev method
  * @sd : pointer to v4l2 subdev structure
+<<<<<<< HEAD
  * @fh : V4L2 subdev file handle
  * @fmt: pointer to v4l2 subdev format structure
  * return -EINVAL or zero on success
  */
 static int csi2_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+ * @cfg: V4L2 subdev pad configuration
+ * @fmt: pointer to v4l2 subdev format structure
+ * return -EINVAL or zero on success
+ */
+static int csi2_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct v4l2_subdev_format *fmt)
 {
 	struct isp_csi2_device *csi2 = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt *format;
 
+<<<<<<< HEAD
 	format = __csi2_get_format(csi2, fh, fmt->pad, fmt->which);
+=======
+	format = __csi2_get_format(csi2, cfg, fmt->pad, fmt->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (format == NULL)
 		return -EINVAL;
 
@@ -995,29 +1117,52 @@ static int csi2_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 /*
  * csi2_set_format - Handle set format by pads subdev method
  * @sd : pointer to v4l2 subdev structure
+<<<<<<< HEAD
  * @fh : V4L2 subdev file handle
  * @fmt: pointer to v4l2 subdev format structure
  * return -EINVAL or zero on success
  */
 static int csi2_set_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+ * @cfg: V4L2 subdev pad configuration
+ * @fmt: pointer to v4l2 subdev format structure
+ * return -EINVAL or zero on success
+ */
+static int csi2_set_format(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct v4l2_subdev_format *fmt)
 {
 	struct isp_csi2_device *csi2 = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt *format;
 
+<<<<<<< HEAD
 	format = __csi2_get_format(csi2, fh, fmt->pad, fmt->which);
 	if (format == NULL)
 		return -EINVAL;
 
 	csi2_try_format(csi2, fh, fmt->pad, &fmt->format, fmt->which);
+=======
+	format = __csi2_get_format(csi2, cfg, fmt->pad, fmt->which);
+	if (format == NULL)
+		return -EINVAL;
+
+	csi2_try_format(csi2, cfg, fmt->pad, &fmt->format, fmt->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*format = fmt->format;
 
 	/* Propagate the format from sink to source */
 	if (fmt->pad == CSI2_PAD_SINK) {
+<<<<<<< HEAD
 		format = __csi2_get_format(csi2, fh, CSI2_PAD_SOURCE,
 					   fmt->which);
 		*format = fmt->format;
 		csi2_try_format(csi2, fh, CSI2_PAD_SOURCE, format, fmt->which);
+=======
+		format = __csi2_get_format(csi2, cfg, CSI2_PAD_SOURCE,
+					   fmt->which);
+		*format = fmt->format;
+		csi2_try_format(csi2, cfg, CSI2_PAD_SOURCE, format, fmt->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -1039,10 +1184,17 @@ static int csi2_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	memset(&format, 0, sizeof(format));
 	format.pad = CSI2_PAD_SINK;
 	format.which = fh ? V4L2_SUBDEV_FORMAT_TRY : V4L2_SUBDEV_FORMAT_ACTIVE;
+<<<<<<< HEAD
 	format.format.code = V4L2_MBUS_FMT_SGRBG10_1X10;
 	format.format.width = 4096;
 	format.format.height = 4096;
 	csi2_set_format(sd, fh, &format);
+=======
+	format.format.code = MEDIA_BUS_FMT_SGRBG10_1X10;
+	format.format.width = 4096;
+	format.format.height = 4096;
+	csi2_set_format(sd, fh ? fh->pad : NULL, &format);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1148,14 +1300,27 @@ static int csi2_link_setup(struct media_entity *entity,
 	struct v4l2_subdev *sd = media_entity_to_v4l2_subdev(entity);
 	struct isp_csi2_device *csi2 = v4l2_get_subdevdata(sd);
 	struct isp_csi2_ctrl_cfg *ctrl = &csi2->ctrl;
+<<<<<<< HEAD
+=======
+	unsigned int index = local->index;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The ISP core doesn't support pipelines with multiple video outputs.
 	 * Revisit this when it will be implemented, and return -EBUSY for now.
 	 */
 
+<<<<<<< HEAD
 	switch (local->index | media_entity_type(remote->entity)) {
 	case CSI2_PAD_SOURCE | MEDIA_ENT_T_DEVNODE:
+=======
+	/* FIXME: this is actually a hack! */
+	if (is_media_entity_v4l2_subdev(remote->entity))
+		index |= 2 << 16;
+
+	switch (index) {
+	case CSI2_PAD_SOURCE:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (csi2->output & ~CSI2_OUTPUT_MEMORY)
 				return -EBUSY;
@@ -1165,7 +1330,11 @@ static int csi2_link_setup(struct media_entity *entity,
 		}
 		break;
 
+<<<<<<< HEAD
 	case CSI2_PAD_SOURCE | MEDIA_ENT_T_V4L2_SUBDEV:
+=======
+	case CSI2_PAD_SOURCE | 2 << 16:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (csi2->output & ~CSI2_OUTPUT_CCDC)
 				return -EBUSY;
@@ -1205,6 +1374,10 @@ int omap3isp_csi2_register_entities(struct isp_csi2_device *csi2,
 	int ret;
 
 	/* Register the subdev and video nodes. */
+<<<<<<< HEAD
+=======
+	csi2->subdev.dev = vdev->mdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = v4l2_device_register_subdev(vdev, &csi2->subdev);
 	if (ret < 0)
 		goto error;
@@ -1245,10 +1418,18 @@ static int csi2_init_entities(struct isp_csi2_device *csi2)
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
 	pads[CSI2_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
+<<<<<<< HEAD
 	pads[CSI2_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
 
 	me->ops = &csi2_media_ops;
 	ret = media_entity_init(me, CSI2_PADS_NUM, pads, 0);
+=======
+	pads[CSI2_PAD_SINK].flags = MEDIA_PAD_FL_SINK
+				    | MEDIA_PAD_FL_MUST_CONNECT;
+
+	me->ops = &csi2_media_ops;
+	ret = media_entity_pads_init(me, CSI2_PADS_NUM, pads);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
@@ -1267,6 +1448,7 @@ static int csi2_init_entities(struct isp_csi2_device *csi2)
 	if (ret < 0)
 		goto error_video;
 
+<<<<<<< HEAD
 	/* Connect the CSI2 subdev to the video node. */
 	ret = media_entity_create_link(&csi2->subdev.entity, CSI2_PAD_SOURCE,
 				       &csi2->video_out.video.entity, 0, 0);
@@ -1277,6 +1459,10 @@ static int csi2_init_entities(struct isp_csi2_device *csi2)
 
 error_link:
 	omap3isp_video_cleanup(&csi2->video_out);
+=======
+	return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_video:
 	media_entity_cleanup(&csi2->subdev.entity);
 	return ret;

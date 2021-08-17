@@ -41,7 +41,11 @@ void nf_nat_l4proto_unique_tuple(const struct nf_nat_l3proto *l3proto,
 				 const struct nf_conn *ct,
 				 u16 *rover)
 {
+<<<<<<< HEAD
 	unsigned int range_size, min, i;
+=======
+	unsigned int range_size, min, max, i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__be16 *portptr;
 	u_int16_t off;
 
@@ -71,6 +75,7 @@ void nf_nat_l4proto_unique_tuple(const struct nf_nat_l3proto *l3proto,
 		}
 	} else {
 		min = ntohs(range->min_proto.all);
+<<<<<<< HEAD
 		range_size = ntohs(range->max_proto.all) - min + 1;
 	}
 
@@ -80,11 +85,29 @@ void nf_nat_l4proto_unique_tuple(const struct nf_nat_l3proto *l3proto,
 						  : tuple->src.u.all);
 	else
 		off = *rover;
+=======
+		max = ntohs(range->max_proto.all);
+		if (unlikely(max < min))
+			swap(max, min);
+		range_size = max - min + 1;
+	}
+
+	if (range->flags & NF_NAT_RANGE_PROTO_RANDOM) {
+		off = l3proto->secure_port(tuple, maniptype == NF_NAT_MANIP_SRC
+						  ? tuple->dst.u.all
+						  : tuple->src.u.all);
+	} else if (range->flags & NF_NAT_RANGE_PROTO_RANDOM_FULLY) {
+		off = prandom_u32();
+	} else {
+		off = *rover;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; ; ++off) {
 		*portptr = htons(min + off % range_size);
 		if (++i != range_size && nf_nat_used_tuple(tuple, ct))
 			continue;
+<<<<<<< HEAD
 		if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM))
 			*rover = off;
 		return;
@@ -94,6 +117,16 @@ void nf_nat_l4proto_unique_tuple(const struct nf_nat_l3proto *l3proto,
 EXPORT_SYMBOL_GPL(nf_nat_l4proto_unique_tuple);
 
 #if defined(CONFIG_NF_CT_NETLINK) || defined(CONFIG_NF_CT_NETLINK_MODULE)
+=======
+		if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL))
+			*rover = off;
+		return;
+	}
+}
+EXPORT_SYMBOL_GPL(nf_nat_l4proto_unique_tuple);
+
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int nf_nat_l4proto_nlattr_to_range(struct nlattr *tb[],
 				   struct nf_nat_range *range)
 {

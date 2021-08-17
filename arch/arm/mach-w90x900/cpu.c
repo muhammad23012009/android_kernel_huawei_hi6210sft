@@ -33,8 +33,13 @@
 #include <mach/hardware.h>
 #include <mach/regs-serial.h>
 #include <mach/regs-clock.h>
+<<<<<<< HEAD
 #include <mach/regs-ebi.h>
 #include <mach/regs-timer.h>
+=======
+#include "regs-ebi.h"
+#include "regs-timer.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "cpu.h"
 #include "clock.h"
@@ -178,7 +183,12 @@ static int __init nuc900_set_cpufreq(char *str)
 	if (!*str)
 		return 0;
 
+<<<<<<< HEAD
 	strict_strtoul(str, 0, &cpufreq);
+=======
+	if (kstrtoul(str, 0, &cpufreq))
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nuc900_clock_source(NULL, "ext");
 
@@ -230,9 +240,15 @@ void __init nuc900_init_clocks(void)
 #define	WTE	(1 << 7)
 #define	WTRE	(1 << 1)
 
+<<<<<<< HEAD
 void nuc9xx_restart(char mode, const char *cmd)
 {
 	if (mode == 's') {
+=======
+void nuc9xx_restart(enum reboot_mode mode, const char *cmd)
+{
+	if (mode == REBOOT_SOFT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Jump into ROM at address 0 */
 		soft_restart(0);
 	} else {

@@ -14,7 +14,11 @@
  *  Copyright (C) 2008-2009 Red Hat, Inc., Ingo Molnar
  *  Copyright (C) 2009 Jaswinder Singh Rajput
  *  Copyright (C) 2009 Advanced Micro Devices, Inc., Robert Richter
+<<<<<<< HEAD
  *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ *  Copyright (C) 2008-2009 Red Hat, Inc., Peter Zijlstra
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  Copyright (C) 2009 Intel Corporation, <markus.t.metzger@intel.com>
  *
  * ppc:
@@ -300,7 +304,11 @@ again:
 
 static void bfin_pmu_stop(struct perf_event *event, int flags)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hw_perf_event *hwc = &event->hw;
 	int idx = hwc->idx;
 
@@ -318,7 +326,11 @@ static void bfin_pmu_stop(struct perf_event *event, int flags)
 
 static void bfin_pmu_start(struct perf_event *event, int flags)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hw_perf_event *hwc = &event->hw;
 	int idx = hwc->idx;
 
@@ -335,7 +347,11 @@ static void bfin_pmu_start(struct perf_event *event, int flags)
 
 static void bfin_pmu_del(struct perf_event *event, int flags)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bfin_pmu_stop(event, PERF_EF_UPDATE);
 	__clear_bit(event->hw.idx, cpuc->used_mask);
@@ -345,7 +361,11 @@ static void bfin_pmu_del(struct perf_event *event, int flags)
 
 static int bfin_pmu_add(struct perf_event *event, int flags)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hw_perf_event *hwc = &event->hw;
 	int idx = hwc->idx;
 	int ret = -EAGAIN;
@@ -389,6 +409,7 @@ static int bfin_pmu_event_init(struct perf_event *event)
 	if (attr->exclude_hv || attr->exclude_idle)
 		return -EPERM;
 
+<<<<<<< HEAD
 	/*
 	 * All of the on-chip counters are "limited", in that they have
 	 * no interrupts, and are therefore unable to do sampling without
@@ -397,6 +418,8 @@ static int bfin_pmu_event_init(struct perf_event *event)
 	if (hwc->sample_period)
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = 0;
 	switch (attr->type) {
 	case PERF_TYPE_RAW:
@@ -429,7 +452,11 @@ static int bfin_pmu_event_init(struct perf_event *event)
 
 static void bfin_pmu_enable(struct pmu *pmu)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct perf_event *event;
 	struct hw_perf_event *hwc;
 	int i;
@@ -461,6 +488,7 @@ static struct pmu pmu = {
 	.read        = bfin_pmu_read,
 };
 
+<<<<<<< HEAD
 static void bfin_pmu_setup(int cpu)
 {
 	struct cpu_hw_events *cpuhw = &per_cpu(cpu_hw_events, cpu);
@@ -484,16 +512,39 @@ bfin_pmu_notifier(struct notifier_block *self, unsigned long action, void *hcpu)
 	}
 
 	return NOTIFY_OK;
+=======
+static int bfin_pmu_prepare_cpu(unsigned int cpu)
+{
+	struct cpu_hw_events *cpuhw = &per_cpu(cpu_hw_events, cpu);
+
+	bfin_write_PFCTL(0);
+	memset(cpuhw, 0, sizeof(struct cpu_hw_events));
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init bfin_pmu_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = perf_pmu_register(&pmu, "cpu", PERF_TYPE_RAW);
 	if (!ret)
 		perf_cpu_notifier(bfin_pmu_notifier);
 
+=======
+	/*
+	 * All of the on-chip counters are "limited", in that they have
+	 * no interrupts, and are therefore unable to do sampling without
+	 * further work and timer assistance.
+	 */
+	pmu.capabilities |= PERF_PMU_CAP_NO_INTERRUPT;
+
+	ret = perf_pmu_register(&pmu, "cpu", PERF_TYPE_RAW);
+	if (!ret)
+		cpuhp_setup_state(CPUHP_PERF_BFIN, "PERF_BFIN",
+				  bfin_pmu_prepare_cpu, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 early_initcall(bfin_pmu_init);

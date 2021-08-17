@@ -21,8 +21,32 @@
 
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter/xt_quota2.h>
+<<<<<<< HEAD
 #ifdef CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG
 #include <linux/netfilter_ipv4/ipt_ULOG.h>
+=======
+
+#ifdef CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG
+/* For compatibility, these definitions are copied from the
+ * deprecated header file <linux/netfilter_ipv4/ipt_ULOG.h> */
+#define ULOG_MAC_LEN	80
+#define ULOG_PREFIX_LEN	32
+
+/* Format of the ULOG packets passed through netlink */
+typedef struct ulog_packet_msg {
+	unsigned long mark;
+	long timestamp_sec;
+	long timestamp_usec;
+	unsigned int hook;
+	char indev_name[IFNAMSIZ];
+	char outdev_name[IFNAMSIZ];
+	size_t data_len;
+	char prefix[ULOG_PREFIX_LEN];
+	unsigned char mac_len;
+	unsigned char mac[ULOG_MAC_LEN];
+	unsigned char payload[0];
+} ulog_packet_msg_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /**
@@ -52,12 +76,18 @@ static DEFINE_SPINLOCK(counter_list_lock);
 
 static struct proc_dir_entry *proc_xt_quota;
 static unsigned int quota_list_perms = S_IRUGO | S_IWUSR;
+<<<<<<< HEAD
 static unsigned int quota_list_uid   = 0;
 static unsigned int quota_list_gid   = 0;
 module_param_named(perms, quota_list_perms, uint, S_IRUGO | S_IWUSR);
 module_param_named(uid, quota_list_uid, uint, S_IRUGO | S_IWUSR);
 module_param_named(gid, quota_list_gid, uint, S_IRUGO | S_IWUSR);
 
+=======
+static kuid_t quota_list_uid = KUIDT_INIT(0);
+static kgid_t quota_list_gid = KGIDT_INIT(0);
+module_param_named(perms, quota_list_perms, uint, S_IRUGO | S_IWUSR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG
 static void quota2_log(unsigned int hooknum,
@@ -290,6 +320,11 @@ quota_mt2(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	struct xt_quota_mtinfo2 *q = (void *)par->matchinfo;
 	struct xt_quota_counter *e = q->master;
+<<<<<<< HEAD
+=======
+	int charge = (q->flags & XT_QUOTA_PACKET) ? 1 : skb->len;
+	bool no_change = q->flags & XT_QUOTA_NO_CHANGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool ret = q->flags & XT_QUOTA_INVERT;
 
 	spin_lock_bh(&e->lock);
@@ -298,6 +333,7 @@ quota_mt2(const struct sk_buff *skb, struct xt_action_param *par)
 		 * While no_change is pointless in "grow" mode, we will
 		 * implement it here simply to have a consistent behavior.
 		 */
+<<<<<<< HEAD
 		if (!(q->flags & XT_QUOTA_NO_CHANGE)) {
 			e->quota += (q->flags & XT_QUOTA_PACKET) ? 1 : skb->len;
 		}
@@ -316,6 +352,23 @@ quota_mt2(const struct sk_buff *skb, struct xt_action_param *par)
 					   par->out,
 					   q->name);
 			}
+=======
+		if (!no_change)
+			e->quota += charge;
+		ret = true; /* note: does not respect inversion (bug??) */
+	} else {
+		if (e->quota > charge) {
+			if (!no_change)
+				e->quota -= charge;
+			ret = !ret;
+		} else if (e->quota) {
+			/* We are transitioning, log that fact. */
+			quota2_log(par->hooknum,
+				   skb,
+				   par->in,
+				   par->out,
+				   q->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* we do not allow even small packets from now on */
 			e->quota = 0;
 		}

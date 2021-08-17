@@ -15,6 +15,10 @@
 #include <asm/asmmacro.h>
 #include <asm/page.h>
 #include <asm/thread_info.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Work around cpp -rob */
 #define ALLOC #alloc
@@ -119,6 +123,10 @@
 __copy_user_begin:
 
 	.globl	__copy_user
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__copy_user)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 dword_align:
 	andcc	%o1, 1, %g0
 	be	4f

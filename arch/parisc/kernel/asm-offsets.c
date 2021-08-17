@@ -242,7 +242,10 @@ int main(void)
 	DEFINE(PT_SZ_ALGN, align_frame(sizeof(struct pt_regs), FRAME_ALIGN));
 	BLANK();
 	DEFINE(TI_TASK, offsetof(struct thread_info, task));
+<<<<<<< HEAD
 	DEFINE(TI_EXEC_DOMAIN, offsetof(struct thread_info, exec_domain));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DEFINE(TI_FLAGS, offsetof(struct thread_info, flags));
 	DEFINE(TI_CPU, offsetof(struct thread_info, cpu));
 	DEFINE(TI_SEGMENT, offsetof(struct thread_info, addr_limit));
@@ -291,7 +294,20 @@ int main(void)
 	DEFINE(ASM_PFN_PTE_SHIFT, PFN_PTE_SHIFT);
 	DEFINE(ASM_PT_INITIAL, PT_INITIAL);
 	BLANK();
+<<<<<<< HEAD
 	DEFINE(EXCDATA_IP, offsetof(struct exception_data, fault_ip));
+=======
+	/* HUGEPAGE_SIZE is only used in vmlinux.lds.S to align kernel text
+	 * and kernel data on physical huge pages */
+#ifdef CONFIG_HUGETLB_PAGE
+	DEFINE(HUGEPAGE_SIZE, 1UL << REAL_HPAGE_SHIFT);
+#else
+	DEFINE(HUGEPAGE_SIZE, PAGE_SIZE);
+#endif
+	BLANK();
+	DEFINE(EXCDATA_IP, offsetof(struct exception_data, fault_ip));
+	DEFINE(EXCDATA_GP, offsetof(struct exception_data, fault_gp));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DEFINE(EXCDATA_SPACE, offsetof(struct exception_data, fault_space));
 	DEFINE(EXCDATA_ADDR, offsetof(struct exception_data, fault_addr));
 	BLANK();

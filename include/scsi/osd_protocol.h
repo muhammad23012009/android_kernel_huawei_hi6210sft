@@ -4,7 +4,11 @@
  * Copyright (C) 2008 Panasas Inc.  All rights reserved.
  *
  * Authors:
+<<<<<<< HEAD
  *   Boaz Harrosh <bharrosh@panasas.com>
+=======
+ *   Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *   Benny Halevy <bhalevy@panasas.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -263,6 +267,7 @@ static inline struct osd_cdb_head *osd_cdb_head(struct osd_cdb *ocdb)
  * Ex name = FORMAT_OSD we have OSD_ACT_FORMAT_OSD && OSDv1_ACT_FORMAT_OSD
  */
 #define OSD_ACT___(Name, Num) \
+<<<<<<< HEAD
 	OSD_ACT_##Name = __constant_cpu_to_be16(0x8880 + Num), \
 	OSDv1_ACT_##Name = __constant_cpu_to_be16(0x8800 + Num),
 
@@ -273,6 +278,18 @@ static inline struct osd_cdb_head *osd_cdb_head(struct osd_cdb *ocdb)
 #define OSD_ACT_V1_V2(Name, Num1, Num2) \
 	OSD_ACT_##Name = __constant_cpu_to_be16(Num2), \
 	OSDv1_ACT_##Name = __constant_cpu_to_be16(Num1),
+=======
+	OSD_ACT_##Name = cpu_to_be16(0x8880 + Num), \
+	OSDv1_ACT_##Name = cpu_to_be16(0x8800 + Num),
+
+/* V2 only actions */
+#define OSD_ACT_V2(Name, Num) \
+	OSD_ACT_##Name = cpu_to_be16(0x8880 + Num),
+
+#define OSD_ACT_V1_V2(Name, Num1, Num2) \
+	OSD_ACT_##Name = cpu_to_be16(Num2), \
+	OSDv1_ACT_##Name = cpu_to_be16(Num1),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum osd_service_actions {
 	OSD_ACT_V2(OBJECT_STRUCTURE_CHECK,	0x00)
@@ -496,7 +513,11 @@ struct osd_timestamp {
  */
 
 struct osd_key_identifier {
+<<<<<<< HEAD
 	u8 id[7]; /* if you know why 7 please email bharrosh@panasas.com */
+=======
+	u8 id[7]; /* if you know why 7 please email ooo@electrozaur.com */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 /* for osd_capability.format */

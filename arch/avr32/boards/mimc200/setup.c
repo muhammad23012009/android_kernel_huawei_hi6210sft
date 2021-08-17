@@ -8,7 +8,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 extern struct atmel_lcdfb_info mimc200_lcdc_data;
+=======
+extern struct atmel_lcdfb_pdata mimc200_lcdc_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/clk.h>
 #include <linux/etherdevice.h>
@@ -71,7 +75,11 @@ static struct fb_monspecs __initdata mimc200_default_monspecs = {
 	.dclkmax		= 25200000,
 };
 
+<<<<<<< HEAD
 struct atmel_lcdfb_info __initdata mimc200_lcdc_data = {
+=======
+struct atmel_lcdfb_pdata __initdata mimc200_lcdc_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.default_bpp		= 16,
 	.default_dmacon		= ATMEL_LCDC_DMAEN | ATMEL_LCDC_DMA2DEN,
 	.default_lcdcon2	= (ATMEL_LCDC_DISTYPE_TFT

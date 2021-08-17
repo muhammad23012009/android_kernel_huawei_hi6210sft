@@ -97,7 +97,11 @@ EXPORT_SYMBOL_GPL(cpu_pm_unregister_notifier);
  */
 int cpu_pm_enter(void)
 {
+<<<<<<< HEAD
 	int nr_calls;
+=======
+	int nr_calls = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	read_lock(&cpu_pm_notifier_lock);
@@ -156,7 +160,11 @@ EXPORT_SYMBOL_GPL(cpu_pm_exit);
  */
 int cpu_cluster_pm_enter(void)
 {
+<<<<<<< HEAD
 	int nr_calls;
+=======
+	int nr_calls = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	read_lock(&cpu_pm_notifier_lock);
@@ -180,7 +188,11 @@ EXPORT_SYMBOL_GPL(cpu_cluster_pm_enter);
  * low power state that may have caused some blocks in the same power domain
  * to reset.
  *
+<<<<<<< HEAD
  * Must be called after cpu_pm_exit has been called on all cpus in the power
+=======
+ * Must be called after cpu_cluster_pm_enter has been called for the power
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * domain, and before cpu_pm_exit has been called on any cpu in the power
  * domain. Notified drivers can include VFP co-processor, interrupt controller
  * and its PM extensions, local CPU timers context save/restore which

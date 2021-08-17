@@ -24,8 +24,14 @@
 */
 
 #include <linux/drbd.h>
+<<<<<<< HEAD
 
 static const char *drbd_conn_s_names[] = {
+=======
+#include "drbd_strings.h"
+
+static const char * const drbd_conn_s_names[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[C_STANDALONE]       = "StandAlone",
 	[C_DISCONNECTING]    = "Disconnecting",
 	[C_UNCONNECTED]      = "Unconnected",
@@ -52,13 +58,21 @@ static const char *drbd_conn_s_names[] = {
 	[C_BEHIND]           = "Behind",
 };
 
+<<<<<<< HEAD
 static const char *drbd_role_s_names[] = {
+=======
+static const char * const drbd_role_s_names[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[R_PRIMARY]   = "Primary",
 	[R_SECONDARY] = "Secondary",
 	[R_UNKNOWN]   = "Unknown"
 };
 
+<<<<<<< HEAD
 static const char *drbd_disk_s_names[] = {
+=======
+static const char * const drbd_disk_s_names[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[D_DISKLESS]     = "Diskless",
 	[D_ATTACHING]    = "Attaching",
 	[D_FAILED]       = "Failed",
@@ -70,7 +84,11 @@ static const char *drbd_disk_s_names[] = {
 	[D_UP_TO_DATE]   = "UpToDate",
 };
 
+<<<<<<< HEAD
 static const char *drbd_state_sw_errors[] = {
+=======
+static const char * const drbd_state_sw_errors[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[-SS_TWO_PRIMARIES] = "Multiple primaries not allowed by config",
 	[-SS_NO_UP_TO_DATE_DISK] = "Need access to UpToDate data",
 	[-SS_NO_LOCAL_DISK] = "Can not resync without local disk",

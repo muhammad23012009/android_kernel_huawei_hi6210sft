@@ -1,6 +1,7 @@
 #ifndef _PARISC_DMA_MAPPING_H
 #define _PARISC_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <linux/mm.h>
 #include <asm/cacheflush.h>
 #include <asm/scatterlist.h>
@@ -25,6 +26,13 @@ struct hppa_dma_ops {
 ** We could live without the hppa_dma_ops indirection if we didn't want
 ** to support 4 different coherent dma models with one binary (they will
 ** someday be loadable modules):
+=======
+#include <asm/cacheflush.h>
+
+/*
+** We need to support 4 different coherent dma models with one binary:
+**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 **     I/O MMU        consistent method           dma_sync behavior
 **  =============   ======================       =======================
 **  a) PA-7x00LC    uncachable host memory          flush/purge
@@ -39,6 +47,7 @@ struct hppa_dma_ops {
 ** flush/purge and allocate "regular" cacheable pages for everything.
 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PA11
 extern struct hppa_dma_ops pcxl_dma_ops;
 extern struct hppa_dma_ops pcx_dma_ops;
@@ -185,13 +194,31 @@ dma_set_mask(struct device *dev, u64 mask)
 	*dev->dma_mask = mask;
 
 	return 0;
+=======
+#define DMA_ERROR_CODE	(~(dma_addr_t)0)
+
+#ifdef CONFIG_PA11
+extern struct dma_map_ops pcxl_dma_ops;
+extern struct dma_map_ops pcx_dma_ops;
+#endif
+
+extern struct dma_map_ops *hppa_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return hppa_dma_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
 dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 	       enum dma_data_direction direction)
 {
+<<<<<<< HEAD
 	if(hppa_dma_ops->dma_sync_single_for_cpu)
+=======
+	if (hppa_dma_ops->sync_single_for_cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		flush_kernel_dcache_range((unsigned long)vaddr, size);
 }
 
@@ -209,12 +236,22 @@ parisc_walk_tree(struct device *dev)
 			break;
 		}
 	}
+<<<<<<< HEAD
 	BUG_ON(!dev->platform_data);
 	return dev->platform_data;
 }
 		
 #define GET_IOC(dev) (HBA_DATA(parisc_walk_tree(dev))->iommu)
 	
+=======
+	return dev->platform_data;
+}
+
+#define GET_IOC(dev) ({					\
+	void *__pdata = parisc_walk_tree(dev);		\
+	__pdata ? HBA_DATA(__pdata)->iommu : NULL;	\
+})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_IOMMU_CCIO
 struct parisc_device;
@@ -238,6 +275,7 @@ struct parisc_device;
 void * sba_get_iommu(struct parisc_device *dev);
 #endif
 
+<<<<<<< HEAD
 /* At the moment, we panic on error for IOMMU resource exaustion */
 #define dma_mapping_error(dev, x)	0
 
@@ -256,4 +294,6 @@ static inline int dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 	return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -147,7 +147,11 @@ void syscall_set_arguments(struct task_struct *task, struct pt_regs *regs,
  *
  * Returns the AUDIT_ARCH_* based on the system call convention in use.
  *
+<<<<<<< HEAD
  * It's only valid to call this when @task is stopped on entry to a system
+=======
+ * It's only valid to call this when current is stopped on entry to a system
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * call, due to %TIF_SYSCALL_TRACE, %TIF_SYSCALL_AUDIT, or %TIF_SECCOMP.
  *
  * Architectures which permit CONFIG_HAVE_ARCH_SECCOMP_FILTER must

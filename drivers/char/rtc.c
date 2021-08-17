@@ -227,7 +227,11 @@ static inline unsigned char rtc_is_updating(void)
 
 #ifdef RTC_IRQ
 /*
+<<<<<<< HEAD
  *	A very tiny interrupt handler. It runs with IRQF_DISABLED set,
+=======
+ *	A very tiny interrupt handler. It runs with interrupts disabled,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	but there is possibility of conflicting with the set_rtc_mmss()
  *	call (the rtc irq and the timer irq can easily run at the same
  *	time in two different CPUs). So we need to serialize
@@ -280,7 +284,11 @@ static irqreturn_t rtc_interrupt(int irq, void *dev_id)
 /*
  * sysctl-tuning infrastructure.
  */
+<<<<<<< HEAD
 static ctl_table rtc_table[] = {
+=======
+static struct ctl_table rtc_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "max-user-freq",
 		.data		= &rtc_max_user_freq,
@@ -291,7 +299,11 @@ static ctl_table rtc_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table rtc_root[] = {
+=======
+static struct ctl_table rtc_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "rtc",
 		.mode		= 0555,
@@ -300,7 +312,11 @@ static ctl_table rtc_root[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table dev_root[] = {
+=======
+static struct ctl_table dev_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "dev",
 		.mode		= 0555,
@@ -1040,8 +1056,12 @@ no_irq:
 		rtc_int_handler_ptr = rtc_interrupt;
 	}
 
+<<<<<<< HEAD
 	if (request_irq(RTC_IRQ, rtc_int_handler_ptr, IRQF_DISABLED,
 			"rtc", NULL)) {
+=======
+	if (request_irq(RTC_IRQ, rtc_int_handler_ptr, 0, "rtc", NULL)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Yeah right, seeing as irq 8 doesn't even hit the bus. */
 		rtc_has_irq = 0;
 		printk(KERN_ERR "rtc: IRQ %d is not free.\n", RTC_IRQ);

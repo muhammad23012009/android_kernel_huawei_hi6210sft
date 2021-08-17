@@ -94,6 +94,7 @@ static int wm8728_hw_params(struct snd_pcm_substream *substream,
 
 	dac &= ~0x18;
 
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		break;
@@ -101,6 +102,15 @@ static int wm8728_hw_params(struct snd_pcm_substream *substream,
 		dac |= 0x10;
 		break;
 	case SNDRV_PCM_FORMAT_S24_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		dac |= 0x10;
+		break;
+	case 24:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dac |= 0x08;
 		break;
 	default:
@@ -170,7 +180,11 @@ static int wm8728_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_ON:
 	case SND_SOC_BIAS_PREPARE:
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Power everything up... */
 			reg = snd_soc_read(codec, WM8728_DACCTL);
 			snd_soc_write(codec, WM8728_DACCTL, reg & ~0x4);
@@ -185,7 +199,10 @@ static int wm8728_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_write(codec, WM8728_DACCTL, reg | 0x4);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -212,6 +229,7 @@ static struct snd_soc_dai_driver wm8728_dai = {
 	.ops = &wm8728_dai_ops,
 };
 
+<<<<<<< HEAD
 static int wm8728_suspend(struct snd_soc_codec *codec)
 {
 	wm8728_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -261,6 +279,20 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8728 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8728_dapm_widgets),
 	.dapm_routes = wm8728_intercon,
 	.num_dapm_routes = ARRAY_SIZE(wm8728_intercon),
+=======
+static const struct snd_soc_codec_driver soc_codec_dev_wm8728 = {
+	.set_bias_level = wm8728_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8728_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm8728_snd_controls),
+		.dapm_widgets		= wm8728_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8728_dapm_widgets),
+		.dapm_routes		= wm8728_intercon,
+		.num_dapm_routes	= ARRAY_SIZE(wm8728_intercon),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct of_device_id wm8728_of_match[] = {
@@ -312,7 +344,10 @@ static int wm8728_spi_remove(struct spi_device *spi)
 static struct spi_driver wm8728_spi_driver = {
 	.driver = {
 		.name	= "wm8728",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = wm8728_of_match,
 	},
 	.probe		= wm8728_spi_probe,
@@ -320,7 +355,11 @@ static struct spi_driver wm8728_spi_driver = {
 };
 #endif /* CONFIG_SPI_MASTER */
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm8728_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
@@ -359,7 +398,10 @@ MODULE_DEVICE_TABLE(i2c, wm8728_i2c_id);
 static struct i2c_driver wm8728_i2c_driver = {
 	.driver = {
 		.name = "wm8728",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = wm8728_of_match,
 	},
 	.probe =    wm8728_i2c_probe,
@@ -371,7 +413,11 @@ static struct i2c_driver wm8728_i2c_driver = {
 static int __init wm8728_modinit(void)
 {
 	int ret = 0;
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = i2c_add_driver(&wm8728_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register wm8728 I2C driver: %d\n",
@@ -391,7 +437,11 @@ module_init(wm8728_modinit);
 
 static void __exit wm8728_exit(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i2c_del_driver(&wm8728_i2c_driver);
 #endif
 #if defined(CONFIG_SPI_MASTER)

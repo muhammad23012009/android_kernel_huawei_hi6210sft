@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,7 +87,13 @@
  * Should the subsystem abort the loading of an ACPI table if the
  * table checksum is incorrect?
  */
+<<<<<<< HEAD
 #define ACPI_CHECKSUM_ABORT             FALSE
+=======
+#ifndef ACPI_CHECKSUM_ABORT
+#define ACPI_CHECKSUM_ABORT             FALSE
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Generate a version of ACPICA that only supports "reduced hardware"
@@ -100,7 +110,13 @@
  *      ACPI PM timer
  *      FACS table (Waking vectors and Global Lock)
  */
+<<<<<<< HEAD
 #define ACPI_REDUCED_HARDWARE           FALSE
+=======
+#ifndef ACPI_REDUCED_HARDWARE
+#define ACPI_REDUCED_HARDWARE           FALSE
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /******************************************************************************
  *
@@ -118,7 +134,11 @@
 
 /* Maximum object reference count (detects object deletion issues) */
 
+<<<<<<< HEAD
 #define ACPI_MAX_REFERENCE_COUNT        0x1000
+=======
+#define ACPI_MAX_REFERENCE_COUNT        0x4000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Default page size for use in mapping memory for operation regions */
 
@@ -132,10 +152,13 @@
 
 #define ACPI_ROOT_TABLE_SIZE_INCREMENT  4
 
+<<<<<<< HEAD
 /* Maximum number of While() loop iterations before forced abort */
 
 #define ACPI_MAX_LOOP_ITERATIONS        0xFFFF
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Maximum sleep allowed via Sleep() operator */
 
 #define ACPI_MAX_SLEEP                  2000	/* 2000 millisec == two seconds */
@@ -144,6 +167,13 @@
 
 #define ACPI_ADDRESS_RANGE_MAX          2
 
+<<<<<<< HEAD
+=======
+/* Maximum number of While() loops before abort */
+
+#define ACPI_MAX_LOOP_COUNT             0xFFFF
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /******************************************************************************
  *
  * ACPI Specification constants (Do not change unless the specification changes)
@@ -215,12 +245,38 @@
 
 /******************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * Miscellaneous constants
+ *
+ *****************************************************************************/
+
+/* UUID constants */
+
+#define UUID_BUFFER_LENGTH          16	/* Length of UUID in memory */
+#define UUID_STRING_LENGTH          36	/* Total length of a UUID string */
+
+/* Positions for required hyphens (dashes) in UUID strings */
+
+#define UUID_HYPHEN1_OFFSET         8
+#define UUID_HYPHEN2_OFFSET         13
+#define UUID_HYPHEN3_OFFSET         18
+#define UUID_HYPHEN4_OFFSET         23
+
+/******************************************************************************
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ACPI AML Debugger
  *
  *****************************************************************************/
 
+<<<<<<< HEAD
 #define ACPI_DEBUGGER_MAX_ARGS          8	/* Must be max method args + 1 */
 #define ACPI_DB_LINE_BUFFER_SIZE	512
+=======
+#define ACPI_DEBUGGER_MAX_ARGS          ACPI_METHOD_NUM_ARGS + 4	/* Max command line arguments */
+#define ACPI_DB_LINE_BUFFER_SIZE        512
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ACPI_DEBUGGER_COMMAND_PROMPT    '-'
 #define ACPI_DEBUGGER_EXECUTE_PROMPT    '%'

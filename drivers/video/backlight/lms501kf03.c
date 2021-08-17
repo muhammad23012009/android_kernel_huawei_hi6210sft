@@ -232,6 +232,7 @@ static int lms501kf03_power_on(struct lms501kf03 *lcd)
 	if (!pd->power_on) {
 		dev_err(lcd->dev, "power_on is NULL.\n");
 		return -EINVAL;
+<<<<<<< HEAD
 	} else {
 		pd->power_on(lcd->ld, 1);
 		msleep(pd->power_on_delay);
@@ -245,6 +246,21 @@ static int lms501kf03_power_on(struct lms501kf03 *lcd)
 		msleep(pd->reset_delay);
 	}
 
+=======
+	}
+
+	pd->power_on(lcd->ld, 1);
+	msleep(pd->power_on_delay);
+
+	if (!pd->reset) {
+		dev_err(lcd->dev, "reset is NULL.\n");
+		return -EINVAL;
+	}
+
+	pd->reset(lcd->ld);
+	msleep(pd->reset_delay);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = lms501kf03_ldi_init(lcd);
 	if (ret) {
 		dev_err(lcd->dev, "failed to initialize ldi.\n");
@@ -344,14 +360,23 @@ static int lms501kf03_probe(struct spi_device *spi)
 	lcd->spi = spi;
 	lcd->dev = &spi->dev;
 
+<<<<<<< HEAD
 	lcd->lcd_pd = spi->dev.platform_data;
+=======
+	lcd->lcd_pd = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!lcd->lcd_pd) {
 		dev_err(&spi->dev, "platform data is NULL\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ld = lcd_device_register("lms501kf03", &spi->dev, lcd,
 				&lms501kf03_lcd_ops);
+=======
+	ld = devm_lcd_device_register(&spi->dev, "lms501kf03", &spi->dev, lcd,
+					&lms501kf03_lcd_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(ld))
 		return PTR_ERR(ld);
 
@@ -382,8 +407,11 @@ static int lms501kf03_remove(struct spi_device *spi)
 	struct lms501kf03 *lcd = spi_get_drvdata(spi);
 
 	lms501kf03_power(lcd, FB_BLANK_POWERDOWN);
+<<<<<<< HEAD
 	lcd_device_unregister(lcd->ld);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -424,7 +452,10 @@ static void lms501kf03_shutdown(struct spi_device *spi)
 static struct spi_driver lms501kf03_driver = {
 	.driver = {
 		.name	= "lms501kf03",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &lms501kf03_pm_ops,
 	},
 	.probe		= lms501kf03_probe,

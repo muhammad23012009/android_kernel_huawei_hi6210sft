@@ -5,10 +5,15 @@
 #ifndef __ASM_ARCH_MEMORY_H
 #define __ASM_ARCH_MEMORY_H
 
+<<<<<<< HEAD
 /*
  * Physical DRAM offset.
  */
 #define PLAT_PHYS_OFFSET		UL(0x10000000)
+=======
+/* REVISIT: omap1 legacy drivers still rely on this */
+#include <mach/soc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Bus address is physical address, except for OMAP-1510 Local Bus.
@@ -19,7 +24,10 @@
  * because of the strncmp().
  */
 #if defined(CONFIG_ARCH_OMAP15XX) && !defined(__ASSEMBLER__)
+<<<<<<< HEAD
 #include <mach/soc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * OMAP-1510 Local Bus address offset

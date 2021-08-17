@@ -11,7 +11,10 @@
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/platform_device.h>
@@ -437,7 +440,11 @@ static int sh7760_i2c_probe(struct platform_device *pdev)
 	struct cami2c *id;
 	int ret;
 
+<<<<<<< HEAD
 	pd = pdev->dev.platform_data;
+=======
+	pd = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pd) {
 		dev_err(&pdev->dev, "no platform_data!\n");
 		ret = -ENODEV;
@@ -472,7 +479,14 @@ static int sh7760_i2c_probe(struct platform_device *pdev)
 		goto out2;
 	}
 
+<<<<<<< HEAD
 	id->irq = platform_get_irq(pdev, 0);
+=======
+	ret = platform_get_irq(pdev, 0);
+	if (ret < 0)
+		goto out3;
+	id->irq = ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	id->adap.nr = pdev->id;
 	id->adap.algo = &sh7760_i2c_algo;
@@ -511,10 +525,15 @@ static int sh7760_i2c_probe(struct platform_device *pdev)
 	}
 
 	ret = i2c_add_numbered_adapter(&id->adap);
+<<<<<<< HEAD
 	if (ret < 0) {
 		dev_err(&pdev->dev, "reg adap failed: %d\n", ret);
 		goto out4;
 	}
+=======
+	if (ret < 0)
+		goto out4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, id);
 
@@ -553,7 +572,10 @@ static int sh7760_i2c_remove(struct platform_device *pdev)
 static struct platform_driver sh7760_i2c_drv = {
 	.driver	= {
 		.name	= SH7760_I2C_DEVNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= sh7760_i2c_probe,
 	.remove		= sh7760_i2c_remove,

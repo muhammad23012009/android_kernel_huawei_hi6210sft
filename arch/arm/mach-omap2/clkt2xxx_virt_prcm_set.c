@@ -98,7 +98,11 @@ long omap2_round_to_table_rate(struct clk_hw *hw, unsigned long rate,
 int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 			    unsigned long parent_rate)
 {
+<<<<<<< HEAD
 	u32 cur_rate, done_rate, bypass = 0, tmp;
+=======
+	u32 cur_rate, done_rate, bypass = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct prcm_config *prcm;
 	unsigned long found_speed = 0;
 	unsigned long flags;
@@ -141,6 +145,7 @@ int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 		else
 			done_rate = CORE_CLK_SRC_DPLL;
 
+<<<<<<< HEAD
 		/* MPU divider */
 		omap2_cm_write_mod_reg(prcm->cm_clksel_mpu, MPU_MOD, CM_CLKSEL);
 
@@ -158,6 +163,13 @@ int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 		if (cpu_is_omap2430())
 			omap2_cm_write_mod_reg(prcm->cm_clksel_mdm,
 					 OMAP2430_MDM_MOD, CM_CLKSEL);
+=======
+		omap2xxx_cm_set_mod_dividers(prcm->cm_clksel_mpu,
+					     prcm->cm_clksel_dsp,
+					     prcm->cm_clksel_gfx,
+					     prcm->cm_clksel1_core,
+					     prcm->cm_clksel_mdm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* x2 to enter omap2xxx_sdrc_init_params() */
 		omap2xxx_sdrc_reprogram(CORE_CLK_SRC_DPLL_X2, 1);
@@ -220,3 +232,51 @@ void omap2xxx_clkt_vps_late_init(void)
 		clk_put(c);
 	}
 }
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_OF
+#include <linux/clk-provider.h>
+#include <linux/clkdev.h>
+
+static const struct clk_ops virt_prcm_set_ops = {
+	.recalc_rate	= &omap2_table_mpu_recalc,
+	.set_rate	= &omap2_select_table_rate,
+	.round_rate	= &omap2_round_to_table_rate,
+};
+
+/**
+ * omap2xxx_clkt_vps_init - initialize virt_prcm_set clock
+ *
+ * Does a manual init for the virtual prcm DVFS clock for OMAP2. This
+ * function is called only from omap2 DT clock init, as the virtual
+ * node is not modelled in the DT clock data.
+ */
+void omap2xxx_clkt_vps_init(void)
+{
+	struct clk_init_data init = { NULL };
+	struct clk_hw_omap *hw = NULL;
+	struct clk *clk;
+	const char *parent_name = "mpu_ck";
+
+	omap2xxx_clkt_vps_late_init();
+	omap2xxx_clkt_vps_check_bootloader_rates();
+
+	hw = kzalloc(sizeof(*hw), GFP_KERNEL);
+	if (!hw)
+		goto cleanup;
+	init.name = "virt_prcm_set";
+	init.ops = &virt_prcm_set_ops;
+	init.parent_names = &parent_name;
+	init.num_parents = 1;
+
+	hw->hw.init = &init;
+
+	clk = clk_register(NULL, &hw->hw);
+	clkdev_create(clk, "cpufreq_ck", NULL);
+	return;
+cleanup:
+	kfree(hw);
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -55,7 +55,10 @@ int pci_add_dynid(struct pci_driver *drv,
 		  unsigned long driver_data)
 {
 	struct pci_dynid *dynid;
+<<<<<<< HEAD
 	int retval;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dynid = kzalloc(sizeof(*dynid), GFP_KERNEL);
 	if (!dynid)
@@ -73,10 +76,16 @@ int pci_add_dynid(struct pci_driver *drv,
 	list_add_tail(&dynid->node, &drv->dynids.list);
 	spin_unlock(&drv->dynids.lock);
 
+<<<<<<< HEAD
 	retval = driver_attach(&drv->driver);
 
 	return retval;
 }
+=======
+	return driver_attach(&drv->driver);
+}
+EXPORT_SYMBOL_GPL(pci_add_dynid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void pci_free_dynids(struct pci_driver *drv)
 {
@@ -98,6 +107,7 @@ static void pci_free_dynids(struct pci_driver *drv)
  *
  * Allow PCI IDs to be added to an existing driver via sysfs.
  */
+<<<<<<< HEAD
 static ssize_t
 store_new_id(struct device_driver *driver, const char *buf, size_t count)
 {
@@ -108,6 +118,18 @@ store_new_id(struct device_driver *driver, const char *buf, size_t count)
 	unsigned long driver_data=0;
 	int fields=0;
 	int retval;
+=======
+static ssize_t store_new_id(struct device_driver *driver, const char *buf,
+			    size_t count)
+{
+	struct pci_driver *pdrv = to_pci_driver(driver);
+	const struct pci_device_id *ids = pdrv->id_table;
+	__u32 vendor, device, subvendor = PCI_ANY_ID,
+		subdevice = PCI_ANY_ID, class = 0, class_mask = 0;
+	unsigned long driver_data = 0;
+	int fields = 0;
+	int retval = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fields = sscanf(buf, "%x %x %x %x %x %x %lx",
 			&vendor, &device, &subvendor, &subdevice,
@@ -115,6 +137,29 @@ store_new_id(struct device_driver *driver, const char *buf, size_t count)
 	if (fields < 2)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (fields != 7) {
+		struct pci_dev *pdev = kzalloc(sizeof(*pdev), GFP_KERNEL);
+		if (!pdev)
+			return -ENOMEM;
+
+		pdev->vendor = vendor;
+		pdev->device = device;
+		pdev->subsystem_vendor = subvendor;
+		pdev->subsystem_device = subdevice;
+		pdev->class = class;
+
+		if (pci_match_id(pdrv->id_table, pdev))
+			retval = -EEXIST;
+
+		kfree(pdev);
+
+		if (retval)
+			return retval;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Only accept driver_data values that match an existing id_table
 	   entry */
 	if (ids) {
@@ -136,6 +181,10 @@ store_new_id(struct device_driver *driver, const char *buf, size_t count)
 		return retval;
 	return count;
 }
+<<<<<<< HEAD
+=======
+static DRIVER_ATTR(new_id, S_IWUSR, NULL, store_new_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * store_remove_id - remove a PCI device ID from this driver
@@ -145,15 +194,24 @@ store_new_id(struct device_driver *driver, const char *buf, size_t count)
  *
  * Removes a dynamic pci device ID to this driver.
  */
+<<<<<<< HEAD
 static ssize_t
 store_remove_id(struct device_driver *driver, const char *buf, size_t count)
+=======
+static ssize_t store_remove_id(struct device_driver *driver, const char *buf,
+			       size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dynid *dynid, *n;
 	struct pci_driver *pdrv = to_pci_driver(driver);
 	__u32 vendor, device, subvendor = PCI_ANY_ID,
 		subdevice = PCI_ANY_ID, class = 0, class_mask = 0;
 	int fields = 0;
+<<<<<<< HEAD
 	int retval = -ENODEV;
+=======
+	size_t retval = -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fields = sscanf(buf, "%x %x %x %x %x %x",
 			&vendor, &device, &subvendor, &subdevice,
@@ -171,12 +229,17 @@ store_remove_id(struct device_driver *driver, const char *buf, size_t count)
 		    !((id->class ^ class) & class_mask)) {
 			list_del(&dynid->node);
 			kfree(dynid);
+<<<<<<< HEAD
 			retval = 0;
+=======
+			retval = count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
 	spin_unlock(&pdrv->dynids.lock);
 
+<<<<<<< HEAD
 	if (retval)
 		return retval;
 	return count;
@@ -187,6 +250,18 @@ static struct driver_attribute pci_drv_attrs[] = {
 	__ATTR(remove_id, S_IWUSR, NULL, store_remove_id),
 	__ATTR_NULL,
 };
+=======
+	return retval;
+}
+static DRIVER_ATTR(remove_id, S_IWUSR, NULL, store_remove_id);
+
+static struct attribute *pci_drv_attrs[] = {
+	&driver_attr_new_id.attr,
+	&driver_attr_remove_id.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(pci_drv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_match_id - See if a pci device matches a given pci_id table
@@ -212,6 +287,17 @@ const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
 	}
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_match_id);
+
+static const struct pci_device_id pci_device_id_any = {
+	.vendor = PCI_ANY_ID,
+	.device = PCI_ANY_ID,
+	.subvendor = PCI_ANY_ID,
+	.subdevice = PCI_ANY_ID,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_match_device - Tell if a PCI device structure has a matching PCI device id structure
@@ -226,18 +312,42 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
 						    struct pci_dev *dev)
 {
 	struct pci_dynid *dynid;
+<<<<<<< HEAD
+=======
+	const struct pci_device_id *found_id = NULL;
+
+	/* When driver_override is set, only bind to the matching driver */
+	if (dev->driver_override && strcmp(dev->driver_override, drv->name))
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Look at the dynamic ids first, before the static ones */
 	spin_lock(&drv->dynids.lock);
 	list_for_each_entry(dynid, &drv->dynids.list, node) {
 		if (pci_match_one_device(&dynid->id, dev)) {
+<<<<<<< HEAD
 			spin_unlock(&drv->dynids.lock);
 			return &dynid->id;
+=======
+			found_id = &dynid->id;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	spin_unlock(&drv->dynids.lock);
 
+<<<<<<< HEAD
 	return pci_match_id(drv->id_table, dev);
+=======
+	if (!found_id)
+		found_id = pci_match_id(drv->id_table, dev);
+
+	/* driver_override will always match, send a dummy id */
+	if (!found_id && dev->driver_override)
+		found_id = &pci_device_id_any;
+
+	return found_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct drv_dev_and_id {
@@ -258,18 +368,41 @@ static long local_pci_probe(void *_ddi)
 	 * Unbound PCI devices are always put in D0, regardless of
 	 * runtime PM status.  During probe, the device is set to
 	 * active and the usage count is incremented.  If the driver
+<<<<<<< HEAD
 	 * supports runtime PM, it should call pm_runtime_put_noidle()
 	 * in its probe routine and pm_runtime_get_noresume() in its
 	 * remove routine.
+=======
+	 * supports runtime PM, it should call pm_runtime_put_noidle(),
+	 * or any other runtime PM helper function decrementing the usage
+	 * count, in its probe routine and pm_runtime_get_noresume() in
+	 * its remove routine.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	pm_runtime_get_sync(dev);
 	pci_dev->driver = pci_drv;
 	rc = pci_drv->probe(pci_dev, ddi->id);
+<<<<<<< HEAD
 	if (rc) {
 		pci_dev->driver = NULL;
 		pm_runtime_put_sync(dev);
 	}
 	return rc;
+=======
+	if (!rc)
+		return rc;
+	if (rc < 0) {
+		pci_dev->driver = NULL;
+		pm_runtime_put_sync(dev);
+		return rc;
+	}
+	/*
+	 * Probe function should return < 0 for failure, 0 for success
+	 * Treat values > 0 as success, but warn.
+	 */
+	dev_warn(dev, "Driver probe function unexpectedly returned %d\n", rc);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
@@ -278,12 +411,36 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
 	int error, node;
 	struct drv_dev_and_id ddi = { drv, dev, id };
 
+<<<<<<< HEAD
 	/* Execute driver initialization on node where the device's
 	   bus is attached to.  This way the driver likely allocates
 	   its local memory on the right node without any need to
 	   change it. */
 	node = dev_to_node(&dev->dev);
 	if (node >= 0) {
+=======
+	/*
+	 * Execute driver initialization on node where the device is
+	 * attached.  This way the driver likely allocates its local memory
+	 * on the right node.
+	 */
+	node = dev_to_node(&dev->dev);
+
+	/*
+	 * On NUMA systems, we are likely to call a PF probe function using
+	 * work_on_cpu().  If that probe calls pci_enable_sriov() (which
+	 * adds the VF devices via pci_bus_add_device()), we may re-enter
+	 * this function to call the VF probe function.  Calling
+	 * work_on_cpu() again will cause a lockdep warning.  Since VFs are
+	 * always on the same node as the PF, we can work around this by
+	 * avoiding work_on_cpu() when we're already on the correct node.
+	 *
+	 * Preemption is enabled, so it's theoretically unsafe to use
+	 * numa_node_id(), but even if we run the probe function on the
+	 * wrong node, it should be functionally correct.
+	 */
+	if (node >= 0 && node != numa_node_id()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int cpu;
 
 		get_online_cpus();
@@ -295,6 +452,10 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
 		put_online_cpus();
 	} else
 		error = local_pci_probe(&ddi);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return error;
 }
 
@@ -302,12 +463,20 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
  * __pci_device_probe - check if a driver wants to claim a specific PCI device
  * @drv: driver to call to check if it wants the PCI device
  * @pci_dev: PCI device being probed
+<<<<<<< HEAD
  * 
  * returns 0 on success, else error.
  * side-effect: pci_dev->driver is set to drv when drv claims pci_dev.
  */
 static int
 __pci_device_probe(struct pci_driver *drv, struct pci_dev *pci_dev)
+=======
+ *
+ * returns 0 on success, else error.
+ * side-effect: pci_dev->driver is set to drv when drv claims pci_dev.
+ */
+static int __pci_device_probe(struct pci_driver *drv, struct pci_dev *pci_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const struct pci_device_id *id;
 	int error = 0;
@@ -324,6 +493,7 @@ __pci_device_probe(struct pci_driver *drv, struct pci_dev *pci_dev)
 	return error;
 }
 
+<<<<<<< HEAD
 static int pci_device_probe(struct device * dev)
 {
 	int error = 0;
@@ -336,14 +506,48 @@ static int pci_device_probe(struct device * dev)
 	error = __pci_device_probe(drv, pci_dev);
 	if (error)
 		pci_dev_put(pci_dev);
+=======
+int __weak pcibios_alloc_irq(struct pci_dev *dev)
+{
+	return 0;
+}
+
+void __weak pcibios_free_irq(struct pci_dev *dev)
+{
+}
+
+static int pci_device_probe(struct device *dev)
+{
+	int error;
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+	struct pci_driver *drv = to_pci_driver(dev->driver);
+
+	error = pcibios_alloc_irq(pci_dev);
+	if (error < 0)
+		return error;
+
+	pci_dev_get(pci_dev);
+	error = __pci_device_probe(drv, pci_dev);
+	if (error) {
+		pcibios_free_irq(pci_dev);
+		pci_dev_put(pci_dev);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return error;
 }
 
+<<<<<<< HEAD
 static int pci_device_remove(struct device * dev)
 {
 	struct pci_dev * pci_dev = to_pci_dev(dev);
 	struct pci_driver * drv = pci_dev->driver;
+=======
+static int pci_device_remove(struct device *dev)
+{
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+	struct pci_driver *drv = pci_dev->driver;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (drv) {
 		if (drv->remove) {
@@ -351,6 +555,10 @@ static int pci_device_remove(struct device * dev)
 			drv->remove(pci_dev);
 			pm_runtime_put_noidle(dev);
 		}
+<<<<<<< HEAD
+=======
+		pcibios_free_irq(pci_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_dev->driver = NULL;
 	}
 
@@ -368,7 +576,11 @@ static int pci_device_remove(struct device * dev)
 	 * We would love to complain here if pci_dev->is_enabled is set, that
 	 * the driver should have called pci_disable_device(), but the
 	 * unfortunate fact is there are too many odd BIOS and bridge setups
+<<<<<<< HEAD
 	 * that don't like drivers doing that all of the time.  
+=======
+	 * that don't like drivers doing that all of the time.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Oh well, we can dream of sane hardware when we sleep, no matter how
 	 * horrible the crap we have to deal with is when we are awake...
 	 */
@@ -386,10 +598,14 @@ static void pci_device_shutdown(struct device *dev)
 
 	if (drv && drv->shutdown)
 		drv->shutdown(pci_dev);
+<<<<<<< HEAD
 	pci_msi_shutdown(pci_dev);
 	pci_msix_shutdown(pci_dev);
 
 #ifdef CONFIG_KEXEC
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * If this is a kexec reboot, turn off Bus Master bit on the
 	 * device to tell it to not continue to do DMA. Don't touch
@@ -399,7 +615,10 @@ static void pci_device_shutdown(struct device *dev)
 	 */
 	if (kexec_in_progress && (pci_dev->current_state <= PCI_D3hot))
 		pci_clear_master(pci_dev);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM
@@ -471,8 +690,13 @@ static int pci_pm_reenable_device(struct pci_dev *pci_dev)
 
 static int pci_legacy_suspend(struct device *dev, pm_message_t state)
 {
+<<<<<<< HEAD
 	struct pci_dev * pci_dev = to_pci_dev(dev);
 	struct pci_driver * drv = pci_dev->driver;
+=======
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+	struct pci_driver *drv = pci_dev->driver;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (drv && drv->suspend) {
 		pci_power_t prev = pci_dev->current_state;
@@ -498,8 +722,13 @@ static int pci_legacy_suspend(struct device *dev, pm_message_t state)
 
 static int pci_legacy_suspend_late(struct device *dev, pm_message_t state)
 {
+<<<<<<< HEAD
 	struct pci_dev * pci_dev = to_pci_dev(dev);
 	struct pci_driver * drv = pci_dev->driver;
+=======
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+	struct pci_driver *drv = pci_dev->driver;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (drv && drv->suspend_late) {
 		pci_power_t prev = pci_dev->current_state;
@@ -515,7 +744,11 @@ static int pci_legacy_suspend_late(struct device *dev, pm_message_t state)
 			WARN_ONCE(pci_dev->current_state != prev,
 				"PCI PM: Device state not saved by %pF\n",
 				drv->suspend_late);
+<<<<<<< HEAD
 			return 0;
+=======
+			goto Fixup;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -524,13 +757,24 @@ static int pci_legacy_suspend_late(struct device *dev, pm_message_t state)
 
 	pci_pm_set_unknown_state(pci_dev);
 
+<<<<<<< HEAD
+=======
+Fixup:
+	pci_fixup_device(pci_fixup_suspend_late, pci_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int pci_legacy_resume_early(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev * pci_dev = to_pci_dev(dev);
 	struct pci_driver * drv = pci_dev->driver;
+=======
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+	struct pci_driver *drv = pci_dev->driver;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return drv && drv->resume_early ?
 			drv->resume_early(pci_dev) : 0;
@@ -538,8 +782,13 @@ static int pci_legacy_resume_early(struct device *dev)
 
 static int pci_legacy_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev * pci_dev = to_pci_dev(dev);
 	struct pci_driver * drv = pci_dev->driver;
+=======
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+	struct pci_driver *drv = pci_dev->driver;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_fixup_device(pci_fixup_resume, pci_dev);
 
@@ -553,14 +802,22 @@ static void pci_pm_default_resume(struct pci_dev *pci_dev)
 {
 	pci_fixup_device(pci_fixup_resume, pci_dev);
 
+<<<<<<< HEAD
 	if (!pci_is_bridge(pci_dev))
+=======
+	if (!pci_has_subordinate(pci_dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_enable_wake(pci_dev, PCI_D0, false);
 }
 
 static void pci_pm_default_suspend(struct pci_dev *pci_dev)
 {
 	/* Disable non-bridge devices without PM support */
+<<<<<<< HEAD
 	if (!pci_is_bridge(pci_dev))
+=======
+	if (!pci_has_subordinate(pci_dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_disable_enabled_device(pci_dev);
 }
 
@@ -586,6 +843,7 @@ static bool pci_has_legacy_pm_support(struct pci_dev *pci_dev)
 static int pci_pm_prepare(struct device *dev)
 {
 	struct device_driver *drv = dev->driver;
+<<<<<<< HEAD
 	int error = 0;
 
 	/*
@@ -603,14 +861,46 @@ static int pci_pm_prepare(struct device *dev)
 		error = drv->pm->prepare(dev);
 
 	return error;
+=======
+
+	/*
+	 * Devices having power.ignore_children set may still be necessary for
+	 * suspending their children in the next phase of device suspend.
+	 */
+	if (dev->power.ignore_children)
+		pm_runtime_resume(dev);
+
+	if (drv && drv->pm && drv->pm->prepare) {
+		int error = drv->pm->prepare(dev);
+		if (error)
+			return error;
+	}
+	return pci_dev_keep_suspended(to_pci_dev(dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void pci_pm_complete(struct device *dev)
 {
+<<<<<<< HEAD
 	struct device_driver *drv = dev->driver;
 
 	if (drv && drv->pm && drv->pm->complete)
 		drv->pm->complete(dev);
+=======
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+
+	pci_dev_complete_resume(pci_dev);
+	pm_generic_complete(dev);
+
+	/* Resume device if platform firmware has put it in reset-power-on */
+	if (dev->power.direct_complete && pm_resume_via_firmware()) {
+		pci_power_t pre_sleep_state = pci_dev->current_state;
+
+		pci_update_current_state(pci_dev, pci_dev->current_state);
+		if (pci_dev->current_state < pre_sleep_state)
+			pm_request_resume(dev);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #else /* !CONFIG_PM_SLEEP */
@@ -635,6 +925,19 @@ static int pci_pm_suspend(struct device *dev)
 		goto Fixup;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * PCI devices suspended at run time need to be resumed at this point,
+	 * because in general it is necessary to reconfigure them for system
+	 * suspend.  Namely, if the device is supposed to wake up the system
+	 * from the sleep state, we may need to reconfigure it for this purpose.
+	 * In turn, if the device is not supposed to wake up the system from the
+	 * sleep state, we'll have to prevent it from signaling wake-up.
+	 */
+	pm_runtime_resume(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_dev->state_saved = false;
 	if (pm->suspend) {
 		pci_power_t prev = pci_dev->current_state;
@@ -669,7 +972,11 @@ static int pci_pm_suspend_noirq(struct device *dev)
 
 	if (!pm) {
 		pci_save_state(pci_dev);
+<<<<<<< HEAD
 		return 0;
+=======
+		goto Fixup;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (pm->suspend_noirq) {
@@ -686,13 +993,21 @@ static int pci_pm_suspend_noirq(struct device *dev)
 			WARN_ONCE(pci_dev->current_state != prev,
 				"PCI PM: State of device not saved by %pF\n",
 				pm->suspend_noirq);
+<<<<<<< HEAD
 			return 0;
+=======
+			goto Fixup;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	if (!pci_dev->state_saved) {
 		pci_save_state(pci_dev);
+<<<<<<< HEAD
 		if (!pci_is_bridge(pci_dev))
+=======
+		if (pci_power_manageable(pci_dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pci_prepare_to_sleep(pci_dev);
 	}
 
@@ -710,6 +1025,12 @@ static int pci_pm_suspend_noirq(struct device *dev)
 	if (pci_dev->class == PCI_CLASS_SERIAL_USB_EHCI)
 		pci_write_config_word(pci_dev, PCI_COMMAND, 0);
 
+<<<<<<< HEAD
+=======
+Fixup:
+	pci_fixup_device(pci_fixup_suspend_late, pci_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -769,6 +1090,16 @@ static int pci_pm_resume(struct device *dev)
 
 #ifdef CONFIG_HIBERNATE_CALLBACKS
 
+<<<<<<< HEAD
+=======
+
+/*
+ * pcibios_pm_ops - provide arch-specific hooks when a PCI device is doing
+ * a hibernate transition
+ */
+struct dev_pm_ops __weak pcibios_pm_ops;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pci_pm_freeze(struct device *dev)
 {
 	struct pci_dev *pci_dev = to_pci_dev(dev);
@@ -782,6 +1113,17 @@ static int pci_pm_freeze(struct device *dev)
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * This used to be done in pci_pm_prepare() for all devices and some
+	 * drivers may depend on it, so do it here.  Ideally, runtime-suspended
+	 * devices should not be touched during freeze/thaw transitions,
+	 * however.
+	 */
+	pm_runtime_resume(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_dev->state_saved = false;
 	if (pm->freeze) {
 		int error;
@@ -792,6 +1134,12 @@ static int pci_pm_freeze(struct device *dev)
 			return error;
 	}
 
+<<<<<<< HEAD
+=======
+	if (pcibios_pm_ops.freeze)
+		return pcibios_pm_ops.freeze(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -817,6 +1165,12 @@ static int pci_pm_freeze_noirq(struct device *dev)
 
 	pci_pm_set_unknown_state(pci_dev);
 
+<<<<<<< HEAD
+=======
+	if (pcibios_pm_ops.freeze_noirq)
+		return pcibios_pm_ops.freeze_noirq(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -826,10 +1180,29 @@ static int pci_pm_thaw_noirq(struct device *dev)
 	struct device_driver *drv = dev->driver;
 	int error = 0;
 
+<<<<<<< HEAD
 	if (pci_has_legacy_pm_support(pci_dev))
 		return pci_legacy_resume_early(dev);
 
 	pci_update_current_state(pci_dev, PCI_D0);
+=======
+	if (pcibios_pm_ops.thaw_noirq) {
+		error = pcibios_pm_ops.thaw_noirq(dev);
+		if (error)
+			return error;
+	}
+
+	if (pci_has_legacy_pm_support(pci_dev))
+		return pci_legacy_resume_early(dev);
+
+	/*
+	 * pci_restore_state() requires the device to be in D0 (because of MSI
+	 * restoration among other things), so force it into D0 in case the
+	 * driver's "freeze" callbacks put it into a low-power state directly.
+	 */
+	pci_set_power_state(pci_dev, PCI_D0);
+	pci_restore_state(pci_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (drv && drv->pm && drv->pm->thaw_noirq)
 		error = drv->pm->thaw_noirq(dev);
@@ -843,6 +1216,15 @@ static int pci_pm_thaw(struct device *dev)
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	int error = 0;
 
+<<<<<<< HEAD
+=======
+	if (pcibios_pm_ops.thaw) {
+		error = pcibios_pm_ops.thaw(dev);
+		if (error)
+			return error;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pci_has_legacy_pm_support(pci_dev))
 		return pci_legacy_resume(dev);
 
@@ -871,6 +1253,12 @@ static int pci_pm_poweroff(struct device *dev)
 		goto Fixup;
 	}
 
+<<<<<<< HEAD
+=======
+	/* The reason to do that is the same as in pci_pm_suspend(). */
+	pm_runtime_resume(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_dev->state_saved = false;
 	if (pm->poweroff) {
 		int error;
@@ -884,6 +1272,12 @@ static int pci_pm_poweroff(struct device *dev)
  Fixup:
 	pci_fixup_device(pci_fixup_suspend, pci_dev);
 
+<<<<<<< HEAD
+=======
+	if (pcibios_pm_ops.poweroff)
+		return pcibios_pm_ops.poweroff(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -895,8 +1289,15 @@ static int pci_pm_poweroff_noirq(struct device *dev)
 	if (pci_has_legacy_pm_support(to_pci_dev(dev)))
 		return pci_legacy_suspend_late(dev, PMSG_HIBERNATE);
 
+<<<<<<< HEAD
 	if (!drv || !drv->pm)
 		return 0;
+=======
+	if (!drv || !drv->pm) {
+		pci_fixup_device(pci_fixup_suspend_late, pci_dev);
+		return 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (drv->pm->poweroff_noirq) {
 		int error;
@@ -907,7 +1308,11 @@ static int pci_pm_poweroff_noirq(struct device *dev)
 			return error;
 	}
 
+<<<<<<< HEAD
 	if (!pci_dev->state_saved && !pci_is_bridge(pci_dev))
+=======
+	if (!pci_dev->state_saved && !pci_has_subordinate(pci_dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_prepare_to_sleep(pci_dev);
 
 	/*
@@ -917,6 +1322,14 @@ static int pci_pm_poweroff_noirq(struct device *dev)
 	if (pci_dev->class == PCI_CLASS_SERIAL_USB_EHCI)
 		pci_write_config_word(pci_dev, PCI_COMMAND, 0);
 
+<<<<<<< HEAD
+=======
+	pci_fixup_device(pci_fixup_suspend_late, pci_dev);
+
+	if (pcibios_pm_ops.poweroff_noirq)
+		return pcibios_pm_ops.poweroff_noirq(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -926,6 +1339,15 @@ static int pci_pm_restore_noirq(struct device *dev)
 	struct device_driver *drv = dev->driver;
 	int error = 0;
 
+<<<<<<< HEAD
+=======
+	if (pcibios_pm_ops.restore_noirq) {
+		error = pcibios_pm_ops.restore_noirq(dev);
+		if (error)
+			return error;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_pm_default_resume_early(pci_dev);
 
 	if (pci_has_legacy_pm_support(pci_dev))
@@ -943,6 +1365,15 @@ static int pci_pm_restore(struct device *dev)
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	int error = 0;
 
+<<<<<<< HEAD
+=======
+	if (pcibios_pm_ops.restore) {
+		error = pcibios_pm_ops.restore(dev);
+		if (error)
+			return error;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * This is necessary for the hibernation error path in which restore is
 	 * called without restoring the standard config registers of the device.
@@ -978,7 +1409,11 @@ static int pci_pm_restore(struct device *dev)
 
 #endif /* !CONFIG_HIBERNATE_CALLBACKS */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int pci_pm_runtime_suspend(struct device *dev)
 {
@@ -988,16 +1423,28 @@ static int pci_pm_runtime_suspend(struct device *dev)
 	int error;
 
 	/*
+<<<<<<< HEAD
 	 * If pci_dev->driver is not set (unbound), the device should
 	 * always remain in D0 regardless of the runtime PM status
 	 */
 	if (!pci_dev->driver)
 		return 0;
+=======
+	 * If pci_dev->driver is not set (unbound), we leave the device in D0,
+	 * but it may go to D3cold when the bridge above it runtime suspends.
+	 * Save its config space in case that happens.
+	 */
+	if (!pci_dev->driver) {
+		pci_save_state(pci_dev);
+		return 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pm || !pm->runtime_suspend)
 		return -ENOSYS;
 
 	pci_dev->state_saved = false;
+<<<<<<< HEAD
 	pci_dev->no_d3cold = false;
 	error = pm->runtime_suspend(dev);
 	suspend_report_result(pm->runtime_suspend, error);
@@ -1005,6 +1452,24 @@ static int pci_pm_runtime_suspend(struct device *dev)
 		return error;
 	if (!pci_dev->d3cold_allowed)
 		pci_dev->no_d3cold = true;
+=======
+	error = pm->runtime_suspend(dev);
+	if (error) {
+		/*
+		 * -EBUSY and -EAGAIN is used to request the runtime PM core
+		 * to schedule a new suspend, so log the event only with debug
+		 * log level.
+		 */
+		if (error == -EBUSY || error == -EAGAIN)
+			dev_dbg(dev, "can't suspend now (%pf returned %d)\n",
+				pm->runtime_suspend, error);
+		else
+			dev_err(dev, "can't suspend (%pf returned %d)\n",
+				pm->runtime_suspend, error);
+
+		return error;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_fixup_device(pci_fixup_suspend, pci_dev);
 
@@ -1031,16 +1496,28 @@ static int pci_pm_runtime_resume(struct device *dev)
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 
 	/*
+<<<<<<< HEAD
 	 * If pci_dev->driver is not set (unbound), the device should
 	 * always remain in D0 regardless of the runtime PM status
 	 */
+=======
+	 * Restoring config space is necessary even if the device is not bound
+	 * to a driver because although we left it in D0, it may have gone to
+	 * D3cold when the bridge above it runtime suspended.
+	 */
+	pci_restore_standard_config(pci_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pci_dev->driver)
 		return 0;
 
 	if (!pm || !pm->runtime_resume)
 		return -ENOSYS;
 
+<<<<<<< HEAD
 	pci_restore_standard_config(pci_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_fixup_device(pci_fixup_resume_early, pci_dev);
 	__pci_enable_wake(pci_dev, PCI_D0, true, false);
 	pci_fixup_device(pci_fixup_resume, pci_dev);
@@ -1056,17 +1533,26 @@ static int pci_pm_runtime_idle(struct device *dev)
 {
 	struct pci_dev *pci_dev = to_pci_dev(dev);
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * If pci_dev->driver is not set (unbound), the device should
 	 * always remain in D0 regardless of the runtime PM status
 	 */
 	if (!pci_dev->driver)
+<<<<<<< HEAD
 		goto out;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pm)
 		return -ENOSYS;
 
+<<<<<<< HEAD
 	if (pm->runtime_idle) {
 		int ret = pm->runtime_idle(dev);
 		if (ret)
@@ -1089,6 +1575,15 @@ out:
 #ifdef CONFIG_PM
 
 const struct dev_pm_ops pci_dev_pm_ops = {
+=======
+	if (pm->runtime_idle)
+		ret = pm->runtime_idle(dev);
+
+	return ret;
+}
+
+static const struct dev_pm_ops pci_dev_pm_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.prepare = pci_pm_prepare,
 	.complete = pci_pm_complete,
 	.suspend = pci_pm_suspend,
@@ -1110,21 +1605,40 @@ const struct dev_pm_ops pci_dev_pm_ops = {
 
 #define PCI_PM_OPS_PTR	(&pci_dev_pm_ops)
 
+<<<<<<< HEAD
 #else /* !COMFIG_PM_OPS */
 
 #define PCI_PM_OPS_PTR	NULL
 
 #endif /* !COMFIG_PM_OPS */
+=======
+#else /* !CONFIG_PM */
+
+#define pci_pm_runtime_suspend	NULL
+#define pci_pm_runtime_resume	NULL
+#define pci_pm_runtime_idle	NULL
+
+#define PCI_PM_OPS_PTR	NULL
+
+#endif /* !CONFIG_PM */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * __pci_register_driver - register a new pci driver
  * @drv: the driver structure to register
  * @owner: owner module of drv
  * @mod_name: module name string
+<<<<<<< HEAD
  * 
  * Adds the driver structure to the list of registered drivers.
  * Returns a negative value on error, otherwise 0. 
  * If no error occurred, the driver remains registered even if 
+=======
+ *
+ * Adds the driver structure to the list of registered drivers.
+ * Returns a negative value on error, otherwise 0.
+ * If no error occurred, the driver remains registered even if
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * no device was claimed during registration.
  */
 int __pci_register_driver(struct pci_driver *drv, struct module *owner,
@@ -1142,23 +1656,39 @@ int __pci_register_driver(struct pci_driver *drv, struct module *owner,
 	/* register with core */
 	return driver_register(&drv->driver);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__pci_register_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_unregister_driver - unregister a pci driver
  * @drv: the driver structure to unregister
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Deletes the driver structure from the list of registered PCI drivers,
  * gives it a chance to clean up by calling its remove() function for
  * each device it was responsible for, and marks those devices as
  * driverless.
  */
 
+<<<<<<< HEAD
 void
 pci_unregister_driver(struct pci_driver *drv)
+=======
+void pci_unregister_driver(struct pci_driver *drv)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	driver_unregister(&drv->driver);
 	pci_free_dynids(drv);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_unregister_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct pci_driver pci_compat_driver = {
 	.name = "compat"
@@ -1168,28 +1698,47 @@ static struct pci_driver pci_compat_driver = {
  * pci_dev_driver - get the pci_driver of a device
  * @dev: the device to query
  *
+<<<<<<< HEAD
  * Returns the appropriate pci_driver structure or %NULL if there is no 
  * registered driver for the device.
  */
 struct pci_driver *
 pci_dev_driver(const struct pci_dev *dev)
+=======
+ * Returns the appropriate pci_driver structure or %NULL if there is no
+ * registered driver for the device.
+ */
+struct pci_driver *pci_dev_driver(const struct pci_dev *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (dev->driver)
 		return dev->driver;
 	else {
 		int i;
+<<<<<<< HEAD
 		for(i=0; i<=PCI_ROM_RESOURCE; i++)
+=======
+		for (i = 0; i <= PCI_ROM_RESOURCE; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (dev->resource[i].flags & IORESOURCE_BUSY)
 				return &pci_compat_driver;
 	}
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_dev_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_bus_match - Tell if a PCI device structure has a matching PCI device id structure
  * @dev: the PCI device structure to match against
  * @drv: the device driver to search for matching PCI device id structures
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Used by a driver to check whether a PCI device present in the
  * system is in its list of supported devices. Returns the matching
  * pci_device_id structure or %NULL if there is no match.
@@ -1229,6 +1778,10 @@ struct pci_dev *pci_dev_get(struct pci_dev *dev)
 		get_device(&dev->dev);
 	return dev;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_dev_get);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_dev_put - release a use of the pci device structure
@@ -1242,6 +1795,10 @@ void pci_dev_put(struct pci_dev *dev)
 	if (dev)
 		put_device(&dev->dev);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_dev_put);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int pci_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
@@ -1251,8 +1808,11 @@ static int pci_uevent(struct device *dev, struct kobj_uevent_env *env)
 		return -ENODEV;
 
 	pdev = to_pci_dev(dev);
+<<<<<<< HEAD
 	if (!pdev)
 		return -ENODEV;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (add_uevent_var(env, "PCI_CLASS=%04X", pdev->class))
 		return -ENOMEM;
@@ -1273,6 +1833,10 @@ static int pci_uevent(struct device *dev, struct kobj_uevent_env *env)
 			   (u8)(pdev->class >> 16), (u8)(pdev->class >> 8),
 			   (u8)(pdev->class)))
 		return -ENOMEM;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1283,16 +1847,26 @@ struct bus_type pci_bus_type = {
 	.probe		= pci_device_probe,
 	.remove		= pci_device_remove,
 	.shutdown	= pci_device_shutdown,
+<<<<<<< HEAD
 	.dev_attrs	= pci_dev_attrs,
 	.bus_attrs	= pci_bus_attrs,
 	.drv_attrs	= pci_drv_attrs,
 	.pm		= PCI_PM_OPS_PTR,
 };
+=======
+	.dev_groups	= pci_dev_groups,
+	.bus_groups	= pci_bus_groups,
+	.drv_groups	= pci_drv_groups,
+	.pm		= PCI_PM_OPS_PTR,
+};
+EXPORT_SYMBOL(pci_bus_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init pci_driver_init(void)
 {
 	return bus_register(&pci_bus_type);
 }
+<<<<<<< HEAD
 
 postcore_initcall(pci_driver_init);
 
@@ -1304,3 +1878,6 @@ EXPORT_SYMBOL(pci_dev_driver);
 EXPORT_SYMBOL(pci_bus_type);
 EXPORT_SYMBOL(pci_dev_get);
 EXPORT_SYMBOL(pci_dev_put);
+=======
+postcore_initcall(pci_driver_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -21,6 +21,10 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dm9000.h>
 #include <linux/platform_device.h>
 
@@ -33,9 +37,15 @@
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
+=======
+#include <mach/regs-gpio.h>
+#include <mach/regs-lcd.h>
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/mtd-nand-s3c2410.h>
 #include <linux/platform_data/i2c-s3c2410.h>
 
@@ -44,7 +54,10 @@
 #include <linux/mtd/nand_ecc.h>
 #include <linux/mtd/partitions.h>
 
+<<<<<<< HEAD
 #include <plat/clock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/devs.h>
 #include <plat/cpu.h>
 #include <linux/platform_data/mmc-s3cmci.h>
@@ -191,11 +204,23 @@ static struct platform_device *at2440evb_devices[] __initdata = {
 static void __init at2440evb_map_io(void)
 {
 	s3c24xx_init_io(at2440evb_iodesc, ARRAY_SIZE(at2440evb_iodesc));
+<<<<<<< HEAD
 	s3c24xx_init_clocks(16934400);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(at2440evb_uartcfgs, ARRAY_SIZE(at2440evb_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init at2440evb_init_time(void)
+{
+	s3c2440_init_clocks(16934400);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init at2440evb_init(void)
 {
 	s3c24xx_fb_set_platdata(&at2440evb_fb_info);
@@ -212,6 +237,10 @@ MACHINE_START(AT2440EVB, "AT2440EVB")
 	.map_io		= at2440evb_map_io,
 	.init_machine	= at2440evb_init,
 	.init_irq	= s3c2440_init_irq,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c244x_restart,
+=======
+	.init_time	= at2440evb_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

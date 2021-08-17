@@ -7,11 +7,17 @@
  */
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "am33xx.dtsi"
+=======
+#include "am33xx.dtsi"
+#include "am335x-bone-common.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "TI AM335x BeagleBone";
 	compatible = "ti,am335x-bone", "ti,am33xx";
+<<<<<<< HEAD
 
 	cpus {
 		cpu@0 {
@@ -135,4 +141,16 @@
 
 &cpsw_emac1 {
 	phy_id = <&davinci_mdio>, <1>;
+=======
+};
+
+&ldo3_reg {
+	regulator-min-microvolt = <1800000>;
+	regulator-max-microvolt = <3300000>;
+	regulator-always-on;
+};
+
+&mmc1 {
+	vmmc-supply = <&ldo3_reg>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

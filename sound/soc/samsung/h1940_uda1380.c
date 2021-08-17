@@ -23,18 +23,31 @@
 #include "regs-iis.h"
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include "s3c24xx-i2s.h"
 
 static unsigned int rates[] = {
+=======
+#include <mach/gpio-samsung.h>
+#include "s3c24xx-i2s.h"
+
+static const unsigned int rates[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	11025,
 	22050,
 	44100,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list hw_rates = {
 	.count = ARRAY_SIZE(rates),
 	.list = rates,
 	.mask = 0,
+=======
+static const struct snd_pcm_hw_constraint_list hw_rates = {
+	.count = ARRAY_SIZE(rates),
+	.list = rates,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_jack hp_jack;
@@ -65,10 +78,13 @@ static int h1940_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
 	runtime->hw.rate_min = hw_rates.list[0];
 	runtime->hw.rate_max = hw_rates.list[hw_rates.count - 1];
 	runtime->hw.rates = SNDRV_PCM_RATE_KNOT;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return snd_pcm_hw_constraint_list(runtime, 0,
 					SNDRV_PCM_HW_PARAM_RATE,
 					&hw_rates);
@@ -79,7 +95,10 @@ static int h1940_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int div;
 	int ret;
 	unsigned int rate = params_rate(params);
@@ -93,11 +112,16 @@ static int h1940_hw_params(struct snd_pcm_substream *substream,
 			div++;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(&rtd->dev, "%s: rate %d is not supported\n",
+=======
+		dev_err(rtd->dev, "%s: rate %d is not supported\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__, rate);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
 		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS);
@@ -110,6 +134,8 @@ static int h1940_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* select clock source */
 	ret = snd_soc_dai_set_sysclk(cpu_dai, S3C24XX_CLKSRC_PCLK, rate,
 			SND_SOC_CLOCK_OUT);
@@ -178,6 +204,7 @@ static struct platform_device *s3c24xx_snd_device;
 
 static int h1940_uda1380_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 	int err;
@@ -193,6 +220,20 @@ static int h1940_uda1380_init(struct snd_soc_pcm_runtime *rtd)
 		hp_jack_pins);
 
 	snd_soc_jack_add_gpios(&hp_jack, ARRAY_SIZE(hp_jack_gpios),
+=======
+	snd_soc_card_jack_new(rtd->card, "Headphone Jack", SND_JACK_HEADPHONE,
+		&hp_jack, hp_jack_pins, ARRAY_SIZE(hp_jack_pins));
+
+	snd_soc_jack_add_gpios(&hp_jack, ARRAY_SIZE(hp_jack_gpios),
+		hp_jack_gpios);
+
+	return 0;
+}
+
+static int h1940_uda1380_card_remove(struct snd_soc_card *card)
+{
+	snd_soc_jack_free_gpios(&hp_jack, ARRAY_SIZE(hp_jack_gpios),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hp_jack_gpios);
 
 	return 0;
@@ -208,6 +249,11 @@ static struct snd_soc_dai_link h1940_uda1380_dai[] = {
 		.init		= h1940_uda1380_init,
 		.platform_name	= "s3c24xx-iis",
 		.codec_name	= "uda1380-codec.0-001a",
+<<<<<<< HEAD
+=======
+		.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+				  SND_SOC_DAIFMT_CBS_CFS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops		= &h1940_ops,
 	},
 };
@@ -215,6 +261,10 @@ static struct snd_soc_dai_link h1940_uda1380_dai[] = {
 static struct snd_soc_card h1940_asoc = {
 	.name = "h1940",
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.remove = h1940_uda1380_card_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link = h1940_uda1380_dai,
 	.num_links = ARRAY_SIZE(h1940_uda1380_dai),
 
@@ -266,8 +316,11 @@ err_out:
 static void __exit h1940_exit(void)
 {
 	platform_device_unregister(s3c24xx_snd_device);
+<<<<<<< HEAD
 	snd_soc_jack_free_gpios(&hp_jack, ARRAY_SIZE(hp_jack_gpios),
 		hp_jack_gpios);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpio_free(S3C_GPIO_END + 9);
 }
 

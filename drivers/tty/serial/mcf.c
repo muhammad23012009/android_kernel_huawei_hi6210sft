@@ -3,7 +3,11 @@
 /*
  *	mcf.c -- Freescale ColdFire UART driver
  *
+<<<<<<< HEAD
  *	(C) Copyright 2003-2007, Greg Ungerer <gerg@snapgear.com>
+=======
+ *	(C) Copyright 2003-2007, Greg Ungerer <gerg@uclinux.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +28,10 @@
 #include <linux/serial_core.h>
 #include <linux/io.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/coldfire.h>
 #include <asm/mcfsim.h>
 #include <asm/mcfuart.h>
@@ -56,7 +64,10 @@ struct mcf_uart {
 	struct uart_port	port;
 	unsigned int		sigs;		/* Local copy of line sigs */
 	unsigned char		imr;		/* Local IMR mirror */
+<<<<<<< HEAD
 	struct serial_rs485	rs485;		/* RS485 settings */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /****************************************************************************/
@@ -103,7 +114,11 @@ static void mcf_start_tx(struct uart_port *port)
 {
 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
 
+<<<<<<< HEAD
 	if (pp->rs485.flags & SER_RS485_ENABLED) {
+=======
+	if (port->rs485.flags & SER_RS485_ENABLED) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Enable Transmitter */
 		writeb(MCFUART_UCR_TXENABLE, port->membase + MCFUART_UCR);
 		/* Manually assert RTS */
@@ -149,12 +164,15 @@ static void mcf_break_ctl(struct uart_port *port, int break_state)
 
 /****************************************************************************/
 
+<<<<<<< HEAD
 static void mcf_enable_ms(struct uart_port *port)
 {
 }
 
 /****************************************************************************/
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mcf_startup(struct uart_port *port)
 {
 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
@@ -204,7 +222,10 @@ static void mcf_shutdown(struct uart_port *port)
 static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
 	struct ktermios *old)
 {
+<<<<<<< HEAD
 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned int baud, baudclk;
 #if defined(CONFIG_M5272)
@@ -247,6 +268,15 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
 		mr1 |= MCFUART_MR1_PARITYNONE;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * FIXME: port->read_status_mask and port->ignore_status_mask
+	 * need to be initialized based on termios settings for
+	 * INPCK, IGNBRK, IGNPAR, PARMRK, BRKINT
+	 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (termios->c_cflag & CSTOPB)
 		mr2 |= MCFUART_MR2_STOP2;
 	else
@@ -257,12 +287,20 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
 		mr2 |= MCFUART_MR2_TXCTS;
 	}
 
+<<<<<<< HEAD
 	if (pp->rs485.flags & SER_RS485_ENABLED) {
+=======
+	spin_lock_irqsave(&port->lock, flags);
+	if (port->rs485.flags & SER_RS485_ENABLED) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(port->dev, "Setting UART to RS485\n");
 		mr2 |= MCFUART_MR2_TXRTS;
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uart_update_timeout(port, termios->c_cflag, baud);
 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
 	writeb(MCFUART_UCR_CMDRESETTX, port->membase + MCFUART_UCR);
@@ -324,7 +362,13 @@ static void mcf_rx_chars(struct mcf_uart *pp)
 		uart_insert_char(port, status, MCFUART_USR_RXOVERRUN, ch, flag);
 	}
 
+<<<<<<< HEAD
 	tty_flip_buffer_push(&port->state->port);
+=======
+	spin_unlock(&port->lock);
+	tty_flip_buffer_push(&port->state->port);
+	spin_lock(&port->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /****************************************************************************/
@@ -357,7 +401,11 @@ static void mcf_tx_chars(struct mcf_uart *pp)
 		pp->imr &= ~MCFUART_UIR_TXREADY;
 		writeb(pp->imr, port->membase + MCFUART_UIMR);
 		/* Disable TX to negate RTS automatically */
+<<<<<<< HEAD
 		if (pp->rs485.flags & SER_RS485_ENABLED)
+=======
+		if (port->rs485.flags & SER_RS485_ENABLED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			writeb(MCFUART_UCR_TXDISABLE,
 				port->membase + MCFUART_UCR);
 	}
@@ -437,6 +485,7 @@ static int mcf_verify_port(struct uart_port *port, struct serial_struct *ser)
 /****************************************************************************/
 
 /* Enable or disable the RS485 support */
+<<<<<<< HEAD
 static void mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
 {
 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
@@ -444,6 +493,12 @@ static void mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
 	unsigned char mr1, mr2;
 
 	spin_lock_irqsave(&port->lock, flags);
+=======
+static int mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
+{
+	unsigned char mr1, mr2;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Get mode registers */
 	mr1 = readb(port->membase + MCFUART_UMR);
 	mr2 = readb(port->membase + MCFUART_UMR);
@@ -457,6 +512,7 @@ static void mcf_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
 	}
 	writeb(mr1, port->membase + MCFUART_UMR);
 	writeb(mr2, port->membase + MCFUART_UMR);
+<<<<<<< HEAD
 	pp->rs485 = *rs485;
 	spin_unlock_irqrestore(&port->lock, flags);
 }
@@ -483,6 +539,10 @@ static int mcf_ioctl(struct uart_port *port, unsigned int cmd,
 	default:
 		return -ENOIOCTLCMD;
 	}
+=======
+	port->rs485 = *rs485;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -498,7 +558,10 @@ static const struct uart_ops mcf_uart_ops = {
 	.start_tx	= mcf_start_tx,
 	.stop_tx	= mcf_stop_tx,
 	.stop_rx	= mcf_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= mcf_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl	= mcf_break_ctl,
 	.startup	= mcf_startup,
 	.shutdown	= mcf_shutdown,
@@ -508,7 +571,10 @@ static const struct uart_ops mcf_uart_ops = {
 	.release_port	= mcf_release_port,
 	.config_port	= mcf_config_port,
 	.verify_port	= mcf_verify_port,
+<<<<<<< HEAD
 	.ioctl		= mcf_ioctl,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct mcf_uart mcf_ports[4];
@@ -535,7 +601,12 @@ int __init early_mcf_setup(struct mcf_platform_uart *platp)
 		port->iotype = SERIAL_IO_MEM;
 		port->irq = platp[i].irq;
 		port->uartclk = MCF_BUSCLK;
+<<<<<<< HEAD
 		port->flags = ASYNC_BOOT_AUTOCONF;
+=======
+		port->flags = UPF_BOOT_AUTOCONF;
+		port->rs485_config = mcf_config_rs485;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port->ops = &mcf_uart_ops;
 	}
 
@@ -624,7 +695,11 @@ console_initcall(mcf_console_init);
 #define	MCF_CONSOLE	NULL
 
 /****************************************************************************/
+<<<<<<< HEAD
 #endif /* CONFIG_MCF_CONSOLE */
+=======
+#endif /* CONFIG_SERIAL_MCF_CONSOLE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /****************************************************************************/
 
 /*
@@ -644,7 +719,11 @@ static struct uart_driver mcf_driver = {
 
 static int mcf_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct mcf_platform_uart *platp = pdev->dev.platform_data;
+=======
+	struct mcf_platform_uart *platp = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct uart_port *port;
 	int i;
 
@@ -656,11 +735,20 @@ static int mcf_probe(struct platform_device *pdev)
 		port->mapbase = platp[i].mapbase;
 		port->membase = (platp[i].membase) ? platp[i].membase :
 			(unsigned char __iomem *) platp[i].mapbase;
+<<<<<<< HEAD
+=======
+		port->dev = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port->iotype = SERIAL_IO_MEM;
 		port->irq = platp[i].irq;
 		port->uartclk = MCF_BUSCLK;
 		port->ops = &mcf_uart_ops;
+<<<<<<< HEAD
 		port->flags = ASYNC_BOOT_AUTOCONF;
+=======
+		port->flags = UPF_BOOT_AUTOCONF;
+		port->rs485_config = mcf_config_rs485;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		uart_add_one_port(&mcf_driver, port);
 	}
@@ -691,7 +779,10 @@ static struct platform_driver mcf_platform_driver = {
 	.remove		= mcf_remove,
 	.driver		= {
 		.name	= "mcfuart",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -727,7 +818,11 @@ static void __exit mcf_exit(void)
 module_init(mcf_init);
 module_exit(mcf_exit);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Greg Ungerer <gerg@snapgear.com>");
+=======
+MODULE_AUTHOR("Greg Ungerer <gerg@uclinux.org>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("Freescale ColdFire UART driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:mcfuart");

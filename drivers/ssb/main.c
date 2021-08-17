@@ -90,6 +90,7 @@ found:
 }
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SSB_SDIOHOST
 struct ssb_bus *ssb_sdio_func_to_bus(struct sdio_func *func)
 {
@@ -109,6 +110,8 @@ found:
 }
 #endif /* CONFIG_SSB_SDIOHOST */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ssb_for_each_bus_call(unsigned long data,
 			  int (*func)(struct ssb_bus *bus, unsigned long data))
 {
@@ -374,7 +377,12 @@ static ssize_t \
 attrib##_show(struct device *dev, struct device_attribute *attr, char *buf) \
 { \
 	return sprintf(buf, format_string, dev_to_ssb_dev(dev)->field); \
+<<<<<<< HEAD
 }
+=======
+} \
+static DEVICE_ATTR_RO(attrib);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ssb_config_attr(core_num, core_index, "%u\n")
 ssb_config_attr(coreid, id.coreid, "0x%04x\n")
@@ -387,6 +395,7 @@ name_show(struct device *dev, struct device_attribute *attr, char *buf)
 	return sprintf(buf, "%s\n",
 		       ssb_core_name(dev_to_ssb_dev(dev)->id.coreid));
 }
+<<<<<<< HEAD
 
 static struct device_attribute ssb_device_attrs[] = {
 	__ATTR_RO(name),
@@ -397,6 +406,20 @@ static struct device_attribute ssb_device_attrs[] = {
 	__ATTR_RO(irq),
 	__ATTR_NULL,
 };
+=======
+static DEVICE_ATTR_RO(name);
+
+static struct attribute *ssb_device_attrs[] = {
+	&dev_attr_name.attr,
+	&dev_attr_core_num.attr,
+	&dev_attr_coreid.attr,
+	&dev_attr_vendor.attr,
+	&dev_attr_revision.attr,
+	&dev_attr_irq.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(ssb_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct bus_type ssb_bustype = {
 	.name		= "ssb",
@@ -407,7 +430,11 @@ static struct bus_type ssb_bustype = {
 	.suspend	= ssb_device_suspend,
 	.resume		= ssb_device_resume,
 	.uevent		= ssb_device_uevent,
+<<<<<<< HEAD
 	.dev_attrs	= ssb_device_attrs,
+=======
+	.dev_groups	= ssb_device_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void ssb_buses_lock(void)
@@ -553,6 +580,17 @@ static int ssb_devices_register(struct ssb_bus *bus)
 	}
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SSB_SFLASH
+	if (bus->mipscore.sflash.present) {
+		err = platform_device_register(&ssb_sflash_dev);
+		if (err)
+			pr_err("Error registering serial flash\n");
+	}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 error:
 	/* Unwind the already registered devices. */
@@ -582,6 +620,16 @@ static int ssb_attach_queued_buses(void)
 		ssb_pcicore_init(&bus->pcicore);
 		if (bus->bustype == SSB_BUSTYPE_SSB)
 			ssb_watchdog_register(bus);
+<<<<<<< HEAD
+=======
+
+		err = ssb_gpio_init(bus);
+		if (err == -ENOTSUPP)
+			ssb_dbg("GPIO driver not activated\n");
+		else if (err)
+			ssb_dbg("Error registering GPIO driver: %i\n", err);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ssb_bus_may_powerdown(bus);
 
 		err = ssb_devices_register(bus);
@@ -597,6 +645,7 @@ error:
 	return err;
 }
 
+<<<<<<< HEAD
 static u8 ssb_ssb_read8(struct ssb_device *dev, u16 offset)
 {
 	struct ssb_bus *bus = dev->bus;
@@ -757,6 +806,8 @@ static const struct ssb_bus_ops ssb_ssb_ops = {
 #endif
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ssb_fetch_invariants(struct ssb_bus *bus,
 				ssb_invariants_func_t get_invariants)
 {
@@ -774,9 +825,16 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int ssb_bus_register(struct ssb_bus *bus,
 			    ssb_invariants_func_t get_invariants,
 			    unsigned long baseaddr)
+=======
+static int __maybe_unused
+ssb_bus_register(struct ssb_bus *bus,
+		 ssb_invariants_func_t get_invariants,
+		 unsigned long baseaddr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 
@@ -819,11 +877,14 @@ static int ssb_bus_register(struct ssb_bus *bus,
 	ssb_chipcommon_init(&bus->chipco);
 	ssb_extif_init(&bus->extif);
 	ssb_mipscore_init(&bus->mipscore);
+<<<<<<< HEAD
 	err = ssb_gpio_init(bus);
 	if (err == -ENOTSUPP)
 		ssb_dbg("GPIO driver not activated\n");
 	else if (err)
 		ssb_dbg("Error registering GPIO driver: %i\n", err);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = ssb_fetch_invariants(bus, get_invariants);
 	if (err) {
 		ssb_bus_may_powerdown(bus);
@@ -882,7 +943,10 @@ int ssb_bus_pcibus_register(struct ssb_bus *bus, struct pci_dev *host_pci)
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ssb_bus_pcibus_register);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SSB_PCIHOST */
 
 #ifdef CONFIG_SSB_PCMCIAHOST
@@ -904,7 +968,10 @@ int ssb_bus_pcmciabus_register(struct ssb_bus *bus,
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ssb_bus_pcmciabus_register);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
 #ifdef CONFIG_SSB_SDIOHOST
@@ -929,15 +996,26 @@ int ssb_bus_sdiobus_register(struct ssb_bus *bus, struct sdio_func *func,
 EXPORT_SYMBOL(ssb_bus_sdiobus_register);
 #endif /* CONFIG_SSB_PCMCIAHOST */
 
+<<<<<<< HEAD
 int ssb_bus_ssbbus_register(struct ssb_bus *bus, unsigned long baseaddr,
 			    ssb_invariants_func_t get_invariants)
+=======
+#ifdef CONFIG_SSB_HOST_SOC
+int ssb_bus_host_soc_register(struct ssb_bus *bus, unsigned long baseaddr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 
 	bus->bustype = SSB_BUSTYPE_SSB;
+<<<<<<< HEAD
 	bus->ops = &ssb_ssb_ops;
 
 	err = ssb_bus_register(bus, get_invariants, baseaddr);
+=======
+	bus->ops = &ssb_host_soc_ops;
+
+	err = ssb_bus_register(bus, ssb_host_soc_get_invariants, baseaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!err) {
 		ssb_info("Sonics Silicon Backplane found at address 0x%08lX\n",
 			 baseaddr);
@@ -945,6 +1023,10 @@ int ssb_bus_ssbbus_register(struct ssb_bus *bus, unsigned long baseaddr,
 
 	return err;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int __ssb_driver_register(struct ssb_driver *drv, struct module *owner)
 {
@@ -1141,6 +1223,11 @@ static u32 ssb_tmslow_reject_bitmask(struct ssb_device *dev)
 	case SSB_IDLOW_SSBREV_25:     /* TODO - find the proper REJECT bit */
 	case SSB_IDLOW_SSBREV_27:     /* same here */
 		return SSB_TMSLOW_REJECT;	/* this is a guess */
+<<<<<<< HEAD
+=======
+	case SSB_IDLOW_SSBREV:
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		WARN(1, KERN_INFO "ssb: Backplane Revision 0x%.8X\n", rev);
 	}
@@ -1469,6 +1556,15 @@ static int __init ssb_modinit(void)
 		/* don't fail SSB init because of this */
 		err = 0;
 	}
+<<<<<<< HEAD
+=======
+	err = ssb_host_pcmcia_init();
+	if (err) {
+		ssb_err("PCMCIA host initialization failed\n");
+		/* don't fail SSB init because of this */
+		err = 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = ssb_gige_init();
 	if (err) {
 		ssb_err("SSB Broadcom Gigabit Ethernet driver initialization failed\n");
@@ -1486,6 +1582,10 @@ fs_initcall(ssb_modinit);
 static void __exit ssb_modexit(void)
 {
 	ssb_gige_exit();
+<<<<<<< HEAD
+=======
+	ssb_host_pcmcia_exit();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b43_pci_ssb_bridge_exit();
 	bus_unregister(&ssb_bustype);
 }

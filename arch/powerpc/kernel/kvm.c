@@ -74,7 +74,11 @@
 #define KVM_INST_MTSRIN		0x7c0001e4
 
 static bool kvm_patching_worked = true;
+<<<<<<< HEAD
 static char kvm_tmp[1024 * 1024];
+=======
+char kvm_tmp[1024 * 1024];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int kvm_tmp_index;
 
 static inline void kvm_patch_ins(u32 *inst, u32 new_inst)
@@ -413,6 +417,7 @@ static void kvm_map_magic_page(void *data)
 {
 	u32 *features = data;
 
+<<<<<<< HEAD
 	ulong in[8];
 	ulong out[8];
 
@@ -420,6 +425,15 @@ static void kvm_map_magic_page(void *data)
 	in[1] = KVM_MAGIC_PAGE;
 
 	kvm_hypercall(in, out, KVM_HCALL_TOKEN(KVM_HC_PPC_MAP_MAGIC_PAGE));
+=======
+	ulong in[8] = {0};
+	ulong out[8];
+
+	in[0] = KVM_MAGIC_PAGE;
+	in[1] = KVM_MAGIC_PAGE | MAGIC_PAGE_FLAG_NOT_MAPPED_NX;
+
+	epapr_hypercall(in, out, KVM_HCALL_TOKEN(KVM_HC_PPC_MAP_MAGIC_PAGE));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*features = out[0];
 }
@@ -649,7 +663,10 @@ static void kvm_check_ins(u32 *inst, u32 features)
 			kvm_patch_ins_mtsrin(inst, inst_rt, inst_rb);
 		}
 		break;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	}
 
@@ -711,6 +728,7 @@ static void kvm_use_magic_page(void)
 			 kvm_patching_worked ? "worked" : "failed");
 }
 
+<<<<<<< HEAD
 unsigned long kvm_hypercall(unsigned long *in,
 			    unsigned long *out,
 			    unsigned long nr)
@@ -757,6 +775,12 @@ static __init void kvm_free_tmp(void)
 
 	/* Free the tmp space we don't need */
 	free_reserved_area(start, end, 0, NULL);
+=======
+static __init void kvm_free_tmp(void)
+{
+	free_reserved_area(&kvm_tmp[kvm_tmp_index],
+			   &kvm_tmp[ARRAY_SIZE(kvm_tmp)], -1, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init kvm_guest_init(void)

@@ -1,7 +1,12 @@
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "kirkwood.dtsi"
 /include/ "kirkwood-6282.dtsi"
+=======
+#include "kirkwood.dtsi"
+#include "kirkwood-6282.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Univeral Scientific Industrial Co. Topkick-1281P2";
@@ -14,6 +19,7 @@
 
 	chosen {
 		bootargs = "console=ttyS0,115200n8 earlyprintk";
+<<<<<<< HEAD
 	};
 
 	ocp@f1000000 {
@@ -30,6 +36,13 @@
 			 * [SW] [*] [*] [*]
 			 */
 
+=======
+		stdout-path = &uart0;
+	};
+
+	ocp@f1000000 {
+		pinctrl: pin-controller@10000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Switch positions
 			 *
@@ -41,6 +54,7 @@
 			 *     |   |   |
 			 * PS [L] [I] [R] LEDS
 			 */
+<<<<<<< HEAD
 			pinctrl-0 = < &pmx_led_disk_yellow
 				      &pmx_sata0_pwr_enable
 				      &pmx_led_sys_red
@@ -54,6 +68,10 @@
 				      &pmx_uart0
 				      &pmx_nand
 				      &pmx_twsi0 >;
+=======
+			pinctrl-0 = <&pmx_sw_left &pmx_sw_right
+				     &pmx_sw_idle &pmx_sw_left2>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pinctrl-names = "default";
 
 			pmx_led_disk_yellow: pmx-led-disk-yellow {
@@ -108,6 +126,7 @@
 		};
 
 		serial@12000 {
+<<<<<<< HEAD
 			status = "ok";
 		};
 
@@ -138,6 +157,9 @@
 				label = "rootfs";
 				reg = <0x1800000 0xe800000>;
 			};
+=======
+			status = "okay";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		sata@80000 {
@@ -146,7 +168,11 @@
 		};
 
 		i2c@11000 {
+<<<<<<< HEAD
 			status = "ok";
+=======
+			status = "okay";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		mvsdio@90000 {
@@ -154,10 +180,15 @@
 			pinctrl-names = "default";
 			status = "okay";
 			/* No CD or WP GPIOs */
+<<<<<<< HEAD
+=======
+			broken-cd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
 	gpio-leds {
+<<<<<<< HEAD
 		compatible = "gpio-leds";
 
 		disk {
@@ -172,21 +203,66 @@
 		system {
 			label = "topkick:blue:system";
 			gpios = <&gpio1 6 1>;
+=======
+		/*
+		 * GPIO LED layout
+		 *
+		 *       /-SYS_LED(2)
+		 *       |
+		 *       |   /-DISK_LED
+		 *       |   |
+		 *       |   |   /-WLAN_LED(2)
+		 *       |   |   |
+		 * [SW] [*] [*] [*]
+		 */
+
+		compatible = "gpio-leds";
+		pinctrl-0 = <&pmx_led_disk_yellow &pmx_led_sys_red
+			     &pmx_led_sys_blue &pmx_led_wifi_green
+			     &pmx_led_wifi_yellow>;
+		pinctrl-names = "default";
+
+		disk {
+			label = "topkick:yellow:disk";
+			gpios = <&gpio0 21 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "disk-activity";
+		};
+		system2 {
+			label = "topkick:red:system";
+			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
+		};
+		system {
+			label = "topkick:blue:system";
+			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			default-state = "on";
 		};
 		wifi {
 			label = "topkick:green:wifi";
+<<<<<<< HEAD
 			gpios = <&gpio1 7 1>;
 		};
 		wifi2 {
 			label = "topkick:yellow:wifi";
 			gpios = <&gpio1 16 1>;
+=======
+			gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
+		};
+		wifi2 {
+			label = "topkick:yellow:wifi";
+			gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 	regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <0>;
+<<<<<<< HEAD
+=======
+		pinctrl-0 = <&pmx_sata0_pwr_enable>;
+		pinctrl-names = "default";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		sata0_power: regulator@1 {
 			compatible = "regulator-fixed";
@@ -201,3 +277,50 @@
 		};
 	};
 };
+<<<<<<< HEAD
+=======
+
+&nand {
+	status = "okay";
+
+	partition@0 {
+		label = "u-boot";
+		reg = <0x0000000 0x180000>;
+	};
+
+	partition@180000 {
+		label = "u-boot env";
+		reg = <0x0180000 0x20000>;
+	};
+
+	partition@200000 {
+		label = "uImage";
+		reg = <0x0200000 0x600000>;
+	};
+
+	partition@800000 {
+		label = "uInitrd";
+		reg = <0x0800000 0x1000000>;
+	};
+
+	partition@1800000 {
+		label = "rootfs";
+		reg = <0x1800000 0xe800000>;
+	};
+};
+
+&mdio {
+	status = "okay";
+
+	ethphy0: ethernet-phy@0 {
+		reg = <0>;
+	};
+};
+
+&eth0 {
+	status = "okay";
+	ethernet0-port@0 {
+		phy-handle = <&ethphy0>;
+	};
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

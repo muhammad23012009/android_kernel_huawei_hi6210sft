@@ -38,7 +38,10 @@
 #include <asm/fpu.h>
 #include <asm/cpu-features.h>
 #include <asm/war.h>
+<<<<<<< HEAD
 #include <asm/vdso.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "signal-common.h"
 
@@ -102,18 +105,32 @@ badframe:
 	force_sig(SIGSEGV, current);
 }
 
+<<<<<<< HEAD
 static int setup_rt_frame_n32(void *sig_return, struct k_sigaction *ka,
 	struct pt_regs *regs, int signr, sigset_t *set, siginfo_t *info)
+=======
+static int setup_rt_frame_n32(void *sig_return, struct ksignal *ksig,
+			      struct pt_regs *regs, sigset_t *set)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct rt_sigframe_n32 __user *frame;
 	int err = 0;
 
+<<<<<<< HEAD
 	frame = get_sigframe(ka, regs, sizeof(*frame));
 	if (!access_ok(VERIFY_WRITE, frame, sizeof (*frame)))
 		goto give_sigsegv;
 
 	/* Create siginfo.  */
 	err |= copy_siginfo_to_user32(&frame->rs_info, info);
+=======
+	frame = get_sigframe(ksig, regs, sizeof(*frame));
+	if (!access_ok(VERIFY_WRITE, frame, sizeof (*frame)))
+		return -EFAULT;
+
+	/* Create siginfo.  */
+	err |= copy_siginfo_to_user32(&frame->rs_info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Create the ucontext.	 */
 	err |= __put_user(0, &frame->rs_uc.uc_flags);
@@ -123,7 +140,11 @@ static int setup_rt_frame_n32(void *sig_return, struct k_sigaction *ka,
 	err |= __copy_conv_sigset_to_user(&frame->rs_uc.uc_sigmask, set);
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
+=======
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Arguments to signal handler:
@@ -135,27 +156,48 @@ static int setup_rt_frame_n32(void *sig_return, struct k_sigaction *ka,
 	 * $25 and c0_epc point to the signal handler, $29 points to
 	 * the struct rt_sigframe.
 	 */
+<<<<<<< HEAD
 	regs->regs[ 4] = signr;
+=======
+	regs->regs[ 4] = ksig->sig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->regs[ 5] = (unsigned long) &frame->rs_info;
 	regs->regs[ 6] = (unsigned long) &frame->rs_uc;
 	regs->regs[29] = (unsigned long) frame;
 	regs->regs[31] = (unsigned long) sig_return;
+<<<<<<< HEAD
 	regs->cp0_epc = regs->regs[25] = (unsigned long) ka->sa.sa_handler;
+=======
+	regs->cp0_epc = regs->regs[25] = (unsigned long) ksig->ka.sa.sa_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	DEBUGP("SIG deliver (%s:%d): sp=0x%p pc=0x%lx ra=0x%lx\n",
 	       current->comm, current->pid,
 	       frame, regs->cp0_epc, regs->regs[31]);
 
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(signr, current);
 	return -EFAULT;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct mips_abi mips_abi_n32 = {
 	.setup_rt_frame = setup_rt_frame_n32,
+<<<<<<< HEAD
 	.rt_signal_return_offset =
 		offsetof(struct mips_vdso, n32_rt_signal_trampoline),
 	.restart	= __NR_N32_restart_syscall
+=======
+	.restart	= __NR_N32_restart_syscall,
+
+	.off_sc_fpregs = offsetof(struct sigcontext, sc_fpregs),
+	.off_sc_fpc_csr = offsetof(struct sigcontext, sc_fpc_csr),
+	.off_sc_used_math = offsetof(struct sigcontext, sc_used_math),
+
+	.vdso		= &vdso_image_n32,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

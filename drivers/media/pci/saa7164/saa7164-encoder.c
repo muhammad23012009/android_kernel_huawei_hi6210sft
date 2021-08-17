@@ -1,7 +1,11 @@
 /*
  *  Driver for the NXP SAA7164 PCIe bridge
  *
+<<<<<<< HEAD
  *  Copyright (c) 2010 Steven Toth <stoth@kernellabs.com>
+=======
+ *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +29,21 @@
 #define ENCODER_MIN_BITRATE 1000000
 #define ENCODER_DEF_BITRATE 5000000
 
+<<<<<<< HEAD
+=======
+/*
+ * This is a dummy non-zero value for the sizeimage field of v4l2_pix_format.
+ * It is not actually used for anything since this driver does not support
+ * stream I/O, only read(), and because this driver produces an MPEG stream
+ * and not discrete frames. But the V4L2 spec doesn't allow for this value
+ * to be 0, so set it to 0x10000 instead.
+ *
+ * If we ever change this driver to support stream I/O, then this field
+ * will be the size of the streaming buffers.
+ */
+#define SAA7164_SIZEIMAGE (0x10000)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct saa7164_tvnorm saa7164_tvnorms[] = {
 	{
 		.name      = "NTSC-M",
@@ -35,6 +54,7 @@ static struct saa7164_tvnorm saa7164_tvnorms[] = {
 	}
 };
 
+<<<<<<< HEAD
 static const u32 saa7164_v4l2_ctrls[] = {
 	V4L2_CID_BRIGHTNESS,
 	V4L2_CID_CONTRAST,
@@ -53,6 +73,8 @@ static const u32 saa7164_v4l2_ctrls[] = {
 	0
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Take the encoder configuration form the port struct and
  * flush it to the hardware.
  */
@@ -211,10 +233,15 @@ static int saa7164_encoder_initialize(struct saa7164_port *port)
 }
 
 /* -- V4L2 --------------------------------------------------------- */
+<<<<<<< HEAD
 static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id id)
 {
 	struct saa7164_encoder_fh *fh = file->private_data;
 	struct saa7164_port *port = fh->port;
+=======
+int saa7164_s_std(struct saa7164_port *port, v4l2_std_id id)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct saa7164_dev *dev = port->dev;
 	unsigned int i;
 
@@ -228,6 +255,10 @@ static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id id)
 		return -EINVAL;
 
 	port->encodernorm = saa7164_tvnorms[i];
+<<<<<<< HEAD
+=======
+	port->std = id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Update the audio decoder while is not running in
 	 * auto detect mode.
@@ -239,6 +270,7 @@ static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id id)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_enum_input(struct file *file, void *priv,
 	struct v4l2_input *i)
 {
@@ -246,6 +278,35 @@ static int vidioc_enum_input(struct file *file, void *priv,
 
 	char *inputs[] = { "tuner", "composite", "svideo", "aux",
 		"composite 2", "svideo 2", "aux 2" };
+=======
+static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id id)
+{
+	struct saa7164_encoder_fh *fh = file->private_data;
+
+	return saa7164_s_std(fh->port, id);
+}
+
+int saa7164_g_std(struct saa7164_port *port, v4l2_std_id *id)
+{
+	*id = port->std;
+	return 0;
+}
+
+static int vidioc_g_std(struct file *file, void *priv, v4l2_std_id *id)
+{
+	struct saa7164_encoder_fh *fh = file->private_data;
+
+	return saa7164_g_std(fh->port, id);
+}
+
+int saa7164_enum_input(struct file *file, void *priv, struct v4l2_input *i)
+{
+	static const char * const inputs[] = {
+		"tuner", "composite", "svideo", "aux",
+		"composite 2", "svideo 2", "aux 2"
+	};
+	int n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (i->index >= 7)
 		return -EINVAL;
@@ -263,10 +324,15 @@ static int vidioc_enum_input(struct file *file, void *priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_g_input(struct file *file, void *priv, unsigned int *i)
 {
 	struct saa7164_encoder_fh *fh = file->private_data;
 	struct saa7164_port *port = fh->port;
+=======
+int saa7164_g_input(struct saa7164_port *port, unsigned int *i)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct saa7164_dev *dev = port->dev;
 
 	if (saa7164_api_get_videomux(port) != SAA_OK)
@@ -279,10 +345,22 @@ static int vidioc_g_input(struct file *file, void *priv, unsigned int *i)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_s_input(struct file *file, void *priv, unsigned int i)
 {
 	struct saa7164_encoder_fh *fh = file->private_data;
 	struct saa7164_port *port = fh->port;
+=======
+static int vidioc_g_input(struct file *file, void *priv, unsigned int *i)
+{
+	struct saa7164_encoder_fh *fh = file->private_data;
+
+	return saa7164_g_input(fh->port, i);
+}
+
+int saa7164_s_input(struct saa7164_port *port, unsigned int i)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct saa7164_dev *dev = port->dev;
 
 	dprintk(DBGLVL_ENC, "%s() input=%d\n", __func__, i);
@@ -298,8 +376,19 @@ static int vidioc_s_input(struct file *file, void *priv, unsigned int i)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_g_tuner(struct file *file, void *priv,
 	struct v4l2_tuner *t)
+=======
+static int vidioc_s_input(struct file *file, void *priv, unsigned int i)
+{
+	struct saa7164_encoder_fh *fh = file->private_data;
+
+	return saa7164_s_input(fh->port, i);
+}
+
+int saa7164_g_tuner(struct file *file, void *priv, struct v4l2_tuner *t)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct saa7164_encoder_fh *fh = file->private_data;
 	struct saa7164_port *port = fh->port;
@@ -309,21 +398,37 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 		return -EINVAL;
 
 	strcpy(t->name, "tuner");
+<<<<<<< HEAD
 	t->type = V4L2_TUNER_ANALOG_TV;
 	t->capability = V4L2_TUNER_CAP_NORM | V4L2_TUNER_CAP_STEREO;
+=======
+	t->capability = V4L2_TUNER_CAP_NORM | V4L2_TUNER_CAP_STEREO;
+	t->rangelow = SAA7164_TV_MIN_FREQ;
+	t->rangehigh = SAA7164_TV_MAX_FREQ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk(DBGLVL_ENC, "VIDIOC_G_TUNER: tuner type %d\n", t->type);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_s_tuner(struct file *file, void *priv,
 	const struct v4l2_tuner *t)
 {
+=======
+int saa7164_s_tuner(struct file *file, void *priv,
+			   const struct v4l2_tuner *t)
+{
+	if (0 != t->index)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Update the A/V core */
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_g_frequency(struct file *file, void *priv,
 	struct v4l2_frequency *f)
 {
@@ -341,6 +446,28 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 {
 	struct saa7164_encoder_fh *fh = file->private_data;
 	struct saa7164_port *port = fh->port;
+=======
+int saa7164_g_frequency(struct saa7164_port *port, struct v4l2_frequency *f)
+{
+	if (f->tuner)
+		return -EINVAL;
+
+	f->frequency = port->freq;
+	return 0;
+}
+
+static int vidioc_g_frequency(struct file *file, void *priv,
+	struct v4l2_frequency *f)
+{
+	struct saa7164_encoder_fh *fh = file->private_data;
+
+	return saa7164_g_frequency(fh->port, f);
+}
+
+int saa7164_s_frequency(struct saa7164_port *port,
+			const struct v4l2_frequency *f)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct saa7164_dev *dev = port->dev;
 	struct saa7164_port *tsport;
 	struct dvb_frontend *fe;
@@ -360,16 +487,25 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 	if (f->tuner != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (f->type != V4L2_TUNER_ANALOG_TV)
 		return -EINVAL;
 
 	port->freq = f->frequency;
+=======
+	port->freq = clamp(f->frequency,
+			   SAA7164_TV_MIN_FREQ, SAA7164_TV_MAX_FREQ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Update the hardware */
 	if (port->nr == SAA7164_PORT_ENC1)
 		tsport = &dev->ports[SAA7164_PORT_TS1];
+<<<<<<< HEAD
 	else
 	if (port->nr == SAA7164_PORT_ENC2)
+=======
+	else if (port->nr == SAA7164_PORT_ENC2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tsport = &dev->ports[SAA7164_PORT_TS2];
 	else
 		BUG();
@@ -386,6 +522,7 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_g_ctrl(struct file *file, void *priv,
 	struct v4l2_control *ctl)
 {
@@ -633,6 +770,56 @@ static int saa7164_set_ctrl(struct saa7164_port *port,
 		break;
 	case V4L2_CID_MPEG_AUDIO_MUTE:
 		params->ctl_mute = ctrl->value;
+=======
+static int vidioc_s_frequency(struct file *file, void *priv,
+			      const struct v4l2_frequency *f)
+{
+	struct saa7164_encoder_fh *fh = file->private_data;
+
+	return saa7164_s_frequency(fh->port, f);
+}
+
+static int saa7164_s_ctrl(struct v4l2_ctrl *ctrl)
+{
+	struct saa7164_port *port =
+		container_of(ctrl->handler, struct saa7164_port, ctrl_handler);
+	struct saa7164_encoder_params *params = &port->encoder_params;
+	int ret = 0;
+
+	switch (ctrl->id) {
+	case V4L2_CID_BRIGHTNESS:
+		port->ctl_brightness = ctrl->val;
+		saa7164_api_set_usercontrol(port, PU_BRIGHTNESS_CONTROL);
+		break;
+	case V4L2_CID_CONTRAST:
+		port->ctl_contrast = ctrl->val;
+		saa7164_api_set_usercontrol(port, PU_CONTRAST_CONTROL);
+		break;
+	case V4L2_CID_SATURATION:
+		port->ctl_saturation = ctrl->val;
+		saa7164_api_set_usercontrol(port, PU_SATURATION_CONTROL);
+		break;
+	case V4L2_CID_HUE:
+		port->ctl_hue = ctrl->val;
+		saa7164_api_set_usercontrol(port, PU_HUE_CONTROL);
+		break;
+	case V4L2_CID_SHARPNESS:
+		port->ctl_sharpness = ctrl->val;
+		saa7164_api_set_usercontrol(port, PU_SHARPNESS_CONTROL);
+		break;
+	case V4L2_CID_AUDIO_VOLUME:
+		port->ctl_volume = ctrl->val;
+		saa7164_api_set_audio_volume(port, port->ctl_volume);
+		break;
+	case V4L2_CID_MPEG_VIDEO_BITRATE:
+		params->bitrate = ctrl->val;
+		break;
+	case V4L2_CID_MPEG_STREAM_TYPE:
+		params->stream_type = ctrl->val;
+		break;
+	case V4L2_CID_MPEG_AUDIO_MUTE:
+		params->ctl_mute = ctrl->val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = saa7164_api_audio_mute(port, params->ctl_mute);
 		if (ret != SAA_OK) {
 			printk(KERN_ERR "%s() error, ret = 0x%x\n", __func__,
@@ -641,7 +828,11 @@ static int saa7164_set_ctrl(struct saa7164_port *port,
 		}
 		break;
 	case V4L2_CID_MPEG_VIDEO_ASPECT:
+<<<<<<< HEAD
 		params->ctl_aspect = ctrl->value;
+=======
+		params->ctl_aspect = ctrl->val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = saa7164_api_set_aspect_ratio(port);
 		if (ret != SAA_OK) {
 			printk(KERN_ERR "%s() error, ret = 0x%x\n", __func__,
@@ -650,6 +841,7 @@ static int saa7164_set_ctrl(struct saa7164_port *port,
 		}
 		break;
 	case V4L2_CID_MPEG_VIDEO_BITRATE_MODE:
+<<<<<<< HEAD
 		params->bitrate_mode = ctrl->value;
 		break;
 	case V4L2_CID_MPEG_VIDEO_B_FRAMES:
@@ -699,6 +891,26 @@ static int vidioc_s_ext_ctrls(struct file *file, void *priv,
 	return -EINVAL;
 }
 
+=======
+		params->bitrate_mode = ctrl->val;
+		break;
+	case V4L2_CID_MPEG_VIDEO_B_FRAMES:
+		params->refdist = ctrl->val;
+		break;
+	case V4L2_CID_MPEG_VIDEO_BITRATE_PEAK:
+		params->bitrate_peak = ctrl->val;
+		break;
+	case V4L2_CID_MPEG_VIDEO_GOP_SIZE:
+		params->gop_size = ctrl->val;
+		break;
+	default:
+		ret = -EINVAL;
+	}
+
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int vidioc_querycap(struct file *file, void  *priv,
 	struct v4l2_capability *cap)
 {
@@ -711,6 +923,7 @@ static int vidioc_querycap(struct file *file, void  *priv,
 		sizeof(cap->card));
 	sprintf(cap->bus_info, "PCI:%s", pci_name(dev->pci));
 
+<<<<<<< HEAD
 	cap->capabilities =
 		V4L2_CAP_VIDEO_CAPTURE |
 		V4L2_CAP_READWRITE     |
@@ -718,6 +931,16 @@ static int vidioc_querycap(struct file *file, void  *priv,
 
 	cap->capabilities |= V4L2_CAP_TUNER;
 	cap->version = 0;
+=======
+	cap->device_caps =
+		V4L2_CAP_VIDEO_CAPTURE |
+		V4L2_CAP_READWRITE |
+		V4L2_CAP_TUNER;
+
+	cap->capabilities = cap->device_caps |
+		V4L2_CAP_VBI_CAPTURE |
+		V4L2_CAP_DEVICE_CAPS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -734,11 +957,16 @@ static int vidioc_enum_fmt_vid_cap(struct file *file, void  *priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_g_fmt_vid_cap(struct file *file, void *priv,
+=======
+static int vidioc_fmt_vid_cap(struct file *file, void *priv,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct v4l2_format *f)
 {
 	struct saa7164_encoder_fh *fh = file->private_data;
 	struct saa7164_port *port = fh->port;
+<<<<<<< HEAD
 	struct saa7164_dev *dev = port->dev;
 
 	f->fmt.pix.pixelformat  = V4L2_PIX_FMT_MPEG;
@@ -873,6 +1101,19 @@ static int vidioc_queryctrl(struct file *file, void *priv,
 	return -EINVAL;
 }
 
+=======
+
+	f->fmt.pix.pixelformat  = V4L2_PIX_FMT_MPEG;
+	f->fmt.pix.bytesperline = 0;
+	f->fmt.pix.sizeimage    = SAA7164_SIZEIMAGE;
+	f->fmt.pix.field        = V4L2_FIELD_INTERLACED;
+	f->fmt.pix.colorspace   = V4L2_COLORSPACE_SMPTE170M;
+	f->fmt.pix.width        = port->width;
+	f->fmt.pix.height       = port->height;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int saa7164_encoder_stop_port(struct saa7164_port *port)
 {
 	struct saa7164_dev *dev = port->dev;
@@ -1073,8 +1314,15 @@ static int fops_open(struct file *file)
 	if (NULL == fh)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	file->private_data = fh;
 	fh->port = port;
+=======
+	fh->port = port;
+	v4l2_fh_init(&fh->fh, video_devdata(file));
+	v4l2_fh_add(&fh->fh);
+	file->private_data = fh;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1095,7 +1343,12 @@ static int fops_release(struct file *file)
 		}
 	}
 
+<<<<<<< HEAD
 	file->private_data = NULL;
+=======
+	v4l2_fh_del(&fh->fh);
+	v4l2_fh_exit(&fh->fh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(fh);
 
 	return 0;
@@ -1239,10 +1492,18 @@ err:
 
 static unsigned int fops_poll(struct file *file, poll_table *wait)
 {
+<<<<<<< HEAD
 	struct saa7164_encoder_fh *fh =
 		(struct saa7164_encoder_fh *)file->private_data;
 	struct saa7164_port *port = fh->port;
 	unsigned int mask = 0;
+=======
+	unsigned long req_events = poll_requested_events(wait);
+	struct saa7164_encoder_fh *fh =
+		(struct saa7164_encoder_fh *)file->private_data;
+	struct saa7164_port *port = fh->port;
+	unsigned int mask = v4l2_ctrl_poll(file, wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	port->last_poll_msecs_diff = port->last_poll_msecs;
 	port->last_poll_msecs = jiffies_to_msecs(jiffies);
@@ -1252,18 +1513,28 @@ static unsigned int fops_poll(struct file *file, poll_table *wait)
 	saa7164_histogram_update(&port->poll_interval,
 		port->last_poll_msecs_diff);
 
+<<<<<<< HEAD
 	if (!video_is_registered(port->v4l_device))
 		return -EIO;
+=======
+	if (!(req_events & (POLLIN | POLLRDNORM)))
+		return mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (atomic_cmpxchg(&fh->v4l_reading, 0, 1) == 0) {
 		if (atomic_inc_return(&port->v4l_reader_count) == 1) {
 			if (saa7164_encoder_initialize(port) < 0)
+<<<<<<< HEAD
 				return -EINVAL;
+=======
+				return mask | POLLERR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			saa7164_encoder_start_streaming(port);
 			msleep(200);
 		}
 	}
 
+<<<<<<< HEAD
 	/* blocking wait for buffer */
 	if ((file->f_flags & O_NONBLOCK) == 0) {
 		if (wait_event_interruptible(port->wait_read,
@@ -1272,6 +1543,8 @@ static unsigned int fops_poll(struct file *file, poll_table *wait)
 		}
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Pull the first buffer from the used list */
 	if (!list_empty(&port->list_buf_used.list))
 		mask |= POLLIN | POLLRDNORM;
@@ -1279,6 +1552,13 @@ static unsigned int fops_poll(struct file *file, poll_table *wait)
 	return mask;
 }
 
+<<<<<<< HEAD
+=======
+static const struct v4l2_ctrl_ops saa7164_ctrl_ops = {
+	.s_ctrl = saa7164_s_ctrl,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_file_operations mpeg_fops = {
 	.owner		= THIS_MODULE,
 	.open		= fops_open,
@@ -1288,6 +1568,7 @@ static const struct v4l2_file_operations mpeg_fops = {
 	.unlocked_ioctl	= video_ioctl2,
 };
 
+<<<<<<< HEAD
 static int saa7164_g_chip_ident(struct file *file, void *fh,
 				struct v4l2_dbg_chip_ident *chip)
 {
@@ -1351,6 +1632,26 @@ static const struct v4l2_ioctl_ops mpeg_ioctl_ops = {
 	.vidioc_g_register	 = saa7164_g_register,
 	.vidioc_s_register	 = saa7164_s_register,
 #endif
+=======
+static const struct v4l2_ioctl_ops mpeg_ioctl_ops = {
+	.vidioc_s_std		 = vidioc_s_std,
+	.vidioc_g_std		 = vidioc_g_std,
+	.vidioc_enum_input	 = saa7164_enum_input,
+	.vidioc_g_input		 = vidioc_g_input,
+	.vidioc_s_input		 = vidioc_s_input,
+	.vidioc_g_tuner		 = saa7164_g_tuner,
+	.vidioc_s_tuner		 = saa7164_s_tuner,
+	.vidioc_g_frequency	 = vidioc_g_frequency,
+	.vidioc_s_frequency	 = vidioc_s_frequency,
+	.vidioc_querycap	 = vidioc_querycap,
+	.vidioc_enum_fmt_vid_cap = vidioc_enum_fmt_vid_cap,
+	.vidioc_g_fmt_vid_cap	 = vidioc_fmt_vid_cap,
+	.vidioc_try_fmt_vid_cap	 = vidioc_fmt_vid_cap,
+	.vidioc_s_fmt_vid_cap	 = vidioc_fmt_vid_cap,
+	.vidioc_log_status	 = v4l2_ctrl_log_status,
+	.vidioc_subscribe_event  = v4l2_ctrl_subscribe_event,
+	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct video_device saa7164_mpeg_template = {
@@ -1359,7 +1660,10 @@ static struct video_device saa7164_mpeg_template = {
 	.ioctl_ops     = &mpeg_ioctl_ops,
 	.minor         = -1,
 	.tvnorms       = SAA7164_NORMS,
+<<<<<<< HEAD
 	.current_norm  = V4L2_STD_NTSC_M,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct video_device *saa7164_encoder_alloc(
@@ -1381,7 +1685,11 @@ static struct video_device *saa7164_encoder_alloc(
 	snprintf(vfd->name, sizeof(vfd->name), "%s %s (%s)", dev->name,
 		type, saa7164_boards[dev->board].name);
 
+<<<<<<< HEAD
 	vfd->parent  = &pci->dev;
+=======
+	vfd->v4l2_dev  = &dev->v4l2_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vfd->release = video_device_release;
 	return vfd;
 }
@@ -1389,12 +1697,20 @@ static struct video_device *saa7164_encoder_alloc(
 int saa7164_encoder_register(struct saa7164_port *port)
 {
 	struct saa7164_dev *dev = port->dev;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler *hdl = &port->ctrl_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int result = -ENODEV;
 
 	dprintk(DBGLVL_ENC, "%s()\n", __func__);
 
+<<<<<<< HEAD
 	if (port->type != SAA7164_MPEG_ENCODER)
 		BUG();
+=======
+	BUG_ON(port->type != SAA7164_MPEG_ENCODER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Sanity check that the PCI configuration space is active */
 	if (port->hwcfg.BARLocation == 0) {
@@ -1402,7 +1718,11 @@ int saa7164_encoder_register(struct saa7164_port *port)
 		       "(errno = %d), NO PCI configuration\n",
 			__func__, result);
 		result = -ENOMEM;
+<<<<<<< HEAD
 		goto failed;
+=======
+		goto fail_pci;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Establish encoder defaults here */
@@ -1413,6 +1733,7 @@ int saa7164_encoder_register(struct saa7164_port *port)
 	port->video_format = EU_VIDEO_FORMAT_MPEG_2;
 	port->audio_format = 0;
 	port->video_resolution = 0;
+<<<<<<< HEAD
 	port->ctl_brightness = 127;
 	port->ctl_contrast = 66;
 	port->ctl_hue = 128;
@@ -1426,6 +1747,55 @@ int saa7164_encoder_register(struct saa7164_port *port)
 	port->encoder_params.ctl_aspect = V4L2_MPEG_VIDEO_ASPECT_4x3;
 	port->encoder_params.refdist = 1;
 	port->encoder_params.gop_size = SAA7164_ENCODER_DEFAULT_GOP_SIZE;
+=======
+	port->freq = SAA7164_TV_MIN_FREQ;
+
+	v4l2_ctrl_handler_init(hdl, 14);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_BRIGHTNESS, 0, 255, 1, 127);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_CONTRAST, 0, 255, 1, 66);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_SATURATION, 0, 255, 1, 62);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_HUE, 0, 255, 1, 128);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_SHARPNESS, 0x0, 0x0f, 1, 8);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_MPEG_AUDIO_MUTE, 0x0, 0x01, 1, 0);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_AUDIO_VOLUME, -83, 24, 1, 20);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_MPEG_VIDEO_BITRATE,
+			  ENCODER_MIN_BITRATE, ENCODER_MAX_BITRATE,
+			  100000, ENCODER_DEF_BITRATE);
+	v4l2_ctrl_new_std_menu(hdl, &saa7164_ctrl_ops,
+			       V4L2_CID_MPEG_STREAM_TYPE,
+			       V4L2_MPEG_STREAM_TYPE_MPEG2_TS, 0,
+			       V4L2_MPEG_STREAM_TYPE_MPEG2_PS);
+	v4l2_ctrl_new_std_menu(hdl, &saa7164_ctrl_ops,
+			       V4L2_CID_MPEG_VIDEO_ASPECT,
+			       V4L2_MPEG_VIDEO_ASPECT_221x100, 0,
+			       V4L2_MPEG_VIDEO_ASPECT_4x3);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_MPEG_VIDEO_GOP_SIZE, 1, 255, 1, 15);
+	v4l2_ctrl_new_std_menu(hdl, &saa7164_ctrl_ops,
+			       V4L2_CID_MPEG_VIDEO_BITRATE_MODE,
+			       V4L2_MPEG_VIDEO_BITRATE_MODE_CBR, 0,
+			       V4L2_MPEG_VIDEO_BITRATE_MODE_VBR);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_MPEG_VIDEO_B_FRAMES, 1, 3, 1, 1);
+	v4l2_ctrl_new_std(hdl, &saa7164_ctrl_ops,
+			  V4L2_CID_MPEG_VIDEO_BITRATE_PEAK,
+			  ENCODER_MIN_BITRATE, ENCODER_MAX_BITRATE,
+			  100000, ENCODER_DEF_BITRATE);
+	if (hdl->error) {
+		result = hdl->error;
+		goto fail_hdl;
+	}
+
+	port->std = V4L2_STD_NTSC_M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (port->encodernorm.id & V4L2_STD_525_60)
 		port->height = 480;
@@ -1440,19 +1810,31 @@ int saa7164_encoder_register(struct saa7164_port *port)
 		printk(KERN_INFO "%s: can't allocate mpeg device\n",
 			dev->name);
 		result = -ENOMEM;
+<<<<<<< HEAD
 		goto failed;
 	}
 
+=======
+		goto fail_hdl;
+	}
+
+	port->v4l_device->ctrl_handler = hdl;
+	v4l2_ctrl_handler_setup(hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	video_set_drvdata(port->v4l_device, port);
 	result = video_register_device(port->v4l_device,
 		VFL_TYPE_GRABBER, -1);
 	if (result < 0) {
 		printk(KERN_INFO "%s: can't register mpeg device\n",
 			dev->name);
+<<<<<<< HEAD
 		/* TODO: We're going to leak here if we don't dealloc
 		 The buffers above. The unreg function can't deal wit it.
 		*/
 		goto failed;
+=======
+		goto fail_reg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	printk(KERN_INFO "%s: registered device video%d [mpeg]\n",
@@ -1474,9 +1856,20 @@ int saa7164_encoder_register(struct saa7164_port *port)
 
 	saa7164_api_set_encoder(port);
 	saa7164_api_get_encoder(port);
+<<<<<<< HEAD
 
 	result = 0;
 failed:
+=======
+	return 0;
+
+fail_reg:
+	video_device_release(port->v4l_device);
+	port->v4l_device = NULL;
+fail_hdl:
+	v4l2_ctrl_handler_free(hdl);
+fail_pci:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 
@@ -1486,8 +1879,12 @@ void saa7164_encoder_unregister(struct saa7164_port *port)
 
 	dprintk(DBGLVL_ENC, "%s(port=%d)\n", __func__, port->nr);
 
+<<<<<<< HEAD
 	if (port->type != SAA7164_MPEG_ENCODER)
 		BUG();
+=======
+	BUG_ON(port->type != SAA7164_MPEG_ENCODER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (port->v4l_device) {
 		if (port->v4l_device->minor != -1)
@@ -1497,6 +1894,10 @@ void saa7164_encoder_unregister(struct saa7164_port *port)
 
 		port->v4l_device = NULL;
 	}
+<<<<<<< HEAD
+=======
+	v4l2_ctrl_handler_free(&port->ctrl_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk(DBGLVL_ENC, "%s(port=%d) done\n", __func__, port->nr);
 }

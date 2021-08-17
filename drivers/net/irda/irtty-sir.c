@@ -123,14 +123,22 @@ static int irtty_change_speed(struct sir_dev *dev, unsigned speed)
 
 	tty = priv->tty;
 
+<<<<<<< HEAD
 	mutex_lock(&tty->termios_mutex);
+=======
+	down_write(&tty->termios_rwsem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	old_termios = tty->termios;
 	cflag = tty->termios.c_cflag;
 	tty_encode_baud_rate(tty, speed, speed);
 	if (tty->ops->set_termios)
 		tty->ops->set_termios(tty, &old_termios);
 	priv->io.speed = speed;
+<<<<<<< HEAD
 	mutex_unlock(&tty->termios_mutex);
+=======
+	up_write(&tty->termios_rwsem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -231,7 +239,11 @@ static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
 
 	dev = priv->dev;
 	if (!dev) {
+<<<<<<< HEAD
 		IRDA_WARNING("%s(), not ready yet!\n", __func__);
+=======
+		net_warn_ratelimited("%s(), not ready yet!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -240,7 +252,11 @@ static void irtty_receive_buf(struct tty_struct *tty, const unsigned char *cp,
 		 *  Characters received with a parity error, etc?
 		 */
  		if (fp && *fp++) { 
+<<<<<<< HEAD
 			IRDA_DEBUG(0, "Framing or parity error!\n");
+=======
+			pr_debug("Framing or parity error!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sirdev_receive(dev, NULL, 0);	/* notify sir_dev (updating stats) */
 			return;
  		}
@@ -280,7 +296,11 @@ static inline void irtty_stop_receiver(struct tty_struct *tty, int stop)
 	struct ktermios old_termios;
 	int cflag;
 
+<<<<<<< HEAD
 	mutex_lock(&tty->termios_mutex);
+=======
+	down_write(&tty->termios_rwsem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	old_termios = tty->termios;
 	cflag = tty->termios.c_cflag;
 	
@@ -292,7 +312,11 @@ static inline void irtty_stop_receiver(struct tty_struct *tty, int stop)
 	tty->termios.c_cflag = cflag;
 	if (tty->ops->set_termios)
 		tty->ops->set_termios(tty, &old_termios);
+<<<<<<< HEAD
 	mutex_unlock(&tty->termios_mutex);
+=======
+	up_write(&tty->termios_rwsem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*****************************************************************/
@@ -387,7 +411,11 @@ static int irtty_ioctl(struct tty_struct *tty, struct file *file, unsigned int c
 	IRDA_ASSERT(priv != NULL, return -ENODEV;);
 	IRDA_ASSERT(priv->magic == IRTTY_MAGIC, return -EBADR;);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(3, "%s(cmd=0x%X)\n", __func__, cmd);
+=======
+	pr_debug("%s(cmd=0x%X)\n", __func__, cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev = priv->dev;
 	IRDA_ASSERT(dev != NULL, return -1;);
@@ -467,7 +495,11 @@ static int irtty_open(struct tty_struct *tty)
 
 	mutex_unlock(&irtty_mutex);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s - %s: irda line discipline opened\n", __func__, tty->name);
+=======
+	pr_debug("%s - %s: irda line discipline opened\n", __func__, tty->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -512,14 +544,21 @@ static void irtty_close(struct tty_struct *tty)
 	sirdev_put_instance(priv->dev);
 
 	/* Stop tty */
+<<<<<<< HEAD
 	irtty_stop_receiver(tty, TRUE);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
 	if (tty->ops->stop)
 		tty->ops->stop(tty);
 
 	kfree(priv);
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s - %s: irda line discipline closed\n", __func__, tty->name);
+=======
+	pr_debug("%s - %s: irda line discipline closed\n", __func__, tty->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* ------------------------------------------------------- */
@@ -546,8 +585,13 @@ static int __init irtty_sir_init(void)
 	int err;
 
 	if ((err = tty_register_ldisc(N_IRDA, &irda_ldisc)) != 0)
+<<<<<<< HEAD
 		IRDA_ERROR("IrDA: can't register line discipline (err = %d)\n",
 			   err);
+=======
+		net_err_ratelimited("IrDA: can't register line discipline (err = %d)\n",
+				    err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -556,8 +600,13 @@ static void __exit irtty_sir_cleanup(void)
 	int err;
 
 	if ((err = tty_unregister_ldisc(N_IRDA))) {
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), can't unregister line discipline (err = %d)\n",
 			   __func__, err);
+=======
+		net_err_ratelimited("%s(), can't unregister line discipline (err = %d)\n",
+				    __func__, err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

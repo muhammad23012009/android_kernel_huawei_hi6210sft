@@ -89,6 +89,7 @@ struct camelot_pcm {
 #define DMABRG_PREALLOC_BUFFER		32 * 1024
 #define DMABRG_PREALLOC_BUFFER_MAX	32 * 1024
 
+<<<<<<< HEAD
 /* support everything the SSI supports */
 #define DMABRG_RATES	\
 	SNDRV_PCM_RATE_8000_192000
@@ -100,18 +101,23 @@ struct camelot_pcm {
 	 SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_U24_3LE |	\
 	 SNDRV_PCM_FMTBIT_S32_LE  | SNDRV_PCM_FMTBIT_U32_LE)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_pcm_hardware camelot_pcm_hardware = {
 	.info = (SNDRV_PCM_INFO_MMAP |
 		SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_BLOCK_TRANSFER |
 		SNDRV_PCM_INFO_MMAP_VALID |
 		SNDRV_PCM_INFO_BATCH),
+<<<<<<< HEAD
 	.formats =	DMABRG_FMTS,
 	.rates =	DMABRG_RATES,
 	.rate_min =		8000,
 	.rate_max =		192000,
 	.channels_min =		2,
 	.channels_max =		8,		/* max of the SSI */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.buffer_bytes_max =	DMABRG_PERIOD_MAX,
 	.period_bytes_min =	DMABRG_PERIOD_MIN,
 	.period_bytes_max =	DMABRG_PERIOD_MAX / 2,
@@ -322,11 +328,14 @@ static struct snd_pcm_ops camelot_pcm_ops = {
 	.pointer	= camelot_pos,
 };
 
+<<<<<<< HEAD
 static void camelot_pcm_free(struct snd_pcm *pcm)
 {
 	snd_pcm_lib_preallocate_free_for_all(pcm);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int camelot_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_pcm *pcm = rtd->pcm;
@@ -345,11 +354,15 @@ static int camelot_pcm_new(struct snd_soc_pcm_runtime *rtd)
 static struct snd_soc_platform_driver sh7760_soc_platform = {
 	.ops		= &camelot_pcm_ops,
 	.pcm_new	= camelot_pcm_new,
+<<<<<<< HEAD
 	.pcm_free	= camelot_pcm_free,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int sh7760_soc_platform_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &sh7760_soc_platform);
 }
 
@@ -357,16 +370,25 @@ static int sh7760_soc_platform_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev, &sh7760_soc_platform);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver sh7760_pcm_driver = {
 	.driver = {
 			.name = "sh7760-pcm-audio",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
 	},
 
 	.probe = sh7760_soc_platform_probe,
 	.remove = sh7760_soc_platform_remove,
+=======
+	},
+
+	.probe = sh7760_soc_platform_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(sh7760_pcm_driver);

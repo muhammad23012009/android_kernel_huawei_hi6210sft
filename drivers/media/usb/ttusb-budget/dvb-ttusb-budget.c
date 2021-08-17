@@ -111,8 +111,13 @@ struct ttusb {
 	int last_filter;
 
 	u8 c;			/* transaction counter, wraps around...  */
+<<<<<<< HEAD
 	fe_sec_tone_mode_t tone;
 	fe_sec_voltage_t voltage;
+=======
+	enum fe_sec_tone_mode tone;
+	enum fe_sec_voltage voltage;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int mux_state;		// 0..2 - MuxSyncWord, 3 - nMuxPacks,    4 - muxpack
 	u8 mux_npacks;
@@ -511,7 +516,12 @@ static int ttusb_update_lnb(struct ttusb *ttusb)
 	return err;
 }
 
+<<<<<<< HEAD
 static int ttusb_set_voltage(struct dvb_frontend* fe, fe_sec_voltage_t voltage)
+=======
+static int ttusb_set_voltage(struct dvb_frontend *fe,
+			     enum fe_sec_voltage voltage)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ttusb* ttusb = (struct ttusb*) fe->dvb->priv;
 
@@ -520,7 +530,11 @@ static int ttusb_set_voltage(struct dvb_frontend* fe, fe_sec_voltage_t voltage)
 }
 
 #ifdef TTUSB_TONE
+<<<<<<< HEAD
 static int ttusb_set_tone(struct dvb_frontend* fe, fe_sec_tone_mode_t tone)
+=======
+static int ttusb_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ttusb* ttusb = (struct ttusb*) fe->dvb->priv;
 
@@ -791,8 +805,12 @@ static void ttusb_free_iso_urbs(struct ttusb *ttusb)
 	int i;
 
 	for (i = 0; i < ISO_BUF_COUNT; i++)
+<<<<<<< HEAD
 		if (ttusb->iso_urb[i])
 			usb_free_urb(ttusb->iso_urb[i]);
+=======
+		usb_free_urb(ttusb->iso_urb[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_free_consistent(NULL,
 			    ISO_FRAME_SIZE * FRAMES_PER_ISO_BUF *
@@ -804,11 +822,17 @@ static int ttusb_alloc_iso_urbs(struct ttusb *ttusb)
 {
 	int i;
 
+<<<<<<< HEAD
 	ttusb->iso_buffer = pci_alloc_consistent(NULL,
 						 ISO_FRAME_SIZE *
 						 FRAMES_PER_ISO_BUF *
 						 ISO_BUF_COUNT,
 						 &ttusb->iso_dma_handle);
+=======
+	ttusb->iso_buffer = pci_zalloc_consistent(NULL,
+						  ISO_FRAME_SIZE * FRAMES_PER_ISO_BUF * ISO_BUF_COUNT,
+						  &ttusb->iso_dma_handle);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ttusb->iso_buffer) {
 		dprintk("%s: pci_alloc_consistent - not enough memory\n",
@@ -816,9 +840,12 @@ static int ttusb_alloc_iso_urbs(struct ttusb *ttusb)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	memset(ttusb->iso_buffer, 0,
 	       ISO_FRAME_SIZE * FRAMES_PER_ISO_BUF * ISO_BUF_COUNT);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < ISO_BUF_COUNT; i++) {
 		struct urb *urb;
 
@@ -1768,6 +1795,11 @@ err_i2c_del_adapter:
 	i2c_del_adapter(&ttusb->i2c_adap);
 err_unregister_adapter:
 	dvb_unregister_adapter (&ttusb->adapter);
+<<<<<<< HEAD
+=======
+	ttusb_free_iso_urbs(ttusb);
+	kfree(ttusb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 

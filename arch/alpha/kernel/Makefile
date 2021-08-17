@@ -8,7 +8,11 @@ ccflags-y	:= -Wno-sign-compare
 
 obj-y    := entry.o traps.o process.o osf_sys.o irq.o \
 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
+<<<<<<< HEAD
 	    alpha_ksyms.o systbls.o err_common.o io.o
+=======
+	    systbls.o err_common.o io.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_VGA_HOSE)	+= console.o
 obj-$(CONFIG_SMP)	+= smp.o
@@ -16,6 +20,11 @@ obj-$(CONFIG_PCI)	+= pci.o pci_iommu.o pci-sysfs.o
 obj-$(CONFIG_SRM_ENV)	+= srm_env.o
 obj-$(CONFIG_MODULES)	+= module.o
 obj-$(CONFIG_PERF_EVENTS) += perf_event.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
+obj-$(CONFIG_AUDIT)	+= audit.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ifdef CONFIG_ALPHA_GENERIC
 

@@ -32,7 +32,11 @@ ENTRY(cpu_arm740_proc_init)
 ENTRY(cpu_arm740_do_idle)
 ENTRY(cpu_arm740_dcache_clean_area)
 ENTRY(cpu_arm740_switch_mm)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm740_proc_fin()
@@ -42,7 +46,11 @@ ENTRY(cpu_arm740_proc_fin)
 	bic	r0, r0, #0x3f000000		@ bank/f/lock/s
 	bic	r0, r0, #0x0000000c		@ w-buffer/cache
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm740_reset(loc)
@@ -56,12 +64,19 @@ ENTRY(cpu_arm740_reset)
 	mrc	p15, 0, ip, c1, c0, 0		@ get ctrl register
 	bic	ip, ip, #0x0000000c		@ ............wc..
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 	mov	pc, r0
 ENDPROC(cpu_arm740_reset)
 	.popsection
 
 	__CPUINIT
 
+=======
+	ret	r0
+ENDPROC(cpu_arm740_reset)
+	.popsection
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type	__arm740_setup, #function
 __arm740_setup:
 	mov	r0, #0
@@ -117,7 +132,11 @@ __arm740_setup:
 						@ need some benchmark
 	orr	r0, r0, #0x0000000d		@ MPU/Cache/WB
 
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.size	__arm740_setup, . - __arm740_setup
 
@@ -134,14 +153,22 @@ __arm740_setup:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type	__arm740_proc_info,#object
 __arm740_proc_info:
 	.long	0x41807400
 	.long	0xfffffff0
 	.long	0
 	.long	0
+<<<<<<< HEAD
 	b	__arm740_setup
+=======
+	initfn	__arm740_setup, __arm740_proc_info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB | HWCAP_26BIT

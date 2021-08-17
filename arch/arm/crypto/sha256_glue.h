@@ -2,6 +2,7 @@
 #define _CRYPTO_SHA256_GLUE_H
 
 #include <linux/crypto.h>
+<<<<<<< HEAD
 #include <crypto/sha.h>
 
 extern struct shash_alg sha256_neon_algs[2];
@@ -19,5 +20,15 @@ extern int sha256_update(struct shash_desc *desc, const u8 *data,
 extern int sha256_export(struct shash_desc *desc, void *out);
 
 extern int sha256_import(struct shash_desc *desc, const void *in);
+=======
+
+extern struct shash_alg sha256_neon_algs[2];
+
+int crypto_sha256_arm_update(struct shash_desc *desc, const u8 *data,
+			     unsigned int len);
+
+int crypto_sha256_arm_finup(struct shash_desc *desc, const u8 *data,
+			    unsigned int len, u8 *hash);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _CRYPTO_SHA256_GLUE_H */

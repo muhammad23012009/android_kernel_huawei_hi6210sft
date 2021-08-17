@@ -19,8 +19,13 @@
  * Workarounds for at least 2 errata so far require this.
  * The mapping is set in mach-pxa/generic.c.
  */
+<<<<<<< HEAD
 #define UNCACHED_PHYS_0		0xff000000
 #define UNCACHED_ADDR		UNCACHED_PHYS_0
+=======
+#define UNCACHED_PHYS_0		0xfe000000
+#define UNCACHED_PHYS_0_SIZE	0x00100000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Intel PXA2xx internal register mapping:

@@ -12,11 +12,38 @@
 
 	.text
 	.set noat
+<<<<<<< HEAD
+=======
+	.cfi_sections	.debug_frame
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Stack offsets.  */
 #define SP_OFF			184
 #define SWITCH_STACK_SIZE	320
 
+<<<<<<< HEAD
+=======
+.macro	CFI_START_OSF_FRAME	func
+	.align	4
+	.globl	\func
+	.type	\func,@function
+\func:
+	.cfi_startproc simple
+	.cfi_return_column 64
+	.cfi_def_cfa	$sp, 48
+	.cfi_rel_offset	64, 8
+	.cfi_rel_offset	$gp, 16
+	.cfi_rel_offset	$16, 24
+	.cfi_rel_offset	$17, 32
+	.cfi_rel_offset	$18, 40
+.endm
+
+.macro	CFI_END_OSF_FRAME	func
+	.cfi_endproc
+	.size	\func, . - \func
+.endm
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This defines the normal kernel pt-regs layout.
  *
@@ -27,6 +54,7 @@
  * the palcode-provided values are available to the signal handler.
  */
 
+<<<<<<< HEAD
 #define SAVE_ALL			\
 	subq	$sp, SP_OFF, $sp;	\
 	stq	$0, 0($sp);		\
@@ -85,33 +113,170 @@
 	ldq	$27, 136($sp);		\
 	ldq	$28, 144($sp);		\
 	addq	$sp, SP_OFF, $sp
+=======
+.macro	SAVE_ALL
+	subq	$sp, SP_OFF, $sp
+	.cfi_adjust_cfa_offset	SP_OFF
+	stq	$0, 0($sp)
+	stq	$1, 8($sp)
+	stq	$2, 16($sp)
+	stq	$3, 24($sp)
+	stq	$4, 32($sp)
+	stq	$28, 144($sp)
+	.cfi_rel_offset	$0, 0
+	.cfi_rel_offset $1, 8
+	.cfi_rel_offset	$2, 16
+	.cfi_rel_offset	$3, 24
+	.cfi_rel_offset	$4, 32
+	.cfi_rel_offset	$28, 144
+	lda	$2, alpha_mv
+	stq	$5, 40($sp)
+	stq	$6, 48($sp)
+	stq	$7, 56($sp)
+	stq	$8, 64($sp)
+	stq	$19, 72($sp)
+	stq	$20, 80($sp)
+	stq	$21, 88($sp)
+	ldq	$2, HAE_CACHE($2)
+	stq	$22, 96($sp)
+	stq	$23, 104($sp)
+	stq	$24, 112($sp)
+	stq	$25, 120($sp)
+	stq	$26, 128($sp)
+	stq	$27, 136($sp)
+	stq	$2, 152($sp)
+	stq	$16, 160($sp)
+	stq	$17, 168($sp)
+	stq	$18, 176($sp)
+	.cfi_rel_offset	$5, 40
+	.cfi_rel_offset	$6, 48
+	.cfi_rel_offset	$7, 56
+	.cfi_rel_offset	$8, 64
+	.cfi_rel_offset $19, 72
+	.cfi_rel_offset	$20, 80
+	.cfi_rel_offset	$21, 88
+	.cfi_rel_offset $22, 96
+	.cfi_rel_offset	$23, 104
+	.cfi_rel_offset	$24, 112
+	.cfi_rel_offset	$25, 120
+	.cfi_rel_offset	$26, 128
+	.cfi_rel_offset	$27, 136
+.endm
+
+.macro	RESTORE_ALL
+	lda	$19, alpha_mv
+	ldq	$0, 0($sp)
+	ldq	$1, 8($sp)
+	ldq	$2, 16($sp)
+	ldq	$3, 24($sp)
+	ldq	$21, 152($sp)
+	ldq	$20, HAE_CACHE($19)
+	ldq	$4, 32($sp)
+	ldq	$5, 40($sp)
+	ldq	$6, 48($sp)
+	ldq	$7, 56($sp)
+	subq	$20, $21, $20
+	ldq	$8, 64($sp)
+	beq	$20, 99f
+	ldq	$20, HAE_REG($19)
+	stq	$21, HAE_CACHE($19)
+	stq	$21, 0($20)
+99:	ldq	$19, 72($sp)
+	ldq	$20, 80($sp)
+	ldq	$21, 88($sp)
+	ldq	$22, 96($sp)
+	ldq	$23, 104($sp)
+	ldq	$24, 112($sp)
+	ldq	$25, 120($sp)
+	ldq	$26, 128($sp)
+	ldq	$27, 136($sp)
+	ldq	$28, 144($sp)
+	addq	$sp, SP_OFF, $sp
+	.cfi_restore	$0
+	.cfi_restore	$1
+	.cfi_restore	$2
+	.cfi_restore	$3
+	.cfi_restore	$4
+	.cfi_restore	$5
+	.cfi_restore	$6
+	.cfi_restore	$7
+	.cfi_restore	$8
+	.cfi_restore	$19
+	.cfi_restore	$20
+	.cfi_restore	$21
+	.cfi_restore	$22
+	.cfi_restore	$23
+	.cfi_restore	$24
+	.cfi_restore	$25
+	.cfi_restore	$26
+	.cfi_restore	$27
+	.cfi_restore	$28
+	.cfi_adjust_cfa_offset	-SP_OFF
+.endm
+
+.macro	DO_SWITCH_STACK
+	bsr	$1, do_switch_stack
+	.cfi_adjust_cfa_offset	SWITCH_STACK_SIZE
+	.cfi_rel_offset	$9, 0
+	.cfi_rel_offset	$10, 8
+	.cfi_rel_offset	$11, 16
+	.cfi_rel_offset	$12, 24
+	.cfi_rel_offset	$13, 32
+	.cfi_rel_offset	$14, 40
+	.cfi_rel_offset	$15, 48
+	/* We don't really care about the FP registers for debugging.  */
+.endm
+
+.macro	UNDO_SWITCH_STACK
+	bsr	$1, undo_switch_stack
+	.cfi_restore	$9
+	.cfi_restore	$10
+	.cfi_restore	$11
+	.cfi_restore	$12
+	.cfi_restore	$13
+	.cfi_restore	$14
+	.cfi_restore	$15
+	.cfi_adjust_cfa_offset	-SWITCH_STACK_SIZE
+.endm
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Non-syscall kernel entry points.
  */
 
+<<<<<<< HEAD
 	.align	4
 	.globl	entInt
 	.ent	entInt
 entInt:
+=======
+CFI_START_OSF_FRAME entInt
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $19
 	jsr	$31, do_entInt
+<<<<<<< HEAD
 .end entInt
 
 	.align	4
 	.globl	entArith
 	.ent	entArith
 entArith:
+=======
+CFI_END_OSF_FRAME entInt
+
+CFI_START_OSF_FRAME entArith
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $18
 	jsr	$31, do_entArith
+<<<<<<< HEAD
 .end entArith
 
 	.align	4
@@ -121,6 +286,15 @@ entMM:
 	SAVE_ALL
 /* save $9 - $15 so the inline exception code can manipulate them.  */
 	subq	$sp, 56, $sp
+=======
+CFI_END_OSF_FRAME entArith
+
+CFI_START_OSF_FRAME entMM
+	SAVE_ALL
+/* save $9 - $15 so the inline exception code can manipulate them.  */
+	subq	$sp, 56, $sp
+	.cfi_adjust_cfa_offset	56
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stq	$9, 0($sp)
 	stq	$10, 8($sp)
 	stq	$11, 16($sp)
@@ -128,6 +302,16 @@ entMM:
 	stq	$13, 32($sp)
 	stq	$14, 40($sp)
 	stq	$15, 48($sp)
+<<<<<<< HEAD
+=======
+	.cfi_rel_offset	$9, 0
+	.cfi_rel_offset	$10, 8
+	.cfi_rel_offset	$11, 16
+	.cfi_rel_offset	$12, 24
+	.cfi_rel_offset	$13, 32
+	.cfi_rel_offset	$14, 40
+	.cfi_rel_offset	$15, 48
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	addq	$sp, 56, $19
 /* handle the fault */
 	lda	$8, 0x3fff
@@ -142,6 +326,7 @@ entMM:
 	ldq	$14, 40($sp)
 	ldq	$15, 48($sp)
 	addq	$sp, 56, $sp
+<<<<<<< HEAD
 /* finish up the syscall as normal.  */
 	br	ret_from_sys_call
 .end entMM
@@ -150,12 +335,28 @@ entMM:
 	.globl	entIF
 	.ent	entIF
 entIF:
+=======
+	.cfi_restore	$9
+	.cfi_restore	$10
+	.cfi_restore	$11
+	.cfi_restore	$12
+	.cfi_restore	$13
+	.cfi_restore	$14
+	.cfi_restore	$15
+	.cfi_adjust_cfa_offset	-56
+/* finish up the syscall as normal.  */
+	br	ret_from_sys_call
+CFI_END_OSF_FRAME entMM
+
+CFI_START_OSF_FRAME entIF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $17
 	jsr	$31, do_entIF
+<<<<<<< HEAD
 .end entIF
 
 	.align	4
@@ -164,6 +365,16 @@ entIF:
 entUna:
 	lda	$sp, -256($sp)
 	stq	$0, 0($sp)
+=======
+CFI_END_OSF_FRAME entIF
+
+CFI_START_OSF_FRAME entUna
+	lda	$sp, -256($sp)
+	.cfi_adjust_cfa_offset	256
+	stq	$0, 0($sp)
+	.cfi_rel_offset	$0, 0
+	.cfi_remember_state
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ldq	$0, 256($sp)	/* get PS */
 	stq	$1, 8($sp)
 	stq	$2, 16($sp)
@@ -195,6 +406,35 @@ entUna:
 	stq	$28, 224($sp)
 	mov	$sp, $19
 	stq	$gp, 232($sp)
+<<<<<<< HEAD
+=======
+	.cfi_rel_offset	$1, 1*8
+	.cfi_rel_offset	$2, 2*8
+	.cfi_rel_offset	$3, 3*8
+	.cfi_rel_offset	$4, 4*8
+	.cfi_rel_offset	$5, 5*8
+	.cfi_rel_offset	$6, 6*8
+	.cfi_rel_offset	$7, 7*8
+	.cfi_rel_offset	$8, 8*8
+	.cfi_rel_offset	$9, 9*8
+	.cfi_rel_offset	$10, 10*8
+	.cfi_rel_offset	$11, 11*8
+	.cfi_rel_offset	$12, 12*8
+	.cfi_rel_offset	$13, 13*8
+	.cfi_rel_offset	$14, 14*8
+	.cfi_rel_offset	$15, 15*8
+	.cfi_rel_offset	$19, 19*8
+	.cfi_rel_offset	$20, 20*8
+	.cfi_rel_offset	$21, 21*8
+	.cfi_rel_offset	$22, 22*8
+	.cfi_rel_offset	$23, 23*8
+	.cfi_rel_offset	$24, 24*8
+	.cfi_rel_offset	$25, 25*8
+	.cfi_rel_offset	$26, 26*8
+	.cfi_rel_offset	$27, 27*8
+	.cfi_rel_offset	$28, 28*8
+	.cfi_rel_offset	$29, 29*8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lda	$8, 0x3fff
 	stq	$31, 248($sp)
 	bic	$sp, $8, $8
@@ -228,6 +468,7 @@ entUna:
 	ldq	$28, 224($sp)
 	ldq	$gp, 232($sp)
 	lda	$sp, 256($sp)
+<<<<<<< HEAD
 	call_pal PAL_rti
 .end entUna
 
@@ -238,6 +479,47 @@ entUnaUser:
 	lda	$sp, 256($sp)	/* pop entUna's stack frame */
 	SAVE_ALL		/* setup normal kernel stack */
 	lda	$sp, -56($sp)
+=======
+	.cfi_restore	$1
+	.cfi_restore	$2
+	.cfi_restore	$3
+	.cfi_restore	$4
+	.cfi_restore	$5
+	.cfi_restore	$6
+	.cfi_restore	$7
+	.cfi_restore	$8
+	.cfi_restore	$9
+	.cfi_restore	$10
+	.cfi_restore	$11
+	.cfi_restore	$12
+	.cfi_restore	$13
+	.cfi_restore	$14
+	.cfi_restore	$15
+	.cfi_restore	$19
+	.cfi_restore	$20
+	.cfi_restore	$21
+	.cfi_restore	$22
+	.cfi_restore	$23
+	.cfi_restore	$24
+	.cfi_restore	$25
+	.cfi_restore	$26
+	.cfi_restore	$27
+	.cfi_restore	$28
+	.cfi_restore	$29
+	.cfi_adjust_cfa_offset	-256
+	call_pal PAL_rti
+
+	.align	4
+entUnaUser:
+	.cfi_restore_state
+	ldq	$0, 0($sp)	/* restore original $0 */
+	lda	$sp, 256($sp)	/* pop entUna's stack frame */
+	.cfi_restore	$0
+	.cfi_adjust_cfa_offset	-256
+	SAVE_ALL		/* setup normal kernel stack */
+	lda	$sp, -56($sp)
+	.cfi_adjust_cfa_offset	56
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stq	$9, 0($sp)
 	stq	$10, 8($sp)
 	stq	$11, 16($sp)
@@ -245,6 +527,16 @@ entUnaUser:
 	stq	$13, 32($sp)
 	stq	$14, 40($sp)
 	stq	$15, 48($sp)
+<<<<<<< HEAD
+=======
+	.cfi_rel_offset	$9, 0
+	.cfi_rel_offset	$10, 8
+	.cfi_rel_offset	$11, 16
+	.cfi_rel_offset	$12, 24
+	.cfi_rel_offset	$13, 32
+	.cfi_rel_offset	$14, 40
+	.cfi_rel_offset	$15, 48
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lda	$8, 0x3fff
 	addq	$sp, 56, $19
 	bic	$sp, $8, $8
@@ -257,6 +549,7 @@ entUnaUser:
 	ldq	$14, 40($sp)
 	ldq	$15, 48($sp)
 	lda	$sp, 56($sp)
+<<<<<<< HEAD
 	br	ret_from_sys_call
 .end entUnaUser
 
@@ -264,13 +557,31 @@ entUnaUser:
 	.globl	entDbg
 	.ent	entDbg
 entDbg:
+=======
+	.cfi_restore	$9
+	.cfi_restore	$10
+	.cfi_restore	$11
+	.cfi_restore	$12
+	.cfi_restore	$13
+	.cfi_restore	$14
+	.cfi_restore	$15
+	.cfi_adjust_cfa_offset	-56
+	br	ret_from_sys_call
+CFI_END_OSF_FRAME entUna
+
+CFI_START_OSF_FRAME entDbg
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $16
 	jsr	$31, do_entDbg
+<<<<<<< HEAD
 .end entDbg
+=======
+CFI_END_OSF_FRAME entDbg
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The system call entry point is special.  Most importantly, it looks
@@ -285,8 +596,17 @@ entDbg:
 
 	.align	4
 	.globl	entSys
+<<<<<<< HEAD
 	.globl	ret_from_sys_call
 	.ent	entSys
+=======
+	.type	entSys, @function
+	.cfi_startproc simple
+	.cfi_return_column 64
+	.cfi_def_cfa	$sp, 48
+	.cfi_rel_offset	64, 8
+	.cfi_rel_offset	$gp, 16
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 entSys:
 	SAVE_ALL
 	lda	$8, 0x3fff
@@ -300,7 +620,18 @@ entSys:
 	stq	$17, SP_OFF+32($sp)
 	s8addq	$0, $5, $5
 	stq	$18, SP_OFF+40($sp)
+<<<<<<< HEAD
 	blbs	$3, strace
+=======
+	.cfi_rel_offset	$16, SP_OFF+24
+	.cfi_rel_offset	$17, SP_OFF+32
+	.cfi_rel_offset	$18, SP_OFF+40
+#ifdef CONFIG_AUDITSYSCALL
+	lda     $6, _TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT
+	and     $3, $6, $3
+#endif
+	bne     $3, strace
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	beq	$4, 1f
 	ldq	$27, 0($5)
 1:	jsr	$26, ($27), alpha_ni_syscall
@@ -310,6 +641,10 @@ entSys:
 	stq	$31, 72($sp)		/* a3=0 => no error */
 
 	.align	4
+<<<<<<< HEAD
+=======
+	.globl	ret_from_sys_call
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ret_from_sys_call:
 	cmovne	$26, 0, $18		/* $18 = 0 => non-restartable */
 	ldq	$0, SP_OFF($sp)
@@ -324,10 +659,18 @@ ret_to_user:
 	and	$17, _TIF_WORK_MASK, $2
 	bne	$2, work_pending
 restore_all:
+<<<<<<< HEAD
+=======
+	.cfi_remember_state
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	RESTORE_ALL
 	call_pal PAL_rti
 
 ret_to_kernel:
+<<<<<<< HEAD
+=======
+	.cfi_restore_state
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lda	$16, 7
 	call_pal PAL_swpipl
 	br restore_all
@@ -356,7 +699,10 @@ $ret_success:
 	stq	$0, 0($sp)
 	stq	$31, 72($sp)	/* a3=0 => no error */
 	br	ret_from_sys_call
+<<<<<<< HEAD
 .end entSys
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Do all cleanup when returning from all interrupts and system calls.
@@ -370,7 +716,11 @@ $ret_success:
  */
 
 	.align	4
+<<<<<<< HEAD
 	.ent	work_pending
+=======
+	.type	work_pending, @function
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 work_pending:
 	and	$17, _TIF_NOTIFY_RESUME | _TIF_SIGPENDING, $2
 	bne	$2, $work_notifysig
@@ -387,23 +737,39 @@ $work_resched:
 
 $work_notifysig:
 	mov	$sp, $16
+<<<<<<< HEAD
 	bsr	$1, do_switch_stack
 	jsr	$26, do_work_pending
 	bsr	$1, undo_switch_stack
 	br	restore_all
 .end work_pending
+=======
+	DO_SWITCH_STACK
+	jsr	$26, do_work_pending
+	UNDO_SWITCH_STACK
+	br	restore_all
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * PTRACE syscall handler
  */
 
 	.align	4
+<<<<<<< HEAD
 	.ent	strace
 strace:
 	/* set up signal stack, call syscall_trace */
 	bsr	$1, do_switch_stack
 	jsr	$26, syscall_trace_enter /* returns the syscall number */
 	bsr	$1, undo_switch_stack
+=======
+	.type	strace, @function
+strace:
+	/* set up signal stack, call syscall_trace */
+	DO_SWITCH_STACK
+	jsr	$26, syscall_trace_enter /* returns the syscall number */
+	UNDO_SWITCH_STACK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* get the arguments back.. */
 	ldq	$16, SP_OFF+24($sp)
@@ -431,9 +797,15 @@ ret_from_straced:
 $strace_success:
 	stq	$0, 0($sp)		/* save return value */
 
+<<<<<<< HEAD
 	bsr	$1, do_switch_stack
 	jsr	$26, syscall_trace_leave
 	bsr	$1, undo_switch_stack
+=======
+	DO_SWITCH_STACK
+	jsr	$26, syscall_trace_leave
+	UNDO_SWITCH_STACK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	br	$31, ret_from_sys_call
 
 	.align	3
@@ -447,26 +819,49 @@ $strace_error:
 	stq	$0, 0($sp)
 	stq	$1, 72($sp)	/* a3 for return */
 
+<<<<<<< HEAD
 	bsr	$1, do_switch_stack
+=======
+	DO_SWITCH_STACK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov	$18, $9		/* save old syscall number */
 	mov	$19, $10	/* save old a3 */
 	jsr	$26, syscall_trace_leave
 	mov	$9, $18
 	mov	$10, $19
+<<<<<<< HEAD
 	bsr	$1, undo_switch_stack
 
 	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
 	br	ret_from_sys_call
 .end strace
+=======
+	UNDO_SWITCH_STACK
+
+	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
+	br	ret_from_sys_call
+CFI_END_OSF_FRAME entSys
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Save and restore the switch stack -- aka the balance of the user context.
  */
 
 	.align	4
+<<<<<<< HEAD
 	.ent	do_switch_stack
 do_switch_stack:
 	lda	$sp, -SWITCH_STACK_SIZE($sp)
+=======
+	.type	do_switch_stack, @function
+	.cfi_startproc simple
+	.cfi_return_column 64
+	.cfi_def_cfa $sp, 0
+	.cfi_register 64, $1
+do_switch_stack:
+	lda	$sp, -SWITCH_STACK_SIZE($sp)
+	.cfi_adjust_cfa_offset	SWITCH_STACK_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stq	$9, 0($sp)
 	stq	$10, 8($sp)
 	stq	$11, 16($sp)
@@ -510,10 +905,21 @@ do_switch_stack:
 	stt	$f0, 312($sp)	# save fpcr in slot of $f31
 	ldt	$f0, 64($sp)	# dont let "do_switch_stack" change fp state.
 	ret	$31, ($1), 1
+<<<<<<< HEAD
 .end do_switch_stack
 
 	.align	4
 	.ent	undo_switch_stack
+=======
+	.cfi_endproc
+	.size	do_switch_stack, .-do_switch_stack
+
+	.align	4
+	.type	undo_switch_stack, @function
+	.cfi_startproc simple
+	.cfi_def_cfa $sp, 0
+	.cfi_register 64, $1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 undo_switch_stack:
 	ldq	$9, 0($sp)
 	ldq	$10, 8($sp)
@@ -558,7 +964,12 @@ undo_switch_stack:
 	ldt	$f30, 304($sp)
 	lda	$sp, SWITCH_STACK_SIZE($sp)
 	ret	$31, ($1), 1
+<<<<<<< HEAD
 .end undo_switch_stack
+=======
+	.cfi_endproc
+	.size	undo_switch_stack, .-undo_switch_stack
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The meat of the context switch code.
@@ -566,6 +977,7 @@ undo_switch_stack:
 
 	.align	4
 	.globl	alpha_switch_to
+<<<<<<< HEAD
 	.ent	alpha_switch_to
 alpha_switch_to:
 	.prologue 0
@@ -577,6 +989,20 @@ alpha_switch_to:
 	mov	$17, $0
 	ret
 .end alpha_switch_to
+=======
+	.type	alpha_switch_to, @function
+	.cfi_startproc
+alpha_switch_to:
+	DO_SWITCH_STACK
+	call_pal PAL_swpctx
+	lda	$8, 0x3fff
+	UNDO_SWITCH_STACK
+	bic	$sp, $8, $8
+	mov	$17, $0
+	ret
+	.cfi_endproc
+	.size	alpha_switch_to, .-alpha_switch_to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * New processes begin life here.

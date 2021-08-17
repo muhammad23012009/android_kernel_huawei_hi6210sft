@@ -23,6 +23,7 @@
 #include "ext4.h"
 
 /*
+<<<<<<< HEAD
  * with AGGRESSIVE_CHECK allocator runs consistency checks over
  * structures. these checks slow things down a lot
  */
@@ -35,10 +36,13 @@
 #define DOUBLE_CHECK__
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #ifdef CONFIG_EXT4_DEBUG
 extern ushort ext4_mballoc_debug;
 
+<<<<<<< HEAD
 #define mb_debug(n, fmt, a...)	                                        \
 	do {								\
 		if ((n) <= ext4_mballoc_debug) {		        \
@@ -49,6 +53,17 @@ extern ushort ext4_mballoc_debug;
 	} while (0)
 #else
 #define mb_debug(n, fmt, a...)
+=======
+#define mb_debug(n, fmt, ...)	                                        \
+do {									\
+	if ((n) <= ext4_mballoc_debug) {				\
+		printk(KERN_DEBUG "(%s, %d): %s: " fmt,			\
+		       __FILE__, __LINE__, __func__, ##__VA_ARGS__);	\
+	}								\
+} while (0)
+#else
+#define mb_debug(n, fmt, ...)	no_printk(fmt, ##__VA_ARGS__)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define EXT4_MB_HISTORY_ALLOC		1	/* allocation */
@@ -175,8 +190,11 @@ struct ext4_allocation_context {
 	/* copy of the best found extent taken before preallocation efforts */
 	struct ext4_free_extent ac_f_ex;
 
+<<<<<<< HEAD
 	/* number of iterations done. we have to track to limit searching */
 	unsigned long ac_ex_scanned;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u16 ac_groups_scanned;
 	__u16 ac_found;
 	__u16 ac_tail;

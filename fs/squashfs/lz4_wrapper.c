@@ -117,6 +117,7 @@ static int lz4_uncompress(struct squashfs_sb_info *msblk, void *strm,
 	data = squashfs_first_page(output);
 	buff = stream->output;
 	while (data) {
+<<<<<<< HEAD
 		if (bytes <= PAGE_CACHE_SIZE) {
 			memcpy(data, buff, bytes);
 			break;
@@ -124,6 +125,15 @@ static int lz4_uncompress(struct squashfs_sb_info *msblk, void *strm,
 		memcpy(data, buff, PAGE_CACHE_SIZE);
 		buff += PAGE_CACHE_SIZE;
 		bytes -= PAGE_CACHE_SIZE;
+=======
+		if (bytes <= PAGE_SIZE) {
+			memcpy(data, buff, bytes);
+			break;
+		}
+		memcpy(data, buff, PAGE_SIZE);
+		buff += PAGE_SIZE;
+		bytes -= PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data = squashfs_next_page(output);
 	}
 	squashfs_finish_page(output);

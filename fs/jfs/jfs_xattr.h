@@ -19,6 +19,11 @@
 #ifndef H_JFS_XATTR
 #define H_JFS_XATTR
 
+<<<<<<< HEAD
+=======
+#include <linux/xattr.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * jfs_ea_list describe the on-disk format of the extended attributes.
  * I know the null-terminator is redundant since namelen is stored, but
@@ -54,12 +59,19 @@ struct jfs_ea_list {
 
 extern int __jfs_setxattr(tid_t, struct inode *, const char *, const void *,
 			  size_t, int);
+<<<<<<< HEAD
 extern int jfs_setxattr(struct dentry *, const char *, const void *, size_t,
 			int);
 extern ssize_t __jfs_getxattr(struct inode *, const char *, void *, size_t);
 extern ssize_t jfs_getxattr(struct dentry *, const char *, void *, size_t);
 extern ssize_t jfs_listxattr(struct dentry *, char *, size_t);
 extern int jfs_removexattr(struct dentry *, const char *);
+=======
+extern ssize_t __jfs_getxattr(struct inode *, const char *, void *, size_t);
+extern ssize_t jfs_listxattr(struct dentry *, char *, size_t);
+
+extern const struct xattr_handler *jfs_xattr_handlers[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_JFS_SECURITY
 extern int jfs_init_security(tid_t, struct inode *, struct inode *,

@@ -325,7 +325,11 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
 /* Helper for generic DMA-mapping functions. */
 static struct pci_dev *alpha_gendev_to_pci(struct device *dev)
 {
+<<<<<<< HEAD
 	if (dev && dev->bus == &pci_bus_type)
+=======
+	if (dev && dev_is_pci(dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return to_pci_dev(dev);
 
 	/* Assume that non-PCI devices asking for DMA are either ISA or EISA,
@@ -349,7 +353,11 @@ static struct pci_dev *alpha_gendev_to_pci(struct device *dev)
 static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
 				     unsigned long offset, size_t size,
 				     enum dma_data_direction dir,
+<<<<<<< HEAD
 				     struct dma_attrs *attrs)
+=======
+				     unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	int dac_allowed;
@@ -369,7 +377,11 @@ static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
 
 static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
 				 size_t size, enum dma_data_direction dir,
+<<<<<<< HEAD
 				 struct dma_attrs *attrs)
+=======
+				 unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
@@ -433,7 +445,11 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
 
 static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
 				      dma_addr_t *dma_addrp, gfp_t gfp,
+<<<<<<< HEAD
 				      struct dma_attrs *attrs)
+=======
+				      unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	void *cpu_addr;
@@ -478,7 +494,11 @@ try_again:
 
 static void alpha_pci_free_coherent(struct device *dev, size_t size,
 				    void *cpu_addr, dma_addr_t dma_addr,
+<<<<<<< HEAD
 				    struct dma_attrs *attrs)
+=======
+				    unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
@@ -651,7 +671,11 @@ sg_fill(struct device *dev, struct scatterlist *leader, struct scatterlist *end,
 
 static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 			    int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			    struct dma_attrs *attrs)
+=======
+			    unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	struct scatterlist *start, *end, *out;
@@ -729,7 +753,11 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 
 static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
 			       int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	unsigned long flags;
@@ -939,6 +967,7 @@ static int alpha_pci_mapping_error(struct device *dev, dma_addr_t dma_addr)
 	return dma_addr == 0;
 }
 
+<<<<<<< HEAD
 static int alpha_pci_set_mask(struct device *dev, u64 mask)
 {
 	if (!dev->dma_mask ||
@@ -949,6 +978,8 @@ static int alpha_pci_set_mask(struct device *dev, u64 mask)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dma_map_ops alpha_pci_ops = {
 	.alloc			= alpha_pci_alloc_coherent,
 	.free			= alpha_pci_free_coherent,
@@ -958,7 +989,10 @@ struct dma_map_ops alpha_pci_ops = {
 	.unmap_sg		= alpha_pci_unmap_sg,
 	.mapping_error		= alpha_pci_mapping_error,
 	.dma_supported		= alpha_pci_supported,
+<<<<<<< HEAD
 	.set_dma_mask		= alpha_pci_set_mask,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct dma_map_ops *dma_ops = &alpha_pci_ops;

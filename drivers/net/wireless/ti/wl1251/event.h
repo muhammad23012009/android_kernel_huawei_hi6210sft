@@ -112,6 +112,16 @@ struct event_mailbox {
 	u8 padding[19];
 } __packed;
 
+<<<<<<< HEAD
+=======
+enum {
+	EVENT_ENTER_POWER_SAVE_FAIL = 0,
+	EVENT_ENTER_POWER_SAVE_SUCCESS,
+	EVENT_EXIT_POWER_SAVE_FAIL,
+	EVENT_EXIT_POWER_SAVE_SUCCESS,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wl1251_event_unmask(struct wl1251 *wl);
 void wl1251_event_mbox_config(struct wl1251 *wl);
 int wl1251_event_handle(struct wl1251 *wl, u8 mbox);

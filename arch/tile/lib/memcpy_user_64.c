@@ -28,9 +28,16 @@
 #define _ST(p, inst, v)						\
 	({							\
 		asm("1: " #inst " %0, %1;"			\
+<<<<<<< HEAD
 		    ".pushsection .coldtext.memcpy,\"ax\";"	\
 		    "2: { move r0, %2; jrp lr };"		\
 		    ".section __ex_table,\"a\";"		\
+=======
+		    ".pushsection .coldtext,\"ax\";"	\
+		    "2: { move r0, %2; jrp lr };"		\
+		    ".section __ex_table,\"a\";"		\
+		    ".align 8;"					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    ".quad 1b, 2b;"				\
 		    ".popsection"				\
 		    : "=m" (*(p)) : "r" (v), "r" (n));		\
@@ -40,9 +47,16 @@
 	({							\
 		unsigned long __v;				\
 		asm("1: " #inst " %0, %1;"			\
+<<<<<<< HEAD
 		    ".pushsection .coldtext.memcpy,\"ax\";"	\
 		    "2: { move r0, %2; jrp lr };"		\
 		    ".section __ex_table,\"a\";"		\
+=======
+		    ".pushsection .coldtext,\"ax\";"	\
+		    "2: { move r0, %2; jrp lr };"		\
+		    ".section __ex_table,\"a\";"		\
+		    ".align 8;"					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    ".quad 1b, 2b;"				\
 		    ".popsection"				\
 		    : "=r" (__v) : "m" (*(p)), "r" (n));	\

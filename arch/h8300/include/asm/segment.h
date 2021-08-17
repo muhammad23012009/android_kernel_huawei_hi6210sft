@@ -29,11 +29,16 @@ typedef struct {
 
 static inline mm_segment_t get_fs(void)
 {
+<<<<<<< HEAD
     return USER_DS;
+=======
+	return USER_DS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline mm_segment_t get_ds(void)
 {
+<<<<<<< HEAD
     /* return the supervisor data space code */
     return KERNEL_DS;
 }
@@ -43,6 +48,13 @@ static inline void set_fs(mm_segment_t val)
 }
 
 #define segment_eq(a,b)	((a).seg == (b).seg)
+=======
+	/* return the supervisor data space code */
+	return KERNEL_DS;
+}
+
+#define segment_eq(a, b)	((a).seg == (b).seg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASSEMBLY__ */
 

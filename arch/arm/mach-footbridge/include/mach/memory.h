@@ -59,11 +59,14 @@ extern unsigned long __bus_to_pfn(unsigned long);
  */
 #define FLUSH_BASE		0xf9000000
 
+<<<<<<< HEAD
 /*
  * Physical DRAM offset.
  */
 #define PLAT_PHYS_OFFSET		UL(0x00000000)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FLUSH_BASE_PHYS		0x50000000
 
 #endif

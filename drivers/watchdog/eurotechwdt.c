@@ -477,4 +477,7 @@ module_exit(eurwdt_exit);
 MODULE_AUTHOR("Rodolfo Giometti");
 MODULE_DESCRIPTION("Driver for Eurotech CPU-1220/1410 on board watchdog");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -68,7 +68,12 @@ static const u8 THMC50_REG_TEMP_DEFAULT[] = { 0x17, 0x18, 0x18 };
 
 /* Each client has this additional data */
 struct thmc50_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+	const struct attribute_group *groups[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex update_lock;
 	enum chips type;
@@ -85,6 +90,7 @@ struct thmc50_data {
 	u8 alarms;
 };
 
+<<<<<<< HEAD
 static int thmc50_detect(struct i2c_client *client,
 			 struct i2c_board_info *info);
 static int thmc50_probe(struct i2c_client *client,
@@ -111,6 +117,49 @@ static struct i2c_driver thmc50_driver = {
 	.detect = thmc50_detect,
 	.address_list = normal_i2c,
 };
+=======
+static struct thmc50_data *thmc50_update_device(struct device *dev)
+{
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int timeout = HZ / 5 + (data->type == thmc50 ? HZ : 0);
+
+	mutex_lock(&data->update_lock);
+
+	if (time_after(jiffies, data->last_updated + timeout)
+	    || !data->valid) {
+
+		int temps = data->has_temp3 ? 3 : 2;
+		int i;
+		int prog = i2c_smbus_read_byte_data(client, THMC50_REG_CONF);
+
+		prog &= THMC50_REG_CONF_PROGRAMMED;
+
+		for (i = 0; i < temps; i++) {
+			data->temp_input[i] = i2c_smbus_read_byte_data(client,
+						THMC50_REG_TEMP[i]);
+			data->temp_max[i] = i2c_smbus_read_byte_data(client,
+						THMC50_REG_TEMP_MAX[i]);
+			data->temp_min[i] = i2c_smbus_read_byte_data(client,
+						THMC50_REG_TEMP_MIN[i]);
+			data->temp_critical[i] =
+				i2c_smbus_read_byte_data(client,
+					prog ? THMC50_REG_TEMP_CRITICAL[i]
+					     : THMC50_REG_TEMP_DEFAULT[i]);
+		}
+		data->analog_out =
+		    i2c_smbus_read_byte_data(client, THMC50_REG_ANALOG_OUT);
+		data->alarms =
+		    i2c_smbus_read_byte_data(client, THMC50_REG_INTR);
+		data->last_updated = jiffies;
+		data->valid = 1;
+	}
+
+	mutex_unlock(&data->update_lock);
+
+	return data;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t show_analog_out(struct device *dev,
 			       struct device_attribute *attr, char *buf)
@@ -123,8 +172,13 @@ static ssize_t set_analog_out(struct device *dev,
 			      struct device_attribute *attr,
 			      const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int config;
 	unsigned long tmp;
 	int err;
@@ -177,8 +231,13 @@ static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long val;
 	int err;
 
@@ -206,8 +265,13 @@ static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long val;
 	int err;
 
@@ -355,6 +419,7 @@ static int thmc50_detect(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int thmc50_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
@@ -416,6 +481,11 @@ static int thmc50_remove(struct i2c_client *client)
 static void thmc50_init_client(struct i2c_client *client)
 {
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+static void thmc50_init_client(struct thmc50_data *data)
+{
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int config;
 
 	data->analog_out = i2c_smbus_read_byte_data(client,
@@ -433,6 +503,7 @@ static void thmc50_init_client(struct i2c_client *client)
 	i2c_smbus_write_byte_data(client, THMC50_REG_CONF, config);
 }
 
+<<<<<<< HEAD
 static struct thmc50_data *thmc50_update_device(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -475,6 +546,56 @@ static struct thmc50_data *thmc50_update_device(struct device *dev)
 	return data;
 }
 
+=======
+static int thmc50_probe(struct i2c_client *client,
+			const struct i2c_device_id *id)
+{
+	struct device *dev = &client->dev;
+	struct thmc50_data *data;
+	struct device *hwmon_dev;
+	int idx = 0;
+
+	data = devm_kzalloc(dev, sizeof(struct thmc50_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+	data->type = id->driver_data;
+	mutex_init(&data->update_lock);
+
+	thmc50_init_client(data);
+
+	/* sysfs hooks */
+	data->groups[idx++] = &thmc50_group;
+
+	/* Register additional ADM1022 sysfs hooks */
+	if (data->has_temp3)
+		data->groups[idx++] = &temp3_group;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, data->groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id thmc50_id[] = {
+	{ "adm1022", adm1022 },
+	{ "thmc50", thmc50 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, thmc50_id);
+
+static struct i2c_driver thmc50_driver = {
+	.class = I2C_CLASS_HWMON,
+	.driver = {
+		.name = "thmc50",
+	},
+	.probe = thmc50_probe,
+	.id_table = thmc50_id,
+	.detect = thmc50_detect,
+	.address_list = normal_i2c,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_i2c_driver(thmc50_driver);
 
 MODULE_AUTHOR("Krzysztof Helt <krzysztof.h1@wp.pl>");

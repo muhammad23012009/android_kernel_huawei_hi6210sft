@@ -52,7 +52,11 @@ struct lp8788_bl {
 	struct pwm_device *pwm;
 };
 
+<<<<<<< HEAD
 struct lp8788_bl_config default_bl_config = {
+=======
+static struct lp8788_bl_config default_bl_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.bl_mode    = LP8788_BL_REGISTER_ONLY,
 	.dim_mode   = LP8788_DIM_EXPONENTIAL,
 	.full_scale = LP8788_FULLSCALE_1900uA,
@@ -63,13 +67,22 @@ struct lp8788_bl_config default_bl_config = {
 
 static inline bool is_brightness_ctrl_by_pwm(enum lp8788_bl_ctrl_mode mode)
 {
+<<<<<<< HEAD
 	return (mode == LP8788_BL_COMB_PWM_BASED);
+=======
+	return mode == LP8788_BL_COMB_PWM_BASED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline bool is_brightness_ctrl_by_register(enum lp8788_bl_ctrl_mode mode)
 {
+<<<<<<< HEAD
 	return (mode == LP8788_BL_REGISTER_ONLY ||
 		mode == LP8788_BL_COMB_REGISTER_BASED);
+=======
+	return mode == LP8788_BL_REGISTER_ONLY ||
+		mode == LP8788_BL_COMB_REGISTER_BASED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int lp8788_backlight_configure(struct lp8788_bl *bl)
@@ -145,6 +158,15 @@ static void lp8788_pwm_ctrl(struct lp8788_bl *bl, int br, int max_br)
 		}
 
 		bl->pwm = pwm;
+<<<<<<< HEAD
+=======
+
+		/*
+		 * FIXME: pwm_apply_args() should be removed when switching to
+		 * the atomic PWM API.
+		 */
+		pwm_apply_args(pwm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	pwm_config(bl->pwm, duty, period);
@@ -176,6 +198,7 @@ static int lp8788_bl_update_status(struct backlight_device *bl_dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lp8788_bl_get_brightness(struct backlight_device *bl_dev)
 {
 	return bl_dev->props.brightness;
@@ -185,6 +208,11 @@ static const struct backlight_ops lp8788_bl_ops = {
 	.options = BL_CORE_SUSPENDRESUME,
 	.update_status = lp8788_bl_update_status,
 	.get_brightness = lp8788_bl_get_brightness,
+=======
+static const struct backlight_ops lp8788_bl_ops = {
+	.options = BL_CORE_SUSPENDRESUME,
+	.update_status = lp8788_bl_update_status,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int lp8788_backlight_register(struct lp8788_bl *bl)
@@ -227,8 +255,12 @@ static void lp8788_backlight_unregister(struct lp8788_bl *bl)
 {
 	struct backlight_device *bl_dev = bl->bl_dev;
 
+<<<<<<< HEAD
 	if (bl_dev)
 		backlight_device_unregister(bl_dev);
+=======
+	backlight_device_unregister(bl_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t lp8788_get_bl_ctl_mode(struct device *dev,
@@ -312,7 +344,10 @@ static int lp8788_backlight_remove(struct platform_device *pdev)
 	backlight_update_status(bl_dev);
 	sysfs_remove_group(&pdev->dev.kobj, &lp8788_attr_group);
 	lp8788_backlight_unregister(bl);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -322,7 +357,10 @@ static struct platform_driver lp8788_bl_driver = {
 	.remove = lp8788_backlight_remove,
 	.driver = {
 		.name = LP8788_DEV_BACKLIGHT,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(lp8788_bl_driver);

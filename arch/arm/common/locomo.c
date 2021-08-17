@@ -138,9 +138,15 @@ static struct locomo_dev_info locomo_devices[] = {
 	},
 };
 
+<<<<<<< HEAD
 static void locomo_handler(unsigned int irq, struct irq_desc *desc)
 {
 	struct locomo *lchip = irq_get_chip_data(irq);
+=======
+static void locomo_handler(struct irq_desc *desc)
+{
+	struct locomo *lchip = irq_desc_get_handler_data(desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int req, i;
 
 	/* Acknowledge the parent IRQ */
@@ -150,6 +156,11 @@ static void locomo_handler(unsigned int irq, struct irq_desc *desc)
 	req = locomo_readl(lchip->base + LOCOMO_ICR) & 0x0f00;
 
 	if (req) {
+<<<<<<< HEAD
+=======
+		unsigned int irq;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* generate the next interrupt(s) */
 		irq = lchip->irq_base;
 		for (i = 0; i <= 3; i++, irq++) {
@@ -198,14 +209,22 @@ static void locomo_setup_irq(struct locomo *lchip)
 	 * Install handler for IRQ_LOCOMO_HW.
 	 */
 	irq_set_irq_type(lchip->irq, IRQ_TYPE_EDGE_FALLING);
+<<<<<<< HEAD
 	irq_set_chip_data(lchip->irq, lchip);
 	irq_set_chained_handler(lchip->irq, locomo_handler);
+=======
+	irq_set_chained_handler_and_data(lchip->irq, locomo_handler, lchip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Install handlers for IRQ_LOCOMO_* */
 	for ( ; irq <= lchip->irq_base + 3; irq++) {
 		irq_set_chip_and_handler(irq, &locomo_chip, handle_level_irq);
 		irq_set_chip_data(irq, lchip);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -475,8 +494,12 @@ static void __locomo_remove(struct locomo *lchip)
 	device_for_each_child(lchip->dev, NULL, locomo_remove_child);
 
 	if (lchip->irq != NO_IRQ) {
+<<<<<<< HEAD
 		irq_set_chained_handler(lchip->irq, NULL);
 		irq_set_handler_data(lchip->irq, NULL);
+=======
+		irq_set_chained_handler_and_data(lchip->irq, NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	iounmap(lchip->base);

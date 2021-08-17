@@ -16,6 +16,7 @@
 #include <linux/mtd/mtd.h>
 #include "nodelist.h"
 
+<<<<<<< HEAD
 static int jffs2_trusted_getxattr(struct dentry *dentry, const char *name,
 		void *buffer, size_t size, int type)
 {
@@ -45,6 +46,28 @@ static size_t jffs2_trusted_listxattr(struct dentry *dentry, char *list,
 	}
 
 	return retlen;
+=======
+static int jffs2_trusted_getxattr(const struct xattr_handler *handler,
+				  struct dentry *unused, struct inode *inode,
+				  const char *name, void *buffer, size_t size)
+{
+	return do_jffs2_getxattr(inode, JFFS2_XPREFIX_TRUSTED,
+				 name, buffer, size);
+}
+
+static int jffs2_trusted_setxattr(const struct xattr_handler *handler,
+				  struct dentry *unused, struct inode *inode,
+				  const char *name, const void *buffer,
+				  size_t size, int flags)
+{
+	return do_jffs2_setxattr(inode, JFFS2_XPREFIX_TRUSTED,
+				 name, buffer, size, flags);
+}
+
+static bool jffs2_trusted_listxattr(struct dentry *dentry)
+{
+	return capable(CAP_SYS_ADMIN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct xattr_handler jffs2_trusted_xattr_handler = {

@@ -4,6 +4,11 @@
 #ifndef __LINUX_PXA168_ETH_H
 #define __LINUX_PXA168_ETH_H
 
+<<<<<<< HEAD
+=======
+#include <linux/phy.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct pxa168_eth_platform_data {
 	int	port_number;
 	int	phy_addr;
@@ -13,6 +18,10 @@ struct pxa168_eth_platform_data {
 	 */
 	int	speed;		/* 0, SPEED_10, SPEED_100 */
 	int	duplex;		/* DUPLEX_HALF or DUPLEX_FULL */
+<<<<<<< HEAD
+=======
+	phy_interface_t intf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Override default RX/TX queue sizes if nonzero.

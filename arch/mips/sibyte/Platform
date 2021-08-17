@@ -13,7 +13,10 @@ cflags-$(CONFIG_SIBYTE_BCM112X) +=					\
 		-I$(srctree)/arch/mips/include/asm/mach-sibyte		\
 		-DSIBYTE_HDR_FEATURES=SIBYTE_HDR_FMASK_1250_112x_ALL
 
+<<<<<<< HEAD
 platform-$(CONFIG_SIBYTE_SB1250)	+= sibyte/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cflags-$(CONFIG_SIBYTE_SB1250)	+=					\
 		-I$(srctree)/arch/mips/include/asm/mach-sibyte		\
 		-DSIBYTE_HDR_FEATURES=SIBYTE_HDR_FMASK_1250_112x_ALL
@@ -31,7 +34,12 @@ cflags-$(CONFIG_SIBYTE_BCM1x80) +=					\
 # Sibyte BCM91120C (CRhine) board
 # Sibyte BCM91125C (CRhone) board
 # Sibyte BCM91125E (Rhone) board
+<<<<<<< HEAD
 # Sibyte SWARM board
+=======
+# Sibyte BCM91250A (SWARM) board
+# Sibyte BCM91250C2 (LittleSur) board
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Sibyte BCM91x80 (BigSur) board
 #
 load-$(CONFIG_SIBYTE_CARMEL)	:= 0xffffffff80100000
@@ -41,3 +49,7 @@ load-$(CONFIG_SIBYTE_RHONE)	:= 0xffffffff80100000
 load-$(CONFIG_SIBYTE_SENTOSA)	:= 0xffffffff80100000
 load-$(CONFIG_SIBYTE_SWARM)	:= 0xffffffff80100000
 load-$(CONFIG_SIBYTE_BIGSUR)	:= 0xffffffff80100000
+<<<<<<< HEAD
+=======
+load-$(CONFIG_SIBYTE_LITTLESUR) := 0xffffffff80100000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

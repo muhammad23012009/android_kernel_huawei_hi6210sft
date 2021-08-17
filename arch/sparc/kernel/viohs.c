@@ -426,6 +426,16 @@ static int process_dreg_info(struct vio_driver_state *vio,
 	if (vio->dr_state & VIO_DR_STATE_RXREG)
 		goto send_nack;
 
+<<<<<<< HEAD
+=======
+	/* v1.6 and higher, ACK with desired, supported mode, or NACK */
+	if (vio_version_after_eq(vio, 1, 6)) {
+		if (!(pkt->options & VIO_TX_DRING))
+			goto send_nack;
+		pkt->options = VIO_TX_DRING;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(vio->desc_buf);
 
 	vio->desc_buf = kzalloc(pkt->descr_size, GFP_ATOMIC);
@@ -453,8 +463,16 @@ static int process_dreg_info(struct vio_driver_state *vio,
 	pkt->tag.stype = VIO_SUBTYPE_ACK;
 	pkt->dring_ident = ++dr->ident;
 
+<<<<<<< HEAD
 	viodbg(HS, "SEND DRING_REG ACK ident[%llx]\n",
 	       (unsigned long long) pkt->dring_ident);
+=======
+	viodbg(HS, "SEND DRING_REG ACK ident[%llx] "
+	       "ndesc[%u] dsz[%u] opt[0x%x] ncookies[%u]\n",
+	       (unsigned long long) pkt->dring_ident,
+	       pkt->num_descr, pkt->descr_size, pkt->options,
+	       pkt->num_cookies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len = (sizeof(*pkt) +
 	       (dr->ncookies * sizeof(struct ldc_trans_cookie)));
@@ -714,7 +732,11 @@ int vio_ldc_alloc(struct vio_driver_state *vio,
 	cfg.tx_irq = vio->vdev->tx_irq;
 	cfg.rx_irq = vio->vdev->rx_irq;
 
+<<<<<<< HEAD
 	lp = ldc_alloc(vio->vdev->channel_id, &cfg, event_arg);
+=======
+	lp = ldc_alloc(vio->vdev->channel_id, &cfg, event_arg, vio->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(lp))
 		return PTR_ERR(lp);
 
@@ -746,7 +768,11 @@ void vio_port_up(struct vio_driver_state *vio)
 
 	err = 0;
 	if (state == LDC_STATE_INIT) {
+<<<<<<< HEAD
 		err = ldc_bind(vio->lp, vio->name);
+=======
+		err = ldc_bind(vio->lp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)
 			printk(KERN_WARNING "%s: Port %lu bind failed, "
 			       "err=%d\n",

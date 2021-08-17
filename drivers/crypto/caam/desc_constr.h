@@ -5,11 +5,19 @@
  */
 
 #include "desc.h"
+<<<<<<< HEAD
+=======
+#include "regs.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IMMEDIATE (1 << 23)
 #define CAAM_CMD_SZ sizeof(u32)
 #define CAAM_PTR_SZ sizeof(dma_addr_t)
 #define CAAM_DESC_BYTES_MAX (CAAM_CMD_SZ * MAX_CAAM_DESCSIZE)
+<<<<<<< HEAD
+=======
+#define DESC_JOB_IO_LEN (CAAM_CMD_SZ * 5 + CAAM_PTR_SZ * 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef DEBUG
 #define PRINT_POS do { printk(KERN_DEBUG "%02d: %s\n", desc_len(desc),\
@@ -29,9 +37,17 @@
 			       LDST_SRCDST_WORD_DECOCTRL | \
 			       (LDOFF_ENABLE_AUTO_NFIFO << LDST_OFFSET_SHIFT))
 
+<<<<<<< HEAD
 static inline int desc_len(u32 *desc)
 {
 	return *desc & HDR_DESCLEN_MASK;
+=======
+extern bool caam_little_end;
+
+static inline int desc_len(u32 *desc)
+{
+	return caam32_to_cpu(*desc) & HDR_DESCLEN_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int desc_bytes(void *desc)
@@ -51,7 +67,11 @@ static inline void *sh_desc_pdb(u32 *desc)
 
 static inline void init_desc(u32 *desc, u32 options)
 {
+<<<<<<< HEAD
 	*desc = (options | HDR_ONE) + 1;
+=======
+	*desc = cpu_to_caam32((options | HDR_ONE) + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void init_sh_desc(u32 *desc, u32 options)
@@ -73,13 +93,30 @@ static inline void init_job_desc(u32 *desc, u32 options)
 	init_desc(desc, CMD_DESC_HDR | options);
 }
 
+<<<<<<< HEAD
+=======
+static inline void init_job_desc_pdb(u32 *desc, u32 options, size_t pdb_bytes)
+{
+	u32 pdb_len = (pdb_bytes + CAAM_CMD_SZ - 1) / CAAM_CMD_SZ;
+
+	init_job_desc(desc, (((pdb_len + 1) << HDR_START_IDX_SHIFT)) | options);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void append_ptr(u32 *desc, dma_addr_t ptr)
 {
 	dma_addr_t *offset = (dma_addr_t *)desc_end(desc);
 
+<<<<<<< HEAD
 	*offset = ptr;
 
 	(*desc) += CAAM_PTR_SZ / CAAM_CMD_SZ;
+=======
+	*offset = cpu_to_caam_dma(ptr);
+
+	(*desc) = cpu_to_caam32(caam32_to_cpu(*desc) +
+				CAAM_PTR_SZ / CAAM_CMD_SZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void init_job_desc_shared(u32 *desc, dma_addr_t ptr, int len,
@@ -98,16 +135,53 @@ static inline void append_data(u32 *desc, void *data, int len)
 	if (len) /* avoid sparse warning: memcpy with byte count of 0 */
 		memcpy(offset, data, len);
 
+<<<<<<< HEAD
 	(*desc) += (len + CAAM_CMD_SZ - 1) / CAAM_CMD_SZ;
+=======
+	(*desc) = cpu_to_caam32(caam32_to_cpu(*desc) +
+				(len + CAAM_CMD_SZ - 1) / CAAM_CMD_SZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void append_cmd(u32 *desc, u32 command)
 {
 	u32 *cmd = desc_end(desc);
 
+<<<<<<< HEAD
 	*cmd = command;
 
 	(*desc)++;
+=======
+	*cmd = cpu_to_caam32(command);
+
+	(*desc) = cpu_to_caam32(caam32_to_cpu(*desc) + 1);
+}
+
+#define append_u32 append_cmd
+
+static inline void append_u64(u32 *desc, u64 data)
+{
+	u32 *offset = desc_end(desc);
+
+	/* Only 32-bit alignment is guaranteed in descriptor buffer */
+	if (caam_little_end) {
+		*offset = cpu_to_caam32(lower_32_bits(data));
+		*(++offset) = cpu_to_caam32(upper_32_bits(data));
+	} else {
+		*offset = cpu_to_caam32(upper_32_bits(data));
+		*(++offset) = cpu_to_caam32(lower_32_bits(data));
+	}
+
+	(*desc) = cpu_to_caam32(caam32_to_cpu(*desc) + 2);
+}
+
+/* Write command without affecting header, and return pointer to next word */
+static inline u32 *write_cmd(u32 *desc, u32 command)
+{
+	*desc = cpu_to_caam32(command);
+
+	return desc + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void append_cmd_ptr(u32 *desc, dma_addr_t ptr, int len,
@@ -122,7 +196,12 @@ static inline void append_cmd_ptr_extlen(u32 *desc, dma_addr_t ptr,
 					 unsigned int len, u32 command)
 {
 	append_cmd(desc, command);
+<<<<<<< HEAD
 	append_ptr(desc, ptr);
+=======
+	if (!(command & (SQIN_RTO | SQIN_PRE)))
+		append_ptr(desc, ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	append_cmd(desc, len);
 }
 
@@ -133,6 +212,7 @@ static inline void append_cmd_data(u32 *desc, void *data, int len,
 	append_data(desc, data, len);
 }
 
+<<<<<<< HEAD
 static inline u32 *append_jump(u32 *desc, u32 options)
 {
 	u32 *cmd = desc_end(desc);
@@ -146,6 +226,32 @@ static inline u32 *append_jump(u32 *desc, u32 options)
 static inline void set_jump_tgt_here(u32 *desc, u32 *jump_cmd)
 {
 	*jump_cmd = *jump_cmd | (desc_len(desc) - (jump_cmd - desc));
+=======
+#define APPEND_CMD_RET(cmd, op) \
+static inline u32 *append_##cmd(u32 *desc, u32 options) \
+{ \
+	u32 *cmd = desc_end(desc); \
+	PRINT_POS; \
+	append_cmd(desc, CMD_##op | options); \
+	return cmd; \
+}
+APPEND_CMD_RET(jump, JUMP)
+APPEND_CMD_RET(move, MOVE)
+
+static inline void set_jump_tgt_here(u32 *desc, u32 *jump_cmd)
+{
+	*jump_cmd = cpu_to_caam32(caam32_to_cpu(*jump_cmd) |
+				  (desc_len(desc) - (jump_cmd - desc)));
+}
+
+static inline void set_move_tgt_here(u32 *desc, u32 *move_cmd)
+{
+	u32 val = caam32_to_cpu(*move_cmd);
+
+	val &= ~MOVE_OFFSET_MASK;
+	val |= (desc_len(desc) << (MOVE_OFFSET_SHIFT + 2)) & MOVE_OFFSET_MASK;
+	*move_cmd = cpu_to_caam32(val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define APPEND_CMD(cmd, op) \
@@ -155,7 +261,10 @@ static inline void append_##cmd(u32 *desc, u32 options) \
 	append_cmd(desc, CMD_##op | options); \
 }
 APPEND_CMD(operation, OPERATION)
+<<<<<<< HEAD
 APPEND_CMD(move, MOVE)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define APPEND_CMD_LEN(cmd, op) \
 static inline void append_##cmd(u32 *desc, unsigned int len, u32 options) \
@@ -163,6 +272,11 @@ static inline void append_##cmd(u32 *desc, unsigned int len, u32 options) \
 	PRINT_POS; \
 	append_cmd(desc, CMD_##op | len | options); \
 }
+<<<<<<< HEAD
+=======
+
+APPEND_CMD_LEN(seq_load, SEQ_LOAD)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 APPEND_CMD_LEN(seq_store, SEQ_STORE)
 APPEND_CMD_LEN(seq_fifo_load, SEQ_FIFO_LOAD)
 APPEND_CMD_LEN(seq_fifo_store, SEQ_FIFO_STORE)
@@ -176,17 +290,47 @@ static inline void append_##cmd(u32 *desc, dma_addr_t ptr, unsigned int len, \
 }
 APPEND_CMD_PTR(key, KEY)
 APPEND_CMD_PTR(load, LOAD)
+<<<<<<< HEAD
 APPEND_CMD_PTR(store, STORE)
 APPEND_CMD_PTR(fifo_load, FIFO_LOAD)
 APPEND_CMD_PTR(fifo_store, FIFO_STORE)
 
+=======
+APPEND_CMD_PTR(fifo_load, FIFO_LOAD)
+APPEND_CMD_PTR(fifo_store, FIFO_STORE)
+
+static inline void append_store(u32 *desc, dma_addr_t ptr, unsigned int len,
+				u32 options)
+{
+	u32 cmd_src;
+
+	cmd_src = options & LDST_SRCDST_MASK;
+
+	append_cmd(desc, CMD_STORE | options | len);
+
+	/* The following options do not require pointer */
+	if (!(cmd_src == LDST_SRCDST_WORD_DESCBUF_SHARED ||
+	      cmd_src == LDST_SRCDST_WORD_DESCBUF_JOB    ||
+	      cmd_src == LDST_SRCDST_WORD_DESCBUF_JOB_WE ||
+	      cmd_src == LDST_SRCDST_WORD_DESCBUF_SHARED_WE))
+		append_ptr(desc, ptr);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define APPEND_SEQ_PTR_INTLEN(cmd, op) \
 static inline void append_seq_##cmd##_ptr_intlen(u32 *desc, dma_addr_t ptr, \
 						 unsigned int len, \
 						 u32 options) \
 { \
 	PRINT_POS; \
+<<<<<<< HEAD
 	append_cmd_ptr(desc, ptr, len, CMD_SEQ_##op##_PTR | options); \
+=======
+	if (options & (SQIN_RTO | SQIN_PRE)) \
+		append_cmd(desc, CMD_SEQ_##op##_PTR | len | options); \
+	else \
+		append_cmd_ptr(desc, ptr, len, CMD_SEQ_##op##_PTR | options); \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 APPEND_SEQ_PTR_INTLEN(in, IN)
 APPEND_SEQ_PTR_INTLEN(out, OUT)
@@ -254,12 +398,36 @@ static inline void append_##cmd##_imm_##type(u32 *desc, type immediate, \
 APPEND_CMD_RAW_IMM(load, LOAD, u32);
 
 /*
+<<<<<<< HEAD
+=======
+ * ee - endianness
+ * size - size of immediate type in bytes
+ */
+#define APPEND_CMD_RAW_IMM2(cmd, op, ee, size) \
+static inline void append_##cmd##_imm_##ee##size(u32 *desc, \
+						   u##size immediate, \
+						   u32 options) \
+{ \
+	__##ee##size data = cpu_to_##ee##size(immediate); \
+	PRINT_POS; \
+	append_cmd(desc, CMD_##op | IMMEDIATE | options | sizeof(data)); \
+	append_data(desc, &data, sizeof(data)); \
+}
+
+APPEND_CMD_RAW_IMM2(load, LOAD, be, 32);
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Append math command. Only the last part of destination and source need to
  * be specified
  */
 #define APPEND_MATH(op, desc, dest, src_0, src_1, len) \
 append_cmd(desc, CMD_MATH | MATH_FUN_##op | MATH_DEST_##dest | \
+<<<<<<< HEAD
 	   MATH_SRC0_##src_0 | MATH_SRC1_##src_1 | (u32) (len & MATH_LEN_MASK));
+=======
+	MATH_SRC0_##src_0 | MATH_SRC1_##src_1 | (u32)len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define append_math_add(desc, dest, src0, src1, len) \
 	APPEND_MATH(ADD, desc, dest, src0, src1, len)
@@ -279,13 +447,22 @@ append_cmd(desc, CMD_MATH | MATH_FUN_##op | MATH_DEST_##dest | \
 	APPEND_MATH(LSHIFT, desc, dest, src0, src1, len)
 #define append_math_rshift(desc, dest, src0, src1, len) \
 	APPEND_MATH(RSHIFT, desc, dest, src0, src1, len)
+<<<<<<< HEAD
+=======
+#define append_math_ldshift(desc, dest, src0, src1, len) \
+	APPEND_MATH(SHLD, desc, dest, src0, src1, len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Exactly one source is IMM. Data is passed in as u32 value */
 #define APPEND_MATH_IMM_u32(op, desc, dest, src_0, src_1, data) \
 do { \
 	APPEND_MATH(op, desc, dest, src_0, src_1, CAAM_CMD_SZ); \
 	append_cmd(desc, data); \
+<<<<<<< HEAD
 } while (0);
+=======
+} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define append_math_add_imm_u32(desc, dest, src0, src1, data) \
 	APPEND_MATH_IMM_u32(ADD, desc, dest, src0, src1, data)
@@ -305,3 +482,37 @@ do { \
 	APPEND_MATH_IMM_u32(LSHIFT, desc, dest, src0, src1, data)
 #define append_math_rshift_imm_u32(desc, dest, src0, src1, data) \
 	APPEND_MATH_IMM_u32(RSHIFT, desc, dest, src0, src1, data)
+<<<<<<< HEAD
+=======
+
+/* Exactly one source is IMM. Data is passed in as u64 value */
+#define APPEND_MATH_IMM_u64(op, desc, dest, src_0, src_1, data) \
+do { \
+	u32 upper = (data >> 16) >> 16; \
+	APPEND_MATH(op, desc, dest, src_0, src_1, CAAM_CMD_SZ * 2 | \
+		    (upper ? 0 : MATH_IFB)); \
+	if (upper) \
+		append_u64(desc, data); \
+	else \
+		append_u32(desc, lower_32_bits(data)); \
+} while (0)
+
+#define append_math_add_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(ADD, desc, dest, src0, src1, data)
+#define append_math_sub_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(SUB, desc, dest, src0, src1, data)
+#define append_math_add_c_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(ADDC, desc, dest, src0, src1, data)
+#define append_math_sub_b_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(SUBB, desc, dest, src0, src1, data)
+#define append_math_and_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(AND, desc, dest, src0, src1, data)
+#define append_math_or_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(OR, desc, dest, src0, src1, data)
+#define append_math_xor_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(XOR, desc, dest, src0, src1, data)
+#define append_math_lshift_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(LSHIFT, desc, dest, src0, src1, data)
+#define append_math_rshift_imm_u64(desc, dest, src0, src1, data) \
+	APPEND_MATH_IMM_u64(RSHIFT, desc, dest, src0, src1, data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

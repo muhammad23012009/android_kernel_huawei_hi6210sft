@@ -179,14 +179,23 @@ void sb_dsp_midi_init(sb_devc * devc, struct module *owner)
 	{
 		printk(KERN_WARNING "Sound Blaster:  failed to allocate MIDI memory.\n");
 		sound_unload_mididev(dev);
+<<<<<<< HEAD
 		  return;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	memcpy((char *) midi_devs[dev], (char *) &sb_midi_operations,
 	       sizeof(struct midi_operations));
 
 	if (owner)
+<<<<<<< HEAD
 			midi_devs[dev]->owner = owner;
 	
+=======
+		midi_devs[dev]->owner = owner;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	midi_devs[dev]->devc = devc;
 
 

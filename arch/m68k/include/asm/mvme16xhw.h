@@ -3,6 +3,7 @@
 
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 /* Board ID data structure - pointer to this retrieved from Bug by head.S */
 
 /* Note, bytes 12 and 13 are board no in BCD (0162,0166,0167,0177,etc) */
@@ -20,6 +21,8 @@ typedef struct {
 	u_long	option2;
 } t_bdid, *p_bdid;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct {
 	u_char	ack_icr,

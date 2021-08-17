@@ -69,3 +69,10 @@ $(obj)/image: vmlinux FORCE
 $(obj)/tftpboot.img: $(obj)/image $(obj)/piggyback System.map $(ROOT_IMG) FORCE
 	$(call if_changed,elftoaout)
 	$(call if_changed,piggy)
+<<<<<<< HEAD
+=======
+
+install:
+	sh $(srctree)/$(src)/install.sh $(KERNELRELEASE) $(obj)/zImage \
+		System.map "$(INSTALL_PATH)"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

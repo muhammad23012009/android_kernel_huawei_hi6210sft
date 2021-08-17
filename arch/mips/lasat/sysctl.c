@@ -39,7 +39,11 @@
 
 
 /* And the same for proc */
+<<<<<<< HEAD
 int proc_dolasatstring(ctl_table *table, int write,
+=======
+int proc_dolasatstring(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       void *buffer, size_t *lenp, loff_t *ppos)
 {
 	int r;
@@ -53,6 +57,7 @@ int proc_dolasatstring(ctl_table *table, int write,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* proc function to write EEPROM after changing int entry */
 int proc_dolasatint(ctl_table *table, int write,
 		       void *buffer, size_t *lenp, loff_t *ppos)
@@ -68,10 +73,13 @@ int proc_dolasatint(ctl_table *table, int write,
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DS1603
 static int rtctmp;
 
 /* proc function to read/write RealTime Clock */
+<<<<<<< HEAD
 int proc_dolasatrtc(ctl_table *table, int write,
 		       void *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -80,6 +88,16 @@ int proc_dolasatrtc(ctl_table *table, int write,
 
 	if (!write) {
 		read_persistent_clock(&ts);
+=======
+int proc_dolasatrtc(struct ctl_table *table, int write,
+		       void *buffer, size_t *lenp, loff_t *ppos)
+{
+	struct timespec64 ts;
+	int r;
+
+	if (!write) {
+		read_persistent_clock64(&ts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rtctmp = ts.tv_sec;
 		/* check for time < 0 and set to 0 */
 		if (rtctmp < 0)
@@ -97,7 +115,11 @@ int proc_dolasatrtc(ctl_table *table, int write,
 #endif
 
 #ifdef CONFIG_INET
+<<<<<<< HEAD
 int proc_lasat_ip(ctl_table *table, int write,
+=======
+int proc_lasat_ip(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       void *buffer, size_t *lenp, loff_t *ppos)
 {
 	unsigned int ip;
@@ -157,7 +179,11 @@ int proc_lasat_ip(ctl_table *table, int write,
 }
 #endif
 
+<<<<<<< HEAD
 int proc_lasat_prid(ctl_table *table, int write,
+=======
+int proc_lasat_prid(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       void *buffer, size_t *lenp, loff_t *ppos)
 {
 	int r;
@@ -176,7 +202,11 @@ int proc_lasat_prid(ctl_table *table, int write,
 
 extern int lasat_boot_to_service;
 
+<<<<<<< HEAD
 static ctl_table lasat_table[] = {
+=======
+static struct ctl_table lasat_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "cpu-hz",
 		.data		= &lasat_board_info.li_cpu_hz,
@@ -262,7 +292,11 @@ static ctl_table lasat_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 static ctl_table lasat_root_table[] = {
+=======
+static struct ctl_table lasat_root_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "lasat",
 		.mode		=  0555,
@@ -285,4 +319,8 @@ static int __init lasat_register_sysctl(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 __initcall(lasat_register_sysctl);
+=======
+arch_initcall(lasat_register_sysctl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

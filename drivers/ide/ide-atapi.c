@@ -92,8 +92,13 @@ int ide_queue_pc_tail(ide_drive_t *drive, struct gendisk *disk,
 	struct request *rq;
 	int error;
 
+<<<<<<< HEAD
 	rq = blk_get_request(drive->queue, READ, __GFP_WAIT);
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq = blk_get_request(drive->queue, READ, __GFP_RECLAIM);
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rq->special = (char *)pc;
 
 	if (buf && bufflen) {
@@ -191,7 +196,11 @@ void ide_prep_sense(ide_drive_t *drive, struct request *rq)
 
 	BUG_ON(sense_len > sizeof(*sense));
 
+<<<<<<< HEAD
 	if (rq->cmd_type == REQ_TYPE_SENSE || drive->sense_rq_armed)
+=======
+	if (rq->cmd_type == REQ_TYPE_ATA_SENSE || drive->sense_rq_armed)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	memset(sense, 0, sizeof(*sense));
@@ -210,7 +219,11 @@ void ide_prep_sense(ide_drive_t *drive, struct request *rq)
 	sense_rq->rq_disk = rq->rq_disk;
 	sense_rq->cmd[0] = GPCMD_REQUEST_SENSE;
 	sense_rq->cmd[4] = cmd_len;
+<<<<<<< HEAD
 	sense_rq->cmd_type = REQ_TYPE_SENSE;
+=======
+	sense_rq->cmd_type = REQ_TYPE_ATA_SENSE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sense_rq->cmd_flags |= REQ_PREEMPT;
 
 	if (drive->media == ide_tape)
@@ -310,7 +323,11 @@ int ide_cd_get_xferlen(struct request *rq)
 	switch (rq->cmd_type) {
 	case REQ_TYPE_FS:
 		return 32768;
+<<<<<<< HEAD
 	case REQ_TYPE_SENSE:
+=======
+	case REQ_TYPE_ATA_SENSE:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case REQ_TYPE_BLOCK_PC:
 	case REQ_TYPE_ATA_PC:
 		return blk_rq_bytes(rq);
@@ -477,7 +494,11 @@ static ide_startstop_t ide_pc_intr(ide_drive_t *drive)
 		if (uptodate == 0)
 			drive->failed_pc = NULL;
 
+<<<<<<< HEAD
 		if (rq->cmd_type == REQ_TYPE_SPECIAL) {
+=======
+		if (rq->cmd_type == REQ_TYPE_DRV_PRIV) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rq->errors = 0;
 			error = 0;
 		} else {

@@ -59,14 +59,24 @@
 #define LDCW		ldcw,co
 #define BL		b,l
 # ifdef CONFIG_64BIT
+<<<<<<< HEAD
 #  define LEVEL		2.0w
 # else
 #  define LEVEL		2.0
+=======
+#  define PA_ASM_LEVEL	2.0w
+# else
+#  define PA_ASM_LEVEL	2.0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # endif
 #else
 #define LDCW		ldcw
 #define BL		bl
+<<<<<<< HEAD
 #define LEVEL		1.1
+=======
+#define PA_ASM_LEVEL	1.1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef __ASSEMBLY__
@@ -515,5 +525,20 @@
 	nop	/* 7 */
 	.endm
 
+<<<<<<< HEAD
+=======
+	/*
+	 * ASM_EXCEPTIONTABLE_ENTRY
+	 *
+	 * Creates an exception table entry.
+	 * Do not convert to a assembler macro. This won't work.
+	 */
+#define ASM_EXCEPTIONTABLE_ENTRY(fault_addr, except_addr)	\
+	.section __ex_table,"aw"			!	\
+	.word (fault_addr - .), (except_addr - .)	!	\
+	.previous
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASSEMBLY__ */
 #endif

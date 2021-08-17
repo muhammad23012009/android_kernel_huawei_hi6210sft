@@ -31,8 +31,15 @@ isa-y					:= $(isa-y)-up
 endif
 
 cflags-$(CONFIG_CPU_SH2)		:= $(call cc-option,-m2,)
+<<<<<<< HEAD
 cflags-$(CONFIG_CPU_SH2A)		+= $(call cc-option,-m2a,) \
 					   $(call cc-option,-m2a-nofpu,)
+=======
+cflags-$(CONFIG_CPU_J2)			+= $(call cc-option,-mj2,)
+cflags-$(CONFIG_CPU_SH2A)		+= $(call cc-option,-m2a,) \
+					   $(call cc-option,-m2a-nofpu,) \
+					   $(call cc-option,-m4-nofpu,)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cflags-$(CONFIG_CPU_SH3)		:= $(call cc-option,-m3,)
 cflags-$(CONFIG_CPU_SH4)		:= $(call cc-option,-m4,) \
 	$(call cc-option,-mno-implicit-fp,-m4-nofpu)
@@ -129,6 +136,11 @@ head-y	:= arch/sh/kernel/head_$(BITS).o
 core-y				+= arch/sh/kernel/ arch/sh/mm/ arch/sh/boards/
 core-$(CONFIG_SH_FPU_EMU)	+= arch/sh/math-emu/
 
+<<<<<<< HEAD
+=======
+core-$(CONFIG_USE_BUILTIN_DTB)	+= arch/sh/boot/dts/
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Mach groups
 machdir-$(CONFIG_SOLUTION_ENGINE)		+= mach-se
 machdir-$(CONFIG_SH_HP6XX)			+= mach-hp6xx
@@ -199,10 +211,13 @@ ifeq ($(CONFIG_DWARF_UNWINDER),y)
   KBUILD_CFLAGS += -fasynchronous-unwind-tables
 endif
 
+<<<<<<< HEAD
 ifeq ($(CONFIG_CC_STACKPROTECTOR),y)
   KBUILD_CFLAGS += -fstack-protector
 endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 libs-$(CONFIG_SUPERH32)		:= arch/sh/lib/	$(libs-y)
 libs-$(CONFIG_SUPERH64)		:= arch/sh/lib64/ $(libs-y)
 

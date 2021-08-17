@@ -7,15 +7,23 @@
  *   Jan Glauber <jang@linux.vnet.ibm.com>
  */
 
+<<<<<<< HEAD
 #define COMPONENT "zPCI hpc"
 #define pr_fmt(fmt) COMPONENT ": " fmt
+=======
+#define KMSG_COMPONENT "zpci"
+#define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/pci.h>
 #include <linux/pci_hotplug.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/pci_debug.h>
 #include <asm/sclp.h>
 
@@ -41,6 +49,31 @@ struct slot {
 	struct zpci_dev *zdev;
 };
 
+<<<<<<< HEAD
+=======
+static inline int slot_configure(struct slot *slot)
+{
+	int ret = sclp_pci_configure(slot->zdev->fid);
+
+	zpci_dbg(3, "conf fid:%x, rc:%d\n", slot->zdev->fid, ret);
+	if (!ret)
+		slot->zdev->state = ZPCI_FN_STATE_CONFIGURED;
+
+	return ret;
+}
+
+static inline int slot_deconfigure(struct slot *slot)
+{
+	int ret = sclp_pci_deconfigure(slot->zdev->fid);
+
+	zpci_dbg(3, "deconf fid:%x, rc:%d\n", slot->zdev->fid, ret);
+	if (!ret)
+		slot->zdev->state = ZPCI_FN_STATE_STANDBY;
+
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int enable_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct slot *slot = hotplug_slot->private;
@@ -49,6 +82,7 @@ static int enable_slot(struct hotplug_slot *hotplug_slot)
 	if (slot->zdev->state != ZPCI_FN_STATE_STANDBY)
 		return -EIO;
 
+<<<<<<< HEAD
 	rc = sclp_pci_configure(slot->zdev->fid);
 	zpci_dbg(3, "conf fid:%x, rc:%d\n", slot->zdev->fid, rc);
 	if (!rc) {
@@ -57,17 +91,41 @@ static int enable_slot(struct hotplug_slot *hotplug_slot)
 		zpci_enable_device(slot->zdev);
 		zpci_scan_device(slot->zdev);
 	}
+=======
+	rc = slot_configure(slot);
+	if (rc)
+		return rc;
+
+	rc = zpci_enable_device(slot->zdev);
+	if (rc)
+		goto out_deconfigure;
+
+	pci_scan_slot(slot->zdev->bus, ZPCI_DEVFN);
+	pci_lock_rescan_remove();
+	pci_bus_add_devices(slot->zdev->bus);
+	pci_unlock_rescan_remove();
+
+	return rc;
+
+out_deconfigure:
+	slot_deconfigure(slot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
 static int disable_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct slot *slot = hotplug_slot->private;
+<<<<<<< HEAD
+=======
+	struct pci_dev *pdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	if (!zpci_fn_configured(slot->zdev->state))
 		return -EIO;
 
+<<<<<<< HEAD
 	rc = zpci_disable_device(slot->zdev);
 	if (rc)
 		return rc;
@@ -79,6 +137,19 @@ static int disable_slot(struct hotplug_slot *hotplug_slot)
 	if (!rc)
 		slot->zdev->state = ZPCI_FN_STATE_STANDBY;
 	return rc;
+=======
+	pdev = pci_get_slot(slot->zdev->bus, ZPCI_DEVFN);
+	if (pdev) {
+		pci_stop_and_remove_bus_device_locked(pdev);
+		pci_dev_put(pdev);
+	}
+
+	rc = zpci_disable_device(slot->zdev);
+	if (rc)
+		return rc;
+
+	return slot_deconfigure(slot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
@@ -107,7 +178,10 @@ static void release_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct slot *slot = hotplug_slot->private;
 
+<<<<<<< HEAD
 	pr_debug("%s - physical_slot = %s\n", __func__, hotplug_slot_name(hotplug_slot));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(slot->hotplug_slot->info);
 	kfree(slot->hotplug_slot);
 	kfree(slot);
@@ -120,7 +194,11 @@ static struct hotplug_slot_ops s390_hotplug_slot_ops = {
 	.get_adapter_status =	get_adapter_status,
 };
 
+<<<<<<< HEAD
 static int init_pci_slot(struct zpci_dev *zdev)
+=======
+int zpci_init_slot(struct zpci_dev *zdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct hotplug_slot *hotplug_slot;
 	struct hotplug_slot_info *info;
@@ -157,10 +235,16 @@ static int init_pci_slot(struct zpci_dev *zdev)
 	snprintf(name, SLOT_NAME_SIZE, "%08x", zdev->fid);
 	rc = pci_hp_register(slot->hotplug_slot, zdev->bus,
 			     ZPCI_DEVFN, name);
+<<<<<<< HEAD
 	if (rc) {
 		pr_err("pci_hp_register failed with error %d\n", rc);
 		goto error_reg;
 	}
+=======
+	if (rc)
+		goto error_reg;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_add(&slot->slot_list, &s390_hotplug_slot_list);
 	return 0;
 
@@ -174,6 +258,7 @@ error:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 static void exit_pci_slot(struct zpci_dev *zdev)
 {
 	struct list_head *tmp, *n;
@@ -181,12 +266,21 @@ static void exit_pci_slot(struct zpci_dev *zdev)
 
 	list_for_each_safe(tmp, n, &s390_hotplug_slot_list) {
 		slot = list_entry(tmp, struct slot, slot_list);
+=======
+void zpci_exit_slot(struct zpci_dev *zdev)
+{
+	struct slot *slot, *next;
+
+	list_for_each_entry_safe(slot, next, &s390_hotplug_slot_list,
+				 slot_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (slot->zdev != zdev)
 			continue;
 		list_del(&slot->slot_list);
 		pci_hp_deregister(slot->hotplug_slot);
 	}
 }
+<<<<<<< HEAD
 
 static struct pci_hp_callback_ops hp_ops = {
 	.create_slot = init_pci_slot,
@@ -244,3 +338,5 @@ static void __exit pci_hotplug_s390_exit(void)
 
 module_init(pci_hotplug_s390_init);
 module_exit(pci_hotplug_s390_exit);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

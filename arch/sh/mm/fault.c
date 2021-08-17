@@ -17,6 +17,10 @@
 #include <linux/kprobes.h>
 #include <linux/perf_event.h>
 #include <linux/kdebug.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io_trapped.h>
 #include <asm/mmu_context.h>
 #include <asm/tlbflush.h>
@@ -353,6 +357,11 @@ mm_fault_error(struct pt_regs *regs, unsigned long error_code,
 	} else {
 		if (fault & VM_FAULT_SIGBUS)
 			do_sigbus(regs, error_code, address);
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			bad_area(regs, error_code, address);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			BUG();
 	}
@@ -436,9 +445,15 @@ asmlinkage void __kprobes do_page_fault(struct pt_regs *regs,
 
 	/*
 	 * If we're in an interrupt, have no user context or are running
+<<<<<<< HEAD
 	 * in an atomic region then we must not take the fault:
 	 */
 	if (unlikely(in_atomic() || !mm)) {
+=======
+	 * with pagefaults disabled then we must not take the fault:
+	 */
+	if (unlikely(faulthandler_disabled() || !mm)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bad_area_nosemaphore(regs, error_code, address);
 		return;
 	}
@@ -484,7 +499,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(fault & (VM_FAULT_RETRY | VM_FAULT_ERROR)))
 		if (mm_fault_error(regs, error_code, address, fault))

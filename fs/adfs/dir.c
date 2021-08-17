@@ -17,15 +17,24 @@
 static DEFINE_RWLOCK(adfs_dir_lock);
 
 static int
+<<<<<<< HEAD
 adfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *inode = file_inode(filp);
 	struct super_block *sb = inode->i_sb;
 	struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+=======
+adfs_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *inode = file_inode(file);
+	struct super_block *sb = inode->i_sb;
+	const struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct object_info obj;
 	struct adfs_dir dir;
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (filp->f_pos >> 32)
 		goto out;
 
@@ -46,10 +55,29 @@ adfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 
 	default:
 		break;
+=======
+	if (ctx->pos >> 32)
+		return 0;
+
+	ret = ops->read(sb, inode->i_ino, inode->i_size, &dir);
+	if (ret)
+		return ret;
+
+	if (ctx->pos == 0) {
+		if (!dir_emit_dot(file, ctx))
+			goto free_out;
+		ctx->pos = 1;
+	}
+	if (ctx->pos == 1) {
+		if (!dir_emit(ctx, "..", 2, dir.parent_id, DT_DIR))
+			goto free_out;
+		ctx->pos = 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	read_lock(&adfs_dir_lock);
 
+<<<<<<< HEAD
 	ret = ops->setpos(&dir, filp->f_pos - 2);
 	if (ret)
 		goto unlock_out;
@@ -58,6 +86,16 @@ adfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			    filp->f_pos, obj.file_id, DT_UNKNOWN) < 0)
 			goto unlock_out;
 		filp->f_pos += 1;
+=======
+	ret = ops->setpos(&dir, ctx->pos - 2);
+	if (ret)
+		goto unlock_out;
+	while (ops->getnext(&dir, &obj) == 0) {
+		if (!dir_emit(ctx, obj.name, obj.name_len,
+			    obj.file_id, DT_UNKNOWN))
+			break;
+		ctx->pos++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 unlock_out:
@@ -65,8 +103,11 @@ unlock_out:
 
 free_out:
 	ops->free(&dir);
+<<<<<<< HEAD
 
 out:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -75,7 +116,11 @@ adfs_dir_update(struct super_block *sb, struct object_info *obj, int wait)
 {
 	int ret = -EINVAL;
 #ifdef CONFIG_ADFS_FS_RW
+<<<<<<< HEAD
 	struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+=======
+	const struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adfs_dir dir;
 
 	printk(KERN_INFO "adfs_dir_update: object %06X in dir %06X\n",
@@ -107,7 +152,11 @@ out:
 }
 
 static int
+<<<<<<< HEAD
 adfs_match(struct qstr *name, struct object_info *obj)
+=======
+adfs_match(const struct qstr *name, struct object_info *obj)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 
@@ -132,10 +181,17 @@ adfs_match(struct qstr *name, struct object_info *obj)
 }
 
 static int
+<<<<<<< HEAD
 adfs_dir_lookup_byname(struct inode *inode, struct qstr *name, struct object_info *obj)
 {
 	struct super_block *sb = inode->i_sb;
 	struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+=======
+adfs_dir_lookup_byname(struct inode *inode, const struct qstr *name, struct object_info *obj)
+{
+	struct super_block *sb = inode->i_sb;
+	const struct adfs_dir_ops *ops = ADFS_SB(sb)->s_dir;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adfs_dir dir;
 	int ret;
 
@@ -144,7 +200,11 @@ adfs_dir_lookup_byname(struct inode *inode, struct qstr *name, struct object_inf
 		goto out;
 
 	if (ADFS_I(inode)->parent_id != dir.parent_id) {
+<<<<<<< HEAD
 		adfs_error(sb, "parent directory changed under me! (%lx but got %lx)\n",
+=======
+		adfs_error(sb, "parent directory changed under me! (%lx but got %x)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   ADFS_I(inode)->parent_id, dir.parent_id);
 		ret = -EIO;
 		goto free_out;
@@ -192,13 +252,21 @@ out:
 const struct file_operations adfs_dir_operations = {
 	.read		= generic_read_dir,
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.readdir	= adfs_readdir,
+=======
+	.iterate	= adfs_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fsync		= generic_file_fsync,
 };
 
 static int
+<<<<<<< HEAD
 adfs_hash(const struct dentry *parent, const struct inode *inode,
 		struct qstr *qstr)
+=======
+adfs_hash(const struct dentry *parent, struct qstr *qstr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const unsigned int name_len = ADFS_SB(parent->d_sb)->s_namelen;
 	const unsigned char *name;
@@ -214,7 +282,11 @@ adfs_hash(const struct dentry *parent, const struct inode *inode,
 	 */
 	qstr->len = i = name_len;
 	name = qstr->name;
+<<<<<<< HEAD
 	hash = init_name_hash();
+=======
+	hash = init_name_hash(parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (i--) {
 		char c;
 
@@ -234,8 +306,12 @@ adfs_hash(const struct dentry *parent, const struct inode *inode,
  * requirements of the underlying filesystem.
  */
 static int
+<<<<<<< HEAD
 adfs_compare(const struct dentry *parent, const struct inode *pinode,
 		const struct dentry *dentry, const struct inode *inode,
+=======
+adfs_compare(const struct dentry *dentry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	int i;

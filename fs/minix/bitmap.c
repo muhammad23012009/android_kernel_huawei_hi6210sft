@@ -96,7 +96,11 @@ int minix_new_block(struct inode * inode)
 unsigned long minix_count_free_blocks(struct super_block *sb)
 {
 	struct minix_sb_info *sbi = minix_sb(sb);
+<<<<<<< HEAD
 	u32 bits = sbi->s_nzones - (sbi->s_firstdatazone + 1);
+=======
+	u32 bits = sbi->s_nzones - sbi->s_firstdatazone + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (count_free(sbi->s_zmap, sb->s_blocksize, bits)
 		<< sbi->s_log_zone_size);
@@ -253,7 +257,11 @@ struct inode *minix_new_inode(const struct inode *dir, umode_t mode, int *error)
 	}
 	inode_init_owner(inode, dir, mode);
 	inode->i_ino = j;
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	inode->i_blocks = 0;
 	memset(&minix_i(inode)->u, 0, sizeof(minix_i(inode)->u));
 	insert_inode_hash(inode);

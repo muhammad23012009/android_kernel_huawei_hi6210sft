@@ -25,7 +25,10 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/crc32.h>
 #include <linux/ethtool.h>
 #include <linux/mii.h>
@@ -212,6 +215,13 @@ enum ASICCtrl_HiWord_bits {
 	ResetBusy = 0x0400,
 };
 
+<<<<<<< HEAD
+=======
+#define IPG_AC_LED_MODE		BIT(14)
+#define IPG_AC_LED_SPEED	BIT(27)
+#define IPG_AC_LED_MODE_BIT_1	BIT(29)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Transmit Frame Control bits */
 enum TFC_bits {
 	DwordAlign = 0x00000000,
@@ -333,7 +343,14 @@ typedef struct t_SROM {
 	u16 asic_ctrl;		/* 0x02 */
 	u16 sub_vendor_id;	/* 0x04 */
 	u16 sub_system_id;	/* 0x06 */
+<<<<<<< HEAD
 	u16 reserved1[12];	/* 0x08-0x1f */
+=======
+	u16 pci_base_1;		/* 0x08 (IP1000A only) */
+	u16 pci_base_2;		/* 0x0a (IP1000A only) */
+	u16 led_mode;		/* 0x0c (IP1000A only) */
+	u16 reserved1[9];	/* 0x0e-0x1f */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 mac_addr[6];		/* 0x20-0x25 */
 	u8 reserved2[10];	/* 0x26-0x2f */
 	u8 sib[204];		/* 0x30-0xfb */
@@ -398,6 +415,10 @@ struct netdev_private {
 	u16 advertising;	/* NWay media advertisement */
 	u16 negotiate;		/* Negotiated media */
 	int phy_addr;		/* PHY addresses. */
+<<<<<<< HEAD
+=======
+	u16 led_mode;		/* LED mode read from EEPROM (IP1000A only) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* The station address location in the EEPROM. */
@@ -408,10 +429,22 @@ struct netdev_private {
         class_mask              of the class are honored during the comparison.
         driver_data             Data private to the driver.
 */
+<<<<<<< HEAD
 
 static DEFINE_PCI_DEVICE_TABLE(rio_pci_tbl) = {
 	{0x1186, 0x4000, PCI_ANY_ID, PCI_ANY_ID, },
 	{0x13f0, 0x1021, PCI_ANY_ID, PCI_ANY_ID, },
+=======
+#define CHIP_IP1000A	1
+
+static const struct pci_device_id rio_pci_tbl[] = {
+	{0x1186, 0x4000, PCI_ANY_ID, PCI_ANY_ID, },
+	{0x13f0, 0x1021, PCI_ANY_ID, PCI_ANY_ID, },
+	{ PCI_VDEVICE(SUNDANCE,	0x1023), CHIP_IP1000A },
+	{ PCI_VDEVICE(SUNDANCE,	0x2021), CHIP_IP1000A },
+	{ PCI_VDEVICE(DLINK,	0x9021), CHIP_IP1000A },
+	{ PCI_VDEVICE(DLINK,	0x4020), CHIP_IP1000A },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 MODULE_DEVICE_TABLE (pci, rio_pci_tbl);

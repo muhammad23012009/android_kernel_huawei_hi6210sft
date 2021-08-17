@@ -968,7 +968,12 @@ static int get_ca_object_length(struct avc_response_frame *r)
 	return r->operand[7];
 }
 
+<<<<<<< HEAD
 int avc_ca_app_info(struct firedtv *fdtv, char *app_info, unsigned int *len)
+=======
+int avc_ca_app_info(struct firedtv *fdtv, unsigned char *app_info,
+		    unsigned int *len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct avc_command_frame *c = (void *)fdtv->avc_data;
 	struct avc_response_frame *r = (void *)fdtv->avc_data;
@@ -1009,7 +1014,12 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int avc_ca_info(struct firedtv *fdtv, char *app_info, unsigned int *len)
+=======
+int avc_ca_info(struct firedtv *fdtv, unsigned char *app_info,
+		unsigned int *len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct avc_command_frame *c = (void *)fdtv->avc_data;
 	struct avc_response_frame *r = (void *)fdtv->avc_data;
@@ -1157,6 +1167,13 @@ int avc_ca_pmt(struct firedtv *fdtv, char *msg, int length)
 		if (pmt_cmd_id != 1 && pmt_cmd_id != 4)
 			dev_err(fdtv->device,
 				"invalid pmt_cmd_id %d\n", pmt_cmd_id);
+<<<<<<< HEAD
+=======
+		if (program_info_length > sizeof(c->operand) - 4 - write_pos) {
+			ret = -EINVAL;
+			goto out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		memcpy(&c->operand[write_pos], &msg[read_pos],
 		       program_info_length);
@@ -1180,6 +1197,15 @@ int avc_ca_pmt(struct firedtv *fdtv, char *msg, int length)
 				dev_err(fdtv->device, "invalid pmt_cmd_id %d "
 					"at stream level\n", pmt_cmd_id);
 
+<<<<<<< HEAD
+=======
+			if (es_info_length > sizeof(c->operand) - 4 -
+					     write_pos) {
+				ret = -EINVAL;
+				goto out;
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			memcpy(&c->operand[write_pos], &msg[read_pos],
 			       es_info_length);
 			read_pos += es_info_length;

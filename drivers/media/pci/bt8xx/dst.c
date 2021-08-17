@@ -425,7 +425,12 @@ static int dst_set_bandwidth(struct dst_state *state, u32 bandwidth)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dst_set_inversion(struct dst_state *state, fe_spectral_inversion_t inversion)
+=======
+static int dst_set_inversion(struct dst_state *state,
+			     enum fe_spectral_inversion inversion)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	state->inversion = inversion;
 	switch (inversion) {
@@ -442,13 +447,21 @@ static int dst_set_inversion(struct dst_state *state, fe_spectral_inversion_t in
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dst_set_fec(struct dst_state *state, fe_code_rate_t fec)
+=======
+static int dst_set_fec(struct dst_state *state, enum fe_code_rate fec)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	state->fec = fec;
 	return 0;
 }
 
+<<<<<<< HEAD
 static fe_code_rate_t dst_get_fec(struct dst_state *state)
+=======
+static enum fe_code_rate dst_get_fec(struct dst_state *state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return state->fec;
 }
@@ -499,7 +512,12 @@ static int dst_set_symbolrate(struct dst_state *state, u32 srate)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dst_set_modulation(struct dst_state *state, fe_modulation_t modulation)
+=======
+static int dst_set_modulation(struct dst_state *state,
+			      enum fe_modulation modulation)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (state->dst_type != DST_TYPE_IS_CABLE)
 		return -EOPNOTSUPP;
@@ -536,7 +554,11 @@ static int dst_set_modulation(struct dst_state *state, fe_modulation_t modulatio
 	return 0;
 }
 
+<<<<<<< HEAD
 static fe_modulation_t dst_get_modulation(struct dst_state *state)
+=======
+static enum fe_modulation dst_get_modulation(struct dst_state *state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return state->modulation;
 }
@@ -1376,7 +1398,12 @@ static int dst_get_tuna(struct dst_state *state)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int dst_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage);
+=======
+static int dst_set_voltage(struct dvb_frontend *fe,
+			   enum fe_sec_voltage voltage);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int dst_write_tuna(struct dvb_frontend *fe)
 {
@@ -1466,7 +1493,11 @@ static int dst_set_diseqc(struct dvb_frontend *fe, struct dvb_diseqc_master_cmd 
 	return dst_command(state, paket, 8);
 }
 
+<<<<<<< HEAD
 static int dst_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
+=======
+static int dst_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage voltage)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int need_cmd, retval = 0;
 	struct dst_state *state = fe->demodulator_priv;
@@ -1500,7 +1531,11 @@ static int dst_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int dst_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+=======
+static int dst_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dst_state *state = fe->demodulator_priv;
 
@@ -1525,7 +1560,11 @@ static int dst_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
 	return dst_tone_power_cmd(state);
 }
 
+<<<<<<< HEAD
 static int dst_send_burst(struct dvb_frontend *fe, fe_sec_mini_cmd_t minicmd)
+=======
+static int dst_send_burst(struct dvb_frontend *fe, enum fe_sec_mini_cmd minicmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dst_state *state = fe->demodulator_priv;
 
@@ -1544,7 +1583,11 @@ static int dst_send_burst(struct dvb_frontend *fe, fe_sec_mini_cmd_t minicmd)
 }
 
 
+<<<<<<< HEAD
 static int dst_init(struct dvb_frontend *fe)
+=======
+static int bt8xx_dst_init(struct dvb_frontend *fe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dst_state *state = fe->demodulator_priv;
 
@@ -1575,7 +1618,11 @@ static int dst_init(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dst_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int dst_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dst_state *state = fe->demodulator_priv;
 
@@ -1646,7 +1693,11 @@ static int dst_tune_frontend(struct dvb_frontend* fe,
 			    bool re_tune,
 			    unsigned int mode_flags,
 			    unsigned int *delay,
+<<<<<<< HEAD
 			    fe_status_t *status)
+=======
+			    enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dst_state *state = fe->demodulator_priv;
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
@@ -1685,9 +1736,15 @@ static int dst_get_tuning_algo(struct dvb_frontend *fe)
 	return dst_algo ? DVBFE_ALGO_HW : DVBFE_ALGO_SW;
 }
 
+<<<<<<< HEAD
 static int dst_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int dst_get_frontend(struct dvb_frontend *fe,
+			    struct dtv_frontend_properties *p)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dst_state *state = fe->demodulator_priv;
 
 	p->frequency = state->decode_freq;
@@ -1707,7 +1764,11 @@ static int dst_get_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void dst_release(struct dvb_frontend *fe)
+=======
+static void bt8xx_dst_release(struct dvb_frontend *fe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dst_state *state = fe->demodulator_priv;
 	if (state->dst_ca) {
@@ -1776,8 +1837,13 @@ static struct dvb_frontend_ops dst_dvbt_ops = {
 			FE_CAN_GUARD_INTERVAL_AUTO
 	},
 
+<<<<<<< HEAD
 	.release = dst_release,
 	.init = dst_init,
+=======
+	.release = bt8xx_dst_release,
+	.init = bt8xx_dst_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tune = dst_tune_frontend,
 	.set_frontend = dst_set_frontend,
 	.get_frontend = dst_get_frontend,
@@ -1801,8 +1867,13 @@ static struct dvb_frontend_ops dst_dvbs_ops = {
 		.caps = FE_CAN_FEC_AUTO | FE_CAN_QPSK
 	},
 
+<<<<<<< HEAD
 	.release = dst_release,
 	.init = dst_init,
+=======
+	.release = bt8xx_dst_release,
+	.init = bt8xx_dst_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tune = dst_tune_frontend,
 	.set_frontend = dst_set_frontend,
 	.get_frontend = dst_get_frontend,
@@ -1834,8 +1905,13 @@ static struct dvb_frontend_ops dst_dvbc_ops = {
 			FE_CAN_QAM_256
 	},
 
+<<<<<<< HEAD
 	.release = dst_release,
 	.init = dst_init,
+=======
+	.release = bt8xx_dst_release,
+	.init = bt8xx_dst_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tune = dst_tune_frontend,
 	.set_frontend = dst_set_frontend,
 	.get_frontend = dst_get_frontend,
@@ -1857,8 +1933,13 @@ static struct dvb_frontend_ops dst_atsc_ops = {
 		.caps = FE_CAN_FEC_AUTO | FE_CAN_QAM_AUTO | FE_CAN_QAM_64 | FE_CAN_QAM_256 | FE_CAN_8VSB
 	},
 
+<<<<<<< HEAD
 	.release = dst_release,
 	.init = dst_init,
+=======
+	.release = bt8xx_dst_release,
+	.init = bt8xx_dst_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tune = dst_tune_frontend,
 	.set_frontend = dst_set_frontend,
 	.get_frontend = dst_get_frontend,

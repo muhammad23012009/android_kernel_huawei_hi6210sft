@@ -47,10 +47,16 @@
 #include <linux/platform_device.h>
 #include <linux/bcd.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <asm/io.h>
 
 #define DRV_NAME	"rs5c313"
 #define DRV_VERSION 	"1.13"
+=======
+#include <linux/io.h>
+
+#define DRV_NAME	"rs5c313"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SH_LANDISK
 /*****************************************************/
@@ -301,7 +307,11 @@ static int rs5c313_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	rs5c313_write_reg(RS5C313_ADDR_SEC10, (data >> 4));
 
 	data = bin2bcd(tm->tm_min);
+<<<<<<< HEAD
 	rs5c313_write_reg(RS5C313_ADDR_MIN, data );
+=======
+	rs5c313_write_reg(RS5C313_ADDR_MIN, data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rs5c313_write_reg(RS5C313_ADDR_MIN10, (data >> 4));
 
 	data = bin2bcd(tm->tm_hour);
@@ -310,7 +320,11 @@ static int rs5c313_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	data = bin2bcd(tm->tm_mday);
 	rs5c313_write_reg(RS5C313_ADDR_DAY, data);
+<<<<<<< HEAD
 	rs5c313_write_reg(RS5C313_ADDR_DAY10, (data>> 4));
+=======
+	rs5c313_write_reg(RS5C313_ADDR_DAY10, (data >> 4));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	data = bin2bcd(tm->tm_mon + 1);
 	rs5c313_write_reg(RS5C313_ADDR_MON, data);
@@ -349,9 +363,15 @@ static void rs5c313_check_xstp_bit(void)
 		}
 
 		memset(&tm, 0, sizeof(struct rtc_time));
+<<<<<<< HEAD
 		tm.tm_mday 	= 1;
 		tm.tm_mon 	= 1 - 1;
 		tm.tm_year 	= 2000 - 1900;
+=======
+		tm.tm_mday	= 1;
+		tm.tm_mon	= 1 - 1;
+		tm.tm_year	= 2000 - 1900;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		rs5c313_rtc_set_time(NULL, &tm);
 		pr_err("invalid value, resetting to 1 Jan 2000\n");
@@ -378,6 +398,7 @@ static int rs5c313_rtc_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rs5c313_rtc_remove(struct platform_device *pdev)
 {
 	return 0;
@@ -390,6 +411,13 @@ static struct platform_driver rs5c313_rtc_platform_driver = {
 	},
 	.probe 	= rs5c313_rtc_probe,
 	.remove = rs5c313_rtc_remove,
+=======
+static struct platform_driver rs5c313_rtc_platform_driver = {
+	.driver         = {
+		.name   = DRV_NAME,
+	},
+	.probe	= rs5c313_rtc_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init rs5c313_rtc_init(void)
@@ -408,13 +436,20 @@ static int __init rs5c313_rtc_init(void)
 
 static void __exit rs5c313_rtc_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister( &rs5c313_rtc_platform_driver );
+=======
+	platform_driver_unregister(&rs5c313_rtc_platform_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(rs5c313_rtc_init);
 module_exit(rs5c313_rtc_exit);
 
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("kogiidena , Nobuhiro Iwamatsu <iwamatsu@nigauri.org>");
 MODULE_DESCRIPTION("Ricoh RS5C313 RTC device driver");
 MODULE_LICENSE("GPL");

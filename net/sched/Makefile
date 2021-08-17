@@ -16,6 +16,18 @@ obj-$(CONFIG_NET_ACT_PEDIT)	+= act_pedit.o
 obj-$(CONFIG_NET_ACT_SIMP)	+= act_simple.o
 obj-$(CONFIG_NET_ACT_SKBEDIT)	+= act_skbedit.o
 obj-$(CONFIG_NET_ACT_CSUM)	+= act_csum.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_NET_ACT_VLAN)	+= act_vlan.o
+obj-$(CONFIG_NET_ACT_BPF)	+= act_bpf.o
+obj-$(CONFIG_NET_ACT_CONNMARK)	+= act_connmark.o
+obj-$(CONFIG_NET_ACT_SKBMOD)	+= act_skbmod.o
+obj-$(CONFIG_NET_ACT_IFE)	+= act_ife.o
+obj-$(CONFIG_NET_IFE_SKBMARK)	+= act_meta_mark.o
+obj-$(CONFIG_NET_IFE_SKBPRIO)	+= act_meta_skbprio.o
+obj-$(CONFIG_NET_IFE_SKBTCINDEX)	+= act_meta_skbtcindex.o
+obj-$(CONFIG_NET_ACT_TUNNEL_KEY)+= act_tunnel_key.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_NET_SCH_FIFO)	+= sch_fifo.o
 obj-$(CONFIG_NET_SCH_CBQ)	+= sch_cbq.o
 obj-$(CONFIG_NET_SCH_HTB)	+= sch_htb.o
@@ -39,6 +51,12 @@ obj-$(CONFIG_NET_SCH_CHOKE)	+= sch_choke.o
 obj-$(CONFIG_NET_SCH_QFQ)	+= sch_qfq.o
 obj-$(CONFIG_NET_SCH_CODEL)	+= sch_codel.o
 obj-$(CONFIG_NET_SCH_FQ_CODEL)	+= sch_fq_codel.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_NET_SCH_FQ)	+= sch_fq.o
+obj-$(CONFIG_NET_SCH_HHF)	+= sch_hhf.o
+obj-$(CONFIG_NET_SCH_PIE)	+= sch_pie.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_NET_CLS_U32)	+= cls_u32.o
 obj-$(CONFIG_NET_CLS_ROUTE4)	+= cls_route.o
@@ -49,6 +67,12 @@ obj-$(CONFIG_NET_CLS_RSVP6)	+= cls_rsvp6.o
 obj-$(CONFIG_NET_CLS_BASIC)	+= cls_basic.o
 obj-$(CONFIG_NET_CLS_FLOW)	+= cls_flow.o
 obj-$(CONFIG_NET_CLS_CGROUP)	+= cls_cgroup.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_NET_CLS_BPF)	+= cls_bpf.o
+obj-$(CONFIG_NET_CLS_FLOWER)	+= cls_flower.o
+obj-$(CONFIG_NET_CLS_MATCHALL)	+= cls_matchall.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_NET_EMATCH)	+= ematch.o
 obj-$(CONFIG_NET_EMATCH_CMP)	+= em_cmp.o
 obj-$(CONFIG_NET_EMATCH_NBYTE)	+= em_nbyte.o

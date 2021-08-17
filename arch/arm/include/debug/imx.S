@@ -11,6 +11,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "imx-uart.h"
 
 /*
@@ -34,6 +38,10 @@
 		.endm
 
 		.macro	senduart,rd,rx
+<<<<<<< HEAD
+=======
+		ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		str	\rd, [\rx, #0x40]	@ TXDATA
 		.endm
 
@@ -42,6 +50,10 @@
 
 		.macro	busyuart,rd,rx
 1002:		ldr	\rd, [\rx, #0x98]	@ SR2
+<<<<<<< HEAD
+=======
+		ARM_BE8(rev \rd, \rd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	\rd, #1 << 3		@ TXDC
 		beq	1002b			@ wait until transmit done
 		.endm

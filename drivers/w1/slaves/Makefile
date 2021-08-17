@@ -6,6 +6,10 @@ obj-$(CONFIG_W1_SLAVE_THERM)	+= w1_therm.o
 obj-$(CONFIG_W1_SLAVE_SMEM)	+= w1_smem.o
 obj-$(CONFIG_W1_SLAVE_DS2408)	+= w1_ds2408.o
 obj-$(CONFIG_W1_SLAVE_DS2413)	+= w1_ds2413.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_W1_SLAVE_DS2406)	+= w1_ds2406.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_W1_SLAVE_DS2423)	+= w1_ds2423.o
 obj-$(CONFIG_W1_SLAVE_DS2431)	+= w1_ds2431.o
 obj-$(CONFIG_W1_SLAVE_DS2433)	+= w1_ds2433.o

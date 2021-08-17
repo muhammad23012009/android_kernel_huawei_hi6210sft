@@ -32,6 +32,7 @@ int st_accel_trig_set_state(struct iio_trigger *trig, bool state)
 
 static int st_accel_buffer_preenable(struct iio_dev *indio_dev)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = st_sensors_set_enable(indio_dev, true);
@@ -42,6 +43,9 @@ static int st_accel_buffer_preenable(struct iio_dev *indio_dev)
 
 st_accel_set_enable_error:
 	return err;
+=======
+	return st_sensors_set_enable(indio_dev, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
@@ -100,7 +104,11 @@ static const struct iio_buffer_setup_ops st_accel_buffer_setup_ops = {
 
 int st_accel_allocate_ring(struct iio_dev *indio_dev)
 {
+<<<<<<< HEAD
 	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+=======
+	return iio_triggered_buffer_setup(indio_dev, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		&st_sensors_trigger_handler, &st_accel_buffer_setup_ops);
 }
 

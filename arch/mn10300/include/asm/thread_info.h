@@ -16,8 +16,11 @@
 
 #include <asm/page.h>
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE		0x10000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_4KSTACKS
 #define THREAD_SIZE		(4096)
 #define THREAD_SIZE_ORDER	(0)
@@ -42,7 +45,10 @@ typedef struct {
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pt_regs		*frame;		/* current exception frame */
 	unsigned long		flags;		/* low level flags */
 	__u32			cpu;		/* current CPU */
@@ -52,7 +58,10 @@ struct thread_info {
 						   0-0xBFFFFFFF for user-thead
 						   0-0xFFFFFFFF for kernel-thread
 						*/
+<<<<<<< HEAD
 	struct restart_block    restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__u8			supervisor_stack[0];
 };
@@ -77,14 +86,20 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 	.addr_limit	= KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
@@ -123,7 +138,11 @@ static inline unsigned long current_stack_pointer(void)
 }
 
 #ifndef CONFIG_KGDB
+<<<<<<< HEAD
 void arch_release_thread_info(struct thread_info *ti);
+=======
+void arch_release_thread_stack(unsigned long *stack);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #define get_thread_info(ti)	get_task_struct((ti)->task)
 #define put_thread_info(ti)	put_task_struct((ti)->task)

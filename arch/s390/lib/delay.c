@@ -12,8 +12,15 @@
 #include <linux/module.h>
 #include <linux/irqflags.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <asm/vtimer.h>
 #include <asm/div64.h>
+=======
+#include <linux/irq.h>
+#include <asm/vtimer.h>
+#include <asm/div64.h>
+#include <asm/idle.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __delay(unsigned long loops)
 {
@@ -26,6 +33,7 @@ void __delay(unsigned long loops)
          */
 	asm volatile("0: brct %0,0b" : : "d" ((loops/2) + 1));
 }
+<<<<<<< HEAD
 
 static void __udelay_disabled(unsigned long long usecs)
 {
@@ -50,24 +58,57 @@ static void __udelay_disabled(unsigned long long usecs)
 	__ctl_load(cr0, 0, 0);
 	__ctl_load(cr6, 6, 6);
 	local_tick_enable(clock_saved);
+=======
+EXPORT_SYMBOL(__delay);
+
+static void __udelay_disabled(unsigned long long usecs)
+{
+	unsigned long cr0, cr0_new, psw_mask;
+	struct s390_idle_data idle;
+	u64 end;
+
+	end = get_tod_clock() + (usecs << 12);
+	__ctl_store(cr0, 0, 0);
+	cr0_new = cr0 & ~CR0_IRQ_SUBCLASS_MASK;
+	cr0_new |= (1UL << (63 - 52)); /* enable clock comparator irq */
+	__ctl_load(cr0_new, 0, 0);
+	psw_mask = __extract_psw() | PSW_MASK_EXT | PSW_MASK_WAIT;
+	set_clock_comparator(end);
+	set_cpu_flag(CIF_IGNORE_IRQ);
+	psw_idle(&idle, psw_mask);
+	clear_cpu_flag(CIF_IGNORE_IRQ);
+	set_clock_comparator(S390_lowcore.clock_comparator);
+	__ctl_load(cr0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __udelay_enabled(unsigned long long usecs)
 {
 	u64 clock_saved, end;
 
+<<<<<<< HEAD
 	end = get_tod_clock() + (usecs << 12);
+=======
+	end = get_tod_clock_fast() + (usecs << 12);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		clock_saved = 0;
 		if (end < S390_lowcore.clock_comparator) {
 			clock_saved = local_tick_disable();
 			set_clock_comparator(end);
 		}
+<<<<<<< HEAD
 		vtime_stop_cpu();
 		local_irq_disable();
 		if (clock_saved)
 			local_tick_enable(clock_saved);
 	} while (get_tod_clock() < end);
+=======
+		enabled_wait();
+		if (clock_saved)
+			local_tick_enable(clock_saved);
+	} while (get_tod_clock_fast() < end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -111,8 +152,13 @@ void udelay_simple(unsigned long long usecs)
 {
 	u64 end;
 
+<<<<<<< HEAD
 	end = get_tod_clock() + (usecs << 12);
 	while (get_tod_clock() < end)
+=======
+	end = get_tod_clock_fast() + (usecs << 12);
+	while (get_tod_clock_fast() < end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cpu_relax();
 }
 
@@ -122,10 +168,17 @@ void __ndelay(unsigned long long nsecs)
 
 	nsecs <<= 9;
 	do_div(nsecs, 125);
+<<<<<<< HEAD
 	end = get_tod_clock() + nsecs;
 	if (nsecs & ~0xfffUL)
 		__udelay(nsecs >> 12);
 	while (get_tod_clock() < end)
+=======
+	end = get_tod_clock_fast() + nsecs;
+	if (nsecs & ~0xfffUL)
+		__udelay(nsecs >> 12);
+	while (get_tod_clock_fast() < end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		barrier();
 }
 EXPORT_SYMBOL(__ndelay);

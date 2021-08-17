@@ -29,6 +29,7 @@ struct omap_iommu_arch_data {
 	struct omap_iommu *iommu_dev;
 };
 
+<<<<<<< HEAD
 /**
  * struct omap_mmu_dev_attr - OMAP mmu device attributes for omap_hwmod
  * @da_start:		device address where the va space starts.
@@ -42,12 +43,17 @@ struct omap_mmu_dev_attr {
 	int nr_tlb_entries;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct iommu_platform_data {
 	const char *name;
 	const char *reset_name;
 	int nr_tlb_entries;
+<<<<<<< HEAD
 	u32 da_start;
 	u32 da_end;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int (*assert_reset)(struct platform_device *pdev, const char *name);
 	int (*deassert_reset)(struct platform_device *pdev, const char *name);

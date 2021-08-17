@@ -88,12 +88,19 @@ static struct resource sh_eth_resources[] = {
 static struct sh_eth_plat_data sh7763_eth_pdata = {
 	.phy = 1,
 	.edmac_endian = EDMAC_LITTLE_ENDIAN,
+<<<<<<< HEAD
 	.register_type = SH_ETH_REG_GIGABIT,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 };
 
 static struct platform_device sh7763rdp_eth_device = {
+<<<<<<< HEAD
 	.name       = "sh-eth",
+=======
+	.name       = "sh7763-gether",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.resource   = sh_eth_resources,
 	.num_resources  = ARRAY_SIZE(sh_eth_resources),
 	.dev        = {

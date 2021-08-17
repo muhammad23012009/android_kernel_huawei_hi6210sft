@@ -57,6 +57,7 @@ static inline void __xapic_wait_icr_idle(void)
 		cpu_relax();
 }
 
+<<<<<<< HEAD
 static inline void
 __default_send_IPI_shortcut(unsigned int shortcut, int vector, unsigned int dest)
 {
@@ -84,11 +85,15 @@ __default_send_IPI_shortcut(unsigned int shortcut, int vector, unsigned int dest
 	 */
 	native_apic_mem_write(APIC_ICR, cfg);
 }
+=======
+void __default_send_IPI_shortcut(unsigned int shortcut, int vector, unsigned int dest);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This is used to send an IPI with no shorthand notation (the destination is
  * specified in bits 56 to 63 of the ICR).
  */
+<<<<<<< HEAD
 static inline void
  __default_send_IPI_dest_field(unsigned int mask, int vector, unsigned int dest)
 {
@@ -119,6 +124,12 @@ static inline void
 	native_apic_mem_write(APIC_ICR, cfg);
 }
 
+=======
+void __default_send_IPI_dest_field(unsigned int mask, int vector, unsigned int dest);
+
+extern void default_send_IPI_single(int cpu, int vector);
+extern void default_send_IPI_single_phys(int cpu, int vector);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void default_send_IPI_mask_sequence_phys(const struct cpumask *mask,
 						 int vector);
 extern void default_send_IPI_mask_allbutself_phys(const struct cpumask *mask,

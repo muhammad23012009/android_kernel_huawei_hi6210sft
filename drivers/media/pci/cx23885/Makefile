@@ -8,7 +8,10 @@ obj-$(CONFIG_VIDEO_CX23885) += cx23885.o
 obj-$(CONFIG_MEDIA_ALTERA_CI) += altera-ci.o
 
 ccflags-y += -Idrivers/media/i2c
+<<<<<<< HEAD
 ccflags-y += -Idrivers/media/common
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ccflags-y += -Idrivers/media/tuners
 ccflags-y += -Idrivers/media/dvb-core
 ccflags-y += -Idrivers/media/dvb-frontends

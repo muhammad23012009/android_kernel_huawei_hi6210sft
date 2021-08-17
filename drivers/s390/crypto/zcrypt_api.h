@@ -74,6 +74,11 @@ struct ica_z90_status {
 #define ZCRYPT_CEX2A		6
 #define ZCRYPT_CEX3C		7
 #define ZCRYPT_CEX3A		8
+<<<<<<< HEAD
+=======
+#define ZCRYPT_CEX4	       10
+#define ZCRYPT_CEX5	       11
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * Large random numbers are pulled in 4096 byte chunks from the crypto cards
@@ -89,10 +94,18 @@ struct zcrypt_ops {
 	long (*rsa_modexpo_crt)(struct zcrypt_device *,
 				struct ica_rsa_modexpo_crt *);
 	long (*send_cprb)(struct zcrypt_device *, struct ica_xcRB *);
+<<<<<<< HEAD
+=======
+	long (*send_ep11_cprb)(struct zcrypt_device *, struct ep11_urb *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long (*rng)(struct zcrypt_device *, char *);
 	struct list_head list;		/* zcrypt ops list. */
 	struct module *owner;
 	int variant;
+<<<<<<< HEAD
+=======
+	char name[128];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct zcrypt_device {

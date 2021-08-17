@@ -9,6 +9,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -19,20 +23,32 @@
 
 struct plat_nand_data {
 	struct nand_chip	chip;
+<<<<<<< HEAD
 	struct mtd_info		mtd;
 	void __iomem		*io_base;
 };
 
 static const char *part_probe_types[] = { "cmdlinepart", NULL };
 
+=======
+	void __iomem		*io_base;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Probe for the NAND device.
  */
 static int plat_nand_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct platform_nand_data *pdata = pdev->dev.platform_data;
 	struct mtd_part_parser_data ppdata;
 	struct plat_nand_data *data;
+=======
+	struct platform_nand_data *pdata = dev_get_platdata(&pdev->dev);
+	struct plat_nand_data *data;
+	struct mtd_info *mtd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *res;
 	const char **part_types;
 	int err = 0;
@@ -47,6 +63,7 @@ static int plat_nand_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -ENXIO;
@@ -76,6 +93,22 @@ static int plat_nand_probe(struct platform_device *pdev)
 	data->mtd.priv = &data->chip;
 	data->mtd.owner = THIS_MODULE;
 	data->mtd.name = dev_name(&pdev->dev);
+=======
+	/* Allocate memory for the device structure (and zero it) */
+	data = devm_kzalloc(&pdev->dev, sizeof(struct plat_nand_data),
+			    GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	data->io_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(data->io_base))
+		return PTR_ERR(data->io_base);
+
+	nand_set_flash_node(&data->chip, pdev->dev.of_node);
+	mtd = nand_to_mtd(&data->chip);
+	mtd->dev.parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	data->chip.IO_ADDR_R = data->io_base;
 	data->chip.IO_ADDR_W = data->io_base;
@@ -90,8 +123,13 @@ static int plat_nand_probe(struct platform_device *pdev)
 	data->chip.bbt_options |= pdata->chip.bbt_options;
 
 	data->chip.ecc.hwctl = pdata->ctrl.hwcontrol;
+<<<<<<< HEAD
 	data->chip.ecc.layout = pdata->chip.ecclayout;
 	data->chip.ecc.mode = NAND_ECC_SOFT;
+=======
+	data->chip.ecc.mode = NAND_ECC_SOFT;
+	data->chip.ecc.algo = NAND_ECC_HAMMING;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, data);
 
@@ -103,21 +141,32 @@ static int plat_nand_probe(struct platform_device *pdev)
 	}
 
 	/* Scan to find existence of the device */
+<<<<<<< HEAD
 	if (nand_scan(&data->mtd, pdata->chip.nr_chips)) {
+=======
+	if (nand_scan(mtd, pdata->chip.nr_chips)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -ENXIO;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	part_types = pdata->chip.part_probe_types ? : part_probe_types;
 
 	ppdata.of_node = pdev->dev.of_node;
 	err = mtd_device_parse_register(&data->mtd, part_types, &ppdata,
+=======
+	part_types = pdata->chip.part_probe_types;
+
+	err = mtd_device_parse_register(mtd, part_types, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					pdata->chip.partitions,
 					pdata->chip.nr_partitions);
 
 	if (!err)
 		return err;
 
+<<<<<<< HEAD
 	nand_release(&data->mtd);
 out:
 	if (pdata->ctrl.remove)
@@ -128,6 +177,12 @@ out_release_io:
 	release_mem_region(res->start, resource_size(res));
 out_free:
 	kfree(data);
+=======
+	nand_cleanup(&data->chip);
+out:
+	if (pdata->ctrl.remove)
+		pdata->ctrl.remove(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -137,6 +192,7 @@ out_free:
 static int plat_nand_remove(struct platform_device *pdev)
 {
 	struct plat_nand_data *data = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct platform_nand_data *pdata = pdev->dev.platform_data;
 	struct resource *res;
 
@@ -148,6 +204,13 @@ static int plat_nand_remove(struct platform_device *pdev)
 	iounmap(data->io_base);
 	release_mem_region(res->start, resource_size(res));
 	kfree(data);
+=======
+	struct platform_nand_data *pdata = dev_get_platdata(&pdev->dev);
+
+	nand_release(&data->chip);
+	if (pdata->ctrl.remove)
+		pdata->ctrl.remove(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -163,7 +226,10 @@ static struct platform_driver plat_nand_driver = {
 	.remove	= plat_nand_remove,
 	.driver	= {
 		.name		= "gen_nand",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = plat_nand_match,
 	},
 };

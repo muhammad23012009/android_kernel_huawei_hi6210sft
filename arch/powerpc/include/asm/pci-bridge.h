@@ -10,11 +10,53 @@
 #include <linux/pci.h>
 #include <linux/list.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <asm-generic/pci-bridge.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct device_node;
 
 /*
+<<<<<<< HEAD
+=======
+ * PCI controller operations
+ */
+struct pci_controller_ops {
+	void		(*dma_dev_setup)(struct pci_dev *pdev);
+	void		(*dma_bus_setup)(struct pci_bus *bus);
+
+	int		(*probe_mode)(struct pci_bus *bus);
+
+	/* Called when pci_enable_device() is called. Returns true to
+	 * allow assignment/enabling of the device. */
+	bool		(*enable_device_hook)(struct pci_dev *pdev);
+
+	void		(*disable_device)(struct pci_dev *pdev);
+
+	void		(*release_device)(struct pci_dev *pdev);
+
+	/* Called during PCI resource reassignment */
+	resource_size_t (*window_alignment)(struct pci_bus *bus,
+					    unsigned long type);
+	void		(*setup_bridge)(struct pci_bus *bus,
+					unsigned long type);
+	void		(*reset_secondary_bus)(struct pci_dev *pdev);
+
+#ifdef CONFIG_PCI_MSI
+	int		(*setup_msi_irqs)(struct pci_dev *pdev,
+					  int nvec, int type);
+	void		(*teardown_msi_irqs)(struct pci_dev *pdev);
+#endif
+
+	int             (*dma_set_mask)(struct pci_dev *pdev, u64 dma_mask);
+	u64		(*dma_get_required_mask)(struct pci_dev *pdev);
+
+	void		(*shutdown)(struct pci_controller *hose);
+};
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Structure of a PCI controller (host bridge)
  */
 struct pci_controller {
@@ -46,6 +88,10 @@ struct pci_controller {
 	resource_size_t	isa_mem_phys;
 	resource_size_t	isa_mem_size;
 
+<<<<<<< HEAD
+=======
+	struct pci_controller_ops controller_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_ops *ops;
 	unsigned int __iomem *cfg_addr;
 	void __iomem *cfg_data;
@@ -89,6 +135,10 @@ struct pci_controller {
 
 #ifdef CONFIG_PPC64
 	unsigned long buid;
+<<<<<<< HEAD
+=======
+	struct pci_dn *pci_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* CONFIG_PPC64 */
 
 	void *private_data;
@@ -119,6 +169,13 @@ extern void setup_indirect_pci(struct pci_controller* hose,
 extern int indirect_read_config(struct pci_bus *bus, unsigned int devfn,
 				int offset, int len, u32 *val);
 
+<<<<<<< HEAD
+=======
+extern int __indirect_read_config(struct pci_controller *hose,
+				  unsigned char bus_number, unsigned int devfn,
+				  int offset, int len, u32 *val);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int indirect_write_config(struct pci_bus *bus, unsigned int devfn,
 				 int offset, int len, u32 val);
 
@@ -150,33 +207,81 @@ static inline int isa_vaddr_is_ioport(void __iomem *address)
 struct iommu_table;
 
 struct pci_dn {
+<<<<<<< HEAD
 	int	busno;			/* pci bus number */
 	int	devfn;			/* pci device and function number */
 
 	struct  pci_controller *phb;	/* for pci devices */
 	struct	iommu_table *iommu_table;	/* for phb's or bridges */
+=======
+	int     flags;
+#define PCI_DN_FLAG_IOV_VF	0x01
+
+	int	busno;			/* pci bus number */
+	int	devfn;			/* pci device and function number */
+	int	vendor_id;		/* Vendor ID */
+	int	device_id;		/* Device ID */
+	int	class_code;		/* Device class code */
+
+	struct  pci_dn *parent;
+	struct  pci_controller *phb;	/* for pci devices */
+	struct	iommu_table_group *table_group;	/* for phb's or bridges */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct	device_node *node;	/* back-pointer to the device_node */
 
 	int	pci_ext_config_space;	/* for pci devices */
 
+<<<<<<< HEAD
 	int	force_32bit_msi:1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct	pci_dev *pcidev;	/* back-pointer to the pci device */
 #ifdef CONFIG_EEH
 	struct eeh_dev *edev;		/* eeh device */
 #endif
+<<<<<<< HEAD
 #define IODA_INVALID_PE		(-1)
 #ifdef CONFIG_PPC_POWERNV
 	int	pe_number;
 #endif
+=======
+#define IODA_INVALID_PE		0xFFFFFFFF
+#ifdef CONFIG_PPC_POWERNV
+	unsigned int pe_number;
+	int     vf_index;		/* VF index in the PF */
+#ifdef CONFIG_PCI_IOV
+	u16     vfs_expanded;		/* number of VFs IOV BAR expanded */
+	u16     num_vfs;		/* number of VFs enabled*/
+	unsigned int *pe_num_map;	/* PE# for the first VF PE or array */
+	bool    m64_single_mode;	/* Use M64 BAR in Single Mode */
+#define IODA_INVALID_M64        (-1)
+	int     (*m64_map)[PCI_SRIOV_NUM_BARS];
+#endif /* CONFIG_PCI_IOV */
+	int	mps;			/* Maximum Payload Size */
+#endif
+	struct list_head child_list;
+	struct list_head list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Get the pointer to a device_node's pci_dn */
 #define PCI_DN(dn)	((struct pci_dn *) (dn)->data)
 
+<<<<<<< HEAD
 extern struct pci_dn *pci_get_pdn(struct pci_dev *pdev);
 
 extern void * update_dn_pci_info(struct device_node *dn, void *data);
+=======
+extern struct pci_dn *pci_get_pdn_by_devfn(struct pci_bus *bus,
+					   int devfn);
+extern struct pci_dn *pci_get_pdn(struct pci_dev *pdev);
+extern struct pci_dn *add_dev_pci_data(struct pci_dev *pdev);
+extern void remove_dev_pci_data(struct pci_dev *pdev);
+extern struct pci_dn *pci_add_device_node_info(struct pci_controller *hose,
+					       struct device_node *dn);
+extern void pci_remove_device_node_info(struct device_node *dn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int pci_device_from_OF_node(struct device_node *np,
 					  u8 *bus, u8 *devfn)
@@ -189,6 +294,7 @@ static inline int pci_device_from_OF_node(struct device_node *np,
 }
 
 #if defined(CONFIG_EEH)
+<<<<<<< HEAD
 static inline struct eeh_dev *of_node_to_eeh_dev(struct device_node *dn)
 {
 	/*
@@ -214,6 +320,24 @@ extern void pcibios_remove_pci_devices(struct pci_bus *bus);
 
 /** Discover new pci devices under this bus, and add them */
 extern void pcibios_add_pci_devices(struct pci_bus *bus);
+=======
+static inline struct eeh_dev *pdn_to_eeh_dev(struct pci_dn *pdn)
+{
+	return pdn ? pdn->edev : NULL;
+}
+#else
+#define pdn_to_eeh_dev(x)	(NULL)
+#endif
+
+/** Find the bus corresponding to the indicated device node */
+extern struct pci_bus *pci_find_bus_by_node(struct device_node *dn);
+
+/** Remove all of the PCI devices under this bus */
+extern void pci_hp_remove_devices(struct pci_bus *bus);
+
+/** Discover new pci devices under this bus, and add them */
+extern void pci_hp_add_devices(struct pci_bus *bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 extern void isa_bridge_find_early(struct pci_controller *hose);
@@ -247,6 +371,10 @@ extern void pci_process_bridge_OF_ranges(struct pci_controller *hose,
 /* Allocate & free a PCI host bridge structure */
 extern struct pci_controller *pcibios_alloc_controller(struct device_node *dev);
 extern void pcibios_free_controller(struct pci_controller *phb);
+<<<<<<< HEAD
+=======
+extern void pcibios_free_controller_deferred(struct pci_host_bridge *bridge);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PCI
 extern int pcibios_vaddr_is_ioport(void __iomem *address);

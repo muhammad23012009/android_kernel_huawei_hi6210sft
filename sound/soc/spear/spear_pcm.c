@@ -4,7 +4,11 @@
  * sound/soc/spear/spear_pcm.c
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Rajeev Kumar<rajeev-dlh.kumar@st.com>
+=======
+ * Rajeev Kumar<rajeevkumar.linux@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -13,6 +17,7 @@
 
 #include <linux/module.h>
 #include <linux/dmaengine.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -26,6 +31,16 @@
 #include <sound/spear_dma.h>
 
 static struct snd_pcm_hardware spear_pcm_hardware = {
+=======
+#include <linux/platform_device.h>
+#include <sound/dmaengine_pcm.h>
+#include <sound/pcm.h>
+#include <sound/soc.h>
+#include <sound/spear_dma.h>
+#include "spear_pcm.h"
+
+static const struct snd_pcm_hardware spear_pcm_hardware = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.info = (SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
 		 SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_RESUME),
@@ -37,6 +52,7 @@ static struct snd_pcm_hardware spear_pcm_hardware = {
 	.fifo_size = 0, /* fifo size in bytes */
 };
 
+<<<<<<< HEAD
 static int spear_pcm_hw_params(struct snd_pcm_substream *substream,
 		struct snd_pcm_hw_params *params)
 {
@@ -199,3 +215,26 @@ MODULE_AUTHOR("Rajeev Kumar <rajeev-dlh.kumar@st.com>");
 MODULE_DESCRIPTION("SPEAr PCM DMA module");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:spear-pcm-audio");
+=======
+static const struct snd_dmaengine_pcm_config spear_dmaengine_pcm_config = {
+	.pcm_hardware = &spear_pcm_hardware,
+	.prealloc_buffer_size = 16 * 1024,
+};
+
+int devm_spear_pcm_platform_register(struct device *dev,
+			struct snd_dmaengine_pcm_config *config,
+			bool (*filter)(struct dma_chan *chan, void *slave))
+{
+	*config = spear_dmaengine_pcm_config;
+	config->compat_filter_fn = filter;
+
+	return devm_snd_dmaengine_pcm_register(dev, config,
+		SND_DMAENGINE_PCM_FLAG_NO_DT |
+		SND_DMAENGINE_PCM_FLAG_COMPAT);
+}
+EXPORT_SYMBOL_GPL(devm_spear_pcm_platform_register);
+
+MODULE_AUTHOR("Rajeev Kumar <rajeevkumar.linux@gmail.com>");
+MODULE_DESCRIPTION("SPEAr PCM DMA module");
+MODULE_LICENSE("GPL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

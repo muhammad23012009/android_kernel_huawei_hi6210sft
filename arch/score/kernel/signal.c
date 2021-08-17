@@ -141,7 +141,11 @@ score_rt_sigreturn(struct pt_regs *regs)
 	int sig;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	frame = (struct rt_sigframe __user *) regs->regs[0];
 	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))
@@ -173,15 +177,26 @@ badframe:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int setup_rt_frame(struct k_sigaction *ka, struct pt_regs *regs,
 		int signr, sigset_t *set, siginfo_t *info)
+=======
+static int setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs,
+			  sigset_t *set)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct rt_sigframe __user *frame;
 	int err = 0;
 
+<<<<<<< HEAD
 	frame = get_sigframe(ka, regs, sizeof(*frame));
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		goto give_sigsegv;
+=======
+	frame = get_sigframe(&ksig->ka, regs, sizeof(*frame));
+	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Set up the return code ...
@@ -194,7 +209,11 @@ static int setup_rt_frame(struct k_sigaction *ka, struct pt_regs *regs,
 	err |= __put_user(0x80008002, frame->rs_code + 1);
 	flush_cache_sigtramp((unsigned long) frame->rs_code);
 
+<<<<<<< HEAD
 	err |= copy_siginfo_to_user(&frame->rs_info, info);
+=======
+	err |= copy_siginfo_to_user(&frame->rs_info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err |= __put_user(0, &frame->rs_uc.uc_flags);
 	err |= __put_user(NULL, &frame->rs_uc.uc_link);
 	err |= __save_altstack(&frame->rs_uc.uc_stack, regs->regs[0]);
@@ -202,6 +221,7 @@ static int setup_rt_frame(struct k_sigaction *ka, struct pt_regs *regs,
 	err |= __copy_to_user(&frame->rs_uc.uc_sigmask, set, sizeof(*set));
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	regs->regs[0] = (unsigned long) frame;
@@ -222,6 +242,25 @@ give_sigsegv:
 static void handle_signal(unsigned long sig, siginfo_t *info,
 	struct k_sigaction *ka, struct pt_regs *regs)
 {
+=======
+		return -EFAULT;
+
+	regs->regs[0] = (unsigned long) frame;
+	regs->regs[3] = (unsigned long) frame->rs_code;
+	regs->regs[4] = ksig->sig;
+	regs->regs[5] = (unsigned long) &frame->rs_info;
+	regs->regs[6] = (unsigned long) &frame->rs_uc;
+	regs->regs[29] = (unsigned long) ksig->ka.sa.sa_handler;
+	regs->cp0_epc = (unsigned long) ksig->ka.sa.sa_handler;
+
+	return 0;
+}
+
+static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+{
+	int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (regs->is_syscall) {
 		switch (regs->regs[4]) {
 		case ERESTART_RESTARTBLOCK:
@@ -229,7 +268,11 @@ static void handle_signal(unsigned long sig, siginfo_t *info,
 			regs->regs[4] = EINTR;
 			break;
 		case ERESTARTSYS:
+<<<<<<< HEAD
 			if (!(ka->sa.sa_flags & SA_RESTART)) {
+=======
+			if (!(ksig->ka.sa.sa_flags & SA_RESTART)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				regs->regs[4] = EINTR;
 				break;
 			}
@@ -245,17 +288,27 @@ static void handle_signal(unsigned long sig, siginfo_t *info,
 	/*
 	 * Set up the stack frame
 	 */
+<<<<<<< HEAD
 	if (setup_rt_frame(ka, regs, sig, sigmask_to_save(), info) < 0)
 		return;
 
 	signal_delivered(sig, info, ka, regs, 0);
+=======
+	ret = setup_rt_frame(ksig, regs, sigmask_to_save());
+
+	signal_setup_done(ret, ksig, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void do_signal(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct k_sigaction ka;
 	siginfo_t info;
 	int signr;
+=======
+	struct ksignal ksig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We want the common case to go fast, which is why we may in certain
@@ -265,10 +318,16 @@ static void do_signal(struct pt_regs *regs)
 	if (!user_mode(regs))
 		return;
 
+<<<<<<< HEAD
 	signr = get_signal_to_deliver(&info, &ka, regs, NULL);
 	if (signr > 0) {
 		/* Actually deliver the signal.  */
 		handle_signal(signr, &info, &ka, regs);
+=======
+	if (get_signal(&ksig)) {
+		/* Actually deliver the signal.  */
+		handle_signal(&ksig, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 

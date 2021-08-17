@@ -14,14 +14,22 @@
 #include <linux/gpio.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 #include <linux/rtc-v3020.h>
+=======
+#include <linux/platform_data/rtc-v3020.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <video/mbxfb.h>
 
 #include <linux/spi/spi.h>
 #include <linux/spi/pxa2xx_spi.h>
 #include <linux/spi/libertas_spi.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
+=======
+#include "pxa27x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <linux/platform_data/mmc-pxamci.h>
 

@@ -220,4 +220,7 @@ MODULE_DESCRIPTION("Hardware Watchdog Device for Winsystems EPX-C3 SBC.  "
 	"so only use it if you are *sure* you are running on this specific "
 	"SBC system from Winsystems!  It writes to IO ports 0x1ee and 0x1ef!");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

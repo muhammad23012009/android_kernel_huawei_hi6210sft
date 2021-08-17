@@ -31,7 +31,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_DESC	"Magellan and SpaceMouse 6dof controller driver"
 

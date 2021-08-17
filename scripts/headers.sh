@@ -19,8 +19,11 @@ for arch in ${archs}; do
 	case ${arch} in
 	um)        # no userspace export
 		;;
+<<<<<<< HEAD
 	cris)      # headers export are known broken
 		;;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*)
 		if [ -d ${srctree}/arch/${arch} ]; then
 			do_command $1 ${arch}
@@ -28,5 +31,8 @@ for arch in ${archs}; do
 		;;
 	esac
 done
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

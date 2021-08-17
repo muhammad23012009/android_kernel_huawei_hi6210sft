@@ -97,18 +97,25 @@ static void wusbhc_devconnect_acked_work(struct work_struct *work);
 
 static void wusb_dev_free(struct wusb_dev *wusb_dev)
 {
+<<<<<<< HEAD
 	if (wusb_dev) {
 		kfree(wusb_dev->set_gtk_req);
 		usb_free_urb(wusb_dev->set_gtk_urb);
 		kfree(wusb_dev);
 	}
+=======
+	kfree(wusb_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct wusb_dev *wusb_dev_alloc(struct wusbhc *wusbhc)
 {
 	struct wusb_dev *wusb_dev;
+<<<<<<< HEAD
 	struct urb *urb;
 	struct usb_ctrlrequest *req;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wusb_dev = kzalloc(sizeof(*wusb_dev), GFP_KERNEL);
 	if (wusb_dev == NULL)
@@ -118,6 +125,7 @@ static struct wusb_dev *wusb_dev_alloc(struct wusbhc *wusbhc)
 
 	INIT_WORK(&wusb_dev->devconnect_acked_work, wusbhc_devconnect_acked_work);
 
+<<<<<<< HEAD
 	urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (urb == NULL)
 		goto err;
@@ -134,6 +142,8 @@ static struct wusb_dev *wusb_dev_alloc(struct wusbhc *wusbhc)
 	req->wIndex = 0;
 	req->wLength = cpu_to_le16(wusbhc->gtk.descr.bLength);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return wusb_dev;
 err:
 	wusb_dev_free(wusb_dev);
@@ -287,9 +297,15 @@ static void wusbhc_devconnect_acked_work(struct work_struct *work)
  * Addresses: because WUSB hosts have no downstream hubs, we can do a
  *            1:1 mapping between 'port number' and device
  *            address. This simplifies many things, as during this
+<<<<<<< HEAD
  *            initial connect phase the USB stack has no knoledge of
  *            the device and hasn't assigned an address yet--we know
  *            USB's choose_address() will use the same euristics we
+=======
+ *            initial connect phase the USB stack has no knowledge of
+ *            the device and hasn't assigned an address yet--we know
+ *            USB's choose_address() will use the same heuristics we
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *            use here, so we can assume which address will be assigned.
  *
  *            USB stack always assigns address 1 to the root hub, so
@@ -306,7 +322,11 @@ void wusbhc_devconnect_ack(struct wusbhc *wusbhc, struct wusb_dn_connect *dnc,
 	struct device *dev = wusbhc->dev;
 	struct wusb_dev *wusb_dev;
 	struct wusb_port *port;
+<<<<<<< HEAD
 	unsigned idx, devnum;
+=======
+	unsigned idx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&wusbhc->mutex);
 
@@ -334,8 +354,11 @@ void wusbhc_devconnect_ack(struct wusbhc *wusbhc, struct wusb_dn_connect *dnc,
 		goto error_unlock;
 	}
 
+<<<<<<< HEAD
 	devnum = idx + 2;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Make sure we are using no crypto on that "virtual port" */
 	wusbhc->set_ptk(wusbhc, idx, 0, NULL, 0);
 
@@ -353,7 +376,11 @@ void wusbhc_devconnect_ack(struct wusbhc *wusbhc, struct wusb_dn_connect *dnc,
 	port->wusb_dev = wusb_dev;
 	port->status |= USB_PORT_STAT_CONNECTION;
 	port->change |= USB_PORT_STAT_C_CONNECTION;
+<<<<<<< HEAD
 	/* Now the port status changed to connected; khubd will
+=======
+	/* Now the port status changed to connected; hub_wq will
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * pick the change up and try to reset the port to bring it to
 	 * the enabled state--so this process returns up to the stack
 	 * and it calls back into wusbhc_rh_port_reset().
@@ -367,7 +394,11 @@ error_unlock:
 /*
  * Disconnect a Wireless USB device from its fake port
  *
+<<<<<<< HEAD
  * Marks the port as disconnected so that khubd can pick up the change
+=======
+ * Marks the port as disconnected so that hub_wq can pick up the change
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * and drops our knowledge about the device.
  *
  * Assumes there is a device connected
@@ -403,7 +434,11 @@ static void __wusbhc_dev_disconnect(struct wusbhc *wusbhc,
 		wusbhc_gtk_rekey(wusbhc);
 
 	/* The Wireless USB part has forgotten about the device already; now
+<<<<<<< HEAD
 	 * khubd's timer will pick up the disconnection and remove the USB
+=======
+	 * hub_wq's timer will pick up the disconnection and remove the USB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * device from the system
 	 */
 }
@@ -411,9 +446,12 @@ static void __wusbhc_dev_disconnect(struct wusbhc *wusbhc,
 /*
  * Refresh the list of keep alives to emit in the MMC
  *
+<<<<<<< HEAD
  * Some devices don't respond to keep alives unless they've been
  * authenticated, so skip unauthenticated devices.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * We only publish the first four devices that have a coming timeout
  * condition. Then when we are done processing those, we go for the
  * next ones. We ignore the ones that have timed out already (they'll
@@ -448,15 +486,24 @@ static void __wusbhc_keep_alive(struct wusbhc *wusbhc)
 
 		if (wusb_dev == NULL)
 			continue;
+<<<<<<< HEAD
 		if (wusb_dev->usb_dev == NULL || !wusb_dev->usb_dev->authenticated)
+=======
+		if (wusb_dev->usb_dev == NULL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		if (time_after(jiffies, wusb_dev->entry_ts + tt)) {
 			dev_err(dev, "KEEPALIVE: device %u timed out\n",
 				wusb_dev->addr);
 			__wusbhc_dev_disconnect(wusbhc, wusb_port);
+<<<<<<< HEAD
 		} else if (time_after(jiffies, wusb_dev->entry_ts + tt/2)) {
 			/* Approaching timeout cut out, need to refresh */
+=======
+		} else if (time_after(jiffies, wusb_dev->entry_ts + tt/3)) {
+			/* Approaching timeout cut off, need to refresh */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ie->bDeviceAddress[keep_alives++] = wusb_dev->addr;
 		}
 	}
@@ -524,11 +571,27 @@ static struct wusb_dev *wusbhc_find_dev_by_addr(struct wusbhc *wusbhc, u8 addr)
  *
  * @wusbhc shall be referenced and unlocked
  */
+<<<<<<< HEAD
 static void wusbhc_handle_dn_alive(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev)
 {
 	mutex_lock(&wusbhc->mutex);
 	wusb_dev->entry_ts = jiffies;
 	__wusbhc_keep_alive(wusbhc);
+=======
+static void wusbhc_handle_dn_alive(struct wusbhc *wusbhc, u8 srcaddr)
+{
+	struct wusb_dev *wusb_dev;
+
+	mutex_lock(&wusbhc->mutex);
+	wusb_dev = wusbhc_find_dev_by_addr(wusbhc, srcaddr);
+	if (wusb_dev == NULL) {
+		dev_dbg(wusbhc->dev, "ignoring DN_Alive from unconnected device %02x\n",
+			srcaddr);
+	} else {
+		wusb_dev->entry_ts = jiffies;
+		__wusbhc_keep_alive(wusbhc);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&wusbhc->mutex);
 }
 
@@ -582,6 +645,7 @@ static void wusbhc_handle_dn_connect(struct wusbhc *wusbhc,
  *
  * @wusbhc shall be referenced and unlocked
  */
+<<<<<<< HEAD
 static void wusbhc_handle_dn_disconnect(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev)
 {
 	struct device *dev = wusbhc->dev;
@@ -590,6 +654,24 @@ static void wusbhc_handle_dn_disconnect(struct wusbhc *wusbhc, struct wusb_dev *
 
 	mutex_lock(&wusbhc->mutex);
 	__wusbhc_dev_disconnect(wusbhc, wusb_port_by_idx(wusbhc, wusb_dev->port_idx));
+=======
+static void wusbhc_handle_dn_disconnect(struct wusbhc *wusbhc, u8 srcaddr)
+{
+	struct device *dev = wusbhc->dev;
+	struct wusb_dev *wusb_dev;
+
+	mutex_lock(&wusbhc->mutex);
+	wusb_dev = wusbhc_find_dev_by_addr(wusbhc, srcaddr);
+	if (wusb_dev == NULL) {
+		dev_dbg(dev, "ignoring DN DISCONNECT from unconnected device %02x\n",
+			srcaddr);
+	} else {
+		dev_info(dev, "DN DISCONNECT: device 0x%02x going down\n",
+			wusb_dev->addr);
+		__wusbhc_dev_disconnect(wusbhc, wusb_port_by_idx(wusbhc,
+			wusb_dev->port_idx));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&wusbhc->mutex);
 }
 
@@ -611,13 +693,17 @@ void wusbhc_handle_dn(struct wusbhc *wusbhc, u8 srcaddr,
 		      struct wusb_dn_hdr *dn_hdr, size_t size)
 {
 	struct device *dev = wusbhc->dev;
+<<<<<<< HEAD
 	struct wusb_dev *wusb_dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (size < sizeof(struct wusb_dn_hdr)) {
 		dev_err(dev, "DN data shorter than DN header (%d < %d)\n",
 			(int)size, (int)sizeof(struct wusb_dn_hdr));
 		return;
 	}
+<<<<<<< HEAD
 
 	wusb_dev = wusbhc_find_dev_by_addr(wusbhc, srcaddr);
 	if (wusb_dev == NULL && dn_hdr->bType != WUSB_DN_CONNECT) {
@@ -626,15 +712,24 @@ void wusbhc_handle_dn(struct wusbhc *wusbhc, u8 srcaddr,
 		return;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (dn_hdr->bType) {
 	case WUSB_DN_CONNECT:
 		wusbhc_handle_dn_connect(wusbhc, dn_hdr, size);
 		break;
 	case WUSB_DN_ALIVE:
+<<<<<<< HEAD
 		wusbhc_handle_dn_alive(wusbhc, wusb_dev);
 		break;
 	case WUSB_DN_DISCONNECT:
 		wusbhc_handle_dn_disconnect(wusbhc, wusb_dev);
+=======
+		wusbhc_handle_dn_alive(wusbhc, srcaddr);
+		break;
+	case WUSB_DN_DISCONNECT:
+		wusbhc_handle_dn_disconnect(wusbhc, srcaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case WUSB_DN_MASAVAILCHANGED:
 	case WUSB_DN_RWAKE:
@@ -913,7 +1008,10 @@ out:
 error_nodev:
 	return;
 
+<<<<<<< HEAD
 	wusb_dev_sysfs_rm(wusb_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_add_sysfs:
 	wusb_dev_bos_rm(wusb_dev);
 error_bos_add:
@@ -973,7 +1071,11 @@ int wusb_usb_ncb(struct notifier_block *nb, unsigned long val,
 	default:
 		WARN_ON(1);
 		result = NOTIFY_BAD;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 
@@ -1062,7 +1164,11 @@ int wusbhc_devconnect_start(struct wusbhc *wusbhc)
 	wusbhc->wuie_host_info = hi;
 
 	queue_delayed_work(wusbd, &wusbhc->keep_alive_timer,
+<<<<<<< HEAD
 			   (wusbhc->trust_timeout*CONFIG_HZ)/1000/2);
+=======
+			   msecs_to_jiffies(wusbhc->trust_timeout / 2));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 

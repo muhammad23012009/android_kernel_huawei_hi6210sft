@@ -35,9 +35,12 @@ static int ir_lirc_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	struct lirc_codec *lirc = &dev->raw->lirc;
 	int sample;
 
+<<<<<<< HEAD
 	if (!(dev->enabled_protocols & RC_BIT_LIRC))
 		return 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dev->raw->lirc.drv || !dev->raw->lirc.drv->rbuf)
 		return -EINVAL;
 
@@ -146,11 +149,27 @@ static ssize_t ir_lirc_transmit_ir(struct file *file, const char __user *buf,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < count; i++) {
+		if (txbuf[i] > IR_MAX_DURATION / 1000 - duration || !txbuf[i]) {
+			ret = -EINVAL;
+			goto out;
+		}
+
+		duration += txbuf[i];
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = dev->tx_ir(dev, txbuf, count);
 	if (ret < 0)
 		goto out;
 
+<<<<<<< HEAD
 	for (i = 0; i < ret; i++)
+=======
+	for (duration = i = 0; i < ret; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		duration += txbuf[i];
 
 	ret *= sizeof(unsigned int);
@@ -248,7 +267,11 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
 		return 0;
 
 	case LIRC_GET_REC_RESOLUTION:
+<<<<<<< HEAD
 		val = dev->rx_resolution;
+=======
+		val = dev->rx_resolution / 1000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case LIRC_SET_WIDEBAND_RECEIVER:
@@ -280,6 +303,7 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
 		if (!dev->max_timeout)
 			return -ENOSYS;
 
+<<<<<<< HEAD
 		tmp = val * 1000;
 
 		if (tmp < dev->min_timeout ||
@@ -287,6 +311,21 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
 				return -EINVAL;
 
 		dev->timeout = tmp;
+=======
+		/* Check for multiply overflow */
+		if (val > U32_MAX / 1000)
+			return -EINVAL;
+
+		tmp = val * 1000;
+
+		if (tmp < dev->min_timeout || tmp > dev->max_timeout)
+			return -EINVAL;
+
+		if (dev->s_timeout)
+			ret = dev->s_timeout(dev, tmp);
+		if (!ret)
+			dev->timeout = tmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case LIRC_SET_REC_TIMEOUT_REPORTS:
@@ -381,6 +420,10 @@ static int ir_lirc_register(struct rc_dev *dev)
 	drv->code_length = sizeof(struct ir_raw_event) * 8;
 	drv->fops = &lirc_fops;
 	drv->dev = &dev->dev;
+<<<<<<< HEAD
+=======
+	drv->rdev = dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	drv->owner = THIS_MODULE;
 
 	drv->minor = lirc_register_driver(drv);
@@ -408,13 +451,21 @@ static int ir_lirc_unregister(struct rc_dev *dev)
 
 	lirc_unregister_driver(lirc->drv->minor);
 	lirc_buffer_free(lirc->drv->rbuf);
+<<<<<<< HEAD
+=======
+	kfree(lirc->drv->rbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(lirc->drv);
 
 	return 0;
 }
 
 static struct ir_raw_handler lirc_handler = {
+<<<<<<< HEAD
 	.protocols	= RC_BIT_LIRC,
+=======
+	.protocols	= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.decode		= ir_lirc_decode,
 	.raw_register	= ir_lirc_register,
 	.raw_unregister	= ir_lirc_unregister,

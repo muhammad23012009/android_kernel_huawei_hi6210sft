@@ -5,8 +5,11 @@
 #include <linux/types.h>
 #include <asm/opcodes.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_BUG
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Use a suitable undefined instruction to use for ARM/Thumb2 bug handling.
  * We need to be careful not to conflict with those used by other modules and
@@ -40,13 +43,21 @@ do {								\
 		"2:\t.asciz " #__file "\n" 			\
 		".popsection\n" 				\
 		".pushsection __bug_table,\"a\"\n"		\
+<<<<<<< HEAD
+=======
+		".align 2\n"					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"3:\t.word 1b, 2b\n"				\
 		"\t.hword " #__line ", 0\n"			\
 		".popsection");					\
 	unreachable();						\
 } while (0)
 
+<<<<<<< HEAD
 #else  /* not CONFIG_DEBUG_BUGVERBOSE */
+=======
+#else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __BUG(__file, __line, __value)				\
 do {								\
@@ -56,7 +67,10 @@ do {								\
 #endif  /* CONFIG_DEBUG_BUGVERBOSE */
 
 #define HAVE_ARCH_BUG
+<<<<<<< HEAD
 #endif  /* CONFIG_BUG */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm-generic/bug.h>
 

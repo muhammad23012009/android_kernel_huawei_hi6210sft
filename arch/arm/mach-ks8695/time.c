@@ -54,6 +54,7 @@
 /* Timer0 Timeout Counter Register */
 #define T0TC_WATCHDOG		(0xff)		/* Enable watchdog mode */
 
+<<<<<<< HEAD
 static void ks8695_set_mode(enum clock_event_mode mode,
 			    struct clock_event_device *evt)
 {
@@ -76,6 +77,27 @@ static void ks8695_set_mode(enum clock_event_mode mode,
 		tmcon |= TMCON_T1EN;
 		writel_relaxed(tmcon, KS8695_TMR_VA + KS8695_TMCON);
 	}
+=======
+static int ks8695_set_periodic(struct clock_event_device *evt)
+{
+	u32 rate = DIV_ROUND_CLOSEST(KS8695_CLOCK_RATE, HZ);
+	u32 half = DIV_ROUND_CLOSEST(rate, 2);
+	u32 tmcon;
+
+	/* Disable timer 1 */
+	tmcon = readl_relaxed(KS8695_TMR_VA + KS8695_TMCON);
+	tmcon &= ~TMCON_T1EN;
+	writel_relaxed(tmcon, KS8695_TMR_VA + KS8695_TMCON);
+
+	/* Both registers need to count down */
+	writel_relaxed(half, KS8695_TMR_VA + KS8695_T1TC);
+	writel_relaxed(half, KS8695_TMR_VA + KS8695_T1PD);
+
+	/* Re-enable timer1 */
+	tmcon |= TMCON_T1EN;
+	writel_relaxed(tmcon, KS8695_TMR_VA + KS8695_TMCON);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ks8695_set_next_event(unsigned long cycles,
@@ -102,11 +124,21 @@ static int ks8695_set_next_event(unsigned long cycles,
 }
 
 static struct clock_event_device clockevent_ks8695 = {
+<<<<<<< HEAD
 	.name		= "ks8695_t1tc",
 	.rating		= 300, /* Reasonably fast and accurate clock event */
 	.features	= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PERIODIC,
 	.set_next_event	= ks8695_set_next_event,
 	.set_mode	= ks8695_set_mode,
+=======
+	.name			= "ks8695_t1tc",
+	/* Reasonably fast and accurate clock event */
+	.rating			= 300,
+	.features		= CLOCK_EVT_FEAT_ONESHOT |
+				  CLOCK_EVT_FEAT_PERIODIC,
+	.set_next_event		= ks8695_set_next_event,
+	.set_state_periodic	= ks8695_set_periodic,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -122,7 +154,11 @@ static irqreturn_t ks8695_timer_interrupt(int irq, void *dev_id)
 
 static struct irqaction ks8695_timer_irq = {
 	.name		= "ks8695_tick",
+<<<<<<< HEAD
 	.flags		= IRQF_DISABLED | IRQF_TIMER,
+=======
+	.flags		= IRQF_TIMER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.handler	= ks8695_timer_interrupt,
 };
 
@@ -154,11 +190,19 @@ void __init ks8695_timer_init(void)
 	setup_irq(KS8695_IRQ_TIMER1, &ks8695_timer_irq);
 }
 
+<<<<<<< HEAD
 void ks8695_restart(char mode, const char *cmd)
 {
 	unsigned int reg;
 
 	if (mode == 's')
+=======
+void ks8695_restart(enum reboot_mode reboot_mode, const char *cmd)
+{
+	unsigned int reg;
+
+	if (reboot_mode == REBOOT_SOFT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		soft_restart(0);
 
 	/* disable timer0 */

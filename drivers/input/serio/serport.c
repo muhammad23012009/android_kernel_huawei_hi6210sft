@@ -71,10 +71,14 @@ static void serport_serio_close(struct serio *serio)
 
 	spin_lock_irqsave(&serport->lock, flags);
 	clear_bit(SERPORT_ACTIVE, &serport->flags);
+<<<<<<< HEAD
 	set_bit(SERPORT_DEAD, &serport->flags);
 	spin_unlock_irqrestore(&serport->lock, flags);
 
 	wake_up_interruptible(&serport->wait);
+=======
+	spin_unlock_irqrestore(&serport->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -125,7 +129,11 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
 {
 	struct serport *serport = (struct serport*) tty->disc_data;
 	unsigned long flags;
+<<<<<<< HEAD
 	unsigned int ch_flags;
+=======
+	unsigned int ch_flags = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	spin_lock_irqsave(&serport->lock, flags);
@@ -134,6 +142,7 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
 		goto out;
 
 	for (i = 0; i < count; i++) {
+<<<<<<< HEAD
 		switch (fp[i]) {
 		case TTY_FRAME:
 			ch_flags = SERIO_FRAME;
@@ -146,6 +155,22 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
 		default:
 			ch_flags = 0;
 			break;
+=======
+		if (fp) {
+			switch (fp[i]) {
+			case TTY_FRAME:
+				ch_flags = SERIO_FRAME;
+				break;
+
+			case TTY_PARITY:
+				ch_flags = SERIO_PARITY;
+				break;
+
+			default:
+				ch_flags = 0;
+				break;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		serio_interrupt(serport->serio, cp[i], ch_flags);
@@ -165,7 +190,10 @@ static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file, u
 {
 	struct serport *serport = (struct serport*) tty->disc_data;
 	struct serio *serio;
+<<<<<<< HEAD
 	char name[64];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (test_and_set_bit(SERPORT_BUSY, &serport->flags))
 		return -EBUSY;
@@ -175,7 +203,11 @@ static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file, u
 		return -ENOMEM;
 
 	strlcpy(serio->name, "Serial port", sizeof(serio->name));
+<<<<<<< HEAD
 	snprintf(serio->phys, sizeof(serio->phys), "%s/serio0", tty_name(tty, name));
+=======
+	snprintf(serio->phys, sizeof(serio->phys), "%s/serio0", tty_name(tty));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	serio->id = serport->id;
 	serio->id.type = SERIO_RS232;
 	serio->write = serport_serio_write;
@@ -185,7 +217,11 @@ static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file, u
 	serio->dev.parent = tty->dev;
 
 	serio_register_port(serport->serio);
+<<<<<<< HEAD
 	printk(KERN_INFO "serio: Serial port %s\n", tty_name(tty, name));
+=======
+	printk(KERN_INFO "serio: Serial port %s\n", tty_name(tty));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wait_event_interruptible(serport->wait, test_bit(SERPORT_DEAD, &serport->flags));
 	serio_unregister_port(serport->serio);
@@ -247,6 +283,22 @@ static long serport_ldisc_compat_ioctl(struct tty_struct *tty,
 }
 #endif
 
+<<<<<<< HEAD
+=======
+static int serport_ldisc_hangup(struct tty_struct *tty)
+{
+	struct serport *serport = (struct serport *) tty->disc_data;
+	unsigned long flags;
+
+	spin_lock_irqsave(&serport->lock, flags);
+	set_bit(SERPORT_DEAD, &serport->flags);
+	spin_unlock_irqrestore(&serport->lock, flags);
+
+	wake_up_interruptible(&serport->wait);
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void serport_ldisc_write_wakeup(struct tty_struct * tty)
 {
 	struct serport *serport = (struct serport *) tty->disc_data;
@@ -273,6 +325,10 @@ static struct tty_ldisc_ops serport_ldisc = {
 	.compat_ioctl =	serport_ldisc_compat_ioctl,
 #endif
 	.receive_buf =	serport_ldisc_receive,
+<<<<<<< HEAD
+=======
+	.hangup =	serport_ldisc_hangup,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.write_wakeup =	serport_ldisc_write_wakeup
 };
 

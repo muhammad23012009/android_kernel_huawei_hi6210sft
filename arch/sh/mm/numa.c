@@ -31,10 +31,17 @@ void __init setup_bootmem_node(int nid, unsigned long start, unsigned long end)
 	unsigned long bootmem_paddr;
 
 	/* Don't allow bogus node assignment */
+<<<<<<< HEAD
 	BUG_ON(nid > MAX_NUMNODES || nid <= 0);
 
 	start_pfn = start >> PAGE_SHIFT;
 	end_pfn = end >> PAGE_SHIFT;
+=======
+	BUG_ON(nid >= MAX_NUMNODES || nid <= 0);
+
+	start_pfn = PFN_DOWN(start);
+	end_pfn = PFN_DOWN(end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pmb_bolt_mapping((unsigned long)__va(start), start, end - start,
 			 PAGE_KERNEL);

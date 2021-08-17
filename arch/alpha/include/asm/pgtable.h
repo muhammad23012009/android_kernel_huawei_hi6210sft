@@ -45,7 +45,11 @@ struct vm_area_struct;
 #define PTRS_PER_PMD	(1UL << (PAGE_SHIFT-3))
 #define PTRS_PER_PGD	(1UL << (PAGE_SHIFT-3))
 #define USER_PTRS_PER_PGD	(TASK_SIZE / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Number of pointers that fit on a page:  this will go away. */
 #define PTRS_PER_PAGE	(1UL << (PAGE_SHIFT-3))
@@ -73,7 +77,10 @@ struct vm_area_struct;
 /* .. and these are ours ... */
 #define _PAGE_DIRTY	0x20000
 #define _PAGE_ACCESSED	0x40000
+<<<<<<< HEAD
 #define _PAGE_FILE	0x80000	/* set:pagecache, unset:swap */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * NOTE! The "accessed" bit isn't necessarily exact:  it can be kept exactly
@@ -268,7 +275,10 @@ extern inline void pgd_clear(pgd_t * pgdp)	{ pgd_val(*pgdp) = 0; }
 extern inline int pte_write(pte_t pte)		{ return !(pte_val(pte) & _PAGE_FOW); }
 extern inline int pte_dirty(pte_t pte)		{ return pte_val(pte) & _PAGE_DIRTY; }
 extern inline int pte_young(pte_t pte)		{ return pte_val(pte) & _PAGE_ACCESSED; }
+<<<<<<< HEAD
 extern inline int pte_file(pte_t pte)		{ return pte_val(pte) & _PAGE_FILE; }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern inline int pte_special(pte_t pte)	{ return 0; }
 
 extern inline pte_t pte_wrprotect(pte_t pte)	{ pte_val(pte) |= _PAGE_FOW; return pte; }
@@ -345,18 +355,24 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)	((pte_t) { (x).val })
 
+<<<<<<< HEAD
 #define pte_to_pgoff(pte)	(pte_val(pte) >> 32)
 #define pgoff_to_pte(off)	((pte_t) { ((off) << 32) | _PAGE_FILE })
 
 #define PTE_FILE_MAX_BITS	32
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef CONFIG_DISCONTIGMEM
 #define kern_addr_valid(addr)	(1)
 #endif
 
+<<<<<<< HEAD
 #define io_remap_pfn_range(vma, start, pfn, size, prot)	\
 		remap_pfn_range(vma, start, pfn, size, prot)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pte_ERROR(e) \
 	printk("%s:%d: bad pte %016lx.\n", __FILE__, __LINE__, pte_val(e))
 #define pmd_ERROR(e) \

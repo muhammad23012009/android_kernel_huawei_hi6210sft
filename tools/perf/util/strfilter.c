@@ -10,6 +10,7 @@ static const char *OP_not	= "!";	/* Logical NOT */
 #define is_operator(c)	((c) == '|' || (c) == '&' || (c) == '!')
 #define is_separator(c)	(is_operator(c) || (c) == '(' || (c) == ')')
 
+<<<<<<< HEAD
 static void strfilter_node__delete(struct strfilter_node *self)
 {
 	if (self) {
@@ -26,6 +27,24 @@ void strfilter__delete(struct strfilter *self)
 	if (self) {
 		strfilter_node__delete(self->root);
 		free(self);
+=======
+static void strfilter_node__delete(struct strfilter_node *node)
+{
+	if (node) {
+		if (node->p && !is_operator(*node->p))
+			zfree((char **)&node->p);
+		strfilter_node__delete(node->l);
+		strfilter_node__delete(node->r);
+		free(node);
+	}
+}
+
+void strfilter__delete(struct strfilter *filter)
+{
+	if (filter) {
+		strfilter_node__delete(filter->root);
+		free(filter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -62,6 +81,7 @@ static struct strfilter_node *strfilter_node__alloc(const char *op,
 						    struct strfilter_node *l,
 						    struct strfilter_node *r)
 {
+<<<<<<< HEAD
 	struct strfilter_node *ret = zalloc(sizeof(struct strfilter_node));
 
 	if (ret) {
@@ -71,6 +91,17 @@ static struct strfilter_node *strfilter_node__alloc(const char *op,
 	}
 
 	return ret;
+=======
+	struct strfilter_node *node = zalloc(sizeof(*node));
+
+	if (node) {
+		node->p = op;
+		node->l = l;
+		node->r = r;
+	}
+
+	return node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct strfilter_node *strfilter_node__new(const char *s,
@@ -154,6 +185,7 @@ error:
  */
 struct strfilter *strfilter__new(const char *rules, const char **err)
 {
+<<<<<<< HEAD
 	struct strfilter *ret = zalloc(sizeof(struct strfilter));
 	const char *ep = NULL;
 
@@ -187,13 +219,164 @@ static bool strfilter_node__compare(struct strfilter_node *self,
 		return !strfilter_node__compare(self->r, str);
 	default:
 		return strglobmatch(str, self->p);
+=======
+	struct strfilter *filter = zalloc(sizeof(*filter));
+	const char *ep = NULL;
+
+	if (filter)
+		filter->root = strfilter_node__new(rules, &ep);
+
+	if (!filter || !filter->root || *ep != '\0') {
+		if (err)
+			*err = ep;
+		strfilter__delete(filter);
+		filter = NULL;
+	}
+
+	return filter;
+}
+
+static int strfilter__append(struct strfilter *filter, bool _or,
+			     const char *rules, const char **err)
+{
+	struct strfilter_node *right, *root;
+	const char *ep = NULL;
+
+	if (!filter || !rules)
+		return -EINVAL;
+
+	right = strfilter_node__new(rules, &ep);
+	if (!right || *ep != '\0') {
+		if (err)
+			*err = ep;
+		goto error;
+	}
+	root = strfilter_node__alloc(_or ? OP_or : OP_and, filter->root, right);
+	if (!root) {
+		ep = NULL;
+		goto error;
+	}
+
+	filter->root = root;
+	return 0;
+
+error:
+	strfilter_node__delete(right);
+	return ep ? -EINVAL : -ENOMEM;
+}
+
+int strfilter__or(struct strfilter *filter, const char *rules, const char **err)
+{
+	return strfilter__append(filter, true, rules, err);
+}
+
+int strfilter__and(struct strfilter *filter, const char *rules,
+		   const char **err)
+{
+	return strfilter__append(filter, false, rules, err);
+}
+
+static bool strfilter_node__compare(struct strfilter_node *node,
+				    const char *str)
+{
+	if (!node || !node->p)
+		return false;
+
+	switch (*node->p) {
+	case '|':	/* OR */
+		return strfilter_node__compare(node->l, str) ||
+			strfilter_node__compare(node->r, str);
+	case '&':	/* AND */
+		return strfilter_node__compare(node->l, str) &&
+			strfilter_node__compare(node->r, str);
+	case '!':	/* NOT */
+		return !strfilter_node__compare(node->r, str);
+	default:
+		return strglobmatch(str, node->p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 /* Return true if STR matches the filter rules */
+<<<<<<< HEAD
 bool strfilter__compare(struct strfilter *self, const char *str)
 {
 	if (!self)
 		return false;
 	return strfilter_node__compare(self->root, str);
+=======
+bool strfilter__compare(struct strfilter *filter, const char *str)
+{
+	if (!filter)
+		return false;
+	return strfilter_node__compare(filter->root, str);
+}
+
+static int strfilter_node__sprint(struct strfilter_node *node, char *buf);
+
+/* sprint node in parenthesis if needed */
+static int strfilter_node__sprint_pt(struct strfilter_node *node, char *buf)
+{
+	int len;
+	int pt = node->r ? 2 : 0;	/* don't need to check node->l */
+
+	if (buf && pt)
+		*buf++ = '(';
+	len = strfilter_node__sprint(node, buf);
+	if (len < 0)
+		return len;
+	if (buf && pt)
+		*(buf + len) = ')';
+	return len + pt;
+}
+
+static int strfilter_node__sprint(struct strfilter_node *node, char *buf)
+{
+	int len = 0, rlen;
+
+	if (!node || !node->p)
+		return -EINVAL;
+
+	switch (*node->p) {
+	case '|':
+	case '&':
+		len = strfilter_node__sprint_pt(node->l, buf);
+		if (len < 0)
+			return len;
+		__fallthrough;
+	case '!':
+		if (buf) {
+			*(buf + len++) = *node->p;
+			buf += len;
+		} else
+			len++;
+		rlen = strfilter_node__sprint_pt(node->r, buf);
+		if (rlen < 0)
+			return rlen;
+		len += rlen;
+		break;
+	default:
+		len = strlen(node->p);
+		if (buf)
+			strcpy(buf, node->p);
+	}
+
+	return len;
+}
+
+char *strfilter__string(struct strfilter *filter)
+{
+	int len;
+	char *ret = NULL;
+
+	len = strfilter_node__sprint(filter->root, NULL);
+	if (len < 0)
+		return NULL;
+
+	ret = malloc(len + 1);
+	if (ret)
+		strfilter_node__sprint(filter->root, ret);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

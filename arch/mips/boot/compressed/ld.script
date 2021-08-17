@@ -8,6 +8,12 @@
 
 OUTPUT_ARCH(mips)
 ENTRY(start)
+<<<<<<< HEAD
+=======
+PHDRS {
+	text PT_LOAD FLAGS(7); /* RWX */
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 SECTIONS
 {
 	/* Text and read-only data */
@@ -15,7 +21,11 @@ SECTIONS
 	.text : {
 		*(.text)
 		*(.rodata)
+<<<<<<< HEAD
 	}
+=======
+	}: text
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* End of text section */
 
 	/* Writable data */
@@ -26,8 +36,17 @@ SECTIONS
 		*(.image)
 		__image_end = .;
 		CONSTRUCTORS
+<<<<<<< HEAD
 	}
 	. = ALIGN(16);
+=======
+		. = ALIGN(16);
+	}
+	__appended_dtb = .;
+	/* leave space for appended DTB */
+	. += 0x100000;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_edata = .;
 	/* End of data section */
 

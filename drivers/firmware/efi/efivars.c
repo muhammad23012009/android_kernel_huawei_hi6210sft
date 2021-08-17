@@ -39,7 +39,11 @@
  *   fix locking per Peter Chubb's findings
  *
  *  25 Mar 2002 - Matt Domsch <Matt_Domsch@dell.com>
+<<<<<<< HEAD
  *   move uuid_unparse() to include/asm-ia64/efi.h:efi_guid_unparse()
+=======
+ *   move uuid_unparse() to include/asm-ia64/efi.h:efi_guid_to_str()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  12 Feb 2002 - Matt Domsch <Matt_Domsch@dell.com>
  *   use list_for_each_safe when deleting vars.
@@ -78,6 +82,10 @@ MODULE_AUTHOR("Matt Domsch <Matt_Domsch@Dell.com>");
 MODULE_DESCRIPTION("sysfs interface to EFI Variables");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(EFIVARS_VERSION);
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:efivars");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 LIST_HEAD(efivar_sysfs_list);
 EXPORT_SYMBOL_GPL(efivar_sysfs_list);
@@ -127,7 +135,11 @@ efivar_guid_read(struct efivar_entry *entry, char *buf)
 	if (!entry || !buf)
 		return 0;
 
+<<<<<<< HEAD
 	efi_guid_unparse(&var->VendorGuid, str);
+=======
+	efi_guid_to_str(&var->VendorGuid, str);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	str += strlen(str);
 	str += sprintf(str, "\n");
 
@@ -138,13 +150,25 @@ static ssize_t
 efivar_attr_read(struct efivar_entry *entry, char *buf)
 {
 	struct efi_variable *var = &entry->var;
+<<<<<<< HEAD
 	char *str = buf;
+=======
+	unsigned long size = sizeof(var->Data);
+	char *str = buf;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!entry || !buf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	var->DataSize = 1024;
 	if (efivar_entry_get(entry, &var->Attributes, &var->DataSize, var->Data))
+=======
+	ret = efivar_entry_get(entry, &var->Attributes, &size, var->Data);
+	var->DataSize = size;
+	if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 	if (var->Attributes & EFI_VARIABLE_NON_VOLATILE)
@@ -171,13 +195,25 @@ static ssize_t
 efivar_size_read(struct efivar_entry *entry, char *buf)
 {
 	struct efi_variable *var = &entry->var;
+<<<<<<< HEAD
 	char *str = buf;
+=======
+	unsigned long size = sizeof(var->Data);
+	char *str = buf;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!entry || !buf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	var->DataSize = 1024;
 	if (efivar_entry_get(entry, &var->Attributes, &var->DataSize, var->Data))
+=======
+	ret = efivar_entry_get(entry, &var->Attributes, &size, var->Data);
+	var->DataSize = size;
+	if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 	str += sprintf(str, "0x%lx\n", var->DataSize);
@@ -188,12 +224,23 @@ static ssize_t
 efivar_data_read(struct efivar_entry *entry, char *buf)
 {
 	struct efi_variable *var = &entry->var;
+<<<<<<< HEAD
+=======
+	unsigned long size = sizeof(var->Data);
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!entry || !buf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	var->DataSize = 1024;
 	if (efivar_entry_get(entry, &var->Attributes, &var->DataSize, var->Data))
+=======
+	ret = efivar_entry_get(entry, &var->Attributes, &size, var->Data);
+	var->DataSize = size;
+	if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 	memcpy(buf, var->Data, var->DataSize);
@@ -220,7 +267,11 @@ sanity_check(struct efi_variable *var, efi_char16_t *name, efi_guid_t vendor,
 	}
 
 	if ((attributes & ~EFI_VARIABLE_MASK) != 0 ||
+<<<<<<< HEAD
 	    efivar_validate(name, data, size) == false) {
+=======
+	    efivar_validate(vendor, name, data, size) == false) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "efivars: Malformed variable content\n");
 		return -EINVAL;
 	}
@@ -230,7 +281,11 @@ sanity_check(struct efi_variable *var, efi_char16_t *name, efi_guid_t vendor,
 
 static inline bool is_compat(void)
 {
+<<<<<<< HEAD
 	if (IS_ENABLED(CONFIG_COMPAT) && is_compat_task())
+=======
+	if (IS_ENABLED(CONFIG_COMPAT) && in_compat_syscall())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return true;
 
 	return false;
@@ -262,6 +317,12 @@ efivar_store_raw(struct efivar_entry *entry, const char *buf, size_t count)
 	u8 *data;
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (!entry || !buf)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (is_compat()) {
 		struct compat_efi_variable *compat;
 
@@ -313,14 +374,26 @@ efivar_show_raw(struct efivar_entry *entry, char *buf)
 {
 	struct efi_variable *var = &entry->var;
 	struct compat_efi_variable *compat;
+<<<<<<< HEAD
 	size_t size;
+=======
+	unsigned long datasize = sizeof(var->Data);
+	size_t size;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!entry || !buf)
 		return 0;
 
+<<<<<<< HEAD
 	var->DataSize = 1024;
 	if (efivar_entry_get(entry, &entry->var.Attributes,
 			     &entry->var.DataSize, entry->var.Data))
+=======
+	ret = efivar_entry_get(entry, &var->Attributes, &datasize, var->Data);
+	var->DataSize = datasize;
+	if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 
 	if (is_compat()) {
@@ -385,7 +458,11 @@ static const struct sysfs_ops efivar_attr_ops = {
 
 static void efivar_release(struct kobject *kobj)
 {
+<<<<<<< HEAD
 	struct efivar_entry *var = container_of(kobj, struct efivar_entry, kobj);
+=======
+	struct efivar_entry *var = to_efivar_entry(kobj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(var);
 }
 
@@ -446,7 +523,12 @@ static ssize_t efivar_create(struct file *filp, struct kobject *kobj,
 	}
 
 	if ((attributes & ~EFI_VARIABLE_MASK) != 0 ||
+<<<<<<< HEAD
 	    efivar_validate(name, data, size) == false) {
+=======
+	    efivar_validate(new_var->VendorGuid, name, data,
+			    size) == false) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "efivars: Malformed variable content\n");
 		return -EINVAL;
 	}
@@ -508,7 +590,12 @@ static ssize_t efivar_delete(struct file *filp, struct kobject *kobj,
 		vendor = del_var->VendorGuid;
 	}
 
+<<<<<<< HEAD
 	efivar_entry_iter_begin();
+=======
+	if (efivar_entry_iter_begin())
+		return -EINTR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	entry = efivar_entry_find(name, vendor, &efivar_sysfs_list, true);
 	if (!entry)
 		err = -EINVAL;
@@ -534,15 +621,27 @@ static ssize_t efivar_delete(struct file *filp, struct kobject *kobj,
  * efivar_create_sysfs_entry - create a new entry in sysfs
  * @new_var: efivar entry to create
  *
+<<<<<<< HEAD
  * Returns 1 on failure, 0 on success
+=======
+ * Returns 0 on success, negative error code on failure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int
 efivar_create_sysfs_entry(struct efivar_entry *new_var)
 {
+<<<<<<< HEAD
 	int i, short_name_size;
 	char *short_name;
 	unsigned long utf8_name_size;
 	efi_char16_t *variable_name = new_var->var.VariableName;
+=======
+	int short_name_size;
+	char *short_name;
+	unsigned long utf8_name_size;
+	efi_char16_t *variable_name = new_var->var.VariableName;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Length of the variable bytes in UTF8, plus the '-' separator,
@@ -553,18 +652,27 @@ efivar_create_sysfs_entry(struct efivar_entry *new_var)
 
 	short_name = kmalloc(short_name_size, GFP_KERNEL);
 	if (!short_name)
+<<<<<<< HEAD
 		return 1;
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ucs2_as_utf8(short_name, variable_name, short_name_size);
 
 	/* This is ugly, but necessary to separate one vendor's
 	   private variables from another's.         */
 	short_name[utf8_name_size] = '-';
+<<<<<<< HEAD
 	efi_guid_unparse(&new_var->var.VendorGuid,
+=======
+	efi_guid_to_str(&new_var->var.VendorGuid,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 short_name + utf8_name_size + 1);
 
 	new_var->kobj.kset = efivars_kset;
 
+<<<<<<< HEAD
 	i = kobject_init_and_add(&new_var->kobj, &efivar_ktype,
 				   NULL, "%s", short_name);
 	kfree(short_name);
@@ -573,6 +681,21 @@ efivar_create_sysfs_entry(struct efivar_entry *new_var)
 
 	kobject_uevent(&new_var->kobj, KOBJ_ADD);
 	efivar_entry_add(new_var, &efivar_sysfs_list);
+=======
+	ret = kobject_init_and_add(&new_var->kobj, &efivar_ktype,
+				   NULL, "%s", short_name);
+	kfree(short_name);
+	if (ret) {
+		kobject_put(&new_var->kobj);
+		return ret;
+	}
+
+	kobject_uevent(&new_var->kobj, KOBJ_ADD);
+	if (efivar_entry_add(new_var, &efivar_sysfs_list)) {
+		efivar_unregister(new_var);
+		return -EINTR;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -658,7 +781,11 @@ static void efivar_update_sysfs_entries(struct work_struct *work)
 			return;
 
 		err = efivar_init(efivar_update_sysfs_entry, entry,
+<<<<<<< HEAD
 				  true, false, &efivar_sysfs_list);
+=======
+				  false, &efivar_sysfs_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!err)
 			break;
 
@@ -687,7 +814,14 @@ static int efivars_sysfs_callback(efi_char16_t *name, efi_guid_t vendor,
 
 static int efivar_sysfs_destroy(struct efivar_entry *entry, void *data)
 {
+<<<<<<< HEAD
 	efivar_entry_remove(entry);
+=======
+	int err = efivar_entry_remove(entry);
+
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	efivar_unregister(entry);
 	return 0;
 }
@@ -695,7 +829,18 @@ static int efivar_sysfs_destroy(struct efivar_entry *entry, void *data)
 static void efivars_sysfs_exit(void)
 {
 	/* Remove all entries and destroy */
+<<<<<<< HEAD
 	__efivar_entry_iter(efivar_sysfs_destroy, &efivar_sysfs_list, NULL, NULL);
+=======
+	int err;
+
+	err = __efivar_entry_iter(efivar_sysfs_destroy, &efivar_sysfs_list,
+				  NULL, NULL);
+	if (err) {
+		pr_err("efivars: Failed to destroy sysfs entries\n");
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (efivars_new_var)
 		sysfs_remove_bin_file(&efivars_kset->kobj, efivars_new_var);
@@ -727,8 +872,12 @@ int efivars_sysfs_init(void)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	efivar_init(efivars_sysfs_callback, NULL, false,
 		    true, &efivar_sysfs_list);
+=======
+	efivar_init(efivars_sysfs_callback, NULL, true, &efivar_sysfs_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = create_efivars_bin_attributes();
 	if (error) {

@@ -19,6 +19,10 @@
 /* VIDCON0 */
 
 #define VIDCON0					0x00
+<<<<<<< HEAD
+=======
+#define VIDCON0_DSI_EN				(1 << 30)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define VIDCON0_INTERLACE			(1 << 29)
 #define VIDCON0_VIDOUT_MASK			(0x7 << 26)
 #define VIDCON0_VIDOUT_SHIFT			26
@@ -107,7 +111,11 @@
 #define VIDCON2_ORGYCbCr			(1 << 8)
 #define VIDCON2_YUVORDCrCb			(1 << 7)
 
+<<<<<<< HEAD
 /* PRTCON (S3C6410, S5PC100)
+=======
+/* PRTCON (S3C6410)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Might not be present in the S3C6410 documentation,
  * but tests prove it's there almost for sure; shouldn't hurt in any case.
  */
@@ -288,8 +296,19 @@
 #define VIDISD14C_ALPHA1_B_LIMIT		0xf
 #define VIDISD14C_ALPHA1_B(_x)			((_x) << 0)
 
+<<<<<<< HEAD
 /* Video buffer addresses */
 #define VIDW_BUF_START(_buff)			(0xA0 + ((_buff) * 8))
+=======
+#define VIDW_ALPHA				0x021c
+#define VIDW_ALPHA_R(_x)			((_x) << 16)
+#define VIDW_ALPHA_G(_x)			((_x) << 8)
+#define VIDW_ALPHA_B(_x)			((_x) << 0)
+
+/* Video buffer addresses */
+#define VIDW_BUF_START(_buff)			(0xA0 + ((_buff) * 8))
+#define VIDW_BUF_START_S(_buff)			(0x40A0 + ((_buff) * 8))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define VIDW_BUF_START1(_buff)			(0xA4 + ((_buff) * 8))
 #define VIDW_BUF_END(_buff)			(0xD0 + ((_buff) * 8))
 #define VIDW_BUF_END1(_buff)			(0xD4 + ((_buff) * 8))
@@ -355,7 +374,11 @@
 #define VIDINTCON0_INT_ENABLE			(1 << 0)
 
 #define VIDINTCON1				0x134
+<<<<<<< HEAD
 #define VIDINTCON1_INT_I180			(1 << 2)
+=======
+#define VIDINTCON1_INT_I80			(1 << 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define VIDINTCON1_INT_FRAME			(1 << 1)
 #define VIDINTCON1_INT_FIFO			(1 << 0)
 
@@ -435,6 +458,15 @@
 #define BLENDCON_NEW_8BIT_ALPHA_VALUE		(1 << 0)
 #define BLENDCON_NEW_4BIT_ALPHA_VALUE		(0 << 0)
 
+<<<<<<< HEAD
+=======
+/* Display port clock control */
+#define DP_MIE_CLKCON				0x27c
+#define DP_MIE_CLK_DISABLE			0x0
+#define DP_MIE_CLK_DP_ENABLE			0x2
+#define DP_MIE_CLK_MIE_ENABLE			0x3
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Notes on per-window bpp settings
  *
  * Value	Win0	 Win1	  Win2	   Win3	    Win 4

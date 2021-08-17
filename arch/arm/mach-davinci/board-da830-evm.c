@@ -17,15 +17,28 @@
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
 #include <linux/i2c/pcf857x.h>
+<<<<<<< HEAD
 #include <linux/i2c/at24.h>
+=======
+#include <linux/platform_data/at24.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/gpio-davinci.h>
+#include <linux/platform_data/mtd-davinci.h>
+#include <linux/platform_data/mtd-davinci-aemif.h>
+#include <linux/platform_data/spi-davinci.h>
+#include <linux/platform_data/usb-davinci.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+<<<<<<< HEAD
 #include <mach/cp_intc.h>
 #include <mach/mux.h>
 #include <linux/platform_data/mtd-davinci.h>
@@ -33,6 +46,12 @@
 #include <linux/platform_data/usb-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
 #include <linux/platform_data/spi-davinci.h>
+=======
+#include <mach/common.h>
+#include "cp_intc.h"
+#include <mach/mux.h>
+#include <mach/da8xx.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DA830_EVM_PHY_ID		""
 /*
@@ -74,12 +93,21 @@ static int da830_evm_usb_ocic_notify(da8xx_ocic_handler_t handler)
 	if (handler != NULL) {
 		da830_evm_usb_ocic_handler = handler;
 
+<<<<<<< HEAD
 		error = request_irq(irq, da830_evm_usb_ocic_irq, IRQF_DISABLED |
 				    IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
 				    "OHCI over-current indicator", NULL);
 		if (error)
 			printk(KERN_ERR "%s: could not request IRQ to watch "
 			       "over-current indicator changes\n", __func__);
+=======
+		error = request_irq(irq, da830_evm_usb_ocic_irq,
+				    IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+				    "OHCI over-current indicator", NULL);
+		if (error)
+			pr_err("%s: could not request IRQ to watch over-current indicator changes\n",
+			       __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		free_irq(irq, NULL);
 
@@ -143,8 +171,12 @@ static __init void da830_evm_usb_init(void)
 	/* USB_REFCLKIN is not used. */
 	ret = davinci_cfg_reg(DA830_USB0_DRVVBUS);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("%s: USB 2.0 PinMux setup failed: %d\n",
 			   __func__, ret);
+=======
+		pr_warn("%s: USB 2.0 PinMux setup failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else {
 		/*
 		 * TPS2065 switch @ 5V supplies 1 A (sustains 1.5 A),
@@ -152,35 +184,55 @@ static __init void da830_evm_usb_init(void)
 		 */
 		ret = da8xx_register_usb20(1000, 3);
 		if (ret)
+<<<<<<< HEAD
 			pr_warning("%s: USB 2.0 registration failed: %d\n",
 				   __func__, ret);
+=======
+			pr_warn("%s: USB 2.0 registration failed: %d\n",
+				__func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = davinci_cfg_reg_list(da830_evm_usb11_pins);
 	if (ret) {
+<<<<<<< HEAD
 		pr_warning("%s: USB 1.1 PinMux setup failed: %d\n",
 			   __func__, ret);
+=======
+		pr_warn("%s: USB 1.1 PinMux setup failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	ret = gpio_request(ON_BD_USB_DRV, "ON_BD_USB_DRV");
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: failed to request GPIO for USB 1.1 port "
 		       "power control: %d\n", __func__, ret);
+=======
+		pr_err("%s: failed to request GPIO for USB 1.1 port power control: %d\n",
+		       __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	gpio_direction_output(ON_BD_USB_DRV, 0);
 
 	ret = gpio_request(ON_BD_USB_OVC, "ON_BD_USB_OVC");
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: failed to request GPIO for USB 1.1 port "
 		       "over-current indicator: %d\n", __func__, ret);
+=======
+		pr_err("%s: failed to request GPIO for USB 1.1 port over-current indicator: %d\n",
+		       __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	gpio_direction_input(ON_BD_USB_OVC);
 
 	ret = da8xx_register_usb11(&da830_evm_usb11_pdata);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("%s: USB 1.1 registration failed: %d\n",
 			   __func__, ret);
 }
@@ -189,6 +241,11 @@ static struct davinci_uart_config da830_evm_uart_config __initdata = {
 	.enabled_uarts = 0x7,
 };
 
+=======
+		pr_warn("%s: USB 1.1 registration failed: %d\n", __func__, ret);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const short da830_evm_mcasp1_pins[] = {
 	DA830_AHCLKX1, DA830_ACLKX1, DA830_AFSX1, DA830_AHCLKR1, DA830_AFSR1,
 	DA830_AMUTE1, DA830_AXR1_0, DA830_AXR1_1, DA830_AXR1_2, DA830_AXR1_5,
@@ -254,31 +311,49 @@ static inline void da830_evm_init_mmc(void)
 
 	ret = davinci_cfg_reg_list(da830_evm_mmc_sd_pins);
 	if (ret) {
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: mmc/sd mux setup failed: %d\n",
 				ret);
+=======
+		pr_warn("%s: mmc/sd mux setup failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	ret = gpio_request(DA830_MMCSD_WP_PIN, "MMC WP");
 	if (ret) {
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: can not open GPIO %d\n",
 			   DA830_MMCSD_WP_PIN);
+=======
+		pr_warn("%s: can not open GPIO %d\n",
+			__func__, DA830_MMCSD_WP_PIN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	gpio_direction_input(DA830_MMCSD_WP_PIN);
 
 	ret = gpio_request(DA830_MMCSD_CD_PIN, "MMC CD\n");
 	if (ret) {
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: can not open GPIO %d\n",
 			   DA830_MMCSD_CD_PIN);
+=======
+		pr_warn("%s: can not open GPIO %d\n",
+			__func__, DA830_MMCSD_CD_PIN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	gpio_direction_input(DA830_MMCSD_CD_PIN);
 
 	ret = da8xx_register_mmcsd0(&da830_evm_mmc_config);
 	if (ret) {
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: mmc/sd registration failed: %d\n",
 				ret);
+=======
+		pr_warn("%s: mmc/sd registration failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gpio_free(DA830_MMCSD_WP_PIN);
 	}
 }
@@ -406,20 +481,36 @@ static inline void da830_evm_init_nand(int mux_mode)
 	int ret;
 
 	if (HAS_MMC) {
+<<<<<<< HEAD
 		pr_warning("WARNING: both MMC/SD and NAND are "
 				"enabled, but they share AEMIF pins.\n"
 				"\tDisable MMC/SD for NAND support.\n");
+=======
+		pr_warn("WARNING: both MMC/SD and NAND are enabled, but they share AEMIF pins\n"
+			"\tDisable MMC/SD for NAND support\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	ret = davinci_cfg_reg_list(da830_evm_emif25_pins);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: emif25 mux setup failed: %d\n",
 				ret);
 
 	ret = platform_device_register(&da830_evm_nand_device);
 	if (ret)
 		pr_warning("da830_evm_init: NAND device not registered.\n");
+=======
+		pr_warn("%s: emif25 mux setup failed: %d\n", __func__, ret);
+
+	ret = platform_device_register(&da830_evm_nand_device);
+	if (ret)
+		pr_warn("%s: NAND device not registered\n", __func__);
+
+	if (davinci_aemif_setup(&da830_evm_nand_device))
+		pr_warn("%s: Cannot configure AEMIF\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	gpio_direction_output(mux_mode, 1);
 }
@@ -434,12 +525,20 @@ static inline void da830_evm_init_lcdc(int mux_mode)
 
 	ret = davinci_cfg_reg_list(da830_lcdcntl_pins);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: lcdcntl mux setup failed: %d\n",
 				ret);
 
 	ret = da8xx_register_lcdc(&sharp_lcd035q3dg01_pdata);
 	if (ret)
 		pr_warning("da830_evm_init: lcd setup failed: %d\n", ret);
+=======
+		pr_warn("%s: lcdcntl mux setup failed: %d\n", __func__, ret);
+
+	ret = da8xx_register_lcdc(&sharp_lcd035q3dg01_pdata);
+	if (ret)
+		pr_warn("%s: lcd setup failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	gpio_direction_output(mux_mode, 0);
 }
@@ -595,6 +694,7 @@ static __init void da830_evm_init(void)
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
 	int ret;
 
+<<<<<<< HEAD
 	ret = da830_register_edma(da830_edma_rsv);
 	if (ret)
 		pr_warning("da830_evm_init: edma registration failed: %d\n",
@@ -609,6 +709,23 @@ static __init void da830_evm_init(void)
 	if (ret)
 		pr_warning("da830_evm_init: i2c0 registration failed: %d\n",
 				ret);
+=======
+	ret = da830_register_gpio();
+	if (ret)
+		pr_warn("%s: GPIO init failed: %d\n", __func__, ret);
+
+	ret = da830_register_edma(da830_edma_rsv);
+	if (ret)
+		pr_warn("%s: edma registration failed: %d\n", __func__, ret);
+
+	ret = davinci_cfg_reg_list(da830_i2c0_pins);
+	if (ret)
+		pr_warn("%s: i2c0 mux setup failed: %d\n", __func__, ret);
+
+	ret = da8xx_register_i2c(0, &da830_evm_i2c_0_pdata);
+	if (ret)
+		pr_warn("%s: i2c0 registration failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	da830_evm_usb_init();
 
@@ -617,6 +734,7 @@ static __init void da830_evm_init(void)
 
 	ret = davinci_cfg_reg_list(da830_cpgmac_pins);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: cpgmac mux setup failed: %d\n",
 				ret);
 
@@ -631,13 +749,31 @@ static __init void da830_evm_init(void)
 				ret);
 
 	davinci_serial_init(&da830_evm_uart_config);
+=======
+		pr_warn("%s: cpgmac mux setup failed: %d\n", __func__, ret);
+
+	ret = da8xx_register_emac();
+	if (ret)
+		pr_warn("%s: emac registration failed: %d\n", __func__, ret);
+
+	ret = da8xx_register_watchdog();
+	if (ret)
+		pr_warn("%s: watchdog registration failed: %d\n",
+			__func__, ret);
+
+	davinci_serial_init(da8xx_serial_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i2c_register_board_info(1, da830_evm_i2c_devices,
 			ARRAY_SIZE(da830_evm_i2c_devices));
 
 	ret = davinci_cfg_reg_list(da830_evm_mcasp1_pins);
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: mcasp1 mux setup failed: %d\n",
 				ret);
+=======
+		pr_warn("%s: mcasp1 mux setup failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	da8xx_register_mcasp(1, &da830_evm_snd_data);
 
@@ -645,11 +781,16 @@ static __init void da830_evm_init(void)
 
 	ret = da8xx_register_rtc();
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("da830_evm_init: rtc setup failed: %d\n", ret);
+=======
+		pr_warn("%s: rtc setup failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = spi_register_board_info(da830evm_spi_info,
 				      ARRAY_SIZE(da830evm_spi_info));
 	if (ret)
+<<<<<<< HEAD
 		pr_warn("%s: spi info registration failed: %d\n", __func__,
 			ret);
 
@@ -657,6 +798,14 @@ static __init void da830_evm_init(void)
 	if (ret)
 		pr_warning("da830_evm_init: spi 0 registration failed: %d\n",
 			   ret);
+=======
+		pr_warn("%s: spi info registration failed: %d\n",
+			__func__, ret);
+
+	ret = da8xx_register_spi_bus(0, ARRAY_SIZE(da830evm_spi_info));
+	if (ret)
+		pr_warn("%s: spi 0 registration failed: %d\n", __func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_SERIAL_8250_CONSOLE

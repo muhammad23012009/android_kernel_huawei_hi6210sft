@@ -60,8 +60,12 @@
 #include <linux/types.h>		/* For standard types (like size_t) */
 #include <linux/errno.h>		/* For the -ENODEV/... values */
 #include <linux/kernel.h>		/* For printk/panic/... */
+<<<<<<< HEAD
 #include <linux/miscdevice.h>		/* For MODULE_ALIAS_MISCDEV
 							(WATCHDOG_MINOR) */
+=======
+#include <linux/miscdevice.h>		/* For struct miscdevice */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/watchdog.h>		/* For the watchdog specific items */
 #include <linux/fs.h>			/* For file operations */
 #include <linux/ioport.h>		/* For io-port access */
@@ -240,7 +244,11 @@ static struct miscdevice acq_miscdev = {
  *	Init & exit routines
  */
 
+<<<<<<< HEAD
 static int acq_probe(struct platform_device *dev)
+=======
+static int __init acq_probe(struct platform_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 
@@ -292,11 +300,17 @@ static void acq_shutdown(struct platform_device *dev)
 }
 
 static struct platform_driver acquirewdt_driver = {
+<<<<<<< HEAD
 	.probe		= acq_probe,
 	.remove		= acq_remove,
 	.shutdown	= acq_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.remove		= acq_remove,
+	.shutdown	= acq_shutdown,
+	.driver		= {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= DRV_NAME,
 	},
 };
@@ -307,6 +321,7 @@ static int __init acq_init(void)
 
 	pr_info("WDT driver for Acquire single board computer initialising\n");
 
+<<<<<<< HEAD
 	err = platform_driver_register(&acquirewdt_driver);
 	if (err)
 		return err;
@@ -321,6 +336,20 @@ static int __init acq_init(void)
 
 unreg_platform_driver:
 	platform_driver_unregister(&acquirewdt_driver);
+=======
+	acq_platform_device = platform_device_register_simple(DRV_NAME,
+								-1, NULL, 0);
+	if (IS_ERR(acq_platform_device))
+		return PTR_ERR(acq_platform_device);
+
+	err = platform_driver_probe(&acquirewdt_driver, acq_probe);
+	if (err)
+		goto unreg_platform_device;
+	return 0;
+
+unreg_platform_device:
+	platform_device_unregister(acq_platform_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -337,4 +366,7 @@ module_exit(acq_exit);
 MODULE_AUTHOR("David Woodhouse");
 MODULE_DESCRIPTION("Acquire Inc. Single Board Computer Watchdog Timer driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

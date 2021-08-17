@@ -1,7 +1,11 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <media/saa7146_vv.h>
 #include <media/v4l2-chip-ident.h>
+=======
+#include <media/drv-intf/saa7146_vv.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-event.h>
 #include <media/v4l2-ctrls.h>
 #include <linux/module.h>
@@ -503,7 +507,11 @@ static int vidioc_s_fbuf(struct file *file, void *fh, const struct v4l2_framebuf
 	/* check if overlay is running */
 	if (IS_OVERLAY_ACTIVE(fh) != 0) {
 		if (vv->video_fh != fh) {
+<<<<<<< HEAD
 			DEB_D("refusing to change framebuffer informations while overlay is active in another open\n");
+=======
+			DEB_D("refusing to change framebuffer information while overlay is active in another open\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EBUSY;
 		}
 	}
@@ -988,6 +996,7 @@ static int vidioc_streamoff(struct file *file, void *__fh, enum v4l2_buf_type ty
 	return err;
 }
 
+<<<<<<< HEAD
 static int vidioc_g_chip_ident(struct file *file, void *__fh,
 		struct v4l2_dbg_chip_ident *chip)
 {
@@ -1008,6 +1017,8 @@ static int vidioc_g_chip_ident(struct file *file, void *__fh,
 			core, g_chip_ident, chip);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const struct v4l2_ioctl_ops saa7146_video_ioctl_ops = {
 	.vidioc_querycap             = vidioc_querycap,
 	.vidioc_enum_fmt_vid_cap     = vidioc_enum_fmt_vid_cap,
@@ -1018,7 +1029,10 @@ const struct v4l2_ioctl_ops saa7146_video_ioctl_ops = {
 	.vidioc_g_fmt_vid_overlay    = vidioc_g_fmt_vid_overlay,
 	.vidioc_try_fmt_vid_overlay  = vidioc_try_fmt_vid_overlay,
 	.vidioc_s_fmt_vid_overlay    = vidioc_s_fmt_vid_overlay,
+<<<<<<< HEAD
 	.vidioc_g_chip_ident         = vidioc_g_chip_ident,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.vidioc_overlay 	     = vidioc_overlay,
 	.vidioc_g_fbuf  	     = vidioc_g_fbuf,
@@ -1039,7 +1053,10 @@ const struct v4l2_ioctl_ops saa7146_video_ioctl_ops = {
 const struct v4l2_ioctl_ops saa7146_vbi_ioctl_ops = {
 	.vidioc_querycap             = vidioc_querycap,
 	.vidioc_g_fmt_vbi_cap        = vidioc_g_fmt_vbi_cap,
+<<<<<<< HEAD
 	.vidioc_g_chip_ident         = vidioc_g_chip_ident,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.vidioc_reqbufs              = vidioc_reqbufs,
 	.vidioc_querybuf             = vidioc_querybuf,

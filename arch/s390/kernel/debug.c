@@ -699,8 +699,12 @@ debug_info_t *debug_register_mode(const char *name, int pages_per_area,
 	/* Since debugfs currently does not support uid/gid other than root, */
 	/* we do not allow gid/uid != 0 until we get support for that. */
 	if ((uid != 0) || (gid != 0))
+<<<<<<< HEAD
 		pr_warning("Root becomes the owner of all s390dbf files "
 			   "in sysfs\n");
+=======
+		pr_warn("Root becomes the owner of all s390dbf files in sysfs\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!initialized);
 	mutex_lock(&debug_mutex);
 
@@ -867,7 +871,11 @@ static inline void
 debug_finish_entry(debug_info_t * id, debug_entry_t* active, int level,
 			int exception)
 {
+<<<<<<< HEAD
 	active->id.stck = get_tod_clock();
+=======
+	active->id.stck = get_tod_clock_fast();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	active->id.fields.cpuid = smp_processor_id();
 	active->caller = __builtin_return_address(0);
 	active->id.fields.exception = exception;
@@ -889,7 +897,11 @@ static int debug_active=1;
  * if debug_active is already off
  */
 static int
+<<<<<<< HEAD
 s390dbf_procactive(ctl_table *table, int write,
+=======
+s390dbf_procactive(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                      void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	if (!write || debug_stoppable || !debug_active)
@@ -1019,7 +1031,11 @@ debug_count_numargs(char *string)
  */
 
 debug_entry_t*
+<<<<<<< HEAD
 debug_sprintf_event(debug_info_t* id, int level,char *string,...)
+=======
+__debug_sprintf_event(debug_info_t *id, int level, char *string, ...)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	va_list   ap;
 	int numargs,idx;
@@ -1027,8 +1043,11 @@ debug_sprintf_event(debug_info_t* id, int level,char *string,...)
 	debug_sprintf_entry_t *curr_event;
 	debug_entry_t *active;
 
+<<<<<<< HEAD
 	if((!id) || (level > id->level))
 		return NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!debug_active || !id->areas)
 		return NULL;
 	numargs=debug_count_numargs(string);
@@ -1050,14 +1069,22 @@ debug_sprintf_event(debug_info_t* id, int level,char *string,...)
 
 	return active;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(debug_sprintf_event);
+=======
+EXPORT_SYMBOL(__debug_sprintf_event);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * debug_sprintf_exception:
  */
 
 debug_entry_t*
+<<<<<<< HEAD
 debug_sprintf_exception(debug_info_t* id, int level,char *string,...)
+=======
+__debug_sprintf_exception(debug_info_t *id, int level, char *string, ...)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	va_list   ap;
 	int numargs,idx;
@@ -1065,8 +1092,11 @@ debug_sprintf_exception(debug_info_t* id, int level,char *string,...)
 	debug_sprintf_entry_t *curr_event;
 	debug_entry_t *active;
 
+<<<<<<< HEAD
 	if((!id) || (level > id->level))
 		return NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!debug_active || !id->areas)
 		return NULL;
 
@@ -1089,7 +1119,11 @@ debug_sprintf_exception(debug_info_t* id, int level,char *string,...)
 
 	return active;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(debug_sprintf_exception);
+=======
+EXPORT_SYMBOL(__debug_sprintf_exception);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * debug_register_view:
@@ -1311,8 +1345,12 @@ debug_input_level_fn(debug_info_t * id, struct debug_view *view,
 		new_level = debug_get_uint(str);
 	}
 	if(new_level < 0) {
+<<<<<<< HEAD
 		pr_warning("%s is not a valid level for a debug "
 			   "feature\n", str);
+=======
+		pr_warn("%s is not a valid level for a debug feature\n", str);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -EINVAL;
 	} else {
 		debug_set_level(id, new_level);
@@ -1461,23 +1499,39 @@ int
 debug_dflt_header_fn(debug_info_t * id, struct debug_view *view,
 			 int area, debug_entry_t * entry, char *out_buf)
 {
+<<<<<<< HEAD
 	struct timespec time_spec;
+=======
+	struct timespec64 time_spec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *except_str;
 	unsigned long caller;
 	int rc = 0;
 	unsigned int level;
 
 	level = entry->id.fields.level;
+<<<<<<< HEAD
 	stck_to_timespec(entry->id.stck, &time_spec);
+=======
+	stck_to_timespec64(entry->id.stck, &time_spec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (entry->id.fields.exception)
 		except_str = "*";
 	else
 		except_str = "-";
+<<<<<<< HEAD
 	caller = ((unsigned long) entry->caller) & PSW_ADDR_INSN;
 	rc += sprintf(out_buf, "%02i %011lu:%06lu %1u %1s %02i %p  ",
 		      area, time_spec.tv_sec, time_spec.tv_nsec / 1000, level,
 		      except_str, entry->id.fields.cpuid, (void *) caller);
+=======
+	caller = (unsigned long) entry->caller;
+	rc += sprintf(out_buf, "%02i %011lld:%06lu %1u %1s %02i %p  ",
+		      area, (long long)time_spec.tv_sec,
+		      time_spec.tv_nsec / 1000, level, except_str,
+		      entry->id.fields.cpuid, (void *)caller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 EXPORT_SYMBOL(debug_dflt_header_fn);

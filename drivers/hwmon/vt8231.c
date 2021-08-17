@@ -759,14 +759,21 @@ static const struct attribute_group vt8231_group = {
 
 static struct platform_driver vt8231_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "vt8231",
 	},
 	.probe	= vt8231_probe,
 	.remove	= vt8231_remove,
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(vt8231_pci_ids) = {
+=======
+static const struct pci_device_id vt8231_pci_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231_4) },
 	{ 0, }
 };

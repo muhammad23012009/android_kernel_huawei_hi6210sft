@@ -25,9 +25,13 @@
  *     GNU General Public License for more details.
  * 
  *     You should have received a copy of the GNU General Public License 
+<<<<<<< HEAD
  *     along with this program; if not, write to the Free Software 
  *     Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
  *     MA 02111-1307 USA
+=======
+ *     along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *     
  ********************************************************************/
 
@@ -67,13 +71,19 @@ static struct dongle_driver ma600 = {
 
 static int __init ma600_sir_init(void)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return irda_register_dongle(&ma600);
 }
 
 static void __exit ma600_sir_cleanup(void)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irda_unregister_dongle(&ma600);
 }
 
@@ -88,8 +98,11 @@ static int ma600_open(struct sir_dev *dev)
 {
 	struct qos_info *qos = &dev->qos;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sirdev_set_dtr_rts(dev, TRUE, TRUE);
 
 	/* Explicitly set the speeds we can accept */
@@ -106,8 +119,11 @@ static int ma600_open(struct sir_dev *dev)
 
 static int ma600_close(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Power off dongle */
 	sirdev_set_dtr_rts(dev, FALSE, FALSE);
 
@@ -176,8 +192,13 @@ static int ma600_change_speed(struct sir_dev *dev, unsigned speed)
 {
 	u8	byte;
 	
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s(), speed=%d (was %d)\n", __func__,
 		speed, dev->speed);
+=======
+	pr_debug("%s(), speed=%d (was %d)\n", __func__,
+		 speed, dev->speed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* dongle already reset, dongle and port at default speed (9600) */
 
@@ -200,6 +221,7 @@ static int ma600_change_speed(struct sir_dev *dev, unsigned speed)
 
 	sirdev_raw_read(dev, &byte, sizeof(byte));
 	if (byte != get_control_byte(speed))  {
+<<<<<<< HEAD
 		IRDA_WARNING("%s(): bad control byte read-back %02x != %02x\n",
 			     __func__, (unsigned) byte,
 			     (unsigned) get_control_byte(speed));
@@ -207,6 +229,15 @@ static int ma600_change_speed(struct sir_dev *dev, unsigned speed)
 	}
 	else
 		IRDA_DEBUG(2, "%s() control byte write read OK\n", __func__);
+=======
+		net_warn_ratelimited("%s(): bad control byte read-back %02x != %02x\n",
+				     __func__, (unsigned)byte,
+				     (unsigned)get_control_byte(speed));
+		return -1;
+	}
+	else
+		pr_debug("%s() control byte write read OK\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* Set DTR, Set RTS */
@@ -238,8 +269,11 @@ static int ma600_change_speed(struct sir_dev *dev, unsigned speed)
 
 static int ma600_reset(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Reset the dongle : set DTR low for 10 ms */
 	sirdev_set_dtr_rts(dev, FALSE, TRUE);
 	msleep(10);

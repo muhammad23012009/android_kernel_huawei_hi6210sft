@@ -21,10 +21,15 @@
  */
 const struct file_operations sysv_file_operations = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= do_sync_read,
 	.aio_read	= generic_file_aio_read,
 	.write		= do_sync_write,
 	.aio_write	= generic_file_aio_write,
+=======
+	.read_iter	= generic_file_read_iter,
+	.write_iter	= generic_file_write_iter,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mmap		= generic_file_mmap,
 	.fsync		= generic_file_fsync,
 	.splice_read	= generic_file_splice_read,
@@ -32,10 +37,17 @@ const struct file_operations sysv_file_operations = {
 
 static int sysv_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	int error;
 
 	error = inode_change_ok(inode, attr);
+=======
+	struct inode *inode = d_inode(dentry);
+	int error;
+
+	error = setattr_prepare(dentry, attr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error)
 		return error;
 

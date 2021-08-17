@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* linux/arch/arm/plat-s3c/include/plat/hwmon.h
  *
+=======
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright 2005 Simtec Electronics
  *	Ben Dooks <ben@simtec.co.uk>
  *	http://armlinux.simtec.co.uk/
@@ -11,8 +15,13 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
 #ifndef __ASM_ARCH_ADC_HWMON_H
 #define __ASM_ARCH_ADC_HWMON_H __FILE__
+=======
+#ifndef __HWMON_S3C_H__
+#define __HWMON_S3C_H__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * s3c_hwmon_chcfg - channel configuration
@@ -47,5 +56,9 @@ struct s3c_hwmon_pdata {
  */
 extern void __init s3c_hwmon_set_platdata(struct s3c_hwmon_pdata *pd);
 
+<<<<<<< HEAD
 #endif /* __ASM_ARCH_ADC_HWMON_H */
 
+=======
+#endif /* __HWMON_S3C_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

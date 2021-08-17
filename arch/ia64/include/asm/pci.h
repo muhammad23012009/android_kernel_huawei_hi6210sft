@@ -6,9 +6,15 @@
 #include <linux/spinlock.h>
 #include <linux/string.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/hw_irq.h>
 
 struct pci_vector_struct {
@@ -50,6 +56,7 @@ struct pci_dev;
 extern unsigned long ia64_max_iommu_merge_mask;
 #define PCI_DMA_BUS_IS_PHYS	(ia64_max_iommu_merge_mask == ~0UL)
 
+<<<<<<< HEAD
 static inline void
 pcibios_penalize_isa_irq (int irq, int active)
 {
@@ -77,6 +84,8 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HAVE_PCI_MMAP
 extern int pci_mmap_page_range (struct pci_dev *dev, struct vm_area_struct *vma,
 				enum pci_mmap_state mmap_state, int write_combine);
@@ -89,6 +98,7 @@ extern int pci_mmap_legacy_page_range(struct pci_bus *bus,
 #define pci_legacy_read platform_pci_legacy_read
 #define pci_legacy_write platform_pci_legacy_write
 
+<<<<<<< HEAD
 struct pci_window {
 	struct resource resource;
 	u64 offset;
@@ -102,10 +112,21 @@ struct pci_controller {
 
 	unsigned int windows;
 	struct pci_window *window;
+=======
+struct pci_controller {
+	struct acpi_device *companion;
+	void *iommu;
+	int segment;
+	int node;		/* nearest node with memory or NUMA_NO_NODE for global allocation */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	void *platform_data;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PCI_CONTROLLER(busdev) ((struct pci_controller *) busdev->sysdata)
 #define pci_domain_nr(busdev)    (PCI_CONTROLLER(busdev)->segment)
 
@@ -116,6 +137,7 @@ static inline int pci_proc_domain(struct pci_bus *bus)
 	return (pci_domain_nr(bus) != 0);
 }
 
+<<<<<<< HEAD
 static inline struct resource *
 pcibios_select_root(struct pci_dev *pdev, struct resource *res)
 {
@@ -129,6 +151,8 @@ pcibios_select_root(struct pci_dev *pdev, struct resource *res)
 	return root;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HAVE_ARCH_PCI_GET_LEGACY_IDE_IRQ
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {

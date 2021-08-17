@@ -16,7 +16,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input.h>
 #include <linux/input-polldev.h>
 #include <linux/interrupt.h>
@@ -186,6 +190,7 @@ static int jornada680kbd_probe(struct platform_device *pdev)
 	struct input_dev *input_dev;
 	int i, error;
 
+<<<<<<< HEAD
 	jornadakbd = kzalloc(sizeof(struct jornadakbd), GFP_KERNEL);
 	if (!jornadakbd)
 		return -ENOMEM;
@@ -194,6 +199,17 @@ static int jornada680kbd_probe(struct platform_device *pdev)
 	if (!poll_dev) {
 		error = -ENOMEM;
 		goto failed;
+=======
+	jornadakbd = devm_kzalloc(&pdev->dev, sizeof(struct jornadakbd),
+				  GFP_KERNEL);
+	if (!jornadakbd)
+		return -ENOMEM;
+
+	poll_dev = devm_input_allocate_polled_device(&pdev->dev);
+	if (!poll_dev) {
+		dev_err(&pdev->dev, "failed to allocate polled input device\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, jornadakbd);
@@ -225,6 +241,7 @@ static int jornada680kbd_probe(struct platform_device *pdev)
 	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
 
 	error = input_register_polled_device(jornadakbd->poll_dev);
+<<<<<<< HEAD
 	if (error)
 		goto failed;
 
@@ -248,6 +265,12 @@ static int jornada680kbd_remove(struct platform_device *pdev)
 	input_unregister_polled_device(jornadakbd->poll_dev);
 	input_free_polled_device(jornadakbd->poll_dev);
 	kfree(jornadakbd);
+=======
+	if (error) {
+		dev_err(&pdev->dev, "failed to register polled input device\n");
+		return error;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -255,10 +278,15 @@ static int jornada680kbd_remove(struct platform_device *pdev)
 static struct platform_driver jornada680kbd_driver = {
 	.driver	= {
 		.name	= "jornada680_kbd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe	= jornada680kbd_probe,
 	.remove	= jornada680kbd_remove,
+=======
+	},
+	.probe	= jornada680kbd_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 module_platform_driver(jornada680kbd_driver);
 

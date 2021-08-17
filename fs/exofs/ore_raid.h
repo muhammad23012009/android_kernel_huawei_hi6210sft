@@ -1,6 +1,10 @@
 /*
  * Copyright (C) from 2011
+<<<<<<< HEAD
  * Boaz Harrosh <bharrosh@panasas.com>
+=======
+ * Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is part of the objects raid engine (ore).
  *
@@ -31,6 +35,7 @@
 #define ORE_DBGMSG2(M...) do {} while (0)
 /* #define ORE_DBGMSG2 ORE_DBGMSG */
 
+<<<<<<< HEAD
 /* Calculate the component order in a stripe. eg the logical data unit
  * address within the stripe of @dev given the @par_dev of this stripe.
  */
@@ -49,6 +54,8 @@ static inline unsigned _dev_order(unsigned devs_in_group, unsigned mirrors_p1,
 	       mirrors_p1;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ios_raid.c stuff needed by ios.c */
 int _ore_post_alloc_raid_stuff(struct ore_io_state *ios);
 void _ore_free_raid_stuff(struct ore_io_state *ios);
@@ -56,7 +63,12 @@ void _ore_free_raid_stuff(struct ore_io_state *ios);
 void _ore_add_sg_seg(struct ore_per_dev_state *per_dev, unsigned cur_len,
 		 bool not_last);
 int _ore_add_parity_unit(struct ore_io_state *ios, struct ore_striping_info *si,
+<<<<<<< HEAD
 		     struct ore_per_dev_state *per_dev, unsigned cur_len);
+=======
+		     struct ore_per_dev_state *per_dev, unsigned cur_len,
+		     bool do_xor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void _ore_add_stripe_page(struct __stripe_pages_2d *sp2d,
 		       struct ore_striping_info *si, struct page *page);
 static inline void _add_stripe_page(struct __stripe_pages_2d *sp2d,

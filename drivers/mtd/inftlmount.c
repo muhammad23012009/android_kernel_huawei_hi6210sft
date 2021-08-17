@@ -30,7 +30,10 @@
 #include <asm/uaccess.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/nftl.h>
 #include <linux/mtd/inftl.h>
@@ -519,7 +522,11 @@ void INFTL_dumpVUchains(struct INFTLrecord *s)
 	pr_debug("INFTL Virtual Unit Chains:\n");
 	for (logical = 0; logical < s->nb_blocks; logical++) {
 		block = s->VUtable[logical];
+<<<<<<< HEAD
 		if (block > s->nb_blocks)
+=======
+		if (block >= s->nb_blocks)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		pr_debug("  LOGICAL %d --> %d ", logical, block);
 		for (i = 0; i < s->nb_blocks; i++) {

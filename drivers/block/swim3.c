@@ -30,6 +30,10 @@
 #include <linux/mutex.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/wait.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/dbdma.h>
 #include <asm/prom.h>
@@ -341,7 +345,11 @@ static void start_request(struct floppy_state *fs)
 		swim3_dbg("do_fd_req: dev=%s cmd=%d sec=%ld nr_sec=%u buf=%p\n",
 			  req->rq_disk->disk_name, req->cmd,
 			  (long)blk_rq_pos(req), blk_rq_sectors(req),
+<<<<<<< HEAD
 			  req->buffer);
+=======
+			  bio_data(req->bio));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		swim3_dbg("           errors=%d current_nr_sectors=%u\n",
 			  req->errors, blk_rq_cur_sectors(req));
 #endif
@@ -439,9 +447,15 @@ static inline void seek_track(struct floppy_state *fs, int n)
 static inline void init_dma(struct dbdma_cmd *cp, int cmd,
 			    void *buf, int count)
 {
+<<<<<<< HEAD
 	st_le16(&cp->req_count, count);
 	st_le16(&cp->command, cmd);
 	st_le32(&cp->phy_addr, virt_to_bus(buf));
+=======
+	cp->req_count = cpu_to_le16(count);
+	cp->command = cpu_to_le16(cmd);
+	cp->phy_addr = cpu_to_le32(virt_to_bus(buf));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cp->xfer_status = 0;
 }
 
@@ -478,11 +492,19 @@ static inline void setup_transfer(struct floppy_state *fs)
 		/* Set up 3 dma commands: write preamble, data, postamble */
 		init_dma(cp, OUTPUT_MORE, write_preamble, sizeof(write_preamble));
 		++cp;
+<<<<<<< HEAD
 		init_dma(cp, OUTPUT_MORE, req->buffer, 512);
 		++cp;
 		init_dma(cp, OUTPUT_LAST, write_postamble, sizeof(write_postamble));
 	} else {
 		init_dma(cp, INPUT_LAST, req->buffer, n * 512);
+=======
+		init_dma(cp, OUTPUT_MORE, bio_data(req->bio), 512);
+		++cp;
+		init_dma(cp, OUTPUT_LAST, write_postamble, sizeof(write_postamble));
+	} else {
+		init_dma(cp, INPUT_LAST, bio_data(req->bio), n * 512);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	++cp;
 	out_le16(&cp->command, DBDMA_STOP);
@@ -770,8 +792,13 @@ static irqreturn_t swim3_interrupt(int irq, void *dev_id)
 		}
 		/* turn off DMA */
 		out_le32(&dr->control, (RUN | PAUSE) << 16);
+<<<<<<< HEAD
 		stat = ld_le16(&cp->xfer_status);
 		resid = ld_le16(&cp->res_count);
+=======
+		stat = le16_to_cpu(cp->xfer_status);
+		resid = le16_to_cpu(cp->res_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (intr & ERROR_INTR) {
 			n = fs->scount - 1 - resid / 512;
 			if (n > 0) {
@@ -840,6 +867,7 @@ static int grab_drive(struct floppy_state *fs, enum swim_state state,
 	spin_lock_irqsave(&swim3_lock, flags);
 	if (fs->state != idle && fs->state != available) {
 		++fs->wanted;
+<<<<<<< HEAD
 		while (fs->state != available) {
 			spin_unlock_irqrestore(&swim3_lock, flags);
 			if (interruptible && signal_pending(current)) {
@@ -848,6 +876,19 @@ static int grab_drive(struct floppy_state *fs, enum swim_state state,
 			}
 			interruptible_sleep_on(&fs->wait);
 			spin_lock_irqsave(&swim3_lock, flags);
+=======
+		/* this will enable irqs in order to sleep */
+		if (!interruptible)
+			wait_event_lock_irq(fs->wait,
+                                        fs->state == available,
+                                        swim3_lock);
+		else if (wait_event_interruptible_lock_irq(fs->wait,
+					fs->state == available,
+					swim3_lock)) {
+			--fs->wanted;
+			spin_unlock_irqrestore(&swim3_lock, flags);
+			return -EINTR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		--fs->wanted;
 	}
@@ -1023,7 +1064,15 @@ static void floppy_release(struct gendisk *disk, fmode_t mode)
 	struct swim3 __iomem *sw = fs->swim3;
 
 	mutex_lock(&swim3_mutex);
+<<<<<<< HEAD
 	if (fs->ref_count > 0 && --fs->ref_count == 0) {
+=======
+	if (fs->ref_count > 0)
+		--fs->ref_count;
+	else if (fs->ref_count == -1)
+		fs->ref_count = 0;
+	if (fs->ref_count == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		swim3_action(fs, MOTOR_OFF);
 		out_8(&sw->control_bic, 0xff);
 		swim3_select(fs, RELAX);
@@ -1166,7 +1215,11 @@ static int swim3_add_device(struct macio_dev *mdev, int index)
 
 	fs->dma_cmd = (struct dbdma_cmd *) DBDMA_ALIGN(fs->dbdma_cmd_space);
 	memset(fs->dma_cmd, 0, 2 * sizeof(struct dbdma_cmd));
+<<<<<<< HEAD
 	st_le16(&fs->dma_cmd[1].command, DBDMA_STOP);
+=======
+	fs->dma_cmd[1].command = cpu_to_le16(DBDMA_STOP);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mdev->media_bay == NULL || check_media_bay(mdev->media_bay) == MB_FD)
 		swim3_mb_event(mdev, MB_FD);

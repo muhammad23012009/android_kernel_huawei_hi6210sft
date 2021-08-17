@@ -50,7 +50,11 @@ static struct platform_device swarm_pata_device = {
 static int __init swarm_pata_init(void)
 {
 	u8 __iomem *base;
+<<<<<<< HEAD
 	phys_t offset, size;
+=======
+	phys_addr_t offset, size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *r;
 
 	if (!SIBYTE_HAVE_IDE)

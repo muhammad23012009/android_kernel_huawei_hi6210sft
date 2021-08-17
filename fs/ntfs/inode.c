@@ -1,7 +1,13 @@
 /**
+<<<<<<< HEAD
  * inode.c - NTFS kernel inode handling. Part of the Linux-NTFS project.
  *
  * Copyright (c) 2001-2007 Anton Altaparmakov
+=======
+ * inode.c - NTFS kernel inode handling.
+ *
+ * Copyright (c) 2001-2014 Anton Altaparmakov and Tuxera Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program/include file is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as published
@@ -28,7 +34,10 @@
 #include <linux/quotaops.h>
 #include <linux/slab.h>
 #include <linux/log2.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "aops.h"
 #include "attrib.h"
@@ -55,7 +64,11 @@
  *
  * Return 1 if the attributes match and 0 if not.
  *
+<<<<<<< HEAD
  * NOTE: This function runs with the inode->i_lock spin lock held so it is not
+=======
+ * NOTE: This function runs with the inode_hash_lock spin lock held so it is not
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * allowed to sleep.
  */
 int ntfs_test_inode(struct inode *vi, ntfs_attr *na)
@@ -503,7 +516,11 @@ err_corrupt_attr:
 		}
 		file_name_attr = (FILE_NAME_ATTR*)((u8*)attr +
 				le16_to_cpu(attr->data.resident.value_offset));
+<<<<<<< HEAD
 		p2 = (u8*)attr + le32_to_cpu(attr->data.resident.value_length);
+=======
+		p2 = (u8 *)file_name_attr + le32_to_cpu(attr->data.resident.value_length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (p2 < (u8*)attr || p2 > p)
 			goto err_corrupt_attr;
 		/* This attribute is ok, but is it in the $Extend directory? */
@@ -662,6 +679,15 @@ static int ntfs_read_locked_inode(struct inode *vi)
 	}
 	a = ctx->attr;
 	/* Get the standard information attribute value. */
+<<<<<<< HEAD
+=======
+	if ((u8 *)a + le16_to_cpu(a->data.resident.value_offset)
+			+ le32_to_cpu(a->data.resident.value_length) >
+			(u8 *)ctx->mrec + vol->mft_record_size) {
+		ntfs_error(vi->i_sb, "Corrupt standard information attribute in inode.");
+		goto unm_err_out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	si = (STANDARD_INFORMATION*)((u8*)a +
 			le16_to_cpu(a->data.resident.value_offset));
 
@@ -869,12 +895,21 @@ skip_attr_list_load:
 					ni->itype.index.block_size);
 			goto unm_err_out;
 		}
+<<<<<<< HEAD
 		if (ni->itype.index.block_size > PAGE_CACHE_SIZE) {
 			ntfs_error(vi->i_sb, "Index block size (%u) > "
 					"PAGE_CACHE_SIZE (%ld) is not "
 					"supported.  Sorry.",
 					ni->itype.index.block_size,
 					PAGE_CACHE_SIZE);
+=======
+		if (ni->itype.index.block_size > PAGE_SIZE) {
+			ntfs_error(vi->i_sb, "Index block size (%u) > "
+					"PAGE_SIZE (%ld) is not "
+					"supported.  Sorry.",
+					ni->itype.index.block_size,
+					PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EOPNOTSUPP;
 			goto unm_err_out;
 		}
@@ -1012,6 +1047,10 @@ skip_large_dir_stuff:
 		/* Setup the operations for this inode. */
 		vi->i_op = &ntfs_dir_inode_ops;
 		vi->i_fop = &ntfs_dir_ops;
+<<<<<<< HEAD
+=======
+		vi->i_mapping->a_ops = &ntfs_mst_aops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* It is a file. */
 		ntfs_attr_reinit_search_ctx(ctx);
@@ -1160,11 +1199,20 @@ no_data_attr_special_case:
 		/* Setup the operations for this inode. */
 		vi->i_op = &ntfs_file_inode_ops;
 		vi->i_fop = &ntfs_file_ops;
+<<<<<<< HEAD
 	}
 	if (NInoMstProtected(ni))
 		vi->i_mapping->a_ops = &ntfs_mst_aops;
 	else
 		vi->i_mapping->a_ops = &ntfs_aops;
+=======
+		vi->i_mapping->a_ops = &ntfs_normal_aops;
+		if (NInoMstProtected(ni))
+			vi->i_mapping->a_ops = &ntfs_mst_aops;
+		else if (NInoCompressed(ni))
+			vi->i_mapping->a_ops = &ntfs_compressed_aops;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * The number of 512-byte blocks used on disk (for stat). This is in so
 	 * far inaccurate as it doesn't account for any named streams or other
@@ -1414,10 +1462,18 @@ static int ntfs_read_locked_attr_inode(struct inode *base_vi, struct inode *vi)
 		ni->allocated_size = sle64_to_cpu(
 				a->data.non_resident.allocated_size);
 	}
+<<<<<<< HEAD
 	if (NInoMstProtected(ni))
 		vi->i_mapping->a_ops = &ntfs_mst_aops;
 	else
 		vi->i_mapping->a_ops = &ntfs_aops;
+=======
+	vi->i_mapping->a_ops = &ntfs_normal_aops;
+	if (NInoMstProtected(ni))
+		vi->i_mapping->a_ops = &ntfs_mst_aops;
+	else if (NInoCompressed(ni))
+		vi->i_mapping->a_ops = &ntfs_compressed_aops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((NInoCompressed(ni) || NInoSparse(ni)) && ni->type != AT_INDEX_ROOT)
 		vi->i_blocks = ni->itype.compressed.size >> 9;
 	else
@@ -1583,10 +1639,17 @@ static int ntfs_read_locked_index_inode(struct inode *base_vi, struct inode *vi)
 				"two.", ni->itype.index.block_size);
 		goto unm_err_out;
 	}
+<<<<<<< HEAD
 	if (ni->itype.index.block_size > PAGE_CACHE_SIZE) {
 		ntfs_error(vi->i_sb, "Index block size (%u) > PAGE_CACHE_SIZE "
 				"(%ld) is not supported.  Sorry.",
 				ni->itype.index.block_size, PAGE_CACHE_SIZE);
+=======
+	if (ni->itype.index.block_size > PAGE_SIZE) {
+		ntfs_error(vi->i_sb, "Index block size (%u) > PAGE_SIZE "
+				"(%ld) is not supported.  Sorry.",
+				ni->itype.index.block_size, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EOPNOTSUPP;
 		goto unm_err_out;
 	}
@@ -1704,8 +1767,11 @@ static int ntfs_read_locked_index_inode(struct inode *base_vi, struct inode *vi)
 	iput(bvi);
 skip_large_index_stuff:
 	/* Setup the operations for this index inode. */
+<<<<<<< HEAD
 	vi->i_op = NULL;
 	vi->i_fop = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vi->i_mapping->a_ops = &ntfs_mst_aops;
 	vi->i_blocks = ni->allocated_size >> 9;
 	/*
@@ -1844,6 +1910,15 @@ int ntfs_read_inode_mount(struct inode *vi)
 		brelse(bh);
 	}
 
+<<<<<<< HEAD
+=======
+	if (le32_to_cpu(m->bytes_allocated) != vol->mft_record_size) {
+		ntfs_error(sb, "Incorrect mft record size %u in superblock, should be %u.",
+				le32_to_cpu(m->bytes_allocated), vol->mft_record_size);
+		goto err_out;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Apply the mst fixups. */
 	if (post_read_mst_fixup((NTFS_RECORD*)m, vol->mft_record_size)) {
 		/* FIXME: Try to use the $MFTMirr now. */
@@ -1854,7 +1929,11 @@ int ntfs_read_inode_mount(struct inode *vi)
 	/* Need this to sanity check attribute list references to $MFT. */
 	vi->i_generation = ni->seq_no = le16_to_cpu(m->sequence_number);
 
+<<<<<<< HEAD
 	/* Provides readpage() and sync_page() for map_mft_record(). */
+=======
+	/* Provides readpage() for map_mft_record(). */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vi->i_mapping->a_ops = &ntfs_mst_aops;
 
 	ctx = ntfs_attr_get_search_ctx(ni, m);
@@ -2259,7 +2338,11 @@ void ntfs_evict_big_inode(struct inode *vi)
 {
 	ntfs_inode *ni = NTFS_I(vi);
 
+<<<<<<< HEAD
 	truncate_inode_pages(&vi->i_data, 0);
+=======
+	truncate_inode_pages_final(&vi->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_inode(vi);
 
 #ifdef NTFS_RW
@@ -2813,7 +2896,11 @@ done:
 	 * for real.
 	 */
 	if (!IS_NOCMTIME(VFS_I(base_ni)) && !IS_RDONLY(VFS_I(base_ni))) {
+<<<<<<< HEAD
 		struct timespec now = current_fs_time(VFS_I(base_ni)->i_sb);
+=======
+		struct timespec now = current_time(VFS_I(base_ni));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int sync_it = 0;
 
 		if (!timespec_equal(&VFS_I(base_ni)->i_mtime, &now) ||
@@ -2889,11 +2976,19 @@ void ntfs_truncate_vfs(struct inode *vi) {
  */
 int ntfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *vi = dentry->d_inode;
 	int err;
 	unsigned int ia_valid = attr->ia_valid;
 
 	err = inode_change_ok(vi, attr);
+=======
+	struct inode *vi = d_inode(dentry);
+	int err;
+	unsigned int ia_valid = attr->ia_valid;
+
+	err = setattr_prepare(dentry, attr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		goto out;
 	/* We do not support NTFS ACLs yet. */

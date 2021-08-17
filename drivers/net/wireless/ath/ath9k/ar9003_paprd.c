@@ -454,6 +454,11 @@ static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
 		if (accum_cnt <= thresh_accum_cnt)
 			continue;
 
+<<<<<<< HEAD
+=======
+		max_index++;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* sum(tx amplitude) */
 		accum_tx = ((data_L[i] >> 16) & 0xffff) |
 		    ((data_U[i] & 0x7ff) << 16);
@@ -468,20 +473,37 @@ static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
 
 		accum_tx <<= scale_factor;
 		accum_rx <<= scale_factor;
+<<<<<<< HEAD
 		x_est[i + 1] = (((accum_tx + accum_cnt) / accum_cnt) + 32) >>
 		    scale_factor;
 
 		Y[i + 1] = ((((accum_rx + accum_cnt) / accum_cnt) + 32) >>
 			    scale_factor) +
 			    (1 << scale_factor) * max_index + 16;
+=======
+		x_est[max_index] =
+			(((accum_tx + accum_cnt) / accum_cnt) + 32) >>
+			scale_factor;
+
+		Y[max_index] =
+			((((accum_rx + accum_cnt) / accum_cnt) + 32) >>
+			    scale_factor) +
+			(1 << scale_factor) * i + 16;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (accum_ang >= (1 << 26))
 			accum_ang -= 1 << 27;
 
+<<<<<<< HEAD
 		theta[i + 1] = ((accum_ang * (1 << scale_factor)) + accum_cnt) /
 		    accum_cnt;
 
 		max_index++;
+=======
+		theta[max_index] =
+			((accum_ang * (1 << scale_factor)) + accum_cnt) /
+			accum_cnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*

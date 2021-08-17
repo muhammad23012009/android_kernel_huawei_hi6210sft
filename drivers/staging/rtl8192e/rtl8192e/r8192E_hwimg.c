@@ -6,20 +6,28 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
  * Contact Information:
  * wlanfae <wlanfae@realtek.com>
+<<<<<<< HEAD
 ******************************************************************************/
+=======
+ *****************************************************************************/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*Created on  2008/11/18,  3: 7*/
 
 #include "r8192E_hwimg.h"
 
+<<<<<<< HEAD
 u8 Rtl8192PciEFwBootArray[BootArrayLengthPciE] = {
 0x10,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x3c,0x08,0xbf,0xc0,0x25,0x08,0x00,0x08,
 0x3c,0x09,0xb0,0x03,0xad,0x28,0x00,0x20,0x40,0x80,0x68,0x00,0x00,0x00,0x00,0x00,
@@ -2791,6 +2799,8 @@ u8 Rtl8192PciEFwDataArray[DataArrayLengthPciE] = {
 0x80,0x00,0x8f,0xd8,0x80,0x00,0x8f,0xec,0x80,0x00,0x90,0x00,0x80,0x00,0x8b,0x88,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u32 Rtl8192PciEPHY_REGArray[PHY_REGArrayLengthPciE] = {0x0,};
 
 u32 Rtl8192PciEPHY_REG_1T2RArray[PHY_REG_1T2RArrayLengthPciE] = {

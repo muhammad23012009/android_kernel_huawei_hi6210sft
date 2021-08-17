@@ -15,6 +15,11 @@
 #include <asm/smp_plat.h>
 #include <asm/cp15.h>
 
+<<<<<<< HEAD
+=======
+#include "core.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void cpu_enter_lowpower(void)
 {
 	unsigned int v;
@@ -85,7 +90,11 @@ static inline void platform_do_lowpower(unsigned int cpu, int *spurious)
  *
  * Called with IRQs disabled
  */
+<<<<<<< HEAD
 void __ref vexpress_cpu_die(unsigned int cpu)
+=======
+void vexpress_cpu_die(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int spurious = 0;
 

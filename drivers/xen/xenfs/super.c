@@ -7,6 +7,11 @@
  *                              Turned xenfs into a loadable module.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -55,6 +60,12 @@ static int xenfs_fill_super(struct super_block *sb, void *data, int silent)
 		{ "privcmd", &xen_privcmd_fops, S_IRUSR|S_IWUSR },
 		{ "xsd_kva", &xsd_kva_file_ops, S_IRUSR|S_IWUSR},
 		{ "xsd_port", &xsd_port_file_ops, S_IRUSR|S_IWUSR},
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_XEN_SYMS
+		{ "xensyms", &xensyms_ops, S_IRUSR},
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{""},
 	};
 
@@ -82,7 +93,11 @@ static int __init xenfs_init(void)
 	if (xen_domain())
 		return register_filesystem(&xenfs_type);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "XENFS: not registering filesystem on non-xen platform\n");
+=======
+	pr_info("not registering filesystem on non-xen platform\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -19,7 +19,10 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "clk.h"
 
@@ -33,7 +36,11 @@
 static int get_div(struct tegra_clk_frac_div *divider, unsigned long rate,
 		   unsigned long parent_rate)
 {
+<<<<<<< HEAD
 	s64 divider_ux1 = parent_rate;
+=======
+	u64 divider_ux1 = parent_rate;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 flags = divider->flags;
 	int mul;
 
@@ -55,11 +62,19 @@ static int get_div(struct tegra_clk_frac_div *divider, unsigned long rate,
 
 	divider_ux1 -= mul;
 
+<<<<<<< HEAD
 	if (divider_ux1 < 0)
 		return 0;
 
 	if (divider_ux1 > get_max_div(divider))
 		return -EINVAL;
+=======
+	if ((s64)divider_ux1 < 0)
+		return 0;
+
+	if (divider_ux1 > get_max_div(divider))
+		return get_max_div(divider);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return divider_ux1;
 }
@@ -185,3 +200,19 @@ struct clk *tegra_clk_register_divider(const char *name,
 
 	return clk;
 }
+<<<<<<< HEAD
+=======
+
+static const struct clk_div_table mc_div_table[] = {
+	{ .val = 0, .div = 2 },
+	{ .val = 1, .div = 1 },
+	{ .val = 0, .div = 0 },
+};
+
+struct clk *tegra_clk_register_mc(const char *name, const char *parent_name,
+				  void __iomem *reg, spinlock_t *lock)
+{
+	return clk_register_divider_table(NULL, name, parent_name, 0, reg,
+					  16, 1, 0, mc_div_table, lock);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

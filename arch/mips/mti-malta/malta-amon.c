@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2007  MIPS Technologies, Inc.
  *	All rights reserved.
 
@@ -25,6 +26,24 @@
 #include <asm/addrspace.h>
 #include <asm/mips-boards/launch.h>
 #include <asm/mipsmtregs.h>
+=======
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License.  See the file "COPYING" in the main directory of this archive
+ * for more details.
+ *
+ * Copyright (C) 2007 MIPS Technologies, Inc.  All rights reserved.
+ * Copyright (C) 2013 Imagination Technologies Ltd.
+ *
+ * Arbitrary Monitor Interface
+ */
+#include <linux/kernel.h>
+#include <linux/smp.h>
+
+#include <asm/addrspace.h>
+#include <asm/mipsmtregs.h>
+#include <asm/mips-boards/launch.h>
+#include <asm/vpe.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int amon_cpu_avail(int cpu)
 {
@@ -48,7 +67,11 @@ int amon_cpu_avail(int cpu)
 	return 1;
 }
 
+<<<<<<< HEAD
 void amon_cpu_start(int cpu,
+=======
+int amon_cpu_start(int cpu,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    unsigned long pc, unsigned long sp,
 		    unsigned long gp, unsigned long a0)
 {
@@ -56,10 +79,17 @@ void amon_cpu_start(int cpu,
 		(struct cpulaunch  *)CKSEG0ADDR(CPULAUNCH);
 
 	if (!amon_cpu_avail(cpu))
+<<<<<<< HEAD
 		return;
 	if (cpu == smp_processor_id()) {
 		pr_debug("launch: I am cpu%d!\n", cpu);
 		return;
+=======
+		return -1;
+	if (cpu == smp_processor_id()) {
+		pr_debug("launch: I am cpu%d!\n", cpu);
+		return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	launch += cpu;
 
@@ -78,4 +108,25 @@ void amon_cpu_start(int cpu,
 		;
 	smp_rmb();	/* Target will be updating flags soon */
 	pr_debug("launch: cpu%d gone!\n", cpu);
+<<<<<<< HEAD
 }
+=======
+
+	return 0;
+}
+
+#ifdef CONFIG_MIPS_VPE_LOADER_CMP
+int vpe_run(struct vpe *v)
+{
+	struct vpe_notifications *n;
+
+	if (amon_cpu_start(aprp_cpu_index(), v->__start, 0, 0, 0) < 0)
+		return -1;
+
+	list_for_each_entry(n, &v->notify, list)
+		n->start(VPE_MODULE_MINOR);
+
+	return 0;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

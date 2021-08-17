@@ -19,11 +19,14 @@
 		.irq = soc ## _INT_FEC,					\
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX25
 const struct imx_fec_data imx25_fec_data __initconst =
 	imx_fec_data_entry_single(MX25, "imx25-fec");
 #endif /* ifdef CONFIG_SOC_IMX25 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SOC_IMX27
 const struct imx_fec_data imx27_fec_data __initconst =
 	imx_fec_data_entry_single(MX27, "imx27-fec");
@@ -35,6 +38,7 @@ const struct imx_fec_data imx35_fec_data __initconst =
 	imx_fec_data_entry_single(MX35, "imx27-fec");
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX51
 /* i.mx51 has the i.mx27 type fec */
 const struct imx_fec_data imx51_fec_data __initconst =
@@ -47,6 +51,8 @@ const struct imx_fec_data imx53_fec_data __initconst =
 	imx_fec_data_entry_single(MX53, "imx25-fec");
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct platform_device *__init imx_add_fec(
 		const struct imx_fec_data *data,
 		const struct fec_platform_data *pdata)

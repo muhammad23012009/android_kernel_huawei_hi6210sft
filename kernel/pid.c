@@ -68,17 +68,32 @@ static inline int mk_pid(struct pid_namespace *pid_ns,
  * the scheme scales to up to 4 million PIDs, runtime.
  */
 struct pid_namespace init_pid_ns = {
+<<<<<<< HEAD
 	.kref = {
 		.refcount       = ATOMIC_INIT(2),
 	},
+=======
+	.kref = KREF_INIT(2),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.pidmap = {
 		[ 0 ... PIDMAP_ENTRIES-1] = { ATOMIC_INIT(BITS_PER_PAGE), NULL }
 	},
 	.last_pid = 0,
+<<<<<<< HEAD
 	.level = 0,
 	.child_reaper = &init_task,
 	.user_ns = &init_user_ns,
 	.proc_inum = PROC_PID_INIT_INO,
+=======
+	.nr_hashed = PIDNS_HASH_ADDING,
+	.level = 0,
+	.child_reaper = &init_task,
+	.user_ns = &init_user_ns,
+	.ns.inum = PROC_PID_INIT_INO,
+#ifdef CONFIG_PID_NS
+	.ns.ops = &pidns_operations,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 EXPORT_SYMBOL_GPL(init_pid_ns);
 
@@ -178,7 +193,11 @@ static int alloc_pidmap(struct pid_namespace *pid_ns)
 			spin_unlock_irq(&pidmap_lock);
 			kfree(page);
 			if (unlikely(!map->page))
+<<<<<<< HEAD
 				break;
+=======
+				return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		if (likely(atomic_read(&map->nr_free))) {
 			for ( ; ; ) {
@@ -206,7 +225,11 @@ static int alloc_pidmap(struct pid_namespace *pid_ns)
 		}
 		pid = mk_pid(pid_ns, map, offset);
 	}
+<<<<<<< HEAD
 	return -1;
+=======
+	return -EAGAIN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int next_pidmap(struct pid_namespace *pid_ns, unsigned int last)
@@ -272,6 +295,14 @@ void free_pid(struct pid *pid)
 			 */
 			wake_up_process(ns->child_reaper);
 			break;
+<<<<<<< HEAD
+=======
+		case PIDNS_HASH_ADDING:
+			/* Handle a fork failure of the first process */
+			WARN_ON(ns->child_reaper);
+			ns->nr_hashed = 0;
+			/* fall through */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case 0:
 			schedule_work(&ns->proc_work);
 			break;
@@ -292,17 +323,32 @@ struct pid *alloc_pid(struct pid_namespace *ns)
 	int i, nr;
 	struct pid_namespace *tmp;
 	struct upid *upid;
+<<<<<<< HEAD
 
 	pid = kmem_cache_alloc(ns->pid_cachep, GFP_KERNEL);
 	if (!pid)
 		goto out;
+=======
+	int retval = -ENOMEM;
+
+	pid = kmem_cache_alloc(ns->pid_cachep, GFP_KERNEL);
+	if (!pid)
+		return ERR_PTR(retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tmp = ns;
 	pid->level = ns->level;
 	for (i = ns->level; i >= 0; i--) {
 		nr = alloc_pidmap(tmp);
+<<<<<<< HEAD
 		if (nr < 0)
 			goto out_free;
+=======
+		if (nr < 0) {
+			retval = nr;
+			goto out_free;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		pid->numbers[i].nr = nr;
 		pid->numbers[i].ns = tmp;
@@ -310,8 +356,15 @@ struct pid *alloc_pid(struct pid_namespace *ns)
 	}
 
 	if (unlikely(is_child_reaper(pid))) {
+<<<<<<< HEAD
 		if (pid_ns_prepare_proc(ns))
 			goto out_free;
+=======
+		if (pid_ns_prepare_proc(ns)) {
+			disable_pid_allocation(ns);
+			goto out_free;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	get_pid_ns(ns);
@@ -330,7 +383,10 @@ struct pid *alloc_pid(struct pid_namespace *ns)
 	}
 	spin_unlock_irq(&pidmap_lock);
 
+<<<<<<< HEAD
 out:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pid;
 
 out_unlock:
@@ -342,8 +398,12 @@ out_free:
 		free_pidmap(pid->numbers + i);
 
 	kmem_cache_free(ns->pid_cachep, pid);
+<<<<<<< HEAD
 	pid = NULL;
 	goto out;
+=======
+	return ERR_PTR(retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void disable_pid_allocation(struct pid_namespace *ns)
@@ -376,6 +436,7 @@ EXPORT_SYMBOL_GPL(find_vpid);
 /*
  * attach_pid() must be called with the tasklist_lock write-held.
  */
+<<<<<<< HEAD
 void attach_pid(struct task_struct *task, enum pid_type type,
 		struct pid *pid)
 {
@@ -384,6 +445,12 @@ void attach_pid(struct task_struct *task, enum pid_type type,
 	link = &task->pids[type];
 	link->pid = pid;
 	hlist_add_head_rcu(&link->node, &pid->tasks[type]);
+=======
+void attach_pid(struct task_struct *task, enum pid_type type)
+{
+	struct pid_link *link = &task->pids[type];
+	hlist_add_head_rcu(&link->node, &link->pid->tasks[type]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __change_pid(struct task_struct *task, enum pid_type type,
@@ -415,7 +482,11 @@ void change_pid(struct task_struct *task, enum pid_type type,
 		struct pid *pid)
 {
 	__change_pid(task, type, pid);
+<<<<<<< HEAD
 	attach_pid(task, type, pid);
+=======
+	attach_pid(task, type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* transfer_pid is an optimization of attach_pid(new), detach_pid(old) */
@@ -445,9 +516,14 @@ EXPORT_SYMBOL(pid_task);
  */
 struct task_struct *find_task_by_pid_ns(pid_t nr, struct pid_namespace *ns)
 {
+<<<<<<< HEAD
 	rcu_lockdep_assert(rcu_read_lock_held(),
 			   "find_task_by_pid_ns() needs rcu_read_lock()"
 			   " protection");
+=======
+	RCU_LOCKDEP_WARN(!rcu_read_lock_held(),
+			 "find_task_by_pid_ns() needs rcu_read_lock() protection");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pid_task(find_pid_ns(nr, ns), PIDTYPE_PID);
 }
 
@@ -462,7 +538,11 @@ struct pid *get_task_pid(struct task_struct *task, enum pid_type type)
 	rcu_read_lock();
 	if (type != PIDTYPE_PID)
 		task = task->group_leader;
+<<<<<<< HEAD
 	pid = get_pid(task->pids[type].pid);
+=======
+	pid = get_pid(rcu_dereference(task->pids[type].pid));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_read_unlock();
 	return pid;
 }
@@ -521,9 +601,18 @@ pid_t __task_pid_nr_ns(struct task_struct *task, enum pid_type type,
 	if (!ns)
 		ns = task_active_pid_ns(current);
 	if (likely(pid_alive(task))) {
+<<<<<<< HEAD
 		if (type != PIDTYPE_PID)
 			task = task->group_leader;
 		nr = pid_nr_ns(task->pids[type].pid, ns);
+=======
+		if (type != PIDTYPE_PID) {
+			if (type == __PIDTYPE_TGID)
+				type = PIDTYPE_PID;
+			task = task->group_leader;
+		}
+		nr = pid_nr_ns(rcu_dereference(task->pids[type].pid), ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	rcu_read_unlock();
 
@@ -531,12 +620,15 @@ pid_t __task_pid_nr_ns(struct task_struct *task, enum pid_type type,
 }
 EXPORT_SYMBOL(__task_pid_nr_ns);
 
+<<<<<<< HEAD
 pid_t task_tgid_nr_ns(struct task_struct *tsk, struct pid_namespace *ns)
 {
 	return pid_nr_ns(task_tgid(tsk), ns);
 }
 EXPORT_SYMBOL(task_tgid_nr_ns);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct pid_namespace *task_active_pid_ns(struct task_struct *tsk)
 {
 	return ns_of_pid(task_pid(tsk));
@@ -583,7 +675,11 @@ void __init pidhash_init(void)
 
 void __init pidmap_init(void)
 {
+<<<<<<< HEAD
 	/* Veryify no one has done anything silly */
+=======
+	/* Verify no one has done anything silly: */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUILD_BUG_ON(PID_MAX_LIMIT >= PIDNS_HASH_ADDING);
 
 	/* bump default and minimum pid_max based on number of cpus */
@@ -597,8 +693,14 @@ void __init pidmap_init(void)
 	/* Reserve PID 0. We never call free_pidmap(0) */
 	set_bit(0, init_pid_ns.pidmap[0].page);
 	atomic_dec(&init_pid_ns.pidmap[0].nr_free);
+<<<<<<< HEAD
 	init_pid_ns.nr_hashed = PIDNS_HASH_ADDING;
 
 	init_pid_ns.pid_cachep = KMEM_CACHE(pid,
 			SLAB_HWCACHE_ALIGN | SLAB_PANIC);
+=======
+
+	init_pid_ns.pid_cachep = KMEM_CACHE(pid,
+			SLAB_HWCACHE_ALIGN | SLAB_PANIC | SLAB_ACCOUNT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

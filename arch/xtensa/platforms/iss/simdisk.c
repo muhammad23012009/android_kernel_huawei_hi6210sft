@@ -21,7 +21,10 @@
 #include <platform/simcall.h>
 
 #define SIMDISK_MAJOR 240
+<<<<<<< HEAD
 #define SECTOR_SHIFT 9
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SIMDISK_MINORS 1
 #define MAX_SIMDISK_COUNT 10
 
@@ -86,6 +89,10 @@ static void simdisk_transfer(struct simdisk *dev, unsigned long sector,
 		unsigned long io;
 
 		simc_lseek(dev->fd, offset, SEEK_SET);
+<<<<<<< HEAD
+=======
+		READ_ONCE(*buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (write)
 			io = simc_write(dev->fd, buffer, nbytes);
 		else
@@ -101,6 +108,7 @@ static void simdisk_transfer(struct simdisk *dev, unsigned long sector,
 	spin_unlock(&dev->lock);
 }
 
+<<<<<<< HEAD
 static int simdisk_xfer_bio(struct simdisk *dev, struct bio *bio)
 {
 	int i;
@@ -110,10 +118,23 @@ static int simdisk_xfer_bio(struct simdisk *dev, struct bio *bio)
 	bio_for_each_segment(bvec, bio, i) {
 		char *buffer = __bio_kmap_atomic(bio, i, KM_USER0);
 		unsigned len = bvec->bv_len >> SECTOR_SHIFT;
+=======
+static blk_qc_t simdisk_make_request(struct request_queue *q, struct bio *bio)
+{
+	struct simdisk *dev = q->queuedata;
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+	sector_t sector = bio->bi_iter.bi_sector;
+
+	bio_for_each_segment(bvec, bio, iter) {
+		char *buffer = __bio_kmap_atomic(bio, iter);
+		unsigned len = bvec.bv_len >> SECTOR_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		simdisk_transfer(dev, sector, len, buffer,
 				bio_data_dir(bio) == WRITE);
 		sector += len;
+<<<<<<< HEAD
 		__bio_kunmap_atomic(bio, KM_USER0);
 	}
 	return 0;
@@ -127,6 +148,15 @@ static void simdisk_make_request(struct request_queue *q, struct bio *bio)
 }
 
 
+=======
+		__bio_kunmap_atomic(buffer);
+	}
+
+	bio_endio(bio);
+	return BLK_QC_T_NONE;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int simdisk_open(struct block_device *bdev, fmode_t mode)
 {
 	struct simdisk *dev = bdev->bd_disk->private_data;
@@ -232,6 +262,7 @@ static ssize_t proc_read_simdisk(struct file *file, char __user *buf,
 static ssize_t proc_write_simdisk(struct file *file, const char __user *buf,
 			size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	char *tmp = kmalloc(count + 1, GFP_KERNEL);
 	struct simdisk *dev = PDE_DATA(file_inode(file));
 	int err;
@@ -242,6 +273,14 @@ static ssize_t proc_write_simdisk(struct file *file, const char __user *buf,
 		err = -EFAULT;
 		goto out_free;
 	}
+=======
+	char *tmp = memdup_user_nul(buf, count);
+	struct simdisk *dev = PDE_DATA(file_inode(file));
+	int err;
+
+	if (IS_ERR(tmp))
+		return PTR_ERR(tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = simdisk_detach(dev);
 	if (err != 0)
@@ -249,8 +288,11 @@ static ssize_t proc_write_simdisk(struct file *file, const char __user *buf,
 
 	if (count > 0 && tmp[count - 1] == '\n')
 		tmp[count - 1] = 0;
+<<<<<<< HEAD
 	else
 		tmp[count] = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (tmp[0])
 		err = simdisk_attach(dev, tmp);

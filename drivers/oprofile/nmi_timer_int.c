@@ -108,8 +108,13 @@ static void nmi_timer_shutdown(void)
 	struct perf_event *event;
 	int cpu;
 
+<<<<<<< HEAD
 	get_online_cpus();
 	unregister_cpu_notifier(&nmi_timer_cpu_nb);
+=======
+	cpu_notifier_register_begin();
+	__unregister_cpu_notifier(&nmi_timer_cpu_nb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_possible_cpu(cpu) {
 		event = per_cpu(nmi_timer_events, cpu);
 		if (!event)
@@ -119,7 +124,11 @@ static void nmi_timer_shutdown(void)
 		perf_event_release_kernel(event);
 	}
 
+<<<<<<< HEAD
 	put_online_cpus();
+=======
+	cpu_notifier_register_done();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int nmi_timer_setup(void)
@@ -132,6 +141,7 @@ static int nmi_timer_setup(void)
 	do_div(period, HZ);
 	nmi_timer_attr.sample_period = period;
 
+<<<<<<< HEAD
 	get_online_cpus();
 	err = register_cpu_notifier(&nmi_timer_cpu_nb);
 	if (err)
@@ -146,6 +156,25 @@ static int nmi_timer_setup(void)
 		nmi_timer_shutdown();
 out:
 	put_online_cpus();
+=======
+	cpu_notifier_register_begin();
+	err = __register_cpu_notifier(&nmi_timer_cpu_nb);
+	if (err)
+		goto out;
+
+	/* can't attach events to offline cpus: */
+	for_each_online_cpu(cpu) {
+		err = nmi_timer_start_cpu(cpu);
+		if (err) {
+			cpu_notifier_register_done();
+			nmi_timer_shutdown();
+			return err;
+		}
+	}
+
+out:
+	cpu_notifier_register_done();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 

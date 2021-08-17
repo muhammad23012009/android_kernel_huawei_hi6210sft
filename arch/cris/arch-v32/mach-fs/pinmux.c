@@ -26,7 +26,35 @@ static DEFINE_SPINLOCK(pinmux_lock);
 
 static void crisv32_pinmux_set(int port);
 
+<<<<<<< HEAD
 int crisv32_pinmux_init(void)
+=======
+static int __crisv32_pinmux_alloc(int port, int first_pin, int last_pin,
+				 enum pin_mode mode)
+{
+	int i;
+
+	for (i = first_pin; i <= last_pin; i++) {
+		if ((pins[port][i] != pinmux_none)
+		    && (pins[port][i] != pinmux_gpio)
+		    && (pins[port][i] != mode)) {
+#ifdef DEBUG
+			panic("Pinmux alloc failed!\n");
+#endif
+			return -EPERM;
+		}
+	}
+
+	for (i = first_pin; i <= last_pin; i++)
+		pins[port][i] = mode;
+
+	crisv32_pinmux_set(port);
+
+	return 0;
+}
+
+static int crisv32_pinmux_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static int initialized;
 
@@ -37,20 +65,35 @@ int crisv32_pinmux_init(void)
 		pa.pa0 = pa.pa1 = pa.pa2 = pa.pa3 =
 		    pa.pa4 = pa.pa5 = pa.pa6 = pa.pa7 = regk_pinmux_yes;
 		REG_WR(pinmux, regi_pinmux, rw_pa, pa);
+<<<<<<< HEAD
 		crisv32_pinmux_alloc(PORT_B, 0, PORT_PINS - 1, pinmux_gpio);
 		crisv32_pinmux_alloc(PORT_C, 0, PORT_PINS - 1, pinmux_gpio);
 		crisv32_pinmux_alloc(PORT_D, 0, PORT_PINS - 1, pinmux_gpio);
 		crisv32_pinmux_alloc(PORT_E, 0, PORT_PINS - 1, pinmux_gpio);
+=======
+		__crisv32_pinmux_alloc(PORT_B, 0, PORT_PINS - 1, pinmux_gpio);
+		__crisv32_pinmux_alloc(PORT_C, 0, PORT_PINS - 1, pinmux_gpio);
+		__crisv32_pinmux_alloc(PORT_D, 0, PORT_PINS - 1, pinmux_gpio);
+		__crisv32_pinmux_alloc(PORT_E, 0, PORT_PINS - 1, pinmux_gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int
 crisv32_pinmux_alloc(int port, int first_pin, int last_pin, enum pin_mode mode)
 {
 	int i;
 	unsigned long flags;
+=======
+int crisv32_pinmux_alloc(int port, int first_pin, int last_pin,
+			 enum pin_mode mode)
+{
+	unsigned long flags;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	crisv32_pinmux_init();
 
@@ -59,6 +102,7 @@ crisv32_pinmux_alloc(int port, int first_pin, int last_pin, enum pin_mode mode)
 
 	spin_lock_irqsave(&pinmux_lock, flags);
 
+<<<<<<< HEAD
 	for (i = first_pin; i <= last_pin; i++) {
 		if ((pins[port][i] != pinmux_none)
 		    && (pins[port][i] != pinmux_gpio)
@@ -79,6 +123,13 @@ crisv32_pinmux_alloc(int port, int first_pin, int last_pin, enum pin_mode mode)
 	spin_unlock_irqrestore(&pinmux_lock, flags);
 
 	return 0;
+=======
+	ret = __crisv32_pinmux_alloc(port, first_pin, last_pin, mode);
+
+	spin_unlock_irqrestore(&pinmux_lock, flags);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int crisv32_pinmux_alloc_fixed(enum fixed_function function)
@@ -86,6 +137,10 @@ int crisv32_pinmux_alloc_fixed(enum fixed_function function)
 	int ret = -EINVAL;
 	char saved[sizeof pins];
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	reg_pinmux_rw_hwprot hwprot;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&pinmux_lock, flags);
 
@@ -94,6 +149,7 @@ int crisv32_pinmux_alloc_fixed(enum fixed_function function)
 
 	crisv32_pinmux_init();	/* Must be done before we read rw_hwprot */
 
+<<<<<<< HEAD
 	reg_pinmux_rw_hwprot hwprot = REG_RD(pinmux, regi_pinmux, rw_hwprot);
 
 	switch (function) {
@@ -145,11 +201,68 @@ int crisv32_pinmux_alloc_fixed(enum fixed_function function)
 		break;
 	case pinmux_eth1:
 		ret = crisv32_pinmux_alloc(PORT_E, 0, 17, pinmux_fixed);
+=======
+	hwprot = REG_RD(pinmux, regi_pinmux, rw_hwprot);
+
+	switch (function) {
+	case pinmux_ser1:
+		ret = __crisv32_pinmux_alloc(PORT_C, 4, 7, pinmux_fixed);
+		hwprot.ser1 = regk_pinmux_yes;
+		break;
+	case pinmux_ser2:
+		ret = __crisv32_pinmux_alloc(PORT_C, 8, 11, pinmux_fixed);
+		hwprot.ser2 = regk_pinmux_yes;
+		break;
+	case pinmux_ser3:
+		ret = __crisv32_pinmux_alloc(PORT_C, 12, 15, pinmux_fixed);
+		hwprot.ser3 = regk_pinmux_yes;
+		break;
+	case pinmux_sser0:
+		ret = __crisv32_pinmux_alloc(PORT_C, 0, 3, pinmux_fixed);
+		ret |= __crisv32_pinmux_alloc(PORT_C, 16, 16, pinmux_fixed);
+		hwprot.sser0 = regk_pinmux_yes;
+		break;
+	case pinmux_sser1:
+		ret = __crisv32_pinmux_alloc(PORT_D, 0, 4, pinmux_fixed);
+		hwprot.sser1 = regk_pinmux_yes;
+		break;
+	case pinmux_ata0:
+		ret = __crisv32_pinmux_alloc(PORT_D, 5, 7, pinmux_fixed);
+		ret |= __crisv32_pinmux_alloc(PORT_D, 15, 17, pinmux_fixed);
+		hwprot.ata0 = regk_pinmux_yes;
+		break;
+	case pinmux_ata1:
+		ret = __crisv32_pinmux_alloc(PORT_D, 0, 4, pinmux_fixed);
+		ret |= __crisv32_pinmux_alloc(PORT_E, 17, 17, pinmux_fixed);
+		hwprot.ata1 = regk_pinmux_yes;
+		break;
+	case pinmux_ata2:
+		ret = __crisv32_pinmux_alloc(PORT_C, 11, 15, pinmux_fixed);
+		ret |= __crisv32_pinmux_alloc(PORT_E, 3, 3, pinmux_fixed);
+		hwprot.ata2 = regk_pinmux_yes;
+		break;
+	case pinmux_ata3:
+		ret = __crisv32_pinmux_alloc(PORT_C, 8, 10, pinmux_fixed);
+		ret |= __crisv32_pinmux_alloc(PORT_C, 0, 2, pinmux_fixed);
+		hwprot.ata2 = regk_pinmux_yes;
+		break;
+	case pinmux_ata:
+		ret = __crisv32_pinmux_alloc(PORT_B, 0, 15, pinmux_fixed);
+		ret |= __crisv32_pinmux_alloc(PORT_D, 8, 15, pinmux_fixed);
+		hwprot.ata = regk_pinmux_yes;
+		break;
+	case pinmux_eth1:
+		ret = __crisv32_pinmux_alloc(PORT_E, 0, 17, pinmux_fixed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hwprot.eth1 = regk_pinmux_yes;
 		hwprot.eth1_mgm = regk_pinmux_yes;
 		break;
 	case pinmux_timer:
+<<<<<<< HEAD
 		ret = crisv32_pinmux_alloc(PORT_C, 16, 16, pinmux_fixed);
+=======
+		ret = __crisv32_pinmux_alloc(PORT_C, 16, 16, pinmux_fixed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hwprot.timer = regk_pinmux_yes;
 		spin_unlock_irqrestore(&pinmux_lock, flags);
 		return ret;
@@ -188,9 +301,25 @@ void crisv32_pinmux_set(int port)
 #endif
 }
 
+<<<<<<< HEAD
 int crisv32_pinmux_dealloc(int port, int first_pin, int last_pin)
 {
 	int i;
+=======
+static int __crisv32_pinmux_dealloc(int port, int first_pin, int last_pin)
+{
+	int i;
+
+	for (i = first_pin; i <= last_pin; i++)
+		pins[port][i] = pinmux_none;
+
+	crisv32_pinmux_set(port);
+	return 0;
+}
+
+int crisv32_pinmux_dealloc(int port, int first_pin, int last_pin)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	crisv32_pinmux_init();
@@ -199,11 +328,15 @@ int crisv32_pinmux_dealloc(int port, int first_pin, int last_pin)
 		return -EINVAL;
 
 	spin_lock_irqsave(&pinmux_lock, flags);
+<<<<<<< HEAD
 
 	for (i = first_pin; i <= last_pin; i++)
 		pins[port][i] = pinmux_none;
 
 	crisv32_pinmux_set(port);
+=======
+	__crisv32_pinmux_dealloc(port, first_pin, last_pin);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&pinmux_lock, flags);
 
 	return 0;
@@ -214,6 +347,10 @@ int crisv32_pinmux_dealloc_fixed(enum fixed_function function)
 	int ret = -EINVAL;
 	char saved[sizeof pins];
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	reg_pinmux_rw_hwprot hwprot;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&pinmux_lock, flags);
 
@@ -222,6 +359,7 @@ int crisv32_pinmux_dealloc_fixed(enum fixed_function function)
 
 	crisv32_pinmux_init();	/* Must be done before we read rw_hwprot */
 
+<<<<<<< HEAD
 	reg_pinmux_rw_hwprot hwprot = REG_RD(pinmux, regi_pinmux, rw_hwprot);
 
 	switch (function) {
@@ -273,11 +411,68 @@ int crisv32_pinmux_dealloc_fixed(enum fixed_function function)
 		break;
 	case pinmux_eth1:
 		ret = crisv32_pinmux_dealloc(PORT_E, 0, 17);
+=======
+	hwprot = REG_RD(pinmux, regi_pinmux, rw_hwprot);
+
+	switch (function) {
+	case pinmux_ser1:
+		ret = __crisv32_pinmux_dealloc(PORT_C, 4, 7);
+		hwprot.ser1 = regk_pinmux_no;
+		break;
+	case pinmux_ser2:
+		ret = __crisv32_pinmux_dealloc(PORT_C, 8, 11);
+		hwprot.ser2 = regk_pinmux_no;
+		break;
+	case pinmux_ser3:
+		ret = __crisv32_pinmux_dealloc(PORT_C, 12, 15);
+		hwprot.ser3 = regk_pinmux_no;
+		break;
+	case pinmux_sser0:
+		ret = __crisv32_pinmux_dealloc(PORT_C, 0, 3);
+		ret |= __crisv32_pinmux_dealloc(PORT_C, 16, 16);
+		hwprot.sser0 = regk_pinmux_no;
+		break;
+	case pinmux_sser1:
+		ret = __crisv32_pinmux_dealloc(PORT_D, 0, 4);
+		hwprot.sser1 = regk_pinmux_no;
+		break;
+	case pinmux_ata0:
+		ret = __crisv32_pinmux_dealloc(PORT_D, 5, 7);
+		ret |= __crisv32_pinmux_dealloc(PORT_D, 15, 17);
+		hwprot.ata0 = regk_pinmux_no;
+		break;
+	case pinmux_ata1:
+		ret = __crisv32_pinmux_dealloc(PORT_D, 0, 4);
+		ret |= __crisv32_pinmux_dealloc(PORT_E, 17, 17);
+		hwprot.ata1 = regk_pinmux_no;
+		break;
+	case pinmux_ata2:
+		ret = __crisv32_pinmux_dealloc(PORT_C, 11, 15);
+		ret |= __crisv32_pinmux_dealloc(PORT_E, 3, 3);
+		hwprot.ata2 = regk_pinmux_no;
+		break;
+	case pinmux_ata3:
+		ret = __crisv32_pinmux_dealloc(PORT_C, 8, 10);
+		ret |= __crisv32_pinmux_dealloc(PORT_C, 0, 2);
+		hwprot.ata2 = regk_pinmux_no;
+		break;
+	case pinmux_ata:
+		ret = __crisv32_pinmux_dealloc(PORT_B, 0, 15);
+		ret |= __crisv32_pinmux_dealloc(PORT_D, 8, 15);
+		hwprot.ata = regk_pinmux_no;
+		break;
+	case pinmux_eth1:
+		ret = __crisv32_pinmux_dealloc(PORT_E, 0, 17);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hwprot.eth1 = regk_pinmux_no;
 		hwprot.eth1_mgm = regk_pinmux_no;
 		break;
 	case pinmux_timer:
+<<<<<<< HEAD
 		ret = crisv32_pinmux_dealloc(PORT_C, 16, 16);
+=======
+		ret = __crisv32_pinmux_dealloc(PORT_C, 16, 16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hwprot.timer = regk_pinmux_no;
 		spin_unlock_irqrestore(&pinmux_lock, flags);
 		return ret;
@@ -293,7 +488,12 @@ int crisv32_pinmux_dealloc_fixed(enum fixed_function function)
 	return ret;
 }
 
+<<<<<<< HEAD
 void crisv32_pinmux_dump(void)
+=======
+#ifdef DEBUG
+static void crisv32_pinmux_dump(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, j;
 
@@ -305,5 +505,9 @@ void crisv32_pinmux_dump(void)
 			printk(KERN_DEBUG "  Pin %d = %d\n", j, pins[i][j]);
 	}
 }
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __initcall(crisv32_pinmux_init);

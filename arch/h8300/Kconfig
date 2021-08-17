@@ -1,4 +1,5 @@
 config H8300
+<<<<<<< HEAD
 	bool
 	default y
 	select HAVE_IDE
@@ -75,17 +76,72 @@ config ISA
 config PCI
 	bool
 	default n
+=======
+        def_bool y
+	select GENERIC_ATOMIC64
+	select HAVE_UID16
+	select VIRT_TO_BUS
+	select GENERIC_IRQ_SHOW
+	select FRAME_POINTER
+	select GENERIC_CPU_DEVICES
+	select MODULES_USE_ELF_RELA
+	select GENERIC_CLOCKEVENTS
+	select CLKDEV_LOOKUP
+	select COMMON_CLK
+	select ARCH_WANT_FRAME_POINTERS
+	select OF
+	select OF_IRQ
+	select OF_EARLY_FLATTREE
+	select HAVE_MEMBLOCK
+	select CLKSRC_OF
+	select H8300_TMR8
+	select HAVE_KERNEL_GZIP
+	select HAVE_KERNEL_LZO
+	select HAVE_ARCH_KGDB
+	select HAVE_ARCH_HASH
+	select CPU_NO_EFFICIENT_FFS
+
+config RWSEM_GENERIC_SPINLOCK
+	def_bool y
+
+config GENERIC_HWEIGHT
+	def_bool y
+
+config NO_IOPORT_MAP
+	def_bool y
+
+config GENERIC_CSUM
+        def_bool y
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config HZ
 	int
 	default 100
 
+<<<<<<< HEAD
+=======
+config NR_CPUS
+	int
+	default 1
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
 
 source "arch/h8300/Kconfig.cpu"
 
+<<<<<<< HEAD
+=======
+menu "Kernel Features"
+
+source "kernel/Kconfig.preempt"
+
+source "mm/Kconfig"
+
+endmenu
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 menu "Executable file formats"
 
 source "fs/Kconfig.binfmt"
@@ -94,6 +150,7 @@ endmenu
 
 source "net/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/base/Kconfig"
 
 source "drivers/mtd/Kconfig"
@@ -217,6 +274,17 @@ source "drivers/staging/Kconfig"
 source "fs/Kconfig"
 
 source "arch/h8300/Kconfig.debug"
+=======
+source "drivers/Kconfig"
+
+source "fs/Kconfig"
+
+menu "Kernel hacking"
+
+source "lib/Kconfig.debug"
+
+endmenu
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 source "security/Kconfig"
 

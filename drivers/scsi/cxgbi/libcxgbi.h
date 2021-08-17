@@ -1,7 +1,11 @@
 /*
  * libcxgbi.h: Chelsio common library for T3/T4 iSCSI driver.
  *
+<<<<<<< HEAD
  * Copyright (c) 2010 Chelsio Communications, Inc.
+=======
+ * Copyright (c) 2010-2015 Chelsio Communications, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +28,18 @@
 #include <linux/scatterlist.h>
 #include <linux/skbuff.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <scsi/scsi_device.h>
 #include <scsi/libiscsi_tcp.h>
 
+=======
+#include <linux/version.h>
+#include <scsi/scsi_device.h>
+#include <scsi/libiscsi_tcp.h>
+
+#include <libcxgb_ppm.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum cxgbi_dbg_flag {
 	CXGBI_DBG_ISCSI,
 	CXGBI_DBG_DDP,
@@ -44,6 +57,18 @@ enum cxgbi_dbg_flag {
 			pr_info(fmt, ##__VA_ARGS__); \
 	} while (0)
 
+<<<<<<< HEAD
+=======
+#define pr_info_ipaddr(fmt_trail,					\
+			addr1, addr2, args_trail...)			\
+do {									\
+	if (!((1 << CXGBI_DBG_SOCK) & dbg_level))			\
+		break;							\
+	pr_info("%pISpc - %pISpc, " fmt_trail,				\
+		addr1, addr2, args_trail);				\
+} while (0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* max. connections per adapter */
 #define CXGBI_MAX_CONN		16384
 
@@ -75,15 +100,19 @@ static inline unsigned int cxgbi_ulp_extra_len(int submode)
 	return ulp2_extra_len[submode & 3];
 }
 
+<<<<<<< HEAD
 /*
  * struct pagepod_hdr, pagepod - pagepod format
  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CPL_RX_DDP_STATUS_DDP_SHIFT	16 /* ddp'able */
 #define CPL_RX_DDP_STATUS_PAD_SHIFT	19 /* pad error */
 #define CPL_RX_DDP_STATUS_HCRC_SHIFT	20 /* hcrc error */
 #define CPL_RX_DDP_STATUS_DCRC_SHIFT	21 /* dcrc error */
 
+<<<<<<< HEAD
 struct cxgbi_pagepod_hdr {
 	u32 vld_tid;
 	u32 pgsz_tag_clr;
@@ -161,6 +190,8 @@ struct cxgbi_ddp_info {
 #define PPOD_VALID(x)		((x) << PPOD_VALID_SHIFT)
 #define PPOD_VALID_FLAG		PPOD_VALID(1U)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * sge_opaque_hdr -
  * Opaque version of structure the SGE stores at skb->head of TX_DATA packets
@@ -202,8 +233,20 @@ struct cxgbi_sock {
 	spinlock_t lock;
 	struct kref refcnt;
 	unsigned int state;
+<<<<<<< HEAD
 	struct sockaddr_in saddr;
 	struct sockaddr_in daddr;
+=======
+	unsigned int csk_family;
+	union {
+		struct sockaddr_in saddr;
+		struct sockaddr_in6 saddr6;
+	};
+	union {
+		struct sockaddr_in daddr;
+		struct sockaddr_in6 daddr6;
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dst_entry *dst;
 	struct sk_buff_head receive_queue;
 	struct sk_buff_head write_queue;
@@ -218,6 +261,11 @@ struct cxgbi_sock {
 	u32 snd_nxt;
 	u32 snd_una;
 	u32 write_seq;
+<<<<<<< HEAD
+=======
+	u32 snd_win;
+	u32 rcv_win;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -261,6 +309,11 @@ struct cxgbi_skb_tx_cb {
 
 enum cxgbi_skcb_flags {
 	SKCBF_TX_NEED_HDR,	/* packet needs a header */
+<<<<<<< HEAD
+=======
+	SKCBF_TX_MEM_WRITE,     /* memory write */
+	SKCBF_TX_FLAG_COMPL,    /* wr completion flag */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SKCBF_RX_COALESCED,	/* received whole pdu */
 	SKCBF_RX_HDR,		/* received pdu header */
 	SKCBF_RX_DATA,		/* received pdu payload */
@@ -301,8 +354,13 @@ static inline void cxgbi_skcb_clear_flag(struct sk_buff *skb,
 	__clear_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
 
+<<<<<<< HEAD
 static inline int cxgbi_skcb_test_flag(struct sk_buff *skb,
 					enum cxgbi_skcb_flags flag)
+=======
+static inline int cxgbi_skcb_test_flag(const struct sk_buff *skb,
+				       enum cxgbi_skcb_flags flag)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return test_bit(flag, &(cxgbi_skcb_flags(skb)));
 }
@@ -509,8 +567,17 @@ struct cxgbi_ports_map {
 #define CXGBI_FLAG_DEV_T4		0x2
 #define CXGBI_FLAG_ADAPTER_RESET	0x4
 #define CXGBI_FLAG_IPV4_SET		0x10
+<<<<<<< HEAD
 struct cxgbi_device {
 	struct list_head list_head;
+=======
+#define CXGBI_FLAG_USE_PPOD_OFLDQ       0x40
+#define CXGBI_FLAG_DDP_OFF		0x100
+
+struct cxgbi_device {
+	struct list_head list_head;
+	struct list_head rcu_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int flags;
 	struct net_device **ports;
 	void *lldev;
@@ -523,14 +590,18 @@ struct cxgbi_device {
 	struct iscsi_transport *itp;
 
 	unsigned int pfvf;
+<<<<<<< HEAD
 	unsigned int snd_win;
 	unsigned int rcv_win;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int rx_credit_thres;
 	unsigned int skb_tx_rsvd;
 	unsigned int skb_rx_extra;	/* for msg coalesced mode */
 	unsigned int tx_max_size;
 	unsigned int rx_max_size;
 	struct cxgbi_ports_map pmap;
+<<<<<<< HEAD
 	struct cxgbi_tag_format tag_format;
 	struct cxgbi_ddp_info *ddp;
 
@@ -540,6 +611,16 @@ struct cxgbi_device {
 				struct cxgbi_gather_list *);
 	void (*csk_ddp_clear)(struct cxgbi_hba *,
 				unsigned int, unsigned int, unsigned int);
+=======
+
+	void (*dev_ddp_cleanup)(struct cxgbi_device *);
+	struct cxgbi_ppm* (*cdev2ppm)(struct cxgbi_device *);
+	int (*csk_ddp_set_map)(struct cxgbi_ppm *, struct cxgbi_sock *,
+			       struct cxgbi_task_tag_info *);
+	void (*csk_ddp_clear_map)(struct cxgbi_device *cdev,
+				  struct cxgbi_ppm *,
+				  struct cxgbi_task_tag_info *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*csk_ddp_setup_digest)(struct cxgbi_sock *,
 				unsigned int, int, int, int);
 	int (*csk_ddp_setup_pgidx)(struct cxgbi_sock *,
@@ -563,6 +644,11 @@ struct cxgbi_conn {
 	struct iscsi_conn *iconn;
 	struct cxgbi_hba *chba;
 	u32 task_idx_bits;
+<<<<<<< HEAD
+=======
+	unsigned int ddp_full;
+	unsigned int ddp_tag_full;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct cxgbi_endpoint {
@@ -576,13 +662,22 @@ struct cxgbi_task_data {
 	unsigned short nr_frags;
 	struct page_frag frags[MAX_PDU_FRAGS];
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	unsigned int offset;
 	unsigned int count;
 	unsigned int sgoffset;
+=======
+	unsigned int dlen;
+	unsigned int offset;
+	unsigned int count;
+	unsigned int sgoffset;
+	struct cxgbi_task_tag_info ttinfo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #define iscsi_task_cxgbi_data(task) \
 	((task)->dd_data + sizeof(struct iscsi_tcp_task))
 
+<<<<<<< HEAD
 static inline int cxgbi_is_ddp_tag(struct cxgbi_tag_format *tformat, u32 tag)
 {
 	return !(tag & (1 << (tformat->rsvd_bits + tformat->rsvd_shift - 1)));
@@ -663,15 +758,29 @@ static inline void *cxgbi_alloc_big_mem(unsigned int size,
 		p = vmalloc(size);
 	if (p)
 		memset(p, 0, size);
+=======
+static inline void *cxgbi_alloc_big_mem(unsigned int size,
+					gfp_t gfp)
+{
+	void *p = kzalloc(size, gfp | __GFP_NOWARN);
+
+	if (!p)
+		p = vzalloc(size);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return p;
 }
 
 static inline void cxgbi_free_big_mem(void *addr)
 {
+<<<<<<< HEAD
 	if (is_vmalloc_addr(addr))
 		vfree(addr);
 	else
 		kfree(addr);
+=======
+	kvfree(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void cxgbi_set_iscsi_ipv4(struct cxgbi_hba *chba, __be32 ipaddr)
@@ -683,16 +792,26 @@ static inline void cxgbi_set_iscsi_ipv4(struct cxgbi_hba *chba, __be32 ipaddr)
 			chba->ndev->name);
 }
 
+<<<<<<< HEAD
 static inline __be32 cxgbi_get_iscsi_ipv4(struct cxgbi_hba *chba)
 {
 	return chba->ipv4addr;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cxgbi_device *cxgbi_device_register(unsigned int, unsigned int);
 void cxgbi_device_unregister(struct cxgbi_device *);
 void cxgbi_device_unregister_all(unsigned int flag);
 struct cxgbi_device *cxgbi_device_find_by_lldev(void *);
+<<<<<<< HEAD
 int cxgbi_hbas_add(struct cxgbi_device *, unsigned int, unsigned int,
+=======
+struct cxgbi_device *cxgbi_device_find_by_netdev(struct net_device *, int *);
+struct cxgbi_device *cxgbi_device_find_by_netdev_rcu(struct net_device *,
+						     int *);
+int cxgbi_hbas_add(struct cxgbi_device *, u64, unsigned int,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct scsi_host_template *,
 			struct scsi_transport_template *);
 void cxgbi_hbas_remove(struct cxgbi_device *);
@@ -737,7 +856,17 @@ int cxgbi_ddp_init(struct cxgbi_device *, unsigned int, unsigned int,
 			unsigned int, unsigned int);
 int cxgbi_ddp_cleanup(struct cxgbi_device *);
 void cxgbi_ddp_page_size_factor(int *);
+<<<<<<< HEAD
 void cxgbi_ddp_ppod_clear(struct cxgbi_pagepod *);
 void cxgbi_ddp_ppod_set(struct cxgbi_pagepod *, struct cxgbi_pagepod_hdr *,
 			struct cxgbi_gather_list *, unsigned int);
+=======
+void cxgbi_ddp_set_one_ppod(struct cxgbi_pagepod *,
+			    struct cxgbi_task_tag_info *,
+			    struct scatterlist **sg_pp, unsigned int *sg_off);
+void cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *,
+			 struct cxgbi_tag_format *, unsigned int ppmax,
+			 unsigned int llimit, unsigned int start,
+			 unsigned int rsvd_factor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/*__LIBCXGBI_H__*/

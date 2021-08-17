@@ -21,8 +21,11 @@
 /**
  * enum mesh_path_flags - mac80211 mesh path flags
  *
+<<<<<<< HEAD
  *
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @MESH_PATH_ACTIVE: the mesh path can be used for forwarding
  * @MESH_PATH_RESOLVING: the discovery process is running for this mesh path
  * @MESH_PATH_SN_VALID: the mesh path contains a valid destination sequence
@@ -32,6 +35,11 @@
  * @MESH_PATH_RESOLVED: the mesh path can has been resolved
  * @MESH_PATH_REQ_QUEUED: there is an unsent path request for this destination
  *	already queued up, waiting for the discovery process to start.
+<<<<<<< HEAD
+=======
+ * @MESH_PATH_DELETED: the mesh path has been deleted and should no longer
+ *	be used
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * MESH_PATH_RESOLVED is used by the mesh path timer to
  * decide when to stop or cancel the mesh path discovery.
@@ -43,6 +51,10 @@ enum mesh_path_flags {
 	MESH_PATH_FIXED	=	BIT(3),
 	MESH_PATH_RESOLVED =	BIT(4),
 	MESH_PATH_REQ_QUEUED =	BIT(5),
+<<<<<<< HEAD
+=======
+	MESH_PATH_DELETED =	BIT(6),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -51,6 +63,7 @@ enum mesh_path_flags {
  *
  *
  * @MESH_WORK_HOUSEKEEPING: run the periodic mesh housekeeping tasks
+<<<<<<< HEAD
  * @MESH_WORK_GROW_MPATH_TABLE: the mesh path table is full and needs
  * to grow.
  * @MESH_WORK_GROW_MPP_TABLE: the mesh portals table is full and needs to
@@ -65,18 +78,40 @@ enum mesh_deferred_task_flags {
 	MESH_WORK_GROW_MPP_TABLE,
 	MESH_WORK_ROOT,
 	MESH_WORK_DRIFT_ADJUST,
+=======
+ * @MESH_WORK_ROOT: the mesh root station needs to send a frame
+ * @MESH_WORK_DRIFT_ADJUST: time to compensate for clock drift relative to other
+ * mesh nodes
+ * @MESH_WORK_MBSS_CHANGED: rebuild beacon and notify driver of BSS changes
+ */
+enum mesh_deferred_task_flags {
+	MESH_WORK_HOUSEKEEPING,
+	MESH_WORK_ROOT,
+	MESH_WORK_DRIFT_ADJUST,
+	MESH_WORK_MBSS_CHANGED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
  * struct mesh_path - mac80211 mesh path structure
  *
  * @dst: mesh path destination mac address
+<<<<<<< HEAD
+=======
+ * @mpp: mesh proxy mac address
+ * @rhash: rhashtable list pointer
+ * @gate_list: list pointer for known gates list
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @sdata: mesh subif
  * @next_hop: mesh neighbor to which frames for this destination will be
  *	forwarded
  * @timer: mesh path discovery timer
  * @frame_queue: pending queue for frames sent to this destination while the
  *	path is unresolved
+<<<<<<< HEAD
+=======
+ * @rcu: rcu head for freeing mesh path
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @sn: target sequence number
  * @metric: current metric to this destination
  * @hop_count: hops to destination
@@ -95,14 +130,26 @@ enum mesh_deferred_task_flags {
  * @is_gate: the destination station of this path is a mesh gate
  *
  *
+<<<<<<< HEAD
  * The combination of dst and sdata is unique in the mesh path table. Since the
  * next_hop STA is only protected by RCU as well, deleting the STA must also
  * remove/substitute the mesh_path structure and wait until that is no longer
  * reachable before destroying the STA completely.
+=======
+ * The dst address is unique in the mesh path table. Since the mesh_path is
+ * protected by RCU, deleting the next_hop STA must remove / substitute the
+ * mesh_path structure and wait until that is no longer reachable before
+ * destroying the STA completely.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct mesh_path {
 	u8 dst[ETH_ALEN];
 	u8 mpp[ETH_ALEN];	/* used for MPP or MAP */
+<<<<<<< HEAD
+=======
+	struct rhash_head rhash;
+	struct hlist_node gate_list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ieee80211_sub_if_data *sdata;
 	struct sta_info __rcu *next_hop;
 	struct timer_list timer;
@@ -126,6 +173,7 @@ struct mesh_path {
 /**
  * struct mesh_table
  *
+<<<<<<< HEAD
  * @hash_buckets: array of hash buckets of the table
  * @hashwlock: array of locks to protect write operations, one per bucket
  * @hash_mask: 2^size_order - 1, used to compute hash idx
@@ -157,6 +205,19 @@ struct mesh_table {
 	spinlock_t gates_lock;
 
 	struct rcu_head rcu_head;
+=======
+ * @known_gates: list of known mesh gates and their mpaths by the station. The
+ * gate's mpath may or may not be resolved and active.
+ * @gates_lock: protects updates to known_gates
+ * @rhead: the rhashtable containing struct mesh_paths, keyed by dest addr
+ * @entries: number of entries in the table
+ */
+struct mesh_table {
+	struct hlist_head known_gates;
+	spinlock_t gates_lock;
+	struct rhashtable rhead;
+	atomic_t entries;		/* Up to MAX_MESH_NEIGHBOURS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Recent multicast cache */
@@ -171,24 +232,41 @@ struct mesh_table {
  * @seqnum: mesh sequence number of the frame
  * @exp_time: expiration time of the entry, in jiffies
  * @sa: source address of the frame
+<<<<<<< HEAD
+=======
+ * @list: hashtable list pointer
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The Recent Multicast Cache keeps track of the latest multicast frames that
  * have been received by a mesh interface and discards received multicast frames
  * that are found in the cache.
  */
 struct rmc_entry {
+<<<<<<< HEAD
 	struct list_head list;
 	u32 seqnum;
 	unsigned long exp_time;
+=======
+	struct hlist_node list;
+	unsigned long exp_time;
+	u32 seqnum;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 sa[ETH_ALEN];
 };
 
 struct mesh_rmc {
+<<<<<<< HEAD
 	struct list_head bucket[RMC_BUCKETS];
 	u32 idx_mask;
 };
 
 #define IEEE80211_MESH_PEER_INACTIVITY_LIMIT (1800 * HZ)
+=======
+	struct hlist_head bucket[RMC_BUCKETS];
+	u32 idx_mask;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IEEE80211_MESH_HOUSEKEEPING_INTERVAL (60 * HZ)
 
 #define MESH_PATH_EXPIRE (600 * HZ)
@@ -206,16 +284,25 @@ struct mesh_rmc {
 /* Various */
 int ieee80211_fill_mesh_addresses(struct ieee80211_hdr *hdr, __le16 *fc,
 				  const u8 *da, const u8 *sa);
+<<<<<<< HEAD
 int ieee80211_new_mesh_header(struct ieee80211_sub_if_data *sdata,
 			      struct ieee80211s_hdr *meshhdr,
 			      const char *addr4or5, const char *addr6);
+=======
+unsigned int ieee80211_new_mesh_header(struct ieee80211_sub_if_data *sdata,
+				       struct ieee80211s_hdr *meshhdr,
+				       const char *addr4or5, const char *addr6);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int mesh_rmc_check(struct ieee80211_sub_if_data *sdata,
 		   const u8 *addr, struct ieee80211s_hdr *mesh_hdr);
 bool mesh_matches_local(struct ieee80211_sub_if_data *sdata,
 			struct ieee802_11_elems *ie);
 void mesh_ids_set_default(struct ieee80211_if_mesh *mesh);
+<<<<<<< HEAD
 void mesh_mgmt_ies_add(struct ieee80211_sub_if_data *sdata,
 		       struct sk_buff *skb);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int mesh_add_meshconf_ie(struct ieee80211_sub_if_data *sdata,
 			 struct sk_buff *skb);
 int mesh_add_meshid_ie(struct ieee80211_sub_if_data *sdata,
@@ -228,12 +315,23 @@ int mesh_add_ht_cap_ie(struct ieee80211_sub_if_data *sdata,
 		       struct sk_buff *skb);
 int mesh_add_ht_oper_ie(struct ieee80211_sub_if_data *sdata,
 			struct sk_buff *skb);
+<<<<<<< HEAD
+=======
+int mesh_add_vht_cap_ie(struct ieee80211_sub_if_data *sdata,
+			struct sk_buff *skb);
+int mesh_add_vht_oper_ie(struct ieee80211_sub_if_data *sdata,
+			 struct sk_buff *skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void mesh_rmc_free(struct ieee80211_sub_if_data *sdata);
 int mesh_rmc_init(struct ieee80211_sub_if_data *sdata);
 void ieee80211s_init(void);
 void ieee80211s_update_metric(struct ieee80211_local *local,
 			      struct sta_info *sta, struct sk_buff *skb);
 void ieee80211_mesh_init_sdata(struct ieee80211_sub_if_data *sdata);
+<<<<<<< HEAD
+=======
+void ieee80211_mesh_teardown_sdata(struct ieee80211_sub_if_data *sdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ieee80211_start_mesh(struct ieee80211_sub_if_data *sdata);
 void ieee80211_stop_mesh(struct ieee80211_sub_if_data *sdata);
 void ieee80211_mesh_root_setup(struct ieee80211_if_mesh *ifmsh);
@@ -271,6 +369,11 @@ int mpp_path_add(struct ieee80211_sub_if_data *sdata,
 		 const u8 *dst, const u8 *mpp);
 struct mesh_path *
 mesh_path_lookup_by_idx(struct ieee80211_sub_if_data *sdata, int idx);
+<<<<<<< HEAD
+=======
+struct mesh_path *
+mpp_path_lookup_by_idx(struct ieee80211_sub_if_data *sdata, int idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void mesh_path_fix_nexthop(struct mesh_path *mpath, struct sta_info *next_hop);
 void mesh_path_expire(struct ieee80211_sub_if_data *sdata);
 void mesh_rx_path_sel_frame(struct ieee80211_sub_if_data *sdata,
@@ -297,6 +400,7 @@ void mesh_rx_plink_frame(struct ieee80211_sub_if_data *sdata,
 void mesh_sta_cleanup(struct sta_info *sta);
 
 /* Private interfaces */
+<<<<<<< HEAD
 /* Mesh tables */
 void mesh_mpath_table_grow(void);
 void mesh_mpp_table_grow(void);
@@ -309,6 +413,17 @@ void mesh_path_flush_pending(struct mesh_path *mpath);
 void mesh_path_tx_pending(struct mesh_path *mpath);
 int mesh_pathtbl_init(void);
 void mesh_pathtbl_unregister(void);
+=======
+/* Mesh paths */
+int mesh_path_error_tx(struct ieee80211_sub_if_data *sdata,
+		       u8 ttl, const u8 *target, u32 target_sn,
+		       u16 target_rcode, const u8 *ra);
+void mesh_path_assign_nexthop(struct mesh_path *mpath, struct sta_info *sta);
+void mesh_path_flush_pending(struct mesh_path *mpath);
+void mesh_path_tx_pending(struct mesh_path *mpath);
+int mesh_pathtbl_init(struct ieee80211_sub_if_data *sdata);
+void mesh_pathtbl_unregister(struct ieee80211_sub_if_data *sdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int mesh_path_del(struct ieee80211_sub_if_data *sdata, const u8 *addr);
 void mesh_path_timer(unsigned long data);
 void mesh_path_flush_by_nexthop(struct sta_info *sta);
@@ -317,21 +432,32 @@ void mesh_path_discard_frame(struct ieee80211_sub_if_data *sdata,
 void mesh_path_tx_root_frame(struct ieee80211_sub_if_data *sdata);
 
 bool mesh_action_is_path_sel(struct ieee80211_mgmt *mgmt);
+<<<<<<< HEAD
 extern int mesh_paths_generation;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_MAC80211_MESH
 static inline
 u32 mesh_plink_inc_estab_count(struct ieee80211_sub_if_data *sdata)
 {
 	atomic_inc(&sdata->u.mesh.estab_plinks);
+<<<<<<< HEAD
 	return mesh_accept_plinks_update(sdata);
+=======
+	return mesh_accept_plinks_update(sdata) | BSS_CHANGED_BEACON;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline
 u32 mesh_plink_dec_estab_count(struct ieee80211_sub_if_data *sdata)
 {
 	atomic_dec(&sdata->u.mesh.estab_plinks);
+<<<<<<< HEAD
 	return mesh_accept_plinks_update(sdata);
+=======
+	return mesh_accept_plinks_update(sdata) | BSS_CHANGED_BEACON;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int mesh_plink_free_count(struct ieee80211_sub_if_data *sdata)
@@ -356,14 +482,20 @@ static inline bool mesh_path_sel_is_hwmp(struct ieee80211_sub_if_data *sdata)
 	return sdata->u.mesh.mesh_pp_id == IEEE80211_PATH_PROTOCOL_HWMP;
 }
 
+<<<<<<< HEAD
 void ieee80211_mesh_notify_scan_completed(struct ieee80211_local *local);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void mesh_path_flush_by_iface(struct ieee80211_sub_if_data *sdata);
 void mesh_sync_adjust_tbtt(struct ieee80211_sub_if_data *sdata);
 void ieee80211s_stop(void);
 #else
+<<<<<<< HEAD
 static inline void
 ieee80211_mesh_notify_scan_completed(struct ieee80211_local *local) {}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool mesh_path_sel_is_hwmp(struct ieee80211_sub_if_data *sdata)
 { return false; }
 static inline void mesh_path_flush_by_iface(struct ieee80211_sub_if_data *sdata)

@@ -35,7 +35,11 @@ struct scsi_transport_template {
 	/*
 	 * If set, called from sysfs and legacy procfs rescanning code.
 	 */
+<<<<<<< HEAD
 	int (*user_scan)(struct Scsi_Host *, uint, uint, uint);
+=======
+	int (*user_scan)(struct Scsi_Host *, uint, uint, u64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* The size of the specific transport attribute structure (a
 	 * space of this size will be left at the end of the

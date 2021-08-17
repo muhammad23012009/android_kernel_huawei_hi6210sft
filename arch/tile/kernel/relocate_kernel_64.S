@@ -34,11 +34,18 @@ STD_ENTRY(relocate_new_kernel)
 	addi	sp, sp, -8
 	/* we now have a stack (whether we need one or not) */
 
+<<<<<<< HEAD
+=======
+#ifdef RELOCATE_NEW_KERNEL_VERBOSE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	moveli	r40, hw2_last(hv_console_putc)
 	shl16insli r40, r40, hw1(hv_console_putc)
 	shl16insli r40, r40, hw0(hv_console_putc)
 
+<<<<<<< HEAD
 #ifdef RELOCATE_NEW_KERNEL_VERBOSE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	moveli	r0, 'r'
 	jalr	r40
 
@@ -78,7 +85,10 @@ STD_ENTRY(relocate_new_kernel)
 	move	r30, sp
 	addi	sp, sp, -16
 
+<<<<<<< HEAD
 #if CHIP_HAS_CBOX_HOME_MAP()
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * On TILE-GX, we need to flush all tiles' caches, since we may
 	 * have been doing hash-for-home caching there.  Note that we
@@ -116,7 +126,10 @@ STD_ENTRY(relocate_new_kernel)
 	shl16insli	r20, r20, hw0(hv_flush_remote)
 
 	jalr	r20
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* r33 is destination pointer, default to zero */
 
@@ -176,10 +189,18 @@ STD_ENTRY(relocate_new_kernel)
 
 	/* we should not get here */
 
+<<<<<<< HEAD
+=======
+#ifdef RELOCATE_NEW_KERNEL_VERBOSE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	moveli	r0, '?'
 	jalr	r40
 	moveli	r0, '\n'
 	jalr	r40
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	j	.Lhalt
 
@@ -237,7 +258,13 @@ STD_ENTRY(relocate_new_kernel)
 	j	.Lloop
 
 
+<<<<<<< HEAD
 .Lerr:	moveli	r0, 'e'
+=======
+.Lerr:
+#ifdef RELOCATE_NEW_KERNEL_VERBOSE
+	moveli	r0, 'e'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jalr	r40
 	moveli	r0, 'r'
 	jalr	r40
@@ -245,6 +272,10 @@ STD_ENTRY(relocate_new_kernel)
 	jalr	r40
 	moveli	r0, '\n'
 	jalr	r40
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 .Lhalt:
 	moveli r41, hw2_last(hv_halt)
 	shl16insli r41, r41, hw1(hv_halt)

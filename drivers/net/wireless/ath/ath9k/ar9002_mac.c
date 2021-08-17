@@ -29,7 +29,12 @@ static void ar9002_hw_set_desc_link(void *ds, u32 ds_link)
 	((struct ath_desc*) ds)->ds_link = ds_link;
 }
 
+<<<<<<< HEAD
 static bool ar9002_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked)
+=======
+static bool ar9002_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked,
+			      u32 *sync_cause_p)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 isr = 0;
 	u32 mask2 = 0;
@@ -170,7 +175,12 @@ static bool ar9002_hw_get_isr(struct ath_hw *ah, enum ath9k_int *masked)
 		return true;
 
 	if (sync_cause) {
+<<<<<<< HEAD
 		ath9k_debug_sync_cause(common, sync_cause);
+=======
+		if (sync_cause_p)
+			*sync_cause_p = sync_cause;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fatal_int =
 			(sync_cause &
 			 (AR_INTR_SYNC_HOST1_FATAL | AR_INTR_SYNC_HOST1_PERR))
@@ -279,7 +289,11 @@ ar9002_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 
 	ACCESS_ONCE(ads->ds_ctl0) = (i->pkt_len & AR_FrameLen)
 		| (i->flags & ATH9K_TXDESC_VMF ? AR_VirtMoreFrag : 0)
+<<<<<<< HEAD
 		| SM(i->txpower, AR_XmitPower)
+=======
+		| SM(i->txpower[0], AR_XmitPower0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		| (i->flags & ATH9K_TXDESC_VEOL ? AR_VEOL : 0)
 		| (i->flags & ATH9K_TXDESC_INTREQ ? AR_TxIntrReq : 0)
 		| (i->keyix != ATH9K_TXKEYIX_INVALID ? AR_DestIdxValid : 0)
@@ -304,6 +318,13 @@ ar9002_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
 		| set11nRateFlags(i->rates, 2)
 		| set11nRateFlags(i->rates, 3)
 		| SM(i->rtscts_rate, AR_RTSCTSRate);
+<<<<<<< HEAD
+=======
+
+	ACCESS_ONCE(ads->ds_ctl9) = SM(i->txpower[1], AR_XmitPower1);
+	ACCESS_ONCE(ads->ds_ctl10) = SM(i->txpower[2], AR_XmitPower2);
+	ACCESS_ONCE(ads->ds_ctl11) = SM(i->txpower[3], AR_XmitPower3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ar9002_hw_proc_txdesc(struct ath_hw *ah, void *ds,
@@ -378,6 +399,27 @@ static int ar9002_hw_proc_txdesc(struct ath_hw *ah, void *ds,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int ar9002_hw_get_duration(struct ath_hw *ah, const void *ds, int index)
+{
+	struct ar5416_desc *ads = AR5416DESC(ds);
+
+	switch (index) {
+	case 0:
+		return MS(ACCESS_ONCE(ads->ds_ctl4), AR_PacketDur0);
+	case 1:
+		return MS(ACCESS_ONCE(ads->ds_ctl4), AR_PacketDur1);
+	case 2:
+		return MS(ACCESS_ONCE(ads->ds_ctl5), AR_PacketDur2);
+	case 3:
+		return MS(ACCESS_ONCE(ads->ds_ctl5), AR_PacketDur3);
+	default:
+		return -1;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void ath9k_hw_setuprxdesc(struct ath_hw *ah, struct ath_desc *ds,
 			  u32 size, u32 flags)
 {
@@ -400,4 +442,8 @@ void ar9002_hw_attach_mac_ops(struct ath_hw *ah)
 	ops->get_isr = ar9002_hw_get_isr;
 	ops->set_txdesc = ar9002_set_txdesc;
 	ops->proc_txdesc = ar9002_hw_proc_txdesc;
+<<<<<<< HEAD
+=======
+	ops->get_duration = ar9002_hw_get_duration;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

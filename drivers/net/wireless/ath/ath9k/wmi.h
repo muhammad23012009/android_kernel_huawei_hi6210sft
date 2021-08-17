@@ -39,7 +39,11 @@ struct wmi_fw_version {
 struct wmi_event_swba {
 	__be64 tsf;
 	u8 beacon_pending;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * 64 - HTC header - WMI header - 1 / txstatus
@@ -112,6 +116,10 @@ enum wmi_cmd_id {
 	WMI_TX_STATS_CMDID,
 	WMI_RX_STATS_CMDID,
 	WMI_BITRATE_MASK_CMDID,
+<<<<<<< HEAD
+=======
+	WMI_REG_RMW_CMDID,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum wmi_event_id {
@@ -125,12 +133,25 @@ enum wmi_event_id {
 };
 
 #define MAX_CMD_NUMBER 62
+<<<<<<< HEAD
+=======
+#define MAX_RMW_CMD_NUMBER 15
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct register_write {
 	__be32 reg;
 	__be32 val;
 };
 
+<<<<<<< HEAD
+=======
+struct register_rmw {
+	__be32 reg;
+	__be32 set;
+	__be32 clr;
+} __packed;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ath9k_htc_tx_event {
 	int count;
 	struct __wmi_event_txstatus txs;
@@ -143,7 +164,11 @@ struct wmi {
 	enum htc_endpoint_id ctrl_epid;
 	struct mutex op_mutex;
 	struct completion cmd_wait;
+<<<<<<< HEAD
 	enum wmi_cmd_id last_cmd_id;
+=======
+	u16 last_seq_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff_head wmi_event_queue;
 	struct tasklet_struct wmi_event_tasklet;
 	u16 tx_seq_id;
@@ -156,14 +181,31 @@ struct wmi {
 
 	spinlock_t wmi_lock;
 
+<<<<<<< HEAD
+=======
+	/* multi write section */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_t mwrite_cnt;
 	struct register_write multi_write[MAX_CMD_NUMBER];
 	u32 multi_write_idx;
 	struct mutex multi_write_mutex;
+<<<<<<< HEAD
 };
 
 struct wmi *ath9k_init_wmi(struct ath9k_htc_priv *priv);
 void ath9k_deinit_wmi(struct ath9k_htc_priv *priv);
+=======
+
+	/* multi rmw section */
+	atomic_t m_rmw_cnt;
+	struct register_rmw multi_rmw[MAX_RMW_CMD_NUMBER];
+	u32 multi_rmw_idx;
+	struct mutex multi_rmw_mutex;
+
+};
+
+struct wmi *ath9k_init_wmi(struct ath9k_htc_priv *priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ath9k_wmi_connect(struct htc_target *htc, struct wmi *wmi,
 		      enum htc_endpoint_id *wmi_ctrl_epid);
 int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
@@ -173,6 +215,11 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 void ath9k_wmi_event_tasklet(unsigned long data);
 void ath9k_fatal_work(struct work_struct *work);
 void ath9k_wmi_event_drain(struct ath9k_htc_priv *priv);
+<<<<<<< HEAD
+=======
+void ath9k_stop_wmi(struct ath9k_htc_priv *priv);
+void ath9k_destoy_wmi(struct ath9k_htc_priv *priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define WMI_CMD(_wmi_cmd)						\
 	do {								\

@@ -31,5 +31,9 @@ consumers.
 Trigger Consumers
 
 Currently triggers are only used for the filling of software
+<<<<<<< HEAD
 buffers and as such any device supporting INDIO_RING_TRIGGERED has the
+=======
+buffers and as such any device supporting INDIO_BUFFER_TRIGGERED has the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 consumer interface automatically created.

@@ -333,6 +333,10 @@ static inline void qib_write_ureg(const struct qib_devdata *dd,
 				  enum qib_ureg regno, u64 value, int ctxt)
 {
 	u64 __iomem *ubase;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dd->userbase)
 		ubase = (u64 __iomem *)
 			((char __iomem *) dd->userbase +
@@ -834,14 +838,22 @@ static void qib_handle_6120_hwerrors(struct qib_devdata *dd, char *msg,
 		bits = (u32) ((hwerrs >>
 			       QLOGIC_IB_HWE_PCIEMEMPARITYERR_SHIFT) &
 			      QLOGIC_IB_HWE_PCIEMEMPARITYERR_MASK);
+<<<<<<< HEAD
 		snprintf(bitsmsg, sizeof dd->cspec->bitsmsgbuf,
+=======
+		snprintf(bitsmsg, sizeof(dd->cspec->bitsmsgbuf),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 "[PCIe Mem Parity Errs %x] ", bits);
 		strlcat(msg, bitsmsg, msgl);
 	}
 
 	if (hwerrs & _QIB_PLL_FAIL) {
 		isfatal = 1;
+<<<<<<< HEAD
 		snprintf(bitsmsg, sizeof dd->cspec->bitsmsgbuf,
+=======
+		snprintf(bitsmsg, sizeof(dd->cspec->bitsmsgbuf),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 "[PLL failed (%llx), InfiniPath hardware unusable]",
 			 (unsigned long long) hwerrs & _QIB_PLL_FAIL);
 		strlcat(msg, bitsmsg, msgl);
@@ -1014,7 +1026,11 @@ static void handle_6120_errors(struct qib_devdata *dd, u64 errs)
 
 	/* do these first, they are most important */
 	if (errs & ERR_MASK(HardwareErr))
+<<<<<<< HEAD
 		qib_handle_6120_hwerrors(dd, msg, sizeof dd->cspec->emsgbuf);
+=======
+		qib_handle_6120_hwerrors(dd, msg, sizeof(dd->cspec->emsgbuf));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		for (log_idx = 0; log_idx < QIB_EEP_LOG_CNT; ++log_idx)
 			if (errs & dd->eep_st_masks[log_idx].errs_to_log)
@@ -1062,7 +1078,11 @@ static void handle_6120_errors(struct qib_devdata *dd, u64 errs)
 	 */
 	mask = ERR_MASK(IBStatusChanged) | ERR_MASK(RcvEgrFullErr) |
 		ERR_MASK(RcvHdrFullErr) | ERR_MASK(HardwareErr);
+<<<<<<< HEAD
 	qib_decode_6120_err(dd, msg, sizeof dd->cspec->emsgbuf, errs & ~mask);
+=======
+	qib_decode_6120_err(dd, msg, sizeof(dd->cspec->emsgbuf), errs & ~mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (errs & E_SUM_PKTERRS)
 		qib_stats.sps_rcverrs++;
@@ -1634,9 +1654,13 @@ static irqreturn_t qib_6120intr(int irq, void *data)
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	qib_stats.sps_ints++;
 	if (dd->int_counter != (u32) -1)
 		dd->int_counter++;
+=======
+	this_cpu_inc(*dd->int_counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(istat & (~QLOGIC_IB_I_BITSEXTANT |
 			      QLOGIC_IB_I_GPIO | QLOGIC_IB_I_ERROR)))
@@ -1672,6 +1696,10 @@ static irqreturn_t qib_6120intr(int irq, void *data)
 		}
 		if (crcs) {
 			u32 cntr = dd->cspec->lli_counter;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cntr += crcs;
 			if (cntr) {
 				if (cntr > dd->cspec->lli_thresh) {
@@ -1724,6 +1752,10 @@ static void qib_setup_6120_interrupt(struct qib_devdata *dd)
 			"irq is 0, BIOS error?  Interrupts won't work\n");
 	else {
 		int ret;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = request_irq(dd->cspec->irq, qib_6120intr, 0,
 				  QIB_DRV_NAME, dd);
 		if (ret)
@@ -1808,7 +1840,12 @@ static int qib_6120_setup_reset(struct qib_devdata *dd)
 	 * isn't set.
 	 */
 	dd->flags &= ~(QIB_INITTED | QIB_PRESENT);
+<<<<<<< HEAD
 	dd->int_counter = 0; /* so we check interrupts work again */
+=======
+	/* so we check interrupts work again */
+	dd->z_int_counter = qib_int_counter(dd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	val = dd->control | QLOGIC_IB_C_RESET;
 	writeq(val, &dd->kregbase[kr_control]);
 	mb(); /* prevent compiler re-ordering around actual reset */
@@ -2928,6 +2965,10 @@ bail:
 static int qib_6120_set_loopback(struct qib_pportdata *ppd, const char *what)
 {
 	int ret = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!strncmp(what, "ibc", 3)) {
 		ppd->dd->cspec->ibcctrl |= SYM_MASK(IBCCtrl, Loopback);
 		qib_devinfo(ppd->dd->pcidev, "Enabling IB%u:%u IBC loopback\n",
@@ -2953,13 +2994,21 @@ static void pma_6120_timer(unsigned long data)
 	struct qib_ibport *ibp = &ppd->ibport_data;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&ibp->lock, flags);
+=======
+	spin_lock_irqsave(&ibp->rvp.lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cs->pma_sample_status == IB_PMA_SAMPLE_STATUS_STARTED) {
 		cs->pma_sample_status = IB_PMA_SAMPLE_STATUS_RUNNING;
 		qib_snapshot_counters(ppd, &cs->sword, &cs->rword,
 				      &cs->spkts, &cs->rpkts, &cs->xmit_wait);
 		mod_timer(&cs->pma_timer,
+<<<<<<< HEAD
 			  jiffies + usecs_to_jiffies(ibp->pma_sample_interval));
+=======
+		      jiffies + usecs_to_jiffies(ibp->rvp.pma_sample_interval));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (cs->pma_sample_status == IB_PMA_SAMPLE_STATUS_RUNNING) {
 		u64 ta, tb, tc, td, te;
 
@@ -2972,11 +3021,19 @@ static void pma_6120_timer(unsigned long data)
 		cs->rpkts = td - cs->rpkts;
 		cs->xmit_wait = te - cs->xmit_wait;
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&ibp->lock, flags);
 }
 
 /*
  * Note that the caller has the ibp->lock held.
+=======
+	spin_unlock_irqrestore(&ibp->rvp.lock, flags);
+}
+
+/*
+ * Note that the caller has the ibp->rvp.lock held.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static void qib_set_cntr_6120_sample(struct qib_pportdata *ppd, u32 intv,
 				     u32 start)
@@ -3169,6 +3226,10 @@ static void get_6120_chip_params(struct qib_devdata *dd)
 static void set_6120_baseaddrs(struct qib_devdata *dd)
 {
 	u32 cregbase;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cregbase = qib_read_kreg32(dd, kr_counterregbase);
 	dd->cspec->cregbase = (u64 __iomem *)
 		((char __iomem *) dd->kregbase + cregbase);
@@ -3264,7 +3325,13 @@ static int init_6120_variables(struct qib_devdata *dd)
 
 	dd->eep_st_masks[2].errs_to_log = ERR_MASK(ResetNegated);
 
+<<<<<<< HEAD
 	qib_init_pportdata(ppd, dd, 0, 1);
+=======
+	ret = qib_init_pportdata(ppd, dd, 0, 1);
+	if (ret)
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ppd->link_width_supported = IB_WIDTH_1X | IB_WIDTH_4X;
 	ppd->link_speed_supported = QIB_IB_SDR;
 	ppd->link_width_enabled = IB_WIDTH_4X;
@@ -3309,11 +3376,17 @@ static int init_6120_variables(struct qib_devdata *dd)
 	qib_6120_config_ctxts(dd);
 	qib_set_ctxtcnt(dd);
 
+<<<<<<< HEAD
 	if (qib_wc_pat) {
 		ret = init_chip_wc_pat(dd, 0);
 		if (ret)
 			goto bail;
 	}
+=======
+	ret = init_chip_wc_pat(dd, 0);
+	if (ret)
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_6120_baseaddrs(dd); /* set chip access pointers now */
 
 	ret = 0;
@@ -3462,6 +3535,16 @@ static int qib_6120_tempsense_rd(struct qib_devdata *dd, int regnum)
 	return -ENXIO;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_INFINIBAND_QIB_DCA
+static int qib_6120_notify_dca(struct qib_devdata *dd, unsigned long event)
+{
+	return 0;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Dummy function, as 6120 boards never disable EEPROM Write */
 static int qib_6120_eeprom_wen(struct qib_devdata *dd, int wen)
 {
@@ -3537,6 +3620,12 @@ struct qib_devdata *qib_init_iba6120_funcs(struct pci_dev *pdev,
 	dd->f_xgxs_reset        = qib_6120_xgxs_reset;
 	dd->f_writescratch      = writescratch;
 	dd->f_tempsense_rd	= qib_6120_tempsense_rd;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_INFINIBAND_QIB_DCA
+	dd->f_notify_dca = qib_6120_notify_dca;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Do remaining pcie setup and save pcie values in dd.
 	 * Any error printing is already done by the init code.

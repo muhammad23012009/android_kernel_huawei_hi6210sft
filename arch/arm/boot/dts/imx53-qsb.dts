@@ -11,11 +11,16 @@
  */
 
 /dts-v1/;
+<<<<<<< HEAD
 #include "imx53.dtsi"
+=======
+#include "imx53-qsb-common.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Freescale i.MX53 Quick Start Board";
 	compatible = "fsl,imx53-qsb", "fsl,imx53";
+<<<<<<< HEAD
 
 	memory {
 		reg = <0x70000000 0x40000000>;
@@ -160,6 +165,11 @@
 		reg = <0x1c>;
 	};
 
+=======
+};
+
+&i2c1 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pmic: dialog@48 {
 		compatible = "dlg,da9053-aa", "dlg,da9052";
 		reg = <0x48>;
@@ -205,8 +215,13 @@
 			};
 
 			ldo3_reg: ldo3 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <600000>;
 				regulator-max-microvolt = <1800000>;
+=======
+				regulator-min-microvolt = <1725000>;
+				regulator-max-microvolt = <3300000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				regulator-always-on;
 			};
 
@@ -217,8 +232,13 @@
 			};
 
 			ldo5_reg: ldo5 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <1725000>;
 				regulator-max-microvolt = <3300000>;
+=======
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <3600000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				regulator-always-on;
 			};
 
@@ -241,19 +261,29 @@
 			};
 
 			ldo9_reg: ldo9 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <1200000>;
+=======
+				regulator-min-microvolt = <1250000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				regulator-max-microvolt = <3600000>;
 				regulator-always-on;
 			};
 
 			ldo10_reg: ldo10 {
+<<<<<<< HEAD
 				regulator-min-microvolt = <1250000>;
 				regulator-max-microvolt = <3650000>;
+=======
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <3600000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				regulator-always-on;
 			};
 		};
 	};
 };
+<<<<<<< HEAD
 
 &audmux {
 	pinctrl-names = "default";
@@ -268,3 +298,5 @@
 	phy-reset-gpios = <&gpio7 6 0>;
 	status = "okay";
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

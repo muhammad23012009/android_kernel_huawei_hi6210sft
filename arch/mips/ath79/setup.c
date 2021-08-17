@@ -17,12 +17,22 @@
 #include <linux/bootmem.h>
 #include <linux/err.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk-provider.h>
+#include <linux/of_fdt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/bootinfo.h>
 #include <asm/idle.h>
 #include <asm/time.h>		/* for mips_hpt_frequency */
 #include <asm/reboot.h>		/* for _machine_{restart,halt} */
 #include <asm/mips_machine.h>
+<<<<<<< HEAD
+=======
+#include <asm/prom.h>
+#include <asm/fw/fw.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-ath79/ath79.h>
 #include <asm/mach-ath79/ar71xx_regs.h>
@@ -32,14 +42,21 @@
 
 #define ATH79_SYS_TYPE_LEN	64
 
+<<<<<<< HEAD
 #define AR71XX_BASE_FREQ	40000000
 #define AR724X_BASE_FREQ	5000000
 #define AR913X_BASE_FREQ	5000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static char ath79_sys_type[ATH79_SYS_TYPE_LEN];
 
 static void ath79_restart(char *command)
 {
+<<<<<<< HEAD
+=======
+	local_irq_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ath79_device_reset_set(AR71XX_RESET_FULL_CHIP);
 	for (;;)
 		if (cpu_wait)
@@ -182,13 +199,24 @@ const char *get_system_type(void)
 	return ath79_sys_type;
 }
 
+<<<<<<< HEAD
 unsigned int __cpuinit get_c0_compare_int(void)
+=======
+int get_c0_perfcount_int(void)
+{
+	return ATH79_MISC_IRQ(5);
+}
+EXPORT_SYMBOL_GPL(get_c0_perfcount_int);
+
+unsigned int get_c0_compare_int(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return CP0_LEGACY_COMPARE_IRQ;
 }
 
 void __init plat_mem_setup(void)
 {
+<<<<<<< HEAD
 	set_io_port_base(KSEG1);
 
 	ath79_reset_base = ioremap_nocache(AR71XX_RESET_BASE,
@@ -203,10 +231,38 @@ void __init plat_mem_setup(void)
 	ath79_clocks_init();
 
 	_machine_restart = ath79_restart;
+=======
+	unsigned long fdt_start;
+
+	set_io_port_base(KSEG1);
+
+	/* Get the position of the FDT passed by the bootloader */
+	fdt_start = fw_getenvl("fdt_start");
+	if (fdt_start)
+		__dt_setup_arch((void *)KSEG0ADDR(fdt_start));
+	else if (fw_passed_dtb)
+		__dt_setup_arch((void *)KSEG0ADDR(fw_passed_dtb));
+
+	if (mips_machtype != ATH79_MACH_GENERIC_OF) {
+		ath79_reset_base = ioremap_nocache(AR71XX_RESET_BASE,
+						   AR71XX_RESET_SIZE);
+		ath79_pll_base = ioremap_nocache(AR71XX_PLL_BASE,
+						 AR71XX_PLL_SIZE);
+		ath79_detect_sys_type();
+		ath79_ddr_ctrl_init();
+
+		detect_memory_region(0, ATH79_MEM_SIZE_MIN, ATH79_MEM_SIZE_MAX);
+
+		/* OF machines should use the reset driver */
+		_machine_restart = ath79_restart;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_machine_halt = ath79_halt;
 	pm_power_off = ath79_halt;
 }
 
+<<<<<<< HEAD
 void __init plat_time_init(void)
 {
 	struct clk *clk;
@@ -216,10 +272,74 @@ void __init plat_time_init(void)
 		panic("unable to get CPU clock, err=%ld", PTR_ERR(clk));
 
 	mips_hpt_frequency = clk_get_rate(clk) / 2;
+=======
+static void __init ath79_of_plat_time_init(void)
+{
+	struct device_node *np;
+	struct clk *clk;
+	unsigned long cpu_clk_rate;
+
+	of_clk_init(NULL);
+
+	np = of_get_cpu_node(0, NULL);
+	if (!np) {
+		pr_err("Failed to get CPU node\n");
+		return;
+	}
+
+	clk = of_clk_get(np, 0);
+	if (IS_ERR(clk)) {
+		pr_err("Failed to get CPU clock: %ld\n", PTR_ERR(clk));
+		return;
+	}
+
+	cpu_clk_rate = clk_get_rate(clk);
+
+	pr_info("CPU clock: %lu.%03lu MHz\n",
+		cpu_clk_rate / 1000000, (cpu_clk_rate / 1000) % 1000);
+
+	mips_hpt_frequency = cpu_clk_rate / 2;
+
+	clk_put(clk);
+}
+
+void __init plat_time_init(void)
+{
+	unsigned long cpu_clk_rate;
+	unsigned long ahb_clk_rate;
+	unsigned long ddr_clk_rate;
+	unsigned long ref_clk_rate;
+
+	if (IS_ENABLED(CONFIG_OF) && mips_machtype == ATH79_MACH_GENERIC_OF) {
+		ath79_of_plat_time_init();
+		return;
+	}
+
+	ath79_clocks_init();
+
+	cpu_clk_rate = ath79_get_sys_clk_rate("cpu");
+	ahb_clk_rate = ath79_get_sys_clk_rate("ahb");
+	ddr_clk_rate = ath79_get_sys_clk_rate("ddr");
+	ref_clk_rate = ath79_get_sys_clk_rate("ref");
+
+	pr_info("Clocks: CPU:%lu.%03luMHz, DDR:%lu.%03luMHz, AHB:%lu.%03luMHz, Ref:%lu.%03luMHz\n",
+		cpu_clk_rate / 1000000, (cpu_clk_rate / 1000) % 1000,
+		ddr_clk_rate / 1000000, (ddr_clk_rate / 1000) % 1000,
+		ahb_clk_rate / 1000000, (ahb_clk_rate / 1000) % 1000,
+		ref_clk_rate / 1000000, (ref_clk_rate / 1000) % 1000);
+
+	mips_hpt_frequency = cpu_clk_rate / 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init ath79_setup(void)
 {
+<<<<<<< HEAD
+=======
+	if  (mips_machtype == ATH79_MACH_GENERIC_OF)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ath79_gpio_init();
 	ath79_register_uart();
 	ath79_register_wdt();
@@ -231,12 +351,27 @@ static int __init ath79_setup(void)
 
 arch_initcall(ath79_setup);
 
+<<<<<<< HEAD
 static void __init ath79_generic_init(void)
 {
 	/* Nothing to do */
+=======
+void __init device_tree_init(void)
+{
+	unflatten_and_copy_device_tree();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MIPS_MACHINE(ATH79_MACH_GENERIC,
 	     "Generic",
 	     "Generic AR71XX/AR724X/AR913X based board",
+<<<<<<< HEAD
 	     ath79_generic_init);
+=======
+	     NULL);
+
+MIPS_MACHINE(ATH79_MACH_GENERIC_OF,
+	     "DTB",
+	     "Generic AR71XX/AR724X/AR913X based board (DT)",
+	     NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

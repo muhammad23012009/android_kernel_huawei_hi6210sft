@@ -2,7 +2,11 @@
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
  * Based on the r8180 driver, which is:
+<<<<<<< HEAD
  * Copyright 2004-2005 Andrea Merello <andreamrl@tiscali.it>, et al.
+=======
+ * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -12,10 +16,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -30,8 +37,11 @@
 #define DRV_NAME "rtllib_92e"
 #endif
 
+<<<<<<< HEAD
 #define DMESG(x, a...)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern u32 rt_global_debug_component;
 
 /* These are the defines for rt_global_debug_component */
@@ -40,10 +50,14 @@ enum RTL_DEBUG {
 	COMP_DBG		= (1 << 1),
 	COMP_INIT		= (1 << 2),
 	COMP_RECV		= (1 << 3),
+<<<<<<< HEAD
 	COMP_SEND		= (1 << 4),
 	COMP_CMD		= (1 << 5),
 	COMP_POWER		= (1 << 6),
 	COMP_EPROM		= (1 << 7),
+=======
+	COMP_POWER		= (1 << 6),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	COMP_SWBW		= (1 << 8),
 	COMP_SEC		= (1 << 9),
 	COMP_LPS		= (1 << 10),
@@ -58,21 +72,28 @@ enum RTL_DEBUG {
 	COMP_CH			= (1 << 19),
 	COMP_RF			= (1 << 20),
 	COMP_FIRMWARE		= (1 << 21),
+<<<<<<< HEAD
 	COMP_HT			= (1 << 22),
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	COMP_RESET		= (1 << 23),
 	COMP_CMDPKT		= (1 << 24),
 	COMP_SCAN		= (1 << 25),
 	COMP_PS			= (1 << 26),
 	COMP_DOWN		= (1 << 27),
 	COMP_INTR		= (1 << 28),
+<<<<<<< HEAD
 	COMP_LED		= (1 << 29),
 	COMP_MLME		= (1 << 30),
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	COMP_ERR		= (1 << 31)
 };
 
 #define RT_TRACE(component, x, args...)		\
 do {			\
 	if (rt_global_debug_component & component) \
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ":" x "\n" , \
 		       ##args);\
 } while (0);
@@ -82,5 +103,9 @@ do {			\
 		printk(KERN_INFO "Assertion failed! %s,%s,%s,line=%d\n", \
 		#expr, __FILE__, __func__, __LINE__);	  \
 	}
+=======
+		printk(KERN_DEBUG DRV_NAME ":" x "\n", ##args);\
+} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

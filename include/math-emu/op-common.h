@@ -685,7 +685,11 @@ do {									\
 	    else								\
 	      {									\
 		r = 0;								\
+<<<<<<< HEAD
 		if (X##_s)							\
+=======
+		if (!X##_s)							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  r = ~r;							\
 	      }									\
 	    FP_SET_EXCEPTION(FP_EX_INVALID);					\
@@ -743,12 +747,24 @@ do {									\
 	  }									\
 	else									\
 	  {									\
+<<<<<<< HEAD
+=======
+	    int _lz0, _lz1;							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    if (X##_e <= -_FP_WORKBITS - 1)					\
 	      _FP_FRAC_SET_##wc(X, _FP_MINFRAC_##wc);				\
 	    else								\
 	      _FP_FRAC_SRS_##wc(X, _FP_FRACBITS_##fs - 1 - X##_e,		\
 				_FP_WFRACBITS_##fs);				\
+<<<<<<< HEAD
 	    _FP_ROUND(wc, X);							\
+=======
+	    _FP_FRAC_CLZ_##wc(_lz0, X);						\
+	    _FP_ROUND(wc, X);							\
+	    _FP_FRAC_CLZ_##wc(_lz1, X);						\
+	    if (_lz1 < _lz0)							\
+	      X##_e++; /* For overflow detection.  */				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    _FP_FRAC_SRL_##wc(X, _FP_WORKBITS);					\
 	    _FP_FRAC_ASSEMBLE_##wc(r, X, rsize);				\
 	  }									\
@@ -762,7 +778,11 @@ do {									\
 	    if (!rsigned)							\
 	      {									\
 		r = 0;								\
+<<<<<<< HEAD
 		if (X##_s)							\
+=======
+		if (!X##_s)							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  r = ~r;							\
 	      }									\
 	    else if (rsigned != 2)						\

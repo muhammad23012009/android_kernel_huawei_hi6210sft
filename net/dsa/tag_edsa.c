@@ -10,21 +10,31 @@
 
 #include <linux/etherdevice.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/netdevice.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include "dsa_priv.h"
 
 #define DSA_HLEN	4
 #define EDSA_HLEN	8
 
+<<<<<<< HEAD
 netdev_tx_t edsa_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static struct sk_buff *edsa_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dsa_slave_priv *p = netdev_priv(dev);
 	u8 *edsa_header;
 
+<<<<<<< HEAD
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Convert the outermost 802.1q tag to a DSA tag and prepend
 	 * a DSA ethertype field is the packet is tagged, or insert
@@ -77,6 +87,7 @@ netdev_tx_t edsa_xmit(struct sk_buff *skb, struct net_device *dev)
 		edsa_header[7] = 0x00;
 	}
 
+<<<<<<< HEAD
 	skb->protocol = htons(ETH_P_EDSA);
 
 	skb->dev = p->parent->dst->master_netdev;
@@ -87,6 +98,13 @@ netdev_tx_t edsa_xmit(struct sk_buff *skb, struct net_device *dev)
 out_free:
 	kfree_skb(skb);
 	return NETDEV_TX_OK;
+=======
+	return skb;
+
+out_free:
+	kfree_skb(skb);
+	return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int edsa_rcv(struct sk_buff *skb, struct net_device *dev,
@@ -129,10 +147,21 @@ static int edsa_rcv(struct sk_buff *skb, struct net_device *dev,
 	 * Check that the source device exists and that the source
 	 * port is a registered DSA port.
 	 */
+<<<<<<< HEAD
 	if (source_device >= dst->pd->nr_chips)
 		goto out_drop;
 	ds = dst->ds[source_device];
 	if (source_port >= DSA_MAX_PORTS || ds->ports[source_port] == NULL)
+=======
+	if (source_device >= DSA_MAX_SWITCHES)
+		goto out_drop;
+
+	ds = dst->ds[source_device];
+	if (!ds)
+		goto out_drop;
+
+	if (source_port >= DSA_MAX_PORTS || !ds->ports[source_port].netdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_drop;
 
 	/*
@@ -187,7 +216,11 @@ static int edsa_rcv(struct sk_buff *skb, struct net_device *dev,
 			2 * ETH_ALEN);
 	}
 
+<<<<<<< HEAD
 	skb->dev = ds->ports[source_port];
+=======
+	skb->dev = ds->ports[source_port].netdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_push(skb, ETH_HLEN);
 	skb->pkt_type = PACKET_HOST;
 	skb->protocol = eth_type_trans(skb, skb->dev);
@@ -205,7 +238,13 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 struct packet_type edsa_packet_type __read_mostly = {
 	.type	= cpu_to_be16(ETH_P_EDSA),
 	.func	= edsa_rcv,
+=======
+const struct dsa_device_ops edsa_netdev_ops = {
+	.xmit	= edsa_xmit,
+	.rcv	= edsa_rcv,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

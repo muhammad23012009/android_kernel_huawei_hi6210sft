@@ -144,7 +144,11 @@ struct ep93xx_dma_desc {
  * @queue: pending descriptors which are handled next
  * @free_list: list of free descriptors which can be used
  * @runtime_addr: physical address currently used as dest/src (M2M only). This
+<<<<<<< HEAD
  *                is set via %DMA_SLAVE_CONFIG before slave operation is
+=======
+ *                is set via .device_config before slave operation is
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *                prepared
  * @runtime_ctrl: M2M runtime values for the control register.
  *
@@ -201,6 +205,10 @@ struct ep93xx_dma_engine {
 	struct dma_device	dma_dev;
 	bool			m2m;
 	int			(*hw_setup)(struct ep93xx_dma_chan *);
+<<<<<<< HEAD
+=======
+	void			(*hw_synchronize)(struct ep93xx_dma_chan *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void			(*hw_shutdown)(struct ep93xx_dma_chan *);
 	void			(*hw_submit)(struct ep93xx_dma_chan *);
 	int			(*hw_interrupt)(struct ep93xx_dma_chan *);
@@ -262,10 +270,15 @@ static void ep93xx_dma_set_active(struct ep93xx_dma_chan *edmac,
 static struct ep93xx_dma_desc *
 ep93xx_dma_get_active(struct ep93xx_dma_chan *edmac)
 {
+<<<<<<< HEAD
 	if (list_empty(&edmac->active))
 		return NULL;
 
 	return list_first_entry(&edmac->active, struct ep93xx_dma_desc, node);
+=======
+	return list_first_entry_or_null(&edmac->active,
+					struct ep93xx_dma_desc, node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -325,6 +338,11 @@ static int m2p_hw_setup(struct ep93xx_dma_chan *edmac)
 		| M2P_CONTROL_ENABLE;
 	m2p_set_control(edmac, control);
 
+<<<<<<< HEAD
+=======
+	edmac->buffer = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -333,6 +351,7 @@ static inline u32 m2p_channel_state(struct ep93xx_dma_chan *edmac)
 	return (readl(edmac->regs + M2P_STATUS) >> 4) & 0x3;
 }
 
+<<<<<<< HEAD
 static void m2p_hw_shutdown(struct ep93xx_dma_chan *edmac)
 {
 	u32 control;
@@ -348,6 +367,29 @@ static void m2p_hw_shutdown(struct ep93xx_dma_chan *edmac)
 
 	while (m2p_channel_state(edmac) == M2P_STATE_STALL)
 		cpu_relax();
+=======
+static void m2p_hw_synchronize(struct ep93xx_dma_chan *edmac)
+{
+	unsigned long flags;
+	u32 control;
+
+	spin_lock_irqsave(&edmac->lock, flags);
+	control = readl(edmac->regs + M2P_CONTROL);
+	control &= ~(M2P_CONTROL_STALLINT | M2P_CONTROL_NFBINT);
+	m2p_set_control(edmac, control);
+	spin_unlock_irqrestore(&edmac->lock, flags);
+
+	while (m2p_channel_state(edmac) >= M2P_STATE_ON)
+		schedule();
+}
+
+static void m2p_hw_shutdown(struct ep93xx_dma_chan *edmac)
+{
+	m2p_set_control(edmac, 0);
+
+	while (m2p_channel_state(edmac) != M2P_STATE_IDLE)
+		dev_warn(chan2dev(edmac), "M2P: Not yet IDLE\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void m2p_fill_desc(struct ep93xx_dma_chan *edmac)
@@ -421,6 +463,7 @@ static int m2p_hw_interrupt(struct ep93xx_dma_chan *edmac)
 			desc->size);
 	}
 
+<<<<<<< HEAD
 	switch (irq_status & (M2P_INTERRUPT_STALL | M2P_INTERRUPT_NFB)) {
 	case M2P_INTERRUPT_STALL:
 		/* Disable interrupts */
@@ -438,6 +481,27 @@ static int m2p_hw_interrupt(struct ep93xx_dma_chan *edmac)
 	}
 
 	return INTERRUPT_UNKNOWN;
+=======
+	/*
+	 * Even latest E2 silicon revision sometimes assert STALL interrupt
+	 * instead of NFB. Therefore we treat them equally, basing on the
+	 * amount of data we still have to transfer.
+	 */
+	if (!(irq_status & (M2P_INTERRUPT_STALL | M2P_INTERRUPT_NFB)))
+		return INTERRUPT_UNKNOWN;
+
+	if (ep93xx_dma_advance_active(edmac)) {
+		m2p_fill_desc(edmac);
+		return INTERRUPT_NEXT_BUFFER;
+	}
+
+	/* Disable interrupts */
+	control = readl(edmac->regs + M2P_CONTROL);
+	control &= ~(M2P_CONTROL_STALLINT | M2P_CONTROL_NFBINT);
+	m2p_set_control(edmac, control);
+
+	return INTERRUPT_DONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -733,6 +797,7 @@ static void ep93xx_dma_advance_work(struct ep93xx_dma_chan *edmac)
 	spin_unlock_irqrestore(&edmac->lock, flags);
 }
 
+<<<<<<< HEAD
 static void ep93xx_dma_unmap_buffers(struct ep93xx_dma_desc *desc)
 {
 	struct device *dev = desc->txd.chan->device->dev;
@@ -755,14 +820,23 @@ static void ep93xx_dma_unmap_buffers(struct ep93xx_dma_desc *desc)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ep93xx_dma_tasklet(unsigned long data)
 {
 	struct ep93xx_dma_chan *edmac = (struct ep93xx_dma_chan *)data;
 	struct ep93xx_dma_desc *desc, *d;
+<<<<<<< HEAD
 	dma_async_tx_callback callback = NULL;
 	void *callback_param = NULL;
 	LIST_HEAD(list);
 
+=======
+	struct dmaengine_desc_callback cb;
+	LIST_HEAD(list);
+
+	memset(&cb, 0, sizeof(cb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&edmac->lock);
 	/*
 	 * If dma_terminate_all() was called before we get to run, the active
@@ -777,8 +851,12 @@ static void ep93xx_dma_tasklet(unsigned long data)
 				dma_cookie_complete(&desc->txd);
 			list_splice_init(&edmac->active, &list);
 		}
+<<<<<<< HEAD
 		callback = desc->txd.callback;
 		callback_param = desc->txd.callback_param;
+=======
+		dmaengine_desc_get_callback(&desc->txd, &cb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock_irq(&edmac->lock);
 
@@ -787,6 +865,7 @@ static void ep93xx_dma_tasklet(unsigned long data)
 
 	/* Now we can release all the chained descriptors */
 	list_for_each_entry_safe(desc, d, &list, node) {
+<<<<<<< HEAD
 		/*
 		 * For the memcpy channels the API requires us to unmap the
 		 * buffers unless requested otherwise.
@@ -799,6 +878,13 @@ static void ep93xx_dma_tasklet(unsigned long data)
 
 	if (callback)
 		callback(callback_param);
+=======
+		dma_descriptor_unmap(&desc->txd);
+		ep93xx_dma_desc_put(edmac, desc);
+	}
+
+	dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static irqreturn_t ep93xx_dma_interrupt(int irq, void *dev_id)
@@ -1073,11 +1159,19 @@ ep93xx_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 
 	first = NULL;
 	for_each_sg(sgl, sg, sg_len, i) {
+<<<<<<< HEAD
 		size_t sg_len = sg_dma_len(sg);
 
 		if (sg_len > DMA_MAX_CHAN_BYTES) {
 			dev_warn(chan2dev(edmac), "too big transfer size %d\n",
 				 sg_len);
+=======
+		size_t len = sg_dma_len(sg);
+
+		if (len > DMA_MAX_CHAN_BYTES) {
+			dev_warn(chan2dev(edmac), "too big transfer size %zu\n",
+				 len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto fail;
 		}
 
@@ -1094,7 +1188,11 @@ ep93xx_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 			desc->src_addr = edmac->runtime_addr;
 			desc->dst_addr = sg_dma_address(sg);
 		}
+<<<<<<< HEAD
 		desc->size = sg_len;
+=======
+		desc->size = len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!first)
 			first = desc;
@@ -1120,7 +1218,10 @@ fail:
  * @period_len: length of a single period
  * @dir: direction of the operation
  * @flags: tx descriptor status flags
+<<<<<<< HEAD
  * @context: operation context (ignored)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Prepares a descriptor for cyclic DMA operation. This means that once the
  * descriptor is submitted, we will be submitting in a @period_len sized
@@ -1133,8 +1234,12 @@ fail:
 static struct dma_async_tx_descriptor *
 ep93xx_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t dma_addr,
 			   size_t buf_len, size_t period_len,
+<<<<<<< HEAD
 			   enum dma_transfer_direction dir, unsigned long flags,
 			   void *context)
+=======
+			   enum dma_transfer_direction dir, unsigned long flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
 	struct ep93xx_dma_desc *desc, *first;
@@ -1153,7 +1258,11 @@ ep93xx_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t dma_addr,
 	}
 
 	if (period_len > DMA_MAX_CHAN_BYTES) {
+<<<<<<< HEAD
 		dev_warn(chan2dev(edmac), "too big period length %d\n",
+=======
+		dev_warn(chan2dev(edmac), "too big period length %zu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 period_len);
 		return NULL;
 	}
@@ -1193,14 +1302,45 @@ fail:
 }
 
 /**
+<<<<<<< HEAD
  * ep93xx_dma_terminate_all - terminate all transactions
  * @edmac: channel
+=======
+ * ep93xx_dma_synchronize - Synchronizes the termination of transfers to the
+ * current context.
+ * @chan: channel
+ *
+ * Synchronizes the DMA channel termination to the current context. When this
+ * function returns it is guaranteed that all transfers for previously issued
+ * descriptors have stopped and and it is safe to free the memory associated
+ * with them. Furthermore it is guaranteed that all complete callback functions
+ * for a previously submitted descriptor have finished running and it is safe to
+ * free resources accessed from within the complete callbacks.
+ */
+static void ep93xx_dma_synchronize(struct dma_chan *chan)
+{
+	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
+
+	if (edmac->edma->hw_synchronize)
+		edmac->edma->hw_synchronize(edmac);
+}
+
+/**
+ * ep93xx_dma_terminate_all - terminate all transactions
+ * @chan: channel
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Stops all DMA transactions. All descriptors are put back to the
  * @edmac->free_list and callbacks are _not_ called.
  */
+<<<<<<< HEAD
 static int ep93xx_dma_terminate_all(struct ep93xx_dma_chan *edmac)
 {
+=======
+static int ep93xx_dma_terminate_all(struct dma_chan *chan)
+{
+	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ep93xx_dma_desc *desc, *_d;
 	unsigned long flags;
 	LIST_HEAD(list);
@@ -1224,9 +1364,16 @@ static int ep93xx_dma_terminate_all(struct ep93xx_dma_chan *edmac)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ep93xx_dma_slave_config(struct ep93xx_dma_chan *edmac,
 				   struct dma_slave_config *config)
 {
+=======
+static int ep93xx_dma_slave_config(struct dma_chan *chan,
+				   struct dma_slave_config *config)
+{
+	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum dma_slave_buswidth width;
 	unsigned long flags;
 	u32 addr, ctrl;
@@ -1272,6 +1419,7 @@ static int ep93xx_dma_slave_config(struct ep93xx_dma_chan *edmac,
 }
 
 /**
+<<<<<<< HEAD
  * ep93xx_dma_control - manipulate all pending operations on a channel
  * @chan: channel
  * @cmd: control command to perform
@@ -1302,6 +1450,8 @@ static int ep93xx_dma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ep93xx_dma_tx_status - check if a transaction is completed
  * @chan: channel
  * @cookie: transaction specific cookie
@@ -1313,6 +1463,7 @@ static enum dma_status ep93xx_dma_tx_status(struct dma_chan *chan,
 					    dma_cookie_t cookie,
 					    struct dma_tx_state *state)
 {
+<<<<<<< HEAD
 	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
 	enum dma_status ret;
 	unsigned long flags;
@@ -1322,6 +1473,9 @@ static enum dma_status ep93xx_dma_tx_status(struct dma_chan *chan,
 	spin_unlock_irqrestore(&edmac->lock, flags);
 
 	return ret;
+=======
+	return dma_cookie_status(chan, cookie, state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -1390,7 +1544,13 @@ static int __init ep93xx_dma_probe(struct platform_device *pdev)
 	dma_dev->device_free_chan_resources = ep93xx_dma_free_chan_resources;
 	dma_dev->device_prep_slave_sg = ep93xx_dma_prep_slave_sg;
 	dma_dev->device_prep_dma_cyclic = ep93xx_dma_prep_dma_cyclic;
+<<<<<<< HEAD
 	dma_dev->device_control = ep93xx_dma_control;
+=======
+	dma_dev->device_config = ep93xx_dma_slave_config;
+	dma_dev->device_synchronize = ep93xx_dma_synchronize;
+	dma_dev->device_terminate_all = ep93xx_dma_terminate_all;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_dev->device_issue_pending = ep93xx_dma_issue_pending;
 	dma_dev->device_tx_status = ep93xx_dma_tx_status;
 
@@ -1407,6 +1567,10 @@ static int __init ep93xx_dma_probe(struct platform_device *pdev)
 	} else {
 		dma_cap_set(DMA_PRIVATE, dma_dev->cap_mask);
 
+<<<<<<< HEAD
+=======
+		edma->hw_synchronize = m2p_hw_synchronize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		edma->hw_setup = m2p_hw_setup;
 		edma->hw_shutdown = m2p_hw_shutdown;
 		edma->hw_submit = m2p_hw_submit;
@@ -1429,7 +1593,11 @@ static int __init ep93xx_dma_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id ep93xx_dma_driver_ids[] = {
+=======
+static const struct platform_device_id ep93xx_dma_driver_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "ep93xx-dma-m2p", 0 },
 	{ "ep93xx-dma-m2m", 1 },
 	{ },

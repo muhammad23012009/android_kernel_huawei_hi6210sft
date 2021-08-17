@@ -11,6 +11,7 @@ static void show_cpuinfo_core(struct seq_file *m, struct cpuinfo_x86 *c,
 			      unsigned int cpu)
 {
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	if (c->x86_max_cores * smp_num_siblings > 1) {
 		seq_printf(m, "physical id\t: %d\n", c->phys_proc_id);
 		seq_printf(m, "siblings\t: %d\n",
@@ -20,6 +21,15 @@ static void show_cpuinfo_core(struct seq_file *m, struct cpuinfo_x86 *c,
 		seq_printf(m, "apicid\t\t: %d\n", c->apicid);
 		seq_printf(m, "initial apicid\t: %d\n", c->initial_apicid);
 	}
+=======
+	seq_printf(m, "physical id\t: %d\n", c->phys_proc_id);
+	seq_printf(m, "siblings\t: %d\n",
+		   cpumask_weight(topology_core_cpumask(cpu)));
+	seq_printf(m, "core id\t\t: %d\n", c->cpu_core_id);
+	seq_printf(m, "cpu cores\t: %d\n", c->booted_cores);
+	seq_printf(m, "apicid\t\t: %d\n", c->apicid);
+	seq_printf(m, "initial apicid\t: %d\n", c->initial_apicid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 }
 
@@ -37,8 +47,13 @@ static void show_cpuinfo_misc(struct seq_file *m, struct cpuinfo_x86 *c)
 		   static_cpu_has_bug(X86_BUG_FDIV) ? "yes" : "no",
 		   static_cpu_has_bug(X86_BUG_F00F) ? "yes" : "no",
 		   static_cpu_has_bug(X86_BUG_COMA) ? "yes" : "no",
+<<<<<<< HEAD
 		   c->hard_math ? "yes" : "no",
 		   c->hard_math ? "yes" : "no",
+=======
+		   static_cpu_has(X86_FEATURE_FPU) ? "yes" : "no",
+		   static_cpu_has(X86_FEATURE_FPU) ? "yes" : "no",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   c->cpuid_level,
 		   c->wp_works_ok ? "yes" : "no");
 }
@@ -72,10 +87,17 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 		   c->x86_model,
 		   c->x86_model_id[0] ? c->x86_model_id : "unknown");
 
+<<<<<<< HEAD
 	if (c->x86_mask || c->cpuid_level >= 0)
 		seq_printf(m, "stepping\t: %d\n", c->x86_mask);
 	else
 		seq_printf(m, "stepping\t: unknown\n");
+=======
+	if (c->x86_stepping || c->cpuid_level >= 0)
+		seq_printf(m, "stepping\t: %d\n", c->x86_stepping);
+	else
+		seq_puts(m, "stepping\t: unknown\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (c->microcode)
 		seq_printf(m, "microcode\t: 0x%x\n", c->microcode);
 
@@ -89,17 +111,37 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 	}
 
 	/* Cache size */
+<<<<<<< HEAD
 	if (c->x86_cache_size >= 0)
 		seq_printf(m, "cache size\t: %d KB\n", c->x86_cache_size);
+=======
+	if (c->x86_cache_size)
+		seq_printf(m, "cache size\t: %u KB\n", c->x86_cache_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	show_cpuinfo_core(m, c, cpu);
 	show_cpuinfo_misc(m, c);
 
+<<<<<<< HEAD
 	seq_printf(m, "flags\t\t:");
+=======
+	seq_puts(m, "flags\t\t:");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < 32*NCAPINTS; i++)
 		if (cpu_has(c, i) && x86_cap_flags[i] != NULL)
 			seq_printf(m, " %s", x86_cap_flags[i]);
 
+<<<<<<< HEAD
+=======
+	seq_puts(m, "\nbugs\t\t:");
+	for (i = 0; i < 32*NBUGINTS; i++) {
+		unsigned int bug_bit = 32*NCAPINTS + i;
+
+		if (cpu_has_bug(c, bug_bit) && x86_bug_flags[i])
+			seq_printf(m, " %s", x86_bug_flags[i]);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(m, "\nbogomips\t: %lu.%02lu\n",
 		   c->loops_per_jiffy/(500000/HZ),
 		   (c->loops_per_jiffy/(5000/HZ)) % 100);
@@ -113,7 +155,11 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 	seq_printf(m, "address sizes\t: %u bits physical, %u bits virtual\n",
 		   c->x86_phys_bits, c->x86_virt_bits);
 
+<<<<<<< HEAD
 	seq_printf(m, "power management:");
+=======
+	seq_puts(m, "power management:");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < 32; i++) {
 		if (c->x86_power & (1 << i)) {
 			if (i < ARRAY_SIZE(x86_power_flags) &&
@@ -126,7 +172,11 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 		}
 	}
 
+<<<<<<< HEAD
 	seq_printf(m, "\n\n");
+=======
+	seq_puts(m, "\n\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

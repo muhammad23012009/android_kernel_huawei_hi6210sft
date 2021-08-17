@@ -33,9 +33,12 @@ static inline int twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
 
 static inline void twsk_destructor(struct sock *sk)
 {
+<<<<<<< HEAD
 	BUG_ON(sk == NULL);
 	BUG_ON(sk->sk_prot == NULL);
 	BUG_ON(sk->sk_prot->twsk_prot == NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sk->sk_prot->twsk_prot->twsk_destructor != NULL)
 		sk->sk_prot->twsk_prot->twsk_destructor(sk);
 }

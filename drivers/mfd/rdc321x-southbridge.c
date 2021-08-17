@@ -19,7 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -39,7 +42,11 @@ static struct resource rdc321x_wdt_resource[] = {
 };
 
 static struct rdc321x_gpio_pdata rdc321x_gpio_pdata = {
+<<<<<<< HEAD
 	.max_gpios	= RDC321X_MAX_GPIO,
+=======
+	.max_gpios	= RDC321X_NUM_GPIO,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource rdc321x_gpio_resources[] = {
@@ -56,7 +63,11 @@ static struct resource rdc321x_gpio_resources[] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct mfd_cell rdc321x_sb_cells[] = {
+=======
+static const struct mfd_cell rdc321x_sb_cells[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "rdc321x-wdt",
 		.resources	= rdc321x_wdt_resource,
@@ -86,6 +97,7 @@ static int rdc321x_sb_probe(struct pci_dev *pdev,
 	rdc321x_gpio_pdata.sb_pdev = pdev;
 	rdc321x_wdt_pdata.sb_pdev = pdev;
 
+<<<<<<< HEAD
 	return mfd_add_devices(&pdev->dev, -1,
 			       rdc321x_sb_cells, ARRAY_SIZE(rdc321x_sb_cells),
 			       NULL, 0, NULL);
@@ -97,6 +109,15 @@ static void rdc321x_sb_remove(struct pci_dev *pdev)
 }
 
 static DEFINE_PCI_DEVICE_TABLE(rdc321x_sb_table) = {
+=======
+	return devm_mfd_add_devices(&pdev->dev, -1,
+				    rdc321x_sb_cells,
+				    ARRAY_SIZE(rdc321x_sb_cells),
+				    NULL, 0, NULL);
+}
+
+static const struct pci_device_id rdc321x_sb_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_RDC, PCI_DEVICE_ID_RDC_R6030) },
 	{}
 };
@@ -106,7 +127,10 @@ static struct pci_driver rdc321x_sb_driver = {
 	.name		= "RDC321x Southbridge",
 	.id_table	= rdc321x_sb_table,
 	.probe		= rdc321x_sb_probe,
+<<<<<<< HEAD
 	.remove		= rdc321x_sb_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_pci_driver(rdc321x_sb_driver);

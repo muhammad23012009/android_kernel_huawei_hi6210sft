@@ -1,6 +1,11 @@
 /****************************************************************************
+<<<<<<< HEAD
  * Driver for Solarflare Solarstorm network controllers and boards
  * Copyright 2007-2010 Solarflare Communications Inc.
+=======
+ * Driver for Solarflare network controllers and boards
+ * Copyright 2007-2012 Solarflare Communications Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -64,7 +69,11 @@
 #define LM87_ALARM_TEMP_INT		0x10
 #define LM87_ALARM_TEMP_EXT1		0x20
 
+<<<<<<< HEAD
 #if defined(CONFIG_SENSORS_LM87) || defined(CONFIG_SENSORS_LM87_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SENSORS_LM87)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int efx_poke_lm87(struct i2c_client *client, const u8 *reg_values)
 {
@@ -455,7 +464,11 @@ static int sfe4001_init(struct efx_nic *efx)
 	struct falcon_board *board = falcon_board(efx);
 	int rc;
 
+<<<<<<< HEAD
 #if defined(CONFIG_SENSORS_LM90) || defined(CONFIG_SENSORS_LM90_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SENSORS_LM90)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	board->hwmon_client =
 		i2c_new_device(&board->i2c_adap, &sfe4001_hwmon_info);
 #else

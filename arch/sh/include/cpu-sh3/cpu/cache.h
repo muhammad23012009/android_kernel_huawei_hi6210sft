@@ -17,7 +17,11 @@
 #define SH_CACHE_COMBINED	4
 #define SH_CACHE_ASSOC		8
 
+<<<<<<< HEAD
 #define CCR		0xffffffec	/* Address of Cache Control Register */
+=======
+#define SH_CCR		0xffffffec	/* Address of Cache Control Register */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CCR_CACHE_CE	0x01	/* Cache Enable */
 #define CCR_CACHE_WT	0x02	/* Write-Through (for P0,U0,P3) (else writeback) */

@@ -18,15 +18,21 @@
 
 #include <asm/uaccess.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/segment.h>
 #include <asm/setup.h>
 #include <asm/macintosh.h>
 #include <asm/mac_via.h>
 #include <asm/mac_oss.h>
 
+<<<<<<< HEAD
 #define BOOTINFO_COMPAT_1_0
 #include <asm/bootinfo.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/machdep.h>
 
 /* Offset between Unix time (1970-based) and Mac time (1904-based) */

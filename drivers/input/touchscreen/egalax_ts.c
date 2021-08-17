@@ -18,7 +18,10 @@
 */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
 #include <linux/input.h>
@@ -166,6 +169,7 @@ static int egalax_firmware_version(struct i2c_client *client)
 }
 
 static int egalax_ts_probe(struct i2c_client *client,
+<<<<<<< HEAD
 				       const struct i2c_device_id *id)
 {
 	struct egalax_ts *ts;
@@ -174,16 +178,32 @@ static int egalax_ts_probe(struct i2c_client *client,
 	int error;
 
 	ts = kzalloc(sizeof(struct egalax_ts), GFP_KERNEL);
+=======
+			   const struct i2c_device_id *id)
+{
+	struct egalax_ts *ts;
+	struct input_dev *input_dev;
+	int error;
+
+	ts = devm_kzalloc(&client->dev, sizeof(struct egalax_ts), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ts) {
 		dev_err(&client->dev, "Failed to allocate memory\n");
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	input_dev = input_allocate_device();
 	if (!input_dev) {
 		dev_err(&client->dev, "Failed to allocate memory\n");
 		error = -ENOMEM;
 		goto err_free_ts;
+=======
+	input_dev = devm_input_allocate_device(&client->dev);
+	if (!input_dev) {
+		dev_err(&client->dev, "Failed to allocate memory\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ts->client = client;
@@ -193,6 +213,7 @@ static int egalax_ts_probe(struct i2c_client *client,
 	error = egalax_wake_up_device(client);
 	if (error) {
 		dev_err(&client->dev, "Failed to wake up the controller\n");
+<<<<<<< HEAD
 		goto err_free_dev;
 	}
 
@@ -201,11 +222,23 @@ static int egalax_ts_probe(struct i2c_client *client,
 		dev_err(&client->dev, "Failed to read firmware version\n");
 		error = -EIO;
 		goto err_free_dev;
+=======
+		return error;
+	}
+
+	error = egalax_firmware_version(client);
+	if (error < 0) {
+		dev_err(&client->dev, "Failed to read firmware version\n");
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	input_dev->name = "EETI eGalax Touch Screen";
 	input_dev->id.bustype = BUS_I2C;
+<<<<<<< HEAD
 	input_dev->dev.parent = &client->dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__set_bit(EV_ABS, input_dev->evbit);
 	__set_bit(EV_KEY, input_dev->evbit);
@@ -221,16 +254,27 @@ static int egalax_ts_probe(struct i2c_client *client,
 
 	input_set_drvdata(input_dev, ts);
 
+<<<<<<< HEAD
 	error = request_threaded_irq(client->irq, NULL, egalax_ts_interrupt,
 				     IRQF_TRIGGER_LOW | IRQF_ONESHOT,
 				     "egalax_ts", ts);
 	if (error < 0) {
 		dev_err(&client->dev, "Failed to register interrupt\n");
 		goto err_free_dev;
+=======
+	error = devm_request_threaded_irq(&client->dev, client->irq, NULL,
+					  egalax_ts_interrupt,
+					  IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+					  "egalax_ts", ts);
+	if (error < 0) {
+		dev_err(&client->dev, "Failed to register interrupt\n");
+		return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	error = input_register_device(ts->input_dev);
 	if (error)
+<<<<<<< HEAD
 		goto err_free_irq;
 
 	i2c_set_clientdata(client, ts);
@@ -256,6 +300,12 @@ static int egalax_ts_remove(struct i2c_client *client)
 	kfree(ts);
 
 	return 0;
+=======
+		return error;
+
+	i2c_set_clientdata(client, ts);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id egalax_ts_id[] = {
@@ -264,8 +314,12 @@ static const struct i2c_device_id egalax_ts_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, egalax_ts_id);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int egalax_ts_suspend(struct device *dev)
+=======
+static int __maybe_unused egalax_ts_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static const u8 suspend_cmd[MAX_I2C_DATA_LEN] = {
 		0x3, 0x6, 0xa, 0x3, 0x36, 0x3f, 0x2, 0, 0, 0
@@ -277,12 +331,17 @@ static int egalax_ts_suspend(struct device *dev)
 	return ret > 0 ? 0 : ret;
 }
 
+<<<<<<< HEAD
 static int egalax_ts_resume(struct device *dev)
+=======
+static int __maybe_unused egalax_ts_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
 	return egalax_wake_up_device(client);
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(egalax_ts_pm_ops, egalax_ts_suspend, egalax_ts_resume);
@@ -291,10 +350,21 @@ static struct of_device_id egalax_ts_dt_ids[] = {
 	{ .compatible = "eeti,egalax_ts" },
 	{ /* sentinel */ }
 };
+=======
+
+static SIMPLE_DEV_PM_OPS(egalax_ts_pm_ops, egalax_ts_suspend, egalax_ts_resume);
+
+static const struct of_device_id egalax_ts_dt_ids[] = {
+	{ .compatible = "eeti,egalax_ts" },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, egalax_ts_dt_ids);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct i2c_driver egalax_ts_driver = {
 	.driver = {
 		.name	= "egalax_ts",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &egalax_ts_pm_ops,
 		.of_match_table	= of_match_ptr(egalax_ts_dt_ids),
@@ -302,6 +372,13 @@ static struct i2c_driver egalax_ts_driver = {
 	.id_table	= egalax_ts_id,
 	.probe		= egalax_ts_probe,
 	.remove		= egalax_ts_remove,
+=======
+		.pm	= &egalax_ts_pm_ops,
+		.of_match_table	= egalax_ts_dt_ids,
+	},
+	.id_table	= egalax_ts_id,
+	.probe		= egalax_ts_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_i2c_driver(egalax_ts_driver);

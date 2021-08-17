@@ -30,7 +30,10 @@
 #define SUPPORT_SYSRQ
 #endif
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/ioport.h>
@@ -47,6 +50,7 @@
 #define BAUD_RATE	115200
 
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include "m32r_sio.h"
 #include "m32r_sio_reg.h"
 
@@ -100,6 +104,25 @@
 
 static struct old_serial_port old_serial_port[] = {
 	SERIAL_PORT_DFNS
+=======
+#include "m32r_sio_reg.h"
+
+#define PASS_LIMIT	256
+
+static const struct {
+	unsigned int port;
+	unsigned int irq;
+} old_serial_port[] = {
+#if defined(CONFIG_PLAT_USRV)
+	/* PORT  IRQ            FLAGS */
+	{ 0x3F8, PLD_IRQ_UART0 }, /* ttyS0 */
+	{ 0x2F8, PLD_IRQ_UART1 }, /* ttyS1 */
+#elif defined(CONFIG_SERIAL_M32R_PLDSIO)
+	{ ((unsigned long)PLD_ESIO0CR), PLD_IRQ_SIO0_RCV }, /* ttyS0 */
+#else
+	{ M32R_SIO_OFFSET, M32R_IRQ_SIO0_R }, /* ttyS0 */
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define UART_NR	ARRAY_SIZE(old_serial_port)
@@ -108,6 +131,7 @@ struct uart_sio_port {
 	struct uart_port	port;
 	struct timer_list	timer;		/* "no irq" timer */
 	struct list_head	list;		/* ports on this IRQ */
+<<<<<<< HEAD
 	unsigned short		rev;
 	unsigned char		acr;
 	unsigned char		ier;
@@ -121,6 +145,9 @@ struct uart_sio_port {
 	 */
 	void			(*pm)(struct uart_port *port,
 				      unsigned int state, unsigned int old);
+=======
+	unsigned char		ier;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct irq_info {
@@ -249,7 +276,12 @@ static void serial_out(struct uart_sio_port *up, int offset, int value)
 
 static void m32r_sio_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (up->ier & UART_IER_THRI) {
 		up->ier &= ~UART_IER_THRI;
@@ -260,12 +292,18 @@ static void m32r_sio_stop_tx(struct uart_port *port)
 static void m32r_sio_start_tx(struct uart_port *port)
 {
 #ifdef CONFIG_SERIAL_M32R_PLDSIO
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct circ_buf *xmit = &up->port.state->xmit;
 
 	if (!(up->ier & UART_IER_THRI)) {
 		up->ier |= UART_IER_THRI;
 		serial_out(up, UART_IER, up->ier);
+<<<<<<< HEAD
 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		up->port.icount.tx++;
@@ -273,6 +311,18 @@ static void m32r_sio_start_tx(struct uart_port *port)
 	while((serial_in(up, UART_LSR) & UART_EMPTY) != UART_EMPTY);
 #else
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+		if (!uart_circ_empty(xmit)) {
+			serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+			up->port.icount.tx++;
+		}
+	}
+	while((serial_in(up, UART_LSR) & UART_EMPTY) != UART_EMPTY);
+#else
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(up->ier & UART_IER_THRI)) {
 		up->ier |= UART_IER_THRI;
@@ -283,7 +333,12 @@ static void m32r_sio_start_tx(struct uart_port *port)
 
 static void m32r_sio_stop_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	up->ier &= ~UART_IER_RLSI;
 	up->port.read_status_mask &= ~UART_LSR_DR;
@@ -292,7 +347,12 @@ static void m32r_sio_stop_rx(struct uart_port *port)
 
 static void m32r_sio_enable_ms(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	up->ier |= UART_IER_MSI;
 	serial_out(up, UART_IER, up->ier);
@@ -338,6 +398,7 @@ static void receive_chars(struct uart_sio_port *up, int *status)
 			 */
 			*status &= up->port.read_status_mask;
 
+<<<<<<< HEAD
 			if (up->port.line == up->port.cons->index) {
 				/* Recover the break flag from console xmit */
 				*status |= up->lsr_break_flag;
@@ -346,6 +407,10 @@ static void receive_chars(struct uart_sio_port *up, int *status)
 
 			if (*status & UART_LSR_BI) {
 				DEBUG_INTR("handling break....");
+=======
+			if (*status & UART_LSR_BI) {
+				pr_debug("handling break....\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				flag = TTY_BREAK;
 			} else if (*status & UART_LSR_PE)
 				flag = TTY_PARITY;
@@ -368,7 +433,14 @@ static void receive_chars(struct uart_sio_port *up, int *status)
 	ignore_char:
 		*status = serial_in(up, UART_LSR);
 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
+<<<<<<< HEAD
 	tty_flip_buffer_push(port);
+=======
+
+	spin_unlock(&up->port.lock);
+	tty_flip_buffer_push(port);
+	spin_lock(&up->port.lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void transmit_chars(struct uart_sio_port *up)
@@ -403,7 +475,11 @@ static void transmit_chars(struct uart_sio_port *up)
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(&up->port);
 
+<<<<<<< HEAD
 	DEBUG_INTR("THRE...");
+=======
+	pr_debug("THRE...\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (uart_circ_empty(xmit))
 		m32r_sio_stop_tx(&up->port);
@@ -415,7 +491,11 @@ static void transmit_chars(struct uart_sio_port *up)
 static inline void m32r_sio_handle_port(struct uart_sio_port *up,
 	unsigned int status)
 {
+<<<<<<< HEAD
 	DEBUG_INTR("status = %x...", status);
+=======
+	pr_debug("status = %x...\n", status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (status & 0x04)
 		receive_chars(up, &status);
@@ -443,7 +523,11 @@ static irqreturn_t m32r_sio_interrupt(int irq, void *dev_id)
 	struct list_head *l, *end = NULL;
 	int pass_counter = 0;
 
+<<<<<<< HEAD
 	DEBUG_INTR("m32r_sio_interrupt(%d)...", irq);
+=======
+	pr_debug("m32r_sio_interrupt(%d)...\n", irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SERIAL_M32R_PLDSIO
 //	if (irq == PLD_IRQ_SIO0_SND)
@@ -483,7 +567,11 @@ static irqreturn_t m32r_sio_interrupt(int irq, void *dev_id)
 
 	spin_unlock(&i->lock);
 
+<<<<<<< HEAD
 	DEBUG_INTR("end.\n");
+=======
+	pr_debug("end.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_HANDLED;
 }
@@ -576,7 +664,12 @@ static void m32r_sio_timeout(unsigned long data)
 
 static unsigned int m32r_sio_tx_empty(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned int ret;
 
@@ -604,7 +697,12 @@ static void m32r_sio_break_ctl(struct uart_port *port, int break_state)
 
 static int m32r_sio_startup(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 
 	sio_init();
@@ -647,7 +745,12 @@ static int m32r_sio_startup(struct uart_port *port)
 
 static void m32r_sio_shutdown(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Disable interrupts from this port
@@ -676,7 +779,12 @@ static unsigned int m32r_sio_get_divisor(struct uart_port *port,
 static void m32r_sio_set_termios(struct uart_port *port,
 	struct ktermios *termios, struct ktermios *old)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char cval = 0;
 	unsigned long flags;
 	unsigned int baud, quot;
@@ -734,7 +842,11 @@ static void m32r_sio_set_termios(struct uart_port *port,
 	up->port.read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
 	if (termios->c_iflag & INPCK)
 		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		up->port.read_status_mask |= UART_LSR_BI;
 
 	/*
@@ -768,6 +880,7 @@ static void m32r_sio_set_termios(struct uart_port *port,
 
 	serial_out(up, UART_IER, up->ier);
 
+<<<<<<< HEAD
 	up->lcr = cval;					/* Save LCR */
 	spin_unlock_irqrestore(&up->port.lock, flags);
 }
@@ -781,6 +894,11 @@ static void m32r_sio_pm(struct uart_port *port, unsigned int state,
 		up->pm(port, state, oldstate);
 }
 
+=======
+	spin_unlock_irqrestore(&up->port.lock, flags);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Resource handling.  This is complicated by the fact that resources
  * depend on the port type.  Maybe we should be claiming the standard
@@ -820,7 +938,12 @@ m32r_sio_request_std_resource(struct uart_sio_port *up, struct resource **res)
 
 static void m32r_sio_release_port(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long start, offset = 0, size = 0;
 
 	size <<= up->port.regshift;
@@ -857,7 +980,12 @@ static void m32r_sio_release_port(struct uart_port *port)
 
 static int m32r_sio_request_port(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *res = NULL;
 	int ret = 0;
 
@@ -884,7 +1012,12 @@ static int m32r_sio_request_port(struct uart_port *port)
 
 static void m32r_sio_config_port(struct uart_port *port, int unused)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	spin_lock_irqsave(&up->port.lock, flags);
@@ -914,7 +1047,10 @@ static struct uart_ops m32r_sio_pops = {
 	.startup	= m32r_sio_startup,
 	.shutdown	= m32r_sio_shutdown,
 	.set_termios	= m32r_sio_set_termios,
+<<<<<<< HEAD
 	.pm		= m32r_sio_pm,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.release_port	= m32r_sio_release_port,
 	.request_port	= m32r_sio_request_port,
 	.config_port	= m32r_sio_config_port,
@@ -933,6 +1069,7 @@ static void __init m32r_sio_init_ports(void)
 		return;
 	first = 0;
 
+<<<<<<< HEAD
 	for (i = 0, up = m32r_sio_ports; i < ARRAY_SIZE(old_serial_port);
 	     i++, up++) {
 		up->port.iobase   = old_serial_port[i].port;
@@ -942,6 +1079,16 @@ static void __init m32r_sio_init_ports(void)
 		up->port.membase  = old_serial_port[i].iomem_base;
 		up->port.iotype   = old_serial_port[i].io_type;
 		up->port.regshift = old_serial_port[i].iomem_reg_shift;
+=======
+	for (i = 0, up = m32r_sio_ports; i < UART_NR; i++, up++) {
+		up->port.iobase   = old_serial_port[i].port;
+		up->port.irq      = irq_canonicalize(old_serial_port[i].irq);
+		up->port.uartclk  = BAUD_RATE * 16;
+		up->port.flags    = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST;
+		up->port.membase  = 0;
+		up->port.iotype   = 0;
+		up->port.regshift = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		up->port.ops      = &m32r_sio_pops;
 	}
 }
@@ -960,9 +1107,12 @@ static void __init m32r_sio_register_ports(struct uart_driver *drv)
 		init_timer(&up->timer);
 		up->timer.function = m32r_sio_timeout;
 
+<<<<<<< HEAD
 		up->mcr_mask = ~0;
 		up->mcr_force = 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		uart_add_one_port(drv, &up->port);
 	}
 }
@@ -972,7 +1122,11 @@ static void __init m32r_sio_register_ports(struct uart_driver *drv)
 /*
  *	Wait for transmitter & holding register to empty
  */
+<<<<<<< HEAD
 static inline void wait_for_xmitr(struct uart_sio_port *up)
+=======
+static void wait_for_xmitr(struct uart_sio_port *up)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int status, tmout = 10000;
 
@@ -995,7 +1149,12 @@ static inline void wait_for_xmitr(struct uart_sio_port *up)
 
 static void m32r_sio_console_putchar(struct uart_port *port, int ch)
 {
+<<<<<<< HEAD
 	struct uart_sio_port *up = (struct uart_sio_port *)port;
+=======
+	struct uart_sio_port *up =
+		container_of(port, struct uart_sio_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wait_for_xmitr(up);
 	sio_out(up, SIOTXB, ch);
@@ -1093,6 +1252,7 @@ static struct uart_driver m32r_sio_reg = {
 	.cons			= M32R_SIO_CONSOLE,
 };
 
+<<<<<<< HEAD
 /**
  *	m32r_sio_suspend_port - suspend one serial port
  *	@line: serial line number
@@ -1115,6 +1275,8 @@ void m32r_sio_resume_port(int line)
 	uart_resume_port(&m32r_sio_reg, &m32r_sio_ports[line].port);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init m32r_sio_init(void)
 {
 	int ret, i;
@@ -1130,6 +1292,7 @@ static int __init m32r_sio_init(void)
 
 	return ret;
 }
+<<<<<<< HEAD
 
 static void __exit m32r_sio_exit(void)
 {
@@ -1149,3 +1312,6 @@ EXPORT_SYMBOL(m32r_sio_resume_port);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Generic M32R SIO serial driver");
+=======
+device_initcall(m32r_sio_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -73,19 +73,28 @@
 			compatible = "marvell,mv64360-mdio";
 			reg = <0x2000 4>;
 			PHY0: ethernet-phy@0 {
+<<<<<<< HEAD
 				device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				interrupts = <76>;	/* GPP 12 */
 				interrupt-parent = <&PIC>;
 				reg = <0>;
 			};
 			PHY1: ethernet-phy@1 {
+<<<<<<< HEAD
 				device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				interrupts = <76>;	/* GPP 12 */
 				interrupt-parent = <&PIC>;
 				reg = <1>;
 			};
 			PHY2: ethernet-phy@2 {
+<<<<<<< HEAD
 				device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				interrupts = <76>;	/* GPP 12 */
 				interrupt-parent = <&PIC>;
 				reg = <2>;
@@ -174,7 +183,10 @@
 		};
 
 		MPSC0: mpsc@8000 {
+<<<<<<< HEAD
 			device_type = "serial";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "marvell,mv64360-mpsc";
 			reg = <0x8000 0x38>;
 			virtual-reg = <0xd8008000>;
@@ -189,7 +201,10 @@
 		};
 
 		MPSC1: mpsc@9000 {
+<<<<<<< HEAD
 			device_type = "serial";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "marvell,mv64360-mpsc";
 			reg = <0x9000 0x38>;
 			virtual-reg = <0xd8009000>;

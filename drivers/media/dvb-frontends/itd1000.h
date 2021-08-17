@@ -29,7 +29,11 @@ struct itd1000_config {
 	u8 i2c_address;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_TUNER_ITD1000)
+=======
+#if IS_REACHABLE(CONFIG_DVB_TUNER_ITD1000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *itd1000_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, struct itd1000_config *cfg);
 #else
 static inline struct dvb_frontend *itd1000_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, struct itd1000_config *cfg)

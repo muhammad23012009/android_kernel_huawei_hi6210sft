@@ -29,6 +29,7 @@
 #ifndef __POWER_H__
 #define __POWER_H__
 
+<<<<<<< HEAD
 /*---------------------  Export Definitions -------------------------*/
 #define     C_PWBT                   1000      // micro sec. power up before TBTT
 #define     PS_FAST_INTERVAL         1         // Fast power saving listen interval
@@ -55,10 +56,22 @@ PSbConsiderPowerDown(
 void
 PSvDisablePowerSaving(
 	void *hDeviceContext
+=======
+#include "device.h"
+
+#define C_PWBT                   1000    /* micro sec. power up before TBTT */
+#define PS_FAST_INTERVAL         1       /* Fast power saving listen interval */
+#define PS_MAX_INTERVAL          4       /* MAX power saving listen interval */
+
+void
+PSvDisablePowerSaving(
+	struct vnt_private *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 );
 
 void
 PSvEnablePowerSaving(
+<<<<<<< HEAD
 	void *hDeviceContext,
 	unsigned short wListenInterval
 );
@@ -79,3 +92,16 @@ PSbIsNextTBTTWakeUp(
 );
 
 #endif //__POWER_H__
+=======
+	struct vnt_private *,
+	unsigned short wListenInterval
+);
+
+
+bool
+PSbIsNextTBTTWakeUp(
+	struct vnt_private *
+);
+
+#endif /* __POWER_H__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -16,6 +16,7 @@
 struct pci_sys_data;
 struct pci_ops;
 struct pci_bus;
+<<<<<<< HEAD
 
 struct hw_pci {
 #ifdef CONFIG_PCI_DOMAINS
@@ -23,6 +24,15 @@ struct hw_pci {
 #endif
 	struct pci_ops	*ops;
 	int		nr_controllers;
+=======
+struct device;
+
+struct hw_pci {
+	struct msi_controller *msi_ctrl;
+	struct pci_ops	*ops;
+	int		nr_controllers;
+	unsigned int	io_optional:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void		**private_data;
 	int		(*setup)(int nr, struct pci_sys_data *);
 	struct pci_bus *(*scan)(int nr, struct pci_sys_data *);
@@ -41,9 +51,12 @@ struct hw_pci {
  * Per-controller structure
  */
 struct pci_sys_data {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI_DOMAINS
 	int		domain;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head node;
 	int		busnr;		/* primary bus number			*/
 	u64		mem_offset;	/* bus->cpu memory mapping offset	*/
@@ -56,19 +69,35 @@ struct pci_sys_data {
 	u8		(*swizzle)(struct pci_dev *, u8 *);
 					/* IRQ mapping				*/
 	int		(*map_irq)(const struct pci_dev *, u8, u8);
+<<<<<<< HEAD
 					/* Resource alignement requirements	*/
 	resource_size_t (*align_resource)(struct pci_dev *dev,
 					  const struct resource *res,
 					  resource_size_t start,
 					  resource_size_t size,
 					  resource_size_t align);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void		*private_data;	/* platform controller private data	*/
 };
 
 /*
  * Call this with your hw_pci struct to initialise the PCI system.
  */
+<<<<<<< HEAD
 void pci_common_init(struct hw_pci *);
+=======
+void pci_common_init_dev(struct device *, struct hw_pci *);
+
+/*
+ * Compatibility wrapper for older platforms that do not care about
+ * passing the parent device.
+ */
+static inline void pci_common_init(struct hw_pci *hw)
+{
+	pci_common_init_dev(NULL, hw);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Setup early fixed I/O mapping.
@@ -92,6 +121,7 @@ extern int dc21285_setup(int nr, struct pci_sys_data *);
 extern void dc21285_preinit(void);
 extern void dc21285_postinit(void);
 
+<<<<<<< HEAD
 extern struct pci_ops via82c505_ops;
 extern int via82c505_setup(int nr, struct pci_sys_data *);
 extern void via82c505_init(void *sysdata);
@@ -101,4 +131,6 @@ extern int pci_v3_setup(int nr, struct pci_sys_data *);
 extern void pci_v3_preinit(void);
 extern void pci_v3_postinit(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_MACH_PCI_H */

@@ -639,6 +639,7 @@ static int venc_probe(struct platform_device *pdev)
 	const struct platform_device_id *pdev_id;
 	struct venc_state *venc;
 	struct resource *res;
+<<<<<<< HEAD
 	int ret;
 
 	venc = kzalloc(sizeof(struct venc_state), GFP_KERNEL);
@@ -705,10 +706,43 @@ static int venc_probe(struct platform_device *pdev)
 			ret = -ENODEV;
 			goto release_vdaccfg_mem_region;
 		}
+=======
+
+	if (!pdev->dev.platform_data) {
+		dev_err(&pdev->dev, "No platform data for VENC sub device");
+		return -EINVAL;
+	}
+
+	pdev_id = platform_get_device_id(pdev);
+	if (!pdev_id)
+		return -EINVAL;
+
+	venc = devm_kzalloc(&pdev->dev, sizeof(struct venc_state), GFP_KERNEL);
+	if (venc == NULL)
+		return -ENOMEM;
+
+	venc->venc_type = pdev_id->driver_data;
+	venc->pdev = &pdev->dev;
+	venc->pdata = pdev->dev.platform_data;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+
+	venc->venc_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(venc->venc_base))
+		return PTR_ERR(venc->venc_base);
+
+	if (venc->venc_type != VPBE_VERSION_1) {
+		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+
+		venc->vdaccfg_reg = devm_ioremap_resource(&pdev->dev, res);
+		if (IS_ERR(venc->vdaccfg_reg))
+			return PTR_ERR(venc->vdaccfg_reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_lock_init(&venc->lock);
 	platform_set_drvdata(pdev, venc);
 	dev_notice(venc->pdev, "VENC sub device probe success\n");
+<<<<<<< HEAD
 	return 0;
 
 release_vdaccfg_mem_region:
@@ -721,10 +755,15 @@ release_venc_mem_region:
 free_mem:
 	kfree(venc);
 	return ret;
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int venc_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct venc_state *venc = platform_get_drvdata(pdev);
 	struct resource *res;
 
@@ -738,6 +777,8 @@ static int venc_remove(struct platform_device *pdev)
 	}
 	kfree(venc);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -746,7 +787,10 @@ static struct platform_driver venc_driver = {
 	.remove		= venc_remove,
 	.driver		= {
 		.name	= MODULE_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table	= vpbe_venc_devtype
 };

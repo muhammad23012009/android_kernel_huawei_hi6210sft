@@ -6,6 +6,15 @@ OUTPUT_ARCH(ELF_ARCH)
 ENTRY(_start)
 jiffies = jiffies_64;
 
+<<<<<<< HEAD
+=======
+VERSION {
+  {
+    local: *;
+  };
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 SECTIONS
 {
   /* This must contain the right address - not quite the default ELF one.*/
@@ -20,15 +29,25 @@ SECTIONS
   . = START + SIZEOF_HEADERS;
 
   _text = .;
+<<<<<<< HEAD
   _stext = .;
   __init_begin = .;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   INIT_TEXT_SECTION(0)
   . = ALIGN(PAGE_SIZE);
 
   .text      :
   {
+<<<<<<< HEAD
     TEXT_TEXT
     SCHED_TEXT
+=======
+    _stext = .;
+    TEXT_TEXT
+    SCHED_TEXT
+    CPUIDLE_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     LOCK_TEXT
     *(.fixup)
     /* .gnu.warning sections are handled specially by elf32.em.  */
@@ -62,7 +81,14 @@ SECTIONS
 
   #include <asm/common.lds.S>
 
+<<<<<<< HEAD
   init.data : { INIT_DATA }
+=======
+  __init_begin = .;
+  init.data : { INIT_DATA }
+  __init_end = .;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   .data    :
   {
     INIT_TASK_DATA(KERNEL_STACK_SIZE)
@@ -97,6 +123,10 @@ SECTIONS
   PROVIDE(_bss_start = .);
   SBSS(0)
   BSS(0)
+<<<<<<< HEAD
+=======
+   __bss_stop = .;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   _end = .;
   PROVIDE (end = .);
 

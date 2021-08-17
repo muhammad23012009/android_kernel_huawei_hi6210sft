@@ -24,7 +24,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/list.h>
 #include <linux/delay.h>
 #include <linux/clk.h>
@@ -33,7 +36,11 @@
 #include <linux/gpio.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/usb/nop-usb-xceiv.h>
+=======
+#include <linux/usb/usb_phy_generic.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/cputype.h>
 #include <mach/hardware.h>
@@ -215,10 +222,17 @@ static void otg_timer(unsigned long _musb)
 	 */
 	devctl = musb_readb(mregs, MUSB_DEVCTL);
 	dev_dbg(musb->controller, "poll devctl %02x (%s)\n", devctl,
+<<<<<<< HEAD
 		usb_otg_state_string(musb->xceiv->state));
 
 	spin_lock_irqsave(&musb->lock, flags);
 	switch (musb->xceiv->state) {
+=======
+		usb_otg_state_string(musb->xceiv->otg->state));
+
+	spin_lock_irqsave(&musb->lock, flags);
+	switch (musb->xceiv->otg->state) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case OTG_STATE_A_WAIT_VFALL:
 		/* Wait till VBUS falls below SessionEnd (~0.2V); the 1.3 RTL
 		 * seems to mis-handle session "start" otherwise (or in our
@@ -229,7 +243,11 @@ static void otg_timer(unsigned long _musb)
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 			break;
 		}
+<<<<<<< HEAD
 		musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
+=======
+		musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		musb_writel(musb->ctrl_base, DAVINCI_USB_INT_SET_REG,
 			MUSB_INTR_VBUSERROR << DAVINCI_USB_USBINT_SHIFT);
 		break;
@@ -252,7 +270,11 @@ static void otg_timer(unsigned long _musb)
 		if (devctl & MUSB_DEVCTL_BDEVICE)
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 		else
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		break;
@@ -285,7 +307,11 @@ static irqreturn_t davinci_musb_interrupt(int irq, void *__hci)
 	 * mask, state, "vector", and EOI registers.
 	 */
 	cppi = container_of(musb->dma_controller, struct cppi, controller);
+<<<<<<< HEAD
 	if (is_cppi_enabled() && musb->dma_controller && !cppi->irq)
+=======
+	if (is_cppi_enabled(musb) && musb->dma_controller && !cppi->irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = cppi_interrupt(irq, __hci);
 
 	/* ack and handle non-CPPI interrupts */
@@ -326,20 +352,32 @@ static irqreturn_t davinci_musb_interrupt(int irq, void *__hci)
 			 * to stop registering in devctl.
 			 */
 			musb->int_usb &= ~MUSB_INTR_VBUSERROR;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_WAIT_VFALL;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_WAIT_VFALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 			WARNING("VBUS error workaround (delay coming)\n");
 		} else if (drvvbus) {
 			MUSB_HST_MODE(musb);
 			otg->default_a = 1;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_A_WAIT_VRISE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_A_WAIT_VRISE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			portstate(musb->port1_status |= USB_PORT_STAT_POWER);
 			del_timer(&otg_workaround);
 		} else {
 			musb->is_active = 0;
 			MUSB_DEV_MODE(musb);
 			otg->default_a = 0;
+<<<<<<< HEAD
 			musb->xceiv->state = OTG_STATE_B_IDLE;
+=======
+			musb->xceiv->otg->state = OTG_STATE_B_IDLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			portstate(musb->port1_status &= ~USB_PORT_STAT_POWER);
 		}
 
@@ -349,7 +387,11 @@ static irqreturn_t davinci_musb_interrupt(int irq, void *__hci)
 		davinci_musb_source_power(musb, drvvbus, 0);
 		dev_dbg(musb->controller, "VBUS %s (%s)%s, devctl %02x\n",
 				drvvbus ? "on" : "off",
+<<<<<<< HEAD
 				usb_otg_state_string(musb->xceiv->state),
+=======
+				usb_otg_state_string(musb->xceiv->otg->state),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				err ? " ERROR" : "",
 				devctl);
 		retval = IRQ_HANDLED;
@@ -362,7 +404,11 @@ static irqreturn_t davinci_musb_interrupt(int irq, void *__hci)
 	musb_writel(tibase, DAVINCI_USB_EOI_REG, 0);
 
 	/* poll for ID change */
+<<<<<<< HEAD
 	if (musb->xceiv->state == OTG_STATE_B_IDLE)
+=======
+	if (musb->xceiv->otg->state == OTG_STATE_B_IDLE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);
 
 	spin_unlock_irqrestore(&musb->lock, flags);
@@ -382,7 +428,10 @@ static int davinci_musb_init(struct musb *musb)
 	u32		revision;
 	int 		ret = -ENODEV;
 
+<<<<<<< HEAD
 	usb_nop_xceiv_register();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	musb->xceiv = usb_get_phy(USB_PHY_TYPE_USB2);
 	if (IS_ERR_OR_NULL(musb->xceiv)) {
 		ret = -EPROBE_DEFER;
@@ -440,7 +489,11 @@ static int davinci_musb_init(struct musb *musb)
 fail:
 	usb_put_phy(musb->xceiv);
 unregister:
+<<<<<<< HEAD
 	usb_nop_xceiv_unregister();
+=======
+	usb_phy_generic_unregister();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -488,15 +541,29 @@ static int davinci_musb_exit(struct musb *musb)
 	phy_off();
 
 	usb_put_phy(musb->xceiv);
+<<<<<<< HEAD
 	usb_nop_xceiv_unregister();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static const struct musb_platform_ops davinci_ops = {
+<<<<<<< HEAD
 	.init		= davinci_musb_init,
 	.exit		= davinci_musb_exit,
 
+=======
+	.quirks		= MUSB_DMA_CPPI,
+	.init		= davinci_musb_init,
+	.exit		= davinci_musb_exit,
+
+#ifdef CONFIG_USB_TI_CPPI_DMA
+	.dma_init	= cppi_dma_controller_create,
+	.dma_exit	= cppi_dma_controller_destroy,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.enable		= davinci_musb_enable,
 	.disable	= davinci_musb_disable,
 
@@ -505,6 +572,7 @@ static const struct musb_platform_ops davinci_ops = {
 	.set_vbus	= davinci_musb_set_vbus,
 };
 
+<<<<<<< HEAD
 static u64 davinci_dmamask = DMA_BIT_MASK(32);
 
 static int davinci_probe(struct platform_device *pdev)
@@ -512,10 +580,26 @@ static int davinci_probe(struct platform_device *pdev)
 	struct musb_hdrc_platform_data	*pdata = pdev->dev.platform_data;
 	struct platform_device		*musb;
 	struct davinci_glue		*glue;
+=======
+static const struct platform_device_info davinci_dev_info = {
+	.name		= "musb-hdrc",
+	.id		= PLATFORM_DEVID_AUTO,
+	.dma_mask	= DMA_BIT_MASK(32),
+};
+
+static int davinci_probe(struct platform_device *pdev)
+{
+	struct resource			musb_resources[3];
+	struct musb_hdrc_platform_data	*pdata = dev_get_platdata(&pdev->dev);
+	struct platform_device		*musb;
+	struct davinci_glue		*glue;
+	struct platform_device_info	pinfo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct clk			*clk;
 
 	int				ret = -ENOMEM;
 
+<<<<<<< HEAD
 	glue = kzalloc(sizeof(*glue), GFP_KERNEL);
 	if (!glue) {
 		dev_err(&pdev->dev, "failed to allocate glue context\n");
@@ -533,11 +617,23 @@ static int davinci_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to get clock\n");
 		ret = PTR_ERR(clk);
 		goto err3;
+=======
+	glue = devm_kzalloc(&pdev->dev, sizeof(*glue), GFP_KERNEL);
+	if (!glue)
+		goto err0;
+
+	clk = devm_clk_get(&pdev->dev, "usb");
+	if (IS_ERR(clk)) {
+		dev_err(&pdev->dev, "failed to get clock\n");
+		ret = PTR_ERR(clk);
+		goto err0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = clk_enable(clk);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to enable clock\n");
+<<<<<<< HEAD
 		goto err4;
 	}
 
@@ -547,10 +643,17 @@ static int davinci_probe(struct platform_device *pdev)
 
 	glue->dev			= &pdev->dev;
 	glue->musb			= musb;
+=======
+		goto err0;
+	}
+
+	glue->dev			= &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	glue->clk			= clk;
 
 	pdata->platform_ops		= &davinci_ops;
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, glue);
 
 	ret = platform_device_add_resources(musb, pdev->resource,
@@ -570,10 +673,50 @@ static int davinci_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register musb device\n");
 		goto err5;
+=======
+	usb_phy_generic_register();
+	platform_set_drvdata(pdev, glue);
+
+	memset(musb_resources, 0x00, sizeof(*musb_resources) *
+			ARRAY_SIZE(musb_resources));
+
+	musb_resources[0].name = pdev->resource[0].name;
+	musb_resources[0].start = pdev->resource[0].start;
+	musb_resources[0].end = pdev->resource[0].end;
+	musb_resources[0].flags = pdev->resource[0].flags;
+
+	musb_resources[1].name = pdev->resource[1].name;
+	musb_resources[1].start = pdev->resource[1].start;
+	musb_resources[1].end = pdev->resource[1].end;
+	musb_resources[1].flags = pdev->resource[1].flags;
+
+	/*
+	 * For DM6467 3 resources are passed. A placeholder for the 3rd
+	 * resource is always there, so it's safe to always copy it...
+	 */
+	musb_resources[2].name = pdev->resource[2].name;
+	musb_resources[2].start = pdev->resource[2].start;
+	musb_resources[2].end = pdev->resource[2].end;
+	musb_resources[2].flags = pdev->resource[2].flags;
+
+	pinfo = davinci_dev_info;
+	pinfo.parent = &pdev->dev;
+	pinfo.res = musb_resources;
+	pinfo.num_res = ARRAY_SIZE(musb_resources);
+	pinfo.data = pdata;
+	pinfo.size_data = sizeof(*pdata);
+
+	glue->musb = musb = platform_device_register_full(&pinfo);
+	if (IS_ERR(musb)) {
+		ret = PTR_ERR(musb);
+		dev_err(&pdev->dev, "failed to register musb device: %d\n", ret);
+		goto err1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 err5:
 	clk_disable(clk);
 
@@ -585,6 +728,10 @@ err3:
 
 err1:
 	kfree(glue);
+=======
+err1:
+	clk_disable(clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 err0:
 	return ret;
@@ -595,9 +742,14 @@ static int davinci_remove(struct platform_device *pdev)
 	struct davinci_glue		*glue = platform_get_drvdata(pdev);
 
 	platform_device_unregister(glue->musb);
+<<<<<<< HEAD
 	clk_disable(glue->clk);
 	clk_put(glue->clk);
 	kfree(glue);
+=======
+	usb_phy_generic_unregister();
+	clk_disable(glue->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

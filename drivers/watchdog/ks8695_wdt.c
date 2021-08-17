@@ -254,6 +254,7 @@ static int ks8695wdt_probe(struct platform_device *pdev)
 
 static int ks8695wdt_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int res;
 
 	res = misc_deregister(&ks8695wdt_miscdev);
@@ -261,6 +262,12 @@ static int ks8695wdt_remove(struct platform_device *pdev)
 		ks8695wdt_miscdev.parent = NULL;
 
 	return res;
+=======
+	misc_deregister(&ks8695wdt_miscdev);
+	ks8695wdt_miscdev.parent = NULL;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ks8695wdt_shutdown(struct platform_device *pdev)
@@ -296,7 +303,10 @@ static struct platform_driver ks8695wdt_driver = {
 	.resume		= ks8695wdt_resume,
 	.driver		= {
 		.name	= "ks8695_wdt",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -323,5 +333,8 @@ module_exit(ks8695_wdt_exit);
 MODULE_AUTHOR("Andrew Victor");
 MODULE_DESCRIPTION("Watchdog driver for KS8695");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS("platform:ks8695_wdt");

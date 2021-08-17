@@ -21,6 +21,10 @@
 #include "cache.h"
 #include "state.h"
 #include "netns.h"
+<<<<<<< HEAD
+=======
+#include "pnfs.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	We have a single directory with several nodes in it.
@@ -39,6 +43,10 @@ enum {
 	NFSD_Versions,
 	NFSD_Ports,
 	NFSD_MaxBlkSize,
+<<<<<<< HEAD
+=======
+	NFSD_MaxConnections,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NFSD_SupportedEnctypes,
 	/*
 	 * The below MUST come last.  Otherwise we leave a hole in nfsd_files[]
@@ -48,6 +56,10 @@ enum {
 	NFSD_Leasetime,
 	NFSD_Gracetime,
 	NFSD_RecoveryDir,
+<<<<<<< HEAD
+=======
+	NFSD_V4EndGrace,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 };
 
@@ -62,10 +74,18 @@ static ssize_t write_pool_threads(struct file *file, char *buf, size_t size);
 static ssize_t write_versions(struct file *file, char *buf, size_t size);
 static ssize_t write_ports(struct file *file, char *buf, size_t size);
 static ssize_t write_maxblksize(struct file *file, char *buf, size_t size);
+<<<<<<< HEAD
+=======
+static ssize_t write_maxconn(struct file *file, char *buf, size_t size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NFSD_V4
 static ssize_t write_leasetime(struct file *file, char *buf, size_t size);
 static ssize_t write_gracetime(struct file *file, char *buf, size_t size);
 static ssize_t write_recoverydir(struct file *file, char *buf, size_t size);
+<<<<<<< HEAD
+=======
+static ssize_t write_v4_end_grace(struct file *file, char *buf, size_t size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static ssize_t (*write_op[])(struct file *, char *, size_t) = {
@@ -77,10 +97,18 @@ static ssize_t (*write_op[])(struct file *, char *, size_t) = {
 	[NFSD_Versions] = write_versions,
 	[NFSD_Ports] = write_ports,
 	[NFSD_MaxBlkSize] = write_maxblksize,
+<<<<<<< HEAD
+=======
+	[NFSD_MaxConnections] = write_maxconn,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NFSD_V4
 	[NFSD_Leasetime] = write_leasetime,
 	[NFSD_Gracetime] = write_gracetime,
 	[NFSD_RecoveryDir] = write_recoverydir,
+<<<<<<< HEAD
+=======
+	[NFSD_V4EndGrace] = write_v4_end_grace,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 };
 
@@ -151,7 +179,10 @@ static const struct file_operations exports_proc_operations = {
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= seq_release,
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int exports_nfsd_open(struct inode *inode, struct file *file)
@@ -164,7 +195,10 @@ static const struct file_operations exports_nfsd_operations = {
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= seq_release,
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int export_features_show(struct seq_file *m, void *v)
@@ -210,7 +244,10 @@ static const struct file_operations pool_stats_operations = {
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= nfsd_pool_stats_release,
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct file_operations reply_cache_stats_operations = {
@@ -225,6 +262,13 @@ static struct file_operations reply_cache_stats_operations = {
  * payload - write methods
  */
 
+<<<<<<< HEAD
+=======
+static inline struct net *netns(struct file *file)
+{
+	return file_inode(file)->i_sb->s_fs_info;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * write_unlock_ip - Release all locks used by a client
@@ -246,7 +290,11 @@ static ssize_t write_unlock_ip(struct file *file, char *buf, size_t size)
 	struct sockaddr *sap = (struct sockaddr *)&address;
 	size_t salen = sizeof(address);
 	char *fo_path;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
+=======
+	struct net *net = netns(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* sanity check */
 	if (size == 0)
@@ -344,7 +392,10 @@ static ssize_t write_filehandle(struct file *file, char *buf, size_t size)
 	int len;
 	struct auth_domain *dom;
 	struct knfsd_fh fh;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (size == 0)
 		return -EINVAL;
@@ -369,8 +420,12 @@ static ssize_t write_filehandle(struct file *file, char *buf, size_t size)
 
 	if (maxsize < NFS_FHSIZE)
 		return -EINVAL;
+<<<<<<< HEAD
 	if (maxsize > NFS3_FHSIZE)
 		maxsize = NFS3_FHSIZE;
+=======
+	maxsize = min(maxsize, NFS3_FHSIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (qword_get(&mesg, mesg, size)>0)
 		return -EINVAL;
@@ -380,7 +435,11 @@ static ssize_t write_filehandle(struct file *file, char *buf, size_t size)
 	if (!dom)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	len = exp_rootfh(net, dom, path, &fh,  maxsize);
+=======
+	len = exp_rootfh(netns(file), dom, path, &fh,  maxsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	auth_domain_put(dom);
 	if (len)
 		return len;
@@ -424,7 +483,11 @@ static ssize_t write_threads(struct file *file, char *buf, size_t size)
 {
 	char *mesg = buf;
 	int rv;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
+=======
+	struct net *net = netns(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (size > 0) {
 		int newthreads;
@@ -475,7 +538,11 @@ static ssize_t write_pool_threads(struct file *file, char *buf, size_t size)
 	int len;
 	int npools;
 	int *nthreads;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
+=======
+	struct net *net = netns(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&nfsd_mutex);
 	npools = nfsd_nrpools(net);
@@ -538,8 +605,12 @@ static ssize_t __write_versions(struct file *file, char *buf, size_t size)
 	unsigned minor;
 	ssize_t tlen = 0;
 	char *sep;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
+=======
+	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (size>0) {
 		if (nn->nfsd_serv)
@@ -601,7 +672,11 @@ static ssize_t __write_versions(struct file *file, char *buf, size_t size)
 				       num);
 			sep = " ";
 
+<<<<<<< HEAD
 			if (len > remaining)
+=======
+			if (len >= remaining)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			remaining -= len;
 			buf += len;
@@ -616,7 +691,11 @@ static ssize_t __write_versions(struct file *file, char *buf, size_t size)
 						'+' : '-',
 					minor);
 
+<<<<<<< HEAD
 			if (len > remaining)
+=======
+			if (len >= remaining)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			remaining -= len;
 			buf += len;
@@ -624,7 +703,11 @@ static ssize_t __write_versions(struct file *file, char *buf, size_t size)
 		}
 
 	len = snprintf(buf, remaining, "\n");
+<<<<<<< HEAD
 	if (len > remaining)
+=======
+	if (len >= remaining)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	return tlen + len;
 }
@@ -825,10 +908,16 @@ static ssize_t __write_ports(struct file *file, char *buf, size_t size,
 static ssize_t write_ports(struct file *file, char *buf, size_t size)
 {
 	ssize_t rv;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
 
 	mutex_lock(&nfsd_mutex);
 	rv = __write_ports(file, buf, size, net);
+=======
+
+	mutex_lock(&nfsd_mutex);
+	rv = __write_ports(file, buf, size, netns(file));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&nfsd_mutex);
 	return rv;
 }
@@ -860,8 +949,12 @@ int nfsd_max_blksize;
 static ssize_t write_maxblksize(struct file *file, char *buf, size_t size)
 {
 	char *mesg = buf;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
+=======
+	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (size > 0) {
 		int bsize;
@@ -871,10 +964,15 @@ static ssize_t write_maxblksize(struct file *file, char *buf, size_t size)
 		/* force bsize into allowed range and
 		 * required alignment.
 		 */
+<<<<<<< HEAD
 		if (bsize < 1024)
 			bsize = 1024;
 		if (bsize > NFSSVC_MAXBLKSIZE)
 			bsize = NFSSVC_MAXBLKSIZE;
+=======
+		bsize = max_t(int, bsize, 1024);
+		bsize = min_t(int, bsize, NFSSVC_MAXBLKSIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bsize &= ~(1024-1);
 		mutex_lock(&nfsd_mutex);
 		if (nn->nfsd_serv) {
@@ -889,6 +987,46 @@ static ssize_t write_maxblksize(struct file *file, char *buf, size_t size)
 							nfsd_max_blksize);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * write_maxconn - Set or report the current max number of connections
+ *
+ * Input:
+ *			buf:		ignored
+ *			size:		zero
+ * OR
+ *
+ * Input:
+ * 			buf:		C string containing an unsigned
+ * 					integer value representing the new
+ * 					number of max connections
+ *			size:		non-zero length of C string in @buf
+ * Output:
+ *	On success:	passed-in buffer filled with '\n'-terminated C string
+ *			containing numeric value of max_connections setting
+ *			for this net namespace;
+ *			return code is the size in bytes of the string
+ *	On error:	return code is zero or a negative errno value
+ */
+static ssize_t write_maxconn(struct file *file, char *buf, size_t size)
+{
+	char *mesg = buf;
+	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
+	unsigned int maxconn = nn->max_connections;
+
+	if (size > 0) {
+		int rv = get_uint(&mesg, &maxconn);
+
+		if (rv)
+			return rv;
+		nn->max_connections = maxconn;
+	}
+
+	return scnprintf(buf, SIMPLE_TRANSACTION_LIMIT, "%u\n", maxconn);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NFSD_V4
 static ssize_t __nfsd4_write_time(struct file *file, char *buf, size_t size,
 				  time_t *time, struct nfsd_net *nn)
@@ -956,8 +1094,12 @@ static ssize_t nfsd4_write_time(struct file *file, char *buf, size_t size,
  */
 static ssize_t write_leasetime(struct file *file, char *buf, size_t size)
 {
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
+=======
+	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nfsd4_write_time(file, buf, size, &nn->nfsd4_lease, nn);
 }
 
@@ -973,8 +1115,12 @@ static ssize_t write_leasetime(struct file *file, char *buf, size_t size)
  */
 static ssize_t write_gracetime(struct file *file, char *buf, size_t size)
 {
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
+=======
+	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nfsd4_write_time(file, buf, size, &nn->nfsd4_grace, nn);
 }
 
@@ -1030,8 +1176,12 @@ static ssize_t __write_recoverydir(struct file *file, char *buf, size_t size,
 static ssize_t write_recoverydir(struct file *file, char *buf, size_t size)
 {
 	ssize_t rv;
+<<<<<<< HEAD
 	struct net *net = file->f_dentry->d_sb->s_fs_info;
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
+=======
+	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&nfsd_mutex);
 	rv = __write_recoverydir(file, buf, size, nn);
@@ -1039,6 +1189,51 @@ static ssize_t write_recoverydir(struct file *file, char *buf, size_t size)
 	return rv;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * write_v4_end_grace - release grace period for nfsd's v4.x lock manager
+ *
+ * Input:
+ *			buf:		ignored
+ *			size:		zero
+ * OR
+ *
+ * Input:
+ * 			buf:		any value
+ *			size:		non-zero length of C string in @buf
+ * Output:
+ *			passed-in buffer filled with "Y" or "N" with a newline
+ *			and NULL-terminated C string. This indicates whether
+ *			the grace period has ended in the current net
+ *			namespace. Return code is the size in bytes of the
+ *			string. Writing a string that starts with 'Y', 'y', or
+ *			'1' to the file will end the grace period for nfsd's v4
+ *			lock manager.
+ */
+static ssize_t write_v4_end_grace(struct file *file, char *buf, size_t size)
+{
+	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
+
+	if (size > 0) {
+		switch(buf[0]) {
+		case 'Y':
+		case 'y':
+		case '1':
+			if (!nn->nfsd_serv)
+				return -EBUSY;
+			nfsd4_end_grace(nn);
+			break;
+		default:
+			return -EINVAL;
+		}
+	}
+
+	return scnprintf(buf, SIMPLE_TRANSACTION_LIMIT, "%c\n",
+			 nn->grace_ended ? 'Y' : 'N');
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*----------------------------------------------------------------------------*/
@@ -1064,6 +1259,10 @@ static int nfsd_fill_super(struct super_block * sb, void * data, int silent)
 		[NFSD_Versions] = {"versions", &transaction_ops, S_IWUSR|S_IRUSR},
 		[NFSD_Ports] = {"portlist", &transaction_ops, S_IWUSR|S_IRUGO},
 		[NFSD_MaxBlkSize] = {"max_block_size", &transaction_ops, S_IWUSR|S_IRUGO},
+<<<<<<< HEAD
+=======
+		[NFSD_MaxConnections] = {"max_connections", &transaction_ops, S_IWUSR|S_IRUGO},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_SUNRPC_GSS) || defined(CONFIG_SUNRPC_GSS_MODULE)
 		[NFSD_SupportedEnctypes] = {"supported_krb5_enctypes", &supported_enctypes_ops, S_IRUGO},
 #endif /* CONFIG_SUNRPC_GSS or CONFIG_SUNRPC_GSS_MODULE */
@@ -1071,6 +1270,7 @@ static int nfsd_fill_super(struct super_block * sb, void * data, int silent)
 		[NFSD_Leasetime] = {"nfsv4leasetime", &transaction_ops, S_IWUSR|S_IRUSR},
 		[NFSD_Gracetime] = {"nfsv4gracetime", &transaction_ops, S_IWUSR|S_IRUSR},
 		[NFSD_RecoveryDir] = {"nfsv4recoverydir", &transaction_ops, S_IWUSR|S_IRUSR},
+<<<<<<< HEAD
 #endif
 		/* last one */ {""}
 	};
@@ -1082,12 +1282,25 @@ static int nfsd_fill_super(struct super_block * sb, void * data, int silent)
 		return ret;
 	sb->s_fs_info = get_net(net);
 	return 0;
+=======
+		[NFSD_V4EndGrace] = {"v4_end_grace", &transaction_ops, S_IWUSR|S_IRUGO},
+#endif
+		/* last one */ {""}
+	};
+	get_net(sb->s_fs_info);
+	return simple_fill_super(sb, 0x6e667364, nfsd_files);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct dentry *nfsd_mount(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
+<<<<<<< HEAD
 	return mount_ns(fs_type, flags, current->nsproxy->net_ns, nfsd_fill_super);
+=======
+	struct net *net = current->nsproxy->net_ns;
+	return mount_ns(fs_type, flags, data, net, net->user_ns, nfsd_fill_super);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void nfsd_umount(struct super_block *sb)
@@ -1144,6 +1357,11 @@ static __net_init int nfsd_init_net(struct net *net)
 		goto out_idmap_error;
 	nn->nfsd4_lease = 90;	/* default lease time */
 	nn->nfsd4_grace = 90;
+<<<<<<< HEAD
+=======
+	nn->clverifier_counter = prandom_u32();
+	nn->clientid_counter = prandom_u32();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 out_idmap_error:
@@ -1170,6 +1388,7 @@ static int __init init_nfsd(void)
 	int retval;
 	printk(KERN_INFO "Installing knfsd (copyright (C) 1996 okir@monad.swb.de).\n");
 
+<<<<<<< HEAD
 	retval = register_cld_notifier();
 	if (retval)
 		return retval;
@@ -1183,6 +1402,23 @@ static int __init init_nfsd(void)
 	retval = nfsd_fault_inject_init(); /* nfsd fault injection controls */
 	if (retval)
 		goto out_free_slabs;
+=======
+	retval = register_pernet_subsys(&nfsd_net_ops);
+	if (retval < 0)
+		return retval;
+	retval = register_cld_notifier();
+	if (retval)
+		goto out_unregister_pernet;
+	retval = nfsd4_init_slabs();
+	if (retval)
+		goto out_unregister_notifier;
+	retval = nfsd4_init_pnfs();
+	if (retval)
+		goto out_free_slabs;
+	retval = nfsd_fault_inject_init(); /* nfsd fault injection controls */
+	if (retval)
+		goto out_exit_pnfs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nfsd_stat_init();	/* Statistics */
 	retval = nfsd_reply_cache_init();
 	if (retval)
@@ -1204,12 +1440,23 @@ out_free_lockd:
 out_free_stat:
 	nfsd_stat_shutdown();
 	nfsd_fault_inject_cleanup();
+<<<<<<< HEAD
 out_free_slabs:
 	nfsd4_free_slabs();
 out_unregister_pernet:
 	unregister_pernet_subsys(&nfsd_net_ops);
 out_unregister_notifier:
 	unregister_cld_notifier();
+=======
+out_exit_pnfs:
+	nfsd4_exit_pnfs();
+out_free_slabs:
+	nfsd4_free_slabs();
+out_unregister_notifier:
+	unregister_cld_notifier();
+out_unregister_pernet:
+	unregister_pernet_subsys(&nfsd_net_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
@@ -1221,10 +1468,18 @@ static void __exit exit_nfsd(void)
 	nfsd_stat_shutdown();
 	nfsd_lockd_shutdown();
 	nfsd4_free_slabs();
+<<<<<<< HEAD
 	nfsd_fault_inject_cleanup();
 	unregister_filesystem(&nfsd_fs_type);
 	unregister_pernet_subsys(&nfsd_net_ops);
 	unregister_cld_notifier();
+=======
+	nfsd4_exit_pnfs();
+	nfsd_fault_inject_cleanup();
+	unregister_filesystem(&nfsd_fs_type);
+	unregister_cld_notifier();
+	unregister_pernet_subsys(&nfsd_net_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MODULE_AUTHOR("Olaf Kirch <okir@monad.swb.de>");

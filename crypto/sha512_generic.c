@@ -18,8 +18,15 @@
 #include <linux/crypto.h>
 #include <linux/types.h>
 #include <crypto/sha.h>
+<<<<<<< HEAD
 #include <linux/percpu.h>
 #include <asm/byteorder.h>
+=======
+#include <crypto/sha512_base.h>
+#include <linux/percpu.h>
+#include <asm/byteorder.h>
+#include <asm/unaligned.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline u64 Ch(u64 x, u64 y, u64 z)
 {
@@ -68,7 +75,11 @@ static const u64 sha512_K[80] = {
 
 static inline void LOAD_OP(int I, u64 *W, const u8 *input)
 {
+<<<<<<< HEAD
 	W[I] = __be64_to_cpu( ((__be64*)(input))[I] );
+=======
+	W[I] = get_unaligned_be64((__u64 *)input + I);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void BLEND_OP(int I, u64 *W)
@@ -129,6 +140,7 @@ sha512_transform(u64 *state, const u8 *input)
 	a = b = c = d = e = f = g = h = t1 = t2 = 0;
 }
 
+<<<<<<< HEAD
 static int
 sha512_init(struct shash_desc *desc)
 {
@@ -161,11 +173,21 @@ sha384_init(struct shash_desc *desc)
 	sctx->count[0] = sctx->count[1] = 0;
 
 	return 0;
+=======
+static void sha512_generic_block_fn(struct sha512_state *sst, u8 const *src,
+				    int blocks)
+{
+	while (blocks--) {
+		sha512_transform(sst->state, src);
+		src += SHA512_BLOCK_SIZE;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int crypto_sha512_update(struct shash_desc *desc, const u8 *data,
 			unsigned int len)
 {
+<<<<<<< HEAD
 	struct sha512_state *sctx = shash_desc_ctx(desc);
 
 	unsigned int i, index, part_len;
@@ -251,18 +273,59 @@ static struct shash_alg sha512_algs[2] = { {
 	.descsize	=	sizeof(struct sha512_state),
 	.base		=	{
 		.cra_name	=	"sha512",
+=======
+	return sha512_base_do_update(desc, data, len, sha512_generic_block_fn);
+}
+EXPORT_SYMBOL(crypto_sha512_update);
+
+static int sha512_final(struct shash_desc *desc, u8 *hash)
+{
+	sha512_base_do_finalize(desc, sha512_generic_block_fn);
+	return sha512_base_finish(desc, hash);
+}
+
+int crypto_sha512_finup(struct shash_desc *desc, const u8 *data,
+			unsigned int len, u8 *hash)
+{
+	sha512_base_do_update(desc, data, len, sha512_generic_block_fn);
+	return sha512_final(desc, hash);
+}
+EXPORT_SYMBOL(crypto_sha512_finup);
+
+static struct shash_alg sha512_algs[2] = { {
+	.digestsize	=	SHA512_DIGEST_SIZE,
+	.init		=	sha512_base_init,
+	.update		=	crypto_sha512_update,
+	.final		=	sha512_final,
+	.finup		=	crypto_sha512_finup,
+	.descsize	=	sizeof(struct sha512_state),
+	.base		=	{
+		.cra_name	=	"sha512",
+		.cra_driver_name =	"sha512-generic",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
 		.cra_blocksize	=	SHA512_BLOCK_SIZE,
 		.cra_module	=	THIS_MODULE,
 	}
 }, {
 	.digestsize	=	SHA384_DIGEST_SIZE,
+<<<<<<< HEAD
 	.init		=	sha384_init,
 	.update		=	crypto_sha512_update,
 	.final		=	sha384_final,
 	.descsize	=	sizeof(struct sha512_state),
 	.base		=	{
 		.cra_name	=	"sha384",
+=======
+	.init		=	sha384_base_init,
+	.update		=	crypto_sha512_update,
+	.final		=	sha512_final,
+	.finup		=	crypto_sha512_finup,
+	.descsize	=	sizeof(struct sha512_state),
+	.base		=	{
+		.cra_name	=	"sha384",
+		.cra_driver_name =	"sha384-generic",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
 		.cra_blocksize	=	SHA384_BLOCK_SIZE,
 		.cra_module	=	THIS_MODULE,

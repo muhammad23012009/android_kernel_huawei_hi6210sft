@@ -9,12 +9,25 @@
 
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "ge863-pro3.dtsi"
+=======
+#include "ge863-pro3.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Telit EVK-PRO3 for Telit GE863-PRO3";
 	compatible = "telit,evk-pro3", "atmel,at91sam9260", "atmel,at91sam9";
 
+<<<<<<< HEAD
+=======
+	clocks {
+		slow_xtal {
+			clock-frequency = <32768>;
+		};
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahb {
 		apb {
 			macb0: ethernet@fffc4000 {
@@ -31,7 +44,11 @@
 			};
 
 			usb1: gadget@fffa4000 {
+<<<<<<< HEAD
 				atmel,vbus-gpio = <&pioC 5 0>;
+=======
+				atmel,vbus-gpio = <&pioC 5 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "okay";
 			};
 
@@ -40,14 +57,26 @@
 			};
 		};
 
+<<<<<<< HEAD
 		usb0: ohci@00500000 {
+=======
+		usb0: ohci@500000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			num-ports = <2>;
 			status = "okay";
 		};
 	};
 
+<<<<<<< HEAD
 	i2c@0 {
 		status = "okay";
 	};
 
 };
+=======
+	i2c-gpio-0 {
+		status = "okay";
+	};
+
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

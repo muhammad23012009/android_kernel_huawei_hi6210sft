@@ -16,6 +16,7 @@ _mcount_wrapper:
 	.global _ftrace_caller
 	.type	_ftrace_caller,function
 _ftrace_caller:
+<<<<<<< HEAD
 	MOVT    D0Re0,#HI(_function_trace_stop)
 	ADD	D0Re0,D0Re0,#LO(_function_trace_stop)
 	GETD	D0Re0,[D0Re0]
@@ -23,6 +24,8 @@ _ftrace_caller:
 	BEQ	$Lcall_stub
 	MOV	PC,D0.4
 $Lcall_stub:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MSETL   [A0StP], D0Ar6, D0Ar4, D0Ar2, D0.4
 	MOV     D1Ar1, D0.4
 	MOV     D0Ar2, D1RtP
@@ -42,6 +45,7 @@ _ftrace_call:
 	.global	_mcount_wrapper
 	.type	_mcount_wrapper,function
 _mcount_wrapper:
+<<<<<<< HEAD
 	MOVT    D0Re0,#HI(_function_trace_stop)
 	ADD	D0Re0,D0Re0,#LO(_function_trace_stop)
 	GETD	D0Re0,[D0Re0]
@@ -49,6 +53,8 @@ _mcount_wrapper:
 	BEQ	$Lcall_mcount
 	MOV	PC,D0.4
 $Lcall_mcount:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MSETL   [A0StP], D0Ar6, D0Ar4, D0Ar2, D0.4
 	MOV     D1Ar1, D0.4
 	MOV     D0Ar2, D1RtP

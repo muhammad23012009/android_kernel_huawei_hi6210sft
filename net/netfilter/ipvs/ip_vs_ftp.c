@@ -96,13 +96,21 @@ static int ip_vs_ftp_get_addrport(char *data, char *data_limit,
 
 	if (data_limit - data < plen) {
 		/* check if there is partial match */
+<<<<<<< HEAD
 		if (strnicmp(data, pattern, data_limit - data) == 0)
+=======
+		if (strncasecmp(data, pattern, data_limit - data) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -1;
 		else
 			return 0;
 	}
 
+<<<<<<< HEAD
 	if (strnicmp(data, pattern, plen) != 0) {
+=======
+	if (strncasecmp(data, pattern, plen) != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	s = data + plen;
@@ -181,7 +189,10 @@ static int ip_vs_ftp_out(struct ip_vs_app *app, struct ip_vs_conn *cp,
 	int ret = 0;
 	enum ip_conntrack_info ctinfo;
 	struct nf_conn *ct;
+<<<<<<< HEAD
 	struct net *net;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*diff = 0;
 
@@ -223,17 +234,29 @@ static int ip_vs_ftp_out(struct ip_vs_app *app, struct ip_vs_conn *cp,
 		 */
 		{
 			struct ip_vs_conn_param p;
+<<<<<<< HEAD
 			ip_vs_conn_fill_param(ip_vs_conn_net(cp), AF_INET,
+=======
+			ip_vs_conn_fill_param(cp->ipvs, AF_INET,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					      iph->protocol, &from, port,
 					      &cp->caddr, 0, &p);
 			n_cp = ip_vs_conn_out_get(&p);
 		}
 		if (!n_cp) {
 			struct ip_vs_conn_param p;
+<<<<<<< HEAD
 			ip_vs_conn_fill_param(ip_vs_conn_net(cp),
 					      AF_INET, IPPROTO_TCP, &cp->caddr,
 					      0, &cp->vaddr, port, &p);
 			n_cp = ip_vs_conn_new(&p, &from, port,
+=======
+			ip_vs_conn_fill_param(cp->ipvs,
+					      AF_INET, IPPROTO_TCP, &cp->caddr,
+					      0, &cp->vaddr, port, &p);
+			/* As above, this is ipv4 only */
+			n_cp = ip_vs_conn_new(&p, AF_INET, &from, port,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					      IP_VS_CONN_F_NO_CPORT |
 					      IP_VS_CONN_F_NFCT,
 					      cp->dest, skb->mark);
@@ -288,9 +311,14 @@ static int ip_vs_ftp_out(struct ip_vs_app *app, struct ip_vs_conn *cp,
 		 * would be adjusted twice.
 		 */
 
+<<<<<<< HEAD
 		net = skb_net(skb);
 		cp->app_data = NULL;
 		ip_vs_tcp_conn_listen(net, n_cp);
+=======
+		cp->app_data = NULL;
+		ip_vs_tcp_conn_listen(n_cp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ip_vs_conn_put(n_cp);
 		return ret;
 	}
@@ -319,7 +347,10 @@ static int ip_vs_ftp_in(struct ip_vs_app *app, struct ip_vs_conn *cp,
 	union nf_inet_addr to;
 	__be16 port;
 	struct ip_vs_conn *n_cp;
+<<<<<<< HEAD
 	struct net *net;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* no diff required for incoming packets */
 	*diff = 0;
@@ -353,7 +384,11 @@ static int ip_vs_ftp_in(struct ip_vs_app *app, struct ip_vs_conn *cp,
 	data_limit = skb_tail_pointer(skb);
 
 	while (data <= data_limit - 6) {
+<<<<<<< HEAD
 		if (strnicmp(data, "PASV\r\n", 6) == 0) {
+=======
+		if (strncasecmp(data, "PASV\r\n", 6) == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Passive mode on */
 			IP_VS_DBG(7, "got PASV at %td of %td\n",
 				  data - data_start,
@@ -391,12 +426,21 @@ static int ip_vs_ftp_in(struct ip_vs_app *app, struct ip_vs_conn *cp,
 
 	{
 		struct ip_vs_conn_param p;
+<<<<<<< HEAD
 		ip_vs_conn_fill_param(ip_vs_conn_net(cp), AF_INET,
+=======
+		ip_vs_conn_fill_param(cp->ipvs, AF_INET,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      iph->protocol, &to, port, &cp->vaddr,
 				      htons(ntohs(cp->vport)-1), &p);
 		n_cp = ip_vs_conn_in_get(&p);
 		if (!n_cp) {
+<<<<<<< HEAD
 			n_cp = ip_vs_conn_new(&p, &cp->daddr,
+=======
+			/* This is ipv4 only */
+			n_cp = ip_vs_conn_new(&p, AF_INET, &cp->daddr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					      htons(ntohs(cp->dport)-1),
 					      IP_VS_CONN_F_NFCT, cp->dest,
 					      skb->mark);
@@ -411,8 +455,12 @@ static int ip_vs_ftp_in(struct ip_vs_app *app, struct ip_vs_conn *cp,
 	/*
 	 *	Move tunnel to listen state
 	 */
+<<<<<<< HEAD
 	net = skb_net(skb);
 	ip_vs_tcp_conn_listen(net, n_cp);
+=======
+	ip_vs_tcp_conn_listen(n_cp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ip_vs_conn_put(n_cp);
 
 	return 1;
@@ -445,14 +493,22 @@ static int __net_init __ip_vs_ftp_init(struct net *net)
 	if (!ipvs)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	app = register_ip_vs_app(net, &ip_vs_ftp);
+=======
+	app = register_ip_vs_app(ipvs, &ip_vs_ftp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(app))
 		return PTR_ERR(app);
 
 	for (i = 0; i < ports_count; i++) {
 		if (!ports[i])
 			continue;
+<<<<<<< HEAD
 		ret = register_ip_vs_app_inc(net, app, app->protocol, ports[i]);
+=======
+		ret = register_ip_vs_app_inc(ipvs, app, app->protocol, ports[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			goto err_unreg;
 		pr_info("%s: loaded support on port[%d] = %d\n",
@@ -461,7 +517,11 @@ static int __net_init __ip_vs_ftp_init(struct net *net)
 	return 0;
 
 err_unreg:
+<<<<<<< HEAD
 	unregister_ip_vs_app(net, &ip_vs_ftp);
+=======
+	unregister_ip_vs_app(ipvs, &ip_vs_ftp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 /*
@@ -469,7 +529,16 @@ err_unreg:
  */
 static void __ip_vs_ftp_exit(struct net *net)
 {
+<<<<<<< HEAD
 	unregister_ip_vs_app(net, &ip_vs_ftp);
+=======
+	struct netns_ipvs *ipvs = net_ipvs(net);
+
+	if (!ipvs)
+		return;
+
+	unregister_ip_vs_app(ipvs, &ip_vs_ftp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pernet_operations ip_vs_ftp_ops = {

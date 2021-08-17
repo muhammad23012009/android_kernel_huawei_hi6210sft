@@ -172,7 +172,10 @@ static int r9701_remove(struct spi_device *spi)
 static struct spi_driver r9701_driver = {
 	.driver = {
 		.name	= "rtc-r9701",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe	= r9701_probe,
 	.remove = r9701_remove,

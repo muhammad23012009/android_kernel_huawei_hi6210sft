@@ -48,18 +48,31 @@ static void gpio_trig_work(struct work_struct *work)
 	if (!gpio_data->gpio)
 		return;
 
+<<<<<<< HEAD
 	tmp = gpio_get_value(gpio_data->gpio);
+=======
+	tmp = gpio_get_value_cansleep(gpio_data->gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (gpio_data->inverted)
 		tmp = !tmp;
 
 	if (tmp) {
 		if (gpio_data->desired_brightness)
+<<<<<<< HEAD
 			__led_set_brightness(gpio_data->led,
 					   gpio_data->desired_brightness);
 		else
 			__led_set_brightness(gpio_data->led, LED_FULL);
 	} else {
 		__led_set_brightness(gpio_data->led, LED_OFF);
+=======
+			led_set_brightness_nosleep(gpio_data->led,
+					   gpio_data->desired_brightness);
+		else
+			led_set_brightness_nosleep(gpio_data->led, LED_FULL);
+	} else {
+		led_set_brightness_nosleep(gpio_data->led, LED_OFF);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

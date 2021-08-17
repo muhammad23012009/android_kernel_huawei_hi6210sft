@@ -32,11 +32,21 @@
 #include <linux/major.h>
 #include <linux/string.h>
 #include <linux/efi.h>
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MSDOS_MBR_SIGNATURE 0xaa55
 #define EFI_PMBR_OSTYPE_EFI 0xEF
 #define EFI_PMBR_OSTYPE_EFI_GPT 0xEE
 
+<<<<<<< HEAD
+=======
+#define GPT_MBR_PROTECTIVE  1
+#define GPT_MBR_HYBRID      2
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define GPT_HEADER_SIGNATURE 0x5452415020494645ULL
 #define GPT_HEADER_REVISION_V1 0x00010000
 #define GPT_PRIMARY_PARTITION_TABLE_LBA 1
@@ -84,13 +94,21 @@ typedef struct _gpt_header {
 	 *
 	 * uint8_t		reserved2[ BlockSize - 92 ];
 	 */
+<<<<<<< HEAD
 } __attribute__ ((packed)) gpt_header;
+=======
+} __packed gpt_header;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct _gpt_entry_attributes {
 	u64 required_to_function:1;
 	u64 reserved:47;
         u64 type_guid_specific:16;
+<<<<<<< HEAD
 } __attribute__ ((packed)) gpt_entry_attributes;
+=======
+} __packed gpt_entry_attributes;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct _gpt_entry {
 	efi_guid_t partition_type_guid;
@@ -99,20 +117,45 @@ typedef struct _gpt_entry {
 	__le64 ending_lba;
 	gpt_entry_attributes attributes;
 	efi_char16_t partition_name[72 / sizeof (efi_char16_t)];
+<<<<<<< HEAD
 } __attribute__ ((packed)) gpt_entry;
+=======
+} __packed gpt_entry;
+
+typedef struct _gpt_mbr_record {
+	u8	boot_indicator; /* unused by EFI, set to 0x80 for bootable */
+	u8	start_head;     /* unused by EFI, pt start in CHS */
+	u8	start_sector;   /* unused by EFI, pt start in CHS */
+	u8	start_track;
+	u8	os_type;        /* EFI and legacy non-EFI OS types */
+	u8	end_head;       /* unused by EFI, pt end in CHS */
+	u8	end_sector;     /* unused by EFI, pt end in CHS */
+	u8	end_track;      /* unused by EFI, pt end in CHS */
+	__le32	starting_lba;   /* used by EFI - start addr of the on disk pt */
+	__le32	size_in_lba;    /* used by EFI - size of pt in LBA */
+} __packed gpt_mbr_record;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct _legacy_mbr {
 	u8 boot_code[440];
 	__le32 unique_mbr_signature;
 	__le16 unknown;
+<<<<<<< HEAD
 	struct partition partition_record[4];
 	__le16 signature;
 } __attribute__ ((packed)) legacy_mbr;
+=======
+	gpt_mbr_record partition_record[4];
+	__le16 signature;
+} __packed legacy_mbr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Functions */
 extern int efi_partition(struct parsed_partitions *state);
 
 #endif
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -132,3 +175,5 @@ extern int efi_partition(struct parsed_partitions *state);
  * tab-width: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -34,7 +34,11 @@
  *  2003-08-11	Resource Management Updates - Adam Belay <ambx1@neo.rr.com>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/delay.h>
@@ -54,8 +58,11 @@ static int isapnp_rdp;		/* Read Data Port */
 static int isapnp_reset = 1;	/* reset all PnP cards (deactivate) */
 static int isapnp_verbose = 1;	/* verbose mode */
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Generic ISA Plug & Play support");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(isapnp_disable, int, 0);
 MODULE_PARM_DESC(isapnp_disable, "ISA Plug & Play disable");
 module_param(isapnp_rdp, int, 0);
@@ -64,7 +71,10 @@ module_param(isapnp_reset, int, 0);
 MODULE_PARM_DESC(isapnp_reset, "ISA Plug & Play reset all cards");
 module_param(isapnp_verbose, int, 0);
 MODULE_PARM_DESC(isapnp_verbose, "ISA Plug & Play verbose mode");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _PIDXR		0x279
 #define _PNPWRP		0xa79

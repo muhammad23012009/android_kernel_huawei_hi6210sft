@@ -79,12 +79,22 @@ static int digsig_verify_rsa(struct key *key,
 	unsigned char *out1 = NULL;
 	const char *m;
 	MPI in = NULL, res = NULL, pkey[2];
+<<<<<<< HEAD
 	uint8_t *p, *datap, *endp;
 	struct user_key_payload *ukp;
 	struct pubkey_hdr *pkh;
 
 	down_read(&key->sem);
 	ukp = key->payload.data;
+=======
+	uint8_t *p, *datap;
+	const uint8_t *endp;
+	const struct user_key_payload *ukp;
+	struct pubkey_hdr *pkh;
+
+	down_read(&key->sem);
+	ukp = user_key_payload(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ukp) {
 		/* key was revoked before we acquired its semaphore */
@@ -109,6 +119,7 @@ static int digsig_verify_rsa(struct key *key,
 	datap = pkh->mpi;
 	endp = ukp->data + ukp->datalen;
 
+<<<<<<< HEAD
 	err = -ENOMEM;
 
 	for (i = 0; i < pkh->nmpi; i++) {
@@ -116,14 +127,32 @@ static int digsig_verify_rsa(struct key *key,
 		pkey[i] = mpi_read_from_buffer(datap, &remaining);
 		if (!pkey[i])
 			goto err;
+=======
+	for (i = 0; i < pkh->nmpi; i++) {
+		unsigned int remaining = endp - datap;
+		pkey[i] = mpi_read_from_buffer(datap, &remaining);
+		if (IS_ERR(pkey[i])) {
+			err = PTR_ERR(pkey[i]);
+			goto err;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		datap += remaining;
 	}
 
 	mblen = mpi_get_nbits(pkey[0]);
 	mlen = DIV_ROUND_UP(mblen, 8);
 
+<<<<<<< HEAD
 	if (mlen == 0)
 		goto err;
+=======
+	if (mlen == 0) {
+		err = -EINVAL;
+		goto err;
+	}
+
+	err = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	out1 = kzalloc(mlen, GFP_KERNEL);
 	if (!out1)
@@ -131,8 +160,15 @@ static int digsig_verify_rsa(struct key *key,
 
 	nret = siglen;
 	in = mpi_read_from_buffer(sig, &nret);
+<<<<<<< HEAD
 	if (!in)
 		goto err;
+=======
+	if (IS_ERR(in)) {
+		err = PTR_ERR(in);
+		goto err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = mpi_alloc(mpi_get_nlimbs(in) * 2);
 	if (!res)
@@ -181,10 +217,18 @@ err1:
  * digsig_verify() - digital signature verification with public key
  * @keyring:	keyring to search key in
  * @sig:	digital signature
+<<<<<<< HEAD
  * @sigen:	length of the signature
  * @data:	data
  * @datalen:	length of the data
  * @return:	0 on success, -EINVAL otherwise
+=======
+ * @siglen:	length of the signature
+ * @data:	data
+ * @datalen:	length of the data
+ *
+ * Returns 0 on success, -EINVAL otherwise
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Verifies data integrity against digital signature.
  * Currently only RSA is supported.
@@ -215,7 +259,11 @@ int digsig_verify(struct key *keyring, const char *sig, int siglen,
 		kref = keyring_search(make_key_ref(keyring, 1UL),
 						&key_type_user, name);
 		if (IS_ERR(kref))
+<<<<<<< HEAD
 			key = ERR_PTR(PTR_ERR(kref));
+=======
+			key = ERR_CAST(kref);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			key = key_ref_to_ptr(kref);
 	} else {

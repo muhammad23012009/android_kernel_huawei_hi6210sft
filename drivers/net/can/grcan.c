@@ -34,10 +34,14 @@
 #include <linux/io.h>
 #include <linux/can/dev.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 
 #include <linux/of_platform.h>
 #include <asm/prom.h>
 
+=======
+#include <linux/of_platform.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_irq.h>
 
 #include <linux/dma-mapping.h>
@@ -1219,11 +1223,19 @@ static int grcan_receive(struct net_device *dev, int budget)
 				cf->data[i] = (u8)(slot[j] >> shift);
 			}
 		}
+<<<<<<< HEAD
 		netif_receive_skb(skb);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Update statistics and read pointer */
 		stats->rx_packets++;
 		stats->rx_bytes += cf->can_dlc;
+<<<<<<< HEAD
+=======
+		netif_receive_skb(skb);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rd = grcan_ring_add(rd, GRCAN_MSG_SIZE, dma->rx.size);
 	}
 
@@ -1581,6 +1593,10 @@ static const struct net_device_ops grcan_netdev_ops = {
 	.ndo_open	= grcan_open,
 	.ndo_stop	= grcan_close,
 	.ndo_start_xmit	= grcan_start_xmit,
+<<<<<<< HEAD
+=======
+	.ndo_change_mtu = can_change_mtu,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int grcan_setup_netdev(struct platform_device *ofdev,
@@ -1646,7 +1662,11 @@ static int grcan_setup_netdev(struct platform_device *ofdev,
 	if (err)
 		goto exit_free_candev;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, dev);
+=======
+	platform_set_drvdata(ofdev, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Reset device to allow bit-timing to be set. No need to call
 	 * grcan_reset at this stage. That is done in grcan_open.
@@ -1683,10 +1703,16 @@ static int grcan_probe(struct platform_device *ofdev)
 	}
 
 	res = platform_get_resource(ofdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	base = devm_request_and_ioremap(&ofdev->dev, res);
 	if (!base) {
 		dev_err(&ofdev->dev, "couldn't map IO resource\n");
 		err = -EADDRNOTAVAIL;
+=======
+	base = devm_ioremap_resource(&ofdev->dev, res);
+	if (IS_ERR(base)) {
+		err = PTR_ERR(base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit_error;
 	}
 
@@ -1716,20 +1742,31 @@ exit_error:
 
 static int grcan_remove(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct net_device *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct net_device *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct grcan_priv *priv = netdev_priv(dev);
 
 	unregister_candev(dev); /* Will in turn call grcan_close */
 
 	irq_dispose_mapping(dev->irq);
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_napi_del(&priv->napi);
 	free_candev(dev);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id grcan_match[] = {
+=======
+static const struct of_device_id grcan_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{.name = "GAISLER_GRCAN"},
 	{.name = "01_03d"},
 	{.name = "GAISLER_GRHCAN"},
@@ -1742,7 +1779,10 @@ MODULE_DEVICE_TABLE(of, grcan_match);
 static struct platform_driver grcan_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = grcan_match,
 	},
 	.probe = grcan_probe,

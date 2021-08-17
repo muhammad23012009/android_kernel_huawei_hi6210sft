@@ -33,7 +33,11 @@
 #include <linux/input/sparse-keymap.h>
 #include <linux/dmi.h>
 #include <linux/fb.h>
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "asus-wmi.h"
 
@@ -145,7 +149,11 @@ static int dmi_matched(const struct dmi_system_id *dmi)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct dmi_system_id asus_quirks[] = {
+=======
+static const struct dmi_system_id asus_quirks[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.callback = dmi_matched,
 		.ident = "ASUSTeK Computer INC. 1000H",
@@ -204,6 +212,7 @@ static void eeepc_wmi_key_filter(struct asus_wmi_driver *asus_wmi, int *code,
 	}
 }
 
+<<<<<<< HEAD
 static acpi_status eeepc_wmi_parse_device(acpi_handle handle, u32 level,
 						 void *context, void **retval)
 {
@@ -228,6 +237,12 @@ static int eeepc_wmi_check_atkd(void)
 static int eeepc_wmi_probe(struct platform_device *pdev)
 {
 	if (eeepc_wmi_check_atkd()) {
+=======
+static int eeepc_wmi_probe(struct platform_device *pdev)
+{
+	if (acpi_dev_found(EEEPC_ACPI_HID)) {
+		pr_warn("Found legacy ATKD device (%s)\n", EEEPC_ACPI_HID);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_warn("WMI device present, but legacy ATKD device is also "
 			"present and enabled\n");
 		pr_warn("You probably booted with acpi_osi=\"Linux\" or "

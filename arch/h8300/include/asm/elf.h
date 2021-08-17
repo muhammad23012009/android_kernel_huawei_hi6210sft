@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 #ifndef __ASMH8300_ELF_H
 #define __ASMH8300_ELF_H
+=======
+#ifndef __ASM_H8300_ELF_H
+#define __ASM_H8300_ELF_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * ELF register definitions..
@@ -25,6 +30,7 @@ typedef unsigned long elf_fpregset_t;
 #define ELF_CLASS	ELFCLASS32
 #define ELF_DATA	ELFDATA2MSB
 #define ELF_ARCH	EM_H8_300
+<<<<<<< HEAD
 #if defined(__H8300H__)
 #define ELF_CORE_EFLAGS 0x810000
 #endif
@@ -33,6 +39,16 @@ typedef unsigned long elf_fpregset_t;
 #endif
 
 #define ELF_PLAT_INIT(_r)	_r->er1 = 0
+=======
+#if defined(CONFIG_CPU_H8300H)
+#define ELF_CORE_EFLAGS 0x810000
+#endif
+#if defined(CONFIG_CPU_H8S)
+#define ELF_CORE_EFLAGS 0x820000
+#endif
+
+#define ELF_PLAT_INIT(_r) do { (_r)->er1 = 0; } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ELF_EXEC_PAGESIZE	4096
 

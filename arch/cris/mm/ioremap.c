@@ -76,10 +76,18 @@ void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned l
  * Must be freed with iounmap.
  */
 
+<<<<<<< HEAD
 void __iomem *ioremap_nocache (unsigned long phys_addr, unsigned long size)
 {
         return __ioremap(phys_addr | MEM_NON_CACHEABLE, size, 0);
 }
+=======
+void __iomem *ioremap_nocache(unsigned long phys_addr, unsigned long size)
+{
+        return __ioremap(phys_addr | MEM_NON_CACHEABLE, size, 0);
+}
+EXPORT_SYMBOL(ioremap_nocache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void iounmap(volatile void __iomem *addr)
 {

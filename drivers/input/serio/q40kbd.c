@@ -30,7 +30,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/serio.h>
 #include <linux/interrupt.h>
 #include <linux/err.h>
@@ -181,14 +184,20 @@ static int q40kbd_remove(struct platform_device *pdev)
 	free_irq(Q40_IRQ_KEYBOARD, q40kbd);
 	kfree(q40kbd);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver q40kbd_driver = {
 	.driver		= {
 		.name	= "q40kbd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove		= q40kbd_remove,
 };

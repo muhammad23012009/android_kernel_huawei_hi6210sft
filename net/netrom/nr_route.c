@@ -25,13 +25,20 @@
 #include <linux/if_arp.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/fcntl.h>
 #include <linux/termios.h>	/* For TIOCINQ/OUTQ */
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <net/netrom.h>
@@ -200,6 +207,10 @@ static int __must_check nr_add_node(ax25_address *nr, const char *mnemonic,
 		/* refcount initialized at 1 */
 		spin_unlock_bh(&nr_node_list_lock);
 
+<<<<<<< HEAD
+=======
+		nr_neigh_put(nr_neigh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	nr_node_lock(nr_node);

@@ -9,7 +9,10 @@
  * 2 of the License, or (at your option) any later version.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/input/sparse-keymap.h>
@@ -264,7 +267,10 @@ static struct platform_driver dm355evm_keys_driver = {
 	.probe		= dm355evm_keys_probe,
 	.remove		= dm355evm_keys_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "dm355evm_keys",
 	},
 };

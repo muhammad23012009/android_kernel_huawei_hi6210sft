@@ -21,21 +21,29 @@
 
 #include "core.h"
 #include "sd_ops.h"
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 #include <linux/mmc/dsm_sdcard.h>
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int mmc_app_cmd(struct mmc_host *host, struct mmc_card *card)
 {
 	int err;
 	struct mmc_command cmd = {0};
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	char *log_buff;
 	int buff_len;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!host);
 	BUG_ON(card && (card->host != host));
 
@@ -50,6 +58,7 @@ int mmc_app_cmd(struct mmc_host *host, struct mmc_card *card)
 	}
 
 	err = mmc_wait_for_cmd(host, &cmd, 0);
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	
@@ -76,6 +85,10 @@ int mmc_app_cmd(struct mmc_host *host, struct mmc_card *card)
 		return err;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Check that card supported application commands */
 	if (!mmc_host_is_spi(host) && !(cmd.resp[0] & R1_APP_CMD))
@@ -153,7 +166,10 @@ EXPORT_SYMBOL(mmc_wait_for_app_cmd);
 
 int mmc_app_set_bus_width(struct mmc_card *card, int width)
 {
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mmc_command cmd = {0};
 
 	BUG_ON(!card);
@@ -173,23 +189,31 @@ int mmc_app_set_bus_width(struct mmc_card *card, int width)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	err = mmc_wait_for_app_cmd(card->host, card, &cmd, MMC_CMD_RETRIES);
 	if (err)
 		return err;
 
 	return 0;
+=======
+	return mmc_wait_for_app_cmd(card->host, card, &cmd, MMC_CMD_RETRIES);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 {
 	struct mmc_command cmd = {0};
 	int i, err = 0;
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	int buff_len;
 	char *log_buff;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!host);
 
 	cmd.opcode = SD_APP_OP_COND;
@@ -201,6 +225,7 @@ int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 
 	for (i = 100; i; i--) {
 		err = mmc_wait_for_app_cmd(host, NULL, &cmd, MMC_CMD_RETRIES);
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */	
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	if (err)
@@ -225,6 +250,11 @@ int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 		break;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+		if (err)
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* if we're just probing, do a single pass */
 		if (ocr == 0)
 			break;
@@ -242,6 +272,7 @@ int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 
 		mmc_delay(10);
 	}
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	if(!strcmp(mmc_hostname(host), "mmc1"))
@@ -250,6 +281,12 @@ int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 	}
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+	if (!i)
+		pr_err("%s: card never left busy state\n", mmc_hostname(host));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rocr && !mmc_host_is_spi(host))
 		*rocr = cmd.resp[0];
 
@@ -262,12 +299,16 @@ int mmc_send_if_cond(struct mmc_host *host, u32 ocr)
 	int err;
 	static const u8 test_pattern = 0xAA;
 	u8 result_pattern;
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	int buff_len;
 	char *log_buff;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * To support SD 2.0 cards, we must always invoke SD_SEND_IF_COND
 	 * before SD_APP_OP_COND. This command will harmlessly fail for
@@ -278,6 +319,7 @@ int mmc_send_if_cond(struct mmc_host *host, u32 ocr)
 	cmd.flags = MMC_RSP_SPI_R7 | MMC_RSP_R7 | MMC_CMD_BCR;
 
 	err = mmc_wait_for_cmd(host, &cmd, 0);
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	
@@ -306,6 +348,11 @@ int mmc_send_if_cond(struct mmc_host *host, u32 ocr)
 
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+	if (err)
+		return err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mmc_host_is_spi(host))
 		result_pattern = cmd.resp[1] & 0xFF;
 	else
@@ -321,12 +368,16 @@ int mmc_send_relative_addr(struct mmc_host *host, unsigned int *rca)
 {
 	int err;
 	struct mmc_command cmd = {0};
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	int buff_len;
 	char *log_buff;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!host);
 	BUG_ON(!rca);
 
@@ -335,6 +386,7 @@ int mmc_send_relative_addr(struct mmc_host *host, unsigned int *rca)
 	cmd.flags = MMC_RSP_R6 | MMC_CMD_BCR;
 
 	err = mmc_wait_for_cmd(host, &cmd, MMC_CMD_RETRIES);
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	if(!strcmp(mmc_hostname(host), "mmc1"))
@@ -360,6 +412,11 @@ int mmc_send_relative_addr(struct mmc_host *host, unsigned int *rca)
 		return err;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+	if (err)
+		return err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*rca = cmd.resp[0] >> 16;
 
 	return 0;
@@ -388,7 +445,10 @@ int mmc_app_send_scr(struct mmc_card *card, u32 *scr)
 	 * routine normally provide temporary on-stack buffers ...
 	 */
 	data_buf = kmalloc(sizeof(card->raw_scr), GFP_KERNEL);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (data_buf == NULL)
 		return -ENOMEM;
 
@@ -432,12 +492,16 @@ int mmc_sd_switch(struct mmc_card *card, int mode, int group,
 	struct mmc_command cmd = {0};
 	struct mmc_data data = {0};
 	struct scatterlist sg;
+<<<<<<< HEAD
 /* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	int buff_len;
 	char *log_buff;
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!card);
 	BUG_ON(!card->host);
 
@@ -466,6 +530,7 @@ int mmc_sd_switch(struct mmc_card *card, int mode, int group,
 	mmc_set_data_timeout(&data, card);
 
 	mmc_wait_for_req(card->host, &mrq);
+<<<<<<< HEAD
 	/* BEGIN PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 #ifdef CONFIG_HUAWEI_SDCARD_DSM
 	if(!strcmp(mmc_hostname(card->host), "mmc1"))
@@ -482,6 +547,9 @@ int mmc_sd_switch(struct mmc_card *card, int mode, int group,
 	}
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cmd.error)
 		return cmd.error;
 	if (data.error)

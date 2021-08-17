@@ -50,8 +50,11 @@
 #include <linux/pnp.h>
 #include <linux/spinlock.h>
 
+<<<<<<< HEAD
 #define DEB(x)
 #define DEB1(x)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "sound_config.h"
 
 #include "ad1848.h"
@@ -256,7 +259,11 @@ static void ad_write(ad1848_info * devc, int reg, int data)
 
 static void wait_for_calibration(ad1848_info * devc)
 {
+<<<<<<< HEAD
 	int timeout = 0;
+=======
+	int timeout;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Wait until the auto calibration process has finished.
@@ -1016,8 +1023,11 @@ static void ad1848_close(int dev)
 	ad1848_info    *devc = (ad1848_info *) audio_devs[dev]->devc;
 	ad1848_port_info *portc = (ad1848_port_info *) audio_devs[dev]->portc;
 
+<<<<<<< HEAD
 	DEB(printk("ad1848_close(void)\n"));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	devc->intr_active = 0;
 	ad1848_halt(dev);
 
@@ -2864,6 +2874,10 @@ static struct {
 	{NULL}
 };
 
+<<<<<<< HEAD
+=======
+#ifdef MODULE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct isapnp_device_id id_table[] = {
 	{	ISAPNP_VENDOR('C','M','I'), ISAPNP_DEVICE(0x0001),
 		ISAPNP_VENDOR('@','@','@'), ISAPNP_FUNCTION(0x0001), 0 },
@@ -2881,6 +2895,10 @@ static struct isapnp_device_id id_table[] = {
 };
 
 MODULE_DEVICE_TABLE(isapnp, id_table);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct pnp_dev *activate_dev(char *devname, char *resname, struct pnp_dev *dev)
 {

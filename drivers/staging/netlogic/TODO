@@ -1,6 +1,9 @@
 * Implementing 64bit stat counter in software
 * All memory allocation should be changed to DMA allocations
+<<<<<<< HEAD
 * All the netdev should be linked to single pdev as parent
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 * Changing comments in to linux standred format
 
 Please send patches

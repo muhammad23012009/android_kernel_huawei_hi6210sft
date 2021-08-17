@@ -342,7 +342,11 @@ static const int compat_event_type_size[] = {
 
 /* IW event code */
 
+<<<<<<< HEAD
 static void wireless_nlevent_flush(void)
+=======
+void wireless_nlevent_flush(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sk_buff *skb;
 	struct net *net;
@@ -355,6 +359,10 @@ static void wireless_nlevent_flush(void)
 				    GFP_KERNEL);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(wireless_nlevent_flush);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int wext_netdev_notifier_call(struct notifier_block *nb,
 				     unsigned long state, void *ptr)
@@ -398,7 +406,14 @@ static int __init wireless_nlevent_init(void)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	return register_netdevice_notifier(&wext_netdev_notifier);
+=======
+	err = register_netdevice_notifier(&wext_netdev_notifier);
+	if (err)
+		unregister_pernet_subsys(&wext_pernet_ops);
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 subsys_initcall(wireless_nlevent_init);
@@ -655,7 +670,12 @@ struct iw_statistics *get_wireless_stats(struct net_device *dev)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int iw_handler_get_iwstats(struct net_device *		dev,
+=======
+/* noinline to avoid a bogus warning with -O3 */
+static noinline int iw_handler_get_iwstats(struct net_device *	dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  struct iw_request_info *	info,
 				  union iwreq_data *		wrqu,
 				  char *			extra)
@@ -893,8 +913,14 @@ out:
 int call_commit_handler(struct net_device *dev)
 {
 #ifdef CONFIG_WIRELESS_EXT
+<<<<<<< HEAD
 	if ((netif_running(dev)) &&
 	   (dev->wireless_handlers->standard[0] != NULL))
+=======
+	if (netif_running(dev) &&
+	    dev->wireless_handlers &&
+	    dev->wireless_handlers->standard[0])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Call the commit handler on the driver */
 		return dev->wireless_handlers->standard[0](dev, NULL,
 							   NULL, NULL);

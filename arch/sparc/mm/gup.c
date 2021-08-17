@@ -56,8 +56,11 @@ static noinline int gup_pte_range(pmd_t pmd, unsigned long addr,
 			put_page(head);
 			return 0;
 		}
+<<<<<<< HEAD
 		if (head != page)
 			get_huge_page_tail(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		pages[*nr] = page;
 		(*nr)++;
@@ -70,6 +73,7 @@ static int gup_huge_pmd(pmd_t *pmdp, pmd_t pmd, unsigned long addr,
 			unsigned long end, int write, struct page **pages,
 			int *nr)
 {
+<<<<<<< HEAD
 	struct page *head, *page, *tail;
 	u32 mask;
 	int refs;
@@ -78,12 +82,24 @@ static int gup_huge_pmd(pmd_t *pmdp, pmd_t pmd, unsigned long addr,
 	if (write)
 		mask |= PMD_HUGE_WRITE;
 	if ((pmd_val(pmd) & mask) != mask)
+=======
+	struct page *head, *page;
+	int refs;
+
+	if (!(pmd_val(pmd) & _PAGE_VALID))
+		return 0;
+
+	if (write && !pmd_write(pmd))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	refs = 0;
 	head = pmd_page(pmd);
 	page = head + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+<<<<<<< HEAD
 	tail = page;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		VM_BUG_ON(compound_head(page) != head);
 		pages[*nr] = page;
@@ -104,6 +120,7 @@ static int gup_huge_pmd(pmd_t *pmdp, pmd_t pmd, unsigned long addr,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/* Any tail page need their mapcount reference taken before we
 	 * return.
 	 */
@@ -113,6 +130,8 @@ static int gup_huge_pmd(pmd_t *pmdp, pmd_t pmd, unsigned long addr,
 		tail++;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -127,7 +146,11 @@ static int gup_pmd_range(pud_t pud, unsigned long addr, unsigned long end,
 		pmd_t pmd = *pmdp;
 
 		next = pmd_addr_end(addr, end);
+<<<<<<< HEAD
 		if (pmd_none(pmd) || pmd_trans_splitting(pmd))
+=======
+		if (pmd_none(pmd))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		if (unlikely(pmd_large(pmd))) {
 			if (!gup_huge_pmd(pmdp, pmd, addr, next,
@@ -161,6 +184,39 @@ static int gup_pud_range(pgd_t pgd, unsigned long addr, unsigned long end,
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+int __get_user_pages_fast(unsigned long start, int nr_pages, int write,
+			  struct page **pages)
+{
+	struct mm_struct *mm = current->mm;
+	unsigned long addr, len, end;
+	unsigned long next, flags;
+	pgd_t *pgdp;
+	int nr = 0;
+
+	start &= PAGE_MASK;
+	addr = start;
+	len = (unsigned long) nr_pages << PAGE_SHIFT;
+	end = start + len;
+
+	local_irq_save(flags);
+	pgdp = pgd_offset(mm, addr);
+	do {
+		pgd_t pgd = *pgdp;
+
+		next = pgd_addr_end(addr, end);
+		if (pgd_none(pgd))
+			break;
+		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
+			break;
+	} while (pgdp++, addr = next, addr != end);
+	local_irq_restore(flags);
+
+	return nr;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int get_user_pages_fast(unsigned long start, int nr_pages, int write,
 			struct page **pages)
 {
@@ -220,10 +276,16 @@ slow:
 		start += nr << PAGE_SHIFT;
 		pages += nr;
 
+<<<<<<< HEAD
 		down_read(&mm->mmap_sem);
 		ret = get_user_pages(current, mm, start,
 			(end - start) >> PAGE_SHIFT, write, 0, pages, NULL);
 		up_read(&mm->mmap_sem);
+=======
+		ret = get_user_pages_unlocked(start,
+			(end - start) >> PAGE_SHIFT, pages,
+			write ? FOLL_WRITE : 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Have to be a bit careful with return values */
 		if (nr > 0) {

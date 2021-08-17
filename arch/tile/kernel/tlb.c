@@ -91,8 +91,20 @@ void flush_tlb_all(void)
 	}
 }
 
+<<<<<<< HEAD
 void flush_tlb_kernel_range(unsigned long start, unsigned long end)
 {
 	flush_remote(0, HV_FLUSH_EVICT_L1I, cpu_online_mask,
+=======
+/*
+ * Callers need to flush the L1I themselves if necessary, e.g. for
+ * kernel module unload.  Otherwise we assume callers are not using
+ * executable pgprot_t's.  Using EVICT_L1I means that dataplane cpus
+ * will get an unnecessary interrupt otherwise.
+ */
+void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+{
+	flush_remote(0, 0, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     start, end - start, PAGE_SIZE, cpu_online_mask, NULL, 0);
 }

@@ -265,7 +265,11 @@ static int cc770_isa_probe(struct platform_device *pdev)
 	else
 		priv->clkout = COR_DEFAULT;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, dev);
+=======
+	platform_set_drvdata(pdev, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
 	err = register_cc770dev(dev);
@@ -293,12 +297,19 @@ static int cc770_isa_probe(struct platform_device *pdev)
 
 static int cc770_isa_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct net_device *dev = dev_get_drvdata(&pdev->dev);
+=======
+	struct net_device *dev = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cc770_priv *priv = netdev_priv(dev);
 	int idx = pdev->id;
 
 	unregister_cc770dev(dev);
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mem[idx]) {
 		iounmap(priv->reg_base);
@@ -319,7 +330,10 @@ static struct platform_driver cc770_isa_driver = {
 	.remove = cc770_isa_remove,
 	.driver = {
 		.name = KBUILD_MODNAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

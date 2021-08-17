@@ -59,6 +59,11 @@ struct vpif_display_config {
 	int subdev_count;
 	struct vpif_display_chan_config chan_config[VPIF_DISPLAY_MAX_CHANNELS];
 	const char *card_name;
+<<<<<<< HEAD
+=======
+	struct v4l2_async_subdev **asd;	/* Flat array, arranged in groups */
+	int *asd_sizes;		/* 0-terminated array of asd group sizes */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct vpif_input {
@@ -81,5 +86,10 @@ struct vpif_capture_config {
 	struct vpif_subdev_info *subdev_info;
 	int subdev_count;
 	const char *card_name;
+<<<<<<< HEAD
+=======
+	struct v4l2_async_subdev **asd;	/* Flat array, arranged in groups */
+	int *asd_sizes;		/* 0-terminated array of asd group sizes */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #endif /* _VPIF_TYPES_H */

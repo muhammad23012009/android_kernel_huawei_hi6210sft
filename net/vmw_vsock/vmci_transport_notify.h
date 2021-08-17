@@ -77,7 +77,13 @@ struct vmci_transport_notify_ops {
 	void (*process_negotiate) (struct sock *sk);
 };
 
+<<<<<<< HEAD
 extern struct vmci_transport_notify_ops vmci_transport_notify_pkt_ops;
 extern struct vmci_transport_notify_ops vmci_transport_notify_pkt_q_state_ops;
+=======
+extern const struct vmci_transport_notify_ops vmci_transport_notify_pkt_ops;
+extern const
+struct vmci_transport_notify_ops vmci_transport_notify_pkt_q_state_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __VMCI_TRANSPORT_NOTIFY_H__ */

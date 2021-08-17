@@ -94,11 +94,17 @@
 		scsi_opcode_name(WRITE_16),			\
 		scsi_opcode_name(VERIFY_16),			\
 		scsi_opcode_name(WRITE_SAME_16),		\
+<<<<<<< HEAD
 		scsi_opcode_name(SERVICE_ACTION_IN),		\
 		scsi_opcode_name(SAI_READ_CAPACITY_16),		\
 		scsi_opcode_name(SAI_GET_LBA_STATUS),		\
 		scsi_opcode_name(MI_REPORT_TARGET_PGS),		\
 		scsi_opcode_name(MO_SET_TARGET_PGS),		\
+=======
+		scsi_opcode_name(ZBC_OUT),			\
+		scsi_opcode_name(ZBC_IN),			\
+		scsi_opcode_name(SERVICE_ACTION_IN_16),		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		scsi_opcode_name(READ_32),			\
 		scsi_opcode_name(WRITE_32),			\
 		scsi_opcode_name(WRITE_SAME_32),		\

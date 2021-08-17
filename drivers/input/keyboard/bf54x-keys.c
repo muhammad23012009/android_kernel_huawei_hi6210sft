@@ -30,7 +30,10 @@
 
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/fs.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -180,7 +183,11 @@ static irqreturn_t bfin_kpad_isr(int irq, void *dev_id)
 static int bfin_kpad_probe(struct platform_device *pdev)
 {
 	struct bf54x_kpad *bf54x_kpad;
+<<<<<<< HEAD
 	struct bfin_kpad_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct bfin_kpad_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct input_dev *input;
 	int i, error;
 
@@ -289,7 +296,12 @@ static int bfin_kpad_probe(struct platform_device *pdev)
 		__set_bit(EV_REP, input->evbit);
 
 	for (i = 0; i < input->keycodemax; i++)
+<<<<<<< HEAD
 		__set_bit(bf54x_kpad->keycode[i] & KEY_MAX, input->keybit);
+=======
+		if (bf54x_kpad->keycode[i] <= KEY_MAX)
+			__set_bit(bf54x_kpad->keycode[i], input->keybit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__clear_bit(KEY_RESERVED, input->keybit);
 
 	error = input_register_device(input);
@@ -326,14 +338,21 @@ out0:
 	kfree(bf54x_kpad->keycode);
 out:
 	kfree(bf54x_kpad);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return error;
 }
 
 static int bfin_kpad_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct bfin_kpad_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct bfin_kpad_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bf54x_kpad *bf54x_kpad = platform_get_drvdata(pdev);
 
 	del_timer_sync(&bf54x_kpad->timer);
@@ -346,7 +365,10 @@ static int bfin_kpad_remove(struct platform_device *pdev)
 
 	kfree(bf54x_kpad->keycode);
 	kfree(bf54x_kpad);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -387,7 +409,10 @@ static int bfin_kpad_resume(struct platform_device *pdev)
 static struct platform_driver bfin_kpad_device_driver = {
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= bfin_kpad_probe,
 	.remove		= bfin_kpad_remove,

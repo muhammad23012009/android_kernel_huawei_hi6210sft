@@ -69,6 +69,11 @@
 #define SGI_EISA_IRQ	SGINT_LOCAL2 + 3	/* EISA interrupts */
 #define SGI_KEYBD_IRQ	SGINT_LOCAL2 + 4	/* keyboard */
 #define SGI_SERIAL_IRQ	SGINT_LOCAL2 + 5	/* onboard serial */
+<<<<<<< HEAD
+=======
+#define SGI_GIOEXP0_IRQ	(SGINT_LOCAL2 + 6)	/* Indy GIO EXP0 */
+#define SGI_GIOEXP1_IRQ	(SGINT_LOCAL2 + 7)	/* Indy GIO EXP1 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ip22_is_fullhouse()	(sgioc->sysid & SGIOC_SYSID_FULLHOUSE)
 

@@ -16,6 +16,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -32,18 +33,36 @@
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+ *
+ * Written or modified by:
+ *   Vlad Yasevich     <vladislav.yasevich@hp.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __sctp_auth_h__
 #define __sctp_auth_h__
 
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct sctp_endpoint;
 struct sctp_association;
 struct sctp_authkey;
 struct sctp_hmacalgo;
+<<<<<<< HEAD
+=======
+struct crypto_shash;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Define a generic struct that will hold all the info
@@ -97,7 +116,11 @@ int sctp_auth_asoc_copy_shkeys(const struct sctp_endpoint *ep,
 				struct sctp_association *asoc,
 				gfp_t gfp);
 int sctp_auth_init_hmacs(struct sctp_endpoint *ep, gfp_t gfp);
+<<<<<<< HEAD
 void sctp_auth_destroy_hmacs(struct crypto_hash *auth_hmacs[]);
+=======
+void sctp_auth_destroy_hmacs(struct crypto_shash *auth_hmacs[]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct sctp_hmac *sctp_auth_get_hmac(__u16 hmac_id);
 struct sctp_hmac *sctp_auth_asoc_get_hmac(const struct sctp_association *asoc);
 void sctp_auth_asoc_set_default_hmac(struct sctp_association *asoc,

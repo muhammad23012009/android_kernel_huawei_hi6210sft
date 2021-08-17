@@ -65,6 +65,10 @@ static inline void kunmap(struct page *page)
 
 static inline void *kmap_atomic(struct page *page)
 {
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 	return page_address(page);
 }
@@ -73,10 +77,17 @@ static inline void *kmap_atomic(struct page *page)
 static inline void __kunmap_atomic(void *addr)
 {
 	pagefault_enable();
+<<<<<<< HEAD
 }
 
 #define kmap_atomic_pfn(pfn)	kmap_atomic(pfn_to_page(pfn))
 #define kmap_atomic_to_page(ptr)	virt_to_page(ptr)
+=======
+	preempt_enable();
+}
+
+#define kmap_atomic_pfn(pfn)	kmap_atomic(pfn_to_page(pfn))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define kmap_flush_unused()	do {} while(0)
 #endif
@@ -93,7 +104,11 @@ static inline int kmap_atomic_idx_push(void)
 
 #ifdef CONFIG_DEBUG_HIGHMEM
 	WARN_ON_ONCE(in_irq() && !irqs_disabled());
+<<<<<<< HEAD
 	BUG_ON(idx > KM_TYPE_NR);
+=======
+	BUG_ON(idx >= KM_TYPE_NR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	return idx;
 }

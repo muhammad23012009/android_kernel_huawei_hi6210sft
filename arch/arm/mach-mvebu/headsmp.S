@@ -24,6 +24,7 @@
 #include <asm/assembler.h>
 
 /*
+<<<<<<< HEAD
  * At this stage the secondary CPUs don't have acces yet to the MMU, so
  * we have to provide physical addresses
  */
@@ -32,6 +33,8 @@
 	__CPUINIT
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Armada XP specific entry point for secondary CPUs.
  * We add the CPU to the coherency fabric and then jump to secondary
  * startup
@@ -39,6 +42,7 @@
 ENTRY(armada_xp_secondary_startup)
  ARM_BE8(setend	be )			@ go BE8 if entered LE
 
+<<<<<<< HEAD
 	/* Read CPU id */
 	mrc     p15, 0, r1, c0, c0, 5
 	and     r1, r1, #0xF
@@ -47,6 +51,12 @@ ENTRY(armada_xp_secondary_startup)
 	ldr     r0, =ARMADA_XP_CFB_BASE
 
 	bl	ll_set_cpu_coherent
+=======
+	bl	ll_add_cpu_to_smp_group
+
+	bl	ll_enable_coherency
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	b	secondary_startup
 
 ENDPROC(armada_xp_secondary_startup)

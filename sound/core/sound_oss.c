@@ -19,12 +19,15 @@
  *
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SND_OSSEMUL
 
 #if !defined(CONFIG_SOUND) && !(defined(MODULE) && defined(CONFIG_SOUND_MODULE))
 #error "Enable the OSS soundcore multiplexer (CONFIG_SOUND) in the kernel."
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -55,7 +58,11 @@ void *snd_lookup_oss_minor_data(unsigned int minor, int type)
 	if (mreg && mreg->type == type) {
 		private_data = mreg->private_data;
 		if (private_data && mreg->card_ptr)
+<<<<<<< HEAD
 			atomic_inc(&mreg->card_ptr->refcount);
+=======
+			get_device(&mreg->card_ptr->card_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		private_data = NULL;
 	mutex_unlock(&sound_oss_mutex);
@@ -105,8 +112,12 @@ static int snd_oss_kernel_minor(int type, struct snd_card *card, int dev)
 }
 
 int snd_register_oss_device(int type, struct snd_card *card, int dev,
+<<<<<<< HEAD
 			    const struct file_operations *f_ops, void *private_data,
 			    const char *name)
+=======
+			    const struct file_operations *f_ops, void *private_data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int minor = snd_oss_kernel_minor(type, card, dev);
 	int minor_unit;
@@ -214,10 +225,14 @@ EXPORT_SYMBOL(snd_unregister_oss_device);
  *  INFO PART
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 
 static struct snd_info_entry *snd_minor_info_oss_entry;
 
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const char *snd_oss_device_type_name(int type)
 {
 	switch (type) {
@@ -264,6 +279,7 @@ int __init snd_minor_info_oss_init(void)
 	struct snd_info_entry *entry;
 
 	entry = snd_info_create_module_entry(THIS_MODULE, "devices", snd_oss_root);
+<<<<<<< HEAD
 	if (entry) {
 		entry->c.text.read = snd_minor_info_oss_read;
 		if (snd_info_register(entry) < 0) {
@@ -283,3 +299,11 @@ int __exit snd_minor_info_oss_done(void)
 #endif /* CONFIG_PROC_FS */
 
 #endif /* CONFIG_SND_OSSEMUL */
+=======
+	if (!entry)
+		return -ENOMEM;
+	entry->c.text.read = snd_minor_info_oss_read;
+	return snd_info_register(entry); /* freed in error path */
+}
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

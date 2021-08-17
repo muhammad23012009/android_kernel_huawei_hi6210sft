@@ -47,6 +47,7 @@ static ssize_t class_attr_store(struct kobject *kobj, struct attribute *attr,
 	return ret;
 }
 
+<<<<<<< HEAD
 static const void *class_attr_namespace(struct kobject *kobj,
 					const struct attribute *attr)
 {
@@ -59,6 +60,8 @@ static const void *class_attr_namespace(struct kobject *kobj,
 	return ns;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void class_release(struct kobject *kobj)
 {
 	struct subsys_private *cp = to_subsys_private(kobj);
@@ -86,7 +89,10 @@ static const struct kobj_ns_type_operations *class_child_ns_type(struct kobject 
 static const struct sysfs_ops class_sysfs_ops = {
 	.show	   = class_attr_show,
 	.store	   = class_attr_store,
+<<<<<<< HEAD
 	.namespace = class_attr_namespace,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct kobj_type class_ktype = {
@@ -99,21 +105,40 @@ static struct kobj_type class_ktype = {
 static struct kset *class_kset;
 
 
+<<<<<<< HEAD
 int class_create_file(struct class *cls, const struct class_attribute *attr)
 {
 	int error;
 	if (cls)
 		error = sysfs_create_file(&cls->p->subsys.kobj,
 					  &attr->attr);
+=======
+int class_create_file_ns(struct class *cls, const struct class_attribute *attr,
+			 const void *ns)
+{
+	int error;
+
+	if (cls)
+		error = sysfs_create_file_ns(&cls->p->subsys.kobj,
+					     &attr->attr, ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		error = -EINVAL;
 	return error;
 }
 
+<<<<<<< HEAD
 void class_remove_file(struct class *cls, const struct class_attribute *attr)
 {
 	if (cls)
 		sysfs_remove_file(&cls->p->subsys.kobj, &attr->attr);
+=======
+void class_remove_file_ns(struct class *cls, const struct class_attribute *attr,
+			  const void *ns)
+{
+	if (cls)
+		sysfs_remove_file_ns(&cls->p->subsys.kobj, &attr->attr, ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct class *class_get(struct class *cls)
@@ -135,7 +160,11 @@ static int add_class_attrs(struct class *cls)
 	int error = 0;
 
 	if (cls->class_attrs) {
+<<<<<<< HEAD
 		for (i = 0; attr_name(cls->class_attrs[i]); i++) {
+=======
+		for (i = 0; cls->class_attrs[i].attr.name; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			error = class_create_file(cls, &cls->class_attrs[i]);
 			if (error)
 				goto error;
@@ -154,7 +183,11 @@ static void remove_class_attrs(struct class *cls)
 	int i;
 
 	if (cls->class_attrs) {
+<<<<<<< HEAD
 		for (i = 0; attr_name(cls->class_attrs[i]); i++)
+=======
+		for (i = 0; cls->class_attrs[i].attr.name; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			class_remove_file(cls, &cls->class_attrs[i]);
 	}
 }
@@ -416,7 +449,11 @@ EXPORT_SYMBOL_GPL(class_for_each_device);
  *
  * Note, you will need to drop the reference with put_device() after use.
  *
+<<<<<<< HEAD
  * @fn is allowed to do anything including calling back into class
+=======
+ * @match is allowed to do anything including calling back into class
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * code.  There's no locking restriction.
  */
 struct device *class_find_device(struct class *class, struct device *start,
@@ -499,6 +536,10 @@ ssize_t show_class_attr_string(struct class *class,
 			       struct class_attribute *attr, char *buf)
 {
 	struct class_attribute_string *cs;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cs = container_of(attr, struct class_attribute_string, attr);
 	return snprintf(buf, PAGE_SIZE, "%s\n", cs->str);
 }
@@ -600,8 +641,13 @@ int __init classes_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(class_create_file);
 EXPORT_SYMBOL_GPL(class_remove_file);
+=======
+EXPORT_SYMBOL_GPL(class_create_file_ns);
+EXPORT_SYMBOL_GPL(class_remove_file_ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL_GPL(class_unregister);
 EXPORT_SYMBOL_GPL(class_destroy);
 

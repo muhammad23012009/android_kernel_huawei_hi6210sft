@@ -20,6 +20,7 @@
 
 
 /* this is the table of CCLK frequencies, in Hz */
+<<<<<<< HEAD
 /* .index is the entry in the auxiliary dpm_state_table[] */
 static struct cpufreq_frequency_table bfin_freq_table[] = {
 	{
@@ -37,6 +38,25 @@ static struct cpufreq_frequency_table bfin_freq_table[] = {
 	{
 		.frequency = CPUFREQ_TABLE_END,
 		.index = 0,
+=======
+/* .driver_data is the entry in the auxiliary dpm_state_table[] */
+static struct cpufreq_frequency_table bfin_freq_table[] = {
+	{
+		.frequency = CPUFREQ_TABLE_END,
+		.driver_data = 0,
+	},
+	{
+		.frequency = CPUFREQ_TABLE_END,
+		.driver_data = 1,
+	},
+	{
+		.frequency = CPUFREQ_TABLE_END,
+		.driver_data = 2,
+	},
+	{
+		.frequency = CPUFREQ_TABLE_END,
+		.driver_data = 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -112,7 +132,11 @@ static unsigned int bfin_getfreq_khz(unsigned int cpu)
 }
 
 #ifdef CONFIG_BF60x
+<<<<<<< HEAD
 unsigned long cpu_set_cclk(int cpu, unsigned long new)
+=======
+static int cpu_set_cclk(int cpu, unsigned long new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct clk *clk;
 	int ret;
@@ -127,23 +151,34 @@ unsigned long cpu_set_cclk(int cpu, unsigned long new)
 }
 #endif
 
+<<<<<<< HEAD
 static int bfin_target(struct cpufreq_policy *policy,
 			unsigned int target_freq, unsigned int relation)
+=======
+static int bfin_target(struct cpufreq_policy *policy, unsigned int index)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifndef CONFIG_BF60x
 	unsigned int plldiv;
 #endif
+<<<<<<< HEAD
 	unsigned int index;
 	unsigned long cclk_hz;
 	struct cpufreq_freqs freqs;
 	static unsigned long lpj_ref;
 	static unsigned int  lpj_ref_freq;
+=======
+	static unsigned long lpj_ref;
+	static unsigned int  lpj_ref_freq;
+	unsigned int old_freq, new_freq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 #if defined(CONFIG_CYCLES_CLOCKSOURCE)
 	cycles_t cycles;
 #endif
 
+<<<<<<< HEAD
 	if (cpufreq_frequency_table_target(policy, bfin_freq_table, target_freq,
 				relation, &index))
 		return -EINVAL;
@@ -157,11 +192,20 @@ static int bfin_target(struct cpufreq_policy *policy,
 			cclk_hz, target_freq, freqs.old);
 
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+=======
+	old_freq = bfin_getfreq_khz(0);
+	new_freq = bfin_freq_table[index].frequency;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef CONFIG_BF60x
 	plldiv = (bfin_read_PLL_DIV() & SSEL) | dpm_state_table[index].csel;
 	bfin_write_PLL_DIV(plldiv);
 #else
+<<<<<<< HEAD
 	ret = cpu_set_cclk(policy->cpu, freqs.new * 1000);
+=======
+	ret = cpu_set_cclk(policy->cpu, new_freq * 1000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret != 0) {
 		WARN_ONCE(ret, "cpufreq set freq failed %d\n", ret);
 		return ret;
@@ -177,6 +221,7 @@ static int bfin_target(struct cpufreq_policy *policy,
 #endif
 	if (!lpj_ref_freq) {
 		lpj_ref = loops_per_jiffy;
+<<<<<<< HEAD
 		lpj_ref_freq = freqs.old;
 	}
 	if (freqs.new != freqs.old) {
@@ -196,6 +241,18 @@ static int bfin_verify_speed(struct cpufreq_policy *policy)
 	return cpufreq_frequency_table_verify(policy, bfin_freq_table);
 }
 
+=======
+		lpj_ref_freq = old_freq;
+	}
+	if (new_freq != old_freq) {
+		loops_per_jiffy = cpufreq_scale(lpj_ref,
+				lpj_ref_freq, new_freq);
+	}
+
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __bfin_cpu_init(struct cpufreq_policy *policy)
 {
 
@@ -209,6 +266,7 @@ static int __bfin_cpu_init(struct cpufreq_policy *policy)
 
 	policy->cpuinfo.transition_latency = 50000; /* 50us assumed */
 
+<<<<<<< HEAD
 	policy->cur = cclk;
 	cpufreq_frequency_table_get_attr(bfin_freq_table, policy->cpu);
 	return cpufreq_frequency_table_cpuinfo(policy, bfin_freq_table);
@@ -227,6 +285,18 @@ static struct cpufreq_driver bfin_driver = {
 	.name = "bfin cpufreq",
 	.owner = THIS_MODULE,
 	.attr = bfin_freq_attr,
+=======
+	return cpufreq_table_validate_and_show(policy, bfin_freq_table);
+}
+
+static struct cpufreq_driver bfin_driver = {
+	.verify = cpufreq_generic_frequency_table_verify,
+	.target_index = bfin_target,
+	.get = bfin_getfreq_khz,
+	.init = __bfin_cpu_init,
+	.name = "bfin cpufreq",
+	.attr = cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init bfin_cpu_init(void)

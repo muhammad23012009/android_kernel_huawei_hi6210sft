@@ -22,6 +22,10 @@
 #ifndef _DAVINCI_VPFE_VIDEO_H
 #define _DAVINCI_VPFE_VIDEO_H
 
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/videobuf2-dma-contig.h>
 
 struct vpfe_device;
@@ -32,7 +36,11 @@ struct vpfe_device;
  *		if there was no buffer previously queued.
  */
 struct vpfe_video_operations {
+<<<<<<< HEAD
 	int(*queue) (struct vpfe_device *vpfe_dev, unsigned long addr);
+=======
+	int (*queue)(struct vpfe_device *vpfe_dev, unsigned long addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum vpfe_pipeline_stream_state {
@@ -51,6 +59,10 @@ enum vpfe_video_state {
 struct vpfe_pipeline {
 	/* media pipeline */
 	struct media_pipeline		*pipe;
+<<<<<<< HEAD
+=======
+	struct media_entity_graph	graph;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* state of the pipeline, continuous,
 	 * single-shot or stopped
 	 */
@@ -72,7 +84,11 @@ struct vpfe_pipeline {
 	container_of(vdev, struct vpfe_video_device, video_dev)
 
 struct vpfe_cap_buffer {
+<<<<<<< HEAD
 	struct vb2_buffer vb;
+=======
+	struct vb2_v4l2_buffer vb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head list;
 };
 
@@ -102,8 +118,11 @@ struct vpfe_video_device {
 	 * user has selected
 	 */
 	enum v4l2_memory			memory;
+<<<<<<< HEAD
 	/* Used to keep track of state of the priority */
 	struct v4l2_prio_state			prio;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* number of open instances of the channel */
 	u32					usrs;
 	/* flag to indicate whether decoder is initialized */
@@ -123,8 +142,11 @@ struct vpfe_video_device {
 	/* Used to store pixel format */
 	struct v4l2_format			fmt;
 	struct vb2_queue			buffer_queue;
+<<<<<<< HEAD
 	/* allocator-specific contexts for each plane */
 	struct vb2_alloc_ctx *alloc_ctx;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Queue of filled frames */
 	struct list_head			dma_queue;
 	spinlock_t				irqlock;

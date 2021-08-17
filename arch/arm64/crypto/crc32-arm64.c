@@ -232,6 +232,10 @@ static struct shash_alg crc32_alg = {
 		.cra_name		=	"crc32",
 		.cra_driver_name	=	"crc32-arm64-hw",
 		.cra_priority		=	300,
+<<<<<<< HEAD
+=======
+		.cra_flags		=	CRYPTO_ALG_OPTIONAL_KEY,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.cra_blocksize		=	CHKSUM_BLOCK_SIZE,
 		.cra_alignmask		=	0,
 		.cra_ctxsize		=	sizeof(struct chksum_ctx),
@@ -253,6 +257,10 @@ static struct shash_alg crc32c_alg = {
 		.cra_name		=	"crc32c",
 		.cra_driver_name	=	"crc32c-arm64-hw",
 		.cra_priority		=	300,
+<<<<<<< HEAD
+=======
+		.cra_flags		=	CRYPTO_ALG_OPTIONAL_KEY,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.cra_blocksize		=	CHKSUM_BLOCK_SIZE,
 		.cra_alignmask		=	0,
 		.cra_ctxsize		=	sizeof(struct chksum_ctx),

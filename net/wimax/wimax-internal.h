@@ -30,6 +30,15 @@
 #define __WIMAX_INTERNAL_H__
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
+=======
+#ifdef pr_fmt
+#undef pr_fmt
+#endif
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/device.h>
 #include <net/wimax.h>
 
@@ -63,11 +72,19 @@ void __wimax_state_set(struct wimax_dev *wimax_dev, enum wimax_st state)
 {
 	wimax_dev->state = state;
 }
+<<<<<<< HEAD
 extern void __wimax_state_change(struct wimax_dev *, enum wimax_st);
 
 #ifdef CONFIG_DEBUG_FS
 extern int wimax_debugfs_add(struct wimax_dev *);
 extern void wimax_debugfs_rm(struct wimax_dev *);
+=======
+void __wimax_state_change(struct wimax_dev *, enum wimax_st);
+
+#ifdef CONFIG_DEBUG_FS
+int wimax_debugfs_add(struct wimax_dev *);
+void wimax_debugfs_rm(struct wimax_dev *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline int wimax_debugfs_add(struct wimax_dev *wimax_dev)
 {
@@ -76,6 +93,7 @@ static inline int wimax_debugfs_add(struct wimax_dev *wimax_dev)
 static inline void wimax_debugfs_rm(struct wimax_dev *wimax_dev) {}
 #endif
 
+<<<<<<< HEAD
 extern void wimax_id_table_add(struct wimax_dev *);
 extern struct wimax_dev *wimax_dev_get_by_genl_info(struct genl_info *, int);
 extern void wimax_id_table_rm(struct wimax_dev *);
@@ -86,6 +104,24 @@ extern void wimax_rfkill_rm(struct wimax_dev *);
 
 extern struct genl_family wimax_gnl_family;
 extern struct genl_multicast_group wimax_gnl_mcg;
+=======
+void wimax_id_table_add(struct wimax_dev *);
+struct wimax_dev *wimax_dev_get_by_genl_info(struct genl_info *, int);
+void wimax_id_table_rm(struct wimax_dev *);
+void wimax_id_table_release(void);
+
+int wimax_rfkill_add(struct wimax_dev *);
+void wimax_rfkill_rm(struct wimax_dev *);
+
+/* generic netlink */
+extern struct genl_family wimax_gnl_family;
+
+/* ops */
+int wimax_gnl_doit_msg_from_user(struct sk_buff *skb, struct genl_info *info);
+int wimax_gnl_doit_reset(struct sk_buff *skb, struct genl_info *info);
+int wimax_gnl_doit_rfkill(struct sk_buff *skb, struct genl_info *info);
+int wimax_gnl_doit_state_get(struct sk_buff *skb, struct genl_info *info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* #ifdef __KERNEL__ */
 #endif /* #ifndef __WIMAX_INTERNAL_H__ */

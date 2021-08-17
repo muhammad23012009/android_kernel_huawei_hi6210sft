@@ -15,7 +15,11 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/sizes.h>
+=======
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/firmware.h>
 #include <linux/gpio.h>
@@ -23,7 +27,13 @@
 #include <linux/init.h>
 #include <linux/media.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/regulator/consumer.h>
+=======
+#include <linux/of_gpio.h>
+#include <linux/regulator/consumer.h>
+#include <linux/sizes.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/spi/spi.h>
 #include <linux/videodev2.h>
@@ -32,7 +42,12 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/s5c73m3.h>
+=======
+#include <media/i2c/s5c73m3.h>
+#include <media/v4l2-of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "s5c73m3.h"
 
@@ -46,6 +61,11 @@ static int update_fw;
 module_param(update_fw, int, 0644);
 
 #define S5C73M3_EMBEDDED_DATA_MAXLEN	SZ_4K
+<<<<<<< HEAD
+=======
+#define S5C73M3_MIPI_DATA_LANES		4
+#define S5C73M3_CLK_NAME		"cis_extclk"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char * const s5c73m3_supply_names[S5C73M3_MAX_SUPPLIES] = {
 	"vdd-int",	/* Digital Core supply (1.2V), CAM_ISP_CORE_1.2V */
@@ -162,7 +182,11 @@ static int s5c73m3_i2c_read(struct i2c_client *client, u16 addr, u16 *data)
 	 */
 	ret = i2c_transfer(client->adapter, msg, 2);
 	if (ret == 2) {
+<<<<<<< HEAD
 		*data = be16_to_cpup((u16 *)rbuf);
+=======
+		*data = be16_to_cpup((__be16 *)rbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		v4l2_dbg(4, s5c73m3_dbg, client,
 			 "%s: addr: 0x%04x, data: 0x%04x\n",
 			 __func__, addr, *data);
@@ -819,10 +843,18 @@ static const struct s5c73m3_frame_size *s5c73m3_find_frame_size(
 }
 
 static void s5c73m3_oif_try_format(struct s5c73m3 *state,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
 				   struct v4l2_subdev_format *fmt,
 				   const struct s5c73m3_frame_size **fs)
 {
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+				   struct v4l2_subdev_format *fmt,
+				   const struct s5c73m3_frame_size **fs)
+{
+	struct v4l2_subdev *sd = &state->sensor_sd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 code;
 
 	switch (fmt->pad) {
@@ -845,7 +877,11 @@ static void s5c73m3_oif_try_format(struct s5c73m3 *state,
 			*fs = state->oif_pix_size[RES_ISP];
 		else
 			*fs = s5c73m3_find_frame_size(
+<<<<<<< HEAD
 						v4l2_subdev_get_try_format(fh,
+=======
+						v4l2_subdev_get_try_format(sd, cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							OIF_ISP_PAD),
 						RES_ISP);
 		break;
@@ -855,7 +891,11 @@ static void s5c73m3_oif_try_format(struct s5c73m3 *state,
 }
 
 static void s5c73m3_try_format(struct s5c73m3 *state,
+<<<<<<< HEAD
 			      struct v4l2_subdev_fh *fh,
+=======
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      struct v4l2_subdev_format *fmt,
 			      const struct s5c73m3_frame_size **fs)
 {
@@ -947,7 +987,11 @@ static int s5c73m3_oif_s_frame_interval(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_enum_frame_interval(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			      struct v4l2_subdev_fh *fh,
+=======
+			      struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      struct v4l2_subdev_frame_interval_enum *fie)
 {
 	struct s5c73m3 *state = oif_sd_to_s5c73m3(sd);
@@ -985,7 +1029,11 @@ static int s5c73m3_oif_get_pad_code(int pad, int index)
 }
 
 static int s5c73m3_get_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			   struct v4l2_subdev_fh *fh,
+=======
+			   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct v4l2_subdev_format *fmt)
 {
 	struct s5c73m3 *state = sensor_sd_to_s5c73m3(sd);
@@ -993,7 +1041,11 @@ static int s5c73m3_get_fmt(struct v4l2_subdev *sd,
 	u32 code;
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+<<<<<<< HEAD
 		fmt->format = *v4l2_subdev_get_try_format(fh, fmt->pad);
+=======
+		fmt->format = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -1019,7 +1071,11 @@ static int s5c73m3_get_fmt(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_get_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			   struct v4l2_subdev_fh *fh,
+=======
+			   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct v4l2_subdev_format *fmt)
 {
 	struct s5c73m3 *state = oif_sd_to_s5c73m3(sd);
@@ -1027,7 +1083,11 @@ static int s5c73m3_oif_get_fmt(struct v4l2_subdev *sd,
 	u32 code;
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+<<<<<<< HEAD
 		fmt->format = *v4l2_subdev_get_try_format(fh, fmt->pad);
+=======
+		fmt->format = *v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -1057,7 +1117,11 @@ static int s5c73m3_oif_get_fmt(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_set_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			   struct v4l2_subdev_fh *fh,
+=======
+			   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct v4l2_subdev_format *fmt)
 {
 	const struct s5c73m3_frame_size *frame_size = NULL;
@@ -1067,10 +1131,17 @@ static int s5c73m3_set_fmt(struct v4l2_subdev *sd,
 
 	mutex_lock(&state->lock);
 
+<<<<<<< HEAD
 	s5c73m3_try_format(state, fh, fmt, &frame_size);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 		mf = v4l2_subdev_get_try_format(fh, fmt->pad);
+=======
+	s5c73m3_try_format(state, cfg, fmt, &frame_size);
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+		mf = v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*mf = fmt->format;
 	} else {
 		switch (fmt->pad) {
@@ -1096,7 +1167,11 @@ static int s5c73m3_set_fmt(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_set_fmt(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 			 struct v4l2_subdev_fh *fh,
+=======
+			 struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 struct v4l2_subdev_format *fmt)
 {
 	const struct s5c73m3_frame_size *frame_size = NULL;
@@ -1106,11 +1181,24 @@ static int s5c73m3_oif_set_fmt(struct v4l2_subdev *sd,
 
 	mutex_lock(&state->lock);
 
+<<<<<<< HEAD
 	s5c73m3_oif_try_format(state, fh, fmt, &frame_size);
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 		mf = v4l2_subdev_get_try_format(fh, fmt->pad);
 		*mf = fmt->format;
+=======
+	s5c73m3_oif_try_format(state, cfg, fmt, &frame_size);
+
+	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+		mf = v4l2_subdev_get_try_format(sd, cfg, fmt->pad);
+		*mf = fmt->format;
+		if (fmt->pad == OIF_ISP_PAD) {
+			mf = v4l2_subdev_get_try_format(sd, cfg, OIF_SOURCE_PAD);
+			mf->width = fmt->format.width;
+			mf->height = fmt->format.height;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		switch (fmt->pad) {
 		case OIF_ISP_PAD:
@@ -1179,7 +1267,11 @@ static int s5c73m3_oif_set_frame_desc(struct v4l2_subdev *sd, unsigned int pad,
 }
 
 static int s5c73m3_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
 	static const int codes[] = {
@@ -1195,7 +1287,11 @@ static int s5c73m3_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				struct v4l2_subdev_fh *fh,
+=======
+				struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct v4l2_subdev_mbus_code_enum *code)
 {
 	int ret;
@@ -1210,7 +1306,11 @@ static int s5c73m3_oif_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct v4l2_subdev_frame_size_enum *fse)
 {
 	int idx;
@@ -1237,9 +1337,16 @@ static int s5c73m3_enum_frame_size(struct v4l2_subdev *sd,
 }
 
 static int s5c73m3_oif_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
 				   struct v4l2_subdev_frame_size_enum *fse)
 {
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+				   struct v4l2_subdev_frame_size_enum *fse)
+{
+	struct s5c73m3 *state = oif_sd_to_s5c73m3(sd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int idx;
 
 	if (fse->pad == OIF_SOURCE_PAD) {
@@ -1249,11 +1356,33 @@ static int s5c73m3_oif_enum_frame_size(struct v4l2_subdev *sd,
 		switch (fse->code) {
 		case S5C73M3_JPEG_FMT:
 		case S5C73M3_ISP_FMT: {
+<<<<<<< HEAD
 			struct v4l2_mbus_framefmt *mf =
 				v4l2_subdev_get_try_format(fh, OIF_ISP_PAD);
 
 			fse->max_width = fse->min_width = mf->width;
 			fse->max_height = fse->min_height = mf->height;
+=======
+			unsigned w, h;
+
+			if (fse->which == V4L2_SUBDEV_FORMAT_TRY) {
+				struct v4l2_mbus_framefmt *mf;
+
+				mf = v4l2_subdev_get_try_format(sd, cfg,
+								OIF_ISP_PAD);
+
+				w = mf->width;
+				h = mf->height;
+			} else {
+				const struct s5c73m3_frame_size *fs;
+
+				fs = state->oif_pix_size[RES_ISP];
+				w = fs->width;
+				h = fs->height;
+			}
+			fse->max_width = fse->min_width = w;
+			fse->max_height = fse->min_height = h;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 		default:
@@ -1296,11 +1425,19 @@ static int s5c73m3_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_mbus_framefmt *mf;
 
+<<<<<<< HEAD
 	mf = v4l2_subdev_get_try_format(fh, S5C73M3_ISP_PAD);
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
 						S5C73M3_ISP_FMT);
 
 	mf = v4l2_subdev_get_try_format(fh, S5C73M3_JPEG_PAD);
+=======
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, S5C73M3_ISP_PAD);
+	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
+						S5C73M3_ISP_FMT);
+
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, S5C73M3_JPEG_PAD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_jpeg_resolutions[1],
 					S5C73M3_JPEG_FMT);
 
@@ -1311,6 +1448,7 @@ static int s5c73m3_oif_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_mbus_framefmt *mf;
 
+<<<<<<< HEAD
 	mf = v4l2_subdev_get_try_format(fh, OIF_ISP_PAD);
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
 						S5C73M3_ISP_FMT);
@@ -1320,6 +1458,17 @@ static int s5c73m3_oif_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 					S5C73M3_JPEG_FMT);
 
 	mf = v4l2_subdev_get_try_format(fh, OIF_SOURCE_PAD);
+=======
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, OIF_ISP_PAD);
+	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
+						S5C73M3_ISP_FMT);
+
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, OIF_JPEG_PAD);
+	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_jpeg_resolutions[1],
+					S5C73M3_JPEG_FMT);
+
+	mf = v4l2_subdev_get_try_format(sd, fh->pad, OIF_SOURCE_PAD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s5c73m3_fill_mbus_fmt(mf, &s5c73m3_isp_resolutions[1],
 						S5C73M3_ISP_FMT);
 	return 0;
@@ -1350,6 +1499,7 @@ static int __s5c73m3_power_on(struct s5c73m3 *state)
 	for (i = 0; i < S5C73M3_MAX_SUPPLIES; i++) {
 		ret = regulator_enable(state->supplies[i].consumer);
 		if (ret)
+<<<<<<< HEAD
 			goto err;
 	}
 
@@ -1361,6 +1511,31 @@ static int __s5c73m3_power_on(struct s5c73m3 *state)
 
 	return 0;
 err:
+=======
+			goto err_reg_dis;
+	}
+
+	ret = clk_set_rate(state->clock, state->mclk_frequency);
+	if (ret < 0)
+		goto err_reg_dis;
+
+	ret = clk_prepare_enable(state->clock);
+	if (ret < 0)
+		goto err_reg_dis;
+
+	v4l2_dbg(1, s5c73m3_dbg, &state->oif_sd, "clock frequency: %ld\n",
+					clk_get_rate(state->clock));
+
+	s5c73m3_gpio_deassert(state, STBY);
+	usleep_range(100, 200);
+
+	s5c73m3_gpio_deassert(state, RSET);
+	usleep_range(50, 100);
+
+	return 0;
+
+err_reg_dis:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (--i; i >= 0; i--)
 		regulator_disable(state->supplies[i].consumer);
 	return ret;
@@ -1370,11 +1545,21 @@ static int __s5c73m3_power_off(struct s5c73m3 *state)
 {
 	int i, ret;
 
+<<<<<<< HEAD
 	if (s5c73m3_gpio_assert(state, RST))
+=======
+	if (s5c73m3_gpio_assert(state, RSET))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usleep_range(10, 50);
 
 	if (s5c73m3_gpio_assert(state, STBY))
 		usleep_range(100, 200);
+<<<<<<< HEAD
+=======
+
+	clk_disable_unprepare(state->clock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	state->streaming = 0;
 	state->isp_ready = 0;
 
@@ -1383,11 +1568,25 @@ static int __s5c73m3_power_off(struct s5c73m3 *state)
 		if (ret)
 			goto err;
 	}
+<<<<<<< HEAD
 	return 0;
 err:
 	for (++i; i < S5C73M3_MAX_SUPPLIES; i++)
 		regulator_enable(state->supplies[i].consumer);
 
+=======
+
+	return 0;
+err:
+	for (++i; i < S5C73M3_MAX_SUPPLIES; i++) {
+		int r = regulator_enable(state->supplies[i].consumer);
+		if (r < 0)
+			v4l2_err(&state->oif_sd, "Failed to reenable %s: %d\n",
+				 state->supplies[i].supply, r);
+	}
+
+	clk_prepare_enable(state->clock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -1406,7 +1605,11 @@ static int s5c73m3_oif_set_power(struct v4l2_subdev *sd, int on)
 			state->apply_fiv = 1;
 			state->apply_fmt = 1;
 		}
+<<<<<<< HEAD
 	} else if (!on == state->power) {
+=======
+	} else if (state->power == !on) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = s5c73m3_set_af_softlanding(state);
 		if (!ret)
 			ret = __s5c73m3_power_off(state);
@@ -1435,6 +1638,7 @@ static int s5c73m3_oif_registered(struct v4l2_subdev *sd)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = media_entity_create_link(&state->sensor_sd.entity,
 			S5C73M3_ISP_PAD, &state->oif_sd.entity, OIF_ISP_PAD,
 			MEDIA_LNK_FL_IMMUTABLE | MEDIA_LNK_FL_ENABLED);
@@ -1454,6 +1658,16 @@ static int s5c73m3_oif_registered(struct v4l2_subdev *sd)
 	v4l2_dbg(1, s5c73m3_dbg, sd, "%s: Booting %s (%d)\n",
 		 __func__, ret ? "failed" : "succeded", ret);
 
+=======
+	ret = media_create_pad_link(&state->sensor_sd.entity,
+			S5C73M3_ISP_PAD, &state->oif_sd.entity, OIF_ISP_PAD,
+			MEDIA_LNK_FL_IMMUTABLE | MEDIA_LNK_FL_ENABLED);
+
+	ret = media_create_pad_link(&state->sensor_sd.entity,
+			S5C73M3_JPEG_PAD, &state->oif_sd.entity, OIF_JPEG_PAD,
+			MEDIA_LNK_FL_IMMUTABLE | MEDIA_LNK_FL_ENABLED);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -1511,6 +1725,7 @@ static const struct v4l2_subdev_ops oif_subdev_ops = {
 	.video	= &s5c73m3_oif_video_ops,
 };
 
+<<<<<<< HEAD
 static int s5c73m3_configure_gpio(int nr, int val, const char *name)
 {
 	unsigned long flags = val ? GPIOF_OUT_INIT_HIGH : GPIOF_OUT_INIT_LOW;
@@ -1533,10 +1748,58 @@ static int s5c73m3_free_gpios(struct s5c73m3 *state)
 			continue;
 		gpio_free(state->gpio[i].gpio);
 		state->gpio[i].gpio = -EINVAL;
+=======
+static int s5c73m3_configure_gpios(struct s5c73m3 *state)
+{
+	static const char * const gpio_names[] = {
+		"S5C73M3_STBY", "S5C73M3_RST"
+	};
+	struct i2c_client *c = state->i2c_client;
+	struct s5c73m3_gpio *g = state->gpio;
+	int ret, i;
+
+	for (i = 0; i < GPIO_NUM; ++i) {
+		unsigned int flags = GPIOF_DIR_OUT;
+		if (g[i].level)
+			flags |= GPIOF_INIT_HIGH;
+		ret = devm_gpio_request_one(&c->dev, g[i].gpio, flags,
+					    gpio_names[i]);
+		if (ret) {
+			v4l2_err(c, "failed to request gpio %s\n",
+				 gpio_names[i]);
+			return ret;
+		}
 	}
 	return 0;
 }
 
+static int s5c73m3_parse_gpios(struct s5c73m3 *state)
+{
+	static const char * const prop_names[] = {
+		"standby-gpios", "xshutdown-gpios",
+	};
+	struct device *dev = &state->i2c_client->dev;
+	struct device_node *node = dev->of_node;
+	int ret, i;
+
+	for (i = 0; i < GPIO_NUM; ++i) {
+		enum of_gpio_flags of_flags;
+
+		ret = of_get_named_gpio_flags(node, prop_names[i],
+					      0, &of_flags);
+		if (ret < 0) {
+			dev_err(dev, "failed to parse %s DT property\n",
+				prop_names[i]);
+			return -EINVAL;
+		}
+		state->gpio[i].gpio = ret;
+		state->gpio[i].level = !(of_flags & OF_GPIO_ACTIVE_LOW);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+	}
+	return 0;
+}
+
+<<<<<<< HEAD
 static int s5c73m3_configure_gpios(struct s5c73m3 *state,
 				   const struct s5c73m3_platform_data *pdata)
 {
@@ -1564,6 +1827,66 @@ static int s5c73m3_configure_gpios(struct s5c73m3 *state,
 	state->gpio[RST] = *gpio;
 	if (gpio_is_valid(gpio->gpio))
 		gpio_set_value(gpio->gpio, 0);
+=======
+static int s5c73m3_get_platform_data(struct s5c73m3 *state)
+{
+	struct device *dev = &state->i2c_client->dev;
+	const struct s5c73m3_platform_data *pdata = dev->platform_data;
+	struct device_node *node = dev->of_node;
+	struct device_node *node_ep;
+	struct v4l2_of_endpoint ep;
+	int ret;
+
+	if (!node) {
+		if (!pdata) {
+			dev_err(dev, "Platform data not specified\n");
+			return -EINVAL;
+		}
+
+		state->mclk_frequency = pdata->mclk_frequency;
+		state->gpio[STBY] = pdata->gpio_stby;
+		state->gpio[RSET] = pdata->gpio_reset;
+		return 0;
+	}
+
+	state->clock = devm_clk_get(dev, S5C73M3_CLK_NAME);
+	if (IS_ERR(state->clock))
+		return PTR_ERR(state->clock);
+
+	if (of_property_read_u32(node, "clock-frequency",
+				 &state->mclk_frequency)) {
+		state->mclk_frequency = S5C73M3_DEFAULT_MCLK_FREQ;
+		dev_info(dev, "using default %u Hz clock frequency\n",
+					state->mclk_frequency);
+	}
+
+	ret = s5c73m3_parse_gpios(state);
+	if (ret < 0)
+		return -EINVAL;
+
+	node_ep = of_graph_get_next_endpoint(node, NULL);
+	if (!node_ep) {
+		dev_warn(dev, "no endpoint defined for node: %s\n",
+						node->full_name);
+		return 0;
+	}
+
+	ret = v4l2_of_parse_endpoint(node_ep, &ep);
+	of_node_put(node_ep);
+	if (ret)
+		return ret;
+
+	if (ep.bus_type != V4L2_MBUS_CSI2) {
+		dev_err(dev, "unsupported bus type\n");
+		return -EINVAL;
+	}
+	/*
+	 * Number of MIPI CSI-2 data lanes is currently not configurable,
+	 * always a default value of 4 lanes is used.
+	 */
+	if (ep.bus.mipi_csi2.num_data_lanes != S5C73M3_MIPI_DATA_LANES)
+		dev_info(dev, "falling back to 4 MIPI CSI-2 data lanes\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1572,27 +1895,45 @@ static int s5c73m3_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
 {
 	struct device *dev = &client->dev;
+<<<<<<< HEAD
 	const struct s5c73m3_platform_data *pdata = client->dev.platform_data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct v4l2_subdev *sd;
 	struct v4l2_subdev *oif_sd;
 	struct s5c73m3 *state;
 	int ret, i;
 
+<<<<<<< HEAD
 	if (pdata == NULL) {
 		dev_err(&client->dev, "Platform data not specified\n");
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	state = devm_kzalloc(dev, sizeof(*state), GFP_KERNEL);
 	if (!state)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	state->i2c_client = client;
+	ret = s5c73m3_get_platform_data(state);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&state->lock);
 	sd = &state->sensor_sd;
 	oif_sd = &state->oif_sd;
 
 	v4l2_subdev_init(sd, &s5c73m3_subdev_ops);
+<<<<<<< HEAD
 	sd->owner = client->driver->driver.owner;
+=======
+	sd->owner = client->dev.driver->owner;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_set_subdevdata(sd, state);
 	strlcpy(sd->name, "S5C73M3", sizeof(sd->name));
 
@@ -1601,10 +1942,17 @@ static int s5c73m3_probe(struct i2c_client *client,
 
 	state->sensor_pads[S5C73M3_JPEG_PAD].flags = MEDIA_PAD_FL_SOURCE;
 	state->sensor_pads[S5C73M3_ISP_PAD].flags = MEDIA_PAD_FL_SOURCE;
+<<<<<<< HEAD
 	sd->entity.type = MEDIA_ENT_T_V4L2_SUBDEV;
 
 	ret = media_entity_init(&sd->entity, S5C73M3_NUM_PADS,
 							state->sensor_pads, 0);
+=======
+	sd->entity.function = MEDIA_ENT_F_CAM_SENSOR;
+
+	ret = media_entity_pads_init(&sd->entity, S5C73M3_NUM_PADS,
+							state->sensor_pads);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
@@ -1617,6 +1965,7 @@ static int s5c73m3_probe(struct i2c_client *client,
 	state->oif_pads[OIF_ISP_PAD].flags = MEDIA_PAD_FL_SINK;
 	state->oif_pads[OIF_JPEG_PAD].flags = MEDIA_PAD_FL_SINK;
 	state->oif_pads[OIF_SOURCE_PAD].flags = MEDIA_PAD_FL_SOURCE;
+<<<<<<< HEAD
 	oif_sd->entity.type = MEDIA_ENT_T_V4L2_SUBDEV;
 
 	ret = media_entity_init(&oif_sd->entity, OIF_NUM_PADS,
@@ -1630,6 +1979,18 @@ static int s5c73m3_probe(struct i2c_client *client,
 	ret = s5c73m3_configure_gpios(state, pdata);
 	if (ret)
 		goto out_err1;
+=======
+	oif_sd->entity.function = MEDIA_ENT_F_PROC_VIDEO_SCALER;
+
+	ret = media_entity_pads_init(&oif_sd->entity, OIF_NUM_PADS,
+							state->oif_pads);
+	if (ret < 0)
+		return ret;
+
+	ret = s5c73m3_configure_gpios(state);
+	if (ret)
+		goto out_err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < S5C73M3_MAX_SUPPLIES; i++)
 		state->supplies[i].supply = s5c73m3_supply_names[i];
@@ -1638,12 +1999,20 @@ static int s5c73m3_probe(struct i2c_client *client,
 			       state->supplies);
 	if (ret) {
 		dev_err(dev, "failed to get regulators\n");
+<<<<<<< HEAD
 		goto out_err2;
+=======
+		goto out_err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = s5c73m3_init_controls(state);
 	if (ret)
+<<<<<<< HEAD
 		goto out_err2;
+=======
+		goto out_err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	state->sensor_pix_size[RES_ISP] = &s5c73m3_isp_resolutions[1];
 	state->sensor_pix_size[RES_JPEG] = &s5c73m3_jpeg_resolutions[1];
@@ -1659,6 +2028,7 @@ static int s5c73m3_probe(struct i2c_client *client,
 
 	ret = s5c73m3_register_spi_driver(state);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out_err2;
 
 	state->i2c_client = client;
@@ -1669,6 +2039,34 @@ static int s5c73m3_probe(struct i2c_client *client,
 out_err2:
 	s5c73m3_free_gpios(state);
 out_err1:
+=======
+		goto out_err;
+
+	oif_sd->dev = dev;
+
+	ret = __s5c73m3_power_on(state);
+	if (ret < 0)
+		goto out_err1;
+
+	ret = s5c73m3_get_fw_version(state);
+	__s5c73m3_power_off(state);
+
+	if (ret < 0) {
+		dev_err(dev, "Device detection failed: %d\n", ret);
+		goto out_err1;
+	}
+
+	ret = v4l2_async_register_subdev(oif_sd);
+	if (ret < 0)
+		goto out_err1;
+
+	v4l2_info(sd, "%s: completed successfully\n", __func__);
+	return 0;
+
+out_err1:
+	s5c73m3_unregister_spi_driver(state);
+out_err:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	media_entity_cleanup(&sd->entity);
 	return ret;
 }
@@ -1679,7 +2077,11 @@ static int s5c73m3_remove(struct i2c_client *client)
 	struct s5c73m3 *state = oif_sd_to_s5c73m3(oif_sd);
 	struct v4l2_subdev *sensor_sd = &state->sensor_sd;
 
+<<<<<<< HEAD
 	v4l2_device_unregister_subdev(oif_sd);
+=======
+	v4l2_async_unregister_subdev(oif_sd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	v4l2_ctrl_handler_free(oif_sd->ctrl_handler);
 	media_entity_cleanup(&oif_sd->entity);
@@ -1688,7 +2090,10 @@ static int s5c73m3_remove(struct i2c_client *client)
 	media_entity_cleanup(&sensor_sd->entity);
 
 	s5c73m3_unregister_spi_driver(state);
+<<<<<<< HEAD
 	s5c73m3_free_gpios(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1699,8 +2104,22 @@ static const struct i2c_device_id s5c73m3_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, s5c73m3_id);
 
+<<<<<<< HEAD
 static struct i2c_driver s5c73m3_i2c_driver = {
 	.driver = {
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id s5c73m3_of_match[] = {
+	{ .compatible = "samsung,s5c73m3" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, s5c73m3_of_match);
+#endif
+
+static struct i2c_driver s5c73m3_i2c_driver = {
+	.driver = {
+		.of_match_table = of_match_ptr(s5c73m3_of_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= DRIVER_NAME,
 	},
 	.probe		= s5c73m3_probe,

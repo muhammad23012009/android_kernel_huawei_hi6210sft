@@ -12,6 +12,10 @@
 #include <linux/acpi.h>
 #include <linux/debugfs.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "internal.h"
 
 MODULE_AUTHOR("Thomas Renninger <trenn@suse.de>");
@@ -34,7 +38,10 @@ static ssize_t acpi_ec_read_io(struct file *f, char __user *buf,
 	 * struct acpi_ec *ec = ((struct seq_file *)f->private_data)->private;
 	 */
 	unsigned int size = EC_SPACE_SIZE;
+<<<<<<< HEAD
 	u8 *data = (u8 *) buf;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	loff_t init_off = *off;
 	int err = 0;
 
@@ -47,9 +54,21 @@ static ssize_t acpi_ec_read_io(struct file *f, char __user *buf,
 		size = count;
 
 	while (size) {
+<<<<<<< HEAD
 		err = ec_read(*off, &data[*off - init_off]);
 		if (err)
 			return err;
+=======
+		u8 byte_read;
+		err = ec_read(*off, &byte_read);
+		if (err)
+			return err;
+		if (put_user(byte_read, buf + *off - init_off)) {
+			if (*off - init_off)
+				return *off - init_off; /* partial read */
+			return -EFAULT;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*off += 1;
 		size--;
 	}
@@ -65,9 +84,17 @@ static ssize_t acpi_ec_write_io(struct file *f, const char __user *buf,
 
 	unsigned int size = count;
 	loff_t init_off = *off;
+<<<<<<< HEAD
 	u8 *data = (u8 *) buf;
 	int err = 0;
 
+=======
+	int err = 0;
+
+	if (!write_support)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (*off >= EC_SPACE_SIZE)
 		return 0;
 	if (*off + count >= EC_SPACE_SIZE) {
@@ -76,7 +103,16 @@ static ssize_t acpi_ec_write_io(struct file *f, const char __user *buf,
 	}
 
 	while (size) {
+<<<<<<< HEAD
 		u8 byte_write = data[*off - init_off];
+=======
+		u8 byte_write;
+		if (get_user(byte_write, buf + *off - init_off)) {
+			if (*off - init_off)
+				return *off - init_off; /* partial write */
+			return -EFAULT;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = ec_write(*off, byte_write);
 		if (err)
 			return err;
@@ -95,7 +131,11 @@ static const struct file_operations acpi_ec_io_ops = {
 	.llseek = default_llseek,
 };
 
+<<<<<<< HEAD
 int acpi_ec_add_debugfs(struct acpi_ec *ec, unsigned int ec_device_count)
+=======
+static int acpi_ec_add_debugfs(struct acpi_ec *ec, unsigned int ec_device_count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dentry *dev_dir;
 	char name[64];
@@ -115,10 +155,17 @@ int acpi_ec_add_debugfs(struct acpi_ec *ec, unsigned int ec_device_count)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (!debugfs_create_x32("gpe", 0444, dev_dir, (u32 *)&first_ec->gpe))
 		goto error;
 	if (!debugfs_create_bool("use_global_lock", 0444, dev_dir,
 				 (u32 *)&first_ec->global_lock))
+=======
+	if (!debugfs_create_x32("gpe", 0444, dev_dir, &first_ec->gpe))
+		goto error;
+	if (!debugfs_create_bool("use_global_lock", 0444, dev_dir,
+				 &first_ec->global_lock))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 
 	if (write_support)

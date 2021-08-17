@@ -203,4 +203,11 @@ static inline void ar7_device_off(u32 bit)
 int __init ar7_gpio_init(void);
 void __init ar7_init_clocks(void);
 
+<<<<<<< HEAD
+=======
+/* Board specific GPIO functions */
+int ar7_gpio_enable(unsigned gpio);
+int ar7_gpio_disable(unsigned gpio);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __AR7_H__ */

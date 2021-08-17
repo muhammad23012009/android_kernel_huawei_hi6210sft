@@ -11,6 +11,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef OMAP3_ISP_VIDEO_H
@@ -30,8 +33,12 @@
 #include <media/media-entity.h>
 #include <media/v4l2-dev.h>
 #include <media/v4l2-fh.h>
+<<<<<<< HEAD
 
 #include "ispqueue.h"
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ISP_VIDEO_DRIVER_NAME		"ispvideo"
 #define ISP_VIDEO_DRIVER_VERSION	"0.0.2"
@@ -55,10 +62,17 @@ struct v4l2_pix_format;
  * @bpp: Bytes per pixel (when stored in memory)
  */
 struct isp_format_info {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode code;
 	enum v4l2_mbus_pixelcode truncated;
 	enum v4l2_mbus_pixelcode uncompressed;
 	enum v4l2_mbus_pixelcode flavor;
+=======
+	u32 code;
+	u32 truncated;
+	u32 uncompressed;
+	u32 flavor;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 pixelformat;
 	unsigned int width;
 	unsigned int bpp;
@@ -89,8 +103,14 @@ enum isp_pipeline_state {
 
 /*
  * struct isp_pipeline - An ISP hardware pipeline
+<<<<<<< HEAD
  * @error: A hardware error occurred during capture
  * @entities: Bitmask of entities in the pipeline (indexed by entity ID)
+=======
+ * @field: The field being processed by the pipeline
+ * @error: A hardware error occurred during capture
+ * @ent_enum: Entities in the pipeline
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct isp_pipeline {
 	struct media_pipeline pipe;
@@ -99,9 +119,16 @@ struct isp_pipeline {
 	enum isp_pipeline_stream_state stream_state;
 	struct isp_video *input;
 	struct isp_video *output;
+<<<<<<< HEAD
 	u32 entities;
 	unsigned long l3_ick;
 	unsigned int max_rate;
+=======
+	struct media_entity_enum ent_enum;
+	unsigned long l3_ick;
+	unsigned int max_rate;
+	enum v4l2_field field;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_t frame_number;
 	bool do_propagation; /* of frame number */
 	bool error;
@@ -124,6 +151,7 @@ static inline int isp_pipeline_ready(struct isp_pipeline *pipe)
 			       ISP_PIPELINE_IDLE_OUTPUT);
 }
 
+<<<<<<< HEAD
 /*
  * struct isp_buffer - ISP buffer
  * @buffer: ISP video buffer
@@ -135,6 +163,21 @@ struct isp_buffer {
 };
 
 #define to_isp_buffer(buf)	container_of(buf, struct isp_buffer, buffer)
+=======
+/**
+ * struct isp_buffer - ISP video buffer
+ * @vb: videobuf2 buffer
+ * @irqlist: List head for insertion into IRQ queue
+ * @dma: DMA address
+ */
+struct isp_buffer {
+	struct vb2_v4l2_buffer vb;
+	struct list_head irqlist;
+	dma_addr_t dma;
+};
+
+#define to_isp_buffer(buf)	container_of(buf, struct isp_buffer, vb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum isp_video_dmaqueue_flags {
 	/* Set if DMA queue becomes empty when ISP_PIPELINE_STREAM_CONTINUOUS */
@@ -172,6 +215,7 @@ struct isp_video {
 	unsigned int bpl_value;		/* bytes per line value */
 	unsigned int bpl_padding;	/* padding at end of line */
 
+<<<<<<< HEAD
 	/* Entity video node streaming */
 	unsigned int streaming:1;
 
@@ -181,6 +225,17 @@ struct isp_video {
 
 	/* Video buffers queue */
 	struct isp_video_queue *queue;
+=======
+	/* Pipeline state */
+	struct isp_pipeline pipe;
+	struct mutex stream_lock;	/* pipeline and stream states */
+	bool error;
+
+	/* Video buffers queue */
+	struct vb2_queue *queue;
+	struct mutex queue_lock;	/* protects the queue */
+	spinlock_t irqlock;		/* protects dmaqueue */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head dmaqueue;
 	enum isp_video_dmaqueue_flags dmaqueue_flags;
 
@@ -192,7 +247,11 @@ struct isp_video {
 struct isp_video_fh {
 	struct v4l2_fh vfh;
 	struct isp_video *video;
+<<<<<<< HEAD
 	struct isp_video_queue queue;
+=======
+	struct vb2_queue queue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct v4l2_format format;
 	struct v4l2_fract timeperframe;
 };
@@ -207,10 +266,18 @@ int omap3isp_video_register(struct isp_video *video,
 			    struct v4l2_device *vdev);
 void omap3isp_video_unregister(struct isp_video *video);
 struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video);
+<<<<<<< HEAD
+=======
+void omap3isp_video_cancel_stream(struct isp_video *video);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void omap3isp_video_resume(struct isp_video *video, int continuous);
 struct media_pad *omap3isp_video_remote_pad(struct isp_video *video);
 
 const struct isp_format_info *
+<<<<<<< HEAD
 omap3isp_video_format_info(enum v4l2_mbus_pixelcode code);
+=======
+omap3isp_video_format_info(u32 code);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* OMAP3_ISP_VIDEO_H */

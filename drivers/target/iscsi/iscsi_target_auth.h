@@ -1,6 +1,10 @@
 #ifndef _ISCSI_CHAP_H_
 #define _ISCSI_CHAP_H_
 
+<<<<<<< HEAD
+=======
+#define CHAP_DIGEST_UNKNOWN	0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CHAP_DIGEST_MD5		5
 #define CHAP_DIGEST_SHA		6
 

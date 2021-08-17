@@ -58,10 +58,19 @@ static int ad5398_write_reg(struct i2c_client *client, const unsigned short data
 
 	val = cpu_to_be16(data);
 	ret = i2c_master_send(client, (char *)&val, 2);
+<<<<<<< HEAD
 	if (ret < 0)
 		dev_err(&client->dev, "I2C write error\n");
 
 	return ret;
+=======
+	if (ret != 2) {
+		dev_err(&client->dev, "I2C write error\n");
+		return ret < 0 ? ret : -EIO;
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ad5398_get_current_limit(struct regulator_dev *rdev)
@@ -214,12 +223,19 @@ MODULE_DEVICE_TABLE(i2c, ad5398_id);
 static int ad5398_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct regulator_init_data *init_data = client->dev.platform_data;
+=======
+	struct regulator_init_data *init_data = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct regulator_config config = { };
 	struct ad5398_chip_info *chip;
 	const struct ad5398_current_data_format *df =
 			(struct ad5398_current_data_format *)id->driver_data;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!init_data)
 		return -EINVAL;
@@ -240,17 +256,27 @@ static int ad5398_probe(struct i2c_client *client,
 	chip->current_offset = df->current_offset;
 	chip->current_mask = (chip->current_level - 1) << chip->current_offset;
 
+<<<<<<< HEAD
 	chip->rdev = regulator_register(&ad5398_reg, &config);
 	if (IS_ERR(chip->rdev)) {
 		ret = PTR_ERR(chip->rdev);
 		dev_err(&client->dev, "failed to register %s %s\n",
 			id->name, ad5398_reg.name);
 		goto err;
+=======
+	chip->rdev = devm_regulator_register(&client->dev, &ad5398_reg,
+					     &config);
+	if (IS_ERR(chip->rdev)) {
+		dev_err(&client->dev, "failed to register %s %s\n",
+			id->name, ad5398_reg.name);
+		return PTR_ERR(chip->rdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	i2c_set_clientdata(client, chip);
 	dev_dbg(&client->dev, "%s regulator driver is registered.\n", id->name);
 	return 0;
+<<<<<<< HEAD
 
 err:
 	return ret;
@@ -262,11 +288,16 @@ static int ad5398_remove(struct i2c_client *client)
 
 	regulator_unregister(chip->rdev);
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct i2c_driver ad5398_driver = {
 	.probe = ad5398_probe,
+<<<<<<< HEAD
 	.remove = ad5398_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.driver		= {
 		.name	= "ad5398",
 	},
@@ -288,4 +319,7 @@ module_exit(ad5398_exit);
 MODULE_DESCRIPTION("AD5398 and AD5821 current regulator driver");
 MODULE_AUTHOR("Sonic Zhang");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS("i2c:ad5398-regulator");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

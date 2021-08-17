@@ -95,7 +95,11 @@ static int bcm1480_set_affinity(struct irq_data *d, const struct cpumask *mask,
 	u64 cur_ints;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	i = cpumask_first(mask);
+=======
+	i = cpumask_first_and(mask, cpu_online_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Convert logical CPU to physical CPU */
 	cpu = cpu_logical_map(i);
@@ -347,6 +351,7 @@ asmlinkage void plat_irq_dispatch(void)
 	unsigned int cpu = smp_processor_id();
 	unsigned int pending;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SIBYTE_BCM1480_PROF
 	/* Set compare to count to silence count/compare timer interrupts */
 	write_c0_compare(read_c0_count());
@@ -360,6 +365,10 @@ asmlinkage void plat_irq_dispatch(void)
 	else
 #endif
 
+=======
+	pending = read_c0_cause() & read_c0_status();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pending & CAUSEF_IP4)
 		do_IRQ(K_BCM1480_INT_TIMER_0 + cpu);
 #ifdef CONFIG_SMP

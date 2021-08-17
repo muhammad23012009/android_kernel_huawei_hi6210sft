@@ -13,6 +13,10 @@
 #ifndef __ASM_POWERPC_PPC4xx_H__
 #define __ASM_POWERPC_PPC4xx_H__
 
+<<<<<<< HEAD
 extern void ppc4xx_reset_system(char *cmd);
+=======
+extern void __noreturn ppc4xx_reset_system(char *cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASM_POWERPC_PPC4xx_H__ */

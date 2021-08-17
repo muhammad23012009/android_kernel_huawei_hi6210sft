@@ -11,6 +11,7 @@
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  */
+<<<<<<< HEAD
 
 #include <linux/of.h>	/* linux/of.h gets to determine #include ordering */
 
@@ -24,6 +25,12 @@
 #include <linux/atomic.h>
 
 #define HAVE_ARCH_DEVTREE_FIXUPS
+=======
+#ifndef _ASM_MICROBLAZE_PROM_H
+#define _ASM_MICROBLAZE_PROM_H
+
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Other Prototypes */
 enum early_consoles {
@@ -33,6 +40,7 @@ enum early_consoles {
 
 extern int of_early_console(void *version);
 
+<<<<<<< HEAD
 /*
  * OF address retreival & translation
  */
@@ -64,4 +72,6 @@ struct device_node *of_get_cpu_node(int cpu, unsigned int *thread);
 #include <linux/of_irq.h>
 #include <linux/platform_device.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_MICROBLAZE_PROM_H */

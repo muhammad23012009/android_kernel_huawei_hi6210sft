@@ -15,7 +15,10 @@
 #include <linux/iommu-helper.h>
 
 #include <asm/iommu.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These give mapping size of each iommu pte/tlb.
@@ -48,6 +51,7 @@ static inline int is_span_boundary(unsigned long entry,
 	return iommu_is_span_boundary(entry, nr, shift, boundary_size);
 }
 
+<<<<<<< HEAD
 extern unsigned long iommu_range_alloc(struct device *dev,
 				       struct iommu *iommu,
 				       unsigned long npages,
@@ -56,4 +60,6 @@ extern void iommu_range_free(struct iommu *iommu,
 			     dma_addr_t dma_addr,
 			     unsigned long npages);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _IOMMU_COMMON_H */

@@ -51,6 +51,11 @@
 #include <rdma/ib_pack.h>
 #include <rdma/rdma_cm.h>
 #include <rdma/iw_cm.h>
+<<<<<<< HEAD
+=======
+#include <rdma/rdma_netlink.h>
+#include <rdma/iw_portmap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define NES_SEND_FIRST_WRITE
 
@@ -130,6 +135,10 @@
 #define NES_DBG_IW_TX       0x00040000
 #define NES_DBG_SHUTDOWN    0x00080000
 #define NES_DBG_PAU         0x00100000
+<<<<<<< HEAD
+=======
+#define NES_DBG_NLMSG       0x00200000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NES_DBG_RSVD1       0x10000000
 #define NES_DBG_RSVD2       0x20000000
 #define NES_DBG_RSVD3       0x40000000
@@ -162,7 +171,11 @@ do { \
 #include "nes_hw.h"
 #include "nes_verbs.h"
 #include "nes_context.h"
+<<<<<<< HEAD
 #include "nes_user.h"
+=======
+#include <rdma/nes-abi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "nes_cm.h"
 #include "nes_mgt.h"
 

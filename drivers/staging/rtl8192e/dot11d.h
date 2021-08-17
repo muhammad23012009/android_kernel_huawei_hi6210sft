@@ -6,10 +6,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -21,8 +24,11 @@
 
 #include "rtllib.h"
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct chnl_txpow_triple {
 	u8 FirstChnl;
 	u8  NumChnls;
@@ -38,7 +44,11 @@ enum dot11d_state {
 /**
  * struct rt_dot11d_info * @CountryIeLen: value greater than 0 if @CountryIeBuf contains
  *		  valid country information element.
+<<<<<<< HEAD
  * @chanell_map: holds channel values
+=======
+ * @channel_map: holds channel values
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *		0 - invalid,
  *		1 - valid (active scan),
  *		2 - valid (passive scan)
@@ -46,7 +56,10 @@ enum dot11d_state {
  */
 
 struct rt_dot11d_info {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool bEnabled;
 
 	u16 CountryIeLen;
@@ -54,8 +67,13 @@ struct rt_dot11d_info {
 	u8  CountryIeSrcAddr[6];
 	u8  CountryIeWatchdog;
 
+<<<<<<< HEAD
 	u8  channel_map[MAX_CHANNEL_NUMBER+1];
 	u8  MaxTxPwrDbmList[MAX_CHANNEL_NUMBER+1];
+=======
+	u8  channel_map[MAX_CHANNEL_NUMBER + 1];
+	u8  MaxTxPwrDbmList[MAX_CHANNEL_NUMBER + 1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	enum dot11d_state State;
 };
@@ -74,6 +92,7 @@ static inline void cpMacAddr(unsigned char *des, unsigned char *src)
 	(GET_DOT11D_INFO(__pIeeeDev)->CountryIeLen > 0)
 
 #define IS_EQUAL_CIE_SRC(__pIeeeDev, __pTa)		\
+<<<<<<< HEAD
 	 eqMacAddr(GET_DOT11D_INFO(__pIeeeDev)->CountryIeSrcAddr, __pTa)
 #define UPDATE_CIE_SRC(__pIeeeDev, __pTa)		\
 	cpMacAddr(GET_DOT11D_INFO(__pIeeeDev)->CountryIeSrcAddr, __pTa)
@@ -92,14 +111,33 @@ static inline void cpMacAddr(unsigned char *des, unsigned char *src)
 
 #define IS_DOT11D_STATE_DONE(__pIeeeDev)			\
 	(GET_DOT11D_INFO(__pIeeeDev)->State == DOT11D_STATE_DONE)
+=======
+	 ether_addr_equal_unaligned( \
+		GET_DOT11D_INFO(__pIeeeDev)->CountryIeSrcAddr, __pTa)
+#define UPDATE_CIE_SRC(__pIeeeDev, __pTa)		\
+	cpMacAddr(GET_DOT11D_INFO(__pIeeeDev)->CountryIeSrcAddr, __pTa)
+
+#define GET_CIE_WATCHDOG(__pIeeeDev)				\
+	 (GET_DOT11D_INFO(__pIeeeDev)->CountryIeWatchdog)
+static inline void RESET_CIE_WATCHDOG(struct rtllib_device *__pIeeeDev)
+{
+	GET_CIE_WATCHDOG(__pIeeeDev) = 0;
+}
+
+#define UPDATE_CIE_WATCHDOG(__pIeeeDev) (++GET_CIE_WATCHDOG(__pIeeeDev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void dot11d_init(struct rtllib_device *dev);
 void Dot11d_Channelmap(u8 channel_plan, struct rtllib_device *ieee);
 void Dot11d_Reset(struct rtllib_device *dev);
 void Dot11d_UpdateCountryIe(struct rtllib_device *dev, u8 *pTaddr,
 			    u16 CoutryIeLen, u8 *pCoutryIe);
+<<<<<<< HEAD
 u8 DOT11D_GetMaxTxPwrInDbm(struct rtllib_device *dev, u8 Channel);
 void DOT11D_ScanComplete(struct rtllib_device *dev);
 int ToLegalChannel(struct rtllib_device *dev, u8 channel);
+=======
+void DOT11D_ScanComplete(struct rtllib_device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

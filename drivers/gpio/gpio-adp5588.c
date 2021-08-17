@@ -41,6 +41,11 @@ struct adp5588_gpio {
 	uint8_t int_en[3];
 	uint8_t irq_mask[3];
 	uint8_t irq_stat[3];
+<<<<<<< HEAD
+=======
+	uint8_t int_input_en[3];
+	uint8_t int_lvl_cached[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int adp5588_gpio_read(struct i2c_client *client, u8 reg)
@@ -65,19 +70,41 @@ static int adp5588_gpio_write(struct i2c_client *client, u8 reg, u8 val)
 
 static int adp5588_gpio_get_value(struct gpio_chip *chip, unsigned off)
 {
+<<<<<<< HEAD
 	struct adp5588_gpio *dev =
 	    container_of(chip, struct adp5588_gpio, gpio_chip);
 
 	return !!(adp5588_gpio_read(dev->client,
 		  GPIO_DAT_STAT1 + ADP5588_BANK(off)) & ADP5588_BIT(off));
+=======
+	struct adp5588_gpio *dev = gpiochip_get_data(chip);
+	unsigned bank = ADP5588_BANK(off);
+	unsigned bit = ADP5588_BIT(off);
+	int val;
+
+	mutex_lock(&dev->lock);
+
+	if (dev->dir[bank] & bit)
+		val = dev->dat_out[bank];
+	else
+		val = adp5588_gpio_read(dev->client, GPIO_DAT_STAT1 + bank);
+
+	mutex_unlock(&dev->lock);
+
+	return !!(val & bit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void adp5588_gpio_set_value(struct gpio_chip *chip,
 				   unsigned off, int val)
 {
 	unsigned bank, bit;
+<<<<<<< HEAD
 	struct adp5588_gpio *dev =
 	    container_of(chip, struct adp5588_gpio, gpio_chip);
+=======
+	struct adp5588_gpio *dev = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bank = ADP5588_BANK(off);
 	bit = ADP5588_BIT(off);
@@ -97,8 +124,12 @@ static int adp5588_gpio_direction_input(struct gpio_chip *chip, unsigned off)
 {
 	int ret;
 	unsigned bank;
+<<<<<<< HEAD
 	struct adp5588_gpio *dev =
 	    container_of(chip, struct adp5588_gpio, gpio_chip);
+=======
+	struct adp5588_gpio *dev = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bank = ADP5588_BANK(off);
 
@@ -115,8 +146,12 @@ static int adp5588_gpio_direction_output(struct gpio_chip *chip,
 {
 	int ret;
 	unsigned bank, bit;
+<<<<<<< HEAD
 	struct adp5588_gpio *dev =
 	    container_of(chip, struct adp5588_gpio, gpio_chip);
+=======
+	struct adp5588_gpio *dev = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bank = ADP5588_BANK(off);
 	bit = ADP5588_BIT(off);
@@ -141,8 +176,13 @@ static int adp5588_gpio_direction_output(struct gpio_chip *chip,
 #ifdef CONFIG_GPIO_ADP5588_IRQ
 static int adp5588_gpio_to_irq(struct gpio_chip *chip, unsigned off)
 {
+<<<<<<< HEAD
 	struct adp5588_gpio *dev =
 		container_of(chip, struct adp5588_gpio, gpio_chip);
+=======
+	struct adp5588_gpio *dev = gpiochip_get_data(chip);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return dev->irq_base + off;
 }
 
@@ -166,12 +206,35 @@ static void adp5588_irq_bus_sync_unlock(struct irq_data *d)
 	struct adp5588_gpio *dev = irq_data_get_irq_chip_data(d);
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i <= ADP5588_BANK(ADP5588_MAXGPIO); i++)
+=======
+	for (i = 0; i <= ADP5588_BANK(ADP5588_MAXGPIO); i++) {
+		if (dev->int_input_en[i]) {
+			mutex_lock(&dev->lock);
+			dev->dir[i] &= ~dev->int_input_en[i];
+			dev->int_input_en[i] = 0;
+			adp5588_gpio_write(dev->client, GPIO_DIR1 + i,
+					   dev->dir[i]);
+			mutex_unlock(&dev->lock);
+		}
+
+		if (dev->int_lvl_cached[i] != dev->int_lvl[i]) {
+			dev->int_lvl_cached[i] = dev->int_lvl[i];
+			adp5588_gpio_write(dev->client, GPIO_INT_LVL1 + i,
+					   dev->int_lvl[i]);
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (dev->int_en[i] ^ dev->irq_mask[i]) {
 			dev->int_en[i] = dev->irq_mask[i];
 			adp5588_gpio_write(dev->client, GPIO_INT_EN1 + i,
 					   dev->int_en[i]);
 		}
+<<<<<<< HEAD
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&dev->irq_lock);
 }
@@ -214,9 +277,13 @@ static int adp5588_irq_set_type(struct irq_data *d, unsigned int type)
 	else
 		return -EINVAL;
 
+<<<<<<< HEAD
 	adp5588_gpio_direction_input(&dev->gpio_chip, gpio);
 	adp5588_gpio_write(dev->client, GPIO_INT_LVL1 + bank,
 			   dev->int_lvl[bank]);
+=======
+	dev->int_input_en[bank] |= bit;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -276,7 +343,12 @@ static irqreturn_t adp5588_irq_handler(int irq, void *devid)
 static int adp5588_irq_setup(struct adp5588_gpio *dev)
 {
 	struct i2c_client *client = dev->client;
+<<<<<<< HEAD
 	struct adp5588_gpio_platform_data *pdata = client->dev.platform_data;
+=======
+	struct adp5588_gpio_platform_data *pdata =
+			dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned gpio;
 	int ret;
 
@@ -293,6 +365,7 @@ static int adp5588_irq_setup(struct adp5588_gpio *dev)
 		irq_set_chip_and_handler(irq, &adp5588_irq_chip,
 					 handle_level_irq);
 		irq_set_nested_thread(irq, 1);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 		/*
 		 * ARM needs us to explicitly flag the IRQ as VALID,
@@ -302,6 +375,9 @@ static int adp5588_irq_setup(struct adp5588_gpio *dev)
 #else
 		irq_set_noprobe(irq);
 #endif
+=======
+		irq_modify_status(irq, IRQ_NOREQUEST, IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = request_threaded_irq(client->irq,
@@ -349,12 +425,21 @@ static void adp5588_irq_teardown(struct adp5588_gpio *dev)
 static int adp5588_gpio_probe(struct i2c_client *client,
 					const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct adp5588_gpio_platform_data *pdata = client->dev.platform_data;
+=======
+	struct adp5588_gpio_platform_data *pdata =
+			dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adp5588_gpio *dev;
 	struct gpio_chip *gc;
 	int ret, i, revid;
 
+<<<<<<< HEAD
 	if (pdata == NULL) {
+=======
+	if (!pdata) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&client->dev, "missing platform data\n");
 		return -ENODEV;
 	}
@@ -365,11 +450,17 @@ static int adp5588_gpio_probe(struct i2c_client *client,
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (dev == NULL) {
 		dev_err(&client->dev, "failed to alloc memory\n");
 		return -ENOMEM;
 	}
+=======
+	dev = devm_kzalloc(&client->dev, sizeof(*dev), GFP_KERNEL);
+	if (!dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->client = client;
 
@@ -378,12 +469,20 @@ static int adp5588_gpio_probe(struct i2c_client *client,
 	gc->direction_output = adp5588_gpio_direction_output;
 	gc->get = adp5588_gpio_get_value;
 	gc->set = adp5588_gpio_set_value;
+<<<<<<< HEAD
 	gc->can_sleep = 1;
+=======
+	gc->can_sleep = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	gc->base = pdata->gpio_start;
 	gc->ngpio = ADP5588_MAXGPIO;
 	gc->label = client->name;
 	gc->owner = THIS_MODULE;
+<<<<<<< HEAD
+=======
+	gc->names = pdata->names;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_init(&dev->lock);
 
@@ -414,7 +513,11 @@ static int adp5588_gpio_probe(struct i2c_client *client,
 		}
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&dev->gpio_chip);
+=======
+	ret = devm_gpiochip_add_data(&client->dev, &dev->gpio_chip, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto err_irq;
 
@@ -434,13 +537,21 @@ static int adp5588_gpio_probe(struct i2c_client *client,
 err_irq:
 	adp5588_irq_teardown(dev);
 err:
+<<<<<<< HEAD
 	kfree(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int adp5588_gpio_remove(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	struct adp5588_gpio_platform_data *pdata = client->dev.platform_data;
+=======
+	struct adp5588_gpio_platform_data *pdata =
+			dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adp5588_gpio *dev = i2c_get_clientdata(client);
 	int ret;
 
@@ -457,6 +568,7 @@ static int adp5588_gpio_remove(struct i2c_client *client)
 	if (dev->irq_base)
 		free_irq(dev->client->irq, dev);
 
+<<<<<<< HEAD
 	ret = gpiochip_remove(&dev->gpio_chip);
 	if (ret) {
 		dev_err(&client->dev, "gpiochip_remove failed %d\n", ret);
@@ -464,6 +576,8 @@ static int adp5588_gpio_remove(struct i2c_client *client)
 	}
 
 	kfree(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

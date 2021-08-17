@@ -22,9 +22,13 @@
  *     GNU General Public License for more details.
  * 
  *     You should have received a copy of the GNU General Public License 
+<<<<<<< HEAD
  *     along with this program; if not, write to the Free Software 
  *     Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
  *     MA 02111-1307 USA
+=======
+ *     along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *     
  ********************************************************************/
 
@@ -78,8 +82,11 @@ static int litelink_open(struct sir_dev *dev)
 {
 	struct qos_info *qos = &dev->qos;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Power up dongle */
 	sirdev_set_dtr_rts(dev, TRUE, TRUE);
 
@@ -95,8 +102,11 @@ static int litelink_open(struct sir_dev *dev)
 
 static int litelink_close(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Power off dongle */
 	sirdev_set_dtr_rts(dev, FALSE, FALSE);
 
@@ -113,8 +123,11 @@ static int litelink_change_speed(struct sir_dev *dev, unsigned speed)
 {
         int i;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* dongle already reset by irda-thread - current speed (dongle and
 	 * port) is the default speed (115200 for litelink!)
 	 */
@@ -156,8 +169,11 @@ static int litelink_change_speed(struct sir_dev *dev, unsigned speed)
  */
 static int litelink_reset(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* probably the power-up can be dropped here, but with only
 	 * 15 usec delay it's not worth the risk unless somebody with
 	 * the hardware confirms it doesn't break anything...

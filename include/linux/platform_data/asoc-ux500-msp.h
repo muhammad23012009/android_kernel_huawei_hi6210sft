@@ -10,6 +10,7 @@
 
 #include <linux/platform_data/dma-ste-dma40.h>
 
+<<<<<<< HEAD
 enum msp_i2s_id {
 	MSP_I2S_0 = 0,
 	MSP_I2S_1,
@@ -20,6 +21,11 @@ enum msp_i2s_id {
 /* Platform data structure for a MSP I2S-device */
 struct msp_i2s_platform_data {
 	enum msp_i2s_id id;
+=======
+/* Platform data structure for a MSP I2S-device */
+struct msp_i2s_platform_data {
+	int id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct stedma40_chan_cfg *msp_i2s_dma_rx;
 	struct stedma40_chan_cfg *msp_i2s_dma_tx;
 };

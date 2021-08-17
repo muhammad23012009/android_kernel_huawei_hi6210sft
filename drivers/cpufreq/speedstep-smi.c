@@ -12,6 +12,11 @@
  *                        SPEEDSTEP - DEFINITIONS                    *
  *********************************************************************/
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "cpufreq: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -42,9 +47,15 @@ static enum speedstep_processor speedstep_processor;
  * are in kHz for the time being.
  */
 static struct cpufreq_frequency_table speedstep_freqs[] = {
+<<<<<<< HEAD
 	{SPEEDSTEP_HIGH,	0},
 	{SPEEDSTEP_LOW,		0},
 	{0,			CPUFREQ_TABLE_END},
+=======
+	{0, SPEEDSTEP_HIGH,	0},
+	{0, SPEEDSTEP_LOW,	0},
+	{0, 0,			CPUFREQ_TABLE_END},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define GET_SPEEDSTEP_OWNER 0
@@ -141,6 +152,7 @@ static int speedstep_smi_get_freqs(unsigned int *low, unsigned int *high)
 }
 
 /**
+<<<<<<< HEAD
  * speedstep_get_state - set the SpeedStep state
  * @state: processor frequency state (SPEEDSTEP_LOW or SPEEDSTEP_HIGH)
  *
@@ -173,6 +185,8 @@ static int speedstep_get_state(void)
 
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * speedstep_set_state - set the SpeedStep state
  * @state: new processor frequency state (SPEEDSTEP_LOW or SPEEDSTEP_HIGH)
  *
@@ -236,9 +250,14 @@ static void speedstep_set_state(unsigned int state)
 			(speedstep_freqs[new_state].frequency / 1000),
 			retry, result);
 	else
+<<<<<<< HEAD
 		printk(KERN_ERR "cpufreq: change to state %u "
 			"failed with new_state %u and result %u\n",
 			state, new_state, result);
+=======
+		pr_err("change to state %u failed with new_state %u and result %u\n",
+		       state, new_state, result);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return;
 }
@@ -247,6 +266,7 @@ static void speedstep_set_state(unsigned int state)
 /**
  * speedstep_target - set a new CPUFreq policy
  * @policy: new policy
+<<<<<<< HEAD
  * @target_freq: new freq
  * @relation:
  *
@@ -271,11 +291,21 @@ static int speedstep_target(struct cpufreq_policy *policy,
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
 	speedstep_set_state(newstate);
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+=======
+ * @index: index of new freq
+ *
+ * Sets a new CPUFreq policy/freq.
+ */
+static int speedstep_target(struct cpufreq_policy *policy, unsigned int index)
+{
+	speedstep_set_state(index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 
+<<<<<<< HEAD
 /**
  * speedstep_verify - verifies a new CPUFreq policy
  * @policy: new policy
@@ -293,6 +323,11 @@ static int speedstep_cpu_init(struct cpufreq_policy *policy)
 {
 	int result;
 	unsigned int speed, state;
+=======
+static int speedstep_cpu_init(struct cpufreq_policy *policy)
+{
+	int result;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int *low, *high;
 
 	/* capability check */
@@ -328,6 +363,7 @@ static int speedstep_cpu_init(struct cpufreq_policy *policy)
 			pr_debug("workaround worked.\n");
 	}
 
+<<<<<<< HEAD
 	/* get current speed setting */
 	state = speedstep_get_state();
 	speed = speedstep_freqs[state].frequency;
@@ -354,6 +390,10 @@ static int speedstep_cpu_exit(struct cpufreq_policy *policy)
 {
 	cpufreq_frequency_table_put_attr(policy->cpu);
 	return 0;
+=======
+	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
+	return cpufreq_table_validate_and_show(policy, speedstep_freqs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned int speedstep_get(unsigned int cpu)
@@ -374,6 +414,7 @@ static int speedstep_resume(struct cpufreq_policy *policy)
 	return result;
 }
 
+<<<<<<< HEAD
 static struct freq_attr *speedstep_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
@@ -389,6 +430,16 @@ static struct cpufreq_driver speedstep_driver = {
 	.resume		= speedstep_resume,
 	.owner		= THIS_MODULE,
 	.attr		= speedstep_attr,
+=======
+static struct cpufreq_driver speedstep_driver = {
+	.name		= "speedstep-smi",
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= speedstep_target,
+	.init		= speedstep_cpu_init,
+	.get		= speedstep_get,
+	.resume		= speedstep_resume,
+	.attr		= cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct x86_cpu_id ss_smi_ids[] = {
@@ -430,8 +481,13 @@ static int __init speedstep_init(void)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	pr_debug("signature:0x%.8ulx, command:0x%.8ulx, "
 		"event:0x%.8ulx, perf_level:0x%.8ulx.\n",
+=======
+	pr_debug("signature:0x%.8x, command:0x%.8x, "
+		"event:0x%.8x, perf_level:0x%.8x.\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ist_info.signature, ist_info.command,
 		ist_info.event, ist_info.perf_level);
 

@@ -57,8 +57,12 @@
 #include "ivtv-gpio.h"
 #include <linux/dma-mapping.h>
 #include <media/tveeprom.h>
+<<<<<<< HEAD
 #include <media/saa7115.h>
 #include <media/v4l2-chip-ident.h>
+=======
+#include <media/i2c/saa7115.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "tuner-xc2028.h"
 
 /* If you have already X v4l cards, then set this to X. This way
@@ -751,9 +755,15 @@ static int ivtv_init_struct1(struct ivtv *itv)
 	spin_lock_init(&itv->lock);
 	spin_lock_init(&itv->dma_reg_lock);
 
+<<<<<<< HEAD
 	init_kthread_worker(&itv->irq_worker);
 	itv->irq_worker_task = kthread_run(kthread_worker_fn, &itv->irq_worker,
 					   itv->v4l2_dev.name);
+=======
+	kthread_init_worker(&itv->irq_worker);
+	itv->irq_worker_task = kthread_run(kthread_worker_fn, &itv->irq_worker,
+					   "%s", itv->v4l2_dev.name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(itv->irq_worker_task)) {
 		IVTV_ERR("Could not create ivtv task\n");
 		return -1;
@@ -761,7 +771,11 @@ static int ivtv_init_struct1(struct ivtv *itv)
 	/* must use the FIFO scheduler as it is realtime sensitive */
 	sched_setscheduler(itv->irq_worker_task, SCHED_FIFO, &param);
 
+<<<<<<< HEAD
 	init_kthread_work(&itv->irq_work, ivtv_irq_work_handler);
+=======
+	kthread_init_work(&itv->irq_work, ivtv_irq_work_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Initial settings */
 	itv->cxhdl.port = CX2341X_PORT_MEMORY;
@@ -827,7 +841,11 @@ static void ivtv_init_struct2(struct ivtv *itv)
 				IVTV_CARD_INPUT_VID_TUNER)
 			break;
 	}
+<<<<<<< HEAD
 	if (i == itv->nof_inputs)
+=======
+	if (i >= itv->nof_inputs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		i = 0;
 	itv->active_input = i;
 	itv->audio_input = itv->card->video_inputs[i].audio_index;
@@ -968,6 +986,7 @@ static void ivtv_load_and_init_modules(struct ivtv *itv)
 	}
 
 	if (hw & IVTV_HW_SAA711X) {
+<<<<<<< HEAD
 		struct v4l2_dbg_chip_ident v;
 
 		/* determine the exact saa711x model */
@@ -977,6 +996,12 @@ static void ivtv_load_and_init_modules(struct ivtv *itv)
 		strlcpy(v.match.name, "saa7115", sizeof(v.match.name));
 		ivtv_call_hw(itv, IVTV_HW_SAA711X, core, g_chip_ident, &v);
 		if (v.ident == V4L2_IDENT_SAA7114) {
+=======
+		/* determine the exact saa711x model */
+		itv->hw_flags &= ~IVTV_HW_SAA711X;
+
+		if (strstr(itv->sd_video->name, "saa7114")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			itv->hw_flags |= IVTV_HW_SAA7114;
 			/* VBI is not yet supported by the saa7114 driver. */
 			itv->v4l2_cap &= ~(V4L2_CAP_SLICED_VBI_CAPTURE|V4L2_CAP_VBI_CAPTURE);
@@ -1267,7 +1292,11 @@ static int ivtv_probe(struct pci_dev *pdev, const struct pci_device_id *pci_id)
 
 	/* Register IRQ */
 	retval = request_irq(itv->pdev->irq, ivtv_irq_handler,
+<<<<<<< HEAD
 	     IRQF_SHARED | IRQF_DISABLED, itv->v4l2_dev.name, (void *)itv);
+=======
+	     IRQF_SHARED, itv->v4l2_dev.name, (void *)itv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval) {
 		IVTV_ERR("Failed to register irq %d\n", retval);
 		goto free_i2c;
@@ -1290,7 +1319,11 @@ static int ivtv_probe(struct pci_dev *pdev, const struct pci_device_id *pci_id)
 	return 0;
 
 free_streams:
+<<<<<<< HEAD
 	ivtv_streams_cleanup(itv, 1);
+=======
+	ivtv_streams_cleanup(itv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 free_irq:
 	free_irq(itv->pdev->irq, (void *)itv);
 free_i2c:
@@ -1447,10 +1480,17 @@ static void ivtv_remove(struct pci_dev *pdev)
 	del_timer_sync(&itv->dma_timer);
 
 	/* Kill irq worker */
+<<<<<<< HEAD
 	flush_kthread_worker(&itv->irq_worker);
 	kthread_stop(itv->irq_worker_task);
 
 	ivtv_streams_cleanup(itv, 1);
+=======
+	kthread_flush_worker(&itv->irq_worker);
+	kthread_stop(itv->irq_worker_task);
+
+	ivtv_streams_cleanup(itv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ivtv_udma_free(itv);
 
 	v4l2_ctrl_handler_free(&itv->cxhdl.hdl);

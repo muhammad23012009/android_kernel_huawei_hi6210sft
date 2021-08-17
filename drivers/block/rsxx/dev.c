@@ -112,6 +112,7 @@ static const struct block_device_operations rsxx_fops = {
 
 static void disk_stats_start(struct rsxx_cardinfo *card, struct bio *bio)
 {
+<<<<<<< HEAD
 	struct hd_struct *part0 = &card->gendisk->part0;
 	int rw = bio_data_dir(bio);
 	int cpu;
@@ -122,12 +123,17 @@ static void disk_stats_start(struct rsxx_cardinfo *card, struct bio *bio)
 	part_inc_in_flight(part0, rw);
 
 	part_stat_unlock();
+=======
+	generic_start_io_acct(bio_data_dir(bio), bio_sectors(bio),
+			     &card->gendisk->part0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void disk_stats_complete(struct rsxx_cardinfo *card,
 				struct bio *bio,
 				unsigned long start_time)
 {
+<<<<<<< HEAD
 	struct hd_struct *part0 = &card->gendisk->part0;
 	unsigned long duration = jiffies - start_time;
 	int rw = bio_data_dir(bio);
@@ -143,6 +149,10 @@ static void disk_stats_complete(struct rsxx_cardinfo *card,
 	part_dec_in_flight(part0, rw);
 
 	part_stat_unlock();
+=======
+	generic_end_io_acct(bio_data_dir(bio), &card->gendisk->part0,
+			   start_time);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void bio_dma_done_cb(struct rsxx_cardinfo *card,
@@ -155,21 +165,48 @@ static void bio_dma_done_cb(struct rsxx_cardinfo *card,
 		atomic_set(&meta->error, 1);
 
 	if (atomic_dec_and_test(&meta->pending_dmas)) {
+<<<<<<< HEAD
 		disk_stats_complete(card, meta->bio, meta->start_time);
 
 		bio_endio(meta->bio, atomic_read(&meta->error) ? -EIO : 0);
+=======
+		if (!card->eeh_state && card->gendisk)
+			disk_stats_complete(card, meta->bio, meta->start_time);
+
+		if (atomic_read(&meta->error))
+			bio_io_error(meta->bio);
+		else
+			bio_endio(meta->bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kmem_cache_free(bio_meta_pool, meta);
 	}
 }
 
+<<<<<<< HEAD
 static void rsxx_make_request(struct request_queue *q, struct bio *bio)
+=======
+static blk_qc_t rsxx_make_request(struct request_queue *q, struct bio *bio)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct rsxx_cardinfo *card = q->queuedata;
 	struct rsxx_bio_meta *bio_meta;
 	int st = -EINVAL;
 
+<<<<<<< HEAD
 	might_sleep();
 
+=======
+	blk_queue_split(q, &bio, q->bio_split);
+
+	might_sleep();
+
+	if (!card)
+		goto req_err;
+
+	if (bio_end_sector(bio) > get_capacity(card->gendisk))
+		goto req_err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(card->halt)) {
 		st = -EFAULT;
 		goto req_err;
@@ -180,7 +217,11 @@ static void rsxx_make_request(struct request_queue *q, struct bio *bio)
 		goto req_err;
 	}
 
+<<<<<<< HEAD
 	if (bio->bi_size == 0) {
+=======
+	if (bio->bi_iter.bi_size == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(CARD_TO_DEV(card), "size zero BIO!\n");
 		goto req_err;
 	}
@@ -196,23 +237,43 @@ static void rsxx_make_request(struct request_queue *q, struct bio *bio)
 	atomic_set(&bio_meta->pending_dmas, 0);
 	bio_meta->start_time = jiffies;
 
+<<<<<<< HEAD
 	disk_stats_start(card, bio);
 
 	dev_dbg(CARD_TO_DEV(card), "BIO[%c]: meta: %p addr8: x%llx size: %d\n",
 		 bio_data_dir(bio) ? 'W' : 'R', bio_meta,
 		 (u64)bio->bi_sector << 9, bio->bi_size);
+=======
+	if (!unlikely(card->halt))
+		disk_stats_start(card, bio);
+
+	dev_dbg(CARD_TO_DEV(card), "BIO[%c]: meta: %p addr8: x%llx size: %d\n",
+		 bio_data_dir(bio) ? 'W' : 'R', bio_meta,
+		 (u64)bio->bi_iter.bi_sector << 9, bio->bi_iter.bi_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	st = rsxx_dma_queue_bio(card, bio, &bio_meta->pending_dmas,
 				    bio_dma_done_cb, bio_meta);
 	if (st)
 		goto queue_err;
 
+<<<<<<< HEAD
 	return;
+=======
+	return BLK_QC_T_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 queue_err:
 	kmem_cache_free(bio_meta_pool, bio_meta);
 req_err:
+<<<<<<< HEAD
 	bio_endio(bio, st);
+=======
+	if (st)
+		bio->bi_error = st;
+	bio_endio(bio);
+	return BLK_QC_T_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*----------------- Device Setup -------------------*/
@@ -225,6 +286,7 @@ static bool rsxx_discard_supported(struct rsxx_cardinfo *card)
 	return (pci_rev >= RSXX_DISCARD_SUPPORT);
 }
 
+<<<<<<< HEAD
 static unsigned short rsxx_get_logical_block_size(
 					struct rsxx_cardinfo *card)
 {
@@ -243,6 +305,8 @@ static unsigned short rsxx_get_logical_block_size(
 		return RSXX_HW_BLK_SIZE;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rsxx_attach_dev(struct rsxx_cardinfo *card)
 {
 	mutex_lock(&card->dev_lock);
@@ -253,8 +317,12 @@ int rsxx_attach_dev(struct rsxx_cardinfo *card)
 			set_capacity(card->gendisk, card->size8 >> 9);
 		else
 			set_capacity(card->gendisk, 0);
+<<<<<<< HEAD
 		add_disk(card->gendisk);
 
+=======
+		device_add_disk(CARD_TO_DEV(card), card->gendisk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		card->bdev_attached = 1;
 	}
 
@@ -305,6 +373,7 @@ int rsxx_setup_dev(struct rsxx_cardinfo *card)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	blk_size = rsxx_get_logical_block_size(card);
 
 	blk_queue_make_request(card->queue, rsxx_make_request);
@@ -315,6 +384,21 @@ int rsxx_setup_dev(struct rsxx_cardinfo *card)
 	blk_queue_physical_block_size(card->queue, RSXX_HW_BLK_SIZE);
 
 	queue_flag_set_unlocked(QUEUE_FLAG_NONROT, card->queue);
+=======
+	if (card->config_valid) {
+		blk_size = card->config.data.block_size;
+		blk_queue_dma_alignment(card->queue, blk_size - 1);
+		blk_queue_logical_block_size(card->queue, blk_size);
+	}
+
+	blk_queue_make_request(card->queue, rsxx_make_request);
+	blk_queue_bounce_limit(card->queue, BLK_BOUNCE_ANY);
+	blk_queue_max_hw_sectors(card->queue, blkdev_max_hw_sectors);
+	blk_queue_physical_block_size(card->queue, RSXX_HW_BLK_SIZE);
+
+	queue_flag_set_unlocked(QUEUE_FLAG_NONROT, card->queue);
+	queue_flag_clear_unlocked(QUEUE_FLAG_ADD_RANDOM, card->queue);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rsxx_discard_supported(card)) {
 		queue_flag_set_unlocked(QUEUE_FLAG_DISCARD, card->queue);
 		blk_queue_max_discard_sectors(card->queue,
@@ -328,7 +412,10 @@ int rsxx_setup_dev(struct rsxx_cardinfo *card)
 
 	snprintf(card->gendisk->disk_name, sizeof(card->gendisk->disk_name),
 		 "rsxx%d", card->disk_id);
+<<<<<<< HEAD
 	card->gendisk->driverfs_dev = &card->dev->dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	card->gendisk->major = card->major;
 	card->gendisk->first_minor = 0;
 	card->gendisk->fops = &rsxx_fops;
@@ -347,6 +434,10 @@ void rsxx_destroy_dev(struct rsxx_cardinfo *card)
 	card->gendisk = NULL;
 
 	blk_cleanup_queue(card->queue);
+<<<<<<< HEAD
+=======
+	card->queue->queuedata = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unregister_blkdev(card->major, DRIVER_NAME);
 }
 

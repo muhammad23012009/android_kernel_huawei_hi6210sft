@@ -60,6 +60,10 @@ struct hvc_struct {
 	struct winsize ws;
 	struct work_struct tty_resize;
 	struct list_head next;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* implemented by a low level driver */
@@ -75,6 +79,12 @@ struct hv_ops {
 	/* tiocmget/set implementation */
 	int (*tiocmget)(struct hvc_struct *hp);
 	int (*tiocmset)(struct hvc_struct *hp, unsigned int set, unsigned int clear);
+<<<<<<< HEAD
+=======
+
+	/* Callbacks to handle tty ports */
+	void (*dtr_rts)(struct hvc_struct *hp, int raise);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Register a vterm and a slot index for use as a console (console_init) */

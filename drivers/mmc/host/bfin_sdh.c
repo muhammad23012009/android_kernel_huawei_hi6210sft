@@ -126,9 +126,12 @@ static int sdh_setup_data(struct sdh_host *host, struct mmc_data *data)
 	length = data->blksz * data->blocks;
 	bfin_write_SDH_DATA_LGTH(length);
 
+<<<<<<< HEAD
 	if (data->flags & MMC_DATA_STREAM)
 		data_ctl |= DTX_MODE;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (data->flags & MMC_DATA_READ)
 		data_ctl |= DTX_DIR;
 	/* Only supports power-of-2 block size */
@@ -391,6 +394,10 @@ static void sdh_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		/* Disable 4 bit SDIO */
 		cfg &= ~SD4E;
 	}
+<<<<<<< HEAD
+=======
+	bfin_write_SDH_CFG(cfg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host->power_mode = ios->power_mode;
 #ifndef RSI_BLKSZ
@@ -415,7 +422,10 @@ static void sdh_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		cfg &= ~SD_CMD_OD;
 # endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ios->power_mode != MMC_POWER_OFF)
 		cfg |= PWR_ON;
 	else
@@ -433,7 +443,10 @@ static void sdh_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		clk_ctl |= CLK_E;
 		host->clk_div = clk_div;
 		bfin_write_SDH_CLK_CTL(clk_ctl);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		sdh_stop_clock(host);
 
@@ -621,8 +634,11 @@ static int sdh_remove(struct platform_device *pdev)
 {
 	struct mmc_host *mmc = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mmc) {
 		struct sdh_host *host = mmc_priv(mmc);
 
@@ -642,6 +658,7 @@ static int sdh_remove(struct platform_device *pdev)
 #ifdef CONFIG_PM
 static int sdh_suspend(struct platform_device *dev, pm_message_t state)
 {
+<<<<<<< HEAD
 	struct mmc_host *mmc = platform_get_drvdata(dev);
 	struct bfin_sd_host *drv_data = get_sdh_data(dev);
 	int ret = 0;
@@ -652,11 +669,21 @@ static int sdh_suspend(struct platform_device *dev, pm_message_t state)
 	peripheral_free_list(drv_data->pin_req);
 
 	return ret;
+=======
+	struct bfin_sd_host *drv_data = get_sdh_data(dev);
+
+	peripheral_free_list(drv_data->pin_req);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int sdh_resume(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct mmc_host *mmc = platform_get_drvdata(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bfin_sd_host *drv_data = get_sdh_data(dev);
 	int ret = 0;
 
@@ -667,10 +694,13 @@ static int sdh_resume(struct platform_device *dev)
 	}
 
 	sdh_reset();
+<<<<<<< HEAD
 
 	if (mmc)
 		ret = mmc_resume_host(mmc);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 #else

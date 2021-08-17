@@ -117,7 +117,11 @@ int cpu_check_affinity(struct irq_data *d, const struct cpumask *dest)
 		return -EINVAL;
 
 	/* whatever mask they set, we just allow one CPU */
+<<<<<<< HEAD
 	cpu_dest = first_cpu(*dest);
+=======
+	cpu_dest = cpumask_first_and(dest, cpu_online_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return cpu_dest;
 }
@@ -131,7 +135,11 @@ static int cpu_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
 	if (cpu_dest < 0)
 		return -1;
 
+<<<<<<< HEAD
 	cpumask_copy(d->affinity, dest);
+=======
+	cpumask_copy(irq_data_get_affinity_mask(d), dest);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -179,10 +187,13 @@ int arch_show_interrupts(struct seq_file *p, int prec)
 	for_each_online_cpu(j)
 		seq_printf(p, "%10u ", irq_stats(j)->irq_resched_count);
 	seq_puts(p, "  Rescheduling interrupts\n");
+<<<<<<< HEAD
 	seq_printf(p, "%*s: ", prec, "CAL");
 	for_each_online_cpu(j)
 		seq_printf(p, "%10u ", irq_stats(j)->irq_call_count);
 	seq_puts(p, "  Function call interrupts\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	seq_printf(p, "%*s: ", prec, "UAH");
 	for_each_online_cpu(j)
@@ -343,7 +354,11 @@ unsigned long txn_affinity_addr(unsigned int irq, int cpu)
 {
 #ifdef CONFIG_SMP
 	struct irq_data *d = irq_get_irq_data(irq);
+<<<<<<< HEAD
 	cpumask_copy(d->affinity, cpumask_of(cpu));
+=======
+	cpumask_copy(irq_data_get_affinity_mask(d), cpumask_of(cpu));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	return per_cpu(cpu_data, cpu).txn_addr;
@@ -499,6 +514,7 @@ static void execute_on_irq_stack(void *func, unsigned long param1)
 	*irq_stack_in_use = 1;
 }
 
+<<<<<<< HEAD
 asmlinkage void do_softirq(void)
 {
 	__u32 pending;
@@ -515,6 +531,11 @@ asmlinkage void do_softirq(void)
 		execute_on_irq_stack(__do_softirq, 0);
 
 	local_irq_restore(flags);
+=======
+void do_softirq_own_stack(void)
+{
+	execute_on_irq_stack(__do_softirq, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* CONFIG_IRQSTACKS */
 
@@ -524,7 +545,11 @@ void do_cpu_irq_mask(struct pt_regs *regs)
 	struct pt_regs *old_regs;
 	unsigned long eirr_val;
 	int irq, cpu = smp_processor_id();
+<<<<<<< HEAD
 	struct irq_desc *desc;
+=======
+	struct irq_data *irq_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 	cpumask_t dest;
 #endif
@@ -538,6 +563,7 @@ void do_cpu_irq_mask(struct pt_regs *regs)
 		goto set_out;
 	irq = eirr_to_irq(eirr_val);
 
+<<<<<<< HEAD
 	/* Filter out spurious interrupts, mostly from serial port at bootup */
 	desc = irq_to_desc(irq);
 	if (unlikely(!desc->action))
@@ -548,6 +574,19 @@ void do_cpu_irq_mask(struct pt_regs *regs)
 	if (irqd_is_per_cpu(&desc->irq_data) &&
 	    !cpu_isset(smp_processor_id(), dest)) {
 		int cpu = first_cpu(dest);
+=======
+	irq_data = irq_get_irq_data(irq);
+
+	/* Filter out spurious interrupts, mostly from serial port at bootup */
+	if (unlikely(!irq_desc_has_action(irq_data_to_desc(irq_data))))
+		goto set_out;
+
+#ifdef CONFIG_SMP
+	cpumask_copy(&dest, irq_data_get_affinity_mask(irq_data));
+	if (irqd_is_per_cpu(irq_data) &&
+	    !cpumask_test_cpu(smp_processor_id(), &dest)) {
+		int cpu = cpumask_first(&dest);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		printk(KERN_DEBUG "redirecting irq %d from CPU %d to %d\n",
 		       irq, smp_processor_id(), cpu);

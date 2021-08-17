@@ -32,16 +32,23 @@ void kunmap(struct page *page)
 
 EXPORT_SYMBOL(kunmap);
 
+<<<<<<< HEAD
 struct page *kmap_atomic_to_page(void *ptr)
 {
 	return virt_to_page(ptr);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void *kmap_atomic(struct page *page)
 {
 	unsigned long paddr;
 	int type;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 	type = kmap_atomic_idx_push();
 	paddr = page_to_phys(page);
@@ -85,5 +92,9 @@ void __kunmap_atomic(void *kvaddr)
 	}
 	kmap_atomic_idx_pop();
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__kunmap_atomic);

@@ -1,7 +1,10 @@
 config FS_ENET
        tristate "Freescale Ethernet Driver"
        depends on NET_VENDOR_FREESCALE && (CPM1 || CPM2 || PPC_MPC512x)
+<<<<<<< HEAD
        select NET_CORE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
        select MII
        select PHYLIB
 

@@ -23,7 +23,11 @@
 #include <linux/smsc911x.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/at24.h>
+=======
+#include <linux/platform_data/at24.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/spi/spi.h>
 #include <linux/irq.h>
@@ -45,6 +49,10 @@
 
 #include "common.h"
 #include "devices-imx31.h"
+<<<<<<< HEAD
+=======
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hardware.h"
 #include "iomux-mx3.h"
 #include "pcm037.h"
@@ -57,7 +65,11 @@ static int __init pcm037_variant_setup(char *str)
 	if (!strcmp("eet", str))
 		pcm037_instance = PCM037_EET;
 	else if (strcmp("pcm970", str))
+<<<<<<< HEAD
 		pr_warning("Unknown pcm037 baseboard variant %s\n", str);
+=======
+		pr_warn("Unknown pcm037 baseboard variant %s\n", str);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 1;
 }
@@ -148,7 +160,11 @@ static unsigned int pcm037_pins[] = {
 	MX31_PIN_CONTRAST__CONTRAST,
 	MX31_PIN_D3_SPL__D3_SPL,
 	MX31_PIN_D3_CLS__D3_CLS,
+<<<<<<< HEAD
 	MX31_PIN_LCS0__GPI03_23,
+=======
+	MX31_PIN_LCS0__GPIO3_23,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* CSI */
 	IOMUX_MODE(MX31_PIN_CSI_D5, IOMUX_CONFIG_GPIO),
 	MX31_PIN_CSI_D6__CSI_D6,
@@ -371,8 +387,12 @@ static int pcm970_sdhc1_init(struct device *dev, irq_handler_t detect_irq,
 #endif
 
 	ret = request_irq(gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_SCK6)), detect_irq,
+<<<<<<< HEAD
 			IRQF_DISABLED | IRQF_TRIGGER_FALLING,
 				"sdhc-detect", data);
+=======
+			IRQF_TRIGGER_FALLING, "sdhc-detect", data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto err_gpio_free_2;
 
@@ -576,8 +596,11 @@ static struct regulator_consumer_supply dummy_supplies[] = {
  */
 static void __init pcm037_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx31_soc_init();
 
 	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
@@ -621,6 +644,7 @@ static void __init pcm037_init(void)
 
 	imx31_add_mxc_w1();
 
+<<<<<<< HEAD
 	/* LAN9217 IRQ pin */
 	ret = gpio_request(IOMUX_TO_GPIO(MX31_PIN_GPIO3_1), "lan9217-irq");
 	if (ret)
@@ -635,6 +659,8 @@ static void __init pcm037_init(void)
 	}
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* I2C adapters and devices */
 	i2c_register_board_info(1, pcm037_i2c_devices,
 			ARRAY_SIZE(pcm037_i2c_devices));
@@ -643,6 +669,7 @@ static void __init pcm037_init(void)
 	imx31_add_imx_i2c2(&pcm037_i2c2_data);
 
 	imx31_add_mxc_nand(&pcm037_nand_board_info);
+<<<<<<< HEAD
 	imx31_add_mxc_mmc(0, &sdhc_pdata);
 	imx31_add_ipu_core();
 	imx31_add_mx3_sdc_fb(&mx3fb_pdata);
@@ -663,6 +690,11 @@ static void __init pcm037_init(void)
 			gpio_to_irq(IOMUX_TO_GPIO(IOMUX_PIN(48, 105)));
 	platform_device_register(&pcm970_sja1000);
 
+=======
+	imx31_add_ipu_core();
+	imx31_add_mx3_sdc_fb(&mx3fb_pdata);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (otg_mode_host) {
 		otg_pdata.otg = imx_otg_ulpi_create(ULPI_OTG_DRVVBUS |
 				ULPI_OTG_DRVVBUS_EXT);
@@ -677,7 +709,10 @@ static void __init pcm037_init(void)
 
 	if (!otg_mode_host)
 		imx31_add_fsl_usb2_udc(&otg_device_pdata);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init pcm037_timer_init(void)
@@ -694,6 +729,42 @@ static void __init pcm037_reserve(void)
 
 static void __init pcm037_init_late(void)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+
+	/* LAN9217 IRQ pin */
+	ret = gpio_request(IOMUX_TO_GPIO(MX31_PIN_GPIO3_1), "lan9217-irq");
+	if (!ret) {
+		gpio_direction_input(IOMUX_TO_GPIO(MX31_PIN_GPIO3_1));
+		smsc911x_resources[1].start =
+			gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO3_1));
+		smsc911x_resources[1].end =
+			gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO3_1));
+		platform_device_register(&pcm037_eth);
+	} else {
+		pr_warn("could not get LAN irq gpio\n");
+	}
+
+	imx31_add_mxc_mmc(0, &sdhc_pdata);
+
+	/* CSI */
+	/* Camera power: default - off */
+	ret = gpio_request(IOMUX_TO_GPIO(MX31_PIN_CSI_D5), "mt9t031-power");
+	if (!ret)
+		gpio_direction_output(IOMUX_TO_GPIO(MX31_PIN_CSI_D5), 1);
+	else
+		iclink_mt9t031.power = NULL;
+
+	pcm037_init_camera();
+
+	pcm970_sja1000_resources[1].start =
+			gpio_to_irq(IOMUX_TO_GPIO(IOMUX_PIN(48, 105)));
+	pcm970_sja1000_resources[1].end =
+			gpio_to_irq(IOMUX_TO_GPIO(IOMUX_PIN(48, 105)));
+	platform_device_register(&pcm970_sja1000);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pcm037_eet_init_devices();
 }
 
@@ -704,7 +775,10 @@ MACHINE_START(PCM037, "Phytec Phycore pcm037")
 	.map_io = mx31_map_io,
 	.init_early = imx31_init_early,
 	.init_irq = mx31_init_irq,
+<<<<<<< HEAD
 	.handle_irq = imx31_handle_irq,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_time	= pcm037_timer_init,
 	.init_machine = pcm037_init,
 	.init_late = pcm037_init_late,

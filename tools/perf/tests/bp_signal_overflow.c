@@ -3,6 +3,15 @@
  * perf_event_tests (git://github.com/deater/perf_event_tests)
  */
 
+<<<<<<< HEAD
+=======
+/*
+ * Powerpc needs __SANE_USERSPACE_TYPES__ before <linux/types.h> to select
+ * 'int-ll64.h' and avoid compile warnings when printing __u64 with %llu.
+ */
+#define __SANE_USERSPACE_TYPES__
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -18,6 +27,10 @@
 #include "tests.h"
 #include "debug.h"
 #include "perf.h"
+<<<<<<< HEAD
+=======
+#include "cloexec.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int overflows;
 
@@ -51,7 +64,11 @@ static long long bp_count(int fd)
 #define EXECUTIONS 10000
 #define THRESHOLD  100
 
+<<<<<<< HEAD
 int test__bp_signal_overflow(void)
+=======
+int test__bp_signal_overflow(int subtest __maybe_unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct perf_event_attr pe;
 	struct sigaction sa;
@@ -85,7 +102,12 @@ int test__bp_signal_overflow(void)
 	pe.exclude_kernel = 1;
 	pe.exclude_hv = 1;
 
+<<<<<<< HEAD
 	fd = sys_perf_event_open(&pe, 0, -1, -1, 0);
+=======
+	fd = sys_perf_event_open(&pe, 0, -1, -1,
+				 perf_event_open_cloexec_flag());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (fd < 0) {
 		pr_debug("failed opening event %llx\n", pe.config);
 		return TEST_FAIL;

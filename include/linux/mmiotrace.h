@@ -106,6 +106,10 @@ extern void enable_mmiotrace(void);
 extern void disable_mmiotrace(void);
 extern void mmio_trace_rw(struct mmiotrace_rw *rw);
 extern void mmio_trace_mapping(struct mmiotrace_map *map);
+<<<<<<< HEAD
 extern int mmio_trace_printk(const char *fmt, va_list args);
+=======
+extern __printf(1, 0) int mmio_trace_printk(const char *fmt, va_list args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _LINUX_MMIOTRACE_H */

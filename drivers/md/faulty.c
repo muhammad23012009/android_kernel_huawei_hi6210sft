@@ -70,12 +70,21 @@
 #include <linux/seq_file.h>
 
 
+<<<<<<< HEAD
 static void faulty_fail(struct bio *bio, int error)
 {
 	struct bio *b = bio->bi_private;
 
 	b->bi_size = bio->bi_size;
 	b->bi_sector = bio->bi_sector;
+=======
+static void faulty_fail(struct bio *bio)
+{
+	struct bio *b = bio->bi_private;
+
+	b->bi_iter.bi_size = bio->bi_iter.bi_size;
+	b->bi_iter.bi_sector = bio->bi_iter.bi_sector;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bio_put(bio);
 
@@ -170,7 +179,11 @@ static void add_sector(struct faulty_conf *conf, sector_t start, int mode)
 		conf->nfaults = n+1;
 }
 
+<<<<<<< HEAD
 static void make_request(struct mddev *mddev, struct bio *bio)
+=======
+static void faulty_make_request(struct mddev *mddev, struct bio *bio)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct faulty_conf *conf = mddev->private;
 	int failit = 0;
@@ -181,6 +194,7 @@ static void make_request(struct mddev *mddev, struct bio *bio)
 			/* special case - don't decrement, don't generic_make_request,
 			 * just fail immediately
 			 */
+<<<<<<< HEAD
 			bio_endio(bio, -EIO);
 			return;
 		}
@@ -189,22 +203,49 @@ static void make_request(struct mddev *mddev, struct bio *bio)
 			failit = 1;
 		if (check_mode(conf, WritePersistent)) {
 			add_sector(conf, bio->bi_sector, WritePersistent);
+=======
+			bio_io_error(bio);
+			return;
+		}
+
+		if (check_sector(conf, bio->bi_iter.bi_sector,
+				 bio_end_sector(bio), WRITE))
+			failit = 1;
+		if (check_mode(conf, WritePersistent)) {
+			add_sector(conf, bio->bi_iter.bi_sector,
+				   WritePersistent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			failit = 1;
 		}
 		if (check_mode(conf, WriteTransient))
 			failit = 1;
 	} else {
 		/* read request */
+<<<<<<< HEAD
 		if (check_sector(conf, bio->bi_sector, bio_end_sector(bio), READ))
+=======
+		if (check_sector(conf, bio->bi_iter.bi_sector,
+				 bio_end_sector(bio), READ))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			failit = 1;
 		if (check_mode(conf, ReadTransient))
 			failit = 1;
 		if (check_mode(conf, ReadPersistent)) {
+<<<<<<< HEAD
 			add_sector(conf, bio->bi_sector, ReadPersistent);
 			failit = 1;
 		}
 		if (check_mode(conf, ReadFixable)) {
 			add_sector(conf, bio->bi_sector, ReadFixable);
+=======
+			add_sector(conf, bio->bi_iter.bi_sector,
+				   ReadPersistent);
+			failit = 1;
+		}
+		if (check_mode(conf, ReadFixable)) {
+			add_sector(conf, bio->bi_iter.bi_sector,
+				   ReadFixable);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			failit = 1;
 		}
 	}
@@ -221,7 +262,11 @@ static void make_request(struct mddev *mddev, struct bio *bio)
 	generic_make_request(bio);
 }
 
+<<<<<<< HEAD
 static void status(struct seq_file *seq, struct mddev *mddev)
+=======
+static void faulty_status(struct seq_file *seq, struct mddev *mddev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct faulty_conf *conf = mddev->private;
 	int n;
@@ -254,7 +299,11 @@ static void status(struct seq_file *seq, struct mddev *mddev)
 }
 
 
+<<<<<<< HEAD
 static int reshape(struct mddev *mddev)
+=======
+static int faulty_reshape(struct mddev *mddev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int mode = mddev->new_layout & ModeMask;
 	int count = mddev->new_layout >> ModeShift;
@@ -294,7 +343,11 @@ static sector_t faulty_size(struct mddev *mddev, sector_t sectors, int raid_disk
 	return sectors;
 }
 
+<<<<<<< HEAD
 static int run(struct mddev *mddev)
+=======
+static int faulty_run(struct mddev *mddev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct md_rdev *rdev;
 	int i;
@@ -322,11 +375,16 @@ static int run(struct mddev *mddev)
 	md_set_array_sectors(mddev, faulty_size(mddev, 0, 0));
 	mddev->private = conf;
 
+<<<<<<< HEAD
 	reshape(mddev);
+=======
+	faulty_reshape(mddev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stop(struct mddev *mddev)
 {
 	struct faulty_conf *conf = mddev->private;
@@ -334,6 +392,13 @@ static int stop(struct mddev *mddev)
 	kfree(conf);
 	mddev->private = NULL;
 	return 0;
+=======
+static void faulty_free(struct mddev *mddev, void *priv)
+{
+	struct faulty_conf *conf = priv;
+
+	kfree(conf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct md_personality faulty_personality =
@@ -341,11 +406,19 @@ static struct md_personality faulty_personality =
 	.name		= "faulty",
 	.level		= LEVEL_FAULTY,
 	.owner		= THIS_MODULE,
+<<<<<<< HEAD
 	.make_request	= make_request,
 	.run		= run,
 	.stop		= stop,
 	.status		= status,
 	.check_reshape	= reshape,
+=======
+	.make_request	= faulty_make_request,
+	.run		= faulty_run,
+	.free		= faulty_free,
+	.status		= faulty_status,
+	.check_reshape	= faulty_reshape,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.size		= faulty_size,
 };
 

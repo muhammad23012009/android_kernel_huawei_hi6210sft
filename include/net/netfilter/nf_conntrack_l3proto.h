@@ -38,8 +38,13 @@ struct nf_conntrack_l3proto {
 			     const struct nf_conntrack_tuple *orig);
 
 	/* Print out the per-protocol part of the tuple. */
+<<<<<<< HEAD
 	int (*print_tuple)(struct seq_file *s,
 			   const struct nf_conntrack_tuple *);
+=======
+	void (*print_tuple)(struct seq_file *s,
+			    const struct nf_conntrack_tuple *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Called before tracking. 
@@ -63,10 +68,13 @@ struct nf_conntrack_l3proto {
 
 	size_t nla_size;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 	const char		*ctl_table_path;
 #endif /* CONFIG_SYSCTL */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Init l3proto pernet data */
 	int (*init_net)(struct net *net);
 
@@ -77,6 +85,7 @@ struct nf_conntrack_l3proto {
 extern struct nf_conntrack_l3proto __rcu *nf_ct_l3protos[AF_MAX];
 
 /* Protocol pernet registration. */
+<<<<<<< HEAD
 extern int nf_ct_l3proto_pernet_register(struct net *net,
 					 struct nf_conntrack_l3proto *proto);
 extern void nf_ct_l3proto_pernet_unregister(struct net *net,
@@ -88,6 +97,18 @@ extern void nf_ct_l3proto_unregister(struct nf_conntrack_l3proto *proto);
 
 extern struct nf_conntrack_l3proto *nf_ct_l3proto_find_get(u_int16_t l3proto);
 extern void nf_ct_l3proto_put(struct nf_conntrack_l3proto *p);
+=======
+int nf_ct_l3proto_pernet_register(struct net *net,
+				  struct nf_conntrack_l3proto *proto);
+void nf_ct_l3proto_pernet_unregister(struct net *net,
+				     struct nf_conntrack_l3proto *proto);
+
+/* Protocol global registration. */
+int nf_ct_l3proto_register(struct nf_conntrack_l3proto *proto);
+void nf_ct_l3proto_unregister(struct nf_conntrack_l3proto *proto);
+
+struct nf_conntrack_l3proto *nf_ct_l3proto_find_get(u_int16_t l3proto);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Existing built-in protocols */
 extern struct nf_conntrack_l3proto nf_conntrack_l3proto_generic;

@@ -22,7 +22,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/tty.h>
 #include <linux/ioport.h>
 #include <linux/slab.h>
@@ -35,31 +38,67 @@
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/atmel_pdc.h>
 #include <linux/atmel_serial.h>
 #include <linux/uaccess.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/platform_data/atmel.h>
+=======
+#include <linux/of_gpio.h>
+#include <linux/dma-mapping.h>
+#include <linux/dmaengine.h>
+#include <linux/atmel_pdc.h>
+#include <linux/atmel_serial.h>
+#include <linux/uaccess.h>
+#include <linux/platform_data/atmel.h>
+#include <linux/timer.h>
+#include <linux/gpio.h>
+#include <linux/gpio/consumer.h>
+#include <linux/err.h>
+#include <linux/irq.h>
+#include <linux/suspend.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/io.h>
 #include <asm/ioctls.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 #include <mach/cpu.h>
 #include <asm/gpio.h>
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PDC_BUFFER_SIZE		512
 /* Revisit: We should calculate this based on the actual port settings */
 #define PDC_RX_TIMEOUT		(3 * 10)		/* 3 bytes */
 
+<<<<<<< HEAD
+=======
+/* The minium number of data FIFOs should be able to contain */
+#define ATMEL_MIN_FIFO_SIZE	8
+/*
+ * These two offsets are substracted from the RX FIFO size to define the RTS
+ * high and low thresholds
+ */
+#define ATMEL_RTS_HIGH_OFFSET	16
+#define ATMEL_RTS_LOW_OFFSET	20
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_SERIAL_ATMEL_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
 #endif
 
 #include <linux/serial_core.h>
 
+<<<<<<< HEAD
+=======
+#include "serial_mctrl_gpio.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void atmel_start_rx(struct uart_port *port);
 static void atmel_stop_rx(struct uart_port *port);
 
@@ -84,6 +123,7 @@ static void atmel_stop_rx(struct uart_port *port);
 
 #define ATMEL_ISR_PASS_LIMIT	256
 
+<<<<<<< HEAD
 /* UART registers. CR is write-only, hence no GET macro */
 #define UART_PUT_CR(port,v)	__raw_writel(v, (port)->membase + ATMEL_US_CR)
 #define UART_GET_MR(port)	__raw_readl((port)->membase + ATMEL_US_MR)
@@ -116,6 +156,8 @@ static void atmel_stop_rx(struct uart_port *port);
 static int (*atmel_open_hook)(struct uart_port *);
 static void (*atmel_close_hook)(struct uart_port *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct atmel_dma_buffer {
 	unsigned char	*buf;
 	dma_addr_t	dma_addr;
@@ -128,9 +170,27 @@ struct atmel_uart_char {
 	u16		ch;
 };
 
+<<<<<<< HEAD
 #define ATMEL_SERIAL_RINGSIZE 1024
 
 /*
+=======
+/*
+ * Be careful, the real size of the ring buffer is
+ * sizeof(atmel_uart_char) * ATMEL_SERIAL_RINGSIZE. It means that ring buffer
+ * can contain up to 1024 characters in PIO mode and up to 4096 characters in
+ * DMA mode.
+ */
+#define ATMEL_SERIAL_RINGSIZE 1024
+
+/*
+ * at91: 6 USARTs and one DBGU port (SAM9260)
+ * avr32: 4
+ */
+#define ATMEL_MAX_UART		7
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * We wrap our port structure around the generic uart_port.
  */
 struct atmel_uart_port {
@@ -140,6 +200,7 @@ struct atmel_uart_port {
 	u32			backup_imr;	/* IMR saved during suspend */
 	int			break_active;	/* break being received */
 
+<<<<<<< HEAD
 	short			use_dma_rx;	/* enable PDC receiver */
 	short			pdc_rx_idx;	/* current PDC RX buffer */
 	struct atmel_dma_buffer	pdc_rx[2];	/* PDC receier */
@@ -155,6 +216,59 @@ struct atmel_uart_port {
 
 	struct serial_rs485	rs485;		/* rs485 settings */
 	unsigned int		tx_done_mask;
+=======
+	bool			use_dma_rx;	/* enable DMA receiver */
+	bool			use_pdc_rx;	/* enable PDC receiver */
+	short			pdc_rx_idx;	/* current PDC RX buffer */
+	struct atmel_dma_buffer	pdc_rx[2];	/* PDC receier */
+
+	bool			use_dma_tx;     /* enable DMA transmitter */
+	bool			use_pdc_tx;	/* enable PDC transmitter */
+	struct atmel_dma_buffer	pdc_tx;		/* PDC transmitter */
+
+	spinlock_t			lock_tx;	/* port lock */
+	spinlock_t			lock_rx;	/* port lock */
+	struct dma_chan			*chan_tx;
+	struct dma_chan			*chan_rx;
+	struct dma_async_tx_descriptor	*desc_tx;
+	struct dma_async_tx_descriptor	*desc_rx;
+	dma_cookie_t			cookie_tx;
+	dma_cookie_t			cookie_rx;
+	struct scatterlist		sg_tx;
+	struct scatterlist		sg_rx;
+	struct tasklet_struct	tasklet_rx;
+	struct tasklet_struct	tasklet_tx;
+	atomic_t		tasklet_shutdown;
+	unsigned int		irq_status_prev;
+	unsigned int		tx_len;
+
+	struct circ_buf		rx_ring;
+
+	struct mctrl_gpios	*gpios;
+	unsigned int		tx_done_mask;
+	u32			fifo_size;
+	u32			rts_high;
+	u32			rts_low;
+	bool			ms_irq_enabled;
+	u32			rtor;	/* address of receiver timeout register if it exists */
+	bool			has_frac_baudrate;
+	bool			has_hw_timer;
+	struct timer_list	uart_timer;
+
+	bool			suspended;
+	unsigned int		pending;
+	unsigned int		pending_status;
+	spinlock_t		lock_suspended;
+
+	bool			hd_start_rx;	/* can start RX during half-duplex operation */
+
+	int (*prepare_rx)(struct uart_port *port);
+	int (*prepare_tx)(struct uart_port *port);
+	void (*schedule_rx)(struct uart_port *port);
+	void (*schedule_tx)(struct uart_port *port);
+	void (*release_rx)(struct uart_port *port);
+	void (*release_tx)(struct uart_port *port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct atmel_uart_port atmel_ports[ATMEL_MAX_UART];
@@ -170,8 +284,11 @@ static const struct of_device_id atmel_serial_dt_ids[] = {
 	{ .compatible = "atmel,at91sam9260-usart" },
 	{ /* sentinel */ }
 };
+<<<<<<< HEAD
 
 MODULE_DEVICE_TABLE(of, atmel_serial_dt_ids);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static inline struct atmel_uart_port *
@@ -180,6 +297,7 @@ to_atmel_uart_port(struct uart_port *uart)
 	return container_of(uart, struct atmel_uart_port, uart);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SERIAL_ATMEL_PDC
 static bool atmel_use_dma_rx(struct uart_port *port)
 {
@@ -196,16 +314,82 @@ static bool atmel_use_dma_tx(struct uart_port *port)
 }
 #else
 static bool atmel_use_dma_rx(struct uart_port *port)
+=======
+static inline u32 atmel_uart_readl(struct uart_port *port, u32 reg)
+{
+	return __raw_readl(port->membase + reg);
+}
+
+static inline void atmel_uart_writel(struct uart_port *port, u32 reg, u32 value)
+{
+	__raw_writel(value, port->membase + reg);
+}
+
+#ifdef CONFIG_AVR32
+
+/* AVR32 cannot handle 8 or 16bit I/O accesses but only 32bit I/O accesses */
+static inline u8 atmel_uart_read_char(struct uart_port *port)
+{
+	return __raw_readl(port->membase + ATMEL_US_RHR);
+}
+
+static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
+{
+	__raw_writel(value, port->membase + ATMEL_US_THR);
+}
+
+#else
+
+static inline u8 atmel_uart_read_char(struct uart_port *port)
+{
+	return __raw_readb(port->membase + ATMEL_US_RHR);
+}
+
+static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
+{
+	__raw_writeb(value, port->membase + ATMEL_US_THR);
+}
+
+#endif
+
+static inline int atmel_uart_is_half_duplex(struct uart_port *port)
+{
+	return (port->rs485.flags & SER_RS485_ENABLED) &&
+		!(port->rs485.flags & SER_RS485_RX_DURING_TX);
+}
+
+#ifdef CONFIG_SERIAL_ATMEL_PDC
+static bool atmel_use_pdc_rx(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	return atmel_port->use_pdc_rx;
+}
+
+static bool atmel_use_pdc_tx(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	return atmel_port->use_pdc_tx;
+}
+#else
+static bool atmel_use_pdc_rx(struct uart_port *port)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return false;
 }
 
+<<<<<<< HEAD
 static bool atmel_use_dma_tx(struct uart_port *port)
+=======
+static bool atmel_use_pdc_tx(struct uart_port *port)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return false;
 }
 #endif
 
+<<<<<<< HEAD
 /* Enable or disable the rs485 support */
 void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
 {
@@ -219,26 +403,125 @@ void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
 	UART_PUT_IDR(port, atmel_port->tx_done_mask);
 
 	mode = UART_GET_MR(port);
+=======
+static bool atmel_use_dma_tx(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	return atmel_port->use_dma_tx;
+}
+
+static bool atmel_use_dma_rx(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	return atmel_port->use_dma_rx;
+}
+
+static bool atmel_use_fifo(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	return atmel_port->fifo_size;
+}
+
+static void atmel_tasklet_schedule(struct atmel_uart_port *atmel_port,
+				   struct tasklet_struct *t)
+{
+	if (!atomic_read(&atmel_port->tasklet_shutdown))
+		tasklet_schedule(t);
+}
+
+static unsigned int atmel_get_lines_status(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	unsigned int status, ret = 0;
+
+	status = atmel_uart_readl(port, ATMEL_US_CSR);
+
+	mctrl_gpio_get(atmel_port->gpios, &ret);
+
+	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+						UART_GPIO_CTS))) {
+		if (ret & TIOCM_CTS)
+			status &= ~ATMEL_US_CTS;
+		else
+			status |= ATMEL_US_CTS;
+	}
+
+	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+						UART_GPIO_DSR))) {
+		if (ret & TIOCM_DSR)
+			status &= ~ATMEL_US_DSR;
+		else
+			status |= ATMEL_US_DSR;
+	}
+
+	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+						UART_GPIO_RI))) {
+		if (ret & TIOCM_RI)
+			status &= ~ATMEL_US_RI;
+		else
+			status |= ATMEL_US_RI;
+	}
+
+	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+						UART_GPIO_DCD))) {
+		if (ret & TIOCM_CD)
+			status &= ~ATMEL_US_DCD;
+		else
+			status |= ATMEL_US_DCD;
+	}
+
+	return status;
+}
+
+/* Enable or disable the rs485 support */
+static int atmel_config_rs485(struct uart_port *port,
+			      struct serial_rs485 *rs485conf)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	unsigned int mode;
+
+	/* Disable interrupts */
+	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
+
+	mode = atmel_uart_readl(port, ATMEL_US_MR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Resetting serial mode to RS232 (0x0) */
 	mode &= ~ATMEL_US_USMODE;
 
+<<<<<<< HEAD
 	atmel_port->rs485 = *rs485conf;
+=======
+	port->rs485 = *rs485conf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (rs485conf->flags & SER_RS485_ENABLED) {
 		dev_dbg(port->dev, "Setting UART to RS485\n");
 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
+<<<<<<< HEAD
 		if ((rs485conf->delay_rts_after_send) > 0)
 			UART_PUT_TTGR(port, rs485conf->delay_rts_after_send);
 		mode |= ATMEL_US_USMODE_RS485;
 	} else {
 		dev_dbg(port->dev, "Setting UART to RS232\n");
 		if (atmel_use_dma_tx(port))
+=======
+		atmel_uart_writel(port, ATMEL_US_TTGR,
+				  rs485conf->delay_rts_after_send);
+		mode |= ATMEL_US_USMODE_RS485;
+	} else {
+		dev_dbg(port->dev, "Setting UART to RS232\n");
+		if (atmel_use_pdc_tx(port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			atmel_port->tx_done_mask = ATMEL_US_ENDTX |
 				ATMEL_US_TXBUFE;
 		else
 			atmel_port->tx_done_mask = ATMEL_US_TXRDY;
 	}
+<<<<<<< HEAD
 	UART_PUT_MR(port, mode);
 
 	/* Enable interrupts */
@@ -246,6 +529,14 @@ void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
 
 	spin_unlock_irqrestore(&port->lock, flags);
 
+=======
+	atmel_uart_writel(port, ATMEL_US_MR, mode);
+
+	/* Enable interrupts */
+	atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -253,7 +544,13 @@ void atmel_config_rs485(struct uart_port *port, struct serial_rs485 *rs485conf)
  */
 static u_int atmel_tx_empty(struct uart_port *port)
 {
+<<<<<<< HEAD
 	return (UART_GET_CSR(port) & ATMEL_US_TXEMPTY) ? TIOCSER_TEMT : 0;
+=======
+	return (atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXEMPTY) ?
+		TIOCSER_TEMT :
+		0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -262,6 +559,7 @@ static u_int atmel_tx_empty(struct uart_port *port)
 static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
 {
 	unsigned int control = 0;
+<<<<<<< HEAD
 	unsigned int mode;
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 
@@ -284,21 +582,64 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
 		control |= ATMEL_US_RTSEN;
 	else
 		control |= ATMEL_US_RTSDIS;
+=======
+	unsigned int mode = atmel_uart_readl(port, ATMEL_US_MR);
+	unsigned int rts_paused, rts_ready;
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	/* override mode to RS485 if needed, otherwise keep the current mode */
+	if (port->rs485.flags & SER_RS485_ENABLED) {
+		atmel_uart_writel(port, ATMEL_US_TTGR,
+				  port->rs485.delay_rts_after_send);
+		mode &= ~ATMEL_US_USMODE;
+		mode |= ATMEL_US_USMODE_RS485;
+	}
+
+	/* set the RTS line state according to the mode */
+	if ((mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_HWHS) {
+		/* force RTS line to high level */
+		rts_paused = ATMEL_US_RTSEN;
+
+		/* give the control of the RTS line back to the hardware */
+		rts_ready = ATMEL_US_RTSDIS;
+	} else {
+		/* force RTS line to high level */
+		rts_paused = ATMEL_US_RTSDIS;
+
+		/* force RTS line to low level */
+		rts_ready = ATMEL_US_RTSEN;
+	}
+
+	if (mctrl & TIOCM_RTS)
+		control |= rts_ready;
+	else
+		control |= rts_paused;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (mctrl & TIOCM_DTR)
 		control |= ATMEL_US_DTREN;
 	else
 		control |= ATMEL_US_DTRDIS;
 
+<<<<<<< HEAD
 	UART_PUT_CR(port, control);
 
 	/* Local loopback mode? */
 	mode = UART_GET_MR(port) & ~ATMEL_US_CHMODE;
+=======
+	atmel_uart_writel(port, ATMEL_US_CR, control);
+
+	mctrl_gpio_set(atmel_port->gpios, mctrl);
+
+	/* Local loopback mode? */
+	mode &= ~ATMEL_US_CHMODE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mctrl & TIOCM_LOOP)
 		mode |= ATMEL_US_CHMODE_LOC_LOOP;
 	else
 		mode |= ATMEL_US_CHMODE_NORMAL;
 
+<<<<<<< HEAD
 	/* Resetting serial mode to RS232 (0x0) */
 	mode &= ~ATMEL_US_USMODE;
 
@@ -312,6 +653,9 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
 		dev_dbg(port->dev, "Setting UART to RS232\n");
 	}
 	UART_PUT_MR(port, mode);
+=======
+	atmel_uart_writel(port, ATMEL_US_MR, mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -319,9 +663,16 @@ static void atmel_set_mctrl(struct uart_port *port, u_int mctrl)
  */
 static u_int atmel_get_mctrl(struct uart_port *port)
 {
+<<<<<<< HEAD
 	unsigned int status, ret = 0;
 
 	status = UART_GET_CSR(port);
+=======
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	unsigned int ret = 0, status;
+
+	status = atmel_uart_readl(port, ATMEL_US_CSR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The control signals are active low.
@@ -335,7 +686,11 @@ static u_int atmel_get_mctrl(struct uart_port *port)
 	if (!(status & ATMEL_US_RI))
 		ret |= TIOCM_RI;
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return mctrl_gpio_get(atmel_port->gpios, &ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -345,6 +700,7 @@ static void atmel_stop_tx(struct uart_port *port)
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 
+<<<<<<< HEAD
 	if (atmel_use_dma_tx(port)) {
 		/* disable PDC transmit */
 		UART_PUT_PTCR(port, ATMEL_PDC_TXTDIS);
@@ -355,6 +711,27 @@ static void atmel_stop_tx(struct uart_port *port)
 	if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
 	    !(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX))
 		atmel_start_rx(port);
+=======
+	if (atmel_use_pdc_tx(port)) {
+		/* disable PDC transmit */
+		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
+	}
+
+	/*
+	 * Disable the transmitter.
+	 * This is mandatory when DMA is used, otherwise the DMA buffer
+	 * is fully transmitted.
+	 */
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
+
+	/* Disable interrupts */
+	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
+
+	if (atmel_uart_is_half_duplex(port))
+		if (!atomic_read(&atmel_port->tasklet_shutdown))
+			atmel_start_rx(port);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -364,6 +741,7 @@ static void atmel_start_tx(struct uart_port *port)
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 
+<<<<<<< HEAD
 	if (atmel_use_dma_tx(port)) {
 		if (UART_GET_PTSR(port) & ATMEL_PDC_TXTEN)
 			/* The transmitter is already running.  Yes, we
@@ -379,6 +757,27 @@ static void atmel_start_tx(struct uart_port *port)
 	}
 	/* Enable interrupts */
 	UART_PUT_IER(port, atmel_port->tx_done_mask);
+=======
+	if (atmel_use_pdc_tx(port) && (atmel_uart_readl(port, ATMEL_PDC_PTSR)
+				       & ATMEL_PDC_TXTEN))
+		/* The transmitter is already running.  Yes, we
+		   really need this.*/
+		return;
+
+	if (atmel_use_pdc_tx(port) || atmel_use_dma_tx(port))
+		if (atmel_uart_is_half_duplex(port))
+			atmel_stop_rx(port);
+
+	if (atmel_use_pdc_tx(port))
+		/* re-enable PDC transmit */
+		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTEN);
+
+	/* Enable interrupts */
+	atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
+
+	/* re-enable the transmitter */
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -386,6 +785,7 @@ static void atmel_start_tx(struct uart_port *port)
  */
 static void atmel_start_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	UART_PUT_CR(port, ATMEL_US_RSTSTA);  /* reset status and receiver */
 
 	UART_PUT_CR(port, ATMEL_US_RXEN);
@@ -397,6 +797,21 @@ static void atmel_start_rx(struct uart_port *port)
 		UART_PUT_PTCR(port, ATMEL_PDC_RXTEN);
 	} else {
 		UART_PUT_IER(port, ATMEL_US_RXRDY);
+=======
+	/* reset status and receiver */
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA);
+
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RXEN);
+
+	if (atmel_use_pdc_rx(port)) {
+		/* enable PDC controller */
+		atmel_uart_writel(port, ATMEL_US_IER,
+				  ATMEL_US_ENDRX | ATMEL_US_TIMEOUT |
+				  port->read_status_mask);
+		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_RXTEN);
+	} else {
+		atmel_uart_writel(port, ATMEL_US_IER, ATMEL_US_RXRDY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -405,6 +820,7 @@ static void atmel_start_rx(struct uart_port *port)
  */
 static void atmel_stop_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	UART_PUT_CR(port, ATMEL_US_RXDIS);
 
 	if (atmel_use_dma_rx(port)) {
@@ -414,6 +830,18 @@ static void atmel_stop_rx(struct uart_port *port)
 			port->read_status_mask);
 	} else {
 		UART_PUT_IDR(port, ATMEL_US_RXRDY);
+=======
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RXDIS);
+
+	if (atmel_use_pdc_rx(port)) {
+		/* disable PDC receive */
+		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_RXTDIS);
+		atmel_uart_writel(port, ATMEL_US_IDR,
+				  ATMEL_US_ENDRX | ATMEL_US_TIMEOUT |
+				  port->read_status_mask);
+	} else {
+		atmel_uart_writel(port, ATMEL_US_IDR, ATMEL_US_RXRDY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -422,8 +850,70 @@ static void atmel_stop_rx(struct uart_port *port)
  */
 static void atmel_enable_ms(struct uart_port *port)
 {
+<<<<<<< HEAD
 	UART_PUT_IER(port, ATMEL_US_RIIC | ATMEL_US_DSRIC
 			| ATMEL_US_DCDIC | ATMEL_US_CTSIC);
+=======
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	uint32_t ier = 0;
+
+	/*
+	 * Interrupt should not be enabled twice
+	 */
+	if (atmel_port->ms_irq_enabled)
+		return;
+
+	atmel_port->ms_irq_enabled = true;
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS))
+		ier |= ATMEL_US_CTSIC;
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DSR))
+		ier |= ATMEL_US_DSRIC;
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_RI))
+		ier |= ATMEL_US_RIIC;
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DCD))
+		ier |= ATMEL_US_DCDIC;
+
+	atmel_uart_writel(port, ATMEL_US_IER, ier);
+
+	mctrl_gpio_enable_ms(atmel_port->gpios);
+}
+
+/*
+ * Disable modem status interrupts
+ */
+static void atmel_disable_ms(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	uint32_t idr = 0;
+
+	/*
+	 * Interrupt should not be disabled twice
+	 */
+	if (!atmel_port->ms_irq_enabled)
+		return;
+
+	atmel_port->ms_irq_enabled = false;
+
+	mctrl_gpio_disable_ms(atmel_port->gpios);
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS))
+		idr |= ATMEL_US_CTSIC;
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DSR))
+		idr |= ATMEL_US_DSRIC;
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_RI))
+		idr |= ATMEL_US_RIIC;
+
+	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DCD))
+		idr |= ATMEL_US_DCDIC;
+
+	atmel_uart_writel(port, ATMEL_US_IDR, idr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -432,9 +922,17 @@ static void atmel_enable_ms(struct uart_port *port)
 static void atmel_break_ctl(struct uart_port *port, int break_state)
 {
 	if (break_state != 0)
+<<<<<<< HEAD
 		UART_PUT_CR(port, ATMEL_US_STTBRK);	/* start break */
 	else
 		UART_PUT_CR(port, ATMEL_US_STPBRK);	/* stop break */
+=======
+		/* start break */
+		atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STTBRK);
+	else
+		/* stop break */
+		atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STPBRK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -468,7 +966,11 @@ atmel_buffer_rx_char(struct uart_port *port, unsigned int status,
 static void atmel_pdc_rxerr(struct uart_port *port, unsigned int status)
 {
 	/* clear error */
+<<<<<<< HEAD
 	UART_PUT_CR(port, ATMEL_US_RSTSTA);
+=======
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (status & ATMEL_US_RXBRK) {
 		/* ignore side-effect */
@@ -491,9 +993,15 @@ static void atmel_rx_chars(struct uart_port *port)
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 	unsigned int status, ch;
 
+<<<<<<< HEAD
 	status = UART_GET_CSR(port);
 	while (status & ATMEL_US_RXRDY) {
 		ch = UART_GET_CHAR(port);
+=======
+	status = atmel_uart_readl(port, ATMEL_US_CSR);
+	while (status & ATMEL_US_RXRDY) {
+		ch = atmel_uart_read_char(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * note that the error handling code is
@@ -504,12 +1012,21 @@ static void atmel_rx_chars(struct uart_port *port)
 			     || atmel_port->break_active)) {
 
 			/* clear error */
+<<<<<<< HEAD
 			UART_PUT_CR(port, ATMEL_US_RSTSTA);
+=======
+			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (status & ATMEL_US_RXBRK
 			    && !atmel_port->break_active) {
 				atmel_port->break_active = 1;
+<<<<<<< HEAD
 				UART_PUT_IER(port, ATMEL_US_RXBRK);
+=======
+				atmel_uart_writel(port, ATMEL_US_IER,
+						  ATMEL_US_RXBRK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else {
 				/*
 				 * This is either the end-of-break
@@ -518,17 +1035,29 @@ static void atmel_rx_chars(struct uart_port *port)
 				 * being set. In both cases, the next
 				 * RXBRK will indicate start-of-break.
 				 */
+<<<<<<< HEAD
 				UART_PUT_IDR(port, ATMEL_US_RXBRK);
+=======
+				atmel_uart_writel(port, ATMEL_US_IDR,
+						  ATMEL_US_RXBRK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status &= ~ATMEL_US_RXBRK;
 				atmel_port->break_active = 0;
 			}
 		}
 
 		atmel_buffer_rx_char(port, status, ch);
+<<<<<<< HEAD
 		status = UART_GET_CSR(port);
 	}
 
 	tasklet_schedule(&atmel_port->tasklet);
+=======
+		status = atmel_uart_readl(port, ATMEL_US_CSR);
+	}
+
+	atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_rx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -540,16 +1069,28 @@ static void atmel_tx_chars(struct uart_port *port)
 	struct circ_buf *xmit = &port->state->xmit;
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 
+<<<<<<< HEAD
 	if (port->x_char && UART_GET_CSR(port) & atmel_port->tx_done_mask) {
 		UART_PUT_CHAR(port, port->x_char);
+=======
+	if (port->x_char &&
+	    (atmel_uart_readl(port, ATMEL_US_CSR) & atmel_port->tx_done_mask)) {
+		atmel_uart_write_char(port, port->x_char);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port->icount.tx++;
 		port->x_char = 0;
 	}
 	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
 		return;
 
+<<<<<<< HEAD
 	while (UART_GET_CSR(port) & atmel_port->tx_done_mask) {
 		UART_PUT_CHAR(port, xmit->buf[xmit->tail]);
+=======
+	while (atmel_uart_readl(port, ATMEL_US_CSR) &
+	       atmel_port->tx_done_mask) {
+		atmel_uart_write_char(port, xmit->buf[xmit->tail]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		port->icount.tx++;
 		if (uart_circ_empty(xmit))
@@ -561,7 +1102,437 @@ static void atmel_tx_chars(struct uart_port *port)
 
 	if (!uart_circ_empty(xmit))
 		/* Enable interrupts */
+<<<<<<< HEAD
 		UART_PUT_IER(port, atmel_port->tx_done_mask);
+=======
+		atmel_uart_writel(port, ATMEL_US_IER,
+				  atmel_port->tx_done_mask);
+}
+
+static void atmel_complete_tx_dma(void *arg)
+{
+	struct atmel_uart_port *atmel_port = arg;
+	struct uart_port *port = &atmel_port->uart;
+	struct circ_buf *xmit = &port->state->xmit;
+	struct dma_chan *chan = atmel_port->chan_tx;
+	unsigned long flags;
+
+	spin_lock_irqsave(&port->lock, flags);
+
+	if (chan)
+		dmaengine_terminate_all(chan);
+	xmit->tail += atmel_port->tx_len;
+	xmit->tail &= UART_XMIT_SIZE - 1;
+
+	port->icount.tx += atmel_port->tx_len;
+
+	spin_lock_irq(&atmel_port->lock_tx);
+	async_tx_ack(atmel_port->desc_tx);
+	atmel_port->cookie_tx = -EINVAL;
+	atmel_port->desc_tx = NULL;
+	spin_unlock_irq(&atmel_port->lock_tx);
+
+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+		uart_write_wakeup(port);
+
+	/*
+	 * xmit is a circular buffer so, if we have just send data from
+	 * xmit->tail to the end of xmit->buf, now we have to transmit the
+	 * remaining data from the beginning of xmit->buf to xmit->head.
+	 */
+	if (!uart_circ_empty(xmit))
+		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
+	else if (atmel_uart_is_half_duplex(port)) {
+		/*
+		 * DMA done, re-enable TXEMPTY and signal that we can stop
+		 * TX and start RX for RS485
+		 */
+		atmel_port->hd_start_rx = true;
+		atmel_uart_writel(port, ATMEL_US_IER,
+				  atmel_port->tx_done_mask);
+	}
+
+	spin_unlock_irqrestore(&port->lock, flags);
+}
+
+static void atmel_release_tx_dma(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	struct dma_chan *chan = atmel_port->chan_tx;
+
+	if (chan) {
+		dmaengine_terminate_all(chan);
+		dma_release_channel(chan);
+		dma_unmap_sg(port->dev, &atmel_port->sg_tx, 1,
+				DMA_TO_DEVICE);
+	}
+
+	atmel_port->desc_tx = NULL;
+	atmel_port->chan_tx = NULL;
+	atmel_port->cookie_tx = -EINVAL;
+}
+
+/*
+ * Called from tasklet with TXRDY interrupt is disabled.
+ */
+static void atmel_tx_dma(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	struct circ_buf *xmit = &port->state->xmit;
+	struct dma_chan *chan = atmel_port->chan_tx;
+	struct dma_async_tx_descriptor *desc;
+	struct scatterlist sgl[2], *sg, *sg_tx = &atmel_port->sg_tx;
+	unsigned int tx_len, part1_len, part2_len, sg_len;
+	dma_addr_t phys_addr;
+
+	/* Make sure we have an idle channel */
+	if (atmel_port->desc_tx != NULL)
+		return;
+
+	if (!uart_circ_empty(xmit) && !uart_tx_stopped(port)) {
+		/*
+		 * DMA is idle now.
+		 * Port xmit buffer is already mapped,
+		 * and it is one page... Just adjust
+		 * offsets and lengths. Since it is a circular buffer,
+		 * we have to transmit till the end, and then the rest.
+		 * Take the port lock to get a
+		 * consistent xmit buffer state.
+		 */
+		tx_len = CIRC_CNT_TO_END(xmit->head,
+					 xmit->tail,
+					 UART_XMIT_SIZE);
+
+		if (atmel_port->fifo_size) {
+			/* multi data mode */
+			part1_len = (tx_len & ~0x3); /* DWORD access */
+			part2_len = (tx_len & 0x3); /* BYTE access */
+		} else {
+			/* single data (legacy) mode */
+			part1_len = 0;
+			part2_len = tx_len; /* BYTE access only */
+		}
+
+		sg_init_table(sgl, 2);
+		sg_len = 0;
+		phys_addr = sg_dma_address(sg_tx) + xmit->tail;
+		if (part1_len) {
+			sg = &sgl[sg_len++];
+			sg_dma_address(sg) = phys_addr;
+			sg_dma_len(sg) = part1_len;
+
+			phys_addr += part1_len;
+		}
+
+		if (part2_len) {
+			sg = &sgl[sg_len++];
+			sg_dma_address(sg) = phys_addr;
+			sg_dma_len(sg) = part2_len;
+		}
+
+		/*
+		 * save tx_len so atmel_complete_tx_dma() will increase
+		 * xmit->tail correctly
+		 */
+		atmel_port->tx_len = tx_len;
+
+		desc = dmaengine_prep_slave_sg(chan,
+					       sgl,
+					       sg_len,
+					       DMA_MEM_TO_DEV,
+					       DMA_PREP_INTERRUPT |
+					       DMA_CTRL_ACK);
+		if (!desc) {
+			dev_err(port->dev, "Failed to send via dma!\n");
+			return;
+		}
+
+		dma_sync_sg_for_device(port->dev, sg_tx, 1, DMA_TO_DEVICE);
+
+		atmel_port->desc_tx = desc;
+		desc->callback = atmel_complete_tx_dma;
+		desc->callback_param = atmel_port;
+		atmel_port->cookie_tx = dmaengine_submit(desc);
+	}
+
+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+		uart_write_wakeup(port);
+}
+
+static int atmel_prepare_tx_dma(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	dma_cap_mask_t		mask;
+	struct dma_slave_config config;
+	int ret, nent;
+
+	dma_cap_zero(mask);
+	dma_cap_set(DMA_SLAVE, mask);
+
+	atmel_port->chan_tx = dma_request_slave_channel(port->dev, "tx");
+	if (atmel_port->chan_tx == NULL)
+		goto chan_err;
+	dev_info(port->dev, "using %s for tx DMA transfers\n",
+		dma_chan_name(atmel_port->chan_tx));
+
+	spin_lock_init(&atmel_port->lock_tx);
+	sg_init_table(&atmel_port->sg_tx, 1);
+	/* UART circular tx buffer is an aligned page. */
+	BUG_ON(!PAGE_ALIGNED(port->state->xmit.buf));
+	sg_set_page(&atmel_port->sg_tx,
+			virt_to_page(port->state->xmit.buf),
+			UART_XMIT_SIZE,
+			(unsigned long)port->state->xmit.buf & ~PAGE_MASK);
+	nent = dma_map_sg(port->dev,
+				&atmel_port->sg_tx,
+				1,
+				DMA_TO_DEVICE);
+
+	if (!nent) {
+		dev_dbg(port->dev, "need to release resource of dma\n");
+		goto chan_err;
+	} else {
+		dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n", __func__,
+			sg_dma_len(&atmel_port->sg_tx),
+			port->state->xmit.buf,
+			&sg_dma_address(&atmel_port->sg_tx));
+	}
+
+	/* Configure the slave DMA */
+	memset(&config, 0, sizeof(config));
+	config.direction = DMA_MEM_TO_DEV;
+	config.dst_addr_width = (atmel_port->fifo_size) ?
+				DMA_SLAVE_BUSWIDTH_4_BYTES :
+				DMA_SLAVE_BUSWIDTH_1_BYTE;
+	config.dst_addr = port->mapbase + ATMEL_US_THR;
+	config.dst_maxburst = 1;
+
+	ret = dmaengine_slave_config(atmel_port->chan_tx,
+				     &config);
+	if (ret) {
+		dev_err(port->dev, "DMA tx slave configuration failed\n");
+		goto chan_err;
+	}
+
+	return 0;
+
+chan_err:
+	dev_err(port->dev, "TX channel not available, switch to pio\n");
+	atmel_port->use_dma_tx = 0;
+	if (atmel_port->chan_tx)
+		atmel_release_tx_dma(port);
+	return -EINVAL;
+}
+
+static void atmel_complete_rx_dma(void *arg)
+{
+	struct uart_port *port = arg;
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_rx);
+}
+
+static void atmel_release_rx_dma(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	struct dma_chan *chan = atmel_port->chan_rx;
+
+	if (chan) {
+		dmaengine_terminate_all(chan);
+		dma_release_channel(chan);
+		dma_unmap_sg(port->dev, &atmel_port->sg_rx, 1,
+				DMA_FROM_DEVICE);
+	}
+
+	atmel_port->desc_rx = NULL;
+	atmel_port->chan_rx = NULL;
+	atmel_port->cookie_rx = -EINVAL;
+}
+
+static void atmel_rx_from_dma(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	struct tty_port *tport = &port->state->port;
+	struct circ_buf *ring = &atmel_port->rx_ring;
+	struct dma_chan *chan = atmel_port->chan_rx;
+	struct dma_tx_state state;
+	enum dma_status dmastat;
+	size_t count;
+
+
+	/* Reset the UART timeout early so that we don't miss one */
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STTTO);
+	dmastat = dmaengine_tx_status(chan,
+				atmel_port->cookie_rx,
+				&state);
+	/* Restart a new tasklet if DMA status is error */
+	if (dmastat == DMA_ERROR) {
+		dev_dbg(port->dev, "Get residue error, restart tasklet\n");
+		atmel_uart_writel(port, ATMEL_US_IER, ATMEL_US_TIMEOUT);
+		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_rx);
+		return;
+	}
+
+	/* CPU claims ownership of RX DMA buffer */
+	dma_sync_sg_for_cpu(port->dev,
+			    &atmel_port->sg_rx,
+			    1,
+			    DMA_FROM_DEVICE);
+
+	/*
+	 * ring->head points to the end of data already written by the DMA.
+	 * ring->tail points to the beginning of data to be read by the
+	 * framework.
+	 * The current transfer size should not be larger than the dma buffer
+	 * length.
+	 */
+	ring->head = sg_dma_len(&atmel_port->sg_rx) - state.residue;
+	BUG_ON(ring->head > sg_dma_len(&atmel_port->sg_rx));
+	/*
+	 * At this point ring->head may point to the first byte right after the
+	 * last byte of the dma buffer:
+	 * 0 <= ring->head <= sg_dma_len(&atmel_port->sg_rx)
+	 *
+	 * However ring->tail must always points inside the dma buffer:
+	 * 0 <= ring->tail <= sg_dma_len(&atmel_port->sg_rx) - 1
+	 *
+	 * Since we use a ring buffer, we have to handle the case
+	 * where head is lower than tail. In such a case, we first read from
+	 * tail to the end of the buffer then reset tail.
+	 */
+	if (ring->head < ring->tail) {
+		count = sg_dma_len(&atmel_port->sg_rx) - ring->tail;
+
+		tty_insert_flip_string(tport, ring->buf + ring->tail, count);
+		ring->tail = 0;
+		port->icount.rx += count;
+	}
+
+	/* Finally we read data from tail to head */
+	if (ring->tail < ring->head) {
+		count = ring->head - ring->tail;
+
+		tty_insert_flip_string(tport, ring->buf + ring->tail, count);
+		/* Wrap ring->head if needed */
+		if (ring->head >= sg_dma_len(&atmel_port->sg_rx))
+			ring->head = 0;
+		ring->tail = ring->head;
+		port->icount.rx += count;
+	}
+
+	/* USART retreives ownership of RX DMA buffer */
+	dma_sync_sg_for_device(port->dev,
+			       &atmel_port->sg_rx,
+			       1,
+			       DMA_FROM_DEVICE);
+
+	/*
+	 * Drop the lock here since it might end up calling
+	 * uart_start(), which takes the lock.
+	 */
+	spin_unlock(&port->lock);
+	tty_flip_buffer_push(tport);
+	spin_lock(&port->lock);
+
+	atmel_uart_writel(port, ATMEL_US_IER, ATMEL_US_TIMEOUT);
+}
+
+static int atmel_prepare_rx_dma(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	struct dma_async_tx_descriptor *desc;
+	dma_cap_mask_t		mask;
+	struct dma_slave_config config;
+	struct circ_buf		*ring;
+	int ret, nent;
+
+	ring = &atmel_port->rx_ring;
+
+	dma_cap_zero(mask);
+	dma_cap_set(DMA_CYCLIC, mask);
+
+	atmel_port->chan_rx = dma_request_slave_channel(port->dev, "rx");
+	if (atmel_port->chan_rx == NULL)
+		goto chan_err;
+	dev_info(port->dev, "using %s for rx DMA transfers\n",
+		dma_chan_name(atmel_port->chan_rx));
+
+	spin_lock_init(&atmel_port->lock_rx);
+	sg_init_table(&atmel_port->sg_rx, 1);
+	/* UART circular rx buffer is an aligned page. */
+	BUG_ON(!PAGE_ALIGNED(ring->buf));
+	sg_set_page(&atmel_port->sg_rx,
+		    virt_to_page(ring->buf),
+		    sizeof(struct atmel_uart_char) * ATMEL_SERIAL_RINGSIZE,
+		    (unsigned long)ring->buf & ~PAGE_MASK);
+	nent = dma_map_sg(port->dev,
+			  &atmel_port->sg_rx,
+			  1,
+			  DMA_FROM_DEVICE);
+
+	if (!nent) {
+		dev_dbg(port->dev, "need to release resource of dma\n");
+		goto chan_err;
+	} else {
+		dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n", __func__,
+			sg_dma_len(&atmel_port->sg_rx),
+			ring->buf,
+			&sg_dma_address(&atmel_port->sg_rx));
+	}
+
+	/* Configure the slave DMA */
+	memset(&config, 0, sizeof(config));
+	config.direction = DMA_DEV_TO_MEM;
+	config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+	config.src_addr = port->mapbase + ATMEL_US_RHR;
+	config.src_maxburst = 1;
+
+	ret = dmaengine_slave_config(atmel_port->chan_rx,
+				     &config);
+	if (ret) {
+		dev_err(port->dev, "DMA rx slave configuration failed\n");
+		goto chan_err;
+	}
+	/*
+	 * Prepare a cyclic dma transfer, assign 2 descriptors,
+	 * each one is half ring buffer size
+	 */
+	desc = dmaengine_prep_dma_cyclic(atmel_port->chan_rx,
+					 sg_dma_address(&atmel_port->sg_rx),
+					 sg_dma_len(&atmel_port->sg_rx),
+					 sg_dma_len(&atmel_port->sg_rx)/2,
+					 DMA_DEV_TO_MEM,
+					 DMA_PREP_INTERRUPT);
+	if (!desc) {
+		dev_err(port->dev, "Preparing DMA cyclic failed\n");
+		goto chan_err;
+	}
+	desc->callback = atmel_complete_rx_dma;
+	desc->callback_param = port;
+	atmel_port->desc_rx = desc;
+	atmel_port->cookie_rx = dmaengine_submit(desc);
+
+	return 0;
+
+chan_err:
+	dev_err(port->dev, "RX channel not available, switch to pio\n");
+	atmel_port->use_dma_rx = 0;
+	if (atmel_port->chan_rx)
+		atmel_release_rx_dma(port);
+	return -EINVAL;
+}
+
+static void atmel_uart_timer_callback(unsigned long data)
+{
+	struct uart_port *port = (void *)data;
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	if (!atomic_read(&atmel_port->tasklet_shutdown)) {
+		tasklet_schedule(&atmel_port->tasklet_rx);
+		mod_timer(&atmel_port->uart_timer,
+			  jiffies + uart_poll_timeout(port));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -572,7 +1543,11 @@ atmel_handle_receive(struct uart_port *port, unsigned int pending)
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 
+<<<<<<< HEAD
 	if (atmel_use_dma_rx(port)) {
+=======
+	if (atmel_use_pdc_rx(port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * PDC receive. Just schedule the tasklet and let it
 		 * figure out the details.
@@ -581,9 +1556,16 @@ atmel_handle_receive(struct uart_port *port, unsigned int pending)
 		 * the moment.
 		 */
 		if (pending & (ATMEL_US_ENDRX | ATMEL_US_TIMEOUT)) {
+<<<<<<< HEAD
 			UART_PUT_IDR(port, (ATMEL_US_ENDRX
 						| ATMEL_US_TIMEOUT));
 			tasklet_schedule(&atmel_port->tasklet);
+=======
+			atmel_uart_writel(port, ATMEL_US_IDR,
+					  (ATMEL_US_ENDRX | ATMEL_US_TIMEOUT));
+			atmel_tasklet_schedule(atmel_port,
+					       &atmel_port->tasklet_rx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		if (pending & (ATMEL_US_RXBRK | ATMEL_US_OVRE |
@@ -591,6 +1573,18 @@ atmel_handle_receive(struct uart_port *port, unsigned int pending)
 			atmel_pdc_rxerr(port, pending);
 	}
 
+<<<<<<< HEAD
+=======
+	if (atmel_use_dma_rx(port)) {
+		if (pending & ATMEL_US_TIMEOUT) {
+			atmel_uart_writel(port, ATMEL_US_IDR,
+					  ATMEL_US_TIMEOUT);
+			atmel_tasklet_schedule(atmel_port,
+					       &atmel_port->tasklet_rx);
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Interrupt receive */
 	if (pending & ATMEL_US_RXRDY)
 		atmel_rx_chars(port);
@@ -599,8 +1593,13 @@ atmel_handle_receive(struct uart_port *port, unsigned int pending)
 		 * End of break detected. If it came along with a
 		 * character, atmel_rx_chars will handle it.
 		 */
+<<<<<<< HEAD
 		UART_PUT_CR(port, ATMEL_US_RSTSTA);
 		UART_PUT_IDR(port, ATMEL_US_RXBRK);
+=======
+		atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA);
+		atmel_uart_writel(port, ATMEL_US_IDR, ATMEL_US_RXBRK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		atmel_port->break_active = 0;
 	}
 }
@@ -614,9 +1613,26 @@ atmel_handle_transmit(struct uart_port *port, unsigned int pending)
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 
 	if (pending & atmel_port->tx_done_mask) {
+<<<<<<< HEAD
 		/* Either PDC or interrupt transmission */
 		UART_PUT_IDR(port, atmel_port->tx_done_mask);
 		tasklet_schedule(&atmel_port->tasklet);
+=======
+		atmel_uart_writel(port, ATMEL_US_IDR,
+				  atmel_port->tx_done_mask);
+
+		/* Start RX if flag was set and FIFO is empty */
+		if (atmel_port->hd_start_rx) {
+			if (!(atmel_uart_readl(port, ATMEL_US_CSR)
+					& ATMEL_US_TXEMPTY))
+				dev_warn(port->dev, "Should start RX, but TX fifo is not empty\n");
+
+			atmel_port->hd_start_rx = false;
+			atmel_start_rx(port);
+		}
+
+		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -628,11 +1644,35 @@ atmel_handle_status(struct uart_port *port, unsigned int pending,
 		    unsigned int status)
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+<<<<<<< HEAD
 
 	if (pending & (ATMEL_US_RIIC | ATMEL_US_DSRIC | ATMEL_US_DCDIC
 				| ATMEL_US_CTSIC)) {
 		atmel_port->irq_status = status;
 		tasklet_schedule(&atmel_port->tasklet);
+=======
+	unsigned int status_change;
+
+	if (pending & (ATMEL_US_RIIC | ATMEL_US_DSRIC | ATMEL_US_DCDIC
+				| ATMEL_US_CTSIC)) {
+		status_change = status ^ atmel_port->irq_status_prev;
+		atmel_port->irq_status_prev = status;
+
+		if (status_change & (ATMEL_US_RI | ATMEL_US_DSR
+					| ATMEL_US_DCD | ATMEL_US_CTS)) {
+			/* TODO: All reads to CSR will clear these interrupts! */
+			if (status_change & ATMEL_US_RI)
+				port->icount.rng++;
+			if (status_change & ATMEL_US_DSR)
+				port->icount.dsr++;
+			if (status_change & ATMEL_US_DCD)
+				uart_handle_dcd_change(port, !(status & ATMEL_US_DCD));
+			if (status_change & ATMEL_US_CTS)
+				uart_handle_cts_change(port, !(status & ATMEL_US_CTS));
+
+			wake_up_interruptible(&port->state->port.delta_msr_wait);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -642,6 +1682,7 @@ atmel_handle_status(struct uart_port *port, unsigned int pending,
 static irqreturn_t atmel_interrupt(int irq, void *dev_id)
 {
 	struct uart_port *port = dev_id;
+<<<<<<< HEAD
 	unsigned int status, pending, pass_counter = 0;
 
 	do {
@@ -650,11 +1691,34 @@ static irqreturn_t atmel_interrupt(int irq, void *dev_id)
 		if (!pending)
 			break;
 
+=======
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	unsigned int status, pending, mask, pass_counter = 0;
+
+	spin_lock(&atmel_port->lock_suspended);
+
+	do {
+		status = atmel_get_lines_status(port);
+		mask = atmel_uart_readl(port, ATMEL_US_IMR);
+		pending = status & mask;
+		if (!pending)
+			break;
+
+		if (atmel_port->suspended) {
+			atmel_port->pending |= pending;
+			atmel_port->pending_status = status;
+			atmel_uart_writel(port, ATMEL_US_IDR, mask);
+			pm_system_wakeup();
+			break;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		atmel_handle_receive(port, pending);
 		atmel_handle_status(port, pending, status);
 		atmel_handle_transmit(port, pending);
 	} while (pass_counter++ < ATMEL_ISR_PASS_LIMIT);
 
+<<<<<<< HEAD
 	return pass_counter ? IRQ_HANDLED : IRQ_NONE;
 }
 
@@ -662,6 +1726,28 @@ static irqreturn_t atmel_interrupt(int irq, void *dev_id)
  * Called from tasklet with ENDTX and TXBUFE interrupts disabled.
  */
 static void atmel_tx_dma(struct uart_port *port)
+=======
+	spin_unlock(&atmel_port->lock_suspended);
+
+	return pass_counter ? IRQ_HANDLED : IRQ_NONE;
+}
+
+static void atmel_release_tx_pdc(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	struct atmel_dma_buffer *pdc = &atmel_port->pdc_tx;
+
+	dma_unmap_single(port->dev,
+			 pdc->dma_addr,
+			 pdc->dma_size,
+			 DMA_TO_DEVICE);
+}
+
+/*
+ * Called from tasklet with ENDTX and TXBUFE interrupts disabled.
+ */
+static void atmel_tx_pdc(struct uart_port *port)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 	struct circ_buf *xmit = &port->state->xmit;
@@ -669,7 +1755,11 @@ static void atmel_tx_dma(struct uart_port *port)
 	int count;
 
 	/* nothing left to transmit? */
+<<<<<<< HEAD
 	if (UART_GET_TCR(port))
+=======
+	if (atmel_uart_readl(port, ATMEL_PDC_TCR))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	xmit->tail += pdc->ofs;
@@ -681,7 +1771,11 @@ static void atmel_tx_dma(struct uart_port *port)
 	/* more to transmit - setup next transfer */
 
 	/* disable PDC transmit */
+<<<<<<< HEAD
 	UART_PUT_PTCR(port, ATMEL_PDC_TXTDIS);
+=======
+	atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!uart_circ_empty(xmit) && !uart_tx_stopped(port)) {
 		dma_sync_single_for_device(port->dev,
@@ -692,6 +1786,7 @@ static void atmel_tx_dma(struct uart_port *port)
 		count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
 		pdc->ofs = count;
 
+<<<<<<< HEAD
 		UART_PUT_TPR(port, pdc->dma_addr + xmit->tail);
 		UART_PUT_TCR(port, count);
 		/* re-enable PDC transmit */
@@ -701,6 +1796,18 @@ static void atmel_tx_dma(struct uart_port *port)
 	} else {
 		if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
 		    !(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX)) {
+=======
+		atmel_uart_writel(port, ATMEL_PDC_TPR,
+				  pdc->dma_addr + xmit->tail);
+		atmel_uart_writel(port, ATMEL_PDC_TCR, count);
+		/* re-enable PDC transmit */
+		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTEN);
+		/* Enable interrupts */
+		atmel_uart_writel(port, ATMEL_US_IER,
+				  atmel_port->tx_done_mask);
+	} else {
+		if (atmel_uart_is_half_duplex(port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* DMA done, stop TX, start RX for RS485 */
 			atmel_start_rx(port);
 		}
@@ -710,6 +1817,26 @@ static void atmel_tx_dma(struct uart_port *port)
 		uart_write_wakeup(port);
 }
 
+<<<<<<< HEAD
+=======
+static int atmel_prepare_tx_pdc(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	struct atmel_dma_buffer *pdc = &atmel_port->pdc_tx;
+	struct circ_buf *xmit = &port->state->xmit;
+
+	pdc->buf = xmit->buf;
+	pdc->dma_addr = dma_map_single(port->dev,
+					pdc->buf,
+					UART_XMIT_SIZE,
+					DMA_TO_DEVICE);
+	pdc->dma_size = UART_XMIT_SIZE;
+	pdc->ofs = 0;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void atmel_rx_from_ring(struct uart_port *port)
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
@@ -778,7 +1905,27 @@ static void atmel_rx_from_ring(struct uart_port *port)
 	spin_lock(&port->lock);
 }
 
+<<<<<<< HEAD
 static void atmel_rx_from_dma(struct uart_port *port)
+=======
+static void atmel_release_rx_pdc(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	int i;
+
+	for (i = 0; i < 2; i++) {
+		struct atmel_dma_buffer *pdc = &atmel_port->pdc_rx[i];
+
+		dma_unmap_single(port->dev,
+				 pdc->dma_addr,
+				 pdc->dma_size,
+				 DMA_FROM_DEVICE);
+		kfree(pdc->buf);
+	}
+}
+
+static void atmel_rx_from_pdc(struct uart_port *port)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 	struct tty_port *tport = &port->state->port;
@@ -790,10 +1937,17 @@ static void atmel_rx_from_dma(struct uart_port *port)
 
 	do {
 		/* Reset the UART timeout early so that we don't miss one */
+<<<<<<< HEAD
 		UART_PUT_CR(port, ATMEL_US_STTTO);
 
 		pdc = &atmel_port->pdc_rx[rx_idx];
 		head = UART_GET_RPR(port) - pdc->dma_addr;
+=======
+		atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STTTO);
+
+		pdc = &atmel_port->pdc_rx[rx_idx];
+		head = atmel_uart_readl(port, ATMEL_PDC_RPR) - pdc->dma_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tail = pdc->ofs;
 
 		/* If the PDC has switched buffers, RPR won't contain
@@ -836,6 +1990,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
 		 */
 		if (head >= pdc->dma_size) {
 			pdc->ofs = 0;
+<<<<<<< HEAD
 			UART_PUT_RNPR(port, pdc->dma_addr);
 			UART_PUT_RNCR(port, pdc->dma_size);
 
@@ -899,6 +2054,250 @@ static void atmel_tasklet_func(unsigned long data)
 		atmel_rx_from_ring(port);
 
 	spin_unlock(&port->lock);
+=======
+			atmel_uart_writel(port, ATMEL_PDC_RNPR, pdc->dma_addr);
+			atmel_uart_writel(port, ATMEL_PDC_RNCR, pdc->dma_size);
+
+			rx_idx = !rx_idx;
+			atmel_port->pdc_rx_idx = rx_idx;
+		}
+	} while (head >= pdc->dma_size);
+
+	/*
+	 * Drop the lock here since it might end up calling
+	 * uart_start(), which takes the lock.
+	 */
+	spin_unlock(&port->lock);
+	tty_flip_buffer_push(tport);
+	spin_lock(&port->lock);
+
+	atmel_uart_writel(port, ATMEL_US_IER,
+			  ATMEL_US_ENDRX | ATMEL_US_TIMEOUT);
+}
+
+static int atmel_prepare_rx_pdc(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	int i;
+
+	for (i = 0; i < 2; i++) {
+		struct atmel_dma_buffer *pdc = &atmel_port->pdc_rx[i];
+
+		pdc->buf = kmalloc(PDC_BUFFER_SIZE, GFP_KERNEL);
+		if (pdc->buf == NULL) {
+			if (i != 0) {
+				dma_unmap_single(port->dev,
+					atmel_port->pdc_rx[0].dma_addr,
+					PDC_BUFFER_SIZE,
+					DMA_FROM_DEVICE);
+				kfree(atmel_port->pdc_rx[0].buf);
+			}
+			atmel_port->use_pdc_rx = 0;
+			return -ENOMEM;
+		}
+		pdc->dma_addr = dma_map_single(port->dev,
+						pdc->buf,
+						PDC_BUFFER_SIZE,
+						DMA_FROM_DEVICE);
+		pdc->dma_size = PDC_BUFFER_SIZE;
+		pdc->ofs = 0;
+	}
+
+	atmel_port->pdc_rx_idx = 0;
+
+	atmel_uart_writel(port, ATMEL_PDC_RPR, atmel_port->pdc_rx[0].dma_addr);
+	atmel_uart_writel(port, ATMEL_PDC_RCR, PDC_BUFFER_SIZE);
+
+	atmel_uart_writel(port, ATMEL_PDC_RNPR,
+			  atmel_port->pdc_rx[1].dma_addr);
+	atmel_uart_writel(port, ATMEL_PDC_RNCR, PDC_BUFFER_SIZE);
+
+	return 0;
+}
+
+/*
+ * tasklet handling tty stuff outside the interrupt handler.
+ */
+static void atmel_tasklet_rx_func(unsigned long data)
+{
+	struct uart_port *port = (struct uart_port *)data;
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	/* The interrupt handler does not take the lock */
+	spin_lock(&port->lock);
+	atmel_port->schedule_rx(port);
+	spin_unlock(&port->lock);
+}
+
+static void atmel_tasklet_tx_func(unsigned long data)
+{
+	struct uart_port *port = (struct uart_port *)data;
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	/* The interrupt handler does not take the lock */
+	spin_lock(&port->lock);
+	atmel_port->schedule_tx(port);
+	spin_unlock(&port->lock);
+}
+
+static void atmel_init_property(struct atmel_uart_port *atmel_port,
+				struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
+
+	if (np) {
+		/* DMA/PDC usage specification */
+		if (of_property_read_bool(np, "atmel,use-dma-rx")) {
+			if (of_property_read_bool(np, "dmas")) {
+				atmel_port->use_dma_rx  = true;
+				atmel_port->use_pdc_rx  = false;
+			} else {
+				atmel_port->use_dma_rx  = false;
+				atmel_port->use_pdc_rx  = true;
+			}
+		} else {
+			atmel_port->use_dma_rx  = false;
+			atmel_port->use_pdc_rx  = false;
+		}
+
+		if (of_property_read_bool(np, "atmel,use-dma-tx")) {
+			if (of_property_read_bool(np, "dmas")) {
+				atmel_port->use_dma_tx  = true;
+				atmel_port->use_pdc_tx  = false;
+			} else {
+				atmel_port->use_dma_tx  = false;
+				atmel_port->use_pdc_tx  = true;
+			}
+		} else {
+			atmel_port->use_dma_tx  = false;
+			atmel_port->use_pdc_tx  = false;
+		}
+
+	} else {
+		atmel_port->use_pdc_rx  = pdata->use_dma_rx;
+		atmel_port->use_pdc_tx  = pdata->use_dma_tx;
+		atmel_port->use_dma_rx  = false;
+		atmel_port->use_dma_tx  = false;
+	}
+
+}
+
+static void atmel_init_rs485(struct uart_port *port,
+				struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
+
+	if (np) {
+		struct serial_rs485 *rs485conf = &port->rs485;
+		u32 rs485_delay[2];
+		/* rs485 properties */
+		if (of_property_read_u32_array(np, "rs485-rts-delay",
+					rs485_delay, 2) == 0) {
+			rs485conf->delay_rts_before_send = rs485_delay[0];
+			rs485conf->delay_rts_after_send = rs485_delay[1];
+			rs485conf->flags = 0;
+		}
+
+		if (of_get_property(np, "rs485-rx-during-tx", NULL))
+			rs485conf->flags |= SER_RS485_RX_DURING_TX;
+
+		if (of_get_property(np, "linux,rs485-enabled-at-boot-time",
+								NULL))
+			rs485conf->flags |= SER_RS485_ENABLED;
+	} else {
+		port->rs485       = pdata->rs485;
+	}
+
+}
+
+static void atmel_set_ops(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	if (atmel_use_dma_rx(port)) {
+		atmel_port->prepare_rx = &atmel_prepare_rx_dma;
+		atmel_port->schedule_rx = &atmel_rx_from_dma;
+		atmel_port->release_rx = &atmel_release_rx_dma;
+	} else if (atmel_use_pdc_rx(port)) {
+		atmel_port->prepare_rx = &atmel_prepare_rx_pdc;
+		atmel_port->schedule_rx = &atmel_rx_from_pdc;
+		atmel_port->release_rx = &atmel_release_rx_pdc;
+	} else {
+		atmel_port->prepare_rx = NULL;
+		atmel_port->schedule_rx = &atmel_rx_from_ring;
+		atmel_port->release_rx = NULL;
+	}
+
+	if (atmel_use_dma_tx(port)) {
+		atmel_port->prepare_tx = &atmel_prepare_tx_dma;
+		atmel_port->schedule_tx = &atmel_tx_dma;
+		atmel_port->release_tx = &atmel_release_tx_dma;
+	} else if (atmel_use_pdc_tx(port)) {
+		atmel_port->prepare_tx = &atmel_prepare_tx_pdc;
+		atmel_port->schedule_tx = &atmel_tx_pdc;
+		atmel_port->release_tx = &atmel_release_tx_pdc;
+	} else {
+		atmel_port->prepare_tx = NULL;
+		atmel_port->schedule_tx = &atmel_tx_chars;
+		atmel_port->release_tx = NULL;
+	}
+}
+
+/*
+ * Get ip name usart or uart
+ */
+static void atmel_get_ip_name(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	int name = atmel_uart_readl(port, ATMEL_US_NAME);
+	u32 version;
+	u32 usart, dbgu_uart, new_uart;
+	/* ASCII decoding for IP version */
+	usart = 0x55534152;	/* USAR(T) */
+	dbgu_uart = 0x44424755;	/* DBGU */
+	new_uart = 0x55415254;	/* UART */
+
+	/*
+	 * Only USART devices from at91sam9260 SOC implement fractional
+	 * baudrate.
+	 */
+	atmel_port->has_frac_baudrate = false;
+	atmel_port->has_hw_timer = false;
+
+	if (name == new_uart) {
+		dev_dbg(port->dev, "Uart with hw timer");
+		atmel_port->has_hw_timer = true;
+		atmel_port->rtor = ATMEL_UA_RTOR;
+	} else if (name == usart) {
+		dev_dbg(port->dev, "Usart\n");
+		atmel_port->has_frac_baudrate = true;
+		atmel_port->has_hw_timer = true;
+		atmel_port->rtor = ATMEL_US_RTOR;
+	} else if (name == dbgu_uart) {
+		dev_dbg(port->dev, "Dbgu or uart without hw timer\n");
+	} else {
+		/* fallback for older SoCs: use version field */
+		version = atmel_uart_readl(port, ATMEL_US_VERSION);
+		switch (version) {
+		case 0x302:
+		case 0x10213:
+		case 0x10302:
+			dev_dbg(port->dev, "This version is usart\n");
+			atmel_port->has_frac_baudrate = true;
+			atmel_port->has_hw_timer = true;
+			atmel_port->rtor = ATMEL_US_RTOR;
+			break;
+		case 0x203:
+		case 0x10202:
+			dev_dbg(port->dev, "This version is uart\n");
+			break;
+		default:
+			dev_err(port->dev, "Not supported ip name nor version, set to uart\n");
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -906,8 +2305,13 @@ static void atmel_tasklet_func(unsigned long data)
  */
 static int atmel_startup(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 	struct tty_struct *tty = port->state->port.tty;
+=======
+	struct platform_device *pdev = to_platform_device(port->dev);
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 
 	/*
@@ -915,11 +2319,17 @@ static int atmel_startup(struct uart_port *port)
 	 * request_irq() is called we could get stuck trying to
 	 * handle an unexpected interrupt
 	 */
+<<<<<<< HEAD
 	UART_PUT_IDR(port, -1);
+=======
+	atmel_uart_writel(port, ATMEL_US_IDR, -1);
+	atmel_port->ms_irq_enabled = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Allocate the IRQ
 	 */
+<<<<<<< HEAD
 	retval = request_irq(port->irq, atmel_interrupt, IRQF_SHARED,
 			tty ? tty->name : "atmel_serial", port);
 	if (retval) {
@@ -992,10 +2402,73 @@ static int atmel_startup(struct uart_port *port)
 	/* Save current CSR for comparison in atmel_tasklet_func() */
 	atmel_port->irq_status_prev = UART_GET_CSR(port);
 	atmel_port->irq_status = atmel_port->irq_status_prev;
+=======
+	retval = request_irq(port->irq, atmel_interrupt,
+			     IRQF_SHARED | IRQF_COND_SUSPEND,
+			     dev_name(&pdev->dev), port);
+	if (retval) {
+		dev_err(port->dev, "atmel_startup - Can't get irq\n");
+		return retval;
+	}
+
+	atomic_set(&atmel_port->tasklet_shutdown, 0);
+	tasklet_init(&atmel_port->tasklet_rx, atmel_tasklet_rx_func,
+			(unsigned long)port);
+	tasklet_init(&atmel_port->tasklet_tx, atmel_tasklet_tx_func,
+			(unsigned long)port);
+
+	/*
+	 * Initialize DMA (if necessary)
+	 */
+	atmel_init_property(atmel_port, pdev);
+	atmel_set_ops(port);
+
+	if (atmel_port->prepare_rx) {
+		retval = atmel_port->prepare_rx(port);
+		if (retval < 0)
+			atmel_set_ops(port);
+	}
+
+	if (atmel_port->prepare_tx) {
+		retval = atmel_port->prepare_tx(port);
+		if (retval < 0)
+			atmel_set_ops(port);
+	}
+
+	/*
+	 * Enable FIFO when available
+	 */
+	if (atmel_port->fifo_size) {
+		unsigned int txrdym = ATMEL_US_ONE_DATA;
+		unsigned int rxrdym = ATMEL_US_ONE_DATA;
+		unsigned int fmr;
+
+		atmel_uart_writel(port, ATMEL_US_CR,
+				  ATMEL_US_FIFOEN |
+				  ATMEL_US_RXFCLR |
+				  ATMEL_US_TXFLCLR);
+
+		if (atmel_use_dma_tx(port))
+			txrdym = ATMEL_US_FOUR_DATA;
+
+		fmr = ATMEL_US_TXRDYM(txrdym) | ATMEL_US_RXRDYM(rxrdym);
+		if (atmel_port->rts_high &&
+		    atmel_port->rts_low)
+			fmr |=	ATMEL_US_FRTSC |
+				ATMEL_US_RXFTHRES(atmel_port->rts_high) |
+				ATMEL_US_RXFTHRES2(atmel_port->rts_low);
+
+		atmel_uart_writel(port, ATMEL_US_FMR, fmr);
+	}
+
+	/* Save current CSR for comparison in atmel_tasklet_func() */
+	atmel_port->irq_status_prev = atmel_get_lines_status(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Finally, enable the serial port
 	 */
+<<<<<<< HEAD
 	UART_PUT_CR(port, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
 	/* enable xmit & rcvr */
 	UART_PUT_CR(port, ATMEL_US_TXEN | ATMEL_US_RXEN);
@@ -1011,38 +2484,138 @@ static int atmel_startup(struct uart_port *port)
 	} else {
 		/* enable receive only */
 		UART_PUT_IER(port, ATMEL_US_RXRDY);
+=======
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+	/* enable xmit & rcvr */
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+
+	setup_timer(&atmel_port->uart_timer,
+			atmel_uart_timer_callback,
+			(unsigned long)port);
+
+	if (atmel_use_pdc_rx(port)) {
+		/* set UART timeout */
+		if (!atmel_port->has_hw_timer) {
+			mod_timer(&atmel_port->uart_timer,
+					jiffies + uart_poll_timeout(port));
+		/* set USART timeout */
+		} else {
+			atmel_uart_writel(port, atmel_port->rtor,
+					  PDC_RX_TIMEOUT);
+			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STTTO);
+
+			atmel_uart_writel(port, ATMEL_US_IER,
+					  ATMEL_US_ENDRX | ATMEL_US_TIMEOUT);
+		}
+		/* enable PDC controller */
+		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_RXTEN);
+	} else if (atmel_use_dma_rx(port)) {
+		/* set UART timeout */
+		if (!atmel_port->has_hw_timer) {
+			mod_timer(&atmel_port->uart_timer,
+					jiffies + uart_poll_timeout(port));
+		/* set USART timeout */
+		} else {
+			atmel_uart_writel(port, atmel_port->rtor,
+					  PDC_RX_TIMEOUT);
+			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_STTTO);
+
+			atmel_uart_writel(port, ATMEL_US_IER,
+					  ATMEL_US_TIMEOUT);
+		}
+	} else {
+		/* enable receive only */
+		atmel_uart_writel(port, ATMEL_US_IER, ATMEL_US_RXRDY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Flush any TX data submitted for DMA. Called when the TX circular
+ * buffer is reset.
+ */
+static void atmel_flush_buffer(struct uart_port *port)
+{
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+
+	if (atmel_use_pdc_tx(port)) {
+		atmel_uart_writel(port, ATMEL_PDC_TCR, 0);
+		atmel_port->pdc_tx.ofs = 0;
+	}
+	/*
+	 * in uart_flush_buffer(), the xmit circular buffer has just
+	 * been cleared, so we have to reset tx_len accordingly.
+	 */
+	atmel_port->tx_len = 0;
+}
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Disable the port
  */
 static void atmel_shutdown(struct uart_port *port)
 {
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 
+<<<<<<< HEAD
+=======
+	/* Disable modem control lines interrupts */
+	atmel_disable_ms(port);
+
+	/* Disable interrupts at device level */
+	atmel_uart_writel(port, ATMEL_US_IDR, -1);
+
+	/* Prevent spurious interrupts from scheduling the tasklet */
+	atomic_inc(&atmel_port->tasklet_shutdown);
+
+	/*
+	 * Prevent any tasklets being scheduled during
+	 * cleanup
+	 */
+	del_timer_sync(&atmel_port->uart_timer);
+
+	/* Make sure that no interrupt is on the fly */
+	synchronize_irq(port->irq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Clear out any scheduled tasklets before
 	 * we destroy the buffers
 	 */
+<<<<<<< HEAD
 	tasklet_kill(&atmel_port->tasklet);
 
 	/*
 	 * Ensure everything is stopped and
 	 * disable all interrupts, port and break condition.
+=======
+	tasklet_kill(&atmel_port->tasklet_rx);
+	tasklet_kill(&atmel_port->tasklet_tx);
+
+	/*
+	 * Ensure everything is stopped and
+	 * disable port and break condition.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	atmel_stop_rx(port);
 	atmel_stop_tx(port);
 
+<<<<<<< HEAD
 	UART_PUT_CR(port, ATMEL_US_RSTSTA);
 	UART_PUT_IDR(port, -1);
 
+=======
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Shut-down the DMA.
 	 */
+<<<<<<< HEAD
 	if (atmel_use_dma_rx(port)) {
 		int i;
 
@@ -1090,6 +2663,25 @@ static void atmel_flush_buffer(struct uart_port *port)
 		UART_PUT_TCR(port, 0);
 		atmel_port->pdc_tx.ofs = 0;
 	}
+=======
+	if (atmel_port->release_rx)
+		atmel_port->release_rx(port);
+	if (atmel_port->release_tx)
+		atmel_port->release_tx(port);
+
+	/*
+	 * Reset ring buffer pointers
+	 */
+	atmel_port->rx_ring.head = 0;
+	atmel_port->rx_ring.tail = 0;
+
+	/*
+	 * Free the interrupts
+	 */
+	free_irq(port->irq, port);
+
+	atmel_flush_buffer(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1106,6 +2698,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
 		 * Enable the peripheral clock for this serial port.
 		 * This is called on uart_open() or a resume event.
 		 */
+<<<<<<< HEAD
 		clk_enable(atmel_port->clk);
 
 		/* re-enable interrupts if we disabled some on suspend */
@@ -1115,15 +2708,33 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
 		/* Back up the interrupt mask and disable all interrupts */
 		atmel_port->backup_imr = UART_GET_IMR(port);
 		UART_PUT_IDR(port, -1);
+=======
+		clk_prepare_enable(atmel_port->clk);
+
+		/* re-enable interrupts if we disabled some on suspend */
+		atmel_uart_writel(port, ATMEL_US_IER, atmel_port->backup_imr);
+		break;
+	case 3:
+		/* Back up the interrupt mask and disable all interrupts */
+		atmel_port->backup_imr = atmel_uart_readl(port, ATMEL_US_IMR);
+		atmel_uart_writel(port, ATMEL_US_IDR, -1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Disable the peripheral clock for this serial port.
 		 * This is called on uart_close() or a suspend event.
 		 */
+<<<<<<< HEAD
 		clk_disable(atmel_port->clk);
 		break;
 	default:
 		printk(KERN_ERR "atmel_serial: unknown pm %d\n", state);
+=======
+		clk_disable_unprepare(atmel_port->clk);
+		break;
+	default:
+		dev_err(port->dev, "atmel_serial: unknown pm %d\n", state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1133,6 +2744,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
 static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
 			      struct ktermios *old)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	unsigned int mode, imr, quot, baud;
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
@@ -1149,6 +2761,20 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
 		quot /= 8;
 		mode |= ATMEL_US_USCLKS_MCK_DIV8;
 	}
+=======
+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+	unsigned long flags;
+	unsigned int old_mode, mode, imr, quot, baud, div, cd, fp = 0;
+
+	/* save the current mode register */
+	mode = old_mode = atmel_uart_readl(port, ATMEL_US_MR);
+
+	/* reset the mode, clock divisor, parity, stop bits and data size */
+	mode &= ~(ATMEL_US_USCLKS | ATMEL_US_CHRL | ATMEL_US_NBSTOP |
+		  ATMEL_US_PAR | ATMEL_US_USMODE);
+
+	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* byte size */
 	switch (termios->c_cflag & CSIZE) {
@@ -1185,23 +2811,35 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
 	} else
 		mode |= ATMEL_US_PAR_NONE;
 
+<<<<<<< HEAD
 	/* hardware handshake (RTS/CTS) */
 	if (termios->c_cflag & CRTSCTS)
 		mode |= ATMEL_US_USMODE_HWHS;
 	else
 		mode |= ATMEL_US_USMODE_NORMAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&port->lock, flags);
 
 	port->read_status_mask = ATMEL_US_OVRE;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= (ATMEL_US_FRAME | ATMEL_US_PARE);
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
 		port->read_status_mask |= ATMEL_US_RXBRK;
 
 	if (atmel_use_dma_rx(port))
 		/* need to enable error interrupts */
 		UART_PUT_IER(port, port->read_status_mask);
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+		port->read_status_mask |= ATMEL_US_RXBRK;
+
+	if (atmel_use_pdc_rx(port))
+		/* need to enable error interrupts */
+		atmel_uart_writel(port, ATMEL_US_IER, port->read_status_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Characters to ignore
@@ -1228,6 +2866,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
 	 * transmitter is empty if requested by the caller, so there's
 	 * no need to wait for it here.
 	 */
+<<<<<<< HEAD
 	imr = UART_GET_IMR(port);
 	UART_PUT_IDR(port, -1);
 
@@ -1261,10 +2900,114 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
 	/* CTS flow-control and modem-status interrupts */
 	if (UART_ENABLE_MS(port, termios->c_cflag))
 		port->ops->enable_ms(port);
+=======
+	imr = atmel_uart_readl(port, ATMEL_US_IMR);
+	atmel_uart_writel(port, ATMEL_US_IDR, -1);
+
+	/* disable receiver and transmitter */
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS | ATMEL_US_RXDIS);
+
+	/* mode */
+	if (port->rs485.flags & SER_RS485_ENABLED) {
+		atmel_uart_writel(port, ATMEL_US_TTGR,
+				  port->rs485.delay_rts_after_send);
+		mode |= ATMEL_US_USMODE_RS485;
+	} else if (termios->c_cflag & CRTSCTS) {
+		/* RS232 with hardware handshake (RTS/CTS) */
+		if (atmel_use_fifo(port) &&
+		    !mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
+			/*
+			 * with ATMEL_US_USMODE_HWHS set, the controller will
+			 * be able to drive the RTS pin high/low when the RX
+			 * FIFO is above RXFTHRES/below RXFTHRES2.
+			 * It will also disable the transmitter when the CTS
+			 * pin is high.
+			 * This mode is not activated if CTS pin is a GPIO
+			 * because in this case, the transmitter is always
+			 * disabled (there must be an internal pull-up
+			 * responsible for this behaviour).
+			 * If the RTS pin is a GPIO, the controller won't be
+			 * able to drive it according to the FIFO thresholds,
+			 * but it will be handled by the driver.
+			 */
+			mode |= ATMEL_US_USMODE_HWHS;
+		} else {
+			/*
+			 * For platforms without FIFO, the flow control is
+			 * handled by the driver.
+			 */
+			mode |= ATMEL_US_USMODE_NORMAL;
+		}
+	} else {
+		/* RS232 without hadware handshake */
+		mode |= ATMEL_US_USMODE_NORMAL;
+	}
+
+	/*
+	 * Set the baud rate:
+	 * Fractional baudrate allows to setup output frequency more
+	 * accurately. This feature is enabled only when using normal mode.
+	 * baudrate = selected clock / (8 * (2 - OVER) * (CD + FP / 8))
+	 * Currently, OVER is always set to 0 so we get
+	 * baudrate = selected clock / (16 * (CD + FP / 8))
+	 * then
+	 * 8 CD + FP = selected clock / (2 * baudrate)
+	 */
+	if (atmel_port->has_frac_baudrate &&
+	    (mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_NORMAL) {
+		div = DIV_ROUND_CLOSEST(port->uartclk, baud * 2);
+		cd = div >> 3;
+		fp = div & ATMEL_US_FP_MASK;
+	} else {
+		cd = uart_get_divisor(port, baud);
+	}
+
+	if (cd > 65535) {	/* BRGR is 16-bit, so switch to slower clock */
+		cd /= 8;
+		mode |= ATMEL_US_USCLKS_MCK_DIV8;
+	}
+	quot = cd | fp << ATMEL_US_FP_OFFSET;
+
+	atmel_uart_writel(port, ATMEL_US_BRGR, quot);
+
+	/* set the mode, clock divisor, parity, stop bits and data size */
+	atmel_uart_writel(port, ATMEL_US_MR, mode);
+
+	/*
+	 * when switching the mode, set the RTS line state according to the
+	 * new mode, otherwise keep the former state
+	 */
+	if ((old_mode & ATMEL_US_USMODE) != (mode & ATMEL_US_USMODE)) {
+		unsigned int rts_state;
+
+		if ((mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_HWHS) {
+			/* let the hardware control the RTS line */
+			rts_state = ATMEL_US_RTSDIS;
+		} else {
+			/* force RTS line to low level */
+			rts_state = ATMEL_US_RTSEN;
+		}
+
+		atmel_uart_writel(port, ATMEL_US_CR, rts_state);
+	}
+
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+
+	/* restore interrupts */
+	atmel_uart_writel(port, ATMEL_US_IER, imr);
+
+	/* CTS flow-control and modem-status interrupts */
+	if (UART_ENABLE_MS(port, termios->c_cflag))
+		atmel_enable_ms(port);
+	else
+		atmel_disable_ms(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
+<<<<<<< HEAD
 static void atmel_set_ldisc(struct uart_port *port, int new)
 {
 	if (new == N_PPS) {
@@ -1272,6 +3015,22 @@ static void atmel_set_ldisc(struct uart_port *port, int new)
 		atmel_enable_ms(port);
 	} else {
 		port->flags &= ~UPF_HARDPPS_CD;
+=======
+static void atmel_set_ldisc(struct uart_port *port, struct ktermios *termios)
+{
+	if (termios->c_line == N_PPS) {
+		port->flags |= UPF_HARDPPS_CD;
+		spin_lock_irq(&port->lock);
+		atmel_enable_ms(port);
+		spin_unlock_irq(&port->lock);
+	} else {
+		port->flags &= ~UPF_HARDPPS_CD;
+		if (!UART_ENABLE_MS(port, termios->c_cflag)) {
+			spin_lock_irq(&port->lock);
+			atmel_disable_ms(port);
+			spin_unlock_irq(&port->lock);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1346,7 +3105,11 @@ static int atmel_verify_port(struct uart_port *port, struct serial_struct *ser)
 		ret = -EINVAL;
 	if (port->uartclk / 16 != ser->baud_base)
 		ret = -EINVAL;
+<<<<<<< HEAD
 	if ((void *)port->mapbase != ser->iomem_base)
+=======
+	if (port->mapbase != (unsigned long)ser->iomem_base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 	if (port->iobase != ser->port)
 		ret = -EINVAL;
@@ -1358,14 +3121,22 @@ static int atmel_verify_port(struct uart_port *port, struct serial_struct *ser)
 #ifdef CONFIG_CONSOLE_POLL
 static int atmel_poll_get_char(struct uart_port *port)
 {
+<<<<<<< HEAD
 	while (!(UART_GET_CSR(port) & ATMEL_US_RXRDY))
 		cpu_relax();
 
 	return UART_GET_CHAR(port);
+=======
+	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_RXRDY))
+		cpu_relax();
+
+	return atmel_uart_read_char(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void atmel_poll_put_char(struct uart_port *port, unsigned char ch)
 {
+<<<<<<< HEAD
 	while (!(UART_GET_CSR(port) & ATMEL_US_TXRDY))
 		cpu_relax();
 
@@ -1403,6 +3174,16 @@ atmel_ioctl(struct uart_port *port, unsigned int cmd, unsigned long arg)
 
 
 static struct uart_ops atmel_pops = {
+=======
+	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY))
+		cpu_relax();
+
+	atmel_uart_write_char(port, ch);
+}
+#endif
+
+static const struct uart_ops atmel_pops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tx_empty	= atmel_tx_empty,
 	.set_mctrl	= atmel_set_mctrl,
 	.get_mctrl	= atmel_get_mctrl,
@@ -1422,13 +3203,17 @@ static struct uart_ops atmel_pops = {
 	.config_port	= atmel_config_port,
 	.verify_port	= atmel_verify_port,
 	.pm		= atmel_serial_pm,
+<<<<<<< HEAD
 	.ioctl		= atmel_ioctl,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_CONSOLE_POLL
 	.poll_get_char	= atmel_poll_get_char,
 	.poll_put_char	= atmel_poll_put_char,
 #endif
 };
 
+<<<<<<< HEAD
 static void atmel_of_init_port(struct atmel_uart_port *atmel_port,
 					 struct device_node *np)
 {
@@ -1477,6 +3262,22 @@ static void atmel_init_port(struct atmel_uart_port *atmel_port,
 		atmel_port->use_dma_tx	= pdata->use_dma_tx;
 		atmel_port->rs485	= pdata->rs485;
 	}
+=======
+/*
+ * Configure the port from the platform device resource info.
+ */
+static int atmel_init_port(struct atmel_uart_port *atmel_port,
+				      struct platform_device *pdev)
+{
+	int ret;
+	struct uart_port *port = &atmel_port->uart;
+	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
+
+	atmel_init_property(atmel_port, pdev);
+	atmel_set_ops(port);
+
+	atmel_init_rs485(port, pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	port->iotype		= UPIO_MEM;
 	port->flags		= UPF_BOOT_AUTOCONF;
@@ -1485,9 +3286,13 @@ static void atmel_init_port(struct atmel_uart_port *atmel_port,
 	port->dev		= &pdev->dev;
 	port->mapbase	= pdev->resource[0].start;
 	port->irq	= pdev->resource[1].start;
+<<<<<<< HEAD
 
 	tasklet_init(&atmel_port->tasklet, atmel_tasklet_func,
 			(unsigned long)port);
+=======
+	port->rs485_config	= atmel_config_rs485;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
 
@@ -1502,21 +3307,48 @@ static void atmel_init_port(struct atmel_uart_port *atmel_port,
 	/* for console, the clock could already be configured */
 	if (!atmel_port->clk) {
 		atmel_port->clk = clk_get(&pdev->dev, "usart");
+<<<<<<< HEAD
 		clk_enable(atmel_port->clk);
 		port->uartclk = clk_get_rate(atmel_port->clk);
 		clk_disable(atmel_port->clk);
+=======
+		if (IS_ERR(atmel_port->clk)) {
+			ret = PTR_ERR(atmel_port->clk);
+			atmel_port->clk = NULL;
+			return ret;
+		}
+		ret = clk_prepare_enable(atmel_port->clk);
+		if (ret) {
+			clk_put(atmel_port->clk);
+			atmel_port->clk = NULL;
+			return ret;
+		}
+		port->uartclk = clk_get_rate(atmel_port->clk);
+		clk_disable_unprepare(atmel_port->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* only enable clock when USART is in use */
 	}
 
 	/* Use TXEMPTY for interrupt when rs485 else TXRDY or ENDTX|TXBUFE */
+<<<<<<< HEAD
 	if (atmel_port->rs485.flags & SER_RS485_ENABLED)
 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
 	else if (atmel_use_dma_tx(port)) {
+=======
+	if (port->rs485.flags & SER_RS485_ENABLED)
+		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
+	else if (atmel_use_pdc_tx(port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port->fifosize = PDC_BUFFER_SIZE;
 		atmel_port->tx_done_mask = ATMEL_US_ENDTX | ATMEL_US_TXBUFE;
 	} else {
 		atmel_port->tx_done_mask = ATMEL_US_TXRDY;
 	}
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct platform_device *atmel_default_console_device;	/* the serial console device */
@@ -1524,9 +3356,15 @@ struct platform_device *atmel_default_console_device;	/* the serial console devi
 #ifdef CONFIG_SERIAL_ATMEL_CONSOLE
 static void atmel_console_putchar(struct uart_port *port, int ch)
 {
+<<<<<<< HEAD
 	while (!(UART_GET_CSR(port) & ATMEL_US_TXRDY))
 		cpu_relax();
 	UART_PUT_CHAR(port, ch);
+=======
+	while (!(atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY))
+		cpu_relax();
+	atmel_uart_write_char(port, ch);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1542,12 +3380,25 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
 	/*
 	 * First, save IMR and then disable interrupts
 	 */
+<<<<<<< HEAD
 	imr = UART_GET_IMR(port);
 	UART_PUT_IDR(port, ATMEL_US_RXRDY | atmel_port->tx_done_mask);
 
 	/* Store PDC transmit status and disable it */
 	pdc_tx = UART_GET_PTSR(port) & ATMEL_PDC_TXTEN;
 	UART_PUT_PTCR(port, ATMEL_PDC_TXTDIS);
+=======
+	imr = atmel_uart_readl(port, ATMEL_US_IMR);
+	atmel_uart_writel(port, ATMEL_US_IDR,
+			  ATMEL_US_RXRDY | atmel_port->tx_done_mask);
+
+	/* Store PDC transmit status and disable it */
+	pdc_tx = atmel_uart_readl(port, ATMEL_PDC_PTSR) & ATMEL_PDC_TXTEN;
+	atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
+
+	/* Make sure that tx path is actually able to send characters */
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uart_console_write(port, s, count, atmel_console_putchar);
 
@@ -1556,15 +3407,26 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
 	 * and restore IMR
 	 */
 	do {
+<<<<<<< HEAD
 		status = UART_GET_CSR(port);
+=======
+		status = atmel_uart_readl(port, ATMEL_US_CSR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (!(status & ATMEL_US_TXRDY));
 
 	/* Restore PDC transmit status */
 	if (pdc_tx)
+<<<<<<< HEAD
 		UART_PUT_PTCR(port, ATMEL_PDC_TXTEN);
 
 	/* set interrupts back the way they were */
 	UART_PUT_IER(port, imr);
+=======
+		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTEN);
+
+	/* set interrupts back the way they were */
+	atmel_uart_writel(port, ATMEL_US_IER, imr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1580,17 +3442,29 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
 	 * If the baud rate generator isn't running, the port wasn't
 	 * initialized by the boot loader.
 	 */
+<<<<<<< HEAD
 	quot = UART_GET_BRGR(port) & ATMEL_US_CD;
 	if (!quot)
 		return;
 
 	mr = UART_GET_MR(port) & ATMEL_US_CHRL;
+=======
+	quot = atmel_uart_readl(port, ATMEL_US_BRGR) & ATMEL_US_CD;
+	if (!quot)
+		return;
+
+	mr = atmel_uart_readl(port, ATMEL_US_MR) & ATMEL_US_CHRL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mr == ATMEL_US_CHRL_8)
 		*bits = 8;
 	else
 		*bits = 7;
 
+<<<<<<< HEAD
 	mr = UART_GET_MR(port) & ATMEL_US_PAR;
+=======
+	mr = atmel_uart_readl(port, ATMEL_US_MR) & ATMEL_US_PAR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mr == ATMEL_US_PAR_EVEN)
 		*parity = 'e';
 	else if (mr == ATMEL_US_PAR_ODD)
@@ -1607,6 +3481,10 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
 
 static int __init atmel_console_setup(struct console *co, char *options)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct uart_port *port = &atmel_ports[co->index].uart;
 	int baud = 115200;
 	int bits = 8;
@@ -1618,11 +3496,21 @@ static int __init atmel_console_setup(struct console *co, char *options)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	clk_enable(atmel_ports[co->index].clk);
 
 	UART_PUT_IDR(port, -1);
 	UART_PUT_CR(port, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
 	UART_PUT_CR(port, ATMEL_US_TXEN | ATMEL_US_RXEN);
+=======
+	ret = clk_prepare_enable(atmel_ports[co->index].clk);
+	if (ret)
+		return ret;
+
+	atmel_uart_writel(port, ATMEL_US_IDR, -1);
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
@@ -1651,6 +3539,7 @@ static struct console atmel_console = {
  */
 static int __init atmel_console_init(void)
 {
+<<<<<<< HEAD
 	if (atmel_default_console_device) {
 		struct atmel_uart_data *pdata =
 			atmel_default_console_device->dev.platform_data;
@@ -1662,6 +3551,22 @@ static int __init atmel_console_init(void)
 
 		add_preferred_console(ATMEL_DEVICENAME, id, NULL);
 		atmel_init_port(port, atmel_default_console_device);
+=======
+	int ret;
+	if (atmel_default_console_device) {
+		struct atmel_uart_data *pdata =
+			dev_get_platdata(&atmel_default_console_device->dev);
+		int id = pdata->num;
+		struct atmel_uart_port *atmel_port = &atmel_ports[id];
+
+		atmel_port->backup_imr = 0;
+		atmel_port->uart.line = id;
+
+		add_preferred_console(ATMEL_DEVICENAME, id, NULL);
+		ret = atmel_init_port(atmel_port, atmel_default_console_device);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		register_console(&atmel_console);
 	}
 
@@ -1726,14 +3631,30 @@ static int atmel_serial_suspend(struct platform_device *pdev,
 
 	if (atmel_is_console_port(port) && console_suspend_enabled) {
 		/* Drain the TX shifter */
+<<<<<<< HEAD
 		while (!(UART_GET_CSR(port) & ATMEL_US_TXEMPTY))
+=======
+		while (!(atmel_uart_readl(port, ATMEL_US_CSR) &
+			 ATMEL_US_TXEMPTY))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cpu_relax();
 	}
 
 	/* we can not wake up if we're running on slow clock */
 	atmel_port->may_wakeup = device_may_wakeup(&pdev->dev);
+<<<<<<< HEAD
 	if (atmel_serial_clk_will_stop())
 		device_set_wakeup_enable(&pdev->dev, 0);
+=======
+	if (atmel_serial_clk_will_stop()) {
+		unsigned long flags;
+
+		spin_lock_irqsave(&atmel_port->lock_suspended, flags);
+		atmel_port->suspended = true;
+		spin_unlock_irqrestore(&atmel_port->lock_suspended, flags);
+		device_set_wakeup_enable(&pdev->dev, 0);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uart_suspend_port(&atmel_uart, port);
 
@@ -1744,6 +3665,21 @@ static int atmel_serial_resume(struct platform_device *pdev)
 {
 	struct uart_port *port = platform_get_drvdata(pdev);
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&atmel_port->lock_suspended, flags);
+	if (atmel_port->pending) {
+		atmel_handle_receive(port, atmel_port->pending);
+		atmel_handle_status(port, atmel_port->pending,
+				    atmel_port->pending_status);
+		atmel_handle_transmit(port, atmel_port->pending);
+		atmel_port->pending = 0;
+	}
+	atmel_port->suspended = false;
+	spin_unlock_irqrestore(&atmel_port->lock_suspended, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uart_resume_port(&atmel_uart, port);
 	device_set_wakeup_enable(&pdev->dev, atmel_port->may_wakeup);
@@ -1755,6 +3691,7 @@ static int atmel_serial_resume(struct platform_device *pdev)
 #define atmel_serial_resume NULL
 #endif
 
+<<<<<<< HEAD
 static int atmel_serial_probe(struct platform_device *pdev)
 {
 	struct atmel_uart_port *port;
@@ -1763,6 +3700,58 @@ static int atmel_serial_probe(struct platform_device *pdev)
 	void *data;
 	int ret = -ENODEV;
 	struct pinctrl *pinctrl;
+=======
+static void atmel_serial_probe_fifos(struct atmel_uart_port *atmel_port,
+				     struct platform_device *pdev)
+{
+	atmel_port->fifo_size = 0;
+	atmel_port->rts_low = 0;
+	atmel_port->rts_high = 0;
+
+	if (of_property_read_u32(pdev->dev.of_node,
+				 "atmel,fifo-size",
+				 &atmel_port->fifo_size))
+		return;
+
+	if (!atmel_port->fifo_size)
+		return;
+
+	if (atmel_port->fifo_size < ATMEL_MIN_FIFO_SIZE) {
+		atmel_port->fifo_size = 0;
+		dev_err(&pdev->dev, "Invalid FIFO size\n");
+		return;
+	}
+
+	/*
+	 * 0 <= rts_low <= rts_high <= fifo_size
+	 * Once their CTS line asserted by the remote peer, some x86 UARTs tend
+	 * to flush their internal TX FIFO, commonly up to 16 data, before
+	 * actually stopping to send new data. So we try to set the RTS High
+	 * Threshold to a reasonably high value respecting this 16 data
+	 * empirical rule when possible.
+	 */
+	atmel_port->rts_high = max_t(int, atmel_port->fifo_size >> 1,
+			       atmel_port->fifo_size - ATMEL_RTS_HIGH_OFFSET);
+	atmel_port->rts_low  = max_t(int, atmel_port->fifo_size >> 2,
+			       atmel_port->fifo_size - ATMEL_RTS_LOW_OFFSET);
+
+	dev_info(&pdev->dev, "Using FIFO (%u data)\n",
+		 atmel_port->fifo_size);
+	dev_dbg(&pdev->dev, "RTS High Threshold : %2u data\n",
+		atmel_port->rts_high);
+	dev_dbg(&pdev->dev, "RTS Low Threshold  : %2u data\n",
+		atmel_port->rts_low);
+}
+
+static int atmel_serial_probe(struct platform_device *pdev)
+{
+	struct atmel_uart_port *atmel_port;
+	struct device_node *np = pdev->dev.of_node;
+	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
+	void *data;
+	int ret = -ENODEV;
+	bool rs485_enabled;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
 
@@ -1788,6 +3777,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	port = &atmel_ports[ret];
 	port->backup_imr = 0;
 	port->uart.line = ret;
@@ -1801,19 +3791,50 @@ static int atmel_serial_probe(struct platform_device *pdev)
 	}
 
 	if (!atmel_use_dma_rx(&port->uart)) {
+=======
+	atmel_port = &atmel_ports[ret];
+	atmel_port->backup_imr = 0;
+	atmel_port->uart.line = ret;
+	atmel_serial_probe_fifos(atmel_port, pdev);
+
+	atomic_set(&atmel_port->tasklet_shutdown, 0);
+	spin_lock_init(&atmel_port->lock_suspended);
+
+	ret = atmel_init_port(atmel_port, pdev);
+	if (ret)
+		goto err_clear_bit;
+
+	atmel_port->gpios = mctrl_gpio_init(&atmel_port->uart, 0);
+	if (IS_ERR(atmel_port->gpios)) {
+		ret = PTR_ERR(atmel_port->gpios);
+		goto err_clear_bit;
+	}
+
+	if (!atmel_use_pdc_rx(&atmel_port->uart)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 		data = kmalloc(sizeof(struct atmel_uart_char)
 				* ATMEL_SERIAL_RINGSIZE, GFP_KERNEL);
 		if (!data)
 			goto err_alloc_ring;
+<<<<<<< HEAD
 		port->rx_ring.buf = data;
 	}
 
 	ret = uart_add_one_port(&atmel_uart, &port->uart);
+=======
+		atmel_port->rx_ring.buf = data;
+	}
+
+	rs485_enabled = atmel_port->uart.rs485.flags & SER_RS485_ENABLED;
+
+	ret = uart_add_one_port(&atmel_uart, &atmel_port->uart);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto err_add_port;
 
 #ifdef CONFIG_SERIAL_ATMEL_CONSOLE
+<<<<<<< HEAD
 	if (atmel_is_console_port(&port->uart)
 			&& ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
 		/*
@@ -1821,10 +3842,20 @@ static int atmel_serial_probe(struct platform_device *pdev)
 		 * the clk_enable() in atmel_console_setup()
 		 */
 		clk_disable(port->clk);
+=======
+	if (atmel_is_console_port(&atmel_port->uart)
+			&& ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
+		/*
+		 * The serial core enabled the clock for us, so undo
+		 * the clk_prepare_enable() in atmel_console_setup()
+		 */
+		clk_disable_unprepare(atmel_port->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 
 	device_init_wakeup(&pdev->dev, 1);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, port);
 
 	if (port->rs485.flags & SER_RS485_ENABLED) {
@@ -1842,22 +3873,84 @@ err_alloc_ring:
 		clk_put(port->clk);
 		port->clk = NULL;
 	}
+=======
+	platform_set_drvdata(pdev, atmel_port);
+
+	/*
+	 * The peripheral clock has been disabled by atmel_init_port():
+	 * enable it before accessing I/O registers
+	 */
+	clk_prepare_enable(atmel_port->clk);
+
+	if (rs485_enabled) {
+		atmel_uart_writel(&atmel_port->uart, ATMEL_US_MR,
+				  ATMEL_US_USMODE_NORMAL);
+		atmel_uart_writel(&atmel_port->uart, ATMEL_US_CR,
+				  ATMEL_US_RTSEN);
+	}
+
+	/*
+	 * Get port name of usart or uart
+	 */
+	atmel_get_ip_name(&atmel_port->uart);
+
+	/*
+	 * The peripheral clock can now safely be disabled till the port
+	 * is used
+	 */
+	clk_disable_unprepare(atmel_port->clk);
+
+	return 0;
+
+err_add_port:
+	kfree(atmel_port->rx_ring.buf);
+	atmel_port->rx_ring.buf = NULL;
+err_alloc_ring:
+	if (!atmel_is_console_port(&atmel_port->uart)) {
+		clk_put(atmel_port->clk);
+		atmel_port->clk = NULL;
+	}
+err_clear_bit:
+	clear_bit(atmel_port->uart.line, atmel_ports_in_use);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Even if the driver is not modular, it makes sense to be able to
+ * unbind a device: there can be many bound devices, and there are
+ * situations where dynamic binding and unbinding can be useful.
+ *
+ * For example, a connected device can require a specific firmware update
+ * protocol that needs bitbanging on IO lines, but use the regular serial
+ * port in the normal case.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int atmel_serial_remove(struct platform_device *pdev)
 {
 	struct uart_port *port = platform_get_drvdata(pdev);
 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
 	int ret = 0;
 
+<<<<<<< HEAD
 	device_init_wakeup(&pdev->dev, 0);
 	platform_set_drvdata(pdev, NULL);
 
 	ret = uart_remove_one_port(&atmel_uart, port);
 
 	tasklet_kill(&atmel_port->tasklet);
+=======
+	tasklet_kill(&atmel_port->tasklet_rx);
+	tasklet_kill(&atmel_port->tasklet_tx);
+
+	device_init_wakeup(&pdev->dev, 0);
+
+	ret = uart_remove_one_port(&atmel_uart, port);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(atmel_port->rx_ring.buf);
 
 	/* "port" is allocated statically, so we shouldn't free it */
@@ -1865,6 +3958,10 @@ static int atmel_serial_remove(struct platform_device *pdev)
 	clear_bit(port->line, atmel_ports_in_use);
 
 	clk_put(atmel_port->clk);
+<<<<<<< HEAD
+=======
+	atmel_port->clk = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -1875,9 +3972,14 @@ static struct platform_driver atmel_serial_driver = {
 	.suspend	= atmel_serial_suspend,
 	.resume		= atmel_serial_resume,
 	.driver		= {
+<<<<<<< HEAD
 		.name	= "atmel_usart",
 		.owner	= THIS_MODULE,
 		.of_match_table	= of_match_ptr(atmel_serial_dt_ids),
+=======
+		.name			= "atmel_usart",
+		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -1895,6 +3997,7 @@ static int __init atmel_serial_init(void)
 
 	return ret;
 }
+<<<<<<< HEAD
 
 static void __exit atmel_serial_exit(void)
 {
@@ -1909,3 +4012,6 @@ MODULE_AUTHOR("Rick Bronson");
 MODULE_DESCRIPTION("Atmel AT91 / AT32 serial port driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:atmel_usart");
+=======
+device_initcall(atmel_serial_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

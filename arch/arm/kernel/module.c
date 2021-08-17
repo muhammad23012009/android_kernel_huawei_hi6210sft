@@ -34,14 +34,28 @@
  * recompiling the whole kernel when CONFIG_XIP_KERNEL is turned on/off.
  */
 #undef MODULES_VADDR
+<<<<<<< HEAD
 #define MODULES_VADDR	(((unsigned long)_etext + ~PMD_MASK) & PMD_MASK)
+=======
+#define MODULES_VADDR	(((unsigned long)_exiprom + ~PMD_MASK) & PMD_MASK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_MMU
 void *module_alloc(unsigned long size)
 {
+<<<<<<< HEAD
 	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
 				GFP_KERNEL, PAGE_KERNEL_EXEC, -1,
+=======
+	void *p = __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
+				GFP_KERNEL, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+				__builtin_return_address(0));
+	if (!IS_ENABLED(CONFIG_ARM_MODULE_PLTS) || p)
+		return p;
+	return __vmalloc_node_range(size, 1,  VMALLOC_START, VMALLOC_END,
+				GFP_KERNEL, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__builtin_return_address(0));
 }
 #endif
@@ -91,20 +105,51 @@ apply_relocate(Elf32_Shdr *sechdrs, const char *strtab, unsigned int symindex,
 			break;
 
 		case R_ARM_ABS32:
+<<<<<<< HEAD
+=======
+		case R_ARM_TARGET1:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*(u32 *)loc += sym->st_value;
 			break;
 
 		case R_ARM_PC24:
 		case R_ARM_CALL:
 		case R_ARM_JUMP24:
+<<<<<<< HEAD
+=======
+			if (sym->st_value & 3) {
+				pr_err("%s: section %u reloc %u sym '%s': unsupported interworking call (ARM -> Thumb)\n",
+				       module->name, relindex, i, symname);
+				return -ENOEXEC;
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			offset = __mem_to_opcode_arm(*(u32 *)loc);
 			offset = (offset & 0x00ffffff) << 2;
 			if (offset & 0x02000000)
 				offset -= 0x04000000;
 
 			offset += sym->st_value - loc;
+<<<<<<< HEAD
 			if (offset & 3 ||
 			    offset <= (s32)0xfe000000 ||
+=======
+
+			/*
+			 * Route through a PLT entry if 'offset' exceeds the
+			 * supported range. Note that 'offset + loc + 8'
+			 * contains the absolute jump target, i.e.,
+			 * @sym + addend, corrected for the +8 PC bias.
+			 */
+			if (IS_ENABLED(CONFIG_ARM_MODULE_PLTS) &&
+			    (offset <= (s32)0xfe000000 ||
+			     offset >= (s32)0x02000000))
+				offset = get_module_plt(module, loc,
+							offset + loc + 8)
+					 - loc - 8;
+
+			if (offset <= (s32)0xfe000000 ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    offset >= (s32)0x02000000) {
 				pr_err("%s: section %u reloc %u sym '%s': relocation %u out of range (%#lx -> %#x)\n",
 				       module->name, relindex, i, symname,
@@ -154,6 +199,25 @@ apply_relocate(Elf32_Shdr *sechdrs, const char *strtab, unsigned int symindex,
 #ifdef CONFIG_THUMB2_KERNEL
 		case R_ARM_THM_CALL:
 		case R_ARM_THM_JUMP24:
+<<<<<<< HEAD
+=======
+			/*
+			 * For function symbols, only Thumb addresses are
+			 * allowed (no interworking).
+			 *
+			 * For non-function symbols, the destination
+			 * has no specific ARM/Thumb disposition, so
+			 * the branch is resolved under the assumption
+			 * that interworking is not required.
+			 */
+			if (ELF32_ST_TYPE(sym->st_info) == STT_FUNC &&
+			    !(sym->st_value & 1)) {
+				pr_err("%s: section %u reloc %u sym '%s': unsupported interworking call (Thumb -> ARM)\n",
+				       module->name, relindex, i, symname);
+				return -ENOEXEC;
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			upper = __mem_to_opcode_thumb16(*(u16 *)loc);
 			lower = __mem_to_opcode_thumb16(*(u16 *)(loc + 2));
 
@@ -182,6 +246,7 @@ apply_relocate(Elf32_Shdr *sechdrs, const char *strtab, unsigned int symindex,
 			offset += sym->st_value - loc;
 
 			/*
+<<<<<<< HEAD
 			 * For function symbols, only Thumb addresses are
 			 * allowed (no interworking).
 			 *
@@ -193,6 +258,19 @@ apply_relocate(Elf32_Shdr *sechdrs, const char *strtab, unsigned int symindex,
 			if ((ELF32_ST_TYPE(sym->st_info) == STT_FUNC &&
 				!(offset & 1)) ||
 			    offset <= (s32)0xff000000 ||
+=======
+			 * Route through a PLT entry if 'offset' exceeds the
+			 * supported range.
+			 */
+			if (IS_ENABLED(CONFIG_ARM_MODULE_PLTS) &&
+			    (offset <= (s32)0xff000000 ||
+			     offset >= (s32)0x01000000))
+				offset = get_module_plt(module, loc,
+							offset + loc + 4)
+					 - loc - 4;
+
+			if (offset <= (s32)0xff000000 ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    offset >= (s32)0x01000000) {
 				pr_err("%s: section %u reloc %u sym '%s': relocation %u out of range (%#lx -> %#x)\n",
 				       module->name, relindex, i, symname,
@@ -250,7 +328,11 @@ apply_relocate(Elf32_Shdr *sechdrs, const char *strtab, unsigned int symindex,
 #endif
 
 		default:
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: unknown relocation: %u\n",
+=======
+			pr_err("%s: unknown relocation: %u\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       module->name, ELF32_R_TYPE(rel->r_info));
 			return -ENOEXEC;
 		}
@@ -299,28 +381,40 @@ int module_finalize(const Elf32_Ehdr *hdr, const Elf_Shdr *sechdrs,
 
 		if (strcmp(".ARM.exidx.init.text", secname) == 0)
 			maps[ARM_SEC_INIT].unw_sec = s;
+<<<<<<< HEAD
 		else if (strcmp(".ARM.exidx.devinit.text", secname) == 0)
 			maps[ARM_SEC_DEVINIT].unw_sec = s;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (strcmp(".ARM.exidx", secname) == 0)
 			maps[ARM_SEC_CORE].unw_sec = s;
 		else if (strcmp(".ARM.exidx.exit.text", secname) == 0)
 			maps[ARM_SEC_EXIT].unw_sec = s;
+<<<<<<< HEAD
 		else if (strcmp(".ARM.exidx.devexit.text", secname) == 0)
 			maps[ARM_SEC_DEVEXIT].unw_sec = s;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (strcmp(".ARM.exidx.text.unlikely", secname) == 0)
 			maps[ARM_SEC_UNLIKELY].unw_sec = s;
 		else if (strcmp(".ARM.exidx.text.hot", secname) == 0)
 			maps[ARM_SEC_HOT].unw_sec = s;
 		else if (strcmp(".init.text", secname) == 0)
 			maps[ARM_SEC_INIT].txt_sec = s;
+<<<<<<< HEAD
 		else if (strcmp(".devinit.text", secname) == 0)
 			maps[ARM_SEC_DEVINIT].txt_sec = s;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (strcmp(".text", secname) == 0)
 			maps[ARM_SEC_CORE].txt_sec = s;
 		else if (strcmp(".exit.text", secname) == 0)
 			maps[ARM_SEC_EXIT].txt_sec = s;
+<<<<<<< HEAD
 		else if (strcmp(".devexit.text", secname) == 0)
 			maps[ARM_SEC_DEVEXIT].txt_sec = s;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (strcmp(".text.unlikely", secname) == 0)
 			maps[ARM_SEC_UNLIKELY].txt_sec = s;
 		else if (strcmp(".text.hot", secname) == 0)

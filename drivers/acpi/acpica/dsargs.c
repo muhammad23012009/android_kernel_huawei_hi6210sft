@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +90,11 @@ acpi_ds_execute_arguments(struct acpi_namespace_node *node,
 
 	/* Allocate a new parser op to be the root of the parsed tree */
 
+<<<<<<< HEAD
 	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP);
+=======
+	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP, aml_start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!op) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -129,7 +137,11 @@ acpi_ds_execute_arguments(struct acpi_namespace_node *node,
 
 	/* Evaluate the deferred arguments */
 
+<<<<<<< HEAD
 	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP);
+=======
+	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP, aml_start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!op) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -158,7 +170,11 @@ acpi_ds_execute_arguments(struct acpi_namespace_node *node,
 	walk_state->deferred_node = node;
 	status = acpi_ps_parse_aml(walk_state);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_ps_delete_parse_tree(op);
 	return_ACPI_STATUS(status);
 }
@@ -194,8 +210,13 @@ acpi_ds_get_buffer_field_arguments(union acpi_operand_object *obj_desc)
 	extra_desc = acpi_ns_get_secondary_object(obj_desc);
 	node = obj_desc->buffer_field.node;
 
+<<<<<<< HEAD
 	ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname(ACPI_TYPE_BUFFER_FIELD,
 						      node, NULL));
+=======
+	ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname
+			(ACPI_TYPE_BUFFER_FIELD, node, NULL));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[%4.4s] BufferField Arg Init\n",
 			  acpi_ut_get_node_name(node)));
@@ -385,7 +406,12 @@ acpi_status acpi_ds_get_region_arguments(union acpi_operand_object *obj_desc)
 	ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname
 			(ACPI_TYPE_REGION, node, NULL));
 
+<<<<<<< HEAD
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[%4.4s] OpRegion Arg Init at AML %p\n",
+=======
+	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+			  "[%4.4s] OpRegion Arg Init at AML %p\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  acpi_ut_get_node_name(node),
 			  extra_desc->extra.aml_start));
 

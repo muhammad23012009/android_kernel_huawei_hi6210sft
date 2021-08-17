@@ -11,6 +11,10 @@
 #define MICHAEL_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/ieee80211.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MICHAEL_MIC_LEN 8
 

@@ -57,7 +57,10 @@
 	*(.uml.initcall.init)
 	__uml_initcall_end = .;
   }
+<<<<<<< HEAD
   __init_end = .;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
   SECURITY_INIT
 
@@ -82,7 +85,11 @@
   .altinstr_replacement : { *(.altinstr_replacement) }
   /* .exit.text is discard at runtime, not link time, to deal with references
      from .altinstructions and .eh_frame */
+<<<<<<< HEAD
   .exit.text : { *(.exit.text) }
+=======
+  .exit.text : { EXIT_TEXT }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   .exit.data : { *(.exit.data) }
 
   .preinit_array : {

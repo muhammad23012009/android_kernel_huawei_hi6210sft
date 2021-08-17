@@ -13,6 +13,10 @@
 
 #include <asm/amigahw.h>
 #include <asm/amigayle.h>
+<<<<<<< HEAD
+=======
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #ifdef CONFIG_ZORRO
@@ -56,7 +60,11 @@ static int __init amiga_init_bus(void)
 	n = AMIGAHW_PRESENT(ZORRO3) ? 4 : 2;
 	pdev = platform_device_register_simple("amiga-zorro", -1,
 					       zorro_resources, n);
+<<<<<<< HEAD
 	return PTR_RET(pdev);
+=======
+	return PTR_ERR_OR_ZERO(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 subsys_initcall(amiga_init_bus);
@@ -66,10 +74,19 @@ static int __init z_dev_present(zorro_id id)
 {
 	unsigned int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < zorro_num_autocon; i++)
 		if (zorro_autocon[i].rom.er_Manufacturer == ZORRO_MANUF(id) &&
 		    zorro_autocon[i].rom.er_Product == ZORRO_PROD(id))
 			return 1;
+=======
+	for (i = 0; i < zorro_num_autocon; i++) {
+		const struct ExpansionRom *rom = &zorro_autocon_init[i].rom;
+		if (be16_to_cpu(rom->er_Manufacturer) == ZORRO_MANUF(id) &&
+		    rom->er_Product == ZORRO_PROD(id))
+			return 1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

@@ -159,6 +159,7 @@ unsigned int twl4030_audio_get_mclk(void)
 EXPORT_SYMBOL_GPL(twl4030_audio_get_mclk);
 
 static bool twl4030_audio_has_codec(struct twl4030_audio_data *pdata,
+<<<<<<< HEAD
 			      struct device_node *node)
 {
 	if (pdata && pdata->codec)
@@ -166,6 +167,20 @@ static bool twl4030_audio_has_codec(struct twl4030_audio_data *pdata,
 
 	if (of_find_node_by_name(node, "codec"))
 		return true;
+=======
+			      struct device_node *parent)
+{
+	struct device_node *node;
+
+	if (pdata && pdata->codec)
+		return true;
+
+	node = of_get_child_by_name(parent, "codec");
+	if (node) {
+		of_node_put(node);
+		return true;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return false;
 }
@@ -187,7 +202,11 @@ static bool twl4030_audio_has_vibra(struct twl4030_audio_data *pdata,
 static int twl4030_audio_probe(struct platform_device *pdev)
 {
 	struct twl4030_audio *audio;
+<<<<<<< HEAD
 	struct twl4030_audio_data *pdata = pdev->dev.platform_data;
+=======
+	struct twl4030_audio_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_node *node = pdev->dev.of_node;
 	struct mfd_cell *cell = NULL;
 	int ret, childs = 0;
@@ -261,10 +280,15 @@ static int twl4030_audio_probe(struct platform_device *pdev)
 		ret = -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (ret) {
 		platform_set_drvdata(pdev, NULL);
 		twl4030_audio_dev = NULL;
 	}
+=======
+	if (ret)
+		twl4030_audio_dev = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -272,7 +296,10 @@ static int twl4030_audio_probe(struct platform_device *pdev)
 static int twl4030_audio_remove(struct platform_device *pdev)
 {
 	mfd_remove_devices(&pdev->dev);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	twl4030_audio_dev = NULL;
 
 	return 0;
@@ -286,7 +313,10 @@ MODULE_DEVICE_TABLE(of, twl4030_audio_of_match);
 
 static struct platform_driver twl4030_audio_driver = {
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "twl4030-audio",
 		.of_match_table = twl4030_audio_of_match,
 	},

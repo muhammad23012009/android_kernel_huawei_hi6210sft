@@ -24,6 +24,11 @@
 #define TIOCGPKT	_IOR('T', 0x38, int) /* Get packet mode state */
 #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
 #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+<<<<<<< HEAD
+=======
+#define TIOCGRS485	_IOR('T', 0x41, struct serial_rs485)
+#define TIOCSRS485	_IOWR('T', 0x42, struct serial_rs485)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Note that all the ioctls that are not available in Linux have a 
  * double underscore on the front to: a) avoid some programs to

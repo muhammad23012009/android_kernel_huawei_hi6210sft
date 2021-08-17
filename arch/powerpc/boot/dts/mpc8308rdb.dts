@@ -166,7 +166,10 @@
 					interrupt-parent = <&ipic>;
 					interrupts = <17 0x8>;
 					reg = <0x2>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 				tbi0: tbi-phy@11 {
 					reg = <0x11>;
@@ -266,7 +269,11 @@
 		};
 
 		dma@2c000 {
+<<<<<<< HEAD
 			compatible = "fsl,mpc8308-dma", "fsl,mpc5121-dma";
+=======
+			compatible = "fsl,mpc8308-dma";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			reg = <0x2c000 0x1800>;
 			interrupts = <3 0x8
 					94 0x8>;

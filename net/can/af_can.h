@@ -60,12 +60,25 @@ struct receiver {
 	struct rcu_head rcu;
 };
 
+<<<<<<< HEAD
 enum { RX_ERR, RX_ALL, RX_FIL, RX_INV, RX_EFF, RX_MAX };
+=======
+#define CAN_SFF_RCV_ARRAY_SZ (1 << CAN_SFF_ID_BITS)
+#define CAN_EFF_RCV_HASH_BITS 10
+#define CAN_EFF_RCV_ARRAY_SZ (1 << CAN_EFF_RCV_HASH_BITS)
+
+enum { RX_ERR, RX_ALL, RX_FIL, RX_INV, RX_MAX };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* per device receive filters linked at dev->ml_priv */
 struct dev_rcv_lists {
 	struct hlist_head rx[RX_MAX];
+<<<<<<< HEAD
 	struct hlist_head rx_sff[0x800];
+=======
+	struct hlist_head rx_sff[CAN_SFF_RCV_ARRAY_SZ];
+	struct hlist_head rx_eff[CAN_EFF_RCV_ARRAY_SZ];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int remove_on_zero_entries;
 	int entries;
 };
@@ -109,9 +122,15 @@ struct s_pstats {
 extern struct dev_rcv_lists can_rx_alldev_list;
 
 /* function prototypes for the CAN networklayer procfs (proc.c) */
+<<<<<<< HEAD
 extern void can_init_proc(void);
 extern void can_remove_proc(void);
 extern void can_stat_update(unsigned long data);
+=======
+void can_init_proc(void);
+void can_remove_proc(void);
+void can_stat_update(unsigned long data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* structures and variables from af_can.c needed in proc.c for reading */
 extern struct timer_list can_stattimer;    /* timer for statistics update */

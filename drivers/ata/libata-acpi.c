@@ -20,8 +20,11 @@
 #include <scsi/scsi_device.h>
 #include "libata.h"
 
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned int ata_acpi_gtf_filter = ATA_ACPI_FILTER_DEFAULT;
 module_param_named(acpi_gtf_filter, ata_acpi_gtf_filter, int, 0644);
 MODULE_PARM_DESC(acpi_gtf_filter, "filter mask for ACPI _GTF commands, set to filter out (0x1=set xfermode, 0x2=lock/freeze lock, 0x4=DIPM, 0x8=FPDMA non-zero offset, 0x10=FPDMA DMA Setup FIS auto-activate)");
@@ -34,6 +37,7 @@ struct ata_acpi_gtf {
 	u8	tf[REGS_PER_GTF];	/* regs. 0x1f1 - 0x1f7 */
 } __packed;
 
+<<<<<<< HEAD
 /*
  *	Helper - belongs in the PCI layer somewhere eventually
  */
@@ -42,12 +46,15 @@ static int is_pci_dev(struct device *dev)
 	return (dev->bus == &pci_bus_type);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ata_acpi_clear_gtf(struct ata_device *dev)
 {
 	kfree(dev->gtf_cache);
 	dev->gtf_cache = NULL;
 }
 
+<<<<<<< HEAD
 /**
  * ata_ap_acpi_handle - provide the acpi_handle for an ata_port
  * @ap: the acpi_handle returned will correspond to this port
@@ -90,6 +97,31 @@ acpi_handle ata_dev_acpi_handle(struct ata_device *dev)
 		return acpi_get_child(ata_ap_acpi_handle(ap), dev->devno);
 }
 EXPORT_SYMBOL(ata_dev_acpi_handle);
+=======
+struct ata_acpi_hotplug_context {
+	struct acpi_hotplug_context hp;
+	union {
+		struct ata_port *ap;
+		struct ata_device *dev;
+	} data;
+};
+
+#define ata_hotplug_data(context) (container_of((context), struct ata_acpi_hotplug_context, hp)->data)
+
+/**
+ * ata_dev_acpi_handle - provide the acpi_handle for an ata_device
+ * @dev: the acpi_handle returned will correspond to this device
+ *
+ * Returns the acpi_handle for the ACPI namespace object corresponding to
+ * the ata_device passed into the function, or NULL if no such object exists
+ * or ACPI is disabled for this device due to consecutive errors.
+ */
+acpi_handle ata_dev_acpi_handle(struct ata_device *dev)
+{
+	return dev->flags & ATA_DFLAG_ACPI_DISABLED ?
+			NULL : ACPI_HANDLE(&dev->tdev);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* @ap and @dev are the same as ata_acpi_handle_hotplug() */
 static void ata_acpi_detach_device(struct ata_port *ap, struct ata_device *dev)
@@ -156,6 +188,7 @@ static void ata_acpi_handle_hotplug(struct ata_port *ap, struct ata_device *dev,
 
 	spin_unlock_irqrestore(ap->lock, flags);
 
+<<<<<<< HEAD
 	if (wait) {
 		ata_port_wait_eh(ap);
 		flush_work(&ap->hotplug_task.work);
@@ -174,6 +207,23 @@ static void ata_acpi_ap_notify_dock(acpi_handle handle, u32 event, void *data)
 	struct ata_port *ap = data;
 
 	ata_acpi_handle_hotplug(ap, NULL, event);
+=======
+	if (wait)
+		ata_port_wait_eh(ap);
+}
+
+static int ata_acpi_dev_notify_dock(struct acpi_device *adev, u32 event)
+{
+	struct ata_device *dev = ata_hotplug_data(adev->hp).dev;
+	ata_acpi_handle_hotplug(dev->link->ap, dev, event);
+	return 0;
+}
+
+static int ata_acpi_ap_notify_dock(struct acpi_device *adev, u32 event)
+{
+	ata_acpi_handle_hotplug(ata_hotplug_data(adev->hp).ap, NULL, event);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ata_acpi_uevent(struct ata_port *ap, struct ata_device *dev,
@@ -195,6 +245,7 @@ static void ata_acpi_uevent(struct ata_port *ap, struct ata_device *dev,
 	}
 }
 
+<<<<<<< HEAD
 static void ata_acpi_ap_uevent(acpi_handle handle, u32 event, void *data)
 {
 	ata_acpi_uevent(data, NULL, event);
@@ -247,6 +298,87 @@ void ata_acpi_hotplug_init(struct ata_host *host)
 						     dev, NULL, NULL);
 		}
 	}
+=======
+static void ata_acpi_ap_uevent(struct acpi_device *adev, u32 event)
+{
+	ata_acpi_uevent(ata_hotplug_data(adev->hp).ap, NULL, event);
+}
+
+static void ata_acpi_dev_uevent(struct acpi_device *adev, u32 event)
+{
+	struct ata_device *dev = ata_hotplug_data(adev->hp).dev;
+	ata_acpi_uevent(dev->link->ap, dev, event);
+}
+
+/* bind acpi handle to pata port */
+void ata_acpi_bind_port(struct ata_port *ap)
+{
+	struct acpi_device *host_companion = ACPI_COMPANION(ap->host->dev);
+	struct acpi_device *adev;
+	struct ata_acpi_hotplug_context *context;
+
+	if (libata_noacpi || ap->flags & ATA_FLAG_ACPI_SATA || !host_companion)
+		return;
+
+	acpi_preset_companion(&ap->tdev, host_companion, ap->port_no);
+
+	if (ata_acpi_gtm(ap, &ap->__acpi_init_gtm) == 0)
+		ap->pflags |= ATA_PFLAG_INIT_GTM_VALID;
+
+	adev = ACPI_COMPANION(&ap->tdev);
+	if (!adev || adev->hp)
+		return;
+
+	context = kzalloc(sizeof(*context), GFP_KERNEL);
+	if (!context)
+		return;
+
+	context->data.ap = ap;
+	acpi_initialize_hp_context(adev, &context->hp, ata_acpi_ap_notify_dock,
+				   ata_acpi_ap_uevent);
+}
+
+void ata_acpi_bind_dev(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	struct acpi_device *port_companion = ACPI_COMPANION(&ap->tdev);
+	struct acpi_device *host_companion = ACPI_COMPANION(ap->host->dev);
+	struct acpi_device *parent, *adev;
+	struct ata_acpi_hotplug_context *context;
+	u64 adr;
+
+	/*
+	 * For both sata/pata devices, host companion device is required.
+	 * For pata device, port companion device is also required.
+	 */
+	if (libata_noacpi || !host_companion ||
+			(!(ap->flags & ATA_FLAG_ACPI_SATA) && !port_companion))
+		return;
+
+	if (ap->flags & ATA_FLAG_ACPI_SATA) {
+		if (!sata_pmp_attached(ap))
+			adr = SATA_ADR(ap->port_no, NO_PORT_MULT);
+		else
+			adr = SATA_ADR(ap->port_no, dev->link->pmp);
+		parent = host_companion;
+	} else {
+		adr = dev->devno;
+		parent = port_companion;
+	}
+
+	acpi_preset_companion(&dev->tdev, parent, adr);
+	adev = ACPI_COMPANION(&dev->tdev);
+	if (!adev || adev->hp)
+		return;
+
+	context = kzalloc(sizeof(*context), GFP_KERNEL);
+	if (!context)
+		return;
+
+	context->data.dev = dev;
+	acpi_initialize_hp_context(adev, &context->hp, ata_acpi_dev_notify_dock,
+				   ata_acpi_dev_uevent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -270,18 +402,46 @@ void ata_acpi_dissociate(struct ata_host *host)
 		struct ata_port *ap = host->ports[i];
 		const struct ata_acpi_gtm *gtm = ata_acpi_init_gtm(ap);
 
+<<<<<<< HEAD
 		if (ata_ap_acpi_handle(ap) && gtm)
+=======
+		if (ACPI_HANDLE(&ap->tdev) && gtm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ata_acpi_stm(ap, gtm);
 	}
 }
 
+<<<<<<< HEAD
 static int __ata_acpi_gtm(struct ata_port *ap, acpi_handle handle,
 			  struct ata_acpi_gtm *gtm)
+=======
+/**
+ * ata_acpi_gtm - execute _GTM
+ * @ap: target ATA port
+ * @gtm: out parameter for _GTM result
+ *
+ * Evaluate _GTM and store the result in @gtm.
+ *
+ * LOCKING:
+ * EH context.
+ *
+ * RETURNS:
+ * 0 on success, -ENOENT if _GTM doesn't exist, -errno on failure.
+ */
+int ata_acpi_gtm(struct ata_port *ap, struct ata_acpi_gtm *gtm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_buffer output = { .length = ACPI_ALLOCATE_BUFFER };
 	union acpi_object *out_obj;
 	acpi_status status;
 	int rc = 0;
+<<<<<<< HEAD
+=======
+	acpi_handle handle = ACPI_HANDLE(&ap->tdev);
+
+	if (!handle)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	status = acpi_evaluate_object(handle, "_GTM", NULL, &output);
 
@@ -317,6 +477,7 @@ static int __ata_acpi_gtm(struct ata_port *ap, acpi_handle handle,
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
  * ata_acpi_gtm - execute _GTM
  * @ap: target ATA port
@@ -338,6 +499,8 @@ int ata_acpi_gtm(struct ata_port *ap, struct ata_acpi_gtm *gtm)
 		return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL_GPL(ata_acpi_gtm);
 
 /**
@@ -374,8 +537,13 @@ int ata_acpi_stm(struct ata_port *ap, const struct ata_acpi_gtm *stm)
 	input.count = 3;
 	input.pointer = in_params;
 
+<<<<<<< HEAD
 	status = acpi_evaluate_object(ata_ap_acpi_handle(ap), "_STM", &input,
 				      NULL);
+=======
+	status = acpi_evaluate_object(ACPI_HANDLE(&ap->tdev), "_STM",
+				      &input, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (status == AE_NOT_FOUND)
 		return -ENOENT;
@@ -850,7 +1018,11 @@ void ata_acpi_on_resume(struct ata_port *ap)
 	const struct ata_acpi_gtm *gtm = ata_acpi_init_gtm(ap);
 	struct ata_device *dev;
 
+<<<<<<< HEAD
 	if (ata_ap_acpi_handle(ap) && gtm) {
+=======
+	if (ACPI_HANDLE(&ap->tdev) && gtm) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* _GTM valid */
 
 		/* restore timing parameters */
@@ -863,6 +1035,10 @@ void ata_acpi_on_resume(struct ata_port *ap)
 		ata_for_each_dev(dev, &ap->link, ALL) {
 			ata_acpi_clear_gtf(dev);
 			if (ata_dev_enabled(dev) &&
+<<<<<<< HEAD
+=======
+			    ata_dev_acpi_handle(dev) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    ata_dev_get_GTF(dev, NULL) >= 0)
 				dev->flags |= ATA_DFLAG_ACPI_PENDING;
 		}
@@ -894,8 +1070,12 @@ static int ata_acpi_choose_suspend_state(struct ata_device *dev, bool runtime)
 		d_max_in = ACPI_STATE_D3_HOT;
 
 out:
+<<<<<<< HEAD
 	return acpi_pm_device_sleep_state(&dev->sdev->sdev_gendev,
 					  NULL, d_max_in);
+=======
+	return acpi_pm_device_sleep_state(&dev->tdev, NULL, d_max_in);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sata_acpi_set_state(struct ata_port *ap, pm_message_t state)
@@ -932,7 +1112,11 @@ static void pata_acpi_set_state(struct ata_port *ap, pm_message_t state)
 	struct ata_device *dev;
 	acpi_handle port_handle;
 
+<<<<<<< HEAD
 	port_handle = ata_ap_acpi_handle(ap);
+=======
+	port_handle = ACPI_HANDLE(&ap->tdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!port_handle)
 		return;
 
@@ -947,11 +1131,19 @@ static void pata_acpi_set_state(struct ata_port *ap, pm_message_t state)
 			continue;
 
 		acpi_bus_set_power(dev_handle, state.event & PM_EVENT_RESUME ?
+<<<<<<< HEAD
 						ACPI_STATE_D0 : ACPI_STATE_D3);
 	}
 
 	if (!(state.event & PM_EVENT_RESUME))
 		acpi_bus_set_power(port_handle, ACPI_STATE_D3);
+=======
+					ACPI_STATE_D0 : ACPI_STATE_D3_COLD);
+	}
+
+	if (!(state.event & PM_EVENT_RESUME))
+		acpi_bus_set_power(port_handle, ACPI_STATE_D3_COLD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -1062,6 +1254,7 @@ void ata_acpi_on_disable(struct ata_device *dev)
 {
 	ata_acpi_clear_gtf(dev);
 }
+<<<<<<< HEAD
 
 static int compat_pci_ata(struct ata_port *ap)
 {
@@ -1169,3 +1362,5 @@ void ata_acpi_unregister(void)
 {
 	scsi_unregister_acpi_bus_type(&ata_acpi_bus);
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -51,7 +51,11 @@
  *
  * version 0.7.3
  * bugfix : The mdc800->state field gets set to READY after the
+<<<<<<< HEAD
  * the diconnect function sets it to NOT_CONNECTED. This makes the
+=======
+ * the disconnect function sets it to NOT_CONNECTED. This makes the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * driver running like the camera is connected and causes some
  * hang ups.
  *
@@ -347,7 +351,12 @@ static int mdc800_usb_waitForIRQ (int mode, int msec)
 {
 	mdc800->camera_request_ready=1+mode;
 
+<<<<<<< HEAD
 	wait_event_timeout(mdc800->irq_wait, mdc800->irq_woken, msec*HZ/1000);
+=======
+	wait_event_timeout(mdc800->irq_wait, mdc800->irq_woken,
+			   msecs_to_jiffies(msec));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mdc800->irq_woken = 0;
 
 	if (mdc800->camera_request_ready>0)
@@ -743,8 +752,14 @@ static ssize_t mdc800_device_read (struct file *file, char __user *buf, size_t l
 					mutex_unlock(&mdc800->io_lock);
 					return len-left;
 				}
+<<<<<<< HEAD
 				wait_event_timeout(mdc800->download_wait, mdc800->downloaded,
 										TO_DOWNLOAD_GET_READY*HZ/1000);
+=======
+				wait_event_timeout(mdc800->download_wait,
+				     mdc800->downloaded,
+				     msecs_to_jiffies(TO_DOWNLOAD_GET_READY));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				mdc800->downloaded = 0;
 				if (mdc800->download_urb->status != 0)
 				{
@@ -867,7 +882,12 @@ static ssize_t mdc800_device_write (struct file *file, const char __user *buf, s
 				mutex_unlock(&mdc800->io_lock);
 				return -EIO;
 			}
+<<<<<<< HEAD
 			wait_event_timeout(mdc800->write_wait, mdc800->written, TO_WRITE_GET_READY*HZ/1000);
+=======
+			wait_event_timeout(mdc800->write_wait, mdc800->written,
+					msecs_to_jiffies(TO_WRITE_GET_READY));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mdc800->written = 0;
 			if (mdc800->state == WORKING)
 			{

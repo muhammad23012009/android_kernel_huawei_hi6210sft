@@ -24,12 +24,20 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/machdep.h>
 #include <asm/macio.h>
 #include <asm/pmac_feature.h>
 #include <asm/prom.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #undef DEBUG
 
@@ -235,7 +243,11 @@ static void macio_create_fixup_irq(struct macio_dev *dev, int index,
 	unsigned int irq;
 
 	irq = irq_create_mapping(NULL, line);
+<<<<<<< HEAD
 	if (irq != NO_IRQ) {
+=======
+	if (!irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev->interrupt[index].start = irq;
 		dev->interrupt[index].flags = IORESOURCE_IRQ;
 		dev->interrupt[index].name = dev_name(&dev->ofdev.dev);
@@ -298,7 +310,11 @@ static void macio_setup_interrupts(struct macio_dev *dev)
 			break;
 		res = &dev->interrupt[j];
 		irq = irq_of_parse_and_map(np, i++);
+<<<<<<< HEAD
 		if (irq == NO_IRQ)
+=======
+		if (!irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		res->start = irq;
 		res->flags = IORESOURCE_IRQ;

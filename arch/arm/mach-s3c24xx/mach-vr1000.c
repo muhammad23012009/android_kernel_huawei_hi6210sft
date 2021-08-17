@@ -25,6 +25,10 @@
 #include <linux/tty.h>
 #include <linux/serial_8250.h>
 #include <linux/serial_reg.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 
 #include <asm/mach/arch.h>
@@ -40,11 +44,18 @@
 
 #include <mach/hardware.h>
 #include <mach/regs-gpio.h>
+<<<<<<< HEAD
 
 #include <plat/clock.h>
 #include <plat/cpu.h>
 #include <plat/devs.h>
 #include <plat/regs-serial.h>
+=======
+#include <mach/gpio-samsung.h>
+
+#include <plat/cpu.h>
+#include <plat/devs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/samsung-time.h>
 
 #include "bast.h"
@@ -285,6 +296,10 @@ static struct i2c_board_info vr1000_i2c_devs[] __initdata = {
 /* devices for this board */
 
 static struct platform_device *vr1000_devices[] __initdata = {
+<<<<<<< HEAD
+=======
+	&s3c2410_device_dclk,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&s3c_device_ohci,
 	&s3c_device_lcd,
 	&s3c_device_wdt,
@@ -298,6 +313,7 @@ static struct platform_device *vr1000_devices[] __initdata = {
 	&vr1000_led3,
 };
 
+<<<<<<< HEAD
 static struct clk *vr1000_clocks[] __initdata = {
 	&s3c24xx_dclk0,
 	&s3c24xx_dclk1,
@@ -306,6 +322,8 @@ static struct clk *vr1000_clocks[] __initdata = {
 	&s3c24xx_uclk,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void vr1000_power_off(void)
 {
 	gpio_direction_output(S3C2410_GPB(9), 1);
@@ -313,6 +331,7 @@ static void vr1000_power_off(void)
 
 static void __init vr1000_map_io(void)
 {
+<<<<<<< HEAD
 	/* initialise clock sources */
 
 	s3c24xx_dclk0.parent = &clk_upll;
@@ -332,10 +351,24 @@ static void __init vr1000_map_io(void)
 
 	s3c24xx_init_io(vr1000_iodesc, ARRAY_SIZE(vr1000_iodesc));
 	s3c24xx_init_clocks(0);
+=======
+	pm_power_off = vr1000_power_off;
+
+	s3c24xx_init_io(vr1000_iodesc, ARRAY_SIZE(vr1000_iodesc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(vr1000_uartcfgs, ARRAY_SIZE(vr1000_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init vr1000_init_time(void)
+{
+	s3c2410_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init vr1000_init(void)
 {
 	s3c_i2c0_set_platdata(NULL);
@@ -356,6 +389,10 @@ MACHINE_START(VR1000, "Thorcom-VR1000")
 	.map_io		= vr1000_map_io,
 	.init_machine	= vr1000_init,
 	.init_irq	= s3c2410_init_irq,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c2410_restart,
+=======
+	.init_time	= vr1000_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

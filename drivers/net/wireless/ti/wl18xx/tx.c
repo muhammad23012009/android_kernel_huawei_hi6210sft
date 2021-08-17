@@ -30,9 +30,15 @@
 
 static
 void wl18xx_get_last_tx_rate(struct wl1271 *wl, struct ieee80211_vif *vif,
+<<<<<<< HEAD
 			     struct ieee80211_tx_rate *rate)
 {
 	u8 fw_rate = wl->fw_status_2->counters.tx_last_rate;
+=======
+			     u8 band, struct ieee80211_tx_rate *rate, u8 hlid)
+{
+	u8 fw_rate = wl->links[hlid].fw_rate_idx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fw_rate > CONF_HW_RATE_INDEX_MAX) {
 		wl1271_error("last Tx rate invalid: %d", fw_rate);
@@ -43,6 +49,11 @@ void wl18xx_get_last_tx_rate(struct wl1271 *wl, struct ieee80211_vif *vif,
 
 	if (fw_rate <= CONF_HW_RATE_INDEX_54MBPS) {
 		rate->idx = fw_rate;
+<<<<<<< HEAD
+=======
+		if (band == NL80211_BAND_5GHZ)
+			rate->idx -= CONF_HW_RATE_INDEX_6MBPS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rate->flags = 0;
 	} else {
 		rate->flags = IEEE80211_TX_RC_MCS;
@@ -77,6 +88,10 @@ static void wl18xx_tx_complete_packet(struct wl1271 *wl, u8 tx_stat_byte)
 	struct sk_buff *skb;
 	int id = tx_stat_byte & WL18XX_TX_STATUS_DESC_ID_MASK;
 	bool tx_success;
+<<<<<<< HEAD
+=======
+	struct wl1271_tx_hw_descr *tx_desc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check for id legality */
 	if (unlikely(id >= wl->num_tx_desc || wl->tx_frames[id] == NULL)) {
@@ -89,6 +104,10 @@ static void wl18xx_tx_complete_packet(struct wl1271 *wl, u8 tx_stat_byte)
 
 	skb = wl->tx_frames[id];
 	info = IEEE80211_SKB_CB(skb);
+<<<<<<< HEAD
+=======
+	tx_desc = (struct wl1271_tx_hw_descr *)skb->data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (wl12xx_is_dummy_packet(wl, skb)) {
 		wl1271_free_tx_id(wl, id);
@@ -102,7 +121,14 @@ static void wl18xx_tx_complete_packet(struct wl1271 *wl, u8 tx_stat_byte)
 	 * first pass info->control.vif while it's valid, and then fill out
 	 * the info->status structures
 	 */
+<<<<<<< HEAD
 	wl18xx_get_last_tx_rate(wl, info->control.vif, &info->status.rates[0]);
+=======
+	wl18xx_get_last_tx_rate(wl, info->control.vif,
+				info->band,
+				&info->status.rates[0],
+				tx_desc->hlid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	info->status.rates[0].count = 1; /* no data about retries */
 	info->status.ack_signal = -1;
@@ -139,14 +165,33 @@ static void wl18xx_tx_complete_packet(struct wl1271 *wl, u8 tx_stat_byte)
 void wl18xx_tx_immediate_complete(struct wl1271 *wl)
 {
 	struct wl18xx_fw_status_priv *status_priv =
+<<<<<<< HEAD
 		(struct wl18xx_fw_status_priv *)wl->fw_status_2->priv;
 	struct wl18xx_priv *priv = wl->priv;
 	u8 i;
+=======
+		(struct wl18xx_fw_status_priv *)wl->fw_status->priv;
+	struct wl18xx_priv *priv = wl->priv;
+	u8 i, hlid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* nothing to do here */
 	if (priv->last_fw_rls_idx == status_priv->fw_release_idx)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* update rates per link */
+	hlid = wl->fw_status->counters.hlid;
+
+	if (hlid < WLCORE_MAX_LINKS) {
+		wl->links[hlid].fw_rate_idx =
+				wl->fw_status->counters.tx_last_rate;
+		wl->links[hlid].fw_rate_mbps =
+				wl->fw_status->counters.tx_last_rate_mbps;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* freed Tx descriptors */
 	wl1271_debug(DEBUG_TX, "last released desc = %d, current idx = %d",
 		     priv->last_fw_rls_idx, status_priv->fw_release_idx);

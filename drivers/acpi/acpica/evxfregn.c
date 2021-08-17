@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -111,6 +120,7 @@ acpi_install_address_space_handler(acpi_handle device,
 		goto unlock_and_exit;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * For the default space_IDs, (the IDs for which there are default region handlers
 	 * installed) Only execute the _REG methods if the global initialization _REG
@@ -147,6 +157,13 @@ acpi_install_address_space_handler(acpi_handle device,
 	status = acpi_ev_execute_reg_methods(node, space_id);
 
       unlock_and_exit:
+=======
+	/* Run all _REG methods for this address space */
+
+	acpi_ev_execute_reg_methods(node, space_id, ACPI_REG_CONNECT);
+
+unlock_and_exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(status);
 }
@@ -213,8 +230,13 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 	/* Find the address handler the user requested */
 
+<<<<<<< HEAD
 	handler_obj = obj_desc->device.handler;
 	last_obj_ptr = &obj_desc->device.handler;
+=======
+	handler_obj = obj_desc->common_notify.handler;
+	last_obj_ptr = &obj_desc->common_notify.handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (handler_obj) {
 
 		/* We have a handler, see if user requested this one */
@@ -257,7 +279,10 @@ acpi_remove_address_space_handler(acpi_handle device,
 				 */
 				region_obj =
 				    handler_obj->address_space.region_list;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 
 			/* Remove this Handler object from the list */
@@ -285,7 +310,11 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 	status = AE_NOT_EXIST;
 
+<<<<<<< HEAD
       unlock_and_exit:
+=======
+unlock_and_exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(status);
 }

@@ -13,14 +13,21 @@
 
 #include <linux/console.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci_regs.h>
 #include <linux/pci_ids.h>
 #include <linux/usb/ch9.h>
 #include <linux/usb/ehci_def.h>
 #include <linux/delay.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kgdb.h>
 #include <linux/kthread.h>
 #include <asm/io.h>
@@ -568,10 +575,13 @@ try_again:
 		dbgp_printk("Could not find attached debug device\n");
 		goto err;
 	}
+<<<<<<< HEAD
 	if (ret < 0) {
 		dbgp_printk("Attached device is not a debug device\n");
 		goto err;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dbgp_endpoint_out = dbgp_desc.bDebugOutEndpoint;
 	dbgp_endpoint_in = dbgp_desc.bDebugInEndpoint;
 
@@ -1097,5 +1107,9 @@ static int __init kgdbdbgp_start_thread(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(kgdbdbgp_start_thread);
+=======
+device_initcall(kgdbdbgp_start_thread);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_KGDB */

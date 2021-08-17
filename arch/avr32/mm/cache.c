@@ -111,6 +111,10 @@ void flush_icache_range(unsigned long start, unsigned long end)
 	__flush_icache_range(start & ~(linesz - 1),
 			     (end + linesz - 1) & ~(linesz - 1));
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(flush_icache_range);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This one is called from __do_fault() and do_swap_page().

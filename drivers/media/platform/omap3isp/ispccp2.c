@@ -12,6 +12,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/delay.h>
@@ -158,6 +161,7 @@ static void ccp2_pwr_cfg(struct isp_ccp2_device *ccp2)
  * @ccp2: pointer to ISP CCP2 device
  * @enable: enable/disable flag
  */
+<<<<<<< HEAD
 static void ccp2_if_enable(struct isp_ccp2_device *ccp2, u8 enable)
 {
 	struct isp_device *isp = to_isp_device(ccp2);
@@ -165,6 +169,19 @@ static void ccp2_if_enable(struct isp_ccp2_device *ccp2, u8 enable)
 
 	if (enable && ccp2->vdds_csib)
 		regulator_enable(ccp2->vdds_csib);
+=======
+static int ccp2_if_enable(struct isp_ccp2_device *ccp2, u8 enable)
+{
+	struct isp_device *isp = to_isp_device(ccp2);
+	int ret;
+	int i;
+
+	if (enable && ccp2->vdds_csib) {
+		ret = regulator_enable(ccp2->vdds_csib);
+		if (ret < 0)
+			return ret;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable/Disable all the LCx channels */
 	for (i = 0; i < CCP2_LCx_CHANS_NUM; i++)
@@ -179,6 +196,11 @@ static void ccp2_if_enable(struct isp_ccp2_device *ccp2, u8 enable)
 
 	if (!enable && ccp2->vdds_csib)
 		regulator_disable(ccp2->vdds_csib);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -205,14 +227,22 @@ static void ccp2_mem_enable(struct isp_ccp2_device *ccp2, u8 enable)
 /*
  * ccp2_phyif_config - Initialize CCP2 phy interface config
  * @ccp2: Pointer to ISP CCP2 device
+<<<<<<< HEAD
  * @config: CCP2 platform data
+=======
+ * @buscfg: CCP2 platform data
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Configure the CCP2 physical interface module from platform data.
  *
  * Returns -EIO if strobe is chosen in CSI1 mode, or 0 on success.
  */
 static int ccp2_phyif_config(struct isp_ccp2_device *ccp2,
+<<<<<<< HEAD
 			     const struct isp_ccp2_platform_data *pdata)
+=======
+			     const struct isp_ccp2_cfg *buscfg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct isp_device *isp = to_isp_device(ccp2);
 	u32 val;
@@ -222,16 +252,28 @@ static int ccp2_phyif_config(struct isp_ccp2_device *ccp2,
 			    ISPCCP2_CTRL_IO_OUT_SEL | ISPCCP2_CTRL_MODE;
 	/* Data/strobe physical layer */
 	BIT_SET(val, ISPCCP2_CTRL_PHY_SEL_SHIFT, ISPCCP2_CTRL_PHY_SEL_MASK,
+<<<<<<< HEAD
 		pdata->phy_layer);
 	BIT_SET(val, ISPCCP2_CTRL_INV_SHIFT, ISPCCP2_CTRL_INV_MASK,
 		pdata->strobe_clk_pol);
+=======
+		buscfg->phy_layer);
+	BIT_SET(val, ISPCCP2_CTRL_INV_SHIFT, ISPCCP2_CTRL_INV_MASK,
+		buscfg->strobe_clk_pol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	isp_reg_writel(isp, val, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL);
 
 	val = isp_reg_readl(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_CTRL);
 	if (!(val & ISPCCP2_CTRL_MODE)) {
+<<<<<<< HEAD
 		if (pdata->ccp2_mode == ISP_CCP2_MODE_CCP2)
 			dev_warn(isp->dev, "OMAP3 CCP2 bus not available\n");
 		if (pdata->phy_layer == ISP_CCP2_PHY_DATA_STROBE)
+=======
+		if (buscfg->ccp2_mode == ISP_CCP2_MODE_CCP2)
+			dev_warn(isp->dev, "OMAP3 CCP2 bus not available\n");
+		if (buscfg->phy_layer == ISP_CCP2_PHY_DATA_STROBE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Strobe mode requires CCP2 */
 			return -EIO;
 	}
@@ -293,10 +335,17 @@ static void ccp2_lcx_config(struct isp_ccp2_device *ccp2,
 	u32 val, format;
 
 	switch (config->format) {
+<<<<<<< HEAD
 	case V4L2_MBUS_FMT_SGRBG10_DPCM8_1X8:
 		format = ISPCCP2_LCx_CTRL_FORMAT_RAW8_DPCM10_VP;
 		break;
 	case V4L2_MBUS_FMT_SGRBG10_1X10:
+=======
+	case MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8:
+		format = ISPCCP2_LCx_CTRL_FORMAT_RAW8_DPCM10_VP;
+		break;
+	case MEDIA_BUS_FMT_SGRBG10_1X10:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		format = ISPCCP2_LCx_CTRL_FORMAT_RAW10_VP;	/* RAW10+VP */
 		break;
@@ -351,7 +400,11 @@ static void ccp2_lcx_config(struct isp_ccp2_device *ccp2,
  */
 static int ccp2_if_configure(struct isp_ccp2_device *ccp2)
 {
+<<<<<<< HEAD
 	const struct isp_v4l2_subdevs_group *pdata;
+=======
+	const struct isp_bus_cfg *buscfg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct v4l2_mbus_framefmt *format;
 	struct media_pad *pad;
 	struct v4l2_subdev *sensor;
@@ -360,6 +413,7 @@ static int ccp2_if_configure(struct isp_ccp2_device *ccp2)
 
 	ccp2_pwr_cfg(ccp2);
 
+<<<<<<< HEAD
 	pad = media_entity_remote_source(&ccp2->pads[CCP2_PAD_SINK]);
 	sensor = media_entity_to_v4l2_subdev(pad->entity);
 	pdata = sensor->host_priv;
@@ -369,13 +423,28 @@ static int ccp2_if_configure(struct isp_ccp2_device *ccp2)
 		return ret;
 
 	ccp2_vp_config(ccp2, pdata->bus.ccp2.vpclk_div + 1);
+=======
+	pad = media_entity_remote_pad(&ccp2->pads[CCP2_PAD_SINK]);
+	sensor = media_entity_to_v4l2_subdev(pad->entity);
+	buscfg = sensor->host_priv;
+
+	ret = ccp2_phyif_config(ccp2, &buscfg->bus.ccp2);
+	if (ret < 0)
+		return ret;
+
+	ccp2_vp_config(ccp2, buscfg->bus.ccp2.vpclk_div + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	v4l2_subdev_call(sensor, sensor, g_skip_top_lines, &lines);
 
 	format = &ccp2->formats[CCP2_PAD_SINK];
 
 	ccp2->if_cfg.data_start = lines;
+<<<<<<< HEAD
 	ccp2->if_cfg.crc = pdata->bus.ccp2.crc;
+=======
+	ccp2->if_cfg.crc = buscfg->bus.ccp2.crc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ccp2->if_cfg.format = format->code;
 	ccp2->if_cfg.data_size = format->height;
 
@@ -442,7 +511,11 @@ static void ccp2_mem_configure(struct isp_ccp2_device *ccp2,
 	u32 val, hwords;
 
 	if (sink_pixcode != source_pixcode &&
+<<<<<<< HEAD
 	    sink_pixcode == V4L2_MBUS_FMT_SGRBG10_DPCM8_1X8)
+=======
+	    sink_pixcode == MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dpcm_decompress = 1;
 
 	ccp2_pwr_cfg(ccp2);
@@ -512,7 +585,11 @@ static void ccp2_mem_configure(struct isp_ccp2_device *ccp2,
 		       ISPCCP2_LCM_IRQSTATUS_EOF_IRQ,
 		       OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_IRQSTATUS);
 
+<<<<<<< HEAD
 	/* Enable LCM interupts */
+=======
+	/* Enable LCM interrupts */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	isp_reg_set(isp, OMAP3_ISP_IOMEM_CCP2, ISPCCP2_LCM_IRQENABLE,
 		    ISPCCP2_LCM_IRQSTATUS_EOF_IRQ |
 		    ISPCCP2_LCM_IRQSTATUS_OCPERROR_IRQ);
@@ -543,7 +620,11 @@ static void ccp2_isr_buffer(struct isp_ccp2_device *ccp2)
 
 	buffer = omap3isp_video_buffer_next(&ccp2->video_in);
 	if (buffer != NULL)
+<<<<<<< HEAD
 		ccp2_set_inaddr(ccp2, buffer->isp_addr);
+=======
+		ccp2_set_inaddr(ccp2, buffer->dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pipe->state |= ISP_PIPELINE_IDLE_INPUT;
 
@@ -608,24 +689,41 @@ void omap3isp_ccp2_isr(struct isp_ccp2_device *ccp2)
  */
 
 static const unsigned int ccp2_fmts[] = {
+<<<<<<< HEAD
 	V4L2_MBUS_FMT_SGRBG10_1X10,
 	V4L2_MBUS_FMT_SGRBG10_DPCM8_1X8,
+=======
+	MEDIA_BUS_FMT_SGRBG10_1X10,
+	MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
  * __ccp2_get_format - helper function for getting ccp2 format
  * @ccp2  : Pointer to ISP CCP2 device
+<<<<<<< HEAD
  * @fh    : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad configuration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @pad   : pad number
  * @which : wanted subdev format
  * return format structure or NULL on error
  */
 static struct v4l2_mbus_framefmt *
+<<<<<<< HEAD
 __ccp2_get_format(struct isp_ccp2_device *ccp2, struct v4l2_subdev_fh *fh,
 		     unsigned int pad, enum v4l2_subdev_format_whence which)
 {
 	if (which == V4L2_SUBDEV_FORMAT_TRY)
 		return v4l2_subdev_get_try_format(fh, pad);
+=======
+__ccp2_get_format(struct isp_ccp2_device *ccp2, struct v4l2_subdev_pad_config *cfg,
+		     unsigned int pad, enum v4l2_subdev_format_whence which)
+{
+	if (which == V4L2_SUBDEV_FORMAT_TRY)
+		return v4l2_subdev_get_try_format(&ccp2->subdev, cfg, pad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		return &ccp2->formats[pad];
 }
@@ -633,13 +731,21 @@ __ccp2_get_format(struct isp_ccp2_device *ccp2, struct v4l2_subdev_fh *fh,
 /*
  * ccp2_try_format - Handle try format by pad subdev method
  * @ccp2  : Pointer to ISP CCP2 device
+<<<<<<< HEAD
  * @fh    : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad configuration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @pad   : pad num
  * @fmt   : pointer to v4l2 mbus format structure
  * @which : wanted subdev format
  */
 static void ccp2_try_format(struct isp_ccp2_device *ccp2,
+<<<<<<< HEAD
 			       struct v4l2_subdev_fh *fh, unsigned int pad,
+=======
+			       struct v4l2_subdev_pad_config *cfg, unsigned int pad,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       struct v4l2_mbus_framefmt *fmt,
 			       enum v4l2_subdev_format_whence which)
 {
@@ -647,8 +753,13 @@ static void ccp2_try_format(struct isp_ccp2_device *ccp2,
 
 	switch (pad) {
 	case CCP2_PAD_SINK:
+<<<<<<< HEAD
 		if (fmt->code != V4L2_MBUS_FMT_SGRBG10_DPCM8_1X8)
 			fmt->code = V4L2_MBUS_FMT_SGRBG10_1X10;
+=======
+		if (fmt->code != MEDIA_BUS_FMT_SGRBG10_DPCM8_1X8)
+			fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (ccp2->input == CCP2_INPUT_SENSOR) {
 			fmt->width = clamp_t(u32, fmt->width,
@@ -673,9 +784,15 @@ static void ccp2_try_format(struct isp_ccp2_device *ccp2,
 		 * When CCP2 write to memory feature will be added this
 		 * should be changed properly.
 		 */
+<<<<<<< HEAD
 		format = __ccp2_get_format(ccp2, fh, CCP2_PAD_SINK, which);
 		memcpy(fmt, format, sizeof(*fmt));
 		fmt->code = V4L2_MBUS_FMT_SGRBG10_1X10;
+=======
+		format = __ccp2_get_format(ccp2, cfg, CCP2_PAD_SINK, which);
+		memcpy(fmt, format, sizeof(*fmt));
+		fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -686,12 +803,20 @@ static void ccp2_try_format(struct isp_ccp2_device *ccp2,
 /*
  * ccp2_enum_mbus_code - Handle pixel format enumeration
  * @sd     : pointer to v4l2 subdev structure
+<<<<<<< HEAD
  * @fh     : V4L2 subdev file handle
+=======
+ * @cfg: V4L2 subdev pad configuration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @code   : pointer to v4l2_subdev_mbus_code_enum structure
  * return -EINVAL or zero on success
  */
 static int ccp2_enum_mbus_code(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				  struct v4l2_subdev_fh *fh,
+=======
+				  struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
 	struct isp_ccp2_device *ccp2 = v4l2_get_subdevdata(sd);
@@ -706,8 +831,13 @@ static int ccp2_enum_mbus_code(struct v4l2_subdev *sd,
 		if (code->index != 0)
 			return -EINVAL;
 
+<<<<<<< HEAD
 		format = __ccp2_get_format(ccp2, fh, CCP2_PAD_SINK,
 					      V4L2_SUBDEV_FORMAT_TRY);
+=======
+		format = __ccp2_get_format(ccp2, cfg, CCP2_PAD_SINK,
+					      code->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		code->code = format->code;
 	}
 
@@ -715,7 +845,11 @@ static int ccp2_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int ccp2_enum_frame_size(struct v4l2_subdev *sd,
+<<<<<<< HEAD
 				   struct v4l2_subdev_fh *fh,
+=======
+				   struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct v4l2_subdev_frame_size_enum *fse)
 {
 	struct isp_ccp2_device *ccp2 = v4l2_get_subdevdata(sd);
@@ -727,7 +861,11 @@ static int ccp2_enum_frame_size(struct v4l2_subdev *sd,
 	format.code = fse->code;
 	format.width = 1;
 	format.height = 1;
+<<<<<<< HEAD
 	ccp2_try_format(ccp2, fh, fse->pad, &format, V4L2_SUBDEV_FORMAT_TRY);
+=======
+	ccp2_try_format(ccp2, cfg, fse->pad, &format, fse->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fse->min_width = format.width;
 	fse->min_height = format.height;
 
@@ -737,7 +875,11 @@ static int ccp2_enum_frame_size(struct v4l2_subdev *sd,
 	format.code = fse->code;
 	format.width = -1;
 	format.height = -1;
+<<<<<<< HEAD
 	ccp2_try_format(ccp2, fh, fse->pad, &format, V4L2_SUBDEV_FORMAT_TRY);
+=======
+	ccp2_try_format(ccp2, cfg, fse->pad, &format, fse->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fse->max_width = format.width;
 	fse->max_height = format.height;
 
@@ -747,17 +889,29 @@ static int ccp2_enum_frame_size(struct v4l2_subdev *sd,
 /*
  * ccp2_get_format - Handle get format by pads subdev method
  * @sd    : pointer to v4l2 subdev structure
+<<<<<<< HEAD
  * @fh    : V4L2 subdev file handle
  * @fmt   : pointer to v4l2 subdev format structure
  * return -EINVAL or zero on success
  */
 static int ccp2_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+ * @cfg: V4L2 subdev pad configuration
+ * @fmt   : pointer to v4l2 subdev format structure
+ * return -EINVAL or zero on success
+ */
+static int ccp2_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      struct v4l2_subdev_format *fmt)
 {
 	struct isp_ccp2_device *ccp2 = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt *format;
 
+<<<<<<< HEAD
 	format = __ccp2_get_format(ccp2, fh, fmt->pad, fmt->which);
+=======
+	format = __ccp2_get_format(ccp2, cfg, fmt->pad, fmt->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (format == NULL)
 		return -EINVAL;
 
@@ -768,29 +922,52 @@ static int ccp2_get_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
 /*
  * ccp2_set_format - Handle set format by pads subdev method
  * @sd    : pointer to v4l2 subdev structure
+<<<<<<< HEAD
  * @fh    : V4L2 subdev file handle
  * @fmt   : pointer to v4l2 subdev format structure
  * returns zero
  */
 static int ccp2_set_format(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh,
+=======
+ * @cfg: V4L2 subdev pad configuration
+ * @fmt   : pointer to v4l2 subdev format structure
+ * returns zero
+ */
+static int ccp2_set_format(struct v4l2_subdev *sd, struct v4l2_subdev_pad_config *cfg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      struct v4l2_subdev_format *fmt)
 {
 	struct isp_ccp2_device *ccp2 = v4l2_get_subdevdata(sd);
 	struct v4l2_mbus_framefmt *format;
 
+<<<<<<< HEAD
 	format = __ccp2_get_format(ccp2, fh, fmt->pad, fmt->which);
 	if (format == NULL)
 		return -EINVAL;
 
 	ccp2_try_format(ccp2, fh, fmt->pad, &fmt->format, fmt->which);
+=======
+	format = __ccp2_get_format(ccp2, cfg, fmt->pad, fmt->which);
+	if (format == NULL)
+		return -EINVAL;
+
+	ccp2_try_format(ccp2, cfg, fmt->pad, &fmt->format, fmt->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*format = fmt->format;
 
 	/* Propagate the format from sink to source */
 	if (fmt->pad == CCP2_PAD_SINK) {
+<<<<<<< HEAD
 		format = __ccp2_get_format(ccp2, fh, CCP2_PAD_SOURCE,
 					   fmt->which);
 		*format = fmt->format;
 		ccp2_try_format(ccp2, fh, CCP2_PAD_SOURCE, format, fmt->which);
+=======
+		format = __ccp2_get_format(ccp2, cfg, CCP2_PAD_SOURCE,
+					   fmt->which);
+		*format = fmt->format;
+		ccp2_try_format(ccp2, cfg, CCP2_PAD_SOURCE, format, fmt->which);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -812,10 +989,17 @@ static int ccp2_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	memset(&format, 0, sizeof(format));
 	format.pad = CCP2_PAD_SINK;
 	format.which = fh ? V4L2_SUBDEV_FORMAT_TRY : V4L2_SUBDEV_FORMAT_ACTIVE;
+<<<<<<< HEAD
 	format.format.code = V4L2_MBUS_FMT_SGRBG10_1X10;
 	format.format.width = 4096;
 	format.format.height = 4096;
 	ccp2_set_format(sd, fh, &format);
+=======
+	format.format.code = MEDIA_BUS_FMT_SGRBG10_1X10;
+	format.format.width = 4096;
+	format.format.height = 4096;
+	ccp2_set_format(sd, fh ? fh->pad : NULL, &format);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -851,7 +1035,16 @@ static int ccp2_s_stream(struct v4l2_subdev *sd, int enable)
 		ccp2_print_status(ccp2);
 
 		/* Enable CSI1/CCP2 interface */
+<<<<<<< HEAD
 		ccp2_if_enable(ccp2, 1);
+=======
+		ret = ccp2_if_enable(ccp2, 1);
+		if (ret < 0) {
+			if (ccp2->phy)
+				omap3isp_csiphy_release(ccp2->phy);
+			return ret;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case ISP_PIPELINE_STREAM_SINGLESHOT:
@@ -929,7 +1122,11 @@ static int ccp2_video_queue(struct isp_video *video, struct isp_buffer *buffer)
 {
 	struct isp_ccp2_device *ccp2 = &video->isp->isp_ccp2;
 
+<<<<<<< HEAD
 	ccp2_set_inaddr(ccp2, buffer->isp_addr);
+=======
+	ccp2_set_inaddr(ccp2, buffer->dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -955,9 +1152,20 @@ static int ccp2_link_setup(struct media_entity *entity,
 {
 	struct v4l2_subdev *sd = media_entity_to_v4l2_subdev(entity);
 	struct isp_ccp2_device *ccp2 = v4l2_get_subdevdata(sd);
+<<<<<<< HEAD
 
 	switch (local->index | media_entity_type(remote->entity)) {
 	case CCP2_PAD_SINK | MEDIA_ENT_T_DEVNODE:
+=======
+	unsigned int index = local->index;
+
+	/* FIXME: this is actually a hack! */
+	if (is_media_entity_v4l2_subdev(remote->entity))
+		index |= 2 << 16;
+
+	switch (index) {
+	case CCP2_PAD_SINK:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* read from memory */
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (ccp2->input == CCP2_INPUT_SENSOR)
@@ -969,7 +1177,11 @@ static int ccp2_link_setup(struct media_entity *entity,
 		}
 		break;
 
+<<<<<<< HEAD
 	case CCP2_PAD_SINK | MEDIA_ENT_T_V4L2_SUBDEV:
+=======
+	case CCP2_PAD_SINK | 2 << 16:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* read from sensor/phy */
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (ccp2->input == CCP2_INPUT_MEMORY)
@@ -980,7 +1192,11 @@ static int ccp2_link_setup(struct media_entity *entity,
 				ccp2->input = CCP2_INPUT_NONE;
 		} break;
 
+<<<<<<< HEAD
 	case CCP2_PAD_SOURCE | MEDIA_ENT_T_V4L2_SUBDEV:
+=======
+	case CCP2_PAD_SOURCE | 2 << 16:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* write to video port/ccdc */
 		if (flags & MEDIA_LNK_FL_ENABLED)
 			ccp2->output = CCP2_OUTPUT_CCDC;
@@ -1024,6 +1240,10 @@ int omap3isp_ccp2_register_entities(struct isp_ccp2_device *ccp2,
 	int ret;
 
 	/* Register the subdev and video nodes. */
+<<<<<<< HEAD
+=======
+	ccp2->subdev.dev = vdev->mdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = v4l2_device_register_subdev(vdev, &ccp2->subdev);
 	if (ret < 0)
 		goto error;
@@ -1065,11 +1285,20 @@ static int ccp2_init_entities(struct isp_ccp2_device *ccp2)
 	v4l2_set_subdevdata(sd, ccp2);
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
+<<<<<<< HEAD
 	pads[CCP2_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
 	pads[CCP2_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
 
 	me->ops = &ccp2_media_ops;
 	ret = media_entity_init(me, CCP2_PADS_NUM, pads, 0);
+=======
+	pads[CCP2_PAD_SINK].flags = MEDIA_PAD_FL_SINK
+				    | MEDIA_PAD_FL_MUST_CONNECT;
+	pads[CCP2_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
+
+	me->ops = &ccp2_media_ops;
+	ret = media_entity_pads_init(me, CCP2_PADS_NUM, pads);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
@@ -1084,7 +1313,11 @@ static int ccp2_init_entities(struct isp_ccp2_device *ccp2)
 	 * implementation we use a fixed 32 bytes alignment regardless of the
 	 * input format and width. If strict 128 bits alignment support is
 	 * required ispvideo will need to be made aware of this special dual
+<<<<<<< HEAD
 	 * alignement requirements.
+=======
+	 * alignment requirements.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	ccp2->video_in.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
 	ccp2->video_in.bpl_alignment = 32;
@@ -1095,6 +1328,7 @@ static int ccp2_init_entities(struct isp_ccp2_device *ccp2)
 
 	ret = omap3isp_video_init(&ccp2->video_in, "CCP2");
 	if (ret < 0)
+<<<<<<< HEAD
 		goto error_video;
 
 	/* Connect the video node to the ccp2 subdev. */
@@ -1108,6 +1342,13 @@ static int ccp2_init_entities(struct isp_ccp2_device *ccp2)
 error_link:
 	omap3isp_video_cleanup(&ccp2->video_in);
 error_video:
+=======
+		goto error;
+
+	return 0;
+
+error:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	media_entity_cleanup(&ccp2->subdev.entity);
 	return ret;
 }

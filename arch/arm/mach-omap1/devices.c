@@ -25,11 +25,16 @@
 #include <mach/mux.h>
 
 #include <mach/omap7xx.h>
+<<<<<<< HEAD
 #include <mach/camera.h>
+=======
+#include "camera.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/hardware.h>
 
 #include "common.h"
 #include "clock.h"
+<<<<<<< HEAD
 #include "dma.h"
 #include "mmc.h"
 #include "sram.h"
@@ -53,6 +58,12 @@ static inline void omap_init_audio(void) {}
 /*-------------------------------------------------------------------------*/
 
 #if defined(CONFIG_RTC_DRV_OMAP) || defined(CONFIG_RTC_DRV_OMAP_MODULE)
+=======
+#include "mmc.h"
+#include "sram.h"
+
+#if IS_ENABLED(CONFIG_RTC_DRV_OMAP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define	OMAP_RTC_BASE		0xfffb4800
 
@@ -91,7 +102,11 @@ static inline void omap_init_mbox(void) { }
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void omap1_mmc_mux(struct omap_mmc_platform_data *mmc_controller,
 			int controller_nr)
@@ -223,16 +238,26 @@ void __init omap1_init_mmc(struct omap_mmc_platform_data **mmc_data,
 		case 0:
 			base = OMAP1_MMC1_BASE;
 			irq = INT_MMC;
+<<<<<<< HEAD
 			rx_req = OMAP_DMA_MMC_RX;
 			tx_req = OMAP_DMA_MMC_TX;
+=======
+			rx_req = 22;
+			tx_req = 21;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case 1:
 			if (!cpu_is_omap16xx())
 				return;
 			base = OMAP1_MMC2_BASE;
 			irq = INT_1610_MMC2;
+<<<<<<< HEAD
 			rx_req = OMAP_DMA_MMC2_RX;
 			tx_req = OMAP_DMA_MMC2_TX;
+=======
+			rx_req = 55;
+			tx_req = 54;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		default:
 			continue;
@@ -249,7 +274,11 @@ void __init omap1_init_mmc(struct omap_mmc_platform_data **mmc_data,
 /*-------------------------------------------------------------------------*/
 
 /* OMAP7xx SPI support */
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_OMAP_100K) || defined(CONFIG_SPI_OMAP_100K_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_OMAP_100K)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct platform_device omap_spi1 = {
 	.name           = "omap1_spi100k",
@@ -331,7 +360,11 @@ static inline void omap_init_sti(void) {}
  * mcbsp1..3	= 5..7
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_OMAP_UWIRE) || defined(CONFIG_SPI_OMAP_UWIRE_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_OMAP_UWIRE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define	OMAP_UWIRE_BASE		0xfffb3000
 
@@ -426,7 +459,10 @@ static int __init omap1_init_devices(void)
 	 * in alphabetical order so they're easier to sort through.
 	 */
 
+<<<<<<< HEAD
 	omap_init_audio();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_init_mbox();
 	omap_init_rtc();
 	omap_init_spi100k();
@@ -438,7 +474,11 @@ static int __init omap1_init_devices(void)
 }
 arch_initcall(omap1_init_devices);
 
+<<<<<<< HEAD
 #if defined(CONFIG_OMAP_WATCHDOG) || defined(CONFIG_OMAP_WATCHDOG_MODULE)
+=======
+#if IS_ENABLED(CONFIG_OMAP_WATCHDOG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct resource wdt_resources[] = {
 	{

@@ -91,6 +91,11 @@
 #define BOND_XMIT_POLICY_LAYER2		0 /* layer 2 (MAC only), default */
 #define BOND_XMIT_POLICY_LAYER34	1 /* layer 3+4 (IP ^ (TCP || UDP)) */
 #define BOND_XMIT_POLICY_LAYER23	2 /* layer 2+3 (IP ^ MAC) */
+<<<<<<< HEAD
+=======
+#define BOND_XMIT_POLICY_ENCAP23	3 /* encapsulated layer 2+3 */
+#define BOND_XMIT_POLICY_ENCAP34	4 /* encapsulated layer 3+4 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct ifbond {
 	__s32 bond_mode;

@@ -10,15 +10,26 @@
  */
 
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/pagemap.h>
 #include <linux/kdebug.h>
 #include <linux/kprobes.h>
+=======
+#include <linux/extable.h>
+#include <linux/pagemap.h>
+#include <linux/kdebug.h>
+#include <linux/kprobes.h>
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mmu_context.h>
 #include <asm/sysreg.h>
 #include <asm/tlb.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_KPROBES
 static inline int notify_page_fault(struct pt_regs *regs, int trap)
@@ -81,7 +92,11 @@ asmlinkage void do_page_fault(unsigned long ecr, struct pt_regs *regs)
 	 * If we're in an interrupt or have no user context, we must
 	 * not take the fault...
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm || regs->sr & SYSREG_BIT(GM))
+=======
+	if (faulthandler_disabled() || !mm || regs->sr & SYSREG_BIT(GM))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto no_context;
 
 	local_irq_enable();
@@ -134,7 +149,11 @@ good_area:
 	 * sure we exit gracefully rather than endlessly redo the
 	 * fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -142,6 +161,11 @@ good_area:
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();

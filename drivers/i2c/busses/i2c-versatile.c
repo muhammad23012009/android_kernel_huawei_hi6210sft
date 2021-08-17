@@ -16,7 +16,10 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/of_i2c.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define I2C_CONTROL	0x00
 #define I2C_CONTROLS	0x00
@@ -71,6 +74,7 @@ static int i2c_versatile_probe(struct platform_device *dev)
 	struct resource *r;
 	int ret;
 
+<<<<<<< HEAD
 	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
 	if (!r) {
 		ret = -EINVAL;
@@ -93,6 +97,16 @@ static int i2c_versatile_probe(struct platform_device *dev)
 		ret = -ENOMEM;
 		goto err_free;
 	}
+=======
+	i2c = devm_kzalloc(&dev->dev, sizeof(struct i2c_versatile), GFP_KERNEL);
+	if (!i2c)
+		return -ENOMEM;
+
+	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
+	i2c->base = devm_ioremap_resource(&dev->dev, r);
+	if (IS_ERR(i2c->base))
+		return PTR_ERR(i2c->base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	writel(SCL | SDA, i2c->base + I2C_CONTROLS);
 
@@ -106,6 +120,7 @@ static int i2c_versatile_probe(struct platform_device *dev)
 
 	i2c->adap.nr = dev->id;
 	ret = i2c_bit_add_numbered_bus(&i2c->adap);
+<<<<<<< HEAD
 	if (ret >= 0) {
 		platform_set_drvdata(dev, i2c);
 		of_i2c_register_devices(&i2c->adap);
@@ -119,6 +134,14 @@ static int i2c_versatile_probe(struct platform_device *dev)
 	release_mem_region(r->start, resource_size(r));
  err_out:
 	return ret;
+=======
+	if (ret < 0)
+		return ret;
+
+	platform_set_drvdata(dev, i2c);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int i2c_versatile_remove(struct platform_device *dev)
@@ -140,7 +163,10 @@ static struct platform_driver i2c_versatile_driver = {
 	.remove		= i2c_versatile_remove,
 	.driver		= {
 		.name	= "versatile-i2c",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = i2c_versatile_match,
 	},
 };

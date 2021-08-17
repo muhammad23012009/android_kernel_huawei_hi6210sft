@@ -33,7 +33,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <media/rc-core.h>
+<<<<<<< HEAD
 #include <linux/pci_ids.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "fintek-cir.h"
 
@@ -148,7 +151,10 @@ static int fintek_hw_detect(struct fintek_dev *fintek)
 	u8 vendor_major, vendor_minor;
 	u8 portsel, ir_class;
 	u16 vendor, chip;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fintek_config_mode_enable(fintek);
 
@@ -208,7 +214,11 @@ static int fintek_hw_detect(struct fintek_dev *fintek)
 
 	spin_unlock_irqrestore(&fintek->fintek_lock, flags);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void fintek_cir_ldev_init(struct fintek_dev *fintek)
@@ -541,7 +551,11 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 	/* Set up the rc device */
 	rdev->priv = fintek;
 	rdev->driver_type = RC_DRIVER_IR_RAW;
+<<<<<<< HEAD
 	rdev->allowed_protos = RC_BIT_ALL;
+=======
+	rdev->allowed_protocols = RC_BIT_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rdev->open = fintek_open;
 	rdev->close = fintek_close;
 	rdev->input_name = FINTEK_DESCRIPTION;
@@ -644,7 +658,10 @@ static int fintek_suspend(struct pnp_dev *pdev, pm_message_t state)
 
 static int fintek_resume(struct pnp_dev *pdev)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fintek_dev *fintek = pnp_get_drvdata(pdev);
 
 	fit_dbg("%s called", __func__);
@@ -661,7 +678,11 @@ static int fintek_resume(struct pnp_dev *pdev)
 
 	fintek_cir_regs_init(fintek);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void fintek_shutdown(struct pnp_dev *pdev)
@@ -686,6 +707,7 @@ static struct pnp_driver fintek_driver = {
 	.shutdown	= fintek_shutdown,
 };
 
+<<<<<<< HEAD
 static int fintek_init(void)
 {
 	return pnp_register_driver(&fintek_driver);
@@ -696,6 +718,8 @@ static void fintek_exit(void)
 	pnp_unregister_driver(&fintek_driver);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(debug, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Enable debugging output");
 
@@ -705,5 +729,9 @@ MODULE_DESCRIPTION(FINTEK_DESCRIPTION " driver");
 MODULE_AUTHOR("Jarod Wilson <jarod@redhat.com>");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_init(fintek_init);
 module_exit(fintek_exit);
+=======
+module_pnp_driver(fintek_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

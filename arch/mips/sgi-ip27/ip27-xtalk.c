@@ -7,7 +7,10 @@
  * Generic XTALK initialization code
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/smp.h>
 #include <asm/sn/types.h>
@@ -23,7 +26,11 @@
 
 extern int bridge_probe(nasid_t nasid, int widget, int masterwid);
 
+<<<<<<< HEAD
 static int __cpuinit probe_one_port(nasid_t nasid, int widget, int masterwid)
+=======
+static int probe_one_port(nasid_t nasid, int widget, int masterwid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	widgetreg_t		widget_id;
 	xwidget_part_num_t	partnum;
@@ -47,7 +54,11 @@ static int __cpuinit probe_one_port(nasid_t nasid, int widget, int masterwid)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __cpuinit xbow_probe(nasid_t nasid)
+=======
+static int xbow_probe(nasid_t nasid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	lboard_t *brd;
 	klxbow_t *xbow_p;
@@ -68,7 +79,11 @@ static int __cpuinit xbow_probe(nasid_t nasid)
 		return -ENODEV;
 
 	/*
+<<<<<<< HEAD
 	 * Okay, here's a xbow. Lets arbitrate and find
+=======
+	 * Okay, here's a xbow. Let's arbitrate and find
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * out if we should initialize it. Set enabled
 	 * hub connected at highest or lowest widget as
 	 * master.
@@ -100,7 +115,11 @@ static int __cpuinit xbow_probe(nasid_t nasid)
 	return 0;
 }
 
+<<<<<<< HEAD
 void __cpuinit xtalk_probe_node(cnodeid_t nid)
+=======
+void xtalk_probe_node(cnodeid_t nid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	volatile u64		hubreg;
 	nasid_t			nasid;

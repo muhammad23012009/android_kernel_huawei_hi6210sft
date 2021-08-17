@@ -22,7 +22,10 @@
 #ifndef _LG2160_H_
 #define _LG2160_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include "dvb_frontend.h"
 
@@ -67,7 +70,11 @@ struct lg2160_config {
 	enum lg_chip_type lg_chip;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_LG2160)
+=======
+#if IS_REACHABLE(CONFIG_DVB_LG2160)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern
 struct dvb_frontend *lg2160_attach(const struct lg2160_config *config,
 				     struct i2c_adapter *i2c_adap);

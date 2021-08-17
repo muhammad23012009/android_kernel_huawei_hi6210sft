@@ -1,5 +1,9 @@
 /*
  * Copyright (C) 2009 Texas Instruments Inc
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014 Lad, Prabhakar <prabhakar.csengg@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +22,7 @@
  * TODO : add support for VBI & HBI data service
  *	  add static buffer allocation
  */
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -40,6 +45,18 @@
 
 #include "vpif_capture.h"
 #include "vpif.h"
+=======
+
+#include <linux/module.h>
+#include <linux/interrupt.h>
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+
+#include <media/v4l2-ioctl.h>
+
+#include "vpif.h"
+#include "vpif_capture.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("TI DaVinci VPIF Capture driver");
 MODULE_LICENSE("GPL");
@@ -50,6 +67,7 @@ MODULE_VERSION(VPIF_CAPTURE_VERSION);
 		v4l2_dbg(level, debug, &vpif_obj.v4l2_dev, fmt, ## arg)
 
 static int debug = 1;
+<<<<<<< HEAD
 static u32 ch0_numbuffers = 3;
 static u32 ch1_numbuffers = 3;
 static u32 ch0_bufsize = 1920 * 1080 * 2;
@@ -76,6 +94,14 @@ static struct vpif_config_params config_params = {
 	.channel_bufsize[0] = 1920 * 1080 * 2,
 	.channel_bufsize[1] = 720 * 576 * 2,
 };
+=======
+
+module_param(debug, int, 0644);
+
+MODULE_PARM_DESC(debug, "Debug level 0-1");
+
+#define VPIF_DRIVER_NAME	"vpif_capture"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* global variables */
 static struct vpif_device vpif_obj = { {NULL} };
@@ -83,8 +109,24 @@ static struct device *vpif_dev;
 static void vpif_calculate_offsets(struct channel_obj *ch);
 static void vpif_config_addr(struct channel_obj *ch, int muxmode);
 
+<<<<<<< HEAD
 /**
  * buffer_prepare :  callback function for buffer prepare
+=======
+static u8 channel_first_int[VPIF_NUMBER_OF_OBJECTS][2] = { {1, 1} };
+
+/* Is set to 1 in case of SDTV formats, 2 in case of HDTV formats. */
+static int ycmux_mode;
+
+static inline
+struct vpif_cap_buffer *to_vpif_buffer(struct vb2_v4l2_buffer *vb)
+{
+	return container_of(vb, struct vpif_cap_buffer, vb);
+}
+
+/**
+ * vpif_buffer_prepare :  callback function for buffer prepare
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @vb: ptr to vb2_buffer
  *
  * This is the callback function for buffer prepare when vb2_qbuf()
@@ -93,10 +135,16 @@ static void vpif_config_addr(struct channel_obj *ch, int muxmode);
  */
 static int vpif_buffer_prepare(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	/* Get the file handle object and channel object */
 	struct vpif_fh *fh = vb2_get_drv_priv(vb->vb2_queue);
 	struct vb2_queue *q = vb->vb2_queue;
 	struct channel_obj *ch = fh->channel;
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct vb2_queue *q = vb->vb2_queue;
+	struct channel_obj *ch = vb2_get_drv_priv(q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct common_obj *common;
 	unsigned long addr;
 
@@ -104,6 +152,7 @@ static int vpif_buffer_prepare(struct vb2_buffer *vb)
 
 	common = &ch->common[VPIF_VIDEO_INDEX];
 
+<<<<<<< HEAD
 	if (vb->state != VB2_BUF_STATE_ACTIVE &&
 		vb->state != VB2_BUF_STATE_PREPARED) {
 		vb2_set_plane_payload(vb, 0, common->fmt.fmt.pix.sizeimage);
@@ -124,21 +173,47 @@ static int vpif_buffer_prepare(struct vb2_buffer *vb)
 exit:
 	vpif_dbg(1, debug, "buffer_prepare:offset is not aligned to 8 bytes\n");
 	return -EINVAL;
+=======
+	vb2_set_plane_payload(vb, 0, common->fmt.fmt.pix.sizeimage);
+	if (vb2_get_plane_payload(vb, 0) > vb2_plane_size(vb, 0))
+		return -EINVAL;
+
+	vbuf->field = common->fmt.fmt.pix.field;
+
+	addr = vb2_dma_contig_plane_dma_addr(vb, 0);
+	if (!IS_ALIGNED((addr + common->ytop_off), 8) ||
+		!IS_ALIGNED((addr + common->ybtm_off), 8) ||
+		!IS_ALIGNED((addr + common->ctop_off), 8) ||
+		!IS_ALIGNED((addr + common->cbtm_off), 8)) {
+		vpif_dbg(1, debug, "offset is not aligned\n");
+		return -EINVAL;
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * vpif_buffer_queue_setup : Callback function for buffer setup.
  * @vq: vb2_queue ptr
+<<<<<<< HEAD
  * @fmt: v4l2 format
  * @nbuffers: ptr to number of buffers requested by application
  * @nplanes:: contains number of distinct video planes needed to hold a frame
  * @sizes[]: contains the size (in bytes) of each plane.
  * @alloc_ctxs: ptr to allocation context
+=======
+ * @nbuffers: ptr to number of buffers requested by application
+ * @nplanes:: contains number of distinct video planes needed to hold a frame
+ * @sizes[]: contains the size (in bytes) of each plane.
+ * @alloc_devs: ptr to allocation context
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This callback function is called when reqbuf() is called to adjust
  * the buffer count and buffer size
  */
 static int vpif_buffer_queue_setup(struct vb2_queue *vq,
+<<<<<<< HEAD
 				const struct v4l2_format *fmt,
 				unsigned int *nbuffers, unsigned int *nplanes,
 				unsigned int sizes[], void *alloc_ctxs[])
@@ -185,6 +260,31 @@ static int vpif_buffer_queue_setup(struct vb2_queue *vq,
 	*nplanes = 1;
 	sizes[0] = size;
 	alloc_ctxs[0] = common->alloc_ctx;
+=======
+				unsigned int *nbuffers, unsigned int *nplanes,
+				unsigned int sizes[], struct device *alloc_devs[])
+{
+	struct channel_obj *ch = vb2_get_drv_priv(vq);
+	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
+	unsigned size = common->fmt.fmt.pix.sizeimage;
+
+	vpif_dbg(2, debug, "vpif_buffer_setup\n");
+
+	if (*nplanes) {
+		if (sizes[0] < size)
+			return -EINVAL;
+		size = sizes[0];
+	}
+
+	if (vq->num_buffers + *nbuffers < 3)
+		*nbuffers = 3 - vq->num_buffers;
+
+	*nplanes = 1;
+	sizes[0] = size;
+
+	/* Calculate the offset for Y and C data in the buffer */
+	vpif_calculate_offsets(ch);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -195,11 +295,17 @@ static int vpif_buffer_queue_setup(struct vb2_queue *vq,
  */
 static void vpif_buffer_queue(struct vb2_buffer *vb)
 {
+<<<<<<< HEAD
 	/* Get the file handle object and channel object */
 	struct vpif_fh *fh = vb2_get_drv_priv(vb->vb2_queue);
 	struct channel_obj *ch = fh->channel;
 	struct vpif_cap_buffer *buf = container_of(vb,
 				struct vpif_cap_buffer, vb);
+=======
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct channel_obj *ch = vb2_get_drv_priv(vb->vb2_queue);
+	struct vpif_cap_buffer *buf = to_vpif_buffer(vbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct common_obj *common;
 	unsigned long flags;
 
@@ -214,6 +320,7 @@ static void vpif_buffer_queue(struct vb2_buffer *vb)
 }
 
 /**
+<<<<<<< HEAD
  * vpif_buf_cleanup : Callback function to free buffer
  * @vb: ptr to vb2_buffer
  *
@@ -272,10 +379,17 @@ static int vpif_buffer_init(struct vb2_buffer *vb)
 static u8 channel_first_int[VPIF_NUMBER_OF_OBJECTS][2] =
 	{ {1, 1} };
 
+=======
+ * vpif_start_streaming : Starts the DMA engine for streaming
+ * @vb: ptr to vb2_buffer
+ * @count: number of buffers
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 {
 	struct vpif_capture_config *vpif_config_data =
 					vpif_dev->platform_data;
+<<<<<<< HEAD
 	struct vpif_fh *fh = vb2_get_drv_priv(vq);
 	struct channel_obj *ch = fh->channel;
 	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
@@ -316,6 +430,19 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 		vpif_dbg(1, debug, "conflict in field format and std format\n");
 		return -EINVAL;
 	}
+=======
+	struct channel_obj *ch = vb2_get_drv_priv(vq);
+	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
+	struct vpif_params *vpif = &ch->vpifparams;
+	struct vpif_cap_buffer *buf, *tmp;
+	unsigned long addr, flags;
+	int ret;
+
+	spin_lock_irqsave(&common->irqlock, flags);
+
+	/* Initialize field_id */
+	ch->field_id = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* configure 1 or 2 channel mode */
 	if (vpif_config_data->setup_input_channel_mode) {
@@ -323,6 +450,7 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 			setup_input_channel_mode(vpif->std_info.ycmux_mode);
 		if (ret < 0) {
 			vpif_dbg(1, debug, "can't set vpif channel mode\n");
+<<<<<<< HEAD
 			return ret;
 		}
 	}
@@ -338,6 +466,37 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 	common->started = ret;
 	vpif_config_addr(ch, ret);
 
+=======
+			goto err;
+		}
+	}
+
+	ret = v4l2_subdev_call(ch->sd, video, s_stream, 1);
+	if (ret && ret != -ENOIOCTLCMD && ret != -ENODEV) {
+		vpif_dbg(1, debug, "stream on failed in subdev\n");
+		goto err;
+	}
+
+	/* Call vpif_set_params function to set the parameters and addresses */
+	ret = vpif_set_video_params(vpif, ch->channel_id);
+	if (ret < 0) {
+		vpif_dbg(1, debug, "can't set video params\n");
+		goto err;
+	}
+
+	ycmux_mode = ret;
+	vpif_config_addr(ch, ret);
+
+	/* Get the next frame from the buffer queue */
+	common->cur_frm = common->next_frm = list_entry(common->dma_queue.next,
+				    struct vpif_cap_buffer, list);
+	/* Remove buffer from the buffer queue */
+	list_del(&common->cur_frm->list);
+	spin_unlock_irqrestore(&common->irqlock, flags);
+
+	addr = vb2_dma_contig_plane_dma_addr(&common->cur_frm->vb.vb2_buf, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	common->set_addr(addr + common->ytop_off,
 			 addr + common->ybtm_off,
 			 addr + common->ctop_off,
@@ -348,19 +507,29 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 	 * VPIF register
 	 */
 	channel_first_int[VPIF_VIDEO_INDEX][ch->channel_id] = 1;
+<<<<<<< HEAD
 	if ((VPIF_CHANNEL0_VIDEO == ch->channel_id)) {
+=======
+	if (VPIF_CHANNEL0_VIDEO == ch->channel_id) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		channel0_intr_assert();
 		channel0_intr_enable(1);
 		enable_channel0(1);
 	}
+<<<<<<< HEAD
 	if ((VPIF_CHANNEL1_VIDEO == ch->channel_id) ||
 	    (common->started == 2)) {
+=======
+	if (VPIF_CHANNEL1_VIDEO == ch->channel_id ||
+		ycmux_mode == 2) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		channel1_intr_assert();
 		channel1_intr_enable(1);
 		enable_channel1(1);
 	}
 
 	return 0;
+<<<<<<< HEAD
 }
 
 /* abort streaming and wait for last buffer */
@@ -378,19 +547,87 @@ static int vpif_stop_streaming(struct vb2_queue *vq)
 
 	/* release all active buffers */
 	spin_lock_irqsave(&common->irqlock, flags);
+=======
+
+err:
+	list_for_each_entry_safe(buf, tmp, &common->dma_queue, list) {
+		list_del(&buf->list);
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_QUEUED);
+	}
+	spin_unlock_irqrestore(&common->irqlock, flags);
+
+	return ret;
+}
+
+/**
+ * vpif_stop_streaming : Stop the DMA engine
+ * @vq: ptr to vb2_queue
+ *
+ * This callback stops the DMA engine and any remaining buffers
+ * in the DMA queue are released.
+ */
+static void vpif_stop_streaming(struct vb2_queue *vq)
+{
+	struct channel_obj *ch = vb2_get_drv_priv(vq);
+	struct common_obj *common;
+	unsigned long flags;
+	int ret;
+
+	common = &ch->common[VPIF_VIDEO_INDEX];
+
+	/* Disable channel as per its device type and channel id */
+	if (VPIF_CHANNEL0_VIDEO == ch->channel_id) {
+		enable_channel0(0);
+		channel0_intr_enable(0);
+	}
+	if (VPIF_CHANNEL1_VIDEO == ch->channel_id ||
+		ycmux_mode == 2) {
+		enable_channel1(0);
+		channel1_intr_enable(0);
+	}
+
+	ycmux_mode = 0;
+
+	ret = v4l2_subdev_call(ch->sd, video, s_stream, 0);
+	if (ret && ret != -ENOIOCTLCMD && ret != -ENODEV)
+		vpif_dbg(1, debug, "stream off failed in subdev\n");
+
+	/* release all active buffers */
+	spin_lock_irqsave(&common->irqlock, flags);
+	if (common->cur_frm == common->next_frm) {
+		vb2_buffer_done(&common->cur_frm->vb.vb2_buf,
+				VB2_BUF_STATE_ERROR);
+	} else {
+		if (common->cur_frm != NULL)
+			vb2_buffer_done(&common->cur_frm->vb.vb2_buf,
+					VB2_BUF_STATE_ERROR);
+		if (common->next_frm != NULL)
+			vb2_buffer_done(&common->next_frm->vb.vb2_buf,
+					VB2_BUF_STATE_ERROR);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (!list_empty(&common->dma_queue)) {
 		common->next_frm = list_entry(common->dma_queue.next,
 						struct vpif_cap_buffer, list);
 		list_del(&common->next_frm->list);
+<<<<<<< HEAD
 		vb2_buffer_done(&common->next_frm->vb, VB2_BUF_STATE_ERROR);
 	}
 	spin_unlock_irqrestore(&common->irqlock, flags);
 
 	return 0;
+=======
+		vb2_buffer_done(&common->next_frm->vb.vb2_buf,
+				VB2_BUF_STATE_ERROR);
+	}
+	spin_unlock_irqrestore(&common->irqlock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct vb2_ops video_qops = {
 	.queue_setup		= vpif_buffer_queue_setup,
+<<<<<<< HEAD
 	.wait_prepare		= vpif_wait_prepare,
 	.wait_finish		= vpif_wait_finish,
 	.buf_init		= vpif_buffer_init,
@@ -399,6 +636,14 @@ static struct vb2_ops video_qops = {
 	.stop_streaming		= vpif_stop_streaming,
 	.buf_cleanup		= vpif_buf_cleanup,
 	.buf_queue		= vpif_buffer_queue,
+=======
+	.buf_prepare		= vpif_buffer_prepare,
+	.start_streaming	= vpif_start_streaming,
+	.stop_streaming		= vpif_stop_streaming,
+	.buf_queue		= vpif_buffer_queue,
+	.wait_prepare		= vb2_ops_wait_prepare,
+	.wait_finish		= vb2_ops_wait_finish,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -411,9 +656,14 @@ static struct vb2_ops video_qops = {
  */
 static void vpif_process_buffer_complete(struct common_obj *common)
 {
+<<<<<<< HEAD
 	v4l2_get_timestamp(&common->cur_frm->vb.v4l2_buf.timestamp);
 	vb2_buffer_done(&common->cur_frm->vb,
 					    VB2_BUF_STATE_DONE);
+=======
+	common->cur_frm->vb.vb2_buf.timestamp = ktime_get_ns();
+	vb2_buffer_done(&common->cur_frm->vb.vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Make curFrm pointing to nextFrm */
 	common->cur_frm = common->next_frm;
 }
@@ -436,8 +686,12 @@ static void vpif_schedule_next_buffer(struct common_obj *common)
 	/* Remove that buffer from the buffer queue */
 	list_del(&common->next_frm->list);
 	spin_unlock(&common->irqlock);
+<<<<<<< HEAD
 	common->next_frm->vb.state = VB2_BUF_STATE_ACTIVE;
 	addr = vb2_dma_contig_plane_dma_addr(&common->next_frm->vb, 0);
+=======
+	addr = vb2_dma_contig_plane_dma_addr(&common->next_frm->vb.vb2_buf, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set top and bottom field addresses in VPIF registers */
 	common->set_addr(addr + common->ytop_off,
@@ -459,7 +713,10 @@ static irqreturn_t vpif_channel_isr(int irq, void *dev_id)
 	struct vpif_device *dev = &vpif_obj;
 	struct common_obj *common;
 	struct channel_obj *ch;
+<<<<<<< HEAD
 	enum v4l2_field field;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int channel_id = 0;
 	int fid = -1, i;
 
@@ -469,6 +726,7 @@ static irqreturn_t vpif_channel_isr(int irq, void *dev_id)
 
 	ch = dev->dev[channel_id];
 
+<<<<<<< HEAD
 	field = ch->common[VPIF_VIDEO_INDEX].fmt.fmt.pix.field;
 
 	for (i = 0; i < VPIF_NUMBER_OF_OBJECTS; i++) {
@@ -477,6 +735,11 @@ static irqreturn_t vpif_channel_isr(int irq, void *dev_id)
 		if (0 == common->started)
 			continue;
 
+=======
+	for (i = 0; i < VPIF_NUMBER_OF_OBJECTS; i++) {
+		common = &ch->common[i];
+		/* skip If streaming is not started in this channel */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Check the field format */
 		if (1 == ch->vpifparams.std_info.frm_fmt) {
 			/* Progressive mode */
@@ -588,10 +851,34 @@ static int vpif_update_std_info(struct channel_obj *ch)
 	common->width = std_info->width;
 	common->fmt.fmt.pix.height = std_info->height;
 	common->height = std_info->height;
+<<<<<<< HEAD
+=======
+	common->fmt.fmt.pix.sizeimage = common->height * common->width * 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	common->fmt.fmt.pix.bytesperline = std_info->width;
 	vpifparams->video_params.hpitch = std_info->width;
 	vpifparams->video_params.storage_mode = std_info->frm_fmt;
 
+<<<<<<< HEAD
+=======
+	if (vid_ch->stdid)
+		common->fmt.fmt.pix.colorspace = V4L2_COLORSPACE_SMPTE170M;
+	else
+		common->fmt.fmt.pix.colorspace = V4L2_COLORSPACE_REC709;
+
+	if (ch->vpifparams.std_info.frm_fmt)
+		common->fmt.fmt.pix.field = V4L2_FIELD_NONE;
+	else
+		common->fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
+
+	if (ch->vpifparams.iface.if_type == VPIF_IF_RAW_BAYER)
+		common->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_SBGGR8;
+	else
+		common->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUV422P;
+
+	common->fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -604,7 +891,11 @@ static int vpif_update_std_info(struct channel_obj *ch)
  */
 static void vpif_calculate_offsets(struct channel_obj *ch)
 {
+<<<<<<< HEAD
 	unsigned int hpitch, vpitch, sizeimage;
+=======
+	unsigned int hpitch, sizeimage;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct video_obj *vid_ch = &(ch->video);
 	struct vpif_params *vpifparams = &ch->vpifparams;
 	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
@@ -623,7 +914,10 @@ static void vpif_calculate_offsets(struct channel_obj *ch)
 	sizeimage = common->fmt.fmt.pix.sizeimage;
 
 	hpitch = common->fmt.fmt.pix.bytesperline;
+<<<<<<< HEAD
 	vpitch = sizeimage / (hpitch * 2);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((V4L2_FIELD_NONE == vid_ch->buf_field) ||
 	    (V4L2_FIELD_INTERLACED == vid_ch->buf_field)) {
@@ -668,6 +962,7 @@ static void vpif_calculate_offsets(struct channel_obj *ch)
 }
 
 /**
+<<<<<<< HEAD
  * vpif_config_format: configure default frame format in the device
  * ch : ptr to channel object
  */
@@ -694,6 +989,8 @@ static void vpif_config_format(struct channel_obj *ch)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * vpif_get_default_field() - Get default field type based on interface
  * @vpif_params - ptr to vpif params
  */
@@ -705,6 +1002,7 @@ static inline enum v4l2_field vpif_get_default_field(
 }
 
 /**
+<<<<<<< HEAD
  * vpif_check_format()  - check given pixel format for compatibility
  * @ch - channel  ptr
  * @pixfmt - Given pixel format
@@ -811,6 +1109,8 @@ exit:
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * vpif_config_addr() - function to configure buffer address in vpif
  * @ch - channel ptr
  * @muxmode - channel mux mode
@@ -832,6 +1132,7 @@ static void vpif_config_addr(struct channel_obj *ch, int muxmode)
 }
 
 /**
+<<<<<<< HEAD
  * vpif_mmap : It is used to map kernel space buffers into user spaces
  * @filep: file pointer
  * @vma: ptr to vm_area_struct
@@ -1309,6 +1610,66 @@ static int vpif_set_input(
 	if (sd_index >= 0) {
 		sd = vpif_obj.sd[sd_index];
 		subdev_info = &vpif_cfg->subdev_info[sd_index];
+=======
+ * vpif_input_to_subdev() - Maps input to sub device
+ * @vpif_cfg - global config ptr
+ * @chan_cfg - channel config ptr
+ * @input_index - Given input index from application
+ *
+ * lookup the sub device information for a given input index.
+ * we report all the inputs to application. inputs table also
+ * has sub device name for the each input
+ */
+static int vpif_input_to_subdev(
+		struct vpif_capture_config *vpif_cfg,
+		struct vpif_capture_chan_config *chan_cfg,
+		int input_index)
+{
+	struct vpif_subdev_info *subdev_info;
+	const char *subdev_name;
+	int i;
+
+	vpif_dbg(2, debug, "vpif_input_to_subdev\n");
+
+	subdev_name = chan_cfg->inputs[input_index].subdev_name;
+	if (subdev_name == NULL)
+		return -1;
+
+	/* loop through the sub device list to get the sub device info */
+	for (i = 0; i < vpif_cfg->subdev_count; i++) {
+		subdev_info = &vpif_cfg->subdev_info[i];
+		if (!strcmp(subdev_info->name, subdev_name))
+			return i;
+	}
+	return -1;
+}
+
+/**
+ * vpif_set_input() - Select an input
+ * @vpif_cfg - global config ptr
+ * @ch - channel
+ * @_index - Given input index from application
+ *
+ * Select the given input.
+ */
+static int vpif_set_input(
+		struct vpif_capture_config *vpif_cfg,
+		struct channel_obj *ch,
+		int index)
+{
+	struct vpif_capture_chan_config *chan_cfg =
+			&vpif_cfg->chan_config[ch->channel_id];
+	struct vpif_subdev_info *subdev_info = NULL;
+	struct v4l2_subdev *sd = NULL;
+	u32 input = 0, output = 0;
+	int sd_index;
+	int ret;
+
+	sd_index = vpif_input_to_subdev(vpif_cfg, chan_cfg, index);
+	if (sd_index >= 0) {
+		sd = vpif_obj.sd[sd_index];
+		subdev_info = &vpif_cfg->subdev_info[sd_index];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* first setup input path from sub device to vpif */
@@ -1339,7 +1700,11 @@ static int vpif_set_input(
 	ch->vpifparams.iface = chan_cfg->vpif_if;
 
 	/* update tvnorms from the sub device input info */
+<<<<<<< HEAD
 	ch->video_dev->tvnorms = chan_cfg->inputs[index].input.std;
+=======
+	ch->video_dev.tvnorms = chan_cfg->inputs[index].input.std;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1353,8 +1718,13 @@ static int vpif_set_input(
  */
 static int vpif_querystd(struct file *file, void *priv, v4l2_std_id *std_id)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
+=======
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	vpif_dbg(2, debug, "vpif_querystd\n");
@@ -1380,11 +1750,30 @@ static int vpif_querystd(struct file *file, void *priv, v4l2_std_id *std_id)
  */
 static int vpif_g_std(struct file *file, void *priv, v4l2_std_id *std)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 
 	vpif_dbg(2, debug, "vpif_g_std\n");
 
+=======
+	struct vpif_capture_config *config = vpif_dev->platform_data;
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct vpif_capture_chan_config *chan_cfg;
+	struct v4l2_input input;
+
+	vpif_dbg(2, debug, "vpif_g_std\n");
+
+	if (config->chan_config[ch->channel_id].inputs == NULL)
+		return -ENODATA;
+
+	chan_cfg = &config->chan_config[ch->channel_id];
+	input = chan_cfg->inputs[ch->input_idx].input;
+	if (input.capabilities != V4L2_IN_CAP_STD)
+		return -ENODATA;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*std = ch->video.stdid;
 	return 0;
 }
@@ -1397,6 +1786,7 @@ static int vpif_g_std(struct file *file, void *priv, v4l2_std_id *std)
  */
 static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
@@ -1422,6 +1812,28 @@ static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 		return ret;
 
 	fh->initialized = 1;
+=======
+	struct vpif_capture_config *config = vpif_dev->platform_data;
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
+	struct vpif_capture_chan_config *chan_cfg;
+	struct v4l2_input input;
+	int ret;
+
+	vpif_dbg(2, debug, "vpif_s_std\n");
+
+	if (config->chan_config[ch->channel_id].inputs == NULL)
+		return -ENODATA;
+
+	chan_cfg = &config->chan_config[ch->channel_id];
+	input = chan_cfg->inputs[ch->input_idx].input;
+	if (input.capabilities != V4L2_IN_CAP_STD)
+		return -ENODATA;
+
+	if (vb2_is_busy(&common->buffer_queue))
+		return -EBUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Call encoder subdevice function to set the standard */
 	ch->video.stdid = std_id;
@@ -1433,11 +1845,16 @@ static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* Configure the default format information */
 	vpif_config_format(ch);
 
 	/* set standard in the sub device */
 	ret = v4l2_subdev_call(ch->sd, core, s_std, std_id);
+=======
+	/* set standard in the sub device */
+	ret = v4l2_subdev_call(ch->sd, video, s_std, std_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret && ret != -ENOIOCTLCMD && ret != -ENODEV) {
 		vpif_dbg(1, debug, "Failed to set standard for sub devices\n");
 		return ret;
@@ -1456,6 +1873,7 @@ static int vpif_enum_input(struct file *file, void *priv,
 {
 
 	struct vpif_capture_config *config = vpif_dev->platform_data;
+<<<<<<< HEAD
 	struct vpif_capture_chan_config *chan_cfg;
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
@@ -1466,6 +1884,16 @@ static int vpif_enum_input(struct file *file, void *priv,
 		vpif_dbg(1, debug, "Invalid input index\n");
 		return -EINVAL;
 	}
+=======
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct vpif_capture_chan_config *chan_cfg;
+
+	chan_cfg = &config->chan_config[ch->channel_id];
+
+	if (input->index >= chan_cfg->input_count)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memcpy(input, &chan_cfg->inputs[input->index].input,
 		sizeof(*input));
@@ -1480,8 +1908,13 @@ static int vpif_enum_input(struct file *file, void *priv,
  */
 static int vpif_g_input(struct file *file, void *priv, unsigned int *index)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
+=======
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*index = ch->input_idx;
 	return 0;
@@ -1496,17 +1929,25 @@ static int vpif_g_input(struct file *file, void *priv, unsigned int *index)
 static int vpif_s_input(struct file *file, void *priv, unsigned int index)
 {
 	struct vpif_capture_config *config = vpif_dev->platform_data;
+<<<<<<< HEAD
 	struct vpif_capture_chan_config *chan_cfg;
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
 	int ret;
+=======
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
+	struct vpif_capture_chan_config *chan_cfg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	chan_cfg = &config->chan_config[ch->channel_id];
 
 	if (index >= chan_cfg->input_count)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (common->started) {
 		vpif_err("Streaming in progress\n");
 		return -EBUSY;
@@ -1525,6 +1966,11 @@ static int vpif_s_input(struct file *file, void *priv, unsigned int index)
 		return ret;
 
 	fh->initialized = 1;
+=======
+	if (vb2_is_busy(&common->buffer_queue))
+		return -EBUSY;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return vpif_set_input(config, ch, index);
 }
 
@@ -1537,8 +1983,13 @@ static int vpif_s_input(struct file *file, void *priv, unsigned int index)
 static int vpif_enum_fmt_vid_cap(struct file *file, void  *priv,
 					struct v4l2_fmtdesc *fmt)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
+=======
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fmt->index != 0) {
 		vpif_dbg(1, debug, "Invalid format index\n");
@@ -1567,6 +2018,7 @@ static int vpif_enum_fmt_vid_cap(struct file *file, void  *priv,
 static int vpif_try_fmt_vid_cap(struct file *file, void *priv,
 				struct v4l2_format *fmt)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 	struct v4l2_pix_format *pixfmt = &fmt->fmt.pix;
@@ -1662,10 +2114,42 @@ static int vpif_querycap(struct file *file, void  *priv,
 	snprintf(cap->bus_info, sizeof(cap->bus_info), "platform:%s",
 		 dev_name(vpif_dev));
 	strlcpy(cap->card, config->card_name, sizeof(cap->card));
+=======
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct v4l2_pix_format *pixfmt = &fmt->fmt.pix;
+	struct common_obj *common = &(ch->common[VPIF_VIDEO_INDEX]);
+	struct vpif_params *vpif_params = &ch->vpifparams;
+
+	/*
+	 * to supress v4l-compliance warnings silently correct
+	 * the pixelformat
+	 */
+	if (vpif_params->iface.if_type == VPIF_IF_RAW_BAYER) {
+		if (pixfmt->pixelformat != V4L2_PIX_FMT_SBGGR8)
+			pixfmt->pixelformat = V4L2_PIX_FMT_SBGGR8;
+	} else {
+		if (pixfmt->pixelformat != V4L2_PIX_FMT_YUV422P)
+			pixfmt->pixelformat = V4L2_PIX_FMT_YUV422P;
+	}
+
+	common->fmt.fmt.pix.pixelformat = pixfmt->pixelformat;
+
+	vpif_update_std_info(ch);
+
+	pixfmt->field = common->fmt.fmt.pix.field;
+	pixfmt->colorspace = common->fmt.fmt.pix.colorspace;
+	pixfmt->bytesperline = common->fmt.fmt.pix.width;
+	pixfmt->width = common->fmt.fmt.pix.width;
+	pixfmt->height = common->fmt.fmt.pix.height;
+	pixfmt->sizeimage = pixfmt->bytesperline * pixfmt->height * 2;
+	pixfmt->priv = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * vpif_g_priority() - get priority handler
  * @file: file ptr
@@ -1680,10 +2164,33 @@ static int vpif_g_priority(struct file *file, void *priv,
 
 	*prio = v4l2_prio_max(&ch->prio);
 
+=======
+
+/**
+ * vpif_g_fmt_vid_cap() - Set INPUT handler
+ * @file: file ptr
+ * @priv: file handle
+ * @fmt: ptr to v4l2 format structure
+ */
+static int vpif_g_fmt_vid_cap(struct file *file, void *priv,
+				struct v4l2_format *fmt)
+{
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
+
+	/* Check the validity of the buffer type */
+	if (common->fmt.type != fmt->type)
+		return -EINVAL;
+
+	/* Fill in the information about format */
+	*fmt = common->fmt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * vpif_s_priority() - set priority handler
  * @file: file ptr
  * @priv: file handle
@@ -1718,6 +2225,53 @@ static int vpif_cropcap(struct file *file, void *priv,
 	crop->bounds.height = common->height;
 	crop->bounds.width = common->width;
 	crop->defrect = crop->bounds;
+=======
+ * vpif_s_fmt_vid_cap() - Set FMT handler
+ * @file: file ptr
+ * @priv: file handle
+ * @fmt: ptr to v4l2 format structure
+ */
+static int vpif_s_fmt_vid_cap(struct file *file, void *priv,
+				struct v4l2_format *fmt)
+{
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
+	int ret;
+
+	vpif_dbg(2, debug, "%s\n", __func__);
+
+	if (vb2_is_busy(&common->buffer_queue))
+		return -EBUSY;
+
+	ret = vpif_try_fmt_vid_cap(file, priv, fmt);
+	if (ret)
+		return ret;
+
+	/* store the format in the channel object */
+	common->fmt = *fmt;
+	return 0;
+}
+
+/**
+ * vpif_querycap() - QUERYCAP handler
+ * @file: file ptr
+ * @priv: file handle
+ * @cap: ptr to v4l2_capability structure
+ */
+static int vpif_querycap(struct file *file, void  *priv,
+				struct v4l2_capability *cap)
+{
+	struct vpif_capture_config *config = vpif_dev->platform_data;
+
+	cap->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
+	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
+	strlcpy(cap->driver, VPIF_DRIVER_NAME, sizeof(cap->driver));
+	snprintf(cap->bus_info, sizeof(cap->bus_info), "platform:%s",
+		 dev_name(vpif_dev));
+	strlcpy(cap->card, config->card_name, sizeof(cap->card));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1731,6 +2285,7 @@ static int
 vpif_enum_dv_timings(struct file *file, void *priv,
 		     struct v4l2_enum_dv_timings *timings)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 	int ret;
@@ -1738,6 +2293,29 @@ vpif_enum_dv_timings(struct file *file, void *priv,
 	ret = v4l2_subdev_call(ch->sd, video, enum_dv_timings, timings);
 	if (ret == -ENOIOCTLCMD || ret == -ENODEV)
 		return -EINVAL;
+=======
+	struct vpif_capture_config *config = vpif_dev->platform_data;
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct vpif_capture_chan_config *chan_cfg;
+	struct v4l2_input input;
+	int ret;
+
+	if (config->chan_config[ch->channel_id].inputs == NULL)
+		return -ENODATA;
+
+	chan_cfg = &config->chan_config[ch->channel_id];
+	input = chan_cfg->inputs[ch->input_idx].input;
+	if (input.capabilities != V4L2_IN_CAP_DV_TIMINGS)
+		return -ENODATA;
+
+	timings->pad = 0;
+
+	ret = v4l2_subdev_call(ch->sd, pad, enum_dv_timings, timings);
+	if (ret == -ENOIOCTLCMD || ret == -ENODEV)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -1751,6 +2329,7 @@ static int
 vpif_query_dv_timings(struct file *file, void *priv,
 		      struct v4l2_dv_timings *timings)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 	int ret;
@@ -1758,6 +2337,27 @@ vpif_query_dv_timings(struct file *file, void *priv,
 	ret = v4l2_subdev_call(ch->sd, video, query_dv_timings, timings);
 	if (ret == -ENOIOCTLCMD || ret == -ENODEV)
 		return -ENODATA;
+=======
+	struct vpif_capture_config *config = vpif_dev->platform_data;
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct vpif_capture_chan_config *chan_cfg;
+	struct v4l2_input input;
+	int ret;
+
+	if (config->chan_config[ch->channel_id].inputs == NULL)
+		return -ENODATA;
+
+	chan_cfg = &config->chan_config[ch->channel_id];
+	input = chan_cfg->inputs[ch->input_idx].input;
+	if (input.capabilities != V4L2_IN_CAP_DV_TIMINGS)
+		return -ENODATA;
+
+	ret = v4l2_subdev_call(ch->sd, video, query_dv_timings, timings);
+	if (ret == -ENOIOCTLCMD || ret == -ENODEV)
+		return -ENODATA;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -1770,6 +2370,7 @@ vpif_query_dv_timings(struct file *file, void *priv,
 static int vpif_s_dv_timings(struct file *file, void *priv,
 		struct v4l2_dv_timings *timings)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 	struct vpif_params *vpifparams = &ch->vpifparams;
@@ -1778,11 +2379,39 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 	struct v4l2_bt_timings *bt = &vid_ch->dv_timings.bt;
 	int ret;
 
+=======
+	struct vpif_capture_config *config = vpif_dev->platform_data;
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct vpif_params *vpifparams = &ch->vpifparams;
+	struct vpif_channel_config_params *std_info = &vpifparams->std_info;
+	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
+	struct video_obj *vid_ch = &ch->video;
+	struct v4l2_bt_timings *bt = &vid_ch->dv_timings.bt;
+	struct vpif_capture_chan_config *chan_cfg;
+	struct v4l2_input input;
+	int ret;
+
+	if (config->chan_config[ch->channel_id].inputs == NULL)
+		return -ENODATA;
+
+	chan_cfg = &config->chan_config[ch->channel_id];
+	input = chan_cfg->inputs[ch->input_idx].input;
+	if (input.capabilities != V4L2_IN_CAP_DV_TIMINGS)
+		return -ENODATA;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (timings->type != V4L2_DV_BT_656_1120) {
 		vpif_dbg(2, debug, "Timing type not defined\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (vb2_is_busy(&common->buffer_queue))
+		return -EBUSY;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Configure subdevice timings, if any */
 	ret = v4l2_subdev_call(ch->sd, video, s_dv_timings, timings);
 	if (ret == -ENOIOCTLCMD || ret == -ENODEV)
@@ -1811,19 +2440,29 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 
 	/* Configure video port timings */
 
+<<<<<<< HEAD
 	std_info->eav2sav = bt->hbackporch + bt->hfrontporch +
 		bt->hsync - 8;
+=======
+	std_info->eav2sav = V4L2_DV_BT_BLANKING_WIDTH(bt) - 8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	std_info->sav2eav = bt->width;
 
 	std_info->l1 = 1;
 	std_info->l3 = bt->vsync + bt->vbackporch + 1;
 
+<<<<<<< HEAD
 	if (bt->interlaced) {
 		if (bt->il_vbackporch || bt->il_vfrontporch || bt->il_vsync) {
 			std_info->vsize = bt->height * 2 +
 				bt->vfrontporch + bt->vsync + bt->vbackporch +
 				bt->il_vfrontporch + bt->il_vsync +
 				bt->il_vbackporch;
+=======
+	std_info->vsize = V4L2_DV_BT_FRAME_HEIGHT(bt);
+	if (bt->interlaced) {
+		if (bt->il_vbackporch || bt->il_vfrontporch || bt->il_vsync) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			std_info->l5 = std_info->vsize/2 -
 				(bt->vfrontporch - 1);
 			std_info->l7 = std_info->vsize/2 + 1;
@@ -1837,8 +2476,11 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 			return -EINVAL;
 		}
 	} else {
+<<<<<<< HEAD
 		std_info->vsize = bt->height + bt->vfrontporch +
 			bt->vsync + bt->vbackporch;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		std_info->l5 = std_info->vsize - (bt->vfrontporch - 1);
 	}
 	strncpy(std_info->name, "Custom timings BT656/1120", VPIF_MAX_NAME);
@@ -1864,6 +2506,7 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 static int vpif_g_dv_timings(struct file *file, void *priv,
 		struct v4l2_dv_timings *timings)
 {
+<<<<<<< HEAD
 	struct vpif_fh *fh = priv;
 	struct channel_obj *ch = fh->channel;
 	struct video_obj *vid_ch = &ch->video;
@@ -1932,6 +2575,27 @@ static int vpif_dbg_s_register(struct file *file, void *priv,
 	return v4l2_subdev_call(ch->sd, core, s_register, reg);
 }
 #endif
+=======
+	struct vpif_capture_config *config = vpif_dev->platform_data;
+	struct video_device *vdev = video_devdata(file);
+	struct channel_obj *ch = video_get_drvdata(vdev);
+	struct video_obj *vid_ch = &ch->video;
+	struct vpif_capture_chan_config *chan_cfg;
+	struct v4l2_input input;
+
+	if (config->chan_config[ch->channel_id].inputs == NULL)
+		return -ENODATA;
+
+	chan_cfg = &config->chan_config[ch->channel_id];
+	input = chan_cfg->inputs[ch->input_idx].input;
+	if (input.capabilities != V4L2_IN_CAP_DV_TIMINGS)
+		return -ENODATA;
+
+	*timings = vid_ch->dv_timings;
+
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * vpif_log_status() - Status information
@@ -1950,6 +2614,7 @@ static int vpif_log_status(struct file *filep, void *priv)
 
 /* vpif capture ioctl operations */
 static const struct v4l2_ioctl_ops vpif_ioctl_ops = {
+<<<<<<< HEAD
 	.vidioc_querycap        	= vpif_querycap,
 	.vidioc_g_priority		= vpif_g_priority,
 	.vidioc_s_priority		= vpif_s_priority,
@@ -1979,12 +2644,43 @@ static const struct v4l2_ioctl_ops vpif_ioctl_ops = {
 	.vidioc_g_register		= vpif_dbg_g_register,
 	.vidioc_s_register		= vpif_dbg_s_register,
 #endif
+=======
+	.vidioc_querycap		= vpif_querycap,
+	.vidioc_enum_fmt_vid_cap	= vpif_enum_fmt_vid_cap,
+	.vidioc_g_fmt_vid_cap		= vpif_g_fmt_vid_cap,
+	.vidioc_s_fmt_vid_cap		= vpif_s_fmt_vid_cap,
+	.vidioc_try_fmt_vid_cap		= vpif_try_fmt_vid_cap,
+
+	.vidioc_enum_input		= vpif_enum_input,
+	.vidioc_s_input			= vpif_s_input,
+	.vidioc_g_input			= vpif_g_input,
+
+	.vidioc_reqbufs			= vb2_ioctl_reqbufs,
+	.vidioc_create_bufs		= vb2_ioctl_create_bufs,
+	.vidioc_querybuf		= vb2_ioctl_querybuf,
+	.vidioc_qbuf			= vb2_ioctl_qbuf,
+	.vidioc_dqbuf			= vb2_ioctl_dqbuf,
+	.vidioc_expbuf			= vb2_ioctl_expbuf,
+	.vidioc_streamon		= vb2_ioctl_streamon,
+	.vidioc_streamoff		= vb2_ioctl_streamoff,
+
+	.vidioc_querystd		= vpif_querystd,
+	.vidioc_s_std			= vpif_s_std,
+	.vidioc_g_std			= vpif_g_std,
+
+	.vidioc_enum_dv_timings		= vpif_enum_dv_timings,
+	.vidioc_query_dv_timings	= vpif_query_dv_timings,
+	.vidioc_s_dv_timings		= vpif_s_dv_timings,
+	.vidioc_g_dv_timings		= vpif_g_dv_timings,
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.vidioc_log_status		= vpif_log_status,
 };
 
 /* vpif file operations */
 static struct v4l2_file_operations vpif_fops = {
 	.owner = THIS_MODULE,
+<<<<<<< HEAD
 	.open = vpif_open,
 	.release = vpif_release,
 	.unlocked_ioctl = video_ioctl2,
@@ -1998,6 +2694,13 @@ static struct video_device vpif_video_template = {
 	.fops		= &vpif_fops,
 	.minor		= -1,
 	.ioctl_ops	= &vpif_ioctl_ops,
+=======
+	.open = v4l2_fh_open,
+	.release = vb2_fop_release,
+	.unlocked_ioctl = video_ioctl2,
+	.mmap = vb2_fop_mmap,
+	.poll = vb2_fop_poll
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -2007,6 +2710,7 @@ static struct video_device vpif_video_template = {
  */
 static int initialize_vpif(void)
 {
+<<<<<<< HEAD
 	int err = 0, i, j;
 	int free_channel_objects_index;
 
@@ -2037,6 +2741,11 @@ static int initialize_vpif(void)
 		    = ch1_bufsize;
 	}
 
+=======
+	int err, i, j;
+	int free_channel_objects_index;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Allocate memory for six channel objects */
 	for (i = 0; i < VPIF_CAPTURE_MAX_DEVICES; i++) {
 		vpif_obj.dev[i] =
@@ -2056,6 +2765,108 @@ vpif_init_free_channel_objects:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int vpif_async_bound(struct v4l2_async_notifier *notifier,
+			    struct v4l2_subdev *subdev,
+			    struct v4l2_async_subdev *asd)
+{
+	int i;
+
+	for (i = 0; i < vpif_obj.config->subdev_count; i++)
+		if (!strcmp(vpif_obj.config->subdev_info[i].name,
+			    subdev->name)) {
+			vpif_obj.sd[i] = subdev;
+			return 0;
+		}
+
+	return -EINVAL;
+}
+
+static int vpif_probe_complete(void)
+{
+	struct common_obj *common;
+	struct video_device *vdev;
+	struct channel_obj *ch;
+	struct vb2_queue *q;
+	int j, err, k;
+
+	for (j = 0; j < VPIF_CAPTURE_MAX_DEVICES; j++) {
+		ch = vpif_obj.dev[j];
+		ch->channel_id = j;
+		common = &(ch->common[VPIF_VIDEO_INDEX]);
+		spin_lock_init(&common->irqlock);
+		mutex_init(&common->lock);
+
+		/* select input 0 */
+		err = vpif_set_input(vpif_obj.config, ch, 0);
+		if (err)
+			goto probe_out;
+
+		/* set initial format */
+		ch->video.stdid = V4L2_STD_525_60;
+		memset(&ch->video.dv_timings, 0, sizeof(ch->video.dv_timings));
+		vpif_update_std_info(ch);
+
+		/* Initialize vb2 queue */
+		q = &common->buffer_queue;
+		q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		q->io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF;
+		q->drv_priv = ch;
+		q->ops = &video_qops;
+		q->mem_ops = &vb2_dma_contig_memops;
+		q->buf_struct_size = sizeof(struct vpif_cap_buffer);
+		q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+		q->min_buffers_needed = 1;
+		q->lock = &common->lock;
+		q->dev = vpif_dev;
+
+		err = vb2_queue_init(q);
+		if (err) {
+			vpif_err("vpif_capture: vb2_queue_init() failed\n");
+			goto probe_out;
+		}
+
+		INIT_LIST_HEAD(&common->dma_queue);
+
+		/* Initialize the video_device structure */
+		vdev = &ch->video_dev;
+		strlcpy(vdev->name, VPIF_DRIVER_NAME, sizeof(vdev->name));
+		vdev->release = video_device_release_empty;
+		vdev->fops = &vpif_fops;
+		vdev->ioctl_ops = &vpif_ioctl_ops;
+		vdev->v4l2_dev = &vpif_obj.v4l2_dev;
+		vdev->vfl_dir = VFL_DIR_RX;
+		vdev->queue = q;
+		vdev->lock = &common->lock;
+		video_set_drvdata(&ch->video_dev, ch);
+		err = video_register_device(vdev,
+					    VFL_TYPE_GRABBER, (j ? 1 : 0));
+		if (err)
+			goto probe_out;
+	}
+
+	v4l2_info(&vpif_obj.v4l2_dev, "VPIF capture driver initialized\n");
+	return 0;
+
+probe_out:
+	for (k = 0; k < j; k++) {
+		/* Get the pointer to the channel object */
+		ch = vpif_obj.dev[k];
+		common = &ch->common[k];
+		/* Unregister video device */
+		video_unregister_device(&ch->video_dev);
+	}
+
+	return err;
+}
+
+static int vpif_async_complete(struct v4l2_async_notifier *notifier)
+{
+	return vpif_probe_complete();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * vpif_probe : This function probes the vpif capture driver
  * @pdev: platform device pointer
@@ -2066,6 +2877,7 @@ vpif_init_free_channel_objects:
 static __init int vpif_probe(struct platform_device *pdev)
 {
 	struct vpif_subdev_info *subdevdata;
+<<<<<<< HEAD
 	struct vpif_capture_config *config;
 	int i, j, k, err;
 	int res_idx = 0;
@@ -2076,6 +2888,13 @@ static __init int vpif_probe(struct platform_device *pdev)
 	struct resource *res;
 	int subdev_count;
 	size_t size;
+=======
+	struct i2c_adapter *i2c_adap;
+	struct resource *res;
+	int subdev_count;
+	int res_idx = 0;
+	int i, err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	vpif_dev = &pdev->dev;
 
@@ -2092,6 +2911,7 @@ static __init int vpif_probe(struct platform_device *pdev)
 	}
 
 	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, res_idx))) {
+<<<<<<< HEAD
 		for (i = res->start; i <= res->end; i++) {
 			if (request_irq(i, vpif_channel_isr, IRQF_SHARED,
 					"VPIF_Capture", (void *)
@@ -2102,10 +2922,20 @@ static __init int vpif_probe(struct platform_device *pdev)
 					(&vpif_obj.dev[res_idx]->channel_id));
 				goto vpif_int_err;
 			}
+=======
+		err = devm_request_irq(&pdev->dev, res->start, vpif_channel_isr,
+					IRQF_SHARED, VPIF_DRIVER_NAME,
+					(void *)(&vpif_obj.dev[res_idx]->
+					channel_id));
+		if (err) {
+			err = -EINVAL;
+			goto vpif_unregister;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		res_idx++;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < VPIF_CAPTURE_MAX_DEVICES; i++) {
 		/* Get the pointer to the channel object */
 		ch = vpif_obj.dev[i];
@@ -2152,11 +2982,17 @@ static __init int vpif_probe(struct platform_device *pdev)
 	config = pdev->dev.platform_data;
 
 	subdev_count = config->subdev_count;
+=======
+	vpif_obj.config = pdev->dev.platform_data;
+
+	subdev_count = vpif_obj.config->subdev_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vpif_obj.sd = kzalloc(sizeof(struct v4l2_subdev *) * subdev_count,
 				GFP_KERNEL);
 	if (vpif_obj.sd == NULL) {
 		vpif_err("unable to allocate memory for subdevice pointers\n");
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto vpif_sd_error;
 	}
 
@@ -2224,6 +3060,54 @@ vpif_int_err:
 		for (j = res->start; j <= res->end; j++)
 			free_irq(j, (void *)(&vpif_obj.dev[i]->channel_id));
 	}
+=======
+		goto vpif_unregister;
+	}
+
+	if (!vpif_obj.config->asd_sizes) {
+		i2c_adap = i2c_get_adapter(1);
+		for (i = 0; i < subdev_count; i++) {
+			subdevdata = &vpif_obj.config->subdev_info[i];
+			vpif_obj.sd[i] =
+				v4l2_i2c_new_subdev_board(&vpif_obj.v4l2_dev,
+							  i2c_adap,
+							  &subdevdata->
+							  board_info,
+							  NULL);
+
+			if (!vpif_obj.sd[i]) {
+				vpif_err("Error registering v4l2 subdevice\n");
+				err = -ENODEV;
+				goto probe_subdev_out;
+			}
+			v4l2_info(&vpif_obj.v4l2_dev,
+				  "registered sub device %s\n",
+				   subdevdata->name);
+		}
+		vpif_probe_complete();
+	} else {
+		vpif_obj.notifier.subdevs = vpif_obj.config->asd;
+		vpif_obj.notifier.num_subdevs = vpif_obj.config->asd_sizes[0];
+		vpif_obj.notifier.bound = vpif_async_bound;
+		vpif_obj.notifier.complete = vpif_async_complete;
+		err = v4l2_async_notifier_register(&vpif_obj.v4l2_dev,
+						   &vpif_obj.notifier);
+		if (err) {
+			vpif_err("Error registering async notifier\n");
+			err = -EINVAL;
+			goto probe_subdev_out;
+		}
+	}
+
+	return 0;
+
+probe_subdev_out:
+	/* free sub devices memory */
+	kfree(vpif_obj.sd);
+vpif_unregister:
+	v4l2_device_unregister(&vpif_obj.v4l2_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -2235,22 +3119,43 @@ vpif_int_err:
  */
 static int vpif_remove(struct platform_device *device)
 {
+<<<<<<< HEAD
 	int i;
 	struct channel_obj *ch;
 
 	v4l2_device_unregister(&vpif_obj.v4l2_dev);
 
+=======
+	struct common_obj *common;
+	struct channel_obj *ch;
+	int i;
+
+	v4l2_device_unregister(&vpif_obj.v4l2_dev);
+
+	kfree(vpif_obj.sd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* un-register device */
 	for (i = 0; i < VPIF_CAPTURE_MAX_DEVICES; i++) {
 		/* Get the pointer to the channel object */
 		ch = vpif_obj.dev[i];
+<<<<<<< HEAD
 		/* Unregister video device */
 		video_unregister_device(ch->video_dev);
+=======
+		common = &ch->common[VPIF_VIDEO_INDEX];
+		/* Unregister video device */
+		video_unregister_device(&ch->video_dev);
+		kfree(vpif_obj.dev[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * vpif_suspend: vpif device suspend
  */
@@ -2265,6 +3170,7 @@ static int vpif_suspend(struct device *dev)
 		/* Get the pointer to the channel object */
 		ch = vpif_obj.dev[i];
 		common = &ch->common[VPIF_VIDEO_INDEX];
+<<<<<<< HEAD
 		mutex_lock(&common->lock);
 		if (ch->usrs && common->io_usrs) {
 			/* Disable channel */
@@ -2277,6 +3183,22 @@ static int vpif_suspend(struct device *dev)
 				enable_channel1(0);
 				channel1_intr_enable(0);
 			}
+=======
+
+		if (!vb2_start_streaming_called(&common->buffer_queue))
+			continue;
+
+		mutex_lock(&common->lock);
+		/* Disable channel */
+		if (ch->channel_id == VPIF_CHANNEL0_VIDEO) {
+			enable_channel0(0);
+			channel0_intr_enable(0);
+		}
+		if (ch->channel_id == VPIF_CHANNEL1_VIDEO ||
+			ycmux_mode == 2) {
+			enable_channel1(0);
+			channel1_intr_enable(0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		mutex_unlock(&common->lock);
 	}
@@ -2297,6 +3219,7 @@ static int vpif_resume(struct device *dev)
 		/* Get the pointer to the channel object */
 		ch = vpif_obj.dev[i];
 		common = &ch->common[VPIF_VIDEO_INDEX];
+<<<<<<< HEAD
 		mutex_lock(&common->lock);
 		if (ch->usrs && common->io_usrs) {
 			/* Disable channel */
@@ -2309,12 +3232,29 @@ static int vpif_resume(struct device *dev)
 				enable_channel1(1);
 				channel1_intr_enable(1);
 			}
+=======
+
+		if (!vb2_start_streaming_called(&common->buffer_queue))
+			continue;
+
+		mutex_lock(&common->lock);
+		/* Enable channel */
+		if (ch->channel_id == VPIF_CHANNEL0_VIDEO) {
+			enable_channel0(1);
+			channel0_intr_enable(1);
+		}
+		if (ch->channel_id == VPIF_CHANNEL1_VIDEO ||
+			ycmux_mode == 2) {
+			enable_channel1(1);
+			channel1_intr_enable(1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		mutex_unlock(&common->lock);
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static const struct dev_pm_ops vpif_dev_pm_ops = {
 	.suspend = vpif_suspend,
@@ -2331,11 +3271,22 @@ static __refdata struct platform_driver vpif_driver = {
 		.name	= "vpif_capture",
 		.owner	= THIS_MODULE,
 		.pm	= vpif_pm_ops,
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(vpif_pm_ops, vpif_suspend, vpif_resume);
+
+static __refdata struct platform_driver vpif_driver = {
+	.driver	= {
+		.name	= VPIF_DRIVER_NAME,
+		.pm	= &vpif_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = vpif_probe,
 	.remove = vpif_remove,
 };
 
+<<<<<<< HEAD
 /**
  * vpif_init: initialize the vpif driver
  *
@@ -2380,3 +3331,6 @@ static void vpif_cleanup(void)
 /* Function for module initialization and cleanup */
 module_init(vpif_init);
 module_exit(vpif_cleanup);
+=======
+module_platform_driver(vpif_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

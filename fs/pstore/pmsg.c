@@ -19,17 +19,26 @@
 #include "internal.h"
 
 static DEFINE_MUTEX(pmsg_lock);
+<<<<<<< HEAD
 #define PMSG_MAX_BOUNCE_BUFFER_SIZE (2*PAGE_SIZE)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t write_pmsg(struct file *file, const char __user *buf,
 			  size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	size_t i, buffer_size;
 	char *buffer;
+=======
+	u64 id;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!count)
 		return 0;
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, buf, count))
 		return -EFAULT;
 
@@ -59,6 +68,17 @@ static ssize_t write_pmsg(struct file *file, const char __user *buf,
 	mutex_unlock(&pmsg_lock);
 	vfree(buffer);
 	return count;
+=======
+	/* check outside lock, page in any data. write_buf_user also checks */
+	if (!access_ok(VERIFY_READ, buf, count))
+		return -EFAULT;
+
+	mutex_lock(&pmsg_lock);
+	ret = psinfo->write_buf_user(PSTORE_TYPE_PMSG, 0, &id, 0, buf, 0, count,
+				     psinfo);
+	mutex_unlock(&pmsg_lock);
+	return ret ? ret : count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations pmsg_fops = {
@@ -112,3 +132,13 @@ err_class:
 err:
 	return;
 }
+<<<<<<< HEAD
+=======
+
+void pstore_unregister_pmsg(void)
+{
+	device_destroy(pmsg_class, MKDEV(pmsg_major, 0));
+	class_destroy(pmsg_class);
+	unregister_chrdev(pmsg_major, PMSG_NAME);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

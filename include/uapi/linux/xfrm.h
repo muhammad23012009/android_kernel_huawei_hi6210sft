@@ -1,6 +1,10 @@
 #ifndef _LINUX_XFRM_H
 #define _LINUX_XFRM_H
 
+<<<<<<< HEAD
+=======
+#include <linux/in6.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 
 /* All of the structures in this file may not change size as they are
@@ -13,6 +17,10 @@
 typedef union {
 	__be32		a4;
 	__be32		a6[4];
+<<<<<<< HEAD
+=======
+	struct in6_addr	in6;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } xfrm_address_t;
 
 /* Ident of a specific xfrm_state. It is used on input to lookup
@@ -296,8 +304,16 @@ enum xfrm_attr_type_t {
 	XFRMA_ALG_AUTH_TRUNC,	/* struct xfrm_algo_auth */
 	XFRMA_MARK,		/* struct xfrm_mark */
 	XFRMA_TFCPAD,		/* __u32 */
+<<<<<<< HEAD
 	XFRMA_REPLAY_ESN_VAL,	/* struct xfrm_replay_esn */
 	XFRMA_SA_EXTRA_FLAGS,	/* __u32 */
+=======
+	XFRMA_REPLAY_ESN_VAL,	/* struct xfrm_replay_state_esn */
+	XFRMA_SA_EXTRA_FLAGS,	/* __u32 */
+	XFRMA_PROTO,		/* __u8 */
+	XFRMA_ADDRESS_FILTER,	/* struct xfrm_address_filter */
+	XFRMA_PAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__XFRMA_MAX
 
 #define XFRMA_MAX (__XFRMA_MAX - 1)
@@ -326,6 +342,11 @@ enum xfrm_spdattr_type_t {
 	XFRMA_SPD_UNSPEC,
 	XFRMA_SPD_INFO,
 	XFRMA_SPD_HINFO,
+<<<<<<< HEAD
+=======
+	XFRMA_SPD_IPV4_HTHRESH,
+	XFRMA_SPD_IPV6_HTHRESH,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__XFRMA_SPD_MAX
 
 #define XFRMA_SPD_MAX (__XFRMA_SPD_MAX - 1)
@@ -345,6 +366,14 @@ struct xfrmu_spdhinfo {
 	__u32 spdhmcnt;
 };
 
+<<<<<<< HEAD
+=======
+struct xfrmu_spdhthresh {
+	__u8 lbits;
+	__u8 rbits;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct xfrm_usersa_info {
 	struct xfrm_selector		sel;
 	struct xfrm_id			id;
@@ -474,6 +503,17 @@ struct xfrm_user_mapping {
 	__be16				new_sport;
 };
 
+<<<<<<< HEAD
+=======
+struct xfrm_address_filter {
+	xfrm_address_t			saddr;
+	xfrm_address_t			daddr;
+	__u16				family;
+	__u8				splen;
+	__u8				dplen;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __KERNEL__
 /* backwards compatibility for userspace */
 #define XFRMGRP_ACQUIRE		1

@@ -18,8 +18,11 @@
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/pagemap.h>
 #include <linux/highmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/scatterlist.h>
 
 static inline void memcpy_dir(void *buf, void *sgdata, size_t nbytes, int out)
@@ -30,6 +33,7 @@ static inline void memcpy_dir(void *buf, void *sgdata, size_t nbytes, int out)
 	memcpy(dst, src, nbytes);
 }
 
+<<<<<<< HEAD
 void scatterwalk_start(struct scatter_walk *walk, struct scatterlist *sg)
 {
 	walk->sg = sg;
@@ -74,6 +78,8 @@ void scatterwalk_done(struct scatter_walk *walk, int out, int more)
 }
 EXPORT_SYMBOL_GPL(scatterwalk_done);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void scatterwalk_copychunks(void *buf, struct scatter_walk *walk,
 			    size_t nbytes, int out)
 {
@@ -84,9 +90,17 @@ void scatterwalk_copychunks(void *buf, struct scatter_walk *walk,
 		if (len_this_page > nbytes)
 			len_this_page = nbytes;
 
+<<<<<<< HEAD
 		vaddr = scatterwalk_map(walk);
 		memcpy_dir(buf, vaddr, len_this_page, out);
 		scatterwalk_unmap(vaddr);
+=======
+		if (out != 2) {
+			vaddr = scatterwalk_map(walk);
+			memcpy_dir(buf, vaddr, len_this_page, out);
+			scatterwalk_unmap(vaddr);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		scatterwalk_advance(walk, len_this_page);
 
@@ -96,7 +110,11 @@ void scatterwalk_copychunks(void *buf, struct scatter_walk *walk,
 		buf += len_this_page;
 		nbytes -= len_this_page;
 
+<<<<<<< HEAD
 		scatterwalk_pagedone(walk, out, 1);
+=======
+		scatterwalk_pagedone(walk, out & 1, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 EXPORT_SYMBOL_GPL(scatterwalk_copychunks);
@@ -105,11 +123,16 @@ void scatterwalk_map_and_copy(void *buf, struct scatterlist *sg,
 			      unsigned int start, unsigned int nbytes, int out)
 {
 	struct scatter_walk walk;
+<<<<<<< HEAD
 	unsigned int offset = 0;
+=======
+	struct scatterlist tmp[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!nbytes)
 		return;
 
+<<<<<<< HEAD
 	for (;;) {
 		scatterwalk_start(&walk, sg);
 
@@ -125,3 +148,35 @@ void scatterwalk_map_and_copy(void *buf, struct scatterlist *sg,
 	scatterwalk_done(&walk, out, 0);
 }
 EXPORT_SYMBOL_GPL(scatterwalk_map_and_copy);
+=======
+	sg = scatterwalk_ffwd(tmp, sg, start);
+
+	scatterwalk_start(&walk, sg);
+	scatterwalk_copychunks(buf, &walk, nbytes, out);
+	scatterwalk_done(&walk, out, 0);
+}
+EXPORT_SYMBOL_GPL(scatterwalk_map_and_copy);
+
+struct scatterlist *scatterwalk_ffwd(struct scatterlist dst[2],
+				     struct scatterlist *src,
+				     unsigned int len)
+{
+	for (;;) {
+		if (!len)
+			return src;
+
+		if (src->length > len)
+			break;
+
+		len -= src->length;
+		src = sg_next(src);
+	}
+
+	sg_init_table(dst, 2);
+	sg_set_page(dst, sg_page(src), src->length - len, src->offset + len);
+	scatterwalk_crypto_chain(dst, sg_next(src), 0, 2);
+
+	return dst;
+}
+EXPORT_SYMBOL_GPL(scatterwalk_ffwd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

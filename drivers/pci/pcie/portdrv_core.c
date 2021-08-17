@@ -11,6 +11,10 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/pcieport_if.h>
@@ -46,7 +50,11 @@ static void release_pcie_device(struct device *dev)
  * pcie_port_msix_add_entry - add entry to given array of MSI-X entries
  * @entries: Array of MSI-X entries
  * @new_entry: Index of the entry to add to the array
+<<<<<<< HEAD
  * @nr_entries: Number of entries aleady in the array
+=======
+ * @nr_entries: Number of entries already in the array
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Return value: Position of the added entry in the array
  */
@@ -79,9 +87,16 @@ static int pcie_port_enable_msix(struct pci_dev *dev, int *vectors, int mask)
 	u16 reg16;
 	u32 reg32;
 
+<<<<<<< HEAD
 	nr_entries = pci_msix_table_size(dev);
 	if (!nr_entries)
 		return -EINVAL;
+=======
+	nr_entries = pci_msix_vec_count(dev);
+	if (nr_entries < 0)
+		return nr_entries;
+	BUG_ON(!nr_entries);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (nr_entries > PCIE_PORT_MAX_MSIX_ENTRIES)
 		nr_entries = PCIE_PORT_MAX_MSIX_ENTRIES;
 
@@ -98,7 +113,11 @@ static int pcie_port_enable_msix(struct pci_dev *dev, int *vectors, int mask)
 	for (i = 0; i < nr_entries; i++)
 		msix_entries[i].entry = i;
 
+<<<<<<< HEAD
 	status = pci_enable_msix(dev, msix_entries, nr_entries);
+=======
+	status = pci_enable_msix_exact(dev, msix_entries, nr_entries);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (status)
 		goto Exit;
 
@@ -170,7 +189,11 @@ static int pcie_port_enable_msix(struct pci_dev *dev, int *vectors, int mask)
 		pci_disable_msix(dev);
 
 		/* Now allocate the MSI-X vectors for real */
+<<<<<<< HEAD
 		status = pci_enable_msix(dev, msix_entries, nvec);
+=======
+		status = pci_enable_msix_exact(dev, msix_entries, nvec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (status)
 			goto Exit;
 	}
@@ -253,13 +276,18 @@ static void cleanup_service_irqs(struct pci_dev *dev)
 static int get_port_device_capability(struct pci_dev *dev)
 {
 	int services = 0;
+<<<<<<< HEAD
 	u32 reg32;
 	int cap_mask = 0;
 	int err;
+=======
+	int cap_mask = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pcie_ports_disabled)
 		return 0;
 
+<<<<<<< HEAD
 	err = pcie_port_platform_notify(dev, &cap_mask);
 	if (!pcie_ports_auto) {
 		cap_mask = PCIE_PORT_SERVICE_PME | PCIE_PORT_SERVICE_HP
@@ -284,6 +312,25 @@ static int get_port_device_capability(struct pci_dev *dev)
 			pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
 				PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
 		}
+=======
+	cap_mask = PCIE_PORT_SERVICE_PME | PCIE_PORT_SERVICE_HP
+			| PCIE_PORT_SERVICE_VC | PCIE_PORT_SERVICE_DPC;
+	if (pci_aer_available())
+		cap_mask |= PCIE_PORT_SERVICE_AER;
+
+	if (pcie_ports_auto)
+		pcie_port_platform_notify(dev, &cap_mask);
+
+	/* Hot-Plug Capable */
+	if ((cap_mask & PCIE_PORT_SERVICE_HP) && dev->is_hotplug_bridge) {
+		services |= PCIE_PORT_SERVICE_HP;
+		/*
+		 * Disable hot-plug interrupts in case they have been enabled
+		 * by the BIOS and the hot-plug service driver is not loaded.
+		 */
+		pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
+			  PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* AER capable */
 	if ((cap_mask & PCIE_PORT_SERVICE_AER)
@@ -309,6 +356,11 @@ static int get_port_device_capability(struct pci_dev *dev)
 		 */
 		pcie_pme_interrupt_enable(dev, false);
 	}
+<<<<<<< HEAD
+=======
+	if (pci_find_ext_capability(dev, PCI_EXT_CAP_ID_DPC))
+		services |= PCIE_PORT_SERVICE_DPC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return services;
 }
@@ -336,18 +388,33 @@ static int pcie_device_init(struct pci_dev *pdev, int service, int irq)
 	device = &pcie->device;
 	device->bus = &pcie_port_bus_type;
 	device->release = release_pcie_device;	/* callback to free pcie dev */
+<<<<<<< HEAD
 	dev_set_name(device, "%s:pcie%02x",
+=======
+	dev_set_name(device, "%s:pcie%03x",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     pci_name(pdev),
 		     get_descriptor_id(pci_pcie_type(pdev), service));
 	device->parent = &pdev->dev;
 	device_enable_async_suspend(device);
 
 	retval = device_register(device);
+<<<<<<< HEAD
 	if (retval)
 		kfree(pcie);
 	else
 		get_device(device);
 	return retval;
+=======
+	if (retval) {
+		put_device(device);
+		return retval;
+	}
+
+	pm_runtime_no_callbacks(device);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -376,10 +443,20 @@ int pcie_port_device_register(struct pci_dev *dev)
 	/*
 	 * Initialize service irqs. Don't use service devices that
 	 * require interrupts if there is no way to generate them.
+<<<<<<< HEAD
 	 */
 	status = init_service_irqs(dev, irqs, capabilities);
 	if (status) {
 		capabilities &= PCIE_PORT_SERVICE_VC;
+=======
+	 * However, some drivers may have a polling mode (e.g. pciehp_poll_mode)
+	 * that can be used in the absence of irqs.  Allow them to determine
+	 * if that is to be used.
+	 */
+	status = init_service_irqs(dev, irqs, capabilities);
+	if (status) {
+		capabilities &= PCIE_PORT_SERVICE_VC | PCIE_PORT_SERVICE_HP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!capabilities)
 			goto error_disable;
 	}
@@ -442,7 +519,11 @@ static int resume_iter(struct device *dev, void *data)
 }
 
 /**
+<<<<<<< HEAD
  * pcie_port_device_suspend - resume port services associated with a PCIe port
+=======
+ * pcie_port_device_resume - resume port services associated with a PCIe port
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @dev: PCI Express port to handle
  */
 int pcie_port_device_resume(struct device *dev)
@@ -453,10 +534,15 @@ int pcie_port_device_resume(struct device *dev)
 
 static int remove_iter(struct device *dev, void *data)
 {
+<<<<<<< HEAD
 	if (dev->bus == &pcie_port_bus_type) {
 		put_device(dev);
 		device_unregister(dev);
 	}
+=======
+	if (dev->bus == &pcie_port_bus_type)
+		device_unregister(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -497,12 +583,21 @@ static int pcie_port_probe_service(struct device *dev)
 
 	pciedev = to_pcie_device(dev);
 	status = driver->probe(pciedev);
+<<<<<<< HEAD
 	if (!status) {
 		dev_printk(KERN_DEBUG, dev, "service driver %s loaded\n",
 			driver->name);
 		get_device(dev);
 	}
 	return status;
+=======
+	if (status)
+		return status;
+
+	dev_printk(KERN_DEBUG, dev, "service driver %s loaded\n", driver->name);
+	get_device(dev);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -553,7 +648,11 @@ int pcie_port_service_register(struct pcie_port_service_driver *new)
 	if (pcie_ports_disabled)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	new->driver.name = (char *)new->name;
+=======
+	new->driver.name = new->name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	new->driver.bus = &pcie_port_bus_type;
 	new->driver.probe = pcie_port_probe_service;
 	new->driver.remove = pcie_port_remove_service;

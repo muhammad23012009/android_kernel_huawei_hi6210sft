@@ -4,7 +4,11 @@
  * by the Free Software Foundation.
  *
  * Copyright (C) 2012 Thomas Langer <thomas.langer@lantiq.com>
+<<<<<<< HEAD
  * Copyright (C) 2012 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2012 John Crispin <john@phrozen.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/init.h>

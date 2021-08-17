@@ -7,6 +7,10 @@
 #include <linux/sched.h>
 #include <linux/syscalls.h>
 #include <asm/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <asm/ptrace-abi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <os.h>
 #include <skas.h>
 #include <sysdep/tls.h>

@@ -23,7 +23,11 @@
 #include <asm/mach/pci.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <mach/pci.h>
+=======
+#include "pci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach/time.h>
 #include <mach/time.h>
 
@@ -93,4 +97,8 @@ MACHINE_START(IQ81340MC, "Intel IQ81340MC")
 	.init_time	= iq81340mc_timer_init,
 	.init_machine   = iq81340mc_init,
 	.restart	= iop13xx_restart,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= NR_IOP13XX_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

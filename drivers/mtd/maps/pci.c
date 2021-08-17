@@ -14,7 +14,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 
 #include <linux/mtd/mtd.h>
@@ -316,7 +319,10 @@ static void mtd_pci_remove(struct pci_dev *dev)
 	map->exit(dev, map);
 	kfree(map);
 
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_release_regions(dev);
 }
 

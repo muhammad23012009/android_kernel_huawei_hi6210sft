@@ -2,7 +2,11 @@
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
  * Based on the r8180 driver, which is:
+<<<<<<< HEAD
  * Copyright 2004-2005 Andrea Merello <andreamrl@tiscali.it>, et al.
+=======
+ * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -12,10 +16,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -28,7 +35,10 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/sched.h>
 #include <linux/types.h>
@@ -69,6 +79,7 @@
 #define DRV_AUTHOR  "<wlanfae@realtek.com>"
 #define DRV_VERSION  "0014.0401.2010"
 
+<<<<<<< HEAD
 #define IS_HARDWARE_TYPE_819xP(_priv)		\
 	((((struct r8192_priv *)rtllib_priv(dev))->card_8192 == NIC_8190P) || \
 	(((struct r8192_priv *)rtllib_priv(dev))->card_8192 == NIC_8192E))
@@ -147,6 +158,21 @@
 #define HAL_HW_PCI_8192CU_DEVICE_ID			0x8191
 #define HAL_HW_PCI_8192DE_DEVICE_ID			0x092D
 #define HAL_HW_PCI_8192DU_DEVICE_ID			0x092D
+=======
+#define IS_HARDWARE_TYPE_8192SE(_priv)		\
+	(((struct r8192_priv *)rtllib_priv(dev))->card_8192 == NIC_8192SE)
+
+#define RTL_PCI_DEVICE(vend, dev, cfg) \
+	.vendor = (vend), .device = (dev), \
+	.subvendor = PCI_ANY_ID, .subdevice = PCI_ANY_ID, \
+	.driver_data = (kernel_ulong_t)&(cfg)
+
+#define TOTAL_CAM_ENTRY		32
+#define CAM_CONTENT_COUNT	8
+
+#define HAL_HW_PCI_REVISION_ID_8192PCIE		0x01
+#define HAL_HW_PCI_REVISION_ID_8192SE	0x10
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define RTL819X_DEFAULT_RF_TYPE		RF_1T2R
 
@@ -161,16 +187,25 @@
 	(1600 + (MAX_802_11_HEADER_LENGTH + ENCRYPTION_MAX_OVERHEAD) *	\
 	 MAX_FRAGMENT_COUNT)
 
+<<<<<<< HEAD
 #define scrclng				4
+=======
+#define CMDPACKET_FRAG_SIZE (4 * (MAX_TRANSMIT_BUFFER_SIZE / 4) - 8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DEFAULT_FRAG_THRESHOLD	2342U
 #define MIN_FRAG_THRESHOLD	256U
 #define DEFAULT_BEACONINTERVAL	0x64U
 
+<<<<<<< HEAD
 #define DEFAULT_SSID		""
 #define DEFAULT_RETRY_RTS	7
 #define DEFAULT_RETRY_DATA	7
 #define PRISM_HDR_SIZE		64
+=======
+#define DEFAULT_RETRY_RTS	7
+#define DEFAULT_RETRY_DATA	7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define	PHY_RSSI_SLID_WIN_MAX			100
 
@@ -192,6 +227,7 @@
 #define MAX_RX_COUNT				64
 #define MAX_TX_QUEUE_COUNT			9
 
+<<<<<<< HEAD
 enum RTL819x_PHY_PARAM {
 	RTL819X_PHY_MACPHY_REG			= 0,
 	RTL819X_PHY_MACPHY_REG_PG		= 1,
@@ -214,6 +250,9 @@ enum RTL819x_PHY_PARAM {
 	RTL819X_EEPROM_MAP			= 18,
 	RTL819X_EFUSE_MAP			= 19,
 };
+=======
+extern int hwwep;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum nic_t {
 	NIC_UNKNOWN     = 0,
@@ -229,7 +268,10 @@ enum nic_t {
 enum rt_eeprom_type {
 	EEPROM_93C46,
 	EEPROM_93C56,
+<<<<<<< HEAD
 	EEPROM_BOOT_EFUSE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum dcmg_txcmd_op {
@@ -251,6 +293,7 @@ enum rt_rf_type_819xu {
 	RF_PSEUDO_11N = 5,
 };
 
+<<<<<<< HEAD
 enum rf_step {
 	RF_STEP_INIT = 0,
 	RF_STEP_NORMAL,
@@ -264,6 +307,8 @@ enum rt_status {
 	RT_STATUS_RESOURCE
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum rt_customer_id {
 	RT_CID_DEFAULT	  = 0,
 	RT_CID_8187_ALPHA0      = 1,
@@ -303,6 +348,7 @@ enum reset_type {
 	RESET_TYPE_SILENT = 0x02
 };
 
+<<<<<<< HEAD
 enum ic_inferiority_8192s {
 	IC_INFERIORITY_A	    = 0,
 	IC_INFERIORITY_B	    = 1,
@@ -355,6 +401,11 @@ struct rt_stats {
 	unsigned long rxframgment;
 	unsigned long rxurberr;
 	unsigned long rxstaterr;
+=======
+struct rt_stats {
+	unsigned long rxrdu;
+	unsigned long rxok;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long rxdatacrcerr;
 	unsigned long rxmgmtcrcerr;
 	unsigned long rxcrcerrmin;
@@ -362,8 +413,11 @@ struct rt_stats {
 	unsigned long rxcrcerrmax;
 	unsigned long received_rate_histogram[4][32];
 	unsigned long received_preamble_GI[2][32];
+<<<<<<< HEAD
 	unsigned long	rx_AMPDUsize_histogram[5];
 	unsigned long rx_AMPDUnum_histogram[5];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long numpacket_matchbssid;
 	unsigned long numpacket_toself;
 	unsigned long num_process_phyinfo;
@@ -371,6 +425,7 @@ struct rt_stats {
 	unsigned long numqry_phystatusCCK;
 	unsigned long numqry_phystatusHT;
 	unsigned long received_bwtype[5];
+<<<<<<< HEAD
 	unsigned long txnperr;
 	unsigned long txnpdrop;
 	unsigned long txresumed;
@@ -423,6 +478,26 @@ struct rt_stats {
 	unsigned long txerrunicast;
 	unsigned long txretrycount;
 	unsigned long txfeedbackretry;
+=======
+	unsigned long rxoverflow;
+	unsigned long rxint;
+	unsigned long ints;
+	unsigned long shints;
+	unsigned long txoverflow;
+	unsigned long txbeokint;
+	unsigned long txbkokint;
+	unsigned long txviokint;
+	unsigned long txvookint;
+	unsigned long txbeaconokint;
+	unsigned long txbeaconerr;
+	unsigned long txmanageokint;
+	unsigned long txcmdpktokint;
+	unsigned long txbytesmulticast;
+	unsigned long txbytesbroadcast;
+	unsigned long txbytesunicast;
+	unsigned long rxbytesunicast;
+	unsigned long txretrycount;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	last_packet_rate;
 	unsigned long slide_signal_strength[100];
 	unsigned long slide_evm[100];
@@ -435,10 +510,15 @@ struct rt_stats {
 	u8 rx_rssi_percentage[4];
 	u8 rx_evm_percentage[2];
 	long rxSNRdB[4];
+<<<<<<< HEAD
 	struct rt_tx_rahis txrate;
 	u32 Slide_Beacon_pwdb[100];
 	u32 Slide_Beacon_Total;
 	struct rt_smooth_data_4rf cck_adc_pwdb;
+=======
+	u32 Slide_Beacon_pwdb[100];
+	u32 Slide_Beacon_Total;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32	CurrentShowTxate;
 };
 
@@ -451,6 +531,7 @@ struct channel_access_setting {
 	u16 CWmaxIndex;
 };
 
+<<<<<<< HEAD
 enum two_port_status {
 	TWO_PORT_STATUS__DEFAULT_ONLY,
 	TWO_PORT_STATUS__EXTENSION_ONLY,
@@ -469,6 +550,8 @@ struct ccktxbbgain {
 	u8	ccktxbb_valuearray[8];
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct init_gain {
 	u8	xaagccore1;
 	u8	xbagccore1;
@@ -549,6 +632,7 @@ struct r8192_priv {
 	struct delayed_work		txpower_tracking_wq;
 	struct delayed_work		rfpath_check_wq;
 	struct delayed_work		gpio_change_rf_wq;
+<<<<<<< HEAD
 	struct delayed_work		initialgain_operate_wq;
 	struct delayed_work		check_hw_scan_wq;
 	struct delayed_work		hw_scan_simu_wq;
@@ -560,6 +644,11 @@ struct r8192_priv {
 
 	struct mp_adapter NdisAdapter;
 
+=======
+
+	struct channel_access_setting ChannelAccessSetting;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rtl819x_ops			*ops;
 	struct rtllib_device			*rtllib;
 
@@ -571,26 +660,36 @@ struct r8192_priv {
 
 
 	enum rt_rf_type_819xu rf_chip;
+<<<<<<< HEAD
 	enum ic_inferiority_8192s IC_Class;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum ht_channel_width CurrentChannelBW;
 	struct bb_reg_definition PHYRegDef[4];
 	struct rate_adaptive rate_adaptive;
 
+<<<<<<< HEAD
 	struct ccktxbbgain cck_txbbgain_table[CCKTxBBGainTableLength];
 	struct ccktxbbgain cck_txbbgain_ch14_table[CCKTxBBGainTableLength];
 
 	struct txbbgain_struct txbbgain_table[TxBBGainTableLength];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum acm_method AcmMethod;
 
 	struct rt_firmware			*pFirmware;
 	enum rtl819x_loopback LoopbackMode;
+<<<<<<< HEAD
 	enum firmware_source firmware_source;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct timer_list			watch_dog_timer;
 	struct timer_list			fsync_timer;
 	struct timer_list			gpio_polling_timer;
 
+<<<<<<< HEAD
 	spinlock_t				fw_scan_lock;
 	spinlock_t				irq_lock;
 	spinlock_t				irq_th_lock;
@@ -602,24 +701,42 @@ struct r8192_priv {
 	spinlock_t				ps_lock;
 
 	struct sk_buff_head		rx_queue;
+=======
+	spinlock_t				irq_th_lock;
+	spinlock_t				tx_lock;
+	spinlock_t				rf_ps_lock;
+	spinlock_t				ps_lock;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff_head		skb_queue;
 
 	struct tasklet_struct		irq_rx_tasklet;
 	struct tasklet_struct		irq_tx_tasklet;
 	struct tasklet_struct		irq_prepare_beacon_tasklet;
 
+<<<<<<< HEAD
 	struct semaphore			wx_sem;
 	struct semaphore			rf_sem;
+=======
+	struct mutex				wx_mutex;
+	struct mutex				rf_mutex;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex				mutex;
 
 	struct rt_stats stats;
 	struct iw_statistics			wstats;
+<<<<<<< HEAD
 	struct proc_dir_entry		*dir_dev;
 
 	short (*rf_set_sens)(struct net_device *dev, short sens);
 	u8 (*rf_set_chan)(struct net_device *dev, u8 ch);
 	void (*rf_close)(struct net_device *dev);
 	void (*rf_init)(struct net_device *dev);
+=======
+
+	short (*rf_set_sens)(struct net_device *dev, short sens);
+	u8 (*rf_set_chan)(struct net_device *dev, u8 ch);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct rx_desc *rx_ring[MAX_RX_QUEUE];
 	struct sk_buff	*rx_buf[MAX_RX_QUEUE][MAX_RX_COUNT];
@@ -630,22 +747,30 @@ struct r8192_priv {
 
 	u64		LastRxDescTSF;
 
+<<<<<<< HEAD
 	u16		EarlyRxThreshold;
 	u32		ReceiveConfig;
 	u8		AcmControl;
 	u8		RFProgType;
+=======
+	u32		ReceiveConfig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8		retry_data;
 	u8		retry_rts;
 	u16		rts;
 
 	struct rtl8192_tx_ring tx_ring[MAX_TX_QUEUE_COUNT];
 	int		 txringcount;
+<<<<<<< HEAD
 	int		txbuffsize;
 	int		txfwbuffersize;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_t	tx_pending[0x10];
 
 	u16		ShortRetryLimit;
 	u16		LongRetryLimit;
+<<<<<<< HEAD
 	u32		TransmitConfig;
 	u8		RegCWinMin;
 	u8		keepAliveLevel;
@@ -653,6 +778,10 @@ struct r8192_priv {
 	bool		sw_radio_on;
 	bool		bHwRadioOff;
 	bool		pwrdown;
+=======
+
+	bool		bHwRadioOff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool		blinked_ingpio;
 	u8		polling_timer_on;
 
@@ -665,17 +794,24 @@ struct r8192_priv {
 
 	struct work_struct qos_activate;
 
+<<<<<<< HEAD
 	u8 bIbssCoordinator;
 
 	short	promisc;
 	short	crcmon;
 
 	int txbeaconcount;
+=======
+	short	promisc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	short	chan;
 	short	sens;
 	short	max_sens;
+<<<<<<< HEAD
 	u32 rx_prevlen;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u8 ScanDelay;
 	bool ps_force;
@@ -686,6 +822,7 @@ struct r8192_priv {
 	enum nic_t card_8192;
 	u8 card_8192_version;
 
+<<<<<<< HEAD
 	short	enable_gpio0;
 
 	u8 rf_type;
@@ -716,12 +853,23 @@ struct r8192_priv {
 	u32 last_rxdesc_tsf_high;
 	u32 last_rxdesc_tsf_low;
 
+=======
+	u8 rf_type;
+	u8 IC_Cut;
+	char nick[IW_ESSID_MAX_SIZE + 1];
+	u8 check_roaming_cnt;
+
+	u32 SilentResetRxSlotIndex;
+	u32 SilentResetRxStuckEvent[MAX_SILENT_RESET_RX_SLOT_NUM];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 basic_rate;
 	u8 short_preamble;
 	u8 dot11CurrentPreambleMode;
 	u8 slot_time;
 	u16 SifsTime;
 
+<<<<<<< HEAD
 	u8 RegWirelessMode;
 
 	u8 firmware_version;
@@ -760,10 +908,23 @@ struct r8192_priv {
 	u8 EEPROMTxPowerLevelCCK[14];
 	u8 EEPROMTxPowerLevelOFDM24G[14];
 	u8 EEPROMTxPowerLevelOFDM5G[24];
+=======
+	bool AutoloadFailFlag;
+
+	short	epromtype;
+	u16 eeprom_vid;
+	u16 eeprom_did;
+	u8 eeprom_CustomerID;
+	u16 eeprom_ChannelPlan;
+
+	u8 EEPROMTxPowerLevelCCK[14];
+	u8 EEPROMTxPowerLevelOFDM24G[14];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 EEPROMRfACCKChnl1TxPwLevel[3];
 	u8 EEPROMRfAOfdmChnlTxPwLevel[3];
 	u8 EEPROMRfCCCKChnl1TxPwLevel[3];
 	u8 EEPROMRfCOfdmChnlTxPwLevel[3];
+<<<<<<< HEAD
 	u16 EEPROMTxPowerDiff;
 	u16 EEPROMAntPwDiff;
 	u8 EEPROMThermalMeter;
@@ -794,6 +955,17 @@ struct r8192_priv {
 	u16 FwCmdIOMap;
 	u32 FwCmdIOParam;
 
+=======
+	u16 EEPROMAntPwDiff;
+	u8 EEPROMThermalMeter;
+	u8 EEPROMCrystalCap;
+
+	u8 EEPROMLegacyHTTxPowerDiff;
+
+	u8 CrystalCap;
+	u8 ThermalMeter[2];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 SwChnlInProgress;
 	u8 SwChnlStage;
 	u8 SwChnlStep;
@@ -809,22 +981,29 @@ struct r8192_priv {
 
 	u16 RegChannelPlan;
 	u16 ChannelPlan;
+<<<<<<< HEAD
 	bool bChnlPlanFromHW;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bool RegRfOff;
 	bool isRFOff;
 	bool bInPowerSaveMode;
 	u8 bHwRfOffAction;
 
+<<<<<<< HEAD
 	bool aspm_clkreq_enable;
 	u32 pci_bridge_vendor;
 	u8 RegHostPciASPMSetting;
 	u8 RegDevicePciASPMSetting;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool RFChangeInProgress;
 	bool SetRFPowerStateInProgress;
 	bool bdisable_nic;
 
+<<<<<<< HEAD
 	u8 pwrGroupCnt;
 
 	u8 ThermalValue_LCK;
@@ -863,6 +1042,8 @@ struct r8192_priv {
 	struct false_alarm_stats FalseAlmCnt;
 
 	u8 DMFlag;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 DM_Type;
 
 	u8 CckPwEnl;
@@ -870,6 +1051,7 @@ struct r8192_priv {
 	u32 Pwr_Track;
 	u8 CCKPresentAttentuation_20Mdefault;
 	u8 CCKPresentAttentuation_40Mdefault;
+<<<<<<< HEAD
 	char CCKPresentAttentuation_difference;
 	char CCKPresentAttentuation;
 	u8 bCckHighPower;
@@ -878,10 +1060,18 @@ struct r8192_priv {
 
 	u32 MCSTxPowerLevelOriginalOffset[6];
 	u32 CCKTxPowerLevelOriginalOffset;
+=======
+	s8 CCKPresentAttentuation_difference;
+	s8 CCKPresentAttentuation;
+	long undecorated_smoothed_pwdb;
+
+	u32 MCSTxPowerLevelOriginalOffset[6];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 TxPowerLevelCCK[14];
 	u8 TxPowerLevelCCK_A[14];
 	u8 TxPowerLevelCCK_C[14];
 	u8		TxPowerLevelOFDM24G[14];
+<<<<<<< HEAD
 	u8		TxPowerLevelOFDM5G[14];
 	u8		TxPowerLevelOFDM24G_A[14];
 	u8		TxPowerLevelOFDM24G_C[14];
@@ -902,24 +1092,41 @@ struct r8192_priv {
 	u8		CurrentOfdm24GTxPwrIdx;
 
 	bool		bdynamic_txpower;
+=======
+	u8		TxPowerLevelOFDM24G_A[14];
+	u8		TxPowerLevelOFDM24G_C[14];
+	u8		LegacyHTTxPowerDiff;
+	s8		RF_C_TxPwDiff;
+	u8		AntennaTxPwDiff[3];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool		bDynamicTxHighPower;
 	bool		bDynamicTxLowPower;
 	bool		bLastDTPFlag_High;
 	bool		bLastDTPFlag_Low;
 
+<<<<<<< HEAD
 	bool		bstore_last_dtpflag;
 	bool		bstart_txctrl_bydtp;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8		rfa_txpowertrackingindex;
 	u8		rfa_txpowertrackingindex_real;
 	u8		rfa_txpowertracking_default;
 	u8		rfc_txpowertrackingindex;
 	u8		rfc_txpowertrackingindex_real;
+<<<<<<< HEAD
 	u8		rfc_txpowertracking_default;
 	bool		btxpower_tracking;
 	bool		bcck_in_ch14;
 
 	u8		TxPowerTrackControl;
+=======
+	bool		btxpower_tracking;
+	bool		bcck_in_ch14;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8		txpower_count;
 	bool		btxpower_trackingInit;
 
@@ -935,11 +1142,14 @@ struct r8192_priv {
 	bool		bcurrent_turbo_EDCA;
 	bool		bis_cur_rdlstate;
 
+<<<<<<< HEAD
 	bool		bCCKinCH14;
 
 	u8		MidHighPwrTHR_L1;
 	u8		MidHighPwrTHR_L2;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool		bfsync_processing;
 	u32		rate_record;
 	u32		rateCountDiffRecord;
@@ -949,6 +1159,7 @@ struct r8192_priv {
 	u32		framesyncC34;
 	u8		framesyncMonitor;
 
+<<<<<<< HEAD
 	bool		bDMInitialGainEnable;
 	bool		MutualAuthenticationFail;
 
@@ -963,12 +1174,16 @@ struct r8192_priv {
 	u8		thermal_readback_index;
 	u32		ccktxpower_adjustcnt_not_ch14;
 	u32		ccktxpower_adjustcnt_ch14;
+=======
+	u32		reset_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	enum reset_type ResetProgress;
 	bool		bForcedSilentReset;
 	bool		bDisableNormalResetCheck;
 	u16		TxCounter;
 	u16		RxCounter;
+<<<<<<< HEAD
 	int		IrpPendingCount;
 	bool		bResetInProgress;
 	bool		force_reset;
@@ -999,10 +1214,21 @@ struct r8192_priv {
 	u8		H2CTxCmdSeq;
 
 
+=======
+	bool		bResetInProgress;
+	bool		force_reset;
+	bool		force_lps;
+
+	bool		chan_forced;
+
+	u8		PwrDomainProtect;
+	u8		H2CTxCmdSeq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern const struct ethtool_ops rtl819x_ethtool_ops;
 
+<<<<<<< HEAD
 void rtl8192_tx_cmd(struct net_device *dev, struct sk_buff *skb);
 short rtl8192_tx(struct net_device *dev, struct sk_buff *skb);
 
@@ -1085,4 +1311,46 @@ void ActUpdateChannelAccessSetting(struct net_device *dev,
 			   enum wireless_mode WirelessMode,
 			   struct channel_access_setting *ChnlAccessSetting);
 
+=======
+u8 rtl92e_readb(struct net_device *dev, int x);
+u32 rtl92e_readl(struct net_device *dev, int x);
+u16 rtl92e_readw(struct net_device *dev, int x);
+void rtl92e_writeb(struct net_device *dev, int x, u8 y);
+void rtl92e_writew(struct net_device *dev, int x, u16 y);
+void rtl92e_writel(struct net_device *dev, int x, u32 y);
+
+void force_pci_posting(struct net_device *dev);
+
+void rtl92e_rx_enable(struct net_device *);
+void rtl92e_tx_enable(struct net_device *);
+
+void rtl92e_hw_sleep_wq(void *data);
+void rtl92e_commit(struct net_device *dev);
+
+void rtl92e_check_rfctrl_gpio_timer(unsigned long data);
+
+void rtl92e_hw_wakeup_wq(void *data);
+
+void rtl92e_reset_desc_ring(struct net_device *dev);
+void rtl92e_set_wireless_mode(struct net_device *dev, u8 wireless_mode);
+void rtl92e_irq_enable(struct net_device *dev);
+void rtl92e_config_rate(struct net_device *dev, u16 *rate_config);
+void rtl92e_irq_disable(struct net_device *dev);
+
+void rtl92e_update_rx_pkt_timestamp(struct net_device *dev,
+				    struct rtllib_rx_stats *stats);
+long rtl92e_translate_to_dbm(struct r8192_priv *priv, u8 signal_strength_index);
+void rtl92e_update_rx_statistics(struct r8192_priv *priv,
+				 struct rtllib_rx_stats *pprevious_stats);
+u8 rtl92e_evm_db_to_percent(s8 value);
+u8 rtl92e_rx_db_to_percent(s8 antpower);
+void rtl92e_copy_mpdu_stats(struct rtllib_rx_stats *psrc_stats,
+			    struct rtllib_rx_stats *ptarget_stats);
+bool rtl92e_enable_nic(struct net_device *dev);
+bool rtl92e_disable_nic(struct net_device *dev);
+
+bool rtl92e_set_rf_state(struct net_device *dev,
+			 enum rt_rf_power_state StateToSet,
+			 RT_RF_CHANGE_SOURCE ChangeSource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -33,7 +33,11 @@
 
 
 /* Register default values for ISABELLE driver. */
+<<<<<<< HEAD
 static struct reg_default isabelle_reg_defs[] = {
+=======
+static const struct reg_default isabelle_reg_defs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0, 0x00 },
 	{ 1, 0x00 },
 	{ 2, 0x00 },
@@ -140,6 +144,7 @@ static const char *isabelle_rx1_texts[] = {"VRX1", "ARX1"};
 static const char *isabelle_rx2_texts[] = {"VRX2", "ARX2"};
 
 static const struct soc_enum isabelle_rx1_enum[] = {
+<<<<<<< HEAD
 	SOC_ENUM_SINGLE(ISABELLE_VOICE_HPF_CFG_REG, 3, 1, isabelle_rx1_texts),
 	SOC_ENUM_SINGLE(ISABELLE_AUDIO_HPF_CFG_REG, 5, 1, isabelle_rx1_texts),
 };
@@ -147,6 +152,19 @@ static const struct soc_enum isabelle_rx1_enum[] = {
 static const struct soc_enum isabelle_rx2_enum[] = {
 	SOC_ENUM_SINGLE(ISABELLE_VOICE_HPF_CFG_REG, 2, 1, isabelle_rx2_texts),
 	SOC_ENUM_SINGLE(ISABELLE_AUDIO_HPF_CFG_REG, 4, 1, isabelle_rx2_texts),
+=======
+	SOC_ENUM_SINGLE(ISABELLE_VOICE_HPF_CFG_REG, 3,
+			ARRAY_SIZE(isabelle_rx1_texts), isabelle_rx1_texts),
+	SOC_ENUM_SINGLE(ISABELLE_AUDIO_HPF_CFG_REG, 5,
+			ARRAY_SIZE(isabelle_rx1_texts), isabelle_rx1_texts),
+};
+
+static const struct soc_enum isabelle_rx2_enum[] = {
+	SOC_ENUM_SINGLE(ISABELLE_VOICE_HPF_CFG_REG, 2,
+			ARRAY_SIZE(isabelle_rx2_texts), isabelle_rx2_texts),
+	SOC_ENUM_SINGLE(ISABELLE_AUDIO_HPF_CFG_REG, 4,
+			ARRAY_SIZE(isabelle_rx2_texts), isabelle_rx2_texts),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Headset DAC playback switches */
@@ -161,6 +179,7 @@ static const char *isabelle_atx_texts[] = {"AMIC1", "DMIC"};
 static const char *isabelle_vtx_texts[] = {"AMIC2", "DMIC"};
 
 static const struct soc_enum isabelle_atx_enum[] = {
+<<<<<<< HEAD
 	SOC_ENUM_SINGLE(ISABELLE_AMIC_CFG_REG, 7, 1, isabelle_atx_texts),
 	SOC_ENUM_SINGLE(ISABELLE_DMIC_CFG_REG, 0, 1, isabelle_atx_texts),
 };
@@ -168,6 +187,19 @@ static const struct soc_enum isabelle_atx_enum[] = {
 static const struct soc_enum isabelle_vtx_enum[] = {
 	SOC_ENUM_SINGLE(ISABELLE_AMIC_CFG_REG, 6, 1, isabelle_vtx_texts),
 	SOC_ENUM_SINGLE(ISABELLE_DMIC_CFG_REG, 0, 1, isabelle_vtx_texts),
+=======
+	SOC_ENUM_SINGLE(ISABELLE_AMIC_CFG_REG, 7,
+			ARRAY_SIZE(isabelle_atx_texts), isabelle_atx_texts),
+	SOC_ENUM_SINGLE(ISABELLE_DMIC_CFG_REG, 0,
+			ARRAY_SIZE(isabelle_atx_texts), isabelle_atx_texts),
+};
+
+static const struct soc_enum isabelle_vtx_enum[] = {
+	SOC_ENUM_SINGLE(ISABELLE_AMIC_CFG_REG, 6,
+			ARRAY_SIZE(isabelle_vtx_texts), isabelle_vtx_texts),
+	SOC_ENUM_SINGLE(ISABELLE_DMIC_CFG_REG, 0,
+			ARRAY_SIZE(isabelle_vtx_texts), isabelle_vtx_texts),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct snd_kcontrol_new atx_mux_controls =
@@ -183,6 +215,7 @@ static const char *isabelle_amic1_texts[] = {
 /* Left analog microphone selection */
 static const char *isabelle_amic2_texts[] = {"Sub Mic", "Aux/FM Right"};
 
+<<<<<<< HEAD
 static const struct soc_enum isabelle_amic1_enum[] = {
 	SOC_ENUM_SINGLE(ISABELLE_AMIC_CFG_REG, 5,
 			ARRAY_SIZE(isabelle_amic1_texts),
@@ -194,6 +227,15 @@ static const struct soc_enum isabelle_amic2_enum[] = {
 			ARRAY_SIZE(isabelle_amic2_texts),
 			isabelle_amic2_texts),
 };
+=======
+static SOC_ENUM_SINGLE_DECL(isabelle_amic1_enum,
+			    ISABELLE_AMIC_CFG_REG, 5,
+			    isabelle_amic1_texts);
+
+static SOC_ENUM_SINGLE_DECL(isabelle_amic2_enum,
+			    ISABELLE_AMIC_CFG_REG, 4,
+			    isabelle_amic2_texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new amic1_control =
 	SOC_DAPM_ENUM("Route", isabelle_amic1_enum);
@@ -206,16 +248,32 @@ static const char *isabelle_st_audio_texts[] = {"ATX1", "ATX2"};
 static const char *isabelle_st_voice_texts[] = {"VTX1", "VTX2"};
 
 static const struct soc_enum isabelle_st_audio_enum[] = {
+<<<<<<< HEAD
 	SOC_ENUM_SINGLE(ISABELLE_ATX_STPGA1_CFG_REG, 7, 1,
 			isabelle_st_audio_texts),
 	SOC_ENUM_SINGLE(ISABELLE_ATX_STPGA2_CFG_REG, 7, 1,
+=======
+	SOC_ENUM_SINGLE(ISABELLE_ATX_STPGA1_CFG_REG, 7,
+			ARRAY_SIZE(isabelle_st_audio_texts),
+			isabelle_st_audio_texts),
+	SOC_ENUM_SINGLE(ISABELLE_ATX_STPGA2_CFG_REG, 7,
+			ARRAY_SIZE(isabelle_st_audio_texts),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			isabelle_st_audio_texts),
 };
 
 static const struct soc_enum isabelle_st_voice_enum[] = {
+<<<<<<< HEAD
 	SOC_ENUM_SINGLE(ISABELLE_VTX_STPGA1_CFG_REG, 7, 1,
 			isabelle_st_voice_texts),
 	SOC_ENUM_SINGLE(ISABELLE_VTX2_STPGA2_CFG_REG, 7, 1,
+=======
+	SOC_ENUM_SINGLE(ISABELLE_VTX_STPGA1_CFG_REG, 7,
+			ARRAY_SIZE(isabelle_st_voice_texts),
+			isabelle_st_voice_texts),
+	SOC_ENUM_SINGLE(ISABELLE_VTX2_STPGA2_CFG_REG, 7,
+			ARRAY_SIZE(isabelle_st_voice_texts),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			isabelle_st_voice_texts),
 };
 
@@ -901,8 +959,11 @@ static int isabelle_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -910,8 +971,12 @@ static int isabelle_hw_params(struct snd_pcm_substream *substream,
 			      struct snd_pcm_hw_params *params,
 			      struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
+=======
+	struct snd_soc_codec *codec = dai->codec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 aif = 0;
 	unsigned int fs_val = 0;
 
@@ -951,11 +1016,19 @@ static int isabelle_hw_params(struct snd_pcm_substream *substream,
 			ISABELLE_FS_RATE_MASK, fs_val);
 
 	/* bit size */
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S20_3LE:
 		aif |= ISABELLE_AIF_LENGTH_20;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 20:
+		aif |= ISABELLE_AIF_LENGTH_20;
+		break;
+	case 32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		aif |= ISABELLE_AIF_LENGTH_32;
 		break;
 	default:
@@ -1011,25 +1084,41 @@ static int isabelle_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 #define ISABELLE_FORMATS (SNDRV_PCM_FMTBIT_S20_3LE |\
 			SNDRV_PCM_FMTBIT_S32_LE)
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops isabelle_hs_dai_ops = {
+=======
+static const struct snd_soc_dai_ops isabelle_hs_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= isabelle_hw_params,
 	.set_fmt	= isabelle_set_dai_fmt,
 	.digital_mute	= isabelle_hs_mute,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops isabelle_hf_dai_ops = {
+=======
+static const struct snd_soc_dai_ops isabelle_hf_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= isabelle_hw_params,
 	.set_fmt	= isabelle_set_dai_fmt,
 	.digital_mute	= isabelle_hf_mute,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops isabelle_line_dai_ops = {
+=======
+static const struct snd_soc_dai_ops isabelle_line_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= isabelle_hw_params,
 	.set_fmt	= isabelle_set_dai_fmt,
 	.digital_mute	= isabelle_line_mute,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops isabelle_ul_dai_ops = {
+=======
+static const struct snd_soc_dai_ops isabelle_ul_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= isabelle_hw_params,
 	.set_fmt	= isabelle_set_dai_fmt,
 };
@@ -1082,6 +1171,7 @@ static struct snd_soc_dai_driver isabelle_dai[] = {
 	},
 };
 
+<<<<<<< HEAD
 static int isabelle_probe(struct snd_soc_codec *codec)
 {
 	int ret = 0;
@@ -1106,6 +1196,18 @@ static struct snd_soc_codec_driver soc_codec_dev_isabelle = {
 	.num_dapm_widgets = ARRAY_SIZE(isabelle_dapm_widgets),
 	.dapm_routes = isabelle_intercon,
 	.num_dapm_routes = ARRAY_SIZE(isabelle_intercon),
+=======
+static struct snd_soc_codec_driver soc_codec_dev_isabelle = {
+	.set_bias_level = isabelle_set_bias_level,
+	.component_driver = {
+		.controls		= isabelle_snd_controls,
+		.num_controls		= ARRAY_SIZE(isabelle_snd_controls),
+		.dapm_widgets		= isabelle_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(isabelle_dapm_widgets),
+		.dapm_routes		= isabelle_intercon,
+		.num_dapm_routes	= ARRAY_SIZE(isabelle_intercon),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.idle_bias_off = true,
 };
 
@@ -1160,7 +1262,10 @@ MODULE_DEVICE_TABLE(i2c, isabelle_i2c_id);
 static struct i2c_driver isabelle_i2c_driver = {
 	.driver = {
 		.name = "isabelle",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = isabelle_i2c_probe,
 	.remove = isabelle_i2c_remove,

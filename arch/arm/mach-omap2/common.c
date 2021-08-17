@@ -14,7 +14,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/platform_data/dsp-omap.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 #include "omap-secure.h"
@@ -30,7 +33,10 @@ int __weak omap_secure_ram_reserve_memblock(void)
 
 void __init omap_reserve(void)
 {
+<<<<<<< HEAD
 	omap_dsp_reserve_sdram_memblock();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_secure_ram_reserve_memblock();
 	omap_barrier_reserve_memblock();
 }

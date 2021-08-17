@@ -15,8 +15,11 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 struct task_struct;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* User-level do most of the mapping between kernel and user
    capabilities based on the version tag given by the kernel. The
    kernel might be somewhat backwards compatible, but don't bet on
@@ -308,8 +311,17 @@ struct vfs_cap_data {
 
 #define CAP_LEASE            28
 
+<<<<<<< HEAD
 #define CAP_AUDIT_WRITE      29
 
+=======
+/* Allow writing the audit log via unicast netlink socket */
+
+#define CAP_AUDIT_WRITE      29
+
+/* Allow configuration of audit via unicast netlink socket */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CAP_AUDIT_CONTROL    30
 
 #define CAP_SETFCAP	     31
@@ -343,7 +355,16 @@ struct vfs_cap_data {
 
 #define CAP_BLOCK_SUSPEND    36
 
+<<<<<<< HEAD
 #define CAP_LAST_CAP         CAP_BLOCK_SUSPEND
+=======
+/* Allow reading the audit log via multicast netlink socket */
+
+#define CAP_AUDIT_READ		37
+
+
+#define CAP_LAST_CAP         CAP_AUDIT_READ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
 

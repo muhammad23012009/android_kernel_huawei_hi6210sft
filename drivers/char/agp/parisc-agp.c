@@ -335,7 +335,11 @@ parisc_agp_setup(void __iomem *ioc_hpa, void __iomem *lba_hpa)
 	struct agp_bridge_data *bridge;
 	int error = 0;
 
+<<<<<<< HEAD
 	fake_bridge_dev = alloc_pci_dev();
+=======
+	fake_bridge_dev = pci_alloc_dev(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!fake_bridge_dev) {
 		error = -ENOMEM;
 		goto fail;

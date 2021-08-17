@@ -69,6 +69,11 @@
  * zone 0.
  */
 #define WUSB_CHANNEL_STOP_DELAY_MS 8
+<<<<<<< HEAD
+=======
+#define WUSB_RETRY_COUNT_MAX 15
+#define WUSB_RETRY_COUNT_INFINITE 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * Wireless USB device
@@ -95,6 +100,10 @@ struct wusb_dev {
 	struct kref refcnt;
 	struct wusbhc *wusbhc;
 	struct list_head cack_node;	/* Connect-Ack list */
+<<<<<<< HEAD
+=======
+	struct list_head rekey_node;	/* GTK rekey list */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 port_idx;
 	u8 addr;
 	u8 beacon_type:4;
@@ -105,8 +114,11 @@ struct wusb_dev {
 	struct usb_wireless_cap_descriptor *wusb_cap_descr;
 	struct uwb_mas_bm availability;
 	struct work_struct devconnect_acked_work;
+<<<<<<< HEAD
 	struct urb *set_gtk_urb;
 	struct usb_ctrlrequest *set_gtk_req;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_device *usb_dev;
 };
 
@@ -163,7 +175,11 @@ struct wusb_port {
  * functions/operations that only deal with general Wireless USB HC
  * issues use this data type to refer to the host.
  *
+<<<<<<< HEAD
  * @usb_hcd 	   Instantiation of a USB host controller
+=======
+ * @usb_hcd	   Instantiation of a USB host controller
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *                 (initialized by upper layer [HWA=HC or WHCI].
  *
  * @dev		   Device that implements this; initialized by the
@@ -195,7 +211,11 @@ struct wusb_port {
  * @ports_max	   Number of simultaneous device connections (fake
  *                 ports) this HC will take. Read-only.
  *
+<<<<<<< HEAD
  * @port      	   Array of port status for each fake root port. Guaranteed to
+=======
+ * @port	   Array of port status for each fake root port. Guaranteed to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *                 always be the same length during device existence
  *                 [this allows for some unlocked but referenced reading].
  *
@@ -252,6 +272,12 @@ struct wusbhc {
 	unsigned trust_timeout;			/* in jiffies */
 	struct wusb_ckhdid chid;
 	uint8_t phy_rate;
+<<<<<<< HEAD
+=======
+	uint8_t dnts_num_slots;
+	uint8_t dnts_interval;
+	uint8_t retry_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wuie_host_info *wuie_host_info;
 
 	struct mutex mutex;			/* locks everything else */
@@ -291,8 +317,15 @@ struct wusbhc {
 	} __attribute__((packed)) gtk;
 	u8 gtk_index;
 	u32 gtk_tkid;
+<<<<<<< HEAD
 	struct work_struct gtk_rekey_done_work;
 	int pending_set_gtks;
+=======
+
+	/* workqueue for WUSB security related tasks. */
+	struct workqueue_struct *wq_security;
+	struct work_struct gtk_rekey_work;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct usb_encryption_descriptor *ccm1_etd;
 };
@@ -326,10 +359,18 @@ void wusbhc_pal_unregister(struct wusbhc *wusbhc);
  * This is a safe assumption as @usb_dev->bus is referenced all the
  * time during the @usb_dev life cycle.
  */
+<<<<<<< HEAD
 static inline struct usb_hcd *usb_hcd_get_by_usb_dev(struct usb_device *usb_dev)
 {
 	struct usb_hcd *usb_hcd;
 	usb_hcd = container_of(usb_dev->bus, struct usb_hcd, self);
+=======
+static inline
+struct usb_hcd *usb_hcd_get_by_usb_dev(struct usb_device *usb_dev)
+{
+	struct usb_hcd *usb_hcd;
+	usb_hcd = bus_to_hcd(usb_dev->bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return usb_get_hcd(usb_hcd);
 }
 
@@ -399,8 +440,11 @@ extern void wusbhc_rh_destroy(struct wusbhc *);
 
 extern int wusbhc_rh_status_data(struct usb_hcd *, char *);
 extern int wusbhc_rh_control(struct usb_hcd *, u16, u16, u16, char *, u16);
+<<<<<<< HEAD
 extern int wusbhc_rh_suspend(struct usb_hcd *);
 extern int wusbhc_rh_resume(struct usb_hcd *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int wusbhc_rh_start_port_reset(struct usb_hcd *, unsigned);
 
 /* MMC handling */

@@ -23,8 +23,12 @@
  * the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+ * along with this program;  if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 
@@ -45,6 +49,10 @@
 #include "netlabel_mgmt.h"
 #include "netlabel_unlabeled.h"
 #include "netlabel_cipso_v4.h"
+<<<<<<< HEAD
+=======
+#include "netlabel_calipso.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "netlabel_user.h"
 
 /*
@@ -72,11 +80,19 @@ int __init netlbl_netlink_init(void)
 	if (ret_val != 0)
 		return ret_val;
 
+<<<<<<< HEAD
 	ret_val = netlbl_unlabel_genl_init();
 	if (ret_val != 0)
 		return ret_val;
 
 	return 0;
+=======
+	ret_val = netlbl_calipso_genl_init();
+	if (ret_val != 0)
+		return ret_val;
+
+	return netlbl_unlabel_genl_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

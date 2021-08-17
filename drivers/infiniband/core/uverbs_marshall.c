@@ -140,5 +140,13 @@ void ib_copy_path_rec_from_user(struct ib_sa_path_rec *dst,
 	dst->packet_life_time	= src->packet_life_time;
 	dst->preference		= src->preference;
 	dst->packet_life_time_selector = src->packet_life_time_selector;
+<<<<<<< HEAD
+=======
+
+	memset(dst->dmac, 0, sizeof(dst->dmac));
+	dst->net = NULL;
+	dst->ifindex = 0;
+	dst->gid_type = IB_GID_TYPE_IB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(ib_copy_path_rec_from_user);

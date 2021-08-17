@@ -14,12 +14,15 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __SMIAPP_PRIV_H_
@@ -28,7 +31,11 @@
 #include <linux/mutex.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-subdev.h>
+<<<<<<< HEAD
 #include <media/smiapp.h>
+=======
+#include <media/i2c/smiapp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "smiapp-pll.h"
 #include "smiapp-reg.h"
@@ -54,6 +61,11 @@
 	(1000 +	(SMIAPP_RESET_DELAY_CLOCKS * 1000	\
 		 + (clk) / 1000 - 1) / ((clk) / 1000))
 
+<<<<<<< HEAD
+=======
+#define SMIAPP_COLOUR_COMPONENTS	4
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "smiapp-limits.h"
 
 struct smiapp_quirk;
@@ -154,6 +166,14 @@ struct smiapp_csi_data_format {
 #define SMIAPP_PAD_SRC			1
 #define SMIAPP_PADS			2
 
+<<<<<<< HEAD
+=======
+#define SMIAPP_COMPRESSED_BASE		8
+#define SMIAPP_COMPRESSED_MAX		16
+#define SMIAPP_NR_OF_COMPRESSED		(SMIAPP_COMPRESSED_MAX - \
+					 SMIAPP_COMPRESSED_BASE + 1)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct smiapp_binning_subtype {
 	u8 horizontal:4;
 	u8 vertical:4;
@@ -196,9 +216,16 @@ struct smiapp_sensor {
 	struct smiapp_subdev *binner;
 	struct smiapp_subdev *scaler;
 	struct smiapp_subdev *pixel_array;
+<<<<<<< HEAD
 	struct smiapp_platform_data *platform_data;
 	struct regulator *vana;
 	struct clk *ext_clk;
+=======
+	struct smiapp_hwconfig *hwcfg;
+	struct regulator *vana;
+	struct clk *ext_clk;
+	struct gpio_desc *xshutdown;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 limits[SMIAPP_LIMIT_LAST];
 	u8 nbinning_subtypes;
 	struct smiapp_binning_subtype binning_subtypes[SMIAPP_BINNING_SUBTYPES];
@@ -215,8 +242,13 @@ struct smiapp_sensor {
 	u8 scaling_mode;
 
 	u8 hvflip_inv_mask; /* H/VFLIP inversion due to sensor orientation */
+<<<<<<< HEAD
 	u8 flash_capability;
 	u8 frame_skip;
+=======
+	u8 frame_skip;
+	u16 image_start;	/* Offset to first line after metadata lines */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int power_count;
 
@@ -230,6 +262,12 @@ struct smiapp_sensor {
 
 	struct smiapp_pll pll;
 
+<<<<<<< HEAD
+=======
+	/* Is a default format supported for a given BPP? */
+	unsigned long valid_link_freqs[SMIAPP_NR_OF_COMPRESSED];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Pixel array controls */
 	struct v4l2_ctrl *analog_gain;
 	struct v4l2_ctrl *exposure;
@@ -241,6 +279,11 @@ struct smiapp_sensor {
 	/* src controls */
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate_csi;
+<<<<<<< HEAD
+=======
+	/* test pattern colour components */
+	struct v4l2_ctrl *test_data[SMIAPP_COLOUR_COMPONENTS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define to_smiapp_subdev(_sd)				\

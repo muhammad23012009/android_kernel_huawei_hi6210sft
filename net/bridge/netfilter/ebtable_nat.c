@@ -12,10 +12,16 @@
 #include <linux/module.h>
 
 #define NAT_VALID_HOOKS ((1 << NF_BR_PRE_ROUTING) | (1 << NF_BR_LOCAL_OUT) | \
+<<<<<<< HEAD
    (1 << NF_BR_POST_ROUTING))
 
 static struct ebt_entries initial_chains[] =
 {
+=======
+			 (1 << NF_BR_POST_ROUTING))
+
+static struct ebt_entries initial_chains[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name	= "PREROUTING",
 		.policy	= EBT_ACCEPT,
@@ -30,8 +36,12 @@ static struct ebt_entries initial_chains[] =
 	}
 };
 
+<<<<<<< HEAD
 static struct ebt_replace_kernel initial_table =
 {
+=======
+static struct ebt_replace_kernel initial_table = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "nat",
 	.valid_hooks	= NAT_VALID_HOOKS,
 	.entries_size	= 3 * sizeof(struct ebt_entries),
@@ -50,8 +60,12 @@ static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct ebt_table frame_nat =
 {
+=======
+static struct ebt_table frame_nat = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "nat",
 	.table		= &initial_table,
 	.valid_hooks	= NAT_VALID_HOOKS,
@@ -60,6 +74,7 @@ static struct ebt_table frame_nat =
 };
 
 static unsigned int
+<<<<<<< HEAD
 ebt_nat_in(unsigned int hook, struct sk_buff *skb, const struct net_device *in
    , const struct net_device *out, int (*okfn)(struct sk_buff *))
 {
@@ -71,26 +86,48 @@ ebt_nat_out(unsigned int hook, struct sk_buff *skb, const struct net_device *in
    , const struct net_device *out, int (*okfn)(struct sk_buff *))
 {
 	return ebt_do_table(hook, skb, in, out, dev_net(out)->xt.frame_nat);
+=======
+ebt_nat_in(void *priv, struct sk_buff *skb,
+	   const struct nf_hook_state *state)
+{
+	return ebt_do_table(skb, state, state->net->xt.frame_nat);
+}
+
+static unsigned int
+ebt_nat_out(void *priv, struct sk_buff *skb,
+	    const struct nf_hook_state *state)
+{
+	return ebt_do_table(skb, state, state->net->xt.frame_nat);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct nf_hook_ops ebt_ops_nat[] __read_mostly = {
 	{
 		.hook		= ebt_nat_out,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_LOCAL_OUT,
 		.priority	= NF_BR_PRI_NAT_DST_OTHER,
 	},
 	{
 		.hook		= ebt_nat_out,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_POST_ROUTING,
 		.priority	= NF_BR_PRI_NAT_SRC,
 	},
 	{
 		.hook		= ebt_nat_in,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_PRE_ROUTING,
 		.priority	= NF_BR_PRI_NAT_DST_BRIDGED,
@@ -100,7 +137,11 @@ static struct nf_hook_ops ebt_ops_nat[] __read_mostly = {
 static int __net_init frame_nat_net_init(struct net *net)
 {
 	net->xt.frame_nat = ebt_register_table(net, &frame_nat);
+<<<<<<< HEAD
 	return PTR_RET(net->xt.frame_nat);
+=======
+	return PTR_ERR_OR_ZERO(net->xt.frame_nat);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __net_exit frame_nat_net_exit(struct net *net)

@@ -40,7 +40,10 @@ unsigned long mmu_context_cache_dat;
 #else
 unsigned long mmu_context_cache_dat[NR_CPUS];
 #endif
+<<<<<<< HEAD
 static unsigned long hole_pages;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * function prototype
@@ -57,6 +60,7 @@ void free_initrd_mem(unsigned long, unsigned long);
 #define MAX_LOW_PFN(nid)	(NODE_DATA(nid)->bdata->node_low_pfn)
 
 #ifndef CONFIG_DISCONTIGMEM
+<<<<<<< HEAD
 unsigned long __init zone_sizes_init(void)
 {
 	unsigned long  zones_size[MAX_NR_ZONES] = {0, };
@@ -75,6 +79,29 @@ unsigned long __init zone_sizes_init(void)
 	} else {
 		zones_size[ZONE_DMA] = low - start_pfn;
 		zones_size[ZONE_NORMAL] = low - max_dma;
+=======
+void __init zone_sizes_init(void)
+{
+	unsigned long  zones_size[MAX_NR_ZONES] = {0, };
+	unsigned long  start_pfn;
+
+#ifdef CONFIG_MMU
+	{
+		unsigned long  low;
+		unsigned long  max_dma;
+
+		start_pfn = START_PFN(0);
+		max_dma = virt_to_phys((char *)MAX_DMA_ADDRESS) >> PAGE_SHIFT;
+		low = MAX_LOW_PFN(0);
+
+		if (low < max_dma) {
+			zones_size[ZONE_DMA] = low - start_pfn;
+			zones_size[ZONE_NORMAL] = 0;
+		} else {
+			zones_size[ZONE_DMA] = low - start_pfn;
+			zones_size[ZONE_NORMAL] = low - max_dma;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #else
 	zones_size[ZONE_DMA] = 0 >> PAGE_SHIFT;
@@ -83,11 +110,17 @@ unsigned long __init zone_sizes_init(void)
 #endif /* CONFIG_MMU */
 
 	free_area_init_node(0, zones_size, start_pfn, 0);
+<<<<<<< HEAD
 
 	return 0;
 }
 #else	/* CONFIG_DISCONTIGMEM */
 extern unsigned long zone_sizes_init(void);
+=======
+}
+#else	/* CONFIG_DISCONTIGMEM */
+extern void zone_sizes_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* CONFIG_DISCONTIGMEM */
 
 /*======================================================================*
@@ -105,6 +138,7 @@ void __init paging_init(void)
 	for (i = 0 ; i < USER_PTRS_PER_PGD * 2 ; i++)
 		pgd_val(pg_dir[i]) = 0;
 #endif /* CONFIG_MMU */
+<<<<<<< HEAD
 	hole_pages = zone_sizes_init();
 }
 
@@ -123,6 +157,9 @@ int __init reservedpages_count(void)
 	}
 
 	return reservedpages;
+=======
+	zone_sizes_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*======================================================================*
@@ -131,6 +168,7 @@ int __init reservedpages_count(void)
  *======================================================================*/
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	int codesize, reservedpages, datasize, initsize;
 	int nid;
 #ifndef CONFIG_MMU
@@ -151,11 +189,20 @@ void __init mem_init(void)
 	high_memory = (void *)__va(PFN_PHYS(MAX_LOW_PFN(0)));
 #else
 	high_memory = (void *)(memory_end & PAGE_MASK);
+=======
+#ifndef CONFIG_MMU
+	extern unsigned long memory_end;
+
+	high_memory = (void *)(memory_end & PAGE_MASK);
+#else
+	high_memory = (void *)__va(PFN_PHYS(MAX_LOW_PFN(0)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_MMU */
 
 	/* clear the zero-page */
 	memset(empty_zero_page, 0, PAGE_SIZE);
 
+<<<<<<< HEAD
 	/* this will put all low memory onto the freelists */
 	for_each_online_node(nid)
 		totalram_pages += free_all_bootmem_node(NODE_DATA(nid));
@@ -173,6 +220,11 @@ void __init mem_init(void)
 		reservedpages << (PAGE_SHIFT-10),
 		datasize >> 10,
 		initsize >> 10);
+=======
+	set_max_mapnr(get_num_physpages());
+	free_all_bootmem();
+	mem_init_print_info(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*======================================================================*
@@ -181,7 +233,11 @@ void __init mem_init(void)
  *======================================================================*/
 void free_initmem(void)
 {
+<<<<<<< HEAD
 	free_initmem_default(0);
+=======
+	free_initmem_default(-1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_BLK_DEV_INITRD
@@ -191,6 +247,10 @@ void free_initmem(void)
  *======================================================================*/
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	free_reserved_area(start, end, 0, "initrd");
+=======
+	free_reserved_area((void *)start, (void *)end, -1, "initrd");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif

@@ -48,7 +48,11 @@ static void l4f00242t03_reset(unsigned int gpio)
 
 static void l4f00242t03_lcd_init(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	struct l4f00242t03_pdata *pdata = spi->dev.platform_data;
+=======
+	struct l4f00242t03_pdata *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct l4f00242t03_priv *priv = spi_get_drvdata(spi);
 	const u16 cmd[] = { 0x36, param(0), 0x3A, param(0x60) };
 	int ret;
@@ -88,7 +92,11 @@ static void l4f00242t03_lcd_init(struct spi_device *spi)
 
 static void l4f00242t03_lcd_powerdown(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	struct l4f00242t03_pdata *pdata = spi->dev.platform_data;
+=======
+	struct l4f00242t03_pdata *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct l4f00242t03_priv *priv = spi_get_drvdata(spi);
 
 	dev_dbg(&spi->dev, "Powering down LCD\n");
@@ -171,7 +179,11 @@ static struct lcd_ops l4f_ops = {
 static int l4f00242t03_probe(struct spi_device *spi)
 {
 	struct l4f00242t03_priv *priv;
+<<<<<<< HEAD
 	struct l4f00242t03_pdata *pdata = spi->dev.platform_data;
+=======
+	struct l4f00242t03_pdata *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	if (pdata == NULL) {
@@ -181,11 +193,16 @@ static int l4f00242t03_probe(struct spi_device *spi)
 
 	priv = devm_kzalloc(&spi->dev, sizeof(struct l4f00242t03_priv),
 				GFP_KERNEL);
+<<<<<<< HEAD
 
 	if (priv == NULL) {
 		dev_err(&spi->dev, "No memory for this device.\n");
 		return -ENOMEM;
 	}
+=======
+	if (priv == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spi_set_drvdata(spi, priv);
 	spi->bits_per_word = 9;
@@ -223,8 +240,13 @@ static int l4f00242t03_probe(struct spi_device *spi)
 		return PTR_ERR(priv->core_reg);
 	}
 
+<<<<<<< HEAD
 	priv->ld = lcd_device_register("l4f00242t03",
 					&spi->dev, priv, &l4f_ops);
+=======
+	priv->ld = devm_lcd_device_register(&spi->dev, "l4f00242t03", &spi->dev,
+					priv, &l4f_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(priv->ld))
 		return PTR_ERR(priv->ld);
 
@@ -243,9 +265,12 @@ static int l4f00242t03_remove(struct spi_device *spi)
 	struct l4f00242t03_priv *priv = spi_get_drvdata(spi);
 
 	l4f00242t03_lcd_power_set(priv->ld, FB_BLANK_POWERDOWN);
+<<<<<<< HEAD
 	lcd_device_unregister(priv->ld);
 	spi_set_drvdata(spi, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -261,7 +286,10 @@ static void l4f00242t03_shutdown(struct spi_device *spi)
 static struct spi_driver l4f00242t03_driver = {
 	.driver = {
 		.name	= "l4f00242t03",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= l4f00242t03_probe,
 	.remove		= l4f00242t03_remove,

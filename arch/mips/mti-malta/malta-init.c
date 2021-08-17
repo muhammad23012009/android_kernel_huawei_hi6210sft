@@ -14,12 +14,22 @@
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/pci_regs.h>
+#include <linux/serial_core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/cacheflush.h>
 #include <asm/smp-ops.h>
 #include <asm/traps.h>
 #include <asm/fw/fw.h>
+<<<<<<< HEAD
 #include <asm/gcmpregs.h>
+=======
+#include <asm/mips-cm.h>
+#include <asm/mips-cpc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mips-boards/generic.h>
 #include <asm/mips-boards/malta.h>
 
@@ -44,6 +54,7 @@ static void __init console_config(void)
 	char parity = '\0', bits = '\0', flow = '\0';
 	char *s;
 
+<<<<<<< HEAD
 	if ((strstr(fw_getcmdline(), "console=")) == NULL) {
 		s = fw_getenv("modetty0");
 		if (s) {
@@ -70,6 +81,41 @@ static void __init console_config(void)
 			bits = '8';
 		if (flow == '\0')
 			flow = 'r';
+=======
+	s = fw_getenv("modetty0");
+	if (s) {
+		while (*s >= '0' && *s <= '9')
+			baud = baud*10 + *s++ - '0';
+		if (*s == ',')
+			s++;
+		if (*s)
+			parity = *s++;
+		if (*s == ',')
+			s++;
+		if (*s)
+			bits = *s++;
+		if (*s == ',')
+			s++;
+		if (*s == 'h')
+			flow = 'r';
+	}
+	if (baud == 0)
+		baud = 38400;
+	if (parity != 'n' && parity != 'o' && parity != 'e')
+		parity = 'n';
+	if (bits != '7' && bits != '8')
+		bits = '8';
+	if (flow == '\0')
+		flow = 'r';
+
+	if ((strstr(fw_getcmdline(), "earlycon=")) == NULL) {
+		sprintf(console_string, "uart8250,io,0x3f8,%d%c%c", baud,
+			parity, bits);
+		setup_earlycon(console_string);
+	}
+
+	if ((strstr(fw_getcmdline(), "console=")) == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sprintf(console_string, " console=ttyS0,%d%c%c%c", baud,
 			parity, bits, flow);
 		strcat(fw_getcmdline(), console_string);
@@ -102,7 +148,14 @@ static void __init mips_ejtag_setup(void)
 	flush_icache_range((unsigned long)base, (unsigned long)base + 0x80);
 }
 
+<<<<<<< HEAD
 extern struct plat_smp_ops msmtc_smp_ops;
+=======
+phys_addr_t mips_cpc_default_phys_base(void)
+{
+	return CPC_BASE_ADDR;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init prom_init(void)
 {
@@ -230,9 +283,24 @@ mips_pci_controller:
 			  MSC01_PCI_SWAP_BYTESWAP << MSC01_PCI_SWAP_MEM_SHF |
 			  MSC01_PCI_SWAP_BYTESWAP << MSC01_PCI_SWAP_BAR0_SHF);
 #endif
+<<<<<<< HEAD
 		/* Fix up target memory mapping.  */
 		MSC_READ(MSC01_PCI_BAR0, mask);
 		MSC_WRITE(MSC01_PCI_P2SCMSKL, mask & MSC01_PCI_BAR0_SIZE_MSK);
+=======
+
+		/*
+		 * Setup the Malta max (2GB) memory for PCI DMA in host bridge
+		 * in transparent addressing mode.
+		 */
+		mask = PHYS_OFFSET | PCI_BASE_ADDRESS_MEM_PREFETCH;
+		MSC_WRITE(MSC01_PCI_BAR0, mask);
+		MSC_WRITE(MSC01_PCI_HEAD4, mask);
+
+		mask &= MSC01_PCI_BAR0_SIZE_MSK;
+		MSC_WRITE(MSC01_PCI_P2SCMSKL, mask);
+		MSC_WRITE(MSC01_PCI_P2SCMAPL, mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Don't handle target retries indefinitely.  */
 		if ((data & MSC01_PCI_CFG_MAXRTRY_MSK) ==
@@ -268,6 +336,7 @@ mips_pci_controller:
 	console_config();
 #endif
 	/* Early detection of CMP support */
+<<<<<<< HEAD
 	if (gcmp_probe(GCMP_BASE_ADDR, GCMP_ADDRSPACE_SZ))
 		if (!register_cmp_smp_ops())
 			return;
@@ -278,4 +347,15 @@ mips_pci_controller:
 #ifdef CONFIG_MIPS_MT_SMTC
 	register_smp_ops(&msmtc_smp_ops);
 #endif
+=======
+	mips_cpc_probe();
+
+	if (!register_cps_smp_ops())
+		return;
+	if (!register_cmp_smp_ops())
+		return;
+	if (!register_vsmp_smp_ops())
+		return;
+	register_up_smp_ops();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

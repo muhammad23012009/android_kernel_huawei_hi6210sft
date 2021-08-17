@@ -235,7 +235,12 @@ struct lance_private {
 static int lance_probe( struct net_device *dev);
 static int lance_open( struct net_device *dev );
 static void lance_init_ring( struct net_device *dev );
+<<<<<<< HEAD
 static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev );
+=======
+static netdev_tx_t lance_start_xmit(struct sk_buff *skb,
+				    struct net_device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static irqreturn_t lance_interrupt( int irq, void *dev_id);
 static int lance_rx( struct net_device *dev );
 static int lance_close( struct net_device *dev );
@@ -358,7 +363,11 @@ static int __init lance_probe( struct net_device *dev)
 
 	REGA(CSR0) = CSR0_STOP;
 
+<<<<<<< HEAD
 	if (request_irq(LANCE_IRQ, lance_interrupt, IRQF_DISABLED, "SUN3 Lance", dev) < 0) {
+=======
+	if (request_irq(LANCE_IRQ, lance_interrupt, 0, "SUN3 Lance", dev) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SUN3
 		iounmap((void __iomem *)ioaddr);
 #endif
@@ -511,7 +520,12 @@ static void lance_init_ring( struct net_device *dev )
 }
 
 
+<<<<<<< HEAD
 static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev )
+=======
+static netdev_tx_t
+lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct lance_private *lp = netdev_priv(dev);
 	int entry, len;
@@ -940,7 +954,11 @@ static struct net_device *sun3lance_dev;
 int __init init_module(void)
 {
 	sun3lance_dev = sun3lance_probe(-1);
+<<<<<<< HEAD
 	return PTR_RET(sun3lance_dev);
+=======
+	return PTR_ERR_OR_ZERO(sun3lance_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __exit cleanup_module(void)

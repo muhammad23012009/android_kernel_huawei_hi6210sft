@@ -275,7 +275,11 @@ static bool duty_mode_enabled(u8 pwm_enable)
 	case 3: /* Manual, speed mode */
 		return false;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Unexpected pwm_enable value %d\n", pwm_enable);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return true;
 	}
 }
@@ -291,7 +295,11 @@ static bool auto_mode_enabled(u8 pwm_enable)
 	case 4: /* Auto, duty mode */
 		return true;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Unexpected pwm_enable value %d\n", pwm_enable);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	}
 }
@@ -832,7 +840,12 @@ static int f75375_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
 {
 	struct f75375_data *data;
+<<<<<<< HEAD
 	struct f75375s_platform_data *f75375s_pdata = client->dev.platform_data;
+=======
+	struct f75375s_platform_data *f75375s_pdata =
+			dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	if (!i2c_check_functionality(client->adapter,

@@ -13,9 +13,15 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/init.h>
+=======
+#include <linux/err.h>
+#include <linux/module.h>
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -152,11 +158,17 @@ static const char * const probes[] = { "RedBoot", "cmdlinepart", NULL };
 
 static int ixp4xx_flash_remove(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct flash_platform_data *plat = dev->dev.platform_data;
 	struct ixp4xx_flash_info *info = platform_get_drvdata(dev);
 
 	platform_set_drvdata(dev, NULL);
 
+=======
+	struct flash_platform_data *plat = dev_get_platdata(&dev->dev);
+	struct ixp4xx_flash_info *info = platform_get_drvdata(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if(!info)
 		return 0;
 
@@ -164,6 +176,7 @@ static int ixp4xx_flash_remove(struct platform_device *dev)
 		mtd_device_unregister(info->mtd);
 		map_destroy(info->mtd);
 	}
+<<<<<<< HEAD
 	if (info->map.virt)
 		iounmap(info->map.virt);
 
@@ -171,6 +184,8 @@ static int ixp4xx_flash_remove(struct platform_device *dev)
 		release_resource(info->res);
 		kfree(info->res);
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (plat->exit)
 		plat->exit();
@@ -180,7 +195,11 @@ static int ixp4xx_flash_remove(struct platform_device *dev)
 
 static int ixp4xx_flash_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct flash_platform_data *plat = dev->dev.platform_data;
+=======
+	struct flash_platform_data *plat = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ixp4xx_flash_info *info;
 	struct mtd_part_parser_data ppdata = {
 		.origin = dev->resource->start,
@@ -196,7 +215,12 @@ static int ixp4xx_flash_probe(struct platform_device *dev)
 			return err;
 	}
 
+<<<<<<< HEAD
 	info = kzalloc(sizeof(struct ixp4xx_flash_info), GFP_KERNEL);
+=======
+	info = devm_kzalloc(&dev->dev, sizeof(struct ixp4xx_flash_info),
+			    GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if(!info) {
 		err = -ENOMEM;
 		goto Error;
@@ -222,6 +246,7 @@ static int ixp4xx_flash_probe(struct platform_device *dev)
 	info->map.write = ixp4xx_probe_write16;
 	info->map.copy_from = ixp4xx_copy_from;
 
+<<<<<<< HEAD
 	info->res = request_mem_region(dev->resource->start,
 			resource_size(dev->resource),
 			"IXP4XXFlash");
@@ -236,6 +261,11 @@ static int ixp4xx_flash_probe(struct platform_device *dev)
 	if (!info->map.virt) {
 		printk(KERN_ERR "IXP4XXFlash: Failed to ioremap region\n");
 		err = -EIO;
+=======
+	info->map.virt = devm_ioremap_resource(&dev->dev, dev->resource);
+	if (IS_ERR(info->map.virt)) {
+		err = PTR_ERR(info->map.virt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto Error;
 	}
 
@@ -245,7 +275,11 @@ static int ixp4xx_flash_probe(struct platform_device *dev)
 		err = -ENXIO;
 		goto Error;
 	}
+<<<<<<< HEAD
 	info->mtd->owner = THIS_MODULE;
+=======
+	info->mtd->dev.parent = &dev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Use the fast version */
 	info->map.write = ixp4xx_write16;
@@ -269,7 +303,10 @@ static struct platform_driver ixp4xx_flash_driver = {
 	.remove		= ixp4xx_flash_remove,
 	.driver		= {
 		.name	= "IXP4XX-Flash",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

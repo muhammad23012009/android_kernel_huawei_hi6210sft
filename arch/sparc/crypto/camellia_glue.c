@@ -323,6 +323,10 @@ module_exit(camellia_sparc64_mod_fini);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Camellia Cipher Algorithm, sparc64 camellia opcode accelerated");
 
+<<<<<<< HEAD
 MODULE_ALIAS_CRYPTO("aes");
+=======
+MODULE_ALIAS_CRYPTO("camellia");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "crop_devid.c"

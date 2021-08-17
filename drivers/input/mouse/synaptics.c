@@ -67,6 +67,12 @@
 #define X_MAX_POSITIVE 8176
 #define Y_MAX_POSITIVE 8176
 
+<<<<<<< HEAD
+=======
+/* maximum ABS_MT_POSITION displacement (in mm) */
+#define DMAX 10
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************************
  *	Stuff we need even when we do not want native Synaptics support
  ****************************************************************************/
@@ -118,6 +124,106 @@ void synaptics_reset(struct psmouse *psmouse)
 
 #ifdef CONFIG_MOUSE_PS2_SYNAPTICS
 
+<<<<<<< HEAD
+=======
+static bool cr48_profile_sensor;
+
+#define ANY_BOARD_ID 0
+struct min_max_quirk {
+	const char * const *pnp_ids;
+	struct {
+		unsigned long int min, max;
+	} board_id;
+	int x_min, x_max, y_min, y_max;
+};
+
+static const struct min_max_quirk min_max_pnpid_table[] = {
+	{
+		(const char * const []){"LEN0033", NULL},
+		{ANY_BOARD_ID, ANY_BOARD_ID},
+		1024, 5052, 2258, 4832
+	},
+	{
+		(const char * const []){"LEN0042", NULL},
+		{ANY_BOARD_ID, ANY_BOARD_ID},
+		1232, 5710, 1156, 4696
+	},
+	{
+		(const char * const []){"LEN0034", "LEN0036", "LEN0037",
+					"LEN0039", "LEN2002", "LEN2004",
+					NULL},
+		{ANY_BOARD_ID, 2961},
+		1024, 5112, 2024, 4832
+	},
+	{
+		(const char * const []){"LEN2000", NULL},
+		{ANY_BOARD_ID, ANY_BOARD_ID},
+		1024, 5113, 2021, 4832
+	},
+	{
+		(const char * const []){"LEN2001", NULL},
+		{ANY_BOARD_ID, ANY_BOARD_ID},
+		1024, 5022, 2508, 4832
+	},
+	{
+		(const char * const []){"LEN2006", NULL},
+		{2691, 2691},
+		1024, 5045, 2457, 4832
+	},
+	{
+		(const char * const []){"LEN2006", NULL},
+		{ANY_BOARD_ID, ANY_BOARD_ID},
+		1264, 5675, 1171, 4688
+	},
+	{ }
+};
+
+/* This list has been kindly provided by Synaptics. */
+static const char * const topbuttonpad_pnp_ids[] = {
+	"LEN0017",
+	"LEN0018",
+	"LEN0019",
+	"LEN0023",
+	"LEN002A",
+	"LEN002B",
+	"LEN002C",
+	"LEN002D",
+	"LEN002E",
+	"LEN0033", /* Helix */
+	"LEN0034", /* T431s, L440, L540, T540, W540, X1 Carbon 2nd */
+	"LEN0035", /* X240 */
+	"LEN0036", /* T440 */
+	"LEN0037", /* X1 Carbon 2nd */
+	"LEN0038",
+	"LEN0039", /* T440s */
+	"LEN0041",
+	"LEN0042", /* Yoga */
+	"LEN0045",
+	"LEN0047",
+	"LEN0049",
+	"LEN2000", /* S540 */
+	"LEN2001", /* Edge E431 */
+	"LEN2002", /* Edge E531 */
+	"LEN2003",
+	"LEN2004", /* L440 */
+	"LEN2005",
+	"LEN2006", /* Edge E440/E540 */
+	"LEN2007",
+	"LEN2008",
+	"LEN2009",
+	"LEN200A",
+	"LEN200B",
+	NULL
+};
+
+/* This list has been kindly provided by Synaptics. */
+static const char * const forcepad_pnp_ids[] = {
+	"SYN300D",
+	"SYN3014",
+	NULL
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************************
  *	Synaptics communications functions
  ****************************************************************************/
@@ -159,18 +265,53 @@ static int synaptics_model_id(struct psmouse *psmouse)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Read the board id from the touchpad
  * The board id is encoded in the "QUERY MODES" response
  */
 static int synaptics_board_id(struct psmouse *psmouse)
+=======
+static int synaptics_more_extended_queries(struct psmouse *psmouse)
+{
+	struct synaptics_data *priv = psmouse->private;
+	unsigned char buf[3];
+
+	if (synaptics_send_cmd(psmouse, SYN_QUE_MEXT_CAPAB_10, buf))
+		return -1;
+
+	priv->ext_cap_10 = (buf[0]<<16) | (buf[1]<<8) | buf[2];
+
+	return 0;
+}
+
+/*
+ * Read the board id and the "More Extended Queries" from the touchpad
+ * The board id is encoded in the "QUERY MODES" response
+ */
+static int synaptics_query_modes(struct psmouse *psmouse)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct synaptics_data *priv = psmouse->private;
 	unsigned char bid[3];
 
+<<<<<<< HEAD
 	if (synaptics_send_cmd(psmouse, SYN_QUE_MODES, bid))
 		return -1;
 	priv->board_id = ((bid[0] & 0xfc) << 6) | bid[1];
+=======
+	/* firmwares prior 7.5 have no board_id encoded */
+	if (SYN_ID_FULL(priv->identity) < 0x705)
+		return 0;
+
+	if (synaptics_send_cmd(psmouse, SYN_QUE_MODES, bid))
+		return -1;
+	priv->board_id = ((bid[0] & 0xfc) << 6) | bid[1];
+
+	if (SYN_MEXT_CAP_BIT(bid[0]))
+		return synaptics_more_extended_queries(psmouse);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -266,13 +407,17 @@ static int synaptics_identify(struct psmouse *psmouse)
  * Resolution is left zero if touchpad does not support the query
  */
 
+<<<<<<< HEAD
 static const int *quirk_min_max;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int synaptics_resolution(struct psmouse *psmouse)
 {
 	struct synaptics_data *priv = psmouse->private;
 	unsigned char resp[3];
 
+<<<<<<< HEAD
 	if (quirk_min_max) {
 		priv->x_min = quirk_min_max[0];
 		priv->x_max = quirk_min_max[1];
@@ -281,6 +426,8 @@ static int synaptics_resolution(struct psmouse *psmouse)
 		return 0;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (SYN_ID_MAJOR(priv->identity) < 4)
 		return 0;
 
@@ -299,23 +446,83 @@ static int synaptics_resolution(struct psmouse *psmouse)
 		} else {
 			priv->x_max = (resp[0] << 5) | ((resp[1] & 0x0f) << 1);
 			priv->y_max = (resp[2] << 5) | ((resp[1] & 0xf0) >> 3);
+<<<<<<< HEAD
 		}
 	}
 
 	if (SYN_EXT_CAP_REQUESTS(priv->capabilities) >= 7 &&
 	    SYN_CAP_MIN_DIMENSIONS(priv->ext_cap_0c)) {
+=======
+			psmouse_info(psmouse,
+				     "queried max coordinates: x [..%d], y [..%d]\n",
+				     priv->x_max, priv->y_max);
+		}
+	}
+
+	if (SYN_CAP_MIN_DIMENSIONS(priv->ext_cap_0c) &&
+	    (SYN_EXT_CAP_REQUESTS(priv->capabilities) >= 7 ||
+	     /*
+	      * Firmware v8.1 does not report proper number of extended
+	      * capabilities, but has been proven to report correct min
+	      * coordinates.
+	      */
+	     SYN_ID_FULL(priv->identity) == 0x801)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (synaptics_send_cmd(psmouse, SYN_QUE_EXT_MIN_COORDS, resp)) {
 			psmouse_warn(psmouse,
 				     "device claims to have min coordinates query, but I'm not able to read it.\n");
 		} else {
 			priv->x_min = (resp[0] << 5) | ((resp[1] & 0x0f) << 1);
 			priv->y_min = (resp[2] << 5) | ((resp[1] & 0xf0) >> 3);
+<<<<<<< HEAD
+=======
+			psmouse_info(psmouse,
+				     "queried min coordinates: x [%d..], y [%d..]\n",
+				     priv->x_min, priv->y_min);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Apply quirk(s) if the hardware matches
+ */
+
+static void synaptics_apply_quirks(struct psmouse *psmouse)
+{
+	struct synaptics_data *priv = psmouse->private;
+	int i;
+
+	for (i = 0; min_max_pnpid_table[i].pnp_ids; i++) {
+		if (!psmouse_matches_pnp_id(psmouse,
+					    min_max_pnpid_table[i].pnp_ids))
+			continue;
+
+		if (min_max_pnpid_table[i].board_id.min != ANY_BOARD_ID &&
+		    priv->board_id < min_max_pnpid_table[i].board_id.min)
+			continue;
+
+		if (min_max_pnpid_table[i].board_id.max != ANY_BOARD_ID &&
+		    priv->board_id > min_max_pnpid_table[i].board_id.max)
+			continue;
+
+		priv->x_min = min_max_pnpid_table[i].x_min;
+		priv->x_max = min_max_pnpid_table[i].x_max;
+		priv->y_min = min_max_pnpid_table[i].y_min;
+		priv->y_max = min_max_pnpid_table[i].y_max;
+		psmouse_info(psmouse,
+			     "quirked min/max coordinates: x [%d..%d], y [%d..%d]\n",
+			     priv->x_min, priv->x_max,
+			     priv->y_min, priv->y_max);
+		break;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int synaptics_query_hardware(struct psmouse *psmouse)
 {
 	if (synaptics_identify(psmouse))
@@ -324,13 +531,22 @@ static int synaptics_query_hardware(struct psmouse *psmouse)
 		return -1;
 	if (synaptics_firmware_id(psmouse))
 		return -1;
+<<<<<<< HEAD
 	if (synaptics_board_id(psmouse))
+=======
+	if (synaptics_query_modes(psmouse))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	if (synaptics_capability(psmouse))
 		return -1;
 	if (synaptics_resolution(psmouse))
 		return -1;
 
+<<<<<<< HEAD
+=======
+	synaptics_apply_quirks(psmouse);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -438,18 +654,36 @@ static int synaptics_is_pt_packet(unsigned char *buf)
 	return (buf[0] & 0xFC) == 0x84 && (buf[3] & 0xCC) == 0xC4;
 }
 
+<<<<<<< HEAD
 static void synaptics_pass_pt_packet(struct serio *ptport, unsigned char *packet)
 {
 	struct psmouse *child = serio_get_drvdata(ptport);
 
 	if (child && child->state == PSMOUSE_ACTIVATED) {
 		serio_interrupt(ptport, packet[1], 0);
+=======
+static void synaptics_pass_pt_packet(struct psmouse *psmouse,
+				     struct serio *ptport,
+				     unsigned char *packet)
+{
+	struct synaptics_data *priv = psmouse->private;
+	struct psmouse *child = serio_get_drvdata(ptport);
+
+	if (child && child->state == PSMOUSE_ACTIVATED) {
+		serio_interrupt(ptport, packet[1] | priv->pt_buttons, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		serio_interrupt(ptport, packet[4], 0);
 		serio_interrupt(ptport, packet[5], 0);
 		if (child->pktsize == 4)
 			serio_interrupt(ptport, packet[2], 0);
+<<<<<<< HEAD
 	} else
 		serio_interrupt(ptport, packet[1], 0);
+=======
+	} else {
+		serio_interrupt(ptport, packet[1], 0);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void synaptics_pt_activate(struct psmouse *psmouse)
@@ -500,6 +734,7 @@ static void synaptics_pt_create(struct psmouse *psmouse)
  *	Functions to interpret the absolute mode packets
  ****************************************************************************/
 
+<<<<<<< HEAD
 static void synaptics_mt_state_set(struct synaptics_mt_state *state, int count,
 				   int sgm, int agm)
 {
@@ -508,6 +743,8 @@ static void synaptics_mt_state_set(struct synaptics_mt_state *state, int count,
 	state->agm = agm;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void synaptics_parse_agm(const unsigned char buf[],
 				struct synaptics_data *priv,
 				struct synaptics_hw_state *hw)
@@ -526,16 +763,36 @@ static void synaptics_parse_agm(const unsigned char buf[],
 		break;
 
 	case 2:
+<<<<<<< HEAD
 		/* AGM-CONTACT packet: (count, sgm, agm) */
 		synaptics_mt_state_set(&agm->mt_state, buf[1], buf[2], buf[4]);
+=======
+		/* AGM-CONTACT packet: we are only interested in the count */
+		priv->agm_count = buf[1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:
 		break;
 	}
+<<<<<<< HEAD
 
 	/* Record that at least one AGM has been received since last SGM */
 	priv->agm_pending = true;
+=======
+}
+
+static void synaptics_parse_ext_buttons(const unsigned char buf[],
+					struct synaptics_data *priv,
+					struct synaptics_hw_state *hw)
+{
+	unsigned int ext_bits =
+		(SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap) + 1) >> 1;
+	unsigned int ext_mask = GENMASK(ext_bits - 1, 0);
+
+	hw->ext_buttons = buf[4] & ext_mask;
+	hw->ext_buttons |= (buf[5] & ext_mask) << ext_bits;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int synaptics_parse_hw_state(const unsigned char buf[],
@@ -567,7 +824,11 @@ static int synaptics_parse_hw_state(const unsigned char buf[],
 		hw->left  = (buf[0] & 0x01) ? 1 : 0;
 		hw->right = (buf[0] & 0x02) ? 1 : 0;
 
+<<<<<<< HEAD
 		if (SYN_CAP_FORCEPAD(priv->ext_cap_0c)) {
+=======
+		if (priv->is_forcepad) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * ForcePads, like Clickpads, use middle button
 			 * bits to report primary button clicks.
@@ -622,6 +883,7 @@ static int synaptics_parse_hw_state(const unsigned char buf[],
 			hw->down = ((buf[0] ^ buf[3]) & 0x02) ? 1 : 0;
 		}
 
+<<<<<<< HEAD
 		if (SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap) &&
 		    ((buf[0] ^ buf[3]) & 0x02)) {
 			switch (SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap) & ~0x01) {
@@ -644,6 +906,11 @@ static int synaptics_parse_hw_state(const unsigned char buf[],
 				hw->ext_buttons |= ((buf[5] & 0x01)) ? 0x02 : 0;
 				hw->ext_buttons |= ((buf[4] & 0x01)) ? 0x01 : 0;
 			}
+=======
+		if (SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap) > 0 &&
+		    ((buf[0] ^ buf[3]) & 0x02)) {
+			synaptics_parse_ext_buttons(buf, priv, hw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else {
 		hw->x = (((buf[1] & 0x1f) << 8) | buf[2]);
@@ -705,12 +972,62 @@ static void synaptics_report_semi_mt_data(struct input_dev *dev,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void synaptics_report_ext_buttons(struct psmouse *psmouse,
+					 const struct synaptics_hw_state *hw)
+{
+	struct input_dev *dev = psmouse->dev;
+	struct synaptics_data *priv = psmouse->private;
+	int ext_bits = (SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap) + 1) >> 1;
+	char buf[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	int i;
+
+	if (!SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap))
+		return;
+
+	/* Bug in FW 8.1 & 8.2, buttons are reported only when ExtBit is 1 */
+	if ((SYN_ID_FULL(priv->identity) == 0x801 ||
+	     SYN_ID_FULL(priv->identity) == 0x802) &&
+	    !((psmouse->packet[0] ^ psmouse->packet[3]) & 0x02))
+		return;
+
+	if (!SYN_CAP_EXT_BUTTONS_STICK(priv->ext_cap_10)) {
+		for (i = 0; i < ext_bits; i++) {
+			input_report_key(dev, BTN_0 + 2 * i,
+				hw->ext_buttons & (1 << i));
+			input_report_key(dev, BTN_1 + 2 * i,
+				hw->ext_buttons & (1 << (i + ext_bits)));
+		}
+		return;
+	}
+
+	/*
+	 * This generation of touchpads has the trackstick buttons
+	 * physically wired to the touchpad. Re-route them through
+	 * the pass-through interface.
+	 */
+	if (!priv->pt_port)
+		return;
+
+	/* The trackstick expects at most 3 buttons */
+	priv->pt_buttons = SYN_CAP_EXT_BUTTON_STICK_L(hw->ext_buttons)      |
+			   SYN_CAP_EXT_BUTTON_STICK_R(hw->ext_buttons) << 1 |
+			   SYN_CAP_EXT_BUTTON_STICK_M(hw->ext_buttons) << 2;
+
+	synaptics_pass_pt_packet(psmouse, priv->pt_port, buf);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void synaptics_report_buttons(struct psmouse *psmouse,
 				     const struct synaptics_hw_state *hw)
 {
 	struct input_dev *dev = psmouse->dev;
 	struct synaptics_data *priv = psmouse->private;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input_report_key(dev, BTN_LEFT, hw->left);
 	input_report_key(dev, BTN_RIGHT, hw->right);
@@ -723,6 +1040,7 @@ static void synaptics_report_buttons(struct psmouse *psmouse,
 		input_report_key(dev, BTN_BACK, hw->down);
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap); i++)
 		input_report_key(dev, BTN_0 + i, hw->ext_buttons & (1 << i));
 }
@@ -815,17 +1133,56 @@ static void synaptics_report_mt_data(struct psmouse *psmouse,
 		break;
 	}
 
+=======
+	synaptics_report_ext_buttons(psmouse, hw);
+}
+
+static void synaptics_report_mt_data(struct psmouse *psmouse,
+				     const struct synaptics_hw_state *sgm,
+				     int num_fingers)
+{
+	struct input_dev *dev = psmouse->dev;
+	struct synaptics_data *priv = psmouse->private;
+	const struct synaptics_hw_state *hw[2] = { sgm, &priv->agm };
+	struct input_mt_pos pos[2];
+	int slot[2], nsemi, i;
+
+	nsemi = clamp_val(num_fingers, 0, 2);
+
+	for (i = 0; i < nsemi; i++) {
+		pos[i].x = hw[i]->x;
+		pos[i].y = synaptics_invert_y(hw[i]->y);
+	}
+
+	input_mt_assign_slots(dev, slot, pos, nsemi, DMAX * priv->x_res);
+
+	for (i = 0; i < nsemi; i++) {
+		input_mt_slot(dev, slot[i]);
+		input_mt_report_slot_state(dev, MT_TOOL_FINGER, true);
+		input_report_abs(dev, ABS_MT_POSITION_X, pos[i].x);
+		input_report_abs(dev, ABS_MT_POSITION_Y, pos[i].y);
+		input_report_abs(dev, ABS_MT_PRESSURE, hw[i]->z);
+	}
+
+	input_mt_drop_unused(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Don't use active slot count to generate BTN_TOOL events. */
 	input_mt_report_pointer_emulation(dev, false);
 
 	/* Send the number of fingers reported by touchpad itself. */
+<<<<<<< HEAD
 	input_mt_report_finger_count(dev, mt_state->count);
+=======
+	input_mt_report_finger_count(dev, num_fingers);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	synaptics_report_buttons(psmouse, sgm);
 
 	input_sync(dev);
 }
 
+<<<<<<< HEAD
 /* Handle case where mt_state->count = 0 */
 static void synaptics_image_sensor_0f(struct synaptics_data *priv,
 				      struct synaptics_mt_state *mt_state)
@@ -1079,20 +1436,27 @@ static void synaptics_image_sensor_45f(struct synaptics_data *priv,
 	priv->mt_state_lost = false;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void synaptics_image_sensor_process(struct psmouse *psmouse,
 					   struct synaptics_hw_state *sgm)
 {
 	struct synaptics_data *priv = psmouse->private;
+<<<<<<< HEAD
 	struct synaptics_hw_state *agm = &priv->agm;
 	struct synaptics_mt_state mt_state;
 
 	/* Initialize using current mt_state (as updated by last agm) */
 	mt_state = agm->mt_state;
+=======
+	int num_fingers;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Update mt_state using the new finger count and current mt_state.
 	 */
 	if (sgm->z == 0)
+<<<<<<< HEAD
 		synaptics_image_sensor_0f(priv, &mt_state);
 	else if (sgm->w >= 4)
 		synaptics_image_sensor_1f(priv, &mt_state);
@@ -1109,6 +1473,20 @@ static void synaptics_image_sensor_process(struct psmouse *psmouse,
 	/* Store updated mt_state */
 	priv->mt_state = agm->mt_state = mt_state;
 	priv->agm_pending = false;
+=======
+		num_fingers = 0;
+	else if (sgm->w >= 4)
+		num_fingers = 1;
+	else if (sgm->w == 0)
+		num_fingers = 2;
+	else if (sgm->w == 1)
+		num_fingers = priv->agm_count ? priv->agm_count : 3;
+	else
+		num_fingers = 4;
+
+	/* Send resulting input events to user space */
+	synaptics_report_mt_data(psmouse, sgm, num_fingers);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1174,6 +1552,14 @@ static void synaptics_process_packet(struct psmouse *psmouse)
 		finger_width = 0;
 	}
 
+<<<<<<< HEAD
+=======
+	if (cr48_profile_sensor) {
+		synaptics_report_mt_data(psmouse, &hw, num_fingers);
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (SYN_CAP_ADV_GESTURE(priv->ext_cap_0c))
 		synaptics_report_semi_mt_data(dev, &hw, &priv->agm,
 					      num_fingers);
@@ -1260,7 +1646,12 @@ static psmouse_ret_t synaptics_process_byte(struct psmouse *psmouse)
 		if (SYN_CAP_PASS_THROUGH(priv->capabilities) &&
 		    synaptics_is_pt_packet(psmouse->packet)) {
 			if (priv->pt_port)
+<<<<<<< HEAD
 				synaptics_pass_pt_packet(priv->pt_port, psmouse->packet);
+=======
+				synaptics_pass_pt_packet(psmouse, priv->pt_port,
+							 psmouse->packet);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			synaptics_process_packet(psmouse);
 
@@ -1291,8 +1682,15 @@ static void set_abs_position_params(struct input_dev *dev,
 	input_abs_set_res(dev, y_code, priv->y_res);
 }
 
+<<<<<<< HEAD
 static void set_input_params(struct input_dev *dev, struct synaptics_data *priv)
 {
+=======
+static void set_input_params(struct psmouse *psmouse,
+			     struct synaptics_data *priv)
+{
+	struct input_dev *dev = psmouse->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	/* Things that apply to both modes */
@@ -1317,22 +1715,45 @@ static void set_input_params(struct input_dev *dev, struct synaptics_data *priv)
 	set_abs_position_params(dev, priv, ABS_X, ABS_Y);
 	input_set_abs_params(dev, ABS_PRESSURE, 0, 255, 0, 0);
 
+<<<<<<< HEAD
+=======
+	if (cr48_profile_sensor)
+		input_set_abs_params(dev, ABS_MT_PRESSURE, 0, 255, 0, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (SYN_CAP_IMAGE_SENSOR(priv->ext_cap_0c)) {
 		set_abs_position_params(dev, priv, ABS_MT_POSITION_X,
 					ABS_MT_POSITION_Y);
 		/* Image sensors can report per-contact pressure */
 		input_set_abs_params(dev, ABS_MT_PRESSURE, 0, 255, 0, 0);
+<<<<<<< HEAD
 		input_mt_init_slots(dev, 2, INPUT_MT_POINTER);
+=======
+		input_mt_init_slots(dev, 2, INPUT_MT_POINTER | INPUT_MT_TRACK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Image sensors can signal 4 and 5 finger clicks */
 		__set_bit(BTN_TOOL_QUADTAP, dev->keybit);
 		__set_bit(BTN_TOOL_QUINTTAP, dev->keybit);
 	} else if (SYN_CAP_ADV_GESTURE(priv->ext_cap_0c)) {
+<<<<<<< HEAD
 		/* Non-image sensors with AGM use semi-mt */
 		__set_bit(INPUT_PROP_SEMI_MT, dev->propbit);
 		input_mt_init_slots(dev, 2, 0);
 		set_abs_position_params(dev, priv, ABS_MT_POSITION_X,
 					ABS_MT_POSITION_Y);
+=======
+		set_abs_position_params(dev, priv, ABS_MT_POSITION_X,
+					ABS_MT_POSITION_Y);
+		/*
+		 * Profile sensor in CR-48 tracks contacts reasonably well,
+		 * other non-image sensors with AGM use semi-mt.
+		 */
+		input_mt_init_slots(dev, 2,
+				    INPUT_MT_POINTER |
+				    (cr48_profile_sensor ?
+					INPUT_MT_TRACK : INPUT_MT_SEMI_MT));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (SYN_CAP_PALMDETECT(priv->capabilities))
@@ -1352,8 +1773,14 @@ static void set_input_params(struct input_dev *dev, struct synaptics_data *priv)
 		__set_bit(BTN_BACK, dev->keybit);
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap); i++)
 		__set_bit(BTN_0 + i, dev->keybit);
+=======
+	if (!SYN_CAP_EXT_BUTTONS_STICK(priv->ext_cap_10))
+		for (i = 0; i < SYN_CAP_MULTI_BUTTON_NO(priv->ext_cap); i++)
+			__set_bit(BTN_0 + i, dev->keybit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__clear_bit(EV_REL, dev->evbit);
 	__clear_bit(REL_X, dev->relbit);
@@ -1361,6 +1788,12 @@ static void set_input_params(struct input_dev *dev, struct synaptics_data *priv)
 
 	if (SYN_CAP_CLICKPAD(priv->ext_cap_0c)) {
 		__set_bit(INPUT_PROP_BUTTONPAD, dev->propbit);
+<<<<<<< HEAD
+=======
+		if (psmouse_matches_pnp_id(psmouse, topbuttonpad_pnp_ids) &&
+		    !SYN_CAP_EXT_BUTTONS_STICK(priv->ext_cap_10))
+			__set_bit(INPUT_PROP_TOPBUTTONPAD, dev->propbit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Clickpads report only left button */
 		__clear_bit(BTN_RIGHT, dev->keybit);
 		__clear_bit(BTN_MIDDLE, dev->keybit);
@@ -1480,7 +1913,11 @@ static int synaptics_reconnect(struct psmouse *psmouse)
 
 static bool impaired_toshiba_kbc;
 
+<<<<<<< HEAD
 static const struct dmi_system_id __initconst toshiba_dmi_table[] = {
+=======
+static const struct dmi_system_id toshiba_dmi_table[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_DMI) && defined(CONFIG_X86)
 	{
 		/* Toshiba Satellite */
@@ -1519,7 +1956,11 @@ static const struct dmi_system_id __initconst toshiba_dmi_table[] = {
 
 static bool broken_olpc_ec;
 
+<<<<<<< HEAD
 static const struct dmi_system_id __initconst olpc_dmi_table[] = {
+=======
+static const struct dmi_system_id olpc_dmi_table[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_DMI) && defined(CONFIG_OLPC)
 	{
 		/* OLPC XO-1 or XO-1.5 */
@@ -1532,6 +1973,7 @@ static const struct dmi_system_id __initconst olpc_dmi_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static const struct dmi_system_id min_max_dmi_table[] __initconst = {
 #if defined(CONFIG_DMI)
 	{
@@ -1623,6 +2065,16 @@ static const struct dmi_system_id min_max_dmi_table[] __initconst = {
 					"ThinkPad X1 Carbon 2nd"),
 		},
 		.driver_data = (int []){1024, 5112, 2024, 4832},
+=======
+static const struct dmi_system_id __initconst cr48_dmi_table[] = {
+#if defined(CONFIG_DMI) && defined(CONFIG_X86)
+	{
+		/* Cr-48 Chromebook (Codename Mario) */
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "IEC"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Mario"),
+		},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 #endif
 	{ }
@@ -1630,6 +2082,7 @@ static const struct dmi_system_id min_max_dmi_table[] __initconst = {
 
 void __init synaptics_module_init(void)
 {
+<<<<<<< HEAD
 	const struct dmi_system_id *min_max_dmi;
 
 	impaired_toshiba_kbc = dmi_check_system(toshiba_dmi_table);
@@ -1638,6 +2091,11 @@ void __init synaptics_module_init(void)
 	min_max_dmi = dmi_first_match(min_max_dmi_table);
 	if (min_max_dmi)
 		quirk_min_max = min_max_dmi->driver_data;
+=======
+	impaired_toshiba_kbc = dmi_check_system(toshiba_dmi_table);
+	broken_olpc_ec = dmi_check_system(olpc_dmi_table);
+	cr48_profile_sensor = dmi_check_system(cr48_dmi_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __synaptics_init(struct psmouse *psmouse, bool absolute_mode)
@@ -1672,6 +2130,15 @@ static int __synaptics_init(struct psmouse *psmouse, bool absolute_mode)
 	if (SYN_ID_DISGEST_SUPPORTED(priv->identity))
 		priv->disable_gesture = true;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Unfortunately ForcePad capability is not exported over PS/2,
+	 * so we have to resort to checking PNP IDs.
+	 */
+	priv->is_forcepad = psmouse_matches_pnp_id(psmouse, forcepad_pnp_ids);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (synaptics_set_mode(psmouse)) {
 		psmouse_err(psmouse, "Unable to initialize device.\n");
 		goto init_fail;
@@ -1680,14 +2147,24 @@ static int __synaptics_init(struct psmouse *psmouse, bool absolute_mode)
 	priv->pkt_type = SYN_MODEL_NEWABS(priv->model_id) ? SYN_NEWABS : SYN_OLDABS;
 
 	psmouse_info(psmouse,
+<<<<<<< HEAD
 		     "Touchpad model: %ld, fw: %ld.%ld, id: %#lx, caps: %#lx/%#lx/%#lx, board id: %lu, fw id: %lu\n",
+=======
+		     "Touchpad model: %ld, fw: %ld.%ld, id: %#lx, caps: %#lx/%#lx/%#lx/%#lx, board id: %lu, fw id: %lu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     SYN_ID_MODEL(priv->identity),
 		     SYN_ID_MAJOR(priv->identity), SYN_ID_MINOR(priv->identity),
 		     priv->model_id,
 		     priv->capabilities, priv->ext_cap, priv->ext_cap_0c,
+<<<<<<< HEAD
 		     priv->board_id, priv->firmware_id);
 
 	set_input_params(psmouse->dev, priv);
+=======
+		     priv->ext_cap_10, priv->board_id, priv->firmware_id);
+
+	set_input_params(psmouse, priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Encode touchpad model so that it can be used to set
@@ -1758,11 +2235,14 @@ int synaptics_init_relative(struct psmouse *psmouse)
 	return __synaptics_init(psmouse, false);
 }
 
+<<<<<<< HEAD
 bool synaptics_supported(void)
 {
 	return true;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_MOUSE_PS2_SYNAPTICS */
 
 void __init synaptics_module_init(void)
@@ -1774,9 +2254,12 @@ int synaptics_init(struct psmouse *psmouse)
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 bool synaptics_supported(void)
 {
 	return false;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_MOUSE_PS2_SYNAPTICS */

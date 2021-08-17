@@ -18,7 +18,10 @@
  */
 
 #include <linux/cpu_cooling.h>
+<<<<<<< HEAD
 #include <linux/cpufreq.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -28,6 +31,7 @@
 static int db8500_cpufreq_cooling_probe(struct platform_device *pdev)
 {
 	struct thermal_cooling_device *cdev;
+<<<<<<< HEAD
 	struct cpumask mask_val;
 
 	/* make sure cpufreq driver has been initialized */
@@ -40,6 +44,19 @@ static int db8500_cpufreq_cooling_probe(struct platform_device *pdev)
 	if (IS_ERR(cdev)) {
 		dev_err(&pdev->dev, "Failed to register cooling device\n");
 		return PTR_ERR(cdev);
+=======
+
+	cdev = cpufreq_cooling_register(cpu_present_mask);
+	if (IS_ERR(cdev)) {
+		int ret = PTR_ERR(cdev);
+
+		if (ret != -EPROBE_DEFER)
+			dev_err(&pdev->dev,
+				"Failed to register cooling device %d\n",
+				ret);
+				
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, cdev);
@@ -74,11 +91,18 @@ static const struct of_device_id db8500_cpufreq_cooling_match[] = {
 	{ .compatible = "stericsson,db8500-cpufreq-cooling" },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, db8500_cpufreq_cooling_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct platform_driver db8500_cpufreq_cooling_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "db8500-cpufreq-cooling",
 		.of_match_table = of_match_ptr(db8500_cpufreq_cooling_match),
 	},

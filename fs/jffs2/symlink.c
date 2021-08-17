@@ -9,6 +9,7 @@
  *
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -65,3 +66,14 @@ static void *jffs2_follow_link(struct dentry *dentry, struct nameidata *nd)
 	return NULL;
 }
 
+=======
+#include "nodelist.h"
+
+const struct inode_operations jffs2_symlink_inode_operations =
+{
+	.readlink =	generic_readlink,
+	.get_link =	simple_get_link,
+	.setattr =	jffs2_setattr,
+	.listxattr =	jffs2_listxattr,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

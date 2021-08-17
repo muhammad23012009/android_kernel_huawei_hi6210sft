@@ -28,6 +28,10 @@
 /*  Special registers.  */
 
 #define SREG_MR			32
+<<<<<<< HEAD
+=======
+#define SREG_IBREAKENABLE	96
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SREG_IBREAKA		128
 #define SREG_DBREAKA		144
 #define SREG_DBREAKC		160
@@ -82,6 +86,10 @@
 #define PS_CALLINC_SHIFT	16
 #define PS_CALLINC_MASK		0x00030000
 #define PS_OWB_SHIFT		8
+<<<<<<< HEAD
+=======
+#define PS_OWB_WIDTH		4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PS_OWB_MASK		0x00000F00
 #define PS_RING_SHIFT		6
 #define PS_RING_MASK		0x000000C0
@@ -102,6 +110,11 @@
 
 /*  DEBUGCAUSE register fields.  */
 
+<<<<<<< HEAD
+=======
+#define DEBUGCAUSE_DBNUM_MASK		0xf00
+#define DEBUGCAUSE_DBNUM_SHIFT		8	/* First bit of DBNUM field */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DEBUGCAUSE_DEBUGINT_BIT		5	/* External debug interrupt */
 #define DEBUGCAUSE_BREAKN_BIT		4	/* BREAK.N instruction */
 #define DEBUGCAUSE_BREAK_BIT		3	/* BREAK instruction */

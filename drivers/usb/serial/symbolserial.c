@@ -11,7 +11,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/tty.h>
 #include <linux/slab.h>
 #include <linux/tty_driver.h>
@@ -61,6 +64,7 @@ static void symbol_int_callback(struct urb *urb)
 
 	usb_serial_debug_data(&port->dev, __func__, urb->actual_length, data);
 
+<<<<<<< HEAD
 	if (urb->actual_length > 1) {
 		data_length = urb->actual_length - 1;
 
@@ -78,6 +82,21 @@ static void symbol_int_callback(struct urb *urb)
 		dev_dbg(&port->dev,
 			"Improper amount of data received from the device, "
 			"%d bytes", urb->actual_length);
+=======
+	/*
+	 * Data from the device comes with a 1 byte header:
+	 *
+	 * <size of data> <data>...
+	 */
+	if (urb->actual_length > 1) {
+		data_length = data[0];
+		if (data_length > (urb->actual_length - 1))
+			data_length = urb->actual_length - 1;
+		tty_insert_flip_string(&port->port, &data[1], data_length);
+		tty_flip_buffer_push(&port->port);
+	} else {
+		dev_dbg(&port->dev, "%s - short packet\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 exit:

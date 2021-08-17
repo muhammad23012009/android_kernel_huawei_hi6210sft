@@ -9,7 +9,11 @@ struct iu {
 	__u8 iu_id;
 	__u8 rsvd1;
 	__be16 tag;
+<<<<<<< HEAD
 };
+=======
+} __attribute__((__packed__));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum {
 	IU_ID_COMMAND		= 0x01,
@@ -52,7 +56,11 @@ struct command_iu {
 	__u8 rsvd7;
 	struct scsi_lun lun;
 	__u8 cdb[16];	/* XXX: Overflow-checking tools may misunderstand */
+<<<<<<< HEAD
 };
+=======
+} __attribute__((__packed__));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct task_mgmt_iu {
 	__u8 iu_id;
@@ -62,7 +70,11 @@ struct task_mgmt_iu {
 	__u8 rsvd2;
 	__be16 task_tag;
 	struct scsi_lun lun;
+<<<<<<< HEAD
 };
+=======
+} __attribute__((__packed__));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Also used for the Read Ready and Write Ready IUs since they have the
@@ -77,6 +89,7 @@ struct sense_iu {
 	__u8 rsvd7[7];
 	__be16 len;
 	__u8 sense[SCSI_SENSE_BUFFERSIZE];
+<<<<<<< HEAD
 };
 
 struct response_ui {
@@ -86,6 +99,17 @@ struct response_ui {
 	__be16 add_response_info;
 	__u8 response_code;
 };
+=======
+} __attribute__((__packed__));
+
+struct response_iu {
+	__u8 iu_id;
+	__u8 rsvd1;
+	__be16 tag;
+	__u8 add_response_info[3];
+	__u8 response_code;
+} __attribute__((__packed__));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct usb_pipe_usage_descriptor {
 	__u8  bLength;

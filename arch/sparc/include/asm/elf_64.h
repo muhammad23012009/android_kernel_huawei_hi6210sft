@@ -7,7 +7,11 @@
 
 #include <asm/ptrace.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/extable_64.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/spitfire.h>
 
 /*
@@ -95,6 +99,10 @@
  * really available.  So we simply advertise only "crypto" support.
  */
 #define HWCAP_SPARC_CRYPTO	0x04000000 /* CRYPTO insns available */
+<<<<<<< HEAD
+=======
+#define HWCAP_SPARC_ADI		0x08000000 /* ADI available */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CORE_DUMP_USE_REGSET
 

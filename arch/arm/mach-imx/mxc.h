@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright 2004-2007, 2010 Freescale Semiconductor, Inc. All Rights Reserved.
+=======
+ * Copyright 2004-2007, 2010-2015 Freescale Semiconductor, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2008 Juergen Beisert (kernel@pengutronix.de)
  *
  * This program is free software; you can redistribute it and/or
@@ -34,6 +38,7 @@
 #define MXC_CPU_MX35		35
 #define MXC_CPU_MX51		51
 #define MXC_CPU_MX53		53
+<<<<<<< HEAD
 #define MXC_CPU_IMX6DL		0x61
 #define MXC_CPU_IMX6Q		0x63
 
@@ -155,6 +160,51 @@ extern unsigned int __mxc_cpu_type;
 static inline bool cpu_is_imx6dl(void)
 {
 	return __mxc_cpu_type == MXC_CPU_IMX6DL;
+=======
+#define MXC_CPU_IMX6SL		0x60
+#define MXC_CPU_IMX6DL		0x61
+#define MXC_CPU_IMX6SX		0x62
+#define MXC_CPU_IMX6Q		0x63
+#define MXC_CPU_IMX6UL		0x64
+#define MXC_CPU_IMX6ULL		0x65
+#define MXC_CPU_IMX7D		0x72
+
+#define IMX_DDR_TYPE_LPDDR2		1
+
+#ifndef __ASSEMBLY__
+extern unsigned int __mxc_cpu_type;
+
+#ifdef CONFIG_SOC_IMX6SL
+static inline bool cpu_is_imx6sl(void)
+{
+	return __mxc_cpu_type == MXC_CPU_IMX6SL;
+}
+#else
+static inline bool cpu_is_imx6sl(void)
+{
+	return false;
+}
+#endif
+
+static inline bool cpu_is_imx6dl(void)
+{
+	return __mxc_cpu_type == MXC_CPU_IMX6DL;
+}
+
+static inline bool cpu_is_imx6sx(void)
+{
+	return __mxc_cpu_type == MXC_CPU_IMX6SX;
+}
+
+static inline bool cpu_is_imx6ul(void)
+{
+	return __mxc_cpu_type == MXC_CPU_IMX6UL;
+}
+
+static inline bool cpu_is_imx6ull(void)
+{
+	return __mxc_cpu_type == MXC_CPU_IMX6ULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline bool cpu_is_imx6q(void)
@@ -162,6 +212,14 @@ static inline bool cpu_is_imx6q(void)
 	return __mxc_cpu_type == MXC_CPU_IMX6Q;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool cpu_is_imx7d(void)
+{
+	return __mxc_cpu_type == MXC_CPU_IMX7D;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cpu_op {
 	u32 cpu_rate;
 };
@@ -171,7 +229,14 @@ int tzic_enable_wake(void);
 extern struct cpu_op *(*get_cpu_op)(int *op);
 #endif
 
+<<<<<<< HEAD
 #define cpu_is_mx3()	(cpu_is_mx31() || cpu_is_mx35())
 #define cpu_is_mx2()	(cpu_is_mx21() || cpu_is_mx27())
+=======
+#define imx_readl	readl_relaxed
+#define imx_readw	readw_relaxed
+#define imx_writel	writel_relaxed
+#define imx_writew	writew_relaxed
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /*  __ASM_ARCH_MXC_H__ */

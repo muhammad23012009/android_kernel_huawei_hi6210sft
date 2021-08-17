@@ -1,4 +1,8 @@
 #include "../util.h"
+<<<<<<< HEAD
+=======
+#include "../../util/util.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "../../util/debug.h"
 #include "gtk.h"
 
@@ -23,8 +27,12 @@ int perf_gtk__deactivate_context(struct perf_gtk_context **ctx)
 	if (!perf_gtk__is_active_context(*ctx))
 		return -1;
 
+<<<<<<< HEAD
 	free(*ctx);
 	*ctx = NULL;
+=======
+	zfree(ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -53,7 +61,11 @@ static int perf_gtk__error(const char *format, va_list args)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef HAVE_GTK_INFO_BAR
+=======
+#ifdef HAVE_GTK_INFO_BAR_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int perf_gtk__warning_info_bar(const char *format, va_list args)
 {
 	char *msg;
@@ -105,7 +117,11 @@ static int perf_gtk__warning_statusbar(const char *format, va_list args)
 
 struct perf_error_ops perf_gtk_eops = {
 	.error		= perf_gtk__error,
+<<<<<<< HEAD
 #ifdef HAVE_GTK_INFO_BAR
+=======
+#ifdef HAVE_GTK_INFO_BAR_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.warning	= perf_gtk__warning_info_bar,
 #else
 	.warning	= perf_gtk__warning_statusbar,

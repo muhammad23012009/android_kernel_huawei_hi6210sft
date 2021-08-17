@@ -59,7 +59,10 @@
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/xattr.h>
+<<<<<<< HEAD
 #include <linux/posix_acl_xattr.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Limit the number of extended attributes per inode so that the total size
@@ -100,24 +103,45 @@ static const struct file_operations empty_fops;
 static int create_xattr(struct ubifs_info *c, struct inode *host,
 			const struct qstr *nm, const void *value, int size)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err, names_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct inode *inode;
 	struct ubifs_inode *ui, *host_ui = ubifs_inode(host);
 	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
 				.new_ino_d = ALIGN(size, 8), .dirtied_ino = 1,
 				.dirtied_ino_d = ALIGN(host_ui->data_len, 8) };
 
+<<<<<<< HEAD
 	if (host_ui->xattr_cnt >= MAX_XATTRS_PER_INODE)
 		return -ENOSPC;
+=======
+	if (host_ui->xattr_cnt >= MAX_XATTRS_PER_INODE) {
+		ubifs_err(c, "inode %lu already has too many xattrs (%d), cannot create more",
+			  host->i_ino, host_ui->xattr_cnt);
+		return -ENOSPC;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Linux limits the maximum size of the extended attribute names list
 	 * to %XATTR_LIST_MAX. This means we should not allow creating more
 	 * extended attributes if the name list becomes larger. This limitation
 	 * is artificial for UBIFS, though.
 	 */
+<<<<<<< HEAD
 	if (host_ui->xattr_names + host_ui->xattr_cnt +
 					nm->len + 1 > XATTR_LIST_MAX)
 		return -ENOSPC;
+=======
+	names_len = host_ui->xattr_names + host_ui->xattr_cnt + nm->len + 1;
+	if (names_len > XATTR_LIST_MAX) {
+		ubifs_err(c, "cannot add one more xattr name to inode %lu, total names length would become %d, max. is %d",
+			  host->i_ino, names_len, XATTR_LIST_MAX);
+		return -ENOSPC;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = ubifs_budget_space(c, &req);
 	if (err)
@@ -195,6 +219,11 @@ static int change_xattr(struct ubifs_info *c, struct inode *host,
 	int err;
 	struct ubifs_inode *host_ui = ubifs_inode(host);
 	struct ubifs_inode *ui = ubifs_inode(inode);
+<<<<<<< HEAD
+=======
+	void *buf = NULL;
+	int old_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ubifs_budget_req req = { .dirtied_ino = 2,
 		.dirtied_ino_d = ALIGN(size, 8) + ALIGN(host_ui->data_len, 8) };
 
@@ -203,6 +232,7 @@ static int change_xattr(struct ubifs_info *c, struct inode *host,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	kfree(ui->data);
 	ui->data = kmemdup(value, size, GFP_NOFS);
 	if (!ui->data) {
@@ -215,6 +245,24 @@ static int change_xattr(struct ubifs_info *c, struct inode *host,
 	mutex_lock(&host_ui->ui_mutex);
 	host->i_ctime = ubifs_current_time(host);
 	host_ui->xattr_size -= CALC_XATTR_BYTES(ui->data_len);
+=======
+	buf = kmemdup(value, size, GFP_NOFS);
+	if (!buf) {
+		err = -ENOMEM;
+		goto out_free;
+	}
+	mutex_lock(&ui->ui_mutex);
+	kfree(ui->data);
+	ui->data = buf;
+	inode->i_size = ui->ui_size = size;
+	old_size = ui->data_len;
+	ui->data_len = size;
+	mutex_unlock(&ui->ui_mutex);
+
+	mutex_lock(&host_ui->ui_mutex);
+	host->i_ctime = ubifs_current_time(host);
+	host_ui->xattr_size -= CALC_XATTR_BYTES(old_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host_ui->xattr_size += CALC_XATTR_BYTES(size);
 
 	/*
@@ -233,7 +281,11 @@ static int change_xattr(struct ubifs_info *c, struct inode *host,
 
 out_cancel:
 	host_ui->xattr_size -= CALC_XATTR_BYTES(size);
+<<<<<<< HEAD
 	host_ui->xattr_size += CALC_XATTR_BYTES(ui->data_len);
+=======
+	host_ui->xattr_size += CALC_XATTR_BYTES(old_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&host_ui->ui_mutex);
 	make_bad_inode(inode);
 out_free:
@@ -241,6 +293,7 @@ out_free:
 	return err;
 }
 
+<<<<<<< HEAD
 /**
  * check_namespace - check extended attribute name-space.
  * @nm: extended attribute name
@@ -277,43 +330,73 @@ static int check_namespace(const struct qstr *nm)
 	return type;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct inode *iget_xattr(struct ubifs_info *c, ino_t inum)
 {
 	struct inode *inode;
 
 	inode = ubifs_iget(c->vfs_sb, inum);
 	if (IS_ERR(inode)) {
+<<<<<<< HEAD
 		ubifs_err("dead extended attribute entry, error %d",
+=======
+		ubifs_err(c, "dead extended attribute entry, error %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  (int)PTR_ERR(inode));
 		return inode;
 	}
 	if (ubifs_inode(inode)->xattr)
 		return inode;
+<<<<<<< HEAD
 	ubifs_err("corrupt extended attribute entry");
+=======
+	ubifs_err(c, "corrupt extended attribute entry");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iput(inode);
 	return ERR_PTR(-EINVAL);
 }
 
+<<<<<<< HEAD
 int ubifs_setxattr(struct dentry *dentry, const char *name,
 		   const void *value, size_t size, int flags)
 {
 	struct inode *inode, *host = dentry->d_inode;
+=======
+static int __ubifs_setxattr(struct inode *host, const char *name,
+			    const void *value, size_t size, int flags,
+			    bool check_lock)
+{
+	struct inode *inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ubifs_info *c = host->i_sb->s_fs_info;
 	struct qstr nm = QSTR_INIT(name, strlen(name));
 	struct ubifs_dent_node *xent;
 	union ubifs_key key;
+<<<<<<< HEAD
 	int err, type;
 
 	dbg_gen("xattr '%s', host ino %lu ('%.*s'), size %zd", name,
 		host->i_ino, dentry->d_name.len, dentry->d_name.name, size);
 	ubifs_assert(mutex_is_locked(&host->i_mutex));
+=======
+	int err;
+
+	if (check_lock)
+		ubifs_assert(inode_is_locked(host));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (size > UBIFS_MAX_INO_DATA)
 		return -ERANGE;
 
+<<<<<<< HEAD
 	type = check_namespace(&nm);
 	if (type < 0)
 		return type;
+=======
+	if (nm.len > UBIFS_MAX_NLEN)
+		return -ENAMETOOLONG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	xent = kmalloc(UBIFS_MAX_XENT_NODE_SZ, GFP_NOFS);
 	if (!xent)
@@ -357,10 +440,17 @@ out_free:
 	return err;
 }
 
+<<<<<<< HEAD
 ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 		       size_t size)
 {
 	struct inode *inode, *host = dentry->d_inode;
+=======
+static ssize_t __ubifs_getxattr(struct inode *host, const char *name,
+				void *buf, size_t size)
+{
+	struct inode *inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ubifs_info *c = host->i_sb->s_fs_info;
 	struct qstr nm = QSTR_INIT(name, strlen(name));
 	struct ubifs_inode *ui;
@@ -368,12 +458,17 @@ ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 	union ubifs_key key;
 	int err;
 
+<<<<<<< HEAD
 	dbg_gen("xattr '%s', ino %lu ('%.*s'), buf size %zd", name,
 		host->i_ino, dentry->d_name.len, dentry->d_name.name, size);
 
 	err = check_namespace(&nm);
 	if (err < 0)
 		return err;
+=======
+	if (nm.len > UBIFS_MAX_NLEN)
+		return -ENAMETOOLONG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	xent = kmalloc(UBIFS_MAX_XENT_NODE_SZ, GFP_NOFS);
 	if (!xent)
@@ -397,10 +492,18 @@ ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 	ubifs_assert(inode->i_size == ui->data_len);
 	ubifs_assert(ubifs_inode(host)->xattr_size > ui->data_len);
 
+<<<<<<< HEAD
 	if (buf) {
 		/* If @buf is %NULL we are supposed to return the length */
 		if (ui->data_len > size) {
 			ubifs_err("buffer size %zd, xattr len %d",
+=======
+	mutex_lock(&ui->ui_mutex);
+	if (buf) {
+		/* If @buf is %NULL we are supposed to return the length */
+		if (ui->data_len > size) {
+			ubifs_err(c, "buffer size %zd, xattr len %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  size, ui->data_len);
 			err = -ERANGE;
 			goto out_iput;
@@ -411,6 +514,10 @@ ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 	err = ui->data_len;
 
 out_iput:
+<<<<<<< HEAD
+=======
+	mutex_unlock(&ui->ui_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iput(inode);
 out_unlock:
 	kfree(xent);
@@ -420,15 +527,24 @@ out_unlock:
 ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 {
 	union ubifs_key key;
+<<<<<<< HEAD
 	struct inode *host = dentry->d_inode;
+=======
+	struct inode *host = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ubifs_info *c = host->i_sb->s_fs_info;
 	struct ubifs_inode *host_ui = ubifs_inode(host);
 	struct ubifs_dent_node *xent, *pxent = NULL;
 	int err, len, written = 0;
 	struct qstr nm = { .name = NULL };
 
+<<<<<<< HEAD
 	dbg_gen("ino %lu ('%.*s'), buffer size %zd", host->i_ino,
 		dentry->d_name.len, dentry->d_name.name, size);
+=======
+	dbg_gen("ino %lu ('%pd'), buffer size %zd", host->i_ino,
+		dentry, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len = host_ui->xattr_names + host_ui->xattr_cnt;
 	if (!buffer)
@@ -443,8 +559,11 @@ ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 
 	lowest_xent_key(c, &key, host->i_ino);
 	while (1) {
+<<<<<<< HEAD
 		int type;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		xent = ubifs_tnc_next_ent(c, &key, &nm);
 		if (IS_ERR(xent)) {
 			err = PTR_ERR(xent);
@@ -454,6 +573,7 @@ ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 		nm.name = xent->name;
 		nm.len = le16_to_cpu(xent->nlen);
 
+<<<<<<< HEAD
 		type = check_namespace(&nm);
 		if (unlikely(type < 0)) {
 			err = type;
@@ -462,6 +582,12 @@ ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 
 		/* Show trusted namespace only for "power" users */
 		if (type != TRUSTED_XATTR || capable(CAP_SYS_ADMIN)) {
+=======
+		/* Show trusted namespace only for "power" users */
+		if (strncmp(xent->name, XATTR_TRUSTED_PREFIX,
+			    XATTR_TRUSTED_PREFIX_LEN) ||
+		    capable(CAP_SYS_ADMIN)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			memcpy(buffer + written, nm.name, nm.len + 1);
 			written += nm.len + 1;
 		}
@@ -473,7 +599,11 @@ ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 
 	kfree(pxent);
 	if (err != -ENOENT) {
+<<<<<<< HEAD
 		ubifs_err("cannot find next direntry, error %d", err);
+=======
+		ubifs_err(c, "cannot find next direntry, error %d", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -522,15 +652,22 @@ out_cancel:
 	return err;
 }
 
+<<<<<<< HEAD
 int ubifs_removexattr(struct dentry *dentry, const char *name)
 {
 	struct inode *inode, *host = dentry->d_inode;
+=======
+static int __ubifs_removexattr(struct inode *host, const char *name)
+{
+	struct inode *inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ubifs_info *c = host->i_sb->s_fs_info;
 	struct qstr nm = QSTR_INIT(name, strlen(name));
 	struct ubifs_dent_node *xent;
 	union ubifs_key key;
 	int err;
 
+<<<<<<< HEAD
 	dbg_gen("xattr '%s', ino %lu ('%.*s')", name,
 		host->i_ino, dentry->d_name.len, dentry->d_name.name);
 	ubifs_assert(mutex_is_locked(&host->i_mutex));
@@ -538,6 +675,12 @@ int ubifs_removexattr(struct dentry *dentry, const char *name)
 	err = check_namespace(&nm);
 	if (err < 0)
 		return err;
+=======
+	ubifs_assert(inode_is_locked(host));
+
+	if (nm.len > UBIFS_MAX_NLEN)
+		return -ENAMETOOLONG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	xent = kmalloc(UBIFS_MAX_XENT_NODE_SZ, GFP_NOFS);
 	if (!xent)
@@ -570,3 +713,100 @@ out_free:
 	kfree(xent);
 	return err;
 }
+<<<<<<< HEAD
+=======
+
+static int init_xattrs(struct inode *inode, const struct xattr *xattr_array,
+		      void *fs_info)
+{
+	const struct xattr *xattr;
+	char *name;
+	int err = 0;
+
+	for (xattr = xattr_array; xattr->name != NULL; xattr++) {
+		name = kmalloc(XATTR_SECURITY_PREFIX_LEN +
+			       strlen(xattr->name) + 1, GFP_NOFS);
+		if (!name) {
+			err = -ENOMEM;
+			break;
+		}
+		strcpy(name, XATTR_SECURITY_PREFIX);
+		strcpy(name + XATTR_SECURITY_PREFIX_LEN, xattr->name);
+		err = __ubifs_setxattr(inode, name, xattr->value,
+				       xattr->value_len, 0, false);
+		kfree(name);
+		if (err < 0)
+			break;
+	}
+
+	return err;
+}
+
+int ubifs_init_security(struct inode *dentry, struct inode *inode,
+			const struct qstr *qstr)
+{
+	int err;
+
+	err = security_inode_init_security(inode, dentry, qstr,
+					   &init_xattrs, 0);
+	if (err) {
+		struct ubifs_info *c = dentry->i_sb->s_fs_info;
+		ubifs_err(c, "cannot initialize security for inode %lu, error %d",
+			  inode->i_ino, err);
+	}
+	return err;
+}
+
+static int ubifs_xattr_get(const struct xattr_handler *handler,
+			   struct dentry *dentry, struct inode *inode,
+			   const char *name, void *buffer, size_t size)
+{
+	dbg_gen("xattr '%s', ino %lu ('%pd'), buf size %zd", name,
+		inode->i_ino, dentry, size);
+
+	name = xattr_full_name(handler, name);
+	return __ubifs_getxattr(inode, name, buffer, size);
+}
+
+static int ubifs_xattr_set(const struct xattr_handler *handler,
+			   struct dentry *dentry, struct inode *inode,
+			   const char *name, const void *value,
+			   size_t size, int flags)
+{
+	dbg_gen("xattr '%s', host ino %lu ('%pd'), size %zd",
+		name, inode->i_ino, dentry, size);
+
+	name = xattr_full_name(handler, name);
+
+	if (value)
+		return __ubifs_setxattr(inode, name, value, size, flags,
+					true);
+	else
+		return __ubifs_removexattr(inode, name);
+}
+
+static const struct xattr_handler ubifs_user_xattr_handler = {
+	.prefix = XATTR_USER_PREFIX,
+	.get = ubifs_xattr_get,
+	.set = ubifs_xattr_set,
+};
+
+static const struct xattr_handler ubifs_trusted_xattr_handler = {
+	.prefix = XATTR_TRUSTED_PREFIX,
+	.get = ubifs_xattr_get,
+	.set = ubifs_xattr_set,
+};
+
+static const struct xattr_handler ubifs_security_xattr_handler = {
+	.prefix = XATTR_SECURITY_PREFIX,
+	.get = ubifs_xattr_get,
+	.set = ubifs_xattr_set,
+};
+
+const struct xattr_handler *ubifs_xattr_handlers[] = {
+	&ubifs_user_xattr_handler,
+	&ubifs_trusted_xattr_handler,
+	&ubifs_security_xattr_handler,
+	NULL
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -57,7 +66,11 @@
 #ifdef BFA_DRIVER_VERSION
 #define BFAD_DRIVER_VERSION    BFA_DRIVER_VERSION
 #else
+<<<<<<< HEAD
 #define BFAD_DRIVER_VERSION    "3.1.2.1"
+=======
+#define BFAD_DRIVER_VERSION    "3.2.25.1"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define BFAD_PROTO_NAME FCPI_NAME
@@ -240,8 +253,13 @@ enum bfad_sm_event {
 	BFAD_E_KTHREAD_CREATE_FAILED	= 2,
 	BFAD_E_INIT			= 3,
 	BFAD_E_INIT_SUCCESS		= 4,
+<<<<<<< HEAD
 	BFAD_E_INIT_FAILED		= 5,
 	BFAD_E_INTR_INIT_FAILED		= 6,
+=======
+	BFAD_E_HAL_INIT_FAILED		= 5,
+	BFAD_E_INIT_FAILED		= 6,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BFAD_E_FCS_EXIT_COMP		= 7,
 	BFAD_E_EXIT_COMP		= 8,
 	BFAD_E_STOP			= 9

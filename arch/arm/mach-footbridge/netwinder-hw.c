@@ -620,7 +620,11 @@ __initcall(nw_hw_init);
  * the parameter page.
  */
 static void __init
+<<<<<<< HEAD
 fixup_netwinder(struct tag *tags, char **cmdline, struct meminfo *mi)
+=======
+fixup_netwinder(struct tag *tags, char **cmdline)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef CONFIG_ISAPNP
 	extern int isapnp_disable;
@@ -634,9 +638,15 @@ fixup_netwinder(struct tag *tags, char **cmdline, struct meminfo *mi)
 #endif
 }
 
+<<<<<<< HEAD
 static void netwinder_restart(char mode, const char *cmd)
 {
 	if (mode == 's') {
+=======
+static void netwinder_restart(enum reboot_mode mode, const char *cmd)
+{
+	if (mode == REBOOT_SOFT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Jump into the ROM */
 		soft_restart(0x41000000);
 	} else {
@@ -692,14 +702,22 @@ static void netwinder_led_set(struct led_classdev *cdev,
 	unsigned long flags;
 	u32 reg;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&nw_gpio_lock, flags);
+=======
+	raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = nw_gpio_read();
 	if (b != LED_OFF)
 		reg &= ~led->mask;
 	else
 		reg |= led->mask;
 	nw_gpio_modify_op(led->mask, reg);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&nw_gpio_lock, flags);
+=======
+	raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static enum led_brightness netwinder_led_get(struct led_classdev *cdev)
@@ -709,9 +727,15 @@ static enum led_brightness netwinder_led_get(struct led_classdev *cdev)
 	unsigned long flags;
 	u32 reg;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&nw_gpio_lock, flags);
 	reg = nw_gpio_read();
 	spin_unlock_irqrestore(&nw_gpio_lock, flags);
+=======
+	raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+	reg = nw_gpio_read();
+	raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (reg & led->mask) ? LED_OFF : LED_FULL;
 }

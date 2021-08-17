@@ -23,6 +23,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <mach/pxa320.h>
 #include <mach/colibri.h>
 #include <linux/platform_data/video-pxafb.h>
@@ -30,6 +31,15 @@
 #include <mach/audio.h>
 #include <mach/pxa27x-udc.h>
 #include <mach/udc.h>
+=======
+#include "pxa320.h"
+#include "colibri.h"
+#include <linux/platform_data/video-pxafb.h>
+#include <linux/platform_data/usb-ohci-pxa27x.h>
+#include <mach/audio.h>
+#include "pxa27x-udc.h"
+#include "udc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "generic.h"
 #include "devices.h"

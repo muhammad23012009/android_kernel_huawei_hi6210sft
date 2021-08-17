@@ -221,7 +221,11 @@ static ssize_t show_min(struct device *dev,
 	struct abx500_temp *data = dev_get_drvdata(dev);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%ld\n", data->min[attr->index]);
+=======
+	return sprintf(buf, "%lu\n", data->min[attr->index]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t show_max(struct device *dev,
@@ -230,7 +234,11 @@ static ssize_t show_max(struct device *dev,
 	struct abx500_temp *data = dev_get_drvdata(dev);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%ld\n", data->max[attr->index]);
+=======
+	return sprintf(buf, "%lu\n", data->max[attr->index]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t show_max_hyst(struct device *dev,
@@ -239,7 +247,11 @@ static ssize_t show_max_hyst(struct device *dev,
 	struct abx500_temp *data = dev_get_drvdata(dev);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%ld\n", data->max_hyst[attr->index]);
+=======
+	return sprintf(buf, "%lu\n", data->max_hyst[attr->index]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t show_min_alarm(struct device *dev,
@@ -315,7 +327,11 @@ static SENSOR_DEVICE_ATTR(temp4_max_hyst, S_IWUSR | S_IRUGO,
 static SENSOR_DEVICE_ATTR(temp4_min_alarm, S_IRUGO, show_min_alarm, NULL, 3);
 static SENSOR_DEVICE_ATTR(temp4_max_alarm, S_IRUGO, show_max_alarm, NULL, 3);
 
+<<<<<<< HEAD
 struct attribute *abx500_temp_attributes[] = {
+=======
+static struct attribute *abx500_temp_attributes[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_name.dev_attr.attr,
 
 	&sensor_dev_attr_temp1_label.dev_attr.attr,
@@ -377,7 +393,11 @@ static int setup_irqs(struct platform_device *pdev)
 	}
 
 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+<<<<<<< HEAD
 		abx500_temp_irq_handler, IRQF_NO_SUSPEND, "abx500-temp", pdev);
+=======
+		abx500_temp_irq_handler, 0, "abx500-temp", pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		dev_err(&pdev->dev, "Request threaded irq failed (%d)\n", ret);
 
@@ -470,11 +490,18 @@ static const struct of_device_id abx500_temp_match[] = {
 	{ .compatible = "stericsson,abx500-temp" },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, abx500_temp_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct platform_driver abx500_temp_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "abx500-temp",
 		.of_match_table = of_match_ptr(abx500_temp_match),
 	},

@@ -64,6 +64,10 @@ enum p9_session_flags {
 
 enum p9_cache_modes {
 	CACHE_NONE,
+<<<<<<< HEAD
+=======
+	CACHE_MMAP,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CACHE_LOOSE,
 	CACHE_FSCACHE,
 };
@@ -77,7 +81,10 @@ enum p9_cache_modes {
  * @cache: cache mode of type &p9_cache_modes
  * @cachetag: the tag of the cache associated with this session
  * @fscache: session cookie associated with FS-Cache
+<<<<<<< HEAD
  * @options: copy of options string given by user
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @uname: string user name to mount hierarchy as
  * @aname: mount specifier for remote hierarchy
  * @maxdata: maximum data to be sent/recvd per protocol message
@@ -116,6 +123,10 @@ struct v9fs_session_info {
 	struct list_head slist; /* list of sessions registered with v9fs */
 	struct backing_dev_info bdi;
 	struct rw_semaphore rename_sem;
+<<<<<<< HEAD
+=======
+	long session_lock_timeout; /* retry interval for blocking locks */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* cache_validity flags */
@@ -123,7 +134,11 @@ struct v9fs_session_info {
 
 struct v9fs_inode {
 #ifdef CONFIG_9P_FSCACHE
+<<<<<<< HEAD
 	spinlock_t fscache_lock;
+=======
+	struct mutex fscache_lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fscache_cookie *fscache;
 #endif
 	struct p9_qid qid;
@@ -148,9 +163,14 @@ extern struct dentry *v9fs_vfs_lookup(struct inode *dir, struct dentry *dentry,
 extern int v9fs_vfs_unlink(struct inode *i, struct dentry *d);
 extern int v9fs_vfs_rmdir(struct inode *i, struct dentry *d);
 extern int v9fs_vfs_rename(struct inode *old_dir, struct dentry *old_dentry,
+<<<<<<< HEAD
 			struct inode *new_dir, struct dentry *new_dentry);
 extern void v9fs_vfs_put_link(struct dentry *dentry, struct nameidata *nd,
 			void *p);
+=======
+			   struct inode *new_dir, struct dentry *new_dentry,
+			   unsigned int flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct inode *v9fs_inode_from_fid(struct v9fs_session_info *v9ses,
 					 struct p9_fid *fid,
 					 struct super_block *sb, int new);

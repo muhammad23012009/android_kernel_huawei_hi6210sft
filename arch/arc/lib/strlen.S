@@ -6,9 +6,15 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <asm/linkage.h>
 
 ARC_ENTRY strlen
+=======
+#include <linux/linkage.h>
+
+ENTRY_CFI(strlen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	or	r3,r0,7
 	ld	r2,[r3,-7]
 	ld.a	r6,[r3,-3]
@@ -80,4 +86,8 @@ ARC_ENTRY strlen
 .Learly_end:
 	b.d	.Lend
 	sub_s.ne r1,r1,r1
+<<<<<<< HEAD
 ARC_EXIT strlen
+=======
+END_CFI(strlen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

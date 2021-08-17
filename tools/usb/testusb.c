@@ -394,7 +394,11 @@ int main (int argc, char **argv)
 	 *      low speed, interrupt    8 *  1     =     8
 	 */
 	param.iterations = 1000;
+<<<<<<< HEAD
 	param.length = 512;
+=======
+	param.length = 1024;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	param.vary = 512;
 	param.sglen = 32;
 
@@ -454,10 +458,17 @@ usage:
 			"\t-t testnum	only run specified case\n"
 			"\t-n		no test running, show devices to be tested\n"
 			"Case arguments:\n"
+<<<<<<< HEAD
 			"\t-c iterations	default 1000\n"
 			"\t-s packetsize	default 512\n"
 			"\t-g sglen	default 32\n"
 			"\t-v vary		default 512\n",
+=======
+			"\t-c iterations		default 1000\n"
+			"\t-s transfer length	default 1024\n"
+			"\t-g sglen		default 32\n"
+			"\t-v vary			default 512\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			argv[0]);
 		return 1;
 	}

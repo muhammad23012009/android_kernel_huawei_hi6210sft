@@ -25,6 +25,18 @@
 #include <arch/chip.h>
 #include <arch/spr_def.h>
 
+<<<<<<< HEAD
+=======
+/* Extract two 32-bit bit values that were read into one register. */
+#ifdef __BIG_ENDIAN__
+#define GET_FIRST_INT(rd, rs) shrsi rd, rs, 32
+#define GET_SECOND_INT(rd, rs) addxi rd, rs, 0
+#else
+#define GET_FIRST_INT(rd, rs) addxi rd, rs, 0
+#define GET_SECOND_INT(rd, rs) shrsi rd, rs, 32
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This module contains the entry code for kernel images. It performs the
  * minimal setup needed to call the generic C routines.
@@ -46,11 +58,19 @@ ENTRY(_start)
 	  movei r2, TILE_CHIP_REV
 	  movei r3, KERNEL_PL
 	}
+<<<<<<< HEAD
 	jal hv_init
 	/* Get a reasonable default ASID in r0 */
 	{
 	  move r0, zero
 	  jal hv_inquire_asid
+=======
+	jal _hv_init
+	/* Get a reasonable default ASID in r0 */
+	{
+	  move r0, zero
+	  jal _hv_inquire_asid
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -61,7 +81,11 @@ ENTRY(_start)
 	 * other CPUs should see a properly-constructed page table.
 	 */
 	{
+<<<<<<< HEAD
 	  v4int_l r2, zero, r0    /* ASID for hv_install_context */
+=======
+	  GET_FIRST_INT(r2, r0)    /* ASID for hv_install_context */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  moveli r4, hw1_last(swapper_pgprot - PAGE_OFFSET)
 	}
 	{
@@ -77,7 +101,11 @@ ENTRY(_start)
 	{
 	  /* After initializing swapper_pgprot, HV_PTE_GLOBAL is set. */
 	  bfextu r7, r1, HV_PTE_INDEX_GLOBAL, HV_PTE_INDEX_GLOBAL
+<<<<<<< HEAD
 	  inv r4
+=======
+	  finv r4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	bnez r7, .Lno_write
 	{
@@ -121,11 +149,16 @@ ENTRY(_start)
 	}
 	{
 	  moveli r3, CTX_PAGE_FLAG
+<<<<<<< HEAD
 	  j hv_install_context
+=======
+	  j _hv_install_context
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 1:
 
 	/* Install the interrupt base. */
+<<<<<<< HEAD
 	moveli r0, hw2_last(MEM_SV_START)
 	shl16insli r0, r0, hw1(MEM_SV_START)
 	shl16insli r0, r0, hw0(MEM_SV_START)
@@ -144,6 +177,21 @@ ENTRY(_start)
 	}
 	{
 	  v4int_l r6, zero, r0    /* r6 = x */
+=======
+	moveli r0, hw2_last(intrpt_start)
+	shl16insli r0, r0, hw1(intrpt_start)
+	shl16insli r0, r0, hw0(intrpt_start)
+	mtspr SPR_INTERRUPT_VECTOR_BASE_K, r0
+
+	/* Get our processor number and save it away in SAVE_K_0. */
+	jal _hv_inquire_topology
+	{
+	  GET_FIRST_INT(r5, r1)   /* r5 = width */
+	  GET_SECOND_INT(r4, r0)  /* r4 = y */
+	}
+	{
+	  GET_FIRST_INT(r6, r0)   /* r6 = x */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  mul_lu_lu r4, r4, r5
 	}
 	{
@@ -154,7 +202,11 @@ ENTRY(_start)
 	/*
 	 * Load up our per-cpu offset.  When the first (master) tile
 	 * boots, this value is still zero, so we will load boot_pc
+<<<<<<< HEAD
 	 * with start_kernel, and boot_sp with init_stack + THREAD_SIZE.
+=======
+	 * with start_kernel, and boot_sp with at the top of init_stack.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * The master tile initializes the per-cpu offset array, so that
 	 * when subsequent (secondary) tiles boot, they will instead load
 	 * from their per-cpu versions of boot_sp and boot_pc.
@@ -198,9 +250,15 @@ ENTRY(_start)
 	}
 	ld r0, r0
 	ld sp, r1
+<<<<<<< HEAD
 	or r4, sp, r4
 	mtspr SPR_SYSTEM_SAVE_K_0, r4  /* save ksp0 + cpu */
 	addi sp, sp, -STACK_TOP_DELTA
+=======
+	shli r4, r4, CPU_SHIFT
+	bfins r4, sp, 0, CPU_SHIFT-1
+	mtspr SPR_SYSTEM_SAVE_K_0, r4  /* save ksp0 + cpu */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	  move lr, zero   /* stop backtraces in the called function */
 	  jr r0

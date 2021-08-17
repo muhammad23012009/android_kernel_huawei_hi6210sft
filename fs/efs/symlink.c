@@ -13,7 +13,11 @@
 
 static int efs_symlink_readpage(struct file *file, struct page *page)
 {
+<<<<<<< HEAD
 	char *link = kmap(page);
+=======
+	char *link = page_address(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct buffer_head * bh;
 	struct inode * inode = page->mapping->host;
 	efs_block_t size = inode->i_size;
@@ -39,12 +43,18 @@ static int efs_symlink_readpage(struct file *file, struct page *page)
 	}
 	link[size] = '\0';
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return 0;
 fail:
 	SetPageError(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return err;
 }

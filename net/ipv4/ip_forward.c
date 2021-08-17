@@ -39,17 +39,21 @@
 #include <net/route.h>
 #include <net/xfrm.h>
 
+<<<<<<< HEAD
 static bool ip_may_fragment(const struct sk_buff *skb)
 {
 	return unlikely((ip_hdr(skb)->frag_off & htons(IP_DF)) == 0) ||
 		skb->local_df;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static bool ip_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
 {
 	if (skb->len <= mtu)
 		return false;
 
+<<<<<<< HEAD
 	if (skb_is_gso(skb) && skb_gso_network_seglen(skb) <= mtu)
 		return false;
 
@@ -110,21 +114,65 @@ static int ip_forward_finish(struct sk_buff *skb)
 
 	IP_INC_STATS_BH(dev_net(skb_dst(skb)->dev), IPSTATS_MIB_OUTFORWDATAGRAMS);
 	IP_ADD_STATS_BH(dev_net(skb_dst(skb)->dev), IPSTATS_MIB_OUTOCTETS, skb->len);
+=======
+	if (unlikely((ip_hdr(skb)->frag_off & htons(IP_DF)) == 0))
+		return false;
+
+	/* original fragment exceeds mtu and DF is set */
+	if (unlikely(IPCB(skb)->frag_max_size > mtu))
+		return true;
+
+	if (skb->ignore_df)
+		return false;
+
+	if (skb_is_gso(skb) && skb_gso_validate_mtu(skb, mtu))
+		return false;
+
+	return true;
+}
+
+
+static int ip_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	struct ip_options *opt	= &(IPCB(skb)->opt);
+
+	__IP_INC_STATS(net, IPSTATS_MIB_OUTFORWDATAGRAMS);
+	__IP_ADD_STATS(net, IPSTATS_MIB_OUTOCTETS, skb->len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(opt->optlen))
 		ip_forward_options(skb);
 
+<<<<<<< HEAD
 	if (ip_gso_exceeds_dst_mtu(skb))
 		return ip_forward_finish_gso(skb);
 
 	return dst_output(skb);
+=======
+	return dst_output(net, sk, skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int ip_forward(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	struct iphdr *iph;	/* Our header */
 	struct rtable *rt;	/* Route we use */
 	struct ip_options *opt	= &(IPCB(skb)->opt);
+=======
+	u32 mtu;
+	struct iphdr *iph;	/* Our header */
+	struct rtable *rt;	/* Route we use */
+	struct ip_options *opt	= &(IPCB(skb)->opt);
+	struct net *net;
+
+	/* that should never happen */
+	if (skb->pkt_type != PACKET_HOST)
+		goto drop;
+
+	if (unlikely(skb->sk))
+		goto drop;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (skb_warn_if_lro(skb))
 		goto drop;
@@ -135,10 +183,15 @@ int ip_forward(struct sk_buff *skb)
 	if (IPCB(skb)->opt.router_alert && ip_call_ra_chain(skb))
 		return NET_RX_SUCCESS;
 
+<<<<<<< HEAD
 	if (skb->pkt_type != PACKET_HOST)
 		goto drop;
 
 	skb_forward_csum(skb);
+=======
+	skb_forward_csum(skb);
+	net = dev_net(skb->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *	According to the RFC, we must first decrease the TTL field. If
@@ -156,10 +209,19 @@ int ip_forward(struct sk_buff *skb)
 	if (opt->is_strictroute && rt->rt_uses_gateway)
 		goto sr_failed;
 
+<<<<<<< HEAD
 	if (!ip_may_fragment(skb) && ip_exceeds_mtu(skb, dst_mtu(&rt->dst))) {
 		IP_INC_STATS(dev_net(rt->dst.dev), IPSTATS_MIB_FRAGFAILS);
 		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
 			  htonl(dst_mtu(&rt->dst)));
+=======
+	IPCB(skb)->flags |= IPSKB_FORWARDED;
+	mtu = ip_dst_mtu_maybe_forward(&rt->dst, true);
+	if (ip_exceeds_mtu(skb, mtu)) {
+		IP_INC_STATS(net, IPSTATS_MIB_FRAGFAILS);
+		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
+			  htonl(mtu));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto drop;
 	}
 
@@ -181,8 +243,14 @@ int ip_forward(struct sk_buff *skb)
 
 	skb->priority = rt_tos2priority(iph->tos);
 
+<<<<<<< HEAD
 	return NF_HOOK(NFPROTO_IPV4, NF_INET_FORWARD, skb, skb->dev,
 		       rt->dst.dev, ip_forward_finish);
+=======
+	return NF_HOOK(NFPROTO_IPV4, NF_INET_FORWARD,
+		       net, NULL, skb, skb->dev, rt->dst.dev,
+		       ip_forward_finish);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 sr_failed:
 	/*
@@ -193,7 +261,11 @@ sr_failed:
 
 too_many_hops:
 	/* Tell the sender its packet died... */
+<<<<<<< HEAD
 	IP_INC_STATS_BH(dev_net(skb_dst(skb)->dev), IPSTATS_MIB_INHDRERRORS);
+=======
+	__IP_INC_STATS(net, IPSTATS_MIB_INHDRERRORS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	icmp_send(skb, ICMP_TIME_EXCEEDED, ICMP_EXC_TTL, 0);
 drop:
 	kfree_skb(skb);

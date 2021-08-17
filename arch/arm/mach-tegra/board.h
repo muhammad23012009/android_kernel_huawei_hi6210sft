@@ -23,6 +23,7 @@
 #define __MACH_TEGRA_BOARD_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 
 void tegra_assert_system_reset(char mode, const char *cmd);
 
@@ -53,6 +54,12 @@ int __init harmony_pcie_init(void);
 #else
 static inline int harmony_pcie_init(void) { return 0; }
 #endif
+=======
+#include <linux/reboot.h>
+
+void __init tegra_map_common_io(void);
+void __init tegra_init_irq(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init tegra_paz00_wifikill_init(void);
 

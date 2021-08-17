@@ -14,11 +14,14 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *  MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * With some changes from Kyösti Mälkki <kmalkki@cc.hut.fi> and
  * Frodo Looijaard <frodol@dds.nl>, and also from Martin Bailey
  * <mbailey@littlefeet-inc.com>
@@ -30,7 +33,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/i2c.h>
 #include <linux/i2c-algo-pcf.h>

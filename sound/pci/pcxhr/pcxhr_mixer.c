@@ -72,7 +72,12 @@ static int pcxhr_update_analog_audio_level(struct snd_pcxhr *chip,
 	rmh.cmd_len = 3;
 	err = pcxhr_send_msg(chip->mgr, &rmh);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_DEBUG "error update_analog_audio_level card(%d)"
+=======
+		dev_dbg(chip->card->dev,
+			"error update_analog_audio_level card(%d)"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   " is_capture(%d) err(%x)\n",
 			   chip->chip_idx, is_capture, err);
 		return -EINVAL;
@@ -284,7 +289,11 @@ static int pcxhr_update_playback_stream_level(struct snd_pcxhr* chip, int idx)
 
 	err = pcxhr_send_msg(chip->mgr, &rmh);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_DEBUG "error update_playback_stream_level "
+=======
+		dev_dbg(chip->card->dev, "error update_playback_stream_level "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   "card(%d) err(%x)\n", chip->chip_idx, err);
 		return -EINVAL;
 	}
@@ -335,7 +344,12 @@ static int pcxhr_update_audio_pipe_level(struct snd_pcxhr *chip,
 
 	err = pcxhr_send_msg(chip->mgr, &rmh);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_DEBUG "error update_audio_level(%d) err=%x\n",
+=======
+		dev_dbg(chip->card->dev,
+			"error update_audio_level(%d) err=%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   chip->chip_idx, err);
 		return -EINVAL;
 	}
@@ -658,6 +672,7 @@ static int pcxhr_audio_src_info(struct snd_kcontrol *kcontrol,
 		if (chip->mgr->board_has_mic)
 			i = 5;	/* Mic and MicroMix available */
 	}
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = i;
@@ -666,6 +681,9 @@ static int pcxhr_audio_src_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 		texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, i, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pcxhr_audio_src_get(struct snd_kcontrol *kcontrol,
@@ -754,6 +772,7 @@ static int pcxhr_clock_type_info(struct snd_kcontrol *kcontrol,
 		texts = textsPCXHR;
 		snd_BUG_ON(clock_items > (PCXHR_CLOCK_TYPE_MAX+1));
 	}
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = clock_items;
@@ -762,6 +781,9 @@ static int pcxhr_clock_type_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 		texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, clock_items, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pcxhr_clock_type_get(struct snd_kcontrol *kcontrol,
@@ -930,7 +952,11 @@ static int pcxhr_iec958_capture_byte(struct snd_pcxhr *chip,
 				temp |= 1;
 		}
 	}
+<<<<<<< HEAD
 	snd_printdd("read iec958 AES %d byte %d = 0x%x\n",
+=======
+	dev_dbg(chip->card->dev, "read iec958 AES %d byte %d = 0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    chip->chip_idx, aes_idx, temp);
 	*aes_bits = temp;
 	return 0;
@@ -992,7 +1018,12 @@ static int pcxhr_iec958_update_byte(struct snd_pcxhr *chip,
 			rmh.cmd[0] |= IO_NUM_REG_CUER;
 			rmh.cmd[1] = cmd;
 			rmh.cmd_len = 2;
+<<<<<<< HEAD
 			snd_printdd("write iec958 AES %d byte %d bit %d (cmd %x)\n",
+=======
+			dev_dbg(chip->card->dev,
+				"write iec958 AES %d byte %d bit %d (cmd %x)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    chip->chip_idx, aes_idx, i, cmd);
 			err = pcxhr_send_msg(chip->mgr, &rmh);
 			if (err)

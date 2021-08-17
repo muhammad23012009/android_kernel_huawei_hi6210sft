@@ -140,4 +140,8 @@ static int __init psw_init(void)
 {
 	return platform_add_devices(psw_devices, ARRAY_SIZE(psw_devices));
 }
+<<<<<<< HEAD
 module_init(psw_init);
+=======
+device_initcall(psw_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

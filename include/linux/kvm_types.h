@@ -28,6 +28,10 @@ struct kvm_run;
 struct kvm_userspace_memory_region;
 struct kvm_vcpu;
 struct kvm_vcpu_init;
+<<<<<<< HEAD
+=======
+struct kvm_memslots;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum kvm_mr_change;
 
@@ -52,6 +56,7 @@ typedef unsigned long  hva_t;
 typedef u64            hpa_t;
 typedef u64            hfn_t;
 
+<<<<<<< HEAD
 typedef hfn_t pfn_t;
 
 union kvm_ioapic_redirect_entry {
@@ -80,6 +85,9 @@ struct kvm_lapic_irq {
 	u32 shorthand;
 	u32 dest_id;
 };
+=======
+typedef hfn_t kvm_pfn_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct gfn_to_hva_cache {
 	u64 generation;

@@ -236,7 +236,11 @@ STUB_GET_NEXT_HIGH_MONO_COUNT(virt, id)
 STUB_RESET_SYSTEM(virt, id)
 
 void
+<<<<<<< HEAD
 efi_gettimeofday (struct timespec *ts)
+=======
+efi_gettimeofday (struct timespec64 *ts)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	efi_time_t tm;
 
@@ -245,7 +249,11 @@ efi_gettimeofday (struct timespec *ts)
 		return;
 	}
 
+<<<<<<< HEAD
 	ts->tv_sec = mktime(tm.year, tm.month, tm.day,
+=======
+	ts->tv_sec = mktime64(tm.year, tm.month, tm.day,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    tm.hour, tm.minute, tm.second);
 	ts->tv_nsec = tm.nanosecond;
 }
@@ -464,7 +472,10 @@ efi_map_pal_code (void)
 		 GRANULEROUNDDOWN((unsigned long) pal_vaddr),
 		 pte_val(pfn_pte(__pa(pal_vaddr) >> PAGE_SHIFT, PAGE_KERNEL)),
 		 IA64_GRANULE_SHIFT);
+<<<<<<< HEAD
 	paravirt_dv_serialize_data();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ia64_set_psr(psr);		/* restore psr */
 }
 
@@ -532,8 +543,11 @@ efi_init (void)
 	       efi.systab->hdr.revision >> 16,
 	       efi.systab->hdr.revision & 0xffff, vendor);
 
+<<<<<<< HEAD
 	set_bit(EFI_SYSTEM_TABLES, &efi.flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	palo_phys      = EFI_INVALID_TABLE_ADDR;
 
 	if (efi_config_init(arch_tables) != 0)
@@ -568,6 +582,10 @@ efi_init (void)
 		{
 			const char *unit;
 			unsigned long size;
+<<<<<<< HEAD
+=======
+			char buf[64];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			md = p;
 			size = md->num_pages << EFI_PAGE_SHIFT;
@@ -586,9 +604,16 @@ efi_init (void)
 				unit = "KB";
 			}
 
+<<<<<<< HEAD
 			printk("mem%02d: type=%2u, attr=0x%016lx, "
 			       "range=[0x%016lx-0x%016lx) (%4lu%s)\n",
 			       i, md->type, md->attribute, md->phys_addr,
+=======
+			printk("mem%02d: %s "
+			       "range=[0x%016lx-0x%016lx) (%4lu%s)\n",
+			       i, efi_md_typeattr_format(buf, sizeof(buf), md),
+			       md->phys_addr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       md->phys_addr + efi_md_size(md), size, unit);
 		}
 	}
@@ -965,7 +990,11 @@ efi_uart_console_only(void)
 /*
  * Look for the first granule aligned memory descriptor memory
  * that is big enough to hold EFI memory map. Make sure this
+<<<<<<< HEAD
  * descriptor is atleast granule sized so it does not get trimmed
+=======
+ * descriptor is at least granule sized so it does not get trimmed
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct kern_memdesc *
 find_memmap_space (void)
@@ -1091,11 +1120,14 @@ efi_memmap_init(u64 *s, u64 *e)
 		if (!is_memory_available(md))
 			continue;
 
+<<<<<<< HEAD
 #ifdef CONFIG_CRASH_DUMP
 		/* saved_max_pfn should ignore max_addr= command line arg */
 		if (saved_max_pfn < (efi_md_end(md) >> PAGE_SHIFT))
 			saved_max_pfn = (efi_md_end(md) >> PAGE_SHIFT);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Round ends inward to granule boundaries
 		 * Give trimmings to uncached allocator
@@ -1182,7 +1214,11 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 	efi_memory_desc_t *md;
 	u64 efi_desc_size;
 	char *name;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+	unsigned long flags, desc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	efi_map_start = __va(ia64_boot_param->efi_memmap);
 	efi_map_end   = efi_map_start + ia64_boot_param->efi_memmap_size;
@@ -1197,6 +1233,11 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 			continue;
 
 		flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+<<<<<<< HEAD
+=======
+		desc = IORES_DESC_NONE;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (md->type) {
 
 			case EFI_MEMORY_MAPPED_IO:
@@ -1211,14 +1252,27 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 				if (md->attribute & EFI_MEMORY_WP) {
 					name = "System ROM";
 					flags |= IORESOURCE_READONLY;
+<<<<<<< HEAD
 				} else if (md->attribute == EFI_MEMORY_UC)
 					name = "Uncached RAM";
 				else
 					name = "System RAM";
+=======
+				} else if (md->attribute == EFI_MEMORY_UC) {
+					name = "Uncached RAM";
+				} else {
+					name = "System RAM";
+					flags |= IORESOURCE_SYSRAM;
+				}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 
 			case EFI_ACPI_MEMORY_NVS:
 				name = "ACPI Non-volatile Storage";
+<<<<<<< HEAD
+=======
+				desc = IORES_DESC_ACPI_NV_STORAGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 
 			case EFI_UNUSABLE_MEMORY:
@@ -1226,6 +1280,14 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 				flags |= IORESOURCE_DISABLED;
 				break;
 
+<<<<<<< HEAD
+=======
+			case EFI_PERSISTENT_MEMORY:
+				name = "Persistent Memory";
+				desc = IORES_DESC_PERSISTENT_MEMORY;
+				break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			case EFI_RESERVED_TYPE:
 			case EFI_RUNTIME_SERVICES_CODE:
 			case EFI_RUNTIME_SERVICES_DATA:
@@ -1246,6 +1308,10 @@ efi_initialize_iomem_resources(struct resource *code_resource,
 		res->start = md->phys_addr;
 		res->end = md->phys_addr + efi_md_size(md) - 1;
 		res->flags = flags;
+<<<<<<< HEAD
+=======
+		res->desc = desc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (insert_resource(&iomem_resource, res) < 0)
 			kfree(res);

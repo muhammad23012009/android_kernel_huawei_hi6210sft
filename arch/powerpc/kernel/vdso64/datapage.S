@@ -16,6 +16,13 @@
 #include <asm/vdso.h>
 
 	.text
+<<<<<<< HEAD
+=======
+.global	__kernel_datapage_offset;
+__kernel_datapage_offset:
+	.long	0
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 V_FUNCTION_BEGIN(__get_datapage)
   .cfi_startproc
 	/* We don't want that exposed or overridable as we want other objects
@@ -27,6 +34,7 @@ V_FUNCTION_BEGIN(__get_datapage)
 	mflr	r0
   .cfi_register lr,r0
 
+<<<<<<< HEAD
 	bcl	20,31,1f
 	.global	__kernel_datapage_offset;
 __kernel_datapage_offset:
@@ -35,6 +43,15 @@ __kernel_datapage_offset:
 	mflr	r3
 	mtlr	r0
 	lwz	r0,0(r3)
+=======
+	bcl	20,31,data_page_branch
+data_page_branch:
+	mflr	r3
+	mtlr	r0
+	addi	r3, r3, __kernel_datapage_offset-data_page_branch
+	lwz	r0,0(r3)
+  .cfi_restore lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	add	r3,r0,r3
 	blr
   .cfi_endproc
@@ -60,7 +77,11 @@ V_FUNCTION_BEGIN(__kernel_get_syscall_map)
 	cmpldi	cr0,r4,0
 	crclr	cr0*4+so
 	beqlr
+<<<<<<< HEAD
 	li	r0,__NR_syscalls
+=======
+	li	r0,NR_syscalls
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stw	r0,0(r4)
 	blr
   .cfi_endproc

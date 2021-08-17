@@ -212,6 +212,7 @@ static int max8907_rtc_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int max8907_rtc_remove(struct platform_device *pdev)
 {
 	return 0;
@@ -224,6 +225,13 @@ static struct platform_driver max8907_rtc_driver = {
 	},
 	.probe = max8907_rtc_probe,
 	.remove = max8907_rtc_remove,
+=======
+static struct platform_driver max8907_rtc_driver = {
+	.driver = {
+		.name = "max8907-rtc",
+	},
+	.probe = max8907_rtc_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 module_platform_driver(max8907_rtc_driver);
 

@@ -19,10 +19,13 @@ obj-$(CONFIG_ARCH_OMAP16XX) += ocpi.o
 # Power Management
 obj-$(CONFIG_PM) += pm.o sleep.o
 
+<<<<<<< HEAD
 # DSP
 obj-$(CONFIG_OMAP_MBOX_FWK)	+= mailbox_mach.o
 mailbox_mach-objs		:= mailbox.o
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 i2c-omap-$(CONFIG_I2C_OMAP)		:= i2c.o
 obj-y					+= $(i2c-omap-m) $(i2c-omap-y)
 
@@ -41,7 +44,10 @@ obj-$(CONFIG_MACH_OMAP_FSAMPLE)		+= board-fsample.o board-nand.o
 obj-$(CONFIG_MACH_OMAP_OSK)		+= board-osk.o
 obj-$(CONFIG_MACH_OMAP_H3)		+= board-h3.o board-h3-mmc.o \
 					   board-nand.o
+<<<<<<< HEAD
 obj-$(CONFIG_MACH_VOICEBLUE)		+= board-voiceblue.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_MACH_OMAP_PALMTE)		+= board-palmte.o
 obj-$(CONFIG_MACH_OMAP_PALMZ71)		+= board-palmz71.o
 obj-$(CONFIG_MACH_OMAP_PALMTT)		+= board-palmtt.o

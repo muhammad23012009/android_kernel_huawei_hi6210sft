@@ -357,7 +357,11 @@ static int mthca_eq_int(struct mthca_dev *dev, struct mthca_eq *eq)
 			mthca_warn(dev, "Unhandled event %02x(%02x) on EQ %d\n",
 				   eqe->type, eqe->subtype, eq->eqn);
 			break;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		set_eqe_hw(eqe);
 		++eq->cons_index;

@@ -63,12 +63,20 @@ void clk_rate_table_build(struct clk *clk,
 		else
 			freq = clk->parent->rate * mult / div;
 
+<<<<<<< HEAD
 		freq_table[i].index = i;
+=======
+		freq_table[i].driver_data = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		freq_table[i].frequency = freq;
 	}
 
 	/* Termination entry */
+<<<<<<< HEAD
 	freq_table[i].index = i;
+=======
+	freq_table[i].driver_data = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	freq_table[i].frequency = CPUFREQ_TABLE_END;
 }
 
@@ -196,6 +204,7 @@ int clk_rate_table_find(struct clk *clk,
 			struct cpufreq_frequency_table *freq_table,
 			unsigned long rate)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; freq_table[i].frequency != CPUFREQ_TABLE_END; i++) {
@@ -207,6 +216,13 @@ int clk_rate_table_find(struct clk *clk,
 		if (freq == rate)
 			return i;
 	}
+=======
+	struct cpufreq_frequency_table *pos;
+
+	cpufreq_for_each_valid_entry(pos, freq_table)
+		if (pos->frequency == rate)
+			return pos - freq_table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return -ENOENT;
 }
@@ -475,6 +491,12 @@ void clk_enable_init_clocks(void)
 
 unsigned long clk_get_rate(struct clk *clk)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return clk->rate;
 }
 EXPORT_SYMBOL_GPL(clk_get_rate);
@@ -484,6 +506,12 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	int ret = -EOPNOTSUPP;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&clock_lock, flags);
 
 	if (likely(clk->ops && clk->ops->set_rate)) {
@@ -541,12 +569,24 @@ EXPORT_SYMBOL_GPL(clk_set_parent);
 
 struct clk *clk_get_parent(struct clk *clk)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return clk->parent;
 }
 EXPORT_SYMBOL_GPL(clk_get_parent);
 
 long clk_round_rate(struct clk *clk, unsigned long rate)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (likely(clk->ops && clk->ops->round_rate)) {
 		unsigned long flags, rounded;
 
@@ -561,6 +601,7 @@ long clk_round_rate(struct clk *clk, unsigned long rate)
 }
 EXPORT_SYMBOL_GPL(clk_round_rate);
 
+<<<<<<< HEAD
 long clk_round_parent(struct clk *clk, unsigned long target,
 		      unsigned long *best_freq, unsigned long *parent_freq,
 		      unsigned int div_min, unsigned int div_max)
@@ -653,6 +694,8 @@ long clk_round_parent(struct clk *clk, unsigned long target,
 }
 EXPORT_SYMBOL_GPL(clk_round_parent);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM
 static void clks_core_resume(void)
 {

@@ -6,7 +6,11 @@
  * Licensed under GPLv2 only
  */
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "at91rm9200.dtsi"
+=======
+#include "at91rm9200.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Phontech MPA 1600";
@@ -17,12 +21,20 @@
 	};
 
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
 
 		main_clock: clock@0 {
 			compatible = "atmel,osc", "fixed-clock";
+=======
+		slow_xtal {
+			clock-frequency = <32768>;
+		};
+
+		main_xtal {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-frequency = <18432000>;
 		};
 	};
@@ -53,7 +65,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	i2c@0 {
+=======
+	i2c-gpio-0 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = "okay";
 	};
 
@@ -62,7 +78,11 @@
 
 		monitor_mute {
 			label = "Monitor mute";
+<<<<<<< HEAD
 			gpios = <&pioC 1 1>;
+=======
+			gpios = <&pioC 1 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,code = <113>;
 		};
 	};

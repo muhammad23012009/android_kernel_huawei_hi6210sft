@@ -242,6 +242,11 @@ int cond_read_bool(struct policydb *p, struct hashtab *h, void *fp)
 		goto err;
 
 	len = le32_to_cpu(buf[2]);
+<<<<<<< HEAD
+=======
+	if (((len == 0) || (len == (u32)-1)))
+		goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = -ENOMEM;
 	key = kmalloc(len + 1, GFP_KERNEL);
@@ -403,6 +408,7 @@ static int cond_read_node(struct policydb *p, struct cond_node *node, void *fp)
 	int rc;
 	struct cond_expr *expr = NULL, *last = NULL;
 
+<<<<<<< HEAD
 	rc = next_entry(buf, fp, sizeof(u32));
 	if (rc)
 		return rc;
@@ -416,6 +422,16 @@ static int cond_read_node(struct policydb *p, struct cond_node *node, void *fp)
 
 	/* expr */
 	len = le32_to_cpu(buf[0]);
+=======
+	rc = next_entry(buf, fp, sizeof(u32) * 2);
+	if (rc)
+		goto err;
+
+	node->cur_state = le32_to_cpu(buf[0]);
+
+	/* expr */
+	len = le32_to_cpu(buf[1]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < len; i++) {
 		rc = next_entry(buf, fp, sizeof(u32) * 2);

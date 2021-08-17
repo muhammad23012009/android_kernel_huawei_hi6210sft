@@ -91,11 +91,14 @@ ENTRY(ftrace_caller)
 #endif /* CONFIG_DYNAMIC_FTRACE */
 	SAVE_REGS
 	swi	r15, r1, 0;
+<<<<<<< HEAD
 	/* MS: HAVE_FUNCTION_TRACE_MCOUNT_TEST begin of checking */
 	lwi	r5, r0, function_trace_stop;
 	bneid	r5, end;
 	nop;
 	/* MS: HAVE_FUNCTION_TRACE_MCOUNT_TEST end of checking */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 #ifndef CONFIG_DYNAMIC_FTRACE
 	lwi	r5, r0, ftrace_graph_return;

@@ -32,6 +32,11 @@ struct vnic_enet_config {
 	char devname[16];
 	u32 intr_timer_usec;
 	u16 loop_tag;
+<<<<<<< HEAD
+=======
+	u16 vf_rq_count;
+	u16 num_arfs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define VENETF_TSO		0x1	/* TSO enabled */

@@ -11,6 +11,7 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/time.h>
 #include <linux/slab.h>
@@ -27,6 +28,16 @@
 #include <linux/log2.h>
 #include <linux/hash.h>
 #include <linux/blkdev.h>
+=======
+#include <linux/pagemap.h>
+#include <linux/mpage.h>
+#include <linux/vfs.h>
+#include <linux/seq_file.h>
+#include <linux/parser.h>
+#include <linux/uio.h>
+#include <linux/blkdev.h>
+#include <linux/backing-dev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/unaligned.h>
 #include "fat.h"
 
@@ -35,11 +46,81 @@
 #define CONFIG_FAT_DEFAULT_IOCHARSET	""
 #endif
 
+<<<<<<< HEAD
 static int fat_default_codepage = CONFIG_FAT_DEFAULT_CODEPAGE;
 static char fat_default_iocharset[] = CONFIG_FAT_DEFAULT_IOCHARSET;
 
 
 static int fat_add_cluster(struct inode *inode)
+=======
+#define KB_IN_SECTORS 2
+
+/*
+ * A deserialized copy of the on-disk structure laid out in struct
+ * fat_boot_sector.
+ */
+struct fat_bios_param_block {
+	u16	fat_sector_size;
+	u8	fat_sec_per_clus;
+	u16	fat_reserved;
+	u8	fat_fats;
+	u16	fat_dir_entries;
+	u16	fat_sectors;
+	u16	fat_fat_length;
+	u32	fat_total_sect;
+
+	u8	fat16_state;
+	u32	fat16_vol_id;
+
+	u32	fat32_length;
+	u32	fat32_root_cluster;
+	u16	fat32_info_sector;
+	u8	fat32_state;
+	u32	fat32_vol_id;
+};
+
+static int fat_default_codepage = CONFIG_FAT_DEFAULT_CODEPAGE;
+static char fat_default_iocharset[] = CONFIG_FAT_DEFAULT_IOCHARSET;
+
+static struct fat_floppy_defaults {
+	unsigned nr_sectors;
+	unsigned sec_per_clus;
+	unsigned dir_entries;
+	unsigned media;
+	unsigned fat_length;
+} floppy_defaults[] = {
+{
+	.nr_sectors = 160 * KB_IN_SECTORS,
+	.sec_per_clus = 1,
+	.dir_entries = 64,
+	.media = 0xFE,
+	.fat_length = 1,
+},
+{
+	.nr_sectors = 180 * KB_IN_SECTORS,
+	.sec_per_clus = 1,
+	.dir_entries = 64,
+	.media = 0xFC,
+	.fat_length = 2,
+},
+{
+	.nr_sectors = 320 * KB_IN_SECTORS,
+	.sec_per_clus = 2,
+	.dir_entries = 112,
+	.media = 0xFF,
+	.fat_length = 1,
+},
+{
+	.nr_sectors = 360 * KB_IN_SECTORS,
+	.sec_per_clus = 2,
+	.dir_entries = 112,
+	.media = 0xFD,
+	.fat_length = 2,
+},
+};
+
+int fat_add_cluster(struct inode *inode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err, cluster;
 
@@ -61,10 +142,17 @@ static inline int __fat_get_block(struct inode *inode, sector_t iblock,
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	unsigned long mapped_blocks;
+<<<<<<< HEAD
 	sector_t phys;
 	int err, offset;
 
 	err = fat_bmap(inode, iblock, &phys, &mapped_blocks, create);
+=======
+	sector_t phys, last_block;
+	int err, offset;
+
+	err = fat_bmap(inode, iblock, &phys, &mapped_blocks, create, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 	if (phys) {
@@ -81,8 +169,19 @@ static inline int __fat_get_block(struct inode *inode, sector_t iblock,
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	offset = (unsigned long)iblock & (sbi->sec_per_clus - 1);
 	if (!offset) {
+=======
+	last_block = inode->i_blocks >> (sb->s_blocksize_bits - 9);
+	offset = (unsigned long)iblock & (sbi->sec_per_clus - 1);
+	/*
+	 * allocate a cluster according to the following.
+	 * 1) no more available blocks
+	 * 2) not part of fallocate region
+	 */
+	if (!offset && !(iblock < last_block)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* TODO: multiple cluster allocation would be desirable. */
 		err = fat_add_cluster(inode);
 		if (err)
@@ -94,7 +193,11 @@ static inline int __fat_get_block(struct inode *inode, sector_t iblock,
 	*max_blocks = min(mapped_blocks, *max_blocks);
 	MSDOS_I(inode)->mmu_private += *max_blocks << sb->s_blocksize_bits;
 
+<<<<<<< HEAD
 	err = fat_bmap(inode, iblock, &phys, &mapped_blocks, create);
+=======
+	err = fat_bmap(inode, iblock, &phys, &mapped_blocks, create, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 
@@ -147,7 +250,11 @@ static void fat_write_failed(struct address_space *mapping, loff_t to)
 	struct inode *inode = mapping->host;
 
 	if (to > inode->i_size) {
+<<<<<<< HEAD
 		truncate_pagecache(inode, to, inode->i_size);
+=======
+		truncate_pagecache(inode, inode->i_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fat_truncate_blocks(inode, inode->i_size);
 	}
 }
@@ -177,23 +284,39 @@ static int fat_write_end(struct file *file, struct address_space *mapping,
 	if (err < len)
 		fat_write_failed(mapping, pos + len);
 	if (!(err < 0) && !(MSDOS_I(inode)->i_attrs & ATTR_ARCH)) {
+<<<<<<< HEAD
 		inode->i_mtime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+		inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		MSDOS_I(inode)->i_attrs |= ATTR_ARCH;
 		mark_inode_dirty(inode);
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 static ssize_t fat_direct_IO(int rw, struct kiocb *iocb,
 			     const struct iovec *iov,
 			     loff_t offset, unsigned long nr_segs)
+=======
+static ssize_t fat_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct file *file = iocb->ki_filp;
 	struct address_space *mapping = file->f_mapping;
 	struct inode *inode = mapping->host;
+<<<<<<< HEAD
 	ssize_t ret;
 
 	if (rw == WRITE) {
+=======
+	size_t count = iov_iter_count(iter);
+	loff_t offset = iocb->ki_pos;
+	ssize_t ret;
+
+	if (iov_iter_rw(iter) == WRITE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * FIXME: blockdev_direct_IO() doesn't use ->write_begin(),
 		 * so we need to update the ->mmu_private to block boundary.
@@ -203,7 +326,11 @@ static ssize_t fat_direct_IO(int rw, struct kiocb *iocb,
 		 *
 		 * Return 0, and fallback to normal buffered write.
 		 */
+<<<<<<< HEAD
 		loff_t size = offset + iov_length(iov, nr_segs);
+=======
+		loff_t size = offset + count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (MSDOS_I(inode)->mmu_private < size)
 			return 0;
 	}
@@ -212,26 +339,79 @@ static ssize_t fat_direct_IO(int rw, struct kiocb *iocb,
 	 * FAT need to use the DIO_LOCKING for avoiding the race
 	 * condition of fat_get_block() and ->truncate().
 	 */
+<<<<<<< HEAD
 	ret = blockdev_direct_IO(rw, iocb, inode, iov, offset, nr_segs,
 				 fat_get_block);
 	if (ret < 0 && (rw & WRITE))
 		fat_write_failed(mapping, offset + iov_length(iov, nr_segs));
+=======
+	ret = blockdev_direct_IO(iocb, inode, iter, fat_get_block);
+	if (ret < 0 && iov_iter_rw(iter) == WRITE)
+		fat_write_failed(mapping, offset + count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int fat_get_block_bmap(struct inode *inode, sector_t iblock,
+		struct buffer_head *bh_result, int create)
+{
+	struct super_block *sb = inode->i_sb;
+	unsigned long max_blocks = bh_result->b_size >> inode->i_blkbits;
+	int err;
+	sector_t bmap;
+	unsigned long mapped_blocks;
+
+	BUG_ON(create != 0);
+
+	err = fat_bmap(inode, iblock, &bmap, &mapped_blocks, create, true);
+	if (err)
+		return err;
+
+	if (bmap) {
+		map_bh(bh_result, sb, bmap);
+		max_blocks = min(mapped_blocks, max_blocks);
+	}
+
+	bh_result->b_size = max_blocks << sb->s_blocksize_bits;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static sector_t _fat_bmap(struct address_space *mapping, sector_t block)
 {
 	sector_t blocknr;
 
 	/* fat_get_cluster() assumes the requested blocknr isn't truncated. */
 	down_read(&MSDOS_I(mapping->host)->truncate_lock);
+<<<<<<< HEAD
 	blocknr = generic_block_bmap(mapping, block, fat_get_block);
+=======
+	blocknr = generic_block_bmap(mapping, block, fat_get_block_bmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	up_read(&MSDOS_I(mapping->host)->truncate_lock);
 
 	return blocknr;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * fat_block_truncate_page() zeroes out a mapping from file offset `from'
+ * up to the end of the block which corresponds to `from'.
+ * This is required during truncate to physically zeroout the tail end
+ * of that block so it doesn't yield old data if the file is later grown.
+ * Also, avoid causing failure from fsx for cases of "data past EOF"
+ */
+int fat_block_truncate_page(struct inode *inode, loff_t from)
+{
+	return block_truncate_page(inode->i_mapping, from, fat_get_block);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct address_space_operations fat_aops = {
 	.readpage	= fat_readpage,
 	.readpages	= fat_readpages,
@@ -359,7 +539,11 @@ struct inode *fat_iget(struct super_block *sb, loff_t i_pos)
 
 static int is_exec(unsigned char *extension)
 {
+<<<<<<< HEAD
 	unsigned char *exe_extensions = "EXECOMBAT", *walk;
+=======
+	unsigned char exe_extensions[] = "EXECOMBAT", *walk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (walk = exe_extensions; *walk; walk += 3)
 		if (!strncmp(extension, walk, 3))
@@ -384,6 +568,27 @@ static int fat_calc_dir_size(struct inode *inode)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int fat_validate_dir(struct inode *dir)
+{
+	struct super_block *sb = dir->i_sb;
+
+	if (dir->i_nlink < 2) {
+		/* Directory should have "."/".." entries at least. */
+		fat_fs_error(sb, "corrupted directory (invalid entries)");
+		return -EIO;
+	}
+	if (MSDOS_I(dir)->i_start == 0 ||
+	    MSDOS_I(dir)->i_start == MSDOS_SB(sb)->root_cluster) {
+		/* Directory should point valid cluster. */
+		fat_fs_error(sb, "corrupted directory (invalid i_start)");
+		return -EIO;
+	}
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* doesn't deal with root inode */
 int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de)
 {
@@ -410,6 +615,13 @@ int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de)
 		MSDOS_I(inode)->mmu_private = inode->i_size;
 
 		set_nlink(inode, fat_subdirs(inode));
+<<<<<<< HEAD
+=======
+
+		error = fat_validate_dir(inode);
+		if (error < 0)
+			return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else { /* not a directory */
 		inode->i_generation |= 1;
 		inode->i_mode = fat_make_mode(sbi, de->attr,
@@ -488,6 +700,7 @@ out:
 
 EXPORT_SYMBOL_GPL(fat_build_inode);
 
+<<<<<<< HEAD
 static void fat_evict_inode(struct inode *inode)
 {
 	truncate_inode_pages(&inode->i_data, 0);
@@ -495,6 +708,45 @@ static void fat_evict_inode(struct inode *inode)
 		inode->i_size = 0;
 		fat_truncate_blocks(inode, 0);
 	}
+=======
+static int __fat_write_inode(struct inode *inode, int wait);
+
+static void fat_free_eofblocks(struct inode *inode)
+{
+	/* Release unwritten fallocated blocks on inode eviction. */
+	if ((inode->i_blocks << 9) >
+			round_up(MSDOS_I(inode)->mmu_private,
+				MSDOS_SB(inode->i_sb)->cluster_size)) {
+		int err;
+
+		fat_truncate_blocks(inode, MSDOS_I(inode)->mmu_private);
+		/* Fallocate results in updating the i_start/iogstart
+		 * for the zero byte file. So, make it return to
+		 * original state during evict and commit it to avoid
+		 * any corruption on the next access to the cluster
+		 * chain for the file.
+		 */
+		err = __fat_write_inode(inode, inode_needs_sync(inode));
+		if (err) {
+			fat_msg(inode->i_sb, KERN_WARNING, "Failed to "
+					"update on disk inode for unused "
+					"fallocated blocks, inode could be "
+					"corrupted. Please run fsck");
+		}
+
+	}
+}
+
+static void fat_evict_inode(struct inode *inode)
+{
+	truncate_inode_pages_final(&inode->i_data);
+	if (!inode->i_nlink) {
+		inode->i_size = 0;
+		fat_truncate_blocks(inode, 0);
+	} else
+		fat_free_eofblocks(inode);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	invalidate_inode_buffers(inode);
 	clear_inode(inode);
 	fat_cache_inval_inode(inode);
@@ -506,7 +758,11 @@ static void fat_set_state(struct super_block *sb,
 {
 	struct buffer_head *bh;
 	struct fat_boot_sector *b;
+<<<<<<< HEAD
 	struct msdos_sb_info *sbi = sb->s_fs_info;
+=======
+	struct msdos_sb_info *sbi = MSDOS_SB(sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* do not change any thing if mounted read only */
 	if ((sb->s_flags & MS_RDONLY) && !force)
@@ -548,6 +804,27 @@ static void fat_set_state(struct super_block *sb,
 	brelse(bh);
 }
 
+<<<<<<< HEAD
+=======
+static void fat_reset_iocharset(struct fat_mount_options *opts)
+{
+	if (opts->iocharset != fat_default_iocharset) {
+		/* Note: opts->iocharset can be NULL here */
+		kfree(opts->iocharset);
+		opts->iocharset = fat_default_iocharset;
+	}
+}
+
+static void delayed_free(struct rcu_head *p)
+{
+	struct msdos_sb_info *sbi = container_of(p, struct msdos_sb_info, rcu);
+	unload_nls(sbi->nls_disk);
+	unload_nls(sbi->nls_io);
+	fat_reset_iocharset(&sbi->options);
+	kfree(sbi);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void fat_put_super(struct super_block *sb)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
@@ -557,6 +834,7 @@ static void fat_put_super(struct super_block *sb)
 	iput(sbi->fsinfo_inode);
 	iput(sbi->fat_inode);
 
+<<<<<<< HEAD
 	unload_nls(sbi->nls_disk);
 	unload_nls(sbi->nls_io);
 
@@ -565,6 +843,9 @@ static void fat_put_super(struct super_block *sb)
 
 	sb->s_fs_info = NULL;
 	kfree(sbi);
+=======
+	call_rcu(&sbi->rcu, delayed_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct kmem_cache *fat_inode_cachep;
@@ -577,6 +858,16 @@ static struct inode *fat_alloc_inode(struct super_block *sb)
 		return NULL;
 
 	init_rwsem(&ei->truncate_lock);
+<<<<<<< HEAD
+=======
+	/* Zeroing to allow iput() even if partial initialized inode. */
+	ei->mmu_private = 0;
+	ei->i_start = 0;
+	ei->i_logstart = 0;
+	ei->i_attrs = 0;
+	ei->i_pos = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return &ei->vfs_inode;
 }
 
@@ -609,7 +900,11 @@ static int __init fat_init_inodecache(void)
 	fat_inode_cachep = kmem_cache_create("fat_inode_cache",
 					     sizeof(struct msdos_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     init_once);
 	if (fat_inode_cachep == NULL)
 		return -ENOMEM;
@@ -850,6 +1145,11 @@ static int fat_show_options(struct seq_file *m, struct dentry *root)
 		seq_puts(m, ",nfs=stale_rw");
 	if (opts->discard)
 		seq_puts(m, ",discard");
+<<<<<<< HEAD
+=======
+	if (opts->dos1xfloppy)
+		seq_puts(m, ",dos1xfloppy");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -864,7 +1164,11 @@ enum {
 	Opt_uni_xl_no, Opt_uni_xl_yes, Opt_nonumtail_no, Opt_nonumtail_yes,
 	Opt_obsolete, Opt_flush, Opt_tz_utc, Opt_rodir, Opt_err_cont,
 	Opt_err_panic, Opt_err_ro, Opt_discard, Opt_nfs, Opt_time_offset,
+<<<<<<< HEAD
 	Opt_nfs_stale_rw, Opt_nfs_nostale_ro, Opt_err,
+=======
+	Opt_nfs_stale_rw, Opt_nfs_nostale_ro, Opt_err, Opt_dos1xfloppy,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const match_table_t fat_tokens = {
@@ -897,6 +1201,10 @@ static const match_table_t fat_tokens = {
 	{Opt_nfs_stale_rw, "nfs"},
 	{Opt_nfs_stale_rw, "nfs=stale_rw"},
 	{Opt_nfs_nostale_ro, "nfs=nostale_ro"},
+<<<<<<< HEAD
+=======
+	{Opt_dos1xfloppy, "dos1xfloppy"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{Opt_obsolete, "conv=binary"},
 	{Opt_obsolete, "conv=text"},
 	{Opt_obsolete, "conv=auto"},
@@ -963,7 +1271,11 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 	opts->fs_fmask = opts->fs_dmask = current_umask();
 	opts->allow_utime = -1;
 	opts->codepage = fat_default_codepage;
+<<<<<<< HEAD
 	opts->iocharset = fat_default_iocharset;
+=======
+	fat_reset_iocharset(opts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (is_vfat) {
 		opts->shortname = VFAT_SFN_DISPLAY_WINNT|VFAT_SFN_CREATE_WIN95;
 		opts->rodir = 0;
@@ -973,7 +1285,11 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 	}
 	opts->name_check = 'n';
 	opts->quiet = opts->showexec = opts->sys_immutable = opts->dotsOK =  0;
+<<<<<<< HEAD
 	opts->utf8 = opts->unicode_xlate = 0;
+=======
+	opts->unicode_xlate = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	opts->numtail = 1;
 	opts->usefree = opts->nocase = 0;
 	opts->tz_set = 0;
@@ -981,6 +1297,11 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 	opts->errors = FAT_ERRORS_RO;
 	*debug = 0;
 
+<<<<<<< HEAD
+=======
+	opts->utf8 = IS_ENABLED(CONFIG_FAT_DEFAULT_UTF8) && is_vfat;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!options)
 		goto out;
 
@@ -1075,7 +1396,16 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 		case Opt_time_offset:
 			if (match_int(&args[0], &option))
 				return -EINVAL;
+<<<<<<< HEAD
 			if (option < -12 * 60 || option > 12 * 60)
+=======
+			/*
+			 * GMT+-12 zones may have DST corrections so at least
+			 * 13 hours difference is needed. Make the limit 24
+			 * just in case someone invents something unusual.
+			 */
+			if (option < -24 * 60 || option > 24 * 60)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return -EINVAL;
 			opts->tz_set = 1;
 			opts->time_offset = option;
@@ -1099,6 +1429,12 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 		case Opt_nfs_nostale_ro:
 			opts->nfs = FAT_NFS_NOSTALE_RO;
 			break;
+<<<<<<< HEAD
+=======
+		case Opt_dos1xfloppy:
+			opts->dos1xfloppy = 1;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* msdos specific */
 		case Opt_dots:
@@ -1110,8 +1446,12 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 
 		/* vfat specific */
 		case Opt_charset:
+<<<<<<< HEAD
 			if (opts->iocharset != fat_default_iocharset)
 				kfree(opts->iocharset);
+=======
+			fat_reset_iocharset(opts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			iocharset = match_strdup(&args[0]);
 			if (!iocharset)
 				return -ENOMEM;
@@ -1195,6 +1535,7 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void fat_dummy_inode_init(struct inode *inode)
 {
 	/* Initialize this dummy inode to work as no-op. */
@@ -1209,6 +1550,11 @@ static int fat_read_root(struct inode *inode)
 {
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
+=======
+static int fat_read_root(struct inode *inode)
+{
+	struct msdos_sb_info *sbi = MSDOS_SB(inode->i_sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int error;
 
 	MSDOS_I(inode)->i_pos = MSDOS_ROOT_INO;
@@ -1254,6 +1600,178 @@ static unsigned long calc_fat_clusters(struct super_block *sb)
 	return sbi->fat_length * sb->s_blocksize * 8 / sbi->fat_bits;
 }
 
+<<<<<<< HEAD
+=======
+static bool fat_bpb_is_zero(struct fat_boot_sector *b)
+{
+	if (get_unaligned_le16(&b->sector_size))
+		return false;
+	if (b->sec_per_clus)
+		return false;
+	if (b->reserved)
+		return false;
+	if (b->fats)
+		return false;
+	if (get_unaligned_le16(&b->dir_entries))
+		return false;
+	if (get_unaligned_le16(&b->sectors))
+		return false;
+	if (b->media)
+		return false;
+	if (b->fat_length)
+		return false;
+	if (b->secs_track)
+		return false;
+	if (b->heads)
+		return false;
+	return true;
+}
+
+static int fat_read_bpb(struct super_block *sb, struct fat_boot_sector *b,
+	int silent, struct fat_bios_param_block *bpb)
+{
+	int error = -EINVAL;
+
+	/* Read in BPB ... */
+	memset(bpb, 0, sizeof(*bpb));
+	bpb->fat_sector_size = get_unaligned_le16(&b->sector_size);
+	bpb->fat_sec_per_clus = b->sec_per_clus;
+	bpb->fat_reserved = le16_to_cpu(b->reserved);
+	bpb->fat_fats = b->fats;
+	bpb->fat_dir_entries = get_unaligned_le16(&b->dir_entries);
+	bpb->fat_sectors = get_unaligned_le16(&b->sectors);
+	bpb->fat_fat_length = le16_to_cpu(b->fat_length);
+	bpb->fat_total_sect = le32_to_cpu(b->total_sect);
+
+	bpb->fat16_state = b->fat16.state;
+	bpb->fat16_vol_id = get_unaligned_le32(b->fat16.vol_id);
+
+	bpb->fat32_length = le32_to_cpu(b->fat32.length);
+	bpb->fat32_root_cluster = le32_to_cpu(b->fat32.root_cluster);
+	bpb->fat32_info_sector = le16_to_cpu(b->fat32.info_sector);
+	bpb->fat32_state = b->fat32.state;
+	bpb->fat32_vol_id = get_unaligned_le32(b->fat32.vol_id);
+
+	/* Validate this looks like a FAT filesystem BPB */
+	if (!bpb->fat_reserved) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR,
+				"bogus number of reserved sectors");
+		goto out;
+	}
+	if (!bpb->fat_fats) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR, "bogus number of FAT structure");
+		goto out;
+	}
+
+	/*
+	 * Earlier we checked here that b->secs_track and b->head are nonzero,
+	 * but it turns out valid FAT filesystems can have zero there.
+	 */
+
+	if (!fat_valid_media(b->media)) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR, "invalid media value (0x%02x)",
+				(unsigned)b->media);
+		goto out;
+	}
+
+	if (!is_power_of_2(bpb->fat_sector_size)
+	    || (bpb->fat_sector_size < 512)
+	    || (bpb->fat_sector_size > 4096)) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR, "bogus logical sector size %u",
+			       (unsigned)bpb->fat_sector_size);
+		goto out;
+	}
+
+	if (!is_power_of_2(bpb->fat_sec_per_clus)) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR, "bogus sectors per cluster %u",
+				(unsigned)bpb->fat_sec_per_clus);
+		goto out;
+	}
+
+	if (bpb->fat_fat_length == 0 && bpb->fat32_length == 0) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR, "bogus number of FAT sectors");
+		goto out;
+	}
+
+	error = 0;
+
+out:
+	return error;
+}
+
+static int fat_read_static_bpb(struct super_block *sb,
+	struct fat_boot_sector *b, int silent,
+	struct fat_bios_param_block *bpb)
+{
+	static const char *notdos1x = "This doesn't look like a DOS 1.x volume";
+
+	struct fat_floppy_defaults *fdefaults = NULL;
+	int error = -EINVAL;
+	sector_t bd_sects;
+	unsigned i;
+
+	bd_sects = i_size_read(sb->s_bdev->bd_inode) / SECTOR_SIZE;
+
+	/* 16-bit DOS 1.x reliably wrote bootstrap short-jmp code */
+	if (b->ignored[0] != 0xeb || b->ignored[2] != 0x90) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR,
+				"%s; no bootstrapping code", notdos1x);
+		goto out;
+	}
+
+	/*
+	 * If any value in this region is non-zero, it isn't archaic
+	 * DOS.
+	 */
+	if (!fat_bpb_is_zero(b)) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR,
+				"%s; DOS 2.x BPB is non-zero", notdos1x);
+		goto out;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(floppy_defaults); i++) {
+		if (floppy_defaults[i].nr_sectors == bd_sects) {
+			fdefaults = &floppy_defaults[i];
+			break;
+		}
+	}
+
+	if (fdefaults == NULL) {
+		if (!silent)
+			fat_msg(sb, KERN_WARNING,
+				"This looks like a DOS 1.x volume, but isn't a recognized floppy size (%llu sectors)",
+				(u64)bd_sects);
+		goto out;
+	}
+
+	if (!silent)
+		fat_msg(sb, KERN_INFO,
+			"This looks like a DOS 1.x volume; assuming default BPB values");
+
+	memset(bpb, 0, sizeof(*bpb));
+	bpb->fat_sector_size = SECTOR_SIZE;
+	bpb->fat_sec_per_clus = fdefaults->sec_per_clus;
+	bpb->fat_reserved = 1;
+	bpb->fat_fats = 2;
+	bpb->fat_dir_entries = fdefaults->dir_entries;
+	bpb->fat_sectors = fdefaults->nr_sectors;
+	bpb->fat_fat_length = fdefaults->fat_length;
+
+	error = 0;
+
+out:
+	return error;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Read the super block of an MS-DOS FS.
  */
@@ -1263,19 +1781,30 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 	struct inode *root_inode = NULL, *fat_inode = NULL;
 	struct inode *fsinfo_inode = NULL;
 	struct buffer_head *bh;
+<<<<<<< HEAD
 	struct fat_boot_sector *b;
 	struct fat_boot_bsx *bsx;
+=======
+	struct fat_bios_param_block bpb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct msdos_sb_info *sbi;
 	u16 logical_sector_size;
 	u32 total_sectors, total_clusters, fat_clusters, rootdir_sectors;
 	int debug;
+<<<<<<< HEAD
 	unsigned int media;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long error;
 	char buf[50];
 
 	/*
 	 * GFP_KERNEL is ok here, because while we do hold the
+<<<<<<< HEAD
 	 * supeblock lock, memory pressure can't call back into
+=======
+	 * superblock lock, memory pressure can't call back into
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * the filesystem, since we're only just about to mount
 	 * it and have no inodes etc active!
 	 */
@@ -1306,6 +1835,7 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 		goto out_fail;
 	}
 
+<<<<<<< HEAD
 	b = (struct fat_boot_sector *) bh->b_data;
 	if (!b->reserved) {
 		if (!silent)
@@ -1360,46 +1890,102 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 	}
 	if (logical_sector_size > sb->s_blocksize) {
 		brelse(bh);
+=======
+	error = fat_read_bpb(sb, (struct fat_boot_sector *)bh->b_data, silent,
+		&bpb);
+	if (error == -EINVAL && sbi->options.dos1xfloppy)
+		error = fat_read_static_bpb(sb,
+			(struct fat_boot_sector *)bh->b_data, silent, &bpb);
+	brelse(bh);
+
+	if (error == -EINVAL)
+		goto out_invalid;
+	else if (error)
+		goto out_fail;
+
+	logical_sector_size = bpb.fat_sector_size;
+	sbi->sec_per_clus = bpb.fat_sec_per_clus;
+
+	error = -EIO;
+	if (logical_sector_size < sb->s_blocksize) {
+		fat_msg(sb, KERN_ERR, "logical sector size too small for device"
+		       " (logical sector size = %u)", logical_sector_size);
+		goto out_fail;
+	}
+
+	if (logical_sector_size > sb->s_blocksize) {
+		struct buffer_head *bh_resize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!sb_set_blocksize(sb, logical_sector_size)) {
 			fat_msg(sb, KERN_ERR, "unable to set blocksize %u",
 			       logical_sector_size);
 			goto out_fail;
 		}
+<<<<<<< HEAD
 		bh = sb_bread(sb, 0);
 		if (bh == NULL) {
+=======
+
+		/* Verify that the larger boot sector is fully readable */
+		bh_resize = sb_bread(sb, 0);
+		if (bh_resize == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			fat_msg(sb, KERN_ERR, "unable to read boot sector"
 			       " (logical sector size = %lu)",
 			       sb->s_blocksize);
 			goto out_fail;
 		}
+<<<<<<< HEAD
 		b = (struct fat_boot_sector *) bh->b_data;
+=======
+		brelse(bh_resize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_init(&sbi->s_lock);
 	sbi->cluster_size = sb->s_blocksize * sbi->sec_per_clus;
 	sbi->cluster_bits = ffs(sbi->cluster_size) - 1;
+<<<<<<< HEAD
 	sbi->fats = b->fats;
 	sbi->fat_bits = 0;		/* Don't know yet */
 	sbi->fat_start = le16_to_cpu(b->reserved);
 	sbi->fat_length = le16_to_cpu(b->fat_length);
+=======
+	sbi->fats = bpb.fat_fats;
+	sbi->fat_bits = 0;		/* Don't know yet */
+	sbi->fat_start = bpb.fat_reserved;
+	sbi->fat_length = bpb.fat_fat_length;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sbi->root_cluster = 0;
 	sbi->free_clusters = -1;	/* Don't know yet */
 	sbi->free_clus_valid = 0;
 	sbi->prev_free = FAT_START_ENT;
 	sb->s_maxbytes = 0xffffffff;
 
+<<<<<<< HEAD
 	if (!sbi->fat_length && b->fat32.length) {
+=======
+	if (!sbi->fat_length && bpb.fat32_length) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct fat_boot_fsinfo *fsinfo;
 		struct buffer_head *fsinfo_bh;
 
 		/* Must be FAT32 */
 		sbi->fat_bits = 32;
+<<<<<<< HEAD
 		sbi->fat_length = le32_to_cpu(b->fat32.length);
 		sbi->root_cluster = le32_to_cpu(b->fat32.root_cluster);
 
 		/* MC - if info_sector is 0, don't multiply by 0 */
 		sbi->fsinfo_sector = le16_to_cpu(b->fat32.info_sector);
+=======
+		sbi->fat_length = bpb.fat32_length;
+		sbi->root_cluster = bpb.fat32_root_cluster;
+
+		/* MC - if info_sector is 0, don't multiply by 0 */
+		sbi->fsinfo_sector = bpb.fat32_info_sector;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (sbi->fsinfo_sector == 0)
 			sbi->fsinfo_sector = 1;
 
@@ -1407,12 +1993,18 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 		if (fsinfo_bh == NULL) {
 			fat_msg(sb, KERN_ERR, "bread failed, FSINFO block"
 			       " (sector = %lu)", sbi->fsinfo_sector);
+<<<<<<< HEAD
 			brelse(bh);
 			goto out_fail;
 		}
 
 		bsx = (struct fat_boot_bsx *)(bh->b_data + FAT32_BSX_OFFSET);
 
+=======
+			goto out_fail;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fsinfo = (struct fat_boot_fsinfo *)fsinfo_bh->b_data;
 		if (!IS_FSINFO(fsinfo)) {
 			fat_msg(sb, KERN_WARNING, "Invalid FSINFO signature: "
@@ -1428,6 +2020,7 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 		}
 
 		brelse(fsinfo_bh);
+<<<<<<< HEAD
 	} else {
 		bsx = (struct fat_boot_bsx *)(bh->b_data + FAT16_BSX_OFFSET);
 	}
@@ -1435,26 +2028,49 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 	/* interpret volume ID as a little endian 32 bit integer */
 	sbi->vol_id = (((u32)bsx->vol_id[0]) | ((u32)bsx->vol_id[1] << 8) |
 		((u32)bsx->vol_id[2] << 16) | ((u32)bsx->vol_id[3] << 24));
+=======
+	}
+
+	/* interpret volume ID as a little endian 32 bit integer */
+	if (sbi->fat_bits == 32)
+		sbi->vol_id = bpb.fat32_vol_id;
+	else /* fat 16 or 12 */
+		sbi->vol_id = bpb.fat16_vol_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sbi->dir_per_block = sb->s_blocksize / sizeof(struct msdos_dir_entry);
 	sbi->dir_per_block_bits = ffs(sbi->dir_per_block) - 1;
 
 	sbi->dir_start = sbi->fat_start + sbi->fats * sbi->fat_length;
+<<<<<<< HEAD
 	sbi->dir_entries = get_unaligned_le16(&b->dir_entries);
 	if (sbi->dir_entries & (sbi->dir_per_block - 1)) {
 		if (!silent)
 			fat_msg(sb, KERN_ERR, "bogus directory-entries per block"
 			       " (%u)", sbi->dir_entries);
 		brelse(bh);
+=======
+	sbi->dir_entries = bpb.fat_dir_entries;
+	if (sbi->dir_entries & (sbi->dir_per_block - 1)) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR, "bogus number of directory entries"
+			       " (%u)", sbi->dir_entries);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_invalid;
 	}
 
 	rootdir_sectors = sbi->dir_entries
 		* sizeof(struct msdos_dir_entry) / sb->s_blocksize;
 	sbi->data_start = sbi->dir_start + rootdir_sectors;
+<<<<<<< HEAD
 	total_sectors = get_unaligned_le16(&b->sectors);
 	if (total_sectors == 0)
 		total_sectors = le32_to_cpu(b->total_sect);
+=======
+	total_sectors = bpb.fat_sectors;
+	if (total_sectors == 0)
+		total_sectors = bpb.fat_total_sect;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	total_clusters = (total_sectors - sbi->data_start) / sbi->sec_per_clus;
 
@@ -1463,9 +2079,15 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 
 	/* some OSes set FAT_STATE_DIRTY and clean it on unmount. */
 	if (sbi->fat_bits == 32)
+<<<<<<< HEAD
 		sbi->dirty = b->fat32.state & FAT_STATE_DIRTY;
 	else /* fat 16 or 12 */
 		sbi->dirty = b->fat16.state & FAT_STATE_DIRTY;
+=======
+		sbi->dirty = bpb.fat32_state & FAT_STATE_DIRTY;
+	else /* fat 16 or 12 */
+		sbi->dirty = bpb.fat16_state & FAT_STATE_DIRTY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check that FAT table does not overflow */
 	fat_clusters = calc_fat_clusters(sb);
@@ -1474,7 +2096,10 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 		if (!silent)
 			fat_msg(sb, KERN_ERR, "count of clusters too big (%u)",
 			       total_clusters);
+<<<<<<< HEAD
 		brelse(bh);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_invalid;
 	}
 
@@ -1487,8 +2112,11 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 	if (sbi->prev_free < FAT_START_ENT)
 		sbi->prev_free = FAT_START_ENT;
 
+<<<<<<< HEAD
 	brelse(bh);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* set up enough so that it can read an inode */
 	fat_hash_init(sb);
 	dir_hash_init(sb);
@@ -1524,13 +2152,19 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 	fat_inode = new_inode(sb);
 	if (!fat_inode)
 		goto out_fail;
+<<<<<<< HEAD
 	fat_dummy_inode_init(fat_inode);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sbi->fat_inode = fat_inode;
 
 	fsinfo_inode = new_inode(sb);
 	if (!fsinfo_inode)
 		goto out_fail;
+<<<<<<< HEAD
 	fat_dummy_inode_init(fsinfo_inode);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fsinfo_inode->i_ino = MSDOS_FSINFO_INO;
 	sbi->fsinfo_inode = fsinfo_inode;
 	insert_inode_hash(fsinfo_inode);
@@ -1577,8 +2211,12 @@ out_fail:
 		iput(fat_inode);
 	unload_nls(sbi->nls_io);
 	unload_nls(sbi->nls_disk);
+<<<<<<< HEAD
 	if (sbi->options.iocharset != fat_default_iocharset)
 		kfree(sbi->options.iocharset);
+=======
+	fat_reset_iocharset(&sbi->options);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sb->s_fs_info = NULL;
 	kfree(sbi);
 	return error;

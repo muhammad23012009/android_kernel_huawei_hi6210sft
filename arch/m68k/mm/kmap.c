@@ -27,9 +27,15 @@
 
 /*
  * For 040/060 we can use the virtual memory area like other architectures,
+<<<<<<< HEAD
  * but for 020/030 we want to use early termination page descriptor and we
  * can't mix this with normal page descriptors, so we have to copy that code
  * (mm/vmalloc.c) and return appriorate aligned addresses.
+=======
+ * but for 020/030 we want to use early termination page descriptors and we
+ * can't mix this with normal page descriptors, so we have to copy that code
+ * (mm/vmalloc.c) and return appropriately aligned addresses.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifdef CPU_M68040_OR_M68060_ONLY
@@ -88,7 +94,12 @@ static inline void free_io_area(void *addr)
 	for (p = &iolist ; (tmp = *p) ; p = &tmp->next) {
 		if (tmp->addr == addr) {
 			*p = tmp->next;
+<<<<<<< HEAD
 			__iounmap(tmp->addr, tmp->size);
+=======
+			/* remove gap added in get_io_area() */
+			__iounmap(tmp->addr, tmp->size - IO_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kfree(tmp);
 			return;
 		}
@@ -224,7 +235,11 @@ void __iomem *__ioremap(unsigned long physaddr, unsigned long size, int cachefla
 EXPORT_SYMBOL(__ioremap);
 
 /*
+<<<<<<< HEAD
  * Unmap a ioremap()ed region again
+=======
+ * Unmap an ioremap()ed region again
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void iounmap(void __iomem *addr)
 {
@@ -241,8 +256,13 @@ EXPORT_SYMBOL(iounmap);
 
 /*
  * __iounmap unmaps nearly everything, so be careful
+<<<<<<< HEAD
  * it doesn't free currently pointer/page tables anymore but it
  * wans't used anyway and might be added later.
+=======
+ * Currently it doesn't free pointer/page tables anymore but this
+ * wasn't used anyway and might be added later.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void __iounmap(void *addr, unsigned long size)
 {

@@ -16,6 +16,14 @@
 
 #include "lkc.h"
 
+<<<<<<< HEAD
+=======
+struct conf_printer {
+	void (*print_symbol)(FILE *, struct symbol *, const char *, void *);
+	void (*print_comment)(FILE *, const char *, void *);
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void conf_warning(const char *fmt, ...)
 	__attribute__ ((format (printf, 1, 2)));
 
@@ -59,6 +67,10 @@ static void conf_message(const char *fmt, ...)
 	va_start(ap, fmt);
 	if (conf_message_callback)
 		conf_message_callback(fmt, ap);
+<<<<<<< HEAD
+=======
+	va_end(ap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const char *conf_get_configname(void)
@@ -140,7 +152,13 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 			sym->flags |= def_flags;
 			break;
 		}
+<<<<<<< HEAD
 		conf_warning("symbol value '%s' invalid for %s", p, sym->name);
+=======
+		if (def != S_DEF_AUTO)
+			conf_warning("symbol value '%s' invalid for %s",
+				     p, sym->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	case S_OTHER:
 		if (*p != '"') {
@@ -161,7 +179,12 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 			memmove(p2, p2 + 1, strlen(p2));
 		}
 		if (!p2) {
+<<<<<<< HEAD
 			conf_warning("invalid string found");
+=======
+			if (def != S_DEF_AUTO)
+				conf_warning("invalid string found");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 1;
 		}
 		/* fall through */
@@ -172,7 +195,13 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 			sym->def[def].val = strdup(p);
 			sym->flags |= def_flags;
 		} else {
+<<<<<<< HEAD
 			conf_warning("symbol value '%s' invalid for %s", p, sym->name);
+=======
+			if (def != S_DEF_AUTO)
+				conf_warning("symbol value '%s' invalid for %s",
+					     p, sym->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 1;
 		}
 		break;
@@ -256,11 +285,16 @@ int conf_read_simple(const char *name, int def)
 		if (in)
 			goto load;
 		sym_add_change_count(1);
+<<<<<<< HEAD
 		if (!sym_defconfig_list) {
 			if (modules_sym)
 				sym_calc_value(modules_sym);
 			return 1;
 		}
+=======
+		if (!sym_defconfig_list)
+			return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		for_all_defaults(sym_defconfig_list, prop) {
 			if (expr_calc_value(prop->visible.expr) == no ||
@@ -367,7 +401,13 @@ load:
 				continue;
 		} else {
 			if (line[0] != '\r' && line[0] != '\n')
+<<<<<<< HEAD
 				conf_warning("unexpected data");
+=======
+				conf_warning("unexpected data: %.*s",
+					     (int)strcspn(line, "\r\n"), line);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 setsym:
@@ -393,9 +433,12 @@ setsym:
 	}
 	free(line);
 	fclose(in);
+<<<<<<< HEAD
 
 	if (modules_sym)
 		sym_calc_value(modules_sym);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -406,8 +449,17 @@ int conf_read(const char *name)
 
 	sym_set_change_count(0);
 
+<<<<<<< HEAD
 	if (conf_read_simple(name, S_DEF_USER))
 		return 1;
+=======
+	if (conf_read_simple(name, S_DEF_USER)) {
+		sym_calc_value(modules_sym);
+		return 1;
+	}
+
+	sym_calc_value(modules_sym);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
@@ -734,7 +786,11 @@ int conf_write(const char *name)
 	struct menu *menu;
 	const char *basename;
 	const char *str;
+<<<<<<< HEAD
 	char dirname[PATH_MAX+1], tmpname[PATH_MAX+1], newname[PATH_MAX+1];
+=======
+	char dirname[PATH_MAX+1], tmpname[PATH_MAX+22], newname[PATH_MAX+8];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *env;
 
 	dirname[0] = 0;
@@ -838,6 +894,10 @@ static int conf_split_config(void)
 
 	name = conf_get_autoconfig_name();
 	conf_read_simple(name, S_DEF_AUTO);
+<<<<<<< HEAD
+=======
+	sym_calc_value(modules_sym);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (chdir("include/config"))
 		return 1;
@@ -1040,7 +1100,11 @@ void conf_set_changed_callback(void (*fn)(void))
 	conf_changed_callback = fn;
 }
 
+<<<<<<< HEAD
 static void randomize_choice_values(struct symbol *csym)
+=======
+static bool randomize_choice_values(struct symbol *csym)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct property *prop;
 	struct symbol *sym;
@@ -1053,7 +1117,11 @@ static void randomize_choice_values(struct symbol *csym)
 	 * In both cases stop.
 	 */
 	if (csym->curr.tri != yes)
+<<<<<<< HEAD
 		return;
+=======
+		return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	prop = sym_get_choice_prop(csym);
 
@@ -1077,10 +1145,21 @@ static void randomize_choice_values(struct symbol *csym)
 		else {
 			sym->def[S_DEF_USER].tri = no;
 		}
+<<<<<<< HEAD
+=======
+		sym->flags |= SYMBOL_DEF_USER;
+		/* clear VALID to get value calculated */
+		sym->flags &= ~SYMBOL_VALID;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	csym->flags |= SYMBOL_DEF_USER;
 	/* clear VALID to get value calculated */
 	csym->flags &= ~(SYMBOL_VALID);
+<<<<<<< HEAD
+=======
+
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void set_all_choice_values(struct symbol *csym)
@@ -1103,7 +1182,11 @@ void set_all_choice_values(struct symbol *csym)
 	csym->flags &= ~(SYMBOL_VALID | SYMBOL_NEED_SET_CHOICE_VALUES);
 }
 
+<<<<<<< HEAD
 void conf_set_all_new_symbols(enum conf_def_mode mode)
+=======
+bool conf_set_all_new_symbols(enum conf_def_mode mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct symbol *sym, *csym;
 	int i, cnt, pby, pty, ptm;	/* pby: probability of boolean  = y
@@ -1151,6 +1234,10 @@ void conf_set_all_new_symbols(enum conf_def_mode mode)
 			exit( 1 );
 		}
 	}
+<<<<<<< HEAD
+=======
+	bool has_changed = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_all_symbols(i, sym) {
 		if (sym_has_value(sym) || (sym->flags & SYMBOL_VALID))
@@ -1158,6 +1245,10 @@ void conf_set_all_new_symbols(enum conf_def_mode mode)
 		switch (sym_get_type(sym)) {
 		case S_BOOLEAN:
 		case S_TRISTATE:
+<<<<<<< HEAD
+=======
+			has_changed = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			switch (mode) {
 			case def_yes:
 				sym->def[S_DEF_USER].tri = yes;
@@ -1166,7 +1257,14 @@ void conf_set_all_new_symbols(enum conf_def_mode mode)
 				sym->def[S_DEF_USER].tri = mod;
 				break;
 			case def_no:
+<<<<<<< HEAD
 				sym->def[S_DEF_USER].tri = no;
+=======
+				if (sym->flags & SYMBOL_ALLNOCONFIG_Y)
+					sym->def[S_DEF_USER].tri = yes;
+				else
+					sym->def[S_DEF_USER].tri = no;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			case def_random:
 				sym->def[S_DEF_USER].tri = no;
@@ -1216,6 +1314,17 @@ void conf_set_all_new_symbols(enum conf_def_mode mode)
 
 		sym_calc_value(csym);
 		if (mode == def_random)
+<<<<<<< HEAD
 			randomize_choice_values(csym);
 	}
+=======
+			has_changed |= randomize_choice_values(csym);
+		else {
+			set_all_choice_values(csym);
+			has_changed = true;
+		}
+	}
+
+	return has_changed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

@@ -12,11 +12,19 @@
 #include <mach/irq.h>
 
 /* init functions only */
+<<<<<<< HEAD
 extern int __init init_arch_irq(void);
 extern void init_exception_vectors(void);
 extern void __init program_IAR(void);
 #ifdef init_mach_irq
 extern void __init init_mach_irq(void);
+=======
+extern int init_arch_irq(void);
+extern void init_exception_vectors(void);
+extern void program_IAR(void);
+#ifdef init_mach_irq
+extern void init_mach_irq(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 # define init_mach_irq()
 #endif
@@ -60,7 +68,12 @@ extern void bfin_internal_mask_irq(unsigned int irq);
 extern void bfin_internal_unmask_irq(unsigned int irq);
 
 struct irq_desc;
+<<<<<<< HEAD
 extern void bfin_demux_mac_status_irq(unsigned int, struct irq_desc *);
 extern void bfin_demux_gpio_irq(unsigned int, struct irq_desc *);
+=======
+extern void bfin_demux_mac_status_irq(struct irq_desc *);
+extern void bfin_demux_gpio_irq(struct irq_desc *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

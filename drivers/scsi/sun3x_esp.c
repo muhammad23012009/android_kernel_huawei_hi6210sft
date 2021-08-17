@@ -12,9 +12,15 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 
 #include <asm/sun3x.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+
+#include <asm/sun3x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/dma.h>
 #include <asm/dvma.h>
 
@@ -233,7 +239,13 @@ static int esp_sun3x_probe(struct platform_device *dev)
 	if (!esp->command_block)
 		goto fail_unmap_regs_dma;
 
+<<<<<<< HEAD
 	host->irq = platform_get_irq(dev, 0);
+=======
+	host->irq = err = platform_get_irq(dev, 0);
+	if (err < 0)
+		goto fail_unmap_command_block;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = request_irq(host->irq, scsi_esp_intr, IRQF_SHARED,
 			  "SUN3X ESP", esp);
 	if (err < 0)
@@ -295,7 +307,10 @@ static struct platform_driver esp_sun3x_driver = {
 	.remove         = esp_sun3x_remove,
 	.driver = {
 		.name   = "sun3x_esp",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

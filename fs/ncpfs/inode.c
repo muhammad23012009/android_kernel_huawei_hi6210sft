@@ -9,6 +9,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 
 #include <asm/uaccess.h>
@@ -80,7 +85,11 @@ static int init_inodecache(void)
 	ncp_inode_cachep = kmem_cache_create("ncp_inode_cache",
 					     sizeof(struct ncp_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     init_once);
 	if (ncp_inode_cachep == NULL)
 		return -ENOMEM;
@@ -133,7 +142,11 @@ void ncp_update_inode(struct inode *inode, struct ncp_entry_info *nwinfo)
 	NCP_FINFO(inode)->access = nwinfo->access;
 	memcpy(NCP_FINFO(inode)->file_handle, nwinfo->file_handle,
 			sizeof(nwinfo->file_handle));
+<<<<<<< HEAD
 	DPRINTK("ncp_update_inode: updated %s, volnum=%d, dirent=%u\n",
+=======
+	ncp_dbg(1, "updated %s, volnum=%d, dirent=%u\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nwinfo->i.entryName, NCP_FINFO(inode)->volNumber,
 		NCP_FINFO(inode)->dirEntNum);
 }
@@ -141,8 +154,12 @@ void ncp_update_inode(struct inode *inode, struct ncp_entry_info *nwinfo)
 static void ncp_update_dates(struct inode *inode, struct nw_info_struct *nwi)
 {
 	/* NFS namespace mode overrides others if it's set. */
+<<<<<<< HEAD
 	DPRINTK(KERN_DEBUG "ncp_update_dates_and_mode: (%s) nfs.mode=0%o\n",
 		nwi->entryName, nwi->nfs.mode);
+=======
+	ncp_dbg(1, "(%s) nfs.mode=0%o\n", nwi->entryName, nwi->nfs.mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (nwi->nfs.mode) {
 		/* XXX Security? */
 		inode->i_mode = nwi->nfs.mode;
@@ -230,7 +247,11 @@ static void ncp_set_attr(struct inode *inode, struct ncp_entry_info *nwinfo)
 	
 	ncp_update_attrs(inode, nwinfo);
 
+<<<<<<< HEAD
 	DDPRINTK("ncp_read_inode: inode->i_mode = %u\n", inode->i_mode);
+=======
+	ncp_dbg(2, "inode->i_mode = %u\n", inode->i_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	set_nlink(inode, 1);
 	inode->i_uid = server->m.uid;
@@ -243,8 +264,12 @@ static void ncp_set_attr(struct inode *inode, struct ncp_entry_info *nwinfo)
 #if defined(CONFIG_NCPFS_EXTRAS) || defined(CONFIG_NCPFS_NFS_NS)
 static const struct inode_operations ncp_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.setattr	= ncp_notify_change,
 };
 #endif
@@ -258,7 +283,11 @@ ncp_iget(struct super_block *sb, struct ncp_entry_info *info)
 	struct inode *inode;
 
 	if (info == NULL) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ncp_iget: info is NULL\n");
+=======
+		pr_err("%s: info is NULL\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 
@@ -266,7 +295,10 @@ ncp_iget(struct super_block *sb, struct ncp_entry_info *info)
 	if (inode) {
 		atomic_set(&NCP_FINFO(inode)->opened, info->opened);
 
+<<<<<<< HEAD
 		inode->i_mapping->backing_dev_info = sb->s_bdi;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode->i_ino = info->ino;
 		ncp_set_attr(inode, info);
 		if (S_ISREG(inode->i_mode)) {
@@ -283,6 +315,10 @@ ncp_iget(struct super_block *sb, struct ncp_entry_info *info)
 #if defined(CONFIG_NCPFS_EXTRAS) || defined(CONFIG_NCPFS_NFS_NS)
 		} else if (S_ISLNK(inode->i_mode)) {
 			inode->i_op = &ncp_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+			inode_nohighmem(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			inode->i_data.a_ops = &ncp_symlink_aops;
 #endif
 		} else {
@@ -290,23 +326,39 @@ ncp_iget(struct super_block *sb, struct ncp_entry_info *info)
 		}
 		insert_inode_hash(inode);
 	} else
+<<<<<<< HEAD
 		printk(KERN_ERR "ncp_iget: iget failed!\n");
+=======
+		pr_err("%s: iget failed!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return inode;
 }
 
 static void
 ncp_evict_inode(struct inode *inode)
 {
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
 	clear_inode(inode);
 
 	if (S_ISDIR(inode->i_mode)) {
 		DDPRINTK("ncp_evict_inode: put directory %ld\n", inode->i_ino);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+	clear_inode(inode);
+
+	if (S_ISDIR(inode->i_mode)) {
+		ncp_dbg(2, "put directory %ld\n", inode->i_ino);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (ncp_make_closed(inode) != 0) {
 		/* We can't do anything but complain. */
+<<<<<<< HEAD
 		printk(KERN_ERR "ncp_evict_inode: could not close\n");
+=======
+		pr_err("%s: could not close\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -404,6 +456,7 @@ static int ncp_parse_options(struct ncp_mount_data_kernel *data, char *options) 
 		switch (optval) {
 			case 'u':
 				data->uid = make_kuid(current_user_ns(), optint);
+<<<<<<< HEAD
 				if (!uid_valid(data->uid))
 					goto err;
 				break;
@@ -416,6 +469,26 @@ static int ncp_parse_options(struct ncp_mount_data_kernel *data, char *options) 
 				data->mounted_uid = make_kuid(current_user_ns(), optint);
 				if (!uid_valid(data->mounted_uid))
 					goto err;
+=======
+				if (!uid_valid(data->uid)) {
+					ret = -EINVAL;
+					goto err;
+				}
+				break;
+			case 'g':
+				data->gid = make_kgid(current_user_ns(), optint);
+				if (!gid_valid(data->gid)) {
+					ret = -EINVAL;
+					goto err;
+				}
+				break;
+			case 'o':
+				data->mounted_uid = make_kuid(current_user_ns(), optint);
+				if (!uid_valid(data->mounted_uid)) {
+					ret = -EINVAL;
+					goto err;
+				}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			case 'm':
 				data->file_mode = optint;
@@ -463,9 +536,13 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 {
 	struct ncp_mount_data_kernel data;
 	struct ncp_server *server;
+<<<<<<< HEAD
 	struct file *ncp_filp;
 	struct inode *root_inode;
 	struct inode *sock_inode;
+=======
+	struct inode *root_inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct socket *sock;
 	int error;
 	int default_bufsize;
@@ -534,6 +611,7 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 	if (!uid_valid(data.mounted_uid) || !uid_valid(data.uid) ||
 	    !gid_valid(data.gid))
 		goto out;
+<<<<<<< HEAD
 	error = -EBADF;
 	ncp_filp = fget(data.ncp_fd);
 	if (!ncp_filp)
@@ -546,6 +624,12 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 	if (!sock)
 		goto out_fput;
 		
+=======
+	sock = sockfd_lookup(data.ncp_fd, &error);
+	if (!sock)
+		goto out;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sock->type == SOCK_STREAM)
 		default_bufsize = 0xF000;
 	else
@@ -563,6 +647,7 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 	server = NCP_SBP(sb);
 	memset(server, 0, sizeof(*server));
 
+<<<<<<< HEAD
 	error = bdi_setup_and_register(&server->bdi, "ncpfs", BDI_CAP_MAP_COPY);
 	if (error)
 		goto out_fput;
@@ -588,6 +673,22 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 		if (info_sock->type != SOCK_STREAM)
 			goto out_fput2;
 		server->info_sock = info_sock;
+=======
+	error = bdi_setup_and_register(&server->bdi, "ncpfs");
+	if (error)
+		goto out_fput;
+
+	server->ncp_sock = sock;
+	
+	if (data.info_fd != -1) {
+		struct socket *info_sock = sockfd_lookup(data.info_fd, &error);
+		if (!info_sock)
+			goto out_bdi;
+		server->info_sock = info_sock;
+		error = -EBADFD;
+		if (info_sock->type != SOCK_STREAM)
+			goto out_fput2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 /*	server->lock = 0;	*/
@@ -615,7 +716,11 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 	   now because of PATH_MAX changes.. */
 	if (server->m.time_out < 1) {
 		server->m.time_out = 10;
+<<<<<<< HEAD
 		printk(KERN_INFO "You need to recompile your ncpfs utils..\n");
+=======
+		pr_info("You need to recompile your ncpfs utils..\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	server->m.time_out = server->m.time_out * HZ / 100;
 	server->m.file_mode = (server->m.file_mode & S_IRWXUGO) | S_IFREG;
@@ -676,7 +781,11 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 	ncp_unlock_server(server);
 	if (error < 0)
 		goto out_rxbuf;
+<<<<<<< HEAD
 	DPRINTK("ncp_fill_super: NCP_SBP(sb) = %x\n", (int) NCP_SBP(sb));
+=======
+	ncp_dbg(1, "NCP_SBP(sb) = %p\n", NCP_SBP(sb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = -EMSGSIZE;	/* -EREMOTESIDEINCOMPATIBLE */
 #ifdef CONFIG_NCPFS_PACKET_SIGNING
@@ -704,7 +813,11 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
 	if (ncp_negotiate_buffersize(server, default_bufsize,
   				     &(server->buffer_size)) != 0)
 		goto out_disconnect;
+<<<<<<< HEAD
 	DPRINTK("ncpfs: bufsize = %d\n", server->buffer_size);
+=======
+	ncp_dbg(1, "bufsize = %d\n", server->buffer_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(&finfo, 0, sizeof(finfo));
 	finfo.i.attributes	= aDIR;
@@ -733,7 +846,11 @@ static int ncp_fill_super(struct super_block *sb, void *raw_data, int silent)
         root_inode = ncp_iget(sb, &finfo);
         if (!root_inode)
 		goto out_disconnect;
+<<<<<<< HEAD
 	DPRINTK("ncp_fill_super: root vol=%d\n", NCP_FINFO(root_inode)->volNumber);
+=======
+	ncp_dbg(1, "root vol=%d\n", NCP_FINFO(root_inode)->volNumber);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sb->s_root = d_make_root(root_inode);
         if (!sb->s_root)
 		goto out_disconnect;
@@ -759,6 +876,7 @@ out_nls:
 	mutex_destroy(&server->root_setup_lock);
 	mutex_destroy(&server->mutex);
 out_fput2:
+<<<<<<< HEAD
 	if (server->info_filp)
 		fput(server->info_filp);
 out_bdi:
@@ -770,6 +888,14 @@ out_fput:
 	 * it doesn't perform proper unlocking.
 	 */
 	fput(ncp_filp);
+=======
+	if (server->info_sock)
+		sockfd_put(server->info_sock);
+out_bdi:
+	bdi_destroy(&server->bdi);
+out_fput:
+	sockfd_put(sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	put_pid(data.wdog_pid);
 	sb->s_fs_info = NULL;
@@ -777,6 +903,20 @@ out:
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+static void delayed_free(struct rcu_head *p)
+{
+	struct ncp_server *server = container_of(p, struct ncp_server, rcu);
+#ifdef CONFIG_NCPFS_NLS
+	/* unload the NLS charsets */
+	unload_nls(server->nls_vol);
+	unload_nls(server->nls_io);
+#endif /* CONFIG_NCPFS_NLS */
+	kfree(server);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ncp_put_super(struct super_block *sb)
 {
 	struct ncp_server *server = NCP_SBP(sb);
@@ -787,18 +927,27 @@ static void ncp_put_super(struct super_block *sb)
 
 	ncp_stop_tasks(server);
 
+<<<<<<< HEAD
 #ifdef CONFIG_NCPFS_NLS
 	/* unload the NLS charsets */
 	unload_nls(server->nls_vol);
 	unload_nls(server->nls_io);
 #endif /* CONFIG_NCPFS_NLS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_destroy(&server->rcv.creq_mutex);
 	mutex_destroy(&server->root_setup_lock);
 	mutex_destroy(&server->mutex);
 
+<<<<<<< HEAD
 	if (server->info_filp)
 		fput(server->info_filp);
 	fput(server->ncp_filp);
+=======
+	if (server->info_sock)
+		sockfd_put(server->info_sock);
+	sockfd_put(server->ncp_sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kill_pid(server->m.wdog_pid, SIGTERM, 1);
 	put_pid(server->m.wdog_pid);
 
@@ -808,8 +957,12 @@ static void ncp_put_super(struct super_block *sb)
 	vfree(server->rxbuf);
 	vfree(server->txbuf);
 	vfree(server->packet);
+<<<<<<< HEAD
 	sb->s_fs_info = NULL;
 	kfree(server);
+=======
+	call_rcu(&server->rcu, delayed_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ncp_statfs(struct dentry *dentry, struct kstatfs *buf)
@@ -827,7 +980,11 @@ static int ncp_statfs(struct dentry *dentry, struct kstatfs *buf)
 	if (!d) {
 		goto dflt;
 	}
+<<<<<<< HEAD
 	i = d->d_inode;
+=======
+	i = d_inode(d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!i) {
 		goto dflt;
 	}
@@ -880,7 +1037,11 @@ dflt:;
 
 int ncp_notify_change(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int result = 0;
 	__le32 info_mask;
 	struct nw_modify_dos_info info;
@@ -892,10 +1053,21 @@ int ncp_notify_change(struct dentry *dentry, struct iattr *attr)
 	if (!server)	/* How this could happen? */
 		goto out;
 
+<<<<<<< HEAD
 	/* ageing the dentry to force validation */
 	ncp_age_dentry(server, dentry);
 
 	result = inode_change_ok(inode, attr);
+=======
+	result = -EPERM;
+	if (IS_DEADDIR(d_inode(dentry)))
+		goto out;
+
+	/* ageing the dentry to force validation */
+	ncp_age_dentry(server, dentry);
+
+	result = setattr_prepare(dentry, attr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result < 0)
 		goto out;
 
@@ -970,8 +1142,12 @@ int ncp_notify_change(struct dentry *dentry, struct iattr *attr)
 	if ((attr->ia_valid & ATTR_SIZE) != 0) {
 		int written;
 
+<<<<<<< HEAD
 		DPRINTK("ncpfs: trying to change size to %ld\n",
 			attr->ia_size);
+=======
+		ncp_dbg(1, "trying to change size to %llu\n", attr->ia_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if ((result = ncp_make_open(inode, O_WRONLY)) < 0) {
 			result = -EACCES;
@@ -1057,7 +1233,11 @@ MODULE_ALIAS_FS("ncpfs");
 static int __init init_ncp_fs(void)
 {
 	int err;
+<<<<<<< HEAD
 	DPRINTK("ncpfs: init_ncp_fs called\n");
+=======
+	ncp_dbg(1, "called\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = init_inodecache();
 	if (err)
@@ -1074,7 +1254,11 @@ out1:
 
 static void __exit exit_ncp_fs(void)
 {
+<<<<<<< HEAD
 	DPRINTK("ncpfs: exit_ncp_fs called\n");
+=======
+	ncp_dbg(1, "called\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unregister_filesystem(&ncp_fs_type);
 	destroy_inodecache();
 }

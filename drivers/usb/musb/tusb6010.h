@@ -12,6 +12,7 @@
 #ifndef __TUSB6010_H__
 #define __TUSB6010_H__
 
+<<<<<<< HEAD
 extern u8 tusb_get_revision(struct musb *musb);
 
 #ifdef CONFIG_USB_TUSB6010
@@ -26,6 +27,8 @@ extern u8 tusb_get_revision(struct musb *musb);
 #define tusb_dma_omap()			0
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* VLYNQ control register. 32-bit at offset 0x000 */
 #define TUSB_VLYNQ_CTRL			0x004
 

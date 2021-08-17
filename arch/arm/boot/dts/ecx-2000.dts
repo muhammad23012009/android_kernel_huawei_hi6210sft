@@ -85,6 +85,15 @@
 				<1 10 0xf08>;
 		};
 
+<<<<<<< HEAD
+=======
+		memory-controller@fff00000 {
+			compatible = "calxeda,ecx-2000-ddr-ctrl";
+			reg = <0xfff00000 0x1000>;
+			interrupts = <0 91 4>;
+		};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		intc: interrupt-controller@fff11000 {
 			compatible = "arm,cortex-a15-gic";
 			#interrupt-cells = <3>;

@@ -22,20 +22,38 @@
 
 #include "hd29l2_priv.h"
 
+<<<<<<< HEAD
+=======
+#define HD29L2_MAX_LEN (3)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* write multiple registers */
 static int hd29l2_wr_regs(struct hd29l2_priv *priv, u8 reg, u8 *val, int len)
 {
 	int ret;
+<<<<<<< HEAD
 	u8 buf[2 + len];
+=======
+	u8 buf[2 + HD29L2_MAX_LEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct i2c_msg msg[1] = {
 		{
 			.addr = priv->cfg.i2c_addr,
 			.flags = 0,
+<<<<<<< HEAD
 			.len = sizeof(buf),
+=======
+			.len = 2 + len,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.buf = buf,
 		}
 	};
 
+<<<<<<< HEAD
+=======
+	if (len > HD29L2_MAX_LEN)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buf[0] = 0x00;
 	buf[1] = reg;
 	memcpy(&buf[2], val, len);
@@ -118,7 +136,11 @@ static int hd29l2_wr_reg_mask(struct hd29l2_priv *priv, u8 reg, u8 val, u8 mask)
 }
 
 /* read single register with mask */
+<<<<<<< HEAD
 int hd29l2_rd_reg_mask(struct hd29l2_priv *priv, u8 reg, u8 *val, u8 mask)
+=======
+static int hd29l2_rd_reg_mask(struct hd29l2_priv *priv, u8 reg, u8 *val, u8 mask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret, i;
 	u8 tmp;
@@ -207,7 +229,11 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int hd29l2_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int hd29l2_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	struct hd29l2_priv *priv = fe->demodulator_priv;
@@ -556,11 +582,19 @@ static int hd29l2_get_frontend_algo(struct dvb_frontend *fe)
 	return DVBFE_ALGO_CUSTOM;
 }
 
+<<<<<<< HEAD
 static int hd29l2_get_frontend(struct dvb_frontend *fe)
 {
 	int ret;
 	struct hd29l2_priv *priv = fe->demodulator_priv;
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
+=======
+static int hd29l2_get_frontend(struct dvb_frontend *fe,
+			       struct dtv_frontend_properties *c)
+{
+	int ret;
+	struct hd29l2_priv *priv = fe->demodulator_priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 buf[3];
 	u32 if_ctl;
 	char *str_constellation, *str_code_rate, *str_constellation_code_rate,

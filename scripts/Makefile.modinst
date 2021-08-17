@@ -18,7 +18,16 @@ __modinst: $(modules)
 
 # Don't stop modules_install if we can't sign external modules.
 quiet_cmd_modules_install = INSTALL $@
+<<<<<<< HEAD
       cmd_modules_install = mkdir -p $(2); cp $@ $(2) ; $(mod_strip_cmd) $(2)/$(notdir $@) ; $(mod_sign_cmd) $(2)/$(notdir $@) $(patsubst %,|| true,$(KBUILD_EXTMOD))
+=======
+      cmd_modules_install = \
+    mkdir -p $(2) ; \
+    cp $@ $(2) ; \
+    $(mod_strip_cmd) $(2)/$(notdir $@) ; \
+    $(mod_sign_cmd) $(2)/$(notdir $@) $(patsubst %,|| true,$(KBUILD_EXTMOD)) && \
+    $(mod_compress_cmd) $(2)/$(notdir $@)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Modules built outside the kernel source tree go into extra by default
 INSTALL_MOD_DIR ?= extra
@@ -31,6 +40,10 @@ $(modules):
 
 
 # Declare the contents of the .PHONY variable as phony.  We keep that
+<<<<<<< HEAD
 # information in a variable se we can use it in if_changed and friends.
+=======
+# information in a variable so we can use it in if_changed and friends.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .PHONY: $(PHONY)

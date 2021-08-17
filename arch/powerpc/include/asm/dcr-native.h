@@ -24,6 +24,10 @@
 
 #include <linux/spinlock.h>
 #include <asm/cputable.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct {
 	unsigned int base;
@@ -31,7 +35,11 @@ typedef struct {
 
 static inline bool dcr_map_ok_native(dcr_host_native_t host)
 {
+<<<<<<< HEAD
 	return 1;
+=======
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define dcr_map_native(dev, dcr_n, dcr_c) \
@@ -64,8 +72,13 @@ static inline void mtdcrx(unsigned int reg, unsigned int val)
 #define mfdcr(rn)						\
 	({unsigned int rval;					\
 	if (__builtin_constant_p(rn) && rn < 1024)		\
+<<<<<<< HEAD
 		asm volatile("mfdcr %0," __stringify(rn)	\
 		              : "=r" (rval));			\
+=======
+		asm volatile("mfdcr %0, %1" : "=r" (rval)	\
+			      : "n" (rn));			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (likely(cpu_has_feature(CPU_FTR_INDEXED_DCR)))	\
 		rval = mfdcrx(rn);				\
 	else							\
@@ -75,8 +88,13 @@ static inline void mtdcrx(unsigned int reg, unsigned int val)
 #define mtdcr(rn, v)						\
 do {								\
 	if (__builtin_constant_p(rn) && rn < 1024)		\
+<<<<<<< HEAD
 		asm volatile("mtdcr " __stringify(rn) ",%0"	\
 			      : : "r" (v)); 			\
+=======
+		asm volatile("mtdcr %0, %1"			\
+			      : : "n" (rn), "r" (v));		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (likely(cpu_has_feature(CPU_FTR_INDEXED_DCR)))	\
 		mtdcrx(rn, v);					\
 	else							\

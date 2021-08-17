@@ -81,7 +81,11 @@ static void ivtv_alsa_announce_pcm_data(struct snd_ivtv_card *itvsc,
 	int period_elapsed = 0;
 	int length;
 
+<<<<<<< HEAD
 	dprintk("ivtv alsa announce ptr=%p data=%p num_bytes=%zd\n", itvsc,
+=======
+	dprintk("ivtv alsa announce ptr=%p data=%p num_bytes=%zu\n", itvsc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pcm_data, num_bytes);
 
 	substream = itvsc->capture_pcm_substream;
@@ -167,7 +171,11 @@ static int snd_ivtv_pcm_capture_open(struct snd_pcm_substream *substream)
 
 	s = &itv->streams[IVTV_ENC_STREAM_TYPE_PCM];
 
+<<<<<<< HEAD
 	v4l2_fh_init(&item.fh, s->vdev);
+=======
+	v4l2_fh_init(&item.fh, &s->vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	item.itv = itv;
 	item.type = s->type;
 
@@ -318,7 +326,11 @@ static struct page *snd_pcm_get_vmalloc_page(struct snd_pcm_substream *subs,
 	return vmalloc_to_page(pageptr);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ivtv_pcm_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_ivtv_pcm_capture_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= snd_ivtv_pcm_capture_open,
 	.close		= snd_ivtv_pcm_capture_close,
 	.ioctl		= snd_ivtv_pcm_ioctl,

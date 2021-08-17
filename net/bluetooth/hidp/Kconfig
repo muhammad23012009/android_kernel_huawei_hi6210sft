@@ -1,6 +1,10 @@
 config BT_HIDP
 	tristate "HIDP protocol support"
+<<<<<<< HEAD
 	depends on BT && INPUT
+=======
+	depends on BT_BREDR && INPUT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select HID
 	help
 	  HIDP (Human Interface Device Protocol) is a transport layer

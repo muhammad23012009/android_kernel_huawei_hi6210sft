@@ -31,8 +31,11 @@ struct acx_header;
 
 int wl1271_cmd_send(struct wl1271 *wl, u16 id, void *buf, size_t len,
 		    size_t res_len);
+<<<<<<< HEAD
 int wlcore_cmd_send_failsafe(struct wl1271 *wl, u16 id, void *buf, size_t len,
 			     size_t res_len, unsigned long valid_rets);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wl12xx_cmd_role_enable(struct wl1271 *wl, u8 *addr, u8 role_type,
 			   u8 *role_id);
 int wl12xx_cmd_role_disable(struct wl1271 *wl, u8 *role_id);
@@ -42,10 +45,18 @@ int wl12xx_cmd_role_start_ap(struct wl1271 *wl, struct wl12xx_vif *wlvif);
 int wl12xx_cmd_role_stop_ap(struct wl1271 *wl, struct wl12xx_vif *wlvif);
 int wl12xx_cmd_role_start_ibss(struct wl1271 *wl, struct wl12xx_vif *wlvif);
 int wl12xx_start_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+<<<<<<< HEAD
 		     enum ieee80211_band band, int channel);
 int wl12xx_stop_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif);
 int wl1271_cmd_test(struct wl1271 *wl, void *buf, size_t buf_len, u8 answer);
 int wl1271_cmd_interrogate(struct wl1271 *wl, u16 id, void *buf, size_t len);
+=======
+		     enum nl80211_band band, int channel);
+int wl12xx_stop_dev(struct wl1271 *wl, struct wl12xx_vif *wlvif);
+int wl1271_cmd_test(struct wl1271 *wl, void *buf, size_t buf_len, u8 answer);
+int wl1271_cmd_interrogate(struct wl1271 *wl, u16 id, void *buf,
+			   size_t cmd_len, size_t res_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wl1271_cmd_configure(struct wl1271 *wl, u16 id, void *buf, size_t len);
 int wlcore_cmd_configure_failsafe(struct wl1271 *wl, u16 id, void *buf,
 				  size_t len, unsigned long valid_rets);
@@ -63,7 +74,12 @@ int wl1271_cmd_build_ps_poll(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 int wl12xx_cmd_build_probe_req(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 			       u8 role_id, u8 band,
 			       const u8 *ssid, size_t ssid_len,
+<<<<<<< HEAD
 			       const u8 *ie, size_t ie_len, bool sched_scan);
+=======
+			       const u8 *ie, size_t ie_len, const u8 *common_ie,
+			       size_t common_ie_len, bool sched_scan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct sk_buff *wl1271_cmd_build_ap_probe_req(struct wl1271 *wl,
 					      struct wl12xx_vif *wlvif,
 					      struct sk_buff *skb);
@@ -83,6 +99,7 @@ int wl1271_cmd_set_ap_key(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 int wl12xx_cmd_set_peer_state(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 			      u8 hlid);
 int wl12xx_roc(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 role_id,
+<<<<<<< HEAD
 	       enum ieee80211_band band, u8 channel);
 int wl12xx_croc(struct wl1271 *wl, u8 role_id);
 int wl12xx_cmd_add_peer(struct wl1271 *wl, struct wl12xx_vif *wlvif,
@@ -91,6 +108,19 @@ int wl12xx_cmd_remove_peer(struct wl1271 *wl, u8 hlid);
 void wlcore_set_pending_regdomain_ch(struct wl1271 *wl, u16 channel,
 				     enum ieee80211_band band);
 int wlcore_cmd_regdomain_config_locked(struct wl1271 *wl);
+=======
+	       enum nl80211_band band, u8 channel);
+int wl12xx_croc(struct wl1271 *wl, u8 role_id);
+int wl12xx_cmd_add_peer(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+			struct ieee80211_sta *sta, u8 hlid);
+int wl12xx_cmd_remove_peer(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+			   u8 hlid);
+void wlcore_set_pending_regdomain_ch(struct wl1271 *wl, u16 channel,
+				     enum nl80211_band band);
+int wlcore_cmd_regdomain_config_locked(struct wl1271 *wl);
+int wlcore_cmd_generic_cfg(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+			   u8 feature, u8 enable, u8 value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wl12xx_cmd_config_fwlog(struct wl1271 *wl);
 int wl12xx_cmd_start_fwlog(struct wl1271 *wl);
 int wl12xx_cmd_stop_fwlog(struct wl1271 *wl);
@@ -104,6 +134,10 @@ int wl12xx_allocate_link(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 void wl12xx_free_link(struct wl1271 *wl, struct wl12xx_vif *wlvif, u8 *hlid);
 int wlcore_cmd_wait_for_event_or_timeout(struct wl1271 *wl,
 					 u32 mask, bool *timeout);
+<<<<<<< HEAD
+=======
+u8 wlcore_get_native_channel_type(u8 nl_channel_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum wl1271_commands {
 	CMD_INTERROGATE	= 1, /* use this to read information elements */
@@ -167,6 +201,17 @@ enum wl1271_commands {
 
 	/* start of 18xx specific commands */
 	CMD_DFS_CHANNEL_CONFIG		= 60,
+<<<<<<< HEAD
+=======
+	CMD_SMART_CONFIG_START		= 61,
+	CMD_SMART_CONFIG_STOP		= 62,
+	CMD_SMART_CONFIG_SET_GROUP_KEY	= 63,
+
+	CMD_CAC_START			= 64,
+	CMD_CAC_STOP			= 65,
+	CMD_DFS_MASTER_RESTART		= 66,
+	CMD_DFS_RADAR_DETECTION_DEBUG	= 67,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	MAX_COMMAND_ID = 0xFFFF,
 };
@@ -205,7 +250,11 @@ enum cmd_templ {
 #define WL1271_COMMAND_TIMEOUT     2000
 #define WL1271_CMD_TEMPL_DFLT_SIZE 252
 #define WL1271_CMD_TEMPL_MAX_SIZE  512
+<<<<<<< HEAD
 #define WL1271_EVENT_TIMEOUT       1500
+=======
+#define WL1271_EVENT_TIMEOUT       5000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct wl1271_cmd_header {
 	__le16 id;
@@ -593,6 +642,11 @@ struct wl12xx_cmd_add_peer {
 	u8 sp_len;
 	u8 wmm;
 	u8 session_id;
+<<<<<<< HEAD
+=======
+	u8 role_id;
+	u8 padding[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 struct wl12xx_cmd_remove_peer {
@@ -601,7 +655,11 @@ struct wl12xx_cmd_remove_peer {
 	u8 hlid;
 	u8 reason_opcode;
 	u8 send_deauth_flag;
+<<<<<<< HEAD
 	u8 padding1;
+=======
+	u8 role_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 /*
@@ -612,7 +670,10 @@ struct wl12xx_cmd_remove_peer {
  */
 enum wl12xx_fwlogger_log_mode {
 	WL12XX_FWLOG_CONTINUOUS,
+<<<<<<< HEAD
 	WL12XX_FWLOG_ON_DEMAND
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Include/exclude timestamps from the log messages */
@@ -636,6 +697,24 @@ struct wl12xx_cmd_regdomain_dfs_config {
 
 	__le32 ch_bit_map1;
 	__le32 ch_bit_map2;
+<<<<<<< HEAD
+=======
+	u8 dfs_region;
+	u8 padding[3];
+} __packed;
+
+enum wlcore_generic_cfg_feature {
+	WLCORE_CFG_FEATURE_RADAR_DEBUG = 2,
+};
+
+struct wlcore_cmd_generic_cfg {
+	struct wl1271_cmd_header header;
+
+	u8 role_id;
+	u8 feature;
+	u8 enable;
+	u8 value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 struct wl12xx_cmd_config_fwlog {

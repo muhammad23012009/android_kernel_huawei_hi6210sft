@@ -332,25 +332,37 @@
 				reg = <0x2120 0x18>;
 
 				phy1: ethernet-phy@1 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					compatible = "national,DP83848VV";
 					reg = <1>;
 				};
 
 				phy2: ethernet-phy@2 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					compatible = "broadcom,BCM5481UA2KMLG";
 					reg = <2>;
 				};
 
 				phy3: ethernet-phy@3 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					compatible = "national,DP83848VV";
 					reg = <3>;
 				};
 
 				phy4: ethernet-phy@4 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					compatible = "broadcom,BCM5481UA2KMLG";
 					reg = <4>;
 				};
@@ -420,7 +432,11 @@
 			gpios = <&qe_pio_e 18 0>;
 
 			flash {
+<<<<<<< HEAD
 				compatible = "stm,nand512-a";
+=======
+				compatible = "st,nand512-a";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 		};
 

@@ -319,6 +319,10 @@ typedef struct modem_info {
   int                   online;          /* 1 = B-Channel is up, drop data */
 					 /* 2 = B-Channel is up, deliver d.*/
   int                   dialing;         /* Dial in progress or ATA        */
+<<<<<<< HEAD
+=======
+  int                   closing;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   int                   rcvsched;        /* Receive needs schedule         */
   int                   isdn_driver;	 /* Index to isdn-driver           */
   int                   isdn_channel;    /* Index to isdn-channel          */

@@ -160,6 +160,7 @@ static int options_show(struct seq_file *s, void *p)
 static ssize_t options_write(struct file *file, const char __user *userbuf,
 			     size_t count, loff_t *data)
 {
+<<<<<<< HEAD
 	char buf[20];
 
 	if (count >= sizeof(buf))
@@ -169,6 +170,13 @@ static ssize_t options_write(struct file *file, const char __user *userbuf,
 	buf[count] = '\0';
 	if (strict_strtoul(buf, 0, &gru_options))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul_from_user(userbuf, count, 0, &gru_options);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }

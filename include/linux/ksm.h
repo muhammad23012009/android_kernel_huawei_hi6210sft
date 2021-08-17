@@ -35,6 +35,7 @@ static inline void ksm_exit(struct mm_struct *mm)
 		__ksm_exit(mm);
 }
 
+<<<<<<< HEAD
 /*
  * A KSM page is one of those write-protected "shared pages" or "merged pages"
  * which KSM maps into multiple mms, wherever identical anonymous page content
@@ -47,6 +48,8 @@ static inline int PageKsm(struct page *page)
 				(PAGE_MAPPING_ANON | PAGE_MAPPING_KSM);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct stable_node *page_stable_node(struct page *page)
 {
 	return PageKsm(page) ? page_rmapping(page) : NULL;
@@ -55,8 +58,12 @@ static inline struct stable_node *page_stable_node(struct page *page)
 static inline void set_page_stable_node(struct page *page,
 					struct stable_node *stable_node)
 {
+<<<<<<< HEAD
 	page->mapping = (void *)stable_node +
 				(PAGE_MAPPING_ANON | PAGE_MAPPING_KSM);
+=======
+	page->mapping = (void *)((unsigned long)stable_node | PAGE_MAPPING_KSM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -73,12 +80,16 @@ static inline void set_page_stable_node(struct page *page,
 struct page *ksm_might_need_to_copy(struct page *page,
 			struct vm_area_struct *vma, unsigned long address);
 
+<<<<<<< HEAD
 int page_referenced_ksm(struct page *page,
 			struct mem_cgroup *memcg, unsigned long *vm_flags);
 int try_to_unmap_ksm(struct page *page,
 			enum ttu_flags flags, struct vm_area_struct *vma);
 int rmap_walk_ksm(struct page *page, int (*rmap_one)(struct page *,
 		  struct vm_area_struct *, unsigned long, void *), void *arg);
+=======
+int rmap_walk_ksm(struct page *page, struct rmap_walk_control *rwc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void ksm_migrate_page(struct page *newpage, struct page *oldpage);
 
 #else  /* !CONFIG_KSM */
@@ -92,11 +103,14 @@ static inline void ksm_exit(struct mm_struct *mm)
 {
 }
 
+<<<<<<< HEAD
 static inline int PageKsm(struct page *page)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MMU
 static inline int ksm_madvise(struct vm_area_struct *vma, unsigned long start,
 		unsigned long end, int advice, unsigned long *vm_flags)
@@ -116,6 +130,7 @@ static inline int page_referenced_ksm(struct page *page,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int try_to_unmap_ksm(struct page *page,
 			enum ttu_flags flags, struct vm_area_struct *target_vma)
 {
@@ -124,6 +139,10 @@ static inline int try_to_unmap_ksm(struct page *page,
 
 static inline int rmap_walk_ksm(struct page *page, int (*rmap_one)(struct page*,
 		struct vm_area_struct *, unsigned long, void *), void *arg)
+=======
+static inline int rmap_walk_ksm(struct page *page,
+			struct rmap_walk_control *rwc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return 0;
 }

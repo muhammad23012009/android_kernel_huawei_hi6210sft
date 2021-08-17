@@ -21,6 +21,10 @@
 #include <linux/bitops.h>
 #include <linux/mount.h>
 #include <linux/nsproxy.h>
+<<<<<<< HEAD
+=======
+#include <linux/uidgid.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/net_namespace.h>
 #include <linux/seq_file.h>
 
@@ -113,9 +117,17 @@ static struct net *get_proc_task_net(struct inode *dir)
 	rcu_read_lock();
 	task = pid_task(proc_pid(dir), PIDTYPE_PID);
 	if (task != NULL) {
+<<<<<<< HEAD
 		ns = task_nsproxy(task);
 		if (ns != NULL)
 			net = get_net(ns->net_ns);
+=======
+		task_lock(task);
+		ns = task->nsproxy;
+		if (ns != NULL)
+			net = get_net(ns->net_ns);
+		task_unlock(task);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	rcu_read_unlock();
 
@@ -140,7 +152,11 @@ static struct dentry *proc_tgid_net_lookup(struct inode *dir,
 static int proc_tgid_net_getattr(struct vfsmount *mnt, struct dentry *dentry,
 		struct kstat *stat)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net *net;
 
 	net = get_proc_task_net(inode);
@@ -160,16 +176,26 @@ const struct inode_operations proc_net_inode_operations = {
 	.getattr	= proc_tgid_net_getattr,
 };
 
+<<<<<<< HEAD
 static int proc_tgid_net_readdir(struct file *filp, void *dirent,
 		filldir_t filldir)
+=======
+static int proc_tgid_net_readdir(struct file *file, struct dir_context *ctx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	struct net *net;
 
 	ret = -EINVAL;
+<<<<<<< HEAD
 	net = get_proc_task_net(file_inode(filp));
 	if (net != NULL) {
 		ret = proc_readdir_de(net->proc_net, filp, dirent, filldir);
+=======
+	net = get_proc_task_net(file_inode(file));
+	if (net != NULL) {
+		ret = proc_readdir_de(net->proc_net, file, ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		put_net(net);
 	}
 	return ret;
@@ -178,12 +204,21 @@ static int proc_tgid_net_readdir(struct file *filp, void *dirent,
 const struct file_operations proc_net_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= proc_tgid_net_readdir,
+=======
+	.iterate_shared	= proc_tgid_net_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static __net_init int proc_net_ns_init(struct net *net)
 {
 	struct proc_dir_entry *netd, *net_statd;
+<<<<<<< HEAD
+=======
+	kuid_t uid;
+	kgid_t gid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	err = -ENOMEM;
@@ -191,12 +226,29 @@ static __net_init int proc_net_ns_init(struct net *net)
 	if (!netd)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	netd->subdir = RB_ROOT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netd->data = net;
 	netd->nlink = 2;
 	netd->namelen = 3;
 	netd->parent = &proc_root;
 	memcpy(netd->name, "net", 4);
 
+<<<<<<< HEAD
+=======
+	uid = make_kuid(net->user_ns, 0);
+	if (!uid_valid(uid))
+		uid = netd->uid;
+
+	gid = make_kgid(net->user_ns, 0);
+	if (!gid_valid(gid))
+		gid = netd->gid;
+
+	proc_set_user(netd, uid, gid);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = -EEXIST;
 	net_statd = proc_net_mkdir(net, "stat", netd);
 	if (!net_statd)

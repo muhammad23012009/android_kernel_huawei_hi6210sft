@@ -192,8 +192,13 @@ static int __init parport_atari_init(void)
 					  &parport_atari_ops);
 		if (!p)
 			return -ENODEV;
+<<<<<<< HEAD
 		if (request_irq(IRQ_MFP_BUSY, parport_irq_handler,
 				IRQ_TYPE_SLOW, p->name, p)) {
+=======
+		if (request_irq(IRQ_MFP_BUSY, parport_irq_handler, 0, p->name,
+				p)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			parport_put_port (p);
 			return -ENODEV;
 		}

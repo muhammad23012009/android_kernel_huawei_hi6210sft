@@ -316,7 +316,11 @@ enum si476x_smoothmetrics {
  * response to 'FM_RD_STATUS' command
  * @rdstpptyint: Traffic program flag(TP) and/or program type(PTY)
  * code has changed.
+<<<<<<< HEAD
  * @rdspiint: Program indentifiaction(PI) code has changed.
+=======
+ * @rdspiint: Program identification(PI) code has changed.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @rdssyncint: RDS synchronization has changed.
  * @rdsfifoint: RDS was received and the RDS FIFO has at least
  * 'FM_RDS_INTERRUPT_FIFO_COUNT' elements in it.

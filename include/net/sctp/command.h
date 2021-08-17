@@ -19,6 +19,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -36,6 +37,22 @@
  */
 
 
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+ *
+ * Written or modified by:
+ *   La Monte H.P. Yarroll <piggy@acm.org>
+ *   Karl Knutson <karl@athena.chicago.il.us>
+ *   Ardelle Fan <ardelle.fan@intel.com>
+ *   Sridhar Samudrala <sri@us.ibm.com>
+ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __net_sctp_command_h__
 #define __net_sctp_command_h__
 
@@ -121,6 +138,10 @@ typedef enum {
 #define SCTP_MAX_NUM_COMMANDS 20
 
 typedef union {
+<<<<<<< HEAD
+=======
+	void *zero_all;	/* Set to NULL to clear the entire union */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__s32 i32;
 	__u32 u32;
 	__be32 be32;
@@ -157,7 +178,11 @@ typedef union {
 static inline sctp_arg_t	\
 SCTP_## name (type arg)		\
 { sctp_arg_t retval;\
+<<<<<<< HEAD
   memset(&retval, 0, sizeof(sctp_arg_t));\
+=======
+  retval.zero_all = NULL;\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   retval.elt = arg;\
   return retval;\
 }
@@ -194,7 +219,11 @@ static inline sctp_arg_t SCTP_NOFORCE(void)
 static inline sctp_arg_t SCTP_NULL(void)
 {
 	sctp_arg_t retval;
+<<<<<<< HEAD
 	memset(&retval, 0, sizeof(sctp_arg_t));
+=======
+	retval.zero_all = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
@@ -205,27 +234,69 @@ typedef struct {
 
 typedef struct {
 	sctp_cmd_t cmds[SCTP_MAX_NUM_COMMANDS];
+<<<<<<< HEAD
 	__u8 next_free_slot;
 	__u8 next_cmd;
+=======
+	sctp_cmd_t *last_used_slot;
+	sctp_cmd_t *next_cmd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } sctp_cmd_seq_t;
 
 
 /* Initialize a block of memory as a command sequence.
  * Return 0 if the initialization fails.
  */
+<<<<<<< HEAD
 int sctp_init_cmd_seq(sctp_cmd_seq_t *seq);
+=======
+static inline int sctp_init_cmd_seq(sctp_cmd_seq_t *seq)
+{
+	/* cmds[] is filled backwards to simplify the overflow BUG() check */
+	seq->last_used_slot = seq->cmds + SCTP_MAX_NUM_COMMANDS;
+	seq->next_cmd = seq->last_used_slot;
+	return 1;		/* We always succeed.  */
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Add a command to an sctp_cmd_seq_t.
  *
  * Use the SCTP_* constructors defined by SCTP_ARG_CONSTRUCTOR() above
  * to wrap data which goes in the obj argument.
  */
+<<<<<<< HEAD
 void sctp_add_cmd_sf(sctp_cmd_seq_t *seq, sctp_verb_t verb, sctp_arg_t obj);
+=======
+static inline void sctp_add_cmd_sf(sctp_cmd_seq_t *seq, sctp_verb_t verb,
+				   sctp_arg_t obj)
+{
+	sctp_cmd_t *cmd = seq->last_used_slot - 1;
+
+	BUG_ON(cmd < seq->cmds);
+
+	cmd->verb = verb;
+	cmd->obj = obj;
+	seq->last_used_slot = cmd;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Return the next command structure in an sctp_cmd_seq.
  * Return NULL at the end of the sequence.
  */
+<<<<<<< HEAD
 sctp_cmd_t *sctp_next_cmd(sctp_cmd_seq_t *seq);
 
 #endif /* __net_sctp_command_h__ */
 
+=======
+static inline sctp_cmd_t *sctp_next_cmd(sctp_cmd_seq_t *seq)
+{
+	if (seq->next_cmd <= seq->last_used_slot)
+		return NULL;
+
+	return --seq->next_cmd;
+}
+
+#endif /* __net_sctp_command_h__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

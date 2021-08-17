@@ -10,7 +10,10 @@
 #include <linux/types.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/miscdevice.h>
 #include <linux/watchdog.h>
 #include <linux/of.h>
@@ -183,7 +186,11 @@ static int riowd_probe(struct platform_device *op)
 		goto out;
 
 	err = -ENOMEM;
+<<<<<<< HEAD
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
+=======
+	p = devm_kzalloc(&op->dev, sizeof(*p), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		goto out;
 
@@ -192,7 +199,11 @@ static int riowd_probe(struct platform_device *op)
 	p->regs = of_ioremap(&op->resource[0], 0, 2, DRIVER_NAME);
 	if (!p->regs) {
 		pr_err("Cannot map registers\n");
+<<<<<<< HEAD
 		goto out_free;
+=======
+		goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* Make miscdev useable right away */
 	riowd_device = p;
@@ -206,27 +217,41 @@ static int riowd_probe(struct platform_device *op)
 	pr_info("Hardware watchdog [%i minutes], regs at %p\n",
 		riowd_timeout, p->regs);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, p);
+=======
+	platform_set_drvdata(op, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 out_iounmap:
 	riowd_device = NULL;
 	of_iounmap(&op->resource[0], p->regs, 2);
 
+<<<<<<< HEAD
 out_free:
 	kfree(p);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return err;
 }
 
 static int riowd_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct riowd *p = dev_get_drvdata(&op->dev);
 
 	misc_deregister(&riowd_miscdev);
 	of_iounmap(&op->resource[0], p->regs, 2);
 	kfree(p);
+=======
+	struct riowd *p = platform_get_drvdata(op);
+
+	misc_deregister(&riowd_miscdev);
+	of_iounmap(&op->resource[0], p->regs, 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -242,7 +267,10 @@ MODULE_DEVICE_TABLE(of, riowd_match);
 static struct platform_driver riowd_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = riowd_match,
 	},
 	.probe		= riowd_probe,

@@ -116,7 +116,10 @@ struct mcs_cb {
 	__u8 *fifo_status;
 
 	iobuff_t rx_buff;	/* receive unwrap state machine */
+<<<<<<< HEAD
 	struct timeval rx_time;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t lock;
 	int receiving;
 

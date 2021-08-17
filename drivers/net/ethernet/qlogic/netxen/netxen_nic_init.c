@@ -14,9 +14,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA  02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The full GNU General Public License is included in this distribution
  * in the file called "COPYING".
@@ -137,6 +141,10 @@ void netxen_release_tx_buffers(struct netxen_adapter *adapter)
 	int i, j;
 	struct nx_host_tx_ring *tx_ring = adapter->tx_ring;
 
+<<<<<<< HEAD
+=======
+	spin_lock_bh(&adapter->tx_clean_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cmd_buf = tx_ring->cmd_buf_arr;
 	for (i = 0; i < tx_ring->num_desc; i++) {
 		buffrag = cmd_buf->frag_array;
@@ -160,6 +168,10 @@ void netxen_release_tx_buffers(struct netxen_adapter *adapter)
 		}
 		cmd_buf++;
 	}
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&adapter->tx_clean_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void netxen_free_sw_resources(struct netxen_adapter *adapter)
@@ -1125,7 +1137,12 @@ netxen_validate_firmware(struct netxen_adapter *adapter)
 		return -EINVAL;
 	}
 	val = nx_get_bios_version(adapter);
+<<<<<<< HEAD
 	netxen_rom_fast_read(adapter, NX_BIOS_VERSION_OFFSET, (int *)&bios);
+=======
+	if (netxen_rom_fast_read(adapter, NX_BIOS_VERSION_OFFSET, (int *)&bios))
+		return -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((__force u32)val != bios) {
 		dev_err(&pdev->dev, "%s: firmware bios is incompatible\n",
 				fw_name[fw_type]);
@@ -1604,13 +1621,21 @@ netxen_process_lro(struct netxen_adapter *adapter,
 	u32 seq_number;
 	u8 vhdr_len = 0;
 
+<<<<<<< HEAD
 	if (unlikely(ring > adapter->max_rds_rings))
+=======
+	if (unlikely(ring >= adapter->max_rds_rings))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	rds_ring = &recv_ctx->rds_rings[ring];
 
 	index = netxen_get_lro_sts_refhandle(sts_data0);
+<<<<<<< HEAD
 	if (unlikely(index > rds_ring->num_desc))
+=======
+	if (unlikely(index >= rds_ring->num_desc))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	buffer = &rds_ring->rx_buf_arr[index];
@@ -1764,7 +1789,11 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 	int done = 0;
 	struct nx_host_tx_ring *tx_ring = adapter->tx_ring;
 
+<<<<<<< HEAD
 	if (!spin_trylock(&adapter->tx_clean_lock))
+=======
+	if (!spin_trylock_bh(&adapter->tx_clean_lock))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 
 	sw_consumer = tx_ring->sw_consumer;
@@ -1794,9 +1823,15 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 			break;
 	}
 
+<<<<<<< HEAD
 	if (count && netif_running(netdev)) {
 		tx_ring->sw_consumer = sw_consumer;
 
+=======
+	tx_ring->sw_consumer = sw_consumer;
+
+	if (count && netif_running(netdev)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		smp_mb();
 
 		if (netif_queue_stopped(netdev) && netif_carrier_ok(netdev))
@@ -1819,7 +1854,11 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 	 */
 	hw_consumer = le32_to_cpu(*(tx_ring->hw_consumer));
 	done = (sw_consumer == hw_consumer);
+<<<<<<< HEAD
 	spin_unlock(&adapter->tx_clean_lock);
+=======
+	spin_unlock_bh(&adapter->tx_clean_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return done;
 }

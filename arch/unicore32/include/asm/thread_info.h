@@ -24,7 +24,10 @@
 #ifndef __ASSEMBLY__
 
 struct task_struct;
+<<<<<<< HEAD
 struct exec_domain;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/types.h>
 
@@ -71,7 +74,10 @@ struct thread_info {
 						/* <0 => bug */
 	mm_segment_t		addr_limit;	/* address limit */
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u32			cpu;		/* cpu */
 	struct cpu_context_save	cpu_context;	/* cpu context */
 	__u32			syscall;	/* syscall number */
@@ -79,12 +85,16 @@ struct thread_info {
 #ifdef CONFIG_UNICORE_FPU_F64
 	struct fp_state		fpstate __attribute__((aligned(8)));
 #endif
+<<<<<<< HEAD
 	struct restart_block	restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define INIT_THREAD_INFO(tsk)						\
 {									\
 	.task		= &tsk,						\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,				\
 	.flags		= 0,						\
 	.preempt_count	= INIT_PREEMPT_COUNT,				\
@@ -92,6 +102,11 @@ struct thread_info {
 	.restart_block	= {						\
 		.fn	= do_no_restart_syscall,			\
 	},								\
+=======
+	.flags		= 0,						\
+	.preempt_count	= INIT_PREEMPT_COUNT,				\
+	.addr_limit	= KERNEL_DS,					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
@@ -118,12 +133,15 @@ static inline struct thread_info *current_thread_info(void)
 #endif
 
 /*
+<<<<<<< HEAD
  * We use bit 30 of the preempt_count to indicate that kernel
  * preemption is occurring.  See <asm/hardirq.h>.
  */
 #define PREEMPT_ACTIVE	0x40000000
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * thread information flags:
  *  TIF_SYSCALL_TRACE	- syscall trace active
  *  TIF_SIGPENDING	- signal pending

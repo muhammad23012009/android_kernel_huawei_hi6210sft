@@ -8,7 +8,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/leds.h>
@@ -125,9 +128,15 @@ static int ot200_led_probe(struct platform_device *pdev)
 		leds[i].cdev.name = leds[i].name;
 		leds[i].cdev.brightness_set = ot200_led_brightness_set;
 
+<<<<<<< HEAD
 		ret = led_classdev_register(&pdev->dev, &leds[i].cdev);
 		if (ret < 0)
 			goto err;
+=======
+		ret = devm_led_classdev_register(&pdev->dev, &leds[i].cdev);
+		if (ret < 0)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	leds_front = 0;		/* turn off all front leds */
@@ -136,6 +145,7 @@ static int ot200_led_probe(struct platform_device *pdev)
 	outb(leds_back, 0x5a);
 
 	return 0;
+<<<<<<< HEAD
 
 err:
 	for (i = i - 1; i >= 0; i--)
@@ -152,14 +162,21 @@ static int ot200_led_remove(struct platform_device *pdev)
 		led_classdev_unregister(&leds[i].cdev);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver ot200_led_driver = {
 	.probe		= ot200_led_probe,
+<<<<<<< HEAD
 	.remove		= ot200_led_remove,
 	.driver		= {
 		.name	= "leds-ot200",
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= "leds-ot200",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

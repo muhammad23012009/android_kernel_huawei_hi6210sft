@@ -17,7 +17,10 @@
 #include <linux/types.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
@@ -213,11 +216,16 @@ static int puv3_i2c_probe(struct platform_device *pdev)
 
 	adapter->nr = pdev->id;
 	rc = i2c_add_numbered_adapter(adapter);
+<<<<<<< HEAD
 	if (rc) {
 		dev_err(&pdev->dev, "Adapter '%s' registration failed\n",
 				adapter->name);
 		goto fail_add_adapter;
 	}
+=======
+	if (rc)
+		goto fail_add_adapter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&pdev->dev, "PKUnity v3 i2c bus adapter.\n");
 	return 0;
@@ -245,7 +253,11 @@ static int puv3_i2c_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int puv3_i2c_suspend(struct device *dev)
 {
 	int poll_count;
@@ -271,7 +283,10 @@ static struct platform_driver puv3_i2c_driver = {
 	.remove		= puv3_i2c_remove,
 	.driver		= {
 		.name	= "PKUnity-v3-I2C",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= PUV3_I2C_PM,
 	}
 };

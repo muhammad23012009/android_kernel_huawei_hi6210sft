@@ -52,6 +52,10 @@
 #include <net/dst.h>
 #include <net/ip.h>
 #include <net/udp.h>
+<<<<<<< HEAD
+=======
+#include <net/udp_tunnel.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/inet_common.h>
 #include <net/xfrm.h>
 #include <net/protocol.h>
@@ -82,8 +86,12 @@
 #define L2TP_SLFLAG_S	   0x40000000
 #define L2TP_SL_SEQ_MASK   0x00ffffff
 
+<<<<<<< HEAD
 #define L2TP_HDR_SIZE_SEQ		10
 #define L2TP_HDR_SIZE_NOSEQ		6
+=======
+#define L2TP_HDR_SIZE_MAX		14
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Default trace flags */
 #define L2TP_DEFAULT_DEBUG_FLAGS	0
@@ -112,21 +120,36 @@ struct l2tp_net {
 	spinlock_t l2tp_session_hlist_lock;
 };
 
+<<<<<<< HEAD
 static void l2tp_session_set_header_len(struct l2tp_session *session, int version);
 static void l2tp_tunnel_free(struct l2tp_tunnel *tunnel);
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+static bool l2tp_sk_is_v6(struct sock *sk)
+{
+	return sk->sk_family == PF_INET6 &&
+	       !ipv6_addr_v4mapped(&sk->sk_v6_daddr);
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline struct l2tp_tunnel *l2tp_tunnel(struct sock *sk)
 {
 	return sk->sk_user_data;
 }
 
+<<<<<<< HEAD
 static inline struct l2tp_net *l2tp_pernet(struct net *net)
+=======
+static inline struct l2tp_net *l2tp_pernet(const struct net *net)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	BUG_ON(!net);
 
 	return net_generic(net, l2tp_net_id);
 }
 
+<<<<<<< HEAD
 /* Tunnel reference counts. Incremented per session that is added to
  * the tunnel.
  */
@@ -160,6 +183,8 @@ do {									\
 #define l2tp_tunnel_dec_refcount(t) l2tp_tunnel_dec_refcount_1(t)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Session hash global list for L2TPv3.
  * The session_id SHOULD be random according to RFC3931, but several
  * L2TP implementations use incrementing session_ids.  So we do a real
@@ -176,7 +201,11 @@ l2tp_session_id_hash_2(struct l2tp_net *pn, u32 session_id)
  * owned by userspace.  A struct sock returned from this function must be
  * released using l2tp_tunnel_sock_put once you're done with it.
  */
+<<<<<<< HEAD
 struct sock *l2tp_tunnel_sock_lookup(struct l2tp_tunnel *tunnel)
+=======
+static struct sock *l2tp_tunnel_sock_lookup(struct l2tp_tunnel *tunnel)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err = 0;
 	struct socket *sock = NULL;
@@ -202,10 +231,16 @@ struct sock *l2tp_tunnel_sock_lookup(struct l2tp_tunnel *tunnel)
 out:
 	return sk;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(l2tp_tunnel_sock_lookup);
 
 /* Drop a reference to a tunnel socket obtained via. l2tp_tunnel_sock_put */
 void l2tp_tunnel_sock_put(struct sock *sk)
+=======
+
+/* Drop a reference to a tunnel socket obtained via. l2tp_tunnel_sock_put */
+static void l2tp_tunnel_sock_put(struct sock *sk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct l2tp_tunnel *tunnel = l2tp_sock_to_tunnel(sk);
 	if (tunnel) {
@@ -217,6 +252,7 @@ void l2tp_tunnel_sock_put(struct sock *sk)
 	}
 	sock_put(sk);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(l2tp_tunnel_sock_put);
 
 /* Lookup a session by id in the global session list
@@ -239,6 +275,8 @@ static struct l2tp_session *l2tp_session_find_2(struct net *net, u32 session_id)
 
 	return NULL;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Session hash list.
  * The session_id SHOULD be random according to RFC2661, but several
@@ -252,25 +290,86 @@ l2tp_session_id_hash(struct l2tp_tunnel *tunnel, u32 session_id)
 	return &tunnel->session_hlist[hash_32(session_id, L2TP_HASH_BITS)];
 }
 
+<<<<<<< HEAD
 /* Lookup a session by id
  */
 struct l2tp_session *l2tp_session_find(struct net *net, struct l2tp_tunnel *tunnel, u32 session_id)
+=======
+/* Lookup a tunnel. A new reference is held on the returned tunnel. */
+struct l2tp_tunnel *l2tp_tunnel_get(const struct net *net, u32 tunnel_id)
+{
+	const struct l2tp_net *pn = l2tp_pernet(net);
+	struct l2tp_tunnel *tunnel;
+
+	rcu_read_lock_bh();
+	list_for_each_entry_rcu(tunnel, &pn->l2tp_tunnel_list, list) {
+		if (tunnel->tunnel_id == tunnel_id) {
+			l2tp_tunnel_inc_refcount(tunnel);
+			rcu_read_unlock_bh();
+
+			return tunnel;
+		}
+	}
+	rcu_read_unlock_bh();
+
+	return NULL;
+}
+EXPORT_SYMBOL_GPL(l2tp_tunnel_get);
+
+/* Lookup a session. A new reference is held on the returned session.
+ * Optionally calls session->ref() too if do_ref is true.
+ */
+struct l2tp_session *l2tp_session_get(const struct net *net,
+				      struct l2tp_tunnel *tunnel,
+				      u32 session_id, bool do_ref)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct hlist_head *session_list;
 	struct l2tp_session *session;
 
+<<<<<<< HEAD
 	/* In L2TPv3, session_ids are unique over all tunnels and we
 	 * sometimes need to look them up before we know the
 	 * tunnel.
 	 */
 	if (tunnel == NULL)
 		return l2tp_session_find_2(net, session_id);
+=======
+	if (!tunnel) {
+		struct l2tp_net *pn = l2tp_pernet(net);
+
+		session_list = l2tp_session_id_hash_2(pn, session_id);
+
+		rcu_read_lock_bh();
+		hlist_for_each_entry_rcu(session, session_list, global_hlist) {
+			if (session->session_id == session_id) {
+				l2tp_session_inc_refcount(session);
+				if (do_ref && session->ref)
+					session->ref(session);
+				rcu_read_unlock_bh();
+
+				return session;
+			}
+		}
+		rcu_read_unlock_bh();
+
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	session_list = l2tp_session_id_hash(tunnel, session_id);
 	read_lock_bh(&tunnel->hlist_lock);
 	hlist_for_each_entry(session, session_list, hlist) {
 		if (session->session_id == session_id) {
+<<<<<<< HEAD
 			read_unlock_bh(&tunnel->hlist_lock);
+=======
+			l2tp_session_inc_refcount(session);
+			if (do_ref && session->ref)
+				session->ref(session);
+			read_unlock_bh(&tunnel->hlist_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return session;
 		}
 	}
@@ -278,7 +377,11 @@ struct l2tp_session *l2tp_session_find(struct net *net, struct l2tp_tunnel *tunn
 
 	return NULL;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(l2tp_session_find);
+=======
+EXPORT_SYMBOL_GPL(l2tp_session_get);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct l2tp_session *l2tp_session_get_nth(struct l2tp_tunnel *tunnel, int nth,
 					  bool do_ref)
@@ -309,7 +412,13 @@ EXPORT_SYMBOL_GPL(l2tp_session_get_nth);
 /* Lookup a session by interface name.
  * This is very inefficient but is only used by management interfaces.
  */
+<<<<<<< HEAD
 struct l2tp_session *l2tp_session_find_by_ifname(struct net *net, char *ifname)
+=======
+struct l2tp_session *l2tp_session_get_by_ifname(const struct net *net,
+						const char *ifname,
+						bool do_ref)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct l2tp_net *pn = l2tp_pernet(net);
 	int hash;
@@ -319,7 +428,15 @@ struct l2tp_session *l2tp_session_find_by_ifname(struct net *net, char *ifname)
 	for (hash = 0; hash < L2TP_HASH_SIZE_2; hash++) {
 		hlist_for_each_entry_rcu(session, &pn->l2tp_session_hlist[hash], global_hlist) {
 			if (!strcmp(session->ifname, ifname)) {
+<<<<<<< HEAD
 				rcu_read_unlock_bh();
+=======
+				l2tp_session_inc_refcount(session);
+				if (do_ref && session->ref)
+					session->ref(session);
+				rcu_read_unlock_bh();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return session;
 			}
 		}
@@ -329,11 +446,88 @@ struct l2tp_session *l2tp_session_find_by_ifname(struct net *net, char *ifname)
 
 	return NULL;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(l2tp_session_find_by_ifname);
 
 /* Lookup a tunnel by id
  */
 struct l2tp_tunnel *l2tp_tunnel_find(struct net *net, u32 tunnel_id)
+=======
+EXPORT_SYMBOL_GPL(l2tp_session_get_by_ifname);
+
+int l2tp_session_register(struct l2tp_session *session,
+			  struct l2tp_tunnel *tunnel)
+{
+	struct l2tp_session *session_walk;
+	struct hlist_head *g_head;
+	struct hlist_head *head;
+	struct l2tp_net *pn;
+	int err;
+
+	head = l2tp_session_id_hash(tunnel, session->session_id);
+
+	write_lock_bh(&tunnel->hlist_lock);
+	if (!tunnel->acpt_newsess) {
+		err = -ENODEV;
+		goto err_tlock;
+	}
+
+	hlist_for_each_entry(session_walk, head, hlist)
+		if (session_walk->session_id == session->session_id) {
+			err = -EEXIST;
+			goto err_tlock;
+		}
+
+	if (tunnel->version == L2TP_HDR_VER_3) {
+		pn = l2tp_pernet(tunnel->l2tp_net);
+		g_head = l2tp_session_id_hash_2(l2tp_pernet(tunnel->l2tp_net),
+						session->session_id);
+
+		spin_lock_bh(&pn->l2tp_session_hlist_lock);
+
+		/* IP encap expects session IDs to be globally unique, while
+		 * UDP encap doesn't.
+		 */
+		hlist_for_each_entry(session_walk, g_head, global_hlist)
+			if (session_walk->session_id == session->session_id &&
+			    (session_walk->tunnel->encap == L2TP_ENCAPTYPE_IP ||
+			     tunnel->encap == L2TP_ENCAPTYPE_IP)) {
+				err = -EEXIST;
+				goto err_tlock_pnlock;
+			}
+
+		l2tp_tunnel_inc_refcount(tunnel);
+		sock_hold(tunnel->sock);
+		hlist_add_head_rcu(&session->global_hlist, g_head);
+
+		spin_unlock_bh(&pn->l2tp_session_hlist_lock);
+	} else {
+		l2tp_tunnel_inc_refcount(tunnel);
+		sock_hold(tunnel->sock);
+	}
+
+	hlist_add_head(&session->hlist, head);
+	write_unlock_bh(&tunnel->hlist_lock);
+
+	/* Ignore management session in session count value */
+	if (session->session_id != 0)
+		atomic_inc(&l2tp_session_count);
+
+	return 0;
+
+err_tlock_pnlock:
+	spin_unlock_bh(&pn->l2tp_session_hlist_lock);
+err_tlock:
+	write_unlock_bh(&tunnel->hlist_lock);
+
+	return err;
+}
+EXPORT_SYMBOL_GPL(l2tp_session_register);
+
+/* Lookup a tunnel by id
+ */
+struct l2tp_tunnel *l2tp_tunnel_find(const struct net *net, u32 tunnel_id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct l2tp_tunnel *tunnel;
 	struct l2tp_net *pn = l2tp_pernet(net);
@@ -351,7 +545,11 @@ struct l2tp_tunnel *l2tp_tunnel_find(struct net *net, u32 tunnel_id)
 }
 EXPORT_SYMBOL_GPL(l2tp_tunnel_find);
 
+<<<<<<< HEAD
 struct l2tp_tunnel *l2tp_tunnel_find_nth(struct net *net, int nth)
+=======
+struct l2tp_tunnel *l2tp_tunnel_find_nth(const struct net *net, int nth)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct l2tp_net *pn = l2tp_pernet(net);
 	struct l2tp_tunnel *tunnel;
@@ -423,10 +621,14 @@ static void l2tp_recv_dequeue_skb(struct l2tp_session *session, struct sk_buff *
 	if (L2TP_SKB_CB(skb)->has_seq) {
 		/* Bump our Nr */
 		session->nr++;
+<<<<<<< HEAD
 		if (tunnel->version == L2TP_HDR_VER_2)
 			session->nr &= 0xffff;
 		else
 			session->nr &= 0xffffff;
+=======
+		session->nr &= session->nr_max;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		l2tp_dbg(session, L2TP_MSG_SEQ, "%s: updated nr to %hu\n",
 			 session->name, session->nr);
@@ -505,6 +707,7 @@ out:
 	spin_unlock_bh(&session->reorder_q.lock);
 }
 
+<<<<<<< HEAD
 static inline int l2tp_verify_udp_checksum(struct sock *sk,
 					   struct sk_buff *skb)
 {
@@ -549,6 +752,84 @@ static inline int l2tp_verify_udp_checksum(struct sock *sk,
 	}
 
 	return __skb_checksum_complete(skb);
+=======
+static int l2tp_seq_check_rx_window(struct l2tp_session *session, u32 nr)
+{
+	u32 nws;
+
+	if (nr >= session->nr)
+		nws = nr - session->nr;
+	else
+		nws = (session->nr_max + 1) - (session->nr - nr);
+
+	return nws < session->nr_window_size;
+}
+
+/* If packet has sequence numbers, queue it if acceptable. Returns 0 if
+ * acceptable, else non-zero.
+ */
+static int l2tp_recv_data_seq(struct l2tp_session *session, struct sk_buff *skb)
+{
+	if (!l2tp_seq_check_rx_window(session, L2TP_SKB_CB(skb)->ns)) {
+		/* Packet sequence number is outside allowed window.
+		 * Discard it.
+		 */
+		l2tp_dbg(session, L2TP_MSG_SEQ,
+			 "%s: pkt %u len %d discarded, outside window, nr=%u\n",
+			 session->name, L2TP_SKB_CB(skb)->ns,
+			 L2TP_SKB_CB(skb)->length, session->nr);
+		goto discard;
+	}
+
+	if (session->reorder_timeout != 0) {
+		/* Packet reordering enabled. Add skb to session's
+		 * reorder queue, in order of ns.
+		 */
+		l2tp_recv_queue_skb(session, skb);
+		goto out;
+	}
+
+	/* Packet reordering disabled. Discard out-of-sequence packets, while
+	 * tracking the number if in-sequence packets after the first OOS packet
+	 * is seen. After nr_oos_count_max in-sequence packets, reset the
+	 * sequence number to re-enable packet reception.
+	 */
+	if (L2TP_SKB_CB(skb)->ns == session->nr) {
+		skb_queue_tail(&session->reorder_q, skb);
+	} else {
+		u32 nr_oos = L2TP_SKB_CB(skb)->ns;
+		u32 nr_next = (session->nr_oos + 1) & session->nr_max;
+
+		if (nr_oos == nr_next)
+			session->nr_oos_count++;
+		else
+			session->nr_oos_count = 0;
+
+		session->nr_oos = nr_oos;
+		if (session->nr_oos_count > session->nr_oos_count_max) {
+			session->reorder_skip = 1;
+			l2tp_dbg(session, L2TP_MSG_SEQ,
+				 "%s: %d oos packets received. Resetting sequence numbers\n",
+				 session->name, session->nr_oos_count);
+		}
+		if (!session->reorder_skip) {
+			atomic_long_inc(&session->stats.rx_seq_discards);
+			l2tp_dbg(session, L2TP_MSG_SEQ,
+				 "%s: oos pkt %u len %d discarded, waiting for %u, reorder_q_len=%d\n",
+				 session->name, L2TP_SKB_CB(skb)->ns,
+				 L2TP_SKB_CB(skb)->length, session->nr,
+				 skb_queue_len(&session->reorder_q));
+			goto discard;
+		}
+		skb_queue_tail(&session->reorder_q, skb);
+	}
+
+out:
+	return 0;
+
+discard:
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Do receive processing of L2TP data frames. We handle both L2TPv2
@@ -610,6 +891,12 @@ static inline int l2tp_verify_udp_checksum(struct sock *sk,
  * a data (not control) frame before coming here. Fields up to the
  * session-id have already been parsed and ptr points to the data
  * after the session-id.
+<<<<<<< HEAD
+=======
+ *
+ * session->ref() must have been called prior to l2tp_recv_common().
+ * session->deref() will be called automatically after skb is processed.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 		      unsigned char *ptr, unsigned char *optr, u16 hdrflags,
@@ -619,6 +906,7 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 	int offset;
 	u32 ns, nr;
 
+<<<<<<< HEAD
 	/* The ref count is increased since we now hold a pointer to
 	 * the session. Take care to decrement the refcnt when exiting
 	 * this function from now on...
@@ -627,6 +915,8 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 	if (session->ref)
 		(*session->ref)(session);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Parse and check optional cookie */
 	if (session->peer_cookie_len > 0) {
 		if (memcmp(ptr, &session->peer_cookie[0], session->peer_cookie_len)) {
@@ -678,11 +968,17 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 				 "%s: recv data ns=%u, session nr=%u\n",
 				 session->name, ns, session->nr);
 		}
+<<<<<<< HEAD
 	}
 
 	/* Advance past L2-specific header, if present */
 	ptr += session->l2specific_len;
 
+=======
+		ptr += 4;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (L2TP_SKB_CB(skb)->has_seq) {
 		/* Received a packet with sequence numbers. If we're the LNS,
 		 * check if we sre sending sequence numbers and if not,
@@ -727,10 +1023,15 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 		}
 	}
 
+<<<<<<< HEAD
 	/* Session data offset is handled differently for L2TPv2 and
 	 * L2TPv3. For L2TPv2, there is an optional 16-bit value in
 	 * the header. For L2TPv3, the offset is negotiated using AVPs
 	 * in the session setup control protocol.
+=======
+	/* Session data offset is defined only for L2TPv2 and is
+	 * indicated by an optional 16-bit value in the header.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	if (tunnel->version == L2TP_HDR_VER_2) {
 		/* If offset bit set, skip it. */
@@ -738,8 +1039,12 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 			offset = ntohs(*(__be16 *)ptr);
 			ptr += 2 + offset;
 		}
+<<<<<<< HEAD
 	} else
 		ptr += session->offset;
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	offset = ptr - optr;
 	if (!pskb_may_pull(skb, offset))
@@ -766,6 +1071,7 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 	 * enabled. Saved L2TP protocol info is stored in skb->sb[].
 	 */
 	if (L2TP_SKB_CB(skb)->has_seq) {
+<<<<<<< HEAD
 		if (session->reorder_timeout != 0) {
 			/* Packet reordering enabled. Add skb to session's
 			 * reorder queue, in order of ns.
@@ -786,6 +1092,10 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 			}
 			skb_queue_tail(&session->reorder_q, skb);
 		}
+=======
+		if (l2tp_recv_data_seq(session, skb))
+			goto discard;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* No sequence numbers. Add the skb to the tail of the
 		 * reorder queue. This ensures that it will be
@@ -797,8 +1107,11 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
 	/* Try to dequeue as many skbs from reorder_q as we can. */
 	l2tp_recv_dequeue(session);
 
+<<<<<<< HEAD
 	l2tp_session_dec_refcount(session);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 
 discard:
@@ -807,8 +1120,11 @@ discard:
 
 	if (session->deref)
 		(*session->deref)(session);
+<<<<<<< HEAD
 
 	l2tp_session_dec_refcount(session);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(l2tp_recv_common);
 
@@ -845,14 +1161,22 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb,
 	u16 version;
 	int length;
 
+<<<<<<< HEAD
 	if (tunnel->sock && l2tp_verify_udp_checksum(tunnel->sock, skb))
 		goto discard_bad_csum;
+=======
+	/* UDP has verifed checksum */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* UDP always verifies the packet length. */
 	__skb_pull(skb, sizeof(struct udphdr));
 
 	/* Short packet? */
+<<<<<<< HEAD
 	if (!pskb_may_pull(skb, L2TP_HDR_SIZE_SEQ)) {
+=======
+	if (!pskb_may_pull(skb, L2TP_HDR_SIZE_MAX)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		l2tp_info(tunnel, L2TP_MSG_DATA,
 			  "%s: recv short packet (len=%d)\n",
 			  tunnel->name, skb->len);
@@ -916,8 +1240,19 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb,
 	}
 
 	/* Find the session context */
+<<<<<<< HEAD
 	session = l2tp_session_find(tunnel->l2tp_net, tunnel, session_id);
 	if (!session || !session->recv_skb) {
+=======
+	session = l2tp_session_get(tunnel->l2tp_net, tunnel, session_id, true);
+	if (!session || !session->recv_skb) {
+		if (session) {
+			if (session->deref)
+				session->deref(session);
+			l2tp_session_dec_refcount(session);
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Not found? Pass to userspace to deal with */
 		l2tp_info(tunnel, L2TP_MSG_DATA,
 			  "%s: no session found (%u/%u). Passing up.\n",
@@ -925,6 +1260,7 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb,
 		goto error;
 	}
 
+<<<<<<< HEAD
 	l2tp_recv_common(session, skb, ptr, optr, hdrflags, length, payload_hook);
 
 	return 0;
@@ -934,6 +1270,14 @@ discard_bad_csum:
 	UDP_INC_STATS_USER(tunnel->l2tp_net, UDP_MIB_INERRORS, 0);
 	atomic_long_inc(&tunnel->stats.rx_errors);
 	kfree_skb(skb);
+=======
+	if (tunnel->version == L2TP_HDR_VER_3 &&
+	    l2tp_v3_ensure_opt_in_linear(session, skb, &ptr, &optr))
+		goto error;
+
+	l2tp_recv_common(session, skb, ptr, optr, hdrflags, length, payload_hook);
+	l2tp_session_dec_refcount(session);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -1031,6 +1375,7 @@ static int l2tp_build_l2tpv3_header(struct l2tp_session *session, void *buf)
 		memcpy(bufp, &session->cookie[0], session->cookie_len);
 		bufp += session->cookie_len;
 	}
+<<<<<<< HEAD
 	if (session->l2specific_len) {
 		if (session->l2specific_type == L2TP_L2SPECTYPE_DEFAULT) {
 			u32 l2h = 0;
@@ -1049,6 +1394,23 @@ static int l2tp_build_l2tpv3_header(struct l2tp_session *session, void *buf)
 	}
 	if (session->offset)
 		bufp += session->offset;
+=======
+	if (session->l2specific_type == L2TP_L2SPECTYPE_DEFAULT) {
+		u32 l2h = 0;
+
+		if (session->send_seq) {
+			l2h = 0x40000000 | session->ns;
+			session->ns++;
+			session->ns &= 0xffffff;
+			l2tp_dbg(session, L2TP_MSG_SEQ,
+				 "%s: updated ns to %u\n",
+				 session->name, session->ns);
+		}
+
+		*((__be32 *)bufp) = htonl(l2h);
+		bufp += 4;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return bufp - optr;
 }
@@ -1078,6 +1440,7 @@ static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb,
 	}
 
 	/* Queue the packet to IP for output */
+<<<<<<< HEAD
 	skb->local_df = 1;
 #if IS_ENABLED(CONFIG_IPV6)
 	if (skb->sk->sk_family == PF_INET6 && !tunnel->v4mapped)
@@ -1085,6 +1448,16 @@ static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb,
 	else
 #endif
 		error = ip_queue_xmit(skb, fl);
+=======
+	skb->ignore_df = 1;
+	skb_dst_drop(skb);
+#if IS_ENABLED(CONFIG_IPV6)
+	if (l2tp_sk_is_v6(tunnel->sock))
+		error = inet6_csk_xmit(tunnel->sock, skb, NULL);
+	else
+#endif
+		error = ip_queue_xmit(tunnel->sock, skb, fl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Update stats */
 	if (error >= 0) {
@@ -1100,6 +1473,7 @@ static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Automatically called when the skb is freed.
  */
 static void l2tp_sock_wfree(struct sk_buff *skb)
@@ -1142,6 +1516,8 @@ static void l2tp_xmit_ipv6_csum(struct sock *sk, struct sk_buff *skb,
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* If caller requires the skb to have a ppp header, the header must be
  * inserted in the skb data before calling this function.
  */
@@ -1153,7 +1529,10 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
 	struct flowi *fl;
 	struct udphdr *uh;
 	struct inet_sock *inet;
+<<<<<<< HEAD
 	__wsum csum;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int headroom;
 	int uhlen = (tunnel->encap == L2TP_ENCAPTYPE_UDP) ? sizeof(struct udphdr) : 0;
 	int udp_len;
@@ -1170,7 +1549,10 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
 		return NET_XMIT_DROP;
 	}
 
+<<<<<<< HEAD
 	skb_orphan(skb);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Setup L2TP header */
 	session->build_header(session, __skb_push(skb, hdr_len));
 
@@ -1187,9 +1569,20 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	/* Get routing info from the tunnel socket */
 	skb_dst_drop(skb);
 	skb_dst_set(skb, dst_clone(__sk_dst_check(sk, 0)));
+=======
+	/* The user-space may change the connection status for the user-space
+	 * provided socket at run time: we must check it under the socket lock
+	 */
+	if (tunnel->fd >= 0 && sk->sk_state != TCP_ESTABLISHED) {
+		kfree_skb(skb);
+		ret = NET_XMIT_DROP;
+		goto out_unlock;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	inet = inet_sk(sk);
 	fl = &inet->cork.fl;
@@ -1203,6 +1596,7 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
 		uh->dest = inet->inet_dport;
 		udp_len = uhlen + hdr_len + data_len;
 		uh->len = htons(udp_len);
+<<<<<<< HEAD
 		uh->check = 0;
 
 		/* Calculate UDP checksum if configured to do so */
@@ -1230,14 +1624,30 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
 						       inet->inet_daddr,
 						       udp_len, IPPROTO_UDP, 0);
 		}
+=======
+
+		/* Calculate UDP checksum if configured to do so */
+#if IS_ENABLED(CONFIG_IPV6)
+		if (l2tp_sk_is_v6(sk))
+			udp6_set_csum(udp_get_no_check6_tx(sk),
+				      skb, &inet6_sk(sk)->saddr,
+				      &sk->sk_v6_daddr, udp_len);
+		else
+#endif
+		udp_set_csum(sk->sk_no_check_tx, skb, inet->inet_saddr,
+			     inet->inet_daddr, udp_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case L2TP_ENCAPTYPE_IP:
 		break;
 	}
 
+<<<<<<< HEAD
 	l2tp_skb_set_owner_w(skb, sk);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	l2tp_xmit_core(session, skb, fl, data_len);
 out_unlock:
 	bh_unlock_sock(sk);
@@ -1280,7 +1690,10 @@ static void l2tp_tunnel_destruct(struct sock *sk)
 	/* Remove hooks into tunnel socket */
 	sk->sk_destruct = tunnel->old_sk_destruct;
 	sk->sk_user_data = NULL;
+<<<<<<< HEAD
 	tunnel->sock = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Remove the tunnel struct from the tunnel list */
 	pn = l2tp_pernet(tunnel->l2tp_net);
@@ -1290,6 +1703,11 @@ static void l2tp_tunnel_destruct(struct sock *sk)
 	atomic_dec(&l2tp_tunnel_count);
 
 	l2tp_tunnel_closeall(tunnel);
+<<<<<<< HEAD
+=======
+
+	tunnel->sock = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	l2tp_tunnel_dec_refcount(tunnel);
 
 	/* Call the original destructor */
@@ -1314,6 +1732,10 @@ void l2tp_tunnel_closeall(struct l2tp_tunnel *tunnel)
 		  tunnel->name);
 
 	write_lock_bh(&tunnel->hlist_lock);
+<<<<<<< HEAD
+=======
+	tunnel->acpt_newsess = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (hash = 0; hash < L2TP_HASH_SIZE; hash++) {
 again:
 		hlist_for_each_safe(walk, tmp, &tunnel->session_hlist[hash]) {
@@ -1324,6 +1746,12 @@ again:
 
 			hlist_del_init(&session->hlist);
 
+<<<<<<< HEAD
+=======
+			if (test_and_set_bit(0, &session->dead))
+				goto again;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (session->ref != NULL)
 				(*session->ref)(session);
 
@@ -1364,6 +1792,7 @@ static void l2tp_udp_encap_destroy(struct sock *sk)
 	}
 }
 
+<<<<<<< HEAD
 /* Really kill the tunnel.
  * Come here only when all sessions have been cleared from the tunnel.
  */
@@ -1375,6 +1804,8 @@ static void l2tp_tunnel_free(struct l2tp_tunnel *tunnel)
 	kfree_rcu(tunnel, rcu);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Workqueue tunnel deletion function */
 static void l2tp_tunnel_del_work(struct work_struct *work)
 {
@@ -1383,6 +1814,12 @@ static void l2tp_tunnel_del_work(struct work_struct *work)
 	struct sock *sk = NULL;
 
 	tunnel = container_of(work, struct l2tp_tunnel, del_work);
+<<<<<<< HEAD
+=======
+
+	l2tp_tunnel_closeall(tunnel);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sk = l2tp_tunnel_sock_lookup(tunnel);
 	if (!sk)
 		goto out;
@@ -1400,9 +1837,16 @@ static void l2tp_tunnel_del_work(struct work_struct *work)
 		if (sock)
 			inet_shutdown(sock, 2);
 	} else {
+<<<<<<< HEAD
 		if (sock)
 			kernel_sock_shutdown(sock, SHUT_RDWR);
 		sk_release_kernel(sk);
+=======
+		if (sock) {
+			kernel_sock_shutdown(sock, SHUT_RDWR);
+			sock_release(sock);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	l2tp_tunnel_sock_put(sk);
@@ -1427,6 +1871,7 @@ static int l2tp_tunnel_sock_create(struct net *net,
 {
 	int err = -EINVAL;
 	struct socket *sock = NULL;
+<<<<<<< HEAD
 	struct sockaddr_in udp_addr = {0};
 	struct sockaddr_l2tpip ip_addr = {0};
 #if IS_ENABLED(CONFIG_IPV6)
@@ -1491,19 +1936,62 @@ static int l2tp_tunnel_sock_create(struct net *net,
 
 		if (!cfg->use_udp_checksums)
 			sock->sk->sk_no_check = UDP_CSUM_NOXMIT;
+=======
+	struct udp_port_cfg udp_conf;
+
+	switch (cfg->encap) {
+	case L2TP_ENCAPTYPE_UDP:
+		memset(&udp_conf, 0, sizeof(udp_conf));
+
+#if IS_ENABLED(CONFIG_IPV6)
+		if (cfg->local_ip6 && cfg->peer_ip6) {
+			udp_conf.family = AF_INET6;
+			memcpy(&udp_conf.local_ip6, cfg->local_ip6,
+			       sizeof(udp_conf.local_ip6));
+			memcpy(&udp_conf.peer_ip6, cfg->peer_ip6,
+			       sizeof(udp_conf.peer_ip6));
+			udp_conf.use_udp6_tx_checksums =
+			  ! cfg->udp6_zero_tx_checksums;
+			udp_conf.use_udp6_rx_checksums =
+			  ! cfg->udp6_zero_rx_checksums;
+		} else
+#endif
+		{
+			udp_conf.family = AF_INET;
+			udp_conf.local_ip = cfg->local_ip;
+			udp_conf.peer_ip = cfg->peer_ip;
+			udp_conf.use_udp_checksums = cfg->use_udp_checksums;
+		}
+
+		udp_conf.local_udp_port = htons(cfg->local_udp_port);
+		udp_conf.peer_udp_port = htons(cfg->peer_udp_port);
+
+		err = udp_sock_create(net, &udp_conf, &sock);
+		if (err < 0)
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		break;
 
 	case L2TP_ENCAPTYPE_IP:
 #if IS_ENABLED(CONFIG_IPV6)
 		if (cfg->local_ip6 && cfg->peer_ip6) {
+<<<<<<< HEAD
 			err = sock_create_kern(AF_INET6, SOCK_DGRAM,
+=======
+			struct sockaddr_l2tpip6 ip6_addr = {0};
+
+			err = sock_create_kern(net, AF_INET6, SOCK_DGRAM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  IPPROTO_L2TP, &sock);
 			if (err < 0)
 				goto out;
 
+<<<<<<< HEAD
 			sk_change_net(sock->sk, net);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ip6_addr.l2tp_family = AF_INET6;
 			memcpy(&ip6_addr.l2tp_addr, cfg->local_ip6,
 			       sizeof(ip6_addr.l2tp_addr));
@@ -1525,13 +2013,22 @@ static int l2tp_tunnel_sock_create(struct net *net,
 		} else
 #endif
 		{
+<<<<<<< HEAD
 			err = sock_create_kern(AF_INET, SOCK_DGRAM,
+=======
+			struct sockaddr_l2tpip ip_addr = {0};
+
+			err = sock_create_kern(net, AF_INET, SOCK_DGRAM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  IPPROTO_L2TP, &sock);
 			if (err < 0)
 				goto out;
 
+<<<<<<< HEAD
 			sk_change_net(sock->sk, net);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ip_addr.l2tp_family = AF_INET;
 			ip_addr.l2tp_addr = cfg->local_ip;
 			ip_addr.l2tp_conn_id = tunnel_id;
@@ -1558,7 +2055,11 @@ out:
 	*sockp = sock;
 	if ((err < 0) && sock) {
 		kernel_sock_shutdown(sock, SHUT_RDWR);
+<<<<<<< HEAD
 		sk_release_kernel(sock->sk);
+=======
+		sock_release(sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*sockp = NULL;
 	}
 
@@ -1608,9 +2109,22 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 
 		encap = cfg->encap;
 
 	/* Quick sanity checks */
+<<<<<<< HEAD
 	switch (encap) {
 	case L2TP_ENCAPTYPE_UDP:
 		err = -EPROTONOSUPPORT;
+=======
+	err = -EPROTONOSUPPORT;
+	if (sk->sk_type != SOCK_DGRAM) {
+		pr_debug("tunl %hu: fd %d wrong socket type\n",
+			 tunnel_id, fd);
+		goto err;
+	}
+	if (sk->sk_family != PF_INET && sk->sk_family != PF_INET6)
+		goto err;
+	switch (encap) {
+	case L2TP_ENCAPTYPE_UDP:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (sk->sk_protocol != IPPROTO_UDP) {
 			pr_err("tunl %hu: fd %d wrong protocol, got %d, expected %d\n",
 			       tunnel_id, fd, sk->sk_protocol, IPPROTO_UDP);
@@ -1618,7 +2132,10 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 
 		}
 		break;
 	case L2TP_ENCAPTYPE_IP:
+<<<<<<< HEAD
 		err = -EPROTONOSUPPORT;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (sk->sk_protocol != IPPROTO_L2TP) {
 			pr_err("tunl %hu: fd %d wrong protocol, got %d, expected %d\n",
 			       tunnel_id, fd, sk->sk_protocol, IPPROTO_L2TP);
@@ -1649,6 +2166,10 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 
 	tunnel->magic = L2TP_TUNNEL_MAGIC;
 	sprintf(&tunnel->name[0], "tunl %u", tunnel_id);
 	rwlock_init(&tunnel->hlist_lock);
+<<<<<<< HEAD
+=======
+	tunnel->acpt_newsess = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* The net we belong to */
 	tunnel->l2tp_net = net;
@@ -1657,6 +2178,7 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 
 	if (cfg != NULL)
 		tunnel->debug = cfg->debug;
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_IPV6)
 	if (sk->sk_family == PF_INET6) {
 		struct ipv6_pinfo *np = inet6_sk(sk);
@@ -1691,6 +2213,22 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 
 	}
 
 	sk->sk_user_data = tunnel;
+=======
+	/* Mark socket as an encapsulation socket. See net/ipv4/udp.c */
+	tunnel->encap = encap;
+	if (encap == L2TP_ENCAPTYPE_UDP) {
+		struct udp_tunnel_sock_cfg udp_cfg = { };
+
+		udp_cfg.sk_user_data = tunnel;
+		udp_cfg.encap_type = UDP_ENCAP_L2TPINUDP;
+		udp_cfg.encap_rcv = l2tp_udp_encap_recv;
+		udp_cfg.encap_destroy = l2tp_udp_encap_destroy;
+
+		setup_udp_tunnel_sock(net, sock, &udp_cfg);
+	} else {
+		sk->sk_user_data = tunnel;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Hook on the tunnel socket destructor so that we can cleanup
 	 * if the tunnel socket goes away.
@@ -1735,6 +2273,7 @@ EXPORT_SYMBOL_GPL(l2tp_tunnel_create);
 
 /* This function is used by the netlink TUNNEL_DELETE command.
  */
+<<<<<<< HEAD
 int l2tp_tunnel_delete(struct l2tp_tunnel *tunnel)
 {
 	l2tp_tunnel_inc_refcount(tunnel);
@@ -1744,6 +2283,14 @@ int l2tp_tunnel_delete(struct l2tp_tunnel *tunnel)
 		return 1;
 	}
 	return 0;
+=======
+void l2tp_tunnel_delete(struct l2tp_tunnel *tunnel)
+{
+	if (!test_and_set_bit(0, &tunnel->dead)) {
+		l2tp_tunnel_inc_refcount(tunnel);
+		queue_work(l2tp_wq, &tunnel->del_work);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(l2tp_tunnel_delete);
 
@@ -1765,8 +2312,11 @@ void l2tp_session_free(struct l2tp_session *session)
 	}
 
 	kfree(session);
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(l2tp_session_free);
 
@@ -1803,6 +2353,12 @@ EXPORT_SYMBOL_GPL(__l2tp_session_unhash);
  */
 int l2tp_session_delete(struct l2tp_session *session)
 {
+<<<<<<< HEAD
+=======
+	if (test_and_set_bit(0, &session->dead))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (session->ref)
 		(*session->ref)(session);
 	__l2tp_session_unhash(session);
@@ -1817,21 +2373,36 @@ int l2tp_session_delete(struct l2tp_session *session)
 EXPORT_SYMBOL_GPL(l2tp_session_delete);
 
 /* We come here whenever a session's send_seq, cookie_len or
+<<<<<<< HEAD
  * l2specific_len parameters are set.
  */
 static void l2tp_session_set_header_len(struct l2tp_session *session, int version)
+=======
+ * l2specific_type parameters are set.
+ */
+void l2tp_session_set_header_len(struct l2tp_session *session, int version)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (version == L2TP_HDR_VER_2) {
 		session->hdr_len = 6;
 		if (session->send_seq)
 			session->hdr_len += 4;
 	} else {
+<<<<<<< HEAD
 		session->hdr_len = 4 + session->cookie_len + session->l2specific_len + session->offset;
+=======
+		session->hdr_len = 4 + session->cookie_len;
+		session->hdr_len += l2tp_get_l2specific_len(session);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (session->tunnel->encap == L2TP_ENCAPTYPE_UDP)
 			session->hdr_len += 4;
 	}
 
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(l2tp_session_set_header_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct l2tp_session *l2tp_session_create(int priv_size, struct l2tp_tunnel *tunnel, u32 session_id, u32 peer_session_id, struct l2tp_session_cfg *cfg)
 {
@@ -1845,6 +2416,18 @@ struct l2tp_session *l2tp_session_create(int priv_size, struct l2tp_tunnel *tunn
 		session->session_id = session_id;
 		session->peer_session_id = peer_session_id;
 		session->nr = 0;
+<<<<<<< HEAD
+=======
+		if (tunnel->version == L2TP_HDR_VER_2)
+			session->nr_max = 0xffff;
+		else
+			session->nr_max = 0xffffff;
+		session->nr_window_size = session->nr_max / 2;
+		session->nr_oos_count_max = 4;
+
+		/* Use NR of first received packet */
+		session->reorder_skip = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		sprintf(&session->name[0], "sess %u/%u",
 			tunnel->tunnel_id, session->session_id);
@@ -1866,7 +2449,10 @@ struct l2tp_session *l2tp_session_create(int priv_size, struct l2tp_tunnel *tunn
 			session->recv_seq = cfg->recv_seq;
 			session->lns_mode = cfg->lns_mode;
 			session->reorder_timeout = cfg->reorder_timeout;
+<<<<<<< HEAD
 			session->offset = cfg->offset;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			session->l2specific_type = cfg->l2specific_type;
 			session->l2specific_len = cfg->l2specific_len;
 			session->cookie_len = cfg->cookie_len;
@@ -1882,6 +2468,7 @@ struct l2tp_session *l2tp_session_create(int priv_size, struct l2tp_tunnel *tunn
 
 		l2tp_session_set_header_len(session, tunnel->version);
 
+<<<<<<< HEAD
 		/* Bump the reference count. The session context is deleted
 		 * only when this drops to zero.
 		 */
@@ -1913,6 +2500,14 @@ struct l2tp_session *l2tp_session_create(int priv_size, struct l2tp_tunnel *tunn
 	}
 
 	return session;
+=======
+		l2tp_session_inc_refcount(session);
+
+		return session;
+	}
+
+	return ERR_PTR(-ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(l2tp_session_create);
 
@@ -1943,9 +2538,19 @@ static __net_exit void l2tp_exit_net(struct net *net)
 
 	rcu_read_lock_bh();
 	list_for_each_entry_rcu(tunnel, &pn->l2tp_tunnel_list, list) {
+<<<<<<< HEAD
 		(void)l2tp_tunnel_delete(tunnel);
 	}
 	rcu_read_unlock_bh();
+=======
+		l2tp_tunnel_delete(tunnel);
+	}
+	rcu_read_unlock_bh();
+
+	if (l2tp_wq)
+		flush_workqueue(l2tp_wq);
+	rcu_barrier();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pernet_operations l2tp_net_ops = {
@@ -1963,9 +2568,16 @@ static int __init l2tp_init(void)
 	if (rc)
 		goto out;
 
+<<<<<<< HEAD
 	l2tp_wq = alloc_workqueue("l2tp", WQ_NON_REENTRANT | WQ_UNBOUND, 0);
 	if (!l2tp_wq) {
 		pr_err("alloc_workqueue failed\n");
+=======
+	l2tp_wq = alloc_workqueue("l2tp", WQ_UNBOUND, 0);
+	if (!l2tp_wq) {
+		pr_err("alloc_workqueue failed\n");
+		unregister_pernet_device(&l2tp_net_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -ENOMEM;
 		goto out;
 	}

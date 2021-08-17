@@ -24,6 +24,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -34,6 +35,14 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -43,9 +52,12 @@
  *    Hui Huang             <hui.huang@nokia.com>
  *    Sridhar Samudrala	    <sri@us.ibm.com>
  *    Ardelle Fan	    <ardelle.fan@intel.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -79,7 +91,11 @@ static struct sctp_transport *sctp_transport_init(struct net *net,
 	 */
 	peer->rto = msecs_to_jiffies(net->sctp.rto_initial);
 
+<<<<<<< HEAD
 	peer->last_time_heard = jiffies;
+=======
+	peer->last_time_heard = ktime_set(0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	peer->last_time_ecne_reduced = jiffies;
 
 	peer->param_flags = SPP_HB_DISABLE |
@@ -116,7 +132,11 @@ struct sctp_transport *sctp_transport_new(struct net *net,
 {
 	struct sctp_transport *transport;
 
+<<<<<<< HEAD
 	transport = t_new(struct sctp_transport, gfp);
+=======
+	transport = kzalloc(sizeof(*transport), gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!transport)
 		goto fail;
 
@@ -139,8 +159,11 @@ fail:
  */
 void sctp_transport_free(struct sctp_transport *transport)
 {
+<<<<<<< HEAD
 	transport->dead = 1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Try to delete the heartbeat timer.  */
 	if (del_timer(&transport->hb_timer))
 		sctp_transport_put(transport);
@@ -155,7 +178,11 @@ void sctp_transport_free(struct sctp_transport *transport)
 
 	/* Delete the ICMP proto unreachable timer if it's active. */
 	if (del_timer(&transport->proto_unreach_timer))
+<<<<<<< HEAD
 		sctp_association_put(transport->asoc);
+=======
+		sctp_transport_put(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sctp_transport_put(transport);
 }
@@ -176,20 +203,36 @@ static void sctp_transport_destroy_rcu(struct rcu_head *head)
  */
 static void sctp_transport_destroy(struct sctp_transport *transport)
 {
+<<<<<<< HEAD
 	SCTP_ASSERT(transport->dead, "Transport is not dead", return);
 
 	call_rcu(&transport->rcu, sctp_transport_destroy_rcu);
+=======
+	if (unlikely(atomic_read(&transport->refcnt))) {
+		WARN(1, "Attempt to destroy undead transport %p!\n", transport);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sctp_packet_free(&transport->packet);
 
 	if (transport->asoc)
 		sctp_association_put(transport->asoc);
+<<<<<<< HEAD
+=======
+
+	call_rcu(&transport->rcu, sctp_transport_destroy_rcu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Start T3_rtx timer if it is not already running and update the heartbeat
  * timer.  This routine is called every time a DATA chunk is sent.
  */
+<<<<<<< HEAD
 void sctp_transport_reset_timers(struct sctp_transport *transport)
+=======
+void sctp_transport_reset_t3_rtx(struct sctp_transport *transport)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* RFC 2960 6.3.2 Retransmission Timer Rules
 	 *
@@ -203,11 +246,27 @@ void sctp_transport_reset_timers(struct sctp_transport *transport)
 		if (!mod_timer(&transport->T3_rtx_timer,
 			       jiffies + transport->rto))
 			sctp_transport_hold(transport);
+<<<<<<< HEAD
 
 	/* When a data chunk is sent, reset the heartbeat interval.  */
 	if (!mod_timer(&transport->hb_timer,
 		       sctp_transport_timeout(transport)))
 	    sctp_transport_hold(transport);
+=======
+}
+
+void sctp_transport_reset_hb_timer(struct sctp_transport *transport)
+{
+	unsigned long expires;
+
+	/* When a data chunk is sent, reset the heartbeat interval.  */
+	expires = jiffies + sctp_transport_timeout(transport);
+	if ((time_before(transport->hb_timer.expires, expires) ||
+	     !timer_pending(&transport->hb_timer)) &&
+	    !mod_timer(&transport->hb_timer,
+		       expires + prandom_u32_max(transport->rto)))
+		sctp_transport_hold(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* This transport has been assigned to an association.
@@ -232,7 +291,11 @@ void sctp_transport_pmtu(struct sctp_transport *transport, struct sock *sk)
 	}
 
 	if (transport->dst) {
+<<<<<<< HEAD
 		transport->pathmtu = dst_mtu(transport->dst);
+=======
+		transport->pathmtu = SCTP_TRUNC4(dst_mtu(transport->dst));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		transport->pathmtu = SCTP_DEFAULT_MAXSEGMENT;
 }
@@ -286,23 +349,38 @@ void sctp_transport_route(struct sctp_transport *transport,
 		return;
 	}
 	if (transport->dst) {
+<<<<<<< HEAD
 		transport->pathmtu = dst_mtu(transport->dst);
+=======
+		transport->pathmtu = SCTP_TRUNC4(dst_mtu(transport->dst));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Initialize sk->sk_rcv_saddr, if the transport is the
 		 * association's active path for getsockname().
 		 */
 		if (asoc && (!asoc->peer.primary_path ||
 				(transport == asoc->peer.active_path)))
+<<<<<<< HEAD
 			opt->pf->af->to_sk_saddr(&transport->saddr,
 						 asoc->base.sk);
+=======
+			opt->pf->to_sk_saddr(&transport->saddr,
+					     asoc->base.sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		transport->pathmtu = SCTP_DEFAULT_MAXSEGMENT;
 }
 
 /* Hold a reference to a transport.  */
+<<<<<<< HEAD
 void sctp_transport_hold(struct sctp_transport *transport)
 {
 	atomic_inc(&transport->refcnt);
+=======
+int sctp_transport_hold(struct sctp_transport *transport)
+{
+	return atomic_add_unless(&transport->refcnt, 1, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Release a reference to a transport and clean up
@@ -317,11 +395,17 @@ void sctp_transport_put(struct sctp_transport *transport)
 /* Update transport's RTO based on the newly calculated RTT. */
 void sctp_transport_update_rto(struct sctp_transport *tp, __u32 rtt)
 {
+<<<<<<< HEAD
 	/* Check for valid transport.  */
 	SCTP_ASSERT(tp, "NULL transport", return);
 
 	/* We should not be doing any RTO updates unless rto_pending is set.  */
 	SCTP_ASSERT(tp->rto_pending, "rto_pending not set", return);
+=======
+	if (unlikely(!tp->rto_pending))
+		/* We should not be doing any RTO updates unless rto_pending is set.  */
+		pr_debug("%s: rto_pending not set on transport %p!\n", __func__, tp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (tp->rttvar || tp->srtt) {
 		struct net *net = sock_net(tp->asoc->base.sk);
@@ -337,7 +421,11 @@ void sctp_transport_update_rto(struct sctp_transport *tp, __u32 rtt)
 		 * 1/8, rto_alpha would be expressed as 3.
 		 */
 		tp->rttvar = tp->rttvar - (tp->rttvar >> net->sctp.rto_beta)
+<<<<<<< HEAD
 			+ (((__u32)abs64((__s64)tp->srtt - (__s64)rtt)) >> net->sctp.rto_beta);
+=======
+			+ (((__u32)abs((__s64)tp->srtt - (__s64)rtt)) >> net->sctp.rto_beta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tp->srtt = tp->srtt - (tp->srtt >> net->sctp.rto_alpha)
 			+ (rtt >> net->sctp.rto_alpha);
 	} else {
@@ -377,9 +465,14 @@ void sctp_transport_update_rto(struct sctp_transport *tp, __u32 rtt)
 	 */
 	tp->rto_pending = 0;
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("%s: transport: %p, rtt: %d, srtt: %d "
 			  "rttvar: %d, rto: %ld\n", __func__,
 			  tp, rtt, tp->srtt, tp->rttvar, tp->rto);
+=======
+	pr_debug("%s: transport:%p, rtt:%d, srtt:%d rttvar:%d, rto:%ld\n",
+		 __func__, tp, rtt, tp->srtt, tp->rttvar, tp->rto);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* This routine updates the transport's cwnd and partial_bytes_acked
@@ -433,12 +526,20 @@ void sctp_transport_raise_cwnd(struct sctp_transport *transport,
 			cwnd += pmtu;
 		else
 			cwnd += bytes_acked;
+<<<<<<< HEAD
 		SCTP_DEBUG_PRINTK("%s: SLOW START: transport: %p, "
 				  "bytes_acked: %d, cwnd: %d, ssthresh: %d, "
 				  "flight_size: %d, pba: %d\n",
 				  __func__,
 				  transport, bytes_acked, cwnd,
 				  ssthresh, flight_size, pba);
+=======
+
+		pr_debug("%s: slow start: transport:%p, bytes_acked:%d, "
+			 "cwnd:%d, ssthresh:%d, flight_size:%d, pba:%d\n",
+			 __func__, transport, bytes_acked, cwnd, ssthresh,
+			 flight_size, pba);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* RFC 2960 7.2.2 Whenever cwnd is greater than ssthresh,
 		 * upon each SACK arrival that advances the Cumulative TSN Ack
@@ -459,12 +560,21 @@ void sctp_transport_raise_cwnd(struct sctp_transport *transport,
 			cwnd += pmtu;
 			pba = ((cwnd < pba) ? (pba - cwnd) : 0);
 		}
+<<<<<<< HEAD
 		SCTP_DEBUG_PRINTK("%s: CONGESTION AVOIDANCE: "
 				  "transport: %p, bytes_acked: %d, cwnd: %d, "
 				  "ssthresh: %d, flight_size: %d, pba: %d\n",
 				  __func__,
 				  transport, bytes_acked, cwnd,
 				  ssthresh, flight_size, pba);
+=======
+
+		pr_debug("%s: congestion avoidance: transport:%p, "
+			 "bytes_acked:%d, cwnd:%d, ssthresh:%d, "
+			 "flight_size:%d, pba:%d\n", __func__,
+			 transport, bytes_acked, cwnd, ssthresh,
+			 flight_size, pba);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	transport->cwnd = cwnd;
@@ -558,10 +668,17 @@ void sctp_transport_lower_cwnd(struct sctp_transport *transport,
 	}
 
 	transport->partial_bytes_acked = 0;
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("%s: transport: %p reason: %d cwnd: "
 			  "%d ssthresh: %d\n", __func__,
 			  transport, reason,
 			  transport->cwnd, transport->ssthresh);
+=======
+
+	pr_debug("%s: transport:%p, reason:%d, cwnd:%d, ssthresh:%d\n",
+		 __func__, transport, reason, transport->cwnd,
+		 transport->ssthresh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Apply Max.Burst limit to the congestion window:
@@ -580,7 +697,11 @@ void sctp_transport_burst_limited(struct sctp_transport *t)
 	u32 old_cwnd = t->cwnd;
 	u32 max_burst_bytes;
 
+<<<<<<< HEAD
 	if (t->burst_limited)
+=======
+	if (t->burst_limited || asoc->max_burst == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	max_burst_bytes = t->flight_size + (asoc->max_burst * asoc->pathmtu);
@@ -602,6 +723,7 @@ void sctp_transport_burst_reset(struct sctp_transport *t)
 }
 
 /* What is the next timeout value for this transport? */
+<<<<<<< HEAD
 unsigned long sctp_transport_timeout(struct sctp_transport *t)
 {
 	unsigned long timeout;
@@ -611,6 +733,18 @@ unsigned long sctp_transport_timeout(struct sctp_transport *t)
 		timeout += t->hbinterval;
 	timeout += jiffies;
 	return timeout;
+=======
+unsigned long sctp_transport_timeout(struct sctp_transport *trans)
+{
+	/* RTO + timer slack +/- 50% of RTO */
+	unsigned long timeout = trans->rto >> 1;
+
+	if (trans->state != SCTP_UNCONFIRMED &&
+	    trans->state != SCTP_PF)
+		timeout += trans->hbinterval;
+
+	return max_t(unsigned long, timeout, HZ / 5);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Reset transport variables to their initial values */
@@ -660,5 +794,8 @@ void sctp_transport_immediate_rtx(struct sctp_transport *t)
 		if (!mod_timer(&t->T3_rtx_timer, jiffies + t->rto))
 			sctp_transport_hold(t);
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

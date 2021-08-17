@@ -18,7 +18,10 @@ config BLACKFIN
 	select HAVE_FTRACE_MCOUNT_RECORD
 	select HAVE_FUNCTION_GRAPH_TRACER
 	select HAVE_FUNCTION_TRACER
+<<<<<<< HEAD
 	select HAVE_FUNCTION_TRACE_MCOUNT_TEST
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select HAVE_IDE
 	select HAVE_KERNEL_GZIP if RAMKERNEL
 	select HAVE_KERNEL_BZIP2 if RAMKERNEL
@@ -27,20 +30,35 @@ config BLACKFIN
 	select HAVE_OPROFILE
 	select HAVE_PERF_EVENTS
 	select ARCH_HAVE_CUSTOM_GPIO_H
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select HAVE_UID16
 	select HAVE_UNDERSCORE_SYMBOL_PREFIX
 	select VIRT_TO_BUS
 	select ARCH_WANT_IPC_PARSE_VERSION
+<<<<<<< HEAD
 	select HAVE_GENERIC_HARDIRQS
 	select GENERIC_ATOMIC64
 	select GENERIC_IRQ_PROBE
 	select USE_GENERIC_SMP_HELPERS if SMP
+=======
+	select GENERIC_ATOMIC64
+	select GENERIC_IRQ_PROBE
+	select GENERIC_IRQ_SHOW
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select HAVE_NMI_WATCHDOG if NMI_WATCHDOG
 	select GENERIC_SMP_IDLE_THREAD
 	select ARCH_USES_GETTIMEOFFSET if !GENERIC_CLOCKEVENTS
 	select HAVE_MOD_ARCH_SPECIFIC
 	select MODULES_USE_ELF_RELA
+<<<<<<< HEAD
+=======
+	select HAVE_DEBUG_STACKOVERFLOW
+	select HAVE_NMI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config GENERIC_CSUM
 	def_bool y
@@ -253,7 +271,11 @@ config NR_CPUS
 
 config HOTPLUG_CPU
 	bool "Support for hot-pluggable CPUs"
+<<<<<<< HEAD
 	depends on SMP && HOTPLUG
+=======
+	depends on SMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default y
 
 config BF_REV_MIN
@@ -282,7 +304,11 @@ config BF_REV_0_0
 
 config BF_REV_0_1
 	bool "0.1"
+<<<<<<< HEAD
 	depends on (BF51x || BF52x || (BF54x && !BF54xM))
+=======
+	depends on (BF51x || BF52x || (BF54x && !BF54xM) || BF60x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config BF_REV_0_2
 	bool "0.2"
@@ -317,6 +343,20 @@ config BF53x
 	depends on (BF531 || BF532 || BF533 || BF534 || BF536 || BF537)
 	default y
 
+<<<<<<< HEAD
+=======
+config GPIO_ADI
+	def_bool y
+	depends on !PINCTRL
+	depends on (BF51x || BF52x || BF53x || BF538 || BF539 || BF561)
+
+config PINCTRL_BLACKFIN_ADI2
+	def_bool y
+	depends on (BF54x || BF60x)
+	select PINCTRL
+	select PINCTRL_ADI2
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config MEM_MT48LC64M4A2FB_7E
 	bool
 	depends on (BFIN533_STAMP)
@@ -664,7 +704,11 @@ config TICKSOURCE_CORETMR
 	default y
 endmenu
 
+<<<<<<< HEAD
 menu "Clock souce"
+=======
+menu "Clock source"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on GENERIC_CLOCKEVENTS
 config CYCLES_CLOCKSOURCE
 	bool "CYCLES"
@@ -860,6 +904,7 @@ config SYS_BFIN_SPINLOCK_L1
 	  If enabled, sys_bfin_spinlock function is linked
 	  into L1 instruction memory. (less latency)
 
+<<<<<<< HEAD
 config IP_CHECKSUM_L1
 	bool "Locate IP Checksum function in L1 Memory"
 	default n
@@ -868,6 +913,8 @@ config IP_CHECKSUM_L1
 	  If enabled, the IP Checksum function is linked
 	  into L1 instruction memory. (less latency)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config CACHELINE_ALIGNED_L1
 	bool "Locate cacheline_aligned data to L1 Data Memory"
 	default y if !BF54x
@@ -1234,8 +1281,11 @@ source "drivers/pci/Kconfig"
 
 source "drivers/pcmcia/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/pci/hotplug/Kconfig"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu
 
 menu "Executable file formats"
@@ -1429,7 +1479,10 @@ source "drivers/cpufreq/Kconfig"
 config BFIN_CPU_FREQ
 	bool
 	depends on CPU_FREQ
+<<<<<<< HEAD
 	select CPU_FREQ_TABLE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default y
 
 config CPU_VOLTAGE

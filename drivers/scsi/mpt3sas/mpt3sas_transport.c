@@ -2,8 +2,14 @@
  * SAS Transport Layer for MPT (Message Passing Technology) based controllers
  *
  * This code is based on drivers/scsi/mpt3sas/mpt3sas_transport.c
+<<<<<<< HEAD
  * Copyright (C) 2012  LSI Corporation
  *  (mailto:DL-MPTFusionLinux@lsi.com)
+=======
+ * Copyright (C) 2012-2014  LSI Corporation
+ * Copyright (C) 2013-2014 Avago Technologies
+ *  (mailto: MPT-FusionLinux.pdl@avagotech.com)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -299,7 +305,10 @@ _transport_expander_report_manufacture(struct MPT3SAS_ADAPTER *ioc,
 	int rc;
 	u16 smid;
 	u32 ioc_state;
+<<<<<<< HEAD
 	unsigned long timeleft;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *psge;
 	u8 issue_reset = 0;
 	void *data_out = NULL;
@@ -393,8 +402,12 @@ _transport_expander_report_manufacture(struct MPT3SAS_ADAPTER *ioc,
 		ioc->name, (unsigned long long)sas_address));
 	init_completion(&ioc->transport_cmds.done);
 	mpt3sas_base_put_smid_default(ioc, smid);
+<<<<<<< HEAD
 	timeleft = wait_for_completion_timeout(&ioc->transport_cmds.done,
 	    10*HZ);
+=======
+	wait_for_completion_timeout(&ioc->transport_cmds.done, 10*HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(ioc->transport_cmds.status & MPT3_CMD_COMPLETE)) {
 		pr_err(MPT3SAS_FMT "%s: timeout\n",
@@ -445,8 +458,12 @@ _transport_expander_report_manufacture(struct MPT3SAS_ADAPTER *ioc,
 
  issue_host_reset:
 	if (issue_reset)
+<<<<<<< HEAD
 		mpt3sas_base_hard_reset_handler(ioc, CAN_SLEEP,
 		    FORCE_BIG_HAMMER);
+=======
+		mpt3sas_base_hard_reset_handler(ioc, FORCE_BIG_HAMMER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	ioc->transport_cmds.status = MPT3_CMD_NOT_USED;
 	if (data_out)
@@ -648,6 +665,10 @@ mpt3sas_transport_port_add(struct MPT3SAS_ADAPTER *ioc, u16 handle,
 	unsigned long flags;
 	struct _sas_node *sas_node;
 	struct sas_rphy *rphy;
+<<<<<<< HEAD
+=======
+	struct _sas_device *sas_device = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	struct sas_port *port;
 
@@ -703,6 +724,14 @@ mpt3sas_transport_port_add(struct MPT3SAS_ADAPTER *ioc, u16 handle,
 		goto out_fail;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!sas_node->parent_dev) {
+		pr_err(MPT3SAS_FMT "failure at %s:%d/%s()!\n",
+		    ioc->name, __FILE__, __LINE__, __func__);
+		goto out_fail;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	port = sas_port_alloc_num(sas_node->parent_dev);
 	if ((sas_port_add(port))) {
 		pr_err(MPT3SAS_FMT "failure at %s:%d/%s()!\n",
@@ -730,10 +759,35 @@ mpt3sas_transport_port_add(struct MPT3SAS_ADAPTER *ioc, u16 handle,
 		    mpt3sas_port->remote_identify.device_type);
 
 	rphy->identify = mpt3sas_port->remote_identify;
+<<<<<<< HEAD
+=======
+
+	if (mpt3sas_port->remote_identify.device_type == SAS_END_DEVICE) {
+		sas_device = mpt3sas_get_sdev_by_addr(ioc,
+				    mpt3sas_port->remote_identify.sas_address);
+		if (!sas_device) {
+			dfailprintk(ioc, printk(MPT3SAS_FMT
+				"failure at %s:%d/%s()!\n",
+				ioc->name, __FILE__, __LINE__, __func__));
+			goto out_fail;
+		}
+		sas_device->pend_sas_rphy_add = 1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((sas_rphy_add(rphy))) {
 		pr_err(MPT3SAS_FMT "failure at %s:%d/%s()!\n",
 		    ioc->name, __FILE__, __LINE__, __func__);
 	}
+<<<<<<< HEAD
+=======
+
+	if (mpt3sas_port->remote_identify.device_type == SAS_END_DEVICE) {
+		sas_device->pend_sas_rphy_add = 0;
+		sas_device_put(sas_device);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((ioc->logging_level & MPT_DEBUG_TRANSPORT))
 		dev_printk(KERN_INFO, &rphy->dev,
 			"add: handle(0x%04x), sas_addr(0x%016llx)\n",
@@ -1081,7 +1135,10 @@ _transport_get_expander_phy_error_log(struct MPT3SAS_ADAPTER *ioc,
 	int rc;
 	u16 smid;
 	u32 ioc_state;
+<<<<<<< HEAD
 	unsigned long timeleft;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *psge;
 	u8 issue_reset = 0;
 	void *data_out = NULL;
@@ -1177,8 +1234,12 @@ _transport_get_expander_phy_error_log(struct MPT3SAS_ADAPTER *ioc,
 		phy->number));
 	init_completion(&ioc->transport_cmds.done);
 	mpt3sas_base_put_smid_default(ioc, smid);
+<<<<<<< HEAD
 	timeleft = wait_for_completion_timeout(&ioc->transport_cmds.done,
 	    10*HZ);
+=======
+	wait_for_completion_timeout(&ioc->transport_cmds.done, 10*HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(ioc->transport_cmds.status & MPT3_CMD_COMPLETE)) {
 		pr_err(MPT3SAS_FMT "%s: timeout\n",
@@ -1227,8 +1288,12 @@ _transport_get_expander_phy_error_log(struct MPT3SAS_ADAPTER *ioc,
 
  issue_host_reset:
 	if (issue_reset)
+<<<<<<< HEAD
 		mpt3sas_base_hard_reset_handler(ioc, CAN_SLEEP,
 		    FORCE_BIG_HAMMER);
+=======
+		mpt3sas_base_hard_reset_handler(ioc, FORCE_BIG_HAMMER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	ioc->transport_cmds.status = MPT3_CMD_NOT_USED;
 	if (data_out)
@@ -1305,15 +1370,27 @@ _transport_get_enclosure_identifier(struct sas_rphy *rphy, u64 *identifier)
 	int rc;
 
 	spin_lock_irqsave(&ioc->sas_device_lock, flags);
+<<<<<<< HEAD
 	sas_device = mpt3sas_scsih_sas_device_find_by_sas_address(ioc,
+=======
+	sas_device = __mpt3sas_get_sdev_by_addr(ioc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    rphy->identify.sas_address);
 	if (sas_device) {
 		*identifier = sas_device->enclosure_logical_id;
 		rc = 0;
+<<<<<<< HEAD
+=======
+		sas_device_put(sas_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		*identifier = 0;
 		rc = -ENXIO;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&ioc->sas_device_lock, flags);
 	return rc;
 }
@@ -1333,12 +1410,23 @@ _transport_get_bay_identifier(struct sas_rphy *rphy)
 	int rc;
 
 	spin_lock_irqsave(&ioc->sas_device_lock, flags);
+<<<<<<< HEAD
 	sas_device = mpt3sas_scsih_sas_device_find_by_sas_address(ioc,
 	    rphy->identify.sas_address);
 	if (sas_device)
 		rc = sas_device->slot;
 	else
 		rc = -ENXIO;
+=======
+	sas_device = __mpt3sas_get_sdev_by_addr(ioc,
+	    rphy->identify.sas_address);
+	if (sas_device) {
+		rc = sas_device->slot;
+		sas_device_put(sas_device);
+	} else {
+		rc = -ENXIO;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&ioc->sas_device_lock, flags);
 	return rc;
 }
@@ -1391,9 +1479,13 @@ _transport_expander_phy_control(struct MPT3SAS_ADAPTER *ioc,
 	int rc;
 	u16 smid;
 	u32 ioc_state;
+<<<<<<< HEAD
 	unsigned long timeleft;
 	void *psge;
 	u32 sgl_flags;
+=======
+	void *psge;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 issue_reset = 0;
 	void *data_out = NULL;
 	dma_addr_t data_out_dma;
@@ -1482,6 +1574,7 @@ _transport_expander_phy_control(struct MPT3SAS_ADAPTER *ioc,
 	    cpu_to_le16(sizeof(struct phy_error_log_request));
 	psge = &mpi_request->SGL;
 
+<<<<<<< HEAD
 	/* WRITE sgel first */
 	sgl_flags = (MPI2_SGE_FLAGS_SIMPLE_ELEMENT |
 	    MPI2_SGE_FLAGS_END_OF_BUFFER | MPI2_SGE_FLAGS_HOST_TO_IOC);
@@ -1500,6 +1593,12 @@ _transport_expander_phy_control(struct MPT3SAS_ADAPTER *ioc,
 	ioc->base_add_sg_single(psge, sgl_flags |
 	    sizeof(struct phy_control_reply), data_out_dma +
 	    sizeof(struct phy_control_request));
+=======
+	ioc->build_sg(ioc, psge, data_out_dma,
+			    sizeof(struct phy_control_request),
+	    data_out_dma + sizeof(struct phy_control_request),
+	    sizeof(struct phy_control_reply));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dtransportprintk(ioc, pr_info(MPT3SAS_FMT
 		"phy_control - send to sas_addr(0x%016llx), phy(%d), opcode(%d)\n",
@@ -1507,8 +1606,12 @@ _transport_expander_phy_control(struct MPT3SAS_ADAPTER *ioc,
 		phy->number, phy_operation));
 	init_completion(&ioc->transport_cmds.done);
 	mpt3sas_base_put_smid_default(ioc, smid);
+<<<<<<< HEAD
 	timeleft = wait_for_completion_timeout(&ioc->transport_cmds.done,
 	    10*HZ);
+=======
+	wait_for_completion_timeout(&ioc->transport_cmds.done, 10*HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(ioc->transport_cmds.status & MPT3_CMD_COMPLETE)) {
 		pr_err(MPT3SAS_FMT "%s: timeout\n",
@@ -1549,8 +1652,12 @@ _transport_expander_phy_control(struct MPT3SAS_ADAPTER *ioc,
 
  issue_host_reset:
 	if (issue_reset)
+<<<<<<< HEAD
 		mpt3sas_base_hard_reset_handler(ioc, CAN_SLEEP,
 		    FORCE_BIG_HAMMER);
+=======
+		mpt3sas_base_hard_reset_handler(ioc, FORCE_BIG_HAMMER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	ioc->transport_cmds.status = MPT3_CMD_NOT_USED;
 	if (data_out)
@@ -1590,7 +1697,11 @@ _transport_phy_reset(struct sas_phy *phy, int hard_reset)
 		    SMP_PHY_CONTROL_LINK_RESET);
 
 	/* handle hba phys */
+<<<<<<< HEAD
 	memset(&mpi_request, 0, sizeof(Mpi2SasIoUnitControlReply_t));
+=======
+	memset(&mpi_request, 0, sizeof(Mpi2SasIoUnitControlRequest_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mpi_request.Function = MPI2_FUNCTION_SAS_IO_UNIT_CONTROL;
 	mpi_request.Operation = hard_reset ?
 	    MPI2_SAS_OP_PHY_HARD_RESET : MPI2_SAS_OP_PHY_LINK_RESET;
@@ -1881,10 +1992,16 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 	struct MPT3SAS_ADAPTER *ioc = shost_priv(shost);
 	Mpi2SmpPassthroughRequest_t *mpi_request;
 	Mpi2SmpPassthroughReply_t *mpi_reply;
+<<<<<<< HEAD
 	int rc, i;
 	u16 smid;
 	u32 ioc_state;
 	unsigned long timeleft;
+=======
+	int rc;
+	u16 smid;
+	u32 ioc_state;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *psge;
 	u8 issue_reset = 0;
 	dma_addr_t dma_addr_in = 0;
@@ -1895,7 +2012,12 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 	void *pci_addr_out = NULL;
 	u16 wait_state_count;
 	struct request *rsp = req->next_rq;
+<<<<<<< HEAD
 	struct bio_vec *bvec = NULL;
+=======
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!rsp) {
 		pr_err(MPT3SAS_FMT "%s: the smp response space is missing\n",
@@ -1922,7 +2044,11 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 	ioc->transport_cmds.status = MPT3_CMD_PENDING;
 
 	/* Check if the request is split across multiple segments */
+<<<<<<< HEAD
 	if (req->bio->bi_vcnt > 1) {
+=======
+	if (bio_multiple_segments(req->bio)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u32 offset = 0;
 
 		/* Allocate memory and copy the request */
@@ -1935,16 +2061,28 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 			goto out;
 		}
 
+<<<<<<< HEAD
 		bio_for_each_segment(bvec, req->bio, i) {
 			memcpy(pci_addr_out + offset,
 			    page_address(bvec->bv_page) + bvec->bv_offset,
 			    bvec->bv_len);
 			offset += bvec->bv_len;
+=======
+		bio_for_each_segment(bvec, req->bio, iter) {
+			memcpy(pci_addr_out + offset,
+			    page_address(bvec.bv_page) + bvec.bv_offset,
+			    bvec.bv_len);
+			offset += bvec.bv_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else {
 		dma_addr_out = pci_map_single(ioc->pdev, bio_data(req->bio),
 		    blk_rq_bytes(req), PCI_DMA_BIDIRECTIONAL);
+<<<<<<< HEAD
 		if (!dma_addr_out) {
+=======
+		if (pci_dma_mapping_error(ioc->pdev, dma_addr_out)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_info(MPT3SAS_FMT "%s(): DMA Addr out = NULL\n",
 			    ioc->name, __func__);
 			rc = -ENOMEM;
@@ -1954,7 +2092,11 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 
 	/* Check if the response needs to be populated across
 	 * multiple segments */
+<<<<<<< HEAD
 	if (rsp->bio->bi_vcnt > 1) {
+=======
+	if (bio_multiple_segments(rsp->bio)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pci_addr_in = pci_alloc_consistent(ioc->pdev, blk_rq_bytes(rsp),
 		    &pci_dma_in);
 		if (!pci_addr_in) {
@@ -1966,7 +2108,11 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 	} else {
 		dma_addr_in =  pci_map_single(ioc->pdev, bio_data(rsp->bio),
 		    blk_rq_bytes(rsp), PCI_DMA_BIDIRECTIONAL);
+<<<<<<< HEAD
 		if (!dma_addr_in) {
+=======
+		if (pci_dma_mapping_error(ioc->pdev, dma_addr_in)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_info(MPT3SAS_FMT "%s(): DMA Addr in = NULL\n",
 			    ioc->name, __func__);
 			rc = -ENOMEM;
@@ -2015,7 +2161,11 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 	mpi_request->RequestDataLength = cpu_to_le16(blk_rq_bytes(req) - 4);
 	psge = &mpi_request->SGL;
 
+<<<<<<< HEAD
 	if (req->bio->bi_vcnt > 1)
+=======
+	if (bio_multiple_segments(req->bio))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ioc->build_sg(ioc, psge, pci_dma_out, (blk_rq_bytes(req) - 4),
 		    pci_dma_in, (blk_rq_bytes(rsp) + 4));
 	else
@@ -2027,8 +2177,12 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 
 	init_completion(&ioc->transport_cmds.done);
 	mpt3sas_base_put_smid_default(ioc, smid);
+<<<<<<< HEAD
 	timeleft = wait_for_completion_timeout(&ioc->transport_cmds.done,
 	    10*HZ);
+=======
+	wait_for_completion_timeout(&ioc->transport_cmds.done, 10*HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(ioc->transport_cmds.status & MPT3_CMD_COMPLETE)) {
 		pr_err(MPT3SAS_FMT "%s : timeout\n",
@@ -2060,6 +2214,7 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 
 		/* check if the resp needs to be copied from the allocated
 		 * pci mem */
+<<<<<<< HEAD
 		if (rsp->bio->bi_vcnt > 1) {
 			u32 offset = 0;
 			u32 bytes_to_copy =
@@ -2077,6 +2232,25 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 					bytes_to_copy -= bvec->bv_len;
 				}
 				offset += bvec->bv_len;
+=======
+		if (bio_multiple_segments(rsp->bio)) {
+			u32 offset = 0;
+			u32 bytes_to_copy =
+			    le16_to_cpu(mpi_reply->ResponseDataLength);
+			bio_for_each_segment(bvec, rsp->bio, iter) {
+				if (bytes_to_copy <= bvec.bv_len) {
+					memcpy(page_address(bvec.bv_page) +
+					    bvec.bv_offset, pci_addr_in +
+					    offset, bytes_to_copy);
+					break;
+				} else {
+					memcpy(page_address(bvec.bv_page) +
+					    bvec.bv_offset, pci_addr_in +
+					    offset, bvec.bv_len);
+					bytes_to_copy -= bvec.bv_len;
+				}
+				offset += bvec.bv_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	} else {
@@ -2087,8 +2261,12 @@ _transport_smp_handler(struct Scsi_Host *shost, struct sas_rphy *rphy,
 
  issue_host_reset:
 	if (issue_reset) {
+<<<<<<< HEAD
 		mpt3sas_base_hard_reset_handler(ioc, CAN_SLEEP,
 		    FORCE_BIG_HAMMER);
+=======
+		mpt3sas_base_hard_reset_handler(ioc, FORCE_BIG_HAMMER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -ETIMEDOUT;
 	}
 

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -99,6 +103,10 @@ acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return_ACPI_STATUS(AE_TYPE);
 	}
 
@@ -117,14 +125,23 @@ acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
 
 	switch (obj_desc->common.type) {
 	case ACPI_TYPE_STRING:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Convert string to an integer - for most cases, the string must be
 		 * hexadecimal as per the ACPI specification. The only exception (as
 		 * of ACPI 3.0) is that the to_integer() operator allows both decimal
 		 * and hexadecimal strings (hex prefixed with "0x").
 		 */
+<<<<<<< HEAD
 		status = acpi_ut_strtoul64((char *)pointer, flags, &result);
+=======
+		status = acpi_ut_strtoul64(ACPI_CAST_PTR(char, pointer),
+					   (acpi_gbl_integer_byte_width |
+					    flags), &result);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -161,6 +178,10 @@ acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
 	default:
 
 		/* No other types can get here */
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -213,7 +234,10 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 		return_ACPI_STATUS(AE_OK);
 
 	case ACPI_TYPE_INTEGER:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Create a new Buffer object.
 		 * Need enough space for one integer
@@ -227,6 +251,7 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 		/* Copy the integer to the buffer, LSB first */
 
 		new_buf = return_desc->buffer.pointer;
+<<<<<<< HEAD
 		ACPI_MEMCPY(new_buf,
 			    &obj_desc->integer.value,
 			    acpi_gbl_integer_byte_width);
@@ -234,6 +259,13 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 
 	case ACPI_TYPE_STRING:
 
+=======
+		memcpy(new_buf, &obj_desc->integer.value,
+		       acpi_gbl_integer_byte_width);
+		break;
+
+	case ACPI_TYPE_STRING:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Create a new Buffer object
 		 * Size will be the string length
@@ -253,11 +285,20 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 		/* Copy the string to the buffer */
 
 		new_buf = return_desc->buffer.pointer;
+<<<<<<< HEAD
 		ACPI_STRNCPY((char *)new_buf, (char *)obj_desc->string.pointer,
 			     obj_desc->string.length);
 		break;
 
 	default:
+=======
+		strncpy((char *)new_buf, (char *)obj_desc->string.pointer,
+			obj_desc->string.length);
+		break;
+
+	default:
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return_ACPI_STATUS(AE_TYPE);
 	}
 
@@ -304,15 +345,27 @@ acpi_ex_convert_to_ascii(u64 integer, u16 base, u8 *string, u8 data_width)
 
 		switch (data_width) {
 		case 1:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			decimal_length = ACPI_MAX8_DECIMAL_DIGITS;
 			break;
 
 		case 4:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			decimal_length = ACPI_MAX32_DECIMAL_DIGITS;
 			break;
 
 		case 8:
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			decimal_length = ACPI_MAX64_DECIMAL_DIGITS;
 			break;
 		}
@@ -352,9 +405,14 @@ acpi_ex_convert_to_ascii(u64 integer, u16 base, u8 *string, u8 data_width)
 
 			/* Get one hex digit, most significant digits first */
 
+<<<<<<< HEAD
 			string[k] =
 			    (u8) acpi_ut_hex_to_ascii_char(integer,
 							   ACPI_MUL_4(j));
+=======
+			string[k] = (u8)
+			    acpi_ut_hex_to_ascii_char(integer, ACPI_MUL_4(j));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			k++;
 		}
 		break;
@@ -438,7 +496,11 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 		 * Need enough space for one ASCII integer (plus null terminator)
 		 */
 		return_desc =
+<<<<<<< HEAD
 		    acpi_ut_create_string_object((acpi_size) string_length);
+=======
+		    acpi_ut_create_string_object((acpi_size)string_length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!return_desc) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -517,7 +579,11 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 		}
 
 		return_desc =
+<<<<<<< HEAD
 		    acpi_ut_create_string_object((acpi_size) string_length);
+=======
+		    acpi_ut_create_string_object((acpi_size)string_length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!return_desc) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -546,6 +612,10 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return_ACPI_STATUS(AE_TYPE);
 	}
 
@@ -599,6 +669,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* No conversion allowed for these types */
 
 			if (destination_type != source_desc->common.type) {
@@ -614,6 +688,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 		break;
 
 	case ARGI_TARGETREF:
+<<<<<<< HEAD
+=======
+	case ARGI_STORE_TARGET:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		switch (destination_type) {
 		case ACPI_TYPE_INTEGER:
@@ -626,7 +704,11 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 			 */
 			status =
 			    acpi_ex_convert_to_integer(source_desc, result_desc,
+<<<<<<< HEAD
 						       16);
+=======
+						       ACPI_STRTOUL_BASE16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case ACPI_TYPE_STRING:
@@ -649,6 +731,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_ERROR((AE_INFO,
 				    "Bad destination type during conversion: 0x%X",
 				    destination_type));
@@ -664,6 +750,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ACPI_ERROR((AE_INFO,
 			    "Unknown Target type ID 0x%X AmlOpcode 0x%X DestType %s",
 			    GET_CURRENT_ARG_TYPE(walk_state->op_info->

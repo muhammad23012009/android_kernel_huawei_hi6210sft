@@ -42,7 +42,11 @@ struct isl6423_config {
 	u8 mod_extern;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_ISL6423)
+=======
+#if IS_REACHABLE(CONFIG_DVB_ISL6423)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 extern struct dvb_frontend *isl6423_attach(struct dvb_frontend *fe,

@@ -45,11 +45,19 @@ static inline void apm_bios_call_asm(u32 func, u32 ebx_in, u32 ecx_in,
 		: "memory", "cc");
 }
 
+<<<<<<< HEAD
 static inline u8 apm_bios_call_simple_asm(u32 func, u32 ebx_in,
 						u32 ecx_in, u32 *eax)
 {
 	int	cx, dx, si;
 	u8	error;
+=======
+static inline bool apm_bios_call_simple_asm(u32 func, u32 ebx_in,
+					    u32 ecx_in, u32 *eax)
+{
+	int	cx, dx, si;
+	bool	error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * N.B. We do NOT need a cld after the BIOS call

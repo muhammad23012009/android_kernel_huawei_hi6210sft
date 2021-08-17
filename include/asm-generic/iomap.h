@@ -30,12 +30,26 @@ extern unsigned int ioread16(void __iomem *);
 extern unsigned int ioread16be(void __iomem *);
 extern unsigned int ioread32(void __iomem *);
 extern unsigned int ioread32be(void __iomem *);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_64BIT
+extern u64 ioread64(void __iomem *);
+extern u64 ioread64be(void __iomem *);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void iowrite8(u8, void __iomem *);
 extern void iowrite16(u16, void __iomem *);
 extern void iowrite16be(u16, void __iomem *);
 extern void iowrite32(u32, void __iomem *);
 extern void iowrite32be(u32, void __iomem *);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_64BIT
+extern void iowrite64(u64, void __iomem *);
+extern void iowrite64be(u64, void __iomem *);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * "string" versions of the above. Note that they
@@ -56,7 +70,11 @@ extern void iowrite8_rep(void __iomem *port, const void *buf, unsigned long coun
 extern void iowrite16_rep(void __iomem *port, const void *buf, unsigned long count);
 extern void iowrite32_rep(void __iomem *port, const void *buf, unsigned long count);
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_IOPORT
+=======
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Create a virtual mapping cookie for an IO port range */
 extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
 extern void ioport_unmap(void __iomem *);
@@ -66,6 +84,13 @@ extern void ioport_unmap(void __iomem *);
 #define ioremap_wc ioremap_nocache
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef ARCH_HAS_IOREMAP_WT
+#define ioremap_wt ioremap_nocache
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PCI
 /* Destroy a virtual mapping cookie for a PCI BAR (memory or IO) */
 struct pci_dev;

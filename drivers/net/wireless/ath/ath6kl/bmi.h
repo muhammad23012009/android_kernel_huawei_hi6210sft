@@ -242,7 +242,12 @@ struct ath6kl_bmi_target_info {
 		(void) (check_type == val);				\
 		addr = ath6kl_get_hi_item_addr(ar, HI_ITEM(item));	\
 		ret = ath6kl_bmi_read(ar, addr, (u8 *) &tmp, 4);	\
+<<<<<<< HEAD
 		*val = le32_to_cpu(tmp);				\
+=======
+		if (!ret)						\
+			*val = le32_to_cpu(tmp);			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret;							\
 	})
 

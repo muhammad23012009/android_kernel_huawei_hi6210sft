@@ -39,6 +39,10 @@
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
 #include <asm/synch.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "head_booke.h"
 
 
@@ -784,6 +788,7 @@ _GLOBAL(__fixup_440A_mcheck)
 	sync
 	blr
 
+<<<<<<< HEAD
 /*
  * extern void giveup_fpu(struct task_struct *prev)
  *
@@ -794,6 +799,8 @@ _GLOBAL(giveup_fpu)
 	blr
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 _GLOBAL(set_context)
 
 #ifdef CONFIG_BDI_SWITCH
@@ -816,7 +823,11 @@ _GLOBAL(set_context)
 _GLOBAL(init_cpu_state)
 	mflr	r22
 #ifdef CONFIG_PPC_47x
+<<<<<<< HEAD
 	/* We use the PVR to differenciate 44x cores from 476 */
+=======
+	/* We use the PVR to differentiate 44x cores from 476 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfspr	r3,SPRN_PVR
 	srwi	r3,r3,16
 	cmplwi	cr0,r3,PVR_476FPE@h
@@ -1220,10 +1231,19 @@ clear_utlb_entry:
 
 	/* We configure icbi to invalidate 128 bytes at a time since the
 	 * current 32-bit kernel code isn't too happy with icache != dcache
+<<<<<<< HEAD
 	 * block size
 	 */
 	mfspr	r3,SPRN_CCR0
 	oris	r3,r3,0x0020
+=======
+	 * block size. We also disable the BTAC as this can cause errors
+	 * in some circumstances (see IBM Erratum 47).
+	 */
+	mfspr	r3,SPRN_CCR0
+	oris	r3,r3,0x0020
+	ori	r3,r3,0x0040
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mtspr	SPRN_CCR0,r3
 	isync
 
@@ -1262,6 +1282,10 @@ sdata:
 	.globl	empty_zero_page
 empty_zero_page:
 	.space	PAGE_SIZE
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(empty_zero_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * To support >32-bit physical addresses, we use an 8KB pgdir.

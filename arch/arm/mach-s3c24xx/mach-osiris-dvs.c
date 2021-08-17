@@ -20,6 +20,10 @@
 #include <linux/i2c/tps65010.h>
 
 #include <plat/cpu-freq.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define OSIRIS_GPIO_DVS	S3C2410_GPB(5)
 
@@ -69,16 +73,26 @@ static int osiris_dvs_notify(struct notifier_block *nb,
 
 	switch (val) {
 	case CPUFREQ_PRECHANGE:
+<<<<<<< HEAD
 		if (old_dvs & !new_dvs ||
 		    cur_dvs & !new_dvs) {
+=======
+		if ((old_dvs && !new_dvs) ||
+		    (cur_dvs && !new_dvs)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_debug("%s: exiting dvs\n", __func__);
 			cur_dvs = false;
 			gpio_set_value(OSIRIS_GPIO_DVS, 1);
 		}
 		break;
 	case CPUFREQ_POSTCHANGE:
+<<<<<<< HEAD
 		if (!old_dvs & new_dvs ||
 		    !cur_dvs & new_dvs) {
+=======
+		if ((!old_dvs && new_dvs) ||
+		    (!cur_dvs && new_dvs)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_debug("entering dvs\n");
 			cur_dvs = true;
 			gpio_set_value(OSIRIS_GPIO_DVS, 0);
@@ -142,7 +156,11 @@ static int osiris_dvs_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* the CONFIG_PM block is so small, it isn't worth actaully compiling it
+=======
+/* the CONFIG_PM block is so small, it isn't worth actually compiling it
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * out if the configuration isn't set. */
 
 static int osiris_dvs_suspend(struct device *dev)
@@ -170,7 +188,10 @@ static struct platform_driver osiris_dvs_driver = {
 	.remove		= osiris_dvs_remove,
 	.driver		= {
 		.name	= "osiris-dvs",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &osiris_dvs_pm,
 	},
 };

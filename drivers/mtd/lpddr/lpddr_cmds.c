@@ -55,10 +55,15 @@ struct mtd_info *lpddr_cmdset(struct map_info *map)
 	int i, j;
 
 	mtd = kzalloc(sizeof(*mtd), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!mtd) {
 		printk(KERN_ERR "Failed to allocate memory for MTD device\n");
 		return NULL;
 	}
+=======
+	if (!mtd)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mtd->priv = map;
 	mtd->type = MTD_NORFLASH;
 
@@ -83,7 +88,10 @@ struct mtd_info *lpddr_cmdset(struct map_info *map)
 	shared = kmalloc(sizeof(struct flchip_shared) * lpddr->numchips,
 						GFP_KERNEL);
 	if (!shared) {
+<<<<<<< HEAD
 		kfree(lpddr);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(mtd);
 		return NULL;
 	}
@@ -388,7 +396,11 @@ static void put_chip(struct map_info *map, struct flchip *chip)
 	wake_up(&chip->wq);
 }
 
+<<<<<<< HEAD
 int do_write_buffer(struct map_info *map, struct flchip *chip,
+=======
+static int do_write_buffer(struct map_info *map, struct flchip *chip,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			unsigned long adr, const struct kvec **pvec,
 			unsigned long *pvec_seek, int len)
 {
@@ -469,7 +481,11 @@ int do_write_buffer(struct map_info *map, struct flchip *chip,
 	return ret;
 }
 
+<<<<<<< HEAD
 int do_erase_oneblock(struct mtd_info *mtd, loff_t adr)
+=======
+static int do_erase_oneblock(struct mtd_info *mtd, loff_t adr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct map_info *map = mtd->priv;
 	struct lpddr_private *lpddr = map->fldrv_priv;
@@ -703,7 +719,11 @@ static int lpddr_erase(struct mtd_info *mtd, struct erase_info *instr)
 
 #define DO_XXLOCK_LOCK		1
 #define DO_XXLOCK_UNLOCK	2
+<<<<<<< HEAD
 int do_xxlock(struct mtd_info *mtd, loff_t adr, uint32_t len, int thunk)
+=======
+static int do_xxlock(struct mtd_info *mtd, loff_t adr, uint32_t len, int thunk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret = 0;
 	struct map_info *map = mtd->priv;
@@ -748,6 +768,7 @@ static int lpddr_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	return do_xxlock(mtd, ofs, len, DO_XXLOCK_UNLOCK);
 }
 
+<<<<<<< HEAD
 int word_program(struct map_info *map, loff_t adr, uint32_t curval)
 {
     int ret;
@@ -776,6 +797,8 @@ out:	put_chip(map, chip);
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Alexey Korolev <akorolev@infradead.org>");
 MODULE_DESCRIPTION("MTD driver for LPDDR flash chips");

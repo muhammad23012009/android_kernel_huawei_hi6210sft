@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     module/range.c
     comedi routines for voltage ranges
 
@@ -20,6 +21,24 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 */
+=======
+ * comedi/range.c
+ * comedi routines for voltage ranges
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 1997-8 David A. Schleef <ds@schleef.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/uaccess.h>
 #include "comedidev.h"
@@ -47,6 +66,7 @@ const struct comedi_lrange range_unknown = { 1, {{0, 1000000, UNIT_none} } };
 EXPORT_SYMBOL_GPL(range_unknown);
 
 /*
+<<<<<<< HEAD
 	COMEDI_RANGEINFO
 	range information ioctl
 
@@ -59,6 +79,20 @@ EXPORT_SYMBOL_GPL(range_unknown);
 	writes:
 		n struct comedi_krange structures to rangeinfo->range_ptr
 */
+=======
+ * COMEDI_RANGEINFO ioctl
+ * range information
+ *
+ * arg:
+ *	pointer to comedi_rangeinfo structure
+ *
+ * reads:
+ *	comedi_rangeinfo structure
+ *
+ * writes:
+ *	array of comedi_krange structures to rangeinfo->range_ptr pointer
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int do_rangeinfo_ioctl(struct comedi_device *dev,
 		       struct comedi_rangeinfo __user *arg)
 {
@@ -88,8 +122,15 @@ int do_rangeinfo_ioctl(struct comedi_device *dev,
 	}
 
 	if (RANGE_LENGTH(it.range_type) != lr->length) {
+<<<<<<< HEAD
 		DPRINTK("wrong length %d should be %d (0x%08x)\n",
 			RANGE_LENGTH(it.range_type), lr->length, it.range_type);
+=======
+		dev_dbg(dev->class_dev,
+			"wrong length %d should be %d (0x%08x)\n",
+			RANGE_LENGTH(it.range_type),
+			lr->length, it.range_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -100,6 +141,7 @@ int do_rangeinfo_ioctl(struct comedi_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int aref_invalid(struct comedi_subdevice *s, unsigned int chanspec)
 {
 	unsigned int aref;
@@ -136,10 +178,30 @@ static int aref_invalid(struct comedi_subdevice *s, unsigned int chanspec)
    This function checks each element in a channel/gain list to make
    make sure it is valid.
 */
+=======
+/**
+ * comedi_check_chanlist() - Validate each element in a chanlist.
+ * @s: comedi_subdevice struct
+ * @n: number of elements in the chanlist
+ * @chanlist: the chanlist to validate
+ *
+ * Each element consists of a channel number, a range index, an analog
+ * reference type and some flags, all packed into an unsigned int.
+ *
+ * This checks that the channel number and range index are supported by
+ * the comedi subdevice.  It does not check whether the analog reference
+ * type and the flags are supported.  Drivers that care should check those
+ * themselves.
+ *
+ * Return: %0 if all @chanlist elements are valid (success),
+ *         %-EINVAL if one or more elements are invalid.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int comedi_check_chanlist(struct comedi_subdevice *s, int n,
 			  unsigned int *chanlist)
 {
 	struct comedi_device *dev = s->device;
+<<<<<<< HEAD
 	int i;
 	int chan;
 
@@ -170,6 +232,27 @@ int comedi_check_chanlist(struct comedi_subdevice *s, int n,
 	} else {
 		dev_err(dev->class_dev, "(bug) no range type list!\n");
 		return -EINVAL;
+=======
+	unsigned int chanspec;
+	int chan, range_len, i;
+
+	for (i = 0; i < n; i++) {
+		chanspec = chanlist[i];
+		chan = CR_CHAN(chanspec);
+		if (s->range_table)
+			range_len = s->range_table->length;
+		else if (s->range_table_list && chan < s->n_chan)
+			range_len = s->range_table_list[chan]->length;
+		else
+			range_len = 0;
+		if (chan >= s->n_chan ||
+		    CR_RANGE(chanspec) >= range_len) {
+			dev_warn(dev->class_dev,
+				 "bad chanlist[%d]=0x%08x chan=%d range length=%d\n",
+				 i, chanspec, chan, range_len);
+			return -EINVAL;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }

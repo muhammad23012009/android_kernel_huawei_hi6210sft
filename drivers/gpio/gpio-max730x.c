@@ -50,7 +50,11 @@
 
 static int max7301_direction_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct max7301 *ts = container_of(chip, struct max7301, chip);
+=======
+	struct max7301 *ts = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *config;
 	u8 offset_bits, pin_config;
 	int ret;
@@ -92,7 +96,11 @@ static int __max7301_set(struct max7301 *ts, unsigned offset, int value)
 static int max7301_direction_output(struct gpio_chip *chip, unsigned offset,
 				    int value)
 {
+<<<<<<< HEAD
 	struct max7301 *ts = container_of(chip, struct max7301, chip);
+=======
+	struct max7301 *ts = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *config;
 	u8 offset_bits;
 	int ret;
@@ -120,7 +128,11 @@ static int max7301_direction_output(struct gpio_chip *chip, unsigned offset,
 
 static int max7301_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct max7301 *ts = container_of(chip, struct max7301, chip);
+=======
+	struct max7301 *ts = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int config, level = -EINVAL;
 
 	/* First 4 pins are unused in the controller */
@@ -148,7 +160,11 @@ static int max7301_get(struct gpio_chip *chip, unsigned offset)
 
 static void max7301_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct max7301 *ts = container_of(chip, struct max7301, chip);
+=======
+	struct max7301 *ts = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* First 4 pins are unused in the controller */
 	offset += 4;
@@ -166,7 +182,11 @@ int __max730x_probe(struct max7301 *ts)
 	struct max7301_platform_data *pdata;
 	int i, ret;
 
+<<<<<<< HEAD
 	pdata = dev->platform_data;
+=======
+	pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_init(&ts->lock);
 	dev_set_drvdata(dev, ts);
@@ -188,10 +208,21 @@ int __max730x_probe(struct max7301 *ts)
 	ts->chip.set = max7301_set;
 
 	ts->chip.ngpio = PIN_NUMBER;
+<<<<<<< HEAD
 	ts->chip.can_sleep = 1;
 	ts->chip.dev = dev;
 	ts->chip.owner = THIS_MODULE;
 
+=======
+	ts->chip.can_sleep = true;
+	ts->chip.parent = dev;
+	ts->chip.owner = THIS_MODULE;
+
+	ret = gpiochip_add_data(&ts->chip, ts);
+	if (ret)
+		goto exit_destroy;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * initialize pullups according to platform data and cache the
 	 * register values for later use.
@@ -213,6 +244,7 @@ int __max730x_probe(struct max7301 *ts)
 		}
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&ts->chip);
 	if (ret)
 		goto exit_destroy;
@@ -221,6 +253,11 @@ int __max730x_probe(struct max7301 *ts)
 
 exit_destroy:
 	dev_set_drvdata(dev, NULL);
+=======
+	return ret;
+
+exit_destroy:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_destroy(&ts->lock);
 	return ret;
 }
@@ -229,11 +266,15 @@ EXPORT_SYMBOL_GPL(__max730x_probe);
 int __max730x_remove(struct device *dev)
 {
 	struct max7301 *ts = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ts == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dev_set_drvdata(dev, NULL);
 
 	/* Power down the chip and disable IRQ output */
@@ -247,6 +288,13 @@ int __max730x_remove(struct device *dev)
 		dev_err(dev, "Failed to remove GPIO controller: %d\n", ret);
 
 	return ret;
+=======
+	/* Power down the chip and disable IRQ output */
+	ts->write(dev, 0x04, 0x00);
+	gpiochip_remove(&ts->chip);
+	mutex_destroy(&ts->lock);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(__max730x_remove);
 

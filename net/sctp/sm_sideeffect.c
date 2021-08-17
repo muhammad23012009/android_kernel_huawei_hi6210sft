@@ -22,6 +22,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -32,6 +33,14 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -42,9 +51,12 @@
  *    Daisy Chang	    <daisyc@us.ibm.com>
  *    Sridhar Samudrala	    <sri@us.ibm.com>
  *    Ardelle Fan	    <ardelle.fan@intel.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -70,14 +82,21 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 static int sctp_side_effects(sctp_event_t event_type, sctp_subtype_t subtype,
 			     sctp_state_t state,
 			     struct sctp_endpoint *ep,
+<<<<<<< HEAD
 			     struct sctp_association *asoc,
+=======
+			     struct sctp_association **asoc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     void *event_arg,
 			     sctp_disposition_t status,
 			     sctp_cmd_seq_t *commands,
 			     gfp_t gfp);
 
+<<<<<<< HEAD
 static void sctp_cmd_hb_timer_update(sctp_cmd_seq_t *cmds,
 				     struct sctp_transport *t);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /********************************************************************
  * Helper functions
  ********************************************************************/
@@ -222,10 +241,21 @@ static int sctp_gen_sack(struct sctp_association *asoc, int force,
 		sctp_add_cmd_sf(commands, SCTP_CMD_TIMER_RESTART,
 				SCTP_TO(SCTP_EVENT_TIMEOUT_SACK));
 	} else {
+<<<<<<< HEAD
 		asoc->a_rwnd = asoc->rwnd;
 		sack = sctp_make_sack(asoc);
 		if (!sack)
 			goto nomem;
+=======
+		__u32 old_a_rwnd = asoc->a_rwnd;
+
+		asoc->a_rwnd = asoc->rwnd;
+		sack = sctp_make_sack(asoc);
+		if (!sack) {
+			asoc->a_rwnd = old_a_rwnd;
+			goto nomem;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		asoc->peer.sack_needed = 0;
 		asoc->peer.sack_cnt = 0;
@@ -256,9 +286,15 @@ void sctp_generate_t3_rtx_event(unsigned long peer)
 
 	/* Check whether a task is in the sock.  */
 
+<<<<<<< HEAD
 	sctp_bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
+=======
+	bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		pr_debug("%s: sock is busy\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Try again later.  */
 		if (!mod_timer(&transport->T3_rtx_timer, jiffies + (HZ/20)))
@@ -266,12 +302,15 @@ void sctp_generate_t3_rtx_event(unsigned long peer)
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	/* Is this transport really dead and just waiting around for
 	 * the timer to let go of the reference?
 	 */
 	if (transport->dead)
 		goto out_unlock;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Run through the state machine.  */
 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_T3_RTX),
@@ -283,7 +322,11 @@ void sctp_generate_t3_rtx_event(unsigned long peer)
 		sk->sk_err = -error;
 
 out_unlock:
+<<<<<<< HEAD
 	sctp_bh_unlock_sock(sk);
+=======
+	bh_unlock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sctp_transport_put(transport);
 }
 
@@ -297,11 +340,18 @@ static void sctp_generate_timeout_event(struct sctp_association *asoc,
 	struct net *net = sock_net(sk);
 	int error = 0;
 
+<<<<<<< HEAD
 	sctp_bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		SCTP_DEBUG_PRINTK("%s:Sock is busy: timer %d\n",
 				  __func__,
 				  timeout_type);
+=======
+	bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		pr_debug("%s: sock is busy: timer %d\n", __func__,
+			 timeout_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Try again later.  */
 		if (!mod_timer(&asoc->timers[timeout_type], jiffies + (HZ/20)))
@@ -325,7 +375,11 @@ static void sctp_generate_timeout_event(struct sctp_association *asoc,
 		sk->sk_err = -error;
 
 out_unlock:
+<<<<<<< HEAD
 	sctp_bh_unlock_sock(sk);
+=======
+	bh_unlock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sctp_association_put(asoc);
 }
 
@@ -377,10 +431,18 @@ void sctp_generate_heartbeat_event(unsigned long data)
 	struct sctp_association *asoc = transport->asoc;
 	struct sock *sk = asoc->base.sk;
 	struct net *net = sock_net(sk);
+<<<<<<< HEAD
 
 	sctp_bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
+=======
+	u32 elapsed, timeout;
+
+	bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		pr_debug("%s: sock is busy\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Try again later.  */
 		if (!mod_timer(&transport->hb_timer, jiffies + (HZ/20)))
@@ -388,22 +450,42 @@ void sctp_generate_heartbeat_event(unsigned long data)
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	/* Is this structure just waiting around for us to actually
 	 * get destroyed?
 	 */
 	if (transport->dead)
 		goto out_unlock;
+=======
+	/* Check if we should still send the heartbeat or reschedule */
+	elapsed = jiffies - transport->last_time_sent;
+	timeout = sctp_transport_timeout(transport);
+	if (elapsed < timeout) {
+		elapsed = timeout - elapsed;
+		if (!mod_timer(&transport->hb_timer, jiffies + elapsed))
+			sctp_transport_hold(transport);
+		goto out_unlock;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_HEARTBEAT),
 			   asoc->state, asoc->ep, asoc,
 			   transport, GFP_ATOMIC);
 
+<<<<<<< HEAD
 	 if (error)
 		 sk->sk_err = -error;
 
 out_unlock:
 	sctp_bh_unlock_sock(sk);
+=======
+	if (error)
+		sk->sk_err = -error;
+
+out_unlock:
+	bh_unlock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sctp_transport_put(transport);
 }
 
@@ -416,15 +498,26 @@ void sctp_generate_proto_unreach_event(unsigned long data)
 	struct sctp_association *asoc = transport->asoc;
 	struct sock *sk = asoc->base.sk;
 	struct net *net = sock_net(sk);
+<<<<<<< HEAD
 	
 	sctp_bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
+=======
+
+	bh_lock_sock(sk);
+	if (sock_owned_by_user(sk)) {
+		pr_debug("%s: sock is busy\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Try again later.  */
 		if (!mod_timer(&transport->proto_unreach_timer,
 				jiffies + (HZ/20)))
+<<<<<<< HEAD
 			sctp_association_hold(asoc);
+=======
+			sctp_transport_hold(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_unlock;
 	}
 
@@ -439,8 +532,13 @@ void sctp_generate_proto_unreach_event(unsigned long data)
 		   asoc->state, asoc->ep, asoc, transport, GFP_ATOMIC);
 
 out_unlock:
+<<<<<<< HEAD
 	sctp_bh_unlock_sock(sk);
 	sctp_association_put(asoc);
+=======
+	bh_unlock_sock(sk);
+	sctp_transport_put(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -485,6 +583,11 @@ static void sctp_do_8_2_transport_strike(sctp_cmd_seq_t *commands,
 					 struct sctp_transport *transport,
 					 int is_hb)
 {
+<<<<<<< HEAD
+=======
+	struct net *net = sock_net(asoc->base.sk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* The check for association's overall error counter exceeding the
 	 * threshold is done in the state function.
 	 */
@@ -507,6 +610,7 @@ static void sctp_do_8_2_transport_strike(sctp_cmd_seq_t *commands,
 	}
 
 	/* If the transport error count is greater than the pf_retrans
+<<<<<<< HEAD
 	 * threshold, and less than pathmaxrtx, then mark this transport
 	 * as Partially Failed, ee SCTP Quick Failover Draft, secon 5.1,
 	 * point 1
@@ -514,22 +618,42 @@ static void sctp_do_8_2_transport_strike(sctp_cmd_seq_t *commands,
 	if ((transport->state != SCTP_PF) &&
 	   (asoc->pf_retrans < transport->pathmaxrxt) &&
 	   (transport->error_count > asoc->pf_retrans)) {
+=======
+	 * threshold, and less than pathmaxrtx, and if the current state
+	 * is SCTP_ACTIVE, then mark this transport as Partially Failed,
+	 * see SCTP Quick Failover Draft, section 5.1
+	 */
+	if (net->sctp.pf_enable &&
+	   (transport->state == SCTP_ACTIVE) &&
+	   (transport->error_count < transport->pathmaxrxt) &&
+	   (transport->error_count > transport->pf_retrans)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		sctp_assoc_control_transport(asoc, transport,
 					     SCTP_TRANSPORT_PF,
 					     0);
 
 		/* Update the hb timer to resend a heartbeat every rto */
+<<<<<<< HEAD
 		sctp_cmd_hb_timer_update(commands, transport);
+=======
+		sctp_transport_reset_hb_timer(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (transport->state != SCTP_INACTIVE &&
 	    (transport->error_count > transport->pathmaxrxt)) {
+<<<<<<< HEAD
 		SCTP_DEBUG_PRINTK_IPADDR("transport_strike:association %p",
 					 " transport IP: port:%d failed.\n",
 					 asoc,
 					 (&transport->ipaddr),
 					 ntohs(transport->ipaddr.v4.sin_port));
+=======
+		pr_debug("%s: association:%p transport addr:%pISpc failed\n",
+			 __func__, asoc, &transport->ipaddr.sa);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sctp_assoc_control_transport(asoc, transport,
 					     SCTP_TRANSPORT_DOWN,
 					     SCTP_FAILED_THRESHOLD);
@@ -557,7 +681,11 @@ static void sctp_cmd_init_failed(sctp_cmd_seq_t *commands,
 {
 	struct sctp_ulpevent *event;
 
+<<<<<<< HEAD
 	event = sctp_ulpevent_make_assoc_change(asoc,0, SCTP_CANT_STR_ASSOC,
+=======
+	event = sctp_ulpevent_make_assoc_change(asoc, 0, SCTP_CANT_STR_ASSOC,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						(__u16)error, 0, 0, NULL,
 						GFP_ATOMIC);
 
@@ -649,11 +777,16 @@ static void sctp_cmd_hb_timers_start(sctp_cmd_seq_t *cmds,
 	 * hold a reference on the transport to make sure none of
 	 * the needed data structures go away.
 	 */
+<<<<<<< HEAD
 	list_for_each_entry(t, &asoc->peer.transport_addr_list, transports) {
 
 		if (!mod_timer(&t->hb_timer, sctp_transport_timeout(t)))
 			sctp_transport_hold(t);
 	}
+=======
+	list_for_each_entry(t, &asoc->peer.transport_addr_list, transports)
+		sctp_transport_reset_hb_timer(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sctp_cmd_hb_timers_stop(sctp_cmd_seq_t *cmds,
@@ -684,6 +817,7 @@ static void sctp_cmd_t3_rtx_timers_stop(sctp_cmd_seq_t *cmds,
 }
 
 
+<<<<<<< HEAD
 /* Helper function to update the heartbeat timer. */
 static void sctp_cmd_hb_timer_update(sctp_cmd_seq_t *cmds,
 				     struct sctp_transport *t)
@@ -693,6 +827,8 @@ static void sctp_cmd_hb_timer_update(sctp_cmd_seq_t *cmds,
 		sctp_transport_hold(t);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Helper function to handle the reception of an HEARTBEAT ACK.  */
 static void sctp_cmd_transport_on(sctp_cmd_seq_t *cmds,
 				  struct sctp_association *asoc,
@@ -716,7 +852,11 @@ static void sctp_cmd_transport_on(sctp_cmd_seq_t *cmds,
 	 * outstanding data and rely on the retransmission limit be reached
 	 * to shutdown the association.
 	 */
+<<<<<<< HEAD
 	if (t->asoc->state != SCTP_STATE_SHUTDOWN_PENDING)
+=======
+	if (t->asoc->state < SCTP_STATE_SHUTDOWN_PENDING)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		t->asoc->overall_error_count = 0;
 
 	/* Clear the hb_sent flag to signal that we had a good
@@ -737,6 +877,15 @@ static void sctp_cmd_transport_on(sctp_cmd_seq_t *cmds,
 		sctp_assoc_control_transport(asoc, t, SCTP_TRANSPORT_UP,
 					     SCTP_HEARTBEAT_SUCCESS);
 
+<<<<<<< HEAD
+=======
+	/* HB-ACK was received for a the proper HB.  Consider this
+	 * forward progress.
+	 */
+	if (t->dst)
+		dst_confirm(t->dst);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* The receiver of the HEARTBEAT ACK should also perform an
 	 * RTT measurement for that destination transport address
 	 * using the time value carried in the HEARTBEAT ACK chunk.
@@ -751,8 +900,12 @@ static void sctp_cmd_transport_on(sctp_cmd_seq_t *cmds,
 	sctp_transport_update_rto(t, (jiffies - hbinfo->sent_at));
 
 	/* Update the heartbeat timer.  */
+<<<<<<< HEAD
 	if (!mod_timer(&t->hb_timer, sctp_transport_timeout(t)))
 		sctp_transport_hold(t);
+=======
+	sctp_transport_reset_hb_timer(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (was_unconfirmed && asoc->peer.transport_count == 1)
 		sctp_transport_immediate_rtx(t);
@@ -808,8 +961,12 @@ static void sctp_cmd_new_state(sctp_cmd_seq_t *cmds,
 
 	asoc->state = state;
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_cmd_new_state: asoc %p[%s]\n",
 			  asoc, sctp_state_tbl[state]);
+=======
+	pr_debug("%s: asoc:%p[%s]\n", __func__, asoc, sctp_state_tbl[state]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sctp_style(sk, TCP)) {
 		/* Change the sk->sk_state of a TCP-style socket that has
@@ -820,8 +977,15 @@ static void sctp_cmd_new_state(sctp_cmd_seq_t *cmds,
 
 		/* Set the RCV_SHUTDOWN flag when a SHUTDOWN is received. */
 		if (sctp_state(asoc, SHUTDOWN_RECEIVED) &&
+<<<<<<< HEAD
 		    sctp_sstate(sk, ESTABLISHED))
 			sk->sk_shutdown |= RCV_SHUTDOWN;
+=======
+		    sctp_sstate(sk, ESTABLISHED)) {
+			sk->sk_state = SCTP_SS_CLOSING;
+			sk->sk_shutdown |= RCV_SHUTDOWN;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (sctp_state(asoc, COOKIE_WAIT)) {
@@ -868,7 +1032,10 @@ static void sctp_cmd_delete_tcb(sctp_cmd_seq_t *cmds,
 	    (!asoc->temp) && (sk->sk_shutdown != SHUTDOWN_MASK))
 		return;
 
+<<<<<<< HEAD
 	sctp_unhash_established(asoc);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sctp_association_free(asoc);
 }
 
@@ -963,7 +1130,11 @@ static void sctp_cmd_del_non_primary(struct sctp_association *asoc)
 		t = list_entry(pos, struct sctp_transport, transports);
 		if (!sctp_cmp_addr_exact(&t->ipaddr,
 					 &asoc->peer.primary_addr)) {
+<<<<<<< HEAD
 			sctp_assoc_del_peer(asoc, &t->ipaddr);
+=======
+			sctp_assoc_rm_peer(asoc, t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }
@@ -1020,6 +1191,7 @@ static void sctp_cmd_t1_timer_update(struct sctp_association *asoc,
 			asoc->timeouts[timer] = asoc->max_init_timeo;
 		}
 		asoc->init_cycle++;
+<<<<<<< HEAD
 		SCTP_DEBUG_PRINTK(
 			"T1 %s Timeout adjustment"
 			" init_err_counter: %d"
@@ -1029,6 +1201,13 @@ static void sctp_cmd_t1_timer_update(struct sctp_association *asoc,
 			asoc->init_err_counter,
 			asoc->init_cycle,
 			asoc->timeouts[timer]);
+=======
+
+		pr_debug("%s: T1[%s] timeout adjustment init_err_counter:%d"
+			 " cycle:%d timeout:%ld\n", __func__, name,
+			 asoc->init_err_counter, asoc->init_cycle,
+			 asoc->timeouts[timer]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 }
@@ -1037,6 +1216,7 @@ static void sctp_cmd_t1_timer_update(struct sctp_association *asoc,
  * This way the whole message is queued up and bundling if
  * encouraged for small fragments.
  */
+<<<<<<< HEAD
 static int sctp_cmd_send_msg(struct sctp_association *asoc,
 				struct sctp_datamsg *msg)
 {
@@ -1050,6 +1230,15 @@ static int sctp_cmd_send_msg(struct sctp_association *asoc,
 	}
 
 	return error;
+=======
+static void sctp_cmd_send_msg(struct sctp_association *asoc,
+			      struct sctp_datamsg *msg, gfp_t gfp)
+{
+	struct sctp_chunk *chunk;
+
+	list_for_each_entry(chunk, &msg->chunks, frag_list)
+		sctp_outq_tail(&asoc->outqueue, chunk, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -1083,6 +1272,7 @@ static void sctp_cmd_send_asconf(struct sctp_association *asoc)
  * main flow of sctp_do_sm() to keep attention focused on the real
  * functionality there.
  */
+<<<<<<< HEAD
 #define DEBUG_PRE \
 	SCTP_DEBUG_PRINTK("sctp_do_sm prefn: " \
 			  "ep %p, %s, %s, asoc %p[%s], %s\n", \
@@ -1100,6 +1290,21 @@ static void sctp_cmd_send_asconf(struct sctp_association *asoc)
 			  error, asoc, \
 			  sctp_state_tbl[(asoc && sctp_id2assoc(ep->base.sk, \
 			  sctp_assoc2id(asoc)))?asoc->state:SCTP_STATE_CLOSED])
+=======
+#define debug_pre_sfn() \
+	pr_debug("%s[pre-fn]: ep:%p, %s, %s, asoc:%p[%s], %s\n", __func__, \
+		 ep, sctp_evttype_tbl[event_type], (*debug_fn)(subtype),   \
+		 asoc, sctp_state_tbl[state], state_fn->name)
+
+#define debug_post_sfn() \
+	pr_debug("%s[post-fn]: asoc:%p, status:%s\n", __func__, asoc, \
+		 sctp_status_tbl[status])
+
+#define debug_post_sfx() \
+	pr_debug("%s[post-sfx]: error:%d, asoc:%p[%s]\n", __func__, error, \
+		 asoc, sctp_state_tbl[(asoc && sctp_id2assoc(ep->base.sk, \
+		 sctp_assoc2id(asoc))) ? asoc->state : SCTP_STATE_CLOSED])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This is the master state machine processing function.
@@ -1119,7 +1324,10 @@ int sctp_do_sm(struct net *net, sctp_event_t event_type, sctp_subtype_t subtype,
 	sctp_disposition_t status;
 	int error = 0;
 	typedef const char *(printfn_t)(sctp_subtype_t);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	static printfn_t *table[] = {
 		NULL, sctp_cname, sctp_tname, sctp_oname, sctp_pname,
 	};
@@ -1132,6 +1340,7 @@ int sctp_do_sm(struct net *net, sctp_event_t event_type, sctp_subtype_t subtype,
 
 	sctp_init_cmd_seq(&commands);
 
+<<<<<<< HEAD
 	DEBUG_PRE;
 	status = (*state_fn->fn)(net, ep, asoc, subtype, event_arg, &commands);
 	DEBUG_POST;
@@ -1140,20 +1349,37 @@ int sctp_do_sm(struct net *net, sctp_event_t event_type, sctp_subtype_t subtype,
 				  ep, asoc, event_arg, status,
 				  &commands, gfp);
 	DEBUG_POST_SFX;
+=======
+	debug_pre_sfn();
+	status = state_fn->fn(net, ep, asoc, subtype, event_arg, &commands);
+	debug_post_sfn();
+
+	error = sctp_side_effects(event_type, subtype, state,
+				  ep, &asoc, event_arg, status,
+				  &commands, gfp);
+	debug_post_sfx();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return error;
 }
 
+<<<<<<< HEAD
 #undef DEBUG_PRE
 #undef DEBUG_POST
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************
  * This the master state function side effect processing function.
  *****************************************************************/
 static int sctp_side_effects(sctp_event_t event_type, sctp_subtype_t subtype,
 			     sctp_state_t state,
 			     struct sctp_endpoint *ep,
+<<<<<<< HEAD
 			     struct sctp_association *asoc,
+=======
+			     struct sctp_association **asoc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     void *event_arg,
 			     sctp_disposition_t status,
 			     sctp_cmd_seq_t *commands,
@@ -1168,16 +1394,26 @@ static int sctp_side_effects(sctp_event_t event_type, sctp_subtype_t subtype,
 	 * disposition SCTP_DISPOSITION_CONSUME.
 	 */
 	if (0 != (error = sctp_cmd_interpreter(event_type, subtype, state,
+<<<<<<< HEAD
 					       ep, asoc,
+=======
+					       ep, *asoc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					       event_arg, status,
 					       commands, gfp)))
 		goto bail;
 
 	switch (status) {
 	case SCTP_DISPOSITION_DISCARD:
+<<<<<<< HEAD
 		SCTP_DEBUG_PRINTK("Ignored sctp protocol event - state %d, "
 				  "event_type %d, event_id %d\n",
 				  state, event_type, subtype.chunk);
+=======
+		pr_debug("%s: ignored sctp protocol event - state:%d, "
+			 "event_type:%d, event_id:%d\n", __func__, state,
+			 event_type, subtype.chunk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case SCTP_DISPOSITION_NOMEM:
@@ -1191,11 +1427,20 @@ static int sctp_side_effects(sctp_event_t event_type, sctp_subtype_t subtype,
 		break;
 
 	case SCTP_DISPOSITION_DELETE_TCB:
+<<<<<<< HEAD
 		/* This should now be a command. */
 		break;
 
 	case SCTP_DISPOSITION_CONSUME:
 	case SCTP_DISPOSITION_ABORT:
+=======
+	case SCTP_DISPOSITION_ABORT:
+		/* This should now be a command. */
+		*asoc = NULL;
+		break;
+
+	case SCTP_DISPOSITION_CONSUME:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * We should no longer have much work to do here as the
 		 * real work has been done as explicit commands above.
@@ -1244,6 +1489,11 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 				sctp_cmd_seq_t *commands,
 				gfp_t gfp)
 {
+<<<<<<< HEAD
+=======
+	struct sock *sk = ep->base.sk;
+	struct sctp_sock *sp = sctp_sk(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int error = 0;
 	int force;
 	sctp_cmd_t *cmd;
@@ -1275,6 +1525,7 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 		case SCTP_CMD_NEW_ASOC:
 			/* Register a new association.  */
 			if (local_cork) {
+<<<<<<< HEAD
 				sctp_outq_uncork(&asoc->outqueue);
 				local_cork = 0;
 			}
@@ -1282,6 +1533,16 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 			/* Register with the endpoint.  */
 			sctp_endpoint_add_asoc(ep, asoc);
 			sctp_hash_established(asoc);
+=======
+				sctp_outq_uncork(&asoc->outqueue, gfp);
+				local_cork = 0;
+			}
+
+			/* Register with the endpoint.  */
+			asoc = cmd->obj.asoc;
+			BUG_ON(asoc->peer.primary_path == NULL);
+			sctp_endpoint_add_asoc(ep, asoc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case SCTP_CMD_UPDATE_ASSOC:
@@ -1294,7 +1555,11 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 
 		case SCTP_CMD_DELETE_TCB:
 			if (local_cork) {
+<<<<<<< HEAD
 				sctp_outq_uncork(&asoc->outqueue);
+=======
+				sctp_outq_uncork(&asoc->outqueue, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				local_cork = 0;
 			}
 			/* Delete the current association.  */
@@ -1348,8 +1613,15 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 			/* Generate an INIT ACK chunk.  */
 			new_obj = sctp_make_init_ack(asoc, chunk, GFP_ATOMIC,
 						     0);
+<<<<<<< HEAD
 			if (!new_obj)
 				goto nomem;
+=======
+			if (!new_obj) {
+				error = -ENOMEM;
+				break;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			sctp_add_cmd_sf(commands, SCTP_CMD_REPLY,
 					SCTP_CHUNK(new_obj));
@@ -1371,7 +1643,12 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 			if (!new_obj) {
 				if (cmd->obj.chunk)
 					sctp_chunk_free(cmd->obj.chunk);
+<<<<<<< HEAD
 				goto nomem;
+=======
+				error = -ENOMEM;
+				break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			sctp_add_cmd_sf(commands, SCTP_CMD_REPLY,
 					SCTP_CHUNK(new_obj));
@@ -1418,26 +1695,45 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 
 			/* Generate a SHUTDOWN chunk.  */
 			new_obj = sctp_make_shutdown(asoc, chunk);
+<<<<<<< HEAD
 			if (!new_obj)
 				goto nomem;
+=======
+			if (!new_obj) {
+				error = -ENOMEM;
+				break;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sctp_add_cmd_sf(commands, SCTP_CMD_REPLY,
 					SCTP_CHUNK(new_obj));
 			break;
 
 		case SCTP_CMD_CHUNK_ULP:
 			/* Send a chunk to the sockets layer.  */
+<<<<<<< HEAD
 			SCTP_DEBUG_PRINTK("sm_sideff: %s %p, %s %p.\n",
 					  "chunk_up:", cmd->obj.chunk,
 					  "ulpq:", &asoc->ulpq);
+=======
+			pr_debug("%s: sm_sideff: chunk_up:%p, ulpq:%p\n",
+				 __func__, cmd->obj.chunk, &asoc->ulpq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sctp_ulpq_tail_data(&asoc->ulpq, cmd->obj.chunk,
 					    GFP_ATOMIC);
 			break;
 
 		case SCTP_CMD_EVENT_ULP:
 			/* Send a notification to the sockets layer.  */
+<<<<<<< HEAD
 			SCTP_DEBUG_PRINTK("sm_sideff: %s %p, %s %p.\n",
 					  "event_up:",cmd->obj.ulpevent,
 					  "ulpq:",&asoc->ulpq);
+=======
+			pr_debug("%s: sm_sideff: event_up:%p, ulpq:%p\n",
+				 __func__, cmd->obj.ulpevent, &asoc->ulpq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sctp_ulpq_tail_event(&asoc->ulpq, cmd->obj.ulpevent);
 			break;
 
@@ -1448,13 +1744,21 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 				local_cork = 1;
 			}
 			/* Send a chunk to our peer.  */
+<<<<<<< HEAD
 			error = sctp_outq_tail(&asoc->outqueue, cmd->obj.chunk);
+=======
+			sctp_outq_tail(&asoc->outqueue, cmd->obj.chunk, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case SCTP_CMD_SEND_PKT:
 			/* Send a full packet to our peer.  */
 			packet = cmd->obj.packet;
+<<<<<<< HEAD
 			sctp_packet_transmit(packet);
+=======
+			sctp_packet_transmit(packet, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sctp_ootb_pkt_free(packet);
 			break;
 
@@ -1602,7 +1906,11 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 			break;
 
 		case SCTP_CMD_REPORT_BAD_TAG:
+<<<<<<< HEAD
 			SCTP_DEBUG_PRINTK("vtag mismatch!\n");
+=======
+			pr_debug("%s: vtag mismatch!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case SCTP_CMD_STRIKE:
@@ -1634,7 +1942,11 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 
 		case SCTP_CMD_HB_TIMER_UPDATE:
 			t = cmd->obj.transport;
+<<<<<<< HEAD
 			sctp_cmd_hb_timer_update(commands, t);
+=======
+			sctp_transport_reset_hb_timer(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case SCTP_CMD_HB_TIMERS_STOP:
@@ -1664,7 +1976,11 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 			 */
 			chunk->pdiscard = 1;
 			if (asoc) {
+<<<<<<< HEAD
 				sctp_outq_uncork(&asoc->outqueue);
+=======
+				sctp_outq_uncork(&asoc->outqueue, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				local_cork = 0;
 			}
 			break;
@@ -1702,7 +2018,11 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 		case SCTP_CMD_FORCE_PRIM_RETRAN:
 			t = asoc->peer.retran_path;
 			asoc->peer.retran_path = asoc->peer.primary_path;
+<<<<<<< HEAD
 			error = sctp_outq_uncork(&asoc->outqueue);
+=======
+			sctp_outq_uncork(&asoc->outqueue, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			local_cork = 0;
 			asoc->peer.retran_path = t;
 			break;
@@ -1729,7 +2049,11 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 				sctp_outq_cork(&asoc->outqueue);
 				local_cork = 1;
 			}
+<<<<<<< HEAD
 			error = sctp_cmd_send_msg(asoc, cmd->obj.msg);
+=======
+			sctp_cmd_send_msg(asoc, cmd->obj.msg, gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case SCTP_CMD_SEND_NEXT_ASCONF:
 			sctp_cmd_send_asconf(asoc);
@@ -1748,17 +2072,32 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (error)
 			break;
 	}
 
 out:
+=======
+		if (error) {
+			cmd = sctp_next_cmd(commands);
+			while (cmd) {
+				if (cmd->verb == SCTP_CMD_REPLY)
+					sctp_chunk_free(cmd->obj.chunk);
+				cmd = sctp_next_cmd(commands);
+			}
+			break;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* If this is in response to a received chunk, wait until
 	 * we are done with the packet to open the queue so that we don't
 	 * send multiple packets in response to a single request.
 	 */
 	if (asoc && SCTP_EVENT_T_CHUNK == event_type && chunk) {
 		if (chunk->end_of_packet || chunk->singleton)
+<<<<<<< HEAD
 			error = sctp_outq_uncork(&asoc->outqueue);
 	} else if (local_cork)
 		error = sctp_outq_uncork(&asoc->outqueue);
@@ -1766,5 +2105,15 @@ out:
 nomem:
 	error = -ENOMEM;
 	goto out;
+=======
+			sctp_outq_uncork(&asoc->outqueue, gfp);
+	} else if (local_cork)
+		sctp_outq_uncork(&asoc->outqueue, gfp);
+
+	if (sp->data_ready_signalled)
+		sp->data_ready_signalled = 0;
+
+	return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 

@@ -670,7 +670,10 @@ static const struct attribute_group via686a_group = {
 
 static struct platform_driver via686a_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "via686a",
 	},
 	.probe		= via686a_probe,
@@ -824,7 +827,11 @@ static struct via686a_data *via686a_update_device(struct device *dev)
 	return data;
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(via686a_pci_ids) = {
+=======
+static const struct pci_device_id via686a_pci_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C686_4) },
 	{ }
 };

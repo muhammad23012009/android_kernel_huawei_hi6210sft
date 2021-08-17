@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Defitions for the address spaces of the AVR32 CPUs. Heavily based on
+=======
+ * Definitions for the address spaces of the AVR32 CPUs. Heavily based on
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * include/asm-sh/addrspace.h
  *
  * Copyright (C) 2004-2006 Atmel Corporation

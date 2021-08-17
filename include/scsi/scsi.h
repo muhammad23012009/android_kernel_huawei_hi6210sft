@@ -1,15 +1,20 @@
 /*
  * This header file contains public constants and structures used by
+<<<<<<< HEAD
  * the scsi code for linux.
  *
  * For documentation on the OPCODES, MESSAGES, and SENSE values,
  * please consult the SCSI standard.
+=======
+ * the SCSI initiator code.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #ifndef _SCSI_SCSI_H
 #define _SCSI_SCSI_H
 
 #include <linux/types.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 
 struct scsi_cmnd;
 
@@ -31,6 +36,17 @@ struct scsi_cmnd;
 #else
 #define SCSI_MAX_SG_CHAIN_SEGMENTS	SCSI_MAX_SG_SEGMENTS
 #endif
+=======
+#include <linux/kernel.h>
+#include <scsi/scsi_common.h>
+#include <scsi/scsi_proto.h>
+
+struct scsi_cmnd;
+
+enum scsi_timeouts {
+	SCSI_DEFAULT_EH_TIMEOUT		= 10 * HZ,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * DIX-capable adapters effectively support infinite chaining for the
@@ -44,6 +60,7 @@ struct scsi_cmnd;
  */
 #define SCAN_WILD_CARD	~0
 
+<<<<<<< HEAD
 /*
  *      SCSI opcodes
  */
@@ -216,6 +233,8 @@ scsi_command_size(const unsigned char *cmnd)
 		scsi_varlen_cdb_length(cmnd) : COMMAND_SIZE(cmnd[0]);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_ACPI
 struct acpi_bus_type;
 
@@ -226,6 +245,7 @@ extern void
 scsi_unregister_acpi_bus_type(struct acpi_bus_type *bus);
 #endif
 
+<<<<<<< HEAD
 /*
  *  SCSI Architecture Model (SAM) Status codes. Taken from SAM-3 draft
  *  T10/1561-D Revision 4 Draft dated 7th November 2002.
@@ -242,6 +262,8 @@ scsi_unregister_acpi_bus_type(struct acpi_bus_type *bus);
 #define SAM_STAT_ACA_ACTIVE      0x30
 #define SAM_STAT_TASK_ABORTED    0x40
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /** scsi_status_is_good - check the status return.
  *
  * @status: the status passed up from the driver (including host and
@@ -265,6 +287,7 @@ static inline int scsi_status_is_good(int status)
 		(status == SAM_STAT_COMMAND_TERMINATED));
 }
 
+<<<<<<< HEAD
 /*
  *  Status codes. These are deprecated as they are shifted 1 bit right
  *  from those found in the SCSI standards. This causes confusion for
@@ -343,6 +366,8 @@ enum scsi_protocol {
 
 /* Returns a human-readable name for the device */
 extern const char * scsi_device_type(unsigned type);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * standard mode-select header prepended to all mode-select commands
@@ -364,6 +389,7 @@ struct ccs_modesel_head {
 };
 
 /*
+<<<<<<< HEAD
  * ScsiLun: 8 byte LUN.
  */
 struct scsi_lun {
@@ -371,6 +397,8 @@ struct scsi_lun {
 };
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The Well Known LUNS (SAM-3) in our int representation of a LUN
  */
 #define SCSI_W_LUN_BASE 0xc100
@@ -378,7 +406,11 @@ struct scsi_lun {
 #define SCSI_W_LUN_ACCESS_CONTROL (SCSI_W_LUN_BASE + 2)
 #define SCSI_W_LUN_TARGET_LOG_PAGE (SCSI_W_LUN_BASE + 3)
 
+<<<<<<< HEAD
 static inline int scsi_is_wlun(unsigned int lun)
+=======
+static inline int scsi_is_wlun(u64 lun)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return (lun & 0xff00) == SCSI_W_LUN_BASE;
 }
@@ -452,6 +484,11 @@ static inline int scsi_is_wlun(unsigned int lun)
 				 * other paths */
 #define DID_NEXUS_FAILURE 0x11  /* Permanent nexus failure, retry on other
 				 * paths might yield different results */
+<<<<<<< HEAD
+=======
+#define DID_ALLOC_FAILURE 0x12  /* Space allocation on the device failed */
+#define DID_MEDIUM_ERROR  0x13  /* Medium error */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DRIVER_OK       0x00	/* Driver status                           */
 
 /*
@@ -481,7 +518,10 @@ static inline int scsi_is_wlun(unsigned int lun)
 #define TIMEOUT_ERROR   0x2007
 #define SCSI_RETURN_NOT_HANDLED   0x2008
 #define FAST_IO_FAIL	0x2009
+<<<<<<< HEAD
 #define TARGET_ERROR    0x200A
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Midlevel queue return values.

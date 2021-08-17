@@ -120,6 +120,10 @@ static void cisco_keepalive_send(struct net_device *dev, u32 type,
 	skb_put(skb, sizeof(struct cisco_packet));
 	skb->priority = TC_PRIO_CONTROL;
 	skb->dev = dev;
+<<<<<<< HEAD
+=======
+	skb->protocol = htons(ETH_P_HDLC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_reset_network_header(skb);
 
 	dev_queue_xmit(skb);
@@ -377,7 +381,13 @@ static int cisco_ioctl(struct net_device *dev, struct ifreq *ifr)
 		memcpy(&state(hdlc)->settings, &new_settings, size);
 		spin_lock_init(&state(hdlc)->lock);
 		dev->header_ops = &cisco_header_ops;
+<<<<<<< HEAD
 		dev->type = ARPHRD_CISCO;
+=======
+		dev->hard_header_len = sizeof(struct hdlc_header);
+		dev->type = ARPHRD_CISCO;
+		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		netif_dormant_on(dev);
 		return 0;
 	}

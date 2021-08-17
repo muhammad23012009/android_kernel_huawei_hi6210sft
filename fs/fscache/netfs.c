@@ -22,6 +22,10 @@ static LIST_HEAD(fscache_netfs_list);
 int __fscache_register_netfs(struct fscache_netfs *netfs)
 {
 	struct fscache_netfs *ptr;
+<<<<<<< HEAD
+=======
+	struct fscache_cookie *cookie;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	_enter("{%s}", netfs->name);
@@ -29,15 +33,22 @@ int __fscache_register_netfs(struct fscache_netfs *netfs)
 	INIT_LIST_HEAD(&netfs->link);
 
 	/* allocate a cookie for the primary index */
+<<<<<<< HEAD
 	netfs->primary_index =
 		kmem_cache_zalloc(fscache_cookie_jar, GFP_KERNEL);
 
 	if (!netfs->primary_index) {
+=======
+	cookie = kmem_cache_zalloc(fscache_cookie_jar, GFP_KERNEL);
+
+	if (!cookie) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		_leave(" = -ENOMEM");
 		return -ENOMEM;
 	}
 
 	/* initialise the primary index cookie */
+<<<<<<< HEAD
 	atomic_set(&netfs->primary_index->usage, 1);
 	atomic_set(&netfs->primary_index->n_children, 0);
 
@@ -47,6 +58,20 @@ int __fscache_register_netfs(struct fscache_netfs *netfs)
 
 	spin_lock_init(&netfs->primary_index->lock);
 	INIT_HLIST_HEAD(&netfs->primary_index->backing_objects);
+=======
+	atomic_set(&cookie->usage, 1);
+	atomic_set(&cookie->n_children, 0);
+	atomic_set(&cookie->n_active, 1);
+
+	cookie->def		= &fscache_fsdef_netfs_def;
+	cookie->parent		= &fscache_fsdef_index;
+	cookie->netfs_data	= netfs;
+	cookie->flags		= 1 << FSCACHE_COOKIE_ENABLED;
+
+	spin_lock_init(&cookie->lock);
+	spin_lock_init(&cookie->stores_lock);
+	INIT_HLIST_HEAD(&cookie->backing_objects);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check the netfs type is not already present */
 	down_write(&fscache_addremove_sem);
@@ -57,6 +82,7 @@ int __fscache_register_netfs(struct fscache_netfs *netfs)
 			goto already_registered;
 	}
 
+<<<<<<< HEAD
 	atomic_inc(&netfs->primary_index->parent->usage);
 	atomic_inc(&netfs->primary_index->parent->n_children);
 
@@ -65,14 +91,29 @@ int __fscache_register_netfs(struct fscache_netfs *netfs)
 
 	printk(KERN_NOTICE "FS-Cache: Netfs '%s' registered for caching\n",
 	       netfs->name);
+=======
+	atomic_inc(&cookie->parent->usage);
+	atomic_inc(&cookie->parent->n_children);
+
+	netfs->primary_index = cookie;
+	list_add(&netfs->link, &fscache_netfs_list);
+	ret = 0;
+
+	pr_notice("Netfs '%s' registered for caching\n", netfs->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 already_registered:
 	up_write(&fscache_addremove_sem);
 
+<<<<<<< HEAD
 	if (ret < 0) {
 		kmem_cache_free(fscache_cookie_jar, netfs->primary_index);
 		netfs->primary_index = NULL;
 	}
+=======
+	if (ret < 0)
+		kmem_cache_free(fscache_cookie_jar, cookie);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	_leave(" = %d", ret);
 	return ret;
@@ -94,8 +135,13 @@ void __fscache_unregister_netfs(struct fscache_netfs *netfs)
 
 	up_write(&fscache_addremove_sem);
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "FS-Cache: Netfs '%s' unregistered from caching\n",
 	       netfs->name);
+=======
+	pr_notice("Netfs '%s' unregistered from caching\n",
+		  netfs->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	_leave("");
 }

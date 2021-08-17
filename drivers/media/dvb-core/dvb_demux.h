@@ -83,7 +83,11 @@ struct dvb_demux_feed {
 	u8 *buffer;
 	int buffer_size;
 
+<<<<<<< HEAD
 	struct timespec timeout;
+=======
+	ktime_t timeout;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dvb_demux_filter *filter;
 
 	int ts_type;
@@ -134,7 +138,11 @@ struct dvb_demux {
 
 	uint8_t *cnt_storage; /* for TS continuity check */
 
+<<<<<<< HEAD
 	struct timespec speed_last_time; /* for TS speed check */
+=======
+	ktime_t speed_last_time; /* for TS speed check */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t speed_pkts_cnt; /* for TS speed check */
 };
 

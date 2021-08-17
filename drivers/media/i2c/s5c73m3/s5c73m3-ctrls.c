@@ -32,7 +32,11 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 #include <media/v4l2-mediabus.h>
+<<<<<<< HEAD
 #include <media/s5c73m3.h>
+=======
+#include <media/i2c/s5c73m3.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "s5c73m3.h"
 
@@ -211,7 +215,11 @@ static int s5c73m3_3a_lock(struct s5c73m3 *state, struct v4l2_ctrl *ctrl)
 	}
 
 	if ((ctrl->val ^ ctrl->cur.val) & V4L2_LOCK_FOCUS)
+<<<<<<< HEAD
 		ret = s5c73m3_af_run(state, ~af_lock);
+=======
+		ret = s5c73m3_af_run(state, !af_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }

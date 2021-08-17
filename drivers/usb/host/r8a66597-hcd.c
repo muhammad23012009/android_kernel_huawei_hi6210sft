@@ -27,7 +27,10 @@
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/timer.h>
 #include <linux/delay.h>
 #include <linux/list.h>
@@ -95,7 +98,11 @@ static int r8a66597_clock_enable(struct r8a66597 *r8a66597)
 	int i = 0;
 
 	if (r8a66597->pdata->on_chip) {
+<<<<<<< HEAD
 		clk_enable(r8a66597->clk);
+=======
+		clk_prepare_enable(r8a66597->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		do {
 			r8a66597_write(r8a66597, SCKE, SYSCFG0);
 			tmp = r8a66597_read(r8a66597, SYSCFG0);
@@ -139,7 +146,11 @@ static void r8a66597_clock_disable(struct r8a66597 *r8a66597)
 	udelay(1);
 
 	if (r8a66597->pdata->on_chip) {
+<<<<<<< HEAD
 		clk_disable(r8a66597->clk);
+=======
+		clk_disable_unprepare(r8a66597->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		r8a66597_bclr(r8a66597, PLLC, SYSCFG0);
 		r8a66597_bclr(r8a66597, XCKE, SYSCFG0);
@@ -1991,6 +2002,11 @@ static int r8a66597_urb_dequeue(struct usb_hcd *hcd, struct urb *urb,
 
 static void r8a66597_endpoint_disable(struct usb_hcd *hcd,
 				      struct usb_host_endpoint *hep)
+<<<<<<< HEAD
+=======
+__acquires(r8a66597->lock)
+__releases(r8a66597->lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct r8a66597 *r8a66597 = hcd_to_r8a66597(hcd);
 	struct r8a66597_pipe *pipe = (struct r8a66597_pipe *)hep->hcpriv;
@@ -2003,6 +2019,7 @@ static void r8a66597_endpoint_disable(struct usb_hcd *hcd,
 		return;
 	pipenum = pipe->info.pipenum;
 
+<<<<<<< HEAD
 	if (pipenum == 0) {
 		kfree(hep->hcpriv);
 		hep->hcpriv = NULL;
@@ -2010,6 +2027,16 @@ static void r8a66597_endpoint_disable(struct usb_hcd *hcd,
 	}
 
 	spin_lock_irqsave(&r8a66597->lock, flags);
+=======
+	spin_lock_irqsave(&r8a66597->lock, flags);
+	if (pipenum == 0) {
+		kfree(hep->hcpriv);
+		hep->hcpriv = NULL;
+		spin_unlock_irqrestore(&r8a66597->lock, flags);
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pipe_stop(r8a66597, pipe);
 	pipe_irq_disable(r8a66597, pipenum);
 	disable_irq_empty(r8a66597, pipenum);
@@ -2102,6 +2129,7 @@ static void r8a66597_check_detect_child(struct r8a66597 *r8a66597,
 
 	memset(now_map, 0, sizeof(now_map));
 
+<<<<<<< HEAD
 	list_for_each_entry(bus, &usb_bus_list, bus_list) {
 		if (!bus->root_hub)
 			continue;
@@ -2112,6 +2140,15 @@ static void r8a66597_check_detect_child(struct r8a66597 *r8a66597,
 		collect_usb_address_map(bus->root_hub, now_map);
 		update_usb_address_map(r8a66597, bus->root_hub, now_map);
 	}
+=======
+	mutex_lock(&usb_bus_idr_lock);
+	bus = idr_find(&usb_bus_idr, hcd->self.busnum);
+	if (bus && bus->root_hub) {
+		collect_usb_address_map(bus->root_hub, now_map);
+		update_usb_address_map(r8a66597, bus->root_hub, now_map);
+	}
+	mutex_unlock(&usb_bus_idr_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int r8a66597_hub_status_data(struct usb_hcd *hcd, char *buf)
@@ -2139,12 +2176,21 @@ static int r8a66597_hub_status_data(struct usb_hcd *hcd, char *buf)
 static void r8a66597_hub_descriptor(struct r8a66597 *r8a66597,
 				    struct usb_hub_descriptor *desc)
 {
+<<<<<<< HEAD
 	desc->bDescriptorType = 0x29;
+=======
+	desc->bDescriptorType = USB_DT_HUB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc->bHubContrCurrent = 0;
 	desc->bNbrPorts = r8a66597->max_root_hub;
 	desc->bDescLength = 9;
 	desc->bPwrOn2PwrGood = 0;
+<<<<<<< HEAD
 	desc->wHubCharacteristics = cpu_to_le16(0x0011);
+=======
+	desc->wHubCharacteristics =
+		cpu_to_le16(HUB_CHAR_INDV_PORT_LPSM | HUB_CHAR_NO_OCPM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc->u.hs.DeviceRemovable[0] =
 		((1 << r8a66597->max_root_hub) - 1) << 1;
 	desc->u.hs.DeviceRemovable[1] = ~0;
@@ -2303,7 +2349,11 @@ static int r8a66597_bus_resume(struct usb_hcd *hcd)
 		rh->port &= ~USB_PORT_STAT_SUSPEND;
 		rh->port |= USB_PORT_STAT_C_SUSPEND << 16;
 		r8a66597_mdfy(r8a66597, RESUME, RESUME | UACT, dvstctr_reg);
+<<<<<<< HEAD
 		msleep(50);
+=======
+		msleep(USB_RESUME_TIMEOUT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r8a66597_mdfy(r8a66597, UACT, RESUME | UACT, dvstctr_reg);
 	}
 
@@ -2395,7 +2445,11 @@ static const struct dev_pm_ops r8a66597_dev_pm_ops = {
 
 static int r8a66597_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct r8a66597		*r8a66597 = dev_get_drvdata(&pdev->dev);
+=======
+	struct r8a66597		*r8a66597 = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_hcd		*hcd = r8a66597_to_hcd(r8a66597);
 
 	del_timer_sync(&r8a66597->rh_timer);
@@ -2468,8 +2522,13 @@ static int r8a66597_probe(struct platform_device *pdev)
 	}
 	r8a66597 = hcd_to_r8a66597(hcd);
 	memset(r8a66597, 0, sizeof(struct r8a66597));
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, r8a66597);
 	r8a66597->pdata = pdev->dev.platform_data;
+=======
+	platform_set_drvdata(pdev, r8a66597);
+	r8a66597->pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r8a66597->irq_sense_low = irq_trigger == IRQF_TRIGGER_LOW;
 
 	if (r8a66597->pdata->on_chip) {
@@ -2486,9 +2545,14 @@ static int r8a66597_probe(struct platform_device *pdev)
 		r8a66597->max_root_hub = 2;
 
 	spin_lock_init(&r8a66597->lock);
+<<<<<<< HEAD
 	init_timer(&r8a66597->rh_timer);
 	r8a66597->rh_timer.function = r8a66597_timer;
 	r8a66597->rh_timer.data = (unsigned long)r8a66597;
+=======
+	setup_timer(&r8a66597->rh_timer, r8a66597_timer,
+		    (unsigned long)r8a66597);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r8a66597->reg = reg;
 
 	/* make sure no interrupts are pending */
@@ -2499,9 +2563,14 @@ static int r8a66597_probe(struct platform_device *pdev)
 
 	for (i = 0; i < R8A66597_MAX_NUM_PIPE; i++) {
 		INIT_LIST_HEAD(&r8a66597->pipe_queue[i]);
+<<<<<<< HEAD
 		init_timer(&r8a66597->td_timer[i]);
 		r8a66597->td_timer[i].function = r8a66597_td_timer;
 		r8a66597->td_timer[i].data = (unsigned long)r8a66597;
+=======
+		setup_timer(&r8a66597->td_timer[i], r8a66597_td_timer,
+			    (unsigned long)r8a66597);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		setup_timer(&r8a66597->interval_timer[i],
 				r8a66597_interval_timer,
 				(unsigned long)r8a66597);
@@ -2516,6 +2585,10 @@ static int r8a66597_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to add hcd\n");
 		goto clean_up3;
 	}
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -2536,8 +2609,12 @@ static struct platform_driver r8a66597_driver = {
 	.probe =	r8a66597_probe,
 	.remove =	r8a66597_remove,
 	.driver		= {
+<<<<<<< HEAD
 		.name = (char *) hcd_name,
 		.owner	= THIS_MODULE,
+=======
+		.name = hcd_name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= R8A66597_DEV_PM_OPS,
 	},
 };

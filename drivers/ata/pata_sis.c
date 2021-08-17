@@ -26,7 +26,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -870,10 +873,17 @@ static int sis_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 	return ata_pci_bmdma_init_one(pdev, ppi, &sis_sht, chipset, 0);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sis_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sis_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -900,7 +910,11 @@ static struct pci_driver sis_pci_driver = {
 	.id_table		= sis_pci_tbl,
 	.probe			= sis_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= sis_reinit_one,
 #endif

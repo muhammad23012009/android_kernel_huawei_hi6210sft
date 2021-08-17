@@ -82,6 +82,10 @@ MACHINE_START(OMAP_GENERIC, "Generic OMAP1510/1610/1710")
 	.map_io		= omap16xx_map_io,
 	.init_early	= omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= omap_generic_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

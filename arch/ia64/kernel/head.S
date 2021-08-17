@@ -26,13 +26,20 @@
 #include <asm/mmu_context.h>
 #include <asm/asm-offsets.h>
 #include <asm/pal.h>
+<<<<<<< HEAD
 #include <asm/paravirt.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/pgtable.h>
 #include <asm/processor.h>
 #include <asm/ptrace.h>
 #include <asm/mca_asm.h>
 #include <linux/init.h>
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_HOTPLUG_CPU
 #define SAL_PSR_BITS_TO_SET				\
@@ -169,6 +176,10 @@ RestRR:											\
 	__PAGE_ALIGNED_DATA
 
 	.global empty_zero_page
+<<<<<<< HEAD
+=======
+EXPORT_DATA_SYMBOL_GPL(empty_zero_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 empty_zero_page:
 	.skip PAGE_SIZE
 
@@ -259,7 +270,11 @@ start_ap:
 	 * Switch into virtual mode:
 	 */
 	movl r16=(IA64_PSR_IT|IA64_PSR_IC|IA64_PSR_DT|IA64_PSR_RT|IA64_PSR_DFH|IA64_PSR_BN \
+<<<<<<< HEAD
 		  |IA64_PSR_DI|IA64_PSR_AC)
+=======
+		  |IA64_PSR_DI)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	;;
 	mov cr.ipsr=r16
 	movl r17=1f
@@ -394,6 +409,7 @@ start_ap:
 	;;
 (isBP)	st8 [r2]=r28		// save the address of the boot param area passed by the bootloader
 
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 
 	movl r14=hypervisor_setup_hooks
@@ -432,6 +448,8 @@ num_hypervisor_hooks = (. - hypervisor_setup_hooks) / 8
 
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 (isAP)	br.call.sptk.many rp=start_secondary
 .ret0:
@@ -1035,7 +1053,11 @@ END(ia64_delay_loop)
  * Return a CPU-local timestamp in nano-seconds.  This timestamp is
  * NOT synchronized across CPUs its return value must never be
  * compared against the values returned on another CPU.  The usage in
+<<<<<<< HEAD
  * kernel/sched.c ensures that.
+=======
+ * kernel/sched/core.c ensures that.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The return-value of sched_clock() is NOT supposed to wrap-around.
  * If it did, it would cause some scheduling hiccups (at the worst).
@@ -1066,12 +1088,15 @@ GLOBAL_ENTRY(ia64_native_sched_clock)
 	shrp r8=r9,r8,IA64_NSEC_PER_CYC_SHIFT
 	br.ret.sptk.many rp
 END(ia64_native_sched_clock)
+<<<<<<< HEAD
 #ifndef CONFIG_PARAVIRT
 	//unsigned long long
 	//sched_clock(void) __attribute__((alias("ia64_native_sched_clock")));
 	.global sched_clock
 sched_clock = ia64_native_sched_clock
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
 GLOBAL_ENTRY(cycle_to_cputime)

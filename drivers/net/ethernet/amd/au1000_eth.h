@@ -18,8 +18,12 @@
  *  for more details.
  *
  *  You should have received a copy of the GNU General Public License along
+<<<<<<< HEAD
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
+=======
+ *  with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * ########################################################################
  *
@@ -107,7 +111,10 @@ struct au1000_private {
 	int old_speed;
 	int old_duplex;
 
+<<<<<<< HEAD
 	struct phy_device *phy_dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mii_bus *mii_bus;
 
 	/* PHY configuration */

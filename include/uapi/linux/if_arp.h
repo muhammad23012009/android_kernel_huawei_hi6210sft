@@ -93,6 +93,11 @@
 #define ARPHRD_PHONET_PIPE 821		/* PhoNet pipe header		*/
 #define ARPHRD_CAIF	822		/* CAIF media type		*/
 #define ARPHRD_IP6GRE	823		/* GRE over IPv6		*/
+<<<<<<< HEAD
+=======
+#define ARPHRD_NETLINK	824		/* Netlink header		*/
+#define ARPHRD_6LOWPAN	825		/* IPv6 over LoWPAN             */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ARPHRD_VOID	  0xFFFF	/* Void type, nothing is known */
 #define ARPHRD_NONE	  0xFFFE	/* zero header length */

@@ -303,7 +303,11 @@ static inline void irlap_next_state(struct irlap_cb *self, IRLAP_STATE state)
 	if (!self || self->magic != LAP_MAGIC)
 		return;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(4, "next LAP state = %s\n", irlap_state[state]);
+=======
+		pr_debug("next LAP state = %s\n", irlap_state[state]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*/
 	self->state = state;
 }

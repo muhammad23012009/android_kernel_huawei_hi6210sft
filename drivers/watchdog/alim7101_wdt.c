@@ -301,6 +301,31 @@ static struct miscdevice wdt_miscdev = {
 	.fops	=	&wdt_fops,
 };
 
+<<<<<<< HEAD
+=======
+static int wdt_restart_handle(struct notifier_block *this, unsigned long mode,
+			      void *cmd)
+{
+	/*
+	 * Cobalt devices have no way of rebooting themselves other
+	 * than getting the watchdog to pull reset, so we restart the
+	 * watchdog on reboot with no heartbeat.
+	 */
+	wdt_change(WDT_ENABLE);
+
+	/* loop until the watchdog fires */
+	while (true)
+		;
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block wdt_restart_handler = {
+	.notifier_call = wdt_restart_handle,
+	.priority = 128,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	Notifier for system down
  */
@@ -311,6 +336,7 @@ static int wdt_notify_sys(struct notifier_block *this,
 	if (code == SYS_DOWN || code == SYS_HALT)
 		wdt_turnoff();
 
+<<<<<<< HEAD
 	if (code == SYS_RESTART) {
 		/*
 		 * Cobalt devices have no way of rebooting themselves other
@@ -320,6 +346,8 @@ static int wdt_notify_sys(struct notifier_block *this,
 		wdt_change(WDT_ENABLE);
 		pr_info("Watchdog timer is now enabled with no heartbeat - should reboot in ~1 second\n");
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NOTIFY_DONE;
 }
 
@@ -338,6 +366,10 @@ static void __exit alim7101_wdt_unload(void)
 	/* Deregister */
 	misc_deregister(&wdt_miscdev);
 	unregister_reboot_notifier(&wdt_notifier);
+<<<<<<< HEAD
+=======
+	unregister_restart_handler(&wdt_restart_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_dev_put(alim7101_pmu);
 }
 
@@ -390,11 +422,24 @@ static int __init alim7101_wdt_init(void)
 		goto err_out;
 	}
 
+<<<<<<< HEAD
+=======
+	rc = register_restart_handler(&wdt_restart_handler);
+	if (rc) {
+		pr_err("cannot register restart handler (err=%d)\n", rc);
+		goto err_out_reboot;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = misc_register(&wdt_miscdev);
 	if (rc) {
 		pr_err("cannot register miscdev on minor=%d (err=%d)\n",
 		       wdt_miscdev.minor, rc);
+<<<<<<< HEAD
 		goto err_out_reboot;
+=======
+		goto err_out_restart;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (nowayout)
@@ -404,6 +449,11 @@ static int __init alim7101_wdt_init(void)
 		timeout, nowayout);
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_out_restart:
+	unregister_restart_handler(&wdt_restart_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out_reboot:
 	unregister_reboot_notifier(&wdt_notifier);
 err_out:
@@ -414,7 +464,11 @@ err_out:
 module_init(alim7101_wdt_init);
 module_exit(alim7101_wdt_unload);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(alim7101_pci_tbl) __used = {
+=======
+static const struct pci_device_id alim7101_pci_tbl[] __used = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M1533) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M7101) },
 	{ }
@@ -425,4 +479,7 @@ MODULE_DEVICE_TABLE(pci, alim7101_pci_tbl);
 MODULE_AUTHOR("Steve Hill");
 MODULE_DESCRIPTION("ALi M7101 PMU Computer Watchdog Timer driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

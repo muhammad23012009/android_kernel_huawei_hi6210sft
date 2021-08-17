@@ -35,11 +35,14 @@
 #ifndef _ASM_NLM_XLR_H
 #define _ASM_NLM_XLR_H
 
+<<<<<<< HEAD
 /* Platform UART functions */
 struct uart_port;
 unsigned int nlm_xlr_uart_in(struct uart_port *, int);
 void nlm_xlr_uart_out(struct uart_port *, int, int);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* SMP helpers */
 void xlr_wakeup_secondary_cpus(void);
 

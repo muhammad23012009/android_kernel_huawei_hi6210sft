@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage devices
+=======
+/*
+ * Driver for USB Mass Storage devices
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Usual Tables File for usb-storage and libusual
  *
  * Copyright (C) 2009 Alan Stern (stern@rowland.harvard.edu)

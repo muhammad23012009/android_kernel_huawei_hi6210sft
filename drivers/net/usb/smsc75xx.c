@@ -13,14 +13,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *****************************************************************************/
 
 #include <linux/module.h>
 #include <linux/kmod.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -31,6 +38,10 @@
 #include <linux/crc32.h>
 #include <linux/usb/usbnet.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_net.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "smsc75xx.h"
 
 #define SMSC_CHIPNAME			"smsc75xx"
@@ -83,6 +94,12 @@ static bool turbo_mode = true;
 module_param(turbo_mode, bool, 0644);
 MODULE_PARM_DESC(turbo_mode, "Enable multiple frames per Rx transaction");
 
+<<<<<<< HEAD
+=======
+static int smsc75xx_link_ok_nopm(struct usbnet *dev);
+static int smsc75xx_phy_gig_workaround(struct usbnet *dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __must_check __smsc75xx_read_reg(struct usbnet *dev, u32 index,
 					    u32 *data, int in_pm)
 {
@@ -100,9 +117,17 @@ static int __must_check __smsc75xx_read_reg(struct usbnet *dev, u32 index,
 	ret = fn(dev, USB_VENDOR_REQUEST_READ_REGISTER, USB_DIR_IN
 		 | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 		 0, index, &buf, 4);
+<<<<<<< HEAD
 	if (unlikely(ret < 0))
 		netdev_warn(dev->net, "Failed to read reg index 0x%08x: %d\n",
 			    index, ret);
+=======
+	if (unlikely(ret < 0)) {
+		netdev_warn(dev->net, "Failed to read reg index 0x%08x: %d\n",
+			    index, ret);
+		return ret;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	le32_to_cpus(&buf);
 	*data = buf;
@@ -727,6 +752,12 @@ static int smsc75xx_ethtool_set_wol(struct net_device *net,
 	struct smsc75xx_priv *pdata = (struct smsc75xx_priv *)(dev->data[0]);
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (wolinfo->wolopts & ~SUPPORTED_WAKE)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pdata->wolopts = wolinfo->wolopts & SUPPORTED_WAKE;
 
 	ret = device_set_wakeup_enable(&dev->udev->dev, pdata->wolopts);
@@ -763,6 +794,18 @@ static int smsc75xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
 
 static void smsc75xx_init_mac_address(struct usbnet *dev)
 {
+<<<<<<< HEAD
+=======
+	const u8 *mac_addr;
+
+	/* maybe the boot loader passed the MAC address in devicetree */
+	mac_addr = of_get_mac_address(dev->udev->dev.of_node);
+	if (mac_addr) {
+		memcpy(dev->net->dev_addr, mac_addr, ETH_ALEN);
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* try reading mac address from EEPROM */
 	if (smsc75xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
 			dev->net->dev_addr) == 0) {
@@ -774,7 +817,11 @@ static void smsc75xx_init_mac_address(struct usbnet *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	/* no eeprom, or eeprom values are invalid. generate random MAC */
+=======
+	/* no useful static MAC address found. generate a random one */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	eth_hw_addr_random(dev->net);
 	netif_dbg(dev, ifup, dev->net, "MAC address set to eth_random_addr\n");
 }
@@ -842,6 +889,12 @@ static int smsc75xx_phy_initialize(struct usbnet *dev)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	/* phy workaround for gig link */
+	smsc75xx_phy_gig_workaround(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	smsc75xx_mdio_write(dev->net, dev->mii.phy_id, MII_ADVERTISE,
 		ADVERTISE_ALL | ADVERTISE_CSMA | ADVERTISE_PAUSE_CAP |
 		ADVERTISE_PAUSE_ASYM);
@@ -947,10 +1000,18 @@ static int smsc75xx_set_features(struct net_device *netdev,
 	/* it's racing here! */
 
 	ret = smsc75xx_write_reg(dev, RFE_CTL, pdata->rfe_ctl);
+<<<<<<< HEAD
 	if (ret < 0)
 		netdev_warn(dev->net, "Error writing RFE_CTL\n");
 
 	return ret;
+=======
+	if (ret < 0) {
+		netdev_warn(dev->net, "Error writing RFE_CTL\n");
+		return ret;
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int smsc75xx_wait_ready(struct usbnet *dev, int in_pm)
@@ -979,6 +1040,65 @@ static int smsc75xx_wait_ready(struct usbnet *dev, int in_pm)
 	return -EIO;
 }
 
+<<<<<<< HEAD
+=======
+static int smsc75xx_phy_gig_workaround(struct usbnet *dev)
+{
+	struct mii_if_info *mii = &dev->mii;
+	int ret = 0, timeout = 0;
+	u32 buf, link_up = 0;
+
+	/* Set the phy in Gig loopback */
+	smsc75xx_mdio_write(dev->net, mii->phy_id, MII_BMCR, 0x4040);
+
+	/* Wait for the link up */
+	do {
+		link_up = smsc75xx_link_ok_nopm(dev);
+		usleep_range(10000, 20000);
+		timeout++;
+	} while ((!link_up) && (timeout < 1000));
+
+	if (timeout >= 1000) {
+		netdev_warn(dev->net, "Timeout waiting for PHY link up\n");
+		return -EIO;
+	}
+
+	/* phy reset */
+	ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
+	if (ret < 0) {
+		netdev_warn(dev->net, "Failed to read PMT_CTL: %d\n", ret);
+		return ret;
+	}
+
+	buf |= PMT_CTL_PHY_RST;
+
+	ret = smsc75xx_write_reg(dev, PMT_CTL, buf);
+	if (ret < 0) {
+		netdev_warn(dev->net, "Failed to write PMT_CTL: %d\n", ret);
+		return ret;
+	}
+
+	timeout = 0;
+	do {
+		usleep_range(10000, 20000);
+		ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
+		if (ret < 0) {
+			netdev_warn(dev->net, "Failed to read PMT_CTL: %d\n",
+				    ret);
+			return ret;
+		}
+		timeout++;
+	} while ((buf & PMT_CTL_PHY_RST) && (timeout < 100));
+
+	if (timeout >= 100) {
+		netdev_warn(dev->net, "timeout waiting for PHY Reset\n");
+		return -EIO;
+	}
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int smsc75xx_reset(struct usbnet *dev)
 {
 	struct smsc75xx_priv *pdata = (struct smsc75xx_priv *)(dev->data[0]);
@@ -1421,7 +1541,11 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	ret = smsc75xx_wait_ready(dev, 0);
 	if (ret < 0) {
 		netdev_warn(dev->net, "device not ready in smsc75xx_bind\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		goto free_pdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	smsc75xx_init_mac_address(dev);
@@ -1430,7 +1554,11 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	ret = smsc75xx_reset(dev);
 	if (ret < 0) {
 		netdev_warn(dev->net, "smsc75xx_reset error %d\n", ret);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto cancel_work;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dev->net->netdev_ops = &smsc75xx_netdev_ops;
@@ -1439,15 +1567,31 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->hard_header_len += SMSC75XX_TX_OVERHEAD;
 	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
 	return 0;
+<<<<<<< HEAD
+=======
+
+cancel_work:
+	cancel_work_sync(&pdata->set_multicast);
+free_pdata:
+	kfree(pdata);
+	dev->data[0] = 0;
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void smsc75xx_unbind(struct usbnet *dev, struct usb_interface *intf)
 {
 	struct smsc75xx_priv *pdata = (struct smsc75xx_priv *)(dev->data[0]);
 	if (pdata) {
+<<<<<<< HEAD
 		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
 		kfree(pdata);
 		pdata = NULL;
+=======
+		cancel_work_sync(&pdata->set_multicast);
+		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
+		kfree(pdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev->data[0] = 0;
 	}
 }
@@ -2187,11 +2331,14 @@ static int smsc75xx_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			skb_pull(skb, align_count);
 	}
 
+<<<<<<< HEAD
 	if (unlikely(skb->len < 0)) {
 		netdev_warn(dev->net, "invalid rx length<0 %d\n", skb->len);
 		return 0;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -2200,6 +2347,7 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
 {
 	u32 tx_cmd_a, tx_cmd_b;
 
+<<<<<<< HEAD
 	if (skb_headroom(skb) < SMSC75XX_TX_OVERHEAD) {
 		struct sk_buff *skb2 =
 			skb_copy_expand(skb, SMSC75XX_TX_OVERHEAD, 0, flags);
@@ -2207,6 +2355,11 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
 		skb = skb2;
 		if (!skb)
 			return NULL;
+=======
+	if (skb_cow_head(skb, SMSC75XX_TX_OVERHEAD)) {
+		dev_kfree_skb_any(skb);
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	tx_cmd_a = (u32)(skb->len & TX_CMD_A_LEN) | TX_CMD_A_FCS;

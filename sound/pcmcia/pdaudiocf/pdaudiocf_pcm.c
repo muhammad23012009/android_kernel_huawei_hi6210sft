@@ -77,7 +77,11 @@ static int pdacf_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	default:
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	spin_lock(&chip->reg_lock);
+=======
+	mutex_lock(&chip->reg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->pcm_running += inc;
 	tmp = pdacf_reg_read(chip, PDAUDIOCF_REG_SCR);
 	if (chip->pcm_running) {
@@ -91,7 +95,11 @@ static int pdacf_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	tmp |= val;
 	pdacf_reg_write(chip, PDAUDIOCF_REG_SCR, tmp);
       __end:
+<<<<<<< HEAD
 	spin_unlock(&chip->reg_lock);
+=======
+	mutex_unlock(&chip->reg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_ak4117_check_rate_and_errors(chip->ak4117, AK4117_CHECK_NO_RATE);
 	return ret;
 }
@@ -296,6 +304,10 @@ int snd_pdacf_pcm_new(struct snd_pdacf *chip)
 
 	pcm->private_data = chip;
 	pcm->info_flags = 0;
+<<<<<<< HEAD
+=======
+	pcm->nonatomic = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	strcpy(pcm->name, chip->card->shortname);
 	chip->pcm = pcm;
 	

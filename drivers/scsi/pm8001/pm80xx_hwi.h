@@ -168,11 +168,24 @@
 #define LINKRATE_15			(0x01 << 8)
 #define LINKRATE_30			(0x02 << 8)
 #define LINKRATE_60			(0x06 << 8)
+<<<<<<< HEAD
+=======
+#define LINKRATE_120			(0x08 << 8)
+
+/* phy_profile */
+#define SAS_PHY_ANALOG_SETTINGS_PAGE	0x04
+#define PHY_DWORD_LENGTH		0xC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Thermal related */
 #define	THERMAL_ENABLE			0x1
 #define	THERMAL_LOG_ENABLE		0x1
+<<<<<<< HEAD
 #define THERMAL_OP_CODE			0x6
+=======
+#define THERMAL_PAGE_CODE_7H		0x6
+#define THERMAL_PAGE_CODE_8H		0x7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define LTEMPHIL			 70
 #define RTEMPHIL			100
 
@@ -210,6 +223,11 @@
 #define SAS_DOPNRJT_RTRY_TMO            128
 #define SAS_COPNRJT_RTRY_TMO            128
 
+<<<<<<< HEAD
+=======
+/* for phy state */
+#define PHY_STATE_LINK_UP_SPCV		0x2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
   Making ORR bigger than IT NEXUS LOSS which is 2000000us = 2 second.
   Assuming a bigger value 3 second, 3000000/128 = 23437.5 where 128
@@ -1167,7 +1185,11 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
 #define IO_XFER_ERROR_INTERNAL_CRC_ERROR	0x54
 #define MPI_IO_RQE_BUSY_FULL			0x55
 #define IO_XFER_ERR_EOB_DATA_OVERRUN		0x56
+<<<<<<< HEAD
 #define IO_XFR_ERROR_INVALID_SSP_RSP_FRAME	0x57
+=======
+#define IO_XFER_ERROR_INVALID_SSP_RSP_FRAME	0x57
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IO_OPEN_CNX_ERROR_OPEN_PREEMPTED	0x58
 
 #define MPI_ERR_IO_RESOURCE_UNAVAILABLE		0x1004
@@ -1223,10 +1245,17 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
 
 /* MSGU CONFIGURATION TABLE*/
 
+<<<<<<< HEAD
 #define SPCv_MSGU_CFG_TABLE_UPDATE		0x01
 #define SPCv_MSGU_CFG_TABLE_RESET		0x02
 #define SPCv_MSGU_CFG_TABLE_FREEZE		0x04
 #define SPCv_MSGU_CFG_TABLE_UNFREEZE		0x08
+=======
+#define SPCv_MSGU_CFG_TABLE_UPDATE		0x001
+#define SPCv_MSGU_CFG_TABLE_RESET		0x002
+#define SPCv_MSGU_CFG_TABLE_FREEZE		0x004
+#define SPCv_MSGU_CFG_TABLE_UNFREEZE		0x008
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MSGU_IBDB_SET				0x00
 #define MSGU_HOST_INT_STATUS			0x08
 #define MSGU_HOST_INT_MASK			0x0C
@@ -1280,6 +1309,12 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
 #define SCRATCH_PAD_BOOT_LOAD_SUCCESS	0x0
 #define SCRATCH_PAD_IOP0_READY		0xC00
 #define SCRATCH_PAD_IOP1_READY		0x3000
+<<<<<<< HEAD
+=======
+#define SCRATCH_PAD_MIPSALL_READY	(SCRATCH_PAD_IOP1_READY | \
+					SCRATCH_PAD_IOP0_READY | \
+					SCRATCH_PAD_RAAE_READY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* boot loader state */
 #define SCRATCH_PAD1_BOOTSTATE_MASK		0x70	/* Bit 4-6 */
@@ -1520,4 +1555,9 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
 #define DEVREG_FAILURE_PORT_NOT_VALID_STATE		0x06
 #define DEVREG_FAILURE_DEVICE_TYPE_NOT_VALID		0x07
 
+<<<<<<< HEAD
+=======
+
+#define MEMBASE_II_SHIFT_REGISTER       0x1010
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

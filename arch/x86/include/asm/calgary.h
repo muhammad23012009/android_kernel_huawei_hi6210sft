@@ -31,7 +31,11 @@
 #include <asm/types.h>
 
 struct iommu_table {
+<<<<<<< HEAD
 	struct cal_chipset_ops *chip_ops; /* chipset specific funcs */
+=======
+	const struct cal_chipset_ops *chip_ops; /* chipset specific funcs */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long  it_base;      /* mapped address of tce table */
 	unsigned long  it_hint;      /* Hint for next alloc */
 	unsigned long *it_map;       /* A simple allocation bitmap for now */

@@ -8,7 +8,12 @@ struct stp_proto {
 	void		*data;
 };
 
+<<<<<<< HEAD
 extern int stp_proto_register(const struct stp_proto *proto);
 extern void stp_proto_unregister(const struct stp_proto *proto);
+=======
+int stp_proto_register(const struct stp_proto *proto);
+void stp_proto_unregister(const struct stp_proto *proto);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _NET_STP_H */

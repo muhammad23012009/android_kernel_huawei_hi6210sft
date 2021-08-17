@@ -31,8 +31,13 @@
 
 struct workspace {
 	void *mem;
+<<<<<<< HEAD
 	void *buf;	/* where compressed data goes */
 	void *cbuf;	/* where decompressed data goes */
+=======
+	void *buf;	/* where decompressed data goes */
+	void *cbuf;	/* where compressed data goes */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head list;
 };
 
@@ -55,8 +60,13 @@ static struct list_head *lzo_alloc_workspace(void)
 		return ERR_PTR(-ENOMEM);
 
 	workspace->mem = vmalloc(LZO1X_MEM_COMPRESS);
+<<<<<<< HEAD
 	workspace->buf = vmalloc(lzo1x_worst_compress(PAGE_CACHE_SIZE));
 	workspace->cbuf = vmalloc(lzo1x_worst_compress(PAGE_CACHE_SIZE));
+=======
+	workspace->buf = vmalloc(lzo1x_worst_compress(PAGE_SIZE));
+	workspace->cbuf = vmalloc(lzo1x_worst_compress(PAGE_SIZE));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!workspace->mem || !workspace->buf || !workspace->cbuf)
 		goto fail;
 
@@ -116,7 +126,11 @@ static int lzo_compress_pages(struct list_head *ws,
 	*total_out = 0;
 	*total_in = 0;
 
+<<<<<<< HEAD
 	in_page = find_get_page(mapping, start >> PAGE_CACHE_SHIFT);
+=======
+	in_page = find_get_page(mapping, start >> PAGE_SHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data_in = kmap(in_page);
 
 	/*
@@ -133,17 +147,30 @@ static int lzo_compress_pages(struct list_head *ws,
 	tot_out = LZO_LEN;
 	pages[0] = out_page;
 	nr_pages = 1;
+<<<<<<< HEAD
 	pg_bytes_left = PAGE_CACHE_SIZE - LZO_LEN;
 
 	/* compress at most one page of data each time */
 	in_len = min(len, PAGE_CACHE_SIZE);
+=======
+	pg_bytes_left = PAGE_SIZE - LZO_LEN;
+
+	/* compress at most one page of data each time */
+	in_len = min(len, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (tot_in < len) {
 		ret = lzo1x_1_compress(data_in, in_len, workspace->cbuf,
 				       &out_len, workspace->mem);
 		if (ret != LZO_E_OK) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG "btrfs deflate in loop returned %d\n",
 			       ret);
 			ret = -1;
+=======
+			pr_debug("BTRFS: deflate in loop returned %d\n",
+			       ret);
+			ret = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		}
 
@@ -189,7 +216,11 @@ static int lzo_compress_pages(struct list_head *ws,
 				kunmap(out_page);
 				if (nr_pages == nr_dest_pages) {
 					out_page = NULL;
+<<<<<<< HEAD
 					ret = -1;
+=======
+					ret = -E2BIG;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					goto out;
 				}
 
@@ -201,14 +232,25 @@ static int lzo_compress_pages(struct list_head *ws,
 				cpage_out = kmap(out_page);
 				pages[nr_pages++] = out_page;
 
+<<<<<<< HEAD
 				pg_bytes_left = PAGE_CACHE_SIZE;
+=======
+				pg_bytes_left = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				out_offset = 0;
 			}
 		}
 
 		/* we're making it bigger, give up */
+<<<<<<< HEAD
 		if (tot_in > 8192 && tot_in < tot_out)
 			goto out;
+=======
+		if (tot_in > 8192 && tot_in < tot_out) {
+			ret = -E2BIG;
+			goto out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* we're all done */
 		if (tot_in >= len)
@@ -219,12 +261,21 @@ static int lzo_compress_pages(struct list_head *ws,
 
 		bytes_left = len - tot_in;
 		kunmap(in_page);
+<<<<<<< HEAD
 		page_cache_release(in_page);
 
 		start += PAGE_CACHE_SIZE;
 		in_page = find_get_page(mapping, start >> PAGE_CACHE_SHIFT);
 		data_in = kmap(in_page);
 		in_len = min(bytes_left, PAGE_CACHE_SIZE);
+=======
+		put_page(in_page);
+
+		start += PAGE_SIZE;
+		in_page = find_get_page(mapping, start >> PAGE_SHIFT);
+		data_in = kmap(in_page);
+		in_len = min(bytes_left, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (tot_out > tot_in)
@@ -246,7 +297,11 @@ out:
 
 	if (in_page) {
 		kunmap(in_page);
+<<<<<<< HEAD
 		page_cache_release(in_page);
+=======
+		put_page(in_page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return ret;
@@ -264,8 +319,12 @@ static int lzo_decompress_biovec(struct list_head *ws,
 	char *data_in;
 	unsigned long page_in_index = 0;
 	unsigned long page_out_index = 0;
+<<<<<<< HEAD
 	unsigned long total_pages_in = (srclen + PAGE_CACHE_SIZE - 1) /
 					PAGE_CACHE_SIZE;
+=======
+	unsigned long total_pages_in = DIV_ROUND_UP(srclen, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long buf_start;
 	unsigned long buf_offset = 0;
 	unsigned long bytes;
@@ -288,7 +347,11 @@ static int lzo_decompress_biovec(struct list_head *ws,
 	tot_in = LZO_LEN;
 	in_offset = LZO_LEN;
 	tot_len = min_t(size_t, srclen, tot_len);
+<<<<<<< HEAD
 	in_page_bytes_left = PAGE_CACHE_SIZE - LZO_LEN;
+=======
+	in_page_bytes_left = PAGE_SIZE - LZO_LEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tot_out = 0;
 	pg_offset = 0;
@@ -333,7 +396,11 @@ cont:
 					break;
 
 				if (page_in_index + 1 >= total_pages_in) {
+<<<<<<< HEAD
 					ret = -1;
+=======
+					ret = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					goto done;
 				}
 
@@ -344,19 +411,32 @@ cont:
 
 				data_in = kmap(pages_in[++page_in_index]);
 
+<<<<<<< HEAD
 				in_page_bytes_left = PAGE_CACHE_SIZE;
+=======
+				in_page_bytes_left = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				in_offset = 0;
 			}
 		}
 
+<<<<<<< HEAD
 		out_len = lzo1x_worst_compress(PAGE_CACHE_SIZE);
+=======
+		out_len = lzo1x_worst_compress(PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = lzo1x_decompress_safe(buf, in_len, workspace->buf,
 					    &out_len);
 		if (need_unmap)
 			kunmap(pages_in[page_in_index - 1]);
 		if (ret != LZO_E_OK) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "btrfs decompress failed\n");
 			ret = -1;
+=======
+			pr_warn("BTRFS: decompress failed\n");
+			ret = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 
@@ -372,6 +452,11 @@ cont:
 	}
 done:
 	kunmap(pages_in[page_in_index]);
+<<<<<<< HEAD
+=======
+	if (!ret)
+		btrfs_clear_biovec_end(bvec, vcnt, page_out_index, pg_offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -396,29 +481,64 @@ static int lzo_decompress(struct list_head *ws, unsigned char *data_in,
 	in_len = read_compress_length(data_in);
 	data_in += LZO_LEN;
 
+<<<<<<< HEAD
 	out_len = PAGE_CACHE_SIZE;
 	ret = lzo1x_decompress_safe(data_in, in_len, workspace->buf, &out_len);
 	if (ret != LZO_E_OK) {
 		printk(KERN_WARNING "btrfs decompress failed!\n");
 		ret = -1;
+=======
+	out_len = PAGE_SIZE;
+	ret = lzo1x_decompress_safe(data_in, in_len, workspace->buf, &out_len);
+	if (ret != LZO_E_OK) {
+		pr_warn("BTRFS: decompress failed!\n");
+		ret = -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
 	if (out_len < start_byte) {
+<<<<<<< HEAD
 		ret = -1;
 		goto out;
 	}
 
+=======
+		ret = -EIO;
+		goto out;
+	}
+
+	/*
+	 * the caller is already checking against PAGE_SIZE, but lets
+	 * move this check closer to the memcpy/memset
+	 */
+	destlen = min_t(unsigned long, destlen, PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bytes = min_t(unsigned long, destlen, out_len - start_byte);
 
 	kaddr = kmap_atomic(dest_page);
 	memcpy(kaddr, workspace->buf + start_byte, bytes);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * btrfs_getblock is doing a zero on the tail of the page too,
+	 * but this will cover anything missing from the decompressed
+	 * data.
+	 */
+	if (bytes < destlen)
+		memset(kaddr+bytes, 0, destlen-bytes);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kunmap_atomic(kaddr);
 out:
 	return ret;
 }
 
+<<<<<<< HEAD
 struct btrfs_compress_op btrfs_lzo_compress = {
+=======
+const struct btrfs_compress_op btrfs_lzo_compress = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.alloc_workspace	= lzo_alloc_workspace,
 	.free_workspace		= lzo_free_workspace,
 	.compress_pages		= lzo_compress_pages,

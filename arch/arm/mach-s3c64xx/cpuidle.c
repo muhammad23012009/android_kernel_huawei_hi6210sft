@@ -16,8 +16,14 @@
 #include <linux/export.h>
 #include <linux/time.h>
 
+<<<<<<< HEAD
 #include <asm/proc-fns.h>
 
+=======
+#include <asm/cpuidle.h>
+
+#include <plat/cpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/map.h>
 
 #include "regs-sys.h"
@@ -48,7 +54,10 @@ static struct cpuidle_driver s3c64xx_cpuidle_driver = {
 			.enter            = s3c64xx_enter_idle,
 			.exit_latency     = 1,
 			.target_residency = 1,
+<<<<<<< HEAD
 			.flags            = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.name             = "IDLE",
 			.desc             = "System active, ARM gated",
 		},
@@ -58,6 +67,12 @@ static struct cpuidle_driver s3c64xx_cpuidle_driver = {
 
 static int __init s3c64xx_init_cpuidle(void)
 {
+<<<<<<< HEAD
 	return cpuidle_register(&s3c64xx_cpuidle_driver, NULL);
+=======
+	if (soc_is_s3c64xx())
+		return cpuidle_register(&s3c64xx_cpuidle_driver, NULL);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 device_initcall(s3c64xx_init_cpuidle);

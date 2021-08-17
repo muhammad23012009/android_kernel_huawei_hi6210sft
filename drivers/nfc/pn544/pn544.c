@@ -13,11 +13,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -31,9 +39,12 @@
 /* Timing restrictions (ms) */
 #define PN544_HCI_RESETVEN_TIME		30
 
+<<<<<<< HEAD
 #define HCI_MODE 0
 #define FW_MODE 1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum pn544_state {
 	PN544_ST_COLD,
 	PN544_ST_FW_READY,
@@ -44,6 +55,10 @@ enum pn544_state {
 
 /* Proprietary commands */
 #define PN544_WRITE		0x3f
+<<<<<<< HEAD
+=======
+#define PN544_TEST_SWP		0x21
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Proprietary gates, events, commands and registers */
 
@@ -84,14 +99,25 @@ enum pn544_state {
 #define PN544_PL_NFCT_DEACTIVATED		0x09
 
 #define PN544_SWP_MGMT_GATE			0xA0
+<<<<<<< HEAD
 
 #define PN544_NFC_WI_MGMT_GATE			0xA1
+=======
+#define PN544_SWP_DEFAULT_MODE			0x01
+
+#define PN544_NFC_WI_MGMT_GATE			0xA1
+#define PN544_NFC_ESE_DEFAULT_MODE		0x01
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PN544_HCI_EVT_SND_DATA			0x01
 #define PN544_HCI_EVT_ACTIVATED			0x02
 #define PN544_HCI_EVT_DEACTIVATED		0x03
 #define PN544_HCI_EVT_RCV_DATA			0x04
 #define PN544_HCI_EVT_CONTINUE_MI		0x05
+<<<<<<< HEAD
+=======
+#define PN544_HCI_EVT_SWITCH_MODE		0x03
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PN544_HCI_CMD_ATTREQUEST		0x12
 #define PN544_HCI_CMD_CONTINUE_ACTIVATION	0x13
@@ -130,6 +156,11 @@ struct pn544_hci_info {
 	int async_cb_type;
 	data_exchange_cb_t async_cb;
 	void *async_cb_context;
+<<<<<<< HEAD
+=======
+
+	fw_download_t fw_download;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int pn544_hci_open(struct nfc_hci_dev *hdev)
@@ -188,6 +219,7 @@ static int pn544_hci_ready(struct nfc_hci_dev *hdev)
 
 		{{0x9e, 0xb4}, 0x00},
 
+<<<<<<< HEAD
 		{{0x9e, 0xd9}, 0xff},
 		{{0x9e, 0xda}, 0xff},
 		{{0x9e, 0xdb}, 0x23},
@@ -195,10 +227,13 @@ static int pn544_hci_ready(struct nfc_hci_dev *hdev)
 		{{0x9e, 0xdd}, 0x22},
 		{{0x9e, 0xde}, 0x24},
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{{0x9c, 0x01}, 0x08},
 
 		{{0x9e, 0xaa}, 0x01},
 
+<<<<<<< HEAD
 		{{0x9b, 0xd1}, 0x0d},
 		{{0x9b, 0xd2}, 0x24},
 		{{0x9b, 0xd3}, 0x0a},
@@ -214,10 +249,28 @@ static int pn544_hci_ready(struct nfc_hci_dev *hdev)
 		{{0x98, 0x00}, 0x3f},
 
 		{{0x9f, 0x09}, 0x00},
+=======
+		{{0x9b, 0xd1}, 0x17},
+		{{0x9b, 0xd2}, 0x58},
+		{{0x9b, 0xd3}, 0x10},
+		{{0x9b, 0xd4}, 0x47},
+		{{0x9b, 0xd5}, 0x0c},
+		{{0x9b, 0xd6}, 0x37},
+		{{0x9b, 0xdd}, 0x33},
+
+		{{0x9b, 0x84}, 0x00},
+		{{0x99, 0x81}, 0x79},
+		{{0x99, 0x31}, 0x79},
+
+		{{0x98, 0x00}, 0x3f},
+
+		{{0x9f, 0x09}, 0x02},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		{{0x9f, 0x0a}, 0x05},
 
 		{{0x9e, 0xd1}, 0xa1},
+<<<<<<< HEAD
 		{{0x99, 0x23}, 0x00},
 
 		{{0x9e, 0x74}, 0x80},
@@ -235,6 +288,25 @@ static int pn544_hci_ready(struct nfc_hci_dev *hdev)
 		{{0x9c, 0x19}, 0x40},
 
 		{{0x9c, 0x1a}, 0x40},
+=======
+		{{0x99, 0x23}, 0x01},
+
+		{{0x9e, 0x74}, 0x00},
+		{{0x9e, 0x90}, 0x00},
+		{{0x9f, 0x28}, 0x10},
+
+		{{0x9f, 0x35}, 0x04},
+
+		{{0x9f, 0x36}, 0x11},
+
+		{{0x9c, 0x31}, 0x00},
+
+		{{0x9c, 0x32}, 0x00},
+
+		{{0x9c, 0x19}, 0x0a},
+
+		{{0x9c, 0x1a}, 0x0a},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		{{0x9c, 0x0c}, 0x00},
 
@@ -244,6 +316,7 @@ static int pn544_hci_ready(struct nfc_hci_dev *hdev)
 
 		{{0x9c, 0x13}, 0x00},
 
+<<<<<<< HEAD
 		{{0x98, 0xa2}, 0x0e},
 
 		{{0x98, 0x93}, 0x40},
@@ -251,6 +324,15 @@ static int pn544_hci_ready(struct nfc_hci_dev *hdev)
 		{{0x98, 0x7d}, 0x02},
 		{{0x98, 0x7e}, 0x00},
 		{{0x9f, 0xc8}, 0x01},
+=======
+		{{0x98, 0xa2}, 0x09},
+
+		{{0x98, 0x93}, 0x00},
+
+		{{0x98, 0x7d}, 0x08},
+		{{0x98, 0x7e}, 0x00},
+		{{0x9f, 0xc8}, 0x00},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 	struct hw_config *p = hw_config;
 	int count = ARRAY_SIZE(hw_config);
@@ -395,7 +477,11 @@ static int pn544_hci_start_poll(struct nfc_hci_dev *hdev,
 	if ((im_protocols | tm_protocols) & NFC_PROTO_NFC_DEP_MASK) {
 		hdev->gb = nfc_get_local_general_bytes(hdev->ndev,
 							&hdev->gb_len);
+<<<<<<< HEAD
 		pr_debug("generate local bytes %p", hdev->gb);
+=======
+		pr_debug("generate local bytes %p\n", hdev->gb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (hdev->gb == NULL || hdev->gb_len == 0) {
 			im_protocols &= ~NFC_PROTO_NFC_DEP_MASK;
 			tm_protocols &= ~NFC_PROTO_NFC_DEP_MASK;
@@ -551,6 +637,7 @@ static int pn544_hci_complete_target_discovered(struct nfc_hci_dev *hdev,
 			return -EPROTO;
 		}
 
+<<<<<<< HEAD
 		r = nfc_hci_send_cmd(hdev, PN544_RF_READER_F_GATE,
 				     PN544_RF_READER_CMD_ACTIVATE_NEXT,
 				     uid_skb->data, uid_skb->len, NULL);
@@ -565,6 +652,27 @@ static int pn544_hci_complete_target_discovered(struct nfc_hci_dev *hdev,
 
 		target->hci_reader_gate = PN544_RF_READER_NFCIP1_INITIATOR_GATE;
 		target->supported_protocols = NFC_PROTO_NFC_DEP_MASK;
+=======
+		/* Type F NFC-DEP IDm has prefix 0x01FE */
+		if ((uid_skb->data[0] == 0x01) && (uid_skb->data[1] == 0xfe)) {
+			kfree_skb(uid_skb);
+			r = nfc_hci_send_cmd(hdev,
+					PN544_RF_READER_NFCIP1_INITIATOR_GATE,
+					PN544_HCI_CMD_CONTINUE_ACTIVATION,
+					NULL, 0, NULL);
+			if (r < 0)
+				return r;
+
+			target->supported_protocols = NFC_PROTO_NFC_DEP_MASK;
+			target->hci_reader_gate =
+				PN544_RF_READER_NFCIP1_INITIATOR_GATE;
+		} else {
+			r = nfc_hci_send_cmd(hdev, PN544_RF_READER_F_GATE,
+					     PN544_RF_READER_CMD_ACTIVATE_NEXT,
+					     uid_skb->data, uid_skb->len, NULL);
+			kfree_skb(uid_skb);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (target->supported_protocols & NFC_PROTO_ISO14443_MASK) {
 		/*
 		 * TODO: maybe other ISO 14443 require some kind of continue
@@ -692,7 +800,11 @@ static int pn544_hci_tm_send(struct nfc_hci_dev *hdev, struct sk_buff *skb)
 static int pn544_hci_check_presence(struct nfc_hci_dev *hdev,
 				   struct nfc_target *target)
 {
+<<<<<<< HEAD
 	pr_debug("supported protocol %d", target->supported_protocols);
+=======
+	pr_debug("supported protocol %d\b", target->supported_protocols);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (target->supported_protocols & (NFC_PROTO_ISO14443_MASK |
 					NFC_PROTO_ISO14443_B_MASK)) {
 		return nfc_hci_send_cmd(hdev, target->hci_reader_gate,
@@ -703,6 +815,7 @@ static int pn544_hci_check_presence(struct nfc_hci_dev *hdev,
 		    target->nfcid1_len != 10)
 			return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 		 return nfc_hci_send_cmd(hdev, NFC_HCI_RF_READER_A_GATE,
 				     PN544_RF_READER_CMD_ACTIVATE_NEXT,
 				     target->nfcid1, target->nfcid1_len, NULL);
@@ -712,6 +825,14 @@ static int pn544_hci_check_presence(struct nfc_hci_dev *hdev,
 	} else if (target->supported_protocols & NFC_PROTO_FELICA_MASK) {
 		return nfc_hci_send_cmd(hdev, PN544_RF_READER_F_GATE,
 					PN544_FELICA_RAW, NULL, 0, NULL);
+=======
+		return nfc_hci_send_cmd(hdev, NFC_HCI_RF_READER_A_GATE,
+				     PN544_RF_READER_CMD_ACTIVATE_NEXT,
+				     target->nfcid1, target->nfcid1_len, NULL);
+	} else if (target->supported_protocols & (NFC_PROTO_JEWEL_MASK |
+						NFC_PROTO_FELICA_MASK)) {
+		return -EOPNOTSUPP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (target->supported_protocols & NFC_PROTO_NFC_DEP_MASK) {
 		return nfc_hci_send_cmd(hdev, target->hci_reader_gate,
 					PN544_HCI_CMD_ATTREQUEST,
@@ -726,6 +847,7 @@ static int pn544_hci_check_presence(struct nfc_hci_dev *hdev,
  * <= 0: driver handled the event, skb consumed
  *    1: driver does not handle the event, please do standard processing
  */
+<<<<<<< HEAD
 static int pn544_hci_event_received(struct nfc_hci_dev *hdev, u8 gate, u8 event,
 				    struct sk_buff *skb)
 {
@@ -733,6 +855,16 @@ static int pn544_hci_event_received(struct nfc_hci_dev *hdev, u8 gate, u8 event,
 	int r;
 
 	pr_debug("hci event %d", event);
+=======
+static int pn544_hci_event_received(struct nfc_hci_dev *hdev, u8 pipe, u8 event,
+				    struct sk_buff *skb)
+{
+	struct sk_buff *rgb_skb = NULL;
+	u8 gate = hdev->pipes[pipe].gate;
+	int r;
+
+	pr_debug("hci event %d\n", event);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (event) {
 	case PN544_HCI_EVT_ACTIVATED:
 		if (gate == PN544_RF_READER_NFCIP1_INITIATOR_GATE) {
@@ -763,7 +895,11 @@ static int pn544_hci_event_received(struct nfc_hci_dev *hdev, u8 gate, u8 event,
 		}
 
 		if (skb->data[0] != 0) {
+<<<<<<< HEAD
 			pr_debug("data0 %d", skb->data[0]);
+=======
+			pr_debug("data0 %d\n", skb->data[0]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			r = -EPROTO;
 			goto exit;
 		}
@@ -780,6 +916,122 @@ exit:
 	return r;
 }
 
+<<<<<<< HEAD
+=======
+static int pn544_hci_fw_download(struct nfc_hci_dev *hdev,
+				 const char *firmware_name)
+{
+	struct pn544_hci_info *info = nfc_hci_get_clientdata(hdev);
+
+	if (info->fw_download == NULL)
+		return -ENOTSUPP;
+
+	return info->fw_download(info->phy_id, firmware_name, hdev->sw_romlib);
+}
+
+static int pn544_hci_discover_se(struct nfc_hci_dev *hdev)
+{
+	u32 se_idx = 0;
+	u8 ese_mode = 0x01; /* Default mode */
+	struct sk_buff *res_skb;
+	int r;
+
+	r = nfc_hci_send_cmd(hdev, PN544_SYS_MGMT_GATE, PN544_TEST_SWP,
+			     NULL, 0, &res_skb);
+
+	if (r == 0) {
+		if (res_skb->len == 2 && res_skb->data[0] == 0x00)
+			nfc_add_se(hdev->ndev, se_idx++, NFC_SE_UICC);
+
+		kfree_skb(res_skb);
+	}
+
+	r = nfc_hci_send_event(hdev, PN544_NFC_WI_MGMT_GATE,
+				PN544_HCI_EVT_SWITCH_MODE,
+				&ese_mode, 1);
+	if (r == 0)
+		nfc_add_se(hdev->ndev, se_idx++, NFC_SE_EMBEDDED);
+
+	return !se_idx;
+}
+
+#define PN544_SE_MODE_OFF	0x00
+#define PN544_SE_MODE_ON	0x01
+static int pn544_hci_enable_se(struct nfc_hci_dev *hdev, u32 se_idx)
+{
+	struct nfc_se *se;
+	u8 enable = PN544_SE_MODE_ON;
+	static struct uicc_gatelist {
+		u8 head;
+		u8 adr[2];
+		u8 value;
+	} uicc_gatelist[] = {
+		{0x00, {0x9e, 0xd9}, 0x23},
+		{0x00, {0x9e, 0xda}, 0x21},
+		{0x00, {0x9e, 0xdb}, 0x22},
+		{0x00, {0x9e, 0xdc}, 0x24},
+	};
+	struct uicc_gatelist *p = uicc_gatelist;
+	int count = ARRAY_SIZE(uicc_gatelist);
+	struct sk_buff *res_skb;
+	int r;
+
+	se = nfc_find_se(hdev->ndev, se_idx);
+
+	switch (se->type) {
+	case NFC_SE_UICC:
+		while (count--) {
+			r = nfc_hci_send_cmd(hdev, PN544_SYS_MGMT_GATE,
+					PN544_WRITE, (u8 *)p, 4, &res_skb);
+			if (r < 0)
+				return r;
+
+			if (res_skb->len != 1) {
+				kfree_skb(res_skb);
+				return -EPROTO;
+			}
+
+			if (res_skb->data[0] != p->value) {
+				kfree_skb(res_skb);
+				return -EIO;
+			}
+
+			kfree_skb(res_skb);
+
+			p++;
+		}
+
+		return nfc_hci_set_param(hdev, PN544_SWP_MGMT_GATE,
+			      PN544_SWP_DEFAULT_MODE, &enable, 1);
+	case NFC_SE_EMBEDDED:
+		return nfc_hci_set_param(hdev, PN544_NFC_WI_MGMT_GATE,
+			      PN544_NFC_ESE_DEFAULT_MODE, &enable, 1);
+
+	default:
+		return -EINVAL;
+	}
+}
+
+static int pn544_hci_disable_se(struct nfc_hci_dev *hdev, u32 se_idx)
+{
+	struct nfc_se *se;
+	u8 disable = PN544_SE_MODE_OFF;
+
+	se = nfc_find_se(hdev->ndev, se_idx);
+
+	switch (se->type) {
+	case NFC_SE_UICC:
+		return nfc_hci_set_param(hdev, PN544_SWP_MGMT_GATE,
+			      PN544_SWP_DEFAULT_MODE, &disable, 1);
+	case NFC_SE_EMBEDDED:
+		return nfc_hci_set_param(hdev, PN544_NFC_WI_MGMT_GATE,
+			      PN544_NFC_ESE_DEFAULT_MODE, &disable, 1);
+	default:
+		return -EINVAL;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct nfc_hci_ops pn544_hci_ops = {
 	.open = pn544_hci_open,
 	.close = pn544_hci_close,
@@ -794,26 +1046,47 @@ static struct nfc_hci_ops pn544_hci_ops = {
 	.tm_send = pn544_hci_tm_send,
 	.check_presence = pn544_hci_check_presence,
 	.event_received = pn544_hci_event_received,
+<<<<<<< HEAD
+=======
+	.fw_download = pn544_hci_fw_download,
+	.discover_se = pn544_hci_discover_se,
+	.enable_se = pn544_hci_enable_se,
+	.disable_se = pn544_hci_disable_se,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int pn544_hci_probe(void *phy_id, struct nfc_phy_ops *phy_ops, char *llc_name,
 		    int phy_headroom, int phy_tailroom, int phy_payload,
+<<<<<<< HEAD
 		    struct nfc_hci_dev **hdev)
 {
 	struct pn544_hci_info *info;
 	u32 protocols, se;
+=======
+		    fw_download_t fw_download, struct nfc_hci_dev **hdev)
+{
+	struct pn544_hci_info *info;
+	u32 protocols;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nfc_hci_init_data init_data;
 	int r;
 
 	info = kzalloc(sizeof(struct pn544_hci_info), GFP_KERNEL);
 	if (!info) {
+<<<<<<< HEAD
 		pr_err("Cannot allocate memory for pn544_hci_info.\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r = -ENOMEM;
 		goto err_info_alloc;
 	}
 
 	info->phy_ops = phy_ops;
 	info->phy_id = phy_id;
+<<<<<<< HEAD
+=======
+	info->fw_download = fw_download;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->state = PN544_ST_COLD;
 	mutex_init(&info->info_lock);
 
@@ -834,6 +1107,7 @@ int pn544_hci_probe(void *phy_id, struct nfc_phy_ops *phy_ops, char *llc_name,
 		    NFC_PROTO_ISO14443_B_MASK |
 		    NFC_PROTO_NFC_DEP_MASK;
 
+<<<<<<< HEAD
 	se = NFC_SE_UICC | NFC_SE_EMBEDDED;
 
 	info->hdev = nfc_hci_allocate_device(&pn544_hci_ops, &init_data, 0,
@@ -842,6 +1116,14 @@ int pn544_hci_probe(void *phy_id, struct nfc_phy_ops *phy_ops, char *llc_name,
 					     phy_tailroom, phy_payload);
 	if (!info->hdev) {
 		pr_err("Cannot allocate nfc hdev.\n");
+=======
+	info->hdev = nfc_hci_allocate_device(&pn544_hci_ops, &init_data, 0,
+					     protocols, llc_name,
+					     phy_headroom + PN544_CMDS_HEADROOM,
+					     phy_tailroom, phy_payload);
+	if (!info->hdev) {
+		pr_err("Cannot allocate nfc hdev\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r = -ENOMEM;
 		goto err_alloc_hdev;
 	}

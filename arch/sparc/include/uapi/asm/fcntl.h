@@ -35,6 +35,10 @@
 #define O_SYNC		(__O_SYNC|O_DSYNC)
 
 #define O_PATH		0x1000000
+<<<<<<< HEAD
+=======
+#define __O_TMPFILE	0x2000000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define F_GETOWN	5	/*  for sockets. */
 #define F_SETOWN	6	/*  for sockets. */

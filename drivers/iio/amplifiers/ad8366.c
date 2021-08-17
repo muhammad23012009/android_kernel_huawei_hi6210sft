@@ -31,7 +31,11 @@ struct ad8366_state {
 };
 
 static int ad8366_write(struct iio_dev *indio_dev,
+<<<<<<< HEAD
 			unsigned char ch_a, char unsigned ch_b)
+=======
+			unsigned char ch_a, unsigned char ch_b)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ad8366_state *st = iio_priv(indio_dev);
 	int ret;
@@ -139,17 +143,29 @@ static int ad8366_probe(struct spi_device *spi)
 	struct ad8366_state *st;
 	int ret;
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*st));
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (indio_dev == NULL)
 		return -ENOMEM;
 
 	st = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	st->reg = regulator_get(&spi->dev, "vcc");
 	if (!IS_ERR(st->reg)) {
 		ret = regulator_enable(st->reg);
 		if (ret)
 			goto error_put_reg;
+=======
+	st->reg = devm_regulator_get(&spi->dev, "vcc");
+	if (!IS_ERR(st->reg)) {
+		ret = regulator_enable(st->reg);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	spi_set_drvdata(spi, indio_dev);
@@ -166,18 +182,25 @@ static int ad8366_probe(struct spi_device *spi)
 	if (ret)
 		goto error_disable_reg;
 
+<<<<<<< HEAD
 	ad8366_write(indio_dev, 0 , 0);
+=======
+	ad8366_write(indio_dev, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
 error_disable_reg:
 	if (!IS_ERR(st->reg))
 		regulator_disable(st->reg);
+<<<<<<< HEAD
 error_put_reg:
 	if (!IS_ERR(st->reg))
 		regulator_put(st->reg);
 
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -190,12 +213,17 @@ static int ad8366_remove(struct spi_device *spi)
 
 	iio_device_unregister(indio_dev);
 
+<<<<<<< HEAD
 	if (!IS_ERR(reg)) {
 		regulator_disable(reg);
 		regulator_put(reg);
 	}
 
 	iio_device_free(indio_dev);
+=======
+	if (!IS_ERR(reg))
+		regulator_disable(reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -204,11 +232,18 @@ static const struct spi_device_id ad8366_id[] = {
 	{"ad8366", 0},
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(spi, ad8366_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct spi_driver ad8366_driver = {
 	.driver = {
 		.name	= KBUILD_MODNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= ad8366_probe,
 	.remove		= ad8366_remove,

@@ -86,6 +86,7 @@ int omap_pm_set_min_bus_tput(struct device *dev, u8 agent_id, unsigned long r)
 	return 0;
 }
 
+<<<<<<< HEAD
 int omap_pm_set_max_dev_wakeup_lat(struct device *req_dev, struct device *dev,
 				   long t)
 {
@@ -174,10 +175,13 @@ int omap_pm_set_min_clk_rate(struct device *dev, struct clk *c, long r)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * DSP Bridge-specific constraints
  */
 
+<<<<<<< HEAD
 const struct omap_opp *omap_pm_dsp_get_opp_table(void)
 {
 	pr_debug("OMAP PM: DSP request for OPP table\n");
@@ -280,6 +284,8 @@ unsigned long omap_pm_cpu_get_freq(void)
 
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * omap_pm_enable_off_mode - notify OMAP PM that off-mode is enabled
@@ -363,9 +369,12 @@ int __init omap_pm_if_init(void)
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 void omap_pm_if_exit(void)
 {
 	/* Deallocate CPUFreq frequency table here */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

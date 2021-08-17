@@ -19,7 +19,11 @@ void __init shx3_cache_init(void)
 {
 	unsigned int ccr;
 
+<<<<<<< HEAD
 	ccr = __raw_readl(CCR);
+=======
+	ccr = __raw_readl(SH_CCR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * If we've got cache aliases, resolve them in hardware.
@@ -40,5 +44,9 @@ void __init shx3_cache_init(void)
 	ccr |= CCR_CACHE_IBE;
 #endif
 
+<<<<<<< HEAD
 	writel_uncached(ccr, CCR);
+=======
+	writel_uncached(ccr, SH_CCR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

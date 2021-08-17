@@ -34,6 +34,22 @@ void * __init early_init_dt_alloc_memory_arch(u64 size, u64 align)
 	return alloc_bootmem_align(size, align);
 }
 
+<<<<<<< HEAD
+=======
+static const void * __init arch_get_next_mach(const char *const **match)
+{
+	static const struct machine_desc *mdesc = __arch_info_begin;
+	const struct machine_desc *m = mdesc;
+
+	if (m >= __arch_info_end)
+		return NULL;
+
+	mdesc++;
+	*match = m->dt_compat;
+	return m;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * setup_machine_fdt - Machine setup when an dtb was passed to the kernel
  * @dt:		virtual address pointer to dt blob
@@ -41,6 +57,7 @@ void * __init early_init_dt_alloc_memory_arch(u64 size, u64 align)
  * If a dtb was passed to the kernel, then use it to choose the correct
  * machine_desc and to setup the system.
  */
+<<<<<<< HEAD
 struct machine_desc * __init setup_machine_fdt(void *dt)
 {
 	struct boot_param_header *devtree = dt;
@@ -111,4 +128,20 @@ void __init copy_fdt(void)
 		       be32_to_cpu(initial_boot_params->totalsize));
 		initial_boot_params = alloc;
 	}
+=======
+const struct machine_desc * __init setup_machine_fdt(void *dt)
+{
+	const struct machine_desc *mdesc;
+
+	/* check device tree validity */
+	if (!early_init_dt_scan(dt))
+		return NULL;
+
+	mdesc = of_flat_dt_match_machine(NULL, arch_get_next_mach);
+	if (!mdesc)
+		dump_machine_table(); /* does not return */
+	pr_info("Machine name: %s\n", mdesc->name);
+
+	return mdesc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

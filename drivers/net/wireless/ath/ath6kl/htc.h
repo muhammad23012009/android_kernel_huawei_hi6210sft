@@ -60,7 +60,11 @@
 /* disable credit flow control on a specific service */
 #define HTC_CONN_FLGS_DISABLE_CRED_FLOW_CTRL          (1 << 3)
 #define HTC_CONN_FLGS_SET_RECV_ALLOC_SHIFT    8
+<<<<<<< HEAD
 #define HTC_CONN_FLGS_SET_RECV_ALLOC_MASK     0xFF00
+=======
+#define HTC_CONN_FLGS_SET_RECV_ALLOC_MASK     0xFF00U
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* connect response status codes */
 #define HTC_SERVICE_SUCCESS      0
@@ -427,7 +431,11 @@ struct htc_endpoint_credit_dist {
 };
 
 /*
+<<<<<<< HEAD
  * credit distibution code that is passed into the distrbution function,
+=======
+ * credit distribution code that is passed into the distribution function,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * there are mandatory and optional codes that must be handled
  */
 enum htc_credit_dist_reason {

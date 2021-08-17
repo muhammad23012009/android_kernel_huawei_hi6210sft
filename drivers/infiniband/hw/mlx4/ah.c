@@ -36,6 +36,7 @@
 #include <linux/slab.h>
 #include <linux/inet.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 
 #include "mlx4_ib.h"
 
@@ -58,6 +59,12 @@ int mlx4_ib_resolve_grh(struct mlx4_ib_dev *dev, const struct ib_ah_attr *ah_att
 	return 0;
 }
 
+=======
+#include <linux/mlx4/driver.h>
+
+#include "mlx4_ib.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct ib_ah *create_ib_ah(struct ib_pd *pd, struct ib_ah_attr *ah_attr,
 				  struct mlx4_ib_ah *ah)
 {
@@ -92,6 +99,7 @@ static struct ib_ah *create_iboe_ah(struct ib_pd *pd, struct ib_ah_attr *ah_attr
 {
 	struct mlx4_ib_dev *ibdev = to_mdev(pd->device);
 	struct mlx4_dev *dev = ibdev->dev;
+<<<<<<< HEAD
 	union ib_gid sgid;
 	u8 mac[6];
 	int err;
@@ -112,6 +120,42 @@ static struct ib_ah *create_iboe_ah(struct ib_pd *pd, struct ib_ah_attr *ah_attr
 	ah->av.eth.port_pd = cpu_to_be32(to_mpd(pd)->pdn | (ah_attr->port_num << 24));
 	ah->av.eth.gid_index = ah_attr->grh.sgid_index;
 	ah->av.eth.vlan = cpu_to_be16(vlan_tag);
+=======
+	int is_mcast = 0;
+	struct in6_addr in6;
+	u16 vlan_tag = 0xffff;
+	union ib_gid sgid;
+	struct ib_gid_attr gid_attr;
+	int ret;
+
+	memcpy(&in6, ah_attr->grh.dgid.raw, sizeof(in6));
+	if (rdma_is_multicast_addr(&in6)) {
+		is_mcast = 1;
+		rdma_get_mcast_mac(&in6, ah->av.eth.mac);
+	} else {
+		memcpy(ah->av.eth.mac, ah_attr->dmac, ETH_ALEN);
+	}
+	ret = ib_get_cached_gid(pd->device, ah_attr->port_num,
+				ah_attr->grh.sgid_index, &sgid, &gid_attr);
+	if (ret)
+		return ERR_PTR(ret);
+	eth_zero_addr(ah->av.eth.s_mac);
+	if (gid_attr.ndev) {
+		if (is_vlan_dev(gid_attr.ndev))
+			vlan_tag = vlan_dev_vlan_id(gid_attr.ndev);
+		memcpy(ah->av.eth.s_mac, gid_attr.ndev->dev_addr, ETH_ALEN);
+		dev_put(gid_attr.ndev);
+	}
+	if (vlan_tag < 0x1000)
+		vlan_tag |= (ah_attr->sl & 7) << 13;
+	ah->av.eth.port_pd = cpu_to_be32(to_mpd(pd)->pdn | (ah_attr->port_num << 24));
+	ret = mlx4_ib_gid_index_to_real_index(ibdev, ah_attr->port_num, ah_attr->grh.sgid_index);
+	if (ret < 0)
+		return ERR_PTR(ret);
+	ah->av.eth.gid_index = ret;
+	ah->av.eth.vlan = cpu_to_be16(vlan_tag);
+	ah->av.eth.hop_limit = ah_attr->grh.hop_limit;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ah_attr->static_rate) {
 		ah->av.eth.stat_rate = ah_attr->static_rate + MLX4_STAT_RATE_OFFSET;
 		while (ah->av.eth.stat_rate > IB_RATE_2_5_GBPS + MLX4_STAT_RATE_OFFSET &&

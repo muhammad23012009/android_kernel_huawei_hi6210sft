@@ -22,6 +22,10 @@
 #ifndef _M68K_SETUP_H
 #define _M68K_SETUP_H
 
+<<<<<<< HEAD
+=======
+#include <uapi/asm/bootinfo.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <uapi/asm/setup.h>
 
 
@@ -297,14 +301,22 @@ extern int m68k_is040or060;
 #define NUM_MEMINFO	4
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 struct mem_info {
+=======
+struct m68k_mem_info {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long addr;		/* physical address of memory chunk */
 	unsigned long size;		/* length of memory chunk (in bytes) */
 };
 
 extern int m68k_num_memory;		/* # of memory blocks found (and used) */
 extern int m68k_realnum_memory;		/* real # of memory blocks found */
+<<<<<<< HEAD
 extern struct mem_info m68k_memory[NUM_MEMINFO];/* memory description */
+=======
+extern struct m68k_mem_info m68k_memory[NUM_MEMINFO];/* memory description */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* _M68K_SETUP_H */

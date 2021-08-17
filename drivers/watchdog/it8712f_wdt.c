@@ -41,7 +41,10 @@
 MODULE_AUTHOR("Jorge Boncompte - DTI2 <jorge@dti2.net>");
 MODULE_DESCRIPTION("IT8712F Watchdog Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int max_units = 255;
 static int margin = 60;		/* in seconds */

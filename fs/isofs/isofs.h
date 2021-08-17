@@ -103,7 +103,11 @@ static inline unsigned int isonum_733(char *p)
 	/* Ignore bigendian datum due to broken mastering programs */
 	return get_unaligned_le32(p);
 }
+<<<<<<< HEAD
 extern int iso_date(char *, int);
+=======
+extern int iso_date(u8 *, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct inode;		/* To make gcc happy */
 

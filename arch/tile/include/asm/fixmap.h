@@ -25,9 +25,12 @@
 #include <asm/kmap_types.h>
 #endif
 
+<<<<<<< HEAD
 #define __fix_to_virt(x)	(FIXADDR_TOP - ((x) << PAGE_SHIFT))
 #define __virt_to_fix(x)	((FIXADDR_TOP - ((x)&PAGE_MASK)) >> PAGE_SHIFT)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Here we define all the compile-time 'special' virtual
  * addresses. The point is to have a constant address at
@@ -78,6 +81,7 @@ enum fixed_addresses {
 #endif
 };
 
+<<<<<<< HEAD
 extern void __set_fixmap(enum fixed_addresses idx,
 			 unsigned long phys, pgprot_t flags);
 
@@ -86,11 +90,14 @@ extern void __set_fixmap(enum fixed_addresses idx,
 #define clear_fixmap(idx) \
 		__set_fixmap(idx, 0, __pgprot(0))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __FIXADDR_SIZE	(__end_of_permanent_fixed_addresses << PAGE_SHIFT)
 #define __FIXADDR_BOOT_SIZE	(__end_of_fixed_addresses << PAGE_SHIFT)
 #define FIXADDR_START		(FIXADDR_TOP + PAGE_SIZE - __FIXADDR_SIZE)
 #define FIXADDR_BOOT_START	(FIXADDR_TOP + PAGE_SIZE - __FIXADDR_BOOT_SIZE)
 
+<<<<<<< HEAD
 extern void __this_fixmap_does_not_exist(void);
 
 /*
@@ -120,6 +127,9 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 	BUG_ON(vaddr >= FIXADDR_TOP || vaddr < FIXADDR_START);
 	return __virt_to_fix(vaddr);
 }
+=======
+#include <asm-generic/fixmap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !__ASSEMBLY__ */
 

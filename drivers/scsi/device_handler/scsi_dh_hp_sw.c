@@ -49,6 +49,7 @@ struct hp_sw_dh_data {
 
 static int hp_sw_start_stop(struct hp_sw_dh_data *);
 
+<<<<<<< HEAD
 static inline struct hp_sw_dh_data *get_hp_sw_data(struct scsi_device *sdev)
 {
 	struct scsi_dh_data *scsi_dh_data = sdev->scsi_dh_data;
@@ -56,6 +57,8 @@ static inline struct hp_sw_dh_data *get_hp_sw_data(struct scsi_device *sdev)
 	return ((struct hp_sw_dh_data *) scsi_dh_data->buf);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * tur_done - Handle TEST UNIT READY return status
  * @sdev: sdev the command has been sent to
@@ -117,7 +120,11 @@ static int hp_sw_tur(struct scsi_device *sdev, struct hp_sw_dh_data *h)
 
 retry:
 	req = blk_get_request(sdev->request_queue, WRITE, GFP_NOIO);
+<<<<<<< HEAD
 	if (!req)
+=======
+	if (IS_ERR(req))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return SCSI_DH_RES_TEMP_UNAVAIL;
 
 	blk_rq_set_block_pc(req);
@@ -247,7 +254,11 @@ static int hp_sw_start_stop(struct hp_sw_dh_data *h)
 	struct request *req;
 
 	req = blk_get_request(h->sdev->request_queue, WRITE, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!req)
+=======
+	if (IS_ERR(req))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return SCSI_DH_RES_TEMP_UNAVAIL;
 
 	blk_rq_set_block_pc(req);
@@ -268,7 +279,11 @@ static int hp_sw_start_stop(struct hp_sw_dh_data *h)
 
 static int hp_sw_prep_fn(struct scsi_device *sdev, struct request *req)
 {
+<<<<<<< HEAD
 	struct hp_sw_dh_data *h = get_hp_sw_data(sdev);
+=======
+	struct hp_sw_dh_data *h = sdev->handler_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = BLKPREP_OK;
 
 	if (h->path_state != HP_SW_PATH_ACTIVE) {
@@ -293,7 +308,11 @@ static int hp_sw_activate(struct scsi_device *sdev,
 				activate_complete fn, void *data)
 {
 	int ret = SCSI_DH_OK;
+<<<<<<< HEAD
 	struct hp_sw_dh_data *h = get_hp_sw_data(sdev);
+=======
+	struct hp_sw_dh_data *h = sdev->handler_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = hp_sw_tur(sdev, h);
 
@@ -312,6 +331,7 @@ static int hp_sw_activate(struct scsi_device *sdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct scsi_dh_devlist hp_sw_dh_data_list[] = {
 	{"COMPAQ", "MSA1000 VOLUME"},
 	{"COMPAQ", "HSV110"},
@@ -369,6 +389,16 @@ static int hp_sw_bus_attach(struct scsi_device *sdev)
 
 	scsi_dh_data->scsi_dh = &hp_sw_dh;
 	h = (struct hp_sw_dh_data *) scsi_dh_data->buf;
+=======
+static int hp_sw_bus_attach(struct scsi_device *sdev)
+{
+	struct hp_sw_dh_data *h;
+	int ret;
+
+	h = kzalloc(sizeof(*h), GFP_KERNEL);
+	if (!h)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	h->path_state = HP_SW_PATH_UNINITIALIZED;
 	h->retries = HP_SW_RETRIES;
 	h->sdev = sdev;
@@ -377,6 +407,7 @@ static int hp_sw_bus_attach(struct scsi_device *sdev)
 	if (ret != SCSI_DH_OK || h->path_state == HP_SW_PATH_UNINITIALIZED)
 		goto failed;
 
+<<<<<<< HEAD
 	if (!try_module_get(THIS_MODULE))
 		goto failed;
 
@@ -384,21 +415,31 @@ static int hp_sw_bus_attach(struct scsi_device *sdev)
 	sdev->scsi_dh_data = scsi_dh_data;
 	spin_unlock_irqrestore(sdev->request_queue->queue_lock, flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sdev_printk(KERN_INFO, sdev, "%s: attached to %s path\n",
 		    HP_SW_NAME, h->path_state == HP_SW_PATH_ACTIVE?
 		    "active":"passive");
 
+<<<<<<< HEAD
 	return 0;
 
 failed:
 	kfree(scsi_dh_data);
 	sdev_printk(KERN_ERR, sdev, "%s: not attached\n",
 		    HP_SW_NAME);
+=======
+	sdev->handler_data = h;
+	return 0;
+failed:
+	kfree(h);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EINVAL;
 }
 
 static void hp_sw_bus_detach( struct scsi_device *sdev )
 {
+<<<<<<< HEAD
 	struct scsi_dh_data *scsi_dh_data;
 	unsigned long flags;
 
@@ -413,6 +454,21 @@ static void hp_sw_bus_detach( struct scsi_device *sdev )
 	kfree(scsi_dh_data);
 }
 
+=======
+	kfree(sdev->handler_data);
+	sdev->handler_data = NULL;
+}
+
+static struct scsi_device_handler hp_sw_dh = {
+	.name		= HP_SW_NAME,
+	.module		= THIS_MODULE,
+	.attach		= hp_sw_bus_attach,
+	.detach		= hp_sw_bus_detach,
+	.activate	= hp_sw_activate,
+	.prep_fn	= hp_sw_prep_fn,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init hp_sw_init(void)
 {
 	return scsi_register_device_handler(&hp_sw_dh);

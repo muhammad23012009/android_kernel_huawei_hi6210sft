@@ -151,6 +151,10 @@ static int wm8350_wdt_probe(struct platform_device *pdev)
 
 	watchdog_set_nowayout(&wm8350_wdt, nowayout);
 	watchdog_set_drvdata(&wm8350_wdt, wm8350);
+<<<<<<< HEAD
+=======
+	wm8350_wdt.parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Default to 4s timeout */
 	wm8350_wdt_set_timeout(&wm8350_wdt, 4);

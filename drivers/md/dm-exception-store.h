@@ -42,8 +42,12 @@ struct dm_exception_store_type {
 	const char *name;
 	struct module *module;
 
+<<<<<<< HEAD
 	int (*ctr) (struct dm_exception_store *store,
 		    unsigned argc, char **argv);
+=======
+	int (*ctr) (struct dm_exception_store *store, char *options);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Destroys this object when you've finished with it.
@@ -123,6 +127,11 @@ struct dm_exception_store {
 	unsigned chunk_shift;
 
 	void *context;
+<<<<<<< HEAD
+=======
+
+	bool userspace_supports_overflow;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*

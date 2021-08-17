@@ -2,6 +2,12 @@
 #include <linux/kernel.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_iommu.h>
+#include <linux/dma-mapping.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -57,15 +63,108 @@ int of_device_add(struct platform_device *ofdev)
 	ofdev->name = dev_name(&ofdev->dev);
 	ofdev->id = -1;
 
+<<<<<<< HEAD
 	/* device_add will assume that this device is on the same node as
 	 * the parent. If there is no parent defined, set the node
 	 * explicitly */
 	if (!ofdev->dev.parent)
 		set_dev_node(&ofdev->dev, of_node_to_nid(ofdev->dev.of_node));
+=======
+	/*
+	 * If this device has not binding numa node in devicetree, that is
+	 * of_node_to_nid returns NUMA_NO_NODE. device_add will assume that this
+	 * device is on the same node as the parent.
+	 */
+	set_dev_node(&ofdev->dev, of_node_to_nid(ofdev->dev.of_node));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return device_add(&ofdev->dev);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * of_dma_configure - Setup DMA configuration
+ * @dev:	Device to apply DMA configuration
+ * @np:		Pointer to OF node having DMA configuration
+ *
+ * Try to get devices's DMA configuration from DT and update it
+ * accordingly.
+ *
+ * If platform code needs to use its own special DMA configuration, it
+ * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
+ * to fix up DMA configuration.
+ */
+void of_dma_configure(struct device *dev, struct device_node *np)
+{
+	u64 dma_addr, paddr, size;
+	int ret;
+	bool coherent;
+	unsigned long offset;
+	const struct iommu_ops *iommu;
+
+	/*
+	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
+	 * setup the correct supported mask.
+	 */
+	if (!dev->coherent_dma_mask)
+		dev->coherent_dma_mask = DMA_BIT_MASK(32);
+
+	/*
+	 * Set it to coherent_dma_mask by default if the architecture
+	 * code has not set it.
+	 */
+	if (!dev->dma_mask)
+		dev->dma_mask = &dev->coherent_dma_mask;
+
+	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+	if (ret < 0) {
+		dma_addr = offset = 0;
+		size = dev->coherent_dma_mask + 1;
+	} else {
+		offset = PFN_DOWN(paddr - dma_addr);
+
+		/*
+		 * Add a work around to treat the size as mask + 1 in case
+		 * it is defined in DT as a mask.
+		 */
+		if (size & 1) {
+			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+				 size);
+			size = size + 1;
+		}
+
+		if (!size) {
+			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+			return;
+		}
+		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+	}
+
+	dev->dma_pfn_offset = offset;
+
+	/*
+	 * Limit coherent and dma mask based on size and default mask
+	 * set by the driver.
+	 */
+	dev->coherent_dma_mask = min(dev->coherent_dma_mask,
+				     DMA_BIT_MASK(ilog2(dma_addr + size)));
+	*dev->dma_mask = min((*dev->dma_mask),
+			     DMA_BIT_MASK(ilog2(dma_addr + size)));
+
+	coherent = of_dma_is_coherent(np);
+	dev_dbg(dev, "device is%sdma coherent\n",
+		coherent ? " " : " not ");
+
+	iommu = of_iommu_configure(dev, np);
+	dev_dbg(dev, "device is%sbehind an iommu\n",
+		iommu ? " " : " not ");
+
+	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+}
+EXPORT_SYMBOL_GPL(of_dma_configure);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int of_device_register(struct platform_device *pdev)
 {
 	device_initialize(&pdev->dev);
@@ -79,12 +178,33 @@ void of_device_unregister(struct platform_device *ofdev)
 }
 EXPORT_SYMBOL(of_device_unregister);
 
+<<<<<<< HEAD
+=======
+const void *of_device_get_match_data(const struct device *dev)
+{
+	const struct of_device_id *match;
+
+	match = of_match_device(dev->driver->of_match_table, dev);
+	if (!match)
+		return NULL;
+
+	return match->data;
+}
+EXPORT_SYMBOL(of_device_get_match_data);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ssize_t of_device_get_modalias(struct device *dev, char *str, ssize_t len)
 {
 	const char *compat;
 	int cplen, i;
 	ssize_t tsize, csize, repend;
 
+<<<<<<< HEAD
+=======
+	if ((!dev) || (!dev->of_node))
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Name & Type */
 	csize = snprintf(str, len, "of:N%sT%s", dev->of_node->name,
 			 dev->of_node->type);
@@ -123,8 +243,14 @@ ssize_t of_device_get_modalias(struct device *dev, char *str, ssize_t len)
 			str[i] = '_';
 	}
 
+<<<<<<< HEAD
 	return tsize;
 }
+=======
+	return repend;
+}
+EXPORT_SYMBOL_GPL(of_device_get_modalias);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * of_device_uevent - Display OF related uevent information
@@ -187,3 +313,7 @@ int of_device_uevent_modalias(struct device *dev, struct kobj_uevent_env *env)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(of_device_uevent_modalias);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

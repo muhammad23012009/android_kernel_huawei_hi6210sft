@@ -26,10 +26,19 @@
 #include <linux/io.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/of_gpio.h>
 #include <linux/slab.h>
 #include <asm/qe.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/of_platform.h>
+#include <linux/of_gpio.h>
+#include <linux/slab.h>
+#include <soc/fsl/qe/qe.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/fsl_gtm.h>
 #include "fhci.h"
 
@@ -308,10 +317,15 @@ static struct fhci_usb *fhci_create_lld(struct fhci_hcd *fhci)
 
 	/* allocate memory for SCC data structure */
 	usb = kzalloc(sizeof(*usb), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!usb) {
 		fhci_err(fhci, "no memory for SCC data struct\n");
 		return NULL;
 	}
+=======
+	if (!usb)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb->fhci = fhci;
 	usb->hc_list = fhci->hc_list;
@@ -358,12 +372,21 @@ static int fhci_start(struct usb_hcd *hcd)
 	hcd->state = HC_STATE_RUNNING;
 
 	/*
+<<<<<<< HEAD
 	 * From here on, khubd concurrently accesses the root
 	 * hub; drivers will be talking to enumerated devices.
 	 * (On restart paths, khubd already knows about the root
 	 * hub and could find work as soon as we wrote FLAG_CF.)
 	 *
 	 * Before this point the HC was idle/ready.  After, khubd
+=======
+	 * From here on, hub_wq concurrently accesses the root
+	 * hub; drivers will be talking to enumerated devices.
+	 * (On restart paths, hub_wq already knows about the root
+	 * hub and could find work as soon as we wrote FLAG_CF.)
+	 *
+	 * Before this point the HC was idle/ready.  After, hub_wq
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * and device drivers may start it running.
 	 */
 	fhci_usb_enable(fhci);
@@ -752,6 +775,11 @@ static int of_fhci_probe(struct platform_device *ofdev)
 	if (ret < 0)
 		goto err_add_hcd;
 
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fhci_dfs_create(fhci);
 
 	return 0;
@@ -817,7 +845,10 @@ MODULE_DEVICE_TABLE(of, of_fhci_match);
 static struct platform_driver of_fhci_driver = {
 	.driver = {
 		.name = "fsl,usb-fhci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_fhci_match,
 	},
 	.probe		= of_fhci_probe,

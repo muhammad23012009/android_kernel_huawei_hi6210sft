@@ -36,7 +36,11 @@ __ioremap_trapped(unsigned long offset, unsigned long size)
 #define __ioremap_trapped(offset, size) NULL
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_IOPORT
+=======
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct list_head trapped_io;
 
 static inline void __iomem *

@@ -84,7 +84,11 @@ static int cffrml_receive(struct cflayer *layr, struct cfpkt *pkt)
 	u16 tmp;
 	u16 len;
 	u16 hdrchks;
+<<<<<<< HEAD
 	u16 pktchks;
+=======
+	int pktchks;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cffrml *this;
 	this = container_obj(layr);
 

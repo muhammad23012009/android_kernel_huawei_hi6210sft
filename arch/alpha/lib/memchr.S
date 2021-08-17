@@ -31,7 +31,11 @@ For correctness consider that:
       - only minimum number of quadwords may be accessed
       - the third argument is an unsigned long
 */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         .set noreorder
         .set noat
 
@@ -162,3 +166,7 @@ $not_found:
 	ret			# .. e1 :
 
         .end memchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(memchr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

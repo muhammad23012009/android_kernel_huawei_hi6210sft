@@ -8,6 +8,11 @@
 extern struct kmem_cache *hugepte_cache;
 
 #ifdef CONFIG_PPC_BOOK3S_64
+<<<<<<< HEAD
+=======
+
+#include <asm/book3s/64/hugetlb-radix.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This should work for other subarchs too. But right now we use the
  * new format only for 64bit book3s
@@ -19,7 +24,11 @@ static inline pte_t *hugepd_page(hugepd_t hpd)
 	 * We have only four bits to encode, MMU page size
 	 */
 	BUILD_BUG_ON((MMU_PAGE_COUNT - 1) > 0xf);
+<<<<<<< HEAD
 	return (pte_t *)(hpd.pd & ~HUGEPD_SHIFT_MASK);
+=======
+	return __va(hpd.pd & HUGEPD_ADDR_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline unsigned int hugepd_mmu_psize(hugepd_t hpd)
@@ -31,7 +40,23 @@ static inline unsigned int hugepd_shift(hugepd_t hpd)
 {
 	return mmu_psize_to_shift(hugepd_mmu_psize(hpd));
 }
+<<<<<<< HEAD
 
+=======
+static inline void flush_hugetlb_page(struct vm_area_struct *vma,
+				      unsigned long vmaddr)
+{
+	if (radix_enabled())
+		return radix__flush_hugetlb_page(vma, vmaddr);
+}
+
+static inline void __local_flush_hugetlb_page(struct vm_area_struct *vma,
+					      unsigned long vmaddr)
+{
+	if (radix_enabled())
+		return radix__local_flush_hugetlb_page(vma, vmaddr);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 
 static inline pte_t *hugepd_page(hugepd_t hpd)
@@ -48,7 +73,11 @@ static inline unsigned int hugepd_shift(hugepd_t hpd)
 #endif /* CONFIG_PPC_BOOK3S_64 */
 
 
+<<<<<<< HEAD
 static inline pte_t *hugepte_offset(hugepd_t *hpdp, unsigned long addr,
+=======
+static inline pte_t *hugepte_offset(hugepd_t hpd, unsigned long addr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    unsigned pdshift)
 {
 	/*
@@ -58,9 +87,15 @@ static inline pte_t *hugepte_offset(hugepd_t *hpdp, unsigned long addr,
 	 */
 	unsigned long idx = 0;
 
+<<<<<<< HEAD
 	pte_t *dir = hugepd_page(*hpdp);
 #ifndef CONFIG_PPC_FSL_BOOK3E
 	idx = (addr & ((1UL << pdshift) - 1)) >> hugepd_shift(*hpdp);
+=======
+	pte_t *dir = hugepd_page(hpd);
+#ifndef CONFIG_PPC_FSL_BOOK3E
+	idx = (addr & ((1UL << pdshift) - 1)) >> hugepd_shift(hpd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	return dir + idx;
@@ -71,7 +106,11 @@ pte_t *huge_pte_offset_and_shift(struct mm_struct *mm,
 
 void flush_dcache_icache_hugepage(struct page *page);
 
+<<<<<<< HEAD
 #if defined(CONFIG_PPC_MM_SLICES) || defined(CONFIG_PPC_SUBPAGE_PROT)
+=======
+#if defined(CONFIG_PPC_MM_SLICES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int is_hugepage_only_range(struct mm_struct *mm, unsigned long addr,
 			   unsigned long len);
 #else
@@ -112,11 +151,14 @@ static inline int prepare_hugepage_range(struct file *file,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void hugetlb_prefault_arch_hook(struct mm_struct *mm)
 {
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
 				   pte_t *ptep, pte_t pte)
 {
@@ -127,7 +169,11 @@ static inline pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
 					    unsigned long addr, pte_t *ptep)
 {
 #ifdef CONFIG_PPC64
+<<<<<<< HEAD
 	return __pte(pte_update(mm, addr, ptep, ~0UL, 1));
+=======
+	return __pte(pte_update(mm, addr, ptep, ~0UL, 0, 1));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	return __pte(pte_update(ptep, ~0UL, 0));
 #endif
@@ -138,7 +184,11 @@ static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
 {
 	pte_t pte;
 	pte = huge_ptep_get_and_clear(vma->vm_mm, addr, ptep);
+<<<<<<< HEAD
 	flush_tlb_page(vma, addr);
+=======
+	flush_hugetlb_page(vma, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int huge_pte_none(pte_t pte)
@@ -173,6 +223,7 @@ static inline pte_t huge_ptep_get(pte_t *ptep)
 	return *ptep;
 }
 
+<<<<<<< HEAD
 static inline int arch_prepare_hugepage(struct page *page)
 {
 	return 0;
@@ -182,6 +233,8 @@ static inline void arch_release_hugepage(struct page *page)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void arch_clear_hugepage_flags(struct page *page)
 {
 }
@@ -191,8 +244,19 @@ static inline void flush_hugetlb_page(struct vm_area_struct *vma,
 				      unsigned long vmaddr)
 {
 }
+<<<<<<< HEAD
 #endif /* CONFIG_HUGETLB_PAGE */
 
+=======
+
+#define hugepd_shift(x) 0
+static inline pte_t *hugepte_offset(hugepd_t hpd, unsigned long addr,
+				    unsigned pdshift)
+{
+	return 0;
+}
+#endif /* CONFIG_HUGETLB_PAGE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * FSL Book3E platforms require special gpage handling - the gpages

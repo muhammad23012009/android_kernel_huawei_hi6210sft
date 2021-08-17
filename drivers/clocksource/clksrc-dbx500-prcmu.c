@@ -10,12 +10,21 @@
  * DBx500-PRCMU Timer
  * The PRCMU has 5 timers which are available in a always-on
  * power domain.  We use the Timer 4 for our always-on clock
+<<<<<<< HEAD
  * source on DB8500 and Timer 3 on DB5500.
  */
 #include <linux/clockchips.h>
 #include <linux/clksrc-dbx500-prcmu.h>
 
 #include <asm/sched_clock.h>
+=======
+ * source on DB8500.
+ */
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/clockchips.h>
+#include <linux/sched_clock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define RATE_32K		32768
 
@@ -30,6 +39,7 @@
 
 static void __iomem *clksrc_dbx500_timer_base;
 
+<<<<<<< HEAD
 static cycle_t clksrc_dbx500_prcmu_read(struct clocksource *cs)
 {
 	u32 count, count2;
@@ -39,6 +49,16 @@ static cycle_t clksrc_dbx500_prcmu_read(struct clocksource *cs)
 			      PRCMU_TIMER_DOWNCOUNT);
 		count2 = readl(clksrc_dbx500_timer_base +
 			       PRCMU_TIMER_DOWNCOUNT);
+=======
+static cycle_t notrace clksrc_dbx500_prcmu_read(struct clocksource *cs)
+{
+	void __iomem *base = clksrc_dbx500_timer_base;
+	u32 count, count2;
+
+	do {
+		count = readl_relaxed(base + PRCMU_TIMER_DOWNCOUNT);
+		count2 = readl_relaxed(base + PRCMU_TIMER_DOWNCOUNT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (count2 != count);
 
 	/* Negate because the timer is a decrementing counter */
@@ -55,7 +75,11 @@ static struct clocksource clocksource_dbx500_prcmu = {
 
 #ifdef CONFIG_CLKSRC_DBX500_PRCMU_SCHED_CLOCK
 
+<<<<<<< HEAD
 static u32 notrace dbx500_prcmu_sched_clock_read(void)
+=======
+static u64 notrace dbx500_prcmu_sched_clock_read(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (unlikely(!clksrc_dbx500_timer_base))
 		return 0;
@@ -65,9 +89,15 @@ static u32 notrace dbx500_prcmu_sched_clock_read(void)
 
 #endif
 
+<<<<<<< HEAD
 void __init clksrc_dbx500_prcmu_init(void __iomem *base)
 {
 	clksrc_dbx500_timer_base = base;
+=======
+static int __init clksrc_dbx500_prcmu_init(struct device_node *node)
+{
+	clksrc_dbx500_timer_base = of_iomap(node, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The A9 sub system expects the timer to be configured as
@@ -83,8 +113,17 @@ void __init clksrc_dbx500_prcmu_init(void __iomem *base)
 		       clksrc_dbx500_timer_base + PRCMU_TIMER_REF);
 	}
 #ifdef CONFIG_CLKSRC_DBX500_PRCMU_SCHED_CLOCK
+<<<<<<< HEAD
 	setup_sched_clock(dbx500_prcmu_sched_clock_read,
 			 32, RATE_32K);
 #endif
 	clocksource_register_hz(&clocksource_dbx500_prcmu, RATE_32K);
 }
+=======
+	sched_clock_register(dbx500_prcmu_sched_clock_read, 32, RATE_32K);
+#endif
+	return clocksource_register_hz(&clocksource_dbx500_prcmu, RATE_32K);
+}
+CLOCKSOURCE_OF_DECLARE(dbx500_prcmu, "stericsson,db8500-prcmu-timer-4",
+		       clksrc_dbx500_prcmu_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

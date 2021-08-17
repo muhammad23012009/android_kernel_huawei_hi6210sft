@@ -32,6 +32,10 @@
 
 #include <linux/types.h>
 #include <linux/bitmap.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_ether.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define i1480_FW 0x00000303
 /* #define i1480_FW 0x00000302 */
@@ -130,7 +134,11 @@ enum { UWB_DRP_BACKOFF_WIN_MAX = 16 };
  * it is also used to define headers sent down and up the wire/radio).
  */
 struct uwb_mac_addr {
+<<<<<<< HEAD
 	u8 data[6];
+=======
+	u8 data[ETH_ALEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __attribute__((packed));
 
 
@@ -568,7 +576,11 @@ struct uwb_rc_evt_confirm {
 /* Device Address Management event. [WHCI] section 3.1.3.2. */
 struct uwb_rc_evt_dev_addr_mgmt {
 	struct uwb_rceb rceb;
+<<<<<<< HEAD
 	u8 baAddr[6];
+=======
+	u8 baAddr[ETH_ALEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 bResultCode;
 } __attribute__((packed));
 

@@ -11,16 +11,27 @@
  *	we have to worry about.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <linux/timex.h>
 #include <linux/preempt.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/processor.h>
 #include <asm/delay.h>
 #include <asm/timer.h>
+<<<<<<< HEAD
+=======
+#include <asm/mwait.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 # include <asm/smp.h>
@@ -50,16 +61,26 @@ static void delay_loop(unsigned long loops)
 /* TSC based delay: */
 static void delay_tsc(unsigned long __loops)
 {
+<<<<<<< HEAD
 	u32 bclock, now, loops = __loops;
+=======
+	u64 bclock, now, loops = __loops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int cpu;
 
 	preempt_disable();
 	cpu = smp_processor_id();
+<<<<<<< HEAD
 	rdtsc_barrier();
 	rdtscl(bclock);
 	for (;;) {
 		rdtsc_barrier();
 		rdtscl(now);
+=======
+	bclock = rdtsc_ordered();
+	for (;;) {
+		now = rdtsc_ordered();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((now - bclock) >= loops)
 			break;
 
@@ -80,14 +101,66 @@ static void delay_tsc(unsigned long __loops)
 		if (unlikely(cpu != smp_processor_id())) {
 			loops -= (now - bclock);
 			cpu = smp_processor_id();
+<<<<<<< HEAD
 			rdtsc_barrier();
 			rdtscl(bclock);
+=======
+			bclock = rdtsc_ordered();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	preempt_enable();
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * On some AMD platforms, MWAITX has a configurable 32-bit timer, that
+ * counts with TSC frequency. The input value is the loop of the
+ * counter, it will exit when the timer expires.
+ */
+static void delay_mwaitx(unsigned long __loops)
+{
+	u64 start, end, delay, loops = __loops;
+
+	/*
+	 * Timer value of 0 causes MWAITX to wait indefinitely, unless there
+	 * is a store on the memory monitored by MONITORX.
+	 */
+	if (loops == 0)
+		return;
+
+	start = rdtsc_ordered();
+
+	for (;;) {
+		delay = min_t(u64, MWAITX_MAX_LOOPS, loops);
+
+		/*
+		 * Use cpu_tss as a cacheline-aligned, seldomly
+		 * accessed per-cpu variable as the monitor target.
+		 */
+		__monitorx(raw_cpu_ptr(&cpu_tss), 0, 0);
+
+		/*
+		 * AMD, like Intel's MWAIT version, supports the EAX hint and
+		 * EAX=0xf0 means, do not enter any deep C-state and we use it
+		 * here in delay() to minimize wakeup latency.
+		 */
+		__mwaitx(MWAITX_DISABLE_CSTATES, delay, MWAITX_ECX_TIMER_ENABLE);
+
+		end = rdtsc_ordered();
+
+		if (loops <= end - start)
+			break;
+
+		loops -= end - start;
+
+		start = end;
+	}
+}
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Since we calibrate only once at boot, this
  * function should be set once at boot and not changed
  */
@@ -95,13 +168,27 @@ static void (*delay_fn)(unsigned long) = delay_loop;
 
 void use_tsc_delay(void)
 {
+<<<<<<< HEAD
 	delay_fn = delay_tsc;
+=======
+	if (delay_fn == delay_loop)
+		delay_fn = delay_tsc;
+}
+
+void use_mwaitx_delay(void)
+{
+	delay_fn = delay_mwaitx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int read_current_timer(unsigned long *timer_val)
 {
 	if (delay_fn == delay_tsc) {
+<<<<<<< HEAD
 		rdtscll(*timer_val);
+=======
+		*timer_val = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	return -1;

@@ -214,7 +214,11 @@ static void md4_final_ascii(struct md4_ctx *mctx, char *out, unsigned int len)
 	mctx->block[14] = mctx->byte_count << 3;
 	mctx->block[15] = mctx->byte_count >> 29;
 	le32_to_cpu_array(mctx->block, (sizeof(mctx->block) -
+<<<<<<< HEAD
 	                  sizeof(uint64_t)) / sizeof(uint32_t));
+=======
+			  sizeof(uint64_t)) / sizeof(uint32_t));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	md4_transform(mctx->hash, mctx->block);
 	cpu_to_le32_array(mctx->hash, sizeof(mctx->hash) / sizeof(uint32_t));
 
@@ -367,7 +371,11 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 			break;
 		/* Terminate line at first space, to get rid of final ' \' */
 		while (*p) {
+<<<<<<< HEAD
                        if (isspace(*p)) {
+=======
+			if (isspace(*p)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				*p = '\0';
 				break;
 			}
@@ -416,7 +424,11 @@ void get_src_version(const char *modname, char sum[], unsigned sumlen)
 		basename = strrchr(modname, '/') + 1;
 	else
 		basename = modname;
+<<<<<<< HEAD
 	sprintf(filelist, "%s/%.*s.mod", modverdir,
+=======
+	snprintf(filelist, sizeof(filelist), "%s/%.*s.mod", modverdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(int) strlen(basename) - 2, basename);
 
 	file = grab_file(filelist, &len);

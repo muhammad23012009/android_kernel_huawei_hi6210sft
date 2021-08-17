@@ -162,7 +162,11 @@ static void timbuart_handle_tx_port(struct uart_port *port, u32 isr, u32 *ier)
 	dev_dbg(port->dev, "%s - leaving\n", __func__);
 }
 
+<<<<<<< HEAD
 void timbuart_handle_rx_port(struct uart_port *port, u32 isr, u32 *ier)
+=======
+static void timbuart_handle_rx_port(struct uart_port *port, u32 isr, u32 *ier)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (isr & RXFLAGS) {
 		/* Some RX status is set */
@@ -184,7 +188,11 @@ void timbuart_handle_rx_port(struct uart_port *port, u32 isr, u32 *ier)
 	dev_dbg(port->dev, "%s - leaving\n", __func__);
 }
 
+<<<<<<< HEAD
 void timbuart_tasklet(unsigned long arg)
+=======
+static void timbuart_tasklet(unsigned long arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct timbuart_port *uart = (struct timbuart_port *)arg;
 	u32 isr, ier = 0;
@@ -244,11 +252,14 @@ static void timbuart_mctrl_check(struct uart_port *port, u32 isr, u32 *ier)
 	*ier |= CTS_DELTA;
 }
 
+<<<<<<< HEAD
 static void timbuart_enable_ms(struct uart_port *port)
 {
 	/* N/A */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void timbuart_break_ctl(struct uart_port *port, int ctl)
 {
 	/* N/A */
@@ -278,6 +289,11 @@ static void timbuart_shutdown(struct uart_port *port)
 	dev_dbg(port->dev, "%s\n", __func__);
 	free_irq(port->irq, uart);
 	iowrite32(0, port->membase + TIMBUART_IER);
+<<<<<<< HEAD
+=======
+
+	timbuart_flush_buffer(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int get_bindex(int baud)
@@ -397,7 +413,11 @@ static int timbuart_verify_port(struct uart_port *port,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct uart_ops timbuart_ops = {
+=======
+static const struct uart_ops timbuart_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tx_empty = timbuart_tx_empty,
 	.set_mctrl = timbuart_set_mctrl,
 	.get_mctrl = timbuart_get_mctrl,
@@ -405,7 +425,10 @@ static struct uart_ops timbuart_ops = {
 	.start_tx = timbuart_start_tx,
 	.flush_buffer = timbuart_flush_buffer,
 	.stop_rx = timbuart_stop_rx,
+<<<<<<< HEAD
 	.enable_ms = timbuart_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl = timbuart_break_ctl,
 	.startup = timbuart_startup,
 	.shutdown = timbuart_shutdown,
@@ -507,7 +530,10 @@ static int timbuart_remove(struct platform_device *dev)
 static struct platform_driver timbuart_platform_driver = {
 	.driver = {
 		.name	= "timb-uart",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= timbuart_probe,
 	.remove		= timbuart_remove,

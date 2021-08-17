@@ -24,7 +24,11 @@
 #define __STMMAC_H__
 
 #define STMMAC_RESOURCE_NAME   "stmmaceth"
+<<<<<<< HEAD
 #define DRV_MODULE_VERSION	"March_2013"
+=======
+#define DRV_MODULE_VERSION	"Jan_2016"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/clk.h>
 #include <linux/stmmac.h>
@@ -32,6 +36,26 @@
 #include <linux/pci.h>
 #include "common.h"
 #include <linux/ptp_clock_kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/reset.h>
+
+struct stmmac_resources {
+	void __iomem *addr;
+	const char *mac;
+	int wol_irq;
+	int lpi_irq;
+	int irq;
+};
+
+struct stmmac_tx_info {
+	dma_addr_t buf;
+	bool map_as_page;
+	unsigned len;
+	bool last_segment;
+	bool is_jumbo;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct stmmac_priv {
 	/* Frequently used values are kept adjacent for cache effect */
@@ -40,25 +64,42 @@ struct stmmac_priv {
 	struct sk_buff **tx_skbuff;
 	unsigned int cur_tx;
 	unsigned int dirty_tx;
+<<<<<<< HEAD
 	unsigned int dma_tx_size;
 	u32 tx_count_frames;
 	u32 tx_coal_frames;
 	u32 tx_coal_timer;
 	dma_addr_t *tx_skbuff_dma;
+=======
+	u32 tx_count_frames;
+	u32 tx_coal_frames;
+	u32 tx_coal_timer;
+	struct stmmac_tx_info *tx_skbuff_dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_addr_t dma_tx_phy;
 	int tx_coalesce;
 	int hwts_tx_en;
 	spinlock_t tx_lock;
 	bool tx_path_in_lpi_mode;
 	struct timer_list txtimer;
+<<<<<<< HEAD
+=======
+	bool tso;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct dma_desc *dma_rx	____cacheline_aligned_in_smp;
 	struct dma_extended_desc *dma_erx;
 	struct sk_buff **rx_skbuff;
 	unsigned int cur_rx;
 	unsigned int dirty_rx;
+<<<<<<< HEAD
 	unsigned int dma_rx_size;
 	unsigned int dma_buf_sz;
+=======
+	unsigned int dma_buf_sz;
+	unsigned int rx_copybreak;
+	unsigned int rx_zeroc_thresh;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 rx_riwt;
 	int hwts_rx_en;
 	dma_addr_t *rx_skbuff_dma;
@@ -70,7 +111,10 @@ struct stmmac_priv {
 	struct net_device *dev;
 	struct device *device;
 	struct mac_device_info *hw;
+<<<<<<< HEAD
 	int no_csum_insertion;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t lock;
 
 	struct phy_device *phydev ____cacheline_aligned_in_smp;
@@ -92,18 +136,27 @@ struct stmmac_priv {
 	int wolopts;
 	int wol_irq;
 	struct clk *stmmac_clk;
+<<<<<<< HEAD
+=======
+	struct clk *pclk;
+	struct reset_control *stmmac_rst;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int clk_csr;
 	struct timer_list eee_ctrl_timer;
 	int lpi_irq;
 	int eee_enabled;
 	int eee_active;
 	int tx_lpi_timer;
+<<<<<<< HEAD
 	int pcs;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int mode;
 	int extend_desc;
 	struct ptp_clock *ptp_clock;
 	struct ptp_clock_info ptp_clock_ops;
 	unsigned int default_addend;
+<<<<<<< HEAD
 	u32 adv_ts;
 	int use_riwt;
 	spinlock_t ptp_lock;
@@ -190,4 +243,41 @@ static inline void stmmac_unregister_pci(void)
 }
 #endif /* CONFIG_STMMAC_PCI */
 
+=======
+	struct clk *clk_ptp_ref;
+	unsigned int clk_ptp_rate;
+	u32 adv_ts;
+	int use_riwt;
+	int irq_wake;
+	spinlock_t ptp_lock;
+	void __iomem *mmcaddr;
+	void __iomem *ptpaddr;
+	u32 rx_tail_addr;
+	u32 tx_tail_addr;
+	u32 mss;
+
+#ifdef CONFIG_DEBUG_FS
+	struct dentry *dbgfs_dir;
+	struct dentry *dbgfs_rings_status;
+	struct dentry *dbgfs_dma_cap;
+#endif
+};
+
+int stmmac_mdio_unregister(struct net_device *ndev);
+int stmmac_mdio_register(struct net_device *ndev);
+int stmmac_mdio_reset(struct mii_bus *mii);
+void stmmac_set_ethtool_ops(struct net_device *netdev);
+
+void stmmac_ptp_register(struct stmmac_priv *priv);
+void stmmac_ptp_unregister(struct stmmac_priv *priv);
+int stmmac_resume(struct device *dev);
+int stmmac_suspend(struct device *dev);
+int stmmac_dvr_remove(struct device *dev);
+int stmmac_dvr_probe(struct device *device,
+		     struct plat_stmmacenet_data *plat_dat,
+		     struct stmmac_resources *res);
+void stmmac_disable_eee_mode(struct stmmac_priv *priv);
+bool stmmac_eee_init(struct stmmac_priv *priv);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __STMMAC_H__ */

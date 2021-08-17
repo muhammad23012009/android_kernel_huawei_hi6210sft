@@ -7,7 +7,11 @@
 #ifndef __MCONSOLE_H__
 #define __MCONSOLE_H__
 
+<<<<<<< HEAD
 #ifndef __KERNEL__
+=======
+#ifdef __UM_HOST__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <stdint.h>
 #define u32 uint32_t
 #endif

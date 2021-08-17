@@ -107,7 +107,11 @@ struct greth_private {
 
 	u16 tx_next;
 	u16 tx_last;
+<<<<<<< HEAD
 	u16 tx_free;
+=======
+	u16 tx_free; /* only used on 10/100Mbit */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 rx_cur;
 
 	struct greth_regs *regs;	/* Address of controller registers. */
@@ -123,9 +127,13 @@ struct greth_private {
 	struct napi_struct napi;
 	spinlock_t devlock;
 
+<<<<<<< HEAD
 	struct phy_device *phy;
 	struct mii_bus *mdio;
 	int mdio_irqs[PHY_MAX_ADDR];
+=======
+	struct mii_bus *mdio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int link;
 	unsigned int speed;
 	unsigned int duplex;

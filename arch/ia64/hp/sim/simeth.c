@@ -268,7 +268,11 @@ static __inline__ int dev_is_ethdev(struct net_device *dev)
 static int
 simeth_device_event(struct notifier_block *this,unsigned long event, void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct simeth_local *local;
 	struct in_device *in_dev;
 	struct in_ifaddr **ifap = NULL;

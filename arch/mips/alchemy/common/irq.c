@@ -389,13 +389,21 @@ static int au1x_ic1_setwake(struct irq_data *d, unsigned int on)
 		return -EINVAL;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	wakemsk = __raw_readl((void __iomem *)SYS_WAKEMSK);
+=======
+	wakemsk = alchemy_rdsys(AU1000_SYS_WAKEMSK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (on)
 		wakemsk |= 1 << bit;
 	else
 		wakemsk &= ~(1 << bit);
+<<<<<<< HEAD
 	__raw_writel(wakemsk, (void __iomem *)SYS_WAKEMSK);
 	wmb();
+=======
+	alchemy_wrsys(wakemsk, AU1000_SYS_WAKEMSK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_restore(flags);
 
 	return 0;
@@ -492,7 +500,11 @@ static int au1x_ic_settype(struct irq_data *d, unsigned int flow_type)
 	default:
 		ret = -EINVAL;
 	}
+<<<<<<< HEAD
 	__irq_set_chip_handler_name_locked(d->irq, chip, handler, name);
+=======
+	irq_set_chip_handler_name_locked(d, chip, handler, name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wmb();
 
@@ -704,7 +716,11 @@ static int au1300_gpic_settype(struct irq_data *d, unsigned int type)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	__irq_set_chip_handler_name_locked(d->irq, &au1300_gpic, hdl, name);
+=======
+	irq_set_chip_handler_name_locked(d, &au1300_gpic, hdl, name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	au1300_gpic_chgcfg(d->irq - ALCHEMY_GPIC_INT_BASE, GPIC_CFG_IC_MASK, s);
 
@@ -852,7 +868,11 @@ static struct syscore_ops alchemy_gpic_pmops = {
 
 /* create chained handlers for the 4 IC requests to the MIPS IRQ ctrl */
 #define DISP(name, base, addr)						      \
+<<<<<<< HEAD
 static void au1000_##name##_dispatch(unsigned int irq, struct irq_desc *d)    \
+=======
+static void au1000_##name##_dispatch(struct irq_desc *d)		      \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {									      \
 	unsigned long r = __raw_readl((void __iomem *)KSEG1ADDR(addr));	      \
 	if (likely(r))							      \
@@ -866,7 +886,11 @@ DISP(ic0r1, AU1000_INTC0_INT_BASE, AU1000_IC0_PHYS_ADDR + IC_REQ1INT)
 DISP(ic1r0, AU1000_INTC1_INT_BASE, AU1000_IC1_PHYS_ADDR + IC_REQ0INT)
 DISP(ic1r1, AU1000_INTC1_INT_BASE, AU1000_IC1_PHYS_ADDR + IC_REQ1INT)
 
+<<<<<<< HEAD
 static void alchemy_gpic_dispatch(unsigned int irq, struct irq_desc *d)
+=======
+static void alchemy_gpic_dispatch(struct irq_desc *d)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i = __raw_readl(AU1300_GPIC_ADDR + AU1300_GPIC_PRIENC);
 	generic_handle_irq(ALCHEMY_GPIC_INT_BASE + i);

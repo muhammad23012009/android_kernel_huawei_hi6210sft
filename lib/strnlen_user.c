@@ -27,7 +27,11 @@
 static inline long do_strnlen_user(const char __user *src, unsigned long count, unsigned long max)
 {
 	const struct word_at_a_time constants = WORD_AT_A_TIME_CONSTANTS;
+<<<<<<< HEAD
 	long align, res = 0;
+=======
+	unsigned long align, res = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long c;
 
 	/*
@@ -41,12 +45,20 @@ static inline long do_strnlen_user(const char __user *src, unsigned long count, 
 	 * Do everything aligned. But that means that we
 	 * need to also expand the maximum..
 	 */
+<<<<<<< HEAD
 	align = (sizeof(long) - 1) & (unsigned long)src;
 	src -= align;
 	max += align;
 
 	if (unlikely(__get_user(c,(unsigned long __user *)src)))
 		return 0;
+=======
+	align = (sizeof(unsigned long) - 1) & (unsigned long)src;
+	src -= align;
+	max += align;
+
+	unsafe_get_user(c, (unsigned long __user *)src, efault);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	c |= aligned_byte_mask(align);
 
 	for (;;) {
@@ -61,8 +73,12 @@ static inline long do_strnlen_user(const char __user *src, unsigned long count, 
 		if (unlikely(max <= sizeof(unsigned long)))
 			break;
 		max -= sizeof(unsigned long);
+<<<<<<< HEAD
 		if (unlikely(__get_user(c,(unsigned long __user *)(src+res))))
 			return 0;
+=======
+		unsafe_get_user(c, (unsigned long __user *)(src+res), efault);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	res -= align;
 
@@ -77,6 +93,10 @@ static inline long do_strnlen_user(const char __user *src, unsigned long count, 
 	 * Nope: we hit the address space limit, and we still had more
 	 * characters the caller would have wanted. That's 0.
 	 */
+<<<<<<< HEAD
+=======
+efault:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -85,13 +105,30 @@ static inline long do_strnlen_user(const char __user *src, unsigned long count, 
  * @str: The string to measure.
  * @count: Maximum count (including NUL character)
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Get the size of a NUL-terminated string in user space.
  *
  * Returns the size of the string INCLUDING the terminating NUL.
+<<<<<<< HEAD
  * If the string is too long, returns 'count+1'.
  * On exception (or invalid count), returns 0.
+=======
+ * If the string is too long, returns a number larger than @count. User
+ * has to check the return value against "> count".
+ * On exception (or invalid count), returns 0.
+ *
+ * NOTE! You should basically never use this function. There is
+ * almost never any valid case for using the length of a user space
+ * string, since the string can be changed at any time by other
+ * threads. Use "strncpy_from_user()" instead to get a stable copy
+ * of the string.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 long strnlen_user(const char __user *str, long count)
 {
@@ -104,7 +141,16 @@ long strnlen_user(const char __user *str, long count)
 	src_addr = (unsigned long)str;
 	if (likely(src_addr < max_addr)) {
 		unsigned long max = max_addr - src_addr;
+<<<<<<< HEAD
 		return do_strnlen_user(str, count, max);
+=======
+		long retval;
+
+		user_access_begin();
+		retval = do_strnlen_user(str, count, max);
+		user_access_end();
+		return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -114,7 +160,12 @@ EXPORT_SYMBOL(strnlen_user);
  * strlen_user: - Get the size of a user string INCLUDING final NUL.
  * @str: The string to measure.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Get the size of a NUL-terminated string in user space.
  *
@@ -132,7 +183,16 @@ long strlen_user(const char __user *str)
 	src_addr = (unsigned long)str;
 	if (likely(src_addr < max_addr)) {
 		unsigned long max = max_addr - src_addr;
+<<<<<<< HEAD
 		return do_strnlen_user(str, ~0ul, max);
+=======
+		long retval;
+
+		user_access_begin();
+		retval = do_strnlen_user(str, ~0ul, max);
+		user_access_end();
+		return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }

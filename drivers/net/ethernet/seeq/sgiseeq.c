@@ -11,7 +11,10 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/interrupt.h>
 #include <linux/string.h>
@@ -356,7 +359,11 @@ static inline void sgiseeq_rx(struct net_device *dev, struct sgiseeq_private *sp
 		if (pkt_status & SEEQ_RSTAT_FIG) {
 			/* Packet is OK. */
 			/* We don't want to receive our own packets */
+<<<<<<< HEAD
 			if (memcmp(rd->skb->data + 6, dev->dev_addr, ETH_ALEN)) {
+=======
+			if (!ether_addr_equal(rd->skb->data + 6, dev->dev_addr)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (len > rx_copybreak) {
 					skb = rd->skb;
 					newskb = netdev_alloc_skb(dev, PKT_BUF_SZ);
@@ -573,7 +580,11 @@ static inline int sgiseeq_reset(struct net_device *dev)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_wake_queue(dev);
 
 	return 0;
@@ -649,7 +660,11 @@ static void timeout(struct net_device *dev)
 	printk(KERN_NOTICE "%s: transmit timed out, resetting\n", dev->name);
 	sgiseeq_reset(dev);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_wake_queue(dev);
 }
 
@@ -721,7 +736,11 @@ static const struct net_device_ops sgiseeq_netdev_ops = {
 
 static int sgiseeq_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct sgiseeq_platform_data *pd = pdev->dev.platform_data;
+=======
+	struct sgiseeq_platform_data *pd = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hpc3_regs *hpcregs = pd->hpc;
 	struct sgiseeq_init_block *sr;
 	unsigned int irq = pd->irq;
@@ -793,15 +812,25 @@ static int sgiseeq_probe(struct platform_device *pdev)
 		printk(KERN_ERR "Sgiseeq: Cannot register net device, "
 		       "aborting.\n");
 		err = -ENODEV;
+<<<<<<< HEAD
 		goto err_out_free_page;
+=======
+		goto err_out_free_attrs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	printk(KERN_INFO "%s: %s %pM\n", dev->name, sgiseeqstr, dev->dev_addr);
 
 	return 0;
 
+<<<<<<< HEAD
 err_out_free_page:
 	free_page((unsigned long) sp->srings);
+=======
+err_out_free_attrs:
+	dma_free_attrs(&pdev->dev, sizeof(*sp->srings), sp->srings,
+		       sp->srings_dma, DMA_ATTR_NON_CONSISTENT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out_free_dev:
 	free_netdev(dev);
 
@@ -818,7 +847,10 @@ static int __exit sgiseeq_remove(struct platform_device *pdev)
 	dma_free_noncoherent(&pdev->dev, sizeof(*sp->srings), sp->srings,
 			     sp->srings_dma);
 	free_netdev(dev);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -828,7 +860,10 @@ static struct platform_driver sgiseeq_driver = {
 	.remove	= __exit_p(sgiseeq_remove),
 	.driver = {
 		.name	= "sgiseeq",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 

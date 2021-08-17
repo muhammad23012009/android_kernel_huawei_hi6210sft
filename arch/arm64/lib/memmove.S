@@ -57,6 +57,7 @@ C_h	.req	x12
 D_l	.req	x13
 D_h	.req	x14
 
+<<<<<<< HEAD
 ENTRY(memmove)
 	prfm    pldl1strm, [src, #L1_CACHE_BYTES]
 	cmp	dstin, src
@@ -64,6 +65,16 @@ ENTRY(memmove)
 	add	tmp1, src, count
 	cmp	dstin, tmp1
 	b.hs	memcpy		/* No overlap.  */
+=======
+	.weak memmove
+ENTRY(__memmove)
+ENTRY(memmove)
+	cmp	dstin, src
+	b.lo	__memcpy
+	add	tmp1, src, count
+	cmp	dstin, tmp1
+	b.hs	__memcpy		/* No overlap.  */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	add	dst, dstin, count
 	add	src, src, count
@@ -185,7 +196,10 @@ ENTRY(memmove)
 	ldp	C_l, C_h, [src, #-48]
 	stp	D_l, D_h, [dst, #-64]!
 	ldp	D_l, D_h, [src, #-64]!
+<<<<<<< HEAD
 	prfm    pldl1strm, [src, #(4*L1_CACHE_BYTES)]
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	subs	count, count, #64
 	b.ge	1b
 	stp	A_l, A_h, [dst, #-16]
@@ -196,4 +210,9 @@ ENTRY(memmove)
 	tst	count, #0x3f
 	b.ne	.Ltail63
 	ret
+<<<<<<< HEAD
 ENDPROC(memmove)
+=======
+ENDPIPROC(memmove)
+ENDPROC(__memmove)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

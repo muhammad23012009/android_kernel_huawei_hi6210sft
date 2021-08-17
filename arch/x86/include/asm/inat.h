@@ -48,6 +48,10 @@
 /* AVX VEX prefixes */
 #define INAT_PFX_VEX2	13	/* 2-bytes VEX prefix */
 #define INAT_PFX_VEX3	14	/* 3-bytes VEX prefix */
+<<<<<<< HEAD
+=======
+#define INAT_PFX_EVEX	15	/* EVEX prefix */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define INAT_LSTPFX_MAX	3
 #define INAT_LGCPFX_MAX	11
@@ -89,6 +93,10 @@
 #define INAT_VARIANT	(1 << (INAT_FLAG_OFFS + 4))
 #define INAT_VEXOK	(1 << (INAT_FLAG_OFFS + 5))
 #define INAT_VEXONLY	(1 << (INAT_FLAG_OFFS + 6))
+<<<<<<< HEAD
+=======
+#define INAT_EVEXONLY	(1 << (INAT_FLAG_OFFS + 7))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Attribute making macros for attribute tables */
 #define INAT_MAKE_PREFIX(pfx)	(pfx << INAT_PFX_OFFS)
 #define INAT_MAKE_ESCAPE(esc)	(esc << INAT_ESC_OFFS)
@@ -141,7 +149,17 @@ static inline int inat_last_prefix_id(insn_attr_t attr)
 static inline int inat_is_vex_prefix(insn_attr_t attr)
 {
 	attr &= INAT_PFX_MASK;
+<<<<<<< HEAD
 	return attr == INAT_PFX_VEX2 || attr == INAT_PFX_VEX3;
+=======
+	return attr == INAT_PFX_VEX2 || attr == INAT_PFX_VEX3 ||
+	       attr == INAT_PFX_EVEX;
+}
+
+static inline int inat_is_evex_prefix(insn_attr_t attr)
+{
+	return (attr & INAT_PFX_MASK) == INAT_PFX_EVEX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int inat_is_vex3_prefix(insn_attr_t attr)
@@ -216,6 +234,15 @@ static inline int inat_accept_vex(insn_attr_t attr)
 
 static inline int inat_must_vex(insn_attr_t attr)
 {
+<<<<<<< HEAD
 	return attr & INAT_VEXONLY;
+=======
+	return attr & (INAT_VEXONLY | INAT_EVEXONLY);
+}
+
+static inline int inat_must_evex(insn_attr_t attr)
+{
+	return attr & INAT_EVEXONLY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif

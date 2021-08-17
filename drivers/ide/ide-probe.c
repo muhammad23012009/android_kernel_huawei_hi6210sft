@@ -273,7 +273,11 @@ int ide_dev_read_id(ide_drive_t *drive, u8 cmd, u16 *id, int irq_ctx)
 	    (hwif->host_flags & IDE_HFLAG_BROKEN_ALTSTATUS) == 0) {
 		a = tp_ops->read_altstatus(hwif);
 		s = tp_ops->read_status(hwif);
+<<<<<<< HEAD
 		if ((a ^ s) & ~ATA_IDX)
+=======
+		if ((a ^ s) & ~ATA_SENSE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* ancient Seagate drives, broken interfaces */
 			printk(KERN_INFO "%s: probing with STATUS(0x%02x) "
 					 "instead of ALTSTATUS(0x%02x)\n",
@@ -545,7 +549,11 @@ static int ide_register_port(ide_hwif_t *hwif)
 	int ret;
 
 	/* register with global device tree */
+<<<<<<< HEAD
 	dev_set_name(&hwif->gendev, hwif->name);
+=======
+	dev_set_name(&hwif->gendev, "%s", hwif->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_set_drvdata(&hwif->gendev, hwif);
 	if (hwif->gendev.parent == NULL)
 		hwif->gendev.parent = hwif->dev;
@@ -559,7 +567,11 @@ static int ide_register_port(ide_hwif_t *hwif)
 	}
 
 	hwif->portdev = device_create(ide_port_class, &hwif->gendev,
+<<<<<<< HEAD
 				      MKDEV(0, 0), hwif, hwif->name);
+=======
+				      MKDEV(0, 0), hwif, "%s", hwif->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(hwif->portdev)) {
 		ret = PTR_ERR(hwif->portdev);
 		device_unregister(&hwif->gendev);
@@ -853,8 +865,14 @@ static int init_irq (ide_hwif_t *hwif)
 	if (irq_handler == NULL)
 		irq_handler = ide_intr;
 
+<<<<<<< HEAD
 	if (request_irq(hwif->irq, irq_handler, sa, hwif->name, hwif))
 		goto out_up;
+=======
+	if (!host->get_lock)
+		if (request_irq(hwif->irq, irq_handler, sa, hwif->name, hwif))
+			goto out_up;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if !defined(__mc68000__)
 	printk(KERN_INFO "%s at 0x%03lx-0x%03lx,0x%03lx on irq %d", hwif->name,
@@ -1533,7 +1551,12 @@ static void ide_unregister(ide_hwif_t *hwif)
 
 	ide_proc_unregister_port(hwif);
 
+<<<<<<< HEAD
 	free_irq(hwif->irq, hwif);
+=======
+	if (!hwif->host->get_lock)
+		free_irq(hwif->irq, hwif);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	device_unregister(hwif->portdev);
 	device_unregister(&hwif->gendev);

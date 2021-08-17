@@ -37,7 +37,10 @@
  *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/seq_file.h>
@@ -76,7 +79,12 @@ static ssize_t carl9170_debugfs_read(struct file *file, char __user *userbuf,
 
 	if (!ar)
 		return -ENODEV;
+<<<<<<< HEAD
 	dfops = container_of(file->f_op, struct carl9170_debugfs_fops, fops);
+=======
+	dfops = container_of(debugfs_real_fops(file),
+			     struct carl9170_debugfs_fops, fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!dfops->read)
 		return -ENOSYS;
@@ -128,7 +136,12 @@ static ssize_t carl9170_debugfs_write(struct file *file,
 
 	if (!ar)
 		return -ENODEV;
+<<<<<<< HEAD
 	dfops = container_of(file->f_op, struct carl9170_debugfs_fops, fops);
+=======
+	dfops = container_of(debugfs_real_fops(file),
+			     struct carl9170_debugfs_fops, fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!dfops->write)
 		return -ENOSYS;
@@ -215,6 +228,7 @@ DEBUGFS_DECLARE_RO_FILE(name, _read_bufsize)
 static char *carl9170_debugfs_mem_usage_read(struct ar9170 *ar, char *buf,
 					     size_t bufsize, ssize_t *len)
 {
+<<<<<<< HEAD
 	ADD(buf, *len, bufsize, "jar: [");
 
 	spin_lock_bh(&ar->mem_lock);
@@ -223,6 +237,12 @@ static char *carl9170_debugfs_mem_usage_read(struct ar9170 *ar, char *buf,
 				  ar->mem_bitmap, ar->fw.mem_blocks);
 
 	ADD(buf, *len, bufsize, "]\n");
+=======
+	spin_lock_bh(&ar->mem_lock);
+
+	ADD(buf, *len, bufsize, "jar: [%*pb]\n",
+	    ar->fw.mem_blocks, ar->mem_bitmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ADD(buf, *len, bufsize, "cookies: used:%3d / total:%3d, allocs:%d\n",
 	    bitmap_weight(ar->mem_bitmap, ar->fw.mem_blocks),
@@ -317,17 +337,25 @@ static char *carl9170_debugfs_ampdu_state_read(struct ar9170 *ar, char *buf,
 		    cnt, iter->tid, iter->bsn, iter->snx, iter->hsn,
 		    iter->max, iter->state, iter->counter);
 
+<<<<<<< HEAD
 		ADD(buf, *len, bufsize, "\tWindow:  [");
 
 		*len += bitmap_scnprintf(&buf[*len], bufsize - *len,
 			iter->bitmap, CARL9170_BAW_BITS);
+=======
+		ADD(buf, *len, bufsize, "\tWindow:  [%*pb,W]\n",
+		    CARL9170_BAW_BITS, iter->bitmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BM_STR_OFF(offset)					\
 	((CARL9170_BAW_BITS - (offset) - 1) / 4 +		\
 	 (CARL9170_BAW_BITS - (offset) - 1) / 32 + 1)
 
+<<<<<<< HEAD
 		ADD(buf, *len, bufsize, ",W]\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		offset = BM_STR_OFF(0);
 		ADD(buf, *len, bufsize, "\tBase Seq: %*s\n", offset, "T");
 
@@ -449,12 +477,17 @@ static char *carl9170_debugfs_vif_dump_read(struct ar9170 *ar, char *buf,
 	ADD(buf, *len, bufsize, "registered VIFs:%d \\ %d\n",
 	    ar->vifs, ar->fw.vif_num);
 
+<<<<<<< HEAD
 	ADD(buf, *len, bufsize, "VIF bitmap: [");
 
 	*len += bitmap_scnprintf(&buf[*len], bufsize - *len,
 				 &ar->vif_bitmap, ar->fw.vif_num);
 
 	ADD(buf, *len, bufsize, "]\n");
+=======
+	ADD(buf, *len, bufsize, "VIF bitmap: [%*pb]\n",
+	    ar->fw.vif_num, &ar->vif_bitmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(iter, &ar->vif_list, list) {

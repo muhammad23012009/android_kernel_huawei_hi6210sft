@@ -104,8 +104,11 @@ unsigned long __nongprelbss dma_coherent_mem_end;
 unsigned long __initdata __sdram_old_base;
 unsigned long __initdata num_mappedpages;
 
+<<<<<<< HEAD
 struct cpuinfo_frv __nongprelbss boot_cpu_data;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 char __initdata command_line[COMMAND_LINE_SIZE];
 char __initdata redboot_command_line[COMMAND_LINE_SIZE];
 
@@ -709,7 +712,11 @@ static void __init reserve_dma_coherent(void)
 /*
  * calibrate the delay loop
  */
+<<<<<<< HEAD
 void __cpuinit calibrate_delay(void)
+=======
+void calibrate_delay(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	loops_per_jiffy = __delay_loops_MHz * (1000000 / HZ);
 
@@ -735,7 +742,11 @@ static void __init parse_cmdline_early(char *cmdline)
 		/* "mem=XXX[kKmM]" sets SDRAM size to <mem>, overriding the value we worked
 		 * out from the SDRAM controller mask register
 		 */
+<<<<<<< HEAD
 		if (!memcmp(cmdline, "mem=", 4)) {
+=======
+		if (!strncmp(cmdline, "mem=", 4)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			unsigned long long mem_size;
 
 			mem_size = memparse(cmdline + 4, &cmdline);
@@ -876,6 +887,10 @@ late_initcall(setup_arch_serial);
 static void __init setup_linux_memory(void)
 {
 	unsigned long bootmap_size, low_top_pfn, kstart, kend, high_mem;
+<<<<<<< HEAD
+=======
+	unsigned long physpages;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kstart	= (unsigned long) &__kernel_image_start - PAGE_OFFSET;
 	kend	= (unsigned long) &__kernel_image_end - PAGE_OFFSET;
@@ -893,6 +908,7 @@ static void __init setup_linux_memory(void)
 					 );
 
 	/* pass the memory that the kernel can immediately use over to the bootmem allocator */
+<<<<<<< HEAD
 	max_mapnr = num_physpages = (memory_end - memory_start) >> PAGE_SHIFT;
 	low_top_pfn = (KERNEL_LOWMEM_END - KERNEL_LOWMEM_START) >> PAGE_SHIFT;
 	high_mem = 0;
@@ -906,6 +922,21 @@ static void __init setup_linux_memory(void)
 	}
 	else {
 		low_top_pfn = num_physpages;
+=======
+	max_mapnr = physpages = (memory_end - memory_start) >> PAGE_SHIFT;
+	low_top_pfn = (KERNEL_LOWMEM_END - KERNEL_LOWMEM_START) >> PAGE_SHIFT;
+	high_mem = 0;
+
+	if (physpages > low_top_pfn) {
+#ifdef CONFIG_HIGHMEM
+		high_mem = physpages - low_top_pfn;
+#else
+		max_mapnr = physpages = low_top_pfn;
+#endif
+	}
+	else {
+		low_top_pfn = physpages;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	min_low_pfn = memory_start >> PAGE_SHIFT;
@@ -979,7 +1010,11 @@ static void __init setup_uclinux_memory(void)
 	free_bootmem(memory_start, memory_end - memory_start);
 
 	high_memory = (void *) (memory_end & PAGE_MASK);
+<<<<<<< HEAD
 	max_mapnr = num_physpages = ((unsigned long) high_memory - PAGE_OFFSET) >> PAGE_SHIFT;
+=======
+	max_mapnr = ((unsigned long) high_memory - PAGE_OFFSET) >> PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	min_low_pfn = memory_start >> PAGE_SHIFT;
 	max_low_pfn = memory_end >> PAGE_SHIFT;

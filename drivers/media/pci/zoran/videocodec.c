@@ -116,8 +116,14 @@ videocodec_attach (struct videocodec_master *master)
 				goto out_module_put;
 			}
 
+<<<<<<< HEAD
 			snprintf(codec->name, sizeof(codec->name),
 				 "%s[%d]", codec->name, h->attached);
+=======
+			res = strlen(codec->name);
+			snprintf(codec->name + res, sizeof(codec->name) - res,
+				 "[%d]", h->attached);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			codec->master_data = master;
 			res = codec->setup(codec);
 			if (res == 0) {

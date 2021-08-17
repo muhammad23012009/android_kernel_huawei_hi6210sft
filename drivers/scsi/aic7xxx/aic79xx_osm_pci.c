@@ -178,10 +178,16 @@ ahd_linux_pci_dev_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		ahd_get_pci_bus(pci),
 		ahd_get_pci_slot(pci),
 		ahd_get_pci_function(pci));
+<<<<<<< HEAD
 	name = kmalloc(strlen(buf) + 1, GFP_ATOMIC);
 	if (name == NULL)
 		return (-ENOMEM);
 	strcpy(name, buf);
+=======
+	name = kstrdup(buf, GFP_ATOMIC);
+	if (name == NULL)
+		return (-ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahd = ahd_alloc(NULL, name);
 	if (ahd == NULL)
 		return (-ENOMEM);

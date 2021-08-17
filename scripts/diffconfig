@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/python
+=======
+#!/usr/bin/env python3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # diffconfig - a tool to compare .config files.
 #
@@ -10,7 +14,11 @@
 import sys, os
 
 def usage():
+<<<<<<< HEAD
     print """Usage: diffconfig [-h] [-m] [<config1> <config2>]
+=======
+    print("""Usage: diffconfig [-h] [-m] [<config1> <config2>]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 Diffconfig is a simple utility for comparing two .config files.
 Using standard diff to compare .config files often includes extraneous and
@@ -28,12 +36,19 @@ If no config files are specified, .config and .config.old are used.
 Example usage:
  $ diffconfig .config config-with-some-changes
 -EXT2_FS_XATTR  n
+<<<<<<< HEAD
 -EXT2_FS_XIP  n
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  CRAMFS  n -> y
  EXT2_FS  y -> n
  LOG_BUF_SHIFT  14 -> 16
  PRINTK_TIME  n -> y
+<<<<<<< HEAD
 """
+=======
+""")
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     sys.exit(0)
 
 # returns a dictionary of name/value pairs for config items in the file
@@ -54,6 +69,7 @@ def print_config(op, config, value, new_value):
     if merge_style:
         if new_value:
             if new_value=="n":
+<<<<<<< HEAD
                 print "# CONFIG_%s is not set" % config
             else:
                 print "CONFIG_%s=%s" % (config, new_value)
@@ -64,13 +80,29 @@ def print_config(op, config, value, new_value):
             print "+%s %s" % (config, new_value)
         else:
             print " %s %s -> %s" % (config, value, new_value)
+=======
+                print("# CONFIG_%s is not set" % config)
+            else:
+                print("CONFIG_%s=%s" % (config, new_value))
+    else:
+        if op=="-":
+            print("-%s %s" % (config, value))
+        elif op=="+":
+            print("+%s %s" % (config, new_value))
+        else:
+            print(" %s %s -> %s" % (config, value, new_value))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 def main():
     global merge_style
 
     # parse command line args
     if ("-h" in sys.argv or "--help" in sys.argv):
+<<<<<<< HEAD
 	usage()
+=======
+        usage()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     merge_style = 0
     if "-m" in sys.argv:
@@ -79,23 +111,42 @@ def main():
 
     argc = len(sys.argv)
     if not (argc==1 or argc == 3):
+<<<<<<< HEAD
         print "Error: incorrect number of arguments or unrecognized option"
+=======
+        print("Error: incorrect number of arguments or unrecognized option")
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         usage()
 
     if argc == 1:
         # if no filenames given, assume .config and .config.old
         build_dir=""
+<<<<<<< HEAD
         if os.environ.has_key("KBUILD_OUTPUT"):
             build_dir = os.environ["KBUILD_OUTPUT"]+"/"
 
+=======
+        if "KBUILD_OUTPUT" in os.environ:
+            build_dir = os.environ["KBUILD_OUTPUT"]+"/"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         configa_filename = build_dir + ".config.old"
         configb_filename = build_dir + ".config"
     else:
         configa_filename = sys.argv[1]
         configb_filename = sys.argv[2]
 
+<<<<<<< HEAD
     a = readconfig(file(configa_filename))
     b = readconfig(file(configb_filename))
+=======
+    try:
+        a = readconfig(open(configa_filename))
+        b = readconfig(open(configb_filename))
+    except (IOError):
+        e = sys.exc_info()[1]
+        print("I/O error[%s]: %s\n" % (e.args[0],e.args[1]))
+        usage()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     # print items in a but not b (accumulate, sort and print)
     old = []
@@ -121,8 +172,12 @@ def main():
 
     # now print items in b but not in a
     # (items from b that were in a were removed above)
+<<<<<<< HEAD
     new = b.keys()
     new.sort()
+=======
+    new = sorted(b.keys())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     for config in new:
         print_config("+", config, None, b[config])
 

@@ -29,6 +29,11 @@ struct css_general_char {
 	u32 fcx : 1;	 /* bit 88 */
 	u32 : 19;
 	u32 alt_ssi : 1; /* bit 108 */
+<<<<<<< HEAD
+=======
+	u32:1;
+	u32 narf:1;	 /* bit 110 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 extern struct css_general_char css_general_characteristics;

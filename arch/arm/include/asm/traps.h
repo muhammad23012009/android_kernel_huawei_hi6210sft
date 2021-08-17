@@ -52,9 +52,12 @@ extern void ptrace_break(struct task_struct *tsk, struct pt_regs *regs);
 
 extern void *vectors_page;
 
+<<<<<<< HEAD
 #ifdef CONFIG_DETECT_HUNG_TASK
 typedef void (*funcptr2)(unsigned long, unsigned long);
 extern void add_hw_hungtask_hook(funcptr2 printhook);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

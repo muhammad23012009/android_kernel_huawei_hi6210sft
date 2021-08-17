@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 #ifndef _CAN_PLATFORM_CC770_H_
 #define _CAN_PLATFORM_CC770_H_
+=======
+#ifndef _CAN_PLATFORM_CC770_H
+#define _CAN_PLATFORM_CC770_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* CPU Interface Register (0x02) */
 #define CPUIF_CEN	0x01	/* Clock Out Enable */
@@ -30,4 +35,8 @@ struct cc770_platform_data {
 	u8 bcr;		/* Bus Configuration Register */
 };
 
+<<<<<<< HEAD
 #endif	/* !_CAN_PLATFORM_CC770_H_ */
+=======
+#endif	/* !_CAN_PLATFORM_CC770_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

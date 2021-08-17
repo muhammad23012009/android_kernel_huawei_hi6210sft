@@ -13,7 +13,10 @@
 
 / {
 	compatible = "snps,arc";
+<<<<<<< HEAD
 	clock-frequency = <80000000>;	/* 80 MHZ */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	#address-cells = <1>;
 	#size-cells = <1>;
 	chosen { };
@@ -30,8 +33,28 @@
 		};
 	};
 
+<<<<<<< HEAD
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x10000000>;	/* 256M */
+=======
+	/* TIMER0 with interrupt for clockevent */
+	timer0 {
+		compatible = "snps,arc-timer";
+		interrupts = <3>;
+		interrupt-parent = <&core_intc>;
+		clocks = <&core_clk>;
+	};
+
+	/* TIMER1 for free running clocksource */
+	timer1 {
+		compatible = "snps,arc-timer";
+		clocks = <&core_clk>;
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0x80000000 0x10000000>;	/* 256M */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

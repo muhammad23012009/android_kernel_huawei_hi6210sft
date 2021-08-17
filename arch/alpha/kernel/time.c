@@ -3,6 +3,7 @@
  *
  *  Copyright (C) 1991, 1992, 1995, 1999, 2000  Linus Torvalds
  *
+<<<<<<< HEAD
  * This file contains the PC-specific time handling details:
  * reading the RTC at bootup, etc..
  * 1994-07-02    Alan Modra
@@ -10,6 +11,9 @@
  * 1995-03-26    Markus Kuhn
  *      fixed 500 ms bug at call to set_rtc_mmss, fixed DS12887
  *      precision CMOS clock update
+=======
+ * This file contains the clocksource time handling.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * 1997-09-10	Updated NTP code according to technical memorandum Jan '96
  *		"A Kernel Model for Precision Timekeeping" by Dave Mills
  * 1997-01-09    Adrian Sun
@@ -21,9 +25,12 @@
  * 1999-04-16	Thorsten Kranzkowski (dl8bcu@gmx.net)
  *	fixed algorithm in do_gettimeofday() for calculating the precise time
  *	from processor cycle counter (now taking lost_ticks into account)
+<<<<<<< HEAD
  * 2000-08-13	Jan-Benedict Glaw <jbglaw@lug-owl.de>
  * 	Fixed time_init to be aware of epoches != 1900. This prevents
  * 	booting up in 2048 for me;) Code is stolen from rtc.c.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * 2003-06-03	R. Scott Bailey <scott.bailey@eds.com>
  *	Tighten sanity in time_init from 1% (10,000 PPM) to 250 PPM
  */
@@ -46,16 +53,24 @@
 #include <asm/uaccess.h>
 #include <asm/io.h>
 #include <asm/hwrpb.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/mc146818rtc.h>
 #include <linux/time.h>
 #include <linux/timex.h>
 #include <linux/clocksource.h>
+<<<<<<< HEAD
+=======
+#include <linux/clockchips.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "proto.h"
 #include "irq_impl.h"
 
+<<<<<<< HEAD
 static int set_rtc_mmss(unsigned long);
 
 DEFINE_SPINLOCK(rtc_lock);
@@ -80,15 +95,26 @@ static struct {
 	unsigned long partial_tick;
 } state;
 
+=======
+DEFINE_SPINLOCK(rtc_lock);
+EXPORT_SYMBOL(rtc_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long est_cycle_freq;
 
 #ifdef CONFIG_IRQ_WORK
 
 DEFINE_PER_CPU(u8, irq_work_pending);
 
+<<<<<<< HEAD
 #define set_irq_work_pending_flag()  __get_cpu_var(irq_work_pending) = 1
 #define test_irq_work_pending()      __get_cpu_var(irq_work_pending)
 #define clear_irq_work_pending()     __get_cpu_var(irq_work_pending) = 0
+=======
+#define set_irq_work_pending_flag()  __this_cpu_write(irq_work_pending, 1)
+#define test_irq_work_pending()      __this_cpu_read(irq_work_pending)
+#define clear_irq_work_pending()     __this_cpu_write(irq_work_pending, 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void arch_irq_work_raise(void)
 {
@@ -105,6 +131,7 @@ void arch_irq_work_raise(void)
 
 static inline __u32 rpcc(void)
 {
+<<<<<<< HEAD
     __u32 result;
     asm volatile ("rpcc %0" : "=r"(result));
     return result;
@@ -213,6 +240,155 @@ common_init_rtc(void)
 		printk("Setting RTC_FREQ to 1024 Hz (%x)\n", x);
 		CMOS_WRITE(0x26, RTC_FREQ_SELECT);
 	}
+=======
+	return __builtin_alpha_rpcc();
+}
+
+
+
+/*
+ * The RTC as a clock_event_device primitive.
+ */
+
+static DEFINE_PER_CPU(struct clock_event_device, cpu_ce);
+
+irqreturn_t
+rtc_timer_interrupt(int irq, void *dev)
+{
+	int cpu = smp_processor_id();
+	struct clock_event_device *ce = &per_cpu(cpu_ce, cpu);
+
+	/* Don't run the hook for UNUSED or SHUTDOWN.  */
+	if (likely(clockevent_state_periodic(ce)))
+		ce->event_handler(ce);
+
+	if (test_irq_work_pending()) {
+		clear_irq_work_pending();
+		irq_work_run();
+	}
+
+	return IRQ_HANDLED;
+}
+
+static int
+rtc_ce_set_next_event(unsigned long evt, struct clock_event_device *ce)
+{
+	/* This hook is for oneshot mode, which we don't support.  */
+	return -EINVAL;
+}
+
+static void __init
+init_rtc_clockevent(void)
+{
+	int cpu = smp_processor_id();
+	struct clock_event_device *ce = &per_cpu(cpu_ce, cpu);
+
+	*ce = (struct clock_event_device){
+		.name = "rtc",
+		.features = CLOCK_EVT_FEAT_PERIODIC,
+		.rating = 100,
+		.cpumask = cpumask_of(cpu),
+		.set_next_event = rtc_ce_set_next_event,
+	};
+
+	clockevents_config_and_register(ce, CONFIG_HZ, 0, 0);
+}
+
+
+/*
+ * The QEMU clock as a clocksource primitive.
+ */
+
+static cycle_t
+qemu_cs_read(struct clocksource *cs)
+{
+	return qemu_get_vmtime();
+}
+
+static struct clocksource qemu_cs = {
+	.name                   = "qemu",
+	.rating                 = 400,
+	.read                   = qemu_cs_read,
+	.mask                   = CLOCKSOURCE_MASK(64),
+	.flags                  = CLOCK_SOURCE_IS_CONTINUOUS,
+	.max_idle_ns		= LONG_MAX
+};
+
+
+/*
+ * The QEMU alarm as a clock_event_device primitive.
+ */
+
+static int qemu_ce_shutdown(struct clock_event_device *ce)
+{
+	/* The mode member of CE is updated for us in generic code.
+	   Just make sure that the event is disabled.  */
+	qemu_set_alarm_abs(0);
+	return 0;
+}
+
+static int
+qemu_ce_set_next_event(unsigned long evt, struct clock_event_device *ce)
+{
+	qemu_set_alarm_rel(evt);
+	return 0;
+}
+
+static irqreturn_t
+qemu_timer_interrupt(int irq, void *dev)
+{
+	int cpu = smp_processor_id();
+	struct clock_event_device *ce = &per_cpu(cpu_ce, cpu);
+
+	ce->event_handler(ce);
+	return IRQ_HANDLED;
+}
+
+static void __init
+init_qemu_clockevent(void)
+{
+	int cpu = smp_processor_id();
+	struct clock_event_device *ce = &per_cpu(cpu_ce, cpu);
+
+	*ce = (struct clock_event_device){
+		.name = "qemu",
+		.features = CLOCK_EVT_FEAT_ONESHOT,
+		.rating = 400,
+		.cpumask = cpumask_of(cpu),
+		.set_state_shutdown = qemu_ce_shutdown,
+		.set_state_oneshot = qemu_ce_shutdown,
+		.tick_resume = qemu_ce_shutdown,
+		.set_next_event = qemu_ce_set_next_event,
+	};
+
+	clockevents_config_and_register(ce, NSEC_PER_SEC, 1000, LONG_MAX);
+}
+
+
+void __init
+common_init_rtc(void)
+{
+	unsigned char x, sel = 0;
+
+	/* Reset periodic interrupt frequency.  */
+#if CONFIG_HZ == 1024 || CONFIG_HZ == 1200
+ 	x = CMOS_READ(RTC_FREQ_SELECT) & 0x3f;
+	/* Test includes known working values on various platforms
+	   where 0x26 is wrong; we refuse to change those. */
+ 	if (x != 0x26 && x != 0x25 && x != 0x19 && x != 0x06) {
+		sel = RTC_REF_CLCK_32KHZ + 6;
+	}
+#elif CONFIG_HZ == 256 || CONFIG_HZ == 128 || CONFIG_HZ == 64 || CONFIG_HZ == 32
+	sel = RTC_REF_CLCK_32KHZ + __builtin_ffs(32768 / CONFIG_HZ);
+#else
+# error "Unknown HZ from arch/alpha/Kconfig"
+#endif
+	if (sel) {
+		printk(KERN_INFO "Setting RTC_FREQ to %d Hz (%x)\n",
+		       CONFIG_HZ, sel);
+		CMOS_WRITE(sel, RTC_FREQ_SELECT);
+ 	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Turn on periodic interrupts.  */
 	x = CMOS_READ(RTC_CONTROL);
@@ -235,6 +411,7 @@ common_init_rtc(void)
 	init_rtc_irq();
 }
 
+<<<<<<< HEAD
 unsigned int common_get_rtc_time(struct rtc_time *time)
 {
 	return __get_rtc_time(time);
@@ -245,6 +422,39 @@ int common_set_rtc_time(struct rtc_time *time)
 	return __set_rtc_time(time);
 }
 
+=======
+
+#ifndef CONFIG_ALPHA_WTINT
+/*
+ * The RPCC as a clocksource primitive.
+ *
+ * While we have free-running timecounters running on all CPUs, and we make
+ * a half-hearted attempt in init_rtc_rpcc_info to sync the timecounter
+ * with the wall clock, that initialization isn't kept up-to-date across
+ * different time counters in SMP mode.  Therefore we can only use this
+ * method when there's only one CPU enabled.
+ *
+ * When using the WTINT PALcall, the RPCC may shift to a lower frequency,
+ * or stop altogether, while waiting for the interrupt.  Therefore we cannot
+ * use this method when WTINT is in use.
+ */
+
+static cycle_t read_rpcc(struct clocksource *cs)
+{
+	return rpcc();
+}
+
+static struct clocksource clocksource_rpcc = {
+	.name                   = "rpcc",
+	.rating                 = 300,
+	.read                   = read_rpcc,
+	.mask                   = CLOCKSOURCE_MASK(32),
+	.flags                  = CLOCK_SOURCE_IS_CONTINUOUS
+};
+#endif /* ALPHA_WTINT */
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Validate a computed cycle counter result against the known bounds for
    the given processor core.  There's too much brokenness in the way of
    timing hardware for any one method to work everywhere.  :-(
@@ -355,6 +565,7 @@ rpcc_after_update_in_progress(void)
 	return rpcc();
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 /* Until and unless we figure out how to get cpu cycle counters
    in sync and keep them there, we can't use the rpcc.  */
@@ -382,6 +593,8 @@ static inline void register_rpcc_clocksource(long cycle_freq)
 }
 #endif /* !CONFIG_SMP */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init
 time_init(void)
 {
@@ -389,6 +602,18 @@ time_init(void)
 	unsigned long cycle_freq, tolerance;
 	long diff;
 
+<<<<<<< HEAD
+=======
+	if (alpha_using_qemu) {
+		clocksource_register_hz(&qemu_cs, NSEC_PER_SEC);
+		init_qemu_clockevent();
+
+		timer_irqaction.handler = qemu_timer_interrupt;
+		init_rtc_irq();
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Calibrate CPU clock -- attempt #1.  */
 	if (!est_cycle_freq)
 		est_cycle_freq = validate_cc_value(calibrate_cc_with_pit());
@@ -423,6 +648,7 @@ time_init(void)
 		       "and unable to estimate a proper value!\n");
 	}
 
+<<<<<<< HEAD
 	/* From John Bowman <bowman@math.ualberta.ca>: allow the values
 	   to settle, as the Update-In-Progress bit going low isn't good
 	   enough on some hardware.  2ms is our guess; we haven't found 
@@ -520,3 +746,27 @@ set_rtc_mmss(unsigned long nowtime)
 
 	return retval;
 }
+=======
+	/* See above for restrictions on using clocksource_rpcc.  */
+#ifndef CONFIG_ALPHA_WTINT
+	if (hwrpb->nr_processors == 1)
+		clocksource_register_hz(&clocksource_rpcc, cycle_freq);
+#endif
+
+	/* Startup the timer source. */
+	alpha_mv.init_rtc();
+	init_rtc_clockevent();
+}
+
+/* Initialize the clock_event_device for secondary cpus.  */
+#ifdef CONFIG_SMP
+void __init
+init_clockevent(void)
+{
+	if (alpha_using_qemu)
+		init_qemu_clockevent();
+	else
+		init_rtc_clockevent();
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

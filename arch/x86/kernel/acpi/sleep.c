@@ -27,12 +27,31 @@ static char temp_stack[4096];
 #endif
 
 /**
+<<<<<<< HEAD
  * acpi_suspend_lowlevel - save kernel state
+=======
+ * x86_acpi_enter_sleep_state - enter sleep state
+ * @state: Sleep state to enter.
+ *
+ * Wrapper around acpi_enter_sleep_state() to be called by assmebly.
+ */
+acpi_status asmlinkage __visible x86_acpi_enter_sleep_state(u8 state)
+{
+	return acpi_enter_sleep_state(state);
+}
+
+/**
+ * x86_acpi_suspend_lowlevel - save kernel state
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Create an identity mapped page table and copy the wakeup routine to
  * low memory.
  */
+<<<<<<< HEAD
 int acpi_suspend_lowlevel(void)
+=======
+int x86_acpi_suspend_lowlevel(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct wakeup_header *header =
 		(struct wakeup_header *) __va(real_mode_header->wakeup_header);
@@ -68,7 +87,11 @@ int acpi_suspend_lowlevel(void)
 
 	header->pmode_cr0 = read_cr0();
 	if (__this_cpu_read(cpu_info.cpuid_level) >= 0) {
+<<<<<<< HEAD
 		header->pmode_cr4 = read_cr4();
+=======
+		header->pmode_cr4 = __read_cr4();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		header->pmode_behavior |= (1 << WAKEUP_BEHAVIOR_RESTORE_CR4);
 	}
 	if (!rdmsr_safe(MSR_IA32_MISC_ENABLE,
@@ -88,7 +111,11 @@ int acpi_suspend_lowlevel(void)
 	saved_magic = 0x12345678;
 #else /* CONFIG_64BIT */
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	stack_start = (unsigned long)temp_stack + sizeof(temp_stack);
+=======
+	initial_stack = (unsigned long)temp_stack + sizeof(temp_stack);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	early_gdt_descr.address =
 			(unsigned long)get_cpu_gdt_table(smp_processor_id());
 	initial_gs = per_cpu_offset(smp_processor_id());

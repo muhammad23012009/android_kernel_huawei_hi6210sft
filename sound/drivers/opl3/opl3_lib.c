@@ -24,7 +24,11 @@
  */
 
 #include <sound/opl3.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -501,10 +505,15 @@ int snd_opl3_hwdep_new(struct snd_opl3 * opl3,
 	hw->private_data = opl3;
 	hw->exclusive = 1;
 #ifdef CONFIG_SND_OSSEMUL
+<<<<<<< HEAD
 	if (device == 0) {
 		hw->oss_type = SNDRV_OSS_DEVICE_TYPE_DMFM;
 		sprintf(hw->oss_dev, "dmfm%i", card->number);
 	}
+=======
+	if (device == 0)
+		hw->oss_type = SNDRV_OSS_DEVICE_TYPE_DMFM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	strcpy(hw->name, hw->id);
 	switch (opl3->hardware & OPL3_HW_MASK) {

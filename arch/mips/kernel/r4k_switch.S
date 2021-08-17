@@ -15,19 +15,29 @@
 #include <asm/fpregdef.h>
 #include <asm/mipsregs.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
 #include <asm/pgtable-bits.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/regdef.h>
 #include <asm/stackframe.h>
 #include <asm/thread_info.h>
 
 #include <asm/asmmacro.h>
 
+<<<<<<< HEAD
+=======
+/* preprocessor replaces the fp in ".set fp=64" with $30 otherwise */
+#undef fp
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Offset to the current process status flags, the first 32 bytes of the
  * stack are not used.
  */
 #define ST_OFF (_THREAD_SIZE - 32 - PT_SIZE + PT_STATUS)
 
+<<<<<<< HEAD
 /*
  * FPU context is saved iff the process has used it's FPU in the current
  * time slice as indicated by _TIF_USEDFPU.  In any case, the CU1 bit for user
@@ -41,6 +51,12 @@
 /*
  * task_struct *resume(task_struct *prev, task_struct *next,
  *		       struct thread_info *next_ti, int usedfpu)
+=======
+#ifndef USE_ALTERNATE_RESUME_IMPL
+/*
+ * task_struct *resume(task_struct *prev, task_struct *next,
+ *		       struct thread_info *next_ti)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 	.align	5
 	LEAF(resume)
@@ -49,6 +65,7 @@
 	cpu_save_nonscratch a0
 	LONG_S	ra, THREAD_REG31(a0)
 
+<<<<<<< HEAD
 	/*
 	 * check if we need to save FPU registers
 	 */
@@ -67,6 +84,13 @@
 	fpu_save_double a0 t0 t1		# c0_status passed in t0
 						# clobbers t1
 1:
+=======
+#if defined(CONFIG_CC_STACKPROTECTOR) && !defined(CONFIG_SMP)
+	PTR_LA	t8, __stack_chk_guard
+	LONG_L	t9, TASK_STACK_CANARY(a1)
+	LONG_S	t9, 0(t8)
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The order of restoring the registers takes care of the race
@@ -77,6 +101,7 @@
 
 	PTR_ADDU	t0, $28, _THREAD_SIZE - 32
 	set_saved_sp	t0, t1, t2
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	/* Read-modify-writes of Status must be atomic on a VPE */
 	mfc0	t2, CP0_TCSTATUS
@@ -89,6 +114,8 @@
 	jal	mips_ihb
 	move	ra,t1
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfc0	t1, CP0_STATUS		/* Do we really need this? */
 	li	a3, 0xff01
 	and	t1, a3
@@ -97,6 +124,7 @@
 	and	a2, a3
 	or	a2, t1
 	mtc0	a2, CP0_STATUS
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	_ehb
 	andi	t0, t0, VPECONTROL_TE
@@ -109,15 +137,27 @@
 	mtc0	t1, CP0_TCSTATUS
 	_ehb
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	move	v0, a0
 	jr	ra
 	END(resume)
 
+<<<<<<< HEAD
+=======
+#endif /* USE_ALTERNATE_RESUME_IMPL */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Save a thread's fp context.
  */
 LEAF(_save_fp)
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+#if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPS32_R2) || \
+		defined(CONFIG_CPU_MIPS32_R6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfc0	t0, CP0_STATUS
 #endif
 	fpu_save_double a0 t0 t1		# clobbers t1
@@ -128,18 +168,52 @@ LEAF(_save_fp)
  * Restore a thread's fp context.
  */
 LEAF(_restore_fp)
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+#if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPS32_R2) || \
+		defined(CONFIG_CPU_MIPS32_R6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfc0	t0, CP0_STATUS
 #endif
 	fpu_restore_double a0 t0 t1		# clobbers t1
 	jr	ra
 	END(_restore_fp)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_HAS_MSA
+
+/*
+ * Save a thread's MSA vector context.
+ */
+LEAF(_save_msa)
+	msa_save_all	a0
+	jr	ra
+	END(_save_msa)
+
+/*
+ * Restore a thread's MSA vector context.
+ */
+LEAF(_restore_msa)
+	msa_restore_all	a0
+	jr	ra
+	END(_restore_msa)
+
+LEAF(_init_msa_upper)
+	msa_init_all_upper
+	jr	ra
+	END(_init_msa_upper)
+
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Load the FPU with signalling NANS.  This bit pattern we're using has
  * the property that no matter whether considered as single or as double
  * precision represents signaling NANS.
  *
+<<<<<<< HEAD
  * We initialize fcr31 to rounding to nearest, no exceptions.
  */
 
@@ -154,15 +228,30 @@ LEAF(_init_fpu)
 	or	t0, t1
 	mtc0	t0, CP0_TCSTATUS
 #else /* Normal MIPS CU1 enable */
+=======
+ * The value to initialize fcr31 to comes in $a0.
+ */
+
+	.set push
+	SET_HARDFLOAT
+
+LEAF(_init_fpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfc0	t0, CP0_STATUS
 	li	t1, ST0_CU1
 	or	t0, t1
 	mtc0	t0, CP0_STATUS
+<<<<<<< HEAD
 #endif /* CONFIG_MIPS_MT_SMTC */
 	enable_fpu_hazard
 
 	li	t1, FPU_DEFAULT
 	ctc1	t1, fcr31
+=======
+	enable_fpu_hazard
+
+	ctc1	a0, fcr31
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	li	t1, -1				# SNaN
 
@@ -222,8 +311,55 @@ LEAF(_init_fpu)
 	mtc1	t1, $f29
 	mtc1	t1, $f30
 	mtc1	t1, $f31
+<<<<<<< HEAD
 #else
 	.set	mips3
+=======
+
+#if defined(CONFIG_CPU_MIPS32_R2) || defined(CONFIG_CPU_MIPS32_R6)
+	.set    push
+	.set    MIPS_ISA_LEVEL_RAW
+	.set	fp=64
+	sll     t0, t0, 5			# is Status.FR set?
+	bgez    t0, 1f				# no: skip setting upper 32b
+
+	mthc1   t1, $f0
+	mthc1   t1, $f1
+	mthc1   t1, $f2
+	mthc1   t1, $f3
+	mthc1   t1, $f4
+	mthc1   t1, $f5
+	mthc1   t1, $f6
+	mthc1   t1, $f7
+	mthc1   t1, $f8
+	mthc1   t1, $f9
+	mthc1   t1, $f10
+	mthc1   t1, $f11
+	mthc1   t1, $f12
+	mthc1   t1, $f13
+	mthc1   t1, $f14
+	mthc1   t1, $f15
+	mthc1   t1, $f16
+	mthc1   t1, $f17
+	mthc1   t1, $f18
+	mthc1   t1, $f19
+	mthc1   t1, $f20
+	mthc1   t1, $f21
+	mthc1   t1, $f22
+	mthc1   t1, $f23
+	mthc1   t1, $f24
+	mthc1   t1, $f25
+	mthc1   t1, $f26
+	mthc1   t1, $f27
+	mthc1   t1, $f28
+	mthc1   t1, $f29
+	mthc1   t1, $f30
+	mthc1   t1, $f31
+1:	.set    pop
+#endif /* CONFIG_CPU_MIPS32_R2 || CONFIG_CPU_MIPS32_R6 */
+#else
+	.set	MIPS_ISA_ARCH_LEVEL_RAW
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dmtc1	t1, $f0
 	dmtc1	t1, $f2
 	dmtc1	t1, $f4
@@ -243,3 +379,8 @@ LEAF(_init_fpu)
 #endif
 	jr	ra
 	END(_init_fpu)
+<<<<<<< HEAD
+=======
+
+	.set pop	/* SET_HARDFLOAT */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

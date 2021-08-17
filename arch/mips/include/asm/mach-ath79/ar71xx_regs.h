@@ -16,7 +16,10 @@
 #define __ASM_MACH_AR71XX_REGS_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/bitops.h>
 
@@ -158,8 +161,13 @@
 #define AR71XX_PLL_REG_ETH0_INT_CLOCK	0x10
 #define AR71XX_PLL_REG_ETH1_INT_CLOCK	0x14
 
+<<<<<<< HEAD
 #define AR71XX_PLL_DIV_SHIFT		3
 #define AR71XX_PLL_DIV_MASK		0x1f
+=======
+#define AR71XX_PLL_FB_SHIFT		3
+#define AR71XX_PLL_FB_MASK		0x1f
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AR71XX_CPU_DIV_SHIFT		16
 #define AR71XX_CPU_DIV_MASK		0x3
 #define AR71XX_DDR_DIV_SHIFT		18
@@ -168,10 +176,17 @@
 #define AR71XX_AHB_DIV_MASK		0x7
 
 #define AR724X_PLL_REG_CPU_CONFIG	0x00
+<<<<<<< HEAD
 #define AR724X_PLL_REG_PCIE_CONFIG	0x18
 
 #define AR724X_PLL_DIV_SHIFT		0
 #define AR724X_PLL_DIV_MASK		0x3ff
+=======
+#define AR724X_PLL_REG_PCIE_CONFIG	0x10
+
+#define AR724X_PLL_FB_SHIFT		0
+#define AR724X_PLL_FB_MASK		0x3ff
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AR724X_PLL_REF_DIV_SHIFT	10
 #define AR724X_PLL_REF_DIV_MASK		0xf
 #define AR724X_AHB_DIV_SHIFT		19
@@ -184,8 +199,13 @@
 #define AR913X_PLL_REG_ETH0_INT_CLOCK	0x14
 #define AR913X_PLL_REG_ETH1_INT_CLOCK	0x18
 
+<<<<<<< HEAD
 #define AR913X_PLL_DIV_SHIFT		0
 #define AR913X_PLL_DIV_MASK		0x3ff
+=======
+#define AR913X_PLL_FB_SHIFT		0
+#define AR913X_PLL_FB_MASK		0x3ff
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AR913X_DDR_DIV_SHIFT		22
 #define AR913X_DDR_DIV_MASK		0x3
 #define AR913X_AHB_DIV_SHIFT		19

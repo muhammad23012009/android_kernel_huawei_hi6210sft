@@ -16,12 +16,20 @@
 #include <linux/timer.h>
 #include <linux/init.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/nand.h>
 #include <linux/mtd/nand_ecc.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -32,7 +40,10 @@
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
 
@@ -41,7 +52,10 @@
 #include <linux/platform_data/i2c-s3c2410.h>
 #include <linux/platform_data/mtd-nand-s3c2410.h>
 
+<<<<<<< HEAD
 #include <plat/clock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/devs.h>
 #include <plat/cpu.h>
 #include <plat/samsung-time.h>
@@ -126,6 +140,7 @@ static struct platform_device *vstms_devices[] __initdata = {
 	&s3c_device_iis,
 	&s3c_device_rtc,
 	&s3c_device_nand,
+<<<<<<< HEAD
 };
 
 static void __init vstms_fixup(struct tag *tags, char **cmdline,
@@ -135,17 +150,38 @@ static void __init vstms_fixup(struct tag *tags, char **cmdline,
 		mi->nr_banks=1;
 		mi->bank[0].start = 0x30000000;
 		mi->bank[0].size = SZ_64M;
+=======
+	&s3c2412_device_dma,
+};
+
+static void __init vstms_fixup(struct tag *tags, char **cmdline)
+{
+	if (tags != phys_to_virt(S3C2410_SDRAM_PA + 0x100)) {
+		memblock_add(0x30000000, SZ_64M);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 static void __init vstms_map_io(void)
 {
 	s3c24xx_init_io(vstms_iodesc, ARRAY_SIZE(vstms_iodesc));
+<<<<<<< HEAD
 	s3c24xx_init_clocks(12000000);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(vstms_uartcfgs, ARRAY_SIZE(vstms_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init vstms_init_time(void)
+{
+	s3c2412_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init vstms_init(void)
 {
 	s3c_i2c0_set_platdata(NULL);
@@ -161,6 +197,10 @@ MACHINE_START(VSTMS, "VSTMS")
 	.init_irq	= s3c2412_init_irq,
 	.init_machine	= vstms_init,
 	.map_io		= vstms_map_io,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c2412_restart,
+=======
+	.init_time	= vstms_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

@@ -63,6 +63,10 @@ SECTIONS
 	*(.text..tlbmiss)
 	TEXT_TEXT
 	SCHED_TEXT
+<<<<<<< HEAD
+=======
+	CPUIDLE_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	LOCK_TEXT
 #ifdef CONFIG_DEBUG_INFO
 	INIT_TEXT

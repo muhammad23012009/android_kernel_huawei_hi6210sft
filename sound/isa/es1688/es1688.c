@@ -138,10 +138,16 @@ static int snd_es1688_probe(struct snd_card *card, unsigned int n)
 {
 	struct snd_es1688 *chip = card->private_data;
 	struct snd_opl3 *opl3;
+<<<<<<< HEAD
 	struct snd_pcm *pcm;
 	int error;
 
 	error = snd_es1688_pcm(card, chip, 0, &pcm);
+=======
+	int error;
+
+	error = snd_es1688_pcm(card, chip, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		return error;
 
@@ -150,9 +156,15 @@ static int snd_es1688_probe(struct snd_card *card, unsigned int n)
 		return error;
 
 	strlcpy(card->driver, "ES1688", sizeof(card->driver));
+<<<<<<< HEAD
 	strlcpy(card->shortname, pcm->name, sizeof(card->shortname));
 	snprintf(card->longname, sizeof(card->longname),
 		"%s at 0x%lx, irq %i, dma %i", pcm->name, chip->port,
+=======
+	strlcpy(card->shortname, chip->pcm->name, sizeof(card->shortname));
+	snprintf(card->longname, sizeof(card->longname),
+		"%s at 0x%lx, irq %i, dma %i", chip->pcm->name, chip->port,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 chip->irq, chip->dma8);
 
 	if (fm_port[n] == SNDRV_AUTO_PORT)
@@ -187,8 +199,13 @@ static int snd_es1688_isa_probe(struct device *dev, unsigned int n)
 	struct snd_card *card;
 	int error;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[n], id[n], THIS_MODULE,
 				sizeof(struct snd_es1688), &card);
+=======
+	error = snd_card_new(dev, index[n], id[n], THIS_MODULE,
+			     sizeof(struct snd_es1688), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		return error;
 
@@ -196,8 +213,11 @@ static int snd_es1688_isa_probe(struct device *dev, unsigned int n)
 	if (error < 0)
 		goto out;
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = snd_es1688_probe(card, n);
 	if (error < 0)
 		goto out;
@@ -213,7 +233,10 @@ out:
 static int snd_es1688_isa_remove(struct device *dev, unsigned int n)
 {
 	snd_card_free(dev_get_drvdata(dev));
+<<<<<<< HEAD
 	dev_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -275,8 +298,14 @@ static int snd_es968_pnp_detect(struct pnp_card_link *pcard,
 	if (dev == SNDRV_CARDS)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[dev], id[dev], THIS_MODULE,
 				sizeof(struct snd_es1688), &card);
+=======
+	error = snd_card_new(&pcard->card->dev,
+			     index[dev], id[dev], THIS_MODULE,
+			     sizeof(struct snd_es1688), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		return error;
 	chip = card->private_data;
@@ -286,10 +315,18 @@ static int snd_es968_pnp_detect(struct pnp_card_link *pcard,
 		snd_card_free(card);
 		return error;
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pcard->card->dev);
 	error = snd_es1688_probe(card, dev);
 	if (error < 0)
 		return error;
+=======
+	error = snd_es1688_probe(card, dev);
+	if (error < 0) {
+		snd_card_free(card);
+		return error;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pnp_set_card_drvdata(pcard, card);
 	snd_es968_pnp_is_probed = 1;
 	return 0;

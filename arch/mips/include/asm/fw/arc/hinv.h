@@ -119,7 +119,11 @@ union key_u {
 #define SGI_ARCS_REV	10			/* rev .10, 3/04/92 */
 #endif
 
+<<<<<<< HEAD
 typedef struct component {
+=======
+typedef struct {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CONFIGCLASS	Class;
 	CONFIGTYPE	Type;
 	IDENTIFIERFLAG	Flags;
@@ -140,7 +144,11 @@ struct cfgdata {
 };
 
 /* System ID */
+<<<<<<< HEAD
 typedef struct systemid {
+=======
+typedef struct {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CHAR VendorId[8];
 	CHAR ProductId[8];
 } SYSTEMID;
@@ -166,7 +174,11 @@ typedef enum memorytype {
 #endif	/* _NT_PROM */
 } MEMORYTYPE;
 
+<<<<<<< HEAD
 typedef struct memorydescriptor {
+=======
+typedef struct {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MEMORYTYPE	Type;
 	LONG		BasePage;
 	LONG		PageCount;

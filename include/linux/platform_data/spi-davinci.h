@@ -19,7 +19,11 @@
 #ifndef __ARCH_ARM_DAVINCI_SPI_H
 #define __ARCH_ARM_DAVINCI_SPI_H
 
+<<<<<<< HEAD
 #include <mach/edma.h>
+=======
+#include <linux/platform_data/edma.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SPI_INTERN_CS	0xFF
 
@@ -49,6 +53,10 @@ struct davinci_spi_platform_data {
 	u8			num_chipselect;
 	u8			intr_line;
 	u8			*chip_sel;
+<<<<<<< HEAD
+=======
+	u8			prescaler_limit;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool			cshold_bug;
 	enum dma_event_q	dma_event_q;
 };

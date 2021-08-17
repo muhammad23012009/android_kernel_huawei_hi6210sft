@@ -1,5 +1,8 @@
 /*
+<<<<<<< HEAD
  *  linux/arch/arm/mach-exynos4/headsmp.S
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  Cloned from linux/arch/arm/mach-realview/headsmp.S
  *
@@ -13,7 +16,11 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 	__CPUINIT
+=======
+#include <asm/assembler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * exynos4 specific entry point for secondary CPUs.  This provides
@@ -21,6 +28,10 @@
  * ready for them to initialise.
  */
 ENTRY(exynos4_secondary_startup)
+<<<<<<< HEAD
+=======
+ARM_BE8(setend	be)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mrc	p15, 0, r0, c0, c0, 5
 	and	r0, r0, #15
 	adr	r4, 1f

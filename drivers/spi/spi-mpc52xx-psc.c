@@ -12,7 +12,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -43,7 +46,10 @@ struct mpc52xx_psc_spi {
 	u8 bits_per_word;
 	u8 busy;
 
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct work_struct work;
 
 	struct list_head queue;
@@ -248,7 +254,12 @@ static void mpc52xx_psc_spi_work(struct work_struct *work)
 		}
 
 		m->status = status;
+<<<<<<< HEAD
 		m->complete(m->context);
+=======
+		if (m->complete)
+			m->complete(m->context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (status || !cs_change)
 			mpc52xx_psc_spi_deactivate_cs(spi);
@@ -299,7 +310,11 @@ static int mpc52xx_psc_spi_transfer(struct spi_device *spi,
 
 	spin_lock_irqsave(&mps->lock, flags);
 	list_add_tail(&m->queue, &mps->queue);
+<<<<<<< HEAD
 	queue_work(mps->workqueue, &mps->work);
+=======
+	schedule_work(&mps->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&mps->lock, flags);
 
 	return 0;
@@ -366,7 +381,11 @@ static irqreturn_t mpc52xx_psc_spi_isr(int irq, void *dev_id)
 static int mpc52xx_psc_spi_do_probe(struct device *dev, u32 regaddr,
 				u32 size, unsigned int irq, s16 bus_num)
 {
+<<<<<<< HEAD
 	struct fsl_spi_platform_data *pdata = dev->platform_data;
+=======
+	struct fsl_spi_platform_data *pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mpc52xx_psc_spi *mps;
 	struct spi_master *master;
 	int ret;
@@ -383,8 +402,13 @@ static int mpc52xx_psc_spi_do_probe(struct device *dev, u32 regaddr,
 
 	mps->irq = irq;
 	if (pdata == NULL) {
+<<<<<<< HEAD
 		dev_warn(dev, "probe called without platform data, no "
 				"cs_control function will be called\n");
+=======
+		dev_warn(dev,
+			 "probe called without platform data, no cs_control function will be called\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mps->cs_control = NULL;
 		mps->sysclk = 0;
 		master->bus_num = bus_num;
@@ -425,6 +449,7 @@ static int mpc52xx_psc_spi_do_probe(struct device *dev, u32 regaddr,
 	INIT_WORK(&mps->work, mpc52xx_psc_spi_work);
 	INIT_LIST_HEAD(&mps->queue);
 
+<<<<<<< HEAD
 	mps->workqueue = create_singlethread_workqueue(
 		dev_name(master->dev.parent));
 	if (mps->workqueue == NULL) {
@@ -440,6 +465,14 @@ static int mpc52xx_psc_spi_do_probe(struct device *dev, u32 regaddr,
 
 unreg_master:
 	destroy_workqueue(mps->workqueue);
+=======
+	ret = spi_register_master(master);
+	if (ret < 0)
+		goto free_irq;
+
+	return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 free_irq:
 	free_irq(mps->irq, mps);
 free_master:
@@ -481,11 +514,18 @@ static int mpc52xx_psc_spi_of_probe(struct platform_device *op)
 
 static int mpc52xx_psc_spi_of_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct spi_master *master = spi_master_get(dev_get_drvdata(&op->dev));
 	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(master);
 
 	flush_workqueue(mps->workqueue);
 	destroy_workqueue(mps->workqueue);
+=======
+	struct spi_master *master = spi_master_get(platform_get_drvdata(op));
+	struct mpc52xx_psc_spi *mps = spi_master_get_devdata(master);
+
+	flush_work(&mps->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_unregister_master(master);
 	free_irq(mps->irq, mps);
 	if (mps->psc)
@@ -508,7 +548,10 @@ static struct platform_driver mpc52xx_psc_spi_of_driver = {
 	.remove = mpc52xx_psc_spi_of_remove,
 	.driver = {
 		.name = "mpc52xx-psc-spi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mpc52xx_psc_spi_of_match,
 	},
 };

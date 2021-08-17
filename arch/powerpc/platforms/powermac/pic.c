@@ -251,24 +251,41 @@ static unsigned int pmac_pic_get_irq(void)
 	}
 	raw_spin_unlock_irqrestore(&pmac_pic_lock, flags);
 	if (unlikely(irq < 0))
+<<<<<<< HEAD
 		return NO_IRQ;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return irq_linear_revmap(pmac_pic_host, irq);
 }
 
 #ifdef CONFIG_XMON
 static struct irqaction xmon_action = {
 	.handler	= xmon_irq,
+<<<<<<< HEAD
 	.flags		= 0,
+=======
+	.flags		= IRQF_NO_THREAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "NMI - XMON"
 };
 #endif
 
 static struct irqaction gatwick_cascade_action = {
 	.handler	= gatwick_action,
+<<<<<<< HEAD
 	.name		= "cascade",
 };
 
 static int pmac_pic_host_match(struct irq_domain *h, struct device_node *node)
+=======
+	.flags		= IRQF_NO_THREAD,
+	.name		= "cascade",
+};
+
+static int pmac_pic_host_match(struct irq_domain *h, struct device_node *node,
+			       enum irq_domain_bus_token bus_token)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* We match all, we don't always have a node anyway */
 	return 1;
@@ -321,6 +338,12 @@ static void __init pmac_pic_probe_oldstyle(void)
 		max_irqs = max_real_irqs = 64;
 
 		/* We might have a second cascaded heathrow */
+<<<<<<< HEAD
+=======
+
+		/* Compensate for of_node_put() in of_find_node_by_name() */
+		of_node_get(master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		slave = of_find_node_by_name(master, "mac-io");
 
 		/* Check ordering of master & slave */
@@ -384,7 +407,11 @@ static void __init pmac_pic_probe_oldstyle(void)
 		out_le32(&pmac_irq_hw[i]->enable, 0);
 
 	/* Hookup cascade irq */
+<<<<<<< HEAD
 	if (slave && pmac_irq_cascade != NO_IRQ)
+=======
+	if (slave && pmac_irq_cascade)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		setup_irq(pmac_irq_cascade, &gatwick_cascade_action);
 
 	printk(KERN_INFO "irq: System has %d possible interrupts\n", max_irqs);
@@ -393,8 +420,13 @@ static void __init pmac_pic_probe_oldstyle(void)
 #endif
 }
 
+<<<<<<< HEAD
 int of_irq_map_oldworld(struct device_node *device, int index,
 			struct of_irq *out_irq)
+=======
+int of_irq_parse_oldworld(struct device_node *device, int index,
+			struct of_phandle_args *out_irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const u32 *ints = NULL;
 	int intlen;
@@ -422,9 +454,15 @@ int of_irq_map_oldworld(struct device_node *device, int index,
 	if (index >= intlen)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	out_irq->controller = NULL;
 	out_irq->specifier[0] = ints[index];
 	out_irq->size = 1;
+=======
+	out_irq->np = NULL;
+	out_irq->args[0] = ints[index];
+	out_irq->args_count = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -439,7 +477,11 @@ static void __init pmac_pic_setup_mpic_nmi(struct mpic *mpic)
 	pswitch = of_find_node_by_name(NULL, "programmer-switch");
 	if (pswitch) {
 		nmi_irq = irq_of_parse_and_map(pswitch, 0);
+<<<<<<< HEAD
 		if (nmi_irq != NO_IRQ) {
+=======
+		if (nmi_irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mpic_irq_set_priority(nmi_irq, 9);
 			setup_irq(nmi_irq, &xmon_action);
 		}

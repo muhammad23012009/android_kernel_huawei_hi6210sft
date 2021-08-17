@@ -88,13 +88,21 @@ static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)
 
 	/* Depth-First Search on bus tree */
 	for (ln=bus_list->next; ln != bus_list; ln=ln->next) {
+<<<<<<< HEAD
 		bus = pci_bus_b(ln);
+=======
+		bus = list_entry(ln, struct pci_bus, node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((dev = bus->self)) {
 			for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
 				r = &dev->resource[idx];
 				if (!r->start)
 					continue;
+<<<<<<< HEAD
 				pci_claim_resource(dev, idx);
+=======
+				pci_claim_bridge_resource(dev, idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		pcibios_allocate_bus_resources(&bus->children);
@@ -175,6 +183,7 @@ static void __init pcibios_assign_resources(void)
 			if (!r->start && r->end)
 				pci_assign_resource(dev, idx);
 		}
+<<<<<<< HEAD
 
 		if (pci_probe & PCI_ASSIGN_ROMS) {
 			r = &dev->resource[PCI_ROM_RESOURCE];
@@ -183,6 +192,8 @@ static void __init pcibios_assign_resources(void)
 			if (r->end)
 				pci_assign_resource(dev, PCI_ROM_RESOURCE);
 		}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

@@ -23,6 +23,10 @@
 #include "ctimap.h"
 #include <linux/spinlock.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <sound/core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SRC_STATE_OFF	0x0
 #define SRC_STATE_INIT	0x4
@@ -47,7 +51,11 @@ struct src_rsc_ops;
 struct src {
 	struct rsc rsc; /* Basic resource info */
 	struct src *intlv; /* Pointer to next interleaved SRC in a series */
+<<<<<<< HEAD
 	struct src_rsc_ops *ops; /* SRC specific operations */
+=======
+	const struct src_rsc_ops *ops; /* SRC specific operations */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Number of contiguous srcs for interleaved usage */
 	unsigned char multi;
 	unsigned char mode; /* Working mode of this SRC resource */
@@ -85,6 +93,10 @@ struct src_desc {
 /* Define src manager object */
 struct src_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;	/* pointer to this card */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t mgr_lock;
 
 	 /* request src resource */
@@ -108,7 +120,11 @@ struct srcimp {
 	struct imapper *imappers;
 	unsigned int mapped; /* A bit-map indicating which conj rsc is mapped */
 	struct srcimp_mgr *mgr;
+<<<<<<< HEAD
 	struct srcimp_rsc_ops *ops;
+=======
+	const struct srcimp_rsc_ops *ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct srcimp_rsc_ops {
@@ -123,6 +139,10 @@ struct srcimp_desc {
 
 struct srcimp_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;	/* pointer to this card */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t mgr_lock;
 	spinlock_t imap_lock;
 	struct list_head imappers;
@@ -140,10 +160,17 @@ struct srcimp_mgr {
 };
 
 /* Constructor and destructor of SRC resource manager */
+<<<<<<< HEAD
 int src_mgr_create(void *hw, struct src_mgr **rsrc_mgr);
 int src_mgr_destroy(struct src_mgr *src_mgr);
 /* Constructor and destructor of SRCIMP resource manager */
 int srcimp_mgr_create(void *hw, struct srcimp_mgr **rsrc_mgr);
+=======
+int src_mgr_create(struct hw *hw, struct src_mgr **rsrc_mgr);
+int src_mgr_destroy(struct src_mgr *src_mgr);
+/* Constructor and destructor of SRCIMP resource manager */
+int srcimp_mgr_create(struct hw *hw, struct srcimp_mgr **rsrc_mgr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int srcimp_mgr_destroy(struct srcimp_mgr *srcimp_mgr);
 
 #endif /* CTSRC_H */

@@ -666,6 +666,10 @@ struct atl1_sft_stats {
 	u64 rx_errors;
 	u64 rx_length_errors;
 	u64 rx_crc_errors;
+<<<<<<< HEAD
+=======
+	u64 rx_dropped;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64 rx_frame_errors;
 	u64 rx_fifo_errors;
 	u64 rx_missed_errors;

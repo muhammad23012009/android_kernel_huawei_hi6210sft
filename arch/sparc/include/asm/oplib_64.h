@@ -62,36 +62,63 @@ struct linux_mem_p1275 {
 /* You must call prom_init() before using any of the library services,
  * preferably as early as possible.  Pass it the romvec pointer.
  */
+<<<<<<< HEAD
 extern void prom_init(void *cif_handler, void *cif_stack);
 
 /* Boot argument acquisition, returns the boot command line string. */
 extern char *prom_getbootargs(void);
+=======
+void prom_init(void *cif_handler);
+void prom_init_report(void);
+
+/* Boot argument acquisition, returns the boot command line string. */
+char *prom_getbootargs(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Miscellaneous routines, don't really fit in any category per se. */
 
 /* Reboot the machine with the command line passed. */
+<<<<<<< HEAD
 extern void prom_reboot(const char *boot_command);
 
 /* Evaluate the forth string passed. */
 extern void prom_feval(const char *forth_string);
+=======
+void prom_reboot(const char *boot_command);
+
+/* Evaluate the forth string passed. */
+void prom_feval(const char *forth_string);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Enter the prom, with possibility of continuation with the 'go'
  * command in newer proms.
  */
+<<<<<<< HEAD
 extern void prom_cmdline(void);
+=======
+void prom_cmdline(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Enter the prom, with no chance of continuation for the stand-alone
  * which calls this.
  */
+<<<<<<< HEAD
 extern void prom_halt(void) __attribute__ ((noreturn));
 
 /* Halt and power-off the machine. */
 extern void prom_halt_power_off(void) __attribute__ ((noreturn));
+=======
+void prom_halt(void) __attribute__ ((noreturn));
+
+/* Halt and power-off the machine. */
+void prom_halt_power_off(void) __attribute__ ((noreturn));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Acquire the IDPROM of the root node in the prom device tree.  This
  * gets passed a buffer where you would like it stuffed.  The return value
  * is the format type of this idprom or 0xff on error.
  */
+<<<<<<< HEAD
 extern unsigned char prom_get_idprom(char *idp_buffer, int idpbuf_size);
 
 /* Write a buffer of characters to the console. */
@@ -100,17 +127,32 @@ extern void prom_console_write_buf(const char *buf, int len);
 /* Prom's internal routines, don't use in kernel/boot code. */
 extern __printf(1, 2) void prom_printf(const char *fmt, ...);
 extern void prom_write(const char *buf, unsigned int len);
+=======
+unsigned char prom_get_idprom(char *idp_buffer, int idpbuf_size);
+
+/* Write a buffer of characters to the console. */
+void prom_console_write_buf(const char *buf, int len);
+
+/* Prom's internal routines, don't use in kernel/boot code. */
+__printf(1, 2) void prom_printf(const char *fmt, ...);
+void prom_write(const char *buf, unsigned int len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Multiprocessor operations... */
 #ifdef CONFIG_SMP
 /* Start the CPU with the given device tree node at the passed program
  * counter with the given arg passed in via register %o0.
  */
+<<<<<<< HEAD
 extern void prom_startcpu(int cpunode, unsigned long pc, unsigned long arg);
+=======
+void prom_startcpu(int cpunode, unsigned long pc, unsigned long arg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Start the CPU with the given cpu ID at the passed program
  * counter with the given arg passed in via register %o0.
  */
+<<<<<<< HEAD
 extern void prom_startcpu_cpuid(int cpuid, unsigned long pc, unsigned long arg);
 
 /* Stop the CPU with the given cpu ID.  */
@@ -124,11 +166,27 @@ extern void prom_idleself(void);
 
 /* Resume the CPU with the passed device tree node. */
 extern void prom_resumecpu(int cpunode);
+=======
+void prom_startcpu_cpuid(int cpuid, unsigned long pc, unsigned long arg);
+
+/* Stop the CPU with the given cpu ID.  */
+void prom_stopcpu_cpuid(int cpuid);
+
+/* Stop the current CPU. */
+void prom_stopself(void);
+
+/* Idle the current CPU. */
+void prom_idleself(void);
+
+/* Resume the CPU with the passed device tree node. */
+void prom_resumecpu(int cpunode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* Power management interfaces. */
 
 /* Put the current CPU to sleep. */
+<<<<<<< HEAD
 extern void prom_sleepself(void);
 
 /* Put the entire system to sleep. */
@@ -136,10 +194,20 @@ extern int prom_sleepsystem(void);
 
 /* Initiate a wakeup event. */
 extern int prom_wakeupsystem(void);
+=======
+void prom_sleepself(void);
+
+/* Put the entire system to sleep. */
+int prom_sleepsystem(void);
+
+/* Initiate a wakeup event. */
+int prom_wakeupsystem(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* MMU and memory related OBP interfaces. */
 
 /* Get unique string identifying SIMM at given physical address. */
+<<<<<<< HEAD
 extern int prom_getunumber(int syndrome_code,
 			   unsigned long phys_addr,
 			   char *buf, int buflen);
@@ -156,6 +224,24 @@ extern long prom_itlb_load(unsigned long index,
 extern long prom_dtlb_load(unsigned long index,
 			   unsigned long tte_data,
 			   unsigned long vaddr);
+=======
+int prom_getunumber(int syndrome_code,
+		    unsigned long phys_addr,
+		    char *buf, int buflen);
+
+/* Retain physical memory to the caller across soft resets. */
+int prom_retain(const char *name, unsigned long size,
+		unsigned long align, unsigned long *paddr);
+
+/* Load explicit I/D TLB entries into the calling processor. */
+long prom_itlb_load(unsigned long index,
+		    unsigned long tte_data,
+		    unsigned long vaddr);
+
+long prom_dtlb_load(unsigned long index,
+		    unsigned long tte_data,
+		    unsigned long vaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Map/Unmap client program address ranges.  First the format of
  * the mapping mode argument.
@@ -170,29 +256,48 @@ extern long prom_dtlb_load(unsigned long index,
 #define PROM_MAP_IE	0x0100 /* Invert-Endianness */
 #define PROM_MAP_DEFAULT (PROM_MAP_WRITE | PROM_MAP_READ | PROM_MAP_EXEC | PROM_MAP_CACHED)
 
+<<<<<<< HEAD
 extern int prom_map(int mode, unsigned long size,
 		    unsigned long vaddr, unsigned long paddr);
 extern void prom_unmap(unsigned long size, unsigned long vaddr);
+=======
+int prom_map(int mode, unsigned long size,
+	     unsigned long vaddr, unsigned long paddr);
+void prom_unmap(unsigned long size, unsigned long vaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /* PROM device tree traversal functions... */
 
 /* Get the child node of the given node, or zero if no child exists. */
+<<<<<<< HEAD
 extern phandle prom_getchild(phandle parent_node);
+=======
+phandle prom_getchild(phandle parent_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Get the next sibling node of the given node, or zero if no further
  * siblings exist.
  */
+<<<<<<< HEAD
 extern phandle prom_getsibling(phandle node);
+=======
+phandle prom_getsibling(phandle node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Get the length, at the passed node, of the given property type.
  * Returns -1 on error (ie. no such property at this node).
  */
+<<<<<<< HEAD
 extern int prom_getproplen(phandle thisnode, const char *property);
+=======
+int prom_getproplen(phandle thisnode, const char *property);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Fetch the requested property using the given buffer.  Returns
  * the number of bytes the prom put into your buffer or -1 on error.
  */
+<<<<<<< HEAD
 extern int prom_getproperty(phandle thisnode, const char *property,
 			    char *prop_buffer, int propbuf_size);
 
@@ -211,20 +316,49 @@ extern void prom_getstring(phandle node, const char *prop, char *buf,
 
 /* Does the passed node have the given "name"? YES=1 NO=0 */
 extern int prom_nodematch(phandle thisnode, const char *name);
+=======
+int prom_getproperty(phandle thisnode, const char *property,
+		     char *prop_buffer, int propbuf_size);
+
+/* Acquire an integer property. */
+int prom_getint(phandle node, const char *property);
+
+/* Acquire an integer property, with a default value. */
+int prom_getintdefault(phandle node, const char *property, int defval);
+
+/* Acquire a boolean property, 0=FALSE 1=TRUE. */
+int prom_getbool(phandle node, const char *prop);
+
+/* Acquire a string property, null string on error. */
+void prom_getstring(phandle node, const char *prop, char *buf,
+		    int bufsize);
+
+/* Does the passed node have the given "name"? YES=1 NO=0 */
+int prom_nodematch(phandle thisnode, const char *name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Search all siblings starting at the passed node for "name" matching
  * the given string.  Returns the node on success, zero on failure.
  */
+<<<<<<< HEAD
 extern phandle prom_searchsiblings(phandle node_start, const char *name);
+=======
+phandle prom_searchsiblings(phandle node_start, const char *name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Return the first property type, as a string, for the given node.
  * Returns a null string on error. Buffer should be at least 32B long.
  */
+<<<<<<< HEAD
 extern char *prom_firstprop(phandle node, char *buffer);
+=======
+char *prom_firstprop(phandle node, char *buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Returns the next property after the passed property for the given
  * node.  Returns null string on failure. Buffer should be at least 32B long.
  */
+<<<<<<< HEAD
 extern char *prom_nextprop(phandle node, const char *prev_property, char *buf);
 
 /* Returns 1 if the specified node has given property. */
@@ -232,10 +366,20 @@ extern int prom_node_has_property(phandle node, const char *property);
 
 /* Returns phandle of the path specified */
 extern phandle prom_finddevice(const char *name);
+=======
+char *prom_nextprop(phandle node, const char *prev_property, char *buf);
+
+/* Returns 1 if the specified node has given property. */
+int prom_node_has_property(phandle node, const char *property);
+
+/* Returns phandle of the path specified */
+phandle prom_finddevice(const char *name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Set the indicated property at the given node with the passed value.
  * Returns the number of bytes of your value that the prom took.
  */
+<<<<<<< HEAD
 extern int prom_setprop(phandle node, const char *prop_name, char *prop_value,
 			int value_size);
 
@@ -246,5 +390,17 @@ extern int prom_ihandle2path(int handle, char *buffer, int bufsize);
 
 /* Client interface level routines. */
 extern void p1275_cmd_direct(unsigned long *);
+=======
+int prom_setprop(phandle node, const char *prop_name, char *prop_value,
+		 int value_size);
+
+phandle prom_inst2pkg(int);
+void prom_sun4v_guest_soft_state(void);
+
+int prom_ihandle2path(int handle, char *buffer, int bufsize);
+
+/* Client interface level routines. */
+void p1275_cmd_direct(unsigned long *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !(__SPARC64_OPLIB_H) */

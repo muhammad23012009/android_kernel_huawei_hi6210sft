@@ -17,11 +17,14 @@
 #define __ASM_ARCH_MEMORY_H
 
 /*
+<<<<<<< HEAD
  * Physical DRAM offset.
  */
 #define PLAT_PHYS_OFFSET	UL(0x00000000)
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Cache flushing area - SRAM
  */
 #define FLUSH_BASE_PHYS		0x40000000

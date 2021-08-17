@@ -18,7 +18,11 @@
  *
  *   linux/fs/minix/dir.c
  *
+<<<<<<< HEAD
  *   Copyright (C) 1991, 1992 Linux Torvalds
+=======
+ *   Copyright (C) 1991, 1992 Linus Torvalds
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -480,6 +484,7 @@ static int ocfs2_check_dir_trailer(struct inode *dir, struct buffer_head *bh)
 
 	trailer = ocfs2_trailer_from_bh(bh, dir->i_sb);
 	if (!OCFS2_IS_VALID_DIR_TRAILER(trailer)) {
+<<<<<<< HEAD
 		rc = -EINVAL;
 		ocfs2_error(dir->i_sb,
 			    "Invalid dirblock #%llu: "
@@ -495,10 +500,24 @@ static int ocfs2_check_dir_trailer(struct inode *dir, struct buffer_head *bh)
 			    "db_blkno of %llu",
 			    (unsigned long long)bh->b_blocknr,
 			    (unsigned long long)le64_to_cpu(trailer->db_blkno));
+=======
+		rc = ocfs2_error(dir->i_sb,
+				 "Invalid dirblock #%llu: signature = %.*s\n",
+				 (unsigned long long)bh->b_blocknr, 7,
+				 trailer->db_signature);
+		goto out;
+	}
+	if (le64_to_cpu(trailer->db_blkno) != bh->b_blocknr) {
+		rc = ocfs2_error(dir->i_sb,
+				 "Directory block #%llu has an invalid db_blkno of %llu\n",
+				 (unsigned long long)bh->b_blocknr,
+				 (unsigned long long)le64_to_cpu(trailer->db_blkno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	if (le64_to_cpu(trailer->db_parent_dinode) !=
 	    OCFS2_I(dir)->ip_blkno) {
+<<<<<<< HEAD
 		rc = -EINVAL;
 		ocfs2_error(dir->i_sb,
 			    "Directory block #%llu on dinode "
@@ -507,6 +526,13 @@ static int ocfs2_check_dir_trailer(struct inode *dir, struct buffer_head *bh)
 			    (unsigned long long)bh->b_blocknr,
 			    (unsigned long long)OCFS2_I(dir)->ip_blkno,
 			    (unsigned long long)le64_to_cpu(trailer->db_blkno));
+=======
+		rc = ocfs2_error(dir->i_sb,
+				 "Directory block #%llu on dinode #%llu has an invalid parent_dinode of %llu\n",
+				 (unsigned long long)bh->b_blocknr,
+				 (unsigned long long)OCFS2_I(dir)->ip_blkno,
+				 (unsigned long long)le64_to_cpu(trailer->db_blkno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 out:
@@ -604,6 +630,7 @@ static int ocfs2_validate_dx_root(struct super_block *sb,
 	}
 
 	if (!OCFS2_IS_VALID_DX_ROOT(dx_root)) {
+<<<<<<< HEAD
 		ocfs2_error(sb,
 			    "Dir Index Root # %llu has bad signature %.*s",
 			    (unsigned long long)le64_to_cpu(dx_root->dr_blkno),
@@ -612,6 +639,15 @@ static int ocfs2_validate_dx_root(struct super_block *sb,
 	}
 
 	return 0;
+=======
+		ret = ocfs2_error(sb,
+				  "Dir Index Root # %llu has bad signature %.*s\n",
+				  (unsigned long long)le64_to_cpu(dx_root->dr_blkno),
+				  7, dx_root->dr_signature);
+	}
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ocfs2_read_dx_root(struct inode *dir, struct ocfs2_dinode *di,
@@ -648,12 +684,20 @@ static int ocfs2_validate_dx_leaf(struct super_block *sb,
 	}
 
 	if (!OCFS2_IS_VALID_DX_LEAF(dx_leaf)) {
+<<<<<<< HEAD
 		ocfs2_error(sb, "Dir Index Leaf has bad signature %.*s",
 			    7, dx_leaf->dl_signature);
 		return -EROFS;
 	}
 
 	return 0;
+=======
+		ret = ocfs2_error(sb, "Dir Index Leaf has bad signature %.*s\n",
+				  7, dx_leaf->dl_signature);
+	}
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ocfs2_read_dx_leaf(struct inode *dir, u64 blkno,
@@ -744,7 +788,11 @@ restart:
 		if (ocfs2_read_dir_block(dir, block, &bh, 0)) {
 			/* read error, skip block & hope for the best.
 			 * ocfs2_read_dir_block() has released the bh. */
+<<<<<<< HEAD
 			ocfs2_error(dir->i_sb, "reading directory %llu, "
+=======
+			mlog(ML_ERROR, "reading directory %llu, "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    "offset %lu\n",
 				    (unsigned long long)OCFS2_I(dir)->ip_blkno,
 				    block);
@@ -812,11 +860,18 @@ static int ocfs2_dx_dir_lookup_rec(struct inode *inode,
 		el = &eb->h_list;
 
 		if (el->l_tree_depth) {
+<<<<<<< HEAD
 			ocfs2_error(inode->i_sb,
 				    "Inode %lu has non zero tree depth in "
 				    "btree tree block %llu\n", inode->i_ino,
 				    (unsigned long long)eb_bh->b_blocknr);
 			ret = -EROFS;
+=======
+			ret = ocfs2_error(inode->i_sb,
+					  "Inode %lu has non zero tree depth in btree tree block %llu\n",
+					  inode->i_ino,
+					  (unsigned long long)eb_bh->b_blocknr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		}
 	}
@@ -832,11 +887,19 @@ static int ocfs2_dx_dir_lookup_rec(struct inode *inode,
 	}
 
 	if (!found) {
+<<<<<<< HEAD
 		ocfs2_error(inode->i_sb, "Inode %lu has bad extent "
 			    "record (%u, %u, 0) in btree", inode->i_ino,
 			    le32_to_cpu(rec->e_cpos),
 			    ocfs2_rec_clusters(el, rec));
 		ret = -EROFS;
+=======
+		ret = ocfs2_error(inode->i_sb,
+				  "Inode %lu has bad extent record (%u, %u, 0) in btree\n",
+				  inode->i_ino,
+				  le32_to_cpu(rec->e_cpos),
+				  ocfs2_rec_clusters(el, rec));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -1617,7 +1680,11 @@ int __ocfs2_add_entry(handle_t *handle,
 	struct ocfs2_dir_entry *de, *de1;
 	struct ocfs2_dinode *di = (struct ocfs2_dinode *)parent_fe_bh->b_data;
 	struct super_block *sb = dir->i_sb;
+<<<<<<< HEAD
 	int retval, status;
+=======
+	int retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int size = sb->s_blocksize;
 	struct buffer_head *insert_bh = lookup->dl_leaf_bh;
 	char *data_start = insert_bh->b_data;
@@ -1687,7 +1754,11 @@ int __ocfs2_add_entry(handle_t *handle,
 				offset, ocfs2_dir_trailer_blk_off(dir->i_sb));
 
 		if (ocfs2_dirent_would_fit(de, rec_len)) {
+<<<<<<< HEAD
 			dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+=======
+			dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			retval = ocfs2_mark_inode_dirty(handle, dir, parent_fe_bh);
 			if (retval < 0) {
 				mlog_errno(retval);
@@ -1695,16 +1766,25 @@ int __ocfs2_add_entry(handle_t *handle,
 			}
 
 			if (insert_bh == parent_fe_bh)
+<<<<<<< HEAD
 				status = ocfs2_journal_access_di(handle,
+=======
+				retval = ocfs2_journal_access_di(handle,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 								 INODE_CACHE(dir),
 								 insert_bh,
 								 OCFS2_JOURNAL_ACCESS_WRITE);
 			else {
+<<<<<<< HEAD
 				status = ocfs2_journal_access_db(handle,
+=======
+				retval = ocfs2_journal_access_db(handle,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 								 INODE_CACHE(dir),
 								 insert_bh,
 					      OCFS2_JOURNAL_ACCESS_WRITE);
 
+<<<<<<< HEAD
 				if (ocfs2_dir_indexed(dir)) {
 					status = ocfs2_dx_dir_insert(dir,
 								handle,
@@ -1714,6 +1794,17 @@ int __ocfs2_add_entry(handle_t *handle,
 						goto bail;
 					}
 				}
+=======
+				if (!retval && ocfs2_dir_indexed(dir))
+					retval = ocfs2_dx_dir_insert(dir,
+								handle,
+								lookup);
+			}
+
+			if (retval) {
+				mlog_errno(retval);
+				goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 
 			/* By now the buffer is marked for journaling */
@@ -1761,11 +1852,18 @@ bail:
 
 static int ocfs2_dir_foreach_blk_id(struct inode *inode,
 				    u64 *f_version,
+<<<<<<< HEAD
 				    loff_t *f_pos, void *priv,
 				    filldir_t filldir, int *filldir_err)
 {
 	int ret, i, filldir_ret;
 	unsigned long offset = *f_pos;
+=======
+				    struct dir_context *ctx)
+{
+	int ret, i;
+	unsigned long offset = ctx->pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct buffer_head *di_bh = NULL;
 	struct ocfs2_dinode *di;
 	struct ocfs2_inline_data *data;
@@ -1781,8 +1879,12 @@ static int ocfs2_dir_foreach_blk_id(struct inode *inode,
 	di = (struct ocfs2_dinode *)di_bh->b_data;
 	data = &di->id2.i_data;
 
+<<<<<<< HEAD
 	while (*f_pos < i_size_read(inode)) {
 revalidate:
+=======
+	while (ctx->pos < i_size_read(inode)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* If the dir block has changed since the last call to
 		 * readdir(2), then we might be pointing to an invalid
 		 * dirent right now.  Scan from the start of the block
@@ -1802,6 +1904,7 @@ revalidate:
 					break;
 				i += le16_to_cpu(de->rec_len);
 			}
+<<<<<<< HEAD
 			*f_pos = offset = i;
 			*f_version = inode->i_version;
 		}
@@ -1822,11 +1925,26 @@ revalidate:
 			 * during the copy operation.
 			 */
 			u64 version = *f_version;
+=======
+			ctx->pos = offset = i;
+			*f_version = inode->i_version;
+		}
+
+		de = (struct ocfs2_dir_entry *) (data->id_data + ctx->pos);
+		if (!ocfs2_check_dir_entry(inode, de, di_bh, ctx->pos)) {
+			/* On error, skip the f_pos to the end. */
+			ctx->pos = i_size_read(inode);
+			break;
+		}
+		offset += le16_to_cpu(de->rec_len);
+		if (le64_to_cpu(de->inode)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			unsigned char d_type = DT_UNKNOWN;
 
 			if (de->file_type < OCFS2_FT_MAX)
 				d_type = ocfs2_filetype_table[de->file_type];
 
+<<<<<<< HEAD
 			filldir_ret = filldir(priv, de->name,
 					      de->name_len,
 					      *f_pos,
@@ -1846,6 +1964,16 @@ revalidate:
 out:
 	brelse(di_bh);
 
+=======
+			if (!dir_emit(ctx, de->name, de->name_len,
+				      le64_to_cpu(de->inode), d_type))
+				goto out;
+		}
+		ctx->pos += le16_to_cpu(de->rec_len);
+	}
+out:
+	brelse(di_bh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1855,16 +1983,25 @@ out:
  */
 static int ocfs2_dir_foreach_blk_el(struct inode *inode,
 				    u64 *f_version,
+<<<<<<< HEAD
 				    loff_t *f_pos, void *priv,
 				    filldir_t filldir, int *filldir_err)
 {
 	int error = 0;
 	unsigned long offset, blk, last_ra_blk = 0;
 	int i, stored;
+=======
+				    struct dir_context *ctx,
+				    bool persist)
+{
+	unsigned long offset, blk, last_ra_blk = 0;
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct buffer_head * bh, * tmp;
 	struct ocfs2_dir_entry * de;
 	struct super_block * sb = inode->i_sb;
 	unsigned int ra_sectors = 16;
+<<<<<<< HEAD
 
 	stored = 0;
 	bh = NULL;
@@ -1876,6 +2013,19 @@ static int ocfs2_dir_foreach_blk_el(struct inode *inode,
 		if (ocfs2_read_dir_block(inode, blk, &bh, 0)) {
 			/* Skip the corrupt dirblock and keep trying */
 			*f_pos += sb->s_blocksize - offset;
+=======
+	int stored = 0;
+
+	bh = NULL;
+
+	offset = ctx->pos & (sb->s_blocksize - 1);
+
+	while (ctx->pos < i_size_read(inode)) {
+		blk = ctx->pos >> sb->s_blocksize_bits;
+		if (ocfs2_read_dir_block(inode, blk, &bh, 0)) {
+			/* Skip the corrupt dirblock and keep trying */
+			ctx->pos += sb->s_blocksize - offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 
@@ -1897,7 +2047,10 @@ static int ocfs2_dir_foreach_blk_el(struct inode *inode,
 			ra_sectors = 8;
 		}
 
+<<<<<<< HEAD
 revalidate:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* If the dir block has changed since the last call to
 		 * readdir(2), then we might be pointing to an invalid
 		 * dirent right now.  Scan from the start of the block
@@ -1917,17 +2070,26 @@ revalidate:
 				i += le16_to_cpu(de->rec_len);
 			}
 			offset = i;
+<<<<<<< HEAD
 			*f_pos = ((*f_pos) & ~(sb->s_blocksize - 1))
+=======
+			ctx->pos = (ctx->pos & ~(sb->s_blocksize - 1))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				| offset;
 			*f_version = inode->i_version;
 		}
 
+<<<<<<< HEAD
 		while (!error && *f_pos < i_size_read(inode)
+=======
+		while (ctx->pos < i_size_read(inode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       && offset < sb->s_blocksize) {
 			de = (struct ocfs2_dir_entry *) (bh->b_data + offset);
 			if (!ocfs2_check_dir_entry(inode, de, bh, offset)) {
 				/* On error, skip the f_pos to the
 				   next block. */
+<<<<<<< HEAD
 				*f_pos = ((*f_pos) | (sb->s_blocksize - 1)) + 1;
 				brelse(bh);
 				goto out;
@@ -1942,10 +2104,17 @@ revalidate:
 				 * during the copy operation.
 				 */
 				unsigned long version = *f_version;
+=======
+				ctx->pos = (ctx->pos | (sb->s_blocksize - 1)) + 1;
+				break;
+			}
+			if (le64_to_cpu(de->inode)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				unsigned char d_type = DT_UNKNOWN;
 
 				if (de->file_type < OCFS2_FT_MAX)
 					d_type = ocfs2_filetype_table[de->file_type];
+<<<<<<< HEAD
 				error = filldir(priv, de->name,
 						de->name_len,
 						*f_pos,
@@ -1961,10 +2130,24 @@ revalidate:
 				stored ++;
 			}
 			*f_pos += le16_to_cpu(de->rec_len);
+=======
+				if (!dir_emit(ctx, de->name,
+						de->name_len,
+						le64_to_cpu(de->inode),
+						d_type)) {
+					brelse(bh);
+					return 0;
+				}
+				stored++;
+			}
+			offset += le16_to_cpu(de->rec_len);
+			ctx->pos += le16_to_cpu(de->rec_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		offset = 0;
 		brelse(bh);
 		bh = NULL;
+<<<<<<< HEAD
 	}
 
 	stored = 0;
@@ -1982,12 +2165,28 @@ static int ocfs2_dir_foreach_blk(struct inode *inode, u64 *f_version,
 
 	return ocfs2_dir_foreach_blk_el(inode, f_version, f_pos, priv, filldir,
 					filldir_err);
+=======
+		if (!persist && stored)
+			break;
+	}
+	return 0;
+}
+
+static int ocfs2_dir_foreach_blk(struct inode *inode, u64 *f_version,
+				 struct dir_context *ctx,
+				 bool persist)
+{
+	if (OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL)
+		return ocfs2_dir_foreach_blk_id(inode, f_version, ctx);
+	return ocfs2_dir_foreach_blk_el(inode, f_version, ctx, persist);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * This is intended to be called from inside other kernel functions,
  * so we fake some arguments.
  */
+<<<<<<< HEAD
 int ocfs2_dir_foreach(struct inode *inode, loff_t *f_pos, void *priv,
 		      filldir_t filldir)
 {
@@ -2004,6 +2203,12 @@ int ocfs2_dir_foreach(struct inode *inode, loff_t *f_pos, void *priv,
 	if (ret > 0)
 		ret = -EIO;
 
+=======
+int ocfs2_dir_foreach(struct inode *inode, struct dir_context *ctx)
+{
+	u64 version = inode->i_version;
+	ocfs2_dir_foreach_blk(inode, &version, ctx, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2011,15 +2216,26 @@ int ocfs2_dir_foreach(struct inode *inode, loff_t *f_pos, void *priv,
  * ocfs2_readdir()
  *
  */
+<<<<<<< HEAD
 int ocfs2_readdir(struct file * filp, void * dirent, filldir_t filldir)
 {
 	int error = 0;
 	struct inode *inode = file_inode(filp);
+=======
+int ocfs2_readdir(struct file *file, struct dir_context *ctx)
+{
+	int error = 0;
+	struct inode *inode = file_inode(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int lock_level = 0;
 
 	trace_ocfs2_readdir((unsigned long long)OCFS2_I(inode)->ip_blkno);
 
+<<<<<<< HEAD
 	error = ocfs2_inode_lock_atime(inode, filp->f_path.mnt, &lock_level);
+=======
+	error = ocfs2_inode_lock_atime(inode, file->f_path.mnt, &lock_level);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (lock_level && error >= 0) {
 		/* We release EX lock which used to update atime
 		 * and get PR lock again to reduce contention
@@ -2035,8 +2251,12 @@ int ocfs2_readdir(struct file * filp, void * dirent, filldir_t filldir)
 		goto bail_nolock;
 	}
 
+<<<<<<< HEAD
 	error = ocfs2_dir_foreach_blk(inode, &filp->f_version, &filp->f_pos,
 				      dirent, filldir, NULL);
+=======
+	error = ocfs2_dir_foreach_blk(inode, &file->f_version, ctx, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ocfs2_inode_unlock(inode, lock_level);
 	if (error)
@@ -2100,12 +2320,17 @@ int ocfs2_check_dir_for_entry(struct inode *dir,
 			      const char *name,
 			      int namelen)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ocfs2_dir_lookup_result lookup = { NULL, };
 
 	trace_ocfs2_check_dir_for_entry(
 		(unsigned long long)OCFS2_I(dir)->ip_blkno, namelen, name);
 
+<<<<<<< HEAD
 	ret = -EEXIST;
 	if (ocfs2_find_entry(name, namelen, dir, &lookup) == 0)
 		goto bail;
@@ -2116,19 +2341,41 @@ bail:
 
 	if (ret)
 		mlog_errno(ret);
+=======
+	if (ocfs2_find_entry(name, namelen, dir, &lookup) == 0) {
+		ret = -EEXIST;
+		mlog_errno(ret);
+	}
+
+	ocfs2_free_dir_lookup_result(&lookup);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 struct ocfs2_empty_dir_priv {
+<<<<<<< HEAD
+=======
+	struct dir_context ctx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned seen_dot;
 	unsigned seen_dot_dot;
 	unsigned seen_other;
 	unsigned dx_dir;
 };
+<<<<<<< HEAD
 static int ocfs2_empty_dir_filldir(void *priv, const char *name, int name_len,
 				   loff_t pos, u64 ino, unsigned type)
 {
 	struct ocfs2_empty_dir_priv *p = priv;
+=======
+static int ocfs2_empty_dir_filldir(struct dir_context *ctx, const char *name,
+				   int name_len, loff_t pos, u64 ino,
+				   unsigned type)
+{
+	struct ocfs2_empty_dir_priv *p =
+		container_of(ctx, struct ocfs2_empty_dir_priv, ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Check the positions of "." and ".." records to be sure
@@ -2204,10 +2451,16 @@ out:
 int ocfs2_empty_dir(struct inode *inode)
 {
 	int ret;
+<<<<<<< HEAD
 	loff_t start = 0;
 	struct ocfs2_empty_dir_priv priv;
 
 	memset(&priv, 0, sizeof(priv));
+=======
+	struct ocfs2_empty_dir_priv priv = {
+		.ctx.actor = ocfs2_empty_dir_filldir,
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ocfs2_dir_indexed(inode)) {
 		ret = ocfs2_empty_dir_dx(inode, &priv);
@@ -2219,7 +2472,11 @@ int ocfs2_empty_dir(struct inode *inode)
 		 */
 	}
 
+<<<<<<< HEAD
 	ret = ocfs2_dir_foreach(inode, &start, &priv, ocfs2_empty_dir_filldir);
+=======
+	ret = ocfs2_dir_foreach(inode, &priv.ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		mlog_errno(ret);
 
@@ -2402,7 +2659,11 @@ static int ocfs2_dx_dir_attach_index(struct ocfs2_super *osb,
 
 	dx_root_bh = sb_getblk(osb->sb, dr_blkno);
 	if (dx_root_bh == NULL) {
+<<<<<<< HEAD
 		ret = -EIO;
+=======
+		ret = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 	ocfs2_set_new_buffer_uptodate(INODE_CACHE(dir), dx_root_bh);
@@ -2475,7 +2736,11 @@ static int ocfs2_dx_dir_format_cluster(struct ocfs2_super *osb,
 	for (i = 0; i < num_dx_leaves; i++) {
 		bh = sb_getblk(osb->sb, start_blk + i);
 		if (bh == NULL) {
+<<<<<<< HEAD
 			ret = -EIO;
+=======
+			ret = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		}
 		dx_leaves[i] = bh;
@@ -2982,7 +3247,11 @@ static int ocfs2_expand_inline_dir(struct inode *dir, struct buffer_head *di_bh,
 	blkno = ocfs2_clusters_to_blocks(dir->i_sb, bit_off);
 	dirdata_bh = sb_getblk(sb, blkno);
 	if (!dirdata_bh) {
+<<<<<<< HEAD
 		ret = -EIO;
+=======
+		ret = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mlog_errno(ret);
 		goto out_commit;
 	}
@@ -3010,6 +3279,10 @@ static int ocfs2_expand_inline_dir(struct inode *dir, struct buffer_head *di_bh,
 		ocfs2_init_dir_trailer(dir, dirdata_bh, i);
 	}
 
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, dir, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ocfs2_journal_dirty(handle, dirdata_bh);
 
 	if (ocfs2_supports_indexed_dirs(osb) && !dx_inline) {
@@ -3053,11 +3326,19 @@ static int ocfs2_expand_inline_dir(struct inode *dir, struct buffer_head *di_bh,
 	ocfs2_dinode_new_extent_list(dir, di);
 
 	i_size_write(dir, sb->s_blocksize);
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+=======
+	dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	di->i_size = cpu_to_le64(sb->s_blocksize);
 	di->i_ctime = di->i_mtime = cpu_to_le64(dir->i_ctime.tv_sec);
 	di->i_ctime_nsec = di->i_mtime_nsec = cpu_to_le32(dir->i_ctime.tv_nsec);
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, dir, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * This should never fail as our extent list is empty and all
@@ -3212,7 +3493,11 @@ static int ocfs2_do_extend_dir(struct super_block *sb,
 
 	*new_bh = sb_getblk(sb, p_blkno);
 	if (!*new_bh) {
+<<<<<<< HEAD
 		status = -EIO;
+=======
+		status = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mlog_errno(status);
 		goto bail;
 	}
@@ -3337,7 +3622,11 @@ static int ocfs2_extend_dir(struct ocfs2_super *osb,
 		if (ocfs2_dir_resv_allowed(osb))
 			data_ac->ac_resv = &OCFS2_I(dir)->ip_la_data_resv;
 
+<<<<<<< HEAD
 		credits = ocfs2_calc_extend_credits(sb, el, 1);
+=======
+		credits = ocfs2_calc_extend_credits(sb, el);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		spin_unlock(&OCFS2_I(dir)->ip_lock);
 		credits = OCFS2_SIMPLE_DIR_EXTEND_CREDITS;
@@ -3391,6 +3680,10 @@ do_extend:
 	} else {
 		de->rec_len = cpu_to_le16(sb->s_blocksize);
 	}
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, dir, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ocfs2_journal_dirty(handle, new_bh);
 
 	dir_i_size += dir->i_sb->s_blocksize;
@@ -3504,10 +3797,15 @@ static int ocfs2_find_dir_space_el(struct inode *dir, const char *name,
 	int blocksize = dir->i_sb->s_blocksize;
 
 	status = ocfs2_read_dir_block(dir, 0, &bh, 0);
+<<<<<<< HEAD
 	if (status) {
 		mlog_errno(status);
 		goto bail;
 	}
+=======
+	if (status)
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rec_len = OCFS2_DIR_REC_LEN(namelen);
 	offset = 0;
@@ -3528,10 +3826,16 @@ static int ocfs2_find_dir_space_el(struct inode *dir, const char *name,
 			status = ocfs2_read_dir_block(dir,
 					     offset >> sb->s_blocksize_bits,
 					     &bh, 0);
+<<<<<<< HEAD
 			if (status) {
 				mlog_errno(status);
 				goto bail;
 			}
+=======
+			if (status)
+				goto bail;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* move to next block */
 			de = (struct ocfs2_dir_entry *) bh->b_data;
 		}
@@ -3561,7 +3865,10 @@ next:
 		de = (struct ocfs2_dir_entry *)((char *) de + le16_to_cpu(de->rec_len));
 	}
 
+<<<<<<< HEAD
 	status = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 bail:
 	brelse(bh);
 	if (status)
@@ -3598,6 +3905,7 @@ static void dx_leaf_sort_swap(void *a, void *b, int size)
 {
 	struct ocfs2_dx_entry *entry1 = a;
 	struct ocfs2_dx_entry *entry2 = b;
+<<<<<<< HEAD
 	struct ocfs2_dx_entry tmp;
 
 	BUG_ON(size != sizeof(*entry1));
@@ -3605,6 +3913,12 @@ static void dx_leaf_sort_swap(void *a, void *b, int size)
 	tmp = *entry1;
 	*entry1 = *entry2;
 	*entry2 = tmp;
+=======
+
+	BUG_ON(size != sizeof(*entry1));
+
+	swap(*entry1, *entry2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ocfs2_dx_leaf_same_major(struct ocfs2_dx_leaf *dx_leaf)
@@ -3767,9 +4081,15 @@ static void ocfs2_dx_dir_transfer_leaf(struct inode *dir, u32 split_hash,
 static int ocfs2_dx_dir_rebalance_credits(struct ocfs2_super *osb,
 					  struct ocfs2_dx_root_block *dx_root)
 {
+<<<<<<< HEAD
 	int credits = ocfs2_clusters_to_blocks(osb->sb, 2);
 
 	credits += ocfs2_calc_extend_credits(osb->sb, &dx_root->dr_list, 1);
+=======
+	int credits = ocfs2_clusters_to_blocks(osb->sb, 3);
+
+	credits += ocfs2_calc_extend_credits(osb->sb, &dx_root->dr_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	credits += ocfs2_quota_trans_credits(osb->sb);
 	return credits;
 }
@@ -3949,6 +4269,10 @@ out_commit:
 		dquot_free_space_nodirty(dir,
 				ocfs2_clusters_to_bytes(dir->i_sb, 1));
 
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, dir, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ocfs2_commit_trans(osb, handle);
 
 out:
@@ -4187,6 +4511,10 @@ static int ocfs2_expand_inline_dx_root(struct inode *dir,
 		mlog_errno(ret);
 	did_quota = 0;
 
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, dir, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ocfs2_journal_dirty(handle, dx_root_bh);
 
 out_commit:
@@ -4427,7 +4755,11 @@ static int ocfs2_dx_dir_remove_index(struct inode *dir,
 		mlog_errno(ret);
 		goto out;
 	}
+<<<<<<< HEAD
 	mutex_lock(&dx_alloc_inode->i_mutex);
+=======
+	inode_lock(dx_alloc_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = ocfs2_inode_lock(dx_alloc_inode, &dx_alloc_bh, 1);
 	if (ret) {
@@ -4454,6 +4786,10 @@ static int ocfs2_dx_dir_remove_index(struct inode *dir,
 	di->i_dyn_features = cpu_to_le16(OCFS2_I(dir)->ip_dyn_features);
 	spin_unlock(&OCFS2_I(dir)->ip_lock);
 	di->i_dx_root = cpu_to_le64(0ULL);
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, dir, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ocfs2_journal_dirty(handle, di_bh);
 
@@ -4475,7 +4811,11 @@ out_unlock:
 	ocfs2_inode_unlock(dx_alloc_inode, 1);
 
 out_mutex:
+<<<<<<< HEAD
 	mutex_unlock(&dx_alloc_inode->i_mutex);
+=======
+	inode_unlock(dx_alloc_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	brelse(dx_alloc_bh);
 out:
 	iput(dx_alloc_inode);
@@ -4524,7 +4864,11 @@ int ocfs2_dx_dir_truncate(struct inode *dir, struct buffer_head *di_bh)
 		p_cpos = ocfs2_blocks_to_clusters(dir->i_sb, blkno);
 
 		ret = ocfs2_remove_btree_range(dir, &et, cpos, p_cpos, clen, 0,
+<<<<<<< HEAD
 					       &dealloc, 0);
+=======
+					       &dealloc, 0, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret) {
 			mlog_errno(ret);
 			goto out;

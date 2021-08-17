@@ -1,6 +1,11 @@
 /* Moorestown PMIC GPIO (access through IPC) driver
  * Copyright (c) 2008 - 2009, Intel Corporation.
  *
+<<<<<<< HEAD
+=======
+ * Author: Alek Du <alek.du@intel.com>
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -21,7 +26,10 @@
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
 #include <linux/delay.h>
@@ -30,7 +38,11 @@
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/intel_scu_ipc.h>
 #include <linux/device.h>
 #include <linux/intel_pmic_gpio.h>
@@ -91,7 +103,11 @@ static void pmic_program_irqtype(int gpio, int type)
 
 static int pmic_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	if (offset > 8) {
+=======
+	if (offset >= 8) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("only pin 0-7 support input\n");
 		return -1;/* we only have 8 GPIO can use as input */
 	}
@@ -130,7 +146,11 @@ static int pmic_gpio_get(struct gpio_chip *chip, unsigned offset)
 	int ret;
 
 	/* we only have 8 GPIO pins we can use as input */
+<<<<<<< HEAD
 	if (offset > 8)
+=======
+	if (offset >= 8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EOPNOTSUPP;
 	ret = intel_scu_ipc_ioread8(GPIO0 + offset, &r);
 	if (ret < 0)
@@ -174,7 +194,11 @@ static int pmic_irq_type(struct irq_data *data, unsigned type)
 
 static int pmic_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct pmic_gpio *pg = container_of(chip, struct pmic_gpio, chip);
+=======
+	struct pmic_gpio *pg = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return pg->irq_base + offset;
 }
@@ -274,12 +298,21 @@ static int platform_pmic_gpio_probe(struct platform_device *pdev)
 	pg->chip.base = pdata->gpio_base;
 	pg->chip.ngpio = NUM_GPIO;
 	pg->chip.can_sleep = 1;
+<<<<<<< HEAD
 	pg->chip.dev = dev;
 
 	mutex_init(&pg->buslock);
 
 	pg->chip.dev = dev;
 	retval = gpiochip_add(&pg->chip);
+=======
+	pg->chip.parent = dev;
+
+	mutex_init(&pg->buslock);
+
+	pg->chip.parent = dev;
+	retval = gpiochip_add_data(&pg->chip, pg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval) {
 		pr_err("Can not add pmic gpio chip\n");
 		goto err;
@@ -288,7 +321,11 @@ static int platform_pmic_gpio_probe(struct platform_device *pdev)
 	retval = request_irq(pg->irq, pmic_irq_handler, 0, "pmic", pg);
 	if (retval) {
 		pr_warn("Interrupt request failed\n");
+<<<<<<< HEAD
 		goto err;
+=======
+		goto fail_request_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = 0; i < 8; i++) {
@@ -299,6 +336,12 @@ static int platform_pmic_gpio_probe(struct platform_device *pdev)
 		irq_set_chip_data(i + pg->irq_base, pg);
 	}
 	return 0;
+<<<<<<< HEAD
+=======
+
+fail_request_irq:
+	gpiochip_remove(&pg->chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	iounmap(pg->gpiointr);
 err2:
@@ -311,7 +354,10 @@ err2:
 static struct platform_driver platform_pmic_gpio_driver = {
 	.driver = {
 		.name		= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= platform_pmic_gpio_probe,
 };
@@ -320,9 +366,13 @@ static int __init platform_pmic_gpio_init(void)
 {
 	return platform_driver_register(&platform_pmic_gpio_driver);
 }
+<<<<<<< HEAD
 
 subsys_initcall(platform_pmic_gpio_init);
 
 MODULE_AUTHOR("Alek Du <alek.du@intel.com>");
 MODULE_DESCRIPTION("Intel Moorestown PMIC GPIO driver");
 MODULE_LICENSE("GPL v2");
+=======
+subsys_initcall(platform_pmic_gpio_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

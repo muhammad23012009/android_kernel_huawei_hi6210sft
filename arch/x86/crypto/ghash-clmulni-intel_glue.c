@@ -19,23 +19,38 @@
 #include <crypto/cryptd.h>
 #include <crypto/gf128mul.h>
 #include <crypto/internal/hash.h>
+<<<<<<< HEAD
 #include <asm/i387.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cpu_device_id.h>
 
 #define GHASH_BLOCK_SIZE	16
 #define GHASH_DIGEST_SIZE	16
 
+<<<<<<< HEAD
 void clmul_ghash_mul(char *dst, const be128 *shash);
 
 void clmul_ghash_update(char *dst, const char *src, unsigned int srclen,
 			const be128 *shash);
+=======
+void clmul_ghash_mul(char *dst, const u128 *shash);
+
+void clmul_ghash_update(char *dst, const char *src, unsigned int srclen,
+			const u128 *shash);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct ghash_async_ctx {
 	struct cryptd_ahash *cryptd_tfm;
 };
 
 struct ghash_ctx {
+<<<<<<< HEAD
 	be128 shash;
+=======
+	u128 shash;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ghash_desc_ctx {
@@ -68,11 +83,19 @@ static int ghash_setkey(struct crypto_shash *tfm,
 	a = be64_to_cpu(x->a);
 	b = be64_to_cpu(x->b);
 
+<<<<<<< HEAD
 	ctx->shash.a = (__be64)((b << 1) | (a >> 63));
 	ctx->shash.b = (__be64)((a << 1) | (b >> 63));
 
 	if (a >> 63)
 		ctx->shash.b ^= cpu_to_be64(0xc2);
+=======
+	ctx->shash.a = (b << 1) | (a >> 63);
+	ctx->shash.b = (a << 1) | (b >> 63);
+
+	if (a >> 63)
+		ctx->shash.b ^= ((u64)0xc2) << 56;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -154,7 +177,12 @@ static struct shash_alg ghash_alg = {
 		.cra_name		= "__ghash",
 		.cra_driver_name	= "__ghash-pclmulqdqni",
 		.cra_priority		= 0,
+<<<<<<< HEAD
 		.cra_flags		= CRYPTO_ALG_TYPE_SHASH,
+=======
+		.cra_flags		= CRYPTO_ALG_TYPE_SHASH |
+					  CRYPTO_ALG_INTERNAL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.cra_blocksize		= GHASH_BLOCK_SIZE,
 		.cra_ctxsize		= sizeof(struct ghash_ctx),
 		.cra_module		= THIS_MODULE,
@@ -167,6 +195,7 @@ static int ghash_async_init(struct ahash_request *req)
 	struct ghash_async_ctx *ctx = crypto_ahash_ctx(tfm);
 	struct ahash_request *cryptd_req = ahash_request_ctx(req);
 	struct cryptd_ahash *cryptd_tfm = ctx->cryptd_tfm;
+<<<<<<< HEAD
 
 	if (!irq_fpu_usable()) {
 		memcpy(cryptd_req, req, sizeof(*req));
@@ -180,17 +209,34 @@ static int ghash_async_init(struct ahash_request *req)
 		desc->flags = req->base.flags;
 		return crypto_shash_init(desc);
 	}
+=======
+	struct shash_desc *desc = cryptd_shash_desc(cryptd_req);
+	struct crypto_shash *child = cryptd_ahash_child(cryptd_tfm);
+
+	desc->tfm = child;
+	desc->flags = req->base.flags;
+	return crypto_shash_init(desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ghash_async_update(struct ahash_request *req)
 {
 	struct ahash_request *cryptd_req = ahash_request_ctx(req);
+<<<<<<< HEAD
 
 	if (!irq_fpu_usable()) {
 		struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
 		struct ghash_async_ctx *ctx = crypto_ahash_ctx(tfm);
 		struct cryptd_ahash *cryptd_tfm = ctx->cryptd_tfm;
 
+=======
+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
+	struct ghash_async_ctx *ctx = crypto_ahash_ctx(tfm);
+	struct cryptd_ahash *cryptd_tfm = ctx->cryptd_tfm;
+
+	if (!irq_fpu_usable() ||
+	    (in_atomic() && cryptd_ahash_queued(cryptd_tfm))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(cryptd_req, req, sizeof(*req));
 		ahash_request_set_tfm(cryptd_req, &cryptd_tfm->base);
 		return crypto_ahash_update(cryptd_req);
@@ -203,12 +249,21 @@ static int ghash_async_update(struct ahash_request *req)
 static int ghash_async_final(struct ahash_request *req)
 {
 	struct ahash_request *cryptd_req = ahash_request_ctx(req);
+<<<<<<< HEAD
 
 	if (!irq_fpu_usable()) {
 		struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
 		struct ghash_async_ctx *ctx = crypto_ahash_ctx(tfm);
 		struct cryptd_ahash *cryptd_tfm = ctx->cryptd_tfm;
 
+=======
+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
+	struct ghash_async_ctx *ctx = crypto_ahash_ctx(tfm);
+	struct cryptd_ahash *cryptd_tfm = ctx->cryptd_tfm;
+
+	if (!irq_fpu_usable() ||
+	    (in_atomic() && cryptd_ahash_queued(cryptd_tfm))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(cryptd_req, req, sizeof(*req));
 		ahash_request_set_tfm(cryptd_req, &cryptd_tfm->base);
 		return crypto_ahash_final(cryptd_req);
@@ -248,7 +303,12 @@ static int ghash_async_digest(struct ahash_request *req)
 	struct ahash_request *cryptd_req = ahash_request_ctx(req);
 	struct cryptd_ahash *cryptd_tfm = ctx->cryptd_tfm;
 
+<<<<<<< HEAD
 	if (!irq_fpu_usable()) {
+=======
+	if (!irq_fpu_usable() ||
+	    (in_atomic() && cryptd_ahash_queued(cryptd_tfm))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(cryptd_req, req, sizeof(*req));
 		ahash_request_set_tfm(cryptd_req, &cryptd_tfm->base);
 		return crypto_ahash_digest(cryptd_req);
@@ -284,7 +344,13 @@ static int ghash_async_init_tfm(struct crypto_tfm *tfm)
 	struct cryptd_ahash *cryptd_tfm;
 	struct ghash_async_ctx *ctx = crypto_tfm_ctx(tfm);
 
+<<<<<<< HEAD
 	cryptd_tfm = cryptd_alloc_ahash("__ghash-pclmulqdqni", 0, 0);
+=======
+	cryptd_tfm = cryptd_alloc_ahash("__ghash-pclmulqdqni",
+					CRYPTO_ALG_INTERNAL,
+					CRYPTO_ALG_INTERNAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(cryptd_tfm))
 		return PTR_ERR(cryptd_tfm);
 	ctx->cryptd_tfm = cryptd_tfm;

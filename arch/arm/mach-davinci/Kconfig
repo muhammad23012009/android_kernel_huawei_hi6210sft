@@ -9,7 +9,10 @@ config CP_INTC
 
 config ARCH_DAVINCI_DMx
 	bool
+<<<<<<< HEAD
 	select CPU_ARM926T
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 menu "TI DaVinci Implementations"
 
@@ -32,36 +35,58 @@ config ARCH_DAVINCI_DM646x
 
 config ARCH_DAVINCI_DA830
 	bool "DA830/OMAP-L137/AM17x based system"
+<<<<<<< HEAD
 	select ARCH_DAVINCI_DA8XX
 	select CPU_DCACHE_WRITETHROUGH # needed on silicon revs 1.0, 1.1
+=======
+	depends on !ARCH_DAVINCI_DMx || (AUTO_ZRELADDR && ARM_PATCH_PHYS_VIRT)
+	select ARCH_DAVINCI_DA8XX
+	# needed on silicon revs 1.0, 1.1:
+	select CPU_DCACHE_WRITETHROUGH if !CPU_DCACHE_DISABLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select CP_INTC
 
 config ARCH_DAVINCI_DA850
 	bool "DA850/OMAP-L138/AM18x based system"
+<<<<<<< HEAD
 	select ARCH_DAVINCI_DA8XX
 	select ARCH_HAS_CPUFREQ
+=======
+	depends on !ARCH_DAVINCI_DMx || (AUTO_ZRELADDR && ARM_PATCH_PHYS_VIRT)
+	select ARCH_DAVINCI_DA8XX
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select CP_INTC
 
 config ARCH_DAVINCI_DA8XX
 	bool
+<<<<<<< HEAD
 	select CPU_ARM926T
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config ARCH_DAVINCI_DM365
 	bool "DaVinci 365 based system"
 	select AINTC
 	select ARCH_DAVINCI_DMx
 
+<<<<<<< HEAD
 config ARCH_DAVINCI_TNETV107X
 	bool "TNETV107X based system"
 	select CPU_V6
 	select CP_INTC
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 comment "DaVinci Board Type"
 
 config MACH_DA8XX_DT
 	bool "Support DA8XX platforms using device tree"
 	default y
+<<<<<<< HEAD
 	depends on ARCH_DAVINCI_DA8XX
+=======
+	depends on ARCH_DAVINCI_DA850
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select PINCTRL
 	help
 	  Say y here to include support for TI DaVinci DA850 based using
@@ -71,8 +96,11 @@ config MACH_DAVINCI_EVM
 	bool "TI DM644x EVM"
 	default ARCH_DAVINCI_DM644x
 	depends on ARCH_DAVINCI_DM644x
+<<<<<<< HEAD
 	select EEPROM_AT24
 	select I2C
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Configure this option to specify the whether the board used
 	  for development is a DM644x EVM
@@ -80,8 +108,11 @@ config MACH_DAVINCI_EVM
 config MACH_SFFSDR
 	bool "Lyrtech SFFSDR"
 	depends on ARCH_DAVINCI_DM644x
+<<<<<<< HEAD
 	select EEPROM_AT24
 	select I2C
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y here to select the Lyrtech Small Form Factor
 	  Software Defined Radio (SFFSDR) board.
@@ -112,8 +143,11 @@ config MACH_DAVINCI_DM6467_EVM
 	bool "TI DM6467 EVM"
 	default ARCH_DAVINCI_DM646x
 	depends on ARCH_DAVINCI_DM646x
+<<<<<<< HEAD
 	select EEPROM_AT24
 	select I2C
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_DAVINCI_DM6467TEVM
 	help
 	  Configure this option to specify the whether the board used
@@ -126,8 +160,11 @@ config MACH_DAVINCI_DM365_EVM
 	bool "TI DM365 EVM"
 	default ARCH_DAVINCI_DM365
 	depends on ARCH_DAVINCI_DM365
+<<<<<<< HEAD
 	select EEPROM_AT24
 	select I2C
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Configure this option to specify whether the board used
 	  for development is a DM365 EVM
@@ -136,9 +173,13 @@ config MACH_DAVINCI_DA830_EVM
 	bool "TI DA830/OMAP-L137/AM17x Reference Platform"
 	default ARCH_DAVINCI_DA830
 	depends on ARCH_DAVINCI_DA830
+<<<<<<< HEAD
 	select EEPROM_AT24
 	select GPIO_PCF857X
 	select I2C
+=======
+	select GPIO_PCF857X if I2C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y here to select the TI DA830/OMAP-L137/AM17x Evaluation Module.
 
@@ -204,6 +245,7 @@ config DA850_UI_SD_VIDEO_PORT
 
 endchoice
 
+<<<<<<< HEAD
 config DA850_WL12XX
 	bool "AM18x wl1271 daughter board"
 	depends on MACH_DAVINCI_DA850_EVM
@@ -232,6 +274,11 @@ config MACH_MITYOMAPL138
 	depends on ARCH_DAVINCI_DA850
 	select EEPROM_AT24
 	select I2C
+=======
+config MACH_MITYOMAPL138
+	bool "Critical Link MityDSP-L138/MityARM-1808 SoM"
+	depends on ARCH_DAVINCI_DA850
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y here to select the Critical Link MityDSP-L138/MityARM-1808
 	  System on Module.  Information on this SoM may be found at

@@ -11,14 +11,21 @@
 #include <linux/irqnr.h>
 #include <linux/hardirq.h>
 #include <linux/irqflags.h>
+<<<<<<< HEAD
 #include <linux/smp.h>
 #include <linux/percpu.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/hrtimer.h>
 #include <linux/kref.h>
 #include <linux/workqueue.h>
 
 #include <linux/atomic.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These correspond to the IORESOURCE_IRQ_* defines in
@@ -40,8 +47,11 @@
  * These flags used only by the kernel as part of the
  * irq handling routines.
  *
+<<<<<<< HEAD
  * IRQF_DISABLED - keep irqs disabled when calling the action handler.
  *                 DEPRECATED. This flag is a NOOP and scheduled to be removed
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * IRQF_SHARED - allow sharing the irq among several devices
  * IRQF_PROBE_SHARED - set by callers when they expect sharing mismatches to occur
  * IRQF_TIMER - Flag to mark this interrupt as timer interrupt
@@ -53,7 +63,13 @@
  * IRQF_ONESHOT - Interrupt is not reenabled after the hardirq handler finished.
  *                Used by threaded interrupts which need to keep the
  *                irq line disabled until the threaded handler has been run.
+<<<<<<< HEAD
  * IRQF_NO_SUSPEND - Do not disable this IRQ during suspend
+=======
+ * IRQF_NO_SUSPEND - Do not disable this IRQ during suspend.  Does not guarantee
+ *                   that this interrupt will wake the system from a suspended
+ *                   state.  See Documentation/power/suspend-and-interrupts.txt
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * IRQF_FORCE_RESUME - Force enable it on resume even if IRQF_NO_SUSPEND is set
  * IRQF_NO_THREAD - Interrupt cannot be threaded
  * IRQF_EARLY_RESUME - Resume IRQ early during syscore instead of at device
@@ -63,7 +79,10 @@
  *                wakeup devices users need to implement wakeup detection in
  *                their interrupt handlers.
  */
+<<<<<<< HEAD
 #define IRQF_DISABLED		0x00000020
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IRQF_SHARED		0x00000080
 #define IRQF_PROBE_SHARED	0x00000100
 #define __IRQF_TIMER		0x00000200
@@ -104,6 +123,10 @@ typedef irqreturn_t (*irq_handler_t)(int, void *);
  * @flags:	flags (see IRQF_* above)
  * @thread_fn:	interrupt handler function for threaded interrupts
  * @thread:	thread pointer for threaded interrupts
+<<<<<<< HEAD
+=======
+ * @secondary:	pointer to secondary irqaction (force threading)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @thread_flags:	flags related to @thread
  * @thread_mask:	bitmask for keeping track of @thread activity
  * @dir:	pointer to the proc/irq/NN/name entry
@@ -115,6 +138,10 @@ struct irqaction {
 	struct irqaction	*next;
 	irq_handler_t		thread_fn;
 	struct task_struct	*thread;
+<<<<<<< HEAD
+=======
+	struct irqaction	*secondary;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int		irq;
 	unsigned int		flags;
 	unsigned long		thread_flags;
@@ -125,7 +152,20 @@ struct irqaction {
 
 extern irqreturn_t no_action(int cpl, void *dev_id);
 
+<<<<<<< HEAD
 #ifdef CONFIG_GENERIC_HARDIRQS
+=======
+/*
+ * If a (PCI) device interrupt is not connected we set dev->irq to
+ * IRQ_NOTCONNECTED. This causes request_irq() to fail with -ENOTCONN, so we
+ * can distingiush that case from other error returns.
+ *
+ * 0x80000000 is guaranteed to be outside the available range of interrupts
+ * and easy to distinguish from other possible incorrect values.
+ */
+#define IRQ_NOTCONNECTED	(1U << 31)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int __must_check
 request_threaded_irq(unsigned int irq, irq_handler_t handler,
 		     irq_handler_t thread_fn,
@@ -145,6 +185,7 @@ request_any_context_irq(unsigned int irq, irq_handler_t handler,
 extern int __must_check
 request_percpu_irq(unsigned int irq, irq_handler_t handler,
 		   const char *devname, void __percpu *percpu_dev_id);
+<<<<<<< HEAD
 #else
 
 extern int __must_check
@@ -179,6 +220,8 @@ request_percpu_irq(unsigned int irq, irq_handler_t handler,
 	return request_irq(irq, handler, 0, devname, percpu_dev_id);
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void free_irq(unsigned int, void *);
 extern void free_percpu_irq(unsigned int, void __percpu *);
@@ -199,6 +242,14 @@ devm_request_irq(struct device *dev, unsigned int irq, irq_handler_t handler,
 					 devname, dev_id);
 }
 
+<<<<<<< HEAD
+=======
+extern int __must_check
+devm_request_any_context_irq(struct device *dev, unsigned int irq,
+		 irq_handler_t handler, unsigned long irqflags,
+		 const char *devname, void *dev_id);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void devm_free_irq(struct device *dev, unsigned int irq, void *dev_id);
 
 /*
@@ -220,10 +271,15 @@ extern void devm_free_irq(struct device *dev, unsigned int irq, void *dev_id);
 #endif
 
 extern void disable_irq_nosync(unsigned int irq);
+<<<<<<< HEAD
+=======
+extern bool disable_hardirq(unsigned int irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void disable_irq(unsigned int irq);
 extern void disable_percpu_irq(unsigned int irq);
 extern void enable_irq(unsigned int irq);
 extern void enable_percpu_irq(unsigned int irq, unsigned int type);
+<<<<<<< HEAD
 
 /* The following three functions are for the core kernel use only. */
 #ifdef CONFIG_GENERIC_HARDIRQS
@@ -236,6 +292,36 @@ static inline int check_wakeup_irqs(void) { return 0; }
 #endif
 
 #if defined(CONFIG_SMP) && defined(CONFIG_GENERIC_HARDIRQS)
+=======
+extern bool irq_percpu_is_enabled(unsigned int irq);
+extern void irq_wake_thread(unsigned int irq, void *dev_id);
+
+/* The following three functions are for the core kernel use only. */
+extern void suspend_device_irqs(void);
+extern void resume_device_irqs(void);
+
+/**
+ * struct irq_affinity_notify - context for notification of IRQ affinity changes
+ * @irq:		Interrupt to which notification applies
+ * @kref:		Reference count, for internal use
+ * @work:		Work item, for internal use
+ * @notify:		Function to be called on change.  This will be
+ *			called in process context.
+ * @release:		Function to be called on release.  This will be
+ *			called in process context.  Once registered, the
+ *			structure must only be freed when this function is
+ *			called or later.
+ */
+struct irq_affinity_notify {
+	unsigned int irq;
+	struct kref kref;
+	struct work_struct work;
+	void (*notify)(struct irq_affinity_notify *, const cpumask_t *mask);
+	void (*release)(struct kref *ref);
+};
+
+#if defined(CONFIG_SMP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern cpumask_var_t irq_default_affinity;
 
@@ -246,7 +332,11 @@ extern int __irq_set_affinity(unsigned int irq, const struct cpumask *cpumask,
 /**
  * irq_set_affinity - Set the irq affinity of a given irq
  * @irq:	Interrupt to set affinity
+<<<<<<< HEAD
  * @mask:	cpumask
+=======
+ * @cpumask:	cpumask
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Fails if cpumask does not contain an online CPU
  */
@@ -259,7 +349,11 @@ irq_set_affinity(unsigned int irq, const struct cpumask *cpumask)
 /**
  * irq_force_affinity - Force the irq affinity of a given irq
  * @irq:	Interrupt to set affinity
+<<<<<<< HEAD
  * @mask:	cpumask
+=======
+ * @cpumask:	cpumask
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Same as irq_set_affinity, but without checking the mask against
  * online cpus.
@@ -278,6 +372,7 @@ extern int irq_select_affinity(unsigned int irq);
 
 extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
 
+<<<<<<< HEAD
 /**
  * struct irq_affinity_notify - context for notification of IRQ affinity changes
  * @irq:		Interrupt to which notification applies
@@ -301,6 +396,14 @@ struct irq_affinity_notify {
 extern int
 irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify);
 
+=======
+extern int
+irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify);
+
+struct cpumask *irq_create_affinity_masks(const struct cpumask *affinity, int nvec);
+int irq_calc_affinity_vectors(const struct cpumask *affinity, int maxvec);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_SMP */
 
 static inline int irq_set_affinity(unsigned int irq, const struct cpumask *m)
@@ -325,9 +428,33 @@ static inline int irq_set_affinity_hint(unsigned int irq,
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_SMP && CONFIG_GENERIC_HARDIRQS */
 
 #ifdef CONFIG_GENERIC_HARDIRQS
+=======
+
+static inline int
+irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify)
+{
+	return 0;
+}
+
+static inline struct cpumask *
+irq_create_affinity_masks(const struct cpumask *affinity, int nvec)
+{
+	return NULL;
+}
+
+static inline int
+irq_calc_affinity_vectors(const struct cpumask *affinity, int maxvec)
+{
+	return maxvec;
+}
+
+#endif /* CONFIG_SMP */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Special lockdep variants of irq disabling/enabling.
  * These should be used for locking constructs that
@@ -392,6 +519,7 @@ static inline int disable_irq_wake(unsigned int irq)
 	return irq_set_irq_wake(irq, 0);
 }
 
+<<<<<<< HEAD
 #else /* !CONFIG_GENERIC_HARDIRQS */
 /*
  * NOTE: non-genirq architectures, if they want to support the lock
@@ -419,6 +547,22 @@ static inline int disable_irq_wake(unsigned int irq)
 }
 #endif /* CONFIG_GENERIC_HARDIRQS */
 
+=======
+/*
+ * irq_get_irqchip_state/irq_set_irqchip_state specific flags
+ */
+enum irqchip_irq_state {
+	IRQCHIP_STATE_PENDING,		/* Is interrupt pending? */
+	IRQCHIP_STATE_ACTIVE,		/* Is interrupt in progress? */
+	IRQCHIP_STATE_MASKED,		/* Is interrupt masked? */
+	IRQCHIP_STATE_LINE_LEVEL,	/* Is IRQ line high? */
+};
+
+extern int irq_get_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
+				 bool *state);
+extern int irq_set_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
+				 bool state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_IRQ_FORCED_THREADING
 extern bool force_irqthreads;
@@ -454,10 +598,18 @@ enum
 	NET_TX_SOFTIRQ,
 	NET_RX_SOFTIRQ,
 	BLOCK_SOFTIRQ,
+<<<<<<< HEAD
 	BLOCK_IOPOLL_SOFTIRQ,
 	TASKLET_SOFTIRQ,
 	SCHED_SOFTIRQ,
 	HRTIMER_SOFTIRQ,
+=======
+	IRQ_POLL_SOFTIRQ,
+	TASKLET_SOFTIRQ,
+	SCHED_SOFTIRQ,
+	HRTIMER_SOFTIRQ, /* Unused, but kept as tools rely on the
+			    numbering. Sigh! */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	RCU_SOFTIRQ,    /* Preferable RCU should always be the last softirq */
 
 	NR_SOFTIRQS
@@ -468,7 +620,11 @@ enum
 /* map softirq index to softirq name. update 'softirq_to_name' in
  * kernel/softirq.c when adding a new softirq.
  */
+<<<<<<< HEAD
 extern char *softirq_to_name[NR_SOFTIRQS];
+=======
+extern const char * const softirq_to_name[NR_SOFTIRQS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* softirq mask and active fields moved to irq_cpustat_t in
  * asm/hardirq.h to get better cache usage.  KAO
@@ -481,6 +637,19 @@ struct softirq_action
 
 asmlinkage void do_softirq(void);
 asmlinkage void __do_softirq(void);
+<<<<<<< HEAD
+=======
+
+#ifdef __ARCH_HAS_DO_SOFTIRQ
+void do_softirq_own_stack(void);
+#else
+static inline void do_softirq_own_stack(void)
+{
+	__do_softirq();
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void open_softirq(int nr, void (*action)(struct softirq_action *));
 extern void softirq_init(void);
 extern void __raise_softirq_irqoff(unsigned int nr);
@@ -488,6 +657,7 @@ extern void __raise_softirq_irqoff(unsigned int nr);
 extern void raise_softirq_irqoff(unsigned int nr);
 extern void raise_softirq(unsigned int nr);
 
+<<<<<<< HEAD
 /* This is the worklist that queues up per-cpu softirq work.
  *
  * send_remote_sendirq() adds work to these lists, and
@@ -497,6 +667,8 @@ extern void raise_softirq(unsigned int nr);
  */
 DECLARE_PER_CPU(struct list_head [NR_SOFTIRQS], softirq_work_list);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DECLARE_PER_CPU(struct task_struct *, ksoftirqd);
 
 static inline struct task_struct *this_cpu_ksoftirqd(void)
@@ -504,6 +676,7 @@ static inline struct task_struct *this_cpu_ksoftirqd(void)
 	return this_cpu_read(ksoftirqd);
 }
 
+<<<<<<< HEAD
 /* Try to send a softirq to a remote cpu.  If this cannot be done, the
  * work will be queued to the local cpu.
  */
@@ -515,6 +688,8 @@ extern void send_remote_softirq(struct call_single_data *cp, int cpu, int softir
 extern void __send_remote_softirq(struct call_single_data *cp, int cpu,
 				  int this_cpu, int softirq);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Tasklets --- multithreaded analogue of BHs.
 
    Main feature differing them of generic softirqs: tasklet
@@ -565,7 +740,11 @@ static inline int tasklet_trylock(struct tasklet_struct *t)
 
 static inline void tasklet_unlock(struct tasklet_struct *t)
 {
+<<<<<<< HEAD
 	smp_mb__before_clear_bit(); 
+=======
+	smp_mb__before_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_bit(TASKLET_STATE_RUN, &(t)->state);
 }
 
@@ -613,7 +792,11 @@ static inline void tasklet_hi_schedule_first(struct tasklet_struct *t)
 static inline void tasklet_disable_nosync(struct tasklet_struct *t)
 {
 	atomic_inc(&t->count);
+<<<<<<< HEAD
 	smp_mb__after_atomic_inc();
+=======
+	smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void tasklet_disable(struct tasklet_struct *t)
@@ -625,6 +808,7 @@ static inline void tasklet_disable(struct tasklet_struct *t)
 
 static inline void tasklet_enable(struct tasklet_struct *t)
 {
+<<<<<<< HEAD
 	smp_mb__before_atomic_dec();
 	atomic_dec(&t->count);
 }
@@ -632,6 +816,9 @@ static inline void tasklet_enable(struct tasklet_struct *t)
 static inline void tasklet_hi_enable(struct tasklet_struct *t)
 {
 	smp_mb__before_atomic_dec();
+=======
+	smp_mb__before_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_dec(&t->count);
 }
 
@@ -652,10 +839,17 @@ tasklet_hrtimer_init(struct tasklet_hrtimer *ttimer,
 		     clockid_t which_clock, enum hrtimer_mode mode);
 
 static inline
+<<<<<<< HEAD
 int tasklet_hrtimer_start(struct tasklet_hrtimer *ttimer, ktime_t time,
 			  const enum hrtimer_mode mode)
 {
 	return hrtimer_start(&ttimer->timer, time, mode);
+=======
+void tasklet_hrtimer_start(struct tasklet_hrtimer *ttimer, ktime_t time,
+			   const enum hrtimer_mode mode)
+{
+	hrtimer_start(&ttimer->timer, time, mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline
@@ -693,7 +887,11 @@ void tasklet_hrtimer_cancel(struct tasklet_hrtimer *ttimer)
  * if more than one irq occurred.
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_GENERIC_HARDIRQS) && !defined(CONFIG_GENERIC_IRQ_PROBE) 
+=======
+#if !defined(CONFIG_GENERIC_IRQ_PROBE) 
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long probe_irq_on(void)
 {
 	return 0;
@@ -729,4 +927,27 @@ extern int early_irq_init(void);
 extern int arch_probe_nr_irqs(void);
 extern int arch_early_irq_init(void);
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_FUNCTION_GRAPH_TRACER) || defined(CONFIG_KASAN)
+/*
+ * We want to know which function is an entrypoint of a hardirq or a softirq.
+ */
+#define __irq_entry		 __attribute__((__section__(".irqentry.text")))
+#define __softirq_entry  \
+	__attribute__((__section__(".softirqentry.text")))
+
+/* Limits of hardirq entrypoints */
+extern char __irqentry_text_start[];
+extern char __irqentry_text_end[];
+/* Limits of softirq entrypoints */
+extern char __softirqentry_text_start[];
+extern char __softirqentry_text_end[];
+
+#else
+#define __irq_entry
+#define __softirq_entry
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

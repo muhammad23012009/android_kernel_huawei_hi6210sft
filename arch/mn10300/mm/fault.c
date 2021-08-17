@@ -23,8 +23,13 @@
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/vt_kern.h>		/* For unblank_screen() */
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/pgalloc.h>
 #include <asm/hardirq.h>
 #include <asm/cpu-regs.h>
@@ -168,7 +173,11 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long fault_code,
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto no_context;
 
 	if ((fault_code & MMUFCR_xFC_ACCESS) == MMUFCR_xFC_ACCESS_USR)
@@ -254,7 +263,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -262,6 +275,11 @@ good_area:
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();

@@ -79,6 +79,10 @@ struct icmphdr {
 		__be16	__unused;
 		__be16	mtu;
 	} frag;
+<<<<<<< HEAD
+=======
+	__u8	reserved[4];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   } un;
 };
 

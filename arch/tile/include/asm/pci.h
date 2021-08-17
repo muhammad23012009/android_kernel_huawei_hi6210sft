@@ -17,7 +17,10 @@
 
 #include <linux/dma-mapping.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/numa.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/pci_iomap.h>
 
 #ifndef __tilegx__
@@ -29,7 +32,10 @@ struct pci_controller {
 	int index;		/* PCI domain number */
 	struct pci_bus *root_bus;
 
+<<<<<<< HEAD
 	int first_busno;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int last_busno;
 
 	int hv_cfg_fd[2];	/* config{0,1} fds for this PCIe controller */
@@ -124,6 +130,14 @@ static inline void pci_iounmap(struct pci_dev *dev, void __iomem *addr) {}
  * the CPA plus TILE_PCI_MEM_MAP_BASE_OFFSET. To support 32-bit
  * devices, we create a separate map region that handles the low
  * 4GB.
+<<<<<<< HEAD
+=======
+ *
+ * This design lets us avoid the "PCI hole" problem where the host bridge
+ * won't pass DMA traffic with target addresses that happen to fall within the
+ * BAR space. This enables us to use all the physical memory for DMA, instead
+ * of wasting the same amount of physical memory as the BAR window size.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define	TILE_PCI_MEM_MAP_BASE_OFFSET	(1ULL << CHIP_PA_WIDTH())
 
@@ -145,6 +159,13 @@ struct pci_controller {
 
 	int pio_mem_index;	/* PIO region index for memory access */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TILE_PCI_IO
+	int pio_io_index;	/* PIO region index for I/O space access */
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Mem-Map regions for all the memory controllers so that Linux can
 	 * map all of its physical memory space to the PCI bus.
@@ -154,6 +175,13 @@ struct pci_controller {
 	int index;		/* PCI domain number */
 	struct pci_bus *root_bus;
 
+<<<<<<< HEAD
+=======
+	/* PCI I/O space resource for this controller. */
+	struct resource io_space;
+	char io_space_name[32];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* PCI memory space resource for this controller. */
 	struct resource mem_space;
 	char mem_space_name[32];
@@ -166,13 +194,20 @@ struct pci_controller {
 
 	/* Table that maps the INTx numbers to Linux irq numbers. */
 	int irq_intx_table[4];
+<<<<<<< HEAD
 
 	/* Address ranges that are routed to this controller/bridge. */
 	struct resource mem_resources[3];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern struct pci_controller pci_controllers[TILEGX_NUM_TRIO * TILEGX_TRIO_PCIES];
 extern gxio_trio_context_t trio_contexts[TILEGX_NUM_TRIO];
+<<<<<<< HEAD
+=======
+extern int num_trio_shims;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
 
@@ -211,12 +246,20 @@ static inline int pcibios_assign_all_busses(void)
 }
 
 #define PCIBIOS_MIN_MEM		0
+<<<<<<< HEAD
 #define PCIBIOS_MIN_IO		0
+=======
+/* Minimum PCI I/O address, starting at the page boundary. */
+#define PCIBIOS_MIN_IO		PAGE_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Use any cpu for PCI. */
 #define cpumask_of_pcibus(bus) cpu_online_mask
 
+<<<<<<< HEAD
 /* implement the pci_ DMA API in terms of the generic device dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_TILE_PCI_H */

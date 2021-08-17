@@ -68,14 +68,21 @@ struct oid_par_priv {
 
 struct oid_obj_priv {
 	unsigned char	dbg; /* 0: without OID debug message
+<<<<<<< HEAD
 			      * 1: with OID debug message */
 	uint(*oidfuns)(struct oid_par_priv *poid_par_priv);
+=======
+			      * 1: with OID debug message
+			      */
+	uint (*oidfuns)(struct oid_par_priv *poid_par_priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 uint oid_null_function(struct oid_par_priv *poid_par_priv);
 
 extern struct iw_handler_def  r871x_handlers_def;
 
+<<<<<<< HEAD
 extern	uint drv_query_info(
 	struct  net_device *MiniportAdapterContext,
 	uint Oid,
@@ -93,5 +100,20 @@ extern	uint drv_set_info(
 	u32 *BytesRead,
 	u32 *BytesNeeded
 );
+=======
+uint drv_query_info(struct net_device *MiniportAdapterContext,
+		    uint Oid,
+		    void *InformationBuffer,
+		    u32 InformationBufferLength,
+		    u32 *BytesWritten,
+		    u32 *BytesNeeded);
+
+uint drv_set_info(struct net_device *MiniportAdapterContext,
+		  uint Oid,
+		  void *InformationBuffer,
+		  u32 InformationBufferLength,
+		  u32 *BytesRead,
+		  u32 *BytesNeeded);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

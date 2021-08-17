@@ -37,26 +37,45 @@ static struct node *read_fstree(const char *dirname)
 	tree = build_node(NULL, NULL);
 
 	while ((de = readdir(d)) != NULL) {
+<<<<<<< HEAD
 		char *tmpnam;
+=======
+		char *tmpname;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (streq(de->d_name, ".")
 		    || streq(de->d_name, ".."))
 			continue;
 
+<<<<<<< HEAD
 		tmpnam = join_path(dirname, de->d_name);
 
 		if (lstat(tmpnam, &st) < 0)
 			die("stat(%s): %s\n", tmpnam, strerror(errno));
+=======
+		tmpname = join_path(dirname, de->d_name);
+
+		if (lstat(tmpname, &st) < 0)
+			die("stat(%s): %s\n", tmpname, strerror(errno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (S_ISREG(st.st_mode)) {
 			struct property *prop;
 			FILE *pfile;
 
+<<<<<<< HEAD
 			pfile = fopen(tmpnam, "r");
 			if (! pfile) {
 				fprintf(stderr,
 					"WARNING: Cannot open %s: %s\n",
 					tmpnam, strerror(errno));
+=======
+			pfile = fopen(tmpname, "rb");
+			if (! pfile) {
+				fprintf(stderr,
+					"WARNING: Cannot open %s: %s\n",
+					tmpname, strerror(errno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else {
 				prop = build_property(xstrdup(de->d_name),
 						      data_copy_file(pfile,
@@ -67,12 +86,20 @@ static struct node *read_fstree(const char *dirname)
 		} else if (S_ISDIR(st.st_mode)) {
 			struct node *newchild;
 
+<<<<<<< HEAD
 			newchild = read_fstree(tmpnam);
+=======
+			newchild = read_fstree(tmpname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			newchild = name_node(newchild, xstrdup(de->d_name));
 			add_child(tree, newchild);
 		}
 
+<<<<<<< HEAD
 		free(tmpnam);
+=======
+		free(tmpname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	closedir(d);

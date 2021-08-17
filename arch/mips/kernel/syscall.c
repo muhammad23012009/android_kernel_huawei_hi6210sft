@@ -28,6 +28,10 @@
 #include <linux/elf.h>
 
 #include <asm/asm.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-eva.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/branch.h>
 #include <asm/cachectl.h>
 #include <asm/cacheflush.h>
@@ -110,13 +114,21 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 
 	if (cpu_has_llsc && R10000_LLSC_WAR) {
 		__asm__ __volatile__ (
+<<<<<<< HEAD
 		"	.set	mips3					\n"
+=======
+		"	.set	arch=r4000				\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	li	%[err], 0				\n"
 		"1:	ll	%[old], (%[addr])			\n"
 		"	move	%[tmp], %[new]				\n"
 		"2:	sc	%[tmp], (%[addr])			\n"
 		"	beqzl	%[tmp], 1b				\n"
 		"3:							\n"
+<<<<<<< HEAD
+=======
+		"	.insn						\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	.section .fixup,\"ax\"				\n"
 		"4:	li	%[err], %[efault]			\n"
 		"	j	3b					\n"
@@ -135,6 +147,7 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 		: "memory");
 	} else if (cpu_has_llsc) {
 		__asm__ __volatile__ (
+<<<<<<< HEAD
 		"	.set	mips3					\n"
 		"	li	%[err], 0				\n"
 		"1:	ll	%[old], (%[addr])			\n"
@@ -142,6 +155,18 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 		"2:	sc	%[tmp], (%[addr])			\n"
 		"	beqz	%[tmp], 4f				\n"
 		"3:							\n"
+=======
+		"	.set	"MIPS_ISA_ARCH_LEVEL"			\n"
+		"	li	%[err], 0				\n"
+		"1:							\n"
+		user_ll("%[old]", "(%[addr])")
+		"	move	%[tmp], %[new]				\n"
+		"2:							\n"
+		user_sc("%[tmp]", "(%[addr])")
+		"	beqz	%[tmp], 4f				\n"
+		"3:							\n"
+		"	.insn						\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	.subsection 2					\n"
 		"4:	b	1b					\n"
 		"	.previous					\n"
@@ -197,6 +222,15 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 	unreachable();
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * mips_atomic_set() normally returns directly via syscall_exit potentially
+ * clobbering static registers, so be sure to preserve them.
+ */
+save_static_function(sys_sysmips);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 SYSCALL_DEFINE3(sysmips, long, cmd, long, arg1, long, arg2)
 {
 	switch (cmd) {

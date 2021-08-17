@@ -12,7 +12,11 @@
 #define _LINUX_DAVINCI_EMAC_H
 
 #include <linux/if_ether.h>
+<<<<<<< HEAD
 #include <linux/memory.h>
+=======
+#include <linux/nvmem-consumer.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct mdio_platform_data {
 	unsigned long		bus_freq;
@@ -46,5 +50,9 @@ enum {
 	EMAC_VERSION_2,	/* DM646x */
 };
 
+<<<<<<< HEAD
 void davinci_get_mac_addr(struct memory_accessor *mem_acc, void *context);
+=======
+void davinci_get_mac_addr(struct nvmem_device *nvmem, void *context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -12,6 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+<<<<<<< HEAD
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
@@ -21,11 +22,20 @@
 
 /* With some changes from Frodo Looijaard <frodol@dds.nl>, Kyösti Mälkki
    <kmalkki@cc.hut.fi> and Jean Delvare <khali@linux-fr.org> */
+=======
+ * ------------------------------------------------------------------------- */
+
+/* With some changes from Frodo Looijaard <frodol@dds.nl>, Kyösti Mälkki
+   <kmalkki@cc.hut.fi> and Jean Delvare <jdelvare@suse.de> */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/sched.h>
 #include <linux/i2c.h>
@@ -623,6 +633,13 @@ const struct i2c_algorithm i2c_bit_algo = {
 };
 EXPORT_SYMBOL(i2c_bit_algo);
 
+<<<<<<< HEAD
+=======
+static const struct i2c_adapter_quirks i2c_bit_quirk_no_clk_stretch = {
+	.flags = I2C_AQ_NO_CLK_STRETCH,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * registering functions to load algorithms at runtime
  */
@@ -641,6 +658,11 @@ static int __i2c_bit_add_bus(struct i2c_adapter *adap,
 	/* register new adapter to i2c module... */
 	adap->algo = &i2c_bit_algo;
 	adap->retries = 3;
+<<<<<<< HEAD
+=======
+	if (bit_adap->getscl == NULL)
+		adap->quirks = &i2c_bit_quirk_no_clk_stretch;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = add_adapter(adap);
 	if (ret < 0)

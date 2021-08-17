@@ -15,6 +15,7 @@
 #include <asm/cpu-features.h>
 #include <asm/watch.h>
 #include <asm/dsp.h>
+<<<<<<< HEAD
 
 struct task_struct;
 
@@ -23,6 +24,24 @@ struct task_struct;
  * checking that n isn't the current task, in which case it does nothing.
  */
 extern asmlinkage void *resume(void *last, void *next, void *next_ti, u32 __usedfpu);
+=======
+#include <asm/cop2.h>
+#include <asm/fpu.h>
+
+struct task_struct;
+
+/**
+ * resume - resume execution of a task
+ * @prev:	The task previously executed.
+ * @next:	The task to begin executing.
+ * @next_ti:	task_thread_info(next).
+ *
+ * This function is used whilst scheduling to save the context of prev & load
+ * the context of next. Returns prev.
+ */
+extern asmlinkage struct task_struct *resume(struct task_struct *prev,
+		struct task_struct *next, struct thread_info *next_ti);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern unsigned int ll_bit;
 extern struct task_struct *ll_task;
@@ -59,6 +78,7 @@ do {									\
 #endif
 
 #define __clear_software_ll_bit()					\
+<<<<<<< HEAD
 do {									\
 	if (!__builtin_constant_p(cpu_has_llsc) || !cpu_has_llsc)	\
 		ll_bit = 0;						\
@@ -82,6 +102,66 @@ do {									\
 	if (cpu_has_userlocal)						\
 		write_c0_userlocal(current_thread_info()->tp_value);	\
 	__restore_watch();						\
+=======
+do {	if (cpu_has_rw_llb) {						\
+		write_c0_lladdr(0);					\
+	} else {							\
+		if (!__builtin_constant_p(cpu_has_llsc) || !cpu_has_llsc)\
+			ll_bit = 0;					\
+	}								\
+} while (0)
+
+/*
+ * Check FCSR for any unmasked exceptions pending set with `ptrace',
+ * clear them and send a signal.
+ */
+#define __sanitize_fcr31(next)						\
+do {									\
+	unsigned long fcr31 = mask_fcr31_x(next->thread.fpu.fcr31);	\
+	void __user *pc;						\
+									\
+	if (unlikely(fcr31)) {						\
+		pc = (void __user *)task_pt_regs(next)->cp0_epc;	\
+		next->thread.fpu.fcr31 &= ~fcr31;			\
+		force_fcr31_sig(fcr31, pc, next);			\
+	}								\
+} while (0)
+
+/*
+ * For newly created kernel threads switch_to() will return to
+ * ret_from_kernel_thread, newly created user threads to ret_from_fork.
+ * That is, everything following resume() will be skipped for new threads.
+ * So everything that matters to new threads should be placed before resume().
+ */
+#define switch_to(prev, next, last)					\
+do {									\
+	__mips_mt_fpaff_switch_to(prev);				\
+	lose_fpu_inatomic(1, prev);					\
+	if (tsk_used_math(next))					\
+		__sanitize_fcr31(next);					\
+	if (cpu_has_dsp) {						\
+		__save_dsp(prev);					\
+		__restore_dsp(next);					\
+	}								\
+	if (cop2_present) {						\
+		set_c0_status(ST0_CU2);					\
+		if ((KSTK_STATUS(prev) & ST0_CU2)) {			\
+			if (cop2_lazy_restore)				\
+				KSTK_STATUS(prev) &= ~ST0_CU2;		\
+			cop2_save(prev);				\
+		}							\
+		if (KSTK_STATUS(next) & ST0_CU2 &&			\
+		    !cop2_lazy_restore) {				\
+			cop2_restore(next);				\
+		}							\
+		clear_c0_status(ST0_CU2);				\
+	}								\
+	__clear_software_ll_bit();					\
+	if (cpu_has_userlocal)						\
+		write_c0_userlocal(task_thread_info(next)->tp_value);	\
+	__restore_watch(next);						\
+	(last) = resume(prev, next, task_thread_info(next));		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } while (0)
 
 #endif /* _ASM_SWITCH_TO_H */

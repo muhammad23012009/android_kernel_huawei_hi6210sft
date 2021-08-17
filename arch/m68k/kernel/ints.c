@@ -10,9 +10,15 @@
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/kernel_stat.h>
 #include <linux/errno.h>
 #include <linux/init.h>
+=======
+#include <linux/errno.h>
+#include <linux/init.h>
+#include <linux/irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/setup.h>
 #include <asm/irq.h>
@@ -58,12 +64,15 @@ void __init init_IRQ(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	/* assembly irq entry code relies on this... */
 	if (HARDIRQ_MASK != 0x00ff0000) {
 		extern void hardirq_mask_is_broken(void);
 		hardirq_mask_is_broken();
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = IRQ_AUTO_1; i <= IRQ_AUTO_7; i++)
 		irq_set_chip_and_handler(i, &auto_irq_chip, handle_simple_irq);
 
@@ -101,7 +110,11 @@ void __init m68k_setup_user_interrupt(unsigned int vec, unsigned int cnt)
 	BUG_ON(IRQ_USER + cnt > NR_IRQS);
 	m68k_first_user_vec = vec;
 	for (i = 0; i < cnt; i++)
+<<<<<<< HEAD
 		irq_set_chip(IRQ_USER + i, &user_irq_chip);
+=======
+		irq_set_chip_and_handler(i, &user_irq_chip, handle_simple_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*user_irqvec_fixup = vec - IRQ_USER;
 	flush_icache();
 }

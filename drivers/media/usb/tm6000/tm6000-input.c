@@ -162,11 +162,49 @@ static int tm6000_ir_config(struct tm6000_IR *ir)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void tm6000_ir_keydown(struct tm6000_IR *ir,
+			      const char *buf, unsigned int len)
+{
+	u8 device, command;
+	u32 scancode;
+	enum rc_type protocol;
+
+	if (len < 1)
+		return;
+
+	command = buf[0];
+	device = (len > 1 ? buf[1] : 0x0);
+	switch (ir->rc_type) {
+	case RC_BIT_RC5:
+		protocol = RC_TYPE_RC5;
+		scancode = RC_SCANCODE_RC5(device, command);
+		break;
+	case RC_BIT_NEC:
+		protocol = RC_TYPE_NEC;
+		scancode = RC_SCANCODE_NEC(device, command);
+		break;
+	default:
+		protocol = RC_TYPE_OTHER;
+		scancode = RC_SCANCODE_OTHER(device << 8 | command);
+		break;
+	}
+
+	dprintk(1, "%s, protocol: 0x%04x, scancode: 0x%08x\n",
+		__func__, protocol, scancode);
+	rc_keydown(ir->rc, protocol, scancode, 0);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void tm6000_ir_urb_received(struct urb *urb)
 {
 	struct tm6000_core *dev = urb->context;
 	struct tm6000_IR *ir = dev->ir;
+<<<<<<< HEAD
 	struct tm6000_ir_poll_result poll_result;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *buf;
 
 	dprintk(2, "%s\n",__func__);
@@ -184,12 +222,16 @@ static void tm6000_ir_urb_received(struct urb *urb)
 			       DUMP_PREFIX_OFFSET,16, 1,
 			       buf, urb->actual_length, false);
 
+<<<<<<< HEAD
 	poll_result.rc_data = buf[0];
 	if (urb->actual_length > 1)
 		poll_result.rc_data |= buf[1] << 8;
 
 	dprintk(1, "%s, scancode: 0x%04x\n",__func__, poll_result.rc_data);
 	rc_keydown(ir->rc, poll_result.rc_data, 0);
+=======
+	tm6000_ir_keydown(ir, urb->transfer_buffer, urb->actual_length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb_submit_urb(urb, GFP_ATOMIC);
 	/*
@@ -204,7 +246,10 @@ static void tm6000_ir_handle_key(struct work_struct *work)
 {
 	struct tm6000_IR *ir = container_of(work, struct tm6000_IR, work.work);
 	struct tm6000_core *dev = ir->dev;
+<<<<<<< HEAD
 	struct tm6000_ir_poll_result poll_result;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 	u8 buf[2];
 
@@ -219,6 +264,7 @@ static void tm6000_ir_handle_key(struct work_struct *work)
 	if (rc < 0)
 		return;
 
+<<<<<<< HEAD
 	if (rc > 1)
 		poll_result.rc_data = buf[0] | buf[1] << 8;
 	else
@@ -226,6 +272,10 @@ static void tm6000_ir_handle_key(struct work_struct *work)
 
 	/* Check if something was read */
 	if ((poll_result.rc_data & 0xff) == 0xff) {
+=======
+	/* Check if something was read */
+	if ((buf[0] & 0xff) == 0xff) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!ir->pwled) {
 			tm6000_flash_led(dev, 1);
 			ir->pwled = 1;
@@ -233,8 +283,12 @@ static void tm6000_ir_handle_key(struct work_struct *work)
 		return;
 	}
 
+<<<<<<< HEAD
 	dprintk(1, "%s, scancode: 0x%04x\n",__func__, poll_result.rc_data);
 	rc_keydown(ir->rc, poll_result.rc_data, 0);
+=======
+	tm6000_ir_keydown(ir, buf, rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tm6000_flash_led(dev, 0);
 	ir->pwled = 0;
 
@@ -422,9 +476,15 @@ int tm6000_ir_init(struct tm6000_core *dev)
 	ir->rc = rc;
 
 	/* input setup */
+<<<<<<< HEAD
 	rc->allowed_protos = RC_BIT_RC5 | RC_BIT_NEC;
 	/* Neded, in order to support NEC remotes with 24 or 32 bits */
 	rc->scanmask = 0xffff;
+=======
+	rc->allowed_protocols = RC_BIT_RC5 | RC_BIT_NEC;
+	/* Neded, in order to support NEC remotes with 24 or 32 bits */
+	rc->scancode_mask = 0xffff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc->priv = ir;
 	rc->change_protocol = tm6000_ir_change_protocol;
 	if (dev->int_in.endp) {

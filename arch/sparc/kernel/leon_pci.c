@@ -34,6 +34,7 @@ void leon_pci_init(struct platform_device *ofdev, struct leon_pci_info *info)
 
 	root_bus = pci_scan_root_bus(&ofdev->dev, 0, info->ops, info,
 				     &resources);
+<<<<<<< HEAD
 	if (root_bus) {
 		/* Setup IRQs of all devices using custom routines */
 		pci_fixup_irqs(pci_common_swizzle, info->map_irq);
@@ -43,6 +44,19 @@ void leon_pci_init(struct platform_device *ofdev, struct leon_pci_info *info)
 	} else {
 		pci_free_resource_list(&resources);
 	}
+=======
+	if (!root_bus) {
+		pci_free_resource_list(&resources);
+		return;
+	}
+
+	/* Setup IRQs of all devices using custom routines */
+	pci_fixup_irqs(pci_common_swizzle, info->map_irq);
+
+	/* Assign devices with resources */
+	pci_assign_unassigned_resources();
+	pci_bus_add_devices(root_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void pcibios_fixup_bus(struct pci_bus *pbus)
@@ -98,6 +112,7 @@ resource_size_t pcibios_align_resource(void *data, const struct resource *res,
 {
 	return res->start;
 }
+<<<<<<< HEAD
 
 int pcibios_enable_device(struct pci_dev *dev, int mask)
 {
@@ -182,3 +197,5 @@ void insl(unsigned long addr, void *dst, unsigned long count)
 	}
 }
 EXPORT_SYMBOL(insl);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

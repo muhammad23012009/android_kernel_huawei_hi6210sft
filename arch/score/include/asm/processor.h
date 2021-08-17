@@ -24,6 +24,10 @@ extern unsigned long get_wchan(struct task_struct *p);
 #define current_text_addr() ({ __label__ _l; _l: &&_l; })
 
 #define cpu_relax()		barrier()
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency()        cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define release_thread(thread)	do {} while (0)
 
 /*

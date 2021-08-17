@@ -47,9 +47,15 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/input.h>
 #include <linux/serio.h>
 #include <linux/init.h>
+=======
+#include <linux/bitrev.h>
+#include <linux/input.h>
+#include <linux/serio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_DESC	"RC transmitter with 5-byte Zhen Hua protocol joystick driver"
 
@@ -73,6 +79,7 @@ struct zhenhua {
 	char phys[32];
 };
 
+<<<<<<< HEAD
 
 /* bits in all incoming bytes needs to be "reversed" */
 static int zhenhua_bitreverse(int x)
@@ -83,6 +90,8 @@ static int zhenhua_bitreverse(int x)
 	return x;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * zhenhua_process_packet() decodes packets the driver receives from the
  * RC transmitter. It updates the data accordingly.
@@ -121,7 +130,11 @@ static irqreturn_t zhenhua_interrupt(struct serio *serio, unsigned char data, un
 		return IRQ_HANDLED;	/* wrong MSB -- ignore this byte */
 
 	if (zhenhua->idx < ZHENHUA_MAX_LENGTH)
+<<<<<<< HEAD
 		zhenhua->data[zhenhua->idx++] = zhenhua_bitreverse(data);
+=======
+		zhenhua->data[zhenhua->idx++] = bitrev8(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (zhenhua->idx == ZHENHUA_MAX_LENGTH) {
 		zhenhua_process_packet(zhenhua);

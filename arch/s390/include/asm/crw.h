@@ -52,6 +52,7 @@ void crw_wait_for_channel_report(void);
 #define CRW_ERC_PERRI	 0x07 /* perm. error, facility init */
 #define CRW_ERC_PMOD	 0x08 /* installed parameters modified */
 
+<<<<<<< HEAD
 static inline int stcrw(struct crw *pcrw)
 {
 	int ccode;
@@ -66,4 +67,6 @@ static inline int stcrw(struct crw *pcrw)
 	return ccode;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_S390_CRW_H */

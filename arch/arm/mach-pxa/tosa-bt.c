@@ -16,7 +16,11 @@
 #include <linux/delay.h>
 #include <linux/rfkill.h>
 
+<<<<<<< HEAD
 #include <mach/tosa_bt.h>
+=======
+#include "tosa_bt.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void tosa_bt_on(struct tosa_bt_data *data)
 {
@@ -129,6 +133,7 @@ static struct platform_driver tosa_bt_driver = {
 
 	.driver = {
 		.name = "tosa-bt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 };
@@ -146,3 +151,12 @@ static void __exit tosa_bt_exit(void)
 
 module_init(tosa_bt_init);
 module_exit(tosa_bt_exit);
+=======
+	},
+};
+module_platform_driver(tosa_bt_driver);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Dmitry Baryshkov");
+MODULE_DESCRIPTION("Bluetooth built-in chip control");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

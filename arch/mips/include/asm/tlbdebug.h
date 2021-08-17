@@ -11,6 +11,10 @@
 /*
  * TLB debugging functions:
  */
+<<<<<<< HEAD
+=======
+extern void dump_tlb_regs(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void dump_tlb_all(void);
 
 #endif /* __ASM_TLBDEBUG_H */

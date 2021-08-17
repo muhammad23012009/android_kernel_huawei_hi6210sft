@@ -23,5 +23,9 @@ ENTRY(strchr)
 		teq	r2, r1
 		movne	r0, #0
 		subeq	r0, r0, #1
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(strchr)

@@ -40,6 +40,10 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-fh.h>
 #include <media/v4l2-event.h>
+<<<<<<< HEAD
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/videobuf2-vmalloc.h>
 #ifdef CONFIG_USB_PWC_INPUT_EVDEV
 #include <linux/input.h>
@@ -210,7 +214,12 @@ struct pwc_raw_frame {
 /* intermediate buffers with raw data from the USB cam */
 struct pwc_frame_buf
 {
+<<<<<<< HEAD
 	struct vb2_buffer vb;	/* common v4l buffer stuff -- must be first */
+=======
+	/* common v4l buffer stuff -- must be first */
+	struct vb2_v4l2_buffer vb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head list;
 	void *data;
 	int filled;		/* number of bytes filled */

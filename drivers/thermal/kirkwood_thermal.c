@@ -33,7 +33,11 @@ struct kirkwood_thermal_priv {
 };
 
 static int kirkwood_get_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 			  unsigned long *temp)
+=======
+			  int *temp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long reg;
 	struct kirkwood_thermal_priv *priv = thermal->devdata;
@@ -75,16 +79,23 @@ static int kirkwood_thermal_probe(struct platform_device *pdev)
 	struct kirkwood_thermal_priv *priv;
 	struct resource *res;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "Failed to get platform resource\n");
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->sensor = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(priv->sensor))
 		return PTR_ERR(priv->sensor);
@@ -108,7 +119,10 @@ static int kirkwood_thermal_exit(struct platform_device *pdev)
 		platform_get_drvdata(pdev);
 
 	thermal_zone_device_unregister(kirkwood_thermal);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -120,8 +134,12 @@ static struct platform_driver kirkwood_thermal_driver = {
 	.remove = kirkwood_thermal_exit,
 	.driver = {
 		.name = "kirkwood_thermal",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(kirkwood_thermal_id_table),
+=======
+		.of_match_table = kirkwood_thermal_id_table,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

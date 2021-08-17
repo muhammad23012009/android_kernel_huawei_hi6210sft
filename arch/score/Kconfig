@@ -2,7 +2,10 @@ menu "Machine selection"
 
 config SCORE
        def_bool y
+<<<<<<< HEAD
        select HAVE_GENERIC_HARDIRQS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
        select GENERIC_IRQ_SHOW
        select GENERIC_IOMAP
        select GENERIC_ATOMIC64
@@ -15,6 +18,10 @@ config SCORE
 	select VIRT_TO_BUS
 	select MODULES_USE_ELF_REL
 	select CLONE_BACKWARDS
+<<<<<<< HEAD
+=======
+	select CPU_NO_EFFICIENT_FFS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 choice
 	prompt "System type"
@@ -23,27 +30,39 @@ choice
 config ARCH_SCORE7
 	bool "SCORE7 processor"
 	select SYS_SUPPORTS_32BIT_KERNEL
+<<<<<<< HEAD
 	select CPU_SCORE7
 	select GENERIC_HAS_IOMAP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config MACH_SPCT6600
 	bool "SPCT6600 series based machines"
 	select SYS_SUPPORTS_32BIT_KERNEL
+<<<<<<< HEAD
 	select CPU_SCORE7
 	select GENERIC_HAS_IOMAP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SCORE_SIM
 	bool "Score simulator"
 	select SYS_SUPPORTS_32BIT_KERNEL
+<<<<<<< HEAD
 	select CPU_SCORE7
 	select GENERIC_HAS_IOMAP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endchoice
 
 endmenu
 
+<<<<<<< HEAD
 config CPU_SCORE7
 	bool
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config NO_DMA
 	bool
 	default y
@@ -87,6 +106,11 @@ config STACKTRACE_SUPPORT
 
 source "init/Kconfig"
 
+<<<<<<< HEAD
+=======
+source "kernel/Kconfig.freezer"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config MMU
 	def_bool y
 

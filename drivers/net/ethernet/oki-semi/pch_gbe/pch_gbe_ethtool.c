@@ -14,8 +14,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include "pch_gbe.h"
 #include "pch_gbe_api.h"
@@ -92,7 +96,11 @@ static int pch_gbe_get_settings(struct net_device *netdev,
 	ecmd->advertising &= ~(ADVERTISED_TP | ADVERTISED_1000baseT_Half);
 
 	if (!netif_carrier_ok(adapter->netdev))
+<<<<<<< HEAD
 		ethtool_cmd_speed_set(ecmd, -1);
+=======
+		ethtool_cmd_speed_set(ecmd, SPEED_UNKNOWN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -118,11 +126,19 @@ static int pch_gbe_set_settings(struct net_device *netdev,
 	 * filled by get_settings() on a down link, speed is -1: */
 	if (speed == UINT_MAX) {
 		speed = SPEED_1000;
+<<<<<<< HEAD
+=======
+		ethtool_cmd_speed_set(ecmd, speed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ecmd->duplex = DUPLEX_FULL;
 	}
 	ret = mii_ethtool_sset(&adapter->mii, ecmd);
 	if (ret) {
+<<<<<<< HEAD
 		pr_err("Error: mii_ethtool_sset\n");
+=======
+		netdev_err(netdev, "Error: mii_ethtool_sset\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 	hw->mac.link_speed = speed;
@@ -164,7 +180,10 @@ static void pch_gbe_get_drvinfo(struct net_device *netdev,
 	strlcpy(drvinfo->version, pch_driver_version, sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->regdump_len = pch_gbe_get_regs_len(netdev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -394,7 +413,11 @@ static void pch_gbe_get_pauseparam(struct net_device *netdev,
 }
 
 /**
+<<<<<<< HEAD
  * pch_gbe_set_pauseparam - Set pause paramters
+=======
+ * pch_gbe_set_pauseparam - Set pause parameters
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @netdev:  Network interface device structure
  * @pause:   Pause parameters structure
  * Returns:
@@ -508,5 +531,9 @@ static const struct ethtool_ops pch_gbe_ethtool_ops = {
 
 void pch_gbe_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &pch_gbe_ethtool_ops);
+=======
+	netdev->ethtool_ops = &pch_gbe_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

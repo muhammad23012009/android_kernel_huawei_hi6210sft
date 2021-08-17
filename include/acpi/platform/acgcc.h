@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +48,25 @@
 #ifndef __ACGCC_H__
 #define __ACGCC_H__
 
+<<<<<<< HEAD
+=======
+/*
+ * Use compiler specific <stdarg.h> is a good practice for even when
+ * -nostdinc is specified (i.e., ACPI_USE_STANDARD_HEADERS undefined.
+ */
+#ifndef va_arg
+#ifdef ACPI_USE_BUILTIN_STDARG
+typedef __builtin_va_list va_list;
+#define va_start(v, l)          __builtin_va_start(v, l)
+#define va_end(v)               __builtin_va_end(v)
+#define va_arg(v, l)            __builtin_va_arg(v, l)
+#define va_copy(d, s)           __builtin_va_copy(d, s)
+#else
+#include <stdarg.h>
+#endif
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ACPI_INLINE             __inline__
 
 /* Function name is used for debug output. Non-ANSI, compiler-dependent */
@@ -64,4 +87,11 @@
  */
 #define ACPI_UNUSED_VAR __attribute__ ((unused))
 
+<<<<<<< HEAD
+=======
+/* GCC supports __VA_ARGS__ in macros */
+
+#define COMPILER_VA_MACRO               1
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/* __ACGCC_H__ */

@@ -29,7 +29,10 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("vp27smpx driver");
 MODULE_AUTHOR("Hans Verkuil");
@@ -112,6 +115,7 @@ static int vp27smpx_g_tuner(struct v4l2_subdev *sd, struct v4l2_tuner *vt)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vp27smpx_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -119,6 +123,8 @@ static int vp27smpx_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_id
 	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_VP27SMPX, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int vp27smpx_log_status(struct v4l2_subdev *sd)
 {
 	struct vp27smpx_state *state = to_state(sd);
@@ -132,8 +138,11 @@ static int vp27smpx_log_status(struct v4l2_subdev *sd)
 
 static const struct v4l2_subdev_core_ops vp27smpx_core_ops = {
 	.log_status = vp27smpx_log_status,
+<<<<<<< HEAD
 	.g_chip_ident = vp27smpx_g_chip_ident,
 	.s_std = vp27smpx_s_std,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_subdev_tuner_ops vp27smpx_tuner_ops = {
@@ -142,9 +151,20 @@ static const struct v4l2_subdev_tuner_ops vp27smpx_tuner_ops = {
 	.g_tuner = vp27smpx_g_tuner,
 };
 
+<<<<<<< HEAD
 static const struct v4l2_subdev_ops vp27smpx_ops = {
 	.core = &vp27smpx_core_ops,
 	.tuner = &vp27smpx_tuner_ops,
+=======
+static const struct v4l2_subdev_video_ops vp27smpx_video_ops = {
+	.s_std = vp27smpx_s_std,
+};
+
+static const struct v4l2_subdev_ops vp27smpx_ops = {
+	.core = &vp27smpx_core_ops,
+	.tuner = &vp27smpx_tuner_ops,
+	.video = &vp27smpx_video_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----------------------------------------------------------------------- */
@@ -169,7 +189,11 @@ static int vp27smpx_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	state = kzalloc(sizeof(struct vp27smpx_state), GFP_KERNEL);
+=======
+	state = devm_kzalloc(&client->dev, sizeof(*state), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (state == NULL)
 		return -ENOMEM;
 	sd = &state->sd;
@@ -186,7 +210,10 @@ static int vp27smpx_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 
 	v4l2_device_unregister_subdev(sd);
+<<<<<<< HEAD
 	kfree(to_state(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -200,7 +227,10 @@ MODULE_DEVICE_TABLE(i2c, vp27smpx_id);
 
 static struct i2c_driver vp27smpx_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "vp27smpx",
 	},
 	.probe		= vp27smpx_probe,

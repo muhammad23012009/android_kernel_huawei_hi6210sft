@@ -4,7 +4,11 @@
 #include <hwregs/intr_vect.h>
 
 /* Number of non-cpu interrupts. */
+<<<<<<< HEAD
 #define NR_IRQS NBR_INTR_VECT /* Exceptions + IRQs */
+=======
+#define NR_IRQS (NBR_INTR_VECT + 256) /* Exceptions + IRQs */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FIRST_IRQ 0x31 /* Exception number for first IRQ */
 #define NR_REAL_IRQS (NBR_INTR_VECT - FIRST_IRQ) /* IRQs */
 #if NR_REAL_IRQS > 32
@@ -102,9 +106,15 @@ __asm__ (				\
  * multiple_irq handler is run and it prioritizes the timer interrupt. However
  * if we had BLOCK'edit here, we would not get the multiple_irq at all.
  *
+<<<<<<< HEAD
  * The non-blocking here is based on the knowledge that the timer interrupt is
  * registered as a fast interrupt (IRQF_DISABLED) so that we _know_ there will not
  * be an sti() before the timer irq handler is run to acknowledge the interrupt.
+=======
+ * The non-blocking here is based on the knowledge that the timer interrupt runs
+ * with interrupts disabled, and therefore there will not be an sti() before the
+ * timer irq handler is run to acknowledge the interrupt.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define BUILD_TIMER_IRQ(nr, mask) 	\
 void IRQ_NAME(nr);			\

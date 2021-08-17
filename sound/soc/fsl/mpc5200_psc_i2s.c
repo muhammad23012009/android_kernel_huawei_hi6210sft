@@ -26,8 +26,12 @@
  * ALSA that we support all rates and let the codec driver decide what rates
  * are really supported.
  */
+<<<<<<< HEAD
 #define PSC_I2S_RATES (SNDRV_PCM_RATE_5512 | SNDRV_PCM_RATE_8000_192000 | \
 			SNDRV_PCM_RATE_CONTINUOUS)
+=======
+#define PSC_I2S_RATES SNDRV_PCM_RATE_CONTINUOUS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * PSC_I2S_FORMATS: audio formats supported by the PSC I2S mode
@@ -218,7 +222,11 @@ static int psc_i2s_of_remove(struct platform_device *op)
 }
 
 /* Match table for of_platform binding */
+<<<<<<< HEAD
 static struct of_device_id psc_i2s_match[] = {
+=======
+static const struct of_device_id psc_i2s_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-psc-i2s", },
 	{ .compatible = "fsl,mpc5200b-psc-i2s", },
 	{}
@@ -230,7 +238,10 @@ static struct platform_driver psc_i2s_driver = {
 	.remove = psc_i2s_of_remove,
 	.driver = {
 		.name = "mpc5200-psc-i2s",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = psc_i2s_match,
 	},
 };

@@ -38,6 +38,7 @@ struct davinci_cpufreq {
 };
 static struct davinci_cpufreq cpufreq;
 
+<<<<<<< HEAD
 static int davinci_verify_speed(struct cpufreq_policy *policy)
 {
 	struct davinci_cpufreq_config *pdata = cpufreq.dev->platform_data;
@@ -97,15 +98,37 @@ static int davinci_target(struct cpufreq_policy *policy,
 		ret = pdata->set_voltage(idx);
 		if (ret)
 			goto out;
+=======
+static int davinci_target(struct cpufreq_policy *policy, unsigned int idx)
+{
+	struct davinci_cpufreq_config *pdata = cpufreq.dev->platform_data;
+	struct clk *armclk = cpufreq.armclk;
+	unsigned int old_freq, new_freq;
+	int ret = 0;
+
+	old_freq = policy->cur;
+	new_freq = pdata->freq_table[idx].frequency;
+
+	/* if moving to higher frequency, up the voltage beforehand */
+	if (pdata->set_voltage && new_freq > old_freq) {
+		ret = pdata->set_voltage(idx);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = clk_set_rate(armclk, idx);
 	if (ret)
+<<<<<<< HEAD
 		goto out;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cpufreq.asyncclk) {
 		ret = clk_set_rate(cpufreq.asyncclk, cpufreq.asyncrate);
 		if (ret)
+<<<<<<< HEAD
 			goto out;
 	}
 
@@ -117,6 +140,16 @@ out:
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
 
 	return ret;
+=======
+			return ret;
+	}
+
+	/* if moving to lower freq, lower the voltage after lowering freq */
+	if (pdata->set_voltage && new_freq < old_freq)
+		pdata->set_voltage(idx);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int davinci_cpu_init(struct cpufreq_policy *policy)
@@ -135,6 +168,7 @@ static int davinci_cpu_init(struct cpufreq_policy *policy)
 			return result;
 	}
 
+<<<<<<< HEAD
 	policy->cur = davinci_getspeed(0);
 
 	result = cpufreq_frequency_table_cpuinfo(policy, freq_table);
@@ -145,6 +179,9 @@ static int davinci_cpu_init(struct cpufreq_policy *policy)
 	}
 
 	cpufreq_frequency_table_get_attr(freq_table, policy->cpu);
+=======
+	policy->clk = cpufreq.armclk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Time measurement across the target() function yields ~1500-1800us
@@ -152,6 +189,7 @@ static int davinci_cpu_init(struct cpufreq_policy *policy)
 	 * Setting the latency to 2000 us to accommodate addition of drivers
 	 * to pre/post change notification list.
 	 */
+<<<<<<< HEAD
 	policy->cpuinfo.transition_latency = 2000 * 1000;
 	return 0;
 }
@@ -176,6 +214,19 @@ static struct cpufreq_driver davinci_driver = {
 	.exit		= davinci_cpu_exit,
 	.name		= "davinci",
 	.attr		= davinci_cpufreq_attr,
+=======
+	return cpufreq_generic_init(policy, freq_table, 2000 * 1000);
+}
+
+static struct cpufreq_driver davinci_driver = {
+	.flags		= CPUFREQ_STICKY | CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= davinci_target,
+	.get		= cpufreq_generic_get,
+	.init		= davinci_cpu_init,
+	.name		= "davinci",
+	.attr		= cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init davinci_cpufreq_probe(struct platform_device *pdev)
@@ -218,7 +269,10 @@ static int __exit davinci_cpufreq_remove(struct platform_device *pdev)
 static struct platform_driver davinci_cpufreq_driver = {
 	.driver = {
 		.name	 = "cpufreq-davinci",
+<<<<<<< HEAD
 		.owner	 = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove = __exit_p(davinci_cpufreq_remove),
 };

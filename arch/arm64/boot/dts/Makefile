@@ -1,9 +1,42 @@
+<<<<<<< HEAD
 dtb-$(CONFIG_ARCH_VEXPRESS) += rtsm_ve-aemv8a.dtb foundation-v8.dtb \
 				fvp-base-gicv2-psci.dtb
 dtb-$(CONFIG_ARCH_VEXPRESS) += juno.dtb
 dtb-$(CONFIG_ARCH_XGENE) += apm-mustang.dtb
 
 dtb-$(CONFIG_ARCH_HI6XXX) += hi6210-sft.dtb
+=======
+dts-dirs += al
+dts-dirs += altera
+dts-dirs += amd
+dts-dirs += amlogic
+dts-dirs += apm
+dts-dirs += arm
+dts-dirs += broadcom
+dts-dirs += cavium
+dts-dirs += exynos
+dts-dirs += freescale
+dts-dirs += hisilicon
+dts-dirs += marvell
+dts-dirs += mediatek
+dts-dirs += nvidia
+dts-dirs += qcom
+dts-dirs += renesas
+dts-dirs += rockchip
+dts-dirs += socionext
+dts-dirs += sprd
+dts-dirs += xilinx
+dts-dirs += lg
+dts-dirs += zte
+
+subdir-y	:= $(dts-dirs)
+
+dtstree		:= $(srctree)/$(src)
+
+dtb-$(CONFIG_OF_ALL_DTBS) := $(patsubst $(dtstree)/%.dts,%.dtb, $(foreach d,$(dts-dirs), $(wildcard $(dtstree)/$(d)/*.dts)))
+
+always		:= $(dtb-y)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 targets += dtbs
 

@@ -12,11 +12,19 @@
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+<<<<<<< HEAD
+=======
+#include <asm/unwind.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Prototype:
  *
+<<<<<<< HEAD
  *	size_t __copy_to_user(void *to, const void *from, size_t n)
+=======
+ *	size_t arm_copy_to_user(void *to, const void *from, size_t n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Purpose:
  *
@@ -80,6 +88,13 @@
 	stmdb	sp!, {r0, r2, r3, \reg1, \reg2}
 	.endm
 
+<<<<<<< HEAD
+=======
+	.macro usave reg1 reg2
+	UNWIND(	.save {r0, r2, r3, \reg1, \reg2}	)
+	.endm
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.macro exit reg1 reg2
 	add	sp, sp, #8
 	ldmfd	sp!, {r0, \reg1, \reg2}
@@ -88,6 +103,7 @@
 	.text
 
 ENTRY(__copy_to_user_std)
+<<<<<<< HEAD
 WEAK(__copy_to_user)
 
 #include "copy_template.S"
@@ -96,6 +112,21 @@ ENDPROC(__copy_to_user)
 ENDPROC(__copy_to_user_std)
 
 	.pushsection .fixup,"ax"
+=======
+WEAK(arm_copy_to_user)
+#ifdef CONFIG_CPU_SPECTRE
+	get_thread_info r3
+	ldr	r3, [r3, #TI_ADDR_LIMIT]
+	uaccess_mask_range_ptr r0, r2, r3, ip
+#endif
+
+#include "copy_template.S"
+
+ENDPROC(arm_copy_to_user)
+ENDPROC(__copy_to_user_std)
+
+	.pushsection .text.fixup,"ax"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.align 0
 	copy_abort_preamble
 	ldmfd	sp!, {r1, r2, r3}
@@ -103,4 +134,7 @@ ENDPROC(__copy_to_user_std)
 	rsb	r0, r0, r2
 	copy_abort_end
 	.popsection
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

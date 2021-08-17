@@ -544,7 +544,12 @@ xpnet_init(void)
 	 * use ether_setup() to init the majority of our device
 	 * structure and then override the necessary pieces.
 	 */
+<<<<<<< HEAD
 	xpnet_device = alloc_netdev(0, XPNET_DEVICE_NAME, ether_setup);
+=======
+	xpnet_device = alloc_netdev(0, XPNET_DEVICE_NAME, NET_NAME_UNKNOWN,
+				    ether_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (xpnet_device == NULL) {
 		kfree(xpnet_broadcast_partitions);
 		return -ENOMEM;

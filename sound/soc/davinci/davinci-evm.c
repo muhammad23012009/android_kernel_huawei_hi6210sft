@@ -15,6 +15,11 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_platform.h>
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/soc.h>
@@ -22,6 +27,7 @@
 #include <asm/dma.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include "davinci-pcm.h"
 #include "davinci-i2s.h"
 #include "davinci-mcasp.h"
@@ -65,6 +71,47 @@ static int evm_hw_params(struct snd_pcm_substream *substream,
 	ret = snd_soc_dai_set_fmt(cpu_dai, AUDIO_FORMAT);
 	if (ret < 0)
 		return ret;
+=======
+struct snd_soc_card_drvdata_davinci {
+	struct clk *mclk;
+	unsigned sysclk;
+};
+
+static int evm_startup(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_card *soc_card = rtd->card;
+	struct snd_soc_card_drvdata_davinci *drvdata =
+		snd_soc_card_get_drvdata(soc_card);
+
+	if (drvdata->mclk)
+		return clk_prepare_enable(drvdata->mclk);
+
+	return 0;
+}
+
+static void evm_shutdown(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_card *soc_card = rtd->card;
+	struct snd_soc_card_drvdata_davinci *drvdata =
+		snd_soc_card_get_drvdata(soc_card);
+
+	if (drvdata->mclk)
+		clk_disable_unprepare(drvdata->mclk);
+}
+
+static int evm_hw_params(struct snd_pcm_substream *substream,
+			 struct snd_pcm_hw_params *params)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+	struct snd_soc_card *soc_card = rtd->card;
+	int ret = 0;
+	unsigned sysclk = ((struct snd_soc_card_drvdata_davinci *)
+			   snd_soc_card_get_drvdata(soc_card))->sysclk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set the codec system clock */
 	ret = snd_soc_dai_set_sysclk(codec_dai, 0, sysclk, SND_SOC_CLOCK_OUT);
@@ -79,6 +126,7 @@ static int evm_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int evm_spdif_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params)
 {
@@ -97,6 +145,14 @@ static struct snd_soc_ops evm_spdif_ops = {
 	.hw_params = evm_spdif_hw_params,
 };
 
+=======
+static struct snd_soc_ops evm_ops = {
+	.startup = evm_startup,
+	.shutdown = evm_shutdown,
+	.hw_params = evm_hw_params,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* davinci-evm machine dapm widgets */
 static const struct snd_soc_dapm_widget aic3x_dapm_widgets[] = {
 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
@@ -130,6 +186,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 /* Logic for a aic3x as connected on a davinci-evm */
 static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
@@ -150,6 +207,30 @@ static int evm_aic3x_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_enable_pin(dapm, "Line Out");
 	snd_soc_dapm_enable_pin(dapm, "Mic Jack");
 	snd_soc_dapm_enable_pin(dapm, "Line In");
+=======
+	struct snd_soc_card *card = rtd->card;
+	struct device_node *np = card->dev->of_node;
+	int ret;
+
+	/* Add davinci-evm specific widgets */
+	snd_soc_dapm_new_controls(&card->dapm, aic3x_dapm_widgets,
+				  ARRAY_SIZE(aic3x_dapm_widgets));
+
+	if (np) {
+		ret = snd_soc_of_parse_audio_routing(card, "ti,audio-routing");
+		if (ret)
+			return ret;
+	} else {
+		/* Set up davinci-evm specific audio path audio_map */
+		snd_soc_dapm_add_routes(&card->dapm, audio_map,
+					ARRAY_SIZE(audio_map));
+	}
+
+	/* not connected */
+	snd_soc_dapm_nc_pin(&card->dapm, "MONO_LOUT");
+	snd_soc_dapm_nc_pin(&card->dapm, "HPLCOM");
+	snd_soc_dapm_nc_pin(&card->dapm, "HPRCOM");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -164,6 +245,11 @@ static struct snd_soc_dai_link dm6446_evm_dai = {
 	.platform_name = "davinci-mcbsp",
 	.init = evm_aic3x_init,
 	.ops = &evm_ops,
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+		   SND_SOC_DAIFMT_IB_NF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_dai_link dm355_evm_dai = {
@@ -175,6 +261,11 @@ static struct snd_soc_dai_link dm355_evm_dai = {
 	.platform_name = "davinci-mcbsp.1",
 	.init = evm_aic3x_init,
 	.ops = &evm_ops,
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+		   SND_SOC_DAIFMT_IB_NF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_dai_link dm365_evm_dai = {
@@ -183,10 +274,19 @@ static struct snd_soc_dai_link dm365_evm_dai = {
 	.stream_name = "AIC3X",
 	.cpu_dai_name = "davinci-mcbsp",
 	.codec_dai_name = "tlv320aic3x-hifi",
+<<<<<<< HEAD
 	.init = evm_aic3x_init,
 	.codec_name = "tlv320aic3x-codec.1-0018",
 	.ops = &evm_ops,
 	.platform_name = "davinci-mcbsp",
+=======
+	.codec_name = "tlv320aic3x-codec.1-0018",
+	.platform_name = "davinci-mcbsp",
+	.init = evm_aic3x_init,
+	.ops = &evm_ops,
+	.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+		   SND_SOC_DAIFMT_IB_NF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif defined(CONFIG_SND_DM365_VOICE_CODEC)
 	.name = "Voice Codec - CQ93VC",
 	.stream_name = "CQ93",
@@ -207,6 +307,11 @@ static struct snd_soc_dai_link dm6467_evm_dai[] = {
 		.codec_name = "tlv320aic3x-codec.0-001a",
 		.init = evm_aic3x_init,
 		.ops = &evm_ops,
+<<<<<<< HEAD
+=======
+		.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+			   SND_SOC_DAIFMT_IB_NF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 		.name = "McASP",
@@ -215,7 +320,12 @@ static struct snd_soc_dai_link dm6467_evm_dai[] = {
 		.codec_dai_name = "dit-hifi",
 		.codec_name = "spdif_dit",
 		.platform_name = "davinci-mcasp.1",
+<<<<<<< HEAD
 		.ops = &evm_spdif_ops,
+=======
+		.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+			   SND_SOC_DAIFMT_IB_NF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -228,6 +338,11 @@ static struct snd_soc_dai_link da830_evm_dai = {
 	.platform_name = "davinci-mcasp.1",
 	.init = evm_aic3x_init,
 	.ops = &evm_ops,
+<<<<<<< HEAD
+=======
+	.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+		   SND_SOC_DAIFMT_IB_NF,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_dai_link da850_evm_dai = {
@@ -239,38 +354,97 @@ static struct snd_soc_dai_link da850_evm_dai = {
 	.platform_name = "davinci-mcasp.0",
 	.init = evm_aic3x_init,
 	.ops = &evm_ops,
+<<<<<<< HEAD
 };
 
 /* davinci dm6446 evm audio machine driver */
+=======
+	.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+		   SND_SOC_DAIFMT_IB_NF,
+};
+
+/* davinci dm6446 evm audio machine driver */
+/*
+ * ASP0 in DM6446 EVM is clocked by U55, as configured by
+ * board-dm644x-evm.c using GPIOs from U18.  There are six
+ * options; here we "know" we use a 48 KHz sample rate.
+ */
+static struct snd_soc_card_drvdata_davinci dm6446_snd_soc_card_drvdata = {
+	.sysclk = 12288000,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_card dm6446_snd_soc_card_evm = {
 	.name = "DaVinci DM6446 EVM",
 	.owner = THIS_MODULE,
 	.dai_link = &dm6446_evm_dai,
 	.num_links = 1,
+<<<<<<< HEAD
 };
 
 /* davinci dm355 evm audio machine driver */
+=======
+	.drvdata = &dm6446_snd_soc_card_drvdata,
+};
+
+/* davinci dm355 evm audio machine driver */
+/* ASP1 on DM355 EVM is clocked by an external oscillator */
+static struct snd_soc_card_drvdata_davinci dm355_snd_soc_card_drvdata = {
+	.sysclk = 27000000,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_card dm355_snd_soc_card_evm = {
 	.name = "DaVinci DM355 EVM",
 	.owner = THIS_MODULE,
 	.dai_link = &dm355_evm_dai,
 	.num_links = 1,
+<<<<<<< HEAD
 };
 
 /* davinci dm365 evm audio machine driver */
+=======
+	.drvdata = &dm355_snd_soc_card_drvdata,
+};
+
+/* davinci dm365 evm audio machine driver */
+static struct snd_soc_card_drvdata_davinci dm365_snd_soc_card_drvdata = {
+	.sysclk = 27000000,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_card dm365_snd_soc_card_evm = {
 	.name = "DaVinci DM365 EVM",
 	.owner = THIS_MODULE,
 	.dai_link = &dm365_evm_dai,
 	.num_links = 1,
+<<<<<<< HEAD
 };
 
 /* davinci dm6467 evm audio machine driver */
+=======
+	.drvdata = &dm365_snd_soc_card_drvdata,
+};
+
+/* davinci dm6467 evm audio machine driver */
+static struct snd_soc_card_drvdata_davinci dm6467_snd_soc_card_drvdata = {
+	.sysclk = 27000000,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_card dm6467_snd_soc_card_evm = {
 	.name = "DaVinci DM6467 EVM",
 	.owner = THIS_MODULE,
 	.dai_link = dm6467_evm_dai,
 	.num_links = ARRAY_SIZE(dm6467_evm_dai),
+<<<<<<< HEAD
+=======
+	.drvdata = &dm6467_snd_soc_card_drvdata,
+};
+
+static struct snd_soc_card_drvdata_davinci da830_snd_soc_card_drvdata = {
+	.sysclk = 24576000,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_card da830_snd_soc_card = {
@@ -278,6 +452,14 @@ static struct snd_soc_card da830_snd_soc_card = {
 	.owner = THIS_MODULE,
 	.dai_link = &da830_evm_dai,
 	.num_links = 1,
+<<<<<<< HEAD
+=======
+	.drvdata = &da830_snd_soc_card_drvdata,
+};
+
+static struct snd_soc_card_drvdata_davinci da850_snd_soc_card_drvdata = {
+	.sysclk = 24576000,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct snd_soc_card da850_snd_soc_card = {
@@ -285,8 +467,124 @@ static struct snd_soc_card da850_snd_soc_card = {
 	.owner = THIS_MODULE,
 	.dai_link = &da850_evm_dai,
 	.num_links = 1,
+<<<<<<< HEAD
 };
 
+=======
+	.drvdata = &da850_snd_soc_card_drvdata,
+};
+
+#if defined(CONFIG_OF)
+
+/*
+ * The struct is used as place holder. It will be completely
+ * filled with data from dt node.
+ */
+static struct snd_soc_dai_link evm_dai_tlv320aic3x = {
+	.name		= "TLV320AIC3X",
+	.stream_name	= "AIC3X",
+	.codec_dai_name	= "tlv320aic3x-hifi",
+	.ops            = &evm_ops,
+	.init           = evm_aic3x_init,
+	.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_CBM_CFM |
+		   SND_SOC_DAIFMT_IB_NF,
+};
+
+static const struct of_device_id davinci_evm_dt_ids[] = {
+	{
+		.compatible = "ti,da830-evm-audio",
+		.data = (void *) &evm_dai_tlv320aic3x,
+	},
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, davinci_evm_dt_ids);
+
+/* davinci evm audio machine driver */
+static struct snd_soc_card evm_soc_card = {
+	.owner = THIS_MODULE,
+	.num_links = 1,
+};
+
+static int davinci_evm_probe(struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	const struct of_device_id *match =
+		of_match_device(of_match_ptr(davinci_evm_dt_ids), &pdev->dev);
+	struct snd_soc_dai_link *dai = (struct snd_soc_dai_link *) match->data;
+	struct snd_soc_card_drvdata_davinci *drvdata = NULL;
+	struct clk *mclk;
+	int ret = 0;
+
+	evm_soc_card.dai_link = dai;
+
+	dai->codec_of_node = of_parse_phandle(np, "ti,audio-codec", 0);
+	if (!dai->codec_of_node)
+		return -EINVAL;
+
+	dai->cpu_of_node = of_parse_phandle(np, "ti,mcasp-controller", 0);
+	if (!dai->cpu_of_node)
+		return -EINVAL;
+
+	dai->platform_of_node = dai->cpu_of_node;
+
+	evm_soc_card.dev = &pdev->dev;
+	ret = snd_soc_of_parse_card_name(&evm_soc_card, "ti,model");
+	if (ret)
+		return ret;
+
+	mclk = devm_clk_get(&pdev->dev, "mclk");
+	if (PTR_ERR(mclk) == -EPROBE_DEFER) {
+		return -EPROBE_DEFER;
+	} else if (IS_ERR(mclk)) {
+		dev_dbg(&pdev->dev, "mclk not found.\n");
+		mclk = NULL;
+	}
+
+	drvdata = devm_kzalloc(&pdev->dev, sizeof(*drvdata), GFP_KERNEL);
+	if (!drvdata)
+		return -ENOMEM;
+
+	drvdata->mclk = mclk;
+
+	ret = of_property_read_u32(np, "ti,codec-clock-rate", &drvdata->sysclk);
+
+	if (ret < 0) {
+		if (!drvdata->mclk) {
+			dev_err(&pdev->dev,
+				"No clock or clock rate defined.\n");
+			return -EINVAL;
+		}
+		drvdata->sysclk = clk_get_rate(drvdata->mclk);
+	} else if (drvdata->mclk) {
+		unsigned int requestd_rate = drvdata->sysclk;
+		clk_set_rate(drvdata->mclk, drvdata->sysclk);
+		drvdata->sysclk = clk_get_rate(drvdata->mclk);
+		if (drvdata->sysclk != requestd_rate)
+			dev_warn(&pdev->dev,
+				 "Could not get requested rate %u using %u.\n",
+				 requestd_rate, drvdata->sysclk);
+	}
+
+	snd_soc_card_set_drvdata(&evm_soc_card, drvdata);
+	ret = devm_snd_soc_register_card(&pdev->dev, &evm_soc_card);
+
+	if (ret)
+		dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n", ret);
+
+	return ret;
+}
+
+static struct platform_driver davinci_evm_driver = {
+	.probe		= davinci_evm_probe,
+	.driver		= {
+		.name	= "davinci_evm",
+		.pm	= &snd_soc_pm_ops,
+		.of_match_table = of_match_ptr(davinci_evm_dt_ids),
+	},
+};
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device *evm_snd_device;
 
 static int __init evm_init(void)
@@ -295,6 +593,18 @@ static int __init evm_init(void)
 	int index;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If dtb is there, the devices will be created dynamically.
+	 * Only register platfrom driver structure.
+	 */
+#if defined(CONFIG_OF)
+	if (of_have_populated_dt())
+		return platform_driver_register(&davinci_evm_driver);
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (machine_is_davinci_evm()) {
 		evm_snd_dev_data = &dm6446_snd_soc_card_evm;
 		index = 0;
@@ -330,6 +640,16 @@ static int __init evm_init(void)
 
 static void __exit evm_exit(void)
 {
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_OF)
+	if (of_have_populated_dt()) {
+		platform_driver_unregister(&davinci_evm_driver);
+		return;
+	}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_unregister(evm_snd_device);
 }
 

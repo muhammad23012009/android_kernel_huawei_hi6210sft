@@ -17,6 +17,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <crypto/null.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <crypto/internal/hash.h>
 #include <crypto/internal/skcipher.h>
 #include <linux/init.h>
@@ -24,10 +28,16 @@
 #include <linux/mm.h>
 #include <linux/string.h>
 
+<<<<<<< HEAD
 #define NULL_KEY_SIZE		0
 #define NULL_BLOCK_SIZE		1
 #define NULL_DIGEST_SIZE	0
 #define NULL_IV_SIZE		0
+=======
+static DEFINE_MUTEX(crypto_default_null_skcipher_lock);
+static struct crypto_skcipher *crypto_default_null_skcipher;
+static int crypto_default_null_skcipher_refcnt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int null_compress(struct crypto_tfm *tfm, const u8 *src,
 			 unsigned int slen, u8 *dst, unsigned int *dlen)
@@ -153,6 +163,45 @@ MODULE_ALIAS_CRYPTO("compress_null");
 MODULE_ALIAS_CRYPTO("digest_null");
 MODULE_ALIAS_CRYPTO("cipher_null");
 
+<<<<<<< HEAD
+=======
+struct crypto_skcipher *crypto_get_default_null_skcipher(void)
+{
+	struct crypto_skcipher *tfm;
+
+	mutex_lock(&crypto_default_null_skcipher_lock);
+	tfm = crypto_default_null_skcipher;
+
+	if (!tfm) {
+		tfm = crypto_alloc_skcipher("ecb(cipher_null)",
+					    0, CRYPTO_ALG_ASYNC);
+		if (IS_ERR(tfm))
+			goto unlock;
+
+		crypto_default_null_skcipher = tfm;
+	}
+
+	crypto_default_null_skcipher_refcnt++;
+
+unlock:
+	mutex_unlock(&crypto_default_null_skcipher_lock);
+
+	return tfm;
+}
+EXPORT_SYMBOL_GPL(crypto_get_default_null_skcipher);
+
+void crypto_put_default_null_skcipher(void)
+{
+	mutex_lock(&crypto_default_null_skcipher_lock);
+	if (!--crypto_default_null_skcipher_refcnt) {
+		crypto_free_skcipher(crypto_default_null_skcipher);
+		crypto_default_null_skcipher = NULL;
+	}
+	mutex_unlock(&crypto_default_null_skcipher_lock);
+}
+EXPORT_SYMBOL_GPL(crypto_put_default_null_skcipher);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init crypto_null_mod_init(void)
 {
 	int ret = 0;

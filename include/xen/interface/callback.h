@@ -36,7 +36,11 @@
  * @extra_args == Operation-specific extra arguments (NULL if none).
  */
 
+<<<<<<< HEAD
 /* ia64, x86: Callback for event delivery. */
+=======
+/* x86: Callback for event delivery. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CALLBACKTYPE_event                 0
 
 /* x86: Failsafe callback when guest state cannot be restored by Xen. */

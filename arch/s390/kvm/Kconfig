@@ -23,6 +23,17 @@ config KVM
 	select ANON_INODES
 	select HAVE_KVM_CPU_RELAX_INTERCEPT
 	select HAVE_KVM_EVENTFD
+<<<<<<< HEAD
+=======
+	select KVM_ASYNC_PF
+	select KVM_ASYNC_PF_SYNC
+	select HAVE_KVM_IRQCHIP
+	select HAVE_KVM_IRQFD
+	select HAVE_KVM_IRQ_ROUTING
+	select HAVE_KVM_INVALID_WAKEUPS
+	select SRCU
+	select KVM_VFIO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  Support hosting paravirtualized guest machines using the SIE
 	  virtualization capability on the mainframe. This should work

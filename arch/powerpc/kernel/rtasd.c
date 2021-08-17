@@ -49,7 +49,11 @@ static unsigned int rtas_error_log_buffer_max;
 static unsigned int event_scan;
 static unsigned int rtas_event_scan_rate;
 
+<<<<<<< HEAD
 static int full_rtas_msgs = 0;
+=======
+static bool full_rtas_msgs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Stop logging to nvram after first fatal error */
 static int logging_enabled; /* Until we initialize everything,
@@ -150,8 +154,13 @@ static void printk_log_rtas(char *buf, int len)
 		struct rtas_error_log *errlog = (struct rtas_error_log *)buf;
 
 		printk(RTAS_DEBUG "event: %d, Type: %s, Severity: %d\n",
+<<<<<<< HEAD
 		       error_log_cnt, rtas_event_type(errlog->type),
 		       errlog->severity);
+=======
+		       error_log_cnt, rtas_event_type(rtas_error_type(errlog)),
+		       rtas_error_severity(errlog));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -159,14 +168,26 @@ static int log_rtas_len(char * buf)
 {
 	int len;
 	struct rtas_error_log *err;
+<<<<<<< HEAD
+=======
+	uint32_t extended_log_length;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* rtas fixed header */
 	len = 8;
 	err = (struct rtas_error_log *)buf;
+<<<<<<< HEAD
 	if (err->extended && err->extended_log_length) {
 
 		/* extended header */
 		len += err->extended_log_length;
+=======
+	extended_log_length = rtas_error_extended_log_length(err);
+	if (rtas_error_extended(err) && extended_log_length) {
+
+		/* extended header */
+		len += extended_log_length;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (rtas_error_log_max == 0)
@@ -284,7 +305,11 @@ static void prrn_work_fn(struct work_struct *work)
 
 static DECLARE_WORK(prrn_work, prrn_work_fn);
 
+<<<<<<< HEAD
 void prrn_schedule_update(u32 scope)
+=======
+static void prrn_schedule_update(u32 scope)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	flush_work(&prrn_work);
 	prrn_update_scope = scope;
@@ -293,6 +318,7 @@ void prrn_schedule_update(u32 scope)
 
 static void handle_rtas_event(const struct rtas_error_log *log)
 {
+<<<<<<< HEAD
 	if (log->type == RTAS_TYPE_PRRN) {
 		/* For PRRN Events the extended log length is used to denote
 		 * the scope for calling rtas update-nodes.
@@ -302,6 +328,15 @@ static void handle_rtas_event(const struct rtas_error_log *log)
 	}
 
 	return;
+=======
+	if (rtas_error_type(log) != RTAS_TYPE_PRRN || !prrn_is_enabled())
+		return;
+
+	/* For PRRN Events the extended log length is used to denote
+	 * the scope for calling rtas update-nodes.
+	 */
+	prrn_schedule_update(rtas_error_extended_log_length(log));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #else
@@ -442,7 +477,11 @@ static void do_event_scan(void)
 }
 
 static void rtas_event_scan(struct work_struct *w);
+<<<<<<< HEAD
 DECLARE_DELAYED_WORK(event_scan_work, rtas_event_scan);
+=======
+static DECLARE_DELAYED_WORK(event_scan_work, rtas_event_scan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Delay should be at least one second since some machines have problems if
@@ -483,7 +522,11 @@ static void rtas_event_scan(struct work_struct *w)
 }
 
 #ifdef CONFIG_PPC64
+<<<<<<< HEAD
 static void retreive_nvram_error_log(void)
+=======
+static void retrieve_nvram_error_log(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int err_type ;
 	int rc ;
@@ -501,7 +544,11 @@ static void retreive_nvram_error_log(void)
 	}
 }
 #else /* CONFIG_PPC64 */
+<<<<<<< HEAD
 static void retreive_nvram_error_log(void)
+=======
+static void retrieve_nvram_error_log(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 #endif /* CONFIG_PPC64 */
@@ -513,7 +560,11 @@ static void start_event_scan(void)
 		 (30000 / rtas_event_scan_rate));
 
 	/* Retrieve errors from nvram if any */
+<<<<<<< HEAD
 	retreive_nvram_error_log();
+=======
+	retrieve_nvram_error_log();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	schedule_delayed_work_on(cpumask_first(cpu_online_mask),
 				 &event_scan_work, event_scan_delay);
@@ -526,10 +577,15 @@ void rtas_cancel_event_scan(void)
 }
 EXPORT_SYMBOL_GPL(rtas_cancel_event_scan);
 
+<<<<<<< HEAD
 static int __init rtas_init(void)
 {
 	struct proc_dir_entry *entry;
 
+=======
+static int __init rtas_event_scan_init(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!machine_is(pseries) && !machine_is(chrp))
 		return 0;
 
@@ -562,13 +618,35 @@ static int __init rtas_init(void)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	start_event_scan();
+
+	return 0;
+}
+arch_initcall(rtas_event_scan_init);
+
+static int __init rtas_init(void)
+{
+	struct proc_dir_entry *entry;
+
+	if (!machine_is(pseries) && !machine_is(chrp))
+		return 0;
+
+	if (!rtas_log_buf)
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	entry = proc_create("powerpc/rtas/error_log", S_IRUSR, NULL,
 			    &proc_rtas_log_operations);
 	if (!entry)
 		printk(KERN_ERR "Failed to create error_log proc entry\n");
 
+<<<<<<< HEAD
 	start_event_scan();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 __initcall(rtas_init);
@@ -592,11 +670,15 @@ __setup("surveillance=", surveillance_setup);
 
 static int __init rtasmsgs_setup(char *str)
 {
+<<<<<<< HEAD
 	if (strcmp(str, "on") == 0)
 		full_rtas_msgs = 1;
 	else if (strcmp(str, "off") == 0)
 		full_rtas_msgs = 0;
 
 	return 1;
+=======
+	return (kstrtobool(str, &full_rtas_msgs) == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 __setup("rtasmsgs=", rtasmsgs_setup);

@@ -16,7 +16,10 @@
  * GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/device.h>
@@ -95,7 +98,11 @@ static int retu_wdt_set_timeout(struct watchdog_device *wdog,
 }
 
 static const struct watchdog_info retu_wdt_info = {
+<<<<<<< HEAD
 	.options = WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
+=======
+	.options = WDIOF_SETTIMEOUT | WDIOF_MAGICCLOSE | WDIOF_KEEPALIVEPING,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.identity = "Retu watchdog",
 };
 
@@ -128,6 +135,10 @@ static int retu_wdt_probe(struct platform_device *pdev)
 	retu_wdt->timeout	= RETU_WDT_MAX_TIMER;
 	retu_wdt->min_timeout	= 0;
 	retu_wdt->max_timeout	= RETU_WDT_MAX_TIMER;
+<<<<<<< HEAD
+=======
+	retu_wdt->parent	= &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	watchdog_set_drvdata(retu_wdt, wdev);
 	watchdog_set_nowayout(retu_wdt, nowayout);

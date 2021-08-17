@@ -32,11 +32,14 @@
 #include <linux/timer.h>
 #include <linux/seq_file.h>
 
+<<<<<<< HEAD
 /* print_ssid() is intended to be used in debug (and possibly error)
  * messages. It should never be used for passing ssid to user space. */
 const char *print_ssid(char *buf, const char *ssid, u8 ssid_len);
 #define DECLARE_SSID_BUF(var) char var[IEEE80211_MAX_SSID_LEN * 4 + 1] __maybe_unused
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NUM_WEP_KEYS	4
 
 enum {

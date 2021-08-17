@@ -14,6 +14,11 @@
 #include <linux/seq_file.h>
 #include <linux/init.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/uaccess.h>
 #include <asm/amigahw.h>
 #include <asm/setup.h>
@@ -21,6 +26,7 @@
 static loff_t
 proc_bus_zorro_lseek(struct file *file, loff_t off, int whence)
 {
+<<<<<<< HEAD
 	loff_t new = -1;
 	struct inode *inode = file_inode(file);
 
@@ -42,6 +48,9 @@ proc_bus_zorro_lseek(struct file *file, loff_t off, int whence)
 		file->f_pos = new;
 	mutex_unlock(&inode->i_mutex);
 	return new;
+=======
+	return fixed_size_llseek(file, off, whence, sizeof(struct ConfigDev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t
@@ -61,10 +70,17 @@ proc_bus_zorro_read(struct file *file, char __user *buf, size_t nbytes, loff_t *
 	/* Construct a ConfigDev */
 	memset(&cd, 0, sizeof(cd));
 	cd.cd_Rom = z->rom;
+<<<<<<< HEAD
 	cd.cd_SlotAddr = z->slotaddr;
 	cd.cd_SlotSize = z->slotsize;
 	cd.cd_BoardAddr = (void *)zorro_resource_start(z);
 	cd.cd_BoardSize = zorro_resource_len(z);
+=======
+	cd.cd_SlotAddr = cpu_to_be16(z->slotaddr);
+	cd.cd_SlotSize = cpu_to_be16(z->slotsize);
+	cd.cd_BoardAddr = cpu_to_be32(zorro_resource_start(z));
+	cd.cd_BoardSize = cpu_to_be32(zorro_resource_len(z));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (copy_to_user(buf, (void *)&cd + pos, nbytes))
 		return -EFAULT;

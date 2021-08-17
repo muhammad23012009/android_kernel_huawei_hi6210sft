@@ -11,6 +11,10 @@
 #include <linux/kallsyms.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/seq_file.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq_handler.h>
 #include <asm/trace.h>
 #include <asm/pda.h>
@@ -33,6 +37,7 @@ static struct irq_desc bad_irq_desc = {
 #endif
 
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 int show_interrupts(struct seq_file *p, void *v)
 {
 	int i = *(loff_t *) v, j;
@@ -64,6 +69,17 @@ int show_interrupts(struct seq_file *p, void *v)
 		seq_printf(p, "     CORE  Non Maskable Interrupt\n");
 		seq_printf(p, "Err: %10u\n",  atomic_read(&irq_err_count));
 	}
+=======
+int arch_show_interrupts(struct seq_file *p, int prec)
+{
+	int j;
+
+	seq_printf(p, "%*s: ", prec, "NMI");
+	for_each_online_cpu(j)
+		seq_printf(p, "%10u ", cpu_pda[j].__nmi_count);
+	seq_printf(p, "  CORE  Non Maskable Interrupt\n");
+	seq_printf(p, "%*s: %10u\n", prec, "ERR", atomic_read(&irq_err_count));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 #endif
@@ -128,7 +144,11 @@ asmlinkage void asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
 	 * than crashing, do something sensible.
 	 */
 	if (irq >= NR_IRQS)
+<<<<<<< HEAD
 		handle_bad_irq(irq, &bad_irq_desc);
+=======
+		handle_bad_irq(&bad_irq_desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		generic_handle_irq(irq);
 

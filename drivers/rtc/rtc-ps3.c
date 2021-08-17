@@ -71,6 +71,7 @@ static int __init ps3_rtc_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __exit ps3_rtc_remove(struct platform_device *dev)
 {
 	return 0;
@@ -82,6 +83,12 @@ static struct platform_driver ps3_rtc_driver = {
 		.owner = THIS_MODULE,
 	},
 	.remove = __exit_p(ps3_rtc_remove),
+=======
+static struct platform_driver ps3_rtc_driver = {
+	.driver = {
+		.name = "rtc-ps3",
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver_probe(ps3_rtc_driver, ps3_rtc_probe);

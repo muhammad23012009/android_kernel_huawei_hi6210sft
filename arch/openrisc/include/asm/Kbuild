@@ -10,8 +10,13 @@ generic-y += bugs.h
 generic-y += cacheflush.h
 generic-y += checksum.h
 generic-y += clkdev.h
+<<<<<<< HEAD
 generic-y += cmpxchg.h
 generic-y += cmpxchg-local.h
+=======
+generic-y += cmpxchg-local.h
+generic-y += cmpxchg.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += cputime.h
 generic-y += current.h
 generic-y += device.h
@@ -30,10 +35,19 @@ generic-y += ioctl.h
 generic-y += ioctls.h
 generic-y += ipcbuf.h
 generic-y += irq_regs.h
+<<<<<<< HEAD
+=======
+generic-y += irq_work.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += kdebug.h
 generic-y += kmap_types.h
 generic-y += kvm_para.h
 generic-y += local.h
+<<<<<<< HEAD
+=======
+generic-y += mcs_spinlock.h
+generic-y += mm-arch-hooks.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += mman.h
 generic-y += module.h
 generic-y += msgbuf.h
@@ -41,8 +55,13 @@ generic-y += pci.h
 generic-y += percpu.h
 generic-y += poll.h
 generic-y += posix_types.h
+<<<<<<< HEAD
 generic-y += resource.h
 generic-y += scatterlist.h
+=======
+generic-y += preempt.h
+generic-y += resource.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += sections.h
 generic-y += segment.h
 generic-y += sembuf.h
@@ -53,11 +72,19 @@ generic-y += siginfo.h
 generic-y += signal.h
 generic-y += socket.h
 generic-y += sockios.h
+<<<<<<< HEAD
 generic-y += statfs.h
 generic-y += stat.h
 generic-y += string.h
 generic-y += switch_to.h
 generic-y += swab.h
+=======
+generic-y += stat.h
+generic-y += statfs.h
+generic-y += string.h
+generic-y += swab.h
+generic-y += switch_to.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 generic-y += termbits.h
 generic-y += termios.h
 generic-y += topology.h
@@ -65,4 +92,10 @@ generic-y += trace_clock.h
 generic-y += types.h
 generic-y += ucontext.h
 generic-y += user.h
+<<<<<<< HEAD
 generic-y += word-at-a-time.h
+=======
+generic-y += vga.h
+generic-y += word-at-a-time.h
+generic-y += xor.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -14,12 +14,15 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/delay.h>
@@ -28,11 +31,19 @@
 
 static int smiapp_write_8(struct smiapp_sensor *sensor, u16 reg, u8 val)
 {
+<<<<<<< HEAD
 	return smiapp_write(sensor, (SMIA_REG_8BIT << 16) | reg, val);
 }
 
 static int smiapp_write_8s(struct smiapp_sensor *sensor,
 			   struct smiapp_reg_8 *regs, int len)
+=======
+	return smiapp_write(sensor, SMIAPP_REG_MK_U8(reg), val);
+}
+
+static int smiapp_write_8s(struct smiapp_sensor *sensor,
+			   const struct smiapp_reg_8 *regs, int len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->src->sd);
 	int rval;
@@ -61,6 +72,7 @@ void smiapp_replace_limit(struct smiapp_sensor *sensor,
 	sensor->limits[limit] = val;
 }
 
+<<<<<<< HEAD
 bool smiapp_quirk_reg(struct smiapp_sensor *sensor,
 		      u32 reg, u32 *val)
 {
@@ -107,6 +119,8 @@ bool smiapp_quirk_reg(struct smiapp_sensor *sensor,
 	return false;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int jt8ew9_limits(struct smiapp_sensor *sensor)
 {
 	if (sensor->minfo.revision_number_major < 0x03)
@@ -123,7 +137,11 @@ static int jt8ew9_limits(struct smiapp_sensor *sensor)
 
 static int jt8ew9_post_poweron(struct smiapp_sensor *sensor)
 {
+<<<<<<< HEAD
 	struct smiapp_reg_8 regs[] = {
+=======
+	const struct smiapp_reg_8 regs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{ 0x30a3, 0xd8 }, /* Output port control : LVDS ports only */
 		{ 0x30ae, 0x00 }, /* 0x0307 pll_multiplier maximum value on PLL input 9.6MHz ( 19.2MHz is divided on pre_pll_div) */
 		{ 0x30af, 0xd0 }, /* 0x0307 pll_multiplier maximum value on PLL input 9.6MHz ( 19.2MHz is divided on pre_pll_div) */
@@ -167,7 +185,11 @@ const struct smiapp_quirk smiapp_jt8ew9_quirk = {
 static int imx125es_post_poweron(struct smiapp_sensor *sensor)
 {
 	/* Taken from v02. No idea what the other two are. */
+<<<<<<< HEAD
 	struct smiapp_reg_8 regs[] = {
+=======
+	const struct smiapp_reg_8 regs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * 0x3302: clk during frame blanking:
 		 * 0x00 - HS mode, 0x01 - LP11
@@ -197,8 +219,12 @@ static int jt8ev1_post_poweron(struct smiapp_sensor *sensor)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->src->sd);
 	int rval;
+<<<<<<< HEAD
 
 	struct smiapp_reg_8 regs[] = {
+=======
+	const struct smiapp_reg_8 regs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{ 0x3031, 0xcd }, /* For digital binning (EQ_MONI) */
 		{ 0x30a3, 0xd0 }, /* FLASH STROBE enable */
 		{ 0x3237, 0x00 }, /* For control of pulse timing for ADC */
@@ -219,8 +245,12 @@ static int jt8ev1_post_poweron(struct smiapp_sensor *sensor)
 		{ 0x33cf, 0xec }, /* For Black sun */
 		{ 0x3328, 0x80 }, /* Ugh. No idea what's this. */
 	};
+<<<<<<< HEAD
 
 	struct smiapp_reg_8 regs_96[] = {
+=======
+	const struct smiapp_reg_8 regs_96[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{ 0x30ae, 0x00 }, /* For control of ADC clock */
 		{ 0x30af, 0xd0 },
 		{ 0x30b0, 0x01 },
@@ -230,13 +260,21 @@ static int jt8ev1_post_poweron(struct smiapp_sensor *sensor)
 	if (rval < 0)
 		return rval;
 
+<<<<<<< HEAD
 	switch (sensor->platform_data->ext_clk) {
+=======
+	switch (sensor->hwcfg->ext_clk) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 9600000:
 		return smiapp_write_8s(sensor, regs_96,
 				       ARRAY_SIZE(regs_96));
 	default:
 		dev_warn(&client->dev, "no MSRs for %d Hz ext_clk\n",
+<<<<<<< HEAD
 			 sensor->platform_data->ext_clk);
+=======
+			 sensor->hwcfg->ext_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 }
@@ -266,12 +304,26 @@ static int jt8ev1_post_streamoff(struct smiapp_sensor *sensor)
 	return smiapp_write_8(sensor, 0x3328, 0x80);
 }
 
+<<<<<<< HEAD
+=======
+static int jt8ev1_init(struct smiapp_sensor *sensor)
+{
+	sensor->pll.flags |= SMIAPP_PLL_FLAG_OP_PIX_CLOCK_PER_LANE;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const struct smiapp_quirk smiapp_jt8ev1_quirk = {
 	.limits = jt8ev1_limits,
 	.post_poweron = jt8ev1_post_poweron,
 	.pre_streamon = jt8ev1_pre_streamon,
 	.post_streamoff = jt8ev1_post_streamoff,
+<<<<<<< HEAD
 	.flags = SMIAPP_QUIRK_FLAG_OP_PIX_CLOCK_PER_LANE,
+=======
+	.init = jt8ev1_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int tcm8500md_limits(struct smiapp_sensor *sensor)

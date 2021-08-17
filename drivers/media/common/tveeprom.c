@@ -40,7 +40,10 @@
 #include <media/tuner.h>
 #include <media/tveeprom.h>
 #include <media/v4l2-common.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("i2c Hauppauge eeprom decoder driver");
 MODULE_AUTHOR("John Klar");
@@ -67,6 +70,7 @@ MODULE_PARM_DESC(debug, "Debug level (0-1)");
  * The Hauppauge eeprom uses an 8bit field to determine which
  * tuner formats the tuner supports.
  */
+<<<<<<< HEAD
 static struct HAUPPAUGE_TUNER_FMT
 {
 	int	id;
@@ -74,6 +78,12 @@ static struct HAUPPAUGE_TUNER_FMT
 }
 hauppauge_tuner_fmt[] =
 {
+=======
+static const struct {
+	int	id;
+	const char * const name;
+} hauppauge_tuner_fmt[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ V4L2_STD_UNKNOWN,                   " UNKNOWN" },
 	{ V4L2_STD_UNKNOWN,                   " FM" },
 	{ V4L2_STD_B|V4L2_STD_GH,             " PAL(B/G)" },
@@ -88,6 +98,7 @@ hauppauge_tuner_fmt[] =
    supplying this information. Note that many tuners where only used for
    testing and never made it to the outside world. So you will only see
    a subset in actual produced cards. */
+<<<<<<< HEAD
 static struct HAUPPAUGE_TUNER
 {
 	int  id;
@@ -95,6 +106,12 @@ static struct HAUPPAUGE_TUNER
 }
 hauppauge_tuner[] =
 {
+=======
+static const struct {
+	int  id;
+	const char * const name;
+} hauppauge_tuner[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 0-9 */
 	{ TUNER_ABSENT,			"None" },
 	{ TUNER_ABSENT,			"External" },
@@ -293,6 +310,7 @@ hauppauge_tuner[] =
 	{ TUNER_ABSENT,                 "Xceive XC5200C"},
 	{ TUNER_ABSENT,                 "NXP 18273"},
 	{ TUNER_ABSENT,                 "Montage M88TS2022"},
+<<<<<<< HEAD
 	/* 180-189 */
 	{ TUNER_ABSENT,                 "NXP 18272M"},
 	{ TUNER_ABSENT,                 "NXP 18272S"},
@@ -361,6 +379,91 @@ audioIC[] =
 	{ V4L2_IDENT_AMBIGUOUS, "CX23887"   },
 	{ V4L2_IDENT_AMBIGUOUS, "SAA7164"   },
 	{ V4L2_IDENT_AMBIGUOUS, "AU8522"    },
+=======
+	/* 180-188 */
+	{ TUNER_ABSENT,                 "NXP 18272M"},
+	{ TUNER_ABSENT,                 "NXP 18272S"},
+
+	{ TUNER_ABSENT,                 "Mirics MSi003"},
+	{ TUNER_ABSENT,                 "MaxLinear MxL256"},
+	{ TUNER_ABSENT,                 "SiLabs Si2158"},
+	{ TUNER_ABSENT,                 "SiLabs Si2178"},
+	{ TUNER_ABSENT,                 "SiLabs Si2157"},
+	{ TUNER_ABSENT,                 "SiLabs Si2177"},
+	{ TUNER_ABSENT,                 "ITE IT9137FN"},
+};
+
+/* Use TVEEPROM_AUDPROC_INTERNAL for those audio 'chips' that are
+ * internal to a video chip, i.e. not a separate audio chip. */
+static const struct {
+	u32   id;
+	const char * const name;
+} audio_ic[] = {
+	/* 0-4 */
+	{ TVEEPROM_AUDPROC_NONE,  "None"      },
+	{ TVEEPROM_AUDPROC_OTHER, "TEA6300"   },
+	{ TVEEPROM_AUDPROC_OTHER, "TEA6320"   },
+	{ TVEEPROM_AUDPROC_OTHER, "TDA9850"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3400C"  },
+	/* 5-9 */
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3410D"  },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3415"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3430"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3438"   },
+	{ TVEEPROM_AUDPROC_OTHER, "CS5331"    },
+	/* 10-14 */
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3435"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3440"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3445"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3411"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3416"   },
+	/* 15-19 */
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3425"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3451"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP3418"   },
+	{ TVEEPROM_AUDPROC_OTHER, "Type 0x12" },
+	{ TVEEPROM_AUDPROC_OTHER, "OKI7716"   },
+	/* 20-24 */
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4410"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4420"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4440"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4450"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4408"   },
+	/* 25-29 */
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4418"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4428"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4448"   },
+	{ TVEEPROM_AUDPROC_MSP,   "MSP4458"   },
+	{ TVEEPROM_AUDPROC_MSP,   "Type 0x1d" },
+	/* 30-34 */
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX880"     },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX881"     },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX883"     },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX882"     },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX25840"   },
+	/* 35-39 */
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX25841"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX25842"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX25843"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX23418"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX23885"   },
+	/* 40-44 */
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX23888"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "SAA7131"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX23887"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "SAA7164"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "AU8522"    },
+	/* 45-49 */
+	{ TVEEPROM_AUDPROC_INTERNAL, "AVF4910B"  },
+	{ TVEEPROM_AUDPROC_INTERNAL, "SAA7231"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "CX23102"   },
+	{ TVEEPROM_AUDPROC_INTERNAL, "SAA7163"   },
+	{ TVEEPROM_AUDPROC_OTHER,    "AK4113"    },
+	/* 50-52 */
+	{ TVEEPROM_AUDPROC_OTHER,    "CS5340"    },
+	{ TVEEPROM_AUDPROC_OTHER,    "CS8416"    },
+	{ TVEEPROM_AUDPROC_OTHER,    "CX20810"   },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* This list is supplied by Hauppauge. Thanks! */
@@ -381,8 +484,17 @@ static const char *decoderIC[] = {
 	"CX25843", "CX23418", "NEC61153", "CX23885", "CX23888",
 	/* 35-39 */
 	"SAA7131", "CX25837", "CX23887", "CX23885A", "CX23887A",
+<<<<<<< HEAD
 	/* 40-42 */
 	"SAA7164", "CX23885B", "AU8522"
+=======
+	/* 40-44 */
+	"SAA7164", "CX23885B", "AU8522", "ADV7401", "AVF4910B",
+	/* 45-49 */
+	"SAA7231", "CX23102", "SAA7163", "ADV7441A", "ADV7181C",
+	/* 50-53 */
+	"CX25836", "TDA9955", "TDA19977", "ADV7842"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int hasRadioTuner(int tunerType)
@@ -453,11 +565,19 @@ void tveeprom_hauppauge_analog(struct i2c_client *c, struct tveeprom *tvee,
 	int i, j, len, done, beenhere, tag, start;
 
 	int tuner1 = 0, t_format1 = 0, audioic = -1;
+<<<<<<< HEAD
 	char *t_name1 = NULL;
 	const char *t_fmt_name1[8] = { " none", "", "", "", "", "", "", "" };
 
 	int tuner2 = 0, t_format2 = 0;
 	char *t_name2 = NULL;
+=======
+	const char *t_name1 = NULL;
+	const char *t_fmt_name1[8] = { " none", "", "", "", "", "", "", "" };
+
+	int tuner2 = 0, t_format2 = 0;
+	const char *t_name2 = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char *t_fmt_name2[8] = { " none", "", "", "", "", "", "", "" };
 
 	memset(tvee, 0, sizeof(*tvee));
@@ -545,10 +665,17 @@ void tveeprom_hauppauge_analog(struct i2c_client *c, struct tveeprom *tvee,
 			to indicate 4052 mux was removed in favor of using MSP
 			inputs directly. */
 			audioic = eeprom_data[i+2] & 0x7f;
+<<<<<<< HEAD
 			if (audioic < ARRAY_SIZE(audioIC))
 				tvee->audio_processor = audioIC[audioic].id;
 			else
 				tvee->audio_processor = V4L2_IDENT_UNKNOWN;
+=======
+			if (audioic < ARRAY_SIZE(audio_ic))
+				tvee->audio_processor = audio_ic[audioic].id;
+			else
+				tvee->audio_processor = TVEEPROM_AUDPROC_OTHER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		/* case 0x03: tag 'EEInfo' */
@@ -558,10 +685,17 @@ void tveeprom_hauppauge_analog(struct i2c_client *c, struct tveeprom *tvee,
 			tvee->serial_number =
 				eeprom_data[i+5] +
 				(eeprom_data[i+6] << 8) +
+<<<<<<< HEAD
 				(eeprom_data[i+7] << 16);
 
 			if ((eeprom_data[i + 8] & 0xf0) &&
 					(tvee->serial_number < 0xffffff)) {
+=======
+				(eeprom_data[i+7] << 16)+
+				(eeprom_data[i+8] << 24);
+
+			if (eeprom_data[i + 8] == 0xf0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				tvee->MAC_address[0] = 0x00;
 				tvee->MAC_address[1] = 0x0D;
 				tvee->MAC_address[2] = 0xFE;
@@ -578,10 +712,17 @@ void tveeprom_hauppauge_analog(struct i2c_client *c, struct tveeprom *tvee,
 			to indicate 4052 mux was removed in favor of using MSP
 			inputs directly. */
 			audioic = eeprom_data[i+1] & 0x7f;
+<<<<<<< HEAD
 			if (audioic < ARRAY_SIZE(audioIC))
 				tvee->audio_processor = audioIC[audioic].id;
 			else
 				tvee->audio_processor = V4L2_IDENT_UNKNOWN;
+=======
+			if (audioic < ARRAY_SIZE(audio_ic))
+				tvee->audio_processor = audio_ic[audioic].id;
+			else
+				tvee->audio_processor = TVEEPROM_AUDPROC_OTHER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			break;
 
@@ -706,7 +847,11 @@ void tveeprom_hauppauge_analog(struct i2c_client *c, struct tveeprom *tvee,
 		}
 	}
 
+<<<<<<< HEAD
 	tveeprom_info("Hauppauge model %d, rev %s, serial# %d\n",
+=======
+	tveeprom_info("Hauppauge model %d, rev %s, serial# %u\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tvee->model, tvee->rev_str, tvee->serial_number);
 	if (tvee->has_MAC_address == 1)
 		tveeprom_info("MAC address is %pM\n", tvee->MAC_address);
@@ -726,11 +871,19 @@ void tveeprom_hauppauge_analog(struct i2c_client *c, struct tveeprom *tvee,
 			t_fmt_name2[6], t_fmt_name2[7], t_format2);
 	if (audioic < 0) {
 		tveeprom_info("audio processor is unknown (no idx)\n");
+<<<<<<< HEAD
 		tvee->audio_processor = V4L2_IDENT_UNKNOWN;
 	} else {
 		if (audioic < ARRAY_SIZE(audioIC))
 			tveeprom_info("audio processor is %s (idx %d)\n",
 					audioIC[audioic].name, audioic);
+=======
+		tvee->audio_processor = TVEEPROM_AUDPROC_OTHER;
+	} else {
+		if (audioic < ARRAY_SIZE(audio_ic))
+			tveeprom_info("audio processor is %s (idx %d)\n",
+					audio_ic[audioic].name, audioic);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			tveeprom_info("audio processor is unknown (idx %d)\n",
 								audioic);

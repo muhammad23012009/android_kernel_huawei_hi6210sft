@@ -12,6 +12,7 @@
 #include <asm/fpregdef.h>
 #include <asm/mipsregs.h>
 
+<<<<<<< HEAD
 	.macro	fpu_save_double thread status tmp1=t0
 	cfc1	\tmp1,  fcr31
 	sdc1	$f0,  THREAD_FPR0(\thread)
@@ -126,6 +127,54 @@
 	lwc1	$f30, THREAD_FPR30(\thread)
 	lwc1	$f31, THREAD_FPR31(\thread)
 	ctc1	\tmp, fcr31
+=======
+	.macro	fpu_save_single thread tmp=t0
+	.set push
+	SET_HARDFLOAT
+	cfc1	\tmp,  fcr31
+	s.d	$f0,  THREAD_FPR0(\thread)
+	s.d	$f2,  THREAD_FPR2(\thread)
+	s.d	$f4,  THREAD_FPR4(\thread)
+	s.d	$f6,  THREAD_FPR6(\thread)
+	s.d	$f8,  THREAD_FPR8(\thread)
+	s.d	$f10, THREAD_FPR10(\thread)
+	s.d	$f12, THREAD_FPR12(\thread)
+	s.d	$f14, THREAD_FPR14(\thread)
+	s.d	$f16, THREAD_FPR16(\thread)
+	s.d	$f18, THREAD_FPR18(\thread)
+	s.d	$f20, THREAD_FPR20(\thread)
+	s.d	$f22, THREAD_FPR22(\thread)
+	s.d	$f24, THREAD_FPR24(\thread)
+	s.d	$f26, THREAD_FPR26(\thread)
+	s.d	$f28, THREAD_FPR28(\thread)
+	s.d	$f30, THREAD_FPR30(\thread)
+	sw	\tmp, THREAD_FCR31(\thread)
+	.set pop
+	.endm
+
+	.macro	fpu_restore_single thread tmp=t0
+	.set push
+	SET_HARDFLOAT
+	lw	\tmp, THREAD_FCR31(\thread)
+	l.d	$f0,  THREAD_FPR0(\thread)
+	l.d	$f2,  THREAD_FPR2(\thread)
+	l.d	$f4,  THREAD_FPR4(\thread)
+	l.d	$f6,  THREAD_FPR6(\thread)
+	l.d	$f8,  THREAD_FPR8(\thread)
+	l.d	$f10, THREAD_FPR10(\thread)
+	l.d	$f12, THREAD_FPR12(\thread)
+	l.d	$f14, THREAD_FPR14(\thread)
+	l.d	$f16, THREAD_FPR16(\thread)
+	l.d	$f18, THREAD_FPR18(\thread)
+	l.d	$f20, THREAD_FPR20(\thread)
+	l.d	$f22, THREAD_FPR22(\thread)
+	l.d	$f24, THREAD_FPR24(\thread)
+	l.d	$f26, THREAD_FPR26(\thread)
+	l.d	$f28, THREAD_FPR28(\thread)
+	l.d	$f30, THREAD_FPR30(\thread)
+	ctc1	\tmp, fcr31
+	.set pop
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.endm
 
 	.macro	cpu_save_nonscratch thread

@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,20 +45,32 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
 #include "actables.h"
+<<<<<<< HEAD
+=======
+#include "acevents.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _COMPONENT          ACPI_TABLES
 ACPI_MODULE_NAME("tbxfload")
 
+<<<<<<< HEAD
 /* Local prototypes */
 static acpi_status acpi_tb_load_namespace(void);
 
 static int no_auto_ssdt;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_load_tables
@@ -66,25 +82,83 @@ static int no_auto_ssdt;
  * DESCRIPTION: Load the ACPI tables from the RSDT/XSDT
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
 acpi_status acpi_load_tables(void)
+=======
+acpi_status ACPI_INIT_FUNCTION acpi_load_tables(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status;
 
 	ACPI_FUNCTION_TRACE(acpi_load_tables);
 
+<<<<<<< HEAD
 	/* Load the namespace from the tables */
 
 	status = acpi_tb_load_namespace();
+=======
+	/*
+	 * Install the default operation region handlers. These are the
+	 * handlers that are defined by the ACPI specification to be
+	 * "always accessible" -- namely, system_memory, system_IO, and
+	 * PCI_Config. This also means that no _REG methods need to be
+	 * run for these address spaces. We need to have these handlers
+	 * installed before any AML code can be executed, especially any
+	 * module-level code (11/2015).
+	 * Note that we allow OSPMs to install their own region handlers
+	 * between acpi_initialize_subsystem() and acpi_load_tables() to use
+	 * their customized default region handlers.
+	 */
+	status = acpi_ev_install_region_handlers();
+	if (ACPI_FAILURE(status)) {
+		ACPI_EXCEPTION((AE_INFO, status,
+				"During Region initialization"));
+		return_ACPI_STATUS(status);
+	}
+
+	/* Load the namespace from the tables */
+
+	status = acpi_tb_load_namespace();
+
+	/* Don't let single failures abort the load */
+
+	if (status == AE_CTRL_TERMINATE) {
+		status = AE_OK;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		ACPI_EXCEPTION((AE_INFO, status,
 				"While loading namespace from ACPI tables"));
 	}
 
+<<<<<<< HEAD
 	return_ACPI_STATUS(status);
 }
 
 ACPI_EXPORT_SYMBOL(acpi_load_tables)
+=======
+	if (acpi_gbl_parse_table_as_term_list
+	    || !acpi_gbl_group_module_level_code) {
+		/*
+		 * Initialize the objects that remain uninitialized. This
+		 * runs the executable AML that may be part of the
+		 * declaration of these objects:
+		 * operation_regions, buffer_fields, Buffers, and Packages.
+		 */
+		status = acpi_ns_initialize_objects();
+		if (ACPI_FAILURE(status)) {
+			return_ACPI_STATUS(status);
+		}
+	}
+
+	acpi_gbl_namespace_initialized = TRUE;
+	return_ACPI_STATUS(status);
+}
+
+ACPI_EXPORT_SYMBOL_INIT(acpi_load_tables)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*******************************************************************************
  *
@@ -98,11 +172,21 @@ ACPI_EXPORT_SYMBOL(acpi_load_tables)
  *              the RSDT/XSDT.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 static acpi_status acpi_tb_load_namespace(void)
+=======
+acpi_status acpi_tb_load_namespace(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status;
 	u32 i;
 	struct acpi_table_header *new_dsdt;
+<<<<<<< HEAD
+=======
+	struct acpi_table_desc *table;
+	u32 tables_loaded = 0;
+	u32 tables_failed = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ACPI_FUNCTION_TRACE(tb_load_namespace);
 
@@ -112,6 +196,7 @@ static acpi_status acpi_tb_load_namespace(void)
 	 * Load the namespace. The DSDT is required, but any SSDT and
 	 * PSDT tables are optional. Verify the DSDT.
 	 */
+<<<<<<< HEAD
 	if (!acpi_gbl_root_table_list.current_table_count ||
 	    !ACPI_COMPARE_NAME(&
 			       (acpi_gbl_root_table_list.
@@ -121,6 +206,13 @@ static acpi_status acpi_tb_load_namespace(void)
 	    ACPI_FAILURE(acpi_tb_verify_table
 			 (&acpi_gbl_root_table_list.
 			  tables[ACPI_TABLE_INDEX_DSDT]))) {
+=======
+	table = &acpi_gbl_root_table_list.tables[acpi_gbl_dsdt_index];
+
+	if (!acpi_gbl_root_table_list.current_table_count ||
+	    !ACPI_COMPARE_NAME(table->signature.ascii, ACPI_SIG_DSDT) ||
+	    ACPI_FAILURE(acpi_tb_validate_table(table))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = AE_NO_ACPI_TABLES;
 		goto unlock_and_exit;
 	}
@@ -129,10 +221,16 @@ static acpi_status acpi_tb_load_namespace(void)
 	 * Save the DSDT pointer for simple access. This is the mapped memory
 	 * address. We must take care here because the address of the .Tables
 	 * array can change dynamically as tables are loaded at run-time. Note:
+<<<<<<< HEAD
 	 * .Pointer field is not validated until after call to acpi_tb_verify_table.
 	 */
 	acpi_gbl_DSDT =
 	    acpi_gbl_root_table_list.tables[ACPI_TABLE_INDEX_DSDT].pointer;
+=======
+	 * .Pointer field is not validated until after call to acpi_tb_validate_table.
+	 */
+	acpi_gbl_DSDT = table->pointer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Optionally copy the entire DSDT to local memory (instead of simply
@@ -141,7 +239,11 @@ static acpi_status acpi_tb_load_namespace(void)
 	 * the DSDT.
 	 */
 	if (acpi_gbl_copy_dsdt_locally) {
+<<<<<<< HEAD
 		new_dsdt = acpi_tb_copy_dsdt(ACPI_TABLE_INDEX_DSDT);
+=======
+		new_dsdt = acpi_tb_copy_dsdt(acpi_gbl_dsdt_index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (new_dsdt) {
 			acpi_gbl_DSDT = new_dsdt;
 		}
@@ -151,6 +253,7 @@ static acpi_status acpi_tb_load_namespace(void)
 	 * Save the original DSDT header for detection of table corruption
 	 * and/or replacement of the DSDT from outside the OS.
 	 */
+<<<<<<< HEAD
 	ACPI_MEMCPY(&acpi_gbl_original_dsdt_header, acpi_gbl_DSDT,
 		    sizeof(struct acpi_table_header));
 
@@ -161,10 +264,26 @@ static acpi_status acpi_tb_load_namespace(void)
 	status = acpi_ns_load_table(ACPI_TABLE_INDEX_DSDT, acpi_gbl_root_node);
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
+=======
+	memcpy(&acpi_gbl_original_dsdt_header, acpi_gbl_DSDT,
+	       sizeof(struct acpi_table_header));
+
+	/* Load and parse tables */
+
+	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
+	status = acpi_ns_load_table(acpi_gbl_dsdt_index, acpi_gbl_root_node);
+	(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
+	if (ACPI_FAILURE(status)) {
+		ACPI_EXCEPTION((AE_INFO, status, "[DSDT] table load failed"));
+		tables_failed++;
+	} else {
+		tables_loaded++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Load any SSDT or PSDT tables. Note: Loop leaves tables locked */
 
+<<<<<<< HEAD
 	(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
 	for (i = 0; i < acpi_gbl_root_table_list.current_table_count; ++i) {
 		if ((!ACPI_COMPARE_NAME
@@ -182,12 +301,25 @@ static acpi_status acpi_tb_load_namespace(void)
 
 		if (no_auto_ssdt) {
 			printk(KERN_WARNING "ACPI: SSDT ignored due to \"acpi_no_auto_ssdt\"\n");
+=======
+	for (i = 0; i < acpi_gbl_root_table_list.current_table_count; ++i) {
+		table = &acpi_gbl_root_table_list.tables[i];
+
+		if (!acpi_gbl_root_table_list.tables[i].address ||
+		    (!ACPI_COMPARE_NAME(table->signature.ascii, ACPI_SIG_SSDT)
+		     && !ACPI_COMPARE_NAME(table->signature.ascii,
+					   ACPI_SIG_PSDT)
+		     && !ACPI_COMPARE_NAME(table->signature.ascii,
+					   ACPI_SIG_OSDT))
+		    || ACPI_FAILURE(acpi_tb_validate_table(table))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 
 		/* Ignore errors while loading tables, get as many as possible */
 
 		(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
+<<<<<<< HEAD
 		(void)acpi_ns_load_table(i, acpi_gbl_root_node);
 		(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
 	}
@@ -195,12 +327,88 @@ static acpi_status acpi_tb_load_namespace(void)
 	ACPI_INFO((AE_INFO, "All ACPI Tables successfully acquired"));
 
       unlock_and_exit:
+=======
+		status = acpi_ns_load_table(i, acpi_gbl_root_node);
+		(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
+		if (ACPI_FAILURE(status)) {
+			ACPI_EXCEPTION((AE_INFO, status,
+					"(%4.4s:%8.8s) while loading table",
+					table->signature.ascii,
+					table->pointer->oem_table_id));
+
+			tables_failed++;
+
+			ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
+					      "Table [%4.4s:%8.8s] (id FF) - Table namespace load failed\n\n",
+					      table->signature.ascii,
+					      table->pointer->oem_table_id));
+		} else {
+			tables_loaded++;
+		}
+	}
+
+	if (!tables_failed) {
+		ACPI_INFO(("%u ACPI AML tables successfully acquired and loaded\n", tables_loaded));
+	} else {
+		ACPI_ERROR((AE_INFO,
+			    "%u table load failures, %u successful",
+			    tables_failed, tables_loaded));
+
+		/* Indicate at least one failure */
+
+		status = AE_CTRL_TERMINATE;
+	}
+
+unlock_and_exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
 	return_ACPI_STATUS(status);
 }
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * FUNCTION:    acpi_install_table
+ *
+ * PARAMETERS:  address             - Address of the ACPI table to be installed.
+ *              physical            - Whether the address is a physical table
+ *                                    address or not
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Dynamically install an ACPI table.
+ *              Note: This function should only be invoked after
+ *                    acpi_initialize_tables() and before acpi_load_tables().
+ *
+ ******************************************************************************/
+
+acpi_status ACPI_INIT_FUNCTION
+acpi_install_table(acpi_physical_address address, u8 physical)
+{
+	acpi_status status;
+	u8 flags;
+	u32 table_index;
+
+	ACPI_FUNCTION_TRACE(acpi_install_table);
+
+	if (physical) {
+		flags = ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL;
+	} else {
+		flags = ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL;
+	}
+
+	status = acpi_tb_install_standard_table(address, flags,
+						FALSE, FALSE, &table_index);
+
+	return_ACPI_STATUS(status);
+}
+
+ACPI_EXPORT_SYMBOL_INIT(acpi_install_table)
+
+/*******************************************************************************
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * FUNCTION:    acpi_load_table
  *
  * PARAMETERS:  table               - Pointer to a buffer containing the ACPI
@@ -215,11 +423,17 @@ static acpi_status acpi_tb_load_namespace(void)
  *              to ensure that the table is not deleted or unmapped.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
 acpi_status acpi_load_table(struct acpi_table_header *table)
 {
 	acpi_status status;
 	struct acpi_table_desc table_desc;
+=======
+acpi_status acpi_load_table(struct acpi_table_header *table)
+{
+	acpi_status status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 table_index;
 
 	ACPI_FUNCTION_TRACE(acpi_load_table);
@@ -230,6 +444,7 @@ acpi_status acpi_load_table(struct acpi_table_header *table)
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	/* Init local table descriptor */
 
 	ACPI_MEMSET(&table_desc, 0, sizeof(struct acpi_table_desc));
@@ -264,6 +479,15 @@ acpi_status acpi_load_table(struct acpi_table_header *table)
 
       unlock_and_exit:
 	(void)acpi_ut_release_mutex(ACPI_MTX_INTERPRETER);
+=======
+	/* Install the table and load it into the namespace */
+
+	ACPI_INFO(("Host-directed Dynamic ACPI Table Load:"));
+	status =
+	    acpi_tb_install_and_load_table(table, ACPI_PTR_TO_PHYSADDR(table),
+					   ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL,
+					   FALSE, &table_index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(status);
 }
 
@@ -312,9 +536,15 @@ acpi_status acpi_unload_parent_table(acpi_handle object)
 		return_ACPI_STATUS(AE_TYPE);
 	}
 
+<<<<<<< HEAD
 	/* Must acquire the interpreter lock during this operation */
 
 	status = acpi_ut_acquire_mutex(ACPI_MTX_INTERPRETER);
+=======
+	/* Must acquire the table lock during this operation */
+
+	status = acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -341,8 +571,15 @@ acpi_status acpi_unload_parent_table(acpi_handle object)
 
 		/* Ensure the table is actually loaded */
 
+<<<<<<< HEAD
 		if (!acpi_tb_is_table_loaded(i)) {
 			status = AE_NOT_EXIST;
+=======
+		(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
+		if (!acpi_tb_is_table_loaded(i)) {
+			status = AE_NOT_EXIST;
+			(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 
@@ -368,14 +605,23 @@ acpi_status acpi_unload_parent_table(acpi_handle object)
 
 		status = acpi_tb_release_owner_id(i);
 		acpi_tb_set_table_loaded_flag(i, FALSE);
+<<<<<<< HEAD
 		break;
 	}
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_INTERPRETER);
+=======
+		(void)acpi_ut_acquire_mutex(ACPI_MTX_TABLES);
+		break;
+	}
+
+	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(status);
 }
 
 ACPI_EXPORT_SYMBOL(acpi_unload_parent_table)
+<<<<<<< HEAD
 
 static int __init acpi_no_auto_ssdt_setup(char *s) {
 
@@ -387,3 +633,5 @@ static int __init acpi_no_auto_ssdt_setup(char *s) {
 }
 
 __setup("acpi_no_auto_ssdt", acpi_no_auto_ssdt_setup);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

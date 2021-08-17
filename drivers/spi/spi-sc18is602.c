@@ -12,10 +12,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -27,6 +30,10 @@
 #include <linux/pm_runtime.h>
 #include <linux/of.h>
 #include <linux/platform_data/sc18is602.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum chips { sc18is602, sc18is602b, sc18is603 };
 
@@ -54,6 +61,11 @@ struct sc18is602 {
 	u8			buffer[SC18IS602_BUFSIZ + 1];
 	int			tlen;	/* Data queued for tx in buffer */
 	int			rindex;	/* Receive data index in buffer */
+<<<<<<< HEAD
+=======
+
+	struct gpio_desc	*reset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int sc18is602_wait_ready(struct sc18is602 *hw, int len)
@@ -183,6 +195,7 @@ static int sc18is602_setup_transfer(struct sc18is602 *hw, u32 hz, u8 mode)
 static int sc18is602_check_transfer(struct spi_device *spi,
 				    struct spi_transfer *t, int tlen)
 {
+<<<<<<< HEAD
 	int bpw;
 	uint32_t hz;
 
@@ -201,6 +214,11 @@ static int sc18is602_check_transfer(struct spi_device *spi,
 	if (hz == 0)
 		return -EINVAL;
 
+=======
+	if (t && t->len + tlen > SC18IS602_BUFSIZ)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -212,6 +230,7 @@ static int sc18is602_transfer_one(struct spi_master *master,
 	struct spi_transfer *t;
 	int status = 0;
 
+<<<<<<< HEAD
 	/* SC18IS602 does not support CS2 */
 	if (hw->id == sc18is602 && spi->chip_select == 2) {
 		status = -ENXIO;
@@ -221,13 +240,21 @@ static int sc18is602_transfer_one(struct spi_master *master,
 	hw->tlen = 0;
 	list_for_each_entry(t, &m->transfers, transfer_list) {
 		u32 hz = t->speed_hz ? : spi->max_speed_hz;
+=======
+	hw->tlen = 0;
+	list_for_each_entry(t, &m->transfers, transfer_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bool do_transfer;
 
 		status = sc18is602_check_transfer(spi, t, hw->tlen);
 		if (status < 0)
 			break;
 
+<<<<<<< HEAD
 		status = sc18is602_setup_transfer(hw, hz, spi->mode);
+=======
+		status = sc18is602_setup_transfer(hw, t->speed_hz, spi->mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (status < 0)
 			break;
 
@@ -245,7 +272,10 @@ static int sc18is602_transfer_one(struct spi_master *master,
 		if (t->delay_usecs)
 			udelay(t->delay_usecs);
 	}
+<<<<<<< HEAD
 error:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	m->status = status;
 	spi_finalize_current_message(master);
 
@@ -254,6 +284,7 @@ error:
 
 static int sc18is602_setup(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	if (!spi->bits_per_word)
 		spi->bits_per_word = 8;
 
@@ -261,6 +292,15 @@ static int sc18is602_setup(struct spi_device *spi)
 		return -EINVAL;
 
 	return sc18is602_check_transfer(spi, NULL, 0);
+=======
+	struct sc18is602 *hw = spi_master_get_devdata(spi->master);
+
+	/* SC18IS602 does not support CS2 */
+	if (hw->id == sc18is602 && spi->chip_select == 2)
+		return -ENXIO;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int sc18is602_probe(struct i2c_client *client,
@@ -271,19 +311,35 @@ static int sc18is602_probe(struct i2c_client *client,
 	struct sc18is602_platform_data *pdata = dev_get_platdata(dev);
 	struct sc18is602 *hw;
 	struct spi_master *master;
+<<<<<<< HEAD
 	int error;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
 				     I2C_FUNC_SMBUS_WRITE_BYTE_DATA))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	master = spi_alloc_master(dev, sizeof(struct sc18is602));
+=======
+	master = devm_spi_alloc_master(dev, sizeof(struct sc18is602));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!master)
 		return -ENOMEM;
 
 	hw = spi_master_get_devdata(master);
 	i2c_set_clientdata(client, hw);
 
+<<<<<<< HEAD
+=======
+	/* assert reset and then release */
+	hw->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+	if (IS_ERR(hw->reset))
+		return PTR_ERR(hw->reset);
+	gpiod_set_value_cansleep(hw->reset, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hw->master = master;
 	hw->client = client;
 	hw->dev = dev;
@@ -313,6 +369,7 @@ static int sc18is602_probe(struct i2c_client *client,
 			hw->freq = SC18IS602_CLOCK;
 		break;
 	}
+<<<<<<< HEAD
 	master->bus_num = client->adapter->nr;
 	master->mode_bits = SPI_CPHA | SPI_CPOL | SPI_LSB_FIRST;
 	master->setup = sc18is602_setup;
@@ -338,6 +395,18 @@ static int sc18is602_remove(struct i2c_client *client)
 	spi_unregister_master(master);
 
 	return 0;
+=======
+	master->bus_num = np ? -1 : client->adapter->nr;
+	master->mode_bits = SPI_CPHA | SPI_CPOL | SPI_LSB_FIRST;
+	master->bits_per_word_mask = SPI_BPW_MASK(8);
+	master->setup = sc18is602_setup;
+	master->transfer_one_message = sc18is602_transfer_one;
+	master->dev.of_node = np;
+	master->min_speed_hz = hw->freq / 128;
+	master->max_speed_hz = hw->freq / 4;
+
+	return devm_spi_register_master(dev, master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id sc18is602_id[] = {
@@ -353,7 +422,10 @@ static struct i2c_driver sc18is602_driver = {
 		.name = "sc18is602",
 	},
 	.probe = sc18is602_probe,
+<<<<<<< HEAD
 	.remove = sc18is602_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = sc18is602_id,
 };
 

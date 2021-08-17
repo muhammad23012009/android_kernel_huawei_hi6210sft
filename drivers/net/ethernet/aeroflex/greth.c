@@ -25,7 +25,10 @@
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -124,6 +127,15 @@ static inline void greth_enable_tx(struct greth_private *greth)
 	GRETH_REGORIN(greth->regs->control, GRETH_TXEN);
 }
 
+<<<<<<< HEAD
+=======
+static inline void greth_enable_tx_and_irq(struct greth_private *greth)
+{
+	wmb(); /* BDs must been written to memory before enabling TX */
+	GRETH_REGORIN(greth->regs->control, GRETH_TXEN | GRETH_TXI);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void greth_disable_tx(struct greth_private *greth)
 {
 	GRETH_REGANDIN(greth->regs->control, ~GRETH_TXEN);
@@ -448,12 +460,23 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static inline u16 greth_num_free_bds(u16 tx_last, u16 tx_next)
+{
+	if (tx_next < tx_last)
+		return (tx_last - tx_next) - 1;
+	else
+		return GRETH_TXBD_NUM - (tx_next - tx_last) - 1;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static netdev_tx_t
 greth_start_xmit_gbit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct greth_private *greth = netdev_priv(dev);
 	struct greth_bd *bdp;
+<<<<<<< HEAD
 	u32 status = 0, dma_addr, ctrl;
 	int curr_tx, nr_frags, i, err = NETDEV_TX_OK;
 	unsigned long flags;
@@ -471,6 +494,19 @@ greth_start_xmit_gbit(struct sk_buff *skb, struct net_device *dev)
 			GRETH_REGSAVE(greth->regs->control, ctrl | GRETH_TXI);
 		netif_stop_queue(dev);
 		spin_unlock_irqrestore(&greth->devlock, flags);
+=======
+	u32 status, dma_addr;
+	int curr_tx, nr_frags, i, err = NETDEV_TX_OK;
+	unsigned long flags;
+	u16 tx_last;
+
+	nr_frags = skb_shinfo(skb)->nr_frags;
+	tx_last = greth->tx_last;
+	rmb(); /* tx_last is updated by the poll task */
+
+	if (greth_num_free_bds(tx_last, greth->tx_next) < nr_frags + 1) {
+		netif_stop_queue(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = NETDEV_TX_BUSY;
 		goto out;
 	}
@@ -489,6 +525,11 @@ greth_start_xmit_gbit(struct sk_buff *skb, struct net_device *dev)
 	/* Linear buf */
 	if (nr_frags != 0)
 		status = GRETH_TXBD_MORE;
+<<<<<<< HEAD
+=======
+	else
+		status = GRETH_BD_IE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (skb->ip_summed == CHECKSUM_PARTIAL)
 		status |= GRETH_TXBD_CSALL;
@@ -546,6 +587,7 @@ greth_start_xmit_gbit(struct sk_buff *skb, struct net_device *dev)
 
 	/* Enable the descriptor chain by enabling the first descriptor */
 	bdp = greth->tx_bd_base + greth->tx_next;
+<<<<<<< HEAD
 	greth_write_bd(&bdp->stat, greth_read_bd(&bdp->stat) | GRETH_BD_EN);
 	greth->tx_next = curr_tx;
 	greth->tx_free -= nr_frags + 1;
@@ -554,6 +596,14 @@ greth_start_xmit_gbit(struct sk_buff *skb, struct net_device *dev)
 
 	spin_lock_irqsave(&greth->devlock, flags); /*save from poll/irq*/
 	greth_enable_tx(greth);
+=======
+	greth_write_bd(&bdp->stat,
+		       greth_read_bd(&bdp->stat) | GRETH_BD_EN);
+
+	spin_lock_irqsave(&greth->devlock, flags); /*save from poll/irq*/
+	greth->tx_next = curr_tx;
+	greth_enable_tx_and_irq(greth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&greth->devlock, flags);
 
 	return NETDEV_TX_OK;
@@ -649,7 +699,10 @@ static void greth_clean_tx(struct net_device *dev)
 	if (greth->tx_free > 0) {
 		netif_wake_queue(dev);
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void greth_update_tx_stats(struct net_device *dev, u32 stat)
@@ -671,6 +724,7 @@ static void greth_clean_tx_gbit(struct net_device *dev)
 {
 	struct greth_private *greth;
 	struct greth_bd *bdp, *bdp_last_frag;
+<<<<<<< HEAD
 	struct sk_buff *skb;
 	u32 stat;
 	int nr_frags, i;
@@ -680,11 +734,28 @@ static void greth_clean_tx_gbit(struct net_device *dev)
 	while (greth->tx_free < GRETH_TXBD_NUM) {
 
 		skb = greth->tx_skbuff[greth->tx_last];
+=======
+	struct sk_buff *skb = NULL;
+	u32 stat;
+	int nr_frags, i;
+	u16 tx_last;
+
+	greth = netdev_priv(dev);
+	tx_last = greth->tx_last;
+
+	while (tx_last != greth->tx_next) {
+
+		skb = greth->tx_skbuff[tx_last];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		nr_frags = skb_shinfo(skb)->nr_frags;
 
 		/* We only clean fully completed SKBs */
+<<<<<<< HEAD
 		bdp_last_frag = greth->tx_bd_base + SKIP_TX(greth->tx_last, nr_frags);
+=======
+		bdp_last_frag = greth->tx_bd_base + SKIP_TX(tx_last, nr_frags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		GRETH_REGSAVE(greth->regs->status, GRETH_INT_TE | GRETH_INT_TX);
 		mb();
@@ -693,14 +764,24 @@ static void greth_clean_tx_gbit(struct net_device *dev)
 		if (stat & GRETH_BD_EN)
 			break;
 
+<<<<<<< HEAD
 		greth->tx_skbuff[greth->tx_last] = NULL;
+=======
+		greth->tx_skbuff[tx_last] = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		greth_update_tx_stats(dev, stat);
 		dev->stats.tx_bytes += skb->len;
 
+<<<<<<< HEAD
 		bdp = greth->tx_bd_base + greth->tx_last;
 
 		greth->tx_last = NEXT_TX(greth->tx_last);
+=======
+		bdp = greth->tx_bd_base + tx_last;
+
+		tx_last = NEXT_TX(tx_last);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		dma_unmap_single(greth->dev,
 				 greth_read_bd(&bdp->addr),
@@ -709,13 +790,18 @@ static void greth_clean_tx_gbit(struct net_device *dev)
 
 		for (i = 0; i < nr_frags; i++) {
 			skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+<<<<<<< HEAD
 			bdp = greth->tx_bd_base + greth->tx_last;
+=======
+			bdp = greth->tx_bd_base + tx_last;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			dma_unmap_page(greth->dev,
 				       greth_read_bd(&bdp->addr),
 				       skb_frag_size(frag),
 				       DMA_TO_DEVICE);
 
+<<<<<<< HEAD
 			greth->tx_last = NEXT_TX(greth->tx_last);
 		}
 		greth->tx_free += nr_frags+1;
@@ -724,6 +810,21 @@ static void greth_clean_tx_gbit(struct net_device *dev)
 
 	if (netif_queue_stopped(dev) && (greth->tx_free > (MAX_SKB_FRAGS+1)))
 		netif_wake_queue(dev);
+=======
+			tx_last = NEXT_TX(tx_last);
+		}
+		dev_kfree_skb(skb);
+	}
+	if (skb) { /* skb is set only if the above while loop was entered */
+		wmb();
+		greth->tx_last = tx_last;
+
+		if (netif_queue_stopped(dev) &&
+		    (greth_num_free_bds(tx_last, greth->tx_next) >
+		    (MAX_SKB_FRAGS+1)))
+			netif_wake_queue(dev);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int greth_rx(struct net_device *dev, int limit)
@@ -966,6 +1067,7 @@ static int greth_poll(struct napi_struct *napi, int budget)
 	greth = container_of(napi, struct greth_private, napi);
 
 restart_txrx_poll:
+<<<<<<< HEAD
 	if (netif_queue_stopped(greth->netdev)) {
 		if (greth->gbit_mac)
 			greth_clean_tx_gbit(greth->netdev);
@@ -976,6 +1078,14 @@ restart_txrx_poll:
 	if (greth->gbit_mac) {
 		work_done += greth_rx_gbit(greth->netdev, budget - work_done);
 	} else {
+=======
+	if (greth->gbit_mac) {
+		greth_clean_tx_gbit(greth->netdev);
+		work_done += greth_rx_gbit(greth->netdev, budget - work_done);
+	} else {
+		if (netif_queue_stopped(greth->netdev))
+			greth_clean_tx(greth->netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		work_done += greth_rx(greth->netdev, budget - work_done);
 	}
 
@@ -984,7 +1094,12 @@ restart_txrx_poll:
 		spin_lock_irqsave(&greth->devlock, flags);
 
 		ctrl = GRETH_REGLOAD(greth->regs->control);
+<<<<<<< HEAD
 		if (netif_queue_stopped(greth->netdev)) {
+=======
+		if ((greth->gbit_mac && (greth->tx_last != greth->tx_next)) ||
+		    (!greth->gbit_mac && netif_queue_stopped(greth->netdev))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			GRETH_REGSAVE(greth->regs->control,
 					ctrl | GRETH_TXI | GRETH_RXI);
 			mask = GRETH_INT_RX | GRETH_INT_RE |
@@ -1096,6 +1211,7 @@ static void greth_set_msglevel(struct net_device *dev, u32 value)
 	struct greth_private *greth = netdev_priv(dev);
 	greth->msg_enable = value;
 }
+<<<<<<< HEAD
 static int greth_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct greth_private *greth = netdev_priv(dev);
@@ -1117,6 +1233,8 @@ static int greth_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 
 	return phy_ethtool_sset(phy, cmd);
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int greth_get_regs_len(struct net_device *dev)
 {
@@ -1132,8 +1250,11 @@ static void greth_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *in
 	strlcpy(info->version, "revision: 1.0", sizeof(info->version));
 	strlcpy(info->bus_info, greth->dev->bus->name, sizeof(info->bus_info));
 	strlcpy(info->fw_version, "N/A", sizeof(info->fw_version));
+<<<<<<< HEAD
 	info->eedump_len = 0;
 	info->regdump_len = sizeof(struct greth_regs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void greth_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
@@ -1150,12 +1271,20 @@ static void greth_get_regs(struct net_device *dev, struct ethtool_regs *regs, vo
 static const struct ethtool_ops greth_ethtool_ops = {
 	.get_msglevel		= greth_get_msglevel,
 	.set_msglevel		= greth_set_msglevel,
+<<<<<<< HEAD
 	.get_settings		= greth_get_settings,
 	.set_settings		= greth_set_settings,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_drvinfo		= greth_get_drvinfo,
 	.get_regs_len           = greth_get_regs_len,
 	.get_regs               = greth_get_regs,
 	.get_link		= ethtool_op_get_link,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
+	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct net_device_ops greth_netdev_ops = {
@@ -1214,6 +1343,7 @@ static int greth_mdio_write(struct mii_bus *bus, int phy, int reg, u16 val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int greth_mdio_reset(struct mii_bus *bus)
 {
 	return 0;
@@ -1223,6 +1353,12 @@ static void greth_link_change(struct net_device *dev)
 {
 	struct greth_private *greth = netdev_priv(dev);
 	struct phy_device *phydev = greth->phy;
+=======
+static void greth_link_change(struct net_device *dev)
+{
+	struct greth_private *greth = netdev_priv(dev);
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int status_change = 0;
 	u32 ctrl;
@@ -1305,7 +1441,10 @@ static int greth_mdio_probe(struct net_device *dev)
 	greth->link = 0;
 	greth->speed = 0;
 	greth->duplex = -1;
+<<<<<<< HEAD
 	greth->phy = phy;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1321,8 +1460,14 @@ static inline int phy_aneg_done(struct phy_device *phydev)
 
 static int greth_mdio_init(struct greth_private *greth)
 {
+<<<<<<< HEAD
 	int ret, phy;
 	unsigned long timeout;
+=======
+	int ret;
+	unsigned long timeout;
+	struct net_device *ndev = greth->netdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	greth->mdio = mdiobus_alloc();
 	if (!greth->mdio) {
@@ -1333,6 +1478,7 @@ static int greth_mdio_init(struct greth_private *greth)
 	snprintf(greth->mdio->id, MII_BUS_ID_SIZE, "%s-%d", greth->mdio->name, greth->irq);
 	greth->mdio->read = greth_mdio_read;
 	greth->mdio->write = greth_mdio_write;
+<<<<<<< HEAD
 	greth->mdio->reset = greth_mdio_reset;
 	greth->mdio->priv = greth;
 
@@ -1341,6 +1487,10 @@ static int greth_mdio_init(struct greth_private *greth)
 	for (phy = 0; phy < PHY_MAX_ADDR; phy++)
 		greth->mdio->irq[phy] = PHY_POLL;
 
+=======
+	greth->mdio->priv = greth;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = mdiobus_register(greth->mdio);
 	if (ret) {
 		goto error;
@@ -1353,6 +1503,7 @@ static int greth_mdio_init(struct greth_private *greth)
 		goto unreg_mdio;
 	}
 
+<<<<<<< HEAD
 	phy_start(greth->phy);
 
 	/* If Ethernet debug link is used make autoneg happen right away */
@@ -1362,6 +1513,18 @@ static int greth_mdio_init(struct greth_private *greth)
 		while (!phy_aneg_done(greth->phy) && time_before(jiffies, timeout)) {
 		}
 		genphy_read_status(greth->phy);
+=======
+	phy_start(ndev->phydev);
+
+	/* If Ethernet debug link is used make autoneg happen right away */
+	if (greth->edcl && greth_edcl == 1) {
+		phy_start_aneg(ndev->phydev);
+		timeout = jiffies + 6*HZ;
+		while (!phy_aneg_done(ndev->phydev) &&
+		       time_before(jiffies, timeout)) {
+		}
+		phy_read_status(ndev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		greth_link_change(greth->netdev);
 	}
 
@@ -1464,18 +1627,30 @@ static int greth_of_probe(struct platform_device *ofdev)
 	}
 
 	/* Allocate TX descriptor ring in coherent memory */
+<<<<<<< HEAD
 	greth->tx_bd_base = dma_alloc_coherent(greth->dev, 1024,
 					       &greth->tx_bd_base_phys,
 					       GFP_KERNEL | __GFP_ZERO);
+=======
+	greth->tx_bd_base = dma_zalloc_coherent(greth->dev, 1024,
+						&greth->tx_bd_base_phys,
+						GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!greth->tx_bd_base) {
 		err = -ENOMEM;
 		goto error3;
 	}
 
 	/* Allocate RX descriptor ring in coherent memory */
+<<<<<<< HEAD
 	greth->rx_bd_base = dma_alloc_coherent(greth->dev, 1024,
 					       &greth->rx_bd_base_phys,
 					       GFP_KERNEL | __GFP_ZERO);
+=======
+	greth->rx_bd_base = dma_zalloc_coherent(greth->dev, 1024,
+						&greth->rx_bd_base_phys,
+						GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!greth->rx_bd_base) {
 		err = -ENOMEM;
 		goto error4;
@@ -1565,7 +1740,11 @@ error1:
 
 static int greth_of_remove(struct platform_device *of_dev)
 {
+<<<<<<< HEAD
 	struct net_device *ndev = dev_get_drvdata(&of_dev->dev);
+=======
+	struct net_device *ndev = platform_get_drvdata(of_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct greth_private *greth = netdev_priv(ndev);
 
 	/* Free descriptor areas */
@@ -1573,6 +1752,7 @@ static int greth_of_remove(struct platform_device *of_dev)
 
 	dma_free_coherent(&of_dev->dev, 1024, greth->tx_bd_base, greth->tx_bd_base_phys);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&of_dev->dev, NULL);
 
 	if (greth->phy)
@@ -1588,6 +1768,22 @@ static int greth_of_remove(struct platform_device *of_dev)
 }
 
 static struct of_device_id greth_of_match[] = {
+=======
+	if (ndev->phydev)
+		phy_stop(ndev->phydev);
+	mdiobus_unregister(greth->mdio);
+
+	unregister_netdev(ndev);
+
+	of_iounmap(&of_dev->resource[0], greth->regs, resource_size(&of_dev->resource[0]));
+
+	free_netdev(ndev);
+
+	return 0;
+}
+
+static const struct of_device_id greth_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 .name = "GAISLER_ETHMAC",
 	 },
@@ -1602,7 +1798,10 @@ MODULE_DEVICE_TABLE(of, greth_of_match);
 static struct platform_driver greth_of_driver = {
 	.driver = {
 		.name = "grlib-greth",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = greth_of_match,
 	},
 	.probe = greth_of_probe,

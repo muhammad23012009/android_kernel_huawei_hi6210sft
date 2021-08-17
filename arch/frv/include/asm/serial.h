@@ -12,7 +12,10 @@
  * the base baud is derived from the clock speed and so is variable
  */
 #define BASE_BAUD 0
+<<<<<<< HEAD
 
 #define STD_COM_FLAGS		ASYNC_BOOT_AUTOCONF
 
 #define SERIAL_PORT_DFNS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -32,7 +32,11 @@
 #define __kernel_ok		(segment_eq(get_fs(), KERNEL_DS))
 
 /*
+<<<<<<< HEAD
  * Algorthmically, for __user_ok() we want do:
+=======
+ * Algorithmically, for __user_ok() we want do:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * 	(start < TASK_SIZE) && (start+len < TASK_SIZE)
  * where TASK_SIZE could either be retrieved from thread_info->addr_limit or
  * emitted directly in code.
@@ -209,7 +213,11 @@ __arc_copy_from_user(void *to, const void __user *from, unsigned long n)
 		*/
 		  "=&r" (tmp), "+r" (to), "+r" (from)
 		:
+<<<<<<< HEAD
 		: "lp_count", "lp_start", "lp_end", "memory");
+=======
+		: "lp_count", "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		return n;
 	}
@@ -438,7 +446,11 @@ __arc_copy_to_user(void __user *to, const void *from, unsigned long n)
 		 */
 		  "=&r" (tmp), "+r" (to), "+r" (from)
 		:
+<<<<<<< HEAD
 		: "lp_count", "lp_start", "lp_end", "memory");
+=======
+		: "lp_count", "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		return n;
 	}
@@ -658,7 +670,11 @@ static inline unsigned long __arc_clear_user(void __user *to, unsigned long n)
 	"	.previous			\n"
 	: "+r"(d_char), "+r"(res)
 	: "i"(0)
+<<<<<<< HEAD
 	: "lp_count", "lp_start", "lp_end", "memory");
+=======
+	: "lp_count", "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return res;
 }
@@ -666,14 +682,20 @@ static inline unsigned long __arc_clear_user(void __user *to, unsigned long n)
 static inline long
 __arc_strncpy_from_user(char *dst, const char __user *src, long count)
 {
+<<<<<<< HEAD
 	long res = count;
 	char val;
 	unsigned int hw_count;
+=======
+	long res = 0;
+	char val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (count == 0)
 		return 0;
 
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	lp 2f		\n"
 	"1:	ldb.ab  %3, [%2, 1]		\n"
 	"	breq.d  %3, 0, 2f		\n"
@@ -683,15 +705,33 @@ __arc_strncpy_from_user(char *dst, const char __user *src, long count)
 	"	.section .fixup, \"ax\"		\n"
 	"	.align 4			\n"
 	"4:	mov %0, %5			\n"
+=======
+	"	mov	lp_count, %5		\n"
+	"	lp	3f			\n"
+	"1:	ldb.ab  %3, [%2, 1]		\n"
+	"	breq.d	%3, 0, 3f               \n"
+	"	stb.ab  %3, [%1, 1]		\n"
+	"	add	%0, %0, 1	# Num of NON NULL bytes copied	\n"
+	"3:								\n"
+	"	.section .fixup, \"ax\"		\n"
+	"	.align 4			\n"
+	"4:	mov %0, %4		# sets @res as -EFAULT	\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	j   3b				\n"
 	"	.previous			\n"
 	"	.section __ex_table, \"a\"	\n"
 	"	.align 4			\n"
 	"	.word   1b, 4b			\n"
 	"	.previous			\n"
+<<<<<<< HEAD
 	: "=r"(res), "+r"(dst), "+r"(src), "=&r"(val), "=l"(hw_count)
 	: "g"(-EFAULT), "ir"(count), "4"(count)	/* this "4" seeds lp_count */
 	: "memory");
+=======
+	: "+r"(res), "+r"(dst), "+r"(src), "=r"(val)
+	: "g"(-EFAULT), "r"(count)
+	: "lp_count", "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return res;
 }

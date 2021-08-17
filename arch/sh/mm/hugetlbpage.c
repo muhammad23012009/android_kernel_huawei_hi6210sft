@@ -35,7 +35,11 @@ pte_t *huge_pte_alloc(struct mm_struct *mm,
 		if (pud) {
 			pmd = pmd_alloc(mm, pud, addr);
 			if (pmd)
+<<<<<<< HEAD
 				pte = pte_alloc_map(mm, NULL, pmd, addr);
+=======
+				pte = pte_alloc_map(mm, pmd, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -62,6 +66,7 @@ pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr)
 	return pte;
 }
 
+<<<<<<< HEAD
 int huge_pmd_unshare(struct mm_struct *mm, unsigned long *addr, pte_t *ptep)
 {
 	return 0;
@@ -73,6 +78,8 @@ struct page *follow_huge_addr(struct mm_struct *mm,
 	return ERR_PTR(-EINVAL);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int pmd_huge(pmd_t pmd)
 {
 	return 0;
@@ -82,9 +89,12 @@ int pud_huge(pud_t pud)
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 struct page *follow_huge_pmd(struct mm_struct *mm, unsigned long address,
 			     pmd_t *pmd, int write)
 {
 	return NULL;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

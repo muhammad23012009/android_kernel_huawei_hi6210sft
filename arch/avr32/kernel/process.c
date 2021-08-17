@@ -62,9 +62,15 @@ void machine_restart(char *cmd)
 /*
  * Free current thread data structures etc
  */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 	ocd_disable(current);
+=======
+void exit_thread(struct task_struct *tsk)
+{
+	ocd_disable(tsk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void flush_thread(void)
@@ -289,7 +295,11 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 		memset(childregs, 0, sizeof(struct pt_regs));
 		p->thread.cpu_context.r0 = arg;
 		p->thread.cpu_context.r1 = usp; /* fn */
+<<<<<<< HEAD
 		p->thread.cpu_context.r2 = syscall_return;
+=======
+		p->thread.cpu_context.r2 = (unsigned long)syscall_return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		p->thread.cpu_context.pc = (unsigned long)ret_from_kernel_thread;
 		childregs->sr = MODE_SUPERVISOR;
 	} else {
@@ -341,7 +351,11 @@ unsigned long get_wchan(struct task_struct *p)
 		 * is actually quite ugly. It might be possible to
 		 * determine the frame size automatically at build
 		 * time by doing this:
+<<<<<<< HEAD
 		 *   - compile sched.c
+=======
+		 *   - compile sched/core.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 *   - disassemble the resulting sched.o
 		 *   - look for 'sub sp,??' shortly after '<schedule>:'
 		 */

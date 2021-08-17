@@ -65,13 +65,19 @@ typedef struct {
 
 struct thread_info {
 	struct task_struct	*task; /* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain; /* execution domain */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		flags; /* low level flags */
 	unsigned long		status; /* thread-synchronous flags */
 	__u32			cpu; /* current CPU */
 	__s32			preempt_count; /* 0 => preemptable,< 0 => BUG*/
 	mm_segment_t		addr_limit; /* thread address space */
+<<<<<<< HEAD
 	struct restart_block	restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct cpu_context	cpu_context;
 };
@@ -82,14 +88,20 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,	\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 	.addr_limit	= KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block = {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
@@ -106,8 +118,11 @@ static inline struct thread_info *current_thread_info(void)
 /* thread information allocation */
 #endif /* __ASSEMBLY__ */
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE		0x10000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * thread information flags
  * - these are process state flags that various assembly files may
@@ -156,6 +171,7 @@ static inline struct thread_info *current_thread_info(void)
  */
 /* FPU was used by this task this quantum (SMP) */
 #define TS_USEDFPU		0x0001
+<<<<<<< HEAD
 #define TS_RESTORE_SIGMASK	0x0002
 
 #ifndef __ASSEMBLY__
@@ -183,6 +199,8 @@ static inline bool test_and_clear_restore_sigmask(void)
 	return true;
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __KERNEL__ */
 #endif /* _ASM_MICROBLAZE_THREAD_INFO_H */

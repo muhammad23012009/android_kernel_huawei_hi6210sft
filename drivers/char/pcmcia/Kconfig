@@ -3,7 +3,11 @@
 #
 
 menu "PCMCIA character devices"
+<<<<<<< HEAD
 	depends on HOTPLUG && PCMCIA!=n
+=======
+	depends on PCMCIA!=n
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SYNCLINK_CS
 	tristate "SyncLink PC Card support"
@@ -15,7 +19,11 @@ config SYNCLINK_CS
 
 	  This driver may be built as a module ( = code which can be
 	  inserted in and removed from the running kernel whenever you want).
+<<<<<<< HEAD
 	  The module will be called synclinkmp.  If you want to do that, say M
+=======
+	  The module will be called synclink_cs.  If you want to do that, say M
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  here.
 
 config CARDMAN_4000

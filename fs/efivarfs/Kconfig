@@ -1,6 +1,10 @@
 config EFIVAR_FS
 	tristate "EFI Variable filesystem"
 	depends on EFI
+<<<<<<< HEAD
+=======
+	default m
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  efivarfs is a replacement filesystem for the old EFI
 	  variable support via sysfs, as it doesn't suffer from the

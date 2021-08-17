@@ -5,11 +5,19 @@
  *
  * Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
  * Copyright (C) 2008-2009 Gabor Juhos <juhosg@openwrt.org>
+<<<<<<< HEAD
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
+=======
+ * Copyright (C) 2013 John Crispin <john@phrozen.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/io.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/sizes.h>
 #include <linux/of_fdt.h>
@@ -21,13 +29,21 @@
 #include <asm/reboot.h>
 #include <asm/bootinfo.h>
 #include <asm/addrspace.h>
+<<<<<<< HEAD
+=======
+#include <asm/prom.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 
 __iomem void *rt_sysc_membase;
 __iomem void *rt_memc_membase;
+<<<<<<< HEAD
 
 extern struct boot_param_header __dtb_start;
+=======
+EXPORT_SYMBOL_GPL(rt_sysc_membase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 __iomem void *plat_of_remap_node(const char *node)
 {
@@ -51,6 +67,7 @@ __iomem void *plat_of_remap_node(const char *node)
 
 void __init device_tree_init(void)
 {
+<<<<<<< HEAD
 	unsigned long base, size;
 	void *fdt_copy;
 
@@ -75,6 +92,20 @@ void __init device_tree_init(void)
 
 	/* free the space reserved for the dt blob */
 	free_bootmem(base, size);
+=======
+	unflatten_and_copy_device_tree();
+}
+
+static int memory_dtb;
+
+static int __init early_init_dt_find_memory(unsigned long node,
+				const char *uname, int depth, void *data)
+{
+	if (depth == 1 && !strcmp(uname, "memory@0"))
+		memory_dtb = 1;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init plat_mem_setup(void)
@@ -85,9 +116,18 @@ void __init plat_mem_setup(void)
 	 * Load the builtin devicetree. This causes the chosen node to be
 	 * parsed resulting in our memory appearing
 	 */
+<<<<<<< HEAD
 	__dt_setup_arch(&__dtb_start);
 
 	if (soc_info.mem_size)
+=======
+	__dt_setup_arch(__dtb_start);
+
+	of_scan_flat_dt(early_init_dt_find_memory, NULL);
+	if (memory_dtb)
+		of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+	else if (soc_info.mem_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		add_memory_region(soc_info.mem_base, soc_info.mem_size * SZ_1M,
 				  BOOT_MEM_RAM);
 	else
@@ -98,6 +138,7 @@ void __init plat_mem_setup(void)
 
 static int __init plat_of_setup(void)
 {
+<<<<<<< HEAD
 	static struct of_device_id of_ids[3];
 	int len = sizeof(of_ids[0].compatible);
 
@@ -109,6 +150,12 @@ static int __init plat_of_setup(void)
 
 	if (of_platform_populate(NULL, of_ids, NULL, NULL))
 		panic("failed to populate DT\n");
+=======
+	__dt_register_buses(soc_info.compatible, "palmbus");
+
+	/* make sure that the reset controller is setup early */
+	ralink_rst_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

@@ -39,4 +39,11 @@ void copy_page(void *to, void *from);
 
 #endif	/* !__ASSEMBLY__ */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_VSYSCALL_EMULATION
+# define __HAVE_ARCH_GATE_AREA 1
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_X86_PAGE_64_H */

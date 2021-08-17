@@ -16,7 +16,10 @@
  *	     Resource sorting
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/pci.h>
@@ -26,17 +29,30 @@
 #include <linux/slab.h>
 #include "pci.h"
 
+<<<<<<< HEAD
 
 void pci_update_resource(struct pci_dev *dev, int resno)
+=======
+static void pci_std_update_resource(struct pci_dev *dev, int resno)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_bus_region region;
 	bool disable;
 	u16 cmd;
 	u32 new, check, mask;
 	int reg;
+<<<<<<< HEAD
 	enum pci_bar_type type;
 	struct resource *res = dev->resource + resno;
 
+=======
+	struct resource *res = dev->resource + resno;
+
+	/* Per SR-IOV spec 3.4.1.11, VF BARs are RO zero */
+	if (dev->is_virtfn)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Ignore resources for unimplemented BARs and unused resource slots
 	 * for 64 bit BARs.
@@ -44,6 +60,12 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 	if (!res->flags)
 		return;
 
+<<<<<<< HEAD
+=======
+	if (res->flags & IORESOURCE_UNSET)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Ignore non-moveable resources.  This might be legacy resources for
 	 * which no functional BAR register exists or another important
@@ -52,6 +74,7 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 	if (res->flags & IORESOURCE_PCI_FIXED)
 		return;
 
+<<<<<<< HEAD
 	pcibios_resource_to_bus(dev, &region, res);
 
 	new = region.start | (res->flags & PCI_REGION_FLAG_MASK);
@@ -68,6 +91,37 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 			return;
 		new |= PCI_ROM_ADDRESS_ENABLE;
 	}
+=======
+	pcibios_resource_to_bus(dev->bus, &region, res);
+	new = region.start;
+
+	if (res->flags & IORESOURCE_IO) {
+		mask = (u32)PCI_BASE_ADDRESS_IO_MASK;
+		new |= res->flags & ~PCI_BASE_ADDRESS_IO_MASK;
+	} else if (resno == PCI_ROM_RESOURCE) {
+		mask = PCI_ROM_ADDRESS_MASK;
+	} else {
+		mask = (u32)PCI_BASE_ADDRESS_MEM_MASK;
+		new |= res->flags & ~PCI_BASE_ADDRESS_MEM_MASK;
+	}
+
+	if (resno < PCI_ROM_RESOURCE) {
+		reg = PCI_BASE_ADDRESS_0 + 4 * resno;
+	} else if (resno == PCI_ROM_RESOURCE) {
+
+		/*
+		 * Apparently some Matrox devices have ROM BARs that read
+		 * as zero when disabled, so don't update ROM BARs unless
+		 * they're enabled.  See https://lkml.org/lkml/2005/8/30/138.
+		 */
+		if (!(res->flags & IORESOURCE_ROM_ENABLE))
+			return;
+
+		reg = dev->rom_base_reg;
+		new |= PCI_ROM_ADDRESS_ENABLE;
+	} else
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We can't update a 64-bit BAR atomically, so when possible,
@@ -94,18 +148,36 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 		pci_write_config_dword(dev, reg + 4, new);
 		pci_read_config_dword(dev, reg + 4, &check);
 		if (check != new) {
+<<<<<<< HEAD
 			dev_err(&dev->dev, "BAR %d: error updating "
 			       "(high %#08x != %#08x)\n", resno, new, check);
+=======
+			dev_err(&dev->dev, "BAR %d: error updating (high %#08x != %#08x)\n",
+				resno, new, check);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	if (disable)
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
+<<<<<<< HEAD
 
 	res->flags &= ~IORESOURCE_UNSET;
 	dev_dbg(&dev->dev, "BAR %d: set to %pR (PCI address [%#llx-%#llx])\n",
 		resno, res, (unsigned long long)region.start,
 		(unsigned long long)region.end);
+=======
+}
+
+void pci_update_resource(struct pci_dev *dev, int resno)
+{
+	if (resno <= PCI_ROM_RESOURCE)
+		pci_std_update_resource(dev, resno);
+#ifdef CONFIG_PCI_IOV
+	else if (resno >= PCI_IOV_RESOURCES && resno <= PCI_IOV_RESOURCE_END)
+		pci_iov_update_resource(dev, resno);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int pci_claim_resource(struct pci_dev *dev, int resource)
@@ -113,18 +185,46 @@ int pci_claim_resource(struct pci_dev *dev, int resource)
 	struct resource *res = &dev->resource[resource];
 	struct resource *root, *conflict;
 
+<<<<<<< HEAD
 	root = pci_find_parent_resource(dev, res);
 	if (!root) {
 		dev_info(&dev->dev, "no compatible bridge window for %pR\n",
 			 res);
+=======
+	if (res->flags & IORESOURCE_UNSET) {
+		dev_info(&dev->dev, "can't claim BAR %d %pR: no address assigned\n",
+			 resource, res);
+		return -EINVAL;
+	}
+
+	/*
+	 * If we have a shadow copy in RAM, the PCI device doesn't respond
+	 * to the shadow range, so we don't need to claim it, and upstream
+	 * bridges don't need to route the range to the device.
+	 */
+	if (res->flags & IORESOURCE_ROM_SHADOW)
+		return 0;
+
+	root = pci_find_parent_resource(dev, res);
+	if (!root) {
+		dev_info(&dev->dev, "can't claim BAR %d %pR: no compatible bridge window\n",
+			 resource, res);
+		res->flags |= IORESOURCE_UNSET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	conflict = request_resource_conflict(root, res);
 	if (conflict) {
+<<<<<<< HEAD
 		dev_info(&dev->dev,
 			 "address space collision: %pR conflicts with %s %pR\n",
 			 res, conflict->name, conflict);
+=======
+		dev_info(&dev->dev, "can't claim BAR %d %pR: address conflict with %s %pR\n",
+			 resource, res, conflict->name, conflict);
+		res->flags |= IORESOURCE_UNSET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -159,21 +259,36 @@ resource_size_t __weak pcibios_retrieve_fw_addr(struct pci_dev *dev, int idx)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev, 
+=======
+static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int resno, resource_size_t size)
 {
 	struct resource *root, *conflict;
 	resource_size_t fw_addr, start, end;
+<<<<<<< HEAD
 	int ret = 0;
 
 	fw_addr = pcibios_retrieve_fw_addr(dev, resno);
 	if (!fw_addr)
 		return 1;
+=======
+
+	fw_addr = pcibios_retrieve_fw_addr(dev, resno);
+	if (!fw_addr)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	start = res->start;
 	end = res->end;
 	res->start = fw_addr;
 	res->end = res->start + size - 1;
+<<<<<<< HEAD
+=======
+	res->flags &= ~IORESOURCE_UNSET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	root = pci_find_parent_resource(dev, res);
 	if (!root) {
@@ -187,6 +302,7 @@ static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
 		 resno, res);
 	conflict = request_resource_conflict(root, res);
 	if (conflict) {
+<<<<<<< HEAD
 		dev_info(&dev->dev,
 			 "BAR %d: %pR conflicts with %s %pR\n", resno,
 			 res, conflict->name, conflict);
@@ -195,6 +311,16 @@ static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
 		ret = 1;
 	}
 	return ret;
+=======
+		dev_info(&dev->dev, "BAR %d: %pR conflicts with %s %pR\n",
+			 resno, res, conflict->name, conflict);
+		res->start = start;
+		res->end = end;
+		res->flags |= IORESOURCE_UNSET;
+		return -EBUSY;
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
@@ -206,6 +332,7 @@ static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 
 	min = (res->flags & IORESOURCE_IO) ? PCIBIOS_MIN_IO : PCIBIOS_MIN_MEM;
 
+<<<<<<< HEAD
 	/* First, try exact prefetching match.. */
 	ret = pci_bus_alloc_resource(bus, res, size, align, min,
 				     IORESOURCE_PREFETCH,
@@ -221,16 +348,59 @@ static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 		ret = pci_bus_alloc_resource(bus, res, size, align, min, 0,
 					     pcibios_align_resource, dev);
 	}
+=======
+	/*
+	 * First, try exact prefetching match.  Even if a 64-bit
+	 * prefetchable bridge window is below 4GB, we can't put a 32-bit
+	 * prefetchable resource in it because pbus_size_mem() assumes a
+	 * 64-bit window will contain no 32-bit resources.  If we assign
+	 * things differently than they were sized, not everything will fit.
+	 */
+	ret = pci_bus_alloc_resource(bus, res, size, align, min,
+				     IORESOURCE_PREFETCH | IORESOURCE_MEM_64,
+				     pcibios_align_resource, dev);
+	if (ret == 0)
+		return 0;
+
+	/*
+	 * If the prefetchable window is only 32 bits wide, we can put
+	 * 64-bit prefetchable resources in it.
+	 */
+	if ((res->flags & (IORESOURCE_PREFETCH | IORESOURCE_MEM_64)) ==
+	     (IORESOURCE_PREFETCH | IORESOURCE_MEM_64)) {
+		ret = pci_bus_alloc_resource(bus, res, size, align, min,
+					     IORESOURCE_PREFETCH,
+					     pcibios_align_resource, dev);
+		if (ret == 0)
+			return 0;
+	}
+
+	/*
+	 * If we didn't find a better match, we can put any memory resource
+	 * in a non-prefetchable window.  If this resource is 32 bits and
+	 * non-prefetchable, the first call already tried the only possibility
+	 * so we don't need to try again.
+	 */
+	if (res->flags & (IORESOURCE_PREFETCH | IORESOURCE_MEM_64))
+		ret = pci_bus_alloc_resource(bus, res, size, align, min, 0,
+					     pcibios_align_resource, dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int _pci_assign_resource(struct pci_dev *dev, int resno,
 				resource_size_t size, resource_size_t min_align)
 {
+<<<<<<< HEAD
 	struct resource *res = dev->resource + resno;
 	struct pci_bus *bus;
 	int ret;
 	char *type;
+=======
+	struct pci_bus *bus;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bus = dev->bus;
 	while ((ret = __pci_assign_resource(bus, dev, resno, size, min_align))) {
@@ -239,6 +409,7 @@ static int _pci_assign_resource(struct pci_dev *dev, int resno,
 		bus = bus->parent;
 	}
 
+<<<<<<< HEAD
 	if (ret) {
 		if (res->flags & IORESOURCE_MEM)
 			if (res->flags & IORESOURCE_PREFETCH)
@@ -254,6 +425,8 @@ static int _pci_assign_resource(struct pci_dev *dev, int resno,
 			 resno, type, (unsigned long long) resource_size(res));
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -263,10 +436,21 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 	resource_size_t align, size;
 	int ret;
 
+<<<<<<< HEAD
 	align = pci_resource_alignment(dev, res);
 	if (!align) {
 		dev_info(&dev->dev, "BAR %d: can't assign %pR "
 			 "(bogus alignment)\n", resno, res);
+=======
+	if (res->flags & IORESOURCE_PCI_FIXED)
+		return 0;
+
+	res->flags |= IORESOURCE_UNSET;
+	align = pci_resource_alignment(dev, res);
+	if (!align) {
+		dev_info(&dev->dev, "BAR %d: can't assign %pR (bogus alignment)\n",
+			 resno, res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -278,6 +462,7 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 	 * where firmware left it.  That at least has a chance of
 	 * working, which is better than just leaving it disabled.
 	 */
+<<<<<<< HEAD
 	if (ret < 0)
 		ret = pci_revert_fw_address(res, dev, resno, size);
 
@@ -289,23 +474,61 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 	}
 	return ret;
 }
+=======
+	if (ret < 0) {
+		dev_info(&dev->dev, "BAR %d: no space for %pR\n", resno, res);
+		ret = pci_revert_fw_address(res, dev, resno, size);
+	}
+
+	if (ret < 0) {
+		dev_info(&dev->dev, "BAR %d: failed to assign %pR\n", resno,
+			 res);
+		return ret;
+	}
+
+	res->flags &= ~IORESOURCE_UNSET;
+	res->flags &= ~IORESOURCE_STARTALIGN;
+	dev_info(&dev->dev, "BAR %d: assigned %pR\n", resno, res);
+	if (resno < PCI_BRIDGE_RESOURCES)
+		pci_update_resource(dev, resno);
+
+	return 0;
+}
+EXPORT_SYMBOL(pci_assign_resource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int pci_reassign_resource(struct pci_dev *dev, int resno, resource_size_t addsize,
 			resource_size_t min_align)
 {
 	struct resource *res = dev->resource + resno;
+<<<<<<< HEAD
 	resource_size_t new_size;
 	int ret;
 
 	if (!res->parent) {
 		dev_info(&dev->dev, "BAR %d: can't reassign an unassigned resource %pR "
 			 "\n", resno, res);
+=======
+	unsigned long flags;
+	resource_size_t new_size;
+	int ret;
+
+	if (res->flags & IORESOURCE_PCI_FIXED)
+		return 0;
+
+	flags = res->flags;
+	res->flags |= IORESOURCE_UNSET;
+	if (!res->parent) {
+		dev_info(&dev->dev, "BAR %d: can't reassign an unassigned resource %pR\n",
+			 resno, res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	/* already aligned with min_align */
 	new_size = resource_size(res) + addsize;
 	ret = _pci_assign_resource(dev, resno, new_size, min_align);
+<<<<<<< HEAD
 	if (!ret) {
 		res->flags &= ~IORESOURCE_STARTALIGN;
 		dev_info(&dev->dev, "BAR %d: reassigned %pR\n", resno, res);
@@ -313,6 +536,23 @@ int pci_reassign_resource(struct pci_dev *dev, int resno, resource_size_t addsiz
 			pci_update_resource(dev, resno);
 	}
 	return ret;
+=======
+	if (ret) {
+		res->flags = flags;
+		dev_info(&dev->dev, "BAR %d: %pR (failed to expand by %#llx)\n",
+			 resno, res, (unsigned long long) addsize);
+		return ret;
+	}
+
+	res->flags &= ~IORESOURCE_UNSET;
+	res->flags &= ~IORESOURCE_STARTALIGN;
+	dev_info(&dev->dev, "BAR %d: reassigned %pR (expanded by %#llx)\n",
+		 resno, res, (unsigned long long) addsize);
+	if (resno < PCI_BRIDGE_RESOURCES)
+		pci_update_resource(dev, resno);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int pci_enable_resources(struct pci_dev *dev, int mask)
@@ -336,9 +576,21 @@ int pci_enable_resources(struct pci_dev *dev, int mask)
 				(!(r->flags & IORESOURCE_ROM_ENABLE)))
 			continue;
 
+<<<<<<< HEAD
 		if (!r->parent) {
 			dev_err(&dev->dev, "device not available "
 				"(can't reserve %pR)\n", r);
+=======
+		if (r->flags & IORESOURCE_UNSET) {
+			dev_err(&dev->dev, "can't enable device: BAR %d %pR not assigned\n",
+				i, r);
+			return -EINVAL;
+		}
+
+		if (!r->parent) {
+			dev_err(&dev->dev, "can't enable device: BAR %d %pR not claimed\n",
+				i, r);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 		}
 

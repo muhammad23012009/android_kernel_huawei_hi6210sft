@@ -14,19 +14,28 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
+<<<<<<< HEAD
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/device.h>
 #include <linux/platform_device.h>
+=======
+#include <linux/device.h>
+#include <linux/platform_device.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/prom.h>
 #include <asm/pmac_low_i2c.h>
 
@@ -154,6 +163,7 @@ static int i2c_powermac_master_xfer(	struct i2c_adapter *adap,
 {
 	struct pmac_i2c_bus	*bus = i2c_get_adapdata(adap);
 	int			rc = 0;
+<<<<<<< HEAD
 	int			read;
 	int			addrdir;
 
@@ -167,6 +177,13 @@ static int i2c_powermac_master_xfer(	struct i2c_adapter *adap,
 		return -EINVAL;
 	read = (msgs->flags & I2C_M_RD) != 0;
 	addrdir = (msgs->addr << 1) | read;
+=======
+	int			addrdir;
+
+	if (msgs->flags & I2C_M_TEN)
+		return -EINVAL;
+	addrdir = i2c_8bit_addr_from_msg(msgs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = pmac_i2c_open(bus, 0);
 	if (rc) {
@@ -209,6 +226,12 @@ static const struct i2c_algorithm i2c_powermac_algorithm = {
 	.functionality	= i2c_powermac_func,
 };
 
+<<<<<<< HEAD
+=======
+static struct i2c_adapter_quirks i2c_powermac_quirks = {
+	.max_num_msgs = 1,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int i2c_powermac_remove(struct platform_device *dev)
 {
@@ -398,7 +421,11 @@ static void i2c_powermac_register_devices(struct i2c_adapter *adap,
 
 static int i2c_powermac_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct pmac_i2c_bus *bus = dev->dev.platform_data;
+=======
+	struct pmac_i2c_bus *bus = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_node *parent = NULL;
 	struct i2c_adapter *adapter;
 	const char *basename;
@@ -438,24 +465,45 @@ static int i2c_powermac_probe(struct platform_device *dev)
 
 	platform_set_drvdata(dev, adapter);
 	adapter->algo = &i2c_powermac_algorithm;
+<<<<<<< HEAD
 	i2c_set_adapdata(adapter, bus);
 	adapter->dev.parent = &dev->dev;
 	adapter->dev.of_node = dev->dev.of_node;
+=======
+	adapter->quirks = &i2c_powermac_quirks;
+	i2c_set_adapdata(adapter, bus);
+	adapter->dev.parent = &dev->dev;
+
+	/* Clear of_node to skip automatic registration of i2c child nodes */
+	adapter->dev.of_node = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = i2c_add_adapter(adapter);
 	if (rc) {
 		printk(KERN_ERR "i2c-powermac: Adapter %s registration "
 		       "failed\n", adapter->name);
 		memset(adapter, 0, sizeof(*adapter));
+<<<<<<< HEAD
+=======
+		return rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	printk(KERN_INFO "PowerMac i2c bus %s registered\n", adapter->name);
 
+<<<<<<< HEAD
 	/* Cannot use of_i2c_register_devices() due to Apple device-tree
 	 * funkyness
 	 */
 	i2c_powermac_register_devices(adapter, bus);
 
 	return rc;
+=======
+	/* Use custom child registration due to Apple device-tree funkyness */
+	adapter->dev.of_node = dev->dev.of_node;
+	i2c_powermac_register_devices(adapter, bus);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver i2c_powermac_driver = {

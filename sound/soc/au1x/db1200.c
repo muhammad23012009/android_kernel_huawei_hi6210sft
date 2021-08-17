@@ -21,7 +21,11 @@
 #include "../codecs/wm8731.h"
 #include "psc.h"
 
+<<<<<<< HEAD
 static struct platform_device_id db1200_pids[] = {
+=======
+static const struct platform_device_id db1200_pids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "db1200-ac97",
 		.driver_data	= 0,
@@ -73,12 +77,20 @@ static struct snd_soc_dai_link db1300_ac97_dai = {
 
 static struct snd_soc_card db1300_ac97_machine = {
 	.name		= "DB1300_AC97",
+<<<<<<< HEAD
+=======
+	.owner		= THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link	= &db1300_ac97_dai,
 	.num_links	= 1,
 };
 
 static struct snd_soc_card db1550_ac97_machine = {
 	.name		= "DB1550_AC97",
+<<<<<<< HEAD
+=======
+	.owner		= THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link	= &db1200_ac97_dai,
 	.num_links	= 1,
 };
@@ -89,13 +101,17 @@ static int db1200_i2s_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+<<<<<<< HEAD
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* WM8731 has its own 12MHz crystal */
 	snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_XTAL,
 				12000000, SND_SOC_CLOCK_IN);
 
+<<<<<<< HEAD
 	/* codec is bitclock and lrclk master */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_LEFT_J |
 			SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBM_CFM);
@@ -110,6 +126,9 @@ static int db1200_i2s_startup(struct snd_pcm_substream *substream)
 	ret = 0;
 out:
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct snd_soc_ops db1200_i2s_wm8731_ops = {
@@ -123,6 +142,11 @@ static struct snd_soc_dai_link db1200_i2s_dai = {
 	.cpu_dai_name	= "au1xpsc_i2s.1",
 	.platform_name	= "au1xpsc-pcm.1",
 	.codec_name	= "wm8731.0-001b",
+<<<<<<< HEAD
+=======
+	.dai_fmt	= SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_NB_NF |
+			  SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ops		= &db1200_i2s_wm8731_ops,
 };
 
@@ -140,11 +164,20 @@ static struct snd_soc_dai_link db1300_i2s_dai = {
 	.cpu_dai_name	= "au1xpsc_i2s.2",
 	.platform_name	= "au1xpsc-pcm.2",
 	.codec_name	= "wm8731.0-001b",
+<<<<<<< HEAD
+=======
+	.dai_fmt	= SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_NB_NF |
+			  SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ops		= &db1200_i2s_wm8731_ops,
 };
 
 static struct snd_soc_card db1300_i2s_machine = {
 	.name		= "DB1300_I2S",
+<<<<<<< HEAD
+=======
+	.owner		= THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link	= &db1300_i2s_dai,
 	.num_links	= 1,
 };
@@ -156,11 +189,20 @@ static struct snd_soc_dai_link db1550_i2s_dai = {
 	.cpu_dai_name	= "au1xpsc_i2s.3",
 	.platform_name	= "au1xpsc-pcm.3",
 	.codec_name	= "wm8731.0-001b",
+<<<<<<< HEAD
+=======
+	.dai_fmt	= SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_NB_NF |
+			  SND_SOC_DAIFMT_CBM_CFM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ops		= &db1200_i2s_wm8731_ops,
 };
 
 static struct snd_soc_card db1550_i2s_machine = {
 	.name		= "DB1550_I2S",
+<<<<<<< HEAD
+=======
+	.owner		= THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link	= &db1550_i2s_dai,
 	.num_links	= 1,
 };
@@ -183,6 +225,7 @@ static int db1200_audio_probe(struct platform_device *pdev)
 
 	card = db1200_cards[pid->driver_data];
 	card->dev = &pdev->dev;
+<<<<<<< HEAD
 	return snd_soc_register_card(card);
 }
 
@@ -191,17 +234,26 @@ static int db1200_audio_remove(struct platform_device *pdev)
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 	snd_soc_unregister_card(card);
 	return 0;
+=======
+	return devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver db1200_audio_driver = {
 	.driver	= {
 		.name	= "db1200-ac97",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &snd_soc_pm_ops,
 	},
 	.id_table	= db1200_pids,
 	.probe		= db1200_audio_probe,
+<<<<<<< HEAD
 	.remove		= db1200_audio_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(db1200_audio_driver);

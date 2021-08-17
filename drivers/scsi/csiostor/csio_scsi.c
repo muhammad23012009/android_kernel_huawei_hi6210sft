@@ -152,6 +152,7 @@ csio_scsi_itnexus_loss_error(uint16_t error)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void
 csio_scsi_tag(struct scsi_cmnd *scmnd, uint8_t *tag, uint8_t hq,
 	      uint8_t oq, uint8_t sq)
@@ -174,6 +175,8 @@ csio_scsi_tag(struct scsi_cmnd *scmnd, uint8_t *tag, uint8_t hq,
 		*tag = 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * csio_scsi_fcp_cmnd - Frame the SCSI FCP command paylod.
  * @req: IO req structure.
@@ -192,11 +195,17 @@ csio_scsi_fcp_cmnd(struct csio_ioreq *req, void *addr)
 		int_to_scsilun(scmnd->device->lun, &fcp_cmnd->fc_lun);
 		fcp_cmnd->fc_tm_flags = 0;
 		fcp_cmnd->fc_cmdref = 0;
+<<<<<<< HEAD
 		fcp_cmnd->fc_pri_ta = 0;
 
 		memcpy(fcp_cmnd->fc_cdb, scmnd->cmnd, 16);
 		csio_scsi_tag(scmnd, &fcp_cmnd->fc_pri_ta,
 			      FCP_PTA_HEADQ, FCP_PTA_ORDERED, FCP_PTA_SIMPLE);
+=======
+
+		memcpy(fcp_cmnd->fc_cdb, scmnd->cmnd, 16);
+		fcp_cmnd->fc_pri_ta = FCP_PTA_SIMPLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fcp_cmnd->fc_dl = cpu_to_be32(scsi_bufflen(scmnd));
 
 		if (req->nsge)
@@ -230,10 +239,17 @@ csio_scsi_init_cmd_wr(struct csio_ioreq *req, void *addr, uint32_t size)
 	struct csio_dma_buf *dma_buf;
 	uint8_t imm = csio_hw_to_scsim(hw)->proto_cmd_len;
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_CMD_WR) |
 					  FW_SCSI_CMD_WR_IMMDLEN(imm));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 					    FW_WR_LEN16(
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_CMD_WR) |
+					  FW_SCSI_CMD_WR_IMMDLEN(imm));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+					    FW_WR_LEN16_V(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						DIV_ROUND_UP(size, 16)));
 
 	wr->cookie = (uintptr_t) req;
@@ -322,8 +338,13 @@ csio_scsi_init_ultptx_dsgl(struct csio_hw *hw, struct csio_ioreq *req,
 	struct csio_dma_buf *dma_buf;
 	struct scsi_cmnd *scmnd = csio_scsi_cmnd(req);
 
+<<<<<<< HEAD
 	sgl->cmd_nsge = htonl(ULPTX_CMD(ULP_TX_SC_DSGL) | ULPTX_MORE |
 				     ULPTX_NSGE(req->nsge));
+=======
+	sgl->cmd_nsge = htonl(ULPTX_CMD_V(ULP_TX_SC_DSGL) | ULPTX_MORE_F |
+				     ULPTX_NSGE_V(req->nsge));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Now add the data SGLs */
 	if (likely(!req->dcopy)) {
 		scsi_for_each_sg(scmnd, sgel, req->nsge, i) {
@@ -391,10 +412,17 @@ csio_scsi_init_read_wr(struct csio_ioreq *req, void *wrp, uint32_t size)
 	uint8_t imm = csio_hw_to_scsim(hw)->proto_cmd_len;
 	struct scsi_cmnd *scmnd = csio_scsi_cmnd(req);
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_READ_WR) |
 				     FW_SCSI_READ_WR_IMMDLEN(imm));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 				       FW_WR_LEN16(DIV_ROUND_UP(size, 16)));
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_READ_WR) |
+				     FW_SCSI_READ_WR_IMMDLEN(imm));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+				       FW_WR_LEN16_V(DIV_ROUND_UP(size, 16)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wr->cookie = (uintptr_t)req;
 	wr->iqid = cpu_to_be16(csio_q_physiqid(hw, req->iq_idx));
 	wr->tmo_val = (uint8_t)(req->tmo);
@@ -444,10 +472,17 @@ csio_scsi_init_write_wr(struct csio_ioreq *req, void *wrp, uint32_t size)
 	uint8_t imm = csio_hw_to_scsim(hw)->proto_cmd_len;
 	struct scsi_cmnd *scmnd = csio_scsi_cmnd(req);
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_WRITE_WR) |
 				     FW_SCSI_WRITE_WR_IMMDLEN(imm));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 				       FW_WR_LEN16(DIV_ROUND_UP(size, 16)));
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_WRITE_WR) |
+				     FW_SCSI_WRITE_WR_IMMDLEN(imm));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+				       FW_WR_LEN16_V(DIV_ROUND_UP(size, 16)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wr->cookie = (uintptr_t)req;
 	wr->iqid = cpu_to_be16(csio_q_physiqid(hw, req->iq_idx));
 	wr->tmo_val = (uint8_t)(req->tmo);
@@ -674,9 +709,15 @@ csio_scsi_init_abrt_cls_wr(struct csio_ioreq *req, void *addr, uint32_t size,
 	struct csio_rnode *rn = req->rnode;
 	struct fw_scsi_abrt_cls_wr *wr = (struct fw_scsi_abrt_cls_wr *)addr;
 
+<<<<<<< HEAD
 	wr->op_immdlen = cpu_to_be32(FW_WR_OP(FW_SCSI_ABRT_CLS_WR));
 	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID(rn->flowid) |
 					    FW_WR_LEN16(
+=======
+	wr->op_immdlen = cpu_to_be32(FW_WR_OP_V(FW_SCSI_ABRT_CLS_WR));
+	wr->flowid_len16 = cpu_to_be32(FW_WR_FLOWID_V(rn->flowid) |
+					    FW_WR_LEN16_V(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						DIV_ROUND_UP(size, 16)));
 
 	wr->cookie = (uintptr_t) req;
@@ -1407,7 +1448,11 @@ csio_device_reset(struct device *dev,
 		return -EINVAL;
 
 	/* Delete NPIV lnodes */
+<<<<<<< HEAD
 	 csio_lnodes_exit(hw, 1);
+=======
+	csio_lnodes_exit(hw, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Block upper IOs */
 	csio_lnodes_block_request(hw);
@@ -1479,8 +1524,13 @@ csio_store_dbg_level(struct device *dev,
 }
 
 static DEVICE_ATTR(hw_state, S_IRUGO, csio_show_hw_state, NULL);
+<<<<<<< HEAD
 static DEVICE_ATTR(device_reset, S_IRUGO | S_IWUSR, NULL, csio_device_reset);
 static DEVICE_ATTR(disable_port, S_IRUGO | S_IWUSR, NULL, csio_disable_port);
+=======
+static DEVICE_ATTR(device_reset, S_IWUSR, NULL, csio_device_reset);
+static DEVICE_ATTR(disable_port, S_IWUSR, NULL, csio_disable_port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEVICE_ATTR(dbg_level, S_IRUGO | S_IWUSR, csio_show_dbg_level,
 		  csio_store_dbg_level);
 
@@ -1657,7 +1707,11 @@ csio_scsi_err_handler(struct csio_hw *hw, struct csio_ioreq *req)
 	case FW_SCSI_UNDER_FLOW_ERR:
 		csio_warn(hw,
 			  "Under-flow error,cmnd:0x%x expected"
+<<<<<<< HEAD
 			  " len:0x%x resid:0x%x lun:0x%x ssn:0x%x\n",
+=======
+			  " len:0x%x resid:0x%x lun:0x%llx ssn:0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  cmnd->cmnd[0], scsi_bufflen(cmnd),
 			  scsi_get_resid(cmnd), cmnd->device->lun,
 			  rn->flowid);
@@ -1737,15 +1791,27 @@ csio_scsi_err_handler(struct csio_hw *hw, struct csio_ioreq *req)
 	}
 
 out:
+<<<<<<< HEAD
 	if (req->nsge > 0)
 		scsi_dma_unmap(cmnd);
+=======
+	if (req->nsge > 0) {
+		scsi_dma_unmap(cmnd);
+		if (req->dcopy && (host_status == DID_OK))
+			host_status = csio_scsi_copy_to_sgl(hw, req);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cmnd->result = (((host_status) << 16) | scsi_status);
 	cmnd->scsi_done(cmnd);
 
 	/* Wake up waiting threads */
 	csio_scsi_cmnd(req) = NULL;
+<<<<<<< HEAD
 	complete_all(&req->cmplobj);
+=======
+	complete(&req->cmplobj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1957,7 +2023,11 @@ csio_eh_abort_handler(struct scsi_cmnd *cmnd)
 
 	csio_dbg(hw,
 		 "Request to abort ioreq:%p cmd:%p cdb:%08llx"
+<<<<<<< HEAD
 		 " ssni:0x%x lun:%d iq:0x%x\n",
+=======
+		 " ssni:0x%x lun:%llu iq:0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ioreq, cmnd, *((uint64_t *)cmnd->cmnd), rn->flowid,
 		cmnd->device->lun, csio_q_physiqid(hw, ioreq->iq_idx));
 
@@ -1969,6 +2039,10 @@ csio_eh_abort_handler(struct scsi_cmnd *cmnd)
 	ready = csio_is_lnode_ready(ln);
 	tmo = CSIO_SCSI_ABRT_TMO_MS;
 
+<<<<<<< HEAD
+=======
+	reinit_completion(&ioreq->cmplobj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&hw->lock);
 	rv = csio_do_abrt_cls(hw, ioreq, (ready ? SCSI_ABORT : SCSI_CLOSE));
 	spin_unlock_irq(&hw->lock);
@@ -1988,8 +2062,11 @@ csio_eh_abort_handler(struct scsi_cmnd *cmnd)
 		goto inval_scmnd;
 	}
 
+<<<<<<< HEAD
 	/* Wait for completion */
 	init_completion(&ioreq->cmplobj);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wait_for_completion_timeout(&ioreq->cmplobj, msecs_to_jiffies(tmo));
 
 	/* FW didnt respond to abort within our timeout */
@@ -2015,13 +2092,21 @@ inval_scmnd:
 	/* FW successfully aborted the request */
 	if (host_byte(cmnd->result) == DID_REQUEUE) {
 		csio_info(hw,
+<<<<<<< HEAD
 			"Aborted SCSI command to (%d:%d) serial#:0x%lx\n",
+=======
+			"Aborted SCSI command to (%d:%llu) serial#:0x%lx\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cmnd->device->id, cmnd->device->lun,
 			cmnd->serial_number);
 		return SUCCESS;
 	} else {
 		csio_info(hw,
+<<<<<<< HEAD
 			"Failed to abort SCSI command, (%d:%d) serial#:0x%lx\n",
+=======
+			"Failed to abort SCSI command, (%d:%llu) serial#:0x%lx\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cmnd->device->id, cmnd->device->lun,
 			cmnd->serial_number);
 		return FAILED;
@@ -2100,13 +2185,21 @@ csio_eh_lun_reset_handler(struct scsi_cmnd *cmnd)
 	if (!rn)
 		goto fail;
 
+<<<<<<< HEAD
 	csio_dbg(hw, "Request to reset LUN:%d (ssni:0x%x tgtid:%d)\n",
+=======
+	csio_dbg(hw, "Request to reset LUN:%llu (ssni:0x%x tgtid:%d)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      cmnd->device->lun, rn->flowid, rn->scsi_id);
 
 	if (!csio_is_lnode_ready(ln)) {
 		csio_err(hw,
 			 "LUN reset cannot be issued on non-ready"
+<<<<<<< HEAD
 			 " local node vnpi:0x%x (LUN:%d)\n",
+=======
+			 " local node vnpi:0x%x (LUN:%llu)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 ln->vnp_flowid, cmnd->device->lun);
 		goto fail;
 	}
@@ -2126,7 +2219,11 @@ csio_eh_lun_reset_handler(struct scsi_cmnd *cmnd)
 	if (fc_remote_port_chkready(rn->rport)) {
 		csio_err(hw,
 			 "LUN reset cannot be issued on non-ready"
+<<<<<<< HEAD
 			 " remote node ssni:0x%x (LUN:%d)\n",
+=======
+			 " remote node ssni:0x%x (LUN:%llu)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 rn->flowid, cmnd->device->lun);
 		goto fail;
 	}
@@ -2168,7 +2265,11 @@ csio_eh_lun_reset_handler(struct scsi_cmnd *cmnd)
 	sld.level = CSIO_LEV_LUN;
 	sld.lnode = ioreq->lnode;
 	sld.rnode = ioreq->rnode;
+<<<<<<< HEAD
 	sld.oslun = (uint64_t)cmnd->device->lun;
+=======
+	sld.oslun = cmnd->device->lun;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&hw->lock, flags);
 	/* Kick off TM SM on the ioreq */
@@ -2190,7 +2291,11 @@ csio_eh_lun_reset_handler(struct scsi_cmnd *cmnd)
 
 	/* LUN reset timed-out */
 	if (((struct scsi_cmnd *)csio_scsi_cmnd(ioreq)) == cmnd) {
+<<<<<<< HEAD
 		csio_err(hw, "LUN reset (%d:%d) timed out\n",
+=======
+		csio_err(hw, "LUN reset (%d:%llu) timed out\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 cmnd->device->id, cmnd->device->lun);
 
 		spin_lock_irq(&hw->lock);
@@ -2203,7 +2308,11 @@ csio_eh_lun_reset_handler(struct scsi_cmnd *cmnd)
 
 	/* LUN reset returned, check cached status */
 	if (cmnd->SCp.Status != FW_SUCCESS) {
+<<<<<<< HEAD
 		csio_err(hw, "LUN reset failed (%d:%d), status: %d\n",
+=======
+		csio_err(hw, "LUN reset failed (%d:%llu), status: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 cmnd->device->id, cmnd->device->lun, cmnd->SCp.Status);
 		goto fail;
 	}
@@ -2223,7 +2332,11 @@ csio_eh_lun_reset_handler(struct scsi_cmnd *cmnd)
 	/* Aborts may have timed out */
 	if (retval != 0) {
 		csio_err(hw,
+<<<<<<< HEAD
 			 "Attempt to abort I/Os during LUN reset of %d"
+=======
+			 "Attempt to abort I/Os during LUN reset of %llu"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 " returned %d\n", cmnd->device->lun, retval);
 		/* Return I/Os back to active_q */
 		spin_lock_irq(&hw->lock);
@@ -2234,7 +2347,11 @@ csio_eh_lun_reset_handler(struct scsi_cmnd *cmnd)
 
 	CSIO_INC_STATS(rn, n_lun_rst);
 
+<<<<<<< HEAD
 	csio_info(hw, "LUN reset occurred (%d:%d)\n",
+=======
+	csio_info(hw, "LUN reset occurred (%d:%llu)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  cmnd->device->id, cmnd->device->lun);
 
 	return SUCCESS;
@@ -2262,11 +2379,15 @@ csio_slave_alloc(struct scsi_device *sdev)
 static int
 csio_slave_configure(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 	if (sdev->tagged_supported)
 		scsi_activate_tcq(sdev, csio_lun_qdepth);
 	else
 		scsi_deactivate_tcq(sdev, csio_lun_qdepth);
 
+=======
+	scsi_change_queue_depth(sdev, csio_lun_qdepth);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

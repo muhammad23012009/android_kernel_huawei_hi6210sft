@@ -69,7 +69,11 @@ static DEVICE_ATTR(name, 0444, name_show, NULL);
 static ssize_t
 temp_input_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	long temperature;
+=======
+	int temperature;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	struct thermal_hwmon_attr *hwmon_attr
 			= container_of(attr, struct thermal_hwmon_attr, attr);
@@ -83,7 +87,11 @@ temp_input_show(struct device *dev, struct device_attribute *attr, char *buf)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	return sprintf(buf, "%ld\n", temperature);
+=======
+	return sprintf(buf, "%d\n", temperature);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t
@@ -95,6 +103,7 @@ temp_crit_show(struct device *dev, struct device_attribute *attr, char *buf)
 			= container_of(hwmon_attr, struct thermal_hwmon_temp,
 				       temp_crit);
 	struct thermal_zone_device *tz = temp->tz;
+<<<<<<< HEAD
 	long temperature;
 	int ret;
 
@@ -103,6 +112,16 @@ temp_crit_show(struct device *dev, struct device_attribute *attr, char *buf)
 		return ret;
 
 	return sprintf(buf, "%ld\n", temperature);
+=======
+	int temperature;
+	int ret;
+
+	ret = tz->ops->get_crit_temp(tz, &temperature);
+	if (ret)
+		return ret;
+
+	return sprintf(buf, "%d\n", temperature);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -140,6 +159,15 @@ thermal_hwmon_lookup_temp(const struct thermal_hwmon_device *hwmon,
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static bool thermal_zone_crit_temp_valid(struct thermal_zone_device *tz)
+{
+	int temp;
+	return tz->ops->get_crit_temp && !tz->ops->get_crit_temp(tz, &temp);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
 {
 	struct thermal_hwmon_device *hwmon;
@@ -189,6 +217,7 @@ int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
 	if (result)
 		goto free_temp_mem;
 
+<<<<<<< HEAD
 	if (tz->ops->get_crit_temp) {
 		unsigned long temperature;
 		if (!tz->ops->get_crit_temp(tz, &temperature)) {
@@ -204,6 +233,20 @@ int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
 			if (result)
 				goto unregister_input;
 		}
+=======
+	if (thermal_zone_crit_temp_valid(tz)) {
+		snprintf(temp->temp_crit.name,
+				sizeof(temp->temp_crit.name),
+				"temp%d_crit", hwmon->count);
+		temp->temp_crit.attr.attr.name = temp->temp_crit.name;
+		temp->temp_crit.attr.attr.mode = 0444;
+		temp->temp_crit.attr.show = temp_crit_show;
+		sysfs_attr_init(&temp->temp_crit.attr.attr);
+		result = device_create_file(hwmon->device,
+					    &temp->temp_crit.attr);
+		if (result)
+			goto unregister_input;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_lock(&thermal_hwmon_list_lock);
@@ -229,6 +272,10 @@ int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
 
 	return result;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(thermal_add_hwmon_sysfs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
 {
@@ -250,7 +297,11 @@ void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
 	}
 
 	device_remove_file(hwmon->device, &temp->temp_input.attr);
+<<<<<<< HEAD
 	if (tz->ops->get_crit_temp)
+=======
+	if (thermal_zone_crit_temp_valid(tz))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		device_remove_file(hwmon->device, &temp->temp_crit.attr);
 
 	mutex_lock(&thermal_hwmon_list_lock);
@@ -267,3 +318,7 @@ void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
 	hwmon_device_unregister(hwmon->device);
 	kfree(hwmon);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(thermal_remove_hwmon_sysfs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

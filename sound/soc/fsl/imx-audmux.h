@@ -1,6 +1,7 @@
 #ifndef __IMX_AUDMUX_H
 #define __IMX_AUDMUX_H
 
+<<<<<<< HEAD
 #define MX27_AUDMUX_HPCR1_SSI0		0
 #define MX27_AUDMUX_HPCR2_SSI1		1
 #define MX27_AUDMUX_HPCR3_SSI_PINS_4	2
@@ -52,6 +53,9 @@
 #define IMX_AUDMUX_V2_PDCR_TXRXEN	(1 << 12)
 #define IMX_AUDMUX_V2_PDCR_MODE(x)	(((x) & 0x3) << 8)
 #define IMX_AUDMUX_V2_PDCR_INMMASK(x)	((x) & 0xff)
+=======
+#include <dt-bindings/sound/fsl-imx-audmux.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int imx_audmux_v1_configure_port(unsigned int port, unsigned int pcr);
 

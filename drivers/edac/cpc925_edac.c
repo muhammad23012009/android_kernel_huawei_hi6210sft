@@ -789,7 +789,11 @@ static struct cpc925_dev_info cpc925_devs[] = {
 	.exit = cpc925_htlink_exit,
 	.check = cpc925_htlink_check,
 	},
+<<<<<<< HEAD
 	{0}, /* Terminated by NULL */
+=======
+	{ }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*

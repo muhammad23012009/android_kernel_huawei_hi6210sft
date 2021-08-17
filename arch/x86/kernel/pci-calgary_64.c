@@ -180,13 +180,21 @@ static void calioc2_dump_error_regs(struct iommu_table *tbl);
 static void calgary_init_bitmap_from_tce_table(struct iommu_table *tbl);
 static void get_tce_space_from_tar(void);
 
+<<<<<<< HEAD
 static struct cal_chipset_ops calgary_chip_ops = {
+=======
+static const struct cal_chipset_ops calgary_chip_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.handle_quirks = calgary_handle_quirks,
 	.tce_cache_blast = calgary_tce_cache_blast,
 	.dump_error_regs = calgary_dump_error_regs
 };
 
+<<<<<<< HEAD
 static struct cal_chipset_ops calioc2_chip_ops = {
+=======
+static const struct cal_chipset_ops calioc2_chip_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.handle_quirks = calioc2_handle_quirks,
 	.tce_cache_blast = calioc2_tce_cache_blast,
 	.dump_error_regs = calioc2_dump_error_regs
@@ -296,7 +304,11 @@ static void iommu_free(struct iommu_table *tbl, dma_addr_t dma_addr,
 
 	/* were we called with bad_dma_address? */
 	badend = DMA_ERROR_CODE + (EMERGENCY_PAGES * PAGE_SIZE);
+<<<<<<< HEAD
 	if (unlikely((dma_addr >= DMA_ERROR_CODE) && (dma_addr < badend))) {
+=======
+	if (unlikely(dma_addr < badend)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		WARN(1, KERN_ERR "Calgary: driver tried unmapping bad DMA "
 		       "address 0x%Lx\n", dma_addr);
 		return;
@@ -340,7 +352,11 @@ static inline struct iommu_table *find_iommu_table(struct device *dev)
 
 static void calgary_unmap_sg(struct device *dev, struct scatterlist *sglist,
 			     int nelems,enum dma_data_direction dir,
+<<<<<<< HEAD
 			     struct dma_attrs *attrs)
+=======
+			     unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iommu_table *tbl = find_iommu_table(dev);
 	struct scatterlist *s;
@@ -364,7 +380,11 @@ static void calgary_unmap_sg(struct device *dev, struct scatterlist *sglist,
 
 static int calgary_map_sg(struct device *dev, struct scatterlist *sg,
 			  int nelems, enum dma_data_direction dir,
+<<<<<<< HEAD
 			  struct dma_attrs *attrs)
+=======
+			  unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iommu_table *tbl = find_iommu_table(dev);
 	struct scatterlist *s;
@@ -396,7 +416,11 @@ static int calgary_map_sg(struct device *dev, struct scatterlist *sg,
 
 	return nelems;
 error:
+<<<<<<< HEAD
 	calgary_unmap_sg(dev, sg, nelems, dir, NULL);
+=======
+	calgary_unmap_sg(dev, sg, nelems, dir, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_sg(sg, s, nelems, i) {
 		sg->dma_address = DMA_ERROR_CODE;
 		sg->dma_length = 0;
@@ -407,7 +431,11 @@ error:
 static dma_addr_t calgary_map_page(struct device *dev, struct page *page,
 				   unsigned long offset, size_t size,
 				   enum dma_data_direction dir,
+<<<<<<< HEAD
 				   struct dma_attrs *attrs)
+=======
+				   unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *vaddr = page_address(page) + offset;
 	unsigned long uaddr;
@@ -422,7 +450,11 @@ static dma_addr_t calgary_map_page(struct device *dev, struct page *page,
 
 static void calgary_unmap_page(struct device *dev, dma_addr_t dma_addr,
 			       size_t size, enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iommu_table *tbl = find_iommu_table(dev);
 	unsigned int npages;
@@ -432,7 +464,11 @@ static void calgary_unmap_page(struct device *dev, dma_addr_t dma_addr,
 }
 
 static void* calgary_alloc_coherent(struct device *dev, size_t size,
+<<<<<<< HEAD
 	dma_addr_t *dma_handle, gfp_t flag, struct dma_attrs *attrs)
+=======
+	dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *ret = NULL;
 	dma_addr_t mapping;
@@ -466,7 +502,11 @@ error:
 
 static void calgary_free_coherent(struct device *dev, size_t size,
 				  void *vaddr, dma_addr_t dma_handle,
+<<<<<<< HEAD
 				  struct dma_attrs *attrs)
+=======
+				  unsigned long attrs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int npages;
 	struct iommu_table *tbl = find_iommu_table(dev);
@@ -1207,13 +1247,18 @@ error:
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline int __init determine_tce_table_size(u64 ram)
+=======
+static inline int __init determine_tce_table_size(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 
 	if (specified_table_size != TCE_TABLE_SIZE_UNSPECIFIED)
 		return specified_table_size;
 
+<<<<<<< HEAD
 	/*
 	 * Table sizes are from 0 to 7 (TCE_TABLE_SIZE_64K to
 	 * TCE_TABLE_SIZE_8M). Table size 0 has 8K entries and each
@@ -1224,6 +1269,26 @@ static inline int __init determine_tce_table_size(u64 ram)
 	ret = get_order(ram >> 13);
 	if (ret > TCE_TABLE_SIZE_8M)
 		ret = TCE_TABLE_SIZE_8M;
+=======
+	if (is_kdump_kernel() && saved_max_pfn) {
+		/*
+		 * Table sizes are from 0 to 7 (TCE_TABLE_SIZE_64K to
+		 * TCE_TABLE_SIZE_8M). Table size 0 has 8K entries and each
+		 * larger table size has twice as many entries, so shift the
+		 * max ram address by 13 to divide by 8K and then look at the
+		 * order of the result to choose between 0-7.
+		 */
+		ret = get_order((saved_max_pfn * PAGE_SIZE) >> 13);
+		if (ret > TCE_TABLE_SIZE_8M)
+			ret = TCE_TABLE_SIZE_8M;
+	} else {
+		/*
+		 * Use 8M by default (suggested by Muli) if it's not
+		 * kdump kernel and saved_max_pfn isn't set.
+		 */
+		ret = TCE_TABLE_SIZE_8M;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -1418,8 +1483,12 @@ int __init detect_calgary(void)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	specified_table_size = determine_tce_table_size((is_kdump_kernel() ?
 					saved_max_pfn : max_pfn) * PAGE_SIZE);
+=======
+	specified_table_size = determine_tce_table_size();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (bus = 0; bus < MAX_PHB_BUS_NUM; bus++) {
 		struct calgary_bus_info *info = &bus_info[bus];

@@ -564,9 +564,13 @@ static int snd_ps3_pcm_hw_params(struct snd_pcm_substream *substream,
 
 static int snd_ps3_pcm_hw_free(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	int ret;
 	ret = snd_pcm_lib_free_pages(substream);
 	return ret;
+=======
+	return snd_pcm_lib_free_pages(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int snd_ps3_delay_to_bytes(struct snd_pcm_substream *substream,
@@ -933,8 +937,15 @@ static int snd_ps3_driver_probe(struct ps3_system_bus_device *dev)
 	int i, ret;
 	u64 lpar_addr, lpar_size;
 
+<<<<<<< HEAD
 	BUG_ON(!firmware_has_feature(FW_FEATURE_PS3_LV1));
 	BUG_ON(dev->match_id != PS3_MATCH_ID_SOUND);
+=======
+	if (WARN_ON(!firmware_has_feature(FW_FEATURE_PS3_LV1)))
+		return -ENODEV;
+	if (WARN_ON(dev->match_id != PS3_MATCH_ID_SOUND))
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	the_card.ps3_dev = dev;
 
@@ -982,7 +993,12 @@ static int snd_ps3_driver_probe(struct ps3_system_bus_device *dev)
 	}
 
 	/* create card instance */
+<<<<<<< HEAD
 	ret = snd_card_create(index, id, THIS_MODULE, 0, &the_card.card);
+=======
+	ret = snd_card_new(&dev->core, index, id, THIS_MODULE,
+			   0, &the_card.card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		goto clean_irq;
 
@@ -1041,7 +1057,11 @@ static int snd_ps3_driver_probe(struct ps3_system_bus_device *dev)
 	if (!the_card.null_buffer_start_vaddr) {
 		pr_info("%s: nullbuffer alloc failed\n", __func__);
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto clean_preallocate;
+=======
+		goto clean_card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	pr_debug("%s: null vaddr=%p dma=%#llx\n", __func__,
 		 the_card.null_buffer_start_vaddr,
@@ -1050,7 +1070,10 @@ static int snd_ps3_driver_probe(struct ps3_system_bus_device *dev)
 	snd_ps3_init_avsetting(&the_card);
 
 	/* register the card */
+<<<<<<< HEAD
 	snd_card_set_dev(the_card.card, &dev->core);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = snd_card_register(the_card.card);
 	if (ret < 0)
 		goto clean_dma_map;
@@ -1064,8 +1087,11 @@ clean_dma_map:
 			  PAGE_SIZE,
 			  the_card.null_buffer_start_vaddr,
 			  the_card.null_buffer_start_dma_addr);
+<<<<<<< HEAD
 clean_preallocate:
 	snd_pcm_lib_preallocate_free_for_all(the_card.pcm);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 clean_card:
 	snd_card_free(the_card.card);
 clean_irq:

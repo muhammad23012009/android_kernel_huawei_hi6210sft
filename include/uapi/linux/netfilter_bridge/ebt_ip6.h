@@ -13,6 +13,10 @@
 #define __LINUX_BRIDGE_EBT_IP6_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/in6.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define EBT_IP6_SOURCE 0x01
 #define EBT_IP6_DEST 0x02

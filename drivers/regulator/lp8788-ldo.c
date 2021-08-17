@@ -170,7 +170,11 @@ static int lp8788_ldo_enable_time(struct regulator_dev *rdev)
 	return ENABLE_TIME_USEC * val;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops lp8788_ldo_voltage_table_ops = {
+=======
+static const struct regulator_ops lp8788_ldo_voltage_table_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.list_voltage = regulator_list_voltage_table,
 	.set_voltage_sel = regulator_set_voltage_sel_regmap,
 	.get_voltage_sel = regulator_get_voltage_sel_regmap,
@@ -180,7 +184,11 @@ static struct regulator_ops lp8788_ldo_voltage_table_ops = {
 	.enable_time = lp8788_ldo_enable_time,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops lp8788_ldo_voltage_fixed_ops = {
+=======
+static const struct regulator_ops lp8788_ldo_voltage_fixed_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.list_voltage = regulator_list_voltage_linear,
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -543,7 +551,11 @@ static int lp8788_dldo_probe(struct platform_device *pdev)
 	cfg.driver_data = ldo;
 	cfg.regmap = lp->regmap;
 
+<<<<<<< HEAD
 	rdev = regulator_register(&lp8788_dldo_desc[id], &cfg);
+=======
+	rdev = devm_regulator_register(&pdev->dev, &lp8788_dldo_desc[id], &cfg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdev)) {
 		ret = PTR_ERR(rdev);
 		dev_err(&pdev->dev, "DLDO%d regulator register err = %d\n",
@@ -557,6 +569,7 @@ static int lp8788_dldo_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lp8788_dldo_remove(struct platform_device *pdev)
 {
 	struct lp8788_ldo *ldo = platform_get_drvdata(pdev);
@@ -573,6 +586,12 @@ static struct platform_driver lp8788_dldo_driver = {
 	.driver = {
 		.name = LP8788_DEV_DLDO,
 		.owner = THIS_MODULE,
+=======
+static struct platform_driver lp8788_dldo_driver = {
+	.probe = lp8788_dldo_probe,
+	.driver = {
+		.name = LP8788_DEV_DLDO,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -604,7 +623,11 @@ static int lp8788_aldo_probe(struct platform_device *pdev)
 	cfg.driver_data = ldo;
 	cfg.regmap = lp->regmap;
 
+<<<<<<< HEAD
 	rdev = regulator_register(&lp8788_aldo_desc[id], &cfg);
+=======
+	rdev = devm_regulator_register(&pdev->dev, &lp8788_aldo_desc[id], &cfg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdev)) {
 		ret = PTR_ERR(rdev);
 		dev_err(&pdev->dev, "ALDO%d regulator register err = %d\n",
@@ -618,6 +641,7 @@ static int lp8788_aldo_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lp8788_aldo_remove(struct platform_device *pdev)
 {
 	struct lp8788_ldo *ldo = platform_get_drvdata(pdev);
@@ -646,13 +670,34 @@ static int __init lp8788_ldo_init(void)
 		return ret;
 
 	return platform_driver_register(&lp8788_aldo_driver);
+=======
+static struct platform_driver lp8788_aldo_driver = {
+	.probe = lp8788_aldo_probe,
+	.driver = {
+		.name = LP8788_DEV_ALDO,
+	},
+};
+
+static struct platform_driver * const drivers[] = {
+	&lp8788_dldo_driver,
+	&lp8788_aldo_driver,
+};
+
+static int __init lp8788_ldo_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 subsys_initcall(lp8788_ldo_init);
 
 static void __exit lp8788_ldo_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&lp8788_aldo_driver);
 	platform_driver_unregister(&lp8788_dldo_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 module_exit(lp8788_ldo_exit);
 

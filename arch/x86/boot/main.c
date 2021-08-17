@@ -14,6 +14,10 @@
  */
 
 #include "boot.h"
+<<<<<<< HEAD
+=======
+#include "string.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct boot_params boot_params __attribute__((aligned(16)));
 
@@ -160,9 +164,12 @@ void main(void)
 	/* Set keyboard repeat rate (why?) and query the lock flags */
 	keyboard_init();
 
+<<<<<<< HEAD
 	/* Query MCA information */
 	query_mca();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Query Intel SpeedStep (IST) information */
 	query_ist();
 

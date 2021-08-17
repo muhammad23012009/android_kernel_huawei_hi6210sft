@@ -3,8 +3,11 @@
  *
  *  Copyright (C) 1995-1999 Russell King
  *
+<<<<<<< HEAD
  *  Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -24,6 +27,10 @@
 #include <asm/hw_breakpoint.h>
 #include <asm/ptrace.h>
 #include <asm/types.h>
+<<<<<<< HEAD
+=======
+#include <asm/unified.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef __KERNEL__
 #define STACK_TOP	((current->personality & ADDR_LIMIT_32BIT) ? \
@@ -78,17 +85,31 @@ extern void release_thread(struct task_struct *);
 unsigned long get_wchan(struct task_struct *p);
 
 #if __LINUX_ARM_ARCH__ == 6 || defined(CONFIG_ARM_ERRATA_754327)
+<<<<<<< HEAD
 #define cpu_relax()			smp_mb()
+=======
+#define cpu_relax()						\
+	do {							\
+		smp_mb();					\
+		__asm__ __volatile__("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");	\
+	} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define cpu_relax()			barrier()
 #endif
 
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency()                cpu_relax()
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define task_pt_regs(p) \
 	((struct pt_regs *)(THREAD_START_SP + task_stack_page(p)) - 1)
 
 #define KSTK_EIP(tsk)	task_pt_regs(tsk)->ARM_pc
 #define KSTK_ESP(tsk)	task_pt_regs(tsk)->ARM_sp
 
+<<<<<<< HEAD
 /*
  * alternative hardware name
  */
@@ -98,6 +119,19 @@ extern char alter_hardware_name[MAX_HARDWARE_NAME];
 #endif
 
 
+=======
+#ifdef CONFIG_SMP
+#define __ALT_SMP_ASM(smp, up)						\
+	"9998:	" smp "\n"						\
+	"	.pushsection \".alt.smp.init\", \"a\"\n"		\
+	"	.long	9998b\n"					\
+	"	" up "\n"						\
+	"	.popsection\n"
+#else
+#define __ALT_SMP_ASM(smp, up)	up
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Prefetching support - only ARMv5.
  */
@@ -108,6 +142,7 @@ static inline void prefetch(const void *ptr)
 {
 	__asm__ __volatile__(
 		"pld\t%a0"
+<<<<<<< HEAD
 		:
 		: "p" (ptr)
 		: "cc");
@@ -119,12 +154,33 @@ static inline void prefetch(const void *ptr)
 #define ARCH_HAS_SPINLOCK_PREFETCH
 #define spin_lock_prefetch(x) do { } while (0)
 
+=======
+		:: "p" (ptr));
+}
+
+#if __LINUX_ARM_ARCH__ >= 7 && defined(CONFIG_SMP)
+#define ARCH_HAS_PREFETCHW
+static inline void prefetchw(const void *ptr)
+{
+	__asm__ __volatile__(
+		".arch_extension	mp\n"
+		__ALT_SMP_ASM(
+			WASM(pldw)		"\t%a0",
+			WASM(pld)		"\t%a0"
+		)
+		:: "p" (ptr));
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define HAVE_ARCH_PICK_MMAP_LAYOUT
 
 #endif
 
+<<<<<<< HEAD
 #include <asm-generic/processor.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_ARM_PROCESSOR_H */

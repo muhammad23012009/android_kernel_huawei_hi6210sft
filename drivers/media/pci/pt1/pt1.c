@@ -101,6 +101,7 @@ struct pt1_adapter {
 	struct dmxdev dmxdev;
 	struct dvb_frontend *fe;
 	int (*orig_set_voltage)(struct dvb_frontend *fe,
+<<<<<<< HEAD
 				fe_sec_voltage_t voltage);
 	int (*orig_sleep)(struct dvb_frontend *fe);
 	int (*orig_init)(struct dvb_frontend *fe);
@@ -112,6 +113,16 @@ struct pt1_adapter {
 #define pt1_printk(level, pt1, format, arg...)	\
 	dev_printk(level, &(pt1)->pdev->dev, format, ##arg)
 
+=======
+				enum fe_sec_voltage voltage);
+	int (*orig_sleep)(struct dvb_frontend *fe);
+	int (*orig_init)(struct dvb_frontend *fe);
+
+	enum fe_sec_voltage voltage;
+	int sleep;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void pt1_write_reg(struct pt1 *pt1, int reg, u32 data)
 {
 	writel(data, pt1->regs + reg * 4);
@@ -154,7 +165,11 @@ static int pt1_sync(struct pt1 *pt1)
 			return 0;
 		pt1_write_reg(pt1, 0, 0x00000008);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not sync\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not sync\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -179,7 +194,11 @@ static int pt1_unlock(struct pt1 *pt1)
 			return 0;
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not unlock\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not unlock\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -193,7 +212,11 @@ static int pt1_reset_pci(struct pt1 *pt1)
 			return 0;
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not reset PCI\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not reset PCI\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -207,7 +230,11 @@ static int pt1_reset_ram(struct pt1 *pt1)
 			return 0;
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not reset RAM\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not reset RAM\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -224,7 +251,11 @@ static int pt1_do_enable_ram(struct pt1 *pt1)
 		}
 		schedule_timeout_uninterruptible((HZ + 999) / 1000);
 	}
+<<<<<<< HEAD
 	pt1_printk(KERN_ERR, pt1, "could not enable RAM\n");
+=======
+	dev_err(&pt1->pdev->dev, "could not enable RAM\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 }
 
@@ -578,7 +609,11 @@ pt1_update_power(struct pt1 *pt1)
 	mutex_unlock(&pt1->lock);
 }
 
+<<<<<<< HEAD
 static int pt1_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
+=======
+static int pt1_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage voltage)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pt1_adapter *adap;
 
@@ -1076,7 +1111,10 @@ static void pt1_remove(struct pci_dev *pdev)
 	pt1_update_power(pt1);
 	pt1_cleanup_adapters(pt1);
 	i2c_del_adapter(&pt1->i2c_adap);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(pt1);
 	pci_iounmap(pdev, regs);
 	pci_release_regions(pdev);
@@ -1198,7 +1236,10 @@ err_i2c_del_adapter:
 err_pt1_cleanup_adapters:
 	pt1_cleanup_adapters(pt1);
 err_kfree:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(pt1);
 err_pci_iounmap:
 	pci_iounmap(pdev, regs);
@@ -1225,6 +1266,7 @@ static struct pci_driver pt1_driver = {
 	.id_table	= pt1_id_table,
 };
 
+<<<<<<< HEAD
 
 static int __init pt1_init(void)
 {
@@ -1239,6 +1281,9 @@ static void __exit pt1_cleanup(void)
 
 module_init(pt1_init);
 module_exit(pt1_cleanup);
+=======
+module_pci_driver(pt1_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Takahito HIRANO <hiranotaka@zng.info>");
 MODULE_DESCRIPTION("Earthsoft PT1/PT2 Driver");

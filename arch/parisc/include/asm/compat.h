@@ -183,6 +183,16 @@ typedef struct compat_siginfo {
 			int _band;      /* POLL_IN, POLL_OUT, POLL_MSG */
 			int _fd;
 		} _sigpoll;
+<<<<<<< HEAD
+=======
+
+		/* SIGSYS */
+		struct {
+			compat_uptr_t _call_addr; /* calling user insn */
+			int _syscall;	/* triggering system call number */
+			compat_uint_t _arch;	/* AUDIT_ARCH_* of syscall */
+		} _sigsys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} _sifields;
 } compat_siginfo_t;
 
@@ -206,10 +216,17 @@ struct compat_ipc64_perm {
 
 struct compat_semid64_ds {
 	struct compat_ipc64_perm sem_perm;
+<<<<<<< HEAD
 	compat_time_t sem_otime;
 	unsigned int __unused1;
 	compat_time_t sem_ctime;
 	unsigned int __unused2;
+=======
+	unsigned int __unused1;
+	compat_time_t sem_otime;
+	unsigned int __unused2;
+	compat_time_t sem_ctime;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	compat_ulong_t sem_nsems;
 	compat_ulong_t __unused3;
 	compat_ulong_t __unused4;

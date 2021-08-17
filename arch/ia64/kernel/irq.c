@@ -42,7 +42,11 @@ ia64_vector __ia64_irq_to_vector(int irq)
 
 unsigned int __ia64_local_vector_to_irq (ia64_vector vec)
 {
+<<<<<<< HEAD
 	return __get_cpu_var(vector_irq)[vec];
+=======
+	return __this_cpu_read(vector_irq[vec]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 
@@ -67,7 +71,11 @@ static char irq_redir [NR_IRQS]; // = { [0 ... NR_IRQS-1] = 1 };
 void set_irq_affinity_info (unsigned int irq, int hwid, int redir)
 {
 	if (irq < NR_IRQS) {
+<<<<<<< HEAD
 		cpumask_copy(irq_get_irq_data(irq)->affinity,
+=======
+		cpumask_copy(irq_get_affinity_mask(irq),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     cpumask_of(cpu_logical_id(hwid)));
 		irq_redir[irq] = (char) (redir & 0xff);
 	}
@@ -119,8 +127,13 @@ static void migrate_irqs(void)
 		if (irqd_is_per_cpu(data))
 			continue;
 
+<<<<<<< HEAD
 		if (cpumask_any_and(data->affinity, cpu_online_mask)
 		    >= nr_cpu_ids) {
+=======
+		if (cpumask_any_and(irq_data_get_affinity_mask(data),
+				    cpu_online_mask) >= nr_cpu_ids) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Save it for phase 2 processing
 			 */

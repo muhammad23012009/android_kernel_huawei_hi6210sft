@@ -12,10 +12,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -39,7 +42,11 @@
 /*
  * private helper fn to determine if check is in open interval (lo,hi)
  */
+<<<<<<< HEAD
 static bool addr_check(unsigned check, unsigned lo, unsigned hi)
+=======
+static bool addr_check(unsigned int check, unsigned int lo, unsigned int hi)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return check - (lo + 1) < (hi - 1) - lo;
 }
@@ -60,7 +67,11 @@ void dma_fifo_init(struct dma_fifo *fifo)
  * @size: 'apparent' size, in bytes, of fifo
  * @align: dma alignment to maintain (should be at least cpu cache alignment),
  *         must be power of 2
+<<<<<<< HEAD
  * @tx_limit: maximum # of bytes transmissable per dma (rounded down to
+=======
+ * @tx_limit: maximum # of bytes transmissible per dma (rounded down to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *            multiple of alignment, but at least align size)
  * @open_limit: maximum # of outstanding dma transactions allowed
  * @gfp_mask: get_free_pages mask, passed to kmalloc()
@@ -68,7 +79,11 @@ void dma_fifo_init(struct dma_fifo *fifo)
  * The 'apparent' size will be rounded up to next greater aligned size.
  * Returns 0 if no error, otherwise an error code
  */
+<<<<<<< HEAD
 int dma_fifo_alloc(struct dma_fifo *fifo, int size, unsigned align,
+=======
+int dma_fifo_alloc(struct dma_fifo *fifo, int size, unsigned int align,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   int tx_limit, int open_limit, gfp_t gfp_mask)
 {
 	int capacity;
@@ -110,7 +125,11 @@ void dma_fifo_free(struct dma_fifo *fifo)
 {
 	struct dma_pending *pending, *next;
 
+<<<<<<< HEAD
 	if (fifo->data == NULL)
+=======
+	if (!fifo->data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	list_for_each_entry_safe(pending, next, &fifo->pending, link)
@@ -127,7 +146,11 @@ void dma_fifo_reset(struct dma_fifo *fifo)
 {
 	struct dma_pending *pending, *next;
 
+<<<<<<< HEAD
 	if (fifo->data == NULL)
+=======
+	if (!fifo->data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	list_for_each_entry_safe(pending, next, &fifo->pending, link)
@@ -153,7 +176,11 @@ int dma_fifo_in(struct dma_fifo *fifo, const void *src, int n)
 {
 	int ofs, l;
 
+<<<<<<< HEAD
 	if (fifo->data == NULL)
+=======
+	if (!fifo->data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOENT;
 	if (fifo->corrupt)
 		return -ENXIO;
@@ -169,9 +196,15 @@ int dma_fifo_in(struct dma_fifo *fifo, const void *src, int n)
 	memcpy(fifo->data, src + l, n - l);
 
 	if (FAIL(fifo, addr_check(fifo->done, fifo->in, fifo->in + n) ||
+<<<<<<< HEAD
 			fifo->avail < n,
 			"fifo corrupt: in:%u out:%u done:%u n:%d avail:%d",
 			fifo->in, fifo->out, fifo->done, n, fifo->avail))
+=======
+		 fifo->avail < n,
+		 "fifo corrupt: in:%u out:%u done:%u n:%d avail:%d",
+		 fifo->in, fifo->out, fifo->done, n, fifo->avail))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENXIO;
 
 	fifo->in += n;
@@ -194,9 +227,15 @@ int dma_fifo_in(struct dma_fifo *fifo, const void *src, int n)
  */
 int dma_fifo_out_pend(struct dma_fifo *fifo, struct dma_pending *pended)
 {
+<<<<<<< HEAD
 	unsigned len, n, ofs, l, limit;
 
 	if (fifo->data == NULL)
+=======
+	unsigned int len, n, ofs, l, limit;
+
+	if (!fifo->data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOENT;
 	if (fifo->corrupt)
 		return -ENXIO;
@@ -214,7 +253,11 @@ int dma_fifo_out_pend(struct dma_fifo *fifo, struct dma_pending *pended)
 	n = len;
 	ofs = fifo->out % fifo->capacity;
 	l = fifo->capacity - ofs;
+<<<<<<< HEAD
 	limit = min_t(unsigned, l, fifo->tx_limit);
+=======
+	limit = min_t(unsigned int, l, fifo->tx_limit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (n > limit) {
 		n = limit;
 		fifo->out += limit;
@@ -236,12 +279,21 @@ int dma_fifo_out_pend(struct dma_fifo *fifo, struct dma_pending *pended)
 	++fifo->open;
 
 	if (FAIL(fifo, fifo->open > fifo->open_limit,
+<<<<<<< HEAD
 			"past open limit:%d (limit:%d)",
 			fifo->open, fifo->open_limit))
 		return -ENXIO;
 	if (FAIL(fifo, fifo->out & (fifo->align - 1),
 			"fifo out unaligned:%u (align:%u)",
 			fifo->out, fifo->align))
+=======
+		 "past open limit:%d (limit:%d)",
+		 fifo->open, fifo->open_limit))
+		return -ENXIO;
+	if (FAIL(fifo, fifo->out & (fifo->align - 1),
+		 "fifo out unaligned:%u (align:%u)",
+		 fifo->out, fifo->align))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENXIO;
 
 	return len - n;
@@ -256,7 +308,11 @@ int dma_fifo_out_complete(struct dma_fifo *fifo, struct dma_pending *complete)
 {
 	struct dma_pending *pending, *next, *tmp;
 
+<<<<<<< HEAD
 	if (fifo->data == NULL)
+=======
+	if (!fifo->data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOENT;
 	if (fifo->corrupt)
 		return -ENXIO;
@@ -264,8 +320,13 @@ int dma_fifo_out_complete(struct dma_fifo *fifo, struct dma_pending *complete)
 		return -EINVAL;
 
 	if (FAIL(fifo, list_empty(&fifo->pending) != (fifo->open == 0),
+<<<<<<< HEAD
 			"pending list disagrees with open count:%d",
 			fifo->open))
+=======
+		 "pending list disagrees with open count:%d",
+		 fifo->open))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENXIO;
 
 	tmp = complete->data;
@@ -282,10 +343,17 @@ int dma_fifo_out_complete(struct dma_fifo *fifo, struct dma_pending *complete)
 		}
 
 		if (FAIL(fifo, pending->out != fifo->done ||
+<<<<<<< HEAD
 				addr_check(fifo->in, fifo->done, pending->next),
 				"in:%u out:%u done:%u saved:%u next:%u",
 				fifo->in, fifo->out, fifo->done, pending->out,
 				pending->next))
+=======
+			 addr_check(fifo->in, fifo->done, pending->next),
+			 "in:%u out:%u done:%u saved:%u next:%u",
+			 fifo->in, fifo->out, fifo->done, pending->out,
+			 pending->next))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENXIO;
 
 		list_del_init(&pending->link);
@@ -300,7 +368,11 @@ int dma_fifo_out_complete(struct dma_fifo *fifo, struct dma_pending *complete)
 	if (FAIL(fifo, fifo->open < 0, "open dma:%d < 0", fifo->open))
 		return -ENXIO;
 	if (FAIL(fifo, fifo->avail > fifo->size, "fifo avail:%d > size:%d",
+<<<<<<< HEAD
 			fifo->avail, fifo->size))
+=======
+		 fifo->avail, fifo->size))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENXIO;
 
 	return 0;

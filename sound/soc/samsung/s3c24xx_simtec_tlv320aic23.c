@@ -52,6 +52,7 @@ static const struct snd_soc_dapm_route base_map[] = {
 */
 static int simtec_tlv320aic23_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
@@ -60,6 +61,8 @@ static int simtec_tlv320aic23_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_enable_pin(dapm, "Line Out");
 	snd_soc_dapm_enable_pin(dapm, "Mic Jack");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	simtec_audio_init(rtd);
 
 	return 0;
@@ -95,7 +98,10 @@ static int simtec_audio_tlv320aic23_probe(struct platform_device *pd)
 
 static struct platform_driver simtec_audio_tlv320aic23_driver = {
 	.driver	= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "s3c24xx-simtec-tlv320aic23",
 		.pm	= simtec_audio_pm,
 	},

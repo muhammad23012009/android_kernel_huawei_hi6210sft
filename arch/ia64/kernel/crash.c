@@ -237,7 +237,11 @@ kdump_init_notifier(struct notifier_block *self, unsigned long val, void *data)
 }
 
 #ifdef CONFIG_SYSCTL
+<<<<<<< HEAD
 static ctl_table kdump_ctl_table[] = {
+=======
+static struct ctl_table kdump_ctl_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname = "kdump_on_init",
 		.data = &kdump_on_init,
@@ -255,7 +259,11 @@ static ctl_table kdump_ctl_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table sys_table[] = {
+=======
+static struct ctl_table sys_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	  .procname = "kernel",
 	  .mode = 0555,

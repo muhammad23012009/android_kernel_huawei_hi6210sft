@@ -1,7 +1,10 @@
 #ifndef _ASM_IA64_IOMMU_H
 #define _ASM_IA64_IOMMU_H 1
 
+<<<<<<< HEAD
 #define cpu_has_x2apic 0
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* 10 seconds */
 #define DMAR_OPERATION_TIMEOUT (((cycles_t) local_cpu_data->itc_freq)*10)
 

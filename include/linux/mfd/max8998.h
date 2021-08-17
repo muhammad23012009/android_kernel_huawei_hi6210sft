@@ -58,10 +58,18 @@ enum {
  * max8998_regulator_data - regulator data
  * @id: regulator id
  * @initdata: regulator init data (contraints, supplies, ...)
+<<<<<<< HEAD
+=======
+ * @reg_node: DT node of regulator (unused on non-DT platforms)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct max8998_regulator_data {
 	int				id;
 	struct regulator_init_data	*initdata;
+<<<<<<< HEAD
+=======
+	struct device_node		*reg_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -73,12 +81,17 @@ struct max8998_regulator_data {
  * @buck_voltage_lock: Do NOT change the values of the following six
  *   registers set by buck?_voltage?. The voltage of BUCK1/2 cannot
  *   be other than the preset values.
+<<<<<<< HEAD
  * @buck1_voltage1: BUCK1 DVS mode 1 voltage register
  * @buck1_voltage2: BUCK1 DVS mode 2 voltage register
  * @buck1_voltage3: BUCK1 DVS mode 3 voltage register
  * @buck1_voltage4: BUCK1 DVS mode 4 voltage register
  * @buck2_voltage1: BUCK2 DVS mode 1 voltage register
  * @buck2_voltage2: BUCK2 DVS mode 2 voltage register
+=======
+ * @buck1_voltage: BUCK1 DVS mode 1 voltage registers
+ * @buck2_voltage: BUCK2 DVS mode 2 voltage registers
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @buck1_set1: BUCK1 gpio pin 1 to set output voltage
  * @buck1_set2: BUCK1 gpio pin 2 to set output voltage
  * @buck1_default_idx: Default for BUCK1 gpio pin 1, 2
@@ -100,6 +113,7 @@ struct max8998_regulator_data {
 struct max8998_platform_data {
 	struct max8998_regulator_data	*regulators;
 	int				num_regulators;
+<<<<<<< HEAD
 	int				irq_base;
 	int				ono;
 	bool				buck_voltage_lock;
@@ -109,6 +123,13 @@ struct max8998_platform_data {
 	int				buck1_voltage4;
 	int				buck2_voltage1;
 	int				buck2_voltage2;
+=======
+	unsigned int			irq_base;
+	int				ono;
+	bool				buck_voltage_lock;
+	int				buck1_voltage[4];
+	int				buck2_voltage[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int				buck1_set1;
 	int				buck1_set2;
 	int				buck1_default_idx;

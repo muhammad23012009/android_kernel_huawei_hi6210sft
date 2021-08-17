@@ -48,7 +48,10 @@
 #include <linux/stat.h>
 #include <linux/cdrom.h>
 #include <linux/nls.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/vfs.h>
 #include <linux/vmalloc.h>
 #include <linux/errno.h>
@@ -63,7 +66,11 @@
 #include "udf_i.h"
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define VDS_POS_PRIMARY_VOL_DESC	0
 #define VDS_POS_UNALLOC_SPACE_DESC	1
@@ -76,6 +83,21 @@
 
 #define UDF_DEFAULT_BLOCKSIZE 2048
 
+<<<<<<< HEAD
+=======
+#define VSD_FIRST_SECTOR_OFFSET		32768
+#define VSD_MAX_SECTOR_OFFSET		0x800000
+
+/*
+ * Maximum number of Terminating Descriptor / Logical Volume Integrity
+ * Descriptor redirections. The chosen numbers are arbitrary - just that we
+ * hopefully don't limit any real use of rewritten inode on write-once media
+ * but avoid looping for too long on corrupted media.
+ */
+#define UDF_MAX_TD_NESTING 64
+#define UDF_MAX_LVID_NESTING 1000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum { UDF_MAX_LINKS = 0xffff };
 
 /* These are the "meat" - everything else is stuffing */
@@ -94,6 +116,7 @@ static unsigned int udf_count_free(struct super_block *);
 static int udf_statfs(struct dentry *, struct kstatfs *);
 static int udf_show_options(struct seq_file *, struct dentry *);
 
+<<<<<<< HEAD
 struct logicalVolIntegrityDescImpUse *udf_sb_lvidiu(struct udf_sb_info *sbi)
 {
 	struct logicalVolIntegrityDesc *lvid =
@@ -101,6 +124,27 @@ struct logicalVolIntegrityDescImpUse *udf_sb_lvidiu(struct udf_sb_info *sbi)
 	__u32 number_of_partitions = le32_to_cpu(lvid->numOfPartitions);
 	__u32 offset = number_of_partitions * 2 *
 				sizeof(uint32_t)/sizeof(uint8_t);
+=======
+struct logicalVolIntegrityDescImpUse *udf_sb_lvidiu(struct super_block *sb)
+{
+	struct logicalVolIntegrityDesc *lvid;
+	unsigned int partnum;
+	unsigned int offset;
+
+	if (!UDF_SB(sb)->s_lvid_bh)
+		return NULL;
+	lvid = (struct logicalVolIntegrityDesc *)UDF_SB(sb)->s_lvid_bh->b_data;
+	partnum = le32_to_cpu(lvid->numOfPartitions);
+	if ((sb->s_blocksize - sizeof(struct logicalVolIntegrityDescImpUse) -
+	     offsetof(struct logicalVolIntegrityDesc, impUse)) /
+	     (2 * sizeof(uint32_t)) < partnum) {
+		udf_err(sb, "Logical volume integrity descriptor corrupted "
+			"(numOfPartitions = %u)!\n", partnum);
+		return NULL;
+	}
+	/* The offset is to skip freeSpaceTable and sizeTable arrays */
+	offset = partnum * 2 * sizeof(uint32_t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (struct logicalVolIntegrityDescImpUse *)&(lvid->impUse[offset]);
 }
 
@@ -160,12 +204,21 @@ static void init_once(void *foo)
 	inode_init_once(&ei->vfs_inode);
 }
 
+<<<<<<< HEAD
 static int init_inodecache(void)
+=======
+static int __init init_inodecache(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	udf_inode_cachep = kmem_cache_create("udf_inode_cache",
 					     sizeof(struct udf_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT |
+<<<<<<< HEAD
 						 SLAB_MEM_SPREAD),
+=======
+						 SLAB_MEM_SPREAD |
+						 SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     init_once);
 	if (!udf_inode_cachep)
 		return -ENOMEM;
@@ -264,17 +317,24 @@ static void udf_sb_free_bitmap(struct udf_bitmap *bitmap)
 {
 	int i;
 	int nr_groups = bitmap->s_nr_groups;
+<<<<<<< HEAD
 	int size = sizeof(struct udf_bitmap) + (sizeof(struct buffer_head *) *
 						nr_groups);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < nr_groups; i++)
 		if (bitmap->s_block_bitmap[i])
 			brelse(bitmap->s_block_bitmap[i]);
 
+<<<<<<< HEAD
 	if (size <= PAGE_SIZE)
 		kfree(bitmap);
 	else
 		vfree(bitmap);
+=======
+	kvfree(bitmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void udf_free_partition(struct udf_part_map *map)
@@ -490,6 +550,10 @@ static int udf_parse_options(char *options, struct udf_options *uopt,
 	while ((p = strsep(&options, ",")) != NULL) {
 		substring_t args[MAX_OPT_ARGS];
 		int token;
+<<<<<<< HEAD
+=======
+		unsigned n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!*p)
 			continue;
 
@@ -501,7 +565,14 @@ static int udf_parse_options(char *options, struct udf_options *uopt,
 		case Opt_bs:
 			if (match_int(&args[0], &option))
 				return 0;
+<<<<<<< HEAD
 			uopt->blocksize = option;
+=======
+			n = option;
+			if (n != 512 && n != 1024 && n != 2048 && n != 4096)
+				return 0;
+			uopt->blocksize = n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			uopt->flags |= (1 << UDF_FLAG_BLOCKSIZE_SET);
 			break;
 		case Opt_unhide:
@@ -629,10 +700,18 @@ static int udf_remount_fs(struct super_block *sb, int *flags, char *options)
 	struct udf_options uopt;
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	int error = 0;
+<<<<<<< HEAD
 	sync_filesystem(sb);
 
 	if (sbi->s_lvid_bh) {
 		int write_rev = le16_to_cpu(udf_sb_lvidiu(sbi)->minUDFWriteRev);
+=======
+	struct logicalVolIntegrityDescImpUse *lvidiu = udf_sb_lvidiu(sb);
+
+	sync_filesystem(sb);
+	if (lvidiu) {
+		int write_rev = le16_to_cpu(lvidiu->minUDFWriteRev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (write_rev > UDF_MAX_WRITE_VERSION && !(*flags & MS_RDONLY))
 			return -EACCES;
 	}
@@ -673,7 +752,11 @@ out_unlock:
 static loff_t udf_check_vsd(struct super_block *sb)
 {
 	struct volStructDesc *vsd = NULL;
+<<<<<<< HEAD
 	loff_t sector = 32768;
+=======
+	loff_t sector = VSD_FIRST_SECTOR_OFFSET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int sectorsize;
 	struct buffer_head *bh = NULL;
 	int nsr02 = 0;
@@ -686,13 +769,32 @@ static loff_t udf_check_vsd(struct super_block *sb)
 	else
 		sectorsize = sb->s_blocksize;
 
+<<<<<<< HEAD
 	sector += (sbi->s_session << sb->s_blocksize_bits);
+=======
+	sector += (((loff_t)sbi->s_session) << sb->s_blocksize_bits);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	udf_debug("Starting at sector %u (%ld byte sectors)\n",
 		  (unsigned int)(sector >> sb->s_blocksize_bits),
 		  sb->s_blocksize);
+<<<<<<< HEAD
 	/* Process the sequence (if applicable) */
 	for (; !nsr02 && !nsr03; sector += sectorsize) {
+=======
+	/* Process the sequence (if applicable). The hard limit on the sector
+	 * offset is arbitrary, hopefully large enough so that all valid UDF
+	 * filesystems will be recognised. There is no mention of an upper
+	 * bound to the size of the volume recognition area in the standard.
+	 *  The limit will prevent the code to read all the sectors of a
+	 * specially crafted image (like a bluray disc full of CD001 sectors),
+	 * potentially causing minutes or even hours of uninterruptible I/O
+	 * activity. This actually happened with uninitialised SSD partitions
+	 * (all 0xFF) before the check for the limit and all valid IDs were
+	 * added */
+	for (; !nsr02 && !nsr03 && sector < VSD_MAX_SECTOR_OFFSET;
+	     sector += sectorsize) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Read a block */
 		bh = udf_tread(sb, sector >> sb->s_blocksize_bits);
 		if (!bh)
@@ -702,10 +804,14 @@ static loff_t udf_check_vsd(struct super_block *sb)
 		vsd = (struct volStructDesc *)(bh->b_data +
 					      (sector & (sb->s_blocksize - 1)));
 
+<<<<<<< HEAD
 		if (vsd->stdIdent[0] == 0) {
 			brelse(bh);
 			break;
 		} else if (!strncmp(vsd->stdIdent, VSD_STD_ID_CD001,
+=======
+		if (!strncmp(vsd->stdIdent, VSD_STD_ID_CD001,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    VSD_STD_ID_LEN)) {
 			switch (vsd->structType) {
 			case 0:
@@ -741,6 +847,20 @@ static loff_t udf_check_vsd(struct super_block *sb)
 		else if (!strncmp(vsd->stdIdent, VSD_STD_ID_NSR03,
 				    VSD_STD_ID_LEN))
 			nsr03 = sector;
+<<<<<<< HEAD
+=======
+		else if (!strncmp(vsd->stdIdent, VSD_STD_ID_BOOT2,
+				    VSD_STD_ID_LEN))
+			; /* nothing */
+		else if (!strncmp(vsd->stdIdent, VSD_STD_ID_CDW02,
+				    VSD_STD_ID_LEN))
+			; /* nothing */
+		else {
+			/* invalid id : end of volume recognition area */
+			brelse(bh);
+			break;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		brelse(bh);
 	}
 
@@ -748,7 +868,12 @@ static loff_t udf_check_vsd(struct super_block *sb)
 		return nsr03;
 	else if (nsr02)
 		return nsr02;
+<<<<<<< HEAD
 	else if (sector - (sbi->s_session << sb->s_blocksize_bits) == 32768)
+=======
+	else if (!bh && sector - (sbi->s_session << sb->s_blocksize_bits) ==
+			VSD_FIRST_SECTOR_OFFSET)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	else
 		return 0;
@@ -853,11 +978,16 @@ static int udf_find_fileset(struct super_block *sb,
 static int udf_load_pvoldesc(struct super_block *sb, sector_t block)
 {
 	struct primaryVolDesc *pvoldesc;
+<<<<<<< HEAD
 	struct ustr *instr, *outstr;
+=======
+	uint8_t *outstr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct buffer_head *bh;
 	uint16_t ident;
 	int ret = -ENOMEM;
 
+<<<<<<< HEAD
 	instr = kmalloc(sizeof(struct ustr), GFP_NOFS);
 	if (!instr)
 		return -ENOMEM;
@@ -865,6 +995,11 @@ static int udf_load_pvoldesc(struct super_block *sb, sector_t block)
 	outstr = kmalloc(sizeof(struct ustr), GFP_NOFS);
 	if (!outstr)
 		goto out1;
+=======
+	outstr = kmalloc(128, GFP_NOFS);
+	if (!outstr)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bh = udf_read_tagged(sb, block, block, &ident);
 	if (!bh) {
@@ -889,6 +1024,7 @@ static int udf_load_pvoldesc(struct super_block *sb, sector_t block)
 #endif
 	}
 
+<<<<<<< HEAD
 	if (!udf_build_ustr(instr, pvoldesc->volIdent, 32))
 		if (udf_CS0toUTF8(outstr, instr)) {
 			strncpy(UDF_SB(sb)->s_volume_ident, outstr->u_name,
@@ -900,24 +1036,51 @@ static int udf_load_pvoldesc(struct super_block *sb, sector_t block)
 	if (!udf_build_ustr(instr, pvoldesc->volSetIdent, 128))
 		if (udf_CS0toUTF8(outstr, instr))
 			udf_debug("volSetIdent[] = '%s'\n", outstr->u_name);
+=======
+	ret = udf_dstrCS0toUTF8(outstr, 31, pvoldesc->volIdent, 32);
+	if (ret < 0) {
+		strcpy(UDF_SB(sb)->s_volume_ident, "InvalidName");
+		pr_warn("incorrect volume identification, setting to "
+			"'InvalidName'\n");
+	} else {
+		strncpy(UDF_SB(sb)->s_volume_ident, outstr, ret);
+	}
+	udf_debug("volIdent[] = '%s'\n", UDF_SB(sb)->s_volume_ident);
+
+	ret = udf_dstrCS0toUTF8(outstr, 127, pvoldesc->volSetIdent, 128);
+	if (ret < 0) {
+		ret = 0;
+		goto out_bh;
+	}
+	outstr[ret] = 0;
+	udf_debug("volSetIdent[] = '%s'\n", outstr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = 0;
 out_bh:
 	brelse(bh);
 out2:
 	kfree(outstr);
+<<<<<<< HEAD
 out1:
 	kfree(instr);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 struct inode *udf_find_metadata_inode_efe(struct super_block *sb,
+<<<<<<< HEAD
 					u32 meta_file_loc, u32 partition_num)
+=======
+					u32 meta_file_loc, u32 partition_ref)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kernel_lb_addr addr;
 	struct inode *metadata_fe;
 
 	addr.logicalBlockNum = meta_file_loc;
+<<<<<<< HEAD
 	addr.partitionReferenceNum = partition_num;
 
 	metadata_fe = udf_iget(sb, &addr);
@@ -928,17 +1091,37 @@ struct inode *udf_find_metadata_inode_efe(struct super_block *sb,
 		udf_warn(sb, "metadata inode efe does not have short allocation descriptors!\n");
 		iput(metadata_fe);
 		metadata_fe = NULL;
+=======
+	addr.partitionReferenceNum = partition_ref;
+
+	metadata_fe = udf_iget_special(sb, &addr);
+
+	if (IS_ERR(metadata_fe)) {
+		udf_warn(sb, "metadata inode efe not found\n");
+		return metadata_fe;
+	}
+	if (UDF_I(metadata_fe)->i_alloc_type != ICBTAG_FLAG_AD_SHORT) {
+		udf_warn(sb, "metadata inode efe does not have short allocation descriptors!\n");
+		iput(metadata_fe);
+		return ERR_PTR(-EIO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return metadata_fe;
 }
 
+<<<<<<< HEAD
 static int udf_load_metadata_files(struct super_block *sb, int partition)
+=======
+static int udf_load_metadata_files(struct super_block *sb, int partition,
+				   int type1_index)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	struct udf_part_map *map;
 	struct udf_meta_data *mdata;
 	struct kernel_lb_addr addr;
+<<<<<<< HEAD
 
 	map = &sbi->s_partmaps[partition];
 	mdata = &map->s_type_specific.s_metadata;
@@ -963,6 +1146,36 @@ static int udf_load_metadata_files(struct super_block *sb, int partition)
 			return -EIO;
 		}
 	}
+=======
+	struct inode *fe;
+
+	map = &sbi->s_partmaps[partition];
+	mdata = &map->s_type_specific.s_metadata;
+	mdata->s_phys_partition_ref = type1_index;
+
+	/* metadata address */
+	udf_debug("Metadata file location: block = %d part = %d\n",
+		  mdata->s_meta_file_loc, mdata->s_phys_partition_ref);
+
+	fe = udf_find_metadata_inode_efe(sb, mdata->s_meta_file_loc,
+					 mdata->s_phys_partition_ref);
+	if (IS_ERR(fe)) {
+		/* mirror file entry */
+		udf_debug("Mirror metadata file location: block = %d part = %d\n",
+			  mdata->s_mirror_file_loc, mdata->s_phys_partition_ref);
+
+		fe = udf_find_metadata_inode_efe(sb, mdata->s_mirror_file_loc,
+						 mdata->s_phys_partition_ref);
+
+		if (IS_ERR(fe)) {
+			udf_err(sb, "Both metadata and mirror metadata inode efe can not found\n");
+			return PTR_ERR(fe);
+		}
+		mdata->s_mirror_fe = fe;
+	} else
+		mdata->s_metadata_fe = fe;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * bitmap file entry
@@ -971,20 +1184,36 @@ static int udf_load_metadata_files(struct super_block *sb, int partition)
 	*/
 	if (mdata->s_bitmap_file_loc != 0xFFFFFFFF) {
 		addr.logicalBlockNum = mdata->s_bitmap_file_loc;
+<<<<<<< HEAD
 		addr.partitionReferenceNum = map->s_partition_num;
+=======
+		addr.partitionReferenceNum = mdata->s_phys_partition_ref;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		udf_debug("Bitmap file location: block = %d part = %d\n",
 			  addr.logicalBlockNum, addr.partitionReferenceNum);
 
+<<<<<<< HEAD
 		mdata->s_bitmap_fe = udf_iget(sb, &addr);
 		if (mdata->s_bitmap_fe == NULL) {
+=======
+		fe = udf_iget_special(sb, &addr);
+		if (IS_ERR(fe)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (sb->s_flags & MS_RDONLY)
 				udf_warn(sb, "bitmap inode efe not found but it's ok since the disc is mounted read-only\n");
 			else {
 				udf_err(sb, "bitmap inode efe not found and attempted read-write mount\n");
+<<<<<<< HEAD
 				return -EIO;
 			}
 		}
+=======
+				return PTR_ERR(fe);
+			}
+		} else
+			mdata->s_bitmap_fe = fe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	udf_debug("udf_load_metadata_files Ok\n");
@@ -1072,6 +1301,7 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 				phd->unallocSpaceTable.extPosition),
 			.partitionReferenceNum = p_index,
 		};
+<<<<<<< HEAD
 
 		map->s_uspace.s_table = udf_iget(sb, &loc);
 		if (!map->s_uspace.s_table) {
@@ -1079,6 +1309,17 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 				  p_index);
 			return -EIO;
 		}
+=======
+		struct inode *inode;
+
+		inode = udf_iget_special(sb, &loc);
+		if (IS_ERR(inode)) {
+			udf_debug("cannot load unallocSpaceTable (part %d)\n",
+				  p_index);
+			return PTR_ERR(inode);
+		}
+		map->s_uspace.s_table = inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		map->s_partition_flags |= UDF_PART_FLAG_UNALLOC_TABLE;
 		udf_debug("unallocSpaceTable (part %d) @ %ld\n",
 			  p_index, map->s_uspace.s_table->i_ino);
@@ -1105,6 +1346,7 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 				phd->freedSpaceTable.extPosition),
 			.partitionReferenceNum = p_index,
 		};
+<<<<<<< HEAD
 
 		map->s_fspace.s_table = udf_iget(sb, &loc);
 		if (!map->s_fspace.s_table) {
@@ -1113,6 +1355,17 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 			return -EIO;
 		}
 
+=======
+		struct inode *inode;
+
+		inode = udf_iget_special(sb, &loc);
+		if (IS_ERR(inode)) {
+			udf_debug("cannot load freedSpaceTable (part %d)\n",
+				  p_index);
+			return PTR_ERR(inode);
+		}
+		map->s_fspace.s_table = inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		map->s_partition_flags |= UDF_PART_FLAG_FREED_TABLE;
 		udf_debug("freedSpaceTable (part %d) @ %ld\n",
 			  p_index, map->s_fspace.s_table->i_ino);
@@ -1139,6 +1392,10 @@ static void udf_find_vat_block(struct super_block *sb, int p_index,
 	struct udf_part_map *map = &sbi->s_partmaps[p_index];
 	sector_t vat_block;
 	struct kernel_lb_addr ino;
+<<<<<<< HEAD
+=======
+	struct inode *inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * VAT file entry is in the last recorded block. Some broken disks have
@@ -1147,10 +1404,20 @@ static void udf_find_vat_block(struct super_block *sb, int p_index,
 	ino.partitionReferenceNum = type1_index;
 	for (vat_block = start_block;
 	     vat_block >= map->s_partition_root &&
+<<<<<<< HEAD
 	     vat_block >= start_block - 3 &&
 	     !sbi->s_vat_inode; vat_block--) {
 		ino.logicalBlockNum = vat_block - map->s_partition_root;
 		sbi->s_vat_inode = udf_iget(sb, &ino);
+=======
+	     vat_block >= start_block - 3; vat_block--) {
+		ino.logicalBlockNum = vat_block - map->s_partition_root;
+		inode = udf_iget_special(sb, &ino);
+		if (!IS_ERR(inode)) {
+			sbi->s_vat_inode = inode;
+			break;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1231,7 +1498,11 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 	p = (struct partitionDesc *)bh->b_data;
 	partitionNumber = le16_to_cpu(p->partitionNumber);
 
+<<<<<<< HEAD
 	/* First scan for TYPE1, SPARABLE and METADATA partitions */
+=======
+	/* First scan for TYPE1 and SPARABLE partitions */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < sbi->s_partitions; i++) {
 		map = &sbi->s_partmaps[i];
 		udf_debug("Searching map: (%d == %d)\n",
@@ -1258,6 +1529,12 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 	 * PHYSICAL partitions are already set up
 	 */
 	type1_idx = i;
+<<<<<<< HEAD
+=======
+#ifdef UDFFS_DEBUG
+	map = NULL; /* supress 'maybe used uninitialized' warning */
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < sbi->s_partitions; i++) {
 		map = &sbi->s_partmaps[i];
 
@@ -1278,7 +1555,11 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 		goto out_bh;
 
 	if (map->s_partition_type == UDF_METADATA_MAP25) {
+<<<<<<< HEAD
 		ret = udf_load_metadata_files(sb, i);
+=======
+		ret = udf_load_metadata_files(sb, i, type1_idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0) {
 			udf_err(sb, "error loading MetaData partition map %d\n",
 				i);
@@ -1330,6 +1611,15 @@ static int udf_load_sparable_map(struct super_block *sb,
 			(int)spm->numSparingTables);
 		return -EIO;
 	}
+<<<<<<< HEAD
+=======
+	if (le32_to_cpu(spm->sizeSparingTable) > sb->s_blocksize) {
+		udf_err(sb, "error loading logical volume descriptor: "
+			"Too big sparing table size (%u)\n",
+			le32_to_cpu(spm->sizeSparingTable));
+		return -EIO;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < spm->numSparingTables; i++) {
 		loc = le32_to_cpu(spm->locSparingTable[i]);
@@ -1495,6 +1785,7 @@ out_bh:
 }
 
 /*
+<<<<<<< HEAD
  * udf_load_logicalvolint
  *
  */
@@ -1525,6 +1816,55 @@ static void udf_load_logicalvolint(struct super_block *sb, struct kernel_extent_
 		brelse(bh);
 }
 
+=======
+ * Find the prevailing Logical Volume Integrity Descriptor.
+ */
+static void udf_load_logicalvolint(struct super_block *sb, struct kernel_extent_ad loc)
+{
+	struct buffer_head *bh, *final_bh;
+	uint16_t ident;
+	struct udf_sb_info *sbi = UDF_SB(sb);
+	struct logicalVolIntegrityDesc *lvid;
+	int indirections = 0;
+
+	while (++indirections <= UDF_MAX_LVID_NESTING) {
+		final_bh = NULL;
+		while (loc.extLength > 0 &&
+			(bh = udf_read_tagged(sb, loc.extLocation,
+					loc.extLocation, &ident))) {
+			if (ident != TAG_IDENT_LVID) {
+				brelse(bh);
+				break;
+			}
+
+			brelse(final_bh);
+			final_bh = bh;
+
+			loc.extLength -= sb->s_blocksize;
+			loc.extLocation++;
+		}
+
+		if (!final_bh)
+			return;
+
+		brelse(sbi->s_lvid_bh);
+		sbi->s_lvid_bh = final_bh;
+
+		lvid = (struct logicalVolIntegrityDesc *)final_bh->b_data;
+		if (lvid->nextIntegrityExt.extLength == 0)
+			return;
+
+		loc = leea_to_cpu(lvid->nextIntegrityExt);
+	}
+
+	udf_warn(sb, "Too many LVID indirections (max %u), ignoring.\n",
+		UDF_MAX_LVID_NESTING);
+	brelse(sbi->s_lvid_bh);
+	sbi->s_lvid_bh = NULL;
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Process a main/reserve volume descriptor sequence.
  *   @block		First block of first extent of the sequence.
@@ -1544,11 +1884,19 @@ static noinline int udf_process_sequence(
 	struct udf_vds_record *curr;
 	struct generic_desc *gd;
 	struct volDescPtr *vdp;
+<<<<<<< HEAD
 	int done = 0;
+=======
+	bool done = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t vdsn;
 	uint16_t ident;
 	long next_s = 0, next_e = 0;
 	int ret;
+<<<<<<< HEAD
+=======
+	unsigned int indirections = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(vds, 0, sizeof(struct udf_vds_record) * VDS_POS_LENGTH);
 
@@ -1619,13 +1967,26 @@ static noinline int udf_process_sequence(
 			}
 			break;
 		case TAG_IDENT_TD: /* ISO 13346 3/10.9 */
+<<<<<<< HEAD
+=======
+			if (++indirections > UDF_MAX_TD_NESTING) {
+				udf_err(sb, "too many TDs (max %u supported)\n", UDF_MAX_TD_NESTING);
+				brelse(bh);
+				return -EIO;
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vds[VDS_POS_TERMINATING_DESC].block = block;
 			if (next_e) {
 				block = next_s;
 				lastblock = next_e;
 				next_s = next_e = 0;
 			} else
+<<<<<<< HEAD
 				done = 1;
+=======
+				done = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 		brelse(bh);
@@ -1879,7 +2240,13 @@ static int udf_load_vrs(struct super_block *sb, struct udf_options *uopt,
 			return 0;
 		}
 		if (nsr_off == -1)
+<<<<<<< HEAD
 			udf_debug("Failed to read byte 32768. Assuming open disc. Skipping validity check\n");
+=======
+			udf_debug("Failed to read sector at offset %d. "
+				  "Assuming open disc. Skipping validity "
+				  "check\n", VSD_FIRST_SECTOR_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!sbi->s_last_block)
 			sbi->s_last_block = udf_get_last_block(sb);
 	} else {
@@ -1906,11 +2273,20 @@ static void udf_open_lvid(struct super_block *sb)
 
 	if (!bh)
 		return;
+<<<<<<< HEAD
 
 	mutex_lock(&sbi->s_alloc_mutex);
 	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
 	lvidiu = udf_sb_lvidiu(sbi);
 
+=======
+	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
+	lvidiu = udf_sb_lvidiu(sb);
+	if (!lvidiu)
+		return;
+
+	mutex_lock(&sbi->s_alloc_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lvidiu->impIdent.identSuffix[0] = UDF_OS_CLASS_UNIX;
 	lvidiu->impIdent.identSuffix[1] = UDF_OS_ID_LINUX;
 	udf_time_to_disk_stamp(&lvid->recordingDateAndTime,
@@ -1938,10 +2314,19 @@ static void udf_close_lvid(struct super_block *sb)
 
 	if (!bh)
 		return;
+<<<<<<< HEAD
 
 	mutex_lock(&sbi->s_alloc_mutex);
 	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
 	lvidiu = udf_sb_lvidiu(sbi);
+=======
+	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
+	lvidiu = udf_sb_lvidiu(sb);
+	if (!lvidiu)
+		return;
+
+	mutex_lock(&sbi->s_alloc_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lvidiu->impIdent.identSuffix[0] = UDF_OS_CLASS_UNIX;
 	lvidiu->impIdent.identSuffix[1] = UDF_OS_ID_LINUX;
 	udf_time_to_disk_stamp(&lvid->recordingDateAndTime, CURRENT_TIME);
@@ -2005,10 +2390,19 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
 	struct udf_options uopt;
 	struct kernel_lb_addr rootdir, fileset;
 	struct udf_sb_info *sbi;
+<<<<<<< HEAD
 
 	uopt.flags = (1 << UDF_FLAG_USE_AD_IN_ICB) | (1 << UDF_FLAG_STRICT);
 	uopt.uid = INVALID_UID;
 	uopt.gid = INVALID_GID;
+=======
+	bool lvid_open = false;
+
+	uopt.flags = (1 << UDF_FLAG_USE_AD_IN_ICB) | (1 << UDF_FLAG_STRICT);
+	/* By default we'll use overflow[ug]id when UDF inode [ug]id == -1 */
+	uopt.uid = make_kuid(current_user_ns(), overflowuid);
+	uopt.gid = make_kgid(current_user_ns(), overflowgid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uopt.umask = 0;
 	uopt.fmode = UDF_INVALID_MODE;
 	uopt.dmode = UDF_INVALID_MODE;
@@ -2022,12 +2416,20 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
 	mutex_init(&sbi->s_alloc_mutex);
 
 	if (!udf_parse_options((char *)options, &uopt, false))
+<<<<<<< HEAD
 		goto error_out;
+=======
+		goto parse_options_failure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (uopt.flags & (1 << UDF_FLAG_UTF8) &&
 	    uopt.flags & (1 << UDF_FLAG_NLS_MAP)) {
 		udf_err(sb, "utf8 cannot be combined with iocharset\n");
+<<<<<<< HEAD
 		goto error_out;
+=======
+		goto parse_options_failure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #ifdef CONFIG_UDF_NLS
 	if ((uopt.flags & (1 << UDF_FLAG_NLS_MAP)) && !uopt.nls_map) {
@@ -2094,6 +2496,7 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
 
 	if (sbi->s_lvid_bh) {
 		struct logicalVolIntegrityDescImpUse *lvidiu =
+<<<<<<< HEAD
 							udf_sb_lvidiu(sbi);
 		uint16_t minUDFReadRev = le16_to_cpu(lvidiu->minUDFReadRev);
 		uint16_t minUDFWriteRev = le16_to_cpu(lvidiu->minUDFWriteRev);
@@ -2103,6 +2506,21 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
 		if (minUDFReadRev > UDF_MAX_READ_VERSION) {
 			udf_err(sb, "minUDFReadRev=%x (max is %x)\n",
 				le16_to_cpu(lvidiu->minUDFReadRev),
+=======
+							udf_sb_lvidiu(sb);
+		uint16_t minUDFReadRev;
+		uint16_t minUDFWriteRev;
+
+		if (!lvidiu) {
+			ret = -EINVAL;
+			goto error_out;
+		}
+		minUDFReadRev = le16_to_cpu(lvidiu->minUDFReadRev);
+		minUDFWriteRev = le16_to_cpu(lvidiu->minUDFWriteRev);
+		if (minUDFReadRev > UDF_MAX_READ_VERSION) {
+			udf_err(sb, "minUDFReadRev=%x (max is %x)\n",
+				minUDFReadRev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				UDF_MAX_READ_VERSION);
 			ret = -EINVAL;
 			goto error_out;
@@ -2147,17 +2565,31 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
 			 le16_to_cpu(ts.year), ts.month, ts.day,
 			 ts.hour, ts.minute, le16_to_cpu(ts.typeAndTimezone));
 	}
+<<<<<<< HEAD
 	if (!(sb->s_flags & MS_RDONLY))
 		udf_open_lvid(sb);
+=======
+	if (!(sb->s_flags & MS_RDONLY)) {
+		udf_open_lvid(sb);
+		lvid_open = true;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Assign the root inode */
 	/* assign inodes by physical block number */
 	/* perhaps it's not extensible enough, but for now ... */
 	inode = udf_iget(sb, &rootdir);
+<<<<<<< HEAD
 	if (!inode) {
 		udf_err(sb, "Error in udf_iget, block=%d, partition=%d\n",
 		       rootdir.logicalBlockNum, rootdir.partitionReferenceNum);
 		ret = -EIO;
+=======
+	if (IS_ERR(inode)) {
+		udf_err(sb, "Error in udf_iget, block=%d, partition=%d\n",
+		       rootdir.logicalBlockNum, rootdir.partitionReferenceNum);
+		ret = PTR_ERR(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error_out;
 	}
 
@@ -2173,13 +2605,22 @@ static int udf_fill_super(struct super_block *sb, void *options, int silent)
 	return 0;
 
 error_out:
+<<<<<<< HEAD
 	if (sbi->s_vat_inode)
 		iput(sbi->s_vat_inode);
+=======
+	iput(sbi->s_vat_inode);
+parse_options_failure:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_UDF_NLS
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP))
 		unload_nls(sbi->s_nls_map);
 #endif
+<<<<<<< HEAD
 	if (!(sb->s_flags & MS_RDONLY))
+=======
+	if (lvid_open)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		udf_close_lvid(sb);
 	brelse(sbi->s_lvid_bh);
 	udf_sb_free_partitions(sb);
@@ -2227,8 +2668,12 @@ static void udf_put_super(struct super_block *sb)
 
 	sbi = UDF_SB(sb);
 
+<<<<<<< HEAD
 	if (sbi->s_vat_inode)
 		iput(sbi->s_vat_inode);
+=======
+	iput(sbi->s_vat_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_UDF_NLS
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP))
 		unload_nls(sbi->s_nls_map);
@@ -2237,6 +2682,10 @@ static void udf_put_super(struct super_block *sb)
 		udf_close_lvid(sb);
 	brelse(sbi->s_lvid_bh);
 	udf_sb_free_partitions(sb);
+<<<<<<< HEAD
+=======
+	mutex_destroy(&sbi->s_alloc_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(sb->s_fs_info);
 	sb->s_fs_info = NULL;
 }
@@ -2266,11 +2715,15 @@ static int udf_statfs(struct dentry *dentry, struct kstatfs *buf)
 	struct logicalVolIntegrityDescImpUse *lvidiu;
 	u64 id = huge_encode_dev(sb->s_bdev->bd_dev);
 
+<<<<<<< HEAD
 	if (sbi->s_lvid_bh != NULL)
 		lvidiu = udf_sb_lvidiu(sbi);
 	else
 		lvidiu = NULL;
 
+=======
+	lvidiu = udf_sb_lvidiu(sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buf->f_type = UDF_SUPER_MAGIC;
 	buf->f_bsize = sb->s_blocksize;
 	buf->f_blocks = sbi->s_partmaps[sbi->s_partition].s_partition_len;
@@ -2280,7 +2733,11 @@ static int udf_statfs(struct dentry *dentry, struct kstatfs *buf)
 					  le32_to_cpu(lvidiu->numDirs)) : 0)
 			+ buf->f_bfree;
 	buf->f_ffree = buf->f_bfree;
+<<<<<<< HEAD
 	buf->f_namelen = UDF_NAME_LEN - 2;
+=======
+	buf->f_namelen = UDF_NAME_LEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buf->f_fsid.val[0] = (u32)id;
 	buf->f_fsid.val[1] = (u32)(id >> 32);
 
@@ -2366,17 +2823,42 @@ static unsigned int udf_count_free_table(struct super_block *sb,
 static unsigned int udf_count_free(struct super_block *sb)
 {
 	unsigned int accum = 0;
+<<<<<<< HEAD
 	struct udf_sb_info *sbi;
 	struct udf_part_map *map;
 
 	sbi = UDF_SB(sb);
+=======
+	struct udf_sb_info *sbi = UDF_SB(sb);
+	struct udf_part_map *map;
+	unsigned int part = sbi->s_partition;
+	int ptype = sbi->s_partmaps[part].s_partition_type;
+
+	if (ptype == UDF_METADATA_MAP25) {
+		part = sbi->s_partmaps[part].s_type_specific.s_metadata.
+							s_phys_partition_ref;
+	} else if (ptype == UDF_VIRTUAL_MAP15 || ptype == UDF_VIRTUAL_MAP20) {
+		/*
+		 * Filesystems with VAT are append-only and we cannot write to
+ 		 * them. Let's just report 0 here.
+		 */
+		return 0;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sbi->s_lvid_bh) {
 		struct logicalVolIntegrityDesc *lvid =
 			(struct logicalVolIntegrityDesc *)
 			sbi->s_lvid_bh->b_data;
+<<<<<<< HEAD
 		if (le32_to_cpu(lvid->numOfPartitions) > sbi->s_partition) {
 			accum = le32_to_cpu(
 					lvid->freeSpaceTable[sbi->s_partition]);
+=======
+		if (le32_to_cpu(lvid->numOfPartitions) > part) {
+			accum = le32_to_cpu(
+					lvid->freeSpaceTable[part]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (accum == 0xFFFFFFFF)
 				accum = 0;
 		}
@@ -2385,7 +2867,11 @@ static unsigned int udf_count_free(struct super_block *sb)
 	if (accum)
 		return accum;
 
+<<<<<<< HEAD
 	map = &sbi->s_partmaps[sbi->s_partition];
+=======
+	map = &sbi->s_partmaps[part];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_BITMAP) {
 		accum += udf_count_free_bitmap(sb,
 					       map->s_uspace.s_bitmap);

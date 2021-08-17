@@ -18,6 +18,34 @@
 #include <linux/dirent.h>
 #include <linux/syscalls.h>
 #include <linux/utime.h>
+<<<<<<< HEAD
+=======
+#include <linux/initramfs.h>
+#include <linux/file.h>
+
+static ssize_t __init xwrite(int fd, const char *p, size_t count)
+{
+	ssize_t out = 0;
+
+	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
+	while (count) {
+		ssize_t rv = sys_write(fd, p, count);
+
+		if (rv < 0) {
+			if (rv == -EINTR || rv == -EAGAIN)
+				continue;
+			return out ? out : rv;
+		} else if (rv == 0)
+			break;
+
+		p += rv;
+		out += rv;
+		count -= rv;
+	}
+
+	return out;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static __initdata char *message;
 static void __init error(char *x)
@@ -174,24 +202,40 @@ static __initdata enum state {
 } state, next_state;
 
 static __initdata char *victim;
+<<<<<<< HEAD
 static __initdata unsigned count;
+=======
+static unsigned long byte_count __initdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __initdata loff_t this_header, next_header;
 
 static inline void __init eat(unsigned n)
 {
 	victim += n;
 	this_header += n;
+<<<<<<< HEAD
 	count -= n;
+=======
+	byte_count -= n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static __initdata char *vcollected;
 static __initdata char *collected;
+<<<<<<< HEAD
 static __initdata int remains;
+=======
+static long remains __initdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __initdata char *collect;
 
 static void __init read_into(char *buf, unsigned size, enum state next)
 {
+<<<<<<< HEAD
 	if (count >= size) {
+=======
+	if (byte_count >= size) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		collected = victim;
 		eat(size);
 		state = next;
@@ -213,9 +257,15 @@ static int __init do_start(void)
 
 static int __init do_collect(void)
 {
+<<<<<<< HEAD
 	unsigned n = remains;
 	if (count < n)
 		n = count;
+=======
+	unsigned long n = remains;
+	if (byte_count < n)
+		n = byte_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(collect, victim, n);
 	eat(n);
 	collect += n;
@@ -257,8 +307,13 @@ static int __init do_header(void)
 
 static int __init do_skip(void)
 {
+<<<<<<< HEAD
 	if (this_header + count < next_header) {
 		eat(count);
+=======
+	if (this_header + byte_count < next_header) {
+		eat(byte_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	} else {
 		eat(next_header - this_header);
@@ -269,9 +324,15 @@ static int __init do_skip(void)
 
 static int __init do_reset(void)
 {
+<<<<<<< HEAD
 	while(count && *victim == '\0')
 		eat(1);
 	if (count && (this_header & 3))
+=======
+	while (byte_count && *victim == '\0')
+		eat(1);
+	if (byte_count && (this_header & 3))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error("broken padding");
 	return 1;
 }
@@ -286,11 +347,19 @@ static int __init maybe_link(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init clean_path(char *path, umode_t mode)
 {
 	struct stat st;
 
 	if (!sys_newlstat(path, &st) && (st.st_mode^mode) & S_IFMT) {
+=======
+static void __init clean_path(char *path, umode_t fmode)
+{
+	struct stat st;
+
+	if (!sys_newlstat(path, &st) && (st.st_mode ^ fmode) & S_IFMT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (S_ISDIR(st.st_mode))
 			sys_rmdir(path);
 		else
@@ -345,8 +414,14 @@ static int __init do_name(void)
 
 static int __init do_copy(void)
 {
+<<<<<<< HEAD
 	if (count >= body_len) {
 		sys_write(wfd, victim, body_len);
+=======
+	if (byte_count >= body_len) {
+		if (xwrite(wfd, victim, body_len) != body_len)
+			error("write error");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sys_close(wfd);
 		do_utime(vcollected, mtime);
 		kfree(vcollected);
@@ -354,9 +429,16 @@ static int __init do_copy(void)
 		state = SkipIt;
 		return 0;
 	} else {
+<<<<<<< HEAD
 		sys_write(wfd, victim, count);
 		body_len -= count;
 		eat(count);
+=======
+		if (xwrite(wfd, victim, byte_count) != byte_count)
+			error("write error");
+		body_len -= byte_count;
+		eat(byte_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	}
 }
@@ -384,13 +466,20 @@ static __initdata int (*actions[])(void) = {
 	[Reset]		= do_reset,
 };
 
+<<<<<<< HEAD
 static int __init write_buffer(char *buf, unsigned len)
 {
 	count = len;
+=======
+static long __init write_buffer(char *buf, unsigned long len)
+{
+	byte_count = len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	victim = buf;
 
 	while (!actions[state]())
 		;
+<<<<<<< HEAD
 	return len - count;
 }
 
@@ -399,6 +488,16 @@ static int __init flush_buffer(void *bufv, unsigned len)
 	char *buf = (char *) bufv;
 	int written;
 	int origLen = len;
+=======
+	return len - byte_count;
+}
+
+static long __init flush_buffer(void *bufv, unsigned long len)
+{
+	char *buf = (char *) bufv;
+	long written;
+	long origLen = len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (message)
 		return -1;
 	while ((written = write_buffer(buf, len)) < len && !message) {
@@ -417,6 +516,7 @@ static int __init flush_buffer(void *bufv, unsigned len)
 	return origLen;
 }
 
+<<<<<<< HEAD
 static unsigned my_inptr;   /* index of next byte to be processed in inbuf */
 
 #include <linux/decompress/generic.h>
@@ -424,6 +524,15 @@ static unsigned my_inptr;   /* index of next byte to be processed in inbuf */
 static char * __init unpack_to_rootfs(char *buf, unsigned len)
 {
 	int written, res;
+=======
+static unsigned long my_inptr; /* index of next byte to be processed in inbuf */
+
+#include <linux/decompress/generic.h>
+
+static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+{
+	long written;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	decompress_fn decompress;
 	const char *compress_name;
 	static __initdata char msg_buf[64];
@@ -455,8 +564,14 @@ static char * __init unpack_to_rootfs(char *buf, unsigned len)
 		}
 		this_header = 0;
 		decompress = decompress_method(buf, len, &compress_name);
+<<<<<<< HEAD
 		if (decompress) {
 			res = decompress(buf, len, NULL, flush_buffer, NULL,
+=======
+		pr_debug("Detected %s compressed data\n", compress_name);
+		if (decompress) {
+			int res = decompress(buf, len, NULL, flush_buffer, NULL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   &my_inptr, error);
 			if (res)
 				error("decompressor failed");
@@ -500,14 +615,22 @@ extern unsigned long __initramfs_size;
 
 static void __init free_initrd(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long crashk_start = (unsigned long)__va(crashk_res.start);
 	unsigned long crashk_end   = (unsigned long)__va(crashk_res.end);
 #endif
 	if (do_retain_initrd)
 		goto skip;
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * If the initrd region is overlapped with crashkernel reserved region,
 	 * free only memory that is not part of crashkernel region.
@@ -579,11 +702,35 @@ static void __init clean_rootfs(void)
 }
 #endif
 
+<<<<<<< HEAD
 static int __init populate_rootfs(void)
 {
 	char *err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
 	if (err)
 		panic(err);	/* Failed to decompress INTERNAL initramfs */
+=======
+static int __initdata do_skip_initramfs;
+
+static int __init skip_initramfs_param(char *str)
+{
+	if (*str)
+		return 0;
+	do_skip_initramfs = 1;
+	return 1;
+}
+__setup("skip_initramfs", skip_initramfs_param);
+
+static int __init populate_rootfs(void)
+{
+	char *err;
+
+	if (do_skip_initramfs)
+		return default_rootfs();
+
+	err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
+	if (err)
+		panic("%s", err); /* Failed to decompress INTERNAL initramfs */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (initrd_start) {
 #ifdef CONFIG_BLK_DEV_RAM
 		int fd;
@@ -602,8 +749,18 @@ static int __init populate_rootfs(void)
 		fd = sys_open("/initrd.image",
 			      O_WRONLY|O_CREAT, 0700);
 		if (fd >= 0) {
+<<<<<<< HEAD
 			sys_write(fd, (char *)initrd_start,
 					initrd_end - initrd_start);
+=======
+			ssize_t written = xwrite(fd, (char *)initrd_start,
+						initrd_end - initrd_start);
+
+			if (written != initrd_end - initrd_start)
+				pr_err("/initrd.image: incomplete write (%zd != %ld)\n",
+				       written, initrd_end - initrd_start);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sys_close(fd);
 			free_initrd();
 		}
@@ -616,6 +773,10 @@ static int __init populate_rootfs(void)
 			printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
 		free_initrd();
 #endif
+<<<<<<< HEAD
+=======
+		flush_delayed_fput();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Try loading default modules from initramfs.  This gives
 		 * us a chance to load before device_initcalls.

@@ -7,6 +7,10 @@
  *		 Denis Joseph Barrow,
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/elf-randomize.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/compiler.h>
 #include <linux/cpu.h>
 #include <linux/sched.h>
@@ -23,6 +27,10 @@
 #include <linux/kprobes.h>
 #include <linux/random.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/init_task.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/vtimer.h>
@@ -52,15 +60,23 @@ unsigned long thread_saved_pc(struct task_struct *tsk)
 		return 0;
 	low = task_stack_page(tsk);
 	high = (struct stack_frame *) task_pt_regs(tsk);
+<<<<<<< HEAD
 	sf = (struct stack_frame *) (tsk->thread.ksp & PSW_ADDR_INSN);
 	if (sf <= low || sf > high)
 		return 0;
 	sf = (struct stack_frame *) (sf->back_chain & PSW_ADDR_INSN);
+=======
+	sf = (struct stack_frame *) tsk->thread.ksp;
+	if (sf <= low || sf > high)
+		return 0;
+	sf = (struct stack_frame *) sf->back_chain;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sf <= low || sf > high)
 		return 0;
 	return sf->gprs[8];
 }
 
+<<<<<<< HEAD
 void arch_cpu_idle(void)
 {
 	local_mcck_disable();
@@ -100,6 +116,42 @@ void flush_thread(void)
 
 void release_thread(struct task_struct *dead_task)
 {
+=======
+extern void kernel_thread_starter(void);
+
+/*
+ * Free current thread data structures etc..
+ */
+void exit_thread(struct task_struct *tsk)
+{
+}
+
+void flush_thread(void)
+{
+}
+
+void release_thread(struct task_struct *dead_task)
+{
+}
+
+void arch_release_task_struct(struct task_struct *tsk)
+{
+	runtime_instr_release(tsk);
+}
+
+int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
+{
+	/*
+	 * Save the floating-point or vector register state of the current
+	 * task and set the CIF_FPU flag to lazy restore the FPU register
+	 * state when returning to user space.
+	 */
+	save_fpu_regs();
+
+	memcpy(dst, src, arch_task_struct_size);
+	dst->thread.fpu.regs = dst->thread.fpu.fprs;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int copy_thread(unsigned long clone_flags, unsigned long new_stackp,
@@ -122,7 +174,11 @@ int copy_thread(unsigned long clone_flags, unsigned long new_stackp,
 	memset(&p->thread.per_user, 0, sizeof(p->thread.per_user));
 	memset(&p->thread.per_event, 0, sizeof(p->thread.per_event));
 	clear_tsk_thread_flag(p, TIF_SINGLE_STEP);
+<<<<<<< HEAD
 	clear_tsk_thread_flag(p, TIF_PER_TRAP);
+=======
+	p->thread.per_flags = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Initialize per thread user and system timer values */
 	ti = task_thread_info(p);
 	ti->user_timer = 0;
@@ -138,9 +194,15 @@ int copy_thread(unsigned long clone_flags, unsigned long new_stackp,
 	if (unlikely(p->flags & PF_KTHREAD)) {
 		/* kernel thread */
 		memset(&frame->childregs, 0, sizeof(struct pt_regs));
+<<<<<<< HEAD
 		frame->childregs.psw.mask = psw_kernel_bits | PSW_MASK_DAT |
 				PSW_MASK_IO | PSW_MASK_EXT | PSW_MASK_MCHECK;
 		frame->childregs.psw.addr = PSW_ADDR_AMODE |
+=======
+		frame->childregs.psw.mask = PSW_KERNEL_BITS | PSW_MASK_DAT |
+				PSW_MASK_IO | PSW_MASK_EXT | PSW_MASK_MCHECK;
+		frame->childregs.psw.addr =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				(unsigned long) kernel_thread_starter;
 		frame->childregs.gprs[9] = new_stackp; /* function */
 		frame->childregs.gprs[10] = arg;
@@ -151,11 +213,16 @@ int copy_thread(unsigned long clone_flags, unsigned long new_stackp,
 	}
 	frame->childregs = *current_pt_regs();
 	frame->childregs.gprs[2] = 0;	/* child returns 0 on fork. */
+<<<<<<< HEAD
+=======
+	frame->childregs.flags = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (new_stackp)
 		frame->childregs.gprs[15] = new_stackp;
 
 	/* Don't copy runtime instrumentation info */
 	p->thread.ri_cb = NULL;
+<<<<<<< HEAD
 	p->thread.ri_signum = 0;
 	frame->childregs.psw.mask &= ~PSW_MASK_RI;
 
@@ -173,6 +240,10 @@ int copy_thread(unsigned long clone_flags, unsigned long new_stackp,
 #else /* CONFIG_64BIT */
 	/* Save the fpu registers to new thread structure. */
 	save_fp_regs(&p->thread.fp_regs);
+=======
+	frame->childregs.psw.mask &= ~PSW_MASK_RI;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set a new TLS ?  */
 	if (clone_flags & CLONE_SETTLS) {
 		unsigned long tls = frame->childregs.gprs[6];
@@ -183,15 +254,23 @@ int copy_thread(unsigned long clone_flags, unsigned long new_stackp,
 			p->thread.acrs[1] = (unsigned int)tls;
 		}
 	}
+<<<<<<< HEAD
 #endif /* CONFIG_64BIT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 asmlinkage void execve_tail(void)
 {
+<<<<<<< HEAD
 	current->thread.fp_regs.fpc = 0;
 	if (MACHINE_HAS_IEEE)
 		asm volatile("sfpc %0,%0" : : "d" (0));
+=======
+	current->thread.fpu.fpc = 0;
+	asm volatile("sfpc %0" : : "d" (0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -199,6 +278,7 @@ asmlinkage void execve_tail(void)
  */
 int dump_fpu (struct pt_regs * regs, s390_fp_regs *fpregs)
 {
+<<<<<<< HEAD
 #ifndef CONFIG_64BIT
 	/*
 	 * save fprs to current->thread.fp_regs to merge them with
@@ -209,6 +289,17 @@ int dump_fpu (struct pt_regs * regs, s390_fp_regs *fpregs)
 #else /* CONFIG_64BIT */
 	save_fp_regs(fpregs);
 #endif /* CONFIG_64BIT */
+=======
+	save_fpu_regs();
+	fpregs->fpc = current->thread.fpu.fpc;
+	fpregs->pad = 0;
+	if (MACHINE_HAS_VX)
+		convert_vx_to_fp((freg_t *)&fpregs->fprs,
+				 current->thread.fpu.vxrs);
+	else
+		memcpy(&fpregs->fprs, current->thread.fpu.fprs,
+		       sizeof(fpregs->fprs));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 EXPORT_SYMBOL(dump_fpu);
@@ -223,6 +314,7 @@ unsigned long get_wchan(struct task_struct *p)
 		return 0;
 	low = task_stack_page(p);
 	high = (struct stack_frame *) task_pt_regs(p);
+<<<<<<< HEAD
 	sf = (struct stack_frame *) (p->thread.ksp & PSW_ADDR_INSN);
 	if (sf <= low || sf > high)
 		return 0;
@@ -231,6 +323,16 @@ unsigned long get_wchan(struct task_struct *p)
 		if (sf <= low || sf > high)
 			return 0;
 		return_address = sf->gprs[8] & PSW_ADDR_INSN;
+=======
+	sf = (struct stack_frame *) p->thread.ksp;
+	if (sf <= low || sf > high)
+		return 0;
+	for (count = 0; count < 16; count++) {
+		sf = (struct stack_frame *) sf->back_chain;
+		if (sf <= low || sf > high)
+			return 0;
+		return_address = sf->gprs[8];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!in_sched_functions(return_address))
 			return return_address;
 	}
@@ -246,15 +348,20 @@ unsigned long arch_align_stack(unsigned long sp)
 
 static inline unsigned long brk_rnd(void)
 {
+<<<<<<< HEAD
 	/* 8MB for 32bit, 1GB for 64bit */
 	if (is_32bit_task())
 		return (get_random_int() & 0x7ffUL) << PAGE_SHIFT;
 	else
 		return (get_random_int() & 0x3ffffUL) << PAGE_SHIFT;
+=======
+	return (get_random_int() & BRK_RND_MASK) << PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 unsigned long arch_randomize_brk(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	unsigned long ret = PAGE_ALIGN(mm->brk + brk_rnd());
 
 	if (ret < mm->brk)
@@ -271,4 +378,10 @@ unsigned long randomize_et_dyn(unsigned long base)
 	if (ret < base)
 		return base;
 	return ret;
+=======
+	unsigned long ret;
+
+	ret = PAGE_ALIGN(mm->brk + brk_rnd());
+	return (ret > mm->brk) ? ret : mm->brk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

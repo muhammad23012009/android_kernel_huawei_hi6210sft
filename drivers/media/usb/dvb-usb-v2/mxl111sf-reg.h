@@ -1,7 +1,11 @@
 /*
  *  mxl111sf-reg.h - driver for the MaxLinear MXL111SF
  *
+<<<<<<< HEAD
  *  Copyright (C) 2010 Michael Krufky <mkrufky@kernellabs.com>
+=======
+ *  Copyright (C) 2010-2014 Michael Krufky <mkrufky@linuxtv.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -171,9 +175,12 @@
 #define V6_DIG_RF_PWR_MSB_REG  0x47
 
 #endif /* _DVB_USB_MXL111SF_REG_H_ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

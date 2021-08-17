@@ -23,6 +23,7 @@
 #ifndef _CHANNEL_H_
 #define _CHANNEL_H_
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "card.h"
 
@@ -52,5 +53,12 @@ void set_channel_map_info(void *pDeviceHandler, unsigned int uChannelIndex,
 			  unsigned char byMap);
 void clear_channel_map_info(void *pDeviceHandler);
 unsigned char auto_channel_select(void *pDeviceHandler, CARD_PHY_TYPE ePHYType);
+=======
+#include "card.h"
+
+void vnt_init_bands(struct vnt_private *);
+
+bool set_channel(struct vnt_private *, struct ieee80211_channel *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _CHANNEL_H_ */

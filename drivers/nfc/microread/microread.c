@@ -13,11 +13,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -554,6 +562,7 @@ exit:
 	kfree_skb(skb);
 
 	if (r)
+<<<<<<< HEAD
 		pr_err("Failed to handle discovered target err=%d", r);
 }
 
@@ -561,6 +570,16 @@ static int microread_event_received(struct nfc_hci_dev *hdev, u8 gate,
 				     u8 event, struct sk_buff *skb)
 {
 	int r;
+=======
+		pr_err("Failed to handle discovered target err=%d\n", r);
+}
+
+static int microread_event_received(struct nfc_hci_dev *hdev, u8 pipe,
+				     u8 event, struct sk_buff *skb)
+{
+	int r;
+	u8 gate = hdev->pipes[pipe].gate;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 mode;
 
 	pr_info("Microread received event 0x%x to gate 0x%x\n", event, gate);
@@ -658,13 +677,20 @@ int microread_probe(void *phy_id, struct nfc_phy_ops *phy_ops, char *llc_name,
 {
 	struct microread_info *info;
 	unsigned long quirks = 0;
+<<<<<<< HEAD
 	u32 protocols, se;
+=======
+	u32 protocols;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nfc_hci_init_data init_data;
 	int r;
 
 	info = kzalloc(sizeof(struct microread_info), GFP_KERNEL);
 	if (!info) {
+<<<<<<< HEAD
 		pr_err("Cannot allocate memory for microread_info.\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r = -ENOMEM;
 		goto err_info_alloc;
 	}
@@ -686,17 +712,26 @@ int microread_probe(void *phy_id, struct nfc_phy_ops *phy_ops, char *llc_name,
 		    NFC_PROTO_ISO14443_B_MASK |
 		    NFC_PROTO_NFC_DEP_MASK;
 
+<<<<<<< HEAD
 	se = NFC_SE_UICC | NFC_SE_EMBEDDED;
 
 	info->hdev = nfc_hci_allocate_device(&microread_hci_ops, &init_data,
 					     quirks, protocols, se, llc_name,
+=======
+	info->hdev = nfc_hci_allocate_device(&microread_hci_ops, &init_data,
+					     quirks, protocols, llc_name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     phy_headroom +
 					     MICROREAD_CMDS_HEADROOM,
 					     phy_tailroom +
 					     MICROREAD_CMD_TAILROOM,
 					     phy_payload);
 	if (!info->hdev) {
+<<<<<<< HEAD
 		pr_err("Cannot allocate nfc hdev.\n");
+=======
+		pr_err("Cannot allocate nfc hdev\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r = -ENOMEM;
 		goto err_alloc_hdev;
 	}

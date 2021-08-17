@@ -157,8 +157,12 @@ static void twl4030_vibra_close(struct input_dev *input)
 }
 
 /*** Module ***/
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int twl4030_vibra_suspend(struct device *dev)
+=======
+static int __maybe_unused twl4030_vibra_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct vibra_info *info = platform_get_drvdata(pdev);
@@ -169,17 +173,25 @@ static int twl4030_vibra_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int twl4030_vibra_resume(struct device *dev)
+=======
+static int __maybe_unused twl4030_vibra_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	vibra_disable_leds();
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(twl4030_vibra_pm_ops,
 			 twl4030_vibra_suspend, twl4030_vibra_resume);
 
 static bool twl4030_vibra_check_coexist(struct twl4030_vibra_data *pdata,
+<<<<<<< HEAD
 			      struct device_node *node)
 {
 	if (pdata && pdata->coexist)
@@ -187,13 +199,31 @@ static bool twl4030_vibra_check_coexist(struct twl4030_vibra_data *pdata,
 
 	if (of_find_node_by_name(node, "codec"))
 		return true;
+=======
+			      struct device_node *parent)
+{
+	struct device_node *node;
+
+	if (pdata && pdata->coexist)
+		return true;
+
+	node = of_get_child_by_name(parent, "codec");
+	if (node) {
+		of_node_put(node);
+		return true;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return false;
 }
 
 static int twl4030_vibra_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct twl4030_vibra_data *pdata = pdev->dev.platform_data;
+=======
+	struct twl4030_vibra_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_node *twl4030_core_node = pdev->dev.parent->of_node;
 	struct vibra_info *info;
 	int ret;
@@ -221,7 +251,10 @@ static int twl4030_vibra_probe(struct platform_device *pdev)
 
 	info->input_dev->name = "twl4030:vibrator";
 	info->input_dev->id.version = 1;
+<<<<<<< HEAD
 	info->input_dev->dev.parent = pdev->dev.parent;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->input_dev->close = twl4030_vibra_close;
 	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
 
@@ -251,7 +284,10 @@ static struct platform_driver twl4030_vibra_driver = {
 	.probe		= twl4030_vibra_probe,
 	.driver		= {
 		.name	= "twl4030-vibra",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &twl4030_vibra_pm_ops,
 	},
 };

@@ -55,7 +55,11 @@ EXPORT_SYMBOL_GPL(pcf50633_free_irq);
 static int __pcf50633_irq_mask_set(struct pcf50633 *pcf, int irq, u8 mask)
 {
 	u8 reg, bit;
+<<<<<<< HEAD
 	int ret = 0, idx;
+=======
+	int idx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	idx = irq >> 3;
 	reg = PCF50633_REG_INT1M + idx;
@@ -72,7 +76,11 @@ static int __pcf50633_irq_mask_set(struct pcf50633 *pcf, int irq, u8 mask)
 
 	mutex_unlock(&pcf->lock);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int pcf50633_irq_mask(struct pcf50633 *pcf, int irq)

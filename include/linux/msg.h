@@ -9,7 +9,11 @@ struct msg_msg {
 	struct list_head m_list;
 	long m_type;
 	size_t m_ts;		/* message text size */
+<<<<<<< HEAD
 	struct msg_msgseg* next;
+=======
+	struct msg_msgseg *next;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *security;
 	/* the actual message follows immediately */
 };

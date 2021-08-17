@@ -102,7 +102,11 @@ static int eata_pio_show_info(struct seq_file *m, struct Scsi_Host *shost)
 		   shost->host_no, SD(shost)->name);
 	seq_printf(m, "Firmware revision: v%s\n",
 		   SD(shost)->revision);
+<<<<<<< HEAD
 	seq_printf(m, "IO: PIO\n");
+=======
+	seq_puts(m, "IO: PIO\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(m, "Base IO : %#.4x\n", (u32) shost->base);
 	seq_printf(m, "Host Bus: %s\n",
 		   (SD(shost)->bustype == 'P')?"PCI ":
@@ -687,7 +691,11 @@ static int register_pio_HBA(long base, struct get_conf *gc, struct pci_dev *pdev
 		return 0;
 
 	if (!reg_IRQ[gc->IRQ]) {	/* Interrupt already registered ? */
+<<<<<<< HEAD
 		if (!request_irq(gc->IRQ, do_eata_pio_int_handler, IRQF_DISABLED, "EATA-PIO", sh)) {
+=======
+		if (!request_irq(gc->IRQ, do_eata_pio_int_handler, 0, "EATA-PIO", sh)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			reg_IRQ[gc->IRQ]++;
 			if (!gc->IRQ_TR)
 				reg_IRQL[gc->IRQ] = 1;	/* IRQ is edge triggered */
@@ -729,6 +737,10 @@ static int register_pio_HBA(long base, struct get_conf *gc, struct pci_dev *pdev
 		break;
 	case 0x24:
 		SD(sh)->EATA_revision = 'z';
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		SD(sh)->EATA_revision = '?';
 	}
@@ -919,9 +931,15 @@ static int eata_pio_detect(struct scsi_host_template *tpnt)
 	find_pio_EISA(&gc);
 	find_pio_ISA(&gc);
 
+<<<<<<< HEAD
 	for (i = 0; i <= MAXIRQ; i++)
 		if (reg_IRQ[i])
 			request_irq(i, do_eata_pio_int_handler, IRQF_DISABLED, "EATA-PIO", NULL);
+=======
+	for (i = 0; i < MAXIRQ; i++)
+		if (reg_IRQ[i])
+			request_irq(i, do_eata_pio_int_handler, 0, "EATA-PIO", NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	HBA_ptr = first_HBA;
 

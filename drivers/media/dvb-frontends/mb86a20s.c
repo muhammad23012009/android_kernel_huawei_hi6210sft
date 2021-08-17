@@ -1,7 +1,11 @@
 /*
  *   Fujitu mb86a20s ISDB-T/ISDB-Tsb Module driver
  *
+<<<<<<< HEAD
  *   Copyright (C) 2010-2013 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ *   Copyright (C) 2010-2013 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *   Copyright (C) 2009-2010 Douglas Landgraf <dougsland@redhat.com>
  *
  *   This program is free software; you can redistribute it and/or
@@ -22,10 +26,13 @@
 
 #define NUM_LAYERS 3
 
+<<<<<<< HEAD
 static int debug = 1;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "Activates frontend debugging (default:0)");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum mb86a20s_bandwidth {
 	MB86A20S_13SEG = 0,
 	MB86A20S_13SEG_PARTIAL = 1,
@@ -33,7 +40,11 @@ enum mb86a20s_bandwidth {
 	MB86A20S_3SEG = 3,
 };
 
+<<<<<<< HEAD
 u8 mb86a20s_subchannel[] = {
+=======
+static u8 mb86a20s_subchannel[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0xb0, 0xc0, 0xd0, 0xe0,
 	0xf0, 0x00, 0x10, 0x20,
 };
@@ -290,17 +301,29 @@ static int mb86a20s_i2c_readreg(struct mb86a20s_state *state,
  * The functions below assume that gateway lock has already obtained
  */
 
+<<<<<<< HEAD
 static int mb86a20s_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int mb86a20s_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mb86a20s_state *state = fe->demodulator_priv;
 	int val;
 
 	*status = 0;
 
+<<<<<<< HEAD
 	val = mb86a20s_readreg(state, 0x0a) & 0xf;
 	if (val < 0)
 		return val;
 
+=======
+	val = mb86a20s_readreg(state, 0x0a);
+	if (val < 0)
+		return val;
+
+	val &= 0xf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (val >= 2)
 		*status |= FE_HAS_SIGNAL;
 
@@ -455,6 +478,12 @@ static int mb86a20s_get_interleaving(struct mb86a20s_state *state,
 				     unsigned layer)
 {
 	int rc;
+<<<<<<< HEAD
+=======
+	int interleaving[] = {
+		0, 1, 2, 4, 8
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	static unsigned char reg[] = {
 		[0] = 0x88,	/* Layer A */
@@ -471,6 +500,7 @@ static int mb86a20s_get_interleaving(struct mb86a20s_state *state,
 	if (rc < 0)
 		return rc;
 
+<<<<<<< HEAD
 	switch ((rc >> 4) & 0x07) {
 	case 1:
 		return GUARD_INTERVAL_1_4;
@@ -485,6 +515,9 @@ static int mb86a20s_get_interleaving(struct mb86a20s_state *state,
 	case 0:
 		return GUARD_INTERVAL_AUTO;
 	}
+=======
+	return interleaving[(rc >> 4) & 0x07];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mb86a20s_get_segment_count(struct mb86a20s_state *state,
@@ -562,7 +595,11 @@ static u32 isdbt_rate[3][5][4] = {
 
 static void mb86a20s_layer_bitrate(struct dvb_frontend *fe, u32 layer,
 				   u32 modulation, u32 forward_error_correction,
+<<<<<<< HEAD
 				   u32 interleaving,
+=======
+				   u32 guard_interval,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   u32 segment)
 {
 	struct mb86a20s_state *state = fe->demodulator_priv;
@@ -570,7 +607,11 @@ static void mb86a20s_layer_bitrate(struct dvb_frontend *fe, u32 layer,
 	int mod, fec, guard;
 
 	/*
+<<<<<<< HEAD
 	 * If modulation/fec/interleaving is not detected, the default is
+=======
+	 * If modulation/fec/guard is not detected, the default is
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * to consider the lowest bit rate, to avoid taking too long time
 	 * to get BER.
 	 */
@@ -608,7 +649,11 @@ static void mb86a20s_layer_bitrate(struct dvb_frontend *fe, u32 layer,
 		break;
 	}
 
+<<<<<<< HEAD
 	switch (interleaving) {
+=======
+	switch (guard_interval) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 	case GUARD_INTERVAL_1_4:
 		guard = 0;
@@ -699,7 +744,11 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 		c->layer[layer].interleaving = rc;
 		mb86a20s_layer_bitrate(fe, layer, c->layer[layer].modulation,
 				       c->layer[layer].fec,
+<<<<<<< HEAD
 				       c->layer[layer].interleaving,
+=======
+				       c->guard_interval,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       c->layer[layer].segment_count);
 	}
 
@@ -717,11 +766,18 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 	rc = mb86a20s_readreg(state, 0x07);
 	if (rc < 0)
 		return rc;
+<<<<<<< HEAD
 	if ((rc & 0x60) == 0x20) {
 		switch (rc & 0x0c >> 2) {
 		case 0:
 			c->transmission_mode = TRANSMISSION_MODE_2K;
 			break;
+=======
+	c->transmission_mode = TRANSMISSION_MODE_AUTO;
+	if ((rc & 0x60) == 0x20) {
+		/* Only modes 2 and 3 are supported */
+		switch ((rc >> 2) & 0x03) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case 1:
 			c->transmission_mode = TRANSMISSION_MODE_4K;
 			break;
@@ -730,7 +786,13 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 			break;
 		}
 	}
+<<<<<<< HEAD
 	if (!(rc & 0x10)) {
+=======
+	c->guard_interval = GUARD_INTERVAL_AUTO;
+	if (!(rc & 0x10)) {
+		/* Guard interval 1/32 is not supported */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (rc & 0x3) {
 		case 0:
 			c->guard_interval = GUARD_INTERVAL_1_4;
@@ -1233,7 +1295,11 @@ struct linear_segments {
  * All tables below return a dB/1000 measurement
  */
 
+<<<<<<< HEAD
 static struct linear_segments cnr_to_db_table[] = {
+=======
+static const struct linear_segments cnr_to_db_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 19648,     0},
 	{ 18187,  1000},
 	{ 16534,  2000},
@@ -1267,7 +1333,11 @@ static struct linear_segments cnr_to_db_table[] = {
 	{   788, 30000},
 };
 
+<<<<<<< HEAD
 static struct linear_segments cnr_64qam_table[] = {
+=======
+static const struct linear_segments cnr_64qam_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 3922688,     0},
 	{ 3920384,  1000},
 	{ 3902720,  2000},
@@ -1301,7 +1371,11 @@ static struct linear_segments cnr_64qam_table[] = {
 	{  388864, 30000},
 };
 
+<<<<<<< HEAD
 static struct linear_segments cnr_16qam_table[] = {
+=======
+static const struct linear_segments cnr_16qam_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 5314816,     0},
 	{ 5219072,  1000},
 	{ 5118720,  2000},
@@ -1335,7 +1409,11 @@ static struct linear_segments cnr_16qam_table[] = {
 	{   95744, 30000},
 };
 
+<<<<<<< HEAD
 struct linear_segments cnr_qpsk_table[] = {
+=======
+static const struct linear_segments cnr_qpsk_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 2834176,     0},
 	{ 2683648,  1000},
 	{ 2536960,  2000},
@@ -1369,7 +1447,11 @@ struct linear_segments cnr_qpsk_table[] = {
 	{   11520, 30000},
 };
 
+<<<<<<< HEAD
 static u32 interpolate_value(u32 value, struct linear_segments *segments,
+=======
+static u32 interpolate_value(u32 value, const struct linear_segments *segments,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     unsigned len)
 {
 	u64 tmp64;
@@ -1453,7 +1535,11 @@ static int mb86a20s_get_blk_error_layer_CNR(struct dvb_frontend *fe)
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 	u32 mer, cnr;
 	int rc, val, layer;
+<<<<<<< HEAD
 	struct linear_segments *segs;
+=======
+	const struct linear_segments *segs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned segs_len;
 
 	dev_dbg(&state->i2c->dev, "%s called.\n", __func__);
@@ -1960,7 +2046,11 @@ static int mb86a20s_set_frontend(struct dvb_frontend *fe)
 }
 
 static int mb86a20s_read_status_and_stats(struct dvb_frontend *fe,
+<<<<<<< HEAD
 					  fe_status_t *status)
+=======
+					  enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mb86a20s_state *state = fe->demodulator_priv;
 	int rc, status_nr;
@@ -2037,6 +2127,7 @@ static int mb86a20s_read_signal_strength_from_cache(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mb86a20s_get_frontend_dummy(struct dvb_frontend *fe)
 {
 	/*
@@ -2047,11 +2138,17 @@ static int mb86a20s_get_frontend_dummy(struct dvb_frontend *fe)
 	return 0;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mb86a20s_tune(struct dvb_frontend *fe,
 			bool re_tune,
 			unsigned int mode_flags,
 			unsigned int *delay,
+<<<<<<< HEAD
 			fe_status_t *status)
+=======
+			enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mb86a20s_state *state = fe->demodulator_priv;
 	int rc = 0;
@@ -2150,7 +2247,10 @@ static struct dvb_frontend_ops mb86a20s_ops = {
 
 	.init = mb86a20s_initfe,
 	.set_frontend = mb86a20s_set_frontend,
+<<<<<<< HEAD
 	.get_frontend = mb86a20s_get_frontend_dummy,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read_status = mb86a20s_read_status_and_stats,
 	.read_signal_strength = mb86a20s_read_signal_strength_from_cache,
 	.tune = mb86a20s_tune,
@@ -2158,5 +2258,9 @@ static struct dvb_frontend_ops mb86a20s_ops = {
 };
 
 MODULE_DESCRIPTION("DVB Frontend module for Fujitsu mb86A20s hardware");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

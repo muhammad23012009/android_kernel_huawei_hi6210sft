@@ -38,7 +38,10 @@ obj-$(CONFIG_BLK_DEV_AEC62XX)		+= aec62xx.o
 obj-$(CONFIG_BLK_DEV_ALI15X3)		+= alim15x3.o
 obj-$(CONFIG_BLK_DEV_AMD74XX)		+= amd74xx.o
 obj-$(CONFIG_BLK_DEV_ATIIXP)		+= atiixp.o
+<<<<<<< HEAD
 obj-$(CONFIG_BLK_DEV_CELLEB)		+= scc_pata.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_BLK_DEV_CMD64X)		+= cmd64x.o
 obj-$(CONFIG_BLK_DEV_CS5520)		+= cs5520.o
 obj-$(CONFIG_BLK_DEV_CS5530)		+= cs5530.o
@@ -78,8 +81,11 @@ obj-$(CONFIG_BLK_DEV_CMD640)		+= cmd640.o
 
 obj-$(CONFIG_BLK_DEV_IDE_PMAC)		+= pmac.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_IDE_H8300)			+= ide-h8300.o
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_IDE_GENERIC)		+= ide-generic.o
 obj-$(CONFIG_BLK_DEV_IDEPNP)		+= ide-pnp.o
 

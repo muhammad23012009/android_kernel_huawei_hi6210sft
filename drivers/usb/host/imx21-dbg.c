@@ -18,6 +18,13 @@
 
 /* this file is part of imx21-hcd.c */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DYNAMIC_DEBUG
+#define DEBUG
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef DEBUG
 
 static inline void create_debug_files(struct imx21 *imx21) { }

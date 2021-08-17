@@ -35,6 +35,11 @@
  *                              Turned xenfs into a loadable module.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/uio.h>
@@ -53,7 +58,11 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "xenbus_comms.h"
 
@@ -61,8 +70,11 @@
 #include <xen/xen.h>
 #include <asm/xen/hypervisor.h>
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * An element of a list of outstanding transactions, for which we're
  * still waiting a reply.
@@ -186,6 +198,11 @@ static int queue_reply(struct list_head *queue, const void *data, size_t len)
 
 	if (len == 0)
 		return 0;
+<<<<<<< HEAD
+=======
+	if (len > XENSTORE_PAYLOAD_MAX)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rb = kmalloc(sizeof(*rb) + len, GFP_KERNEL);
 	if (rb == NULL)
@@ -314,16 +331,31 @@ static int xenbus_write_transaction(unsigned msg_type,
 			rc = -ENOMEM;
 			goto out;
 		}
+<<<<<<< HEAD
+=======
+	} else if (u->u.msg.tx_id != 0) {
+		list_for_each_entry(trans, &u->transactions, list)
+			if (trans->handle.id == u->u.msg.tx_id)
+				break;
+		if (&trans->list == &u->transactions)
+			return -ESRCH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	reply = xenbus_dev_request_and_reply(&u->u.msg);
 	if (IS_ERR(reply)) {
+<<<<<<< HEAD
 		kfree(trans);
+=======
+		if (msg_type == XS_TRANSACTION_START)
+			kfree(trans);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = PTR_ERR(reply);
 		goto out;
 	}
 
 	if (msg_type == XS_TRANSACTION_START) {
+<<<<<<< HEAD
 		trans->handle.id = simple_strtoul(reply, NULL, 0);
 
 		list_add(&trans->list, &u->transactions);
@@ -334,6 +366,16 @@ static int xenbus_write_transaction(unsigned msg_type,
 		BUG_ON(&trans->list == &u->transactions);
 		list_del(&trans->list);
 
+=======
+		if (u->u.msg.type == XS_ERROR)
+			kfree(trans);
+		else {
+			trans->handle.id = simple_strtoul(reply, NULL, 0);
+			list_add(&trans->list, &u->transactions);
+		}
+	} else if (u->u.msg.type == XS_TRANSACTION_END) {
+		list_del(&trans->list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(trans);
 	}
 
@@ -357,7 +399,11 @@ out:
 
 static int xenbus_write_watch(unsigned msg_type, struct xenbus_file_priv *u)
 {
+<<<<<<< HEAD
 	struct watch_adapter *watch, *tmp_watch;
+=======
+	struct watch_adapter *watch;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *path, *token;
 	int err, rc;
 	LIST_HEAD(staging_q);
@@ -392,7 +438,11 @@ static int xenbus_write_watch(unsigned msg_type, struct xenbus_file_priv *u)
 		}
 		list_add(&watch->list, &u->watches);
 	} else {
+<<<<<<< HEAD
 		list_for_each_entry_safe(watch, tmp_watch, &u->watches, list) {
+=======
+		list_for_each_entry(watch, &u->watches, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!strcmp(watch->token, token) &&
 			    !strcmp(watch->watch.node, path)) {
 				unregister_xenbus_watch(&watch->watch);
@@ -529,7 +579,11 @@ static int xenbus_file_open(struct inode *inode, struct file *filp)
 	if (xen_store_evtchn == 0)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	nonseekable_open(inode, filp);
+=======
+	stream_open(inode, filp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u = kzalloc(sizeof(*u), GFP_KERNEL);
 	if (u == NULL)
@@ -616,6 +670,7 @@ static int __init xenbus_init(void)
 
 	err = misc_register(&xenbus_dev);
 	if (err)
+<<<<<<< HEAD
 		printk(KERN_ERR "Could not register xenbus frontend device\n");
 	return err;
 }
@@ -627,3 +682,9 @@ static void __exit xenbus_exit(void)
 
 module_init(xenbus_init);
 module_exit(xenbus_exit);
+=======
+		pr_err("Could not register xenbus frontend device\n");
+	return err;
+}
+device_initcall(xenbus_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

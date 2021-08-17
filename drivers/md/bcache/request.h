@@ -1,6 +1,7 @@
 #ifndef _BCACHE_REQUEST_H_
 #define _BCACHE_REQUEST_H_
 
+<<<<<<< HEAD
 #include <linux/cgroup.h>
 
 struct search {
@@ -37,12 +38,48 @@ void bch_cache_read_endio(struct bio *, int);
 
 void bch_open_buckets_free(struct cache_set *);
 int bch_open_buckets_alloc(struct cache_set *);
+=======
+struct data_insert_op {
+	struct closure		cl;
+	struct cache_set	*c;
+	struct bio		*bio;
+	struct workqueue_struct *wq;
+
+	unsigned		inode;
+	uint16_t		write_point;
+	uint16_t		write_prio;
+	short			error;
+
+	union {
+		uint16_t	flags;
+
+	struct {
+		unsigned	bypass:1;
+		unsigned	writeback:1;
+		unsigned	flush_journal:1;
+		unsigned	csum:1;
+
+		unsigned	replace:1;
+		unsigned	replace_collision:1;
+
+		unsigned	insert_data_done:1;
+	};
+	};
+
+	struct keylist		insert_keys;
+	BKEY_PADDED(replace_key);
+};
+
+unsigned bch_get_congested(struct cache_set *);
+void bch_data_insert(struct closure *cl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void bch_cached_dev_request_init(struct cached_dev *dc);
 void bch_flash_dev_request_init(struct bcache_device *d);
 
 extern struct kmem_cache *bch_search_cache, *bch_passthrough_cache;
 
+<<<<<<< HEAD
 struct bch_cgroup {
 #ifdef CONFIG_CGROUP_BCACHE
 	struct cgroup_subsys_state	css;
@@ -59,4 +96,6 @@ struct bch_cgroup {
 
 struct bch_cgroup *bch_bio_to_cgroup(struct bio *bio);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _BCACHE_REQUEST_H_ */

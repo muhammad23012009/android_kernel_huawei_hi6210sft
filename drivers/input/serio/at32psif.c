@@ -314,8 +314,11 @@ static int __exit psif_remove(struct platform_device *pdev)
 	clk_put(psif->pclk);
 	kfree(psif);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -354,7 +357,10 @@ static struct platform_driver psif_driver = {
 	.remove		= __exit_p(psif_remove),
 	.driver		= {
 		.name	= "atmel_psif",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &psif_pm_ops,
 	},
 };

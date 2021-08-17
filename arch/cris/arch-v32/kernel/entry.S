@@ -99,6 +99,11 @@ ret_from_kernel_thread:
 
 	.type	ret_from_intr,@function
 ret_from_intr:
+<<<<<<< HEAD
+=======
+	moveq	0, $r9			; not a syscall
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	;; Check for resched if preemptive kernel, or if we're going back to
 	;; user-mode. This test matches the user_regs(regs) macro. Don't simply
 	;; test CCS since that doesn't necessarily reflect what mode we'll
@@ -145,7 +150,11 @@ system_call:
 	;; Stack-frame similar to the irq heads, which is reversed in
 	;; ret_from_sys_call.
 
+<<<<<<< HEAD
 	sub.d	92, $sp		; Skip EXS and EDA.
+=======
+	sub.d	92, $sp		; Skip EDA.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movem	$r13, [$sp]
 	move.d	$sp, $r8
 	addq	14*4, $r8
@@ -156,8 +165,14 @@ system_call:
 	move	$ccs, $r4
 	move	$srp, $r5
 	move	$erp, $r6
+<<<<<<< HEAD
 	subq	4, $sp
 	movem	$r6, [$r8]
+=======
+	move.d	$r9, $r7	; Store syscall number in EXS
+	subq	4, $sp
+	movem	$r7, [$r8]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ei			; Enable interrupts while processing syscalls.
 	move.d	$r10, [$sp]
 
@@ -237,6 +252,20 @@ ret_from_sys_call:
 
 	.type	_Rexit,@function
 _Rexit:
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_TRACE_IRQFLAGS)
+	addoq	+PT_ccs, $sp, $acr
+	move.d	[$acr], $r0
+	btstq	15, $r0		; I1
+	bpl	1f
+	nop
+	jsr	trace_hardirqs_on
+	nop
+1:
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	;; This epilogue MUST match the prologues in multiple_interrupt, irq.h
 	;; and ptregs.h.
 	addq	4, $sp		; Skip orig_r10.
@@ -278,6 +307,7 @@ _syscall_exit_work:
 	.type	_work_pending,@function
 _work_pending:
 	addoq	+TI_flags, $r0, $acr
+<<<<<<< HEAD
 	move.d	[$acr], $r10
 	btstq	TIF_NEED_RESCHED, $r10	; Need resched?
 	bpl	_work_notifysig		; No, must be signal/notify.
@@ -315,6 +345,16 @@ _work_notifysig:
 	ba _Rexit
 	nop
 	.size	_work_notifysig, . - _work_notifysig
+=======
+	move.d	[$acr], $r12		; The thread_info_flags parameter.
+	move.d	$sp, $r11		; The regs param.
+	jsr	do_work_pending
+	move.d	$r9, $r10		; The syscall/irq param.
+
+	ba _Rexit
+	nop
+	.size	_work_pending, . - _work_pending
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	;; We get here as a sidetrack when we've entered a syscall with the
 	;; trace-bit set. We need to call do_syscall_trace and then continue
@@ -424,7 +464,11 @@ nmi_interrupt:
 	bpl     1f
 	nop
 	jsr	handle_watchdog_bite	; In time.c.
+<<<<<<< HEAD
         move.d	$sp, $r10		; Pointer to registers
+=======
+	move.d	$sp, $r10		; Pointer to registers
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 1:	btstq	REG_BIT(intr_vect, r_nmi, ext), $r0
 	bpl     1f
 	nop
@@ -452,7 +496,11 @@ spurious_interrupt:
 	nop
 
 	;; This handles the case when multiple interrupts arrive at the same
+<<<<<<< HEAD
 	;; time. Jump to the first set interrupt bit in a priotiry fashion. The
+=======
+	;; time. Jump to the first set interrupt bit in a priority fashion. The
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	;; hardware will call the unserved interrupts after the handler
 	;; finishes.
 	.type	multiple_interrupt, @function
@@ -885,6 +933,7 @@ sys_call_table:
 	.long sys_preadv
 	.long sys_pwritev
 	.long sys_setns			/* 335 */
+<<<<<<< HEAD
 
         /*
          * NOTE!! This doesn't have to be exact - we just have
@@ -892,6 +941,39 @@ sys_call_table:
          * entries. Don't panic if you notice that this hasn't
          * been shrunk every time we add a new system call.
          */
+=======
+	.long sys_name_to_handle_at
+	.long sys_open_by_handle_at
+	.long sys_rt_tgsigqueueinfo
+	.long sys_perf_event_open
+	.long sys_recvmmsg		/* 340 */
+	.long sys_accept4
+	.long sys_fanotify_init
+	.long sys_fanotify_mark
+	.long sys_prlimit64
+	.long sys_clock_adjtime		/* 345 */
+	.long sys_syncfs
+	.long sys_sendmmsg
+	.long sys_process_vm_readv
+	.long sys_process_vm_writev
+	.long sys_kcmp			/* 350 */
+	.long sys_finit_module
+	.long sys_sched_setattr
+	.long sys_sched_getattr
+	.long sys_renameat2
+	.long sys_seccomp		/* 355 */
+	.long sys_getrandom
+	.long sys_memfd_create
+	.long sys_bpf
+	.long sys_execveat
+
+	/*
+	 * NOTE!! This doesn't have to be exact - we just have
+	 * to make sure we have _enough_ of the "sys_ni_syscall"
+	 * entries. Don't panic if you notice that this hasn't
+	 * been shrunk every time we add a new system call.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.rept NR_syscalls - (.-sys_call_table) / 4
 		.long sys_ni_syscall

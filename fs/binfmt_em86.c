@@ -24,7 +24,12 @@
 
 static int load_em86(struct linux_binprm *bprm)
 {
+<<<<<<< HEAD
 	char *interp, *i_name, *i_arg;
+=======
+	const char *i_name, *i_arg;
+	char *interp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct file * file;
 	int retval;
 	struct elfhdr	elf_ex;
@@ -38,10 +43,21 @@ static int load_em86(struct linux_binprm *bprm)
 	/* First of all, some simple consistency checks */
 	if ((elf_ex.e_type != ET_EXEC && elf_ex.e_type != ET_DYN) ||
 		(!((elf_ex.e_machine == EM_386) || (elf_ex.e_machine == EM_486))) ||
+<<<<<<< HEAD
 		(!bprm->file->f_op || !bprm->file->f_op->mmap)) {
 			return -ENOEXEC;
 	}
 
+=======
+		!bprm->file->f_op->mmap) {
+			return -ENOEXEC;
+	}
+
+	/* Need to be able to load the file after exec */
+	if (bprm->interp_flags & BINPRM_FLAGS_PATH_INACCESSIBLE)
+		return -ENOENT;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	allow_write_access(bprm->file);
 	fput(bprm->file);
 	bprm->file = NULL;

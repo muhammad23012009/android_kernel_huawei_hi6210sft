@@ -14,6 +14,10 @@
 #include <linux/mii.h>
 #include <linux/usb.h>
 #include <linux/usb/usbnet.h>
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/netns/generic.h>
 #include <net/caif/caif_dev.h>
 #include <net/caif/caif_layer.h>
@@ -86,6 +90,7 @@ static struct cflayer *cfusbl_create(int phyid, u8 ethaddr[ETH_ALEN],
 {
 	struct cfusbl *this = kmalloc(sizeof(struct cfusbl), GFP_ATOMIC);
 
+<<<<<<< HEAD
 	if (!this) {
 		pr_warn("Out of memory\n");
 		return NULL;
@@ -93,6 +98,14 @@ static struct cflayer *cfusbl_create(int phyid, u8 ethaddr[ETH_ALEN],
 	caif_assert(offsetof(struct cfusbl, layer) == 0);
 
 	memset(this, 0, sizeof(struct cflayer));
+=======
+	if (!this)
+		return NULL;
+
+	caif_assert(offsetof(struct cfusbl, layer) == 0);
+
+	memset(&this->layer, 0, sizeof(this->layer));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	this->layer.receive = cfusbl_receive;
 	this->layer.transmit = cfusbl_transmit;
 	this->layer.ctrlcmd = cfusbl_ctrlcmd;
@@ -105,8 +118,13 @@ static struct cflayer *cfusbl_create(int phyid, u8 ethaddr[ETH_ALEN],
 	 *	5-11	source address
 	 *	12-13	protocol type
 	 */
+<<<<<<< HEAD
 	memcpy(&this->tx_eth_hdr[ETH_ALEN], braddr, ETH_ALEN);
 	memcpy(&this->tx_eth_hdr[ETH_ALEN], ethaddr, ETH_ALEN);
+=======
+	ether_addr_copy(&this->tx_eth_hdr[ETH_ALEN], braddr);
+	ether_addr_copy(&this->tx_eth_hdr[ETH_ALEN], ethaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	this->tx_eth_hdr[12] = cpu_to_be16(ETH_P_802_EX1) & 0xff;
 	this->tx_eth_hdr[13] = (cpu_to_be16(ETH_P_802_EX1) >> 8) & 0xff;
 	pr_debug("caif ethernet TX-header dst:%pM src:%pM type:%02x%02x\n",
@@ -116,18 +134,36 @@ static struct cflayer *cfusbl_create(int phyid, u8 ethaddr[ETH_ALEN],
 	return (struct cflayer *) this;
 }
 
+<<<<<<< HEAD
+=======
+static void cfusbl_release(struct cflayer *layer)
+{
+	kfree(layer);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct packet_type caif_usb_type __read_mostly = {
 	.type = cpu_to_be16(ETH_P_802_EX1),
 };
 
 static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
+<<<<<<< HEAD
 				void *arg)
 {
 	struct net_device *dev = arg;
+=======
+				void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct caif_dev_common common;
 	struct cflayer *layer, *link_support;
 	struct usbnet *usbnet;
 	struct usb_device *usbdev;
+<<<<<<< HEAD
+=======
+	int res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Check whether we have a NCM device, and find its VID/PID. */
 	if (!(dev->dev.parent && dev->dev.parent->driver &&
@@ -170,8 +206,16 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
 	if (dev->num_tx_queues > 1)
 		pr_warn("USB device uses more than one tx queue\n");
 
+<<<<<<< HEAD
 	caif_enroll_dev(dev, &common, link_support, CFUSB_MAX_HEADLEN,
 			&layer, &caif_usb_type.func);
+=======
+	res = caif_enroll_dev(dev, &common, link_support, CFUSB_MAX_HEADLEN,
+			&layer, &caif_usb_type.func);
+	if (res)
+		goto err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pack_added)
 		dev_add_pack(&caif_usb_type);
 	pack_added = true;
@@ -181,6 +225,12 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
 	layer->name[sizeof(layer->name) - 1] = 0;
 
 	return 0;
+<<<<<<< HEAD
+=======
+err:
+	cfusbl_release(link_support);
+	return res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct notifier_block caif_device_notifier = {

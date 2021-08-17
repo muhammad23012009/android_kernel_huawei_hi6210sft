@@ -27,7 +27,10 @@
 #include <mach/irqs.h>
 
 #include "iomap.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DPS_RSTCT2_PER_EN	(1 << 0)
 #define DSP_RSTCT2_WD_PER_EN	(1 << 1)
@@ -114,12 +117,20 @@ struct resource omap7xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP1_RX,
+=======
+			.start = 9,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP1_TX,
+=======
+			.start = 8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},
@@ -141,12 +152,20 @@ struct resource omap7xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP3_RX,
+=======
+			.start = 11,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP3_TX,
+=======
+			.start = 10,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},
@@ -191,12 +210,20 @@ struct resource omap15xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP1_RX,
+=======
+			.start = 9,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP1_TX,
+=======
+			.start = 8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},
@@ -218,12 +245,20 @@ struct resource omap15xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP2_RX,
+=======
+			.start = 17,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP2_TX,
+=======
+			.start = 16,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},
@@ -245,12 +280,20 @@ struct resource omap15xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP3_RX,
+=======
+			.start = 11,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP3_TX,
+=======
+			.start = 10,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},
@@ -298,12 +341,20 @@ struct resource omap16xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP1_RX,
+=======
+			.start = 9,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP1_TX,
+=======
+			.start = 8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},
@@ -325,12 +376,20 @@ struct resource omap16xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP2_RX,
+=======
+			.start = 17,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP2_TX,
+=======
+			.start = 16,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},
@@ -352,12 +411,20 @@ struct resource omap16xx_mcbsp_res[][6] = {
 		},
 		{
 			.name  = "rx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP3_RX,
+=======
+			.start = 11,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 		{
 			.name  = "tx",
+<<<<<<< HEAD
 			.start = OMAP_DMA_MCBSP3_TX,
+=======
+			.start = 10,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.flags = IORESOURCE_DMA,
 		},
 	},

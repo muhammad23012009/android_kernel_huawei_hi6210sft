@@ -99,6 +99,7 @@ sesInfoFree(struct cifs_ses *buf_to_free)
 	kfree(buf_to_free->serverOS);
 	kfree(buf_to_free->serverDomain);
 	kfree(buf_to_free->serverNOS);
+<<<<<<< HEAD
 	if (buf_to_free->password) {
 		memset(buf_to_free->password, 0, strlen(buf_to_free->password));
 		kfree(buf_to_free->password);
@@ -106,6 +107,13 @@ sesInfoFree(struct cifs_ses *buf_to_free)
 	kfree(buf_to_free->user_name);
 	kfree(buf_to_free->domainName);
 	kfree(buf_to_free);
+=======
+	kzfree(buf_to_free->password);
+	kfree(buf_to_free->user_name);
+	kfree(buf_to_free->domainName);
+	kzfree(buf_to_free->auth_key.response);
+	kzfree(buf_to_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct cifs_tcon *
@@ -119,6 +127,10 @@ tconInfoAlloc(void)
 		++ret_buf->tc_count;
 		INIT_LIST_HEAD(&ret_buf->openFileList);
 		INIT_LIST_HEAD(&ret_buf->tcon_list);
+<<<<<<< HEAD
+=======
+		spin_lock_init(&ret_buf->open_file_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_CIFS_STATS
 		spin_lock_init(&ret_buf->stat_lock);
 #endif
@@ -135,10 +147,14 @@ tconInfoFree(struct cifs_tcon *buf_to_free)
 	}
 	atomic_dec(&tconInfoAllocCount);
 	kfree(buf_to_free->nativeFileSystem);
+<<<<<<< HEAD
 	if (buf_to_free->password) {
 		memset(buf_to_free->password, 0, strlen(buf_to_free->password));
 		kfree(buf_to_free->password);
 	}
+=======
+	kzfree(buf_to_free->password);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(buf_to_free);
 }
 
@@ -225,6 +241,18 @@ cifs_small_buf_release(void *buf_to_free)
 	return;
 }
 
+<<<<<<< HEAD
+=======
+void
+free_rsp_buf(int resp_buftype, void *rsp)
+{
+	if (resp_buftype == CIFS_SMALL_BUFFER)
+		cifs_small_buf_release(rsp);
+	else if (resp_buftype == CIFS_LARGE_BUFFER)
+		cifs_buf_release(rsp);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* NB: MID can not be set if treeCon not passed in, in that
    case it is responsbility of caller to set the mid */
 void
@@ -267,8 +295,12 @@ header_assemble(struct smb_hdr *buffer, char smb_command /* command */ ,
 		if (treeCon->nocase)
 			buffer->Flags  |= SMBFLG_CASELESS;
 		if ((treeCon->ses) && (treeCon->ses->server))
+<<<<<<< HEAD
 			if (treeCon->ses->server->sec_mode &
 			  (SECMODE_SIGN_REQUIRED | SECMODE_SIGN_ENABLED))
+=======
+			if (treeCon->ses->server->sign)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				buffer->Flags2 |= SMBFLG2_SECURITY_SIGNATURE;
 	}
 
@@ -278,7 +310,11 @@ header_assemble(struct smb_hdr *buffer, char smb_command /* command */ ,
 }
 
 static int
+<<<<<<< HEAD
 check_smb_hdr(struct smb_hdr *smb, __u16 mid)
+=======
+check_smb_hdr(struct smb_hdr *smb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* does it have the right SMB "signature" ? */
 	if (*(__le32 *) smb->Protocol != cpu_to_le32(0x424d53ff)) {
@@ -287,6 +323,7 @@ check_smb_hdr(struct smb_hdr *smb, __u16 mid)
 		return 1;
 	}
 
+<<<<<<< HEAD
 	/* Make sure that message ids match */
 	if (mid != smb->Mid) {
 		cifs_dbg(VFS, "Mids do not match. received=%u expected=%u\n",
@@ -294,6 +331,8 @@ check_smb_hdr(struct smb_hdr *smb, __u16 mid)
 		return 1;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* if it's a response then accept */
 	if (smb->Flags & SMBFLG_RESPONSE)
 		return 0;
@@ -302,15 +341,26 @@ check_smb_hdr(struct smb_hdr *smb, __u16 mid)
 	if (smb->Command == SMB_COM_LOCKING_ANDX)
 		return 0;
 
+<<<<<<< HEAD
 	cifs_dbg(VFS, "Server sent request, not response. mid=%u\n", smb->Mid);
+=======
+	cifs_dbg(VFS, "Server sent request, not response. mid=%u\n",
+		 get_mid(smb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
 int
+<<<<<<< HEAD
 checkSMB(char *buf, unsigned int total_read)
 {
 	struct smb_hdr *smb = (struct smb_hdr *)buf;
 	__u16 mid = smb->Mid;
+=======
+checkSMB(char *buf, unsigned int total_read, struct TCP_Server_Info *server)
+{
+	struct smb_hdr *smb = (struct smb_hdr *)buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u32 rfclen = be32_to_cpu(smb->smb_buf_length);
 	__u32 clc_len;  /* calculated length */
 	cifs_dbg(FYI, "checkSMB Length: 0x%x, smb_buf_length: 0x%x\n",
@@ -348,7 +398,11 @@ checkSMB(char *buf, unsigned int total_read)
 	}
 
 	/* otherwise, there is enough to get to the BCC */
+<<<<<<< HEAD
 	if (check_smb_hdr(smb, mid))
+=======
+	if (check_smb_hdr(smb))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	clc_len = smbCalcSize(smb);
 
@@ -359,6 +413,10 @@ checkSMB(char *buf, unsigned int total_read)
 	}
 
 	if (4 + rfclen != clc_len) {
+<<<<<<< HEAD
+=======
+		__u16 mid = get_mid(smb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* check if bcc wrapped around for large read responses */
 		if ((rfclen > 64 * 1024) && (rfclen > clc_len)) {
 			/* check if lengths match mod 64K */
@@ -366,11 +424,19 @@ checkSMB(char *buf, unsigned int total_read)
 				return 0; /* bcc wrapped */
 		}
 		cifs_dbg(FYI, "Calculated size %u vs length %u mismatch for mid=%u\n",
+<<<<<<< HEAD
 			 clc_len, 4 + rfclen, smb->Mid);
 
 		if (4 + rfclen < clc_len) {
 			cifs_dbg(VFS, "RFC1001 size %u smaller than SMB for mid=%u\n",
 				 rfclen, smb->Mid);
+=======
+			 clc_len, 4 + rfclen, mid);
+
+		if (4 + rfclen < clc_len) {
+			cifs_dbg(VFS, "RFC1001 size %u smaller than SMB for mid=%u\n",
+				 rfclen, mid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EIO;
 		} else if (rfclen > clc_len + 512) {
 			/*
@@ -383,7 +449,11 @@ checkSMB(char *buf, unsigned int total_read)
 			 * data to 512 bytes.
 			 */
 			cifs_dbg(VFS, "RFC1001 size %u more than 512 bytes larger than SMB for mid=%u\n",
+<<<<<<< HEAD
 				 rfclen, smb->Mid);
+=======
+				 rfclen, mid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EIO;
 		}
 	}
@@ -408,9 +478,23 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 			(struct smb_com_transaction_change_notify_rsp *)buf;
 		struct file_notify_information *pnotify;
 		__u32 data_offset = 0;
+<<<<<<< HEAD
 		if (get_bcc(buf) > sizeof(struct file_notify_information)) {
 			data_offset = le32_to_cpu(pSMBr->DataOffset);
 
+=======
+		size_t len = srv->total_read - sizeof(pSMBr->hdr.smb_buf_length);
+
+		if (get_bcc(buf) > sizeof(struct file_notify_information)) {
+			data_offset = le32_to_cpu(pSMBr->DataOffset);
+
+			if (data_offset >
+			    len - sizeof(struct file_notify_information)) {
+				cifs_dbg(FYI, "invalid data_offset %u\n",
+					 data_offset);
+				return true;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pnotify = (struct file_notify_information *)
 				((char *)&pSMBr->hdr.Protocol + data_offset);
 			cifs_dbg(FYI, "dnotify on %s Action: 0x%x\n",
@@ -420,7 +504,11 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 			return true;
 		}
 		if (pSMBr->hdr.Status.CifsError) {
+<<<<<<< HEAD
 			cifs_dbg(FYI, "notify err 0x%d\n",
+=======
+			cifs_dbg(FYI, "notify err 0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 pSMBr->hdr.Status.CifsError);
 			return true;
 		}
@@ -447,7 +535,11 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 	if (pSMB->hdr.WordCount != 8)
 		return false;
 
+<<<<<<< HEAD
 	cifs_dbg(FYI, "oplock type 0x%d level 0x%d\n",
+=======
+	cifs_dbg(FYI, "oplock type 0x%x level 0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 pSMB->LockType, pSMB->OplockLevel);
 	if (!(pSMB->LockType & LOCKING_ANDX_OPLOCK_RELEASE))
 		return false;
@@ -462,7 +554,11 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 				continue;
 
 			cifs_stats_inc(&tcon->stats.cifs_stats.num_oplock_brks);
+<<<<<<< HEAD
 			spin_lock(&cifs_file_list_lock);
+=======
+			spin_lock(&tcon->open_file_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			list_for_each(tmp2, &tcon->openFileList) {
 				netfile = list_entry(tmp2, struct cifsFileInfo,
 						     tlist);
@@ -470,6 +566,7 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 					continue;
 
 				cifs_dbg(FYI, "file id match, oplock break\n");
+<<<<<<< HEAD
 				pCifsInode = CIFS_I(netfile->dentry->d_inode);
 
 				cifs_set_oplock_level(pCifsInode,
@@ -483,6 +580,23 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 				return true;
 			}
 			spin_unlock(&cifs_file_list_lock);
+=======
+				pCifsInode = CIFS_I(d_inode(netfile->dentry));
+
+				set_bit(CIFS_INODE_PENDING_OPLOCK_BREAK,
+					&pCifsInode->flags);
+
+				netfile->oplock_epoch = 0;
+				netfile->oplock_level = pSMB->OplockLevel;
+				netfile->oplock_break_cancelled = false;
+				cifs_queue_oplock_break(netfile);
+
+				spin_unlock(&tcon->open_file_lock);
+				spin_unlock(&cifs_tcp_ses_lock);
+				return true;
+			}
+			spin_unlock(&tcon->open_file_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_unlock(&cifs_tcp_ses_lock);
 			cifs_dbg(FYI, "No matching file for oplock break\n");
 			return true;
@@ -496,6 +610,7 @@ is_valid_oplock_break(char *buffer, struct TCP_Server_Info *srv)
 void
 dump_smb(void *buf, int smb_buf_length)
 {
+<<<<<<< HEAD
 	int i, j;
 	char debug_line[17];
 	unsigned char *buffer = buf;
@@ -529,6 +644,13 @@ dump_smb(void *buf, int smb_buf_length)
 	}
 	printk(" | %s\n", debug_line);
 	return;
+=======
+	if (traceSMB == 0)
+		return;
+
+	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_NONE, 8, 2, buf,
+		       smb_buf_length, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void
@@ -546,6 +668,7 @@ void cifs_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock)
 	oplock &= 0xF;
 
 	if (oplock == OPLOCK_EXCLUSIVE) {
+<<<<<<< HEAD
 		cinode->clientCanCacheAll = true;
 		cinode->clientCanCacheRead = true;
 		cifs_dbg(FYI, "Exclusive Oplock granted on inode %p\n",
@@ -559,6 +682,88 @@ void cifs_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock)
 		cinode->clientCanCacheAll = false;
 		cinode->clientCanCacheRead = false;
 	}
+=======
+		cinode->oplock = CIFS_CACHE_WRITE_FLG | CIFS_CACHE_READ_FLG;
+		cifs_dbg(FYI, "Exclusive Oplock granted on inode %p\n",
+			 &cinode->vfs_inode);
+	} else if (oplock == OPLOCK_READ) {
+		cinode->oplock = CIFS_CACHE_READ_FLG;
+		cifs_dbg(FYI, "Level II Oplock granted on inode %p\n",
+			 &cinode->vfs_inode);
+	} else
+		cinode->oplock = 0;
+}
+
+/*
+ * We wait for oplock breaks to be processed before we attempt to perform
+ * writes.
+ */
+int cifs_get_writer(struct cifsInodeInfo *cinode)
+{
+	int rc;
+
+start:
+	rc = wait_on_bit(&cinode->flags, CIFS_INODE_PENDING_OPLOCK_BREAK,
+			 TASK_KILLABLE);
+	if (rc)
+		return rc;
+
+	spin_lock(&cinode->writers_lock);
+	if (!cinode->writers)
+		set_bit(CIFS_INODE_PENDING_WRITERS, &cinode->flags);
+	cinode->writers++;
+	/* Check to see if we have started servicing an oplock break */
+	if (test_bit(CIFS_INODE_PENDING_OPLOCK_BREAK, &cinode->flags)) {
+		cinode->writers--;
+		if (cinode->writers == 0) {
+			clear_bit(CIFS_INODE_PENDING_WRITERS, &cinode->flags);
+			wake_up_bit(&cinode->flags, CIFS_INODE_PENDING_WRITERS);
+		}
+		spin_unlock(&cinode->writers_lock);
+		goto start;
+	}
+	spin_unlock(&cinode->writers_lock);
+	return 0;
+}
+
+void cifs_put_writer(struct cifsInodeInfo *cinode)
+{
+	spin_lock(&cinode->writers_lock);
+	cinode->writers--;
+	if (cinode->writers == 0) {
+		clear_bit(CIFS_INODE_PENDING_WRITERS, &cinode->flags);
+		wake_up_bit(&cinode->flags, CIFS_INODE_PENDING_WRITERS);
+	}
+	spin_unlock(&cinode->writers_lock);
+}
+
+/**
+ * cifs_queue_oplock_break - queue the oplock break handler for cfile
+ *
+ * This function is called from the demultiplex thread when it
+ * receives an oplock break for @cfile.
+ *
+ * Assumes the tcon->open_file_lock is held.
+ * Assumes cfile->file_info_lock is NOT held.
+ */
+void cifs_queue_oplock_break(struct cifsFileInfo *cfile)
+{
+	/*
+	 * Bump the handle refcount now while we hold the
+	 * open_file_lock to enforce the validity of it for the oplock
+	 * break handler. The matching put is done at the end of the
+	 * handler.
+	 */
+	cifsFileInfo_get(cfile);
+
+	queue_work(cifsoplockd_wq, &cfile->oplock_break);
+}
+
+void cifs_done_oplock_break(struct cifsInodeInfo *cinode)
+{
+	clear_bit(CIFS_INODE_PENDING_OPLOCK_BREAK, &cinode->flags);
+	wake_up_bit(&cinode->flags, CIFS_INODE_PENDING_OPLOCK_BREAK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 bool
@@ -579,9 +784,15 @@ backup_cred(struct cifs_sb_info *cifs_sb)
 void
 cifs_del_pending_open(struct cifs_pending_open *open)
 {
+<<<<<<< HEAD
 	spin_lock(&cifs_file_list_lock);
 	list_del(&open->olist);
 	spin_unlock(&cifs_file_list_lock);
+=======
+	spin_lock(&tlink_tcon(open->tlink)->open_file_lock);
+	list_del(&open->olist);
+	spin_unlock(&tlink_tcon(open->tlink)->open_file_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void
@@ -601,7 +812,13 @@ void
 cifs_add_pending_open(struct cifs_fid *fid, struct tcon_link *tlink,
 		      struct cifs_pending_open *open)
 {
+<<<<<<< HEAD
 	spin_lock(&cifs_file_list_lock);
 	cifs_add_pending_open_locked(fid, tlink, open);
 	spin_unlock(&cifs_file_list_lock);
+=======
+	spin_lock(&tlink_tcon(tlink)->open_file_lock);
+	cifs_add_pending_open_locked(fid, tlink, open);
+	spin_unlock(&tlink_tcon(open->tlink)->open_file_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

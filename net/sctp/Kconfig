@@ -30,7 +30,12 @@ menuconfig IP_SCTP
 	  homing at either or both ends of an association."
 
 	  To compile this protocol support as a module, choose M here: the
+<<<<<<< HEAD
 	  module will be called sctp.
+=======
+	  module will be called sctp. Debug messages are handeled by the
+	  kernel's dynamic debugging framework.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  If in doubt, say N.
 
@@ -48,6 +53,7 @@ config NET_SCTPPROBE
         To compile this code as a module, choose M here: the
         module will be called sctp_probe.
 
+<<<<<<< HEAD
 config SCTP_DBG_MSG
 	bool "SCTP: Debug messages"
 	help
@@ -56,6 +62,8 @@ config SCTP_DBG_MSG
 	  If unsure, say N.  However, if you are running into problems, use 
 	  this option to gather detailed trace information
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config SCTP_DBG_OBJCNT
 	bool "SCTP: Debug object counts"
 	depends on PROC_FS
@@ -106,5 +114,12 @@ config SCTP_COOKIE_HMAC_SHA1
 	select CRYPTO_HMAC if SCTP_COOKIE_HMAC_SHA1
 	select CRYPTO_SHA1 if SCTP_COOKIE_HMAC_SHA1
 
+<<<<<<< HEAD
+=======
+config INET_SCTP_DIAG
+	depends on INET_DIAG
+	def_tristate INET_DIAG
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endif # IP_SCTP

@@ -12,6 +12,7 @@
  */
 #define SCHEDSTAT_VERSION 15
 
+<<<<<<< HEAD
 static int show_schedstat(struct seq_file *seq, void *v)
 {
 	int cpu;
@@ -20,6 +21,33 @@ static int show_schedstat(struct seq_file *seq, void *v)
 
 	if (mask_str == NULL)
 		return -ENOMEM;
+=======
+#ifdef CONFIG_SMP
+static inline void show_easstat(struct seq_file *seq, struct eas_stats *stats)
+{
+	/* eas-specific runqueue stats */
+	seq_printf(seq, "eas %llu %llu %llu %llu %llu %llu ",
+	    stats->sis_attempts, stats->sis_idle, stats->sis_cache_affine,
+	    stats->sis_suff_cap, stats->sis_idle_cpu, stats->sis_count);
+
+	seq_printf(seq, "%llu %llu %llu %llu %llu %llu %llu ",
+	    stats->secb_attempts, stats->secb_sync, stats->secb_idle_bt,
+	    stats->secb_insuff_cap, stats->secb_no_nrg_sav,
+	    stats->secb_nrg_sav, stats->secb_count);
+
+	seq_printf(seq, "%llu %llu %llu %llu %llu ",
+	    stats->fbt_attempts, stats->fbt_no_cpu, stats->fbt_no_sd,
+	    stats->fbt_pref_idle, stats->fbt_count);
+
+	seq_printf(seq, "%llu %llu\n",
+	    stats->cas_attempts, stats->cas_count);
+}
+#endif
+
+static int show_schedstat(struct seq_file *seq, void *v)
+{
+	int cpu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (v == (void *)1) {
 		seq_printf(seq, "version %d\n", SCHEDSTAT_VERSION);
@@ -45,14 +73,24 @@ static int show_schedstat(struct seq_file *seq, void *v)
 		seq_printf(seq, "\n");
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
+=======
+		show_easstat(seq, &rq->eas_stats);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* domain-specific stats */
 		rcu_read_lock();
 		for_each_domain(cpu, sd) {
 			enum cpu_idle_type itype;
 
+<<<<<<< HEAD
 			cpumask_scnprintf(mask_str, mask_len,
 					  sched_domain_span(sd));
 			seq_printf(seq, "domain%d %s", dcount++, mask_str);
+=======
+			seq_printf(seq, "domain%d %*pb", dcount++,
+				   cpumask_pr_args(sched_domain_span(sd)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			for (itype = CPU_IDLE; itype < CPU_MAX_IDLE_TYPES;
 					itype++) {
 				seq_printf(seq, " %u %u %u %u %u %u %u %u",
@@ -72,11 +110,19 @@ static int show_schedstat(struct seq_file *seq, void *v)
 			    sd->sbf_count, sd->sbf_balanced, sd->sbf_pushed,
 			    sd->ttwu_wake_remote, sd->ttwu_move_affine,
 			    sd->ttwu_move_balance);
+<<<<<<< HEAD
+=======
+
+			show_easstat(seq, &sd->eas_stats);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		rcu_read_unlock();
 #endif
 	}
+<<<<<<< HEAD
 	kfree(mask_str);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -142,4 +188,8 @@ static int __init proc_schedstat_init(void)
 	proc_create("schedstat", 0, NULL, &proc_schedstat_operations);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(proc_schedstat_init);
+=======
+subsys_initcall(proc_schedstat_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

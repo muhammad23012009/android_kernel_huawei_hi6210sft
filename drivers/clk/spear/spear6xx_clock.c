@@ -2,14 +2,21 @@
  * SPEAr6xx machines clock framework source file
  *
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clkdev.h>
 #include <linux/io.h>
 #include <linux/spinlock_types.h>
@@ -118,12 +125,19 @@ void __init spear6xx_clk_init(void __iomem *misc_base)
 {
 	struct clk *clk, *clk1;
 
+<<<<<<< HEAD
 	clk = clk_register_fixed_rate(NULL, "osc_32k_clk", NULL, CLK_IS_ROOT,
 			32000);
 	clk_register_clkdev(clk, "osc_32k_clk", NULL);
 
 	clk = clk_register_fixed_rate(NULL, "osc_30m_clk", NULL, CLK_IS_ROOT,
 			30000000);
+=======
+	clk = clk_register_fixed_rate(NULL, "osc_32k_clk", NULL, 0, 32000);
+	clk_register_clkdev(clk, "osc_32k_clk", NULL);
+
+	clk = clk_register_fixed_rate(NULL, "osc_30m_clk", NULL, 0, 30000000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_register_clkdev(clk, "osc_30m_clk", NULL);
 
 	/* clock derived from 32 KHz osc clk */

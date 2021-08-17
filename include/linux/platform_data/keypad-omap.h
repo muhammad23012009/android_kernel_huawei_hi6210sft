@@ -1,14 +1,22 @@
 /*
+<<<<<<< HEAD
  *  arch/arm/plat-omap/include/mach/keypad.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  Copyright (C) 2006 Komal Shah <komal_shah802003@yahoo.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #ifndef ASMARM_ARCH_KEYPAD_H
 #define ASMARM_ARCH_KEYPAD_H
+=======
+#ifndef __KEYPAD_OMAP_H
+#define __KEYPAD_OMAP_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef CONFIG_ARCH_OMAP1
 #warning Please update the board to use matrix-keypad driver

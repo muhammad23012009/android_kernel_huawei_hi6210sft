@@ -3,7 +3,11 @@
    memory is addressed by 16 bits words.
 
    This is part of rtl8180 OpenSource driver.
+<<<<<<< HEAD
    Copyright (C) Andrea Merello 2004  <andreamrl@tiscali.it>
+=======
+   Copyright (C) Andrea Merello 2004  <andrea.merello@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
    Released under the terms of GPL (General Public Licence)
 
    Parts of this driver are based on the GPL part of the
@@ -20,6 +24,7 @@
 
 #include "r8180_93cx6.h"
 
+<<<<<<< HEAD
 void eprom_cs(struct net_device *dev, short bit)
 {
 	if(bit)
@@ -29,12 +34,29 @@ void eprom_cs(struct net_device *dev, short bit)
 	else
 		write_nic_byte_E(dev, EPROM_CMD, read_nic_byte_E(dev, EPROM_CMD)\
 			       &~(1<<EPROM_CS_SHIFT)); //disable EPROM
+=======
+static void eprom_cs(struct net_device *dev, short bit)
+{
+	u8 cmdreg;
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+	if (err)
+		return;
+	if (bit)
+		/* enable EPROM */
+		write_nic_byte_E(dev, EPROM_CMD, cmdreg | EPROM_CS_BIT);
+	else
+		/* disable EPROM */
+		write_nic_byte_E(dev, EPROM_CMD, cmdreg & ~EPROM_CS_BIT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	force_pci_posting(dev);
 	udelay(EPROM_DELAY);
 }
 
 
+<<<<<<< HEAD
 void eprom_ck_cycle(struct net_device *dev)
 {
 	write_nic_byte_E(dev, EPROM_CMD,
@@ -43,11 +65,28 @@ void eprom_ck_cycle(struct net_device *dev)
 	udelay(EPROM_DELAY);
 	write_nic_byte_E(dev, EPROM_CMD,
 		       read_nic_byte_E(dev, EPROM_CMD) &~ (1<<EPROM_CK_SHIFT));
+=======
+static void eprom_ck_cycle(struct net_device *dev)
+{
+	u8 cmdreg;
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+	if (err)
+		return;
+	write_nic_byte_E(dev, EPROM_CMD, cmdreg | EPROM_CK_BIT);
+	force_pci_posting(dev);
+	udelay(EPROM_DELAY);
+
+	read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+	write_nic_byte_E(dev, EPROM_CMD, cmdreg & ~EPROM_CK_BIT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	force_pci_posting(dev);
 	udelay(EPROM_DELAY);
 }
 
 
+<<<<<<< HEAD
 void eprom_w(struct net_device *dev,short bit)
 {
 	if(bit)
@@ -56,12 +95,27 @@ void eprom_w(struct net_device *dev,short bit)
 	else
 		write_nic_byte_E(dev, EPROM_CMD, read_nic_byte_E(dev,EPROM_CMD)\
 			       &~(1<<EPROM_W_SHIFT));
+=======
+static void eprom_w(struct net_device *dev, short bit)
+{
+	u8 cmdreg;
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &cmdreg);
+	if (err)
+		return;
+	if (bit)
+		write_nic_byte_E(dev, EPROM_CMD, cmdreg | EPROM_W_BIT);
+	else
+		write_nic_byte_E(dev, EPROM_CMD, cmdreg & ~EPROM_W_BIT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	force_pci_posting(dev);
 	udelay(EPROM_DELAY);
 }
 
 
+<<<<<<< HEAD
 short eprom_r(struct net_device *dev)
 {
 	short bit;
@@ -70,37 +124,76 @@ short eprom_r(struct net_device *dev)
 	udelay(EPROM_DELAY);
 
 	if(bit) return 1;
+=======
+static short eprom_r(struct net_device *dev)
+{
+	u8 bit;
+	int err;
+
+	err = read_nic_byte_E(dev, EPROM_CMD, &bit);
+	if (err)
+		return err;
+
+	udelay(EPROM_DELAY);
+
+	if (bit & EPROM_R_BIT)
+		return 1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 
+<<<<<<< HEAD
 void eprom_send_bits_string(struct net_device *dev, short b[], int len)
 {
 	int i;
 
 	for(i=0; i<len; i++){
+=======
+static void eprom_send_bits_string(struct net_device *dev, short b[], int len)
+{
+	int i;
+
+	for (i = 0; i < len; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		eprom_w(dev, b[i]);
 		eprom_ck_cycle(dev);
 	}
 }
 
 
+<<<<<<< HEAD
 u32 eprom_read(struct net_device *dev, u32 addr)
 {
 	struct r8192_priv *priv = ieee80211_priv(dev);
 	short read_cmd[]={1,1,0};
+=======
+int eprom_read(struct net_device *dev, u32 addr)
+{
+	struct r8192_priv *priv = ieee80211_priv(dev);
+	short read_cmd[] = {1, 1, 0};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	short addr_str[8];
 	int i;
 	int addr_len;
 	u32 ret;
+<<<<<<< HEAD
 
 	ret=0;
 	//enable EPROM programming
+=======
+	int err;
+
+	ret = 0;
+	/* enable EPROM programming */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	write_nic_byte_E(dev, EPROM_CMD,
 		       (EPROM_CMD_PROGRAM<<EPROM_CMD_OPERATING_MODE_SHIFT));
 	force_pci_posting(dev);
 	udelay(EPROM_DELAY);
 
+<<<<<<< HEAD
 	if (priv->epromtype==EPROM_93c56){
 		addr_str[7]=addr & 1;
 		addr_str[6]=addr & (1<<1);
@@ -119,12 +212,33 @@ u32 eprom_read(struct net_device *dev, u32 addr)
 		addr_str[1]=addr & (1<<4);
 		addr_str[0]=addr & (1<<5);
 		addr_len=6;
+=======
+	if (priv->epromtype == EPROM_93c56) {
+		addr_str[7] = addr & 1;
+		addr_str[6] = addr & (1<<1);
+		addr_str[5] = addr & (1<<2);
+		addr_str[4] = addr & (1<<3);
+		addr_str[3] = addr & (1<<4);
+		addr_str[2] = addr & (1<<5);
+		addr_str[1] = addr & (1<<6);
+		addr_str[0] = addr & (1<<7);
+		addr_len = 8;
+	} else {
+		addr_str[5] = addr & 1;
+		addr_str[4] = addr & (1<<1);
+		addr_str[3] = addr & (1<<2);
+		addr_str[2] = addr & (1<<3);
+		addr_str[1] = addr & (1<<4);
+		addr_str[0] = addr & (1<<5);
+		addr_len = 6;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	eprom_cs(dev, 1);
 	eprom_ck_cycle(dev);
 	eprom_send_bits_string(dev, read_cmd, 3);
 	eprom_send_bits_string(dev, addr_str, addr_len);
 
+<<<<<<< HEAD
 	//keep chip pin D to low state while reading.
 	//I'm unsure if it is necessary, but anyway shouldn't hurt
 	eprom_w(dev, 0);
@@ -134,12 +248,34 @@ u32 eprom_read(struct net_device *dev, u32 addr)
 		//and reading data. (eeprom outs a dummy 0)
 		eprom_ck_cycle(dev);
 		ret |= (eprom_r(dev)<<(15-i));
+=======
+	/*
+	 * keep chip pin D to low state while reading.
+	 * I'm unsure if it is necessary, but anyway shouldn't hurt
+	 */
+	eprom_w(dev, 0);
+
+	for (i = 0; i < 16; i++) {
+		/* eeprom needs a clk cycle between writing opcode&adr
+		 * and reading data. (eeprom outs a dummy 0)
+		 */
+		eprom_ck_cycle(dev);
+		err = eprom_r(dev);
+		if (err < 0)
+			return err;
+
+		ret |= err<<(15-i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	eprom_cs(dev, 0);
 	eprom_ck_cycle(dev);
 
+<<<<<<< HEAD
 	//disable EPROM programming
+=======
+	/* disable EPROM programming */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	write_nic_byte_E(dev, EPROM_CMD,
 		       (EPROM_CMD_NORMAL<<EPROM_CMD_OPERATING_MODE_SHIFT));
 	return ret;

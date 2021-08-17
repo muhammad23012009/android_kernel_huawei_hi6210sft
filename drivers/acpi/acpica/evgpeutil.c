@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -101,13 +105,18 @@ acpi_ev_walk_gpe_list(acpi_gpe_callback gpe_walk_callback, void *context)
 		gpe_xrupt_info = gpe_xrupt_info->next;
 	}
 
+<<<<<<< HEAD
       unlock_and_exit:
+=======
+unlock_and_exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
 	return_ACPI_STATUS(status);
 }
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ev_valid_gpe_event
  *
  * PARAMETERS:  gpe_event_info              - Info for this GPE
@@ -155,6 +164,8 @@ u8 acpi_ev_valid_gpe_event(struct acpi_gpe_event_info *gpe_event_info)
 
 /*******************************************************************************
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * FUNCTION:    acpi_ev_get_gpe_device
  *
  * PARAMETERS:  GPE_WALK_CALLBACK
@@ -196,9 +207,16 @@ acpi_ev_get_gpe_device(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
  *
  * FUNCTION:    acpi_ev_get_gpe_xrupt_block
  *
+<<<<<<< HEAD
  * PARAMETERS:  interrupt_number     - Interrupt for a GPE block
  *
  * RETURN:      A GPE interrupt block
+=======
+ * PARAMETERS:  interrupt_number            - Interrupt for a GPE block
+ *              gpe_xrupt_block             - Where the block is returned
+ *
+ * RETURN:      Status
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * DESCRIPTION: Get or Create a GPE interrupt block. There is one interrupt
  *              block per unique interrupt level used for GPEs. Should be
@@ -207,7 +225,13 @@ acpi_ev_get_gpe_device(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 struct acpi_gpe_xrupt_info *acpi_ev_get_gpe_xrupt_block(u32 interrupt_number)
+=======
+acpi_status
+acpi_ev_get_gpe_xrupt_block(u32 interrupt_number,
+			    struct acpi_gpe_xrupt_info **gpe_xrupt_block)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_gpe_xrupt_info *next_gpe_xrupt;
 	struct acpi_gpe_xrupt_info *gpe_xrupt;
@@ -221,7 +245,12 @@ struct acpi_gpe_xrupt_info *acpi_ev_get_gpe_xrupt_block(u32 interrupt_number)
 	next_gpe_xrupt = acpi_gbl_gpe_xrupt_list_head;
 	while (next_gpe_xrupt) {
 		if (next_gpe_xrupt->interrupt_number == interrupt_number) {
+<<<<<<< HEAD
 			return_PTR(next_gpe_xrupt);
+=======
+			*gpe_xrupt_block = next_gpe_xrupt;
+			return_ACPI_STATUS(AE_OK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		next_gpe_xrupt = next_gpe_xrupt->next;
@@ -231,7 +260,11 @@ struct acpi_gpe_xrupt_info *acpi_ev_get_gpe_xrupt_block(u32 interrupt_number)
 
 	gpe_xrupt = ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_gpe_xrupt_info));
 	if (!gpe_xrupt) {
+<<<<<<< HEAD
 		return_PTR(NULL);
+=======
+		return_ACPI_STATUS(AE_NO_MEMORY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	gpe_xrupt->interrupt_number = interrupt_number;
@@ -250,6 +283,10 @@ struct acpi_gpe_xrupt_info *acpi_ev_get_gpe_xrupt_block(u32 interrupt_number)
 	} else {
 		acpi_gbl_gpe_xrupt_list_head = gpe_xrupt;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
 
 	/* Install new interrupt handler if not SCI_INT */
@@ -259,6 +296,7 @@ struct acpi_gpe_xrupt_info *acpi_ev_get_gpe_xrupt_block(u32 interrupt_number)
 							   acpi_ev_gpe_xrupt_handler,
 							   gpe_xrupt);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO,
 				    "Could not install GPE interrupt handler at level 0x%X",
 				    interrupt_number));
@@ -267,6 +305,17 @@ struct acpi_gpe_xrupt_info *acpi_ev_get_gpe_xrupt_block(u32 interrupt_number)
 	}
 
 	return_PTR(gpe_xrupt);
+=======
+			ACPI_EXCEPTION((AE_INFO, status,
+					"Could not install GPE interrupt handler at level 0x%X",
+					interrupt_number));
+			return_ACPI_STATUS(status);
+		}
+	}
+
+	*gpe_xrupt_block = gpe_xrupt;
+	return_ACPI_STATUS(AE_OK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*******************************************************************************
@@ -361,12 +410,23 @@ acpi_ev_delete_gpe_handlers(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 		/* Now look at the individual GPEs in this byte register */
 
 		for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++) {
+<<<<<<< HEAD
 			gpe_event_info = &gpe_block->event_info[((acpi_size) i *
 								 ACPI_GPE_REGISTER_WIDTH)
 								+ j];
 
 			if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
 			    ACPI_GPE_DISPATCH_HANDLER) {
+=======
+			gpe_event_info = &gpe_block->event_info[((acpi_size)i *
+								 ACPI_GPE_REGISTER_WIDTH)
+								+ j];
+
+			if ((ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+			     ACPI_GPE_DISPATCH_HANDLER) ||
+			    (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+			     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				/* Delete an installed handler block */
 
@@ -374,10 +434,15 @@ acpi_ev_delete_gpe_handlers(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 				gpe_event_info->dispatch.handler = NULL;
 				gpe_event_info->flags &=
 				    ~ACPI_GPE_DISPATCH_MASK;
+<<<<<<< HEAD
 			} else
 			    if ((gpe_event_info->
 				 flags & ACPI_GPE_DISPATCH_MASK) ==
 				ACPI_GPE_DISPATCH_NOTIFY) {
+=======
+			} else if (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags)
+				   == ACPI_GPE_DISPATCH_NOTIFY) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				/* Delete the implicit notification device list */
 
@@ -387,6 +452,10 @@ acpi_ev_delete_gpe_handlers(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 					ACPI_FREE(notify);
 					notify = next;
 				}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				gpe_event_info->dispatch.notify_list = NULL;
 				gpe_event_info->flags &=
 				    ~ACPI_GPE_DISPATCH_MASK;

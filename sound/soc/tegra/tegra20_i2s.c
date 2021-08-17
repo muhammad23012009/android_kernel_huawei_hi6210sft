@@ -297,7 +297,11 @@ static bool tegra20_i2s_wr_rd_reg(struct device *dev, unsigned int reg)
 		return true;
 	default:
 		return false;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool tegra20_i2s_volatile_reg(struct device *dev, unsigned int reg)
@@ -310,7 +314,11 @@ static bool tegra20_i2s_volatile_reg(struct device *dev, unsigned int reg)
 		return true;
 	default:
 		return false;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool tegra20_i2s_precious_reg(struct device *dev, unsigned int reg)
@@ -321,7 +329,11 @@ static bool tegra20_i2s_precious_reg(struct device *dev, unsigned int reg)
 		return true;
 	default:
 		return false;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct regmap_config tegra20_i2s_regmap_config = {
@@ -333,15 +345,23 @@ static const struct regmap_config tegra20_i2s_regmap_config = {
 	.readable_reg = tegra20_i2s_wr_rd_reg,
 	.volatile_reg = tegra20_i2s_volatile_reg,
 	.precious_reg = tegra20_i2s_precious_reg,
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
+=======
+	.cache_type = REGCACHE_FLAT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int tegra20_i2s_platform_probe(struct platform_device *pdev)
 {
 	struct tegra20_i2s *i2s;
+<<<<<<< HEAD
 	struct resource *mem, *memregion, *dmareq;
 	u32 of_dma[2];
 	u32 dma_ch;
+=======
+	struct resource *mem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *regs;
 	int ret;
 
@@ -364,6 +384,7 @@ static int tegra20_i2s_platform_probe(struct platform_device *pdev)
 	}
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!mem) {
 		dev_err(&pdev->dev, "No memory resource\n");
 		ret = -ENODEV;
@@ -396,6 +417,11 @@ static int tegra20_i2s_platform_probe(struct platform_device *pdev)
 	if (!regs) {
 		dev_err(&pdev->dev, "ioremap failed\n");
 		ret = -ENOMEM;
+=======
+	regs = devm_ioremap_resource(&pdev->dev, mem);
+	if (IS_ERR(regs)) {
+		ret = PTR_ERR(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_clk_put;
 	}
 
@@ -410,12 +436,18 @@ static int tegra20_i2s_platform_probe(struct platform_device *pdev)
 	i2s->capture_dma_data.addr = mem->start + TEGRA20_I2S_FIFO2;
 	i2s->capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	i2s->capture_dma_data.maxburst = 4;
+<<<<<<< HEAD
 	i2s->capture_dma_data.slave_id = dma_ch;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	i2s->playback_dma_data.addr = mem->start + TEGRA20_I2S_FIFO1;
 	i2s->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	i2s->playback_dma_data.maxburst = 4;
+<<<<<<< HEAD
 	i2s->playback_dma_data.slave_id = dma_ch;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pm_runtime_enable(&pdev->dev);
 	if (!pm_runtime_enabled(&pdev->dev)) {
@@ -482,7 +514,10 @@ static const struct dev_pm_ops tegra20_i2s_pm_ops = {
 static struct platform_driver tegra20_i2s_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = tegra20_i2s_of_match,
 		.pm = &tegra20_i2s_pm_ops,
 	},

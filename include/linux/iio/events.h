@@ -9,6 +9,7 @@
 #ifndef _IIO_EVENTS_H_
 #define _IIO_EVENTS_H_
 
+<<<<<<< HEAD
 #include <linux/ioctl.h>
 #include <linux/types.h>
 #include <linux/iio/types.h>
@@ -39,6 +40,10 @@ enum iio_event_direction {
 	IIO_EV_DIR_RISING,
 	IIO_EV_DIR_FALLING,
 };
+=======
+#include <linux/iio/types.h>
+#include <uapi/linux/iio/events.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * IIO_EVENT_CODE() - create event identifier
@@ -60,10 +65,13 @@ enum iio_event_direction {
 	 ((u16)chan))
 
 
+<<<<<<< HEAD
 #define IIO_EV_DIR_MAX 4
 #define IIO_EV_BIT(type, direction)			\
 	(1 << (type*IIO_EV_DIR_MAX + direction))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * IIO_MOD_EVENT_CODE() - create event identifier for modified channels
  * @chan_type:	Type of the channel. Should be one of enum iio_chan_type.
@@ -88,6 +96,7 @@ enum iio_event_direction {
 #define IIO_UNMOD_EVENT_CODE(chan_type, number, type, direction)	\
 	IIO_EVENT_CODE(chan_type, 0, 0, direction, type, number, 0, 0)
 
+<<<<<<< HEAD
 #define IIO_EVENT_CODE_EXTRACT_TYPE(mask) ((mask >> 56) & 0xFF)
 
 #define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 48) & 0x7F)
@@ -102,4 +111,6 @@ enum iio_event_direction {
 #define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 40) & 0xFF)
 #define IIO_EVENT_CODE_EXTRACT_DIFF(mask) (((mask) >> 55) & 0x1)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

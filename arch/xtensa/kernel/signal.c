@@ -245,7 +245,11 @@ asmlinkage long xtensa_rt_sigreturn(long a0, long a1, long a2, long a3,
 	int ret;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (regs->depc > 64)
 		panic("rt_sigreturn in double exception!\n");
@@ -331,17 +335,29 @@ gen_return_code(unsigned char *codemem)
 }
 
 
+<<<<<<< HEAD
 static int setup_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		       sigset_t *set, struct pt_regs *regs)
 {
 	struct rt_sigframe *frame;
 	int err = 0;
 	int signal;
+=======
+static int setup_frame(struct ksignal *ksig, sigset_t *set,
+		       struct pt_regs *regs)
+{
+	struct rt_sigframe *frame;
+	int err = 0, sig = ksig->sig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long sp, ra, tp;
 
 	sp = regs->areg[1];
 
+<<<<<<< HEAD
 	if ((ka->sa.sa_flags & SA_ONSTACK) != 0 && sas_ss_flags(sp) == 0) {
+=======
+	if ((ksig->ka.sa.sa_flags & SA_ONSTACK) != 0 && sas_ss_flags(sp) == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sp = current->sas_ss_sp + current->sas_ss_size;
 	}
 
@@ -351,6 +367,7 @@ static int setup_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		panic ("Double exception sys_sigreturn\n");
 
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame))) {
+<<<<<<< HEAD
 		goto give_sigsegv;
 	}
 
@@ -362,6 +379,13 @@ static int setup_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 
 	if (ka->sa.sa_flags & SA_SIGINFO) {
 		err |= copy_siginfo_to_user(&frame->info, info);
+=======
+		return -EFAULT;
+	}
+
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO) {
+		err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Create the user context.  */
@@ -372,8 +396,13 @@ static int setup_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	err |= setup_sigcontext(frame, regs);
 	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
 
+<<<<<<< HEAD
 	if (ka->sa.sa_flags & SA_RESTORER) {
 		ra = (unsigned long)ka->sa.sa_restorer;
+=======
+	if (ksig->ka.sa.sa_flags & SA_RESTORER) {
+		ra = (unsigned long)ksig->ka.sa.sa_restorer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 
 		/* Create sys_rt_sigreturn syscall in stack frame */
@@ -381,7 +410,11 @@ static int setup_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		err |= gen_return_code(frame->retcode);
 
 		if (err) {
+<<<<<<< HEAD
 			goto give_sigsegv;
+=======
+			return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		ra = (unsigned long) frame->retcode;
 	}
@@ -393,18 +426,27 @@ static int setup_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 
 	/* Set up registers for signal handler; preserve the threadptr */
 	tp = regs->threadptr;
+<<<<<<< HEAD
 	start_thread(regs, (unsigned long) ka->sa.sa_handler,
+=======
+	start_thread(regs, (unsigned long) ksig->ka.sa.sa_handler,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     (unsigned long) frame);
 
 	/* Set up a stack frame for a call4
 	 * Note: PS.CALLINC is set to one by start_thread
 	 */
 	regs->areg[4] = (((unsigned long) ra) & 0x3fffffff) | 0x40000000;
+<<<<<<< HEAD
 	regs->areg[6] = (unsigned long) signal;
+=======
+	regs->areg[6] = (unsigned long) sig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->areg[7] = (unsigned long) &frame->info;
 	regs->areg[8] = (unsigned long) &frame->uc;
 	regs->threadptr = tp;
 
+<<<<<<< HEAD
 	/* Set access mode to USER_DS.  Nomenclature is outdated, but
 	 * functionality is used in uaccess.h
 	 */
@@ -420,6 +462,14 @@ static int setup_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 give_sigsegv:
 	force_sigsegv(sig, current);
 	return -EFAULT;
+=======
+#if DEBUG_SIG
+	printk("SIG rt deliver (%s:%d): signal=%d sp=%p pc=%08x\n",
+		current->comm, current->pid, sig, frame, regs->pc);
+#endif
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -433,6 +483,7 @@ give_sigsegv:
  */
 static void do_signal(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 	int signr;
 	struct k_sigaction ka;
@@ -442,6 +493,13 @@ static void do_signal(struct pt_regs *regs)
 	signr = get_signal_to_deliver(&info, &ka, regs, NULL);
 
 	if (signr > 0) {
+=======
+	struct ksignal ksig;
+
+	task_pt_regs(current)->icountlevel = 0;
+
+	if (get_signal(&ksig)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int ret;
 
 		/* Are we from a system call? */
@@ -457,7 +515,11 @@ static void do_signal(struct pt_regs *regs)
 					break;
 
 				case -ERESTARTSYS:
+<<<<<<< HEAD
 					if (!(ka.sa.sa_flags & SA_RESTART)) {
+=======
+					if (!(ksig.ka.sa.sa_flags & SA_RESTART)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						regs->areg[2] = -EINTR;
 						break;
 					}
@@ -476,11 +538,16 @@ static void do_signal(struct pt_regs *regs)
 
 		/* Whee!  Actually deliver the signal.  */
 		/* Set up the stack frame */
+<<<<<<< HEAD
 		ret = setup_frame(signr, &ka, &info, sigmask_to_save(), regs);
 		if (ret)
 			return;
 
 		signal_delivered(signr, &info, &ka, regs, 0);
+=======
+		ret = setup_frame(&ksig, sigmask_to_save(), regs);
+		signal_setup_done(ret, &ksig, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (current->ptrace & PT_SINGLESTEP)
 			task_pt_regs(current)->icountlevel = 1;
 

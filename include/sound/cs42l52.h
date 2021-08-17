@@ -16,6 +16,7 @@ struct cs42l52_platform_data {
 	/* MICBIAS Level. Check datasheet Pg48 */
 	unsigned int micbias_lvl;
 
+<<<<<<< HEAD
 	/* MICA mode selection 0=Single 1=Differential */
 	unsigned int mica_cfg;
 
@@ -27,10 +28,22 @@ struct cs42l52_platform_data {
 
 	/* MICB Select 0=MIC2A 1=MIC2B */
 	unsigned int micb_sel;
+=======
+	/* MICA mode selection Differential or Single-ended */
+	bool mica_diff_cfg;
+
+	/* MICB mode selection Differential or Single-ended */
+	bool micb_diff_cfg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Charge Pump Freq. Check datasheet Pg73 */
 	unsigned int chgfreq;
 
+<<<<<<< HEAD
+=======
+	/* Reset GPIO */
+	unsigned int reset_gpio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* __CS42L52_H */

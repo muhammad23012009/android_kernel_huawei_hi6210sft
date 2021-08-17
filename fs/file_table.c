@@ -20,12 +20,19 @@
 #include <linux/cdev.h>
 #include <linux/fsnotify.h>
 #include <linux/sysctl.h>
+<<<<<<< HEAD
 #include <linux/lglock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/percpu_counter.h>
 #include <linux/percpu.h>
 #include <linux/hardirq.h>
 #include <linux/task_work.h>
 #include <linux/ima.h>
+<<<<<<< HEAD
+=======
+#include <linux/swap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/atomic.h>
 
@@ -52,7 +59,10 @@ static void file_free_rcu(struct rcu_head *head)
 static inline void file_free(struct file *f)
 {
 	percpu_counter_dec(&nr_files);
+<<<<<<< HEAD
 	file_check_state(f);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	call_rcu(&f->f_u.fu_rcuhead, file_free_rcu);
 }
 
@@ -77,14 +87,22 @@ EXPORT_SYMBOL_GPL(get_max_files);
  * Handle nr_files sysctl
  */
 #if defined(CONFIG_SYSCTL) && defined(CONFIG_PROC_FS)
+<<<<<<< HEAD
 int proc_nr_files(ctl_table *table, int write,
+=======
+int proc_nr_files(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                      void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	files_stat.nr_files = get_nr_files();
 	return proc_doulongvec_minmax(table, write, buffer, lenp, ppos);
 }
 #else
+<<<<<<< HEAD
 int proc_nr_files(ctl_table *table, int write,
+=======
+int proc_nr_files(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                      void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	return -ENOSYS;
@@ -135,6 +153,10 @@ struct file *get_empty_filp(void)
 	atomic_long_set(&f->f_count, 1);
 	rwlock_init(&f->f_owner.lock);
 	spin_lock_init(&f->f_lock);
+<<<<<<< HEAD
+=======
+	mutex_init(&f->f_pos_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	eventpoll_init_file(f);
 	/* f->f_version: 0 */
 	return f;
@@ -150,6 +172,7 @@ over:
 
 /**
  * alloc_file - allocate and initialize a 'struct file'
+<<<<<<< HEAD
  * @mnt: the vfsmount on which the file will reside
  * @dentry: the dentry representing the new file
  * @mode: the mode with which the new file will be opened
@@ -162,6 +185,12 @@ over:
  *
  * If all the callers of init_file() are eliminated, its
  * code should be moved into this function.
+=======
+ *
+ * @path: the (dentry, vfsmount) pair for the new file
+ * @mode: the mode with which the new file will be opened
+ * @fop: the 'struct file_operations' for the new file
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct file *alloc_file(struct path *path, fmode_t mode,
 		const struct file_operations *fop)
@@ -175,6 +204,7 @@ struct file *alloc_file(struct path *path, fmode_t mode,
 	file->f_path = *path;
 	file->f_inode = path->dentry->d_inode;
 	file->f_mapping = path->dentry->d_inode->i_mapping;
+<<<<<<< HEAD
 	file->f_mode = mode;
 	file->f_op = fop;
 
@@ -188,12 +218,23 @@ struct file *alloc_file(struct path *path, fmode_t mode,
 		file_take_write(file);
 		WARN_ON(mnt_clone_write(path->mnt));
 	}
+=======
+	if ((mode & FMODE_READ) &&
+	     likely(fop->read || fop->read_iter))
+		mode |= FMODE_CAN_READ;
+	if ((mode & FMODE_WRITE) &&
+	     likely(fop->write || fop->write_iter))
+		mode |= FMODE_CAN_WRITE;
+	file->f_mode = mode;
+	file->f_op = fop;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((mode & (FMODE_READ | FMODE_WRITE)) == FMODE_READ)
 		i_readcount_inc(path->dentry->d_inode);
 	return file;
 }
 EXPORT_SYMBOL(alloc_file);
 
+<<<<<<< HEAD
 /**
  * drop_file_write_access - give up ability to write to a file
  * @file: the file to which we will stop writing
@@ -218,13 +259,19 @@ static void drop_file_write_access(struct file *file)
 	file_release_write(file);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* the real guts of fput() - releasing the last reference to file
  */
 static void __fput(struct file *file)
 {
 	struct dentry *dentry = file->f_path.dentry;
 	struct vfsmount *mnt = file->f_path.mnt;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = file->f_inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	might_sleep();
 
@@ -234,6 +281,7 @@ static void __fput(struct file *file)
 	 * in the file cleanup chain.
 	 */
 	eventpoll_release(file);
+<<<<<<< HEAD
 	locks_remove_flock(file);
 
 	if (unlikely(file->f_flags & FASYNC)) {
@@ -242,6 +290,16 @@ static void __fput(struct file *file)
 	}
 	ima_file_free(file);
 	if (file->f_op && file->f_op->release)
+=======
+	locks_remove_file(file);
+
+	if (unlikely(file->f_flags & FASYNC)) {
+		if (file->f_op->fasync)
+			file->f_op->fasync(-1, file, 0);
+	}
+	ima_file_free(file);
+	if (file->f_op->release)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		file->f_op->release(inode, file);
 	security_file_free(file);
 	if (unlikely(S_ISCHR(inode->i_mode) && inode->i_cdev != NULL &&
@@ -252,8 +310,15 @@ static void __fput(struct file *file)
 	put_pid(file->f_owner.pid);
 	if ((file->f_mode & (FMODE_READ | FMODE_WRITE)) == FMODE_READ)
 		i_readcount_dec(inode);
+<<<<<<< HEAD
 	if (file->f_mode & FMODE_WRITE)
 		drop_file_write_access(file);
+=======
+	if (file->f_mode & FMODE_WRITER) {
+		put_write_access(inode);
+		__mnt_drop_write(mnt);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	file->f_path.dentry = NULL;
 	file->f_path.mnt = NULL;
 	file->f_inode = NULL;
@@ -294,7 +359,11 @@ void flush_delayed_fput(void)
 	delayed_fput(NULL);
 }
 
+<<<<<<< HEAD
 static DECLARE_WORK(delayed_fput_work, delayed_fput);
+=======
+static DECLARE_DELAYED_WORK(delayed_fput_work, delayed_fput);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void fput(struct file *file)
 {
@@ -305,10 +374,22 @@ void fput(struct file *file)
 			init_task_work(&file->f_u.fu_rcuhead, ____fput);
 			if (!task_work_add(task, &file->f_u.fu_rcuhead, true))
 				return;
+<<<<<<< HEAD
 		}
 
 		if (llist_add(&file->f_u.fu_llist, &delayed_fput_list))
 			schedule_work(&delayed_fput_work);
+=======
+			/*
+			 * After this task has run exit_task_work(),
+			 * task_work_add() will fail.  Fall through to delayed
+			 * fput to avoid leaking *file.
+			 */
+		}
+
+		if (llist_add(&file->f_u.fu_llist, &delayed_fput_list))
+			schedule_delayed_work(&delayed_fput_work, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -339,6 +420,7 @@ void put_filp(struct file *file)
 	}
 }
 
+<<<<<<< HEAD
 
 void __init files_init(unsigned long mempages)
 { 
@@ -356,4 +438,26 @@ void __init files_init(unsigned long mempages)
 	files_stat.max_files = max_t(unsigned long, n, NR_FILE);
 	files_defer_init();
 	percpu_counter_init(&nr_files, 0);
+=======
+void __init files_init(void)
+{ 
+	filp_cachep = kmem_cache_create("filp", sizeof(struct file), 0,
+			SLAB_HWCACHE_ALIGN | SLAB_PANIC, NULL);
+	percpu_counter_init(&nr_files, 0, GFP_KERNEL);
+}
+
+/*
+ * One file with associated inode and dcache is very roughly 1K. Per default
+ * do not use more than 10% of our memory for files.
+ */
+void __init files_maxfiles_init(void)
+{
+	unsigned long n;
+	unsigned long memreserve = (totalram_pages - nr_free_pages()) * 3/2;
+
+	memreserve = min(memreserve, totalram_pages - 1);
+	n = ((totalram_pages - memreserve) * (PAGE_SIZE / 1024)) / 10;
+
+	files_stat.max_files = max_t(unsigned long, n, NR_FILE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } 

@@ -157,7 +157,11 @@ pxa_cpu_do_suspend:
 	@ Do not reorder...
 	@ Intel PXA270 Specification Update notes problems performing
 	@ external accesses after SDRAM is put in self-refresh mode
+<<<<<<< HEAD
 	@ (see Errata 39 ...hangs when entering self-refresh mode)
+=======
+	@ (see Errata 38 ...hangs when entering self-refresh mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	@ force address lines low by reading at physical address 0
 	ldr	r3, [r2]

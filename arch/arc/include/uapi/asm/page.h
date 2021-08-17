@@ -9,6 +9,11 @@
 #ifndef _UAPI__ASM_ARC_PAGE_H
 #define _UAPI__ASM_ARC_PAGE_H
 
+<<<<<<< HEAD
+=======
+#include <linux/const.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* PAGE_SHIFT determines the page size */
 #if defined(CONFIG_ARC_PAGE_SIZE_16K)
 #define PAGE_SHIFT 14
@@ -25,6 +30,7 @@
 #define PAGE_SHIFT 13
 #endif
 
+<<<<<<< HEAD
 #ifdef __ASSEMBLY__
 #define PAGE_SIZE	(1 << PAGE_SHIFT)
 #define PAGE_OFFSET	(0x80000000)
@@ -32,6 +38,10 @@
 #define PAGE_SIZE	(1UL << PAGE_SHIFT)	/* Default 8K */
 #define PAGE_OFFSET	(0x80000000UL)	/* Kernel starts at 2G onwards */
 #endif
+=======
+#define PAGE_SIZE	_BITUL(PAGE_SHIFT)	/* Default 8K */
+#define PAGE_OFFSET	_AC(0x80000000, UL)	/* Kernel starts at 2G onwrds */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PAGE_MASK	(~(PAGE_SIZE-1))
 

@@ -4,12 +4,19 @@
  * Copyright (c) 2000 Eric Brower (ebrower@usa.net)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
 #include <linux/major.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/miscdevice.h>
 #include <linux/ioport.h>		/* request_region */
 #include <linux/slab.h>
@@ -144,10 +151,14 @@ static long d7s_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	case D7SIOCTM:
 		/* toggle device mode-- flip display orientation */
+<<<<<<< HEAD
 		if (regs & D7S_FLIP)
 			regs &= ~D7S_FLIP;
 		else
 			regs |= D7S_FLIP;
+=======
+		regs ^= D7S_FLIP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		writeb(regs, p->regs);
 		break;
 	}
@@ -181,7 +192,11 @@ static int d7s_probe(struct platform_device *op)
 	if (d7s_device)
 		goto out;
 
+<<<<<<< HEAD
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
+=======
+	p = devm_kzalloc(&op->dev, sizeof(*p), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = -ENOMEM;
 	if (!p)
 		goto out;
@@ -224,6 +239,10 @@ static int d7s_probe(struct platform_device *op)
 	dev_set_drvdata(&op->dev, p);
 	d7s_device = p;
 	err = 0;
+<<<<<<< HEAD
+=======
+	of_node_put(opts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out:
 	return err;
@@ -232,7 +251,10 @@ out_iounmap:
 	of_iounmap(&op->resource[0], p->regs, sizeof(u8));
 
 out_free:
+<<<<<<< HEAD
 	kfree(p);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	goto out;
 }
 
@@ -252,7 +274,10 @@ static int d7s_remove(struct platform_device *op)
 
 	misc_deregister(&d7s_miscdev);
 	of_iounmap(&op->resource[0], p->regs, sizeof(u8));
+<<<<<<< HEAD
 	kfree(p);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -268,7 +293,10 @@ MODULE_DEVICE_TABLE(of, d7s_match);
 static struct platform_driver d7s_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = d7s_match,
 	},
 	.probe		= d7s_probe,

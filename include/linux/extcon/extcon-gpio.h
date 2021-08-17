@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  *  External connector (extcon) class generic GPIO driver
+=======
+ * Single-state GPIO extcon driver based on extcon class
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 2012 Samsung Electronics
  * Author: MyungJoo Ham <myungjoo.ham@samsung.com>
@@ -16,14 +20,19 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
 */
+=======
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __EXTCON_GPIO_H__
 #define __EXTCON_GPIO_H__ __FILE__
 
 #include <linux/extcon.h>
 
 /**
+<<<<<<< HEAD
  * struct gpio_extcon_platform_data - A simple GPIO-controlled extcon device.
  * @name	The name of this GPIO extcon device.
  * @gpio	Corresponding GPIO.
@@ -47,6 +56,27 @@ struct gpio_extcon_platform_data {
 	/* if NULL, "0" or "1" will be printed */
 	const char *state_on;
 	const char *state_off;
+=======
+ * struct gpio_extcon_pdata - A simple GPIO-controlled extcon device.
+ * @extcon_id:		The unique id of specific external connector.
+ * @gpio:		Corresponding GPIO.
+ * @gpio_active_low:	Boolean describing whether gpio active state is 1 or 0
+ *			If true, low state of gpio means active.
+ *			If false, high state of gpio means active.
+ * @debounce:		Debounce time for GPIO IRQ in ms.
+ * @irq_flags:		IRQ Flags (e.g., IRQF_TRIGGER_LOW).
+ * @check_on_resume:	Boolean describing whether to check the state of gpio
+ *			while resuming from sleep.
+ */
+struct gpio_extcon_pdata {
+	unsigned int extcon_id;
+	unsigned gpio;
+	bool gpio_active_low;
+	unsigned long debounce;
+	unsigned long irq_flags;
+
+	bool check_on_resume;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* __EXTCON_GPIO_H__ */

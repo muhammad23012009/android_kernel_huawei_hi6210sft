@@ -12,8 +12,12 @@
  * published by the Free Software Foundation.                                *
  *                                                                           *
  * You should have received a copy of the GNU General Public License along   *
+<<<<<<< HEAD
  * with this program; if not, write to the Free Software Foundation, Inc.,   *
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                 *
+=======
+ * with this program; if not, see <http://www.gnu.org/licenses/>.            *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *                                                                           *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
@@ -523,7 +527,11 @@ static const struct board_info t1_board[] = {
 
 };
 
+<<<<<<< HEAD
 DEFINE_PCI_DEVICE_TABLE(t1_pci_tbl) = {
+=======
+const struct pci_device_id t1_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CH_DEVICE(8, 0, CH_BRD_T110_1CU),
 	CH_DEVICE(8, 1, CH_BRD_T110_1CU),
 	CH_DEVICE(7, 0, CH_BRD_N110_1F),

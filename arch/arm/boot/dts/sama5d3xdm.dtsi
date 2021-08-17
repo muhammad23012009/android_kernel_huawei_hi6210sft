@@ -18,14 +18,23 @@
 					interrupts = <31 0x0>;
 					pinctrl-names = "default";
 					pinctrl-0 = <&pinctrl_qt1070_irq>;
+<<<<<<< HEAD
+=======
+					wakeup-source;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
 			adc0: adc@f8018000 {
+<<<<<<< HEAD
 				status = "disabled";
 			};
 
 			tsadcc: tsadcc@f8018000 {
+=======
+				atmel,adc-ts-wires = <4>;
+				atmel,adc-ts-pressure-threshold = <10000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "okay";
 			};
 
@@ -33,7 +42,11 @@
 				board {
 					pinctrl_qt1070_irq: qt1070_irq {
 						atmel,pins =
+<<<<<<< HEAD
 							<4 31 0x0 0x5>; /* PE31 GPIO with pull up deglith */
+=======
+							<AT91_PIOE 31 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>; /* PE31 GPIO with pull up deglith */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					};
 				};
 			};

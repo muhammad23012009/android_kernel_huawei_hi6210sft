@@ -154,7 +154,11 @@ const struct tomoyo_path_info *tomoyo_get_name(const char *name)
 	if (!name)
 		return NULL;
 	len = strlen(name) + 1;
+<<<<<<< HEAD
 	hash = full_name_hash((const unsigned char *) name, len - 1);
+=======
+	hash = full_name_hash(NULL, (const unsigned char *) name, len - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	head = &tomoyo_name_list[hash_long(hash, TOMOYO_HASH_BITS)];
 	if (mutex_lock_interruptible(&tomoyo_policy_lock))
 		return NULL;

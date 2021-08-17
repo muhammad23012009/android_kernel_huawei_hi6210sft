@@ -7,6 +7,10 @@
 #include <linux/input-polldev.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-rc32434/gpio.h>
 #include <asm/mach-rc32434/rb.h>
@@ -87,7 +91,10 @@ static int rb532_button_remove(struct platform_device *pdev)
 
 	input_unregister_polled_device(poll_dev);
 	input_free_polled_device(poll_dev);
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -97,7 +104,10 @@ static struct platform_driver rb532_button_driver = {
 	.remove = rb532_button_remove,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(rb532_button_driver);

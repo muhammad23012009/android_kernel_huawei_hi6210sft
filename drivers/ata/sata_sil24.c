@@ -336,7 +336,11 @@ static void sil24_dev_config(struct ata_device *dev);
 static int sil24_scr_read(struct ata_link *link, unsigned sc_reg, u32 *val);
 static int sil24_scr_write(struct ata_link *link, unsigned sc_reg, u32 val);
 static int sil24_qc_defer(struct ata_queued_cmd *qc);
+<<<<<<< HEAD
 static void sil24_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors sil24_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int sil24_qc_issue(struct ata_queued_cmd *qc);
 static bool sil24_qc_fill_rtf(struct ata_queued_cmd *qc);
 static void sil24_pmp_attach(struct ata_port *ap);
@@ -353,8 +357,15 @@ static void sil24_error_handler(struct ata_port *ap);
 static void sil24_post_internal_cmd(struct ata_queued_cmd *qc);
 static int sil24_port_start(struct ata_port *ap);
 static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sil24_pci_device_resume(struct pci_dev *pdev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sil24_pci_device_resume(struct pci_dev *pdev);
+#endif
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int sil24_port_resume(struct ata_port *ap);
 #endif
 
@@ -375,7 +386,11 @@ static struct pci_driver sil24_pci_driver = {
 	.id_table		= sil24_pci_tbl,
 	.probe			= sil24_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= sil24_pci_device_resume,
 #endif
@@ -386,6 +401,10 @@ static struct scsi_host_template sil24_sht = {
 	.can_queue		= SIL24_MAX_CMDS,
 	.sg_tablesize		= SIL24_MAX_SGE,
 	.dma_boundary		= ATA_DMA_BOUNDARY,
+<<<<<<< HEAD
+=======
+	.tag_alloc_policy	= BLK_TAG_ALLOC_FIFO,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct ata_port_operations sil24_ops = {
@@ -837,7 +856,11 @@ static int sil24_qc_defer(struct ata_queued_cmd *qc)
 	return ata_std_qc_defer(qc);
 }
 
+<<<<<<< HEAD
 static void sil24_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors sil24_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ata_port *ap = qc->ap;
 	struct sil24_port_priv *pp = ap->private_data;
@@ -881,6 +904,11 @@ static void sil24_qc_prep(struct ata_queued_cmd *qc)
 
 	if (qc->flags & ATA_QCFLAG_DMAMAP)
 		sil24_fill_sg(qc, sge);
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned int sil24_qc_issue(struct ata_queued_cmd *qc)
@@ -1152,8 +1180,13 @@ static irqreturn_t sil24_interrupt(int irq, void *dev_instance)
 	status = readl(host_base + HOST_IRQ_STAT);
 
 	if (status == 0xffffffff) {
+<<<<<<< HEAD
 		printk(KERN_ERR DRV_NAME ": IRQ status == 0xffffffff, "
 		       "PCI fault or device removal?\n");
+=======
+		dev_err(host->dev, "IRQ status == 0xffffffff, "
+			"PCI fault or device removal?\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -1309,10 +1342,17 @@ static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	host->iomap = iomap;
 
 	/* configure and activate the device */
+<<<<<<< HEAD
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
 		if (rc) {
 			rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+		if (rc) {
+			rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (rc) {
 				dev_err(&pdev->dev,
 					"64-bit DMA enable failed\n");
@@ -1320,12 +1360,20 @@ static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 			}
 		}
 	} else {
+<<<<<<< HEAD
 		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rc) {
 			dev_err(&pdev->dev, "32-bit DMA enable failed\n");
 			return rc;
 		}
+<<<<<<< HEAD
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rc) {
 			dev_err(&pdev->dev,
 				"32-bit consistent DMA enable failed\n");
@@ -1350,10 +1398,17 @@ static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 				 &sil24_sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sil24_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sil24_pci_device_resume(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *host_base = host->iomap[SIL24_HOST_BAR];
 	int rc;
 
@@ -1370,7 +1425,13 @@ static int sil24_pci_device_resume(struct pci_dev *pdev)
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+#endif
+
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int sil24_port_resume(struct ata_port *ap)
 {
 	sil24_config_pmp(ap, ap->nr_pmp_links);

@@ -6,6 +6,7 @@
  * Copyright (C) 1994 by Waldorf Electronics
  * Copyright (C) 1995 - 2000, 01, 03 by Ralf Baechle
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
+<<<<<<< HEAD
  * Copyright (C) 2007  Maciej W. Rozycki
  */
 #include <linux/module.h>
@@ -15,12 +16,32 @@
 #include <asm/compiler.h>
 #include <asm/war.h>
 
+=======
+ * Copyright (C) 2007, 2014 Maciej W. Rozycki
+ */
+#include <linux/export.h>
+#include <linux/param.h>
+#include <linux/smp.h>
+#include <linux/stringify.h>
+
+#include <asm/asm.h>
+#include <asm/compiler.h>
+#include <asm/war.h>
+
+#ifndef CONFIG_CPU_DADDI_WORKAROUNDS
+#define GCC_DADDI_IMM_ASM() "I"
+#else
+#define GCC_DADDI_IMM_ASM() "r"
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __delay(unsigned long loops)
 {
 	__asm__ __volatile__ (
 	"	.set	noreorder				\n"
 	"	.align	3					\n"
 	"1:	bnez	%0, 1b					\n"
+<<<<<<< HEAD
 #if BITS_PER_LONG == 32
 	"	subu	%0, 1					\n"
 #else
@@ -29,6 +50,12 @@ void __delay(unsigned long loops)
 	"	.set	reorder					\n"
 	: "=r" (loops)
 	: "0" (loops));
+=======
+	"	 " __stringify(LONG_SUBU) "	%0, %1		\n"
+	"	.set	reorder					\n"
+	: "=r" (loops)
+	: GCC_DADDI_IMM_ASM() (1), "0" (loops));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__delay);
 

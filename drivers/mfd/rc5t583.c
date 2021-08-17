@@ -74,7 +74,11 @@ static struct deepsleep_control_data deepsleep_data[] = {
 #define EXT_PWR_REQ		\
 	(RC5T583_EXT_PWRREQ1_CONTROL | RC5T583_EXT_PWRREQ2_CONTROL)
 
+<<<<<<< HEAD
 static struct mfd_cell rc5t583_subdevs[] = {
+=======
+static const struct mfd_cell rc5t583_subdevs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{.name = "rc5t583-gpio",},
 	{.name = "rc5t583-regulator",},
 	{.name = "rc5t583-rtc",      },
@@ -241,8 +245,13 @@ static const struct regmap_config rc5t583_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
 	.volatile_reg = volatile_reg,
+<<<<<<< HEAD
 	.max_register = RC5T583_MAX_REGS,
 	.num_reg_defaults_raw = RC5T583_MAX_REGS,
+=======
+	.max_register = RC5T583_MAX_REG,
+	.num_reg_defaults_raw = RC5T583_NUM_REGS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cache_type = REGCACHE_RBTREE,
 };
 
@@ -250,9 +259,14 @@ static int rc5t583_i2c_probe(struct i2c_client *i2c,
 			      const struct i2c_device_id *id)
 {
 	struct rc5t583 *rc5t583;
+<<<<<<< HEAD
 	struct rc5t583_platform_data *pdata = i2c->dev.platform_data;
 	int ret;
 	bool irq_init_success = false;
+=======
+	struct rc5t583_platform_data *pdata = dev_get_platdata(&i2c->dev);
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pdata) {
 		dev_err(&i2c->dev, "Err: Platform data not found\n");
@@ -284,6 +298,7 @@ static int rc5t583_i2c_probe(struct i2c_client *i2c,
 		/* Still continue with warning, if irq init fails */
 		if (ret)
 			dev_warn(&i2c->dev, "IRQ init failed: %d\n", ret);
+<<<<<<< HEAD
 		else
 			irq_init_success = true;
 	}
@@ -310,6 +325,18 @@ static int  rc5t583_i2c_remove(struct i2c_client *i2c)
 	mfd_remove_devices(rc5t583->dev);
 	rc5t583_irq_exit(rc5t583);
 	return 0;
+=======
+	}
+
+	ret = devm_mfd_add_devices(rc5t583->dev, -1, rc5t583_subdevs,
+				   ARRAY_SIZE(rc5t583_subdevs), NULL, 0, NULL);
+	if (ret) {
+		dev_err(&i2c->dev, "add mfd devices failed: %d\n", ret);
+		return ret;
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id rc5t583_i2c_id[] = {
@@ -322,10 +349,15 @@ MODULE_DEVICE_TABLE(i2c, rc5t583_i2c_id);
 static struct i2c_driver rc5t583_i2c_driver = {
 	.driver = {
 		   .name = "rc5t583",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   },
 	.probe = rc5t583_i2c_probe,
 	.remove = rc5t583_i2c_remove,
+=======
+		   },
+	.probe = rc5t583_i2c_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = rc5t583_i2c_id,
 };
 

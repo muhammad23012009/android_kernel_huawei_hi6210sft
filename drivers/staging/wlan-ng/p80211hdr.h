@@ -148,7 +148,11 @@
 /* Generic 802.11 Header types */
 
 struct p80211_hdr_a3 {
+<<<<<<< HEAD
 	u16 fc;
+=======
+	__le16 fc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 dur;
 	u8 a1[ETH_ALEN];
 	u8 a2[ETH_ALEN];

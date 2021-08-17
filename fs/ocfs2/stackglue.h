@@ -45,6 +45,12 @@ struct file_lock;
  */
 #define GROUP_NAME_MAX		64
 
+<<<<<<< HEAD
+=======
+/* This shadows  OCFS2_CLUSTER_NAME_LEN */
+#define CLUSTER_NAME_MAX	16
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * ocfs2_protocol_version changes when ocfs2 does something different in
@@ -97,8 +103,15 @@ struct ocfs2_locking_protocol {
  * locking compatibility.
  */
 struct ocfs2_cluster_connection {
+<<<<<<< HEAD
 	char cc_name[GROUP_NAME_MAX];
 	int cc_namelen;
+=======
+	char cc_name[GROUP_NAME_MAX + 1];
+	int cc_namelen;
+	char cc_cluster_name[CLUSTER_NAME_MAX + 1];
+	int cc_cluster_name_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ocfs2_protocol_version cc_version;
 	struct ocfs2_locking_protocol *cc_proto;
 	void (*cc_recovery_handler)(int node_num, void *recovery_data);
@@ -152,7 +165,12 @@ struct ocfs2_stack_operations {
 	 * ->this_node() returns the cluster's unique identifier for the
 	 * local node.
 	 */
+<<<<<<< HEAD
 	int (*this_node)(unsigned int *node);
+=======
+	int (*this_node)(struct ocfs2_cluster_connection *conn,
+			 unsigned int *node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Call the underlying dlm lock function.  The ->dlm_lock()
@@ -239,6 +257,11 @@ struct ocfs2_stack_plugin {
 
 /* Used by the filesystem */
 int ocfs2_cluster_connect(const char *stack_name,
+<<<<<<< HEAD
+=======
+			  const char *cluster_name,
+			  int cluster_name_len,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  const char *group,
 			  int grouplen,
 			  struct ocfs2_locking_protocol *lproto,
@@ -260,7 +283,12 @@ int ocfs2_cluster_connect_agnostic(const char *group,
 int ocfs2_cluster_disconnect(struct ocfs2_cluster_connection *conn,
 			     int hangup_pending);
 void ocfs2_cluster_hangup(const char *group, int grouplen);
+<<<<<<< HEAD
 int ocfs2_cluster_this_node(unsigned int *node);
+=======
+int ocfs2_cluster_this_node(struct ocfs2_cluster_connection *conn,
+			    unsigned int *node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct ocfs2_lock_res;
 int ocfs2_dlm_lock(struct ocfs2_cluster_connection *conn,
@@ -289,7 +317,11 @@ void ocfs2_stack_glue_set_max_proto_version(struct ocfs2_protocol_version *max_p
 int ocfs2_stack_glue_register(struct ocfs2_stack_plugin *plugin);
 void ocfs2_stack_glue_unregister(struct ocfs2_stack_plugin *plugin);
 
+<<<<<<< HEAD
 /* In ocfs2_downconvert_lock(), we need to know which stack we are using */
 int ocfs2_is_o2cb_active(void);
+=======
+extern struct kset *ocfs2_kset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif  /* STACKGLUE_H */

@@ -14,6 +14,20 @@ static inline unsigned long xchg_u32(volatile u32 *m, unsigned long val)
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned long xchg_u16(volatile u16 *m, unsigned long val)
+{
+	unsigned long flags, retval;
+
+	local_irq_save(flags);
+	retval = *m;
+	*m = val;
+	local_irq_restore(flags);
+	return retval;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long xchg_u8(volatile u8 *m, unsigned long val)
 {
 	unsigned long flags, retval;

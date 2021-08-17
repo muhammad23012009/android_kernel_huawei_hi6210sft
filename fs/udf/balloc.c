@@ -21,7 +21,10 @@
 
 #include "udfdecl.h"
 
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/bitops.h>
 
 #include "udf_i.h"
@@ -63,6 +66,7 @@ static int __load_block_bitmap(struct super_block *sb,
 			  block_group, nr_groups);
 	}
 
+<<<<<<< HEAD
 	if (bitmap->s_block_bitmap[block_group]) {
 		return block_group;
 	} else {
@@ -72,6 +76,16 @@ static int __load_block_bitmap(struct super_block *sb,
 			return retval;
 		return block_group;
 	}
+=======
+	if (bitmap->s_block_bitmap[block_group])
+		return block_group;
+
+	retval = read_block_bitmap(sb, bitmap, block_group, block_group);
+	if (retval < 0)
+		return retval;
+
+	return block_group;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int load_block_bitmap(struct super_block *sb,
@@ -358,7 +372,10 @@ static void udf_table_free_blocks(struct super_block *sb,
 	struct kernel_lb_addr eloc;
 	struct extent_position oepos, epos;
 	int8_t etype;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct udf_inode_info *iinfo;
 
 	mutex_lock(&sbi->s_alloc_mutex);
@@ -425,7 +442,10 @@ static void udf_table_free_blocks(struct super_block *sb,
 		}
 
 		if (epos.bh != oepos.bh) {
+<<<<<<< HEAD
 			i = -1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			oepos.block = epos.block;
 			brelse(oepos.bh);
 			get_bh(epos.bh);
@@ -451,9 +471,12 @@ static void udf_table_free_blocks(struct super_block *sb,
 		 */
 
 		int adsize;
+<<<<<<< HEAD
 		struct short_ad *sad = NULL;
 		struct long_ad *lad = NULL;
 		struct allocExtDesc *aed;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		eloc.logicalBlockNum = start;
 		elen = EXT_RECORDED_ALLOCATED |
@@ -470,6 +493,7 @@ static void udf_table_free_blocks(struct super_block *sb,
 		}
 
 		if (epos.offset + (2 * adsize) > sb->s_blocksize) {
+<<<<<<< HEAD
 			unsigned char *sptr, *dptr;
 			int loffset;
 
@@ -566,6 +590,19 @@ static void udf_table_free_blocks(struct super_block *sb,
 				mark_buffer_dirty(epos.bh);
 			}
 		}
+=======
+			/* Steal a block from the extent being free'd */
+			udf_setup_indirect_aext(table, eloc.logicalBlockNum,
+						&epos);
+
+			eloc.logicalBlockNum++;
+			elen -= sb->s_blocksize;
+		}
+
+		/* It's possible that stealing the block emptied the extent */
+		if (elen)
+			__udf_add_aext(table, &epos, &eloc, elen, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	brelse(epos.bh);
@@ -762,7 +799,11 @@ inline int udf_prealloc_blocks(struct super_block *sb,
 			       uint32_t block_count)
 {
 	struct udf_part_map *map = &UDF_SB(sb)->s_partmaps[partition];
+<<<<<<< HEAD
 	sector_t allocated;
+=======
+	int allocated;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_BITMAP)
 		allocated = udf_bitmap_prealloc_blocks(sb,

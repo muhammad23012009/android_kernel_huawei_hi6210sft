@@ -41,6 +41,10 @@
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* As with the other PowerPC ports, it is expected that when code
  * execution begins here, the following registers contain valid, yet
@@ -822,6 +826,7 @@ finish_tlb_load:
 	rfi			/* Should sync shadow TLBs */
 	b	.		/* prevent prefetch past rfi */
 
+<<<<<<< HEAD
 /* extern void giveup_fpu(struct task_struct *prev)
  *
  * The PowerPC 4xx family of processors do not have an FPU, so this just
@@ -830,6 +835,8 @@ finish_tlb_load:
 _ENTRY(giveup_fpu)
 	blr
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This is where the main kernel code starts.
  */
 start_here:
@@ -938,6 +945,7 @@ initial_mmu:
 	tlbwe	r4,r0,TLB_DATA		/* Load the data portion of the entry */
 	tlbwe	r3,r0,TLB_TAG		/* Load the tag portion of the entry */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_TEXT_DEBUG) && defined(SERIAL_DEBUG_IO_BASE)
 
 	/* Load a TLB entry for the UART, so that ppc4xx_progress() can use
@@ -957,6 +965,8 @@ initial_mmu:
 	tlbwe	r3,r0,TLB_TAG
 #endif /* CONFIG_SERIAL_DEBUG_TEXT && SERIAL_DEBUG_IO_BASE */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	isync
 
 	/* Establish the exception vector base
@@ -998,6 +1008,10 @@ sdata:
 	.globl	empty_zero_page
 empty_zero_page:
 	.space	4096
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(empty_zero_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.globl	swapper_pg_dir
 swapper_pg_dir:
 	.space	PGD_TABLE_SIZE

@@ -48,11 +48,19 @@ static inline void nf_ct_set_tstamp(struct net *net, bool enable)
 }
 
 #ifdef CONFIG_NF_CONNTRACK_TIMESTAMP
+<<<<<<< HEAD
 extern int nf_conntrack_tstamp_pernet_init(struct net *net);
 extern void nf_conntrack_tstamp_pernet_fini(struct net *net);
 
 extern int nf_conntrack_tstamp_init(void);
 extern void nf_conntrack_tstamp_fini(void);
+=======
+int nf_conntrack_tstamp_pernet_init(struct net *net);
+void nf_conntrack_tstamp_pernet_fini(struct net *net);
+
+int nf_conntrack_tstamp_init(void);
+void nf_conntrack_tstamp_fini(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline int nf_conntrack_tstamp_pernet_init(struct net *net)
 {

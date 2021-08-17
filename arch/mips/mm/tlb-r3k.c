@@ -10,7 +10,10 @@
  * Copyright (C) 2002  Ralf Baechle
  * Copyright (C) 2002  Maciej W. Rozycki
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
@@ -37,6 +40,7 @@ extern void build_tlb_refill_handler(void);
 		"nop\n\t"		\
 		".set	pop\n\t")
 
+<<<<<<< HEAD
 int r3k_have_wired_reg;		/* should be in cpu_data? */
 
 /* TLB operations. */
@@ -61,6 +65,35 @@ void local_flush_tlb_all(void)
 		tlb_write_indexed();
 	}
 	write_c0_entryhi(old_ctx);
+=======
+int r3k_have_wired_reg;			/* Should be in cpu_data? */
+
+/* TLB operations. */
+static void local_flush_tlb_from(int entry)
+{
+	unsigned long old_ctx;
+
+	old_ctx = read_c0_entryhi() & cpu_asid_mask(&current_cpu_data);
+	write_c0_entrylo0(0);
+	while (entry < current_cpu_data.tlbsize) {
+		write_c0_index(entry << 8);
+		write_c0_entryhi((entry | 0x80000) << 12);
+		entry++;				/* BARRIER */
+		tlb_write_indexed();
+	}
+	write_c0_entryhi(old_ctx);
+}
+
+void local_flush_tlb_all(void)
+{
+	unsigned long flags;
+
+#ifdef DEBUG_TLB
+	printk("[tlball]");
+#endif
+	local_irq_save(flags);
+	local_flush_tlb_from(r3k_have_wired_reg ? read_c0_wired() : 8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_restore(flags);
 }
 
@@ -79,6 +112,10 @@ void local_flush_tlb_mm(struct mm_struct *mm)
 void local_flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
 			   unsigned long end)
 {
+<<<<<<< HEAD
+=======
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mm_struct *mm = vma->vm_mm;
 	int cpu = smp_processor_id();
 
@@ -87,13 +124,22 @@ void local_flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
 
 #ifdef DEBUG_TLB
 		printk("[tlbrange<%lu,0x%08lx,0x%08lx>]",
+<<<<<<< HEAD
 			cpu_context(cpu, mm) & ASID_MASK, start, end);
+=======
+			cpu_context(cpu, mm) & asid_mask, start, end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 		local_irq_save(flags);
 		size = (end - start + (PAGE_SIZE - 1)) >> PAGE_SHIFT;
 		if (size <= current_cpu_data.tlbsize) {
+<<<<<<< HEAD
 			int oldpid = read_c0_entryhi() & ASID_MASK;
 			int newpid = cpu_context(cpu, mm) & ASID_MASK;
+=======
+			int oldpid = read_c0_entryhi() & asid_mask;
+			int newpid = cpu_context(cpu, mm) & asid_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			start &= PAGE_MASK;
 			end += PAGE_SIZE - 1;
@@ -157,19 +203,33 @@ void local_flush_tlb_kernel_range(unsigned long start, unsigned long end)
 
 void local_flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 {
+<<<<<<< HEAD
 	int cpu = smp_processor_id();
 
 	if (!vma || cpu_context(cpu, vma->vm_mm) != 0) {
+=======
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+	int cpu = smp_processor_id();
+
+	if (cpu_context(cpu, vma->vm_mm) != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long flags;
 		int oldpid, newpid, idx;
 
 #ifdef DEBUG_TLB
 		printk("[tlbpage<%lu,0x%08lx>]", cpu_context(cpu, vma->vm_mm), page);
 #endif
+<<<<<<< HEAD
 		newpid = cpu_context(cpu, vma->vm_mm) & ASID_MASK;
 		page &= PAGE_MASK;
 		local_irq_save(flags);
 		oldpid = read_c0_entryhi() & ASID_MASK;
+=======
+		newpid = cpu_context(cpu, vma->vm_mm) & asid_mask;
+		page &= PAGE_MASK;
+		local_irq_save(flags);
+		oldpid = read_c0_entryhi() & asid_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		write_c0_entryhi(page | newpid);
 		BARRIER;
 		tlb_probe();
@@ -188,6 +248,10 @@ finish:
 
 void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t pte)
 {
+<<<<<<< HEAD
+=======
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int idx, pid;
 
@@ -197,10 +261,17 @@ void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t pte)
 	if (current->active_mm != vma->vm_mm)
 		return;
 
+<<<<<<< HEAD
 	pid = read_c0_entryhi() & ASID_MASK;
 
 #ifdef DEBUG_TLB
 	if ((pid != (cpu_context(cpu, vma->vm_mm) & ASID_MASK)) || (cpu_context(cpu, vma->vm_mm) == 0)) {
+=======
+	pid = read_c0_entryhi() & asid_mask;
+
+#ifdef DEBUG_TLB
+	if ((pid != (cpu_context(cpu, vma->vm_mm) & asid_mask)) || (cpu_context(cpu, vma->vm_mm) == 0)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk("update_mmu_cache: Wheee, bogus tlbpid mmpid=%lu tlbpid=%d\n",
 		       (cpu_context(cpu, vma->vm_mm)), pid);
 	}
@@ -226,6 +297,10 @@ void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t pte)
 void add_wired_entry(unsigned long entrylo0, unsigned long entrylo1,
 		     unsigned long entryhi, unsigned long pagemask)
 {
+<<<<<<< HEAD
+=======
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	unsigned long old_ctx;
 	static unsigned long wired = 0;
@@ -241,7 +316,11 @@ void add_wired_entry(unsigned long entrylo0, unsigned long entrylo1,
 
 		local_irq_save(flags);
 		/* Save old context and create impossible VPN2 value */
+<<<<<<< HEAD
 		old_ctx = read_c0_entryhi() & ASID_MASK;
+=======
+		old_ctx = read_c0_entryhi() & asid_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		old_pagemask = read_c0_pagemask();
 		w = read_c0_wired();
 		write_c0_wired(w + 1);
@@ -264,7 +343,11 @@ void add_wired_entry(unsigned long entrylo0, unsigned long entrylo1,
 #endif
 
 		local_irq_save(flags);
+<<<<<<< HEAD
 		old_ctx = read_c0_entryhi() & ASID_MASK;
+=======
+		old_ctx = read_c0_entryhi() & asid_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		write_c0_entrylo0(entrylo0);
 		write_c0_entryhi(entryhi);
 		write_c0_index(wired);
@@ -276,9 +359,22 @@ void add_wired_entry(unsigned long entrylo0, unsigned long entrylo1,
 	}
 }
 
+<<<<<<< HEAD
 void __cpuinit tlb_init(void)
 {
 	local_flush_tlb_all();
 
+=======
+void tlb_init(void)
+{
+	switch (current_cpu_type()) {
+	case CPU_TX3922:
+	case CPU_TX3927:
+		r3k_have_wired_reg = 1;
+		write_c0_wired(0);		/* Set to 8 on reset... */
+		break;
+	}
+	local_flush_tlb_from(0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	build_tlb_refill_handler();
 }

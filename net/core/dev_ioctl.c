@@ -28,6 +28,10 @@ static int dev_ifname(struct net *net, struct ifreq __user *arg)
 
 	if (copy_from_user(&ifr, arg, sizeof(struct ifreq)))
 		return -EFAULT;
+<<<<<<< HEAD
+=======
+	ifr.ifr_name[IFNAMSIZ-1] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = netdev_get_name(net, ifr.ifr_name, ifr.ifr_ifindex);
 	if (error)
@@ -142,10 +146,19 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
 
 	case SIOCGIFHWADDR:
 		if (!dev->addr_len)
+<<<<<<< HEAD
 			memset(ifr->ifr_hwaddr.sa_data, 0, sizeof ifr->ifr_hwaddr.sa_data);
 		else
 			memcpy(ifr->ifr_hwaddr.sa_data, dev->dev_addr,
 			       min(sizeof ifr->ifr_hwaddr.sa_data, (size_t) dev->addr_len));
+=======
+			memset(ifr->ifr_hwaddr.sa_data, 0,
+			       sizeof(ifr->ifr_hwaddr.sa_data));
+		else
+			memcpy(ifr->ifr_hwaddr.sa_data, dev->dev_addr,
+			       min(sizeof(ifr->ifr_hwaddr.sa_data),
+				   (size_t)dev->addr_len));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ifr->ifr_hwaddr.sa_family = dev->type;
 		return 0;
 
@@ -265,7 +278,12 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
 		if (ifr->ifr_hwaddr.sa_family != dev->type)
 			return -EINVAL;
 		memcpy(dev->broadcast, ifr->ifr_hwaddr.sa_data,
+<<<<<<< HEAD
 		       min(sizeof ifr->ifr_hwaddr.sa_data, (size_t) dev->addr_len));
+=======
+		       min(sizeof(ifr->ifr_hwaddr.sa_data),
+			   (size_t)dev->addr_len));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		call_netdevice_notifiers(NETDEV_CHANGEADDR, dev);
 		return 0;
 
@@ -327,6 +345,10 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
 		    cmd == SIOCBRADDIF ||
 		    cmd == SIOCBRDELIF ||
 		    cmd == SIOCSHWTSTAMP ||
+<<<<<<< HEAD
+=======
+		    cmd == SIOCGHWTSTAMP ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    cmd == SIOCWANDEV) {
 			err = -EOPNOTSUPP;
 			if (ops->ndo_do_ioctl) {
@@ -364,11 +386,16 @@ void dev_load(struct net *net, const char *name)
 	no_module = !dev;
 	if (no_module && capable(CAP_NET_ADMIN))
 		no_module = request_module("netdev-%s", name);
+<<<<<<< HEAD
 	if (no_module && capable(CAP_SYS_MODULE)) {
 		if (!request_module("%s", name))
 			pr_warn("Loading kernel module for a network device with CAP_SYS_MODULE (deprecated).  Use CAP_NET_ADMIN and alias netdev-%s instead.\n",
 				name);
 	}
+=======
+	if (no_module && capable(CAP_SYS_MODULE))
+		request_module("%s", name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(dev_load);
 
@@ -546,6 +573,10 @@ int dev_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 	 */
 	default:
 		if (cmd == SIOCWANDEV ||
+<<<<<<< HEAD
+=======
+		    cmd == SIOCGHWTSTAMP ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    (cmd >= SIOCDEVPRIVATE &&
 		     cmd <= SIOCDEVPRIVATE + 15)) {
 			dev_load(net, ifr.ifr_name);

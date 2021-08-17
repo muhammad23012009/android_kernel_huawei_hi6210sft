@@ -73,7 +73,15 @@ int main(void)
 	write_bytes(addr);
 	ret = read_bytes(addr);
 
+<<<<<<< HEAD
 	munmap(addr, LENGTH);
+=======
+	/* munmap() length of MAP_HUGETLB memory must be hugepage aligned */
+	if (munmap(addr, LENGTH)) {
+		perror("munmap");
+		exit(1);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }

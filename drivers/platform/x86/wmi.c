@@ -37,8 +37,12 @@
 #include <linux/acpi.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/uuid.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ACPI_MODULE_NAME("wmi");
 MODULE_AUTHOR("Carlos Corbacho");
@@ -47,7 +51,10 @@ MODULE_LICENSE("GPL");
 
 #define ACPI_WMI_CLASS "wmi"
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(wmi_data_lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static LIST_HEAD(wmi_block_list);
 
 struct guid_block {
@@ -118,6 +125,7 @@ static struct acpi_driver acpi_wmi_driver = {
  * GUID parsing functions
  */
 
+<<<<<<< HEAD
 /**
  * wmi_parse_hexbyte - Convert a ASCII hex number to a byte
  * @src:  Pointer to at least 2 characters to convert.
@@ -228,17 +236,28 @@ static int wmi_gtoa(const char *in, char *out)
 static bool find_guid(const char *guid_string, struct wmi_block **out)
 {
 	char tmp[16], guid_input[16];
+=======
+static bool find_guid(const char *guid_string, struct wmi_block **out)
+{
+	uuid_le guid_input;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wmi_block *wblock;
 	struct guid_block *block;
 	struct list_head *p;
 
+<<<<<<< HEAD
 	wmi_parse_guid(guid_string, tmp);
 	wmi_swap_bytes(tmp, guid_input);
+=======
+	if (uuid_le_to_bin(guid_string, &guid_input))
+		return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each(p, &wmi_block_list) {
 		wblock = list_entry(p, struct wmi_block, list);
 		block = &wblock->gblock;
 
+<<<<<<< HEAD
 		if (memcmp(block->guid, guid_input, 16) == 0) {
 			if (out)
 				*out = wblock;
@@ -246,20 +265,33 @@ static bool find_guid(const char *guid_string, struct wmi_block **out)
 		}
 	}
 	return 0;
+=======
+		if (memcmp(block->guid, &guid_input, 16) == 0) {
+			if (out)
+				*out = wblock;
+			return true;
+		}
+	}
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static acpi_status wmi_method_enable(struct wmi_block *wblock, int enable)
 {
 	struct guid_block *block = NULL;
 	char method[5];
+<<<<<<< HEAD
 	struct acpi_object_list input;
 	union acpi_object params[1];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_status status;
 	acpi_handle handle;
 
 	block = &wblock->gblock;
 	handle = wblock->handle;
 
+<<<<<<< HEAD
 	if (!block)
 		return AE_NOT_EXIST;
 
@@ -270,6 +302,10 @@ static acpi_status wmi_method_enable(struct wmi_block *wblock, int enable)
 
 	snprintf(method, 5, "WE%02X", block->notify_id);
 	status = acpi_evaluate_object(handle, method, &input, NULL);
+=======
+	snprintf(method, 5, "WE%02X", block->notify_id);
+	status = acpi_execute_simple_method(handle, method, enable);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (status != AE_OK && status != AE_NOT_FOUND)
 		return status;
@@ -353,10 +389,17 @@ struct acpi_buffer *out)
 {
 	struct guid_block *block = NULL;
 	struct wmi_block *wblock = NULL;
+<<<<<<< HEAD
 	acpi_handle handle, wc_handle;
 	acpi_status status, wc_status = AE_ERROR;
 	struct acpi_object_list input, wc_input;
 	union acpi_object wc_params[1], wq_params[1];
+=======
+	acpi_handle handle;
+	acpi_status status, wc_status = AE_ERROR;
+	struct acpi_object_list input;
+	union acpi_object wq_params[1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char method[5];
 	char wc_method[5] = "WC";
 
@@ -386,11 +429,14 @@ struct acpi_buffer *out)
 	 * enable collection.
 	 */
 	if (block->flags & ACPI_WMI_EXPENSIVE) {
+<<<<<<< HEAD
 		wc_input.count = 1;
 		wc_input.pointer = wc_params;
 		wc_params[0].type = ACPI_TYPE_INTEGER;
 		wc_params[0].integer.value = 1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		strncat(wc_method, block->object_id, 2);
 
 		/*
@@ -398,10 +444,16 @@ struct acpi_buffer *out)
 		 * expensive, but have no corresponding WCxx method. So we
 		 * should not fail if this happens.
 		 */
+<<<<<<< HEAD
 		wc_status = acpi_get_handle(handle, wc_method, &wc_handle);
 		if (ACPI_SUCCESS(wc_status))
 			wc_status = acpi_evaluate_object(handle, wc_method,
 				&wc_input, NULL);
+=======
+		if (acpi_has_method(handle, wc_method))
+			wc_status = acpi_execute_simple_method(handle,
+								wc_method, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	strcpy(method, "WQ");
@@ -414,9 +466,13 @@ struct acpi_buffer *out)
 	 * the WQxx method failed - we should disable collection anyway.
 	 */
 	if ((block->flags & ACPI_WMI_EXPENSIVE) && ACPI_SUCCESS(wc_status)) {
+<<<<<<< HEAD
 		wc_params[0].integer.value = 0;
 		status = acpi_evaluate_object(handle,
 		wc_method, &wc_input, NULL);
+=======
+		status = acpi_execute_simple_method(handle, wc_method, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return status;
@@ -478,11 +534,15 @@ EXPORT_SYMBOL_GPL(wmi_set_block);
 
 static void wmi_dump_wdg(const struct guid_block *g)
 {
+<<<<<<< HEAD
 	char guid_string[37];
 
 	wmi_gtoa(g->guid, guid_string);
 
 	pr_info("%s:\n", guid_string);
+=======
+	pr_info("%pUL:\n", g->guid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("\tobject_id: %c%c\n", g->object_id[0], g->object_id[1]);
 	pr_info("\tnotify_id: %02X\n", g->notify_id);
 	pr_info("\treserved: %02X\n", g->reserved);
@@ -551,20 +611,33 @@ wmi_notify_handler handler, void *data)
 {
 	struct wmi_block *block;
 	acpi_status status = AE_NOT_EXIST;
+<<<<<<< HEAD
 	char tmp[16], guid_input[16];
+=======
+	uuid_le guid_input;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head *p;
 
 	if (!guid || !handler)
 		return AE_BAD_PARAMETER;
 
+<<<<<<< HEAD
 	wmi_parse_guid(guid, tmp);
 	wmi_swap_bytes(tmp, guid_input);
+=======
+	if (uuid_le_to_bin(guid, &guid_input))
+		return AE_BAD_PARAMETER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each(p, &wmi_block_list) {
 		acpi_status wmi_status;
 		block = list_entry(p, struct wmi_block, list);
 
+<<<<<<< HEAD
 		if (memcmp(block->gblock.guid, guid_input, 16) == 0) {
+=======
+		if (memcmp(block->gblock.guid, &guid_input, 16) == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (block->handler &&
 			    block->handler != wmi_notify_debug)
 				return AE_ALREADY_ACQUIRED;
@@ -592,20 +665,33 @@ acpi_status wmi_remove_notify_handler(const char *guid)
 {
 	struct wmi_block *block;
 	acpi_status status = AE_NOT_EXIST;
+<<<<<<< HEAD
 	char tmp[16], guid_input[16];
+=======
+	uuid_le guid_input;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head *p;
 
 	if (!guid)
 		return AE_BAD_PARAMETER;
 
+<<<<<<< HEAD
 	wmi_parse_guid(guid, tmp);
 	wmi_swap_bytes(tmp, guid_input);
+=======
+	if (uuid_le_to_bin(guid, &guid_input))
+		return AE_BAD_PARAMETER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each(p, &wmi_block_list) {
 		acpi_status wmi_status;
 		block = list_entry(p, struct wmi_block, list);
 
+<<<<<<< HEAD
 		if (memcmp(block->gblock.guid, guid_input, 16) == 0) {
+=======
+		if (memcmp(block->gblock.guid, &guid_input, 16) == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!block->handler ||
 			    block->handler == wmi_notify_debug)
 				return AE_NULL_ENTRY;
@@ -682,6 +768,7 @@ EXPORT_SYMBOL_GPL(wmi_has_guid);
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 			     char *buf)
 {
+<<<<<<< HEAD
 	char guid_string[37];
 	struct wmi_block *wblock;
 
@@ -698,6 +785,25 @@ static struct device_attribute wmi_dev_attrs[] = {
 	__ATTR_RO(modalias),
 	__ATTR_NULL
 };
+=======
+	struct wmi_block *wblock;
+
+	wblock = dev_get_drvdata(dev);
+	if (!wblock) {
+		strcat(buf, "\n");
+		return strlen(buf);
+	}
+
+	return sprintf(buf, "wmi:%pUL\n", wblock->gblock.guid);
+}
+static DEVICE_ATTR_RO(modalias);
+
+static struct attribute *wmi_attrs[] = {
+	&dev_attr_modalias.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(wmi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int wmi_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
@@ -712,7 +818,11 @@ static int wmi_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
 	if (!wblock)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	wmi_gtoa(wblock->gblock.guid, guid_string);
+=======
+	sprintf(guid_string, "%pUL", wblock->gblock.guid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	strcpy(&env->buf[env->buflen - 1], "wmi:");
 	memcpy(&env->buf[env->buflen - 1 + 4], guid_string, 36);
@@ -732,18 +842,28 @@ static struct class wmi_class = {
 	.name = "wmi",
 	.dev_release = wmi_dev_free,
 	.dev_uevent = wmi_dev_uevent,
+<<<<<<< HEAD
 	.dev_attrs = wmi_dev_attrs,
+=======
+	.dev_groups = wmi_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int wmi_create_device(const struct guid_block *gblock,
 			     struct wmi_block *wblock, acpi_handle handle)
 {
+<<<<<<< HEAD
 	char guid_string[37];
 
 	wblock->dev.class = &wmi_class;
 
 	wmi_gtoa(gblock->guid, guid_string);
 	dev_set_name(&wblock->dev, guid_string);
+=======
+	wblock->dev.class = &wmi_class;
+
+	dev_set_name(&wblock->dev, "%pUL", gblock->guid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_set_drvdata(&wblock->dev, wblock);
 
@@ -778,7 +898,11 @@ static bool guid_already_parsed(const char *guid_string)
 /*
  * Parse the _WDG method for the GUID data blocks
  */
+<<<<<<< HEAD
 static acpi_status parse_wdg(acpi_handle handle)
+=======
+static int parse_wdg(acpi_handle handle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_buffer out = {ACPI_ALLOCATE_BUFFER, NULL};
 	union acpi_object *obj;
@@ -810,7 +934,11 @@ static acpi_status parse_wdg(acpi_handle handle)
 
 		wblock = kzalloc(sizeof(struct wmi_block), GFP_KERNEL);
 		if (!wblock)
+<<<<<<< HEAD
 			return AE_NO_MEMORY;
+=======
+			return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		wblock->handle = handle;
 		wblock->gblock = gblock[i];
@@ -894,7 +1022,10 @@ static void acpi_wmi_notify(struct acpi_device *device, u32 event)
 	struct guid_block *block;
 	struct wmi_block *wblock;
 	struct list_head *p;
+<<<<<<< HEAD
 	char guid_string[37];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each(p, &wmi_block_list) {
 		wblock = list_entry(p, struct wmi_block, list);
@@ -905,8 +1036,13 @@ static void acpi_wmi_notify(struct acpi_device *device, u32 event)
 			if (wblock->handler)
 				wblock->handler(event, wblock->handler_data);
 			if (debug_event) {
+<<<<<<< HEAD
 				wmi_gtoa(wblock->gblock.guid, guid_string);
 				pr_info("DEBUG Event GUID: %s\n", guid_string);
+=======
+				pr_info("DEBUG Event GUID: %pUL\n",
+					wblock->gblock.guid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 
 			acpi_bus_generate_netlink_event(
@@ -982,5 +1118,9 @@ static void __exit acpi_wmi_exit(void)
 	pr_info("Mapper unloaded\n");
 }
 
+<<<<<<< HEAD
 subsys_initcall(acpi_wmi_init);
+=======
+subsys_initcall_sync(acpi_wmi_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_exit(acpi_wmi_exit);

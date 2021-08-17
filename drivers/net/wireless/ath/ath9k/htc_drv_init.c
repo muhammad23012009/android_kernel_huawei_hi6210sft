@@ -34,6 +34,7 @@ static int ath9k_htc_btcoex_enable;
 module_param_named(btcoex_enable, ath9k_htc_btcoex_enable, int, 0444);
 MODULE_PARM_DESC(btcoex_enable, "Enable wifi-BT coexistence");
 
+<<<<<<< HEAD
 #define CHAN2G(_freq, _idx)  { \
 	.center_freq = (_freq), \
 	.hw_value = (_idx), \
@@ -122,6 +123,21 @@ static struct ieee80211_rate ath9k_legacy_rates[] = {
 };
 
 #ifdef CONFIG_MAC80211_LEDS
+=======
+static int ath9k_ps_enable;
+module_param_named(ps_enable, ath9k_ps_enable, int, 0444);
+MODULE_PARM_DESC(ps_enable, "Enable WLAN PowerSave");
+
+int htc_use_dev_fw = 0;
+module_param_named(use_dev_fw, htc_use_dev_fw, int, 0444);
+MODULE_PARM_DESC(use_dev_fw, "Use development FW version");
+
+#ifdef CONFIG_MAC80211_LEDS
+int ath9k_htc_led_blink = 1;
+module_param_named(blink, ath9k_htc_led_blink, int, 0444);
+MODULE_PARM_DESC(blink, "Enable LED blink on activity");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct ieee80211_tpt_blink ath9k_htc_tpt_blink[] = {
 	{ .throughput = 0 * 1024, .blink_time = 334 },
 	{ .throughput = 1 * 1024, .blink_time = 260 },
@@ -136,9 +152,30 @@ static const struct ieee80211_tpt_blink ath9k_htc_tpt_blink[] = {
 };
 #endif
 
+<<<<<<< HEAD
 static int ath9k_htc_wait_for_target(struct ath9k_htc_priv *priv)
 {
 	int time_left;
+=======
+static void ath9k_htc_op_ps_wakeup(struct ath_common *common)
+{
+	ath9k_htc_ps_wakeup((struct ath9k_htc_priv *) common->priv);
+}
+
+static void ath9k_htc_op_ps_restore(struct ath_common *common)
+{
+	ath9k_htc_ps_restore((struct ath9k_htc_priv *) common->priv);
+}
+
+static struct ath_ps_ops ath9k_htc_ps_ops = {
+	.wakeup = ath9k_htc_op_ps_wakeup,
+	.restore = ath9k_htc_op_ps_restore,
+};
+
+static int ath9k_htc_wait_for_target(struct ath9k_htc_priv *priv)
+{
+	unsigned long time_left;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (atomic_read(&priv->htc->tgt_ready) > 0) {
 		atomic_dec(&priv->htc->tgt_ready);
@@ -170,6 +207,10 @@ static void ath9k_deinit_device(struct ath9k_htc_priv *priv)
 
 	wiphy_rfkill_stop_polling(hw->wiphy);
 	ath9k_deinit_leds(priv);
+<<<<<<< HEAD
+=======
+	ath9k_htc_deinit_debug(priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ieee80211_unregister_hw(hw);
 	ath9k_rx_cleanup(priv);
 	ath9k_tx_cleanup(priv);
@@ -305,7 +346,11 @@ static unsigned int ath9k_regread(void *hw_priv, u32 reg_offset)
 	if (unlikely(r)) {
 		ath_dbg(common, WMI, "REGISTER READ FAILED: (0x%04x, %d)\n",
 			reg_offset, r);
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return be32_to_cpu(val);
@@ -321,11 +366,19 @@ static void ath9k_multi_regread(void *hw_priv, u32 *addr,
 	__be32 tmpval[8];
 	int i, ret;
 
+<<<<<<< HEAD
        for (i = 0; i < count; i++) {
 	       tmpaddr[i] = cpu_to_be32(addr[i]);
        }
 
        ret = ath9k_wmi_cmd(priv->wmi, WMI_REG_READ_CMDID,
+=======
+	for (i = 0; i < count; i++) {
+		tmpaddr[i] = cpu_to_be32(addr[i]);
+	}
+
+	ret = ath9k_wmi_cmd(priv->wmi, WMI_REG_READ_CMDID,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   (u8 *)tmpaddr , sizeof(u32) * count,
 			   (u8 *)tmpval, sizeof(u32) * count,
 			   100);
@@ -334,9 +387,34 @@ static void ath9k_multi_regread(void *hw_priv, u32 *addr,
 			"Multiple REGISTER READ FAILED (count: %d)\n", count);
 	}
 
+<<<<<<< HEAD
        for (i = 0; i < count; i++) {
 	       val[i] = be32_to_cpu(tmpval[i]);
        }
+=======
+	for (i = 0; i < count; i++) {
+		val[i] = be32_to_cpu(tmpval[i]);
+	}
+}
+
+static void ath9k_regwrite_multi(struct ath_common *common)
+{
+	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+	u32 rsp_status;
+	int r;
+
+	r = ath9k_wmi_cmd(priv->wmi, WMI_REG_WRITE_CMDID,
+			  (u8 *) &priv->wmi->multi_write,
+			  sizeof(struct register_write) * priv->wmi->multi_write_idx,
+			  (u8 *) &rsp_status, sizeof(rsp_status),
+			  100);
+	if (unlikely(r)) {
+		ath_dbg(common, WMI,
+			"REGISTER WRITE FAILED, multi len: %d\n",
+			priv->wmi->multi_write_idx);
+	}
+	priv->wmi->multi_write_idx = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ath9k_regwrite_single(void *hw_priv, u32 val, u32 reg_offset)
@@ -365,8 +443,11 @@ static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+<<<<<<< HEAD
 	u32 rsp_status;
 	int r;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&priv->wmi->multi_write_mutex);
 
@@ -379,6 +460,7 @@ static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 	priv->wmi->multi_write_idx++;
 
 	/* If the buffer is full, send it out. */
+<<<<<<< HEAD
 	if (priv->wmi->multi_write_idx == MAX_CMD_NUMBER) {
 		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_WRITE_CMDID,
 			  (u8 *) &priv->wmi->multi_write,
@@ -392,6 +474,10 @@ static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 		}
 		priv->wmi->multi_write_idx = 0;
 	}
+=======
+	if (priv->wmi->multi_write_idx == MAX_CMD_NUMBER)
+		ath9k_regwrite_multi(common);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&priv->wmi->multi_write_mutex);
 }
@@ -422,21 +508,60 @@ static void ath9k_regwrite_flush(void *hw_priv)
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+<<<<<<< HEAD
 	u32 rsp_status;
 	int r;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	atomic_dec(&priv->wmi->mwrite_cnt);
 
 	mutex_lock(&priv->wmi->multi_write_mutex);
 
+<<<<<<< HEAD
 	if (priv->wmi->multi_write_idx) {
 		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_WRITE_CMDID,
 			  (u8 *) &priv->wmi->multi_write,
 			  sizeof(struct register_write) * priv->wmi->multi_write_idx,
+=======
+	if (priv->wmi->multi_write_idx)
+		ath9k_regwrite_multi(common);
+
+	mutex_unlock(&priv->wmi->multi_write_mutex);
+}
+
+static void ath9k_reg_rmw_buffer(void *hw_priv,
+				 u32 reg_offset, u32 set, u32 clr)
+{
+	struct ath_hw *ah = (struct ath_hw *) hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+	u32 rsp_status;
+	int r;
+
+	mutex_lock(&priv->wmi->multi_rmw_mutex);
+
+	/* Store the register/value */
+	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].reg =
+		cpu_to_be32(reg_offset);
+	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].set =
+		cpu_to_be32(set);
+	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].clr =
+		cpu_to_be32(clr);
+
+	priv->wmi->multi_rmw_idx++;
+
+	/* If the buffer is full, send it out. */
+	if (priv->wmi->multi_rmw_idx == MAX_RMW_CMD_NUMBER) {
+		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_RMW_CMDID,
+			  (u8 *) &priv->wmi->multi_rmw,
+			  sizeof(struct register_write) * priv->wmi->multi_rmw_idx,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  (u8 *) &rsp_status, sizeof(rsp_status),
 			  100);
 		if (unlikely(r)) {
 			ath_dbg(common, WMI,
+<<<<<<< HEAD
 				"REGISTER WRITE FAILED, multi len: %d\n",
 				priv->wmi->multi_write_idx);
 		}
@@ -457,6 +582,111 @@ static u32 ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 clr)
 	return val;
 }
 
+=======
+				"REGISTER RMW FAILED, multi len: %d\n",
+				priv->wmi->multi_rmw_idx);
+		}
+		priv->wmi->multi_rmw_idx = 0;
+	}
+
+	mutex_unlock(&priv->wmi->multi_rmw_mutex);
+}
+
+static void ath9k_reg_rmw_flush(void *hw_priv)
+{
+	struct ath_hw *ah = (struct ath_hw *) hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+	u32 rsp_status;
+	int r;
+
+	if (test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags))
+		return;
+
+	atomic_dec(&priv->wmi->m_rmw_cnt);
+
+	mutex_lock(&priv->wmi->multi_rmw_mutex);
+
+	if (priv->wmi->multi_rmw_idx) {
+		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_RMW_CMDID,
+			  (u8 *) &priv->wmi->multi_rmw,
+			  sizeof(struct register_rmw) * priv->wmi->multi_rmw_idx,
+			  (u8 *) &rsp_status, sizeof(rsp_status),
+			  100);
+		if (unlikely(r)) {
+			ath_dbg(common, WMI,
+				"REGISTER RMW FAILED, multi len: %d\n",
+				priv->wmi->multi_rmw_idx);
+		}
+		priv->wmi->multi_rmw_idx = 0;
+	}
+
+	mutex_unlock(&priv->wmi->multi_rmw_mutex);
+}
+
+static void ath9k_enable_rmw_buffer(void *hw_priv)
+{
+	struct ath_hw *ah = (struct ath_hw *) hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+
+	if (test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags))
+		return;
+
+	atomic_inc(&priv->wmi->m_rmw_cnt);
+}
+
+static u32 ath9k_reg_rmw_single(void *hw_priv,
+				 u32 reg_offset, u32 set, u32 clr)
+{
+	struct ath_hw *ah = (struct ath_hw *) hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+	struct register_rmw buf, buf_ret;
+	int ret;
+	u32 val = 0;
+
+	buf.reg = cpu_to_be32(reg_offset);
+	buf.set = cpu_to_be32(set);
+	buf.clr = cpu_to_be32(clr);
+
+	ret = ath9k_wmi_cmd(priv->wmi, WMI_REG_RMW_CMDID,
+			  (u8 *) &buf, sizeof(buf),
+			  (u8 *) &buf_ret, sizeof(buf_ret),
+			  100);
+	if (unlikely(ret)) {
+		ath_dbg(common, WMI, "REGISTER RMW FAILED:(0x%04x, %d)\n",
+			reg_offset, ret);
+	}
+	return val;
+}
+
+static u32 ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 clr)
+{
+	struct ath_hw *ah = (struct ath_hw *) hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+
+	if (test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags)) {
+		u32 val;
+
+		val = REG_READ(ah, reg_offset);
+		val &= ~clr;
+		val |= set;
+		REG_WRITE(ah, reg_offset, val);
+
+		return 0;
+	}
+
+	if (atomic_read(&priv->wmi->m_rmw_cnt))
+		ath9k_reg_rmw_buffer(hw_priv, reg_offset, set, clr);
+	else
+		ath9k_reg_rmw_single(hw_priv, reg_offset, set, clr);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ath_usb_read_cachesize(struct ath_common *common, int *csz)
 {
 	*csz = L1_CACHE_BYTES >> 2;
@@ -487,6 +717,7 @@ static const struct ath_bus_ops ath9k_usb_bus_ops = {
 	.eeprom_read = ath_usb_eeprom_read,
 };
 
+<<<<<<< HEAD
 static void setup_ht_cap(struct ath9k_htc_priv *priv,
 			 struct ieee80211_sta_ht_cap *ht_info)
 {
@@ -529,6 +760,8 @@ static void setup_ht_cap(struct ath9k_htc_priv *priv,
 	ht_info->mcs.tx_params |= IEEE80211_HT_MCS_TX_DEFINED;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ath9k_init_queues(struct ath9k_htc_priv *priv)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
@@ -537,8 +770,13 @@ static int ath9k_init_queues(struct ath9k_htc_priv *priv)
 	for (i = 0; i < ARRAY_SIZE(priv->hwq_map); i++)
 		priv->hwq_map[i] = -1;
 
+<<<<<<< HEAD
 	priv->beaconq = ath9k_hw_beaconq_setup(priv->ah);
 	if (priv->beaconq == -1) {
+=======
+	priv->beacon.beaconq = ath9k_hw_beaconq_setup(priv->ah);
+	if (priv->beacon.beaconq == -1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ath_err(common, "Unable to setup BEACON xmit queue\n");
 		goto err;
 	}
@@ -573,6 +811,7 @@ err:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static void ath9k_init_channels_rates(struct ath9k_htc_priv *priv)
 {
 	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ) {
@@ -598,13 +837,28 @@ static void ath9k_init_channels_rates(struct ath9k_htc_priv *priv)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ath9k_init_misc(struct ath9k_htc_priv *priv)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
 
 	memcpy(common->bssidmask, ath_bcast_mac, ETH_ALEN);
 
+<<<<<<< HEAD
 	priv->ah->opmode = NL80211_IFTYPE_STATION;
+=======
+	common->last_rssi = ATH_RSSI_DUMMY_MARKER;
+	priv->ah->opmode = NL80211_IFTYPE_STATION;
+
+	priv->spec_priv.ah = priv->ah;
+	priv->spec_priv.spec_config.enabled = 0;
+	priv->spec_priv.spec_config.short_repeat = true;
+	priv->spec_priv.spec_config.count = 8;
+	priv->spec_priv.spec_config.endless = false;
+	priv->spec_priv.spec_config.period = 0x12;
+	priv->spec_priv.spec_config.fft_period = 0x02;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ath9k_init_priv(struct ath9k_htc_priv *priv,
@@ -615,12 +869,20 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 	struct ath_common *common;
 	int i, ret = 0, csz = 0;
 
+<<<<<<< HEAD
 	set_bit(OP_INVALID, &priv->op_flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ah = kzalloc(sizeof(struct ath_hw), GFP_KERNEL);
 	if (!ah)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	ah->dev = priv->dev;
+	ah->hw = priv->hw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ah->hw_version.devid = devid;
 	ah->hw_version.usbdev = drv_info;
 	ah->ah_flags |= AH_USE_EEPROM;
@@ -629,17 +891,30 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 	ah->reg_ops.write = ath9k_regwrite;
 	ah->reg_ops.enable_write_buffer = ath9k_enable_regwrite_buffer;
 	ah->reg_ops.write_flush = ath9k_regwrite_flush;
+<<<<<<< HEAD
+=======
+	ah->reg_ops.enable_rmw_buffer = ath9k_enable_rmw_buffer;
+	ah->reg_ops.rmw_flush = ath9k_reg_rmw_flush;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ah->reg_ops.rmw = ath9k_reg_rmw;
 	priv->ah = ah;
 
 	common = ath9k_hw_common(ah);
 	common->ops = &ah->reg_ops;
+<<<<<<< HEAD
+=======
+	common->ps_ops = &ath9k_htc_ps_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	common->bus_ops = &ath9k_usb_bus_ops;
 	common->ah = ah;
 	common->hw = priv->hw;
 	common->priv = priv;
 	common->debug_mask = ath9k_debug;
 	common->btcoex_enabled = ath9k_htc_btcoex_enable == 1;
+<<<<<<< HEAD
+=======
+	set_bit(ATH_OP_INVALID, &common->op_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&priv->beacon_lock);
 	spin_lock_init(&priv->tx.tx_lock);
@@ -675,10 +950,18 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 		goto err_queues;
 
 	for (i = 0; i < ATH9K_HTC_MAX_BCN_VIF; i++)
+<<<<<<< HEAD
 		priv->cur_beacon_conf.bslot[i] = NULL;
 
 	ath9k_cmn_init_crypto(ah);
 	ath9k_init_channels_rates(priv);
+=======
+		priv->beacon.bslot[i] = NULL;
+	priv->beacon.slottime = 9;
+
+	ath9k_cmn_init_channels_rates(common);
+	ath9k_cmn_init_crypto(ah);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ath9k_init_misc(priv);
 	ath9k_htc_init_btcoex(priv, product);
 
@@ -698,6 +981,12 @@ static const struct ieee80211_iface_limit if_limits[] = {
 	{ .max = 2,	.types = BIT(NL80211_IFTYPE_STATION) |
 				 BIT(NL80211_IFTYPE_P2P_CLIENT) },
 	{ .max = 2,	.types = BIT(NL80211_IFTYPE_AP) |
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MAC80211_MESH
+				 BIT(NL80211_IFTYPE_MESH_POINT) |
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 BIT(NL80211_IFTYPE_P2P_GO) },
 };
 
@@ -711,6 +1000,7 @@ static const struct ieee80211_iface_combination if_comb = {
 static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 			       struct ieee80211_hw *hw)
 {
+<<<<<<< HEAD
 	struct ath_common *common = ath9k_hw_common(priv->ah);
 
 	hw->flags = IEEE80211_HW_SIGNAL_DBM |
@@ -722,13 +1012,37 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 		IEEE80211_HW_PS_NULLFUNC_STACK |
 		IEEE80211_HW_REPORTS_TX_ACK_STATUS |
 		IEEE80211_HW_HOST_BROADCAST_PS_BUFFERING;
+=======
+	struct ath_hw *ah = priv->ah;
+	struct ath_common *common = ath9k_hw_common(priv->ah);
+	struct base_eep_header *pBase;
+
+	ieee80211_hw_set(hw, HOST_BROADCAST_PS_BUFFERING);
+	ieee80211_hw_set(hw, MFP_CAPABLE);
+	ieee80211_hw_set(hw, REPORTS_TX_ACK_STATUS);
+	ieee80211_hw_set(hw, PS_NULLFUNC_STACK);
+	ieee80211_hw_set(hw, RX_INCLUDES_FCS);
+	ieee80211_hw_set(hw, HAS_RATE_CONTROL);
+	ieee80211_hw_set(hw, SPECTRUM_MGMT);
+	ieee80211_hw_set(hw, SIGNAL_DBM);
+	ieee80211_hw_set(hw, AMPDU_AGGREGATION);
+
+	if (ath9k_ps_enable)
+		ieee80211_hw_set(hw, SUPPORTS_PS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hw->wiphy->interface_modes =
 		BIT(NL80211_IFTYPE_STATION) |
 		BIT(NL80211_IFTYPE_ADHOC) |
 		BIT(NL80211_IFTYPE_AP) |
 		BIT(NL80211_IFTYPE_P2P_GO) |
+<<<<<<< HEAD
 		BIT(NL80211_IFTYPE_P2P_CLIENT);
+=======
+		BIT(NL80211_IFTYPE_P2P_CLIENT) |
+		BIT(NL80211_IFTYPE_MESH_POINT) |
+		BIT(NL80211_IFTYPE_OCB);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hw->wiphy->iface_combinations = &if_comb;
 	hw->wiphy->n_iface_combinations = 1;
@@ -736,10 +1050,19 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 	hw->wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
 
 	hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN |
+<<<<<<< HEAD
 			    WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL;
 
 	hw->queues = 4;
 	hw->channel_change_time = 5000;
+=======
+			    WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
+			    WIPHY_FLAG_HAS_CHANNEL_SWITCH;
+
+	hw->wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS;
+
+	hw->queues = 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hw->max_listen_interval = 1;
 
 	hw->vif_data_size = sizeof(struct ath9k_htc_vif);
@@ -750,6 +1073,7 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 		sizeof(struct htc_frame_hdr) + 4;
 
 	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ)
+<<<<<<< HEAD
 		hw->wiphy->bands[IEEE80211_BAND_2GHZ] =
 			&priv->sbands[IEEE80211_BAND_2GHZ];
 	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
@@ -763,6 +1087,20 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 		if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
 			setup_ht_cap(priv,
 				     &priv->sbands[IEEE80211_BAND_5GHZ].ht_cap);
+=======
+		hw->wiphy->bands[NL80211_BAND_2GHZ] =
+			&common->sbands[NL80211_BAND_2GHZ];
+	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
+		hw->wiphy->bands[NL80211_BAND_5GHZ] =
+			&common->sbands[NL80211_BAND_5GHZ];
+
+	ath9k_cmn_reload_chainmask(ah);
+
+	pBase = ath9k_htc_get_eeprom_base(priv);
+	if (pBase) {
+		hw->wiphy->available_antennas_rx = pBase->rxMask;
+		hw->wiphy->available_antennas_tx = pBase->txMask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	SET_IEEE80211_PERM_ADDR(hw, common->macaddr);
@@ -802,6 +1140,15 @@ static int ath9k_init_firmware_version(struct ath9k_htc_priv *priv)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (priv->fw_version_major == 1 && priv->fw_version_minor < 4)
+		set_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags);
+
+	dev_info(priv->dev, "FW RMW support: %s\n",
+		test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags) ? "Off" : "On");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -911,8 +1258,14 @@ err_init:
 int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
 			   u16 devid, char *product, u32 drv_info)
 {
+<<<<<<< HEAD
 	struct ieee80211_hw *hw;
 	struct ath9k_htc_priv *priv;
+=======
+	struct hif_device_usb *hif_dev;
+	struct ath9k_htc_priv *priv;
+	struct ieee80211_hw *hw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	hw = ieee80211_alloc_hw(sizeof(struct ath9k_htc_priv), &ath9k_htc_ops);
@@ -947,7 +1300,14 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
 	return 0;
 
 err_init:
+<<<<<<< HEAD
 	ath9k_deinit_wmi(priv);
+=======
+	ath9k_stop_wmi(priv);
+	hif_dev = (struct hif_device_usb *)htc_handle->hif_dev;
+	ath9k_hif_usb_dealloc_urbs(hif_dev);
+	ath9k_destoy_wmi(priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_free:
 	ieee80211_free_hw(hw);
 	return ret;
@@ -962,7 +1322,11 @@ void ath9k_htc_disconnect_device(struct htc_target *htc_handle, bool hotunplug)
 			htc_handle->drv_priv->ah->ah_flags |= AH_UNPLUGGED;
 
 		ath9k_deinit_device(htc_handle->drv_priv);
+<<<<<<< HEAD
 		ath9k_deinit_wmi(htc_handle->drv_priv);
+=======
+		ath9k_stop_wmi(htc_handle->drv_priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ieee80211_free_hw(htc_handle->drv_priv->hw);
 	}
 }
@@ -985,6 +1349,11 @@ int ath9k_htc_resume(struct htc_target *htc_handle)
 
 	ret = ath9k_init_htc_services(priv, priv->ah->hw_version.devid,
 				      priv->ah->hw_version.usbdev);
+<<<<<<< HEAD
+=======
+	ath9k_configure_leds(priv);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 #endif

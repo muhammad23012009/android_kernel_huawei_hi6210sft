@@ -2,11 +2,19 @@
  * public header file of the frontend drivers for mobile DVB-T demodulators
  * DiBcom 3000M-B and DiBcom 3000P/M-C (http://www.dibcom.fr/)
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
  *
  * based on GPL code from DibCom, which has
  *
  * Copyright (C) 2004 Amaury Demol for DiBcom (ademol@dibcom.fr)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+ *
+ * based on GPL code from DibCom, which has
+ *
+ * Copyright (C) 2004 Amaury Demol for DiBcom
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License as
@@ -14,7 +22,11 @@
  *
  * Acknowledgements
  *
+<<<<<<< HEAD
  *  Amaury Demol (ademol@dibcom.fr) from DiBcom for providing specs and driver
+=======
+ *  Amaury Demol from DiBcom for providing specs and driver
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  sources, on which this driver (and the dvb-dibusb) are based.
  *
  * see Documentation/dvb/README.dvb-usb for more information
@@ -41,7 +53,11 @@ struct dib_fe_xfer_ops
 	int (*tuner_pass_ctrl)(struct dvb_frontend *fe, int onoff, u8 pll_ctrl);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_DIB3000MB)
+=======
+#if IS_REACHABLE(CONFIG_DVB_DIB3000MB)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* dib3000mb_attach(const struct dib3000_config* config,
 					     struct i2c_adapter* i2c, struct dib_fe_xfer_ops *xfer_ops);
 #else

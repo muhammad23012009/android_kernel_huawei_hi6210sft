@@ -286,7 +286,11 @@ static void xonar_ds_init(struct oxygen *chip)
 	xonar_enable_output(chip);
 
 	snd_jack_new(chip->card, "Headphone",
+<<<<<<< HEAD
 		     SND_JACK_HEADPHONE, &data->hp_jack);
+=======
+		     SND_JACK_HEADPHONE, &data->hp_jack, false, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xonar_ds_handle_hp_jack(chip);
 
 	snd_component_add(chip->card, "WM8776");

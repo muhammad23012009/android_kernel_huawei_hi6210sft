@@ -17,7 +17,13 @@ OUTPUT_ARCH(mips)
 ENTRY(kernel_entry)
 PHDRS {
 	text PT_LOAD FLAGS(7);	/* RWX */
+<<<<<<< HEAD
 	note PT_NOTE FLAGS(4);	/* R__ */
+=======
+#ifndef CONFIG_CAVIUM_OCTEON_SOC
+	note PT_NOTE FLAGS(4);	/* R__ */
+#endif /* CAVIUM_OCTEON_SOC */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_32BIT
@@ -47,15 +53,27 @@ SECTIONS
 	/* . = 0xa800000000300000; */
 	. = 0xffffffff80300000;
 #endif
+<<<<<<< HEAD
 	. = VMLINUX_LOAD_ADDRESS;
+=======
+	. = LINKER_LOAD_ADDRESS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* read-only */
 	_text = .;	/* Text and read-only data */
 	.text : {
 		TEXT_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+=======
+		CPUIDLE_TEXT
+		LOCK_TEXT
+		KPROBES_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*(.text.*)
 		*(.fixup)
 		*(.gnu.warning)
@@ -71,7 +89,16 @@ SECTIONS
 		__stop___dbe_table = .;
 	}
 
+<<<<<<< HEAD
 	NOTES :text :note
+=======
+#ifdef CONFIG_CAVIUM_OCTEON_SOC
+#define NOTES_HEADER
+#else /* CONFIG_CAVIUM_OCTEON_SOC */
+#define NOTES_HEADER :note
+#endif /* CONFIG_CAVIUM_OCTEON_SOC */
+	NOTES :text NOTES_HEADER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dummy : { *(.dummy) } :text
 
 	_sdata = .;			/* Start of data section */
@@ -83,6 +110,10 @@ SECTIONS
 
 		INIT_TASK_DATA(THREAD_SIZE)
 		NOSAVE_DATA
+<<<<<<< HEAD
+=======
+		PAGE_ALIGNED_DATA(PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		CACHELINE_ALIGNED_DATA(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
 		READ_MOSTLY_DATA(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
 		DATA_DATA
@@ -125,8 +156,47 @@ SECTIONS
 	.exit.data : {
 		EXIT_DATA
 	}
+<<<<<<< HEAD
 
 	PERCPU_SECTION(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
+=======
+#ifdef CONFIG_SMP
+	PERCPU_SECTION(1 << CONFIG_MIPS_L1_CACHE_SHIFT)
+#endif
+
+#ifdef CONFIG_MIPS_ELF_APPENDED_DTB
+	.appended_dtb : AT(ADDR(.appended_dtb) - LOAD_OFFSET) {
+		*(.appended_dtb)
+		KEEP(*(.appended_dtb))
+	}
+#endif
+
+#ifdef CONFIG_RELOCATABLE
+	. = ALIGN(4);
+
+	.data.reloc : {
+		_relocation_start = .;
+		/*
+		 * Space for relocation table
+		 * This needs to be filled so that the
+		 * relocs tool can overwrite the content.
+		 * An invalid value is left at the start of the
+		 * section to abort relocation if the table
+		 * has not been filled in.
+		 */
+		LONG(0xFFFFFFFF);
+		FILL(0);
+		. += CONFIG_RELOCATION_TABLE_SIZE - 4;
+		_relocation_end = .;
+	}
+#endif
+
+#ifdef CONFIG_MIPS_RAW_APPENDED_DTB
+	__appended_dtb = .;
+	/* leave space for appended DTB */
+	. += 0x100000;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Align to 64K in attempt to eliminate holes before the
 	 * .bss..swapper_pg_dir section at the start of .bss.  This
@@ -141,7 +211,11 @@ SECTIONS
 	 * Force .bss to 64K alignment so that .bss..swapper_pg_dir
 	 * gets that alignment.	 .sbss should be empty, so there will be
 	 * no holes after __init_end. */
+<<<<<<< HEAD
 	BSS_SECTION(0, 0x10000, 0)
+=======
+	BSS_SECTION(0, 0x10000, 8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	_end = . ;
 
@@ -175,9 +249,17 @@ SECTIONS
 	DISCARDS
 	/DISCARD/ : {
 		/* ABI crap starts here */
+<<<<<<< HEAD
+=======
+		*(.MIPS.abiflags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*(.MIPS.options)
 		*(.options)
 		*(.pdr)
 		*(.reginfo)
+<<<<<<< HEAD
+=======
+		*(.eh_frame)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }

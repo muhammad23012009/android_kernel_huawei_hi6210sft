@@ -14,7 +14,10 @@
 #include <linux/interrupt.h>
 #include <linux/timer.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <asm/machvec.h>
 #include <mach/secureedge5410.h>
@@ -49,7 +52,11 @@ static int __init eraseconfig_init(void)
 				irq);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(eraseconfig_init);
+=======
+device_initcall(eraseconfig_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Initialize IRQ setting

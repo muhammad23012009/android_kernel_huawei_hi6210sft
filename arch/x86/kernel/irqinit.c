@@ -4,6 +4,10 @@
 #include <linux/sched.h>
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/timex.h>
 #include <linux/random.h>
 #include <linux/kprobes.h>
@@ -51,8 +55,13 @@ static struct irqaction irq2 = {
 	.flags = IRQF_NO_THREAD,
 };
 
+<<<<<<< HEAD
 DEFINE_PER_CPU(vector_irq_t, vector_irq) = {
 	[0 ... NR_VECTORS - 1] = -1,
+=======
+DEFINE_PER_CPU_USER_MAPPED(vector_irq_t, vector_irq) = {
+	[0 ... NR_VECTORS - 1] = VECTOR_UNUSED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int vector_used_by_percpu_irq(unsigned int vector)
@@ -60,7 +69,11 @@ int vector_used_by_percpu_irq(unsigned int vector)
 	int cpu;
 
 	for_each_online_cpu(cpu) {
+<<<<<<< HEAD
 		if (per_cpu(vector_irq, cpu)[vector] != -1)
+=======
+		if (!IS_ERR_OR_NULL(per_cpu(vector_irq, cpu)[vector]))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 1;
 	}
 
@@ -70,7 +83,10 @@ int vector_used_by_percpu_irq(unsigned int vector)
 void __init init_ISA_irqs(void)
 {
 	struct irq_chip *chip = legacy_pic->chip;
+<<<<<<< HEAD
 	const char *name = chip->name;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 #if defined(CONFIG_X86_64) || defined(CONFIG_X86_LOCAL_APIC)
@@ -78,8 +94,13 @@ void __init init_ISA_irqs(void)
 #endif
 	legacy_pic->init(0);
 
+<<<<<<< HEAD
 	for (i = 0; i < legacy_pic->nr_legacy_irqs; i++)
 		irq_set_chip_and_handler_name(i, chip, handle_level_irq, name);
+=======
+	for (i = 0; i < nr_legacy_irqs(); i++)
+		irq_set_chip_and_handler(i, chip, handle_level_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init init_IRQ(void)
@@ -87,6 +108,7 @@ void __init init_IRQ(void)
 	int i;
 
 	/*
+<<<<<<< HEAD
 	 * We probably need a better place for this, but it works for
 	 * now ...
 	 */
@@ -94,18 +116,27 @@ void __init init_IRQ(void)
 
 	/*
 	 * On cpu 0, Assign IRQ0_VECTOR..IRQ15_VECTOR's to IRQ 0..15.
+=======
+	 * On cpu 0, Assign ISA_IRQ_VECTOR(irq) to IRQ 0..15.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * If these IRQ's are handled by legacy interrupt-controllers like PIC,
 	 * then this configuration will likely be static after the boot. If
 	 * these IRQ's are handled by more mordern controllers like IO-APIC,
 	 * then this vector space can be freed and re-used dynamically as the
 	 * irq's migrate etc.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < legacy_pic->nr_legacy_irqs; i++)
 		per_cpu(vector_irq, 0)[IRQ0_VECTOR + i] = i;
+=======
+	for (i = 0; i < nr_legacy_irqs(); i++)
+		per_cpu(vector_irq, 0)[ISA_IRQ_VECTOR(i)] = irq_to_desc(i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	x86_init.irqs.intr_init();
 }
 
+<<<<<<< HEAD
 /*
  * Setup the vector to irq mappings.
  */
@@ -132,6 +163,11 @@ static void __init smp_intr_init(void)
 {
 #ifdef CONFIG_SMP
 #if defined(CONFIG_X86_64) || defined(CONFIG_X86_LOCAL_APIC)
+=======
+static void __init smp_intr_init(void)
+{
+#ifdef CONFIG_SMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * The reschedule interrupt is a CPU-to-CPU reschedule-helper
 	 * IPI, driven by wakeup.
@@ -151,7 +187,10 @@ static void __init smp_intr_init(void)
 
 	/* IPI used for rebooting/stopping */
 	alloc_intr_gate(REBOOT_VECTOR, reboot_interrupt);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SMP */
 }
 
@@ -166,7 +205,15 @@ static void __init apic_intr_init(void)
 	alloc_intr_gate(THRESHOLD_APIC_VECTOR, threshold_interrupt);
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_X86_64) || defined(CONFIG_X86_LOCAL_APIC)
+=======
+#ifdef CONFIG_X86_MCE_AMD
+	alloc_intr_gate(DEFERRED_ERROR_VECTOR, deferred_error_interrupt);
+#endif
+
+#ifdef CONFIG_X86_LOCAL_APIC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* self generated IPI for local APIC timer */
 	alloc_intr_gate(LOCAL_TIMER_VECTOR, apic_timer_interrupt);
 
@@ -175,6 +222,11 @@ static void __init apic_intr_init(void)
 #ifdef CONFIG_HAVE_KVM
 	/* IPI for KVM to deliver posted interrupt */
 	alloc_intr_gate(POSTED_INTR_VECTOR, kvm_posted_intr_ipi);
+<<<<<<< HEAD
+=======
+	/* IPI for KVM to deliver interrupt to wake up tasks */
+	alloc_intr_gate(POSTED_INTR_WAKEUP_VECTOR, kvm_posted_intr_wakeup_ipi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* IPI vectors for APIC spurious and error interrupts */
@@ -204,12 +256,29 @@ void __init native_init_IRQ(void)
 	 * 'special' SMP interrupts)
 	 */
 	i = FIRST_EXTERNAL_VECTOR;
+<<<<<<< HEAD
 	for_each_clear_bit_from(i, used_vectors, NR_VECTORS) {
 		/* IA32_SYSCALL_VECTOR could be used in trap_init already. */
 		set_intr_gate(i, interrupt[i - FIRST_EXTERNAL_VECTOR]);
 	}
 
 	if (!acpi_ioapic && !of_ioapic)
+=======
+#ifndef CONFIG_X86_LOCAL_APIC
+#define first_system_vector NR_VECTORS
+#endif
+	for_each_clear_bit_from(i, used_vectors, first_system_vector) {
+		/* IA32_SYSCALL_VECTOR could be used in trap_init already. */
+		set_intr_gate(i, irq_entries_start +
+				8 * (i - FIRST_EXTERNAL_VECTOR));
+	}
+#ifdef CONFIG_X86_LOCAL_APIC
+	for_each_clear_bit_from(i, used_vectors, NR_VECTORS)
+		set_intr_gate(i, spurious_interrupt);
+#endif
+
+	if (!acpi_ioapic && !of_ioapic && nr_legacy_irqs())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		setup_irq(2, &irq2);
 
 #ifdef CONFIG_X86_32

@@ -1,7 +1,11 @@
 /*
  * Digital Beep Input Interface for HD-audio codec
  *
+<<<<<<< HEAD
  * Author: Matthew Ranostay <mranostay@embeddedalley.com>
+=======
+ * Author: Matt Ranostay <mranostay@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (c) 2008 Embedded Alley Solutions Inc
  *
  *  This driver is free software; you can redistribute it and/or modify
@@ -20,7 +24,10 @@
  */
 
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <linux/export.h>
@@ -34,6 +41,7 @@ enum {
 	DIGBEEP_HZ_MAX = 12000000,	/* 12 KHz */
 };
 
+<<<<<<< HEAD
 static void snd_hda_generate_beep(struct work_struct *work)
 {
 	struct hda_beep *beep =
@@ -50,14 +58,44 @@ static void snd_hda_generate_beep(struct work_struct *work)
 		beep->playing = 1;
 	}
 	/* generate tone */
+=======
+/* generate or stop tone */
+static void generate_tone(struct hda_beep *beep, int tone)
+{
+	struct hda_codec *codec = beep->codec;
+
+	if (tone && !beep->playing) {
+		snd_hda_power_up(codec);
+		if (beep->power_hook)
+			beep->power_hook(beep, true);
+		beep->playing = 1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_hda_codec_write(codec, beep->nid, 0,
 			    AC_VERB_SET_BEEP_CONTROL, tone);
 	if (!tone && beep->playing) {
 		beep->playing = 0;
+<<<<<<< HEAD
+=======
+		if (beep->power_hook)
+			beep->power_hook(beep, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_hda_power_down(codec);
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void snd_hda_generate_beep(struct work_struct *work)
+{
+	struct hda_beep *beep =
+		container_of(work, struct hda_beep, beep_work);
+
+	if (beep->enabled)
+		generate_tone(beep, beep->tone);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* (non-standard) Linear beep tone calculation for IDT/STAC codecs 
  *
  * The tone frequency of beep generator on IDT/STAC codecs is
@@ -110,6 +148,10 @@ static int snd_hda_beep_event(struct input_dev *dev, unsigned int type,
 	case SND_BELL:
 		if (hz)
 			hz = 1000;
+<<<<<<< HEAD
+=======
+		/* fallthru */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SND_TONE:
 		if (beep->linear_tone)
 			beep->tone = beep_linear_tone(beep, hz);
@@ -130,16 +172,27 @@ static void turn_off_beep(struct hda_beep *beep)
 	cancel_work_sync(&beep->beep_work);
 	if (beep->playing) {
 		/* turn off beep */
+<<<<<<< HEAD
 		snd_hda_codec_write(beep->codec, beep->nid, 0,
 				    AC_VERB_SET_BEEP_CONTROL, 0);
 		beep->playing = 0;
 		snd_hda_power_down(beep->codec);
+=======
+		generate_tone(beep, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 static void snd_hda_do_detach(struct hda_beep *beep)
 {
+<<<<<<< HEAD
 	input_unregister_device(beep->dev);
+=======
+	if (beep->registered)
+		input_unregister_device(beep->dev);
+	else
+		input_free_device(beep->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	beep->dev = NULL;
 	turn_off_beep(beep);
 }
@@ -148,6 +201,7 @@ static int snd_hda_do_attach(struct hda_beep *beep)
 {
 	struct input_dev *input_dev;
 	struct hda_codec *codec = beep->codec;
+<<<<<<< HEAD
 	int err;
 
 	input_dev = input_allocate_device();
@@ -155,19 +209,33 @@ static int snd_hda_do_attach(struct hda_beep *beep)
 		printk(KERN_INFO "hda_beep: unable to allocate input device\n");
 		return -ENOMEM;
 	}
+=======
+
+	input_dev = input_allocate_device();
+	if (!input_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* setup digital beep device */
 	input_dev->name = "HDA Digital PCBeep";
 	input_dev->phys = beep->phys;
 	input_dev->id.bustype = BUS_PCI;
+<<<<<<< HEAD
 
 	input_dev->id.vendor = codec->vendor_id >> 16;
 	input_dev->id.product = codec->vendor_id & 0xffff;
+=======
+	input_dev->dev.parent = &codec->card->card_dev;
+
+	input_dev->id.vendor = codec->core.vendor_id >> 16;
+	input_dev->id.product = codec->core.vendor_id & 0xffff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_dev->id.version = 0x01;
 
 	input_dev->evbit[0] = BIT_MASK(EV_SND);
 	input_dev->sndbit[0] = BIT_MASK(SND_BELL) | BIT_MASK(SND_TONE);
 	input_dev->event = snd_hda_beep_event;
+<<<<<<< HEAD
 	input_dev->dev.parent = &codec->bus->pci->dev;
 	input_set_drvdata(input_dev, beep);
 
@@ -177,10 +245,22 @@ static int snd_hda_do_attach(struct hda_beep *beep)
 		printk(KERN_INFO "hda_beep: unable to register input device\n");
 		return err;
 	}
+=======
+	input_set_drvdata(input_dev, beep);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	beep->dev = input_dev;
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_hda_enable_beep_device - Turn on/off beep sound
+ * @codec: the HDA codec
+ * @enable: flag to turn on/off
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_hda_enable_beep_device(struct hda_codec *codec, int enable)
 {
 	struct hda_beep *beep = codec->beep;
@@ -195,8 +275,27 @@ int snd_hda_enable_beep_device(struct hda_codec *codec, int enable)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_HDA(snd_hda_enable_beep_device);
 
+=======
+EXPORT_SYMBOL_GPL(snd_hda_enable_beep_device);
+
+/**
+ * snd_hda_attach_beep_device - Attach a beep input device
+ * @codec: the HDA codec
+ * @nid: beep NID
+ *
+ * Attach a beep object to the given widget.  If beep hint is turned off
+ * explicitly or beep_mode of the codec is turned off, this doesn't nothing.
+ *
+ * The attached beep device has to be registered via
+ * snd_hda_register_beep_device() and released via snd_hda_detach_beep_device()
+ * appropriately.
+ *
+ * Currently, only one beep device is allowed to each codec.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 {
 	struct hda_beep *beep;
@@ -211,7 +310,11 @@ int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 	if (beep == NULL)
 		return -ENOMEM;
 	snprintf(beep->phys, sizeof(beep->phys),
+<<<<<<< HEAD
 		"card%d/codec#%d/beep0", codec->bus->card->number, codec->addr);
+=======
+		"card%d/codec#%d/beep0", codec->card->number, codec->addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* enable linear scale */
 	snd_hda_codec_write_cache(codec, nid, 0,
 		AC_VERB_SET_DIGI_CONVERT_2, 0x01);
@@ -232,8 +335,17 @@ int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_HDA(snd_hda_attach_beep_device);
 
+=======
+EXPORT_SYMBOL_GPL(snd_hda_attach_beep_device);
+
+/**
+ * snd_hda_detach_beep_device - Detach the beep device
+ * @codec: the HDA codec
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void snd_hda_detach_beep_device(struct hda_codec *codec)
 {
 	struct hda_beep *beep = codec->beep;
@@ -244,7 +356,36 @@ void snd_hda_detach_beep_device(struct hda_codec *codec)
 		kfree(beep);
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_HDA(snd_hda_detach_beep_device);
+=======
+EXPORT_SYMBOL_GPL(snd_hda_detach_beep_device);
+
+/**
+ * snd_hda_register_beep_device - Register the beep device
+ * @codec: the HDA codec
+ */
+int snd_hda_register_beep_device(struct hda_codec *codec)
+{
+	struct hda_beep *beep = codec->beep;
+	int err;
+
+	if (!beep || !beep->dev)
+		return 0;
+
+	err = input_register_device(beep->dev);
+	if (err < 0) {
+		codec_err(codec, "hda_beep: unable to register input device\n");
+		input_free_device(beep->dev);
+		codec->beep = NULL;
+		kfree(beep);
+		return err;
+	}
+	beep->registered = true;
+	return 0;
+}
+EXPORT_SYMBOL_GPL(snd_hda_register_beep_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static bool ctl_has_mute(struct snd_kcontrol *kcontrol)
 {
@@ -254,20 +395,48 @@ static bool ctl_has_mute(struct snd_kcontrol *kcontrol)
 }
 
 /* get/put callbacks for beep mute mixer switches */
+<<<<<<< HEAD
+=======
+
+/**
+ * snd_hda_mixer_amp_switch_get_beep - Get callback for beep controls
+ * @kcontrol: ctl element
+ * @ucontrol: pointer to get/store the data
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_hda_mixer_amp_switch_get_beep(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
 	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct hda_beep *beep = codec->beep;
+<<<<<<< HEAD
 	if (beep && (!beep->enabled || !ctl_has_mute(kcontrol))) {
 		ucontrol->value.integer.value[0] =
+=======
+	int chs = get_amp_channels(kcontrol);
+
+	if (beep && (!beep->enabled || !ctl_has_mute(kcontrol))) {
+		if (chs & 1)
+			ucontrol->value.integer.value[0] = beep->enabled;
+		if (chs & 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ucontrol->value.integer.value[1] = beep->enabled;
 		return 0;
 	}
 	return snd_hda_mixer_amp_switch_get(kcontrol, ucontrol);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_HDA(snd_hda_mixer_amp_switch_get_beep);
 
+=======
+EXPORT_SYMBOL_GPL(snd_hda_mixer_amp_switch_get_beep);
+
+/**
+ * snd_hda_mixer_amp_switch_put_beep - Put callback for beep controls
+ * @kcontrol: ctl element
+ * @ucontrol: pointer to get/store the data
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_hda_mixer_amp_switch_put_beep(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
@@ -289,4 +458,8 @@ int snd_hda_mixer_amp_switch_put_beep(struct snd_kcontrol *kcontrol,
 		return 0;
 	return snd_hda_mixer_amp_switch_put(kcontrol, ucontrol);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_HDA(snd_hda_mixer_amp_switch_put_beep);
+=======
+EXPORT_SYMBOL_GPL(snd_hda_mixer_amp_switch_put_beep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

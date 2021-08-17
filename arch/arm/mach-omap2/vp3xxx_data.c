@@ -28,8 +28,13 @@
 #include "prm2xxx_3xxx.h"
 
 static const struct omap_vp_ops omap3_vp_ops = {
+<<<<<<< HEAD
 	.check_txdone = omap3_prm_vp_check_txdone,
 	.clear_txdone = omap3_prm_vp_clear_txdone,
+=======
+	.check_txdone = omap_prm_vp_check_txdone,
+	.clear_txdone = omap_prm_vp_clear_txdone,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*

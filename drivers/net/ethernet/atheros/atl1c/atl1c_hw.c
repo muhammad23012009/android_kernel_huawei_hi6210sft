@@ -153,7 +153,11 @@ static int atl1c_get_permanent_address(struct atl1c_hw *hw)
 bool atl1c_read_eeprom(struct atl1c_hw *hw, u32 offset, u32 *p_value)
 {
 	int i;
+<<<<<<< HEAD
 	int ret = false;
+=======
+	bool ret = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 otp_ctrl_data;
 	u32 control;
 	u32 data;
@@ -307,7 +311,11 @@ void atl1c_start_phy_polling(struct atl1c_hw *hw, u16 clk_sel)
 
 /*
  * atl1c_read_phy_core
+<<<<<<< HEAD
  * core funtion to read register in PHY via MDIO control regsiter.
+=======
+ * core function to read register in PHY via MDIO control regsiter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ext: extension register (see IEEE 802.3)
  * dev: device address (see IEEE 802.3 DEVAD, PRTAD is fixed to 0)
  * reg: reg to read
@@ -356,7 +364,11 @@ int atl1c_read_phy_core(struct atl1c_hw *hw, bool ext, u8 dev,
 
 /*
  * atl1c_write_phy_core
+<<<<<<< HEAD
  * core funtion to write to register in PHY via MDIO control regsiter.
+=======
+ * core function to write to register in PHY via MDIO control register.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * ext: extension register (see IEEE 802.3)
  * dev: device address (see IEEE 802.3 DEVAD, PRTAD is fixed to 0)
  * reg: reg to write
@@ -639,7 +651,10 @@ int atl1c_phy_init(struct atl1c_hw *hw)
 			dev_err(&pdev->dev, "Wrong Media type %d\n",
 				hw->media_type);
 		return -1;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret_val = atl1c_write_phy_reg(hw, MII_BMCR, mii_bmcr_data);
@@ -682,7 +697,10 @@ int atl1c_get_speed_and_duplex(struct atl1c_hw *hw, u16 *speed, u16 *duplex)
 		break;
 	default:
 		return -1;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (phy_data & GIGA_PSSR_DPLX)

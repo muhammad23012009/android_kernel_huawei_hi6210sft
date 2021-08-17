@@ -46,7 +46,11 @@ static int restore_sigcontext(struct pt_regs *regs,
 	int err = 0;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Restore the regs from &sc->regs.
@@ -132,6 +136,7 @@ static inline unsigned long align_sigframe(unsigned long sp)
  * or the alternate stack.
  */
 
+<<<<<<< HEAD
 static inline void __user *get_sigframe(struct k_sigaction *ka,
 					struct pt_regs *regs, size_t frame_size)
 {
@@ -156,6 +161,18 @@ static inline void __user *get_sigframe(struct k_sigaction *ka,
 	if (onsigstack && !likely(on_sig_stack(sp)))
 		return (void __user *)-1L;
 
+=======
+static inline void __user *get_sigframe(struct ksignal *ksig,
+					struct pt_regs *regs, size_t frame_size)
+{
+	unsigned long sp = regs->sp;
+
+	/* redzone */
+	sp -= STACK_FRAME_OVERHEAD;
+	sp = sigsp(sp, ksig);
+	sp = align_sigframe(sp - frame_size);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (void __user *)sp;
 }
 
@@ -166,13 +183,19 @@ static inline void __user *get_sigframe(struct k_sigaction *ka,
  * trampoline which performs the syscall sigreturn, or a provided
  * user-mode trampoline.
  */
+<<<<<<< HEAD
 static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 			  sigset_t *set, struct pt_regs *regs)
+=======
+static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+			  struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct rt_sigframe *frame;
 	unsigned long return_ip;
 	int err = 0;
 
+<<<<<<< HEAD
 	frame = get_sigframe(ka, regs, sizeof(*frame));
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		goto give_sigsegv;
@@ -180,6 +203,16 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	/* Create siginfo.  */
 	if (ka->sa.sa_flags & SA_SIGINFO)
 		err |= copy_siginfo_to_user(&frame->info, info);
+=======
+	frame = get_sigframe(ksig, regs, sizeof(*frame));
+
+	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+		return -EFAULT;
+
+	/* Create siginfo.  */
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO)
+		err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Create the ucontext.  */
 	err |= __put_user(0, &frame->uc.uc_flags);
@@ -190,7 +223,11 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
+=======
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* trampoline - the desired return ip is the retcode itself */
 	return_ip = (unsigned long)&frame->retcode;
@@ -204,6 +241,7 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	err |= __put_user(0x15000000, (unsigned long *)(frame->retcode + 8));
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	/* TODO what is the current->exec_domain stuff and invmap ? */
@@ -212,6 +250,14 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	regs->pc = (unsigned long)ka->sa.sa_handler; /* what we enter NOW */
 	regs->gpr[9] = (unsigned long)return_ip;     /* what we enter LATER */
 	regs->gpr[3] = (unsigned long)sig;           /* arg 1: signo */
+=======
+		return -EFAULT;
+
+	/* Set up registers for signal handler */
+	regs->pc = (unsigned long)ksig->ka.sa.sa_handler; /* what we enter NOW */
+	regs->gpr[9] = (unsigned long)return_ip;     /* what we enter LATER */
+	regs->gpr[3] = (unsigned long)ksig->sig;           /* arg 1: signo */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->gpr[4] = (unsigned long)&frame->info;  /* arg 2: (siginfo_t*) */
 	regs->gpr[5] = (unsigned long)&frame->uc;    /* arg 3: ucontext */
 
@@ -219,6 +265,7 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	regs->sp = (unsigned long)frame;
 
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
@@ -238,6 +285,18 @@ handle_signal(unsigned long sig,
 
 	signal_delivered(sig, info, ka, regs,
 				 test_thread_flag(TIF_SINGLESTEP));
+=======
+}
+
+static inline void
+handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+{
+	int ret;
+
+	ret = setup_rt_frame(ksig, sigmask_to_save(), regs);
+
+	signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -254,9 +313,13 @@ handle_signal(unsigned long sig,
 
 int do_signal(struct pt_regs *regs, int syscall)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 	int signr;
 	struct k_sigaction ka;
+=======
+	struct ksignal ksig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long continue_addr = 0;
 	unsigned long restart_addr = 0;
 	unsigned long retval = 0;
@@ -286,6 +349,7 @@ int do_signal(struct pt_regs *regs, int syscall)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Get the signal to deliver.  When running under ptrace, at this
 	 * point the debugger may change all our registers ...
 	 */
@@ -296,18 +360,34 @@ int do_signal(struct pt_regs *regs, int syscall)
 	 * debugger has chosen to restart at a different PC.
 	 */
 	if (signr > 0) {
+=======
+	 * Get the signal to deliver.  During the call to get_signal the
+	 * debugger may change all our registers so we may need to revert
+	 * the decision to restart the syscall; specifically, if the PC is
+	 * changed, don't restart the syscall.
+	 */
+	if (get_signal(&ksig)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (unlikely(restart) && regs->pc == restart_addr) {
 			if (retval == -ERESTARTNOHAND ||
 			    retval == -ERESTART_RESTARTBLOCK
 			    || (retval == -ERESTARTSYS
+<<<<<<< HEAD
 			        && !(ka.sa.sa_flags & SA_RESTART))) {
+=======
+			        && !(ksig.ka.sa.sa_flags & SA_RESTART))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/* No automatic restart */
 				regs->gpr[11] = -EINTR;
 				regs->pc = continue_addr;
 			}
 		}
+<<<<<<< HEAD
 
 		handle_signal(signr, &info, &ka, regs);
+=======
+		handle_signal(&ksig, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* no handler */
 		restore_saved_sigmask();

@@ -158,18 +158,25 @@ int kgdb_arch_handle_exception(int e_vector, int signo, int err_code,
 	return -1;
 }
 
+<<<<<<< HEAD
 unsigned long kgdb_arch_pc(int exception, struct pt_regs *regs)
 {
 	return instruction_pointer(regs);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int kgdb_arch_init(void)
 {
 	single_step_data.armed = 0;
 	return 0;
 }
 
+<<<<<<< HEAD
 void kgdb_trap(struct pt_regs *regs, int param)
+=======
+void kgdb_trap(struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* trap_s 3 is used for breakpoints that overwrite existing
 	 * instructions, while trap_s 4 is used for compiled breakpoints.
@@ -181,7 +188,11 @@ void kgdb_trap(struct pt_regs *regs, int param)
 	 * with trap_s 4 (compiled) breakpoints, continuation needs to
 	 * start after the breakpoint.
 	 */
+<<<<<<< HEAD
 	if (param == 3)
+=======
+	if (regs->ecr_param == 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		instruction_pointer(regs) -= BREAK_INSTR_SIZE;
 
 	kgdb_handle_exception(1, SIGTRAP, 0, regs);
@@ -196,6 +207,21 @@ void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long ip)
 	instruction_pointer(regs) = ip;
 }
 
+<<<<<<< HEAD
+=======
+static void kgdb_call_nmi_hook(void *ignored)
+{
+	kgdb_nmicallback(raw_smp_processor_id(), NULL);
+}
+
+void kgdb_roundup_cpus(unsigned long flags)
+{
+	local_irq_enable();
+	smp_call_function(kgdb_call_nmi_hook, NULL, 0);
+	local_irq_disable();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct kgdb_arch arch_kgdb_ops = {
 	/* breakpoint instruction: TRAP_S 0x3 */
 #ifdef CONFIG_CPU_BIG_ENDIAN

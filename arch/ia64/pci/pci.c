@@ -115,6 +115,7 @@ struct pci_ops pci_root_ops = {
 	.write = pci_write,
 };
 
+<<<<<<< HEAD
 /* Called by ACPI when it finds a new root bus.  */
 
 static struct pci_controller *alloc_pci_controller(int seg)
@@ -139,6 +140,15 @@ struct pci_root_info {
 
 static unsigned int
 new_space (u64 phys_base, int sparse)
+=======
+struct pci_root_info {
+	struct acpi_pci_root_info common;
+	struct pci_controller controller;
+	struct list_head io_resources;
+};
+
+static unsigned int new_space(u64 phys_base, int sparse)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u64 mmio_base;
 	int i;
@@ -153,7 +163,11 @@ new_space (u64 phys_base, int sparse)
 			return i;
 
 	if (num_io_spaces == MAX_IO_SPACES) {
+<<<<<<< HEAD
 		printk(KERN_ERR "PCI: Too many IO port spaces "
+=======
+		pr_err("PCI: Too many IO port spaces "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"(MAX_IO_SPACES=%lu)\n", MAX_IO_SPACES);
 		return ~0;
 	}
@@ -165,14 +179,23 @@ new_space (u64 phys_base, int sparse)
 	return i;
 }
 
+<<<<<<< HEAD
 static u64 add_io_space(struct pci_root_info *info,
 			struct acpi_resource_address64 *addr)
 {
 	struct resource *resource;
+=======
+static int add_io_space(struct device *dev, struct pci_root_info *info,
+			struct resource_entry *entry)
+{
+	struct resource_entry *iospace;
+	struct resource *resource, *res = entry->res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *name;
 	unsigned long base, min, max, base_port;
 	unsigned int sparse = 0, space_nr, len;
 
+<<<<<<< HEAD
 	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
 	if (!resource) {
 		printk(KERN_ERR "PCI: No memory for %s I/O port space\n",
@@ -201,6 +224,29 @@ static u64 add_io_space(struct pci_root_info *info,
 	base_port = IO_SPACE_BASE(space_nr);
 	snprintf(name, len, "%s I/O Ports %08lx-%08lx", info->name,
 		base_port + min, base_port + max);
+=======
+	len = strlen(info->common.name) + 32;
+	iospace = resource_list_create_entry(NULL, len);
+	if (!iospace) {
+		dev_err(dev, "PCI: No memory for %s I/O port space\n",
+			info->common.name);
+		return -ENOMEM;
+	}
+
+	if (res->flags & IORESOURCE_IO_SPARSE)
+		sparse = 1;
+	space_nr = new_space(entry->offset, sparse);
+	if (space_nr == ~0)
+		goto free_resource;
+
+	name = (char *)(iospace + 1);
+	min = res->start - entry->offset;
+	max = res->end - entry->offset;
+	base = __pa(io_space[space_nr].mmio_base);
+	base_port = IO_SPACE_BASE(space_nr);
+	snprintf(name, len, "%s I/O Ports %08lx-%08lx", info->common.name,
+		 base_port + min, base_port + max);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The SDM guarantees the legacy 0-64K space is sparse, but if the
@@ -210,10 +256,15 @@ static u64 add_io_space(struct pci_root_info *info,
 	if (space_nr == 0)
 		sparse = 1;
 
+<<<<<<< HEAD
+=======
+	resource = iospace->res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	resource->name  = name;
 	resource->flags = IORESOURCE_MEM;
 	resource->start = base + (sparse ? IO_SPACE_SPARSE_ENCODING(min) : min);
 	resource->end   = base + (sparse ? IO_SPACE_SPARSE_ENCODING(max) : max);
+<<<<<<< HEAD
 	insert_resource(&iomem_resource, resource);
 
 	return base_port;
@@ -392,10 +443,127 @@ out2:
 	kfree(controller);
 out1:
 	return NULL;
+=======
+	if (insert_resource(&iomem_resource, resource)) {
+		dev_err(dev,
+			"can't allocate host bridge io space resource  %pR\n",
+			resource);
+		goto free_resource;
+	}
+
+	entry->offset = base_port;
+	res->start = min + base_port;
+	res->end = max + base_port;
+	resource_list_add_tail(iospace, &info->io_resources);
+
+	return 0;
+
+free_resource:
+	resource_list_free_entry(iospace);
+	return -ENOSPC;
+}
+
+/*
+ * An IO port or MMIO resource assigned to a PCI host bridge may be
+ * consumed by the host bridge itself or available to its child
+ * bus/devices. The ACPI specification defines a bit (Producer/Consumer)
+ * to tell whether the resource is consumed by the host bridge itself,
+ * but firmware hasn't used that bit consistently, so we can't rely on it.
+ *
+ * On x86 and IA64 platforms, all IO port and MMIO resources are assumed
+ * to be available to child bus/devices except one special case:
+ *     IO port [0xCF8-0xCFF] is consumed by the host bridge itself
+ *     to access PCI configuration space.
+ *
+ * So explicitly filter out PCI CFG IO ports[0xCF8-0xCFF].
+ */
+static bool resource_is_pcicfg_ioport(struct resource *res)
+{
+	return (res->flags & IORESOURCE_IO) &&
+		res->start == 0xCF8 && res->end == 0xCFF;
+}
+
+static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
+{
+	struct device *dev = &ci->bridge->dev;
+	struct pci_root_info *info;
+	struct resource *res;
+	struct resource_entry *entry, *tmp;
+	int status;
+
+	status = acpi_pci_probe_root_resources(ci);
+	if (status > 0) {
+		info = container_of(ci, struct pci_root_info, common);
+		resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
+			res = entry->res;
+			if (res->flags & IORESOURCE_MEM) {
+				/*
+				 * HP's firmware has a hack to work around a
+				 * Windows bug. Ignore these tiny memory ranges.
+				 */
+				if (resource_size(res) <= 16) {
+					resource_list_del(entry);
+					insert_resource(&iomem_resource,
+							entry->res);
+					resource_list_add_tail(entry,
+							&info->io_resources);
+				}
+			} else if (res->flags & IORESOURCE_IO) {
+				if (resource_is_pcicfg_ioport(entry->res))
+					resource_list_destroy_entry(entry);
+				else if (add_io_space(dev, info, entry))
+					resource_list_destroy_entry(entry);
+			}
+		}
+	}
+
+	return status;
+}
+
+static void pci_acpi_root_release_info(struct acpi_pci_root_info *ci)
+{
+	struct pci_root_info *info;
+	struct resource_entry *entry, *tmp;
+
+	info = container_of(ci, struct pci_root_info, common);
+	resource_list_for_each_entry_safe(entry, tmp, &info->io_resources) {
+		release_resource(entry->res);
+		resource_list_destroy_entry(entry);
+	}
+	kfree(info);
+}
+
+static struct acpi_pci_root_ops pci_acpi_root_ops = {
+	.pci_ops = &pci_root_ops,
+	.release_info = pci_acpi_root_release_info,
+	.prepare_resources = pci_acpi_root_prepare_resources,
+};
+
+struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+{
+	struct acpi_device *device = root->device;
+	struct pci_root_info *info;
+
+	info = kzalloc(sizeof(*info), GFP_KERNEL);
+	if (!info) {
+		dev_err(&device->dev,
+			"pci_bus %04x:%02x: ignored (out of memory)\n",
+			root->segment, (int)root->secondary.start);
+		return NULL;
+	}
+
+	info->controller.segment = root->segment;
+	info->controller.companion = device;
+	info->controller.node = acpi_get_node(device->handle);
+	INIT_LIST_HEAD(&info->io_resources);
+	return acpi_pci_root_create(root, &pci_acpi_root_ops,
+				    &info->common, &info->controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
 {
+<<<<<<< HEAD
 	struct pci_controller *controller = bridge->bus->sysdata;
 
 	ACPI_HANDLE_SET(&bridge->dev, controller->acpi_handle);
@@ -435,12 +603,58 @@ static void pcibios_fixup_resources(struct pci_dev *dev, int start, int limit)
 void pcibios_fixup_device_resources(struct pci_dev *dev)
 {
 	pcibios_fixup_resources(dev, 0, PCI_BRIDGE_RESOURCES);
+=======
+	/*
+	 * We pass NULL as parent to pci_create_root_bus(), so if it is not NULL
+	 * here, pci_create_root_bus() has been called by someone else and
+	 * sysdata is likely to be different from what we expect.  Let it go in
+	 * that case.
+	 */
+	if (!bridge->dev.parent) {
+		struct pci_controller *controller = bridge->bus->sysdata;
+		ACPI_COMPANION_SET(&bridge->dev, controller->companion);
+	}
+	return 0;
+}
+
+void pcibios_fixup_device_resources(struct pci_dev *dev)
+{
+	int idx;
+
+	if (!dev->bus)
+		return;
+
+	for (idx = 0; idx < PCI_BRIDGE_RESOURCES; idx++) {
+		struct resource *r = &dev->resource[idx];
+
+		if (!r->flags || r->parent || !r->start)
+			continue;
+
+		pci_claim_resource(dev, idx);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(pcibios_fixup_device_resources);
 
 static void pcibios_fixup_bridge_resources(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	pcibios_fixup_resources(dev, PCI_BRIDGE_RESOURCES, PCI_NUM_RESOURCES);
+=======
+	int idx;
+
+	if (!dev->bus)
+		return;
+
+	for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
+		struct resource *r = &dev->resource[idx];
+
+		if (!r->flags || r->parent || !r->start)
+			continue;
+
+		pci_claim_bridge_resource(dev, idx);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -691,7 +905,11 @@ static void __init set_pci_dfl_cacheline_size(void)
 
 	status = ia64_pal_cache_summary(&levels, &unique_caches);
 	if (status != 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: ia64_pal_cache_summary() failed "
+=======
+		pr_err("%s: ia64_pal_cache_summary() failed "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"(status=%ld)\n", __func__, status);
 		return;
 	}
@@ -699,7 +917,11 @@ static void __init set_pci_dfl_cacheline_size(void)
 	status = ia64_pal_cache_config_info(levels - 1,
 				/* cache_type (data_or_unified)= */ 2, &cci);
 	if (status != 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: ia64_pal_cache_config_info() failed "
+=======
+		pr_err("%s: ia64_pal_cache_config_info() failed "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"(status=%ld)\n", __func__, status);
 		return;
 	}

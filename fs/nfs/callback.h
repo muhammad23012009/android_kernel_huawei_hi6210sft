@@ -32,6 +32,7 @@ enum nfs4_callback_opnum {
 	OP_CB_WANTS_CANCELLED = 12,
 	OP_CB_NOTIFY_LOCK   = 13,
 	OP_CB_NOTIFY_DEVICEID = 14,
+<<<<<<< HEAD
 	OP_CB_ILLEGAL = 10044,
 };
 
@@ -39,6 +40,19 @@ struct cb_process_state {
 	__be32			drc_status;
 	struct nfs_client	*clp;
 	u32			slotid;
+=======
+/* Callback operations new to NFSv4.2 */
+	OP_CB_OFFLOAD = 15,
+	OP_CB_ILLEGAL = 10044,
+};
+
+struct nfs4_slot;
+struct cb_process_state {
+	__be32			drc_status;
+	struct nfs_client	*clp;
+	struct nfs4_slot	*slot;
+	u32			minorversion;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net		*net;
 };
 
@@ -58,7 +72,10 @@ struct cb_compound_hdr_res {
 };
 
 struct cb_getattrargs {
+<<<<<<< HEAD
 	struct sockaddr *addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nfs_fh fh;
 	uint32_t bitmap[2];
 };
@@ -73,7 +90,10 @@ struct cb_getattrres {
 };
 
 struct cb_recallargs {
+<<<<<<< HEAD
 	struct sockaddr *addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nfs_fh fh;
 	nfs4_stateid stateid;
 	uint32_t truncate;
@@ -116,9 +136,12 @@ extern __be32 nfs4_callback_sequence(struct cb_sequenceargs *args,
 				       struct cb_sequenceres *res,
 				       struct cb_process_state *cps);
 
+<<<<<<< HEAD
 extern int nfs41_validate_delegation_stateid(struct nfs_delegation *delegation,
 					     const nfs4_stateid *stateid);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RCA4_TYPE_MASK_RDATA_DLG	0
 #define RCA4_TYPE_MASK_WDATA_DLG	1
 #define RCA4_TYPE_MASK_DIR_DLG         2
@@ -131,7 +154,10 @@ extern int nfs41_validate_delegation_stateid(struct nfs_delegation *delegation,
 #define RCA4_TYPE_MASK_ALL 0xf31f
 
 struct cb_recallanyargs {
+<<<<<<< HEAD
 	struct sockaddr	*craa_addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t	craa_objs_to_keep;
 	uint32_t	craa_type_mask;
 };
@@ -141,7 +167,10 @@ extern __be32 nfs4_callback_recallany(struct cb_recallanyargs *args,
 					struct cb_process_state *cps);
 
 struct cb_recallslotargs {
+<<<<<<< HEAD
 	struct sockaddr	*crsa_addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t	crsa_target_highest_slotid;
 };
 extern __be32 nfs4_callback_recallslot(struct cb_recallslotargs *args,
@@ -149,7 +178,10 @@ extern __be32 nfs4_callback_recallslot(struct cb_recallslotargs *args,
 					 struct cb_process_state *cps);
 
 struct cb_layoutrecallargs {
+<<<<<<< HEAD
 	struct sockaddr		*cbl_addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t		cbl_recall_type;
 	uint32_t		cbl_layout_type;
 	uint32_t		cbl_layoutchanged;
@@ -183,6 +215,18 @@ extern __be32 nfs4_callback_devicenotify(
 	struct cb_devicenotifyargs *args,
 	void *dummy, struct cb_process_state *cps);
 
+<<<<<<< HEAD
+=======
+struct cb_notify_lock_args {
+	struct nfs_fh			cbnl_fh;
+	struct nfs_lowner		cbnl_owner;
+	bool				cbnl_valid;
+};
+
+extern __be32 nfs4_callback_notify_lock(struct cb_notify_lock_args *args,
+					 void *dummy,
+					 struct cb_process_state *cps);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_NFS_V4_1 */
 extern int check_gss_callback_principal(struct nfs_client *, struct svc_rqst *);
 extern __be32 nfs4_callback_getattr(struct cb_getattrargs *args,
@@ -193,9 +237,12 @@ extern __be32 nfs4_callback_recall(struct cb_recallargs *args, void *dummy,
 #if IS_ENABLED(CONFIG_NFS_V4)
 extern int nfs_callback_up(u32 minorversion, struct rpc_xprt *xprt);
 extern void nfs_callback_down(int minorversion, struct net *net);
+<<<<<<< HEAD
 extern int nfs4_validate_delegation_stateid(struct nfs_delegation *delegation,
 					    const nfs4_stateid *stateid);
 extern int nfs4_set_callback_sessionid(struct nfs_client *clp);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_NFS_V4 */
 /*
  * nfs41: Callbacks are expected to not cause substantial latency,
@@ -205,7 +252,14 @@ extern int nfs4_set_callback_sessionid(struct nfs_client *clp);
 #define NFS41_BC_MIN_CALLBACKS 1
 #define NFS41_BC_MAX_CALLBACKS 1
 
+<<<<<<< HEAD
 extern unsigned int nfs_callback_set_tcpport;
 extern unsigned short nfs_callback_tcpport;
+=======
+#define NFS4_MIN_NR_CALLBACK_THREADS 1
+
+extern unsigned int nfs_callback_set_tcpport;
+extern unsigned short nfs_callback_nr_threads;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __LINUX_FS_NFS_CALLBACK_H */

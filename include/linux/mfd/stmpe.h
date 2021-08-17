@@ -11,6 +11,10 @@
 #include <linux/mutex.h>
 
 struct device;
+<<<<<<< HEAD
+=======
+struct regulator;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum stmpe_block {
 	STMPE_BLOCK_GPIO	= 1 << 0,
@@ -25,6 +29,10 @@ enum stmpe_partnum {
 	STMPE610,
 	STMPE801,
 	STMPE811,
+<<<<<<< HEAD
+=======
+	STMPE1600,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	STMPE1601,
 	STMPE1801,
 	STMPE2401,
@@ -38,6 +46,7 @@ enum stmpe_partnum {
  */
 enum {
 	STMPE_IDX_CHIP_ID,
+<<<<<<< HEAD
 	STMPE_IDX_ICR_LSB,
 	STMPE_IDX_IER_LSB,
 	STMPE_IDX_ISR_LSB,
@@ -52,6 +61,44 @@ enum {
 	STMPE_IDX_GPAFR_U_MSB,
 	STMPE_IDX_IEGPIOR_LSB,
 	STMPE_IDX_ISGPIOR_LSB,
+=======
+	STMPE_IDX_SYS_CTRL,
+	STMPE_IDX_SYS_CTRL2,
+	STMPE_IDX_ICR_LSB,
+	STMPE_IDX_IER_LSB,
+	STMPE_IDX_IER_MSB,
+	STMPE_IDX_ISR_LSB,
+	STMPE_IDX_ISR_MSB,
+	STMPE_IDX_GPMR_LSB,
+	STMPE_IDX_GPMR_CSB,
+	STMPE_IDX_GPMR_MSB,
+	STMPE_IDX_GPSR_LSB,
+	STMPE_IDX_GPSR_CSB,
+	STMPE_IDX_GPSR_MSB,
+	STMPE_IDX_GPCR_LSB,
+	STMPE_IDX_GPCR_CSB,
+	STMPE_IDX_GPCR_MSB,
+	STMPE_IDX_GPDR_LSB,
+	STMPE_IDX_GPDR_CSB,
+	STMPE_IDX_GPDR_MSB,
+	STMPE_IDX_GPEDR_LSB,
+	STMPE_IDX_GPEDR_CSB,
+	STMPE_IDX_GPEDR_MSB,
+	STMPE_IDX_GPRER_LSB,
+	STMPE_IDX_GPRER_CSB,
+	STMPE_IDX_GPRER_MSB,
+	STMPE_IDX_GPFER_LSB,
+	STMPE_IDX_GPFER_CSB,
+	STMPE_IDX_GPFER_MSB,
+	STMPE_IDX_GPPUR_LSB,
+	STMPE_IDX_GPPDR_LSB,
+	STMPE_IDX_GPAFR_U_MSB,
+	STMPE_IDX_IEGPIOR_LSB,
+	STMPE_IDX_IEGPIOR_CSB,
+	STMPE_IDX_IEGPIOR_MSB,
+	STMPE_IDX_ISGPIOR_LSB,
+	STMPE_IDX_ISGPIOR_CSB,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	STMPE_IDX_ISGPIOR_MSB,
 	STMPE_IDX_MAX,
 };
@@ -59,9 +106,18 @@ enum {
 
 struct stmpe_variant_info;
 struct stmpe_client_info;
+<<<<<<< HEAD
 
 /**
  * struct stmpe - STMPE MFD structure
+=======
+struct stmpe_platform_data;
+
+/**
+ * struct stmpe - STMPE MFD structure
+ * @vcc: optional VCC regulator
+ * @vio: optional VIO regulator
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @lock: lock protecting I/O operations
  * @irq_lock: IRQ bus lock
  * @dev: device, mostly for dev_dbg()
@@ -73,13 +129,21 @@ struct stmpe_client_info;
  * @regs: list of addresses of registers which are at different addresses on
  *	  different variants.  Indexed by one of STMPE_IDX_*.
  * @irq: irq number for stmpe
+<<<<<<< HEAD
  * @irq_base: starting IRQ number for internal IRQs
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @num_gpios: number of gpios, differs for variants
  * @ier: cache of IER registers for bus_lock
  * @oldier: cache of IER registers for bus_lock
  * @pdata: platform data
  */
 struct stmpe {
+<<<<<<< HEAD
+=======
+	struct regulator *vcc;
+	struct regulator *vio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex lock;
 	struct mutex irq_lock;
 	struct device *dev;
@@ -91,7 +155,10 @@ struct stmpe {
 	const u8 *regs;
 
 	int irq;
+<<<<<<< HEAD
 	int irq_base;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int num_gpios;
 	u8 ier[2];
 	u8 oldier[2];
@@ -110,6 +177,7 @@ extern int stmpe_set_altfunc(struct stmpe *stmpe, u32 pins,
 extern int stmpe_enable(struct stmpe *stmpe, unsigned int blocks);
 extern int stmpe_disable(struct stmpe *stmpe, unsigned int blocks);
 
+<<<<<<< HEAD
 struct matrix_keymap_data;
 
 /**
@@ -225,4 +293,8 @@ struct stmpe_platform_data {
 #define STMPE_NR_GPIOS		24
 #define STMPE_NR_IRQS		STMPE_INT_GPIO(STMPE_NR_GPIOS)
 
+=======
+#define STMPE_GPIO_NOREQ_811_TOUCH	(0xf0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

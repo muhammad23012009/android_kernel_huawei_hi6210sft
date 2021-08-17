@@ -9,6 +9,11 @@
  *  Copyright (C) 1996 Dave Redman (djhr@tadpole.co.uk)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/timer.h>
 #include <asm/traps.h>
 #include <asm/pgalloc.h>
@@ -186,9 +191,16 @@ static unsigned long sun4m_imask[0x50] = {
 
 static void sun4m_mask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct sun4m_handler_data *handler_data = data->handler_data;
 	int cpu = smp_processor_id();
 
+=======
+	struct sun4m_handler_data *handler_data;
+	int cpu = smp_processor_id();
+
+	handler_data = irq_data_get_irq_handler_data(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (handler_data->mask) {
 		unsigned long flags;
 
@@ -204,9 +216,16 @@ static void sun4m_mask_irq(struct irq_data *data)
 
 static void sun4m_unmask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct sun4m_handler_data *handler_data = data->handler_data;
 	int cpu = smp_processor_id();
 
+=======
+	struct sun4m_handler_data *handler_data;
+	int cpu = smp_processor_id();
+
+	handler_data = irq_data_get_irq_handler_data(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (handler_data->mask) {
 		unsigned long flags;
 

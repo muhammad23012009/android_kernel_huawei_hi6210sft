@@ -10,6 +10,7 @@
  *	modify it under the terms of the GNU General Public License
  *	version 2 or later, as published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #include <linux/ip.h>
 #include <linux/module.h>
 #include <linux/percpu.h>
@@ -30,6 +31,17 @@
 #	include <net/netfilter/nf_conntrack.h>
 #endif
 
+=======
+#include <linux/module.h>
+#include <linux/skbuff.h>
+#include <linux/route.h>
+#include <linux/netfilter/x_tables.h>
+#include <net/route.h>
+#include <net/netfilter/ipv4/nf_dup_ipv4.h>
+#include <net/netfilter/ipv6/nf_dup_ipv6.h>
+#include <linux/netfilter/xt_TEE.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct xt_tee_priv {
 	struct notifier_block	notifier;
 	struct xt_tee_tginfo	*tginfo;
@@ -37,6 +49,7 @@ struct xt_tee_priv {
 };
 
 static const union nf_inet_addr tee_zero_address;
+<<<<<<< HEAD
 static DEFINE_PER_CPU(bool, tee_active);
 
 static struct net *pick_net(struct sk_buff *skb)
@@ -81,11 +94,14 @@ tee_tg_route4(struct sk_buff *skb, const struct xt_tee_tginfo *info)
 	skb->protocol = htons(ETH_P_IP);
 	return true;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned int
 tee_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_tee_tginfo *info = par->targinfo;
+<<<<<<< HEAD
 	struct iphdr *iph;
 
 	if (__this_cpu_read(tee_active))
@@ -131,10 +147,17 @@ tee_tg4(struct sk_buff *skb, const struct xt_action_param *par)
 	} else {
 		kfree_skb(skb);
 	}
+=======
+	int oif = info->priv ? info->priv->oif : 0;
+
+	nf_dup_ipv4(par->net, skb, par->hooknum, &info->gw.in, oif);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return XT_CONTINUE;
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
+<<<<<<< HEAD
 static bool
 tee_tg_route6(struct sk_buff *skb, const struct xt_tee_tginfo *info)
 {
@@ -164,10 +187,13 @@ tee_tg_route6(struct sk_buff *skb, const struct xt_tee_tginfo *info)
 	return true;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int
 tee_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_tee_tginfo *info = par->targinfo;
+<<<<<<< HEAD
 
 	if (__this_cpu_read(tee_active))
 		return XT_CONTINUE;
@@ -193,6 +219,12 @@ tee_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	} else {
 		kfree_skb(skb);
 	}
+=======
+	int oif = info->priv ? info->priv->oif : 0;
+
+	nf_dup_ipv6(par->net, skb, par->hooknum, &info->gw.in6, oif);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return XT_CONTINUE;
 }
 #endif
@@ -200,7 +232,11 @@ tee_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 static int tee_netdev_event(struct notifier_block *this, unsigned long event,
 			    void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct xt_tee_priv *priv;
 
 	priv = container_of(this, struct xt_tee_priv, notifier);
@@ -235,6 +271,11 @@ static int tee_tg_check(const struct xt_tgchk_param *par)
 		return -EINVAL;
 
 	if (info->oif[0]) {
+<<<<<<< HEAD
+=======
+		int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (info->oif[sizeof(info->oif)-1] != '\0')
 			return -EINVAL;
 
@@ -247,10 +288,22 @@ static int tee_tg_check(const struct xt_tgchk_param *par)
 		priv->notifier.notifier_call = tee_netdev_event;
 		info->priv    = priv;
 
+<<<<<<< HEAD
 		register_netdevice_notifier(&priv->notifier);
 	} else
 		info->priv = NULL;
 
+=======
+		ret = register_netdevice_notifier(&priv->notifier);
+		if (ret) {
+			kfree(priv);
+			return ret;
+		}
+	} else
+		info->priv = NULL;
+
+	static_key_slow_inc(&xt_tee_enabled);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -262,6 +315,10 @@ static void tee_tg_destroy(const struct xt_tgdtor_param *par)
 		unregister_netdevice_notifier(&info->priv->notifier);
 		kfree(info->priv);
 	}
+<<<<<<< HEAD
+=======
+	static_key_slow_dec(&xt_tee_enabled);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct xt_target tee_tg_reg[] __read_mostly = {

@@ -237,8 +237,12 @@ srmcons_init(void)
 
 	return -ENODEV;
 }
+<<<<<<< HEAD
 
 module_init(srmcons_init);
+=======
+device_initcall(srmcons_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*

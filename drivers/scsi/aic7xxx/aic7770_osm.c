@@ -85,10 +85,16 @@ aic7770_probe(struct device *dev)
 	int	error;
 
 	sprintf(buf, "ahc_eisa:%d", eisaBase >> 12);
+<<<<<<< HEAD
 	name = kmalloc(strlen(buf) + 1, GFP_ATOMIC);
 	if (name == NULL)
 		return (ENOMEM);
 	strcpy(name, buf);
+=======
+	name = kstrdup(buf, GFP_ATOMIC);
+	if (name == NULL)
+		return (ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahc = ahc_alloc(&aic7xxx_driver_template, name);
 	if (ahc == NULL)
 		return (ENOMEM);

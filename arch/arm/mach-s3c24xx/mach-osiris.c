@@ -18,6 +18,10 @@
 #include <linux/device.h>
 #include <linux/syscore_ops.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk.h>
 #include <linux/i2c.h>
 #include <linux/io.h>
@@ -39,17 +43,27 @@
 #include <linux/mtd/nand_ecc.h>
 #include <linux/mtd/partitions.h>
 
+<<<<<<< HEAD
 #include <plat/clock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/cpu.h>
 #include <plat/cpu-freq.h>
 #include <plat/devs.h>
 #include <plat/gpio-cfg.h>
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/samsung-time.h>
 
 #include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 #include "osiris.h"
@@ -343,12 +357,17 @@ static struct i2c_board_info osiris_i2c_devs[] __initdata = {
 /* Standard Osiris devices */
 
 static struct platform_device *osiris_devices[] __initdata = {
+<<<<<<< HEAD
+=======
+	&s3c2410_device_dclk,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&s3c_device_i2c0,
 	&s3c_device_wdt,
 	&s3c_device_nand,
 	&osiris_pcmcia,
 };
 
+<<<<<<< HEAD
 static struct clk *osiris_clocks[] __initdata = {
 	&s3c24xx_dclk0,
 	&s3c24xx_dclk1,
@@ -357,6 +376,8 @@ static struct clk *osiris_clocks[] __initdata = {
 	&s3c24xx_uclk,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct s3c_cpufreq_board __initdata osiris_cpufreq = {
 	.refresh	= 7800, /* refresh period is 7.8usec */
 	.auto_io	= 1,
@@ -367,6 +388,7 @@ static void __init osiris_map_io(void)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	/* initialise the clocks */
 
 	s3c24xx_dclk0.parent = &clk_upll;
@@ -384,6 +406,9 @@ static void __init osiris_map_io(void)
 
 	s3c24xx_init_io(osiris_iodesc, ARRAY_SIZE(osiris_iodesc));
 	s3c24xx_init_clocks(0);
+=======
+	s3c24xx_init_io(osiris_iodesc, ARRAY_SIZE(osiris_iodesc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(osiris_uartcfgs, ARRAY_SIZE(osiris_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 
@@ -407,6 +432,15 @@ static void __init osiris_map_io(void)
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
+=======
+static void __init osiris_init_time(void)
+{
+	s3c2440_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init osiris_init(void)
 {
 	register_syscore_ops(&osiris_pm_syscore_ops);
@@ -428,6 +462,10 @@ MACHINE_START(OSIRIS, "Simtec-OSIRIS")
 	.map_io		= osiris_map_io,
 	.init_irq	= s3c2440_init_irq,
 	.init_machine	= osiris_init,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c244x_restart,
+=======
+	.init_time	= osiris_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

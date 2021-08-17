@@ -25,13 +25,21 @@
 #include <linux/errno.h>		/* For the -ENODEV/... values */
 #include <linux/kernel.h>		/* For printk/panic/... */
 #include <linux/fs.h>			/* For file operations */
+<<<<<<< HEAD
 #include <linux/miscdevice.h>		/* For MODULE_ALIAS_MISCDEV
 							(WATCHDOG_MINOR) */
+=======
+#include <linux/miscdevice.h>		/* For struct miscdevice */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/watchdog.h>		/* For the watchdog specific items */
 #include <linux/init.h>			/* For __init/__exit/... */
 #include <linux/platform_device.h>	/* For platform_driver framework */
 #include <linux/spinlock.h>		/* For spin_lock/spin_unlock/... */
 #include <linux/uaccess.h>		/* For copy_to_user/put_user/... */
+<<<<<<< HEAD
+=======
+#include <linux/io.h>			/* For devm_ioremap_nocache */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-rc32434/integ.h>	/* For the Watchdog registers */
 
@@ -271,7 +279,11 @@ static int rc32434_wdt_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	wdt_reg = ioremap_nocache(r->start, resource_size(r));
+=======
+	wdt_reg = devm_ioremap_nocache(&pdev->dev, r->start, resource_size(r));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!wdt_reg) {
 		pr_err("failed to remap I/O resources\n");
 		return -ENXIO;
@@ -293,23 +305,33 @@ static int rc32434_wdt_probe(struct platform_device *pdev)
 	ret = misc_register(&rc32434_wdt_miscdev);
 	if (ret < 0) {
 		pr_err("failed to register watchdog device\n");
+<<<<<<< HEAD
 		goto unmap;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	pr_info("Watchdog Timer version " VERSION ", timer margin: %d sec\n",
 		timeout);
 
 	return 0;
+<<<<<<< HEAD
 
 unmap:
 	iounmap(wdt_reg);
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int rc32434_wdt_remove(struct platform_device *pdev)
 {
 	misc_deregister(&rc32434_wdt_miscdev);
+<<<<<<< HEAD
 	iounmap(wdt_reg);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -333,4 +355,7 @@ MODULE_AUTHOR("Ondrej Zajicek <santiago@crfreenet.org>,"
 		"Florian Fainelli <florian@openwrt.org>");
 MODULE_DESCRIPTION("Driver for the IDT RC32434 SoC watchdog");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

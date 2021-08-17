@@ -404,6 +404,9 @@ MODULE_AUTHOR("Ian E. Morgan <imorgan@webcon.ca>");
 MODULE_DESCRIPTION("SBC8360 watchdog driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.01");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* end of sbc8360.c */

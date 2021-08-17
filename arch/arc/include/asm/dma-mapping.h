@@ -11,6 +11,7 @@
 #ifndef ASM_ARC_DMA_MAPPING_H
 #define ASM_ARC_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <asm-generic/dma-coherent.h>
 #include <asm/cacheflush.h>
 
@@ -216,6 +217,20 @@ static inline int dma_set_mask(struct device *dev, u64 dma_mask)
 	*dev->dma_mask = dma_mask;
 
 	return 0;
+=======
+#ifndef CONFIG_ARC_PLAT_NEEDS_PHYS_TO_DMA
+#define plat_dma_to_phys(dev, dma_handle) ((phys_addr_t)(dma_handle))
+#define plat_phys_to_dma(dev, paddr) ((dma_addr_t)(paddr))
+#else
+#include <plat/dma.h>
+#endif
+
+extern struct dma_map_ops arc_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return &arc_dma_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif

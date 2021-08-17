@@ -96,8 +96,13 @@ ssize_t xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct
 	if (base || xdr->page_base) {
 		pglen -= base;
 		base += xdr->page_base;
+<<<<<<< HEAD
 		ppage += base >> PAGE_CACHE_SHIFT;
 		base &= ~PAGE_CACHE_MASK;
+=======
+		ppage += base >> PAGE_SHIFT;
+		base &= ~PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	do {
 		char *kaddr;
@@ -113,7 +118,11 @@ ssize_t xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct
 			}
 		}
 
+<<<<<<< HEAD
 		len = PAGE_CACHE_SIZE;
+=======
+		len = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kaddr = kmap_atomic(*ppage);
 		if (base) {
 			len -= base;
@@ -155,7 +164,11 @@ int csum_partial_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb)
 	struct xdr_skb_reader	desc;
 
 	desc.skb = skb;
+<<<<<<< HEAD
 	desc.offset = sizeof(struct udphdr);
+=======
+	desc.offset = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc.count = skb->len - desc.offset;
 
 	if (skb_csum_unnecessary(skb))
@@ -173,7 +186,12 @@ int csum_partial_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb)
 		return -1;
 	if (csum_fold(desc.csum))
 		return -1;
+<<<<<<< HEAD
 	if (unlikely(skb->ip_summed == CHECKSUM_COMPLETE))
+=======
+	if (unlikely(skb->ip_summed == CHECKSUM_COMPLETE) &&
+	    !skb->csum_complete_sw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		netdev_rx_csum_fault(skb->dev);
 	return 0;
 no_checksum:

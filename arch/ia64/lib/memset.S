@@ -18,6 +18,10 @@
    to get peak speed when value = 0.  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef ret
 
 #define dest		in0
@@ -360,3 +364,7 @@ GLOBAL_ENTRY(memset)
 	br.ret.sptk.many rp
 }
 END(memset)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

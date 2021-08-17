@@ -143,11 +143,18 @@ enum flctl_ecc_res_t {
 struct dma_chan;
 
 struct sh_flctl {
+<<<<<<< HEAD
 	struct mtd_info		mtd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nand_chip	chip;
 	struct platform_device	*pdev;
 	struct dev_pm_qos_request pm_qos;
 	void __iomem		*reg;
+<<<<<<< HEAD
+=======
+	resource_size_t		fifo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint8_t	done_buff[2048 + 64];	/* max size 2048 + 64 */
 	int	read_bytes;
@@ -186,7 +193,11 @@ struct sh_flctl_platform_data {
 
 static inline struct sh_flctl *mtd_to_flctl(struct mtd_info *mtdinfo)
 {
+<<<<<<< HEAD
 	return container_of(mtdinfo, struct sh_flctl, mtd);
+=======
+	return container_of(mtd_to_nand(mtdinfo), struct sh_flctl, chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif	/* __SH_FLCTL_H__ */

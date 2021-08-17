@@ -21,7 +21,10 @@
 #ifndef CX24116_H
 #define CX24116_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 
 struct cx24116_config {
@@ -41,7 +44,11 @@ struct cx24116_config {
 	u16 i2c_wr_max;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_CX24116)
+=======
+#if IS_REACHABLE(CONFIG_DVB_CX24116)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *cx24116_attach(
 	const struct cx24116_config *config,
 	struct i2c_adapter *i2c);

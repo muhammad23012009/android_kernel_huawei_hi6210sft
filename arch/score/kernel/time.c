@@ -41,7 +41,11 @@ static irqreturn_t timer_interrupt(int irq, void *dev_id)
 
 static struct irqaction timer_irq = {
 	.handler = timer_interrupt,
+<<<<<<< HEAD
 	.flags = IRQF_DISABLED | IRQF_TIMER,
+=======
+	.flags = IRQF_TIMER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name = "timer",
 };
 
@@ -55,6 +59,7 @@ static int score_timer_set_next_event(unsigned long delta,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void score_timer_set_mode(enum clock_event_mode mode,
 		struct clock_event_device *evdev)
 {
@@ -80,6 +85,22 @@ static struct clock_event_device score_clockevent = {
 	.shift		= 16,
 	.set_next_event	= score_timer_set_next_event,
 	.set_mode	= score_timer_set_mode,
+=======
+static int score_timer_set_periodic(struct clock_event_device *evt)
+{
+	outl((TMR_M_PERIODIC | TMR_IE_ENABLE), P_TIMER0_CTRL);
+	outl(SYSTEM_CLOCK / HZ, P_TIMER0_PRELOAD);
+	outl(inl(P_TIMER0_CTRL) | TMR_ENABLE, P_TIMER0_CTRL);
+	return 0;
+}
+
+static struct clock_event_device score_clockevent = {
+	.name			= "score_clockevent",
+	.features		= CLOCK_EVT_FEAT_PERIODIC,
+	.shift			= 16,
+	.set_next_event		= score_timer_set_next_event,
+	.set_state_periodic	= score_timer_set_periodic,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void __init time_init(void)

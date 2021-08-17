@@ -114,7 +114,11 @@ bte_result_t bte_copy(u64 src, u64 dest, u64 len, u64 mode, void *notification)
 		if (mode & BTE_USE_ANY) {
 			nasid_to_try[1] = my_nasid;
 		} else {
+<<<<<<< HEAD
 			nasid_to_try[1] = (int)NULL;
+=======
+			nasid_to_try[1] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else {
 		/* try local then remote */
@@ -122,7 +126,11 @@ bte_result_t bte_copy(u64 src, u64 dest, u64 len, u64 mode, void *notification)
 		if (mode & BTE_USE_ANY) {
 			nasid_to_try[1] = NASID_GET(dest);
 		} else {
+<<<<<<< HEAD
 			nasid_to_try[1] = (int)NULL;
+=======
+			nasid_to_try[1] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 

@@ -2,6 +2,7 @@
 #define __SPARC_IO_H
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/ioport.h>  /* struct resource */
 
@@ -140,42 +141,115 @@ void insl(unsigned long addr, void *dst, unsigned long count);
 
 #define IO_SPACE_LIMIT 0xffffffff
 
+=======
+#include <linux/ioport.h>  /* struct resource */
+
+#define IO_SPACE_LIMIT 0xffffffff
+
+#define memset_io(d,c,sz)     _memset_io(d,c,sz)
+#define memcpy_fromio(d,s,sz) _memcpy_fromio(d,s,sz)
+#define memcpy_toio(d,s,sz)   _memcpy_toio(d,s,sz)
+
+#include <asm-generic/io.h>
+
+static inline void _memset_io(volatile void __iomem *dst,
+                              int c, __kernel_size_t n)
+{
+	volatile void __iomem *d = dst;
+
+	while (n--) {
+		writeb(c, d);
+		d++;
+	}
+}
+
+static inline void _memcpy_fromio(void *dst, const volatile void __iomem *src,
+                                  __kernel_size_t n)
+{
+	char *d = dst;
+
+	while (n--) {
+		char tmp = readb(src);
+		*d++ = tmp;
+		src++;
+	}
+}
+
+static inline void _memcpy_toio(volatile void __iomem *dst, const void *src,
+                                __kernel_size_t n)
+{
+	const char *s = src;
+	volatile void __iomem *d = dst;
+
+	while (n--) {
+		char tmp = *s++;
+		writeb(tmp, d);
+		d++;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * SBus accessors.
  *
  * SBus has only one, memory mapped, I/O space.
  * We do not need to flip bytes for SBus of course.
  */
+<<<<<<< HEAD
 static inline u8 _sbus_readb(const volatile void __iomem *addr)
+=======
+static inline u8 sbus_readb(const volatile void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return *(__force volatile u8 *)addr;
 }
 
+<<<<<<< HEAD
 static inline u16 _sbus_readw(const volatile void __iomem *addr)
+=======
+static inline u16 sbus_readw(const volatile void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return *(__force volatile u16 *)addr;
 }
 
+<<<<<<< HEAD
 static inline u32 _sbus_readl(const volatile void __iomem *addr)
+=======
+static inline u32 sbus_readl(const volatile void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return *(__force volatile u32 *)addr;
 }
 
+<<<<<<< HEAD
 static inline void _sbus_writeb(u8 b, volatile void __iomem *addr)
+=======
+static inline void sbus_writeb(u8 b, volatile void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	*(__force volatile u8 *)addr = b;
 }
 
+<<<<<<< HEAD
 static inline void _sbus_writew(u16 w, volatile void __iomem *addr)
+=======
+static inline void sbus_writew(u16 w, volatile void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	*(__force volatile u16 *)addr = w;
 }
 
+<<<<<<< HEAD
 static inline void _sbus_writel(u32 l, volatile void __iomem *addr)
+=======
+static inline void sbus_writel(u32 l, volatile void __iomem *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	*(__force volatile u32 *)addr = l;
 }
 
+<<<<<<< HEAD
 /*
  * The only reason for #define's is to hide casts to unsigned long.
  */
@@ -187,6 +261,10 @@ static inline void _sbus_writel(u32 l, volatile void __iomem *addr)
 #define sbus_writel(__l, __addr)	_sbus_writel(__l, __addr)
 
 static inline void sbus_memset_io(volatile void __iomem *__dst, int c, __kernel_size_t n)
+=======
+static inline void sbus_memset_io(volatile void __iomem *__dst, int c,
+                                  __kernel_size_t n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	while(n--) {
 		sbus_writeb(c, __dst);
@@ -194,6 +272,7 @@ static inline void sbus_memset_io(volatile void __iomem *__dst, int c, __kernel_
 	}
 }
 
+<<<<<<< HEAD
 static inline void
 _memset_io(volatile void __iomem *dst, int c, __kernel_size_t n)
 {
@@ -210,6 +289,11 @@ _memset_io(volatile void __iomem *dst, int c, __kernel_size_t n)
 static inline void
 _sbus_memcpy_fromio(void *dst, const volatile void __iomem *src,
 		    __kernel_size_t n)
+=======
+static inline void sbus_memcpy_fromio(void *dst,
+                                      const volatile void __iomem *src,
+                                      __kernel_size_t n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *d = dst;
 
@@ -220,6 +304,7 @@ _sbus_memcpy_fromio(void *dst, const volatile void __iomem *src,
 	}
 }
 
+<<<<<<< HEAD
 #define sbus_memcpy_fromio(d, s, sz)	_sbus_memcpy_fromio(d, s, sz)
 
 static inline void
@@ -239,6 +324,11 @@ _memcpy_fromio(void *dst, const volatile void __iomem *src, __kernel_size_t n)
 static inline void
 _sbus_memcpy_toio(volatile void __iomem *dst, const void *src,
 		  __kernel_size_t n)
+=======
+static inline void sbus_memcpy_toio(volatile void __iomem *dst,
+                                    const void *src,
+                                    __kernel_size_t n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const char *s = src;
 	volatile void __iomem *d = dst;
@@ -250,6 +340,7 @@ _sbus_memcpy_toio(volatile void __iomem *dst, const void *src,
 	}
 }
 
+<<<<<<< HEAD
 #define sbus_memcpy_toio(d, s, sz)	_sbus_memcpy_toio(d, s, sz)
 
 static inline void
@@ -267,12 +358,15 @@ _memcpy_toio(volatile void __iomem *dst, const void *src, __kernel_size_t n)
 
 #define memcpy_toio(d,s,sz)	_memcpy_toio(d,s,sz)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef __KERNEL__
 
 /*
  * Bus number may be embedded in the higher bits of the physical address.
  * This is why we have no bus number argument to ioremap().
  */
+<<<<<<< HEAD
 extern void __iomem *ioremap(unsigned long offset, unsigned long size);
 #define ioremap_nocache(X,Y)	ioremap((X),(Y))
 #define ioremap_wc(X,Y)		ioremap((X),(Y))
@@ -333,6 +427,21 @@ extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
  */
 #define RTC_PORT(x)   (rtc_port + (x))
 #define RTC_ALWAYS_BCD  0
+=======
+void __iomem *ioremap(unsigned long offset, unsigned long size);
+#define ioremap_nocache(X,Y)	ioremap((X),(Y))
+#define ioremap_wc(X,Y)		ioremap((X),(Y))
+#define ioremap_wt(X,Y)		ioremap((X),(Y))
+void iounmap(volatile void __iomem *addr);
+
+/* Create a virtual mapping cookie for an IO port range */
+void __iomem *ioport_map(unsigned long port, unsigned int nr);
+void ioport_unmap(void __iomem *);
+
+/* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
+struct pci_dev;
+void pci_iounmap(struct pci_dev *dev, void __iomem *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int sbus_can_dma_64bit(void)
 {
@@ -343,12 +452,17 @@ static inline int sbus_can_burst64(void)
 	return 0; /* actually, sparc_cpu_model==sun4d */
 }
 struct device;
+<<<<<<< HEAD
 extern void sbus_set_sbus64(struct device *, int);
+=======
+void sbus_set_sbus64(struct device *, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 
 #define __ARCH_HAS_NO_PAGE_ZERO_MAPPED		1
 
+<<<<<<< HEAD
 /*
  * Convert a physical pointer to a virtual kernel pointer for /dev/mem
  * access
@@ -359,5 +473,7 @@ extern void sbus_set_sbus64(struct device *, int);
  * Convert a virtual cached pointer to an uncached pointer
  */
 #define xlate_dev_kmem_ptr(p)	p
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !(__SPARC_IO_H) */

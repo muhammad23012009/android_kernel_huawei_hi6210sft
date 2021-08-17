@@ -53,6 +53,7 @@
 #include <asm/numa.h>
 #include <asm/sal.h>
 #include <asm/cyclone.h>
+<<<<<<< HEAD
 #include <asm/xen/hypervisor.h>
 
 #define BAD_MADT_ENTRY(entry, end) (                                        \
@@ -62,6 +63,12 @@
 #define PREFIX			"ACPI: "
 
 u32 acpi_rsdt_forced;
+=======
+
+#define PREFIX			"ACPI: "
+
+int acpi_lapic;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned int acpi_cpei_override;
 unsigned int acpi_cpei_phys_cpuid;
 
@@ -120,8 +127,11 @@ acpi_get_sysname(void)
 			return "uv";
 		else
 			return "sn2";
+<<<<<<< HEAD
 	} else if (xen_pv_domain() && !strcmp(hdr->oem_id, "XEN")) {
 		return "xen";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 #ifdef CONFIG_INTEL_IOMMU
@@ -387,9 +397,12 @@ static void __init acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 
 static int __init acpi_parse_madt(struct acpi_table_header *table)
 {
+<<<<<<< HEAD
 	if (!table)
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_madt = (struct acpi_table_madt *)table;
 
 	acpi_madt_rev = acpi_madt->header.revision;
@@ -493,7 +506,11 @@ acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa)
 	    (pa->apic_id << 8) | (pa->local_sapic_eid);
 	/* nid should be overridden as logical node id later */
 	node_cpuid[srat_num_cpus].nid = pxm;
+<<<<<<< HEAD
 	cpu_set(srat_num_cpus, early_cpu_possible_map);
+=======
+	cpumask_set_cpu(srat_num_cpus, &early_cpu_possible_map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	srat_num_cpus++;
 }
 
@@ -534,7 +551,11 @@ acpi_numa_memory_affinity_init(struct acpi_srat_mem_affinity *ma)
 	return 0;
 }
 
+<<<<<<< HEAD
 void __init acpi_numa_arch_fixup(void)
+=======
+void __init acpi_numa_fixup(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, j, node_from, node_to;
 
@@ -652,9 +673,12 @@ static int __init acpi_parse_fadt(struct acpi_table_header *table)
 	struct acpi_table_header *fadt_header;
 	struct acpi_table_fadt *fadt;
 
+<<<<<<< HEAD
 	if (!table)
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fadt_header = (struct acpi_table_header *)table;
 	if (fadt_header->revision != 3)
 		return -ENODEV;	/* Only deal with ACPI 2.0 FADT */
@@ -684,6 +708,11 @@ int __init early_acpi_boot_init(void)
 	if (ret < 1)
 		printk(KERN_ERR PREFIX
 		       "Error parsing MADT - no LAPIC entries\n");
+<<<<<<< HEAD
+=======
+	else
+		acpi_lapic = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 	if (available_cpus == 0) {
@@ -807,6 +836,7 @@ int acpi_isa_irq_to_gsi(unsigned isa_irq, u32 *gsi)
  *  ACPI based hotplug CPU support
  */
 #ifdef CONFIG_ACPI_HOTPLUG_CPU
+<<<<<<< HEAD
 static __cpuinit
 int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
 {
@@ -815,6 +845,11 @@ int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
 	int nid;
 
 	pxm_id = acpi_get_pxm(handle);
+=======
+int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+{
+#ifdef CONFIG_ACPI_NUMA
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * We don't have cpu-only-node hotadd. But if the system equips
 	 * SRAT table, pxm is already found and node is ready.
@@ -822,11 +857,18 @@ int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
 	 * This code here is for the system which doesn't have full SRAT
   	 * table for possible cpus.
 	 */
+<<<<<<< HEAD
 	nid = acpi_map_pxm_to_node(pxm_id);
 	node_cpuid[cpu].phys_id = physid;
 	node_cpuid[cpu].nid = nid;
 #endif
 	return (0);
+=======
+	node_cpuid[cpu].phys_id = physid;
+	node_cpuid[cpu].nid = acpi_get_node(handle);
+#endif
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int additional_cpus __initdata = -1;
@@ -882,6 +924,7 @@ __init void prefill_possible_map(void)
 		set_cpu_possible(i, true);
 }
 
+<<<<<<< HEAD
 static int __cpuinit _acpi_map_lsapic(acpi_handle handle, int *pcpu)
 {
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -916,6 +959,12 @@ static int __cpuinit _acpi_map_lsapic(acpi_handle handle, int *pcpu)
 	kfree(buffer.pointer);
 	buffer.length = ACPI_ALLOCATE_BUFFER;
 	buffer.pointer = NULL;
+=======
+static int _acpi_map_lsapic(acpi_handle handle, int physid, int *pcpu)
+{
+	cpumask_t tmp_map;
+	int cpu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cpumask_complement(&tmp_map, cpu_present_mask);
 	cpu = cpumask_first(&tmp_map);
@@ -934,6 +983,7 @@ static int __cpuinit _acpi_map_lsapic(acpi_handle handle, int *pcpu)
 }
 
 /* wrapper to silence section mismatch warning */
+<<<<<<< HEAD
 int __ref acpi_map_lsapic(acpi_handle handle, int *pcpu)
 {
 	return _acpi_map_lsapic(handle, pcpu);
@@ -941,6 +991,15 @@ int __ref acpi_map_lsapic(acpi_handle handle, int *pcpu)
 EXPORT_SYMBOL(acpi_map_lsapic);
 
 int acpi_unmap_lsapic(int cpu)
+=======
+int __ref acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, int *pcpu)
+{
+	return _acpi_map_lsapic(handle, physid, pcpu);
+}
+EXPORT_SYMBOL(acpi_map_cpu);
+
+int acpi_unmap_cpu(int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ia64_cpu_to_sapicid[cpu] = -1;
 	set_cpu_present(cpu, false);
@@ -951,8 +1010,12 @@ int acpi_unmap_lsapic(int cpu)
 
 	return (0);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(acpi_unmap_lsapic);
+=======
+EXPORT_SYMBOL(acpi_unmap_cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif				/* CONFIG_ACPI_HOTPLUG_CPU */
 
 #ifdef CONFIG_ACPI_NUMA
@@ -963,7 +1026,11 @@ static acpi_status acpi_map_iosapic(acpi_handle handle, u32 depth,
 	union acpi_object *obj;
 	struct acpi_madt_io_sapic *iosapic;
 	unsigned int gsi_base;
+<<<<<<< HEAD
 	int pxm, node;
+=======
+	int node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Only care about objects w/ a method that returns the MADT */
 	if (ACPI_FAILURE(acpi_evaluate_object(handle, "_MAT", NULL, &buffer)))
@@ -990,6 +1057,7 @@ static acpi_status acpi_map_iosapic(acpi_handle handle, u32 depth,
 
 	kfree(buffer.pointer);
 
+<<<<<<< HEAD
 	/*
 	 * OK, it's an IOSAPIC MADT entry, look for a _PXM value to tell
 	 * us which node to associate this with.
@@ -1001,6 +1069,11 @@ static acpi_status acpi_map_iosapic(acpi_handle handle, u32 depth,
 	node = pxm_to_node(pxm);
 
 	if (node >= MAX_NUMNODES || !node_online(node) ||
+=======
+	/* OK, it's an IOSAPIC MADT entry; associate it with a node */
+	node = acpi_get_node(handle);
+	if (node == NUMA_NO_NODE || !node_online(node) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    cpumask_empty(cpumask_of_node(node)))
 		return AE_OK;
 

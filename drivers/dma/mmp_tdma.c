@@ -19,9 +19,15 @@
 #include <linux/dmaengine.h>
 #include <linux/platform_device.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <mach/regs-icu.h>
 #include <linux/platform_data/dma-mmp_tdma.h>
 #include <linux/of_device.h>
+=======
+#include <linux/platform_data/dma-mmp_tdma.h>
+#include <linux/of_device.h>
+#include <linux/of_dma.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "dmaengine.h"
 
@@ -62,6 +68,14 @@
 #define TDCR_BURSTSZ_16B	(0x3 << 6)
 #define TDCR_BURSTSZ_32B	(0x6 << 6)
 #define TDCR_BURSTSZ_64B	(0x7 << 6)
+<<<<<<< HEAD
+=======
+#define TDCR_BURSTSZ_SQU_1B		(0x5 << 6)
+#define TDCR_BURSTSZ_SQU_2B		(0x6 << 6)
+#define TDCR_BURSTSZ_SQU_4B		(0x0 << 6)
+#define TDCR_BURSTSZ_SQU_8B		(0x1 << 6)
+#define TDCR_BURSTSZ_SQU_16B	(0x3 << 6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TDCR_BURSTSZ_SQU_32B	(0x7 << 6)
 #define TDCR_BURSTSZ_128B	(0x5 << 6)
 #define TDCR_DSTDIR_MSK		(0x3 << 4)	/* Dst Direction */
@@ -95,7 +109,10 @@ enum mmp_tdma_type {
 	PXA910_SQU,
 };
 
+<<<<<<< HEAD
 #define TDMA_ALIGNMENT		3
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TDMA_MAX_XFER_BYTES    SZ_64K
 
 struct mmp_tdma_chan {
@@ -105,7 +122,11 @@ struct mmp_tdma_chan {
 	struct tasklet_struct		tasklet;
 
 	struct mmp_tdma_desc		*desc_arr;
+<<<<<<< HEAD
 	phys_addr_t			desc_arr_phys;
+=======
+	dma_addr_t			desc_arr_phys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int				desc_num;
 	enum dma_transfer_direction	dir;
 	dma_addr_t			dev_addr;
@@ -116,11 +137,20 @@ struct mmp_tdma_chan {
 	int				idx;
 	enum mmp_tdma_type		type;
 	int				irq;
+<<<<<<< HEAD
 	unsigned long			reg_base;
+=======
+	void __iomem			*reg_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	size_t				buf_len;
 	size_t				period_len;
 	size_t				pos;
+<<<<<<< HEAD
+=======
+
+	struct gen_pool			*pool;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define TDMA_CHANNEL_NUM 2
@@ -140,16 +170,30 @@ static void mmp_tdma_chan_set_desc(struct mmp_tdma_chan *tdmac, dma_addr_t phys)
 					tdmac->reg_base + TDCR);
 }
 
+<<<<<<< HEAD
 static void mmp_tdma_enable_chan(struct mmp_tdma_chan *tdmac)
 {
 	/* enable irq */
 	writel(TDIMR_COMP, tdmac->reg_base + TDIMR);
+=======
+static void mmp_tdma_enable_irq(struct mmp_tdma_chan *tdmac, bool enable)
+{
+	if (enable)
+		writel(TDIMR_COMP, tdmac->reg_base + TDIMR);
+	else
+		writel(0, tdmac->reg_base + TDIMR);
+}
+
+static void mmp_tdma_enable_chan(struct mmp_tdma_chan *tdmac)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* enable dma chan */
 	writel(readl(tdmac->reg_base + TDCR) | TDCR_CHANEN,
 					tdmac->reg_base + TDCR);
 	tdmac->status = DMA_IN_PROGRESS;
 }
 
+<<<<<<< HEAD
 static void mmp_tdma_disable_chan(struct mmp_tdma_chan *tdmac)
 {
 	writel(readl(tdmac->reg_base + TDCR) & ~TDCR_CHANEN,
@@ -176,6 +220,51 @@ static int mmp_tdma_config_chan(struct mmp_tdma_chan *tdmac)
 	unsigned int tdcr;
 
 	mmp_tdma_disable_chan(tdmac);
+=======
+static int mmp_tdma_disable_chan(struct dma_chan *chan)
+{
+	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
+	u32 tdcr;
+
+	tdcr = readl(tdmac->reg_base + TDCR);
+	tdcr |= TDCR_ABR;
+	tdcr &= ~TDCR_CHANEN;
+	writel(tdcr, tdmac->reg_base + TDCR);
+
+	tdmac->status = DMA_COMPLETE;
+
+	return 0;
+}
+
+static int mmp_tdma_resume_chan(struct dma_chan *chan)
+{
+	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
+
+	writel(readl(tdmac->reg_base + TDCR) | TDCR_CHANEN,
+					tdmac->reg_base + TDCR);
+	tdmac->status = DMA_IN_PROGRESS;
+
+	return 0;
+}
+
+static int mmp_tdma_pause_chan(struct dma_chan *chan)
+{
+	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
+
+	writel(readl(tdmac->reg_base + TDCR) & ~TDCR_CHANEN,
+					tdmac->reg_base + TDCR);
+	tdmac->status = DMA_PAUSED;
+
+	return 0;
+}
+
+static int mmp_tdma_config_chan(struct dma_chan *chan)
+{
+	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
+	unsigned int tdcr = 0;
+
+	mmp_tdma_disable_chan(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (tdmac->dir == DMA_MEM_TO_DEV)
 		tdcr = TDCR_DSTDIR_ADDR_HOLD | TDCR_SRCDIR_ADDR_INC;
@@ -224,8 +313,36 @@ static int mmp_tdma_config_chan(struct mmp_tdma_chan *tdmac)
 			return -EINVAL;
 		}
 	} else if (tdmac->type == PXA910_SQU) {
+<<<<<<< HEAD
 		tdcr |= TDCR_BURSTSZ_SQU_32B;
 		tdcr |= TDCR_SSPMOD;
+=======
+		tdcr |= TDCR_SSPMOD;
+
+		switch (tdmac->burst_sz) {
+		case 1:
+			tdcr |= TDCR_BURSTSZ_SQU_1B;
+			break;
+		case 2:
+			tdcr |= TDCR_BURSTSZ_SQU_2B;
+			break;
+		case 4:
+			tdcr |= TDCR_BURSTSZ_SQU_4B;
+			break;
+		case 8:
+			tdcr |= TDCR_BURSTSZ_SQU_8B;
+			break;
+		case 16:
+			tdcr |= TDCR_BURSTSZ_SQU_16B;
+			break;
+		case 32:
+			tdcr |= TDCR_BURSTSZ_SQU_32B;
+			break;
+		default:
+			dev_err(tdmac->dev, "mmp_tdma: unknown burst size.\n");
+			return -EINVAL;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	writel(tdcr, tdmac->reg_base + TDCR);
@@ -246,12 +363,34 @@ static int mmp_tdma_clear_chan_irq(struct mmp_tdma_chan *tdmac)
 	return -EAGAIN;
 }
 
+<<<<<<< HEAD
+=======
+static size_t mmp_tdma_get_pos(struct mmp_tdma_chan *tdmac)
+{
+	size_t reg;
+
+	if (tdmac->idx == 0) {
+		reg = __raw_readl(tdmac->reg_base + TDSAR);
+		reg -= tdmac->desc_arr[0].src_addr;
+	} else if (tdmac->idx == 1) {
+		reg = __raw_readl(tdmac->reg_base + TDDAR);
+		reg -= tdmac->desc_arr[0].dst_addr;
+	} else
+		return -EINVAL;
+
+	return reg;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static irqreturn_t mmp_tdma_chan_handler(int irq, void *dev_id)
 {
 	struct mmp_tdma_chan *tdmac = dev_id;
 
 	if (mmp_tdma_clear_chan_irq(tdmac) == 0) {
+<<<<<<< HEAD
 		tdmac->pos = (tdmac->pos + tdmac->period_len) % tdmac->buf_len;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tasklet_schedule(&tdmac->tasklet);
 		return IRQ_HANDLED;
 	} else
@@ -282,9 +421,13 @@ static void dma_do_tasklet(unsigned long data)
 {
 	struct mmp_tdma_chan *tdmac = (struct mmp_tdma_chan *)data;
 
+<<<<<<< HEAD
 	if (tdmac->desc.callback)
 		tdmac->desc.callback(tdmac->desc.callback_param);
 
+=======
+	dmaengine_desc_get_callback_invoke(&tdmac->desc, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void mmp_tdma_free_descriptor(struct mmp_tdma_chan *tdmac)
@@ -292,11 +435,21 @@ static void mmp_tdma_free_descriptor(struct mmp_tdma_chan *tdmac)
 	struct gen_pool *gpool;
 	int size = tdmac->desc_num * sizeof(struct mmp_tdma_desc);
 
+<<<<<<< HEAD
 	gpool = sram_get_gpool("asram");
 	if (tdmac->desc_arr)
 		gen_pool_free(gpool, (unsigned long)tdmac->desc_arr,
 				size);
 	tdmac->desc_arr = NULL;
+=======
+	gpool = tdmac->pool;
+	if (gpool && tdmac->desc_arr)
+		gen_pool_free(gpool, (unsigned long)tdmac->desc_arr,
+				size);
+	tdmac->desc_arr = NULL;
+	if (tdmac->status == DMA_ERROR)
+		tdmac->status = DMA_COMPLETE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return;
 }
@@ -320,7 +473,11 @@ static int mmp_tdma_alloc_chan_resources(struct dma_chan *chan)
 
 	if (tdmac->irq) {
 		ret = devm_request_irq(tdmac->dev, tdmac->irq,
+<<<<<<< HEAD
 			mmp_tdma_chan_handler, IRQF_DISABLED, "tdma", tdmac);
+=======
+			mmp_tdma_chan_handler, 0, "tdma", tdmac);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 	}
@@ -337,11 +494,16 @@ static void mmp_tdma_free_chan_resources(struct dma_chan *chan)
 	return;
 }
 
+<<<<<<< HEAD
 struct mmp_tdma_desc *mmp_tdma_alloc_descriptor(struct mmp_tdma_chan *tdmac)
+=======
+static struct mmp_tdma_desc *mmp_tdma_alloc_descriptor(struct mmp_tdma_chan *tdmac)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct gen_pool *gpool;
 	int size = tdmac->desc_num * sizeof(struct mmp_tdma_desc);
 
+<<<<<<< HEAD
 	gpool = sram_get_gpool("asram");
 	if (!gpool)
 		return NULL;
@@ -352,6 +514,13 @@ struct mmp_tdma_desc *mmp_tdma_alloc_descriptor(struct mmp_tdma_chan *tdmac)
 
 	tdmac->desc_arr_phys = gen_pool_virt_to_phys(gpool,
 			(unsigned long)tdmac->desc_arr);
+=======
+	gpool = tdmac->pool;
+	if (!gpool)
+		return NULL;
+
+	tdmac->desc_arr = gen_pool_dma_alloc(gpool, size, &tdmac->desc_arr_phys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return tdmac->desc_arr;
 }
@@ -359,19 +528,31 @@ struct mmp_tdma_desc *mmp_tdma_alloc_descriptor(struct mmp_tdma_chan *tdmac)
 static struct dma_async_tx_descriptor *mmp_tdma_prep_dma_cyclic(
 		struct dma_chan *chan, dma_addr_t dma_addr, size_t buf_len,
 		size_t period_len, enum dma_transfer_direction direction,
+<<<<<<< HEAD
 		unsigned long flags, void *context)
+=======
+		unsigned long flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
 	struct mmp_tdma_desc *desc;
 	int num_periods = buf_len / period_len;
 	int i = 0, buf = 0;
 
+<<<<<<< HEAD
 	if (tdmac->status != DMA_SUCCESS)
+=======
+	if (tdmac->status != DMA_COMPLETE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	if (period_len > TDMA_MAX_XFER_BYTES) {
 		dev_err(tdmac->dev,
+<<<<<<< HEAD
 				"maximum period size exceeded: %d > %d\n",
+=======
+				"maximum period size exceeded: %zu > %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				period_len, TDMA_MAX_XFER_BYTES);
 		goto err_out;
 	}
@@ -404,6 +585,13 @@ static struct dma_async_tx_descriptor *mmp_tdma_prep_dma_cyclic(
 		i++;
 	}
 
+<<<<<<< HEAD
+=======
+	/* enable interrupt */
+	if (flags & DMA_PREP_INTERRUPT)
+		mmp_tdma_enable_irq(tdmac, true);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tdmac->buf_len = buf_len;
 	tdmac->period_len = period_len;
 	tdmac->pos = 0;
@@ -415,6 +603,7 @@ err_out:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int mmp_tdma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 		unsigned long arg)
 {
@@ -449,6 +638,36 @@ static int mmp_tdma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	}
 
 	return ret;
+=======
+static int mmp_tdma_terminate_all(struct dma_chan *chan)
+{
+	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
+
+	mmp_tdma_disable_chan(chan);
+	/* disable interrupt */
+	mmp_tdma_enable_irq(tdmac, false);
+
+	return 0;
+}
+
+static int mmp_tdma_config(struct dma_chan *chan,
+			   struct dma_slave_config *dmaengine_cfg)
+{
+	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
+
+	if (dmaengine_cfg->direction == DMA_DEV_TO_MEM) {
+		tdmac->dev_addr = dmaengine_cfg->src_addr;
+		tdmac->burst_sz = dmaengine_cfg->src_maxburst;
+		tdmac->buswidth = dmaengine_cfg->src_addr_width;
+	} else {
+		tdmac->dev_addr = dmaengine_cfg->dst_addr;
+		tdmac->burst_sz = dmaengine_cfg->dst_maxburst;
+		tdmac->buswidth = dmaengine_cfg->dst_addr_width;
+	}
+	tdmac->dir = dmaengine_cfg->direction;
+
+	return mmp_tdma_config_chan(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static enum dma_status mmp_tdma_tx_status(struct dma_chan *chan,
@@ -456,7 +675,13 @@ static enum dma_status mmp_tdma_tx_status(struct dma_chan *chan,
 {
 	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
 
+<<<<<<< HEAD
 	dma_set_residue(txstate, tdmac->buf_len - tdmac->pos);
+=======
+	tdmac->pos = mmp_tdma_get_pos(tdmac);
+	dma_set_tx_state(txstate, chan->completed_cookie, chan->cookie,
+			 tdmac->buf_len - tdmac->pos);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return tdmac->status;
 }
@@ -477,7 +702,12 @@ static int mmp_tdma_remove(struct platform_device *pdev)
 }
 
 static int mmp_tdma_chan_init(struct mmp_tdma_device *tdev,
+<<<<<<< HEAD
 						int idx, int irq, int type)
+=======
+					int idx, int irq,
+					int type, struct gen_pool *pool)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mmp_tdma_chan *tdmac;
 
@@ -488,18 +718,30 @@ static int mmp_tdma_chan_init(struct mmp_tdma_device *tdev,
 
 	/* alloc channel */
 	tdmac = devm_kzalloc(tdev->dev, sizeof(*tdmac), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!tdmac) {
 		dev_err(tdev->dev, "no free memory for DMA channels!\n");
 		return -ENOMEM;
 	}
+=======
+	if (!tdmac)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (irq)
 		tdmac->irq = irq;
 	tdmac->dev	   = tdev->dev;
 	tdmac->chan.device = &tdev->device;
 	tdmac->idx	   = idx;
 	tdmac->type	   = type;
+<<<<<<< HEAD
 	tdmac->reg_base	   = (unsigned long)tdev->base + idx * 4;
 	tdmac->status = DMA_SUCCESS;
+=======
+	tdmac->reg_base	   = tdev->base + idx * 4;
+	tdmac->pool	   = pool;
+	tdmac->status = DMA_COMPLETE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tdev->tdmac[tdmac->idx] = tdmac;
 	tasklet_init(&tdmac->tasklet, dma_do_tasklet, (unsigned long)tdmac);
 
@@ -509,7 +751,50 @@ static int mmp_tdma_chan_init(struct mmp_tdma_device *tdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id mmp_tdma_dt_ids[] = {
+=======
+struct mmp_tdma_filter_param {
+	struct device_node *of_node;
+	unsigned int chan_id;
+};
+
+static bool mmp_tdma_filter_fn(struct dma_chan *chan, void *fn_param)
+{
+	struct mmp_tdma_filter_param *param = fn_param;
+	struct mmp_tdma_chan *tdmac = to_mmp_tdma_chan(chan);
+	struct dma_device *pdma_device = tdmac->chan.device;
+
+	if (pdma_device->dev->of_node != param->of_node)
+		return false;
+
+	if (chan->chan_id != param->chan_id)
+		return false;
+
+	return true;
+}
+
+static struct dma_chan *mmp_tdma_xlate(struct of_phandle_args *dma_spec,
+			       struct of_dma *ofdma)
+{
+	struct mmp_tdma_device *tdev = ofdma->of_dma_data;
+	dma_cap_mask_t mask = tdev->device.cap_mask;
+	struct mmp_tdma_filter_param param;
+
+	if (dma_spec->args_count != 1)
+		return NULL;
+
+	param.of_node = ofdma->of_node;
+	param.chan_id = dma_spec->args[0];
+
+	if (param.chan_id >= TDMA_CHANNEL_NUM)
+		return NULL;
+
+	return dma_request_channel(mask, mmp_tdma_filter_fn, &param);
+}
+
+static const struct of_device_id mmp_tdma_dt_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "marvell,adma-1.0", .data = (void *)MMP_AUD_TDMA},
 	{ .compatible = "marvell,pxa910-squ", .data = (void *)PXA910_SQU},
 	{}
@@ -525,6 +810,10 @@ static int mmp_tdma_probe(struct platform_device *pdev)
 	int i, ret;
 	int irq = 0, irq_num = 0;
 	int chan_num = TDMA_CHANNEL_NUM;
+<<<<<<< HEAD
+=======
+	struct gen_pool *pool = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	of_id = of_match_device(mmp_tdma_dt_ids, &pdev->dev);
 	if (of_id)
@@ -545,19 +834,38 @@ static int mmp_tdma_probe(struct platform_device *pdev)
 	}
 
 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!iores)
 		return -EINVAL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tdev->base = devm_ioremap_resource(&pdev->dev, iores);
 	if (IS_ERR(tdev->base))
 		return PTR_ERR(tdev->base);
 
 	INIT_LIST_HEAD(&tdev->device.channels);
 
+<<<<<<< HEAD
 	if (irq_num != chan_num) {
 		irq = platform_get_irq(pdev, 0);
 		ret = devm_request_irq(&pdev->dev, irq,
 			mmp_tdma_int_handler, IRQF_DISABLED, "tdma", tdev);
+=======
+	if (pdev->dev.of_node)
+		pool = of_gen_pool_get(pdev->dev.of_node, "asram", 0);
+	else
+		pool = sram_get_gpool("asram");
+	if (!pool) {
+		dev_err(&pdev->dev, "asram pool not available\n");
+		return -ENOMEM;
+	}
+
+	if (irq_num != chan_num) {
+		irq = platform_get_irq(pdev, 0);
+		ret = devm_request_irq(&pdev->dev, irq,
+			mmp_tdma_int_handler, 0, "tdma", tdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 	}
@@ -565,7 +873,11 @@ static int mmp_tdma_probe(struct platform_device *pdev)
 	/* initialize channel parameters */
 	for (i = 0; i < chan_num; i++) {
 		irq = (irq_num != chan_num) ? 0 : platform_get_irq(pdev, i);
+<<<<<<< HEAD
 		ret = mmp_tdma_chan_init(tdev, i, irq, type);
+=======
+		ret = mmp_tdma_chan_init(tdev, i, irq, type, pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 	}
@@ -580,8 +892,16 @@ static int mmp_tdma_probe(struct platform_device *pdev)
 	tdev->device.device_prep_dma_cyclic = mmp_tdma_prep_dma_cyclic;
 	tdev->device.device_tx_status = mmp_tdma_tx_status;
 	tdev->device.device_issue_pending = mmp_tdma_issue_pending;
+<<<<<<< HEAD
 	tdev->device.device_control = mmp_tdma_control;
 	tdev->device.copy_align = TDMA_ALIGNMENT;
+=======
+	tdev->device.device_config = mmp_tdma_config;
+	tdev->device.device_pause = mmp_tdma_pause_chan;
+	tdev->device.device_resume = mmp_tdma_resume_chan;
+	tdev->device.device_terminate_all = mmp_tdma_terminate_all;
+	tdev->device.copy_align = DMAENGINE_ALIGN_8_BYTES;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
 	platform_set_drvdata(pdev, tdev);
@@ -592,6 +912,19 @@ static int mmp_tdma_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	if (pdev->dev.of_node) {
+		ret = of_dma_controller_register(pdev->dev.of_node,
+							mmp_tdma_xlate, tdev);
+		if (ret) {
+			dev_err(tdev->device.dev,
+				"failed to register controller\n");
+			dma_async_device_unregister(&tdev->device);
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(tdev->device.dev, "initialized\n");
 	return 0;
 }
@@ -605,7 +938,10 @@ static const struct platform_device_id mmp_tdma_id_table[] = {
 static struct platform_driver mmp_tdma_driver = {
 	.driver		= {
 		.name	= "mmp-tdma",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mmp_tdma_dt_ids,
 	},
 	.id_table	= mmp_tdma_id_table,

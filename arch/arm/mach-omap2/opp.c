@@ -17,7 +17,12 @@
  * GNU General Public License for more details.
  */
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/opp.h>
+=======
+#include <linux/of.h>
+#include <linux/pm_opp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpu.h>
 
 #include "omap_device.h"
@@ -40,6 +45,12 @@ int __init omap_init_opp_table(struct omap_opp_def *opp_def,
 {
 	int i, r;
 
+<<<<<<< HEAD
+=======
+	if (of_have_populated_dt())
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!opp_def || !opp_def_size) {
 		pr_err("%s: invalid params!\n", __func__);
 		return -EINVAL;
@@ -81,14 +92,22 @@ int __init omap_init_opp_table(struct omap_opp_def *opp_def,
 			dev = &oh->od->pdev->dev;
 		}
 
+<<<<<<< HEAD
 		r = opp_add(dev, opp_def->freq, opp_def->u_volt);
+=======
+		r = dev_pm_opp_add(dev, opp_def->freq, opp_def->u_volt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (r) {
 			dev_err(dev, "%s: add OPP %ld failed for %s [%d] result=%d\n",
 				__func__, opp_def->freq,
 				opp_def->hwmod_name, i, r);
 		} else {
 			if (!opp_def->default_available)
+<<<<<<< HEAD
 				r = opp_disable(dev, opp_def->freq);
+=======
+				r = dev_pm_opp_disable(dev, opp_def->freq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (r)
 				dev_err(dev, "%s: disable %ld failed for %s [%d] result=%d\n",
 					__func__, opp_def->freq,

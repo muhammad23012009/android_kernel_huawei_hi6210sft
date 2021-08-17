@@ -15,9 +15,16 @@
 
 #include <linux/compiler.h>
 #include <linux/stringify.h>
+<<<<<<< HEAD
 #include <asm/hazards.h>
 
 #if defined(CONFIG_CPU_MIPSR2) && !defined(CONFIG_MIPS_MT_SMTC)
+=======
+#include <asm/compiler.h>
+#include <asm/hazards.h>
+
+#if defined(CONFIG_CPU_MIPSR2) || defined (CONFIG_CPU_MIPSR6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void arch_local_irq_disable(void)
 {
@@ -40,7 +47,16 @@ static inline unsigned long arch_local_irq_save(void)
 	"	.set	push						\n"
 	"	.set	reorder						\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 	"	di	%[flags]					\n"
+=======
+#if defined(CONFIG_CPU_LOONGSON3)
+	"	mfc0	%[flags], $12					\n"
+	"	di							\n"
+#else
+	"	di	%[flags]					\n"
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	andi	%[flags], 1					\n"
 	"	" __stringify(__irq_disable_hazard) "			\n"
 	"	.set	pop						\n"
@@ -59,7 +75,11 @@ static inline void arch_local_irq_restore(unsigned long flags)
 	"	.set	push						\n"
 	"	.set	noreorder					\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 #if defined(CONFIG_IRQ_CPU)
+=======
+#if defined(CONFIG_IRQ_MIPS_CPU)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Slow, but doesn't suffer from a relatively unlikely race
 	 * condition we're having since days 1.
@@ -83,6 +103,7 @@ static inline void arch_local_irq_restore(unsigned long flags)
 	: "memory");
 }
 
+<<<<<<< HEAD
 static inline void __arch_local_irq_restore(unsigned long flags)
 {
 	__asm__ __volatile__(
@@ -112,11 +133,14 @@ static inline void __arch_local_irq_restore(unsigned long flags)
 	: "0" (flags)
 	: "memory");
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 /* Functions that require preempt_{dis,en}able() are in mips-atomic.c */
 void arch_local_irq_disable(void);
 unsigned long arch_local_irq_save(void);
 void arch_local_irq_restore(unsigned long flags);
+<<<<<<< HEAD
 void __arch_local_irq_restore(unsigned long flags);
 #endif /* if defined(CONFIG_CPU_MIPSR2) && !defined(CONFIG_MIPS_MT_SMTC) */
 
@@ -132,16 +156,26 @@ static inline void arch_local_irq_enable(void)
 	 */
 	smtc_ipi_replay();
 #endif
+=======
+#endif /* CONFIG_CPU_MIPSR2 || CONFIG_CPU_MIPSR6 */
+
+static inline void arch_local_irq_enable(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(
 	"	.set	push						\n"
 	"	.set	reorder						\n"
 	"	.set	noat						\n"
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	"	mfc0	$1, $2, 1	# SMTC - clear TCStatus.IXMT	\n"
 	"	ori	$1, 0x400					\n"
 	"	xori	$1, 0x400					\n"
 	"	mtc0	$1, $2, 1					\n"
 #elif defined(CONFIG_CPU_MIPSR2)
+=======
+#if   defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_CPU_MIPSR6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	ei							\n"
 #else
 	"	mfc0	$1,$12						\n"
@@ -163,11 +197,15 @@ static inline unsigned long arch_local_save_flags(void)
 	asm __volatile__(
 	"	.set	push						\n"
 	"	.set	reorder						\n"
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	"	mfc0	%[flags], $2, 1					\n"
 #else
 	"	mfc0	%[flags], $12					\n"
 #endif
+=======
+	"	mfc0	%[flags], $12					\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	.set	pop						\n"
 	: [flags] "=r" (flags));
 
@@ -177,6 +215,7 @@ static inline unsigned long arch_local_save_flags(void)
 
 static inline int arch_irqs_disabled_flags(unsigned long flags)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	/*
 	 * SMTC model uses TCStatus.IXMT to disable interrupts for a thread/CPU
@@ -185,6 +224,9 @@ static inline int arch_irqs_disabled_flags(unsigned long flags)
 #else
 	return !(flags & 1);
 #endif
+=======
+	return !(flags & 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* #ifndef __ASSEMBLY__ */

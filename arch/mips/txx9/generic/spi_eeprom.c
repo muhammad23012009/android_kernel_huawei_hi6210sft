@@ -80,7 +80,10 @@ static int __init early_seeprom_probe(struct spi_device *spi)
 static struct spi_driver early_seeprom_driver __initdata = {
 	.driver = {
 		.name	= "at25",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe	= early_seeprom_probe,
 };

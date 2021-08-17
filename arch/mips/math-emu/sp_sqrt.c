@@ -5,8 +5,11 @@
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
  *
+<<<<<<< HEAD
  * ########################################################################
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  This program is free software; you can distribute it and/or modify it
  *  under the terms of the GNU General Public License (Version 2) as
  *  published by the Free Software Foundation.
@@ -18,6 +21,7 @@
  *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
+<<<<<<< HEAD
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
  * ########################################################################
@@ -27,6 +31,14 @@
 #include "ieee754sp.h"
 
 ieee754sp ieee754sp_sqrt(ieee754sp x)
+=======
+ *  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
+ */
+
+#include "ieee754sp.h"
+
+union ieee754sp ieee754sp_sqrt(union ieee754sp x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ix, s, q, m, t, i;
 	unsigned int r;
@@ -35,11 +47,16 @@ ieee754sp ieee754sp_sqrt(ieee754sp x)
 	/* take care of Inf and NaN */
 
 	EXPLODEXSP;
+<<<<<<< HEAD
 	CLEARCX;
+=======
+	ieee754_clearcx();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	FLUSHXSP;
 
 	/* x == INF or NAN? */
 	switch (xc) {
+<<<<<<< HEAD
 	case IEEE754_CLASS_QNAN:
 		/* sqrt(Nan) = Nan */
 		return ieee754sp_nanxcpt(x, "sqrt");
@@ -57,12 +74,39 @@ ieee754sp ieee754sp_sqrt(ieee754sp x)
 		}
 		/* sqrt(+Inf) = Inf */
 		return x;
+=======
+	case IEEE754_CLASS_SNAN:
+		return ieee754sp_nanxcpt(x);
+
+	case IEEE754_CLASS_QNAN:
+		/* sqrt(Nan) = Nan */
+		return x;
+
+	case IEEE754_CLASS_ZERO:
+		/* sqrt(0) = 0 */
+		return x;
+
+	case IEEE754_CLASS_INF:
+		if (xs) {
+			/* sqrt(-Inf) = Nan */
+			ieee754_setcx(IEEE754_INVALID_OPERATION);
+			return ieee754sp_indef();
+		}
+		/* sqrt(+Inf) = Inf */
+		return x;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case IEEE754_CLASS_DNORM:
 	case IEEE754_CLASS_NORM:
 		if (xs) {
 			/* sqrt(-x) = Nan */
+<<<<<<< HEAD
 			SETCX(IEEE754_INVALID_OPERATION);
 			return ieee754sp_nanxcpt(ieee754sp_indef(), "sqrt");
+=======
+			ieee754_setcx(IEEE754_INVALID_OPERATION);
+			return ieee754sp_indef();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	}
@@ -99,12 +143,21 @@ ieee754sp ieee754sp_sqrt(ieee754sp x)
 	}
 
 	if (ix != 0) {
+<<<<<<< HEAD
 		SETCX(IEEE754_INEXACT);
 		switch (ieee754_csr.rm) {
 		case IEEE754_RP:
 			q += 2;
 			break;
 		case IEEE754_RN:
+=======
+		ieee754_setcx(IEEE754_INEXACT);
+		switch (ieee754_csr.rm) {
+		case FPU_CSR_RU:
+			q += 2;
+			break;
+		case FPU_CSR_RN:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			q += (q & 1);
 			break;
 		}

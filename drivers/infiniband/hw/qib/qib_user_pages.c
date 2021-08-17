@@ -52,7 +52,11 @@ static void __qib_release_user_pages(struct page **p, size_t num_pages,
  * Call with current->mm->mmap_sem held.
  */
 static int __qib_get_user_pages(unsigned long start_page, size_t num_pages,
+<<<<<<< HEAD
 				struct page **p, struct vm_area_struct **vma)
+=======
+				struct page **p)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long lock_limit;
 	size_t got;
@@ -66,10 +70,17 @@ static int __qib_get_user_pages(unsigned long start_page, size_t num_pages,
 	}
 
 	for (got = 0; got < num_pages; got += ret) {
+<<<<<<< HEAD
 		ret = get_user_pages(current, current->mm,
 				     start_page + got * PAGE_SIZE,
 				     num_pages - got, 1, 1,
 				     p + got, vma);
+=======
+		ret = get_user_pages(start_page + got * PAGE_SIZE,
+				     num_pages - got,
+				     FOLL_WRITE | FOLL_FORCE,
+				     p + got, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0)
 			goto bail_release;
 	}
@@ -98,6 +109,7 @@ bail:
  *
  * I'm sure we won't be so lucky with other iommu's, so FIXME.
  */
+<<<<<<< HEAD
 dma_addr_t qib_map_page(struct pci_dev *hwdev, struct page *page,
 			unsigned long offset, size_t size, int direction)
 {
@@ -108,13 +120,34 @@ dma_addr_t qib_map_page(struct pci_dev *hwdev, struct page *page,
 	if (phys == 0) {
 		pci_unmap_page(hwdev, phys, size, direction);
 		phys = pci_map_page(hwdev, page, offset, size, direction);
+=======
+int qib_map_page(struct pci_dev *hwdev, struct page *page, dma_addr_t *daddr)
+{
+	dma_addr_t phys;
+
+	phys = pci_map_page(hwdev, page, 0, PAGE_SIZE, PCI_DMA_FROMDEVICE);
+	if (pci_dma_mapping_error(hwdev, phys))
+		return -ENOMEM;
+
+	if (!phys) {
+		pci_unmap_page(hwdev, phys, PAGE_SIZE, PCI_DMA_FROMDEVICE);
+		phys = pci_map_page(hwdev, page, 0, PAGE_SIZE,
+				    PCI_DMA_FROMDEVICE);
+		if (pci_dma_mapping_error(hwdev, phys))
+			return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * FIXME: If we get 0 again, we should keep this page,
 		 * map another, then free the 0 page.
 		 */
 	}
+<<<<<<< HEAD
 
 	return phys;
+=======
+	*daddr = phys;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -136,7 +169,11 @@ int qib_get_user_pages(unsigned long start_page, size_t num_pages,
 
 	down_write(&current->mm->mmap_sem);
 
+<<<<<<< HEAD
 	ret = __qib_get_user_pages(start_page, num_pages, p, NULL);
+=======
+	ret = __qib_get_user_pages(start_page, num_pages, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	up_write(&current->mm->mmap_sem);
 

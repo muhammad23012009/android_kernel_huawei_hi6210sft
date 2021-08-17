@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
    comedi/drivers/dt2815.c
    Hardware driver for Data Translation DT2815
 
@@ -63,15 +64,78 @@ Configuration options:
 
 #define DT2815_SIZE 2
 
+=======
+ * comedi/drivers/dt2815.c
+ * Hardware driver for Data Translation DT2815
+ *
+ * COMEDI - Linux Control and Measurement Device Interface
+ * Copyright (C) 1999 Anders Blomdell <anders.blomdell@control.lth.se>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/*
+ * Driver: dt2815
+ * Description: Data Translation DT2815
+ * Author: ds
+ * Status: mostly complete, untested
+ * Devices: [Data Translation] DT2815 (dt2815)
+ *
+ * I'm not sure anyone has ever tested this board.  If you have information
+ * contrary, please update.
+ *
+ * Configuration options:
+ * [0] - I/O port base base address
+ * [1] - IRQ (unused)
+ * [2] - Voltage unipolar/bipolar configuration
+ *	0 == unipolar 5V  (0V -- +5V)
+ *	1 == bipolar 5V  (-5V -- +5V)
+ * [3] - Current offset configuration
+ *	0 == disabled  (0mA -- +32mAV)
+ *	1 == enabled  (+4mA -- +20mAV)
+ * [4] - Firmware program configuration
+ *	0 == program 1 (see manual table 5-4)
+ *	1 == program 2 (see manual table 5-4)
+ *	2 == program 3 (see manual table 5-4)
+ *	3 == program 4 (see manual table 5-4)
+ * [5] - Analog output 0 range configuration
+ *	0 == voltage
+ *	1 == current
+ * [6] - Analog output 1 range configuration (same options)
+ * [7] - Analog output 2 range configuration (same options)
+ * [8] - Analog output 3 range configuration (same options)
+ * [9] - Analog output 4 range configuration (same options)
+ * [10] - Analog output 5 range configuration (same options)
+ * [11] - Analog output 6 range configuration (same options)
+ * [12] - Analog output 7 range configuration (same options)
+ */
+
+#include <linux/module.h>
+#include "../comedidev.h"
+
+#include <linux/delay.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DT2815_DATA 0
 #define DT2815_STATUS 1
 
 struct dt2815_private {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct comedi_lrange *range_type_list[8];
 	unsigned int ao_readback[8];
 };
 
+<<<<<<< HEAD
 static int dt2815_wait_for_status(struct comedi_device *dev, int status)
 {
 	int i;
@@ -81,6 +145,19 @@ static int dt2815_wait_for_status(struct comedi_device *dev, int status)
 			break;
 	}
 	return status;
+=======
+static int dt2815_ao_status(struct comedi_device *dev,
+			    struct comedi_subdevice *s,
+			    struct comedi_insn *insn,
+			    unsigned long context)
+{
+	unsigned int status;
+
+	status = inb(dev->iobase + DT2815_STATUS);
+	if (status == context)
+		return 0;
+	return -EBUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int dt2815_ao_insn_read(struct comedi_device *dev,
@@ -103,6 +180,7 @@ static int dt2815_ao_insn(struct comedi_device *dev, struct comedi_subdevice *s,
 	struct dt2815_private *devpriv = dev->private;
 	int i;
 	int chan = CR_CHAN(insn->chanspec);
+<<<<<<< HEAD
 	unsigned int status;
 	unsigned int lo, hi;
 
@@ -125,12 +203,35 @@ static int dt2815_ao_insn(struct comedi_device *dev, struct comedi_subdevice *s,
 			       "on %d reason %x\n", chan, status);
 			return -EBUSY;
 		}
+=======
+	unsigned int lo, hi;
+	int ret;
+
+	for (i = 0; i < insn->n; i++) {
+		/* FIXME: lo bit 0 chooses voltage output or current output */
+		lo = ((data[i] & 0x0f) << 4) | (chan << 1) | 0x01;
+		hi = (data[i] & 0xff0) >> 4;
+
+		ret = comedi_timeout(dev, s, insn, dt2815_ao_status, 0x00);
+		if (ret)
+			return ret;
+
+		outb(lo, dev->iobase + DT2815_DATA);
+
+		ret = comedi_timeout(dev, s, insn, dt2815_ao_status, 0x10);
+		if (ret)
+			return ret;
+
+		outb(hi, dev->iobase + DT2815_DATA);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		devpriv->ao_readback[chan] = data[i];
 	}
 	return i;
 }
 
 /*
+<<<<<<< HEAD
   options[0]   Board base address
   options[1]   IRQ (not applicable)
   options[2]   Voltage unipolar/bipolar configuration
@@ -152,6 +253,29 @@ static int dt2815_ao_insn(struct comedi_device *dev, struct comedi_subdevice *s,
   options[12]   Analog output 7 range configuration
 		0 == voltage
 		1 == current
+=======
+ * options[0]   Board base address
+ * options[1]   IRQ (not applicable)
+ * options[2]   Voltage unipolar/bipolar configuration
+ *		0 == unipolar 5V  (0V -- +5V)
+ *		1 == bipolar 5V  (-5V -- +5V)
+ * options[3]   Current offset configuration
+ *		0 == disabled  (0mA -- +32mAV)
+ *		1 == enabled  (+4mA -- +20mAV)
+ * options[4]   Firmware program configuration
+ *		0 == program 1 (see manual table 5-4)
+ *		1 == program 2 (see manual table 5-4)
+ *		2 == program 3 (see manual table 5-4)
+ *		3 == program 4 (see manual table 5-4)
+ * options[5]   Analog output 0 range configuration
+ *		0 == voltage
+ *		1 == current
+ * options[6]   Analog output 1 range configuration
+ * ...
+ * options[12]   Analog output 7 range configuration
+ *		0 == voltage
+ *		1 == current
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 static int dt2815_attach(struct comedi_device *dev, struct comedi_devconfig *it)
@@ -162,7 +286,11 @@ static int dt2815_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	const struct comedi_lrange *current_range_type, *voltage_range_type;
 	int ret;
 
+<<<<<<< HEAD
 	ret = comedi_request_region(dev, it->options[0], DT2815_SIZE);
+=======
+	ret = comedi_request_region(dev, it->options[0], 0x2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -170,10 +298,16 @@ static int dt2815_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	devpriv = kzalloc(sizeof(*devpriv), GFP_KERNEL);
 	if (!devpriv)
 		return -ENOMEM;
 	dev->private = devpriv;
+=======
+	devpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));
+	if (!devpriv)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	s = &dev->subdevices[0];
 	/* ao subdevice */
@@ -204,6 +338,7 @@ static int dt2815_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		status = inb(dev->iobase + DT2815_STATUS);
 		if (status == 4) {
 			unsigned int program;
+<<<<<<< HEAD
 			program = (it->options[4] & 0x3) << 3 | 0x7;
 			outb(program, dev->iobase + DT2815_DATA);
 			printk(KERN_INFO ", program: 0x%x (@t=%d)\n",
@@ -212,6 +347,18 @@ static int dt2815_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		} else if (status != 0x00) {
 			printk(KERN_WARNING "dt2815: unexpected status 0x%x "
 			       "(@t=%d)\n", status, i);
+=======
+
+			program = (it->options[4] & 0x3) << 3 | 0x7;
+			outb(program, dev->iobase + DT2815_DATA);
+			dev_dbg(dev->class_dev, "program: 0x%x (@t=%d)\n",
+				program, i);
+			break;
+		} else if (status != 0x00) {
+			dev_dbg(dev->class_dev,
+				"unexpected status 0x%x (@t=%d)\n",
+				status, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (status & 0x60)
 				outb(0x00, dev->iobase + DT2815_STATUS);
 		}

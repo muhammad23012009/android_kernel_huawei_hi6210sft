@@ -21,14 +21,32 @@
 #include <linux/usb/usbnet.h>
 #include <linux/usb/cdc-wdm.h>
 #include <linux/usb/cdc_ncm.h>
+<<<<<<< HEAD
+=======
+#include <net/ipv6.h>
+#include <net/addrconf.h>
+
+/* alternative VLAN for IP session 0 if not untagged */
+#define MBIM_IPS0_VID	4094
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* driver specific data - must match cdc_ncm usage */
 struct cdc_mbim_state {
 	struct cdc_ncm_ctx *ctx;
 	atomic_t pmcount;
 	struct usb_driver *subdriver;
+<<<<<<< HEAD
 	struct usb_interface *control;
 	struct usb_interface *data;
+=======
+	unsigned long _unused;
+	unsigned long flags;
+};
+
+/* flags for the cdc_mbim_state.flags field */
+enum cdc_mbim_flags {
+	FLAG_IPS0_VLAN = 1 << 0,	/* IP session 0 is tagged  */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* using a counter to merge subdriver requests with our own into a combined state */
@@ -42,6 +60,7 @@ static int cdc_mbim_manage_power(struct usbnet *dev, int on)
 	if ((on && atomic_add_return(1, &info->pmcount) == 1) || (!on && atomic_dec_and_test(&info->pmcount))) {
 		/* need autopm_get/put here to ensure the usbcore sees the new value */
 		rv = usb_autopm_get_interface(dev->intf);
+<<<<<<< HEAD
 		if (rv < 0)
 			goto err;
 		dev->intf->needs_remote_wakeup = on;
@@ -49,6 +68,13 @@ static int cdc_mbim_manage_power(struct usbnet *dev, int on)
 	}
 err:
 	return rv;
+=======
+		dev->intf->needs_remote_wakeup = on;
+		if (!rv)
+			usb_autopm_put_interface(dev->intf);
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int cdc_mbim_wdm_manage_power(struct usb_interface *intf, int status)
@@ -62,12 +88,82 @@ static int cdc_mbim_wdm_manage_power(struct usb_interface *intf, int status)
 	return cdc_mbim_manage_power(dev, status);
 }
 
+<<<<<<< HEAD
+=======
+static int cdc_mbim_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid)
+{
+	struct usbnet *dev = netdev_priv(netdev);
+	struct cdc_mbim_state *info = (void *)&dev->data;
+
+	/* creation of this VLAN is a request to tag IP session 0 */
+	if (vid == MBIM_IPS0_VID)
+		info->flags |= FLAG_IPS0_VLAN;
+	else
+		if (vid >= 512)	/* we don't map these to MBIM session */
+			return -EINVAL;
+	return 0;
+}
+
+static int cdc_mbim_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
+{
+	struct usbnet *dev = netdev_priv(netdev);
+	struct cdc_mbim_state *info = (void *)&dev->data;
+
+	/* this is a request for an untagged IP session 0 */
+	if (vid == MBIM_IPS0_VID)
+		info->flags &= ~FLAG_IPS0_VLAN;
+	return 0;
+}
+
+static const struct net_device_ops cdc_mbim_netdev_ops = {
+	.ndo_open             = usbnet_open,
+	.ndo_stop             = usbnet_stop,
+	.ndo_start_xmit       = usbnet_start_xmit,
+	.ndo_tx_timeout       = usbnet_tx_timeout,
+	.ndo_change_mtu       = cdc_ncm_change_mtu,
+	.ndo_set_mac_address  = eth_mac_addr,
+	.ndo_validate_addr    = eth_validate_addr,
+	.ndo_vlan_rx_add_vid  = cdc_mbim_rx_add_vid,
+	.ndo_vlan_rx_kill_vid = cdc_mbim_rx_kill_vid,
+};
+
+/* Change the control interface altsetting and update the .driver_info
+ * pointer if the matching entry after changing class codes points to
+ * a different struct
+ */
+static int cdc_mbim_set_ctrlalt(struct usbnet *dev, struct usb_interface *intf, u8 alt)
+{
+	struct usb_driver *driver = to_usb_driver(intf->dev.driver);
+	const struct usb_device_id *id;
+	struct driver_info *info;
+	int ret;
+
+	ret = usb_set_interface(dev->udev,
+				intf->cur_altsetting->desc.bInterfaceNumber,
+				alt);
+	if (ret)
+		return ret;
+
+	id = usb_match_id(intf, driver->id_table);
+	if (!id)
+		return -ENODEV;
+
+	info = (struct driver_info *)id->driver_info;
+	if (info != dev->driver_info) {
+		dev_dbg(&intf->dev, "driver_info updated to '%s'\n",
+			info->description);
+		dev->driver_info = info;
+	}
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int cdc_mbim_bind(struct usbnet *dev, struct usb_interface *intf)
 {
 	struct cdc_ncm_ctx *ctx;
 	struct usb_driver *subdriver = ERR_PTR(-ENODEV);
 	int ret = -ENODEV;
+<<<<<<< HEAD
 	u8 data_altsetting = cdc_ncm_select_altsetting(dev, intf);
 	struct cdc_mbim_state *info = (void *)&dev->data;
 
@@ -76,6 +172,25 @@ static int cdc_mbim_bind(struct usbnet *dev, struct usb_interface *intf)
 		goto err;
 
 	ret = cdc_ncm_bind_common(dev, intf, data_altsetting);
+=======
+	u8 data_altsetting = 1;
+	struct cdc_mbim_state *info = (void *)&dev->data;
+
+	/* should we change control altsetting on a NCM/MBIM function? */
+	if (cdc_ncm_select_altsetting(intf) == CDC_NCM_COMM_ALTSETTING_MBIM) {
+		data_altsetting = CDC_NCM_DATA_ALTSETTING_MBIM;
+		ret = cdc_mbim_set_ctrlalt(dev, intf, CDC_NCM_COMM_ALTSETTING_MBIM);
+		if (ret)
+			goto err;
+		ret = -ENODEV;
+	}
+
+	/* we will hit this for NCM/MBIM functions if prefer_mbim is false */
+	if (!cdc_ncm_comm_intf_is_mbim(intf->cur_altsetting))
+		goto err;
+
+	ret = cdc_ncm_bind_common(dev, intf, data_altsetting, dev->driver_info->data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto err;
 
@@ -101,7 +216,14 @@ static int cdc_mbim_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->flags |= IFF_NOARP;
 
 	/* no need to put the VLAN tci in the packet headers */
+<<<<<<< HEAD
 	dev->net->features |= NETIF_F_HW_VLAN_CTAG_TX;
+=======
+	dev->net->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_FILTER;
+
+	/* monitor VLAN additions and removals */
+	dev->net->netdev_ops = &cdc_mbim_netdev_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	return ret;
 }
@@ -164,12 +286,33 @@ static struct sk_buff *cdc_mbim_tx_fixup(struct usbnet *dev, struct sk_buff *skb
 			skb_pull(skb, ETH_HLEN);
 		}
 
+<<<<<<< HEAD
 		/* mapping VLANs to MBIM sessions:
 		 *   no tag     => IPS session <0>
 		 *   1 - 255    => IPS session <vlanid>
 		 *   256 - 511  => DSS session <vlanid - 256>
 		 *   512 - 4095 => unsupported, drop
 		 */
+=======
+		/* Is IP session <0> tagged too? */
+		if (info->flags & FLAG_IPS0_VLAN) {
+			/* drop all untagged packets */
+			if (!tci)
+				goto error;
+			/* map MBIM_IPS0_VID to IPS<0> */
+			if (tci == MBIM_IPS0_VID)
+				tci = 0;
+		}
+
+		/* mapping VLANs to MBIM sessions:
+		 *   no tag     => IPS session <0> if !FLAG_IPS0_VLAN
+		 *   1 - 255    => IPS session <vlanid>
+		 *   256 - 511  => DSS session <vlanid - 256>
+		 *   512 - 4093 => unsupported, drop
+		 *   4094       => IPS session <0> if FLAG_IPS0_VLAN
+		 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (tci & 0x0f00) {
 		case 0x0000: /* VLAN ID 0 - 255 */
 			if (!is_ip)
@@ -178,6 +321,11 @@ static struct sk_buff *cdc_mbim_tx_fixup(struct usbnet *dev, struct sk_buff *skb
 			c[3] = tci;
 			break;
 		case 0x0100: /* VLAN ID 256 - 511 */
+<<<<<<< HEAD
+=======
+			if (is_ip)
+				goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sign = cpu_to_le32(USB_CDC_MBIM_NDP16_DSS_SIGN);
 			c = (u8 *)&sign;
 			c[3] = tci;
@@ -190,7 +338,11 @@ static struct sk_buff *cdc_mbim_tx_fixup(struct usbnet *dev, struct sk_buff *skb
 	}
 
 	spin_lock_bh(&ctx->mtx);
+<<<<<<< HEAD
 	skb_out = cdc_ncm_fill_tx_frame(ctx, skb, sign);
+=======
+	skb_out = cdc_ncm_fill_tx_frame(dev, skb, sign);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_bh(&ctx->mtx);
 	return skb_out;
 
@@ -201,12 +353,81 @@ error:
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+/* Some devices are known to send Neigbor Solicitation messages and
+ * require Neigbor Advertisement replies.  The IPv6 core will not
+ * respond since IFF_NOARP is set, so we must handle them ourselves.
+ */
+static void do_neigh_solicit(struct usbnet *dev, u8 *buf, u16 tci)
+{
+	struct ipv6hdr *iph = (void *)buf;
+	struct nd_msg *msg = (void *)(iph + 1);
+	struct net_device *netdev;
+	struct inet6_dev *in6_dev;
+	bool is_router;
+
+	/* we'll only respond to requests from unicast addresses to
+	 * our solicited node addresses.
+	 */
+	if (!ipv6_addr_is_solict_mult(&iph->daddr) ||
+	    !(ipv6_addr_type(&iph->saddr) & IPV6_ADDR_UNICAST))
+		return;
+
+	/* need to send the NA on the VLAN dev, if any */
+	rcu_read_lock();
+	if (tci) {
+		netdev = __vlan_find_dev_deep_rcu(dev->net, htons(ETH_P_8021Q),
+						  tci);
+		if (!netdev) {
+			rcu_read_unlock();
+			return;
+		}
+	} else {
+		netdev = dev->net;
+	}
+	dev_hold(netdev);
+	rcu_read_unlock();
+
+	in6_dev = in6_dev_get(netdev);
+	if (!in6_dev)
+		goto out;
+	is_router = !!in6_dev->cnf.forwarding;
+	in6_dev_put(in6_dev);
+
+	/* ipv6_stub != NULL if in6_dev_get returned an inet6_dev */
+	ipv6_stub->ndisc_send_na(netdev, &iph->saddr, &msg->target,
+				 is_router /* router */,
+				 true /* solicited */,
+				 false /* override */,
+				 true /* inc_opt */);
+out:
+	dev_put(netdev);
+}
+
+static bool is_neigh_solicit(u8 *buf, size_t len)
+{
+	struct ipv6hdr *iph = (void *)buf;
+	struct nd_msg *msg = (void *)(iph + 1);
+
+	return (len >= sizeof(struct ipv6hdr) + sizeof(struct nd_msg) &&
+		iph->nexthdr == IPPROTO_ICMPV6 &&
+		msg->icmph.icmp6_code == 0 &&
+		msg->icmph.icmp6_type == NDISC_NEIGHBOUR_SOLICITATION);
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct sk_buff *cdc_mbim_process_dgram(struct usbnet *dev, u8 *buf, size_t len, u16 tci)
 {
 	__be16 proto = htons(ETH_P_802_3);
 	struct sk_buff *skb = NULL;
 
+<<<<<<< HEAD
 	if (tci < 256) { /* IPS session? */
+=======
+	if (tci < 256 || tci == MBIM_IPS0_VID) { /* IPS session? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (len < sizeof(struct iphdr))
 			goto err;
 
@@ -215,6 +436,11 @@ static struct sk_buff *cdc_mbim_process_dgram(struct usbnet *dev, u8 *buf, size_
 			proto = htons(ETH_P_IP);
 			break;
 		case 0x60:
+<<<<<<< HEAD
+=======
+			if (is_neigh_solicit(buf, len))
+				do_neigh_solicit(dev, buf, tci);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			proto = htons(ETH_P_IPV6);
 			break;
 		default:
@@ -230,7 +456,11 @@ static struct sk_buff *cdc_mbim_process_dgram(struct usbnet *dev, u8 *buf, size_
 	skb_put(skb, ETH_HLEN);
 	skb_reset_mac_header(skb);
 	eth_hdr(skb)->h_proto = proto;
+<<<<<<< HEAD
 	memset(eth_hdr(skb)->h_source, 0, ETH_ALEN);
+=======
+	eth_zero_addr(eth_hdr(skb)->h_source);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(eth_hdr(skb)->h_dest, dev->net->dev_addr, ETH_ALEN);
 
 	/* add datagram */
@@ -238,7 +468,11 @@ static struct sk_buff *cdc_mbim_process_dgram(struct usbnet *dev, u8 *buf, size_
 
 	/* map MBIM session to VLAN */
 	if (tci)
+<<<<<<< HEAD
 		vlan_put_tag(skb, htons(ETH_P_8021Q), tci);
+=======
+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), tci);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	return skb;
 }
@@ -256,6 +490,10 @@ static int cdc_mbim_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
 	struct usb_cdc_ncm_dpe16 *dpe16;
 	int ndpoffset;
 	int loopcount = 50; /* arbitrary max preventing infinite loop */
+<<<<<<< HEAD
+=======
+	u32 payload = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *c;
 	u16 tci;
 
@@ -274,6 +512,12 @@ next_ndp:
 	case cpu_to_le32(USB_CDC_MBIM_NDP16_IPS_SIGN):
 		c = (u8 *)&ndp16->dwSignature;
 		tci = c[3];
+<<<<<<< HEAD
+=======
+		/* tag IPS<0> packets too if MBIM_IPS0_VID exists */
+		if (!tci && info->flags & FLAG_IPS0_VLAN)
+			tci = MBIM_IPS0_VID;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case cpu_to_le32(USB_CDC_MBIM_NDP16_DSS_SIGN):
 		c = (u8 *)&ndp16->dwSignature;
@@ -315,6 +559,10 @@ next_ndp:
 			if (!skb)
 				goto error;
 			usbnet_skb_return(dev, skb);
+<<<<<<< HEAD
+=======
+			payload += len;	/* count payload bytes in this NTB */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 err_ndp:
@@ -323,6 +571,13 @@ err_ndp:
 	if (ndpoffset && loopcount--)
 		goto next_ndp;
 
+<<<<<<< HEAD
+=======
+	/* update stats */
+	ctx->rx_overhead += skb_in->len - payload;
+	ctx->rx_ntbs++;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 error:
 	return 0;
@@ -330,15 +585,24 @@ error:
 
 static int cdc_mbim_suspend(struct usb_interface *intf, pm_message_t message)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret = -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usbnet *dev = usb_get_intfdata(intf);
 	struct cdc_mbim_state *info = (void *)&dev->data;
 	struct cdc_ncm_ctx *ctx = info->ctx;
 
+<<<<<<< HEAD
 	if (ctx == NULL) {
 		ret = -1;
 		goto error;
 	}
+=======
+	if (!ctx)
+		goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Both usbnet_suspend() and subdriver->suspend() MUST return 0
@@ -371,7 +635,11 @@ static int cdc_mbim_resume(struct usb_interface *intf)
 	if (ret < 0)
 		goto err;
 	ret = usbnet_resume(intf);
+<<<<<<< HEAD
 	if (ret < 0 && callsub && info->subdriver->suspend)
+=======
+	if (ret < 0 && callsub)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		info->subdriver->suspend(intf, PMSG_SUSPEND);
 err:
 	return ret;
@@ -388,9 +656,24 @@ static const struct driver_info cdc_mbim_info = {
 };
 
 /* MBIM and NCM devices should not need a ZLP after NTBs with
+<<<<<<< HEAD
  * dwNtbOutMaxSize length. This driver_info is for the exceptional
  * devices requiring it anyway, allowing them to be supported without
  * forcing the performance penalty on all the sane devices.
+=======
+ * dwNtbOutMaxSize length. Nevertheless, a number of devices from
+ * different vendor IDs will fail unless we send ZLPs, forcing us
+ * to make this the default.
+ *
+ * This default may cause a performance penalty for spec conforming
+ * devices wanting to take advantage of optimizations possible without
+ * ZLPs.  A whitelist is added in an attempt to avoid this for devices
+ * known to conform to the MBIM specification.
+ *
+ * All known devices supporting NCM compatibility mode are also
+ * conforming to the NCM and MBIM specifications. For this reason, the
+ * NCM subclass entry is also in the ZLP whitelist.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static const struct driver_info cdc_mbim_info_zlp = {
 	.description = "CDC MBIM",
@@ -402,6 +685,44 @@ static const struct driver_info cdc_mbim_info_zlp = {
 	.tx_fixup = cdc_mbim_tx_fixup,
 };
 
+<<<<<<< HEAD
+=======
+/* The spefication explicitly allows NDPs to be placed anywhere in the
+ * frame, but some devices fail unless the NDP is placed after the IP
+ * packets.  Using the CDC_NCM_FLAG_NDP_TO_END flags to force this
+ * behaviour.
+ *
+ * Note: The current implementation of this feature restricts each NTB
+ * to a single NDP, implying that multiplexed sessions cannot share an
+ * NTB. This might affect performace for multiplexed sessions.
+ */
+static const struct driver_info cdc_mbim_info_ndp_to_end = {
+	.description = "CDC MBIM",
+	.flags = FLAG_NO_SETINT | FLAG_MULTI_PACKET | FLAG_WWAN,
+	.bind = cdc_mbim_bind,
+	.unbind = cdc_mbim_unbind,
+	.manage_power = cdc_mbim_manage_power,
+	.rx_fixup = cdc_mbim_rx_fixup,
+	.tx_fixup = cdc_mbim_tx_fixup,
+	.data = CDC_NCM_FLAG_NDP_TO_END,
+};
+
+/* Some modems (e.g. Telit LE922A6) do not work properly with altsetting
+ * toggle done in cdc_ncm_bind_common. CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE
+ * flag is used to avoid this procedure.
+ */
+static const struct driver_info cdc_mbim_info_avoid_altsetting_toggle = {
+	.description = "CDC MBIM",
+	.flags = FLAG_NO_SETINT | FLAG_MULTI_PACKET | FLAG_WWAN | FLAG_SEND_ZLP,
+	.bind = cdc_mbim_bind,
+	.unbind = cdc_mbim_unbind,
+	.manage_power = cdc_mbim_manage_power,
+	.rx_fixup = cdc_mbim_rx_fixup,
+	.tx_fixup = cdc_mbim_tx_fixup,
+	.data = CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct usb_device_id mbim_devs[] = {
 	/* This duplicate NCM entry is intentional. MBIM devices can
 	 * be disguised as NCM by default, and this is necessary to
@@ -413,6 +734,7 @@ static const struct usb_device_id mbim_devs[] = {
 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
 	  .driver_info = (unsigned long)&cdc_mbim_info,
 	},
+<<<<<<< HEAD
 	/* Sierra Wireless MC7710 need ZLPs */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68a2, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
@@ -423,6 +745,30 @@ static const struct usb_device_id mbim_devs[] = {
 	},
 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
 	  .driver_info = (unsigned long)&cdc_mbim_info,
+=======
+	/* ZLP conformance whitelist: All Ericsson MBIM devices */
+	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bdb, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+	  .driver_info = (unsigned long)&cdc_mbim_info,
+	},
+
+	/* Some Huawei devices, ME906s-158 (12d1:15c1) and E3372
+	 * (12d1:157d), are known to fail unless the NDP is placed
+	 * after the IP packets.  Applying the quirk to all Huawei
+	 * devices is broader than necessary, but harmless.
+	 */
+	{ USB_VENDOR_AND_INTERFACE_INFO(0x12d1, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+	  .driver_info = (unsigned long)&cdc_mbim_info_ndp_to_end,
+	},
+
+	/* Telit LE922A6 in MBIM composition */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1041, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
+	},
+
+	/* default entry */
+	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{
 	},

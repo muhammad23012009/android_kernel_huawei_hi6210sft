@@ -22,8 +22,11 @@
 #ifndef MC44S803_H
 #define MC44S803_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dvb_frontend;
 struct i2c_adapter;
 
@@ -32,7 +35,11 @@ struct mc44s803_config {
 	u8 dig_out;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_MC44S803)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_MC44S803)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *mc44s803_attach(struct dvb_frontend *fe,
 	 struct i2c_adapter *i2c, struct mc44s803_config *cfg);
 #else

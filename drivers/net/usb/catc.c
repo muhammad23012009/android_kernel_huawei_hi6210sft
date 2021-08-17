@@ -24,15 +24,22 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * 
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -378,7 +385,11 @@ static int catc_tx_run(struct catc *catc)
 	catc->tx_idx = !catc->tx_idx;
 	catc->tx_ptr = 0;
 
+<<<<<<< HEAD
 	catc->netdev->trans_start = jiffies;
+=======
+	netif_trans_update(catc->netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return status;
 }
 
@@ -391,7 +402,11 @@ static void catc_tx_done(struct urb *urb)
 	if (status == -ECONNRESET) {
 		dev_dbg(&urb->dev->dev, "Tx Reset.\n");
 		urb->status = 0;
+<<<<<<< HEAD
 		catc->netdev->trans_start = jiffies;
+=======
+		netif_trans_update(catc->netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		catc->netdev->stats.tx_errors++;
 		clear_bit(TX_RUNNING, &catc->flags);
 		netif_wake_queue(catc->netdev);
@@ -640,10 +655,17 @@ static void catc_set_multicast_list(struct net_device *netdev)
 {
 	struct catc *catc = netdev_priv(netdev);
 	struct netdev_hw_addr *ha;
+<<<<<<< HEAD
 	u8 broadcast[6];
 	u8 rx = RxEnable | RxPolarity | RxMultiCast;
 
 	memset(broadcast, 0xff, 6);
+=======
+	u8 broadcast[ETH_ALEN];
+	u8 rx = RxEnable | RxPolarity | RxMultiCast;
+
+	eth_broadcast_addr(broadcast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(catc->multicast, 0, 64);
 
 	catc_multicast(broadcast, catc->multicast);
@@ -778,7 +800,11 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 	struct usb_device *usbdev = interface_to_usbdev(intf);
 	struct net_device *netdev;
 	struct catc *catc;
+<<<<<<< HEAD
 	u8 broadcast[6];
+=======
+	u8 broadcast[ETH_ALEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int pktsz, ret;
 
 	if (usb_set_interface(usbdev,
@@ -795,7 +821,11 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 
 	netdev->netdev_ops = &catc_netdev_ops;
 	netdev->watchdog_timeo = TX_TIMEOUT;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &ops);
+=======
+	netdev->ethtool_ops = &ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	catc->usbdev = usbdev;
 	catc->netdev = netdev;
@@ -889,7 +919,11 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
 		
 		dev_dbg(dev, "Filling the multicast list.\n");
 	  
+<<<<<<< HEAD
 		memset(broadcast, 0xff, 6);
+=======
+		eth_broadcast_addr(broadcast);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		catc_multicast(broadcast, catc->multicast);
 		catc_multicast(netdev->dev_addr, catc->multicast);
 		catc_write_mem(catc, 0xfa80, catc->multicast, 64);

@@ -18,8 +18,13 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 
 #include <asm/sched_clock.h>
+=======
+#include <linux/sched_clock.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
@@ -181,7 +186,11 @@ static struct timer_s timers[] = {
 		.name      = "clockevent",
 		.opts      = TIMER_OPTS_DISABLED,
 		.irqaction = {
+<<<<<<< HEAD
 			.flags   = IRQF_DISABLED | IRQF_TIMER,
+=======
+			.flags   = IRQF_TIMER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.handler = timer_interrupt,
 		}
 	},
@@ -190,7 +199,11 @@ static struct timer_s timers[] = {
 		.period     = ~0,
 		.opts       = TIMER_OPTS_PERIODIC,
 		.irqaction = {
+<<<<<<< HEAD
 			.flags   = IRQF_DISABLED | IRQF_TIMER,
+=======
+			.flags   = IRQF_TIMER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.handler = freerun_interrupt,
 		}
 	},
@@ -285,7 +298,11 @@ static struct clocksource clocksource_davinci = {
 /*
  * Overwrite weak default sched_clock with something more precise
  */
+<<<<<<< HEAD
 static u32 notrace davinci_read_sched_clock(void)
+=======
+static u64 notrace davinci_read_sched_clock(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return timer32_read(&timers[TID_CLOCKSOURCE]);
 }
@@ -303,6 +320,7 @@ static int davinci_set_next_event(unsigned long cycles,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void davinci_set_mode(enum clock_event_mode mode,
 			     struct clock_event_device *evt)
 {
@@ -334,6 +352,44 @@ static struct clock_event_device clockevent_davinci = {
 	.shift		= 32,
 	.set_next_event	= davinci_set_next_event,
 	.set_mode	= davinci_set_mode,
+=======
+static int davinci_shutdown(struct clock_event_device *evt)
+{
+	struct timer_s *t = &timers[TID_CLOCKEVENT];
+
+	t->opts &= ~TIMER_OPTS_STATE_MASK;
+	t->opts |= TIMER_OPTS_DISABLED;
+	return 0;
+}
+
+static int davinci_set_oneshot(struct clock_event_device *evt)
+{
+	struct timer_s *t = &timers[TID_CLOCKEVENT];
+
+	t->opts &= ~TIMER_OPTS_STATE_MASK;
+	t->opts |= TIMER_OPTS_ONESHOT;
+	return 0;
+}
+
+static int davinci_set_periodic(struct clock_event_device *evt)
+{
+	struct timer_s *t = &timers[TID_CLOCKEVENT];
+
+	t->period = davinci_clock_tick_rate / (HZ);
+	t->opts &= ~TIMER_OPTS_STATE_MASK;
+	t->opts |= TIMER_OPTS_PERIODIC;
+	timer32_config(t);
+	return 0;
+}
+
+static struct clock_event_device clockevent_davinci = {
+	.features		= CLOCK_EVT_FEAT_PERIODIC |
+				  CLOCK_EVT_FEAT_ONESHOT,
+	.set_next_event		= davinci_set_next_event,
+	.set_state_shutdown	= davinci_shutdown,
+	.set_state_periodic	= davinci_set_periodic,
+	.set_state_oneshot	= davinci_set_oneshot,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -343,8 +399,11 @@ void __init davinci_timer_init(void)
 	struct davinci_soc_info *soc_info = &davinci_soc_info;
 	unsigned int clockevent_id;
 	unsigned int clocksource_id;
+<<<<<<< HEAD
 	static char err[] __initdata = KERN_ERR
 		"%s: can't register clocksource!\n";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	clockevent_id = soc_info->timer_info->clockevent_id;
@@ -365,12 +424,21 @@ void __init davinci_timer_init(void)
 
 		/* Only bottom timers can use compare regs */
 		if (IS_TIMER_TOP(clockevent_id))
+<<<<<<< HEAD
 			pr_warning("davinci_timer_init: Invalid use"
 				" of system timers.  Results unpredictable.\n");
 		else if ((dtip[event_timer].cmp_off == 0)
 				|| (dtip[event_timer].cmp_irq == 0))
 			pr_warning("davinci_timer_init:  Invalid timer instance"
 				" setup.  Results unpredictable.\n");
+=======
+			pr_warn("%s: Invalid use of system timers.  Results unpredictable.\n",
+				__func__);
+		else if ((dtip[event_timer].cmp_off == 0)
+				|| (dtip[event_timer].cmp_irq == 0))
+			pr_warn("%s: Invalid timer instance setup.  Results unpredictable.\n",
+				__func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else {
 			timers[TID_CLOCKEVENT].opts |= TIMER_OPTS_USE_COMPARE;
 			clockevent_davinci.features = CLOCK_EVT_FEAT_ONESHOT;
@@ -390,13 +458,21 @@ void __init davinci_timer_init(void)
 	clocksource_davinci.name = id_to_name[clocksource_id];
 	if (clocksource_register_hz(&clocksource_davinci,
 				    davinci_clock_tick_rate))
+<<<<<<< HEAD
 		printk(err, clocksource_davinci.name);
 
 	setup_sched_clock(davinci_read_sched_clock, 32,
+=======
+		pr_err("%s: can't register clocksource!\n",
+		       clocksource_davinci.name);
+
+	sched_clock_register(davinci_read_sched_clock, 32,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  davinci_clock_tick_rate);
 
 	/* setup clockevent */
 	clockevent_davinci.name = id_to_name[timers[TID_CLOCKEVENT].id];
+<<<<<<< HEAD
 	clockevent_davinci.mult = div_sc(davinci_clock_tick_rate, NSEC_PER_SEC,
 					 clockevent_davinci.shift);
 	clockevent_davinci.max_delta_ns =
@@ -405,6 +481,12 @@ void __init davinci_timer_init(void)
 
 	clockevent_davinci.cpumask = cpumask_of(0);
 	clockevents_register_device(&clockevent_davinci);
+=======
+
+	clockevent_davinci.cpumask = cpumask_of(0);
+	clockevents_config_and_register(&clockevent_davinci,
+					davinci_clock_tick_rate, 1, 0xfffffffe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i=0; i< ARRAY_SIZE(timers); i++)
 		timer32_config(&timers[i]);

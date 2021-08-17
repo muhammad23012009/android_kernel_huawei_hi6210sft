@@ -85,7 +85,11 @@ int powersave_nap;
 /*
  * Register the sysctl to set/clear powersave_nap.
  */
+<<<<<<< HEAD
 static ctl_table powersave_nap_ctl_table[]={
+=======
+static struct ctl_table powersave_nap_ctl_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "powersave-nap",
 		.data		= &powersave_nap,
@@ -95,7 +99,11 @@ static ctl_table powersave_nap_ctl_table[]={
 	},
 	{}
 };
+<<<<<<< HEAD
 static ctl_table powersave_nap_sysctl_root[] = {
+=======
+static struct ctl_table powersave_nap_sysctl_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "kernel",
 		.mode		= 0555,

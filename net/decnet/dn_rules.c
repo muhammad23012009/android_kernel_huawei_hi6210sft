@@ -229,7 +229,10 @@ static const struct fib_rules_ops __net_initconst dn_fib_rules_ops_template = {
 	.configure	= dn_fib_rule_configure,
 	.compare	= dn_fib_rule_compare,
 	.fill		= dn_fib_rule_fill,
+<<<<<<< HEAD
 	.default_pref	= fib_default_rule_pref,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flush_cache	= dn_fib_rule_flush_cache,
 	.nlgroup	= RTNLGRP_DECnet_RULE,
 	.policy		= dn_fib_rule_policy,
@@ -248,7 +251,13 @@ void __init dn_fib_rules_init(void)
 
 void __exit dn_fib_rules_cleanup(void)
 {
+<<<<<<< HEAD
 	fib_rules_unregister(dn_fib_rules_ops);
+=======
+	rtnl_lock();
+	fib_rules_unregister(dn_fib_rules_ops);
+	rtnl_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_barrier();
 }
 

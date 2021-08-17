@@ -183,6 +183,10 @@ static const struct user_regset_view hexagon_user_view = {
 	.e_machine = ELF_ARCH,
 	.ei_osabi = ELF_OSABI,
 	.regsets = hexagon_regsets,
+<<<<<<< HEAD
+=======
+	.e_flags = ELF_CORE_EFLAGS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.n = ARRAY_SIZE(hexagon_regsets)
 };
 

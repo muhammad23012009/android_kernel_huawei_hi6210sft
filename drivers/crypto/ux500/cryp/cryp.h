@@ -114,6 +114,12 @@ enum cryp_status_id {
 };
 
 /* Cryp DMA interface */
+<<<<<<< HEAD
+=======
+#define CRYP_DMA_TX_FIFO	0x08
+#define CRYP_DMA_RX_FIFO	0x10
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum cryp_dma_req_type {
 	CRYP_DMA_DISABLE_BOTH,
 	CRYP_DMA_ENABLE_IN_DATA,
@@ -217,7 +223,12 @@ struct cryp_dma {
 
 /**
  * struct cryp_device_data - structure for a cryp device.
+<<<<<<< HEAD
  * @base: Pointer to the hardware base address.
+=======
+ * @base: Pointer to virtual base address of the cryp device.
+ * @phybase: Pointer to physical memory location of the cryp device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @dev: Pointer to the devices dev structure.
  * @clk: Pointer to the device's clock control.
  * @pwr_regulator: Pointer to the device's power control.
@@ -232,6 +243,10 @@ struct cryp_dma {
  */
 struct cryp_device_data {
 	struct cryp_register __iomem *base;
+<<<<<<< HEAD
+=======
+	phys_addr_t phybase;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *dev;
 	struct clk *clk;
 	struct regulator *pwr_regulator;

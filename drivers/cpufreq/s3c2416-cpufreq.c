@@ -72,6 +72,7 @@ static struct s3c2416_dvfs s3c2416_dvfs_table[] = {
 #endif
 
 static struct cpufreq_frequency_table s3c2416_freq_table[] = {
+<<<<<<< HEAD
 	{ SOURCE_HCLK, FREQ_DVS },
 	{ SOURCE_ARMDIV, 133333 },
 	{ SOURCE_ARMDIV, 266666 },
@@ -97,6 +98,23 @@ static int s3c2416_cpufreq_verify_speed(struct cpufreq_policy *policy)
 	return cpufreq_frequency_table_verify(policy, s3c_freq->freq_table);
 }
 
+=======
+	{ 0, SOURCE_HCLK, FREQ_DVS },
+	{ 0, SOURCE_ARMDIV, 133333 },
+	{ 0, SOURCE_ARMDIV, 266666 },
+	{ 0, SOURCE_ARMDIV, 400000 },
+	{ 0, 0, CPUFREQ_TABLE_END },
+};
+
+static struct cpufreq_frequency_table s3c2450_freq_table[] = {
+	{ 0, SOURCE_HCLK, FREQ_DVS },
+	{ 0, SOURCE_ARMDIV, 133500 },
+	{ 0, SOURCE_ARMDIV, 267000 },
+	{ 0, SOURCE_ARMDIV, 534000 },
+	{ 0, 0, CPUFREQ_TABLE_END },
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int s3c2416_cpufreq_get_speed(unsigned int cpu)
 {
 	struct s3c2416_data *s3c_freq = &s3c2416_cpufreq;
@@ -205,7 +223,11 @@ static int s3c2416_cpufreq_leave_dvs(struct s3c2416_data *s3c_freq, int idx)
 		ret = s3c2416_cpufreq_set_armdiv(s3c_freq,
 					clk_get_rate(s3c_freq->hclk) / 1000);
 		if (ret < 0) {
+<<<<<<< HEAD
 			pr_err("cpufreq: Failed to to set the armdiv to %lukHz: %d\n",
+=======
+			pr_err("cpufreq: Failed to set the armdiv to %lukHz: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       clk_get_rate(s3c_freq->hclk) / 1000, ret);
 			return ret;
 		}
@@ -227,6 +249,7 @@ static int s3c2416_cpufreq_leave_dvs(struct s3c2416_data *s3c_freq, int idx)
 }
 
 static int s3c2416_cpufreq_set_target(struct cpufreq_policy *policy,
+<<<<<<< HEAD
 				      unsigned int target_freq,
 				      unsigned int relation)
 {
@@ -245,6 +268,17 @@ static int s3c2416_cpufreq_set_target(struct cpufreq_policy *policy,
 		goto out;
 
 	idx = s3c_freq->freq_table[i].index;
+=======
+				      unsigned int index)
+{
+	struct s3c2416_data *s3c_freq = &s3c2416_cpufreq;
+	unsigned int new_freq;
+	int idx, ret, to_dvs = 0;
+
+	mutex_lock(&cpufreq_lock);
+
+	idx = s3c_freq->freq_table[index].driver_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (idx == SOURCE_HCLK)
 		to_dvs = 1;
@@ -256,14 +290,18 @@ static int s3c2416_cpufreq_set_target(struct cpufreq_policy *policy,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	freqs.flags = 0;
 	freqs.old = s3c_freq->is_dvs ? FREQ_DVS
 				     : clk_get_rate(s3c_freq->armclk) / 1000;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* When leavin dvs mode, always switch the armdiv to the hclk rate
 	 * The S3C2416 has stability issues when switching directly to
 	 * higher frequencies.
 	 */
+<<<<<<< HEAD
 	freqs.new = (s3c_freq->is_dvs && !to_dvs)
 				? clk_get_rate(s3c_freq->hclk) / 1000
 				: s3c_freq->freq_table[i].frequency;
@@ -274,6 +312,11 @@ static int s3c2416_cpufreq_set_target(struct cpufreq_policy *policy,
 		goto out;
 
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+=======
+	new_freq = (s3c_freq->is_dvs && !to_dvs)
+				? clk_get_rate(s3c_freq->hclk) / 1000
+				: s3c_freq->freq_table[index].frequency;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (to_dvs) {
 		pr_debug("cpufreq: enter dvs\n");
@@ -282,12 +325,19 @@ static int s3c2416_cpufreq_set_target(struct cpufreq_policy *policy,
 		pr_debug("cpufreq: leave dvs\n");
 		ret = s3c2416_cpufreq_leave_dvs(s3c_freq, idx);
 	} else {
+<<<<<<< HEAD
 		pr_debug("cpufreq: change armdiv to %dkHz\n", freqs.new);
 		ret = s3c2416_cpufreq_set_armdiv(s3c_freq, freqs.new);
 	}
 
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
 
+=======
+		pr_debug("cpufreq: change armdiv to %dkHz\n", new_freq);
+		ret = s3c2416_cpufreq_set_armdiv(s3c_freq, new_freq);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	mutex_unlock(&cpufreq_lock);
 
@@ -295,10 +345,17 @@ out:
 }
 
 #ifdef CONFIG_ARM_S3C2416_CPUFREQ_VCORESCALE
+<<<<<<< HEAD
 static void __init s3c2416_cpufreq_cfg_regulator(struct s3c2416_data *s3c_freq)
 {
 	int count, v, i, found;
 	struct cpufreq_frequency_table *freq;
+=======
+static void s3c2416_cpufreq_cfg_regulator(struct s3c2416_data *s3c_freq)
+{
+	int count, v, i, found;
+	struct cpufreq_frequency_table *pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct s3c2416_dvfs *dvfs;
 
 	count = regulator_count_voltages(s3c_freq->vddarm);
@@ -307,12 +364,20 @@ static void __init s3c2416_cpufreq_cfg_regulator(struct s3c2416_data *s3c_freq)
 		return;
 	}
 
+<<<<<<< HEAD
 	freq = s3c_freq->freq_table;
 	while (count > 0 && freq->frequency != CPUFREQ_TABLE_END) {
 		if (freq->frequency == CPUFREQ_ENTRY_INVALID)
 			continue;
 
 		dvfs = &s3c2416_dvfs_table[freq->index];
+=======
+	if (!count)
+		goto out;
+
+	cpufreq_for_each_valid_entry(pos, s3c_freq->freq_table) {
+		dvfs = &s3c2416_dvfs_table[pos->driver_data];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		found = 0;
 
 		/* Check only the min-voltage, more is always ok on S3C2416 */
@@ -324,6 +389,7 @@ static void __init s3c2416_cpufreq_cfg_regulator(struct s3c2416_data *s3c_freq)
 
 		if (!found) {
 			pr_debug("cpufreq: %dkHz unsupported by regulator\n",
+<<<<<<< HEAD
 				 freq->frequency);
 			freq->frequency = CPUFREQ_ENTRY_INVALID;
 		}
@@ -331,6 +397,14 @@ static void __init s3c2416_cpufreq_cfg_regulator(struct s3c2416_data *s3c_freq)
 		freq++;
 	}
 
+=======
+				 pos->frequency);
+			pos->frequency = CPUFREQ_ENTRY_INVALID;
+		}
+	}
+
+out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Guessed */
 	s3c_freq->regulator_latency = 1 * 1000 * 1000;
 }
@@ -367,10 +441,17 @@ static struct notifier_block s3c2416_cpufreq_reboot_notifier = {
 	.notifier_call = s3c2416_cpufreq_reboot_notifier_evt,
 };
 
+<<<<<<< HEAD
 static int __init s3c2416_cpufreq_driver_init(struct cpufreq_policy *policy)
 {
 	struct s3c2416_data *s3c_freq = &s3c2416_cpufreq;
 	struct cpufreq_frequency_table *freq;
+=======
+static int s3c2416_cpufreq_driver_init(struct cpufreq_policy *policy)
+{
+	struct s3c2416_data *s3c_freq = &s3c2416_cpufreq;
+	struct cpufreq_frequency_table *pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct clk *msysclk;
 	unsigned long rate;
 	int ret;
@@ -458,6 +539,7 @@ static int __init s3c2416_cpufreq_driver_init(struct cpufreq_policy *policy)
 	s3c_freq->regulator_latency = 0;
 #endif
 
+<<<<<<< HEAD
 	freq = s3c_freq->freq_table;
 	while (freq->frequency != CPUFREQ_TABLE_END) {
 		/* special handling for dvs mode */
@@ -468,12 +550,23 @@ static int __init s3c2416_cpufreq_driver_init(struct cpufreq_policy *policy)
 				freq->frequency = CPUFREQ_ENTRY_INVALID;
 			} else {
 				freq++;
+=======
+	cpufreq_for_each_entry(pos, s3c_freq->freq_table) {
+		/* special handling for dvs mode */
+		if (pos->driver_data == 0) {
+			if (!s3c_freq->hclk) {
+				pr_debug("cpufreq: %dkHz unsupported as it would need unavailable dvs mode\n",
+					 pos->frequency);
+				pos->frequency = CPUFREQ_ENTRY_INVALID;
+			} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 			}
 		}
 
 		/* Check for frequencies we can generate */
 		rate = clk_round_rate(s3c_freq->armdiv,
+<<<<<<< HEAD
 				      freq->frequency * 1000);
 		rate /= 1000;
 		if (rate != freq->frequency) {
@@ -499,6 +592,25 @@ static int __init s3c2416_cpufreq_driver_init(struct cpufreq_policy *policy)
 
 	cpufreq_frequency_table_get_attr(s3c_freq->freq_table, 0);
 
+=======
+				      pos->frequency * 1000);
+		rate /= 1000;
+		if (rate != pos->frequency) {
+			pr_debug("cpufreq: %dkHz unsupported by clock (clk_round_rate return %lu)\n",
+				pos->frequency, rate);
+			pos->frequency = CPUFREQ_ENTRY_INVALID;
+		}
+	}
+
+	/* Datasheet says PLL stabalisation time must be at least 300us,
+	 * so but add some fudge. (reference in LOCKCON0 register description)
+	 */
+	ret = cpufreq_generic_init(policy, s3c_freq->freq_table,
+			(500 * 1000) + s3c_freq->regulator_latency);
+	if (ret)
+		goto err_freq_table;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	register_reboot_notifier(&s3c2416_cpufreq_reboot_notifier);
 
 	return 0;
@@ -517,6 +629,7 @@ err_hclk:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct freq_attr *s3c2416_cpufreq_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
@@ -531,6 +644,16 @@ static struct cpufreq_driver s3c2416_cpufreq_driver = {
 	.init		= s3c2416_cpufreq_driver_init,
 	.name		= "s3c2416",
 	.attr		= s3c2416_cpufreq_attr,
+=======
+static struct cpufreq_driver s3c2416_cpufreq_driver = {
+	.flags		= CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= s3c2416_cpufreq_set_target,
+	.get		= s3c2416_cpufreq_get_speed,
+	.init		= s3c2416_cpufreq_driver_init,
+	.name		= "s3c2416",
+	.attr		= cpufreq_generic_attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init s3c2416_cpufreq_init(void)

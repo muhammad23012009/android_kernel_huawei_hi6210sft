@@ -11,6 +11,7 @@
 
 #include "bus_numa.h"
 
+<<<<<<< HEAD
 /*
  * This discovers the pcibus <-> node mapping on AMD K8.
  * also get peer root bus resource for io,mmio
@@ -32,6 +33,35 @@ static struct pci_hostbridge_probe pci_probes[] __initdata = {
 
 #define RANGE_NUM 16
 
+=======
+#define AMD_NB_F0_NODE_ID			0x60
+#define AMD_NB_F0_UNIT_ID			0x64
+#define AMD_NB_F1_CONFIG_MAP_REG		0xe0
+
+#define RANGE_NUM				16
+#define AMD_NB_F1_CONFIG_MAP_RANGES		4
+
+struct amd_hostbridge {
+	u32 bus;
+	u32 slot;
+	u32 device;
+};
+
+/*
+ * IMPORTANT NOTE:
+ * hb_probes[] and early_root_info_init() is in maintenance mode.
+ * It only supports K8, Fam10h, Fam11h, and Fam15h_00h-0fh .
+ * Future processor will rely on information in ACPI.
+ */
+static struct amd_hostbridge hb_probes[] __initdata = {
+	{ 0, 0x18, 0x1100 }, /* K8 */
+	{ 0, 0x18, 0x1200 }, /* Family10h */
+	{ 0xff, 0, 0x1200 }, /* Family10h */
+	{ 0, 0x18, 0x1300 }, /* Family11h */
+	{ 0, 0x18, 0x1600 }, /* Family15h */
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct pci_root_info __init *find_pci_root_info(int node, int link)
 {
 	struct pci_root_info *info;
@@ -44,6 +74,7 @@ static struct pci_root_info __init *find_pci_root_info(int node, int link)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void __init set_mp_bus_range_to_node(int min_bus, int max_bus, int node)
 {
 #ifdef CONFIG_NUMA
@@ -60,6 +91,15 @@ static void __init set_mp_bus_range_to_node(int min_bus, int max_bus, int node)
  * Registers found in the K8 northbridge
  */
 static int __init early_fill_mp_bus_info(void)
+=======
+/**
+ * early_root_info_init()
+ * called before pcibios_scan_root and pci_scan_bus
+ * fills the mp_bus_to_cpumask array based according
+ * to the LDT Bus Number Registers found in the northbridge.
+ */
+static int __init early_root_info_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	unsigned bus;
@@ -84,11 +124,16 @@ static int __init early_fill_mp_bus_info(void)
 		return -1;
 
 	found = false;
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(pci_probes); i++) {
+=======
+	for (i = 0; i < ARRAY_SIZE(hb_probes); i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u32 id;
 		u16 device;
 		u16 vendor;
 
+<<<<<<< HEAD
 		bus = pci_probes[i].bus;
 		slot = pci_probes[i].slot;
 		id = read_pci_config(bus, slot, 0, PCI_VENDOR_ID);
@@ -97,6 +142,18 @@ static int __init early_fill_mp_bus_info(void)
 		device = (id>>16) & 0xffff;
 		if (pci_probes[i].vendor == vendor &&
 		    pci_probes[i].device == device) {
+=======
+		bus = hb_probes[i].bus;
+		slot = hb_probes[i].slot;
+		id = read_pci_config(bus, slot, 0, PCI_VENDOR_ID);
+		vendor = id & 0xffff;
+		device = (id>>16) & 0xffff;
+
+		if (vendor != PCI_VENDOR_ID_AMD)
+			continue;
+
+		if (hb_probes[i].device == device) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			found = true;
 			break;
 		}
@@ -105,10 +162,23 @@ static int __init early_fill_mp_bus_info(void)
 	if (!found)
 		return 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < 4; i++) {
 		int min_bus;
 		int max_bus;
 		reg = read_pci_config(bus, slot, 1, 0xe0 + (i << 2));
+=======
+	/*
+	 * We should learn topology and routing information from _PXM and
+	 * _CRS methods in the ACPI namespace.  We extract node numbers
+	 * here to work around BIOSes that don't supply _PXM.
+	 */
+	for (i = 0; i < AMD_NB_F1_CONFIG_MAP_RANGES; i++) {
+		int min_bus;
+		int max_bus;
+		reg = read_pci_config(bus, slot, 1,
+				AMD_NB_F1_CONFIG_MAP_REG + (i << 2));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Check if that register is enabled for bus range */
 		if ((reg & 7) != 3)
@@ -117,16 +187,37 @@ static int __init early_fill_mp_bus_info(void)
 		min_bus = (reg >> 16) & 0xff;
 		max_bus = (reg >> 24) & 0xff;
 		node = (reg >> 4) & 0x07;
+<<<<<<< HEAD
 		set_mp_bus_range_to_node(min_bus, max_bus, node);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		link = (reg >> 8) & 0x03;
 
 		info = alloc_pci_root_info(min_bus, max_bus, node, link);
 	}
 
+<<<<<<< HEAD
 	/* get the default node and link for left over res */
 	reg = read_pci_config(bus, slot, 0, 0x60);
 	def_node = (reg >> 8) & 0x07;
 	reg = read_pci_config(bus, slot, 0, 0x64);
+=======
+	/*
+	 * The following code extracts routing information for use on old
+	 * systems where Linux doesn't automatically use host bridge _CRS
+	 * methods (or when the user specifies "pci=nocrs").
+	 *
+	 * We only do this through Fam11h, because _CRS should be enough on
+	 * newer systems.
+	 */
+	if (boot_cpu_data.x86 > 0x11)
+		return 0;
+
+	/* get the default node and link for left over res */
+	reg = read_pci_config(bus, slot, 0, AMD_NB_F0_NODE_ID);
+	def_node = (reg >> 8) & 0x07;
+	reg = read_pci_config(bus, slot, 0, AMD_NB_F0_UNIT_ID);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	def_link = (reg >> 8) & 0x03;
 
 	memset(range, 0, sizeof(range));
@@ -312,7 +403,11 @@ static int __init early_fill_mp_bus_info(void)
 
 #define ENABLE_CF8_EXT_CFG      (1ULL << 46)
 
+<<<<<<< HEAD
 static void __cpuinit enable_pci_io_ecs(void *unused)
+=======
+static void enable_pci_io_ecs(void *unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u64 reg;
 	rdmsrl(MSR_AMD64_NB_CFG, reg);
@@ -322,8 +417,13 @@ static void __cpuinit enable_pci_io_ecs(void *unused)
 	}
 }
 
+<<<<<<< HEAD
 static int __cpuinit amd_cpu_notify(struct notifier_block *self,
 				    unsigned long action, void *hcpu)
+=======
+static int amd_cpu_notify(struct notifier_block *self, unsigned long action,
+			  void *hcpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpu = (long)hcpu;
 	switch (action) {
@@ -337,7 +437,11 @@ static int __cpuinit amd_cpu_notify(struct notifier_block *self,
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static struct notifier_block __cpuinitdata amd_cpu_notifier = {
+=======
+static struct notifier_block amd_cpu_notifier = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.notifier_call	= amd_cpu_notify,
 };
 
@@ -373,17 +477,31 @@ static int __init pci_io_ecs_init(void)
 	int cpu;
 
 	/* assume all cpus from fam10h have IO ECS */
+<<<<<<< HEAD
         if (boot_cpu_data.x86 < 0x10)
+=======
+	if (boot_cpu_data.x86 < 0x10)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* Try the PCI method first. */
 	if (early_pci_allowed())
 		pci_enable_pci_io_ecs();
 
+<<<<<<< HEAD
 	register_cpu_notifier(&amd_cpu_notifier);
 	for_each_online_cpu(cpu)
 		amd_cpu_notify(&amd_cpu_notifier, (unsigned long)CPU_ONLINE,
 			       (void *)(long)cpu);
+=======
+	cpu_notifier_register_begin();
+	for_each_online_cpu(cpu)
+		amd_cpu_notify(&amd_cpu_notifier, (unsigned long)CPU_ONLINE,
+			       (void *)(long)cpu);
+	__register_cpu_notifier(&amd_cpu_notifier);
+	cpu_notifier_register_done();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_probe |= PCI_HAS_IO_ECS;
 
 	return 0;
@@ -394,7 +512,11 @@ static int __init amd_postcore_init(void)
 	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD)
 		return 0;
 
+<<<<<<< HEAD
 	early_fill_mp_bus_info();
+=======
+	early_root_info_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_io_ecs_init();
 
 	return 0;

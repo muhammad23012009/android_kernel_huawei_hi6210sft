@@ -123,10 +123,13 @@ static inline int translate_mode(struct file *file)
 #include "sound_calls.h"
 #include "dev_table.h"
 
+<<<<<<< HEAD
 #ifndef DEB
 #define DEB(x)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef DDB
 #define DDB(x) do {} while (0)
 #endif

@@ -37,11 +37,18 @@
 #include <linux/proc_fs.h>
 #include <linux/export.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/hardware/cache-l2x0.h>
+#include <asm/hardware/cache-uniphier.h>
+#include <asm/outercache.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/exception.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
 #include <linux/huawei/rdr_private.h>
 #ifdef CONFIG_HISI_RDR
 #ifndef CONFIG_HISI_RDR_SWITCH
@@ -79,6 +86,8 @@ EXPORT_SYMBOL(int_switch_hook_delete);
 
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long irq_err_count;
 
 int arch_show_interrupts(struct seq_file *p, int prec)
@@ -101,6 +110,7 @@ int arch_show_interrupts(struct seq_file *p, int prec)
  */
 void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct pt_regs *old_regs = set_irq_regs(regs);
 
 #ifdef CONFIG_HISI_RDR
@@ -161,6 +171,9 @@ void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 #endif
 
 	set_irq_regs(old_regs);
+=======
+	__handle_domain_irq(NULL, irq, false, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -172,6 +185,7 @@ asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
 	handle_IRQ(irq, regs);
 }
 
+<<<<<<< HEAD
 void set_irq_flags(unsigned int irq, unsigned int iflags)
 {
 	unsigned long clr = 0, set = IRQ_NOREQUEST | IRQ_NOPROBE | IRQ_NOAUTOEN;
@@ -194,10 +208,31 @@ EXPORT_SYMBOL_GPL(set_irq_flags);
 
 void __init init_IRQ(void)
 {
+=======
+void __init init_IRQ(void)
+{
+	int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ENABLED(CONFIG_OF) && !machine_desc->init_irq)
 		irqchip_init();
 	else
 		machine_desc->init_irq();
+<<<<<<< HEAD
+=======
+
+	if (IS_ENABLED(CONFIG_OF) && IS_ENABLED(CONFIG_CACHE_L2X0) &&
+	    (machine_desc->l2c_aux_mask || machine_desc->l2c_aux_val)) {
+		if (!outer_cache.write_sec)
+			outer_cache.write_sec = machine_desc->l2c_write_sec;
+		ret = l2x0_of_init(machine_desc->l2c_aux_val,
+				   machine_desc->l2c_aux_mask);
+		if (ret && ret != -ENODEV)
+			pr_err("L2C: failed to init: %d\n", ret);
+	}
+
+	uniphier_cache_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_MULTI_IRQ_HANDLER
@@ -217,6 +252,7 @@ int __init arch_probe_nr_irqs(void)
 	return nr_irqs;
 }
 #endif
+<<<<<<< HEAD
 
 #ifdef CONFIG_HOTPLUG_CPU
 
@@ -279,3 +315,5 @@ void migrate_irqs(void)
 	local_irq_restore(flags);
 }
 #endif /* CONFIG_HOTPLUG_CPU */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -23,6 +23,10 @@
 #include <linux/mtd/nand.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
 #include <linux/serial_8250.h>
@@ -147,7 +151,11 @@ static int rb532_dev_ready(struct mtd_info *mtd)
 
 static void rb532_cmd_ctrl(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char orbits, nandbits;
 
 	if (ctrl & NAND_CTRL_CHANGE) {
@@ -223,6 +231,10 @@ static struct platform_device rb532_wdt = {
 
 static struct plat_serial8250_port rb532_uart_res[] = {
 	{
+<<<<<<< HEAD
+=======
+		.type           = PORT_16550A,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.membase	= (char *)KSEG1ADDR(REGBASE + UART0BASE),
 		.irq		= UART0_IRQ,
 		.regshift	= 2,
@@ -250,6 +262,7 @@ static struct platform_device *rb532_devs[] = {
 	&rb532_wdt
 };
 
+<<<<<<< HEAD
 static void __init parse_mac_addr(char *macstr)
 {
 	int i, h, l;
@@ -272,6 +285,8 @@ static void __init parse_mac_addr(char *macstr)
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* NAND definitions */
 #define NAND_CHIP_DELAY 25
 
@@ -333,7 +348,14 @@ static int __init plat_setup_devices(void)
 static int __init setup_kmac(char *s)
 {
 	printk(KERN_INFO "korina mac = %s\n", s);
+<<<<<<< HEAD
 	parse_mac_addr(s);
+=======
+	if (!mac_pton(s, korina_dev0_data.mac)) {
+		printk(KERN_ERR "Invalid mac\n");
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

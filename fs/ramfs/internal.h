@@ -10,5 +10,8 @@
  */
 
 
+<<<<<<< HEAD
 extern const struct address_space_operations ramfs_aops;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const struct inode_operations ramfs_file_inode_operations;

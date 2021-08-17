@@ -23,19 +23,43 @@
 #ifndef _ASM_FPU_EMULATOR_H
 #define _ASM_FPU_EMULATOR_H
 
+<<<<<<< HEAD
 #include <asm/break.h>
 #include <asm/inst.h>
 #include <asm/local.h>
+=======
+#include <linux/sched.h>
+#include <asm/dsemul.h>
+#include <asm/thread_info.h>
+#include <asm/inst.h>
+#include <asm/local.h>
+#include <asm/processor.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_DEBUG_FS
 
 struct mips_fpu_emulator_stats {
+<<<<<<< HEAD
 	local_t emulated;
 	local_t loads;
 	local_t stores;
 	local_t cp1ops;
 	local_t cp1xops;
 	local_t errors;
+=======
+	unsigned long emulated;
+	unsigned long loads;
+	unsigned long stores;
+	unsigned long cp1ops;
+	unsigned long cp1xops;
+	unsigned long errors;
+	unsigned long ieee754_inexact;
+	unsigned long ieee754_underflow;
+	unsigned long ieee754_overflow;
+	unsigned long ieee754_zerodiv;
+	unsigned long ieee754_invalidop;
+	unsigned long ds_emul;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 DECLARE_PER_CPU(struct mips_fpu_emulator_stats, fpuemustats);
@@ -43,7 +67,11 @@ DECLARE_PER_CPU(struct mips_fpu_emulator_stats, fpuemustats);
 #define MIPS_FPU_EMU_INC_STATS(M)					\
 do {									\
 	preempt_disable();						\
+<<<<<<< HEAD
 	__local_inc(&__get_cpu_var(fpuemustats).M);			\
+=======
+	__this_cpu_inc(fpuemustats.M);					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	preempt_enable();						\
 } while (0)
 
@@ -51,6 +79,7 @@ do {									\
 #define MIPS_FPU_EMU_INC_STATS(M) do { } while (0)
 #endif /* CONFIG_DEBUG_FS */
 
+<<<<<<< HEAD
 extern int mips_dsemul(struct pt_regs *regs, mips_instruction ir,
 	unsigned long cpc);
 extern int do_dsemulret(struct pt_regs *xcp);
@@ -70,5 +99,40 @@ int mm_isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
  * Break instruction with special math emu break code set
  */
 #define BREAK_MATH (0x0000000d | (BRK_MEMU << 16))
+=======
+extern int fpu_emulator_cop1Handler(struct pt_regs *xcp,
+				    struct mips_fpu_struct *ctx, int has_fpu,
+				    void *__user *fault_addr);
+void force_fcr31_sig(unsigned long fcr31, void __user *fault_addr,
+		     struct task_struct *tsk);
+int process_fpemu_return(int sig, void __user *fault_addr,
+			 unsigned long fcr31);
+int isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
+		  unsigned long *contpc);
+int mm_isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
+		     unsigned long *contpc);
+
+#define SIGNALLING_NAN 0x7ff800007ff80000LL
+
+static inline void fpu_emulator_init_fpu(void)
+{
+	struct task_struct *t = current;
+	int i;
+
+	for (i = 0; i < 32; i++)
+		set_fpr64(&t->thread.fpu.fpr[i], 0, SIGNALLING_NAN);
+}
+
+/*
+ * Mask the FCSR Cause bits according to the Enable bits, observing
+ * that Unimplemented is always enabled.
+ */
+static inline unsigned long mask_fcr31_x(unsigned long fcr31)
+{
+	return fcr31 & (FPU_CSR_UNI_X |
+			((fcr31 & FPU_CSR_ALL_E) <<
+			 (ffs(FPU_CSR_ALL_X) - ffs(FPU_CSR_ALL_E))));
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_FPU_EMULATOR_H */

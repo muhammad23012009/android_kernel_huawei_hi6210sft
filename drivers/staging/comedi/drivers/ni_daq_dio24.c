@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
     comedi/drivers/ni_daq_dio24.c
     Driver for National Instruments PCMCIA DAQ-Card DIO-24
     Copyright (C) 2002 Daniel Vecino Castel <dvecino@able.es>
@@ -42,6 +43,42 @@ the PCMCIA interface.
 #include <pcmcia/cistpl.h>
 #include <pcmcia/cisreg.h>
 #include <pcmcia/ds.h>
+=======
+ * Comedi driver for National Instruments PCMCIA DAQ-Card DIO-24
+ * Copyright (C) 2002 Daniel Vecino Castel <dvecino@able.es>
+ *
+ * PCMCIA crap at end of file is adapted from dummy_cs.c 1.31
+ * 2001/08/24 12:13:13 from the pcmcia package.
+ * The initial developer of the pcmcia dummy_cs.c code is David A. Hinds
+ * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
+ * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/*
+ * Driver: ni_daq_dio24
+ * Description: National Instruments PCMCIA DAQ-Card DIO-24
+ * Author: Daniel Vecino Castel <dvecino@able.es>
+ * Devices: [National Instruments] PCMCIA DAQ-Card DIO-24 (ni_daq_dio24)
+ * Status: ?
+ * Updated: Thu, 07 Nov 2002 21:53:06 -0800
+ *
+ * This is just a wrapper around the 8255.o driver to properly handle
+ * the PCMCIA interface.
+ */
+
+#include <linux/module.h>
+#include "../comedi_pcmcia.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "8255.h"
 
@@ -64,6 +101,7 @@ static int dio24_auto_attach(struct comedi_device *dev,
 
 	/* 8255 dio */
 	s = &dev->subdevices[0];
+<<<<<<< HEAD
 	ret = subdev_8255_init(dev, s, NULL, dev->iobase);
 	if (ret)
 		return ret;
@@ -75,13 +113,20 @@ static void dio24_detach(struct comedi_device *dev)
 {
 	comedi_spriv_free(dev, 0);
 	comedi_pcmcia_disable(dev);
+=======
+	return subdev_8255_init(dev, s, NULL, 0x00);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct comedi_driver driver_dio24 = {
 	.driver_name	= "ni_daq_dio24",
 	.module		= THIS_MODULE,
 	.auto_attach	= dio24_auto_attach,
+<<<<<<< HEAD
 	.detach		= dio24_detach,
+=======
+	.detach		= comedi_pcmcia_disable,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int dio24_cs_attach(struct pcmcia_device *link)

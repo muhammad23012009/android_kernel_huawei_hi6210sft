@@ -26,11 +26,19 @@
 #include <linux/interrupt.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
+=======
+#include <asm/bootinfo-vme.h>
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/pgtable.h>
 #include <asm/setup.h>
 #include <asm/irq.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/machdep.h>
 #include <asm/mvme147hw.h>
 
@@ -45,6 +53,7 @@ extern void mvme147_reset (void);
 
 static int bcd2int (unsigned char b);
 
+<<<<<<< HEAD
 /* Save tick handler routine pointer, will point to xtime_update() in
  * kernel/time/timekeeping.c, called via mvme147_process_int() */
 
@@ -54,6 +63,13 @@ irq_handler_t tick_handler;
 int mvme147_parse_bootinfo(const struct bi_record *bi)
 {
 	if (bi->tag == BI_VME_TYPE || bi->tag == BI_VME_BRDINFO)
+=======
+
+int __init mvme147_parse_bootinfo(const struct bi_record *bi)
+{
+	uint16_t tag = be16_to_cpu(bi->tag);
+	if (tag == BI_VME_TYPE || tag == BI_VME_BRDINFO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	else
 		return 1;
@@ -104,16 +120,34 @@ void __init config_mvme147(void)
 
 static irqreturn_t mvme147_timer_int (int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	m147_pcc->t1_int_cntrl = PCC_TIMER_INT_CLR;
 	m147_pcc->t1_int_cntrl = PCC_INT_ENAB|PCC_LEVEL_TIMER1;
 	return tick_handler(irq, dev_id);
+=======
+	irq_handler_t timer_routine = dev_id;
+	unsigned long flags;
+
+	local_irq_save(flags);
+	m147_pcc->t1_int_cntrl = PCC_TIMER_INT_CLR;
+	m147_pcc->t1_int_cntrl = PCC_INT_ENAB|PCC_LEVEL_TIMER1;
+	timer_routine(0, NULL);
+	local_irq_restore(flags);
+
+	return IRQ_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
 void mvme147_sched_init (irq_handler_t timer_routine)
 {
+<<<<<<< HEAD
 	tick_handler = timer_routine;
 	if (request_irq(PCC_IRQ_TIMER1, mvme147_timer_int, 0, "timer 1", NULL))
+=======
+	if (request_irq(PCC_IRQ_TIMER1, mvme147_timer_int, 0, "timer 1",
+			timer_routine))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("Couldn't register timer interrupt\n");
 
 	/* Init the clock with a value */
@@ -165,6 +199,7 @@ int mvme147_set_clock_mmss (unsigned long nowtime)
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 /*-------------------  Serial console stuff ------------------------*/
 
@@ -211,3 +246,5 @@ void mvme147_init_console_port (struct console *co, int cflag)
 {
 	co->write    = m147_scc_write;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

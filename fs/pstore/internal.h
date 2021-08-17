@@ -41,14 +41,28 @@ pstore_ftrace_decode_cpu(struct pstore_ftrace_record *rec)
 
 #ifdef CONFIG_PSTORE_FTRACE
 extern void pstore_register_ftrace(void);
+<<<<<<< HEAD
 #else
 static inline void pstore_register_ftrace(void) {}
+=======
+extern void pstore_unregister_ftrace(void);
+#else
+static inline void pstore_register_ftrace(void) {}
+static inline void pstore_unregister_ftrace(void) {}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_PSTORE_PMSG
 extern void pstore_register_pmsg(void);
+<<<<<<< HEAD
 #else
 static inline void pstore_register_pmsg(void) {}
+=======
+extern void pstore_unregister_pmsg(void);
+#else
+static inline void pstore_register_pmsg(void) {}
+static inline void pstore_unregister_pmsg(void) {}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 extern struct pstore_info *psinfo;
@@ -56,8 +70,15 @@ extern struct pstore_info *psinfo;
 extern void	pstore_set_kmsg_bytes(int);
 extern void	pstore_get_records(int);
 extern int	pstore_mkfile(enum pstore_type_id, char *psname, u64 id,
+<<<<<<< HEAD
 			      int count, char *data, size_t size,
 			      struct timespec time, struct pstore_info *psi);
 extern int	pstore_is_mounted(void);
+=======
+			      int count, char *data, bool compressed,
+			      size_t size, struct timespec time,
+			      struct pstore_info *psi);
+extern bool	pstore_is_mounted(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

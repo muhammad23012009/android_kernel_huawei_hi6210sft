@@ -102,7 +102,11 @@ int mISDN_dsp_element_register(struct mISDN_dsp_element *elem)
 	entry->dev.class = elements_class;
 	entry->dev.release = mISDN_dsp_dev_release;
 	dev_set_drvdata(&entry->dev, elem);
+<<<<<<< HEAD
 	dev_set_name(&entry->dev, elem->name);
+=======
+	dev_set_name(&entry->dev, "%s", elem->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = device_register(&entry->dev);
 	if (ret) {
 		printk(KERN_ERR "%s: failed to register %s\n",
@@ -235,7 +239,11 @@ void dsp_pipeline_destroy(struct dsp_pipeline *pipeline)
 
 int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 {
+<<<<<<< HEAD
 	int len, incomplete = 0, found = 0;
+=======
+	int incomplete = 0, found = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *dup, *tok, *name, *args;
 	struct dsp_element_entry *entry, *n;
 	struct dsp_pipeline_entry *pipeline_entry;
@@ -247,6 +255,7 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 	if (!list_empty(&pipeline->list))
 		_dsp_pipeline_destroy(pipeline);
 
+<<<<<<< HEAD
 	if (!cfg)
 		return 0;
 
@@ -258,6 +267,11 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 	if (!dup)
 		return 0;
 	strcpy(dup, cfg);
+=======
+	dup = kstrdup(cfg, GFP_ATOMIC);
+	if (!dup)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while ((tok = strsep(&dup, "|"))) {
 		if (!strlen(tok))
 			continue;

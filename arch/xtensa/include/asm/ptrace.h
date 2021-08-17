@@ -59,9 +59,23 @@ struct pt_regs {
 	(task_stack_page(tsk) + KERNEL_STACK_SIZE - (XCHAL_NUM_AREGS-16)*4) - 1)
 # define user_mode(regs) (((regs)->ps & 0x00000020)!=0)
 # define instruction_pointer(regs) ((regs)->pc)
+<<<<<<< HEAD
 
 # ifndef CONFIG_SMP
 #  define profile_pc(regs) instruction_pointer(regs)
+=======
+# define return_pointer(regs) (MAKE_PC_FROM_RA((regs)->areg[0], \
+					       (regs)->areg[1]))
+
+# ifndef CONFIG_SMP
+#  define profile_pc(regs) instruction_pointer(regs)
+# else
+#  define profile_pc(regs)						\
+	({								\
+		in_lock_functions(instruction_pointer(regs)) ?		\
+		return_pointer(regs) : instruction_pointer(regs);	\
+	})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # endif
 
 #define user_stack_pointer(regs) ((regs)->areg[1])

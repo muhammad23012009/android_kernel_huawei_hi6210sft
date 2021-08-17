@@ -17,8 +17,11 @@
 struct user_namespace;
 extern struct user_namespace init_user_ns;
 
+<<<<<<< HEAD
 #ifdef CONFIG_UIDGID_STRICT_TYPE_CHECKS
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef struct {
 	uid_t val;
 } kuid_t;
@@ -31,6 +34,10 @@ typedef struct {
 #define KUIDT_INIT(value) (kuid_t){ value }
 #define KGIDT_INIT(value) (kgid_t){ value }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MULTIUSER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline uid_t __kuid_val(kuid_t uid)
 {
 	return uid.val;
@@ -40,6 +47,7 @@ static inline gid_t __kgid_val(kgid_t gid)
 {
 	return gid.val;
 }
+<<<<<<< HEAD
 
 #else
 
@@ -49,24 +57,38 @@ typedef gid_t kgid_t;
 static inline uid_t __kuid_val(kuid_t uid)
 {
 	return uid;
+=======
+#else
+static inline uid_t __kuid_val(kuid_t uid)
+{
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline gid_t __kgid_val(kgid_t gid)
 {
+<<<<<<< HEAD
 	return gid;
 }
 
 #define KUIDT_INIT(value) ((kuid_t) value )
 #define KGIDT_INIT(value) ((kgid_t) value )
 
+=======
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define GLOBAL_ROOT_UID KUIDT_INIT(0)
 #define GLOBAL_ROOT_GID KGIDT_INIT(0)
 
+<<<<<<< HEAD
 #define GLOBAL_SYSTEM_UID KUIDT_INIT(1000)
 #define GLOBAL_SYSTEM_GID KGIDT_INIT(1000)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define INVALID_UID KUIDT_INIT(-1)
 #define INVALID_GID KGIDT_INIT(-1)
 
@@ -122,12 +144,20 @@ static inline bool gid_lte(kgid_t left, kgid_t right)
 
 static inline bool uid_valid(kuid_t uid)
 {
+<<<<<<< HEAD
 	return !uid_eq(uid, INVALID_UID);
+=======
+	return __kuid_val(uid) != (uid_t) -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline bool gid_valid(kgid_t gid)
 {
+<<<<<<< HEAD
 	return !gid_eq(gid, INVALID_GID);
+=======
+	return __kgid_val(gid) != (gid_t) -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_USER_NS
@@ -190,12 +220,20 @@ static inline gid_t from_kgid_munged(struct user_namespace *to, kgid_t kgid)
 
 static inline bool kuid_has_mapping(struct user_namespace *ns, kuid_t uid)
 {
+<<<<<<< HEAD
 	return true;
+=======
+	return uid_valid(uid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline bool kgid_has_mapping(struct user_namespace *ns, kgid_t gid)
 {
+<<<<<<< HEAD
 	return true;
+=======
+	return gid_valid(gid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* CONFIG_USER_NS */

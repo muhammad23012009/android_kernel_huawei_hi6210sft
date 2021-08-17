@@ -139,8 +139,11 @@ static struct board_type products[] = {
 	{0x3214103C, "Smart Array E200i", &SA5_access},
 	{0x3215103C, "Smart Array E200i", &SA5_access},
 	{0x3237103C, "Smart Array E500", &SA5_access},
+<<<<<<< HEAD
 	{0x3223103C, "Smart Array P800", &SA5_access},
 	{0x3234103C, "Smart Array P400", &SA5_access},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x323D103C, "Smart Array P700m", &SA5_access},
 };
 
@@ -516,6 +519,7 @@ cciss_proc_write(struct file *file, const char __user *buf,
 	if (!buf || length > PAGE_SIZE - 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	buffer = (char *)__get_free_page(GFP_KERNEL);
 	if (!buffer)
 		return -ENOMEM;
@@ -524,6 +528,11 @@ cciss_proc_write(struct file *file, const char __user *buf,
 	if (copy_from_user(buffer, buf, length))
 		goto out;
 	buffer[length] = '\0';
+=======
+	buffer = memdup_user_nul(buf, length);
+	if (IS_ERR(buffer))
+		return PTR_ERR(buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_CISS_SCSI_TAPE
 	if (strncmp(ENGAGE_SCSI, buffer, sizeof ENGAGE_SCSI - 1) == 0) {
@@ -539,8 +548,12 @@ cciss_proc_write(struct file *file, const char __user *buf,
 	/* might be nice to have "disengage" too, but it's not
 	   safely possible. (only 1 module use count, lock issues.) */
 
+<<<<<<< HEAD
 out:
 	free_page((unsigned long)buffer);
+=======
+	kfree(buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -574,8 +587,11 @@ static void cciss_procinit(ctlr_info_t *h)
 
 /* List of controllers which cannot be hard reset on kexec with reset_devices */
 static u32 unresettable_controller[] = {
+<<<<<<< HEAD
 	0x324a103C, /* Smart Array P712m */
 	0x324b103C, /* SmartArray P711m */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x3223103C, /* Smart Array P800 */
 	0x3234103C, /* Smart Array P400 */
 	0x3235103C, /* Smart Array P400i */
@@ -586,12 +602,40 @@ static u32 unresettable_controller[] = {
 	0x3215103C, /* Smart Array E200i */
 	0x3237103C, /* Smart Array E500 */
 	0x323D103C, /* Smart Array P700m */
+<<<<<<< HEAD
 	0x409C0E11, /* Smart Array 6400 */
 	0x409D0E11, /* Smart Array 6400 EM */
+=======
+	0x40800E11, /* Smart Array 5i */
+	0x409C0E11, /* Smart Array 6400 */
+	0x409D0E11, /* Smart Array 6400 EM */
+	0x40700E11, /* Smart Array 5300 */
+	0x40820E11, /* Smart Array 532 */
+	0x40830E11, /* Smart Array 5312 */
+	0x409A0E11, /* Smart Array 641 */
+	0x409B0E11, /* Smart Array 642 */
+	0x40910E11, /* Smart Array 6i */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* List of controllers which cannot even be soft reset */
 static u32 soft_unresettable_controller[] = {
+<<<<<<< HEAD
+=======
+	0x40800E11, /* Smart Array 5i */
+	0x40700E11, /* Smart Array 5300 */
+	0x40820E11, /* Smart Array 532 */
+	0x40830E11, /* Smart Array 5312 */
+	0x409A0E11, /* Smart Array 641 */
+	0x409B0E11, /* Smart Array 642 */
+	0x40910E11, /* Smart Array 6i */
+	/* Exclude 640x boards.  These are two pci devices in one slot
+	 * which share a battery backed cache module.  One controls the
+	 * cache, the other accesses the cache through the one that controls
+	 * it.  If we reset the one controlling the cache, the other will
+	 * likely not be happy.  Just forbid resetting this conjoined mess.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x409C0E11, /* Smart Array 6400 */
 	0x409D0E11, /* Smart Array 6400 EM */
 };
@@ -1014,6 +1058,7 @@ static CommandList_struct *cmd_special_alloc(ctlr_info_t *h)
 	u64bit temp64;
 	dma_addr_t cmd_dma_handle, err_dma_handle;
 
+<<<<<<< HEAD
 	c = (CommandList_struct *) pci_alloc_consistent(h->pdev,
 		sizeof(CommandList_struct), &cmd_dma_handle);
 	if (c == NULL)
@@ -1025,13 +1070,27 @@ static CommandList_struct *cmd_special_alloc(ctlr_info_t *h)
 	c->err_info = (ErrorInfo_struct *)
 	    pci_alloc_consistent(h->pdev, sizeof(ErrorInfo_struct),
 		    &err_dma_handle);
+=======
+	c = pci_zalloc_consistent(h->pdev, sizeof(CommandList_struct),
+				  &cmd_dma_handle);
+	if (c == NULL)
+		return NULL;
+
+	c->cmdindex = -1;
+
+	c->err_info = pci_zalloc_consistent(h->pdev, sizeof(ErrorInfo_struct),
+					    &err_dma_handle);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (c->err_info == NULL) {
 		pci_free_consistent(h->pdev,
 			sizeof(CommandList_struct), c, cmd_dma_handle);
 		return NULL;
 	}
+<<<<<<< HEAD
 	memset(c->err_info, 0, sizeof(ErrorInfo_struct));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_LIST_HEAD(&c->list);
 	c->busaddr = (__u32) cmd_dma_handle;
@@ -1944,7 +2003,10 @@ static int cciss_add_disk(ctlr_info_t *h, struct gendisk *disk,
 	if (cciss_create_ld_sysfs_entry(h, drv_index))
 		goto cleanup_queue;
 	disk->private_data = h->drv[drv_index];
+<<<<<<< HEAD
 	disk->driverfs_dev = &h->drv[drv_index]->dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set up queue information */
 	blk_queue_bounce_limit(disk->queue, h->pdev->dma_mask);
@@ -1966,7 +2028,11 @@ static int cciss_add_disk(ctlr_info_t *h, struct gendisk *disk,
 	/* allows the interrupt handler to start the queue */
 	wmb();
 	h->drv[drv_index]->queue = disk->queue;
+<<<<<<< HEAD
 	add_disk(disk);
+=======
+	device_add_disk(&h->drv[drv_index]->dev, disk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 cleanup_queue:
@@ -2808,7 +2874,11 @@ resend_cmd2:
 		/* erase the old error information */
 		memset(c->err_info, 0, sizeof(ErrorInfo_struct));
 		return_status = IO_OK;
+<<<<<<< HEAD
 		INIT_COMPLETION(wait);
+=======
+		reinit_completion(&wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto resend_cmd2;
 	}
 
@@ -3669,7 +3739,11 @@ static int add_to_scan_list(struct ctlr_info *h)
 		}
 	}
 	if (!found && !h->busy_scanning) {
+<<<<<<< HEAD
 		INIT_COMPLETION(h->scan_wait);
+=======
+		reinit_completion(&h->scan_wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_add_tail(&h->scan_list, &scan_q);
 		ret = 1;
 	}
@@ -3841,7 +3915,11 @@ static void print_cfg_table(ctlr_info_t *h)
 	       readl(&(tb->HostWrite.CoalIntDelay)));
 	dev_dbg(&h->pdev->dev, "   Coalesce Interrupt Count = 0x%x\n",
 	       readl(&(tb->HostWrite.CoalIntCount)));
+<<<<<<< HEAD
 	dev_dbg(&h->pdev->dev, "   Max outstanding commands = 0x%d\n",
+=======
+	dev_dbg(&h->pdev->dev, "   Max outstanding commands = 0x%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       readl(&(tb->CmdsOutMax)));
 	dev_dbg(&h->pdev->dev, "   Bus Types = 0x%x\n",
 		readl(&(tb->BusTypes)));
@@ -4080,7 +4158,11 @@ static void cciss_interrupt_mode(ctlr_info_t *h)
 		goto default_int_mode;
 
 	if (pci_find_capability(h->pdev, PCI_CAP_ID_MSIX)) {
+<<<<<<< HEAD
 		err = pci_enable_msix(h->pdev, cciss_msix_entries, 4);
+=======
+		err = pci_enable_msix_exact(h->pdev, cciss_msix_entries, 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!err) {
 			h->intr[0] = cciss_msix_entries[0].vector;
 			h->intr[1] = cciss_msix_entries[1].vector;
@@ -4088,6 +4170,7 @@ static void cciss_interrupt_mode(ctlr_info_t *h)
 			h->intr[3] = cciss_msix_entries[3].vector;
 			h->msix_vector = 1;
 			return;
+<<<<<<< HEAD
 		}
 		if (err > 0) {
 			dev_warn(&h->pdev->dev,
@@ -4097,6 +4180,11 @@ static void cciss_interrupt_mode(ctlr_info_t *h)
 			dev_warn(&h->pdev->dev,
 				"MSI-X init failed %d\n", err);
 			goto default_int_mode;
+=======
+		} else {
+			dev_warn(&h->pdev->dev,
+				"MSI-X init failed %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	if (pci_find_capability(h->pdev, PCI_CAP_ID_MSI)) {
@@ -4259,6 +4347,16 @@ static void cciss_find_board_params(ctlr_info_t *h)
 	h->nr_cmds = h->max_commands - 4 - cciss_tape_cmds;
 	h->maxsgentries = readl(&(h->cfgtable->MaxSGElements));
 	/*
+<<<<<<< HEAD
+=======
+	 * The P600 may exhibit poor performnace under some workloads
+	 * if we use the value in the configuration table. Limit this
+	 * controller to MAXSGENTRIES (32) instead.
+	 */
+	if (h->board_id == 0x3225103C)
+		h->maxsgentries = MAXSGENTRIES;
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Limit in-command s/g elements to 32 save dma'able memory.
 	 * Howvever spec says if 0, use 31
 	 */
@@ -4669,8 +4767,12 @@ static int cciss_kdump_hard_reset_controller(struct pci_dev *pdev)
 	 */
 	cciss_lookup_board_id(pdev, &board_id);
 	if (!ctlr_is_resettable(board_id)) {
+<<<<<<< HEAD
 		dev_warn(&pdev->dev, "Cannot reset Smart Array 640x "
 				"due to shared cache module.");
+=======
+		dev_warn(&pdev->dev, "Controller not resettable\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 
@@ -4997,7 +5099,11 @@ reinit_after_soft_reset:
 
 	i = alloc_cciss_hba(pdev);
 	if (i < 0)
+<<<<<<< HEAD
 		return -1;
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	h = hba[i];
 	h->pdev = pdev;
@@ -5176,7 +5282,11 @@ reinit_after_soft_reset:
 	rebuild_lun_table(h, 1, 0);
 	cciss_engage_scsi(h);
 	h->busy_initializing = 0;
+<<<<<<< HEAD
 	return 1;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 clean4:
 	cciss_free_cmd_pool(h);
@@ -5198,7 +5308,11 @@ clean_no_release_regions:
 	 */
 	pci_set_drvdata(pdev, NULL);
 	free_hba(h);
+<<<<<<< HEAD
 	return -1;
+=======
+	return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void cciss_shutdown(struct pci_dev *pdev)

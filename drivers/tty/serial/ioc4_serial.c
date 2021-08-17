@@ -297,7 +297,11 @@ struct ioc4_serial {
 	struct ioc4_uartregs uart_1;
 	struct ioc4_uartregs uart_2;
 	struct ioc4_uartregs uart_3;
+<<<<<<< HEAD
 } ioc4_serial;
+=======
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* UART clock speed */
 #define IOC4_SER_XIN_CLK_66     66666667
@@ -1011,7 +1015,12 @@ static irqreturn_t ioc4_intr(int irq, void *arg)
 		 */
 		for (xx = 0; xx < num_intrs; xx++) {
 			intr_info = &soft->is_intr_type[intr_type].is_intr_info[xx];
+<<<<<<< HEAD
 			if ((this_mir = this_ir & intr_info->sd_bits)) {
+=======
+			this_mir = this_ir & intr_info->sd_bits;
+			if (this_mir) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/* Disable owned interrupts, call handler */
 				handled++;
 				write_ireg(soft, intr_info->sd_bits, IOC4_W_IEC,
@@ -2597,7 +2606,10 @@ static struct uart_ops ioc4_ops = {
 	.stop_tx	= ic4_stop_tx,
 	.start_tx	= ic4_start_tx,
 	.stop_rx	= null_void_function,
+<<<<<<< HEAD
 	.enable_ms	= null_void_function,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl	= ic4_break_ctl,
 	.startup	= ic4_startup,
 	.shutdown	= ic4_shutdown,
@@ -2767,7 +2779,11 @@ ioc4_serial_core_attach(struct pci_dev *pdev, int port_type)
  *		called per card found from IOC4 master module.
  * @idd: Master module data for this IOC4
  */
+<<<<<<< HEAD
 int
+=======
+static int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ioc4_serial_attach_one(struct ioc4_driver_data *idd)
 {
 	unsigned long tmp_addr1;
@@ -2866,10 +2882,19 @@ ioc4_serial_attach_one(struct ioc4_driver_data *idd)
 
 	/* register port with the serial core - 1 rs232, 1 rs422 */
 
+<<<<<<< HEAD
 	if ((ret = ioc4_serial_core_attach(idd->idd_pdev, PROTO_RS232)))
 		goto out4;
 
 	if ((ret = ioc4_serial_core_attach(idd->idd_pdev, PROTO_RS422)))
+=======
+	ret = ioc4_serial_core_attach(idd->idd_pdev, PROTO_RS232);
+	if (ret)
+		goto out4;
+
+	ret = ioc4_serial_core_attach(idd->idd_pdev, PROTO_RS422);
+	if (ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out5;
 
 	Num_of_ioc4_cards++;

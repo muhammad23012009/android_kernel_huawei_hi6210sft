@@ -45,5 +45,8 @@ struct cx25821_board cx25821_boards[] = {
 	},
 
 };
+<<<<<<< HEAD
 
 const unsigned int cx25821_bcount = ARRAY_SIZE(cx25821_boards);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

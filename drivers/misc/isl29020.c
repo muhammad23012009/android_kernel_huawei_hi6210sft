@@ -23,7 +23,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
@@ -90,8 +93,15 @@ static ssize_t als_sensing_range_store(struct device *dev,
 	int ret_val;
 	unsigned long val;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 10, &val))
 		return -EINVAL;
+=======
+	ret_val = kstrtoul(buf, 10, &val);
+	if (ret_val)
+		return ret_val;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (val < 1 || val > 64000)
 		return -EINVAL;
 

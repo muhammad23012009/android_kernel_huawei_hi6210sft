@@ -24,7 +24,10 @@ struct delay_c {
 	struct work_struct flush_expired_bios;
 	struct list_head delayed_bios;
 	atomic_t may_delay;
+<<<<<<< HEAD
 	mempool_t *delayed_pool;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct dm_dev *dev_read;
 	sector_t start_read;
@@ -40,14 +43,20 @@ struct delay_c {
 struct dm_delay_info {
 	struct delay_c *context;
 	struct list_head list;
+<<<<<<< HEAD
 	struct bio *bio;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long expires;
 };
 
 static DEFINE_MUTEX(delayed_bios_lock);
 
+<<<<<<< HEAD
 static struct kmem_cache *delayed_cache;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void handle_delayed_timer(unsigned long data)
 {
 	struct delay_c *dc = (struct delay_c *)data;
@@ -87,6 +96,7 @@ static struct bio *flush_delayed_bios(struct delay_c *dc, int flush_all)
 	mutex_lock(&delayed_bios_lock);
 	list_for_each_entry_safe(delayed, next, &dc->delayed_bios, list) {
 		if (flush_all || time_after_eq(jiffies, delayed->expires)) {
+<<<<<<< HEAD
 			list_del(&delayed->list);
 			bio_list_add(&flush_bios, delayed->bio);
 			if ((bio_data_dir(delayed->bio) == WRITE))
@@ -94,6 +104,16 @@ static struct bio *flush_delayed_bios(struct delay_c *dc, int flush_all)
 			else
 				delayed->context->reads--;
 			mempool_free(delayed, dc->delayed_pool);
+=======
+			struct bio *bio = dm_bio_from_per_bio_data(delayed,
+						sizeof(struct dm_delay_info));
+			list_del(&delayed->list);
+			bio_list_add(&flush_bios, bio);
+			if ((bio_data_dir(bio) == WRITE))
+				delayed->context->writes--;
+			else
+				delayed->context->reads--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 
@@ -125,6 +145,10 @@ static void flush_expired_bios(struct work_struct *work)
  *    <device> <offset> <delay> [<write_device> <write_offset> <write_delay>]
  *
  * With separate write parameters, the first set is only used for reads.
+<<<<<<< HEAD
+=======
+ * Offsets are specified in sectors.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Delays are specified in milliseconds.
  */
 static int delay_ctr(struct dm_target *ti, unsigned int argc, char **argv)
@@ -132,9 +156,16 @@ static int delay_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	struct delay_c *dc;
 	unsigned long long tmpll;
 	char dummy;
+<<<<<<< HEAD
 
 	if (argc != 3 && argc != 6) {
 		ti->error = "requires exactly 3 or 6 arguments";
+=======
+	int ret;
+
+	if (argc != 3 && argc != 6) {
+		ti->error = "Requires exactly 3 or 6 arguments";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -146,6 +177,10 @@ static int delay_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	dc->reads = dc->writes = 0;
 
+<<<<<<< HEAD
+=======
+	ret = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sscanf(argv[1], "%llu%c", &tmpll, &dummy) != 1) {
 		ti->error = "Invalid device sector";
 		goto bad;
@@ -157,12 +192,22 @@ static int delay_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad;
 	}
 
+<<<<<<< HEAD
 	if (dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
 			  &dc->dev_read)) {
+=======
+	ret = dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
+			    &dc->dev_read);
+	if (ret) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ti->error = "Device lookup failed";
 		goto bad;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dc->dev_write = NULL;
 	if (argc == 3)
 		goto out;
@@ -178,19 +223,29 @@ static int delay_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad_dev_read;
 	}
 
+<<<<<<< HEAD
 	if (dm_get_device(ti, argv[3], dm_table_get_mode(ti->table),
 			  &dc->dev_write)) {
+=======
+	ret = dm_get_device(ti, argv[3], dm_table_get_mode(ti->table),
+			    &dc->dev_write);
+	if (ret) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ti->error = "Write device lookup failed";
 		goto bad_dev_read;
 	}
 
 out:
+<<<<<<< HEAD
 	dc->delayed_pool = mempool_create_slab_pool(128, delayed_cache);
 	if (!dc->delayed_pool) {
 		DMERR("Couldn't create delayed bio pool.");
 		goto bad_dev_write;
 	}
 
+=======
+	ret = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dc->kdelayd_wq = alloc_workqueue("kdelayd", WQ_MEM_RECLAIM, 0);
 	if (!dc->kdelayd_wq) {
 		DMERR("Couldn't start kdelayd");
@@ -206,33 +261,52 @@ out:
 
 	ti->num_flush_bios = 1;
 	ti->num_discard_bios = 1;
+<<<<<<< HEAD
+=======
+	ti->per_io_data_size = sizeof(struct dm_delay_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ti->private = dc;
 	return 0;
 
 bad_queue:
+<<<<<<< HEAD
 	mempool_destroy(dc->delayed_pool);
 bad_dev_write:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dc->dev_write)
 		dm_put_device(ti, dc->dev_write);
 bad_dev_read:
 	dm_put_device(ti, dc->dev_read);
 bad:
 	kfree(dc);
+<<<<<<< HEAD
 	return -EINVAL;
+=======
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void delay_dtr(struct dm_target *ti)
 {
 	struct delay_c *dc = ti->private;
 
+<<<<<<< HEAD
 	destroy_workqueue(dc->kdelayd_wq);
+=======
+	if (dc->kdelayd_wq)
+		destroy_workqueue(dc->kdelayd_wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dm_put_device(ti, dc->dev_read);
 
 	if (dc->dev_write)
 		dm_put_device(ti, dc->dev_write);
 
+<<<<<<< HEAD
 	mempool_destroy(dc->delayed_pool);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(dc);
 }
 
@@ -242,6 +316,7 @@ static int delay_bio(struct delay_c *dc, int delay, struct bio *bio)
 	unsigned long expires = 0;
 
 	if (!delay || !atomic_read(&dc->may_delay))
+<<<<<<< HEAD
 		return 1;
 
 	delayed = mempool_alloc(dc->delayed_pool, GFP_NOIO);
@@ -249,6 +324,14 @@ static int delay_bio(struct delay_c *dc, int delay, struct bio *bio)
 	delayed->context = dc;
 	delayed->bio = bio;
 	delayed->expires = expires = jiffies + (delay * HZ / 1000);
+=======
+		return DM_MAPIO_REMAPPED;
+
+	delayed = dm_per_bio_data(bio, sizeof(struct dm_delay_info));
+
+	delayed->context = dc;
+	delayed->expires = expires = jiffies + msecs_to_jiffies(delay);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&delayed_bios_lock);
 
@@ -263,7 +346,11 @@ static int delay_bio(struct delay_c *dc, int delay, struct bio *bio)
 
 	queue_timeout(dc, expires);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return DM_MAPIO_SUBMITTED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void delay_presuspend(struct dm_target *ti)
@@ -289,14 +376,24 @@ static int delay_map(struct dm_target *ti, struct bio *bio)
 	if ((bio_data_dir(bio) == WRITE) && (dc->dev_write)) {
 		bio->bi_bdev = dc->dev_write->bdev;
 		if (bio_sectors(bio))
+<<<<<<< HEAD
 			bio->bi_sector = dc->start_write +
 					 dm_target_offset(ti, bio->bi_sector);
+=======
+			bio->bi_iter.bi_sector = dc->start_write +
+				dm_target_offset(ti, bio->bi_iter.bi_sector);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		return delay_bio(dc, dc->write_delay, bio);
 	}
 
 	bio->bi_bdev = dc->dev_read->bdev;
+<<<<<<< HEAD
 	bio->bi_sector = dc->start_read + dm_target_offset(ti, bio->bi_sector);
+=======
+	bio->bi_iter.bi_sector = dc->start_read +
+		dm_target_offset(ti, bio->bi_iter.bi_sector);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return delay_bio(dc, dc->read_delay, bio);
 }
@@ -356,6 +453,7 @@ static struct target_type delay_target = {
 
 static int __init dm_delay_init(void)
 {
+<<<<<<< HEAD
 	int r = -ENOMEM;
 
 	delayed_cache = KMEM_CACHE(dm_delay_info, 0);
@@ -363,6 +461,9 @@ static int __init dm_delay_init(void)
 		DMERR("Couldn't create delayed bio cache.");
 		goto bad_memcache;
 	}
+=======
+	int r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	r = dm_register_target(&delay_target);
 	if (r < 0) {
@@ -373,15 +474,21 @@ static int __init dm_delay_init(void)
 	return 0;
 
 bad_register:
+<<<<<<< HEAD
 	kmem_cache_destroy(delayed_cache);
 bad_memcache:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return r;
 }
 
 static void __exit dm_delay_exit(void)
 {
 	dm_unregister_target(&delay_target);
+<<<<<<< HEAD
 	kmem_cache_destroy(delayed_cache);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Module hooks */

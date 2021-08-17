@@ -14,10 +14,18 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/irq.h>
 #include <linux/mfd/core.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqdomain.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/regmap.h>
 
 #include <linux/mfd/wm8994/core.h>
@@ -26,7 +34,11 @@
 
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 static struct regmap_irq wm8994_irqs[] = {
+=======
+static const struct regmap_irq wm8994_irqs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[WM8994_IRQ_TEMP_SHUT] = {
 		.reg_offset = 1,
 		.mask = WM8994_TEMP_SHUT_EINT,
@@ -126,7 +138,11 @@ static struct regmap_irq wm8994_irqs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct regmap_irq_chip wm8994_irq_chip = {
+=======
+static const struct regmap_irq_chip wm8994_irq_chip = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name = "wm8994",
 	.irqs = wm8994_irqs,
 	.num_irqs = ARRAY_SIZE(wm8994_irqs),
@@ -138,11 +154,60 @@ static struct regmap_irq_chip wm8994_irq_chip = {
 	.runtime_pm = true,
 };
 
+<<<<<<< HEAD
+=======
+static void wm8994_edge_irq_enable(struct irq_data *data)
+{
+}
+
+static void wm8994_edge_irq_disable(struct irq_data *data)
+{
+}
+
+static struct irq_chip wm8994_edge_irq_chip = {
+	.name			= "wm8994_edge",
+	.irq_disable		= wm8994_edge_irq_disable,
+	.irq_enable		= wm8994_edge_irq_enable,
+};
+
+static irqreturn_t wm8994_edge_irq(int irq, void *data)
+{
+	struct wm8994 *wm8994 = data;
+
+	while (gpio_get_value_cansleep(wm8994->pdata.irq_gpio))
+		handle_nested_irq(irq_create_mapping(wm8994->edge_irq, 0));
+
+	return IRQ_HANDLED;
+}
+
+static int wm8994_edge_irq_map(struct irq_domain *h, unsigned int virq,
+			       irq_hw_number_t hw)
+{
+	struct wm8994 *wm8994 = h->host_data;
+
+	irq_set_chip_data(virq, wm8994);
+	irq_set_chip_and_handler(virq, &wm8994_edge_irq_chip, handle_edge_irq);
+	irq_set_nested_thread(virq, 1);
+	irq_set_noprobe(virq);
+
+	return 0;
+}
+
+static const struct irq_domain_ops wm8994_edge_irq_ops = {
+	.map	= wm8994_edge_irq_map,
+	.xlate	= irq_domain_xlate_twocell,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wm8994_irq_init(struct wm8994 *wm8994)
 {
 	int ret;
 	unsigned long irqflags;
+<<<<<<< HEAD
 	struct wm8994_pdata *pdata = wm8994->dev->platform_data;
+=======
+	struct wm8994_pdata *pdata = &wm8994->pdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!wm8994->irq) {
 		dev_warn(wm8994->dev,
@@ -156,10 +221,58 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 	if (pdata->irq_flags)
 		irqflags = pdata->irq_flags;
 
+<<<<<<< HEAD
 	ret = regmap_add_irq_chip(wm8994->regmap, wm8994->irq,
 				  irqflags,
 				  wm8994->irq_base, &wm8994_irq_chip,
 				  &wm8994->irq_data);
+=======
+	/* use a GPIO for edge triggered controllers */
+	if (irqflags & (IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING)) {
+		if (gpio_to_irq(pdata->irq_gpio) != wm8994->irq) {
+			dev_warn(wm8994->dev, "IRQ %d is not GPIO %d (%d)\n",
+				 wm8994->irq, pdata->irq_gpio,
+				 gpio_to_irq(pdata->irq_gpio));
+			wm8994->irq = gpio_to_irq(pdata->irq_gpio);
+		}
+
+		ret = devm_gpio_request_one(wm8994->dev, pdata->irq_gpio,
+					    GPIOF_IN, "WM8994 IRQ");
+
+		if (ret != 0) {
+			dev_err(wm8994->dev, "Failed to get IRQ GPIO: %d\n",
+				ret);
+			return ret;
+		}
+
+		wm8994->edge_irq = irq_domain_add_linear(NULL, 1,
+							 &wm8994_edge_irq_ops,
+							 wm8994);
+
+		ret = regmap_add_irq_chip(wm8994->regmap,
+					  irq_create_mapping(wm8994->edge_irq,
+							     0),
+					  IRQF_ONESHOT,
+					  wm8994->irq_base, &wm8994_irq_chip,
+					  &wm8994->irq_data);
+		if (ret != 0) {
+			dev_err(wm8994->dev, "Failed to get IRQ: %d\n",
+				ret);
+			return ret;
+		}
+
+		ret = request_threaded_irq(wm8994->irq,
+					   NULL, wm8994_edge_irq,
+					   irqflags,
+					   "WM8994 edge", wm8994);
+	} else {
+		ret = regmap_add_irq_chip(wm8994->regmap, wm8994->irq,
+					  irqflags,
+					  wm8994->irq_base, &wm8994_irq_chip,
+					  &wm8994->irq_data);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret != 0) {
 		dev_err(wm8994->dev, "Failed to register IRQ chip: %d\n", ret);
 		return ret;
@@ -170,8 +283,16 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(wm8994_irq_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void wm8994_irq_exit(struct wm8994 *wm8994)
 {
 	regmap_del_irq_chip(wm8994->irq, wm8994->irq_data);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(wm8994_irq_exit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

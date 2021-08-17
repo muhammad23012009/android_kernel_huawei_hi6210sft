@@ -57,9 +57,13 @@
 #define P9_RDMA_IRD		0
 #define P9_RDMA_ORD		0
 #define P9_RDMA_TIMEOUT		30000		/* 30 seconds */
+<<<<<<< HEAD
 #define P9_RDMA_MAXSIZE		(4*4096)	/* Min SGE is 4, so we can
 						 * safely advertise a maxsize
 						 * of 64k */
+=======
+#define P9_RDMA_MAXSIZE		(1024*1024)	/* 1MB */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct p9_trans_rdma - RDMA transport instance
@@ -75,7 +79,13 @@
  * @sq_depth: The depth of the Send Queue
  * @sq_sem: Semaphore for the SQ
  * @rq_depth: The depth of the Receive Queue.
+<<<<<<< HEAD
  * @rq_count: Count of requests in the Receive Queue.
+=======
+ * @rq_sem: Semaphore for the RQ
+ * @excess_rc : Amount of posted Receive Contexts without a pending request.
+ *		See rdma_request()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @addr: The remote peer's address
  * @req_lock: Protects the active request list
  * @cm_done: Completion event for connection management tracking
@@ -94,13 +104,21 @@ struct p9_trans_rdma {
 	struct ib_pd *pd;
 	struct ib_qp *qp;
 	struct ib_cq *cq;
+<<<<<<< HEAD
 	struct ib_mr *dma_mr;
 	u32 lkey;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long timeout;
 	int sq_depth;
 	struct semaphore sq_sem;
 	int rq_depth;
+<<<<<<< HEAD
 	atomic_t rq_count;
+=======
+	struct semaphore rq_sem;
+	atomic_t excess_rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sockaddr_in addr;
 	spinlock_t req_lock;
 
@@ -110,14 +128,21 @@ struct p9_trans_rdma {
 /**
  * p9_rdma_context - Keeps track of in-process WR
  *
+<<<<<<< HEAD
  * @wc_op: The original WR op for when the CQE completes in error.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @busa: Bus address to unmap when the WR completes
  * @req: Keeps track of requests (send)
  * @rc: Keepts track of replies (receive)
  */
 struct p9_rdma_req;
 struct p9_rdma_context {
+<<<<<<< HEAD
 	enum ib_wc_opcode wc_op;
+=======
+	struct ib_cqe cqe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_addr_t busa;
 	union {
 		struct p9_req_t *req;
@@ -138,6 +163,10 @@ struct p9_rdma_opts {
 	int sq_depth;
 	int rq_depth;
 	long timeout;
+<<<<<<< HEAD
+=======
+	int privport;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -145,7 +174,14 @@ struct p9_rdma_opts {
  */
 enum {
 	/* Options that take integer arguments */
+<<<<<<< HEAD
 	Opt_port, Opt_rq_depth, Opt_sq_depth, Opt_timeout, Opt_err,
+=======
+	Opt_port, Opt_rq_depth, Opt_sq_depth, Opt_timeout,
+	/* Options that take no argument */
+	Opt_privport,
+	Opt_err,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static match_table_t tokens = {
@@ -153,6 +189,10 @@ static match_table_t tokens = {
 	{Opt_sq_depth, "sq=%u"},
 	{Opt_rq_depth, "rq=%u"},
 	{Opt_timeout, "timeout=%u"},
+<<<<<<< HEAD
+=======
+	{Opt_privport, "privport"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{Opt_err, NULL},
 };
 
@@ -174,6 +214,10 @@ static int parse_opts(char *params, struct p9_rdma_opts *opts)
 	opts->sq_depth = P9_RDMA_SQ_DEPTH;
 	opts->rq_depth = P9_RDMA_RQ_DEPTH;
 	opts->timeout = P9_RDMA_TIMEOUT;
+<<<<<<< HEAD
+=======
+	opts->privport = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!params)
 		return 0;
@@ -192,11 +236,21 @@ static int parse_opts(char *params, struct p9_rdma_opts *opts)
 		if (!*p)
 			continue;
 		token = match_token(p, tokens, args);
+<<<<<<< HEAD
 		r = match_int(&args[0], &option);
 		if (r < 0) {
 			p9_debug(P9_DEBUG_ERROR,
 				 "integer field, but no integer?\n");
 			continue;
+=======
+		if ((token != Opt_err) && (token != Opt_privport)) {
+			r = match_int(&args[0], &option);
+			if (r < 0) {
+				p9_debug(P9_DEBUG_ERROR,
+					 "integer field, but no integer?\n");
+				continue;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		switch (token) {
 		case Opt_port:
@@ -211,6 +265,12 @@ static int parse_opts(char *params, struct p9_rdma_opts *opts)
 		case Opt_timeout:
 			opts->timeout = option;
 			break;
+<<<<<<< HEAD
+=======
+		case Opt_privport:
+			opts->privport = 1;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			continue;
 		}
@@ -245,8 +305,12 @@ p9_cm_event_handler(struct rdma_cm_id *id, struct rdma_cm_event *event)
 	case RDMA_CM_EVENT_DISCONNECTED:
 		if (rdma)
 			rdma->state = P9_RDMA_CLOSED;
+<<<<<<< HEAD
 		if (c)
 			c->status = Disconnected;
+=======
+		c->status = Disconnected;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case RDMA_CM_EVENT_TIMEWAIT_EXIT:
@@ -274,9 +338,18 @@ p9_cm_event_handler(struct rdma_cm_id *id, struct rdma_cm_event *event)
 }
 
 static void
+<<<<<<< HEAD
 handle_recv(struct p9_client *client, struct p9_trans_rdma *rdma,
 	    struct p9_rdma_context *c, enum ib_wc_status status, u32 byte_len)
 {
+=======
+recv_done(struct ib_cq *cq, struct ib_wc *wc)
+{
+	struct p9_client *client = cq->cq_context;
+	struct p9_trans_rdma *rdma = client->trans;
+	struct p9_rdma_context *c =
+		container_of(wc->wr_cqe, struct p9_rdma_context, cqe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct p9_req_t *req;
 	int err = 0;
 	int16_t tag;
@@ -285,7 +358,11 @@ handle_recv(struct p9_client *client, struct p9_trans_rdma *rdma,
 	ib_dma_unmap_single(rdma->cm_id->device, c->busa, client->msize,
 							 DMA_FROM_DEVICE);
 
+<<<<<<< HEAD
 	if (status != IB_WC_SUCCESS)
+=======
+	if (wc->status != IB_WC_SUCCESS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out;
 
 	err = p9_parse_header(c->rc, NULL, NULL, &tag, 1);
@@ -296,6 +373,7 @@ handle_recv(struct p9_client *client, struct p9_trans_rdma *rdma,
 	if (!req)
 		goto err_out;
 
+<<<<<<< HEAD
 	req->rc = c->rc;
 	req->status = REQ_STATUS_RCVD;
 	p9_client_cb(client, req);
@@ -315,6 +393,44 @@ handle_send(struct p9_client *client, struct p9_trans_rdma *rdma,
 	ib_dma_unmap_single(rdma->cm_id->device,
 			    c->busa, c->req->tc->size,
 			    DMA_TO_DEVICE);
+=======
+	/* Check that we have not yet received a reply for this request.
+	 */
+	if (unlikely(req->rc)) {
+		pr_err("Duplicate reply for request %d", tag);
+		goto err_out;
+	}
+
+	req->rc = c->rc;
+	p9_client_cb(client, req, REQ_STATUS_RCVD);
+
+ out:
+	up(&rdma->rq_sem);
+	kfree(c);
+	return;
+
+ err_out:
+	p9_debug(P9_DEBUG_ERROR, "req %p err %d status %d\n",
+			req, err, wc->status);
+	rdma->state = P9_RDMA_FLUSHING;
+	client->status = Disconnected;
+	goto out;
+}
+
+static void
+send_done(struct ib_cq *cq, struct ib_wc *wc)
+{
+	struct p9_client *client = cq->cq_context;
+	struct p9_trans_rdma *rdma = client->trans;
+	struct p9_rdma_context *c =
+		container_of(wc->wr_cqe, struct p9_rdma_context, cqe);
+
+	ib_dma_unmap_single(rdma->cm_id->device,
+			    c->busa, c->req->tc->size,
+			    DMA_TO_DEVICE);
+	up(&rdma->sq_sem);
+	kfree(c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void qp_event_handler(struct ib_event *event, void *context)
@@ -323,6 +439,7 @@ static void qp_event_handler(struct ib_event *event, void *context)
 		 event->event, context);
 }
 
+<<<<<<< HEAD
 static void cq_comp_handler(struct ib_cq *cq, void *cq_context)
 {
 	struct p9_client *client = cq_context;
@@ -359,14 +476,19 @@ static void cq_event_handler(struct ib_event *e, void *v)
 	p9_debug(P9_DEBUG_ERROR, "CQ event %d context %p\n", e->event, v);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void rdma_destroy_trans(struct p9_trans_rdma *rdma)
 {
 	if (!rdma)
 		return;
 
+<<<<<<< HEAD
 	if (rdma->dma_mr && !IS_ERR(rdma->dma_mr))
 		ib_dereg_mr(rdma->dma_mr);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rdma->qp && !IS_ERR(rdma->qp))
 		ib_destroy_qp(rdma->qp);
 
@@ -374,7 +496,11 @@ static void rdma_destroy_trans(struct p9_trans_rdma *rdma)
 		ib_dealloc_pd(rdma->pd);
 
 	if (rdma->cq && !IS_ERR(rdma->cq))
+<<<<<<< HEAD
 		ib_destroy_cq(rdma->cq);
+=======
+		ib_free_cq(rdma->cq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (rdma->cm_id && !IS_ERR(rdma->cm_id))
 		rdma_destroy_id(rdma->cm_id);
@@ -395,6 +521,7 @@ post_recv(struct p9_client *client, struct p9_rdma_context *c)
 	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa))
 		goto error;
 
+<<<<<<< HEAD
 	sge.addr = c->busa;
 	sge.length = client->msize;
 	sge.lkey = rdma->lkey;
@@ -402,6 +529,16 @@ post_recv(struct p9_client *client, struct p9_rdma_context *c)
 	wr.next = NULL;
 	c->wc_op = IB_WC_RECV;
 	wr.wr_id = (unsigned long) c;
+=======
+	c->cqe.done = recv_done;
+
+	sge.addr = c->busa;
+	sge.length = client->msize;
+	sge.lkey = rdma->pd->local_dma_lkey;
+
+	wr.next = NULL;
+	wr.wr_cqe = &c->cqe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wr.sg_list = &sge;
 	wr.num_sge = 1;
 	return ib_post_recv(rdma->qp, &wr, &bad_wr);
@@ -421,10 +558,34 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 	struct p9_rdma_context *c = NULL;
 	struct p9_rdma_context *rpl_context = NULL;
 
+<<<<<<< HEAD
+=======
+	/* When an error occurs between posting the recv and the send,
+	 * there will be a receive context posted without a pending request.
+	 * Since there is no way to "un-post" it, we remember it and skip
+	 * post_recv() for the next request.
+	 * So here,
+	 * see if we are this `next request' and need to absorb an excess rc.
+	 * If yes, then drop and free our own, and do not recv_post().
+	 **/
+	if (unlikely(atomic_read(&rdma->excess_rc) > 0)) {
+		if ((atomic_sub_return(1, &rdma->excess_rc) >= 0)) {
+			/* Got one ! */
+			kfree(req->rc);
+			req->rc = NULL;
+			goto dont_need_post_recv;
+		} else {
+			/* We raced and lost. */
+			atomic_inc(&rdma->excess_rc);
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Allocate an fcall for the reply */
 	rpl_context = kmalloc(sizeof *rpl_context, GFP_NOFS);
 	if (!rpl_context) {
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto err_close;
 	}
 
@@ -447,6 +608,11 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 		err = -ENOMEM;
 		goto err_free2;
 	}
+=======
+		goto recv_error;
+	}
+	rpl_context->rc = req->rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Post a receive buffer for this request. We need to ensure
@@ -455,6 +621,7 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 	 * outstanding request, so we must keep a count to avoid
 	 * overflowing the RQ.
 	 */
+<<<<<<< HEAD
 	if (atomic_inc_return(&rdma->rq_count) <= rdma->rq_depth) {
 		err = post_recv(client, rpl_context);
 		if (err)
@@ -465,17 +632,38 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 	/* remove posted receive buffer from request structure */
 	req->rc = NULL;
 
+=======
+	if (down_interruptible(&rdma->rq_sem)) {
+		err = -EINTR;
+		goto recv_error;
+	}
+
+	err = post_recv(client, rpl_context);
+	if (err) {
+		p9_debug(P9_DEBUG_ERROR, "POST RECV failed: %d\n", err);
+		goto recv_error;
+	}
+	/* remove posted receive buffer from request structure */
+	req->rc = NULL;
+
+dont_need_post_recv:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Post the request */
 	c = kmalloc(sizeof *c, GFP_NOFS);
 	if (!c) {
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto err_free1;
+=======
+		goto send_error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	c->req = req;
 
 	c->busa = ib_dma_map_single(rdma->cm_id->device,
 				    c->req->tc->sdata, c->req->tc->size,
 				    DMA_TO_DEVICE);
+<<<<<<< HEAD
 	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa))
 		goto error;
 
@@ -486,11 +674,27 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 	wr.next = NULL;
 	c->wc_op = IB_WC_SEND;
 	wr.wr_id = (unsigned long) c;
+=======
+	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa)) {
+		err = -EIO;
+		goto send_error;
+	}
+
+	c->cqe.done = send_done;
+
+	sge.addr = c->busa;
+	sge.length = c->req->tc->size;
+	sge.lkey = rdma->pd->local_dma_lkey;
+
+	wr.next = NULL;
+	wr.wr_cqe = &c->cqe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wr.opcode = IB_WR_SEND;
 	wr.send_flags = IB_SEND_SIGNALED;
 	wr.sg_list = &sge;
 	wr.num_sge = 1;
 
+<<<<<<< HEAD
 	if (down_interruptible(&rdma->sq_sem))
 		goto error;
 
@@ -509,6 +713,42 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
  err_close:
 	spin_lock_irqsave(&rdma->req_lock, flags);
 	if (rdma->state < P9_RDMA_CLOSING) {
+=======
+	if (down_interruptible(&rdma->sq_sem)) {
+		err = -EINTR;
+		goto send_error;
+	}
+
+	/* Mark request as `sent' *before* we actually send it,
+	 * because doing if after could erase the REQ_STATUS_RCVD
+	 * status in case of a very fast reply.
+	 */
+	req->status = REQ_STATUS_SENT;
+	err = ib_post_send(rdma->qp, &wr, &bad_wr);
+	if (err)
+		goto send_error;
+
+	/* Success */
+	return 0;
+
+ /* Handle errors that happened during or while preparing the send: */
+ send_error:
+	req->status = REQ_STATUS_ERROR;
+	kfree(c);
+	p9_debug(P9_DEBUG_ERROR, "Error %d in rdma_request()\n", err);
+
+	/* Ach.
+	 *  We did recv_post(), but not send. We have one recv_post in excess.
+	 */
+	atomic_inc(&rdma->excess_rc);
+	return err;
+
+ /* Handle errors that happened during or while preparing post_recv(): */
+ recv_error:
+	kfree(rpl_context);
+	spin_lock_irqsave(&rdma->req_lock, flags);
+	if (err != -EINTR && rdma->state < P9_RDMA_CLOSING) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rdma->state = P9_RDMA_CLOSING;
 		spin_unlock_irqrestore(&rdma->req_lock, flags);
 		rdma_disconnect(rdma->cm_id);
@@ -551,17 +791,60 @@ static struct p9_trans_rdma *alloc_rdma(struct p9_rdma_opts *opts)
 	spin_lock_init(&rdma->req_lock);
 	init_completion(&rdma->cm_done);
 	sema_init(&rdma->sq_sem, rdma->sq_depth);
+<<<<<<< HEAD
 	atomic_set(&rdma->rq_count, 0);
+=======
+	sema_init(&rdma->rq_sem, rdma->rq_depth);
+	atomic_set(&rdma->excess_rc, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rdma;
 }
 
+<<<<<<< HEAD
 /* its not clear to me we can do anything after send has been posted */
 static int rdma_cancel(struct p9_client *client, struct p9_req_t *req)
 {
 	return 1;
 }
 
+=======
+static int rdma_cancel(struct p9_client *client, struct p9_req_t *req)
+{
+	/* Nothing to do here.
+	 * We will take care of it (if we have to) in rdma_cancelled()
+	 */
+	return 1;
+}
+
+/* A request has been fully flushed without a reply.
+ * That means we have posted one buffer in excess.
+ */
+static int rdma_cancelled(struct p9_client *client, struct p9_req_t *req)
+{
+	struct p9_trans_rdma *rdma = client->trans;
+	atomic_inc(&rdma->excess_rc);
+	return 0;
+}
+
+static int p9_rdma_bind_privport(struct p9_trans_rdma *rdma)
+{
+	struct sockaddr_in cl = {
+		.sin_family = AF_INET,
+		.sin_addr.s_addr = htonl(INADDR_ANY),
+	};
+	int port, err = -EINVAL;
+
+	for (port = P9_DEF_MAX_RESVPORT; port >= P9_DEF_MIN_RESVPORT; port--) {
+		cl.sin_port = htons((ushort)port);
+		err = rdma_bind_addr(rdma->cm_id, (struct sockaddr *)&cl);
+		if (err != -EADDRINUSE)
+			break;
+	}
+	return err;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * trans_create_rdma - Transport method for creating atransport instance
  * @client: client instance
@@ -576,7 +859,13 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 	struct p9_trans_rdma *rdma;
 	struct rdma_conn_param conn_param;
 	struct ib_qp_init_attr qp_attr;
+<<<<<<< HEAD
 	struct ib_device_attr devattr;
+=======
+
+	if (addr == NULL)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Parse the transport specific mount options */
 	err = parse_opts(args, &opts);
@@ -589,14 +878,32 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 		return -ENOMEM;
 
 	/* Create the RDMA CM ID */
+<<<<<<< HEAD
 	rdma->cm_id = rdma_create_id(p9_cm_event_handler, client, RDMA_PS_TCP,
 				     IB_QPT_RC);
+=======
+	rdma->cm_id = rdma_create_id(&init_net, p9_cm_event_handler, client,
+				     RDMA_PS_TCP, IB_QPT_RC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdma->cm_id))
 		goto error;
 
 	/* Associate the client with the transport */
 	client->trans = rdma;
 
+<<<<<<< HEAD
+=======
+	/* Bind to a privileged port if we need to */
+	if (opts.privport) {
+		err = p9_rdma_bind_privport(rdma);
+		if (err < 0) {
+			pr_err("%s (%d): problem binding to privport: %d\n",
+			       __func__, task_pid_nr(current), -err);
+			goto error;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Resolve the server's address */
 	rdma->addr.sin_family = AF_INET;
 	rdma->addr.sin_addr.s_addr = in_aton(addr);
@@ -618,6 +925,7 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 	if (err || (rdma->state != P9_RDMA_ROUTE_RESOLVED))
 		goto error;
 
+<<<<<<< HEAD
 	/* Query the device attributes */
 	err = ib_query_device(rdma->cm_id->device, &devattr);
 	if (err)
@@ -647,6 +955,20 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 		rdma->lkey = rdma->dma_mr->lkey;
 	}
 
+=======
+	/* Create the Completion Queue */
+	rdma->cq = ib_alloc_cq(rdma->cm_id->device, client,
+			opts.sq_depth + opts.rq_depth + 1,
+			0, IB_POLL_SOFTIRQ);
+	if (IS_ERR(rdma->cq))
+		goto error;
+
+	/* Create the Protection Domain */
+	rdma->pd = ib_alloc_pd(rdma->cm_id->device, 0);
+	if (IS_ERR(rdma->pd))
+		goto error;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Create the Queue Pair */
 	memset(&qp_attr, 0, sizeof qp_attr);
 	qp_attr.event_handler = qp_event_handler;
@@ -695,6 +1017,10 @@ static struct p9_trans_module p9_rdma_trans = {
 	.close = rdma_close,
 	.request = rdma_request,
 	.cancel = rdma_cancel,
+<<<<<<< HEAD
+=======
+	.cancelled = rdma_cancelled,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**

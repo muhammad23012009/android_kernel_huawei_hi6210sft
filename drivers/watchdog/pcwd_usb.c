@@ -32,7 +32,11 @@
 #include <linux/errno.h>	/* For the -ENODEV/... values */
 #include <linux/kernel.h>	/* For printk/panic/... */
 #include <linux/delay.h>	/* For mdelay function */
+<<<<<<< HEAD
 #include <linux/miscdevice.h>	/* For MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR) */
+=======
+#include <linux/miscdevice.h>	/* For struct miscdevice */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/watchdog.h>	/* For the watchdog specific items */
 #include <linux/notifier.h>	/* For notifier support */
 #include <linux/reboot.h>	/* For reboot_notifier stuff */
@@ -44,6 +48,7 @@
 #include <linux/hid.h>		/* For HID_REQ_SET_REPORT & HID_DT_REPORT */
 #include <linux/uaccess.h>	/* For copy_to_user/put_user/... */
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_DEBUG
 static int debug = 1;
 #else
@@ -61,6 +66,8 @@ do {							\
 	if (debug)					\
 		pr_debug(format "\n", ##__VA_ARGS__);	\
 } while (0)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Module and Version Information */
 #define DRIVER_VERSION "1.02"
@@ -72,12 +79,15 @@ do {							\
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE(DRIVER_LICENSE);
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 MODULE_ALIAS_MISCDEV(TEMP_MINOR);
 
 /* Module Parameters */
 module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define WATCHDOG_HEARTBEAT 0	/* default heartbeat =
 						delay-time from dip-switches */
@@ -195,6 +205,10 @@ static void usb_pcwd_intr_done(struct urb *urb)
 	struct usb_pcwd_private *usb_pcwd =
 				(struct usb_pcwd_private *)urb->context;
 	unsigned char *data = usb_pcwd->intr_buffer;
+<<<<<<< HEAD
+=======
+	struct device *dev = &usb_pcwd->interface->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 
 	switch (urb->status) {
@@ -204,6 +218,7 @@ static void usb_pcwd_intr_done(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* this urb is terminated, clean up */
+<<<<<<< HEAD
 		dbg("%s - urb shutting down with status: %d", __func__,
 								urb->status);
 		return;
@@ -215,6 +230,19 @@ static void usb_pcwd_intr_done(struct urb *urb)
 	}
 
 	dbg("received following data cmd=0x%02x msb=0x%02x lsb=0x%02x",
+=======
+		dev_dbg(dev, "%s - urb shutting down with status: %d",
+			__func__, urb->status);
+		return;
+	/* -EPIPE:  should clear the halt */
+	default:		/* error */
+		dev_dbg(dev, "%s - nonzero urb status received: %d",
+			__func__, urb->status);
+		goto resubmit;
+	}
+
+	dev_dbg(dev, "received following data cmd=0x%02x msb=0x%02x lsb=0x%02x",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data[0], data[1], data[2]);
 
 	usb_pcwd->cmd_command  = data[0];
@@ -235,13 +263,24 @@ static int usb_pcwd_send_command(struct usb_pcwd_private *usb_pcwd,
 		unsigned char cmd, unsigned char *msb, unsigned char *lsb)
 {
 	int got_response, count;
+<<<<<<< HEAD
 	unsigned char buf[6];
+=======
+	unsigned char *buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We will not send any commands if the USB PCWD device does
 	 * not exist */
 	if ((!usb_pcwd) || (!usb_pcwd->exists))
 		return -1;
 
+<<<<<<< HEAD
+=======
+	buf = kmalloc(6, GFP_KERNEL);
+	if (buf == NULL)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* The USB PC Watchdog uses a 6 byte report format.
 	 * The board currently uses only 3 of the six bytes of the report. */
 	buf[0] = cmd;			/* Byte 0 = CMD */
@@ -249,17 +288,30 @@ static int usb_pcwd_send_command(struct usb_pcwd_private *usb_pcwd,
 	buf[2] = *lsb;			/* Byte 2 = Data LSB */
 	buf[3] = buf[4] = buf[5] = 0;	/* All other bytes not used */
 
+<<<<<<< HEAD
 	dbg("sending following data cmd=0x%02x msb=0x%02x lsb=0x%02x",
+=======
+	dev_dbg(&usb_pcwd->interface->dev,
+		"sending following data cmd=0x%02x msb=0x%02x lsb=0x%02x",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		buf[0], buf[1], buf[2]);
 
 	atomic_set(&usb_pcwd->cmd_received, 0);
 
 	if (usb_control_msg(usb_pcwd->udev, usb_sndctrlpipe(usb_pcwd->udev, 0),
 			HID_REQ_SET_REPORT, HID_DT_REPORT,
+<<<<<<< HEAD
 			0x0200, usb_pcwd->interface_number, buf, sizeof(buf),
 			USB_COMMAND_TIMEOUT) != sizeof(buf)) {
 		dbg("usb_pcwd_send_command: error in usb_control_msg for "
 				"cmd 0x%x 0x%x 0x%x\n", cmd, *msb, *lsb);
+=======
+			0x0200, usb_pcwd->interface_number, buf, 6,
+			USB_COMMAND_TIMEOUT) != 6) {
+		dev_dbg(&usb_pcwd->interface->dev,
+			"usb_pcwd_send_command: error in usb_control_msg for cmd 0x%x 0x%x 0x%x\n",
+			cmd, *msb, *lsb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* wait till the usb card processed the command,
 	 * with a max. timeout of USB_COMMAND_TIMEOUT */
@@ -277,6 +329,11 @@ static int usb_pcwd_send_command(struct usb_pcwd_private *usb_pcwd,
 		*lsb = usb_pcwd->cmd_data_lsb;
 	}
 
+<<<<<<< HEAD
+=======
+	kfree(buf);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return got_response;
 }
 
@@ -622,7 +679,11 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 	struct usb_host_interface *iface_desc;
 	struct usb_endpoint_descriptor *endpoint;
 	struct usb_pcwd_private *usb_pcwd = NULL;
+<<<<<<< HEAD
 	int pipe, maxp;
+=======
+	int pipe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval = -ENOMEM;
 	int got_fw_rev;
 	unsigned char fw_rev_major, fw_rev_minor;
@@ -644,6 +705,12 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	if (iface_desc->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* check out the endpoint: it has to be Interrupt & IN */
 	endpoint = &iface_desc->endpoint[0].desc;
 
@@ -655,6 +722,7 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 
 	/* get a handle to the interrupt data pipe */
 	pipe = usb_rcvintpipe(udev, endpoint->bEndpointAddress);
+<<<<<<< HEAD
 	maxp = usb_maxpacket(udev, pipe, usb_pipeout(pipe));
 
 	/* allocate memory for our device and initialize it */
@@ -663,6 +731,13 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 		pr_err("Out of memory\n");
 		goto error;
 	}
+=======
+
+	/* allocate memory for our device and initialize it */
+	usb_pcwd = kzalloc(sizeof(struct usb_pcwd_private), GFP_KERNEL);
+	if (usb_pcwd == NULL)
+		goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb_pcwd_device = usb_pcwd;
 
@@ -683,10 +758,15 @@ static int usb_pcwd_probe(struct usb_interface *interface,
 
 	/* allocate the urb's */
 	usb_pcwd->intr_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!usb_pcwd->intr_urb) {
 		pr_err("Out of memory\n");
 		goto error;
 	}
+=======
+	if (!usb_pcwd->intr_urb)
+		goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* initialise the intr urb's */
 	usb_fill_int_urb(usb_pcwd->intr_urb, udev, pipe,

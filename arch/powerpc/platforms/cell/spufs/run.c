@@ -326,7 +326,11 @@ static int spu_process_callback(struct spu_context *ctx)
 	spu_ret = -ENOSYS;
 	npc += 4;
 
+<<<<<<< HEAD
 	if (s.nr_ret < __NR_syscalls) {
+=======
+	if (s.nr_ret < NR_syscalls) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spu_release(ctx);
 		/* do actual system call from here */
 		spu_ret = spu_sys_callback(&s);
@@ -435,7 +439,11 @@ long spufs_run_spu(struct spu_context *ctx, u32 *npc, u32 *event)
 
 	/* Note: we don't need to force_sig SIGTRAP on single-step
 	 * since we have TIF_SINGLESTEP set, thus the kernel will do
+<<<<<<< HEAD
 	 * it upon return from the syscall anyawy
+=======
+	 * it upon return from the syscall anyway.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	if (unlikely(status & SPU_STATUS_SINGLE_STEP))
 		ret = -ERESTARTSYS;

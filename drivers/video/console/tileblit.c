@@ -13,6 +13,10 @@
 #include <linux/fb.h>
 #include <linux/vt_kern.h>
 #include <linux/console.h>
+<<<<<<< HEAD
+=======
+#include <linux/font.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/types.h>
 #include "fbcon.h"
 
@@ -80,7 +84,11 @@ static void tile_clear_margins(struct vc_data *vc, struct fb_info *info,
 }
 
 static void tile_cursor(struct vc_data *vc, struct fb_info *info, int mode,
+<<<<<<< HEAD
 			int softback_lines, int fg, int bg)
+=======
+			int fg, int bg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fb_tilecursor cursor;
 	int use_sw = (vc->vc_cursor_type & 0x10);

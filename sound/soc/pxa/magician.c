@@ -41,6 +41,7 @@ static int magician_hp_switch;
 static int magician_spk_switch = 1;
 static int magician_in_sel = MAGICIAN_MIC;
 
+<<<<<<< HEAD
 static void magician_ext_control(struct snd_soc_codec *codec)
 {
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
@@ -66,11 +67,42 @@ static void magician_ext_control(struct snd_soc_codec *codec)
 	}
 
 	snd_soc_dapm_sync(dapm);
+=======
+static void magician_ext_control(struct snd_soc_dapm_context *dapm)
+{
+
+	snd_soc_dapm_mutex_lock(dapm);
+
+	if (magician_spk_switch)
+		snd_soc_dapm_enable_pin_unlocked(dapm, "Speaker");
+	else
+		snd_soc_dapm_disable_pin_unlocked(dapm, "Speaker");
+	if (magician_hp_switch)
+		snd_soc_dapm_enable_pin_unlocked(dapm, "Headphone Jack");
+	else
+		snd_soc_dapm_disable_pin_unlocked(dapm, "Headphone Jack");
+
+	switch (magician_in_sel) {
+	case MAGICIAN_MIC:
+		snd_soc_dapm_disable_pin_unlocked(dapm, "Headset Mic");
+		snd_soc_dapm_enable_pin_unlocked(dapm, "Call Mic");
+		break;
+	case MAGICIAN_MIC_EXT:
+		snd_soc_dapm_disable_pin_unlocked(dapm, "Call Mic");
+		snd_soc_dapm_enable_pin_unlocked(dapm, "Headset Mic");
+		break;
+	}
+
+	snd_soc_dapm_sync_unlocked(dapm);
+
+	snd_soc_dapm_mutex_unlock(dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int magician_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 
 	mutex_lock(&codec->mutex);
@@ -79,6 +111,11 @@ static int magician_startup(struct snd_pcm_substream *substream)
 	magician_ext_control(codec);
 
 	mutex_unlock(&codec->mutex);
+=======
+
+	/* check the jack status at stream startup */
+	magician_ext_control(&rtd->card->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -277,13 +314,21 @@ static int magician_get_hp(struct snd_kcontrol *kcontrol,
 static int magician_set_hp(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_card *card = snd_kcontrol_chip(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (magician_hp_switch == ucontrol->value.integer.value[0])
 		return 0;
 
 	magician_hp_switch = ucontrol->value.integer.value[0];
+<<<<<<< HEAD
 	magician_ext_control(codec);
+=======
+	magician_ext_control(&card->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -297,30 +342,49 @@ static int magician_get_spk(struct snd_kcontrol *kcontrol,
 static int magician_set_spk(struct snd_kcontrol *kcontrol,
 			    struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_card *card = snd_kcontrol_chip(kcontrol);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (magician_spk_switch == ucontrol->value.integer.value[0])
 		return 0;
 
 	magician_spk_switch = ucontrol->value.integer.value[0];
+<<<<<<< HEAD
 	magician_ext_control(codec);
+=======
+	magician_ext_control(&card->dapm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
 static int magician_get_input(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = magician_in_sel;
+=======
+	ucontrol->value.enumerated.item[0] = magician_in_sel;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int magician_set_input(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	if (magician_in_sel == ucontrol->value.integer.value[0])
 		return 0;
 
 	magician_in_sel = ucontrol->value.integer.value[0];
+=======
+	if (magician_in_sel == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	magician_in_sel = ucontrol->value.enumerated.item[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (magician_in_sel) {
 	case MAGICIAN_MIC:
@@ -393,6 +457,7 @@ static const struct snd_kcontrol_new uda1380_magician_controls[] = {
 			magician_get_input, magician_set_input),
 };
 
+<<<<<<< HEAD
 /*
  * Logic for a uda1380 as connected on a HTC Magician
  */
@@ -426,6 +491,8 @@ static int magician_uda1380_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* magician digital audio interface glue - connects codec <--> CPU */
 static struct snd_soc_dai_link magician_dai[] = {
 {
@@ -435,7 +502,10 @@ static struct snd_soc_dai_link magician_dai[] = {
 	.codec_dai_name = "uda1380-hifi-playback",
 	.platform_name = "pxa-pcm-audio",
 	.codec_name = "uda1380-codec.0-0018",
+<<<<<<< HEAD
 	.init = magician_uda1380_init,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ops = &magician_playback_ops,
 },
 {
@@ -456,6 +526,16 @@ static struct snd_soc_card snd_soc_card_magician = {
 	.dai_link = magician_dai,
 	.num_links = ARRAY_SIZE(magician_dai),
 
+<<<<<<< HEAD
+=======
+	.controls = uda1380_magician_controls,
+	.num_controls = ARRAY_SIZE(uda1380_magician_controls),
+	.dapm_widgets = uda1380_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(uda1380_dapm_widgets),
+	.dapm_routes = audio_map,
+	.num_dapm_routes = ARRAY_SIZE(audio_map),
+	.fully_routed = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device *magician_snd_device;

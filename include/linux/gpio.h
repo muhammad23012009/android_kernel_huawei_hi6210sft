@@ -3,7 +3,11 @@
 
 #include <linux/errno.h>
 
+<<<<<<< HEAD
 /* see Documentation/gpio.txt */
+=======
+/* see Documentation/gpio/gpio-legacy.txt */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* make these flag values available regardless of GPIO kconfig options */
 #define GPIOF_DIR_OUT	(0 << 0)
@@ -16,6 +20,7 @@
 #define GPIOF_OUT_INIT_LOW	(GPIOF_DIR_OUT | GPIOF_INIT_LOW)
 #define GPIOF_OUT_INIT_HIGH	(GPIOF_DIR_OUT | GPIOF_INIT_HIGH)
 
+<<<<<<< HEAD
 /* Gpio pin is open drain */
 #define GPIOF_OPEN_DRAIN	(1 << 2)
 
@@ -24,6 +29,19 @@
 
 #define GPIOF_EXPORT		(1 << 4)
 #define GPIOF_EXPORT_CHANGEABLE	(1 << 5)
+=======
+/* Gpio pin is active-low */
+#define GPIOF_ACTIVE_LOW        (1 << 2)
+
+/* Gpio pin is open drain */
+#define GPIOF_OPEN_DRAIN	(1 << 3)
+
+/* Gpio pin is open source */
+#define GPIOF_OPEN_SOURCE	(1 << 4)
+
+#define GPIOF_EXPORT		(1 << 5)
+#define GPIOF_EXPORT_CHANGEABLE	(1 << 6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define GPIOF_EXPORT_DIR_FIXED	(GPIOF_EXPORT)
 #define GPIOF_EXPORT_DIR_CHANGEABLE (GPIOF_EXPORT | GPIOF_EXPORT_CHANGEABLE)
 
@@ -74,12 +92,29 @@ static inline int irq_to_gpio(unsigned int irq)
 
 #endif /* ! CONFIG_ARCH_HAVE_CUSTOM_GPIO_H */
 
+<<<<<<< HEAD
+=======
+/* CONFIG_GPIOLIB: bindings for managed devices that want to request gpios */
+
+struct device;
+
+int devm_gpio_request(struct device *dev, unsigned gpio, const char *label);
+int devm_gpio_request_one(struct device *dev, unsigned gpio,
+			  unsigned long flags, const char *label);
+void devm_gpio_free(struct device *dev, unsigned int gpio);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* ! CONFIG_GPIOLIB */
 
 #include <linux/kernel.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/errno.h>
 #include <linux/bug.h>
+=======
+#include <linux/bug.h>
+#include <linux/pinctrl/pinctrl.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct device;
 struct gpio_chip;
@@ -184,6 +219,7 @@ static inline int gpio_export_link(struct device *dev, const char *name,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline int gpio_sysfs_set_active_low(unsigned gpio, int value)
 {
 	/* GPIO can never have been requested */
@@ -191,6 +227,8 @@ static inline int gpio_sysfs_set_active_low(unsigned gpio, int value)
 	return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void gpio_unexport(unsigned gpio)
 {
 	/* GPIO can never have been exported */
@@ -204,6 +242,22 @@ static inline int gpio_to_irq(unsigned gpio)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
+=======
+static inline int gpiochip_lock_as_irq(struct gpio_chip *chip,
+				       unsigned int offset)
+{
+	WARN_ON(1);
+	return -EINVAL;
+}
+
+static inline void gpiochip_unlock_as_irq(struct gpio_chip *chip,
+					  unsigned int offset)
+{
+	WARN_ON(1);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int irq_to_gpio(unsigned irq)
 {
 	/* irq can never have been returned from gpio_to_irq() */
@@ -211,15 +265,21 @@ static inline int irq_to_gpio(unsigned irq)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline int
 gpiochip_add_pin_range(struct gpio_chip *chip, const char *pinctl_name,
 		       unsigned int gpio_offset, unsigned int pin_offset,
 		       unsigned int npins)
+=======
+static inline int devm_gpio_request(struct device *dev, unsigned gpio,
+				    const char *label)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	WARN_ON(1);
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static inline void
 gpiochip_remove_pin_ranges(struct gpio_chip *chip)
 {
@@ -235,5 +295,20 @@ int devm_gpio_request(struct device *dev, unsigned gpio, const char *label);
 int devm_gpio_request_one(struct device *dev, unsigned gpio,
 			  unsigned long flags, const char *label);
 void devm_gpio_free(struct device *dev, unsigned int gpio);
+=======
+static inline int devm_gpio_request_one(struct device *dev, unsigned gpio,
+					unsigned long flags, const char *label)
+{
+	WARN_ON(1);
+	return -EINVAL;
+}
+
+static inline void devm_gpio_free(struct device *dev, unsigned int gpio)
+{
+	WARN_ON(1);
+}
+
+#endif /* ! CONFIG_GPIOLIB */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __LINUX_GPIO_H */

@@ -16,6 +16,10 @@
 #define UX500_MSP_I2S_H
 
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/asoc-ux500-msp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MSP_INPUT_FREQ_APB 48000000
 
@@ -341,11 +345,14 @@ enum msp_compress_mode {
 	MSP_COMPRESS_MODE_A_LAW = 3
 };
 
+<<<<<<< HEAD
 enum msp_spi_burst_mode {
 	MSP_SPI_BURST_MODE_DISABLE = 0,
 	MSP_SPI_BURST_MODE_ENABLE = 1
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum msp_expand_mode {
 	MSP_EXPAND_MODE_LINEAR = 0,
 	MSP_EXPAND_MODE_LINEAR_SIGNED = 1,
@@ -370,6 +377,7 @@ enum msp_protocol {
  */
 #define MAX_MSP_BACKUP_REGS 36
 
+<<<<<<< HEAD
 enum enum_i2s_controller {
 	MSP_0_I2S_CONTROLLER = 0,
 	MSP_1_I2S_CONTROLLER,
@@ -377,6 +385,8 @@ enum enum_i2s_controller {
 	MSP_3_I2S_CONTROLLER,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum i2s_direction_t {
 	MSP_DIR_TX = 0x01,
 	MSP_DIR_RX = 0x02,
@@ -454,6 +464,7 @@ struct msp_protdesc {
 	u32 clocks_per_frame;
 };
 
+<<<<<<< HEAD
 struct i2s_message {
 	enum i2s_direction_t i2s_direction;
 	void *txdata;
@@ -480,6 +491,8 @@ struct i2s_controller {
 	char name[48];
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ux500_msp_config {
 	unsigned int f_inputclk;
 	unsigned int rx_clk_sel;
@@ -491,8 +504,11 @@ struct ux500_msp_config {
 	unsigned int tx_fsync_sel;
 	unsigned int rx_fifo_config;
 	unsigned int tx_fifo_config;
+<<<<<<< HEAD
 	unsigned int spi_clk_mode;
 	unsigned int spi_burst_mode;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int loopback_enable;
 	unsigned int tx_data_enable;
 	unsigned int default_protdesc;
@@ -502,6 +518,7 @@ struct ux500_msp_config {
 	unsigned int direction;
 	unsigned int protocol;
 	unsigned int frame_freq;
+<<<<<<< HEAD
 	unsigned int frame_size;
 	enum msp_data_size data_size;
 	unsigned int def_elem_len;
@@ -539,6 +556,30 @@ struct ux500_msp {
 struct ux500_msp_dma_params {
 	unsigned int data_size;
 	struct stedma40_chan_cfg *dma_cfg;
+=======
+	enum msp_data_size data_size;
+	unsigned int def_elem_len;
+	unsigned int iodelay;
+};
+
+struct ux500_msp_dma_params {
+	unsigned int data_size;
+	dma_addr_t tx_rx_addr;
+	struct stedma40_chan_cfg *dma_cfg;
+};
+
+struct ux500_msp {
+	int id;
+	void __iomem *registers;
+	struct device *dev;
+	struct ux500_msp_dma_params playback_dma_data;
+	struct ux500_msp_dma_params capture_dma_data;
+	enum msp_state msp_state;
+	int def_elem_len;
+	unsigned int dir_busy;
+	int loopback_enable;
+	unsigned int f_bitclk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct msp_i2s_platform_data;

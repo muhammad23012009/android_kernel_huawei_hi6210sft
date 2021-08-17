@@ -10,6 +10,10 @@
  */
 
 #ifndef __PINCTRL_LANTIQ_H
+<<<<<<< HEAD
+=======
+#define __PINCTRL_LANTIQ_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/clkdev.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -161,6 +165,17 @@ enum ltq_pin {
 	GPIO53,
 	GPIO54,
 	GPIO55,
+<<<<<<< HEAD
+=======
+	GPIO56,
+	GPIO57,
+	GPIO58,
+	GPIO59,
+	GPIO60, /* 60 */
+	GPIO61,
+	GPIO62,
+	GPIO63,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	GPIO64,
 	GPIO65,
@@ -192,4 +207,8 @@ enum ltq_pin {
 extern int ltq_pinctrl_register(struct platform_device *pdev,
 				   struct ltq_pinmux_info *info);
 extern int ltq_pinctrl_unregister(struct platform_device *pdev);
+<<<<<<< HEAD
 #endif	/* __PINCTRL_PXA3XX_H */
+=======
+#endif	/* __PINCTRL_LANTIQ_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

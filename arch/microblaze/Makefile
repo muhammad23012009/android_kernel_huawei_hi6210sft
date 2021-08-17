@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+KBUILD_DEFCONFIG := mmu_defconfig
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ifeq ($(CONFIG_MMU),y)
 UTS_SYSNAME = -DUTS_SYSNAME=\"Linux\"
 else
@@ -46,7 +51,10 @@ head-y := arch/microblaze/kernel/head.o
 libs-y += arch/microblaze/lib/
 core-y += arch/microblaze/kernel/
 core-y += arch/microblaze/mm/
+<<<<<<< HEAD
 core-y += arch/microblaze/platform/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 core-$(CONFIG_PCI) += arch/microblaze/pci/
 
 drivers-$(CONFIG_OPROFILE) += arch/microblaze/oprofile/
@@ -72,20 +80,39 @@ all: linux.bin
 archclean:
 	$(Q)$(MAKE) $(clean)=$(boot)
 
+<<<<<<< HEAD
 linux.bin linux.bin.gz: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 
 simpleImage.%: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+=======
+linux.bin linux.bin.gz linux.bin.ub: vmlinux
+	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+	@echo 'Kernel: $(boot)/$@ is ready' ' (#'`cat .version`')'
+
+simpleImage.%: vmlinux
+	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+	@echo 'Kernel: $(boot)/$@ is ready' ' (#'`cat .version`')'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 define archhelp
   echo '* linux.bin    - Create raw binary'
   echo '  linux.bin.gz - Create compressed raw binary'
+<<<<<<< HEAD
   echo '  simpleImage.<dt> - ELF image with $(arch)/boot/dts/<dt>.dts linked in'
   echo '                   - stripped elf with fdt blob'
   echo '  simpleImage.<dt>.unstrip - full ELF image with fdt blob'
   echo '  *_defconfig      - Select default config from arch/microblaze/configs'
   echo ''
+=======
+  echo '  linux.bin.ub - Create U-Boot wrapped raw binary'
+  echo '  simpleImage.<dt> - Create the following images with <dt>.dtb linked in'
+  echo '                    simpleImage.<dt>        : raw image'
+  echo '                    simpleImage.<dt>.ub     : raw image with U-Boot header'
+  echo '                    simpleImage.<dt>.unstrip: ELF (identical to vmlinux)'
+  echo '                    simpleImage.<dt>.strip  : stripped ELF'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   echo '  Targets with <dt> embed a device tree blob inside the image'
   echo '  These targets support board with firmware that does not'
   echo '  support passing a device tree directly. Replace <dt> with the'

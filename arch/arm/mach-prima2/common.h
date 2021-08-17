@@ -10,6 +10,7 @@
 #define __MACH_PRIMA2_COMMON_H__
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/mach/time.h>
 #include <asm/exception.h>
 
@@ -17,10 +18,19 @@
 #define SIRFSOC_VA(x)		(SIRFSOC_VA_BASE + ((x) & 0x00FFF000))
 
 extern struct smp_operations   sirfsoc_smp_ops;
+=======
+#include <linux/reboot.h>
+
+#include <asm/mach/time.h>
+#include <asm/exception.h>
+
+extern const struct smp_operations sirfsoc_smp_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void sirfsoc_secondary_startup(void);
 extern void sirfsoc_cpu_die(unsigned int cpu);
 
 extern void __init sirfsoc_of_irq_init(void);
+<<<<<<< HEAD
 extern void __init sirfsoc_of_clk_init(void);
 extern void sirfsoc_restart(char, const char *);
 extern asmlinkage void __exception_irq_entry sirfsoc_handle_irq(struct pt_regs *regs);
@@ -37,6 +47,10 @@ static inline void sirfsoc_map_scu(void) {}
 extern void sirfsoc_map_scu(void);
 #endif
 
+=======
+extern asmlinkage void __exception_irq_entry sirfsoc_handle_irq(struct pt_regs *regs);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SUSPEND
 extern int sirfsoc_pm_init(void);
 #else

@@ -61,6 +61,7 @@ static const struct m5602_sensor s5k83a = {
 	.i2c_slave_id = 0x5a,
 	.i2c_regW = 2,
 };
+<<<<<<< HEAD
 
 static const unsigned char preinit_s5k83a[][4] = {
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02, 0x00},
@@ -185,4 +186,6 @@ static const unsigned char start_s5k83a[][4] = {
 	{BRIDGE, M5602_XB_SEN_CLK_DIV, 0x00, 0x00},
 	{BRIDGE, M5602_XB_SEN_CLK_CTRL, 0xb0, 0x00},
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

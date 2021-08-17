@@ -1,7 +1,11 @@
 /*
  * i2c-amd756-s4882.c - i2c-amd756 extras for the Tyan S4882 motherboard
  *
+<<<<<<< HEAD
  * Copyright (C) 2004, 2008 Jean Delvare <khali@linux-fr.org>
+=======
+ * Copyright (C) 2004, 2008 Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,10 +16,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
  
 /*
@@ -250,7 +257,11 @@ static void __exit amd756_s4882_exit(void)
 		       "Physical bus restoration failed\n");
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("S4882 SMBus multiplexing");
 MODULE_LICENSE("GPL");
 

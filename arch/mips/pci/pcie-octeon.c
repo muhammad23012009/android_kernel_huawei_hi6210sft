@@ -11,7 +11,11 @@
 #include <linux/interrupt.h>
 #include <linux/time.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-npei-defs.h>
@@ -1762,6 +1766,7 @@ static int octeon_pcie_write_config(unsigned int pcie_port, struct pci_bus *bus,
 	default:
 		return PCIBIOS_FUNC_NOT_SUPPORTED;
 	}
+<<<<<<< HEAD
 #if PCI_CONFIG_SPACE_DELAY
 	/*
 	 * Delay on writes so that devices have time to come up. Some
@@ -1770,6 +1775,8 @@ static int octeon_pcie_write_config(unsigned int pcie_port, struct pci_bus *bus,
 	 */
 	udelay(PCI_CONFIG_SPACE_DELAY);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return PCIBIOS_SUCCESSFUL;
 }
 
@@ -1792,8 +1799,13 @@ static int octeon_dummy_write_config(struct pci_bus *bus, unsigned int devfn,
 }
 
 static struct pci_ops octeon_pcie0_ops = {
+<<<<<<< HEAD
 	octeon_pcie0_read_config,
 	octeon_pcie0_write_config,
+=======
+	.read	= octeon_pcie0_read_config,
+	.write	= octeon_pcie0_write_config,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource octeon_pcie0_mem_resource = {
@@ -1813,8 +1825,13 @@ static struct pci_controller octeon_pcie0_controller = {
 };
 
 static struct pci_ops octeon_pcie1_ops = {
+<<<<<<< HEAD
 	octeon_pcie1_read_config,
 	octeon_pcie1_write_config,
+=======
+	.read	= octeon_pcie1_read_config,
+	.write	= octeon_pcie1_write_config,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource octeon_pcie1_mem_resource = {
@@ -1834,8 +1851,13 @@ static struct pci_controller octeon_pcie1_controller = {
 };
 
 static struct pci_ops octeon_dummy_ops = {
+<<<<<<< HEAD
 	octeon_dummy_read_config,
 	octeon_dummy_write_config,
+=======
+	.read	= octeon_dummy_read_config,
+	.write	= octeon_dummy_write_config,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct resource octeon_dummy_mem_resource = {

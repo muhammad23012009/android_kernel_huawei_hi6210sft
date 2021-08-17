@@ -115,12 +115,20 @@ static void tcp_lp_init(struct sock *sk)
  * Will only call newReno CA when away from inference.
  * From TCP-LP's paper, this will be handled in additive increasement.
  */
+<<<<<<< HEAD
 static void tcp_lp_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
+=======
+static void tcp_lp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct lp *lp = inet_csk_ca(sk);
 
 	if (!(lp->flag & LP_WITHIN_INF))
+<<<<<<< HEAD
 		tcp_reno_cong_avoid(sk, ack, in_flight);
+=======
+		tcp_reno_cong_avoid(sk, ack, acked);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -260,6 +268,7 @@ static void tcp_lp_rtt_sample(struct sock *sk, u32 rtt)
  * newReno in increase case.
  * We work it out by following the idea from TCP-LP's paper directly
  */
+<<<<<<< HEAD
 static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
@@ -271,6 +280,21 @@ static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 	/* calc inference */
 	if (tcp_time_stamp > tp->rx_opt.rcv_tsecr)
 		lp->inference = 3 * (tcp_time_stamp - tp->rx_opt.rcv_tsecr);
+=======
+static void tcp_lp_pkts_acked(struct sock *sk, const struct ack_sample *sample)
+{
+	struct tcp_sock *tp = tcp_sk(sk);
+	struct lp *lp = inet_csk_ca(sk);
+	u32 delta;
+
+	if (sample->rtt_us > 0)
+		tcp_lp_rtt_sample(sk, sample->rtt_us);
+
+	/* calc inference */
+	delta = tcp_time_stamp - tp->rx_opt.rcv_tsecr;
+	if ((s32)delta > 0)
+		lp->inference = 3 * delta;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* test if within inference */
 	if (lp->last_drop && (tcp_time_stamp - lp->last_drop < lp->inference))
@@ -314,11 +338,17 @@ static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 }
 
 static struct tcp_congestion_ops tcp_lp __read_mostly = {
+<<<<<<< HEAD
 	.flags = TCP_CONG_RTT_STAMP,
 	.init = tcp_lp_init,
 	.ssthresh = tcp_reno_ssthresh,
 	.cong_avoid = tcp_lp_cong_avoid,
 	.min_cwnd = tcp_reno_min_cwnd,
+=======
+	.init = tcp_lp_init,
+	.ssthresh = tcp_reno_ssthresh,
+	.cong_avoid = tcp_lp_cong_avoid,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.pkts_acked = tcp_lp_pkts_acked,
 
 	.owner = THIS_MODULE,

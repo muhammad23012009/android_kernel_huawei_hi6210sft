@@ -24,11 +24,19 @@ int __init clk_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_COMMON_CLK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = arch_clk_init();
 	if (unlikely(ret)) {
 		pr_err("%s: CPU clock registration failed.\n", __func__);
 		return ret;
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sh_mv.mv_clk_init) {
 		ret = sh_mv.mv_clk_init();
@@ -39,11 +47,19 @@ int __init clk_init(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_COMMON_CLK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Kick the child clocks.. */
 	recalculate_root_clocks();
 
 	/* Enable the necessary init clocks */
 	clk_enable_init_clocks();
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }

@@ -34,7 +34,11 @@ struct search_path {
 static struct search_path *search_path_head, **search_path_tail;
 
 
+<<<<<<< HEAD
 static char *dirname(const char *path)
+=======
+static char *get_dirname(const char *path)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const char *slash = strrchr(path, '/');
 
@@ -53,7 +57,11 @@ FILE *depfile; /* = NULL */
 struct srcfile_state *current_srcfile; /* = NULL */
 
 /* Detect infinite include recursion. */
+<<<<<<< HEAD
 #define MAX_SRCFILE_DEPTH     (200)
+=======
+#define MAX_SRCFILE_DEPTH     (100)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int srcfile_depth; /* = 0 */
 
 
@@ -77,7 +85,11 @@ static char *try_open(const char *dirname, const char *fname, FILE **fp)
 	else
 		fullname = join_path(dirname, fname);
 
+<<<<<<< HEAD
 	*fp = fopen(fullname, "r");
+=======
+	*fp = fopen(fullname, "rb");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!*fp) {
 		free(fullname);
 		fullname = NULL;
@@ -150,7 +162,11 @@ void srcfile_push(const char *fname)
 	srcfile = xmalloc(sizeof(*srcfile));
 
 	srcfile->f = srcfile_relative_open(fname, &srcfile->name);
+<<<<<<< HEAD
 	srcfile->dir = dirname(srcfile->name);
+=======
+	srcfile->dir = get_dirname(srcfile->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	srcfile->prev = current_srcfile;
 
 	srcfile->lineno = 1;
@@ -159,7 +175,11 @@ void srcfile_push(const char *fname)
 	current_srcfile = srcfile;
 }
 
+<<<<<<< HEAD
 int srcfile_pop(void)
+=======
+bool srcfile_pop(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct srcfile_state *srcfile = current_srcfile;
 
@@ -177,7 +197,11 @@ int srcfile_pop(void)
 	 * fix this we could either allocate all the files from a
 	 * table, or use a pool allocator. */
 
+<<<<<<< HEAD
 	return current_srcfile ? 1 : 0;
+=======
+	return current_srcfile ? true : false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void srcfile_add_search_path(const char *dirname)
@@ -290,6 +314,7 @@ srcpos_string(struct srcpos *pos)
 	return pos_str;
 }
 
+<<<<<<< HEAD
 void
 srcpos_verror(struct srcpos *pos, char const *fmt, va_list va)
 {
@@ -326,6 +351,29 @@ srcpos_warn(struct srcpos *pos, char const *fmt, ...)
 	vfprintf(stderr, fmt, va);
 	fprintf(stderr, "\n");
 
+=======
+void srcpos_verror(struct srcpos *pos, const char *prefix,
+		   const char *fmt, va_list va)
+{
+	char *srcstr;
+
+	srcstr = srcpos_string(pos);
+
+	fprintf(stderr, "%s: %s ", prefix, srcstr);
+	vfprintf(stderr, fmt, va);
+	fprintf(stderr, "\n");
+
+	free(srcstr);
+}
+
+void srcpos_error(struct srcpos *pos, const char *prefix,
+		  const char *fmt, ...)
+{
+	va_list va;
+
+	va_start(va, fmt);
+	srcpos_verror(pos, prefix, fmt, va);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	va_end(va);
 }
 

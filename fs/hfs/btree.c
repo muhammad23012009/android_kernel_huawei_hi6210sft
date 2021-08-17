@@ -116,6 +116,7 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 	}
 
 	tree->node_size_shift = ffs(size) - 1;
+<<<<<<< HEAD
 	tree->pages_per_bnode = (tree->node_size + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
 
 	kunmap(page);
@@ -124,6 +125,16 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 
 fail_page:
 	page_cache_release(page);
+=======
+	tree->pages_per_bnode = (tree->node_size + PAGE_SIZE - 1) >> PAGE_SHIFT;
+
+	kunmap(page);
+	put_page(page);
+	return tree;
+
+fail_page:
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 free_inode:
 	tree->inode->i_mapping->a_ops = &hfs_aops;
 	iput(tree->inode);
@@ -219,6 +230,7 @@ static struct hfs_bnode *hfs_bmap_new_bmap(struct hfs_bnode *prev, u32 idx)
 	return node;
 }
 
+<<<<<<< HEAD
 struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 {
 	struct hfs_bnode *node, *next_node;
@@ -238,6 +250,19 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 		res = hfs_extend_file(inode);
 		if (res)
 			return ERR_PTR(res);
+=======
+/* Make sure @tree has enough space for the @rsvd_nodes */
+int hfs_bmap_reserve(struct hfs_btree *tree, int rsvd_nodes)
+{
+	struct inode *inode = tree->inode;
+	u32 count;
+	int res;
+
+	while (tree->free_nodes < rsvd_nodes) {
+		res = hfs_extend_file(inode);
+		if (res)
+			return res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		HFS_I(inode)->phys_size = inode->i_size =
 				(loff_t)HFS_I(inode)->alloc_blocks *
 				HFS_SB(tree->sb)->alloc_blksz;
@@ -245,9 +270,32 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 					  tree->sb->s_blocksize_bits;
 		inode_set_bytes(inode, inode->i_size);
 		count = inode->i_size >> tree->node_size_shift;
+<<<<<<< HEAD
 		tree->free_nodes = count - tree->node_count;
 		tree->node_count = count;
 	}
+=======
+		tree->free_nodes += count - tree->node_count;
+		tree->node_count = count;
+	}
+	return 0;
+}
+
+struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
+{
+	struct hfs_bnode *node, *next_node;
+	struct page **pagep;
+	u32 nidx, idx;
+	unsigned off;
+	u16 off16;
+	u16 len;
+	u8 *data, byte, m;
+	int i, res;
+
+	res = hfs_bmap_reserve(tree, 1);
+	if (res)
+		return ERR_PTR(res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nidx = 0;
 	node = hfs_bnode_find(tree, nidx);
@@ -257,9 +305,15 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 	off = off16;
 
 	off += node->page_offset;
+<<<<<<< HEAD
 	pagep = node->page + (off >> PAGE_CACHE_SHIFT);
 	data = kmap(*pagep);
 	off &= ~PAGE_CACHE_MASK;
+=======
+	pagep = node->page + (off >> PAGE_SHIFT);
+	data = kmap(*pagep);
+	off &= ~PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	idx = 0;
 
 	for (;;) {
@@ -279,7 +333,11 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 					}
 				}
 			}
+<<<<<<< HEAD
 			if (++off >= PAGE_CACHE_SIZE) {
+=======
+			if (++off >= PAGE_SIZE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				kunmap(*pagep);
 				data = kmap(*++pagep);
 				off = 0;
@@ -302,9 +360,15 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 		len = hfs_brec_lenoff(node, 0, &off16);
 		off = off16;
 		off += node->page_offset;
+<<<<<<< HEAD
 		pagep = node->page + (off >> PAGE_CACHE_SHIFT);
 		data = kmap(*pagep);
 		off &= ~PAGE_CACHE_MASK;
+=======
+		pagep = node->page + (off >> PAGE_SHIFT);
+		data = kmap(*pagep);
+		off &= ~PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -328,13 +392,23 @@ void hfs_bmap_free(struct hfs_bnode *node)
 
 		nidx -= len * 8;
 		i = node->next;
+<<<<<<< HEAD
 		hfs_bnode_put(node);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!i) {
 			/* panic */;
 			pr_crit("unable to free bnode %u. bmap not found!\n",
 				node->this);
+<<<<<<< HEAD
 			return;
 		}
+=======
+			hfs_bnode_put(node);
+			return;
+		}
+		hfs_bnode_put(node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		node = hfs_bnode_find(tree, i);
 		if (IS_ERR(node))
 			return;
@@ -348,9 +422,15 @@ void hfs_bmap_free(struct hfs_bnode *node)
 		len = hfs_brec_lenoff(node, 0, &off);
 	}
 	off += node->page_offset + nidx / 8;
+<<<<<<< HEAD
 	page = node->page[off >> PAGE_CACHE_SHIFT];
 	data = kmap(page);
 	off &= ~PAGE_CACHE_MASK;
+=======
+	page = node->page[off >> PAGE_SHIFT];
+	data = kmap(page);
+	off &= ~PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	m = 1 << (~nidx & 7);
 	byte = data[off];
 	if (!(byte & m)) {

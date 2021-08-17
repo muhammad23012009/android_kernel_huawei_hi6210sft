@@ -97,14 +97,21 @@ int w1_ds2760_recall_eeprom(struct device *dev, int addr)
 	return w1_ds2760_eeprom_cmd(dev, addr, W1_DS2760_RECALL_DATA);
 }
 
+<<<<<<< HEAD
 static ssize_t w1_ds2760_read_bin(struct file *filp, struct kobject *kobj,
 				  struct bin_attribute *bin_attr,
 				  char *buf, loff_t off, size_t count)
+=======
+static ssize_t w1_slave_read(struct file *filp, struct kobject *kobj,
+			     struct bin_attribute *bin_attr, char *buf,
+			     loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device *dev = container_of(kobj, struct device, kobj);
 	return w1_ds2760_read(dev, buf, off, count);
 }
 
+<<<<<<< HEAD
 static struct bin_attribute w1_ds2760_bin_attr = {
 	.attr = {
 		.name = "w1_slave",
@@ -115,10 +122,28 @@ static struct bin_attribute w1_ds2760_bin_attr = {
 };
 
 static DEFINE_IDA(bat_ida);
+=======
+static BIN_ATTR_RO(w1_slave, DS2760_DATA_SIZE);
+
+static struct bin_attribute *w1_ds2760_bin_attrs[] = {
+	&bin_attr_w1_slave,
+	NULL,
+};
+
+static const struct attribute_group w1_ds2760_group = {
+	.bin_attrs = w1_ds2760_bin_attrs,
+};
+
+static const struct attribute_group *w1_ds2760_groups[] = {
+	&w1_ds2760_group,
+	NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int w1_ds2760_add_slave(struct w1_slave *sl)
 {
 	int ret;
+<<<<<<< HEAD
 	int id;
 	struct platform_device *pdev;
 
@@ -133,12 +158,20 @@ static int w1_ds2760_add_slave(struct w1_slave *sl)
 		ret = -ENOMEM;
 		goto pdev_alloc_failed;
 	}
+=======
+	struct platform_device *pdev;
+
+	pdev = platform_device_alloc("ds2760-battery", PLATFORM_DEVID_AUTO);
+	if (!pdev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pdev->dev.parent = &sl->dev;
 
 	ret = platform_device_add(pdev);
 	if (ret)
 		goto pdev_add_failed;
 
+<<<<<<< HEAD
 	ret = sysfs_create_bin_file(&sl->dev.kobj, &w1_ds2760_bin_attr);
 	if (ret)
 		goto bin_attr_failed;
@@ -155,28 +188,47 @@ pdev_alloc_failed:
 	ida_simple_remove(&bat_ida, id);
 noid:
 success:
+=======
+	dev_set_drvdata(&sl->dev, pdev);
+
+	return 0;
+
+pdev_add_failed:
+	platform_device_put(pdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static void w1_ds2760_remove_slave(struct w1_slave *sl)
 {
 	struct platform_device *pdev = dev_get_drvdata(&sl->dev);
+<<<<<<< HEAD
 	int id = pdev->id;
 
 	platform_device_unregister(pdev);
 	ida_simple_remove(&bat_ida, id);
 	sysfs_remove_bin_file(&sl->dev.kobj, &w1_ds2760_bin_attr);
+=======
+
+	platform_device_unregister(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct w1_family_ops w1_ds2760_fops = {
 	.add_slave    = w1_ds2760_add_slave,
 	.remove_slave = w1_ds2760_remove_slave,
+<<<<<<< HEAD
+=======
+	.groups       = w1_ds2760_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct w1_family w1_ds2760_family = {
 	.fid = W1_FAMILY_DS2760,
 	.fops = &w1_ds2760_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_ds2760_init(void)
 {
@@ -191,15 +243,25 @@ static void __exit w1_ds2760_exit(void)
 	w1_unregister_family(&w1_ds2760_family);
 	ida_destroy(&bat_ida);
 }
+=======
+module_w1_family(w1_ds2760_family);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 EXPORT_SYMBOL(w1_ds2760_read);
 EXPORT_SYMBOL(w1_ds2760_write);
 EXPORT_SYMBOL(w1_ds2760_store_eeprom);
 EXPORT_SYMBOL(w1_ds2760_recall_eeprom);
 
+<<<<<<< HEAD
 module_init(w1_ds2760_init);
 module_exit(w1_ds2760_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Szabolcs Gyurko <szabolcs.gyurko@tlt.hu>");
 MODULE_DESCRIPTION("1-wire Driver Dallas 2760 battery monitor chip");
+=======
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Szabolcs Gyurko <szabolcs.gyurko@tlt.hu>");
+MODULE_DESCRIPTION("1-wire Driver Dallas 2760 battery monitor chip");
+MODULE_ALIAS("w1-family-" __stringify(W1_FAMILY_DS2760));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

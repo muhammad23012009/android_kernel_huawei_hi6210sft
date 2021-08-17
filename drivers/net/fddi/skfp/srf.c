@@ -73,7 +73,11 @@ void smt_init_evc(struct s_smc *smc)
 {
 	struct s_srf_evc	*evc ;
 	const struct evc_init 	*init ;
+<<<<<<< HEAD
 	int			i ;
+=======
+	unsigned int		i ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			index ;
 	int			offset ;
 
@@ -84,7 +88,11 @@ void smt_init_evc(struct s_smc *smc)
 	evc = smc->evcs ;
 	init = evc_inits ;
 
+<<<<<<< HEAD
 	for (i = 0 ; (unsigned) i < MAX_INIT_EVC ; i++) {
+=======
+	for (i = 0 ; i < MAX_INIT_EVC ; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (index = 0 ; index < init->n ; index++) {
 			evc->evc_code = init->code ;
 			evc->evc_para = init->para ;
@@ -98,7 +106,11 @@ void smt_init_evc(struct s_smc *smc)
 		init++ ;
 	}
 
+<<<<<<< HEAD
 	if ((unsigned) (evc - smc->evcs) > MAX_EVCS) {
+=======
+	if ((unsigned int) (evc - smc->evcs) > MAX_EVCS) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		SMT_PANIC(smc,SMT_E0127, SMT_E0127_MSG) ;
 	}
 
@@ -139,7 +151,11 @@ void smt_init_evc(struct s_smc *smc)
 		offset++ ;
 	}
 #ifdef	DEBUG
+<<<<<<< HEAD
 	for (i = 0, evc = smc->evcs ; (unsigned) i < MAX_EVCS ; i++, evc++) {
+=======
+	for (i = 0, evc = smc->evcs ; i < MAX_EVCS ; i++, evc++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (SMT_IS_CONDITION(evc->evc_code)) {
 			if (!evc->evc_cond_state) {
 				SMT_PANIC(smc,SMT_E0128, SMT_E0128_MSG) ;
@@ -160,10 +176,17 @@ void smt_init_evc(struct s_smc *smc)
 
 static struct s_srf_evc *smt_get_evc(struct s_smc *smc, int code, int index)
 {
+<<<<<<< HEAD
 	int			i ;
 	struct s_srf_evc	*evc ;
 
 	for (i = 0, evc = smc->evcs ; (unsigned) i < MAX_EVCS ; i++, evc++) {
+=======
+	unsigned int		i ;
+	struct s_srf_evc	*evc ;
+
+	for (i = 0, evc = smc->evcs ; i < MAX_EVCS ; i++, evc++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (evc->evc_code == code && evc->evc_index == index)
 			return evc;
 	}
@@ -335,9 +358,15 @@ void smt_srf_event(struct s_smc *smc, int code, int index, int cond)
 static void clear_all_rep(struct s_smc *smc)
 {
 	struct s_srf_evc	*evc ;
+<<<<<<< HEAD
 	int			i ;
 
 	for (i = 0, evc = smc->evcs ; (unsigned) i < MAX_EVCS ; i++, evc++) {
+=======
+	unsigned int		i ;
+
+	for (i = 0, evc = smc->evcs ; i < MAX_EVCS ; i++, evc++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		evc->evc_rep_required = FALSE ;
 		if (SMT_IS_CONDITION(evc->evc_code))
 			*evc->evc_cond_state = FALSE ;
@@ -348,10 +377,17 @@ static void clear_all_rep(struct s_smc *smc)
 static void clear_reported(struct s_smc *smc)
 {
 	struct s_srf_evc	*evc ;
+<<<<<<< HEAD
 	int			i ;
 
 	smc->srf.any_report = FALSE ;
 	for (i = 0, evc = smc->evcs ; (unsigned) i < MAX_EVCS ; i++, evc++) {
+=======
+	unsigned int		i ;
+
+	smc->srf.any_report = FALSE ;
+	for (i = 0, evc = smc->evcs ; i < MAX_EVCS ; i++, evc++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (SMT_IS_CONDITION(evc->evc_code)) {
 			if (*evc->evc_cond_state == FALSE)
 				evc->evc_rep_required = FALSE ;
@@ -375,7 +411,11 @@ static void smt_send_srf(struct s_smc *smc)
 	struct s_srf_evc	*evc ;
 	SK_LOC_DECL(struct s_pcon,pcon) ;
 	SMbuf			*mb ;
+<<<<<<< HEAD
 	int			i ;
+=======
+	unsigned int		i ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	static const struct fddi_addr SMT_SRF_DA = {
 		{ 0x80, 0x01, 0x43, 0x00, 0x80, 0x08 }
@@ -405,7 +445,11 @@ static void smt_send_srf(struct s_smc *smc)
 	smt_add_para(smc,&pcon,(u_short) SMT_P1033,0,0) ;
 	smt_add_para(smc,&pcon,(u_short) SMT_P1034,0,0) ;
 
+<<<<<<< HEAD
 	for (i = 0, evc = smc->evcs ; (unsigned) i < MAX_EVCS ; i++, evc++) {
+=======
+	for (i = 0, evc = smc->evcs ; i < MAX_EVCS ; i++, evc++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (evc->evc_rep_required) {
 			smt_add_para(smc,&pcon,evc->evc_para,
 				(int)evc->evc_index,0) ;
@@ -414,7 +458,11 @@ static void smt_send_srf(struct s_smc *smc)
 	smt->smt_len = SMT_MAX_INFO_LEN - pcon.pc_len ;
 	mb->sm_len = smt->smt_len + sizeof(struct smt_header) ;
 
+<<<<<<< HEAD
 	DB_SMT("SRF: sending SRF at %x, len %d\n",smt,mb->sm_len) ;
+=======
+	DB_SMT("SRF: sending SRF at %p, len %d\n",smt,mb->sm_len) ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DB_SMT("SRF: state SR%d Threshold %d\n",
 		smc->srf.sr_state,smc->srf.SRThreshold/TICKS_PER_SECOND) ;
 #ifdef	DEBUG

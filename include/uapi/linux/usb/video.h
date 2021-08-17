@@ -28,6 +28,10 @@
 
 /* A.3. Video Interface Protocol Codes */
 #define UVC_PC_PROTOCOL_UNDEFINED			0x00
+<<<<<<< HEAD
+=======
+#define UVC_PC_PROTOCOL_15				0x01
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* A.5. Video Class-Specific VC Interface Descriptor Subtypes */
 #define UVC_VC_DESCRIPTOR_UNDEFINED			0x00

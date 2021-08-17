@@ -30,16 +30,26 @@ extern int perf_use_color_default;
 int perf_color_default_config(const char *var, const char *value, void *cb);
 
 int perf_config_colorbool(const char *var, const char *value, int stdout_is_tty);
+<<<<<<< HEAD
 void color_parse(const char *value, const char *var, char *dst);
 void color_parse_mem(const char *value, int len, const char *var, char *dst);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int color_vsnprintf(char *bf, size_t size, const char *color,
 		    const char *fmt, va_list args);
 int color_vfprintf(FILE *fp, const char *color, const char *fmt, va_list args);
 int color_fprintf(FILE *fp, const char *color, const char *fmt, ...);
 int color_snprintf(char *bf, size_t size, const char *color, const char *fmt, ...);
+<<<<<<< HEAD
 int color_fprintf_ln(FILE *fp, const char *color, const char *fmt, ...);
 int color_fwrite_lines(FILE *fp, const char *color, size_t count, const char *buf);
 int percent_color_snprintf(char *bf, size_t size, const char *fmt, ...);
+=======
+int color_fwrite_lines(FILE *fp, const char *color, size_t count, const char *buf);
+int value_color_snprintf(char *bf, size_t size, const char *fmt, double value);
+int percent_color_snprintf(char *bf, size_t size, const char *fmt, ...);
+int percent_color_len_snprintf(char *bf, size_t size, const char *fmt, ...);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int percent_color_fprintf(FILE *fp, const char *fmt, double percent);
 const char *get_percent_color(double percent);
 

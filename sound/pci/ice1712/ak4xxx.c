@@ -21,7 +21,11 @@
  *
  */      
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>

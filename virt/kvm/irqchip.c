@@ -31,6 +31,7 @@
 #include <trace/events/kvm.h>
 #include "irq.h"
 
+<<<<<<< HEAD
 struct kvm_irq_routing_table {
 	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
 	struct kvm_kernel_irq_routing_entry *rt_entries;
@@ -42,6 +43,8 @@ struct kvm_irq_routing_table {
 	struct hlist_head map[0];
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int kvm_irq_map_gsi(struct kvm *kvm,
 		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
 {
@@ -51,7 +54,11 @@ int kvm_irq_map_gsi(struct kvm *kvm,
 
 	irq_rt = srcu_dereference_check(kvm->irq_routing, &kvm->irq_srcu,
 					lockdep_is_held(&kvm->irq_lock));
+<<<<<<< HEAD
 	if (gsi < irq_rt->nr_rt_entries) {
+=======
+	if (irq_rt && gsi < irq_rt->nr_rt_entries) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hlist_for_each_entry(e, &irq_rt->map[gsi], link) {
 			entries[n] = *e;
 			++n;
@@ -73,12 +80,21 @@ int kvm_send_userspace_msi(struct kvm *kvm, struct kvm_msi *msi)
 {
 	struct kvm_kernel_irq_routing_entry route;
 
+<<<<<<< HEAD
 	if (!irqchip_in_kernel(kvm) || msi->flags != 0)
+=======
+	if (!irqchip_in_kernel(kvm) || (msi->flags & ~KVM_MSI_VALID_DEVID))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	route.msi.address_lo = msi->address_lo;
 	route.msi.address_hi = msi->address_hi;
 	route.msi.data = msi->data;
+<<<<<<< HEAD
+=======
+	route.msi.flags = msi->flags;
+	route.msi.devid = msi->devid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return kvm_set_msi(&route, kvm, KVM_USERSPACE_IRQ_SOURCE_ID, 1, false);
 }
@@ -105,7 +121,11 @@ int kvm_set_irq(struct kvm *kvm, int irq_source_id, u32 irq, int level,
 	i = kvm_irq_map_gsi(kvm, irq_set, irq);
 	srcu_read_unlock(&kvm->irq_srcu, idx);
 
+<<<<<<< HEAD
 	while(i--) {
+=======
+	while (i--) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int r;
 		r = irq_set[i].set(&irq_set[i], kvm, irq_source_id, level,
 				   line_status);
@@ -118,14 +138,46 @@ int kvm_set_irq(struct kvm *kvm, int irq_source_id, u32 irq, int level,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void free_irq_routing_table(struct kvm_irq_routing_table *rt)
+{
+	int i;
+
+	if (!rt)
+		return;
+
+	for (i = 0; i < rt->nr_rt_entries; ++i) {
+		struct kvm_kernel_irq_routing_entry *e;
+		struct hlist_node *n;
+
+		hlist_for_each_entry_safe(e, n, &rt->map[i], link) {
+			hlist_del(&e->link);
+			kfree(e);
+		}
+	}
+
+	kfree(rt);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void kvm_free_irq_routing(struct kvm *kvm)
 {
 	/* Called only during vm destruction. Nobody can use the pointer
 	   at this stage */
+<<<<<<< HEAD
 	kfree(kvm->irq_routing);
 }
 
 static int setup_routing_entry(struct kvm_irq_routing_table *rt,
+=======
+	struct kvm_irq_routing_table *rt = rcu_access_pointer(kvm->irq_routing);
+	free_irq_routing_table(rt);
+}
+
+static int setup_routing_entry(struct kvm *kvm,
+			       struct kvm_irq_routing_table *rt,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       struct kvm_kernel_irq_routing_entry *e,
 			       const struct kvm_irq_routing_entry *ue)
 {
@@ -134,17 +186,29 @@ static int setup_routing_entry(struct kvm_irq_routing_table *rt,
 
 	/*
 	 * Do not allow GSI to be mapped to the same irqchip more than once.
+<<<<<<< HEAD
 	 * Allow only one to one mapping between GSI and MSI.
 	 */
 	hlist_for_each_entry(ei, &rt->map[ue->gsi], link)
 		if (ei->type == KVM_IRQ_ROUTING_MSI ||
 		    ue->type == KVM_IRQ_ROUTING_MSI ||
+=======
+	 * Allow only one to one mapping between GSI and non-irqchip routing.
+	 */
+	hlist_for_each_entry(ei, &rt->map[ue->gsi], link)
+		if (ei->type != KVM_IRQ_ROUTING_IRQCHIP ||
+		    ue->type != KVM_IRQ_ROUTING_IRQCHIP ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    ue->u.irqchip.irqchip == ei->irqchip.irqchip)
 			return r;
 
 	e->gsi = ue->gsi;
 	e->type = ue->type;
+<<<<<<< HEAD
 	r = kvm_set_routing_entry(e, ue);
+=======
+	r = kvm_set_routing_entry(kvm, e, ue);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (r)
 		goto out;
 	if (e->type == KVM_IRQ_ROUTING_IRQCHIP)
@@ -156,12 +220,23 @@ out:
 	return r;
 }
 
+<<<<<<< HEAD
+=======
+void __attribute__((weak)) kvm_arch_irq_routing_update(struct kvm *kvm)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int kvm_set_irq_routing(struct kvm *kvm,
 			const struct kvm_irq_routing_entry *ue,
 			unsigned nr,
 			unsigned flags)
 {
 	struct kvm_irq_routing_table *new, *old;
+<<<<<<< HEAD
+=======
+	struct kvm_kernel_irq_routing_entry *e;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 i, j, nr_rt_entries = 0;
 	int r;
 
@@ -173,27 +248,56 @@ int kvm_set_irq_routing(struct kvm *kvm,
 
 	nr_rt_entries += 1;
 
+<<<<<<< HEAD
 	new = kzalloc(sizeof(*new) + (nr_rt_entries * sizeof(struct hlist_head))
 		      + (nr * sizeof(struct kvm_kernel_irq_routing_entry)),
+=======
+	new = kzalloc(sizeof(*new) + (nr_rt_entries * sizeof(struct hlist_head)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      GFP_KERNEL);
 
 	if (!new)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	new->rt_entries = (void *)&new->map[nr_rt_entries];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	new->nr_rt_entries = nr_rt_entries;
 	for (i = 0; i < KVM_NR_IRQCHIPS; i++)
 		for (j = 0; j < KVM_IRQCHIP_NUM_PINS; j++)
 			new->chip[i][j] = -1;
 
 	for (i = 0; i < nr; ++i) {
+<<<<<<< HEAD
 		r = -EINVAL;
 		if (ue->flags)
 			goto out;
 		r = setup_routing_entry(new, &new->rt_entries[i], ue);
 		if (r)
 			goto out;
+=======
+		r = -ENOMEM;
+		e = kzalloc(sizeof(*e), GFP_KERNEL);
+		if (!e)
+			goto out;
+
+		r = -EINVAL;
+		switch (ue->type) {
+		case KVM_IRQ_ROUTING_MSI:
+			if (ue->flags & ~KVM_MSI_VALID_DEVID)
+				goto free_entry;
+			break;
+		default:
+			if (ue->flags)
+				goto free_entry;
+			break;
+		}
+		r = setup_routing_entry(kvm, new, e, ue);
+		if (r)
+			goto free_entry;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		++ue;
 	}
 
@@ -201,14 +305,32 @@ int kvm_set_irq_routing(struct kvm *kvm,
 	old = kvm->irq_routing;
 	rcu_assign_pointer(kvm->irq_routing, new);
 	kvm_irq_routing_update(kvm);
+<<<<<<< HEAD
 	mutex_unlock(&kvm->irq_lock);
 
+=======
+	kvm_arch_irq_routing_update(kvm);
+	mutex_unlock(&kvm->irq_lock);
+
+	kvm_arch_post_irq_routing_update(kvm);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	synchronize_srcu_expedited(&kvm->irq_srcu);
 
 	new = old;
 	r = 0;
+<<<<<<< HEAD
 
 out:
 	kfree(new);
+=======
+	goto out;
+
+free_entry:
+	kfree(e);
+out:
+	free_irq_routing_table(new);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return r;
 }

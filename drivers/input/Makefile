@@ -12,6 +12,10 @@ obj-$(CONFIG_INPUT_POLLDEV)	+= input-polldev.o
 obj-$(CONFIG_INPUT_SPARSEKMAP)	+= sparse-keymap.o
 obj-$(CONFIG_INPUT_MATRIXKMAP)	+= matrix-keymap.o
 
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_INPUT_LEDS)	+= input-leds.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_INPUT_MOUSEDEV)	+= mousedev.o
 obj-$(CONFIG_INPUT_JOYDEV)	+= joydev.o
 obj-$(CONFIG_INPUT_EVDEV)	+= evdev.o
@@ -27,3 +31,8 @@ obj-$(CONFIG_INPUT_MISC)	+= misc/
 obj-$(CONFIG_INPUT_APMPOWER)	+= apm-power.o
 obj-$(CONFIG_INPUT_KEYRESET)	+= keyreset.o
 obj-$(CONFIG_INPUT_KEYCOMBO)	+= keycombo.o
+<<<<<<< HEAD
+=======
+
+obj-$(CONFIG_RMI4_CORE)		+= rmi4/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

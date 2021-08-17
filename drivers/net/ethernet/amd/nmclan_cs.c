@@ -132,7 +132,10 @@ Include Files
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ptrace.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -458,7 +461,11 @@ static int nmclan_probe(struct pcmcia_device *link)
     lp->tx_free_frames=AM2150_MAX_TX_FRAMES;
 
     dev->netdev_ops = &mace_netdev_ops;
+<<<<<<< HEAD
     SET_ETHTOOL_OPS(dev, &netdev_ethtool_ops);
+=======
+    dev->ethtool_ops = &netdev_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     dev->watchdog_timeo = TX_TIMEOUT;
 
     return nmclan_config(link);
@@ -622,7 +629,11 @@ static int nmclan_config(struct pcmcia_device *link)
   ret = pcmcia_request_io(link);
   if (ret)
 	  goto failed;
+<<<<<<< HEAD
   ret = pcmcia_request_exclusive_irq(link, mace_interrupt);
+=======
+  ret = pcmcia_request_irq(link, mace_interrupt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   if (ret)
 	  goto failed;
   ret = pcmcia_enable_device(link);
@@ -852,7 +863,11 @@ static void mace_tx_timeout(struct net_device *dev)
 #else /* #if RESET_ON_TIMEOUT */
   pr_cont("NOT resetting card\n");
 #endif /* #if RESET_ON_TIMEOUT */
+<<<<<<< HEAD
   dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+  netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   netif_wake_queue(dev);
 }
 
@@ -953,6 +968,11 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
   do {
     /* WARNING: MACE_IR is a READ/CLEAR port! */
     status = inb(ioaddr + AM2150_MACE_BASE + MACE_IR);
+<<<<<<< HEAD
+=======
+    if (!(status & ~MACE_IMR_DEFAULT) && IntrCnt == MACE_MAX_IR_ITERATIONS)
+      return IRQ_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     pr_debug("mace_interrupt: irq 0x%X status 0x%X.\n", irq, status);
 

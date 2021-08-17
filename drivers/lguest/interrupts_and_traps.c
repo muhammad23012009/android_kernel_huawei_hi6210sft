@@ -20,7 +20,11 @@
 #include "lg.h"
 
 /* Allow Guests to use a non-128 (ie. non-Linux) syscall trap. */
+<<<<<<< HEAD
 static unsigned int syscall_vector = SYSCALL_VECTOR;
+=======
+static unsigned int syscall_vector = IA32_SYSCALL_VECTOR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param(syscall_vector, uint, 0444);
 
 /* The address of the interrupt handler is split into two bits: */
@@ -56,6 +60,7 @@ static void push_guest_stack(struct lg_cpu *cpu, unsigned long *gstack, u32 val)
 }
 
 /*H:210
+<<<<<<< HEAD
  * The set_guest_interrupt() routine actually delivers the interrupt or
  * trap.  The mechanics of delivering traps and interrupts to the Guest are the
  * same, except some traps have an "error code" which gets pushed onto the
@@ -64,13 +69,23 @@ static void push_guest_stack(struct lg_cpu *cpu, unsigned long *gstack, u32 val)
  * "lo" and "hi" are the two parts of the Interrupt Descriptor Table for this
  * interrupt or trap.  It's split into two parts for traditional reasons: gcc
  * on i386 used to be frightened by 64 bit numbers.
+=======
+ * The push_guest_interrupt_stack() routine saves Guest state on the stack for
+ * an interrupt or trap.  The mechanics of delivering traps and interrupts to
+ * the Guest are the same, except some traps have an "error code" which gets
+ * pushed onto the stack as well: the caller tells us if this is one.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * We set up the stack just like the CPU does for a real interrupt, so it's
  * identical for the Guest (and the standard "iret" instruction will undo
  * it).
  */
+<<<<<<< HEAD
 static void set_guest_interrupt(struct lg_cpu *cpu, u32 lo, u32 hi,
 				bool has_err)
+=======
+static void push_guest_interrupt_stack(struct lg_cpu *cpu, bool has_err)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long gstack, origstack;
 	u32 eflags, ss, irq_enable;
@@ -130,16 +145,54 @@ static void set_guest_interrupt(struct lg_cpu *cpu, u32 lo, u32 hi,
 	if (has_err)
 		push_guest_stack(cpu, &gstack, cpu->regs->errcode);
 
+<<<<<<< HEAD
 	/*
 	 * Now we've pushed all the old state, we change the stack, the code
 	 * segment and the address to execute.
 	 */
 	cpu->regs->ss = ss;
 	cpu->regs->esp = virtstack + (gstack - origstack);
+=======
+	/* Adjust the stack pointer and stack segment. */
+	cpu->regs->ss = ss;
+	cpu->regs->esp = virtstack + (gstack - origstack);
+}
+
+/*
+ * This actually makes the Guest start executing the given interrupt/trap
+ * handler.
+ *
+ * "lo" and "hi" are the two parts of the Interrupt Descriptor Table for this
+ * interrupt or trap.  It's split into two parts for traditional reasons: gcc
+ * on i386 used to be frightened by 64 bit numbers.
+ */
+static void guest_run_interrupt(struct lg_cpu *cpu, u32 lo, u32 hi)
+{
+	/* If we're already in the kernel, we don't change stacks. */
+	if ((cpu->regs->ss&0x3) != GUEST_PL)
+		cpu->regs->ss = cpu->esp1;
+
+	/*
+	 * Set the code segment and the address to execute.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpu->regs->cs = (__KERNEL_CS|GUEST_PL);
 	cpu->regs->eip = idt_address(lo, hi);
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Trapping always clears these flags:
+	 * TF: Trap flag
+	 * VM: Virtual 8086 mode
+	 * RF: Resume
+	 * NT: Nested task.
+	 */
+	cpu->regs->eflags &=
+		~(X86_EFLAGS_TF|X86_EFLAGS_VM|X86_EFLAGS_RF|X86_EFLAGS_NT);
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * There are two kinds of interrupt handlers: 0xE is an "interrupt
 	 * gate" which expects interrupts to be disabled on entry.
 	 */
@@ -148,6 +201,27 @@ static void set_guest_interrupt(struct lg_cpu *cpu, u32 lo, u32 hi,
 			kill_guest(cpu, "Disabling interrupts");
 }
 
+<<<<<<< HEAD
+=======
+/* This restores the eflags word which was pushed on the stack by a trap */
+static void restore_eflags(struct lg_cpu *cpu)
+{
+	/* This is the physical address of the stack. */
+	unsigned long stack_pa = guest_pa(cpu, cpu->regs->esp);
+
+	/*
+	 * Stack looks like this:
+	 * Address	Contents
+	 * esp		EIP
+	 * esp + 4	CS
+	 * esp + 8	EFLAGS
+	 */
+	cpu->regs->eflags = lgread(cpu, stack_pa + 8, u32);
+	cpu->regs->eflags &=
+		~(X86_EFLAGS_TF|X86_EFLAGS_VM|X86_EFLAGS_RF|X86_EFLAGS_NT);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*H:205
  * Virtual Interrupts.
  *
@@ -190,6 +264,7 @@ void try_deliver_interrupt(struct lg_cpu *cpu, unsigned int irq, bool more)
 
 	BUG_ON(irq >= LGUEST_IRQS);
 
+<<<<<<< HEAD
 	/*
 	 * They may be in the middle of an iret, where they asked us never to
 	 * deliver interrupts.
@@ -198,6 +273,8 @@ void try_deliver_interrupt(struct lg_cpu *cpu, unsigned int irq, bool more)
 	   (cpu->regs->eip < cpu->lg->noirq_end))
 		return;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* If they're halted, interrupts restart them. */
 	if (cpu->halted) {
 		/* Re-enable interrupts. */
@@ -227,12 +304,43 @@ void try_deliver_interrupt(struct lg_cpu *cpu, unsigned int irq, bool more)
 	if (idt_present(idt->a, idt->b)) {
 		/* OK, mark it no longer pending and deliver it. */
 		clear_bit(irq, cpu->irqs_pending);
+<<<<<<< HEAD
 		/*
 		 * set_guest_interrupt() takes the interrupt descriptor and a
 		 * flag to say whether this interrupt pushes an error code onto
 		 * the stack as well: virtual interrupts never do.
 		 */
 		set_guest_interrupt(cpu, idt->a, idt->b, false);
+=======
+
+		/*
+		 * They may be about to iret, where they asked us never to
+		 * deliver interrupts.  In this case, we can emulate that iret
+		 * then immediately deliver the interrupt.  This is basically
+		 * a noop: the iret would pop the interrupt frame and restore
+		 * eflags, and then we'd set it up again.  So just restore the
+		 * eflags word and jump straight to the handler in this case.
+		 *
+		 * Denys Vlasenko points out that this isn't quite right: if
+		 * the iret was returning to userspace, then that interrupt
+		 * would reset the stack pointer (which the Guest told us
+		 * about via LHCALL_SET_STACK).  But unless the Guest is being
+		 * *really* weird, that will be the same as the current stack
+		 * anyway.
+		 */
+		if (cpu->regs->eip == cpu->lg->noirq_iret) {
+			restore_eflags(cpu);
+		} else {
+			/*
+			 * set_guest_interrupt() takes a flag to say whether
+			 * this interrupt pushes an error code onto the stack
+			 * as well: virtual interrupts never do.
+			 */
+			push_guest_interrupt_stack(cpu, false);
+		}
+		/* Actually make Guest cpu jump to handler. */
+		guest_run_interrupt(cpu, idt->a, idt->b);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -278,10 +386,17 @@ void set_interrupt(struct lg_cpu *cpu, unsigned int irq)
  * Actually now I think of it, it's possible that Ron *is* half the Plan 9
  * userbase.  Oh well.
  */
+<<<<<<< HEAD
 static bool could_be_syscall(unsigned int num)
 {
 	/* Normal Linux SYSCALL_VECTOR or reserved vector? */
 	return num == SYSCALL_VECTOR || num == syscall_vector;
+=======
+bool could_be_syscall(unsigned int num)
+{
+	/* Normal Linux IA32_SYSCALL_VECTOR or reserved vector? */
+	return num == IA32_SYSCALL_VECTOR || num == syscall_vector;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* The syscall vector it wants must be unused by Host. */
@@ -298,7 +413,11 @@ bool check_syscall_vector(struct lguest *lg)
 int init_interrupts(void)
 {
 	/* If they want some strange system call vector, reserve it now */
+<<<<<<< HEAD
 	if (syscall_vector != SYSCALL_VECTOR) {
+=======
+	if (syscall_vector != IA32_SYSCALL_VECTOR) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (test_bit(syscall_vector, used_vectors) ||
 		    vector_used_by_percpu_irq(syscall_vector)) {
 			printk(KERN_ERR "lg: couldn't reserve syscall %u\n",
@@ -313,7 +432,11 @@ int init_interrupts(void)
 
 void free_interrupts(void)
 {
+<<<<<<< HEAD
 	if (syscall_vector != SYSCALL_VECTOR)
+=======
+	if (syscall_vector != IA32_SYSCALL_VECTOR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clear_bit(syscall_vector, used_vectors);
 }
 
@@ -343,8 +466,14 @@ bool deliver_trap(struct lg_cpu *cpu, unsigned int num)
 	 */
 	if (!idt_present(cpu->arch.idt[num].a, cpu->arch.idt[num].b))
 		return false;
+<<<<<<< HEAD
 	set_guest_interrupt(cpu, cpu->arch.idt[num].a,
 			    cpu->arch.idt[num].b, has_err(num));
+=======
+	push_guest_interrupt_stack(cpu, has_err(num));
+	guest_run_interrupt(cpu, cpu->arch.idt[num].a,
+			    cpu->arch.idt[num].b);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return true;
 }
 
@@ -362,6 +491,13 @@ bool deliver_trap(struct lg_cpu *cpu, unsigned int num)
  *
  * This routine indicates if a particular trap number could be delivered
  * directly.
+<<<<<<< HEAD
+=======
+ *
+ * Unfortunately, Linux 4.6 started using an interrupt gate instead of a
+ * trap gate for syscalls, so this trick is ineffective.  See Mastery for
+ * how we could do this anyway...
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static bool direct_trap(unsigned int num)
 {
@@ -385,8 +521,14 @@ static bool direct_trap(unsigned int num)
  * The Guest has the ability to turn its interrupt gates into trap gates,
  * if it is careful.  The Host will let trap gates can go directly to the
  * Guest, but the Guest needs the interrupts atomically disabled for an
+<<<<<<< HEAD
  * interrupt gate.  It can do this by pointing the trap gate at instructions
  * within noirq_start and noirq_end, where it can safely disable interrupts.
+=======
+ * interrupt gate.  The Host could provide a mechanism to register more
+ * "no-interrupt" regions, and the Guest could point the trap gate at
+ * instructions within that region, where it can safely disable interrupts.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*M:006

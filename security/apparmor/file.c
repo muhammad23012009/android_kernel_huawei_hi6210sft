@@ -260,7 +260,11 @@ unsigned int aa_str_perms(struct aa_dfa *dfa, unsigned int start,
  */
 static inline bool is_deleted(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	if (d_unlinked(dentry) && dentry->d_inode->i_nlink == 0)
+=======
+	if (d_unlinked(dentry) && d_backing_inode(dentry)->i_nlink == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	return 0;
 }
@@ -276,7 +280,11 @@ static inline bool is_deleted(struct dentry *dentry)
  *
  * Returns: %0 else error if access denied or other error
  */
+<<<<<<< HEAD
 int aa_path_perm(int op, struct aa_profile *profile, struct path *path,
+=======
+int aa_path_perm(int op, struct aa_profile *profile, const struct path *path,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 int flags, u32 request, struct path_cond *cond)
 {
 	char *buffer = NULL;
@@ -347,13 +355,22 @@ static inline bool xindex_is_subset(u32 link, u32 target)
  * Returns: %0 if allowed else error
  */
 int aa_path_link(struct aa_profile *profile, struct dentry *old_dentry,
+<<<<<<< HEAD
 		 struct path *new_dir, struct dentry *new_dentry)
+=======
+		 const struct path *new_dir, struct dentry *new_dentry)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct path link = { new_dir->mnt, new_dentry };
 	struct path target = { new_dir->mnt, old_dentry };
 	struct path_cond cond = {
+<<<<<<< HEAD
 		old_dentry->d_inode->i_uid,
 		old_dentry->d_inode->i_mode
+=======
+		d_backing_inode(old_dentry)->i_uid,
+		d_backing_inode(old_dentry)->i_mode
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 	char *buffer = NULL, *buffer2 = NULL;
 	const char *lname, *tname = NULL, *info = NULL;

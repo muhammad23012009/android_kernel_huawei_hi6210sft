@@ -34,15 +34,27 @@
 
 #include "libfdt.h"
 #include "util.h"
+<<<<<<< HEAD
+=======
+#include "version_gen.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 char *xstrdup(const char *s)
 {
 	int len = strlen(s) + 1;
+<<<<<<< HEAD
 	char *dup = xmalloc(len);
 
 	memcpy(dup, s, len);
 
 	return dup;
+=======
+	char *d = xmalloc(len);
+
+	memcpy(d, s, len);
+
+	return d;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 char *join_path(const char *path, const char *name)
@@ -69,10 +81,17 @@ char *join_path(const char *path, const char *name)
 	return str;
 }
 
+<<<<<<< HEAD
 int util_is_printable_string(const void *data, int len)
 {
 	const char *s = data;
 	const char *ss;
+=======
+bool util_is_printable_string(const void *data, int len)
+{
+	const char *s = data;
+	const char *ss, *se;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* zero length is not */
 	if (len == 0)
@@ -82,6 +101,7 @@ int util_is_printable_string(const void *data, int len)
 	if (s[len - 1] != '\0')
 		return 0;
 
+<<<<<<< HEAD
 	ss = s;
 	while (*s && isprint(*s))
 		s++;
@@ -89,6 +109,21 @@ int util_is_printable_string(const void *data, int len)
 	/* not zero, or not done yet */
 	if (*s != '\0' || (s + 1 - ss) < len)
 		return 0;
+=======
+	se = s + len;
+
+	while (s < se) {
+		ss = s;
+		while (s < se && *s && isprint((unsigned char)*s))
+			s++;
+
+		/* not zero, or not done yet */
+		if (*s != '\0' || s == ss)
+			return 0;
+
+		s++;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 1;
 }
@@ -145,7 +180,10 @@ char get_escape_char(const char *s, int *i)
 	int	j = *i + 1;
 	char	val;
 
+<<<<<<< HEAD
 	assert(c);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (c) {
 	case 'a':
 		val = '\a';
@@ -191,7 +229,11 @@ char get_escape_char(const char *s, int *i)
 	return val;
 }
 
+<<<<<<< HEAD
 int utilfdt_read_err(const char *filename, char **buffp)
+=======
+int utilfdt_read_err_len(const char *filename, char **buffp, off_t *len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int fd = 0;	/* assume stdin */
 	char *buf = NULL;
@@ -206,16 +248,24 @@ int utilfdt_read_err(const char *filename, char **buffp)
 	}
 
 	/* Loop until we have read everything */
+<<<<<<< HEAD
 	buf = malloc(bufsize);
+=======
+	buf = xmalloc(bufsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		/* Expand the buffer to hold the next chunk */
 		if (offset == bufsize) {
 			bufsize *= 2;
+<<<<<<< HEAD
 			buf = realloc(buf, bufsize);
 			if (!buf) {
 				ret = ENOMEM;
 				break;
 			}
+=======
+			buf = xrealloc(buf, bufsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		ret = read(fd, &buf[offset], bufsize - offset);
@@ -232,6 +282,7 @@ int utilfdt_read_err(const char *filename, char **buffp)
 		free(buf);
 	else
 		*buffp = buf;
+<<<<<<< HEAD
 	return ret;
 }
 
@@ -239,6 +290,22 @@ char *utilfdt_read(const char *filename)
 {
 	char *buff;
 	int ret = utilfdt_read_err(filename, &buff);
+=======
+	*len = bufsize;
+	return ret;
+}
+
+int utilfdt_read_err(const char *filename, char **buffp)
+{
+	off_t len;
+	return utilfdt_read_err_len(filename, buffp, &len);
+}
+
+char *utilfdt_read_len(const char *filename, off_t *len)
+{
+	char *buff;
+	int ret = utilfdt_read_err_len(filename, &buff, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ret) {
 		fprintf(stderr, "Couldn't open blob from '%s': %s\n", filename,
@@ -249,6 +316,15 @@ char *utilfdt_read(const char *filename)
 	return buff;
 }
 
+<<<<<<< HEAD
+=======
+char *utilfdt_read(const char *filename)
+{
+	off_t len;
+	return utilfdt_read_len(filename, &len);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int utilfdt_write_err(const char *filename, const void *blob)
 {
 	int fd = 1;	/* assume stdout */
@@ -329,3 +405,103 @@ int utilfdt_decode_type(const char *fmt, int *type, int *size)
 		return -1;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+void utilfdt_print_data(const char *data, int len)
+{
+	int i;
+	const char *s;
+
+	/* no data, don't print */
+	if (len == 0)
+		return;
+
+	if (util_is_printable_string(data, len)) {
+		printf(" = ");
+
+		s = data;
+		do {
+			printf("\"%s\"", s);
+			s += strlen(s) + 1;
+			if (s < data + len)
+				printf(", ");
+		} while (s < data + len);
+
+	} else if ((len % 4) == 0) {
+		const uint32_t *cell = (const uint32_t *)data;
+
+		printf(" = <");
+		for (i = 0, len /= 4; i < len; i++)
+			printf("0x%08x%s", fdt32_to_cpu(cell[i]),
+			       i < (len - 1) ? " " : "");
+		printf(">");
+	} else {
+		const unsigned char *p = (const unsigned char *)data;
+		printf(" = [");
+		for (i = 0; i < len; i++)
+			printf("%02x%s", *p++, i < len - 1 ? " " : "");
+		printf("]");
+	}
+}
+
+void util_version(void)
+{
+	printf("Version: %s\n", DTC_VERSION);
+	exit(0);
+}
+
+void util_usage(const char *errmsg, const char *synopsis,
+		const char *short_opts, struct option const long_opts[],
+		const char * const opts_help[])
+{
+	FILE *fp = errmsg ? stderr : stdout;
+	const char a_arg[] = "<arg>";
+	size_t a_arg_len = strlen(a_arg) + 1;
+	size_t i;
+	int optlen;
+
+	fprintf(fp,
+		"Usage: %s\n"
+		"\n"
+		"Options: -[%s]\n", synopsis, short_opts);
+
+	/* prescan the --long opt length to auto-align */
+	optlen = 0;
+	for (i = 0; long_opts[i].name; ++i) {
+		/* +1 is for space between --opt and help text */
+		int l = strlen(long_opts[i].name) + 1;
+		if (long_opts[i].has_arg == a_argument)
+			l += a_arg_len;
+		if (optlen < l)
+			optlen = l;
+	}
+
+	for (i = 0; long_opts[i].name; ++i) {
+		/* helps when adding new applets or options */
+		assert(opts_help[i] != NULL);
+
+		/* first output the short flag if it has one */
+		if (long_opts[i].val > '~')
+			fprintf(fp, "      ");
+		else
+			fprintf(fp, "  -%c, ", long_opts[i].val);
+
+		/* then the long flag */
+		if (long_opts[i].has_arg == no_argument)
+			fprintf(fp, "--%-*s", optlen, long_opts[i].name);
+		else
+			fprintf(fp, "--%s %s%*s", long_opts[i].name, a_arg,
+				(int)(optlen - strlen(long_opts[i].name) - a_arg_len), "");
+
+		/* finally the help text */
+		fprintf(fp, "%s\n", opts_help[i]);
+	}
+
+	if (errmsg) {
+		fprintf(fp, "\nError: %s\n", errmsg);
+		exit(EXIT_FAILURE);
+	} else
+		exit(EXIT_SUCCESS);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -190,9 +190,12 @@ static struct irq_chip clipper_irq_type = {
 static void
 dp264_device_interrupt(unsigned long vector)
 {
+<<<<<<< HEAD
 #if 1
 	printk("dp264_device_interrupt: NOT IMPLEMENTED YET!!\n");
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long pld;
 	unsigned int i;
 
@@ -210,12 +213,16 @@ dp264_device_interrupt(unsigned long vector)
 			isa_device_interrupt(vector);
 		else
 			handle_irq(16 + i);
+<<<<<<< HEAD
 #if 0
 		TSUNAMI_cchip->dir0.csr = 1UL << i; mb();
 		tmp = TSUNAMI_cchip->dir0.csr;
 #endif
 	}
 #endif
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void 

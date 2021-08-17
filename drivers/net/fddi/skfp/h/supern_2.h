@@ -92,6 +92,7 @@
 union rx_descr {
 	struct {
 #ifdef	LITTLE_ENDIAN
+<<<<<<< HEAD
 	unsigned	rx_length :16 ;	/* frame length lower/upper byte */
 	unsigned	rx_erfbb  :2 ;	/* received frame byte boundary */
 	unsigned	rx_reserv2:2 ;	/* reserved */	
@@ -119,6 +120,35 @@ union rx_descr {
 	unsigned	rx_erfbb  :2 ;	/* received frame byte boundary */
 	unsigned	rx_reserv2:2 ;	/* reserved */	
 	unsigned	rx_length :16 ;	/* frame length lower/upper byte */
+=======
+	unsigned int	rx_length :16 ;	/* frame length lower/upper byte */
+	unsigned int	rx_erfbb  :2 ;	/* received frame byte boundary */
+	unsigned int	rx_reserv2:2 ;	/* reserved */
+	unsigned int	rx_sfrmty :3 ;	/* frame type bits */
+	unsigned int	rx_sadrrg :1 ;	/* DA == MA or broad-/multicast */
+	unsigned int	rx_sfrmerr:1 ;	/* received frame not valid */
+	unsigned int	rx_seac0  :1 ;	/* frame-copied  C-indicator */
+	unsigned int	rx_seac1  :1 ;	/* address-match A-indicator */
+	unsigned int	rx_seac2  :1 ;	/* frame-error   E-indicator */
+	unsigned int	rx_ssrcrtg:1 ;	/* == 1 SA has MSB set */
+	unsigned int	rx_reserv1:1 ;	/* reserved */
+	unsigned int	rx_msrabt :1 ;	/* memory status receive abort */
+	unsigned int	rx_msvalid:1 ;	/* memory status valid */
+#else
+	unsigned int	rx_msvalid:1 ;	/* memory status valid */
+	unsigned int	rx_msrabt :1 ;	/* memory status receive abort */
+	unsigned int	rx_reserv1:1 ;	/* reserved */
+	unsigned int	rx_ssrcrtg:1 ;	/* == 1 SA has MSB set */
+	unsigned int	rx_seac2  :1 ;	/* frame-error   E-indicator */
+	unsigned int	rx_seac1  :1 ;	/* address-match A-indicator */
+	unsigned int	rx_seac0  :1 ;	/* frame-copied  C-indicator */
+	unsigned int	rx_sfrmerr:1 ;	/* received frame not valid */
+	unsigned int	rx_sadrrg :1 ;	/* DA == MA or broad-/multicast */
+	unsigned int	rx_sfrmty :3 ;	/* frame type bits */
+	unsigned int	rx_erfbb  :2 ;	/* received frame byte boundary */
+	unsigned int	rx_reserv2:2 ;	/* reserved */
+	unsigned int	rx_length :16 ;	/* frame length lower/upper byte */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	} r ;
 	long	i ;
@@ -162,6 +192,7 @@ union rx_descr {
 union tx_descr {
 	struct {
 #ifdef	LITTLE_ENDIAN
+<<<<<<< HEAD
 	unsigned	tx_length:16 ;	/* frame length lower/upper byte */
 	unsigned	tx_res	 :8 ;	/* reserved 	 (bit 16..23) */
 	unsigned	tx_xmtabt:1 ;	/* transmit abort */
@@ -179,6 +210,25 @@ union tx_descr {
 	unsigned	tx_xmtabt:1 ;	/* transmit abort */
 	unsigned	tx_res	 :8 ;	/* reserved 	 (bit 16..23) */
 	unsigned	tx_length:16 ;	/* frame length lower/upper byte */
+=======
+	unsigned int	tx_length:16 ;	/* frame length lower/upper byte */
+	unsigned int	tx_res	 :8 ;	/* reserved 	 (bit 16..23) */
+	unsigned int	tx_xmtabt:1 ;	/* transmit abort */
+	unsigned int	tx_nfcs  :1 ;	/* no frame check sequence */
+	unsigned int	tx_xdone :1 ;	/* give up token */
+	unsigned int	tx_rpxm  :2 ;	/* byte offset */
+	unsigned int	tx_pat1  :2 ;	/* must be TXP1 */
+	unsigned int	tx_more	 :1 ;	/* more frame in chain */
+#else
+	unsigned int	tx_more	 :1 ;	/* more frame in chain */
+	unsigned int	tx_pat1  :2 ;	/* must be TXP1 */
+	unsigned int	tx_rpxm  :2 ;	/* byte offset */
+	unsigned int	tx_xdone :1 ;	/* give up token */
+	unsigned int	tx_nfcs  :1 ;	/* no frame check sequence */
+	unsigned int	tx_xmtabt:1 ;	/* transmit abort */
+	unsigned int	tx_res	 :8 ;	/* reserved 	 (bit 16..23) */
+	unsigned int	tx_length:16 ;	/* frame length lower/upper byte */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	} t ;
 	long	i ;
@@ -202,6 +252,7 @@ union tx_descr {
 union tx_pointer {
 	struct t {
 #ifdef	LITTLE_ENDIAN
+<<<<<<< HEAD
 	unsigned	tp_pointer:16 ;	/* pointer to tx_descr (low/high) */
 	unsigned	tp_res	  :8 ;	/* reserved 	 (bit 16..23) */
 	unsigned	tp_pattern:8 ;	/* fixed pattern (bit 24..31) */
@@ -209,6 +260,15 @@ union tx_pointer {
 	unsigned	tp_pattern:8 ;	/* fixed pattern (bit 24..31) */
 	unsigned	tp_res	  :8 ;	/* reserved 	 (bit 16..23) */
 	unsigned	tp_pointer:16 ;	/* pointer to tx_descr (low/high) */
+=======
+	unsigned int	tp_pointer:16 ;	/* pointer to tx_descr (low/high) */
+	unsigned int	tp_res	  :8 ;	/* reserved 	 (bit 16..23) */
+	unsigned int	tp_pattern:8 ;	/* fixed pattern (bit 24..31) */
+#else
+	unsigned int	tp_pattern:8 ;	/* fixed pattern (bit 24..31) */
+	unsigned int	tp_res	  :8 ;	/* reserved 	 (bit 16..23) */
+	unsigned int	tp_pointer:16 ;	/* pointer to tx_descr (low/high) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	} t ;
 	long	i ;

@@ -54,12 +54,25 @@ static int usb_write(struct i2c_adapter *adapter, int cmd,
 
 static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 {
+<<<<<<< HEAD
 	unsigned char status;
 	struct i2c_msg *pmsg;
 	int i;
 
 	dev_dbg(&adapter->dev, "master xfer %d messages:\n", num);
 
+=======
+	unsigned char *pstatus;
+	struct i2c_msg *pmsg;
+	int i, ret;
+
+	dev_dbg(&adapter->dev, "master xfer %d messages:\n", num);
+
+	pstatus = kmalloc(sizeof(*pstatus), GFP_KERNEL);
+	if (!pstatus)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0 ; i < num ; i++) {
 		int cmd = CMD_I2C_IO;
 
@@ -84,7 +97,12 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 				     pmsg->buf, pmsg->len) != pmsg->len) {
 				dev_err(&adapter->dev,
 					"failure reading data\n");
+<<<<<<< HEAD
 				return -EREMOTEIO;
+=======
+				ret = -EREMOTEIO;
+				goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		} else {
 			/* write data */
@@ -93,11 +111,17 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 				      pmsg->buf, pmsg->len) != pmsg->len) {
 				dev_err(&adapter->dev,
 					"failure writing data\n");
+<<<<<<< HEAD
 				return -EREMOTEIO;
+=======
+				ret = -EREMOTEIO;
+				goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 
 		/* read status */
+<<<<<<< HEAD
 		if (usb_read(adapter, CMD_GET_STATUS, 0, 0, &status, 1) != 1) {
 			dev_err(&adapter->dev, "failure reading status\n");
 			return -EREMOTEIO;
@@ -109,10 +133,30 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 	}
 
 	return i;
+=======
+		if (usb_read(adapter, CMD_GET_STATUS, 0, 0, pstatus, 1) != 1) {
+			dev_err(&adapter->dev, "failure reading status\n");
+			ret = -EREMOTEIO;
+			goto out;
+		}
+
+		dev_dbg(&adapter->dev, "  status = %d\n", *pstatus);
+		if (*pstatus == STATUS_ADDRESS_NAK) {
+			ret = -EREMOTEIO;
+			goto out;
+		}
+	}
+
+	ret = i;
+out:
+	kfree(pstatus);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static u32 usb_func(struct i2c_adapter *adapter)
 {
+<<<<<<< HEAD
 	__le32 func;
 
 	/* get functionality from adapter */
@@ -123,6 +167,25 @@ static u32 usb_func(struct i2c_adapter *adapter)
 	}
 
 	return le32_to_cpu(func);
+=======
+	__le32 *pfunc;
+	u32 ret;
+
+	pfunc = kmalloc(sizeof(*pfunc), GFP_KERNEL);
+
+	/* get functionality from adapter */
+	if (!pfunc || usb_read(adapter, CMD_GET_FUNC, 0, 0, pfunc,
+			       sizeof(*pfunc)) != sizeof(*pfunc)) {
+		dev_err(&adapter->dev, "failure reading functionality\n");
+		ret = 0;
+		goto out;
+	}
+
+	ret = le32_to_cpup(pfunc);
+out:
+	kfree(pfunc);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* This is the actual algorithm we define */
@@ -143,7 +206,10 @@ static const struct i2c_algorithm usb_algorithm = {
 static const struct usb_device_id i2c_tiny_usb_table[] = {
 	{ USB_DEVICE(0x0403, 0xc631) },   /* FTDI */
 	{ USB_DEVICE(0x1c40, 0x0534) },   /* EZPrototypes */
+<<<<<<< HEAD
 	{ USB_DEVICE(0x1964, 0x0001) },   /* Robofuzz OSIF */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }                               /* Terminating entry */
 };
 
@@ -160,22 +226,55 @@ static int usb_read(struct i2c_adapter *adapter, int cmd,
 		    int value, int index, void *data, int len)
 {
 	struct i2c_tiny_usb *dev = (struct i2c_tiny_usb *)adapter->algo_data;
+<<<<<<< HEAD
 
 	/* do control transfer */
 	return usb_control_msg(dev->usb_dev, usb_rcvctrlpipe(dev->usb_dev, 0),
 			       cmd, USB_TYPE_VENDOR | USB_RECIP_INTERFACE |
 			       USB_DIR_IN, value, index, data, len, 2000);
+=======
+	void *dmadata = kmalloc(len, GFP_KERNEL);
+	int ret;
+
+	if (!dmadata)
+		return -ENOMEM;
+
+	/* do control transfer */
+	ret = usb_control_msg(dev->usb_dev, usb_rcvctrlpipe(dev->usb_dev, 0),
+			       cmd, USB_TYPE_VENDOR | USB_RECIP_INTERFACE |
+			       USB_DIR_IN, value, index, dmadata, len, 2000);
+
+	memcpy(data, dmadata, len);
+	kfree(dmadata);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int usb_write(struct i2c_adapter *adapter, int cmd,
 		     int value, int index, void *data, int len)
 {
 	struct i2c_tiny_usb *dev = (struct i2c_tiny_usb *)adapter->algo_data;
+<<<<<<< HEAD
 
 	/* do control transfer */
 	return usb_control_msg(dev->usb_dev, usb_sndctrlpipe(dev->usb_dev, 0),
 			       cmd, USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
 			       value, index, data, len, 2000);
+=======
+	void *dmadata = kmemdup(data, len, GFP_KERNEL);
+	int ret;
+
+	if (!dmadata)
+		return -ENOMEM;
+
+	/* do control transfer */
+	ret = usb_control_msg(dev->usb_dev, usb_sndctrlpipe(dev->usb_dev, 0),
+			       cmd, USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
+			       value, index, dmadata, len, 2000);
+
+	kfree(dmadata);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void i2c_tiny_usb_free(struct i2c_tiny_usb *dev)

@@ -5,6 +5,10 @@
 #include <linux/fb.h>
 #include <linux/io.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
+=======
+#include <linux/mmc/card.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 
@@ -64,6 +68,13 @@
  * Some controllers can support SDIO IRQ signalling.
  */
 #define TMIO_MMC_SDIO_IRQ		(1 << 2)
+<<<<<<< HEAD
+=======
+
+/* Some features are only available or tested on RCar Gen2 or later */
+#define TMIO_MMC_MIN_RCAR2		(1 << 3)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Some controllers require waiting for the SD bus to become
  * idle before writing to some registers.
@@ -76,11 +87,38 @@
  */
 #define TMIO_MMC_USE_GPIO_CD		(1 << 5)
 
+<<<<<<< HEAD
+=======
+/*
+ * Some controllers doesn't have over 0x100 register.
+ * it is used to checking accessibility of
+ * CTL_SD_CARD_CLK_CTL / CTL_CLK_AND_WAIT_CTL
+ */
+#define TMIO_MMC_HAVE_HIGH_REG		(1 << 6)
+
+/*
+ * Some controllers have CMD12 automatically
+ * issue/non-issue register
+ */
+#define TMIO_MMC_HAVE_CMD12_CTRL	(1 << 7)
+
+/*
+ * Some controllers needs to set 1 on SDIO status reserved bits
+ */
+#define TMIO_MMC_SDIO_STATUS_QUIRK	(1 << 8)
+
+/*
+ * Some controllers allows to set SDx actual clock
+ */
+#define TMIO_MMC_CLK_ACTUAL		(1 << 10)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int tmio_core_mmc_enable(void __iomem *cnf, int shift, unsigned long base);
 int tmio_core_mmc_resume(void __iomem *cnf, int shift, unsigned long base);
 void tmio_core_mmc_pwr(void __iomem *cnf, int shift, int state);
 void tmio_core_mmc_clk_div(void __iomem *cnf, int shift, int state);
 
+<<<<<<< HEAD
 struct tmio_mmc_dma {
 	void *chan_priv_tx;
 	void *chan_priv_rx;
@@ -88,16 +126,25 @@ struct tmio_mmc_dma {
 };
 
 struct tmio_mmc_host;
+=======
+struct dma_chan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * data for the MMC controller
  */
 struct tmio_mmc_data {
+<<<<<<< HEAD
+=======
+	void				*chan_priv_tx;
+	void				*chan_priv_rx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int			hclk;
 	unsigned long			capabilities;
 	unsigned long			capabilities2;
 	unsigned long			flags;
 	u32				ocr_mask;	/* available voltages */
+<<<<<<< HEAD
 	struct tmio_mmc_dma		*dma;
 	struct device			*dev;
 	unsigned int			cd_gpio;
@@ -108,6 +155,13 @@ struct tmio_mmc_data {
 	/* clock management callbacks */
 	int (*clk_enable)(struct platform_device *pdev, unsigned int *f);
 	void (*clk_disable)(struct platform_device *pdev);
+=======
+	unsigned int			cd_gpio;
+	int				alignment_shift;
+	dma_addr_t			dma_rx_offset;
+	void (*set_pwr)(struct platform_device *host, int state);
+	void (*set_clk_div)(struct platform_device *host, int state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*

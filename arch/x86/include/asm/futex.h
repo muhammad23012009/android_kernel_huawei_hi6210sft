@@ -41,6 +41,7 @@
 		       "+m" (*uaddr), "=&r" (tem)		\
 		     : "r" (oparg), "i" (-EFAULT), "1" (0))
 
+<<<<<<< HEAD
 static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
@@ -55,6 +56,13 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
 
+=======
+static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
+		u32 __user *uaddr)
+{
+	int oldval = 0, ret, tem;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 
 	switch (op) {
@@ -80,6 +88,7 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 
 	pagefault_enable();
 
+<<<<<<< HEAD
 	if (!ret) {
 		switch (cmp) {
 		case FUTEX_OP_CMP_EQ:
@@ -104,12 +113,18 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 			ret = -ENOSYS;
 		}
 	}
+=======
+	if (!ret)
+		*oval = oldval;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 						u32 oldval, u32 newval)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
@@ -130,6 +145,9 @@ static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 
 	*uval = oldval;
 	return ret;
+=======
+	return user_atomic_cmpxchg_inatomic(uval, uaddr, oldval, newval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif

@@ -294,8 +294,11 @@ EXPORT_SYMBOL(mt2131_attach);
 MODULE_AUTHOR("Steven Toth");
 MODULE_DESCRIPTION("Microtune MT2131 silicon tuner driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

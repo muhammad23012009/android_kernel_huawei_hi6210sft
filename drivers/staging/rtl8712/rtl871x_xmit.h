@@ -58,7 +58,12 @@ do { \
 } while (0)
 
 /* Fixed the Big Endian bug when doing the Tx.
+<<<<<<< HEAD
  * The Linksys WRH54G will check this.*/
+=======
+ * The Linksys WRH54G will check this.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TKIP_IV(pattrib_iv, txpn, keyidx)\
 do { \
 	pattrib_iv[0] = txpn._byte_.TSC1;\
@@ -105,7 +110,12 @@ struct pkt_attrib {
 	u16	seqnum;
 	u16	ether_type;
 	u16	pktlen;		/* the original 802.3 pkt raw_data len
+<<<<<<< HEAD
 				 * (not include ether_hdr data) */
+=======
+				 * (not include ether_hdr data)
+				 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16	last_txcmdsz;
 
 	u8	pkt_hdrlen;	/*the original 802.3 pkt header len*/
@@ -119,7 +129,12 @@ struct pkt_attrib {
 
 	u8	priority;
 	u8	encrypt;	/* when 0 indicate no encrypt. when non-zero,
+<<<<<<< HEAD
 				 * indicate the encrypt algorithm*/
+=======
+				 * indicate the encrypt algorithm
+				 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	iv_len;
 	u8	icv_len;
 	unsigned char iv[8];
@@ -176,7 +191,12 @@ struct sta_xmit_priv {
 	spinlock_t lock;
 	sint	option;
 	sint	apsd_setting;	/* When bit mask is on, the associated edca
+<<<<<<< HEAD
 				 * queue supports APSD.*/
+=======
+				 * queue supports APSD.
+				 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tx_servq	be_q;	/* priority == 0,3 */
 	struct tx_servq	bk_q;	/* priority == 1,2*/
 	struct tx_servq	vi_q;	/*priority == 4,5*/
@@ -233,9 +253,15 @@ struct	xmit_priv {
 	u8	hwxmit_entry;
 	u8	txirp_cnt;
 	struct tasklet_struct xmit_tasklet;
+<<<<<<< HEAD
 	_workitem xmit_pipe4_reset_wi;
 	_workitem xmit_pipe6_reset_wi;
 	_workitem xmit_piped_reset_wi;
+=======
+	struct work_struct xmit_pipe4_reset_wi;
+	struct work_struct xmit_pipe6_reset_wi;
+	struct work_struct xmit_piped_reset_wi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*per AC pending irp*/
 	int beq_cnt;
 	int bkq_cnt;

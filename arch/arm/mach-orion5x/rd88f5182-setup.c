@@ -23,9 +23,15 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*****************************************************************************
  * RD-88F5182 Info
@@ -108,7 +114,11 @@ static struct platform_device rd88f5182_gpio_leds = {
  * PCI
  ****************************************************************************/
 
+<<<<<<< HEAD
 void __init rd88f5182_pci_preinit(void)
+=======
+static void __init rd88f5182_pci_preinit(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int pin;
 
@@ -264,11 +274,22 @@ static void __init rd88f5182_init(void)
 	orion5x_uart0_init();
 	orion5x_xor_init();
 
+<<<<<<< HEAD
 	mvebu_mbus_add_window("devbus-boot", RD88F5182_NOR_BOOT_BASE,
 			      RD88F5182_NOR_BOOT_SIZE);
 
 	mvebu_mbus_add_window("devbus-cs1", RD88F5182_NOR_BASE,
 			      RD88F5182_NOR_SIZE);
+=======
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    RD88F5182_NOR_BOOT_BASE,
+				    RD88F5182_NOR_BOOT_SIZE);
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_TARGET(1),
+				    ORION_MBUS_DEVBUS_ATTR(1),
+				    RD88F5182_NOR_BASE,
+				    RD88F5182_NOR_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&rd88f5182_nor_flash);
 	platform_device_register(&rd88f5182_gpio_leds);
 
@@ -278,6 +299,10 @@ static void __init rd88f5182_init(void)
 MACHINE_START(RD88F5182, "Marvell Orion-NAS Reference Design")
 	/* Maintainer: Ronen Shitrit <rshitrit@marvell.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= rd88f5182_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,

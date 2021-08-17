@@ -31,6 +31,7 @@ void perf_read_values_destroy(struct perf_read_values *values)
 		return;
 
 	for (i = 0; i < values->threads; i++)
+<<<<<<< HEAD
 		free(values->value[i]);
 	free(values->value);
 	free(values->pid);
@@ -39,6 +40,16 @@ void perf_read_values_destroy(struct perf_read_values *values)
 	for (i = 0; i < values->counters; i++)
 		free(values->countername[i]);
 	free(values->countername);
+=======
+		zfree(&values->value[i]);
+	zfree(&values->value);
+	zfree(&values->pid);
+	zfree(&values->tid);
+	zfree(&values->counterrawid);
+	for (i = 0; i < values->counters; i++)
+		zfree(&values->countername[i]);
+	zfree(&values->countername);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void perf_read_values__enlarge_threads(struct perf_read_values *values)

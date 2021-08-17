@@ -37,10 +37,17 @@ EXPORT_SYMBOL_GPL(nfsd_debug);
 unsigned int	nlm_debug;
 EXPORT_SYMBOL_GPL(nlm_debug);
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
 
 static struct ctl_table_header *sunrpc_table_header;
 static ctl_table		sunrpc_table[];
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+
+static struct ctl_table_header *sunrpc_table_header;
+static struct ctl_table sunrpc_table[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void
 rpc_register_sysctl(void)
@@ -58,7 +65,11 @@ rpc_unregister_sysctl(void)
 	}
 }
 
+<<<<<<< HEAD
 static int proc_do_xprt(ctl_table *table, int write,
+=======
+static int proc_do_xprt(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	char tmpbuf[256];
@@ -73,10 +84,17 @@ static int proc_do_xprt(ctl_table *table, int write,
 }
 
 static int
+<<<<<<< HEAD
 proc_dodebug(ctl_table *table, int write,
 				void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	char		tmpbuf[20], c, *s;
+=======
+proc_dodebug(struct ctl_table *table, int write,
+				void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	char		tmpbuf[20], c, *s = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char __user *p;
 	unsigned int	value;
 	size_t		left, len;
@@ -103,23 +121,42 @@ proc_dodebug(ctl_table *table, int write,
 			return -EFAULT;
 		tmpbuf[left] = '\0';
 
+<<<<<<< HEAD
 		for (s = tmpbuf, value = 0; '0' <= *s && *s <= '9'; s++, left--)
 			value = 10 * value + (*s - '0');
 		if (*s && !isspace(*s))
 			return -EINVAL;
 		while (left && isspace(*s))
 			left--, s++;
+=======
+		value = simple_strtol(tmpbuf, &s, 0);
+		if (s) {
+			left -= (s - tmpbuf);
+			if (left && !isspace(*s))
+				return -EINVAL;
+			while (left && isspace(*s))
+				left--, s++;
+		} else
+			left = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*(unsigned int *) table->data = value;
 		/* Display the RPC tasks on writing to rpc_debug */
 		if (strcmp(table->procname, "rpc_debug") == 0)
 			rpc_show_tasks(&init_net);
 	} else {
+<<<<<<< HEAD
 		if (!access_ok(VERIFY_WRITE, buffer, left))
 			return -EFAULT;
 		len = sprintf(tmpbuf, "%d", *(unsigned int *) table->data);
 		if (len > left)
 			len = left;
 		if (__copy_to_user(buffer, tmpbuf, len))
+=======
+		len = sprintf(tmpbuf, "0x%04x", *(unsigned int *) table->data);
+		if (len > left)
+			len = left;
+		if (copy_to_user(buffer, tmpbuf, len))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EFAULT;
 		if ((left -= len) > 0) {
 			if (put_user('\n', (char __user *)buffer + len))
@@ -135,7 +172,11 @@ done:
 }
 
 
+<<<<<<< HEAD
 static ctl_table debug_table[] = {
+=======
+static struct ctl_table debug_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "rpc_debug",
 		.data		= &rpc_debug,
@@ -173,7 +214,11 @@ static ctl_table debug_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table sunrpc_table[] = {
+=======
+static struct ctl_table sunrpc_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "sunrpc",
 		.mode		= 0555,

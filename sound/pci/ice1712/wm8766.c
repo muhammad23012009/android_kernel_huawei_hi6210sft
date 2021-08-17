@@ -183,6 +183,7 @@ void snd_wm8766_set_if(struct snd_wm8766 *wm, u16 dac)
 	snd_wm8766_write(wm, WM8766_REG_IFCTRL, val | dac);
 }
 
+<<<<<<< HEAD
 void snd_wm8766_set_master_mode(struct snd_wm8766 *wm, u16 mode)
 {
 	u16 val = wm->regs[WM8766_REG_DACCTRL3] & ~WM8766_DAC3_MSTR_MASK;
@@ -199,6 +200,8 @@ void snd_wm8766_set_power(struct snd_wm8766 *wm, u16 power)
 	snd_wm8766_write(wm, WM8766_REG_DACCTRL3, val | power);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void snd_wm8766_volume_restore(struct snd_wm8766 *wm)
 {
 	u16 val = wm->regs[WM8766_REG_DACR1];
@@ -253,7 +256,12 @@ static int snd_wm8766_ctl_get(struct snd_kcontrol *kcontrol,
 	}
 	if (wm->ctl[n].flags & WM8766_FLAG_INVERT) {
 		val1 = wm->ctl[n].max - (val1 - wm->ctl[n].min);
+<<<<<<< HEAD
 		val2 = wm->ctl[n].max - (val2 - wm->ctl[n].min);
+=======
+		if (wm->ctl[n].flags & WM8766_FLAG_STEREO)
+			val2 = wm->ctl[n].max - (val2 - wm->ctl[n].min);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	ucontrol->value.integer.value[0] = val1;
 	if (wm->ctl[n].flags & WM8766_FLAG_STEREO)

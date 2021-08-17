@@ -1,19 +1,40 @@
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/clockchips.h>
 
+=======
+#include <linux/tick.h>
+#include <linux/percpu-defs.h>
+
+#include <xen/xen.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <xen/interface/xen.h>
 #include <xen/grant_table.h>
 #include <xen/events.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/cpufeatures.h>
+#include <asm/msr-index.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/xen/hypercall.h>
 #include <asm/xen/page.h>
 #include <asm/fixmap.h>
 
 #include "xen-ops.h"
 #include "mmu.h"
+<<<<<<< HEAD
 
 void xen_arch_pre_suspend(void)
 {
+=======
+#include "pmu.h"
+
+static void xen_pv_pre_suspend(void)
+{
+	xen_mm_pin_all();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xen_start_info->store_mfn = mfn_to_pfn(xen_start_info->store_mfn);
 	xen_start_info->console.domU.mfn =
 		mfn_to_pfn(xen_start_info->console.domU.mfn);
@@ -26,7 +47,11 @@ void xen_arch_pre_suspend(void)
 		BUG();
 }
 
+<<<<<<< HEAD
 void xen_arch_hvm_post_suspend(int suspend_cancelled)
+=======
+static void xen_hvm_post_suspend(int suspend_cancelled)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef CONFIG_XEN_PVHVM
 	int cpu;
@@ -42,7 +67,11 @@ void xen_arch_hvm_post_suspend(int suspend_cancelled)
 #endif
 }
 
+<<<<<<< HEAD
 void xen_arch_post_suspend(int suspend_cancelled)
+=======
+static void xen_pv_post_suspend(int suspend_cancelled)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	xen_build_mfn_list_list();
 
@@ -61,10 +90,31 @@ void xen_arch_post_suspend(int suspend_cancelled)
 		xen_vcpu_restore();
 	}
 
+<<<<<<< HEAD
+=======
+	xen_mm_unpin_all();
+}
+
+static DEFINE_PER_CPU(u64, spec_ctrl);
+
+void xen_arch_pre_suspend(void)
+{
+	if (xen_pv_domain())
+		xen_pv_pre_suspend();
+}
+
+void xen_arch_post_suspend(int cancelled)
+{
+	if (xen_pv_domain())
+		xen_pv_post_suspend(cancelled);
+	else
+		xen_hvm_post_suspend(cancelled);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void xen_vcpu_notify_restore(void *data)
 {
+<<<<<<< HEAD
 	unsigned long reason = (unsigned long)data;
 
 	/* Boot processor notified via generic timekeeping_resume() */
@@ -72,10 +122,52 @@ static void xen_vcpu_notify_restore(void *data)
 		return;
 
 	clockevents_notify(reason, NULL);
+=======
+	if (xen_pv_domain() && boot_cpu_has(X86_FEATURE_SPEC_CTRL))
+		wrmsrl(MSR_IA32_SPEC_CTRL, this_cpu_read(spec_ctrl));
+
+	/* Boot processor notified via generic timekeeping_resume() */
+	if (smp_processor_id() == 0)
+		return;
+
+	tick_resume_local();
+}
+
+static void xen_vcpu_notify_suspend(void *data)
+{
+	u64 tmp;
+
+	tick_suspend_local();
+
+	if (xen_pv_domain() && boot_cpu_has(X86_FEATURE_SPEC_CTRL)) {
+		rdmsrl(MSR_IA32_SPEC_CTRL, tmp);
+		this_cpu_write(spec_ctrl, tmp);
+		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void xen_arch_resume(void)
 {
+<<<<<<< HEAD
 	on_each_cpu(xen_vcpu_notify_restore,
 		    (void *)CLOCK_EVT_NOTIFY_RESUME, 1);
+=======
+	int cpu;
+
+	on_each_cpu(xen_vcpu_notify_restore, NULL, 1);
+
+	for_each_online_cpu(cpu)
+		xen_pmu_init(cpu);
+}
+
+void xen_arch_suspend(void)
+{
+	int cpu;
+
+	for_each_online_cpu(cpu)
+		xen_pmu_finish(cpu);
+
+	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

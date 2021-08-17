@@ -49,13 +49,21 @@ static struct resource __initdata kernel_data = {
 	.name	= "Kernel data",
 	.start	= 0,
 	.end	= 0,
+<<<<<<< HEAD
 	.flags	= IORESOURCE_MEM,
+=======
+	.flags	= IORESOURCE_SYSTEM_RAM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 static struct resource __initdata kernel_code = {
 	.name	= "Kernel code",
 	.start	= 0,
 	.end	= 0,
+<<<<<<< HEAD
 	.flags	= IORESOURCE_MEM,
+=======
+	.flags	= IORESOURCE_SYSTEM_RAM,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.sibling = &kernel_data,
 };
 
@@ -134,7 +142,11 @@ add_physical_memory(resource_size_t start, resource_size_t end)
 	new->start = start;
 	new->end = end;
 	new->name = "System RAM";
+<<<<<<< HEAD
 	new->flags = IORESOURCE_MEM;
+=======
+	new->flags = IORESOURCE_SYSTEM_RAM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*pprev = new;
 }
@@ -555,7 +567,11 @@ void __init setup_arch (char **cmdline_p)
 {
 	struct clk *cpu_clk;
 
+<<<<<<< HEAD
 	init_mm.start_code = (unsigned long)_text;
+=======
+	init_mm.start_code = (unsigned long)_stext;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	init_mm.end_code = (unsigned long)_etext;
 	init_mm.end_data = (unsigned long)_edata;
 	init_mm.brk = (unsigned long)_end;

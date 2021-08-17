@@ -11,6 +11,7 @@
 
 #include <asm/page.h>
 
+<<<<<<< HEAD
 /* Really, userland/ksyms should not see any of this stuff. */
 
 #ifdef __KERNEL__
@@ -67,4 +68,6 @@ extern int strncmp(const char *, const char *, __kernel_size_t);
 
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* !(__SPARC_STRING_H__) */

@@ -30,6 +30,10 @@
 
 #define DATA_LEN			100
 #define DATA_CHAR			'a'
+<<<<<<< HEAD
+=======
+#define DATA_CHAR_1			'b'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PORT_BASE			8000
 
@@ -37,6 +41,7 @@
 # define __maybe_unused		__attribute__ ((__unused__))
 #endif
 
+<<<<<<< HEAD
 static __maybe_unused void pair_udp_setfilter(int fd)
 {
 	struct sock_filter bpf_filter[] = {
@@ -46,20 +51,47 @@ static __maybe_unused void pair_udp_setfilter(int fd)
 		{ 0x15, 0, 3, DATA_CHAR  },  /* JEQ DATA_CHAR [f goto nomatch]*/
 		{ 0x30, 0, 0, 0x00000051 },  /* LD  ip[81]		      */
 		{ 0x15, 0, 1, DATA_CHAR  },  /* JEQ DATA_CHAR [f goto nomatch]*/
+=======
+static __maybe_unused void sock_setfilter(int fd, int lvl, int optnum)
+{
+	struct sock_filter bpf_filter[] = {
+		{ 0x80, 0, 0, 0x00000000 },  /* LD  pktlen		      */
+		{ 0x35, 0, 4, DATA_LEN   },  /* JGE DATA_LEN  [f goto nomatch]*/
+		{ 0x30, 0, 0, 0x00000050 },  /* LD  ip[80]		      */
+		{ 0x15, 1, 0, DATA_CHAR  },  /* JEQ DATA_CHAR   [t goto match]*/
+		{ 0x15, 0, 1, DATA_CHAR_1},  /* JEQ DATA_CHAR_1 [t goto match]*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{ 0x06, 0, 0, 0x00000060 },  /* RET match	              */
 		{ 0x06, 0, 0, 0x00000000 },  /* RET no match		      */
 	};
 	struct sock_fprog bpf_prog;
 
+<<<<<<< HEAD
 	bpf_prog.filter = bpf_filter;
 	bpf_prog.len = sizeof(bpf_filter) / sizeof(struct sock_filter);
 	if (setsockopt(fd, SOL_SOCKET, SO_ATTACH_FILTER, &bpf_prog,
+=======
+	if (lvl == SOL_PACKET && optnum == PACKET_FANOUT_DATA)
+		bpf_filter[5].code = 0x16;   /* RET A			      */
+
+	bpf_prog.filter = bpf_filter;
+	bpf_prog.len = sizeof(bpf_filter) / sizeof(struct sock_filter);
+	if (setsockopt(fd, lvl, optnum, &bpf_prog,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       sizeof(bpf_prog))) {
 		perror("setsockopt SO_ATTACH_FILTER");
 		exit(1);
 	}
 }
 
+<<<<<<< HEAD
+=======
+static __maybe_unused void pair_udp_setfilter(int fd)
+{
+	sock_setfilter(fd, SOL_SOCKET, SO_ATTACH_FILTER);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __maybe_unused void pair_udp_open(int fds[], uint16_t port)
 {
 	struct sockaddr_in saddr, daddr;
@@ -96,11 +128,19 @@ static __maybe_unused void pair_udp_open(int fds[], uint16_t port)
 	}
 }
 
+<<<<<<< HEAD
 static __maybe_unused void pair_udp_send(int fds[], int num)
 {
 	char buf[DATA_LEN], rbuf[DATA_LEN];
 
 	memset(buf, DATA_CHAR, sizeof(buf));
+=======
+static __maybe_unused void pair_udp_send_char(int fds[], int num, char payload)
+{
+	char buf[DATA_LEN], rbuf[DATA_LEN];
+
+	memset(buf, payload, sizeof(buf));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (num--) {
 		/* Should really handle EINTR and EAGAIN */
 		if (write(fds[0], buf, sizeof(buf)) != sizeof(buf)) {
@@ -118,6 +158,14 @@ static __maybe_unused void pair_udp_send(int fds[], int num)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static __maybe_unused void pair_udp_send(int fds[], int num)
+{
+	return pair_udp_send_char(fds, num, DATA_CHAR);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __maybe_unused void pair_udp_close(int fds[])
 {
 	close(fds[0]);

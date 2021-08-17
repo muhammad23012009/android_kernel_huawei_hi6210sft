@@ -81,11 +81,14 @@ void prom_feval(const char *fstring)
 }
 EXPORT_SYMBOL(prom_feval);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 extern void smp_capture(void);
 extern void smp_release(void);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Drop into the prom, with the chance to continue with the 'go'
  * prom command.
  */

@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -64,6 +65,33 @@
 
 /* Base address to the AP system controller */
 void __iomem *ap_syscon_base;
+=======
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/syscore_ops.h>
+#include <linux/amba/bus.h>
+#include <linux/io.h>
+#include <linux/irqchip.h>
+#include <linux/of_irq.h>
+#include <linux/of_address.h>
+#include <linux/of_platform.h>
+#include <linux/termios.h>
+
+#include <asm/mach/arch.h>
+#include <asm/mach/map.h>
+
+#include "hardware.h"
+#include "cm.h"
+#include "common.h"
+#include "pci_v3.h"
+#include "lm.h"
+
+/* Base address to the AP system controller */
+void __iomem *ap_syscon_base;
+/* Base address to the external bus interface */
+static void __iomem *ebi_base;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * All IO addresses are mapped onto VA 0xFFFx.xxxx, where x.xxxx
@@ -73,6 +101,7 @@ void __iomem *ap_syscon_base;
  * just for now).
  */
 #define VA_IC_BASE	__io_address(INTEGRATOR_IC_BASE)
+<<<<<<< HEAD
 #define VA_EBI_BASE	__io_address(INTEGRATOR_EBI_BASE)
 #define VA_CMIC_BASE	__io_address(INTEGRATOR_HDR_IC)
 
@@ -92,10 +121,18 @@ void __iomem *ap_syscon_base;
  * f1700000	17000000	UART 1
  * f1a00000	1a000000	Debug LEDs
  * f1b00000	1b000000	GPIO
+=======
+
+/*
+ * Logical      Physical
+ * f1400000	14000000	Interrupt controller
+ * f1600000	16000000	UART 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 static struct map_desc ap_io_desc[] __initdata __maybe_unused = {
 	{
+<<<<<<< HEAD
 		.virtual	= IO_ADDRESS(INTEGRATOR_HDR_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_HDR_BASE),
 		.length		= SZ_4K,
@@ -111,6 +148,8 @@ static struct map_desc ap_io_desc[] __initdata __maybe_unused = {
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
 	}, {
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.virtual	= IO_ADDRESS(INTEGRATOR_IC_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_IC_BASE),
 		.length		= SZ_4K,
@@ -120,6 +159,7 @@ static struct map_desc ap_io_desc[] __initdata __maybe_unused = {
 		.pfn		= __phys_to_pfn(INTEGRATOR_UART0_BASE),
 		.length		= SZ_4K,
 		.type		= MT_DEVICE
+<<<<<<< HEAD
 	}, {
 		.virtual	= IO_ADDRESS(INTEGRATOR_DBG_BASE),
 		.pfn		= __phys_to_pfn(INTEGRATOR_DBG_BASE),
@@ -145,14 +185,20 @@ static struct map_desc ap_io_desc[] __initdata __maybe_unused = {
 		.pfn		= __phys_to_pfn(PHYS_PCI_V3_BASE),
 		.length		= SZ_64K,
 		.type		= MT_DEVICE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 
 static void __init ap_map_io(void)
 {
 	iotable_init(ap_io_desc, ARRAY_SIZE(ap_io_desc));
+<<<<<<< HEAD
 	vga_base = (unsigned long)PCI_MEMORY_VADDR;
 	pci_map_io_early(__phys_to_pfn(PHYS_PCI_IO_BASE));
+=======
+	pci_v3_early_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PM
@@ -167,7 +213,11 @@ static int irq_suspend(void)
 static void irq_resume(void)
 {
 	/* disable all irq sources */
+<<<<<<< HEAD
 	writel(-1, VA_CMIC_BASE + IRQ_ENABLE_CLEAR);
+=======
+	cm_clear_irqs();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writel(-1, VA_IC_BASE + IRQ_ENABLE_CLEAR);
 	writel(-1, VA_IC_BASE + FIQ_ENABLE_CLEAR);
 
@@ -193,6 +243,7 @@ static int __init irq_syscore_init(void)
 device_initcall(irq_syscore_init);
 
 /*
+<<<<<<< HEAD
  * Flash handling.
  */
 #define EBI_CSR1 (VA_EBI_BASE + INTEGRATOR_EBI_CSR1_OFFSET)
@@ -251,6 +302,8 @@ static struct physmap_flash_data ap_flash_data = {
 };
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * For the PL010 found in the Integrator/AP some of the UART control is
  * implemented in the system controller and accessed using a callback
  * from the driver.
@@ -289,6 +342,7 @@ struct amba_pl010_data ap_uart_data = {
 	.set_mctrl = integrator_uart_set_mctrl,
 };
 
+<<<<<<< HEAD
 /*
  * Where is the timer (VA)?
  */
@@ -419,10 +473,13 @@ static void integrator_clockevent_init(unsigned long inrate,
 					0xffffU);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init ap_init_early(void)
 {
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 
 static void __init ap_of_timer_init(void)
@@ -475,16 +532,26 @@ static void __init ap_init_irq_of(void)
 	writel(0xffffffffU, VA_CMIC_BASE + IRQ_ENABLE_CLEAR);
 	of_irq_init(fpga_irq_of_match);
 	integrator_clk_init(false);
+=======
+static void __init ap_init_irq_of(void)
+{
+	cm_init();
+	irqchip_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* For the Device Tree, add in the UART callbacks as AUXDATA */
 static struct of_dev_auxdata ap_auxdata_lookup[] __initdata = {
+<<<<<<< HEAD
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_RTC_BASE,
 		"rtc", NULL),
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_UART0_BASE,
 		"uart0", &ap_uart_data),
 	OF_DEV_AUXDATA("arm,primecell", INTEGRATOR_UART1_BASE,
 		"uart1", &ap_uart_data),
+<<<<<<< HEAD
 	OF_DEV_AUXDATA("arm,primecell", KMI0_BASE,
 		"kmi0", NULL),
 	OF_DEV_AUXDATA("arm,primecell", KMI1_BASE,
@@ -513,10 +580,39 @@ static void __init ap_init_of(void)
 	syscon = of_find_node_by_path("/syscon");
 	if (!syscon)
 		return;
+=======
+	{ /* sentinel */ },
+};
+
+static const struct of_device_id ap_syscon_match[] = {
+	{ .compatible = "arm,integrator-ap-syscon"},
+	{ },
+};
+
+static const struct of_device_id ebi_match[] = {
+	{ .compatible = "arm,external-bus-interface"},
+	{ },
+};
+
+static void __init ap_init_of(void)
+{
+	unsigned long sc_dec;
+	struct device_node *syscon;
+	struct device_node *ebi;
+	int i;
+
+	syscon = of_find_matching_node(NULL, ap_syscon_match);
+	if (!syscon)
+		return;
+	ebi = of_find_matching_node(NULL, ebi_match);
+	if (!ebi)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ap_syscon_base = of_iomap(syscon, 0);
 	if (!ap_syscon_base)
 		return;
+<<<<<<< HEAD
 
 	ap_sc_id = readl(ap_syscon_base);
 
@@ -547,6 +643,13 @@ static void __init ap_init_of(void)
 
 	of_platform_populate(root, of_default_bus_match_table,
 			ap_auxdata_lookup, parent);
+=======
+	ebi_base = of_iomap(ebi, 0);
+	if (!ebi_base)
+		return;
+
+	of_platform_default_populate(NULL, ap_auxdata_lookup, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sc_dec = readl(ap_syscon_base + INTEGRATOR_SC_DEC_OFFSET);
 	for (i = 0; i < 4; i++) {
@@ -562,7 +665,11 @@ static void __init ap_init_of(void)
 		lmdev->resource.start = 0xc0000000 + 0x10000000 * i;
 		lmdev->resource.end = lmdev->resource.start + 0x0fffffff;
 		lmdev->resource.flags = IORESOURCE_MEM;
+<<<<<<< HEAD
 		lmdev->irq = IRQ_AP_EXPINT0 + i;
+=======
+		lmdev->irq = irq_of_parse_and_map(syscon, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lmdev->id = i;
 
 		lm_device_register(lmdev);
@@ -579,6 +686,7 @@ DT_MACHINE_START(INTEGRATOR_AP_DT, "ARM Integrator/AP (Device Tree)")
 	.map_io		= ap_map_io,
 	.init_early	= ap_init_early,
 	.init_irq	= ap_init_irq_of,
+<<<<<<< HEAD
 	.handle_irq	= fpga_handle_irq,
 	.init_time	= ap_of_timer_init,
 	.init_machine	= ap_init_of,
@@ -712,3 +820,8 @@ MACHINE_START(INTEGRATOR, "ARM-Integrator")
 MACHINE_END
 
 #endif
+=======
+	.init_machine	= ap_init_of,
+	.dt_compat      = ap_dt_board_compat,
+MACHINE_END
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

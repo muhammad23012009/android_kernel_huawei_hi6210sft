@@ -1,6 +1,7 @@
 #ifndef _M68K_DMA_MAPPING_H
 #define _M68K_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <asm/cache.h>
 
 struct scatterlist;
@@ -46,12 +47,22 @@ static inline void dma_free_noncoherent(struct device *dev, size_t size,
 {
 	dma_free_coherent(dev, size, addr, handle);
 }
+=======
+extern struct dma_map_ops m68k_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+        return &m68k_dma_ops;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 				  enum dma_data_direction dir)
 {
 	/* we use coherent allocation, so not much to do here. */
 }
 
+<<<<<<< HEAD
 extern dma_addr_t dma_map_single(struct device *, void *, size_t,
 				 enum dma_data_direction);
 static inline void dma_unmap_single(struct device *dev, dma_addr_t addr,
@@ -120,4 +131,6 @@ extern int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
 #define dma_mmap_coherent(d, v, c, h, s) dma_common_mmap(d, v, c, h, s)
 #define dma_get_sgtable(d, t, v, h, s) dma_common_get_sgtable(d, t, v, h, s)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif  /* _M68K_DMA_MAPPING_H */

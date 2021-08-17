@@ -17,9 +17,16 @@
 #include <linux/types.h>
 #include <linux/fb.h>
 #include <linux/leds.h>
+<<<<<<< HEAD
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
 #include <linux/atmel_serial.h>
+=======
+#include <linux/pwm.h>
+#include <linux/leds_pwm.h>
+#include <linux/input.h>
+#include <linux/gpio_keys.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
 
@@ -83,7 +90,11 @@ static struct fb_monspecs __initdata lcd_fb_default_monspecs = {
 	.dclkmax		= 9260000,
 };
 
+<<<<<<< HEAD
 static struct atmel_lcdfb_info __initdata rmt_lcdc_data = {
+=======
+static struct atmel_lcdfb_pdata __initdata rmt_lcdc_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.default_bpp		= 24,
 	.default_dmacon		= ATMEL_LCDC_DMAEN | ATMEL_LCDC_DMA2DEN,
 	.default_lcdcon2	= (ATMEL_LCDC_DISTYPE_TFT
@@ -126,7 +137,11 @@ static struct fb_monspecs __initdata lcd_fb_default_monspecs = {
 	.dclkmax		= 9260000,
 };
 
+<<<<<<< HEAD
 static struct atmel_lcdfb_info __initdata rmt_lcdc_data = {
+=======
+static struct atmel_lcdfb_pdata __initdata rmt_lcdc_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.default_bpp		= 24,
 	.default_dmacon		= ATMEL_LCDC_DMAEN | ATMEL_LCDC_DMA2DEN,
 	.default_lcdcon2	= (ATMEL_LCDC_DISTYPE_TFT
@@ -150,12 +165,16 @@ static struct ac97c_platform_data __initdata ac97c0_data = {
 static struct platform_device rmt_ts_device = {
 	.name	= "ucb1400_ts",
 	.id	= -1,
+<<<<<<< HEAD
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #endif
 
 #ifdef CONFIG_BOARD_MRMT_BL_PWM
 /* PWM LEDs: LCD Backlight, etc */
+<<<<<<< HEAD
 static struct gpio_led rmt_pwm_led[] = {
 	/* here the "gpio" is actually a PWM channel */
 	{ .name = "backlight",	.gpio = PWM_CH_BL, },
@@ -171,6 +190,30 @@ static struct platform_device rmt_pwm_led_dev = {
 	.id		= -1,
 	.dev		= {
 		.platform_data	= &rmt_pwm_led_data,
+=======
+static struct pwm_lookup pwm_lookup[] = {
+	PWM_LOOKUP("at91sam9rl-pwm", PWM_CH_BL, "leds_pwm", "ds1",
+		   5000, PWM_POLARITY_INVERSED),
+};
+
+static struct led_pwm pwm_leds[] = {
+	{
+		.name = "backlight",
+		.max_brightness = 255,
+	},
+};
+
+static struct led_pwm_platform_data pwm_data = {
+	.num_leds       = ARRAY_SIZE(pwm_leds),
+	.leds           = pwm_leds,
+};
+
+static struct platform_device leds_pwm = {
+	.name   = "leds_pwm",
+	.id     = -1,
+	.dev    = {
+		.platform_data = &pwm_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 #endif
@@ -326,7 +369,12 @@ static int __init mrmt1_init(void)
 #ifdef CONFIG_BOARD_MRMT_BL_PWM
 	/* Use PWM for Backlight controls */
 	at32_add_device_pwm(1 << PWM_CH_BL);
+<<<<<<< HEAD
 	platform_device_register(&rmt_pwm_led_dev);
+=======
+	pwm_add_table(pwm_lookup, ARRAY_SIZE(pwm_lookup));
+	platform_device_register(&leds_pwm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	/* Backlight always on */
 	udelay( 1 );

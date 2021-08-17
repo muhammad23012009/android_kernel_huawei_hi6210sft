@@ -32,7 +32,10 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ptrace.h>
 #include <linux/string.h>
 #include <linux/timer.h>
@@ -67,7 +70,11 @@
 #define PCNET_RDC_TIMEOUT (2*HZ/100)	/* Max wait in jiffies for Tx RDC */
 
 static const char *if_names[] = { "auto", "10baseT", "10base2"};
+<<<<<<< HEAD
 
+=======
+static u32 pcnet_msg_enable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*====================================================================*/
 
@@ -112,11 +119,19 @@ static void pcnet_detach(struct pcmcia_device *p_dev);
 
 /*====================================================================*/
 
+<<<<<<< HEAD
 typedef struct hw_info_t {
     u_int	offset;
     u_char	a0, a1, a2;
     u_int	flags;
 } hw_info_t;
+=======
+struct hw_info {
+    u_int	offset;
+    u_char	a0, a1, a2;
+    u_int	flags;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DELAY_OUTPUT	0x01
 #define HAS_MISC_REG	0x02
@@ -133,7 +148,11 @@ typedef struct hw_info_t {
 #define MII_PHYID_REG1		0x02
 #define MII_PHYID_REG2		0x03
 
+<<<<<<< HEAD
 static hw_info_t hw_info[] = {
+=======
+static struct hw_info hw_info[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     { /* Accton EN2212 */ 0x0ff0, 0x00, 0x00, 0xe8, DELAY_OUTPUT },
     { /* Allied Telesis LA-PCM */ 0x0ff0, 0x00, 0x00, 0xf4, 0 },
     { /* APEX MultiCard */ 0x03f4, 0x00, 0x20, 0xe5, 0 },
@@ -197,11 +216,19 @@ static hw_info_t hw_info[] = {
 
 #define NR_INFO		ARRAY_SIZE(hw_info)
 
+<<<<<<< HEAD
 static hw_info_t default_info = { 0, 0, 0, 0, 0 };
 static hw_info_t dl10019_info = { 0, 0, 0, 0, IS_DL10019|HAS_MII };
 static hw_info_t dl10022_info = { 0, 0, 0, 0, IS_DL10022|HAS_MII };
 
 typedef struct pcnet_dev_t {
+=======
+static struct hw_info default_info = { 0, 0, 0, 0, 0 };
+static struct hw_info dl10019_info = { 0, 0, 0, 0, IS_DL10019|HAS_MII };
+static struct hw_info dl10022_info = { 0, 0, 0, 0, IS_DL10022|HAS_MII };
+
+struct pcnet_dev {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pcmcia_device	*p_dev;
     u_int		flags;
     void		__iomem *base;
@@ -211,12 +238,21 @@ typedef struct pcnet_dev_t {
     u_char		eth_phy, pna_phy;
     u_short		link_status;
     u_long		mii_reset;
+<<<<<<< HEAD
 } pcnet_dev_t;
 
 static inline pcnet_dev_t *PRIV(struct net_device *dev)
 {
 	char *p = netdev_priv(dev);
 	return (pcnet_dev_t *)(p + sizeof(struct ei_device));
+=======
+};
+
+static inline struct pcnet_dev *PRIV(struct net_device *dev)
+{
+	char *p = netdev_priv(dev);
+	return (struct pcnet_dev *)(p + sizeof(struct ei_device));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct net_device_ops pcnet_netdev_ops = {
@@ -238,13 +274,21 @@ static const struct net_device_ops pcnet_netdev_ops = {
 
 static int pcnet_probe(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info;
+=======
+    struct pcnet_dev *info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     struct net_device *dev;
 
     dev_dbg(&link->dev, "pcnet_attach()\n");
 
     /* Create new ethernet device */
+<<<<<<< HEAD
     dev = __alloc_ei_netdev(sizeof(pcnet_dev_t));
+=======
+    dev = __alloc_ei_netdev(sizeof(struct pcnet_dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if (!dev) return -ENOMEM;
     info = PRIV(dev);
     info->p_dev = link;
@@ -277,7 +321,11 @@ static void pcnet_detach(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_hwinfo(struct pcmcia_device *link)
+=======
+static struct hw_info *get_hwinfo(struct pcmcia_device *link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
     struct net_device *dev = link->priv;
     u_char __iomem *base, *virt;
@@ -318,7 +366,11 @@ static hw_info_t *get_hwinfo(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_prom(struct pcmcia_device *link)
+=======
+static struct hw_info *get_prom(struct pcmcia_device *link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
     struct net_device *dev = link->priv;
     unsigned int ioaddr = dev->base_addr;
@@ -372,7 +424,11 @@ static hw_info_t *get_prom(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_dl10019(struct pcmcia_device *link)
+=======
+static struct hw_info *get_dl10019(struct pcmcia_device *link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
     struct net_device *dev = link->priv;
     int i;
@@ -394,7 +450,11 @@ static hw_info_t *get_dl10019(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_ax88190(struct pcmcia_device *link)
+=======
+static struct hw_info *get_ax88190(struct pcmcia_device *link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
     struct net_device *dev = link->priv;
     unsigned int ioaddr = dev->base_addr;
@@ -425,7 +485,11 @@ static hw_info_t *get_ax88190(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_hwired(struct pcmcia_device *link)
+=======
+static struct hw_info *get_hwired(struct pcmcia_device *link)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
     struct net_device *dev = link->priv;
     int i;
@@ -490,12 +554,21 @@ static int pcnet_confcheck(struct pcmcia_device *p_dev, void *priv_data)
 	return try_io_port(p_dev);
 }
 
+<<<<<<< HEAD
 static hw_info_t *pcnet_try_config(struct pcmcia_device *link,
 				   int *has_shmem, int try)
 {
 	struct net_device *dev = link->priv;
 	hw_info_t *local_hw_info;
 	pcnet_dev_t *info = PRIV(dev);
+=======
+static struct hw_info *pcnet_try_config(struct pcmcia_device *link,
+					int *has_shmem, int try)
+{
+	struct net_device *dev = link->priv;
+	struct hw_info *local_hw_info;
+	struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int priv = try;
 	int ret;
 
@@ -554,10 +627,18 @@ static hw_info_t *pcnet_try_config(struct pcmcia_device *link,
 static int pcnet_config(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
     int start_pg, stop_pg, cm_offset;
     int has_shmem = 0;
     hw_info_t *local_hw_info;
+=======
+    struct pcnet_dev *info = PRIV(dev);
+    int start_pg, stop_pg, cm_offset;
+    int has_shmem = 0;
+    struct hw_info *local_hw_info;
+    struct ei_device *ei_local;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     dev_dbg(&link->dev, "pcnet_config\n");
 
@@ -607,6 +688,11 @@ static int pcnet_config(struct pcmcia_device *link)
 	mii_phy_probe(dev);
 
     SET_NETDEV_DEV(dev, &link->dev);
+<<<<<<< HEAD
+=======
+    ei_local = netdev_priv(dev);
+    ei_local->msg_enable = pcnet_msg_enable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     if (register_netdev(dev) != 0) {
 	pr_notice("register_netdev() failed\n");
@@ -616,7 +702,11 @@ static int pcnet_config(struct pcmcia_device *link)
     if (info->flags & (IS_DL10019|IS_DL10022)) {
 	u_char id = inb(dev->base_addr + 0x1a);
 	netdev_info(dev, "NE2000 (DL100%d rev %02x): ",
+<<<<<<< HEAD
 	       (info->flags & IS_DL10022) ? 22 : 19, id);
+=======
+		    (info->flags & IS_DL10022) ? 22 : 19, id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info->pna_phy)
 	    pr_cont("PNA, ");
     } else {
@@ -637,7 +727,11 @@ failed:
 
 static void pcnet_release(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
 	pcnet_dev_t *info = PRIV(link->priv);
+=======
+	struct pcnet_dev *info = PRIV(link->priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&link->dev, "pcnet_release\n");
 
@@ -834,7 +928,11 @@ static void write_asic(unsigned int ioaddr, int location, short asic_data)
 static void set_misc_reg(struct net_device *dev)
 {
     unsigned int nic_base = dev->base_addr;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     u_char tmp;
 
     if (info->flags & HAS_MISC_REG) {
@@ -871,7 +969,11 @@ static void set_misc_reg(struct net_device *dev)
 
 static void mii_phy_probe(struct net_device *dev)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int mii_addr = dev->base_addr + DLINK_GPIO;
     int i;
     u_int tmp, phyid;
@@ -896,7 +998,11 @@ static void mii_phy_probe(struct net_device *dev)
 static int pcnet_open(struct net_device *dev)
 {
     int ret;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     struct pcmcia_device *link = info->p_dev;
     unsigned int nic_base = dev->base_addr;
 
@@ -916,11 +1022,16 @@ static int pcnet_open(struct net_device *dev)
 
     info->phy_id = info->eth_phy;
     info->link_status = 0x00;
+<<<<<<< HEAD
     init_timer(&info->watchdog);
     info->watchdog.function = ei_watchdog;
     info->watchdog.data = (u_long)dev;
     info->watchdog.expires = jiffies + HZ;
     add_timer(&info->watchdog);
+=======
+    setup_timer(&info->watchdog, ei_watchdog, (u_long)dev);
+    mod_timer(&info->watchdog, jiffies + HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     return ei_open(dev);
 } /* pcnet_open */
@@ -929,7 +1040,11 @@ static int pcnet_open(struct net_device *dev)
 
 static int pcnet_close(struct net_device *dev)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     struct pcmcia_device *link = info->p_dev;
 
     dev_dbg(&link->dev, "pcnet_close('%s')\n", dev->name);
@@ -980,7 +1095,11 @@ static void pcnet_reset_8390(struct net_device *dev)
 
 static int set_config(struct net_device *dev, struct ifmap *map)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if ((map->port != (u_char)(-1)) && (map->port != dev->if_port)) {
 	if (!(info->flags & HAS_MISC_REG))
 	    return -EOPNOTSUPP;
@@ -998,7 +1117,11 @@ static int set_config(struct net_device *dev, struct ifmap *map)
 static irqreturn_t ei_irq_wrapper(int irq, void *dev_id)
 {
     struct net_device *dev = dev_id;
+<<<<<<< HEAD
     pcnet_dev_t *info;
+=======
+    struct pcnet_dev *info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     irqreturn_t ret = ei_interrupt(irq, dev_id);
 
     if (ret == IRQ_HANDLED) {
@@ -1011,7 +1134,11 @@ static irqreturn_t ei_irq_wrapper(int irq, void *dev_id)
 static void ei_watchdog(u_long arg)
 {
     struct net_device *dev = (struct net_device *)arg;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     unsigned int nic_base = dev->base_addr;
     unsigned int mii_addr = nic_base + DLINK_GPIO;
     u_short link;
@@ -1063,9 +1190,15 @@ static void ei_watchdog(u_long arg)
 	    if (info->phy_id == info->eth_phy) {
 		if (p)
 		    netdev_info(dev, "autonegotiation complete: "
+<<<<<<< HEAD
 			   "%sbaseT-%cD selected\n",
 			   ((p & 0x0180) ? "100" : "10"),
 			   ((p & 0x0140) ? 'F' : 'H'));
+=======
+				"%sbaseT-%cD selected\n",
+				((p & 0x0180) ? "100" : "10"),
+				((p & 0x0140) ? 'F' : 'H'));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 		    netdev_info(dev, "link partner did not autonegotiate\n");
 	    }
@@ -1081,7 +1214,11 @@ static void ei_watchdog(u_long arg)
 	    mdio_write(mii_addr, info->phy_id, 0, 0x0400);
 	    info->phy_id ^= info->pna_phy ^ info->eth_phy;
 	    netdev_info(dev, "switched to %s transceiver\n",
+<<<<<<< HEAD
 		   (info->phy_id == info->eth_phy) ? "ethernet" : "PNA");
+=======
+			(info->phy_id == info->eth_phy) ? "ethernet" : "PNA");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    mdio_write(mii_addr, info->phy_id, 0,
 		       (info->phy_id == info->eth_phy) ? 0x1000 : 0);
 	    info->link_status = 0;
@@ -1099,7 +1236,11 @@ reschedule:
 
 static int ei_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     struct mii_ioctl_data *data = if_mii(rq);
     unsigned int mii_addr = dev->base_addr + DLINK_GPIO;
 
@@ -1128,9 +1269,15 @@ static void dma_get_8390_hdr(struct net_device *dev,
     unsigned int nic_base = dev->base_addr;
 
     if (ei_status.dmaing) {
+<<<<<<< HEAD
 	netdev_notice(dev, "DMAing conflict in dma_block_input."
 	       "[DMAstat:%1x][irqlock:%1x]\n",
 	       ei_status.dmaing, ei_status.irqlock);
+=======
+	netdev_err(dev, "DMAing conflict in dma_block_input."
+		   "[DMAstat:%1x][irqlock:%1x]\n",
+		   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
     }
 
@@ -1159,6 +1306,7 @@ static void dma_block_input(struct net_device *dev, int count,
     unsigned int nic_base = dev->base_addr;
     int xfer_count = count;
     char *buf = skb->data;
+<<<<<<< HEAD
 
     if ((ei_debug > 4) && (count != 4))
 	netdev_dbg(dev, "[bi=%d]\n", count+4);
@@ -1166,6 +1314,16 @@ static void dma_block_input(struct net_device *dev, int count,
 	netdev_notice(dev, "DMAing conflict in dma_block_input."
 	       "[DMAstat:%1x][irqlock:%1x]\n",
 	       ei_status.dmaing, ei_status.irqlock);
+=======
+    struct ei_device *ei_local = netdev_priv(dev);
+
+    if ((netif_msg_rx_status(ei_local)) && (count != 4))
+	netdev_dbg(dev, "[bi=%d]\n", count+4);
+    if (ei_status.dmaing) {
+	netdev_err(dev, "DMAing conflict in dma_block_input."
+		   "[DMAstat:%1x][irqlock:%1x]\n",
+		   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
     }
     ei_status.dmaing |= 0x01;
@@ -1183,7 +1341,12 @@ static void dma_block_input(struct net_device *dev, int count,
     /* This was for the ALPHA version only, but enough people have been
        encountering problems that it is still here. */
 #ifdef PCMCIA_DEBUG
+<<<<<<< HEAD
     if (ei_debug > 4) {		/* DMA termination address check... */
+=======
+      /* DMA termination address check... */
+    if (netif_msg_rx_status(ei_local)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int addr, tries = 20;
 	do {
 	    /* DON'T check for 'inb_p(EN0_ISR) & ENISR_RDC' here
@@ -1196,8 +1359,13 @@ static void dma_block_input(struct net_device *dev, int count,
 	} while (--tries > 0);
 	if (tries <= 0)
 	    netdev_notice(dev, "RX transfer address mismatch,"
+<<<<<<< HEAD
 		   "%#4.4x (expected) vs. %#4.4x (actual).\n",
 		   ring_offset + xfer_count, addr);
+=======
+			  "%#4.4x (expected) vs. %#4.4x (actual).\n",
+			  ring_offset + xfer_count, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 #endif
     outb_p(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
@@ -1210,15 +1378,26 @@ static void dma_block_output(struct net_device *dev, int count,
 			     const u_char *buf, const int start_page)
 {
     unsigned int nic_base = dev->base_addr;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
 #ifdef PCMCIA_DEBUG
     int retries = 0;
+=======
+    struct pcnet_dev *info = PRIV(dev);
+#ifdef PCMCIA_DEBUG
+    int retries = 0;
+    struct ei_device *ei_local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
     u_long dma_start;
 
 #ifdef PCMCIA_DEBUG
+<<<<<<< HEAD
     if (ei_debug > 4)
 	netdev_dbg(dev, "[bo=%d]\n", count);
+=======
+    netif_dbg(ei_local, tx_queued, dev, "[bo=%d]\n", count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
     /* Round the count up for word writes.  Do we need to do this?
@@ -1227,9 +1406,15 @@ static void dma_block_output(struct net_device *dev, int count,
     if (count & 0x01)
 	count++;
     if (ei_status.dmaing) {
+<<<<<<< HEAD
 	netdev_notice(dev, "DMAing conflict in dma_block_output."
 	       "[DMAstat:%1x][irqlock:%1x]\n",
 	       ei_status.dmaing, ei_status.irqlock);
+=======
+	netdev_err(dev, "DMAing conflict in dma_block_output."
+		   "[DMAstat:%1x][irqlock:%1x]\n",
+		   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
     }
     ei_status.dmaing |= 0x01;
@@ -1256,7 +1441,12 @@ static void dma_block_output(struct net_device *dev, int count,
 #ifdef PCMCIA_DEBUG
     /* This was for the ALPHA version only, but enough people have been
        encountering problems that it is still here. */
+<<<<<<< HEAD
     if (ei_debug > 4) {	/* DMA termination address check... */
+=======
+    /* DMA termination address check... */
+    if (netif_msg_tx_queued(ei_local)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int addr, tries = 20;
 	do {
 	    int high = inb_p(nic_base + EN0_RSARHI);
@@ -1267,8 +1457,13 @@ static void dma_block_output(struct net_device *dev, int count,
 	} while (--tries > 0);
 	if (tries <= 0) {
 	    netdev_notice(dev, "Tx packet transfer address mismatch,"
+<<<<<<< HEAD
 		   "%#4.4x (expected) vs. %#4.4x (actual).\n",
 		   (start_page << 8) + count, addr);
+=======
+			  "%#4.4x (expected) vs. %#4.4x (actual).\n",
+			  (start_page << 8) + count, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    if (retries++ == 0)
 		goto retry;
 	}
@@ -1277,10 +1472,17 @@ static void dma_block_output(struct net_device *dev, int count,
 
     while ((inb_p(nic_base + EN0_ISR) & ENISR_RDC) == 0)
 	if (time_after(jiffies, dma_start + PCNET_RDC_TIMEOUT)) {
+<<<<<<< HEAD
 	    netdev_notice(dev, "timeout waiting for Tx RDC.\n");
 	    pcnet_reset_8390(dev);
 	    NS8390_init(dev, 1);
 	    break;
+=======
+		netdev_warn(dev, "timeout waiting for Tx RDC.\n");
+		pcnet_reset_8390(dev);
+		NS8390_init(dev, 1);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
     outb_p(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
@@ -1398,7 +1600,11 @@ static int setup_shmem_window(struct pcmcia_device *link, int start_pg,
 			      int stop_pg, int cm_offset)
 {
     struct net_device *dev = link->priv;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     int i, window_size, offset, ret;
 
     window_size = (stop_pg - start_pg) << 8;
@@ -1499,6 +1705,10 @@ static const struct pcmcia_device_id pcnet_ids[] = {
 	PCMCIA_DEVICE_MANF_CARD(0x026f, 0x030a),
 	PCMCIA_DEVICE_MANF_CARD(0x0274, 0x1103),
 	PCMCIA_DEVICE_MANF_CARD(0x0274, 0x1121),
+<<<<<<< HEAD
+=======
+	PCMCIA_DEVICE_MANF_CARD(0xc001, 0x0009),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PCMCIA_DEVICE_PROD_ID12("2408LAN", "Ethernet", 0x352fff7f, 0x00b2e941),
 	PCMCIA_DEVICE_PROD_ID1234("Socket", "CF 10/100 Ethernet Card", "Revision B", "05/11/06", 0xb38bcc2e, 0x4de88352, 0xeaca6c8d, 0x7e57c22e),
 	PCMCIA_DEVICE_PROD_ID123("Cardwell", "PCMCIA", "ETHERNET", 0x9533672e, 0x281f1c5d, 0x3ff7175b),

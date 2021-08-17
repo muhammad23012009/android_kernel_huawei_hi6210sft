@@ -284,7 +284,11 @@ __write_ctrl_pciv2(struct fritzcard *fc, struct hdlc_hw *hdlc, u32 channel) {
 					  AVM_HDLC_STATUS_1));
 }
 
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 write_ctrl(struct bchannel *bch, int which) {
 	struct fritzcard *fc = bch->hw;
 	struct hdlc_hw *hdlc;
@@ -741,7 +745,11 @@ inithdlc(struct fritzcard *fc)
 	modehdlc(&fc->bch[1], -1);
 }
 
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 clear_pending_hdlc_ints(struct fritzcard *fc)
 {
 	u32 val;
@@ -962,7 +970,11 @@ avm_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	return err;
 }
 
+<<<<<<< HEAD
 int
+=======
+static int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 setup_fritz(struct fritzcard *fc)
 {
 	u32 val, ver;

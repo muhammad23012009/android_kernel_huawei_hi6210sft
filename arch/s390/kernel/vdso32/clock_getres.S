@@ -19,6 +19,7 @@
 	.type  __kernel_clock_getres,@function
 __kernel_clock_getres:
 	.cfi_startproc
+<<<<<<< HEAD
 	chi	%r2,__CLOCK_REALTIME
 	je	0f
 	chi	%r2,__CLOCK_MONOTONIC
@@ -27,6 +28,22 @@ __kernel_clock_getres:
 	jz	2f				/* res == NULL */
 	basr	%r1,0
 1:	l	%r0,4f-1b(%r1)
+=======
+	basr	%r1,0
+	la	%r1,4f-.(%r1)
+	chi	%r2,__CLOCK_REALTIME
+	je	0f
+	chi	%r2,__CLOCK_MONOTONIC
+	je	0f
+	la	%r1,5f-4f(%r1)
+	chi	%r2,__CLOCK_REALTIME_COARSE
+	je	0f
+	chi	%r2,__CLOCK_MONOTONIC_COARSE
+	jne	3f
+0:	ltr	%r3,%r3
+	jz	2f				/* res == NULL */
+1:	l	%r0,0(%r1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xc	0(4,%r3),0(%r3)			/* set tp->tv_sec to zero */
 	st	%r0,4(%r3)			/* store tp->tv_usec */
 2:	lhi	%r2,0
@@ -35,5 +52,9 @@ __kernel_clock_getres:
 	svc	0
 	br	%r14
 4:	.long	__CLOCK_REALTIME_RES
+<<<<<<< HEAD
+=======
+5:	.long	__CLOCK_COARSE_RES
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cfi_endproc
 	.size	__kernel_clock_getres,.-__kernel_clock_getres

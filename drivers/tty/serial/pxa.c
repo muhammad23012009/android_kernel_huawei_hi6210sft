@@ -27,7 +27,10 @@
 #define SUPPORT_SYSRQ
 #endif
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/console.h>
@@ -223,6 +226,10 @@ static void serial_pxa_start_tx(struct uart_port *port)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* should hold up->port.lock */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void check_modem_status(struct uart_pxa_port *up)
 {
 	int status;
@@ -255,12 +262,20 @@ static inline irqreturn_t serial_pxa_irq(int irq, void *dev_id)
 	iir = serial_in(up, UART_IIR);
 	if (iir & UART_IIR_NO_INT)
 		return IRQ_NONE;
+<<<<<<< HEAD
+=======
+	spin_lock(&up->port.lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lsr = serial_in(up, UART_LSR);
 	if (lsr & UART_LSR_DR)
 		receive_chars(up, &lsr);
 	check_modem_status(up);
 	if (lsr & UART_LSR_THRE)
 		transmit_chars(up);
+<<<<<<< HEAD
+=======
+	spin_unlock(&up->port.lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return IRQ_HANDLED;
 }
 
@@ -332,6 +347,7 @@ static void serial_pxa_break_ctl(struct uart_port *port, int break_state)
 	spin_unlock_irqrestore(&up->port.lock, flags);
 }
 
+<<<<<<< HEAD
 #if 0
 static void serial_pxa_dma_init(struct pxa_uart *up)
 {
@@ -357,6 +373,8 @@ out:
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int serial_pxa_startup(struct uart_port *port)
 {
 	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
@@ -517,7 +535,11 @@ serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
 	up->port.read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
 	if (termios->c_iflag & INPCK)
 		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		up->port.read_status_mask |= UART_LSR_BI;
 
 	/*
@@ -625,7 +647,11 @@ static struct uart_driver serial_pxa_reg;
 /*
  *	Wait for transmitter & holding register to empty
  */
+<<<<<<< HEAD
 static inline void wait_for_xmitr(struct uart_pxa_port *up)
+=======
+static void wait_for_xmitr(struct uart_pxa_port *up)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int status, tmout = 10000;
 
@@ -736,6 +762,7 @@ static void serial_pxa_put_poll_char(struct uart_port *port,
 	wait_for_xmitr(up);
 	/*
 	 *	Send the character out.
+<<<<<<< HEAD
 	 *	If a LF, also do CR...
 	 */
 	serial_out(up, UART_TX, c);
@@ -743,6 +770,10 @@ static void serial_pxa_put_poll_char(struct uart_port *port,
 		wait_for_xmitr(up);
 		serial_out(up, UART_TX, 13);
 	}
+=======
+	 */
+	serial_out(up, UART_TX, c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *	Finally, wait for transmitter to become empty
@@ -790,7 +821,11 @@ static struct console serial_pxa_console = {
 #define PXA_CONSOLE	NULL
 #endif
 
+<<<<<<< HEAD
 struct uart_ops serial_pxa_pops = {
+=======
+static struct uart_ops serial_pxa_pops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tx_empty	= serial_pxa_tx_empty,
 	.set_mctrl	= serial_pxa_set_mctrl,
 	.get_mctrl	= serial_pxa_get_mctrl,
@@ -808,7 +843,11 @@ struct uart_ops serial_pxa_pops = {
 	.request_port	= serial_pxa_request_port,
 	.config_port	= serial_pxa_config_port,
 	.verify_port	= serial_pxa_verify_port,
+<<<<<<< HEAD
 #ifdef CONFIG_CONSOLE_POLL
+=======
+#if defined(CONFIG_CONSOLE_POLL) && defined(CONFIG_SERIAL_PXA_CONSOLE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.poll_get_char = serial_pxa_get_poll_char,
 	.poll_put_char = serial_pxa_put_poll_char,
 #endif
@@ -851,12 +890,19 @@ static const struct dev_pm_ops serial_pxa_pm_ops = {
 };
 #endif
 
+<<<<<<< HEAD
 static struct of_device_id serial_pxa_dt_ids[] = {
+=======
+static const struct of_device_id serial_pxa_dt_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "mrvl,pxa-uart", },
 	{ .compatible = "mrvl,mmp-uart", },
 	{}
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int serial_pxa_probe_dt(struct platform_device *pdev,
 			       struct uart_pxa_port *sport)
@@ -941,6 +987,7 @@ static int serial_pxa_probe(struct platform_device *dev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int serial_pxa_remove(struct platform_device *dev)
 {
 	struct uart_pxa_port *sport = platform_get_drvdata(dev);
@@ -966,11 +1013,26 @@ static struct platform_driver serial_pxa_driver = {
 #ifdef CONFIG_PM
 		.pm	= &serial_pxa_pm_ops,
 #endif
+=======
+static struct platform_driver serial_pxa_driver = {
+        .probe          = serial_pxa_probe,
+
+	.driver		= {
+	        .name	= "pxa2xx-uart",
+#ifdef CONFIG_PM
+		.pm	= &serial_pxa_pm_ops,
+#endif
+		.suppress_bind_attrs = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = serial_pxa_dt_ids,
 	},
 };
 
+<<<<<<< HEAD
 int __init serial_pxa_init(void)
+=======
+static int __init serial_pxa_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 
@@ -984,6 +1046,7 @@ int __init serial_pxa_init(void)
 
 	return ret;
 }
+<<<<<<< HEAD
 
 void __exit serial_pxa_exit(void)
 {
@@ -996,3 +1059,6 @@ module_exit(serial_pxa_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:pxa2xx-uart");
+=======
+device_initcall(serial_pxa_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

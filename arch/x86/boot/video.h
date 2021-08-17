@@ -80,7 +80,11 @@ struct card_info {
 	u16 xmode_n;		/* Size of unprobed mode range */
 };
 
+<<<<<<< HEAD
 #define __videocard struct card_info __attribute__((section(".videocards")))
+=======
+#define __videocard struct card_info __attribute__((used,section(".videocards")))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct card_info video_cards[], video_cards_end[];
 
 int mode_defined(u16 mode);	/* video.c */
@@ -91,7 +95,10 @@ int mode_defined(u16 mode);	/* video.c */
 #define ADAPTER_VGA	2
 
 extern int adapter;
+<<<<<<< HEAD
 extern u16 video_segment;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int force_x, force_y;	/* Don't query the BIOS for cols/rows */
 extern int do_restore;		/* Restore screen contents */
 extern int graphic_mode;	/* Graphics mode with linear frame buffer */

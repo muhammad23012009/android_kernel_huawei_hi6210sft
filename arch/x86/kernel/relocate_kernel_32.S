@@ -186,7 +186,11 @@ identity_mapped:
 	movl	CP_PA_PGD(%ebx), %eax
 	movl	%eax, %cr3
 	movl	%cr0, %eax
+<<<<<<< HEAD
 	orl	$(1<<31), %eax
+=======
+	orl	$X86_CR0_PG, %eax
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	movl	%eax, %cr0
 	lea	PAGE_SIZE(%edi), %esp
 	movl	%edi, %eax
@@ -226,23 +230,39 @@ swap_pages:
 	movl	(%ebx), %ecx
 	addl	$4, %ebx
 1:
+<<<<<<< HEAD
 	testl	$0x1,   %ecx  /* is it a destination page */
+=======
+	testb	$0x1, %cl     /* is it a destination page */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jz	2f
 	movl	%ecx,	%edi
 	andl	$0xfffff000, %edi
 	jmp     0b
 2:
+<<<<<<< HEAD
 	testl	$0x2,	%ecx  /* is it an indirection page */
+=======
+	testb	$0x2, %cl    /* is it an indirection page */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jz	2f
 	movl	%ecx,	%ebx
 	andl	$0xfffff000, %ebx
 	jmp     0b
 2:
+<<<<<<< HEAD
 	testl   $0x4,   %ecx /* is it the done indicator */
 	jz      2f
 	jmp     3f
 2:
 	testl   $0x8,   %ecx /* is it the source indicator */
+=======
+	testb   $0x4, %cl    /* is it the done indicator */
+	jz      2f
+	jmp     3f
+2:
+	testb   $0x8, %cl    /* is it the source indicator */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jz      0b	     /* Ignore it otherwise */
 	movl    %ecx,   %esi /* For every source page do a copy */
 	andl    $0xfffff000, %esi

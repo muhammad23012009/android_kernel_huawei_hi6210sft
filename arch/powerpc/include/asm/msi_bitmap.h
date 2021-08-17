@@ -19,6 +19,10 @@ struct msi_bitmap {
 	unsigned long		*bitmap;
 	spinlock_t		lock;
 	unsigned int		irq_count;
+<<<<<<< HEAD
+=======
+	bool		 	bitmap_from_slab;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int msi_bitmap_alloc_hwirqs(struct msi_bitmap *bmp, int num);

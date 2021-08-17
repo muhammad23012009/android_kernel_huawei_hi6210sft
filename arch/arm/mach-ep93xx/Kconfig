@@ -5,6 +5,10 @@ menu "Cirrus EP93xx Implementation Options"
 config EP93XX_SOC_COMMON
 	bool
 	default y
+<<<<<<< HEAD
+=======
+	select SOC_BUS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select LEDS_GPIO_REGISTER
 
 config CRUNCH
@@ -14,6 +18,7 @@ config CRUNCH
 
 comment "EP93xx Platforms"
 
+<<<<<<< HEAD
 choice
 	prompt "EP93xx first SDRAM bank selection"
 	default EP93XX_SDCE3_SYNC_PHYS_OFFSET
@@ -53,6 +58,10 @@ endchoice
 config MACH_ADSSPHERE
 	bool "Support ADS Sphere"
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+config MACH_ADSSPHERE
+	bool "Support ADS Sphere"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say 'Y' here if you want your kernel to support the ADS
 	  Sphere board.
@@ -62,7 +71,10 @@ config MACH_EDB93XX
 
 config MACH_EDB9301
 	bool "Support Cirrus Logic EDB9301"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
@@ -70,7 +82,10 @@ config MACH_EDB9301
 
 config MACH_EDB9302
 	bool "Support Cirrus Logic EDB9302"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
@@ -78,7 +93,10 @@ config MACH_EDB9302
 
 config MACH_EDB9302A
 	bool "Support Cirrus Logic EDB9302A"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE0_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
@@ -86,7 +104,10 @@ config MACH_EDB9302A
 
 config MACH_EDB9307
 	bool "Support Cirrus Logic EDB9307"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
@@ -94,7 +115,10 @@ config MACH_EDB9307
 
 config MACH_EDB9307A
 	bool "Support Cirrus Logic EDB9307A"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE0_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
@@ -102,7 +126,10 @@ config MACH_EDB9307A
 
 config MACH_EDB9312
 	bool "Support Cirrus Logic EDB9312"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
@@ -110,7 +137,10 @@ config MACH_EDB9312
 
 config MACH_EDB9315
 	bool "Support Cirrus Logic EDB9315"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
@@ -118,14 +148,20 @@ config MACH_EDB9315
 
 config MACH_EDB9315A
 	bool "Support Cirrus Logic EDB9315A"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE0_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_EDB93XX
 	help
 	  Say 'Y' here if you want your kernel to support the Cirrus
 	  Logic EDB9315A Evaluation Board.
 
 config MACH_GESBC9312
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool "Support Glomation GESBC-9312-sx"
 	help
 	  Say 'Y' here if you want your kernel to support the Glomation
@@ -136,7 +172,10 @@ config MACH_MICRO9
 
 config MACH_MICRO9H
 	bool "Support Contec Micro9-High"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_MICRO9
 	help
 	  Say 'Y' here if you want your kernel to support the
@@ -144,7 +183,10 @@ config MACH_MICRO9H
 
 config MACH_MICRO9M
 	bool "Support Contec Micro9-Mid"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_ASYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_MICRO9
 	help
 	  Say 'Y' here if you want your kernel to support the
@@ -152,7 +194,10 @@ config MACH_MICRO9M
 
 config MACH_MICRO9L
 	bool "Support Contec Micro9-Lite"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_MICRO9
 	help
 	  Say 'Y' here if you want your kernel to support the
@@ -160,7 +205,10 @@ config MACH_MICRO9L
 
 config MACH_MICRO9S
 	bool "Support Contec Micro9-Slim"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_ASYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select MACH_MICRO9
 	help
 	  Say 'Y' here if you want your kernel to support the
@@ -168,32 +216,45 @@ config MACH_MICRO9S
 
 config MACH_SIM_ONE
         bool "Support Simplemachines Sim.One board"
+<<<<<<< HEAD
         depends on EP93XX_SDCE0_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         help
           Say 'Y' here if you want your kernel to support the
           Simplemachines Sim.One board.
 
 config MACH_SNAPPER_CL15
 	bool "Support Bluewater Systems Snapper CL15 Module"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE0_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say 'Y' here if you want your kernel to support the Bluewater
 	  Systems Snapper CL15 Module.
 
 config MACH_TS72XX
 	bool "Support Technologic Systems TS-72xx SBC"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE3_SYNC_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say 'Y' here if you want your kernel to support the
 	  Technologic Systems TS-72xx board.
 
 config MACH_VISION_EP9307
 	bool "Support Vision Engraving Systems EP9307 SoM"
+<<<<<<< HEAD
 	depends on EP93XX_SDCE0_PHYS_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say 'Y' here if you want your kernel to support the
 	  Vision Engraving Systems EP9307 SoM.
 
+<<<<<<< HEAD
 choice
 	prompt "Select a UART for early kernel messages"
 
@@ -208,6 +269,8 @@ config EP93XX_EARLY_UART3
 
 endchoice
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu
 
 endif

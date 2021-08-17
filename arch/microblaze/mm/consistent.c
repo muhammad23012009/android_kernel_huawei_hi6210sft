@@ -117,7 +117,11 @@ void *consistent_alloc(gfp_t gfp, size_t size, dma_addr_t *dma_handle)
 	ret = (void *)va;
 
 	/* This gives us the real physical address of the first page. */
+<<<<<<< HEAD
 	*dma_handle = pa = virt_to_bus((void *)vaddr);
+=======
+	*dma_handle = pa = __virt_to_phys(vaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/*
@@ -156,6 +160,28 @@ void *consistent_alloc(gfp_t gfp, size_t size, dma_addr_t *dma_handle)
 }
 EXPORT_SYMBOL(consistent_alloc);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+static pte_t *consistent_virt_to_pte(void *vaddr)
+{
+	unsigned long addr = (unsigned long)vaddr;
+
+	return pte_offset_kernel(pmd_offset(pgd_offset_k(addr), addr), addr);
+}
+
+unsigned long consistent_virt_to_pfn(void *vaddr)
+{
+	pte_t *ptep = consistent_virt_to_pte(vaddr);
+
+	if (pte_none(*ptep) || !pte_present(*ptep))
+		return 0;
+
+	return pte_pfn(*ptep);
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * free page(s) as defined by the above mapping.
  */
@@ -176,12 +202,17 @@ void consistent_free(size_t size, void *vaddr)
 	page = virt_to_page(vaddr);
 
 	do {
+<<<<<<< HEAD
 		ClearPageReserved(page);
 		__free_page(page);
+=======
+		__free_reserved_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		page++;
 	} while (size -= PAGE_SIZE);
 #else
 	do {
+<<<<<<< HEAD
 		pte_t *ptep;
 		unsigned long pfn;
 
@@ -189,14 +220,23 @@ void consistent_free(size_t size, void *vaddr)
 						(unsigned int)vaddr),
 					(unsigned int)vaddr),
 				(unsigned int)vaddr);
+=======
+		pte_t *ptep = consistent_virt_to_pte(vaddr);
+		unsigned long pfn;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!pte_none(*ptep) && pte_present(*ptep)) {
 			pfn = pte_pfn(*ptep);
 			pte_clear(&init_mm, (unsigned int)vaddr, ptep);
 			if (pfn_valid(pfn)) {
 				page = pfn_to_page(pfn);
+<<<<<<< HEAD
 
 				ClearPageReserved(page);
 				__free_page(page);
+=======
+				__free_reserved_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		vaddr += PAGE_SIZE;

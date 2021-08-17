@@ -172,7 +172,10 @@ struct cytp_data {
 #ifdef CONFIG_MOUSE_PS2_CYPRESS
 int cypress_detect(struct psmouse *psmouse, bool set_properties);
 int cypress_init(struct psmouse *psmouse);
+<<<<<<< HEAD
 bool cypress_supported(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 inline int cypress_detect(struct psmouse *psmouse, bool set_properties)
 {
@@ -182,10 +185,13 @@ inline int cypress_init(struct psmouse *psmouse)
 {
 	return -ENOSYS;
 }
+<<<<<<< HEAD
 inline bool cypress_supported(void)
 {
 	return 0;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_MOUSE_PS2_CYPRESS */
 
 #endif  /* _CYPRESS_PS2_H */

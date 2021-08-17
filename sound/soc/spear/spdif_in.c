@@ -18,12 +18,20 @@
 #include <linux/ioport.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <sound/dmaengine_pcm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 #include <sound/spear_dma.h>
 #include <sound/spear_spdif.h>
 #include "spdif_in_regs.h"
+<<<<<<< HEAD
+=======
+#include "spear_pcm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct spdif_in_params {
 	u32 format;
@@ -37,6 +45,11 @@ struct spdif_in_dev {
 	struct device *dev;
 	void (*reset_perip)(void);
 	int irq;
+<<<<<<< HEAD
+=======
+	struct snd_dmaengine_dai_dma_data dma_params_rx;
+	struct snd_dmaengine_pcm_config config;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void spdif_in_configure(struct spdif_in_dev *host)
@@ -49,6 +62,7 @@ static void spdif_in_configure(struct spdif_in_dev *host)
 	writel(0xF, host->io_base + SPDIF_IN_IRQ_MASK);
 }
 
+<<<<<<< HEAD
 static int spdif_in_startup(struct snd_pcm_substream *substream,
 		struct snd_soc_dai *cpu_dai)
 {
@@ -58,6 +72,15 @@ static int spdif_in_startup(struct snd_pcm_substream *substream,
 		return -EINVAL;
 
 	snd_soc_dai_set_dma_data(cpu_dai, substream, (void *)&host->dma_params);
+=======
+static int spdif_in_dai_probe(struct snd_soc_dai *dai)
+{
+	struct spdif_in_dev *host = snd_soc_dai_get_drvdata(dai);
+
+	host->dma_params_rx.filter_data = &host->dma_params;
+	dai->capture_dma_data = &host->dma_params_rx;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -70,7 +93,10 @@ static void spdif_in_shutdown(struct snd_pcm_substream *substream,
 		return;
 
 	writel(0x0, host->io_base + SPDIF_IN_IRQ_MASK);
+<<<<<<< HEAD
 	snd_soc_dai_set_dma_data(dai, substream, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void spdif_in_format(struct spdif_in_dev *host, u32 format)
@@ -151,13 +177,21 @@ static int spdif_in_trigger(struct snd_pcm_substream *substream, int cmd,
 }
 
 static struct snd_soc_dai_ops spdif_in_dai_ops = {
+<<<<<<< HEAD
 	.startup	= spdif_in_startup,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.shutdown	= spdif_in_shutdown,
 	.trigger	= spdif_in_trigger,
 	.hw_params	= spdif_in_hw_params,
 };
 
+<<<<<<< HEAD
 struct snd_soc_dai_driver spdif_in_dai = {
+=======
+static struct snd_soc_dai_driver spdif_in_dai = {
+	.probe = spdif_in_dai_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.capture = {
 		.channels_min = 2,
 		.channels_max = 2,
@@ -202,28 +236,42 @@ static int spdif_in_probe(struct platform_device *pdev)
 	struct spdif_in_dev *host;
 	struct spear_spdif_platform_data *pdata;
 	struct resource *res, *res_fifo;
+<<<<<<< HEAD
 	int ret;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -EINVAL;
+=======
+	void __iomem *io_base;
+	int ret;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	io_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(io_base))
+		return PTR_ERR(io_base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res_fifo = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (!res_fifo)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!devm_request_mem_region(&pdev->dev, res->start,
 				resource_size(res), pdev->name)) {
 		dev_warn(&pdev->dev, "Failed to get memory resourse\n");
 		return -ENOENT;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host = devm_kzalloc(&pdev->dev, sizeof(*host), GFP_KERNEL);
 	if (!host) {
 		dev_warn(&pdev->dev, "kzalloc fail\n");
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	host->io_base = devm_ioremap(&pdev->dev, res->start,
 				resource_size(res));
 	if (!host->io_base) {
@@ -231,11 +279,18 @@ static int spdif_in_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+=======
+	host->io_base = io_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host->irq = platform_get_irq(pdev, 0);
 	if (host->irq < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	host->clk = clk_get(&pdev->dev, NULL);
+=======
+	host->clk = devm_clk_get(&pdev->dev, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(host->clk))
 		return PTR_ERR(host->clk);
 
@@ -248,7 +303,10 @@ static int spdif_in_probe(struct platform_device *pdev)
 	host->dma_params.addr = res_fifo->start;
 	host->dma_params.max_burst = 16;
 	host->dma_params.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+<<<<<<< HEAD
 	host->dma_params.filter = pdata->filter;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host->reset_perip = pdata->reset_perip;
 
 	host->dev = &pdev->dev;
@@ -257,11 +315,15 @@ static int spdif_in_probe(struct platform_device *pdev)
 	ret = devm_request_irq(&pdev->dev, host->irq, spdif_in_irq, 0,
 			"spdif-in", host);
 	if (ret) {
+<<<<<<< HEAD
 		clk_put(host->clk);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_warn(&pdev->dev, "request_irq failed\n");
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_register_component(&pdev->dev, &spdif_in_component,
 					 &spdif_in_dai, 1);
 	if (ret != 0) {
@@ -291,6 +353,21 @@ static struct platform_driver spdif_in_driver = {
 	.driver		= {
 		.name	= "spdif-in",
 		.owner	= THIS_MODULE,
+=======
+	ret = devm_snd_soc_register_component(&pdev->dev, &spdif_in_component,
+					      &spdif_in_dai, 1);
+	if (ret)
+		return ret;
+
+	return devm_spear_pcm_platform_register(&pdev->dev, &host->config,
+						pdata->filter);
+}
+
+static struct platform_driver spdif_in_driver = {
+	.probe		= spdif_in_probe,
+	.driver		= {
+		.name	= "spdif-in",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

@@ -22,12 +22,19 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
 #include <linux/delay.h>
 #include <linux/sysfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_MUTEX(compass_mutex);
 
@@ -46,10 +53,19 @@ static int compass_store(struct device *dev, const char *buf, size_t count,
 	int ret;
 	unsigned long val;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 10, &val))
 		return -EINVAL;
 	if (val >= strlen(map))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 10, &val);
+	if (ret)
+		return ret;
+	if (val >= strlen(map))
+		return -EINVAL;
+	val = array_index_nospec(val, strlen(map));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&compass_mutex);
 	ret = compass_command(c, map[val]);
 	mutex_unlock(&compass_mutex);

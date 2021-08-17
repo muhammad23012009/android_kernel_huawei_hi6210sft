@@ -487,7 +487,11 @@ static int __init init_trix(void)
 
 static void __exit cleanup_trix(void)
 {
+<<<<<<< HEAD
 	if (fw_load && trix_boot)
+=======
+	if (fw_load)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		vfree(trix_boot);
 	if (sb)
 		unload_trix_sb(&cfg2);

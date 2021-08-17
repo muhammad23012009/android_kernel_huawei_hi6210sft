@@ -22,7 +22,12 @@
 
 unsigned long switcher_addr;
 struct page **lg_switcher_pages;
+<<<<<<< HEAD
 static struct vm_struct *switcher_vma;
+=======
+static struct vm_struct *switcher_text_vma;
+static struct vm_struct *switcher_stacks_vma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* This One Big lock protects all inter-guest data structures. */
 DEFINE_MUTEX(lguest_lock);
@@ -42,7 +47,10 @@ DEFINE_MUTEX(lguest_lock);
 static __init int map_switcher(void)
 {
 	int i, err;
+<<<<<<< HEAD
 	struct page **pagep;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Map the Switcher in to high memory.
@@ -84,11 +92,23 @@ static __init int map_switcher(void)
 	}
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Copy in the compiled-in Switcher code (from x86/switcher_32.S).
+	 * It goes in the first page, which we map in momentarily.
+	 */
+	memcpy(kmap(lg_switcher_pages[0]), start_switcher_text,
+	       end_switcher_text - start_switcher_text);
+	kunmap(lg_switcher_pages[0]);
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * We place the Switcher underneath the fixmap area, which is the
 	 * highest virtual address we can get.  This is important, since we
 	 * tell the Guest it can't access this memory, so we want its ceiling
 	 * as high as possible.
 	 */
+<<<<<<< HEAD
 	switcher_addr = FIXADDR_START - (TOTAL_SWITCHER_PAGES+1)*PAGE_SIZE;
 
 	/*
@@ -101,11 +121,28 @@ static __init int map_switcher(void)
 				     VM_ALLOC, switcher_addr, switcher_addr
 				     + (TOTAL_SWITCHER_PAGES+1) * PAGE_SIZE);
 	if (!switcher_vma) {
+=======
+	switcher_addr = FIXADDR_START - TOTAL_SWITCHER_PAGES*PAGE_SIZE;
+
+	/*
+	 * Now we reserve the "virtual memory area"s we want.  We might
+	 * not get them in theory, but in practice it's worked so far.
+	 *
+	 * We want the switcher text to be read-only and executable, and
+	 * the stacks to be read-write and non-executable.
+	 */
+	switcher_text_vma = __get_vm_area(PAGE_SIZE, VM_ALLOC|VM_NO_GUARD,
+					  switcher_addr,
+					  switcher_addr + PAGE_SIZE);
+
+	if (!switcher_text_vma) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -ENOMEM;
 		printk("lguest: could not map switcher pages high\n");
 		goto free_pages;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * This code actually sets up the pages we've allocated to appear at
 	 * switcher_addr.  map_vm_area() takes the vma we allocated above, the
@@ -118,10 +155,40 @@ static __init int map_switcher(void)
 	if (err) {
 		printk("lguest: map_vm_area failed: %i\n", err);
 		goto free_vma;
+=======
+	switcher_stacks_vma = __get_vm_area(SWITCHER_STACK_PAGES * PAGE_SIZE,
+					    VM_ALLOC|VM_NO_GUARD,
+					    switcher_addr + PAGE_SIZE,
+					    switcher_addr + TOTAL_SWITCHER_PAGES * PAGE_SIZE);
+	if (!switcher_stacks_vma) {
+		err = -ENOMEM;
+		printk("lguest: could not map switcher pages high\n");
+		goto free_text_vma;
+	}
+
+	/*
+	 * This code actually sets up the pages we've allocated to appear at
+	 * switcher_addr.  map_vm_area() takes the vma we allocated above, the
+	 * kind of pages we're mapping (kernel text pages and kernel writable
+	 * pages respectively), and a pointer to our array of struct pages.
+	 */
+	err = map_vm_area(switcher_text_vma, PAGE_KERNEL_RX, lg_switcher_pages);
+	if (err) {
+		printk("lguest: text map_vm_area failed: %i\n", err);
+		goto free_vmas;
+	}
+
+	err = map_vm_area(switcher_stacks_vma, PAGE_KERNEL,
+			  lg_switcher_pages + SWITCHER_TEXT_PAGES);
+	if (err) {
+		printk("lguest: stacks map_vm_area failed: %i\n", err);
+		goto free_vmas;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
 	 * Now the Switcher is mapped at the right address, we can't fail!
+<<<<<<< HEAD
 	 * Copy in the compiled-in Switcher code (from x86/switcher_32.S).
 	 */
 	memcpy(switcher_vma->addr, start_switcher_text,
@@ -134,6 +201,19 @@ static __init int map_switcher(void)
 
 free_vma:
 	vunmap(switcher_vma->addr);
+=======
+	 */
+	printk(KERN_INFO "lguest: mapped switcher at %p\n",
+	       switcher_text_vma->addr);
+	/* And we succeeded... */
+	return 0;
+
+free_vmas:
+	/* Undoes map_vm_area and __get_vm_area */
+	vunmap(switcher_stacks_vma->addr);
+free_text_vma:
+	vunmap(switcher_text_vma->addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 free_pages:
 	i = TOTAL_SWITCHER_PAGES;
 free_some_pages:
@@ -151,7 +231,12 @@ static void unmap_switcher(void)
 	unsigned int i;
 
 	/* vunmap() undoes *both* map_vm_area() and __get_vm_area(). */
+<<<<<<< HEAD
 	vunmap(switcher_vma->addr);
+=======
+	vunmap(switcher_text_vma->addr);
+	vunmap(switcher_stacks_vma->addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Now we just need to free the pages we copied the switcher into */
 	for (i = 0; i < TOTAL_SWITCHER_PAGES; i++)
 		__free_pages(lg_switcher_pages[i], 0);
@@ -176,7 +261,11 @@ static void unmap_switcher(void)
 bool lguest_address_ok(const struct lguest *lg,
 		       unsigned long addr, unsigned long len)
 {
+<<<<<<< HEAD
 	return (addr+len) / PAGE_SIZE < lg->pfn_limit && (addr+len >= addr);
+=======
+	return addr+len <= lg->pfn_limit * PAGE_SIZE && (addr+len >= addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -211,6 +300,17 @@ void __lgwrite(struct lg_cpu *cpu, unsigned long addr, const void *b,
  */
 int run_guest(struct lg_cpu *cpu, unsigned long __user *user)
 {
+<<<<<<< HEAD
+=======
+	/* If the launcher asked for a register with LHREQ_GETREG */
+	if (cpu->reg_read) {
+		if (put_user(*cpu->reg_read, user))
+			return -EFAULT;
+		cpu->reg_read = NULL;
+		return sizeof(*cpu->reg_read);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* We stop running once the Guest is dead. */
 	while (!cpu->lg->dead) {
 		unsigned int irq;
@@ -220,6 +320,7 @@ int run_guest(struct lg_cpu *cpu, unsigned long __user *user)
 		if (cpu->hcall)
 			do_hypercalls(cpu);
 
+<<<<<<< HEAD
 		/*
 		 * It's possible the Guest did a NOTIFY hypercall to the
 		 * Launcher.
@@ -235,6 +336,14 @@ int run_guest(struct lg_cpu *cpu, unsigned long __user *user)
 					return -EFAULT;
 				return sizeof(cpu->pending_notify);
 			}
+=======
+		/* Do we have to tell the Launcher about a trap? */
+		if (cpu->pending.trap) {
+			if (copy_to_user(user, &cpu->pending,
+					 sizeof(cpu->pending)))
+				return -EFAULT;
+			return sizeof(cpu->pending);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		/*

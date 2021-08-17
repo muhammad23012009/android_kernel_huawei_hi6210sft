@@ -24,7 +24,11 @@
 #include <linux/init.h>
 #include <linux/of_platform.h>
 
+<<<<<<< HEAD
 static __initdata struct of_device_id ppc44x_of_bus[] = {
+=======
+static const struct of_device_id ppc44x_of_bus[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "ibm,plb4", },
 	{ .compatible = "ibm,opb", },
 	{ .compatible = "ibm,ebc", },
@@ -67,11 +71,18 @@ static char *board[] __initdata = {
 
 static int __init ppc44x_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 	int i = 0;
 
 	for (i = 0; i < ARRAY_SIZE(board); i++) {
 		if (of_flat_dt_is_compatible(root, board[i])) {
+=======
+	int i = 0;
+
+	for (i = 0; i < ARRAY_SIZE(board); i++) {
+		if (of_machine_is_compatible(board[i])) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pci_set_flags(PCI_REASSIGN_ALL_RSRC);
 			return 1;
 		}

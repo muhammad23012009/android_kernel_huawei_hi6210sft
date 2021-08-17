@@ -44,7 +44,13 @@
 /* Policy capability filenames */
 static char *policycap_names[] = {
 	"network_peer_controls",
+<<<<<<< HEAD
 	"open_perms"
+=======
+	"open_perms",
+	"redhat1",
+	"always_check_network"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 unsigned int selinux_checkreqprot = CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE;
@@ -52,7 +58,11 @@ unsigned int selinux_checkreqprot = CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE;
 static int __init checkreqprot_setup(char *str)
 {
 	unsigned long checkreqprot;
+<<<<<<< HEAD
 	if (!strict_strtoul(str, 0, &checkreqprot))
+=======
+	if (!kstrtoul(str, 0, &checkreqprot))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		selinux_checkreqprot = checkreqprot ? 1 : 0;
 	return 1;
 }
@@ -114,6 +124,10 @@ enum sel_inos {
 	SEL_DENY_UNKNOWN, /* export unknown deny handling to userspace */
 	SEL_STATUS,	/* export current status using mmap() */
 	SEL_POLICY,	/* allow userspace to read the in kernel policy */
+<<<<<<< HEAD
+=======
+	SEL_VALIDATE_TRANS, /* compute validatetrans decision */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SEL_INO_NEXT,	/* The next inode number to use */
 };
 
@@ -145,6 +159,7 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	ssize_t length;
 	int new_value;
 
+<<<<<<< HEAD
 	length = -ENOMEM;
 	if (count >= PAGE_SIZE)
 		goto out;
@@ -162,6 +177,18 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	length = -EFAULT;
 	if (copy_from_user(page, buf, count))
 		goto out;
+=======
+	if (count >= PAGE_SIZE)
+		return -ENOMEM;
+
+	/* No partial writes. */
+	if (*ppos != 0)
+		return -EINVAL;
+
+	page = memdup_user_nul(buf, count);
+	if (IS_ERR(page))
+		return PTR_ERR(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	length = -EINVAL;
 	if (sscanf(page, "%d", &new_value) != 1)
@@ -184,7 +211,11 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	}
 	length = count;
 out:
+<<<<<<< HEAD
 	free_page((unsigned long) page);
+=======
+	kfree(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return length;
 }
 #else
@@ -273,6 +304,7 @@ static ssize_t sel_write_disable(struct file *file, const char __user *buf,
 				 size_t count, loff_t *ppos)
 
 {
+<<<<<<< HEAD
 	char *page = NULL;
 	ssize_t length;
 	int new_value;
@@ -294,6 +326,22 @@ static ssize_t sel_write_disable(struct file *file, const char __user *buf,
 	length = -EFAULT;
 	if (copy_from_user(page, buf, count))
 		goto out;
+=======
+	char *page;
+	ssize_t length;
+	int new_value;
+
+	if (count >= PAGE_SIZE)
+		return -ENOMEM;
+
+	/* No partial writes. */
+	if (*ppos != 0)
+		return -EINVAL;
+
+	page = memdup_user_nul(buf, count);
+	if (IS_ERR(page))
+		return PTR_ERR(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	length = -EINVAL;
 	if (sscanf(page, "%d", &new_value) != 1)
@@ -311,7 +359,11 @@ static ssize_t sel_write_disable(struct file *file, const char __user *buf,
 
 	length = count;
 out:
+<<<<<<< HEAD
 	free_page((unsigned long) page);
+=======
+	kfree(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return length;
 }
 #else
@@ -391,9 +443,15 @@ static int sel_open_policy(struct inode *inode, struct file *filp)
 		goto err;
 
 	if (i_size_read(inode) != security_policydb_len()) {
+<<<<<<< HEAD
 		mutex_lock(&inode->i_mutex);
 		i_size_write(inode, security_policydb_len());
 		mutex_unlock(&inode->i_mutex);
+=======
+		inode_lock(inode);
+		i_size_write(inode, security_policydb_len());
+		inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	rc = security_read_policy(&plm->data, &plm->len);
@@ -574,7 +632,11 @@ static ssize_t sel_write_context(struct file *file, char *buf, size_t size)
 	if (length)
 		goto out;
 
+<<<<<<< HEAD
 	length = security_context_to_sid(buf, size, &sid);
+=======
+	length = security_context_to_sid(buf, size, &sid, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (length)
 		goto out;
 
@@ -609,12 +671,17 @@ static ssize_t sel_read_checkreqprot(struct file *filp, char __user *buf,
 static ssize_t sel_write_checkreqprot(struct file *file, const char __user *buf,
 				      size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	char *page = NULL;
+=======
+	char *page;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ssize_t length;
 	unsigned int new_value;
 
 	length = task_has_security(current, SECURITY__SETCHECKREQPROT);
 	if (length)
+<<<<<<< HEAD
 		goto out;
 
 	length = -ENOMEM;
@@ -634,6 +701,20 @@ static ssize_t sel_write_checkreqprot(struct file *file, const char __user *buf,
 	length = -EFAULT;
 	if (copy_from_user(page, buf, count))
 		goto out;
+=======
+		return length;
+
+	if (count >= PAGE_SIZE)
+		return -ENOMEM;
+
+	/* No partial writes. */
+	if (*ppos != 0)
+		return -EINVAL;
+
+	page = memdup_user_nul(buf, count);
+	if (IS_ERR(page))
+		return PTR_ERR(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	length = -EINVAL;
 	if (sscanf(page, "%u", &new_value) != 1)
@@ -642,7 +723,11 @@ static ssize_t sel_write_checkreqprot(struct file *file, const char __user *buf,
 	selinux_checkreqprot = new_value ? 1 : 0;
 	length = count;
 out:
+<<<<<<< HEAD
 	free_page((unsigned long) page);
+=======
+	kfree(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return length;
 }
 static const struct file_operations sel_checkreqprot_ops = {
@@ -651,6 +736,86 @@ static const struct file_operations sel_checkreqprot_ops = {
 	.llseek		= generic_file_llseek,
 };
 
+<<<<<<< HEAD
+=======
+static ssize_t sel_write_validatetrans(struct file *file,
+					const char __user *buf,
+					size_t count, loff_t *ppos)
+{
+	char *oldcon = NULL, *newcon = NULL, *taskcon = NULL;
+	char *req = NULL;
+	u32 osid, nsid, tsid;
+	u16 tclass;
+	int rc;
+
+	rc = task_has_security(current, SECURITY__VALIDATE_TRANS);
+	if (rc)
+		goto out;
+
+	rc = -ENOMEM;
+	if (count >= PAGE_SIZE)
+		goto out;
+
+	/* No partial writes. */
+	rc = -EINVAL;
+	if (*ppos != 0)
+		goto out;
+
+	rc = -ENOMEM;
+	req = kzalloc(count + 1, GFP_KERNEL);
+	if (!req)
+		goto out;
+
+	rc = -EFAULT;
+	if (copy_from_user(req, buf, count))
+		goto out;
+
+	rc = -ENOMEM;
+	oldcon = kzalloc(count + 1, GFP_KERNEL);
+	if (!oldcon)
+		goto out;
+
+	newcon = kzalloc(count + 1, GFP_KERNEL);
+	if (!newcon)
+		goto out;
+
+	taskcon = kzalloc(count + 1, GFP_KERNEL);
+	if (!taskcon)
+		goto out;
+
+	rc = -EINVAL;
+	if (sscanf(req, "%s %s %hu %s", oldcon, newcon, &tclass, taskcon) != 4)
+		goto out;
+
+	rc = security_context_str_to_sid(oldcon, &osid, GFP_KERNEL);
+	if (rc)
+		goto out;
+
+	rc = security_context_str_to_sid(newcon, &nsid, GFP_KERNEL);
+	if (rc)
+		goto out;
+
+	rc = security_context_str_to_sid(taskcon, &tsid, GFP_KERNEL);
+	if (rc)
+		goto out;
+
+	rc = security_validate_transition_user(osid, nsid, tsid, tclass);
+	if (!rc)
+		rc = count;
+out:
+	kfree(req);
+	kfree(oldcon);
+	kfree(newcon);
+	kfree(taskcon);
+	return rc;
+}
+
+static const struct file_operations sel_transition_ops = {
+	.write		= sel_write_validatetrans,
+	.llseek		= generic_file_llseek,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Remaining nodes use transaction based IO methods like nfsd/nfsctl.c
  */
@@ -729,11 +894,19 @@ static ssize_t sel_write_access(struct file *file, char *buf, size_t size)
 	if (sscanf(buf, "%s %s %hu", scon, tcon, &tclass) != 3)
 		goto out;
 
+<<<<<<< HEAD
 	length = security_context_to_sid(scon, strlen(scon) + 1, &ssid);
 	if (length)
 		goto out;
 
 	length = security_context_to_sid(tcon, strlen(tcon) + 1, &tsid);
+=======
+	length = security_context_str_to_sid(scon, &ssid, GFP_KERNEL);
+	if (length)
+		goto out;
+
+	length = security_context_str_to_sid(tcon, &tsid, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (length)
 		goto out;
 
@@ -815,11 +988,19 @@ static ssize_t sel_write_create(struct file *file, char *buf, size_t size)
 		objname = namebuf;
 	}
 
+<<<<<<< HEAD
 	length = security_context_to_sid(scon, strlen(scon) + 1, &ssid);
 	if (length)
 		goto out;
 
 	length = security_context_to_sid(tcon, strlen(tcon) + 1, &tsid);
+=======
+	length = security_context_str_to_sid(scon, &ssid, GFP_KERNEL);
+	if (length)
+		goto out;
+
+	length = security_context_str_to_sid(tcon, &tsid, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (length)
 		goto out;
 
@@ -876,11 +1057,19 @@ static ssize_t sel_write_relabel(struct file *file, char *buf, size_t size)
 	if (sscanf(buf, "%s %s %hu", scon, tcon, &tclass) != 3)
 		goto out;
 
+<<<<<<< HEAD
 	length = security_context_to_sid(scon, strlen(scon) + 1, &ssid);
 	if (length)
 		goto out;
 
 	length = security_context_to_sid(tcon, strlen(tcon) + 1, &tsid);
+=======
+	length = security_context_str_to_sid(scon, &ssid, GFP_KERNEL);
+	if (length)
+		goto out;
+
+	length = security_context_str_to_sid(tcon, &tsid, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (length)
 		goto out;
 
@@ -932,7 +1121,11 @@ static ssize_t sel_write_user(struct file *file, char *buf, size_t size)
 	if (sscanf(buf, "%s %s", con, user) != 2)
 		goto out;
 
+<<<<<<< HEAD
 	length = security_context_to_sid(con, strlen(con) + 1, &sid);
+=======
+	length = security_context_str_to_sid(con, &sid, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (length)
 		goto out;
 
@@ -992,11 +1185,19 @@ static ssize_t sel_write_member(struct file *file, char *buf, size_t size)
 	if (sscanf(buf, "%s %s %hu", scon, tcon, &tclass) != 3)
 		goto out;
 
+<<<<<<< HEAD
 	length = security_context_to_sid(scon, strlen(scon) + 1, &ssid);
 	if (length)
 		goto out;
 
 	length = security_context_to_sid(tcon, strlen(tcon) + 1, &tsid);
+=======
+	length = security_context_str_to_sid(scon, &ssid, GFP_KERNEL);
+	if (length)
+		goto out;
+
+	length = security_context_str_to_sid(tcon, &tsid, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (length)
 		goto out;
 
@@ -1030,7 +1231,11 @@ static struct inode *sel_make_inode(struct super_block *sb, int mode)
 
 	if (ret) {
 		ret->i_mode = mode;
+<<<<<<< HEAD
 		ret->i_atime = ret->i_mtime = ret->i_ctime = CURRENT_TIME;
+=======
+		ret->i_atime = ret->i_mtime = ret->i_ctime = current_time(ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return ret;
 }
@@ -1098,6 +1303,7 @@ static ssize_t sel_write_bool(struct file *filep, const char __user *buf,
 	if (*ppos != 0)
 		goto out;
 
+<<<<<<< HEAD
 	length = -ENOMEM;
 	page = (char *)get_zeroed_page(GFP_KERNEL);
 	if (!page)
@@ -1106,6 +1312,14 @@ static ssize_t sel_write_bool(struct file *filep, const char __user *buf,
 	length = -EFAULT;
 	if (copy_from_user(page, buf, count))
 		goto out;
+=======
+	page = memdup_user_nul(buf, count);
+	if (IS_ERR(page)) {
+		length = PTR_ERR(page);
+		page = NULL;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	length = -EINVAL;
 	if (sscanf(page, "%d", &new_value) != 1)
@@ -1119,7 +1333,11 @@ static ssize_t sel_write_bool(struct file *filep, const char __user *buf,
 
 out:
 	mutex_unlock(&sel_mutex);
+<<<<<<< HEAD
 	free_page((unsigned long) page);
+=======
+	kfree(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return length;
 }
 
@@ -1152,6 +1370,7 @@ static ssize_t sel_commit_bools_write(struct file *filep,
 	if (*ppos != 0)
 		goto out;
 
+<<<<<<< HEAD
 	length = -ENOMEM;
 	page = (char *)get_zeroed_page(GFP_KERNEL);
 	if (!page)
@@ -1160,6 +1379,14 @@ static ssize_t sel_commit_bools_write(struct file *filep,
 	length = -EFAULT;
 	if (copy_from_user(page, buf, count))
 		goto out;
+=======
+	page = memdup_user_nul(buf, count);
+	if (IS_ERR(page)) {
+		length = PTR_ERR(page);
+		page = NULL;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	length = -EINVAL;
 	if (sscanf(page, "%d", &new_value) != 1)
@@ -1174,7 +1401,11 @@ static ssize_t sel_commit_bools_write(struct file *filep,
 
 out:
 	mutex_unlock(&sel_mutex);
+<<<<<<< HEAD
 	free_page((unsigned long) page);
+=======
+	kfree(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return length;
 }
 
@@ -1185,6 +1416,7 @@ static const struct file_operations sel_commit_bools_ops = {
 
 static void sel_remove_entries(struct dentry *de)
 {
+<<<<<<< HEAD
 	struct list_head *node;
 
 	spin_lock(&de->d_lock);
@@ -1209,6 +1441,10 @@ static void sel_remove_entries(struct dentry *de)
 	}
 
 	spin_unlock(&de->d_lock);
+=======
+	d_genocide(de);
+	shrink_dcache_parent(de);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define BOOL_DIR_NAME "booleans"
@@ -1312,6 +1548,7 @@ static ssize_t sel_write_avc_cache_threshold(struct file *file,
 					     size_t count, loff_t *ppos)
 
 {
+<<<<<<< HEAD
 	char *page = NULL;
 	ssize_t ret;
 	int new_value;
@@ -1337,6 +1574,26 @@ static ssize_t sel_write_avc_cache_threshold(struct file *file,
 	ret = -EFAULT;
 	if (copy_from_user(page, buf, count))
 		goto out;
+=======
+	char *page;
+	ssize_t ret;
+	unsigned int new_value;
+
+	ret = task_has_security(current, SECURITY__SETSECPARAM);
+	if (ret)
+		return ret;
+
+	if (count >= PAGE_SIZE)
+		return -ENOMEM;
+
+	/* No partial writes. */
+	if (*ppos != 0)
+		return -EINVAL;
+
+	page = memdup_user_nul(buf, count);
+	if (IS_ERR(page))
+		return PTR_ERR(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = -EINVAL;
 	if (sscanf(page, "%u", &new_value) != 1)
@@ -1346,7 +1603,11 @@ static ssize_t sel_write_avc_cache_threshold(struct file *file,
 
 	ret = count;
 out:
+<<<<<<< HEAD
 	free_page((unsigned long)page);
+=======
+	kfree(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -1390,6 +1651,10 @@ static struct avc_cache_stats *sel_avc_get_stat_idx(loff_t *idx)
 		*idx = cpu + 1;
 		return &per_cpu(avc_cache_stats, cpu);
 	}
+<<<<<<< HEAD
+=======
+	(*idx)++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NULL;
 }
 
@@ -1658,6 +1923,7 @@ static int sel_make_class_dir_entries(char *classname, int index,
 	return rc;
 }
 
+<<<<<<< HEAD
 static void sel_remove_classes(void)
 {
 	struct list_head *class_node;
@@ -1682,13 +1948,19 @@ static void sel_remove_classes(void)
 	sel_remove_entries(class_dir);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int sel_make_classes(void)
 {
 	int rc, nclasses, i;
 	char **classes;
 
 	/* delete any existing entries */
+<<<<<<< HEAD
 	sel_remove_classes();
+=======
+	sel_remove_entries(class_dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = security_get_classes(&classes, &nclasses);
 	if (rc)
@@ -1773,7 +2045,11 @@ static struct dentry *sel_make_dir(struct dentry *dir, const char *name,
 	inc_nlink(inode);
 	d_add(dentry, inode);
 	/* bump link count on parent directory, too */
+<<<<<<< HEAD
 	inc_nlink(dir->d_inode);
+=======
+	inc_nlink(d_inode(dir));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return dentry;
 }
@@ -1803,6 +2079,11 @@ static int sel_fill_super(struct super_block *sb, void *data, int silent)
 		[SEL_DENY_UNKNOWN] = {"deny_unknown", &sel_handle_unknown_ops, S_IRUGO},
 		[SEL_STATUS] = {"status", &sel_handle_status_ops, S_IRUGO},
 		[SEL_POLICY] = {"policy", &sel_policy_ops, S_IRUGO},
+<<<<<<< HEAD
+=======
+		[SEL_VALIDATE_TRANS] = {"validatetrans", &sel_transition_ops,
+					S_IWUGO},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* last one */ {""}
 	};
 	ret = simple_fill_super(sb, SELINUX_MAGIC, selinux_files);
@@ -1889,7 +2170,10 @@ static struct file_system_type sel_fs_type = {
 };
 
 struct vfsmount *selinuxfs_mount;
+<<<<<<< HEAD
 static struct kobject *selinuxfs_kobj;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init init_sel_fs(void)
 {
@@ -1898,6 +2182,7 @@ static int __init init_sel_fs(void)
 	if (!selinux_enabled)
 		return 0;
 
+<<<<<<< HEAD
 	selinuxfs_kobj = kobject_create_and_add("selinux", fs_kobj);
 	if (!selinuxfs_kobj)
 		return -ENOMEM;
@@ -1905,6 +2190,15 @@ static int __init init_sel_fs(void)
 	err = register_filesystem(&sel_fs_type);
 	if (err) {
 		kobject_put(selinuxfs_kobj);
+=======
+	err = sysfs_create_mount_point(fs_kobj, "selinux");
+	if (err)
+		return err;
+
+	err = register_filesystem(&sel_fs_type);
+	if (err) {
+		sysfs_remove_mount_point(fs_kobj, "selinux");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -1923,7 +2217,11 @@ __initcall(init_sel_fs);
 #ifdef CONFIG_SECURITY_SELINUX_DISABLE
 void exit_sel_fs(void)
 {
+<<<<<<< HEAD
 	kobject_put(selinuxfs_kobj);
+=======
+	sysfs_remove_mount_point(fs_kobj, "selinux");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kern_unmount(selinuxfs_mount);
 	unregister_filesystem(&sel_fs_type);
 }

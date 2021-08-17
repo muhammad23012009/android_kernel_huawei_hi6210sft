@@ -54,6 +54,10 @@ struct shdma_desc {
 	dma_cookie_t cookie;
 	int chunks;
 	int mark;
+<<<<<<< HEAD
+=======
+	bool cyclic;			/* used as cyclic transfer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct shdma_chan {
@@ -68,6 +72,12 @@ struct shdma_chan {
 	int id;				/* Raw id of this channel */
 	int irq;			/* Channel IRQ */
 	int slave_id;			/* Client ID for slave DMA */
+<<<<<<< HEAD
+=======
+	int real_slave_id;		/* argument passed to filter function */
+	int hw_req;			/* DMA request line for slave DMA - same
+					 * as MID/RID, used with DT */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum shdma_pm_state pm_state;
 };
 
@@ -94,7 +104,11 @@ struct shdma_ops {
 	dma_addr_t (*slave_addr)(struct shdma_chan *);
 	int (*desc_setup)(struct shdma_chan *, struct shdma_desc *,
 			  dma_addr_t, dma_addr_t, size_t *);
+<<<<<<< HEAD
 	int (*set_slave)(struct shdma_chan *, int, bool);
+=======
+	int (*set_slave)(struct shdma_chan *, int, dma_addr_t, bool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*setup_xfer)(struct shdma_chan *, int);
 	void (*start_xfer)(struct shdma_chan *, struct shdma_desc *);
 	struct shdma_desc *(*embedded_desc)(void *, int);
@@ -114,7 +128,10 @@ struct shdma_dev {
 
 int shdma_request_irq(struct shdma_chan *, int,
 			   unsigned long, const char *);
+<<<<<<< HEAD
 void shdma_free_irq(struct shdma_chan *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 bool shdma_reset(struct shdma_dev *sdev);
 void shdma_chan_probe(struct shdma_dev *sdev,
 			   struct shdma_chan *schan, int id);
@@ -122,5 +139,16 @@ void shdma_chan_remove(struct shdma_chan *schan);
 int shdma_init(struct device *dev, struct shdma_dev *sdev,
 		    int chan_num);
 void shdma_cleanup(struct shdma_dev *sdev);
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_SH_DMAE_BASE)
+bool shdma_chan_filter(struct dma_chan *chan, void *arg);
+#else
+static inline bool shdma_chan_filter(struct dma_chan *chan, void *arg)
+{
+	return false;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

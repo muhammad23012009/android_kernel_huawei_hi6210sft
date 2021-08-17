@@ -252,8 +252,12 @@ static int el3_isa_id_sequence(__be16 *phys_addr)
 		for (i = 0; i < el3_cards; i++) {
 			struct el3_private *lp = netdev_priv(el3_devs[i]);
 			if (lp->type == EL3_PNP &&
+<<<<<<< HEAD
 			    !memcmp(phys_addr, el3_devs[i]->dev_addr,
 				    ETH_ALEN)) {
+=======
+			    ether_addr_equal((u8 *)phys_addr, el3_devs[i]->dev_addr)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (el3_debug > 3)
 					pr_debug("3c509 with address %02x %02x %02x %02x %02x %02x was found by ISAPnP\n",
 						phys_addr[0] & 0xff, phys_addr[0] >> 8,
@@ -535,7 +539,11 @@ static int el3_common_init(struct net_device *dev)
 	/* The EL3-specific entries in the device structure. */
 	dev->netdev_ops = &netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &ethtool_ops);
+=======
+	dev->ethtool_ops = &ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = register_netdev(dev);
 	if (err) {
@@ -563,7 +571,11 @@ static void el3_common_remove (struct net_device *dev)
 }
 
 #ifdef CONFIG_EISA
+<<<<<<< HEAD
 static int __init el3_eisa_probe (struct device *device)
+=======
+static int el3_eisa_probe(struct device *device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	short i;
 	int ioaddr, irq, if_port;
@@ -696,11 +708,19 @@ el3_tx_timeout (struct net_device *dev)
 	int ioaddr = dev->base_addr;
 
 	/* Transmitter timeout, serious problems. */
+<<<<<<< HEAD
 	pr_warning("%s: transmit timed out, Tx_status %2.2x status %4.4x Tx FIFO room %d.\n",
 		   dev->name, inb(ioaddr + TX_STATUS), inw(ioaddr + EL3_STATUS),
 		   inw(ioaddr + TX_FREE));
 	dev->stats.tx_errors++;
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	pr_warn("%s: transmit timed out, Tx_status %2.2x status %4.4x Tx FIFO room %d\n",
+		dev->name, inb(ioaddr + TX_STATUS), inw(ioaddr + EL3_STATUS),
+		inw(ioaddr + TX_FREE));
+	dev->stats.tx_errors++;
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Issue TX_RESET and TX_START commands. */
 	outw(TxReset, ioaddr + EL3_CMD);
 	outw(TxEnable, ioaddr + EL3_CMD);
@@ -723,6 +743,7 @@ el3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		pr_debug("%s: el3_start_xmit(length = %u) called, status %4.4x.\n",
 			   dev->name, skb->len, inw(ioaddr + EL3_STATUS));
 	}
+<<<<<<< HEAD
 #if 0
 #ifndef final_version
 	{	/* Error-checking code, delete someday. */
@@ -742,6 +763,8 @@ el3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 *	We lock the driver against other processors. Note
 	 *	we don't need to lock versus the IRQ as we suspended
@@ -769,7 +792,11 @@ el3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	spin_unlock_irqrestore(&lp->lock, flags);
 
+<<<<<<< HEAD
 	dev_kfree_skb (skb);
+=======
+	dev_consume_skb_any (skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Clear the Tx status stack. */
 	{

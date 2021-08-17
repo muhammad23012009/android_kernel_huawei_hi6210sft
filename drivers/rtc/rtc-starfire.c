@@ -51,6 +51,7 @@ static int __init starfire_rtc_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __exit starfire_rtc_remove(struct platform_device *pdev)
 {
 	return 0;
@@ -62,6 +63,12 @@ static struct platform_driver starfire_rtc_driver = {
 		.owner	= THIS_MODULE,
 	},
 	.remove		= __exit_p(starfire_rtc_remove),
+=======
+static struct platform_driver starfire_rtc_driver = {
+	.driver		= {
+		.name	= "rtc-starfire",
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver_probe(starfire_rtc_driver, starfire_rtc_probe);

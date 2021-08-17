@@ -51,7 +51,12 @@
 #define AS3711_ASIC_ID_1		0x90
 #define AS3711_ASIC_ID_2		0x91
 
+<<<<<<< HEAD
 #define AS3711_MAX_REGS			0x92
+=======
+#define AS3711_MAX_REG		AS3711_ASIC_ID_2
+#define AS3711_NUM_REGS		(AS3711_MAX_REG + 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Regulators */
 enum {

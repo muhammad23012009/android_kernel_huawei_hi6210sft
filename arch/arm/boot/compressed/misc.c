@@ -22,6 +22,7 @@ unsigned int __machine_arch_type;
 #include <linux/types.h>
 #include <linux/linkage.h>
 
+<<<<<<< HEAD
 /* DTS2013031107868 qidechun 2013-03-11 begin */
 #ifdef CONFIG_SRECORDER
 
@@ -103,6 +104,8 @@ static inline void do_nothing(void)
 }
 #endif /* CONFIG_SRECORDER */
 /* DTS2013031107868 qidechun 2013-03-11 end */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void putstr(const char *ptr);
 extern void error(char *x);
 
@@ -208,6 +211,7 @@ asmlinkage void __div0(void)
 	error("Attempting division by 0!");
 }
 
+<<<<<<< HEAD
 extern int do_decompress(u8 *input, int len, u8 *output, void (*error)(char *x));
 
 
@@ -586,6 +590,23 @@ static inline void dump_abnormal_reset_log(unsigned long dst, unsigned long src)
 #endif
 #endif
 /* DTS2013031107868 qidechun 2013-03-11 end */
+=======
+unsigned long __stack_chk_guard;
+
+void __stack_chk_guard_setup(void)
+{
+	__stack_chk_guard = 0x000a0dff;
+}
+
+void __stack_chk_fail(void)
+{
+	error("stack-protector: Kernel stack is corrupted\n");
+}
+
+extern int do_decompress(u8 *input, int len, u8 *output, void (*error)(char *x));
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void
 decompress_kernel(unsigned long output_start, unsigned long free_mem_ptr_p,
 		unsigned long free_mem_ptr_end_p,
@@ -593,11 +614,17 @@ decompress_kernel(unsigned long output_start, unsigned long free_mem_ptr_p,
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+	__stack_chk_guard_setup();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	output_data		= (unsigned char *)output_start;
 	free_mem_ptr		= free_mem_ptr_p;
 	free_mem_end_ptr	= free_mem_ptr_end_p;
 	__machine_arch_type	= arch_id;
 
+<<<<<<< HEAD
 /* DTS2013031107868 qidechun 2013-03-11 begin */
 #ifdef CONFIG_SRECORDER
     do
@@ -706,6 +733,8 @@ decompress_kernel(unsigned long output_start, unsigned long free_mem_ptr_p,
     } while (0);
 #endif
 /* DTS2013031107868 qidechun 2013-03-11 end */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	arch_decomp_setup();
 
 	putstr("Uncompressing Linux...");

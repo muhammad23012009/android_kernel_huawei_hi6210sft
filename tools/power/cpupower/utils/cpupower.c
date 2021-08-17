@@ -12,17 +12,26 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+<<<<<<< HEAD
+=======
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/utsname.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "builtin.h"
 #include "helpers/helpers.h"
 #include "helpers/bitmask.h"
 
+<<<<<<< HEAD
 struct cmd_struct {
 	const char *cmd;
 	int (*main)(int, const char **);
 	int needs_root;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 
 static int cmd_help(int argc, const char **argv);
@@ -43,10 +52,23 @@ int be_verbose;
 
 static void print_help(void);
 
+<<<<<<< HEAD
+=======
+struct cmd_struct {
+	const char *cmd;
+	int (*main)(int, const char **);
+	int needs_root;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct cmd_struct commands[] = {
 	{ "frequency-info",	cmd_freq_info,	0	},
 	{ "frequency-set",	cmd_freq_set,	1	},
 	{ "idle-info",		cmd_idle_info,	0	},
+<<<<<<< HEAD
+=======
+	{ "idle-set",		cmd_idle_set,	1	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "set",		cmd_set,	1	},
 	{ "info",		cmd_info,	0	},
 	{ "monitor",		cmd_monitor,	0	},
@@ -168,6 +190,11 @@ int main(int argc, const char *argv[])
 {
 	const char *cmd;
 	unsigned int i, ret;
+<<<<<<< HEAD
+=======
+	struct stat statbuf;
+	struct utsname uts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cpus_chosen = bitmask_alloc(sysconf(_SC_NPROCESSORS_CONF));
 
@@ -193,7 +220,20 @@ int main(int argc, const char *argv[])
 	}
 
 	get_cpu_info(0, &cpupower_cpu_info);
+<<<<<<< HEAD
 	run_as_root = !getuid();
+=======
+	run_as_root = !geteuid();
+	if (run_as_root) {
+		ret = uname(&uts);
+		if (!ret && !strcmp(uts.machine, "x86_64") &&
+		    stat("/dev/cpu/0/msr", &statbuf) != 0) {
+			if (system("modprobe msr") == -1)
+	fprintf(stderr, _("MSR access not available.\n"));
+		}
+	}
+		
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < ARRAY_SIZE(commands); i++) {
 		struct cmd_struct *p = commands + i;

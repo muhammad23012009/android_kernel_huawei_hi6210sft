@@ -1,6 +1,10 @@
 #ifndef _UAPI_X_TABLES_H
 #define _UAPI_X_TABLES_H
+<<<<<<< HEAD
 #include <linux/kernel.h>
+=======
+#include <linux/const.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 
 #define XT_FUNCTION_MAXNAMELEN 30

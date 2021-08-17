@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2009-2012 ST Microelectronics
  * Rajeev Kumar <rajeev-dlh.kumar@st.com>
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -16,6 +20,11 @@
 #include <linux/dmaengine.h>
 #include <linux/amba/pl08x.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach/time.h>
 
 extern void spear13xx_timer_init(void);
@@ -32,12 +41,21 @@ void __init spear6xx_clk_init(void __iomem *misc_base);
 void __init spear13xx_map_io(void);
 void __init spear13xx_l2x0_init(void);
 
+<<<<<<< HEAD
 void spear_restart(char, const char *);
 
 void spear13xx_secondary_startup(void);
 void __cpuinit spear13xx_cpu_die(unsigned int cpu);
 
 extern struct smp_operations spear13xx_smp_ops;
+=======
+void spear_restart(enum reboot_mode, const char *);
+
+void spear13xx_secondary_startup(void);
+void spear13xx_cpu_die(unsigned int cpu);
+
+extern const struct smp_operations spear13xx_smp_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_MACH_SPEAR1310
 void __init spear1310_clk_init(void __iomem *misc_base, void __iomem *ras_base);

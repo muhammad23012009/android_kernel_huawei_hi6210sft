@@ -34,7 +34,11 @@
 
 static __u8 c67x00_hub_des[] = {
 	0x09,			/*  __u8  bLength; */
+<<<<<<< HEAD
 	0x29,			/*  __u8  bDescriptorType; Hub-descriptor */
+=======
+	USB_DT_HUB,		/*  __u8  bDescriptorType; Hub-descriptor */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	0x02,			/*  __u8  bNbrPorts; */
 	0x00,			/* __u16  wHubCharacteristics; */
 	0x00,			/*   (per-port OC, no power switching) */
@@ -384,6 +388,11 @@ int c67x00_hcd_probe(struct c67x00_sie *sie)
 		goto err2;
 	}
 
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&sie->lock, flags);
 	sie->private_data = c67x00;
 	sie->irq = c67x00_hcd_irq;

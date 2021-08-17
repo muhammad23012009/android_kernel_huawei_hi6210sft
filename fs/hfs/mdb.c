@@ -166,7 +166,11 @@ int hfs_mdb_get(struct super_block *sb)
 		pr_warn("continuing without an alternate MDB\n");
 	}
 
+<<<<<<< HEAD
 	HFS_SB(sb)->bitmap = (__be32 *)__get_free_pages(GFP_KERNEL, PAGE_SIZE < 8192 ? 1 : 0);
+=======
+	HFS_SB(sb)->bitmap = kmalloc(8192, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!HFS_SB(sb)->bitmap)
 		goto out;
 
@@ -360,7 +364,11 @@ void hfs_mdb_put(struct super_block *sb)
 	unload_nls(HFS_SB(sb)->nls_io);
 	unload_nls(HFS_SB(sb)->nls_disk);
 
+<<<<<<< HEAD
 	free_pages((unsigned long)HFS_SB(sb)->bitmap, PAGE_SIZE < 8192 ? 1 : 0);
+=======
+	kfree(HFS_SB(sb)->bitmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(HFS_SB(sb));
 	sb->s_fs_info = NULL;
 }

@@ -16,7 +16,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -182,6 +185,11 @@ static int spcp8x5_port_probe(struct usb_serial_port *port)
 
 	usb_set_serial_port_data(port, priv);
 
+<<<<<<< HEAD
+=======
+	port->port.drain_delay = 256;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -232,13 +240,21 @@ static int spcp8x5_get_msr(struct usb_serial_port *port, u8 *status)
 			      GET_UART_STATUS, GET_UART_STATUS_TYPE,
 			      0, GET_UART_STATUS_MSR, buf, 1, 100);
 	if (ret < 1) {
+<<<<<<< HEAD
 		dev_err(&port->dev, "failed to get modem status: %d", ret);
+=======
+		dev_err(&port->dev, "failed to get modem status: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret >= 0)
 			ret = -EIO;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(&port->dev, "0xc0:0x22:0:6  %d - 0x02%x", ret, *buf);
+=======
+	dev_dbg(&port->dev, "0xc0:0x22:0:6  %d - 0x02%x\n", ret, *buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*status = *buf;
 	ret = 0;
 out:
@@ -360,8 +376,12 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	case 1000000:
 			buf[0] = 0x0b;	break;
 	default:
+<<<<<<< HEAD
 		dev_err(&port->dev, "spcp825 driver does not support the "
 			"baudrate requested, using default of 9600.\n");
+=======
+		dev_err(&port->dev, "unsupported baudrate, using 9600\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Set Data Length : 00:5bit, 01:6bit, 10:7bit, 11:8bit */
@@ -428,8 +448,11 @@ static int spcp8x5_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (tty)
 		spcp8x5_set_termios(tty, port, NULL);
 
+<<<<<<< HEAD
 	port->port.drain_delay = 256;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return usb_serial_generic_open(tty, port);
 }
 

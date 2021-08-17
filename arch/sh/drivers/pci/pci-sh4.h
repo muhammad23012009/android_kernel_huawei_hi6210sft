@@ -11,6 +11,7 @@
 
 #include <asm/io.h>
 
+<<<<<<< HEAD
 /* startup values */
 #define PCI_PROBE_BIOS		1
 #define PCI_PROBE_CONF1		2
@@ -19,6 +20,8 @@
 #define PCI_ASSIGN_ROMS		0x1000
 #define PCI_BIOS_IRQ_SCAN	0x2000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SH4_PCICR		0x100		/* PCI Control Register */
   #define SH4_PCICR_PREFIX	  0xA5000000	/* CR prefix for write */
   #define SH4_PCICR_FTO		  0x00000400	/* TRDY/IRDY Enable */

@@ -28,6 +28,13 @@
 #ifndef __ASM_ARCH_OMAP_CPU_H
 #define __ASM_ARCH_OMAP_CPU_H
 
+<<<<<<< HEAD
+=======
+#include <asm/irq.h>
+#include <mach/hardware.h>
+#include <mach/irqs.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __ASSEMBLY__
 
 #include <linux/bitops.h>
@@ -195,6 +202,10 @@ IS_OMAP_TYPE(1710, 0x1710)
 #define cpu_is_omap34xx()		0
 #define cpu_is_omap44xx()		0
 #define soc_is_omap54xx()		0
+<<<<<<< HEAD
+=======
+#define soc_is_dra7xx()			0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define soc_is_am33xx()			0
 #define cpu_class_is_omap1()		1
 #define cpu_class_is_omap2()		0

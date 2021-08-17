@@ -25,6 +25,7 @@ config HID_SENSOR_IIO_TRIGGER
 	  If this driver is compiled as a module, it will be named
 	  hid-sensor-trigger.
 
+<<<<<<< HEAD
 config HID_SENSOR_ENUM_BASE_QUIRKS
 	bool "ENUM base quirks for HID Sensor IIO drivers"
 	depends on HID_SENSOR_IIO_COMMON
@@ -34,4 +35,6 @@ config HID_SENSOR_ENUM_BASE_QUIRKS
 	  Since logical minimum is still set 0 instead of 1,
 	  there is no easy way to differentiate.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu

@@ -33,8 +33,13 @@
  * Each of the descriptors is 64 bytes in size (8*64 = 512 bytes in a set).
  */
 
+<<<<<<< HEAD
 #define MAX_CPUS_PER_UVHUB		64
 #define MAX_CPUS_PER_SOCKET		32
+=======
+#define MAX_CPUS_PER_UVHUB		128
+#define MAX_CPUS_PER_SOCKET		64
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADP_SZ				64 /* hardware-provided max. */
 #define UV_CPUS_PER_AS			32 /* hardware-provided max. */
 #define ITEMS_PER_DESC			8
@@ -49,14 +54,21 @@
 #define UV_NET_ENDPOINT_INTD		(is_uv1_hub() ?			\
 			UV1_NET_ENDPOINT_INTD : UV2_NET_ENDPOINT_INTD)
 #define UV_DESC_PSHIFT			49
+<<<<<<< HEAD
 #define UV_PAYLOADQ_PNODE_SHIFT		49
+=======
+#define UV_PAYLOADQ_GNODE_SHIFT		49
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define UV_PTC_BASENAME			"sgi_uv/ptc_statistics"
 #define UV_BAU_BASENAME			"sgi_uv/bau_tunables"
 #define UV_BAU_TUNABLES_DIR		"sgi_uv"
 #define UV_BAU_TUNABLES_FILE		"bau_tunables"
 #define WHITESPACE			" \t\n"
+<<<<<<< HEAD
 #define uv_mmask			((1UL << uv_hub_info->m_val) - 1)
 #define uv_physnodeaddr(x)		((__pa((unsigned long)(x)) & uv_mmask))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cpubit_isset(cpu, bau_local_cpumask) \
 	test_bit((cpu), (bau_local_cpumask).bits)
 
@@ -73,6 +85,10 @@
 #define UV_INTD_SOFT_ACK_TIMEOUT_PERIOD	(is_uv1_hub() ?			\
 		UV1_INTD_SOFT_ACK_TIMEOUT_PERIOD :			\
 		UV2_INTD_SOFT_ACK_TIMEOUT_PERIOD)
+<<<<<<< HEAD
+=======
+/* assuming UV3 is the same */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BAU_MISC_CONTROL_MULT_MASK	3
 
@@ -93,6 +109,11 @@
 #define SOFTACK_MSHIFT UVH_LB_BAU_MISC_CONTROL_ENABLE_INTD_SOFT_ACK_MODE_SHFT
 #define SOFTACK_PSHIFT UVH_LB_BAU_MISC_CONTROL_INTD_SOFT_ACK_TIMEOUT_PERIOD_SHFT
 #define SOFTACK_TIMEOUT_PERIOD UV_INTD_SOFT_ACK_TIMEOUT_PERIOD
+<<<<<<< HEAD
+=======
+#define PREFETCH_HINT_SHFT UV3H_LB_BAU_MISC_CONTROL_ENABLE_INTD_PREFETCH_HINT_SHFT
+#define SB_STATUS_SHFT UV3H_LB_BAU_MISC_CONTROL_ENABLE_EXTENDED_SB_STATUS_SHFT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define write_gmmr	uv_write_global_mmr64
 #define write_lmmr	uv_write_local_mmr
 #define read_lmmr	uv_read_local_mmr
@@ -322,8 +343,14 @@ struct uv1_bau_msg_header {
 /*
  * UV2 Message header:  16 bytes (128 bits) (bytes 0x30-0x3f of descriptor)
  * see figure 9-2 of harp_sys.pdf
+<<<<<<< HEAD
  */
 struct uv2_bau_msg_header {
+=======
+ * assuming UV3 is the same
+ */
+struct uv2_3_bau_msg_header {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int	base_dest_nasid:15;	/* nasid of the first bit */
 	/* bits 14:0 */				/* in uvhub map */
 	unsigned int	dest_subnodeid:5;	/* must be 0x10, for the LB */
@@ -383,6 +410,20 @@ struct uv2_bau_msg_header {
 	/* bits 127:120 */
 };
 
+<<<<<<< HEAD
+=======
+/* Abstracted BAU functions */
+struct bau_operations {
+	unsigned long (*read_l_sw_ack)(void);
+	unsigned long (*read_g_sw_ack)(int pnode);
+	unsigned long (*bau_gpa_to_offset)(unsigned long vaddr);
+	void (*write_l_sw_ack)(unsigned long mmr);
+	void (*write_g_sw_ack)(int pnode, unsigned long mmr);
+	void (*write_payload_first)(int pnode, unsigned long mmr);
+	void (*write_payload_last)(int pnode, unsigned long mmr);
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The activation descriptor:
  * The format of the message to send, plus all accompanying control
@@ -395,7 +436,11 @@ struct bau_desc {
 	 */
 	union bau_msg_header {
 		struct uv1_bau_msg_header	uv1_hdr;
+<<<<<<< HEAD
 		struct uv2_bau_msg_header	uv2_hdr;
+=======
+		struct uv2_3_bau_msg_header	uv2_3_hdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} header;
 
 	struct bau_msg_payload			payload;
@@ -594,7 +639,11 @@ struct bau_control {
 	int			timeout_tries;
 	int			ipi_attempts;
 	int			conseccompletes;
+<<<<<<< HEAD
 	short			nobau;
+=======
+	bool			nobau;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	short			baudisabled;
 	short			cpu;
 	short			osnode;
@@ -631,11 +680,14 @@ struct bau_control {
 	struct hub_and_pnode	*thp;
 };
 
+<<<<<<< HEAD
 static inline unsigned long read_mmr_uv2_status(void)
 {
 	return read_lmmr(UV2H_LB_BAU_SB_ACTIVATION_STATUS_2);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void write_mmr_data_broadcast(int pnode, unsigned long mmr_image)
 {
 	write_gmmr(pnode, UVH_BAU_DATA_BROADCAST, mmr_image);
@@ -656,6 +708,19 @@ static inline void write_gmmr_activation(int pnode, unsigned long mmr_image)
 	write_gmmr(pnode, UVH_LB_BAU_SB_ACTIVATION_CONTROL, mmr_image);
 }
 
+<<<<<<< HEAD
+=======
+static inline void write_mmr_proc_payload_first(int pnode, unsigned long mmr_image)
+{
+	write_gmmr(pnode, UV4H_LB_PROC_INTD_QUEUE_FIRST, mmr_image);
+}
+
+static inline void write_mmr_proc_payload_last(int pnode, unsigned long mmr_image)
+{
+	write_gmmr(pnode, UV4H_LB_PROC_INTD_QUEUE_LAST, mmr_image);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void write_mmr_payload_first(int pnode, unsigned long mmr_image)
 {
 	write_gmmr(pnode, UVH_LB_BAU_INTD_PAYLOAD_QUEUE_FIRST, mmr_image);
@@ -701,6 +766,29 @@ static inline unsigned long read_gmmr_sw_ack(int pnode)
 	return read_gmmr(pnode, UVH_LB_BAU_INTD_SOFTWARE_ACKNOWLEDGE);
 }
 
+<<<<<<< HEAD
+=======
+static inline void write_mmr_proc_sw_ack(unsigned long mr)
+{
+	uv_write_local_mmr(UV4H_LB_PROC_INTD_SOFT_ACK_CLEAR, mr);
+}
+
+static inline void write_gmmr_proc_sw_ack(int pnode, unsigned long mr)
+{
+	write_gmmr(pnode, UV4H_LB_PROC_INTD_SOFT_ACK_CLEAR, mr);
+}
+
+static inline unsigned long read_mmr_proc_sw_ack(void)
+{
+	return read_lmmr(UV4H_LB_PROC_INTD_SOFT_ACK_PENDING);
+}
+
+static inline unsigned long read_gmmr_proc_sw_ack(int pnode)
+{
+	return read_gmmr(pnode, UV4H_LB_PROC_INTD_SOFT_ACK_PENDING);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void write_mmr_data_config(int pnode, unsigned long mr)
 {
 	uv_write_global_mmr64(pnode, UVH_BAU_DATA_CONFIG, mr);
@@ -731,6 +819,12 @@ static inline void bau_cpubits_clear(struct bau_local_cpumask *dstp, int nbits)
 }
 
 extern void uv_bau_message_intr1(void);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TRACING
+#define trace_uv_bau_message_intr1 uv_bau_message_intr1
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void uv_bau_timeout_intr1(void);
 
 struct atomic_short {
@@ -757,7 +851,15 @@ static inline int atomic_read_short(const struct atomic_short *v)
  */
 static inline int atom_asr(short i, struct atomic_short *v)
 {
+<<<<<<< HEAD
 	return i + xadd(&v->counter, i);
+=======
+	short __i = i;
+	asm volatile(LOCK_PREFIX "xaddw %0, %1"
+			: "+r" (i), "+m" (v->counter)
+			: : "memory");
+	return i + __i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

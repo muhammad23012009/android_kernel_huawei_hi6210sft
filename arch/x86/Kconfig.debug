@@ -5,6 +5,7 @@ config TRACE_IRQFLAGS_SUPPORT
 
 source "lib/Kconfig.debug"
 
+<<<<<<< HEAD
 config STRICT_DEVMEM
 	bool "Filter access to /dev/mem"
 	---help---
@@ -22,6 +23,8 @@ config STRICT_DEVMEM
 
 	  If in doubt, say Y.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config X86_VERBOSE_BOOTUP
 	bool "Enable verbose x86 bootup info messages"
 	default y
@@ -43,10 +46,13 @@ config EARLY_PRINTK
 	  with klogd/syslogd or the X server. You should normally N here,
 	  unless you want to debug such a crash.
 
+<<<<<<< HEAD
 config EARLY_PRINTK_INTEL_MID
 	bool "Early printk for Intel MID platform support"
 	depends on EARLY_PRINTK && X86_INTEL_MID
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config EARLY_PRINTK_DBGP
 	bool "Early printk via EHCI debug port"
 	depends on EARLY_PRINTK && PCI
@@ -59,6 +65,7 @@ config EARLY_PRINTK_DBGP
 	  with klogd/syslogd or the X server. You should normally N here,
 	  unless you want to debug such a crash. You need usb debug device.
 
+<<<<<<< HEAD
 config DEBUG_STACKOVERFLOW
 	bool "Check for stack overflows"
 	depends on DEBUG_KERNEL
@@ -73,6 +80,26 @@ config X86_PTDUMP
 	bool "Export kernel pagetable layout to userspace via debugfs"
 	depends on DEBUG_KERNEL
 	select DEBUG_FS
+=======
+config EARLY_PRINTK_EFI
+	bool "Early printk via the EFI framebuffer"
+	depends on EFI && EARLY_PRINTK
+	select FONT_SUPPORT
+	---help---
+	  Write kernel log output directly into the EFI framebuffer.
+
+	  This is useful for kernel debugging when your machine crashes very
+	  early before the console code is initialized.
+
+config X86_PTDUMP_CORE
+	def_bool n
+
+config X86_PTDUMP
+	tristate "Export kernel pagetable layout to userspace via debugfs"
+	depends on DEBUG_KERNEL
+	select DEBUG_FS
+	select X86_PTDUMP_CORE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  Say Y here if you want to show the kernel pagetable layout in a
 	  debugfs file. This information is only useful for kernel developers
@@ -81,6 +108,7 @@ config X86_PTDUMP
 	  kernel.
 	  If in doubt, say "N"
 
+<<<<<<< HEAD
 config DEBUG_RODATA
 	bool "Write protect kernel read-only data structures"
 	default y
@@ -100,6 +128,53 @@ config DEBUG_RODATA_TEST
 	  feature as well as for the change_page_attr() infrastructure.
 	  If in doubt, say "N"
 
+=======
+config EFI_PGT_DUMP
+	bool "Dump the EFI pagetable"
+	depends on EFI
+	select X86_PTDUMP_CORE
+	---help---
+	  Enable this if you want to dump the EFI page table before
+	  enabling virtual mode. This can be used to debug miscellaneous
+	  issues with the mapping of the EFI runtime regions into that
+	  table.
+
+config DEBUG_RODATA_TEST
+	bool "Testcase for the marking rodata read-only"
+	default y
+	---help---
+	  This option enables a testcase for the setting rodata read-only
+	  as well as for the change_page_attr() infrastructure.
+	  If in doubt, say "N"
+
+config DEBUG_WX
+	bool "Warn on W+X mappings at boot"
+	select X86_PTDUMP_CORE
+	---help---
+	  Generate a warning if any W+X mappings are found at boot.
+
+	  This is useful for discovering cases where the kernel is leaving
+	  W+X mappings after applying NX, as such mappings are a security risk.
+
+	  Look for a message in dmesg output like this:
+
+	    x86/mm: Checked W+X mappings: passed, no W+X pages found.
+
+	  or like this, if the check failed:
+
+	    x86/mm: Checked W+X mappings: FAILED, <N> W+X pages found.
+
+	  Note that even if the check fails, your kernel is possibly
+	  still fine, as W+X mappings are not a security hole in
+	  themselves, what they do is that they make the exploitation
+	  of other unfixed kernel bugs easier.
+
+	  There is no runtime or memory usage effect of this option
+	  once the kernel has booted up - it's a one time check.
+
+	  If in doubt, say "Y".
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config DEBUG_SET_MODULE_RONX
 	bool "Set loadable kernel module data as NX and text as RO"
 	depends on MODULES
@@ -122,7 +197,10 @@ config DEBUG_NX_TEST
 config DOUBLEFAULT
 	default y
 	bool "Enable doublefault exception handler" if EXPERT
+<<<<<<< HEAD
 	depends on X86_32
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  This option allows trapping of rare doublefault exceptions that
 	  would otherwise cause a system to silently reboot. Disabling this
@@ -184,7 +262,12 @@ config HAVE_MMIOTRACE_SUPPORT
 
 config X86_DECODER_SELFTEST
 	bool "x86 instruction decoder selftest"
+<<<<<<< HEAD
 	depends on DEBUG_KERNEL && KPROBES
+=======
+	depends on DEBUG_KERNEL && INSTRUCTION_DECODER
+	depends on !COMPILE_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	 Perform x86 instruction decoder selftests at build time.
 	 This option is useful for checking the sanity of x86 instruction
@@ -292,6 +375,21 @@ config OPTIMIZE_INLINING
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
+=======
+config DEBUG_ENTRY
+	bool "Debug low-level entry code"
+	depends on DEBUG_KERNEL
+	---help---
+	  This option enables sanity checks in x86's low-level entry code.
+	  Some of these sanity checks may slow down kernel entries and
+	  exits or otherwise impact performance.
+
+	  This is currently used to help test NMI code.
+
+	  If unsure, say N.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config DEBUG_NMI_SELFTEST
 	bool "NMI Selftest"
 	depends on DEBUG_KERNEL && X86_LOCAL_APIC
@@ -304,4 +402,44 @@ config DEBUG_NMI_SELFTEST
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
+=======
+config DEBUG_IMR_SELFTEST
+	bool "Isolated Memory Region self test"
+	default n
+	depends on INTEL_IMR
+	---help---
+	  This option enables automated sanity testing of the IMR code.
+	  Some simple tests are run to verify IMR bounds checking, alignment
+	  and overlapping. This option is really only useful if you are
+	  debugging an IMR memory map or are modifying the IMR code and want to
+	  test your changes.
+
+	  If unsure say N here.
+
+config X86_DEBUG_FPU
+	bool "Debug the x86 FPU code"
+	depends on DEBUG_KERNEL
+	default y
+	---help---
+	  If this option is enabled then there will be extra sanity
+	  checks and (boot time) debug printouts added to the kernel.
+	  This debugging adds some small amount of runtime overhead
+	  to the kernel.
+
+	  If unsure, say N.
+
+config PUNIT_ATOM_DEBUG
+	tristate "ATOM Punit debug driver"
+	depends on PCI
+	select DEBUG_FS
+	select IOSF_MBI
+	---help---
+	  This is a debug driver, which gets the power states
+	  of all Punit North Complex devices. The power states of
+	  each device is exposed as part of the debugfs interface.
+	  The current power state can be read from
+	  /sys/kernel/debug/punit_atom/dev_power_state
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu

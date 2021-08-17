@@ -15,12 +15,20 @@
  * details.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/acpi.h>
+<<<<<<< HEAD
 #include <acpi/acpi_drivers.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <xen/acpi.h>
 #include <xen/interface/platform.h>
 #include <asm/xen/hypercall.h>
@@ -116,8 +124,13 @@ acpi_memory_get_resource(struct acpi_resource *resource, void *context)
 	list_for_each_entry(info, &mem_device->res_list, list) {
 		if ((info->caching == address64.info.mem.caching) &&
 		    (info->write_protect == address64.info.mem.write_protect) &&
+<<<<<<< HEAD
 		    (info->start_addr + info->length == address64.minimum)) {
 			info->length += address64.address_length;
+=======
+		    (info->start_addr + info->length == address64.address.minimum)) {
+			info->length += address64.address.address_length;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return AE_OK;
 		}
 	}
@@ -129,8 +142,13 @@ acpi_memory_get_resource(struct acpi_resource *resource, void *context)
 	INIT_LIST_HEAD(&new->list);
 	new->caching = address64.info.mem.caching;
 	new->write_protect = address64.info.mem.write_protect;
+<<<<<<< HEAD
 	new->start_addr = address64.minimum;
 	new->length = address64.address_length;
+=======
+	new->start_addr = address64.address.minimum;
+	new->length = address64.address.address_length;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_add_tail(&new->list, &mem_device->res_list);
 
 	return AE_OK;
@@ -167,7 +185,11 @@ static int acpi_memory_get_device(acpi_handle handle,
 	acpi_scan_lock_acquire();
 
 	acpi_bus_get_device(handle, &device);
+<<<<<<< HEAD
 	if (device)
+=======
+	if (acpi_device_enumerated(device))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto end;
 
 	/*
@@ -180,8 +202,14 @@ static int acpi_memory_get_device(acpi_handle handle,
 		result = -EINVAL;
 		goto out;
 	}
+<<<<<<< HEAD
 	result = acpi_bus_get_device(handle, &device);
 	if (result) {
+=======
+	device = NULL;
+	acpi_bus_get_device(handle, &device);
+	if (!acpi_device_enumerated(device)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_warn(PREFIX "Missing device object\n");
 		result = -EINVAL;
 		goto out;
@@ -283,7 +311,11 @@ static void acpi_memory_device_notify(acpi_handle handle, u32 event, void *data)
 		return;
 	}
 
+<<<<<<< HEAD
 	(void) acpi_evaluate_hotplug_ost(handle, event, ost_code, NULL);
+=======
+	(void) acpi_evaluate_ost(handle, event, ost_code, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 }
 

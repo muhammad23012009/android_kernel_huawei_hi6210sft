@@ -25,6 +25,11 @@
 #include <linux/fs_uart_pd.h>
 #include <linux/fsl_devices.h>
 #include <linux/mii.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_fdt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 
 #include <asm/delay.h>
@@ -33,7 +38,10 @@
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/mpc8xx.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/8xx_immap.h>
 #include <asm/cpm1.h>
 #include <asm/fs_pd.h>
@@ -44,6 +52,7 @@
 
 static u32 __iomem *bcsr, *bcsr5;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCMCIA_M8XX
 static void pcmcia_hw_setup(int slot, int enable)
 {
@@ -99,6 +108,8 @@ static int pcmcia_set_voltage(int slot, int vcc, int vpp)
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cpm_pin {
 	int port, pin, flags;
 };
@@ -243,21 +254,31 @@ static void __init mpc885ads_setup_arch(void)
 		of_detach_node(np);
 		of_node_put(np);
 	}
+<<<<<<< HEAD
 
 #ifdef CONFIG_PCMCIA_M8XX
 	/* Set up board specific hook-ups.*/
 	m8xx_pcmcia_ops.hw_ctrl = pcmcia_hw_setup;
 	m8xx_pcmcia_ops.voltage_set = pcmcia_set_voltage;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init mpc885ads_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 	return of_flat_dt_is_compatible(root, "fsl,mpc885ads");
 }
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+	return of_machine_is_compatible("fsl,mpc885ads");
+}
+
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name = "soc", },
 	{ .name = "cpm", },
 	{ .name = "localbus", },

@@ -11,15 +11,23 @@
 #include <linux/module.h>
 #include <linux/skbuff.h>
 
+<<<<<<< HEAD
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 #include <linux/jhash.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netfilter.h>
 #include <linux/netfilter_arp.h>
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter/xt_NFQUEUE.h>
 
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_queue.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Harald Welte <laforge@netfilter.org>");
 MODULE_DESCRIPTION("Xtables: packet forwarding to netlink");
 MODULE_LICENSE("GPL");
@@ -28,7 +36,10 @@ MODULE_ALIAS("ip6t_NFQUEUE");
 MODULE_ALIAS("arpt_NFQUEUE");
 
 static u32 jhash_initval __read_mostly;
+<<<<<<< HEAD
 static bool rnd_inited __read_mostly;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned int
 nfqueue_tg(struct sk_buff *skb, const struct xt_action_param *par)
@@ -38,6 +49,7 @@ nfqueue_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	return NF_QUEUE_NR(tinfo->queuenum);
 }
 
+<<<<<<< HEAD
 static u32 hash_v4(const struct sk_buff *skb)
 {
 	const struct iphdr *iph = ip_hdr(skb);
@@ -92,15 +104,24 @@ nfqueue_hash(const struct sk_buff *skb, const struct xt_action_param *par)
 	return queue;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int
 nfqueue_tg_v1(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_NFQ_info_v1 *info = par->targinfo;
 	u32 queue = info->queuenum;
 
+<<<<<<< HEAD
 	if (info->queues_total > 1)
 		queue = nfqueue_hash(skb, par);
 
+=======
+	if (info->queues_total > 1) {
+		queue = nfqueue_hash(skb, queue, info->queues_total,
+				     par->family, jhash_initval);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NF_QUEUE_NR(queue);
 }
 
@@ -120,10 +141,15 @@ static int nfqueue_tg_check(const struct xt_tgchk_param *par)
 	const struct xt_NFQ_info_v3 *info = par->targinfo;
 	u32 maxid;
 
+<<<<<<< HEAD
 	if (unlikely(!rnd_inited)) {
 		get_random_bytes(&jhash_initval, sizeof(jhash_initval));
 		rnd_inited = true;
 	}
+=======
+	init_hashrandom(&jhash_initval);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info->queues_total == 0) {
 		pr_err("NFQUEUE: number of total queues is 0\n");
 		return -EINVAL;
@@ -147,17 +173,35 @@ nfqueue_tg_v3(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_NFQ_info_v3 *info = par->targinfo;
 	u32 queue = info->queuenum;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (info->queues_total > 1) {
 		if (info->flags & NFQ_FLAG_CPU_FANOUT) {
 			int cpu = smp_processor_id();
 
 			queue = info->queuenum + cpu % info->queues_total;
+<<<<<<< HEAD
 		} else
 			queue = nfqueue_hash(skb, par);
 	}
 
 	return NF_QUEUE_NR(queue);
+=======
+		} else {
+			queue = nfqueue_hash(skb, queue, info->queues_total,
+					     par->family, jhash_initval);
+		}
+	}
+
+	ret = NF_QUEUE_NR(queue);
+	if (info->flags & NFQ_FLAG_BYPASS)
+		ret |= NF_VERDICT_FLAG_QUEUE_BYPASS;
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct xt_target nfqueue_tg_reg[] __read_mostly = {

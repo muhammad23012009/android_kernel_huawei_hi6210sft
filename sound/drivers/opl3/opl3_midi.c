@@ -105,6 +105,11 @@ static void snd_opl3_calc_pitch(unsigned char *fnum, unsigned char *blocknum,
 		int pitchbend = chan->midi_pitchbend;
 		int segment;
 
+<<<<<<< HEAD
+=======
+		if (pitchbend < -0x2000)
+			pitchbend = -0x2000;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (pitchbend > 0x1FFF)
 			pitchbend = 0x1FFF;
 
@@ -258,12 +263,19 @@ void snd_opl3_timer_func(unsigned long data)
 	spin_unlock_irqrestore(&opl3->voice_lock, flags);
 
 	spin_lock_irqsave(&opl3->sys_timer_lock, flags);
+<<<<<<< HEAD
 	if (again) {
 		opl3->tlist.expires = jiffies + 1;	/* invoke again */
 		add_timer(&opl3->tlist);
 	} else {
 		opl3->sys_timer_status = 0;
 	}
+=======
+	if (again)
+		mod_timer(&opl3->tlist, jiffies + 1);	/* invoke again */
+	else
+		opl3->sys_timer_status = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&opl3->sys_timer_lock, flags);
 }
 
@@ -275,8 +287,12 @@ static void snd_opl3_start_timer(struct snd_opl3 *opl3)
 	unsigned long flags;
 	spin_lock_irqsave(&opl3->sys_timer_lock, flags);
 	if (! opl3->sys_timer_status) {
+<<<<<<< HEAD
 		opl3->tlist.expires = jiffies + 1;
 		add_timer(&opl3->tlist);
+=======
+		mod_timer(&opl3->tlist, jiffies + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		opl3->sys_timer_status = 1;
 	}
 	spin_unlock_irqrestore(&opl3->sys_timer_lock, flags);
@@ -390,6 +406,14 @@ void snd_opl3_note_on(void *p, int note, int vel, struct snd_midi_channel *chan)
 		voice = snd_opl3_oss_map[chan->number];		
 	}
 
+<<<<<<< HEAD
+=======
+	if (voice < 0) {
+		spin_unlock_irqrestore(&opl3->voice_lock, flags);
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (voice < MAX_OPL2_VOICES) {
 		/* Left register block for voices 0 .. 8 */
 		reg_side = OPL3_LEFT;

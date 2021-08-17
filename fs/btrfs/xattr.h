@@ -21,8 +21,11 @@
 
 #include <linux/xattr.h>
 
+<<<<<<< HEAD
 extern const struct xattr_handler btrfs_xattr_acl_access_handler;
 extern const struct xattr_handler btrfs_xattr_acl_default_handler;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const struct xattr_handler *btrfs_xattr_handlers[];
 
 extern ssize_t __btrfs_getxattr(struct inode *inode, const char *name,
@@ -30,11 +33,14 @@ extern ssize_t __btrfs_getxattr(struct inode *inode, const char *name,
 extern int __btrfs_setxattr(struct btrfs_trans_handle *trans,
 			    struct inode *inode, const char *name,
 			    const void *value, size_t size, int flags);
+<<<<<<< HEAD
 extern ssize_t btrfs_getxattr(struct dentry *dentry, const char *name,
 		void *buffer, size_t size);
 extern int btrfs_setxattr(struct dentry *dentry, const char *name,
 		const void *value, size_t size, int flags);
 extern int btrfs_removexattr(struct dentry *dentry, const char *name);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int btrfs_xattr_security_init(struct btrfs_trans_handle *trans,
 				     struct inode *inode, struct inode *dir,

@@ -207,7 +207,11 @@ static int sun3xflop_request_irq(void)
 	if(!once) {
 		once = 1;
 		error = request_irq(FLOPPY_IRQ, sun3xflop_hardint,
+<<<<<<< HEAD
 				    IRQF_DISABLED, "floppy", NULL);
+=======
+				    0, "floppy", NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ((error == 0) ? 0 : -1);
 	} else return 0;
 }

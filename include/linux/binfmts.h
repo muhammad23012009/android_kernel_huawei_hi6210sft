@@ -31,7 +31,11 @@ struct linux_binprm {
 #ifdef __alpha__
 	unsigned int taso:1;
 #endif
+<<<<<<< HEAD
 	unsigned int recursion_depth;
+=======
+	unsigned int recursion_depth; /* only for search_binary_handler() */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct file * file;
 	struct cred *cred;	/* new credentials */
 	int unsafe;		/* how unsafe this exec is (mask of LSM_UNSAFE_*) */
@@ -44,7 +48,10 @@ struct linux_binprm {
 	unsigned interp_flags;
 	unsigned interp_data;
 	unsigned long loader, exec;
+<<<<<<< HEAD
 	char tcomm[TASK_COMM_LEN];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define BINPRM_FLAGS_ENFORCE_NONDUMP_BIT 0
@@ -54,13 +61,28 @@ struct linux_binprm {
 #define BINPRM_FLAGS_EXECFD_BIT 1
 #define BINPRM_FLAGS_EXECFD (1 << BINPRM_FLAGS_EXECFD_BIT)
 
+<<<<<<< HEAD
 /* Function parameter for binfmt->coredump */
 struct coredump_params {
 	siginfo_t *siginfo;
+=======
+/* filename of the binary will be inaccessible after exec */
+#define BINPRM_FLAGS_PATH_INACCESSIBLE_BIT 2
+#define BINPRM_FLAGS_PATH_INACCESSIBLE (1 << BINPRM_FLAGS_PATH_INACCESSIBLE_BIT)
+
+/* Function parameter for binfmt->coredump */
+struct coredump_params {
+	const siginfo_t *siginfo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pt_regs *regs;
 	struct file *file;
 	unsigned long limit;
 	unsigned long mm_flags;
+<<<<<<< HEAD
+=======
+	loff_t written;
+	loff_t pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -108,13 +130,21 @@ extern int suid_dumpable;
 extern int setup_arg_pages(struct linux_binprm * bprm,
 			   unsigned long stack_top,
 			   int executable_stack);
+<<<<<<< HEAD
+=======
+extern int transfer_args_to_stack(struct linux_binprm *bprm,
+				  unsigned long *sp_location);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int bprm_change_interp(char *interp, struct linux_binprm *bprm);
 extern int copy_strings_kernel(int argc, const char *const *argv,
 			       struct linux_binprm *bprm);
 extern int prepare_bprm_creds(struct linux_binprm *bprm);
 extern void install_exec_creds(struct linux_binprm *bprm);
 extern void set_binfmt(struct linux_binfmt *new);
+<<<<<<< HEAD
 extern void free_bprm(struct linux_binprm *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern ssize_t read_code(struct file *, unsigned long, loff_t, size_t);
 
 #endif /* _LINUX_BINFMTS_H */

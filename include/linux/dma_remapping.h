@@ -20,6 +20,17 @@
 #define CONTEXT_TT_MULTI_LEVEL	0
 #define CONTEXT_TT_DEV_IOTLB	1
 #define CONTEXT_TT_PASS_THROUGH 2
+<<<<<<< HEAD
+=======
+/* Extended context entry types */
+#define CONTEXT_TT_PT_PASID	4
+#define CONTEXT_TT_PT_PASID_DEV_IOTLB 5
+#define CONTEXT_TT_MASK (7ULL << 2)
+
+#define CONTEXT_DINVE		(1ULL << 8)
+#define CONTEXT_PRS		(1ULL << 9)
+#define CONTEXT_PASIDE		(1ULL << 11)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct intel_iommu;
 struct dmar_domain;
@@ -27,7 +38,10 @@ struct root_entry;
 
 
 #ifdef CONFIG_INTEL_IOMMU
+<<<<<<< HEAD
 extern void free_dmar_iommu(struct intel_iommu *iommu);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int iommu_calculate_agaw(struct intel_iommu *iommu);
 extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
 extern int dmar_disabled;
@@ -41,9 +55,12 @@ static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
 {
 	return 0;
 }
+<<<<<<< HEAD
 static inline void free_dmar_iommu(struct intel_iommu *iommu)
 {
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define dmar_disabled	(1)
 #define intel_iommu_enabled (0)
 #endif

@@ -12,8 +12,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) IBM Corporation, 2003, 2010
  *
@@ -59,7 +63,11 @@ static struct kobj_type ktype_veth_pool;
 
 static const char ibmveth_driver_name[] = "ibmveth";
 static const char ibmveth_driver_string[] = "IBM Power Virtual Ethernet Driver";
+<<<<<<< HEAD
 #define ibmveth_driver_version "1.04"
+=======
+#define ibmveth_driver_version "1.06"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Santiago Leon <santil@linux.vnet.ibm.com>");
 MODULE_DESCRIPTION("IBM Power Virtual Ethernet Driver");
@@ -80,6 +88,14 @@ static unsigned int rx_flush __read_mostly = 0;
 module_param(rx_flush, uint, 0644);
 MODULE_PARM_DESC(rx_flush, "Flush receive buffers before use");
 
+<<<<<<< HEAD
+=======
+static bool old_large_send __read_mostly;
+module_param(old_large_send, bool, S_IRUGO);
+MODULE_PARM_DESC(old_large_send,
+	"Use old large send method on firmware that supports the new method");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ibmveth_stat {
 	char name[ETH_GSTRING_LEN];
 	int offset;
@@ -101,12 +117,22 @@ struct ibmveth_stat ibmveth_stats[] = {
 	{ "tx_send_failed", IBMVETH_STAT_OFF(tx_send_failed) },
 	{ "fw_enabled_ipv4_csum", IBMVETH_STAT_OFF(fw_ipv4_csum_support) },
 	{ "fw_enabled_ipv6_csum", IBMVETH_STAT_OFF(fw_ipv6_csum_support) },
+<<<<<<< HEAD
+=======
+	{ "tx_large_packets", IBMVETH_STAT_OFF(tx_large_packets) },
+	{ "rx_large_packets", IBMVETH_STAT_OFF(rx_large_packets) },
+	{ "fw_enabled_large_send", IBMVETH_STAT_OFF(fw_large_send_support) }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* simple methods of getting data from the current rxq entry */
 static inline u32 ibmveth_rxq_flags(struct ibmveth_adapter *adapter)
 {
+<<<<<<< HEAD
 	return adapter->rx_queue.queue_addr[adapter->rx_queue.index].flags_off;
+=======
+	return be32_to_cpu(adapter->rx_queue.queue_addr[adapter->rx_queue.index].flags_off);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int ibmveth_rxq_toggle(struct ibmveth_adapter *adapter)
@@ -130,9 +156,20 @@ static inline int ibmveth_rxq_frame_offset(struct ibmveth_adapter *adapter)
 	return ibmveth_rxq_flags(adapter) & IBMVETH_RXQ_OFF_MASK;
 }
 
+<<<<<<< HEAD
 static inline int ibmveth_rxq_frame_length(struct ibmveth_adapter *adapter)
 {
 	return adapter->rx_queue.queue_addr[adapter->rx_queue.index].length;
+=======
+static inline int ibmveth_rxq_large_packet(struct ibmveth_adapter *adapter)
+{
+	return ibmveth_rxq_flags(adapter) & IBMVETH_RXQ_LRG_PKT;
+}
+
+static inline int ibmveth_rxq_frame_length(struct ibmveth_adapter *adapter)
+{
+	return be32_to_cpu(adapter->rx_queue.queue_addr[adapter->rx_queue.index].length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int ibmveth_rxq_csum_good(struct ibmveth_adapter *adapter)
@@ -162,7 +199,11 @@ static int ibmveth_alloc_buffer_pool(struct ibmveth_buff_pool *pool)
 	if (!pool->free_map)
 		return -1;
 
+<<<<<<< HEAD
 	pool->dma_addr = kmalloc(sizeof(dma_addr_t) * pool->size, GFP_KERNEL);
+=======
+	pool->dma_addr = kcalloc(pool->size, sizeof(dma_addr_t), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pool->dma_addr) {
 		kfree(pool->free_map);
 		pool->free_map = NULL;
@@ -180,8 +221,11 @@ static int ibmveth_alloc_buffer_pool(struct ibmveth_buff_pool *pool)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	memset(pool->dma_addr, 0, sizeof(dma_addr_t) * pool->size);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < pool->size; ++i)
 		pool->free_map[i] = i;
 
@@ -534,10 +578,28 @@ retry:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int ibmveth_open(struct net_device *netdev)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
 	u64 mac_address = 0;
+=======
+static u64 ibmveth_encode_mac_addr(u8 *mac)
+{
+	int i;
+	u64 encoded = 0;
+
+	for (i = 0; i < ETH_ALEN; i++)
+		encoded = (encoded << 8) | mac[i];
+
+	return encoded;
+}
+
+static int ibmveth_open(struct net_device *netdev)
+{
+	struct ibmveth_adapter *adapter = netdev_priv(netdev);
+	u64 mac_address;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rxq_entries = 1;
 	unsigned long lpar_rc;
 	int rc;
@@ -591,8 +653,12 @@ static int ibmveth_open(struct net_device *netdev)
 	adapter->rx_queue.num_slots = rxq_entries;
 	adapter->rx_queue.toggle = 1;
 
+<<<<<<< HEAD
 	memcpy(&mac_address, netdev->dev_addr, netdev->addr_len);
 	mac_address = mac_address >> 16;
+=======
+	mac_address = ibmveth_encode_mac_addr(netdev->dev_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rxq_desc.fields.flags_len = IBMVETH_BUF_VALID |
 					adapter->rx_queue.queue_len;
@@ -746,7 +812,11 @@ static netdev_features_t ibmveth_fix_features(struct net_device *dev,
 	 */
 
 	if (!(features & NETIF_F_RXCSUM))
+<<<<<<< HEAD
 		features &= ~NETIF_F_ALL_CSUM;
+=======
+		features &= ~NETIF_F_CSUM_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return features;
 }
@@ -837,11 +907,77 @@ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
 	return rc1 ? rc1 : rc2;
 }
 
+<<<<<<< HEAD
+=======
+static int ibmveth_set_tso(struct net_device *dev, u32 data)
+{
+	struct ibmveth_adapter *adapter = netdev_priv(dev);
+	unsigned long set_attr, clr_attr, ret_attr;
+	long ret1, ret2;
+	int rc1 = 0, rc2 = 0;
+	int restart = 0;
+
+	if (netif_running(dev)) {
+		restart = 1;
+		adapter->pool_config = 1;
+		ibmveth_close(dev);
+		adapter->pool_config = 0;
+	}
+
+	set_attr = 0;
+	clr_attr = 0;
+
+	if (data)
+		set_attr = IBMVETH_ILLAN_LRG_SR_ENABLED;
+	else
+		clr_attr = IBMVETH_ILLAN_LRG_SR_ENABLED;
+
+	ret1 = h_illan_attributes(adapter->vdev->unit_address, 0, 0, &ret_attr);
+
+	if (ret1 == H_SUCCESS && (ret_attr & IBMVETH_ILLAN_LRG_SND_SUPPORT) &&
+	    !old_large_send) {
+		ret2 = h_illan_attributes(adapter->vdev->unit_address, clr_attr,
+					  set_attr, &ret_attr);
+
+		if (ret2 != H_SUCCESS) {
+			netdev_err(dev, "unable to change tso settings. %d rc=%ld\n",
+				   data, ret2);
+
+			h_illan_attributes(adapter->vdev->unit_address,
+					   set_attr, clr_attr, &ret_attr);
+
+			if (data == 1)
+				dev->features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
+			rc1 = -EIO;
+
+		} else {
+			adapter->fw_large_send_support = data;
+			adapter->large_send = data;
+		}
+	} else {
+		/* Older firmware version of large send offload does not
+		 * support tcp6/ipv6
+		 */
+		if (data == 1) {
+			dev->features &= ~NETIF_F_TSO6;
+			netdev_info(dev, "TSO feature requires all partitions to have updated driver");
+		}
+		adapter->large_send = data;
+	}
+
+	if (restart)
+		rc2 = ibmveth_open(dev);
+
+	return rc1 ? rc1 : rc2;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ibmveth_set_features(struct net_device *dev,
 	netdev_features_t features)
 {
 	struct ibmveth_adapter *adapter = netdev_priv(dev);
 	int rx_csum = !!(features & NETIF_F_RXCSUM);
+<<<<<<< HEAD
 	int rc;
 
 	if (rx_csum == adapter->rx_csum)
@@ -852,6 +988,27 @@ static int ibmveth_set_features(struct net_device *dev,
 		dev->features = features & ~(NETIF_F_ALL_CSUM | NETIF_F_RXCSUM);
 
 	return rc;
+=======
+	int large_send = !!(features & (NETIF_F_TSO | NETIF_F_TSO6));
+	int rc1 = 0, rc2 = 0;
+
+	if (rx_csum != adapter->rx_csum) {
+		rc1 = ibmveth_set_csum_offload(dev, rx_csum);
+		if (rc1 && !adapter->rx_csum)
+			dev->features =
+				features & ~(NETIF_F_CSUM_MASK |
+					     NETIF_F_RXCSUM);
+	}
+
+	if (large_send != adapter->large_send) {
+		rc2 = ibmveth_set_tso(dev, large_send);
+		if (rc2 && !adapter->large_send)
+			dev->features =
+				features & ~(NETIF_F_TSO | NETIF_F_TSO6);
+	}
+
+	return rc1 ? rc1 : rc2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ibmveth_get_strings(struct net_device *dev, u32 stringset, u8 *data)
@@ -902,7 +1059,11 @@ static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 #define page_offset(v) ((unsigned long)(v) & ((1 << 12) - 1))
 
 static int ibmveth_send(struct ibmveth_adapter *adapter,
+<<<<<<< HEAD
 			union ibmveth_buf_desc *descs)
+=======
+			union ibmveth_buf_desc *descs, unsigned long mss)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long correlator;
 	unsigned int retry_count;
@@ -919,7 +1080,12 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
 					     descs[0].desc, descs[1].desc,
 					     descs[2].desc, descs[3].desc,
 					     descs[4].desc, descs[5].desc,
+<<<<<<< HEAD
 					     correlator, &correlator);
+=======
+					     correlator, &correlator, mss,
+					     adapter->fw_large_send_support);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while ((ret == H_BUSY) && (retry_count--));
 
 	if (ret != H_SUCCESS && ret != H_DROPPED) {
@@ -940,6 +1106,10 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
 	int last, i;
 	int force_bounce = 0;
 	dma_addr_t dma_addr;
+<<<<<<< HEAD
+=======
+	unsigned long mss = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * veth handles a maximum of 6 segments including the header, so
@@ -965,6 +1135,12 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
 
 	desc_flags = IBMVETH_BUF_VALID;
 
+<<<<<<< HEAD
+=======
+	if (skb_is_gso(skb) && adapter->fw_large_send_support)
+		desc_flags |= IBMVETH_BUF_LRG_SND;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		unsigned char *buf = skb_transport_header(skb) +
 						skb->csum_offset;
@@ -992,7 +1168,11 @@ retry_bounce:
 		descs[0].fields.flags_len = desc_flags | skb->len;
 		descs[0].fields.address = adapter->bounce_buffer_dma;
 
+<<<<<<< HEAD
 		if (ibmveth_send(adapter, descs)) {
+=======
+		if (ibmveth_send(adapter, descs, 0)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			adapter->tx_send_failed++;
 			netdev->stats.tx_dropped++;
 		} else {
@@ -1026,7 +1206,27 @@ retry_bounce:
 		descs[i+1].fields.address = dma_addr;
 	}
 
+<<<<<<< HEAD
 	if (ibmveth_send(adapter, descs)) {
+=======
+	if (skb_is_gso(skb)) {
+		if (adapter->fw_large_send_support) {
+			mss = (unsigned long)skb_shinfo(skb)->gso_size;
+			adapter->tx_large_packets++;
+		} else if (!skb_is_gso_v6(skb)) {
+			/* Put -1 in the IP checksum to tell phyp it
+			 * is a largesend packet. Put the mss in
+			 * the TCP checksum.
+			 */
+			ip_hdr(skb)->check = 0xffff;
+			tcp_hdr(skb)->check =
+				cpu_to_be16(skb_shinfo(skb)->gso_size);
+			adapter->tx_large_packets++;
+		}
+	}
+
+	if (ibmveth_send(adapter, descs, mss)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		adapter->tx_send_failed++;
 		netdev->stats.tx_dropped++;
 	} else {
@@ -1045,25 +1245,97 @@ retry_bounce:
 			       DMA_TO_DEVICE);
 
 out:
+<<<<<<< HEAD
 	dev_kfree_skb(skb);
+=======
+	dev_consume_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NETDEV_TX_OK;
 
 map_failed_frags:
 	last = i+1;
+<<<<<<< HEAD
 	for (i = 0; i < last; i++)
+=======
+	for (i = 1; i < last; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dma_unmap_page(&adapter->vdev->dev, descs[i].fields.address,
 			       descs[i].fields.flags_len & IBMVETH_BUF_LEN_MASK,
 			       DMA_TO_DEVICE);
 
+<<<<<<< HEAD
+=======
+	dma_unmap_single(&adapter->vdev->dev,
+			 descs[0].fields.address,
+			 descs[0].fields.flags_len & IBMVETH_BUF_LEN_MASK,
+			 DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 map_failed:
 	if (!firmware_has_feature(FW_FEATURE_CMO))
 		netdev_err(netdev, "tx: unable to map xmit buffer\n");
 	adapter->tx_map_failed++;
+<<<<<<< HEAD
 	skb_linearize(skb);
+=======
+	if (skb_linearize(skb)) {
+		netdev->stats.tx_dropped++;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	force_bounce = 1;
 	goto retry_bounce;
 }
 
+<<<<<<< HEAD
+=======
+static void ibmveth_rx_mss_helper(struct sk_buff *skb, u16 mss, int lrg_pkt)
+{
+	struct tcphdr *tcph;
+	int offset = 0;
+	int hdr_len;
+
+	/* only TCP packets will be aggregated */
+	if (skb->protocol == htons(ETH_P_IP)) {
+		struct iphdr *iph = (struct iphdr *)skb->data;
+
+		if (iph->protocol == IPPROTO_TCP) {
+			offset = iph->ihl * 4;
+			skb_shinfo(skb)->gso_type = SKB_GSO_TCPV4;
+		} else {
+			return;
+		}
+	} else if (skb->protocol == htons(ETH_P_IPV6)) {
+		struct ipv6hdr *iph6 = (struct ipv6hdr *)skb->data;
+
+		if (iph6->nexthdr == IPPROTO_TCP) {
+			offset = sizeof(struct ipv6hdr);
+			skb_shinfo(skb)->gso_type = SKB_GSO_TCPV6;
+		} else {
+			return;
+		}
+	} else {
+		return;
+	}
+	/* if mss is not set through Large Packet bit/mss in rx buffer,
+	 * expect that the mss will be written to the tcp header checksum.
+	 */
+	tcph = (struct tcphdr *)(skb->data + offset);
+	if (lrg_pkt) {
+		skb_shinfo(skb)->gso_size = mss;
+	} else if (offset) {
+		skb_shinfo(skb)->gso_size = ntohs(tcph->check);
+		tcph->check = 0;
+	}
+
+	if (skb_shinfo(skb)->gso_size) {
+		hdr_len = offset + tcph->doff * 4;
+		skb_shinfo(skb)->gso_segs =
+				DIV_ROUND_UP(skb->len - hdr_len,
+					     skb_shinfo(skb)->gso_size);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ibmveth_poll(struct napi_struct *napi, int budget)
 {
 	struct ibmveth_adapter *adapter =
@@ -1071,9 +1343,16 @@ static int ibmveth_poll(struct napi_struct *napi, int budget)
 	struct net_device *netdev = adapter->netdev;
 	int frames_processed = 0;
 	unsigned long lpar_rc;
+<<<<<<< HEAD
 
 restart_poll:
 	do {
+=======
+	struct iphdr *iph;
+	u16 mss = 0;
+
+	while (frames_processed < budget) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!ibmveth_rxq_pending_buffer(adapter))
 			break;
 
@@ -1088,9 +1367,28 @@ restart_poll:
 			int length = ibmveth_rxq_frame_length(adapter);
 			int offset = ibmveth_rxq_frame_offset(adapter);
 			int csum_good = ibmveth_rxq_csum_good(adapter);
+<<<<<<< HEAD
 
 			skb = ibmveth_rxq_get_buffer(adapter);
 
+=======
+			int lrg_pkt = ibmveth_rxq_large_packet(adapter);
+			__sum16 iph_check = 0;
+
+			skb = ibmveth_rxq_get_buffer(adapter);
+
+			/* if the large packet bit is set in the rx queue
+			 * descriptor, the mss will be written by PHYP eight
+			 * bytes from the start of the rx buffer, which is
+			 * skb->data at this stage
+			 */
+			if (lrg_pkt) {
+				__be64 *rxmss = (__be64 *)(skb->data + 8);
+
+				mss = (u16)be64_to_cpu(*rxmss);
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			new_skb = NULL;
 			if (length < rx_copybreak)
 				new_skb = netdev_alloc_skb(netdev, length);
@@ -1113,20 +1411,63 @@ restart_poll:
 			skb_put(skb, length);
 			skb->protocol = eth_type_trans(skb, netdev);
 
+<<<<<<< HEAD
 			if (csum_good)
 				skb->ip_summed = CHECKSUM_UNNECESSARY;
 
 			netif_receive_skb(skb);	/* send it up */
+=======
+			if (csum_good) {
+				skb->ip_summed = CHECKSUM_UNNECESSARY;
+				if (be16_to_cpu(skb->protocol) == ETH_P_IP) {
+					iph = (struct iphdr *)skb->data;
+
+					/* If the IP checksum is not offloaded and if the packet
+					 *  is large send, the checksum must be rebuilt.
+					 */
+					if (iph->check == 0xffff) {
+						iph->check = 0;
+						iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
+					}
+				}
+			}
+
+			/* PHYP without PLSO support places a -1 in the ip
+			 * checksum for large send frames.
+			 */
+			if (skb->protocol == cpu_to_be16(ETH_P_IP)) {
+				struct iphdr *iph = (struct iphdr *)skb->data;
+
+				iph_check = iph->check;
+			}
+
+			if ((length > netdev->mtu + ETH_HLEN) ||
+			    lrg_pkt || iph_check == 0xffff) {
+				ibmveth_rx_mss_helper(skb, mss, lrg_pkt);
+				adapter->rx_large_packets++;
+			}
+
+			napi_gro_receive(napi, skb);	/* send it up */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			netdev->stats.rx_packets++;
 			netdev->stats.rx_bytes += length;
 			frames_processed++;
 		}
+<<<<<<< HEAD
 	} while (frames_processed < budget);
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ibmveth_replenish_task(adapter);
 
 	if (frames_processed < budget) {
+<<<<<<< HEAD
+=======
+		napi_complete(napi);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* We think we are done - reenable interrupts,
 		 * then check once more to make sure we are done.
 		 */
@@ -1135,13 +1476,19 @@ restart_poll:
 
 		BUG_ON(lpar_rc != H_SUCCESS);
 
+<<<<<<< HEAD
 		napi_complete(napi);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ibmveth_rxq_pending_buffer(adapter) &&
 		    napi_reschedule(napi)) {
 			lpar_rc = h_vio_signal(adapter->vdev->unit_address,
 					       VIO_IRQ_DISABLE);
+<<<<<<< HEAD
 			goto restart_poll;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -1194,8 +1541,13 @@ static void ibmveth_set_multicast_list(struct net_device *netdev)
 		/* add the addresses to the filter table */
 		netdev_for_each_mc_addr(ha, netdev) {
 			/* add the multicast address to the filter table */
+<<<<<<< HEAD
 			unsigned long mcast_addr = 0;
 			memcpy(((char *)&mcast_addr)+2, ha->addr, 6);
+=======
+			u64 mcast_addr;
+			mcast_addr = ibmveth_encode_mac_addr(ha->addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			lpar_rc = h_multicast_ctrl(adapter->vdev->unit_address,
 						   IbmVethMcastAddFilter,
 						   mcast_addr);
@@ -1229,7 +1581,11 @@ static int ibmveth_change_mtu(struct net_device *dev, int new_mtu)
 		return -EINVAL;
 
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++)
+<<<<<<< HEAD
 		if (new_mtu_oh < adapter->rx_buff_pool[i].buff_size)
+=======
+		if (new_mtu_oh <= adapter->rx_buff_pool[i].buff_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 	if (i == IBMVETH_NUM_BUFF_POOLS)
@@ -1248,7 +1604,11 @@ static int ibmveth_change_mtu(struct net_device *dev, int new_mtu)
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
 		adapter->rx_buff_pool[i].active = 1;
 
+<<<<<<< HEAD
 		if (new_mtu_oh < adapter->rx_buff_pool[i].buff_size) {
+=======
+		if (new_mtu_oh <= adapter->rx_buff_pool[i].buff_size) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev->mtu = new_mtu;
 			vio_cmo_set_dev_desired(viodev,
 						ibmveth_get_desired_dma
@@ -1286,18 +1646,34 @@ static unsigned long ibmveth_get_desired_dma(struct vio_dev *vdev)
 {
 	struct net_device *netdev = dev_get_drvdata(&vdev->dev);
 	struct ibmveth_adapter *adapter;
+<<<<<<< HEAD
+=======
+	struct iommu_table *tbl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long ret;
 	int i;
 	int rxqentries = 1;
 
+<<<<<<< HEAD
 	/* netdev inits at probe time along with the structures we need below*/
 	if (netdev == NULL)
 		return IOMMU_PAGE_ALIGN(IBMVETH_IO_ENTITLEMENT_DEFAULT);
+=======
+	tbl = get_iommu_table_base(&vdev->dev);
+
+	/* netdev inits at probe time along with the structures we need below*/
+	if (netdev == NULL)
+		return IOMMU_PAGE_ALIGN(IBMVETH_IO_ENTITLEMENT_DEFAULT, tbl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	adapter = netdev_priv(netdev);
 
 	ret = IBMVETH_BUFF_LIST_SIZE + IBMVETH_FILT_LIST_SIZE;
+<<<<<<< HEAD
 	ret += IOMMU_PAGE_ALIGN(netdev->mtu);
+=======
+	ret += IOMMU_PAGE_ALIGN(netdev->mtu, tbl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
 		/* add the size of the active receive buffers */
@@ -1305,15 +1681,49 @@ static unsigned long ibmveth_get_desired_dma(struct vio_dev *vdev)
 			ret +=
 			    adapter->rx_buff_pool[i].size *
 			    IOMMU_PAGE_ALIGN(adapter->rx_buff_pool[i].
+<<<<<<< HEAD
 			            buff_size);
 		rxqentries += adapter->rx_buff_pool[i].size;
 	}
 	/* add the size of the receive queue entries */
 	ret += IOMMU_PAGE_ALIGN(rxqentries * sizeof(struct ibmveth_rx_q_entry));
+=======
+					     buff_size, tbl);
+		rxqentries += adapter->rx_buff_pool[i].size;
+	}
+	/* add the size of the receive queue entries */
+	ret += IOMMU_PAGE_ALIGN(
+		rxqentries * sizeof(struct ibmveth_rx_q_entry), tbl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int ibmveth_set_mac_addr(struct net_device *dev, void *p)
+{
+	struct ibmveth_adapter *adapter = netdev_priv(dev);
+	struct sockaddr *addr = p;
+	u64 mac_address;
+	int rc;
+
+	if (!is_valid_ether_addr(addr->sa_data))
+		return -EADDRNOTAVAIL;
+
+	mac_address = ibmveth_encode_mac_addr(addr->sa_data);
+	rc = h_change_logical_lan_mac(adapter->vdev->unit_address, mac_address);
+	if (rc) {
+		netdev_err(adapter->netdev, "h_change_logical_lan_mac failed with rc=%d\n", rc);
+		return rc;
+	}
+
+	ether_addr_copy(dev->dev_addr, addr->sa_data);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct net_device_ops ibmveth_netdev_ops = {
 	.ndo_open		= ibmveth_open,
 	.ndo_stop		= ibmveth_close,
@@ -1324,7 +1734,11 @@ static const struct net_device_ops ibmveth_netdev_ops = {
 	.ndo_fix_features	= ibmveth_fix_features,
 	.ndo_set_features	= ibmveth_set_features,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_set_mac_address	= eth_mac_addr,
+=======
+	.ndo_set_mac_address    = ibmveth_set_mac_addr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= ibmveth_poll_controller,
 #endif
@@ -1336,7 +1750,13 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 	struct net_device *netdev;
 	struct ibmveth_adapter *adapter;
 	unsigned char *mac_addr_p;
+<<<<<<< HEAD
 	unsigned int *mcastFilterSize_p;
+=======
+	__be32 *mcastFilterSize_p;
+	long ret;
+	unsigned long ret_attr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&dev->dev, "entering ibmveth_probe for UA 0x%x\n",
 		dev->unit_address);
@@ -1356,8 +1776,14 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	mcastFilterSize_p = (unsigned int *)vio_get_attribute(dev,
 						VETH_MCAST_FILTER_SIZE, NULL);
+=======
+	mcastFilterSize_p = (__be32 *)vio_get_attribute(dev,
+							VETH_MCAST_FILTER_SIZE,
+							NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!mcastFilterSize_p) {
 		dev_err(&dev->dev, "Can't find VETH_MCAST_FILTER_SIZE "
 			"attribute\n");
@@ -1374,23 +1800,56 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
 
 	adapter->vdev = dev;
 	adapter->netdev = netdev;
+<<<<<<< HEAD
 	adapter->mcastFilterSize = *mcastFilterSize_p;
+=======
+	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adapter->pool_config = 0;
 
 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
 
+<<<<<<< HEAD
 	adapter->mac_addr = 0;
 	memcpy(&adapter->mac_addr, mac_addr_p, 6);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev->irq = dev->irq;
 	netdev->netdev_ops = &ibmveth_netdev_ops;
 	netdev->ethtool_ops = &netdev_ethtool_ops;
 	SET_NETDEV_DEV(netdev, &dev->dev);
+<<<<<<< HEAD
 	netdev->hw_features = NETIF_F_SG | NETIF_F_RXCSUM |
 		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
 	netdev->features |= netdev->hw_features;
 
 	memcpy(netdev->dev_addr, &adapter->mac_addr, netdev->addr_len);
+=======
+	netdev->hw_features = NETIF_F_SG;
+	if (vio_get_attribute(dev, "ibm,illan-options", NULL) != NULL) {
+		netdev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+				       NETIF_F_RXCSUM;
+	}
+
+	netdev->features |= netdev->hw_features;
+
+	ret = h_illan_attributes(adapter->vdev->unit_address, 0, 0, &ret_attr);
+
+	/* If running older firmware, TSO should not be enabled by default */
+	if (ret == H_SUCCESS && (ret_attr & IBMVETH_ILLAN_LRG_SND_SUPPORT) &&
+	    !old_large_send) {
+		netdev->hw_features |= NETIF_F_TSO | NETIF_F_TSO6;
+		netdev->features |= netdev->hw_features;
+	} else {
+		netdev->hw_features |= NETIF_F_TSO;
+	}
+
+	memcpy(netdev->dev_addr, mac_addr_p, ETH_ALEN);
+
+	if (firmware_has_feature(FW_FEATURE_CMO))
+		memcpy(pool_count, pool_count_cmo, sizeof(pool_count));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
 		struct kobject *kobj = &adapter->rx_buff_pool[i].kobj;

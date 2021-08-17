@@ -107,25 +107,41 @@ static irqreturn_t fpga_interrupt(int irq, void *_mask)
 static struct irqaction fpga_irq[4]  = {
 	[0] = {
 		.handler	= fpga_interrupt,
+<<<<<<< HEAD
 		.flags		= IRQF_DISABLED | IRQF_SHARED,
+=======
+		.flags		= IRQF_SHARED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name		= "fpga.0",
 		.dev_id		= (void *) 0x0028UL,
 	},
 	[1] = {
 		.handler	= fpga_interrupt,
+<<<<<<< HEAD
 		.flags		= IRQF_DISABLED | IRQF_SHARED,
+=======
+		.flags		= IRQF_SHARED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name		= "fpga.1",
 		.dev_id		= (void *) 0x0050UL,
 	},
 	[2] = {
 		.handler	= fpga_interrupt,
+<<<<<<< HEAD
 		.flags		= IRQF_DISABLED | IRQF_SHARED,
+=======
+		.flags		= IRQF_SHARED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name		= "fpga.2",
 		.dev_id		= (void *) 0x1c00UL,
 	},
 	[3] = {
 		.handler	= fpga_interrupt,
+<<<<<<< HEAD
 		.flags		= IRQF_DISABLED | IRQF_SHARED,
+=======
+		.flags		= IRQF_SHARED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name		= "fpga.3",
 		.dev_id		= (void *) 0x6386UL,
 	}

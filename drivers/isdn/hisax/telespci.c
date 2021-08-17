@@ -290,10 +290,13 @@ int setup_telespci(struct IsdnCard *card)
 	struct IsdnCardState *cs = card->cs;
 	char tmp[64];
 
+<<<<<<< HEAD
 #ifdef __BIG_ENDIAN
 #error "not running on big endian machines now"
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	strcpy(tmp, telespci_revision);
 	printk(KERN_INFO "HiSax: Teles/PCI driver Rev. %s\n", HiSax_getrev(tmp));
 	if (cs->typ != ISDN_CTYPE_TELESPCI)

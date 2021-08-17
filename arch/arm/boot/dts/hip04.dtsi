@@ -275,7 +275,10 @@
 		compatible = "arm,coresight-etb10", "arm,primecell";
 		reg = <0 0xe3c42000 0 0x1000>;
 
+<<<<<<< HEAD
 		coresight-default-sink;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clocks = <&clk_375m>;
 		clock-names = "apb_pclk";
 		port {

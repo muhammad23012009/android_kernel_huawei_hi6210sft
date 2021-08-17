@@ -13,6 +13,10 @@
 #define L1_CACHE_SHIFT     8
 #define NET_SKB_PAD	   32
 
+<<<<<<< HEAD
 #define __read_mostly __attribute__((__section__(".data..read_mostly")))
+=======
+#define __read_mostly __section(.data..read_mostly)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

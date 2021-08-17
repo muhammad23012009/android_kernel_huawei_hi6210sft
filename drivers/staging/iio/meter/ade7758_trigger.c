@@ -21,7 +21,11 @@
 static irqreturn_t ade7758_data_rdy_trig_poll(int irq, void *private)
 {
 	disable_irq_nosync(irq);
+<<<<<<< HEAD
 	iio_trigger_poll(private, iio_get_time_ns());
+=======
+	iio_trigger_poll(private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_HANDLED;
 }
@@ -66,7 +70,11 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
 	st->trig = iio_trigger_alloc("%s-dev%d",
 					spi_get_device_id(st->us)->name,
 					indio_dev->id);
+<<<<<<< HEAD
 	if (st->trig == NULL) {
+=======
+	if (!st->trig) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 		goto error_ret;
 	}

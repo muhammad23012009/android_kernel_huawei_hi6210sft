@@ -39,6 +39,7 @@ struct modes_unit {
 	char *mode_string;
 	int mode_size;
 };
+<<<<<<< HEAD
 struct modes_unit ieee80211_modes[] = {
 	{"a",1},
 	{"b",1},
@@ -46,6 +47,15 @@ struct modes_unit ieee80211_modes[] = {
 	{"?",1},
 	{"N-24G",5},
 	{"N-5G",4},
+=======
+static struct modes_unit ieee80211_modes[] = {
+	{"a", 1},
+	{"b", 1},
+	{"g", 1},
+	{"?", 1},
+	{"N-24G", 5},
+	{"N-5G", 4},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define iwe_stream_add_event_rsl iwe_stream_add_event
@@ -172,7 +182,11 @@ static inline char *rtl819x_translate_scan(struct ieee80211_device *ieee,
 	iwe.cmd = IWEVCUSTOM;
 	iwe.u.data.length = p - custom;
 	if (iwe.u.data.length)
+<<<<<<< HEAD
 	start = iwe_stream_add_point(info, start, stop, &iwe, custom);
+=======
+		start = iwe_stream_add_point(info, start, stop, &iwe, custom);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Add quality statistics */
 	/* TODO: Fix these values... */
 	iwe.cmd = IWEVQUAL;
@@ -194,7 +208,11 @@ static inline char *rtl819x_translate_scan(struct ieee80211_device *ieee,
 	iwe.u.data.length = p - custom;
 	if (iwe.u.data.length)
 	    start = iwe_stream_add_point(info, start, stop, &iwe, custom);
+<<<<<<< HEAD
 #if (WIRELESS_EXT < 18)
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ieee->wpa_enabled && network->wpa_ie_len){
 		char buf[MAX_WPA_IE_LEN * 2 + 30];
 	//	printk("WPA IE\n");
@@ -224,6 +242,7 @@ static inline char *rtl819x_translate_scan(struct ieee80211_device *ieee,
 		iwe.u.data.length = strlen(buf);
 		start = iwe_stream_add_point(info, start, stop, &iwe, buf);
 	}
+<<<<<<< HEAD
 #else
 	memset(&iwe, 0, sizeof(iwe));
 	if (network->wpa_ie_len)
@@ -244,6 +263,8 @@ static inline char *rtl819x_translate_scan(struct ieee80211_device *ieee,
 		start = iwe_stream_add_point(info, start, stop, &iwe, buf);
 	}
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 	/* Add EXTRA: Age to display seconds since last beacon/probe response
@@ -273,7 +294,11 @@ int ieee80211_wx_get_scan(struct ieee80211_device *ieee,
 	int i = 0;
 	int err = 0;
 	IEEE80211_DEBUG_WX("Getting scan\n");
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
+=======
+	mutex_lock(&ieee->wx_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	list_for_each_entry(network, &ieee->network_list, list) {
@@ -282,7 +307,11 @@ int ieee80211_wx_get_scan(struct ieee80211_device *ieee,
 		{
 			err = -E2BIG;
 			break;
+<<<<<<< HEAD
 												}
+=======
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ieee->scan_age == 0 ||
 		    time_after(network->last_scanned + ieee->scan_age, jiffies))
 			ev = rtl819x_translate_scan(ieee, ev, stop, network, info);
@@ -297,7 +326,11 @@ int ieee80211_wx_get_scan(struct ieee80211_device *ieee,
 	}
 
 	spin_unlock_irqrestore(&ieee->lock, flags);
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
+=======
+	mutex_unlock(&ieee->wx_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wrqu->data.length = ev -  extra;
 	wrqu->data.flags = 0;
 
@@ -305,6 +338,10 @@ int ieee80211_wx_get_scan(struct ieee80211_device *ieee,
 
 	return err;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_scan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_encode(struct ieee80211_device *ieee,
 			    struct iw_request_info *info,
@@ -479,6 +516,10 @@ int ieee80211_wx_set_encode(struct ieee80211_device *ieee,
 	}
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_set_encode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_get_encode(struct ieee80211_device *ieee,
 			    struct iw_request_info *info,
@@ -521,7 +562,12 @@ int ieee80211_wx_get_encode(struct ieee80211_device *ieee,
 
 	return 0;
 }
+<<<<<<< HEAD
 #if (WIRELESS_EXT >= 18)
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_encode);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 			       struct iw_request_info *info,
 			       union iwreq_data *wrqu, char *extra)
@@ -539,7 +585,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 	struct ieee80211_security sec = {
 		.flags = 0,
 	};
+<<<<<<< HEAD
 	//printk("======>encoding flag:%x,ext flag:%x, ext alg:%d\n", encoding->flags,ext->ext_flags, ext->alg);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	idx = encoding->flags & IW_ENCODE_INDEX;
 	if (idx) {
 		if (idx < 1 || idx > WEP_KEYS)
@@ -555,7 +604,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 		group_key = 1;
 	} else {
 		/* some Cisco APs use idx>0 for unicast in dynamic WEP */
+<<<<<<< HEAD
 		//printk("not group key, flags:%x, ext->alg:%d\n", ext->ext_flags, ext->alg);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (idx != 0 && ext->alg != IW_ENCODE_ALG_WEP)
 			return -EINVAL;
 		if (ieee->iw_mode == IW_MODE_INFRA)
@@ -584,7 +636,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 			sec.level = SEC_LEVEL_0;
 			sec.flags |= SEC_LEVEL;
 		}
+<<<<<<< HEAD
 		//printk("disabled: flag:%x\n", encoding->flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto done;
 	}
 
@@ -655,7 +710,10 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 		goto done;
 	}
  //skip_host_crypt:
+<<<<<<< HEAD
 	//printk("skip_host_crypt:ext_flags:%x\n", ext->ext_flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ext->ext_flags & IW_ENCODE_EXT_SET_TX_KEY) {
 		ieee->tx_keyidx = idx;
 		sec.active_key = idx;
@@ -695,6 +753,10 @@ done:
 	}
 	return ret;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_set_encode_ext);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_get_encode_ext(struct ieee80211_device *ieee,
 			       struct iw_request_info *info,
@@ -750,6 +812,10 @@ int ieee80211_wx_get_encode_ext(struct ieee80211_device *ieee,
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_encode_ext);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_mlme(struct ieee80211_device *ieee,
 			       struct iw_request_info *info,
@@ -766,6 +832,10 @@ int ieee80211_wx_set_mlme(struct ieee80211_device *ieee,
 	}
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_set_mlme);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 			       struct iw_request_info *info,
@@ -774,7 +844,10 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 	switch (data->flags & IW_AUTH_INDEX) {
 	case IW_AUTH_WPA_VERSION:
 	     /*need to support wpa2 here*/
+<<<<<<< HEAD
 		//printk("wpa version:%x\n", data->value);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case IW_AUTH_CIPHER_PAIRWISE:
 	case IW_AUTH_CIPHER_GROUP:
@@ -792,7 +865,11 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 		break;
 
 	case IW_AUTH_80211_AUTH_ALG:
+<<<<<<< HEAD
 		//printk("======>%s():data->value is %d\n",__FUNCTION__,data->value);
+=======
+		//printk("======>%s():data->value is %d\n",__func__,data->value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	//	ieee->open_wep = (data->value&IW_AUTH_ALG_OPEN_SYSTEM)?1:0;
 		if(data->value & IW_AUTH_ALG_SHARED_KEY){
 			ieee->open_wep = 0;
@@ -805,16 +882,25 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 		else if(data->value & IW_AUTH_ALG_LEAP){
 			ieee->open_wep = 1;
 			ieee->auth_mode = 2;
+<<<<<<< HEAD
 			//printk("hahahaa:LEAP\n");
 		}
 		else
 			return -EINVAL;
 		//printk("open_wep:%d\n", ieee->open_wep);
+=======
+		}
+		else
+			return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case IW_AUTH_WPA_ENABLED:
 		ieee->wpa_enabled = (data->value)?1:0;
+<<<<<<< HEAD
 		//printk("enalbe wpa:%d\n", ieee->wpa_enabled);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case IW_AUTH_RX_UNENCRYPTED_EAPOL:
@@ -828,7 +914,12 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 	}
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+EXPORT_SYMBOL(ieee80211_wx_set_auth);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ieee80211_wx_set_gen_ie(struct ieee80211_device *ieee, u8 *ie, size_t len)
 {
 	u8 *buf;
@@ -862,6 +953,7 @@ int ieee80211_wx_set_gen_ie(struct ieee80211_device *ieee, u8 *ie, size_t len)
 	return 0;
 
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(ieee80211_wx_set_gen_ie);
 #if (WIRELESS_EXT >= 18)
@@ -873,3 +965,6 @@ EXPORT_SYMBOL(ieee80211_wx_get_encode_ext);
 EXPORT_SYMBOL(ieee80211_wx_get_scan);
 EXPORT_SYMBOL(ieee80211_wx_set_encode);
 EXPORT_SYMBOL(ieee80211_wx_get_encode);
+=======
+EXPORT_SYMBOL(ieee80211_wx_set_gen_ie);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

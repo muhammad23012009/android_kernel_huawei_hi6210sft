@@ -25,8 +25,11 @@ struct lp3971 {
 	struct device *dev;
 	struct mutex io_lock;
 	struct i2c_client *i2c;
+<<<<<<< HEAD
 	int num_regulators;
 	struct regulator_dev **rdev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static u8 lp3971_reg_read(struct lp3971 *lp3971, u8 reg);
@@ -329,7 +332,11 @@ static int lp3971_i2c_read(struct i2c_client *i2c, char reg, int count,
 		return -EIO;
 	ret = i2c_smbus_read_byte_data(i2c, reg);
 	if (ret < 0)
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*dest = ret;
 	return 0;
@@ -367,8 +374,13 @@ static int lp3971_set_bits(struct lp3971 *lp3971, u8 reg, u16 mask, u16 val)
 	mutex_lock(&lp3971->io_lock);
 
 	ret = lp3971_i2c_read(lp3971->i2c, reg, 1, &tmp);
+<<<<<<< HEAD
 	tmp = (tmp & ~mask) | val;
 	if (ret == 0) {
+=======
+	if (ret == 0) {
+		tmp = (tmp & ~mask) | val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = lp3971_i2c_write(lp3971->i2c, reg, 1, &tmp);
 		dev_dbg(lp3971->dev, "reg write 0x%02x -> 0x%02x\n", (int)reg,
 			(unsigned)val&0xff);
@@ -383,6 +395,7 @@ static int setup_regulators(struct lp3971 *lp3971,
 {
 	int i, err;
 
+<<<<<<< HEAD
 	lp3971->num_regulators = pdata->num_regulators;
 	lp3971->rdev = kcalloc(pdata->num_regulators,
 				sizeof(struct regulator_dev *), GFP_KERNEL);
@@ -391,15 +404,22 @@ static int setup_regulators(struct lp3971 *lp3971,
 		goto err_nomem;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Instantiate the regulators */
 	for (i = 0; i < pdata->num_regulators; i++) {
 		struct regulator_config config = { };
 		struct lp3971_regulator_subdev *reg = &pdata->regulators[i];
+<<<<<<< HEAD
+=======
+		struct regulator_dev *rdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		config.dev = lp3971->dev;
 		config.init_data = reg->initdata;
 		config.driver_data = lp3971;
 
+<<<<<<< HEAD
 		lp3971->rdev[i] = regulator_register(&regulators[reg->id],
 						     &config);
 		if (IS_ERR(lp3971->rdev[i])) {
@@ -407,10 +427,20 @@ static int setup_regulators(struct lp3971 *lp3971,
 			dev_err(lp3971->dev, "regulator init failed: %d\n",
 				err);
 			goto error;
+=======
+		rdev = devm_regulator_register(lp3971->dev,
+					       &regulators[reg->id], &config);
+		if (IS_ERR(rdev)) {
+			err = PTR_ERR(rdev);
+			dev_err(lp3971->dev, "regulator init failed: %d\n",
+				err);
+			return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 error:
 	while (--i >= 0)
@@ -419,13 +449,19 @@ error:
 	lp3971->rdev = NULL;
 err_nomem:
 	return err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int lp3971_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
 	struct lp3971 *lp3971;
+<<<<<<< HEAD
 	struct lp3971_platform_data *pdata = i2c->dev.platform_data;
+=======
+	struct lp3971_platform_data *pdata = dev_get_platdata(&i2c->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	u16 val;
 
@@ -434,7 +470,11 @@ static int lp3971_i2c_probe(struct i2c_client *i2c,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	lp3971 = kzalloc(sizeof(struct lp3971), GFP_KERNEL);
+=======
+	lp3971 = devm_kzalloc(&i2c->dev, sizeof(struct lp3971), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (lp3971 == NULL)
 		return -ENOMEM;
 
@@ -449,11 +489,16 @@ static int lp3971_i2c_probe(struct i2c_client *i2c,
 		ret = -ENODEV;
 	if (ret < 0) {
 		dev_err(&i2c->dev, "failed to detect device\n");
+<<<<<<< HEAD
 		goto err_detect;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = setup_regulators(lp3971, pdata);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err_detect;
 
 	i2c_set_clientdata(i2c, lp3971);
@@ -481,16 +526,32 @@ static int lp3971_i2c_remove(struct i2c_client *i2c)
 static const struct i2c_device_id lp3971_i2c_id[] = {
        { "lp3971", 0 },
        { }
+=======
+		return ret;
+
+	i2c_set_clientdata(i2c, lp3971);
+	return 0;
+}
+
+static const struct i2c_device_id lp3971_i2c_id[] = {
+	{ "lp3971", 0 },
+	{ }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 MODULE_DEVICE_TABLE(i2c, lp3971_i2c_id);
 
 static struct i2c_driver lp3971_i2c_driver = {
 	.driver = {
 		.name = "LP3971",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe    = lp3971_i2c_probe,
 	.remove   = lp3971_i2c_remove,
+=======
+	},
+	.probe    = lp3971_i2c_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = lp3971_i2c_id,
 };
 

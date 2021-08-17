@@ -29,6 +29,10 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/omap-dma.h>
+<<<<<<< HEAD
+=======
+#include <linux/omap-gpmc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/gpio-omap.h>
 
 #include <trace/events/power.h>
@@ -43,13 +47,23 @@
 #include "common.h"
 #include "cm3xxx.h"
 #include "cm-regbits-34xx.h"
+<<<<<<< HEAD
 #include "gpmc.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "prm-regbits-34xx.h"
 #include "prm3xxx.h"
 #include "pm.h"
 #include "sdrc.h"
+<<<<<<< HEAD
 #include "sram.h"
 #include "control.h"
+=======
+#include "omap-secure.h"
+#include "sram.h"
+#include "control.h"
+#include "vc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* pm34xx errata defined in pm.h */
 u16 pm34xx_errata;
@@ -65,7 +79,10 @@ struct power_state {
 
 static LIST_HEAD(pwrst_list);
 
+<<<<<<< HEAD
 static int (*_omap_save_secure_sram)(u32 *addr);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void (*omap3_do_wfi_sram)(void);
 
 static struct powerdomain *mpu_pwrdm, *neon_pwrdm;
@@ -120,8 +137,13 @@ static void omap3_save_secure_ram_context(void)
 		 * will hang the system.
 		 */
 		pwrdm_set_next_pwrst(mpu_pwrdm, PWRDM_POWER_ON);
+<<<<<<< HEAD
 		ret = _omap_save_secure_sram((u32 *)
 				__pa(omap3_secure_ram_storage));
+=======
+		ret = omap3_save_secure_ram(omap3_secure_ram_storage,
+					    OMAP3_SAVE_SECURE_RAM_SZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pwrdm_set_next_pwrst(mpu_pwrdm, mpu_next_state);
 		/* Following is for error tracking, it should not happen */
 		if (ret) {
@@ -132,6 +154,7 @@ static void omap3_save_secure_ram_context(void)
 	}
 }
 
+<<<<<<< HEAD
 /*
  * PRCM Interrupt Handler Helper Function
  *
@@ -180,12 +203,19 @@ static int prcm_clear_mod_irqs(s16 module, u8 regs, u32 ignore_bits)
 	return c;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static irqreturn_t _prcm_int_handle_io(int irq, void *unused)
 {
 	int c;
 
+<<<<<<< HEAD
 	c = prcm_clear_mod_irqs(WKUP_MOD, 1,
 		~(OMAP3430_ST_IO_MASK | OMAP3430_ST_IO_CHAIN_MASK));
+=======
+	c = omap_prm_clear_mod_irqs(WKUP_MOD, 1, OMAP3430_ST_IO_MASK |
+				    OMAP3430_ST_IO_CHAIN_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return c ? IRQ_HANDLED : IRQ_NONE;
 }
@@ -199,6 +229,7 @@ static irqreturn_t _prcm_int_handle_wakeup(int irq, void *unused)
 	 * these are handled in a separate handler to avoid acking
 	 * IO events before parsing in mux code
 	 */
+<<<<<<< HEAD
 	c = prcm_clear_mod_irqs(WKUP_MOD, 1,
 		OMAP3430_ST_IO_MASK | OMAP3430_ST_IO_CHAIN_MASK);
 	c += prcm_clear_mod_irqs(CORE_MOD, 1, 0);
@@ -206,6 +237,15 @@ static irqreturn_t _prcm_int_handle_wakeup(int irq, void *unused)
 	if (omap_rev() > OMAP3430_REV_ES1_0) {
 		c += prcm_clear_mod_irqs(CORE_MOD, 3, 0);
 		c += prcm_clear_mod_irqs(OMAP3430ES2_USBHOST_MOD, 1, 0);
+=======
+	c = omap_prm_clear_mod_irqs(WKUP_MOD, 1, ~(OMAP3430_ST_IO_MASK |
+						   OMAP3430_ST_IO_CHAIN_MASK));
+	c += omap_prm_clear_mod_irqs(CORE_MOD, 1, ~0);
+	c += omap_prm_clear_mod_irqs(OMAP3430_PER_MOD, 1, ~0);
+	if (omap_rev() > OMAP3430_REV_ES1_0) {
+		c += omap_prm_clear_mod_irqs(CORE_MOD, 3, ~0);
+		c += omap_prm_clear_mod_irqs(OMAP3430ES2_USBHOST_MOD, 1, ~0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return c ? IRQ_HANDLED : IRQ_NONE;
@@ -245,7 +285,10 @@ void omap_sram_idle(void)
 	int per_next_state = PWRDM_POWER_ON;
 	int core_next_state = PWRDM_POWER_ON;
 	int per_going_off;
+<<<<<<< HEAD
 	int core_prev_state;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 sdrc_pwr = 0;
 
 	mpu_next_state = pwrdm_read_next_pwrst(mpu_pwrdm);
@@ -288,6 +331,12 @@ void omap_sram_idle(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* Configure PMIC signaling for I2C4 or sys_off_mode */
+	omap3_vc_set_pmic_signaling(core_next_state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap3_intc_prepare_idle();
 
 	/*
@@ -322,6 +371,7 @@ void omap_sram_idle(void)
 		sdrc_write_reg(sdrc_pwr, SDRC_POWER);
 
 	/* CORE */
+<<<<<<< HEAD
 	if (core_next_state < PWRDM_POWER_ON) {
 		core_prev_state = pwrdm_read_prev_pwrst(core_pwrdm);
 		if (core_prev_state == PWRDM_POWER_OFF) {
@@ -336,6 +386,22 @@ void omap_sram_idle(void)
 					       OMAP3_PRM_VOLTCTRL_OFFSET);
 	}
 	omap3_intc_resume_idle();
+=======
+	if (core_next_state < PWRDM_POWER_ON &&
+	    pwrdm_read_prev_pwrst(core_pwrdm) == PWRDM_POWER_OFF) {
+		omap3_core_restore_context();
+		omap3_cm_restore_context();
+		omap3_sram_restore_context();
+		omap2_sms_restore_context();
+	} else {
+		/*
+		 * In off-mode resume path above, omap3_core_restore_context
+		 * also handles the INTC autoidle restore done here so limit
+		 * this to non-off mode resume paths so we don't do it twice.
+		 */
+		omap3_intc_resume_idle();
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pwrdm_post_transition(NULL);
 
@@ -349,11 +415,19 @@ static void omap3_pm_idle(void)
 	if (omap_irq_pending())
 		return;
 
+<<<<<<< HEAD
 	trace_cpu_idle(1, smp_processor_id());
 
 	omap_sram_idle();
 
 	trace_cpu_idle(PWR_EVENT_EXIT, smp_processor_id());
+=======
+	trace_cpu_idle_rcuidle(1, smp_processor_id());
+
+	omap_sram_idle();
+
+	trace_cpu_idle_rcuidle(PWR_EVENT_EXIT, smp_processor_id());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_SUSPEND
@@ -395,6 +469,7 @@ restore:
 
 	return ret;
 }
+<<<<<<< HEAD
 
 #endif /* CONFIG_SUSPEND */
 
@@ -552,6 +627,17 @@ static void __init prcm_setup_regs(void)
 	omap3_iva_idle();
 
 	omap3_d2d_idle();
+=======
+#else
+#define omap3_pm_suspend NULL
+#endif /* CONFIG_SUSPEND */
+
+static void __init prcm_setup_regs(void)
+{
+	omap3_ctrl_init();
+
+	omap3_prm_init_pm(cpu_is_omap3630(), omap3_has_iva());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void omap3_pm_off_mode_enable(int enable)
@@ -627,15 +713,21 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
  *
  * The minimum set of functions is pushed to SRAM for execution:
  * - omap3_do_wfi for erratum i581 WA,
+<<<<<<< HEAD
  * - save_secure_ram_context for security extensions.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void omap_push_sram_idle(void)
 {
 	omap3_do_wfi_sram = omap_sram_push(omap3_do_wfi, omap3_do_wfi_sz);
+<<<<<<< HEAD
 
 	if (omap_type() != OMAP2_DEVICE_TYPE_GP)
 		_omap_save_secure_sram = omap_sram_push(save_secure_ram_context,
 				save_secure_ram_context_sz);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init pm_errata_configure(void)
@@ -659,7 +751,11 @@ int __init omap3_pm_init(void)
 	int ret;
 
 	if (!omap3_has_io_chain_ctrl())
+<<<<<<< HEAD
 		pr_warning("PM: no software I/O chain control; some wakeups may be lost\n");
+=======
+		pr_warn("PM: no software I/O chain control; some wakeups may be lost\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pm_errata_configure();
 
@@ -710,9 +806,13 @@ int __init omap3_pm_init(void)
 	per_clkdm = clkdm_lookup("per_clkdm");
 	wkup_clkdm = clkdm_lookup("wkup_clkdm");
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUSPEND
 	omap_pm_suspend = omap3_pm_suspend;
 #endif
+=======
+	omap_common_suspend_init(omap3_pm_suspend);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	arm_pm_idle = omap3_pm_idle;
 	omap3_idle_init();
@@ -749,7 +849,11 @@ int __init omap3_pm_init(void)
 	clkdm_add_wkdep(neon_clkdm, mpu_clkdm);
 	if (omap_type() != OMAP2_DEVICE_TYPE_GP) {
 		omap3_secure_ram_storage =
+<<<<<<< HEAD
 			kmalloc(0x803F, GFP_KERNEL);
+=======
+			kmalloc(OMAP3_SAVE_SECURE_RAM_SZ, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!omap3_secure_ram_storage)
 			pr_err("Memory allocation failed when allocating for secure sram context\n");
 

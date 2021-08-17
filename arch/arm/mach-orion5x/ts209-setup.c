@@ -25,9 +25,15 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "tsx09-common.h"
 
 #define QNAP_TS209_NOR_BOOT_BASE 0xf4000000
@@ -106,7 +112,11 @@ static struct platform_device qnap_ts209_nor_flash = {
 #define QNAP_TS209_PCI_SLOT0_IRQ_PIN	6
 #define QNAP_TS209_PCI_SLOT1_IRQ_PIN	7
 
+<<<<<<< HEAD
 void __init qnap_ts209_pci_preinit(void)
+=======
+static void __init qnap_ts209_pci_preinit(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int pin;
 
@@ -286,8 +296,15 @@ static void __init qnap_ts209_init(void)
 	/*
 	 * Configure peripherals.
 	 */
+<<<<<<< HEAD
 	mvebu_mbus_add_window("devbus-boot", QNAP_TS209_NOR_BOOT_BASE,
 			      QNAP_TS209_NOR_BOOT_SIZE);
+=======
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    QNAP_TS209_NOR_BOOT_BASE,
+				    QNAP_TS209_NOR_BOOT_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&qnap_ts209_nor_flash);
 
 	orion5x_ehci0_init();
@@ -312,7 +329,11 @@ static void __init qnap_ts209_init(void)
 			gpio_free(TS209_RTC_GPIO);
 	}
 	if (qnap_ts209_i2c_rtc.irq == 0)
+<<<<<<< HEAD
 		pr_warning("qnap_ts209_init: failed to get RTC IRQ\n");
+=======
+		pr_warn("qnap_ts209_init: failed to get RTC IRQ\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i2c_register_board_info(0, &qnap_ts209_i2c_rtc, 1);
 
 	/* register tsx09 specific power-off method */
@@ -322,6 +343,10 @@ static void __init qnap_ts209_init(void)
 MACHINE_START(TS209, "QNAP TS-109/TS-209")
 	/* Maintainer: Byron Bradley <byron.bbradley@gmail.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= qnap_ts209_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,

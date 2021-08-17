@@ -196,7 +196,11 @@ static int get_ctl_type(struct snd_card *card, struct snd_ctl_elem_id *id,
 	kctl = snd_ctl_find_id(card, id);
 	if (! kctl) {
 		up_read(&card->controls_rwsem);
+<<<<<<< HEAD
 		return -ENXIO;
+=======
+		return -ENOENT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (info == NULL) {
@@ -263,7 +267,11 @@ static int copy_ctl_value_from_user(struct snd_card *card,
 	} else {
 		size = get_elem_size(type, count);
 		if (size < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "snd_ioctl32_ctl_elem_value: unknown type %d\n", type);
+=======
+			dev_err(card->dev, "snd_ioctl32_ctl_elem_value: unknown type %d\n", type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 		}
 		if (copy_from_user(data->value.bytes.data, valuep, size))
@@ -400,8 +408,12 @@ static int snd_ctl_elem_add_compat(struct snd_ctl_file *file,
 	if (copy_from_user(&data->id, &data32->id, sizeof(data->id)) ||
 	    copy_from_user(&data->type, &data32->type, 3 * sizeof(u32)))
 		goto error;
+<<<<<<< HEAD
 	if (get_user(data->owner, &data32->owner) ||
 	    get_user(data->type, &data32->type))
+=======
+	if (get_user(data->owner, &data32->owner))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 	switch (data->type) {
 	case SNDRV_CTL_ELEM_TYPE_BOOLEAN:

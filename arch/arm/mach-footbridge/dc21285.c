@@ -69,6 +69,7 @@ dc21285_read_config(struct pci_bus *bus, unsigned int devfn, int where,
 	if (addr)
 		switch (size) {
 		case 1:
+<<<<<<< HEAD
 			asm("ldrb	%0, [%1, %2]"
 				: "=r" (v) : "r" (addr), "r" (where) : "cc");
 			break;
@@ -78,6 +79,17 @@ dc21285_read_config(struct pci_bus *bus, unsigned int devfn, int where,
 			break;
 		case 4:
 			asm("ldr	%0, [%1, %2]"
+=======
+			asm volatile("ldrb	%0, [%1, %2]"
+				: "=r" (v) : "r" (addr), "r" (where) : "cc");
+			break;
+		case 2:
+			asm volatile("ldrh	%0, [%1, %2]"
+				: "=r" (v) : "r" (addr), "r" (where) : "cc");
+			break;
+		case 4:
+			asm volatile("ldr	%0, [%1, %2]"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				: "=r" (v) : "r" (addr), "r" (where) : "cc");
 			break;
 		}
@@ -103,17 +115,29 @@ dc21285_write_config(struct pci_bus *bus, unsigned int devfn, int where,
 	if (addr)
 		switch (size) {
 		case 1:
+<<<<<<< HEAD
 			asm("strb	%0, [%1, %2]"
+=======
+			asm volatile("strb	%0, [%1, %2]"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				: : "r" (value), "r" (addr), "r" (where)
 				: "cc");
 			break;
 		case 2:
+<<<<<<< HEAD
 			asm("strh	%0, [%1, %2]"
+=======
+			asm volatile("strh	%0, [%1, %2]"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				: : "r" (value), "r" (addr), "r" (where)
 				: "cc");
 			break;
 		case 4:
+<<<<<<< HEAD
 			asm("str	%0, [%1, %2]"
+=======
+			asm volatile("str	%0, [%1, %2]"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				: : "r" (value), "r" (addr), "r" (where)
 				: "cc");
 			break;
@@ -334,6 +358,7 @@ void __init dc21285_preinit(void)
 	/*
 	 * We don't care if these fail.
 	 */
+<<<<<<< HEAD
 	dc21285_request_irq(IRQ_PCI_SERR, dc21285_serr_irq, IRQF_DISABLED,
 			    "PCI system error", &serr_timer);
 	dc21285_request_irq(IRQ_PCI_PERR, dc21285_parity_irq, IRQF_DISABLED,
@@ -343,6 +368,17 @@ void __init dc21285_preinit(void)
 	dc21285_request_irq(IRQ_DISCARD_TIMER, dc21285_discard_irq, IRQF_DISABLED,
 			    "Discard timer", NULL);
 	dc21285_request_irq(IRQ_PCI_DPERR, dc21285_dparity_irq, IRQF_DISABLED,
+=======
+	dc21285_request_irq(IRQ_PCI_SERR, dc21285_serr_irq, 0,
+			    "PCI system error", &serr_timer);
+	dc21285_request_irq(IRQ_PCI_PERR, dc21285_parity_irq, 0,
+			    "PCI parity error", &perr_timer);
+	dc21285_request_irq(IRQ_PCI_ABORT, dc21285_abort_irq, 0,
+			    "PCI abort", NULL);
+	dc21285_request_irq(IRQ_DISCARD_TIMER, dc21285_discard_irq, 0,
+			    "Discard timer", NULL);
+	dc21285_request_irq(IRQ_PCI_DPERR, dc21285_dparity_irq, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    "PCI data parity", NULL);
 
 	if (cfn_mode) {

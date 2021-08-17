@@ -354,6 +354,10 @@ out:
 		usb_autopm_put_interface(i2400mu->usb_iface);
 	d_fnend(8, dev, "(i2400m %p ack %p size %zu) = %ld\n",
 		i2400m, ack, ack_size, (long) result);
+<<<<<<< HEAD
+=======
+	usb_put_urb(&notif_urb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 
 error_exceeded:

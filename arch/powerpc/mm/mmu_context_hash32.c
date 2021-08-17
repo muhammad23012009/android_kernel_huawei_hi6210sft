@@ -2,7 +2,11 @@
  * This file contains the routines for handling the MMU on those
  * PowerPC implementations where the MMU substantially follows the
  * architecture specification.  This includes the 6xx, 7xx, 7xxx,
+<<<<<<< HEAD
  * 8260, and POWER3 implementations but excludes the 8xx and 4xx.
+=======
+ * and 8260 implementations but excludes the 8xx and 4xx.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  -- paulus
  *
  *  Derived from arch/ppc/mm/init.c:

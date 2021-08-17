@@ -23,16 +23,26 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mariusz Bialonczyk <manio@skyboo.net>");
 MODULE_DESCRIPTION("w1 family 3a driver for DS2413 2 Pin IO");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("w1-family-" __stringify(W1_FAMILY_DS2413));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define W1_F3A_RETRIES                     3
 #define W1_F3A_FUNC_PIO_ACCESS_READ        0xF5
 #define W1_F3A_FUNC_PIO_ACCESS_WRITE       0x5A
 #define W1_F3A_SUCCESS_CONFIRM_BYTE        0xAA
 
+<<<<<<< HEAD
 static ssize_t w1_f3a_read_state(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static ssize_t state_read(struct file *filp, struct kobject *kobj,
+			  struct bin_attribute *bin_attr, char *buf, loff_t off,
+			  size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	dev_dbg(&sl->dev,
@@ -65,10 +75,18 @@ static ssize_t w1_f3a_read_state(
 		return 1;
 }
 
+<<<<<<< HEAD
 static ssize_t w1_f3a_write_output(
 	struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr,
 	char *buf, loff_t off, size_t count)
+=======
+static BIN_ATTR_RO(state, 1);
+
+static ssize_t output_write(struct file *filp, struct kobject *kobj,
+			    struct bin_attribute *bin_attr, char *buf,
+			    loff_t off, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	u8 w1_buf[3];
@@ -109,6 +127,7 @@ error:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 #define NB_SYSFS_BIN_FILES 2
 static struct bin_attribute w1_f3a_sysfs_bin_files[NB_SYSFS_BIN_FILES] = {
 	{
@@ -156,12 +175,34 @@ static void w1_f3a_remove_slave(struct w1_slave *sl)
 static struct w1_family_ops w1_f3a_fops = {
 	.add_slave      = w1_f3a_add_slave,
 	.remove_slave   = w1_f3a_remove_slave,
+=======
+static BIN_ATTR(output, S_IRUGO | S_IWUSR | S_IWGRP, NULL, output_write, 1);
+
+static struct bin_attribute *w1_f3a_bin_attrs[] = {
+	&bin_attr_state,
+	&bin_attr_output,
+	NULL,
+};
+
+static const struct attribute_group w1_f3a_group = {
+	.bin_attrs = w1_f3a_bin_attrs,
+};
+
+static const struct attribute_group *w1_f3a_groups[] = {
+	&w1_f3a_group,
+	NULL,
+};
+
+static struct w1_family_ops w1_f3a_fops = {
+	.groups		= w1_f3a_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct w1_family w1_family_3a = {
 	.fid = W1_FAMILY_DS2413,
 	.fops = &w1_f3a_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_f3a_init(void)
 {
@@ -175,3 +216,6 @@ static void __exit w1_f3a_exit(void)
 
 module_init(w1_f3a_init);
 module_exit(w1_f3a_exit);
+=======
+module_w1_family(w1_family_3a);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

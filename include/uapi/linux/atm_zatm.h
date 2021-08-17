@@ -35,12 +35,15 @@ struct zatm_pool_req {
 	struct zatm_pool_info info;	/* actual information */
 };
 
+<<<<<<< HEAD
 struct zatm_t_hist {
 	struct timeval real;		/* real (wall-clock) time */
 	struct timeval expected;	/* expected real time */
 };
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ZATM_OAM_POOL		0	/* free buffer pool for OAM cells */
 #define ZATM_AAL0_POOL		1	/* free buffer pool for AAL0 cells */
 #define ZATM_AAL5_POOL_BASE	2	/* first AAL5 free buffer pool */

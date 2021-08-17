@@ -10,7 +10,11 @@
  * Copyright (C) 2008 Panasas Inc.  All rights reserved.
  *
  * Authors:
+<<<<<<< HEAD
  *   Boaz Harrosh <bharrosh@panasas.com>
+=======
+ *   Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *   Benny Halevy <bhalevy@panasas.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -74,7 +78,11 @@
 static const char osd_name[] = "osd";
 static const char *osd_version_string = "open-osd 0.2.1";
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Boaz Harrosh <bharrosh@panasas.com>");
+=======
+MODULE_AUTHOR("Boaz Harrosh <ooo@electrozaur.com>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("open-osd Upper-Layer-Driver osd.ko");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_CHARDEV_MAJOR(SCSI_OSD_MAJOR);
@@ -107,6 +115,10 @@ static ssize_t osdname_show(struct device *dev, struct device_attribute *attr,
 						   class_dev);
 	return sprintf(buf, "%s\n", ould->odi.osdname);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(osdname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t systemid_show(struct device *dev, struct device_attribute *attr,
 			    char *buf)
@@ -117,17 +129,32 @@ static ssize_t systemid_show(struct device *dev, struct device_attribute *attr,
 	memcpy(buf, ould->odi.systemid, ould->odi.systemid_len);
 	return ould->odi.systemid_len;
 }
+<<<<<<< HEAD
 
 static struct device_attribute osd_uld_attrs[] = {
 	__ATTR(osdname, S_IRUGO, osdname_show, NULL),
 	__ATTR(systemid, S_IRUGO, systemid_show, NULL),
 	__ATTR_NULL,
 };
+=======
+static DEVICE_ATTR_RO(systemid);
+
+static struct attribute *osd_uld_attrs[] = {
+	&dev_attr_osdname.attr,
+	&dev_attr_systemid.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(osd_uld);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct class osd_uld_class = {
 	.owner		= THIS_MODULE,
 	.name		= "scsi_osd",
+<<<<<<< HEAD
 	.dev_attrs	= osd_uld_attrs,
+=======
+	.dev_groups	= osd_uld_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -537,9 +564,15 @@ static int osd_remove(struct device *dev)
  */
 
 static struct scsi_driver osd_driver = {
+<<<<<<< HEAD
 	.owner			= THIS_MODULE,
 	.gendrv = {
 		.name		= osd_name,
+=======
+	.gendrv = {
+		.name		= osd_name,
+		.owner		= THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.probe		= osd_probe,
 		.remove		= osd_remove,
 	}

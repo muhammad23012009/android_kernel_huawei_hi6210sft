@@ -62,6 +62,14 @@ struct vnic_rx_stats {
 	u64 rsvd[16];
 };
 
+<<<<<<< HEAD
+=======
+/* Generic statistics */
+struct vnic_gen_stats {
+	u64 dma_map_error;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct vnic_stats {
 	struct vnic_tx_stats tx;
 	struct vnic_rx_stats rx;

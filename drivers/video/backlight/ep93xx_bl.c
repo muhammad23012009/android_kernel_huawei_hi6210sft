@@ -92,8 +92,13 @@ static int ep93xxbl_probe(struct platform_device *dev)
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = EP93XX_MAX_BRIGHT;
+<<<<<<< HEAD
 	bl = backlight_device_register(dev->name, &dev->dev, ep93xxbl,
 				       &ep93xxbl_ops, &props);
+=======
+	bl = devm_backlight_device_register(&dev->dev, dev->name, &dev->dev,
+					ep93xxbl, &ep93xxbl_ops, &props);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(bl))
 		return PTR_ERR(bl);
 
@@ -106,6 +111,7 @@ static int ep93xxbl_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ep93xxbl_remove(struct platform_device *dev)
 {
 	struct backlight_device *bl = platform_get_drvdata(dev);
@@ -115,6 +121,8 @@ static int ep93xxbl_remove(struct platform_device *dev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM_SLEEP
 static int ep93xxbl_suspend(struct device *dev)
 {
@@ -137,11 +145,17 @@ static SIMPLE_DEV_PM_OPS(ep93xxbl_pm_ops, ep93xxbl_suspend, ep93xxbl_resume);
 static struct platform_driver ep93xxbl_driver = {
 	.driver		= {
 		.name	= "ep93xx-bl",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &ep93xxbl_pm_ops,
 	},
 	.probe		= ep93xxbl_probe,
 	.remove		= ep93xxbl_remove,
+=======
+		.pm	= &ep93xxbl_pm_ops,
+	},
+	.probe		= ep93xxbl_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(ep93xxbl_driver);

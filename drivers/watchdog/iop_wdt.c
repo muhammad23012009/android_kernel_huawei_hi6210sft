@@ -259,4 +259,7 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started");
 MODULE_AUTHOR("Curt E Bruns <curt.e.bruns@intel.com>");
 MODULE_DESCRIPTION("iop watchdog timer driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -95,11 +95,18 @@ static struct kmem_cache *ccid_kmem_cache_create(int obj_size, char *slab_name_f
 
 static void ccid_kmem_cache_destroy(struct kmem_cache *slab)
 {
+<<<<<<< HEAD
 	if (slab != NULL)
 		kmem_cache_destroy(slab);
 }
 
 static int ccid_activate(struct ccid_operations *ccid_ops)
+=======
+	kmem_cache_destroy(slab);
+}
+
+static int __init ccid_activate(struct ccid_operations *ccid_ops)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err = -ENOBUFS;
 

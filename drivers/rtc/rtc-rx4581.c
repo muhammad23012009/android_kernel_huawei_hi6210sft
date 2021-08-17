@@ -282,11 +282,14 @@ static int rx4581_probe(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rx4581_remove(struct spi_device *spi)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct spi_device_id rx4581_id[] = {
 	{ "rx4581", 0 },
 	{ }
@@ -296,10 +299,15 @@ MODULE_DEVICE_TABLE(spi, rx4581_id);
 static struct spi_driver rx4581_driver = {
 	.driver = {
 		.name	= "rtc-rx4581",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe	= rx4581_probe,
 	.remove = rx4581_remove,
+=======
+	},
+	.probe	= rx4581_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = rx4581_id,
 };
 

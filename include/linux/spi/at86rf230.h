@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Written by:
  * Dmitry Eremin-Solenikov <dmitry.baryshkov@siemens.com>
  */
@@ -26,6 +29,7 @@ struct at86rf230_platform_data {
 	int rstn;
 	int slp_tr;
 	int dig2;
+<<<<<<< HEAD
 
 	/* Setting the irq_type will configure the driver to request
 	 * the platform irq trigger type according to the given value
@@ -40,6 +44,9 @@ struct at86rf230_platform_data {
 	 * of the device to high active (the default value).
 	 */
 	int irq_type;
+=======
+	u8 xtal_trim;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif

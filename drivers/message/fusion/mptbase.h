@@ -405,7 +405,11 @@ typedef struct _VirtTarget {
 typedef struct _VirtDevice {
 	VirtTarget		*vtarget;
 	u8			 configured_lun;
+<<<<<<< HEAD
 	int			 lun;
+=======
+	u64			 lun;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } VirtDevice;
 
 /*
@@ -605,7 +609,11 @@ typedef struct _MPT_ADAPTER
 	int			 id;		/* Unique adapter id N {0,1,2,...} */
 	int			 pci_irq;	/* This irq           */
 	char			 name[MPT_NAME_LENGTH];	/* "iocN"             */
+<<<<<<< HEAD
 	char			 prod_name[MPT_NAME_LENGTH];	/* "LSIFC9x9"         */
+=======
+	const char		 *prod_name;	/* "LSIFC9x9"         */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_FUSION_LOGGING
 	/* used in mpt_display_event_info */
 	char			 evStr[EVENT_DESCR_STR_SZ];
@@ -671,7 +679,10 @@ typedef struct _MPT_ADAPTER
 	u8			*HostPageBuffer; /* SAS - host page buffer support */
 	u32			HostPageBuffer_sz;
 	dma_addr_t		HostPageBuffer_dma;
+<<<<<<< HEAD
 	int			 mtrr_reg;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_dev		*pcidev;	/* struct pci_dev pointer */
 	int			bars;		/* bitmask of BAR's that must be configured */
 	int			msi_enable;

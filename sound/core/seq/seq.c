@@ -47,8 +47,11 @@ int seq_default_timer_card = -1;
 int seq_default_timer_device =
 #ifdef CONFIG_SND_SEQ_HRTIMER_DEFAULT
 	SNDRV_TIMER_GLOBAL_HRTIMER
+<<<<<<< HEAD
 #elif defined(CONFIG_SND_SEQ_RTCTIMER_DEFAULT)
 	SNDRV_TIMER_GLOBAL_RTC
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	SNDRV_TIMER_GLOBAL_SYSTEM
 #endif
@@ -86,7 +89,10 @@ static int __init alsa_seq_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	snd_seq_autoload_lock();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = client_init_data()) < 0)
 		goto error;
 
@@ -110,8 +116,13 @@ static int __init alsa_seq_init(void)
 	if ((err = snd_seq_system_client_init()) < 0)
 		goto error;
 
+<<<<<<< HEAD
  error:
 	snd_seq_autoload_unlock();
+=======
+	snd_seq_autoload_init();
+ error:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -131,6 +142,11 @@ static void __exit alsa_seq_exit(void)
 
 	/* release event memory */
 	snd_sequencer_memory_done();
+<<<<<<< HEAD
+=======
+
+	snd_seq_autoload_exit();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(alsa_seq_init)

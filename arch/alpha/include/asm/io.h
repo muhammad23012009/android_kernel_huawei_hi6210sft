@@ -297,7 +297,13 @@ static inline void __iomem * ioremap_nocache(unsigned long offset,
 					     unsigned long size)
 {
 	return ioremap(offset, size);
+<<<<<<< HEAD
 } 
+=======
+}
+
+#define ioremap_uc ioremap_nocache
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void iounmap(volatile void __iomem *addr)
 {
@@ -489,10 +495,17 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
 }
 #endif
 
+<<<<<<< HEAD
 #define ioread16be(p) be16_to_cpu(ioread16(p))
 #define ioread32be(p) be32_to_cpu(ioread32(p))
 #define iowrite16be(v,p) iowrite16(cpu_to_be16(v), (p))
 #define iowrite32be(v,p) iowrite32(cpu_to_be32(v), (p))
+=======
+#define ioread16be(p) swab16(ioread16(p))
+#define ioread32be(p) swab32(ioread32(p))
+#define iowrite16be(v,p) iowrite16(swab16(v), (p))
+#define iowrite32be(v,p) iowrite32(swab32(v), (p))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define inb_p		inb
 #define inw_p		inw
@@ -500,10 +513,21 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
 #define outb_p		outb
 #define outw_p		outw
 #define outl_p		outl
+<<<<<<< HEAD
 #define readb_relaxed(addr) __raw_readb(addr)
 #define readw_relaxed(addr) __raw_readw(addr)
 #define readl_relaxed(addr) __raw_readl(addr)
 #define readq_relaxed(addr) __raw_readq(addr)
+=======
+#define readb_relaxed(addr)	__raw_readb(addr)
+#define readw_relaxed(addr)	__raw_readw(addr)
+#define readl_relaxed(addr)	__raw_readl(addr)
+#define readq_relaxed(addr)	__raw_readq(addr)
+#define writeb_relaxed(b, addr)	__raw_writeb(b, addr)
+#define writew_relaxed(b, addr)	__raw_writew(b, addr)
+#define writel_relaxed(b, addr)	__raw_writel(b, addr)
+#define writeq_relaxed(b, addr)	__raw_writeq(b, addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define mmiowb()
 

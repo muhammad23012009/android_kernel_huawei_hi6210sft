@@ -49,6 +49,10 @@ struct squashfs_inode_info {
 
 static inline struct squashfs_inode_info *squashfs_i(struct inode *inode)
 {
+<<<<<<< HEAD
 	return list_entry(inode, struct squashfs_inode_info, vfs_inode);
+=======
+	return container_of(inode, struct squashfs_inode_info, vfs_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif

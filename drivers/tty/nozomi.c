@@ -140,8 +140,13 @@ static int debug;
 #define R_FCR		0x0000	/* Flow Control Register */
 #define R_IER		0x0004	/* Interrupt Enable Register */
 
+<<<<<<< HEAD
 #define CONFIG_MAGIC	0xEFEFFEFE
 #define TOGGLE_VALID	0x0000
+=======
+#define NOZOMI_CONFIG_MAGIC	0xEFEFFEFE
+#define TOGGLE_VALID		0x0000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Definition of interrupt tokens */
 #define MDM_DL1		0x0001
@@ -523,7 +528,11 @@ static u32 write_mem32(void __iomem *mem_addr_start, const u32 *buf,
 }
 
 /* Setup pointers to different channels and also setup buffer sizes. */
+<<<<<<< HEAD
 static void setup_memory(struct nozomi *dc)
+=======
+static void nozomi_setup_memory(struct nozomi *dc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem *offset = dc->base_addr + dc->config_table.dl_start;
 	/* The length reported is including the length field of 4 bytes,
@@ -660,9 +669,15 @@ static int nozomi_read_config_table(struct nozomi *dc)
 	read_mem32((u32 *) &dc->config_table, dc->base_addr + 0,
 						sizeof(struct config_table));
 
+<<<<<<< HEAD
 	if (dc->config_table.signature != CONFIG_MAGIC) {
 		dev_err(&dc->pdev->dev, "ConfigTable Bad! 0x%08X != 0x%08X\n",
 			dc->config_table.signature, CONFIG_MAGIC);
+=======
+	if (dc->config_table.signature != NOZOMI_CONFIG_MAGIC) {
+		dev_err(&dc->pdev->dev, "ConfigTable Bad! 0x%08X != 0x%08X\n",
+			dc->config_table.signature, NOZOMI_CONFIG_MAGIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -671,7 +686,11 @@ static int nozomi_read_config_table(struct nozomi *dc)
 		int i;
 		DBG1("Second phase, configuring card");
 
+<<<<<<< HEAD
 		setup_memory(dc);
+=======
+		nozomi_setup_memory(dc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		dc->port[PORT_MDM].toggle_ul = dc->config_table.toggle.mdm_ul;
 		dc->port[PORT_MDM].toggle_dl = dc->config_table.toggle.mdm_dl;
@@ -705,7 +724,11 @@ static int nozomi_read_config_table(struct nozomi *dc)
 			 dc->config_table.version);
 
 		/* Here we should disable all I/O over F32. */
+<<<<<<< HEAD
 		setup_memory(dc);
+=======
+		nozomi_setup_memory(dc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * We should send ALL channel pair tokens back along
@@ -826,7 +849,11 @@ static int receive_data(enum port_type index, struct nozomi *dc)
 	size = __le32_to_cpu(readl(addr));
 	/*  DBG1( "%d bytes port: %d", size, index); */
 
+<<<<<<< HEAD
 	if (tty && test_bit(TTY_THROTTLED, &tty->flags)) {
+=======
+	if (tty && tty_throttled(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		DBG1("No room in tty, don't read data, don't ack interrupt, "
 			"disable interrupt");
 
@@ -959,7 +986,11 @@ static int receive_flow_control(struct nozomi *dc)
 		dev_err(&dc->pdev->dev,
 			"ERROR: flow control received for non-existing port\n");
 		return 0;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	DBG1("0x%04X->0x%04X", *((u16 *)&dc->port[port].ctrl_dl),
 	   *((u16 *)&ctrl_dl));
@@ -1025,7 +1056,11 @@ static enum ctrl_port_type port2ctrl(enum port_type port,
 		dev_err(&dc->pdev->dev,
 			"ERROR: send flow control " \
 			"received for non-existing port\n");
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return CTRL_ERROR;
 }
 
@@ -1437,7 +1472,11 @@ static int nozomi_card_init(struct pci_dev *pdev,
 			NOZOMI_NAME, dc);
 	if (unlikely(ret)) {
 		dev_err(&pdev->dev, "can't request irq %d\n", pdev->irq);
+<<<<<<< HEAD
 		goto err_free_kfifo;
+=======
+		goto err_free_all_kfifo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	DBG1("base_addr: %p", dc->base_addr);
@@ -1475,12 +1514,24 @@ static int nozomi_card_init(struct pci_dev *pdev,
 	return 0;
 
 err_free_tty:
+<<<<<<< HEAD
 	for (i = 0; i < MAX_PORT; ++i) {
 		tty_unregister_device(ntty_driver, dc->index_start + i);
 		tty_port_destroy(&dc->port[i].port);
 	}
 err_free_kfifo:
 	for (i = 0; i < MAX_PORT; i++)
+=======
+	for (i--; i >= 0; i--) {
+		tty_unregister_device(ntty_driver, dc->index_start + i);
+		tty_port_destroy(&dc->port[i].port);
+	}
+	free_irq(pdev->irq, dc);
+err_free_all_kfifo:
+	i = MAX_PORT;
+err_free_kfifo:
+	for (i--; i >= PORT_MDM; i--)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfifo_free(&dc->port[i].fifo_ul);
 err_free_sbuf:
 	kfree(dc->send_buf);
@@ -1805,7 +1856,11 @@ static int ntty_ioctl(struct tty_struct *tty,
 	default:
 		DBG1("ERR: 0x%08X, %d", cmd, cmd);
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rval;
 }

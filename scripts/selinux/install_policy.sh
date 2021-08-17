@@ -66,4 +66,7 @@ if [ "eq$dodev" != "eq" ]; then
 	$SF file_contexts /dev
 	mount --move /mnt /dev
 fi
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

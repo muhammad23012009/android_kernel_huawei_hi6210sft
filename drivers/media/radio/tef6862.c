@@ -25,14 +25,22 @@
 #include <linux/slab.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_NAME "tef6862"
 
 #define FREQ_MUL 16000
 
+<<<<<<< HEAD
 #define TEF6862_LO_FREQ (875 * FREQ_MUL / 10)
 #define TEF6862_HI_FREQ (108 * FREQ_MUL)
+=======
+#define TEF6862_LO_FREQ (875U * FREQ_MUL / 10)
+#define TEF6862_HI_FREQ (108U * FREQ_MUL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Write mode sub addresses */
 #define WM_SUB_BANDWIDTH	0x0
@@ -49,6 +57,7 @@
 #define WM_SUB_TEST		0xF
 
 /* Different modes of the MSA register */
+<<<<<<< HEAD
 #define MODE_BUFFER		0x0
 #define MODE_PRESET		0x1
 #define MODE_SEARCH		0x2
@@ -58,6 +67,17 @@
 #define MODE_LOAD		0x6
 #define MODE_END		0x7
 #define MODE_SHIFT		5
+=======
+#define MSA_MODE_BUFFER		0x0
+#define MSA_MODE_PRESET		0x1
+#define MSA_MODE_SEARCH		0x2
+#define MSA_MODE_AF_UPDATE	0x3
+#define MSA_MODE_JUMP		0x4
+#define MSA_MODE_CHECK		0x5
+#define MSA_MODE_LOAD		0x6
+#define MSA_MODE_END		0x7
+#define MSA_MODE_SHIFT		5
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct tef6862_state {
 	struct v4l2_subdev sd;
@@ -105,6 +125,10 @@ static int tef6862_s_frequency(struct v4l2_subdev *sd, const struct v4l2_frequen
 {
 	struct tef6862_state *state = to_state(sd);
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
+<<<<<<< HEAD
+=======
+	unsigned freq = f->frequency;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 pll;
 	u8 i2cmsg[3];
 	int err;
@@ -112,8 +136,14 @@ static int tef6862_s_frequency(struct v4l2_subdev *sd, const struct v4l2_frequen
 	if (f->tuner != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	pll = 1964 + ((f->frequency - TEF6862_LO_FREQ) * 20) / FREQ_MUL;
 	i2cmsg[0] = (MODE_PRESET << MODE_SHIFT) | WM_SUB_PLLM;
+=======
+	freq = clamp(freq, TEF6862_LO_FREQ, TEF6862_HI_FREQ);
+	pll = 1964 + ((freq - TEF6862_LO_FREQ) * 20) / FREQ_MUL;
+	i2cmsg[0] = (MSA_MODE_PRESET << MSA_MODE_SHIFT) | WM_SUB_PLLM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i2cmsg[1] = (pll >> 8) & 0xff;
 	i2cmsg[2] = pll & 0xff;
 
@@ -121,7 +151,11 @@ static int tef6862_s_frequency(struct v4l2_subdev *sd, const struct v4l2_frequen
 	if (err != sizeof(i2cmsg))
 		return err < 0 ? err : -EIO;
 
+<<<<<<< HEAD
 	state->freq = f->frequency;
+=======
+	state->freq = freq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -136,6 +170,7 @@ static int tef6862_g_frequency(struct v4l2_subdev *sd, struct v4l2_frequency *f)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tef6862_g_chip_ident(struct v4l2_subdev *sd,
 	struct v4l2_dbg_chip_ident *chip)
 {
@@ -144,6 +179,8 @@ static int tef6862_g_chip_ident(struct v4l2_subdev *sd,
 	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_TEF6862, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_subdev_tuner_ops tef6862_tuner_ops = {
 	.g_tuner = tef6862_g_tuner,
 	.s_tuner = tef6862_s_tuner,
@@ -151,12 +188,16 @@ static const struct v4l2_subdev_tuner_ops tef6862_tuner_ops = {
 	.g_frequency = tef6862_g_frequency,
 };
 
+<<<<<<< HEAD
 static const struct v4l2_subdev_core_ops tef6862_core_ops = {
 	.g_chip_ident = tef6862_g_chip_ident,
 };
 
 static const struct v4l2_subdev_ops tef6862_ops = {
 	.core = &tef6862_core_ops,
+=======
+static const struct v4l2_subdev_ops tef6862_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.tuner = &tef6862_tuner_ops,
 };
 
@@ -207,7 +248,10 @@ MODULE_DEVICE_TABLE(i2c, tef6862_id);
 
 static struct i2c_driver tef6862_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= DRIVER_NAME,
 	},
 	.probe		= tef6862_probe,

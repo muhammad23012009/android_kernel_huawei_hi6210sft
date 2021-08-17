@@ -376,7 +376,10 @@ cache_flush_060 (unsigned long addr, int scope, int cache, unsigned long len)
 asmlinkage int
 sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 {
+<<<<<<< HEAD
 	struct vm_area_struct *vma;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = -EINVAL;
 
 	if (scope < FLUSH_SCOPE_LINE || scope > FLUSH_SCOPE_ALL ||
@@ -389,10 +392,20 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 		if (!capable(CAP_SYS_ADMIN))
 			goto out;
 	} else {
+<<<<<<< HEAD
+=======
+		struct vm_area_struct *vma;
+
+		/* Check for overflow.  */
+		if (addr + len < addr)
+			goto out;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Verify that the specified address region actually belongs
 		 * to this process.
 		 */
+<<<<<<< HEAD
 		vma = find_vma (current->mm, addr);
 		ret = -EINVAL;
 		/* Check for overflow.  */
@@ -400,6 +413,13 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 			goto out;
 		if (vma == NULL || addr < vma->vm_start || addr + len > vma->vm_end)
 			goto out;
+=======
+		ret = -EINVAL;
+		down_read(&current->mm->mmap_sem);
+		vma = find_vma(current->mm, addr);
+		if (!vma || addr < vma->vm_start || addr + len > vma->vm_end)
+			goto out_unlock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (CPU_IS_020_OR_030) {
@@ -429,7 +449,11 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 			__asm__ __volatile__ ("movec %0, %%cacr" : : "r" (cacr));
 		}
 		ret = 0;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_unlock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 	    /*
 	     * 040 or 060: don't blindly trust 'scope', someone could
@@ -446,6 +470,11 @@ sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
 		ret = cache_flush_060 (addr, scope, cache, len);
 	    }
 	}
+<<<<<<< HEAD
+=======
+out_unlock:
+	up_read(&current->mm->mmap_sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return ret;
 }

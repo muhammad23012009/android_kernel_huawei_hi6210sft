@@ -3,6 +3,7 @@
 
 #include <asm/ldt.h>
 
+<<<<<<< HEAD
 /* misc architecture specific prototypes */
 
 void system_call(void);
@@ -13,6 +14,31 @@ void ia32_cstar_target(void);
 void ia32_sysenter_target(void);
 
 void syscall32_cpu_init(void);
+=======
+struct task_struct;
+
+/* misc architecture specific prototypes */
+
+void syscall_init(void);
+
+#ifdef CONFIG_X86_64
+void entry_SYSCALL_64(void);
+#endif
+
+#ifdef CONFIG_X86_32
+void entry_INT80_32(void);
+void entry_SYSENTER_32(void);
+void __begin_SYSENTER_singlestep_region(void);
+void __end_SYSENTER_singlestep_region(void);
+#endif
+
+#ifdef CONFIG_IA32_EMULATION
+void entry_SYSENTER_compat(void);
+void __end_entry_SYSENTER_compat(void);
+void entry_SYSCALL_compat(void);
+void entry_INT80_compat(void);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void x86_configure_nx(void);
 void x86_report_nx(void);

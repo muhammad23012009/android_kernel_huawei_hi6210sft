@@ -55,14 +55,20 @@
 
 #define NR_IOSAPICS			256
 
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT_GUEST
 #include <asm/paravirt.h>
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define iosapic_pcat_compat_init	ia64_native_iosapic_pcat_compat_init
 #define __iosapic_read			__ia64_native_iosapic_read
 #define __iosapic_write			__ia64_native_iosapic_write
 #define iosapic_get_irq_chip		ia64_native_iosapic_get_irq_chip
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void __init ia64_native_iosapic_pcat_compat_init(void);
 extern struct irq_chip *ia64_native_iosapic_get_irq_chip(unsigned long trigger);

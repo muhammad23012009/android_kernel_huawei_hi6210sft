@@ -55,8 +55,16 @@ struct anysee_state {
 	u8 buf[64];
 	u8 seq;
 	u8 hw; /* PCB ID */
+<<<<<<< HEAD
 	u8 fe_id:1; /* frondend ID */
 	u8 has_ci:1;
+=======
+	#define ANYSEE_I2C_CLIENT_MAX 1
+	struct i2c_client *i2c_client[ANYSEE_I2C_CLIENT_MAX];
+	u8 fe_id:1; /* frondend ID */
+	u8 has_ci:1;
+	u8 has_tda18212:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ci_attached:1;
 	struct dvb_ca_en50221 ci;
 	unsigned long ci_cam_ready; /* jiffies */

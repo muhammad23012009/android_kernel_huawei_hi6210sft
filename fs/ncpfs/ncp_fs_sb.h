@@ -38,16 +38,24 @@ struct ncp_mount_data_kernel {
 };
 
 struct ncp_server {
+<<<<<<< HEAD
 
+=======
+	struct rcu_head rcu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ncp_mount_data_kernel m;	/* Nearly all of the mount data is of
 					   interest for us later, so we store
 					   it completely. */
 
 	__u8 name_space[NCP_NUMBER_OF_VOLUMES + 2];
 
+<<<<<<< HEAD
 	struct file *ncp_filp;	/* File pointer to ncp socket */
 	struct socket *ncp_sock;/* ncp socket */
 	struct file *info_filp;
+=======
+	struct socket *ncp_sock;/* ncp socket */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct socket *info_sock;
 
 	u8 sequence;
@@ -111,7 +119,11 @@ struct ncp_server {
 
 	spinlock_t requests_lock;	/* Lock accesses to tx.requests, tx.creq and rcv.creq when STREAM mode */
 
+<<<<<<< HEAD
 	void (*data_ready)(struct sock* sk, int len);
+=======
+	void (*data_ready)(struct sock* sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*error_report)(struct sock* sk);
 	void (*write_space)(struct sock* sk);	/* STREAM mode only */
 	struct {
@@ -153,7 +165,11 @@ extern void ncp_tcp_tx_proc(struct work_struct *work);
 extern void ncpdgram_rcv_proc(struct work_struct *work);
 extern void ncpdgram_timeout_proc(struct work_struct *work);
 extern void ncpdgram_timeout_call(unsigned long server);
+<<<<<<< HEAD
 extern void ncp_tcp_data_ready(struct sock* sk, int len);
+=======
+extern void ncp_tcp_data_ready(struct sock* sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void ncp_tcp_write_space(struct sock* sk);
 extern void ncp_tcp_error_report(struct sock* sk);
 

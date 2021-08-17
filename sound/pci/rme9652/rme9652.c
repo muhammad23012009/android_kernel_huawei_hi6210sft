@@ -25,6 +25,11 @@
 #include <linux/interrupt.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+#include <linux/nospec.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -34,7 +39,10 @@
 #include <sound/initval.h>
 
 #include <asm/current.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -294,10 +302,13 @@ static int snd_hammerfall_get_buffer(struct pci_dev *pci, struct snd_dma_buffer 
 {
 	dmab->dev.type = SNDRV_DMA_TYPE_DEV;
 	dmab->dev.dev = snd_dma_pci_data(pci);
+<<<<<<< HEAD
 	if (snd_dma_get_reserved_buf(dmab, snd_dma_pci_buf_id(pci))) {
 		if (dmab->bytes >= size)
 			return 0;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
 				size, dmab) < 0)
 		return -ENOMEM;
@@ -306,6 +317,7 @@ static int snd_hammerfall_get_buffer(struct pci_dev *pci, struct snd_dma_buffer 
 
 static void snd_hammerfall_free_buffer(struct snd_dma_buffer *dmab, struct pci_dev *pci)
 {
+<<<<<<< HEAD
 	if (dmab->area) {
 		dmab->dev.dev = NULL; /* make it anonymous */
 		snd_dma_reserve_buf(dmab, snd_dma_pci_buf_id(pci));
@@ -314,6 +326,14 @@ static void snd_hammerfall_free_buffer(struct snd_dma_buffer *dmab, struct pci_d
 
 
 static DEFINE_PCI_DEVICE_TABLE(snd_rme9652_ids) = {
+=======
+	if (dmab->area)
+		snd_dma_free_pages(dmab);
+}
+
+
+static const struct pci_device_id snd_rme9652_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.vendor	   = 0x10ee,
 		.device	   = 0x3fc4,
@@ -400,7 +420,13 @@ static snd_pcm_uframes_t rme9652_hw_pointer(struct snd_rme9652 *rme9652)
 	if (offset < period_size) {
 		if (offset > rme9652->max_jitter) {
 			if (frag)
+<<<<<<< HEAD
 				printk(KERN_ERR "Unexpected hw_pointer position (bufid == 0): status: %x offset: %d\n", status, offset);
+=======
+				dev_err(rme9652->card->dev,
+					"Unexpected hw_pointer position (bufid == 0): status: %x offset: %d\n",
+					status, offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else if (!frag)
 			return 0;
 		offset -= rme9652->max_jitter;
@@ -409,7 +435,13 @@ static snd_pcm_uframes_t rme9652_hw_pointer(struct snd_rme9652 *rme9652)
 	} else {
 		if (offset > period_size + rme9652->max_jitter) {
 			if (!frag)
+<<<<<<< HEAD
 				printk(KERN_ERR "Unexpected hw_pointer position (bufid == 1): status: %x offset: %d\n", status, offset);
+=======
+				dev_err(rme9652->card->dev,
+					"Unexpected hw_pointer position (bufid == 1): status: %x offset: %d\n",
+					status, offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else if (frag)
 			return period_size;
 		offset -= rme9652->max_jitter;
@@ -775,7 +807,12 @@ static inline int rme9652_spdif_sample_rate(struct snd_rme9652 *s)
 		break;
 
 	default:
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "%s: unknown S/PDIF input rate (bits = 0x%x)\n",
+=======
+		dev_err(s->card->dev,
+			"%s: unknown S/PDIF input rate (bits = 0x%x)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   s->card_name, rate_bits);
 		return 0;
 		break;
@@ -921,6 +958,7 @@ static int rme9652_set_adat1_input(struct snd_rme9652 *rme9652, int internal)
 
 static int snd_rme9652_info_adat1_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = {"ADAT1", "Internal"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -930,6 +968,11 @@ static int snd_rme9652_info_adat1_in(struct snd_kcontrol *kcontrol, struct snd_c
 		uinfo->value.enumerated.item = 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[2] = {"ADAT1", "Internal"};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_rme9652_get_adat1_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -992,6 +1035,7 @@ static int rme9652_set_spdif_input(struct snd_rme9652 *rme9652, int in)
 
 static int snd_rme9652_info_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {"ADAT1", "Coaxial", "Internal"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1001,6 +1045,11 @@ static int snd_rme9652_info_spdif_in(struct snd_kcontrol *kcontrol, struct snd_c
 		uinfo->value.enumerated.item = 2;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {"ADAT1", "Coaxial", "Internal"};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_rme9652_get_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1141,6 +1190,7 @@ static int rme9652_set_sync_mode(struct snd_rme9652 *rme9652, int mode)
 
 static int snd_rme9652_info_sync_mode(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {"AutoSync", "Master", "Word Clock"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1150,6 +1200,13 @@ static int snd_rme9652_info_sync_mode(struct snd_kcontrol *kcontrol, struct snd_
 		uinfo->value.enumerated.item = 2;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"AutoSync", "Master", "Word Clock"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_rme9652_get_sync_mode(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1232,6 +1289,7 @@ static int rme9652_set_sync_pref(struct snd_rme9652 *rme9652, int pref)
 
 static int snd_rme9652_info_sync_pref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {"IEC958 In", "ADAT1 In", "ADAT2 In", "ADAT3 In"};
 	struct snd_rme9652 *rme9652 = snd_kcontrol_chip(kcontrol);
 
@@ -1242,6 +1300,16 @@ static int snd_rme9652_info_sync_pref(struct snd_kcontrol *kcontrol, struct snd_
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"IEC958 In", "ADAT1 In", "ADAT2 In", "ADAT3 In"
+	};
+	struct snd_rme9652 *rme9652 = snd_kcontrol_chip(kcontrol);
+
+	return snd_ctl_enum_info(uinfo, 1,
+				 rme9652->ss_channels == RME9652_NCHANNELS ? 4 : 3,
+				 texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_rme9652_get_sync_pref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1393,6 +1461,7 @@ static int snd_rme9652_get_spdif_rate(struct snd_kcontrol *kcontrol, struct snd_
 
 static int snd_rme9652_info_adat_sync(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {"No Lock", "Lock", "No Lock Sync", "Lock Sync"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1402,6 +1471,13 @@ static int snd_rme9652_info_adat_sync(struct snd_kcontrol *kcontrol, struct snd_
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"No Lock", "Lock", "No Lock Sync", "Lock Sync"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_rme9652_get_adat_sync(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1779,12 +1855,21 @@ static int snd_rme9652_free(struct snd_rme9652 *rme9652)
 
 	if (rme9652->irq >= 0)
 		free_irq(rme9652->irq, (void *)rme9652);
+<<<<<<< HEAD
 	if (rme9652->iobase)
 		iounmap(rme9652->iobase);
 	if (rme9652->port)
 		pci_release_regions(rme9652->pci);
 
 	pci_disable_device(rme9652->pci);
+=======
+	iounmap(rme9652->iobase);
+	if (rme9652->port)
+		pci_release_regions(rme9652->pci);
+
+	if (pci_is_enabled(rme9652->pci))
+		pci_disable_device(rme9652->pci);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1796,7 +1881,12 @@ static int snd_rme9652_initialize_memory(struct snd_rme9652 *rme9652)
 	    snd_hammerfall_get_buffer(rme9652->pci, &rme9652->playback_dma_buf, RME9652_DMA_AREA_BYTES) < 0) {
 		if (rme9652->capture_dma_buf.area)
 			snd_dma_free_pages(&rme9652->capture_dma_buf);
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: no buffers available\n", rme9652->card_name);
+=======
+		dev_err(rme9652->card->dev,
+			"%s: no buffers available\n", rme9652->card_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 
@@ -2059,9 +2149,16 @@ static int snd_rme9652_channel_info(struct snd_pcm_substream *substream,
 	if (snd_BUG_ON(info->channel >= RME9652_NCHANNELS))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if ((chn = rme9652->channel_map[info->channel]) < 0) {
 		return -EINVAL;
 	}
+=======
+	chn = rme9652->channel_map[array_index_nospec(info->channel,
+						      RME9652_NCHANNELS)];
+	if (chn < 0)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	info->offset = chn * RME9652_CHANNEL_BUFFER_BYTES;
 	info->first = 0;
@@ -2391,7 +2488,11 @@ static int snd_rme9652_capture_release(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme9652_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_rme9652_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_rme9652_playback_open,
 	.close =	snd_rme9652_playback_release,
 	.ioctl =	snd_rme9652_ioctl,
@@ -2403,7 +2504,11 @@ static struct snd_pcm_ops snd_rme9652_playback_ops = {
 	.silence =	snd_rme9652_hw_silence,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme9652_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_rme9652_capture_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_rme9652_capture_open,
 	.close =	snd_rme9652_capture_release,
 	.ioctl =	snd_rme9652_ioctl,
@@ -2474,13 +2579,22 @@ static int snd_rme9652_create(struct snd_card *card,
 	rme9652->port = pci_resource_start(pci, 0);
 	rme9652->iobase = ioremap_nocache(rme9652->port, RME9652_IO_EXTENT);
 	if (rme9652->iobase == NULL) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "unable to remap region 0x%lx-0x%lx\n", rme9652->port, rme9652->port + RME9652_IO_EXTENT - 1);
+=======
+		dev_err(card->dev, "unable to remap region 0x%lx-0x%lx\n",
+			rme9652->port, rme9652->port + RME9652_IO_EXTENT - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 	
 	if (request_irq(pci->irq, snd_rme9652_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, rme9652)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "unable to request IRQ %d\n", pci->irq);
+=======
+		dev_err(card->dev, "unable to request IRQ %d\n", pci->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 	rme9652->irq = pci->irq;
@@ -2593,8 +2707,13 @@ static int snd_rme9652_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_rme9652), &card);
+=======
+	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+			   sizeof(struct snd_rme9652), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (err < 0)
 		return err;
@@ -2603,7 +2722,10 @@ static int snd_rme9652_probe(struct pci_dev *pci,
 	card->private_free = snd_rme9652_card_free;
 	rme9652->dev = dev;
 	rme9652->pci = pci;
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((err = snd_rme9652_create(card, rme9652, precise_ptr[dev])) < 0) {
 		snd_card_free(card);
@@ -2628,7 +2750,10 @@ static int snd_rme9652_probe(struct pci_dev *pci,
 static void snd_rme9652_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
+<<<<<<< HEAD
 	pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pci_driver rme9652_driver = {

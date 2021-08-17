@@ -26,7 +26,11 @@
 
 /*
  * OMAP3-specific global PRM registers
+<<<<<<< HEAD
  * Use __raw_{read,write}l() with these registers.
+=======
+ * Use {read,write}l_relaxed() with these registers.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * With a few exceptions, these are the register names beginning with
  * PRM_* on 34xx.  (The exceptions are the IRQSTATUS and IRQENABLE
@@ -132,10 +136,13 @@
 
 #ifndef __ASSEMBLER__
 
+<<<<<<< HEAD
 /* OMAP3-specific VP functions */
 u32 omap3_prm_vp_check_txdone(u8 vp_id);
 void omap3_prm_vp_clear_txdone(u8 vp_id);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * OMAP3 access functions for voltage controller (VC) and
  * voltage proccessor (VP) in the PRM.
@@ -144,6 +151,7 @@ extern u32 omap3_prm_vcvp_read(u8 offset);
 extern void omap3_prm_vcvp_write(u32 val, u8 offset);
 extern u32 omap3_prm_vcvp_rmw(u32 mask, u32 bits, u8 offset);
 
+<<<<<<< HEAD
 extern void omap3xxx_prm_reconfigure_io_chain(void);
 
 /* PRM interrupt-related functions */
@@ -156,6 +164,14 @@ extern void omap3xxx_prm_dpll3_reset(void);
 
 extern int __init omap3xxx_prm_init(void);
 extern u32 omap3xxx_prm_get_reset_sources(void);
+=======
+int __init omap3xxx_prm_init(const struct omap_prcm_init_data *data);
+void omap3xxx_prm_iva_idle(void);
+void omap3_prm_reset_modem(void);
+int omap3xxx_prm_clear_global_cold_reset(void);
+void omap3_prm_save_scratchpad_contents(u32 *ptr);
+void omap3_prm_init_pm(bool has_uart4, bool has_iva);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASSEMBLER */
 

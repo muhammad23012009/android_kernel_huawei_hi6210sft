@@ -17,6 +17,7 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 
 #include <mach/hardware.h>
@@ -24,6 +25,15 @@
 #include <mach/gpio.h>
 
 #define GPIO_BASE(x)		IO_ADDRESS(GEMINI_GPIO_BASE(x))
+=======
+#include <linux/gpio/driver.h>
+
+#include <mach/hardware.h>
+#include <mach/irqs.h>
+
+#define GPIO_BASE(x)		IO_ADDRESS(GEMINI_GPIO_BASE(x))
+#define irq_to_gpio(x)		((x) - GPIO_IRQ_BASE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* GPIO registers definition */
 #define GPIO_DATA_OUT		0x0
@@ -126,7 +136,11 @@ static int gpio_set_irq_type(struct irq_data *d, unsigned int type)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void gpio_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void gpio_irq_handler(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int port = (unsigned int)irq_desc_get_handler_data(desc);
 	unsigned int gpio_irq_no, irq_stat;
@@ -220,6 +234,7 @@ void __init gemini_gpio_init(void)
 		     j < GPIO_IRQ_BASE + (i + 1) * 32; j++) {
 			irq_set_chip_and_handler(j, &gpio_irq_chip,
 						 handle_edge_irq);
+<<<<<<< HEAD
 			set_irq_flags(j, IRQF_VALID);
 		}
 
@@ -228,4 +243,14 @@ void __init gemini_gpio_init(void)
 	}
 
 	BUG_ON(gpiochip_add(&gemini_gpio_chip));
+=======
+			irq_clear_status_flags(j, IRQ_NOREQUEST);
+		}
+
+		irq_set_chained_handler_and_data(IRQ_GPIO(i), gpio_irq_handler,
+						 (void *)i);
+	}
+
+	BUG_ON(gpiochip_add_data(&gemini_gpio_chip, NULL));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

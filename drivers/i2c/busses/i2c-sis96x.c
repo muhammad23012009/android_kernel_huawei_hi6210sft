@@ -10,10 +10,13 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+<<<<<<< HEAD
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 /*
@@ -36,7 +39,10 @@
 #include <linux/stddef.h>
 #include <linux/ioport.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/acpi.h>
 #include <linux/io.h>
 
@@ -245,7 +251,11 @@ static struct i2c_adapter sis96x_adapter = {
 	.algo		= &smbus_algorithm,
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(sis96x_ids) = {
+=======
+static const struct pci_device_id sis96x_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_SMBUS) },
 	{ 0, }
 };

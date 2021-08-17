@@ -37,7 +37,11 @@
 #define CS42L52_CHIP_REV_A0			0x00
 #define CS42L52_CHIP_REV_A1			0x01
 #define CS42L52_CHIP_REV_B0			0x02
+<<<<<<< HEAD
 #define CS42L52_CHIP_REV_MASK			0x03
+=======
+#define CS42L52_CHIP_REV_MASK			0x07
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CS42L52_PWRCTL1				0x02
 #define CS42L52_PWRCTL1_PDN_ALL			0x9F
@@ -269,6 +273,10 @@
 #define CS42L52_FIX_BITS1			0x3E
 #define CS42L52_FIX_BITS2			0x47
 
+<<<<<<< HEAD
 #define CS42L52_MAX_REGISTER			0x34
+=======
+#define CS42L52_MAX_REGISTER			0x47
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

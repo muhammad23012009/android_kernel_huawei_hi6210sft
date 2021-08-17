@@ -13,15 +13,19 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/irqchip.h>
 #include <linux/platform_device.h>
 #include <linux/of_platform.h>
@@ -40,12 +44,27 @@
 #include <mach/sh73a0.h>
 #include <mach/common.h>
 #include <asm/mach-types.h>
+=======
+#include <linux/delay.h>
+#include <linux/input.h>
+#include <linux/io.h>
+
+#include <asm/hardware/cache-l2x0.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach/map.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
 static struct map_desc sh73a0_io_desc[] __initdata = {
 	/* create a 1:1 entity map for 0xe6xxxxxx
+=======
+#include "common.h"
+#include "sh73a0.h"
+
+static struct map_desc sh73a0_io_desc[] __initdata = {
+	/* create a 1:1 identity mapping for 0xe6xxxxxx
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * used by CPGA, INTC and PFC.
 	 */
 	{
@@ -56,6 +75,7 @@ static struct map_desc sh73a0_io_desc[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 void __init sh73a0_map_io(void)
 {
 	iotable_init(sh73a0_io_desc, ARRAY_SIZE(sh73a0_io_desc));
@@ -1029,6 +1049,23 @@ void __init sh73a0_add_standard_devices_dt(void)
 }
 
 static const char *sh73a0_boards_compat_dt[] __initdata = {
+=======
+static void __init sh73a0_map_io(void)
+{
+	debug_ll_io_init();
+	iotable_init(sh73a0_io_desc, ARRAY_SIZE(sh73a0_io_desc));
+}
+
+static void __init sh73a0_generic_init(void)
+{
+#ifdef CONFIG_CACHE_L2X0
+	/* Shared attribute override enable, 64K*8way */
+	l2x0_init(IOMEM(0xf0100000), 0x00400000, 0xc20f0fff);
+#endif
+}
+
+static const char *const sh73a0_boards_compat_dt[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"renesas,sh73a0",
 	NULL,
 };
@@ -1036,6 +1073,7 @@ static const char *sh73a0_boards_compat_dt[] __initdata = {
 DT_MACHINE_START(SH73A0_DT, "Generic SH73A0 (Flattened Device Tree)")
 	.smp		= smp_ops(sh73a0_smp_ops),
 	.map_io		= sh73a0_map_io,
+<<<<<<< HEAD
 	.init_early	= sh73a0_init_delay,
 	.nr_irqs	= NR_IRQS_LEGACY,
 	.init_irq	= irqchip_init,
@@ -1043,3 +1081,10 @@ DT_MACHINE_START(SH73A0_DT, "Generic SH73A0 (Flattened Device Tree)")
 	.dt_compat	= sh73a0_boards_compat_dt,
 MACHINE_END
 #endif /* CONFIG_USE_OF */
+=======
+	.init_early	= shmobile_init_delay,
+	.init_machine	= sh73a0_generic_init,
+	.init_late	= shmobile_init_late,
+	.dt_compat	= sh73a0_boards_compat_dt,
+MACHINE_END
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

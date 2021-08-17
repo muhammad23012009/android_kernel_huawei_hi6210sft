@@ -15,13 +15,20 @@
 #include <linux/module.h>
 #include <linux/ioport.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/mii.h>
 #include <linux/platform_device.h>
 #include <linux/mdio-bitbang.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_mdio.h>
 #include <linux/of_platform.h>
 
@@ -172,6 +179,7 @@ static int fs_enet_mdio_probe(struct platform_device *ofdev)
 		goto out_free_bus;
 
 	new_bus->phy_mask = ~0;
+<<<<<<< HEAD
 	new_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!new_bus->irq) {
 		ret = -ENOMEM;
@@ -190,6 +198,18 @@ static int fs_enet_mdio_probe(struct platform_device *ofdev)
 out_free_irqs:
 	dev_set_drvdata(&ofdev->dev, NULL);
 	kfree(new_bus->irq);
+=======
+
+	new_bus->parent = &ofdev->dev;
+	platform_set_drvdata(ofdev, new_bus);
+
+	ret = of_mdiobus_register(new_bus, ofdev->dev.of_node);
+	if (ret)
+		goto out_unmap_regs;
+
+	return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_unmap_regs:
 	iounmap(bitbang->dir);
 out_free_bus:
@@ -202,12 +222,19 @@ out:
 
 static int fs_enet_mdio_remove(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct mii_bus *bus = dev_get_drvdata(&ofdev->dev);
 	struct bb_info *bitbang = bus->priv;
 
 	mdiobus_unregister(bus);
 	dev_set_drvdata(&ofdev->dev, NULL);
 	kfree(bus->irq);
+=======
+	struct mii_bus *bus = platform_get_drvdata(ofdev);
+	struct bb_info *bitbang = bus->priv;
+
+	mdiobus_unregister(bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_mdio_bitbang(bus);
 	iounmap(bitbang->dir);
 	kfree(bitbang);
@@ -215,7 +242,11 @@ static int fs_enet_mdio_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id fs_enet_mdio_bb_match[] = {
+=======
+static const struct of_device_id fs_enet_mdio_bb_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.compatible = "fsl,cpm2-mdio-bitbang",
 	},
@@ -226,7 +257,10 @@ MODULE_DEVICE_TABLE(of, fs_enet_mdio_bb_match);
 static struct platform_driver fs_enet_bb_mdio_driver = {
 	.driver = {
 		.name = "fsl-bb-mdio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = fs_enet_mdio_bb_match,
 	},
 	.probe = fs_enet_mdio_probe,
@@ -234,3 +268,7 @@ static struct platform_driver fs_enet_bb_mdio_driver = {
 };
 
 module_platform_driver(fs_enet_bb_mdio_driver);
+<<<<<<< HEAD
+=======
+MODULE_LICENSE("GPL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

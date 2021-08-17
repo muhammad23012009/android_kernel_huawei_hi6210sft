@@ -36,6 +36,16 @@
 
 #include <asm/octeon/cvmx-helper.h>
 
+<<<<<<< HEAD
+=======
+enum cvmx_helper_board_usb_clock_types {
+	USB_CLOCK_TYPE_REF_12,
+	USB_CLOCK_TYPE_REF_24,
+	USB_CLOCK_TYPE_REF_48,
+	USB_CLOCK_TYPE_CRYSTAL_12,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef enum {
 	set_phy_link_flags_autoneg = 0x1,
 	set_phy_link_flags_flow_control_dont_touch = 0x0 << 1,
@@ -51,6 +61,7 @@ typedef enum {
 #define CVMX_HELPER_BOARD_MGMT_IPD_PORT	    -10
 
 /**
+<<<<<<< HEAD
  * cvmx_override_board_link_get(int ipd_port) is a function
  * pointer. It is meant to allow customization of the process of
  * talking to a PHY to determine link speed. It is called every
@@ -61,6 +72,8 @@ typedef enum {
 extern cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port);
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Return the MII PHY address associated with the given IPD
  * port. A result of -1 means there isn't a MII capable PHY
  * connected to this port. On chips supporting multiple MII
@@ -79,6 +92,7 @@ extern cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port);
 extern int cvmx_helper_board_get_mii_address(int ipd_port);
 
 /**
+<<<<<<< HEAD
  * This function as a board specific method of changing the PHY
  * speed, duplex, and autonegotiation. This programs the PHY and
  * not Octeon. This can be used to force Octeon's links to
@@ -99,6 +113,8 @@ int cvmx_helper_board_link_set_phy(int phy_addr,
 				   cvmx_helper_link_info_t link_info);
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This function is the board specific method of determining an
  * ethernet ports link speed. Most Octeon boards have Marvell PHYs
  * and are handled by the fall through case. This function must be
@@ -154,4 +170,9 @@ extern int __cvmx_helper_board_interface_probe(int interface,
  */
 extern int __cvmx_helper_board_hardware_enable(int interface);
 
+<<<<<<< HEAD
+=======
+enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __CVMX_HELPER_BOARD_H__ */

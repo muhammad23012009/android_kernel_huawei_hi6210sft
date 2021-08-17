@@ -1,15 +1,29 @@
+<<<<<<< HEAD
 /* bnx2i_hwi.c: Broadcom NetXtreme II iSCSI driver.
  *
  * Copyright (c) 2006 - 2012 Broadcom Corporation
  * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
  * Copyright (c) 2007, 2008 Mike Christie
+=======
+/* bnx2i_hwi.c: QLogic NetXtreme II iSCSI driver.
+ *
+ * Copyright (c) 2006 - 2013 Broadcom Corporation
+ * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
+ * Copyright (c) 2007, 2008 Mike Christie
+ * Copyright (c) 2014, QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
  * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
+<<<<<<< HEAD
  * Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+=======
+ * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+ * Maintained by: QLogic-Storage-Upstream@qlogic.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/gfp.h>
@@ -61,7 +75,11 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 	 * yield integral num of page buffers
 	 */
 	/* adjust SQ */
+<<<<<<< HEAD
 	num_elements_per_pg = PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
+=======
+	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hba->max_sqes < num_elements_per_pg)
 		hba->max_sqes = num_elements_per_pg;
 	else if (hba->max_sqes % num_elements_per_pg)
@@ -69,7 +87,11 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 				 ~(num_elements_per_pg - 1);
 
 	/* adjust CQ */
+<<<<<<< HEAD
 	num_elements_per_pg = PAGE_SIZE / BNX2I_CQE_SIZE;
+=======
+	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_CQE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hba->max_cqes < num_elements_per_pg)
 		hba->max_cqes = num_elements_per_pg;
 	else if (hba->max_cqes % num_elements_per_pg)
@@ -77,7 +99,11 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 				 ~(num_elements_per_pg - 1);
 
 	/* adjust RQ */
+<<<<<<< HEAD
 	num_elements_per_pg = PAGE_SIZE / BNX2I_RQ_WQE_SIZE;
+=======
+	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_RQ_WQE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hba->max_rqes < num_elements_per_pg)
 		hba->max_rqes = num_elements_per_pg;
 	else if (hba->max_rqes % num_elements_per_pg)
@@ -126,7 +152,11 @@ static void bnx2i_iscsi_license_error(struct bnx2i_hba *hba, u32 error_code)
 
 /**
  * bnx2i_arm_cq_event_coalescing - arms CQ to enable EQ notification
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @action:	action, ARM or DISARM. For now only ARM_CQE is used
  *
  * Arm'ing CQ will enable chip to generate global EQ events inorder to interrupt
@@ -756,7 +786,11 @@ void bnx2i_send_cmd_cleanup_req(struct bnx2i_hba *hba, struct bnx2i_cmd *cmd)
 /**
  * bnx2i_send_conn_destroy - initiates iscsi connection teardown process
  * @hba:	adapter structure pointer
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * this routine prepares and posts CONN_OFLD_REQ1/2 KWQE to initiate
  * 	iscsi connection context clean-up process
@@ -791,7 +825,11 @@ int bnx2i_send_conn_destroy(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 /**
  * bnx2i_570x_send_conn_ofld_req - initiates iscsi conn context setup process
  * @hba: 		adapter structure pointer
+<<<<<<< HEAD
  * @ep: 		endpoint (transport indentifier) structure
+=======
+ * @ep: 		endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * 5706/5708/5709 specific - prepares and posts CONN_OFLD_REQ1/2 KWQE
  */
@@ -851,7 +889,11 @@ static int bnx2i_570x_send_conn_ofld_req(struct bnx2i_hba *hba,
 /**
  * bnx2i_5771x_send_conn_ofld_req - initiates iscsi connection context creation
  * @hba: 		adapter structure pointer
+<<<<<<< HEAD
  * @ep: 		endpoint (transport indentifier) structure
+=======
+ * @ep: 		endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * 57710 specific - prepares and posts CONN_OFLD_REQ1/2 KWQE
  */
@@ -920,7 +962,11 @@ static int bnx2i_5771x_send_conn_ofld_req(struct bnx2i_hba *hba,
  * bnx2i_send_conn_ofld_req - initiates iscsi connection context setup process
  *
  * @hba: 		adapter structure pointer
+<<<<<<< HEAD
  * @ep: 		endpoint (transport indentifier) structure
+=======
+ * @ep: 		endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * this routine prepares and posts CONN_OFLD_REQ1/2 KWQE
  */
@@ -939,7 +985,11 @@ int bnx2i_send_conn_ofld_req(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 
 /**
  * setup_qp_page_tables - iscsi QP page table setup function
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Sets up page tables for SQ/RQ/CQ, 1G/sec (5706/5708/5709) devices requires
  * 	64-bit address in big endian format. Whereas 10G/sec (57710) requires
@@ -959,7 +1009,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 
 	/* SQ page table */
 	memset(ep->qp.sq_pgtbl_virt, 0, ep->qp.sq_pgtbl_size);
+<<<<<<< HEAD
 	num_pages = ep->qp.sq_mem_size / PAGE_SIZE;
+=======
+	num_pages = ep->qp.sq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = ep->qp.sq_phys;
 
 	if (cnic_dev_10g)
@@ -973,7 +1027,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			/* PTE is written in big endian format for
 			 * 5706/5708/5709 devices */
@@ -981,13 +1039,21 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) page;
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	/* RQ page table */
 	memset(ep->qp.rq_pgtbl_virt, 0, ep->qp.rq_pgtbl_size);
+<<<<<<< HEAD
 	num_pages = ep->qp.rq_mem_size / PAGE_SIZE;
+=======
+	num_pages = ep->qp.rq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = ep->qp.rq_phys;
 
 	if (cnic_dev_10g)
@@ -1001,7 +1067,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			/* PTE is written in big endian format for
 			 * 5706/5708/5709 devices */
@@ -1009,13 +1079,21 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) page;
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	/* CQ page table */
 	memset(ep->qp.cq_pgtbl_virt, 0, ep->qp.cq_pgtbl_size);
+<<<<<<< HEAD
 	num_pages = ep->qp.cq_mem_size / PAGE_SIZE;
+=======
+	num_pages = ep->qp.cq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = ep->qp.cq_phys;
 
 	if (cnic_dev_10g)
@@ -1029,7 +1107,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			/* PTE is written in big endian format for
 			 * 5706/5708/5709 devices */
@@ -1037,7 +1119,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) page;
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }
@@ -1046,7 +1132,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 /**
  * bnx2i_alloc_qp_resc - allocates required resources for QP.
  * @hba:	adapter structure pointer
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Allocate QP (transport layer for iSCSI connection) resources, DMA'able
  *	memory for SQ/RQ/CQ and page tables. EP structure elements such
@@ -1064,11 +1154,19 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	/* Allocate page table memory for SQ which is page aligned */
 	ep->qp.sq_mem_size = hba->max_sqes * BNX2I_SQ_WQE_SIZE;
 	ep->qp.sq_mem_size =
+<<<<<<< HEAD
 		(ep->qp.sq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
 	ep->qp.sq_pgtbl_size =
 		(ep->qp.sq_mem_size / PAGE_SIZE) * sizeof(void *);
 	ep->qp.sq_pgtbl_size =
 		(ep->qp.sq_pgtbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+		(ep->qp.sq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+	ep->qp.sq_pgtbl_size =
+		(ep->qp.sq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	ep->qp.sq_pgtbl_size =
+		(ep->qp.sq_pgtbl_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ep->qp.sq_pgtbl_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.sq_pgtbl_size,
@@ -1101,11 +1199,19 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	/* Allocate page table memory for CQ which is page aligned */
 	ep->qp.cq_mem_size = hba->max_cqes * BNX2I_CQE_SIZE;
 	ep->qp.cq_mem_size =
+<<<<<<< HEAD
 		(ep->qp.cq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
 	ep->qp.cq_pgtbl_size =
 		(ep->qp.cq_mem_size / PAGE_SIZE) * sizeof(void *);
 	ep->qp.cq_pgtbl_size =
 		(ep->qp.cq_pgtbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+		(ep->qp.cq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+	ep->qp.cq_pgtbl_size =
+		(ep->qp.cq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	ep->qp.cq_pgtbl_size =
+		(ep->qp.cq_pgtbl_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ep->qp.cq_pgtbl_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.cq_pgtbl_size,
@@ -1144,11 +1250,19 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	/* Allocate page table memory for RQ which is page aligned */
 	ep->qp.rq_mem_size = hba->max_rqes * BNX2I_RQ_WQE_SIZE;
 	ep->qp.rq_mem_size =
+<<<<<<< HEAD
 		(ep->qp.rq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
 	ep->qp.rq_pgtbl_size =
 		(ep->qp.rq_mem_size / PAGE_SIZE) * sizeof(void *);
 	ep->qp.rq_pgtbl_size =
 		(ep->qp.rq_pgtbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+		(ep->qp.rq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+	ep->qp.rq_pgtbl_size =
+		(ep->qp.rq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	ep->qp.rq_pgtbl_size =
+		(ep->qp.rq_pgtbl_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ep->qp.rq_pgtbl_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.rq_pgtbl_size,
@@ -1191,7 +1305,11 @@ mem_alloc_err:
 /**
  * bnx2i_free_qp_resc - free memory resources held by QP
  * @hba:	adapter structure pointer
+<<<<<<< HEAD
  * @ep:	endpoint (transport indentifier) structure
+=======
+ * @ep:	endpoint (transport identifier) structure
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Free QP resources - SQ/RQ/CQ memory and page tables.
  */
@@ -1270,7 +1388,11 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 	bnx2i_adjust_qp_size(hba);
 
 	iscsi_init.flags =
+<<<<<<< HEAD
 		ISCSI_PAGE_SIZE_4K << ISCSI_KWQE_INIT1_PAGE_SIZE_SHIFT;
+=======
+		(CNIC_PAGE_BITS - 8) << ISCSI_KWQE_INIT1_PAGE_SIZE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (en_tcp_dack)
 		iscsi_init.flags |= ISCSI_KWQE_INIT1_DELAYED_ACK_ENABLE;
 	iscsi_init.reserved0 = 0;
@@ -1288,6 +1410,7 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 			((hba->num_ccell & 0xFFFF) | (hba->max_sqes << 16));
 	iscsi_init.num_ccells_per_conn = hba->num_ccell;
 	iscsi_init.num_tasks_per_conn = hba->max_sqes;
+<<<<<<< HEAD
 	iscsi_init.sq_wqes_per_page = PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
 	iscsi_init.sq_num_wqes = hba->max_sqes;
 	iscsi_init.cq_log_wqes_per_page =
@@ -1297,6 +1420,17 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 				   (PAGE_SIZE - 1)) / PAGE_SIZE;
 	iscsi_init.sq_num_pages = (hba->max_sqes * BNX2I_SQ_WQE_SIZE +
 				   (PAGE_SIZE - 1)) / PAGE_SIZE;
+=======
+	iscsi_init.sq_wqes_per_page = CNIC_PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
+	iscsi_init.sq_num_wqes = hba->max_sqes;
+	iscsi_init.cq_log_wqes_per_page =
+		(u8) bnx2i_power_of2(CNIC_PAGE_SIZE / BNX2I_CQE_SIZE);
+	iscsi_init.cq_num_wqes = hba->max_cqes;
+	iscsi_init.cq_num_pages = (hba->max_cqes * BNX2I_CQE_SIZE +
+				   (CNIC_PAGE_SIZE - 1)) / CNIC_PAGE_SIZE;
+	iscsi_init.sq_num_pages = (hba->max_sqes * BNX2I_SQ_WQE_SIZE +
+				   (CNIC_PAGE_SIZE - 1)) / CNIC_PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iscsi_init.rq_buffer_size = BNX2I_RQ_WQE_SIZE;
 	iscsi_init.rq_num_wqes = hba->max_rqes;
 
@@ -1361,7 +1495,11 @@ int bnx2i_process_scsi_cmd_resp(struct iscsi_session *session,
 	u32 datalen = 0;
 
 	resp_cqe = (struct bnx2i_cmd_response *)cqe;
+<<<<<<< HEAD
 	spin_lock_bh(&session->lock);
+=======
+	spin_lock_bh(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = iscsi_itt_to_task(conn,
 				 resp_cqe->itt & ISCSI_CMD_RESPONSE_INDEX);
 	if (!task)
@@ -1432,7 +1570,11 @@ done:
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)hdr,
 			     conn->data, datalen);
 fail:
+<<<<<<< HEAD
 	spin_unlock_bh(&session->lock);
+=======
+	spin_unlock_bh(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1457,7 +1599,11 @@ static int bnx2i_process_login_resp(struct iscsi_session *session,
 	int pad_len;
 
 	login = (struct bnx2i_login_response *) cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = iscsi_itt_to_task(conn,
 				 login->itt & ISCSI_LOGIN_RESPONSE_INDEX);
 	if (!task)
@@ -1500,7 +1646,11 @@ static int bnx2i_process_login_resp(struct iscsi_session *session,
 		bnx2i_conn->gen_pdu.resp_buf,
 		bnx2i_conn->gen_pdu.resp_wr_ptr - bnx2i_conn->gen_pdu.resp_buf);
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1525,7 +1675,11 @@ static int bnx2i_process_text_resp(struct iscsi_session *session,
 	int pad_len;
 
 	text = (struct bnx2i_text_response *) cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = iscsi_itt_to_task(conn, text->itt & ISCSI_LOGIN_RESPONSE_INDEX);
 	if (!task)
 		goto done;
@@ -1561,7 +1715,11 @@ static int bnx2i_process_text_resp(struct iscsi_session *session,
 			     bnx2i_conn->gen_pdu.resp_wr_ptr -
 			     bnx2i_conn->gen_pdu.resp_buf);
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1584,7 +1742,11 @@ static int bnx2i_process_tmf_resp(struct iscsi_session *session,
 	struct iscsi_tm_rsp *resp_hdr;
 
 	tmf_cqe = (struct bnx2i_tmf_response *)cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = iscsi_itt_to_task(conn,
 				 tmf_cqe->itt & ISCSI_TMF_RESPONSE_INDEX);
 	if (!task)
@@ -1600,7 +1762,11 @@ static int bnx2i_process_tmf_resp(struct iscsi_session *session,
 
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)resp_hdr, NULL, 0);
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1623,7 +1789,11 @@ static int bnx2i_process_logout_resp(struct iscsi_session *session,
 	struct iscsi_logout_rsp *resp_hdr;
 
 	logout = (struct bnx2i_logout_response *) cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = iscsi_itt_to_task(conn,
 				 logout->itt & ISCSI_LOGOUT_RESPONSE_INDEX);
 	if (!task)
@@ -1647,7 +1817,11 @@ static int bnx2i_process_logout_resp(struct iscsi_session *session,
 
 	bnx2i_conn->ep->state = EP_STATE_LOGOUT_RESP_RCVD;
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1668,12 +1842,20 @@ static void bnx2i_process_nopin_local_cmpl(struct iscsi_session *session,
 	struct iscsi_task *task;
 
 	nop_in = (struct bnx2i_nop_in_msg *)cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = iscsi_itt_to_task(conn,
 				 nop_in->itt & ISCSI_NOP_IN_MSG_INDEX);
 	if (task)
 		__iscsi_put_task(task);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -1712,7 +1894,11 @@ static int bnx2i_process_nopin_mesg(struct iscsi_session *session,
 
 	nop_in = (struct bnx2i_nop_in_msg *)cqe;
 
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hdr = (struct iscsi_nopin *)&bnx2i_conn->gen_pdu.resp_hdr;
 	memset(hdr, 0, sizeof(struct iscsi_hdr));
 	hdr->opcode = nop_in->op_code;
@@ -1738,7 +1924,11 @@ static int bnx2i_process_nopin_mesg(struct iscsi_session *session,
 	}
 done:
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)hdr, NULL, 0);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return tgt_async_nop;
 }
@@ -1771,7 +1961,11 @@ static void bnx2i_process_async_mesg(struct iscsi_session *session,
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	resp_hdr = (struct iscsi_async *) &bnx2i_conn->gen_pdu.resp_hdr;
 	memset(resp_hdr, 0, sizeof(struct iscsi_hdr));
 	resp_hdr->opcode = async_cqe->op_code;
@@ -1790,7 +1984,11 @@ static void bnx2i_process_async_mesg(struct iscsi_session *session,
 
 	__iscsi_complete_pdu(bnx2i_conn->cls_conn->dd_data,
 			     (struct iscsi_hdr *)resp_hdr, NULL, 0);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -1817,7 +2015,11 @@ static void bnx2i_process_reject_mesg(struct iscsi_session *session,
 	} else
 		bnx2i_unsol_pdu_adjust_rq(bnx2i_conn);
 
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hdr = (struct iscsi_reject *) &bnx2i_conn->gen_pdu.resp_hdr;
 	memset(hdr, 0, sizeof(struct iscsi_hdr));
 	hdr->opcode = reject->op_code;
@@ -1828,7 +2030,11 @@ static void bnx2i_process_reject_mesg(struct iscsi_session *session,
 	hdr->ffffffff = cpu_to_be32(RESERVED_ITT);
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)hdr, conn->data,
 			     reject->data_length);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -1848,13 +2054,21 @@ static void bnx2i_process_cmd_cleanup_resp(struct iscsi_session *session,
 	struct iscsi_task *task;
 
 	cmd_clean_rsp = (struct bnx2i_cleanup_response *)cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	task = iscsi_itt_to_task(conn,
 			cmd_clean_rsp->itt & ISCSI_CLEANUP_RESPONSE_INDEX);
 	if (!task)
 		printk(KERN_ALERT "bnx2i: cmd clean ITT %x not active\n",
 			cmd_clean_rsp->itt & ISCSI_CLEANUP_RESPONSE_INDEX);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	complete(&bnx2i_conn->cmd_cleanup_cmpl);
 }
 
@@ -1870,7 +2084,11 @@ int bnx2i_percpu_io_thread(void *arg)
 	struct bnx2i_work *work, *tmp;
 	LIST_HEAD(work_list);
 
+<<<<<<< HEAD
 	set_user_nice(current, -20);
+=======
+	set_user_nice(current, MIN_NICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (!kthread_should_stop()) {
 		spin_lock_bh(&p->p_work_lock);
@@ -1921,11 +2139,19 @@ static int bnx2i_queue_scsi_cmd_resp(struct iscsi_session *session,
 	int rc = 0;
 	int cpu;
 
+<<<<<<< HEAD
 	spin_lock(&session->lock);
 	task = iscsi_itt_to_task(bnx2i_conn->cls_conn->dd_data,
 				 cqe->itt & ISCSI_CMD_RESPONSE_INDEX);
 	if (!task || !task->sc) {
 		spin_unlock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+	task = iscsi_itt_to_task(bnx2i_conn->cls_conn->dd_data,
+				 cqe->itt & ISCSI_CMD_RESPONSE_INDEX);
+	if (!task || !task->sc) {
+		spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	sc = task->sc;
@@ -1935,7 +2161,11 @@ static int bnx2i_queue_scsi_cmd_resp(struct iscsi_session *session,
 	else
 		cpu = sc->request->cpu;
 
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	p = &per_cpu(bnx2i_percpu, cpu);
 	spin_lock(&p->p_work_lock);
@@ -2415,7 +2645,11 @@ static void bnx2i_process_conn_destroy_cmpl(struct bnx2i_hba *hba,
 	ep = bnx2i_find_ep_in_destroy_list(hba, conn_destroy->iscsi_conn_id);
 	if (!ep) {
 		printk(KERN_ALERT "bnx2i_conn_destroy_cmpl: no pending "
+<<<<<<< HEAD
 				  "offload request, unexpected complection\n");
+=======
+				  "offload request, unexpected completion\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -2738,9 +2972,16 @@ int bnx2i_map_ep_dbell_regs(struct bnx2i_endpoint *ep)
 	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type)) {
 		reg_base = pci_resource_start(ep->hba->pcidev,
 					      BNX2X_DOORBELL_PCI_BAR);
+<<<<<<< HEAD
 		reg_off = BNX2I_5771X_DBELL_PAGE_SIZE * (cid_num & 0x1FFFF) +
 			  DPM_TRIGER_TYPE;
 		ep->qp.ctx_base = ioremap_nocache(reg_base + reg_off, 4);
+=======
+		reg_off = (1 << BNX2X_DB_SHIFT) * (cid_num & 0x1FFFF);
+		ep->qp.ctx_base = ioremap_nocache(reg_base + reg_off, 4);
+		if (!ep->qp.ctx_base)
+			return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto arm_cq;
 	}
 

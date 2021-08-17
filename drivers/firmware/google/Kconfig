@@ -12,8 +12,12 @@ menu "Google Firmware Drivers"
 
 config GOOGLE_SMI
 	tristate "SMI interface for Google platforms"
+<<<<<<< HEAD
 	depends on ACPI && DMI
 	select EFI
+=======
+	depends on ACPI && DMI && EFI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select EFI_VARS
 	help
 	  Say Y here if you want to enable SMI callbacks for Google

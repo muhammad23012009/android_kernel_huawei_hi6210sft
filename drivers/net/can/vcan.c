@@ -50,9 +50,12 @@
 #include <linux/slab.h>
 #include <net/rtnetlink.h>
 
+<<<<<<< HEAD
 static __initconst const char banner[] =
 	KERN_INFO "vcan: Virtual CAN interface driver\n";
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("virtual CAN interface");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>");
@@ -173,7 +176,11 @@ static struct rtnl_link_ops vcan_link_ops __read_mostly = {
 
 static __init int vcan_init_module(void)
 {
+<<<<<<< HEAD
 	printk(banner);
+=======
+	pr_info("vcan: Virtual CAN interface driver\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (echo)
 		printk(KERN_INFO "vcan: enabled echo on driver level.\n");

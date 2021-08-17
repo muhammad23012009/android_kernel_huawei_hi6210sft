@@ -31,6 +31,7 @@
 #define ST_OFF (_THREAD_SIZE - 32 - PT_SIZE + PT_STATUS)
 
 /*
+<<<<<<< HEAD
  * FPU context is saved iff the process has used it's FPU in the current
  * time slice as indicated by TIF_USEDFPU.  In any case, the CU1 bit for user
  * space STATUS register should be 0, so that a process *always* starts its
@@ -43,6 +44,10 @@
 /*
  * task_struct *resume(task_struct *prev, task_struct *next,
  *		       struct thread_info *next_ti, int usedfpu)
+=======
+ * task_struct *resume(task_struct *prev, task_struct *next,
+ *		       struct thread_info *next_ti)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 LEAF(resume)
 	mfc0	t1, CP0_STATUS
@@ -50,6 +55,7 @@ LEAF(resume)
 	cpu_save_nonscratch a0
 	sw	ra, THREAD_REG31(a0)
 
+<<<<<<< HEAD
 	beqz	a3, 1f
 
 	PTR_L	t3, TASK_THREAD_INFO(a0)
@@ -66,6 +72,15 @@ LEAF(resume)
 
 1:
 	/*
+=======
+#if defined(CONFIG_CC_STACKPROTECTOR) && !defined(CONFIG_SMP)
+	PTR_LA	t8, __stack_chk_guard
+	LONG_L	t9, TASK_STACK_CANARY(a1)
+	LONG_S	t9, 0(t8)
+#endif
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * The order of restoring the registers takes care of the race
 	 * updating $28, $29 and kernelsp without disabling ints.
 	 */
@@ -108,10 +123,18 @@ LEAF(_restore_fp)
  * the property that no matter whether considered as single or as double
  * precision represents signaling NANS.
  *
+<<<<<<< HEAD
  * We initialize fcr31 to rounding to nearest, no exceptions.
  */
 
 #define FPU_DEFAULT  0x00000000
+=======
+ * The value to initialize fcr31 to comes in $a0.
+ */
+
+	.set push
+	SET_HARDFLOAT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 LEAF(_init_fpu)
 	mfc0	t0, CP0_STATUS
@@ -119,8 +142,12 @@ LEAF(_init_fpu)
 	or	t0, t1
 	mtc0	t0, CP0_STATUS
 
+<<<<<<< HEAD
 	li	t1, FPU_DEFAULT
 	ctc1	t1, fcr31
+=======
+	ctc1	a0, fcr31
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	li	t0, -1
 
@@ -158,3 +185,8 @@ LEAF(_init_fpu)
 	mtc1	t0, $f31
 	jr	ra
 	END(_init_fpu)
+<<<<<<< HEAD
+=======
+
+	.set pop
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

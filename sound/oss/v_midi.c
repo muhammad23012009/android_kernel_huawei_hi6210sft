@@ -49,13 +49,21 @@ static int v_midi_open (int dev, int mode,
 	unsigned long flags;
 
 	if (devc == NULL)
+<<<<<<< HEAD
 		return -(ENXIO);
+=======
+		return -ENXIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&devc->lock,flags);
 	if (devc->opened)
 	{
 		spin_unlock_irqrestore(&devc->lock,flags);
+<<<<<<< HEAD
 		return -(EBUSY);
+=======
+		return -EBUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	devc->opened = 1;
 	spin_unlock_irqrestore(&devc->lock,flags);

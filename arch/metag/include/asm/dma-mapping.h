@@ -1,6 +1,7 @@
 #ifndef _ASM_METAG_DMA_MAPPING_H
 #define _ASM_METAG_DMA_MAPPING_H
 
+<<<<<<< HEAD
 #include <linux/mm.h>
 
 #include <asm/cache.h>
@@ -168,6 +169,13 @@ dma_set_mask(struct device *dev, u64 mask)
 	*dev->dma_mask = mask;
 
 	return 0;
+=======
+extern struct dma_map_ops metag_dma_ops;
+
+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+{
+	return &metag_dma_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -180,6 +188,7 @@ dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 {
 }
 
+<<<<<<< HEAD
 /* drivers/base/dma-mapping.c */
 extern int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
 				  void *cpu_addr, dma_addr_t dma_addr,
@@ -187,4 +196,6 @@ extern int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
 
 #define dma_get_sgtable(d, t, v, h, s) dma_common_get_sgtable(d, t, v, h, s)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

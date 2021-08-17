@@ -88,10 +88,16 @@ struct snd_pdacf {
 	unsigned long port;
 	int irq;
 
+<<<<<<< HEAD
 	spinlock_t reg_lock;
 	unsigned short regmap[8];
 	unsigned short suspend_reg_scr;
 	struct tasklet_struct tq;
+=======
+	struct mutex reg_lock;
+	unsigned short regmap[8];
+	unsigned short suspend_reg_scr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spinlock_t ak4117_lock;
 	struct ak4117 *ak4117;
@@ -136,7 +142,11 @@ int snd_pdacf_resume(struct snd_pdacf *chip);
 #endif
 int snd_pdacf_pcm_new(struct snd_pdacf *chip);
 irqreturn_t pdacf_interrupt(int irq, void *dev);
+<<<<<<< HEAD
 void pdacf_tasklet(unsigned long private_data);
+=======
+irqreturn_t pdacf_threaded_irq(int irq, void *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void pdacf_reinit(struct snd_pdacf *chip, int resume);
 
 #endif /* __PDAUDIOCF_H */

@@ -18,22 +18,39 @@
 #include <asm/cacheflush.h>
 #include <asm/smp_plat.h>
 
+<<<<<<< HEAD
+=======
+#include <plat/platsmp.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Write pen_release in a way that is guaranteed to be visible to all
  * observers, irrespective of whether they're taking part in coherency
  * or not.  This is necessary for the hotplug code to work reliably.
  */
+<<<<<<< HEAD
 static void __cpuinit write_pen_release(int val)
 {
 	pen_release = val;
 	smp_wmb();
 	__cpuc_flush_dcache_area((void *)&pen_release, sizeof(pen_release));
 	outer_clean_range(__pa(&pen_release), __pa(&pen_release + 1));
+=======
+static void write_pen_release(int val)
+{
+	pen_release = val;
+	smp_wmb();
+	sync_cache_w(&pen_release);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static DEFINE_SPINLOCK(boot_lock);
 
+<<<<<<< HEAD
 void __cpuinit versatile_secondary_init(unsigned int cpu)
+=======
+void versatile_secondary_init(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * let the primary processor know we're out of the
@@ -48,7 +65,11 @@ void __cpuinit versatile_secondary_init(unsigned int cpu)
 	spin_unlock(&boot_lock);
 }
 
+<<<<<<< HEAD
 int __cpuinit versatile_boot_secondary(unsigned int cpu, struct task_struct *idle)
+=======
+int versatile_boot_secondary(unsigned int cpu, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long timeout;
 

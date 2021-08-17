@@ -581,7 +581,11 @@ struct sym_pmc {
 #define sym_lp(tp, lun) (!lun) ? (tp)->lun0p : NULL
 #else
 #define sym_lp(tp, lun) \
+<<<<<<< HEAD
 	(!lun) ? (tp)->lun0p : (tp)->lunmp ? (tp)->lunmp[(lun)] : NULL
+=======
+	(!lun) ? (tp)->lun0p : (tp)->lunmp ? (tp)->lunmp[((u8)lun)] : NULL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*

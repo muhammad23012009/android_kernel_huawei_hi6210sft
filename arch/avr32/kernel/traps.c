@@ -11,7 +11,12 @@
 #include <linux/init.h>
 #include <linux/kallsyms.h>
 #include <linux/kdebug.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+#include <linux/module.h>	/* print_modules */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/notifier.h>
 #include <linux/sched.h>
 #include <linux/uaccess.h>

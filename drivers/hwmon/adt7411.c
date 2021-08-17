@@ -7,8 +7,12 @@
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  TODO: SPI, support for external temperature sensor
  *	  use power-down mode for suspend?, interrupt handling?
+=======
+ *  TODO: SPI, use power-down mode for suspend?, interrupt handling?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -30,6 +34,11 @@
 
 #define ADT7411_REG_CFG1			0x18
 #define ADT7411_CFG1_START_MONITOR		(1 << 0)
+<<<<<<< HEAD
+=======
+#define ADT7411_CFG1_RESERVED_BIT1		(1 << 1)
+#define ADT7411_CFG1_EXT_TDM			(1 << 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADT7411_CFG1_RESERVED_BIT3		(1 << 3)
 
 #define ADT7411_REG_CFG2			0x19
@@ -37,6 +46,12 @@
 
 #define ADT7411_REG_CFG3			0x1a
 #define ADT7411_CFG3_ADC_CLK_225		(1 << 0)
+<<<<<<< HEAD
+=======
+#define ADT7411_CFG3_RESERVED_BIT1		(1 << 1)
+#define ADT7411_CFG3_RESERVED_BIT2		(1 << 2)
+#define ADT7411_CFG3_RESERVED_BIT3		(1 << 3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADT7411_CFG3_REF_VDD			(1 << 4)
 
 #define ADT7411_REG_DEVICE_ID			0x4d
@@ -52,7 +67,12 @@ struct adt7411_data {
 	struct mutex update_lock;
 	unsigned long next_update;
 	int vref_cached;
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+	bool use_ext_temp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -112,7 +132,12 @@ static int adt7411_modify_bit(struct i2c_client *client, u8 reg, u8 bit,
 static ssize_t adt7411_show_vdd(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+	struct adt7411_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = adt7411_read_10_bit(client, ADT7411_REG_INT_TEMP_VDD_LSB,
 			ADT7411_REG_VDD_MSB, 2);
 
@@ -122,10 +147,27 @@ static ssize_t adt7411_show_vdd(struct device *dev,
 static ssize_t adt7411_show_temp(struct device *dev,
 			struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	int val = adt7411_read_10_bit(client, ADT7411_REG_INT_TEMP_VDD_LSB,
 			ADT7411_REG_INT_TEMP_MSB, 0);
 
+=======
+	int nr = to_sensor_dev_attr(attr)->index;
+	struct adt7411_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int val;
+	struct {
+		u8 low;
+		u8 high;
+	} reg[2] = {
+		{ ADT7411_REG_INT_TEMP_VDD_LSB, ADT7411_REG_INT_TEMP_MSB },
+		{ ADT7411_REG_EXT_TEMP_AIN14_LSB,
+		  ADT7411_REG_EXT_TEMP_AIN1_MSB },
+	};
+
+	val = adt7411_read_10_bit(client, reg[nr].low, reg[nr].high, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (val < 0)
 		return val;
 
@@ -138,8 +180,13 @@ static ssize_t adt7411_show_input(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adt7411_data *data = i2c_get_clientdata(client);
+=======
+	struct adt7411_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int val;
 	u8 lsb_reg, lsb_shift;
 
@@ -181,7 +228,12 @@ static ssize_t adt7411_show_bit(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	struct sensor_device_attribute_2 *attr2 = to_sensor_dev_attr_2(attr);
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+	struct adt7411_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = i2c_smbus_read_byte_data(client, attr2->index);
 
 	return ret < 0 ? ret : sprintf(buf, "%u\n", !!(ret & attr2->nr));
@@ -192,8 +244,13 @@ static ssize_t adt7411_set_bit(struct device *dev,
 			       size_t count)
 {
 	struct sensor_device_attribute_2 *s_attr2 = to_sensor_dev_attr_2(attr);
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adt7411_data *data = i2c_get_clientdata(client);
+=======
+	struct adt7411_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	unsigned long flag;
 
@@ -211,11 +268,20 @@ static ssize_t adt7411_set_bit(struct device *dev,
 	return ret < 0 ? ret : count;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADT7411_BIT_ATTR(__name, __reg, __bit) \
 	SENSOR_DEVICE_ATTR_2(__name, S_IRUGO | S_IWUSR, adt7411_show_bit, \
 	adt7411_set_bit, __bit, __reg)
 
+<<<<<<< HEAD
 static DEVICE_ATTR(temp1_input, S_IRUGO, adt7411_show_temp, NULL);
+=======
+static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, adt7411_show_temp, NULL, 0);
+static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, adt7411_show_temp, NULL, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEVICE_ATTR(in0_input, S_IRUGO, adt7411_show_vdd, NULL);
 static SENSOR_DEVICE_ATTR(in1_input, S_IRUGO, adt7411_show_input, NULL, 0);
 static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, adt7411_show_input, NULL, 1);
@@ -230,7 +296,12 @@ static ADT7411_BIT_ATTR(fast_sampling, ADT7411_REG_CFG3, ADT7411_CFG3_ADC_CLK_22
 static ADT7411_BIT_ATTR(adc_ref_vdd, ADT7411_REG_CFG3, ADT7411_CFG3_REF_VDD);
 
 static struct attribute *adt7411_attrs[] = {
+<<<<<<< HEAD
 	&dev_attr_temp1_input.attr,
+=======
+	&sensor_dev_attr_temp1_input.dev_attr.attr,
+	&sensor_dev_attr_temp2_input.dev_attr.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&dev_attr_in0_input.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
@@ -246,9 +317,33 @@ static struct attribute *adt7411_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group adt7411_attr_grp = {
 	.attrs = adt7411_attrs,
 };
+=======
+static umode_t adt7411_attrs_visible(struct kobject *kobj,
+				     struct attribute *attr, int index)
+{
+	struct device *dev = container_of(kobj, struct device, kobj);
+	struct adt7411_data *data = dev_get_drvdata(dev);
+	bool visible = true;
+
+	if (attr == &sensor_dev_attr_temp2_input.dev_attr.attr)
+		visible = data->use_ext_temp;
+	else if (attr == &sensor_dev_attr_in1_input.dev_attr.attr ||
+		 attr == &sensor_dev_attr_in2_input.dev_attr.attr)
+		visible = !data->use_ext_temp;
+
+	return visible ? attr->mode : 0;
+}
+
+static const struct attribute_group adt7411_group = {
+	.attrs = adt7411_attrs,
+	.is_visible = adt7411_attrs_visible,
+};
+__ATTRIBUTE_GROUPS(adt7411);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int adt7411_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
@@ -279,6 +374,7 @@ static int adt7411_detect(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adt7411_probe(struct i2c_client *client,
 				   const struct i2c_device_id *id)
 {
@@ -286,10 +382,63 @@ static int adt7411_probe(struct i2c_client *client,
 	int ret;
 
 	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
+=======
+static int adt7411_init_device(struct adt7411_data *data)
+{
+	int ret;
+	u8 val;
+
+	ret = i2c_smbus_read_byte_data(data->client, ADT7411_REG_CFG3);
+	if (ret < 0)
+		return ret;
+
+	/*
+	 * We must only write zero to bit 1 and bit 2 and only one to bit 3
+	 * according to the datasheet.
+	 */
+	val = ret;
+	val &= ~(ADT7411_CFG3_RESERVED_BIT1 | ADT7411_CFG3_RESERVED_BIT2);
+	val |= ADT7411_CFG3_RESERVED_BIT3;
+
+	ret = i2c_smbus_write_byte_data(data->client, ADT7411_REG_CFG3, val);
+	if (ret < 0)
+		return ret;
+
+	ret = i2c_smbus_read_byte_data(data->client, ADT7411_REG_CFG1);
+	if (ret < 0)
+		return ret;
+
+	data->use_ext_temp = ret & ADT7411_CFG1_EXT_TDM;
+
+	/*
+	 * We must only write zero to bit 1 and only one to bit 3 according to
+	 * the datasheet.
+	 */
+	val = ret;
+	val &= ~ADT7411_CFG1_RESERVED_BIT1;
+	val |= ADT7411_CFG1_RESERVED_BIT3;
+
+	/* enable monitoring */
+	val |= ADT7411_CFG1_START_MONITOR;
+
+	return i2c_smbus_write_byte_data(data->client, ADT7411_REG_CFG1, val);
+}
+
+static int adt7411_probe(struct i2c_client *client,
+				   const struct i2c_device_id *id)
+{
+	struct device *dev = &client->dev;
+	struct adt7411_data *data;
+	struct device *hwmon_dev;
+	int ret;
+
+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!data)
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+<<<<<<< HEAD
 	mutex_init(&data->device_lock);
 	mutex_init(&data->update_lock);
 
@@ -297,12 +446,20 @@ static int adt7411_probe(struct i2c_client *client,
 	ret = adt7411_modify_bit(client, ADT7411_REG_CFG1,
 				 ADT7411_CFG1_RESERVED_BIT3
 				 | ADT7411_CFG1_START_MONITOR, 1);
+=======
+	data->client = client;
+	mutex_init(&data->device_lock);
+	mutex_init(&data->update_lock);
+
+	ret = adt7411_init_device(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
 	/* force update on first occasion */
 	data->next_update = jiffies;
 
+<<<<<<< HEAD
 	ret = sysfs_create_group(&client->dev.kobj, &adt7411_attr_grp);
 	if (ret)
 		return ret;
@@ -329,6 +486,12 @@ static int adt7411_remove(struct i2c_client *client)
 	hwmon_device_unregister(data->hwmon_dev);
 	sysfs_remove_group(&client->dev.kobj, &adt7411_attr_grp);
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   adt7411_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id adt7411_id[] = {
@@ -342,7 +505,10 @@ static struct i2c_driver adt7411_driver = {
 		.name		= "adt7411",
 	},
 	.probe  = adt7411_probe,
+<<<<<<< HEAD
 	.remove	= adt7411_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = adt7411_id,
 	.detect = adt7411_detect,
 	.address_list = normal_i2c,

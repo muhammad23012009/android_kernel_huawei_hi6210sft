@@ -60,12 +60,21 @@ struct dma_chan_ref {
  * dependency chain
  * @ASYNC_TX_FENCE: specify that the next operation in the dependency
  * chain uses this operation's result as an input
+<<<<<<< HEAD
+=======
+ * @ASYNC_TX_PQ_XOR_DST: do not overwrite the syndrome but XOR it with the
+ * input data. Required for rmw case.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 enum async_tx_flags {
 	ASYNC_TX_XOR_ZERO_DST	 = (1 << 0),
 	ASYNC_TX_XOR_DROP_DST	 = (1 << 1),
 	ASYNC_TX_ACK		 = (1 << 2),
 	ASYNC_TX_FENCE		 = (1 << 3),
+<<<<<<< HEAD
+=======
+	ASYNC_TX_PQ_XOR_DST	 = (1 << 4),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -182,10 +191,13 @@ async_memcpy(struct page *dest, struct page *src, unsigned int dest_offset,
 	     unsigned int src_offset, size_t len,
 	     struct async_submit_ctl *submit);
 
+<<<<<<< HEAD
 struct dma_async_tx_descriptor *
 async_memset(struct page *dest, int val, unsigned int offset,
 	     size_t len, struct async_submit_ctl *submit);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dma_async_tx_descriptor *async_trigger_callback(struct async_submit_ctl *submit);
 
 struct dma_async_tx_descriptor *

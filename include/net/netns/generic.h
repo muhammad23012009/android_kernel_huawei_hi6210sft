@@ -38,11 +38,17 @@ static inline void *net_generic(const struct net *net, int id)
 
 	rcu_read_lock();
 	ng = rcu_dereference(net->gen);
+<<<<<<< HEAD
 	BUG_ON(id == 0 || id > ng->len);
 	ptr = ng->ptr[id - 1];
 	rcu_read_unlock();
 
 	BUG_ON(!ptr);
+=======
+	ptr = ng->ptr[id - 1];
+	rcu_read_unlock();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ptr;
 }
 #endif

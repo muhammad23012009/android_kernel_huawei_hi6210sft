@@ -16,7 +16,10 @@
 #define LHCALL_SET_PTE		14
 #define LHCALL_SET_PGD		15
 #define LHCALL_LOAD_TLS		16
+<<<<<<< HEAD
 #define LHCALL_NOTIFY		17
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define LHCALL_LOAD_GDT_ENTRY	18
 #define LHCALL_SEND_INTERRUPTS	19
 

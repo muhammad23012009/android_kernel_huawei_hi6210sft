@@ -15,13 +15,17 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 struct in6_addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct inet_bind_bucket;
 struct request_sock;
 struct sk_buff;
 struct sock;
 struct sockaddr;
 
+<<<<<<< HEAD
 extern int inet6_csk_bind_conflict(const struct sock *sk,
 				   const struct inet_bind_bucket *tb, bool relax);
 
@@ -45,4 +49,17 @@ extern void inet6_csk_addr2sockaddr(struct sock *sk, struct sockaddr *uaddr);
 extern int inet6_csk_xmit(struct sk_buff *skb, struct flowi *fl);
 
 extern struct dst_entry *inet6_csk_update_pmtu(struct sock *sk, u32 mtu);
+=======
+int inet6_csk_bind_conflict(const struct sock *sk,
+			    const struct inet_bind_bucket *tb, bool relax);
+
+struct dst_entry *inet6_csk_route_req(const struct sock *sk, struct flowi6 *fl6,
+				      const struct request_sock *req, u8 proto);
+
+void inet6_csk_addr2sockaddr(struct sock *sk, struct sockaddr *uaddr);
+
+int inet6_csk_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl);
+
+struct dst_entry *inet6_csk_update_pmtu(struct sock *sk, u32 mtu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _INET6_CONNECTION_SOCK_H */

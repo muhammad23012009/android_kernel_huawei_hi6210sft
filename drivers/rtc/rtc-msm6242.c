@@ -7,6 +7,11 @@
  *  Copyright (C) 1993 Hamish Macdonald
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -111,8 +116,13 @@ static void msm6242_lock(struct msm6242_priv *priv)
 	}
 
 	if (!cnt)
+<<<<<<< HEAD
 		pr_warning("msm6242: timed out waiting for RTC (0x%x)\n",
 			   msm6242_read(priv, MSM6242_CD));
+=======
+		pr_warn("timed out waiting for RTC (0x%x)\n",
+			msm6242_read(priv, MSM6242_CD));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void msm6242_unlock(struct msm6242_priv *priv)
@@ -130,7 +140,12 @@ static int msm6242_read_time(struct device *dev, struct rtc_time *tm)
 		      msm6242_read(priv, MSM6242_SECOND1);
 	tm->tm_min  = msm6242_read(priv, MSM6242_MINUTE10) * 10 +
 		      msm6242_read(priv, MSM6242_MINUTE1);
+<<<<<<< HEAD
 	tm->tm_hour = (msm6242_read(priv, MSM6242_HOUR10 & 3)) * 10 +
+=======
+	tm->tm_hour = (msm6242_read(priv, MSM6242_HOUR10) &
+		       MSM6242_HOUR10_HR_MASK) * 10 +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      msm6242_read(priv, MSM6242_HOUR1);
 	tm->tm_mday = msm6242_read(priv, MSM6242_DAY10) * 10 +
 		      msm6242_read(priv, MSM6242_DAY1);
@@ -199,7 +214,10 @@ static int __init msm6242_rtc_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct msm6242_priv *priv;
 	struct rtc_device *rtc;
+<<<<<<< HEAD
 	int error;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
@@ -216,6 +234,7 @@ static int __init msm6242_rtc_probe(struct platform_device *pdev)
 
 	rtc = devm_rtc_device_register(&pdev->dev, "rtc-msm6242",
 				&msm6242_rtc_ops, THIS_MODULE);
+<<<<<<< HEAD
 	if (IS_ERR(rtc)) {
 		error = PTR_ERR(rtc);
 		goto out_unmap;
@@ -232,14 +251,25 @@ out_unmap:
 static int __exit msm6242_rtc_remove(struct platform_device *pdev)
 {
 	return 0;
+=======
+	if (IS_ERR(rtc))
+		return PTR_ERR(rtc);
+
+	priv->rtc = rtc;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver msm6242_rtc_driver = {
 	.driver	= {
 		.name	= "rtc-msm6242",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.remove	= __exit_p(msm6242_rtc_remove),
+=======
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver_probe(msm6242_rtc_driver, msm6242_rtc_probe);

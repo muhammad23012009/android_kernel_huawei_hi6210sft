@@ -11,6 +11,11 @@
 #ifndef __ASM_ARCH_DOVE_H
 #define __ASM_ARCH_DOVE_H
 
+<<<<<<< HEAD
+=======
+#include <mach/irqs.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Marvell Dove address maps.
  *

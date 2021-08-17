@@ -24,12 +24,21 @@
 # include "boot.h"
 #endif
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <asm/processor-flags.h>
 #include <asm/required-features.h>
 #include <asm/msr-index.h>
 
 struct cpu_features cpu;
 static u32 cpu_vendor[3];
+=======
+#include <asm/intel-family.h>
+#include <asm/processor-flags.h>
+#include <asm/required-features.h>
+#include <asm/msr-index.h>
+#include "string.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u32 err_flags[NCAPINTS];
 
 static const int req_level = CONFIG_X86_MINIMUM_CPU_FAMILY;
@@ -69,6 +78,7 @@ static int is_transmeta(void)
 	       cpu_vendor[2] == A32('M', 'x', '8', '6');
 }
 
+<<<<<<< HEAD
 static int has_fpu(void)
 {
 	u16 fcw = -1, fsw = -1;
@@ -155,6 +165,17 @@ static void get_flags(void)
 
 /* Returns a bitmask of which words we have error bits in */
 static int check_flags(void)
+=======
+static int is_intel(void)
+{
+	return cpu_vendor[0] == A32('G', 'e', 'n', 'u') &&
+	       cpu_vendor[1] == A32('i', 'n', 'e', 'I') &&
+	       cpu_vendor[2] == A32('n', 't', 'e', 'l');
+}
+
+/* Returns a bitmask of which words we have error bits in */
+static int check_cpuflags(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 err;
 	int i;
@@ -187,8 +208,13 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 	if (has_eflag(X86_EFLAGS_AC))
 		cpu.level = 4;
 
+<<<<<<< HEAD
 	get_flags();
 	err = check_flags();
+=======
+	get_cpuflags();
+	err = check_cpuflags();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (test_bit(X86_FEATURE_LM, cpu.flags))
 		cpu.level = 64;
@@ -207,8 +233,13 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 		eax &= ~(1 << 15);
 		asm("wrmsr" : : "a" (eax), "d" (edx), "c" (ecx));
 
+<<<<<<< HEAD
 		get_flags();	/* Make sure it really did something */
 		err = check_flags();
+=======
+		get_cpuflags();	/* Make sure it really did something */
+		err = check_cpuflags();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (err == 0x01 &&
 		   !(err_flags[0] & ~(1 << X86_FEATURE_CX8)) &&
 		   is_centaur() && cpu.model >= 6) {
@@ -223,7 +254,11 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 		asm("wrmsr" : : "a" (eax), "d" (edx), "c" (ecx));
 
 		set_bit(X86_FEATURE_CX8, cpu.flags);
+<<<<<<< HEAD
 		err = check_flags();
+=======
+		err = check_cpuflags();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (err == 0x01 && is_transmeta()) {
 		/* Transmeta might have masked feature bits in word 0 */
 
@@ -238,8 +273,28 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 		    : : "ecx", "ebx");
 		asm("wrmsr" : : "a" (eax), "d" (edx), "c" (ecx));
 
+<<<<<<< HEAD
 		err = check_flags();
 	}
+=======
+		err = check_cpuflags();
+	} else if (err == 0x01 &&
+		   !(err_flags[0] & ~(1 << X86_FEATURE_PAE)) &&
+		   is_intel() && cpu.level == 6 &&
+		   (cpu.model == 9 || cpu.model == 13)) {
+		/* PAE is disabled on this Pentium M but can be forced */
+		if (cmdline_find_option_bool("forcepae")) {
+			puts("WARNING: Forcing PAE in CPU flags\n");
+			set_bit(X86_FEATURE_PAE, cpu.flags);
+			err = check_cpuflags();
+		}
+		else {
+			puts("WARNING: PAE disabled. Use parameter 'forcepae' to enable at your own risk!\n");
+		}
+	}
+	if (!err)
+		err = check_knl_erratum();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (err_flags_ptr)
 		*err_flags_ptr = err ? err_flags : NULL;
@@ -250,3 +305,36 @@ int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr)
 
 	return (cpu.level < req_level || err) ? -1 : 0;
 }
+<<<<<<< HEAD
+=======
+
+int check_knl_erratum(void)
+{
+	/*
+	 * First check for the affected model/family:
+	 */
+	if (!is_intel() ||
+	    cpu.family != 6 ||
+	    cpu.model != INTEL_FAM6_XEON_PHI_KNL)
+		return 0;
+
+	/*
+	 * This erratum affects the Accessed/Dirty bits, and can
+	 * cause stray bits to be set in !Present PTEs.  We have
+	 * enough bits in our 64-bit PTEs (which we have on real
+	 * 64-bit mode or PAE) to avoid using these troublesome
+	 * bits.  But, we do not have enough space in our 32-bit
+	 * PTEs.  So, refuse to run on 32-bit non-PAE kernels.
+	 */
+	if (IS_ENABLED(CONFIG_X86_64) || IS_ENABLED(CONFIG_X86_PAE))
+		return 0;
+
+	puts("This 32-bit kernel can not run on this Xeon Phi x200\n"
+	     "processor due to a processor erratum.  Use a 64-bit\n"
+	     "kernel, or enable PAE in this 32-bit kernel.\n\n");
+
+	return -1;
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

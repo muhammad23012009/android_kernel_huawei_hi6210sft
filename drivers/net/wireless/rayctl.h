@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 #ifndef RAYLINK_H
+=======
+#ifndef _RAYCTL_H_
+#define _RAYCTL_H_
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef unsigned char UCHAR;
 
@@ -729,4 +734,8 @@ typedef struct snaphdr_t
 #define RAY_IPX_TYPE  0x8137
 #define APPLEARP_TYPE 0x80f3
 /*****************************************************************************/
+<<<<<<< HEAD
 #endif /* #ifndef RAYLINK_H */
+=======
+#endif /* _RAYCTL_H_ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

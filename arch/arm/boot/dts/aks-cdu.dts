@@ -9,13 +9,26 @@
 
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "ge863-pro3.dtsi"
+=======
+#include "ge863-pro3.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	chosen {
 		bootargs = "console=ttyS0,115200 ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs";
 	};
 
+<<<<<<< HEAD
+=======
+	clocks {
+		slow_xtal {
+			clock-frequency = <32768>;
+		};
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ahb {
 		apb {
 			usart0: serial@fffb0000 {
@@ -46,12 +59,20 @@
 			};
 
 			usb1: gadget@fffa4000 {
+<<<<<<< HEAD
 				atmel,vbus-gpio = <&pioC 15 0>;
+=======
+				atmel,vbus-gpio = <&pioC 15 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "okay";
 			};
 		};
 
+<<<<<<< HEAD
 		usb0: ohci@00500000 {
+=======
+		usb0: ohci@500000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			num-ports = <2>;
 			status = "okay";
 		};
@@ -90,23 +111,39 @@
 		compatible = "gpio-leds";
 
 		red {
+<<<<<<< HEAD
 			gpios = <&pioC 10 0>;
+=======
+			gpios = <&pioC 10 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "none";
 		};
 
 		green {
+<<<<<<< HEAD
 			gpios = <&pioA 5 1>;
+=======
+			gpios = <&pioA 5 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "none";
 			default-state = "on";
 		};
 
 		yellow {
+<<<<<<< HEAD
 			gpios = <&pioB 20 1>;
+=======
+			gpios = <&pioB 20 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "none";
 		};
 
 		blue {
+<<<<<<< HEAD
 			gpios = <&pioB 21 1>;
+=======
+			gpios = <&pioB 21 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "none";
 		};
 	};

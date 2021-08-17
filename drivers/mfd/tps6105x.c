@@ -16,11 +16,16 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/mutex.h>
+=======
+#include <linux/regmap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/gpio.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/regulator/driver.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/tps6105x.h>
@@ -85,13 +90,29 @@ fail:
 	return 0;
 }
 EXPORT_SYMBOL(tps6105x_mask_and_set);
+=======
+#include <linux/mfd/core.h>
+#include <linux/mfd/tps6105x.h>
+
+static struct regmap_config tps6105x_regmap_config = {
+	.reg_bits = 8,
+	.val_bits = 8,
+	.max_register = TPS6105X_REG_3,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int tps6105x_startup(struct tps6105x *tps6105x)
 {
 	int ret;
+<<<<<<< HEAD
 	u8 regval;
 
 	ret = tps6105x_get(tps6105x, TPS6105X_REG_0, &regval);
+=======
+	unsigned int regval;
+
+	ret = regmap_read(tps6105x->regmap, TPS6105X_REG_0, &regval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 	switch (regval >> TPS6105X_REG0_MODE_SHIFT) {
@@ -119,6 +140,7 @@ static int tps6105x_startup(struct tps6105x *tps6105x)
 }
 
 /*
+<<<<<<< HEAD
  * MFD cells - we have one cell which is selected operation
  * mode, and we always have a GPIO cell.
  */
@@ -133,12 +155,44 @@ static struct mfd_cell tps6105x_cells[] = {
 	},
 };
 
+=======
+ * MFD cells - we always have a GPIO cell and we have one cell
+ * which is selected operation mode.
+ */
+static struct mfd_cell tps6105x_gpio_cell = {
+	.name = "tps6105x-gpio",
+};
+
+static struct mfd_cell tps6105x_leds_cell = {
+	.name = "tps6105x-leds",
+};
+
+static struct mfd_cell tps6105x_flash_cell = {
+	.name = "tps6105x-flash",
+};
+
+static struct mfd_cell tps6105x_regulator_cell = {
+	.name = "tps6105x-regulator",
+};
+
+static int tps6105x_add_device(struct tps6105x *tps6105x,
+			       struct mfd_cell *cell)
+{
+	cell->platform_data = tps6105x;
+	cell->pdata_size = sizeof(*tps6105x);
+
+	return mfd_add_devices(&tps6105x->client->dev,
+			       PLATFORM_DEVID_AUTO, cell, 1, NULL, 0, NULL);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int tps6105x_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
 	struct tps6105x			*tps6105x;
 	struct tps6105x_platform_data	*pdata;
 	int ret;
+<<<<<<< HEAD
 	int i;
 
 	tps6105x = kmalloc(sizeof(*tps6105x), GFP_KERNEL);
@@ -150,20 +204,51 @@ static int tps6105x_probe(struct i2c_client *client,
 	pdata = client->dev.platform_data;
 	tps6105x->pdata = pdata;
 	mutex_init(&tps6105x->lock);
+=======
+
+	pdata = dev_get_platdata(&client->dev);
+	if (!pdata) {
+		dev_err(&client->dev, "missing platform data\n");
+		return -ENODEV;
+	}
+
+	tps6105x = devm_kmalloc(&client->dev, sizeof(*tps6105x), GFP_KERNEL);
+	if (!tps6105x)
+		return -ENOMEM;
+
+	tps6105x->regmap = devm_regmap_init_i2c(client, &tps6105x_regmap_config);
+	if (IS_ERR(tps6105x->regmap))
+		return PTR_ERR(tps6105x->regmap);
+
+	i2c_set_clientdata(client, tps6105x);
+	tps6105x->client = client;
+	tps6105x->pdata = pdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = tps6105x_startup(tps6105x);
 	if (ret) {
 		dev_err(&client->dev, "chip initialization failed\n");
+<<<<<<< HEAD
 		goto fail;
 	}
 
 	/* Remove warning texts when you implement new cell drivers */
+=======
+		return ret;
+	}
+
+	ret = tps6105x_add_device(tps6105x, &tps6105x_gpio_cell);
+	if (ret)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (pdata->mode) {
 	case TPS6105X_MODE_SHUTDOWN:
 		dev_info(&client->dev,
 			 "present, not used for anything, only GPIO\n");
 		break;
 	case TPS6105X_MODE_TORCH:
+<<<<<<< HEAD
 		tps6105x_cells[0].name = "tps6105x-leds";
 		dev_warn(&client->dev,
 			 "torch mode is unsupported\n");
@@ -196,6 +281,24 @@ static int tps6105x_probe(struct i2c_client *client,
 
 fail:
 	kfree(tps6105x);
+=======
+		ret = tps6105x_add_device(tps6105x, &tps6105x_leds_cell);
+		break;
+	case TPS6105X_MODE_TORCH_FLASH:
+		ret = tps6105x_add_device(tps6105x, &tps6105x_flash_cell);
+		break;
+	case TPS6105X_MODE_VOLTAGE:
+		ret = tps6105x_add_device(tps6105x, &tps6105x_regulator_cell);
+		break;
+	default:
+		dev_warn(&client->dev, "invalid mode: %d\n", pdata->mode);
+		break;
+	}
+
+	if (ret)
+		mfd_remove_devices(&client->dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -206,11 +309,18 @@ static int tps6105x_remove(struct i2c_client *client)
 	mfd_remove_devices(&client->dev);
 
 	/* Put chip in shutdown mode */
+<<<<<<< HEAD
 	tps6105x_mask_and_set(tps6105x, TPS6105X_REG_0,
 		TPS6105X_REG0_MODE_MASK,
 		TPS6105X_MODE_SHUTDOWN << TPS6105X_REG0_MODE_SHIFT);
 
 	kfree(tps6105x);
+=======
+	regmap_update_bits(tps6105x->regmap, TPS6105X_REG_0,
+		TPS6105X_REG0_MODE_MASK,
+		TPS6105X_MODE_SHUTDOWN << TPS6105X_REG0_MODE_SHIFT);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

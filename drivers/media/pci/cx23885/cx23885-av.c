@@ -14,23 +14,49 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  *  02110-1301, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include "cx23885.h"
 #include "cx23885-av.h"
+<<<<<<< HEAD
+=======
+#include "cx23885-video.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void cx23885_av_work_handler(struct work_struct *work)
 {
 	struct cx23885_dev *dev =
 			   container_of(work, struct cx23885_dev, cx25840_work);
+<<<<<<< HEAD
 	bool handled;
 
 	v4l2_subdev_call(dev->sd_cx25840, core, interrupt_service_routine,
 			 PCI_MSK_AV_CORE, &handled);
+=======
+	bool handled = false;
+
+	v4l2_subdev_call(dev->sd_cx25840, core, interrupt_service_routine,
+			 PCI_MSK_AV_CORE, &handled);
+
+	/* Getting here with the interrupt not handled
+	   then probbaly flatiron does have pending interrupts.
+	*/
+	if (!handled) {
+		/* clear left and right adc channel interrupt request flag */
+		cx23885_flatiron_write(dev, 0x1f,
+			cx23885_flatiron_read(dev, 0x1f) | 0x80);
+		cx23885_flatiron_write(dev, 0x23,
+			cx23885_flatiron_read(dev, 0x23) | 0x80);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cx23885_irq_enable(dev, PCI_MSK_AV_CORE);
 }

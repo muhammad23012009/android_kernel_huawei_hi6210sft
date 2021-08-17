@@ -1,6 +1,9 @@
 /*
+<<<<<<< HEAD
  *  drivers/mtd/ndfc.c
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  Overview:
  *   Platform independent driver for NDFC (NanD Flash Controller)
  *   integrated into EP440 cores
@@ -30,6 +33,10 @@
 #include <linux/mtd/ndfc.h>
 #include <linux/slab.h>
 #include <linux/mtd/mtd.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <asm/io.h>
 
@@ -38,7 +45,10 @@
 struct ndfc_controller {
 	struct platform_device *ofdev;
 	void __iomem *ndfcbase;
+<<<<<<< HEAD
 	struct mtd_info mtd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nand_chip chip;
 	int chip_select;
 	struct nand_hw_control ndfc_control;
@@ -49,8 +59,13 @@ static struct ndfc_controller ndfc_ctrl[NDFC_MAX_CS];
 static void ndfc_select_chip(struct mtd_info *mtd, int chip)
 {
 	uint32_t ccr;
+<<<<<<< HEAD
 	struct nand_chip *nchip = mtd->priv;
 	struct ndfc_controller *ndfc = nchip->priv;
+=======
+	struct nand_chip *nchip = mtd_to_nand(mtd);
+	struct ndfc_controller *ndfc = nand_get_controller_data(nchip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ccr = in_be32(ndfc->ndfcbase + NDFC_CCR);
 	if (chip >= 0) {
@@ -63,8 +78,13 @@ static void ndfc_select_chip(struct mtd_info *mtd, int chip)
 
 static void ndfc_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct ndfc_controller *ndfc = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct ndfc_controller *ndfc = nand_get_controller_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cmd == NAND_CMD_NONE)
 		return;
@@ -77,8 +97,13 @@ static void ndfc_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 
 static int ndfc_ready(struct mtd_info *mtd)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct ndfc_controller *ndfc = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct ndfc_controller *ndfc = nand_get_controller_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return in_be32(ndfc->ndfcbase + NDFC_STAT) & NDFC_STAT_IS_READY;
 }
@@ -86,8 +111,13 @@ static int ndfc_ready(struct mtd_info *mtd)
 static void ndfc_enable_hwecc(struct mtd_info *mtd, int mode)
 {
 	uint32_t ccr;
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct ndfc_controller *ndfc = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct ndfc_controller *ndfc = nand_get_controller_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ccr = in_be32(ndfc->ndfcbase + NDFC_CCR);
 	ccr |= NDFC_CCR_RESET_ECC;
@@ -98,8 +128,13 @@ static void ndfc_enable_hwecc(struct mtd_info *mtd, int mode)
 static int ndfc_calculate_ecc(struct mtd_info *mtd,
 			      const u_char *dat, u_char *ecc_code)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct ndfc_controller *ndfc = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct ndfc_controller *ndfc = nand_get_controller_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t ecc;
 	uint8_t *p = (uint8_t *)&ecc;
 
@@ -122,8 +157,13 @@ static int ndfc_calculate_ecc(struct mtd_info *mtd,
  */
 static void ndfc_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct ndfc_controller *ndfc = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct ndfc_controller *ndfc = nand_get_controller_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t *p = (uint32_t *) buf;
 
 	for(;len > 0; len -= 4)
@@ -132,8 +172,13 @@ static void ndfc_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 
 static void ndfc_write_buf(struct mtd_info *mtd, const uint8_t *buf, int len)
 {
+<<<<<<< HEAD
 	struct nand_chip *chip = mtd->priv;
 	struct ndfc_controller *ndfc = chip->priv;
+=======
+	struct nand_chip *chip = mtd_to_nand(mtd);
+	struct ndfc_controller *ndfc = nand_get_controller_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t *p = (uint32_t *) buf;
 
 	for(;len > 0; len -= 4)
@@ -148,7 +193,11 @@ static int ndfc_chip_init(struct ndfc_controller *ndfc,
 {
 	struct device_node *flash_np;
 	struct nand_chip *chip = &ndfc->chip;
+<<<<<<< HEAD
 	struct mtd_part_parser_data ppdata;
+=======
+	struct mtd_info *mtd = nand_to_mtd(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	chip->IO_ADDR_R = ndfc->ndfcbase + NDFC_DATA;
@@ -167,33 +216,59 @@ static int ndfc_chip_init(struct ndfc_controller *ndfc,
 	chip->ecc.size = 256;
 	chip->ecc.bytes = 3;
 	chip->ecc.strength = 1;
+<<<<<<< HEAD
 	chip->priv = ndfc;
 
 	ndfc->mtd.priv = chip;
 	ndfc->mtd.owner = THIS_MODULE;
+=======
+	nand_set_controller_data(chip, ndfc);
+
+	mtd->dev.parent = &ndfc->ofdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	flash_np = of_get_next_child(node, NULL);
 	if (!flash_np)
 		return -ENODEV;
+<<<<<<< HEAD
 
 	ppdata.of_node = flash_np;
 	ndfc->mtd.name = kasprintf(GFP_KERNEL, "%s.%s",
 			dev_name(&ndfc->ofdev->dev), flash_np->name);
 	if (!ndfc->mtd.name) {
+=======
+	nand_set_flash_node(chip, flash_np);
+
+	mtd->name = kasprintf(GFP_KERNEL, "%s.%s", dev_name(&ndfc->ofdev->dev),
+			      flash_np->name);
+	if (!mtd->name) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	ret = nand_scan(&ndfc->mtd, 1);
 	if (ret)
 		goto err;
 
 	ret = mtd_device_parse_register(&ndfc->mtd, NULL, &ppdata, NULL, 0);
+=======
+	ret = nand_scan(mtd, 1);
+	if (ret)
+		goto err;
+
+	ret = mtd_device_register(mtd, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 err:
 	of_node_put(flash_np);
 	if (ret)
+<<<<<<< HEAD
 		kfree(ndfc->mtd.name);
+=======
+		kfree(mtd->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -202,7 +277,12 @@ static int ndfc_probe(struct platform_device *ofdev)
 	struct ndfc_controller *ndfc;
 	const __be32 *reg;
 	u32 ccr;
+<<<<<<< HEAD
 	int err, len, cs;
+=======
+	u32 cs;
+	int err, len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Read the reg property to get the chip select */
 	reg = of_get_property(ofdev->dev.of_node, "reg", &len);
@@ -220,8 +300,12 @@ static int ndfc_probe(struct platform_device *ofdev)
 	ndfc = &ndfc_ctrl[cs];
 	ndfc->chip_select = cs;
 
+<<<<<<< HEAD
 	spin_lock_init(&ndfc->ndfc_control.lock);
 	init_waitqueue_head(&ndfc->ndfc_control.wq);
+=======
+	nand_hw_control_init(&ndfc->ndfc_control);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ndfc->ofdev = ofdev;
 	dev_set_drvdata(&ofdev->dev, ndfc);
 
@@ -259,9 +343,16 @@ static int ndfc_probe(struct platform_device *ofdev)
 static int ndfc_remove(struct platform_device *ofdev)
 {
 	struct ndfc_controller *ndfc = dev_get_drvdata(&ofdev->dev);
+<<<<<<< HEAD
 
 	nand_release(&ndfc->mtd);
 	kfree(ndfc->mtd.name);
+=======
+	struct mtd_info *mtd = nand_to_mtd(&ndfc->chip);
+
+	nand_release(&ndfc->chip);
+	kfree(mtd->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -275,7 +366,10 @@ MODULE_DEVICE_TABLE(of, ndfc_match);
 static struct platform_driver ndfc_driver = {
 	.driver = {
 		.name = "ndfc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = ndfc_match,
 	},
 	.probe = ndfc_probe,

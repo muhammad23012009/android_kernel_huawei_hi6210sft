@@ -9,6 +9,16 @@
 #ifndef _ADAV80X_H
 #define _ADAV80X_H
 
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+
+struct device;
+
+extern const struct regmap_config adav80x_regmap_config;
+int adav80x_bus_probe(struct device *dev, struct regmap *regmap);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum adav80x_pll_src {
 	ADAV80X_PLL_SRC_XIN,
 	ADAV80X_PLL_SRC_XTAL,

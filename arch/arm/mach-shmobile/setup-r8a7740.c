@@ -12,6 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -35,10 +36,20 @@
 #include <mach/common.h>
 #include <mach/irqs.h>
 #include <asm/mach-types.h>
+=======
+ */
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/irqchip.h>
+#include <linux/irqchip/arm-gic.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mach/map.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
 static struct map_desc r8a7740_io_desc[] __initdata = {
 	 /*
 	  * for CPGA/INTC/PFC
@@ -885,6 +896,9 @@ static struct platform_device *r8a7740_late_devices[] __initdata = {
 	&usb_dma_device,
 	&pmu_device,
 };
+=======
+#include "common.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * r8a7740 chip has lasting errata on MERAM buffer.
@@ -893,7 +907,11 @@ static struct platform_device *r8a7740_late_devices[] __initdata = {
  *	"Media RAM (MERAM)" on r8a7740 documentation
  */
 #define MEBUFCNTR	0xFE950098
+<<<<<<< HEAD
 void r8a7740_meram_workaround(void)
+=======
+static void __init r8a7740_meram_workaround(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem *reg;
 
@@ -904,6 +922,7 @@ void r8a7740_meram_workaround(void)
 	}
 }
 
+<<<<<<< HEAD
 #define ICCR	0x0004
 #define ICSTART	0x0070
 
@@ -1021,11 +1040,50 @@ void __init r8a7740_add_standard_devices_dt(void)
 }
 
 static const char *r8a7740_boards_compat_dt[] __initdata = {
+=======
+static void __init r8a7740_init_irq_of(void)
+{
+	void __iomem *intc_prio_base = ioremap_nocache(0xe6900010, 0x10);
+	void __iomem *intc_msk_base = ioremap_nocache(0xe6900040, 0x10);
+	void __iomem *pfc_inta_ctrl = ioremap_nocache(0xe605807c, 0x4);
+
+	irqchip_init();
+
+	/* route signals to GIC */
+	iowrite32(0x0, pfc_inta_ctrl);
+
+	/*
+	 * To mask the shared interrupt to SPI 149 we must ensure to set
+	 * PRIO *and* MASK. Else we run into IRQ floods when registering
+	 * the intc_irqpin devices
+	 */
+	iowrite32(0x0, intc_prio_base + 0x0);
+	iowrite32(0x0, intc_prio_base + 0x4);
+	iowrite32(0x0, intc_prio_base + 0x8);
+	iowrite32(0x0, intc_prio_base + 0xc);
+	iowrite8(0xff, intc_msk_base + 0x0);
+	iowrite8(0xff, intc_msk_base + 0x4);
+	iowrite8(0xff, intc_msk_base + 0x8);
+	iowrite8(0xff, intc_msk_base + 0xc);
+
+	iounmap(intc_prio_base);
+	iounmap(intc_msk_base);
+	iounmap(pfc_inta_ctrl);
+}
+
+static void __init r8a7740_generic_init(void)
+{
+	r8a7740_meram_workaround();
+}
+
+static const char *const r8a7740_boards_compat_dt[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"renesas,r8a7740",
 	NULL,
 };
 
 DT_MACHINE_START(R8A7740_DT, "Generic R8A7740 (Flattened Device Tree)")
+<<<<<<< HEAD
 	.map_io		= r8a7740_map_io,
 	.init_early	= r8a7740_add_early_devices_dt,
 	.init_irq	= r8a7740_init_irq,
@@ -1034,3 +1092,13 @@ DT_MACHINE_START(R8A7740_DT, "Generic R8A7740 (Flattened Device Tree)")
 MACHINE_END
 
 #endif /* CONFIG_USE_OF */
+=======
+	.l2c_aux_val	= 0,
+	.l2c_aux_mask	= ~0,
+	.init_early	= shmobile_init_delay,
+	.init_irq	= r8a7740_init_irq_of,
+	.init_machine	= r8a7740_generic_init,
+	.init_late	= shmobile_init_late,
+	.dt_compat	= r8a7740_boards_compat_dt,
+MACHINE_END
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

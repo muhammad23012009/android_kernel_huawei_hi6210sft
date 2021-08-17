@@ -45,7 +45,10 @@
 
 #include "../codecs/ad73311.h"
 #include "bf5xx-sport.h"
+<<<<<<< HEAD
 #include "bf5xx-i2s-pcm.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if CONFIG_SND_BF5XX_SPORT_NUM == 0
 #define bfin_write_SPORT_TCR1	bfin_write_SPORT0_TCR1

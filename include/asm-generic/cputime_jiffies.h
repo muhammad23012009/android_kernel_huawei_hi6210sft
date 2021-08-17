@@ -3,6 +3,11 @@
 
 typedef unsigned long __nocast cputime_t;
 
+<<<<<<< HEAD
+=======
+#define cmpxchg_cputime(ptr, old, new) cmpxchg(ptr, old, new)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cputime_one_jiffy		jiffies_to_cputime(1)
 #define cputime_to_jiffies(__ct)	(__force unsigned long)(__ct)
 #define cputime_to_scaled(__ct)		(__ct)
@@ -15,8 +20,15 @@ typedef u64 __nocast cputime64_t;
 
 
 /*
+<<<<<<< HEAD
  * Convert nanoseconds to cputime
  */
+=======
+ * Convert nanoseconds <-> cputime
+ */
+#define cputime_to_nsecs(__ct)		\
+	jiffies_to_nsecs(cputime_to_jiffies(__ct))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define nsecs_to_cputime64(__nsec)	\
 	jiffies64_to_cputime64(nsecs_to_jiffies64(__nsec))
 #define nsecs_to_cputime(__nsec)	\

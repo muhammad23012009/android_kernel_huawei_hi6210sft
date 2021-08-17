@@ -39,8 +39,12 @@ int snd_free_sgbuf_pages(struct snd_dma_buffer *dmab)
 	if (! sgbuf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (dmab->area)
 		vunmap(dmab->area);
+=======
+	vunmap(dmab->area);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dmab->area = NULL;
 
 	tmpb.dev.type = SNDRV_DMA_TYPE_DEV;

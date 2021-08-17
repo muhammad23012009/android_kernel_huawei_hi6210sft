@@ -73,7 +73,11 @@ static int min_lap_keepalive_time = 100;	/* 100us */
 /* For other sysctl, I've no idea of the range. Maybe Dag could help
  * us on that - Jean II */
 
+<<<<<<< HEAD
 static int do_devname(ctl_table *table, int write,
+=======
+static int do_devname(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	int ret;
@@ -90,7 +94,11 @@ static int do_devname(ctl_table *table, int write,
 }
 
 
+<<<<<<< HEAD
 static int do_discovery(ctl_table *table, int write,
+=======
+static int do_discovery(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                     void __user *buffer, size_t *lenp, loff_t *ppos)
 {
        int ret;
@@ -111,7 +119,11 @@ static int do_discovery(ctl_table *table, int write,
 }
 
 /* One file */
+<<<<<<< HEAD
 static ctl_table irda_table[] = {
+=======
+static struct ctl_table irda_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "discovery",
 		.data		= &sysctl_discovery,
@@ -126,6 +138,7 @@ static ctl_table irda_table[] = {
 		.mode		= 0644,
 		.proc_handler	= do_devname,
 	},
+<<<<<<< HEAD
 #ifdef CONFIG_IRDA_DEBUG
 	{
 		.procname	= "debug",
@@ -135,6 +148,8 @@ static ctl_table irda_table[] = {
 		.proc_handler	= proc_dointvec
 	},
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_IRDA_FAST_RR
 	{
 		.procname	= "fast_poll_increase",

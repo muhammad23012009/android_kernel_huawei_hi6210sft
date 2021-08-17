@@ -18,6 +18,11 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -145,8 +150,12 @@ static int twl_rtc_read_u8(u8 *data, u8 reg)
 
 	ret = twl_i2c_read_u8(TWL_MODULE_RTC, data, (rtc_reg_map[reg]));
 	if (ret < 0)
+<<<<<<< HEAD
 		pr_err("twl_rtc: Could not read TWL"
 		       "register %X - error %d\n", reg, ret);
+=======
+		pr_err("Could not read TWL register %X - error %d\n", reg, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -159,8 +168,13 @@ static int twl_rtc_write_u8(u8 data, u8 reg)
 
 	ret = twl_i2c_write_u8(TWL_MODULE_RTC, data, (rtc_reg_map[reg]));
 	if (ret < 0)
+<<<<<<< HEAD
 		pr_err("twl_rtc: Could not write TWL"
 		       "register %X - error %d\n", reg, ret);
+=======
+		pr_err("Could not write TWL register %X - error %d\n",
+		       reg, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -213,12 +227,33 @@ static int mask_rtc_irq_bit(unsigned char bit)
 
 static int twl_rtc_alarm_irq_enable(struct device *dev, unsigned enabled)
 {
+<<<<<<< HEAD
 	int ret;
 
 	if (enabled)
 		ret = set_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
 	else
 		ret = mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+	int irq = platform_get_irq(pdev, 0);
+	static bool twl_rtc_wake_enabled;
+	int ret;
+
+	if (enabled) {
+		ret = set_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
+		if (device_can_wakeup(dev) && !twl_rtc_wake_enabled) {
+			enable_irq_wake(irq);
+			twl_rtc_wake_enabled = true;
+		}
+	} else {
+		ret = mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
+		if (twl_rtc_wake_enabled) {
+			disable_irq_wake(irq);
+			twl_rtc_wake_enabled = false;
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -449,7 +484,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops twl_rtc_ops = {
+=======
+static const struct rtc_class_ops twl_rtc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read_time	= twl_rtc_read_time,
 	.set_time	= twl_rtc_set_time,
 	.read_alarm	= twl_rtc_read_alarm,
@@ -467,11 +506,25 @@ static int twl_rtc_probe(struct platform_device *pdev)
 	u8 rd_reg;
 
 	if (irq <= 0)
+<<<<<<< HEAD
 		goto out1;
 
 	ret = twl_rtc_read_u8(&rd_reg, REG_RTC_STATUS_REG);
 	if (ret < 0)
 		goto out1;
+=======
+		return ret;
+
+	/* Initialize the register map */
+	if (twl_class_is_4030())
+		rtc_reg_map = (u8 *)twl4030_rtc_reg_map;
+	else
+		rtc_reg_map = (u8 *)twl6030_rtc_reg_map;
+
+	ret = twl_rtc_read_u8(&rd_reg, REG_RTC_STATUS_REG);
+	if (ret < 0)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (rd_reg & BIT_RTC_STATUS_REG_POWER_UP_M)
 		dev_warn(&pdev->dev, "Power up reset detected.\n");
@@ -482,7 +535,11 @@ static int twl_rtc_probe(struct platform_device *pdev)
 	/* Clear RTC Power up reset and pending alarm interrupts */
 	ret = twl_rtc_write_u8(rd_reg, REG_RTC_STATUS_REG);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out1;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (twl_class_is_6030()) {
 		twl6030_interrupt_unmask(TWL6030_RTC_INT_MASK,
@@ -494,7 +551,11 @@ static int twl_rtc_probe(struct platform_device *pdev)
 	dev_info(&pdev->dev, "Enabling TWL-RTC\n");
 	ret = twl_rtc_write_u8(BIT_RTC_CTRL_REG_STOP_RTC_M, REG_RTC_CTRL_REG);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out1;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* ensure interrupts are disabled, bootloaders can be strange */
 	ret = twl_rtc_write_u8(0, REG_RTC_INTERRUPTS_REG);
@@ -504,6 +565,7 @@ static int twl_rtc_probe(struct platform_device *pdev)
 	/* init cached IRQ enable bits */
 	ret = twl_rtc_read_u8(&rtc_irq_bits, REG_RTC_INTERRUPTS_REG);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out1;
 
 	rtc = rtc_device_register(pdev->name,
@@ -531,6 +593,31 @@ out2:
 	rtc_device_unregister(rtc);
 out1:
 	return ret;
+=======
+		return ret;
+
+	device_init_wakeup(&pdev->dev, 1);
+
+	rtc = devm_rtc_device_register(&pdev->dev, pdev->name,
+					&twl_rtc_ops, THIS_MODULE);
+	if (IS_ERR(rtc)) {
+		dev_err(&pdev->dev, "can't register RTC device, err %ld\n",
+			PTR_ERR(rtc));
+		return PTR_ERR(rtc);
+	}
+
+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+					twl_rtc_interrupt,
+					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+					dev_name(&rtc->dev), rtc);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "IRQ is not free.\n");
+		return ret;
+	}
+
+	platform_set_drvdata(pdev, rtc);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -540,9 +627,12 @@ out1:
 static int twl_rtc_remove(struct platform_device *pdev)
 {
 	/* leave rtc running, but disable irqs */
+<<<<<<< HEAD
 	struct rtc_device *rtc = platform_get_drvdata(pdev);
 	int irq = platform_get_irq(pdev, 0);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_ALARM_M);
 	mask_rtc_irq_bit(BIT_RTC_INTERRUPTS_REG_IT_TIMER_M);
 	if (twl_class_is_6030()) {
@@ -552,11 +642,14 @@ static int twl_rtc_remove(struct platform_device *pdev)
 			REG_INT_MSK_STS_A);
 	}
 
+<<<<<<< HEAD
 
 	free_irq(irq, rtc);
 
 	rtc_device_unregister(rtc);
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -602,13 +695,17 @@ static struct platform_driver twl4030rtc_driver = {
 	.remove		= twl_rtc_remove,
 	.shutdown	= twl_rtc_shutdown,
 	.driver		= {
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name		= "twl_rtc",
 		.pm		= &twl_rtc_pm_ops,
 		.of_match_table = of_match_ptr(twl_rtc_of_match),
 	},
 };
 
+<<<<<<< HEAD
 static int __init twl_rtc_init(void)
 {
 	if (twl_class_is_4030())
@@ -625,6 +722,9 @@ static void __exit twl_rtc_exit(void)
 	platform_driver_unregister(&twl4030rtc_driver);
 }
 module_exit(twl_rtc_exit);
+=======
+module_platform_driver(twl4030rtc_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Texas Instruments, MontaVista Software");
 MODULE_LICENSE("GPL");

@@ -29,6 +29,10 @@
  */
 
 #define ETH_ALEN	6		/* Octets in one ethernet addr	 */
+<<<<<<< HEAD
+=======
+#define ETH_TLEN	2		/* Octets in ethernet type field */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ETH_HLEN	14		/* Total octets in header.	 */
 #define ETH_ZLEN	60		/* Min. octets in frame sans FCS */
 #define ETH_DATA_LEN	1500		/* Max. octets in payload	 */
@@ -42,6 +46,10 @@
 #define ETH_P_LOOP	0x0060		/* Ethernet Loopback packet	*/
 #define ETH_P_PUP	0x0200		/* Xerox PUP packet		*/
 #define ETH_P_PUPAT	0x0201		/* Xerox PUP Addr Trans packet	*/
+<<<<<<< HEAD
+=======
+#define ETH_P_TSN	0x22F0		/* TSN (IEEE 1722) packet	*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ETH_P_IP	0x0800		/* Internet Protocol packet	*/
 #define ETH_P_X25	0x0805		/* CCITT X.25			*/
 #define ETH_P_ARP	0x0806		/* Address Resolution packet	*/
@@ -68,11 +76,19 @@
 #define ETH_P_SLOW	0x8809		/* Slow Protocol. See 802.3ad 43B */
 #define ETH_P_WCCP	0x883E		/* Web-cache coordination protocol
 					 * defined in draft-wilson-wrec-wccp-v2-00.txt */
+<<<<<<< HEAD
 #define ETH_P_PPP_DISC	0x8863		/* PPPoE discovery messages     */
 #define ETH_P_PPP_SES	0x8864		/* PPPoE session messages	*/
 #define ETH_P_MPLS_UC	0x8847		/* MPLS Unicast traffic		*/
 #define ETH_P_MPLS_MC	0x8848		/* MPLS Multicast traffic	*/
 #define ETH_P_ATMMPOA	0x884c		/* MultiProtocol Over ATM	*/
+=======
+#define ETH_P_MPLS_UC	0x8847		/* MPLS Unicast traffic		*/
+#define ETH_P_MPLS_MC	0x8848		/* MPLS Multicast traffic	*/
+#define ETH_P_ATMMPOA	0x884c		/* MultiProtocol Over ATM	*/
+#define ETH_P_PPP_DISC	0x8863		/* PPPoE discovery messages     */
+#define ETH_P_PPP_SES	0x8864		/* PPPoE session messages	*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ETH_P_LINK_CTL	0x886c		/* HPNA, wlan link local tunnel */
 #define ETH_P_ATMFATE	0x8884		/* Frame-based ATM Transport
 					 * over Ethernet
@@ -82,12 +98,27 @@
 #define ETH_P_8021AD	0x88A8          /* 802.1ad Service VLAN		*/
 #define ETH_P_802_EX1	0x88B5		/* 802.1 Local Experimental 1.  */
 #define ETH_P_TIPC	0x88CA		/* TIPC 			*/
+<<<<<<< HEAD
 #define ETH_P_8021AH	0x88E7          /* 802.1ah Backbone Service Tag */
 #define ETH_P_MVRP	0x88F5          /* 802.1Q MVRP                  */
 #define ETH_P_1588	0x88F7		/* IEEE 1588 Timesync */
 #define ETH_P_FCOE	0x8906		/* Fibre Channel over Ethernet  */
 #define ETH_P_TDLS	0x890D          /* TDLS */
 #define ETH_P_FIP	0x8914		/* FCoE Initialization Protocol */
+=======
+#define ETH_P_MACSEC	0x88E5		/* 802.1ae MACsec */
+#define ETH_P_8021AH	0x88E7          /* 802.1ah Backbone Service Tag */
+#define ETH_P_MVRP	0x88F5          /* 802.1Q MVRP                  */
+#define ETH_P_1588	0x88F7		/* IEEE 1588 Timesync */
+#define ETH_P_NCSI	0x88F8		/* NCSI protocol		*/
+#define ETH_P_PRP	0x88FB		/* IEC 62439-3 PRP/HSRv0	*/
+#define ETH_P_FCOE	0x8906		/* Fibre Channel over Ethernet  */
+#define ETH_P_TDLS	0x890D          /* TDLS */
+#define ETH_P_FIP	0x8914		/* FCoE Initialization Protocol */
+#define ETH_P_80221	0x8917		/* IEEE 802.21 Media Independent Handover Protocol */
+#define ETH_P_HSR	0x892F		/* IEC 62439-3 HSRv1	*/
+#define ETH_P_LOOPBACK	0x9000		/* Ethernet loopback packet, per IEEE 802.3 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ETH_P_QINQ1	0x9100		/* deprecated QinQ VLAN [ NOT AN OFFICIALLY REGISTERED ID ] */
 #define ETH_P_QINQ2	0x9200		/* deprecated QinQ VLAN [ NOT AN OFFICIALLY REGISTERED ID ] */
 #define ETH_P_QINQ3	0x9300		/* deprecated QinQ VLAN [ NOT AN OFFICIALLY REGISTERED ID ] */
@@ -125,16 +156,33 @@
 #define ETH_P_PHONET	0x00F5		/* Nokia Phonet frames          */
 #define ETH_P_IEEE802154 0x00F6		/* IEEE802.15.4 frame		*/
 #define ETH_P_CAIF	0x00F7		/* ST-Ericsson CAIF protocol	*/
+<<<<<<< HEAD
+=======
+#define ETH_P_XDSA	0x00F8		/* Multiplexed DSA protocol	*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	This is an Ethernet frame header.
  */
 
+<<<<<<< HEAD
+=======
+/* allow libcs like musl to deactivate this, glibc does not implement this. */
+#ifndef __UAPI_DEF_ETHHDR
+#define __UAPI_DEF_ETHHDR		1
+#endif
+
+#if __UAPI_DEF_ETHHDR
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ethhdr {
 	unsigned char	h_dest[ETH_ALEN];	/* destination eth addr	*/
 	unsigned char	h_source[ETH_ALEN];	/* source ether addr	*/
 	__be16		h_proto;		/* packet type ID field	*/
 } __attribute__((packed));
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #endif /* _UAPI_LINUX_IF_ETHER_H */

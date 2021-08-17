@@ -17,8 +17,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -45,7 +49,11 @@ connmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	u_int32_t newmark;
 
 	ct = nf_ct_get(skb, &ctinfo);
+<<<<<<< HEAD
 	if (ct == NULL)
+=======
+	if (ct == NULL || nf_ct_is_untracked(ct))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return XT_CONTINUE;
 
 	switch (info->mode) {
@@ -98,7 +106,11 @@ connmark_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	const struct nf_conn *ct;
 
 	ct = nf_ct_get(skb, &ctinfo);
+<<<<<<< HEAD
 	if (ct == NULL)
+=======
+	if (ct == NULL || nf_ct_is_untracked(ct))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 
 	return ((ct->mark & info->mask) == info->mark) ^ info->invert;

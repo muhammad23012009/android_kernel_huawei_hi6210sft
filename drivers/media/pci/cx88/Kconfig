@@ -2,8 +2,12 @@ config VIDEO_CX88
 	tristate "Conexant 2388x (bt878 successor) support"
 	depends on VIDEO_DEV && PCI && I2C && RC_CORE
 	select I2C_ALGOBIT
+<<<<<<< HEAD
 	select VIDEO_BTCX
 	select VIDEOBUF_DMA_SG
+=======
+	select VIDEOBUF2_DMA_SG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select VIDEO_TUNER
 	select VIDEO_TVEEPROM
 	select VIDEO_WM8775 if MEDIA_SUBDRV_AUTOSELECT
@@ -45,7 +49,11 @@ config VIDEO_CX88_BLACKBIRD
 config VIDEO_CX88_DVB
 	tristate "DVB/ATSC Support for cx2388x based TV cards"
 	depends on VIDEO_CX88 && DVB_CORE
+<<<<<<< HEAD
 	select VIDEOBUF_DVB
+=======
+	select VIDEOBUF2_DVB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select DVB_PLL if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_MT352 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_ZL10353 if MEDIA_SUBDRV_AUTOSELECT
@@ -72,9 +80,15 @@ config VIDEO_CX88_DVB
 	  To compile this driver as a module, choose M here: the
 	  module will be called cx88-dvb.
 
+<<<<<<< HEAD
 config VIDEO_CX88_VP3054
 	tristate "VP-3054 Secondary I2C Bus Support"
 	default m
+=======
+config VIDEO_CX88_ENABLE_VP3054
+	bool "VP-3054 Secondary I2C Bus Support"
+	default y
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on VIDEO_CX88_DVB && DVB_MT352
 	---help---
 	  This adds DVB-T support for cards based on the
@@ -82,6 +96,14 @@ config VIDEO_CX88_VP3054
 	  which also require support for the VP-3054
 	  Secondary I2C bus, such at DNTV Live! DVB-T Pro.
 
+<<<<<<< HEAD
+=======
+config VIDEO_CX88_VP3054
+	tristate
+	depends on VIDEO_CX88_DVB && VIDEO_CX88_ENABLE_VP3054
+	default y
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config VIDEO_CX88_MPEG
 	tristate
 	depends on VIDEO_CX88_DVB || VIDEO_CX88_BLACKBIRD

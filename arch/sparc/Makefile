@@ -24,7 +24,17 @@ LDFLAGS        := -m elf32_sparc
 export BITS    := 32
 UTS_MACHINE    := sparc
 
+<<<<<<< HEAD
 KBUILD_CFLAGS  += -m32 -mcpu=v8 -pipe -mno-fpu -fcall-used-g5 -fcall-used-g7
+=======
+# We are adding -Wa,-Av8 to KBUILD_CFLAGS to deal with a specs bug in some
+# versions of gcc.  Some gcc versions won't pass -Av8 to binutils when you
+# give -mcpu=v8.  This silently worked with older bintutils versions but
+# does not any more.
+KBUILD_CFLAGS  += -m32 -mcpu=v8 -pipe -mno-fpu -fcall-used-g5 -fcall-used-g7
+KBUILD_CFLAGS  += -Wa,-Av8
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 KBUILD_AFLAGS  += -m32 -Wa,-Av8
 
 else
@@ -68,6 +78,12 @@ all: zImage
 image zImage uImage tftpboot.img vmlinux.aout: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 
+<<<<<<< HEAD
+=======
+install:
+	$(Q)$(MAKE) $(build)=$(boot) $@
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 archclean:
 	$(Q)$(MAKE) $(clean)=$(boot)
 

@@ -6,8 +6,11 @@
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
  *
+<<<<<<< HEAD
  * ########################################################################
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  This program is free software; you can distribute it and/or modify it
  *  under the terms of the GNU General Public License (Version 2) as
  *  published by the Free Software Foundation.
@@ -19,16 +22,24 @@
  *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
+<<<<<<< HEAD
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
  * ########################################################################
  */
 
+=======
+ *  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
+ */
+
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "ieee754int.h"
 
 #define assert(expr) ((void)0)
 
+<<<<<<< HEAD
 /* 3bit extended double precision sticky right shift */
 #define XDPSRS(v,rs)	\
   ((rs > (DP_MBITS+3))?1:((v) >> (rs)) | ((v) << (64-(rs)) != 0))
@@ -48,10 +59,52 @@
 static inline ieee754dp builddp(int s, int bx, u64 m)
 {
 	ieee754dp r;
+=======
+#define DP_EBIAS	1023
+#define DP_EMIN		(-1022)
+#define DP_EMAX		1023
+#define DP_FBITS	52
+#define DP_MBITS	52
+
+#define DP_MBIT(x)	((u64)1 << (x))
+#define DP_HIDDEN_BIT	DP_MBIT(DP_FBITS)
+#define DP_SIGN_BIT	DP_MBIT(63)
+
+#define DPSIGN(dp)	(dp.sign)
+#define DPBEXP(dp)	(dp.bexp)
+#define DPMANT(dp)	(dp.mant)
+
+static inline int ieee754dp_finite(union ieee754dp x)
+{
+	return DPBEXP(x) != DP_EMAX + 1 + DP_EBIAS;
+}
+
+/* 3bit extended double precision sticky right shift */
+#define XDPSRS(v,rs)	\
+	((rs > (DP_FBITS+3))?1:((v) >> (rs)) | ((v) << (64-(rs)) != 0))
+
+#define XDPSRSX1() \
+	(xe++, (xm = (xm >> 1) | (xm & 1)))
+
+#define XDPSRS1(v)	\
+	(((v) >> 1) | ((v) & 1))
+
+/* convert denormal to normalized with extended exponent */
+#define DPDNORMx(m,e) \
+	while ((m >> DP_FBITS) == 0) { m <<= 1; e--; }
+#define DPDNORMX	DPDNORMx(xm, xe)
+#define DPDNORMY	DPDNORMx(ym, ye)
+#define DPDNORMZ	DPDNORMx(zm, ze)
+
+static inline union ieee754dp builddp(int s, int bx, u64 m)
+{
+	union ieee754dp r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	assert((s) == 0 || (s) == 1);
 	assert((bx) >= DP_EMIN - 1 + DP_EBIAS
 	       && (bx) <= DP_EMAX + 1 + DP_EBIAS);
+<<<<<<< HEAD
 	assert(((m) >> DP_MBITS) == 0);
 
 	r.parts.sign = s;
@@ -80,3 +133,16 @@ extern ieee754dp ieee754dp_format(int, int, u64);
 }
 
 #define DPNORMRET1(s, e, m, name, a0)  DPNORMRET2(s, e, m, name, a0, a0)
+=======
+	assert(((m) >> DP_FBITS) == 0);
+
+	r.sign = s;
+	r.bexp = bx;
+	r.mant = m;
+
+	return r;
+}
+
+extern union ieee754dp __cold ieee754dp_nanxcpt(union ieee754dp);
+extern union ieee754dp ieee754dp_format(int, int, u64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

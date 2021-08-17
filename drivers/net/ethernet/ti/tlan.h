@@ -195,6 +195,10 @@ struct tlan_priv {
 	u32			timer_set_at;
 	u32			timer_type;
 	struct timer_list	timer;
+<<<<<<< HEAD
+=======
+	struct timer_list	media_timer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct board		*adapter;
 	u32			adapter_rev;
 	u32			aui;
@@ -206,10 +210,14 @@ struct tlan_priv {
 	u8			tlan_rev;
 	u8			tlan_full_duplex;
 	spinlock_t		lock;
+<<<<<<< HEAD
 	u8			link;
 	u8			is_eisa;
 	struct work_struct			tlan_tqueue;
 	u8			neg_be_verbose;
+=======
+	struct work_struct			tlan_tqueue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -220,7 +228,10 @@ struct tlan_priv {
 	 *
 	 ****************************************************************/
 
+<<<<<<< HEAD
 #define TLAN_TIMER_LINK_BEAT		1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TLAN_TIMER_ACTIVITY		2
 #define TLAN_TIMER_PHY_PDOWN		3
 #define TLAN_TIMER_PHY_PUP		4
@@ -242,6 +253,10 @@ struct tlan_priv {
 #define TLAN_EEPROM_ACK		0
 #define TLAN_EEPROM_STOP	1
 
+<<<<<<< HEAD
+=======
+#define TLAN_EEPROM_SIZE	256
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 

@@ -85,12 +85,20 @@ static void dbg_led_set(struct led_classdev *cdev,
 	struct dbg_led *led = container_of(cdev, struct dbg_led, cdev);
 	u16 reg;
 
+<<<<<<< HEAD
 	reg = __raw_readw(&fpga->leds);
+=======
+	reg = readw_relaxed(&fpga->leds);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (b != LED_OFF)
 		reg |= led->mask;
 	else
 		reg &= ~led->mask;
+<<<<<<< HEAD
 	__raw_writew(reg, &fpga->leds);
+=======
+	writew_relaxed(reg, &fpga->leds);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static enum led_brightness dbg_led_get(struct led_classdev *cdev)
@@ -98,7 +106,11 @@ static enum led_brightness dbg_led_get(struct led_classdev *cdev)
 	struct dbg_led *led = container_of(cdev, struct dbg_led, cdev);
 	u16 reg;
 
+<<<<<<< HEAD
 	reg = __raw_readw(&fpga->leds);
+=======
+	reg = readw_relaxed(&fpga->leds);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (reg & led->mask) ? LED_FULL : LED_OFF;
 }
 
@@ -112,7 +124,11 @@ static int fpga_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	fpga = ioremap(iomem->start, resource_size(iomem));
+<<<<<<< HEAD
 	__raw_writew(0xff, &fpga->leds);
+=======
+	writew_relaxed(0xff, &fpga->leds);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < ARRAY_SIZE(dbg_leds); i++) {
 		struct dbg_led *led;
@@ -138,15 +154,24 @@ static int fpga_probe(struct platform_device *pdev)
 
 static int fpga_suspend_noirq(struct device *dev)
 {
+<<<<<<< HEAD
 	fpga_led_state = __raw_readw(&fpga->leds);
 	__raw_writew(0xff, &fpga->leds);
+=======
+	fpga_led_state = readw_relaxed(&fpga->leds);
+	writew_relaxed(0xff, &fpga->leds);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int fpga_resume_noirq(struct device *dev)
 {
+<<<<<<< HEAD
 	__raw_writew(~fpga_led_state, &fpga->leds);
+=======
+	writew_relaxed(~fpga_led_state, &fpga->leds);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

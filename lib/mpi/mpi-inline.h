@@ -30,7 +30,11 @@
 #define G10_MPI_INLINE_H
 
 #ifndef G10_MPI_INLINE_DECL
+<<<<<<< HEAD
 #define G10_MPI_INLINE_DECL  extern inline
+=======
+#define G10_MPI_INLINE_DECL  static inline
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 G10_MPI_INLINE_DECL mpi_limb_t

@@ -22,7 +22,10 @@
  *  02110-1301, USA.
  */
 
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "cx18-driver.h"
 #include "cx18-io.h"
 #include "cx18-cards.h"
@@ -491,8 +494,13 @@ void cx18_av_std_setup(struct cx18 *cx)
 
 	/* Sets horizontal blanking delay and active lines */
 	cx18_av_write(cx, 0x470, hblank);
+<<<<<<< HEAD
 	cx18_av_write(cx, 0x471, 0xff & (((hblank >> 8) & 0x3) |
 						(hactive << 4)));
+=======
+	cx18_av_write(cx, 0x471,
+		      (((hblank >> 8) & 0x3) | (hactive << 4)) & 0xff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cx18_av_write(cx, 0x472, hactive >> 4);
 
 	/* Sets burst gate delay */
@@ -500,14 +508,24 @@ void cx18_av_std_setup(struct cx18 *cx)
 
 	/* Sets vertical blanking delay and active duration */
 	cx18_av_write(cx, 0x474, vblank);
+<<<<<<< HEAD
 	cx18_av_write(cx, 0x475, 0xff & (((vblank >> 8) & 0x3) |
 						(vactive << 4)));
+=======
+	cx18_av_write(cx, 0x475,
+		      (((vblank >> 8) & 0x3) | (vactive << 4)) & 0xff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cx18_av_write(cx, 0x476, vactive >> 4);
 	cx18_av_write(cx, 0x477, vblank656);
 
 	/* Sets src decimation rate */
+<<<<<<< HEAD
 	cx18_av_write(cx, 0x478, 0xff & src_decimation);
 	cx18_av_write(cx, 0x479, 0xff & (src_decimation >> 8));
+=======
+	cx18_av_write(cx, 0x478, src_decimation & 0xff);
+	cx18_av_write(cx, 0x479, (src_decimation >> 8) & 0xff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Sets Luma and UV Low pass filters */
 	cx18_av_write(cx, 0x47a, luma_lpf << 6 | ((uv_lpf << 4) & 0x30));
@@ -517,8 +535,13 @@ void cx18_av_std_setup(struct cx18 *cx)
 
 	/* Sets SC Step*/
 	cx18_av_write(cx, 0x47c, sc);
+<<<<<<< HEAD
 	cx18_av_write(cx, 0x47d, 0xff & sc >> 8);
 	cx18_av_write(cx, 0x47e, 0xff & sc >> 16);
+=======
+	cx18_av_write(cx, 0x47d, (sc >> 8) & 0xff);
+	cx18_av_write(cx, 0x47e, (sc >> 16) & 0xff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (std & V4L2_STD_625_50) {
 		state->slicer_line_delay = 1;
@@ -946,14 +969,26 @@ static int cx18_av_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cx18_av_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *fmt)
 {
+=======
+static int cx18_av_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *fmt = &format->format;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cx18_av_state *state = to_cx18_av_state(sd);
 	struct cx18 *cx = v4l2_get_subdevdata(sd);
 	int HSC, VSC, Vsrc, Hsrc, filter, Vlines;
 	int is_50Hz = !(state->std & V4L2_STD_525_60);
 
+<<<<<<< HEAD
 	if (fmt->code != V4L2_MBUS_FMT_FIXED)
+=======
+	if (format->pad || fmt->code != MEDIA_BUS_FMT_FIXED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	fmt->field = V4L2_FIELD_INTERLACED;
@@ -988,6 +1023,12 @@ static int cx18_av_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt 
 		return -ERANGE;
 	}
 
+<<<<<<< HEAD
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HSC = (Hsrc * (1 << 20)) / fmt->width - (1 << 20);
 	VSC = (1 << 16) - (Vsrc * (1 << 9) / Vlines - (1 << 9));
 	VSC &= 0x1fff;
@@ -1231,6 +1272,7 @@ static int cx18_av_log_status(struct v4l2_subdev *sd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int cx18_av_dbg_match(const struct v4l2_dbg_match *match)
 {
 	return match->type == V4L2_CHIP_MATCH_HOST && match->addr == 1;
@@ -1248,18 +1290,25 @@ static int cx18_av_g_chip_ident(struct v4l2_subdev *sd,
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int cx18_av_g_register(struct v4l2_subdev *sd,
 			      struct v4l2_dbg_register *reg)
 {
 	struct cx18 *cx = v4l2_get_subdevdata(sd);
 
+<<<<<<< HEAD
 	if (!cx18_av_dbg_match(&reg->match))
 		return -EINVAL;
 	if ((reg->reg & 0x3) != 0)
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+	if ((reg->reg & 0x3) != 0)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg->size = 4;
 	reg->val = cx18_av_read4(cx, reg->reg & 0x00000ffc);
 	return 0;
@@ -1270,12 +1319,17 @@ static int cx18_av_s_register(struct v4l2_subdev *sd,
 {
 	struct cx18 *cx = v4l2_get_subdevdata(sd);
 
+<<<<<<< HEAD
 	if (!cx18_av_dbg_match(&reg->match))
 		return -EINVAL;
 	if ((reg->reg & 0x3) != 0)
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+	if ((reg->reg & 0x3) != 0)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cx18_av_write4(cx, reg->reg & 0x00000ffc, reg->val);
 	return 0;
 }
@@ -1286,6 +1340,7 @@ static const struct v4l2_ctrl_ops cx18_av_ctrl_ops = {
 };
 
 static const struct v4l2_subdev_core_ops cx18_av_general_ops = {
+<<<<<<< HEAD
 	.g_chip_ident = cx18_av_g_chip_ident,
 	.log_status = cx18_av_log_status,
 	.load_fw = cx18_av_load_fw,
@@ -1298,6 +1353,11 @@ static const struct v4l2_subdev_core_ops cx18_av_general_ops = {
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
 	.s_std = cx18_av_s_std,
+=======
+	.log_status = cx18_av_log_status,
+	.load_fw = cx18_av_load_fw,
+	.reset = cx18_av_reset,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.g_register = cx18_av_g_register,
 	.s_register = cx18_av_s_register,
@@ -1317,9 +1377,15 @@ static const struct v4l2_subdev_audio_ops cx18_av_audio_ops = {
 };
 
 static const struct v4l2_subdev_video_ops cx18_av_video_ops = {
+<<<<<<< HEAD
 	.s_routing = cx18_av_s_video_routing,
 	.s_stream = cx18_av_s_stream,
 	.s_mbus_fmt = cx18_av_s_mbus_fmt,
+=======
+	.s_std = cx18_av_s_std,
+	.s_routing = cx18_av_s_video_routing,
+	.s_stream = cx18_av_s_stream,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_subdev_vbi_ops cx18_av_vbi_ops = {
@@ -1329,12 +1395,23 @@ static const struct v4l2_subdev_vbi_ops cx18_av_vbi_ops = {
 	.s_raw_fmt = cx18_av_s_raw_fmt,
 };
 
+<<<<<<< HEAD
+=======
+static const struct v4l2_subdev_pad_ops cx18_av_pad_ops = {
+	.set_fmt = cx18_av_set_fmt,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_subdev_ops cx18_av_ops = {
 	.core = &cx18_av_general_ops,
 	.tuner = &cx18_av_tuner_ops,
 	.audio = &cx18_av_audio_ops,
 	.video = &cx18_av_video_ops,
 	.vbi = &cx18_av_vbi_ops,
+<<<<<<< HEAD
+=======
+	.pad = &cx18_av_pad_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int cx18_av_probe(struct cx18 *cx)
@@ -1344,8 +1421,11 @@ int cx18_av_probe(struct cx18 *cx)
 	int err;
 
 	state->rev = cx18_av_read4(cx, CXADEC_CHIP_CTRL) & 0xffff;
+<<<<<<< HEAD
 	state->id = ((state->rev >> 4) == CXADEC_CHIP_TYPE_MAKO)
 		    ? V4L2_IDENT_CX23418_843 : V4L2_IDENT_UNKNOWN;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	state->vid_input = CX18_AV_COMPOSITE7;
 	state->aud_input = CX18_AV_AUDIO8;

@@ -86,8 +86,11 @@ static int girbil_open(struct sir_dev *dev)
 {
 	struct qos_info *qos = &dev->qos;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Power on dongle */
 	sirdev_set_dtr_rts(dev, TRUE, TRUE);
 
@@ -102,8 +105,11 @@ static int girbil_open(struct sir_dev *dev)
 
 static int girbil_close(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Power off dongle */
 	sirdev_set_dtr_rts(dev, FALSE, FALSE);
 
@@ -126,8 +132,11 @@ static int girbil_change_speed(struct sir_dev *dev, unsigned speed)
 	u8 control[2];
 	static int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* dongle alread reset - port and dongle at default speed */
 
 	switch(state) {
@@ -179,7 +188,12 @@ static int girbil_change_speed(struct sir_dev *dev, unsigned speed)
 		break;
 
 	default:
+<<<<<<< HEAD
 		IRDA_ERROR("%s - undefined state %d\n", __func__, state);
+=======
+		net_err_ratelimited("%s - undefined state %d\n",
+				    __func__, state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 		break;
 	}
@@ -209,8 +223,11 @@ static int girbil_reset(struct sir_dev *dev)
 	u8 control = GIRBIL_TXEN | GIRBIL_RXEN;
 	int ret = 0;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (state) {
 	case SIRDEV_STATE_DONGLE_RESET:
 		/* Reset dongle */
@@ -241,7 +258,12 @@ static int girbil_reset(struct sir_dev *dev)
 		break;
 
 	default:
+<<<<<<< HEAD
 		IRDA_ERROR("%s(), undefined state %d\n", __func__, state);
+=======
+		net_err_ratelimited("%s(), undefined state %d\n",
+				    __func__, state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -1;
 		break;
 	}

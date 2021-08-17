@@ -21,8 +21,14 @@
 #define TP_COMMAND		0xE2	/* Commands start with this */
 
 #define TP_READ_ID		0xE1	/* Sent for device identification */
+<<<<<<< HEAD
 #define TP_MAGIC_IDENT		0x01	/* Sent after a TP_READ_ID followed */
 					/* by the firmware ID */
+=======
+#define TP_MAGIC_IDENT		0x03	/* Sent after a TP_READ_ID followed */
+					/* by the firmware ID */
+					/* Firmware ID includes 0x1, 0x2, 0x3 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*
@@ -70,6 +76,12 @@
 #define TP_UP_THRESH		0x5A	/* Used to generate a 'click' on Z-axis */
 #define TP_Z_TIME		0x5E	/* How sharp of a press */
 #define TP_JENKS_CURV		0x5D	/* Minimum curvature for double click */
+<<<<<<< HEAD
+=======
+#define TP_DRIFT_TIME		0x5F	/* How long a 'hands off' condition */
+					/* must last (x*107ms) for drift */
+					/* correction to occur */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Toggling Flag bits
@@ -120,6 +132,10 @@
 #define TP_DEF_UP_THRESH	0xFF
 #define TP_DEF_Z_TIME		0x26
 #define TP_DEF_JENKS_CURV	0x87
+<<<<<<< HEAD
+=======
+#define TP_DEF_DRIFT_TIME	0x05
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Toggles */
 #define TP_DEF_MB		0x00
@@ -137,6 +153,10 @@ struct trackpoint_data
 	unsigned char draghys, mindrag;
 	unsigned char thresh, upthresh;
 	unsigned char ztime, jenks;
+<<<<<<< HEAD
+=======
+	unsigned char drift_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* toggles */
 	unsigned char press_to_select;
@@ -147,7 +167,12 @@ struct trackpoint_data
 #ifdef CONFIG_MOUSE_PS2_TRACKPOINT
 int trackpoint_detect(struct psmouse *psmouse, bool set_properties);
 #else
+<<<<<<< HEAD
 inline int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
+=======
+static inline int trackpoint_detect(struct psmouse *psmouse,
+				    bool set_properties)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -ENOSYS;
 }

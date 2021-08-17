@@ -52,7 +52,11 @@
 #define MLOG_MASK_PREFIX ML_DLM
 #include "cluster/masklog.h"
 
+<<<<<<< HEAD
 static struct kmem_cache *dlm_lock_cache = NULL;
+=======
+static struct kmem_cache *dlm_lock_cache;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_SPINLOCK(dlm_cookie_lock);
 static u64 dlm_next_cookie = 1;
@@ -91,19 +95,29 @@ void dlm_destroy_lock_cache(void)
 static int dlm_can_grant_new_lock(struct dlm_lock_resource *res,
 				  struct dlm_lock *lock)
 {
+<<<<<<< HEAD
 	struct list_head *iter;
 	struct dlm_lock *tmplock;
 
 	list_for_each(iter, &res->granted) {
 		tmplock = list_entry(iter, struct dlm_lock, list);
 
+=======
+	struct dlm_lock *tmplock;
+
+	list_for_each_entry(tmplock, &res->granted, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!dlm_lock_compatible(tmplock->ml.type, lock->ml.type))
 			return 0;
 	}
 
+<<<<<<< HEAD
 	list_for_each(iter, &res->converting) {
 		tmplock = list_entry(iter, struct dlm_lock, list);
 
+=======
+	list_for_each_entry(tmplock, &res->converting, list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!dlm_lock_compatible(tmplock->ml.type, lock->ml.type))
 			return 0;
 		if (!dlm_lock_compatible(tmplock->ml.convert_type,
@@ -178,6 +192,10 @@ static enum dlm_status dlmlock_master(struct dlm_ctxt *dlm,
 				     lock->ml.node);
 			}
 		} else {
+<<<<<<< HEAD
+=======
+			status = DLM_NORMAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dlm_lock_get(lock);
 			list_add_tail(&lock->list, &res->blocked);
 			kick_thread = 1;

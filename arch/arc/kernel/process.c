@@ -41,26 +41,110 @@ SYSCALL_DEFINE0(arc_gettls)
 	return task_thread_info(current)->thr_ptr;
 }
 
+<<<<<<< HEAD
 void arch_cpu_idle(void)
 {
 	/* sleep, but enable all interrupts before committing */
 	__asm__("sleep 0x3");
+=======
+SYSCALL_DEFINE3(arc_usr_cmpxchg, int *, uaddr, int, expected, int, new)
+{
+	struct pt_regs *regs = current_pt_regs();
+	u32 uval;
+	int ret;
+
+	/*
+	 * This is only for old cores lacking LLOCK/SCOND, which by defintion
+	 * can't possibly be SMP. Thus doesn't need to be SMP safe.
+	 * And this also helps reduce the overhead for serializing in
+	 * the UP case
+	 */
+	WARN_ON_ONCE(IS_ENABLED(CONFIG_SMP));
+
+	/* Z indicates to userspace if operation succeded */
+	regs->status32 &= ~STATUS_Z_MASK;
+
+	ret = access_ok(VERIFY_WRITE, uaddr, sizeof(*uaddr));
+	if (!ret)
+		 goto fail;
+
+again:
+	preempt_disable();
+
+	ret = __get_user(uval, uaddr);
+	if (ret)
+		 goto fault;
+
+	if (uval != expected)
+		 goto out;
+
+	ret = __put_user(new, uaddr);
+	if (ret)
+		 goto fault;
+
+	regs->status32 |= STATUS_Z_MASK;
+
+out:
+	preempt_enable();
+	return uval;
+
+fault:
+	preempt_enable();
+
+	if (unlikely(ret != -EFAULT))
+		 goto fail;
+
+	down_read(&current->mm->mmap_sem);
+	ret = fixup_user_fault(current, current->mm, (unsigned long) uaddr,
+			       FAULT_FLAG_WRITE, NULL);
+	up_read(&current->mm->mmap_sem);
+
+	if (likely(!ret))
+		 goto again;
+
+fail:
+	force_sig(SIGSEGV, current);
+	return ret;
+}
+
+void arch_cpu_idle(void)
+{
+	/* sleep, but enable all interrupts before committing */
+	__asm__ __volatile__(
+		"sleep %0	\n"
+		:
+		:"I"(ISA_SLEEP_ARG)); /* can't be "r" has to be embedded const */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 asmlinkage void ret_from_fork(void);
 
+<<<<<<< HEAD
 /* Layout of Child kernel mode stack as setup at the end of this function is
+=======
+/*
+ * Copy architecture-specific thread state
+ *
+ * Layout of Child kernel mode stack as setup at the end of this function is
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * |     ...        |
  * |     ...        |
  * |    unused      |
  * |                |
+<<<<<<< HEAD
  * ------------------  <==== top of Stack (thread.ksp)
  * |   UNUSED 1 word|
  * ------------------
  * |     r25        |
  * ~                ~
  * |    --to--      |   (CALLEE Regs of user mode)
+=======
+ * ------------------
+ * |     r25        |   <==== top of Stack (thread.ksp)
+ * ~                ~
+ * |    --to--      |   (CALLEE Regs of kernel mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * |     r13        |
  * ------------------
  * |     fp         |
@@ -76,11 +160,22 @@ asmlinkage void ret_from_fork(void);
  * |    --to--      |   (scratch Regs of user mode)
  * |     r0         |
  * ------------------
+<<<<<<< HEAD
  * |   UNUSED 1 word|
  * ------------------  <===== END of PAGE
  */
 int copy_thread(unsigned long clone_flags,
 		unsigned long usp, unsigned long arg,
+=======
+ * |      SP        |
+ * |    orig_r0     |
+ * |    event/ECR   |
+ * |    user_r25    |
+ * ------------------  <===== END of PAGE
+ */
+int copy_thread(unsigned long clone_flags,
+		unsigned long usp, unsigned long kthread_arg,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct task_struct *p)
 {
 	struct pt_regs *c_regs;        /* child's pt_regs */
@@ -111,7 +206,11 @@ int copy_thread(unsigned long clone_flags,
 	if (unlikely(p->flags & PF_KTHREAD)) {
 		memset(c_regs, 0, sizeof(struct pt_regs));
 
+<<<<<<< HEAD
 		c_callee->r13 = arg; /* argument to kernel thread */
+=======
+		c_callee->r13 = kthread_arg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		c_callee->r14 = usp;  /* function */
 
 		return 0;
@@ -146,10 +245,34 @@ int copy_thread(unsigned long clone_flags,
 		task_thread_info(current)->thr_ptr;
 	}
 
+<<<<<<< HEAD
+=======
+
+	/*
+	 * setup usermode thread pointer #1:
+	 * when child is picked by scheduler, __switch_to() uses @c_callee to
+	 * populate usermode callee regs: this works (despite being in a kernel
+	 * function) since special return path for child @ret_from_fork()
+	 * ensures those regs are not clobbered all the way to RTIE to usermode
+	 */
+	c_callee->r25 = task_thread_info(p)->thr_ptr;
+
+#ifdef CONFIG_ARC_CURR_IN_REG
+	/*
+	 * setup usermode thread pointer #2:
+	 * however for this special use of r25 in kernel, __switch_to() sets
+	 * r25 for kernel needs and only in the final return path is usermode
+	 * r25 setup, from pt_regs->user_r25. So set that up as well
+	 */
+	c_regs->user_r25 = c_callee->r25;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  * Some archs flush debug and FPU info here
  */
 void flush_thread(void)
@@ -160,6 +283,31 @@ void flush_thread(void)
  * Free any architecture-specific thread data structures, etc.
  */
 void exit_thread(void)
+=======
+ * Do necessary setup to start up a new user task
+ */
+void start_thread(struct pt_regs * regs, unsigned long pc, unsigned long usp)
+{
+	regs->sp = usp;
+	regs->ret = pc;
+
+	/*
+	 * [U]ser Mode bit set
+	 * [L] ZOL loop inhibited to begin with - cleared by a LP insn
+	 * Interrupts enabled
+	 */
+	regs->status32 = STATUS_U_MASK | STATUS_L_MASK | ISA_INIT_STATUS_BITS;
+
+	/* bogus seed values for debugging */
+	regs->lp_start = 0x10;
+	regs->lp_end = 0x80;
+}
+
+/*
+ * Some archs flush debug and FPU info here
+ */
+void flush_thread(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 }
 
@@ -168,6 +316,7 @@ int dump_fpu(struct pt_regs *regs, elf_fpregset_t *fpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * API: expected by schedular Code: If thread is sleeping where is that.
  * What is this good for? it will be always the scheduler or ret_from_fork.
@@ -191,15 +340,28 @@ unsigned long thread_saved_pc(struct task_struct *t)
 	return blink;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int elf_check_arch(const struct elf32_hdr *x)
 {
 	unsigned int eflags;
 
+<<<<<<< HEAD
 	if (x->e_machine != EM_ARCOMPACT)
 		return 0;
 
 	eflags = x->e_flags;
 	if ((eflags & EF_ARC_OSABI_MSK) < EF_ARC_OSABI_CURRENT) {
+=======
+	if (x->e_machine != EM_ARC_INUSE) {
+		pr_err("ELF not built for %s ISA\n",
+			is_isa_arcompact() ? "ARCompact":"ARCv2");
+		return 0;
+	}
+
+	eflags = x->e_flags;
+	if ((eflags & EF_ARC_OSABI_MSK) != EF_ARC_OSABI_CURRENT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("ABI mismatch - you need newer toolchain\n");
 		force_sigsegv(SIGSEGV, current);
 		return 0;

@@ -54,6 +54,7 @@
 #include <asm/ioctls.h>
 #include "internal.h"
 
+<<<<<<< HEAD
 int compat_log = 1;
 
 int compat_printk(const char *fmt, ...)
@@ -68,12 +69,19 @@ int compat_printk(const char *fmt, ...)
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Not all architectures have sys_utime, so implement this in terms
  * of sys_utimes.
  */
+<<<<<<< HEAD
 asmlinkage long compat_sys_utime(const char __user *filename,
 				 struct compat_utimbuf __user *t)
+=======
+COMPAT_SYSCALL_DEFINE2(utime, const char __user *, filename,
+		       struct compat_utimbuf __user *, t)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct timespec tv[2];
 
@@ -87,13 +95,22 @@ asmlinkage long compat_sys_utime(const char __user *filename,
 	return do_utimes(AT_FDCWD, filename, t ? tv : NULL, 0);
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_utimensat(unsigned int dfd, const char __user *filename, struct compat_timespec __user *t, int flags)
+=======
+COMPAT_SYSCALL_DEFINE4(utimensat, unsigned int, dfd, const char __user *, filename, struct compat_timespec __user *, t, int, flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct timespec tv[2];
 
 	if  (t) {
+<<<<<<< HEAD
 		if (get_compat_timespec(&tv[0], &t[0]) ||
 		    get_compat_timespec(&tv[1], &t[1]))
+=======
+		if (compat_get_timespec(&tv[0], &t[0]) ||
+		    compat_get_timespec(&tv[1], &t[1]))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EFAULT;
 
 		if (tv[0].tv_nsec == UTIME_OMIT && tv[1].tv_nsec == UTIME_OMIT)
@@ -102,7 +119,11 @@ asmlinkage long compat_sys_utimensat(unsigned int dfd, const char __user *filena
 	return do_utimes(dfd, filename, t ? tv : NULL, flags);
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_futimesat(unsigned int dfd, const char __user *filename, struct compat_timeval __user *t)
+=======
+COMPAT_SYSCALL_DEFINE3(futimesat, unsigned int, dfd, const char __user *, filename, struct compat_timeval __user *, t)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct timespec tv[2];
 
@@ -121,7 +142,11 @@ asmlinkage long compat_sys_futimesat(unsigned int dfd, const char __user *filena
 	return do_utimes(dfd, filename, t ? tv : NULL, 0);
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_utimes(const char __user *filename, struct compat_timeval __user *t)
+=======
+COMPAT_SYSCALL_DEFINE2(utimes, const char __user *, filename, struct compat_timeval __user *, t)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return compat_sys_futimesat(AT_FDCWD, filename, t);
 }
@@ -159,8 +184,13 @@ static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
 	return copy_to_user(ubuf, &tmp, sizeof(tmp)) ? -EFAULT : 0;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_newstat(const char __user * filename,
 		struct compat_stat __user *statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(newstat, const char __user *, filename,
+		       struct compat_stat __user *, statbuf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstat stat;
 	int error;
@@ -171,8 +201,13 @@ asmlinkage long compat_sys_newstat(const char __user * filename,
 	return cp_compat_stat(&stat, statbuf);
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_newlstat(const char __user * filename,
 		struct compat_stat __user *statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(newlstat, const char __user *, filename,
+		       struct compat_stat __user *, statbuf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstat stat;
 	int error;
@@ -184,9 +219,15 @@ asmlinkage long compat_sys_newlstat(const char __user * filename,
 }
 
 #ifndef __ARCH_WANT_STAT64
+<<<<<<< HEAD
 asmlinkage long compat_sys_newfstatat(unsigned int dfd,
 		const char __user *filename,
 		struct compat_stat __user *statbuf, int flag)
+=======
+COMPAT_SYSCALL_DEFINE4(newfstatat, unsigned int, dfd,
+		       const char __user *, filename,
+		       struct compat_stat __user *, statbuf, int, flag)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstat stat;
 	int error;
@@ -198,8 +239,13 @@ asmlinkage long compat_sys_newfstatat(unsigned int dfd,
 }
 #endif
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_newfstat(unsigned int fd,
 		struct compat_stat __user * statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(newfstat, unsigned int, fd,
+		       struct compat_stat __user *, statbuf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstat stat;
 	int error = vfs_fstat(fd, &stat);
@@ -247,7 +293,11 @@ static int put_compat_statfs(struct compat_statfs __user *ubuf, struct kstatfs *
  * The following statfs calls are copies of code from fs/statfs.c and
  * should be checked against those from time to time
  */
+<<<<<<< HEAD
 asmlinkage long compat_sys_statfs(const char __user *pathname, struct compat_statfs __user *buf)
+=======
+COMPAT_SYSCALL_DEFINE2(statfs, const char __user *, pathname, struct compat_statfs __user *, buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstatfs tmp;
 	int error = user_statfs(pathname, &tmp);
@@ -256,7 +306,11 @@ asmlinkage long compat_sys_statfs(const char __user *pathname, struct compat_sta
 	return error;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_fstatfs(unsigned int fd, struct compat_statfs __user *buf)
+=======
+COMPAT_SYSCALL_DEFINE2(fstatfs, unsigned int, fd, struct compat_statfs __user *, buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstatfs tmp;
 	int error = fd_statfs(fd, &tmp);
@@ -298,7 +352,11 @@ static int put_compat_statfs64(struct compat_statfs64 __user *ubuf, struct kstat
 	return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_statfs64(const char __user *pathname, compat_size_t sz, struct compat_statfs64 __user *buf)
+=======
+COMPAT_SYSCALL_DEFINE3(statfs64, const char __user *, pathname, compat_size_t, sz, struct compat_statfs64 __user *, buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstatfs tmp;
 	int error;
@@ -312,7 +370,11 @@ asmlinkage long compat_sys_statfs64(const char __user *pathname, compat_size_t s
 	return error;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_fstatfs64(unsigned int fd, compat_size_t sz, struct compat_statfs64 __user *buf)
+=======
+COMPAT_SYSCALL_DEFINE3(fstatfs64, unsigned int, fd, compat_size_t, sz, struct compat_statfs64 __user *, buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct kstatfs tmp;
 	int error;
@@ -331,7 +393,11 @@ asmlinkage long compat_sys_fstatfs64(unsigned int fd, compat_size_t sz, struct c
  * Given how simple this syscall is that apporach is more maintainable
  * than the various conversion hacks.
  */
+<<<<<<< HEAD
 asmlinkage long compat_sys_ustat(unsigned dev, struct compat_ustat __user *u)
+=======
+COMPAT_SYSCALL_DEFINE2(ustat, unsigned, dev, struct compat_ustat __user *, u)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct compat_ustat tmp;
 	struct kstatfs sbuf;
@@ -399,12 +465,36 @@ static int put_compat_flock64(struct flock *kfl, struct compat_flock64 __user *u
 }
 #endif
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_fcntl64(unsigned int fd, unsigned int cmd,
 		unsigned long arg)
+=======
+static unsigned int
+convert_fcntl_cmd(unsigned int cmd)
+{
+	switch (cmd) {
+	case F_GETLK64:
+		return F_GETLK;
+	case F_SETLK64:
+		return F_SETLK;
+	case F_SETLKW64:
+		return F_SETLKW;
+	}
+
+	return cmd;
+}
+
+COMPAT_SYSCALL_DEFINE3(fcntl64, unsigned int, fd, unsigned int, cmd,
+		       compat_ulong_t, arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	mm_segment_t old_fs;
 	struct flock f;
 	long ret;
+<<<<<<< HEAD
+=======
+	unsigned int conv_cmd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (cmd) {
 	case F_GETLK:
@@ -441,16 +531,29 @@ asmlinkage long compat_sys_fcntl64(unsigned int fd, unsigned int cmd,
 	case F_GETLK64:
 	case F_SETLK64:
 	case F_SETLKW64:
+<<<<<<< HEAD
+=======
+	case F_OFD_GETLK:
+	case F_OFD_SETLK:
+	case F_OFD_SETLKW:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = get_compat_flock64(&f, compat_ptr(arg));
 		if (ret != 0)
 			break;
 		old_fs = get_fs();
 		set_fs(KERNEL_DS);
+<<<<<<< HEAD
 		ret = sys_fcntl(fd, (cmd == F_GETLK64) ? F_GETLK :
 				((cmd == F_SETLK64) ? F_SETLK : F_SETLKW),
 				(unsigned long)&f);
 		set_fs(old_fs);
 		if (cmd == F_GETLK64 && ret == 0) {
+=======
+		conv_cmd = convert_fcntl_cmd(cmd);
+		ret = sys_fcntl(fd, conv_cmd, (unsigned long)&f);
+		set_fs(old_fs);
+		if ((conv_cmd == F_GETLK || conv_cmd == F_OFD_GETLK) && ret == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* need to return lock information - see above for commentary */
 			if (f.l_start > COMPAT_LOFF_T_MAX)
 				ret = -EOVERFLOW;
@@ -468,6 +571,7 @@ asmlinkage long compat_sys_fcntl64(unsigned int fd, unsigned int cmd,
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_fcntl(unsigned int fd, unsigned int cmd,
 		unsigned long arg)
 {
@@ -478,6 +582,24 @@ asmlinkage long compat_sys_fcntl(unsigned int fd, unsigned int cmd,
 
 asmlinkage long
 compat_sys_io_setup(unsigned nr_reqs, u32 __user *ctx32p)
+=======
+COMPAT_SYSCALL_DEFINE3(fcntl, unsigned int, fd, unsigned int, cmd,
+		       compat_ulong_t, arg)
+{
+	switch (cmd) {
+	case F_GETLK64:
+	case F_SETLK64:
+	case F_SETLKW64:
+	case F_OFD_GETLK:
+	case F_OFD_SETLK:
+	case F_OFD_SETLKW:
+		return -EINVAL;
+	}
+	return compat_sys_fcntl64(fd, cmd, arg);
+}
+
+COMPAT_SYSCALL_DEFINE2(io_setup, unsigned, nr_reqs, u32 __user *, ctx32p)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	long ret;
 	aio_context_t ctx64;
@@ -496,6 +618,7 @@ compat_sys_io_setup(unsigned nr_reqs, u32 __user *ctx32p)
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long
 compat_sys_io_getevents(aio_context_t ctx_id,
 				 unsigned long min_nr,
@@ -522,6 +645,26 @@ compat_sys_io_getevents(aio_context_t ctx_id,
 	ret = sys_io_getevents(ctx_id, min_nr, nr, events, ut);
 out:
 	return ret;
+=======
+COMPAT_SYSCALL_DEFINE5(io_getevents, compat_aio_context_t, ctx_id,
+		       compat_long_t, min_nr,
+		       compat_long_t, nr,
+		       struct io_event __user *, events,
+		       struct compat_timespec __user *, timeout)
+{
+	struct timespec t;
+	struct timespec __user *ut = NULL;
+
+	if (timeout) {
+		if (compat_get_timespec(&t, timeout))
+			return -EFAULT;
+
+		ut = compat_alloc_user_space(sizeof(*ut));
+		if (copy_to_user(ut, &t, sizeof(t)) )
+			return -EFAULT;
+	} 
+	return sys_io_getevents(ctx_id, min_nr, nr, events, ut);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* A write operation does a read from user space and vice versa */
@@ -546,7 +689,11 @@ ssize_t compat_rw_copy_check_uvector(int type,
 		goto out;
 
 	ret = -EINVAL;
+<<<<<<< HEAD
 	if (nr_segs > UIO_MAXIOV || nr_segs < 0)
+=======
+	if (nr_segs > UIO_MAXIOV)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	if (nr_segs > fast_segs) {
 		ret = -ENOMEM;
@@ -617,8 +764,13 @@ copy_iocb(long nr, u32 __user *ptr32, struct iocb __user * __user *ptr64)
 
 #define MAX_AIO_SUBMITS 	(PAGE_SIZE/sizeof(struct iocb *))
 
+<<<<<<< HEAD
 asmlinkage long
 compat_sys_io_submit(aio_context_t ctx_id, int nr, u32 __user *iocb)
+=======
+COMPAT_SYSCALL_DEFINE3(io_submit, compat_aio_context_t, ctx_id,
+		       int, nr, u32 __user *, iocb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iocb __user * __user *iocb64; 
 	long ret;
@@ -770,6 +922,7 @@ static int do_nfs4_super_data_conv(void *raw_data)
 #define NCPFS_NAME      "ncpfs"
 #define NFS4_NAME	"nfs4"
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_mount(const char __user * dev_name,
 				 const char __user * dir_name,
 				 const char __user * type, unsigned long flags,
@@ -818,6 +971,49 @@ asmlinkage long compat_sys_mount(const char __user * dev_name,
 	kfree(kernel_dev);
  out2:
 	putname(dir);
+=======
+COMPAT_SYSCALL_DEFINE5(mount, const char __user *, dev_name,
+		       const char __user *, dir_name,
+		       const char __user *, type, compat_ulong_t, flags,
+		       const void __user *, data)
+{
+	char *kernel_type;
+	void *options;
+	char *kernel_dev;
+	int retval;
+
+	kernel_type = copy_mount_string(type);
+	retval = PTR_ERR(kernel_type);
+	if (IS_ERR(kernel_type))
+		goto out;
+
+	kernel_dev = copy_mount_string(dev_name);
+	retval = PTR_ERR(kernel_dev);
+	if (IS_ERR(kernel_dev))
+		goto out1;
+
+	options = copy_mount_options(data);
+	retval = PTR_ERR(options);
+	if (IS_ERR(options))
+		goto out2;
+
+	if (kernel_type && options) {
+		if (!strcmp(kernel_type, NCPFS_NAME)) {
+			do_ncp_super_data_conv(options);
+		} else if (!strcmp(kernel_type, NFS4_NAME)) {
+			retval = -EINVAL;
+			if (do_nfs4_super_data_conv(options))
+				goto out3;
+		}
+	}
+
+	retval = do_mount(kernel_dev, dir_name, kernel_type, flags, options);
+
+ out3:
+	kfree(options);
+ out2:
+	kfree(kernel_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out1:
 	kfree(kernel_type);
  out:
@@ -837,10 +1033,19 @@ struct compat_readdir_callback {
 	int result;
 };
 
+<<<<<<< HEAD
 static int compat_fillonedir(void *__buf, const char *name, int namlen,
 			loff_t offset, u64 ino, unsigned int d_type)
 {
 	struct compat_readdir_callback *buf = __buf;
+=======
+static int compat_fillonedir(struct dir_context *ctx, const char *name,
+			     int namlen, loff_t offset, u64 ino,
+			     unsigned int d_type)
+{
+	struct compat_readdir_callback *buf =
+		container_of(ctx, struct compat_readdir_callback, ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct compat_old_linux_dirent __user *dirent;
 	compat_ulong_t d_ino;
 
@@ -869,11 +1074,19 @@ efault:
 	return -EFAULT;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_old_readdir(unsigned int fd,
 	struct compat_old_linux_dirent __user *dirent, unsigned int count)
 {
 	int error;
 	struct fd f = fdget(fd);
+=======
+COMPAT_SYSCALL_DEFINE3(old_readdir, unsigned int, fd,
+		struct compat_old_linux_dirent __user *, dirent, unsigned int, count)
+{
+	int error;
+	struct fd f = fdget_pos(fd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct compat_readdir_callback buf = {
 		.ctx.actor = compat_fillonedir,
 		.dirent = dirent
@@ -886,7 +1099,11 @@ asmlinkage long compat_sys_old_readdir(unsigned int fd,
 	if (buf.result)
 		error = buf.result;
 
+<<<<<<< HEAD
 	fdput(f);
+=======
+	fdput_pos(f);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return error;
 }
 
@@ -905,11 +1122,20 @@ struct compat_getdents_callback {
 	int error;
 };
 
+<<<<<<< HEAD
 static int compat_filldir(void *__buf, const char *name, int namlen,
 		loff_t offset, u64 ino, unsigned int d_type)
 {
 	struct compat_linux_dirent __user * dirent;
 	struct compat_getdents_callback *buf = __buf;
+=======
+static int compat_filldir(struct dir_context *ctx, const char *name, int namlen,
+		loff_t offset, u64 ino, unsigned int d_type)
+{
+	struct compat_linux_dirent __user * dirent;
+	struct compat_getdents_callback *buf =
+		container_of(ctx, struct compat_getdents_callback, ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	compat_ulong_t d_ino;
 	int reclen = ALIGN(offsetof(struct compat_linux_dirent, d_name) +
 		namlen + 2, sizeof(compat_long_t));
@@ -924,6 +1150,11 @@ static int compat_filldir(void *__buf, const char *name, int namlen,
 	}
 	dirent = buf->previous;
 	if (dirent) {
+<<<<<<< HEAD
+=======
+		if (signal_pending(current))
+			return -EINTR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (__put_user(offset, &dirent->d_off))
 			goto efault;
 	}
@@ -948,8 +1179,13 @@ efault:
 	return -EFAULT;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_getdents(unsigned int fd,
 		struct compat_linux_dirent __user *dirent, unsigned int count)
+=======
+COMPAT_SYSCALL_DEFINE3(getdents, unsigned int, fd,
+		struct compat_linux_dirent __user *, dirent, unsigned int, count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fd f;
 	struct compat_linux_dirent __user * lastdirent;
@@ -963,7 +1199,11 @@ asmlinkage long compat_sys_getdents(unsigned int fd,
 	if (!access_ok(VERIFY_WRITE, dirent, count))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	f = fdget(fd);
+=======
+	f = fdget_pos(fd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!f.file)
 		return -EBADF;
 
@@ -977,11 +1217,19 @@ asmlinkage long compat_sys_getdents(unsigned int fd,
 		else
 			error = count - buf.count;
 	}
+<<<<<<< HEAD
 	fdput(f);
 	return error;
 }
 
 #ifndef __ARCH_OMIT_COMPAT_SYS_GETDENTS64
+=======
+	fdput_pos(f);
+	return error;
+}
+
+#ifdef __ARCH_WANT_COMPAT_SYS_GETDENTS64
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct compat_getdents_callback64 {
 	struct dir_context ctx;
@@ -991,11 +1239,21 @@ struct compat_getdents_callback64 {
 	int error;
 };
 
+<<<<<<< HEAD
 static int compat_filldir64(void * __buf, const char * name, int namlen, loff_t offset,
 		     u64 ino, unsigned int d_type)
 {
 	struct linux_dirent64 __user *dirent;
 	struct compat_getdents_callback64 *buf = __buf;
+=======
+static int compat_filldir64(struct dir_context *ctx, const char *name,
+			    int namlen, loff_t offset, u64 ino,
+			    unsigned int d_type)
+{
+	struct linux_dirent64 __user *dirent;
+	struct compat_getdents_callback64 *buf =
+		container_of(ctx, struct compat_getdents_callback64, ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int reclen = ALIGN(offsetof(struct linux_dirent64, d_name) + namlen + 1,
 		sizeof(u64));
 	u64 off;
@@ -1006,6 +1264,11 @@ static int compat_filldir64(void * __buf, const char * name, int namlen, loff_t 
 	dirent = buf->previous;
 
 	if (dirent) {
+<<<<<<< HEAD
+=======
+		if (signal_pending(current))
+			return -EINTR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (__put_user_unaligned(offset, &dirent->d_off))
 			goto efault;
 	}
@@ -1033,8 +1296,13 @@ efault:
 	return -EFAULT;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_getdents64(unsigned int fd,
 		struct linux_dirent64 __user * dirent, unsigned int count)
+=======
+COMPAT_SYSCALL_DEFINE3(getdents64, unsigned int, fd,
+		struct linux_dirent64 __user *, dirent, unsigned int, count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fd f;
 	struct linux_dirent64 __user * lastdirent;
@@ -1048,7 +1316,11 @@ asmlinkage long compat_sys_getdents64(unsigned int fd,
 	if (!access_ok(VERIFY_WRITE, dirent, count))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	f = fdget(fd);
+=======
+	f = fdget_pos(fd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!f.file)
 		return -EBADF;
 
@@ -1063,10 +1335,17 @@ asmlinkage long compat_sys_getdents64(unsigned int fd,
 		else
 			error = count - buf.count;
 	}
+<<<<<<< HEAD
 	fdput(f);
 	return error;
 }
 #endif /* ! __ARCH_OMIT_COMPAT_SYS_GETDENTS64 */
+=======
+	fdput_pos(f);
+	return error;
+}
+#endif /* __ARCH_WANT_COMPAT_SYS_GETDENTS64 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Exactly like fs/open.c:sys_open(), except that it doesn't set the
@@ -1287,9 +1566,15 @@ out_nofds:
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_select(int n, compat_ulong_t __user *inp,
 	compat_ulong_t __user *outp, compat_ulong_t __user *exp,
 	struct compat_timeval __user *tvp)
+=======
+COMPAT_SYSCALL_DEFINE5(select, int, n, compat_ulong_t __user *, inp,
+	compat_ulong_t __user *, outp, compat_ulong_t __user *, exp,
+	struct compat_timeval __user *, tvp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct timespec end_time, *to = NULL;
 	struct compat_timeval tv;
@@ -1320,7 +1605,11 @@ struct compat_sel_arg_struct {
 	compat_uptr_t tvp;
 };
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_old_select(struct compat_sel_arg_struct __user *arg)
+=======
+COMPAT_SYSCALL_DEFINE1(old_select, struct compat_sel_arg_struct __user *, arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct compat_sel_arg_struct a;
 
@@ -1381,9 +1670,15 @@ static long do_compat_pselect(int n, compat_ulong_t __user *inp,
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_pselect6(int n, compat_ulong_t __user *inp,
 	compat_ulong_t __user *outp, compat_ulong_t __user *exp,
 	struct compat_timespec __user *tsp, void __user *sig)
+=======
+COMPAT_SYSCALL_DEFINE6(pselect6, int, n, compat_ulong_t __user *, inp,
+	compat_ulong_t __user *, outp, compat_ulong_t __user *, exp,
+	struct compat_timespec __user *, tsp, void __user *, sig)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	compat_size_t sigsetsize = 0;
 	compat_uptr_t up = 0;
@@ -1400,9 +1695,15 @@ asmlinkage long compat_sys_pselect6(int n, compat_ulong_t __user *inp,
 				 sigsetsize);
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_ppoll(struct pollfd __user *ufds,
 	unsigned int nfds, struct compat_timespec __user *tsp,
 	const compat_sigset_t __user *sigmask, compat_size_t sigsetsize)
+=======
+COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
+	unsigned int,  nfds, struct compat_timespec __user *, tsp,
+	const compat_sigset_t __user *, sigmask, compat_size_t, sigsetsize)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	compat_sigset_t ss32;
 	sigset_t ksigmask, sigsaved;

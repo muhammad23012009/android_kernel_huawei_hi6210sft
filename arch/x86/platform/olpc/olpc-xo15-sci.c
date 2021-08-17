@@ -15,8 +15,12 @@
 #include <linux/power_supply.h>
 #include <linux/olpc-ec.h>
 
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/olpc.h>
 
 #define DRV_NAME			"olpc-xo15-sci"
@@ -40,6 +44,7 @@ static bool				lid_wake_on_close;
  */
 static int set_lid_wake_behavior(bool wake_on_close)
 {
+<<<<<<< HEAD
 	struct acpi_object_list arg_list;
 	union acpi_object arg;
 	acpi_status status;
@@ -50,6 +55,11 @@ static int set_lid_wake_behavior(bool wake_on_close)
 	arg.integer.value	= wake_on_close;
 
 	status = acpi_evaluate_object(NULL, "\\_SB.PCI0.LID.LIDW", &arg_list, NULL);
+=======
+	acpi_status status;
+
+	status = acpi_execute_simple_method(NULL, "\\_SB.PCI0.LID.LIDW", wake_on_close);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		pr_warning(PFX "failed to set lid behavior\n");
 		return 1;
@@ -91,7 +101,11 @@ static void battery_status_changed(void)
 
 	if (psy) {
 		power_supply_changed(psy);
+<<<<<<< HEAD
 		put_device(psy->dev);
+=======
+		power_supply_put(psy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -101,7 +115,11 @@ static void ac_status_changed(void)
 
 	if (psy) {
 		power_supply_changed(psy);
+<<<<<<< HEAD
 		put_device(psy->dev);
+=======
+		power_supply_put(psy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -204,6 +222,10 @@ static int xo15_sci_remove(struct acpi_device *device)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int xo15_sci_resume(struct device *dev)
 {
 	/* Enable all EC events */
@@ -215,6 +237,10 @@ static int xo15_sci_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(xo15_sci_pm, NULL, xo15_sci_resume);
 

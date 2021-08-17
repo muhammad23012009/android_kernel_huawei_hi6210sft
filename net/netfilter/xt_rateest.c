@@ -18,7 +18,11 @@ static bool
 xt_rateest_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_rateest_match_info *info = par->matchinfo;
+<<<<<<< HEAD
 	struct gnet_stats_rate_est *r;
+=======
+	struct gnet_stats_rate_est64 *r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u_int32_t bps1, bps2, pps1, pps2;
 	bool ret = true;
 

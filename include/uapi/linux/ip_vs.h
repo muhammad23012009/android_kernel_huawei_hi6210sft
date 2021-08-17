@@ -20,6 +20,15 @@
 #define IP_VS_SVC_F_PERSISTENT	0x0001		/* persistent port */
 #define IP_VS_SVC_F_HASHED	0x0002		/* hashed entry */
 #define IP_VS_SVC_F_ONEPACKET	0x0004		/* one-packet scheduling */
+<<<<<<< HEAD
+=======
+#define IP_VS_SVC_F_SCHED1	0x0008		/* scheduler flag 1 */
+#define IP_VS_SVC_F_SCHED2	0x0010		/* scheduler flag 2 */
+#define IP_VS_SVC_F_SCHED3	0x0020		/* scheduler flag 3 */
+
+#define IP_VS_SVC_F_SCHED_SH_FALLBACK	IP_VS_SVC_F_SCHED1 /* SH fallback */
+#define IP_VS_SVC_F_SCHED_SH_PORT	IP_VS_SVC_F_SCHED2 /* SH use port */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *      Destination Server Flags
@@ -328,7 +337,11 @@ enum {
 	__IPVS_CMD_ATTR_MAX,
 };
 
+<<<<<<< HEAD
 #define IPVS_CMD_ATTR_MAX (__IPVS_SVC_ATTR_MAX - 1)
+=======
+#define IPVS_CMD_ATTR_MAX (__IPVS_CMD_ATTR_MAX - 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Attributes used to describe a service
@@ -352,6 +365,11 @@ enum {
 
 	IPVS_SVC_ATTR_PE_NAME,		/* name of ct retriever */
 
+<<<<<<< HEAD
+=======
+	IPVS_SVC_ATTR_STATS64,		/* nested attribute for service stats */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__IPVS_SVC_ATTR_MAX,
 };
 
@@ -378,6 +396,14 @@ enum {
 	IPVS_DEST_ATTR_PERSIST_CONNS,	/* persistent connections */
 
 	IPVS_DEST_ATTR_STATS,		/* nested attribute for dest stats */
+<<<<<<< HEAD
+=======
+
+	IPVS_DEST_ATTR_ADDR_FAMILY,	/* Address family of address */
+
+	IPVS_DEST_ATTR_STATS64,		/* nested attribute for dest stats */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__IPVS_DEST_ATTR_MAX,
 };
 
@@ -393,6 +419,14 @@ enum {
 	IPVS_DAEMON_ATTR_STATE,		/* sync daemon state (master/backup) */
 	IPVS_DAEMON_ATTR_MCAST_IFN,	/* multicast interface name */
 	IPVS_DAEMON_ATTR_SYNC_ID,	/* SyncID we belong to */
+<<<<<<< HEAD
+=======
+	IPVS_DAEMON_ATTR_SYNC_MAXLEN,	/* UDP Payload Size */
+	IPVS_DAEMON_ATTR_MCAST_GROUP,	/* IPv4 Multicast Address */
+	IPVS_DAEMON_ATTR_MCAST_GROUP6,	/* IPv6 Multicast Address */
+	IPVS_DAEMON_ATTR_MCAST_PORT,	/* Multicast Port (base) */
+	IPVS_DAEMON_ATTR_MCAST_TTL,	/* Multicast TTL */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__IPVS_DAEMON_ATTR_MAX,
 };
 
@@ -401,7 +435,12 @@ enum {
 /*
  * Attributes used to describe service or destination entry statistics
  *
+<<<<<<< HEAD
  * Used inside nested attributes IPVS_SVC_ATTR_STATS and IPVS_DEST_ATTR_STATS
+=======
+ * Used inside nested attributes IPVS_SVC_ATTR_STATS, IPVS_DEST_ATTR_STATS,
+ * IPVS_SVC_ATTR_STATS64 and IPVS_DEST_ATTR_STATS64.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 enum {
 	IPVS_STATS_ATTR_UNSPEC = 0,
@@ -416,6 +455,10 @@ enum {
 	IPVS_STATS_ATTR_OUTPPS,		/* current out packet rate */
 	IPVS_STATS_ATTR_INBPS,		/* current in byte rate */
 	IPVS_STATS_ATTR_OUTBPS,		/* current out byte rate */
+<<<<<<< HEAD
+=======
+	IPVS_STATS_ATTR_PAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__IPVS_STATS_ATTR_MAX,
 };
 

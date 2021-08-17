@@ -16,7 +16,11 @@ awk	'BEGIN { num = -1; }	# Ignore the beginning of the file
 	/^START_TABLE/ { num = 0; next; }
 	/^END_TABLE/ {
 		if (num != $2) {
+<<<<<<< HEAD
 			printf "__NR_syscalls (%s) is not one more than the last syscall (%s)\n",
+=======
+			printf "NR_syscalls (%s) is not one more than the last syscall (%s)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				$2, num - 1;
 			exit(1);
 		}

@@ -34,11 +34,14 @@ const struct imx_mxc_nand_data imx21_mxc_nand_data __initconst =
 	imx_mxc_nand_data_entry_single(MX21, "imx21-nand", SZ_4K);
 #endif /* ifdef CONFIG_SOC_IMX21 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX25
 const struct imx_mxc_nand_data imx25_mxc_nand_data __initconst =
 	imx_mxc_nand_data_entry_single(MX25, "imx25-nand", SZ_8K);
 #endif /* ifdef CONFIG_SOC_IMX25 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SOC_IMX27
 const struct imx_mxc_nand_data imx27_mxc_nand_data __initconst =
 	imx_mxc_nand_data_entry_single(MX27, "imx27-nand", SZ_4K);
@@ -54,11 +57,14 @@ const struct imx_mxc_nand_data imx35_mxc_nand_data __initconst =
 	imx_mxc_nand_data_entry_single(MX35, "imx25-nand", SZ_8K);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX51
 const struct imx_mxc_nand_data imx51_mxc_nand_data __initconst =
 	imx_mxc_nandv3_data_entry_single(MX51, "imx51-nand", SZ_16K);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct platform_device *__init imx_add_mxc_nand(
 		const struct imx_mxc_nand_data *data,
 		const struct mxc_nand_platform_data *pdata)

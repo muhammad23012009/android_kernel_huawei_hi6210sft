@@ -51,6 +51,12 @@ static bool da9052_reg_readable(struct device *dev, unsigned int reg)
 	case DA9052_GPIO_2_3_REG:
 	case DA9052_GPIO_4_5_REG:
 	case DA9052_GPIO_6_7_REG:
+<<<<<<< HEAD
+=======
+	case DA9052_GPIO_8_9_REG:
+	case DA9052_GPIO_10_11_REG:
+	case DA9052_GPIO_12_13_REG:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case DA9052_GPIO_14_15_REG:
 	case DA9052_ID_0_1_REG:
 	case DA9052_ID_2_3_REG:
@@ -164,6 +170,10 @@ static bool da9052_reg_writeable(struct device *dev, unsigned int reg)
 	case DA9052_EVENT_B_REG:
 	case DA9052_EVENT_C_REG:
 	case DA9052_EVENT_D_REG:
+<<<<<<< HEAD
+=======
+	case DA9052_FAULTLOG_REG:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case DA9052_IRQ_MASK_A_REG:
 	case DA9052_IRQ_MASK_B_REG:
 	case DA9052_IRQ_MASK_C_REG:
@@ -178,6 +188,12 @@ static bool da9052_reg_writeable(struct device *dev, unsigned int reg)
 	case DA9052_GPIO_2_3_REG:
 	case DA9052_GPIO_4_5_REG:
 	case DA9052_GPIO_6_7_REG:
+<<<<<<< HEAD
+=======
+	case DA9052_GPIO_8_9_REG:
+	case DA9052_GPIO_10_11_REG:
+	case DA9052_GPIO_12_13_REG:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case DA9052_GPIO_14_15_REG:
 	case DA9052_ID_0_1_REG:
 	case DA9052_ID_2_3_REG:
@@ -279,6 +295,12 @@ static bool da9052_reg_volatile(struct device *dev, unsigned int reg)
 	case DA9052_EVENT_B_REG:
 	case DA9052_EVENT_C_REG:
 	case DA9052_EVENT_D_REG:
+<<<<<<< HEAD
+=======
+	case DA9052_CONTROL_B_REG:
+	case DA9052_CONTROL_D_REG:
+	case DA9052_SUPPLY_REG:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case DA9052_FAULTLOG_REG:
 	case DA9052_CHG_TIME_REG:
 	case DA9052_ADC_RES_L_REG:
@@ -427,7 +449,15 @@ int da9052_adc_read_temp(struct da9052 *da9052)
 }
 EXPORT_SYMBOL_GPL(da9052_adc_read_temp);
 
+<<<<<<< HEAD
 static struct mfd_cell da9052_subdev_info[] = {
+=======
+static const struct mfd_cell da9052_subdev_info[] = {
+	{
+		.name = "da9052-regulator",
+		.id = 0,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "da9052-regulator",
 		.id = 1,
@@ -481,10 +511,13 @@ static struct mfd_cell da9052_subdev_info[] = {
 		.id = 13,
 	},
 	{
+<<<<<<< HEAD
 		.name = "da9052-regulator",
 		.id = 14,
 	},
 	{
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "da9052-onkey",
 	},
 	{
@@ -519,7 +552,11 @@ static struct mfd_cell da9052_subdev_info[] = {
 	},
 };
 
+<<<<<<< HEAD
 struct regmap_config da9052_regmap_config = {
+=======
+const struct regmap_config da9052_regmap_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reg_bits = 8,
 	.val_bits = 8,
 
@@ -532,14 +569,73 @@ struct regmap_config da9052_regmap_config = {
 };
 EXPORT_SYMBOL_GPL(da9052_regmap_config);
 
+<<<<<<< HEAD
 int da9052_device_init(struct da9052 *da9052, u8 chip_id)
 {
 	struct da9052_pdata *pdata = da9052->dev->platform_data;
+=======
+static int da9052_clear_fault_log(struct da9052 *da9052)
+{
+	int ret = 0;
+	int fault_log = 0;
+
+	fault_log = da9052_reg_read(da9052, DA9052_FAULTLOG_REG);
+	if (fault_log < 0) {
+		dev_err(da9052->dev,
+			"Cannot read FAULT_LOG %d\n", fault_log);
+		return fault_log;
+	}
+
+	if (fault_log) {
+		if (fault_log & DA9052_FAULTLOG_TWDERROR)
+			dev_dbg(da9052->dev,
+				"Fault log entry detected: TWD_ERROR\n");
+		if (fault_log & DA9052_FAULTLOG_VDDFAULT)
+			dev_dbg(da9052->dev,
+				"Fault log entry detected: VDD_FAULT\n");
+		if (fault_log & DA9052_FAULTLOG_VDDSTART)
+			dev_dbg(da9052->dev,
+				"Fault log entry detected: VDD_START\n");
+		if (fault_log & DA9052_FAULTLOG_TEMPOVER)
+			dev_dbg(da9052->dev,
+				"Fault log entry detected: TEMP_OVER\n");
+		if (fault_log & DA9052_FAULTLOG_KEYSHUT)
+			dev_dbg(da9052->dev,
+				"Fault log entry detected: KEY_SHUT\n");
+		if (fault_log & DA9052_FAULTLOG_NSDSET)
+			dev_dbg(da9052->dev,
+				"Fault log entry detected: nSD_SHUT\n");
+		if (fault_log & DA9052_FAULTLOG_WAITSET)
+			dev_dbg(da9052->dev,
+				"Fault log entry detected: WAIT_SHUT\n");
+
+		ret = da9052_reg_write(da9052,
+					DA9052_FAULTLOG_REG,
+					0xFF);
+		if (ret < 0)
+			dev_err(da9052->dev,
+				"Cannot reset FAULT_LOG values %d\n", ret);
+	}
+
+	return ret;
+}
+
+int da9052_device_init(struct da9052 *da9052, u8 chip_id)
+{
+	struct da9052_pdata *pdata = dev_get_platdata(da9052->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	mutex_init(&da9052->auxadc_lock);
 	init_completion(&da9052->done);
 
+<<<<<<< HEAD
+=======
+	ret = da9052_clear_fault_log(da9052);
+	if (ret < 0)
+		dev_warn(da9052->dev, "Cannot clear FAULT_LOG\n");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata && pdata->init != NULL)
 		pdata->init(da9052);
 
@@ -551,7 +647,12 @@ int da9052_device_init(struct da9052 *da9052, u8 chip_id)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = mfd_add_devices(da9052->dev, -1, da9052_subdev_info,
+=======
+	ret = mfd_add_devices(da9052->dev, PLATFORM_DEVID_AUTO,
+			      da9052_subdev_info,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      ARRAY_SIZE(da9052_subdev_info), NULL, 0, NULL);
 	if (ret) {
 		dev_err(da9052->dev, "mfd_add_devices failed: %d\n", ret);

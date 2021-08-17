@@ -135,10 +135,17 @@ struct ab8500_prcmu_ranges {
 /* hwreg- "mask" and "shift" entries ressources */
 struct hwreg_cfg {
 	u32  bank;      /* target bank */
+<<<<<<< HEAD
 	u32  addr;      /* target address */
 	uint fmt;       /* format */
 	uint mask;      /* read/write mask, applied before any bit shift */
 	int  shift;     /* bit shift (read:right shift, write:left shift */
+=======
+	unsigned long addr;      /* target address */
+	uint fmt;       /* format */
+	unsigned long mask; /* read/write mask, applied before any bit shift */
+	long shift;     /* bit shift (read:right shift, write:left shift */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 /* fmt bit #0: 0=hexa, 1=dec */
 #define REG_FMT_DEC(c) ((c)->fmt & 0x1)
@@ -153,14 +160,23 @@ static struct hwreg_cfg hwreg_cfg = {
 
 #define AB8500_NAME_STRING "ab8500"
 #define AB8500_ADC_NAME_STRING "gpadc"
+<<<<<<< HEAD
 #define AB8500_NUM_BANKS 24
+=======
+#define AB8500_NUM_BANKS AB8500_DEBUG_FIELD_LAST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define AB8500_REV_REG 0x80
 
 static struct ab8500_prcmu_ranges *debug_ranges;
 
+<<<<<<< HEAD
 struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 	[0x0] = {
+=======
+static struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
+	[AB8500_M_FSM_RANK] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.num_ranges = 0,
 		.range = NULL,
 	},
@@ -242,8 +258,15 @@ struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 				.first = 0x40,
 				.last = 0x44,
 			},
+<<<<<<< HEAD
 			/* 0x80-0x8B is SIM registers and should
 			 * not be accessed from here */
+=======
+			/*
+			 * 0x80-0x8B are SIM registers and should
+			 * not be accessed from here
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 	},
 	[AB8500_USB] = {
@@ -313,7 +336,11 @@ struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 			},
 		},
 	},
+<<<<<<< HEAD
 	[0x9] = {
+=======
+	[AB8500_RESERVED] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.num_ranges = 0,
 		.range = NULL,
 	},
@@ -384,6 +411,7 @@ struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 			},
 		},
 	},
+<<<<<<< HEAD
 	[AB8500_DEVELOPMENT] = {
 		.num_ranges = 1,
 		.range = (struct ab8500_reg_range[]) {
@@ -402,6 +430,8 @@ struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 			},
 		},
 	},
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[AB8500_AUDIO] = {
 		.num_ranges = 1,
 		.range = (struct ab8500_reg_range[]) {
@@ -461,6 +491,7 @@ struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 			},
 		},
 	},
+<<<<<<< HEAD
 	[0x11] = {
 		.num_ranges = 0,
 		.range = NULL,
@@ -474,6 +505,31 @@ struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 		.range = NULL,
 	},
 	[0x14] = {
+=======
+	[AB8500_DEVELOPMENT] = {
+		.num_ranges = 1,
+		.range = (struct ab8500_reg_range[]) {
+			{
+				.first = 0x00,
+				.last = 0x00,
+			},
+		},
+	},
+	[AB8500_DEBUG] = {
+		.num_ranges = 1,
+		.range = (struct ab8500_reg_range[]) {
+			{
+				.first = 0x05,
+				.last = 0x07,
+			},
+		},
+	},
+	[AB8500_PROD_TEST] = {
+		.num_ranges = 0,
+		.range = NULL,
+	},
+	[AB8500_STE_TEST] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.num_ranges = 0,
 		.range = NULL,
 	},
@@ -488,7 +544,11 @@ struct ab8500_prcmu_ranges ab8500_debug_ranges[AB8500_NUM_BANKS] = {
 	},
 };
 
+<<<<<<< HEAD
 struct ab8500_prcmu_ranges ab8505_debug_ranges[AB8500_NUM_BANKS] = {
+=======
+static struct ab8500_prcmu_ranges ab8505_debug_ranges[AB8500_NUM_BANKS] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[0x0] = {
 		.num_ranges = 0,
 		.range = NULL,
@@ -587,8 +647,15 @@ struct ab8500_prcmu_ranges ab8505_debug_ranges[AB8500_NUM_BANKS] = {
 				.first = 0x40,
 				.last = 0x48,
 			},
+<<<<<<< HEAD
 			/* 0x80-0x8B is SIM registers and should
 			 * not be accessed from here */
+=======
+			/*
+			 * 0x80-0x8B are SIM registers and should
+			 * not be accessed from here
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 	},
 	[AB8500_USB] = {
@@ -847,7 +914,11 @@ struct ab8500_prcmu_ranges ab8505_debug_ranges[AB8500_NUM_BANKS] = {
 	},
 };
 
+<<<<<<< HEAD
 struct ab8500_prcmu_ranges ab8540_debug_ranges[AB8500_NUM_BANKS] = {
+=======
+static struct ab8500_prcmu_ranges ab8540_debug_ranges[AB8500_NUM_BANKS] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[AB8500_M_FSM_RANK] = {
 		.num_ranges = 1,
 		.range = (struct ab8500_reg_range[]) {
@@ -1283,7 +1354,11 @@ static irqreturn_t ab8500_debug_handler(int irq, void *data)
 
 /* Prints to seq_file or log_buf */
 static int ab8500_registers_print(struct device *dev, u32 bank,
+<<<<<<< HEAD
 				struct seq_file *s)
+=======
+				  struct seq_file *s)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int i;
 
@@ -1304,6 +1379,7 @@ static int ab8500_registers_print(struct device *dev, u32 bank,
 			}
 
 			if (s) {
+<<<<<<< HEAD
 				err = seq_printf(s, "  [0x%02X/0x%02X]: 0x%02X\n",
 					bank, reg, value);
 				if (err < 0) {
@@ -1317,6 +1393,23 @@ static int ab8500_registers_print(struct device *dev, u32 bank,
 			}
 		}
 	}
+=======
+				seq_printf(s, "  [0x%02X/0x%02X]: 0x%02X\n",
+					   bank, reg, value);
+				/*
+				 * Error is not returned here since
+				 * the output is wanted in any case
+				 */
+				if (seq_has_overflowed(s))
+					return 0;
+			} else {
+				dev_info(dev, " [0x%02X/0x%02X]: 0x%02X\n",
+					 bank, reg, value);
+			}
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1325,12 +1418,20 @@ static int ab8500_print_bank_registers(struct seq_file *s, void *p)
 	struct device *dev = s->private;
 	u32 bank = debug_bank;
 
+<<<<<<< HEAD
 	seq_printf(s, AB8500_NAME_STRING " register values:\n");
 
 	seq_printf(s, " bank 0x%02X:\n", bank);
 
 	ab8500_registers_print(dev, bank, s);
 	return 0;
+=======
+	seq_puts(s, AB8500_NAME_STRING " register values:\n");
+
+	seq_printf(s, " bank 0x%02X:\n", bank);
+
+	return ab8500_registers_print(dev, bank, s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_registers_open(struct inode *inode, struct file *file)
@@ -1350,6 +1451,7 @@ static int ab8500_print_all_banks(struct seq_file *s, void *p)
 {
 	struct device *dev = s->private;
 	unsigned int i;
+<<<<<<< HEAD
 	int err;
 
 	seq_printf(s, AB8500_NAME_STRING " register values:\n");
@@ -1358,6 +1460,18 @@ static int ab8500_print_all_banks(struct seq_file *s, void *p)
 		err = seq_printf(s, " bank 0x%02X:\n", i);
 
 		ab8500_registers_print(dev, i, s);
+=======
+
+	seq_puts(s, AB8500_NAME_STRING " register values:\n");
+
+	for (i = 0; i < AB8500_NUM_BANKS; i++) {
+		int err;
+
+		seq_printf(s, " bank 0x%02X:\n", i);
+		err = ab8500_registers_print(dev, i, s);
+		if (err)
+			return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -1367,14 +1481,22 @@ void ab8500_dump_all_banks(struct device *dev)
 {
 	unsigned int i;
 
+<<<<<<< HEAD
 	printk(KERN_INFO"ab8500 register values:\n");
 
 	for (i = 1; i < AB8500_NUM_BANKS; i++) {
 		printk(KERN_INFO" bank 0x%02X:\n", i);
+=======
+	dev_info(dev, "ab8500 register values:\n");
+
+	for (i = 1; i < AB8500_NUM_BANKS; i++) {
+		dev_info(dev, " bank 0x%02X:\n", i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ab8500_registers_print(dev, i, NULL);
 	}
 }
 
+<<<<<<< HEAD
 /* Space for 500 registers. */
 #define DUMP_MAX_REGS 700
 struct ab8500_register_dump
@@ -1432,6 +1554,8 @@ out:
 		pr_info("Failed to save all ABB registers.\n");
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ab8500_all_banks_open(struct inode *inode, struct file *file)
 {
 	struct seq_file *s;
@@ -1461,7 +1585,12 @@ static const struct file_operations ab8500_all_banks_fops = {
 
 static int ab8500_bank_print(struct seq_file *s, void *p)
 {
+<<<<<<< HEAD
 	return seq_printf(s, "0x%02X\n", debug_bank);
+=======
+	seq_printf(s, "0x%02X\n", debug_bank);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_bank_open(struct inode *inode, struct file *file)
@@ -1493,7 +1622,12 @@ static ssize_t ab8500_bank_write(struct file *file,
 
 static int ab8500_address_print(struct seq_file *s, void *p)
 {
+<<<<<<< HEAD
 	return seq_printf(s, "0x%02X\n", debug_address);
+=======
+	seq_printf(s, "0x%02X\n", debug_address);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_address_open(struct inode *inode, struct file *file)
@@ -1564,7 +1698,11 @@ static ssize_t ab8500_val_write(struct file *file,
 	err = abx500_set_register_interruptible(dev,
 		(u8)debug_bank, debug_address, (u8)user_val);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "abx500_set_reg failed %d, %d", err, __LINE__);
+=======
+		pr_err("abx500_set_reg failed %d, %d", err, __LINE__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -1578,6 +1716,7 @@ static u32 num_interrupts[AB8500_MAX_NR_IRQS];
 static u32 num_wake_interrupts[AB8500_MAX_NR_IRQS];
 static int num_interrupt_lines;
 
+<<<<<<< HEAD
 bool __attribute__((weak)) suspend_test_wake_cause_interrupt_is_mine(u32 my_int)
 {
 	return false;
@@ -1590,12 +1729,19 @@ void ab8500_debug_register_interrupt(int line)
 		if (suspend_test_wake_cause_interrupt_is_mine(irq_ab8500))
 			num_wake_interrupts[line]++;
 	}
+=======
+void ab8500_debug_register_interrupt(int line)
+{
+	if (line < num_interrupt_lines)
+		num_interrupts[line]++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_interrupts_print(struct seq_file *s, void *p)
 {
 	int line;
 
+<<<<<<< HEAD
 	seq_printf(s, "name: number:  number of: wake:\n");
 
 	for (line = 0; line < num_interrupt_lines; line++) {
@@ -1603,12 +1749,27 @@ static int ab8500_interrupts_print(struct seq_file *s, void *p)
 		struct irqaction *action = desc->action;
 
 		seq_printf(s, "%3i:  %6i %4i", line,
+=======
+	seq_puts(s, "name: number:  number of: wake:\n");
+
+	for (line = 0; line < num_interrupt_lines; line++) {
+		struct irq_desc *desc = irq_to_desc(line + irq_first);
+
+		seq_printf(s, "%3i:  %6i %4i",
+			   line,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   num_interrupts[line],
 			   num_wake_interrupts[line]);
 
 		if (desc && desc->name)
 			seq_printf(s, "-%-8s", desc->name);
+<<<<<<< HEAD
 		if (action) {
+=======
+		if (desc && desc->action) {
+			struct irqaction *action = desc->action;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			seq_printf(s, "  %s", action->name);
 			while ((action = action->next) != NULL)
 				seq_printf(s, ", %s", action->name);
@@ -1707,8 +1868,12 @@ static int ab8500_print_modem_registers(struct seq_file *s, void *p)
 			dev_err(dev, "ab->read fail %d\n", err);
 			return err;
 		}
+<<<<<<< HEAD
 		err = seq_printf(s, "  [0x%02X/0x%02X]: 0x%02X\n",
 			bank, reg, value);
+=======
+		seq_printf(s, "  [0x%02X/0x%02X]: 0x%02X\n", bank, reg, value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	err = abx500_set_register_interruptible(dev,
 		AB8500_REGU_CTRL1, AB8500_SUPPLY_CONTROL_REG, orig_value);
@@ -1721,7 +1886,12 @@ static int ab8500_print_modem_registers(struct seq_file *s, void *p)
 
 static int ab8500_modem_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	return single_open(file, ab8500_print_modem_registers, inode->i_private);
+=======
+	return single_open(file, ab8500_print_modem_registers,
+			   inode->i_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ab8500_modem_fops = {
@@ -1744,13 +1914,24 @@ static int ab8500_gpadc_bat_ctrl_print(struct seq_file *s, void *p)
 	bat_ctrl_convert = ab8500_gpadc_ad_to_voltage(gpadc,
 		BAT_CTRL, bat_ctrl_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		bat_ctrl_convert, bat_ctrl_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", bat_ctrl_convert, bat_ctrl_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_bat_ctrl_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	return single_open(file, ab8500_gpadc_bat_ctrl_print, inode->i_private);
+=======
+	return single_open(file, ab8500_gpadc_bat_ctrl_print,
+			   inode->i_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ab8500_gpadc_bat_ctrl_fops = {
@@ -1773,14 +1954,25 @@ static int ab8500_gpadc_btemp_ball_print(struct seq_file *s, void *p)
 	btemp_ball_convert = ab8500_gpadc_ad_to_voltage(gpadc, BTEMP_BALL,
 		btemp_ball_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s,
 		"%d,0x%X\n", btemp_ball_convert, btemp_ball_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", btemp_ball_convert, btemp_ball_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_btemp_ball_open(struct inode *inode,
 					struct file *file)
 {
+<<<<<<< HEAD
 	return single_open(file, ab8500_gpadc_btemp_ball_print, inode->i_private);
+=======
+	return single_open(file, ab8500_gpadc_btemp_ball_print,
+			   inode->i_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ab8500_gpadc_btemp_ball_fops = {
@@ -1803,8 +1995,14 @@ static int ab8500_gpadc_main_charger_v_print(struct seq_file *s, void *p)
 	main_charger_v_convert = ab8500_gpadc_ad_to_voltage(gpadc,
 		MAIN_CHARGER_V, main_charger_v_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 			main_charger_v_convert, main_charger_v_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", main_charger_v_convert, main_charger_v_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_main_charger_v_open(struct inode *inode,
@@ -1834,8 +2032,14 @@ static int ab8500_gpadc_acc_detect1_print(struct seq_file *s, void *p)
 	acc_detect1_convert = ab8500_gpadc_ad_to_voltage(gpadc, ACC_DETECT1,
 		acc_detect1_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		acc_detect1_convert, acc_detect1_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", acc_detect1_convert, acc_detect1_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_acc_detect1_open(struct inode *inode,
@@ -1865,8 +2069,14 @@ static int ab8500_gpadc_acc_detect2_print(struct seq_file *s, void *p)
 	acc_detect2_convert = ab8500_gpadc_ad_to_voltage(gpadc,
 		ACC_DETECT2, acc_detect2_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		acc_detect2_convert, acc_detect2_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", acc_detect2_convert, acc_detect2_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_acc_detect2_open(struct inode *inode,
@@ -1896,8 +2106,14 @@ static int ab8500_gpadc_aux1_print(struct seq_file *s, void *p)
 	aux1_convert = ab8500_gpadc_ad_to_voltage(gpadc, ADC_AUX1,
 		aux1_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		aux1_convert, aux1_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", aux1_convert, aux1_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_aux1_open(struct inode *inode, struct file *file)
@@ -1925,8 +2141,14 @@ static int ab8500_gpadc_aux2_print(struct seq_file *s, void *p)
 	aux2_convert = ab8500_gpadc_ad_to_voltage(gpadc, ADC_AUX2,
 		aux2_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 			aux2_convert, aux2_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", aux2_convert, aux2_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_aux2_open(struct inode *inode, struct file *file)
@@ -1954,14 +2176,25 @@ static int ab8500_gpadc_main_bat_v_print(struct seq_file *s, void *p)
 	main_bat_v_convert = ab8500_gpadc_ad_to_voltage(gpadc, MAIN_BAT_V,
 		main_bat_v_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		main_bat_v_convert, main_bat_v_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", main_bat_v_convert, main_bat_v_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_main_bat_v_open(struct inode *inode,
 					struct file *file)
 {
+<<<<<<< HEAD
 	return single_open(file, ab8500_gpadc_main_bat_v_print, inode->i_private);
+=======
+	return single_open(file, ab8500_gpadc_main_bat_v_print,
+			   inode->i_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ab8500_gpadc_main_bat_v_fops = {
@@ -1984,8 +2217,14 @@ static int ab8500_gpadc_vbus_v_print(struct seq_file *s, void *p)
 	vbus_v_convert = ab8500_gpadc_ad_to_voltage(gpadc, VBUS_V,
 		vbus_v_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		vbus_v_convert, vbus_v_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", vbus_v_convert, vbus_v_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_vbus_v_open(struct inode *inode, struct file *file)
@@ -2013,8 +2252,14 @@ static int ab8500_gpadc_main_charger_c_print(struct seq_file *s, void *p)
 	main_charger_c_convert = ab8500_gpadc_ad_to_voltage(gpadc,
 		MAIN_CHARGER_C, main_charger_c_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		main_charger_c_convert, main_charger_c_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", main_charger_c_convert, main_charger_c_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_main_charger_c_open(struct inode *inode,
@@ -2044,8 +2289,14 @@ static int ab8500_gpadc_usb_charger_c_print(struct seq_file *s, void *p)
 	usb_charger_c_convert = ab8500_gpadc_ad_to_voltage(gpadc,
 		USB_CHARGER_C, usb_charger_c_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		usb_charger_c_convert, usb_charger_c_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", usb_charger_c_convert, usb_charger_c_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_usb_charger_c_open(struct inode *inode,
@@ -2075,13 +2326,24 @@ static int ab8500_gpadc_bk_bat_v_print(struct seq_file *s, void *p)
 	bk_bat_v_convert = ab8500_gpadc_ad_to_voltage(gpadc,
 		BK_BAT_V, bk_bat_v_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		bk_bat_v_convert, bk_bat_v_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", bk_bat_v_convert, bk_bat_v_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_bk_bat_v_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	return single_open(file, ab8500_gpadc_bk_bat_v_print, inode->i_private);
+=======
+	return single_open(file, ab8500_gpadc_bk_bat_v_print,
+			   inode->i_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ab8500_gpadc_bk_bat_v_fops = {
@@ -2104,13 +2366,24 @@ static int ab8500_gpadc_die_temp_print(struct seq_file *s, void *p)
 	die_temp_convert = ab8500_gpadc_ad_to_voltage(gpadc, DIE_TEMP,
 		die_temp_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		die_temp_convert, die_temp_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", die_temp_convert, die_temp_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_die_temp_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	return single_open(file, ab8500_gpadc_die_temp_print, inode->i_private);
+=======
+	return single_open(file, ab8500_gpadc_die_temp_print,
+			   inode->i_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ab8500_gpadc_die_temp_fops = {
@@ -2133,8 +2406,14 @@ static int ab8500_gpadc_usb_id_print(struct seq_file *s, void *p)
 	usb_id_convert = ab8500_gpadc_ad_to_voltage(gpadc, USB_ID,
 		usb_id_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		usb_id_convert, usb_id_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", usb_id_convert, usb_id_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_usb_id_open(struct inode *inode, struct file *file)
@@ -2162,8 +2441,14 @@ static int ab8540_gpadc_xtal_temp_print(struct seq_file *s, void *p)
 	xtal_temp_convert = ab8500_gpadc_ad_to_voltage(gpadc, XTAL_TEMP,
 		xtal_temp_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n",
 		xtal_temp_convert, xtal_temp_raw);
+=======
+	seq_printf(s, "%d,0x%X\n", xtal_temp_convert, xtal_temp_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8540_gpadc_xtal_temp_open(struct inode *inode, struct file *file)
@@ -2189,11 +2474,21 @@ static int ab8540_gpadc_vbat_true_meas_print(struct seq_file *s, void *p)
 	gpadc = ab8500_gpadc_get("ab8500-gpadc.0");
 	vbat_true_meas_raw = ab8500_gpadc_read_raw(gpadc, VBAT_TRUE_MEAS,
 		avg_sample, trig_edge, trig_timer, conv_type);
+<<<<<<< HEAD
 	vbat_true_meas_convert = ab8500_gpadc_ad_to_voltage(gpadc, VBAT_TRUE_MEAS,
 		vbat_true_meas_raw);
 
 	return seq_printf(s, "%d,0x%X\n",
 		vbat_true_meas_convert, vbat_true_meas_raw);
+=======
+	vbat_true_meas_convert =
+		ab8500_gpadc_ad_to_voltage(gpadc, VBAT_TRUE_MEAS,
+					   vbat_true_meas_raw);
+
+	seq_printf(s, "%d,0x%X\n", vbat_true_meas_convert, vbat_true_meas_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8540_gpadc_vbat_true_meas_open(struct inode *inode,
@@ -2228,9 +2523,19 @@ static int ab8540_gpadc_bat_ctrl_and_ibat_print(struct seq_file *s, void *p)
 	ibat_convert = ab8500_gpadc_ad_to_voltage(gpadc, IBAT_VIRTUAL_CHANNEL,
 		ibat_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n"  "%d,0x%X\n",
 		bat_ctrl_convert, bat_ctrl_raw,
 		ibat_convert, ibat_raw);
+=======
+	seq_printf(s,
+		   "%d,0x%X\n"
+		   "%d,0x%X\n",
+		   bat_ctrl_convert, bat_ctrl_raw,
+		   ibat_convert, ibat_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8540_gpadc_bat_ctrl_and_ibat_open(struct inode *inode,
@@ -2264,9 +2569,19 @@ static int ab8540_gpadc_vbat_meas_and_ibat_print(struct seq_file *s, void *p)
 	ibat_convert = ab8500_gpadc_ad_to_voltage(gpadc, IBAT_VIRTUAL_CHANNEL,
 		ibat_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n"  "%d,0x%X\n",
 		vbat_meas_convert, vbat_meas_raw,
 		ibat_convert, ibat_raw);
+=======
+	seq_printf(s,
+		   "%d,0x%X\n"
+		   "%d,0x%X\n",
+		   vbat_meas_convert, vbat_meas_raw,
+		   ibat_convert, ibat_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8540_gpadc_vbat_meas_and_ibat_open(struct inode *inode,
@@ -2284,7 +2599,12 @@ static const struct file_operations ab8540_gpadc_vbat_meas_and_ibat_fops = {
 	.owner = THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int ab8540_gpadc_vbat_true_meas_and_ibat_print(struct seq_file *s, void *p)
+=======
+static int ab8540_gpadc_vbat_true_meas_and_ibat_print(struct seq_file *s,
+						      void *p)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int vbat_true_meas_raw;
 	int vbat_true_meas_convert;
@@ -2301,9 +2621,19 @@ static int ab8540_gpadc_vbat_true_meas_and_ibat_print(struct seq_file *s, void *
 	ibat_convert = ab8500_gpadc_ad_to_voltage(gpadc, IBAT_VIRTUAL_CHANNEL,
 		ibat_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n"  "%d,0x%X\n",
 		vbat_true_meas_convert, vbat_true_meas_raw,
 		ibat_convert, ibat_raw);
+=======
+	seq_printf(s,
+		   "%d,0x%X\n"
+		   "%d,0x%X\n",
+		   vbat_true_meas_convert, vbat_true_meas_raw,
+		   ibat_convert, ibat_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8540_gpadc_vbat_true_meas_and_ibat_open(struct inode *inode,
@@ -2313,7 +2643,12 @@ static int ab8540_gpadc_vbat_true_meas_and_ibat_open(struct inode *inode,
 		inode->i_private);
 }
 
+<<<<<<< HEAD
 static const struct file_operations ab8540_gpadc_vbat_true_meas_and_ibat_fops = {
+=======
+static const struct file_operations
+ab8540_gpadc_vbat_true_meas_and_ibat_fops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = ab8540_gpadc_vbat_true_meas_and_ibat_open,
 	.read = seq_read,
 	.llseek = seq_lseek,
@@ -2337,9 +2672,19 @@ static int ab8540_gpadc_bat_temp_and_ibat_print(struct seq_file *s, void *p)
 	ibat_convert = ab8500_gpadc_ad_to_voltage(gpadc, IBAT_VIRTUAL_CHANNEL,
 		ibat_raw);
 
+<<<<<<< HEAD
 	return seq_printf(s, "%d,0x%X\n"  "%d,0x%X\n",
 		bat_temp_convert, bat_temp_raw,
 		ibat_convert, ibat_raw);
+=======
+	seq_printf(s,
+		   "%d,0x%X\n"
+		   "%d,0x%X\n",
+		   bat_temp_convert, bat_temp_raw,
+		   ibat_convert, ibat_raw);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8540_gpadc_bat_temp_and_ibat_open(struct inode *inode,
@@ -2366,6 +2711,7 @@ static int ab8540_gpadc_otp_cal_print(struct seq_file *s, void *p)
 	gpadc = ab8500_gpadc_get("ab8500-gpadc.0");
 	ab8540_gpadc_get_otp(gpadc, &vmain_l, &vmain_h, &btemp_l, &btemp_h,
 			&vbat_l, &vbat_h, &ibat_l, &ibat_h);
+<<<<<<< HEAD
 	return seq_printf(s, "VMAIN_L:0x%X\n"
 		"VMAIN_H:0x%X\n"
 		"BTEMP_L:0x%X\n"
@@ -2375,6 +2721,21 @@ static int ab8540_gpadc_otp_cal_print(struct seq_file *s, void *p)
 		"IBAT_L:0x%X\n"
 		"IBAT_H:0x%X\n",
 		vmain_l, vmain_h, btemp_l, btemp_h, vbat_l, vbat_h, ibat_l, ibat_h);
+=======
+	seq_printf(s,
+		   "VMAIN_L:0x%X\n"
+		   "VMAIN_H:0x%X\n"
+		   "BTEMP_L:0x%X\n"
+		   "BTEMP_H:0x%X\n"
+		   "VBAT_L:0x%X\n"
+		   "VBAT_H:0x%X\n"
+		   "IBAT_L:0x%X\n"
+		   "IBAT_H:0x%X\n",
+		   vmain_l, vmain_h, btemp_l, btemp_h,
+		   vbat_l, vbat_h, ibat_l, ibat_h);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8540_gpadc_otp_cal_open(struct inode *inode, struct file *file)
@@ -2392,7 +2753,13 @@ static const struct file_operations ab8540_gpadc_otp_calib_fops = {
 
 static int ab8500_gpadc_avg_sample_print(struct seq_file *s, void *p)
 {
+<<<<<<< HEAD
 	return seq_printf(s, "%d\n", avg_sample);
+=======
+	seq_printf(s, "%d\n", avg_sample);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_avg_sample_open(struct inode *inode, struct file *file)
@@ -2418,8 +2785,13 @@ static ssize_t ab8500_gpadc_avg_sample_write(struct file *file,
 			|| (user_avg_sample == SAMPLE_16)) {
 		avg_sample = (u8) user_avg_sample;
 	} else {
+<<<<<<< HEAD
 		dev_err(dev, "debugfs error input: "
 			"should be egal to 1, 4, 8 or 16\n");
+=======
+		dev_err(dev,
+			"debugfs err input: should be egal to 1, 4, 8 or 16\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -2437,7 +2809,13 @@ static const struct file_operations ab8500_gpadc_avg_sample_fops = {
 
 static int ab8500_gpadc_trig_edge_print(struct seq_file *s, void *p)
 {
+<<<<<<< HEAD
 	return seq_printf(s, "%d\n", trig_edge);
+=======
+	seq_printf(s, "%d\n", trig_edge);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_trig_edge_open(struct inode *inode, struct file *file)
@@ -2482,7 +2860,13 @@ static const struct file_operations ab8500_gpadc_trig_edge_fops = {
 
 static int ab8500_gpadc_trig_timer_print(struct seq_file *s, void *p)
 {
+<<<<<<< HEAD
 	return seq_printf(s, "%d\n", trig_timer);
+=======
+	seq_printf(s, "%d\n", trig_timer);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_trig_timer_open(struct inode *inode, struct file *file)
@@ -2503,6 +2887,7 @@ static ssize_t ab8500_gpadc_trig_timer_write(struct file *file,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	if ((user_trig_timer >= 0) && (user_trig_timer <= 255)) {
 		trig_timer = (u8) user_trig_timer;
 	} else {
@@ -2511,6 +2896,16 @@ static ssize_t ab8500_gpadc_trig_timer_write(struct file *file,
 		return -EINVAL;
 	}
 
+=======
+	if (user_trig_timer & ~0xFF) {
+		dev_err(dev,
+			"debugfs error input: should be between 0 to 255\n");
+		return -EINVAL;
+	}
+
+	trig_timer = (u8) user_trig_timer;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return count;
 }
 
@@ -2525,7 +2920,13 @@ static const struct file_operations ab8500_gpadc_trig_timer_fops = {
 
 static int ab8500_gpadc_conv_type_print(struct seq_file *s, void *p)
 {
+<<<<<<< HEAD
 	return seq_printf(s, "%d\n", conv_type);
+=======
+	seq_printf(s, "%d\n", conv_type);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_gpadc_conv_type_open(struct inode *inode, struct file *file)
@@ -2578,6 +2979,10 @@ static const struct file_operations ab8500_gpadc_conv_type_fops = {
 static int strval_len(char *b)
 {
 	char *s = b;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((*s == '0') && ((*(s+1) == 'x') || (*(s+1) == 'X'))) {
 		s += 2;
 		for (; *s && (*s != ' ') && (*s != '\n'); s++) {
@@ -2642,13 +3047,25 @@ static ssize_t hwreg_common_write(char *b, struct hwreg_cfg *cfg,
 			b += (*(b+2) == ' ') ? 3 : 6;
 			if (strval_len(b) == 0)
 				return -EINVAL;
+<<<<<<< HEAD
 			loc.mask = simple_strtoul(b, &b, 0);
+=======
+			ret = kstrtoul(b, 0, &loc.mask);
+			if (ret)
+				return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else if ((!strncmp(b, "-s ", 3)) ||
 				(!strncmp(b, "-shift ", 7))) {
 			b += (*(b+2) == ' ') ? 3 : 7;
 			if (strval_len(b) == 0)
 				return -EINVAL;
+<<<<<<< HEAD
 			loc.shift = simple_strtol(b, &b, 0);
+=======
+			ret = kstrtol(b, 0, &loc.shift);
+			if (ret)
+				return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			return -EINVAL;
 		}
@@ -2656,29 +3073,54 @@ static ssize_t hwreg_common_write(char *b, struct hwreg_cfg *cfg,
 	/* get arg BANK and ADDRESS */
 	if (strval_len(b) == 0)
 		return -EINVAL;
+<<<<<<< HEAD
 	loc.bank = simple_strtoul(b, &b, 0);
+=======
+	ret = kstrtouint(b, 0, &loc.bank);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (*b == ' ')
 		b++;
 	if (strval_len(b) == 0)
 		return -EINVAL;
+<<<<<<< HEAD
 	loc.addr = simple_strtoul(b, &b, 0);
+=======
+	ret = kstrtoul(b, 0, &loc.addr);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (write) {
 		while (*b == ' ')
 			b++;
 		if (strval_len(b) == 0)
 			return -EINVAL;
+<<<<<<< HEAD
 		val = simple_strtoul(b, &b, 0);
+=======
+		ret = kstrtouint(b, 0, &val);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* args are ok, update target cfg (mainly for read) */
 	*cfg = loc;
 
 #ifdef ABB_HWREG_DEBUG
+<<<<<<< HEAD
 	pr_warn("HWREG request: %s, %s, addr=0x%08X, mask=0x%X, shift=%d"
 			"value=0x%X\n", (write) ? "write" : "read",
 			REG_FMT_DEC(cfg) ? "decimal" : "hexa",
 			cfg->addr, cfg->mask, cfg->shift, val);
+=======
+	pr_warn("HWREG request: %s, %s,\n", (write) ? "write" : "read",
+		REG_FMT_DEC(cfg) ? "decimal" : "hexa");
+	pr_warn("  addr=0x%08X, mask=0x%X, shift=%d" "value=0x%X\n",
+		cfg->addr, cfg->mask, cfg->shift, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	if (!write)
@@ -2757,15 +3199,24 @@ static ssize_t show_irq(struct device *dev,
 	unsigned int irq_index;
 	int err;
 
+<<<<<<< HEAD
 	err = strict_strtoul(attr->attr.name, 0, &name);
+=======
+	err = kstrtoul(attr->attr.name, 0, &name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return err;
 
 	irq_index = name - irq_first;
 	if (irq_index >= num_irqs)
 		return -EINVAL;
+<<<<<<< HEAD
 	else
 		return sprintf(buf, "%u\n", irq_count[irq_index]);
+=======
+
+	return sprintf(buf, "%u\n", irq_count[irq_index]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t ab8500_subscribe_write(struct file *file,
@@ -2800,7 +3251,17 @@ static ssize_t ab8500_subscribe_write(struct file *file,
 	 */
 	dev_attr[irq_index] = kmalloc(sizeof(struct device_attribute),
 		GFP_KERNEL);
+<<<<<<< HEAD
 	event_name[irq_index] = kmalloc(count, GFP_KERNEL);
+=======
+	if (!dev_attr[irq_index])
+		return -ENOMEM;
+
+	event_name[irq_index] = kmalloc(count, GFP_KERNEL);
+	if (!event_name[irq_index])
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sprintf(event_name[irq_index], "%lu", user_val);
 	dev_attr[irq_index]->show = show_irq;
 	dev_attr[irq_index]->store = NULL;
@@ -2808,16 +3269,28 @@ static ssize_t ab8500_subscribe_write(struct file *file,
 	dev_attr[irq_index]->attr.mode = S_IRUGO;
 	err = sysfs_create_file(&dev->kobj, &dev_attr[irq_index]->attr);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "sysfs_create_file failed %d\n", err);
+=======
+		pr_info("sysfs_create_file failed %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
 	err = request_threaded_irq(user_val, NULL, ab8500_debug_handler,
+<<<<<<< HEAD
 				   IRQF_SHARED | IRQF_NO_SUSPEND,
 				   "ab8500-debug", &dev->kobj);
 	if (err < 0) {
 		printk(KERN_ERR "request_threaded_irq failed %d, %lu\n",
                        err, user_val);
+=======
+				   IRQF_SHARED | IRQF_NO_SUSPEND | IRQF_ONESHOT,
+				   "ab8500-debug", &dev->kobj);
+	if (err < 0) {
+		pr_info("request_threaded_irq failed %d, %lu\n",
+			err, user_val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sysfs_remove_file(&dev->kobj, &dev_attr[irq_index]->attr);
 		return err;
 	}
@@ -2937,15 +3410,22 @@ static struct dentry *ab8500_gpadc_dir;
 static int ab8500_debug_probe(struct platform_device *plf)
 {
 	struct dentry *file;
+<<<<<<< HEAD
 	int ret = -ENOMEM;
 	struct ab8500 *ab8500;
 	struct resource *res;
+=======
+	struct ab8500 *ab8500;
+	struct resource *res;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	debug_bank = AB8500_MISC;
 	debug_address = AB8500_REV_REG & 0x00FF;
 
 	ab8500 = dev_get_drvdata(plf->dev.parent);
 	num_irqs = ab8500->mask_size;
 
+<<<<<<< HEAD
 	irq_count = kzalloc(sizeof(*irq_count)*num_irqs, GFP_KERNEL);
 	if (!irq_count)
 		return -ENOMEM;
@@ -2964,23 +3444,54 @@ static int ab8500_debug_probe(struct platform_device *plf)
 			irq_first);
 		ret = -ENXIO;
 		goto out_freeevent_name;
+=======
+	irq_count = devm_kzalloc(&plf->dev,
+				 sizeof(*irq_count)*num_irqs, GFP_KERNEL);
+	if (!irq_count)
+		return -ENOMEM;
+
+	dev_attr = devm_kzalloc(&plf->dev,
+				sizeof(*dev_attr)*num_irqs, GFP_KERNEL);
+	if (!dev_attr)
+		return -ENOMEM;
+
+	event_name = devm_kzalloc(&plf->dev,
+				  sizeof(*event_name)*num_irqs, GFP_KERNEL);
+	if (!event_name)
+		return -ENOMEM;
+
+	res = platform_get_resource_byname(plf, 0, "IRQ_AB8500");
+	if (!res) {
+		dev_err(&plf->dev, "AB8500 irq not found, err %d\n", irq_first);
+		return -ENXIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	irq_ab8500 = res->start;
 
 	irq_first = platform_get_irq_byname(plf, "IRQ_FIRST");
 	if (irq_first < 0) {
+<<<<<<< HEAD
 		dev_err(&plf->dev, "First irq not found, err %d\n",
 			irq_first);
 		ret = irq_first;
 		goto out_freeevent_name;
+=======
+		dev_err(&plf->dev, "First irq not found, err %d\n", irq_first);
+		return irq_first;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	irq_last = platform_get_irq_byname(plf, "IRQ_LAST");
 	if (irq_last < 0) {
+<<<<<<< HEAD
 		dev_err(&plf->dev, "Last irq not found, err %d\n",
 			irq_last);
 		ret = irq_last;
 		goto out_freeevent_name;
+=======
+		dev_err(&plf->dev, "Last irq not found, err %d\n", irq_last);
+		return irq_last;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ab8500_dir = debugfs_create_dir(AB8500_NAME_STRING, NULL);
@@ -2988,6 +3499,7 @@ static int ab8500_debug_probe(struct platform_device *plf)
 		goto err;
 
 	ab8500_gpadc_dir = debugfs_create_dir(AB8500_ADC_NAME_STRING,
+<<<<<<< HEAD
 		ab8500_dir);
 	if (!ab8500_gpadc_dir)
 		goto err;
@@ -3019,6 +3531,43 @@ static int ab8500_debug_probe(struct platform_device *plf)
 
 	file = debugfs_create_file("irq-subscribe", (S_IRUGO | S_IWUSR | S_IWGRP),
 		ab8500_dir, &plf->dev, &ab8500_subscribe_fops);
+=======
+					      ab8500_dir);
+	if (!ab8500_gpadc_dir)
+		goto err;
+
+	file = debugfs_create_file("all-bank-registers", S_IRUGO, ab8500_dir,
+				   &plf->dev, &ab8500_registers_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("all-banks", S_IRUGO, ab8500_dir,
+				   &plf->dev, &ab8500_all_banks_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("register-bank",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_dir, &plf->dev, &ab8500_bank_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("register-address",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_dir, &plf->dev, &ab8500_address_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("register-value",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_dir, &plf->dev, &ab8500_val_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("irq-subscribe",
+				   (S_IRUGO | S_IWUSR | S_IWGRP), ab8500_dir,
+				   &plf->dev, &ab8500_subscribe_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
@@ -3036,6 +3585,7 @@ static int ab8500_debug_probe(struct platform_device *plf)
 		num_interrupt_lines = AB8540_NR_IRQS;
 	}
 
+<<<<<<< HEAD
 	file = debugfs_create_file("interrupts", (S_IRUGO),
 		ab8500_dir, &plf->dev, &ab8500_interrupts_fops);
 	if (!file)
@@ -3043,25 +3593,51 @@ static int ab8500_debug_probe(struct platform_device *plf)
 
 	file = debugfs_create_file("irq-unsubscribe", (S_IRUGO | S_IWUSR | S_IWGRP),
 		ab8500_dir, &plf->dev, &ab8500_unsubscribe_fops);
+=======
+	file = debugfs_create_file("interrupts", (S_IRUGO), ab8500_dir,
+				   &plf->dev, &ab8500_interrupts_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("irq-unsubscribe",
+				   (S_IRUGO | S_IWUSR | S_IWGRP), ab8500_dir,
+				   &plf->dev, &ab8500_unsubscribe_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("hwreg", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_dir, &plf->dev, &ab8500_hwreg_fops);
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("all-modem-registers", (S_IRUGO | S_IWUSR | S_IWGRP),
 		ab8500_dir, &plf->dev, &ab8500_modem_fops);
+=======
+				   ab8500_dir, &plf->dev, &ab8500_hwreg_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("all-modem-registers",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_dir, &plf->dev, &ab8500_modem_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("bat_ctrl", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_bat_ctrl_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_bat_ctrl_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("btemp_ball", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_btemp_ball_fops);
 	if (!file)
 		goto err;
@@ -3078,25 +3654,66 @@ static int ab8500_debug_probe(struct platform_device *plf)
 
 	file = debugfs_create_file("acc_detect2", (S_IRUGO | S_IWUSR | S_IWGRP),
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_acc_detect2_fops);
+=======
+				   ab8500_gpadc_dir,
+				   &plf->dev, &ab8500_gpadc_btemp_ball_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("main_charger_v",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_main_charger_v_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("acc_detect1",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_acc_detect1_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("acc_detect2",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_acc_detect2_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("adc_aux1", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_aux1_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_aux1_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("adc_aux2", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_aux2_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_aux2_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("main_bat_v", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_main_bat_v_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_main_bat_v_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("vbus_v", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_vbus_v_fops);
 	if (!file)
 		goto err;
@@ -3108,25 +3725,59 @@ static int ab8500_debug_probe(struct platform_device *plf)
 
 	file = debugfs_create_file("usb_charger_c", (S_IRUGO | S_IWUSR | S_IWGRP),
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_usb_charger_c_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_vbus_v_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("main_charger_c",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_main_charger_c_fops);
+	if (!file)
+		goto err;
+
+	file = debugfs_create_file("usb_charger_c",
+				   (S_IRUGO | S_IWUSR | S_IWGRP),
+				   ab8500_gpadc_dir,
+				   &plf->dev, &ab8500_gpadc_usb_charger_c_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("bk_bat_v", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_bk_bat_v_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_bk_bat_v_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("die_temp", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_die_temp_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_die_temp_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("usb_id", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_usb_id_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_usb_id_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	if (is_ab8540(ab8500)) {
+<<<<<<< HEAD
 		file = debugfs_create_file("xtal_temp", (S_IRUGO | S_IWUSR | S_IWGRP),
 			ab8500_gpadc_dir, &plf->dev, &ab8540_gpadc_xtal_temp_fops);
 		if (!file)
@@ -3160,32 +3811,97 @@ static int ab8500_debug_probe(struct platform_device *plf)
 			goto err;
 		file = debugfs_create_file("otp_calib", (S_IRUGO | S_IWUSR | S_IWGRP),
 			ab8500_gpadc_dir, &plf->dev, &ab8540_gpadc_otp_calib_fops);
+=======
+		file = debugfs_create_file("xtal_temp",
+					   (S_IRUGO | S_IWUSR | S_IWGRP),
+					   ab8500_gpadc_dir, &plf->dev,
+					   &ab8540_gpadc_xtal_temp_fops);
+		if (!file)
+			goto err;
+		file = debugfs_create_file("vbattruemeas",
+					   (S_IRUGO | S_IWUSR | S_IWGRP),
+					   ab8500_gpadc_dir, &plf->dev,
+					   &ab8540_gpadc_vbat_true_meas_fops);
+		if (!file)
+			goto err;
+		file = debugfs_create_file("batctrl_and_ibat",
+					(S_IRUGO | S_IWUGO),
+					ab8500_gpadc_dir,
+					&plf->dev,
+					&ab8540_gpadc_bat_ctrl_and_ibat_fops);
+		if (!file)
+			goto err;
+		file = debugfs_create_file("vbatmeas_and_ibat",
+					(S_IRUGO | S_IWUGO),
+					ab8500_gpadc_dir, &plf->dev,
+					&ab8540_gpadc_vbat_meas_and_ibat_fops);
+		if (!file)
+			goto err;
+		file = debugfs_create_file("vbattruemeas_and_ibat",
+				(S_IRUGO | S_IWUGO),
+				ab8500_gpadc_dir,
+				&plf->dev,
+				&ab8540_gpadc_vbat_true_meas_and_ibat_fops);
+		if (!file)
+			goto err;
+		file = debugfs_create_file("battemp_and_ibat",
+			(S_IRUGO | S_IWUGO),
+			ab8500_gpadc_dir,
+			&plf->dev, &ab8540_gpadc_bat_temp_and_ibat_fops);
+		if (!file)
+			goto err;
+		file = debugfs_create_file("otp_calib",
+				(S_IRUGO | S_IWUSR | S_IWGRP),
+				ab8500_gpadc_dir,
+				&plf->dev, &ab8540_gpadc_otp_calib_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!file)
 			goto err;
 	}
 	file = debugfs_create_file("avg_sample", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_avg_sample_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_avg_sample_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("trig_edge", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_trig_edge_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_trig_edge_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("trig_timer", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_trig_timer_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_trig_timer_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	file = debugfs_create_file("conv_type", (S_IRUGO | S_IWUSR | S_IWGRP),
+<<<<<<< HEAD
 		ab8500_gpadc_dir, &plf->dev, &ab8500_gpadc_conv_type_fops);
+=======
+				   ab8500_gpadc_dir, &plf->dev,
+				   &ab8500_gpadc_conv_type_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!file)
 		goto err;
 
 	return 0;
 
 err:
+<<<<<<< HEAD
 	if (ab8500_dir)
 		debugfs_remove_recursive(ab8500_dir);
 	dev_err(&plf->dev, "failed to create debugfs entries.\n");
@@ -3197,14 +3913,23 @@ out_freeirq_count:
 	kfree(irq_count);
 
 	return ret;
+=======
+	debugfs_remove_recursive(ab8500_dir);
+	dev_err(&plf->dev, "failed to create debugfs entries.\n");
+
+	return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ab8500_debug_remove(struct platform_device *plf)
 {
 	debugfs_remove_recursive(ab8500_dir);
+<<<<<<< HEAD
 	kfree(event_name);
 	kfree(dev_attr);
 	kfree(irq_count);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -3212,7 +3937,10 @@ static int ab8500_debug_remove(struct platform_device *plf)
 static struct platform_driver ab8500_debug_driver = {
 	.driver = {
 		.name = "ab8500-debug",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe  = ab8500_debug_probe,
 	.remove = ab8500_debug_remove

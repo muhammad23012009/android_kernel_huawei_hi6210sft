@@ -44,6 +44,11 @@
 static const char version[] =
 	"8390.c:v1.10cvs 9/23/94 Donald Becker (becker@cesdis.gsfc.nasa.gov)\n";
 
+<<<<<<< HEAD
+=======
+static u32 zorro8390_msg_enable;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "lib8390.c"
 
 #define DRV_NAME	"zorro8390"
@@ -86,9 +91,15 @@ static struct card_info {
 static void zorro8390_reset_8390(struct net_device *dev)
 {
 	unsigned long reset_start_time = jiffies;
+<<<<<<< HEAD
 
 	if (ei_debug > 1)
 		netdev_dbg(dev, "resetting - t=%ld...\n", jiffies);
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_dbg(ei_local, hw, dev, "resetting - t=%ld...\n", jiffies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	z_writeb(z_readb(NE_BASE + NE_RESET), NE_BASE + NE_RESET);
 
@@ -119,8 +130,14 @@ static void zorro8390_get_8390_hdr(struct net_device *dev,
 	 * If it does, it's the last thing you'll see
 	 */
 	if (ei_status.dmaing) {
+<<<<<<< HEAD
 		netdev_err(dev, "%s: DMAing conflict [DMAstat:%d][irqlock:%d]\n",
 			   __func__, ei_status.dmaing, ei_status.irqlock);
+=======
+		netdev_warn(dev,
+			    "%s: DMAing conflict [DMAstat:%d][irqlock:%d]\n",
+			    __func__, ei_status.dmaing, ei_status.irqlock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -230,7 +247,11 @@ static void zorro8390_block_output(struct net_device *dev, int count,
 	while ((z_readb(NE_BASE + NE_EN0_ISR) & ENISR_RDC) == 0)
 		if (time_after(jiffies, dma_start + 2 * HZ / 100)) {
 					/* 20ms */
+<<<<<<< HEAD
 			netdev_err(dev, "timeout waiting for Tx RDC\n");
+=======
+			netdev_warn(dev, "timeout waiting for Tx RDC\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			zorro8390_reset_8390(dev);
 			__NS8390_init(dev, 1);
 			break;
@@ -248,8 +269,14 @@ static int zorro8390_open(struct net_device *dev)
 
 static int zorro8390_close(struct net_device *dev)
 {
+<<<<<<< HEAD
 	if (ei_debug > 1)
 		netdev_dbg(dev, "Shutting down ethercard\n");
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_dbg(ei_local, ifdown, dev, "Shutting down ethercard\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__ei_close(dev);
 	return 0;
 }
@@ -287,12 +314,20 @@ static const struct net_device_ops zorro8390_netdev_ops = {
 };
 
 static int zorro8390_init(struct net_device *dev, unsigned long board,
+<<<<<<< HEAD
 			  const char *name, unsigned long ioaddr)
+=======
+			  const char *name, void __iomem *ioaddr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	int err;
 	unsigned char SA_prom[32];
 	int start_page, stop_page;
+<<<<<<< HEAD
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	static u32 zorro8390_offsets[16] = {
 		0x00, 0x02, 0x04, 0x06, 0x08, 0x0a, 0x0c, 0x0e,
 		0x10, 0x12, 0x14, 0x16, 0x18, 0x1a, 0x1c, 0x1e,
@@ -354,7 +389,11 @@ static int zorro8390_init(struct net_device *dev, unsigned long board,
 	start_page = NESM_START_PG;
 	stop_page = NESM_STOP_PG;
 
+<<<<<<< HEAD
 	dev->base_addr = ioaddr;
+=======
+	dev->base_addr = (unsigned long)ioaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->irq = IRQ_AMIGA_PORTS;
 
 	/* Install the Interrupt handler */
@@ -383,6 +422,12 @@ static int zorro8390_init(struct net_device *dev, unsigned long board,
 
 	dev->netdev_ops = &zorro8390_netdev_ops;
 	__NS8390_init(dev, 0);
+<<<<<<< HEAD
+=======
+
+	ei_local->msg_enable = zorro8390_msg_enable;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = register_netdev(dev);
 	if (err) {
 		free_irq(IRQ_AMIGA_PORTS, dev);

@@ -32,11 +32,15 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+<<<<<<< HEAD
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	unsigned int pll_out;
 	int bfs, rfs, ret;
 
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_U8:
 	case SNDRV_PCM_FORMAT_S8:
@@ -44,6 +48,13 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 		break;
 	case SNDRV_PCM_FORMAT_U16_LE:
 	case SNDRV_PCM_FORMAT_S16_LE:
+=======
+	switch (params_width(params)) {
+	case 8:
+		bfs = 16;
+		break;
+	case 16:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bfs = 32;
 		break;
 	default:
@@ -79,6 +90,7 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 	}
 	pll_out = params_rate(params) * rfs;
 
+<<<<<<< HEAD
 	/* Set the Codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S
 					 | SND_SOC_DAIFMT_NB_NF
@@ -93,6 +105,8 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set WM8580 to drive MCLK from its PLLA */
 	ret = snd_soc_dai_set_clkdiv(codec_dai, WM8580_MCLK,
 					WM8580_CLKSRC_PLLA);
@@ -153,6 +167,7 @@ static const struct snd_soc_dapm_route smdk_wm8580_audio_map[] = {
 
 static int smdk_wm8580_init_paiftx(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
@@ -160,6 +175,12 @@ static int smdk_wm8580_init_paiftx(struct snd_soc_pcm_runtime *rtd)
 	 * resistor to connect the line from the microphone jack.
 	 */
 	snd_soc_dapm_disable_pin(dapm, "MicIn");
+=======
+	/* Enabling the microphone requires the fitting of a 0R
+	 * resistor to connect the line from the microphone jack.
+	 */
+	snd_soc_dapm_disable_pin(&rtd->card->dapm, "MicIn");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -170,6 +191,12 @@ enum {
 	SEC_PLAYBACK,
 };
 
+<<<<<<< HEAD
+=======
+#define SMDK_DAI_FMT (SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | \
+	SND_SOC_DAIFMT_CBM_CFM)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_dai_link smdk_dai[] = {
 	[PRI_PLAYBACK] = { /* Primary Playback i/f */
 		.name = "WM8580 PAIF RX",
@@ -178,6 +205,10 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8580-hifi-playback",
 		.platform_name = "samsung-i2s.0",
 		.codec_name = "wm8580.0-001b",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SMDK_DAI_FMT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops = &smdk_ops,
 	},
 	[PRI_CAPTURE] = { /* Primary Capture i/f */
@@ -187,6 +218,10 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8580-hifi-capture",
 		.platform_name = "samsung-i2s.0",
 		.codec_name = "wm8580.0-001b",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SMDK_DAI_FMT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.init = smdk_wm8580_init_paiftx,
 		.ops = &smdk_ops,
 	},
@@ -197,6 +232,10 @@ static struct snd_soc_dai_link smdk_dai[] = {
 		.codec_dai_name = "wm8580-hifi-playback",
 		.platform_name = "samsung-i2s-sec",
 		.codec_name = "wm8580.0-001b",
+<<<<<<< HEAD
+=======
+		.dai_fmt = SMDK_DAI_FMT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.ops = &smdk_ops,
 	},
 };

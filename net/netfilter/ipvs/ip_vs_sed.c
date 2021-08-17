@@ -44,7 +44,11 @@
 #include <net/ip_vs.h>
 
 
+<<<<<<< HEAD
 static inline unsigned int
+=======
+static inline int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ip_vs_sed_dest_overhead(struct ip_vs_dest *dest)
 {
 	/*
@@ -59,10 +63,18 @@ ip_vs_sed_dest_overhead(struct ip_vs_dest *dest)
  *	Weighted Least Connection scheduling
  */
 static struct ip_vs_dest *
+<<<<<<< HEAD
 ip_vs_sed_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 {
 	struct ip_vs_dest *dest, *least;
 	unsigned int loh, doh;
+=======
+ip_vs_sed_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
+		   struct ip_vs_iphdr *iph)
+{
+	struct ip_vs_dest *dest, *least;
+	int loh, doh;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	IP_VS_DBG(6, "%s(): Scheduling...\n", __func__);
 
@@ -98,8 +110,13 @@ ip_vs_sed_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 		if (dest->flags & IP_VS_DEST_F_OVERLOAD)
 			continue;
 		doh = ip_vs_sed_dest_overhead(dest);
+<<<<<<< HEAD
 		if (loh * atomic_read(&dest->weight) >
 		    doh * atomic_read(&least->weight)) {
+=======
+		if ((__s64)loh * atomic_read(&dest->weight) >
+		    (__s64)doh * atomic_read(&least->weight)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			least = dest;
 			loh = doh;
 		}
@@ -107,7 +124,12 @@ ip_vs_sed_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 
 	IP_VS_DBG_BUF(6, "SED: server %s:%u "
 		      "activeconns %d refcnt %d weight %d overhead %d\n",
+<<<<<<< HEAD
 		      IP_VS_DBG_ADDR(svc->af, &least->addr), ntohs(least->port),
+=======
+		      IP_VS_DBG_ADDR(least->af, &least->addr),
+		      ntohs(least->port),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      atomic_read(&least->activeconns),
 		      atomic_read(&least->refcnt),
 		      atomic_read(&least->weight), loh);

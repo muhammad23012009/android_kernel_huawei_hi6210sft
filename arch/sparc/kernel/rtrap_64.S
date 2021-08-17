@@ -14,14 +14,26 @@
 #include <asm/visasm.h>
 #include <asm/processor.h>
 
+<<<<<<< HEAD
 #define		RTRAP_PSTATE		(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_IE)
 #define		RTRAP_PSTATE_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV)
 #define		RTRAP_PSTATE_AG_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_AG)
+=======
+#ifdef CONFIG_CONTEXT_TRACKING
+# define SCHEDULE_USER schedule_user
+#else
+# define SCHEDULE_USER schedule
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		.text
 		.align			32
 __handle_preemption:
+<<<<<<< HEAD
 		call			schedule
+=======
+		call			SCHEDULE_USER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 wrpr			%g0, RTRAP_PSTATE, %pstate
 		ba,pt			%xcc, __handle_preemption_continue
 		 wrpr			%g0, RTRAP_PSTATE_IRQOFF, %pstate
@@ -67,7 +79,17 @@ rtrap_nmi:	ldx			[%sp + PTREGS_OFF + PT_V9_TSTATE], %l1
 		andn			%l1, %l4, %l1
 		srl			%l4, 20, %l4
 		ba,pt			%xcc, rtrap_no_irq_enable
+<<<<<<< HEAD
 		 wrpr			%l4, %pil
+=======
+		nop
+		/* Do not actually set the %pil here.  We will do that
+		 * below after we clear PSTATE_IE in the %pstate register.
+		 * If we re-enable interrupts here, we can recurse down
+		 * the hardirq stack potentially endlessly, causing a
+		 * stack overflow.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		.align			64
 		.globl			rtrap_irq, rtrap, irqsz_patchme, rtrap_xcall
@@ -230,6 +252,7 @@ rt_continue:	ldx			[%sp + PTREGS_OFF + PT_V9_G1], %g1
 		 wrpr			%g1, %cwp
 		ba,a,pt			%xcc, user_rtt_fill_64bit
 
+<<<<<<< HEAD
 user_rtt_fill_fixup:
 		rdpr	%cwp, %g1
 		add	%g1, 1, %g1
@@ -276,6 +299,19 @@ user_rtt_fill_fixup:
 		 add	%sp, PTREGS_OFF, %o0
 		ba,pt	%xcc, rtrap
 		 nop
+=======
+user_rtt_fill_fixup_dax:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 mov	1, %g3
+
+user_rtt_fill_fixup_mna:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 mov	2, %g3
+
+user_rtt_fill_fixup:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 clr	%g3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 user_rtt_pre_restore:
 		add			%g1, 1, %g1
@@ -306,12 +342,19 @@ to_kernel:
 		 nop
 		cmp			%l4, 0
 		bne,pn			%xcc, kern_fpucheck
+<<<<<<< HEAD
 		 sethi			%hi(PREEMPT_ACTIVE), %l6
 		stw			%l6, [%g6 + TI_PRE_COUNT]
 		call			schedule
 		 nop
 		ba,pt			%xcc, rtrap
 		 stw			%g0, [%g6 + TI_PRE_COUNT]
+=======
+		 nop
+		call			preempt_schedule_irq
+		 nop
+		ba,pt			%xcc, rtrap
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 kern_fpucheck:	ldub			[%g6 + TI_FPDEPTH], %l5
 		brz,pt			%l5, rt_continue

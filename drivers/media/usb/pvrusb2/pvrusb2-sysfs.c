@@ -848,6 +848,7 @@ static ssize_t debugcmd_store(struct device *class_dev,
 	return count;
 }
 #endif /* CONFIG_VIDEO_PVRUSB2_DEBUGIFC */
+<<<<<<< HEAD
 
 
 /*
@@ -859,3 +860,5 @@ static ssize_t debugcmd_store(struct device *class_dev,
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

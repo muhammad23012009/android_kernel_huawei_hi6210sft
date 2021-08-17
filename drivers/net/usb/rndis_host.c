@@ -13,11 +13,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -215,7 +221,11 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 			dev_dbg(&info->control->dev,
 				"rndis response error, code %d\n", retval);
 		}
+<<<<<<< HEAD
 		msleep(20);
+=======
+		msleep(40);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	dev_dbg(&info->control->dev, "rndis response timeout\n");
 	return -ETIMEDOUT;
@@ -400,7 +410,11 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 	reply_len = sizeof *phym;
 	retval = rndis_query(dev, intf, u.buf,
 			     RNDIS_OID_GEN_PHYSICAL_MEDIUM,
+<<<<<<< HEAD
 			     0, (void **) &phym, &reply_len);
+=======
+			     reply_len, (void **)&phym, &reply_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval != 0 || !phym) {
 		/* OID is optional so don't fail here. */
 		phym_unspec = cpu_to_le32(RNDIS_PHYSICAL_MEDIUM_UNSPECIFIED);
@@ -430,7 +444,15 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 		dev_err(&intf->dev, "rndis get ethaddr, %d\n", retval);
 		goto halt_fail_and_release;
 	}
+<<<<<<< HEAD
 	memcpy(net->dev_addr, bp, ETH_ALEN);
+=======
+
+	if (bp[0] & 0x02)
+		eth_hw_addr_random(net);
+	else
+		ether_addr_copy(net->dev_addr, bp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set a nonzero filter to enable data transfers */
 	memset(u.set, 0, sizeof *u.set);

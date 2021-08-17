@@ -30,6 +30,7 @@
 
 #include "ppc_cbe_cpufreq.h"
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(cbe_switch_mutex);
 
 
@@ -44,6 +45,19 @@ static struct cpufreq_frequency_table cbe_freqs[] = {
 	{8,	0},
 	{10,	0},
 	{0,	CPUFREQ_TABLE_END},
+=======
+/* the CBE supports an 8 step frequency scaling */
+static struct cpufreq_frequency_table cbe_freqs[] = {
+	{0, 1,	0},
+	{0, 2,	0},
+	{0, 3,	0},
+	{0, 4,	0},
+	{0, 5,	0},
+	{0, 6,	0},
+	{0, 8,	0},
+	{0, 10,	0},
+	{0, 0,	CPUFREQ_TABLE_END},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -70,9 +84,16 @@ static int set_pmode(unsigned int cpu, unsigned int slow_mode)
 
 static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	const u32 *max_freqp;
 	u32 max_freq;
 	int i, cur_pmode;
+=======
+	struct cpufreq_frequency_table *pos;
+	const u32 *max_freqp;
+	u32 max_freq;
+	int cur_pmode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_node *cpu;
 
 	cpu = of_get_cpu_node(policy->cpu, NULL);
@@ -88,6 +109,10 @@ static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	if (!cbe_get_cpu_pmd_regs(policy->cpu) ||
 	    !cbe_get_cpu_mic_tm_regs(policy->cpu)) {
 		pr_info("invalid CBE regs pointers for cpufreq\n");
+<<<<<<< HEAD
+=======
+		of_node_put(cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -105,9 +130,15 @@ static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	pr_debug("initializing frequency table\n");
 
 	/* initialize frequency table */
+<<<<<<< HEAD
 	for (i=0; cbe_freqs[i].frequency!=CPUFREQ_TABLE_END; i++) {
 		cbe_freqs[i].frequency = max_freq / cbe_freqs[i].index;
 		pr_debug("%d: %d\n", i, cbe_freqs[i].frequency);
+=======
+	cpufreq_for_each_entry(pos, cbe_freqs) {
+		pos->frequency = max_freq / pos->driver_data;
+		pr_debug("%d: %d\n", (int)(pos - cbe_freqs), pos->frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* if DEBUG is enabled set_pmode() measures the latency
@@ -123,6 +154,7 @@ static int cbe_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	cpumask_copy(policy->cpus, cpu_sibling_mask(policy->cpu));
 #endif
 
+<<<<<<< HEAD
 	cpufreq_frequency_table_get_attr(cbe_freqs, policy->cpu);
 
 	/* this ensures that policy->cpuinfo_min
@@ -161,10 +193,21 @@ static int cbe_cpufreq_target(struct cpufreq_policy *policy,
 	mutex_lock(&cbe_switch_mutex);
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
 
+=======
+	/* this ensures that policy->cpuinfo_min
+	 * and policy->cpuinfo_max are set correctly */
+	return cpufreq_table_validate_and_show(policy, cbe_freqs);
+}
+
+static int cbe_cpufreq_target(struct cpufreq_policy *policy,
+			      unsigned int cbe_pmode_new)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_debug("setting frequency for cpu %d to %d kHz, " \
 		 "1/%d of max frequency\n",
 		 policy->cpu,
 		 cbe_freqs[cbe_pmode_new].frequency,
+<<<<<<< HEAD
 		 cbe_freqs[cbe_pmode_new].index);
 
 	rc = set_pmode(policy->cpu, cbe_pmode_new);
@@ -182,6 +225,18 @@ static struct cpufreq_driver cbe_cpufreq_driver = {
 	.exit		= cbe_cpufreq_cpu_exit,
 	.name		= "cbe-cpufreq",
 	.owner		= THIS_MODULE,
+=======
+		 cbe_freqs[cbe_pmode_new].driver_data);
+
+	return set_pmode(policy->cpu, cbe_pmode_new);
+}
+
+static struct cpufreq_driver cbe_cpufreq_driver = {
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= cbe_cpufreq_target,
+	.init		= cbe_cpufreq_cpu_init,
+	.name		= "cbe-cpufreq",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.flags		= CPUFREQ_CONST_LOOPS,
 };
 

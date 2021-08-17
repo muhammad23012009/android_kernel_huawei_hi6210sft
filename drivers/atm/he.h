@@ -281,7 +281,11 @@ struct he_dev {
 	int irq_peak;
 
 	struct tasklet_struct tasklet;
+<<<<<<< HEAD
 	struct pci_pool *tpd_pool;
+=======
+	struct dma_pool *tpd_pool;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head outstanding_tpds;
 
 	dma_addr_t tpdrq_phys;
@@ -296,7 +300,11 @@ struct he_dev {
 	struct he_buff **rbpl_virt;
 	unsigned long *rbpl_table;
 	unsigned long rbpl_hint;
+<<<<<<< HEAD
 	struct pci_pool *rbpl_pool;
+=======
+	struct dma_pool *rbpl_pool;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_addr_t rbpl_phys;
 	struct he_rbp *rbpl_base, *rbpl_tail;
 	struct list_head rbpl_outstanding;

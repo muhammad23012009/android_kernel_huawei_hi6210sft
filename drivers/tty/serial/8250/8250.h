@@ -12,6 +12,7 @@
  */
 
 #include <linux/serial_8250.h>
+<<<<<<< HEAD
 #include <linux/dmaengine.h>
 
 struct uart_8250_dma {
@@ -22,12 +23,35 @@ struct uart_8250_dma {
 	int			rx_chan_id;
 	int			tx_chan_id;
 
+=======
+#include <linux/serial_reg.h>
+#include <linux/dmaengine.h>
+
+struct uart_8250_dma {
+	int (*tx_dma)(struct uart_8250_port *p);
+	int (*rx_dma)(struct uart_8250_port *p);
+
+	/* Filter function */
+	dma_filter_fn		fn;
+	/* Parameter to the filter function */
+	void			*rx_param;
+	void			*tx_param;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dma_slave_config	rxconf;
 	struct dma_slave_config	txconf;
 
 	struct dma_chan		*rxchan;
 	struct dma_chan		*txchan;
 
+<<<<<<< HEAD
+=======
+	/* Device address base for DMA operations */
+	phys_addr_t		rx_dma_addr;
+	phys_addr_t		tx_dma_addr;
+
+	/* DMA address of the buffer in memory */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_addr_t		rx_addr;
 	dma_addr_t		tx_addr;
 
@@ -39,7 +63,13 @@ struct uart_8250_dma {
 	size_t			rx_size;
 	size_t			tx_size;
 
+<<<<<<< HEAD
 	unsigned char		tx_running:1;
+=======
+	unsigned char		tx_running;
+	unsigned char		tx_err;
+	unsigned char		rx_running;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct old_serial_port {
@@ -47,12 +77,19 @@ struct old_serial_port {
 	unsigned int baud_base;
 	unsigned int port;
 	unsigned int irq;
+<<<<<<< HEAD
 	unsigned int flags;
 	unsigned char hub6;
 	unsigned char io_type;
 	unsigned char *iomem_base;
 	unsigned short iomem_reg_shift;
 	unsigned long irqflags;
+=======
+	upf_t        flags;
+	unsigned char io_type;
+	unsigned char __iomem *iomem_base;
+	unsigned short iomem_reg_shift;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct serial8250_config {
@@ -60,6 +97,10 @@ struct serial8250_config {
 	unsigned short	fifo_size;
 	unsigned short	tx_loadsz;
 	unsigned char	fcr;
+<<<<<<< HEAD
+=======
+	unsigned char	rxtrig_bytes[UART_FCR_R_TRIG_MAX_STATE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int	flags;
 };
 
@@ -70,6 +111,10 @@ struct serial8250_config {
 #define UART_CAP_UUE	(1 << 12)	/* UART needs IER bit 6 set (Xscale) */
 #define UART_CAP_RTOIE	(1 << 13)	/* UART needs IER bit 4 set (Xscale, Tegra) */
 #define UART_CAP_HFIFO	(1 << 14)	/* UART has a "hidden" FIFO */
+<<<<<<< HEAD
+=======
+#define UART_CAP_RPM	(1 << 15)	/* Runtime PM is active while idle */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define UART_BUG_QUOT	(1 << 0)	/* UART has buggy quot LSB */
 #define UART_BUG_TXEN	(1 << 1)	/* UART has buggy TX IIR status */
@@ -77,10 +122,13 @@ struct serial8250_config {
 #define UART_BUG_THRE	(1 << 3)	/* UART has buggy THRE reassertion */
 #define UART_BUG_PARITY	(1 << 4)	/* UART mishandles parity if FIFO enabled */
 
+<<<<<<< HEAD
 #define PROBE_RSA	(1 << 0)
 #define PROBE_ANY	(~0)
 
 #define HIGH_BITS_OFFSET ((sizeof(long)-sizeof(int))*8)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SERIAL_8250_SHARE_IRQ
 #define SERIAL8250_SHARE_IRQS 1
@@ -88,6 +136,21 @@ struct serial8250_config {
 #define SERIAL8250_SHARE_IRQS 0
 #endif
 
+<<<<<<< HEAD
+=======
+#define SERIAL8250_PORT_FLAGS(_base, _irq, _flags)		\
+	{							\
+		.iobase		= _base,			\
+		.irq		= _irq,				\
+		.uartclk	= 1843200,			\
+		.iotype		= UPIO_PORT,			\
+		.flags		= UPF_BOOT_AUTOCONF | (_flags),	\
+	}
+
+#define SERIAL8250_PORT(_base, _irq) SERIAL8250_PORT_FLAGS(_base, _irq, 0)
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int serial_in(struct uart_8250_port *up, int offset)
 {
 	return up->port.serial_in(&up->port, offset);
@@ -110,6 +173,25 @@ static inline void serial_dl_write(struct uart_8250_port *up, int value)
 	up->dl_write(up, value);
 }
 
+<<<<<<< HEAD
+=======
+struct uart_8250_port *serial8250_get_port(int line);
+void serial8250_rpm_get(struct uart_8250_port *p);
+void serial8250_rpm_put(struct uart_8250_port *p);
+int serial8250_em485_init(struct uart_8250_port *p);
+void serial8250_em485_destroy(struct uart_8250_port *p);
+
+static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+{
+	serial_out(up, UART_MCR, value);
+}
+
+static inline int serial8250_in_MCR(struct uart_8250_port *up)
+{
+	return serial_in(up, UART_MCR);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(__alpha__) && !defined(CONFIG_PCI)
 /*
  * Digital did something really horribly wrong with the OUT1 and OUT2
@@ -129,6 +211,15 @@ static inline int serial8250_pnp_init(void) { return 0; }
 static inline void serial8250_pnp_exit(void) { }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SERIAL_8250_FINTEK
+int fintek_8250_probe(struct uart_8250_port *uart);
+#else
+static inline int fintek_8250_probe(struct uart_8250_port *uart) { return 0; }
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_ARCH_OMAP1
 static inline int is_omap1_8250(struct uart_8250_port *pt)
 {
@@ -168,7 +259,12 @@ static inline int is_omap1510_8250(struct uart_8250_port *pt)
 
 #ifdef CONFIG_SERIAL_8250_DMA
 extern int serial8250_tx_dma(struct uart_8250_port *);
+<<<<<<< HEAD
 extern int serial8250_rx_dma(struct uart_8250_port *, unsigned int iir);
+=======
+extern int serial8250_rx_dma(struct uart_8250_port *);
+extern void serial8250_rx_dma_flush(struct uart_8250_port *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int serial8250_request_dma(struct uart_8250_port *);
 extern void serial8250_release_dma(struct uart_8250_port *);
 #else
@@ -176,13 +272,46 @@ static inline int serial8250_tx_dma(struct uart_8250_port *p)
 {
 	return -1;
 }
+<<<<<<< HEAD
 static inline int serial8250_rx_dma(struct uart_8250_port *p, unsigned int iir)
 {
 	return -1;
 }
+=======
+static inline int serial8250_rx_dma(struct uart_8250_port *p)
+{
+	return -1;
+}
+static inline void serial8250_rx_dma_flush(struct uart_8250_port *p) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int serial8250_request_dma(struct uart_8250_port *p)
 {
 	return -1;
 }
 static inline void serial8250_release_dma(struct uart_8250_port *p) { }
 #endif
+<<<<<<< HEAD
+=======
+
+static inline int ns16550a_goto_highspeed(struct uart_8250_port *up)
+{
+	unsigned char status;
+
+	status = serial_in(up, 0x04); /* EXCR2 */
+#define PRESL(x) ((x) & 0x30)
+	if (PRESL(status) == 0x10) {
+		/* already in high speed mode */
+		return 0;
+	} else {
+		status &= ~0xB0; /* Disable LOCK, mask out PRESL[01] */
+		status |= 0x10;  /* 1.625 divisor for baud_base --> 921600 */
+		serial_out(up, 0x04, status);
+	}
+	return 1;
+}
+
+static inline int serial_index(struct uart_port *port)
+{
+	return port->minor - 64;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

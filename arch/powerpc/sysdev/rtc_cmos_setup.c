@@ -62,7 +62,11 @@ static int  __init add_rtc(void)
 	pd = platform_device_register_simple("rtc_cmos", -1,
 					     &res[0], num_res);
 
+<<<<<<< HEAD
 	return PTR_RET(pd);
+=======
+	return PTR_ERR_OR_ZERO(pd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 fs_initcall(add_rtc);
 

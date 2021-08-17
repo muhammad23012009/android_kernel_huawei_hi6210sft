@@ -36,6 +36,7 @@
 
 #include <rdma/ib_pma.h>
 
+<<<<<<< HEAD
 #define IB_SMP_UNSUP_VERSION    cpu_to_be16(0x0004)
 #define IB_SMP_UNSUP_METHOD     cpu_to_be16(0x0008)
 #define IB_SMP_UNSUP_METH_ATTR  cpu_to_be16(0x000C)
@@ -178,6 +179,19 @@ struct ib_vl_weight_elem {
 	u8      vl;     /* Only low 4 bits, upper 4 bits reserved */
 	u8      weight;
 };
+=======
+#define IB_SMP_UNSUP_VERSION \
+cpu_to_be16(IB_MGMT_MAD_STATUS_BAD_VERSION)
+
+#define IB_SMP_UNSUP_METHOD \
+cpu_to_be16(IB_MGMT_MAD_STATUS_UNSUPPORTED_METHOD)
+
+#define IB_SMP_UNSUP_METH_ATTR \
+cpu_to_be16(IB_MGMT_MAD_STATUS_UNSUPPORTED_METHOD_ATTRIB)
+
+#define IB_SMP_INVALID_FIELD \
+cpu_to_be16(IB_MGMT_MAD_STATUS_INVALID_ATTRIB_VALUE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IB_VLARB_LOWPRI_0_31    1
 #define IB_VLARB_LOWPRI_32_63   2
@@ -209,7 +223,11 @@ struct ib_pma_portcounters_cong {
 	__be64 port_rcv_packets;
 	__be64 port_xmit_wait;
 	__be64 port_adr_events;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IB_PMA_CONG_HW_CONTROL_TIMER            0x00
 #define IB_PMA_CONG_HW_CONTROL_SAMPLE           0x01
@@ -415,7 +433,10 @@ struct cc_table_shadow {
 	struct ib_cc_table_entry_shadow entries[CC_TABLE_SHADOW_MAX];
 } __packed;
 
+<<<<<<< HEAD
 #endif				/* _QIB_MAD_H */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The PortSamplesControl.CounterMasks field is an array of 3 bit fields
  * which specify the N'th counter's capabilities. See ch. 16.1.3.2.
@@ -428,3 +449,8 @@ struct cc_table_shadow {
 		    COUNTER_MASK(1, 2) | \
 		    COUNTER_MASK(1, 3) | \
 		    COUNTER_MASK(1, 4))
+<<<<<<< HEAD
+=======
+
+#endif				/* _QIB_MAD_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

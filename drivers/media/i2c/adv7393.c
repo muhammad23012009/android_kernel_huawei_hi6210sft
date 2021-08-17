@@ -31,9 +31,14 @@
 #include <linux/videodev2.h>
 #include <linux/uaccess.h>
 
+<<<<<<< HEAD
 #include <media/adv7393.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-chip-ident.h>
+=======
+#include <media/i2c/adv7393.h>
+#include <media/v4l2-device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-ctrls.h>
 
 #include "adv7393_regs.h"
@@ -301,6 +306,7 @@ static int adv7393_s_ctrl(struct v4l2_ctrl *ctrl)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int adv7393_g_chip_ident(struct v4l2_subdev *sd,
 				struct v4l2_dbg_chip_ident *chip)
 {
@@ -309,12 +315,15 @@ static int adv7393_g_chip_ident(struct v4l2_subdev *sd,
 	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_ADV7393, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_ctrl_ops adv7393_ctrl_ops = {
 	.s_ctrl = adv7393_s_ctrl,
 };
 
 static const struct v4l2_subdev_core_ops adv7393_core_ops = {
 	.log_status = adv7393_log_status,
+<<<<<<< HEAD
 	.g_chip_ident = adv7393_g_chip_ident,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
@@ -323,6 +332,8 @@ static const struct v4l2_subdev_core_ops adv7393_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int adv7393_s_std_output(struct v4l2_subdev *sd, v4l2_std_id std)
@@ -410,7 +421,11 @@ static int adv7393_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	state = kzalloc(sizeof(struct adv7393_state), GFP_KERNEL);
+=======
+	state = devm_kzalloc(&client->dev, sizeof(*state), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (state == NULL)
 		return -ENOMEM;
 
@@ -444,16 +459,24 @@ static int adv7393_probe(struct i2c_client *client,
 		int err = state->hdl.error;
 
 		v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 		kfree(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 	v4l2_ctrl_handler_setup(&state->hdl);
 
 	err = adv7393_initialize(&state->sd);
+<<<<<<< HEAD
 	if (err) {
 		v4l2_ctrl_handler_free(&state->hdl);
 		kfree(state);
 	}
+=======
+	if (err)
+		v4l2_ctrl_handler_free(&state->hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -464,7 +487,10 @@ static int adv7393_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 	kfree(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -477,7 +503,10 @@ MODULE_DEVICE_TABLE(i2c, adv7393_id);
 
 static struct i2c_driver adv7393_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "adv7393",
 	},
 	.probe		= adv7393_probe,

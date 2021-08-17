@@ -1,5 +1,9 @@
 /****************************************************************************
+<<<<<<< HEAD
  * Driver for Solarflare Solarstorm network controllers and boards
+=======
+ * Driver for Solarflare network controllers and boards
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright 2006-2011 Solarflare Communications Inc.
  *
  * This program is free software; you can redistribute it and/or modify it

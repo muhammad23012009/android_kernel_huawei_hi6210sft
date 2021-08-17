@@ -47,10 +47,17 @@ static struct cflayer *get_up(struct cfmuxl *muxl, u16 id);
 
 struct cflayer *cfmuxl_create(void)
 {
+<<<<<<< HEAD
 	struct cfmuxl *this = kmalloc(sizeof(struct cfmuxl), GFP_ATOMIC);
 	if (!this)
 		return NULL;
 	memset(this, 0, sizeof(*this));
+=======
+	struct cfmuxl *this = kzalloc(sizeof(struct cfmuxl), GFP_ATOMIC);
+
+	if (!this)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	this->layer.receive = cfmuxl_receive;
 	this->layer.transmit = cfmuxl_transmit;
 	this->layer.ctrlcmd = cfmuxl_ctrlcmd;

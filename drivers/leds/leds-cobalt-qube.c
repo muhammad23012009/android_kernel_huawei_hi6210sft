@@ -3,7 +3,10 @@
  *
  * Control the Cobalt Qube/RaQ front LED
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/ioport.h>
 #include <linux/leds.h>
@@ -37,7 +40,10 @@ static struct led_classdev qube_front_led = {
 static int cobalt_qube_led_probe(struct platform_device *pdev)
 {
 	struct resource *res;
+<<<<<<< HEAD
 	int retval;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
@@ -50,6 +56,7 @@ static int cobalt_qube_led_probe(struct platform_device *pdev)
 	led_value = LED_FRONT_LEFT | LED_FRONT_RIGHT;
 	writeb(led_value, led_port);
 
+<<<<<<< HEAD
 	retval = led_classdev_register(&pdev->dev, &qube_front_led);
 	if (retval)
 		goto err_null;
@@ -70,14 +77,22 @@ static int cobalt_qube_led_remove(struct platform_device *pdev)
 		led_port = NULL;
 
 	return 0;
+=======
+	return devm_led_classdev_register(&pdev->dev, &qube_front_led);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver cobalt_qube_led_driver = {
 	.probe	= cobalt_qube_led_probe,
+<<<<<<< HEAD
 	.remove	= cobalt_qube_led_remove,
 	.driver	= {
 		.name	= "cobalt-qube-leds",
 		.owner	= THIS_MODULE,
+=======
+	.driver	= {
+		.name	= "cobalt-qube-leds",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

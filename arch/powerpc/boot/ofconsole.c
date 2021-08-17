@@ -18,7 +18,11 @@
 
 #include "of.h"
 
+<<<<<<< HEAD
 static void *of_stdout_handle;
+=======
+static unsigned int of_stdout_handle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int of_console_open(void)
 {
@@ -27,8 +31,15 @@ static int of_console_open(void)
 	if (((devp = of_finddevice("/chosen")) != NULL)
 	    && (of_getprop(devp, "stdout", &of_stdout_handle,
 			   sizeof(of_stdout_handle))
+<<<<<<< HEAD
 		== sizeof(of_stdout_handle)))
 		return 0;
+=======
+		== sizeof(of_stdout_handle))) {
+		of_stdout_handle = be32_to_cpu(of_stdout_handle);
+		return 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return -1;
 }

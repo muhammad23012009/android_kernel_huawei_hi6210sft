@@ -9,6 +9,7 @@ menuconfig SND_ARM
 	  Drivers that are implemented on ASoC can be found in
 	  "ALSA for SoC audio support" section.
 
+<<<<<<< HEAD
 config SND_PXA2XX_LIB
 	tristate
 	select SND_AC97_CODEC if SND_PXA2XX_LIB_AC97
@@ -17,6 +18,8 @@ config SND_PXA2XX_LIB
 config SND_PXA2XX_LIB_AC97
 	bool
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 if SND_ARM
 
 config SND_ARMAACI
@@ -42,3 +45,13 @@ config SND_PXA2XX_AC97
 
 endif	# SND_ARM
 
+<<<<<<< HEAD
+=======
+config SND_PXA2XX_LIB
+	tristate
+	select SND_AC97_CODEC if SND_PXA2XX_LIB_AC97
+	select SND_DMAENGINE_PCM
+
+config SND_PXA2XX_LIB_AC97
+	bool
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

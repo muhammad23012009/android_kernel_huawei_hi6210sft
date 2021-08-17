@@ -125,7 +125,10 @@
 #include <linux/errno.h>
 #include <linux/random.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/usb.h>
@@ -300,9 +303,13 @@ static inline void mts_show_command(struct scsi_cmnd *srb)
 	MTS_DEBUG( "Command %s (%d bytes)\n", what, srb->cmd_len);
 
  out:
+<<<<<<< HEAD
 	MTS_DEBUG( "  %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
 	       srb->cmnd[0], srb->cmnd[1], srb->cmnd[2], srb->cmnd[3], srb->cmnd[4], srb->cmnd[5],
 	       srb->cmnd[6], srb->cmnd[7], srb->cmnd[8], srb->cmnd[9]);
+=======
+	MTS_DEBUG( "  %10ph\n", srb->cmnd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #else
@@ -638,7 +645,10 @@ static struct scsi_host_template mts_scsi_host_template = {
 	.sg_tablesize =		SG_ALL,
 	.can_queue =		1,
 	.this_id =		-1,
+<<<<<<< HEAD
 	.cmd_per_lun =		1,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.use_clustering =	1,
 	.emulated =		1,
 	.slave_alloc =		mts_slave_alloc,
@@ -728,6 +738,13 @@ static int mts_usb_probe(struct usb_interface *intf,
 
 	}
 
+<<<<<<< HEAD
+=======
+	if (ep_in_current != &ep_in_set[2]) {
+		MTS_WARNING("couldn't find two input bulk endpoints. Bailing out.\n");
+		return -ENODEV;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ( ep_out == -1 ) {
 		MTS_WARNING( "couldn't find an output bulk endpoint. Bailing out.\n" );

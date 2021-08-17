@@ -37,6 +37,7 @@ struct snd_usb_audio {
 	struct usb_interface *pm_intf;
 	u32 usb_id;
 	struct mutex mutex;
+<<<<<<< HEAD
 	struct rw_semaphore shutdown_rwsem;
 	unsigned int shutdown:1;
 	unsigned int probing:1;
@@ -45,6 +46,19 @@ struct snd_usb_audio {
 	
 	int num_interfaces;
 	int num_suspended_intf;
+=======
+	unsigned int system_suspend;
+	atomic_t active;
+	atomic_t shutdown;
+	atomic_t usage_count;
+	wait_queue_head_t shutdown_wait;
+	unsigned int txfr_quirk:1; /* Subframe boundaries on transfers */
+	unsigned int tx_length_quirk:1; /* Put length specifier in transfers */
+	
+	int num_interfaces;
+	int num_suspended_intf;
+	int sample_rate_read_error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct list_head pcm_list;	/* list of pcm streams */
 	struct list_head ep_list;	/* list of audio-related endpoints */
@@ -55,12 +69,29 @@ struct snd_usb_audio {
 	struct list_head mixer_list;	/* list of mixer interfaces */
 
 	int setup;			/* from the 'device_setup' module param */
+<<<<<<< HEAD
 	int nrpacks;			/* from the 'nrpacks' module param */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool autoclock;			/* from the 'autoclock' module param */
 
 	struct usb_host_interface *ctrl_intf;	/* the audio control interface */
 };
 
+<<<<<<< HEAD
+=======
+#define USB_AUDIO_IFACE_UNUSED	((void *)-1L)
+
+#define usb_audio_err(chip, fmt, args...) \
+	dev_err(&(chip)->dev->dev, fmt, ##args)
+#define usb_audio_warn(chip, fmt, args...) \
+	dev_warn(&(chip)->dev->dev, fmt, ##args)
+#define usb_audio_info(chip, fmt, args...) \
+	dev_info(&(chip)->dev->dev, fmt, ##args)
+#define usb_audio_dbg(chip, fmt, args...) \
+	dev_dbg(&(chip)->dev->dev, fmt, ##args)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Information about devices with broken descriptors
  */
@@ -72,9 +103,17 @@ struct snd_usb_audio {
 enum quirk_type {
 	QUIRK_IGNORE_INTERFACE,
 	QUIRK_COMPOSITE,
+<<<<<<< HEAD
 	QUIRK_MIDI_STANDARD_INTERFACE,
 	QUIRK_MIDI_FIXED_ENDPOINT,
 	QUIRK_MIDI_YAMAHA,
+=======
+	QUIRK_AUTODETECT,
+	QUIRK_MIDI_STANDARD_INTERFACE,
+	QUIRK_MIDI_FIXED_ENDPOINT,
+	QUIRK_MIDI_YAMAHA,
+	QUIRK_MIDI_ROLAND,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	QUIRK_MIDI_MIDIMAN,
 	QUIRK_MIDI_NOVATION,
 	QUIRK_MIDI_RAW_BYTES,
@@ -105,4 +144,10 @@ struct snd_usb_audio_quirk {
 #define combine_triple(s)  (combine_word(s) | ((unsigned int)(s)[2] << 16))
 #define combine_quad(s)    (combine_triple(s) | ((unsigned int)(s)[3] << 24))
 
+<<<<<<< HEAD
+=======
+int snd_usb_lock_shutdown(struct snd_usb_audio *chip);
+void snd_usb_unlock_shutdown(struct snd_usb_audio *chip);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __USBAUDIO_H */

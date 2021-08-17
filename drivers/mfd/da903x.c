@@ -2,10 +2,17 @@
  * Base driver for Dialog Semiconductor DA9030/DA9034
  *
  * Copyright (C) 2008 Compulab, Ltd.
+<<<<<<< HEAD
  * 	Mike Rapoport <mike@compulab.co.il>
  *
  * Copyright (C) 2006-2008 Marvell International Ltd.
  * 	Eric Miao <eric.miao@marvell.com>
+=======
+ *	Mike Rapoport <mike@compulab.co.il>
+ *
+ * Copyright (C) 2006-2008 Marvell International Ltd.
+ *	Eric Miao <eric.miao@marvell.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -60,7 +67,11 @@ struct da903x_chip_ops {
 struct da903x_chip {
 	struct i2c_client	*client;
 	struct device		*dev;
+<<<<<<< HEAD
 	struct da903x_chip_ops	*ops;
+=======
+	const struct da903x_chip_ops *ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int			type;
 	uint32_t		events_mask;
@@ -424,7 +435,11 @@ static irqreturn_t da903x_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct da903x_chip_ops da903x_ops[] = {
+=======
+static const struct da903x_chip_ops da903x_ops[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[0] = {
 		.init_chip	= da9030_init_chip,
 		.unmask_events	= da9030_unmask_events,
@@ -494,7 +509,11 @@ failed:
 static int da903x_probe(struct i2c_client *client,
 				  const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct da903x_platform_data *pdata = client->dev.platform_data;
+=======
+	struct da903x_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct da903x_chip *chip;
 	unsigned int tmp;
 	int ret;
@@ -532,11 +551,15 @@ static int da903x_probe(struct i2c_client *client,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = da903x_add_subdevs(chip, pdata);
 	if (ret)
 		return ret;
 
 	return 0;
+=======
+	return da903x_add_subdevs(chip, pdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int da903x_remove(struct i2c_client *client)
@@ -550,7 +573,10 @@ static int da903x_remove(struct i2c_client *client)
 static struct i2c_driver da903x_driver = {
 	.driver	= {
 		.name	= "da903x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= da903x_probe,
 	.remove		= da903x_remove,
@@ -570,6 +596,12 @@ static void __exit da903x_exit(void)
 module_exit(da903x_exit);
 
 MODULE_DESCRIPTION("PMIC Driver for Dialog Semiconductor DA9034");
+<<<<<<< HEAD
 MODULE_AUTHOR("Eric Miao <eric.miao@marvell.com>"
 	      "Mike Rapoport <mike@compulab.co.il>");
 MODULE_LICENSE("GPL");
+=======
+MODULE_AUTHOR("Eric Miao <eric.miao@marvell.com>");
+MODULE_AUTHOR("Mike Rapoport <mike@compulab.co.il>");
+MODULE_LICENSE("GPL v2");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

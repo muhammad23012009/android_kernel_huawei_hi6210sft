@@ -188,6 +188,10 @@
 
 struct snd_pcm_substream;
 
+<<<<<<< HEAD
+=======
+int snd_cs8427_init(struct snd_i2c_bus *bus, struct snd_i2c_device *device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_cs8427_create(struct snd_i2c_bus *bus, unsigned char addr,
 		      unsigned int reset_timeout, struct snd_i2c_device **r_cs8427);
 int snd_cs8427_reg_write(struct snd_i2c_device *device, unsigned char reg,

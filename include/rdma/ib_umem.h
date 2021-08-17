@@ -38,10 +38,15 @@
 #include <linux/workqueue.h>
 
 struct ib_ucontext;
+<<<<<<< HEAD
+=======
+struct ib_umem_odp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct ib_umem {
 	struct ib_ucontext     *context;
 	size_t			length;
+<<<<<<< HEAD
 	int			offset;
 	int			page_size;
 	int                     writable;
@@ -58,6 +63,44 @@ struct ib_umem_chunk {
 	int                     nmap;
 	struct scatterlist      page_list[0];
 };
+=======
+	unsigned long		address;
+	int			page_size;
+	int                     writable;
+	int                     hugetlb;
+	struct work_struct	work;
+	struct pid             *pid;
+	struct mm_struct       *mm;
+	unsigned long		diff;
+	struct ib_umem_odp     *odp_data;
+	struct sg_table sg_head;
+	int             nmap;
+	int             npages;
+};
+
+/* Returns the offset of the umem start relative to the first page. */
+static inline int ib_umem_offset(struct ib_umem *umem)
+{
+	return umem->address & ((unsigned long)umem->page_size - 1);
+}
+
+/* Returns the first page of an ODP umem. */
+static inline unsigned long ib_umem_start(struct ib_umem *umem)
+{
+	return umem->address - ib_umem_offset(umem);
+}
+
+/* Returns the address of the page after the last one of an ODP umem. */
+static inline unsigned long ib_umem_end(struct ib_umem *umem)
+{
+	return PAGE_ALIGN(umem->address + umem->length);
+}
+
+static inline size_t ib_umem_num_pages(struct ib_umem *umem)
+{
+	return (ib_umem_end(umem) - ib_umem_start(umem)) >> PAGE_SHIFT;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_INFINIBAND_USER_MEM
 
@@ -65,6 +108,11 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 			    size_t size, int access, int dmasync);
 void ib_umem_release(struct ib_umem *umem);
 int ib_umem_page_count(struct ib_umem *umem);
+<<<<<<< HEAD
+=======
+int ib_umem_copy_from(void *dst, struct ib_umem *umem, size_t offset,
+		      size_t length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else /* CONFIG_INFINIBAND_USER_MEM */
 
@@ -77,7 +125,14 @@ static inline struct ib_umem *ib_umem_get(struct ib_ucontext *context,
 }
 static inline void ib_umem_release(struct ib_umem *umem) { }
 static inline int ib_umem_page_count(struct ib_umem *umem) { return 0; }
+<<<<<<< HEAD
 
+=======
+static inline int ib_umem_copy_from(void *dst, struct ib_umem *umem, size_t offset,
+		      		    size_t length) {
+	return -EINVAL;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_INFINIBAND_USER_MEM */
 
 #endif /* IB_UMEM_H */

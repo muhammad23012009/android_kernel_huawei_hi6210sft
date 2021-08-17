@@ -7,6 +7,10 @@ enum ipi_vector {
 	XEN_CALL_FUNCTION_SINGLE_VECTOR,
 	XEN_SPIN_UNLOCK_VECTOR,
 	XEN_IRQ_WORK_VECTOR,
+<<<<<<< HEAD
+=======
+	XEN_NMI_VECTOR,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	XEN_NR_IPIS,
 };
@@ -19,4 +23,18 @@ static inline int xen_irqs_disabled(struct pt_regs *regs)
 /* No need for a barrier -- XCHG is a barrier on x86. */
 #define xchg_xen_ulong(ptr, val) xchg((ptr), (val))
 
+<<<<<<< HEAD
+=======
+extern int xen_have_vector_callback;
+
+/*
+ * Events delivered via platform PCI interrupts are always
+ * routed to vcpu 0 and hence cannot be rebound.
+ */
+static inline bool xen_support_evtchn_rebind(void)
+{
+	return (!xen_hvm_domain() || xen_have_vector_callback);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_X86_XEN_EVENTS_H */

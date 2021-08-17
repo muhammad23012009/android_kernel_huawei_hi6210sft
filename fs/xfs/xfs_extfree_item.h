@@ -18,6 +18,7 @@
 #ifndef	__XFS_EXTFREE_ITEM_H__
 #define	__XFS_EXTFREE_ITEM_H__
 
+<<<<<<< HEAD
 struct xfs_mount;
 struct kmem_zone;
 
@@ -105,6 +106,13 @@ typedef struct xfs_efd_log_format_64 {
 
 #ifdef __KERNEL__
 
+=======
+/* kernel only EFI/EFD definitions */
+
+struct xfs_mount;
+struct kmem_zone;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Max number of extents in fast allocation path.
  */
@@ -121,9 +129,34 @@ typedef struct xfs_efd_log_format_64 {
  * "extent free done" log item described below.
  *
  * The EFI is reference counted so that it is not freed prior to both the EFI
+<<<<<<< HEAD
  * and EFD being committed and unpinned. This ensures that when the last
  * reference goes away the EFI will always be in the AIL as it has been
  * unpinned, regardless of whether the EFD is processed before or after the EFI.
+=======
+ * and EFD being committed and unpinned. This ensures the EFI is inserted into
+ * the AIL even in the event of out of order EFI/EFD processing. In other words,
+ * an EFI is born with two references:
+ *
+ * 	1.) an EFI held reference to track EFI AIL insertion
+ * 	2.) an EFD held reference to track EFD commit
+ *
+ * On allocation, both references are the responsibility of the caller. Once the
+ * EFI is added to and dirtied in a transaction, ownership of reference one
+ * transfers to the transaction. The reference is dropped once the EFI is
+ * inserted to the AIL or in the event of failure along the way (e.g., commit
+ * failure, log I/O error, etc.). Note that the caller remains responsible for
+ * the EFD reference under all circumstances to this point. The caller has no
+ * means to detect failure once the transaction is committed, however.
+ * Therefore, an EFD is required after this point, even in the event of
+ * unrelated failure.
+ *
+ * Once an EFD is allocated and dirtied in a transaction, reference two
+ * transfers to the transaction. The EFD reference is dropped once it reaches
+ * the unpin handler. Similar to the EFI, the reference also drops in the event
+ * of commit failure or log I/O errors. Note that the EFD is not inserted in the
+ * AIL, so at this point both the EFI and EFD are freed.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 typedef struct xfs_efi_log_item {
 	xfs_log_item_t		efi_item;
@@ -159,7 +192,14 @@ xfs_efd_log_item_t	*xfs_efd_init(struct xfs_mount *, xfs_efi_log_item_t *,
 int			xfs_efi_copy_format(xfs_log_iovec_t *buf,
 					    xfs_efi_log_format_t *dst_efi_fmt);
 void			xfs_efi_item_free(xfs_efi_log_item_t *);
+<<<<<<< HEAD
 
 #endif	/* __KERNEL__ */
+=======
+void			xfs_efi_release(struct xfs_efi_log_item *);
+
+int			xfs_efi_recover(struct xfs_mount *mp,
+					struct xfs_efi_log_item *efip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __XFS_EXTFREE_ITEM_H__ */

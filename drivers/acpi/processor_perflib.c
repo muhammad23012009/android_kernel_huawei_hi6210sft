@@ -20,10 +20,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  General Public License for more details.
  *
+<<<<<<< HEAD
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -31,15 +34,23 @@
 #include <linux/init.h>
 #include <linux/cpufreq.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/acpi.h>
+#include <acpi/processor.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_X86
 #include <asm/cpufeature.h>
 #endif
 
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 #include <acpi/processor.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PREFIX "ACPI: "
 
 #define ACPI_PROCESSOR_CLASS		"processor"
@@ -90,7 +101,11 @@ static int acpi_processor_ppc_notifier(struct notifier_block *nb,
 	if (ignore_ppc)
 		return 0;
 
+<<<<<<< HEAD
 	if (event != CPUFREQ_INCOMPATIBLE)
+=======
+	if (event != CPUFREQ_ADJUST)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	mutex_lock(&performance_mutex);
@@ -159,6 +174,7 @@ static int acpi_processor_get_platform_limit(struct acpi_processor *pr)
  */
 static void acpi_processor_ppc_ost(acpi_handle handle, int status)
 {
+<<<<<<< HEAD
 	union acpi_object params[2] = {
 		{.type = ACPI_TYPE_INTEGER,},
 		{.type = ACPI_TYPE_INTEGER,},
@@ -175,13 +191,22 @@ static void acpi_processor_ppc_ost(acpi_handle handle, int status)
 
 	acpi_evaluate_object(handle, "_OST", &arg_list, NULL);
 	return;
+=======
+	if (acpi_has_method(handle, "_OST"))
+		acpi_evaluate_ost(handle, ACPI_PROCESSOR_NOTIFY_PERFORMANCE,
+				  status, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int acpi_processor_ppc_has_changed(struct acpi_processor *pr, int event_flag)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (ignore_ppc) {
+=======
+	if (ignore_ppc || !pr->performance) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Only when it is notification event, the _OST object
 		 * will be evaluated. Otherwise it is skipped.
@@ -240,6 +265,7 @@ void acpi_processor_ppc_exit(void)
 	acpi_processor_ppc_status &= ~PPC_REGISTERED;
 }
 
+<<<<<<< HEAD
 /*
  * Do a quick check if the systems looks like it should use ACPI
  * cpufreq. We look at a _PCT method being available, but don't
@@ -262,6 +288,8 @@ void acpi_processor_load_module(struct acpi_processor *pr)
 	kfree(buffer.pointer);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int acpi_processor_get_performance_control(struct acpi_processor *pr)
 {
 	int result = 0;
@@ -468,14 +496,21 @@ static int acpi_processor_get_performance_states(struct acpi_processor *pr)
 int acpi_processor_get_performance_info(struct acpi_processor *pr)
 {
 	int result = 0;
+<<<<<<< HEAD
 	acpi_status status = AE_OK;
 	acpi_handle handle = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pr || !pr->performance || !pr->handle)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	status = acpi_get_handle(pr->handle, "_PCT", &handle);
 	if (ACPI_FAILURE(status)) {
+=======
+	if (!acpi_has_method(pr->handle, "_PCT")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 				  "ACPI-based processor performance control unavailable\n"));
 		return -ENODEV;
@@ -501,7 +536,11 @@ int acpi_processor_get_performance_info(struct acpi_processor *pr)
 	 */
  update_bios:
 #ifdef CONFIG_X86
+<<<<<<< HEAD
 	if (ACPI_SUCCESS(acpi_get_handle(pr->handle, "_PPC", &handle))){
+=======
+	if (acpi_has_method(pr->handle, "_PPC")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if(boot_cpu_has(X86_FEATURE_EST))
 			printk(KERN_WARNING FW_BUG "BIOS needs update for CPU "
 			       "frequency support\n");
@@ -639,7 +678,11 @@ end:
 int acpi_processor_preregister_performance(
 		struct acpi_processor_performance __percpu *performance)
 {
+<<<<<<< HEAD
 	int count, count_target;
+=======
+	int count_target;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval = 0;
 	unsigned int i, j;
 	cpumask_var_t covered_cpus;
@@ -711,7 +754,10 @@ int acpi_processor_preregister_performance(
 
 		/* Validate the Domain info */
 		count_target = pdomain->num_processors;
+<<<<<<< HEAD
 		count = 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (pdomain->coord_type == DOMAIN_COORD_TYPE_SW_ALL)
 			pr->performance->shared_type = CPUFREQ_SHARED_TYPE_ALL;
 		else if (pdomain->coord_type == DOMAIN_COORD_TYPE_HW_ALL)
@@ -745,7 +791,10 @@ int acpi_processor_preregister_performance(
 
 			cpumask_set_cpu(j, covered_cpus);
 			cpumask_set_cpu(j, pr->performance->shared_cpu_map);
+<<<<<<< HEAD
 			count++;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		for_each_possible_cpu(j) {
@@ -827,9 +876,13 @@ acpi_processor_register_performance(struct acpi_processor_performance
 
 EXPORT_SYMBOL(acpi_processor_register_performance);
 
+<<<<<<< HEAD
 void
 acpi_processor_unregister_performance(struct acpi_processor_performance
 				      *performance, unsigned int cpu)
+=======
+void acpi_processor_unregister_performance(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_processor *pr;
 

@@ -8,7 +8,11 @@
 #include <linux/mm.h>
 #include <linux/highmem.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/backing-dev.h>
 #include <linux/interrupt.h>
 #include <asm/uaccess.h>
@@ -570,12 +574,20 @@ do {									\
 unsigned long __copy_to_user_ll(void __user *to, const void *from,
 				unsigned long n)
 {
+<<<<<<< HEAD
 	stac();
+=======
+	__uaccess_begin_nospec();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (movsl_is_ok(to, from, n))
 		__copy_user(to, from, n);
 	else
 		n = __copy_user_intel(to, from, n);
+<<<<<<< HEAD
 	clac();
+=======
+	__uaccess_end();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return n;
 }
 EXPORT_SYMBOL(__copy_to_user_ll);
@@ -612,7 +624,11 @@ unsigned long __copy_from_user_ll_nocache(void *to, const void __user *from,
 {
 	stac();
 #ifdef CONFIG_X86_INTEL_USERCOPY
+<<<<<<< HEAD
 	if (n > 64 && cpu_has_xmm2)
+=======
+	if (n > 64 && static_cpu_has(X86_FEATURE_XMM2))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		n = __copy_user_zeroing_intel_nocache(to, from, n);
 	else
 		__copy_user_zeroing(to, from, n);
@@ -627,16 +643,26 @@ EXPORT_SYMBOL(__copy_from_user_ll_nocache);
 unsigned long __copy_from_user_ll_nocache_nozero(void *to, const void __user *from,
 					unsigned long n)
 {
+<<<<<<< HEAD
 	stac();
 #ifdef CONFIG_X86_INTEL_USERCOPY
 	if (n > 64 && cpu_has_xmm2)
+=======
+	__uaccess_begin_nospec();
+#ifdef CONFIG_X86_INTEL_USERCOPY
+	if (n > 64 && static_cpu_has(X86_FEATURE_XMM2))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		n = __copy_user_intel_nocache(to, from, n);
 	else
 		__copy_user(to, from, n);
 #else
 	__copy_user(to, from, n);
 #endif
+<<<<<<< HEAD
 	clac();
+=======
+	__uaccess_end();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return n;
 }
 EXPORT_SYMBOL(__copy_from_user_ll_nocache_nozero);
@@ -647,21 +673,34 @@ EXPORT_SYMBOL(__copy_from_user_ll_nocache_nozero);
  * @from: Source address, in kernel space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copy data from kernel space to user space.
  *
  * Returns number of bytes that could not be copied.
  * On success, this will be zero.
  */
+<<<<<<< HEAD
 unsigned long
 copy_to_user(void __user *to, const void *from, unsigned long n)
+=======
+unsigned long _copy_to_user(void __user *to, const void *from, unsigned n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (access_ok(VERIFY_WRITE, to, n))
 		n = __copy_to_user(to, from, n);
 	return n;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(copy_to_user);
+=======
+EXPORT_SYMBOL(_copy_to_user);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * copy_from_user: - Copy a block of data from user space.
@@ -669,7 +708,12 @@ EXPORT_SYMBOL(copy_to_user);
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copy data from user space to kernel space.
  *
@@ -679,8 +723,12 @@ EXPORT_SYMBOL(copy_to_user);
  * If some data could not be copied, this function will pad the copied
  * data to the requested size using zero bytes.
  */
+<<<<<<< HEAD
 unsigned long
 _copy_from_user(void *to, const void __user *from, unsigned long n)
+=======
+unsigned long _copy_from_user(void *to, const void __user *from, unsigned n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (access_ok(VERIFY_READ, from, n))
 		n = __copy_from_user(to, from, n);

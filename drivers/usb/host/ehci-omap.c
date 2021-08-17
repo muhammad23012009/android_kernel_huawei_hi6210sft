@@ -86,7 +86,11 @@ static inline u32 ehci_read(void __iomem *base, u32 reg)
 
 static struct hc_driver __read_mostly ehci_omap_hc_driver;
 
+<<<<<<< HEAD
 static const struct ehci_driver_overrides ehci_omap_overrides __initdata = {
+=======
+static const struct ehci_driver_overrides ehci_omap_overrides __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.extra_priv_size = sizeof(struct omap_hcd),
 };
 
@@ -100,11 +104,19 @@ static const struct ehci_driver_overrides ehci_omap_overrides __initdata = {
 static int ehci_hcd_omap_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
+<<<<<<< HEAD
 	struct usbhs_omap_platform_data *pdata = dev->platform_data;
 	struct resource	*res;
 	struct usb_hcd	*hcd;
 	void __iomem *regs;
 	int ret = -ENODEV;
+=======
+	struct usbhs_omap_platform_data *pdata = dev_get_platdata(dev);
+	struct resource	*res;
+	struct usb_hcd	*hcd;
+	void __iomem *regs;
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int irq;
 	int i;
 	struct omap_hcd	*omap;
@@ -119,7 +131,11 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 
 	/* For DT boot, get platform data from parent. i.e. usbhshost */
 	if (dev->of_node) {
+<<<<<<< HEAD
 		pdata = dev->parent->platform_data;
+=======
+		pdata = dev_get_platdata(dev->parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev->platform_data = pdata;
 	}
 
@@ -144,11 +160,19 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 	 * Since shared usb code relies on it, set it here for now.
 	 * Once we have dma capability bindings this can go away.
 	 */
+<<<<<<< HEAD
 	if (!dev->dma_mask)
 		dev->dma_mask = &dev->coherent_dma_mask;
 	if (!dev->coherent_dma_mask)
 		dev->coherent_dma_mask = DMA_BIT_MASK(32);
 
+=======
+	ret = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(32));
+	if (ret)
+		return ret;
+
+	ret = -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hcd = usb_create_hcd(&ehci_omap_hc_driver, dev,
 			dev_name(dev));
 	if (!hcd) {
@@ -215,6 +239,10 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 		dev_err(dev, "failed to add hcd with err %d\n", ret);
 		goto err_pm_runtime;
 	}
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Bring PHYs out of reset for non PHY modes.
@@ -236,6 +264,10 @@ static int ehci_hcd_omap_probe(struct platform_device *pdev)
 
 err_pm_runtime:
 	pm_runtime_put_sync(dev);
+<<<<<<< HEAD
+=======
+	pm_runtime_disable(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 err_phy:
 	for (i = 0; i < omap->nports; i++) {
@@ -278,6 +310,7 @@ static int ehci_hcd_omap_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void ehci_hcd_omap_shutdown(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(&pdev->dev);
@@ -286,6 +319,8 @@ static void ehci_hcd_omap_shutdown(struct platform_device *pdev)
 		hcd->driver->shutdown(hcd);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id omap_ehci_dt_ids[] = {
 	{ .compatible = "ti,ehci-omap" },
 	{ }
@@ -296,12 +331,20 @@ MODULE_DEVICE_TABLE(of, omap_ehci_dt_ids);
 static struct platform_driver ehci_hcd_omap_driver = {
 	.probe			= ehci_hcd_omap_probe,
 	.remove			= ehci_hcd_omap_remove,
+<<<<<<< HEAD
 	.shutdown		= ehci_hcd_omap_shutdown,
+=======
+	.shutdown		= usb_hcd_platform_shutdown,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*.suspend		= ehci_hcd_omap_suspend, */
 	/*.resume		= ehci_hcd_omap_resume, */
 	.driver = {
 		.name		= hcd_name,
+<<<<<<< HEAD
 		.of_match_table = of_match_ptr(omap_ehci_dt_ids),
+=======
+		.of_match_table = omap_ehci_dt_ids,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 

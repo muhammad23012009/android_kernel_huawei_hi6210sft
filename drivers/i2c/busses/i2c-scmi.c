@@ -12,13 +12,22 @@
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/stddef.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/acpi.h>
 
 #define ACPI_SMBUS_HC_CLASS		"smbus"
 #define ACPI_SMBUS_HC_DEVICE_NAME	"cmi"
 
+<<<<<<< HEAD
+=======
+/* SMBUS HID definition as supported by Microsoft Windows */
+#define ACPI_SMBUS_MS_HID		"SMB0001"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ACPI_MODULE_NAME("smbus_cmi");
 
 struct smbus_methods_t {
@@ -52,6 +61,10 @@ static const struct smbus_methods_t ibm_smbus_methods = {
 static const struct acpi_device_id acpi_smbus_cmi_ids[] = {
 	{"SMBUS01", (kernel_ulong_t)&smbus_methods},
 	{ACPI_SMBUS_IBM_HID, (kernel_ulong_t)&ibm_smbus_methods},
+<<<<<<< HEAD
+=======
+	{ACPI_SMBUS_MS_HID, (kernel_ulong_t)&smbus_methods},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{"", 0}
 };
 MODULE_DEVICE_TABLE(acpi, acpi_smbus_cmi_ids);
@@ -149,6 +162,10 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 			mt_params[3].type = ACPI_TYPE_INTEGER;
 			mt_params[3].integer.value = len;
 			mt_params[4].type = ACPI_TYPE_BUFFER;
+<<<<<<< HEAD
+=======
+			mt_params[4].buffer.length = len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mt_params[4].buffer.pointer = data->block + 1;
 		}
 		break;
@@ -223,7 +240,11 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 		goto out;
 
 	obj = pkg->package.elements + 1;
+<<<<<<< HEAD
 	if (obj == NULL || obj->type != ACPI_TYPE_INTEGER) {
+=======
+	if (obj->type != ACPI_TYPE_INTEGER) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ACPI_ERROR((AE_INFO, "Invalid argument type"));
 		result = -EIO;
 		goto out;
@@ -235,7 +256,11 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 	case I2C_SMBUS_BYTE:
 	case I2C_SMBUS_BYTE_DATA:
 	case I2C_SMBUS_WORD_DATA:
+<<<<<<< HEAD
 		if (obj == NULL || obj->type != ACPI_TYPE_INTEGER) {
+=======
+		if (obj->type != ACPI_TYPE_INTEGER) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_ERROR((AE_INFO, "Invalid argument type"));
 			result = -EIO;
 			goto out;
@@ -246,7 +271,11 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 			data->byte = obj->integer.value;
 		break;
 	case I2C_SMBUS_BLOCK_DATA:
+<<<<<<< HEAD
 		if (obj == NULL || obj->type != ACPI_TYPE_BUFFER) {
+=======
+		if (obj->type != ACPI_TYPE_BUFFER) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_ERROR((AE_INFO, "Invalid argument type"));
 			result = -EIO;
 			goto out;
@@ -360,6 +389,10 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 {
 	struct acpi_smbus_cmi *smbus_cmi;
 	const struct acpi_device_id *id;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	smbus_cmi = kzalloc(sizeof(struct acpi_smbus_cmi), GFP_KERNEL);
 	if (!smbus_cmi)
@@ -381,8 +414,15 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 	acpi_walk_namespace(ACPI_TYPE_METHOD, smbus_cmi->handle, 1,
 			    acpi_smbus_cmi_query_methods, NULL, smbus_cmi, NULL);
 
+<<<<<<< HEAD
 	if (smbus_cmi->cap_info == 0)
 		goto err;
+=======
+	if (smbus_cmi->cap_info == 0) {
+		ret = -ENODEV;
+		goto err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	snprintf(smbus_cmi->adapter.name, sizeof(smbus_cmi->adapter.name),
 		"SMBus CMI adapter %s",
@@ -393,7 +433,12 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 	smbus_cmi->adapter.class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
 	smbus_cmi->adapter.dev.parent = &device->dev;
 
+<<<<<<< HEAD
 	if (i2c_add_adapter(&smbus_cmi->adapter)) {
+=======
+	ret = i2c_add_adapter(&smbus_cmi->adapter);
+	if (ret) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&device->dev, "Couldn't register adapter!\n");
 		goto err;
 	}
@@ -403,7 +448,11 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 err:
 	kfree(smbus_cmi);
 	device->driver_data = NULL;
+<<<<<<< HEAD
 	return -EIO;
+=======
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int acpi_smbus_cmi_remove(struct acpi_device *device)

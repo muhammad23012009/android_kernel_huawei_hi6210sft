@@ -60,8 +60,13 @@ struct s3c_i2sv2_info {
 
 	unsigned char	 master;
 
+<<<<<<< HEAD
 	struct s3c_dma_params	*dma_playback;
 	struct s3c_dma_params	*dma_capture;
+=======
+	struct snd_dmaengine_dai_dma_data *dma_playback;
+	struct snd_dmaengine_dai_dma_data *dma_capture;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u32		 suspend_iismod;
 	u32		 suspend_iiscon;

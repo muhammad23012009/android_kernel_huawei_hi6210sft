@@ -7,13 +7,19 @@
 
 enum ipi_msg_type {
 	IPI_CALL_FUNC,
+<<<<<<< HEAD
 	IPI_CALL_FUNC_SINGLE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IPI_RESCHEDULE,
 };
 
 extern void arch_send_call_function_single_ipi(int cpu);
 extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
+<<<<<<< HEAD
 #define arch_send_call_function_ipi_mask arch_send_call_function_ipi_mask
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 asmlinkage void secondary_start_kernel(void);
 

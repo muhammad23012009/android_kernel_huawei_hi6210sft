@@ -153,7 +153,11 @@ struct cfi_ident {
 	uint16_t MaxBufWriteSize;
 	uint8_t  NumEraseRegions;
 	uint32_t EraseRegionInfo[0]; /* Not host ordered */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Extended Query Structure for both PRI and ALT */
 
@@ -161,7 +165,11 @@ struct cfi_extquery {
 	uint8_t  pri[3];
 	uint8_t  MajorVersion;
 	uint8_t  MinorVersion;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Vendor-Specific PRI for Intel/Sharp Extended Command Set (0x0001) */
 
@@ -180,7 +188,11 @@ struct cfi_pri_intelext {
 	uint8_t  FactProtRegSize;
 	uint8_t  UserProtRegSize;
 	uint8_t  extra[0];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cfi_intelext_otpinfo {
 	uint32_t ProtRegAddr;
@@ -188,7 +200,11 @@ struct cfi_intelext_otpinfo {
 	uint8_t  FactProtRegSize;
 	uint16_t UserGroups;
 	uint8_t  UserProtRegSize;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cfi_intelext_blockinfo {
 	uint16_t NumIdentBlocks;
@@ -196,7 +212,11 @@ struct cfi_intelext_blockinfo {
 	uint16_t MinBlockEraseCycles;
 	uint8_t  BitsPerCell;
 	uint8_t  BlockCap;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cfi_intelext_regioninfo {
 	uint16_t NumIdentPartitions;
@@ -205,7 +225,11 @@ struct cfi_intelext_regioninfo {
 	uint8_t  NumOpAllowedSimEraMode;
 	uint8_t  NumBlockTypes;
 	struct cfi_intelext_blockinfo BlockTypes[1];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cfi_intelext_programming_regioninfo {
 	uint8_t  ProgRegShift;
@@ -214,7 +238,11 @@ struct cfi_intelext_programming_regioninfo {
 	uint8_t  Reserved2;
 	uint8_t  ControlInvalid;
 	uint8_t  Reserved3;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Vendor-Specific PRI for AMD/Fujitsu Extended Command Set (0x0002) */
 
@@ -233,7 +261,11 @@ struct cfi_pri_amdstd {
 	uint8_t  VppMin;
 	uint8_t  VppMax;
 	uint8_t  TopBottom;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Vendor-Specific PRI for Atmel chips (command set 0x0002) */
 
@@ -245,18 +277,30 @@ struct cfi_pri_atmel {
 	uint8_t BottomBoot;
 	uint8_t BurstMode;
 	uint8_t PageMode;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cfi_pri_query {
 	uint8_t  NumFields;
 	uint32_t ProtField[1]; /* Not host ordered */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct cfi_bri_query {
 	uint8_t  PageModeReadCap;
 	uint8_t  NumFields;
 	uint32_t ConfField[1]; /* Not host ordered */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define P_ID_NONE               0x0000
 #define P_ID_INTEL_EXT          0x0001
@@ -296,6 +340,7 @@ struct cfi_private {
 	struct flchip chips[0];  /* per-chip data structure for each chip */
 };
 
+<<<<<<< HEAD
 /*
  * Returns the command address according to the given geometry.
  */
@@ -473,6 +518,21 @@ static inline uint32_t cfi_send_gen_cmd(u_char cmd, uint32_t cmd_addr, uint32_t 
 
 	return addr - base;
 }
+=======
+uint32_t cfi_build_cmd_addr(uint32_t cmd_ofs,
+				struct map_info *map, struct cfi_private *cfi);
+
+map_word cfi_build_cmd(u_long cmd, struct map_info *map, struct cfi_private *cfi);
+#define CMD(x)  cfi_build_cmd((x), map, cfi)
+
+unsigned long cfi_merge_status(map_word val, struct map_info *map,
+					   struct cfi_private *cfi);
+#define MERGESTATUS(x) cfi_merge_status((x), map, cfi)
+
+uint32_t cfi_send_gen_cmd(u_char cmd, uint32_t cmd_addr, uint32_t base,
+				struct map_info *map, struct cfi_private *cfi,
+				int type, map_word *prev_val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline uint8_t cfi_read_query(struct map_info *map, uint32_t addr)
 {
@@ -506,6 +566,7 @@ static inline uint16_t cfi_read_query16(struct map_info *map, uint32_t addr)
 	}
 }
 
+<<<<<<< HEAD
 static inline void cfi_udelay(int us)
 {
 	if (us >= 1000) {
@@ -515,6 +576,9 @@ static inline void cfi_udelay(int us)
 		cond_resched();
 	}
 }
+=======
+void cfi_udelay(int us);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int __xipram cfi_qry_present(struct map_info *map, __u32 base,
 			     struct cfi_private *cfi);

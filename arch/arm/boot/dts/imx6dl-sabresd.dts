@@ -15,6 +15,7 @@
 	model = "Freescale i.MX6 DualLite SABRE Smart Device Board";
 	compatible = "fsl,imx6dl-sabresd", "fsl,imx6dl";
 };
+<<<<<<< HEAD
 
 &iomuxc {
 	pinctrl-names = "default";
@@ -33,3 +34,5 @@
 		};
 	};
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -14,6 +14,11 @@
 #include <linux/pci.h>
 #include <linux/pci_ids.h>
 #include <linux/edac.h>
+<<<<<<< HEAD
+=======
+
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "edac_core.h"
 
 #define X38_REVISION		"1.1"
@@ -161,11 +166,14 @@ static void x38_clear_error_info(struct mem_ctl_info *mci)
 			 X38_ERRSTS_BITS);
 }
 
+<<<<<<< HEAD
 static u64 x38_readq(const void __iomem *addr)
 {
 	return readl(addr) | (((u64)readl(addr + 4)) << 32);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void x38_get_and_clear_error_info(struct mem_ctl_info *mci,
 				 struct x38_error_info *info)
 {
@@ -183,9 +191,15 @@ static void x38_get_and_clear_error_info(struct mem_ctl_info *mci,
 	if (!(info->errsts & X38_ERRSTS_BITS))
 		return;
 
+<<<<<<< HEAD
 	info->eccerrlog[0] = x38_readq(window + X38_C0ECCERRLOG);
 	if (x38_channel_num == 2)
 		info->eccerrlog[1] = x38_readq(window + X38_C1ECCERRLOG);
+=======
+	info->eccerrlog[0] = lo_hi_readq(window + X38_C0ECCERRLOG);
+	if (x38_channel_num == 2)
+		info->eccerrlog[1] = lo_hi_readq(window + X38_C1ECCERRLOG);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_read_config_word(pdev, X38_ERRSTS, &info->errsts2);
 
@@ -196,10 +210,17 @@ static void x38_get_and_clear_error_info(struct mem_ctl_info *mci,
 	 * should be UE info.
 	 */
 	if ((info->errsts ^ info->errsts2) & X38_ERRSTS_BITS) {
+<<<<<<< HEAD
 		info->eccerrlog[0] = x38_readq(window + X38_C0ECCERRLOG);
 		if (x38_channel_num == 2)
 			info->eccerrlog[1] =
 				x38_readq(window + X38_C1ECCERRLOG);
+=======
+		info->eccerrlog[0] = lo_hi_readq(window + X38_C0ECCERRLOG);
+		if (x38_channel_num == 2)
+			info->eccerrlog[1] =
+				lo_hi_readq(window + X38_C1ECCERRLOG);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	x38_clear_error_info(mci);
@@ -248,8 +269,12 @@ static void x38_check(struct mem_ctl_info *mci)
 	x38_process_error_info(mci, &info);
 }
 
+<<<<<<< HEAD
 
 void __iomem *x38_map_mchbar(struct pci_dev *pdev)
+=======
+static void __iomem *x38_map_mchbar(struct pci_dev *pdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	union {
 		u64 mchbar;
@@ -449,7 +474,11 @@ static void x38_remove_one(struct pci_dev *pdev)
 	edac_mc_free(mci);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(x38_pci_tbl) = {
+=======
+static const struct pci_device_id x38_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 PCI_VEND_DEV(INTEL, X38_HB), PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 	 X38},
@@ -504,8 +533,12 @@ fail1:
 	pci_unregister_driver(&x38_driver);
 
 fail0:
+<<<<<<< HEAD
 	if (mci_pdev)
 		pci_dev_put(mci_pdev);
+=======
+	pci_dev_put(mci_pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return pci_rc;
 }

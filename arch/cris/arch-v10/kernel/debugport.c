@@ -19,7 +19,10 @@
 #include <linux/delay.h>
 #include <linux/tty.h>
 #include <arch/svinto.h>
+<<<<<<< HEAD
 #include <asm/io.h>             /* Get SIMCOUT. */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void reset_watchdog(void);
 
@@ -318,12 +321,15 @@ console_write(struct console *co, const char *buf, unsigned int len)
 	if (!port)
 		return;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SVINTO_SIM
 	/* no use to simulate the serial debug output */
 	SIMCOUT(buf, len);
 	return;
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         console_write_direct(co, buf, len);
 }
 
@@ -475,7 +481,11 @@ etrax_console_device(struct console* co, int *index)
 #endif
 }
 
+<<<<<<< HEAD
 static struct console sercons = {
+=======
+static struct console ser_console = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	name : "ttyS",
 	write: console_write,
 	read : NULL,
@@ -487,7 +497,11 @@ static struct console sercons = {
 	cflag : 0,
 	next : NULL
 };
+<<<<<<< HEAD
 static struct console sercons0 = {
+=======
+static struct console ser0_console = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	name : "ttyS",
 	write: console_write,
 	read : NULL,
@@ -500,7 +514,11 @@ static struct console sercons0 = {
 	next : NULL
 };
 
+<<<<<<< HEAD
 static struct console sercons1 = {
+=======
+static struct console ser1_console = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	name : "ttyS",
 	write: console_write,
 	read : NULL,
@@ -512,7 +530,11 @@ static struct console sercons1 = {
 	cflag : 0,
 	next : NULL
 };
+<<<<<<< HEAD
 static struct console sercons2 = {
+=======
+static struct console ser2_console = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	name : "ttyS",
 	write: console_write,
 	read : NULL,
@@ -524,7 +546,11 @@ static struct console sercons2 = {
 	cflag : 0,
 	next : NULL
 };
+<<<<<<< HEAD
 static struct console sercons3 = {
+=======
+static struct console ser3_console = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	name : "ttyS",
 	write: console_write,
 	read : NULL,
@@ -546,17 +572,29 @@ init_etrax_debug(void)
 	static int first = 1;
 
 	if (!first) {
+<<<<<<< HEAD
 		unregister_console(&sercons);
 		register_console(&sercons0);
 		register_console(&sercons1);
 		register_console(&sercons2);
 		register_console(&sercons3);
+=======
+		unregister_console(&ser_console);
+		register_console(&ser0_console);
+		register_console(&ser1_console);
+		register_console(&ser2_console);
+		register_console(&ser3_console);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                 init_dummy_console();
 		return 0;
 	}
 
 	first = 0;
+<<<<<<< HEAD
 	register_console(&sercons);
+=======
+	register_console(&ser_console);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	start_port(port);
 #ifdef CONFIG_ETRAX_KGDB
 	start_port(kgdb_port);

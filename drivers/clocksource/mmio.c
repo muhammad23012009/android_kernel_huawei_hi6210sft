@@ -22,22 +22,38 @@ static inline struct clocksource_mmio *to_mmio_clksrc(struct clocksource *c)
 
 cycle_t clocksource_mmio_readl_up(struct clocksource *c)
 {
+<<<<<<< HEAD
 	return readl_relaxed(to_mmio_clksrc(c)->reg);
+=======
+	return (cycle_t)readl_relaxed(to_mmio_clksrc(c)->reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 cycle_t clocksource_mmio_readl_down(struct clocksource *c)
 {
+<<<<<<< HEAD
 	return ~readl_relaxed(to_mmio_clksrc(c)->reg);
+=======
+	return ~(cycle_t)readl_relaxed(to_mmio_clksrc(c)->reg) & c->mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 cycle_t clocksource_mmio_readw_up(struct clocksource *c)
 {
+<<<<<<< HEAD
 	return readw_relaxed(to_mmio_clksrc(c)->reg);
+=======
+	return (cycle_t)readw_relaxed(to_mmio_clksrc(c)->reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 cycle_t clocksource_mmio_readw_down(struct clocksource *c)
 {
+<<<<<<< HEAD
 	return ~(unsigned)readw_relaxed(to_mmio_clksrc(c)->reg);
+=======
+	return ~(cycle_t)readw_relaxed(to_mmio_clksrc(c)->reg) & c->mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -55,7 +71,11 @@ int __init clocksource_mmio_init(void __iomem *base, const char *name,
 {
 	struct clocksource_mmio *cs;
 
+<<<<<<< HEAD
 	if (bits > 32 || bits < 16)
+=======
+	if (bits > 64 || bits < 16)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	cs = kzalloc(sizeof(struct clocksource_mmio), GFP_KERNEL);

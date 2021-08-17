@@ -2,6 +2,10 @@
 #define _ASM_X86_KVM_PARA_H
 
 #include <asm/processor.h>
+<<<<<<< HEAD
+=======
+#include <asm/alternative.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <uapi/asm/kvm_para.h>
 
 extern void kvmclock_init(void);
@@ -16,10 +20,15 @@ static inline bool kvm_check_and_clear_guest_paused(void)
 }
 #endif /* CONFIG_KVM_GUEST */
 
+<<<<<<< HEAD
 /* This instruction is vmcall.  On non-VT architectures, it will generate a
  * trap that we will then rewrite to the appropriate instruction.
  */
 #define KVM_HYPERCALL ".byte 0x0f,0x01,0xc1"
+=======
+#define KVM_HYPERCALL \
+        ALTERNATIVE(".byte 0x0f,0x01,0xc1", ".byte 0x0f,0x01,0xd9", X86_FEATURE_VMMCALL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* For KVM hypercalls, a three-byte sequence of either the vmcall or the vmmcall
  * instruction.  The hypervisor may replace it with something else but only the
@@ -85,6 +94,7 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline bool kvm_para_available(void)
 {
 	unsigned int eax, ebx, ecx, edx;
@@ -104,11 +114,38 @@ static inline bool kvm_para_available(void)
 			return true;
 	}
 
+=======
+#ifdef CONFIG_KVM_GUEST
+bool kvm_para_available(void);
+unsigned int kvm_arch_para_features(void);
+void __init kvm_guest_init(void);
+void kvm_async_pf_task_wait(u32 token);
+void kvm_async_pf_task_wake(u32 token);
+u32 kvm_read_and_reset_pf_reason(void);
+extern void kvm_disable_steal_time(void);
+
+#ifdef CONFIG_PARAVIRT_SPINLOCKS
+void __init kvm_spinlock_init(void);
+#else /* !CONFIG_PARAVIRT_SPINLOCKS */
+static inline void kvm_spinlock_init(void)
+{
+}
+#endif /* CONFIG_PARAVIRT_SPINLOCKS */
+
+#else /* CONFIG_KVM_GUEST */
+#define kvm_guest_init() do {} while (0)
+#define kvm_async_pf_task_wait(T) do {} while(0)
+#define kvm_async_pf_task_wake(T) do {} while(0)
+
+static inline bool kvm_para_available(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return false;
 }
 
 static inline unsigned int kvm_arch_para_features(void)
 {
+<<<<<<< HEAD
 	return cpuid_eax(KVM_CPUID_FEATURES);
 }
 
@@ -122,6 +159,11 @@ extern void kvm_disable_steal_time(void);
 #define kvm_guest_init() do { } while (0)
 #define kvm_async_pf_task_wait(T) do {} while(0)
 #define kvm_async_pf_task_wake(T) do {} while(0)
+=======
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline u32 kvm_read_and_reset_pf_reason(void)
 {
 	return 0;

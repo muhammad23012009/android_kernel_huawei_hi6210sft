@@ -25,7 +25,10 @@ struct g2d_dev {
 	struct mutex		mutex;
 	spinlock_t		ctrl_lock;
 	atomic_t		num_inst;
+<<<<<<< HEAD
 	struct vb2_alloc_ctx	*alloc_ctx;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem		*regs;
 	struct clk		*clk;
 	struct clk		*gate;
@@ -57,7 +60,10 @@ struct g2d_frame {
 struct g2d_ctx {
 	struct v4l2_fh fh;
 	struct g2d_dev		*dev;
+<<<<<<< HEAD
 	struct v4l2_m2m_ctx	*m2m_ctx;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct g2d_frame	in;
 	struct g2d_frame	out;
 	struct v4l2_ctrl	*ctrl_hflip;
@@ -90,8 +96,11 @@ void g2d_set_flip(struct g2d_dev *d, u32 r);
 void g2d_set_v41_stretch(struct g2d_dev *d,
 			struct g2d_frame *src, struct g2d_frame *dst);
 void g2d_set_cmd(struct g2d_dev *d, u32 c);
+<<<<<<< HEAD
 
 static inline struct g2d_variant *g2d_get_drv_data(struct platform_device *pdev)
 {
 	return (struct g2d_variant *)platform_get_device_id(pdev)->driver_data;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

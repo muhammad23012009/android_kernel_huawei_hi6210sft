@@ -373,10 +373,17 @@ static int asd_build_ata_ascb(struct asd_ascb *ascb, struct sas_task *task,
 
 	if (unlikely(task->ata_task.device_control_reg_update))
 		scb->header.opcode = CONTROL_ATA_DEV;
+<<<<<<< HEAD
 	else if (dev->sata_dev.command_set == ATA_COMMAND_SET)
 		scb->header.opcode = INITIATE_ATA_TASK;
 	else
 		scb->header.opcode = INITIATE_ATAPI_TASK;
+=======
+	else if (dev->sata_dev.class == ATA_DEV_ATAPI)
+		scb->header.opcode = INITIATE_ATAPI_TASK;
+	else
+		scb->header.opcode = INITIATE_ATA_TASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	scb->ata_task.proto_conn_rate = (1 << 5); /* STP */
 	if (dev->port->oob_mode == SAS_OOB_MODE)
@@ -387,7 +394,11 @@ static int asd_build_ata_ascb(struct asd_ascb *ascb, struct sas_task *task,
 	if (likely(!task->ata_task.device_control_reg_update))
 		scb->ata_task.fis.flags |= 0x80; /* C=1: update ATA cmd reg */
 	scb->ata_task.fis.flags &= 0xF0; /* PM_PORT field shall be 0 */
+<<<<<<< HEAD
 	if (dev->sata_dev.command_set == ATAPI_COMMAND_SET)
+=======
+	if (dev->sata_dev.class == ATA_DEV_ATAPI)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(scb->ata_task.atapi_packet, task->ata_task.atapi_packet,
 		       16);
 	scb->ata_task.sister_scb = cpu_to_le16(0xFFFF);
@@ -399,7 +410,11 @@ static int asd_build_ata_ascb(struct asd_ascb *ascb, struct sas_task *task,
 		if (task->ata_task.dma_xfer)
 			flags |= DATA_XFER_MODE_DMA;
 		if (task->ata_task.use_ncq &&
+<<<<<<< HEAD
 		    dev->sata_dev.command_set != ATAPI_COMMAND_SET)
+=======
+		    dev->sata_dev.class != ATA_DEV_ATAPI)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			flags |= ATA_Q_TYPE_NCQ;
 		flags |= data_dir_flags[task->data_dir];
 		scb->ata_task.ata_flags = flags;
@@ -505,7 +520,12 @@ static int asd_build_ssp_ascb(struct asd_ascb *ascb, struct sas_task *task,
 		scb->ssp_task.ssp_cmd.efb_prio_attr |= EFB_MASK;
 	scb->ssp_task.ssp_cmd.efb_prio_attr |= (task->ssp_task.task_prio << 3);
 	scb->ssp_task.ssp_cmd.efb_prio_attr |= (task->ssp_task.task_attr & 7);
+<<<<<<< HEAD
 	memcpy(scb->ssp_task.ssp_cmd.cdb, task->ssp_task.cdb, 16);
+=======
+	memcpy(scb->ssp_task.ssp_cmd.cdb, task->ssp_task.cmd->cmnd,
+	       task->ssp_task.cmd->cmd_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	scb->ssp_task.sister_scb = cpu_to_le16(0xFFFF);
 	scb->ssp_task.conn_handle = cpu_to_le16(
@@ -542,8 +562,12 @@ static int asd_can_queue(struct asd_ha_struct *asd_ha, int num)
 	return res;
 }
 
+<<<<<<< HEAD
 int asd_execute_task(struct sas_task *task, const int num,
 		     gfp_t gfp_flags)
+=======
+int asd_execute_task(struct sas_task *task, gfp_t gfp_flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int res = 0;
 	LIST_HEAD(alist);
@@ -552,11 +576,19 @@ int asd_execute_task(struct sas_task *task, const int num,
 	struct asd_ha_struct *asd_ha = task->dev->port->ha->lldd_ha;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	res = asd_can_queue(asd_ha, num);
 	if (res)
 		return res;
 
 	res = num;
+=======
+	res = asd_can_queue(asd_ha, 1);
+	if (res)
+		return res;
+
+	res = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ascb = asd_ascb_alloc_list(asd_ha, &res, gfp_flags);
 	if (res) {
 		res = -ENOMEM;
@@ -567,7 +599,11 @@ int asd_execute_task(struct sas_task *task, const int num,
 	list_for_each_entry(a, &alist, list) {
 		a->uldd_task = t;
 		t->lldd_task = a;
+<<<<<<< HEAD
 		t = list_entry(t->list.next, struct sas_task, list);
+=======
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	list_for_each_entry(a, &alist, list) {
 		t = a->uldd_task;
@@ -600,7 +636,11 @@ int asd_execute_task(struct sas_task *task, const int num,
 	}
 	list_del_init(&alist);
 
+<<<<<<< HEAD
 	res = asd_post_ascb_list(asd_ha, ascb, num);
+=======
+	res = asd_post_ascb_list(asd_ha, ascb, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(res)) {
 		a = NULL;
 		__list_add(&alist, ascb->list.prev, &ascb->list);
@@ -638,6 +678,10 @@ out_err_unmap:
 out_err:
 	if (ascb)
 		asd_ascb_free_list(ascb);
+<<<<<<< HEAD
 	asd_can_dequeue(asd_ha, num);
+=======
+	asd_can_dequeue(asd_ha, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return res;
 }

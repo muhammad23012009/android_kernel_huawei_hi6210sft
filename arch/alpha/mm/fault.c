@@ -23,8 +23,12 @@
 #include <linux/smp.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void die_if_kernel(char *,struct pt_regs *,long, unsigned long *);
 
@@ -78,7 +82,11 @@ __load_new_mm_context(struct mm_struct *next_mm)
 /* Macro for exception fixup code to access integer registers.  */
 #define dpf_reg(r)							\
 	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
+<<<<<<< HEAD
 				 (r) <= 18 ? (r)+8 : (r)-10])
+=======
+				 (r) <= 18 ? (r)+10 : (r)-10])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 asmlinkage void
 do_page_fault(unsigned long address, unsigned long mmcsr,
@@ -107,7 +115,11 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 
 	/* If we're in an interrupt context, or have no user context,
 	   we must not take the fault.  */
+<<<<<<< HEAD
 	if (!mm || in_atomic())
+=======
+	if (!mm || faulthandler_disabled())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto no_context;
 
 #ifdef CONFIG_ALPHA_LARGE_VMALLOC
@@ -148,7 +160,11 @@ retry:
 	/* If for any reason at all we couldn't handle the fault,
 	   make sure we exit gracefully rather than endlessly redo
 	   the fault.  */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -156,6 +172,11 @@ retry:
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();

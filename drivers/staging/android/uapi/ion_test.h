@@ -20,8 +20,11 @@
 #include <linux/ioctl.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
 //typedef int ion_user_handle_t;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct ion_test_rw_data - metadata passed to the kernel to read handle
  * @ptr:	a pointer to an area at least as large as size
@@ -34,6 +37,10 @@ struct ion_test_rw_data {
 	__u64 offset;
 	__u64 size;
 	int write;
+<<<<<<< HEAD
+=======
+	int __padding;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define ION_IOC_MAGIC		'I'

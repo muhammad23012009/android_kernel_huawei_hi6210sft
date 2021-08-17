@@ -574,6 +574,7 @@ static int ieee_fpe_handler(struct pt_regs *regs)
 	return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage void do_fpu_error(unsigned long r4, unsigned long r5,
 			     unsigned long r6, unsigned long r7,
 			     struct pt_regs regs)
@@ -592,6 +593,8 @@ asmlinkage void do_fpu_error(unsigned long r4, unsigned long r5,
 	force_sig_info(SIGFPE, &info, tsk);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * fpu_init - Initialize FPU registers
  * @fpu: Pointer to software emulated FPU registers.

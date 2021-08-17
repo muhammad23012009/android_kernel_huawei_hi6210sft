@@ -15,11 +15,15 @@ ifdef CONFIG_FUNCTION_TRACER
 # Do not profile debug and lowlevel utilities
 CFLAGS_REMOVE_ftrace.o = -pg
 CFLAGS_REMOVE_cache.o = -pg
+<<<<<<< HEAD
 CFLAGS_REMOVE_irq.o = -pg
 CFLAGS_REMOVE_pacache.o = -pg
 CFLAGS_REMOVE_perf.o = -pg
 CFLAGS_REMOVE_traps.o = -pg
 CFLAGS_REMOVE_unaligned.o = -pg
+=======
+CFLAGS_REMOVE_perf.o = -pg
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 CFLAGS_REMOVE_unwind.o = -pg
 endif
 
@@ -29,7 +33,14 @@ obj-$(CONFIG_PCI)	+= pci.o
 obj-$(CONFIG_MODULES)	+= module.o
 obj-$(CONFIG_64BIT)	+= binfmt_elf32.o sys_parisc32.o signal32.o
 obj-$(CONFIG_STACKTRACE)+= stacktrace.o
+<<<<<<< HEAD
 # only supported for PCX-W/U in 64-bit mode at the moment
 obj-$(CONFIG_64BIT)	+= perf.o perf_asm.o
+=======
+obj-$(CONFIG_AUDIT)	+= audit.o
+obj64-$(CONFIG_AUDIT)	+= compat_audit.o
+# only supported for PCX-W/U in 64-bit mode at the moment
+obj-$(CONFIG_64BIT)	+= perf.o perf_asm.o $(obj64-y)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_FUNCTION_TRACER)		+= ftrace.o
 obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o

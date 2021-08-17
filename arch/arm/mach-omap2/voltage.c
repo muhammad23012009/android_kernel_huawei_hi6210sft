@@ -55,7 +55,11 @@ static LIST_HEAD(voltdm_list);
 unsigned long voltdm_get_voltage(struct voltagedomain *voltdm)
 {
 	if (!voltdm || IS_ERR(voltdm)) {
+<<<<<<< HEAD
 		pr_warning("%s: VDD specified does not exist!\n", __func__);
+=======
+		pr_warn("%s: VDD specified does not exist!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -77,7 +81,11 @@ int voltdm_scale(struct voltagedomain *voltdm,
 	unsigned long volt = 0;
 
 	if (!voltdm || IS_ERR(voltdm)) {
+<<<<<<< HEAD
 		pr_warning("%s: VDD specified does not exist!\n", __func__);
+=======
+		pr_warn("%s: VDD specified does not exist!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -87,6 +95,15 @@ int voltdm_scale(struct voltagedomain *voltdm,
 		return -ENODATA;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!voltdm->volt_data) {
+		pr_err("%s: No voltage data defined for vdd_%s\n",
+			__func__, voltdm->name);
+		return -ENODATA;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Adjust voltage to the exact voltage from the OPP table */
 	for (i = 0; voltdm->volt_data[i].volt_nominal != 0; i++) {
 		if (voltdm->volt_data[i].volt_nominal >= target_volt) {
@@ -96,8 +113,13 @@ int voltdm_scale(struct voltagedomain *voltdm,
 	}
 
 	if (!volt) {
+<<<<<<< HEAD
 		pr_warning("%s: not scaling. OPP voltage for %lu, not found.\n",
 			   __func__, target_volt);
+=======
+		pr_warn("%s: not scaling. OPP voltage for %lu, not found.\n",
+			__func__, target_volt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -122,7 +144,11 @@ void voltdm_reset(struct voltagedomain *voltdm)
 	unsigned long target_volt;
 
 	if (!voltdm || IS_ERR(voltdm)) {
+<<<<<<< HEAD
 		pr_warning("%s: VDD specified does not exist!\n", __func__);
+=======
+		pr_warn("%s: VDD specified does not exist!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -152,7 +178,11 @@ void omap_voltage_get_volttable(struct voltagedomain *voltdm,
 				struct omap_volt_data **volt_data)
 {
 	if (!voltdm || IS_ERR(voltdm)) {
+<<<<<<< HEAD
 		pr_warning("%s: VDD specified does not exist!\n", __func__);
+=======
+		pr_warn("%s: VDD specified does not exist!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -180,12 +210,20 @@ struct omap_volt_data *omap_voltage_get_voltdata(struct voltagedomain *voltdm,
 	int i;
 
 	if (!voltdm || IS_ERR(voltdm)) {
+<<<<<<< HEAD
 		pr_warning("%s: VDD specified does not exist!\n", __func__);
+=======
+		pr_warn("%s: VDD specified does not exist!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ERR_PTR(-EINVAL);
 	}
 
 	if (!voltdm->volt_data) {
+<<<<<<< HEAD
 		pr_warning("%s: voltage table does not exist for vdd_%s\n",
+=======
+		pr_warn("%s: voltage table does not exist for vdd_%s\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__, voltdm->name);
 		return ERR_PTR(-ENODATA);
 	}
@@ -214,7 +252,11 @@ int omap_voltage_register_pmic(struct voltagedomain *voltdm,
 			       struct omap_voltdm_pmic *pmic)
 {
 	if (!voltdm || IS_ERR(voltdm)) {
+<<<<<<< HEAD
 		pr_warning("%s: VDD specified does not exist!\n", __func__);
+=======
+		pr_warn("%s: VDD specified does not exist!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -224,6 +266,7 @@ int omap_voltage_register_pmic(struct voltagedomain *voltdm,
 }
 
 /**
+<<<<<<< HEAD
  * omap_change_voltscale_method() - API to change the voltage scaling method.
  * @voltdm:	pointer to the VDD whose voltage scaling method
  *		has to be changed.
@@ -255,6 +298,8 @@ void omap_change_voltscale_method(struct voltagedomain *voltdm,
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * omap_voltage_late_init() - Init the various voltage parameters
  *
  * This API is to be called in the later stages of the
@@ -279,7 +324,11 @@ int __init omap_voltage_late_init(void)
 
 		sys_ck = clk_get(NULL, voltdm->sys_clk.name);
 		if (IS_ERR(sys_ck)) {
+<<<<<<< HEAD
 			pr_warning("%s: Could not get sys clk.\n", __func__);
+=======
+			pr_warn("%s: Could not get sys clk.\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 		}
 		voltdm->sys_clk.rate = clk_get_rate(sys_ck);
@@ -316,6 +365,7 @@ static struct voltagedomain *_voltdm_lookup(const char *name)
 	return voltdm;
 }
 
+<<<<<<< HEAD
 /**
  * voltdm_add_pwrdm - add a powerdomain to a voltagedomain
  * @voltdm: struct voltagedomain * to add the powerdomain to
@@ -394,12 +444,17 @@ int voltdm_for_each(int (*fn)(struct voltagedomain *voltdm, void *user),
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int _voltdm_register(struct voltagedomain *voltdm)
 {
 	if (!voltdm || !voltdm->name)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&voltdm->pwrdm_list);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_add(&voltdm->node, &voltdm_list);
 
 	pr_debug("voltagedomain: registered %s\n", voltdm->name);

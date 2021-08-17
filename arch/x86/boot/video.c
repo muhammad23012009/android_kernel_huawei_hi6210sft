@@ -13,10 +13,20 @@
  * Select video mode
  */
 
+<<<<<<< HEAD
+=======
+#include <uapi/asm/boot.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "boot.h"
 #include "video.h"
 #include "vesa.h"
 
+<<<<<<< HEAD
+=======
+static u16 video_segment;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void store_cursor_position(void)
 {
 	struct biosregs ireg, oreg;

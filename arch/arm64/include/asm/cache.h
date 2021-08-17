@@ -16,7 +16,13 @@
 #ifndef __ASM_CACHE_H
 #define __ASM_CACHE_H
 
+<<<<<<< HEAD
 #define L1_CACHE_SHIFT		6
+=======
+#include <asm/cachetype.h>
+
+#define L1_CACHE_SHIFT		7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define L1_CACHE_BYTES		(1 << L1_CACHE_SHIFT)
 
 /*
@@ -27,6 +33,21 @@
  * the CPU.
  */
 #define ARCH_DMA_MINALIGN	L1_CACHE_BYTES
+<<<<<<< HEAD
 #define ARCH_SLAB_MINALIGN	8
+=======
+
+#ifndef __ASSEMBLY__
+
+#define __read_mostly __attribute__((__section__(".data..read_mostly")))
+
+static inline int cache_line_size(void)
+{
+	u32 cwg = cache_type_cwg();
+	return cwg ? 4 << cwg : L1_CACHE_BYTES;
+}
+
+#endif	/* __ASSEMBLY__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

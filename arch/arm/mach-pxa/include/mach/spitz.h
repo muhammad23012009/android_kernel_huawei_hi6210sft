@@ -15,8 +15,13 @@
 #define __ASM_ARCH_SPITZ_H  1
 #endif
 
+<<<<<<< HEAD
 #include <linux/fb.h>
 #include <linux/gpio.h>
+=======
+#include "irqs.h" /* PXA_NR_BUILTIN_GPIO, PXA_GPIO_TO_IRQ */
+#include <linux/fb.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Spitz/Akita GPIOs */
 

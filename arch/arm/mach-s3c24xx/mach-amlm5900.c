@@ -37,6 +37,10 @@
 #include <linux/platform_device.h>
 #include <linux/proc_fs.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 
 #include <asm/mach/arch.h>
@@ -49,9 +53,15 @@
 #include <asm/mach-types.h>
 #include <mach/fb.h>
 
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
 #include <mach/regs-lcd.h>
 #include <mach/regs-gpio.h>
+=======
+#include <mach/regs-lcd.h>
+#include <mach/regs-gpio.h>
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/platform_data/i2c-s3c2410.h>
 #include <plat/devs.h>
@@ -160,11 +170,23 @@ static struct platform_device *amlm5900_devices[] __initdata = {
 static void __init amlm5900_map_io(void)
 {
 	s3c24xx_init_io(amlm5900_iodesc, ARRAY_SIZE(amlm5900_iodesc));
+<<<<<<< HEAD
 	s3c24xx_init_clocks(0);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(amlm5900_uartcfgs, ARRAY_SIZE(amlm5900_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init amlm5900_init_time(void)
+{
+	s3c2410_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_FB_S3C2410
 static struct s3c2410fb_display __initdata amlm5900_lcd_info = {
 	.width		= 160,
@@ -240,6 +262,10 @@ MACHINE_START(AML_M5900, "AML_M5900")
 	.map_io		= amlm5900_map_io,
 	.init_irq	= s3c2410_init_irq,
 	.init_machine	= amlm5900_init,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c2410_restart,
+=======
+	.init_time	= amlm5900_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

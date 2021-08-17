@@ -112,6 +112,10 @@
 #include <linux/io.h>
 #include <linux/uaccess.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_vlan.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq.h>
 
 #define RTL8139_DRIVER_NAME   DRV_NAME " Fast Ethernet driver " DRV_VERSION
@@ -182,10 +186,20 @@ static int debug = -1;
 /* Number of Tx descriptor registers. */
 #define NUM_TX_DESC	4
 
+<<<<<<< HEAD
 /* max supported ethernet frame size -- must be at least (dev->mtu+14+4).*/
 #define MAX_ETH_FRAME_SIZE	1536
 
 /* Size of the Tx bounce buffers -- must be at least (dev->mtu+14+4). */
+=======
+/* max supported ethernet frame size -- must be at least (dev->mtu+18+4).*/
+#define MAX_ETH_FRAME_SIZE	1792
+
+/* max supported payload size */
+#define MAX_ETH_DATA_SIZE (MAX_ETH_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN)
+
+/* Size of the Tx bounce buffers -- must be at least (dev->mtu+18+4). */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TX_BUF_SIZE	MAX_ETH_FRAME_SIZE
 #define TX_BUF_TOT_LEN	(TX_BUF_SIZE * NUM_TX_DESC)
 
@@ -234,7 +248,11 @@ static const struct {
 };
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(rtl8139_pci_tbl) = {
+=======
+static const struct pci_device_id rtl8139_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x10ec, 0x8139, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
 	{0x10ec, 0x8138, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
 	{0x1113, 0x1211, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
@@ -727,7 +745,10 @@ static void __rtl8139_cleanup_dev (struct net_device *dev)
 	pci_release_regions (pdev);
 
 	free_netdev(dev);
+<<<<<<< HEAD
 	pci_set_drvdata (pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -784,6 +805,7 @@ static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
 	if (rc)
 		goto err_out;
 
+<<<<<<< HEAD
 	rc = pci_request_regions (pdev, DRV_NAME);
 	if (rc)
 		goto err_out;
@@ -791,6 +813,18 @@ static struct net_device *rtl8139_init_board(struct pci_dev *pdev)
 
 	pci_set_master (pdev);
 
+=======
+	disable_dev_on_err = 1;
+	rc = pci_request_regions (pdev, DRV_NAME);
+	if (rc)
+		goto err_out;
+
+	pci_set_master (pdev);
+
+	u64_stats_init(&tp->rx_stats.syncp);
+	u64_stats_init(&tp->tx_stats.syncp);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 retry:
 	/* PIO bar register comes first. */
 	bar = !use_io;
@@ -918,11 +952,26 @@ static int rtl8139_set_features(struct net_device *dev, netdev_features_t featur
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int rtl8139_change_mtu(struct net_device *dev, int new_mtu)
+{
+	if (new_mtu < 68 || new_mtu > MAX_ETH_DATA_SIZE)
+		return -EINVAL;
+	dev->mtu = new_mtu;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct net_device_ops rtl8139_netdev_ops = {
 	.ndo_open		= rtl8139_open,
 	.ndo_stop		= rtl8139_close,
 	.ndo_get_stats64	= rtl8139_get_stats64,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_change_mtu		= rtl8139_change_mtu,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address 	= rtl8139_set_mac_address,
 	.ndo_start_xmit		= rtl8139_start_xmit,
@@ -1096,6 +1145,10 @@ static int rtl8139_init_one(struct pci_dev *pdev,
 	return 0;
 
 err_out:
+<<<<<<< HEAD
+=======
+	netif_napi_del(&tp->napi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__rtl8139_cleanup_dev (dev);
 	pci_disable_device (pdev);
 	return i;
@@ -1110,6 +1163,10 @@ static void rtl8139_remove_one(struct pci_dev *pdev)
 	assert (dev != NULL);
 
 	cancel_delayed_work_sync(&tp->thread);
+<<<<<<< HEAD
+=======
+	netif_napi_del(&tp->napi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unregister_netdev (dev);
 
@@ -1651,6 +1708,13 @@ static void rtl8139_tx_timeout_task (struct work_struct *work)
 	int i;
 	u8 tmp8;
 
+<<<<<<< HEAD
+=======
+	napi_disable(&tp->napi);
+	netif_stop_queue(dev);
+	synchronize_sched();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netdev_dbg(dev, "Transmit timeout, status %02x %04x %04x media %02x\n",
 		   RTL_R8(ChipCmd), RTL_R16(IntrStatus),
 		   RTL_R16(IntrMask), RTL_R8(MediaStatus));
@@ -1680,10 +1744,17 @@ static void rtl8139_tx_timeout_task (struct work_struct *work)
 	spin_unlock_irq(&tp->lock);
 
 	/* ...and finally, reset everything */
+<<<<<<< HEAD
 	if (netif_running(dev)) {
 		rtl8139_hw_start (dev);
 		netif_wake_queue (dev);
 	}
+=======
+	napi_enable(&tp->napi);
+	rtl8139_hw_start(dev);
+	netif_wake_queue(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_bh(&tp->rx_lock);
 }
 
@@ -1715,9 +1786,15 @@ static netdev_tx_t rtl8139_start_xmit (struct sk_buff *skb,
 		if (len < ETH_ZLEN)
 			memset(tp->tx_buf[entry], 0, ETH_ZLEN);
 		skb_copy_and_csum_dev(skb, tp->tx_buf[entry]);
+<<<<<<< HEAD
 		dev_kfree_skb(skb);
 	} else {
 		dev_kfree_skb(skb);
+=======
+		dev_kfree_skb_any(skb);
+	} else {
+		dev_kfree_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev->stats.tx_dropped++;
 		return NETDEV_TX_OK;
 	}
@@ -2023,7 +2100,11 @@ keep_pkt:
 		/* Malloc up new buffer, compatible with net-2e. */
 		/* Omit the four octet CRC from the length. */
 
+<<<<<<< HEAD
 		skb = netdev_alloc_skb_ip_align(dev, pkt_size);
+=======
+		skb = napi_alloc_skb(&tp->napi, pkt_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (likely(skb)) {
 #if RX_BUF_IDX == 3
 			wrap_copy(skb, rx_ring, ring_offset+4, pkt_size);
@@ -2213,7 +2294,11 @@ static void rtl8139_poll_controller(struct net_device *dev)
 	struct rtl8139_private *tp = netdev_priv(dev);
 	const int irq = tp->pci_dev->irq;
 
+<<<<<<< HEAD
 	disable_irq(irq);
+=======
+	disable_irq_nosync(irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rtl8139_interrupt(irq, dev);
 	enable_irq(irq);
 }
@@ -2372,7 +2457,10 @@ static void rtl8139_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(tp->pci_dev), sizeof(info->bus_info));
+<<<<<<< HEAD
 	info->regdump_len = tp->regs_len;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int rtl8139_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
@@ -2520,6 +2608,7 @@ rtl8139_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 	netdev_stats_to_stats64(stats, &dev->stats);
 
 	do {
+<<<<<<< HEAD
 		start = u64_stats_fetch_begin_bh(&tp->rx_stats.syncp);
 		stats->rx_packets = tp->rx_stats.packets;
 		stats->rx_bytes = tp->rx_stats.bytes;
@@ -2530,6 +2619,18 @@ rtl8139_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 		stats->tx_packets = tp->tx_stats.packets;
 		stats->tx_bytes = tp->tx_stats.bytes;
 	} while (u64_stats_fetch_retry_bh(&tp->tx_stats.syncp, start));
+=======
+		start = u64_stats_fetch_begin_irq(&tp->rx_stats.syncp);
+		stats->rx_packets = tp->rx_stats.packets;
+		stats->rx_bytes = tp->rx_stats.bytes;
+	} while (u64_stats_fetch_retry_irq(&tp->rx_stats.syncp, start));
+
+	do {
+		start = u64_stats_fetch_begin_irq(&tp->tx_stats.syncp);
+		stats->tx_packets = tp->tx_stats.packets;
+		stats->tx_bytes = tp->tx_stats.bytes;
+	} while (u64_stats_fetch_retry_irq(&tp->tx_stats.syncp, start));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return stats;
 }

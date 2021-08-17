@@ -30,6 +30,7 @@ void show_regs(struct pt_regs *regs)
         printk(" DS: %04lx ES: %04lx\n",
 	       0xffff & PT_REGS_DS(regs), 
 	       0xffff & PT_REGS_ES(regs));
+<<<<<<< HEAD
 
         show_trace(NULL, (unsigned long *) &regs);
 }
@@ -97,3 +98,6 @@ void show_trace(struct task_struct* task, unsigned long * stack)
 	printk("\n");
 }
 
+=======
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

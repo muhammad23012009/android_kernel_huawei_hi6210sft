@@ -14,8 +14,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _PCH_GBE_H_
@@ -482,7 +486,10 @@ struct pch_gbe_buffer {
 
 /**
  * struct pch_gbe_tx_ring - tx ring information
+<<<<<<< HEAD
  * @tx_lock:	spinlock structs
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @desc:	pointer to the descriptor ring memory
  * @dma:	physical address of the descriptor ring
  * @size:	length of descriptor ring in bytes
@@ -492,7 +499,10 @@ struct pch_gbe_buffer {
  * @buffer_info:	array of buffer information structs
  */
 struct pch_gbe_tx_ring {
+<<<<<<< HEAD
 	spinlock_t tx_lock;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pch_gbe_tx_desc *desc;
 	dma_addr_t dma;
 	unsigned int size;
@@ -582,6 +592,22 @@ struct pch_gbe_hw_stats {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct pch_gbe_privdata - PCI Device ID driver data
+ * @phy_tx_clk_delay:		Bool, configure the PHY TX delay in software
+ * @phy_disable_hibernate:	Bool, disable PHY hibernation
+ * @platform_init:		Platform initialization callback, called from
+ *				probe, prior to PHY initialization.
+ */
+struct pch_gbe_privdata {
+	bool phy_tx_clk_delay;
+	bool phy_disable_hibernate;
+	int (*platform_init)(struct pci_dev *pdev);
+};
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct pch_gbe_adapter - board specific private data structure
  * @stats_lock:	Spinlock structure for status
  * @ethtool_lock:	Spinlock structure for ethtool
@@ -604,6 +630,10 @@ struct pch_gbe_hw_stats {
  * @rx_buffer_len:	Receive buffer length
  * @tx_queue_len:	Transmit queue length
  * @have_msi:		PCI MSI mode flag
+<<<<<<< HEAD
+=======
+ * @pch_gbe_privdata:	PCI Device ID driver_data
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 struct pch_gbe_adapter {
@@ -631,6 +661,7 @@ struct pch_gbe_adapter {
 	int hwts_tx_en;
 	int hwts_rx_en;
 	struct pci_dev *ptp_pdev;
+<<<<<<< HEAD
 };
 
 extern const char pch_driver_version[];
@@ -670,4 +701,48 @@ extern s32 pch_gbe_mac_force_mac_fc(struct pch_gbe_hw *hw);
 extern s32 pch_gbe_mac_read_mac_addr(struct pch_gbe_hw *hw);
 extern u16 pch_gbe_mac_ctrl_miim(struct pch_gbe_hw *hw,
 				  u32 addr, u32 dir, u32 reg, u16 data);
+=======
+	struct pch_gbe_privdata *pdata;
+};
+
+#define pch_gbe_hw_to_adapter(hw)	container_of(hw, struct pch_gbe_adapter, hw)
+
+extern const char pch_driver_version[];
+
+/* pch_gbe_main.c */
+int pch_gbe_up(struct pch_gbe_adapter *adapter);
+void pch_gbe_down(struct pch_gbe_adapter *adapter);
+void pch_gbe_reinit_locked(struct pch_gbe_adapter *adapter);
+void pch_gbe_reset(struct pch_gbe_adapter *adapter);
+int pch_gbe_setup_tx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_tx_ring *txdr);
+int pch_gbe_setup_rx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_rx_ring *rxdr);
+void pch_gbe_free_tx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_tx_ring *tx_ring);
+void pch_gbe_free_rx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_rx_ring *rx_ring);
+void pch_gbe_update_stats(struct pch_gbe_adapter *adapter);
+u32 pch_ch_control_read(struct pci_dev *pdev);
+void pch_ch_control_write(struct pci_dev *pdev, u32 val);
+u32 pch_ch_event_read(struct pci_dev *pdev);
+void pch_ch_event_write(struct pci_dev *pdev, u32 val);
+u32 pch_src_uuid_lo_read(struct pci_dev *pdev);
+u32 pch_src_uuid_hi_read(struct pci_dev *pdev);
+u64 pch_rx_snap_read(struct pci_dev *pdev);
+u64 pch_tx_snap_read(struct pci_dev *pdev);
+int pch_set_station_address(u8 *addr, struct pci_dev *pdev);
+
+/* pch_gbe_param.c */
+void pch_gbe_check_options(struct pch_gbe_adapter *adapter);
+
+/* pch_gbe_ethtool.c */
+void pch_gbe_set_ethtool_ops(struct net_device *netdev);
+
+/* pch_gbe_mac.c */
+s32 pch_gbe_mac_force_mac_fc(struct pch_gbe_hw *hw);
+s32 pch_gbe_mac_read_mac_addr(struct pch_gbe_hw *hw);
+u16 pch_gbe_mac_ctrl_miim(struct pch_gbe_hw *hw, u32 addr, u32 dir, u32 reg,
+			  u16 data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _PCH_GBE_H_ */

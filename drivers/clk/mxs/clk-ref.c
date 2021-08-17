@@ -9,7 +9,10 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/io.h>

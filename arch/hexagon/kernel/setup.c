@@ -19,6 +19,10 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/bootmem.h>
 #include <linux/mmzone.h>
 #include <linux/mm.h>
@@ -32,16 +36,23 @@
 #include <asm/hexagon_vm.h>
 #include <asm/vm_mmu.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 #include <asm/prom.h>
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 char cmd_line[COMMAND_LINE_SIZE];
 static char default_command_line[COMMAND_LINE_SIZE] __initdata = CONFIG_CMDLINE;
 
 int on_simulator;
 
+<<<<<<< HEAD
 void __cpuinit calibrate_delay(void)
+=======
+void calibrate_delay(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	loops_per_jiffy = thread_freq_mhz * 1000000 / HZ;
 }

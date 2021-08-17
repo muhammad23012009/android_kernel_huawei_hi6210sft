@@ -120,7 +120,10 @@ __vxge_hw_device_register_poll(void __iomem *reg, u64 mask, u32 max_millis)
 {
 	u64 val64;
 	u32 i = 0;
+<<<<<<< HEAD
 	enum vxge_hw_status ret = VXGE_HW_FAIL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	udelay(10);
 
@@ -139,7 +142,11 @@ __vxge_hw_device_register_poll(void __iomem *reg, u64 mask, u32 max_millis)
 		mdelay(1);
 	} while (++i <= max_millis);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return VXGE_HW_FAIL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline enum vxge_hw_status
@@ -809,7 +816,11 @@ __vxge_hw_vpath_fw_ver_get(struct __vxge_hw_virtualpath *vpath,
 	struct vxge_hw_device_date *fw_date = &hw_info->fw_date;
 	struct vxge_hw_device_version *flash_version = &hw_info->flash_version;
 	struct vxge_hw_device_date *flash_date = &hw_info->flash_date;
+<<<<<<< HEAD
 	u64 data0, data1 = 0, steer_ctrl = 0;
+=======
+	u64 data0 = 0, data1 = 0, steer_ctrl = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum vxge_hw_status status;
 
 	status = vxge_hw_vpath_fw_api(vpath,
@@ -1682,12 +1693,19 @@ enum vxge_hw_status vxge_hw_driver_stats_get(
 			struct __vxge_hw_device *hldev,
 			struct vxge_hw_device_stats_sw_info *sw_stats)
 {
+<<<<<<< HEAD
 	enum vxge_hw_status status = VXGE_HW_OK;
 
 	memcpy(sw_stats, &hldev->stats.sw_dev_info_stats,
 		sizeof(struct vxge_hw_device_stats_sw_info));
 
 	return status;
+=======
+	memcpy(sw_stats, &hldev->stats.sw_dev_info_stats,
+		sizeof(struct vxge_hw_device_stats_sw_info));
+
+	return VXGE_HW_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -2148,7 +2166,11 @@ __vxge_hw_ring_mempool_item_alloc(struct vxge_hw_mempool *mempoolh,
  * __vxge_hw_ring_replenish - Initial replenish of RxDs
  * This function replenishes the RxDs from reserve array to work array
  */
+<<<<<<< HEAD
 enum vxge_hw_status
+=======
+static enum vxge_hw_status
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 vxge_hw_ring_replenish(struct __vxge_hw_ring *ring)
 {
 	void *rxd;
@@ -3228,7 +3250,10 @@ enum vxge_hw_status
 vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask)
 {
 	struct vxge_hw_vpmgmt_reg       __iomem *vpmgmt_reg;
+<<<<<<< HEAD
 	enum vxge_hw_status status = VXGE_HW_OK;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i = 0, j = 0;
 
 	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
@@ -3241,7 +3266,11 @@ vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask)
 				return VXGE_HW_FAIL;
 		}
 	}
+<<<<<<< HEAD
 	return status;
+=======
+	return VXGE_HW_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 /*
  * vxge_hw_mgmt_reg_Write - Write Titan register.
@@ -3979,7 +4008,10 @@ __vxge_hw_vpath_mgmt_read(
 {
 	u32 i, mtu = 0, max_pyld = 0;
 	u64 val64;
+<<<<<<< HEAD
 	enum vxge_hw_status status = VXGE_HW_OK;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < VXGE_HW_MAC_MAX_MAC_PORT_ID; i++) {
 
@@ -4009,7 +4041,11 @@ __vxge_hw_vpath_mgmt_read(
 	else
 		VXGE_HW_DEVICE_LINK_STATE_SET(vpath->hldev, VXGE_HW_LINK_DOWN);
 
+<<<<<<< HEAD
 	return status;
+=======
+	return VXGE_HW_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -4039,14 +4075,21 @@ static enum vxge_hw_status
 __vxge_hw_vpath_reset(struct __vxge_hw_device *hldev, u32 vp_id)
 {
 	u64 val64;
+<<<<<<< HEAD
 	enum vxge_hw_status status = VXGE_HW_OK;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	val64 = VXGE_HW_CMN_RSTHDLR_CFG0_SW_RESET_VPATH(1 << (16 - vp_id));
 
 	__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(val64, 0, 32),
 				&hldev->common_reg->cmn_rsthdlr_cfg0);
 
+<<<<<<< HEAD
 	return status;
+=======
+	return VXGE_HW_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -4227,7 +4270,10 @@ static enum vxge_hw_status
 __vxge_hw_vpath_mac_configure(struct __vxge_hw_device *hldev, u32 vp_id)
 {
 	u64 val64;
+<<<<<<< HEAD
 	enum vxge_hw_status status = VXGE_HW_OK;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct __vxge_hw_virtualpath *vpath;
 	struct vxge_hw_vp_config *vp_config;
 	struct vxge_hw_vpath_reg __iomem *vp_reg;
@@ -4283,7 +4329,11 @@ __vxge_hw_vpath_mac_configure(struct __vxge_hw_device *hldev, u32 vp_id)
 
 		writeq(val64, &vp_reg->rxmac_vcfg1);
 	}
+<<<<<<< HEAD
 	return status;
+=======
+	return VXGE_HW_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -4295,7 +4345,10 @@ static enum vxge_hw_status
 __vxge_hw_vpath_tim_configure(struct __vxge_hw_device *hldev, u32 vp_id)
 {
 	u64 val64;
+<<<<<<< HEAD
 	enum vxge_hw_status status = VXGE_HW_OK;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct __vxge_hw_virtualpath *vpath;
 	struct vxge_hw_vpath_reg __iomem *vp_reg;
 	struct vxge_hw_vp_config *config;
@@ -4545,7 +4598,11 @@ __vxge_hw_vpath_tim_configure(struct __vxge_hw_device *hldev, u32 vp_id)
 	val64 |= VXGE_HW_TIM_WRKLD_CLC_CNT_RX_TX(3);
 	writeq(val64, &vp_reg->tim_wrkld_clc);
 
+<<<<<<< HEAD
 	return status;
+=======
+	return VXGE_HW_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -4645,7 +4702,11 @@ static void __vxge_hw_vp_terminate(struct __vxge_hw_device *hldev, u32 vp_id)
 	vpath->ringh = NULL;
 	vpath->fifoh = NULL;
 	memset(&vpath->vpath_handles, 0, sizeof(struct list_head));
+<<<<<<< HEAD
 	vpath->stats_block = 0;
+=======
+	vpath->stats_block = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vpath->hw_stats = NULL;
 	vpath->hw_stats_sav = NULL;
 	vpath->sw_stats = NULL;

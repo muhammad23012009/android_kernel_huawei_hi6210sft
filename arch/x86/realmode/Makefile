@@ -6,6 +6,11 @@
 # for more details.
 #
 #
+<<<<<<< HEAD
+=======
+KASAN_SANITIZE			:= n
+OBJECT_FILES_NON_STANDARD	:= y
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 subdir- := rm
 

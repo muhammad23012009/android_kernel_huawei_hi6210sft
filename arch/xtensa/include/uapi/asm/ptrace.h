@@ -72,6 +72,11 @@
 #define PTRACE_SETREGS		13
 #define PTRACE_GETXTREGS	18
 #define PTRACE_SETXTREGS	19
+<<<<<<< HEAD
+=======
+#define PTRACE_GETHBPREGS	20
+#define PTRACE_SETHBPREGS	21
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #endif /* _UAPI_XTENSA_PTRACE_H */

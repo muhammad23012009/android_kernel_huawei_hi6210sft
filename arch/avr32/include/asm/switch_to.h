@@ -15,11 +15,21 @@
  */
 #ifdef CONFIG_OWNERSHIP_TRACE
 #include <asm/ocd.h>
+<<<<<<< HEAD
 #define finish_arch_switch(prev)			\
 	do {						\
 		ocd_write(PID, prev->pid);		\
 		ocd_write(PID, current->pid);		\
 	} while(0)
+=======
+#define ocd_switch(prev, next)				\
+	do {						\
+		ocd_write(PID, prev->pid);		\
+		ocd_write(PID, next->pid);		\
+	} while(0)
+#else
+#define ocd_switch(prev, next)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
@@ -38,6 +48,10 @@ extern struct task_struct *__switch_to(struct task_struct *,
 				       struct cpu_context *);
 #define switch_to(prev, next, last)					\
 	do {								\
+<<<<<<< HEAD
+=======
+		ocd_switch(prev, next);					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		last = __switch_to(prev, &prev->thread.cpu_context + 1,	\
 				   &next->thread.cpu_context);		\
 	} while (0)

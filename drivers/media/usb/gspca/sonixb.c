@@ -466,6 +466,14 @@ static void reg_r(struct gspca_dev *gspca_dev,
 		dev_err(gspca_dev->v4l2_dev.dev,
 			"Error reading register %02x: %d\n", value, res);
 		gspca_dev->usb_err = res;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the result is zeroed to avoid uninitialized
+		 * values.
+		 */
+		gspca_dev->usb_buf[0] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -513,10 +521,14 @@ static void i2c_w(struct gspca_dev *gspca_dev, const u8 *buf)
 		if (gspca_dev->usb_buf[0] & 0x04) {
 			if (gspca_dev->usb_buf[0] & 0x08) {
 				dev_err(gspca_dev->v4l2_dev.dev,
+<<<<<<< HEAD
 					"i2c error writing %02x %02x %02x %02x"
 					" %02x %02x %02x %02x\n",
 					buf[0], buf[1], buf[2], buf[3],
 					buf[4], buf[5], buf[6], buf[7]);
+=======
+					"i2c error writing %8ph\n", buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				gspca_dev->usb_err = -EIO;
 			}
 			return;
@@ -753,7 +765,11 @@ static void setexposure(struct gspca_dev *gspca_dev)
 		/* In 640x480, if the reg11 has less than 4, the image is
 		   unstable (the bridge goes into a higher compression mode
 		   which we have not reverse engineered yet). */
+<<<<<<< HEAD
 		if (gspca_dev->width == 640 && reg11 < 4)
+=======
+		if (gspca_dev->pixfmt.width == 640 && reg11 < 4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			reg11 = 4;
 
 		/* frame exposure time in ms = 1000 * reg11 / 30    ->
@@ -916,7 +932,11 @@ static void do_autogain(struct gspca_dev *gspca_dev)
 				desired_avg_lum, deadzone))
 			sd->autogain_ignore_frames = AUTOGAIN_IGNORE_FRAMES;
 	} else {
+<<<<<<< HEAD
 		int gain_knee = gspca_dev->gain->maximum * 9 / 10;
+=======
+		int gain_knee = (s32)gspca_dev->gain->maximum * 9 / 10;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (gspca_expo_autogain(gspca_dev, avg_lum, desired_avg_lum,
 				deadzone, gain_knee, sd->exposure_knee))
 			sd->autogain_ignore_frames = AUTOGAIN_IGNORE_FRAMES;
@@ -1433,10 +1453,15 @@ static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x0c45, 0x600d), SB(PAS106, 101)},
 	{USB_DEVICE(0x0c45, 0x6011), SB(OV6650, 101)},
 	{USB_DEVICE(0x0c45, 0x6019), SB(OV7630, 101)},
+<<<<<<< HEAD
 #if !IS_ENABLED(CONFIG_USB_SN9C102)
 	{USB_DEVICE(0x0c45, 0x6024), SB(TAS5130CXX, 102)},
 	{USB_DEVICE(0x0c45, 0x6025), SB(TAS5130CXX, 102)},
 #endif
+=======
+	{USB_DEVICE(0x0c45, 0x6024), SB(TAS5130CXX, 102)},
+	{USB_DEVICE(0x0c45, 0x6025), SB(TAS5130CXX, 102)},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{USB_DEVICE(0x0c45, 0x6027), SB(OV7630, 101)}, /* Genius Eye 310 */
 	{USB_DEVICE(0x0c45, 0x6028), SB(PAS202, 102)},
 	{USB_DEVICE(0x0c45, 0x6029), SB(PAS106, 102)},

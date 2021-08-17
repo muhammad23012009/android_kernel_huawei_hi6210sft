@@ -18,8 +18,14 @@
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
 #include <asm/sched_clock.h>
 #include <asm/mach/time.h>
+=======
+#include <linux/sched_clock.h>
+
+#define PRIMA2_CLOCK_FREQ 1000000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SIRFSOC_TIMER_COUNTER_LO	0x0000
 #define SIRFSOC_TIMER_COUNTER_HI	0x0004
@@ -59,7 +65,12 @@ static irqreturn_t sirfsoc_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *ce = dev_id;
 
+<<<<<<< HEAD
 	WARN_ON(!(readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_STATUS) & BIT(0)));
+=======
+	WARN_ON(!(readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_STATUS) &
+		BIT(0)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* clear timer0 interrupt */
 	writel_relaxed(BIT(0), sirfsoc_timer_base + SIRFSOC_TIMER_STATUS);
@@ -70,14 +81,26 @@ static irqreturn_t sirfsoc_timer_interrupt(int irq, void *dev_id)
 }
 
 /* read 64-bit timer counter */
+<<<<<<< HEAD
 static cycle_t sirfsoc_timer_read(struct clocksource *cs)
+=======
+static cycle_t notrace sirfsoc_timer_read(struct clocksource *cs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u64 cycles;
 
 	/* latch the 64-bit timer counter */
+<<<<<<< HEAD
 	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT, sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
 	cycles = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_LATCHED_HI);
 	cycles = (cycles << 32) | readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_LATCHED_LO);
+=======
+	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT,
+		sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
+	cycles = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_LATCHED_HI);
+	cycles = (cycles << 32) |
+		readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_LATCHED_LO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return cycles;
 }
@@ -87,16 +110,27 @@ static int sirfsoc_timer_set_next_event(unsigned long delta,
 {
 	unsigned long now, next;
 
+<<<<<<< HEAD
 	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT, sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
 	now = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_LATCHED_LO);
 	next = now + delta;
 	writel_relaxed(next, sirfsoc_timer_base + SIRFSOC_TIMER_MATCH_0);
 	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT, sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
+=======
+	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT,
+		sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
+	now = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_LATCHED_LO);
+	next = now + delta;
+	writel_relaxed(next, sirfsoc_timer_base + SIRFSOC_TIMER_MATCH_0);
+	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT,
+		sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	now = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_LATCHED_LO);
 
 	return next - now > delta ? -ETIME : 0;
 }
 
+<<<<<<< HEAD
 static void sirfsoc_timer_set_mode(enum clock_event_mode mode,
 	struct clock_event_device *ce)
 {
@@ -115,16 +149,43 @@ static void sirfsoc_timer_set_mode(enum clock_event_mode mode,
 	case CLOCK_EVT_MODE_RESUME:
 		break;
 	}
+=======
+static int sirfsoc_timer_shutdown(struct clock_event_device *evt)
+{
+	u32 val = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+
+	writel_relaxed(val & ~BIT(0),
+		       sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+	return 0;
+}
+
+static int sirfsoc_timer_set_oneshot(struct clock_event_device *evt)
+{
+	u32 val = readl_relaxed(sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+
+	writel_relaxed(val | BIT(0), sirfsoc_timer_base + SIRFSOC_TIMER_INT_EN);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sirfsoc_clocksource_suspend(struct clocksource *cs)
 {
 	int i;
 
+<<<<<<< HEAD
 	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT, sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
 
 	for (i = 0; i < SIRFSOC_TIMER_REG_CNT; i++)
 		sirfsoc_timer_reg_val[i] = readl_relaxed(sirfsoc_timer_base + sirfsoc_timer_reg_list[i]);
+=======
+	writel_relaxed(SIRFSOC_TIMER_LATCH_BIT,
+		sirfsoc_timer_base + SIRFSOC_TIMER_LATCH);
+
+	for (i = 0; i < SIRFSOC_TIMER_REG_CNT; i++)
+		sirfsoc_timer_reg_val[i] =
+			readl_relaxed(sirfsoc_timer_base +
+				sirfsoc_timer_reg_list[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void sirfsoc_clocksource_resume(struct clocksource *cs)
@@ -132,17 +193,32 @@ static void sirfsoc_clocksource_resume(struct clocksource *cs)
 	int i;
 
 	for (i = 0; i < SIRFSOC_TIMER_REG_CNT - 2; i++)
+<<<<<<< HEAD
 		writel_relaxed(sirfsoc_timer_reg_val[i], sirfsoc_timer_base + sirfsoc_timer_reg_list[i]);
 
 	writel_relaxed(sirfsoc_timer_reg_val[SIRFSOC_TIMER_REG_CNT - 2], sirfsoc_timer_base + SIRFSOC_TIMER_COUNTER_LO);
 	writel_relaxed(sirfsoc_timer_reg_val[SIRFSOC_TIMER_REG_CNT - 1], sirfsoc_timer_base + SIRFSOC_TIMER_COUNTER_HI);
+=======
+		writel_relaxed(sirfsoc_timer_reg_val[i],
+			sirfsoc_timer_base + sirfsoc_timer_reg_list[i]);
+
+	writel_relaxed(sirfsoc_timer_reg_val[SIRFSOC_TIMER_REG_CNT - 2],
+		sirfsoc_timer_base + SIRFSOC_TIMER_COUNTER_LO);
+	writel_relaxed(sirfsoc_timer_reg_val[SIRFSOC_TIMER_REG_CNT - 1],
+		sirfsoc_timer_base + SIRFSOC_TIMER_COUNTER_HI);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct clock_event_device sirfsoc_clockevent = {
 	.name = "sirfsoc_clockevent",
 	.rating = 200,
 	.features = CLOCK_EVT_FEAT_ONESHOT,
+<<<<<<< HEAD
 	.set_mode = sirfsoc_timer_set_mode,
+=======
+	.set_state_shutdown = sirfsoc_timer_shutdown,
+	.set_state_oneshot = sirfsoc_timer_set_oneshot,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set_next_event = sirfsoc_timer_set_next_event,
 };
 
@@ -165,19 +241,30 @@ static struct irqaction sirfsoc_timer_irq = {
 };
 
 /* Overwrite weak default sched_clock with more precise one */
+<<<<<<< HEAD
 static u32 notrace sirfsoc_read_sched_clock(void)
 {
 	return (u32)(sirfsoc_timer_read(NULL) & 0xffffffff);
+=======
+static u64 notrace sirfsoc_read_sched_clock(void)
+{
+	return sirfsoc_timer_read(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init sirfsoc_clockevent_init(void)
 {
 	sirfsoc_clockevent.cpumask = cpumask_of(0);
+<<<<<<< HEAD
 	clockevents_config_and_register(&sirfsoc_clockevent, CLOCK_TICK_RATE,
+=======
+	clockevents_config_and_register(&sirfsoc_clockevent, PRIMA2_CLOCK_FREQ,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					2, -2);
 }
 
 /* initialize the kernel jiffy timer source */
+<<<<<<< HEAD
 static void __init sirfsoc_prima2_timer_init(struct device_node *np)
 {
 	unsigned long rate;
@@ -200,10 +287,48 @@ static void __init sirfsoc_prima2_timer_init(struct device_node *np)
 	sirfsoc_timer_irq.irq = irq_of_parse_and_map(np, 0);
 
 	writel_relaxed(rate / CLOCK_TICK_RATE / 2 - 1, sirfsoc_timer_base + SIRFSOC_TIMER_DIV);
+=======
+static int __init sirfsoc_prima2_timer_init(struct device_node *np)
+{
+	unsigned long rate;
+	struct clk *clk;
+	int ret;
+
+	clk = of_clk_get(np, 0);
+	if (IS_ERR(clk)) {
+		pr_err("Failed to get clock");
+		return PTR_ERR(clk);
+	}
+
+	ret = clk_prepare_enable(clk);
+	if (ret) {
+		pr_err("Failed to enable clock");
+		return ret;
+	}
+
+	rate = clk_get_rate(clk);
+
+	if (rate < PRIMA2_CLOCK_FREQ || rate % PRIMA2_CLOCK_FREQ) {
+		pr_err("Invalid clock rate");
+		return -EINVAL;
+	}
+
+	sirfsoc_timer_base = of_iomap(np, 0);
+	if (!sirfsoc_timer_base) {
+		pr_err("unable to map timer cpu registers\n");
+		return -ENXIO;
+	}
+
+	sirfsoc_timer_irq.irq = irq_of_parse_and_map(np, 0);
+
+	writel_relaxed(rate / PRIMA2_CLOCK_FREQ / 2 - 1,
+		sirfsoc_timer_base + SIRFSOC_TIMER_DIV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writel_relaxed(0, sirfsoc_timer_base + SIRFSOC_TIMER_COUNTER_LO);
 	writel_relaxed(0, sirfsoc_timer_base + SIRFSOC_TIMER_COUNTER_HI);
 	writel_relaxed(BIT(0), sirfsoc_timer_base + SIRFSOC_TIMER_STATUS);
 
+<<<<<<< HEAD
 	BUG_ON(clocksource_register_hz(&sirfsoc_clocksource, CLOCK_TICK_RATE));
 
 	setup_sched_clock(sirfsoc_read_sched_clock, 32, CLOCK_TICK_RATE);
@@ -213,3 +338,25 @@ static void __init sirfsoc_prima2_timer_init(struct device_node *np)
 	sirfsoc_clockevent_init();
 }
 CLOCKSOURCE_OF_DECLARE(sirfsoc_prima2_timer, "sirf,prima2-tick", sirfsoc_prima2_timer_init);
+=======
+	ret = clocksource_register_hz(&sirfsoc_clocksource, PRIMA2_CLOCK_FREQ);
+	if (ret) {
+		pr_err("Failed to register clocksource");
+		return ret;
+	}
+
+	sched_clock_register(sirfsoc_read_sched_clock, 64, PRIMA2_CLOCK_FREQ);
+
+	ret = setup_irq(sirfsoc_timer_irq.irq, &sirfsoc_timer_irq);
+	if (ret) {
+		pr_err("Failed to setup irq");
+		return ret;
+	}
+
+	sirfsoc_clockevent_init();
+
+	return 0;
+}
+CLOCKSOURCE_OF_DECLARE(sirfsoc_prima2_timer,
+	"sirf,prima2-tick", sirfsoc_prima2_timer_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

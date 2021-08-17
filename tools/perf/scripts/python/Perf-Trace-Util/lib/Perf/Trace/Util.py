@@ -71,7 +71,14 @@ try:
 except:
 	if not audit_package_warned:
 		audit_package_warned = True
+<<<<<<< HEAD
 		print "Install the audit-libs-python package to get syscall names"
+=======
+		print "Install the audit-libs-python package to get syscall names.\n" \
+                    "For example:\n  # apt-get install python-audit (Ubuntu)" \
+                    "\n  # yum install audit-libs-python (Fedora)" \
+                    "\n  etc.\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 def syscall_name(id):
 	try:

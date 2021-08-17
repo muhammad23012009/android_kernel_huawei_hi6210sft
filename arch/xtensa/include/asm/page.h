@@ -15,6 +15,7 @@
 #include <asm/types.h>
 #include <asm/cache.h>
 #include <platform/hardware.h>
+<<<<<<< HEAD
 
 /*
  * Fixed TLB translations in the processor.
@@ -24,6 +25,9 @@
 #define XCHAL_KSEG_BYPASS_VADDR 0xd8000000
 #define XCHAL_KSEG_PADDR        0x00000000
 #define XCHAL_KSEG_SIZE         0x08000000
+=======
+#include <asm/kmem_layout.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * PAGE_SHIFT determines the page size
@@ -35,10 +39,20 @@
 
 #ifdef CONFIG_MMU
 #define PAGE_OFFSET	XCHAL_KSEG_CACHED_VADDR
+<<<<<<< HEAD
 #define MAX_MEM_PFN	XCHAL_KSEG_SIZE
 #else
 #define PAGE_OFFSET	0
 #define MAX_MEM_PFN	(PLATFORM_DEFAULT_MEM_START + PLATFORM_DEFAULT_MEM_SIZE)
+=======
+#define PHYS_OFFSET	XCHAL_KSEG_PADDR
+#define MAX_LOW_PFN	(PHYS_PFN(XCHAL_KSEG_PADDR) + \
+			 PHYS_PFN(XCHAL_KSEG_SIZE))
+#else
+#define PAGE_OFFSET	PLATFORM_DEFAULT_MEM_START
+#define PHYS_OFFSET	PLATFORM_DEFAULT_MEM_START
+#define MAX_LOW_PFN	PHYS_PFN(0xfffffffful)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define PGTABLE_START	0x80000000
@@ -78,7 +92,13 @@
 # define DCACHE_ALIAS_EQ(a,b)	((((a) ^ (b)) & DCACHE_ALIAS_MASK) == 0)
 #else
 # define DCACHE_ALIAS_ORDER	0
+<<<<<<< HEAD
 #endif
+=======
+# define DCACHE_ALIAS(a)	((void)(a), 0)
+#endif
+#define DCACHE_N_COLORS		(1 << DCACHE_ALIAS_ORDER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if ICACHE_WAY_SIZE > PAGE_SIZE
 # define ICACHE_ALIAS_ORDER	(ICACHE_WAY_SHIFT - PAGE_SHIFT)
@@ -134,6 +154,10 @@ static inline __attribute_const__ int get_order(unsigned long size)
 #endif
 
 struct page;
+<<<<<<< HEAD
+=======
+struct vm_area_struct;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void clear_page(void *page);
 extern void copy_page(void *to, void *from);
 
@@ -142,9 +166,22 @@ extern void copy_page(void *to, void *from);
  * some extra work
  */
 
+<<<<<<< HEAD
 #if DCACHE_WAY_SIZE > PAGE_SIZE
 extern void clear_user_page(void*, unsigned long, struct page*);
 extern void copy_user_page(void*, void*, unsigned long, struct page*);
+=======
+#if defined(CONFIG_MMU) && DCACHE_WAY_SIZE > PAGE_SIZE
+extern void clear_page_alias(void *vaddr, unsigned long paddr);
+extern void copy_page_alias(void *to, void *from,
+			    unsigned long to_paddr, unsigned long from_paddr);
+
+#define clear_user_highpage clear_user_highpage
+void clear_user_highpage(struct page *page, unsigned long vaddr);
+#define __HAVE_ARCH_COPY_USER_HIGHPAGE
+void copy_user_highpage(struct page *to, struct page *from,
+			unsigned long vaddr, struct vm_area_struct *vma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 # define clear_user_page(page, vaddr, pg)	clear_page(page)
 # define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
@@ -157,10 +194,32 @@ extern void copy_user_page(void*, void*, unsigned long, struct page*);
  * addresses.
  */
 
+<<<<<<< HEAD
 #define ARCH_PFN_OFFSET		(PLATFORM_DEFAULT_MEM_START >> PAGE_SHIFT)
 
 #define __pa(x)			((unsigned long) (x) - PAGE_OFFSET)
 #define __va(x)			((void *)((unsigned long) (x) + PAGE_OFFSET))
+=======
+#define ARCH_PFN_OFFSET		(PHYS_OFFSET >> PAGE_SHIFT)
+
+#ifdef CONFIG_MMU
+static inline unsigned long ___pa(unsigned long va)
+{
+	unsigned long off = va - PAGE_OFFSET;
+
+	if (off >= XCHAL_KSEG_SIZE)
+		off -= XCHAL_KSEG_SIZE;
+
+	return off + PHYS_OFFSET;
+}
+#define __pa(x)	___pa((unsigned long)(x))
+#else
+#define __pa(x)	\
+	((unsigned long) (x) - PAGE_OFFSET + PHYS_OFFSET)
+#endif
+#define __va(x)	\
+	((void *)((unsigned long) (x) - PHYS_OFFSET + PAGE_OFFSET))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pfn_valid(pfn) \
 	((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
 

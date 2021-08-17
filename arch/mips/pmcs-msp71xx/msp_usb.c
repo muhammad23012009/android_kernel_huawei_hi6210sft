@@ -75,6 +75,7 @@ static struct mspusb_device msp_usbhost0_device = {
 		.resource	= msp_usbhost0_resources,
 	},
 };
+<<<<<<< HEAD
 
 /* MSP7140/MSP82XX has two USB2 hosts. */
 #ifdef CONFIG_MSP_HAS_DUAL_USB
@@ -116,6 +117,8 @@ static struct mspusb_device msp_usbhost1_device = {
 	},
 };
 #endif /* CONFIG_MSP_HAS_DUAL_USB */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_USB_EHCI_HCD */
 
 #if defined(CONFIG_USB_GADGET)
@@ -157,6 +160,7 @@ static struct mspusb_device msp_usbdev0_device = {
 		.resource	= msp_usbdev0_resources,
 	},
 };
+<<<<<<< HEAD
 
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 static struct resource msp_usbdev1_resources[] = {
@@ -197,6 +201,8 @@ static struct mspusb_device msp_usbdev1_device = {
 };
 
 #endif /* CONFIG_MSP_HAS_DUAL_USB */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_USB_GADGET */
 
 static int __init msp_usb_setup(void)
@@ -231,10 +237,13 @@ static int __init msp_usb_setup(void)
 #if defined(CONFIG_USB_EHCI_HCD)
 		msp_devs[0] = &msp_usbhost0_device.dev;
 		ppfinit("platform add USB HOST done %s.\n", msp_devs[0]->name);
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 		msp_devs[1] = &msp_usbhost1_device.dev;
 		ppfinit("platform add USB HOST done %s.\n", msp_devs[1]->name);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 		ppfinit("%s: echi_hcd not supported\n", __FILE__);
 #endif	/* CONFIG_USB_EHCI_HCD */
@@ -244,11 +253,14 @@ static int __init msp_usb_setup(void)
 		msp_devs[0] = &msp_usbdev0_device.dev;
 		ppfinit("platform add USB DEVICE done %s.\n"
 					, msp_devs[0]->name);
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 		msp_devs[1] = &msp_usbdev1_device.dev;
 		ppfinit("platform add USB DEVICE done %s.\n"
 					, msp_devs[1]->name);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 		ppfinit("%s: usb_gadget not supported\n", __FILE__);
 #endif	/* CONFIG_USB_GADGET */

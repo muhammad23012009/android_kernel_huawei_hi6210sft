@@ -82,9 +82,20 @@ EXPORT_SYMBOL(__ioremap);
 
 void __iounmap(volatile void __iomem *io_addr)
 {
+<<<<<<< HEAD
 	void *addr = (void *)(PAGE_MASK & (unsigned long)io_addr);
 
 	vunmap(addr);
+=======
+	unsigned long addr = (unsigned long)io_addr & PAGE_MASK;
+
+	/*
+	 * We could get an address outside vmalloc range in case
+	 * of ioremap_cache() reusing a RAM mapping.
+	 */
+	if (VMALLOC_START <= addr && addr < VMALLOC_END)
+		vunmap((void *)addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__iounmap);
 
@@ -99,6 +110,7 @@ void __iomem *ioremap_cache(phys_addr_t phys_addr, size_t size)
 }
 EXPORT_SYMBOL(ioremap_cache);
 
+<<<<<<< HEAD
 static pte_t bm_pte[PTRS_PER_PTE] __page_aligned_bss;
 #ifndef CONFIG_ARM64_64K_PAGES
 static pte_t bm_pmd[PTRS_PER_PMD] __page_aligned_bss;
@@ -189,3 +201,12 @@ void __init __early_set_fixmap(enum fixed_addresses idx,
 		flush_tlb_kernel_range(addr, addr+PAGE_SIZE);
 	}
 }
+=======
+/*
+ * Must be called after early_fixmap_init
+ */
+void __init early_ioremap_init(void)
+{
+	early_ioremap_setup();
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

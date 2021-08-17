@@ -6,6 +6,7 @@
 #ifndef _ASM_GENERIC_PCI_H
 #define _ASM_GENERIC_PCI_H
 
+<<<<<<< HEAD
 static inline struct resource *
 pcibios_select_root(struct pci_dev *pdev, struct resource *res)
 {
@@ -19,6 +20,8 @@ pcibios_select_root(struct pci_dev *pdev, struct resource *res)
 	return root;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef HAVE_ARCH_PCI_GET_LEGACY_IDE_IRQ
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {

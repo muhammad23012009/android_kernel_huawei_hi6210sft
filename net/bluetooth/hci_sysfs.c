@@ -1,14 +1,19 @@
 /* Bluetooth HCI driver model support. */
 
+<<<<<<< HEAD
 #include <linux/debugfs.h>
 #include <linux/module.h>
 #include <asm/unaligned.h>
+=======
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
 static struct class *bt_class;
 
+<<<<<<< HEAD
 struct dentry *bt_debugfs;
 EXPORT_SYMBOL_GPL(bt_debugfs);
 
@@ -77,6 +82,8 @@ static const struct attribute_group *bt_link_groups[] = {
 	NULL
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void bt_link_release(struct device *dev)
 {
 	struct hci_conn *conn = to_hci_conn(dev);
@@ -85,7 +92,10 @@ static void bt_link_release(struct device *dev)
 
 static struct device_type bt_link = {
 	.name    = "link",
+<<<<<<< HEAD
 	.groups  = bt_link_groups,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.release = bt_link_release,
 };
 
@@ -150,6 +160,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn)
 	hci_dev_put(hdev);
 }
 
+<<<<<<< HEAD
 static inline char *host_bustostr(int bus)
 {
 	switch (bus) {
@@ -386,12 +397,21 @@ static const struct attribute_group *bt_host_groups[] = {
 static void bt_host_release(struct device *dev)
 {
 	struct hci_dev *hdev = to_hci_dev(dev);
+=======
+static void bt_host_release(struct device *dev)
+{
+	struct hci_dev *hdev = to_hci_dev(dev);
+
+	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
+		hci_cleanup_dev(hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(hdev);
 	module_put(THIS_MODULE);
 }
 
 static struct device_type bt_host = {
 	.name    = "host",
+<<<<<<< HEAD
 	.groups  = bt_host_groups,
 	.release = bt_host_release,
 };
@@ -531,6 +551,11 @@ static int auto_accept_delay_get(void *data, u64 *val)
 DEFINE_SIMPLE_ATTRIBUTE(auto_accept_delay_fops, auto_accept_delay_get,
 			auto_accept_delay_set, "%llu\n");
 
+=======
+	.release = bt_host_release,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void hci_init_sysfs(struct hci_dev *hdev)
 {
 	struct device *dev = &hdev->dev;
@@ -542,6 +567,7 @@ void hci_init_sysfs(struct hci_dev *hdev)
 	device_initialize(dev);
 }
 
+<<<<<<< HEAD
 int hci_add_sysfs(struct hci_dev *hdev)
 {
 	struct device *dev = &hdev->dev;
@@ -591,11 +617,21 @@ int __init bt_sysfs_init(void)
 	bt_class = class_create(THIS_MODULE, "bluetooth");
 
 	return PTR_RET(bt_class);
+=======
+int __init bt_sysfs_init(void)
+{
+	bt_class = class_create(THIS_MODULE, "bluetooth");
+
+	return PTR_ERR_OR_ZERO(bt_class);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void bt_sysfs_cleanup(void)
 {
 	class_destroy(bt_class);
+<<<<<<< HEAD
 
 	debugfs_remove_recursive(bt_debugfs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

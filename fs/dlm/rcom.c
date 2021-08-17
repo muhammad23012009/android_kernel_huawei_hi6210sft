@@ -206,7 +206,11 @@ static void receive_rcom_status(struct dlm_ls *ls, struct dlm_rcom *rc_in)
 
 	rs = (struct rcom_status *)rc_in->rc_buf;
 
+<<<<<<< HEAD
 	if (!(rs->rs_flags & DLM_RSF_NEED_SLOTS)) {
+=======
+	if (!(le32_to_cpu(rs->rs_flags) & DLM_RSF_NEED_SLOTS)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = dlm_recover_status(ls);
 		goto do_create;
 	}

@@ -21,13 +21,17 @@
 #include <asm/asmmacro.h>
 #include <asm/irqflags.h>
 #include <asm/regdef.h>
+<<<<<<< HEAD
 #include <asm/pgtable-bits.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/mipsregs.h>
 #include <asm/stackframe.h>
 
 #include <kernel-entry-init.h>
 
 	/*
+<<<<<<< HEAD
 	 * inputs are the text nasid in t1, data nasid in t2.
 	 */
 	.macro MAPPED_KERNEL_SETUP_TLB
@@ -67,6 +71,8 @@
 	.endm
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * For the moment disable interrupts, mark the kernel mode and
 	 * set ST0_KX so that the CPU does not spit fire when using
 	 * 64-bit addresses.  A full initialization of the CPU's status
@@ -74,6 +80,7 @@
 	 */
 	.macro	setup_c0_status set clr
 	.set	push
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	/*
 	 * For SMTC, we need to set privilege and disable interrupts only for
@@ -94,13 +101,18 @@
 	xor	t0, ST0_EXL | ST0_ERL | \clr
 	mtc0	t0, CP0_STATUS
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfc0	t0, CP0_STATUS
 	or	t0, ST0_CU0|\set|0x1f|\clr
 	xor	t0, 0x1f|\clr
 	mtc0	t0, CP0_STATUS
 	.set	noreorder
 	sll	zero,3				# ehb
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set	pop
 	.endm
 
@@ -154,6 +166,7 @@ NESTED(kernel_entry, 16, sp)			# kernel entry point
 	jr	t0
 0:
 
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	/*
 	 * In SMTC kernel, "CLI" is thread-specific, in TCStatus.
@@ -172,6 +185,27 @@ NESTED(kernel_entry, 16, sp)			# kernel entry point
 	mtc0	t0, CP0_STATUS
 #endif /* CONFIG_MIPS_MT_SMTC */
 
+=======
+#ifdef CONFIG_USE_OF
+#ifdef CONFIG_MIPS_RAW_APPENDED_DTB
+	PTR_LA		t2, __appended_dtb
+
+#ifdef CONFIG_CPU_BIG_ENDIAN
+	li		t1, 0xd00dfeed
+#else
+	li		t1, 0xedfe0dd0
+#endif
+	lw		t0, (t2)
+	beq		t0, t1, dtb_found
+#endif
+	li		t1, -2
+	move		t2, a1
+	beq		a0, t1, dtb_found
+
+	li		t2, 0
+dtb_found:
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR_LA		t0, __bss_start		# clear .bss
 	LONG_S		zero, (t0)
 	PTR_LA		t1, __bss_stop - LONGSIZE
@@ -185,6 +219,13 @@ NESTED(kernel_entry, 16, sp)			# kernel entry point
 	LONG_S		a2, fw_arg2
 	LONG_S		a3, fw_arg3
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_USE_OF
+	LONG_S		t2, fw_passed_dtb
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MTC0		zero, CP0_CONTEXT	# clear context register
 	PTR_LA		$28, init_thread_union
 	/* Set the SP after an empty pt_regs.  */
@@ -194,17 +235,44 @@ NESTED(kernel_entry, 16, sp)			# kernel entry point
 	set_saved_sp	sp, t0, t1
 	PTR_SUBU	sp, 4 * SZREG		# init stack pointer
 
+<<<<<<< HEAD
 	j		start_kernel
 	END(kernel_entry)
 
 	__CPUINIT
 
+=======
+#ifdef CONFIG_RELOCATABLE
+	/* Copy kernel and apply the relocations */
+	jal		relocate_kernel
+
+	/* Repoint the sp into the new kernel image */
+	PTR_LI		sp, _THREAD_SIZE - 32 - PT_SIZE
+	PTR_ADDU	sp, $28
+	set_saved_sp	sp, t0, t1
+	PTR_SUBU	sp, 4 * SZREG		# init stack pointer
+
+	/*
+	 * relocate_kernel returns the entry point either
+	 * in the relocated kernel or the original if for
+	 * some reason relocation failed - jump there now
+	 * with instruction hazard barrier because of the
+	 * newly sync'd icache.
+	 */
+	jr.hb		v0
+#else
+	j		start_kernel
+#endif
+	END(kernel_entry)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 /*
  * SMP slave cpus entry point.	Board specific code for bootstrap calls this
  * function after setting up the stack and gp registers.
  */
 NESTED(smp_bootstrap, 16, sp)
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	/*
 	 * Read-modify-writes of Status must be atomic, and this
@@ -229,3 +297,10 @@ NESTED(smp_bootstrap, 16, sp)
 #endif /* CONFIG_SMP */
 
 	__FINIT
+=======
+	smp_slave_setup
+	setup_c0_status_sec
+	j	start_secondary
+	END(smp_bootstrap)
+#endif /* CONFIG_SMP */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copied from arch/arm/include/asm/opcodes.h
  *
@@ -229,3 +230,10 @@ extern asmlinkage unsigned int arm_check_condition(u32 opcode, u64 psr);
 #endif
 
 #endif /* __ASM_ARM_OPCODES_H */
+=======
+#ifdef CONFIG_CPU_BIG_ENDIAN
+#define CONFIG_CPU_ENDIAN_BE8 CONFIG_CPU_BIG_ENDIAN
+#endif
+
+#include <../../arm/include/asm/opcodes.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

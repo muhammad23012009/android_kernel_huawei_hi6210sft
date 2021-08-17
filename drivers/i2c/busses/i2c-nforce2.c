@@ -17,10 +17,13 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+<<<<<<< HEAD
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 /*
@@ -51,7 +54,10 @@
 #include <linux/kernel.h>
 #include <linux/stddef.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/delay.h>
 #include <linux/dmi.h>
@@ -132,7 +138,11 @@ static struct pci_driver nforce2_driver;
 
 /* For multiplexing support, we need a global reference to the 1st
    SMBus channel */
+<<<<<<< HEAD
 #if defined CONFIG_I2C_NFORCE2_S4985 || defined CONFIG_I2C_NFORCE2_S4985_MODULE
+=======
+#if IS_ENABLED(CONFIG_I2C_NFORCE2_S4985)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct i2c_adapter *nforce2_smbus;
 EXPORT_SYMBOL_GPL(nforce2_smbus);
 
@@ -307,7 +317,11 @@ static struct i2c_algorithm smbus_algorithm = {
 };
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(nforce2_ids) = {
+=======
+static const struct pci_device_id nforce2_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE2_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE2S_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE3_SMBUS) },
@@ -371,7 +385,10 @@ static int nforce2_probe_smb(struct pci_dev *dev, int bar, int alt_reg,
 
 	error = i2c_add_adapter(&smbus->adapter);
 	if (error) {
+<<<<<<< HEAD
 		dev_err(&smbus->adapter.dev, "Failed to register adapter.\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		release_region(smbus->base, smbus->size);
 		return error;
 	}

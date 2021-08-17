@@ -11,16 +11,28 @@
  * is licensed "as is" without any warranty of any kind, whether express
  * or implied.
  */
+<<<<<<< HEAD
+=======
+#include <linux/clkdev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/gpio.h>
 #include <linux/init.h>
 #include <linux/clk.h>
 #include <linux/platform_device.h>
 #include <linux/cpufreq.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
 
 #include <asm/mach/map.h>
 
 #include <mach/psc.h>
+=======
+#include <linux/platform_data/gpio-davinci.h>
+
+#include <asm/mach/map.h>
+
+#include "psc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/irqs.h>
 #include <mach/cputype.h>
 #include <mach/common.h>
@@ -28,14 +40,20 @@
 #include <mach/da8xx.h>
 #include <mach/cpufreq.h>
 #include <mach/pm.h>
+<<<<<<< HEAD
 #include <mach/gpio-davinci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "clock.h"
 #include "mux.h"
 
+<<<<<<< HEAD
 /* SoC specific clock flags */
 #define DA850_CLK_ASYNC3	BIT(16)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DA850_PLL1_BASE		0x01e1a000
 #define DA850_TIMER64P2_BASE	0x01f0c000
 #define DA850_TIMER64P3_BASE	0x01f0d000
@@ -160,6 +178,35 @@ static struct clk pll1_sysclk3 = {
 	.div_reg	= PLLDIV3,
 };
 
+<<<<<<< HEAD
+=======
+static int da850_async3_set_parent(struct clk *clk, struct clk *parent)
+{
+	u32 val;
+
+	val = readl(DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG));
+
+	if (parent == &pll0_sysclk2) {
+		val &= ~CFGCHIP3_ASYNC3_CLKSRC;
+	} else if (parent == &pll1_sysclk2) {
+		val |= CFGCHIP3_ASYNC3_CLKSRC;
+	} else {
+		pr_err("Bad parent on async3 clock mux\n");
+		return -EINVAL;
+	}
+
+	writel(val, DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG));
+
+	return 0;
+}
+
+static struct clk async3_clk = {
+	.name		= "async3",
+	.parent		= &pll1_sysclk2,
+	.set_parent	= da850_async3_set_parent,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct clk i2c0_clk = {
 	.name		= "i2c0",
 	.parent		= &pll0_aux_clk,
@@ -233,18 +280,30 @@ static struct clk uart0_clk = {
 
 static struct clk uart1_clk = {
 	.name		= "uart1",
+<<<<<<< HEAD
 	.parent		= &pll0_sysclk2,
 	.lpsc		= DA8XX_LPSC1_UART1,
 	.gpsc		= 1,
 	.flags		= DA850_CLK_ASYNC3,
+=======
+	.parent		= &async3_clk,
+	.lpsc		= DA8XX_LPSC1_UART1,
+	.gpsc		= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct clk uart2_clk = {
 	.name		= "uart2",
+<<<<<<< HEAD
 	.parent		= &pll0_sysclk2,
 	.lpsc		= DA8XX_LPSC1_UART2,
 	.gpsc		= 1,
 	.flags		= DA850_CLK_ASYNC3,
+=======
+	.parent		= &async3_clk,
+	.lpsc		= DA8XX_LPSC1_UART2,
+	.gpsc		= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct clk aintc_clk = {
@@ -297,12 +356,44 @@ static struct clk emac_clk = {
 	.gpsc		= 1,
 };
 
+<<<<<<< HEAD
 static struct clk mcasp_clk = {
 	.name		= "mcasp",
 	.parent		= &pll0_sysclk2,
 	.lpsc		= DA8XX_LPSC1_McASP0,
 	.gpsc		= 1,
 	.flags		= DA850_CLK_ASYNC3,
+=======
+/*
+ * In order to avoid adding the emac_clk to the clock lookup table twice (and
+ * screwing up the linked list in the process) create a separate clock for
+ * mdio inheriting the rate from emac_clk.
+ */
+static struct clk mdio_clk = {
+	.name		= "mdio",
+	.parent		= &emac_clk,
+};
+
+static struct clk mcasp_clk = {
+	.name		= "mcasp",
+	.parent		= &async3_clk,
+	.lpsc		= DA8XX_LPSC1_McASP0,
+	.gpsc		= 1,
+};
+
+static struct clk mcbsp0_clk = {
+	.name		= "mcbsp0",
+	.parent		= &async3_clk,
+	.lpsc		= DA850_LPSC1_McBSP0,
+	.gpsc		= 1,
+};
+
+static struct clk mcbsp1_clk = {
+	.name		= "mcbsp1",
+	.parent		= &async3_clk,
+	.lpsc		= DA850_LPSC1_McBSP1,
+	.gpsc		= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct clk lcdc_clk = {
@@ -354,10 +445,16 @@ static struct clk spi0_clk = {
 
 static struct clk spi1_clk = {
 	.name		= "spi1",
+<<<<<<< HEAD
 	.parent		= &pll0_sysclk2,
 	.lpsc		= DA8XX_LPSC1_SPI1,
 	.gpsc		= 1,
 	.flags		= DA850_CLK_ASYNC3,
+=======
+	.parent		= &async3_clk,
+	.lpsc		= DA8XX_LPSC1_SPI1,
+	.gpsc		= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct clk vpif_clk = {
@@ -385,10 +482,16 @@ static struct clk dsp_clk = {
 
 static struct clk ehrpwm_clk = {
 	.name		= "ehrpwm",
+<<<<<<< HEAD
 	.parent		= &pll0_sysclk2,
 	.lpsc		= DA8XX_LPSC1_PWM,
 	.gpsc		= 1,
 	.flags		= DA850_CLK_ASYNC3,
+=======
+	.parent		= &async3_clk,
+	.lpsc		= DA8XX_LPSC1_PWM,
+	.gpsc		= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define DA8XX_EHRPWM_TBCLKSYNC	BIT(12)
@@ -420,10 +523,16 @@ static struct clk ehrpwm_tbclk = {
 
 static struct clk ecap_clk = {
 	.name		= "ecap",
+<<<<<<< HEAD
 	.parent		= &pll0_sysclk2,
 	.lpsc		= DA8XX_LPSC1_ECAP,
 	.gpsc		= 1,
 	.flags		= DA850_CLK_ASYNC3,
+=======
+	.parent		= &async3_clk,
+	.lpsc		= DA8XX_LPSC1_ECAP,
+	.gpsc		= 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct clk_lookup da850_clks[] = {
@@ -441,9 +550,16 @@ static struct clk_lookup da850_clks[] = {
 	CLK(NULL,		"pll1_aux",	&pll1_aux_clk),
 	CLK(NULL,		"pll1_sysclk2",	&pll1_sysclk2),
 	CLK(NULL,		"pll1_sysclk3",	&pll1_sysclk3),
+<<<<<<< HEAD
 	CLK("i2c_davinci.1",	NULL,		&i2c0_clk),
 	CLK(NULL,		"timer0",	&timerp64_0_clk),
 	CLK("watchdog",		NULL,		&timerp64_1_clk),
+=======
+	CLK(NULL,		"async3",	&async3_clk),
+	CLK("i2c_davinci.1",	NULL,		&i2c0_clk),
+	CLK(NULL,		"timer0",	&timerp64_0_clk),
+	CLK("davinci-wdt",	NULL,		&timerp64_1_clk),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CLK(NULL,		"arm_rom",	&arm_rom_clk),
 	CLK(NULL,		"tpcc0",	&tpcc0_clk),
 	CLK(NULL,		"tptc0",	&tptc0_clk),
@@ -451,9 +567,15 @@ static struct clk_lookup da850_clks[] = {
 	CLK(NULL,		"tpcc1",	&tpcc1_clk),
 	CLK(NULL,		"tptc2",	&tptc2_clk),
 	CLK("pruss_uio",	"pruss",	&pruss_clk),
+<<<<<<< HEAD
 	CLK(NULL,		"uart0",	&uart0_clk),
 	CLK(NULL,		"uart1",	&uart1_clk),
 	CLK(NULL,		"uart2",	&uart2_clk),
+=======
+	CLK("serial8250.0",	NULL,		&uart0_clk),
+	CLK("serial8250.1",	NULL,		&uart1_clk),
+	CLK("serial8250.2",	NULL,		&uart2_clk),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CLK(NULL,		"aintc",	&aintc_clk),
 	CLK(NULL,		"gpio",		&gpio_clk),
 	CLK("i2c_davinci.2",	NULL,		&i2c1_clk),
@@ -461,17 +583,32 @@ static struct clk_lookup da850_clks[] = {
 	CLK(NULL,		"arm",		&arm_clk),
 	CLK(NULL,		"rmii",		&rmii_clk),
 	CLK("davinci_emac.1",	NULL,		&emac_clk),
+<<<<<<< HEAD
 	CLK("davinci-mcasp.0",	NULL,		&mcasp_clk),
 	CLK("da8xx_lcdc.0",	"fck",		&lcdc_clk),
 	CLK("da830-mmc.0",	NULL,		&mmcsd0_clk),
 	CLK("da830-mmc.1",	NULL,		&mmcsd1_clk),
+=======
+	CLK("davinci_mdio.0",	"fck",		&mdio_clk),
+	CLK("davinci-mcasp.0",	NULL,		&mcasp_clk),
+	CLK("davinci-mcbsp.0",	NULL,		&mcbsp0_clk),
+	CLK("davinci-mcbsp.1",	NULL,		&mcbsp1_clk),
+	CLK("da8xx_lcdc.0",	"fck",		&lcdc_clk),
+	CLK("da830-mmc.0",	NULL,		&mmcsd0_clk),
+	CLK("da830-mmc.1",	NULL,		&mmcsd1_clk),
+	CLK("ti-aemif",		NULL,		&aemif_clk),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CLK(NULL,		"aemif",	&aemif_clk),
 	CLK(NULL,		"usb11",	&usb11_clk),
 	CLK(NULL,		"usb20",	&usb20_clk),
 	CLK("spi_davinci.0",	NULL,		&spi0_clk),
 	CLK("spi_davinci.1",	NULL,		&spi1_clk),
 	CLK("vpif",		NULL,		&vpif_clk),
+<<<<<<< HEAD
 	CLK("ahci",		NULL,		&sata_clk),
+=======
+	CLK("ahci_da850",		NULL,		&sata_clk),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	CLK("davinci-rproc.0",	NULL,		&dsp_clk),
 	CLK("ehrpwm",		"fck",		&ehrpwm_clk),
 	CLK("ehrpwm",		"tbclk",	&ehrpwm_tbclk),
@@ -713,7 +850,11 @@ const short da850_lcdcntl_pins[] __initconst = {
 	-1
 };
 
+<<<<<<< HEAD
 const short da850_vpif_capture_pins[] __initdata = {
+=======
+const short da850_vpif_capture_pins[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DA850_VPIF_DIN0, DA850_VPIF_DIN1, DA850_VPIF_DIN2, DA850_VPIF_DIN3,
 	DA850_VPIF_DIN4, DA850_VPIF_DIN5, DA850_VPIF_DIN6, DA850_VPIF_DIN7,
 	DA850_VPIF_DIN8, DA850_VPIF_DIN9, DA850_VPIF_DIN10, DA850_VPIF_DIN11,
@@ -723,7 +864,11 @@ const short da850_vpif_capture_pins[] __initdata = {
 	-1
 };
 
+<<<<<<< HEAD
 const short da850_vpif_display_pins[] __initdata = {
+=======
+const short da850_vpif_display_pins[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DA850_VPIF_DOUT0, DA850_VPIF_DOUT1, DA850_VPIF_DOUT2, DA850_VPIF_DOUT3,
 	DA850_VPIF_DOUT4, DA850_VPIF_DOUT5, DA850_VPIF_DOUT6, DA850_VPIF_DOUT7,
 	DA850_VPIF_DOUT8, DA850_VPIF_DOUT9, DA850_VPIF_DOUT10,
@@ -907,6 +1052,7 @@ static struct davinci_timer_info da850_timer_info = {
 	.clocksource_id	= T0_TOP,
 };
 
+<<<<<<< HEAD
 static void da850_set_async3_src(int pllnum)
 {
 	struct clk *clk, *newparent = pllnum ? &pll1_sysclk2 : &pll0_sysclk2;
@@ -931,6 +1077,8 @@ static void da850_set_async3_src(int pllnum)
 	__raw_writel(v, DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG));
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_CPU_FREQ
 /*
  * Notes:
@@ -1004,7 +1152,11 @@ static const struct da850_opp da850_opp_96 = {
 
 #define OPP(freq) 		\
 	{				\
+<<<<<<< HEAD
 		.index = (unsigned int) &da850_opp_##freq,	\
+=======
+		.driver_data = (unsigned int) &da850_opp_##freq,	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.frequency = freq * 1000, \
 	}
 
@@ -1016,7 +1168,11 @@ static struct cpufreq_frequency_table da850_freq_table[] = {
 	OPP(200),
 	OPP(96),
 	{
+<<<<<<< HEAD
 		.index		= 0,
+=======
+		.driver_data		= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.frequency	= CPUFREQ_TABLE_END,
 	},
 };
@@ -1044,7 +1200,11 @@ static int da850_set_voltage(unsigned int index)
 	if (!cvdd)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	opp = (struct da850_opp *) cpufreq_info.freq_table[index].index;
+=======
+	opp = (struct da850_opp *) cpufreq_info.freq_table[index].driver_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return regulator_set_voltage(cvdd, opp->cvdd_min, opp->cvdd_max);
 }
@@ -1091,6 +1251,7 @@ int da850_register_cpufreq(char *async_clk)
 
 static int da850_round_armrate(struct clk *clk, unsigned long rate)
 {
+<<<<<<< HEAD
 	int i, ret = 0, diff;
 	unsigned int best = (unsigned int) -1;
 	struct cpufreq_frequency_table *table = cpufreq_info.freq_table;
@@ -1099,12 +1260,27 @@ static int da850_round_armrate(struct clk *clk, unsigned long rate)
 
 	for (i = 0; table[i].frequency != CPUFREQ_TABLE_END; i++) {
 		diff = table[i].frequency - rate;
+=======
+	int ret = 0, diff;
+	unsigned int best = (unsigned int) -1;
+	struct cpufreq_frequency_table *table = cpufreq_info.freq_table;
+	struct cpufreq_frequency_table *pos;
+
+	rate /= 1000; /* convert to kHz */
+
+	cpufreq_for_each_entry(pos, table) {
+		diff = pos->frequency - rate;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (diff < 0)
 			diff = -diff;
 
 		if (diff < best) {
 			best = diff;
+<<<<<<< HEAD
 			ret = table[i].frequency;
+=======
+			ret = pos->frequency;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -1125,7 +1301,11 @@ static int da850_set_pll0rate(struct clk *clk, unsigned long index)
 	struct pll_data *pll = clk->pll_data;
 	int ret;
 
+<<<<<<< HEAD
 	opp = (struct da850_opp *) cpufreq_info.freq_table[index].index;
+=======
+	opp = (struct da850_opp *) cpufreq_info.freq_table[index].driver_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prediv = opp->prediv;
 	mult = opp->mult;
 	postdiv = opp->postdiv;
@@ -1280,6 +1460,18 @@ int __init da850_register_vpif_capture(struct vpif_capture_config
 	return platform_device_register(&da850_vpif_capture_dev);
 }
 
+<<<<<<< HEAD
+=======
+static struct davinci_gpio_platform_data da850_gpio_platform_data = {
+	.ngpio = 144,
+};
+
+int __init da850_register_gpio(void)
+{
+	return da8xx_register_gpio(&da850_gpio_platform_data);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct davinci_soc_info davinci_soc_info_da850 = {
 	.io_desc		= da850_io_desc,
 	.io_desc_num		= ARRAY_SIZE(da850_io_desc),
@@ -1297,11 +1489,14 @@ static struct davinci_soc_info davinci_soc_info_da850 = {
 	.intc_irq_prios		= da850_default_priorities,
 	.intc_irq_num		= DA850_N_CP_INTC_IRQ,
 	.timer_info		= &da850_timer_info,
+<<<<<<< HEAD
 	.gpio_type		= GPIO_TYPE_DAVINCI,
 	.gpio_base		= DA8XX_GPIO_BASE,
 	.gpio_num		= 144,
 	.gpio_irq		= IRQ_DA8XX_GPIO0,
 	.serial_dev		= &da8xx_serial_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.emac_pdata		= &da8xx_emac_pdata,
 	.sram_dma		= DA8XX_SHARED_RAM_BASE,
 	.sram_len		= SZ_128K,
@@ -1321,6 +1516,7 @@ void __init da850_init(void)
 	if (WARN(!da8xx_syscfg1_base, "Unable to map syscfg1 module"))
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * Move the clock source of Async3 domain to PLL1 SYSCLK2.
 	 * This helps keeping the peripherals on this domain insulated
@@ -1330,6 +1526,8 @@ void __init da850_init(void)
 	 */
 	da850_set_async3_src(1);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Unlock writing to PLL0 registers */
 	v = __raw_readl(DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP0_REG));
 	v &= ~CFGCHIP0_PLL_MASTER_LOCK;
@@ -1339,4 +1537,9 @@ void __init da850_init(void)
 	v = __raw_readl(DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG));
 	v &= ~CFGCHIP3_PLL1_MASTER_LOCK;
 	__raw_writel(v, DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG));
+<<<<<<< HEAD
+=======
+
+	davinci_clk_init(davinci_soc_info_da850.cpu_clks);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

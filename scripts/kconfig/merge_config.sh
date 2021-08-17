@@ -32,10 +32,17 @@ usage() {
 	echo "  -m    only merge the fragments, do not execute the make command"
 	echo "  -n    use allnoconfig instead of alldefconfig"
 	echo "  -r    list redundant entries when merging fragments"
+<<<<<<< HEAD
 	echo "  -O    dir to put generated output files"
 }
 
 MAKE=true
+=======
+	echo "  -O    dir to put generated output files.  Consider setting \$KCONFIG_CONFIG instead."
+}
+
+RUNMAKE=true
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ALLTARGET=alldefconfig
 WARNREDUN=false
 OUTPUT=.
@@ -48,7 +55,11 @@ while true; do
 		continue
 		;;
 	"-m")
+<<<<<<< HEAD
 		MAKE=false
+=======
+		RUNMAKE=false
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		shift
 		continue
 		;;
@@ -77,9 +88,33 @@ while true; do
 	esac
 done
 
+<<<<<<< HEAD
 INITFILE=$1
 shift;
 
+=======
+if [ "$#" -lt 1 ] ; then
+	usage
+	exit
+fi
+
+if [ -z "$KCONFIG_CONFIG" ]; then
+	if [ "$OUTPUT" != . ]; then
+		KCONFIG_CONFIG=$(readlink -m -- "$OUTPUT/.config")
+	else
+		KCONFIG_CONFIG=.config
+	fi
+fi
+
+INITFILE=$1
+shift;
+
+if [ ! -r "$INITFILE" ]; then
+	echo "The base file '$INITFILE' does not exist.  Exit." >&2
+	exit 1
+fi
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MERGE_LIST=$*
 SED_CONFIG_EXP="s/^\(# \)\{0,1\}\(CONFIG_[a-zA-Z0-9_]*\)[= ].*/\2/p"
 TMP_FILE=$(mktemp ./.tmp.config.XXXXXXXXXX)
@@ -87,6 +122,7 @@ TMP_FILE=$(mktemp ./.tmp.config.XXXXXXXXXX)
 echo "Using $INITFILE as base"
 cat $INITFILE > $TMP_FILE
 
+<<<<<<< HEAD
 # Merge files, printing warnings on overrided values
 for MERGE_FILE in $MERGE_LIST ; do
 	echo "Merging $MERGE_FILE"
@@ -98,23 +134,53 @@ for MERGE_FILE in $MERGE_LIST ; do
 			PREV_VAL=$(grep -w $CFG $TMP_FILE)
 			NEW_VAL=$(grep -w $CFG $MERGE_FILE)
 			if [ "x$PREV_VAL" != "x$NEW_VAL" ] ; then
+=======
+# Merge files, printing warnings on overridden values
+for MERGE_FILE in $MERGE_LIST ; do
+	echo "Merging $MERGE_FILE"
+	if [ ! -r "$MERGE_FILE" ]; then
+		echo "The merge file '$MERGE_FILE' does not exist.  Exit." >&2
+		exit 1
+	fi
+	CFG_LIST=$(sed -n "$SED_CONFIG_EXP" $MERGE_FILE)
+
+	for CFG in $CFG_LIST ; do
+		grep -q -w $CFG $TMP_FILE || continue
+		PREV_VAL=$(grep -w $CFG $TMP_FILE)
+		NEW_VAL=$(grep -w $CFG $MERGE_FILE)
+		if [ "x$PREV_VAL" != "x$NEW_VAL" ] ; then
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			echo Value of $CFG is redefined by fragment $MERGE_FILE:
 			echo Previous  value: $PREV_VAL
 			echo New value:       $NEW_VAL
 			echo
+<<<<<<< HEAD
 			elif [ "$WARNREDUN" = "true" ]; then
 			echo Value of $CFG is redundant by fragment $MERGE_FILE:
 			fi
 			sed -i "/$CFG[ =]/d" $TMP_FILE
 		fi
+=======
+		elif [ "$WARNREDUN" = "true" ]; then
+			echo Value of $CFG is redundant by fragment $MERGE_FILE:
+		fi
+		sed -i "/$CFG[ =]/d" $TMP_FILE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	done
 	cat $MERGE_FILE >> $TMP_FILE
 done
 
+<<<<<<< HEAD
 if [ "$MAKE" = "false" ]; then
 	cp $TMP_FILE $OUTPUT/.config
 	echo "#"
 	echo "# merged configuration written to $OUTPUT/.config (needs make)"
+=======
+if [ "$RUNMAKE" = "false" ]; then
+	cp -T -- "$TMP_FILE" "$KCONFIG_CONFIG"
+	echo "#"
+	echo "# merged configuration written to $KCONFIG_CONFIG (needs make)"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	echo "#"
 	clean_up
 	exit
@@ -138,7 +204,11 @@ make KCONFIG_ALLCONFIG=$TMP_FILE $OUTPUT_ARG $ALLTARGET
 for CFG in $(sed -n "$SED_CONFIG_EXP" $TMP_FILE); do
 
 	REQUESTED_VAL=$(grep -w -e "$CFG" $TMP_FILE)
+<<<<<<< HEAD
 	ACTUAL_VAL=$(grep -w -e "$CFG" $OUTPUT/.config)
+=======
+	ACTUAL_VAL=$(grep -w -e "$CFG" "$KCONFIG_CONFIG")
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if [ "x$REQUESTED_VAL" != "x$ACTUAL_VAL" ] ; then
 		echo "Value requested for $CFG not in final .config"
 		echo "Requested value:  $REQUESTED_VAL"

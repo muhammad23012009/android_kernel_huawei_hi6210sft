@@ -144,7 +144,11 @@ module_param(max_duration, int, 0444);
 
 
 /**
+<<<<<<< HEAD
  * we can detect a core multipiler from dir0_lsb
+=======
+ * we can detect a core multiplier from dir0_lsb
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * from GX1 datasheet p.56,
  *	MULT[3:0]:
  *	0000 = SYSCLK multiplied by 4 (test only)
@@ -183,7 +187,11 @@ static void gx_write_byte(int reg, int value)
  * gx_detect_chipset:
  *
  **/
+<<<<<<< HEAD
 static __init struct pci_dev *gx_detect_chipset(void)
+=======
+static struct pci_dev * __init gx_detect_chipset(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *gx_pci = NULL;
 
@@ -265,7 +273,11 @@ static void gx_set_cpuspeed(struct cpufreq_policy *policy, unsigned int khz)
 
 	freqs.new = new_khz;
 
+<<<<<<< HEAD
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
+=======
+	cpufreq_freq_transition_begin(policy, &freqs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_save(flags);
 
 	if (new_khz != stock_freq) {
@@ -314,7 +326,11 @@ static void gx_set_cpuspeed(struct cpufreq_policy *policy, unsigned int khz)
 
 	gx_params->pci_suscfg = suscfg;
 
+<<<<<<< HEAD
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+=======
+	cpufreq_freq_transition_end(policy, &freqs, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("suspend modulation w/ duration of ON:%d us, OFF:%d us\n",
 		gx_params->on_duration * 32, gx_params->off_duration * 32);
@@ -346,7 +362,11 @@ static int cpufreq_gx_verify(struct cpufreq_policy *policy)
 
 	/* it needs to be assured that at least one supported frequency is
 	 * within policy->min and policy->max. If it is not, policy->max
+<<<<<<< HEAD
 	 * needs to be increased until one freuqency is supported.
+=======
+	 * needs to be increased until one frequency is supported.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * policy->min may not be decreased, though. This way we guarantee a
 	 * specific processing capacity.
 	 */
@@ -401,7 +421,11 @@ static int cpufreq_gx_target(struct cpufreq_policy *policy,
 
 static int cpufreq_gx_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	unsigned int maxfreq, curfreq;
+=======
+	unsigned int maxfreq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!policy || policy->cpu != 0)
 		return -ENODEV;
@@ -415,10 +439,15 @@ static int cpufreq_gx_cpu_init(struct cpufreq_policy *policy)
 		maxfreq = 30000 * gx_freq_mult[getCx86(CX86_DIR1) & 0x0f];
 
 	stock_freq = maxfreq;
+<<<<<<< HEAD
 	curfreq = gx_get_cpuspeed(0);
 
 	pr_debug("cpu max frequency is %d.\n", maxfreq);
 	pr_debug("cpu current frequency is %dkHz.\n", curfreq);
+=======
+
+	pr_debug("cpu max frequency is %d.\n", maxfreq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* setup basic struct for cpufreq API */
 	policy->cpu = 0;
@@ -428,7 +457,10 @@ static int cpufreq_gx_cpu_init(struct cpufreq_policy *policy)
 	else
 		policy->min = maxfreq / POLICY_MIN_DIV;
 	policy->max = maxfreq;
+<<<<<<< HEAD
 	policy->cur = curfreq;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	policy->cpuinfo.min_freq = maxfreq / max_duration;
 	policy->cpuinfo.max_freq = maxfreq;
 	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
@@ -446,7 +478,10 @@ static struct cpufreq_driver gx_suspmod_driver = {
 	.target		= cpufreq_gx_target,
 	.init		= cpufreq_gx_cpu_init,
 	.name		= "gx-suspmod",
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init cpufreq_gx_init(void)
@@ -466,7 +501,11 @@ static int __init cpufreq_gx_init(void)
 
 	pr_debug("geode suspend modulation available.\n");
 
+<<<<<<< HEAD
 	params = kzalloc(sizeof(struct gxfreq_params), GFP_KERNEL);
+=======
+	params = kzalloc(sizeof(*params), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (params == NULL)
 		return -ENOMEM;
 

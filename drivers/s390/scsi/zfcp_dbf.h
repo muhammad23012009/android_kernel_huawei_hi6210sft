@@ -2,7 +2,11 @@
  * zfcp device driver
  * debug feature declarations
  *
+<<<<<<< HEAD
  * Copyright IBM Corp. 2008, 2016
+=======
+ * Copyright IBM Corp. 2008, 2017
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef ZFCP_DBF_H
@@ -204,7 +208,11 @@ enum zfcp_dbf_scsi_id {
  * @id: unique number of recovery record type
  * @tag: identifier string specifying the location of initiation
  * @scsi_id: scsi device id
+<<<<<<< HEAD
  * @scsi_lun: scsi device logical unit number
+=======
+ * @scsi_lun: scsi device logical unit number, low part of 64 bit, old 32 bit
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @scsi_result: scsi result
  * @scsi_retries: current retry number of scsi request
  * @scsi_allowed: allowed retries
@@ -214,6 +222,10 @@ enum zfcp_dbf_scsi_id {
  * @host_scribble: LLD specific data attached to SCSI request
  * @pl_len: length of paload stored as zfcp_dbf_pay
  * @fsf_rsp: response for fsf request
+<<<<<<< HEAD
+=======
+ * @scsi_lun_64_hi: scsi device logical unit number, high part of 64 bit
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct zfcp_dbf_scsi {
 	u8 id;
@@ -230,6 +242,10 @@ struct zfcp_dbf_scsi {
 	u64 host_scribble;
 	u16 pl_len;
 	struct fcp_resp_with_ext fcp_rsp;
+<<<<<<< HEAD
+=======
+	u32 scsi_lun_64_hi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 /**
@@ -310,7 +326,11 @@ bool zfcp_dbf_hba_fsf_resp_suppress(struct zfcp_fsf_req *req)
 static inline
 void zfcp_dbf_hba_fsf_resp(char *tag, int level, struct zfcp_fsf_req *req)
 {
+<<<<<<< HEAD
 	if (level <= req->adapter->dbf->hba->level)
+=======
+	if (debug_level_enabled(req->adapter->dbf->hba, level))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		zfcp_dbf_hba_fsf_res(tag, level, req);
 }
 
@@ -355,7 +375,11 @@ void _zfcp_dbf_scsi(char *tag, int level, struct scsi_cmnd *scmd,
 	struct zfcp_adapter *adapter = (struct zfcp_adapter *)
 					scmd->device->host->hostdata[0];
 
+<<<<<<< HEAD
 	if (level <= adapter->dbf->scsi->level)
+=======
+	if (debug_level_enabled(adapter->dbf->scsi, level))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		zfcp_dbf_scsi(tag, level, scmd, req);
 }
 
@@ -405,7 +429,12 @@ void zfcp_dbf_scsi_abort(char *tag, struct scsi_cmnd *scmd,
  * @flag: indicates type of reset (Target Reset, Logical Unit Reset)
  */
 static inline
+<<<<<<< HEAD
 void zfcp_dbf_scsi_devreset(char *tag, struct scsi_cmnd *scmnd, u8 flag)
+=======
+void zfcp_dbf_scsi_devreset(char *tag, struct scsi_cmnd *scmnd, u8 flag,
+			    struct zfcp_fsf_req *fsf_req)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char tmp_tag[ZFCP_DBF_TAG_LEN];
 
@@ -415,7 +444,11 @@ void zfcp_dbf_scsi_devreset(char *tag, struct scsi_cmnd *scmnd, u8 flag)
 		memcpy(tmp_tag, "lr_", 3);
 
 	memcpy(&tmp_tag[3], tag, 4);
+<<<<<<< HEAD
 	_zfcp_dbf_scsi(tmp_tag, 1, scmnd, NULL);
+=======
+	_zfcp_dbf_scsi(tmp_tag, 1, scmnd, fsf_req);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

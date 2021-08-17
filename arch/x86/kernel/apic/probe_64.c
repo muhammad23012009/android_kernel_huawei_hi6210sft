@@ -11,10 +11,16 @@
 #include <linux/threads.h>
 #include <linux/cpumask.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
 #include <linux/init.h>
+=======
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/ctype.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/hardirq.h>
 #include <linux/dmar.h>
 

@@ -29,6 +29,7 @@
 #include <media/v4l2-fh.h>
 #include <media/tuner.h>
 #include <media/tveeprom.h>
+<<<<<<< HEAD
 #include <media/videobuf-dma-sg.h>
 #include <media/v4l2-chip-ident.h>
 #include <media/cx2341x.h>
@@ -37,12 +38,24 @@
 #include <media/wm8775.h>
 
 #include "btcx-risc.h"
+=======
+#include <media/videobuf2-dma-sg.h>
+#include <media/drv-intf/cx2341x.h>
+#include <media/videobuf2-dvb.h>
+#include <media/i2c/ir-kbd-i2c.h>
+#include <media/i2c/wm8775.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "cx88-reg.h"
 #include "tuner-xc2028.h"
 
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 #define CX88_VERSION "0.0.9"
+=======
+#define CX88_VERSION "1.0.0"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define UNSET (-1U)
 
@@ -63,7 +76,12 @@
 #define FORMAT_FLAGS_PACKED       0x01
 #define FORMAT_FLAGS_PLANAR       0x02
 
+<<<<<<< HEAD
 #define VBI_LINE_COUNT              17
+=======
+#define VBI_LINE_PAL_COUNT              18
+#define VBI_LINE_NTSC_COUNT             12
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define VBI_LINE_LENGTH           2048
 
 #define AUD_RDS_LINES		     4
@@ -96,13 +114,21 @@ enum cx8802_board_access {
 
 static inline unsigned int norm_maxw(v4l2_std_id norm)
 {
+<<<<<<< HEAD
 	return (norm & (V4L2_STD_MN & ~V4L2_STD_PAL_Nc)) ? 720 : 768;
+=======
+	return 720;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
 static inline unsigned int norm_maxh(v4l2_std_id norm)
 {
+<<<<<<< HEAD
 	return (norm & V4L2_STD_625_50) ? 576 : 480;
+=======
+	return (norm & V4L2_STD_525_60) ? 480 : 576;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* ----------------------------------------------------------- */
@@ -259,6 +285,14 @@ struct cx88_input {
 	unsigned int    audioroute:4;
 };
 
+<<<<<<< HEAD
+=======
+enum cx88_audio_chip {
+	CX88_AUDIO_WM8775 = 1,
+	CX88_AUDIO_TVAUDIO,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cx88_board {
 	const char              *name;
 	unsigned int            tuner_type;
@@ -269,7 +303,11 @@ struct cx88_board {
 	struct cx88_input       input[MAX_CX88_INPUT];
 	struct cx88_input       radio;
 	enum cx88_board_type    mpeg;
+<<<<<<< HEAD
 	unsigned int            audio_chip;
+=======
+	enum cx88_audio_chip	audio_chip;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			num_frontends;
 
 	/* Used for I2S devices */
@@ -307,6 +345,7 @@ enum cx88_tvaudio {
 
 #define BUFFER_TIMEOUT     msecs_to_jiffies(2000)
 
+<<<<<<< HEAD
 /* buffer for one video frame */
 struct cx88_buffer {
 	/* common v4l buffer stuff -- must be first */
@@ -317,16 +356,43 @@ struct cx88_buffer {
 	struct btcx_riscmem    risc;
 	const struct cx8800_fmt *fmt;
 	u32                    count;
+=======
+struct cx88_riscmem {
+	unsigned int   size;
+	__le32         *cpu;
+	__le32         *jmp;
+	dma_addr_t     dma;
+};
+
+/* buffer for one video frame */
+struct cx88_buffer {
+	/* common v4l buffer stuff -- must be first */
+	struct vb2_v4l2_buffer vb;
+	struct list_head       list;
+
+	/* cx88 specific */
+	unsigned int           bpl;
+	struct cx88_riscmem    risc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct cx88_dmaqueue {
 	struct list_head       active;
+<<<<<<< HEAD
 	struct list_head       queued;
 	struct timer_list      timeout;
 	struct btcx_riscmem    stopper;
 	u32                    count;
 };
 
+=======
+	u32                    count;
+};
+
+struct cx8800_dev;
+struct cx8802_dev;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cx88_core {
 	struct list_head           devlist;
 	atomic_t                   refcount;
@@ -365,13 +431,25 @@ struct cx88_core {
 
 	/* config info -- dvb */
 #if IS_ENABLED(CONFIG_VIDEO_CX88_DVB)
+<<<<<<< HEAD
 	int 			   (*prev_set_voltage)(struct dvb_frontend *fe, fe_sec_voltage_t voltage);
 #endif
 	void			   (*gate_ctrl)(struct cx88_core  *core, int open);
+=======
+	int	(*prev_set_voltage)(struct dvb_frontend *fe,
+				    enum fe_sec_voltage voltage);
+#endif
+	void	(*gate_ctrl)(struct cx88_core *core, int open);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* state info */
 	struct task_struct         *kthread;
 	v4l2_std_id                tvnorm;
+<<<<<<< HEAD
+=======
+	unsigned		   width, height;
+	unsigned		   field;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum cx88_tvaudio          tvaudio;
 	u32                        audiomode_manual;
 	u32                        audiomode_current;
@@ -391,11 +469,22 @@ struct cx88_core {
 	struct mutex               lock;
 	/* various v4l controls */
 	u32                        freq;
+<<<<<<< HEAD
 	int                        users;
 	int                        mpeg_users;
 
 	/* cx88-video needs to access cx8802 for hybrid tuner pll access. */
 	struct cx8802_dev          *dvbdev;
+=======
+
+	/*
+	 * cx88-video needs to access cx8802 for hybrid tuner pll access and
+	 * for vb2_is_busy() checks.
+	 */
+	struct cx8802_dev          *dvbdev;
+	/* cx88-blackbird needs to access cx8800 for vb2_is_busy() checks */
+	struct cx8800_dev          *v4ldev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum cx88_board_type       active_type_id;
 	int			   active_ref;
 	int			   active_fe_id;
@@ -449,6 +538,7 @@ static inline struct cx88_core *to_core(struct v4l2_device *v4l2_dev)
 		val;								\
 	})
 
+<<<<<<< HEAD
 struct cx8800_dev;
 struct cx8802_dev;
 
@@ -467,6 +557,11 @@ struct cx8800_fh {
 	struct videobuf_queue      vbiq;
 };
 
+=======
+/* ----------------------------------------------------------- */
+/* function 0: video stuff                                     */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cx8800_suspend_state {
 	int                        disabled;
 };
@@ -477,20 +572,35 @@ struct cx8800_dev {
 
 	/* various device info */
 	unsigned int               resources;
+<<<<<<< HEAD
 	struct video_device        *video_dev;
 	struct video_device        *vbi_dev;
 	struct video_device        *radio_dev;
+=======
+	struct video_device        video_dev;
+	struct video_device        vbi_dev;
+	struct video_device        radio_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* pci i/o */
 	struct pci_dev             *pci;
 	unsigned char              pci_rev,pci_lat;
 
 	const struct cx8800_fmt    *fmt;
+<<<<<<< HEAD
 	unsigned int               width, height;
 
 	/* capture queues */
 	struct cx88_dmaqueue       vidq;
 	struct cx88_dmaqueue       vbiq;
+=======
+
+	/* capture queues */
+	struct cx88_dmaqueue       vidq;
+	struct vb2_queue           vb2_vidq;
+	struct cx88_dmaqueue       vbiq;
+	struct vb2_queue           vb2_vbiq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* various v4l controls */
 
@@ -506,12 +616,15 @@ struct cx8800_dev {
 /* ----------------------------------------------------------- */
 /* function 2: mpeg stuff                                      */
 
+<<<<<<< HEAD
 struct cx8802_fh {
 	struct v4l2_fh		   fh;
 	struct cx8802_dev          *dev;
 	struct videobuf_queue      mpegq;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cx8802_suspend_state {
 	int                        disabled;
 };
@@ -555,6 +668,10 @@ struct cx8802_dev {
 
 	/* dma queues */
 	struct cx88_dmaqueue       mpegq;
+<<<<<<< HEAD
+=======
+	struct vb2_queue           vb2_mpegq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32                        ts_packet_size;
 	u32                        ts_packet_count;
 
@@ -564,11 +681,16 @@ struct cx8802_dev {
 	/* for blackbird only */
 	struct list_head           devlist;
 #if IS_ENABLED(CONFIG_VIDEO_CX88_BLACKBIRD)
+<<<<<<< HEAD
 	struct video_device        *mpeg_dev;
 	u32                        mailbox;
 	int                        width;
 	int                        height;
 	unsigned char              mpeg_active; /* nonzero if mpeg encoder is active */
+=======
+	struct video_device        mpeg_dev;
+	u32                        mailbox;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* mpeg params */
 	struct cx2341x_handler     cxhdl;
@@ -576,7 +698,11 @@ struct cx8802_dev {
 
 #if IS_ENABLED(CONFIG_VIDEO_CX88_DVB)
 	/* for dvb only */
+<<<<<<< HEAD
 	struct videobuf_dvb_frontends frontends;
+=======
+	struct vb2_dvb_frontends frontends;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #if IS_ENABLED(CONFIG_VIDEO_CX88_VP3054)
@@ -630,11 +756,16 @@ extern void cx88_shutdown(struct cx88_core *core);
 extern int cx88_reset(struct cx88_core *core);
 
 extern int
+<<<<<<< HEAD
 cx88_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
+=======
+cx88_risc_buffer(struct pci_dev *pci, struct cx88_riscmem *risc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 struct scatterlist *sglist,
 		 unsigned int top_offset, unsigned int bottom_offset,
 		 unsigned int bpl, unsigned int padding, unsigned int lines);
 extern int
+<<<<<<< HEAD
 cx88_risc_databuffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 		     struct scatterlist *sglist, unsigned int bpl,
 		     unsigned int lines, unsigned int lpi);
@@ -646,6 +777,14 @@ cx88_free_buffer(struct videobuf_queue *q, struct cx88_buffer *buf);
 
 extern void cx88_risc_disasm(struct cx88_core *core,
 			     struct btcx_riscmem *risc);
+=======
+cx88_risc_databuffer(struct pci_dev *pci, struct cx88_riscmem *risc,
+		     struct scatterlist *sglist, unsigned int bpl,
+		     unsigned int lines, unsigned int lpi);
+
+extern void cx88_risc_disasm(struct cx88_core *core,
+			     struct cx88_riscmem *risc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int cx88_sram_channel_setup(struct cx88_core *core,
 				   const struct sram_channel *ch,
 				   unsigned int bpl, u32 risc);
@@ -656,11 +795,20 @@ extern int cx88_set_scale(struct cx88_core *core, unsigned int width,
 			  unsigned int height, enum v4l2_field field);
 extern int cx88_set_tvnorm(struct cx88_core *core, v4l2_std_id norm);
 
+<<<<<<< HEAD
 extern struct video_device *cx88_vdev_init(struct cx88_core *core,
 					   struct pci_dev *pci,
 					   const struct video_device *template_,
 					   const char *type);
 extern struct cx88_core* cx88_core_get(struct pci_dev *pci);
+=======
+extern void cx88_vdev_init(struct cx88_core *core,
+			   struct pci_dev *pci,
+			   struct video_device *vfd,
+			   const struct video_device *template_,
+			   const char *type);
+extern struct cx88_core *cx88_core_get(struct pci_dev *pci);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void cx88_core_put(struct cx88_core *core,
 			  struct pci_dev *pci);
 
@@ -680,12 +828,19 @@ int cx8800_start_vbi_dma(struct cx8800_dev    *dev,
 			 struct cx88_dmaqueue *q,
 			 struct cx88_buffer   *buf);
 */
+<<<<<<< HEAD
 int cx8800_stop_vbi_dma(struct cx8800_dev *dev);
 int cx8800_restart_vbi_queue(struct cx8800_dev    *dev,
 			     struct cx88_dmaqueue *q);
 void cx8800_vbi_timeout(unsigned long data);
 
 extern const struct videobuf_queue_ops cx8800_vbi_qops;
+=======
+void cx8800_stop_vbi_dma(struct cx8800_dev *dev);
+int cx8800_restart_vbi_queue(struct cx8800_dev *dev, struct cx88_dmaqueue *q);
+
+extern const struct vb2_ops cx8800_vbi_qops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* ----------------------------------------------------------- */
 /* cx88-i2c.c                                                  */
@@ -735,6 +890,7 @@ extern void cx88_i2c_init_ir(struct cx88_core *core);
 /* ----------------------------------------------------------- */
 /* cx88-mpeg.c                                                 */
 
+<<<<<<< HEAD
 int cx8802_buf_prepare(struct videobuf_queue *q,struct cx8802_dev *dev,
 			struct cx88_buffer *buf, enum v4l2_field field);
 void cx8802_buf_queue(struct cx8802_dev *dev, struct cx88_buffer *buf);
@@ -743,6 +899,19 @@ void cx8802_cancel_buffers(struct cx8802_dev *dev);
 /* ----------------------------------------------------------- */
 /* cx88-video.c*/
 int cx88_enum_input (struct cx88_core  *core,struct v4l2_input *i);
+=======
+int cx8802_buf_prepare(struct vb2_queue *q, struct cx8802_dev *dev,
+			struct cx88_buffer *buf);
+void cx8802_buf_queue(struct cx8802_dev *dev, struct cx88_buffer *buf);
+void cx8802_cancel_buffers(struct cx8802_dev *dev);
+int cx8802_start_dma(struct cx8802_dev    *dev,
+			    struct cx88_dmaqueue *q,
+			    struct cx88_buffer   *buf);
+
+/* ----------------------------------------------------------- */
+/* cx88-video.c*/
+int cx88_enum_input(struct cx88_core *core, struct v4l2_input *i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int cx88_set_freq(struct cx88_core  *core, const struct v4l2_frequency *f);
 int cx88_video_mux(struct cx88_core *core, unsigned int input);
 void cx88_querycap(struct file *file, struct cx88_core *core,

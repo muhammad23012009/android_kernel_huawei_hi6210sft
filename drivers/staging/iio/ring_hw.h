@@ -9,6 +9,12 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#ifndef _RING_HW_H_
+#define _RING_HW_H_
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct iio_hw_ring_buffer- hardware ring buffer
  * @buf:	generic ring buffer elements
@@ -20,3 +26,8 @@ struct iio_hw_buffer {
 };
 
 #define iio_to_hw_buf(r) container_of(r, struct iio_hw_buffer, buf)
+<<<<<<< HEAD
+=======
+
+#endif /* _RING_HW_H_ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

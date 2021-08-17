@@ -35,6 +35,10 @@
 
 #include "ufshcd.h"
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PM
 /**
@@ -42,6 +46,7 @@
  * @pdev: pointer to PCI device handle
  * @state: power state
  *
+<<<<<<< HEAD
  * Returns -ENOSYS
  */
 static int ufshcd_pci_suspend(struct pci_dev *pdev, pm_message_t state)
@@ -53,12 +58,21 @@ static int ufshcd_pci_suspend(struct pci_dev *pdev, pm_message_t state)
 	 */
 
 	return -ENOSYS;
+=======
+ * Returns 0 if successful
+ * Returns non-zero otherwise
+ */
+static int ufshcd_pci_suspend(struct device *dev)
+{
+	return ufshcd_system_suspend(dev_get_drvdata(dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * ufshcd_pci_resume - resume power management function
  * @pdev: pointer to PCI device handle
  *
+<<<<<<< HEAD
  * Returns -ENOSYS
  */
 static int ufshcd_pci_resume(struct pci_dev *pdev)
@@ -71,6 +85,34 @@ static int ufshcd_pci_resume(struct pci_dev *pdev)
 
 	return -ENOSYS;
 }
+=======
+ * Returns 0 if successful
+ * Returns non-zero otherwise
+ */
+static int ufshcd_pci_resume(struct device *dev)
+{
+	return ufshcd_system_resume(dev_get_drvdata(dev));
+}
+
+static int ufshcd_pci_runtime_suspend(struct device *dev)
+{
+	return ufshcd_runtime_suspend(dev_get_drvdata(dev));
+}
+static int ufshcd_pci_runtime_resume(struct device *dev)
+{
+	return ufshcd_runtime_resume(dev_get_drvdata(dev));
+}
+static int ufshcd_pci_runtime_idle(struct device *dev)
+{
+	return ufshcd_runtime_idle(dev_get_drvdata(dev));
+}
+#else /* !CONFIG_PM */
+#define ufshcd_pci_suspend	NULL
+#define ufshcd_pci_resume	NULL
+#define ufshcd_pci_runtime_suspend	NULL
+#define ufshcd_pci_runtime_resume	NULL
+#define ufshcd_pci_runtime_idle	NULL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_PM */
 
 /**
@@ -79,7 +121,11 @@ static int ufshcd_pci_resume(struct pci_dev *pdev)
  */
 static void ufshcd_pci_shutdown(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	ufshcd_hba_stop((struct ufs_hba *)pci_get_drvdata(pdev));
+=======
+	ufshcd_shutdown((struct ufs_hba *)pci_get_drvdata(pdev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -91,6 +137,7 @@ static void ufshcd_pci_remove(struct pci_dev *pdev)
 {
 	struct ufs_hba *hba = pci_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	disable_irq(pdev->irq);
 	free_irq(pdev->irq, hba);
 	ufshcd_remove(hba);
@@ -118,6 +165,12 @@ static int ufshcd_set_dma_mask(struct pci_dev *pdev)
 	if (!err)
 		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
 	return err;
+=======
+	pm_runtime_forbid(&pdev->dev);
+	pm_runtime_get_noresume(&pdev->dev);
+	ufshcd_remove(hba);
+	ufshcd_dealloc_host(hba);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -134,14 +187,22 @@ ufshcd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	void __iomem *mmio_base;
 	int err;
 
+<<<<<<< HEAD
 	err = pci_enable_device(pdev);
 	if (err) {
 		dev_err(&pdev->dev, "pci_enable_device failed\n");
 		goto out_error;
+=======
+	err = pcim_enable_device(pdev);
+	if (err) {
+		dev_err(&pdev->dev, "pcim_enable_device failed\n");
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
 
 	err = pci_request_regions(pdev, UFSHCD);
 	if (err < 0) {
@@ -184,6 +245,47 @@ out_error:
 }
 
 static DEFINE_PCI_DEVICE_TABLE(ufshcd_pci_tbl) = {
+=======
+	err = pcim_iomap_regions(pdev, 1 << 0, UFSHCD);
+	if (err < 0) {
+		dev_err(&pdev->dev, "request and iomap failed\n");
+		return err;
+	}
+
+	mmio_base = pcim_iomap_table(pdev)[0];
+
+	err = ufshcd_alloc_host(&pdev->dev, &hba);
+	if (err) {
+		dev_err(&pdev->dev, "Allocation failed\n");
+		return err;
+	}
+
+	INIT_LIST_HEAD(&hba->clk_list_head);
+
+	err = ufshcd_init(hba, mmio_base, pdev->irq);
+	if (err) {
+		dev_err(&pdev->dev, "Initialization failed\n");
+		ufshcd_dealloc_host(hba);
+		return err;
+	}
+
+	pci_set_drvdata(pdev, hba);
+	pm_runtime_put_noidle(&pdev->dev);
+	pm_runtime_allow(&pdev->dev);
+
+	return 0;
+}
+
+static const struct dev_pm_ops ufshcd_pci_pm_ops = {
+	.suspend	= ufshcd_pci_suspend,
+	.resume		= ufshcd_pci_resume,
+	.runtime_suspend = ufshcd_pci_runtime_suspend,
+	.runtime_resume  = ufshcd_pci_runtime_resume,
+	.runtime_idle    = ufshcd_pci_runtime_idle,
+};
+
+static const struct pci_device_id ufshcd_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_SAMSUNG, 0xC00C, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 	{ }	/* terminate list */
 };
@@ -196,10 +298,16 @@ static struct pci_driver ufshcd_pci_driver = {
 	.probe = ufshcd_pci_probe,
 	.remove = ufshcd_pci_remove,
 	.shutdown = ufshcd_pci_shutdown,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend = ufshcd_pci_suspend,
 	.resume = ufshcd_pci_resume,
 #endif
+=======
+	.driver = {
+		.pm = &ufshcd_pci_pm_ops
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_pci_driver(ufshcd_pci_driver);

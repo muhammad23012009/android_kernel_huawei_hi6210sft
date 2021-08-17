@@ -105,6 +105,7 @@ MODULE_DESCRIPTION ("Linux for S/390 IUCV network driver");
 
 DECLARE_PER_CPU(char[256], iucv_dbf_txt_buf);
 
+<<<<<<< HEAD
 /* Allow to sort out low debug levels early to avoid wasted sprints */
 static inline int iucv_dbf_passes(debug_info_t *dbf_grp, int level)
 {
@@ -114,6 +115,11 @@ static inline int iucv_dbf_passes(debug_info_t *dbf_grp, int level)
 #define IUCV_DBF_TEXT_(name, level, text...) \
 	do { \
 		if (iucv_dbf_passes(iucv_dbf_##name, level)) { \
+=======
+#define IUCV_DBF_TEXT_(name, level, text...) \
+	do { \
+		if (debug_level_enabled(iucv_dbf_##name, level)) { \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			char* __buf = get_cpu_var(iucv_dbf_txt_buf); \
 			sprintf(__buf, text); \
 			debug_text_event(iucv_dbf_##name, level, __buf); \
@@ -130,6 +136,7 @@ static inline int iucv_dbf_passes(debug_info_t *dbf_grp, int level)
 /**
  * some more debug stuff
  */
+<<<<<<< HEAD
 #define IUCV_HEXDUMP16(importance,header,ptr) \
 PRINT_##importance(header "%02x %02x %02x %02x  %02x %02x %02x %02x  " \
 		   "%02x %02x %02x %02x  %02x %02x %02x %02x\n", \
@@ -150,6 +157,8 @@ PRINT_##importance(header "%02x %02x %02x %02x  %02x %02x %02x %02x  " \
 		   *(((char*)ptr)+28),*(((char*)ptr)+29), \
 		   *(((char*)ptr)+30),*(((char*)ptr)+31));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PRINTK_HEADER " iucv: "       /* for debugging */
 
 /* dummy device to make sure netiucv_pm functions are called */
@@ -175,12 +184,20 @@ static struct device_driver netiucv_driver = {
 	.pm = &netiucv_pm_ops,
 };
 
+<<<<<<< HEAD
 static int netiucv_callback_connreq(struct iucv_path *,
 				    u8 ipvmid[8], u8 ipuser[16]);
 static void netiucv_callback_connack(struct iucv_path *, u8 ipuser[16]);
 static void netiucv_callback_connrej(struct iucv_path *, u8 ipuser[16]);
 static void netiucv_callback_connsusp(struct iucv_path *, u8 ipuser[16]);
 static void netiucv_callback_connres(struct iucv_path *, u8 ipuser[16]);
+=======
+static int netiucv_callback_connreq(struct iucv_path *, u8 *, u8 *);
+static void netiucv_callback_connack(struct iucv_path *, u8 *);
+static void netiucv_callback_connrej(struct iucv_path *, u8 *);
+static void netiucv_callback_connsusp(struct iucv_path *, u8 *);
+static void netiucv_callback_connres(struct iucv_path *, u8 *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void netiucv_callback_rx(struct iucv_path *, struct iucv_message *);
 static void netiucv_callback_txdone(struct iucv_path *, struct iucv_message *);
 
@@ -204,7 +221,11 @@ struct connection_profile {
 	unsigned long doios_multi;
 	unsigned long txlen;
 	unsigned long tx_time;
+<<<<<<< HEAD
 	struct timespec send_stamp;
+=======
+	unsigned long send_stamp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long tx_pending;
 	unsigned long tx_max_pending;
 };
@@ -513,12 +534,18 @@ DEFINE_PER_CPU(char[256], iucv_dbf_txt_buf);
 
 static void iucv_unregister_dbf_views(void)
 {
+<<<<<<< HEAD
 	if (iucv_dbf_setup)
 		debug_unregister(iucv_dbf_setup);
 	if (iucv_dbf_data)
 		debug_unregister(iucv_dbf_data);
 	if (iucv_dbf_trace)
 		debug_unregister(iucv_dbf_trace);
+=======
+	debug_unregister(iucv_dbf_setup);
+	debug_unregister(iucv_dbf_data);
+	debug_unregister(iucv_dbf_trace);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 static int iucv_register_dbf_views(void)
 {
@@ -585,8 +612,13 @@ static void netiucv_callback_connack(struct iucv_path *path, u8 ipuser[16])
 	fsm_event(conn->fsm, CONN_EVENT_CONN_ACK, conn);
 }
 
+<<<<<<< HEAD
 static int netiucv_callback_connreq(struct iucv_path *path,
 				    u8 ipvmid[8], u8 ipuser[16])
+=======
+static int netiucv_callback_connreq(struct iucv_path *path, u8 *ipvmid,
+				    u8 *ipuser)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iucv_connection *conn = path->private;
 	struct iucv_event ev;
@@ -616,21 +648,33 @@ static int netiucv_callback_connreq(struct iucv_path *path,
 	return rc;
 }
 
+<<<<<<< HEAD
 static void netiucv_callback_connrej(struct iucv_path *path, u8 ipuser[16])
+=======
+static void netiucv_callback_connrej(struct iucv_path *path, u8 *ipuser)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iucv_connection *conn = path->private;
 
 	fsm_event(conn->fsm, CONN_EVENT_CONN_REJ, conn);
 }
 
+<<<<<<< HEAD
 static void netiucv_callback_connsusp(struct iucv_path *path, u8 ipuser[16])
+=======
+static void netiucv_callback_connsusp(struct iucv_path *path, u8 *ipuser)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iucv_connection *conn = path->private;
 
 	fsm_event(conn->fsm, CONN_EVENT_CONN_SUS, conn);
 }
 
+<<<<<<< HEAD
 static void netiucv_callback_connres(struct iucv_path *path, u8 ipuser[16])
+=======
+static void netiucv_callback_connres(struct iucv_path *path, u8 *ipuser)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iucv_connection *conn = path->private;
 
@@ -765,8 +809,17 @@ static void conn_action_txdone(fsm_instance *fi, int event, void *arg)
 
 	IUCV_DBF_TEXT(trace, 4, __func__);
 
+<<<<<<< HEAD
 	if (conn && conn->netdev)
 		privptr = netdev_priv(conn->netdev);
+=======
+	if (!conn || !conn->netdev) {
+		IUCV_DBF_TEXT(data, 2,
+			      "Send confirmation for unlinked connection\n");
+		return;
+	}
+	privptr = netdev_priv(conn->netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	conn->prof.tx_pending--;
 	if (single_flag) {
 		if ((skb = skb_dequeue(&conn->commit_queue))) {
@@ -808,7 +861,11 @@ static void conn_action_txdone(fsm_instance *fi, int event, void *arg)
 
 	header.next = 0;
 	memcpy(skb_put(conn->tx_buff, NETIUCV_HDRLEN), &header, NETIUCV_HDRLEN);
+<<<<<<< HEAD
 	conn->prof.send_stamp = current_kernel_time();
+=======
+	conn->prof.send_stamp = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	txmsg.class = 0;
 	txmsg.tag = 0;
 	rc = iucv_message_send(conn->path, &txmsg, 0, 0,
@@ -1242,7 +1299,11 @@ static int netiucv_transmit_skb(struct iucv_connection *conn,
 		memcpy(skb_put(nskb, NETIUCV_HDRLEN), &header,  NETIUCV_HDRLEN);
 
 		fsm_newstate(conn->fsm, CONN_STATE_TX);
+<<<<<<< HEAD
 		conn->prof.send_stamp = current_kernel_time();
+=======
+		conn->prof.send_stamp = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		msg.tag = 1;
 		msg.class = 0;
@@ -1433,7 +1494,11 @@ static int netiucv_tx(struct sk_buff *skb, struct net_device *dev)
 		IUCV_DBF_TEXT(data, 2, "EBUSY from netiucv_tx\n");
 		return NETDEV_TX_BUSY;
 	}
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = netiucv_transmit_skb(privptr->conn, skb);
 	netiucv_clear_busy(dev);
 	return rc ? NETDEV_TX_BUSY : NETDEV_TX_OK;
@@ -2037,7 +2102,11 @@ static struct net_device *netiucv_init_netdevice(char *username, char *userdata)
 	struct net_device *dev;
 
 	dev = alloc_netdev(sizeof(struct netiucv_priv), "iucv%d",
+<<<<<<< HEAD
 			   netiucv_setup_netdevice);
+=======
+			   NET_NAME_UNKNOWN, netiucv_setup_netdevice);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dev)
 		return NULL;
 	rtnl_lock();

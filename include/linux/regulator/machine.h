@@ -42,6 +42,16 @@ struct regulator;
 #define REGULATOR_CHANGE_DRMS		0x10
 #define REGULATOR_CHANGE_BYPASS		0x20
 
+<<<<<<< HEAD
+=======
+/* Regulator active discharge flags */
+enum regulator_active_discharge {
+	REGULATOR_ACTIVE_DISCHARGE_DEFAULT,
+	REGULATOR_ACTIVE_DISCHARGE_DISABLE,
+	REGULATOR_ACTIVE_DISCHARGE_ENABLE,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct regulator_state - regulator state during low power system states
  *
@@ -75,6 +85,11 @@ struct regulator_state {
  *
  * @min_uA: Smallest current consumers may set.
  * @max_uA: Largest current consumers may set.
+<<<<<<< HEAD
+=======
+ * @ilim_uA: Maximum input current.
+ * @system_load: Load that isn't captured by any consumer requests.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * @valid_modes_mask: Mask of modes which may be configured by consumers.
  * @valid_ops_mask: Operations which may be performed by consumers.
@@ -85,6 +100,13 @@ struct regulator_state {
  *           bootloader then it will be enabled when the constraints are
  *           applied.
  * @apply_uV: Apply the voltage constraint when initialising.
+<<<<<<< HEAD
+=======
+ * @ramp_disable: Disable ramp delay when initialising or when setting voltage.
+ * @soft_start: Enable soft start so that voltage ramps slowly.
+ * @pull_down: Enable pull down when regulator is disabled.
+ * @over_current_protection: Auto disable on over current event.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * @input_uV: Input voltage for regulator when supplied by another regulator.
  *
@@ -95,6 +117,13 @@ struct regulator_state {
  * @initial_state: Suspend state to set by default.
  * @initial_mode: Mode to set at startup.
  * @ramp_delay: Time to settle down after voltage change (unit: uV/us)
+<<<<<<< HEAD
+=======
+ * @active_discharge: Enable/disable active discharge. The enum
+ *		      regulator_active_discharge values are used for
+ *		      initialisation.
+ * @enable_time: Turn-on time of the rails (unit: microseconds)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct regulation_constraints {
 
@@ -109,6 +138,12 @@ struct regulation_constraints {
 	/* current output range (inclusive) - for current control */
 	int min_uA;
 	int max_uA;
+<<<<<<< HEAD
+=======
+	int ilim_uA;
+
+	int system_load;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* valid regulator operating modes for this machine */
 	unsigned int valid_modes_mask;
@@ -129,11 +164,24 @@ struct regulation_constraints {
 	unsigned int initial_mode;
 
 	unsigned int ramp_delay;
+<<<<<<< HEAD
+=======
+	unsigned int enable_time;
+
+	unsigned int active_discharge;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* constraint flags */
 	unsigned always_on:1;	/* regulator never off when system is on */
 	unsigned boot_on:1;	/* bootloader/firmware enabled regulator */
 	unsigned apply_uV:1;	/* apply uV constraint if min == max */
+<<<<<<< HEAD
+=======
+	unsigned ramp_disable:1; /* disable ramp delay */
+	unsigned soft_start:1;	/* ramp voltage slowly */
+	unsigned pull_down:1;	/* pull down resistor when regulator off */
+	unsigned over_current_protection:1; /* auto disable on over current */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -187,19 +235,36 @@ struct regulator_init_data {
 	void *driver_data;	/* core does not touch this */
 };
 
+<<<<<<< HEAD
 int regulator_suspend_prepare(suspend_state_t state);
 int regulator_suspend_finish(void);
 
 #ifdef CONFIG_REGULATOR
 void regulator_has_full_constraints(void);
 void regulator_use_dummy_regulator(void);
+=======
+#ifdef CONFIG_REGULATOR
+void regulator_has_full_constraints(void);
+int regulator_suspend_prepare(suspend_state_t state);
+int regulator_suspend_finish(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline void regulator_has_full_constraints(void)
 {
 }
+<<<<<<< HEAD
 
 static inline void regulator_use_dummy_regulator(void)
 {
+=======
+static inline int regulator_suspend_prepare(suspend_state_t state)
+{
+	return 0;
+}
+static inline int regulator_suspend_finish(void)
+{
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 

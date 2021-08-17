@@ -36,9 +36,17 @@ SECTIONS
 		TEXT_TEXT
 		EXTRA_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+=======
+		CPUIDLE_TEXT
+		LOCK_TEXT
+		KPROBES_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*(.fixup)
 		*(.gnu.warning)
 		_etext = .;		/* End of text section */

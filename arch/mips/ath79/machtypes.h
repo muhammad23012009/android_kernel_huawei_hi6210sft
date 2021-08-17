@@ -15,6 +15,10 @@
 #include <asm/mips_machine.h>
 
 enum ath79_mach_type {
+<<<<<<< HEAD
+=======
+	ATH79_MACH_GENERIC_OF = -1,	/* Device tree board */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ATH79_MACH_GENERIC = 0,
 	ATH79_MACH_AP121,		/* Atheros AP121 reference board */
 	ATH79_MACH_AP136_010,		/* Atheros AP136-010 reference board */

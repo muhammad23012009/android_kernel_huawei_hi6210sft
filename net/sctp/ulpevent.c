@@ -22,6 +22,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -32,15 +33,26 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    Jon Grimm             <jgrimm@us.ibm.com>
  *    La Monte H.P. Yarroll <piggy@acm.org>
  *    Ardelle Fan	    <ardelle.fan@intel.com>
  *    Sridhar Samudrala     <sri@us.ibm.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/slab.h>
@@ -57,9 +69,15 @@ static void sctp_ulpevent_release_frag_data(struct sctp_ulpevent *event);
 
 
 /* Initialize an ULP event from an given skb.  */
+<<<<<<< HEAD
 SCTP_STATIC void sctp_ulpevent_init(struct sctp_ulpevent *event,
 				    int msg_flags,
 				    unsigned int len)
+=======
+static void sctp_ulpevent_init(struct sctp_ulpevent *event,
+			       __u16 msg_flags,
+			       unsigned int len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	memset(event, 0, sizeof(struct sctp_ulpevent));
 	event->msg_flags = msg_flags;
@@ -67,8 +85,13 @@ SCTP_STATIC void sctp_ulpevent_init(struct sctp_ulpevent *event,
 }
 
 /* Create a new sctp_ulpevent.  */
+<<<<<<< HEAD
 SCTP_STATIC struct sctp_ulpevent *sctp_ulpevent_new(int size, int msg_flags,
 						    gfp_t gfp)
+=======
+static struct sctp_ulpevent *sctp_ulpevent_new(int size, __u16 msg_flags,
+					       gfp_t gfp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sctp_ulpevent *event;
 	struct sk_buff *skb;
@@ -98,6 +121,10 @@ int sctp_ulpevent_is_notification(const struct sctp_ulpevent *event)
 static inline void sctp_ulpevent_set_owner(struct sctp_ulpevent *event,
 					   const struct sctp_association *asoc)
 {
+<<<<<<< HEAD
+=======
+	struct sctp_chunk *chunk = event->chunk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *skb;
 
 	/* Cast away the const, as we are just wanting to
@@ -108,6 +135,11 @@ static inline void sctp_ulpevent_set_owner(struct sctp_ulpevent *event,
 	event->asoc = (struct sctp_association *)asoc;
 	atomic_add(event->rmem_len, &event->asoc->rmem_alloc);
 	sctp_skb_set_owner_r(skb, asoc->base.sk);
+<<<<<<< HEAD
+=======
+	if (chunk && chunk->head_skb && !chunk->head_skb->sk)
+		chunk->head_skb->sk = asoc->base.sk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* A simple destructor to give up the reference to the association. */
@@ -348,7 +380,11 @@ struct sctp_ulpevent *sctp_ulpevent_make_peer_addr_change(
 	memcpy(&spc->spc_aaddr, aaddr, sizeof(struct sockaddr_storage));
 
 	/* Map ipv4 address into v4-mapped-on-v6 address.  */
+<<<<<<< HEAD
 	sctp_get_pf_specific(asoc->base.sk->sk_family)->addr_v4map(
+=======
+	sctp_get_pf_specific(asoc->base.sk->sk_family)->addr_to_user(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					sctp_sk(asoc->base.sk),
 					(union sctp_addr *)&spc->spc_aaddr);
 
@@ -387,7 +423,11 @@ sctp_ulpevent_make_remote_error(const struct sctp_association *asoc,
 
 	ch = (sctp_errhdr_t *)(chunk->skb->data);
 	cause = ch->cause;
+<<<<<<< HEAD
 	elen = WORD_ROUND(ntohs(ch->length)) - sizeof(sctp_errhdr_t);
+=======
+	elen = SCTP_PAD4(ntohs(ch->length)) - sizeof(sctp_errhdr_t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Pull off the ERROR header.  */
 	skb_pull(chunk->skb, sizeof(sctp_errhdr_t));
@@ -692,7 +732,11 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	 * MUST ignore the padding bytes.
 	 */
 	len = ntohs(chunk->chunk_hdr->length);
+<<<<<<< HEAD
 	padding = WORD_ROUND(len) - len;
+=======
+	padding = SCTP_PAD4(len) - len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Fixup cloned skb with just this chunks data.  */
 	skb_trim(skb, chunk->chunk_end - padding - skb->data);
@@ -706,6 +750,15 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	 */
 	sctp_ulpevent_init(event, 0, skb->len + sizeof(struct sk_buff));
 
+<<<<<<< HEAD
+=======
+	/* And hold the chunk as we need it for getting the IP headers
+	 * later in recvmsg
+	 */
+	sctp_chunk_hold(chunk);
+	event->chunk = chunk;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sctp_ulpevent_receive_data(event, asoc);
 
 	event->stream = ntohs(chunk->subh.data_hdr->stream);
@@ -717,7 +770,10 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	}
 	event->tsn = ntohl(chunk->subh.data_hdr->tsn);
 	event->msg_flags |= chunk->chunk_hdr->flags;
+<<<<<<< HEAD
 	event->iif = sctp_chunk_iif(chunk);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return event;
 
@@ -893,6 +949,72 @@ void sctp_ulpevent_read_sndrcvinfo(const struct sctp_ulpevent *event,
 		 sizeof(sinfo), &sinfo);
 }
 
+<<<<<<< HEAD
+=======
+/* RFC6458, Section 5.3.5 SCTP Receive Information Structure
+ * (SCTP_SNDRCV)
+ */
+void sctp_ulpevent_read_rcvinfo(const struct sctp_ulpevent *event,
+				struct msghdr *msghdr)
+{
+	struct sctp_rcvinfo rinfo;
+
+	if (sctp_ulpevent_is_notification(event))
+		return;
+
+	memset(&rinfo, 0, sizeof(struct sctp_rcvinfo));
+	rinfo.rcv_sid = event->stream;
+	rinfo.rcv_ssn = event->ssn;
+	rinfo.rcv_ppid = event->ppid;
+	rinfo.rcv_flags = event->flags;
+	rinfo.rcv_tsn = event->tsn;
+	rinfo.rcv_cumtsn = event->cumtsn;
+	rinfo.rcv_assoc_id = sctp_assoc2id(event->asoc);
+	rinfo.rcv_context = event->asoc->default_rcv_context;
+
+	put_cmsg(msghdr, IPPROTO_SCTP, SCTP_RCVINFO,
+		 sizeof(rinfo), &rinfo);
+}
+
+/* RFC6458, Section 5.3.6. SCTP Next Receive Information Structure
+ * (SCTP_NXTINFO)
+ */
+static void __sctp_ulpevent_read_nxtinfo(const struct sctp_ulpevent *event,
+					 struct msghdr *msghdr,
+					 const struct sk_buff *skb)
+{
+	struct sctp_nxtinfo nxtinfo;
+
+	memset(&nxtinfo, 0, sizeof(nxtinfo));
+	nxtinfo.nxt_sid = event->stream;
+	nxtinfo.nxt_ppid = event->ppid;
+	nxtinfo.nxt_flags = event->flags;
+	if (sctp_ulpevent_is_notification(event))
+		nxtinfo.nxt_flags |= SCTP_NOTIFICATION;
+	nxtinfo.nxt_length = skb->len;
+	nxtinfo.nxt_assoc_id = sctp_assoc2id(event->asoc);
+
+	put_cmsg(msghdr, IPPROTO_SCTP, SCTP_NXTINFO,
+		 sizeof(nxtinfo), &nxtinfo);
+}
+
+void sctp_ulpevent_read_nxtinfo(const struct sctp_ulpevent *event,
+				struct msghdr *msghdr,
+				struct sock *sk)
+{
+	struct sk_buff *skb;
+	int err;
+
+	skb = sctp_skb_recv_datagram(sk, MSG_PEEK, 1, &err);
+	if (skb != NULL) {
+		__sctp_ulpevent_read_nxtinfo(sctp_skb2event(skb),
+					     msghdr, skb);
+		/* Just release refcount here. */
+		kfree_skb(skb);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Do accounting for bytes received and hold a reference to the association
  * for each skb.
  */
@@ -951,6 +1073,10 @@ static void sctp_ulpevent_release_data(struct sctp_ulpevent *event)
 
 done:
 	sctp_assoc_rwnd_increase(event->asoc, len);
+<<<<<<< HEAD
+=======
+	sctp_chunk_put(event->chunk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sctp_ulpevent_release_owner(event);
 }
 
@@ -973,6 +1099,10 @@ static void sctp_ulpevent_release_frag_data(struct sctp_ulpevent *event)
 	}
 
 done:
+<<<<<<< HEAD
+=======
+	sctp_chunk_put(event->chunk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sctp_ulpevent_release_owner(event);
 }
 

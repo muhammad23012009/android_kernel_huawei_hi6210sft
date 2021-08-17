@@ -53,8 +53,15 @@ static struct iowa_bus *iowa_pci_find(unsigned long vaddr, unsigned long paddr)
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct iowa_bus *iowa_mem_find_bus(const PCI_IO_ADDR addr)
 {
+=======
+#ifdef CONFIG_PPC_INDIRECT_MMIO
+struct iowa_bus *iowa_mem_find_bus(const PCI_IO_ADDR addr)
+{
+	unsigned hugepage_shift;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct iowa_bus *bus;
 	int token;
 
@@ -69,12 +76,27 @@ struct iowa_bus *iowa_mem_find_bus(const PCI_IO_ADDR addr)
 		vaddr = (unsigned long)PCI_FIX_ADDR(addr);
 		if (vaddr < PHB_IO_BASE || vaddr >= PHB_IO_END)
 			return NULL;
+<<<<<<< HEAD
 
 		ptep = find_linux_pte(init_mm.pgd, vaddr);
 		if (ptep == NULL)
 			paddr = 0;
 		else
 			paddr = pte_pfn(*ptep) << PAGE_SHIFT;
+=======
+		/*
+		 * We won't find huge pages here (iomem). Also can't hit
+		 * a page table free due to init_mm
+		 */
+		ptep = __find_linux_pte_or_hugepte(init_mm.pgd, vaddr,
+						   NULL, &hugepage_shift);
+		if (ptep == NULL)
+			paddr = 0;
+		else {
+			WARN_ON(hugepage_shift);
+			paddr = pte_pfn(*ptep) << PAGE_SHIFT;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bus = iowa_pci_find(vaddr, paddr);
 
 		if (bus == NULL)
@@ -83,13 +105,33 @@ struct iowa_bus *iowa_mem_find_bus(const PCI_IO_ADDR addr)
 
 	return bus;
 }
+<<<<<<< HEAD
 
+=======
+#else /* CONFIG_PPC_INDIRECT_MMIO */
+struct iowa_bus *iowa_mem_find_bus(const PCI_IO_ADDR addr)
+{
+	return NULL;
+}
+#endif /* !CONFIG_PPC_INDIRECT_MMIO */
+
+#ifdef CONFIG_PPC_INDIRECT_PIO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct iowa_bus *iowa_pio_find_bus(unsigned long port)
 {
 	unsigned long vaddr = (unsigned long)pci_io_base + port;
 	return iowa_pci_find(vaddr, 0);
 }
+<<<<<<< HEAD
 
+=======
+#else
+struct iowa_bus *iowa_pio_find_bus(unsigned long port)
+{
+	return NULL;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DEF_PCI_AC_RET(name, ret, at, al, space, aa)		\
 static ret iowa_##name at					\
@@ -130,6 +172,10 @@ static const struct ppc_pci_io iowa_pci_io = {
 
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_INDIRECT_MMIO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __iomem *iowa_ioremap(phys_addr_t addr, unsigned long size,
 				  unsigned long flags, void *caller)
 {
@@ -144,6 +190,12 @@ static void __iomem *iowa_ioremap(phys_addr_t addr, unsigned long size,
 	}
 	return res;
 }
+<<<<<<< HEAD
+=======
+#else /* CONFIG_PPC_INDIRECT_MMIO */
+#define iowa_ioremap NULL
+#endif /* !CONFIG_PPC_INDIRECT_MMIO */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Enable IO workaround */
 static void io_workaround_init(void)

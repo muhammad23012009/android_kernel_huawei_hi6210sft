@@ -86,7 +86,11 @@
  * cpu_arm925_proc_init()
  */
 ENTRY(cpu_arm925_proc_init)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm925_proc_fin()
@@ -96,7 +100,11 @@ ENTRY(cpu_arm925_proc_fin)
 	bic	r0, r0, #0x1000			@ ...i............
 	bic	r0, r0, #0x000e			@ ............wca.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm925_reset(loc)
@@ -129,7 +137,11 @@ ENDPROC(cpu_arm925_reset)
 	bic	ip, ip, #0x000f			@ ............wcam
 	bic	ip, ip, #0x1100			@ ...i...s........
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm925_do_idle()
@@ -145,7 +157,11 @@ ENTRY(cpu_arm925_do_idle)
 	mcr	p15, 0, r2, c1, c0, 0		@ Disable I cache
 	mcr	p15, 0, r0, c7, c0, 4		@ Wait for interrupt
 	mcr	p15, 0, r1, c1, c0, 0		@ Restore ICache enable
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_icache_all()
@@ -155,7 +171,11 @@ ENTRY(cpu_arm925_do_idle)
 ENTRY(arm925_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(arm925_flush_icache_all)
 
 /*
@@ -188,7 +208,11 @@ __flush_whole_cache:
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_user_cache_range(start, end, flags)
@@ -225,7 +249,11 @@ ENTRY(arm925_flush_user_cache_range)
 	blo	1b
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	coherent_kern_range(start, end)
@@ -259,7 +287,11 @@ ENTRY(arm925_coherent_user_range)
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
 	mov	r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -279,7 +311,11 @@ ENTRY(arm925_flush_kern_dcache_area)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_inv_range(start, end)
@@ -307,7 +343,11 @@ arm925_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_clean_range(start, end)
@@ -328,7 +368,11 @@ arm925_dma_clean_range:
 	blo	1b
 #endif
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_flush_range(start, end)
@@ -350,7 +394,11 @@ ENTRY(arm925_dma_flush_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_map_area(start, size, dir)
@@ -373,7 +421,11 @@ ENDPROC(arm925_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(arm925_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(arm925_dma_unmap_area)
 
 	.globl	arm925_flush_kern_cache_louis
@@ -390,7 +442,11 @@ ENTRY(cpu_arm925_dcache_clean_area)
 	bhi	1b
 #endif
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* =============================== PageTable ============================== */
 
@@ -419,7 +475,11 @@ ENTRY(cpu_arm925_switch_mm)
 	mcr	p15, 0, r0, c2, c0, 0		@ load page table pointer
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_arm925_set_pte_ext(ptep, pte, ext)
@@ -436,16 +496,23 @@ ENTRY(cpu_arm925_set_pte_ext)
 #endif
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
 #endif /* CONFIG_MMU */
+<<<<<<< HEAD
 	mov	pc, lr
 
 	__CPUINIT
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.type	__arm925_setup, #function
 __arm925_setup:
 	mov	r0, #0
+<<<<<<< HEAD
 #if defined(CONFIG_CPU_ICACHE_STREAMING_DISABLE)
         orr     r0,r0,#1 << 7
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Transparent on, D-cache clean & flush mode. See  NOTE2 above */
         orr     r0,r0,#1 << 1			@ transparent mode on
@@ -471,7 +538,11 @@ __arm925_setup:
 #ifdef CONFIG_CPU_CACHE_ROUND_ROBIN
 	orr	r0, r0, #0x4000			@ .1.. .... .... ....
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.size	__arm925_setup, . - __arm925_setup
 
 	/*
@@ -496,7 +567,11 @@ arm925_crval:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .macro arm925_proc_info name:req, cpu_val:req, cpu_mask:req, cpu_name:req, cache
 	.type	__\name\()_proc_info,#object
@@ -504,6 +579,10 @@ __\name\()_proc_info:
 	.long	\cpu_val
 	.long	\cpu_mask
 	.long   PMD_TYPE_SECT | \
+<<<<<<< HEAD
+=======
+		PMD_SECT_CACHEABLE | \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
@@ -511,7 +590,11 @@ __\name\()_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
+<<<<<<< HEAD
 	b	__arm925_setup
+=======
+	initfn	__arm925_setup, __\name\()_proc_info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

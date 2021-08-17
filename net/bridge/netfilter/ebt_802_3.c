@@ -20,16 +20,26 @@ ebt_802_3_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	__be16 type = hdr->llc.ui.ctrl & IS_UI ? hdr->llc.ui.type : hdr->llc.ni.type;
 
 	if (info->bitmask & EBT_802_3_SAP) {
+<<<<<<< HEAD
 		if (FWINV(info->sap != hdr->llc.ui.ssap, EBT_802_3_SAP))
 			return false;
 		if (FWINV(info->sap != hdr->llc.ui.dsap, EBT_802_3_SAP))
+=======
+		if (NF_INVF(info, EBT_802_3_SAP, info->sap != hdr->llc.ui.ssap))
+			return false;
+		if (NF_INVF(info, EBT_802_3_SAP, info->sap != hdr->llc.ui.dsap))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return false;
 	}
 
 	if (info->bitmask & EBT_802_3_TYPE) {
 		if (!(hdr->llc.ui.dsap == CHECK_TYPE && hdr->llc.ui.ssap == CHECK_TYPE))
 			return false;
+<<<<<<< HEAD
 		if (FWINV(info->type != type, EBT_802_3_TYPE))
+=======
+		if (NF_INVF(info, EBT_802_3_TYPE, info->type != type))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return false;
 	}
 

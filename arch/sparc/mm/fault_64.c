@@ -14,23 +14,39 @@
 #include <linux/mman.h>
 #include <linux/signal.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/perf_event.h>
 #include <linux/interrupt.h>
 #include <linux/kprobes.h>
 #include <linux/kdebug.h>
 #include <linux/percpu.h>
+<<<<<<< HEAD
+=======
+#include <linux/context_tracking.h>
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/openprom.h>
 #include <asm/oplib.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/asi.h>
 #include <asm/lsu.h>
 #include <asm/sections.h>
 #include <asm/mmu_context.h>
+<<<<<<< HEAD
+=======
+#include <asm/setup.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int show_unhandled_signals = 1;
 
@@ -109,11 +125,16 @@ static unsigned int get_user_insn(unsigned long tpc)
 	if (pmd_none(*pmdp) || unlikely(pmd_bad(*pmdp)))
 		goto out_irq_enable;
 
+<<<<<<< HEAD
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 	if (pmd_trans_huge(*pmdp)) {
 		if (pmd_trans_splitting(*pmdp))
 			goto out_irq_enable;
 
+=======
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	if (is_hugetlb_pmd(*pmdp)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pa  = pmd_pfn(*pmdp) << PAGE_SHIFT;
 		pa += tpc & ~HPAGE_MASK;
 
@@ -195,9 +216,12 @@ static void do_fault_siginfo(int code, int sig, struct pt_regs *regs,
 	force_sig_info(sig, &info, current);
 }
 
+<<<<<<< HEAD
 extern int handle_ldf_stq(u32, struct pt_regs *);
 extern int handle_ld_nf(u32, struct pt_regs *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int get_fault_insn(struct pt_regs *regs, unsigned int insn)
 {
 	if (!insn) {
@@ -282,6 +306,10 @@ static void noinline __kprobes bogus_32bit_fault_tpc(struct pt_regs *regs)
 
 asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 {
+<<<<<<< HEAD
+=======
+	enum ctx_state prev_state = exception_enter();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	unsigned int insn = 0;
@@ -292,7 +320,11 @@ asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 	fault_code = get_thread_fault_code();
 
 	if (notify_page_fault(regs))
+<<<<<<< HEAD
 		return;
+=======
+		goto exit_exception;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	si_code = SEGV_MAPERR;
 	address = current_thread_info()->fault_address;
@@ -321,7 +353,11 @@ asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 			/* Valid, no problems... */
 		} else {
 			bad_kernel_pc(regs, address);
+<<<<<<< HEAD
 			return;
+=======
+			goto exit_exception;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else
 		flags |= FAULT_FLAG_USER;
@@ -330,7 +366,11 @@ asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto intr_or_no_mm;
 
 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
@@ -346,6 +386,12 @@ retry:
 		down_read(&mm->mmap_sem);
 	}
 
+<<<<<<< HEAD
+=======
+	if (fault_code & FAULT_CODE_BAD_RA)
+		goto do_sigbus;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vma = find_vma(mm, address);
 	if (!vma)
 		goto bad_area;
@@ -410,8 +456,14 @@ good_area:
 	 * that here.
 	 */
 	if ((fault_code & FAULT_CODE_ITLB) && !(vma->vm_flags & VM_EXEC)) {
+<<<<<<< HEAD
 		BUG_ON(address != regs->tpc);
 		BUG_ON(regs->tstate & TSTATE_PRIV);
+=======
+		WARN(address != regs->tpc,
+		     "address (%lx) != regs->tpc (%lx)\n", address, regs->tpc);
+		WARN_ON(regs->tstate & TSTATE_PRIV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto bad_area;
 	}
 
@@ -435,14 +487,26 @@ good_area:
 			goto bad_area;
 	}
 
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
+=======
+	fault = handle_mm_fault(vma, address, flags);
+
+	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
+		goto exit_exception;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();
@@ -473,14 +537,24 @@ good_area:
 	up_read(&mm->mmap_sem);
 
 	mm_rss = get_mm_rss(mm);
+<<<<<<< HEAD
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
 	mm_rss -= (mm->context.huge_pte_count * (HPAGE_SIZE / PAGE_SIZE));
+=======
+#if defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	mm_rss -= (mm->context.thp_pte_count * (HPAGE_SIZE / PAGE_SIZE));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	if (unlikely(mm_rss >
 		     mm->context.tsb_block[MM_TSB_BASE].tsb_rss_limit))
 		tsb_grow(mm, MM_TSB_BASE, mm_rss);
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+<<<<<<< HEAD
 	mm_rss = mm->context.huge_pte_count;
+=======
+	mm_rss = mm->context.hugetlb_pte_count + mm->context.thp_pte_count;
+	mm_rss *= REAL_HPAGE_PER_HPAGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(mm_rss >
 		     mm->context.tsb_block[MM_TSB_HUGE].tsb_rss_limit)) {
 		if (mm->context.tsb_block[MM_TSB_HUGE].tsb)
@@ -490,6 +564,11 @@ good_area:
 
 	}
 #endif
+<<<<<<< HEAD
+=======
+exit_exception:
+	exception_exit(prev_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 
 	/*
@@ -502,7 +581,11 @@ bad_area:
 
 handle_kernel_fault:
 	do_kernel_fault(regs, si_code, fault_code, insn, address);
+<<<<<<< HEAD
 	return;
+=======
+	goto exit_exception;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * We ran out of memory, or some other thing happened to us that made
@@ -513,7 +596,11 @@ out_of_memory:
 	up_read(&mm->mmap_sem);
 	if (!(regs->tstate & TSTATE_PRIV)) {
 		pagefault_out_of_memory();
+<<<<<<< HEAD
 		return;
+=======
+		goto exit_exception;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	goto handle_kernel_fault;
 

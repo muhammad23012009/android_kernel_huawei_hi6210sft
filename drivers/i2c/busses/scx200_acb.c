@@ -17,10 +17,13 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     General Public License for more details.
+<<<<<<< HEAD
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -431,10 +434,15 @@ static struct scx200_acb_iface *scx200_create_iface(const char *text,
 	struct i2c_adapter *adapter;
 
 	iface = kzalloc(sizeof(*iface), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!iface) {
 		pr_err("can't allocate memory\n");
 		return NULL;
 	}
+=======
+	if (!iface)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	adapter = &iface->adapter;
 	i2c_set_adapdata(adapter, iface);
@@ -550,13 +558,20 @@ static int scx200_remove(struct platform_device *pdev)
 static struct platform_driver scx200_pci_driver = {
 	.driver = {
 		.name = "cs5535-smb",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = scx200_probe,
 	.remove = scx200_remove,
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(scx200_isa) = {
+=======
+static const struct pci_device_id scx200_isa[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_NS, PCI_DEVICE_ID_NS_SCx200_BRIDGE) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_NS, PCI_DEVICE_ID_NS_SC1100_BRIDGE) },
 	{ 0, }

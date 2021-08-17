@@ -110,10 +110,17 @@ unsigned long __init mmu_mapin_ram(unsigned long top)
 		unsigned long val = p | _PMD_SIZE_16M | _PAGE_EXEC | _PAGE_HWWRITE;
 
 		pmdp = pmd_offset(pud_offset(pgd_offset_k(v), v), v);
+<<<<<<< HEAD
 		pmd_val(*pmdp++) = val;
 		pmd_val(*pmdp++) = val;
 		pmd_val(*pmdp++) = val;
 		pmd_val(*pmdp++) = val;
+=======
+		*pmdp++ = __pmd(val);
+		*pmdp++ = __pmd(val);
+		*pmdp++ = __pmd(val);
+		*pmdp++ = __pmd(val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		v += LARGE_PAGE_SIZE_16M;
 		p += LARGE_PAGE_SIZE_16M;
@@ -125,7 +132,11 @@ unsigned long __init mmu_mapin_ram(unsigned long top)
 		unsigned long val = p | _PMD_SIZE_4M | _PAGE_EXEC | _PAGE_HWWRITE;
 
 		pmdp = pmd_offset(pud_offset(pgd_offset_k(v), v), v);
+<<<<<<< HEAD
 		pmd_val(*pmdp) = val;
+=======
+		*pmdp = __pmd(val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		v += LARGE_PAGE_SIZE_4M;
 		p += LARGE_PAGE_SIZE_4M;

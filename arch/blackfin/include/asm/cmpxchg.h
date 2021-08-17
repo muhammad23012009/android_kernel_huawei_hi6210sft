@@ -128,6 +128,9 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
 #endif /* !CONFIG_SMP */
 
 #define xchg(ptr, x) ((__typeof__(*(ptr)))__xchg((unsigned long)(x), (ptr), sizeof(*(ptr))))
+<<<<<<< HEAD
 #define tas(ptr) ((void)xchg((ptr), 1))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ARCH_BLACKFIN_CMPXCHG__ */

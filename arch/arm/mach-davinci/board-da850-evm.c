@@ -18,8 +18,13 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/at24.h>
 #include <linux/i2c/pca953x.h>
+=======
+#include <linux/platform_data/at24.h>
+#include <linux/platform_data/pca953x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input.h>
 #include <linux/input/tps6507x-ts.h>
 #include <linux/mfd/tps6507x.h>
@@ -28,12 +33,17 @@
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/gpio-davinci.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/mtd-davinci.h>
 #include <linux/platform_data/mtd-davinci-aemif.h>
 #include <linux/platform_data/spi-davinci.h>
 #include <linux/platform_data/uio_pruss.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/tps6507x.h>
+<<<<<<< HEAD
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
 #include <linux/wl12xx.h>
@@ -42,13 +52,29 @@
 #include <mach/da8xx.h>
 #include <mach/mux.h>
 #include <mach/sram.h>
+=======
+#include <linux/regulator/fixed.h>
+#include <linux/spi/spi.h>
+#include <linux/spi/flash.h>
+
+#include <mach/common.h>
+#include "cp_intc.h"
+#include <mach/da8xx.h>
+#include <mach/mux.h>
+#include "sram.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/system_info.h>
 
+<<<<<<< HEAD
 #include <media/tvp514x.h>
 #include <media/adv7343.h>
+=======
+#include <media/i2c/tvp514x.h>
+#include <media/i2c/adv7343.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DA850_EVM_PHY_ID		"davinci_mdio-0:00"
 #define DA850_LCD_PWR_PIN		GPIO_TO_PIN(2, 8)
@@ -57,9 +83,12 @@
 #define DA850_MMCSD_CD_PIN		GPIO_TO_PIN(4, 0)
 #define DA850_MMCSD_WP_PIN		GPIO_TO_PIN(4, 1)
 
+<<<<<<< HEAD
 #define DA850_WLAN_EN			GPIO_TO_PIN(6, 9)
 #define DA850_WLAN_IRQ			GPIO_TO_PIN(6, 10)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DA850_MII_MDIO_CLKEN_PIN	GPIO_TO_PIN(2, 6)
 
 static struct mtd_partition da850evm_spiflash_part[] = {
@@ -356,6 +385,12 @@ static inline void da850_evm_setup_nor_nand(void)
 
 		platform_add_devices(da850_evm_devices,
 					ARRAY_SIZE(da850_evm_devices));
+<<<<<<< HEAD
+=======
+
+		if (davinci_aemif_setup(&da850_evm_nandflash_device))
+			pr_warn("%s: Cannot configure AEMIF.\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -446,8 +481,12 @@ static void da850_evm_ui_keys_init(unsigned gpio)
 	for (i = 0; i < DA850_N_UI_PB; i++) {
 		button = &da850_evm_ui_keys[i];
 		button->code = KEY_F8 - i;
+<<<<<<< HEAD
 		button->desc = (char *)
 				da850_evm_ui_exp[DA850_EVM_UI_EXP_PB8 + i];
+=======
+		button->desc = da850_evm_ui_exp[DA850_EVM_UI_EXP_PB8 + i];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		button->gpio = gpio + DA850_EVM_UI_EXP_PB8 + i;
 	}
 }
@@ -622,15 +661,23 @@ static void da850_evm_bb_keys_init(unsigned gpio)
 	struct gpio_keys_button *button;
 
 	button = &da850_evm_bb_keys[0];
+<<<<<<< HEAD
 	button->desc = (char *)
 		da850_evm_bb_exp[DA850_EVM_BB_EXP_USER_PB1];
+=======
+	button->desc = da850_evm_bb_exp[DA850_EVM_BB_EXP_USER_PB1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	button->gpio = gpio + DA850_EVM_BB_EXP_USER_PB1;
 
 	for (i = 0; i < DA850_N_BB_USER_SW; i++) {
 		button = &da850_evm_bb_keys[i + 1];
 		button->code = SW_LID + i;
+<<<<<<< HEAD
 		button->desc = (char *)
 				da850_evm_bb_exp[DA850_EVM_BB_EXP_USER_SW1 + i];
+=======
+		button->desc = da850_evm_bb_exp[DA850_EVM_BB_EXP_USER_SW1 + i];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		button->gpio = gpio + DA850_EVM_BB_EXP_USER_SW1 + i;
 	}
 }
@@ -746,10 +793,13 @@ static struct davinci_i2c_platform_data da850_evm_i2c_0_pdata = {
 	.bus_delay	= 0,	/* usec */
 };
 
+<<<<<<< HEAD
 static struct davinci_uart_config da850_evm_uart_config __initdata = {
 	.enabled_uarts = 0x7,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* davinci da850 evm audio machine driver */
 static u8 da850_iis_serializer_direction[] = {
 	INACTIVE_MODE,	INACTIVE_MODE,	INACTIVE_MODE,	INACTIVE_MODE,
@@ -841,6 +891,19 @@ static int da850_lcd_hw_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* Fixed regulator support */
+static struct regulator_consumer_supply fixed_supplies[] = {
+	/* Baseboard 3.3V: 5V -> TPS73701DCQ -> 3.3V */
+	REGULATOR_SUPPLY("AVDD", "1-0018"),
+	REGULATOR_SUPPLY("DRVDD", "1-0018"),
+
+	/* Baseboard 1.8V: 5V -> TPS73701DCQ -> 1.8V */
+	REGULATOR_SUPPLY("DVDD", "1-0018"),
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* TPS65070 voltage regulator support */
 
 /* 3.3V */
@@ -864,6 +927,10 @@ static struct regulator_consumer_supply tps65070_dcdc2_consumers[] = {
 	{
 		.supply = "dvdd3318_c",
 	},
+<<<<<<< HEAD
+=======
+	REGULATOR_SUPPLY("IOVDD", "1-0018"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* 1.2V */
@@ -935,6 +1002,10 @@ static struct regulator_init_data tps65070_regulator_data[] = {
 			.valid_ops_mask = (REGULATOR_CHANGE_VOLTAGE |
 				REGULATOR_CHANGE_STATUS),
 			.boot_on = 1,
+<<<<<<< HEAD
+=======
+			.always_on = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		},
 		.num_consumer_supplies = ARRAY_SIZE(tps65070_dcdc2_consumers),
 		.consumer_supplies = tps65070_dcdc2_consumers,
@@ -985,7 +1056,10 @@ static struct regulator_init_data tps65070_regulator_data[] = {
 static struct touchscreen_init_data tps6507x_touchscreen_data = {
 	.poll_period =  30,	/* ms between touch samples */
 	.min_pressure = 0x30,	/* minimum pressure to trigger touch */
+<<<<<<< HEAD
 	.vref = 0,		/* turn off vref when not using A/D */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.vendor = 0,		/* /sys/class/input/input?/id/vendor */
 	.product = 65070,	/* /sys/class/input/input?/id/product */
 	.version = 0x100,	/* /sys/class/input/input?/id/version */
@@ -1250,12 +1324,19 @@ static struct vpif_capture_config da850_vpif_capture_config = {
 
 static struct adv7343_platform_data adv7343_pdata = {
 	.mode_config = {
+<<<<<<< HEAD
 		.dac_3 = 1,
 		.dac_2 = 1,
 		.dac_1 = 1,
 	},
 	.sd_config = {
 		.sd_dac_out1 = 1,
+=======
+		.dac = { 1, 1, 1 },
+	},
+	.sd_config = {
+		.sd_dac_out = { 1 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -1335,6 +1416,7 @@ static __init void da850_vpif_init(void)
 static __init void da850_vpif_init(void) {}
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_DA850_WL12XX
 
 static void wl12xx_set_power(int index, bool power_on)
@@ -1438,12 +1520,23 @@ static __init int da850_wl12xx_init(void)
 
 #endif /* CONFIG_DA850_WL12XX */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DA850EVM_SATA_REFCLKPN_RATE	(100 * 1000 * 1000)
 
 static __init void da850_evm_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+	ret = da850_register_gpio();
+	if (ret)
+		pr_warn("%s: GPIO init failed: %d\n", __func__, ret);
+
+	regulator_register_fixed(0, fixed_supplies, ARRAY_SIZE(fixed_supplies));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = pmic_tps65070_init();
 	if (ret)
 		pr_warn("%s: TPS65070 PMIC init failed: %d\n", __func__, ret);
@@ -1488,6 +1581,7 @@ static __init void da850_evm_init(void)
 		if (ret)
 			pr_warn("%s: MMCSD0 registration failed: %d\n",
 				__func__, ret);
+<<<<<<< HEAD
 
 		ret = da850_wl12xx_init();
 		if (ret)
@@ -1496,6 +1590,11 @@ static __init void da850_evm_init(void)
 	}
 
 	davinci_serial_init(&da850_evm_uart_config);
+=======
+	}
+
+	davinci_serial_init(da8xx_serial_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	i2c_register_board_info(1, da850_evm_i2c_devices,
 			ARRAY_SIZE(da850_evm_i2c_devices));
@@ -1577,6 +1676,11 @@ static __init void da850_evm_init(void)
 	if (ret)
 		pr_warn("%s: dsp/rproc registration failed: %d\n",
 			__func__, ret);
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_SERIAL_8250_CONSOLE

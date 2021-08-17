@@ -21,9 +21,15 @@
 #include <linux/i2c.h>
 #include <linux/spi/spi.h>
 #include <linux/usb/musb.h>
+<<<<<<< HEAD
 #include <linux/platform_data/i2c-cbus-gpio.h>
 #include <linux/platform_data/spi-omap2-mcspi.h>
 #include <linux/platform_data/mtd-onenand-omap2.h>
+=======
+#include <linux/mmc/host.h>
+#include <linux/platform_data/spi-omap2-mcspi.h>
+#include <linux/platform_data/mmc-omap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/menelaus.h>
 #include <sound/tlv320aic3x.h>
 
@@ -32,9 +38,14 @@
 
 #include "common.h"
 #include "mmc.h"
+<<<<<<< HEAD
 
 #include "mux.h"
 #include "gpmc-onenand.h"
+=======
+#include "soc.h"
+#include "common-board-devices.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define TUSB6010_ASYNC_CS	1
 #define TUSB6010_SYNC_CS	4
@@ -42,6 +53,7 @@
 #define TUSB6010_GPIO_ENABLE	0
 #define TUSB6010_DMACHAN	0x3f
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C_CBUS_GPIO) || defined(CONFIG_I2C_CBUS_GPIO_MODULE)
 static struct i2c_cbus_platform_data n8x0_cbus_data = {
 	.clk_gpio = 66,
@@ -82,6 +94,34 @@ static void __init n8x0_cbus_init(void)
 #endif /* CONFIG_I2C_CBUS_GPIO */
 
 #if defined(CONFIG_USB_MUSB_TUSB6010) || defined(CONFIG_USB_MUSB_TUSB6010_MODULE)
+=======
+#define NOKIA_N810_WIMAX	(1 << 2)
+#define NOKIA_N810		(1 << 1)
+#define NOKIA_N800		(1 << 0)
+
+static u32 board_caps;
+
+#define board_is_n800()		(board_caps & NOKIA_N800)
+#define board_is_n810()		(board_caps & NOKIA_N810)
+#define board_is_n810_wimax()	(board_caps & NOKIA_N810_WIMAX)
+
+static void board_check_revision(void)
+{
+	if (of_have_populated_dt()) {
+		if (of_machine_is_compatible("nokia,n800"))
+			board_caps = NOKIA_N800;
+		else if (of_machine_is_compatible("nokia,n810"))
+			board_caps = NOKIA_N810;
+		else if (of_machine_is_compatible("nokia,n810-wimax"))
+			board_caps = NOKIA_N810_WIMAX;
+	}
+
+	if (!board_caps)
+		pr_err("Unknown board\n");
+}
+
+#if IS_ENABLED(CONFIG_USB_MUSB_TUSB6010)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Enable or disable power to TUSB6010. When enabling, turn on 3.3 V and
  * 1.5 V voltage regulators of PM companion chip. Companion chip will then
@@ -122,11 +162,15 @@ static struct musb_hdrc_config musb_config = {
 };
 
 static struct musb_hdrc_platform_data tusb_data = {
+<<<<<<< HEAD
 #ifdef CONFIG_USB_GADGET_MUSB_HDRC
 	.mode		= MUSB_OTG,
 #else
 	.mode		= MUSB_HOST,
 #endif
+=======
+	.mode		= MUSB_OTG,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set_power	= tusb_set_power,
 	.min_power	= 25,	/* x2 = 50 mA drawn from VBUS as peripheral */
 	.power		= 100,	/* Max 100 mA VBUS for host mode */
@@ -182,6 +226,7 @@ static struct spi_board_info n800_spi_board_info[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_ONENAND_OMAP2) || \
 	defined(CONFIG_MTD_ONENAND_OMAP2_MODULE)
 
@@ -227,6 +272,9 @@ static struct omap_onenand_platform_data board_onenand_data[] = {
 
 #if defined(CONFIG_MENELAUS) &&						\
 	(defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE))
+=======
+#if defined(CONFIG_MENELAUS) && IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * On both N800 and N810, only the first of the two MMC controllers is in use.
@@ -346,7 +394,11 @@ static void n810_set_power_emmc(struct device *dev,
 static int n8x0_mmc_set_power(struct device *dev, int slot, int power_on,
 			      int vdd)
 {
+<<<<<<< HEAD
 	if (machine_is_nokia_n800() || slot == 0)
+=======
+	if (board_is_n800() || slot == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return n8x0_mmc_set_power_menelaus(dev, slot, power_on, vdd);
 
 	n810_set_power_emmc(dev, power_on);
@@ -390,9 +442,16 @@ static int n8x0_mmc_get_cover_state(struct device *dev, int slot)
 
 static void n8x0_mmc_callback(void *data, u8 card_mask)
 {
+<<<<<<< HEAD
 	int bit, *openp, index;
 
 	if (machine_is_nokia_n800()) {
+=======
+#ifdef CONFIG_MMC_OMAP
+	int bit, *openp, index;
+
+	if (board_is_n800()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bit = 1 << 1;
 		openp = &slot2_cover_open;
 		index = 1;
@@ -407,7 +466,10 @@ static void n8x0_mmc_callback(void *data, u8 card_mask)
 	else
 		*openp = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_OMAP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_mmc_notify_cover_event(mmc_device, index, *openp);
 #else
 	pr_warn("MMC: notify cover event not available\n");
@@ -425,7 +487,11 @@ static int n8x0_mmc_late_init(struct device *dev)
 	if (r < 0)
 		return r;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n800())
+=======
+	if (board_is_n800())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		vs2sel = 0;
 	else
 		vs2sel = 2;
@@ -448,7 +514,11 @@ static int n8x0_mmc_late_init(struct device *dev)
 	if (r < 0)
 		return r;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n800()) {
+=======
+	if (board_is_n800()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bit = 1 << 1;
 		openp = &slot2_cover_open;
 	} else {
@@ -475,7 +545,11 @@ static void n8x0_mmc_shutdown(struct device *dev)
 {
 	int vs2sel;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n800())
+=======
+	if (board_is_n800())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		vs2sel = 0;
 	else
 		vs2sel = 2;
@@ -490,7 +564,11 @@ static void n8x0_mmc_cleanup(struct device *dev)
 
 	gpio_free(N8X0_SLOT_SWITCH_GPIO);
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n810()) {
+=======
+	if (board_is_n810()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gpio_free(N810_EMMC_VSD_GPIO);
 		gpio_free(N810_EMMC_VIO_GPIO);
 	}
@@ -501,7 +579,11 @@ static void n8x0_mmc_cleanup(struct device *dev)
  * MMC controller2 is not in use.
  */
 static struct omap_mmc_platform_data mmc1_data = {
+<<<<<<< HEAD
 	.nr_slots			= 2,
+=======
+	.nr_slots			= 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.switch_slot			= n8x0_mmc_switch_slot,
 	.init				= n8x0_mmc_late_init,
 	.cleanup			= n8x0_mmc_cleanup,
@@ -541,7 +623,11 @@ static void __init n8x0_mmc_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n810()) {
+=======
+	if (board_is_n810()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mmc1_data.slots[0].name = "external";
 
 		/*
@@ -559,7 +645,11 @@ static void __init n8x0_mmc_init(void)
 	if (err)
 		return;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n810()) {
+=======
+	if (board_is_n810()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = gpio_request_array(n810_emmc_gpios,
 					 ARRAY_SIZE(n810_emmc_gpios));
 		if (err) {
@@ -568,11 +658,19 @@ static void __init n8x0_mmc_init(void)
 		}
 	}
 
+<<<<<<< HEAD
 	mmc_data[0] = &mmc1_data;
 	omap242x_init_mmc(mmc_data);
 }
 #else
 
+=======
+	mmc1_data.nr_slots = 2;
+	mmc_data[0] = &mmc1_data;
+}
+#else
+static struct omap_mmc_platform_data mmc1_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init n8x0_mmc_init(void)
 {
 }
@@ -631,6 +729,7 @@ static int n8x0_menelaus_late_init(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 static struct menelaus_platform_data n8x0_menelaus_platform_data __initdata = {
 	.late_init = n8x0_menelaus_late_init,
 };
@@ -760,3 +859,36 @@ MACHINE_START(NOKIA_N810_WIMAX, "Nokia N810 WiMAX")
 	.init_time	= omap2_sync32k_timer_init,
 	.restart	= omap2xxx_restart,
 MACHINE_END
+=======
+struct menelaus_platform_data n8x0_menelaus_platform_data __initdata = {
+	.late_init = n8x0_menelaus_late_init,
+};
+
+struct aic3x_pdata n810_aic33_data __initdata = {
+	.gpio_reset = 118,
+};
+
+static int __init n8x0_late_initcall(void)
+{
+	if (!board_caps)
+		return -ENODEV;
+
+	n8x0_mmc_init();
+	n8x0_usb_init();
+
+	return 0;
+}
+omap_late_initcall(n8x0_late_initcall);
+
+/*
+ * Legacy init pdata init for n8x0. Note that we want to follow the
+ * I2C bus numbering starting at 0 for device tree like other omaps.
+ */
+void * __init n8x0_legacy_init(void)
+{
+	board_check_revision();
+	spi_register_board_info(n800_spi_board_info,
+				ARRAY_SIZE(n800_spi_board_info));
+	return &mmc1_data;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

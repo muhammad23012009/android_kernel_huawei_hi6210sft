@@ -7,6 +7,10 @@
  *     Copyright IBM Corp. 2003, 2009
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/console.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -30,6 +34,12 @@
 
 static struct raw3270_fn con3270_fn;
 
+<<<<<<< HEAD
+=======
+static bool auto_update = 1;
+module_param(auto_update, bool, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Main 3270 console view data structure.
  */
@@ -120,7 +130,16 @@ con3270_create_status(struct con3270 *cp)
 static void
 con3270_update_string(struct con3270 *cp, struct string *s, int nr)
 {
+<<<<<<< HEAD
 	if (s->len >= cp->view.cols - 5)
+=======
+	if (s->len < 4) {
+		/* This indicates a bug, but printing a warning would
+		 * cause a deadlock. */
+		return;
+	}
+	if (s->string[s->len - 4] != TO_RA)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	raw3270_buffer_address(cp->view.dev, s->string + s->len - 3,
 			       cp->view.cols * (nr + 1));
@@ -204,6 +223,11 @@ con3270_update(struct con3270 *cp)
 	struct string *s, *n;
 	int rc;
 
+<<<<<<< HEAD
+=======
+	if (!auto_update && !raw3270_view_active(&cp->view))
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cp->view.dev)
 		raw3270_activate_view(&cp->view);
 
@@ -394,7 +418,11 @@ con3270_deactivate(struct raw3270_view *view)
 	del_timer(&cp->timer);
 }
 
+<<<<<<< HEAD
 static int
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 con3270_irq(struct con3270 *cp, struct raw3270_request *rq, struct irb *irb)
 {
 	/* Handle ATTN. Schedule tasklet to read aid. */
@@ -407,8 +435,16 @@ con3270_irq(struct con3270 *cp, struct raw3270_request *rq, struct irb *irb)
 		else
 			/* Normal end. Copy residual count. */
 			rq->rescnt = irb->scsw.cmd.count;
+<<<<<<< HEAD
 	}
 	return RAW3270_IO_DONE;
+=======
+	} else if (irb->scsw.cmd.dstat & DEV_STAT_DEV_END) {
+		/* Interrupt without an outstanding request -> update all */
+		cp->update_flags = CON_UPDATE_ALL;
+		con3270_set_timer(cp, 1);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Console view to a 3270 device. */
@@ -451,11 +487,19 @@ con3270_cline_end(struct con3270 *cp)
 		cp->cline->len + 4 : cp->view.cols;
 	s = con3270_alloc_string(cp, size);
 	memcpy(s->string, cp->cline->string, cp->cline->len);
+<<<<<<< HEAD
 	if (s->len < cp->view.cols - 5) {
 		s->string[s->len - 4] = TO_RA;
 		s->string[s->len - 1] = 0;
 	} else {
 		while (--size > cp->cline->len)
+=======
+	if (cp->cline->len < cp->view.cols - 5) {
+		s->string[s->len - 4] = TO_RA;
+		s->string[s->len - 1] = 0;
+	} else {
+		while (--size >= cp->cline->len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			s->string[size] = cp->view.ascebc[' '];
 	}
 	/* Replace cline with allocated line s and reset cline. */
@@ -529,6 +573,10 @@ con3270_flush(void)
 	if (!cp->view.dev)
 		return;
 	raw3270_pm_unfreeze(&cp->view);
+<<<<<<< HEAD
+=======
+	raw3270_activate_view(&cp->view);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&cp->view.lock, flags);
 	con3270_wait_write(cp);
 	cp->nr_up = 0;
@@ -595,6 +643,11 @@ con3270_init(void)
 		return PTR_ERR(rp);
 
 	condev = kzalloc(sizeof(struct con3270), GFP_KERNEL | GFP_DMA);
+<<<<<<< HEAD
+=======
+	if (!condev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	condev->view.dev = rp;
 
 	condev->read = raw3270_request_alloc(0);
@@ -611,7 +664,11 @@ con3270_init(void)
 		     (void (*)(unsigned long)) con3270_read_tasklet,
 		     (unsigned long) condev->read);
 
+<<<<<<< HEAD
 	raw3270_add_view(&condev->view, &con3270_fn, 1);
+=======
+	raw3270_add_view(&condev->view, &con3270_fn, 1, RAW3270_VIEW_LOCK_IRQ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_LIST_HEAD(&condev->freemem);
 	for (i = 0; i < CON3270_STRING_PAGES; i++) {

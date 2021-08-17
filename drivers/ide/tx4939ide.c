@@ -618,12 +618,16 @@ static int tx4939ide_resume(struct platform_device *dev)
 static struct platform_driver tx4939ide_driver = {
 	.driver = {
 		.name = MODNAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove = __exit_p(tx4939ide_remove),
 	.resume = tx4939ide_resume,
 };
 
+<<<<<<< HEAD
 static int __init tx4939ide_init(void)
 {
 	return platform_driver_probe(&tx4939ide_driver, tx4939ide_probe);
@@ -636,6 +640,9 @@ static void __exit tx4939ide_exit(void)
 
 module_init(tx4939ide_init);
 module_exit(tx4939ide_exit);
+=======
+module_platform_driver_probe(tx4939ide_driver, tx4939ide_probe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("TX4939 internal IDE driver");
 MODULE_LICENSE("GPL");

@@ -5,6 +5,11 @@
 #include <linux/msg.h>
 #include <fcntl.h>
 
+<<<<<<< HEAD
+=======
+#include "../kselftest.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MAX_MSG_SIZE		32
 
 struct msg1 {
@@ -133,7 +138,11 @@ int dump_queue(struct msgque_data *msgque)
 	for (kern_id = 0; kern_id < 256; kern_id++) {
 		ret = msgctl(kern_id, MSG_STAT, &ds);
 		if (ret < 0) {
+<<<<<<< HEAD
 			if (errno == -EINVAL)
+=======
+			if (errno == EINVAL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				continue;
 			printf("Failed to get stats for IPC queue with id %d\n",
 					kern_id);
@@ -193,54 +202,101 @@ int main(int argc, char **argv)
 	int msg, pid, err;
 	struct msgque_data msgque;
 
+<<<<<<< HEAD
 	msgque.key = ftok(argv[0], 822155650);
 	if (msgque.key == -1) {
 		printf("Can't make key\n");
 		return -errno;
+=======
+	if (getuid() != 0) {
+		printf("Please run the test as root - Exiting.\n");
+		return ksft_exit_fail();
+	}
+
+	msgque.key = ftok(argv[0], 822155650);
+	if (msgque.key == -1) {
+		printf("Can't make key: %d\n", -errno);
+		return ksft_exit_fail();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	msgque.msq_id = msgget(msgque.key, IPC_CREAT | IPC_EXCL | 0666);
 	if (msgque.msq_id == -1) {
+<<<<<<< HEAD
 		printf("Can't create queue\n");
+=======
+		err = -errno;
+		printf("Can't create queue: %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out;
 	}
 
 	err = fill_msgque(&msgque);
 	if (err) {
+<<<<<<< HEAD
 		printf("Failed to fill queue\n");
+=======
+		printf("Failed to fill queue: %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_destroy;
 	}
 
 	err = dump_queue(&msgque);
 	if (err) {
+<<<<<<< HEAD
 		printf("Failed to dump queue\n");
+=======
+		printf("Failed to dump queue: %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_destroy;
 	}
 
 	err = check_and_destroy_queue(&msgque);
 	if (err) {
+<<<<<<< HEAD
 		printf("Failed to check and destroy queue\n");
+=======
+		printf("Failed to check and destroy queue: %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out;
 	}
 
 	err = restore_queue(&msgque);
 	if (err) {
+<<<<<<< HEAD
 		printf("Failed to restore queue\n");
+=======
+		printf("Failed to restore queue: %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_destroy;
 	}
 
 	err = check_and_destroy_queue(&msgque);
 	if (err) {
+<<<<<<< HEAD
 		printf("Failed to test queue\n");
 		goto err_out;
 	}
 	return 0;
+=======
+		printf("Failed to test queue: %d\n", err);
+		goto err_out;
+	}
+	return ksft_exit_pass();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 err_destroy:
 	if (msgctl(msgque.msq_id, IPC_RMID, 0)) {
 		printf("Failed to destroy queue: %d\n", -errno);
+<<<<<<< HEAD
 		return -errno;
 	}
 err_out:
 	return err;
+=======
+		return ksft_exit_fail();
+	}
+err_out:
+	return ksft_exit_fail();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

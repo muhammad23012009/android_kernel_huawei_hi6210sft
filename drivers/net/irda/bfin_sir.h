@@ -82,9 +82,12 @@ struct bfin_sir_self {
 
 #define DRIVER_NAME "bfin_sir"
 
+<<<<<<< HEAD
 #define port_membase(port)     (((struct bfin_sir_port *)(port))->membase)
 #define get_lsr_cache(port)    (((struct bfin_sir_port *)(port))->lsr)
 #define put_lsr_cache(port, v) (((struct bfin_sir_port *)(port))->lsr = (v))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/bfin_serial.h>
 
 static const unsigned short per[][4] = {

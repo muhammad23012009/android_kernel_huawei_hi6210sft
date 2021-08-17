@@ -22,7 +22,12 @@ config SMS_SIANO_DEBUGFS
 	bool "Enable debugfs for smsdvb"
 	depends on SMS_SIANO_MDTV
 	depends on DEBUG_FS
+<<<<<<< HEAD
 	depends on SMS_USB_DRV
+=======
+	depends on SMS_USB_DRV = SMS_SDIO_DRV
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  Choose Y to enable visualizing a dump of the frontend
 	  statistics response packets via debugfs. Currently, works

@@ -2,8 +2,15 @@
 # Kbuild for top-level directory of the kernel
 # This file takes care of the following:
 # 1) Generate bounds.h
+<<<<<<< HEAD
 # 2) Generate asm-offsets.h (may need bounds.h)
 # 3) Check for missing system calls
+=======
+# 2) Generate timeconst.h
+# 3) Generate asm-offsets.h (may need bounds.h and timeconst.h)
+# 4) Check for missing system calls
+# 5) Generate constants.py (may need bounds.h)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #####
 # 1) Generate bounds.h
@@ -11,6 +18,7 @@
 bounds-file := include/generated/bounds.h
 
 always  := $(bounds-file)
+<<<<<<< HEAD
 targets := $(bounds-file) kernel/bounds.s
 
 quiet_cmd_bounds = GEN     $@
@@ -29,23 +37,53 @@ define cmd_bounds
 	 echo ""; \
 	 echo "#endif" ) > $@
 endef
+=======
+targets := kernel/bounds.s
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # We use internal kbuild rules to avoid the "is up to date" message from make
 kernel/bounds.s: kernel/bounds.c FORCE
 	$(Q)mkdir -p $(dir $@)
 	$(call if_changed_dep,cc_s_c)
 
+<<<<<<< HEAD
 $(obj)/$(bounds-file): kernel/bounds.s Kbuild
 	$(Q)mkdir -p $(dir $@)
 	$(call cmd,bounds)
 
 #####
 # 2) Generate asm-offsets.h
+=======
+$(obj)/$(bounds-file): kernel/bounds.s FORCE
+	$(call filechk,offsets,__LINUX_BOUNDS_H__)
+
+#####
+# 2) Generate timeconst.h
+
+timeconst-file := include/generated/timeconst.h
+
+targets += $(timeconst-file)
+
+quiet_cmd_gentimeconst = GEN     $@
+define cmd_gentimeconst
+	(echo $(CONFIG_HZ) | bc -q $< ) > $@
+endef
+define filechk_gentimeconst
+	(echo $(CONFIG_HZ) | bc -q $< )
+endef
+
+$(obj)/$(timeconst-file): kernel/time/timeconst.bc FORCE
+	$(call filechk,gentimeconst)
+
+#####
+# 3) Generate asm-offsets.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 
 offsets-file := include/generated/asm-offsets.h
 
 always  += $(offsets-file)
+<<<<<<< HEAD
 targets += $(offsets-file)
 targets += arch/$(SRCARCH)/kernel/asm-offsets.s
 
@@ -86,6 +124,21 @@ $(obj)/$(offsets-file): arch/$(SRCARCH)/kernel/asm-offsets.s Kbuild
 
 #####
 # 3) Check for missing system calls
+=======
+targets += arch/$(SRCARCH)/kernel/asm-offsets.s
+
+# We use internal kbuild rules to avoid the "is up to date" message from make
+arch/$(SRCARCH)/kernel/asm-offsets.s: arch/$(SRCARCH)/kernel/asm-offsets.c \
+                                      $(obj)/$(timeconst-file) $(obj)/$(bounds-file) FORCE
+	$(Q)mkdir -p $(dir $@)
+	$(call if_changed_dep,cc_s_c)
+
+$(obj)/$(offsets-file): arch/$(SRCARCH)/kernel/asm-offsets.s FORCE
+	$(call filechk,offsets,__ASM_OFFSETS_H__)
+
+#####
+# 4) Check for missing system calls
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 
 always += missing-syscalls
@@ -97,5 +150,19 @@ quiet_cmd_syscalls = CALL    $<
 missing-syscalls: scripts/checksyscalls.sh $(offsets-file) FORCE
 	$(call cmd,syscalls)
 
+<<<<<<< HEAD
 # Keep these two files during make clean
 no-clean-files := $(bounds-file) $(offsets-file)
+=======
+#####
+# 5) Generate constants for Python GDB integration
+#
+
+extra-$(CONFIG_GDB_SCRIPTS) += build_constants_py
+
+build_constants_py: $(obj)/$(timeconst-file) $(obj)/$(bounds-file)
+	@$(MAKE) $(build)=scripts/gdb/linux $@
+
+# Keep these three files during make clean
+no-clean-files := $(bounds-file) $(offsets-file) $(timeconst-file)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

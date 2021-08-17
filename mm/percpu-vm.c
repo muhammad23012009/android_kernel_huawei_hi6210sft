@@ -20,6 +20,7 @@ static struct page *pcpu_chunk_page(struct pcpu_chunk *chunk,
 }
 
 /**
+<<<<<<< HEAD
  * pcpu_get_pages_and_bitmap - get temp pages array and bitmap
  * @chunk: chunk of interest
  * @bitmapp: output parameter for bitmap
@@ -60,6 +61,27 @@ static struct page **pcpu_get_pages_and_bitmap(struct pcpu_chunk *chunk,
 	bitmap_copy(bitmap, chunk->populated, pcpu_unit_pages);
 
 	*bitmapp = bitmap;
+=======
+ * pcpu_get_pages - get temp pages array
+ * @chunk: chunk of interest
+ *
+ * Returns pointer to array of pointers to struct page which can be indexed
+ * with pcpu_page_idx().  Note that there is only one array and accesses
+ * should be serialized by pcpu_alloc_mutex.
+ *
+ * RETURNS:
+ * Pointer to temp pages array on success.
+ */
+static struct page **pcpu_get_pages(struct pcpu_chunk *chunk_alloc)
+{
+	static struct page **pages;
+	size_t pages_size = pcpu_nr_units * pcpu_unit_pages * sizeof(pages[0]);
+
+	lockdep_assert_held(&pcpu_alloc_mutex);
+
+	if (!pages)
+		pages = pcpu_mem_zalloc(pages_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pages;
 }
 
@@ -67,7 +89,10 @@ static struct page **pcpu_get_pages_and_bitmap(struct pcpu_chunk *chunk,
  * pcpu_free_pages - free pages which were allocated for @chunk
  * @chunk: chunk pages were allocated for
  * @pages: array of pages to be freed, indexed by pcpu_page_idx()
+<<<<<<< HEAD
  * @populated: populated bitmap
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @page_start: page index of the first page to be freed
  * @page_end: page index of the last page to be freed + 1
  *
@@ -75,8 +100,12 @@ static struct page **pcpu_get_pages_and_bitmap(struct pcpu_chunk *chunk,
  * The pages were allocated for @chunk.
  */
 static void pcpu_free_pages(struct pcpu_chunk *chunk,
+<<<<<<< HEAD
 			    struct page **pages, unsigned long *populated,
 			    int page_start, int page_end)
+=======
+			    struct page **pages, int page_start, int page_end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int cpu;
 	int i;
@@ -95,7 +124,10 @@ static void pcpu_free_pages(struct pcpu_chunk *chunk,
  * pcpu_alloc_pages - allocates pages for @chunk
  * @chunk: target chunk
  * @pages: array to put the allocated pages into, indexed by pcpu_page_idx()
+<<<<<<< HEAD
  * @populated: populated bitmap
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @page_start: page index of the first page to be allocated
  * @page_end: page index of the last page to be allocated + 1
  *
@@ -104,8 +136,12 @@ static void pcpu_free_pages(struct pcpu_chunk *chunk,
  * content of @pages and will pass it verbatim to pcpu_map_pages().
  */
 static int pcpu_alloc_pages(struct pcpu_chunk *chunk,
+<<<<<<< HEAD
 			    struct page **pages, unsigned long *populated,
 			    int page_start, int page_end)
+=======
+			    struct page **pages, int page_start, int page_end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const gfp_t gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_COLD;
 	unsigned int cpu, tcpu;
@@ -164,7 +200,10 @@ static void __pcpu_unmap_pages(unsigned long addr, int nr_pages)
  * pcpu_unmap_pages - unmap pages out of a pcpu_chunk
  * @chunk: chunk of interest
  * @pages: pages array which can be used to pass information to free
+<<<<<<< HEAD
  * @populated: populated bitmap
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @page_start: page index of the first page to unmap
  * @page_end: page index of the last page to unmap + 1
  *
@@ -175,8 +214,12 @@ static void __pcpu_unmap_pages(unsigned long addr, int nr_pages)
  * proper pre/post flush functions.
  */
 static void pcpu_unmap_pages(struct pcpu_chunk *chunk,
+<<<<<<< HEAD
 			     struct page **pages, unsigned long *populated,
 			     int page_start, int page_end)
+=======
+			     struct page **pages, int page_start, int page_end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int cpu;
 	int i;
@@ -192,8 +235,11 @@ static void pcpu_unmap_pages(struct pcpu_chunk *chunk,
 		__pcpu_unmap_pages(pcpu_chunk_addr(chunk, cpu, page_start),
 				   page_end - page_start);
 	}
+<<<<<<< HEAD
 
 	bitmap_clear(populated, page_start, page_end - page_start);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -228,7 +274,10 @@ static int __pcpu_map_pages(unsigned long addr, struct page **pages,
  * pcpu_map_pages - map pages into a pcpu_chunk
  * @chunk: chunk of interest
  * @pages: pages array containing pages to be mapped
+<<<<<<< HEAD
  * @populated: populated bitmap
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @page_start: page index of the first page to map
  * @page_end: page index of the last page to map + 1
  *
@@ -236,6 +285,7 @@ static int __pcpu_map_pages(unsigned long addr, struct page **pages,
  * caller is responsible for calling pcpu_post_map_flush() after all
  * mappings are complete.
  *
+<<<<<<< HEAD
  * This function is responsible for setting corresponding bits in
  * @chunk->populated bitmap and whatever is necessary for reverse
  * lookup (addr -> chunk).
@@ -243,6 +293,13 @@ static int __pcpu_map_pages(unsigned long addr, struct page **pages,
 static int pcpu_map_pages(struct pcpu_chunk *chunk,
 			  struct page **pages, unsigned long *populated,
 			  int page_start, int page_end)
+=======
+ * This function is responsible for setting up whatever is necessary for
+ * reverse lookup (addr -> chunk).
+ */
+static int pcpu_map_pages(struct pcpu_chunk *chunk,
+			  struct page **pages, int page_start, int page_end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int cpu, tcpu;
 	int i, err;
@@ -253,6 +310,7 @@ static int pcpu_map_pages(struct pcpu_chunk *chunk,
 				       page_end - page_start);
 		if (err < 0)
 			goto err;
+<<<<<<< HEAD
 	}
 
 	/* mapping successful, link chunk and mark populated */
@@ -265,6 +323,14 @@ static int pcpu_map_pages(struct pcpu_chunk *chunk,
 
 	return 0;
 
+=======
+
+		for (i = page_start; i < page_end; i++)
+			pcpu_set_page_chunk(pages[pcpu_page_idx(cpu, i)],
+					    chunk);
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	for_each_possible_cpu(tcpu) {
 		if (tcpu == cpu)
@@ -299,15 +365,24 @@ static void pcpu_post_map_flush(struct pcpu_chunk *chunk,
 /**
  * pcpu_populate_chunk - populate and map an area of a pcpu_chunk
  * @chunk: chunk of interest
+<<<<<<< HEAD
  * @off: offset to the area to populate
  * @size: size of the area to populate in bytes
  *
  * For each cpu, populate and map pages [@page_start,@page_end) into
  * @chunk.  The area is cleared on return.
+=======
+ * @page_start: the start page
+ * @page_end: the end page
+ *
+ * For each cpu, populate and map pages [@page_start,@page_end) into
+ * @chunk.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * CONTEXT:
  * pcpu_alloc_mutex, does GFP_KERNEL allocation.
  */
+<<<<<<< HEAD
 static int pcpu_populate_chunk(struct pcpu_chunk *chunk, int off, int size)
 {
 	int page_start = PFN_DOWN(off);
@@ -363,21 +438,51 @@ err_free:
 	pcpu_for_each_unpop_region(chunk, rs, re, page_start, free_end)
 		pcpu_free_pages(chunk, pages, populated, rs, re);
 	return rc;
+=======
+static int pcpu_populate_chunk(struct pcpu_chunk *chunk,
+			       int page_start, int page_end)
+{
+	struct page **pages;
+
+	pages = pcpu_get_pages(chunk);
+	if (!pages)
+		return -ENOMEM;
+
+	if (pcpu_alloc_pages(chunk, pages, page_start, page_end))
+		return -ENOMEM;
+
+	if (pcpu_map_pages(chunk, pages, page_start, page_end)) {
+		pcpu_free_pages(chunk, pages, page_start, page_end);
+		return -ENOMEM;
+	}
+	pcpu_post_map_flush(chunk, page_start, page_end);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * pcpu_depopulate_chunk - depopulate and unmap an area of a pcpu_chunk
  * @chunk: chunk to depopulate
+<<<<<<< HEAD
  * @off: offset to the area to depopulate
  * @size: size of the area to depopulate in bytes
  *
  * For each cpu, depopulate and unmap pages [@page_start,@page_end)
  * from @chunk.  If @flush is true, vcache is flushed before unmapping
  * and tlb after.
+=======
+ * @page_start: the start page
+ * @page_end: the end page
+ *
+ * For each cpu, depopulate and unmap pages [@page_start,@page_end)
+ * from @chunk.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * CONTEXT:
  * pcpu_alloc_mutex.
  */
+<<<<<<< HEAD
 static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size)
 {
 	int page_start = PFN_DOWN(off);
@@ -394,18 +499,29 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size)
 
 	/* immutable chunks can't be depopulated */
 	WARN_ON(chunk->immutable);
+=======
+static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
+				  int page_start, int page_end)
+{
+	struct page **pages;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * If control reaches here, there must have been at least one
 	 * successful population attempt so the temp pages array must
 	 * be available now.
 	 */
+<<<<<<< HEAD
 	pages = pcpu_get_pages_and_bitmap(chunk, &populated, false);
+=======
+	pages = pcpu_get_pages(chunk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!pages);
 
 	/* unmap and free */
 	pcpu_pre_unmap_flush(chunk, page_start, page_end);
 
+<<<<<<< HEAD
 	pcpu_for_each_pop_region(chunk, rs, re, page_start, page_end)
 		pcpu_unmap_pages(chunk, pages, populated, rs, re);
 
@@ -416,6 +532,13 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size)
 
 	/* commit new bitmap */
 	bitmap_copy(chunk->populated, populated, pcpu_unit_pages);
+=======
+	pcpu_unmap_pages(chunk, pages, page_start, page_end);
+
+	/* no need to flush tlb, vmalloc will handle it lazily */
+
+	pcpu_free_pages(chunk, pages, page_start, page_end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pcpu_chunk *pcpu_create_chunk(void)

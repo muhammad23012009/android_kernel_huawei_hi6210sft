@@ -70,6 +70,7 @@ enum stedma40_flow_ctrl {
 	STEDMA40_FLOW_CTRL,
 };
 
+<<<<<<< HEAD
 enum stedma40_periph_data_width {
 	STEDMA40_BYTE_WIDTH = STEDMA40_ESIZE_8_BIT,
 	STEDMA40_HALFWORD_WIDTH = STEDMA40_ESIZE_16_BIT,
@@ -87,6 +88,10 @@ enum stedma40_xfer_dir {
 
 /**
  * struct stedma40_chan_cfg - dst/src channel configuration
+=======
+/**
+ * struct stedma40_half_channel_info - dst/src channel configuration
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * @big_endian: true if the src/dst should be read as big endian
  * @data_width: Data width of the src/dst hardware
@@ -95,7 +100,11 @@ enum stedma40_xfer_dir {
  */
 struct stedma40_half_channel_info {
 	bool big_endian;
+<<<<<<< HEAD
 	enum stedma40_periph_data_width data_width;
+=======
+	enum dma_slave_buswidth data_width;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int psize;
 	enum stedma40_flow_ctrl flow_ctrl;
 };
@@ -109,8 +118,12 @@ struct stedma40_half_channel_info {
  * version 3+, i.e DB8500v2+
  * @mode: channel mode: physical, logical, or operation
  * @mode_opt: options for the chosen channel mode
+<<<<<<< HEAD
  * @src_dev_type: Src device type
  * @dst_dev_type: Dst device type
+=======
+ * @dev_type: src/dst device type (driver uses dir to figure out which)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @src_info: Parameters for dst half channel
  * @dst_info: Parameters for dst half channel
  * @use_fixed_channel: if true, use physical channel specified by phy_channel
@@ -121,13 +134,21 @@ struct stedma40_half_channel_info {
  *
  */
 struct stedma40_chan_cfg {
+<<<<<<< HEAD
 	enum stedma40_xfer_dir			 dir;
+=======
+	enum dma_transfer_direction		 dir;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool					 high_priority;
 	bool					 realtime;
 	enum stedma40_mode			 mode;
 	enum stedma40_mode_opt			 mode_opt;
+<<<<<<< HEAD
 	int					 src_dev_type;
 	int					 dst_dev_type;
+=======
+	int					 dev_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct stedma40_half_channel_info	 src_info;
 	struct stedma40_half_channel_info	 dst_info;
 
@@ -138,6 +159,7 @@ struct stedma40_chan_cfg {
 /**
  * struct stedma40_platform_data - Configuration struct for the dma device.
  *
+<<<<<<< HEAD
  * @dev_len: length of dev_tx and dev_rx
  * @dev_tx: mapping between destination event line and io address
  * @dev_rx: mapping between source event line and io address
@@ -145,6 +167,10 @@ struct stedma40_chan_cfg {
  * @memcpy_len: length of memcpy
  * @memcpy_conf_phy: default configuration of physical channel memcpy
  * @memcpy_conf_log: default configuration of logical channel memcpy
+=======
+ * @dev_tx: mapping between destination event line and io address
+ * @dev_rx: mapping between source event line and io address
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @disabled_channels: A vector, ending with -1, that marks physical channels
  * that are for different reasons not available for the driver.
  * @soft_lli_chans: A vector, that marks physical channels will use LLI by SW
@@ -154,11 +180,16 @@ struct stedma40_chan_cfg {
  * @num_of_soft_lli_chans: The number of channels that needs to be configured
  * to use SoftLLI.
  * @use_esram_lcla: flag for mapping the lcla into esram region
+<<<<<<< HEAD
+=======
+ * @num_of_memcpy_chans: The number of channels reserved for memcpy.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @num_of_phy_chans: The number of physical channels implemented in HW.
  * 0 means reading the number of channels from DMA HW but this is only valid
  * for 'multiple of 4' channels, like 8.
  */
 struct stedma40_platform_data {
+<<<<<<< HEAD
 	u32				 dev_len;
 	const dma_addr_t		*dev_tx;
 	const dma_addr_t		*dev_rx;
@@ -166,10 +197,16 @@ struct stedma40_platform_data {
 	u32				 memcpy_len;
 	struct stedma40_chan_cfg	*memcpy_conf_phy;
 	struct stedma40_chan_cfg	*memcpy_conf_log;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int				 disabled_channels[STEDMA40_MAX_PHYS];
 	int				*soft_lli_chans;
 	int				 num_of_soft_lli_chans;
 	bool				 use_esram_lcla;
+<<<<<<< HEAD
+=======
+	int				 num_of_memcpy_chans;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int				 num_of_phy_chans;
 };
 

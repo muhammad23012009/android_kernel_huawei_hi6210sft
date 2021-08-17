@@ -52,6 +52,10 @@
 #define SNOOP_SIZE_2GB		0x1e
 
 /* control Register Bit Masks */
+<<<<<<< HEAD
+=======
+#define CONTROL_REGISTER_W1C_MASK       0x00020000  /* W1C: PHY_CLK_VALID */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ULPI_INT_EN             (1<<0)
 #define WU_INT_EN               (1<<1)
 #define USB_CTRL_USB_EN         (1<<2)

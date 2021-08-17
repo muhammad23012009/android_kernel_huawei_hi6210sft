@@ -11,10 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called COPYING.
  */
@@ -47,6 +50,10 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -65,6 +72,10 @@
 #include <linux/acpi.h>
 #include <linux/acpi_dma.h>
 #include <linux/of_dma.h>
+<<<<<<< HEAD
+=======
+#include <linux/mempool.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_MUTEX(dma_list_mutex);
 static DEFINE_IDR(dma_idr);
@@ -87,7 +98,12 @@ static struct dma_chan *dev_to_dma_chan(struct device *dev)
 	return chan_dev->chan;
 }
 
+<<<<<<< HEAD
 static ssize_t show_memcpy_count(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static ssize_t memcpy_count_show(struct device *dev,
+				 struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dma_chan *chan;
 	unsigned long count = 0;
@@ -106,9 +122,16 @@ static ssize_t show_memcpy_count(struct device *dev, struct device_attribute *at
 
 	return err;
 }
+<<<<<<< HEAD
 
 static ssize_t show_bytes_transferred(struct device *dev, struct device_attribute *attr,
 				      char *buf)
+=======
+static DEVICE_ATTR_RO(memcpy_count);
+
+static ssize_t bytes_transferred_show(struct device *dev,
+				      struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dma_chan *chan;
 	unsigned long count = 0;
@@ -127,8 +150,15 @@ static ssize_t show_bytes_transferred(struct device *dev, struct device_attribut
 
 	return err;
 }
+<<<<<<< HEAD
 
 static ssize_t show_in_use(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(bytes_transferred);
+
+static ssize_t in_use_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dma_chan *chan;
 	int err;
@@ -143,6 +173,7 @@ static ssize_t show_in_use(struct device *dev, struct device_attribute *attr, ch
 
 	return err;
 }
+<<<<<<< HEAD
 
 static struct device_attribute dma_attrs[] = {
 	__ATTR(memcpy_count, S_IRUGO, show_memcpy_count, NULL),
@@ -150,6 +181,17 @@ static struct device_attribute dma_attrs[] = {
 	__ATTR(in_use, S_IRUGO, show_in_use, NULL),
 	__ATTR_NULL
 };
+=======
+static DEVICE_ATTR_RO(in_use);
+
+static struct attribute *dma_dev_attrs[] = {
+	&dev_attr_memcpy_count.attr,
+	&dev_attr_bytes_transferred.attr,
+	&dev_attr_in_use.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(dma_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void chan_dev_release(struct device *dev)
 {
@@ -167,7 +209,11 @@ static void chan_dev_release(struct device *dev)
 
 static struct class dma_devclass = {
 	.name		= "dma",
+<<<<<<< HEAD
 	.dev_attrs	= dma_attrs,
+=======
+	.dev_groups	= dma_dev_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev_release	= chan_dev_release,
 };
 
@@ -215,6 +261,7 @@ static void balance_ref_count(struct dma_chan *chan)
  */
 static int dma_chan_get(struct dma_chan *chan)
 {
+<<<<<<< HEAD
 	int err = -ENODEV;
 	struct module *owner = dma_chan_to_owner(chan);
 
@@ -240,6 +287,37 @@ static int dma_chan_get(struct dma_chan *chan)
 	}
 
 	return err;
+=======
+	struct module *owner = dma_chan_to_owner(chan);
+	int ret;
+
+	/* The channel is already in use, update client count */
+	if (chan->client_count) {
+		__module_get(owner);
+		goto out;
+	}
+
+	if (!try_module_get(owner))
+		return -ENODEV;
+
+	/* allocate upon first client reference */
+	if (chan->device->device_alloc_chan_resources) {
+		ret = chan->device->device_alloc_chan_resources(chan);
+		if (ret < 0)
+			goto err_out;
+	}
+
+	if (!dma_has_cap(DMA_PRIVATE, chan->device->cap_mask))
+		balance_ref_count(chan);
+
+out:
+	chan->client_count++;
+	return 0;
+
+err_out:
+	module_put(owner);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -250,12 +328,35 @@ static int dma_chan_get(struct dma_chan *chan)
  */
 static void dma_chan_put(struct dma_chan *chan)
 {
+<<<<<<< HEAD
 	if (!chan->client_count)
 		return; /* this channel failed alloc_chan_resources */
 	chan->client_count--;
 	module_put(dma_chan_to_owner(chan));
 	if (chan->client_count == 0)
 		chan->device->device_free_chan_resources(chan);
+=======
+	/* This channel is not in use, bail out */
+	if (!chan->client_count)
+		return;
+
+	chan->client_count--;
+	module_put(dma_chan_to_owner(chan));
+
+	/* This channel is not in use anymore, free it */
+	if (!chan->client_count && chan->device->device_free_chan_resources) {
+		/* Make sure all operations have completed */
+		dmaengine_synchronize(chan);
+		chan->device->device_free_chan_resources(chan);
+	}
+
+	/* If the channel is used via a DMA request router, free the mapping */
+	if (chan->router && chan->router->route_free) {
+		chan->router->route_free(chan->router->dev, chan->route_data);
+		chan->router = NULL;
+		chan->route_data = NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 enum dma_status dma_sync_wait(struct dma_chan *chan, dma_cookie_t cookie)
@@ -267,7 +368,11 @@ enum dma_status dma_sync_wait(struct dma_chan *chan, dma_cookie_t cookie)
 	do {
 		status = dma_async_is_tx_complete(chan, cookie, NULL, NULL);
 		if (time_after_eq(jiffies, dma_sync_wait_timeout)) {
+<<<<<<< HEAD
 			pr_err("%s: timeout!\n", __func__);
+=======
+			dev_err(chan->device->dev, "%s: timeout!\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return DMA_ERROR;
 		}
 		if (status != DMA_IN_PROGRESS)
@@ -323,8 +428,12 @@ static int __init dma_channel_table_init(void)
 	if (err) {
 		pr_err("initialization failure\n");
 		for_each_dma_cap_mask(cap, dma_cap_mask_all)
+<<<<<<< HEAD
 			if (channel_table[cap])
 				free_percpu(channel_table[cap]);
+=======
+			free_percpu(channel_table[cap]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return err;
@@ -341,6 +450,7 @@ struct dma_chan *dma_find_channel(enum dma_transaction_type tx_type)
 }
 EXPORT_SYMBOL(dma_find_channel);
 
+<<<<<<< HEAD
 /*
  * net_dma_find_channel - find a channel for net_dma
  * net_dma has alignment requirements
@@ -355,6 +465,8 @@ struct dma_chan *net_dma_find_channel(void)
 }
 EXPORT_SYMBOL(net_dma_find_channel);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * dma_issue_pending_all - flush all pending operations across all channels
  */
@@ -376,6 +488,7 @@ void dma_issue_pending_all(void)
 EXPORT_SYMBOL(dma_issue_pending_all);
 
 /**
+<<<<<<< HEAD
  * nth_chan - returns the nth channel of the given capability
  * @cap: capability to match
  * @n: nth channel desired
@@ -390,6 +503,32 @@ static struct dma_chan *nth_chan(enum dma_transaction_type cap, int n)
 	struct dma_chan *chan;
 	struct dma_chan *ret = NULL;
 	struct dma_chan *min = NULL;
+=======
+ * dma_chan_is_local - returns true if the channel is in the same numa-node as the cpu
+ */
+static bool dma_chan_is_local(struct dma_chan *chan, int cpu)
+{
+	int node = dev_to_node(chan->device->dev);
+	return node == -1 || cpumask_test_cpu(cpu, cpumask_of_node(node));
+}
+
+/**
+ * min_chan - returns the channel with min count and in the same numa-node as the cpu
+ * @cap: capability to match
+ * @cpu: cpu index which the channel should be close to
+ *
+ * If some channels are close to the given cpu, the one with the lowest
+ * reference count is returned. Otherwise, cpu is ignored and only the
+ * reference count is taken into account.
+ * Must be called under dma_list_mutex.
+ */
+static struct dma_chan *min_chan(enum dma_transaction_type cap, int cpu)
+{
+	struct dma_device *device;
+	struct dma_chan *chan;
+	struct dma_chan *min = NULL;
+	struct dma_chan *localmin = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each_entry(device, &dma_device_list, global_node) {
 		if (!dma_has_cap(cap, device->cap_mask) ||
@@ -398,6 +537,7 @@ static struct dma_chan *nth_chan(enum dma_transaction_type cap, int n)
 		list_for_each_entry(chan, &device->channels, device_node) {
 			if (!chan->client_count)
 				continue;
+<<<<<<< HEAD
 			if (!min)
 				min = chan;
 			else if (chan->table_count < min->table_count)
@@ -419,6 +559,24 @@ static struct dma_chan *nth_chan(enum dma_transaction_type cap, int n)
 		ret->table_count++;
 
 	return ret;
+=======
+			if (!min || chan->table_count < min->table_count)
+				min = chan;
+
+			if (dma_chan_is_local(chan, cpu))
+				if (!localmin ||
+				    chan->table_count < localmin->table_count)
+					localmin = chan;
+		}
+	}
+
+	chan = localmin ? localmin : min;
+
+	if (chan)
+		chan->table_count++;
+
+	return chan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -435,7 +593,10 @@ static void dma_channel_rebalance(void)
 	struct dma_device *device;
 	int cpu;
 	int cap;
+<<<<<<< HEAD
 	int n;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* undo the last distribution */
 	for_each_dma_cap_mask(cap, dma_cap_mask_all)
@@ -454,6 +615,7 @@ static void dma_channel_rebalance(void)
 		return;
 
 	/* redistribute available channels */
+<<<<<<< HEAD
 	n = 0;
 	for_each_dma_cap_mask(cap, dma_cap_mask_all)
 		for_each_online_cpu(cpu) {
@@ -462,18 +624,71 @@ static void dma_channel_rebalance(void)
 			else
 				chan = nth_chan(cap, -1);
 
+=======
+	for_each_dma_cap_mask(cap, dma_cap_mask_all)
+		for_each_online_cpu(cpu) {
+			chan = min_chan(cap, cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			per_cpu_ptr(channel_table[cap], cpu)->chan = chan;
 		}
 }
 
+<<<<<<< HEAD
+=======
+int dma_get_slave_caps(struct dma_chan *chan, struct dma_slave_caps *caps)
+{
+	struct dma_device *device;
+
+	if (!chan || !caps)
+		return -EINVAL;
+
+	device = chan->device;
+
+	/* check if the channel supports slave transactions */
+	if (!(test_bit(DMA_SLAVE, device->cap_mask.bits) ||
+	      test_bit(DMA_CYCLIC, device->cap_mask.bits)))
+		return -ENXIO;
+
+	/*
+	 * Check whether it reports it uses the generic slave
+	 * capabilities, if not, that means it doesn't support any
+	 * kind of slave capabilities reporting.
+	 */
+	if (!device->directions)
+		return -ENXIO;
+
+	caps->src_addr_widths = device->src_addr_widths;
+	caps->dst_addr_widths = device->dst_addr_widths;
+	caps->directions = device->directions;
+	caps->max_burst = device->max_burst;
+	caps->residue_granularity = device->residue_granularity;
+	caps->descriptor_reuse = device->descriptor_reuse;
+
+	/*
+	 * Some devices implement only pause (e.g. to get residuum) but no
+	 * resume. However cmd_pause is advertised as pause AND resume.
+	 */
+	caps->cmd_pause = !!(device->device_pause && device->device_resume);
+	caps->cmd_terminate = !!device->device_terminate_all;
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(dma_get_slave_caps);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct dma_chan *private_candidate(const dma_cap_mask_t *mask,
 					  struct dma_device *dev,
 					  dma_filter_fn fn, void *fn_param)
 {
 	struct dma_chan *chan;
 
+<<<<<<< HEAD
 	if (!__dma_device_satisfies_mask(dev, mask)) {
 		pr_debug("%s: wrong capabilities\n", __func__);
+=======
+	if (mask && !__dma_device_satisfies_mask(dev, mask)) {
+		dev_dbg(dev->dev, "%s: wrong capabilities\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 	/* devices with multiple channels need special handling as we need to
@@ -488,12 +703,20 @@ static struct dma_chan *private_candidate(const dma_cap_mask_t *mask,
 
 	list_for_each_entry(chan, &dev->channels, device_node) {
 		if (chan->client_count) {
+<<<<<<< HEAD
 			pr_debug("%s: %s busy\n",
+=======
+			dev_dbg(dev->dev, "%s: %s busy\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 __func__, dma_chan_name(chan));
 			continue;
 		}
 		if (fn && !fn(chan, fn_param)) {
+<<<<<<< HEAD
 			pr_debug("%s: %s filter said false\n",
+=======
+			dev_dbg(dev->dev, "%s: %s filter said false\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 __func__, dma_chan_name(chan));
 			continue;
 		}
@@ -503,8 +726,50 @@ static struct dma_chan *private_candidate(const dma_cap_mask_t *mask,
 	return NULL;
 }
 
+<<<<<<< HEAD
 /**
  * dma_request_channel - try to get specific channel exclusively
+=======
+static struct dma_chan *find_candidate(struct dma_device *device,
+				       const dma_cap_mask_t *mask,
+				       dma_filter_fn fn, void *fn_param)
+{
+	struct dma_chan *chan = private_candidate(mask, device, fn, fn_param);
+	int err;
+
+	if (chan) {
+		/* Found a suitable channel, try to grab, prep, and return it.
+		 * We first set DMA_PRIVATE to disable balance_ref_count as this
+		 * channel will not be published in the general-purpose
+		 * allocator
+		 */
+		dma_cap_set(DMA_PRIVATE, device->cap_mask);
+		device->privatecnt++;
+		err = dma_chan_get(chan);
+
+		if (err) {
+			if (err == -ENODEV) {
+				dev_dbg(device->dev, "%s: %s module removed\n",
+					__func__, dma_chan_name(chan));
+				list_del_rcu(&device->global_node);
+			} else
+				dev_dbg(device->dev,
+					"%s: failed to get %s: (%d)\n",
+					 __func__, dma_chan_name(chan), err);
+
+			if (--device->privatecnt == 0)
+				dma_cap_clear(DMA_PRIVATE, device->cap_mask);
+
+			chan = ERR_PTR(err);
+		}
+	}
+
+	return chan ? chan : ERR_PTR(-EPROBE_DEFER);
+}
+
+/**
+ * dma_get_slave_channel - try to get specific channel exclusively
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @chan: target channel
  */
 struct dma_chan *dma_get_slave_channel(struct dma_chan *chan)
@@ -514,37 +779,91 @@ struct dma_chan *dma_get_slave_channel(struct dma_chan *chan)
 	/* lock against __dma_request_channel */
 	mutex_lock(&dma_list_mutex);
 
+<<<<<<< HEAD
 	if (chan->client_count == 0)
 		err = dma_chan_get(chan);
 	else
+=======
+	if (chan->client_count == 0) {
+		struct dma_device *device = chan->device;
+
+		dma_cap_set(DMA_PRIVATE, device->cap_mask);
+		device->privatecnt++;
+		err = dma_chan_get(chan);
+		if (err) {
+			dev_dbg(chan->device->dev,
+				"%s: failed to get %s: (%d)\n",
+				__func__, dma_chan_name(chan), err);
+			chan = NULL;
+			if (--device->privatecnt == 0)
+				dma_cap_clear(DMA_PRIVATE, device->cap_mask);
+		}
+	} else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		chan = NULL;
 
 	mutex_unlock(&dma_list_mutex);
 
+<<<<<<< HEAD
 	if (err)
 		pr_debug("%s: failed to get %s: (%d)\n",
 			__func__, dma_chan_name(chan), err);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return chan;
 }
 EXPORT_SYMBOL_GPL(dma_get_slave_channel);
 
+<<<<<<< HEAD
 /**
  * dma_request_channel - try to allocate an exclusive channel
  * @mask: capabilities that the channel must satisfy
  * @fn: optional callback to disposition available channels
  * @fn_param: opaque parameter to pass to dma_filter_fn
+=======
+struct dma_chan *dma_get_any_slave_channel(struct dma_device *device)
+{
+	dma_cap_mask_t mask;
+	struct dma_chan *chan;
+
+	dma_cap_zero(mask);
+	dma_cap_set(DMA_SLAVE, mask);
+
+	/* lock against __dma_request_channel */
+	mutex_lock(&dma_list_mutex);
+
+	chan = find_candidate(device, &mask, NULL, NULL);
+
+	mutex_unlock(&dma_list_mutex);
+
+	return IS_ERR(chan) ? NULL : chan;
+}
+EXPORT_SYMBOL_GPL(dma_get_any_slave_channel);
+
+/**
+ * __dma_request_channel - try to allocate an exclusive channel
+ * @mask: capabilities that the channel must satisfy
+ * @fn: optional callback to disposition available channels
+ * @fn_param: opaque parameter to pass to dma_filter_fn
+ *
+ * Returns pointer to appropriate DMA channel on success or NULL.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct dma_chan *__dma_request_channel(const dma_cap_mask_t *mask,
 				       dma_filter_fn fn, void *fn_param)
 {
 	struct dma_device *device, *_d;
 	struct dma_chan *chan = NULL;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Find a channel */
 	mutex_lock(&dma_list_mutex);
 	list_for_each_entry_safe(device, _d, &dma_device_list, global_node) {
+<<<<<<< HEAD
 		chan = private_candidate(mask, device, fn, fn_param);
 		if (chan) {
 			/* Found a suitable channel, try to grab, prep, and
@@ -569,6 +888,13 @@ struct dma_chan *__dma_request_channel(const dma_cap_mask_t *mask,
 				dma_cap_clear(DMA_PRIVATE, device->cap_mask);
 			chan = NULL;
 		}
+=======
+		chan = find_candidate(device, mask, fn, fn_param);
+		if (!IS_ERR(chan))
+			break;
+
+		chan = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	mutex_unlock(&dma_list_mutex);
 
@@ -581,6 +907,7 @@ struct dma_chan *__dma_request_channel(const dma_cap_mask_t *mask,
 }
 EXPORT_SYMBOL_GPL(__dma_request_channel);
 
+<<<<<<< HEAD
 /**
  * dma_request_slave_channel - try to allocate an exclusive slave channel
  * @dev:	pointer to client device structure
@@ -600,6 +927,115 @@ struct dma_chan *dma_request_slave_channel(struct device *dev, const char *name)
 }
 EXPORT_SYMBOL_GPL(dma_request_slave_channel);
 
+=======
+static const struct dma_slave_map *dma_filter_match(struct dma_device *device,
+						    const char *name,
+						    struct device *dev)
+{
+	int i;
+
+	if (!device->filter.mapcnt)
+		return NULL;
+
+	for (i = 0; i < device->filter.mapcnt; i++) {
+		const struct dma_slave_map *map = &device->filter.map[i];
+
+		if (!strcmp(map->devname, dev_name(dev)) &&
+		    !strcmp(map->slave, name))
+			return map;
+	}
+
+	return NULL;
+}
+
+/**
+ * dma_request_chan - try to allocate an exclusive slave channel
+ * @dev:	pointer to client device structure
+ * @name:	slave channel name
+ *
+ * Returns pointer to appropriate DMA channel on success or an error pointer.
+ */
+struct dma_chan *dma_request_chan(struct device *dev, const char *name)
+{
+	struct dma_device *d, *_d;
+	struct dma_chan *chan = NULL;
+
+	/* If device-tree is present get slave info from here */
+	if (dev->of_node)
+		chan = of_dma_request_slave_channel(dev->of_node, name);
+
+	/* If device was enumerated by ACPI get slave info from here */
+	if (has_acpi_companion(dev) && !chan)
+		chan = acpi_dma_request_slave_chan_by_name(dev, name);
+
+	if (chan) {
+		/* Valid channel found or requester need to be deferred */
+		if (!IS_ERR(chan) || PTR_ERR(chan) == -EPROBE_DEFER)
+			return chan;
+	}
+
+	/* Try to find the channel via the DMA filter map(s) */
+	mutex_lock(&dma_list_mutex);
+	list_for_each_entry_safe(d, _d, &dma_device_list, global_node) {
+		dma_cap_mask_t mask;
+		const struct dma_slave_map *map = dma_filter_match(d, name, dev);
+
+		if (!map)
+			continue;
+
+		dma_cap_zero(mask);
+		dma_cap_set(DMA_SLAVE, mask);
+
+		chan = find_candidate(d, &mask, d->filter.fn, map->param);
+		if (!IS_ERR(chan))
+			break;
+	}
+	mutex_unlock(&dma_list_mutex);
+
+	return chan ? chan : ERR_PTR(-EPROBE_DEFER);
+}
+EXPORT_SYMBOL_GPL(dma_request_chan);
+
+/**
+ * dma_request_slave_channel - try to allocate an exclusive slave channel
+ * @dev:	pointer to client device structure
+ * @name:	slave channel name
+ *
+ * Returns pointer to appropriate DMA channel on success or NULL.
+ */
+struct dma_chan *dma_request_slave_channel(struct device *dev,
+					   const char *name)
+{
+	struct dma_chan *ch = dma_request_chan(dev, name);
+	if (IS_ERR(ch))
+		return NULL;
+
+	return ch;
+}
+EXPORT_SYMBOL_GPL(dma_request_slave_channel);
+
+/**
+ * dma_request_chan_by_mask - allocate a channel satisfying certain capabilities
+ * @mask: capabilities that the channel must satisfy
+ *
+ * Returns pointer to appropriate DMA channel on success or an error pointer.
+ */
+struct dma_chan *dma_request_chan_by_mask(const dma_cap_mask_t *mask)
+{
+	struct dma_chan *chan;
+
+	if (!mask)
+		return ERR_PTR(-ENODEV);
+
+	chan = __dma_request_channel(mask, NULL, NULL);
+	if (!chan)
+		chan = ERR_PTR(-ENODEV);
+
+	return chan;
+}
+EXPORT_SYMBOL_GPL(dma_request_chan_by_mask);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void dma_release_channel(struct dma_chan *chan)
 {
 	mutex_lock(&dma_list_mutex);
@@ -636,8 +1072,14 @@ void dmaengine_get(void)
 				list_del_rcu(&device->global_node);
 				break;
 			} else if (err)
+<<<<<<< HEAD
 				pr_debug("%s: failed to get %s: (%d)\n",
 				       __func__, dma_chan_name(chan), err);
+=======
+				dev_dbg(chan->device->dev,
+					"%s: failed to get %s: (%d)\n",
+					__func__, dma_chan_name(chan), err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -684,17 +1126,25 @@ static bool device_has_all_tx_types(struct dma_device *device)
 		return false;
 	#endif
 
+<<<<<<< HEAD
 	#if defined(CONFIG_ASYNC_MEMCPY) || defined(CONFIG_ASYNC_MEMCPY_MODULE)
+=======
+	#if IS_ENABLED(CONFIG_ASYNC_MEMCPY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dma_has_cap(DMA_MEMCPY, device->cap_mask))
 		return false;
 	#endif
 
+<<<<<<< HEAD
 	#if defined(CONFIG_ASYNC_MEMSET) || defined(CONFIG_ASYNC_MEMSET_MODULE)
 	if (!dma_has_cap(DMA_MEMSET, device->cap_mask))
 		return false;
 	#endif
 
 	#if defined(CONFIG_ASYNC_XOR) || defined(CONFIG_ASYNC_XOR_MODULE)
+=======
+	#if IS_ENABLED(CONFIG_ASYNC_XOR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dma_has_cap(DMA_XOR, device->cap_mask))
 		return false;
 
@@ -704,7 +1154,11 @@ static bool device_has_all_tx_types(struct dma_device *device)
 	#endif
 	#endif
 
+<<<<<<< HEAD
 	#if defined(CONFIG_ASYNC_PQ) || defined(CONFIG_ASYNC_PQ_MODULE)
+=======
+	#if IS_ENABLED(CONFIG_ASYNC_PQ)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dma_has_cap(DMA_PQ, device->cap_mask))
 		return false;
 
@@ -763,6 +1217,7 @@ int dma_async_device_register(struct dma_device *device)
 		!device->device_prep_dma_sg);
 	BUG_ON(dma_has_cap(DMA_CYCLIC, device->cap_mask) &&
 		!device->device_prep_dma_cyclic);
+<<<<<<< HEAD
 	BUG_ON(dma_has_cap(DMA_SLAVE, device->cap_mask) &&
 		!device->device_control);
 	BUG_ON(dma_has_cap(DMA_INTERLEAVE, device->cap_mask) &&
@@ -770,6 +1225,11 @@ int dma_async_device_register(struct dma_device *device)
 
 	BUG_ON(!device->device_alloc_chan_resources);
 	BUG_ON(!device->device_free_chan_resources);
+=======
+	BUG_ON(dma_has_cap(DMA_INTERLEAVE, device->cap_mask) &&
+		!device->device_prep_interleaved_dma);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!device->device_tx_status);
 	BUG_ON(!device->device_issue_pending);
 	BUG_ON(!device->dev);
@@ -824,6 +1284,16 @@ int dma_async_device_register(struct dma_device *device)
 		}
 		chan->client_count = 0;
 	}
+<<<<<<< HEAD
+=======
+
+	if (!chancnt) {
+		dev_err(device->dev, "%s: device has no channels!\n", __func__);
+		rc = -ENODEV;
+		goto err_out;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	device->chancnt = chancnt;
 
 	mutex_lock(&dma_list_mutex);
@@ -903,6 +1373,7 @@ void dma_async_device_unregister(struct dma_device *device)
 }
 EXPORT_SYMBOL(dma_async_device_unregister);
 
+<<<<<<< HEAD
 /**
  * dma_async_memcpy_buf_to_buf - offloaded copy between virtual addresses
  * @chan: DMA channel to offload copy to
@@ -1044,6 +1515,136 @@ dma_async_memcpy_pg_to_pg(struct dma_chan *chan, struct page *dest_pg,
 	return cookie;
 }
 EXPORT_SYMBOL(dma_async_memcpy_pg_to_pg);
+=======
+struct dmaengine_unmap_pool {
+	struct kmem_cache *cache;
+	const char *name;
+	mempool_t *pool;
+	size_t size;
+};
+
+#define __UNMAP_POOL(x) { .size = x, .name = "dmaengine-unmap-" __stringify(x) }
+static struct dmaengine_unmap_pool unmap_pool[] = {
+	__UNMAP_POOL(2),
+	#if IS_ENABLED(CONFIG_DMA_ENGINE_RAID)
+	__UNMAP_POOL(16),
+	__UNMAP_POOL(128),
+	__UNMAP_POOL(256),
+	#endif
+};
+
+static struct dmaengine_unmap_pool *__get_unmap_pool(int nr)
+{
+	int order = get_count_order(nr);
+
+	switch (order) {
+	case 0 ... 1:
+		return &unmap_pool[0];
+#if IS_ENABLED(CONFIG_DMA_ENGINE_RAID)
+	case 2 ... 4:
+		return &unmap_pool[1];
+	case 5 ... 7:
+		return &unmap_pool[2];
+	case 8:
+		return &unmap_pool[3];
+#endif
+	default:
+		BUG();
+		return NULL;
+	}
+}
+
+static void dmaengine_unmap(struct kref *kref)
+{
+	struct dmaengine_unmap_data *unmap = container_of(kref, typeof(*unmap), kref);
+	struct device *dev = unmap->dev;
+	int cnt, i;
+
+	cnt = unmap->to_cnt;
+	for (i = 0; i < cnt; i++)
+		dma_unmap_page(dev, unmap->addr[i], unmap->len,
+			       DMA_TO_DEVICE);
+	cnt += unmap->from_cnt;
+	for (; i < cnt; i++)
+		dma_unmap_page(dev, unmap->addr[i], unmap->len,
+			       DMA_FROM_DEVICE);
+	cnt += unmap->bidi_cnt;
+	for (; i < cnt; i++) {
+		if (unmap->addr[i] == 0)
+			continue;
+		dma_unmap_page(dev, unmap->addr[i], unmap->len,
+			       DMA_BIDIRECTIONAL);
+	}
+	cnt = unmap->map_cnt;
+	mempool_free(unmap, __get_unmap_pool(cnt)->pool);
+}
+
+void dmaengine_unmap_put(struct dmaengine_unmap_data *unmap)
+{
+	if (unmap)
+		kref_put(&unmap->kref, dmaengine_unmap);
+}
+EXPORT_SYMBOL_GPL(dmaengine_unmap_put);
+
+static void dmaengine_destroy_unmap_pool(void)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(unmap_pool); i++) {
+		struct dmaengine_unmap_pool *p = &unmap_pool[i];
+
+		mempool_destroy(p->pool);
+		p->pool = NULL;
+		kmem_cache_destroy(p->cache);
+		p->cache = NULL;
+	}
+}
+
+static int __init dmaengine_init_unmap_pool(void)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(unmap_pool); i++) {
+		struct dmaengine_unmap_pool *p = &unmap_pool[i];
+		size_t size;
+
+		size = sizeof(struct dmaengine_unmap_data) +
+		       sizeof(dma_addr_t) * p->size;
+
+		p->cache = kmem_cache_create(p->name, size, 0,
+					     SLAB_HWCACHE_ALIGN, NULL);
+		if (!p->cache)
+			break;
+		p->pool = mempool_create_slab_pool(1, p->cache);
+		if (!p->pool)
+			break;
+	}
+
+	if (i == ARRAY_SIZE(unmap_pool))
+		return 0;
+
+	dmaengine_destroy_unmap_pool();
+	return -ENOMEM;
+}
+
+struct dmaengine_unmap_data *
+dmaengine_get_unmap_data(struct device *dev, int nr, gfp_t flags)
+{
+	struct dmaengine_unmap_data *unmap;
+
+	unmap = mempool_alloc(__get_unmap_pool(nr)->pool, flags);
+	if (!unmap)
+		return NULL;
+
+	memset(unmap, 0, sizeof(*unmap));
+	kref_init(&unmap->kref);
+	unmap->dev = dev;
+	unmap->map_cnt = nr;
+
+	return unmap;
+}
+EXPORT_SYMBOL(dmaengine_get_unmap_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void dma_async_tx_descriptor_init(struct dma_async_tx_descriptor *tx,
 	struct dma_chan *chan)
@@ -1064,12 +1665,22 @@ dma_wait_for_async_tx(struct dma_async_tx_descriptor *tx)
 	unsigned long dma_sync_wait_timeout = jiffies + msecs_to_jiffies(5000);
 
 	if (!tx)
+<<<<<<< HEAD
 		return DMA_SUCCESS;
 
 	while (tx->cookie == -EBUSY) {
 		if (time_after_eq(jiffies, dma_sync_wait_timeout)) {
 			pr_err("%s timeout waiting for descriptor submission\n",
 			       __func__);
+=======
+		return DMA_COMPLETE;
+
+	while (tx->cookie == -EBUSY) {
+		if (time_after_eq(jiffies, dma_sync_wait_timeout)) {
+			dev_err(tx->chan->device->dev,
+				"%s timeout waiting for descriptor submission\n",
+				__func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return DMA_ERROR;
 		}
 		cpu_relax();
@@ -1118,6 +1729,13 @@ EXPORT_SYMBOL_GPL(dma_run_dependencies);
 
 static int __init dma_bus_init(void)
 {
+<<<<<<< HEAD
+=======
+	int err = dmaengine_init_unmap_pool();
+
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return class_register(&dma_devclass);
 }
 arch_initcall(dma_bus_init);

@@ -43,6 +43,19 @@ struct rb_augment_callbacks {
 
 extern void __rb_insert_augmented(struct rb_node *node, struct rb_root *root,
 	void (*augment_rotate)(struct rb_node *old, struct rb_node *new));
+<<<<<<< HEAD
+=======
+/*
+ * Fixup the rbtree and update the augmented information when rebalancing.
+ *
+ * On insertion, the user must update the augmented information on the path
+ * leading to the inserted node, then call rb_link_node() as usual and
+ * rb_augment_inserted() instead of the usual rb_insert_color() call.
+ * If rb_augment_inserted() rebalances the rbtree, it will callback into
+ * a user provided function to update the augmented information on the
+ * affected subtrees.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void
 rb_insert_augmented(struct rb_node *node, struct rb_root *root,
 		    const struct rb_augment_callbacks *augment)
@@ -113,11 +126,32 @@ __rb_change_child(struct rb_node *old, struct rb_node *new,
 {
 	if (parent) {
 		if (parent->rb_left == old)
+<<<<<<< HEAD
 			parent->rb_left = new;
 		else
 			parent->rb_right = new;
 	} else
 		root->rb_node = new;
+=======
+			WRITE_ONCE(parent->rb_left, new);
+		else
+			WRITE_ONCE(parent->rb_right, new);
+	} else
+		WRITE_ONCE(root->rb_node, new);
+}
+
+static inline void
+__rb_change_child_rcu(struct rb_node *old, struct rb_node *new,
+		      struct rb_node *parent, struct rb_root *root)
+{
+	if (parent) {
+		if (parent->rb_left == old)
+			rcu_assign_pointer(parent->rb_left, new);
+		else
+			rcu_assign_pointer(parent->rb_right, new);
+	} else
+		rcu_assign_pointer(root->rb_node, new);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 extern void __rb_erase_color(struct rb_node *parent, struct rb_root *root,
@@ -127,7 +161,12 @@ static __always_inline struct rb_node *
 __rb_erase_augmented(struct rb_node *node, struct rb_root *root,
 		     const struct rb_augment_callbacks *augment)
 {
+<<<<<<< HEAD
 	struct rb_node *child = node->rb_right, *tmp = node->rb_left;
+=======
+	struct rb_node *child = node->rb_right;
+	struct rb_node *tmp = node->rb_left;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rb_node *parent, *rebalance;
 	unsigned long pc;
 
@@ -157,6 +196,10 @@ __rb_erase_augmented(struct rb_node *node, struct rb_root *root,
 		tmp = parent;
 	} else {
 		struct rb_node *successor = child, *child2;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tmp = child->rb_left;
 		if (!tmp) {
 			/*
@@ -170,6 +213,10 @@ __rb_erase_augmented(struct rb_node *node, struct rb_root *root,
 			 */
 			parent = successor;
 			child2 = successor->rb_right;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			augment->copy(node, successor);
 		} else {
 			/*
@@ -191,19 +238,36 @@ __rb_erase_augmented(struct rb_node *node, struct rb_root *root,
 				successor = tmp;
 				tmp = tmp->rb_left;
 			} while (tmp);
+<<<<<<< HEAD
 			parent->rb_left = child2 = successor->rb_right;
 			successor->rb_right = child;
 			rb_set_parent(child, successor);
+=======
+			child2 = successor->rb_right;
+			WRITE_ONCE(parent->rb_left, child2);
+			WRITE_ONCE(successor->rb_right, child);
+			rb_set_parent(child, successor);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			augment->copy(node, successor);
 			augment->propagate(parent, successor);
 		}
 
+<<<<<<< HEAD
 		successor->rb_left = tmp = node->rb_left;
+=======
+		tmp = node->rb_left;
+		WRITE_ONCE(successor->rb_left, tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rb_set_parent(tmp, successor);
 
 		pc = node->__rb_parent_color;
 		tmp = __rb_parent(pc);
 		__rb_change_child(node, successor, tmp, root);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (child2) {
 			successor->__rb_parent_color = pc;
 			rb_set_parent_color(child2, parent, RB_BLACK);

@@ -7,7 +7,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
@@ -113,9 +116,18 @@ static int pcf8574_kp_probe(struct i2c_client *client, const struct i2c_device_i
 	idev->keycodemax = ARRAY_SIZE(lp->btncode);
 
 	for (i = 0; i < ARRAY_SIZE(pcf8574_kp_btncode); i++) {
+<<<<<<< HEAD
 		lp->btncode[i] = pcf8574_kp_btncode[i];
 		__set_bit(lp->btncode[i] & KEY_MAX, idev->keybit);
 	}
+=======
+		if (lp->btncode[i] <= KEY_MAX) {
+			lp->btncode[i] = pcf8574_kp_btncode[i];
+			__set_bit(lp->btncode[i], idev->keybit);
+		}
+	}
+	__clear_bit(KEY_RESERVED, idev->keybit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sprintf(lp->name, DRV_NAME);
 	sprintf(lp->phys, "kp_data/input0");
@@ -206,7 +218,10 @@ MODULE_DEVICE_TABLE(i2c, pcf8574_kp_id);
 static struct i2c_driver pcf8574_kp_driver = {
 	.driver = {
 		.name  = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM
 		.pm = &pcf8574_kp_pm_ops,
 #endif

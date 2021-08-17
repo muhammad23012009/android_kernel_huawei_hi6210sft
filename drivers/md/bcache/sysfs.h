@@ -80,9 +80,22 @@ do {									\
 
 #define sysfs_strtoul_clamp(file, var, min, max)			\
 do {									\
+<<<<<<< HEAD
 	if (attr == &sysfs_ ## file)					\
 		return strtoul_safe_clamp(buf, var, min, max)		\
 			?: (ssize_t) size;				\
+=======
+	if (attr == &sysfs_ ## file) {					\
+		unsigned long v = 0;					\
+		ssize_t ret;						\
+		ret = strtoul_safe_clamp(buf, v, min, max);		\
+		if (!ret) {						\
+			var = v;					\
+			return size;					\
+		}							\
+		return ret;						\
+	}								\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } while (0)
 
 #define strtoul_or_return(cp)						\

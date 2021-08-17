@@ -29,19 +29,29 @@
 #include <linux/kprobes.h>
 #include <linux/ptrace.h>
 #include <linux/preempt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/kdebug.h>
 #include <linux/slab.h>
+=======
+#include <linux/extable.h>
+#include <linux/kdebug.h>
+#include <linux/slab.h>
+#include <asm/code-patching.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cacheflush.h>
 #include <asm/sstep.h>
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_ADV_DEBUG_REGS
 #define MSR_SINGLESTEP	(MSR_DE)
 #else
 #define MSR_SINGLESTEP	(MSR_SE)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DEFINE_PER_CPU(struct kprobe *, current_kprobe) = NULL;
 DEFINE_PER_CPU(struct kprobe_ctlblk, kprobe_ctlblk);
 
@@ -104,6 +114,7 @@ void __kprobes arch_remove_kprobe(struct kprobe *p)
 
 static void __kprobes prepare_singlestep(struct kprobe *p, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	/* We turn off async exceptions to ensure that the single step will
 	 * be for the instruction we have the kprobe on, if we dont its
 	 * possible we'd get the single step reported for an exception handler
@@ -117,6 +128,9 @@ static void __kprobes prepare_singlestep(struct kprobe *p, struct pt_regs *regs)
 	isync();
 #endif
 #endif
+=======
+	enable_single_step(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * On powerpc we should single step on the original
@@ -136,7 +150,11 @@ static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
 
 static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = kcb->prev_kprobe.kp;
+=======
+	__this_cpu_write(current_kprobe, kcb->prev_kprobe.kp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kcb->kprobe_status = kcb->prev_kprobe.status;
 	kcb->kprobe_saved_msr = kcb->prev_kprobe.saved_msr;
 }
@@ -144,7 +162,11 @@ static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 static void __kprobes set_current_kprobe(struct kprobe *p, struct pt_regs *regs,
 				struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = p;
+=======
+	__this_cpu_write(current_kprobe, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kcb->kprobe_saved_msr = regs->msr;
 }
 
@@ -209,7 +231,11 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 				ret = 1;
 				goto no_kprobe;
 			}
+<<<<<<< HEAD
 			p = __get_cpu_var(current_kprobe);
+=======
+			p = __this_cpu_read(current_kprobe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (p->break_handler && p->break_handler(p, regs)) {
 				goto ss_probe;
 			}
@@ -295,12 +321,20 @@ no_kprobe:
  * 	- When the probed function returns, this probe
  * 		causes the handlers to fire
  */
+<<<<<<< HEAD
 static void __used kretprobe_trampoline_holder(void)
 {
 	asm volatile(".global kretprobe_trampoline\n"
 			"kretprobe_trampoline:\n"
 			"nop\n");
 }
+=======
+asm(".global kretprobe_trampoline\n"
+	".type kretprobe_trampoline, @function\n"
+	"kretprobe_trampoline:\n"
+	"nop\n"
+	".size kretprobe_trampoline, .-kretprobe_trampoline\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Called when the probe at kretprobe trampoline is hit
@@ -447,7 +481,11 @@ int __kprobes kprobe_fault_handler(struct pt_regs *regs, int trapnr)
 	case KPROBE_HIT_SSDONE:
 		/*
 		 * We increment the nmissed count for accounting,
+<<<<<<< HEAD
 		 * we can also use npre/npostfault count for accouting
+=======
+		 * we can also use npre/npostfault count for accounting
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * these specific fault cases.
 		 */
 		kprobes_inc_nmissed_count(cur);
@@ -509,12 +547,19 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC64
 unsigned long arch_deref_entry_point(void *entry)
 {
 	return ((func_descr_t *)entry)->entry;
 }
 #endif
+=======
+unsigned long arch_deref_entry_point(void *entry)
+{
+	return ppc_global_function_entry(entry);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int __kprobes setjmp_pre_handler(struct kprobe *p, struct pt_regs *regs)
 {
@@ -525,7 +570,13 @@ int __kprobes setjmp_pre_handler(struct kprobe *p, struct pt_regs *regs)
 
 	/* setup return addr to the jprobe handler routine */
 	regs->nip = arch_deref_entry_point(jp->entry);
+<<<<<<< HEAD
 #ifdef CONFIG_PPC64
+=======
+#ifdef PPC64_ELF_ABI_v2
+	regs->gpr[12] = (unsigned long)jp->entry;
+#elif defined(PPC64_ELF_ABI_v1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->gpr[2] = (unsigned long)(((func_descr_t *)jp->entry)->toc);
 #endif
 

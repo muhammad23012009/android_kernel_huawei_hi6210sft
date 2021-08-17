@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Source for:
+=======
+ * cyttsp_i2c.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Cypress TrueTouch(TM) Standard Product (TTSP) I2C touchscreen driver.
  * For use with Cypress Txx3xx parts.
  * Supported parts include:
@@ -19,11 +23,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  * Contact Cypress Semiconductor at www.cypress.com <kev@cypress.com>
+=======
+ * Contact Cypress Semiconductor at www.cypress.com <ttdrivers@cypress.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 
@@ -34,6 +42,7 @@
 
 #define CY_I2C_DATA_SIZE	128
 
+<<<<<<< HEAD
 static int cyttsp_i2c_read_block_data(struct cyttsp *ts,
 				      u8 addr, u8 length, void *values)
 {
@@ -75,6 +84,8 @@ static int cyttsp_i2c_write_block_data(struct cyttsp *ts,
 	return retval < 0 ? retval : 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct cyttsp_bus_ops cyttsp_i2c_bus_ops = {
 	.bustype	= BUS_I2C,
 	.write		= cyttsp_i2c_write_block_data,
@@ -98,6 +109,7 @@ static int cyttsp_i2c_probe(struct i2c_client *client,
 		return PTR_ERR(ts);
 
 	i2c_set_clientdata(client, ts);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -108,6 +120,8 @@ static int cyttsp_i2c_remove(struct i2c_client *client)
 
 	cyttsp_remove(ts);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -120,11 +134,17 @@ MODULE_DEVICE_TABLE(i2c, cyttsp_i2c_id);
 static struct i2c_driver cyttsp_i2c_driver = {
 	.driver = {
 		.name	= CY_I2C_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &cyttsp_pm_ops,
 	},
 	.probe		= cyttsp_i2c_probe,
 	.remove		= cyttsp_i2c_remove,
+=======
+		.pm	= &cyttsp_pm_ops,
+	},
+	.probe		= cyttsp_i2c_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= cyttsp_i2c_id,
 };
 
@@ -133,4 +153,7 @@ module_i2c_driver(cyttsp_i2c_driver);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Cypress TrueTouch(R) Standard Product (TTSP) I2C driver");
 MODULE_AUTHOR("Cypress");
+<<<<<<< HEAD
 MODULE_ALIAS("i2c:cyttsp");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

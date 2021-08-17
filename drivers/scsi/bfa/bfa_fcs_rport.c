@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -189,8 +198,13 @@ bfa_fcs_rport_sm_uninit(struct bfa_fcs_rport_s *rport, enum rport_event event)
 		break;
 
 	case RPSM_EVENT_PLOGI_RCVD:
+<<<<<<< HEAD
 		bfa_sm_set_state(rport, bfa_fcs_rport_sm_fc4_fcs_online);
 		bfa_fcs_rport_fcs_online_action(rport);
+=======
+		bfa_sm_set_state(rport, bfa_fcs_rport_sm_plogiacc_sending);
+		bfa_fcs_rport_send_plogiacc(rport, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case RPSM_EVENT_PLOGI_COMP:
@@ -2577,7 +2591,11 @@ bfa_fcs_rport_update(struct bfa_fcs_rport_s *rport, struct fc_logi_s *plogi)
 
 		port->fabric->bb_credit = be16_to_cpu(plogi->csp.bbcred);
 		bfa_fcport_set_tx_bbcredit(port->fcs->bfa,
+<<<<<<< HEAD
 					  port->fabric->bb_credit, 0);
+=======
+					  port->fabric->bb_credit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 }
@@ -3430,9 +3448,16 @@ bfa_fcs_rpf_rpsc2_response(void *fcsarg, struct bfa_fcxp_s *fcxp, void *cbarg,
 		num_ents = be16_to_cpu(rpsc2_acc->num_pids);
 		bfa_trc(rport->fcs, num_ents);
 		if (num_ents > 0) {
+<<<<<<< HEAD
 			WARN_ON(rpsc2_acc->port_info[0].pid == rport->pid);
 			bfa_trc(rport->fcs,
 				be16_to_cpu(rpsc2_acc->port_info[0].pid));
+=======
+			WARN_ON(be32_to_cpu(rpsc2_acc->port_info[0].pid) !=
+						bfa_ntoh3b(rport->pid));
+			bfa_trc(rport->fcs,
+				be32_to_cpu(rpsc2_acc->port_info[0].pid));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			bfa_trc(rport->fcs,
 				be16_to_cpu(rpsc2_acc->port_info[0].speed));
 			bfa_trc(rport->fcs,

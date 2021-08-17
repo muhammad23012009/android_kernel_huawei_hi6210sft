@@ -43,7 +43,10 @@ int crisv32_request_dma(unsigned int dmanr, const char *device_id,
 		}
 		if (options & DMA_PANIC_ON_ERROR)
 			panic("request_dma error!");
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&dma_lock, flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 	clk_ctrl = REG_RD(config, regi_config, rw_clk_ctrl);

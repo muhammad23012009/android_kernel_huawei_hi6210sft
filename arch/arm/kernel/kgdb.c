@@ -12,6 +12,12 @@
 #include <linux/irq.h>
 #include <linux/kdebug.h>
 #include <linux/kgdb.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+
+#include <asm/patch.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/traps.h>
 
 struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] =
@@ -71,7 +77,11 @@ int dbg_set_reg(int regno, void *mem, struct pt_regs *regs)
 void
 sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 {
+<<<<<<< HEAD
 	struct pt_regs *thread_regs;
+=======
+	struct thread_info *ti;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int regno;
 
 	/* Just making sure... */
@@ -83,6 +93,7 @@ sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 		gdb_regs[regno] = 0;
 
 	/* Otherwise, we have only some registers from switch_to() */
+<<<<<<< HEAD
 	thread_regs		= task_pt_regs(task);
 	gdb_regs[_R0]		= thread_regs->ARM_r0;
 	gdb_regs[_R1]		= thread_regs->ARM_r1;
@@ -101,6 +112,19 @@ sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 	gdb_regs[_LR]		= thread_regs->ARM_lr;
 	gdb_regs[_PC]		= thread_regs->ARM_pc;
 	gdb_regs[_CPSR]		= thread_regs->ARM_cpsr;
+=======
+	ti			= task_thread_info(task);
+	gdb_regs[_R4]		= ti->cpu_context.r4;
+	gdb_regs[_R5]		= ti->cpu_context.r5;
+	gdb_regs[_R6]		= ti->cpu_context.r6;
+	gdb_regs[_R7]		= ti->cpu_context.r7;
+	gdb_regs[_R8]		= ti->cpu_context.r8;
+	gdb_regs[_R9]		= ti->cpu_context.r9;
+	gdb_regs[_R10]		= ti->cpu_context.sl;
+	gdb_regs[_FP]		= ti->cpu_context.fp;
+	gdb_regs[_SPT]		= ti->cpu_context.sp;
+	gdb_regs[_PC]		= ti->cpu_context.pc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long pc)
@@ -164,12 +188,22 @@ static int kgdb_compiled_brk_fn(struct pt_regs *regs, unsigned int instr)
 static struct undef_hook kgdb_brkpt_hook = {
 	.instr_mask		= 0xffffffff,
 	.instr_val		= KGDB_BREAKINST,
+<<<<<<< HEAD
+=======
+	.cpsr_mask		= MODE_MASK,
+	.cpsr_val		= SVC_MODE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fn			= kgdb_brk_fn
 };
 
 static struct undef_hook kgdb_compiled_brkpt_hook = {
 	.instr_mask		= 0xffffffff,
 	.instr_val		= KGDB_COMPILED_BREAK,
+<<<<<<< HEAD
+=======
+	.cpsr_mask		= MODE_MASK,
+	.cpsr_val		= SVC_MODE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fn			= kgdb_compiled_brk_fn
 };
 
@@ -244,6 +278,36 @@ void kgdb_arch_exit(void)
 	unregister_die_notifier(&kgdb_notifier);
 }
 
+<<<<<<< HEAD
+=======
+int kgdb_arch_set_breakpoint(struct kgdb_bkpt *bpt)
+{
+	int err;
+
+	/* patch_text() only supports int-sized breakpoints */
+	BUILD_BUG_ON(sizeof(int) != BREAK_INSTR_SIZE);
+
+	err = probe_kernel_read(bpt->saved_instr, (char *)bpt->bpt_addr,
+				BREAK_INSTR_SIZE);
+	if (err)
+		return err;
+
+	/* Machine is already stopped, so we can use __patch_text() directly */
+	__patch_text((void *)bpt->bpt_addr,
+		     *(unsigned int *)arch_kgdb_ops.gdb_bpt_instr);
+
+	return err;
+}
+
+int kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt)
+{
+	/* Machine is already stopped, so we can use __patch_text() directly */
+	__patch_text((void *)bpt->bpt_addr, *(unsigned int *)bpt->saved_instr);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Register our undef instruction hooks with ARM undef core.
  * We regsiter a hook specifically looking for the KGB break inst

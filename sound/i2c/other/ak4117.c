@@ -62,7 +62,11 @@ static void reg_dump(struct ak4117 *ak4117)
 
 static void snd_ak4117_free(struct ak4117 *chip)
 {
+<<<<<<< HEAD
 	del_timer(&chip->timer);
+=======
+	del_timer_sync(&chip->timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(chip);
 }
 
@@ -91,9 +95,13 @@ int snd_ak4117_create(struct snd_card *card, ak4117_read_t *read, ak4117_write_t
 	chip->read = read;
 	chip->write = write;
 	chip->private_data = private_data;
+<<<<<<< HEAD
 	init_timer(&chip->timer);
 	chip->timer.data = (unsigned long)chip;
 	chip->timer.function = snd_ak4117_timer;
+=======
+	setup_timer(&chip->timer, snd_ak4117_timer, (unsigned long)chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (reg = 0; reg < 5; reg++)
 		chip->regmap[reg] = pgm[reg];
@@ -112,7 +120,11 @@ int snd_ak4117_create(struct snd_card *card, ak4117_read_t *read, ak4117_write_t
 
       __fail:
 	snd_ak4117_free(chip);
+<<<<<<< HEAD
 	return err < 0 ? err : -EIO;
+=======
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void snd_ak4117_reg_write(struct ak4117 *chip, unsigned char reg, unsigned char mask, unsigned char val)
@@ -139,8 +151,12 @@ void snd_ak4117_reinit(struct ak4117 *chip)
 	/* release powerdown, everything is initialized now */
 	reg_write(chip, AK4117_REG_PWRDN, old | AK4117_RST | AK4117_PWN);
 	chip->init = 0;
+<<<<<<< HEAD
 	chip->timer.expires = 1 + jiffies;
 	add_timer(&chip->timer);
+=======
+	mod_timer(&chip->timer, 1 + jiffies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned int external_rate(unsigned char rcs1)
@@ -540,8 +556,12 @@ static void snd_ak4117_timer(unsigned long data)
 	if (chip->init)
 		return;
 	snd_ak4117_check_rate_and_errors(chip, 0);
+<<<<<<< HEAD
 	chip->timer.expires = 1 + jiffies;
 	add_timer(&chip->timer);
+=======
+	mod_timer(&chip->timer, 1 + jiffies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 EXPORT_SYMBOL(snd_ak4117_create);

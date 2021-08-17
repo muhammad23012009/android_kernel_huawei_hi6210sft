@@ -3,7 +3,11 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/system.h>
+=======
+#include <asm/system_misc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/proc-fns.h>
 
 static void gemini_idle(void)

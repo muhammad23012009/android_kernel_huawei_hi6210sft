@@ -398,10 +398,17 @@ static struct mmc_host_ops sdricoh_ops = {
 static int sdricoh_init_mmc(struct pci_dev *pci_dev,
 			    struct pcmcia_device *pcmcia_dev)
 {
+<<<<<<< HEAD
 	int result = 0;
 	void __iomem *iobase = NULL;
 	struct mmc_host *mmc = NULL;
 	struct sdricoh_host *host = NULL;
+=======
+	int result;
+	void __iomem *iobase;
+	struct mmc_host *mmc;
+	struct sdricoh_host *host;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *dev = &pcmcia_dev->dev;
 	/* map iomem */
 	if (pci_resource_len(pci_dev, SDRICOH_PCI_REGION) !=
@@ -419,7 +426,11 @@ static int sdricoh_init_mmc(struct pci_dev *pci_dev,
 	if (readl(iobase + R104_VERSION) != 0x4000) {
 		dev_dbg(dev, "no supported mmc controller found\n");
 		result = -ENODEV;
+<<<<<<< HEAD
 		goto err;
+=======
+		goto unmap_io;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* allocate privdata */
 	mmc = pcmcia_dev->priv =
@@ -427,7 +438,11 @@ static int sdricoh_init_mmc(struct pci_dev *pci_dev,
 	if (!mmc) {
 		dev_err(dev, "mmc_alloc_host failed\n");
 		result = -ENOMEM;
+<<<<<<< HEAD
 		goto err;
+=======
+		goto unmap_io;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	host = mmc_priv(mmc);
 
@@ -451,8 +466,12 @@ static int sdricoh_init_mmc(struct pci_dev *pci_dev,
 	if (sdricoh_reset(host)) {
 		dev_dbg(dev, "could not reset\n");
 		result = -EIO;
+<<<<<<< HEAD
 		goto err;
 
+=======
+		goto free_host;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	result = mmc_add_host(mmc);
@@ -461,6 +480,7 @@ static int sdricoh_init_mmc(struct pci_dev *pci_dev,
 		dev_dbg(dev, "mmc host registered\n");
 		return 0;
 	}
+<<<<<<< HEAD
 
 err:
 	if (iobase)
@@ -468,6 +488,12 @@ err:
 	if (mmc)
 		mmc_free_host(mmc);
 
+=======
+free_host:
+	mmc_free_host(mmc);
+unmap_io:
+	pci_iounmap(pci_dev, iobase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 
@@ -516,9 +542,13 @@ static void sdricoh_pcmcia_detach(struct pcmcia_device *link)
 #ifdef CONFIG_PM
 static int sdricoh_pcmcia_suspend(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
 	struct mmc_host *mmc = link->priv;
 	dev_dbg(&link->dev, "suspend\n");
 	mmc_suspend_host(mmc);
+=======
+	dev_dbg(&link->dev, "suspend\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -527,7 +557,10 @@ static int sdricoh_pcmcia_resume(struct pcmcia_device *link)
 	struct mmc_host *mmc = link->priv;
 	dev_dbg(&link->dev, "resume\n");
 	sdricoh_reset(mmc_priv(mmc));
+<<<<<<< HEAD
 	mmc_resume_host(mmc);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 #else

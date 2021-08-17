@@ -72,13 +72,18 @@ static int imote2_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 			ret);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int imote2_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -94,6 +99,14 @@ static struct platform_driver imote2_driver = {
 	},
 	.probe		= imote2_probe,
 	.remove		= imote2_remove,
+=======
+static struct platform_driver imote2_driver = {
+	.driver		= {
+		.name	= "imote2-audio",
+		.pm     = &snd_soc_pm_ops,
+	},
+	.probe		= imote2_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(imote2_driver);

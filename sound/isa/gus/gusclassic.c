@@ -149,7 +149,11 @@ static int snd_gusclassic_probe(struct device *dev, unsigned int n)
 	struct snd_gus_card *gus;
 	int error;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[n], id[n], THIS_MODULE, 0, &card);
+=======
+	error = snd_card_new(dev, index[n], id[n], THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		return error;
 
@@ -181,12 +185,20 @@ static int snd_gusclassic_probe(struct device *dev, unsigned int n)
 	if (error < 0)
 		goto out;
 
+<<<<<<< HEAD
 	error = snd_gf1_pcm_new(gus, 0, 0, NULL);
+=======
+	error = snd_gf1_pcm_new(gus, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		goto out;
 
 	if (!gus->ace_flag) {
+<<<<<<< HEAD
 		error = snd_gf1_rawmidi_new(gus, 0, NULL);
+=======
+		error = snd_gf1_rawmidi_new(gus, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (error < 0)
 			goto out;
 	}
@@ -199,8 +211,11 @@ static int snd_gusclassic_probe(struct device *dev, unsigned int n)
 		sprintf(card->longname + strlen(card->longname),
 			"&%d", gus->gf1.dma2);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = snd_card_register(card);
 	if (error < 0)
 		goto out;
@@ -215,7 +230,10 @@ out:	snd_card_free(card);
 static int snd_gusclassic_remove(struct device *dev, unsigned int n)
 {
 	snd_card_free(dev_get_drvdata(dev));
+<<<<<<< HEAD
 	dev_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -232,6 +250,7 @@ static struct isa_driver snd_gusclassic_driver = {
 	}
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_gusclassic_init(void)
 {
 	return isa_register_driver(&snd_gusclassic_driver, SNDRV_CARDS);
@@ -244,3 +263,6 @@ static void __exit alsa_card_gusclassic_exit(void)
 
 module_init(alsa_card_gusclassic_init);
 module_exit(alsa_card_gusclassic_exit);
+=======
+module_isa_driver(snd_gusclassic_driver, SNDRV_CARDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

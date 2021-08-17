@@ -4,9 +4,22 @@
 #include <linux/sched.h> /* MMF_VM_HUGEPAGE */
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+<<<<<<< HEAD
 extern int __khugepaged_enter(struct mm_struct *mm);
 extern void __khugepaged_exit(struct mm_struct *mm);
 extern int khugepaged_enter_vma_merge(struct vm_area_struct *vma);
+=======
+extern struct attribute_group khugepaged_attr_group;
+
+extern int khugepaged_init(void);
+extern void khugepaged_destroy(void);
+extern int start_stop_khugepaged(void);
+extern int __khugepaged_enter(struct mm_struct *mm);
+extern void __khugepaged_exit(struct mm_struct *mm);
+extern int khugepaged_enter_vma_merge(struct vm_area_struct *vma,
+				      unsigned long vm_flags);
+extern void khugepaged_min_free_kbytes_update(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define khugepaged_enabled()					       \
 	(transparent_hugepage_flags &				       \
@@ -35,6 +48,7 @@ static inline void khugepaged_exit(struct mm_struct *mm)
 		__khugepaged_exit(mm);
 }
 
+<<<<<<< HEAD
 static inline int khugepaged_enter(struct vm_area_struct *vma)
 {
 	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
@@ -42,6 +56,15 @@ static inline int khugepaged_enter(struct vm_area_struct *vma)
 		     (khugepaged_req_madv() &&
 		      vma->vm_flags & VM_HUGEPAGE)) &&
 		    !(vma->vm_flags & VM_NOHUGEPAGE))
+=======
+static inline int khugepaged_enter(struct vm_area_struct *vma,
+				   unsigned long vm_flags)
+{
+	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
+		if ((khugepaged_always() ||
+		     (khugepaged_req_madv() && (vm_flags & VM_HUGEPAGE))) &&
+		    !(vm_flags & VM_NOHUGEPAGE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (__khugepaged_enter(vma->vm_mm))
 				return -ENOMEM;
 	return 0;
@@ -54,6 +77,7 @@ static inline int khugepaged_fork(struct mm_struct *mm, struct mm_struct *oldmm)
 static inline void khugepaged_exit(struct mm_struct *mm)
 {
 }
+<<<<<<< HEAD
 static inline int khugepaged_enter(struct vm_area_struct *vma)
 {
 	return 0;
@@ -62,6 +86,22 @@ static inline int khugepaged_enter_vma_merge(struct vm_area_struct *vma)
 {
 	return 0;
 }
+=======
+static inline int khugepaged_enter(struct vm_area_struct *vma,
+				   unsigned long vm_flags)
+{
+	return 0;
+}
+static inline int khugepaged_enter_vma_merge(struct vm_area_struct *vma,
+					     unsigned long vm_flags)
+{
+	return 0;
+}
+
+static inline void khugepaged_min_free_kbytes_update(void)
+{
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
 
 #endif /* _LINUX_KHUGEPAGED_H */

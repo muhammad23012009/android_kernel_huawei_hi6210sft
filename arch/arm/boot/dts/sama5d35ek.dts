@@ -7,11 +7,22 @@
  * Licensed under GPLv2 or later.
  */
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "sama5d3xmb.dtsi"
 
 / {
 	model = "Atmel SAMA5D35-EK";
 	compatible = "atmel,sama5d35ek", "atmel,sama5d3xmb", "atmel,sama5d3xcm", "atmel,sama5d3", "atmel,sama5";
+=======
+#include "sama5d35.dtsi"
+#include "sama5d3xmb.dtsi"
+#include "sama5d3xmb_emac.dtsi"
+#include "sama5d3xmb_gmac.dtsi"
+
+/ {
+	model = "Atmel SAMA5D35-EK";
+	compatible = "atmel,sama5d35ek", "atmel,sama5d3xmb", "atmel,sama5d3xcm", "atmel,sama5d35", "atmel,sama5d3", "atmel,sama5";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ahb {
 		apb {
@@ -43,6 +54,7 @@
 
 	gpio_keys {
 		compatible = "gpio-keys";
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -51,6 +63,14 @@
 			gpios = <&pioE 27 0>;
 			linux,code = <0x100>;
 			gpio-key,wakeup;
+=======
+
+		pb_user1 {
+			label = "pb_user1";
+			gpios = <&pioE 27 GPIO_ACTIVE_HIGH>;
+			linux,code = <0x100>;
+			wakeup-source;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 };

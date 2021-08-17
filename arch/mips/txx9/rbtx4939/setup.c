@@ -186,7 +186,11 @@ static void __init rbtx4939_update_ioc_pen(void)
 
 #define RBTX4939_MAX_7SEGLEDS	8
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_LEDS_CLASS)
+=======
+#if IS_BUILTIN(CONFIG_LEDS_CLASS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u8 led_val[RBTX4939_MAX_7SEGLEDS];
 struct rbtx4939_led_data {
 	struct led_classdev cdev;
@@ -215,7 +219,11 @@ static int __init rbtx4939_led_probe(struct platform_device *pdev)
 	int i;
 	static char *default_triggers[] __initdata = {
 		"heartbeat",
+<<<<<<< HEAD
 		"ide-disk",
+=======
+		"disk-activity",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"nand-disk",
 	};
 
@@ -245,7 +253,10 @@ static int __init rbtx4939_led_probe(struct platform_device *pdev)
 static struct platform_driver rbtx4939_led_driver = {
 	.driver	 = {
 		.name = "rbtx4939-led",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -262,7 +273,11 @@ static inline void rbtx4939_led_setup(void)
 
 static void __rbtx4939_7segled_putc(unsigned int pos, unsigned char val)
 {
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_LEDS_CLASS)
+=======
+#if IS_BUILTIN(CONFIG_LEDS_CLASS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	local_irq_save(flags);
 	/* bit7: reserved for LED class */

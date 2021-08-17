@@ -846,8 +846,13 @@ int jffs2_thread_should_wake(struct jffs2_sb_info *c)
 		return 1;
 
 	if (c->unchecked_size) {
+<<<<<<< HEAD
 		jffs2_dbg(1, "jffs2_thread_should_wake(): unchecked_size %d, checked_ino #%d\n",
 			  c->unchecked_size, c->checked_ino);
+=======
+		jffs2_dbg(1, "jffs2_thread_should_wake(): unchecked_size %d, check_ino #%d\n",
+			  c->unchecked_size, c->check_ino);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	}
 

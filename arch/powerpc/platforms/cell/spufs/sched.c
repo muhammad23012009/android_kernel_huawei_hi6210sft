@@ -83,7 +83,10 @@ static struct timer_list spuloadavg_timer;
 #define MIN_SPU_TIMESLICE	max(5 * HZ / (1000 * SPUSCHED_TICK), 1)
 #define DEF_SPU_TIMESLICE	(100 * HZ / (1000 * SPUSCHED_TICK))
 
+<<<<<<< HEAD
 #define MAX_USER_PRIO		(MAX_PRIO - MAX_RT_PRIO)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SCALE_PRIO(x, prio) \
 	max(x * (MAX_PRIO - prio) / (MAX_USER_PRIO / 2), MIN_SPU_TIMESLICE)
 
@@ -623,7 +626,11 @@ static struct spu *spu_get_idle(struct spu_context *ctx)
 
 /**
  * find_victim - find a lower priority context to preempt
+<<<<<<< HEAD
  * @ctx:	canidate context for running
+=======
+ * @ctx:	candidate context for running
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Returns the freed physical spu to run the new context on.
  */
@@ -1040,13 +1047,20 @@ void spuctx_switch_state(struct spu_context *ctx,
 {
 	unsigned long long curtime;
 	signed long long delta;
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct spu *spu;
 	enum spu_utilization_state old_state;
 	int node;
 
+<<<<<<< HEAD
 	ktime_get_ts(&ts);
 	curtime = timespec_to_ns(&ts);
+=======
+	curtime = ktime_get_ns();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	delta = curtime - ctx->stats.tstamp;
 
 	WARN_ON(!mutex_is_locked(&ctx->state_mutex));

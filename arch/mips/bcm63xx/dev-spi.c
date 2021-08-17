@@ -18,6 +18,7 @@
 #include <bcm63xx_dev_spi.h>
 #include <bcm63xx_regs.h>
 
+<<<<<<< HEAD
 #ifdef BCMCPU_RUNTIME_DETECT
 /*
  * register offsets
@@ -44,6 +45,8 @@ static __init void bcm63xx_spi_regs_init(void)
 static __init void bcm63xx_spi_regs_init(void) { }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct resource spi_resources[] = {
 	{
 		.start		= -1, /* filled at runtime */
@@ -56,6 +59,7 @@ static struct resource spi_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct bcm63xx_spi_pdata spi_pdata = {
 	.bus_num		= 0,
 	.num_chipselect		= 8,
@@ -69,6 +73,12 @@ static struct platform_device bcm63xx_spi_device = {
 	.dev		= {
 		.platform_data = &spi_pdata,
 	},
+=======
+static struct platform_device bcm63xx_spi_device = {
+	.id		= -1,
+	.num_resources	= ARRAY_SIZE(spi_resources),
+	.resource	= spi_resources,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int __init bcm63xx_spi_register(void)
@@ -81,6 +91,7 @@ int __init bcm63xx_spi_register(void)
 	spi_resources[1].start = bcm63xx_get_irq_number(IRQ_SPI);
 
 	if (BCMCPU_IS_6338() || BCMCPU_IS_6348()) {
+<<<<<<< HEAD
 		spi_resources[0].end += BCM_6348_RSET_SPI_SIZE - 1;
 		spi_pdata.fifo_size = SPI_6348_MSG_DATA_SIZE;
 		spi_pdata.msg_type_shift = SPI_6348_MSG_TYPE_SHIFT;
@@ -96,5 +107,17 @@ int __init bcm63xx_spi_register(void)
 
 	bcm63xx_spi_regs_init();
 
+=======
+		bcm63xx_spi_device.name = "bcm6348-spi",
+		spi_resources[0].end += BCM_6348_RSET_SPI_SIZE - 1;
+	}
+
+	if (BCMCPU_IS_3368() || BCMCPU_IS_6358() || BCMCPU_IS_6362() ||
+		BCMCPU_IS_6368()) {
+		bcm63xx_spi_device.name = "bcm6358-spi",
+		spi_resources[0].end += BCM_6358_RSET_SPI_SIZE - 1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return platform_device_register(&bcm63xx_spi_device);
 }

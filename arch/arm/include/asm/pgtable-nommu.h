@@ -54,8 +54,11 @@
 
 typedef pte_t *pte_addr_t;
 
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte) { return 0; }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * ZERO_PAGE is a global shared page that is always zero: used
  * for zero-mapped memory areas etc..
@@ -79,8 +82,11 @@ extern unsigned int kobjsize(const void *objp);
  * No page table caches to initialise.
  */
 #define pgtable_cache_init()	do { } while (0)
+<<<<<<< HEAD
 #define io_remap_pfn_range	remap_pfn_range
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * All 32bit addresses are effectively valid for vmalloc...
@@ -89,7 +95,11 @@ extern unsigned int kobjsize(const void *objp);
 #define	VMALLOC_START	0UL
 #define	VMALLOC_END	0xffffffffUL
 
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS      (0)
+=======
+#define FIRST_USER_ADDRESS      0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm-generic/pgtable.h>
 

@@ -460,7 +460,11 @@ static void ccdc_config_black_compense(struct ccdc_black_compensation *bcomp)
  * ccdc_write_dfc_entry()
  * write an entry in the dfc table.
  */
+<<<<<<< HEAD
 int ccdc_write_dfc_entry(int index, struct ccdc_vertical_dft *dfc)
+=======
+static int ccdc_write_dfc_entry(int index, struct ccdc_vertical_dft *dfc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 /* TODO This is to be re-visited and adjusted */
 #define DFC_WRITE_WAIT_COUNT	1000
@@ -1030,7 +1034,10 @@ static int dm355_ccdc_remove(struct platform_device *pdev)
 static struct platform_driver dm355_ccdc_driver = {
 	.driver = {
 		.name	= "dm355_ccdc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove = dm355_ccdc_remove,
 	.probe = dm355_ccdc_probe,

@@ -33,13 +33,24 @@
 #include <asm/pgtable.h>
 #include <asm/homecache.h>
 #include <asm/cachectl.h>
+<<<<<<< HEAD
+=======
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <arch/chip.h>
 
 SYSCALL_DEFINE3(cacheflush, unsigned long, addr, unsigned long, len,
 		unsigned long, flags)
 {
+<<<<<<< HEAD
 	if (flags & DCACHE)
 		homecache_evict(cpumask_of(smp_processor_id()));
+=======
+	/* DCACHE is not particularly effective if not bound to one cpu. */
+	if (flags & DCACHE)
+		homecache_evict(cpumask_of(raw_smp_processor_id()));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (flags & ICACHE)
 		flush_remote(0, HV_FLUSH_EVICT_L1I, mm_cpumask(current->mm),
 			     0, 0, 0, NULL, NULL, 0);
@@ -57,13 +68,28 @@ SYSCALL_DEFINE3(cacheflush, unsigned long, addr, unsigned long, len,
 
 #if !defined(__tilegx__) || defined(CONFIG_COMPAT)
 
+<<<<<<< HEAD
 ssize_t sys32_readahead(int fd, u32 offset_lo, u32 offset_hi, u32 count)
+=======
+#ifdef __BIG_ENDIAN
+#define SYSCALL_PAIR(name) u32 name ## _hi, u32 name ## _lo
+#else
+#define SYSCALL_PAIR(name) u32 name ## _lo, u32 name ## _hi
+#endif
+
+ssize_t sys32_readahead(int fd, SYSCALL_PAIR(offset), u32 count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return sys_readahead(fd, ((loff_t)offset_hi << 32) | offset_lo, count);
 }
 
+<<<<<<< HEAD
 int sys32_fadvise64_64(int fd, u32 offset_lo, u32 offset_hi,
 		       u32 len_lo, u32 len_hi, int advice)
+=======
+int sys32_fadvise64_64(int fd, SYSCALL_PAIR(offset),
+		       SYSCALL_PAIR(len), int advice)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return sys_fadvise64_64(fd, ((loff_t)offset_hi << 32) | offset_lo,
 				((loff_t)len_hi << 32) | len_lo, advice);

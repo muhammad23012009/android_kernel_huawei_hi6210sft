@@ -14,6 +14,11 @@ enum {
 	_IRQ_NO_BALANCING	= IRQ_NO_BALANCING,
 	_IRQ_NESTED_THREAD	= IRQ_NESTED_THREAD,
 	_IRQ_PER_CPU_DEVID	= IRQ_PER_CPU_DEVID,
+<<<<<<< HEAD
+=======
+	_IRQ_IS_POLLED		= IRQ_IS_POLLED,
+	_IRQ_DISABLE_UNLAZY	= IRQ_DISABLE_UNLAZY,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_IRQF_MODIFY_MASK	= IRQF_MODIFY_MASK,
 };
 
@@ -26,6 +31,11 @@ enum {
 #define IRQ_NOAUTOEN		GOT_YOU_MORON
 #define IRQ_NESTED_THREAD	GOT_YOU_MORON
 #define IRQ_PER_CPU_DEVID	GOT_YOU_MORON
+<<<<<<< HEAD
+=======
+#define IRQ_IS_POLLED		GOT_YOU_MORON
+#define IRQ_DISABLE_UNLAZY	GOT_YOU_MORON
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef IRQF_MODIFY_MASK
 #define IRQF_MODIFY_MASK	GOT_YOU_MORON
 
@@ -147,3 +157,21 @@ static inline bool irq_settings_is_nested_thread(struct irq_desc *desc)
 {
 	return desc->status_use_accessors & _IRQ_NESTED_THREAD;
 }
+<<<<<<< HEAD
+=======
+
+static inline bool irq_settings_is_polled(struct irq_desc *desc)
+{
+	return desc->status_use_accessors & _IRQ_IS_POLLED;
+}
+
+static inline bool irq_settings_disable_unlazy(struct irq_desc *desc)
+{
+	return desc->status_use_accessors & _IRQ_DISABLE_UNLAZY;
+}
+
+static inline void irq_settings_clr_disable_unlazy(struct irq_desc *desc)
+{
+	desc->status_use_accessors &= ~_IRQ_DISABLE_UNLAZY;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

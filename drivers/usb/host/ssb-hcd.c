@@ -105,7 +105,11 @@ static struct platform_device *ssb_hcd_create_pdev(struct ssb_device *dev, bool 
 {
 	struct platform_device *hci_dev;
 	struct resource hci_res[2];
+<<<<<<< HEAD
 	int ret = -ENOMEM;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(hci_res, 0, sizeof(hci_res));
 
@@ -119,7 +123,11 @@ static struct platform_device *ssb_hcd_create_pdev(struct ssb_device *dev, bool 
 	hci_dev = platform_device_alloc(ohci ? "ohci-platform" :
 					"ehci-platform" , 0);
 	if (!hci_dev)
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-ENOMEM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hci_dev->dev.parent = dev->dev;
 	hci_dev->dev.dma_mask = &hci_dev->dev.coherent_dma_mask;
@@ -163,11 +171,19 @@ static int ssb_hcd_probe(struct ssb_device *dev,
 
 	/* TODO: Probably need checks here; is the core connected? */
 
+<<<<<<< HEAD
 	if (dma_set_mask(dev->dma_dev, DMA_BIT_MASK(32)) ||
 	    dma_set_coherent_mask(dev->dma_dev, DMA_BIT_MASK(32)))
 		return -EOPNOTSUPP;
 
 	usb_dev = kzalloc(sizeof(struct ssb_hcd_device), GFP_KERNEL);
+=======
+	if (dma_set_mask_and_coherent(dev->dma_dev, DMA_BIT_MASK(32)))
+		return -EOPNOTSUPP;
+
+	usb_dev = devm_kzalloc(dev->dev, sizeof(struct ssb_hcd_device),
+			       GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!usb_dev)
 		return -ENOMEM;
 
@@ -182,10 +198,15 @@ static int ssb_hcd_probe(struct ssb_device *dev,
 	start = ssb_admatch_base(tmp);
 	len = (coreid == SSB_DEV_USB20_HOST) ? 0x800 : ssb_admatch_size(tmp);
 	usb_dev->ohci_dev = ssb_hcd_create_pdev(dev, true, start, len);
+<<<<<<< HEAD
 	if (IS_ERR(usb_dev->ohci_dev)) {
 		err = PTR_ERR(usb_dev->ohci_dev);
 		goto err_free_usb_dev;
 	}
+=======
+	if (IS_ERR(usb_dev->ohci_dev))
+		return PTR_ERR(usb_dev->ohci_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (coreid == SSB_DEV_USB20_HOST) {
 		start = ssb_admatch_base(tmp) + 0x800; /* ehci core offset */
@@ -201,8 +222,11 @@ static int ssb_hcd_probe(struct ssb_device *dev,
 
 err_unregister_ohci_dev:
 	platform_device_unregister(usb_dev->ohci_dev);
+<<<<<<< HEAD
 err_free_usb_dev:
 	kfree(usb_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -252,7 +276,11 @@ static const struct ssb_device_id ssb_hcd_table[] = {
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_USB11_HOSTDEV, SSB_ANY_REV),
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_USB11_HOST, SSB_ANY_REV),
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_USB20_HOST, SSB_ANY_REV),
+<<<<<<< HEAD
 	SSB_DEVTABLE_END
+=======
+	{},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 MODULE_DEVICE_TABLE(ssb, ssb_hcd_table);
 

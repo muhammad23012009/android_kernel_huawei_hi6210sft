@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * AVR32 and (fake) AT91 CPU identification
+=======
+ * AVR32 CPU identification
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 2007 Atmel Corporation
  *
@@ -20,6 +24,7 @@
 # define cpu_is_at32ap7000()	(0)
 #endif
 
+<<<<<<< HEAD
 /*
  * Since this is AVR32, we will never run on any AT91 CPU. But these
  * definitions may reduce clutter in common drivers.
@@ -44,4 +49,6 @@
 #define cpu_is_at91sam9g25()	(0)
 #define cpu_is_at91sam9x25()	(0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_ARCH_CPU_H */

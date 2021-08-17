@@ -600,7 +600,11 @@ static int si476x_core_fwver_to_revision(struct si476x_core *core,
 unknown_revision:
 	dev_err(&core->client->dev,
 		"Unsupported version of the firmware: %d.%d.%d, "
+<<<<<<< HEAD
 		"reverting to A10 comptible functions\n",
+=======
+		"reverting to A10 compatible functions\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		major, minor1, minor2);
 
 	return SI476X_REVISION_A10;
@@ -718,7 +722,11 @@ static int si476x_core_probe(struct i2c_client *client,
 	atomic_set(&core->is_alive, 0);
 	core->power_state = SI476X_POWER_DOWN;
 
+<<<<<<< HEAD
 	pdata = client->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata) {
 		memcpy(&core->power_up_parameters,
 		       &pdata->power_up_parameters,
@@ -766,7 +774,11 @@ static int si476x_core_probe(struct i2c_client *client,
 			   sizeof(struct v4l2_rds_data),
 			   GFP_KERNEL);
 	if (rval) {
+<<<<<<< HEAD
 		dev_err(&client->dev, "Could not alloate the FIFO\n");
+=======
+		dev_err(&client->dev, "Could not allocate the FIFO\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto free_gpio;
 	}
 	mutex_init(&core->rds_drainer_status_lock);
@@ -777,7 +789,12 @@ static int si476x_core_probe(struct i2c_client *client,
 		rval = devm_request_threaded_irq(&client->dev,
 						 client->irq, NULL,
 						 si476x_core_interrupt,
+<<<<<<< HEAD
 						 IRQF_TRIGGER_FALLING,
+=======
+						 IRQF_TRIGGER_FALLING |
+						 IRQF_ONESHOT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						 client->name, core);
 		if (rval < 0) {
 			dev_err(&client->dev, "Could not request IRQ %d\n",
@@ -872,7 +889,10 @@ MODULE_DEVICE_TABLE(i2c, si476x_id);
 static struct i2c_driver si476x_core_driver = {
 	.driver		= {
 		.name	= "si476x-core",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= si476x_core_probe,
 	.remove         = si476x_core_remove,

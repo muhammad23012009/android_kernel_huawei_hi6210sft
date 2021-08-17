@@ -10,6 +10,10 @@
  * debug functions
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef __KERNEL__
 
 #include <stdarg.h>
@@ -23,6 +27,7 @@
 
 #include "befs.h"
 
+<<<<<<< HEAD
 #define ERRBUFSIZE 1024
 
 void
@@ -41,11 +46,25 @@ befs_error(const struct super_block *sb, const char *fmt, ...)
 
 	printk(KERN_ERR "BeFS(%s): %s\n", sb->s_id, err_buf);
 	kfree(err_buf);
+=======
+void
+befs_error(const struct super_block *sb, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	pr_err("(%s): %pV\n", sb->s_id, &vaf);
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void
 befs_warning(const struct super_block *sb, const char *fmt, ...)
 {
+<<<<<<< HEAD
 	va_list args;
 	char *err_buf = kmalloc(ERRBUFSIZE, GFP_KERNEL);
 	if (err_buf == NULL) {
@@ -60,6 +79,16 @@ befs_warning(const struct super_block *sb, const char *fmt, ...)
 	printk(KERN_WARNING "BeFS(%s): %s\n", sb->s_id, err_buf);
 
 	kfree(err_buf);
+=======
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	pr_warn("(%s): %pV\n", sb->s_id, &vaf);
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void
@@ -67,6 +96,7 @@ befs_debug(const struct super_block *sb, const char *fmt, ...)
 {
 #ifdef CONFIG_BEFS_DEBUG
 
+<<<<<<< HEAD
 	va_list args;
 	char *err_buf = NULL;
 
@@ -86,6 +116,15 @@ befs_debug(const struct super_block *sb, const char *fmt, ...)
 
 		kfree(err_buf);
 	}
+=======
+	struct va_format vaf;
+	va_list args;
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	pr_debug("(%s): %pV\n", sb->s_id, &vaf);
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif				//CONFIG_BEFS_DEBUG
 }
@@ -109,9 +148,15 @@ befs_dump_inode(const struct super_block *sb, befs_inode * inode)
 	befs_debug(sb, "  gid %u", fs32_to_cpu(sb, inode->gid));
 	befs_debug(sb, "  mode %08x", fs32_to_cpu(sb, inode->mode));
 	befs_debug(sb, "  flags %08x", fs32_to_cpu(sb, inode->flags));
+<<<<<<< HEAD
 	befs_debug(sb, "  create_time %Lu",
 		   fs64_to_cpu(sb, inode->create_time));
 	befs_debug(sb, "  last_modified_time %Lu",
+=======
+	befs_debug(sb, "  create_time %llu",
+		   fs64_to_cpu(sb, inode->create_time));
+	befs_debug(sb, "  last_modified_time %llu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   fs64_to_cpu(sb, inode->last_modified_time));
 
 	tmp_run = fsrun_to_cpu(sb, inode->parent);
@@ -137,7 +182,11 @@ befs_dump_inode(const struct super_block *sb, befs_inode * inode)
 				   tmp_run.allocation_group, tmp_run.start,
 				   tmp_run.len);
 		}
+<<<<<<< HEAD
 		befs_debug(sb, "  max_direct_range %Lu",
+=======
+		befs_debug(sb, "  max_direct_range %llu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   fs64_to_cpu(sb,
 				       inode->data.datastream.
 				       max_direct_range));
@@ -147,7 +196,11 @@ befs_dump_inode(const struct super_block *sb, befs_inode * inode)
 			   tmp_run.allocation_group,
 			   tmp_run.start, tmp_run.len);
 
+<<<<<<< HEAD
 		befs_debug(sb, "  max_indirect_range %Lu",
+=======
+		befs_debug(sb, "  max_indirect_range %llu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   fs64_to_cpu(sb,
 				       inode->data.datastream.
 				       max_indirect_range));
@@ -158,12 +211,20 @@ befs_dump_inode(const struct super_block *sb, befs_inode * inode)
 			   tmp_run.allocation_group, tmp_run.start,
 			   tmp_run.len);
 
+<<<<<<< HEAD
 		befs_debug(sb, "  max_double_indirect_range %Lu",
+=======
+		befs_debug(sb, "  max_double_indirect_range %llu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   fs64_to_cpu(sb,
 				       inode->data.datastream.
 				       max_double_indirect_range));
 
+<<<<<<< HEAD
 		befs_debug(sb, "  size %Lu",
+=======
+		befs_debug(sb, "  size %llu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   fs64_to_cpu(sb, inode->data.datastream.size));
 	}
 
@@ -191,8 +252,14 @@ befs_dump_super_block(const struct super_block *sb, befs_super_block * sup)
 	befs_debug(sb, "  block_size %u", fs32_to_cpu(sb, sup->block_size));
 	befs_debug(sb, "  block_shift %u", fs32_to_cpu(sb, sup->block_shift));
 
+<<<<<<< HEAD
 	befs_debug(sb, "  num_blocks %Lu", fs64_to_cpu(sb, sup->num_blocks));
 	befs_debug(sb, "  used_blocks %Lu", fs64_to_cpu(sb, sup->used_blocks));
+=======
+	befs_debug(sb, "  num_blocks %llu", fs64_to_cpu(sb, sup->num_blocks));
+	befs_debug(sb, "  used_blocks %llu", fs64_to_cpu(sb, sup->used_blocks));
+	befs_debug(sb, "  inode_size %u", fs32_to_cpu(sb, sup->inode_size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	befs_debug(sb, "  magic2 %08x", fs32_to_cpu(sb, sup->magic2));
 	befs_debug(sb, "  blocks_per_ag %u",
@@ -206,8 +273,13 @@ befs_dump_super_block(const struct super_block *sb, befs_super_block * sup)
 	befs_debug(sb, "  log_blocks %u, %hu, %hu",
 		   tmp_run.allocation_group, tmp_run.start, tmp_run.len);
 
+<<<<<<< HEAD
 	befs_debug(sb, "  log_start %Ld", fs64_to_cpu(sb, sup->log_start));
 	befs_debug(sb, "  log_end %Ld", fs64_to_cpu(sb, sup->log_end));
+=======
+	befs_debug(sb, "  log_start %lld", fs64_to_cpu(sb, sup->log_start));
+	befs_debug(sb, "  log_end %lld", fs64_to_cpu(sb, sup->log_end));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	befs_debug(sb, "  magic3 %08x", fs32_to_cpu(sb, sup->magic3));
 

@@ -24,6 +24,10 @@
 #include <linux/i2c/twl.h>
 #include <linux/gpio.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/phy/phy.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/regulator/machine.h>
 #include <linux/regulator/fixed.h>
 
@@ -65,19 +69,36 @@ void __init omap_pmic_init(int bus, u32 clkrate,
 	omap_register_i2c_bus(bus, clkrate, &pmic_i2c_board_info, 1);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARCH_OMAP4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init omap4_pmic_init(const char *pmic_type,
 		    struct twl4030_platform_data *pmic_data,
 		    struct i2c_board_info *devices, int nr_devices)
 {
 	/* PMIC part*/
+<<<<<<< HEAD
 	omap_mux_init_signal("sys_nirq1", OMAP_PIN_INPUT_PULLUP | OMAP_PIN_OFF_WAKEUPENABLE);
 	omap_mux_init_signal("fref_clk0_out.sys_drm_msecure", OMAP_PIN_OUTPUT);
 	omap_pmic_init(1, 400, pmic_type, 7 + OMAP44XX_IRQ_GIC_START, pmic_data);
+=======
+	unsigned int irq;
+
+	omap_mux_init_signal("sys_nirq1", OMAP_PIN_INPUT_PULLUP | OMAP_PIN_OFF_WAKEUPENABLE);
+	omap_mux_init_signal("fref_clk0_out.sys_drm_msecure", OMAP_PIN_OUTPUT);
+	irq = omap4_xlate_irq(7 + OMAP44XX_IRQ_GIC_START);
+	omap_pmic_init(1, 400, pmic_type, irq, pmic_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Register additional devices on i2c1 bus if needed */
 	if (devices)
 		i2c_register_board_info(1, devices, nr_devices);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init omap_pmic_late_init(void)
 {
@@ -91,7 +112,11 @@ void __init omap_pmic_late_init(void)
 
 #if defined(CONFIG_ARCH_OMAP3)
 static struct twl4030_usb_data omap3_usb_pdata = {
+<<<<<<< HEAD
 	.usb_mode	= T2_USB_MODE_ULPI,
+=======
+	.usb_mode = T2_USB_MODE_ULPI,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int omap3_batt_table[] = {
@@ -140,6 +165,10 @@ static struct regulator_init_data omap3_vdac_idata = {
 
 static struct regulator_consumer_supply omap3_vpll2_supplies[] = {
 	REGULATOR_SUPPLY("vdds_dsi", "omapdss"),
+<<<<<<< HEAD
+=======
+	REGULATOR_SUPPLY("vdds_dsi", "omapdss_dpi.0"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	REGULATOR_SUPPLY("vdds_dsi", "omapdss_dsi.0"),
 };
 
@@ -525,8 +554,12 @@ void __init omap4_pmic_get_config(struct twl4030_platform_data *pmic_data,
 }
 #endif /* CONFIG_ARCH_OMAP4 */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_OMAP_SOC_OMAP_TWL4030) || \
 	defined(CONFIG_SND_OMAP_SOC_OMAP_TWL4030_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SND_OMAP_SOC_OMAP_TWL4030)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/omap-twl4030.h>
 
 /* Commonly used configuration */

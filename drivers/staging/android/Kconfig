@@ -1,5 +1,6 @@
 menu "Android"
 
+<<<<<<< HEAD
 config ANDROID
 	bool "Android Drivers"
 	default N
@@ -27,6 +28,10 @@ config ANDROID_BINDER_IPC_32BIT
 	  Enable to support an old 32-bit Android user-space. Breaks the new
 	  Android user-space.
 
+=======
+if ANDROID
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config ASHMEM
 	bool "Enable the Anonymous Shared Memory Subsystem"
 	default n
@@ -39,6 +44,7 @@ config ASHMEM
 	  It is, in theory, a good memory allocator for low-memory devices,
 	  because it can discard shared memory units when under memory pressure.
 
+<<<<<<< HEAD
 config ANDROID_LOGGER
         tristate "Android log driver"
         default n
@@ -70,6 +76,17 @@ config ANDROID_LOW_MEMORY_KILLER
 	default N
 	---help---
 	  Registers processes to be killed when memory is low
+=======
+config ANDROID_LOW_MEMORY_KILLER
+	bool "Android Low Memory Killer"
+	---help---
+	  Registers processes to be killed when low memory conditions, this is useful
+	  as there is no particular swap space on android.
+
+	  The registered process will kill according to the priorities in android init
+	  scripts (/init.rc), and it defines priority values with minimum free memory size
+	  for each priority.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
 	bool "Android Low Memory Killer: detect oom_adj values"
@@ -80,6 +97,7 @@ config ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
 	  /sys/module/lowmemorykiller/parameters/adj and convert them
 	  to oom_score_adj values.
 
+<<<<<<< HEAD
 config ANDROID_INTF_ALARM_DEV
 	bool "Android alarm driver"
 	depends on RTC_CLASS
@@ -161,4 +179,19 @@ source "drivers/staging/android/ion/Kconfig"
 source "drivers/staging/android/fiq_debugger/Kconfig"
 
 endif # if ANDROID
+=======
+config ANDROID_VSOC
+	tristate "Android Virtual SoC support"
+	default n
+	depends on PCI_MSI
+	---help---
+	  This option adds support for the Virtual SoC driver needed to boot
+	  a 'cuttlefish' Android image inside QEmu. The driver interacts with
+	  a QEmu ivshmem device. If built as a module, it will be called vsoc.
+
+source "drivers/staging/android/ion/Kconfig"
+
+endif # if ANDROID
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu

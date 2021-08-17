@@ -25,6 +25,7 @@
 #include <linux/slab.h>
 #include <linux/irq.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/irqchip.h>
 #include <linux/platform_data/clk-nomadik.h>
 #include <linux/platform_data/pinctrl-nomadik.h>
@@ -37,6 +38,11 @@
 #include <linux/mtd/fsmc.h>
 #include <linux/gpio.h>
 #include <linux/amba/mmci.h>
+=======
+#include <linux/of_irq.h>
+#include <linux/of_address.h>
+#include <linux/of_platform.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
@@ -91,6 +97,7 @@
 #define NOMADIK_L2CC_BASE	0x10210000	/* L2 Cache controller */
 #define NOMADIK_UART1_VBASE	0xF01FB000
 
+<<<<<<< HEAD
 static unsigned long out_low[] = { PIN_OUTPUT_LOW };
 static unsigned long out_high[] = { PIN_OUTPUT_HIGH };
 static unsigned long in_nopull[] = { PIN_INPUT_NOPULL };
@@ -133,6 +140,8 @@ static struct pinctrl_map __initdata nhk8815_pinmap[] = {
 	PIN_MAP_CONFIGS_PIN_HOG_DEFAULT("pinctrl-stn8815", "GPIO74_C20", in_pullup),
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This is needed for LL-debug/earlyprintk/debug-macro.S */
 static struct map_desc cpu8815_io_desc[] __initdata = {
 	{
@@ -148,7 +157,11 @@ static void __init cpu8815_map_io(void)
 	iotable_init(cpu8815_io_desc, ARRAY_SIZE(cpu8815_io_desc));
 }
 
+<<<<<<< HEAD
 static void cpu8815_restart(char mode, const char *cmd)
+=======
+static void cpu8815_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem *srcbase = ioremap(NOMADIK_SRC_BASE, SZ_4K);
 
@@ -158,6 +171,7 @@ static void cpu8815_restart(char mode, const char *cmd)
 	writel(1, srcbase + 0x18);
 }
 
+<<<<<<< HEAD
 /* Initial value for SRC control register: all timers use MXTAL/8 source */
 #define SRC_CR_INIT_MASK	0x00007fff
 #define SRC_CR_INIT_VAL		0x2aaa8000
@@ -317,15 +331,25 @@ static void __init cpu8815_init_of(void)
 }
 
 static const char * cpu8815_board_compat[] = {
+=======
+static const char * cpu8815_board_compat[] = {
+	"st,nomadik-nhk-15",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"calaosystems,usb-s8815",
 	NULL,
 };
 
 DT_MACHINE_START(NOMADIK_DT, "Nomadik STn8815")
+<<<<<<< HEAD
 	.map_io		= cpu8815_map_io,
 	.init_irq	= irqchip_init,
 	.init_time	= cpu8815_timer_init_of,
 	.init_machine	= cpu8815_init_of,
+=======
+	.l2c_aux_val	= 0,
+	.l2c_aux_mask	= ~0,
+	.map_io		= cpu8815_map_io,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.restart	= cpu8815_restart,
 	.dt_compat      = cpu8815_board_compat,
 MACHINE_END

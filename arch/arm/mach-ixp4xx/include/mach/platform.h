@@ -13,6 +13,11 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/types.h>
 
 #ifndef	__ARMEB__
@@ -72,7 +77,11 @@ extern unsigned long ixp4xx_exp_bus_size;
 /*
  * Clock Speed Definitions.
  */
+<<<<<<< HEAD
 #define IXP4XX_PERIPHERAL_BUS_CLOCK 	(66) /* 66Mhzi APB BUS   */ 
+=======
+#define IXP4XX_PERIPHERAL_BUS_CLOCK 	(66) /* 66MHzi APB BUS   */ 
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IXP4XX_UART_XTAL        	14745600
 
 /*
@@ -123,12 +132,17 @@ extern void ixp4xx_init_early(void);
 extern void ixp4xx_init_irq(void);
 extern void ixp4xx_sys_init(void);
 extern void ixp4xx_timer_init(void);
+<<<<<<< HEAD
 extern void ixp4xx_restart(char, const char *);
+=======
+extern void ixp4xx_restart(enum reboot_mode, const char *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void ixp4xx_pci_preinit(void);
 struct pci_sys_data;
 extern int ixp4xx_setup(int nr, struct pci_sys_data *sys);
 extern struct pci_ops ixp4xx_ops;
 
+<<<<<<< HEAD
 /*
  * GPIO-functions
  */
@@ -168,5 +182,7 @@ static inline void gpio_line_set(u8 line, int value)
 	    *IXP4XX_GPIO_GPOUTR &= ~(1 << line);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif // __ASSEMBLY__
 

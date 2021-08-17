@@ -21,6 +21,11 @@
   *
   */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/delay.h>
 #include <linux/clk.h>
@@ -57,7 +62,11 @@ static int __init omap4430_phy_power_down(void)
 	}
 
 	/* Power down the phy */
+<<<<<<< HEAD
 	__raw_writel(PHY_PD, ctrl_base + CONTROL_DEV_CONF);
+=======
+	writel_relaxed(PHY_PD, ctrl_base + CONTROL_DEV_CONF);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iounmap(ctrl_base);
 
@@ -97,13 +106,21 @@ void am35x_musb_phy_power(u8 on)
 
 		omap_ctrl_writel(devconf2, AM35XX_CONTROL_DEVCONF2);
 
+<<<<<<< HEAD
 		pr_info(KERN_INFO "Waiting for PHY clock good...\n");
+=======
+		pr_info("Waiting for PHY clock good...\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while (!(omap_ctrl_readl(AM35XX_CONTROL_DEVCONF2)
 				& CONF2_PHYCLKGD)) {
 			cpu_relax();
 
 			if (time_after(jiffies, timeout)) {
+<<<<<<< HEAD
 				pr_err(KERN_ERR "musb PHY clock good timed out\n");
+=======
+				pr_err("musb PHY clock good timed out\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			}
 		}
@@ -145,11 +162,16 @@ void am35x_set_mode(u8 musb_mode)
 		devconf2 |= CONF2_NO_OVERRIDE;
 		break;
 	default:
+<<<<<<< HEAD
 		pr_info(KERN_INFO "Unsupported mode %u\n", musb_mode);
+=======
+		pr_info("Unsupported mode %u\n", musb_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	omap_ctrl_writel(devconf2, AM35XX_CONTROL_DEVCONF2);
 }
+<<<<<<< HEAD
 
 void ti81xx_musb_phy_power(u8 on)
 {
@@ -185,3 +207,5 @@ void ti81xx_musb_phy_power(u8 on)
 
 	iounmap(scm_base);
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

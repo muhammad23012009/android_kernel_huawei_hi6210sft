@@ -1,5 +1,8 @@
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/console.h>
@@ -9,7 +12,11 @@
 
 static int hvsi_send_packet(struct hvsi_priv *pv, struct hvsi_header *packet)
 {
+<<<<<<< HEAD
 	packet->seqno = atomic_inc_return(&pv->seqno);
+=======
+	packet->seqno = cpu_to_be16(atomic_inc_return(&pv->seqno));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Assumes that always succeeds, works in practice */
 	return pv->put_chars(pv->termno, (char *)packet, packet->len);
@@ -28,7 +35,11 @@ static void hvsi_start_handshake(struct hvsi_priv *pv)
 	/* Send version query */
 	q.hdr.type = VS_QUERY_PACKET_HEADER;
 	q.hdr.len = sizeof(struct hvsi_query);
+<<<<<<< HEAD
 	q.verb = VSV_SEND_VERSION_NUMBER;
+=======
+	q.verb = cpu_to_be16(VSV_SEND_VERSION_NUMBER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hvsi_send_packet(pv, &q.hdr);
 }
 
@@ -40,7 +51,11 @@ static int hvsi_send_close(struct hvsi_priv *pv)
 
 	ctrl.hdr.type = VS_CONTROL_PACKET_HEADER;
 	ctrl.hdr.len = sizeof(struct hvsi_control);
+<<<<<<< HEAD
 	ctrl.verb = VSV_CLOSE_PROTOCOL;
+=======
+	ctrl.verb = cpu_to_be16(VSV_CLOSE_PROTOCOL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return hvsi_send_packet(pv, &ctrl.hdr);
 }
 
@@ -69,14 +84,22 @@ static void hvsi_got_control(struct hvsi_priv *pv)
 {
 	struct hvsi_control *pkt = (struct hvsi_control *)pv->inbuf;
 
+<<<<<<< HEAD
 	switch (pkt->verb) {
+=======
+	switch (be16_to_cpu(pkt->verb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case VSV_CLOSE_PROTOCOL:
 		/* We restart the handshaking */
 		hvsi_start_handshake(pv);
 		break;
 	case VSV_MODEM_CTL_UPDATE:
 		/* Transition of carrier detect */
+<<<<<<< HEAD
 		hvsi_cd_change(pv, pkt->word & HVSI_TSCD);
+=======
+		hvsi_cd_change(pv, be32_to_cpu(pkt->word) & HVSI_TSCD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -87,7 +110,11 @@ static void hvsi_got_query(struct hvsi_priv *pv)
 	struct hvsi_query_response r;
 
 	/* We only handle version queries */
+<<<<<<< HEAD
 	if (pkt->verb != VSV_SEND_VERSION_NUMBER)
+=======
+	if (be16_to_cpu(pkt->verb) != VSV_SEND_VERSION_NUMBER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	pr_devel("HVSI@%x: Got version query, sending response...\n",
@@ -96,7 +123,11 @@ static void hvsi_got_query(struct hvsi_priv *pv)
 	/* Send version response */
 	r.hdr.type = VS_QUERY_RESPONSE_PACKET_HEADER;
 	r.hdr.len = sizeof(struct hvsi_query_response);
+<<<<<<< HEAD
 	r.verb = VSV_SEND_VERSION_NUMBER;
+=======
+	r.verb = cpu_to_be16(VSV_SEND_VERSION_NUMBER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r.u.version = HVSI_VERSION;
 	r.query_seqno = pkt->hdr.seqno;
 	hvsi_send_packet(pv, &r.hdr);
@@ -112,7 +143,11 @@ static void hvsi_got_response(struct hvsi_priv *pv)
 
 	switch(r->verb) {
 	case VSV_SEND_MODEM_CTL_STATUS:
+<<<<<<< HEAD
 		hvsi_cd_change(pv, r->u.mctrl_word & HVSI_TSCD);
+=======
+		hvsi_cd_change(pv, be32_to_cpu(r->u.mctrl_word) & HVSI_TSCD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pv->mctrl_update = 1;
 		break;
 	}
@@ -265,8 +300,12 @@ int hvsilib_read_mctrl(struct hvsi_priv *pv)
 	pv->mctrl_update = 0;
 	q.hdr.type = VS_QUERY_PACKET_HEADER;
 	q.hdr.len = sizeof(struct hvsi_query);
+<<<<<<< HEAD
 	q.hdr.seqno = atomic_inc_return(&pv->seqno);
 	q.verb = VSV_SEND_MODEM_CTL_STATUS;
+=======
+	q.verb = cpu_to_be16(VSV_SEND_MODEM_CTL_STATUS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = hvsi_send_packet(pv, &q.hdr);
 	if (rc <= 0) {
 		pr_devel("HVSI@%x: Error %d...\n", pv->termno, rc);
@@ -304,9 +343,15 @@ int hvsilib_write_mctrl(struct hvsi_priv *pv, int dtr)
 
 	ctrl.hdr.type = VS_CONTROL_PACKET_HEADER,
 	ctrl.hdr.len = sizeof(struct hvsi_control);
+<<<<<<< HEAD
 	ctrl.verb = VSV_SET_MODEM_CTL;
 	ctrl.mask = HVSI_TSDTR;
 	ctrl.word = dtr ? HVSI_TSDTR : 0;
+=======
+	ctrl.verb = cpu_to_be16(VSV_SET_MODEM_CTL);
+	ctrl.mask = cpu_to_be32(HVSI_TSDTR);
+	ctrl.word = cpu_to_be32(dtr ? HVSI_TSDTR : 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return hvsi_send_packet(pv, &ctrl.hdr);
 }
 
@@ -407,8 +452,12 @@ void hvsilib_close(struct hvsi_priv *pv, struct hvc_struct *hp)
 		hvsi_send_close(pv);
 	}
 
+<<<<<<< HEAD
 	if (pv->tty)
 		tty_kref_put(pv->tty);
+=======
+	tty_kref_put(pv->tty);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pv->tty = NULL;
 }
 

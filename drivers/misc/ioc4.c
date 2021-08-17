@@ -144,10 +144,16 @@ ioc4_clock_calibrate(struct ioc4_driver_data *idd)
 {
 	union ioc4_int_out int_out;
 	union ioc4_gpcr gpcr;
+<<<<<<< HEAD
 	unsigned int state, last_state = 1;
 	struct timespec start_ts, end_ts;
 	uint64_t start, end, period;
 	unsigned int count = 0;
+=======
+	unsigned int state, last_state;
+	uint64_t start, end, period;
+	unsigned int count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable output */
 	gpcr.raw = 0;
@@ -168,6 +174,7 @@ ioc4_clock_calibrate(struct ioc4_driver_data *idd)
 	mmiowb();
 
 	/* Check square wave period averaged over some number of cycles */
+<<<<<<< HEAD
 	do {
 		int_out.raw = readl(&idd->idd_misc_regs->int_out.raw);
 		state = int_out.fields.int_out;
@@ -181,6 +188,22 @@ ioc4_clock_calibrate(struct ioc4_driver_data *idd)
 		}
 		last_state = state;
 	} while (1);
+=======
+	start = ktime_get_ns();
+	state = 1; /* make sure the first read isn't a rising edge */
+	for (count = 0; count <= IOC4_CALIBRATE_END; count++) {
+		do { /* wait for a rising edge */
+			last_state = state;
+			int_out.raw = readl(&idd->idd_misc_regs->int_out.raw);
+			state = int_out.fields.int_out;
+		} while (last_state || !state);
+
+		/* discard the first few cycles */
+		if (count == IOC4_CALIBRATE_DISCARD)
+			start = ktime_get_ns();
+	}
+	end = ktime_get_ns();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Calculation rearranged to preserve intermediate precision.
 	 * Logically:
@@ -192,8 +215,11 @@ ioc4_clock_calibrate(struct ioc4_driver_data *idd)
 	 *    by which the IOC4 generates the square wave, to get the
 	 *    period of an IOC4 INT_OUT count.
 	 */
+<<<<<<< HEAD
 	end = end_ts.tv_sec * NSEC_PER_SEC + end_ts.tv_nsec;
 	start = start_ts.tv_sec * NSEC_PER_SEC + start_ts.tv_nsec;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	period = (end - start) /
 		(IOC4_CALIBRATE_CYCLES * 2 * (IOC4_CALIBRATE_COUNT + 1));
 

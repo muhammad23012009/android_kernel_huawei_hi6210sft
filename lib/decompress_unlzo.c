@@ -31,6 +31,10 @@
  */
 
 #ifdef STATIC
+<<<<<<< HEAD
+=======
+#define PREBOOT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "lzo/lzo1x_decompress_safe.c"
 #else
 #include <linux/decompress/unlzo.h>
@@ -51,7 +55,11 @@ static const unsigned char lzop_magic[] = {
 #define HEADER_SIZE_MIN       (9 + 7     + 4 + 8     + 1       + 4)
 #define HEADER_SIZE_MAX       (9 + 7 + 1 + 8 + 8 + 4 + 1 + 255 + 4)
 
+<<<<<<< HEAD
 STATIC inline int INIT parse_header(u8 *input, int *skip, int in_len)
+=======
+STATIC inline long INIT parse_header(u8 *input, long *skip, long in_len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int l;
 	u8 *parse = input;
@@ -108,6 +116,7 @@ STATIC inline int INIT parse_header(u8 *input, int *skip, int in_len)
 	return 1;
 }
 
+<<<<<<< HEAD
 STATIC inline int INIT unlzo(u8 *input, int in_len,
 				int (*fill) (void *, unsigned int),
 				int (*flush) (void *, unsigned int),
@@ -116,6 +125,16 @@ STATIC inline int INIT unlzo(u8 *input, int in_len,
 {
 	u8 r = 0;
 	int skip = 0;
+=======
+STATIC int INIT unlzo(u8 *input, long in_len,
+				long (*fill)(void *, unsigned long),
+				long (*flush)(void *, unsigned long),
+				u8 *output, long *posp,
+				void (*error) (char *x))
+{
+	u8 r = 0;
+	long skip = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 src_len, dst_len;
 	size_t tmp;
 	u8 *in_buf, *in_buf_save, *out_buf;
@@ -287,4 +306,18 @@ exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 #define decompress unlzo
+=======
+#ifdef PREBOOT
+STATIC int INIT __decompress(unsigned char *buf, long len,
+			   long (*fill)(void*, unsigned long),
+			   long (*flush)(void*, unsigned long),
+			   unsigned char *out_buf, long olen,
+			   long *pos,
+			   void (*error)(char *x))
+{
+	return unlzo(buf, len, fill, flush, out_buf, pos, error);
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

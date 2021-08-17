@@ -17,7 +17,11 @@ static inline unsigned long cris_swapnwbrlz(unsigned long w)
 	   in another register:
 	   !  __asm__ ("swapnwbr %2\n\tlz %2,%0"
 	   !	      : "=r,r" (res), "=r,X" (dummy) : "1,0" (w));
+<<<<<<< HEAD
 	   confuses gcc (sched.c, gcc from cris-dist-1.14).  */
+=======
+	   confuses gcc (core.c, gcc from cris-dist-1.14).  */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unsigned long res;
 	__asm__ ("swapnwbr %0 \n\t"

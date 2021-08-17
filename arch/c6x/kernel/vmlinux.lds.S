@@ -37,12 +37,15 @@ SECTIONS
 		_vectors_end = .;
 	}
 
+<<<<<<< HEAD
 	. = ALIGN(0x1000);
 	.cmdline :
 	{
 		*(.cmdline)
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * This section contains data which may be shared with other
 	 * cores. It needs to be a fixed offset from PAGE_OFFSET
@@ -54,16 +57,25 @@ SECTIONS
 	}
 
 	. = ALIGN(PAGE_SIZE);
+<<<<<<< HEAD
 	.init :
 	{
 		_stext = .;
+=======
+	__init_begin = .;
+	.init :
+	{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		_sinittext = .;
 		HEAD_TEXT
 		INIT_TEXT
 		_einittext = .;
 	}
 
+<<<<<<< HEAD
 	__init_begin = _stext;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_DATA_SECTION(16)
 
 	PERCPU_SECTION(128)
@@ -74,10 +86,20 @@ SECTIONS
 	.text :
 	{
 		_text = .;
+<<<<<<< HEAD
 		TEXT_TEXT
 		SCHED_TEXT
 		LOCK_TEXT
 		IRQENTRY_TEXT
+=======
+		_stext = .;
+		TEXT_TEXT
+		SCHED_TEXT
+		CPUIDLE_TEXT
+		LOCK_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		KPROBES_TEXT
 		*(.fixup)
 		*(.gnu.warning)

@@ -12,6 +12,7 @@
 #ifndef _MPC8610_I2S_H
 #define _MPC8610_I2S_H
 
+<<<<<<< HEAD
 /* SSI Register Map */
 struct ccsr_ssi {
 	__be32 stx0;	/* 0x.0000 - SSI Transmit Data Register 0 */
@@ -39,6 +40,34 @@ struct ccsr_ssi {
 	__be32 saccdis; /* 0x.0058 - SSI AC97 Channel Disable Register */
 };
 
+=======
+/* SSI registers */
+#define CCSR_SSI_STX0			0x00
+#define CCSR_SSI_STX1			0x04
+#define CCSR_SSI_SRX0			0x08
+#define CCSR_SSI_SRX1			0x0c
+#define CCSR_SSI_SCR			0x10
+#define CCSR_SSI_SISR			0x14
+#define CCSR_SSI_SIER			0x18
+#define CCSR_SSI_STCR			0x1c
+#define CCSR_SSI_SRCR			0x20
+#define CCSR_SSI_STCCR			0x24
+#define CCSR_SSI_SRCCR			0x28
+#define CCSR_SSI_SFCSR			0x2c
+#define CCSR_SSI_STR			0x30
+#define CCSR_SSI_SOR			0x34
+#define CCSR_SSI_SACNT			0x38
+#define CCSR_SSI_SACADD			0x3c
+#define CCSR_SSI_SACDAT			0x40
+#define CCSR_SSI_SATAG			0x44
+#define CCSR_SSI_STMSK			0x48
+#define CCSR_SSI_SRMSK			0x4c
+#define CCSR_SSI_SACCST			0x50
+#define CCSR_SSI_SACCEN			0x54
+#define CCSR_SSI_SACCDIS		0x58
+
+#define CCSR_SSI_SCR_SYNC_TX_FS		0x00001000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CCSR_SSI_SCR_RFR_CLK_DIS	0x00000800
 #define CCSR_SSI_SCR_TFR_CLK_DIS	0x00000400
 #define CCSR_SSI_SCR_TCH_EN		0x00000100
@@ -125,7 +154,13 @@ struct ccsr_ssi {
 #define CCSR_SSI_SRCR_REFS		0x00000001
 
 /* STCCR and SRCCR */
+<<<<<<< HEAD
 #define CCSR_SSI_SxCCR_DIV2		0x00040000
+=======
+#define CCSR_SSI_SxCCR_DIV2_SHIFT	18
+#define CCSR_SSI_SxCCR_DIV2		0x00040000
+#define CCSR_SSI_SxCCR_PSR_SHIFT	17
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CCSR_SSI_SxCCR_PSR		0x00020000
 #define CCSR_SSI_SxCCR_WL_SHIFT		13
 #define CCSR_SSI_SxCCR_WL_MASK		0x0001E000
@@ -204,5 +239,69 @@ struct ccsr_ssi {
 #define CCSR_SSI_SACNT_FV		0x00000002
 #define CCSR_SSI_SACNT_AC97EN		0x00000001
 
+<<<<<<< HEAD
 #endif
 
+=======
+
+struct device;
+
+#if IS_ENABLED(CONFIG_DEBUG_FS)
+
+struct fsl_ssi_dbg {
+	struct dentry *dbg_dir;
+	struct dentry *dbg_stats;
+
+	struct {
+		unsigned int rfrc;
+		unsigned int tfrc;
+		unsigned int cmdau;
+		unsigned int cmddu;
+		unsigned int rxt;
+		unsigned int rdr1;
+		unsigned int rdr0;
+		unsigned int tde1;
+		unsigned int tde0;
+		unsigned int roe1;
+		unsigned int roe0;
+		unsigned int tue1;
+		unsigned int tue0;
+		unsigned int tfs;
+		unsigned int rfs;
+		unsigned int tls;
+		unsigned int rls;
+		unsigned int rff1;
+		unsigned int rff0;
+		unsigned int tfe1;
+		unsigned int tfe0;
+	} stats;
+};
+
+void fsl_ssi_dbg_isr(struct fsl_ssi_dbg *ssi_dbg, u32 sisr);
+
+int fsl_ssi_debugfs_create(struct fsl_ssi_dbg *ssi_dbg, struct device *dev);
+
+void fsl_ssi_debugfs_remove(struct fsl_ssi_dbg *ssi_dbg);
+
+#else
+
+struct fsl_ssi_dbg {
+};
+
+static inline void fsl_ssi_dbg_isr(struct fsl_ssi_dbg *stats, u32 sisr)
+{
+}
+
+static inline int fsl_ssi_debugfs_create(struct fsl_ssi_dbg *ssi_dbg,
+		struct device *dev)
+{
+	return 0;
+}
+
+static inline void fsl_ssi_debugfs_remove(struct fsl_ssi_dbg *ssi_dbg)
+{
+}
+#endif  /* ! IS_ENABLED(CONFIG_DEBUG_FS) */
+
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -152,8 +152,12 @@ static void octeon_cf_set_piomode(struct ata_port *ap, struct ata_device *dev)
 		div = 8;
 	T = (int)((1000000000000LL * div) / octeon_get_io_clock_rate());
 
+<<<<<<< HEAD
 	if (ata_timing_compute(dev, dev->pio_mode, &timing, T, T))
 		BUG();
+=======
+	BUG_ON(ata_timing_compute(dev, dev->pio_mode, &timing, T, T));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	t1 = timing.setup;
 	if (t1)
@@ -865,7 +869,11 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	if (node == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cf_port = kzalloc(sizeof(*cf_port), GFP_KERNEL);
+=======
+	cf_port = devm_kzalloc(&pdev->dev, sizeof(*cf_port), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!cf_port)
 		return -ENOMEM;
 
@@ -881,10 +889,16 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	n_size = of_n_size_cells(node);
 
 	reg_prop = of_find_property(node, "reg", &reg_len);
+<<<<<<< HEAD
 	if (!reg_prop || reg_len < sizeof(__be32)) {
 		rv = -EINVAL;
 		goto free_cf_port;
 	}
+=======
+	if (!reg_prop || reg_len < sizeof(__be32))
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cs_num = reg_prop->value;
 	cf_port->cs0 = be32_to_cpup(cs_num);
 
@@ -901,6 +915,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
 				if (!res_dma) {
 					of_node_put(dma_node);
+<<<<<<< HEAD
 					rv = -EINVAL;
 					goto free_cf_port;
 				}
@@ -917,10 +932,27 @@ static int octeon_cf_probe(struct platform_device *pdev)
 				i = platform_get_irq(dma_dev, 0);
 				if (i > 0)
 					irq = i;
+=======
+					return -EINVAL;
+				}
+				cf_port->dma_base = (u64)devm_ioremap_nocache(&pdev->dev, res_dma->start,
+									 resource_size(res_dma));
+				if (!cf_port->dma_base) {
+					of_node_put(dma_node);
+					return -EINVAL;
+				}
+
+				i = platform_get_irq(dma_dev, 0);
+				if (i > 0) {
+					irq = i;
+					irq_handler = octeon_cf_interrupt;
+				}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			of_node_put(dma_node);
 		}
 		res_cs1 = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+<<<<<<< HEAD
 		if (!res_cs1) {
 			rv = -EINVAL;
 			goto free_cf_port;
@@ -935,11 +967,25 @@ static int octeon_cf_probe(struct platform_device *pdev)
 			rv = -EINVAL;
 			goto free_cf_port;
 		}
+=======
+		if (!res_cs1)
+			return -EINVAL;
+
+		cs1 = devm_ioremap_nocache(&pdev->dev, res_cs1->start,
+					   resource_size(res_cs1));
+		if (!cs1)
+			return rv;
+
+		if (reg_len < (n_addr + n_size + 1) * sizeof(__be32))
+			return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cs_num += n_addr + n_size;
 		cf_port->cs1 = be32_to_cpup(cs_num);
 	}
 
 	res_cs0 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 
 	if (!res_cs0) {
 		rv = -EINVAL;
@@ -951,11 +997,24 @@ static int octeon_cf_probe(struct platform_device *pdev)
 
 	if (!cs0)
 		goto free_cf_port;
+=======
+	if (!res_cs0)
+		return -EINVAL;
+
+	cs0 = devm_ioremap_nocache(&pdev->dev, res_cs0->start,
+				   resource_size(res_cs0));
+	if (!cs0)
+		return rv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* allocate host */
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host)
+<<<<<<< HEAD
 		goto free_cf_port;
+=======
+		return rv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ap = host->ports[0];
 	ap->private_data = cf_port;
@@ -1014,22 +1073,34 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	}
 	cf_port->c0 = ap->ioaddr.ctl_addr;
 
+<<<<<<< HEAD
 	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(64);
 	pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
 
 	ata_port_desc(ap, "cmd %p ctl %p", base, ap->ioaddr.ctl_addr);
 
 
+=======
+	rv = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (rv)
+		return rv;
+
+	ata_port_desc(ap, "cmd %p ctl %p", base, ap->ioaddr.ctl_addr);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&pdev->dev, "version " DRV_VERSION" %d bit%s.\n",
 		 is_16bit ? 16 : 8,
 		 cf_port->is_true_ide ? ", True IDE" : "");
 
 	return ata_host_activate(host, irq, irq_handler,
 				 IRQF_SHARED, &octeon_cf_sht);
+<<<<<<< HEAD
 
 free_cf_port:
 	kfree(cf_port);
 	return rv;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void octeon_cf_shutdown(struct device *dev)
@@ -1037,7 +1108,11 @@ static void octeon_cf_shutdown(struct device *dev)
 	union cvmx_mio_boot_dma_cfgx dma_cfg;
 	union cvmx_mio_boot_dma_intx dma_int;
 
+<<<<<<< HEAD
 	struct octeon_cf_port *cf_port = dev->platform_data;
+=======
+	struct octeon_cf_port *cf_port = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cf_port->dma_base) {
 		/* Stop and clear the dma engine.  */
@@ -1068,13 +1143,20 @@ static struct of_device_id octeon_cf_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, octeon_i2c_match);
+=======
+MODULE_DEVICE_TABLE(of, octeon_cf_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver octeon_cf_driver = {
 	.probe		= octeon_cf_probe,
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = octeon_cf_match,
 		.shutdown = octeon_cf_shutdown
 	},

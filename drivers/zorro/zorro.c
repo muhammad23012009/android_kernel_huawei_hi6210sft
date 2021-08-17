@@ -16,8 +16,15 @@
 #include <linux/bitops.h>
 #include <linux/string.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 
+=======
+#include <linux/dma-mapping.h>
+#include <linux/slab.h>
+
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/setup.h>
 #include <asm/amigahw.h>
 
@@ -29,7 +36,12 @@
      */
 
 unsigned int zorro_num_autocon;
+<<<<<<< HEAD
 struct zorro_dev zorro_autocon[ZORRO_NUM_AUTO];
+=======
+struct zorro_dev_init zorro_autocon_init[ZORRO_NUM_AUTO] __initdata;
+struct zorro_dev *zorro_autocon;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
     /*
@@ -38,6 +50,10 @@ struct zorro_dev zorro_autocon[ZORRO_NUM_AUTO];
 
 struct zorro_bus {
 	struct device dev;
+<<<<<<< HEAD
+=======
+	struct zorro_dev devices[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -125,18 +141,34 @@ static struct resource __init *zorro_find_parent_resource(
 static int __init amiga_zorro_probe(struct platform_device *pdev)
 {
 	struct zorro_bus *bus;
+<<<<<<< HEAD
+=======
+	struct zorro_dev_init *zi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct zorro_dev *z;
 	struct resource *r;
 	unsigned int i;
 	int error;
 
 	/* Initialize the Zorro bus */
+<<<<<<< HEAD
 	bus = kzalloc(sizeof(*bus), GFP_KERNEL);
 	if (!bus)
 		return -ENOMEM;
 
 	bus->dev.parent = &pdev->dev;
 	dev_set_name(&bus->dev, "zorro");
+=======
+	bus = kzalloc(sizeof(*bus) +
+		      zorro_num_autocon * sizeof(bus->devices[0]),
+		      GFP_KERNEL);
+	if (!bus)
+		return -ENOMEM;
+
+	zorro_autocon = bus->devices;
+	bus->dev.parent = &pdev->dev;
+	dev_set_name(&bus->dev, zorro_bus_type.name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = device_register(&bus->dev);
 	if (error) {
 		pr_err("Zorro: Error registering zorro_bus\n");
@@ -151,6 +183,7 @@ static int __init amiga_zorro_probe(struct platform_device *pdev)
 
 	/* First identify all devices ... */
 	for (i = 0; i < zorro_num_autocon; i++) {
+<<<<<<< HEAD
 		z = &zorro_autocon[i];
 		z->id = (z->rom.er_Manufacturer<<16) | (z->rom.er_Product<<8);
 		if (z->id == ZORRO_PROD_GVP_EPC_BASE) {
@@ -160,6 +193,25 @@ static int __init amiga_zorro_probe(struct platform_device *pdev)
 		}
 		sprintf(z->name, "Zorro device %08x", z->id);
 		zorro_name_device(z);
+=======
+		zi = &zorro_autocon_init[i];
+		z = &zorro_autocon[i];
+
+		z->rom = zi->rom;
+		z->id = (be16_to_cpu(z->rom.er_Manufacturer) << 16) |
+			(z->rom.er_Product << 8);
+		if (z->id == ZORRO_PROD_GVP_EPC_BASE) {
+			/* GVP quirk */
+			unsigned long magic = zi->boardaddr + 0x8000;
+			z->id |= *(u16 *)ZTWO_VADDR(magic) & GVP_PRODMASK;
+		}
+		z->slotaddr = zi->slotaddr;
+		z->slotsize = zi->slotsize;
+		sprintf(z->name, "Zorro device %08x", z->id);
+		zorro_name_device(z);
+		z->resource.start = zi->boardaddr;
+		z->resource.end = zi->boardaddr + zi->boardsize - 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		z->resource.name = z->name;
 		r = zorro_find_parent_resource(pdev, z);
 		error = request_resource(r, &z->resource);
@@ -167,9 +219,26 @@ static int __init amiga_zorro_probe(struct platform_device *pdev)
 			dev_err(&bus->dev,
 				"Address space collision on device %s %pR\n",
 				z->name, &z->resource);
+<<<<<<< HEAD
 		dev_set_name(&z->dev, "%02x", i);
 		z->dev.parent = &bus->dev;
 		z->dev.bus = &zorro_bus_type;
+=======
+		z->dev.parent = &bus->dev;
+		z->dev.bus = &zorro_bus_type;
+		z->dev.id = i;
+		switch (z->rom.er_Type & ERT_TYPEMASK) {
+		case ERT_ZORROIII:
+			z->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+			break;
+
+		case ERT_ZORROII:
+		default:
+			z->dev.coherent_dma_mask = DMA_BIT_MASK(24);
+			break;
+		}
+		z->dev.dma_mask = &z->dev.coherent_dma_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* ... then register them */
@@ -207,7 +276,10 @@ static int __init amiga_zorro_probe(struct platform_device *pdev)
 static struct platform_driver amiga_zorro_driver = {
 	.driver   = {
 		.name	= "amiga-zorro",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

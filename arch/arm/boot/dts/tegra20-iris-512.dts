@@ -1,17 +1,36 @@
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "tegra20-colibri-512.dtsi"
+=======
+#include "tegra20-colibri-512.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Toradex Colibri T20 512MB on Iris";
 	compatible = "toradex,iris", "toradex,colibri_t20-512", "nvidia,tegra20";
 
+<<<<<<< HEAD
 	host1x {
 		hdmi {
+=======
+	aliases {
+		serial0 = &uarta;
+		serial1 = &uartd;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	host1x@50000000 {
+		hdmi@54280000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "okay";
 		};
 	};
 
+<<<<<<< HEAD
 	pinmux {
 		state_default: pinmux {
 			hdint {
@@ -32,10 +51,33 @@
 
 			uartd {
 				nvidia,tristate = <0>;
+=======
+	pinmux@70000014 {
+		state_default: pinmux {
+			hdint {
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+			};
+
+			i2cddc {
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+			};
+
+			sdio4 {
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+			};
+
+			uarta {
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+			};
+
+			uartd {
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 		};
 	};
 
+<<<<<<< HEAD
 	usb@c5000000 {
 		status = "okay";
 		dr_mode = "otg";
@@ -54,6 +96,33 @@
 	};
 
 	i2c_ddc: i2c@7000c400 {
+=======
+	serial@70006000 {
+		status = "okay";
+	};
+
+	serial@70006300 {
+		status = "okay";
+	};
+
+	i2c_ddc: i2c@7000c400 {
+		status = "okay";
+	};
+
+	usb@c5000000 {
+		status = "okay";
+	};
+
+	usb-phy@c5000000 {
+		status = "okay";
+	};
+
+	usb@c5008000 {
+		status = "okay";
+	};
+
+	usb-phy@c5008000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = "okay";
 	};
 
@@ -73,7 +142,11 @@
 			regulator-max-microvolt = <5000000>;
 			regulator-boot-on;
 			regulator-always-on;
+<<<<<<< HEAD
 			gpio = <&gpio 178 0>;
+=======
+			gpio = <&gpio TEGRA_GPIO(W, 2) GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		vcc_sd_reg: regulator@1 {

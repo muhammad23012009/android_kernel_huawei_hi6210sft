@@ -1,13 +1,23 @@
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/mod_devicetable.h>
 #include <linux/errno.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
+=======
+#include <linux/of_platform.h>
+#include <linux/of_address.h>
+#include <linux/of_device.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "of_device_common.h"
 

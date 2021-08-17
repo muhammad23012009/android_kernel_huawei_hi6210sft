@@ -13,7 +13,10 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/string.h>
 #include <linux/pm.h>
 #include <linux/input.h>
@@ -393,7 +396,10 @@ static int wm831x_ts_remove(struct platform_device *pdev)
 static struct platform_driver wm831x_ts_driver = {
 	.driver = {
 		.name = "wm831x-touch",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = wm831x_ts_probe,
 	.remove = wm831x_ts_remove,

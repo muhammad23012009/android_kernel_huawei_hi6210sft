@@ -17,7 +17,11 @@
 
 #define fd_outb(val,port)			\
 	do {					\
+<<<<<<< HEAD
 		if ((port) == FD_DOR)		\
+=======
+		if ((port) == (u32)FD_DOR)	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			fd_setdor((val));	\
 		else				\
 			outb((val),(port));	\
@@ -25,7 +29,11 @@
 
 #define fd_inb(port)		inb((port))
 #define fd_request_irq()	request_irq(IRQ_FLOPPYDISK,floppy_interrupt,\
+<<<<<<< HEAD
 					    IRQF_DISABLED,"floppy",NULL)
+=======
+					    0,"floppy",NULL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define fd_free_irq()		free_irq(IRQ_FLOPPYDISK,NULL)
 #define fd_disable_irq()	disable_irq(IRQ_FLOPPYDISK)
 #define fd_enable_irq()		enable_irq(IRQ_FLOPPYDISK)

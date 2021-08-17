@@ -5,6 +5,10 @@
 #include <linux/module.h>
 #include <linux/bio.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/blk-mq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched/sysctl.h>
 
 #include "blk.h"
@@ -24,7 +28,10 @@ static void blk_end_sync_rq(struct request *rq, int error)
 	struct completion *waiting = rq->end_io_data;
 
 	rq->end_io_data = NULL;
+<<<<<<< HEAD
 	__blk_put_request(rq->q, rq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * complete last, if this is a stack request the process (and thus
@@ -53,6 +60,7 @@ void blk_execute_rq_nowait(struct request_queue *q, struct gendisk *bd_disk,
 			   rq_end_io_fn *done)
 {
 	int where = at_head ? ELEVATOR_INSERT_FRONT : ELEVATOR_INSERT_BACK;
+<<<<<<< HEAD
 	bool is_pm_resume;
 
 	WARN_ON(irqs_disabled());
@@ -64,22 +72,48 @@ void blk_execute_rq_nowait(struct request_queue *q, struct gendisk *bd_disk,
 	 * be freed before that returns.
 	 */
 	is_pm_resume = rq->cmd_type == REQ_TYPE_PM_RESUME;
+=======
+
+	WARN_ON(irqs_disabled());
+	WARN_ON(rq->cmd_type == REQ_TYPE_FS);
+
+	rq->rq_disk = bd_disk;
+	rq->end_io = done;
+
+	/*
+	 * don't check dying flag for MQ because the request won't
+	 * be reused after dying flag is set
+	 */
+	if (q->mq_ops) {
+		blk_mq_insert_request(rq, at_head, true, false);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irq(q->queue_lock);
 
 	if (unlikely(blk_queue_dying(q))) {
+<<<<<<< HEAD
 		rq->errors = -ENXIO;
 		if (rq->end_io)
 			rq->end_io(rq, rq->errors);
+=======
+		rq->cmd_flags |= REQ_QUIET; 
+		rq->errors = -ENXIO;
+		__blk_end_request_all(rq, rq->errors);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock_irq(q->queue_lock);
 		return;
 	}
 
 	__elv_add_request(q, rq, where);
 	__blk_run_queue(q);
+<<<<<<< HEAD
 	/* the queue is stopped so it won't be run */
 	if (is_pm_resume)
 		__blk_run_queue_uncond(q);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irq(q->queue_lock);
 }
 EXPORT_SYMBOL_GPL(blk_execute_rq_nowait);
@@ -103,12 +137,15 @@ int blk_execute_rq(struct request_queue *q, struct gendisk *bd_disk,
 	int err = 0;
 	unsigned long hang_check;
 
+<<<<<<< HEAD
 	/*
 	 * we need an extra reference to the request, so we can look at
 	 * it after io completion
 	 */
 	rq->ref_count++;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rq->sense) {
 		memset(sense, 0, sizeof(sense));
 		rq->sense = sense;
@@ -128,6 +165,14 @@ int blk_execute_rq(struct request_queue *q, struct gendisk *bd_disk,
 	if (rq->errors)
 		err = -EIO;
 
+<<<<<<< HEAD
+=======
+	if (rq->sense == sense)	{
+		rq->sense = NULL;
+		rq->sense_len = 0;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 EXPORT_SYMBOL(blk_execute_rq);

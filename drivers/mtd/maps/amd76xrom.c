@@ -138,7 +138,11 @@ static int amd76xrom_init_one(struct pci_dev *pdev,
 	/*
 	 * Try to reserve the window mem region.  If this fails then
 	 * it is likely due to a fragment of the window being
+<<<<<<< HEAD
 	 * "reseved" by the BIOS.  In the case that the
+=======
+	 * "reserved" by the BIOS.  In the case that the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * request_mem_region() fails then once the rom size is
 	 * discovered we will try to reserve the unreserved fragment.
 	 */

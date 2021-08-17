@@ -102,7 +102,11 @@
 #define EWOULDBLOCK	EAGAIN	/* Operation would block */
 #define EALREADY	149	/* Operation already in progress */
 #define EINPROGRESS	150	/* Operation now in progress */
+<<<<<<< HEAD
 #define ESTALE		151	/* Stale NFS file handle */
+=======
+#define ESTALE		151	/* Stale file handle */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ECANCELED	158	/* AIO operation canceled */
 
 /*

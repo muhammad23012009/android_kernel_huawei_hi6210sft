@@ -16,14 +16,33 @@
 #ifndef __ASM_SMP_H
 #define __ASM_SMP_H
 
+<<<<<<< HEAD
+=======
+/* Values for secondary_data.status */
+
+#define CPU_MMU_OFF		(-1)
+#define CPU_BOOT_SUCCESS	(0)
+/* The cpu invoked ops->cpu_die, synchronise it with cpu_kill */
+#define CPU_KILL_ME		(1)
+/* The cpu couldn't die gracefully and is looping in the kernel */
+#define CPU_STUCK_IN_KERNEL	(2)
+/* Fatal system error detected by secondary CPU, crash the system */
+#define CPU_PANIC_KERNEL	(3)
+
+#ifndef __ASSEMBLY__
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/threads.h>
 #include <linux/cpumask.h>
 #include <linux/thread_info.h>
 
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 # error "<asm/smp.h> included in non-SMP build"
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define raw_smp_processor_id() (current_thread_info()->cpu)
 
 struct seq_file;
@@ -39,7 +58,12 @@ extern void show_ipi_list(struct seq_file *p, int prec);
 extern void handle_IPI(int ipinr, struct pt_regs *regs);
 
 /*
+<<<<<<< HEAD
  * Setup the set of possible CPUs (via set_cpu_possible)
+=======
+ * Discover the set of possible CPUs and determine their
+ * SMP operations.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 extern void smp_init_cpus(void);
 
@@ -48,6 +72,11 @@ extern void smp_init_cpus(void);
  */
 extern void set_smp_cross_call(void (*)(const struct cpumask *, unsigned int));
 
+<<<<<<< HEAD
+=======
+extern void (*__smp_cross_call)(const struct cpumask *, unsigned int);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Called from the secondary holding pen, this is the secondary CPU entry point.
  */
@@ -55,19 +84,89 @@ asmlinkage void secondary_start_kernel(void);
 
 /*
  * Initial data for bringing up a secondary CPU.
+<<<<<<< HEAD
  */
 struct secondary_data {
 	void *stack;
 };
 extern struct secondary_data secondary_data;
+=======
+ * @stack  - sp for the secondary CPU
+ * @status - Result passed back from the secondary CPU to
+ *           indicate failure.
+ */
+struct secondary_data {
+	void *stack;
+	long status;
+};
+
+extern struct secondary_data secondary_data;
+extern long __early_cpu_boot_status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void secondary_entry(void);
 
 extern void arch_send_call_function_single_ipi(int cpu);
 extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM64_ACPI_PARKING_PROTOCOL
+extern void arch_send_wakeup_ipi_mask(const struct cpumask *mask);
+#else
+static inline void arch_send_wakeup_ipi_mask(const struct cpumask *mask)
+{
+	BUILD_BUG();
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int __cpu_disable(void);
 
 extern void __cpu_die(unsigned int cpu);
 extern void cpu_die(void);
+<<<<<<< HEAD
+=======
+extern void cpu_die_early(void);
+
+static inline void cpu_park_loop(void)
+{
+	for (;;) {
+		wfe();
+		wfi();
+	}
+}
+
+static inline void update_cpu_boot_status(int val)
+{
+	WRITE_ONCE(secondary_data.status, val);
+	/* Ensure the visibility of the status update */
+	dsb(ishst);
+}
+
+/*
+ * The calling secondary CPU has detected serious configuration mismatch,
+ * which calls for a kernel panic. Update the boot status and park the calling
+ * CPU.
+ */
+static inline void cpu_panic_kernel(void)
+{
+	update_cpu_boot_status(CPU_PANIC_KERNEL);
+	cpu_park_loop();
+}
+
+/*
+ * If a secondary CPU enters the kernel but fails to come online,
+ * (e.g. due to mismatched features), and cannot exit the kernel,
+ * we increment cpus_stuck_in_kernel and leave the CPU in a
+ * quiesecent loop within the kernel text. The memory containing
+ * this loop must not be re-used for anything else as the 'stuck'
+ * core is executing it.
+ *
+ * This function is used to inhibit features like kexec and hibernate.
+ */
+bool cpus_are_stuck_in_kernel(void);
+
+#endif /* ifndef __ASSEMBLY__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* ifndef __ASM_SMP_H */

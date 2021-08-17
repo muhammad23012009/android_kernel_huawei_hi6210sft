@@ -27,6 +27,7 @@ static DEFINE_SPINLOCK(dummy);
 
 #endif /* SMP */
 
+<<<<<<< HEAD
 int __atomic_add_return(int i, atomic_t *v)
 {
 	int ret;
@@ -39,6 +40,46 @@ int __atomic_add_return(int i, atomic_t *v)
 	return ret;
 }
 EXPORT_SYMBOL(__atomic_add_return);
+=======
+#define ATOMIC_FETCH_OP(op, c_op)					\
+int atomic_fetch_##op(int i, atomic_t *v)				\
+{									\
+	int ret;							\
+	unsigned long flags;						\
+	spin_lock_irqsave(ATOMIC_HASH(v), flags);			\
+									\
+	ret = v->counter;						\
+	v->counter c_op i;						\
+									\
+	spin_unlock_irqrestore(ATOMIC_HASH(v), flags);			\
+	return ret;							\
+}									\
+EXPORT_SYMBOL(atomic_fetch_##op);
+
+#define ATOMIC_OP_RETURN(op, c_op)					\
+int atomic_##op##_return(int i, atomic_t *v)				\
+{									\
+	int ret;							\
+	unsigned long flags;						\
+	spin_lock_irqsave(ATOMIC_HASH(v), flags);			\
+									\
+	ret = (v->counter c_op i);					\
+									\
+	spin_unlock_irqrestore(ATOMIC_HASH(v), flags);			\
+	return ret;							\
+}									\
+EXPORT_SYMBOL(atomic_##op##_return);
+
+ATOMIC_OP_RETURN(add, +=)
+
+ATOMIC_FETCH_OP(add, +=)
+ATOMIC_FETCH_OP(and, &=)
+ATOMIC_FETCH_OP(or, |=)
+ATOMIC_FETCH_OP(xor, ^=)
+
+#undef ATOMIC_FETCH_OP
+#undef ATOMIC_OP_RETURN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int atomic_xchg(atomic_t *v, int new)
 {

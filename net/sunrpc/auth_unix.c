@@ -23,9 +23,13 @@ struct unx_cred {
 };
 #define uc_uid			uc_base.cr_uid
 
+<<<<<<< HEAD
 #define UNX_WRITESLACK		(21 + (UNX_MAXNODENAME >> 2))
 
 #ifdef RPC_DEBUG
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
 
@@ -33,7 +37,11 @@ static struct rpc_auth		unix_auth;
 static const struct rpc_credops	unix_credops;
 
 static struct rpc_auth *
+<<<<<<< HEAD
 unx_create(struct rpc_clnt *clnt, rpc_authflavor_t flavor)
+=======
+unx_create(struct rpc_auth_create_args *args, struct rpc_clnt *clnt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dprintk("RPC:       creating UNIX authenticator for client %p\n",
 			clnt);
@@ -48,17 +56,36 @@ unx_destroy(struct rpc_auth *auth)
 	rpcauth_clear_credcache(auth->au_credcache);
 }
 
+<<<<<<< HEAD
+=======
+static int
+unx_hash_cred(struct auth_cred *acred, unsigned int hashbits)
+{
+	return hash_64(from_kgid(&init_user_ns, acred->gid) |
+		((u64)from_kuid(&init_user_ns, acred->uid) <<
+			(sizeof(gid_t) * 8)), hashbits);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Lookup AUTH_UNIX creds for current process
  */
 static struct rpc_cred *
 unx_lookup_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags)
 {
+<<<<<<< HEAD
 	return rpcauth_lookup_credcache(auth, acred, flags);
 }
 
 static struct rpc_cred *
 unx_create_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags)
+=======
+	return rpcauth_lookup_credcache(auth, acred, flags, GFP_NOFS);
+}
+
+static struct rpc_cred *
+unx_create_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags, gfp_t gfp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct unx_cred	*cred;
 	unsigned int groups = 0;
@@ -68,7 +95,11 @@ unx_create_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags)
 			from_kuid(&init_user_ns, acred->uid),
 			from_kgid(&init_user_ns, acred->gid));
 
+<<<<<<< HEAD
 	if (!(cred = kmalloc(sizeof(*cred), GFP_NOFS)))
+=======
+	if (!(cred = kmalloc(sizeof(*cred), gfp)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ERR_PTR(-ENOMEM);
 
 	rpcauth_init_cred(&cred->uc_base, acred, auth, &unix_credops);
@@ -81,7 +112,11 @@ unx_create_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags)
 
 	cred->uc_gid = acred->gid;
 	for (i = 0; i < groups; i++)
+<<<<<<< HEAD
 		cred->uc_gids[i] = GROUP_AT(acred->group_info, i);
+=======
+		cred->uc_gids[i] = acred->group_info->gid[i];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (i < NFS_NGROUPS)
 		cred->uc_gids[i] = INVALID_GID;
 
@@ -129,7 +164,11 @@ unx_match(struct auth_cred *acred, struct rpc_cred *rcred, int flags)
 	if (groups > NFS_NGROUPS)
 		groups = NFS_NGROUPS;
 	for (i = 0; i < groups ; i++)
+<<<<<<< HEAD
 		if (!gid_eq(cred->uc_gids[i], GROUP_AT(acred->group_info, i)))
+=======
+		if (!gid_eq(cred->uc_gids[i], acred->group_info->gid[i]))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 	if (groups < NFS_NGROUPS && gid_valid(cred->uc_gids[groups]))
 		return 0;
@@ -192,13 +231,21 @@ unx_validate(struct rpc_task *task, __be32 *p)
 	    flavor != RPC_AUTH_UNIX &&
 	    flavor != RPC_AUTH_SHORT) {
 		printk("RPC: bad verf flavor: %u\n", flavor);
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-EIO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	size = ntohl(*p++);
 	if (size > RPC_MAX_AUTH_SIZE) {
 		printk("RPC: giant verf size: %u\n", size);
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-EIO);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	task->tk_rqstp->rq_cred->cr_auth->au_rslack = (size >> 2) + 2;
 	p += (size >> 2);
@@ -222,14 +269,24 @@ const struct rpc_authops authunix_ops = {
 	.au_name	= "UNIX",
 	.create		= unx_create,
 	.destroy	= unx_destroy,
+<<<<<<< HEAD
+=======
+	.hash_cred	= unx_hash_cred,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.lookup_cred	= unx_lookup_cred,
 	.crcreate	= unx_create_cred,
 };
 
 static
 struct rpc_auth		unix_auth = {
+<<<<<<< HEAD
 	.au_cslack	= UNX_WRITESLACK,
 	.au_rslack	= 2,			/* assume AUTH_NULL verf */
+=======
+	.au_cslack	= UNX_CALLSLACK,
+	.au_rslack	= NUL_REPLYSLACK,
+	.au_flags	= RPCAUTH_AUTH_NO_CRKEY_TIMEOUT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.au_ops		= &authunix_ops,
 	.au_flavor	= RPC_AUTH_UNIX,
 	.au_count	= ATOMIC_INIT(0),

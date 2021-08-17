@@ -30,11 +30,14 @@ extern void platform_init(bp_tag_t*);
 extern void platform_setup (char **);
 
 /*
+<<<<<<< HEAD
  * platform_init_irq is called from init_IRQ.
  */
 extern void platform_init_irq (void);
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * platform_restart is called to restart the system.
  */
 extern void platform_restart (void);
@@ -74,4 +77,13 @@ extern int platform_pcibios_fixup (void);
  */
 extern void platform_calibrate_ccount (void);
 
+<<<<<<< HEAD
+=======
+/*
+ * Flush and reset the mmu, simulate a processor reset, and
+ * jump to the reset vector.
+ */
+void cpu_reset(void) __attribute__((noreturn));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* _XTENSA_PLATFORM_H */

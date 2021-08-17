@@ -77,7 +77,10 @@ bfin_jc_emudat_manager(void *arg)
 			pr_debug("waiting for readers\n");
 			__set_current_state(TASK_UNINTERRUPTIBLE);
 			schedule();
+<<<<<<< HEAD
 			__set_current_state(TASK_RUNNING);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 
@@ -211,6 +214,7 @@ bfin_jc_chars_in_buffer(struct tty_struct *tty)
 	return circ_cnt(&bfin_jc_write_buf);
 }
 
+<<<<<<< HEAD
 static void
 bfin_jc_wait_until_sent(struct tty_struct *tty, int timeout)
 {
@@ -223,6 +227,8 @@ bfin_jc_wait_until_sent(struct tty_struct *tty, int timeout)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct tty_operations bfin_jc_ops = {
 	.open            = bfin_jc_open,
 	.close           = bfin_jc_close,
@@ -231,7 +237,10 @@ static const struct tty_operations bfin_jc_ops = {
 	.flush_chars     = bfin_jc_flush_chars,
 	.write_room      = bfin_jc_write_room,
 	.chars_in_buffer = bfin_jc_chars_in_buffer,
+<<<<<<< HEAD
 	.wait_until_sent = bfin_jc_wait_until_sent,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init bfin_jc_init(void)
@@ -349,7 +358,11 @@ bfin_jc_early_write(struct console *co, const char *buf, unsigned int count)
 	bfin_jc_straight_buffer_write(buf, count);
 }
 
+<<<<<<< HEAD
 static struct __initdata console bfin_jc_early_console = {
+=======
+static struct console bfin_jc_early_console __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name   = "early_BFJC",
 	.write   = bfin_jc_early_write,
 	.flags   = CON_ANYTIME | CON_PRINTBUFFER,

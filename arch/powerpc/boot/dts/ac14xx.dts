@@ -10,7 +10,11 @@
  */
 
 
+<<<<<<< HEAD
 /include/ "mpc5121.dtsi"
+=======
+#include <mpc5121.dtsi>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "ac14xx";
@@ -139,7 +143,18 @@
 		};
 	};
 
+<<<<<<< HEAD
 	soc@80000000 {
+=======
+	clocks {
+		osc {
+			clock-frequency = <25000000>;
+		};
+	};
+
+	soc@80000000 {
+		bus-frequency = <80000000>;	/* 80 MHz ips bus */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		clock@f00 {
 			compatible = "fsl,mpc5121rev2-clock", "fsl,mpc5121-clock";
@@ -224,7 +239,11 @@
 			};
 
 			rtc@68 {
+<<<<<<< HEAD
 				compatible = "stm,m41t00";
+=======
+				compatible = "st,m41t00";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				reg = <0x68>;
 			};
 		};

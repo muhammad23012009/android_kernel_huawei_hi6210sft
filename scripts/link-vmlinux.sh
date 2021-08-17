@@ -37,12 +37,48 @@ info()
 	fi
 }
 
+<<<<<<< HEAD
+=======
+# Thin archive build here makes a final archive with
+# symbol table and indexes from vmlinux objects, which can be
+# used as input to linker.
+#
+# Traditional incremental style of link does not require this step
+#
+# built-in.o output file
+#
+archive_builtin()
+{
+	if [ -n "${CONFIG_THIN_ARCHIVES}" ]; then
+		info AR built-in.o
+		rm -f built-in.o;
+		${AR} rcsT${KBUILD_ARFLAGS} built-in.o			\
+					${KBUILD_VMLINUX_INIT}		\
+					${KBUILD_VMLINUX_MAIN}
+	fi
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Link of vmlinux.o used for section mismatch analysis
 # ${1} output file
 modpost_link()
 {
+<<<<<<< HEAD
 	${LD} ${LDFLAGS} -r -o ${1} ${KBUILD_VMLINUX_INIT}                   \
 		--start-group ${KBUILD_VMLINUX_MAIN} --end-group
+=======
+	local objects
+
+	if [ -n "${CONFIG_THIN_ARCHIVES}" ]; then
+		objects="--whole-archive built-in.o"
+	else
+		objects="${KBUILD_VMLINUX_INIT}				\
+			--start-group					\
+			${KBUILD_VMLINUX_MAIN}				\
+			--end-group"
+	fi
+	${LD} ${LDFLAGS} -r -o ${1} ${objects}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 # Link of vmlinux
@@ -51,6 +87,7 @@ modpost_link()
 vmlinux_link()
 {
 	local lds="${objtree}/${KBUILD_LDS}"
+<<<<<<< HEAD
 
 	if [ "${SRCARCH}" != "um" ]; then
 		${LD} ${LDFLAGS} ${LDFLAGS_vmlinux} -o ${2}                  \
@@ -63,6 +100,38 @@ vmlinux_link()
 				 ${KBUILD_VMLINUX_MAIN}                      \
 			-Wl,--end-group                                      \
 			-lutil ${1}
+=======
+	local objects
+
+	if [ "${SRCARCH}" != "um" ]; then
+		if [ -n "${CONFIG_THIN_ARCHIVES}" ]; then
+			objects="--whole-archive built-in.o ${1}"
+		else
+			objects="${KBUILD_VMLINUX_INIT}			\
+				--start-group				\
+				${KBUILD_VMLINUX_MAIN}			\
+				--end-group				\
+				${1}"
+		fi
+
+		${LD} ${LDFLAGS} ${LDFLAGS_vmlinux} -o ${2}		\
+			-T ${lds} ${objects}
+	else
+		if [ -n "${CONFIG_THIN_ARCHIVES}" ]; then
+			objects="-Wl,--whole-archive built-in.o ${1}"
+		else
+			objects="${KBUILD_VMLINUX_INIT}			\
+				-Wl,--start-group			\
+				${KBUILD_VMLINUX_MAIN}			\
+				-Wl,--end-group				\
+				${1}"
+		fi
+
+		${CC} ${CFLAGS_vmlinux} -o ${2}				\
+			-Wl,-T,${lds}					\
+			${objects}					\
+			-lutil -lrt -lpthread
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rm -f linux
 	fi
 }
@@ -82,14 +151,31 @@ kallsyms()
 		kallsymopt="${kallsymopt} --all-symbols"
 	fi
 
+<<<<<<< HEAD
 	kallsymopt="${kallsymopt} --page-offset=$CONFIG_PAGE_OFFSET"
+=======
+	if [ -n "${CONFIG_KALLSYMS_ABSOLUTE_PERCPU}" ]; then
+		kallsymopt="${kallsymopt} --absolute-percpu"
+	fi
+
+	if [ -n "${CONFIG_KALLSYMS_BASE_RELATIVE}" ]; then
+		kallsymopt="${kallsymopt} --base-relative"
+	fi
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	local aflags="${KBUILD_AFLAGS} ${KBUILD_AFLAGS_KERNEL}               \
 		      ${NOSTDINC_FLAGS} ${LINUXINCLUDE} ${KBUILD_CPPFLAGS}"
 
+<<<<<<< HEAD
 	${NM} -n ${1} | \
 		scripts/kallsyms ${kallsymopt} | \
 		${CC} ${aflags} -c -o ${2} -x assembler-with-cpp -
+=======
+	local afile="`basename ${2} .o`.S"
+
+	${NM} -n ${1} | scripts/kallsyms ${kallsymopt} > ${afile}
+	${CC} ${aflags} -c -o ${2} ${afile}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 # Create map file with all symbols from ${1}
@@ -105,7 +191,10 @@ sortextable()
 }
 
 # Delete output files in case of error
+<<<<<<< HEAD
 trap cleanup SIGHUP SIGINT SIGQUIT SIGTERM ERR
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cleanup()
 {
 	rm -f .old_version
@@ -113,11 +202,32 @@ cleanup()
 	rm -f .tmp_kallsyms*
 	rm -f .tmp_version
 	rm -f .tmp_vmlinux*
+<<<<<<< HEAD
+=======
+	rm -f built-in.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rm -f System.map
 	rm -f vmlinux
 	rm -f vmlinux.o
 }
 
+<<<<<<< HEAD
+=======
+on_exit()
+{
+	if [ $? -ne 0 ]; then
+		cleanup
+	fi
+}
+trap on_exit EXIT
+
+on_signals()
+{
+	exit 1
+}
+trap on_signals HUP INT QUIT TERM
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 #
 # Use "make V=1" to debug this script
@@ -142,6 +252,11 @@ case "${KCONFIG_CONFIG}" in
 	. "./${KCONFIG_CONFIG}"
 esac
 
+<<<<<<< HEAD
+=======
+archive_builtin
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #link vmlinux.o
 info LD vmlinux.o
 modpost_link vmlinux.o
@@ -160,7 +275,11 @@ else
 fi;
 
 # final build of init/
+<<<<<<< HEAD
 ${MAKE} -f "${srctree}/scripts/Makefile.build" obj=init
+=======
+${MAKE} -f "${srctree}/scripts/Makefile.build" obj=init GCC_PLUGINS_CFLAGS="${GCC_PLUGINS_CFLAGS}"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 kallsymso=""
 kallsyms_vmlinux=""
@@ -225,7 +344,10 @@ if [ -n "${CONFIG_KALLSYMS}" ]; then
 	if ! cmp -s System.map .tmp_System.map; then
 		echo >&2 Inconsistent kallsyms data
 		echo >&2 Try "make KALLSYMS_EXTRA_PASS=1" as a workaround
+<<<<<<< HEAD
 		cleanup
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		exit 1
 	fi
 fi

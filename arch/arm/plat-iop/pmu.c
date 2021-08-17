@@ -24,7 +24,11 @@ static struct resource pmu_resource = {
 };
 
 static struct platform_device pmu_device = {
+<<<<<<< HEAD
 	.name		= "arm-pmu",
+=======
+	.name		= "xscale-pmu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id		= -1,
 	.resource	= &pmu_resource,
 	.num_resources	= 1,

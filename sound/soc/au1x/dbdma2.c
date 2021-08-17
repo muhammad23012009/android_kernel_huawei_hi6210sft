@@ -65,6 +65,7 @@ struct au1xpsc_audio_dmadata {
 #define AU1XPSC_PERIOD_MIN_BYTES	1024
 #define AU1XPSC_BUFFER_MIN_BYTES	65536
 
+<<<<<<< HEAD
 #define AU1XPSC_PCM_FMTS					\
 	(SNDRV_PCM_FMTBIT_S8     | SNDRV_PCM_FMTBIT_U8 |	\
 	 SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S16_BE |	\
@@ -73,11 +74,16 @@ struct au1xpsc_audio_dmadata {
 	 SNDRV_PCM_FMTBIT_U32_LE | SNDRV_PCM_FMTBIT_U32_BE |	\
 	 0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* PCM hardware DMA capabilities - platform specific */
 static const struct snd_pcm_hardware au1xpsc_pcm_hardware = {
 	.info		  = SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
 			    SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BATCH,
+<<<<<<< HEAD
 	.formats	  = AU1XPSC_PCM_FMTS,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.period_bytes_min = AU1XPSC_PERIOD_MIN_BYTES,
 	.period_bytes_max = 4096 * 1024 - 1,
 	.periods_min	  = 2,
@@ -215,8 +221,13 @@ static int au1xpsc_pcm_hw_params(struct snd_pcm_substream *substream,
 	stype = substream->stream;
 	pcd = to_dmadata(substream);
 
+<<<<<<< HEAD
 	DBG("runtime->dma_area = 0x%08lx dma_addr_t = 0x%08lx dma_size = %d "
 	    "runtime->min_align %d\n",
+=======
+	DBG("runtime->dma_area = 0x%08lx dma_addr_t = 0x%08lx dma_size = %zu "
+	    "runtime->min_align %lu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(unsigned long)runtime->dma_area,
 		(unsigned long)runtime->dma_addr, runtime->dma_bytes,
 		runtime->min_align);
@@ -324,11 +335,14 @@ static struct snd_pcm_ops au1xpsc_pcm_ops = {
 	.pointer	= au1xpsc_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static void au1xpsc_pcm_free_dma_buffers(struct snd_pcm *pcm)
 {
 	snd_pcm_lib_preallocate_free_for_all(pcm);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int au1xpsc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
@@ -344,7 +358,10 @@ static int au1xpsc_pcm_new(struct snd_soc_pcm_runtime *rtd)
 static struct snd_soc_platform_driver au1xpsc_soc_platform = {
 	.ops		= &au1xpsc_pcm_ops,
 	.pcm_new	= au1xpsc_pcm_new,
+<<<<<<< HEAD
 	.pcm_free	= au1xpsc_pcm_free_dma_buffers,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int au1xpsc_pcm_drvprobe(struct platform_device *pdev)
@@ -359,6 +376,7 @@ static int au1xpsc_pcm_drvprobe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, dmadata);
 
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &au1xpsc_soc_platform);
 }
 
@@ -367,15 +385,24 @@ static int au1xpsc_pcm_drvremove(struct platform_device *pdev)
 	snd_soc_unregister_platform(&pdev->dev);
 
 	return 0;
+=======
+	return devm_snd_soc_register_platform(&pdev->dev,
+					      &au1xpsc_soc_platform);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver au1xpsc_pcm_driver = {
 	.driver	= {
 		.name	= "au1xpsc-pcm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= au1xpsc_pcm_drvprobe,
 	.remove		= au1xpsc_pcm_drvremove,
+=======
+	},
+	.probe		= au1xpsc_pcm_drvprobe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(au1xpsc_pcm_driver);

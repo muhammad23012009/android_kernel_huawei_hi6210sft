@@ -284,7 +284,11 @@ EXPORT_SYMBOL_GPL(rh_create);
  */
 void rh_destroy(rh_info_t * info)
 {
+<<<<<<< HEAD
 	if ((info->flags & RHIF_STATIC_BLOCK) == 0 && info->block != NULL)
+=======
+	if ((info->flags & RHIF_STATIC_BLOCK) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(info->block);
 
 	if ((info->flags & RHIF_STATIC_INFO) == 0)
@@ -325,7 +329,11 @@ void rh_init(rh_info_t * info, unsigned int alignment, int max_blocks,
 }
 EXPORT_SYMBOL_GPL(rh_init);
 
+<<<<<<< HEAD
 /* Attach a free memory region, coalesces regions if adjuscent */
+=======
+/* Attach a free memory region, coalesces regions if adjacent */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int rh_attach_region(rh_info_t * info, unsigned long start, int size)
 {
 	rh_block_t *blk;

@@ -41,7 +41,11 @@ int icache_44x_need_flush;
 
 unsigned long tlb_47x_boltmap[1024/8];
 
+<<<<<<< HEAD
 static void __cpuinit ppc44x_update_tlb_hwater(void)
+=======
+static void ppc44x_update_tlb_hwater(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	extern unsigned int tlb_44x_patch_hwater_D[];
 	extern unsigned int tlb_44x_patch_hwater_I[];
@@ -134,7 +138,11 @@ static void __init ppc47x_update_boltmap(void)
 /*
  * "Pins" a 256MB TLB entry in AS0 for kernel lowmem for 47x type MMU
  */
+<<<<<<< HEAD
 static void __cpuinit ppc47x_pin_tlb(unsigned int virt, unsigned int phys)
+=======
+static void ppc47x_pin_tlb(unsigned int virt, unsigned int phys)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int rA;
 	int bolted;
@@ -229,7 +237,11 @@ void setup_initial_memory_limit(phys_addr_t first_memblock_base,
 }
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 void __cpuinit mmu_init_secondary(int cpu)
+=======
+void mmu_init_secondary(int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long addr;
 	unsigned long memstart = memstart_addr & ~(PPC_PIN_SIZE - 1);

@@ -9,9 +9,12 @@
 #ifndef INTERN_H
 #define INTERN_H
 
+<<<<<<< HEAD
 #define JOBR_UNASSIGNED 0
 #define JOBR_ASSIGNED 1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Currently comes from Kconfig param as a ^2 (driver-required) */
 #define JOBR_DEPTH (1 << CONFIG_CRYPTO_DEV_FSL_CAAM_RINGSIZE)
 
@@ -40,13 +43,24 @@ struct caam_jrentry_info {
 
 /* Private sub-storage for a single JobR */
 struct caam_drv_private_jr {
+<<<<<<< HEAD
 	struct device *parentdev;	/* points back to controller dev */
 	struct platform_device *jr_pdev;/* points to platform device for JR */
+=======
+	struct list_head	list_node;	/* Job Ring device list */
+	struct device		*dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ridx;
 	struct caam_job_ring __iomem *rregs;	/* JobR's register space */
 	struct tasklet_struct irqtask;
 	int irq;			/* One per queue */
+<<<<<<< HEAD
 	int assign;			/* busy/free */
+=======
+
+	/* Number of scatterlist crypt transforms active on the JobR */
+	atomic_t tfm_count ____cacheline_aligned;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Job ring info */
 	int ringsize;	/* Size of rings (assume input = output) */
@@ -67,6 +81,7 @@ struct caam_drv_private_jr {
 struct caam_drv_private {
 
 	struct device *dev;
+<<<<<<< HEAD
 	struct device **jrdev; /* Alloc'ed array per sub-device */
 	spinlock_t jr_alloc_lock;
 	struct platform_device *pdev;
@@ -76,6 +91,17 @@ struct caam_drv_private {
 	struct caam_deco **deco; /* DECO/CCB views */
 	struct caam_assurance *ac;
 	struct caam_queue_if *qi; /* QI control region */
+=======
+	struct platform_device **jrpdev; /* Alloc'ed array per sub-device */
+	struct platform_device *pdev;
+
+	/* Physical-presence section */
+	struct caam_ctrl __iomem *ctrl; /* controller region */
+	struct caam_deco __iomem *deco; /* DECO/CCB views */
+	struct caam_assurance __iomem *assure;
+	struct caam_queue_if __iomem *qi; /* QI control region */
+	struct caam_job_ring __iomem *jr[4];	/* JobR's register space */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Detected geometry block. Filled in from device tree if powerpc,
@@ -84,6 +110,7 @@ struct caam_drv_private {
 	u8 total_jobrs;		/* Total Job Rings in device */
 	u8 qi_present;		/* Nonzero if QI present in device */
 	int secvio_irq;		/* Security violation interrupt number */
+<<<<<<< HEAD
 
 	/* which jr allocated to scatterlist crypto */
 	atomic_t tfm_count ____cacheline_aligned;
@@ -91,6 +118,20 @@ struct caam_drv_private {
 	struct list_head alg_list;
 	/* list of registered hash algorithms (mk generic context handle?) */
 	struct list_head hash_list;
+=======
+	int virt_en;		/* Virtualization enabled in CAAM */
+
+#define	RNG4_MAX_HANDLES 2
+	/* RNG4 block */
+	u32 rng4_sh_init;	/* This bitmap shows which of the State
+				   Handles of the RNG4 block are initialized
+				   by this driver */
+
+	struct clk *caam_ipg;
+	struct clk *caam_mem;
+	struct clk *caam_aclk;
+	struct clk *caam_emi_slow;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * debugfs entries for developer view into driver/device

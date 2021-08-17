@@ -110,11 +110,14 @@
 #define i91u_MAXQUEUE		2
 #define i91u_REVID "Initio INI-9X00U/UW SCSI device driver; Revision: 1.04a"
 
+<<<<<<< HEAD
 #define I950_DEVICE_ID	0x9500	/* Initio's inic-950 product ID   */
 #define I940_DEVICE_ID	0x9400	/* Initio's inic-940 product ID   */
 #define I935_DEVICE_ID	0x9401	/* Initio's inic-935 product ID   */
 #define I920_DEVICE_ID	0x0002	/* Initio's other product ID      */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef DEBUG_i91u
 static unsigned int i91u_debug = DEBUG_DEFAULT;
 #endif
@@ -127,6 +130,7 @@ static int setup_debug = 0;
 
 static void i91uSCBPost(u8 * pHcb, u8 * pScb);
 
+<<<<<<< HEAD
 /* PCI Devices supported by this driver */
 static struct pci_device_id i91u_pci_devices[] = {
 	{ PCI_VENDOR_ID_INIT,  I950_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
@@ -138,6 +142,8 @@ static struct pci_device_id i91u_pci_devices[] = {
 };
 MODULE_DEVICE_TABLE(pci, i91u_pci_devices);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DEBUG_INTERRUPT 0
 #define DEBUG_QUEUE     0
 #define DEBUG_STATE     0
@@ -2833,7 +2839,10 @@ static struct scsi_host_template initio_template = {
 	.can_queue		= MAX_TARGETS * i91u_MAXQUEUE,
 	.this_id		= 1,
 	.sg_tablesize		= SG_ALL,
+<<<<<<< HEAD
 	.cmd_per_lun		= 1,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.use_clustering		= ENABLE_CLUSTERING,
 };
 
@@ -2931,7 +2940,11 @@ static int initio_probe_one(struct pci_dev *pdev,
 	shost->base = host->addr;
 	shost->sg_tablesize = TOTAL_SG_ENTRY;
 
+<<<<<<< HEAD
 	error = request_irq(pdev->irq, i91u_intr, IRQF_DISABLED|IRQF_SHARED, "i91u", shost);
+=======
+	error = request_irq(pdev->irq, i91u_intr, IRQF_SHARED, "i91u", shost);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0) {
 		printk(KERN_WARNING "initio: Unable to request IRQ %d\n", pdev->irq);
 		goto out_free_scbs;

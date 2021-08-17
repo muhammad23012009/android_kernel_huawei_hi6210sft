@@ -35,13 +35,20 @@
 #include <linux/delay.h>
 #include <linux/clocksource.h>
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <clocksource/arm_arch_timer.h>
 
 #include <asm/thread_info.h>
 #include <asm/stacktrace.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long profile_pc(struct pt_regs *regs)
 {
 	struct stackframe frame;
@@ -52,8 +59,16 @@ unsigned long profile_pc(struct pt_regs *regs)
 	frame.fp = regs->regs[29];
 	frame.sp = regs->sp;
 	frame.pc = regs->pc;
+<<<<<<< HEAD
 	do {
 		int ret = unwind_frame(&frame);
+=======
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+	frame.graph = current->curr_ret_stack;
+#endif
+	do {
+		int ret = unwind_frame(NULL, &frame);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0)
 			return 0;
 	} while (in_lock_functions(frame.pc));
@@ -61,6 +76,7 @@ unsigned long profile_pc(struct pt_regs *regs)
 	return frame.pc;
 }
 EXPORT_SYMBOL(profile_pc);
+<<<<<<< HEAD
 #endif
 
 static u64 sched_clock_mult __read_mostly;
@@ -69,13 +85,19 @@ unsigned long long notrace sched_clock(void)
 {
 	return arch_timer_read_counter() * sched_clock_mult;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init time_init(void)
 {
 	u32 arch_timer_rate;
 
 	of_clk_init(NULL);
+<<<<<<< HEAD
 	clocksource_of_init();
+=======
+	clocksource_probe();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tick_setup_hrtimer_broadcast();
 
@@ -83,9 +105,12 @@ void __init time_init(void)
 	if (!arch_timer_rate)
 		panic("Unable to initialise architected timer.\n");
 
+<<<<<<< HEAD
 	/* Cache the sched_clock multiplier to save a divide in the hot path. */
 	sched_clock_mult = NSEC_PER_SEC / arch_timer_rate;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Calibrate the delay loop directly */
 	lpj_fine = arch_timer_rate / HZ;
 }

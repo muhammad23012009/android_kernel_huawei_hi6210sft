@@ -3,16 +3,24 @@
 #
 
 menuconfig HOTPLUG_PCI
+<<<<<<< HEAD
 	tristate "Support for PCI Hotplug"
 	depends on PCI && HOTPLUG && SYSFS
+=======
+	bool "Support for PCI Hotplug"
+	depends on PCI && SYSFS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  Say Y here if you have a motherboard with a PCI Hotplug controller.
 	  This allows you to add and remove PCI cards while the machine is
 	  powered up and running.
 
+<<<<<<< HEAD
 	  To compile this driver as a module, choose M here: the
 	  module will be called pci_hotplug.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  When in doubt, say N.
 
 if HOTPLUG_PCI
@@ -116,6 +124,22 @@ config HOTPLUG_PCI_SHPC
 
 	  When in doubt, say N.
 
+<<<<<<< HEAD
+=======
+config HOTPLUG_PCI_POWERNV
+	tristate "PowerPC PowerNV PCI Hotplug driver"
+	depends on PPC_POWERNV && EEH
+	select OF_DYNAMIC
+	help
+	  Say Y here if you run PowerPC PowerNV platform that supports
+	  PCI Hotplug
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called pnv-php.
+
+	  When in doubt, say N.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config HOTPLUG_PCI_RPA
 	tristate "RPA PCI Hotplug driver"
 	depends on PPC_PSERIES && EEH
@@ -136,8 +160,13 @@ config HOTPLUG_PCI_RPA_DLPAR
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called rpadlpar_io.
+<<<<<<< HEAD
  
  	  When in doubt, say N.
+=======
+
+	  When in doubt, say N.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config HOTPLUG_PCI_SGI
 	tristate "SGI PCI Hotplug Support"
@@ -149,7 +178,11 @@ config HOTPLUG_PCI_SGI
 	  When in doubt, say N.
 
 config HOTPLUG_PCI_S390
+<<<<<<< HEAD
 	tristate "System z PCI Hotplug Support"
+=======
+	bool "System z PCI Hotplug Support"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on S390 && 64BIT
 	help
 	  Say Y here if you want to use the System z PCI Hotplug

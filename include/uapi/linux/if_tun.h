@@ -22,6 +22,7 @@
 
 /* Read queue size */
 #define TUN_READQ_SIZE	500
+<<<<<<< HEAD
 
 /* TUN device flags */
 #define TUN_TUN_DEV 	0x0001	
@@ -37,6 +38,13 @@
 #define TUN_VNET_HDR 	0x0200
 #define TUN_TAP_MQ      0x0400
 
+=======
+/* TUN device type flags: deprecated. Use IFF_TUN/IFF_TAP instead. */
+#define TUN_TUN_DEV 	IFF_TUN
+#define TUN_TAP_DEV	IFF_TAP
+#define TUN_TYPE_MASK   0x000f
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Ioctl defines */
 #define TUNSETNOCSUM  _IOW('T', 200, int) 
 #define TUNSETDEBUG   _IOW('T', 201, int) 
@@ -56,6 +64,19 @@
 #define TUNGETVNETHDRSZ _IOR('T', 215, int)
 #define TUNSETVNETHDRSZ _IOW('T', 216, int)
 #define TUNSETQUEUE  _IOW('T', 217, int)
+<<<<<<< HEAD
+=======
+#define TUNSETIFINDEX	_IOW('T', 218, unsigned int)
+#define TUNGETFILTER _IOR('T', 219, struct sock_fprog)
+#define TUNSETVNETLE _IOW('T', 220, int)
+#define TUNGETVNETLE _IOR('T', 221, int)
+/* The TUNSETVNETBE and TUNGETVNETBE ioctls are for cross-endian support on
+ * little-endian hosts. Not all kernel configurations support them, but all
+ * configurations that support SET also support GET.
+ */
+#define TUNSETVNETBE _IOW('T', 222, int)
+#define TUNGETVNETBE _IOR('T', 223, int)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* TUNSETIFF ifr flags */
 #define IFF_TUN		0x0001
@@ -68,6 +89,15 @@
 #define IFF_MULTI_QUEUE 0x0100
 #define IFF_ATTACH_QUEUE 0x0200
 #define IFF_DETACH_QUEUE 0x0400
+<<<<<<< HEAD
+=======
+/* read-only flag */
+#define IFF_PERSIST	0x0800
+#define IFF_NOFILTER	0x1000
+
+/* Socket options */
+#define TUN_TX_TIMESTAMP 1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Features for GSO (TUNSETOFFLOAD). */
 #define TUN_F_CSUM	0x01	/* You can hand me unchecksummed packets. */

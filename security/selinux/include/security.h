@@ -8,6 +8,10 @@
 #ifndef _SELINUX_SECURITY_H_
 #define _SELINUX_SECURITY_H_
 
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dcache.h>
 #include <linux/magic.h>
 #include <linux/types.h>
@@ -38,24 +42,40 @@
 
 /* Range of policy versions we understand*/
 #define POLICYDB_VERSION_MIN   POLICYDB_VERSION_BASE
+<<<<<<< HEAD
 #ifdef CONFIG_SECURITY_SELINUX_POLICYDB_VERSION_MAX
 #define POLICYDB_VERSION_MAX	CONFIG_SECURITY_SELINUX_POLICYDB_VERSION_MAX_VALUE
 #else
 #define POLICYDB_VERSION_MAX	POLICYDB_VERSION_XPERMS_IOCTL
 #endif
+=======
+#define POLICYDB_VERSION_MAX	POLICYDB_VERSION_XPERMS_IOCTL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Mask for just the mount related flags */
 #define SE_MNTMASK	0x0f
 /* Super block security struct flags for mount options */
+<<<<<<< HEAD
+=======
+/* BE CAREFUL, these need to be the low order bits for selinux_get_mnt_opts */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CONTEXT_MNT	0x01
 #define FSCONTEXT_MNT	0x02
 #define ROOTCONTEXT_MNT	0x04
 #define DEFCONTEXT_MNT	0x08
+<<<<<<< HEAD
 /* Non-mount related flags */
 #define SE_SBINITIALIZED	0x10
 #define SE_SBPROC		0x20
 #define SE_SBLABELSUPP	0x40
 #define SE_SBGENFS	0x80
+=======
+#define SBLABEL_MNT	0x10
+/* Non-mount related flags */
+#define SE_SBINITIALIZED	0x0100
+#define SE_SBPROC		0x0200
+#define SE_SBGENFS		0x0400
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CONTEXT_STR	"context="
 #define FSCONTEXT_STR	"fscontext="
@@ -71,12 +91,21 @@ extern int selinux_enabled;
 enum {
 	POLICYDB_CAPABILITY_NETPEER,
 	POLICYDB_CAPABILITY_OPENPERM,
+<<<<<<< HEAD
+=======
+	POLICYDB_CAPABILITY_REDHAT1,
+	POLICYDB_CAPABILITY_ALWAYSNETWORK,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__POLICYDB_CAPABILITY_MAX
 };
 #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
 
 extern int selinux_policycap_netpeer;
 extern int selinux_policycap_openperm;
+<<<<<<< HEAD
+=======
+extern int selinux_policycap_alwaysnetwork;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * type_datum properties
@@ -159,7 +188,13 @@ int security_sid_to_context(u32 sid, char **scontext,
 int security_sid_to_context_force(u32 sid, char **scontext, u32 *scontext_len);
 
 int security_context_to_sid(const char *scontext, u32 scontext_len,
+<<<<<<< HEAD
 	u32 *out_sid);
+=======
+			    u32 *out_sid, gfp_t gfp);
+
+int security_context_str_to_sid(const char *scontext, u32 *out_sid, gfp_t gfp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int security_context_to_sid_default(const char *scontext, u32 scontext_len,
 				    u32 *out_sid, u32 def_sid, gfp_t gfp_flags);
@@ -180,6 +215,12 @@ int security_node_sid(u16 domain, void *addr, u32 addrlen,
 int security_validate_transition(u32 oldsid, u32 newsid, u32 tasksid,
 				 u16 tclass);
 
+<<<<<<< HEAD
+=======
+int security_validate_transition_user(u32 oldsid, u32 newsid, u32 tasksid,
+				      u16 tclass);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int security_bounded_transition(u32 oldsid, u32 newsid);
 
 int security_sid_mls_copy(u32 sid, u32 mls_sid, u32 *new_sid);
@@ -199,9 +240,16 @@ int security_get_allow_unknown(void);
 #define SECURITY_FS_USE_GENFS		4 /* use the genfs support */
 #define SECURITY_FS_USE_NONE		5 /* no labeling support */
 #define SECURITY_FS_USE_MNTPOINT	6 /* use mountpoint labeling */
+<<<<<<< HEAD
 
 int security_fs_use(const char *fstype, unsigned int *behavior,
 	u32 *sid);
+=======
+#define SECURITY_FS_USE_NATIVE		7 /* use native label support */
+#define SECURITY_FS_USE_MAX		7 /* Highest SECURITY_FS_USE_XXX */
+
+int security_fs_use(struct super_block *sb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int security_genfs_sid(const char *fstype, char *name, u16 sclass,
 	u32 *sid);
@@ -244,7 +292,11 @@ struct selinux_kernel_status {
 	/*
 	 * The version > 0 supports above members.
 	 */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void selinux_status_update_setenforce(int enforcing);
 extern void selinux_status_update_policyload(int seqno);

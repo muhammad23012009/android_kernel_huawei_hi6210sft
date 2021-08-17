@@ -28,7 +28,10 @@
 
 #define DRV_NAME	"jme"
 #define DRV_VERSION	"1.0.8"
+<<<<<<< HEAD
 #define PFX		DRV_NAME ": "
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PCI_DEVICE_ID_JMICRON_JMC250	0x0250
 #define PCI_DEVICE_ID_JMICRON_JMC260	0x0260

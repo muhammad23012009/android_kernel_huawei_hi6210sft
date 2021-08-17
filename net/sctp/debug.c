@@ -22,6 +22,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -32,6 +33,14 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -40,17 +49,23 @@
  *    Jon Grimm             <jgrimm@us.ibm.com>
  *    Daisy Chang	    <daisyc@us.ibm.com>
  *    Sridhar Samudrala	    <sri@us.ibm.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <net/sctp/sctp.h>
 
+<<<<<<< HEAD
 #if SCTP_DEBUG
 int sctp_debug_flag = 1;	/* Initially enable DEBUG */
 #endif	/* SCTP_DEBUG */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* These are printable forms of Chunk ID's from section 3.1.  */
 static const char *const sctp_cid_tbl[SCTP_NUM_BASE_CHUNK_TYPES] = {
 	"DATA",
@@ -177,7 +192,11 @@ static const char *const sctp_timer_tbl[] = {
 /* Lookup timer debug name. */
 const char *sctp_tname(const sctp_subtype_t id)
 {
+<<<<<<< HEAD
 	if (id.timeout <= SCTP_EVENT_TIMEOUT_MAX)
+=======
+	if (id.timeout < ARRAY_SIZE(sctp_timer_tbl))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return sctp_timer_tbl[id.timeout];
 	return "unknown_timer";
 }

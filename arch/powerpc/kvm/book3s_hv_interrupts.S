@@ -35,7 +35,11 @@
  ****************************************************************************/
 
 /* Registers:
+<<<<<<< HEAD
  *  r4: vcpu pointer
+=======
+ *  none
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 _GLOBAL(__kvmppc_vcore_entry)
 
@@ -52,6 +56,7 @@ _GLOBAL(__kvmppc_vcore_entry)
 	std	r3, _CCR(r1)
 
 	/* Save host DSCR */
+<<<<<<< HEAD
 BEGIN_FTR_SECTION
 	mfspr	r3, SPRN_DSCR
 	std	r3, HSTATE_DSCR(r13)
@@ -60,6 +65,16 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
 	/* Save host DABR */
 	mfspr	r3, SPRN_DABR
 	std	r3, HSTATE_DABR(r13)
+=======
+	mfspr	r3, SPRN_DSCR
+	std	r3, HSTATE_DSCR(r13)
+
+BEGIN_FTR_SECTION
+	/* Save host DABR */
+	mfspr	r3, SPRN_DABR
+	std	r3, HSTATE_DABR(r13)
+END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_207S)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Hard-disable interrupts */
 	mfmsr   r10
@@ -69,32 +84,65 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
 	mtmsrd  r10,1
 
 	/* Save host PMU registers */
+<<<<<<< HEAD
 	/* R4 is live here (vcpu pointer) but not r3 or r5 */
+=======
+BEGIN_FTR_SECTION
+	/* Work around P8 PMAE bug */
+	li	r3, -1
+	clrrdi	r3, r3, 10
+	mfspr	r8, SPRN_MMCR2
+	mtspr	SPRN_MMCR2, r3		/* freeze all counters using MMCR2 */
+	isync
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	li	r3, 1
 	sldi	r3, r3, 31		/* MMCR0_FC (freeze counters) bit */
 	mfspr	r7, SPRN_MMCR0		/* save MMCR0 */
 	mtspr	SPRN_MMCR0, r3		/* freeze all counters, disable interrupts */
 	mfspr	r6, SPRN_MMCRA
+<<<<<<< HEAD
 BEGIN_FTR_SECTION
 	/* On P7, clear MMCRA in order to disable SDAR updates */
 	li	r5, 0
 	mtspr	SPRN_MMCRA, r5
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_206)
+=======
+	/* Clear MMCRA in order to disable SDAR updates */
+	li	r5, 0
+	mtspr	SPRN_MMCRA, r5
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	isync
 	ld	r3, PACALPPACAPTR(r13)	/* is the host using the PMU? */
 	lbz	r5, LPPACA_PMCINUSE(r3)
 	cmpwi	r5, 0
 	beq	31f			/* skip if not */
 	mfspr	r5, SPRN_MMCR1
+<<<<<<< HEAD
 	std	r7, HSTATE_MMCR(r13)
 	std	r5, HSTATE_MMCR + 8(r13)
 	std	r6, HSTATE_MMCR + 16(r13)
+=======
+	mfspr	r9, SPRN_SIAR
+	mfspr	r10, SPRN_SDAR
+	std	r7, HSTATE_MMCR0(r13)
+	std	r5, HSTATE_MMCR1(r13)
+	std	r6, HSTATE_MMCRA(r13)
+	std	r9, HSTATE_SIAR(r13)
+	std	r10, HSTATE_SDAR(r13)
+BEGIN_FTR_SECTION
+	mfspr	r9, SPRN_SIER
+	std	r8, HSTATE_MMCR2(r13)
+	std	r9, HSTATE_SIER(r13)
+END_FTR_SECTION_IFSET(CPU_FTR_ARCH_207S)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfspr	r3, SPRN_PMC1
 	mfspr	r5, SPRN_PMC2
 	mfspr	r6, SPRN_PMC3
 	mfspr	r7, SPRN_PMC4
 	mfspr	r8, SPRN_PMC5
 	mfspr	r9, SPRN_PMC6
+<<<<<<< HEAD
 BEGIN_FTR_SECTION
 	mfspr	r10, SPRN_PMC7
 	mfspr	r11, SPRN_PMC8
@@ -109,6 +157,14 @@ BEGIN_FTR_SECTION
 	stw	r10, HSTATE_PMC + 24(r13)
 	stw	r11, HSTATE_PMC + 28(r13)
 END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
+=======
+	stw	r3, HSTATE_PMC1(r13)
+	stw	r5, HSTATE_PMC2(r13)
+	stw	r6, HSTATE_PMC3(r13)
+	stw	r7, HSTATE_PMC4(r13)
+	stw	r8, HSTATE_PMC5(r13)
+	stw	r9, HSTATE_PMC6(r13)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 31:
 
 	/*
@@ -122,6 +178,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
 	add	r8,r8,r7
 	std	r8,HSTATE_DECEXP(r13)
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	/*
 	 * On PPC970, if the guest vcpu has an external interrupt pending,
@@ -150,6 +207,10 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
 
 	/* Jump to partition switch code */
 	bl	.kvmppc_hv_entry_trampoline
+=======
+	/* Jump to partition switch code */
+	bl	kvmppc_hv_entry_trampoline
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nop
 
 /*
@@ -158,9 +219,12 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_201)
  * Interrupts are enabled again at this point.
  */
 
+<<<<<<< HEAD
 .global kvmppc_handler_highmem
 kvmppc_handler_highmem:
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Register usage at this point:
 	 *

@@ -17,7 +17,10 @@
 #include <linux/module.h>
 #include <net/tcp.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define BICTCP_BETA_SCALE    1024	/* Scale factor beta calculation
 					 * max_cwnd = snd_cwnd * beta
 					 */
@@ -46,11 +49,18 @@ MODULE_PARM_DESC(initial_ssthresh, "initial value of slow start threshold");
 module_param(smooth_part, int, 0644);
 MODULE_PARM_DESC(smooth_part, "log(B/(B*Smin))/log(B/(B-1))+B, # of RTT from Wmax-B to Wmax");
 
+<<<<<<< HEAD
 
 /* BIC TCP Parameters */
 struct bictcp {
 	u32	cnt;		/* increase cwnd by 1 after ACKs */
 	u32 	last_max_cwnd;	/* last maximum snd_cwnd */
+=======
+/* BIC TCP Parameters */
+struct bictcp {
+	u32	cnt;		/* increase cwnd by 1 after ACKs */
+	u32	last_max_cwnd;	/* last maximum snd_cwnd */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32	loss_cwnd;	/* congestion window at last loss */
 	u32	last_cwnd;	/* the last snd_cwnd */
 	u32	last_time;	/* time when updated last_cwnd */
@@ -103,7 +113,11 @@ static inline void bictcp_update(struct bictcp *ca, u32 cwnd)
 
 	/* binary increase */
 	if (cwnd < ca->last_max_cwnd) {
+<<<<<<< HEAD
 		__u32 	dist = (ca->last_max_cwnd - cwnd)
+=======
+		__u32	dist = (ca->last_max_cwnd - cwnd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/ BICTCP_B;
 
 		if (dist > max_increment)
@@ -140,11 +154,16 @@ static inline void bictcp_update(struct bictcp *ca, u32 cwnd)
 		ca->cnt = 1;
 }
 
+<<<<<<< HEAD
 static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
+=======
+static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct bictcp *ca = inet_csk_ca(sk);
 
+<<<<<<< HEAD
 	if (!tcp_is_cwnd_limited(sk, in_flight))
 		return;
 
@@ -155,6 +174,17 @@ static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 		tcp_cong_avoid_ai(tp, ca->cnt);
 	}
 
+=======
+	if (!tcp_is_cwnd_limited(sk))
+		return;
+
+	if (tcp_in_slow_start(tp))
+		tcp_slow_start(tp, acked);
+	else {
+		bictcp_update(ca, tp->snd_cwnd);
+		tcp_cong_avoid_ai(tp, ca->cnt, 1);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -177,7 +207,10 @@ static u32 bictcp_recalc_ssthresh(struct sock *sk)
 
 	ca->loss_cwnd = tp->snd_cwnd;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (tp->snd_cwnd <= low_window)
 		return max(tp->snd_cwnd >> 1U, 2U);
 	else
@@ -188,6 +221,10 @@ static u32 bictcp_undo_cwnd(struct sock *sk)
 {
 	const struct tcp_sock *tp = tcp_sk(sk);
 	const struct bictcp *ca = inet_csk_ca(sk);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return max(tp->snd_cwnd, ca->loss_cwnd);
 }
 
@@ -200,18 +237,31 @@ static void bictcp_state(struct sock *sk, u8 new_state)
 /* Track delayed acknowledgment ratio using sliding window
  * ratio = (15*ratio + sample) / 16
  */
+<<<<<<< HEAD
 static void bictcp_acked(struct sock *sk, u32 cnt, s32 rtt)
+=======
+static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const struct inet_connection_sock *icsk = inet_csk(sk);
 
 	if (icsk->icsk_ca_state == TCP_CA_Open) {
 		struct bictcp *ca = inet_csk_ca(sk);
+<<<<<<< HEAD
 		cnt -= ca->delayed_ack >> ACK_RATIO_SHIFT;
 		ca->delayed_ack += cnt;
 	}
 }
 
 
+=======
+
+		ca->delayed_ack += sample->pkts_acked -
+			(ca->delayed_ack >> ACK_RATIO_SHIFT);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct tcp_congestion_ops bictcp __read_mostly = {
 	.init		= bictcp_init,
 	.ssthresh	= bictcp_recalc_ssthresh,

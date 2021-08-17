@@ -175,10 +175,17 @@ ENTRY(__clear_user)
 	br	r3
 
 	.section .fixup, "ax"
+<<<<<<< HEAD
+=======
+99:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	br	r3
 	.previous
 	.section __ex_table, "a"
 	.align	2
+<<<<<<< HEAD
 99:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.word	0b, 99b
 	.previous

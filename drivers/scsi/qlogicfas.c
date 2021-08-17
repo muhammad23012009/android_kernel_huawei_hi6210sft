@@ -171,8 +171,11 @@ static int qlogicfas_release(struct Scsi_Host *shost)
 		qlogicfas408_disable_ints(priv);	
 		free_irq(shost->irq, shost);
 	}
+<<<<<<< HEAD
 	if (shost->dma_channel != 0xff)
 		free_dma(shost->dma_channel);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (shost->io_port && shost->n_io_port)
 		release_region(shost->io_port, shost->n_io_port);
 	scsi_host_put(shost);
@@ -195,7 +198,10 @@ static struct scsi_host_template qlogicfas_driver_template = {
 	.can_queue		= 1,
 	.this_id		= -1,
 	.sg_tablesize		= SG_ALL,
+<<<<<<< HEAD
 	.cmd_per_lun		= 1,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.use_clustering		= DISABLE_CLUSTERING,
 };
 

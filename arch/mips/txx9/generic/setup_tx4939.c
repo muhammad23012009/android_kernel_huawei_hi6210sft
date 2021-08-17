@@ -35,8 +35,13 @@ static void __init tx4939_wdr_init(void)
 {
 	/* report watchdog reset status */
 	if (____raw_readq(&tx4939_ccfgptr->ccfg) & TX4939_CCFG_WDRST)
+<<<<<<< HEAD
 		pr_warning("Watchdog reset detected at 0x%lx\n",
 			   read_c0_errorepc());
+=======
+		pr_warn("Watchdog reset detected at 0x%lx\n",
+			read_c0_errorepc());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* clear WatchDogReset (W1C) */
 	tx4939_ccfg_set(TX4939_CCFG_WDRST);
 	/* do reset on watchdog */
@@ -320,18 +325,32 @@ void __init tx4939_sio_init(unsigned int sclk, unsigned int cts_mask)
 #if IS_ENABLED(CONFIG_TC35815)
 static u32 tx4939_get_eth_speed(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct ethtool_cmd cmd;
 	if (__ethtool_get_settings(dev, &cmd))
 		return 100;	/* default 100Mbps */
 
 	return ethtool_cmd_speed(&cmd);
+=======
+	struct ethtool_link_ksettings cmd;
+
+	if (__ethtool_get_link_ksettings(dev, &cmd))
+		return 100;	/* default 100Mbps */
+
+	return cmd.base.speed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int tx4939_netdev_event(struct notifier_block *this,
 			       unsigned long event,
 			       void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (event == NETDEV_CHANGE && netif_carrier_ok(dev)) {
 		__u64 bit = 0;
 		if (dev->irq == TXX9_IRQ_BASE + TX4939_IR_ETH(0))

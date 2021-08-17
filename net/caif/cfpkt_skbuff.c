@@ -81,11 +81,15 @@ static struct cfpkt *cfpkt_create_pfx(u16 len, u16 pfx)
 {
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	if (likely(in_interrupt()))
 		skb = alloc_skb(len + pfx, GFP_ATOMIC);
 	else
 		skb = alloc_skb(len + pfx, GFP_KERNEL);
 
+=======
+	skb = alloc_skb(len + pfx, GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(skb == NULL))
 		return NULL;
 
@@ -203,6 +207,7 @@ int cfpkt_add_body(struct cfpkt *pkt, const void *data, u16 len)
 			PKT_ERROR(pkt, "cow failed\n");
 			return -EPROTO;
 		}
+<<<<<<< HEAD
 		/*
 		 * Is the SKB non-linear after skb_cow_data()? If so, we are
 		 * going to add data to the last SKB, so we need to adjust
@@ -217,6 +222,12 @@ int cfpkt_add_body(struct cfpkt *pkt, const void *data, u16 len)
 
 	/* All set to put the last SKB and optionally write data there. */
 	to = skb_put(lastskb, len);
+=======
+	}
+
+	/* All set to put the last SKB and optionally write data there. */
+	to = pskb_put(skb, lastskb, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (likely(data))
 		memcpy(to, data, len);
 	return 0;
@@ -265,9 +276,15 @@ inline u16 cfpkt_getlen(struct cfpkt *pkt)
 	return skb->len;
 }
 
+<<<<<<< HEAD
 inline u16 cfpkt_iterate(struct cfpkt *pkt,
 			 u16 (*iter_func)(u16, void *, u16),
 			 u16 data)
+=======
+int cfpkt_iterate(struct cfpkt *pkt,
+		  u16 (*iter_func)(u16, void *, u16),
+		  u16 data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * Don't care about the performance hit of linearizing,
@@ -296,7 +313,11 @@ int cfpkt_setlen(struct cfpkt *pkt, u16 len)
 		else
 			skb_trim(skb, len);
 
+<<<<<<< HEAD
 			return cfpkt_getlen(pkt);
+=======
+		return cfpkt_getlen(pkt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Need to expand SKB */

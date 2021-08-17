@@ -458,12 +458,15 @@ static inline void update_tx_channel_config (hrz_dev * dev, short chan, u8 mode,
     return;
 }
 
+<<<<<<< HEAD
 static inline u16 query_tx_channel_config (hrz_dev * dev, short chan, u8 mode) {
   wr_regw (dev, TX_CHANNEL_CONFIG_COMMAND_OFF,
 	   chan * TX_CHANNEL_CONFIG_MULT | mode);
     return rd_regw (dev, TX_CHANNEL_CONFIG_DATA_OFF);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /********** dump functions **********/
 
 static inline void dump_skb (char * prefix, unsigned int vc, struct sk_buff * skb) {
@@ -513,6 +516,7 @@ static inline void dump_framer (hrz_dev * dev) {
 
 /* RX channels are 10 bit integers, these fns are quite paranoid */
 
+<<<<<<< HEAD
 static inline int channel_to_vpivci (const u16 channel, short * vpi, int * vci) {
   unsigned short vci_bits = 10 - vpi_bits;
   if ((channel & RX_CHANNEL_MASK) == channel) {
@@ -523,6 +527,8 @@ static inline int channel_to_vpivci (const u16 channel, short * vpi, int * vci) 
   return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int vpivci_to_channel (u16 * channel, const short vpi, const int vci) {
   unsigned short vci_bits = 10 - vpi_bits;
   if (0 <= vpi && vpi < 1<<vpi_bits && 0 <= vci && vci < 1<<vci_bits) {
@@ -1260,6 +1266,7 @@ static u32 rx_queue_entry_next (hrz_dev * dev) {
   return rx_queue_entry;
 }
 
+<<<<<<< HEAD
 /********** handle RX disabled by device **********/
 
 static inline void rx_disabled_handler (hrz_dev * dev) {
@@ -1268,6 +1275,8 @@ static inline void rx_disabled_handler (hrz_dev * dev) {
   PRINTK (KERN_WARNING, "RX was disabled!");
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /********** handle RX data received by device **********/
 
 // called from IRQ handler
@@ -2819,16 +2828,24 @@ static int hrz_probe(struct pci_dev *pci_dev,
 	dev->atm_dev->ci_range.vpi_bits = vpi_bits;
 	dev->atm_dev->ci_range.vci_bits = 10-vpi_bits;
 
+<<<<<<< HEAD
 	init_timer(&dev->housekeeping);
 	dev->housekeeping.function = do_housekeeping;
 	dev->housekeeping.data = (unsigned long) dev;
+=======
+	setup_timer(&dev->housekeeping, do_housekeeping, (unsigned long) dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mod_timer(&dev->housekeeping, jiffies);
 
 out:
 	return err;
 
 out_free_irq:
+<<<<<<< HEAD
 	free_irq(dev->irq, dev);
+=======
+	free_irq(irq, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_free:
 	kfree(dev);
 out_release:

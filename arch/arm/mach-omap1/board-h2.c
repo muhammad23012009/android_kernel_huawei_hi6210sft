@@ -41,16 +41,24 @@
 #include <mach/mux.h>
 #include <linux/omap-dma.h>
 #include <mach/tc.h>
+<<<<<<< HEAD
 #include <mach/irda.h>
 #include <linux/platform_data/keypad-omap.h>
 #include <mach/flash.h>
+=======
+#include <linux/platform_data/keypad-omap.h>
+#include "flash.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/hardware.h>
 #include <mach/usb.h>
 
 #include "common.h"
 #include "board-h2.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* At OMAP1610 Innovator the Ethernet is directly connected to CS1 */
 #define OMAP1610_ETHR_START		0x04000300
@@ -276,6 +284,7 @@ static struct platform_device h2_kp_device = {
 	.resource	= h2_kp_resources,
 };
 
+<<<<<<< HEAD
 #define H2_IRDA_FIRSEL_GPIO_PIN	17
 
 static struct omap_irda_config h2_irda_data = {
@@ -309,6 +318,8 @@ static struct platform_device h2_irda_device = {
 	.resource	= h2_irda_resources,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct gpio_led h2_gpio_led_pins[] = {
 	{
 		.name		= "h2:red",
@@ -339,7 +350,10 @@ static struct platform_device *h2_devices[] __initdata = {
 	&h2_nor_device,
 	&h2_nand_device,
 	&h2_smc91x_device,
+<<<<<<< HEAD
 	&h2_irda_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&h2_kp_device,
 	&h2_gpio_leds,
 };
@@ -354,6 +368,12 @@ static void __init h2_init_smc91x(void)
 
 static int tps_setup(struct i2c_client *client, void *context)
 {
+<<<<<<< HEAD
+=======
+	if (!IS_BUILTIN(CONFIG_TPS65010))
+		return -ENOSYS;
+	
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tps65010_config_vregs1(TPS_LDO2_ENABLE | TPS_VLDO2_3_0V |
 				TPS_LDO1_ENABLE | TPS_VLDO1_3_0V);
 
@@ -382,7 +402,11 @@ static struct omap_usb_config h2_usb_config __initdata = {
 #if IS_ENABLED(CONFIG_USB_OMAP)
 	.hmc_mode	= 19,	/* 0:host(off) 1:dev|otg 2:disabled */
 	/* .hmc_mode	= 21,*/	/* 0:host(off) 1:dev(loopback) 2:host(loopback) */
+<<<<<<< HEAD
 #elif	defined(CONFIG_USB_OHCI_HCD) || defined(CONFIG_USB_OHCI_HCD_MODULE)
+=======
+#elif	IS_ENABLED(CONFIG_USB_OHCI_HCD)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* needs OTG cable, or NONSTANDARD (B-to-MiniB) */
 	.hmc_mode	= 20,	/* 1:dev|otg(off) 1:host 2:disabled */
 #endif
@@ -459,6 +483,10 @@ MACHINE_START(OMAP_H2, "TI-H2")
 	.map_io		= omap16xx_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= h2_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

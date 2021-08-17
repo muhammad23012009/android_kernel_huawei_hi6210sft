@@ -40,10 +40,13 @@ void __init pcibios_fixup_irqs(void)
 	}
 }
 
+<<<<<<< HEAD
 void __init pcibios_penalize_isa_irq(int irq)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void pcibios_enable_irq(struct pci_dev *dev)
 {
 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, dev->irq);

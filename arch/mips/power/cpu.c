@@ -7,7 +7,11 @@
  * Author: Hu Hongbing <huhb@lemote.com>
  *	   Wu Zhangjin <wuzhangjin@gmail.com>
  */
+<<<<<<< HEAD
 #include <asm/suspend.h>
+=======
+#include <asm/sections.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/fpu.h>
 #include <asm/dsp.h>
 

@@ -56,6 +56,7 @@ static int metag_timer_set_next_event(unsigned long delta,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void metag_timer_set_mode(enum clock_event_mode mode,
 				 struct clock_event_device *evt)
 {
@@ -75,6 +76,8 @@ static void metag_timer_set_mode(enum clock_event_mode mode,
 	};
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static cycle_t metag_clocksource_read(struct clocksource *cs)
 {
 	return __core_reg_get(TXTIMER);
@@ -90,7 +93,11 @@ static struct clocksource clocksource_metag = {
 
 static irqreturn_t metag_timer_interrupt(int irq, void *dummy)
 {
+<<<<<<< HEAD
 	struct clock_event_device *evt = &__get_cpu_var(local_clockevent);
+=======
+	struct clock_event_device *evt = this_cpu_ptr(&local_clockevent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	evt->event_handler(evt);
 
@@ -109,7 +116,11 @@ unsigned long long sched_clock(void)
 	return ticks << HARDWARE_TO_NS_SHIFT;
 }
 
+<<<<<<< HEAD
 static void __cpuinit arch_timer_setup(unsigned int cpu)
+=======
+static int arch_timer_starting_cpu(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int txdivtime;
 	struct clock_event_device *clk = &per_cpu(local_clockevent, cpu);
@@ -129,7 +140,10 @@ static void __cpuinit arch_timer_setup(unsigned int cpu)
 	clk->rating = 200,
 	clk->shift = 12,
 	clk->irq = tbisig_map(TBID_SIGNUM_TRT),
+<<<<<<< HEAD
 	clk->set_mode = metag_timer_set_mode,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk->set_next_event = metag_timer_set_next_event,
 
 	clk->mult = div_sc(hwtimer_freq, NSEC_PER_SEC, clk->shift);
@@ -152,6 +166,7 @@ static void __cpuinit arch_timer_setup(unsigned int cpu)
 		val = core_reg_read(TXUCT_ID, TXTIMER_REGNUM, thread0);
 		__core_reg_set(TXTIMER, val);
 	}
+<<<<<<< HEAD
 }
 
 static int __cpuinit arch_timer_cpu_notify(struct notifier_block *self,
@@ -173,6 +188,11 @@ static struct notifier_block __cpuinitdata arch_timer_cpu_nb = {
 	.notifier_call = arch_timer_cpu_notify,
 };
 
+=======
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __init metag_generic_timer_init(void)
 {
 	/*
@@ -184,10 +204,16 @@ int __init metag_generic_timer_init(void)
 #ifdef CONFIG_METAG_META21
 	hwtimer_freq = get_coreclock() / (metag_in32(EXPAND_TIMER_DIV) + 1);
 #endif
+<<<<<<< HEAD
+=======
+	pr_info("Timer frequency: %u Hz\n", hwtimer_freq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clocksource_register_hz(&clocksource_metag, hwtimer_freq);
 
 	setup_irq(tbisig_map(TBID_SIGNUM_TRT), &metag_timer_irq);
 
+<<<<<<< HEAD
 	/* Configure timer on boot CPU */
 	arch_timer_setup(smp_processor_id());
 
@@ -195,4 +221,10 @@ int __init metag_generic_timer_init(void)
 	register_cpu_notifier(&arch_timer_cpu_nb);
 
 	return 0;
+=======
+	/* Hook cpu boot to configure the CPU's timers */
+	return cpuhp_setup_state(CPUHP_AP_METAG_TIMER_STARTING,
+				 "AP_METAG_TIMER_STARTING",
+				 arch_timer_starting_cpu, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

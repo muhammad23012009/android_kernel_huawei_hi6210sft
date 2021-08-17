@@ -236,6 +236,12 @@ static int si21_writeregs(struct si21xx_state *state, u8 reg1,
 				.len = len + 1
 	};
 
+<<<<<<< HEAD
+=======
+	if (len > sizeof(buf) - 1)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	msg.buf[0] =  reg1;
 	memcpy(msg.buf + 1, data, len);
 
@@ -407,7 +413,11 @@ static int si21xx_send_diseqc_msg(struct dvb_frontend *fe,
 }
 
 static int si21xx_send_diseqc_burst(struct dvb_frontend *fe,
+<<<<<<< HEAD
 						fe_sec_mini_cmd_t burst)
+=======
+				    enum fe_sec_mini_cmd burst)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct si21xx_state *state = fe->demodulator_priv;
 	u8 val;
@@ -431,7 +441,11 @@ static int si21xx_send_diseqc_burst(struct dvb_frontend *fe,
 	return 0;
 }
 /*	30.06.2008 */
+<<<<<<< HEAD
 static int si21xx_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+=======
+static int si21xx_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct si21xx_state *state = fe->demodulator_priv;
 	u8 val;
@@ -451,7 +465,11 @@ static int si21xx_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
 	}
 }
 
+<<<<<<< HEAD
 static int si21xx_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t volt)
+=======
+static int si21xx_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage volt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct si21xx_state *state = fe->demodulator_priv;
 
@@ -533,7 +551,11 @@ static int si21xx_init(struct dvb_frontend *fe)
 
 }
 
+<<<<<<< HEAD
 static int si21_read_status(struct dvb_frontend *fe, fe_status_t *status)
+=======
+static int si21_read_status(struct dvb_frontend *fe, enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct si21xx_state *state = fe->demodulator_priv;
 	u8 regs_read[2];
@@ -638,7 +660,11 @@ static int si21_read_ucblocks(struct dvb_frontend *fe, u32 *ucblocks)
 /*	initiates a channel acquisition sequence
 	using the specified symbol rate and code rate */
 static int si21xx_setacquire(struct dvb_frontend *fe, int symbrate,
+<<<<<<< HEAD
 						fe_code_rate_t crate)
+=======
+			     enum fe_code_rate crate)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 
 	struct si21xx_state *state = fe->demodulator_priv;

@@ -13,13 +13,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/capability.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/if.h>
 #include <linux/inetdevice.h>
 #include <linux/ip.h>
@@ -62,14 +70,25 @@ static const struct nla_policy xt_osf_policy[OSF_ATTR_MAX + 1] = {
 	[OSF_ATTR_FINGER]	= { .len = sizeof(struct xt_osf_user_finger) },
 };
 
+<<<<<<< HEAD
 static int xt_osf_add_callback(struct sock *ctnl, struct sk_buff *skb,
 			       const struct nlmsghdr *nlh,
+=======
+static int xt_osf_add_callback(struct net *net, struct sock *ctnl,
+			       struct sk_buff *skb, const struct nlmsghdr *nlh,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       const struct nlattr * const osf_attrs[])
 {
 	struct xt_osf_user_finger *f;
 	struct xt_osf_finger *kf = NULL, *sf;
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_NET_ADMIN))
+		return -EPERM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!osf_attrs[OSF_ATTR_FINGER])
 		return -EINVAL;
 
@@ -105,7 +124,12 @@ static int xt_osf_add_callback(struct sock *ctnl, struct sk_buff *skb,
 	return err;
 }
 
+<<<<<<< HEAD
 static int xt_osf_remove_callback(struct sock *ctnl, struct sk_buff *skb,
+=======
+static int xt_osf_remove_callback(struct net *net, struct sock *ctnl,
+				  struct sk_buff *skb,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  const struct nlmsghdr *nlh,
 				  const struct nlattr * const osf_attrs[])
 {
@@ -113,6 +137,12 @@ static int xt_osf_remove_callback(struct sock *ctnl, struct sk_buff *skb,
 	struct xt_osf_finger *sf;
 	int err = -ENOENT;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_NET_ADMIN))
+		return -EPERM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!osf_attrs[OSF_ATTR_FINGER])
 		return -EINVAL;
 
@@ -201,7 +231,11 @@ xt_osf_match_packet(const struct sk_buff *skb, struct xt_action_param *p)
 	unsigned char opts[MAX_IPOPTLEN];
 	const struct xt_osf_finger *kf;
 	const struct xt_osf_user_finger *f;
+<<<<<<< HEAD
 	struct net *net = dev_net(p->in ? p->in : p->out);
+=======
+	struct net *net = p->net;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!info)
 		return false;
@@ -226,6 +260,11 @@ xt_osf_match_packet(const struct sk_buff *skb, struct xt_action_param *p)
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(kf, &xt_osf_fingers[df], finger_entry) {
+<<<<<<< HEAD
+=======
+		int foptsize, optnum;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		f = &kf->finger;
 
 		if (!(info->flags & XT_OSF_LOG) && strcmp(info->genre, f->genre))
@@ -234,6 +273,7 @@ xt_osf_match_packet(const struct sk_buff *skb, struct xt_action_param *p)
 		optp = _optp;
 		fmatch = FMATCH_WRONG;
 
+<<<<<<< HEAD
 		if (totlen == f->ss && xt_osf_ttl(skb, info, f->ttl)) {
 			int foptsize, optnum;
 
@@ -338,6 +378,109 @@ xt_osf_match_packet(const struct sk_buff *skb, struct xt_action_param *p)
 			    info->loglevel == XT_OSF_LOGLEVEL_FIRST)
 				break;
 		}
+=======
+		if (totlen != f->ss || !xt_osf_ttl(skb, info, f->ttl))
+			continue;
+
+		/*
+		 * Should not happen if userspace parser was written correctly.
+		 */
+		if (f->wss.wc >= OSF_WSS_MAX)
+			continue;
+
+		/* Check options */
+
+		foptsize = 0;
+		for (optnum = 0; optnum < f->opt_num; ++optnum)
+			foptsize += f->opt[optnum].length;
+
+		if (foptsize > MAX_IPOPTLEN ||
+		    optsize > MAX_IPOPTLEN ||
+		    optsize != foptsize)
+			continue;
+
+		check_WSS = f->wss.wc;
+
+		for (optnum = 0; optnum < f->opt_num; ++optnum) {
+			if (f->opt[optnum].kind == (*optp)) {
+				__u32 len = f->opt[optnum].length;
+				const __u8 *optend = optp + len;
+
+				fmatch = FMATCH_OK;
+
+				switch (*optp) {
+				case OSFOPT_MSS:
+					mss = optp[3];
+					mss <<= 8;
+					mss |= optp[2];
+
+					mss = ntohs((__force __be16)mss);
+					break;
+				case OSFOPT_TS:
+					break;
+				}
+
+				optp = optend;
+			} else
+				fmatch = FMATCH_OPT_WRONG;
+
+			if (fmatch != FMATCH_OK)
+				break;
+		}
+
+		if (fmatch != FMATCH_OPT_WRONG) {
+			fmatch = FMATCH_WRONG;
+
+			switch (check_WSS) {
+			case OSF_WSS_PLAIN:
+				if (f->wss.val == 0 || window == f->wss.val)
+					fmatch = FMATCH_OK;
+				break;
+			case OSF_WSS_MSS:
+				/*
+				 * Some smart modems decrease mangle MSS to
+				 * SMART_MSS_2, so we check standard, decreased
+				 * and the one provided in the fingerprint MSS
+				 * values.
+				 */
+#define SMART_MSS_1	1460
+#define SMART_MSS_2	1448
+				if (window == f->wss.val * mss ||
+				    window == f->wss.val * SMART_MSS_1 ||
+				    window == f->wss.val * SMART_MSS_2)
+					fmatch = FMATCH_OK;
+				break;
+			case OSF_WSS_MTU:
+				if (window == f->wss.val * (mss + 40) ||
+				    window == f->wss.val * (SMART_MSS_1 + 40) ||
+				    window == f->wss.val * (SMART_MSS_2 + 40))
+					fmatch = FMATCH_OK;
+				break;
+			case OSF_WSS_MODULO:
+				if ((window % f->wss.val) == 0)
+					fmatch = FMATCH_OK;
+				break;
+			}
+		}
+
+		if (fmatch != FMATCH_OK)
+			continue;
+
+		fcount++;
+
+		if (info->flags & XT_OSF_LOG)
+			nf_log_packet(net, p->family, p->hooknum, skb,
+				      p->in, p->out, NULL,
+				      "%s [%s:%s] : %pI4:%d -> %pI4:%d hops=%d\n",
+				      f->genre, f->version, f->subtype,
+				      &ip->saddr, ntohs(tcp->source),
+				      &ip->daddr, ntohs(tcp->dest),
+				      f->ttl - ip->ttl);
+
+		if ((info->flags & XT_OSF_LOG) &&
+		    info->loglevel == XT_OSF_LOGLEVEL_FIRST)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	rcu_read_unlock();
 
@@ -423,4 +566,9 @@ module_exit(xt_osf_fini);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
 MODULE_DESCRIPTION("Passive OS fingerprint matching.");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("ipt_osf");
+MODULE_ALIAS("ip6t_osf");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_OSF);

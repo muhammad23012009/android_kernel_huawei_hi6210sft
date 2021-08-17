@@ -17,7 +17,11 @@
 
 static unsigned int base_addr;
 
+<<<<<<< HEAD
 void heartbeat(void)
+=======
+void microblaze_heartbeat(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static unsigned int cnt, period, dist;
 
@@ -42,7 +46,11 @@ void heartbeat(void)
 	}
 }
 
+<<<<<<< HEAD
 void setup_heartbeat(void)
+=======
+void microblaze_setup_heartbeat(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device_node *gpio = NULL;
 	int *prop;

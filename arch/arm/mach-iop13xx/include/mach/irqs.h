@@ -191,6 +191,9 @@ static inline u32 read_intpnd_3(void)
 #define NR_IOP13XX_IRQS	(IRQ_IOP13XX_HPI + 1)
 #endif
 
+<<<<<<< HEAD
 #define NR_IRQS		NR_IOP13XX_IRQS
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _IOP13XX_IRQ_H_ */

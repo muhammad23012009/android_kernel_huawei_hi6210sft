@@ -12,10 +12,27 @@
  */
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/perf_event.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ptrace.h>
 #include <linux/uaccess.h>
 #include <asm/disasm.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_BIG_ENDIAN
+#define BE		1
+#define FIRST_BYTE_16	"swap %1, %1\n swape %1, %1\n"
+#define FIRST_BYTE_32	"swape %1, %1\n"
+#else
+#define BE		0
+#define FIRST_BYTE_16
+#define FIRST_BYTE_32
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __get8_unaligned_check(val, addr, err)		\
 	__asm__(					\
 	"1:	ldb.ab	%1, [%2, 1]\n"			\
@@ -23,7 +40,11 @@
 	"	.section .fixup,\"ax\"\n"		\
 	"	.align	4\n"				\
 	"3:	mov	%0, 1\n"			\
+<<<<<<< HEAD
 	"	b	2b\n"				\
+=======
+	"	j	2b\n"				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	.previous\n"				\
 	"	.section __ex_table,\"a\"\n"		\
 	"	.align	4\n"				\
@@ -36,9 +57,15 @@
 	do {						\
 		unsigned int err = 0, v, a = addr;	\
 		__get8_unaligned_check(v, a, err);	\
+<<<<<<< HEAD
 		val =  v ;				\
 		__get8_unaligned_check(v, a, err);	\
 		val |= v << 8;				\
+=======
+		val =  v << ((BE) ? 8 : 0);		\
+		__get8_unaligned_check(v, a, err);	\
+		val |= v << ((BE) ? 0 : 8);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)				\
 			goto fault;			\
 	} while (0)
@@ -47,6 +74,7 @@
 	do {						\
 		unsigned int err = 0, v, a = addr;	\
 		__get8_unaligned_check(v, a, err);	\
+<<<<<<< HEAD
 		val =  v << 0;				\
 		__get8_unaligned_check(v, a, err);	\
 		val |= v << 8;				\
@@ -54,6 +82,15 @@
 		val |= v << 16;				\
 		__get8_unaligned_check(v, a, err);	\
 		val |= v << 24;				\
+=======
+		val =  v << ((BE) ? 24 : 0);		\
+		__get8_unaligned_check(v, a, err);	\
+		val |= v << ((BE) ? 16 : 8);		\
+		__get8_unaligned_check(v, a, err);	\
+		val |= v << ((BE) ? 8 : 16);		\
+		__get8_unaligned_check(v, a, err);	\
+		val |= v << ((BE) ? 0 : 24);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)				\
 			goto fault;			\
 	} while (0)
@@ -63,6 +100,10 @@
 		unsigned int err = 0, v = val, a = addr;\
 							\
 		__asm__(				\
+<<<<<<< HEAD
+=======
+		FIRST_BYTE_16				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"1:	stb.ab	%1, [%2, 1]\n"		\
 		"	lsr %1, %1, 8\n"		\
 		"2:	stb	%1, [%2]\n"		\
@@ -70,7 +111,11 @@
 		"	.section .fixup,\"ax\"\n"	\
 		"	.align	4\n"			\
 		"4:	mov	%0, 1\n"		\
+<<<<<<< HEAD
 		"	b	3b\n"			\
+=======
+		"	j	3b\n"			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	.previous\n"			\
 		"	.section __ex_table,\"a\"\n"	\
 		"	.align	4\n"			\
@@ -87,8 +132,14 @@
 #define put32_unaligned_check(val, addr)		\
 	do {						\
 		unsigned int err = 0, v = val, a = addr;\
+<<<<<<< HEAD
 		__asm__(				\
 							\
+=======
+							\
+		__asm__(				\
+		FIRST_BYTE_32				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"1:	stb.ab	%1, [%2, 1]\n"		\
 		"	lsr %1, %1, 8\n"		\
 		"2:	stb.ab	%1, [%2, 1]\n"		\
@@ -100,7 +151,11 @@
 		"	.section .fixup,\"ax\"\n"	\
 		"	.align	4\n"			\
 		"6:	mov	%0, 1\n"		\
+<<<<<<< HEAD
 		"	b	5b\n"			\
+=======
+		"	j	5b\n"			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	.previous\n"			\
 		"	.section __ex_table,\"a\"\n"	\
 		"	.align	4\n"			\
@@ -187,7 +242,11 @@ fault:	state->fault = 1;
  * Returns 0 if successfully handled, 1 if some error happened
  */
 int misaligned_fixup(unsigned long address, struct pt_regs *regs,
+<<<<<<< HEAD
 		     unsigned long cause, struct callee_regs *cregs)
+=======
+		     struct callee_regs *cregs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct disasm_state state;
 	char buf[TASK_COMM_LEN];
@@ -242,6 +301,10 @@ int misaligned_fixup(unsigned long address, struct pt_regs *regs,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	perf_sw_event(PERF_COUNT_SW_ALIGNMENT_FAULTS, 1, regs, address);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 fault:

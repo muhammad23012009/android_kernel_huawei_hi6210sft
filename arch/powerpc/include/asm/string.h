@@ -3,12 +3,17 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_STRCPY
 #define __HAVE_ARCH_STRNCPY
 #define __HAVE_ARCH_STRLEN
 #define __HAVE_ARCH_STRCMP
 #define __HAVE_ARCH_STRNCMP
 #define __HAVE_ARCH_STRCAT
+=======
+#define __HAVE_ARCH_STRNCPY
+#define __HAVE_ARCH_STRNCMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __HAVE_ARCH_MEMSET
 #define __HAVE_ARCH_MEMCPY
 #define __HAVE_ARCH_MEMMOVE

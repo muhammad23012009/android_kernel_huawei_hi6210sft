@@ -12,6 +12,15 @@
 #ifndef _TLV320AIC23_H
 #define _TLV320AIC23_H
 
+<<<<<<< HEAD
+=======
+struct device;
+struct regmap_config;
+
+extern const struct regmap_config tlv320aic23_regmap;
+int tlv320aic23_probe(struct device *dev, struct regmap *regmap);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Codec TLV320AIC23 */
 #define TLV320AIC23_LINVOL		0x00
 #define TLV320AIC23_RINVOL		0x01

@@ -169,6 +169,7 @@ static void *sta2x11_swiotlb_alloc_coherent(struct device *dev,
 					    size_t size,
 					    dma_addr_t *dma_handle,
 					    gfp_t flags,
+<<<<<<< HEAD
 					    struct dma_attrs *attrs)
 {
 	void *vaddr;
@@ -176,6 +177,13 @@ static void *sta2x11_swiotlb_alloc_coherent(struct device *dev,
 	vaddr = dma_generic_alloc_coherent(dev, size, dma_handle, flags, attrs);
 	if (!vaddr)
 		vaddr = swiotlb_alloc_coherent(dev, size, dma_handle, flags);
+=======
+					    unsigned long attrs)
+{
+	void *vaddr;
+
+	vaddr = x86_swiotlb_alloc_coherent(dev, size, dma_handle, flags, attrs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*dma_handle = p2a(*dma_handle, to_pci_dev(dev));
 	return vaddr;
 }
@@ -183,7 +191,11 @@ static void *sta2x11_swiotlb_alloc_coherent(struct device *dev,
 /* We have our own dma_ops: the same as swiotlb but from alloc (above) */
 static struct dma_map_ops sta2x11_dma_ops = {
 	.alloc = sta2x11_swiotlb_alloc_coherent,
+<<<<<<< HEAD
 	.free = swiotlb_free_coherent,
+=======
+	.free = x86_swiotlb_free_coherent,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map_page = swiotlb_map_page,
 	.unmap_page = swiotlb_unmap_page,
 	.map_sg = swiotlb_map_sg_attrs,

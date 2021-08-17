@@ -211,7 +211,11 @@ CPU_LE( lsr	tmp2, tmp2, tmp1 )
 .Lunequal_proc:
 	cbz	diff, .Lremain8
 
+<<<<<<< HEAD
 /*There is differnence occured in the latest comparison.*/
+=======
+/* There is difference occurred in the latest comparison. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 .Lnot_limit:
 /*
 * For little endian,reverse the low significant equal bits into MSB,then
@@ -255,4 +259,8 @@ CPU_LE( rev	data2, data2 )
 .Lret0:
 	mov	result, #0
 	ret
+<<<<<<< HEAD
 ENDPROC(memcmp)
+=======
+ENDPIPROC(memcmp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -16,13 +16,21 @@
 #include "ad7606.h"
 
 static int ad7606_par16_read_block(struct device *dev,
+<<<<<<< HEAD
 				 int count, void *buf)
+=======
+				   int count, void *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 	struct ad7606_state *st = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	insw((unsigned long) st->base_address, buf, count);
+=======
+	insw((unsigned long)st->base_address, buf, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -32,13 +40,21 @@ static const struct ad7606_bus_ops ad7606_par16_bops = {
 };
 
 static int ad7606_par8_read_block(struct device *dev,
+<<<<<<< HEAD
 				 int count, void *buf)
+=======
+				  int count, void *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 	struct ad7606_state *st = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	insb((unsigned long) st->base_address, buf, count * 2);
+=======
+	insb((unsigned long)st->base_address, buf, count * 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -53,7 +69,11 @@ static int ad7606_par_probe(struct platform_device *pdev)
 	struct iio_dev *indio_dev;
 	void __iomem *addr;
 	resource_size_t remap_size;
+<<<<<<< HEAD
 	int ret, irq;
+=======
+	int irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
@@ -62,6 +82,7 @@ static int ad7606_par_probe(struct platform_device *pdev)
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res)
 		return -ENODEV;
 
@@ -87,10 +108,26 @@ static int ad7606_par_probe(struct platform_device *pdev)
 		ret = PTR_ERR(indio_dev);
 		goto out2;
 	}
+=======
+	addr = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(addr))
+		return PTR_ERR(addr);
+
+	remap_size = resource_size(res);
+
+	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
+				 platform_get_device_id(pdev)->driver_data,
+				 remap_size > 1 ? &ad7606_par16_bops :
+				 &ad7606_par8_bops);
+
+	if (IS_ERR(indio_dev))
+		return PTR_ERR(indio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, indio_dev);
 
 	return 0;
+<<<<<<< HEAD
 
 out2:
 	iounmap(addr);
@@ -98,11 +135,14 @@ out1:
 	release_mem_region(res->start, remap_size);
 
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ad7606_par_remove(struct platform_device *pdev)
 {
 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct resource *res;
 	struct ad7606_state *st = iio_priv(indio_dev);
 
@@ -147,6 +187,15 @@ static const struct dev_pm_ops ad7606_pm_ops = {
 #endif  /* CONFIG_PM */
 
 static struct platform_device_id ad7606_driver_ids[] = {
+=======
+
+	ad7606_remove(indio_dev, platform_get_irq(pdev, 0));
+
+	return 0;
+}
+
+static const struct platform_device_id ad7606_driver_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "ad7606-8",
 		.driver_data	= ID_AD7606_8,
@@ -168,8 +217,12 @@ static struct platform_driver ad7606_driver = {
 	.id_table = ad7606_driver_ids,
 	.driver = {
 		.name	 = "ad7606",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm    = AD7606_PAR_PM_OPS,
+=======
+		.pm	 = AD7606_PM_OPS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

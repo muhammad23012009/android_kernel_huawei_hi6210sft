@@ -27,7 +27,11 @@
  * platform-specific code to shutdown a CPU
  * Called with IRQs disabled
  */
+<<<<<<< HEAD
 void __ref omap4_cpu_die(unsigned int cpu)
+=======
+void omap4_cpu_die(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int boot_cpu = 0;
 	void __iomem *base = omap_get_wakeupgen_base();
@@ -39,7 +43,11 @@ void __ref omap4_cpu_die(unsigned int cpu)
 		if (omap_modify_auxcoreboot0(0x0, 0x200) != 0x0)
 			pr_err("Secure clear status failed\n");
 	} else {
+<<<<<<< HEAD
 		__raw_writel(0, base + OMAP_AUX_CORE_BOOT_0);
+=======
+		writel_relaxed(0, base + OMAP_AUX_CORE_BOOT_0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 
@@ -53,7 +61,11 @@ void __ref omap4_cpu_die(unsigned int cpu)
 			boot_cpu = omap_read_auxcoreboot0();
 		else
 			boot_cpu =
+<<<<<<< HEAD
 				__raw_readl(base + OMAP_AUX_CORE_BOOT_0) >> 5;
+=======
+				readl_relaxed(base + OMAP_AUX_CORE_BOOT_0) >> 5;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (boot_cpu == smp_processor_id()) {
 			/*
@@ -64,3 +76,12 @@ void __ref omap4_cpu_die(unsigned int cpu)
 		pr_debug("CPU%u: spurious wakeup call\n", cpu);
 	}
 }
+<<<<<<< HEAD
+=======
+
+/* Needed by kexec and platform_can_cpu_hotplug() */
+int omap4_cpu_kill(unsigned int cpu)
+{
+	return 1;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

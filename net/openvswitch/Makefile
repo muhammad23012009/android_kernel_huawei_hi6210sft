@@ -9,6 +9,22 @@ openvswitch-y := \
 	datapath.o \
 	dp_notify.o \
 	flow.o \
+<<<<<<< HEAD
 	vport.o \
 	vport-internal_dev.o \
 	vport-netdev.o \
+=======
+	flow_netlink.o \
+	flow_table.o \
+	vport.o \
+	vport-internal_dev.o \
+	vport-netdev.o
+
+ifneq ($(CONFIG_NF_CONNTRACK),)
+openvswitch-y += conntrack.o
+endif
+
+obj-$(CONFIG_OPENVSWITCH_VXLAN)+= vport-vxlan.o
+obj-$(CONFIG_OPENVSWITCH_GENEVE)+= vport-geneve.o
+obj-$(CONFIG_OPENVSWITCH_GRE)	+= vport-gre.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

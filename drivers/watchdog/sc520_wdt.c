@@ -158,12 +158,19 @@ static void wdt_timer_ping(unsigned long data)
 
 static void wdt_config(int writeval)
 {
+<<<<<<< HEAD
 	__u16 dummy;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	/* buy some time (ping) */
 	spin_lock_irqsave(&wdt_spinlock, flags);
+<<<<<<< HEAD
 	dummy = readw(wdtmrctl);	/* ensure write synchronization */
+=======
+	readw(wdtmrctl);	/* ensure write synchronization */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	writew(0xAAAA, wdtmrctl);
 	writew(0x5555, wdtmrctl);
 	/* unlock WDT = make WDT configuration register writable one time */
@@ -191,7 +198,11 @@ static int wdt_startup(void)
 static int wdt_turnoff(void)
 {
 	/* Stop the timer */
+<<<<<<< HEAD
 	del_timer(&timer);
+=======
+	del_timer_sync(&timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Stop the watchdog */
 	wdt_config(0);
@@ -433,4 +444,7 @@ MODULE_AUTHOR("Scott and Bill Jennings");
 MODULE_DESCRIPTION(
 	"Driver for watchdog timer in AMD \"Elan\" SC520 uProcessor");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

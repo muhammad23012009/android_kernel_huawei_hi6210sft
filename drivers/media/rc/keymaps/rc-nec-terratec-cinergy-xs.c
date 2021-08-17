@@ -2,7 +2,11 @@
  *
  * keymap imported from ir-keymaps.c
  *
+<<<<<<< HEAD
  * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ * Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +18,11 @@
 #include <linux/module.h>
 
 /* Terratec Cinergy Hybrid T USB XS FM
+<<<<<<< HEAD
    Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+   Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 static struct rc_map_table nec_terratec_cinergy_xs[] = {
@@ -155,4 +163,8 @@ module_init(init_rc_map_nec_terratec_cinergy_xs)
 module_exit(exit_rc_map_nec_terratec_cinergy_xs)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

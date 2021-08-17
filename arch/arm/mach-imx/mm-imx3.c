@@ -19,6 +19,10 @@
 #include <linux/mm.h>
 #include <linux/init.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pinctrl/machine.h>
 
 #include <asm/pgtable.h>
@@ -38,8 +42,11 @@ static void imx3_idle(void)
 {
 	unsigned long reg = 0;
 
+<<<<<<< HEAD
 	mx3_cpu_lp_set(MX3_WAIT);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(
 		/* disable I and D cache */
 		"mrc p15, 0, %0, c1, c0, 0\n"
@@ -135,12 +142,29 @@ void __init mx31_map_io(void)
 	iotable_init(mx31_io_desc, ARRAY_SIZE(mx31_io_desc));
 }
 
+<<<<<<< HEAD
 void __init imx31_init_early(void)
 {
 	mxc_set_cpu_type(MXC_CPU_MX31);
 	mxc_arch_reset_init(MX31_IO_ADDRESS(MX31_WDOG_BASE_ADDR));
 	arch_ioremap_caller = imx3_ioremap_caller;
 	arm_pm_idle = imx3_idle;
+=======
+static void imx31_idle(void)
+{
+	int reg = imx_readl(mx3_ccm_base + MXC_CCM_CCMR);
+	reg &= ~MXC_CCM_CCMR_LPM_MASK;
+	imx_writel(reg, mx3_ccm_base + MXC_CCM_CCMR);
+
+	imx3_idle();
+}
+
+void __init imx31_init_early(void)
+{
+	mxc_set_cpu_type(MXC_CPU_MX31);
+	arch_ioremap_caller = imx3_ioremap_caller;
+	arm_pm_idle = imx31_idle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mx3_ccm_base = MX31_IO_ADDRESS(MX31_CCM_BASE_ADDR);
 }
 
@@ -168,12 +192,23 @@ static const struct resource imx31_audmux_res[] __initconst = {
 	DEFINE_RES_MEM(MX31_AUDMUX_BASE_ADDR, SZ_16K),
 };
 
+<<<<<<< HEAD
+=======
+static const struct resource imx31_rnga_res[] __initconst = {
+	DEFINE_RES_MEM(MX31_RNGA_BASE_ADDR, SZ_16K),
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init imx31_soc_init(void)
 {
 	int to_version = mx31_revision() >> 4;
 
 	imx3_init_l2x0();
 
+<<<<<<< HEAD
+=======
+	mxc_arch_reset_init(MX31_IO_ADDRESS(MX31_WDOG_BASE_ADDR));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mxc_device_init();
 
 	mxc_register_gpio("imx31-gpio", 0, MX31_GPIO1_BASE_ADDR, SZ_16K, MX31_INT_GPIO1, 0);
@@ -195,6 +230,11 @@ void __init imx31_soc_init(void)
 
 	platform_device_register_simple("imx31-audmux", 0, imx31_audmux_res,
 					ARRAY_SIZE(imx31_audmux_res));
+<<<<<<< HEAD
+=======
+	platform_device_register_simple("mxc_rnga", -1, imx31_rnga_res,
+					ARRAY_SIZE(imx31_rnga_res));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* ifdef CONFIG_SOC_IMX31 */
 
@@ -212,12 +252,29 @@ void __init mx35_map_io(void)
 	iotable_init(mx35_io_desc, ARRAY_SIZE(mx35_io_desc));
 }
 
+<<<<<<< HEAD
+=======
+static void imx35_idle(void)
+{
+	int reg = imx_readl(mx3_ccm_base + MXC_CCM_CCMR);
+	reg &= ~MXC_CCM_CCMR_LPM_MASK;
+	reg |= MXC_CCM_CCMR_LPM_WAIT_MX35;
+	imx_writel(reg, mx3_ccm_base + MXC_CCM_CCMR);
+
+	imx3_idle();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init imx35_init_early(void)
 {
 	mxc_set_cpu_type(MXC_CPU_MX35);
 	mxc_iomux_v3_init(MX35_IO_ADDRESS(MX35_IOMUXC_BASE_ADDR));
+<<<<<<< HEAD
 	mxc_arch_reset_init(MX35_IO_ADDRESS(MX35_WDOG_BASE_ADDR));
 	arm_pm_idle = imx3_idle;
+=======
+	arm_pm_idle = imx35_idle;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	arch_ioremap_caller = imx3_ioremap_caller;
 	mx3_ccm_base = MX35_IO_ADDRESS(MX35_CCM_BASE_ADDR);
 }
@@ -272,6 +329,10 @@ void __init imx35_soc_init(void)
 
 	imx3_init_l2x0();
 
+<<<<<<< HEAD
+=======
+	mxc_arch_reset_init(MX35_IO_ADDRESS(MX35_WDOG_BASE_ADDR));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mxc_device_init();
 
 	mxc_register_gpio("imx35-gpio", 0, MX35_GPIO1_BASE_ADDR, SZ_16K, MX35_INT_GPIO1, 0);

@@ -237,11 +237,14 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 
 	/* get the /sys/devices/system/edac reference */
 	edac_subsys = edac_get_sysfs_subsys();
+<<<<<<< HEAD
 	if (edac_subsys == NULL) {
 		edac_dbg(1, "no edac_subsys error\n");
 		err = -ENODEV;
 		goto err_out;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Point to the 'edac_subsys' this instance 'reports' to */
 	edac_dev->edac_subsys = edac_subsys;
@@ -256,7 +259,11 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 
 	if (!try_module_get(edac_dev->owner)) {
 		err = -ENODEV;
+<<<<<<< HEAD
 		goto err_mod_get;
+=======
+		goto err_out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* register */
@@ -280,11 +287,17 @@ int edac_device_register_sysfs_main_kobj(struct edac_device_ctl_info *edac_dev)
 
 	/* Error exit stack */
 err_kobj_reg:
+<<<<<<< HEAD
 	module_put(edac_dev->owner);
 
 err_mod_get:
 	edac_put_sysfs_subsys();
 
+=======
+	kobject_put(&edac_dev->kobj);
+	module_put(edac_dev->owner);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out:
 	return err;
 }
@@ -306,7 +319,10 @@ void edac_device_unregister_sysfs_main_kobj(struct edac_device_ctl_info *dev)
 	 *   b) 'kfree' the memory
 	 */
 	kobject_put(&dev->kobj);
+<<<<<<< HEAD
 	edac_put_sysfs_subsys();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* edac_dev -> instance information */

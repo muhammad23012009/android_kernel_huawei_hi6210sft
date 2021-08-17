@@ -5,11 +5,18 @@
  * This assembly file is re-written from memmove_64.c file.
  *	- Copyright 2011 Fenghua Yu <fenghua.yu@intel.com>
  */
+<<<<<<< HEAD
 #define _STRING_C
 #include <linux/linkage.h>
 #include <asm/dwarf2.h>
 #include <asm/cpufeature.h>
 #include <asm/alternative-asm.h>
+=======
+#include <linux/linkage.h>
+#include <asm/cpufeatures.h>
+#include <asm/alternative-asm.h>
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #undef memmove
 
@@ -24,8 +31,15 @@
  * Output:
  * rax: dest
  */
+<<<<<<< HEAD
 ENTRY(memmove)
 	CFI_STARTPROC
+=======
+.weak memmove
+
+ENTRY(memmove)
+ENTRY(__memmove)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Handle more 32 bytes in loop */
 	mov %rdi, %rax
@@ -41,6 +55,11 @@ ENTRY(memmove)
 	jg 2f
 
 .Lmemmove_begin_forward:
+<<<<<<< HEAD
+=======
+	ALTERNATIVE "", "movq %rdx, %rcx; rep movsb; retq", X86_FEATURE_ERMS
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * movsq instruction have many startup latency
 	 * so we handle small size by general register.
@@ -203,6 +222,7 @@ ENTRY(memmove)
 	movb %r11b, (%rdi)
 13:
 	retq
+<<<<<<< HEAD
 	CFI_ENDPROC
 
 	.section .altinstr_replacement,"ax"
@@ -221,3 +241,9 @@ ENTRY(memmove)
 		.Lmemmove_end_forward_efs-.Lmemmove_begin_forward_efs
 	.previous
 ENDPROC(memmove)
+=======
+ENDPROC(__memmove)
+ENDPROC(memmove)
+EXPORT_SYMBOL(__memmove)
+EXPORT_SYMBOL(memmove)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

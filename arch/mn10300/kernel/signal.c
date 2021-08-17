@@ -40,7 +40,11 @@ static int restore_sigcontext(struct pt_regs *regs,
 	unsigned int err = 0;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (is_using_fpu(current))
 		fpu_kill_state(current);
@@ -75,7 +79,11 @@ static int restore_sigcontext(struct pt_regs *regs,
 		struct fpucontext *buf;
 		err |= __get_user(buf, &sc->fpucontext);
 		if (buf) {
+<<<<<<< HEAD
 			if (verify_area(VERIFY_READ, buf, sizeof(*buf)))
+=======
+			if (!access_ok(VERIFY_READ, buf, sizeof(*buf)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto badframe;
 			err |= fpu_restore_sigcontext(buf);
 		}
@@ -98,7 +106,11 @@ asmlinkage long sys_sigreturn(void)
 	long d0;
 
 	frame = (struct sigframe __user *) current_frame()->sp;
+<<<<<<< HEAD
 	if (verify_area(VERIFY_READ, frame, sizeof(*frame)))
+=======
+	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto badframe;
 	if (__get_user(set.sig[0], &frame->sc.oldmask))
 		goto badframe;
@@ -130,7 +142,11 @@ asmlinkage long sys_rt_sigreturn(void)
 	long d0;
 
 	frame = (struct rt_sigframe __user *) current_frame()->sp;
+<<<<<<< HEAD
 	if (verify_area(VERIFY_READ, frame, sizeof(*frame)))
+=======
+	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto badframe;
 	if (__copy_from_user(&set, &frame->uc.uc_sigmask, sizeof(set)))
 		goto badframe;
@@ -186,6 +202,7 @@ static int setup_sigcontext(struct sigcontext __user *sc,
 /*
  * determine which stack to use..
  */
+<<<<<<< HEAD
 static inline void __user *get_sigframe(struct k_sigaction *ka,
 					struct pt_regs *regs,
 					size_t frame_size)
@@ -200,6 +217,13 @@ static inline void __user *get_sigframe(struct k_sigaction *ka,
 		if (sas_ss_flags(sp) == 0)
 			sp = current->sas_ss_sp + current->sas_ss_size;
 	}
+=======
+static inline void __user *get_sigframe(struct ksignal *ksig,
+					struct pt_regs *regs,
+					size_t frame_size)
+{
+	unsigned long sp = sigsp(regs->sp, ksig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (void __user *) ((sp - frame_size) & ~7UL);
 }
@@ -207,6 +231,7 @@ static inline void __user *get_sigframe(struct k_sigaction *ka,
 /*
  * set up a normal signal frame
  */
+<<<<<<< HEAD
 static int setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 		       struct pt_regs *regs)
 {
@@ -230,15 +255,39 @@ static int setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 
 	if (setup_sigcontext(&frame->sc, &frame->fpuctx, regs, set->sig[0]))
 		goto give_sigsegv;
+=======
+static int setup_frame(struct ksignal *ksig, sigset_t *set,
+		       struct pt_regs *regs)
+{
+	struct sigframe __user *frame;
+	int sig = ksig->sig;
+
+	frame = get_sigframe(ksig, regs, sizeof(*frame));
+
+	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+		return -EFAULT;
+
+	if (__put_user(sig, &frame->sig) < 0 ||
+	    __put_user(&frame->sc, &frame->psc) < 0)
+		return -EFAULT;
+
+	if (setup_sigcontext(&frame->sc, &frame->fpuctx, regs, set->sig[0]))
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (_NSIG_WORDS > 1) {
 		if (__copy_to_user(frame->extramask, &set->sig[1],
 				   sizeof(frame->extramask)))
+<<<<<<< HEAD
 			goto give_sigsegv;
+=======
+			return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* set up to return from userspace.  If provided, use a stub already in
 	 * userspace */
+<<<<<<< HEAD
 	if (ka->sa.sa_flags & SA_RESTORER) {
 		if (__put_user(ka->sa.sa_restorer, &frame->pretcode))
 			goto give_sigsegv;
@@ -246,20 +295,37 @@ static int setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 		if (__put_user((void (*)(void))frame->retcode,
 			       &frame->pretcode))
 			goto give_sigsegv;
+=======
+	if (ksig->ka.sa.sa_flags & SA_RESTORER) {
+		if (__put_user(ksig->ka.sa.sa_restorer, &frame->pretcode))
+			return -EFAULT;
+	} else {
+		if (__put_user((void (*)(void))frame->retcode,
+			       &frame->pretcode))
+			return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* this is mov $,d0; syscall 0 */
 		if (__put_user(0x2c, (char *)(frame->retcode + 0)) ||
 		    __put_user(__NR_sigreturn, (char *)(frame->retcode + 1)) ||
 		    __put_user(0x00, (char *)(frame->retcode + 2)) ||
 		    __put_user(0xf0, (char *)(frame->retcode + 3)) ||
 		    __put_user(0xe0, (char *)(frame->retcode + 4)))
+<<<<<<< HEAD
 			goto give_sigsegv;
+=======
+			return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		flush_icache_range((unsigned long) frame->retcode,
 				   (unsigned long) frame->retcode + 5);
 	}
 
 	/* set up registers for signal handler */
 	regs->sp = (unsigned long) frame;
+<<<<<<< HEAD
 	regs->pc = (unsigned long) ka->sa.sa_handler;
+=======
+	regs->pc = (unsigned long) ksig->ka.sa.sa_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->d0 = sig;
 	regs->d1 = (unsigned long) &frame->sc;
 
@@ -270,15 +336,19 @@ static int setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 #endif
 
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
 	return -EFAULT;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
  * set up a realtime signal frame
  */
+<<<<<<< HEAD
 static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 			  sigset_t *set, struct pt_regs *regs)
 {
@@ -301,6 +371,24 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	    __put_user(&frame->uc, &frame->puc) ||
 	    copy_siginfo_to_user(&frame->info, info))
 		goto give_sigsegv;
+=======
+static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+			  struct pt_regs *regs)
+{
+	struct rt_sigframe __user *frame;
+	int sig = ksig->sig;
+
+	frame = get_sigframe(ksig, regs, sizeof(*frame));
+
+	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
+		return -EFAULT;
+
+	if (__put_user(sig, &frame->sig) ||
+	    __put_user(&frame->info, &frame->pinfo) ||
+	    __put_user(&frame->uc, &frame->puc) ||
+	    copy_siginfo_to_user(&frame->info, &ksig->info))
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* create the ucontext.  */
 	if (__put_user(0, &frame->uc.uc_flags) ||
@@ -309,6 +397,7 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	    setup_sigcontext(&frame->uc.uc_mcontext,
 			     &frame->fpuctx, regs, set->sig[0]) ||
 	    __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set)))
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	/* set up to return from userspace.  If provided, use a stub already in
@@ -316,6 +405,16 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	if (ka->sa.sa_flags & SA_RESTORER) {
 		if (__put_user(ka->sa.sa_restorer, &frame->pretcode))
 			goto give_sigsegv;
+=======
+		return -EFAULT;
+
+	/* set up to return from userspace.  If provided, use a stub already in
+	 * userspace */
+	if (ksig->ka.sa.sa_flags & SA_RESTORER) {
+		if (__put_user(ksig->ka.sa.sa_restorer, &frame->pretcode))
+			return -EFAULT;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		if (__put_user((void(*)(void))frame->retcode,
 			       &frame->pretcode) ||
@@ -326,7 +425,11 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		    __put_user(0x00, (char *)(frame->retcode + 2)) ||
 		    __put_user(0xf0, (char *)(frame->retcode + 3)) ||
 		    __put_user(0xe0, (char *)(frame->retcode + 4)))
+<<<<<<< HEAD
 			goto give_sigsegv;
+=======
+			return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		flush_icache_range((u_long) frame->retcode,
 				   (u_long) frame->retcode + 5);
@@ -334,7 +437,11 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 
 	/* Set up registers for signal handler */
 	regs->sp = (unsigned long) frame;
+<<<<<<< HEAD
 	regs->pc = (unsigned long) ka->sa.sa_handler;
+=======
+	regs->pc = (unsigned long) ksig->ka.sa.sa_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regs->d0 = sig;
 	regs->d1 = (long) &frame->info;
 
@@ -345,10 +452,13 @@ static int setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 #endif
 
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
 	return -EFAULT;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void stepback(struct pt_regs *regs)
@@ -360,9 +470,13 @@ static inline void stepback(struct pt_regs *regs)
 /*
  * handle the actual delivery of a signal to userspace
  */
+<<<<<<< HEAD
 static int handle_signal(int sig,
 			 siginfo_t *info, struct k_sigaction *ka,
 			 struct pt_regs *regs)
+=======
+static int handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sigset_t *oldset = sigmask_to_save();
 	int ret;
@@ -377,7 +491,11 @@ static int handle_signal(int sig,
 			break;
 
 		case -ERESTARTSYS:
+<<<<<<< HEAD
 			if (!(ka->sa.sa_flags & SA_RESTART)) {
+=======
+			if (!(ksig->ka.sa.sa_flags & SA_RESTART)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				regs->d0 = -EINTR;
 				break;
 			}
@@ -390,6 +508,7 @@ static int handle_signal(int sig,
 	}
 
 	/* Set up the stack frame */
+<<<<<<< HEAD
 	if (ka->sa.sa_flags & SA_SIGINFO)
 		ret = setup_rt_frame(sig, ka, info, oldset, regs);
 	else
@@ -399,6 +518,14 @@ static int handle_signal(int sig,
 
 	signal_delivered(sig, info, ka, regs,
 			 test_thread_flag(TIF_SINGLESTEP));
+=======
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO)
+		ret = setup_rt_frame(ksig, oldset, regs);
+	else
+		ret = setup_frame(ksig, oldset, regs);
+
+	signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -407,6 +534,7 @@ static int handle_signal(int sig,
  */
 static void do_signal(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct k_sigaction ka;
 	siginfo_t info;
 	int signr;
@@ -416,6 +544,12 @@ static void do_signal(struct pt_regs *regs)
 		if (handle_signal(signr, &info, &ka, regs) == 0) {
 		}
 
+=======
+	struct ksignal ksig;
+
+	if (get_signal(&ksig)) {
+		handle_signal(&ksig, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 

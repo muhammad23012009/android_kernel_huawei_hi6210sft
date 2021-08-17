@@ -48,9 +48,15 @@ static struct platform_device *appldata_pdev;
  * /proc entries (sysctl)
  */
 static const char appldata_proc_name[APPLDATA_PROC_NAME_LENGTH] = "appldata";
+<<<<<<< HEAD
 static int appldata_timer_handler(ctl_table *ctl, int write,
 				  void __user *buffer, size_t *lenp, loff_t *ppos);
 static int appldata_interval_handler(ctl_table *ctl, int write,
+=======
+static int appldata_timer_handler(struct ctl_table *ctl, int write,
+				  void __user *buffer, size_t *lenp, loff_t *ppos);
+static int appldata_interval_handler(struct ctl_table *ctl, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 void __user *buffer,
 					 size_t *lenp, loff_t *ppos);
 
@@ -201,10 +207,17 @@ static void __appldata_vtimer_setup(int cmd)
  * Start/Stop timer, show status of timer (0 = not active, 1 = active)
  */
 static int
+<<<<<<< HEAD
 appldata_timer_handler(ctl_table *ctl, int write,
 			   void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	int len;
+=======
+appldata_timer_handler(struct ctl_table *ctl, int write,
+			   void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	unsigned int len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char buf[2];
 
 	if (!*lenp || *ppos) {
@@ -243,10 +256,18 @@ out:
  * current timer interval.
  */
 static int
+<<<<<<< HEAD
 appldata_interval_handler(ctl_table *ctl, int write,
 			   void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	int len, interval;
+=======
+appldata_interval_handler(struct ctl_table *ctl, int write,
+			   void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	unsigned int len;
+	int interval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char buf[16];
 
 	if (!*lenp || *ppos) {
@@ -286,11 +307,20 @@ out:
  * monitoring (0 = not in process, 1 = in process)
  */
 static int
+<<<<<<< HEAD
 appldata_generic_handler(ctl_table *ctl, int write,
 			   void __user *buffer, size_t *lenp, loff_t *ppos)
 {
 	struct appldata_ops *ops = NULL, *tmp_ops;
 	int rc, len, found;
+=======
+appldata_generic_handler(struct ctl_table *ctl, int write,
+			   void __user *buffer, size_t *lenp, loff_t *ppos)
+{
+	struct appldata_ops *ops = NULL, *tmp_ops;
+	unsigned int len;
+	int rc, found;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char buf[2];
 	struct list_head *lh;
 
@@ -509,7 +539,10 @@ static const struct dev_pm_ops appldata_pm_ops = {
 static struct platform_driver appldata_pdrv = {
 	.driver = {
 		.name	= "appldata",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &appldata_pm_ops,
 	},
 };
@@ -527,6 +560,10 @@ static int __init appldata_init(void)
 {
 	int rc;
 
+<<<<<<< HEAD
+=======
+	init_virt_timer(&appldata_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	appldata_timer.function = appldata_timer_function;
 	appldata_timer.data = (unsigned long) &appldata_work;
 
@@ -540,7 +577,11 @@ static int __init appldata_init(void)
 		rc = PTR_ERR(appldata_pdev);
 		goto out_driver;
 	}
+<<<<<<< HEAD
 	appldata_wq = create_singlethread_workqueue("appldata");
+=======
+	appldata_wq = alloc_ordered_workqueue("appldata", 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!appldata_wq) {
 		rc = -ENOMEM;
 		goto out_device;

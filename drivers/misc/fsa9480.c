@@ -396,7 +396,11 @@ static int fsa9480_irq_init(struct fsa9480_usbsw *usbsw)
 				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
 				"fsa9480 micro USB", usbsw);
 		if (ret) {
+<<<<<<< HEAD
 			dev_err(&client->dev, "failed to reqeust IRQ\n");
+=======
+			dev_err(&client->dev, "failed to request IRQ\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return ret;
 		}
 

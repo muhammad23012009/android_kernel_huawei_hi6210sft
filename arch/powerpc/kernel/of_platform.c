@@ -72,7 +72,11 @@ static int of_pci_phb_probe(struct platform_device *dev)
 
 	/* Register devices with EEH */
 	if (dev->dev.of_node->child)
+<<<<<<< HEAD
 		eeh_add_device_tree_early(dev->dev.of_node);
+=======
+		eeh_add_device_tree_early(PCI_DN(dev->dev.of_node));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Scan the bus */
 	pcibios_scan_phb(phb);
@@ -97,7 +101,11 @@ static int of_pci_phb_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id of_pci_phb_ids[] = {
+=======
+static const struct of_device_id of_pci_phb_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .type = "pci", },
 	{ .type = "pcix", },
 	{ .type = "pcie", },
@@ -110,7 +118,10 @@ static struct platform_driver of_pci_phb_driver = {
 	.probe = of_pci_phb_probe,
 	.driver = {
 		.name = "of-pci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = of_pci_phb_ids,
 	},
 };

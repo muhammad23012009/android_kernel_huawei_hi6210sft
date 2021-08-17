@@ -47,6 +47,14 @@ NLS ?=		true
 # cpufreq-bench benchmarking tool
 CPUFREQ_BENCH ?= true
 
+<<<<<<< HEAD
+=======
+# Do not build libraries, but build the code in statically
+# Libraries are still built, otherwise the Makefile code would
+# be rather ugly.
+export STATIC ?= false
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Prefix to the directories we're installing to
 DESTDIR ?=
 
@@ -58,11 +66,19 @@ DESTDIR ?=
 # and _should_ modify the PACKAGE_BUGREPORT definition
 
 VERSION=			$(shell ./utils/version-gen.sh)
+<<<<<<< HEAD
 LIB_MAJ=			0.0.0
 LIB_MIN=			0
 
 PACKAGE =			cpupower
 PACKAGE_BUGREPORT =		cpufreq@vger.kernel.org
+=======
+LIB_MAJ=			0.0.1
+LIB_MIN=			0
+
+PACKAGE =			cpupower
+PACKAGE_BUGREPORT =		linux-pm@vger.kernel.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 LANGUAGES = 			de fr it cs pt
 
 
@@ -124,6 +140,7 @@ WARNINGS += -Wshadow
 CFLAGS += -DVERSION=\"$(VERSION)\" -DPACKAGE=\"$(PACKAGE)\" \
 		-DPACKAGE_BUGREPORT=\"$(PACKAGE_BUGREPORT)\" -D_GNU_SOURCE
 
+<<<<<<< HEAD
 UTIL_OBJS =  utils/helpers/amd.o utils/helpers/topology.o utils/helpers/msr.o \
 	utils/helpers/sysfs.o utils/helpers/misc.o utils/helpers/cpuid.o \
 	utils/helpers/pci.o utils/helpers/bitmask.o \
@@ -132,6 +149,18 @@ UTIL_OBJS =  utils/helpers/amd.o utils/helpers/topology.o utils/helpers/msr.o \
 	utils/idle_monitor/mperf_monitor.o utils/idle_monitor/cpupower-monitor.o \
 	utils/cpupower.o utils/cpufreq-info.o utils/cpufreq-set.o \
 	utils/cpupower-set.o utils/cpupower-info.o utils/cpuidle-info.o
+=======
+UTIL_OBJS =  utils/helpers/amd.o utils/helpers/msr.o \
+	utils/helpers/sysfs.o utils/helpers/misc.o utils/helpers/cpuid.o \
+	utils/helpers/pci.o utils/helpers/bitmask.o \
+	utils/idle_monitor/nhm_idle.o utils/idle_monitor/snb_idle.o \
+	utils/idle_monitor/hsw_ext_idle.o \
+	utils/idle_monitor/amd_fam14h_idle.o utils/idle_monitor/cpuidle_sysfs.o \
+	utils/idle_monitor/mperf_monitor.o utils/idle_monitor/cpupower-monitor.o \
+	utils/cpupower.o utils/cpufreq-info.o utils/cpufreq-set.o \
+	utils/cpupower-set.o utils/cpupower-info.o utils/cpuidle-info.o \
+	utils/cpuidle-set.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 UTIL_SRC := $(UTIL_OBJS:.o=.c)
 
@@ -141,9 +170,15 @@ UTIL_HEADERS = utils/helpers/helpers.h utils/idle_monitor/cpupower-monitor.h \
 	utils/helpers/bitmask.h \
 	utils/idle_monitor/idle_monitors.h utils/idle_monitor/idle_monitors.def
 
+<<<<<<< HEAD
 LIB_HEADERS = 	lib/cpufreq.h lib/sysfs.h
 LIB_SRC = 	lib/cpufreq.c lib/sysfs.c
 LIB_OBJS = 	lib/cpufreq.o lib/sysfs.o
+=======
+LIB_HEADERS = 	lib/cpufreq.h lib/cpupower.h lib/cpuidle.h
+LIB_SRC = 	lib/cpufreq.c lib/cpupower.c lib/cpuidle.c
+LIB_OBJS = 	lib/cpufreq.o lib/cpupower.o lib/cpuidle.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 LIB_OBJS :=	$(addprefix $(OUTPUT),$(LIB_OBJS))
 
 CFLAGS +=	-pipe
@@ -159,6 +194,15 @@ ifeq ($(strip $(CPUFREQ_BENCH)),true)
 	COMPILE_BENCH += compile-bench
 endif
 
+<<<<<<< HEAD
+=======
+ifeq ($(strip $(STATIC)),true)
+        UTIL_OBJS += $(LIB_OBJS)
+        UTIL_HEADERS += $(LIB_HEADERS)
+        UTIL_SRC += $(LIB_SRC)
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 CFLAGS += $(WARNINGS)
 
 ifeq ($(strip $(V)),false)
@@ -207,7 +251,15 @@ $(OUTPUT)%.o: %.c
 
 $(OUTPUT)cpupower: $(UTIL_OBJS) $(OUTPUT)libcpupower.so.$(LIB_MAJ)
 	$(ECHO) "  CC      " $@
+<<<<<<< HEAD
 	$(QUIET) $(CC) $(CFLAGS) $(LDFLAGS) $(UTIL_OBJS) -lcpupower -lrt -lpci -L$(OUTPUT) -o $@
+=======
+ifeq ($(strip $(STATIC)),true)
+	$(QUIET) $(CC) $(CFLAGS) $(LDFLAGS) $(UTIL_OBJS) -lrt -lpci -L$(OUTPUT) -o $@
+else
+	$(QUIET) $(CC) $(CFLAGS) $(LDFLAGS) $(UTIL_OBJS) -lcpupower -lrt -lpci -L$(OUTPUT) -o $@
+endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	$(QUIET) $(STRIPCMD) $@
 
 $(OUTPUT)po/$(PACKAGE).pot: $(UTIL_SRC)
@@ -263,6 +315,10 @@ install-lib:
 	$(CP) $(OUTPUT)libcpupower.so* $(DESTDIR)${libdir}/
 	$(INSTALL) -d $(DESTDIR)${includedir}
 	$(INSTALL_DATA) lib/cpufreq.h $(DESTDIR)${includedir}/cpufreq.h
+<<<<<<< HEAD
+=======
+	$(INSTALL_DATA) lib/cpuidle.h $(DESTDIR)${includedir}/cpuidle.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 install-tools:
 	$(INSTALL) -d $(DESTDIR)${bindir}
@@ -272,6 +328,11 @@ install-man:
 	$(INSTALL_DATA) -D man/cpupower.1 $(DESTDIR)${mandir}/man1/cpupower.1
 	$(INSTALL_DATA) -D man/cpupower-frequency-set.1 $(DESTDIR)${mandir}/man1/cpupower-frequency-set.1
 	$(INSTALL_DATA) -D man/cpupower-frequency-info.1 $(DESTDIR)${mandir}/man1/cpupower-frequency-info.1
+<<<<<<< HEAD
+=======
+	$(INSTALL_DATA) -D man/cpupower-idle-set.1 $(DESTDIR)${mandir}/man1/cpupower-idle-set.1
+	$(INSTALL_DATA) -D man/cpupower-idle-info.1 $(DESTDIR)${mandir}/man1/cpupower-idle-info.1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	$(INSTALL_DATA) -D man/cpupower-set.1 $(DESTDIR)${mandir}/man1/cpupower-set.1
 	$(INSTALL_DATA) -D man/cpupower-info.1 $(DESTDIR)${mandir}/man1/cpupower-info.1
 	$(INSTALL_DATA) -D man/cpupower-monitor.1 $(DESTDIR)${mandir}/man1/cpupower-monitor.1
@@ -287,14 +348,33 @@ install-bench:
 	@#DESTDIR must be set from outside to survive
 	@sbindir=$(sbindir) bindir=$(bindir) docdir=$(docdir) confdir=$(confdir) $(MAKE) -C bench O=$(OUTPUT) install
 
+<<<<<<< HEAD
 install: all install-lib install-tools install-man $(INSTALL_NLS) $(INSTALL_BENCH)
+=======
+ifeq ($(strip $(STATIC)),true)
+install: all install-tools install-man $(INSTALL_NLS) $(INSTALL_BENCH)
+else
+install: all install-lib install-tools install-man $(INSTALL_NLS) $(INSTALL_BENCH)
+endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 uninstall:
 	- rm -f $(DESTDIR)${libdir}/libcpupower.*
 	- rm -f $(DESTDIR)${includedir}/cpufreq.h
+<<<<<<< HEAD
 	- rm -f $(DESTDIR)${bindir}/utils/cpupower
 	- rm -f $(DESTDIR)${mandir}/man1/cpufreq-set.1
 	- rm -f $(DESTDIR)${mandir}/man1/cpufreq-info.1
+=======
+	- rm -f $(DESTDIR)${includedir}/cpuidle.h
+	- rm -f $(DESTDIR)${bindir}/utils/cpupower
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-frequency-set.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-frequency-info.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-set.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-info.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-monitor.1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	- for HLANG in $(LANGUAGES); do \
 		rm -f $(DESTDIR)${localedir}/$$HLANG/LC_MESSAGES/cpupower.mo; \
 	  done;

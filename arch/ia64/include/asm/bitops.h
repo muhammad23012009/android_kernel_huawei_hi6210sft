@@ -16,6 +16,10 @@
 #include <linux/compiler.h>
 #include <linux/types.h>
 #include <asm/intrinsics.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * set_bit - Atomically set a bit in memory
@@ -65,12 +69,15 @@ __set_bit (int nr, volatile void *addr)
 	*((__u32 *) addr + (nr >> 5)) |= (1 << (nr & 31));
 }
 
+<<<<<<< HEAD
 /*
  * clear_bit() has "acquire" semantics.
  */
 #define smp_mb__before_clear_bit()	smp_mb()
 #define smp_mb__after_clear_bit()	do { /* skip */; } while (0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * clear_bit - Clears a bit in memory
  * @nr: Bit to clear
@@ -78,7 +85,11 @@ __set_bit (int nr, volatile void *addr)
  *
  * clear_bit() is atomic and may not be reordered.  However, it does
  * not contain a memory barrier, so if it is used for locking purposes,
+<<<<<<< HEAD
  * you should call smp_mb__before_clear_bit() and/or smp_mb__after_clear_bit()
+=======
+ * you should call smp_mb__before_atomic() and/or smp_mb__after_atomic()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * in order to ensure changes are visible on other processors.
  */
 static __inline__ void
@@ -425,6 +436,7 @@ __fls (unsigned long x)
 
 #include <asm-generic/bitops/fls64.h>
 
+<<<<<<< HEAD
 /*
  * ffs: find first bit set. This is defined the same way as the libc and
  * compiler builtin ffs routines, therefore differs in spirit from the above
@@ -432,6 +444,9 @@ __fls (unsigned long x)
  * bit number + 1.  ffs(0) is defined to return zero.
  */
 #define ffs(x)	__builtin_ffs(x)
+=======
+#include <asm-generic/bitops/builtin-ffs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * hweightN: returns the hamming weight (i.e. the number

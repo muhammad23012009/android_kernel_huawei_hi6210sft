@@ -37,6 +37,14 @@ struct task_security_struct {
 	u32 sockcreate_sid;	/* fscreate SID */
 };
 
+<<<<<<< HEAD
+=======
+enum label_initialized {
+	LABEL_INVALID,		/* invalid or not initialized */
+	LABEL_INITIALIZED	/* initialized */
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct inode_security_struct {
 	struct inode *inode;	/* back pointer to inode object */
 	union {
@@ -62,8 +70,13 @@ struct superblock_security_struct {
 	u32 sid;			/* SID of file system superblock */
 	u32 def_sid;			/* default SID for labeling */
 	u32 mntpoint_sid;		/* SECURITY_FS_USE_MNTPOINT context for files */
+<<<<<<< HEAD
 	unsigned int behavior;		/* labeling behavior */
 	unsigned char flags;		/* which mount options were specified */
+=======
+	unsigned short behavior;	/* labeling behavior */
+	unsigned short flags;		/* which mount options were specified */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex lock;
 	struct list_head isec_head;
 	spinlock_t isec_lock;

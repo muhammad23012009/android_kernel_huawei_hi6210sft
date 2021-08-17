@@ -23,6 +23,11 @@
 #include <linux/kernel.h>
 #include <linux/irq.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/i8259.h>
@@ -177,7 +182,11 @@ static int xilinx_intc_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops xilinx_intc_ops = {
+=======
+static const struct irq_domain_ops xilinx_intc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map = xilinx_intc_map,
 	.xlate = xilinx_intc_xlate,
 };
@@ -220,7 +229,11 @@ int xilinx_intc_get_irq(void)
 /*
  * Support code for cascading to 8259 interrupt controllers
  */
+<<<<<<< HEAD
 static void xilinx_i8259_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void xilinx_i8259_cascade(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
@@ -263,7 +276,11 @@ static void __init xilinx_i8259_setup_cascade(void)
 static inline void xilinx_i8259_setup_cascade(void) { return; }
 #endif /* defined(CONFIG_PPC_I8259) */
 
+<<<<<<< HEAD
 static struct of_device_id xilinx_intc_match[] __initconst = {
+=======
+static const struct of_device_id xilinx_intc_match[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "xlnx,opb-intc-1.00.c", },
 	{ .compatible = "xlnx,xps-intc-1.00.a", },
 	{}

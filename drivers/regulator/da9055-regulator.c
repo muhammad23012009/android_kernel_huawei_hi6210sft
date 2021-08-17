@@ -19,6 +19,11 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/regulator/of_regulator.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/mfd/da9055/core.h>
 #include <linux/mfd/da9055/reg.h>
@@ -322,7 +327,11 @@ static int da9055_suspend_disable(struct regulator_dev *rdev)
 		return 0;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops da9055_buck_ops = {
+=======
+static const struct regulator_ops da9055_buck_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_mode = da9055_buck_get_mode,
 	.set_mode = da9055_buck_set_mode,
 
@@ -343,7 +352,11 @@ static struct regulator_ops da9055_buck_ops = {
 	.set_suspend_mode = da9055_buck_set_mode,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops da9055_ldo_ops = {
+=======
+static const struct regulator_ops da9055_ldo_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_mode = da9055_ldo_get_mode,
 	.set_mode = da9055_ldo_set_mode,
 
@@ -446,6 +459,12 @@ static int da9055_gpio_init(struct da9055_regulator *regulator,
 	struct da9055_regulator_info *info = regulator->info;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!pdata)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata->gpio_ren && pdata->gpio_ren[id]) {
 		char name[18];
 		int gpio_mux = pdata->gpio_ren[id];
@@ -530,17 +549,79 @@ static inline struct da9055_regulator_info *find_regulator_info(int id)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+static struct of_regulator_match da9055_reg_matches[] = {
+	{ .name = "BUCK1", },
+	{ .name = "BUCK2", },
+	{ .name = "LDO1", },
+	{ .name = "LDO2", },
+	{ .name = "LDO3", },
+	{ .name = "LDO4", },
+	{ .name = "LDO5", },
+	{ .name = "LDO6", },
+};
+
+static int da9055_regulator_dt_init(struct platform_device *pdev,
+				    struct da9055_regulator *regulator,
+				    struct regulator_config *config,
+				    int regid)
+{
+	struct device_node *nproot, *np;
+	int ret;
+
+	nproot = of_node_get(pdev->dev.parent->of_node);
+	if (!nproot)
+		return -ENODEV;
+
+	np = of_get_child_by_name(nproot, "regulators");
+	if (!np)
+		return -ENODEV;
+
+	ret = of_regulator_match(&pdev->dev, np, &da9055_reg_matches[regid], 1);
+	of_node_put(nproot);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "Error matching regulator: %d\n", ret);
+		return ret;
+	}
+
+	config->init_data = da9055_reg_matches[regid].init_data;
+	config->of_node = da9055_reg_matches[regid].of_node;
+
+	if (!config->of_node)
+		return -ENODEV;
+
+	return 0;
+}
+#else
+static inline int da9055_regulator_dt_init(struct platform_device *pdev,
+				       struct da9055_regulator *regulator,
+				       struct regulator_config *config,
+				       int regid)
+{
+	return -ENODEV;
+}
+#endif /* CONFIG_OF */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int da9055_regulator_probe(struct platform_device *pdev)
 {
 	struct regulator_config config = { };
 	struct da9055_regulator *regulator;
 	struct da9055 *da9055 = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	struct da9055_pdata *pdata = da9055->dev->platform_data;
 	int ret, irq;
 
 	if (pdata == NULL || pdata->regulators[pdev->id] == NULL)
 		return -ENODEV;
 
+=======
+	struct da9055_pdata *pdata = dev_get_platdata(da9055->dev);
+	int ret, irq;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	regulator = devm_kzalloc(&pdev->dev, sizeof(struct da9055_regulator),
 				 GFP_KERNEL);
 	if (!regulator)
@@ -557,13 +638,25 @@ static int da9055_regulator_probe(struct platform_device *pdev)
 	config.driver_data = regulator;
 	config.regmap = da9055->regmap;
 
+<<<<<<< HEAD
 	if (pdata && pdata->regulators)
 		config.init_data = pdata->regulators[pdev->id];
+=======
+	if (pdata && pdata->regulators) {
+		config.init_data = pdata->regulators[pdev->id];
+	} else {
+		ret = da9055_regulator_dt_init(pdev, regulator, &config,
+					       pdev->id);
+		if (ret < 0)
+			return ret;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = da9055_gpio_init(regulator, &config, pdata, pdev->id);
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	regulator->rdev = regulator_register(&regulator->info->reg_desc,
 					     &config);
 	if (IS_ERR(regulator->rdev)) {
@@ -571,12 +664,27 @@ static int da9055_regulator_probe(struct platform_device *pdev)
 			regulator->info->reg_desc.name);
 		ret = PTR_ERR(regulator->rdev);
 		return ret;
+=======
+	regulator->rdev = devm_regulator_register(&pdev->dev,
+						  &regulator->info->reg_desc,
+						  &config);
+	if (IS_ERR(regulator->rdev)) {
+		dev_err(&pdev->dev, "Failed to register regulator %s\n",
+			regulator->info->reg_desc.name);
+		return PTR_ERR(regulator->rdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Only LDO 5 and 6 has got the over current interrupt */
 	if (pdev->id == DA9055_ID_LDO5 || pdev->id ==  DA9055_ID_LDO6) {
 		irq = platform_get_irq_byname(pdev, "REGULATOR");
+<<<<<<< HEAD
 		irq = regmap_irq_get_virq(da9055->irq_data, irq);
+=======
+		if (irq < 0)
+			return irq;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
 						da9055_ldo5_6_oc_irq,
 						IRQF_TRIGGER_HIGH |
@@ -588,7 +696,11 @@ static int da9055_regulator_probe(struct platform_device *pdev)
 				dev_err(&pdev->dev,
 				"Failed to request Regulator IRQ %d: %d\n",
 				irq, ret);
+<<<<<<< HEAD
 				goto err_regulator;
+=======
+				return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
@@ -596,6 +708,7 @@ static int da9055_regulator_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, regulator);
 
 	return 0;
+<<<<<<< HEAD
 
 err_regulator:
 	regulator_unregister(regulator->rdev);
@@ -609,14 +722,21 @@ static int da9055_regulator_remove(struct platform_device *pdev)
 	regulator_unregister(regulator->rdev);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver da9055_regulator_driver = {
 	.probe = da9055_regulator_probe,
+<<<<<<< HEAD
 	.remove = da9055_regulator_remove,
 	.driver = {
 		.name = "da9055-regulator",
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.name = "da9055-regulator",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

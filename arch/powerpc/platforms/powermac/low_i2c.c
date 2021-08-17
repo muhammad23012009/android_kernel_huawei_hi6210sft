@@ -15,7 +15,11 @@
  * This file thus provides a simple low level unified i2c interface for
  * powermac that covers the various types of i2c busses used in Apple machines.
  * For now, keywest, PMU and SMU, though we could add Cuda, or other bit
+<<<<<<< HEAD
  * banging busses found on older chipstes in earlier machines if we ever need
+=======
+ * banging busses found on older chipsets in earlier machines if we ever need
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * one of them.
  *
  * The drivers in this file are synchronous/blocking. In addition, the
@@ -401,7 +405,11 @@ static int kw_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 {
 	struct pmac_i2c_host_kw *host = bus->hostdata;
 	u8 mode_reg = host->speed;
+<<<<<<< HEAD
 	int use_irq = host->irq != NO_IRQ && !bus->polled;
+=======
+	int use_irq = host->irq && !bus->polled;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Setup mode & subaddress if any */
 	switch(bus->mode) {
@@ -452,7 +460,11 @@ static int kw_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 	 */
 	if (use_irq) {
 		/* Clear completion */
+<<<<<<< HEAD
 		INIT_COMPLETION(host->complete);
+=======
+		reinit_completion(&host->complete);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Ack stale interrupts */
 		kw_write_reg(reg_isr, kw_read_reg(reg_isr));
 		/* Arm timeout */
@@ -535,7 +547,11 @@ static struct pmac_i2c_host_kw *__init kw_i2c_host_init(struct device_node *np)
 		break;
 	}	
 	host->irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (host->irq == NO_IRQ)
+=======
+	if (!host->irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING
 		       "low_i2c: Failed to map interrupt for %s\n",
 		       np->full_name);
@@ -557,7 +573,11 @@ static struct pmac_i2c_host_kw *__init kw_i2c_host_init(struct device_node *np)
 	 */
 	if (request_irq(host->irq, kw_i2c_irq, IRQF_NO_SUSPEND,
 			"keywest i2c", host))
+<<<<<<< HEAD
 		host->irq = NO_IRQ;
+=======
+		host->irq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk(KERN_INFO "KeyWest i2c @0x%08x irq %d %s\n",
 	       *addrp, host->irq, np->full_name);
@@ -717,7 +737,11 @@ static int pmu_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 			return -EINVAL;
 		}
 
+<<<<<<< HEAD
 		INIT_COMPLETION(comp);
+=======
+		reinit_completion(&comp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		req->data[0] = PMU_I2C_CMD;
 		req->reply[0] = 0xff;
 		req->nbytes = sizeof(struct pmu_i2c_hdr) + 1;
@@ -748,7 +772,11 @@ static int pmu_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 
 		hdr->bus = PMU_I2C_BUS_STATUS;
 
+<<<<<<< HEAD
 		INIT_COMPLETION(comp);
+=======
+		reinit_completion(&comp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		req->data[0] = PMU_I2C_CMD;
 		req->reply[0] = 0xff;
 		req->nbytes = 2;

@@ -9,6 +9,7 @@
 
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
 #include <linux/device.h>
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -33,6 +34,9 @@ struct at91_udc_data {
 	int	pullup_pin;		/* active == D+ pulled up */
 	u8	pullup_active_low;	/* true == pullup_pin is active low */
 };
+=======
+#include <linux/serial.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  /* Compact Flash */
 struct at91_cf_data {
@@ -46,6 +50,7 @@ struct at91_cf_data {
 #define AT91_IDE_SWAP_A0_A2	0x02
 };
 
+<<<<<<< HEAD
  /* USB Host */
 #define AT91_MAX_USBH_PORTS	3
 struct at91_usbh_data {
@@ -58,6 +63,8 @@ struct at91_usbh_data {
 	u8              overcurrent_changed[AT91_MAX_USBH_PORTS];
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  /* NAND / SmartMedia */
 struct atmel_nand_data {
 	int		enable_pin;		/* chip enable */
@@ -71,6 +78,13 @@ struct atmel_nand_data {
 	u8		on_flash_bbt;		/* bbt on flash */
 	struct mtd_partition *parts;
 	unsigned int	num_parts;
+<<<<<<< HEAD
+=======
+	bool		has_dma;		/* support dma transfer */
+
+	/* default is false, only for at32ap7000 chip is true */
+	bool		need_reset_workaround;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
  /* Serial */
@@ -82,6 +96,7 @@ struct atmel_uart_data {
 	struct serial_rs485	rs485;		/* rs485 settings */
 };
 
+<<<<<<< HEAD
  /* Touchscreen Controller */
 struct at91_tsadcc_data {
 	unsigned int    adc_clock;
@@ -94,6 +109,8 @@ struct at91_can_data {
 	void (*transceiver_switch)(int on);
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* FIXME: this needs a better location, but gets stuff building again */
 extern int at91_suspend_entering_slow_clock(void);
 

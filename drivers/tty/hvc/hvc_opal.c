@@ -29,6 +29,10 @@
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/interrupt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/hvconsole.h>
 #include <asm/prom.h>
@@ -41,7 +45,11 @@
 
 static const char hvc_opal_name[] = "hvc_opal";
 
+<<<<<<< HEAD
 static struct of_device_id hvc_opal_match[] = {
+=======
+static const struct of_device_id hvc_opal_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name = "serial", .compatible = "ibm,opal-console-raw" },
 	{ .name = "serial", .compatible = "ibm,opal-console-hvsi" },
 	{ },
@@ -167,7 +175,11 @@ static int hvc_opal_probe(struct platform_device *dev)
 	struct hvc_struct *hp;
 	struct hvc_opal_priv *pv;
 	hv_protocol_t proto;
+<<<<<<< HEAD
 	unsigned int termno, boot = 0;
+=======
+	unsigned int termno, irq, boot = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const __be32 *reg;
 
 	if (of_device_is_compatible(dev->dev.of_node, "ibm,opal-console-raw")) {
@@ -213,10 +225,32 @@ static int hvc_opal_probe(struct platform_device *dev)
 		dev->dev.of_node->full_name,
 		boot ? " (boot console)" : "");
 
+<<<<<<< HEAD
 	/* We don't do IRQ yet */
 	hp = hvc_alloc(termno, 0, ops, MAX_VIO_PUT_CHARS);
 	if (IS_ERR(hp))
 		return PTR_ERR(hp);
+=======
+	irq = irq_of_parse_and_map(dev->dev.of_node, 0);
+	if (!irq) {
+		pr_info("hvc%d: No interrupts property, using OPAL event\n",
+				termno);
+		irq = opal_event_request(ilog2(OPAL_EVENT_CONSOLE_INPUT));
+	}
+
+	if (!irq) {
+		pr_err("hvc_opal: Unable to map interrupt for device %s\n",
+			dev->dev.of_node->full_name);
+		return irq;
+	}
+
+	hp = hvc_alloc(termno, irq, ops, MAX_VIO_PUT_CHARS);
+	if (IS_ERR(hp))
+		return PTR_ERR(hp);
+
+	/* hvc consoles on powernv may need to share a single irq */
+	hp->flags = IRQF_SHARED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_set_drvdata(&dev->dev, hp);
 
 	return 0;
@@ -242,7 +276,10 @@ static struct platform_driver hvc_opal_driver = {
 	.remove		= hvc_opal_remove,
 	.driver		= {
 		.name	= hvc_opal_name,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table	= hvc_opal_match,
 	}
 };
@@ -255,6 +292,7 @@ static int __init hvc_opal_init(void)
 	/* Register as a vio device to receive callbacks */
 	return platform_driver_register(&hvc_opal_driver);
 }
+<<<<<<< HEAD
 module_init(hvc_opal_init);
 
 static void __exit hvc_opal_exit(void)
@@ -262,6 +300,9 @@ static void __exit hvc_opal_exit(void)
 	platform_driver_unregister(&hvc_opal_driver);
 }
 module_exit(hvc_opal_exit);
+=======
+device_initcall(hvc_opal_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void udbg_opal_putc(char c)
 {
@@ -323,11 +364,15 @@ static void udbg_init_opal_common(void)
 	udbg_putc = udbg_opal_putc;
 	udbg_getc = udbg_opal_getc;
 	udbg_getc_poll = udbg_opal_getc_poll;
+<<<<<<< HEAD
 	tb_ticks_per_usec = 0x200; /* Make udelay not suck */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init hvc_opal_init_early(void)
 {
+<<<<<<< HEAD
 	struct device_node *stdout_node = NULL;
 	const u32 *termno;
 	const char *name = NULL;
@@ -344,6 +389,15 @@ void __init hvc_opal_init_early(void)
 			return;
 		}
 	} else {
+=======
+	struct device_node *stdout_node = of_node_get(of_stdout);
+	const __be32 *termno;
+	const struct hv_ops *ops;
+	u32 index;
+
+	/* If the console wasn't in /chosen, try /ibm,opal */
+	if (!stdout_node) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct device_node *opal, *np;
 
 		/* Current OPAL takeover doesn't provide the stdout
@@ -371,7 +425,11 @@ void __init hvc_opal_init_early(void)
 	if (!stdout_node)
 		return;
 	termno = of_get_property(stdout_node, "reg", NULL);
+<<<<<<< HEAD
 	index = termno ? *termno : 0;
+=======
+	index = termno ? be32_to_cpup(termno) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (index >= MAX_NR_HVC_CONSOLES)
 		return;
 	hvc_opal_privs[index] = &hvc_opal_boot_priv;

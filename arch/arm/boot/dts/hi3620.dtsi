@@ -1,7 +1,13 @@
 /*
  * Hisilicon Ltd. Hi3620 SoC
  *
+<<<<<<< HEAD
  * Copyright (C) 2012-2013 Linaro Ltd.
+=======
+ * Copyright (C) 2012-2013 Hisilicon Ltd.
+ * Copyright (C) 2012-2013 Linaro Ltd.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -9,12 +15,18 @@
  * publishhed by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 /include/ "skeleton.dtsi"
+=======
+#include "skeleton.dtsi"
+#include <dt-bindings/clock/hi3620-clock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	aliases {
 		serial0 = &uart0;
 		serial1 = &uart1;
+<<<<<<< HEAD
 		mshc0 = &dwmmc_0;
 		mshc1 = &dwmmc_1;
 		mshc2 = &dwmmc_2;
@@ -34,11 +46,20 @@
 		clock-output-names = "osc26mhz";
 	};
 	pclk: clk@0 {
+=======
+		serial2 = &uart2;
+		serial3 = &uart3;
+		serial4 = &uart4;
+	};
+
+	pclk: clk {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <26000000>;
 		clock-output-names = "apb_pclk";
 	};
+<<<<<<< HEAD
 	pll_arm0: clk@1 {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
@@ -966,17 +987,70 @@
 		l2: l2-cache {
 			compatible = "arm,pl310-cache";
 			reg = <0xfc100000 0x100000>;
+=======
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		enable-method = "hisilicon,hi3620-smp";
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a9";
+			reg = <0x0>;
+			next-level-cache = <&L2>;
+		};
+
+		cpu@1 {
+			compatible = "arm,cortex-a9";
+			device_type = "cpu";
+			reg = <1>;
+			next-level-cache = <&L2>;
+		};
+
+		cpu@2 {
+			compatible = "arm,cortex-a9";
+			device_type = "cpu";
+			reg = <2>;
+			next-level-cache = <&L2>;
+		};
+
+		cpu@3 {
+			compatible = "arm,cortex-a9";
+			device_type = "cpu";
+			reg = <3>;
+			next-level-cache = <&L2>;
+		};
+	};
+
+	amba {
+
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "simple-bus";
+		interrupt-parent = <&gic>;
+		ranges = <0 0xfc000000 0x2000000>;
+
+		L2: l2-cache {
+			compatible = "arm,pl310-cache";
+			reg = <0x100000 0x100000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 15 4>;
 			cache-unified;
 			cache-level = <2>;
 		};
 
+<<<<<<< HEAD
 		intc: interrupt-controller@fc001000 {
+=======
+		gic: interrupt-controller@1000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "arm,cortex-a9-gic";
 			#interrupt-cells = <3>;
 			#address-cells = <0>;
 			interrupt-controller;
 			/* gic dist base, gic cpu base */
+<<<<<<< HEAD
 			reg = <0xfc001000 0x1000>, <0xfc000100 0x100>;
 		};
 
@@ -986,10 +1060,40 @@
 			/* timer00 & timer01 */
 			interrupts = <0 0 4>, <0 1 4>;
 			clocks = <&timer0_mux &timer1_mux>;
+=======
+			reg = <0x1000 0x1000>, <0x100 0x100>;
+		};
+
+		sysctrl: system-controller@802000 {
+			compatible = "hisilicon,sysctrl";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0 0x802000 0x1000>;
+			reg = <0x802000 0x1000>;
+
+			smp-offset = <0x31c>;
+			resume-offset = <0x308>;
+			reboot-offset = <0x4>;
+
+			clock: clock@0 {
+				compatible = "hisilicon,hi3620-clock";
+				reg = <0 0x10000>;
+				#clock-cells = <1>;
+			};
+		};
+
+		dual_timer0: dual_timer@800000 {
+			compatible = "arm,sp804", "arm,primecell";
+			reg = <0x800000 0x1000>;
+			/* timer00 & timer01 */
+			interrupts = <0 0 4>, <0 1 4>;
+			clocks = <&clock HI3620_TIMER0_MUX>, <&clock HI3620_TIMER1_MUX>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		dual_timer1: dual_timer@fc801000 {
 			/*
 			 * Only used in NORMAL state, not available ins
@@ -1001,30 +1105,57 @@
 			/* timer10 & timer11 */
 			interrupts = <0 2 4>, <0 3 4>;
 			clocks = <&timer2_mux &timer3_mux>;
+=======
+		dual_timer1: dual_timer@801000 {
+			compatible = "arm,sp804", "arm,primecell";
+			reg = <0x801000 0x1000>;
+			/* timer10 & timer11 */
+			interrupts = <0 2 4>, <0 3 4>;
+			clocks = <&clock HI3620_TIMER2_MUX>, <&clock HI3620_TIMER3_MUX>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		dual_timer2: dual_timer@fca01000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0xfca01000 0x1000>;
 			/* timer20 & timer21 */
 			interrupts = <0 4 4>, <0 5 4>;
 			clocks = <&timer4_mux &timer5_mux>;
+=======
+		dual_timer2: dual_timer@a01000 {
+			compatible = "arm,sp804", "arm,primecell";
+			reg = <0xa01000 0x1000>;
+			/* timer20 & timer21 */
+			interrupts = <0 4 4>, <0 5 4>;
+			clocks = <&clock HI3620_TIMER4_MUX>, <&clock HI3620_TIMER5_MUX>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		dual_timer3: dual_timer@fca02000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0xfca02000 0x1000>;
 			/* timer30 & timer31 */
 			interrupts = <0 6 4>, <0 7 4>;
 			clocks = <&timer6_mux &timer7_mux>;
+=======
+		dual_timer3: dual_timer@a02000 {
+			compatible = "arm,sp804", "arm,primecell";
+			reg = <0xa02000 0x1000>;
+			/* timer30 & timer31 */
+			interrupts = <0 6 4>, <0 7 4>;
+			clocks = <&clock HI3620_TIMER6_MUX>, <&clock HI3620_TIMER7_MUX>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 
 		timer5: timer@fc000600 {
 			compatible = "arm,cortex-a9-twd-timer";
@@ -1037,49 +1168,110 @@
 			reg = <0xfcb00000 0x1000>;
 			interrupts = <0 20 4>;
 			clocks = <&uartclk0>;
+=======
+		dual_timer4: dual_timer@a03000 {
+			compatible = "arm,sp804", "arm,primecell";
+			reg = <0xa03000 0x1000>;
+			/* timer40 & timer41 */
+			interrupts = <0 96 4>, <0 97 4>;
+			clocks = <&clock HI3620_TIMER8_MUX>, <&clock HI3620_TIMER9_MUX>;
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+		timer5: timer@600 {
+			compatible = "arm,cortex-a9-twd-timer";
+			reg = <0x600 0x20>;
+			interrupts = <1 13 0xf01>;
+		};
+
+		uart0: uart@b00000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0xb00000 0x1000>;
+			interrupts = <0 20 4>;
+			clocks = <&clock HI3620_UARTCLK0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+			clock-names = "apb_pclk";
+			status = "disabled";
+		};
+
+<<<<<<< HEAD
 		uart1: uart@fcb01000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xfcb01000 0x1000>;
 			interrupts = <0 21 4>;
 			clocks = <&uartclk1>;
+=======
+		uart1: uart@b01000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0xb01000 0x1000>;
+			interrupts = <0 21 4>;
+			clocks = <&clock HI3620_UARTCLK1>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		uart2: uart@fcb02000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xfcb02000 0x1000>;
 			interrupts = <0 22 4>;
 			clocks = <&uartclk2>;
+=======
+		uart2: uart@b02000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0xb02000 0x1000>;
+			interrupts = <0 22 4>;
+			clocks = <&clock HI3620_UARTCLK2>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		uart3: uart@fcb03000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xfcb03000 0x1000>;
 			interrupts = <0 23 4>;
 			clocks = <&uartclk3>;
+=======
+		uart3: uart@b03000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0xb03000 0x1000>;
+			interrupts = <0 23 4>;
+			clocks = <&clock HI3620_UARTCLK3>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		uart4: uart@fcb04000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xfcb04000 0x1000>;
 			interrupts = <0 24 4>;
 			clocks = <&uartclk4>;
+=======
+		uart4: uart@b04000 {
+			compatible = "arm,pl011", "arm,primecell";
+			reg = <0xb04000 0x1000>;
+			interrupts = <0 24 4>;
+			clocks = <&clock HI3620_UARTCLK4>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		gpio0: gpio@fc806000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc806000 0x1000>;
+=======
+		gpio0: gpio@806000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x806000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 64 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1087,6 +1279,7 @@
 					&pmx0 5 0 1 &pmx0 6 1 1 &pmx0 7 2 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk0>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <0>;
@@ -1096,6 +1289,15 @@
 		gpio1: gpio@fc807000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc807000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK0>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio1: gpio@807000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x807000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 65 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1104,6 +1306,7 @@
 					&pmx0 6 5 1 &pmx0 7 6 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk1>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <8>;
@@ -1113,6 +1316,15 @@
 		gpio2: gpio@fc808000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc808000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK1>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio2: gpio@808000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x808000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 66 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1121,6 +1333,7 @@
 					&pmx0 6 3 1 &pmx0 7 3 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk2>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <16>;
@@ -1130,6 +1343,15 @@
 		gpio3: gpio@fc809000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc809000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK2>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio3: gpio@809000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x809000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 67 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1138,6 +1360,7 @@
 					&pmx0 6 11 1 &pmx0 7 11 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk3>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <24>;
@@ -1147,6 +1370,15 @@
 		gpio4: gpio@fc80a000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc80a000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK3>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio4: gpio@80a000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x80a000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 68 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1155,6 +1387,7 @@
 					&pmx0 6 13 1 &pmx0 7 13 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk4>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <32>;
@@ -1164,6 +1397,15 @@
 		gpio5: gpio@fc80b000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc80b000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK4>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio5: gpio@80b000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x80b000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 69 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1172,6 +1414,7 @@
 					&pmx0 6 16 1 &pmx0 7 16 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk5>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <40>;
@@ -1181,6 +1424,15 @@
 		gpio6: gpio@fc80c000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc80c000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK5>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio6: gpio@80c000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x80c000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 70 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1189,6 +1441,7 @@
 					&pmx0 6 18 1 &pmx0 7 19 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk6>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <48>;
@@ -1198,6 +1451,15 @@
 		gpio7: gpio@fc80d000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc80d000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK6>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio7: gpio@80d000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x80d000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 71 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1206,6 +1468,7 @@
 					&pmx0 6 25 1 &pmx0 7 26 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk7>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <56>;
@@ -1215,6 +1478,15 @@
 		gpio8: gpio@fc80e000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc80e000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK7>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio8: gpio@80e000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x80e000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 72 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1223,6 +1495,7 @@
 					&pmx0 6 33 1 &pmx0 7 34 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk8>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <64>;
@@ -1232,6 +1505,15 @@
 		gpio9: gpio@fc80f000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc80f000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK8>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio9: gpio@80f000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x80f000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 73 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1240,6 +1522,7 @@
 					&pmx0 6 41 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk9>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <72>;
@@ -1249,6 +1532,15 @@
 		gpio10: gpio@fc810000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc810000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK9>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio10: gpio@810000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x810000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 74 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1256,6 +1548,7 @@
 					&pmx0 5 45 1 &pmx0 6 46 1 &pmx0 7 46 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk10>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <80>;
@@ -1265,6 +1558,15 @@
 		gpio11: gpio@fc811000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc811000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK10>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio11: gpio@811000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x811000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 75 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1273,6 +1575,7 @@
 					&pmx0 6 49 1 &pmx0 7 49 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk11>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <88>;
@@ -1282,6 +1585,15 @@
 		gpio12: gpio@fc812000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc812000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK11>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio12: gpio@812000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x812000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 76 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1290,6 +1602,7 @@
 					&pmx0 6 51 1 &pmx0 7 52 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk12>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <96>;
@@ -1299,6 +1612,15 @@
 		gpio13: gpio@fc813000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc813000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK12>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio13: gpio@813000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x813000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 77 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1307,6 +1629,7 @@
 					&pmx0 6 55 1 &pmx0 7 56 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk13>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <104>;
@@ -1316,6 +1639,15 @@
 		gpio14: gpio@fc814000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc814000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK13>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio14: gpio@814000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x814000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 78 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1324,6 +1656,7 @@
 					&pmx0 6 60 1 &pmx0 7 61 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk14>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <112>;
@@ -1333,6 +1666,15 @@
 		gpio15: gpio@fc815000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc815000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK14>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio15: gpio@815000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x815000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 79 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1341,6 +1683,7 @@
 					&pmx0 6 64 1 &pmx0 7 65 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk15>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <120>;
@@ -1350,6 +1693,15 @@
 		gpio16: gpio@fc816000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc816000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK15>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio16: gpio@816000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x816000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 80 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1358,6 +1710,7 @@
 					&pmx0 6 72 1 &pmx0 7 73 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk16>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <128>;
@@ -1367,6 +1720,15 @@
 		gpio17: gpio@fc817000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc817000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK16>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio17: gpio@817000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x817000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 81 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1375,6 +1737,7 @@
 					&pmx0 6 80 1 &pmx0 7 81 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk17>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <136>;
@@ -1384,6 +1747,15 @@
 		gpio18: gpio@fc818000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc818000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK17>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio18: gpio@818000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x818000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 82 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1392,6 +1764,7 @@
 					&pmx0 6 86 1 &pmx0 7 87 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk18>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <144>;
@@ -1401,6 +1774,15 @@
 		gpio19: gpio@fc819000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc819000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK18>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio19: gpio@819000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x819000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 83 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1408,6 +1790,7 @@
 					&pmx0 3 88 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk19>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <152>;
@@ -1417,6 +1800,15 @@
 		gpio20: gpio@fc81a000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc81a000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK19>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio20: gpio@81a000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x81a000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 84 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -1424,6 +1816,7 @@
 					&pmx0 3 90 1 &pmx0 4 91 1 &pmx0 5 92 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk20>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <160>;
@@ -1433,12 +1826,22 @@
 		gpio21: gpio@fc81b000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0xfc81b000 0x1000>;
+=======
+			clocks = <&clock HI3620_GPIOCLK20>;
+			clock-names = "apb_pclk";
+		};
+
+		gpio21: gpio@81b000 {
+			compatible = "arm,pl061", "arm,primecell";
+			reg = <0x81b000 0x1000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			interrupts = <0 85 0x4>;
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <	&pmx0 3 94 1 &pmx0 7 96 1>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+<<<<<<< HEAD
 			clocks = <&gpioclk21>;
 			clock-names = "apb_pclk";
 			linux,gpio-base = <168>;
@@ -1448,6 +1851,15 @@
 		pmx0: pinmux@fc803000 {
 			compatible = "pinctrl-single";
 			reg = <0xfc803000 0x188>;
+=======
+			clocks = <&clock HI3620_GPIOCLK21>;
+			clock-names = "apb_pclk";
+		};
+
+		pmx0: pinmux@803000 {
+			compatible = "pinctrl-single";
+			reg = <0x803000 0x188>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			#address-cells = <1>;
 			#size-cells = <1>;
 			#gpio-range-cells = <3>;
@@ -1466,15 +1878,22 @@
 			};
 		};
 
+<<<<<<< HEAD
 		pmx1: pinmux@fc803800 {
 			compatible = "pinconf-single";
 			reg = <0xfc803800 0x2dc>;
+=======
+		pmx1: pinmux@803800 {
+			compatible = "pinconf-single";
+			reg = <0x803800 0x2dc>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
 
 			pinctrl-single,register-width = <32>;
 		};
+<<<<<<< HEAD
 
 		i2c0: i2c@fcb08000 {
 			compatible = "snps,designware-i2c";
@@ -1622,5 +2041,7 @@
 			interrupts = <0 52 0x4>;
 			clocks = <&clk_usbpicophy &clk_usb2dvc>;
 		};
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

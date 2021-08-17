@@ -27,6 +27,7 @@
 
 static struct class *savu_class;
 
+<<<<<<< HEAD
 static ssize_t savu_sysfs_read(struct file *fp, struct kobject *kobj,
 		char *buf, loff_t off, size_t count,
 		size_t real_size, uint command)
@@ -141,12 +142,45 @@ static int savu_init_savu_device_struct(struct usb_device *usb_dev,
 
 	return 0;
 }
+=======
+ROCCAT_COMMON2_BIN_ATTRIBUTE_W(control, 0x4, 0x03);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(profile, 0x5, 0x03);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(general, 0x6, 0x10);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(buttons, 0x7, 0x2f);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(macro, 0x8, 0x0823);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(info, 0x9, 0x08);
+ROCCAT_COMMON2_BIN_ATTRIBUTE_RW(sensor, 0xc, 0x04);
+
+static struct bin_attribute *savu_bin_attrs[] = {
+	&bin_attr_control,
+	&bin_attr_profile,
+	&bin_attr_general,
+	&bin_attr_buttons,
+	&bin_attr_macro,
+	&bin_attr_info,
+	&bin_attr_sensor,
+	NULL,
+};
+
+static const struct attribute_group savu_group = {
+	.bin_attrs = savu_bin_attrs,
+};
+
+static const struct attribute_group *savu_groups[] = {
+	&savu_group,
+	NULL,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int savu_init_specials(struct hid_device *hdev)
 {
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
 	struct usb_device *usb_dev = interface_to_usbdev(intf);
+<<<<<<< HEAD
 	struct savu_device *savu;
+=======
+	struct roccat_common2_device *savu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 
 	if (intf->cur_altsetting->desc.bInterfaceProtocol
@@ -162,9 +196,15 @@ static int savu_init_specials(struct hid_device *hdev)
 	}
 	hid_set_drvdata(hdev, savu);
 
+<<<<<<< HEAD
 	retval = savu_init_savu_device_struct(usb_dev, savu);
 	if (retval) {
 		hid_err(hdev, "couldn't init struct savu_device\n");
+=======
+	retval = roccat_common2_device_init_struct(usb_dev, savu);
+	if (retval) {
+		hid_err(hdev, "couldn't init Savu device\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit_free;
 	}
 
@@ -186,7 +226,11 @@ exit_free:
 static void savu_remove_specials(struct hid_device *hdev)
 {
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
+<<<<<<< HEAD
 	struct savu_device *savu;
+=======
+	struct roccat_common2_device *savu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (intf->cur_altsetting->desc.bInterfaceProtocol
 			!= USB_INTERFACE_PROTOCOL_MOUSE)
@@ -235,7 +279,11 @@ static void savu_remove(struct hid_device *hdev)
 	hid_hw_stop(hdev);
 }
 
+<<<<<<< HEAD
 static void savu_report_to_chrdev(struct savu_device const *savu,
+=======
+static void savu_report_to_chrdev(struct roccat_common2_device const *savu,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u8 const *data)
 {
 	struct savu_roccat_report roccat_report;
@@ -257,7 +305,11 @@ static int savu_raw_event(struct hid_device *hdev,
 		struct hid_report *report, u8 *data, int size)
 {
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
+<<<<<<< HEAD
 	struct savu_device *savu = hid_get_drvdata(hdev);
+=======
+	struct roccat_common2_device *savu = hid_get_drvdata(hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (intf->cur_altsetting->desc.bInterfaceProtocol
 			!= USB_INTERFACE_PROTOCOL_MOUSE)
@@ -294,7 +346,11 @@ static int __init savu_init(void)
 	savu_class = class_create(THIS_MODULE, "savu");
 	if (IS_ERR(savu_class))
 		return PTR_ERR(savu_class);
+<<<<<<< HEAD
 	savu_class->dev_bin_attrs = savu_bin_attributes;
+=======
+	savu_class->dev_groups = savu_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = hid_register_driver(&savu_driver);
 	if (retval)

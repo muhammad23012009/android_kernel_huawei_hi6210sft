@@ -2,7 +2,11 @@
  * Copyright (C) 2005, 2006
  * Avishay Traeger (avishay@gmail.com)
  * Copyright (C) 2008, 2009
+<<<<<<< HEAD
  * Boaz Harrosh <bharrosh@panasas.com>
+=======
+ * Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyrights for code taken from ext2:
  *     Copyright (C) 1992, 1993, 1994, 1995
@@ -41,6 +45,7 @@ static inline unsigned exofs_chunk_size(struct inode *inode)
 static inline void exofs_put_page(struct page *page)
 {
 	kunmap(page);
+<<<<<<< HEAD
 	page_cache_release(page);
 }
 
@@ -48,15 +53,24 @@ static inline void exofs_put_page(struct page *page)
 static inline unsigned long dir_pages(struct inode *inode)
 {
 	return (inode->i_size + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned exofs_last_byte(struct inode *inode, unsigned long page_nr)
 {
 	loff_t last_byte = inode->i_size;
 
+<<<<<<< HEAD
 	last_byte -= page_nr << PAGE_CACHE_SHIFT;
 	if (last_byte > PAGE_CACHE_SIZE)
 		last_byte = PAGE_CACHE_SIZE;
+=======
+	last_byte -= page_nr << PAGE_SHIFT;
+	if (last_byte > PAGE_SIZE)
+		last_byte = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return last_byte;
 }
 
@@ -85,19 +99,32 @@ static int exofs_commit_chunk(struct page *page, loff_t pos, unsigned len)
 	return err;
 }
 
+<<<<<<< HEAD
 static void exofs_check_page(struct page *page)
+=======
+static bool exofs_check_page(struct page *page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct inode *dir = page->mapping->host;
 	unsigned chunk_size = exofs_chunk_size(dir);
 	char *kaddr = page_address(page);
 	unsigned offs, rec_len;
+<<<<<<< HEAD
 	unsigned limit = PAGE_CACHE_SIZE;
+=======
+	unsigned limit = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct exofs_dir_entry *p;
 	char *error;
 
 	/* if the page is the last one in the directory */
+<<<<<<< HEAD
 	if ((dir->i_size >> PAGE_CACHE_SHIFT) == page->index) {
 		limit = dir->i_size & ~PAGE_CACHE_MASK;
+=======
+	if ((dir->i_size >> PAGE_SHIFT) == page->index) {
+		limit = dir->i_size & ~PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (limit & (chunk_size - 1))
 			goto Ebadsize;
 		if (!limit)
@@ -120,7 +147,11 @@ static void exofs_check_page(struct page *page)
 		goto Eend;
 out:
 	SetPageChecked(page);
+<<<<<<< HEAD
 	return;
+=======
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 Ebadsize:
 	EXOFS_ERR("ERROR [exofs_check_page]: "
@@ -143,8 +174,13 @@ Espan:
 bad_entry:
 	EXOFS_ERR(
 		"ERROR [exofs_check_page]: bad entry in directory(0x%lx): %s - "
+<<<<<<< HEAD
 		"offset=%lu, inode=0x%llu, rec_len=%d, name_len=%d\n",
 		dir->i_ino, error, (page->index<<PAGE_CACHE_SHIFT)+offs,
+=======
+		"offset=%lu, inode=0x%llx, rec_len=%d, name_len=%d\n",
+		dir->i_ino, error, (page->index<<PAGE_SHIFT)+offs,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		_LLU(le64_to_cpu(p->inode_no)),
 		rec_len, p->name_len);
 	goto fail;
@@ -153,11 +189,19 @@ Eend:
 	EXOFS_ERR("ERROR [exofs_check_page]: "
 		"entry in directory(0x%lx) spans the page boundary"
 		"offset=%lu, inode=0x%llx\n",
+<<<<<<< HEAD
 		dir->i_ino, (page->index<<PAGE_CACHE_SHIFT)+offs,
 		_LLU(le64_to_cpu(p->inode_no)));
 fail:
 	SetPageChecked(page);
 	SetPageError(page);
+=======
+		dir->i_ino, (page->index<<PAGE_SHIFT)+offs,
+		_LLU(le64_to_cpu(p->inode_no)));
+fail:
+	SetPageError(page);
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct page *exofs_get_page(struct inode *dir, unsigned long n)
@@ -167,10 +211,17 @@ static struct page *exofs_get_page(struct inode *dir, unsigned long n)
 
 	if (!IS_ERR(page)) {
 		kmap(page);
+<<<<<<< HEAD
 		if (!PageChecked(page))
 			exofs_check_page(page);
 		if (PageError(page))
 			goto fail;
+=======
+		if (unlikely(!PageChecked(page))) {
+			if (PageError(page) || !exofs_check_page(page))
+				goto fail;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return page;
 
@@ -239,6 +290,7 @@ void exofs_set_de_type(struct exofs_dir_entry *de, struct inode *inode)
 }
 
 static int
+<<<<<<< HEAD
 exofs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	loff_t pos = filp->f_pos;
@@ -249,12 +301,26 @@ exofs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 	unsigned chunk_mask = ~(exofs_chunk_size(inode)-1);
 	unsigned char *types = NULL;
 	int need_revalidate = (filp->f_version != inode->i_version);
+=======
+exofs_readdir(struct file *file, struct dir_context *ctx)
+{
+	loff_t pos = ctx->pos;
+	struct inode *inode = file_inode(file);
+	unsigned int offset = pos & ~PAGE_MASK;
+	unsigned long n = pos >> PAGE_SHIFT;
+	unsigned long npages = dir_pages(inode);
+	unsigned chunk_mask = ~(exofs_chunk_size(inode)-1);
+	int need_revalidate = (file->f_version != inode->i_version);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pos > inode->i_size - EXOFS_DIR_REC_LEN(1))
 		return 0;
 
+<<<<<<< HEAD
 	types = exofs_filetype_table;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for ( ; n < npages; n++, offset = 0) {
 		char *kaddr, *limit;
 		struct exofs_dir_entry *de;
@@ -263,7 +329,11 @@ exofs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		if (IS_ERR(page)) {
 			EXOFS_ERR("ERROR: bad page in directory(0x%lx)\n",
 				  inode->i_ino);
+<<<<<<< HEAD
 			filp->f_pos += PAGE_CACHE_SIZE - offset;
+=======
+			ctx->pos += PAGE_SIZE - offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return PTR_ERR(page);
 		}
 		kaddr = page_address(page);
@@ -271,9 +341,15 @@ exofs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			if (offset) {
 				offset = exofs_validate_entry(kaddr, offset,
 								chunk_mask);
+<<<<<<< HEAD
 				filp->f_pos = (n<<PAGE_CACHE_SHIFT) + offset;
 			}
 			filp->f_version = inode->i_version;
+=======
+				ctx->pos = (n<<PAGE_SHIFT) + offset;
+			}
+			file->f_version = inode->i_version;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			need_revalidate = 0;
 		}
 		de = (struct exofs_dir_entry *)(kaddr + offset);
@@ -288,6 +364,7 @@ exofs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 				return -EIO;
 			}
 			if (de->inode_no) {
+<<<<<<< HEAD
 				int over;
 				unsigned char d_type = DT_UNKNOWN;
 
@@ -300,15 +377,34 @@ exofs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 						le64_to_cpu(de->inode_no),
 						d_type);
 				if (over) {
+=======
+				unsigned char t;
+
+				if (de->file_type < EXOFS_FT_MAX)
+					t = exofs_filetype_table[de->file_type];
+				else
+					t = DT_UNKNOWN;
+
+				if (!dir_emit(ctx, de->name, de->name_len,
+						le64_to_cpu(de->inode_no),
+						t)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					exofs_put_page(page);
 					return 0;
 				}
 			}
+<<<<<<< HEAD
 			filp->f_pos += le16_to_cpu(de->rec_len);
 		}
 		exofs_put_page(page);
 	}
 
+=======
+			ctx->pos += le16_to_cpu(de->rec_len);
+		}
+		exofs_put_page(page);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -385,7 +481,11 @@ ino_t exofs_parent_ino(struct dentry *child)
 	struct exofs_dir_entry *de;
 	ino_t ino;
 
+<<<<<<< HEAD
 	de = exofs_dotdot(child->d_inode, &page);
+=======
+	de = exofs_dotdot(d_inode(child), &page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!de)
 		return 0;
 
@@ -428,14 +528,22 @@ int exofs_set_link(struct inode *dir, struct exofs_dir_entry *de,
 	if (likely(!err))
 		err = exofs_commit_chunk(page, pos, len);
 	exofs_put_page(page);
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+=======
+	dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(dir);
 	return err;
 }
 
 int exofs_add_link(struct dentry *dentry, struct inode *inode)
 {
+<<<<<<< HEAD
 	struct inode *dir = dentry->d_parent->d_inode;
+=======
+	struct inode *dir = d_inode(dentry->d_parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const unsigned char *name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
 	unsigned chunk_size = exofs_chunk_size(dir);
@@ -461,7 +569,11 @@ int exofs_add_link(struct dentry *dentry, struct inode *inode)
 		kaddr = page_address(page);
 		dir_end = kaddr + exofs_last_byte(dir, n);
 		de = (struct exofs_dir_entry *)kaddr;
+<<<<<<< HEAD
 		kaddr += PAGE_CACHE_SIZE - reclen;
+=======
+		kaddr += PAGE_SIZE - reclen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		while ((char *)de <= kaddr) {
 			if ((char *)de == dir_end) {
 				name_len = 0;
@@ -515,7 +627,11 @@ got_it:
 	de->inode_no = cpu_to_le64(inode->i_ino);
 	exofs_set_de_type(de, inode);
 	err = exofs_commit_chunk(page, pos, rec_len);
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME;
+=======
+	dir->i_mtime = dir->i_ctime = current_time(dir);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(dir);
 	sbi->s_numfiles++;
 
@@ -566,7 +682,11 @@ int exofs_delete_entry(struct exofs_dir_entry *dir, struct page *page)
 	dir->inode_no = 0;
 	if (likely(!err))
 		err = exofs_commit_chunk(page, pos, to - from);
+<<<<<<< HEAD
 	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
+=======
+	inode->i_ctime = inode->i_mtime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mark_inode_dirty(inode);
 	sbi->s_numfiles--;
 out:
@@ -614,7 +734,11 @@ int exofs_make_empty(struct inode *inode, struct inode *parent)
 	kunmap_atomic(kaddr);
 	err = exofs_commit_chunk(page, 0, chunk_size);
 fail:
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -669,5 +793,9 @@ not_empty:
 const struct file_operations exofs_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= exofs_readdir,
+=======
+	.iterate_shared	= exofs_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

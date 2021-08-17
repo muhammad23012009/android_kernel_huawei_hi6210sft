@@ -76,6 +76,10 @@ static int hidp_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long 
 			sockfd_put(csock);
 			return err;
 		}
+<<<<<<< HEAD
+=======
+		ca.name[sizeof(ca.name)-1] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		err = hidp_connection_add(&ca, csock, isock);
 		if (!err && copy_to_user(argp, &ca, sizeof(ca)))
@@ -235,7 +239,11 @@ static int hidp_sock_create(struct net *net, struct socket *sock, int protocol,
 	if (sock->type != SOCK_RAW)
 		return -ESOCKTNOSUPPORT;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hidp_proto);
+=======
+	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hidp_proto, kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sk)
 		return -ENOMEM;
 

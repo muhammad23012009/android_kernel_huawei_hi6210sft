@@ -30,7 +30,14 @@ enum regnames {
 #define NUMREGBYTES		((GDB_Y + 1) * 8)
 #endif
 
+<<<<<<< HEAD
 extern void arch_kgdb_breakpoint(void);
+=======
+struct pt_regs;
+asmlinkage void kgdb_trap(unsigned long trap_level, struct pt_regs *regs);
+
+void arch_kgdb_breakpoint(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BREAK_INSTR_SIZE	4
 #define CACHE_FLUSH_IS_SAFE	1

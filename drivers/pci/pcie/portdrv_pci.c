@@ -1,12 +1,20 @@
 /*
  * File:	portdrv_pci.c
  * Purpose:	PCI Express Port Bus Driver
+<<<<<<< HEAD
+=======
+ * Author:	Tom Nguyen <tom.l.nguyen@intel.com>
+ * Version:	v1.0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 2004 Intel
  * Copyright (C) Tom Long Nguyen (tom.l.nguyen@intel.com)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -21,6 +29,7 @@
 #include "portdrv.h"
 #include "aer/aerdrv.h"
 
+<<<<<<< HEAD
 /*
  * Version Information
  */
@@ -31,6 +40,8 @@ MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* If this switch is set, PCIe port native services should not be enabled. */
 bool pcie_ports_disabled;
 
@@ -93,6 +104,7 @@ static int pcie_port_resume_noirq(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 struct d3cold_info {
 	bool no_d3cold;
@@ -127,6 +139,11 @@ static int pcie_port_runtime_suspend(struct device *dev)
 	pdev->no_d3cold = d3cold_info.no_d3cold;
 	pdev->d3cold_delay = d3cold_info.d3cold_delay;
 	return 0;
+=======
+static int pcie_port_runtime_suspend(struct device *dev)
+{
+	return to_pci_dev(dev)->bridge_d3 ? 0 : -EBUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pcie_port_runtime_resume(struct device *dev)
@@ -134,6 +151,7 @@ static int pcie_port_runtime_resume(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pci_dev_pme_poll(struct pci_dev *pdev, void *data)
 {
 	bool *pme_poll = data;
@@ -163,6 +181,17 @@ static int pcie_port_runtime_idle(struct device *dev)
 #define pcie_port_runtime_resume	NULL
 #define pcie_port_runtime_idle		NULL
 #endif
+=======
+static int pcie_port_runtime_idle(struct device *dev)
+{
+	/*
+	 * Assume the PCI core has set bridge_d3 whenever it thinks the port
+	 * should be good to go to D3.  Everything else, including moving
+	 * the port to D3, is handled by the PCI core.
+	 */
+	return to_pci_dev(dev)->bridge_d3 ? 0 : -EBUSY;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct dev_pm_ops pcie_portdrv_pm_ops = {
 	.suspend	= pcie_port_device_suspend,
@@ -173,7 +202,11 @@ static const struct dev_pm_ops pcie_portdrv_pm_ops = {
 	.restore	= pcie_port_device_resume,
 	.resume_noirq	= pcie_port_resume_noirq,
 	.runtime_suspend = pcie_port_runtime_suspend,
+<<<<<<< HEAD
 	.runtime_resume = pcie_port_runtime_resume,
+=======
+	.runtime_resume	= pcie_port_runtime_resume,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.runtime_idle	= pcie_port_runtime_idle,
 };
 
@@ -203,25 +236,62 @@ static int pcie_portdrv_probe(struct pci_dev *dev,
 	     (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (!dev->irq && dev->pin) {
 		dev_warn(&dev->dev, "device [%04x:%04x] has invalid IRQ; "
 			 "check vendor BIOS\n", dev->vendor, dev->device);
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	status = pcie_port_device_register(dev);
 	if (status)
 		return status;
 
 	pci_save_state(dev);
+<<<<<<< HEAD
 	/*
 	 * D3cold may not work properly on some PCIe port, so disable
 	 * it by default.
 	 */
 	dev->d3cold_allowed = false;
+=======
+
+	/*
+	 * Prevent runtime PM if the port is advertising support for PCIe
+	 * hotplug.  Otherwise the BIOS hotplug SMI code might not be able
+	 * to enumerate devices behind this port properly (the port is
+	 * powered down preventing all config space accesses to the
+	 * subordinate devices).  We can't be sure for native PCIe hotplug
+	 * either so prevent that as well.
+	 */
+	if (!dev->is_hotplug_bridge) {
+		/*
+		 * Keep the port resumed 100ms to make sure things like
+		 * config space accesses from userspace (lspci) will not
+		 * cause the port to repeatedly suspend and resume.
+		 */
+		pm_runtime_set_autosuspend_delay(&dev->dev, 100);
+		pm_runtime_use_autosuspend(&dev->dev);
+		pm_runtime_mark_last_busy(&dev->dev);
+		pm_runtime_put_autosuspend(&dev->dev);
+		pm_runtime_allow(&dev->dev);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static void pcie_portdrv_remove(struct pci_dev *dev)
 {
+<<<<<<< HEAD
+=======
+	if (!dev->is_hotplug_bridge) {
+		pm_runtime_forbid(&dev->dev);
+		pm_runtime_get_noresume(&dev->dev);
+		pm_runtime_dont_use_autosuspend(&dev->dev);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pcie_port_device_remove(dev);
 }
 
@@ -373,7 +443,10 @@ static const struct pci_device_id port_pci_ids[] = { {
 	PCI_DEVICE_CLASS(((PCI_CLASS_BRIDGE_PCI << 8) | 0x00), ~0),
 	}, { /* end: all zeroes */ }
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(pci, port_pci_ids);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct pci_error_handlers pcie_portdrv_err_handler = {
 	.error_detected = pcie_portdrv_error_detected,
@@ -389,15 +462,25 @@ static struct pci_driver pcie_portdriver = {
 	.probe		= pcie_portdrv_probe,
 	.remove		= pcie_portdrv_remove,
 
+<<<<<<< HEAD
 	.err_handler 	= &pcie_portdrv_err_handler,
 
 	.driver.pm 	= PCIE_PORTDRV_PM_OPS,
+=======
+	.err_handler	= &pcie_portdrv_err_handler,
+
+	.driver.pm	= PCIE_PORTDRV_PM_OPS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init dmi_pcie_pme_disable_msi(const struct dmi_system_id *d)
 {
 	pr_notice("%s detected: will not use MSI for PCIe PME signaling\n",
+<<<<<<< HEAD
 			d->ident);
+=======
+		  d->ident);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pcie_pme_disable_msi();
 	return 0;
 }
@@ -411,7 +494,11 @@ static struct dmi_system_id __initdata pcie_portdrv_dmi_table[] = {
 	 .ident = "MSI Wind U-100",
 	 .matches = {
 		     DMI_MATCH(DMI_SYS_VENDOR,
+<<<<<<< HEAD
 		     		"MICRO-STAR INTERNATIONAL CO., LTD"),
+=======
+				"MICRO-STAR INTERNATIONAL CO., LTD"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     DMI_MATCH(DMI_PRODUCT_NAME, "U-100"),
 		     },
 	 },
@@ -438,5 +525,9 @@ static int __init pcie_portdrv_init(void)
  out:
 	return retval;
 }
+<<<<<<< HEAD
 
 module_init(pcie_portdrv_init);
+=======
+device_initcall(pcie_portdrv_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

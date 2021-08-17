@@ -31,7 +31,11 @@ struct cx22700_config
 	u8 demod_address;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_CX22700)
+=======
+#if IS_REACHABLE(CONFIG_DVB_CX22700)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* cx22700_attach(const struct cx22700_config* config,
 					   struct i2c_adapter* i2c);
 #else

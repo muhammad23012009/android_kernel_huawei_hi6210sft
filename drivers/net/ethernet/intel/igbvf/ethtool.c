@@ -13,8 +13,12 @@
   more details.
 
   You should have received a copy of the GNU General Public License along with
+<<<<<<< HEAD
   this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+  this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
   The full GNU General Public License is included in this distribution in
   the file called "COPYING".
@@ -36,7 +40,10 @@
 #include "igbvf.h"
 #include <linux/if_vlan.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct igbvf_stats {
 	char stat_string[ETH_GSTRING_LEN];
 	int sizeof_stat;
@@ -74,7 +81,11 @@ static const char igbvf_gstrings_test[][ETH_GSTRING_LEN] = {
 #define IGBVF_TEST_LEN ARRAY_SIZE(igbvf_gstrings_test)
 
 static int igbvf_get_settings(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_cmd *ecmd)
+=======
+			      struct ethtool_cmd *ecmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
@@ -101,8 +112,13 @@ static int igbvf_get_settings(struct net_device *netdev,
 		else
 			ecmd->duplex = DUPLEX_HALF;
 	} else {
+<<<<<<< HEAD
 		ethtool_cmd_speed_set(ecmd, -1);
 		ecmd->duplex = -1;
+=======
+		ethtool_cmd_speed_set(ecmd, SPEED_UNKNOWN);
+		ecmd->duplex = DUPLEX_UNKNOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ecmd->autoneg = AUTONEG_DISABLE;
@@ -111,12 +127,17 @@ static int igbvf_get_settings(struct net_device *netdev,
 }
 
 static int igbvf_set_settings(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_cmd *ecmd)
+=======
+			      struct ethtool_cmd *ecmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -EOPNOTSUPP;
 }
 
 static void igbvf_get_pauseparam(struct net_device *netdev,
+<<<<<<< HEAD
                                  struct ethtool_pauseparam *pause)
 {
 	return;
@@ -124,6 +145,14 @@ static void igbvf_get_pauseparam(struct net_device *netdev,
 
 static int igbvf_set_pauseparam(struct net_device *netdev,
                                 struct ethtool_pauseparam *pause)
+=======
+				 struct ethtool_pauseparam *pause)
+{
+}
+
+static int igbvf_set_pauseparam(struct net_device *netdev,
+				struct ethtool_pauseparam *pause)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -EOPNOTSUPP;
 }
@@ -131,12 +160,20 @@ static int igbvf_set_pauseparam(struct net_device *netdev,
 static u32 igbvf_get_msglevel(struct net_device *netdev)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return adapter->msg_enable;
 }
 
 static void igbvf_set_msglevel(struct net_device *netdev, u32 data)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adapter->msg_enable = data;
 }
 
@@ -147,7 +184,11 @@ static int igbvf_get_regs_len(struct net_device *netdev)
 }
 
 static void igbvf_get_regs(struct net_device *netdev,
+<<<<<<< HEAD
                            struct ethtool_regs *regs, void *p)
+=======
+			   struct ethtool_regs *regs, void *p)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
@@ -155,7 +196,12 @@ static void igbvf_get_regs(struct net_device *netdev,
 
 	memset(p, 0, IGBVF_REGS_LEN * sizeof(u32));
 
+<<<<<<< HEAD
 	regs->version = (1 << 24) | (adapter->pdev->revision << 16) |
+=======
+	regs->version = (1u << 24) |
+			(adapter->pdev->revision << 16) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			adapter->pdev->device;
 
 	regs_buff[0] = er32(CTRL);
@@ -176,19 +222,31 @@ static int igbvf_get_eeprom_len(struct net_device *netdev)
 }
 
 static int igbvf_get_eeprom(struct net_device *netdev,
+<<<<<<< HEAD
                             struct ethtool_eeprom *eeprom, u8 *bytes)
+=======
+			    struct ethtool_eeprom *eeprom, u8 *bytes)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -EOPNOTSUPP;
 }
 
 static int igbvf_set_eeprom(struct net_device *netdev,
+<<<<<<< HEAD
                             struct ethtool_eeprom *eeprom, u8 *bytes)
+=======
+			    struct ethtool_eeprom *eeprom, u8 *bytes)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -EOPNOTSUPP;
 }
 
 static void igbvf_get_drvinfo(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_drvinfo *drvinfo)
+=======
+			      struct ethtool_drvinfo *drvinfo)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 
@@ -197,12 +255,19 @@ static void igbvf_get_drvinfo(struct net_device *netdev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->regdump_len = igbvf_get_regs_len(netdev);
 	drvinfo->eedump_len = igbvf_get_eeprom_len(netdev);
 }
 
 static void igbvf_get_ringparam(struct net_device *netdev,
                                 struct ethtool_ringparam *ring)
+=======
+}
+
+static void igbvf_get_ringparam(struct net_device *netdev,
+				struct ethtool_ringparam *ring)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct igbvf_ring *tx_ring = adapter->tx_ring;
@@ -215,7 +280,11 @@ static void igbvf_get_ringparam(struct net_device *netdev,
 }
 
 static int igbvf_set_ringparam(struct net_device *netdev,
+<<<<<<< HEAD
                                struct ethtool_ringparam *ring)
+=======
+			       struct ethtool_ringparam *ring)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct igbvf_ring *temp_ring;
@@ -225,12 +294,21 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 	if ((ring->rx_mini_pending) || (ring->rx_jumbo_pending))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	new_rx_count = max(ring->rx_pending, (u32)IGBVF_MIN_RXD);
 	new_rx_count = min(new_rx_count, (u32)IGBVF_MAX_RXD);
 	new_rx_count = ALIGN(new_rx_count, REQ_RX_DESCRIPTOR_MULTIPLE);
 
 	new_tx_count = max(ring->tx_pending, (u32)IGBVF_MIN_TXD);
 	new_tx_count = min(new_tx_count, (u32)IGBVF_MAX_TXD);
+=======
+	new_rx_count = max_t(u32, ring->rx_pending, IGBVF_MIN_RXD);
+	new_rx_count = min_t(u32, new_rx_count, IGBVF_MAX_RXD);
+	new_rx_count = ALIGN(new_rx_count, REQ_RX_DESCRIPTOR_MULTIPLE);
+
+	new_tx_count = max_t(u32, ring->tx_pending, IGBVF_MIN_TXD);
+	new_tx_count = min_t(u32, new_tx_count, IGBVF_MAX_TXD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	new_tx_count = ALIGN(new_tx_count, REQ_TX_DESCRIPTOR_MULTIPLE);
 
 	if ((new_tx_count == adapter->tx_ring->count) &&
@@ -240,7 +318,11 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 	}
 
 	while (test_and_set_bit(__IGBVF_RESETTING, &adapter->state))
+<<<<<<< HEAD
 		msleep(1);
+=======
+		usleep_range(1000, 2000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!netif_running(adapter->netdev)) {
 		adapter->tx_ring->count = new_tx_count;
@@ -256,10 +338,16 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 
 	igbvf_down(adapter);
 
+<<<<<<< HEAD
 	/*
 	 * We can't just free everything and then setup again,
 	 * because the ISRs in MSI-X mode get passed pointers
 	 * to the tx and rx ring structs.
+=======
+	/* We can't just free everything and then setup again,
+	 * because the ISRs in MSI-X mode get passed pointers
+	 * to the Tx and Rx ring structs.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	if (new_tx_count != adapter->tx_ring->count) {
 		memcpy(temp_ring, adapter->tx_ring, sizeof(struct igbvf_ring));
@@ -284,7 +372,11 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 
 		igbvf_free_rx_resources(adapter->rx_ring);
 
+<<<<<<< HEAD
 		memcpy(adapter->rx_ring, temp_ring,sizeof(struct igbvf_ring));
+=======
+		memcpy(adapter->rx_ring, temp_ring, sizeof(struct igbvf_ring));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 err_setup:
 	igbvf_up(adapter);
@@ -308,14 +400,22 @@ static int igbvf_link_test(struct igbvf_adapter *adapter, u64 *data)
 }
 
 static void igbvf_diag_test(struct net_device *netdev,
+<<<<<<< HEAD
                             struct ethtool_test *eth_test, u64 *data)
+=======
+			    struct ethtool_test *eth_test, u64 *data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 
 	set_bit(__IGBVF_TESTING, &adapter->state);
 
+<<<<<<< HEAD
 	/*
 	 * Link test performed before hardware reset so autoneg doesn't
+=======
+	/* Link test performed before hardware reset so autoneg doesn't
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * interfere with test result
 	 */
 	if (igbvf_link_test(adapter, &data[0]))
@@ -326,20 +426,32 @@ static void igbvf_diag_test(struct net_device *netdev,
 }
 
 static void igbvf_get_wol(struct net_device *netdev,
+<<<<<<< HEAD
                           struct ethtool_wolinfo *wol)
+=======
+			  struct ethtool_wolinfo *wol)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	wol->supported = 0;
 	wol->wolopts = 0;
 }
 
 static int igbvf_set_wol(struct net_device *netdev,
+<<<<<<< HEAD
                          struct ethtool_wolinfo *wol)
+=======
+			 struct ethtool_wolinfo *wol)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -EOPNOTSUPP;
 }
 
 static int igbvf_get_coalesce(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_coalesce *ec)
+=======
+			      struct ethtool_coalesce *ec)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 
@@ -352,13 +464,21 @@ static int igbvf_get_coalesce(struct net_device *netdev,
 }
 
 static int igbvf_set_coalesce(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_coalesce *ec)
+=======
+			      struct ethtool_coalesce *ec)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 
 	if ((ec->rx_coalesce_usecs >= IGBVF_MIN_ITR_USECS) &&
+<<<<<<< HEAD
 	     (ec->rx_coalesce_usecs <= IGBVF_MAX_ITR_USECS)) {
+=======
+	    (ec->rx_coalesce_usecs <= IGBVF_MAX_ITR_USECS)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		adapter->current_itr = ec->rx_coalesce_usecs << 2;
 		adapter->requested_itr = 1000000000 /
 					(adapter->current_itr * 256);
@@ -367,8 +487,12 @@ static int igbvf_set_coalesce(struct net_device *netdev,
 		adapter->current_itr = IGBVF_START_ITR;
 		adapter->requested_itr = ec->rx_coalesce_usecs;
 	} else if (ec->rx_coalesce_usecs == 0) {
+<<<<<<< HEAD
 		/*
 		 * The user's desire is to turn off interrupt throttling
+=======
+		/* The user's desire is to turn off interrupt throttling
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * altogether, but due to HW limitations, we can't do that.
 		 * Instead we set a very small value in EITR, which would
 		 * allow ~967k interrupts per second, but allow the adapter's
@@ -377,8 +501,14 @@ static int igbvf_set_coalesce(struct net_device *netdev,
 		adapter->current_itr = 4;
 		adapter->requested_itr = 1000000000 /
 					(adapter->current_itr * 256);
+<<<<<<< HEAD
 	} else
 		return -EINVAL;
+=======
+	} else {
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	writel(adapter->current_itr,
 	       hw->hw_addr + adapter->rx_ring->itr_register);
@@ -389,15 +519,25 @@ static int igbvf_set_coalesce(struct net_device *netdev,
 static int igbvf_nway_reset(struct net_device *netdev)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (netif_running(netdev))
 		igbvf_reinit_locked(adapter);
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static void igbvf_get_ethtool_stats(struct net_device *netdev,
                                     struct ethtool_stats *stats,
                                     u64 *data)
+=======
+static void igbvf_get_ethtool_stats(struct net_device *netdev,
+				    struct ethtool_stats *stats,
+				    u64 *data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	int i;
@@ -405,6 +545,7 @@ static void igbvf_get_ethtool_stats(struct net_device *netdev,
 	igbvf_update_stats(adapter);
 	for (i = 0; i < IGBVF_GLOBAL_STATS_LEN; i++) {
 		char *p = (char *)adapter +
+<<<<<<< HEAD
 		          igbvf_gstrings_stats[i].stat_offset;
 		char *b = (char *)adapter +
 		          igbvf_gstrings_stats[i].base_stat_offset;
@@ -413,11 +554,24 @@ static void igbvf_get_ethtool_stats(struct net_device *netdev,
 		            (*(u32 *)p - *(u32 *)b));
 	}
 
+=======
+			  igbvf_gstrings_stats[i].stat_offset;
+		char *b = (char *)adapter +
+			  igbvf_gstrings_stats[i].base_stat_offset;
+		data[i] = ((igbvf_gstrings_stats[i].sizeof_stat ==
+			    sizeof(u64)) ? (*(u64 *)p - *(u64 *)b) :
+			    (*(u32 *)p - *(u32 *)b));
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int igbvf_get_sset_count(struct net_device *dev, int stringset)
 {
+<<<<<<< HEAD
 	switch(stringset) {
+=======
+	switch (stringset) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case ETH_SS_TEST:
 		return IGBVF_TEST_LEN;
 	case ETH_SS_STATS:
@@ -428,7 +582,11 @@ static int igbvf_get_sset_count(struct net_device *dev, int stringset)
 }
 
 static void igbvf_get_strings(struct net_device *netdev, u32 stringset,
+<<<<<<< HEAD
                               u8 *data)
+=======
+			      u8 *data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 *p = data;
 	int i;
@@ -476,5 +634,9 @@ static const struct ethtool_ops igbvf_ethtool_ops = {
 
 void igbvf_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &igbvf_ethtool_ops);
+=======
+	netdev->ethtool_ops = &igbvf_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

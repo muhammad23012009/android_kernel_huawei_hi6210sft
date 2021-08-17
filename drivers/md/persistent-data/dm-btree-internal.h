@@ -34,12 +34,20 @@ struct node_header {
 	__le32 max_entries;
 	__le32 value_size;
 	__le32 padding;
+<<<<<<< HEAD
 } __packed;
+=======
+} __attribute__((packed, aligned(8)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct btree_node {
 	struct node_header header;
 	__le64 keys[0];
+<<<<<<< HEAD
 } __packed;
+=======
+} __attribute__((packed, aligned(8)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*
@@ -52,7 +60,11 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
 		  struct dm_btree_value_type *vt);
 
 int new_block(struct dm_btree_info *info, struct dm_block **result);
+<<<<<<< HEAD
 int unlock_block(struct dm_btree_info *info, struct dm_block *b);
+=======
+void unlock_block(struct dm_btree_info *info, struct dm_block *b);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Spines keep track of the rolling locks.  There are 2 variants, read-only

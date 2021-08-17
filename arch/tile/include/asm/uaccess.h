@@ -65,6 +65,16 @@ static inline int is_arch_mappable_range(unsigned long addr,
 #endif
 
 /*
+<<<<<<< HEAD
+=======
+ * Note that using this definition ignores is_arch_mappable_range(),
+ * so on tilepro code that uses user_addr_max() is constrained not
+ * to reference the tilepro user-interrupt region.
+ */
+#define user_addr_max() (current_thread_info()->addr_limit.seg)
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Test whether a block of memory is a valid user space address.
  * Returns 0 if the range is valid, nonzero otherwise.
  */
@@ -78,7 +88,12 @@ int __range_ok(unsigned long addr, unsigned long size);
  * @addr: User space pointer to start of block to check
  * @size: Size of block to check
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Checks if a pointer to a block of memory in user space is valid.
  *
@@ -114,6 +129,7 @@ struct exception_table_entry {
 extern int fixup_exception(struct pt_regs *regs);
 
 /*
+<<<<<<< HEAD
  * Support macros for __get_user().
  *
  * Implementation note: The "case 8" logic of casting to the type of
@@ -122,13 +138,30 @@ extern int fixup_exception(struct pt_regs *regs);
  * ptrdiff_t, i.e. also an integer type.  This way there are no
  * questionable casts seen by the compiler on an ILP32 platform.
  *
+=======
+ * This is a type: either unsigned long, if the argument fits into
+ * that type, or otherwise unsigned long long.
+ */
+#define __inttype(x) \
+	__typeof__(__builtin_choose_expr(sizeof(x) > sizeof(0UL), 0ULL, 0UL))
+
+/*
+ * Support macros for __get_user().
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Note that __get_user() and __put_user() assume proper alignment.
  */
 
 #ifdef __LP64__
 #define _ASM_PTR	".quad"
+<<<<<<< HEAD
 #else
 #define _ASM_PTR	".long"
+=======
+#define _ASM_ALIGN	".align 8"
+#else
+#define _ASM_PTR	".long"
+#define _ASM_ALIGN	".align 4"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #define __get_user_asm(OP, x, ptr, ret)					\
@@ -137,6 +170,10 @@ extern int fixup_exception(struct pt_regs *regs);
 		     "0: { movei %1, 0; movei %0, %3 }\n"		\
 		     "j 9f\n"						\
 		     ".section __ex_table,\"a\"\n"			\
+<<<<<<< HEAD
+=======
+		     _ASM_ALIGN "\n"					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     _ASM_PTR " 1b, 0b\n"				\
 		     ".popsection\n"					\
 		     "9:"						\
@@ -168,13 +205,21 @@ extern int fixup_exception(struct pt_regs *regs);
 			     "0: { movei %1, 0; movei %2, 0 }\n"	\
 			     "{ movei %0, %4; j 9f }\n"			\
 			     ".section __ex_table,\"a\"\n"		\
+<<<<<<< HEAD
+=======
+			     ".align 4\n"				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     ".word 1b, 0b\n"				\
 			     ".word 2b, 0b\n"				\
 			     ".popsection\n"				\
 			     "9:"					\
 			     : "=r" (ret), "=r" (__a), "=&r" (__b)	\
 			     : "r" (ptr), "i" (-EFAULT));		\
+<<<<<<< HEAD
 		(x) = (__typeof(x))(__typeof((x)-(x)))			\
+=======
+		(x) = (__force __typeof(x))(__inttype(x))		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			(((u64)__hi32(__a, __b) << 32) |		\
 			 __lo32(__a, __b));				\
 	})
@@ -188,7 +233,12 @@ extern int __get_user_bad(void)
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -206,6 +256,7 @@ extern int __get_user_bad(void)
 #define __get_user(x, ptr)						\
 	({								\
 		int __ret;						\
+<<<<<<< HEAD
 		__chk_user_ptr(ptr);					\
 		switch (sizeof(*(ptr))) {				\
 		case 1: __get_user_1(x, ptr, __ret); break;		\
@@ -214,6 +265,18 @@ extern int __get_user_bad(void)
 		case 8: __get_user_8(x, ptr, __ret); break;		\
 		default: __ret = __get_user_bad(); break;		\
 		}							\
+=======
+		typeof(x) _x;						\
+		__chk_user_ptr(ptr);					\
+		switch (sizeof(*(ptr))) {				\
+		case 1: __get_user_1(_x, ptr, __ret); break;		\
+		case 2: __get_user_2(_x, ptr, __ret); break;		\
+		case 4: __get_user_4(_x, ptr, __ret); break;		\
+		case 8: __get_user_8(_x, ptr, __ret); break;		\
+		default: __ret = __get_user_bad(); break;		\
+		}							\
+		(x) = (typeof(*(ptr))) _x;				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__ret;							\
 	})
 
@@ -224,6 +287,10 @@ extern int __get_user_bad(void)
 		     ".pushsection .fixup,\"ax\"\n"			\
 		     "0: { movei %0, %3; j 9f }\n"			\
 		     ".section __ex_table,\"a\"\n"			\
+<<<<<<< HEAD
+=======
+		     _ASM_ALIGN "\n"					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     _ASM_PTR " 1b, 0b\n"				\
 		     ".popsection\n"					\
 		     "9:"						\
@@ -241,13 +308,21 @@ extern int __get_user_bad(void)
 #define __put_user_4(x, ptr, ret) __put_user_asm(sw, x, ptr, ret)
 #define __put_user_8(x, ptr, ret)					\
 	({								\
+<<<<<<< HEAD
 		u64 __x = (__typeof((x)-(x)))(x);			\
+=======
+		u64 __x = (__force __inttype(x))(x);			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int __lo = (int) __x, __hi = (int) (__x >> 32);		\
 		asm volatile("1: { sw %1, %2; addi %0, %1, 4 }\n"	\
 			     "2: { sw %0, %3; movei %0, 0 }\n"		\
 			     ".pushsection .fixup,\"ax\"\n"		\
 			     "0: { movei %0, %4; j 9f }\n"		\
 			     ".section __ex_table,\"a\"\n"		\
+<<<<<<< HEAD
+=======
+			     ".align 4\n"				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     ".word 1b, 0b\n"				\
 			     ".word 2b, 0b\n"				\
 			     ".popsection\n"				\
@@ -266,7 +341,12 @@ extern int __put_user_bad(void)
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -283,12 +363,22 @@ extern int __put_user_bad(void)
 #define __put_user(x, ptr)						\
 ({									\
 	int __ret;							\
+<<<<<<< HEAD
 	__chk_user_ptr(ptr);						\
 	switch (sizeof(*(ptr))) {					\
 	case 1: __put_user_1(x, ptr, __ret); break;			\
 	case 2: __put_user_2(x, ptr, __ret); break;			\
 	case 4: __put_user_4(x, ptr, __ret); break;			\
 	case 8: __put_user_8(x, ptr, __ret); break;			\
+=======
+	typeof(*(ptr)) _x = (x);					\
+	__chk_user_ptr(ptr);						\
+	switch (sizeof(*(ptr))) {					\
+	case 1: __put_user_1(_x, ptr, __ret); break;			\
+	case 2: __put_user_2(_x, ptr, __ret); break;			\
+	case 4: __put_user_4(_x, ptr, __ret); break;			\
+	case 8: __put_user_8(_x, ptr, __ret); break;			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default: __ret = __put_user_bad(); break;			\
 	}								\
 	__ret;								\
@@ -321,7 +411,12 @@ extern int __put_user_bad(void)
  * @from: Source address, in kernel space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copy data from kernel space to user space.  Caller must check
  * the specified block with access_ok() before calling this function.
@@ -357,7 +452,12 @@ copy_to_user(void __user *to, const void *from, unsigned long n)
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copy data from user space to kernel space.  Caller must check
  * the specified block with access_ok() before calling this function.
@@ -395,6 +495,7 @@ _copy_from_user(void *to, const void __user *from, unsigned long n)
 	return n;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_STRICT_USER_COPY_CHECKS
 /*
  * There are still unprovable places in the generic code as of 2.6.34, so this
@@ -403,6 +504,15 @@ _copy_from_user(void *to, const void __user *from, unsigned long n)
  */
 extern void copy_from_user_overflow(void)
 	__compiletime_warning("copy_from_user() size is not provably correct");
+=======
+extern void __compiletime_error("usercopy buffer size is too small")
+__bad_copy_user(void);
+
+static inline void copy_user_overflow(int size, unsigned long count)
+{
+	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long __must_check copy_from_user(void *to,
 					  const void __user *from,
@@ -412,6 +522,7 @@ static inline unsigned long __must_check copy_from_user(void *to,
 
 	if (likely(sz == -1 || sz >= n))
 		n = _copy_from_user(to, from, n);
+<<<<<<< HEAD
 	else
 		copy_from_user_overflow();
 
@@ -420,6 +531,15 @@ static inline unsigned long __must_check copy_from_user(void *to,
 #else
 #define copy_from_user _copy_from_user
 #endif
+=======
+	else if (!__builtin_constant_p(n))
+		copy_user_overflow(sz, n);
+	else
+		__bad_copy_user();
+
+	return n;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef __tilegx__
 /**
@@ -428,7 +548,12 @@ static inline unsigned long __must_check copy_from_user(void *to,
  * @from: Source address, in user space.
  * @n:    Number of bytes to copy.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copy data from user space to user space.  Caller must check
  * the specified blocks with access_ok() before calling this function.
@@ -442,7 +567,11 @@ extern unsigned long __copy_in_user_inatomic(
 static inline unsigned long __must_check
 __copy_in_user(void __user *to, const void __user *from, unsigned long n)
 {
+<<<<<<< HEAD
 	might_sleep();
+=======
+	might_fault();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return __copy_in_user_inatomic(to, from, n);
 }
 
@@ -456,6 +585,7 @@ copy_in_user(void __user *to, const void __user *from, unsigned long n)
 #endif
 
 
+<<<<<<< HEAD
 /**
  * strlen_user: - Get the size of a string in user space.
  * @str: The string to measure.
@@ -512,6 +642,11 @@ static inline long __must_check strncpy_from_user(
 		return __strncpy_from_user(dst, src, count);
 	return -EFAULT;
 }
+=======
+extern long strnlen_user(const char __user *str, long n);
+extern long strlen_user(const char __user *str);
+extern long strncpy_from_user(char *dst, const char __user *src, long);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * clear_user: - Zero a block of memory in user space.
@@ -567,6 +702,7 @@ static inline unsigned long __must_check flush_user(
 }
 
 /**
+<<<<<<< HEAD
  * inv_user: - Invalidate a block of memory in user space from cache.
  * @mem:   Destination address, in user space.
  * @len:   Number of bytes to invalidate.
@@ -598,6 +734,8 @@ static inline unsigned long __must_check inv_user(
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * finv_user: - Flush-inval a block of memory in user space from cache.
  * @mem:   Destination address, in user space.
  * @len:   Number of bytes to invalidate.

@@ -377,8 +377,12 @@ static void free_buffer(struct videobuf_queue *vq, struct zr364xx_buffer *buf)
 {
 	_DBG("%s\n", __func__);
 
+<<<<<<< HEAD
 	if (in_interrupt())
 		BUG();
+=======
+	BUG_ON(in_interrupt());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	videobuf_vmalloc_free(&buf->vb);
 	buf->vb.state = VIDEOBUF_NEEDS_INIT;
@@ -605,6 +609,17 @@ static int zr364xx_read_video_callback(struct zr364xx_camera *cam,
 	ptr = pdest = frm->lpvbits;
 
 	if (frm->ulState == ZR364XX_READ_IDLE) {
+<<<<<<< HEAD
+=======
+		if (purb->actual_length < 128) {
+			/* header incomplete */
+			dev_info(&cam->udev->dev,
+				 "%s: buffer (%d bytes) too small to hold jpeg header. Discarding.\n",
+				 __func__, purb->actual_length);
+			return -EINVAL;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		frm->ulState = ZR364XX_READ_FRAME;
 		frm->cur_size = 0;
 
@@ -704,7 +719,12 @@ static int zr364xx_vidioc_querycap(struct file *file, void *priv,
 	struct zr364xx_camera *cam = video_drvdata(file);
 
 	strlcpy(cap->driver, DRIVER_DESC, sizeof(cap->driver));
+<<<<<<< HEAD
 	strlcpy(cap->card, cam->udev->product, sizeof(cap->card));
+=======
+	if (cam->udev->product)
+		strlcpy(cap->card, cam->udev->product, sizeof(cap->card));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	strlcpy(cap->bus_info, dev_name(&cam->udev->dev),
 		sizeof(cap->bus_info));
 	cap->device_caps = V4L2_CAP_VIDEO_CAPTURE |
@@ -806,7 +826,10 @@ static int zr364xx_vidioc_try_fmt_vid_cap(struct file *file, void *priv,
 	f->fmt.pix.bytesperline = f->fmt.pix.width * 2;
 	f->fmt.pix.sizeimage = f->fmt.pix.height * f->fmt.pix.bytesperline;
 	f->fmt.pix.colorspace = V4L2_COLORSPACE_JPEG;
+<<<<<<< HEAD
 	f->fmt.pix.priv = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DBG("%s: V4L2_PIX_FMT_%s (%d) ok!\n", __func__,
 	    decode_fourcc(f->fmt.pix.pixelformat, pixelformat_name),
 	    f->fmt.pix.field);
@@ -829,7 +852,10 @@ static int zr364xx_vidioc_g_fmt_vid_cap(struct file *file, void *priv,
 	f->fmt.pix.bytesperline = f->fmt.pix.width * 2;
 	f->fmt.pix.sizeimage = f->fmt.pix.height * f->fmt.pix.bytesperline;
 	f->fmt.pix.colorspace = V4L2_COLORSPACE_JPEG;
+<<<<<<< HEAD
 	f->fmt.pix.priv = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -866,7 +892,10 @@ static int zr364xx_vidioc_s_fmt_vid_cap(struct file *file, void *priv,
 	f->fmt.pix.bytesperline = f->fmt.pix.width * 2;
 	f->fmt.pix.sizeimage = f->fmt.pix.height * f->fmt.pix.bytesperline;
 	f->fmt.pix.colorspace = V4L2_COLORSPACE_JPEG;
+<<<<<<< HEAD
 	f->fmt.pix.priv = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cam->vb_vidq.field = f->fmt.pix.field;
 
 	if (f->fmt.pix.width == 160 && f->fmt.pix.height == 120)
@@ -1049,10 +1078,15 @@ static int zr364xx_start_readpipe(struct zr364xx_camera *cam)
 	pipe_info->state = 1;
 	pipe_info->err_count = 0;
 	pipe_info->stream_urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pipe_info->stream_urb) {
 		dev_err(&cam->udev->dev, "ReadStream: Unable to alloc URB\n");
 		return -ENOMEM;
 	}
+=======
+	if (!pipe_info->stream_urb)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* transfer buffer allocated in board_init */
 	usb_fill_bulk_urb(pipe_info->stream_urb, cam->udev,
 			  pipe,
@@ -1063,6 +1097,10 @@ static int zr364xx_start_readpipe(struct zr364xx_camera *cam)
 	DBG("submitting URB %p\n", pipe_info->stream_urb);
 	retval = usb_submit_urb(pipe_info->stream_urb, GFP_KERNEL);
 	if (retval) {
+<<<<<<< HEAD
+=======
+		usb_free_urb(pipe_info->stream_urb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR KBUILD_MODNAME ": start read pipe failed\n");
 		return retval;
 	}
@@ -1456,10 +1494,14 @@ static int zr364xx_probe(struct usb_interface *intf,
 	cam->vdev.lock = &cam->lock;
 	cam->vdev.v4l2_dev = &cam->v4l2_dev;
 	cam->vdev.ctrl_handler = &cam->ctrl_handler;
+<<<<<<< HEAD
 	set_bit(V4L2_FL_USE_FH_PRIO, &cam->vdev.flags);
 	video_set_drvdata(&cam->vdev, cam);
 	if (debug)
 		cam->vdev.debug = V4L2_DEBUG_IOCTL | V4L2_DEBUG_IOCTL_ARG;
+=======
+	video_set_drvdata(&cam->vdev, cam);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cam->udev = udev;
 

@@ -69,7 +69,14 @@ int kdb_stub(struct kgdb_state *ks)
 	if (atomic_read(&kgdb_setting_breakpoint))
 		reason = KDB_REASON_KEYBOARD;
 
+<<<<<<< HEAD
 	if (in_nmi())
+=======
+	if (ks->err_code == KDB_REASON_SYSTEM_NMI && ks->signo == SIGTRAP)
+		reason = KDB_REASON_SYSTEM_NMI;
+
+	else if (in_nmi())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		reason = KDB_REASON_NMI;
 
 	for (i = 0, bp = kdb_breakpoints; i < KDB_MAXBPT; i++, bp++) {
@@ -126,6 +133,13 @@ int kdb_stub(struct kgdb_state *ks)
 		ks->pass_exception = 1;
 		KDB_FLAG_SET(CATASTROPHIC);
 	}
+<<<<<<< HEAD
+=======
+	/* set CATASTROPHIC if the system contains unresponsive processors */
+	for_each_online_cpu(i)
+		if (!kgdb_info[i].enter_kgdb)
+			KDB_FLAG_SET(CATASTROPHIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (KDB_STATE(SSBPT) && reason == KDB_REASON_SSTEP) {
 		KDB_STATE_CLEAR(SSBPT);
 		KDB_STATE_CLEAR(DOING_SS);

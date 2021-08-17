@@ -13,7 +13,10 @@
 
 unsigned long mpc5xxx_get_bus_frequency(struct device_node *node)
 {
+<<<<<<< HEAD
 	struct device_node *np;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const unsigned int *p_bus_freq = NULL;
 
 	of_node_get(node);
@@ -22,12 +25,18 @@ unsigned long mpc5xxx_get_bus_frequency(struct device_node *node)
 		if (p_bus_freq)
 			break;
 
+<<<<<<< HEAD
 		np = of_get_parent(node);
 		of_node_put(node);
 		node = np;
 	}
 	if (node)
 		of_node_put(node);
+=======
+		node = of_get_next_parent(node);
+	}
+	of_node_put(node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return p_bus_freq ? *p_bus_freq : 0;
 }

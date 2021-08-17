@@ -6,6 +6,10 @@
 
 #include <linux/ceph/buffer.h>
 #include <linux/ceph/decode.h>
+<<<<<<< HEAD
+=======
+#include <linux/ceph/libceph.h> /* for ceph_kvmalloc */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 {
@@ -15,6 +19,7 @@ struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 	if (!b)
 		return NULL;
 
+<<<<<<< HEAD
 	b->vec.iov_base = kmalloc(len, gfp | __GFP_NOWARN);
 	if (b->vec.iov_base) {
 		b->is_vmalloc = false;
@@ -25,6 +30,12 @@ struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 			return NULL;
 		}
 		b->is_vmalloc = true;
+=======
+	b->vec.iov_base = ceph_kvmalloc(len, gfp);
+	if (!b->vec.iov_base) {
+		kfree(b);
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	kref_init(&b->kref);
@@ -40,12 +51,16 @@ void ceph_buffer_release(struct kref *kref)
 	struct ceph_buffer *b = container_of(kref, struct ceph_buffer, kref);
 
 	dout("buffer_release %p\n", b);
+<<<<<<< HEAD
 	if (b->vec.iov_base) {
 		if (b->is_vmalloc)
 			vfree(b->vec.iov_base);
 		else
 			kfree(b->vec.iov_base);
 	}
+=======
+	kvfree(b->vec.iov_base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(b);
 }
 EXPORT_SYMBOL(ceph_buffer_release);

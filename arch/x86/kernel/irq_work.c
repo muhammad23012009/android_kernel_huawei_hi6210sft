@@ -1,13 +1,18 @@
 /*
  * x86 specific code for irq_work
  *
+<<<<<<< HEAD
  * Copyright (C) 2010 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
+=======
+ * Copyright (C) 2010 Red Hat, Inc., Peter Zijlstra
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
 #include <linux/irq_work.h>
 #include <linux/hardirq.h>
 #include <asm/apic.h>
+<<<<<<< HEAD
 
 void smp_irq_work_interrupt(struct pt_regs *regs)
 {
@@ -16,12 +21,41 @@ void smp_irq_work_interrupt(struct pt_regs *regs)
 	inc_irq_stat(apic_irq_work_irqs);
 	irq_work_run();
 	irq_exit();
+=======
+#include <asm/trace/irq_vectors.h>
+#include <linux/interrupt.h>
+
+static inline void __smp_irq_work_interrupt(void)
+{
+	inc_irq_stat(apic_irq_work_irqs);
+	irq_work_run();
+}
+
+__visible void __irq_entry smp_irq_work_interrupt(struct pt_regs *regs)
+{
+	ipi_entering_ack_irq();
+	__smp_irq_work_interrupt();
+	exiting_irq();
+}
+
+__visible void __irq_entry smp_trace_irq_work_interrupt(struct pt_regs *regs)
+{
+	ipi_entering_ack_irq();
+	trace_irq_work_entry(IRQ_WORK_VECTOR);
+	__smp_irq_work_interrupt();
+	trace_irq_work_exit(IRQ_WORK_VECTOR);
+	exiting_irq();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void arch_irq_work_raise(void)
 {
 #ifdef CONFIG_X86_LOCAL_APIC
+<<<<<<< HEAD
 	if (!cpu_has_apic)
+=======
+	if (!arch_irq_work_has_interrupt())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	apic->send_IPI_self(IRQ_WORK_VECTOR);

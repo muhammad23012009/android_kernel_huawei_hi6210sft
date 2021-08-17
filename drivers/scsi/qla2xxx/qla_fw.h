@@ -1,6 +1,10 @@
 /*
  * QLogic Fibre Channel HBA Driver
+<<<<<<< HEAD
  * Copyright (c)  2003-2013 QLogic Corporation
+=======
+ * Copyright (c)  2003-2014 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * See LICENSE.qla2xxx for copyright and licensing details.
  */
@@ -91,7 +95,11 @@ struct nvram_24xx {
 	/* Firmware Initialization Control Block. */
 	uint16_t version;
 	uint16_t reserved_1;
+<<<<<<< HEAD
 	uint16_t frame_payload_size;
+=======
+	__le16 frame_payload_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint16_t execution_throttle;
 	uint16_t exchange_count;
 	uint16_t hard_address;
@@ -317,8 +325,13 @@ struct init_cb_24xx {
 	 * BIT 3  = Reserved
 	 * BIT 4  = Enable Target Mode
 	 * BIT 5  = Disable Initiator Mode
+<<<<<<< HEAD
 	 * BIT 6  = Reserved
 	 * BIT 7  = Reserved
+=======
+	 * BIT 6  = Acquire FA-WWN
+	 * BIT 7  = Enable D-port Diagnostics
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 *
 	 * BIT 8  = Reserved
 	 * BIT 9  = Non Participating LIP
@@ -371,7 +384,14 @@ struct init_cb_24xx {
 	 * BIT 14 = Data Rate bit 1
 	 * BIT 15 = Data Rate bit 2
 	 * BIT 16 = Enable 75 ohm Termination Select
+<<<<<<< HEAD
 	 * BIT 17-31 = Reserved
+=======
+	 * BIT 17-28 = Reserved
+	 * BIT 29 = Enable response queue 0 in index shadowing
+	 * BIT 30 = Enable request queue 0 out index shadowing
+	 * BIT 31 = Reserved
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	uint32_t firmware_options_3;
 	uint16_t qos;
@@ -564,7 +584,11 @@ struct sts_entry_24xx {
 #define SF_TRANSFERRED_DATA	BIT_11
 #define SF_FCP_RSP_DMA		BIT_0
 
+<<<<<<< HEAD
 	uint16_t reserved_2;
+=======
+	uint16_t retry_delay;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint16_t scsi_status;		/* SCSI status. */
 #define SS_CONFIRMATION_REQ		BIT_12
 
@@ -1134,6 +1158,7 @@ struct device_reg_24xx {
 #define MIN_MULTI_ID_FABRIC	64	/* Must be power-of-2. */
 #define MAX_MULTI_ID_FABRIC	256	/* ... */
 
+<<<<<<< HEAD
 #define for_each_mapped_vp_idx(_ha, _idx)		\
 	for (_idx = find_next_bit((_ha)->vp_idx_map,	\
 		(_ha)->max_npiv_vports + 1, 1);		\
@@ -1141,6 +1166,8 @@ struct device_reg_24xx {
 	    _idx = find_next_bit((_ha)->vp_idx_map,	\
 		(_ha)->max_npiv_vports + 1, _idx + 1))	\
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct mid_conf_entry_24xx {
 	uint16_t reserved_1;
 
@@ -1292,7 +1319,13 @@ struct vp_rpt_id_entry_24xx {
 
 	uint8_t vp_idx_map[16];
 
+<<<<<<< HEAD
 	uint8_t reserved_4[32];
+=======
+	uint8_t reserved_4[24];
+	uint16_t bbcr;
+	uint8_t reserved_5[6];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define VF_EVFP_IOCB_TYPE       0x26    /* Exchange Virtual Fabric Parameters entry. */
@@ -1378,6 +1411,13 @@ struct qla_flt_header {
 #define FLT_REG_NVRAM_0		0x15
 #define FLT_REG_VPD_1		0x16
 #define FLT_REG_NVRAM_1		0x17
+<<<<<<< HEAD
+=======
+#define FLT_REG_VPD_2		0xD4
+#define FLT_REG_NVRAM_2		0xD5
+#define FLT_REG_VPD_3		0xD6
+#define FLT_REG_NVRAM_3		0xD7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FLT_REG_FDT		0x1a
 #define FLT_REG_FLT		0x1c
 #define FLT_REG_HW_EVENT_0	0x1d
@@ -1387,10 +1427,28 @@ struct qla_flt_header {
 #define FLT_REG_GOLD_FW		0x2f
 #define FLT_REG_FCP_PRIO_0	0x87
 #define FLT_REG_FCP_PRIO_1	0x88
+<<<<<<< HEAD
+=======
+#define FLT_REG_CNA_FW		0x97
+#define FLT_REG_BOOT_CODE_8044	0xA2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FLT_REG_FCOE_FW		0xA4
 #define FLT_REG_FCOE_NVRAM_0	0xAA
 #define FLT_REG_FCOE_NVRAM_1	0xAC
 
+<<<<<<< HEAD
+=======
+/* 27xx */
+#define FLT_REG_IMG_PRI_27XX	0x95
+#define FLT_REG_IMG_SEC_27XX	0x96
+#define FLT_REG_FW_SEC_27XX	0x02
+#define FLT_REG_BOOTLOAD_SEC_27XX	0x9
+#define FLT_REG_VPD_SEC_27XX_0	0x50
+#define FLT_REG_VPD_SEC_27XX_1	0x52
+#define FLT_REG_VPD_SEC_27XX_2	0xD8
+#define FLT_REG_VPD_SEC_27XX_3	0xDA
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct qla_flt_region {
 	uint32_t code;
 	uint32_t size;

@@ -300,7 +300,11 @@ static int __init parport_mfc3_init(void)
 		if (!request_mem_region(piabase, sizeof(struct pia), "PIA"))
 			continue;
 
+<<<<<<< HEAD
 		pp = (struct pia *)ZTWO_VADDR(piabase);
+=======
+		pp = ZTWO_VADDR(piabase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pp->crb = 0;
 		pp->pddrb = 255; /* all data pins output */
 		pp->crb = PIA_DDR|32|8;

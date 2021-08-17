@@ -46,7 +46,11 @@ static void frv_change_dcache_mode(unsigned long newmode)
 /*
  * handle requests to dynamically switch the write caching mode delivered by /proc
  */
+<<<<<<< HEAD
 static int procctl_frv_cachemode(ctl_table *table, int write,
+=======
+static int procctl_frv_cachemode(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 void __user *buffer, size_t *lenp,
 				 loff_t *ppos)
 {
@@ -121,7 +125,11 @@ static int procctl_frv_cachemode(ctl_table *table, int write,
  * permit the mm_struct the nominated process is using have its MMU context ID pinned
  */
 #ifdef CONFIG_MMU
+<<<<<<< HEAD
 static int procctl_frv_pin_cxnr(ctl_table *table, int write,
+=======
+static int procctl_frv_pin_cxnr(struct ctl_table *table, int write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				void __user *buffer, size_t *lenp,
 				loff_t *ppos)
 {

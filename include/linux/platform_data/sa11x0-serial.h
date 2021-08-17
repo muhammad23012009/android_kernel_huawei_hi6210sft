@@ -26,8 +26,17 @@ struct sa1100_port_fns {
 void sa1100_register_uart_fns(struct sa1100_port_fns *fns);
 void sa1100_register_uart(int idx, int port);
 #else
+<<<<<<< HEAD
 #define sa1100_register_uart_fns(fns) do { } while (0)
 #define sa1100_register_uart(idx,port) do { } while (0)
+=======
+static inline void sa1100_register_uart_fns(struct sa1100_port_fns *fns)
+{
+}
+static inline void sa1100_register_uart(int idx, int port)
+{
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif

@@ -4,7 +4,11 @@
  * SPEAr310 machine source file
  *
  * Copyright (C) 2009-2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -15,7 +19,10 @@
 
 #include <linux/amba/pl08x.h>
 #include <linux/amba/serial.h>
+<<<<<<< HEAD
 #include <linux/irqchip.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <asm/mach/arch.h>
 #include "generic.h"
@@ -237,8 +244,12 @@ static void __init spear310_dt_init(void)
 	pl080_plat_data.slave_channels = spear310_dma_info;
 	pl080_plat_data.num_slave_channels = ARRAY_SIZE(spear310_dma_info);
 
+<<<<<<< HEAD
 	of_platform_populate(NULL, of_default_bus_match_table,
 			spear310_auxdata_lookup, NULL);
+=======
+	of_platform_default_populate(NULL, spear310_auxdata_lookup, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const char * const spear310_dt_board_compat[] = {
@@ -254,7 +265,10 @@ static void __init spear310_map_io(void)
 
 DT_MACHINE_START(SPEAR310_DT, "ST SPEAr310 SoC with Flattened Device Tree")
 	.map_io		=	spear310_map_io,
+<<<<<<< HEAD
 	.init_irq	=	irqchip_init,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_time	=	spear3xx_timer_init,
 	.init_machine	=	spear310_dt_init,
 	.restart	=	spear_restart,

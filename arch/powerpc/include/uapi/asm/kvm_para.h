@@ -82,10 +82,22 @@ struct kvm_vcpu_arch_shared {
 
 #define KVM_FEATURE_MAGIC_PAGE	1
 
+<<<<<<< HEAD
+=======
+/* Magic page flags from host to guest */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define KVM_MAGIC_FEAT_SR		(1 << 0)
 
 /* MASn, ESR, PIR, and high SPRGs */
 #define KVM_MAGIC_FEAT_MAS0_TO_SPRG7	(1 << 1)
 
+<<<<<<< HEAD
+=======
+/* Magic page flags from guest to host */
+
+#define MAGIC_PAGE_FLAG_NOT_MAPPED_NX	(1 << 0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _UAPI__POWERPC_KVM_PARA_H__ */

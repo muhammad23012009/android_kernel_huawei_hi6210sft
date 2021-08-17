@@ -251,7 +251,10 @@ static SIMPLE_DEV_PM_OPS(vgg2432a4_pm_ops, vgg2432a4_suspend, vgg2432a4_resume);
 static struct spi_driver vgg2432a4_driver = {
 	.driver = {
 		.name		= "VGG2432A4",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm		= &vgg2432a4_pm_ops,
 	},
 	.probe		= vgg2432a4_probe,

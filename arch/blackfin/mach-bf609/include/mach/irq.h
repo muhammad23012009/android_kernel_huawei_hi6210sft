@@ -298,7 +298,11 @@
 extern u8 sec_int_priority[];
 
 /*
+<<<<<<< HEAD
  * bfin pint registers layout
+=======
+ * gpio pint registers layout
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct bfin_pint_regs {
 	u32 mask_set;

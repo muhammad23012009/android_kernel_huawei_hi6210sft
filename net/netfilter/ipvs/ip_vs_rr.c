@@ -55,7 +55,12 @@ static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
  * Round-Robin Scheduling
  */
 static struct ip_vs_dest *
+<<<<<<< HEAD
 ip_vs_rr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
+=======
+ip_vs_rr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
+		  struct ip_vs_iphdr *iph)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct list_head *p;
 	struct ip_vs_dest *dest, *last;
@@ -94,7 +99,11 @@ stop:
 	spin_unlock_bh(&svc->sched_lock);
 	IP_VS_DBG_BUF(6, "RR: server %s:%u "
 		      "activeconns %d refcnt %d weight %d\n",
+<<<<<<< HEAD
 		      IP_VS_DBG_ADDR(svc->af, &dest->addr), ntohs(dest->port),
+=======
+		      IP_VS_DBG_ADDR(dest->af, &dest->addr), ntohs(dest->port),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      atomic_read(&dest->activeconns),
 		      atomic_read(&dest->refcnt), atomic_read(&dest->weight));
 

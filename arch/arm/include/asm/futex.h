@@ -13,7 +13,11 @@
 	"	.align	3\n"					\
 	"	.long	1b, 4f, 2b, 4f\n"			\
 	"	.popsection\n"					\
+<<<<<<< HEAD
 	"	.pushsection .fixup,\"ax\"\n"			\
+=======
+	"	.pushsection .text.fixup,\"ax\"\n"		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	.align	2\n"					\
 	"4:	mov	%0, " err_reg "\n"			\
 	"	b	3b\n"					\
@@ -22,7 +26,15 @@
 #ifdef CONFIG_SMP
 
 #define __futex_atomic_op(insn, ret, oldval, tmp, uaddr, oparg)	\
+<<<<<<< HEAD
 	smp_mb();						\
+=======
+({								\
+	unsigned int __ua_flags;				\
+	smp_mb();						\
+	prefetchw(uaddr);					\
+	__ua_flags = uaccess_save_and_enable();			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(					\
 	"1:	ldrex	%1, [%3]\n"				\
 	"	" insn "\n"					\
@@ -33,12 +45,22 @@
 	__futex_atomic_ex_table("%5")				\
 	: "=&r" (ret), "=&r" (oldval), "=&r" (tmp)		\
 	: "r" (uaddr), "r" (oparg), "Ir" (-EFAULT)		\
+<<<<<<< HEAD
 	: "cc", "memory")
+=======
+	: "cc", "memory");					\
+	uaccess_restore(__ua_flags);				\
+})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
 {
+<<<<<<< HEAD
+=======
+	unsigned int __ua_flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	u32 val;
 
@@ -46,6 +68,12 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		return -EFAULT;
 
 	smp_mb();
+<<<<<<< HEAD
+=======
+	/* Prefetching cannot fault */
+	prefetchw(uaddr);
+	__ua_flags = uaccess_save_and_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__("@futex_atomic_cmpxchg_inatomic\n"
 	"1:	ldrex	%1, [%4]\n"
 	"	teq	%1, %2\n"
@@ -58,6 +86,10 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	: "=&r" (ret), "=&r" (val)
 	: "r" (oldval), "r" (newval), "r" (uaddr), "Ir" (-EFAULT)
 	: "cc", "memory");
+<<<<<<< HEAD
+=======
+	uaccess_restore(__ua_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	smp_mb();
 
 	*uval = val;
@@ -70,6 +102,11 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 #include <asm/domain.h>
 
 #define __futex_atomic_op(insn, ret, oldval, tmp, uaddr, oparg)	\
+<<<<<<< HEAD
+=======
+({								\
+	unsigned int __ua_flags = uaccess_save_and_enable();	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(					\
 	"1:	" TUSER(ldr) "	%1, [%3]\n"			\
 	"	" insn "\n"					\
@@ -78,18 +115,33 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	__futex_atomic_ex_table("%5")				\
 	: "=&r" (ret), "=&r" (oldval), "=&r" (tmp)		\
 	: "r" (uaddr), "r" (oparg), "Ir" (-EFAULT)		\
+<<<<<<< HEAD
 	: "cc", "memory")
+=======
+	: "cc", "memory");					\
+	uaccess_restore(__ua_flags);				\
+})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
 {
+<<<<<<< HEAD
+=======
+	unsigned int __ua_flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 	u32 val;
 
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+	__ua_flags = uaccess_save_and_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__("@futex_atomic_cmpxchg_inatomic\n"
 	"1:	" TUSER(ldr) "	%1, [%4]\n"
 	"	teq	%1, %2\n"
@@ -99,14 +151,23 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	: "+r" (ret), "=&r" (val)
 	: "r" (oldval), "r" (newval), "r" (uaddr), "Ir" (-EFAULT)
 	: "cc", "memory");
+<<<<<<< HEAD
 
 	*uval = val;
+=======
+	uaccess_restore(__ua_flags);
+
+	*uval = val;
+	preempt_enable();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 #endif /* !SMP */
 
 static inline int
+<<<<<<< HEAD
 futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
@@ -122,6 +183,16 @@ futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 		return -EFAULT;
 
 	pagefault_disable();	/* implies preempt_disable() */
+=======
+arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
+{
+	int oldval = 0, ret, tmp;
+
+#ifndef CONFIG_SMP
+	preempt_disable();
+#endif
+	pagefault_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (op) {
 	case FUTEX_OP_SET:
@@ -143,6 +214,7 @@ futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 		ret = -ENOSYS;
 	}
 
+<<<<<<< HEAD
 	pagefault_enable();	/* subsumes preempt_enable() */
 
 	if (!ret) {
@@ -156,6 +228,21 @@ futex_atomic_op_inuser (int encoded_op, u32 __user *uaddr)
 		default: ret = -ENOSYS;
 		}
 	}
+=======
+	pagefault_enable();
+#ifndef CONFIG_SMP
+	preempt_enable();
+#endif
+
+	/*
+	 * Store unconditionally. If ret != 0 the extra store is the least
+	 * of the worries but GCC cannot figure out that __futex_atomic_op()
+	 * is either setting ret to -EFAULT or storing the old value in
+	 * oldval which results in a uninitialized warning at the call site.
+	 */
+	*oval = oldval;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 

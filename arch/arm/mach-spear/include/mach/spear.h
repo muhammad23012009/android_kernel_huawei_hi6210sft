@@ -3,7 +3,11 @@
  *
  * Copyright (C) 2009,2012 ST Microelectronics
  * Rajeev Kumar<rajeev-dlh.kumar@st.com>
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -39,7 +43,10 @@
 
 /* Debug uart for linux, will be used for debug and uncompress messages */
 #define SPEAR_DBG_UART_BASE		SPEAR_ICM1_UART_BASE
+<<<<<<< HEAD
 #define VA_SPEAR_DBG_UART_BASE		VA_SPEAR_ICM1_UART_BASE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Sysctl base for spear platform */
 #define SPEAR_SYS_CTRL_BASE		SPEAR_ICM3_SYS_CTRL_BASE
@@ -53,10 +60,17 @@
 #ifdef CONFIG_ARCH_SPEAR13XX
 
 #define PERIP_GRP2_BASE				UL(0xB3000000)
+<<<<<<< HEAD
 #define VA_PERIP_GRP2_BASE			IOMEM(0xFE000000)
 #define MCIF_SDHCI_BASE				UL(0xB3000000)
 #define SYSRAM0_BASE				UL(0xB3800000)
 #define VA_SYSRAM0_BASE				IOMEM(0xFE800000)
+=======
+#define VA_PERIP_GRP2_BASE			IOMEM(0xF9000000)
+#define MCIF_SDHCI_BASE				UL(0xB3000000)
+#define SYSRAM0_BASE				UL(0xB3800000)
+#define VA_SYSRAM0_BASE				IOMEM(0xF9800000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SYS_LOCATION				(VA_SYSRAM0_BASE + 0x600)
 
 #define PERIP_GRP1_BASE				UL(0xE0000000)
@@ -86,7 +100,10 @@
 
 /* Debug uart for linux, will be used for debug and uncompress messages */
 #define SPEAR_DBG_UART_BASE			UART_BASE
+<<<<<<< HEAD
 #define VA_SPEAR_DBG_UART_BASE			VA_UART_BASE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* SPEAR13XX */
 

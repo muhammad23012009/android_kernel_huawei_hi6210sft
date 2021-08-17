@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (c) 2003-2007 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -24,6 +30,13 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 *********************************************************************/
+=======
+ */
+
+#include <asm/octeon/cvmx-pip.h>
+#include <asm/octeon/cvmx-helper.h>
+#include <asm/octeon/cvmx-helper-util.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * cvm_oct_get_buffer_ptr - convert packet data address to pointer
@@ -45,6 +58,7 @@ static inline void *cvm_oct_get_buffer_ptr(union cvmx_buf_ptr packet_ptr)
  */
 static inline int INTERFACE(int ipd_port)
 {
+<<<<<<< HEAD
 	if (ipd_port < 32)	/* Interface 0 or 1 for RGMII,GMII,SPI, etc */
 		return ipd_port >> 4;
 	else if (ipd_port < 36)	/* Interface 2 for NPI */
@@ -55,6 +69,16 @@ static inline int INTERFACE(int ipd_port)
 		return 4;
 	else
 		panic("Illegal ipd_port %d passed to INTERFACE\n", ipd_port);
+=======
+	int interface;
+
+	if (ipd_port == CVMX_PIP_NUM_INPUT_PORTS)
+		return 10;
+	interface = cvmx_helper_get_interface_num(ipd_port);
+	if (interface >= 0)
+		return interface;
+	panic("Illegal ipd_port %d passed to INTERFACE\n", ipd_port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -65,8 +89,12 @@ static inline int INTERFACE(int ipd_port)
  */
 static inline int INDEX(int ipd_port)
 {
+<<<<<<< HEAD
 	if (ipd_port < 32)
 		return ipd_port & 15;
 	else
 		return ipd_port & 3;
+=======
+	return cvmx_helper_get_interface_index_num(ipd_port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

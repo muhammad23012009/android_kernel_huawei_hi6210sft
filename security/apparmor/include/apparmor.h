@@ -15,6 +15,10 @@
 #ifndef __APPARMOR_H
 #define __APPARMOR_H
 
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/fs.h>
 
 #include "match.h"
@@ -36,6 +40,10 @@
 extern enum audit_mode aa_g_audit;
 extern bool aa_g_audit_header;
 extern bool aa_g_debug;
+<<<<<<< HEAD
+=======
+extern bool aa_g_hash_policy;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern bool aa_g_lock_policy;
 extern bool aa_g_logsyscall;
 extern bool aa_g_paranoid_load;
@@ -64,8 +72,28 @@ extern int apparmor_initialized __initdata;
 /* fn's in lib */
 char *aa_split_fqname(char *args, char **ns_name);
 void aa_info_message(const char *str);
+<<<<<<< HEAD
 void *kvmalloc(size_t size);
 
+=======
+void *__aa_kvmalloc(size_t size, gfp_t flags);
+
+static inline void *kvmalloc(size_t size)
+{
+	return __aa_kvmalloc(size, 0);
+}
+
+static inline void *kvzalloc(size_t size)
+{
+	return __aa_kvmalloc(size, __GFP_ZERO);
+}
+
+/* returns 0 if kref not incremented */
+static inline int kref_get_not0(struct kref *kref)
+{
+	return atomic_inc_not_zero(&kref->refcount);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * aa_strneq - compare null terminated @str to a non null terminated substring
@@ -96,9 +124,15 @@ static inline unsigned int aa_dfa_null_transition(struct aa_dfa *dfa,
 	return aa_dfa_next(dfa, start, 0);
 }
 
+<<<<<<< HEAD
 static inline bool mediated_filesystem(struct inode *inode)
 {
 	return !(inode->i_sb->s_flags & MS_NOUSER);
+=======
+static inline bool mediated_filesystem(struct dentry *dentry)
+{
+	return !(dentry->d_sb->s_flags & MS_NOUSER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* __APPARMOR_H */

@@ -123,25 +123,44 @@ static bool pss_mixer;
 #endif
 
 
+<<<<<<< HEAD
 typedef struct pss_mixerdata {
+=======
+struct pss_mixerdata {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int volume_l;
 	unsigned int volume_r;
 	unsigned int bass;
 	unsigned int treble;
 	unsigned int synth;
+<<<<<<< HEAD
 } pss_mixerdata;
 
 typedef struct pss_confdata {
+=======
+};
+
+struct pss_confdata {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int             base;
 	int             irq;
 	int             dma;
 	int            *osp;
+<<<<<<< HEAD
 	pss_mixerdata   mixer;
 	int             ad_mixer_dev;
 } pss_confdata;
   
 static pss_confdata pss_data;
 static pss_confdata *devc = &pss_data;
+=======
+	struct pss_mixerdata mixer;
+	int             ad_mixer_dev;
+};
+  
+static struct pss_confdata pss_data;
+static struct pss_confdata *devc = &pss_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEFINE_SPINLOCK(lock);
 
 static int      pss_initialized;
@@ -150,7 +169,11 @@ static int	pss_cdrom_port = -1;	/* Parameter for the PSS cdrom port */
 static bool	pss_enable_joystick;    /* Parameter for enabling the joystick */
 static coproc_operations pss_coproc_operations;
 
+<<<<<<< HEAD
 static void pss_write(pss_confdata *devc, int data)
+=======
+static void pss_write(struct pss_confdata *devc, int data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long i, limit;
 
@@ -206,7 +229,11 @@ static int __init probe_pss(struct address_info *hw_config)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int set_irq(pss_confdata * devc, int dev, int irq)
+=======
+static int set_irq(struct pss_confdata *devc, int dev, int irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static unsigned short irq_bits[16] =
 	{
@@ -232,7 +259,11 @@ static int set_irq(pss_confdata * devc, int dev, int irq)
 	return 1;
 }
 
+<<<<<<< HEAD
 static void set_io_base(pss_confdata * devc, int dev, int base)
+=======
+static void set_io_base(struct pss_confdata *devc, int dev, int base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned short  tmp = inw(REG(dev)) & 0x003f;
 	unsigned short  bits = (base & 0x0ffc) << 4;
@@ -240,7 +271,11 @@ static void set_io_base(pss_confdata * devc, int dev, int base)
 	outw(bits | tmp, REG(dev));
 }
 
+<<<<<<< HEAD
 static int set_dma(pss_confdata * devc, int dev, int dma)
+=======
+static int set_dma(struct pss_confdata *devc, int dev, int dma)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static unsigned short dma_bits[8] =
 	{
@@ -264,7 +299,11 @@ static int set_dma(pss_confdata * devc, int dev, int dma)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int pss_reset_dsp(pss_confdata * devc)
+=======
+static int pss_reset_dsp(struct pss_confdata *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long   i, limit = jiffies + HZ/10;
 
@@ -275,7 +314,11 @@ static int pss_reset_dsp(pss_confdata * devc)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int pss_put_dspword(pss_confdata * devc, unsigned short word)
+=======
+static int pss_put_dspword(struct pss_confdata *devc, unsigned short word)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, val;
 
@@ -291,7 +334,11 @@ static int pss_put_dspword(pss_confdata * devc, unsigned short word)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pss_get_dspword(pss_confdata * devc, unsigned short *word)
+=======
+static int pss_get_dspword(struct pss_confdata *devc, unsigned short *word)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, val;
 
@@ -307,7 +354,12 @@ static int pss_get_dspword(pss_confdata * devc, unsigned short *word)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pss_download_boot(pss_confdata * devc, unsigned char *block, int size, int flags)
+=======
+static int pss_download_boot(struct pss_confdata *devc, unsigned char *block,
+			     int size, int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i, val, count;
 	unsigned long limit;
@@ -397,7 +449,11 @@ static int pss_download_boot(pss_confdata * devc, unsigned char *block, int size
 }
 
 /* Mixer */
+<<<<<<< HEAD
 static void set_master_volume(pss_confdata *devc, int left, int right)
+=======
+static void set_master_volume(struct pss_confdata *devc, int left, int right)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static unsigned char log_scale[101] =  {
 		0xdb, 0xe0, 0xe3, 0xe5, 0xe7, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xed, 0xee,
@@ -416,7 +472,11 @@ static void set_master_volume(pss_confdata *devc, int left, int right)
 	pss_write(devc, log_scale[right] | 0x0100);
 }
 
+<<<<<<< HEAD
 static void set_synth_volume(pss_confdata *devc, int volume)
+=======
+static void set_synth_volume(struct pss_confdata *devc, int volume)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int vol = ((0x8000*volume)/100L);
 	pss_write(devc, 0x0080);
@@ -425,21 +485,33 @@ static void set_synth_volume(pss_confdata *devc, int volume)
 	pss_write(devc, vol);
 }
 
+<<<<<<< HEAD
 static void set_bass(pss_confdata *devc, int level)
+=======
+static void set_bass(struct pss_confdata *devc, int level)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int vol = (int)(((0xfd - 0xf0) * level)/100L) + 0xf0;
 	pss_write(devc, 0x0010);
 	pss_write(devc, vol | 0x0200);
 };
 
+<<<<<<< HEAD
 static void set_treble(pss_confdata *devc, int level)
+=======
+static void set_treble(struct pss_confdata *devc, int level)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {	
 	int vol = (((0xfd - 0xf0) * level)/100L) + 0xf0;
 	pss_write(devc, 0x0010);
 	pss_write(devc, vol | 0x0300);
 };
 
+<<<<<<< HEAD
 static void pss_mixer_reset(pss_confdata *devc)
+=======
+static void pss_mixer_reset(struct pss_confdata *devc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	set_master_volume(devc, 33, 33);
 	set_bass(devc, 50);
@@ -499,7 +571,12 @@ static int ret_vol_stereo(int left, int right)
 	return ((right << 8) | left);
 }
 
+<<<<<<< HEAD
 static int call_ad_mixer(pss_confdata *devc,unsigned int cmd, void __user *arg)
+=======
+static int call_ad_mixer(struct pss_confdata *devc, unsigned int cmd,
+			 void __user *arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (devc->ad_mixer_dev != NO_WSS_MIXER) 
 		return mixer_devs[devc->ad_mixer_dev]->ioctl(devc->ad_mixer_dev, cmd, arg);
@@ -509,7 +586,11 @@ static int call_ad_mixer(pss_confdata *devc,unsigned int cmd, void __user *arg)
 
 static int pss_mixer_ioctl (int dev, unsigned int cmd, void __user *arg)
 {
+<<<<<<< HEAD
 	pss_confdata *devc = mixer_devs[dev]->devc;
+=======
+	struct pss_confdata *devc = mixer_devs[dev]->devc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int cmdf = cmd & 0xff;
 	
 	if ((cmdf != SOUND_MIXER_VOLUME) && (cmdf != SOUND_MIXER_BASS) &&
@@ -1226,7 +1307,11 @@ static void __exit cleanup_pss(void)
 {
 	if(!pss_no_sound)
 	{
+<<<<<<< HEAD
 		if(fw_load && pss_synth)
+=======
+		if (fw_load)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vfree(pss_synth);
 		if(pssmss)
 			unload_pss_mss(&cfg2);

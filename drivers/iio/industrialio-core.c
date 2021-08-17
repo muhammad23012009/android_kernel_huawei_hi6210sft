@@ -9,6 +9,11 @@
  * Based on elements of hwmon and input subsystems.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "iio-core: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/idr.h>
@@ -23,11 +28,19 @@
 #include <linux/slab.h>
 #include <linux/anon_inodes.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/iio/iio.h>
 #include "iio_core.h"
 #include "iio_core_trigger.h"
 #include <linux/iio/sysfs.h>
 #include <linux/iio/events.h>
+<<<<<<< HEAD
+=======
+#include <linux/iio/buffer.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* IDA to assign each registered device a unique id */
 static DEFINE_IDA(iio_ida);
@@ -66,12 +79,37 @@ static const char * const iio_chan_type_name_spec[] = {
 	[IIO_ALTVOLTAGE] = "altvoltage",
 	[IIO_CCT] = "cct",
 	[IIO_PRESSURE] = "pressure",
+<<<<<<< HEAD
+=======
+	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+	[IIO_ACTIVITY] = "activity",
+	[IIO_STEPS] = "steps",
+	[IIO_ENERGY] = "energy",
+	[IIO_DISTANCE] = "distance",
+	[IIO_VELOCITY] = "velocity",
+	[IIO_CONCENTRATION] = "concentration",
+	[IIO_RESISTANCE] = "resistance",
+	[IIO_PH] = "ph",
+	[IIO_UVINDEX] = "uvindex",
+	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const char * const iio_modifier_names[] = {
 	[IIO_MOD_X] = "x",
 	[IIO_MOD_Y] = "y",
 	[IIO_MOD_Z] = "z",
+<<<<<<< HEAD
+=======
+	[IIO_MOD_X_AND_Y] = "x&y",
+	[IIO_MOD_X_AND_Z] = "x&z",
+	[IIO_MOD_Y_AND_Z] = "y&z",
+	[IIO_MOD_X_AND_Y_AND_Z] = "x&y&z",
+	[IIO_MOD_X_OR_Y] = "x|y",
+	[IIO_MOD_X_OR_Z] = "x|z",
+	[IIO_MOD_Y_OR_Z] = "y|z",
+	[IIO_MOD_X_OR_Y_OR_Z] = "x|y|z",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
 	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
 	[IIO_MOD_LIGHT_BOTH] = "both",
@@ -80,6 +118,26 @@ static const char * const iio_modifier_names[] = {
 	[IIO_MOD_LIGHT_RED] = "red",
 	[IIO_MOD_LIGHT_GREEN] = "green",
 	[IIO_MOD_LIGHT_BLUE] = "blue",
+<<<<<<< HEAD
+=======
+	[IIO_MOD_LIGHT_UV] = "uv",
+	[IIO_MOD_QUATERNION] = "quaternion",
+	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+	[IIO_MOD_TEMP_OBJECT] = "object",
+	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
+	[IIO_MOD_NORTH_TRUE] = "from_north_true",
+	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
+	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
+	[IIO_MOD_RUNNING] = "running",
+	[IIO_MOD_JOGGING] = "jogging",
+	[IIO_MOD_WALKING] = "walking",
+	[IIO_MOD_STILL] = "still",
+	[IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z] = "sqrt(x^2+y^2+z^2)",
+	[IIO_MOD_I] = "i",
+	[IIO_MOD_Q] = "q",
+	[IIO_MOD_CO2] = "co2",
+	[IIO_MOD_VOC] = "voc",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* relies on pairs of these shared then separate */
@@ -96,13 +154,36 @@ static const char * const iio_chan_info_postfix[] = {
 	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
 	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
 	= "filter_low_pass_3db_frequency",
+<<<<<<< HEAD
+=======
+	[IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY]
+	= "filter_high_pass_3db_frequency",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
 	[IIO_CHAN_INFO_PHASE] = "phase",
 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
 	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+<<<<<<< HEAD
 };
 
+=======
+	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
+	[IIO_CHAN_INFO_ENABLE] = "en",
+	[IIO_CHAN_INFO_CALIBHEIGHT] = "calibheight",
+	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
+	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
+	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
+	[IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
+};
+
+/**
+ * iio_find_channel_from_si() - get channel from its scan index
+ * @indio_dev:		device
+ * @si:			scan index to match
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 const struct iio_chan_spec
 *iio_find_channel_from_si(struct iio_dev *indio_dev, int si)
 {
@@ -123,6 +204,89 @@ ssize_t iio_read_const_attr(struct device *dev,
 }
 EXPORT_SYMBOL(iio_read_const_attr);
 
+<<<<<<< HEAD
+=======
+static int iio_device_set_clock(struct iio_dev *indio_dev, clockid_t clock_id)
+{
+	int ret;
+	const struct iio_event_interface *ev_int = indio_dev->event_interface;
+
+	ret = mutex_lock_interruptible(&indio_dev->mlock);
+	if (ret)
+		return ret;
+	if ((ev_int && iio_event_enabled(ev_int)) ||
+	    iio_buffer_enabled(indio_dev)) {
+		mutex_unlock(&indio_dev->mlock);
+		return -EBUSY;
+	}
+	indio_dev->clock_id = clock_id;
+	mutex_unlock(&indio_dev->mlock);
+
+	return 0;
+}
+
+/**
+ * iio_get_time_ns() - utility function to get a time stamp for events etc
+ * @indio_dev: device
+ */
+s64 iio_get_time_ns(const struct iio_dev *indio_dev)
+{
+	struct timespec tp;
+
+	switch (iio_device_get_clock(indio_dev)) {
+	case CLOCK_REALTIME:
+		ktime_get_real_ts(&tp);
+		break;
+	case CLOCK_MONOTONIC:
+		ktime_get_ts(&tp);
+		break;
+	case CLOCK_MONOTONIC_RAW:
+		getrawmonotonic(&tp);
+		break;
+	case CLOCK_REALTIME_COARSE:
+		tp = current_kernel_time();
+		break;
+	case CLOCK_MONOTONIC_COARSE:
+		tp = get_monotonic_coarse();
+		break;
+	case CLOCK_BOOTTIME:
+		get_monotonic_boottime(&tp);
+		break;
+	case CLOCK_TAI:
+		timekeeping_clocktai(&tp);
+		break;
+	default:
+		BUG();
+	}
+
+	return timespec_to_ns(&tp);
+}
+EXPORT_SYMBOL(iio_get_time_ns);
+
+/**
+ * iio_get_time_res() - utility function to get time stamp clock resolution in
+ *                      nano seconds.
+ * @indio_dev: device
+ */
+unsigned int iio_get_time_res(const struct iio_dev *indio_dev)
+{
+	switch (iio_device_get_clock(indio_dev)) {
+	case CLOCK_REALTIME:
+	case CLOCK_MONOTONIC:
+	case CLOCK_MONOTONIC_RAW:
+	case CLOCK_BOOTTIME:
+	case CLOCK_TAI:
+		return hrtimer_resolution;
+	case CLOCK_REALTIME_COARSE:
+	case CLOCK_MONOTONIC_COARSE:
+		return LOW_RES_NSEC;
+	default:
+		BUG();
+	}
+}
+EXPORT_SYMBOL(iio_get_time_res);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int __init iio_init(void)
 {
 	int ret;
@@ -130,16 +294,24 @@ static int __init iio_init(void)
 	/* Register sysfs bus */
 	ret  = bus_register(&iio_bus_type);
 	if (ret < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "%s could not register bus type\n",
 			__FILE__);
+=======
+		pr_err("could not register bus type\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error_nothing;
 	}
 
 	ret = alloc_chrdev_region(&iio_devt, 0, IIO_DEV_MAX, "iio");
 	if (ret < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: failed to allocate char dev region\n",
 		       __FILE__);
+=======
+		pr_err("failed to allocate char dev region\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error_unregister_bus_type;
 	}
 
@@ -174,8 +346,15 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
 	ret = indio_dev->info->debugfs_reg_access(indio_dev,
 						  indio_dev->cached_reg_addr,
 						  0, &val);
+<<<<<<< HEAD
 	if (ret)
 		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
+=======
+	if (ret) {
+		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
+		return ret;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len = snprintf(buf, sizeof(buf), "0x%X\n", val);
 
@@ -333,7 +512,11 @@ ssize_t iio_enum_read(struct iio_dev *indio_dev,
 	else if (i >= e->num_items)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", e->items[i]);
+=======
+	return snprintf(buf, PAGE_SIZE, "%s\n", e->items[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(iio_enum_read);
 
@@ -361,6 +544,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
 }
 EXPORT_SYMBOL_GPL(iio_enum_write);
 
+<<<<<<< HEAD
 static ssize_t iio_read_channel_info(struct device *dev,
 				     struct device_attribute *attr,
 				     char *buf)
@@ -403,10 +587,179 @@ static ssize_t iio_read_channel_info(struct device *dev,
 		val2 = do_div(tmp, 1000000000LL);
 		val = tmp;
 		return sprintf(buf, "%d.%09u\n", val, val2);
+=======
+static const struct iio_mount_matrix iio_mount_idmatrix = {
+	.rotation = {
+		"1", "0", "0",
+		"0", "1", "0",
+		"0", "0", "1"
+	}
+};
+
+static int iio_setup_mount_idmatrix(const struct device *dev,
+				    struct iio_mount_matrix *matrix)
+{
+	*matrix = iio_mount_idmatrix;
+	dev_info(dev, "mounting matrix not found: using identity...\n");
+	return 0;
+}
+
+ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+			      const struct iio_chan_spec *chan, char *buf)
+{
+	const struct iio_mount_matrix *mtx = ((iio_get_mount_matrix_t *)
+					      priv)(indio_dev, chan);
+
+	if (IS_ERR(mtx))
+		return PTR_ERR(mtx);
+
+	if (!mtx)
+		mtx = &iio_mount_idmatrix;
+
+	return snprintf(buf, PAGE_SIZE, "%s, %s, %s; %s, %s, %s; %s, %s, %s\n",
+			mtx->rotation[0], mtx->rotation[1], mtx->rotation[2],
+			mtx->rotation[3], mtx->rotation[4], mtx->rotation[5],
+			mtx->rotation[6], mtx->rotation[7], mtx->rotation[8]);
+}
+EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
+
+/**
+ * of_iio_read_mount_matrix() - retrieve iio device mounting matrix from
+ *                              device-tree "mount-matrix" property
+ * @dev:	device the mounting matrix property is assigned to
+ * @propname:	device specific mounting matrix property name
+ * @matrix:	where to store retrieved matrix
+ *
+ * If device is assigned no mounting matrix property, a default 3x3 identity
+ * matrix will be filled in.
+ *
+ * Return: 0 if success, or a negative error code on failure.
+ */
+#ifdef CONFIG_OF
+int of_iio_read_mount_matrix(const struct device *dev,
+			     const char *propname,
+			     struct iio_mount_matrix *matrix)
+{
+	if (dev->of_node) {
+		int err = of_property_read_string_array(dev->of_node,
+				propname, matrix->rotation,
+				ARRAY_SIZE(iio_mount_idmatrix.rotation));
+
+		if (err == ARRAY_SIZE(iio_mount_idmatrix.rotation))
+			return 0;
+
+		if (err >= 0)
+			/* Invalid number of matrix entries. */
+			return -EINVAL;
+
+		if (err != -EINVAL)
+			/* Invalid matrix declaration format. */
+			return err;
+	}
+
+	/* Matrix was not declared at all: fallback to identity. */
+	return iio_setup_mount_idmatrix(dev, matrix);
+}
+#else
+int of_iio_read_mount_matrix(const struct device *dev,
+			     const char *propname,
+			     struct iio_mount_matrix *matrix)
+{
+	return iio_setup_mount_idmatrix(dev, matrix);
+}
+#endif
+EXPORT_SYMBOL(of_iio_read_mount_matrix);
+
+/**
+ * iio_format_value() - Formats a IIO value into its string representation
+ * @buf:	The buffer to which the formatted value gets written
+ * @type:	One of the IIO_VAL_... constants. This decides how the val
+ *		and val2 parameters are formatted.
+ * @size:	Number of IIO value entries contained in vals
+ * @vals:	Pointer to the values, exact meaning depends on the
+ *		type parameter.
+ *
+ * Return: 0 by default, a negative number on failure or the
+ *	   total number of characters written for a type that belongs
+ *	   to the IIO_VAL_... constant.
+ */
+ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+{
+	unsigned long long tmp;
+	bool scale_db = false;
+
+	switch (type) {
+	case IIO_VAL_INT:
+		return sprintf(buf, "%d\n", vals[0]);
+	case IIO_VAL_INT_PLUS_MICRO_DB:
+		scale_db = true;
+	case IIO_VAL_INT_PLUS_MICRO:
+		if (vals[1] < 0)
+			return sprintf(buf, "-%d.%06u%s\n", abs(vals[0]),
+				       -vals[1], scale_db ? " dB" : "");
+		else
+			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
+				scale_db ? " dB" : "");
+	case IIO_VAL_INT_PLUS_NANO:
+		if (vals[1] < 0)
+			return sprintf(buf, "-%d.%09u\n", abs(vals[0]),
+				       -vals[1]);
+		else
+			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+	case IIO_VAL_FRACTIONAL:
+		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+		vals[0] = (int)div_s64_rem(tmp, 1000000000, &vals[1]);
+		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
+	case IIO_VAL_FRACTIONAL_LOG2:
+		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
+		vals[1] = do_div(tmp, 1000000000LL);
+		vals[0] = tmp;
+		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+	case IIO_VAL_INT_MULTIPLE:
+	{
+		int i;
+		int len = 0;
+
+		for (i = 0; i < size; ++i)
+			len += snprintf(&buf[len], PAGE_SIZE - len, "%d ",
+								vals[i]);
+		len += snprintf(&buf[len], PAGE_SIZE - len, "\n");
+		return len;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		return 0;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(iio_format_value);
+
+static ssize_t iio_read_channel_info(struct device *dev,
+				     struct device_attribute *attr,
+				     char *buf)
+{
+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+	int vals[INDIO_MAX_RAW_ELEMENTS];
+	int ret;
+	int val_len = 2;
+
+	if (indio_dev->info->read_raw_multi)
+		ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
+							INDIO_MAX_RAW_ELEMENTS,
+							vals, &val_len,
+							this_attr->address);
+	else
+		ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+				    &vals[0], &vals[1], this_attr->address);
+
+	if (ret < 0)
+		return ret;
+
+	return iio_format_value(buf, ret, val_len, vals);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * iio_str_to_fixpoint() - Parse a fixed-point number from a string
@@ -424,6 +777,15 @@ int iio_str_to_fixpoint(const char *str, int fract_mult,
 	int i = 0, f = 0;
 	bool integer_part = true, negative = false;
 
+<<<<<<< HEAD
+=======
+	if (fract_mult == 0) {
+		*fract = 0;
+
+		return kstrtoint(str, 0, integer);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (str[0] == '-') {
 		negative = true;
 		str++;
@@ -483,6 +845,12 @@ static ssize_t iio_write_channel_info(struct device *dev,
 	if (indio_dev->info->write_raw_get_fmt)
 		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
 			this_attr->c, this_attr->address)) {
+<<<<<<< HEAD
+=======
+		case IIO_VAL_INT:
+			fract_mult = 0;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case IIO_VAL_INT_PLUS_MICRO:
 			fract_mult = 100000;
 			break;
@@ -516,6 +884,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 						struct device_attribute *attr,
 						const char *buf,
 						size_t len),
+<<<<<<< HEAD
 			   bool generic)
 {
 	int ret;
@@ -524,6 +893,17 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 
 	/* Build up postfix of <extend_name>_<modifier>_postfix */
 	if (chan->modified && !generic) {
+=======
+			   enum iio_shared_by shared_by)
+{
+	int ret = 0;
+	char *name = NULL;
+	char *full_postfix;
+	sysfs_attr_init(&dev_attr->attr);
+
+	/* Build up postfix of <extend_name>_<modifier>_postfix */
+	if (chan->modified && (shared_by == IIO_SEPARATE)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (chan->extend_name)
 			full_postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
 						 iio_modifier_names[chan
@@ -536,7 +916,11 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 								    ->channel2],
 						 postfix);
 	} else {
+<<<<<<< HEAD
 		if (chan->extend_name == NULL)
+=======
+		if (chan->extend_name == NULL || shared_by != IIO_SEPARATE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			full_postfix = kstrdup(postfix, GFP_KERNEL);
 		else
 			full_postfix = kasprintf(GFP_KERNEL,
@@ -544,6 +928,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 						 chan->extend_name,
 						 postfix);
 	}
+<<<<<<< HEAD
 	if (full_postfix == NULL) {
 		ret = -ENOMEM;
 		goto error_ret;
@@ -553,19 +938,49 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 		if (generic)
 			name_format
 				= kasprintf(GFP_KERNEL, "%s_%s-%s_%s",
+=======
+	if (full_postfix == NULL)
+		return -ENOMEM;
+
+	if (chan->differential) { /* Differential can not have modifier */
+		switch (shared_by) {
+		case IIO_SHARED_BY_ALL:
+			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
+			break;
+		case IIO_SHARED_BY_DIR:
+			name = kasprintf(GFP_KERNEL, "%s_%s",
+						iio_direction[chan->output],
+						full_postfix);
+			break;
+		case IIO_SHARED_BY_TYPE:
+			name = kasprintf(GFP_KERNEL, "%s_%s-%s_%s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    iio_direction[chan->output],
 					    iio_chan_type_name_spec[chan->type],
 					    iio_chan_type_name_spec[chan->type],
 					    full_postfix);
+<<<<<<< HEAD
 		else if (chan->indexed)
 			name_format
 				= kasprintf(GFP_KERNEL, "%s_%s%d-%s%d_%s",
+=======
+			break;
+		case IIO_SEPARATE:
+			if (!chan->indexed) {
+				WARN(1, "Differential channels must be indexed\n");
+				ret = -EINVAL;
+				goto error_free_full_postfix;
+			}
+			name = kasprintf(GFP_KERNEL,
+					    "%s_%s%d-%s%d_%s",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    iio_direction[chan->output],
 					    iio_chan_type_name_spec[chan->type],
 					    chan->channel,
 					    iio_chan_type_name_spec[chan->type],
 					    chan->channel2,
 					    full_postfix);
+<<<<<<< HEAD
 		else {
 			WARN_ON("Differential channels must be indexed\n");
 			ret = -EINVAL;
@@ -604,6 +1019,47 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 		ret = -ENOMEM;
 		goto error_free_name_format;
 	}
+=======
+			break;
+		}
+	} else { /* Single ended */
+		switch (shared_by) {
+		case IIO_SHARED_BY_ALL:
+			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
+			break;
+		case IIO_SHARED_BY_DIR:
+			name = kasprintf(GFP_KERNEL, "%s_%s",
+						iio_direction[chan->output],
+						full_postfix);
+			break;
+		case IIO_SHARED_BY_TYPE:
+			name = kasprintf(GFP_KERNEL, "%s_%s_%s",
+					    iio_direction[chan->output],
+					    iio_chan_type_name_spec[chan->type],
+					    full_postfix);
+			break;
+
+		case IIO_SEPARATE:
+			if (chan->indexed)
+				name = kasprintf(GFP_KERNEL, "%s_%s%d_%s",
+						    iio_direction[chan->output],
+						    iio_chan_type_name_spec[chan->type],
+						    chan->channel,
+						    full_postfix);
+			else
+				name = kasprintf(GFP_KERNEL, "%s_%s_%s",
+						    iio_direction[chan->output],
+						    iio_chan_type_name_spec[chan->type],
+						    full_postfix);
+			break;
+		}
+	}
+	if (name == NULL) {
+		ret = -ENOMEM;
+		goto error_free_full_postfix;
+	}
+	dev_attr->attr.name = name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (readfunc) {
 		dev_attr->attr.mode |= S_IRUGO;
@@ -614,6 +1070,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
 		dev_attr->attr.mode |= S_IWUSR;
 		dev_attr->store = writefunc;
 	}
+<<<<<<< HEAD
 	kfree(name_format);
 	kfree(full_postfix);
 
@@ -624,6 +1081,12 @@ error_free_name_format:
 error_free_full_postfix:
 	kfree(full_postfix);
 error_ret:
+=======
+
+error_free_full_postfix:
+	kfree(full_postfix);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -642,13 +1105,18 @@ int __iio_add_chan_devattr(const char *postfix,
 						const char *buf,
 						size_t len),
 			   u64 mask,
+<<<<<<< HEAD
 			   bool generic,
+=======
+			   enum iio_shared_by shared_by,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct device *dev,
 			   struct list_head *attr_list)
 {
 	int ret;
 	struct iio_dev_attr *iio_attr, *t;
 
+<<<<<<< HEAD
 	iio_attr = kzalloc(sizeof *iio_attr, GFP_KERNEL);
 	if (iio_attr == NULL) {
 		ret = -ENOMEM;
@@ -657,6 +1125,14 @@ int __iio_add_chan_devattr(const char *postfix,
 	ret = __iio_device_attr_init(&iio_attr->dev_attr,
 				     postfix, chan,
 				     readfunc, writefunc, generic);
+=======
+	iio_attr = kzalloc(sizeof(*iio_attr), GFP_KERNEL);
+	if (iio_attr == NULL)
+		return -ENOMEM;
+	ret = __iio_device_attr_init(&iio_attr->dev_attr,
+				     postfix, chan,
+				     readfunc, writefunc, shared_by);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto error_iio_dev_attr_free;
 	iio_attr->c = chan;
@@ -664,7 +1140,11 @@ int __iio_add_chan_devattr(const char *postfix,
 	list_for_each_entry(t, attr_list, l)
 		if (strcmp(t->dev_attr.attr.name,
 			   iio_attr->dev_attr.attr.name) == 0) {
+<<<<<<< HEAD
 			if (!generic)
+=======
+			if (shared_by == IIO_SEPARATE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dev_err(dev, "tried to double register : %s\n",
 					t->dev_attr.attr.name);
 			ret = -EBUSY;
@@ -678,6 +1158,7 @@ error_device_attr_deinit:
 	__iio_device_attr_deinit(&iio_attr->dev_attr);
 error_iio_dev_attr_free:
 	kfree(iio_attr);
+<<<<<<< HEAD
 error_ret:
 	return ret;
 }
@@ -705,11 +1186,27 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
 		attrcount++;
 	}
 	for_each_set_bit(i, &chan->info_mask_shared_by_type, sizeof(long)*8) {
+=======
+	return ret;
+}
+
+static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+					 struct iio_chan_spec const *chan,
+					 enum iio_shared_by shared_by,
+					 const long *infomask)
+{
+	int i, ret, attrcount = 0;
+
+	for_each_set_bit(i, infomask, sizeof(infomask)*8) {
+		if (i >= ARRAY_SIZE(iio_chan_info_postfix))
+			return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
 					     chan,
 					     &iio_read_channel_info,
 					     &iio_write_channel_info,
 					     i,
+<<<<<<< HEAD
 					     1,
 					     &indio_dev->dev,
 					     &indio_dev->channel_attr_list);
@@ -722,6 +1219,57 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
 		attrcount++;
 	}
 
+=======
+					     shared_by,
+					     &indio_dev->dev,
+					     &indio_dev->channel_attr_list);
+		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
+			continue;
+		else if (ret < 0)
+			return ret;
+		attrcount++;
+	}
+
+	return attrcount;
+}
+
+static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+					struct iio_chan_spec const *chan)
+{
+	int ret, attrcount = 0;
+	const struct iio_chan_spec_ext_info *ext_info;
+
+	if (chan->channel < 0)
+		return 0;
+	ret = iio_device_add_info_mask_type(indio_dev, chan,
+					    IIO_SEPARATE,
+					    &chan->info_mask_separate);
+	if (ret < 0)
+		return ret;
+	attrcount += ret;
+
+	ret = iio_device_add_info_mask_type(indio_dev, chan,
+					    IIO_SHARED_BY_TYPE,
+					    &chan->info_mask_shared_by_type);
+	if (ret < 0)
+		return ret;
+	attrcount += ret;
+
+	ret = iio_device_add_info_mask_type(indio_dev, chan,
+					    IIO_SHARED_BY_DIR,
+					    &chan->info_mask_shared_by_dir);
+	if (ret < 0)
+		return ret;
+	attrcount += ret;
+
+	ret = iio_device_add_info_mask_type(indio_dev, chan,
+					    IIO_SHARED_BY_ALL,
+					    &chan->info_mask_shared_by_all);
+	if (ret < 0)
+		return ret;
+	attrcount += ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (chan->ext_info) {
 		unsigned int i = 0;
 		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
@@ -740,12 +1288,17 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
 				continue;
 
 			if (ret)
+<<<<<<< HEAD
 				goto error_ret;
+=======
+				return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			attrcount++;
 		}
 	}
 
+<<<<<<< HEAD
 	ret = attrcount;
 error_ret:
 	return ret;
@@ -756,6 +1309,27 @@ static void iio_device_remove_and_free_read_attr(struct iio_dev *indio_dev,
 {
 	kfree(p->dev_attr.attr.name);
 	kfree(p);
+=======
+	return attrcount;
+}
+
+/**
+ * iio_free_chan_devattr_list() - Free a list of IIO device attributes
+ * @attr_list: List of IIO device attributes
+ *
+ * This function frees the memory allocated for each of the IIO device
+ * attributes in the list.
+ */
+void iio_free_chan_devattr_list(struct list_head *attr_list)
+{
+	struct iio_dev_attr *p, *n;
+
+	list_for_each_entry_safe(p, n, attr_list, l) {
+		kfree(p->dev_attr.attr.name);
+		list_del(&p->l);
+		kfree(p);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t iio_show_dev_name(struct device *dev,
@@ -763,16 +1337,108 @@ static ssize_t iio_show_dev_name(struct device *dev,
 				 char *buf)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", indio_dev->name);
+=======
+	return snprintf(buf, PAGE_SIZE, "%s\n", indio_dev->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
 
+<<<<<<< HEAD
 static int iio_device_register_sysfs(struct iio_dev *indio_dev)
 {
 	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
 	struct iio_dev_attr *p, *n;
 	struct attribute **attr;
+=======
+static ssize_t iio_show_timestamp_clock(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	const struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+	const clockid_t clk = iio_device_get_clock(indio_dev);
+	const char *name;
+	ssize_t sz;
+
+	switch (clk) {
+	case CLOCK_REALTIME:
+		name = "realtime\n";
+		sz = sizeof("realtime\n");
+		break;
+	case CLOCK_MONOTONIC:
+		name = "monotonic\n";
+		sz = sizeof("monotonic\n");
+		break;
+	case CLOCK_MONOTONIC_RAW:
+		name = "monotonic_raw\n";
+		sz = sizeof("monotonic_raw\n");
+		break;
+	case CLOCK_REALTIME_COARSE:
+		name = "realtime_coarse\n";
+		sz = sizeof("realtime_coarse\n");
+		break;
+	case CLOCK_MONOTONIC_COARSE:
+		name = "monotonic_coarse\n";
+		sz = sizeof("monotonic_coarse\n");
+		break;
+	case CLOCK_BOOTTIME:
+		name = "boottime\n";
+		sz = sizeof("boottime\n");
+		break;
+	case CLOCK_TAI:
+		name = "tai\n";
+		sz = sizeof("tai\n");
+		break;
+	default:
+		BUG();
+	}
+
+	memcpy(buf, name, sz);
+	return sz;
+}
+
+static ssize_t iio_store_timestamp_clock(struct device *dev,
+					 struct device_attribute *attr,
+					 const char *buf, size_t len)
+{
+	clockid_t clk;
+	int ret;
+
+	if (sysfs_streq(buf, "realtime"))
+		clk = CLOCK_REALTIME;
+	else if (sysfs_streq(buf, "monotonic"))
+		clk = CLOCK_MONOTONIC;
+	else if (sysfs_streq(buf, "monotonic_raw"))
+		clk = CLOCK_MONOTONIC_RAW;
+	else if (sysfs_streq(buf, "realtime_coarse"))
+		clk = CLOCK_REALTIME_COARSE;
+	else if (sysfs_streq(buf, "monotonic_coarse"))
+		clk = CLOCK_MONOTONIC_COARSE;
+	else if (sysfs_streq(buf, "boottime"))
+		clk = CLOCK_BOOTTIME;
+	else if (sysfs_streq(buf, "tai"))
+		clk = CLOCK_TAI;
+	else
+		return -EINVAL;
+
+	ret = iio_device_set_clock(dev_to_iio_dev(dev), clk);
+	if (ret)
+		return ret;
+
+	return len;
+}
+
+static DEVICE_ATTR(current_timestamp_clock, S_IRUGO | S_IWUSR,
+		   iio_show_timestamp_clock, iio_store_timestamp_clock);
+
+static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+{
+	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
+	struct iio_dev_attr *p;
+	struct attribute **attr, *clk = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* First count elements in any existing group */
 	if (indio_dev->info->attrs) {
@@ -787,16 +1453,36 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
 	 */
 	if (indio_dev->channels)
 		for (i = 0; i < indio_dev->num_channels; i++) {
+<<<<<<< HEAD
 			ret = iio_device_add_channel_sysfs(indio_dev,
 							   &indio_dev
 							   ->channels[i]);
+=======
+			const struct iio_chan_spec *chan =
+				&indio_dev->channels[i];
+
+			if (chan->type == IIO_TIMESTAMP)
+				clk = &dev_attr_current_timestamp_clock.attr;
+
+			ret = iio_device_add_channel_sysfs(indio_dev, chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ret < 0)
 				goto error_clear_attrs;
 			attrcount += ret;
 		}
 
+<<<<<<< HEAD
 	if (indio_dev->name)
 		attrcount++;
+=======
+	if (indio_dev->event_interface)
+		clk = &dev_attr_current_timestamp_clock.attr;
+
+	if (indio_dev->name)
+		attrcount++;
+	if (clk)
+		attrcount++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	indio_dev->chan_attr_group.attrs = kcalloc(attrcount + 1,
 						   sizeof(indio_dev->chan_attr_group.attrs[0]),
@@ -817,6 +1503,11 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
 		indio_dev->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
 	if (indio_dev->name)
 		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
+<<<<<<< HEAD
+=======
+	if (clk)
+		indio_dev->chan_attr_group.attrs[attrn++] = clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	indio_dev->groups[indio_dev->groupcounter++] =
 		&indio_dev->chan_attr_group;
@@ -824,11 +1515,15 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
 	return 0;
 
 error_clear_attrs:
+<<<<<<< HEAD
 	list_for_each_entry_safe(p, n,
 				 &indio_dev->channel_attr_list, l) {
 		list_del(&p->l);
 		iio_device_remove_and_free_read_attr(indio_dev, p);
 	}
+=======
+	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -836,6 +1531,7 @@ error_clear_attrs:
 static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
 {
 
+<<<<<<< HEAD
 	struct iio_dev_attr *p, *n;
 
 	list_for_each_entry_safe(p, n, &indio_dev->channel_attr_list, l) {
@@ -843,11 +1539,17 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
 		iio_device_remove_and_free_read_attr(indio_dev, p);
 	}
 	kfree(indio_dev->chan_attr_group.attrs);
+=======
+	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
+	kfree(indio_dev->chan_attr_group.attrs);
+	indio_dev->chan_attr_group.attrs = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void iio_dev_release(struct device *device)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(device);
+<<<<<<< HEAD
 	if (indio_dev->chrdev.dev)
 		cdev_del(&indio_dev->chrdev);
 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
@@ -855,6 +1557,14 @@ static void iio_dev_release(struct device *device)
 	iio_device_unregister_eventset(indio_dev);
 	iio_device_unregister_sysfs(indio_dev);
 	iio_device_unregister_debugfs(indio_dev);
+=======
+	if (indio_dev->modes & (INDIO_BUFFER_TRIGGERED | INDIO_EVENT_TRIGGERED))
+		iio_device_unregister_trigger_consumer(indio_dev);
+	iio_device_unregister_eventset(indio_dev);
+	iio_device_unregister_sysfs(indio_dev);
+
+	iio_buffer_put(indio_dev->buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ida_simple_remove(&iio_ida, indio_dev->id);
 	kfree(indio_dev);
@@ -865,6 +1575,13 @@ struct device_type iio_device_type = {
 	.release = iio_dev_release,
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * iio_device_alloc() - allocate an iio_dev from a driver
+ * @sizeof_priv:	Space to allocate for private structure.
+ **/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct iio_dev *iio_device_alloc(int sizeof_priv)
 {
 	struct iio_dev *dev;
@@ -893,7 +1610,11 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
 		dev->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
 		if (dev->id < 0) {
 			/* cannot use a dev_err as the name isn't available */
+<<<<<<< HEAD
 			printk(KERN_ERR "Failed to get id\n");
+=======
+			pr_err("failed to get device id\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kfree(dev);
 			return NULL;
 		}
@@ -905,6 +1626,13 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
 }
 EXPORT_SYMBOL(iio_device_alloc);
 
+<<<<<<< HEAD
+=======
+/**
+ * iio_device_free() - free an iio_dev from a driver
+ * @dev:		the iio_dev associated with the device
+ **/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void iio_device_free(struct iio_dev *dev)
 {
 	if (dev)
@@ -912,8 +1640,86 @@ void iio_device_free(struct iio_dev *dev)
 }
 EXPORT_SYMBOL(iio_device_free);
 
+<<<<<<< HEAD
 /**
  * iio_chrdev_open() - chrdev file open for buffer access and ioctls
+=======
+static void devm_iio_device_release(struct device *dev, void *res)
+{
+	iio_device_free(*(struct iio_dev **)res);
+}
+
+int devm_iio_device_match(struct device *dev, void *res, void *data)
+{
+	struct iio_dev **r = res;
+	if (!r || !*r) {
+		WARN_ON(!r || !*r);
+		return 0;
+	}
+	return *r == data;
+}
+EXPORT_SYMBOL_GPL(devm_iio_device_match);
+
+/**
+ * devm_iio_device_alloc - Resource-managed iio_device_alloc()
+ * @dev:		Device to allocate iio_dev for
+ * @sizeof_priv:	Space to allocate for private structure.
+ *
+ * Managed iio_device_alloc. iio_dev allocated with this function is
+ * automatically freed on driver detach.
+ *
+ * If an iio_dev allocated with this function needs to be freed separately,
+ * devm_iio_device_free() must be used.
+ *
+ * RETURNS:
+ * Pointer to allocated iio_dev on success, NULL on failure.
+ */
+struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
+{
+	struct iio_dev **ptr, *iio_dev;
+
+	ptr = devres_alloc(devm_iio_device_release, sizeof(*ptr),
+			   GFP_KERNEL);
+	if (!ptr)
+		return NULL;
+
+	iio_dev = iio_device_alloc(sizeof_priv);
+	if (iio_dev) {
+		*ptr = iio_dev;
+		devres_add(dev, ptr);
+	} else {
+		devres_free(ptr);
+	}
+
+	return iio_dev;
+}
+EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
+
+/**
+ * devm_iio_device_free - Resource-managed iio_device_free()
+ * @dev:		Device this iio_dev belongs to
+ * @iio_dev:		the iio_dev associated with the device
+ *
+ * Free iio_dev allocated with devm_iio_device_alloc().
+ */
+void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev)
+{
+	int rc;
+
+	rc = devres_release(dev, devm_iio_device_release,
+			    devm_iio_device_match, iio_dev);
+	WARN_ON(rc);
+}
+EXPORT_SYMBOL_GPL(devm_iio_device_free);
+
+/**
+ * iio_chrdev_open() - chrdev file open for buffer access and ioctls
+ * @inode:	Inode structure for identifying the device in the file system
+ * @filp:	File structure for iio device used to keep and later access
+ *		private data
+ *
+ * Return: 0 on success or -EBUSY if the device is already opened
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  **/
 static int iio_chrdev_open(struct inode *inode, struct file *filp)
 {
@@ -923,6 +1729,11 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
 	if (test_and_set_bit(IIO_BUSY_BIT_POS, &indio_dev->flags))
 		return -EBUSY;
 
+<<<<<<< HEAD
+=======
+	iio_device_get(indio_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	filp->private_data = indio_dev;
 
 	return 0;
@@ -930,12 +1741,25 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
 
 /**
  * iio_chrdev_release() - chrdev file close buffer access and ioctls
+<<<<<<< HEAD
  **/
+=======
+ * @inode:	Inode structure pointer for the char device
+ * @filp:	File structure pointer for the char device
+ *
+ * Return: 0 for successful release
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int iio_chrdev_release(struct inode *inode, struct file *filp)
 {
 	struct iio_dev *indio_dev = container_of(inode->i_cdev,
 						struct iio_dev, chrdev);
 	clear_bit(IIO_BUSY_BIT_POS, &indio_dev->flags);
+<<<<<<< HEAD
+=======
+	iio_device_put(indio_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -947,8 +1771,18 @@ static long iio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	int __user *ip = (int __user *)arg;
 	int fd;
 
+<<<<<<< HEAD
 	if (cmd == IIO_GET_EVENT_FD_IOCTL) {
 		fd = iio_event_getfd(indio_dev);
+=======
+	if (!indio_dev->info)
+		return -ENODEV;
+
+	if (cmd == IIO_GET_EVENT_FD_IOCTL) {
+		fd = iio_event_getfd(indio_dev);
+		if (fd < 0)
+			return fd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (copy_to_user(ip, &fd, sizeof(fd)))
 			return -EFAULT;
 		return 0;
@@ -967,8 +1801,40 @@ static const struct file_operations iio_buffer_fileops = {
 	.compat_ioctl = iio_ioctl,
 };
 
+<<<<<<< HEAD
 static const struct iio_buffer_setup_ops noop_ring_setup_ops;
 
+=======
+static int iio_check_unique_scan_index(struct iio_dev *indio_dev)
+{
+	int i, j;
+	const struct iio_chan_spec *channels = indio_dev->channels;
+
+	if (!(indio_dev->modes & INDIO_ALL_BUFFER_MODES))
+		return 0;
+
+	for (i = 0; i < indio_dev->num_channels - 1; i++) {
+		if (channels[i].scan_index < 0)
+			continue;
+		for (j = i + 1; j < indio_dev->num_channels; j++)
+			if (channels[i].scan_index == channels[j].scan_index) {
+				dev_err(&indio_dev->dev,
+					"Duplicate scan index %d\n",
+					channels[i].scan_index);
+				return -EINVAL;
+			}
+	}
+
+	return 0;
+}
+
+static const struct iio_buffer_setup_ops noop_ring_setup_ops;
+
+/**
+ * iio_device_register() - register a device with the IIO subsystem
+ * @indio_dev:		Device structure filled by the device driver
+ **/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int iio_device_register(struct iio_dev *indio_dev)
 {
 	int ret;
@@ -977,6 +1843,13 @@ int iio_device_register(struct iio_dev *indio_dev)
 	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
 		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
 
+<<<<<<< HEAD
+=======
+	ret = iio_check_unique_scan_index(indio_dev);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* configure elements for the chrdev */
 	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
 
@@ -984,13 +1857,30 @@ int iio_device_register(struct iio_dev *indio_dev)
 	if (ret) {
 		dev_err(indio_dev->dev.parent,
 			"Failed to register debugfs interfaces\n");
+<<<<<<< HEAD
 		goto error_ret;
 	}
+=======
+		return ret;
+	}
+
+	ret = iio_buffer_alloc_sysfs_and_mask(indio_dev);
+	if (ret) {
+		dev_err(indio_dev->dev.parent,
+			"Failed to create buffer sysfs interfaces\n");
+		goto error_unreg_debugfs;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = iio_device_register_sysfs(indio_dev);
 	if (ret) {
 		dev_err(indio_dev->dev.parent,
 			"Failed to register sysfs interfaces\n");
+<<<<<<< HEAD
 		goto error_unreg_debugfs;
+=======
+		goto error_buffer_free_sysfs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	ret = iio_device_register_eventset(indio_dev);
 	if (ret) {
@@ -998,13 +1888,18 @@ int iio_device_register(struct iio_dev *indio_dev)
 			"Failed to register event set\n");
 		goto error_free_sysfs;
 	}
+<<<<<<< HEAD
 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
+=======
+	if (indio_dev->modes & (INDIO_BUFFER_TRIGGERED | INDIO_EVENT_TRIGGERED))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iio_device_register_trigger_consumer(indio_dev);
 
 	if ((indio_dev->modes & INDIO_ALL_BUFFER_MODES) &&
 		indio_dev->setup_ops == NULL)
 		indio_dev->setup_ops = &noop_ring_setup_ops;
 
+<<<<<<< HEAD
 	ret = device_add(&indio_dev->dev);
 	if (ret < 0)
 		goto error_unreg_eventset;
@@ -1017,17 +1912,41 @@ int iio_device_register(struct iio_dev *indio_dev)
 
 error_del_device:
 	device_del(&indio_dev->dev);
+=======
+	cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
+	indio_dev->chrdev.owner = indio_dev->info->driver_module;
+	indio_dev->chrdev.kobj.parent = &indio_dev->dev.kobj;
+	ret = cdev_add(&indio_dev->chrdev, indio_dev->dev.devt, 1);
+	if (ret < 0)
+		goto error_unreg_eventset;
+
+	ret = device_add(&indio_dev->dev);
+	if (ret < 0)
+		goto error_cdev_del;
+
+	return 0;
+error_cdev_del:
+	cdev_del(&indio_dev->chrdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_unreg_eventset:
 	iio_device_unregister_eventset(indio_dev);
 error_free_sysfs:
 	iio_device_unregister_sysfs(indio_dev);
+<<<<<<< HEAD
 error_unreg_debugfs:
 	iio_device_unregister_debugfs(indio_dev);
 error_ret:
+=======
+error_buffer_free_sysfs:
+	iio_buffer_free_sysfs_and_mask(indio_dev);
+error_unreg_debugfs:
+	iio_device_unregister_debugfs(indio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 EXPORT_SYMBOL(iio_device_register);
 
+<<<<<<< HEAD
 void iio_device_unregister(struct iio_dev *indio_dev)
 {
 	mutex_lock(&indio_dev->info_exist_lock);
@@ -1036,6 +1955,131 @@ void iio_device_unregister(struct iio_dev *indio_dev)
 	device_del(&indio_dev->dev);
 }
 EXPORT_SYMBOL(iio_device_unregister);
+=======
+/**
+ * iio_device_unregister() - unregister a device from the IIO subsystem
+ * @indio_dev:		Device structure representing the device.
+ **/
+void iio_device_unregister(struct iio_dev *indio_dev)
+{
+	mutex_lock(&indio_dev->info_exist_lock);
+
+	device_del(&indio_dev->dev);
+
+	if (indio_dev->chrdev.dev)
+		cdev_del(&indio_dev->chrdev);
+	iio_device_unregister_debugfs(indio_dev);
+
+	iio_disable_all_buffers(indio_dev);
+
+	indio_dev->info = NULL;
+
+	iio_device_wakeup_eventset(indio_dev);
+	iio_buffer_wakeup_poll(indio_dev);
+
+	mutex_unlock(&indio_dev->info_exist_lock);
+
+	iio_buffer_free_sysfs_and_mask(indio_dev);
+}
+EXPORT_SYMBOL(iio_device_unregister);
+
+static void devm_iio_device_unreg(struct device *dev, void *res)
+{
+	iio_device_unregister(*(struct iio_dev **)res);
+}
+
+/**
+ * devm_iio_device_register - Resource-managed iio_device_register()
+ * @dev:	Device to allocate iio_dev for
+ * @indio_dev:	Device structure filled by the device driver
+ *
+ * Managed iio_device_register.  The IIO device registered with this
+ * function is automatically unregistered on driver detach. This function
+ * calls iio_device_register() internally. Refer to that function for more
+ * information.
+ *
+ * If an iio_dev registered with this function needs to be unregistered
+ * separately, devm_iio_device_unregister() must be used.
+ *
+ * RETURNS:
+ * 0 on success, negative error number on failure.
+ */
+int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
+{
+	struct iio_dev **ptr;
+	int ret;
+
+	ptr = devres_alloc(devm_iio_device_unreg, sizeof(*ptr), GFP_KERNEL);
+	if (!ptr)
+		return -ENOMEM;
+
+	*ptr = indio_dev;
+	ret = iio_device_register(indio_dev);
+	if (!ret)
+		devres_add(dev, ptr);
+	else
+		devres_free(ptr);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(devm_iio_device_register);
+
+/**
+ * devm_iio_device_unregister - Resource-managed iio_device_unregister()
+ * @dev:	Device this iio_dev belongs to
+ * @indio_dev:	the iio_dev associated with the device
+ *
+ * Unregister iio_dev registered with devm_iio_device_register().
+ */
+void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev)
+{
+	int rc;
+
+	rc = devres_release(dev, devm_iio_device_unreg,
+			    devm_iio_device_match, indio_dev);
+	WARN_ON(rc);
+}
+EXPORT_SYMBOL_GPL(devm_iio_device_unregister);
+
+/**
+ * iio_device_claim_direct_mode - Keep device in direct mode
+ * @indio_dev:	the iio_dev associated with the device
+ *
+ * If the device is in direct mode it is guaranteed to stay
+ * that way until iio_device_release_direct_mode() is called.
+ *
+ * Use with iio_device_release_direct_mode()
+ *
+ * Returns: 0 on success, -EBUSY on failure
+ */
+int iio_device_claim_direct_mode(struct iio_dev *indio_dev)
+{
+	mutex_lock(&indio_dev->mlock);
+
+	if (iio_buffer_enabled(indio_dev)) {
+		mutex_unlock(&indio_dev->mlock);
+		return -EBUSY;
+	}
+	return 0;
+}
+EXPORT_SYMBOL_GPL(iio_device_claim_direct_mode);
+
+/**
+ * iio_device_release_direct_mode - releases claim on direct mode
+ * @indio_dev:	the iio_dev associated with the device
+ *
+ * Release the claim. Device is no longer guaranteed to stay
+ * in direct mode.
+ *
+ * Use with iio_device_claim_direct_mode()
+ */
+void iio_device_release_direct_mode(struct iio_dev *indio_dev)
+{
+	mutex_unlock(&indio_dev->mlock);
+}
+EXPORT_SYMBOL_GPL(iio_device_release_direct_mode);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 subsys_initcall(iio_init);
 module_exit(iio_exit);
 

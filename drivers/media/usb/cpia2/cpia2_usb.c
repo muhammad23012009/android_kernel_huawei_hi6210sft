@@ -209,7 +209,11 @@ static void cpia2_usb_complete(struct urb *urb)
 {
 	int i;
 	unsigned char *cdata;
+<<<<<<< HEAD
 	static int frame_ready = false;
+=======
+	static bool frame_ready = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct camera_data *cam = (struct camera_data *) urb->context;
 
 	if (urb->status!=0) {
@@ -545,18 +549,43 @@ static void free_sbufs(struct camera_data *cam)
 static int write_packet(struct usb_device *udev,
 			u8 request, u8 * registers, u16 start, size_t size)
 {
+<<<<<<< HEAD
 	if (!registers || size <= 0)
 		return -EINVAL;
 
 	return usb_control_msg(udev,
+=======
+	unsigned char *buf;
+	int ret;
+
+	if (!registers || size <= 0)
+		return -EINVAL;
+
+	buf = kmalloc(size, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+	memcpy(buf, registers, size);
+
+	ret = usb_control_msg(udev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       usb_sndctrlpipe(udev, 0),
 			       request,
 			       USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			       start,	/* value */
 			       0,	/* index */
+<<<<<<< HEAD
 			       registers,	/* buffer */
 			       size,
 			       HZ);
+=======
+			       buf,	/* buffer */
+			       size,
+			       HZ);
+
+	kfree(buf);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /****************************************************************************
@@ -567,18 +596,45 @@ static int write_packet(struct usb_device *udev,
 static int read_packet(struct usb_device *udev,
 		       u8 request, u8 * registers, u16 start, size_t size)
 {
+<<<<<<< HEAD
 	if (!registers || size <= 0)
 		return -EINVAL;
 
 	return usb_control_msg(udev,
+=======
+	unsigned char *buf;
+	int ret;
+
+	if (!registers || size <= 0)
+		return -EINVAL;
+
+	buf = kmalloc(size, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+	ret = usb_control_msg(udev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       usb_rcvctrlpipe(udev, 0),
 			       request,
 			       USB_DIR_IN|USB_TYPE_VENDOR|USB_RECIP_DEVICE,
 			       start,	/* value */
 			       0,	/* index */
+<<<<<<< HEAD
 			       registers,	/* buffer */
 			       size,
 			       HZ);
+=======
+			       buf,	/* buffer */
+			       size,
+			       HZ);
+
+	if (ret >= 0)
+		memcpy(registers, buf, size);
+
+	kfree(buf);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /******************************************************************************
@@ -662,9 +718,18 @@ static int submit_urbs(struct camera_data *cam)
 		}
 		urb = usb_alloc_urb(FRAMES_PER_DESC, GFP_KERNEL);
 		if (!urb) {
+<<<<<<< HEAD
 			ERR("%s: usb_alloc_urb error!\n", __func__);
 			for (j = 0; j < i; j++)
 				usb_free_urb(cam->sbuf[j].urb);
+=======
+			for (j = 0; j < i; j++)
+				usb_free_urb(cam->sbuf[j].urb);
+			for (j = 0; j < NUM_SBUF; j++) {
+				kfree(cam->sbuf[j].data);
+				cam->sbuf[j].data = NULL;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -ENOMEM;
 		}
 
@@ -831,15 +896,23 @@ static int cpia2_usb_probe(struct usb_interface *intf,
 	ret = set_alternate(cam, USBIF_CMDONLY);
 	if (ret < 0) {
 		ERR("%s: usb_set_interface error (ret = %d)\n", __func__, ret);
+<<<<<<< HEAD
 		kfree(cam);
 		return ret;
+=======
+		goto alt_err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 
 	if((ret = cpia2_init_camera(cam)) < 0) {
 		ERR("%s: failed to initialize cpia2 camera (ret = %d)\n", __func__, ret);
+<<<<<<< HEAD
 		kfree(cam);
 		return ret;
+=======
+		goto alt_err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	LOG("  CPiA Version: %d.%02d (%d.%d)\n",
 	       cam->params.version.firmware_revision_hi,
@@ -859,11 +932,22 @@ static int cpia2_usb_probe(struct usb_interface *intf,
 	ret = cpia2_register_camera(cam);
 	if (ret < 0) {
 		ERR("%s: Failed to register cpia2 camera (ret = %d)\n", __func__, ret);
+<<<<<<< HEAD
 		kfree(cam);
 		return ret;
 	}
 
 	return 0;
+=======
+		goto alt_err;
+	}
+
+	return 0;
+
+alt_err:
+	cpia2_deinit_camera_struct(cam, intf);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /******************************************************************************
@@ -884,19 +968,31 @@ static void cpia2_usb_disconnect(struct usb_interface *intf)
 	cpia2_unregister_camera(cam);
 	v4l2_device_disconnect(&cam->v4l2_dev);
 	mutex_unlock(&cam->v4l2_lock);
+<<<<<<< HEAD
 	v4l2_device_put(&cam->v4l2_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if(cam->buffers) {
 		DBG("Wakeup waiting processes\n");
 		cam->curbuff->status = FRAME_READY;
 		cam->curbuff->length = 0;
+<<<<<<< HEAD
 		if (waitqueue_active(&cam->wq_stream))
 			wake_up_interruptible(&cam->wq_stream);
+=======
+		wake_up_interruptible(&cam->wq_stream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	DBG("Releasing interface\n");
 	usb_driver_release_interface(&cpia2_driver, intf);
 
+<<<<<<< HEAD
+=======
+	v4l2_device_put(&cam->v4l2_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	LOG("CPiA2 camera disconnected.\n");
 }
 

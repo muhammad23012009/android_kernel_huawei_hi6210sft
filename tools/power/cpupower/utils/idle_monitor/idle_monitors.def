@@ -2,6 +2,10 @@
 DEF(amd_fam14h)
 DEF(intel_nhm)
 DEF(intel_snb)
+<<<<<<< HEAD
+=======
+DEF(intel_hsw_ext)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DEF(mperf)
 #endif
 DEF(cpuidle_sysfs)

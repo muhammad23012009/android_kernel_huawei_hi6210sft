@@ -30,7 +30,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/mutex.h>
@@ -383,6 +386,10 @@ static int mpu3050_probe(struct i2c_client *client,
 
 	pm_runtime_enable(&client->dev);
 	pm_runtime_set_autosuspend_delay(&client->dev, MPU3050_AUTO_DELAY);
+<<<<<<< HEAD
+=======
+	i2c_set_clientdata(client, sensor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -466,7 +473,10 @@ MODULE_DEVICE_TABLE(of, mpu3050_of_match);
 static struct i2c_driver mpu3050_i2c_driver = {
 	.driver	= {
 		.name	= "mpu3050",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &mpu3050_pm,
 		.of_match_table = mpu3050_of_match,
 	},

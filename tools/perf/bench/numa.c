@@ -4,10 +4,21 @@
  * numa: Simulate NUMA-sensitive workload and measure their NUMA performance
  */
 
+<<<<<<< HEAD
 #include "../perf.h"
 #include "../builtin.h"
 #include "../util/util.h"
 #include "../util/parse-options.h"
+=======
+/* For the CLR_() macros */
+#include <pthread.h>
+
+#include "../perf.h"
+#include "../builtin.h"
+#include "../util/util.h"
+#include <subcmd/parse-options.h>
+#include "../util/cloexec.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "bench.h"
 
@@ -20,16 +31,33 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+<<<<<<< HEAD
 #include <pthread.h>
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
 #include <sys/types.h>
+=======
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
+#include <sys/prctl.h>
+#include <sys/types.h>
+#include <linux/time64.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <numa.h>
 #include <numaif.h>
 
+<<<<<<< HEAD
+=======
+#ifndef RUSAGE_THREAD
+# define RUSAGE_THREAD 1
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Regular printout to the terminal, supressed if -q is specified:
  */
@@ -51,6 +79,12 @@ struct thread_data {
 	unsigned int		loops_done;
 	u64			val;
 	u64			runtime_ns;
+<<<<<<< HEAD
+=======
+	u64			system_time_ns;
+	u64			user_time_ns;
+	double			speed_gbs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pthread_mutex_t		*process_lock;
 };
 
@@ -159,8 +193,13 @@ static const struct option options[] = {
 	OPT_STRING('L', "mb_proc_locked", &p0.mb_proc_locked_str,"MB", "process serialized/locked memory access (MBs), <= process_memory"),
 	OPT_STRING('T', "mb_thread"	, &p0.mb_thread_str,	"MB", "thread  memory (MBs)"),
 
+<<<<<<< HEAD
 	OPT_UINTEGER('l', "nr_loops"	, &p0.nr_loops,		"max number of loops to run"),
 	OPT_UINTEGER('s', "nr_secs"	, &p0.nr_secs,		"max number of seconds to run"),
+=======
+	OPT_UINTEGER('l', "nr_loops"	, &p0.nr_loops,		"max number of loops to run (default: unlimited)"),
+	OPT_UINTEGER('s', "nr_secs"	, &p0.nr_secs,		"max number of seconds to run (default: 5 secs)"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	OPT_UINTEGER('u', "usleep"	, &p0.sleep_usecs,	"usecs to sleep per loop iteration"),
 
 	OPT_BOOLEAN('R', "data_reads"	, &p0.data_reads,	"access the data via writes (can be mixed with -W)"),
@@ -180,7 +219,11 @@ static const struct option options[] = {
 	OPT_INTEGER('H', "thp"		, &p0.thp,		"MADV_NOHUGEPAGE < 0 < MADV_HUGEPAGE"),
 	OPT_BOOLEAN('c', "show_convergence", &p0.show_convergence, "show convergence details"),
 	OPT_BOOLEAN('m', "measure_convergence",	&p0.measure_convergence, "measure convergence latency"),
+<<<<<<< HEAD
 	OPT_BOOLEAN('q', "quiet"	, &p0.show_quiet,	"bzero the initial allocations"),
+=======
+	OPT_BOOLEAN('q', "quiet"	, &p0.show_quiet,	"quiet mode"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	OPT_BOOLEAN('S', "serialize-startup", &p0.serialize_startup,"serialize thread startup"),
 
 	/* Special option string parsing callbacks: */
@@ -203,6 +246,50 @@ static const char * const numa_usage[] = {
 	NULL
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * To get number of numa nodes present.
+ */
+static int nr_numa_nodes(void)
+{
+	int i, nr_nodes = 0;
+
+	for (i = 0; i < g->p.nr_nodes; i++) {
+		if (numa_bitmask_isbitset(numa_nodes_ptr, i))
+			nr_nodes++;
+	}
+
+	return nr_nodes;
+}
+
+/*
+ * To check if given numa node is present.
+ */
+static int is_node_present(int node)
+{
+	return numa_bitmask_isbitset(numa_nodes_ptr, node);
+}
+
+/*
+ * To check given numa node has cpus.
+ */
+static bool node_has_cpus(int node)
+{
+	struct bitmask *cpu = numa_allocate_cpumask();
+	unsigned int i;
+
+	if (cpu && !numa_node_to_cpus(node, cpu)) {
+		for (i = 0; i < cpu->size; i++) {
+			if (numa_bitmask_isbitset(cpu, i))
+				return true;
+		}
+	}
+
+	return false; /* lets fall back to nocpus safely */
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static cpu_set_t bind_to_cpu(int target_cpu)
 {
 	cpu_set_t orig_mask, mask;
@@ -231,12 +318,20 @@ static cpu_set_t bind_to_cpu(int target_cpu)
 
 static cpu_set_t bind_to_node(int target_node)
 {
+<<<<<<< HEAD
 	int cpus_per_node = g->p.nr_cpus/g->p.nr_nodes;
+=======
+	int cpus_per_node = g->p.nr_cpus / nr_numa_nodes();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpu_set_t orig_mask, mask;
 	int cpu;
 	int ret;
 
+<<<<<<< HEAD
 	BUG_ON(cpus_per_node*g->p.nr_nodes != g->p.nr_cpus);
+=======
+	BUG_ON(cpus_per_node * nr_numa_nodes() != g->p.nr_cpus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(!cpus_per_node);
 
 	ret = sched_getaffinity(0, sizeof(orig_mask), &orig_mask);
@@ -288,7 +383,11 @@ static void bind_to_memnode(int node)
 	if (node == -1)
 		return;
 
+<<<<<<< HEAD
 	BUG_ON(g->p.nr_nodes > (int)sizeof(nodemask));
+=======
+	BUG_ON(g->p.nr_nodes > (int)sizeof(nodemask)*8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nodemask = 1L << node;
 
 	ret = set_mempolicy(MPOL_BIND, &nodemask, sizeof(nodemask)*8);
@@ -320,8 +419,15 @@ static u8 *alloc_data(ssize_t bytes0, int map_flags,
 
 	/* Allocate and initialize all memory on CPU#0: */
 	if (init_cpu0) {
+<<<<<<< HEAD
 		orig_mask = bind_to_node(0);
 		bind_to_memnode(0);
+=======
+		int node = numa_node_of_cpu(0);
+
+		orig_mask = bind_to_node(node);
+		bind_to_memnode(node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	bytes = bytes0 + HPSIZE;
@@ -429,14 +535,22 @@ static int parse_cpu_list(const char *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void parse_setup_cpu_list(void)
+=======
+static int parse_setup_cpu_list(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct thread_data *td;
 	char *str0, *str;
 	int t;
 
 	if (!g->p.cpu_list_str)
+<<<<<<< HEAD
 		return;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintf("g->p.nr_tasks: %d\n", g->p.nr_tasks);
 
@@ -500,8 +614,17 @@ static void parse_setup_cpu_list(void)
 
 		dprintf("CPUs: %d_%d-%d#%dx%d\n", bind_cpu_0, bind_len, bind_cpu_1, step, mul);
 
+<<<<<<< HEAD
 		BUG_ON(bind_cpu_0 < 0 || bind_cpu_0 >= g->p.nr_cpus);
 		BUG_ON(bind_cpu_1 < 0 || bind_cpu_1 >= g->p.nr_cpus);
+=======
+		if (bind_cpu_0 >= g->p.nr_cpus || bind_cpu_1 >= g->p.nr_cpus) {
+			printf("\nTest not applicable, system has only %d CPUs.\n", g->p.nr_cpus);
+			return -1;
+		}
+
+		BUG_ON(bind_cpu_0 < 0 || bind_cpu_1 < 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		BUG_ON(bind_cpu_0 > bind_cpu_1);
 
 		for (bind_cpu = bind_cpu_0; bind_cpu <= bind_cpu_1; bind_cpu += step) {
@@ -541,6 +664,10 @@ out:
 		printf("# NOTE: %d tasks bound, %d tasks unbound\n", t, g->p.nr_tasks - t);
 
 	free(str0);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int parse_cpus_opt(const struct option *opt __maybe_unused,
@@ -561,14 +688,22 @@ static int parse_node_list(const char *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void parse_setup_node_list(void)
+=======
+static int parse_setup_node_list(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct thread_data *td;
 	char *str0, *str;
 	int t;
 
 	if (!g->p.node_list_str)
+<<<<<<< HEAD
 		return;
+=======
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintf("g->p.nr_tasks: %d\n", g->p.nr_tasks);
 
@@ -619,15 +754,28 @@ static void parse_setup_node_list(void)
 
 		dprintf("NODEs: %d-%d #%d\n", bind_node_0, bind_node_1, step);
 
+<<<<<<< HEAD
 		BUG_ON(bind_node_0 < 0 || bind_node_0 >= g->p.nr_nodes);
 		BUG_ON(bind_node_1 < 0 || bind_node_1 >= g->p.nr_nodes);
+=======
+		if (bind_node_0 >= g->p.nr_nodes || bind_node_1 >= g->p.nr_nodes) {
+			printf("\nTest not applicable, system has only %d nodes.\n", g->p.nr_nodes);
+			return -1;
+		}
+
+		BUG_ON(bind_node_0 < 0 || bind_node_1 < 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		BUG_ON(bind_node_0 > bind_node_1);
 
 		for (bind_node = bind_node_0; bind_node <= bind_node_1; bind_node += step) {
 			int i;
 
 			for (i = 0; i < mul; i++) {
+<<<<<<< HEAD
 				if (t >= g->p.nr_tasks) {
+=======
+				if (t >= g->p.nr_tasks || !node_has_cpus(bind_node)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					printf("\n# NOTE: ignoring bind NODEs starting at NODE#%d\n", bind_node);
 					goto out;
 				}
@@ -651,6 +799,10 @@ out:
 		printf("# NOTE: %d tasks mem-bound, %d tasks unbound\n", t, g->p.nr_tasks - t);
 
 	free(str0);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int parse_nodes_opt(const struct option *opt __maybe_unused,
@@ -818,6 +970,12 @@ static int count_process_nodes(int process_nr)
 		td = g->threads + task_nr;
 
 		node = numa_node_of_cpu(td->curr_cpu);
+<<<<<<< HEAD
+=======
+		if (node < 0) /* curr_cpu was likely still -1 */
+			return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		node_present[node] = 1;
 	}
 
@@ -872,6 +1030,14 @@ static void calc_convergence_compression(int *strong)
 	for (p = 0; p < g->p.nr_proc; p++) {
 		unsigned int nodes = count_process_nodes(p);
 
+<<<<<<< HEAD
+=======
+		if (!nodes) {
+			*strong = 0;
+			return;
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nodes_min = min(nodes, nodes_min);
 		nodes_max = max(nodes, nodes_max);
 	}
@@ -933,6 +1099,11 @@ static void calc_convergence(double runtime_ns_max, double *convergence)
 	sum = 0;
 
 	for (node = 0; node < g->p.nr_nodes; node++) {
+<<<<<<< HEAD
+=======
+		if (!is_node_present(node))
+			continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nr = nodes[node];
 		nr_min = min(nr, nr_min);
 		nr_max = max(nr, nr_max);
@@ -953,8 +1124,16 @@ static void calc_convergence(double runtime_ns_max, double *convergence)
 	process_groups = 0;
 
 	for (node = 0; node < g->p.nr_nodes; node++) {
+<<<<<<< HEAD
 		int processes = count_node_processes(node);
 
+=======
+		int processes;
+
+		if (!is_node_present(node))
+			continue;
+		processes = count_node_processes(node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nr = nodes[node];
 		tprintf(" %2d/%-2d", nr, processes);
 
@@ -979,7 +1158,11 @@ static void calc_convergence(double runtime_ns_max, double *convergence)
 	if (strong && process_groups == g->p.nr_proc) {
 		if (!*convergence) {
 			*convergence = runtime_ns_max;
+<<<<<<< HEAD
 			tprintf(" (%6.1fs converged)\n", *convergence/1e9);
+=======
+			tprintf(" (%6.1fs converged)\n", *convergence / NSEC_PER_SEC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (g->p.measure_convergence) {
 				g->all_converged = true;
 				g->stop_work = true;
@@ -987,7 +1170,11 @@ static void calc_convergence(double runtime_ns_max, double *convergence)
 		}
 	} else {
 		if (*convergence) {
+<<<<<<< HEAD
 			tprintf(" (%6.1fs de-converged)", runtime_ns_max/1e9);
+=======
+			tprintf(" (%6.1fs de-converged)", runtime_ns_max / NSEC_PER_SEC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*convergence = 0;
 		}
 		tprintf("\n");
@@ -997,7 +1184,11 @@ static void calc_convergence(double runtime_ns_max, double *convergence)
 static void show_summary(double runtime_ns_max, int l, double *convergence)
 {
 	tprintf("\r #  %5.1f%%  [%.1f mins]",
+<<<<<<< HEAD
 		(double)(l+1)/g->p.nr_loops*100.0, runtime_ns_max/1e9 / 60.0);
+=======
+		(double)(l+1)/g->p.nr_loops*100.0, runtime_ns_max / NSEC_PER_SEC / 60.0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	calc_convergence(runtime_ns_max, convergence);
 
@@ -1021,9 +1212,16 @@ static void *worker_thread(void *__tdata)
 	u8 *global_data;
 	u8 *process_data;
 	u8 *thread_data;
+<<<<<<< HEAD
 	u64 bytes_done;
 	long work_done;
 	u32 l;
+=======
+	u64 bytes_done, secs;
+	long work_done;
+	u32 l;
+	struct rusage rusage;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bind_to_cpumask(td->bind_cpumask);
 	bind_to_memnode(td->bind_node);
@@ -1110,7 +1308,11 @@ static void *worker_thread(void *__tdata)
 		/* Check whether our max runtime timed out: */
 		if (g->p.nr_secs) {
 			timersub(&stop, &start0, &diff);
+<<<<<<< HEAD
 			if (diff.tv_sec >= g->p.nr_secs) {
+=======
+			if ((u32)diff.tv_sec >= g->p.nr_secs) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				g->stop_work = true;
 				break;
 			}
@@ -1153,11 +1355,19 @@ static void *worker_thread(void *__tdata)
 
 		if (details >= 3) {
 			timersub(&stop, &start, &diff);
+<<<<<<< HEAD
 			runtime_ns_max = diff.tv_sec * 1000000000;
 			runtime_ns_max += diff.tv_usec * 1000;
 
 			if (details >= 0) {
 				printf(" #%2d / %2d: %14.2lf nsecs/op [val: %016lx]\n",
+=======
+			runtime_ns_max = diff.tv_sec * NSEC_PER_SEC;
+			runtime_ns_max += diff.tv_usec * NSEC_PER_USEC;
+
+			if (details >= 0) {
+				printf(" #%2d / %2d: %14.2lf nsecs/op [val: %016"PRIx64"]\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					process_nr, thread_nr, runtime_ns_max / bytes_done, val);
 			}
 			fflush(stdout);
@@ -1166,16 +1376,34 @@ static void *worker_thread(void *__tdata)
 			continue;
 
 		timersub(&stop, &start0, &diff);
+<<<<<<< HEAD
 		runtime_ns_max = diff.tv_sec * 1000000000ULL;
 		runtime_ns_max += diff.tv_usec * 1000ULL;
+=======
+		runtime_ns_max = diff.tv_sec * NSEC_PER_SEC;
+		runtime_ns_max += diff.tv_usec * NSEC_PER_USEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		show_summary(runtime_ns_max, l, &convergence);
 	}
 
 	gettimeofday(&stop, NULL);
 	timersub(&stop, &start0, &diff);
+<<<<<<< HEAD
 	td->runtime_ns = diff.tv_sec * 1000000000ULL;
 	td->runtime_ns += diff.tv_usec * 1000ULL;
+=======
+	td->runtime_ns = diff.tv_sec * NSEC_PER_SEC;
+	td->runtime_ns += diff.tv_usec * NSEC_PER_USEC;
+	secs = td->runtime_ns / NSEC_PER_SEC;
+	td->speed_gbs = secs ? bytes_done / secs / 1e9 : 0;
+
+	getrusage(RUSAGE_THREAD, &rusage);
+	td->system_time_ns = rusage.ru_stime.tv_sec * NSEC_PER_SEC;
+	td->system_time_ns += rusage.ru_stime.tv_usec * NSEC_PER_USEC;
+	td->user_time_ns = rusage.ru_utime.tv_sec * NSEC_PER_SEC;
+	td->user_time_ns += rusage.ru_utime.tv_usec * NSEC_PER_USEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	free_data(thread_data, g->p.bytes_thread);
 
@@ -1252,7 +1480,11 @@ static void print_summary(void)
 
 	printf("\n ###\n");
 	printf(" # %d %s will execute (on %d nodes, %d CPUs):\n",
+<<<<<<< HEAD
 		g->p.nr_tasks, g->p.nr_tasks == 1 ? "task" : "tasks", g->p.nr_nodes, g->p.nr_cpus);
+=======
+		g->p.nr_tasks, g->p.nr_tasks == 1 ? "task" : "tasks", nr_numa_nodes(), g->p.nr_cpus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printf(" #      %5dx %5ldMB global  shared mem operations\n",
 			g->p.nr_loops, g->p.bytes_global/1024/1024);
 	printf(" #      %5dx %5ldMB process shared mem operations\n",
@@ -1356,8 +1588,13 @@ static int init(void)
 	init_thread_data();
 
 	tprintf("#\n");
+<<<<<<< HEAD
 	parse_setup_cpu_list();
 	parse_setup_node_list();
+=======
+	if (parse_setup_cpu_list() || parse_setup_node_list())
+		return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tprintf("#\n");
 
 	print_summary();
@@ -1385,7 +1622,11 @@ static void print_res(const char *name, double val,
 	if (!name)
 		name = "main,";
 
+<<<<<<< HEAD
 	if (g->p.show_quiet)
+=======
+	if (!g->p.show_quiet)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printf(" %-30s %15.3f, %-15s %s\n", name, val, txt_unit, txt_short);
 	else
 		printf(" %14.3f %s\n", val, txt_long);
@@ -1402,7 +1643,11 @@ static int __bench_numa(const char *name)
 	double runtime_sec_min;
 	int wait_stat;
 	double bytes;
+<<<<<<< HEAD
 	int i, t;
+=======
+	int i, t, p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (init())
 		return -1;
@@ -1436,7 +1681,11 @@ static int __bench_numa(const char *name)
 	}
 	/* Wait for all the threads to start up: */
 	while (g->nr_tasks_started != g->p.nr_tasks)
+<<<<<<< HEAD
 		usleep(1000);
+=======
+		usleep(USEC_PER_MSEC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(g->nr_tasks_started != g->p.nr_tasks);
 
@@ -1455,9 +1704,15 @@ static int __bench_numa(const char *name)
 
 		timersub(&stop, &start, &diff);
 
+<<<<<<< HEAD
 		startup_sec = diff.tv_sec * 1000000000.0;
 		startup_sec += diff.tv_usec * 1000.0;
 		startup_sec /= 1e9;
+=======
+		startup_sec = diff.tv_sec * NSEC_PER_SEC;
+		startup_sec += diff.tv_usec * NSEC_PER_USEC;
+		startup_sec /= NSEC_PER_SEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		tprintf(" threads initialized in %.6f seconds.\n", startup_sec);
 		tprintf(" #\n");
@@ -1496,6 +1751,7 @@ static int __bench_numa(const char *name)
 	tprintf("\n ###\n");
 	tprintf("\n");
 
+<<<<<<< HEAD
 	runtime_sec_max = diff.tv_sec * 1000000000.0;
 	runtime_sec_max += diff.tv_usec * 1000.0;
 	runtime_sec_max /= 1e9;
@@ -1504,6 +1760,16 @@ static int __bench_numa(const char *name)
 
 	bytes = g->bytes_done;
 	runtime_avg = (double)runtime_ns_sum / g->p.nr_tasks / 1e9;
+=======
+	runtime_sec_max = diff.tv_sec * NSEC_PER_SEC;
+	runtime_sec_max += diff.tv_usec * NSEC_PER_USEC;
+	runtime_sec_max /= NSEC_PER_SEC;
+
+	runtime_sec_min = runtime_ns_min / NSEC_PER_SEC;
+
+	bytes = g->bytes_done;
+	runtime_avg = (double)runtime_ns_sum / g->p.nr_tasks / NSEC_PER_SEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (g->p.measure_convergence) {
 		print_res(name, runtime_sec_max,
@@ -1529,7 +1795,11 @@ static int __bench_numa(const char *name)
 	print_res(name, bytes / 1e9,
 		"GB,", "data-total",		"GB data processed, total");
 
+<<<<<<< HEAD
 	print_res(name, runtime_sec_max * 1e9 / (bytes / g->p.nr_tasks),
+=======
+	print_res(name, runtime_sec_max * NSEC_PER_SEC / (bytes / g->p.nr_tasks),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"nsecs,", "runtime/byte/thread","nsecs/byte/thread runtime");
 
 	print_res(name, bytes / g->p.nr_tasks / 1e9 / runtime_sec_max,
@@ -1538,6 +1808,27 @@ static int __bench_numa(const char *name)
 	print_res(name, bytes / runtime_sec_max / 1e9,
 		"GB/sec,", "total-speed",	"GB/sec total speed");
 
+<<<<<<< HEAD
+=======
+	if (g->p.show_details >= 2) {
+		char tname[14 + 2 * 10 + 1];
+		struct thread_data *td;
+		for (p = 0; p < g->p.nr_proc; p++) {
+			for (t = 0; t < g->p.nr_threads; t++) {
+				memset(tname, 0, sizeof(tname));
+				td = g->threads + p*g->p.nr_threads + t;
+				snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
+				print_res(tname, td->speed_gbs,
+					"GB/sec",	"thread-speed", "GB/sec/thread speed");
+				print_res(tname, td->system_time_ns / NSEC_PER_SEC,
+					"secs",	"thread-system-time", "system CPU time/thread");
+				print_res(tname, td->user_time_ns / NSEC_PER_SEC,
+					"secs",	"thread-user-time", "user CPU time/thread");
+			}
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free(pids);
 
 	deinit();
@@ -1583,6 +1874,14 @@ static void init_params(struct params *p, const char *name, int argc, const char
 	p->data_rand_walk		= true;
 	p->nr_loops			= -1;
 	p->init_random			= true;
+<<<<<<< HEAD
+=======
+	p->mb_global_str		= "1";
+	p->nr_proc			= 1;
+	p->nr_threads			= 1;
+	p->nr_secs			= 5;
+	p->run_all			= argc == 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int run_bench_numa(const char *name, const char **argv)
@@ -1600,7 +1899,10 @@ static int run_bench_numa(const char *name, const char **argv)
 	return 0;
 
 err:
+<<<<<<< HEAD
 	usage_with_options(numa_usage, options);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -1;
 }
 
@@ -1701,8 +2003,12 @@ static int bench_all(void)
 	BUG_ON(ret < 0);
 
 	for (i = 0; i < nr; i++) {
+<<<<<<< HEAD
 		if (run_bench_numa(tests[i][0], tests[i] + 1))
 			return -1;
+=======
+		run_bench_numa(tests[i][0], tests[i] + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	printf("\n");

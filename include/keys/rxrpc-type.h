@@ -51,7 +51,11 @@ struct krb5_principal {
 struct krb5_tagged_data {
 	/* for tag value, see /usr/include/krb5/krb5.h
 	 * - KRB5_AUTHDATA_* for auth data
+<<<<<<< HEAD
 	 * - 
+=======
+	 * -
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	s32		tag;
 	u32		data_len;

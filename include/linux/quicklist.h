@@ -5,7 +5,11 @@
  * as needed after allocation when they are freed. Per cpu lists of pages
  * are kept that only contain node local pages.
  *
+<<<<<<< HEAD
  * (C) 2007, SGI. Christoph Lameter <clameter@sgi.com>
+=======
+ * (C) 2007, SGI. Christoph Lameter <cl@linux.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #include <linux/kernel.h>
 #include <linux/gfp.h>

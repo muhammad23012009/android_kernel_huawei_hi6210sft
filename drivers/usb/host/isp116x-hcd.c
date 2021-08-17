@@ -60,7 +60,10 @@
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/usb.h>
@@ -501,7 +504,12 @@ static void start_atl_transfers(struct isp116x *isp116x)
 	if (isp116x->periodic_count) {
 		isp116x->fmindex = index =
 		    (isp116x->fmindex + 1) & (PERIODIC_SIZE - 1);
+<<<<<<< HEAD
 		if ((load = isp116x->load[index])) {
+=======
+		load = isp116x->load[index];
+		if (load) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Bring all int transfers for this frame
 			   into the active queue */
 			isp116x->atl_active = last_ep =
@@ -944,12 +952,23 @@ static void isp116x_hub_descriptor(struct isp116x *isp116x,
 {
 	u32 reg = isp116x->rhdesca;
 
+<<<<<<< HEAD
 	desc->bDescriptorType = 0x29;
+=======
+	desc->bDescriptorType = USB_DT_HUB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc->bDescLength = 9;
 	desc->bHubContrCurrent = 0;
 	desc->bNbrPorts = (u8) (reg & 0x3);
 	/* Power switching, device type, overcurrent. */
+<<<<<<< HEAD
 	desc->wHubCharacteristics = cpu_to_le16((u16) ((reg >> 8) & 0x1f));
+=======
+	desc->wHubCharacteristics = cpu_to_le16((u16) ((reg >> 8) &
+						       (HUB_CHAR_LPSM |
+							HUB_CHAR_COMPOUND |
+							HUB_CHAR_OCPM)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc->bPwrOn2PwrGood = (u8) ((reg >> 24) & 0xff);
 	/* ports removable, and legacy PortPwrCtrlMask */
 	desc->u.hs.DeviceRemovable[0] = 0;
@@ -1488,7 +1507,11 @@ static int isp116x_bus_resume(struct usb_hcd *hcd)
 	spin_unlock_irq(&isp116x->lock);
 
 	hcd->state = HC_STATE_RESUMING;
+<<<<<<< HEAD
 	msleep(20);
+=======
+	msleep(USB_RESUME_TIMEOUT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Go operational */
 	spin_lock_irq(&isp116x->lock);
@@ -1626,7 +1649,11 @@ static int isp116x_probe(struct platform_device *pdev)
 	isp116x->addr_reg = addr_reg;
 	spin_lock_init(&isp116x->lock);
 	INIT_LIST_HEAD(&isp116x->async);
+<<<<<<< HEAD
 	isp116x->board = pdev->dev.platform_data;
+=======
+	isp116x->board = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!isp116x->board) {
 		ERR("Platform data structure not initialized\n");
@@ -1645,6 +1672,11 @@ static int isp116x_probe(struct platform_device *pdev)
 	if (ret)
 		goto err6;
 
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = create_debug_file(isp116x);
 	if (ret) {
 		ERR("Couldn't create debugfs entry\n");
@@ -1705,8 +1737,12 @@ static struct platform_driver isp116x_driver = {
 	.suspend = isp116x_suspend,
 	.resume = isp116x_resume,
 	.driver = {
+<<<<<<< HEAD
 		.name = (char *)hcd_name,
 		.owner	= THIS_MODULE,
+=======
+		.name = hcd_name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

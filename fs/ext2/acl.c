@@ -4,7 +4,10 @@
  * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
  */
 
+<<<<<<< HEAD
 #include <linux/capability.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -148,6 +151,7 @@ ext2_get_acl(struct inode *inode, int type)
 	struct posix_acl *acl;
 	int retval;
 
+<<<<<<< HEAD
 	if (!test_opt(inode->i_sb, POSIX_ACL))
 		return NULL;
 
@@ -155,6 +159,8 @@ ext2_get_acl(struct inode *inode, int type)
 	if (acl != ACL_NOT_CACHED)
 		return acl;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (type) {
 	case ACL_TYPE_ACCESS:
 		name_index = EXT2_XATTR_INDEX_POSIX_ACL_ACCESS;
@@ -180,6 +186,7 @@ ext2_get_acl(struct inode *inode, int type)
 		acl = ERR_PTR(retval);
 	kfree(value);
 
+<<<<<<< HEAD
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
 
@@ -191,12 +198,20 @@ ext2_get_acl(struct inode *inode, int type)
  */
 static int
 ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
+=======
+	return acl;
+}
+
+static int
+__ext2_set_acl(struct inode *inode, struct posix_acl *acl, int type)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int name_index;
 	void *value = NULL;
 	size_t size = 0;
 	int error;
 
+<<<<<<< HEAD
 	if (S_ISLNK(inode->i_mode))
 		return -EOPNOTSUPP;
 	if (!test_opt(inode->i_sb, POSIX_ACL))
@@ -212,6 +227,11 @@ ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 				inode->i_ctime = CURRENT_TIME_SEC;
 				mark_inode_dirty(inode);
 			}
+=======
+	switch(type) {
+		case ACL_TYPE_ACCESS:
+			name_index = EXT2_XATTR_INDEX_POSIX_ACL_ACCESS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case ACL_TYPE_DEFAULT:
@@ -238,6 +258,7 @@ ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 }
 
 /*
+<<<<<<< HEAD
  * Initialize the ACLs of a new inode. Called from ext2_new_inode.
  *
  * dir->i_mutex: down
@@ -412,3 +433,49 @@ const struct xattr_handler ext2_xattr_acl_default_handler = {
 	.get	= ext2_xattr_get_acl,
 	.set	= ext2_xattr_set_acl,
 };
+=======
+ * inode->i_mutex: down
+ */
+int
+ext2_set_acl(struct inode *inode, struct posix_acl *acl, int type)
+{
+	int error;
+
+	if (type == ACL_TYPE_ACCESS && acl) {
+		error = posix_acl_update_mode(inode, &inode->i_mode, &acl);
+		if (error)
+			return error;
+		inode->i_ctime = current_time(inode);
+		mark_inode_dirty(inode);
+	}
+	return __ext2_set_acl(inode, acl, type);
+}
+
+/*
+ * Initialize the ACLs of a new inode. Called from ext2_new_inode.
+ *
+ * dir->i_mutex: down
+ * inode->i_mutex: up (access to inode is still exclusive)
+ */
+int
+ext2_init_acl(struct inode *inode, struct inode *dir)
+{
+	struct posix_acl *default_acl, *acl;
+	int error;
+
+	error = posix_acl_create(dir, &inode->i_mode, &default_acl, &acl);
+	if (error)
+		return error;
+
+	if (default_acl) {
+		error = __ext2_set_acl(inode, default_acl, ACL_TYPE_DEFAULT);
+		posix_acl_release(default_acl);
+	}
+	if (acl) {
+		if (!error)
+			error = __ext2_set_acl(inode, acl, ACL_TYPE_ACCESS);
+		posix_acl_release(acl);
+	}
+	return error;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

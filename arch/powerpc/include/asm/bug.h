@@ -133,7 +133,10 @@ extern int do_page_fault(struct pt_regs *, unsigned long, unsigned long);
 extern void bad_page_fault(struct pt_regs *, unsigned long, int);
 extern void _exception(int, struct pt_regs *, int, unsigned long);
 extern void die(const char *, struct pt_regs *, long);
+<<<<<<< HEAD
 extern void print_backtrace(unsigned long *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !__ASSEMBLY__ */
 

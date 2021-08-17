@@ -11,7 +11,10 @@
  * for more details.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/profile.h>
 #include <linux/timex.h>
@@ -50,6 +53,7 @@ int update_persistent_clock(struct timespec now)
 }
 #endif
 
+<<<<<<< HEAD
 unsigned int get_rtc_time(struct rtc_time *tm)
 {
 	if (rtc_sh_get_time != null_rtc_get_time) {
@@ -64,13 +68,39 @@ unsigned int get_rtc_time(struct rtc_time *tm)
 EXPORT_SYMBOL(get_rtc_time);
 
 int set_rtc_time(struct rtc_time *tm)
+=======
+static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
+{
+	struct timespec tv;
+
+	rtc_sh_get_time(&tv);
+	rtc_time_to_tm(tv.tv_sec, tm);
+	return 0;
+}
+
+static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long secs;
 
 	rtc_tm_to_time(tm, &secs);
+<<<<<<< HEAD
 	return rtc_sh_set_time(secs);
 }
 EXPORT_SYMBOL(set_rtc_time);
+=======
+	if ((rtc_sh_set_time == null_rtc_set_time) ||
+	    (rtc_sh_set_time(secs) < 0))
+		return -EOPNOTSUPP;
+
+	return 0;
+}
+
+static const struct rtc_class_ops rtc_generic_ops = {
+	.read_time = rtc_generic_get_time,
+	.set_time = rtc_generic_set_time,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init rtc_generic_init(void)
 {
@@ -79,6 +109,7 @@ static int __init rtc_generic_init(void)
 	if (rtc_sh_get_time == null_rtc_get_time)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
 	if (IS_ERR(pdev))
 		return PTR_ERR(pdev);
@@ -86,6 +117,16 @@ static int __init rtc_generic_init(void)
 	return 0;
 }
 module_init(rtc_generic_init);
+=======
+	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
+					     &rtc_generic_ops,
+					     sizeof(rtc_generic_ops));
+
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+device_initcall(rtc_generic_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void (*board_time_init)(void);
 

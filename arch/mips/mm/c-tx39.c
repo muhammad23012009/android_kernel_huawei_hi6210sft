@@ -28,8 +28,11 @@ static unsigned long icache_size, dcache_size;		/* Size in bytes */
 
 #include <asm/r4kcache.h>
 
+<<<<<<< HEAD
 extern int r3k_have_wired_reg;	/* in r3k-tlb.c */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This sequence is required to ensure icache is disabled immediately */
 #define TX39_STOP_STREAMING() \
 __asm__ __volatile__( \
@@ -344,7 +347,11 @@ static __init void tx39_probe_cache(void)
 	}
 }
 
+<<<<<<< HEAD
 void __cpuinit tx39_cache_init(void)
+=======
+void tx39_cache_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	extern void build_clear_page(void);
 	extern void build_copy_page(void);
@@ -383,8 +390,11 @@ void __cpuinit tx39_cache_init(void)
 	case CPU_TX3927:
 	default:
 		/* TX39/H2,H3 core (writeback 2way-set-associative cache) */
+<<<<<<< HEAD
 		r3k_have_wired_reg = 1;
 		write_c0_wired(0);	/* set 8 on reset... */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* board-dependent init code may set WBON */
 
 		__flush_cache_vmap	= tx39__flush_cache_vmap;
@@ -415,6 +425,12 @@ void __cpuinit tx39_cache_init(void)
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	__flush_icache_user_range = flush_icache_range;
+	__local_flush_icache_user_range = local_flush_icache_range;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	current_cpu_data.icache.waysize = icache_size / current_cpu_data.icache.ways;
 	current_cpu_data.dcache.waysize = dcache_size / current_cpu_data.dcache.ways;
 

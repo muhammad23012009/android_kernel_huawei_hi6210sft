@@ -43,6 +43,10 @@
 	    ".pushsection .fixup,\"ax\"\n"			\
 	    "0: { movei %0, %5; j 9f }\n"			\
 	    ".section __ex_table,\"a\"\n"			\
+<<<<<<< HEAD
+=======
+	    ".align 8\n"					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    ".quad 1b, 0b\n"					\
 	    ".popsection\n"					\
 	    "9:"						\
@@ -79,6 +83,7 @@
 		ret = gu.err;						\
 	}
 
+<<<<<<< HEAD
 #define __futex_set() __futex_call(__atomic_xchg)
 #define __futex_add() __futex_call(__atomic_xchg_add)
 #define __futex_or() __futex_call(__atomic_or)
@@ -89,6 +94,18 @@
 	{								\
 		struct __get_user gu = __atomic_cmpxchg((u32 __force *)uaddr, \
 							lock, oldval, oparg); \
+=======
+#define __futex_set() __futex_call(__atomic32_xchg)
+#define __futex_add() __futex_call(__atomic32_xchg_add)
+#define __futex_or() __futex_call(__atomic32_fetch_or)
+#define __futex_andn() __futex_call(__atomic32_fetch_andn)
+#define __futex_xor() __futex_call(__atomic32_fetch_xor)
+
+#define __futex_cmpxchg()						\
+	{								\
+		struct __get_user gu = __atomic32_cmpxchg((u32 __force *)uaddr, \
+							  lock, oldval, oparg); \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		val = gu.val;						\
 		ret = gu.err;						\
 	}
@@ -105,12 +122,18 @@
 	lock = __atomic_hashed_lock((int __force *)uaddr)
 #endif
 
+<<<<<<< HEAD
 static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
 	int cmp = (encoded_op >> 24) & 15;
 	int oparg = (encoded_op << 8) >> 20;
 	int cmparg = (encoded_op << 20) >> 20;
+=======
+static inline int arch_futex_atomic_op_inuser(int op, u32 oparg, int *oval,
+		u32 __user *uaddr)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int uninitialized_var(val), ret;
 
 	__futex_prolog();
@@ -118,12 +141,15 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 	/* The 32-bit futex code makes this assumption, so validate it here. */
 	BUILD_BUG_ON(sizeof(atomic_t) != sizeof(int));
 
+<<<<<<< HEAD
 	if (encoded_op & (FUTEX_OP_OPARG_SHIFT << 28))
 		oparg = 1 << oparg;
 
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 	switch (op) {
 	case FUTEX_OP_SET:
@@ -147,6 +173,7 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 	}
 	pagefault_enable();
 
+<<<<<<< HEAD
 	if (!ret) {
 		switch (cmp) {
 		case FUTEX_OP_CMP_EQ:
@@ -171,6 +198,11 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 			ret = -ENOSYS;
 		}
 	}
+=======
+	if (!ret)
+		*oval = val;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 

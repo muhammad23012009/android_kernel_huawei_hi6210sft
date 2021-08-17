@@ -1,18 +1,28 @@
 /*
+<<<<<<< HEAD
  * include/asm-xtensa/cacheflush.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
  * (C) 2001 - 2007 Tensilica Inc.
+=======
+ * (C) 2001 - 2013 Tensilica Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _XTENSA_CACHEFLUSH_H
 #define _XTENSA_CACHEFLUSH_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mm.h>
 #include <asm/processor.h>
 #include <asm/page.h>
@@ -41,6 +51,10 @@
  * specials for cache aliasing:
  *
  * __flush_invalidate_dcache_page_alias(vaddr,paddr)
+<<<<<<< HEAD
+=======
+ * __invalidate_dcache_page_alias(vaddr,paddr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * __invalidate_icache_page_alias(vaddr,paddr)
  */
 
@@ -51,7 +65,10 @@ extern void __invalidate_icache_page(unsigned long);
 extern void __invalidate_icache_range(unsigned long, unsigned long);
 extern void __invalidate_dcache_range(unsigned long, unsigned long);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if XCHAL_DCACHE_IS_WRITEBACK
 extern void __flush_invalidate_dcache_all(void);
 extern void __flush_dcache_page(unsigned long);
@@ -59,17 +76,37 @@ extern void __flush_dcache_range(unsigned long, unsigned long);
 extern void __flush_invalidate_dcache_page(unsigned long);
 extern void __flush_invalidate_dcache_range(unsigned long, unsigned long);
 #else
+<<<<<<< HEAD
 # define __flush_dcache_range(p,s)		do { } while(0)
 # define __flush_dcache_page(p)			do { } while(0)
 # define __flush_invalidate_dcache_page(p) 	__invalidate_dcache_page(p)
+=======
+static inline void __flush_dcache_page(unsigned long va)
+{
+}
+static inline void __flush_dcache_range(unsigned long va, unsigned long sz)
+{
+}
+# define __flush_invalidate_dcache_all()	__invalidate_dcache_all()
+# define __flush_invalidate_dcache_page(p)	__invalidate_dcache_page(p)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define __flush_invalidate_dcache_range(p,s)	__invalidate_dcache_range(p,s)
 #endif
 
 #if defined(CONFIG_MMU) && (DCACHE_WAY_SIZE > PAGE_SIZE)
 extern void __flush_invalidate_dcache_page_alias(unsigned long, unsigned long);
+<<<<<<< HEAD
 #else
 static inline void __flush_invalidate_dcache_page_alias(unsigned long virt,
 							unsigned long phys) { }
+=======
+extern void __invalidate_dcache_page_alias(unsigned long, unsigned long);
+#else
+static inline void __flush_invalidate_dcache_page_alias(unsigned long virt,
+							unsigned long phys) { }
+static inline void __invalidate_dcache_page_alias(unsigned long virt,
+						  unsigned long phys) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #if defined(CONFIG_MMU) && (ICACHE_WAY_SIZE > PAGE_SIZE)
 extern void __invalidate_icache_page_alias(unsigned long, unsigned long);
@@ -87,9 +124,29 @@ static inline void __invalidate_icache_page_alias(unsigned long virt,
  * (see also Documentation/cachetlb.txt)
  */
 
+<<<<<<< HEAD
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
 
 #define flush_cache_all()						\
+=======
+#if defined(CONFIG_MMU) && \
+	((DCACHE_WAY_SIZE > PAGE_SIZE) || defined(CONFIG_SMP))
+
+#ifdef CONFIG_SMP
+void flush_cache_all(void);
+void flush_cache_range(struct vm_area_struct*, ulong, ulong);
+void flush_icache_range(unsigned long start, unsigned long end);
+void flush_cache_page(struct vm_area_struct*,
+			     unsigned long, unsigned long);
+#else
+#define flush_cache_all local_flush_cache_all
+#define flush_cache_range local_flush_cache_range
+#define flush_icache_range local_flush_icache_range
+#define flush_cache_page  local_flush_cache_page
+#endif
+
+#define local_flush_cache_all()						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {								\
 		__flush_invalidate_dcache_all();			\
 		__invalidate_icache_all();				\
@@ -103,9 +160,17 @@ static inline void __invalidate_icache_page_alias(unsigned long virt,
 
 #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
 extern void flush_dcache_page(struct page*);
+<<<<<<< HEAD
 extern void flush_cache_range(struct vm_area_struct*, ulong, ulong);
 extern void flush_cache_page(struct vm_area_struct*,
 			     unsigned long, unsigned long);
+=======
+
+void local_flush_cache_range(struct vm_area_struct *vma,
+		unsigned long start, unsigned long end);
+void local_flush_cache_page(struct vm_area_struct *vma,
+		unsigned long address, unsigned long pfn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 
@@ -119,13 +184,23 @@ extern void flush_cache_page(struct vm_area_struct*,
 #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 0
 #define flush_dcache_page(page)				do { } while (0)
 
+<<<<<<< HEAD
 #define flush_cache_page(vma,addr,pfn)			do { } while (0)
 #define flush_cache_range(vma,start,end)		do { } while (0)
+=======
+#define flush_icache_range local_flush_icache_range
+#define flush_cache_page(vma, addr, pfn)		do { } while (0)
+#define flush_cache_range(vma, start, end)		do { } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 
 /* Ensure consistency between data and instruction cache. */
+<<<<<<< HEAD
 #define flush_icache_range(start,end) 					\
+=======
+#define local_flush_icache_range(start, end)				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {								\
 		__flush_dcache_range(start, (end) - (start));		\
 		__invalidate_icache_range(start,(end) - (start));	\
@@ -137,7 +212,11 @@ extern void flush_cache_page(struct vm_area_struct*,
 #define flush_dcache_mmap_lock(mapping)			do { } while (0)
 #define flush_dcache_mmap_unlock(mapping)		do { } while (0)
 
+<<<<<<< HEAD
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
+=======
+#if defined(CONFIG_MMU) && (DCACHE_WAY_SIZE > PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void copy_to_user_page(struct vm_area_struct*, struct page*,
 		unsigned long, void*, const void*, unsigned long);
@@ -158,6 +237,7 @@ extern void copy_from_user_page(struct vm_area_struct*, struct page*,
 
 #endif
 
+<<<<<<< HEAD
 #define XTENSA_CACHEBLK_LOG2	29
 #define XTENSA_CACHEBLK_SIZE	(1 << XTENSA_CACHEBLK_LOG2)
 #define XTENSA_CACHEBLK_MASK	(7 << XTENSA_CACHEBLK_LOG2)
@@ -254,4 +334,6 @@ static inline void flush_invalidate_dcache_unaligned(u32 addr, u32 size)
 }
 
 #endif /* __KERNEL__ */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _XTENSA_CACHEFLUSH_H */

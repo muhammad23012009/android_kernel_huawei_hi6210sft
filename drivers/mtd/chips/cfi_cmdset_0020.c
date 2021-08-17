@@ -22,7 +22,10 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/byteorder.h>
 
@@ -176,7 +179,10 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 	//printk(KERN_DEBUG "number of CFI chips: %d\n", cfi->numchips);
 
 	if (!mtd) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to allocate memory for MTD device\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(cfi->cmdset_priv);
 		return NULL;
 	}
@@ -189,7 +195,10 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 	mtd->eraseregions = kmalloc(sizeof(struct mtd_erase_region_info)
 			* mtd->numeraseregions, GFP_KERNEL);
 	if (!mtd->eraseregions) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to allocate memory for MTD erase region info\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(cfi->cmdset_priv);
 		kfree(mtd);
 		return NULL;
@@ -209,6 +218,7 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 			mtd->eraseregions[(j*cfi->cfiq->NumEraseRegions)+i].numblocks = ernum;
 		}
 		offset += (ersize * ernum);
+<<<<<<< HEAD
 		}
 
 		if (offset != devsize) {
@@ -226,6 +236,25 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 			       mtd->eraseregions[i].erasesize,
 			       mtd->eraseregions[i].numblocks);
 		}
+=======
+	}
+
+	if (offset != devsize) {
+		/* Argh */
+		printk(KERN_WARNING "Sum of regions (%lx) != total size of set of interleaved chips (%lx)\n", offset, devsize);
+		kfree(mtd->eraseregions);
+		kfree(cfi->cmdset_priv);
+		kfree(mtd);
+		return NULL;
+	}
+
+	for (i=0; i<mtd->numeraseregions;i++){
+		printk(KERN_DEBUG "%d: offset=0x%llx,size=0x%x,blocks=%d\n",
+		       i, (unsigned long long)mtd->eraseregions[i].offset,
+		       mtd->eraseregions[i].erasesize,
+		       mtd->eraseregions[i].numblocks);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Also select the correct geometry setup too */
 	mtd->_erase = cfi_staa_erase_varsize;
@@ -419,7 +448,11 @@ static int cfi_staa_read (struct mtd_info *mtd, loff_t from, size_t len, size_t 
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline int do_write_buffer(struct map_info *map, struct flchip *chip,
+=======
+static int do_write_buffer(struct map_info *map, struct flchip *chip,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  unsigned long adr, const u_char *buf, int len)
 {
 	struct cfi_private *cfi = map->fldrv_priv;
@@ -964,7 +997,11 @@ static int cfi_staa_erase_varsize(struct mtd_info *mtd,
 			chipnum++;
 
 			if (chipnum >= cfi->numchips)
+<<<<<<< HEAD
 			break;
+=======
+				break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -1173,7 +1210,11 @@ static int cfi_staa_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 			chipnum++;
 
 			if (chipnum >= cfi->numchips)
+<<<<<<< HEAD
 			break;
+=======
+				break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	return 0;

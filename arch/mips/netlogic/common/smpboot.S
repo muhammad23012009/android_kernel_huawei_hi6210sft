@@ -32,7 +32,10 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/asm.h>
 #include <asm/asm-offsets.h>
@@ -49,6 +52,7 @@
 #include <asm/netlogic/xlp-hal/sys.h>
 #include <asm/netlogic/xlp-hal/cpucontrol.h>
 
+<<<<<<< HEAD
 #define CP0_EBASE	$15
 #define SYS_CPU_COHERENT_BASE(node)	CKSEG1ADDR(XLP_DEFAULT_IO_BASE) + \
 			XLP_IO_SYS_OFFSET(node) + XLP_IO_PCI_HDRSZ + \
@@ -242,6 +246,15 @@ EXPORT(nlm_reset_entry_end)
 FEXPORT(xlp_boot_core0_siblings)	/* "Master" cpu starts from here */
 	xlp_config_lsu
 	dmtc0	sp, $4, 2		/* SP saved in UserLocal */
+=======
+	.set	noreorder
+	.set	noat
+	.set	arch=xlr		/* for mfcr/mtcr, XLR is sufficient */
+
+/* Called by the boot cpu to wake up its sibling threads */
+NESTED(xlp_boot_core0_siblings, PT_SIZE, sp)
+	/* CPU register contents lost when enabling threads, save them first */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SAVE_ALL
 	sync
 	/* find the location to which nlm_boot_siblings was relocated */
@@ -251,11 +264,21 @@ FEXPORT(xlp_boot_core0_siblings)	/* "Master" cpu starts from here */
 	dsubu	t2, t1
 	daddu	t2, t0
 	/* call it */
+<<<<<<< HEAD
 	jr	t2
 	nop
 	/* not reached */
 
 	__CPUINIT
+=======
+	jalr	t2
+	nop
+	RESTORE_ALL
+	jr	ra
+	nop
+END(xlp_boot_core0_siblings)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 NESTED(nlm_boot_secondary_cpus, 16, sp)
 	/* Initialize CP0 Status */
 	move	t1, zero
@@ -269,7 +292,11 @@ NESTED(nlm_boot_secondary_cpus, 16, sp)
 	PTR_L	gp, 0(t1)
 
 	/* a0 has the processor id */
+<<<<<<< HEAD
 	mfc0	a0, CP0_EBASE, 1
+=======
+	mfc0	a0, CP0_EBASE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	andi	a0, 0x3ff		/* a0 <- node/core */
 	PTR_LA	t0, nlm_early_init_secondary
 	jalr	t0
@@ -279,23 +306,37 @@ NESTED(nlm_boot_secondary_cpus, 16, sp)
 	jr	t0
 	nop
 END(nlm_boot_secondary_cpus)
+<<<<<<< HEAD
 	__FINIT
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * In case of RMIboot bootloader which is used on XLR boards, the CPUs
  * be already woken up and waiting in bootloader code.
  * This will get them out of the bootloader code and into linux. Needed
+<<<<<<< HEAD
  *  because the bootloader area will be taken and initialized by linux.
  */
 	__CPUINIT
+=======
+ * because the bootloader area will be taken and initialized by linux.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 NESTED(nlm_rmiboot_preboot, 16, sp)
 	mfc0	t0, $15, 1	/* read ebase */
 	andi	t0, 0x1f	/* t0 has the processor_id() */
 	andi	t2, t0, 0x3	/* thread num */
 	sll	t0, 2		/* offset in cpu array */
 
+<<<<<<< HEAD
 	PTR_LA	t1, nlm_cpu_ready /* mark CPU ready */
 	PTR_ADDU t1, t0
+=======
+	li	t3, CKSEG1ADDR(RESET_DATA_PHYS)
+	ADDIU	t1, t3, BOOT_CPU_READY
+	ADDU	t1, t0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	li	t3, 1
 	sw	t3, 0(t1)
 
@@ -320,8 +361,16 @@ NESTED(nlm_rmiboot_preboot, 16, sp)
 	or	t1, t2, v1	/* put in new value */
 	mtcr	t1, t0		/* update core control */
 
+<<<<<<< HEAD
 1:	wait
 	j	1b
 	nop
 END(nlm_rmiboot_preboot)
 	__FINIT
+=======
+	/* wait for NMI to hit */
+1:	wait
+	b	1b
+	nop
+END(nlm_rmiboot_preboot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

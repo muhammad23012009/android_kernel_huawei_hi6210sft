@@ -284,7 +284,11 @@ static int lm3533_bl_probe(struct platform_device *pdev)
 	if (!lm3533)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_err(&pdev->dev, "no platform data\n");
 		return -EINVAL;
@@ -296,11 +300,16 @@ static int lm3533_bl_probe(struct platform_device *pdev)
 	}
 
 	bl = devm_kzalloc(&pdev->dev, sizeof(*bl), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!bl) {
 		dev_err(&pdev->dev,
 				"failed to allocate memory for backlight\n");
 		return -ENOMEM;
 	}
+=======
+	if (!bl)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bl->lm3533 = lm3533;
 	bl->id = pdev->id;
@@ -313,8 +322,14 @@ static int lm3533_bl_probe(struct platform_device *pdev)
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = LM3533_BL_MAX_BRIGHTNESS;
 	props.brightness = pdata->default_brightness;
+<<<<<<< HEAD
 	bd = backlight_device_register(pdata->name, pdev->dev.parent, bl,
 						&lm3533_bl_ops, &props);
+=======
+	bd = devm_backlight_device_register(&pdev->dev, pdata->name,
+					pdev->dev.parent, bl, &lm3533_bl_ops,
+					&props);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(bd)) {
 		dev_err(&pdev->dev, "failed to register backlight device\n");
 		return PTR_ERR(bd);
@@ -328,7 +343,11 @@ static int lm3533_bl_probe(struct platform_device *pdev)
 	ret = sysfs_create_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to create sysfs attributes\n");
+<<<<<<< HEAD
 		goto err_unregister;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	backlight_update_status(bd);
@@ -345,8 +364,11 @@ static int lm3533_bl_probe(struct platform_device *pdev)
 
 err_sysfs_remove:
 	sysfs_remove_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
+<<<<<<< HEAD
 err_unregister:
 	backlight_device_unregister(bd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -363,7 +385,10 @@ static int lm3533_bl_remove(struct platform_device *pdev)
 
 	lm3533_ctrlbank_disable(&bl->cb);
 	sysfs_remove_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
+<<<<<<< HEAD
 	backlight_device_unregister(bd);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -402,7 +427,10 @@ static void lm3533_bl_shutdown(struct platform_device *pdev)
 static struct platform_driver lm3533_bl_driver = {
 	.driver = {
 		.name	= "lm3533-backlight",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &lm3533_bl_pm_ops,
 	},
 	.probe		= lm3533_bl_probe,

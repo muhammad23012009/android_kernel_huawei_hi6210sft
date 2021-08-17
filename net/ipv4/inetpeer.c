@@ -72,11 +72,15 @@ void inet_peer_base_init(struct inet_peer_base *bp)
 {
 	bp->root = peer_avl_empty_rcu;
 	seqlock_init(&bp->lock);
+<<<<<<< HEAD
 	bp->flush_seq = ~0U;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bp->total = 0;
 }
 EXPORT_SYMBOL_GPL(inet_peer_base_init);
 
+<<<<<<< HEAD
 static atomic_t v4_seq = ATOMIC_INIT(0);
 static atomic_t v6_seq = ATOMIC_INIT(0);
 
@@ -102,6 +106,8 @@ void inetpeer_invalidate_family(int family)
 	atomic_inc(fp);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PEER_MAXDEPTH 40 /* sufficient for about 2^27 nodes */
 
 /* Exported for sysctl_net_ipv4.  */
@@ -113,7 +119,11 @@ int inet_peer_maxttl __read_mostly = 10 * 60 * HZ;	/* usual time to live: 10 min
 static void inetpeer_gc_worker(struct work_struct *work)
 {
 	struct inet_peer *p, *n, *c;
+<<<<<<< HEAD
 	LIST_HEAD(list);
+=======
+	struct list_head list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_bh(&gc_lock);
 	list_replace_init(&gc_list, &list);
@@ -183,6 +193,7 @@ void __init inet_initpeers(void)
 	INIT_DEFERRABLE_WORK(&gc_work, inetpeer_gc_worker);
 }
 
+<<<<<<< HEAD
 static int addr_compare(const struct inetpeer_addr *a,
 			const struct inetpeer_addr *b)
 {
@@ -199,6 +210,8 @@ static int addr_compare(const struct inetpeer_addr *a,
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define rcu_deref_locked(X, BASE)				\
 	rcu_dereference_protected(X, lockdep_is_held(&(BASE)->lock.lock))
 
@@ -213,8 +226,13 @@ static int addr_compare(const struct inetpeer_addr *a,
 	stackptr = _stack;					\
 	*stackptr++ = &_base->root;				\
 	for (u = rcu_deref_locked(_base->root, _base);		\
+<<<<<<< HEAD
 	     u != peer_avl_empty; ) {				\
 		int cmp = addr_compare(_daddr, &u->daddr);	\
+=======
+	     u != peer_avl_empty;) {				\
+		int cmp = inetpeer_addr_cmp(_daddr, &u->daddr);	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (cmp == 0)					\
 			break;					\
 		if (cmp == -1)					\
@@ -241,7 +259,11 @@ static struct inet_peer *lookup_rcu(const struct inetpeer_addr *daddr,
 	int count = 0;
 
 	while (u != peer_avl_empty) {
+<<<<<<< HEAD
 		int cmp = addr_compare(daddr, &u->daddr);
+=======
+		int cmp = inetpeer_addr_cmp(daddr, &u->daddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (cmp == 0) {
 			/* Before taking a reference, check if this entry was
 			 * deleted (refcnt=-1)
@@ -268,7 +290,11 @@ static struct inet_peer *lookup_rcu(const struct inetpeer_addr *daddr,
 	*stackptr++ = &start->avl_left;				\
 	v = &start->avl_left;					\
 	for (u = rcu_deref_locked(*v, base);			\
+<<<<<<< HEAD
 	     u->avl_right != peer_avl_empty_rcu; ) {		\
+=======
+	     u->avl_right != peer_avl_empty_rcu;) {		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		v = &u->avl_right;				\
 		*stackptr++ = v;				\
 		u = rcu_deref_locked(*v, base);			\
@@ -451,8 +477,11 @@ struct inet_peer *inet_getpeer(struct inet_peer_base *base,
 	unsigned int sequence;
 	int invalidated, gccnt = 0;
 
+<<<<<<< HEAD
 	flush_check(base, daddr->family);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Attempt a lockless lookup first.
 	 * Because of a concurrent writer, we might not find an existing entry.
 	 */
@@ -492,6 +521,10 @@ relookup:
 		atomic_set(&p->rid, 0);
 		p->metrics[RTAX_LOCK-1] = INETPEER_METRICS_NEW;
 		p->rate_tokens = 0;
+<<<<<<< HEAD
+=======
+		p->n_redirects = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* 60*HZ is arbitrary, but chosen enough high so that the first
 		 * calculation of tokens is at its maximum.
 		 */
@@ -511,7 +544,11 @@ EXPORT_SYMBOL_GPL(inet_getpeer);
 void inet_putpeer(struct inet_peer *p)
 {
 	p->dtime = (__u32)jiffies;
+<<<<<<< HEAD
 	smp_mb__before_atomic_dec();
+=======
+	smp_mb__before_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_dec(&p->refcnt);
 }
 EXPORT_SYMBOL_GPL(inet_putpeer);

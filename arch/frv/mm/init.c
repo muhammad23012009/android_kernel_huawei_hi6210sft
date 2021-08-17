@@ -78,7 +78,11 @@ void __init paging_init(void)
 	memset((void *) empty_zero_page, 0, PAGE_SIZE);
 
 #ifdef CONFIG_HIGHMEM
+<<<<<<< HEAD
 	if (num_physpages - num_mappedpages) {
+=======
+	if (get_num_physpages() - num_mappedpages) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pgd_t *pge;
 		pud_t *pue;
 		pmd_t *pme;
@@ -96,7 +100,11 @@ void __init paging_init(void)
 	 */
 	zones_size[ZONE_NORMAL]  = max_low_pfn - min_low_pfn;
 #ifdef CONFIG_HIGHMEM
+<<<<<<< HEAD
 	zones_size[ZONE_HIGHMEM] = num_physpages - num_mappedpages;
+=======
+	zones_size[ZONE_HIGHMEM] = get_num_physpages() - num_mappedpages;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	free_area_init(zones_size);
@@ -114,6 +122,7 @@ void __init paging_init(void)
  */
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	unsigned long npages = (memory_end - memory_start) >> PAGE_SHIFT;
 	unsigned long tmp;
 #ifdef CONFIG_MMU
@@ -153,6 +162,26 @@ void __init mem_init(void)
 	       datak
 	       );
 
+=======
+	unsigned long code_size = _etext - _stext;
+
+	/* this will put all low memory onto the freelists */
+	free_all_bootmem();
+#if defined(CONFIG_MMU) && defined(CONFIG_HIGHMEM)
+	{
+		unsigned long pfn;
+
+		for (pfn = get_num_physpages() - 1;
+		     pfn >= num_mappedpages; pfn--)
+			free_highmem_page(&mem_map[pfn]);
+	}
+#endif
+
+	mem_init_print_info(NULL);
+	if (rom_length > 0 && rom_length >= code_size)
+		printk("Memory available:  %luKiB/%luKiB ROM\n",
+			(rom_length - code_size) >> 10, rom_length >> 10);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } /* end mem_init() */
 
 /*****************************************************************************/
@@ -162,7 +191,11 @@ void __init mem_init(void)
 void free_initmem(void)
 {
 #if defined(CONFIG_RAMKERNEL) && !defined(CONFIG_PROTECT_KERNEL)
+<<<<<<< HEAD
 	free_initmem_default(0);
+=======
+	free_initmem_default(-1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 } /* end free_initmem() */
 
@@ -173,6 +206,10 @@ void free_initmem(void)
 #ifdef CONFIG_BLK_DEV_INITRD
 void __init free_initrd_mem(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	free_reserved_area(start, end, 0, "initrd");
+=======
+	free_reserved_area((void *)start, (void *)end, -1, "initrd");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } /* end free_initrd_mem() */
 #endif

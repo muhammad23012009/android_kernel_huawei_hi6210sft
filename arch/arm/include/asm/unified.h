@@ -20,8 +20,23 @@
 #ifndef __ASM_UNIFIED_H
 #define __ASM_UNIFIED_H
 
+<<<<<<< HEAD
 #if defined(__ASSEMBLY__) && defined(CONFIG_ARM_ASM_UNIFIED)
 	.syntax unified
+=======
+#if defined(__ASSEMBLY__)
+	.syntax unified
+#else
+__asm__(".syntax unified");
+#endif
+
+#ifdef CONFIG_CPU_V7M
+#define AR_CLASS(x...)
+#define M_CLASS(x...)	x
+#else
+#define AR_CLASS(x...)	x
+#define M_CLASS(x...)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_THUMB2_KERNEL
@@ -37,7 +52,12 @@
 #define THUMB(x...)	x
 #ifdef __ASSEMBLY__
 #define W(instr)	instr.w
+<<<<<<< HEAD
 #define BSYM(sym)	sym + 1
+=======
+#else
+#define WASM(instr)	#instr ".w"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #else	/* !CONFIG_THUMB2_KERNEL */
@@ -49,11 +69,17 @@
 #define THUMB(x...)
 #ifdef __ASSEMBLY__
 #define W(instr)	instr
+<<<<<<< HEAD
 #define BSYM(sym)	sym
+=======
+#else
+#define WASM(instr)	#instr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif	/* CONFIG_THUMB2_KERNEL */
 
+<<<<<<< HEAD
 #ifndef CONFIG_ARM_ASM_UNIFIED
 
 /*
@@ -127,4 +153,6 @@ __asm__(
 
 #endif	/* CONFIG_ARM_ASM_UNIFIED */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* !__ASM_UNIFIED_H */

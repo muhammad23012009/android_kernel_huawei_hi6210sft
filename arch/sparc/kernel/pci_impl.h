@@ -48,8 +48,13 @@ struct sparc64_msiq_ops {
 			      unsigned long devino);
 };
 
+<<<<<<< HEAD
 extern void sparc64_pbm_msi_init(struct pci_pbm_info *pbm,
 				 const struct sparc64_msiq_ops *ops);
+=======
+void sparc64_pbm_msi_init(struct pci_pbm_info *pbm,
+			  const struct sparc64_msiq_ops *ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct sparc64_msiq_cookie {
 	struct pci_pbm_info *pbm;
@@ -97,6 +102,10 @@ struct pci_pbm_info {
 	/* PBM I/O and Memory space resources. */
 	struct resource			io_space;
 	struct resource			mem_space;
+<<<<<<< HEAD
+=======
+	struct resource			mem64_space;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource			busn;
 
 	/* Base of PCI Config space, can be per-PBM or shared. */
@@ -158,6 +167,7 @@ extern struct pci_pbm_info *pci_pbm_root;
 extern int pci_num_pbms;
 
 /* PCI bus scanning and fixup support. */
+<<<<<<< HEAD
 extern void pci_get_pbm_props(struct pci_pbm_info *pbm);
 extern struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
 					struct device *parent);
@@ -175,6 +185,25 @@ extern void pci_config_read32(u32 *addr, u32 *ret);
 extern void pci_config_write8(u8 *addr, u8 val);
 extern void pci_config_write16(u16 *addr, u16 val);
 extern void pci_config_write32(u32 *addr, u32 val);
+=======
+void pci_get_pbm_props(struct pci_pbm_info *pbm);
+struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
+				 struct device *parent);
+void pci_determine_mem_io_space(struct pci_pbm_info *pbm);
+
+/* Error reporting support. */
+void pci_scan_for_target_abort(struct pci_pbm_info *, struct pci_bus *);
+void pci_scan_for_master_abort(struct pci_pbm_info *, struct pci_bus *);
+void pci_scan_for_parity_error(struct pci_pbm_info *, struct pci_bus *);
+
+/* Configuration space access. */
+void pci_config_read8(u8 *addr, u8 *ret);
+void pci_config_read16(u16 *addr, u16 *ret);
+void pci_config_read32(u32 *addr, u32 *ret);
+void pci_config_write8(u8 *addr, u8 val);
+void pci_config_write16(u16 *addr, u16 val);
+void pci_config_write32(u32 *addr, u32 val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct pci_ops sun4u_pci_ops;
 extern struct pci_ops sun4v_pci_ops;

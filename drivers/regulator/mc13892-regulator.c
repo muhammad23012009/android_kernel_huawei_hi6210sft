@@ -274,6 +274,7 @@ static struct mc13xxx_regulator mc13892_regulators[] = {
 	MC13892_SW_DEFINE(SW4, SWITCHERS3, SWITCHERS3, mc13892_sw),
 	MC13892_FIXED_DEFINE(SWBST, SWITCHERS5, mc13892_swbst),
 	MC13892_FIXED_DEFINE(VIOHI, REGULATORMODE0, mc13892_viohi),
+<<<<<<< HEAD
 	MC13892_DEFINE_REGU(VPLL, REGULATORMODE0, REGULATORSETTING0,	\
 		mc13892_vpll),
 	MC13892_DEFINE_REGU(VDIG, REGULATORMODE0, REGULATORSETTING0,	\
@@ -293,6 +294,27 @@ static struct mc13xxx_regulator mc13892_regulators[] = {
 	MC13892_DEFINE_REGU(VGEN2, REGULATORMODE0, REGULATORSETTING0,	\
 		mc13892_vgen2),
 	MC13892_DEFINE_REGU(VGEN3, REGULATORMODE1, REGULATORSETTING0,	\
+=======
+	MC13892_DEFINE_REGU(VPLL, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vpll),
+	MC13892_DEFINE_REGU(VDIG, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vdig),
+	MC13892_DEFINE_REGU(VSD, REGULATORMODE1, REGULATORSETTING1,
+		mc13892_vsd),
+	MC13892_DEFINE_REGU(VUSB2, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vusb2),
+	MC13892_DEFINE_REGU(VVIDEO, REGULATORMODE1, REGULATORSETTING1,
+		mc13892_vvideo),
+	MC13892_DEFINE_REGU(VAUDIO, REGULATORMODE1, REGULATORSETTING1,
+		mc13892_vaudio),
+	MC13892_DEFINE_REGU(VCAM, REGULATORMODE1, REGULATORSETTING0,
+		mc13892_vcam),
+	MC13892_DEFINE_REGU(VGEN1, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vgen1),
+	MC13892_DEFINE_REGU(VGEN2, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vgen2),
+	MC13892_DEFINE_REGU(VGEN3, REGULATORMODE1, REGULATORSETTING0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mc13892_vgen3),
 	MC13892_FIXED_DEFINE(VUSB, USB1, mc13892_vusb),
 	MC13892_GPO_DEFINE(GPO1, POWERMISC, mc13892_gpo),
@@ -476,8 +498,13 @@ static int mc13892_sw_regulator_set_voltage_sel(struct regulator_dev *rdev,
 	}
 
 	mc13xxx_lock(priv->mc13xxx);
+<<<<<<< HEAD
 	ret = mc13xxx_reg_rmw(priv->mc13xxx, mc13892_regulators[id].vsel_reg, mask,
 			      reg_value);
+=======
+	ret = mc13xxx_reg_rmw(priv->mc13xxx, mc13892_regulators[id].vsel_reg,
+			      mask, reg_value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
@@ -526,6 +553,10 @@ static unsigned int mc13892_vcam_get_mode(struct regulator_dev *rdev)
 	return REGULATOR_MODE_NORMAL;
 }
 
+<<<<<<< HEAD
+=======
+static struct regulator_ops mc13892_vcam_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int mc13892_regulator_probe(struct platform_device *pdev)
 {
@@ -582,10 +613,19 @@ static int mc13892_regulator_probe(struct platform_device *pdev)
 	}
 	mc13xxx_unlock(mc13892);
 
+<<<<<<< HEAD
 	mc13892_regulators[MC13892_VCAM].desc.ops->set_mode
 		= mc13892_vcam_set_mode;
 	mc13892_regulators[MC13892_VCAM].desc.ops->get_mode
 		= mc13892_vcam_get_mode;
+=======
+	/* update mc13892_vcam ops */
+	memcpy(&mc13892_vcam_ops, mc13892_regulators[MC13892_VCAM].desc.ops,
+						sizeof(struct regulator_ops));
+	mc13892_vcam_ops.set_mode = mc13892_vcam_set_mode,
+	mc13892_vcam_ops.get_mode = mc13892_vcam_get_mode,
+	mc13892_regulators[MC13892_VCAM].desc.ops = &mc13892_vcam_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mc13xxx_data = mc13xxx_parse_regulators_dt(pdev, mc13892_regulators,
 					ARRAY_SIZE(mc13892_regulators));
@@ -611,26 +651,39 @@ static int mc13892_regulator_probe(struct platform_device *pdev)
 		config.driver_data = priv;
 		config.of_node = node;
 
+<<<<<<< HEAD
 		priv->regulators[i] = regulator_register(desc, &config);
 		if (IS_ERR(priv->regulators[i])) {
 			dev_err(&pdev->dev, "failed to register regulator %s\n",
 				mc13892_regulators[i].desc.name);
 			ret = PTR_ERR(priv->regulators[i]);
 			goto err;
+=======
+		priv->regulators[i] = devm_regulator_register(&pdev->dev, desc,
+							      &config);
+		if (IS_ERR(priv->regulators[i])) {
+			dev_err(&pdev->dev, "failed to register regulator %s\n",
+				mc13892_regulators[i].desc.name);
+			return PTR_ERR(priv->regulators[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	return 0;
+<<<<<<< HEAD
 err:
 	while (--i >= 0)
 		regulator_unregister(priv->regulators[i]);
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 err_unlock:
 	mc13xxx_unlock(mc13892);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int mc13892_regulator_remove(struct platform_device *pdev)
 {
 	struct mc13xxx_regulator_priv *priv = platform_get_drvdata(pdev);
@@ -650,6 +703,12 @@ static struct platform_driver mc13892_regulator_driver = {
 		.owner	= THIS_MODULE,
 	},
 	.remove	= mc13892_regulator_remove,
+=======
+static struct platform_driver mc13892_regulator_driver = {
+	.driver	= {
+		.name	= "mc13892-regulator",
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe	= mc13892_regulator_probe,
 };
 

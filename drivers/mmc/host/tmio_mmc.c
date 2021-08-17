@@ -23,6 +23,7 @@
 
 #include "tmio_mmc.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int tmio_mmc_suspend(struct platform_device *dev, pm_message_t state)
 {
@@ -34,17 +35,39 @@ static int tmio_mmc_suspend(struct platform_device *dev, pm_message_t state)
 	/* Tell MFD core it can disable us now.*/
 	if (!ret && cell->disable)
 		cell->disable(dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int tmio_mmc_suspend(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	const struct mfd_cell *cell = mfd_get_cell(pdev);
+	int ret;
+
+	ret = pm_runtime_force_suspend(dev);
+
+	/* Tell MFD core it can disable us now.*/
+	if (!ret && cell->disable)
+		cell->disable(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int tmio_mmc_resume(struct platform_device *dev)
 {
 	const struct mfd_cell *cell = mfd_get_cell(dev);
+=======
+static int tmio_mmc_resume(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	const struct mfd_cell *cell = mfd_get_cell(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	/* Tell the MFD core we are ready to be enabled */
 	if (cell->resume)
+<<<<<<< HEAD
 		ret = cell->resume(dev);
 
 	if (!ret)
@@ -55,6 +78,15 @@ static int tmio_mmc_resume(struct platform_device *dev)
 #else
 #define tmio_mmc_suspend NULL
 #define tmio_mmc_resume NULL
+=======
+		ret = cell->resume(pdev);
+
+	if (!ret)
+		ret = pm_runtime_force_resume(dev);
+
+	return ret;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static int tmio_mmc_probe(struct platform_device *pdev)
@@ -62,6 +94,10 @@ static int tmio_mmc_probe(struct platform_device *pdev)
 	const struct mfd_cell *cell = mfd_get_cell(pdev);
 	struct tmio_mmc_data *pdata;
 	struct tmio_mmc_host *host;
+<<<<<<< HEAD
+=======
+	struct resource *res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = -EINVAL, irq;
 
 	if (pdev->num_resources != 2)
@@ -84,11 +120,35 @@ static int tmio_mmc_probe(struct platform_device *pdev)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	ret = tmio_mmc_host_probe(&host, pdev, pdata);
 	if (ret)
 		goto cell_disable;
 
 	ret = request_irq(irq, tmio_mmc_irq, IRQF_TRIGGER_FALLING,
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!res) {
+		ret = -EINVAL;
+		goto cell_disable;
+	}
+
+	pdata->flags |= TMIO_MMC_HAVE_HIGH_REG;
+
+	host = tmio_mmc_host_alloc(pdev);
+	if (!host)
+		goto cell_disable;
+
+	/* SD control register space size is 0x200, 0x400 for bus_shift=1 */
+	host->bus_shift = resource_size(res) >> 10;
+
+	ret = tmio_mmc_host_probe(host, pdata);
+	if (ret)
+		goto host_free;
+
+	ret = devm_request_irq(&pdev->dev, irq, tmio_mmc_irq,
+				IRQF_TRIGGER_FALLING,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dev_name(&pdev->dev), host);
 	if (ret)
 		goto host_remove;
@@ -100,6 +160,11 @@ static int tmio_mmc_probe(struct platform_device *pdev)
 
 host_remove:
 	tmio_mmc_host_remove(host);
+<<<<<<< HEAD
+=======
+host_free:
+	tmio_mmc_host_free(host);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 cell_disable:
 	if (cell->disable)
 		cell->disable(pdev);
@@ -112,11 +177,16 @@ static int tmio_mmc_remove(struct platform_device *pdev)
 	const struct mfd_cell *cell = mfd_get_cell(pdev);
 	struct mmc_host *mmc = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
 	if (mmc) {
 		struct tmio_mmc_host *host = mmc_priv(mmc);
 		free_irq(platform_get_irq(pdev, 0), host);
+=======
+	if (mmc) {
+		struct tmio_mmc_host *host = mmc_priv(mmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tmio_mmc_host_remove(host);
 		if (cell->disable)
 			cell->disable(pdev);
@@ -127,6 +197,7 @@ static int tmio_mmc_remove(struct platform_device *pdev)
 
 /* ------------------- device registration ----------------------- */
 
+<<<<<<< HEAD
 static struct platform_driver tmio_mmc_driver = {
 	.driver = {
 		.name = "tmio-mmc",
@@ -136,6 +207,22 @@ static struct platform_driver tmio_mmc_driver = {
 	.remove = tmio_mmc_remove,
 	.suspend = tmio_mmc_suspend,
 	.resume = tmio_mmc_resume,
+=======
+static const struct dev_pm_ops tmio_mmc_dev_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(tmio_mmc_suspend, tmio_mmc_resume)
+	SET_RUNTIME_PM_OPS(tmio_mmc_host_runtime_suspend,
+			tmio_mmc_host_runtime_resume,
+			NULL)
+};
+
+static struct platform_driver tmio_mmc_driver = {
+	.driver = {
+		.name = "tmio-mmc",
+		.pm = &tmio_mmc_dev_pm_ops,
+	},
+	.probe = tmio_mmc_probe,
+	.remove = tmio_mmc_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(tmio_mmc_driver);

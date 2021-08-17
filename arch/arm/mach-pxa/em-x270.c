@@ -14,7 +14,11 @@
 #include <linux/delay.h>
 
 #include <linux/dm9000.h>
+<<<<<<< HEAD
 #include <linux/rtc-v3020.h>
+=======
+#include <linux/platform_data/rtc-v3020.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
@@ -30,7 +34,11 @@
 #include <linux/power_supply.h>
 #include <linux/apm-emulation.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/pca953x.h>
+=======
+#include <linux/platform_data/pca953x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c/pxa-i2c.h>
 #include <linux/regulator/userspace-consumer.h>
 
@@ -39,14 +47,23 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/pxa27x-udc.h>
+=======
+#include "pxa27x.h"
+#include "pxa27x-udc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/keypad-pxa27x.h>
+<<<<<<< HEAD
 #include <linux/platform_data/camera-pxa.h>
+=======
+#include <linux/platform_data/media/camera-pxa.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "generic.h"
 #include "devices.h"
@@ -289,7 +306,11 @@ static void nand_cs_off(void)
 static void em_x270_nand_cmd_ctl(struct mtd_info *mtd, int dat,
 				 unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long nandaddr = (unsigned long)this->IO_ADDR_W;
 
 	dsb();
@@ -378,7 +399,11 @@ static void __init em_x270_init_nand(void)
 
 	err = gpio_request(GPIO11_NAND_CS, "NAND CS");
 	if (err) {
+<<<<<<< HEAD
 		pr_warning("EM-X270: failed to request NAND CS gpio\n");
+=======
+		pr_warn("EM-X270: failed to request NAND CS gpio\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -386,7 +411,11 @@ static void __init em_x270_init_nand(void)
 
 	err = gpio_request(nand_rb, "NAND R/B");
 	if (err) {
+<<<<<<< HEAD
 		pr_warning("EM-X270: failed to request NAND R/B gpio\n");
+=======
+		pr_warn("EM-X270: failed to request NAND R/B gpio\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gpio_free(GPIO11_NAND_CS);
 		return;
 	}
@@ -477,16 +506,35 @@ static int em_x270_usb_hub_init(void)
 	/* USB Hub power-on and reset */
 	gpio_direction_output(usb_hub_reset, 1);
 	gpio_direction_output(GPIO9_USB_VBUS_EN, 0);
+<<<<<<< HEAD
 	regulator_enable(em_x270_usb_ldo);
 	gpio_set_value(usb_hub_reset, 0);
 	gpio_set_value(usb_hub_reset, 1);
 	regulator_disable(em_x270_usb_ldo);
 	regulator_enable(em_x270_usb_ldo);
+=======
+	err = regulator_enable(em_x270_usb_ldo);
+	if (err)
+		goto err_free_rst_gpio;
+
+	gpio_set_value(usb_hub_reset, 0);
+	gpio_set_value(usb_hub_reset, 1);
+	regulator_disable(em_x270_usb_ldo);
+	err = regulator_enable(em_x270_usb_ldo);
+	if (err)
+		goto err_free_rst_gpio;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpio_set_value(usb_hub_reset, 0);
 	gpio_set_value(GPIO9_USB_VBUS_EN, 1);
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_free_rst_gpio:
+	gpio_free(usb_hub_reset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_free_vbus_gpio:
 	gpio_free(GPIO9_USB_VBUS_EN);
 err_free_usb_ldo:
@@ -556,8 +604,12 @@ static int em_x270_mci_init(struct device *dev,
 	}
 
 	err = request_irq(gpio_to_irq(mmc_cd), em_x270_detect_int,
+<<<<<<< HEAD
 			      IRQF_DISABLED | IRQF_TRIGGER_RISING |
 			      IRQF_TRIGGER_FALLING,
+=======
+			      IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      "MMC card detect", data);
 	if (err) {
 		dev_err(dev, "can't request MMC card detect IRQ: %d\n", err);
@@ -592,7 +644,11 @@ err_irq:
 	return err;
 }
 
+<<<<<<< HEAD
 static void em_x270_mci_setpower(struct device *dev, unsigned int vdd)
+=======
+static int em_x270_mci_setpower(struct device *dev, unsigned int vdd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pxamci_platform_data* p_d = dev->platform_data;
 
@@ -600,10 +656,18 @@ static void em_x270_mci_setpower(struct device *dev, unsigned int vdd)
 		int vdd_uV = (2000 + (vdd - __ffs(MMC_VDD_20_21)) * 100) * 1000;
 
 		regulator_set_voltage(em_x270_sdio_ldo, vdd_uV, vdd_uV);
+<<<<<<< HEAD
 		regulator_enable(em_x270_sdio_ldo);
 	} else {
 		regulator_disable(em_x270_sdio_ldo);
 	}
+=======
+		return regulator_enable(em_x270_sdio_ldo);
+	} else {
+		regulator_disable(em_x270_sdio_ldo);
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void em_x270_mci_exit(struct device *dev, void *data)
@@ -833,21 +897,40 @@ static inline void em_x270_init_ac97(void) {}
 #endif
 
 #if defined(CONFIG_KEYBOARD_PXA27x) || defined(CONFIG_KEYBOARD_PXA27x_MODULE)
+<<<<<<< HEAD
 static unsigned int em_x270_module_matrix_keys[] = {
+=======
+static const unsigned int em_x270_module_matrix_keys[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	KEY(0, 0, KEY_A), KEY(1, 0, KEY_UP), KEY(2, 1, KEY_B),
 	KEY(0, 2, KEY_LEFT), KEY(1, 1, KEY_ENTER), KEY(2, 0, KEY_RIGHT),
 	KEY(0, 1, KEY_C), KEY(1, 2, KEY_DOWN), KEY(2, 2, KEY_D),
 };
 
+<<<<<<< HEAD
+=======
+static struct matrix_keymap_data em_x270_matrix_keymap_data = {
+	.keymap			= em_x270_module_matrix_keys,
+	.keymap_size		= ARRAY_SIZE(em_x270_module_matrix_keys),
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct pxa27x_keypad_platform_data em_x270_module_keypad_info = {
 	/* code map for the matrix keys */
 	.matrix_key_rows	= 3,
 	.matrix_key_cols	= 3,
+<<<<<<< HEAD
 	.matrix_key_map		= em_x270_module_matrix_keys,
 	.matrix_key_map_size	= ARRAY_SIZE(em_x270_module_matrix_keys),
 };
 
 static unsigned int em_x270_exeda_matrix_keys[] = {
+=======
+	.matrix_keymap_data	= &em_x270_matrix_keymap_data,
+};
+
+static const unsigned int em_x270_exeda_matrix_keys[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	KEY(0, 0, KEY_RIGHTSHIFT), KEY(0, 1, KEY_RIGHTCTRL),
 	KEY(0, 2, KEY_RIGHTALT), KEY(0, 3, KEY_SPACE),
 	KEY(0, 4, KEY_LEFTALT), KEY(0, 5, KEY_LEFTCTRL),
@@ -889,12 +972,24 @@ static unsigned int em_x270_exeda_matrix_keys[] = {
 	KEY(7, 6, 0), KEY(7, 7, 0),
 };
 
+<<<<<<< HEAD
+=======
+static struct matrix_keymap_data em_x270_exeda_matrix_keymap_data = {
+	.keymap			= em_x270_exeda_matrix_keys,
+	.keymap_size		= ARRAY_SIZE(em_x270_exeda_matrix_keys),
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct pxa27x_keypad_platform_data em_x270_exeda_keypad_info = {
 	/* code map for the matrix keys */
 	.matrix_key_rows	= 8,
 	.matrix_key_cols	= 8,
+<<<<<<< HEAD
 	.matrix_key_map		= em_x270_exeda_matrix_keys,
 	.matrix_key_map_size	= ARRAY_SIZE(em_x270_exeda_matrix_keys),
+=======
+	.matrix_keymap_data	= &em_x270_exeda_matrix_keymap_data,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void __init em_x270_init_keypad(void)
@@ -1290,6 +1385,11 @@ static void __init em_x270_init(void)
 	em_x270_init_i2c();
 	em_x270_init_camera();
 	em_x270_userspace_consumers_init();
+<<<<<<< HEAD
+=======
+
+	regulator_has_full_constraints();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MACHINE_START(EM_X270, "Compulab EM-X270")

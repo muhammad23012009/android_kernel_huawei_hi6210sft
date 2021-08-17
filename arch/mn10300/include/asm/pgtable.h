@@ -56,7 +56,13 @@ extern void paging_init(void);
 #define PGDIR_SHIFT	22
 #define PTRS_PER_PGD	1024
 #define PTRS_PER_PUD	1	/* we don't really have any PUD physically */
+<<<<<<< HEAD
 #define PTRS_PER_PMD	1	/* we don't really have any PMD physically */
+=======
+#define __PAGETABLE_PUD_FOLDED
+#define PTRS_PER_PMD	1	/* we don't really have any PMD physically */
+#define __PAGETABLE_PMD_FOLDED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PTRS_PER_PTE	1024
 
 #define PGD_SIZE	PAGE_SIZE
@@ -65,7 +71,11 @@ extern void paging_init(void);
 #define PGDIR_MASK	(~(PGDIR_SIZE - 1))
 
 #define USER_PTRS_PER_PGD	(TASK_SIZE / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define USER_PGD_PTRS		(PAGE_OFFSET >> PGDIR_SHIFT)
 #define KERNEL_PGD_PTRS		(PTRS_PER_PGD - USER_PGD_PTRS)
@@ -134,7 +144,10 @@ extern pte_t kernel_vmalloc_ptes[(VMALLOC_END - VMALLOC_START) / PAGE_SIZE];
 #define _PAGE_NX		0			/* no-execute bit */
 
 /* If _PAGE_VALID is clear, we use these: */
+<<<<<<< HEAD
 #define _PAGE_FILE		xPTEL2_C	/* set:pagecache unset:swap */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define _PAGE_PROTNONE		0x000		/* If not present */
 
 #define __PAGE_PROT_UWAUX	0x010
@@ -241,11 +254,14 @@ static inline int pte_young(pte_t pte)	{ return pte_val(pte) & _PAGE_ACCESSED; }
 static inline int pte_write(pte_t pte)	{ return pte_val(pte) & __PAGE_PROT_WRITE; }
 static inline int pte_special(pte_t pte){ return 0; }
 
+<<<<<<< HEAD
 /*
  * The following only works if pte_present() is not true.
  */
 static inline int pte_file(pte_t pte)	{ return pte_val(pte) & _PAGE_FILE; }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline pte_t pte_rdprotect(pte_t pte)
 {
 	pte_val(pte) &= ~(__PAGE_PROT_USER|__PAGE_PROT_UWAUX); return pte;
@@ -338,6 +354,7 @@ static inline int pte_exec_kernel(pte_t pte)
 	return 1;
 }
 
+<<<<<<< HEAD
 #define PTE_FILE_MAX_BITS	30
 
 #define pte_to_pgoff(pte)	(pte_val(pte) >> 2)
@@ -348,6 +365,13 @@ static inline int pte_exec_kernel(pte_t pte)
 #define __swp_offset(x)			((x).val >> 8)
 #define __swp_entry(type, offset) \
 	((swp_entry_t) { ((type) << 2) | ((offset) << 8) })
+=======
+/* Encode and de-code a swap entry */
+#define __swp_type(x)			(((x).val >> 1) & 0x3f)
+#define __swp_offset(x)			((x).val >> 7)
+#define __swp_entry(type, offset) \
+	((swp_entry_t) { ((type) << 1) | ((offset) << 7) })
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)		__pte((x).val)
 
@@ -486,9 +510,12 @@ extern void update_mmu_cache(struct vm_area_struct *vma,
 
 #define kern_addr_valid(addr)	(1)
 
+<<<<<<< HEAD
 #define io_remap_pfn_range(vma, vaddr, pfn, size, prot) \
 	remap_pfn_range((vma), (vaddr), (pfn), (size), (prot))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MK_IOSPACE_PFN(space, pfn)	(pfn)
 #define GET_IOSPACE(pfn)		0
 #define GET_PFN(pfn)			(pfn)

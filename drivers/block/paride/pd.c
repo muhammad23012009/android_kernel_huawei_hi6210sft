@@ -247,6 +247,11 @@ static char *pd_errs[17] = { "ERR", "INDEX", "ECC", "DRQ", "SEEK", "WRERR",
 	"IDNF", "MC", "UNC", "???", "TMO"
 };
 
+<<<<<<< HEAD
+=======
+static void *par_drv;		/* reference of parport driver */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int status_reg(struct pd_unit *disk)
 {
 	return pi_read_regr(disk->pi, 1, 6);
@@ -442,7 +447,11 @@ static char *pd_buf;		/* buffer for request in progress */
 
 static enum action do_pd_io_start(void)
 {
+<<<<<<< HEAD
 	if (pd_req->cmd_type == REQ_TYPE_SPECIAL) {
+=======
+	if (pd_req->cmd_type == REQ_TYPE_DRV_PRIV) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		phase = pd_special;
 		return pd_special();
 	}
@@ -454,7 +463,11 @@ static enum action do_pd_io_start(void)
 		if (pd_block + pd_count > get_capacity(pd_req->rq_disk))
 			return Fail;
 		pd_run = blk_rq_sectors(pd_req);
+<<<<<<< HEAD
 		pd_buf = pd_req->buffer;
+=======
+		pd_buf = bio_data(pd_req->bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pd_retries = 0;
 		if (pd_cmd == READ)
 			return do_pd_read_start();
@@ -485,7 +498,11 @@ static int pd_next_buf(void)
 	spin_lock_irqsave(&pd_lock, saved_flags);
 	__blk_end_request_cur(pd_req, 0);
 	pd_count = blk_rq_cur_sectors(pd_req);
+<<<<<<< HEAD
 	pd_buf = pd_req->buffer;
+=======
+	pd_buf = bio_data(pd_req->bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&pd_lock, saved_flags);
 	return 0;
 }
@@ -721,9 +738,17 @@ static int pd_special_command(struct pd_unit *disk,
 	struct request *rq;
 	int err = 0;
 
+<<<<<<< HEAD
 	rq = blk_get_request(disk->gd->queue, READ, __GFP_WAIT);
 
 	rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	rq = blk_get_request(disk->gd->queue, READ, __GFP_RECLAIM);
+	if (IS_ERR(rq))
+		return PTR_ERR(rq);
+
+	rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rq->special = func;
 
 	err = blk_execute_rq(disk->gd->queue, disk->gd, rq, 0);
@@ -870,6 +895,15 @@ static int pd_detect(void)
 			pd_drive_count++;
 	}
 
+<<<<<<< HEAD
+=======
+	par_drv = pi_register_driver(name);
+	if (!par_drv) {
+		pr_err("failed to register %s driver\n", name);
+		return -1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pd_drive_count == 0) { /* nothing spec'd - so autoprobe for 1 */
 		disk = pd;
 		if (pi_init(disk->pi, 1, -1, -1, -1, -1, -1, pd_scratch,
@@ -900,8 +934,15 @@ static int pd_detect(void)
 			found = 1;
 		}
 	}
+<<<<<<< HEAD
 	if (!found)
 		printk("%s: no valid drive found\n", name);
+=======
+	if (!found) {
+		printk("%s: no valid drive found\n", name);
+		pi_unregister_driver(par_drv);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return found;
 }
 

@@ -46,6 +46,7 @@
 #define TEGRA_APB_MISC_GP_HIDREV	(TEGRA_APB_MISC_BASE + 0x804)
 
 /*
+<<<<<<< HEAD
  * Must be 1MB-aligned since a 1MB mapping is used early on.
  * Must not overlap with regions in mach-tegra/io.c:tegra_io_desc[].
  */
@@ -55,6 +56,16 @@
 		/* Load address of CLK_RST register */ \
 		movw	rp, #TEGRA_CLK_RST_DEVICES_##lhu & 0xffff ; \
 		movt	rp, #TEGRA_CLK_RST_DEVICES_##lhu >> 16 ; \
+=======
+ * Must be section-aligned since a section mapping is used early on.
+ * Must not overlap with regions in mach-tegra/io.c:tegra_io_desc[].
+ */
+#define UART_VIRTUAL_BASE		0xfe800000
+
+#define checkuart(rp, rv, lhu, bit, uart) \
+		/* Load address of CLK_RST register */ \
+		ldr	rp, =TEGRA_CLK_RST_DEVICES_##lhu ; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Load value from CLK_RST register */ \
 		ldr	rp, [rp, #0] ; \
 		/* Test UART's reset bit */ \
@@ -62,8 +73,12 @@
 		/* If set, can't use UART; jump to save no UART */ \
 		bne	90f ; \
 		/* Load address of CLK_OUT_ENB register */ \
+<<<<<<< HEAD
 		movw	rp, #TEGRA_CLK_OUT_ENB_##lhu & 0xffff ; \
 		movt	rp, #TEGRA_CLK_OUT_ENB_##lhu >> 16 ; \
+=======
+		ldr	rp, =TEGRA_CLK_OUT_ENB_##lhu ; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Load value from CLK_OUT_ENB register */ \
 		ldr	rp, [rp, #0] ; \
 		/* Test UART's clock enable bit */ \
@@ -71,8 +86,12 @@
 		/* If clear, can't use UART; jump to save no UART */ \
 		beq	90f ; \
 		/* Passed all tests, load address of UART registers */ \
+<<<<<<< HEAD
 		movw	rp, #TEGRA_UART##uart##_BASE & 0xffff ; \
 		movt	rp, #TEGRA_UART##uart##_BASE >> 16 ; \
+=======
+		ldr	rp, =TEGRA_UART##uart##_BASE ; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Jump to save UART address */ \
 		b 91f
 
@@ -90,15 +109,27 @@
 
 #ifdef CONFIG_TEGRA_DEBUG_UART_AUTO_ODMDATA
 		/* Check ODMDATA */
+<<<<<<< HEAD
 10:		movw	\rp, #TEGRA_PMC_SCRATCH20 & 0xffff
 		movt	\rp, #TEGRA_PMC_SCRATCH20 >> 16
 		ldr	\rp, [\rp, #0]		@ Load PMC_SCRATCH20
 		ubfx	\rv, \rp, #18, #2	@ 19:18 are console type
+=======
+10:		ldr	\rp, =TEGRA_PMC_SCRATCH20
+		ldr	\rp, [\rp, #0]		@ Load PMC_SCRATCH20
+		lsr	\rv, \rp, #18		@ 19:18 are console type
+		and	\rv, \rv, #3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cmp	\rv, #2			@ 2 and 3 mean DCC, UART
 		beq	11f			@ some boards swap the meaning
 		cmp	\rv, #3			@ so accept either
 		bne	90f
+<<<<<<< HEAD
 11:		ubfx	\rv, \rp, #15, #3	@ 17:15 are UART ID
+=======
+11:		lsr	\rv, \rp, #15		@ 17:15 are UART ID
+		and	\rv, #7	
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cmp	\rv, #0			@ UART 0?
 		beq	20f
 		cmp	\rv, #1			@ UART 1?
@@ -156,6 +187,7 @@
 92:		and	\rv, \rp, #0xffffff	@ offset within 1MB section
 		add	\rv, \rv, #UART_VIRTUAL_BASE
 		str	\rv, [\tmp, #8]		@ Store in tegra_uart_virt
+<<<<<<< HEAD
 		movw	\rv, #TEGRA_APB_MISC_GP_HIDREV & 0xffff
 		movt	\rv, #TEGRA_APB_MISC_GP_HIDREV >> 16
 		ldr	\rv, [\rv, #0]		@ Load HIDREV
@@ -178,6 +210,8 @@
 		/* uart[UART_LCR] = UART_LCR_WLEN8; */
 		mov	\rv, #UART_LCR_WLEN8
 		str	\rv, [\rp, #UART_LCR << UART_SHIFT]
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		b	100f
 
 		.align
@@ -205,8 +239,13 @@
 		cmp	\rx, #0
 		beq	1002f
 1001:		ldrb	\rd, [\rx, #UART_LSR << UART_SHIFT]
+<<<<<<< HEAD
 		and	\rd, \rd, #UART_LSR_TEMT | UART_LSR_THRE
 		teq	\rd, #UART_LSR_TEMT | UART_LSR_THRE
+=======
+		and	\rd, \rd, #UART_LSR_THRE
+		teq	\rd, #UART_LSR_THRE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bne	1001b
 1002:
 		.endm
@@ -221,3 +260,33 @@
 1002:
 #endif
 		.endm
+<<<<<<< HEAD
+=======
+
+/*
+ * Storage for the state maintained by the macros above.
+ *
+ * In the kernel proper, this data is located in arch/arm/mach-tegra/tegra.c.
+ * That's because this header is included from multiple files, and we only
+ * want a single copy of the data. In particular, the UART probing code above
+ * assumes it's running using physical addresses. This is true when this file
+ * is included from head.o, but not when included from debug.o. So we need
+ * to share the probe results between the two copies, rather than having
+ * to re-run the probing again later.
+ *
+ * In the decompressor, we put the symbol/storage right here, since common.c
+ * isn't included in the decompressor build. This symbol gets put in .text
+ * even though it's really data, since .data is discarded from the
+ * decompressor. Luckily, .text is writeable in the decompressor, unless
+ * CONFIG_ZBOOT_ROM. That dependency is handled in arch/arm/Kconfig.debug.
+ */
+#if defined(ZIMAGE)
+tegra_uart_config:
+	/* Debug UART initialization required */
+	.word 1
+	/* Debug UART physical address */
+	.word 0
+	/* Debug UART virtual address */
+	.word 0
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

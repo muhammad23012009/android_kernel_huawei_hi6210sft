@@ -2,6 +2,10 @@
 #define LINUX_MM_INLINE_H
 
 #include <linux/huge_mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/swap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * page_is_file_cache - should the page be on a file LRU or anon LRU?
@@ -21,6 +25,7 @@ static inline int page_is_file_cache(struct page *page)
 	return !PageSwapBacked(page);
 }
 
+<<<<<<< HEAD
 static __always_inline void add_page_to_lru_list(struct page *page,
 				struct lruvec *lruvec, enum lru_list lru)
 {
@@ -28,15 +33,48 @@ static __always_inline void add_page_to_lru_list(struct page *page,
 	mem_cgroup_update_lru_size(lruvec, lru, nr_pages);
 	list_add(&page->lru, &lruvec->lists[lru]);
 	__mod_zone_page_state(lruvec_zone(lruvec), NR_LRU_BASE + lru, nr_pages);
+=======
+static __always_inline void __update_lru_size(struct lruvec *lruvec,
+				enum lru_list lru, enum zone_type zid,
+				int nr_pages)
+{
+	struct pglist_data *pgdat = lruvec_pgdat(lruvec);
+
+	__mod_node_page_state(pgdat, NR_LRU_BASE + lru, nr_pages);
+	__mod_zone_page_state(&pgdat->node_zones[zid],
+				NR_ZONE_LRU_BASE + lru, nr_pages);
+}
+
+static __always_inline void update_lru_size(struct lruvec *lruvec,
+				enum lru_list lru, enum zone_type zid,
+				int nr_pages)
+{
+	__update_lru_size(lruvec, lru, zid, nr_pages);
+#ifdef CONFIG_MEMCG
+	mem_cgroup_update_lru_size(lruvec, lru, zid, nr_pages);
+#endif
+}
+
+static __always_inline void add_page_to_lru_list(struct page *page,
+				struct lruvec *lruvec, enum lru_list lru)
+{
+	update_lru_size(lruvec, lru, page_zonenum(page), hpage_nr_pages(page));
+	list_add(&page->lru, &lruvec->lists[lru]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static __always_inline void del_page_from_lru_list(struct page *page,
 				struct lruvec *lruvec, enum lru_list lru)
 {
+<<<<<<< HEAD
 	int nr_pages = hpage_nr_pages(page);
 	mem_cgroup_update_lru_size(lruvec, lru, -nr_pages);
 	list_del(&page->lru);
 	__mod_zone_page_state(lruvec_zone(lruvec), NR_LRU_BASE + lru, -nr_pages);
+=======
+	list_del(&page->lru);
+	update_lru_size(lruvec, lru, page_zonenum(page), -hpage_nr_pages(page));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -99,4 +137,9 @@ static __always_inline enum lru_list page_lru(struct page *page)
 	return lru;
 }
 
+<<<<<<< HEAD
+=======
+#define lru_to_page(head) (list_entry((head)->prev, struct page, lru))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

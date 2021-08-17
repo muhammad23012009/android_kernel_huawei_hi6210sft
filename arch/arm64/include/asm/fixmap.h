@@ -8,7 +8,11 @@
  * Copyright (C) 1998 Ingo Molnar
  * Copyright (C) 2013 Mark Salter <msalter@redhat.com>
  *
+<<<<<<< HEAD
  * Adapted from arch/x86_64 version.
+=======
+ * Adapted from arch/x86 version.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 
@@ -17,7 +21,14 @@
 
 #ifndef __ASSEMBLY__
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <asm/page.h>
+=======
+#include <linux/sizes.h>
+#include <asm/boot.h>
+#include <asm/page.h>
+#include <asm/pgtable-prot.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Here we define all the compile-time 'special' virtual
@@ -31,23 +42,66 @@
  *
  */
 enum fixed_addresses {
+<<<<<<< HEAD
 	FIX_EARLYCON_MEM_BASE,
+=======
+	FIX_HOLE,
+
+	/*
+	 * Reserve a virtual window for the FDT that is 2 MB larger than the
+	 * maximum supported size, and put it at the top of the fixmap region.
+	 * The additional space ensures that any FDT that does not exceed
+	 * MAX_FDT_SIZE can be mapped regardless of whether it crosses any
+	 * 2 MB alignment boundaries.
+	 *
+	 * Keep this at the top so it remains 2 MB aligned.
+	 */
+#define FIX_FDT_SIZE		(MAX_FDT_SIZE + SZ_2M)
+	FIX_FDT_END,
+	FIX_FDT = FIX_FDT_END + FIX_FDT_SIZE / PAGE_SIZE - 1,
+
+	FIX_EARLYCON_MEM_BASE,
+	FIX_TEXT_POKE0,
+
+#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+	FIX_ENTRY_TRAMP_DATA,
+	FIX_ENTRY_TRAMP_TEXT,
+#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
+#endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__end_of_permanent_fixed_addresses,
 
 	/*
 	 * Temporary boot-time mappings, used by early_ioremap(),
 	 * before ioremap() is functional.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_ARM64_64K_PAGES
 #define NR_FIX_BTMAPS		4
 #else
 #define NR_FIX_BTMAPS		64
 #endif
+=======
+#define NR_FIX_BTMAPS		(SZ_256K / PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FIX_BTMAPS_SLOTS	7
 #define TOTAL_FIX_BTMAPS	(NR_FIX_BTMAPS * FIX_BTMAPS_SLOTS)
 
 	FIX_BTMAP_END = __end_of_permanent_fixed_addresses,
 	FIX_BTMAP_BEGIN = FIX_BTMAP_END + TOTAL_FIX_BTMAPS - 1,
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Used for kernel page table creation, so unmapped memory may be used
+	 * for tables.
+	 */
+	FIX_PTE,
+	FIX_PMD,
+	FIX_PUD,
+	FIX_PGD,
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__end_of_fixed_addresses
 };
 
@@ -56,10 +110,21 @@ enum fixed_addresses {
 
 #define FIXMAP_PAGE_IO     __pgprot(PROT_DEVICE_nGnRE)
 
+<<<<<<< HEAD
 extern void __early_set_fixmap(enum fixed_addresses idx,
 			       phys_addr_t phys, pgprot_t flags);
 
 #define __set_fixmap __early_set_fixmap
+=======
+void __init early_fixmap_init(void);
+
+#define __early_set_fixmap __set_fixmap
+
+#define __late_set_fixmap __set_fixmap
+#define __late_clear_fixmap(idx) __set_fixmap((idx), 0, FIXMAP_PAGE_CLEAR)
+
+extern void __set_fixmap(enum fixed_addresses idx, phys_addr_t phys, pgprot_t prot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm-generic/fixmap.h>
 

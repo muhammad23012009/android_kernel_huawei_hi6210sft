@@ -5,11 +5,18 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/string.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqflags.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/openprom.h>
 #include <asm/oplib.h>
@@ -20,7 +27,10 @@
 struct {
 	long prom_callback;			/* 0x00 */
 	void (*prom_cif_handler)(long *);	/* 0x08 */
+<<<<<<< HEAD
 	unsigned long prom_cif_stack;		/* 0x10 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } p1275buf;
 
 extern void prom_world(int);
@@ -37,8 +47,13 @@ void p1275_cmd_direct(unsigned long *args)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	raw_local_save_flags(flags);
 	raw_local_irq_restore((unsigned long)PIL_NMI);
+=======
+	local_save_flags(flags);
+	local_irq_restore((unsigned long)PIL_NMI);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	raw_spin_lock(&prom_entry_lock);
 
 	prom_world(1);
@@ -46,11 +61,18 @@ void p1275_cmd_direct(unsigned long *args)
 	prom_world(0);
 
 	raw_spin_unlock(&prom_entry_lock);
+<<<<<<< HEAD
 	raw_local_irq_restore(flags);
+=======
+	local_irq_restore(flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void prom_cif_init(void *cif_handler, void *cif_stack)
 {
 	p1275buf.prom_cif_handler = (void (*)(long *))cif_handler;
+<<<<<<< HEAD
 	p1275buf.prom_cif_stack = (unsigned long)cif_stack;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

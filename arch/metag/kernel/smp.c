@@ -8,6 +8,10 @@
  * published by the Free Software Foundation.
  */
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/completion.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/spinlock.h>
@@ -62,10 +66,19 @@ static DEFINE_PER_CPU(struct ipi_data, ipi_data) = {
 
 static DEFINE_SPINLOCK(boot_lock);
 
+<<<<<<< HEAD
 /*
  * "thread" is assumed to be a valid Meta hardware thread ID.
  */
 int __cpuinit boot_secondary(unsigned int thread, struct task_struct *idle)
+=======
+static DECLARE_COMPLETION(cpu_running);
+
+/*
+ * "thread" is assumed to be a valid Meta hardware thread ID.
+ */
+static int boot_secondary(unsigned int thread, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 val;
 
@@ -115,11 +128,17 @@ int __cpuinit boot_secondary(unsigned int thread, struct task_struct *idle)
  * If the cache partition has changed, prints a message to the log describing
  * those changes.
  */
+<<<<<<< HEAD
 static __cpuinit void describe_cachepart_change(unsigned int thread,
 						const char *label,
 						unsigned int sz,
 						unsigned int old,
 						unsigned int new)
+=======
+static void describe_cachepart_change(unsigned int thread, const char *label,
+				      unsigned int sz, unsigned int old,
+				      unsigned int new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int lor1, land1, gor1, gand1;
 	unsigned int lor2, land2, gor2, gand2;
@@ -167,7 +186,11 @@ static __cpuinit void describe_cachepart_change(unsigned int thread,
  * Ensures that coherency is enabled and that the threads share the same cache
  * partitions.
  */
+<<<<<<< HEAD
 static __cpuinit void setup_smp_cache(unsigned int thread)
+=======
+static void setup_smp_cache(unsigned int thread)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int this_thread, lflags;
 	unsigned int dcsz, dcpart_this, dcpart_old, dcpart_new;
@@ -212,7 +235,11 @@ static __cpuinit void setup_smp_cache(unsigned int thread)
 				  icpart_old, icpart_new);
 }
 
+<<<<<<< HEAD
 int __cpuinit __cpu_up(unsigned int cpu, struct task_struct *idle)
+=======
+int __cpu_up(unsigned int cpu, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int thread = cpu_2_hwthread_id[cpu];
 	int ret;
@@ -235,12 +262,16 @@ int __cpuinit __cpu_up(unsigned int cpu, struct task_struct *idle)
 	 */
 	ret = boot_secondary(thread, idle);
 	if (ret == 0) {
+<<<<<<< HEAD
 		unsigned long timeout;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * CPU was successfully started, wait for it
 		 * to come online or time out.
 		 */
+<<<<<<< HEAD
 		timeout = jiffies + HZ;
 		while (time_before(jiffies, timeout)) {
 			if (cpu_online(cpu))
@@ -249,6 +280,10 @@ int __cpuinit __cpu_up(unsigned int cpu, struct task_struct *idle)
 			udelay(10);
 			barrier();
 		}
+=======
+		wait_for_completion_timeout(&cpu_running,
+					    msecs_to_jiffies(1000));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!cpu_online(cpu))
 			ret = -EIO;
@@ -268,15 +303,24 @@ int __cpuinit __cpu_up(unsigned int cpu, struct task_struct *idle)
 }
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 static DECLARE_COMPLETION(cpu_killed);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * __cpu_disable runs on the processor to be shutdown.
  */
+<<<<<<< HEAD
 int __cpuexit __cpu_disable(void)
 {
 	unsigned int cpu = smp_processor_id();
 	struct task_struct *p;
+=======
+int __cpu_disable(void)
+{
+	unsigned int cpu = smp_processor_id();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Take this CPU offline.  Once we clear this, we can't return,
@@ -296,12 +340,16 @@ int __cpuexit __cpu_disable(void)
 	flush_cache_all();
 	local_flush_tlb_all();
 
+<<<<<<< HEAD
 	read_lock(&tasklist_lock);
 	for_each_process(p) {
 		if (p->mm)
 			cpumask_clear_cpu(cpu, mm_cpumask(p->mm));
 	}
 	read_unlock(&tasklist_lock);
+=======
+	clear_tasks_mm_cpumask(cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -310,9 +358,15 @@ int __cpuexit __cpu_disable(void)
  * called on the thread which is asking for a CPU to be shutdown -
  * waits until shutdown has completed, or it is timed out.
  */
+<<<<<<< HEAD
 void __cpuexit __cpu_die(unsigned int cpu)
 {
 	if (!wait_for_completion_timeout(&cpu_killed, msecs_to_jiffies(1)))
+=======
+void __cpu_die(unsigned int cpu)
+{
+	if (!cpu_wait_death(cpu, 1))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("CPU%u: unable to kill\n", cpu);
 }
 
@@ -322,12 +376,22 @@ void __cpuexit __cpu_die(unsigned int cpu)
  * Note that we do not return from this function. If this cpu is
  * brought online again it will need to run secondary_startup().
  */
+<<<<<<< HEAD
 void __cpuexit cpu_die(void)
 {
 	local_irq_disable();
 	idle_task_exit();
 
 	complete(&cpu_killed);
+=======
+void cpu_die(void)
+{
+	local_irq_disable();
+	idle_task_exit();
+	irq_ctx_exit(smp_processor_id());
+
+	(void)cpu_report_death();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	asm ("XOR	TXENABLE, D0Re0,D0Re0\n");
 }
@@ -337,7 +401,11 @@ void __cpuexit cpu_die(void)
  * Called by both boot and secondaries to move global data into
  * per-processor storage.
  */
+<<<<<<< HEAD
 void __cpuinit smp_store_cpu_info(unsigned int cpuid)
+=======
+void smp_store_cpu_info(unsigned int cpuid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cpuinfo_metag *cpu_info = &per_cpu(cpu_data, cpuid);
 
@@ -380,17 +448,25 @@ asmlinkage void secondary_start_kernel(void)
 		panic("No TBI found!");
 
 	per_cpu_trap_init(cpu);
+<<<<<<< HEAD
+=======
+	irq_ctx_init(cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	preempt_disable();
 
 	setup_priv();
 
+<<<<<<< HEAD
 	/*
 	 * Enable local interrupts.
 	 */
 	tbi_startup_interrupt(TBID_SIGNUM_TRT);
 	notify_cpu_starting(cpu);
 	local_irq_enable();
+=======
+	notify_cpu_starting(cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_info("CPU%u (thread %u): Booted secondary processor\n",
 		cpu, cpu_2_hwthread_id[cpu]);
@@ -402,17 +478,31 @@ asmlinkage void secondary_start_kernel(void)
 	 * OK, now it's safe to let the boot CPU continue
 	 */
 	set_cpu_online(cpu, true);
+<<<<<<< HEAD
 
 	/*
 	 * Check for cache aliasing.
 	 * Preemption is disabled
 	 */
 	check_for_cache_aliasing(cpu);
+=======
+	complete(&cpu_running);
+
+	/*
+	 * Enable local interrupts.
+	 */
+	tbi_startup_interrupt(TBID_SIGNUM_TRT);
+	local_irq_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * OK, it's off to the idle thread for us
 	 */
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init smp_cpus_done(unsigned int max_cpus)
@@ -508,7 +598,11 @@ void arch_send_call_function_ipi_mask(const struct cpumask *mask)
 
 void arch_send_call_function_single_ipi(int cpu)
 {
+<<<<<<< HEAD
 	send_ipi_message(cpumask_of(cpu), IPI_CALL_FUNC_SINGLE);
+=======
+	send_ipi_message(cpumask_of(cpu), IPI_CALL_FUNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void show_ipi_list(struct seq_file *p)
@@ -534,11 +628,18 @@ static DEFINE_SPINLOCK(stop_lock);
  *
  *  Bit 0 - Inter-processor function call
  */
+<<<<<<< HEAD
 static int do_IPI(struct pt_regs *regs)
 {
 	unsigned int cpu = smp_processor_id();
 	struct ipi_data *ipi = &per_cpu(ipi_data, cpu);
 	struct pt_regs *old_regs = set_irq_regs(regs);
+=======
+static int do_IPI(void)
+{
+	unsigned int cpu = smp_processor_id();
+	struct ipi_data *ipi = &per_cpu(ipi_data, cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long msgs, nextmsg;
 	int handled = 0;
 
@@ -563,10 +664,13 @@ static int do_IPI(struct pt_regs *regs)
 			generic_smp_call_function_interrupt();
 			break;
 
+<<<<<<< HEAD
 		case IPI_CALL_FUNC_SINGLE:
 			generic_smp_call_function_single_interrupt();
 			break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			pr_crit("CPU%u: Unknown IPI message 0x%lx\n",
 				cpu, nextmsg);
@@ -574,8 +678,11 @@ static int do_IPI(struct pt_regs *regs)
 		}
 	}
 
+<<<<<<< HEAD
 	set_irq_regs(old_regs);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return handled;
 }
 
@@ -641,7 +748,11 @@ static void kick_raise_softirq(cpumask_t callmap, unsigned int irq)
 static TBIRES ipi_handler(TBIRES State, int SigNum, int Triggers,
 		   int Inst, PTBI pTBI, int *handled)
 {
+<<<<<<< HEAD
 	*handled = do_IPI((struct pt_regs *)State.Sig.pCtx);
+=======
+	*handled = do_IPI();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return State;
 }

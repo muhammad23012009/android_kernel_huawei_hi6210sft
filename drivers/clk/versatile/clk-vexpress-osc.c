@@ -11,8 +11,11 @@
  * Copyright (C) 2012 ARM Limited
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) "vexpress-osc: " fmt
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -22,7 +25,11 @@
 #include <linux/vexpress.h>
 
 struct vexpress_osc {
+<<<<<<< HEAD
 	struct vexpress_config_func *func;
+=======
+	struct regmap *reg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct clk_hw hw;
 	unsigned long rate_min;
 	unsigned long rate_max;
@@ -36,7 +43,11 @@ static unsigned long vexpress_osc_recalc_rate(struct clk_hw *hw,
 	struct vexpress_osc *osc = to_vexpress_osc(hw);
 	u32 rate;
 
+<<<<<<< HEAD
 	vexpress_config_read(osc->func, 0, &rate);
+=======
+	regmap_read(osc->reg, 0, &rate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rate;
 }
@@ -60,7 +71,11 @@ static int vexpress_osc_set_rate(struct clk_hw *hw, unsigned long rate,
 {
 	struct vexpress_osc *osc = to_vexpress_osc(hw);
 
+<<<<<<< HEAD
 	return vexpress_config_write(osc->func, 0, rate);
+=======
+	return regmap_write(osc->reg, 0, rate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct clk_ops vexpress_osc_ops = {
@@ -70,6 +85,7 @@ static struct clk_ops vexpress_osc_ops = {
 };
 
 
+<<<<<<< HEAD
 struct clk * __init vexpress_osc_setup(struct device *dev)
 {
 	struct clk_init_data init;
@@ -94,12 +110,16 @@ struct clk * __init vexpress_osc_setup(struct device *dev)
 }
 
 void __init vexpress_osc_of_setup(struct device_node *node)
+=======
+static int vexpress_osc_probe(struct platform_device *pdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct clk_init_data init;
 	struct vexpress_osc *osc;
 	struct clk *clk;
 	u32 range[2];
 
+<<<<<<< HEAD
 	osc = kzalloc(sizeof(*osc), GFP_KERNEL);
 	if (!osc)
 		return;
@@ -112,22 +132,43 @@ void __init vexpress_osc_of_setup(struct device_node *node)
 	}
 
 	if (of_property_read_u32_array(node, "freq-range", range,
+=======
+	osc = devm_kzalloc(&pdev->dev, sizeof(*osc), GFP_KERNEL);
+	if (!osc)
+		return -ENOMEM;
+
+	osc->reg = devm_regmap_init_vexpress_config(&pdev->dev);
+	if (IS_ERR(osc->reg))
+		return PTR_ERR(osc->reg);
+
+	if (of_property_read_u32_array(pdev->dev.of_node, "freq-range", range,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ARRAY_SIZE(range)) == 0) {
 		osc->rate_min = range[0];
 		osc->rate_max = range[1];
 	}
 
+<<<<<<< HEAD
 	of_property_read_string(node, "clock-output-names", &init.name);
 	if (!init.name)
 		init.name = node->full_name;
 
 	init.ops = &vexpress_osc_ops;
 	init.flags = CLK_IS_ROOT;
+=======
+	if (of_property_read_string(pdev->dev.of_node, "clock-output-names",
+			&init.name) != 0)
+		init.name = dev_name(&pdev->dev);
+
+	init.ops = &vexpress_osc_ops;
+	init.flags = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	init.num_parents = 0;
 
 	osc->hw.init = &init;
 
 	clk = clk_register(NULL, &osc->hw);
+<<<<<<< HEAD
 	if (IS_ERR(clk)) {
 		pr_err("Failed to register clock '%s'!\n", init.name);
 		goto error;
@@ -145,3 +186,33 @@ error:
 	kfree(osc);
 }
 CLK_OF_DECLARE(vexpress_soc, "arm,vexpress-osc", vexpress_osc_of_setup);
+=======
+	if (IS_ERR(clk))
+		return PTR_ERR(clk);
+
+	of_clk_add_provider(pdev->dev.of_node, of_clk_src_simple_get, clk);
+
+	dev_dbg(&pdev->dev, "Registered clock '%s'\n", init.name);
+
+	return 0;
+}
+
+static const struct of_device_id vexpress_osc_of_match[] = {
+	{ .compatible = "arm,vexpress-osc", },
+	{}
+};
+
+static struct platform_driver vexpress_osc_driver = {
+	.driver	= {
+		.name = "vexpress-osc",
+		.of_match_table = vexpress_osc_of_match,
+	},
+	.probe = vexpress_osc_probe,
+};
+
+static int __init vexpress_osc_init(void)
+{
+	return platform_driver_register(&vexpress_osc_driver);
+}
+core_initcall(vexpress_osc_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

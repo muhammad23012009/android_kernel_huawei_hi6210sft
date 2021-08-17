@@ -123,11 +123,19 @@ struct fsp_data {
 extern int fsp_detect(struct psmouse *psmouse, bool set_properties);
 extern int fsp_init(struct psmouse *psmouse);
 #else
+<<<<<<< HEAD
 inline int fsp_detect(struct psmouse *psmouse, bool set_properties)
 {
 	return -ENOSYS;
 }
 inline int fsp_init(struct psmouse *psmouse)
+=======
+static inline int fsp_detect(struct psmouse *psmouse, bool set_properties)
+{
+	return -ENOSYS;
+}
+static inline int fsp_init(struct psmouse *psmouse)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -ENOSYS;
 }

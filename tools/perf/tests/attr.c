@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The struct perf_event_attr test support.
  *
@@ -19,6 +22,7 @@
  * permissions. All the event text files are stored there.
  */
 
+<<<<<<< HEAD
 /*
  * Powerpc needs __SANE_USERSPACE_TYPES__ before <linux/types.h> to select
  * 'int-ll64.h' and avoid compile warnings when printing __u64 with %llu.
@@ -27,11 +31,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+=======
+#include <stdlib.h>
+#include <stdio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include "../perf.h"
 #include "util.h"
+<<<<<<< HEAD
 #include "exec_cmd.h"
+=======
+#include <subcmd/exec-cmd.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "tests.h"
 
 #define ENV "PERF_TEST_ATTR"
@@ -154,6 +166,7 @@ static int run_dir(const char *d, const char *perf)
 	if (verbose)
 		vcnt++;
 
+<<<<<<< HEAD
 	snprintf(cmd, 3*PATH_MAX, PYTHON " %s/attr.py -d %s/attr/ -p %s %.*s",
 		 d, d, perf, vcnt, v);
 
@@ -161,6 +174,15 @@ static int run_dir(const char *d, const char *perf)
 }
 
 int test__attr(void)
+=======
+	scnprintf(cmd, 3*PATH_MAX, PYTHON " %s/attr.py -d %s/attr/ -p %s %.*s",
+		  d, d, perf, vcnt, v);
+
+	return system(cmd) ? TEST_FAIL : TEST_OK;
+}
+
+int test__attr(int subtest __maybe_unused)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct stat st;
 	char path_perf[PATH_MAX];
@@ -171,13 +193,21 @@ int test__attr(void)
 		return run_dir("./tests", "./perf");
 
 	/* Then installed path. */
+<<<<<<< HEAD
 	snprintf(path_dir,  PATH_MAX, "%s/tests", perf_exec_path());
+=======
+	snprintf(path_dir,  PATH_MAX, "%s/tests", get_argv_exec_path());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snprintf(path_perf, PATH_MAX, "%s/perf", BINDIR);
 
 	if (!lstat(path_dir, &st) &&
 	    !lstat(path_perf, &st))
 		return run_dir(path_dir, path_perf);
 
+<<<<<<< HEAD
 	fprintf(stderr, " (omitted)");
 	return 0;
+=======
+	return TEST_SKIP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

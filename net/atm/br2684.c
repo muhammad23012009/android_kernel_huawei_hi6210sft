@@ -682,8 +682,13 @@ static int br2684_create(void __user *arg)
 
 	netdev = alloc_netdev(sizeof(struct br2684_dev),
 			      ni.ifname[0] ? ni.ifname : "nas%d",
+<<<<<<< HEAD
 			      (payload == p_routed) ?
 			      br2684_setup_routed : br2684_setup);
+=======
+			      NET_NAME_UNKNOWN,
+			      (payload == p_routed) ? br2684_setup_routed : br2684_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!netdev)
 		return -ENOMEM;
 
@@ -802,6 +807,7 @@ static int br2684_seq_show(struct seq_file *seq, void *v)
 			   (brdev->payload == p_bridged) ? "bridged" : "routed",
 			   brvcc->copies_failed, brvcc->copies_needed);
 #ifdef CONFIG_ATM_BR2684_IPFILTER
+<<<<<<< HEAD
 #define b1(var, byte)	((u8 *) &brvcc->filter.var)[byte]
 #define bs(var)		b1(var, 0), b1(var, 1), b1(var, 2), b1(var, 3)
 		if (brvcc->filter.netmask != 0)
@@ -809,6 +815,12 @@ static int br2684_seq_show(struct seq_file *seq, void *v)
 				   "%d.%d.%d.%d\n", bs(prefix), bs(netmask));
 #undef bs
 #undef b1
+=======
+		if (brvcc->filter.netmask != 0)
+			seq_printf(seq, "    filter=%pI4/%pI4\n",
+				   &brvcc->filter.prefix,
+				   &brvcc->filter.netmask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_ATM_BR2684_IPFILTER */
 	}
 	return 0;

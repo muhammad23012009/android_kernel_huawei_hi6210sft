@@ -52,7 +52,10 @@
 #include <linux/suspend.h>
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
 #include <linux/memblock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/reg.h>
 #include <asm/sections.h>
@@ -97,11 +100,14 @@ int sccdbg;
 sys_ctrler_t sys_ctrler = SYS_CTRLER_UNKNOWN;
 EXPORT_SYMBOL(sys_ctrler);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PMAC_SMU
 unsigned long smu_cmdbuf_abs;
 EXPORT_SYMBOL(smu_cmdbuf_abs);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void pmac_show_cpuinfo(struct seq_file *m)
 {
 	struct device_node *np;
@@ -325,7 +331,10 @@ static void __init pmac_setup_arch(void)
     defined(CONFIG_PPC64)
 	pmac_nvram_init();
 #endif
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC32
 #ifdef CONFIG_BLK_DEV_INITRD
 	if (initrd_start)
@@ -336,7 +345,11 @@ static void __init pmac_setup_arch(void)
 #endif
 
 #ifdef CONFIG_ADB
+<<<<<<< HEAD
 	if (strstr(cmd_line, "adb_sync")) {
+=======
+	if (strstr(boot_command_line, "adb_sync")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		extern int __adb_probe_sync;
 		__adb_probe_sync = 1;
 	}
@@ -359,13 +372,23 @@ static int pmac_late_init(void)
 }
 machine_late_initcall(powermac, pmac_late_init);
 
+<<<<<<< HEAD
 /*
  * This is __init_refok because we check for "initializing" before
+=======
+void note_bootable_part(dev_t dev, int part, int goodness);
+/*
+ * This is __ref because we check for "initializing" before
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * touching any of the __init sensitive things and "initializing"
  * will be false after __init time. This can't be __init because it
  * can be called whenever a disk is first accessed.
  */
+<<<<<<< HEAD
 void __init_refok note_bootable_part(dev_t dev, int part, int goodness)
+=======
+void __ref note_bootable_part(dev_t dev, int part, int goodness)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *p;
 
@@ -383,7 +406,11 @@ void __init_refok note_bootable_part(dev_t dev, int part, int goodness)
 }
 
 #ifdef CONFIG_ADB_CUDA
+<<<<<<< HEAD
 static void cuda_restart(void)
+=======
+static void __noreturn cuda_restart(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct adb_request req;
 
@@ -392,7 +419,11 @@ static void cuda_restart(void)
 		cuda_poll();
 }
 
+<<<<<<< HEAD
 static void cuda_shutdown(void)
+=======
+static void __noreturn cuda_shutdown(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct adb_request req;
 
@@ -416,7 +447,11 @@ static void cuda_shutdown(void)
 #define smu_shutdown()
 #endif
 
+<<<<<<< HEAD
 static void pmac_restart(char *cmd)
+=======
+static void __noreturn pmac_restart(char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	switch (sys_ctrler) {
 	case SYS_CTRLER_CUDA:
@@ -430,9 +465,16 @@ static void pmac_restart(char *cmd)
 		break;
 	default: ;
 	}
+<<<<<<< HEAD
 }
 
 static void pmac_power_off(void)
+=======
+	while (1) ;
+}
+
+static void __noreturn pmac_power_off(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	switch (sys_ctrler) {
 	case SYS_CTRLER_CUDA:
@@ -446,9 +488,16 @@ static void pmac_power_off(void)
 		break;
 	default: ;
 	}
+<<<<<<< HEAD
 }
 
 static void
+=======
+	while (1) ;
+}
+
+static void __noreturn
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 pmac_halt(void)
 {
 	pmac_power_off();
@@ -457,10 +506,17 @@ pmac_halt(void)
 /* 
  * Early initialization.
  */
+<<<<<<< HEAD
 static void __init pmac_init_early(void)
 {
 	/* Enable early btext debug if requested */
 	if (strstr(cmd_line, "btextdbg")) {
+=======
+static void __init pmac_init(void)
+{
+	/* Enable early btext debug if requested */
+	if (strstr(boot_command_line, "btextdbg")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		udbg_adb_init_early();
 		register_early_udbg_console();
 	}
@@ -469,11 +525,19 @@ static void __init pmac_init_early(void)
 	pmac_feature_init();
 
 	/* Initialize debug stuff */
+<<<<<<< HEAD
 	udbg_scc_init(!!strstr(cmd_line, "sccdbg"));
 	udbg_adb_init(!!strstr(cmd_line, "btextdbg"));
 
 #ifdef CONFIG_PPC64
 	iommu_init_early_dart();
+=======
+	udbg_scc_init(!!strstr(boot_command_line, "sccdbg"));
+	udbg_adb_init(!!strstr(boot_command_line, "btextdbg"));
+
+#ifdef CONFIG_PPC64
+	iommu_init_early_dart(&pmac_pci_controller_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* SMP Init has to be done early as we need to patch up
@@ -489,9 +553,12 @@ static int __init pmac_declare_of_platform_devices(void)
 {
 	struct device_node *np;
 
+<<<<<<< HEAD
 	if (machine_is(chrp))
 		return -1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	np = of_find_node_by_name(NULL, "valkyrie");
 	if (np) {
 		of_platform_device_create(np, "valkyrie", NULL);
@@ -598,6 +665,7 @@ console_initcall(check_pmac_serial_console);
  */
 static int __init pmac_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "Power Macintosh") &&
@@ -616,6 +684,12 @@ static int __init pmac_probe(void)
 	hpte_init_native();
 #endif
 
+=======
+	if (!of_machine_is_compatible("Power Macintosh") &&
+	    !of_machine_is_compatible("MacRISC"))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC32
 	/* isa_io_base gets set in pmac_pci_init */
 	ISA_DMA_THRESHOLD = ~0L;
@@ -623,6 +697,7 @@ static int __init pmac_probe(void)
 	DMA_MODE_WRITE = 2;
 #endif /* CONFIG_PPC32 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PMAC_SMU
 	/*
 	 * SMU based G5s need some memory below 2Gb, at least the current
@@ -652,18 +727,32 @@ static int pmac_pci_probe_mode(struct pci_bus *bus)
 	return PCI_PROBE_DEVTREE;
 }
 #endif /* CONFIG_PPC64 */
+=======
+	pm_power_off = pmac_power_off;
+
+	pmac_init();
+
+	return 1;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 define_machine(powermac) {
 	.name			= "PowerMac",
 	.probe			= pmac_probe,
 	.setup_arch		= pmac_setup_arch,
+<<<<<<< HEAD
 	.init_early		= pmac_init_early,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.show_cpuinfo		= pmac_show_cpuinfo,
 	.init_IRQ		= pmac_pic_init,
 	.get_irq		= NULL,	/* changed later */
 	.pci_irq_fixup		= pmac_pci_irq_fixup,
 	.restart		= pmac_restart,
+<<<<<<< HEAD
 	.power_off		= pmac_power_off,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.halt			= pmac_halt,
 	.time_init		= pmac_time_init,
 	.get_boot_time		= pmac_get_boot_time,
@@ -673,12 +762,18 @@ define_machine(powermac) {
 	.feature_call		= pmac_do_feature_call,
 	.progress		= udbg_progress,
 #ifdef CONFIG_PPC64
+<<<<<<< HEAD
 	.pci_probe_mode		= pmac_pci_probe_mode,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.power_save		= power4_idle,
 	.enable_pmcs		= power4_enable_pmcs,
 #endif /* CONFIG_PPC64 */
 #ifdef CONFIG_PPC32
+<<<<<<< HEAD
 	.pcibios_enable_device_hook = pmac_pci_enable_device_hook,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.pcibios_after_init	= pmac_pcibios_after_init,
 	.phys_mem_access_prot	= pci_phys_mem_access_prot,
 #endif

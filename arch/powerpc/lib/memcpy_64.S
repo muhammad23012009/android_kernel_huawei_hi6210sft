@@ -8,6 +8,7 @@
  */
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
+<<<<<<< HEAD
 
 	.align	7
 _GLOBAL(memcpy)
@@ -16,6 +17,34 @@ BEGIN_FTR_SECTION
 FTR_SECTION_ELSE
 	b	memcpy_power7
 ALT_FTR_SECTION_END_IFCLR(CPU_FTR_VMX_COPY)
+=======
+#include <asm/export.h>
+
+	.align	7
+_GLOBAL_TOC(memcpy)
+BEGIN_FTR_SECTION
+#ifdef __LITTLE_ENDIAN__
+	cmpdi	cr7,r5,0
+#else
+	std	r3,-STACKFRAMESIZE+STK_REG(R31)(r1)	/* save destination pointer for return value */
+#endif
+FTR_SECTION_ELSE
+#ifndef SELFTEST
+	b	memcpy_power7
+#endif
+ALT_FTR_SECTION_END_IFCLR(CPU_FTR_VMX_COPY)
+#ifdef __LITTLE_ENDIAN__
+	/* dumb little-endian memcpy that will get replaced at runtime */
+	addi r9,r3,-1
+	addi r4,r4,-1
+	beqlr cr7
+	mtctr r5
+1:	lbzu r10,1(r4)
+	stbu r10,1(r9)
+	bdnz 1b
+	blr
+#else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PPC_MTOCRF(0x01,r5)
 	cmpldi	cr1,r5,16
 	neg	r6,r3		# LS 3 bits = # bytes to 8-byte dest bdry
@@ -71,7 +100,11 @@ END_FTR_SECTION_IFCLR(CPU_FTR_UNALIGNED_LD_STD)
 2:	bf	cr7*4+3,3f
 	lbz	r9,8(r4)
 	stb	r9,0(r3)
+<<<<<<< HEAD
 3:	ld	r3,48(r1)	/* return dest pointer */
+=======
+3:	ld	r3,-STACKFRAMESIZE+STK_REG(R31)(r1)	/* return dest pointer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr
 
 .Lsrc_unaligned:
@@ -154,7 +187,11 @@ END_FTR_SECTION_IFCLR(CPU_FTR_UNALIGNED_LD_STD)
 2:	bf	cr7*4+3,3f
 	rotldi	r9,r9,8
 	stb	r9,0(r3)
+<<<<<<< HEAD
 3:	ld	r3,48(r1)	/* return dest pointer */
+=======
+3:	ld	r3,-STACKFRAMESIZE+STK_REG(R31)(r1)	/* return dest pointer */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blr
 
 .Ldst_unaligned:
@@ -199,5 +236,12 @@ END_FTR_SECTION_IFCLR(CPU_FTR_UNALIGNED_LD_STD)
 3:	bf	cr7*4+3,4f
 	lbz	r0,0(r4)
 	stb	r0,0(r3)
+<<<<<<< HEAD
 4:	ld	r3,48(r1)	/* return dest pointer */
 	blr
+=======
+4:	ld	r3,-STACKFRAMESIZE+STK_REG(R31)(r1)	/* return dest pointer */
+	blr
+#endif
+EXPORT_SYMBOL(memcpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

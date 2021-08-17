@@ -15,6 +15,10 @@ struct ocores_i2c_platform_data {
 	u32 reg_shift; /* register offset shift value */
 	u32 reg_io_width; /* register io read/write width */
 	u32 clock_khz; /* input clock in kHz */
+<<<<<<< HEAD
+=======
+	bool big_endian; /* registers are big endian */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 num_devices; /* number of devices in the devices list */
 	struct i2c_board_info const *devices; /* devices connected to the bus */
 };

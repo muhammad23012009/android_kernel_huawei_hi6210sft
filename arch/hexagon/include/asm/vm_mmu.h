@@ -78,7 +78,11 @@
 #define	__HEXAGON_C_WB_L2	0x7	/* Write-back, with L2 */
 
 /*
+<<<<<<< HEAD
  * This can be overriden, but we're defaulting to the most aggressive
+=======
+ * This can be overridden, but we're defaulting to the most aggressive
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * cache policy, the better to find bugs sooner.
  */
 

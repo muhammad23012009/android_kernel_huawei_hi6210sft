@@ -68,9 +68,12 @@
 #define MMC_CLR_WRITE_PROT       29   /* ac   [31:0] data addr   R1b */
 #define MMC_SEND_WRITE_PROT      30   /* adtc [31:0] wpdata addr R1  */
 
+<<<<<<< HEAD
 /* BEGIN PN:DTS2016042003896 , Modified by d00168349, 2016/04/20 */
 #define MMC_SEND_WRITE_PROT_TYPE 31   /*  adtc [31:0] wpdata addr R1  */
 /* END PN:DTS2016042003896 , Modified by d00168349, 2016/04/20 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   /* class 5 */
 #define MMC_ERASE_GROUP_START    35   /* ac   [31:0] data addr   R1  */
 #define MMC_ERASE_GROUP_END      36   /* ac   [31:0] data addr   R1  */
@@ -275,11 +278,14 @@ struct _mmc_csd {
  * EXT_CSD fields
  */
 
+<<<<<<< HEAD
 /* BEGIN PN: DTS2014082802676, Added by l00167697, 2014/8/29, add emmc firmware update function*/
 #define EXT_CSD_FFU_STATUS		26	/* R */
 #define EXT_CSD_MODE_OPERATION_CODES	29	/* W */
 #define EXT_CSD_MODE_CONFIG		30	/* R/W */
 /* END PN: DTS2014082802676, Added by l00167697, 2014/8/29*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_FLUSH_CACHE		32      /* W */
 #define EXT_CSD_CACHE_CTRL		33      /* R/W */
 #define EXT_CSD_POWER_OFF_NOTIFICATION	34	/* R/W */
@@ -289,6 +295,10 @@ struct _mmc_csd {
 #define EXT_CSD_EXP_EVENTS_CTRL		56	/* R/W, 2 bytes */
 #define EXT_CSD_DATA_SECTOR_SIZE	61	/* R */
 #define EXT_CSD_GP_SIZE_MULT		143	/* R/W */
+<<<<<<< HEAD
+=======
+#define EXT_CSD_PARTITION_SETTING_COMPLETED 155	/* R/W */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_PARTITION_ATTRIBUTE	156	/* R/W */
 #define EXT_CSD_PARTITION_SUPPORT	160	/* RO */
 #define EXT_CSD_HPI_MGMT		161	/* R/W */
@@ -298,20 +308,32 @@ struct _mmc_csd {
 #define EXT_CSD_SANITIZE_START		165     /* W */
 #define EXT_CSD_WR_REL_PARAM		166	/* RO */
 #define EXT_CSD_RPMB_MULT		168	/* RO */
+<<<<<<< HEAD
 /* BEGIN PN: DTS2014082802676, Added by l00167697, 2014/8/29, add emmc firmware update function*/
 #define EXT_CSD_FW_CONFIG		169	/* R/W */
 /* END PN: DTS2014082802676, Added by l00167697, 2014/8/29*/
 #define EXT_CSD_USER_WP			171	/* R/W */
+=======
+#define EXT_CSD_FW_CONFIG		169	/* R/W */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_BOOT_WP			173	/* R/W */
 #define EXT_CSD_ERASE_GROUP_DEF		175	/* R/W */
 #define EXT_CSD_PART_CONFIG		179	/* R/W */
 #define EXT_CSD_ERASED_MEM_CONT		181	/* RO */
 #define EXT_CSD_BUS_WIDTH		183	/* R/W */
+<<<<<<< HEAD
+=======
+#define EXT_CSD_STROBE_SUPPORT		184	/* RO */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_HS_TIMING		185	/* R/W */
 #define EXT_CSD_POWER_CLASS		187	/* R/W */
 #define EXT_CSD_REV			192	/* RO */
 #define EXT_CSD_STRUCTURE		194	/* RO */
 #define EXT_CSD_CARD_TYPE		196	/* RO */
+<<<<<<< HEAD
+=======
+#define EXT_CSD_DRIVER_STRENGTH		197	/* RO */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_OUT_OF_INTERRUPT_TIME	198	/* RO */
 #define EXT_CSD_PART_SWITCH_TIME        199     /* RO */
 #define EXT_CSD_PWR_CL_52_195		200	/* RO */
@@ -337,6 +359,7 @@ struct _mmc_csd {
 #define EXT_CSD_POWER_OFF_LONG_TIME	247	/* RO */
 #define EXT_CSD_GENERIC_CMD6_TIME	248	/* RO */
 #define EXT_CSD_CACHE_SIZE		249	/* RO, 4 bytes */
+<<<<<<< HEAD
 #define EXT_CSD_PRE_EOL_INFO		267	/* RO */
 #define EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_A		 268	/* RO */
 #define EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_B		 269	/* RO */
@@ -347,6 +370,14 @@ struct _mmc_csd {
 #define EXT_CSD_FFU_FEATURES		492	/* RO */
 #define EXT_CSD_SUPPORTED_MODE		493	/* RO */
 /* END PN: DTS2014082802676, Added by l00167697, 2014/8/29*/
+=======
+#define EXT_CSD_PWR_CL_DDR_200_360	253	/* RO */
+#define EXT_CSD_FIRMWARE_VERSION	254	/* RO, 8 bytes */
+#define EXT_CSD_PRE_EOL_INFO		267	/* RO */
+#define EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_A	268	/* RO */
+#define EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_B	269	/* RO */
+#define EXT_CSD_SUPPORTED_MODE		493	/* RO */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_TAG_UNIT_SIZE		498	/* RO */
 #define EXT_CSD_DATA_TAG_SUPPORT	499	/* RO */
 #define EXT_CSD_MAX_PACKED_WRITES	500	/* RO */
@@ -370,30 +401,64 @@ struct _mmc_csd {
 #define EXT_CSD_PART_CONFIG_ACC_RPMB	(0x3)
 #define EXT_CSD_PART_CONFIG_ACC_GP0	(0x4)
 
+<<<<<<< HEAD
+=======
+#define EXT_CSD_PART_SETTING_COMPLETED	(0x1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_PART_SUPPORT_PART_EN	(0x1)
 
 #define EXT_CSD_CMD_SET_NORMAL		(1<<0)
 #define EXT_CSD_CMD_SET_SECURE		(1<<1)
 #define EXT_CSD_CMD_SET_CPSECURE	(1<<2)
 
+<<<<<<< HEAD
 #define EXT_CSD_CARD_TYPE_26	(1<<0)	/* Card can run at 26MHz */
 #define EXT_CSD_CARD_TYPE_52	(1<<1)	/* Card can run at 52MHz */
 #define EXT_CSD_CARD_TYPE_MASK	0x3F	/* Mask out reserved bits */
+=======
+#define EXT_CSD_CARD_TYPE_HS_26	(1<<0)	/* Card can run at 26MHz */
+#define EXT_CSD_CARD_TYPE_HS_52	(1<<1)	/* Card can run at 52MHz */
+#define EXT_CSD_CARD_TYPE_HS	(EXT_CSD_CARD_TYPE_HS_26 | \
+				 EXT_CSD_CARD_TYPE_HS_52)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_CARD_TYPE_DDR_1_8V  (1<<2)   /* Card can run at 52MHz */
 					     /* DDR mode @1.8V or 3V I/O */
 #define EXT_CSD_CARD_TYPE_DDR_1_2V  (1<<3)   /* Card can run at 52MHz */
 					     /* DDR mode @1.2V I/O */
 #define EXT_CSD_CARD_TYPE_DDR_52       (EXT_CSD_CARD_TYPE_DDR_1_8V  \
 					| EXT_CSD_CARD_TYPE_DDR_1_2V)
+<<<<<<< HEAD
 #define EXT_CSD_CARD_TYPE_SDR_1_8V	(1<<4)	/* Card can run at 200MHz */
 #define EXT_CSD_CARD_TYPE_SDR_1_2V	(1<<5)	/* Card can run at 200MHz */
 						/* SDR mode @1.2V I/O */
+=======
+#define EXT_CSD_CARD_TYPE_HS200_1_8V	(1<<4)	/* Card can run at 200MHz */
+#define EXT_CSD_CARD_TYPE_HS200_1_2V	(1<<5)	/* Card can run at 200MHz */
+						/* SDR mode @1.2V I/O */
+#define EXT_CSD_CARD_TYPE_HS200		(EXT_CSD_CARD_TYPE_HS200_1_8V | \
+					 EXT_CSD_CARD_TYPE_HS200_1_2V)
+#define EXT_CSD_CARD_TYPE_HS400_1_8V	(1<<6)	/* Card can run at 200MHz DDR, 1.8V */
+#define EXT_CSD_CARD_TYPE_HS400_1_2V	(1<<7)	/* Card can run at 200MHz DDR, 1.2V */
+#define EXT_CSD_CARD_TYPE_HS400		(EXT_CSD_CARD_TYPE_HS400_1_8V | \
+					 EXT_CSD_CARD_TYPE_HS400_1_2V)
+#define EXT_CSD_CARD_TYPE_HS400ES	(1<<8)	/* Card can run at HS400ES */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define EXT_CSD_BUS_WIDTH_1	0	/* Card is in 1 bit mode */
 #define EXT_CSD_BUS_WIDTH_4	1	/* Card is in 4 bit mode */
 #define EXT_CSD_BUS_WIDTH_8	2	/* Card is in 8 bit mode */
 #define EXT_CSD_DDR_BUS_WIDTH_4	5	/* Card is in 4 bit DDR mode */
 #define EXT_CSD_DDR_BUS_WIDTH_8	6	/* Card is in 8 bit DDR mode */
+<<<<<<< HEAD
+=======
+#define EXT_CSD_BUS_WIDTH_STROBE BIT(7)	/* Enhanced strobe mode */
+
+#define EXT_CSD_TIMING_BC	0	/* Backwards compatility */
+#define EXT_CSD_TIMING_HS	1	/* High speed */
+#define EXT_CSD_TIMING_HS200	2	/* HS200 */
+#define EXT_CSD_TIMING_HS400	3	/* HS400 */
+#define EXT_CSD_DRV_STR_SHIFT	4	/* Driver Strength shift */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define EXT_CSD_SEC_ER_EN	BIT(0)
 #define EXT_CSD_SEC_BD_BLK_EN	BIT(2)
@@ -413,10 +478,13 @@ struct _mmc_csd {
 #define EXT_CSD_PWR_CL_8BIT_SHIFT	4
 #define EXT_CSD_PWR_CL_4BIT_SHIFT	0
 
+<<<<<<< HEAD
 #ifdef CONFIG_HUAWEI_EMMC_DSM
 #define EXT_CSD_DYNCAP_EVENT_EN	BIT(1)
 #define EXT_CSD_SYSPOOL_EVENT_EN	BIT(2)
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define EXT_CSD_PACKED_EVENT_EN	BIT(3)
 
 /*
@@ -436,6 +504,14 @@ struct _mmc_csd {
 #define EXT_CSD_BKOPS_LEVEL_2		0x2
 
 /*
+<<<<<<< HEAD
+=======
+ * BKOPS modes
+ */
+#define EXT_CSD_MANUAL_BKOPS_MASK	0x01
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * MMC_SWITCH access modes
  */
 
@@ -444,6 +520,7 @@ struct _mmc_csd {
 #define MMC_SWITCH_MODE_CLEAR_BITS	0x02	/* Clear bits which are 1 in value */
 #define MMC_SWITCH_MODE_WRITE_BYTE	0x03	/* Set target to value */
 
+<<<<<<< HEAD
 #define MMC_MIN_PART_SWITCH_TIME	300
 
 /*
@@ -456,4 +533,8 @@ struct _mmc_csd {
 #define MMC_LOCK_MODE_SET_PWD	(1<<0)
 #define MMC_LOCK_MODE_UNLOCK    (1<<4)
 #endif /* CONFIG_MMC_PASSWORDS */
+=======
+#define mmc_driver_type_mask(n)		(1 << (n))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* LINUX_MMC_MMC_H */

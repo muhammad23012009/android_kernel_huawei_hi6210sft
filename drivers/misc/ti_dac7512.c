@@ -20,11 +20,16 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/spi/spi.h>
 
 #define DAC7512_DRV_NAME	"dac7512"
 #define DRIVER_VERSION		"1.0"
+=======
+#include <linux/spi/spi.h>
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static ssize_t dac7512_store_val(struct device *dev,
 				 struct device_attribute *attr,
@@ -33,9 +38,17 @@ static ssize_t dac7512_store_val(struct device *dev,
 	struct spi_device *spi = to_spi_device(dev);
 	unsigned char tmp[2];
 	unsigned long val;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 10, &val) < 0)
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 10, &val);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tmp[0] = val >> 8;
 	tmp[1] = val & 0xff;
@@ -73,6 +86,7 @@ static int dac7512_remove(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct spi_driver dac7512_driver = {
 	.driver = {
 		.name	= DAC7512_DRV_NAME,
@@ -80,6 +94,30 @@ static struct spi_driver dac7512_driver = {
 	},
 	.probe	= dac7512_probe,
 	.remove	= dac7512_remove,
+=======
+static const struct spi_device_id dac7512_id_table[] = {
+	{ "dac7512", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(spi, dac7512_id_table);
+
+#ifdef CONFIG_OF
+static const struct of_device_id dac7512_of_match[] = {
+	{ .compatible = "ti,dac7512", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, dac7512_of_match);
+#endif
+
+static struct spi_driver dac7512_driver = {
+	.driver = {
+		.name	= "dac7512",
+		.of_match_table = of_match_ptr(dac7512_of_match),
+	},
+	.probe	= dac7512_probe,
+	.remove	= dac7512_remove,
+	.id_table = dac7512_id_table,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_spi_driver(dac7512_driver);
@@ -87,4 +125,7 @@ module_spi_driver(dac7512_driver);
 MODULE_AUTHOR("Daniel Mack <daniel@caiaq.de>");
 MODULE_DESCRIPTION("DAC7512 16-bit DAC");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
 MODULE_VERSION(DRIVER_VERSION);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

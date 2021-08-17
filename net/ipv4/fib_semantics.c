@@ -42,6 +42,10 @@
 #include <net/ip_fib.h>
 #include <net/netlink.h>
 #include <net/nexthop.h>
+<<<<<<< HEAD
+=======
+#include <net/lwtunnel.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "fib_lookup.h"
 
@@ -56,8 +60,12 @@ static unsigned int fib_info_cnt;
 static struct hlist_head fib_info_devhash[DEVINDEX_HASHSIZE];
 
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
+<<<<<<< HEAD
 
 static DEFINE_SPINLOCK(fib_multipath_lock);
+=======
+u32 fib_multipath_secret __read_mostly;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define for_nexthops(fi) {						\
 	int nhsel; const struct fib_nh *nh;				\
@@ -157,9 +165,18 @@ static void rt_fibinfo_free(struct rtable __rcu **rtp)
 
 static void free_nh_exceptions(struct fib_nh *nh)
 {
+<<<<<<< HEAD
 	struct fnhe_hash_bucket *hash = nh->nh_exceptions;
 	int i;
 
+=======
+	struct fnhe_hash_bucket *hash;
+	int i;
+
+	hash = rcu_dereference_protected(nh->nh_exceptions, 1);
+	if (!hash)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < FNHE_HASH_SIZE; i++) {
 		struct fib_nh_exception *fnhe;
 
@@ -169,7 +186,12 @@ static void free_nh_exceptions(struct fib_nh *nh)
 			
 			next = rcu_dereference_protected(fnhe->fnhe_next, 1);
 
+<<<<<<< HEAD
 			rt_fibinfo_free(&fnhe->fnhe_rth);
+=======
+			rt_fibinfo_free(&fnhe->fnhe_rth_input);
+			rt_fibinfo_free(&fnhe->fnhe_rth_output);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			kfree(fnhe);
 
@@ -200,19 +222,34 @@ static void rt_fibinfo_free_cpus(struct rtable __rcu * __percpu *rtp)
 static void free_fib_info_rcu(struct rcu_head *head)
 {
 	struct fib_info *fi = container_of(head, struct fib_info, rcu);
+<<<<<<< HEAD
+=======
+	struct dst_metrics *m;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	change_nexthops(fi) {
 		if (nexthop_nh->nh_dev)
 			dev_put(nexthop_nh->nh_dev);
+<<<<<<< HEAD
 		if (nexthop_nh->nh_exceptions)
 			free_nh_exceptions(nexthop_nh);
+=======
+		lwtstate_put(nexthop_nh->nh_lwtstate);
+		free_nh_exceptions(nexthop_nh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rt_fibinfo_free_cpus(nexthop_nh->nh_pcpu_rth_output);
 		rt_fibinfo_free(&nexthop_nh->nh_rth_input);
 	} endfor_nexthops(fi);
 
+<<<<<<< HEAD
 	release_net(fi->fib_net);
 	if (fi->fib_metrics != (u32 *) dst_default_metrics)
 		kfree(fi->fib_metrics);
+=======
+	m = fi->fib_metrics;
+	if (m != &dst_default_metrics && atomic_dec_and_test(&m->refcnt))
+		kfree(m);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(fi);
 }
 
@@ -264,7 +301,12 @@ static inline int nh_comp(const struct fib_info *fi, const struct fib_info *ofi)
 #ifdef CONFIG_IP_ROUTE_CLASSID
 		    nh->nh_tclassid != onh->nh_tclassid ||
 #endif
+<<<<<<< HEAD
 		    ((nh->nh_flags ^ onh->nh_flags) & ~RTNH_F_DEAD))
+=======
+		    lwtunnel_cmp_encap(nh->nh_lwtstate, onh->nh_lwtstate) ||
+		    ((nh->nh_flags ^ onh->nh_flags) & ~RTNH_COMPARE_MASK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -1;
 		onh++;
 	} endfor_nexthops(fi);
@@ -316,7 +358,11 @@ static struct fib_info *fib_find_info(const struct fib_info *nfi)
 		    nfi->fib_type == fi->fib_type &&
 		    memcmp(nfi->fib_metrics, fi->fib_metrics,
 			   sizeof(u32) * RTAX_MAX) == 0 &&
+<<<<<<< HEAD
 		    ((nfi->fib_flags ^ fi->fib_flags) & ~RTNH_F_DEAD) == 0 &&
+=======
+		    !((nfi->fib_flags ^ fi->fib_flags) & ~RTNH_COMPARE_MASK) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    (nfi->fib_nhs == 0 || nh_comp(fi, nfi) == 0))
 			return fi;
 	}
@@ -357,12 +403,21 @@ static inline size_t fib_nlmsg_size(struct fib_info *fi)
 			 + nla_total_size(4) /* RTA_TABLE */
 			 + nla_total_size(4) /* RTA_DST */
 			 + nla_total_size(4) /* RTA_PRIORITY */
+<<<<<<< HEAD
 			 + nla_total_size(4); /* RTA_PREFSRC */
+=======
+			 + nla_total_size(4) /* RTA_PREFSRC */
+			 + nla_total_size(TCP_CA_NAME_MAX); /* RTAX_CC_ALGO */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* space for nested metrics */
 	payload += nla_total_size((RTAX_MAX * nla_total_size(4)));
 
 	if (fi->fib_nhs) {
+<<<<<<< HEAD
+=======
+		size_t nh_encapsize = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Also handles the special case fib_nhs == 1 */
 
 		/* each nexthop is packed in an attribute */
@@ -371,15 +426,37 @@ static inline size_t fib_nlmsg_size(struct fib_info *fi)
 		/* may contain flow and gateway attribute */
 		nhsize += 2 * nla_total_size(4);
 
+<<<<<<< HEAD
 		/* all nexthops are packed in a nested attribute */
 		payload += nla_total_size(fi->fib_nhs * nhsize);
+=======
+		/* grab encap info */
+		for_nexthops(fi) {
+			if (nh->nh_lwtstate) {
+				/* RTA_ENCAP_TYPE */
+				nh_encapsize += lwtunnel_get_encap_size(
+						nh->nh_lwtstate);
+				/* RTA_ENCAP */
+				nh_encapsize +=  nla_total_size(2);
+			}
+		} endfor_nexthops(fi);
+
+		/* all nexthops are packed in a nested attribute */
+		payload += nla_total_size((fi->fib_nhs * nhsize) +
+					  nh_encapsize);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return payload;
 }
 
 void rtmsg_fib(int event, __be32 key, struct fib_alias *fa,
+<<<<<<< HEAD
 	       int dst_len, u32 tb_id, struct nl_info *info,
+=======
+	       int dst_len, u32 tb_id, const struct nl_info *info,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       unsigned int nlm_flags)
 {
 	struct sk_buff *skb;
@@ -387,7 +464,11 @@ void rtmsg_fib(int event, __be32 key, struct fib_alias *fa,
 	int err = -ENOBUFS;
 
 	skb = nlmsg_new(fib_nlmsg_size(fa->fa_info), GFP_KERNEL);
+<<<<<<< HEAD
 	if (skb == NULL)
+=======
+	if (!skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto errout;
 
 	err = fib_dump_info(skb, info->portid, seq, event, tb_id,
@@ -407,6 +488,7 @@ errout:
 		rtnl_set_sk_err(info->nl_net, RTNLGRP_IPV4_ROUTE, err);
 }
 
+<<<<<<< HEAD
 /* Return the first fib alias matching TOS with
  * priority less than or equal to PRIO.
  */
@@ -427,6 +509,11 @@ struct fib_alias *fib_find_alias(struct list_head *fah, u8 tos, u32 prio)
 
 int fib_detect_death(struct fib_info *fi, int order,
 		     struct fib_info **last_resort, int *last_idx, int dflt)
+=======
+static int fib_detect_death(struct fib_info *fi, int order,
+			    struct fib_info **last_resort, int *last_idx,
+			    int dflt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct neighbour *n;
 	int state = NUD_NONE;
@@ -435,13 +522,22 @@ int fib_detect_death(struct fib_info *fi, int order,
 	if (n) {
 		state = n->nud_state;
 		neigh_release(n);
+<<<<<<< HEAD
+=======
+	} else {
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (state == NUD_REACHABLE)
 		return 0;
 	if ((state & NUD_VALID) && order != dflt)
 		return 0;
 	if ((state & NUD_VALID) ||
+<<<<<<< HEAD
 	    (*last_idx < 0 && order > dflt)) {
+=======
+	    (*last_idx < 0 && order > dflt && state != NUD_INCOMPLETE)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*last_resort = fi;
 		*last_idx = order;
 	}
@@ -466,12 +562,24 @@ static int fib_count_nexthops(struct rtnexthop *rtnh, int remaining)
 static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
 		       int remaining, struct fib_config *cfg)
 {
+<<<<<<< HEAD
+=======
+	struct net *net = cfg->fc_nlinfo.nl_net;
+	int ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	change_nexthops(fi) {
 		int attrlen;
 
 		if (!rtnh_ok(rtnh, remaining))
 			return -EINVAL;
 
+<<<<<<< HEAD
+=======
+		if (rtnh->rtnh_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN))
+			return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nexthop_nh->nh_flags =
 			(cfg->fc_flags & ~0xFF) | rtnh->rtnh_flags;
 		nexthop_nh->nh_oif = rtnh->rtnh_ifindex;
@@ -482,25 +590,153 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
 			struct nlattr *nla, *attrs = rtnh_attrs(rtnh);
 
 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
+<<<<<<< HEAD
 			nexthop_nh->nh_gw = nla ? nla_get_be32(nla) : 0;
+=======
+			nexthop_nh->nh_gw = nla ? nla_get_in_addr(nla) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_IP_ROUTE_CLASSID
 			nla = nla_find(attrs, attrlen, RTA_FLOW);
 			nexthop_nh->nh_tclassid = nla ? nla_get_u32(nla) : 0;
 			if (nexthop_nh->nh_tclassid)
 				fi->fib_net->ipv4.fib_num_tclassid_users++;
 #endif
+<<<<<<< HEAD
+=======
+			nla = nla_find(attrs, attrlen, RTA_ENCAP);
+			if (nla) {
+				struct lwtunnel_state *lwtstate;
+				struct net_device *dev = NULL;
+				struct nlattr *nla_entype;
+
+				nla_entype = nla_find(attrs, attrlen,
+						      RTA_ENCAP_TYPE);
+				if (!nla_entype)
+					goto err_inval;
+				if (cfg->fc_oif)
+					dev = __dev_get_by_index(net, cfg->fc_oif);
+				ret = lwtunnel_build_state(dev, nla_get_u16(
+							   nla_entype),
+							   nla,  AF_INET, cfg,
+							   &lwtstate);
+				if (ret)
+					goto errout;
+				nexthop_nh->nh_lwtstate =
+					lwtstate_get(lwtstate);
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		rtnh = rtnh_next(rtnh, &remaining);
 	} endfor_nexthops(fi);
 
 	return 0;
+<<<<<<< HEAD
 }
 
 #endif
 
 int fib_nh_match(struct fib_config *cfg, struct fib_info *fi)
 {
+=======
+
+err_inval:
+	ret = -EINVAL;
+
+errout:
+	return ret;
+}
+
+static void fib_rebalance(struct fib_info *fi)
+{
+	int total;
+	int w;
+	struct in_device *in_dev;
+
+	if (fi->fib_nhs < 2)
+		return;
+
+	total = 0;
+	for_nexthops(fi) {
+		if (nh->nh_flags & RTNH_F_DEAD)
+			continue;
+
+		in_dev = __in_dev_get_rtnl(nh->nh_dev);
+
+		if (in_dev &&
+		    IN_DEV_IGNORE_ROUTES_WITH_LINKDOWN(in_dev) &&
+		    nh->nh_flags & RTNH_F_LINKDOWN)
+			continue;
+
+		total += nh->nh_weight;
+	} endfor_nexthops(fi);
+
+	w = 0;
+	change_nexthops(fi) {
+		int upper_bound;
+
+		in_dev = __in_dev_get_rtnl(nexthop_nh->nh_dev);
+
+		if (nexthop_nh->nh_flags & RTNH_F_DEAD) {
+			upper_bound = -1;
+		} else if (in_dev &&
+			   IN_DEV_IGNORE_ROUTES_WITH_LINKDOWN(in_dev) &&
+			   nexthop_nh->nh_flags & RTNH_F_LINKDOWN) {
+			upper_bound = -1;
+		} else {
+			w += nexthop_nh->nh_weight;
+			upper_bound = DIV_ROUND_CLOSEST_ULL((u64)w << 31,
+							    total) - 1;
+		}
+
+		atomic_set(&nexthop_nh->nh_upper_bound, upper_bound);
+	} endfor_nexthops(fi);
+
+	net_get_random_once(&fib_multipath_secret,
+			    sizeof(fib_multipath_secret));
+}
+
+static inline void fib_add_weight(struct fib_info *fi,
+				  const struct fib_nh *nh)
+{
+	fi->fib_weight += nh->nh_weight;
+}
+
+#else /* CONFIG_IP_ROUTE_MULTIPATH */
+
+#define fib_rebalance(fi) do { } while (0)
+#define fib_add_weight(fi, nh) do { } while (0)
+
+#endif /* CONFIG_IP_ROUTE_MULTIPATH */
+
+static int fib_encap_match(struct net *net, u16 encap_type,
+			   struct nlattr *encap,
+			   int oif, const struct fib_nh *nh,
+			   const struct fib_config *cfg)
+{
+	struct lwtunnel_state *lwtstate;
+	struct net_device *dev = NULL;
+	int ret, result = 0;
+
+	if (encap_type == LWTUNNEL_ENCAP_NONE)
+		return 0;
+
+	if (oif)
+		dev = __dev_get_by_index(net, oif);
+	ret = lwtunnel_build_state(dev, encap_type, encap,
+				   AF_INET, cfg, &lwtstate);
+	if (!ret) {
+		result = lwtunnel_cmp_encap(lwtstate, nh->nh_lwtstate);
+		lwtstate_free(lwtstate);
+	}
+
+	return result;
+}
+
+int fib_nh_match(struct fib_config *cfg, struct fib_info *fi)
+{
+	struct net *net = cfg->fc_nlinfo.nl_net;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
 	struct rtnexthop *rtnh;
 	int remaining;
@@ -510,6 +746,20 @@ int fib_nh_match(struct fib_config *cfg, struct fib_info *fi)
 		return 1;
 
 	if (cfg->fc_oif || cfg->fc_gw) {
+<<<<<<< HEAD
+=======
+		if (cfg->fc_encap) {
+			if (fib_encap_match(net, cfg->fc_encap_type,
+					    cfg->fc_encap, cfg->fc_oif,
+					    fi->fib_nh, cfg))
+			    return 1;
+		}
+#ifdef CONFIG_IP_ROUTE_CLASSID
+		if (cfg->fc_flow &&
+		    cfg->fc_flow != fi->fib_nh->nh_tclassid)
+			return 1;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((!cfg->fc_oif || cfg->fc_oif == fi->fib_nh->nh_oif) &&
 		    (!cfg->fc_gw  || cfg->fc_gw == fi->fib_nh->nh_gw))
 			return 0;
@@ -517,7 +767,11 @@ int fib_nh_match(struct fib_config *cfg, struct fib_info *fi)
 	}
 
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
+<<<<<<< HEAD
 	if (cfg->fc_mp == NULL)
+=======
+	if (!cfg->fc_mp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	rtnh = cfg->fc_mp;
@@ -537,7 +791,11 @@ int fib_nh_match(struct fib_config *cfg, struct fib_info *fi)
 			struct nlattr *nla, *attrs = rtnh_attrs(rtnh);
 
 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
+<<<<<<< HEAD
 			if (nla && nla_get_be32(nla) != nh->nh_gw)
+=======
+			if (nla && nla_get_in_addr(nla) != nh->nh_gw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return 1;
 #ifdef CONFIG_IP_ROUTE_CLASSID
 			nla = nla_find(attrs, attrlen, RTA_FLOW);
@@ -599,7 +857,11 @@ int fib_nh_match(struct fib_config *cfg, struct fib_info *fi)
 static int fib_check_nh(struct fib_config *cfg, struct fib_info *fi,
 			struct fib_nh *nh)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net *net;
 	struct net_device *dev;
 
@@ -608,16 +870,31 @@ static int fib_check_nh(struct fib_config *cfg, struct fib_info *fi,
 		struct fib_result res;
 
 		if (nh->nh_flags & RTNH_F_ONLINK) {
+<<<<<<< HEAD
 
 			if (cfg->fc_scope >= RT_SCOPE_LINK)
 				return -EINVAL;
 			if (inet_addr_type(net, nh->nh_gw) != RTN_UNICAST)
 				return -EINVAL;
+=======
+			unsigned int addr_type;
+
+			if (cfg->fc_scope >= RT_SCOPE_LINK)
+				return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev = __dev_get_by_index(net, nh->nh_oif);
 			if (!dev)
 				return -ENODEV;
 			if (!(dev->flags & IFF_UP))
 				return -ENETDOWN;
+<<<<<<< HEAD
+=======
+			addr_type = inet_addr_type_dev_table(net, dev, nh->nh_gw);
+			if (addr_type != RTN_UNICAST)
+				return -EINVAL;
+			if (!netif_carrier_ok(dev))
+				nh->nh_flags |= RTNH_F_LINKDOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			nh->nh_dev = dev;
 			dev_hold(dev);
 			nh->nh_scope = RT_SCOPE_LINK;
@@ -625,6 +902,10 @@ static int fib_check_nh(struct fib_config *cfg, struct fib_info *fi,
 		}
 		rcu_read_lock();
 		{
+<<<<<<< HEAD
+=======
+			struct fib_table *tbl = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct flowi4 fl4 = {
 				.daddr = nh->nh_gw,
 				.flowi4_scope = cfg->fc_scope + 1,
@@ -635,7 +916,28 @@ static int fib_check_nh(struct fib_config *cfg, struct fib_info *fi,
 			/* It is not necessary, but requires a bit of thinking */
 			if (fl4.flowi4_scope < RT_SCOPE_LINK)
 				fl4.flowi4_scope = RT_SCOPE_LINK;
+<<<<<<< HEAD
 			err = fib_lookup(net, &fl4, &res);
+=======
+
+			if (cfg->fc_table && cfg->fc_table != RT_TABLE_MAIN)
+				tbl = fib_get_table(net, cfg->fc_table);
+
+			if (tbl)
+				err = fib_table_lookup(tbl, &fl4, &res,
+						       FIB_LOOKUP_IGNORE_LINKSTATE |
+						       FIB_LOOKUP_NOREF);
+
+			/* on error or if no table given do full lookup. This
+			 * is needed for example when nexthops are in the local
+			 * table rather than the given table
+			 */
+			if (!tbl || err) {
+				err = fib_lookup(net, &fl4, &res,
+						 FIB_LOOKUP_IGNORE_LINKSTATE);
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (err) {
 				rcu_read_unlock();
 				return err;
@@ -650,6 +952,11 @@ static int fib_check_nh(struct fib_config *cfg, struct fib_info *fi,
 		if (!dev)
 			goto out;
 		dev_hold(dev);
+<<<<<<< HEAD
+=======
+		if (!netif_carrier_ok(dev))
+			nh->nh_flags |= RTNH_F_LINKDOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = (dev->flags & IFF_UP) ? 0 : -ENETDOWN;
 	} else {
 		struct in_device *in_dev;
@@ -660,7 +967,11 @@ static int fib_check_nh(struct fib_config *cfg, struct fib_info *fi,
 		rcu_read_lock();
 		err = -ENODEV;
 		in_dev = inetdev_by_index(net, nh->nh_oif);
+<<<<<<< HEAD
 		if (in_dev == NULL)
+=======
+		if (!in_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		err = -ENETDOWN;
 		if (!(in_dev->dev->flags & IFF_UP))
@@ -668,6 +979,11 @@ static int fib_check_nh(struct fib_config *cfg, struct fib_info *fi,
 		nh->nh_dev = in_dev->dev;
 		dev_hold(nh->nh_dev);
 		nh->nh_scope = RT_SCOPE_HOST;
+<<<<<<< HEAD
+=======
+		if (!netif_carrier_ok(nh->nh_dev))
+			nh->nh_flags |= RTNH_F_LINKDOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = 0;
 	}
 out:
@@ -727,8 +1043,11 @@ static void fib_info_hash_move(struct hlist_head *new_info_hash,
 			struct hlist_head *dest;
 			unsigned int new_hash;
 
+<<<<<<< HEAD
 			hlist_del(&fi->fib_hash);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			new_hash = fib_info_hashfn(fi);
 			dest = &new_info_hash[new_hash];
 			hlist_add_head(&fi->fib_hash, dest);
@@ -745,8 +1064,11 @@ static void fib_info_hash_move(struct hlist_head *new_info_hash,
 			struct hlist_head *ldest;
 			unsigned int new_hash;
 
+<<<<<<< HEAD
 			hlist_del(&fi->fib_lhash);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			new_hash = fib_laddr_hashfn(fi->fib_prefsrc);
 			ldest = &new_laddrhash[new_hash];
 			hlist_add_head(&fi->fib_lhash, ldest);
@@ -771,6 +1093,81 @@ __be32 fib_info_update_nh_saddr(struct net *net, struct fib_nh *nh)
 	return nh->nh_saddr;
 }
 
+<<<<<<< HEAD
+=======
+static bool fib_valid_prefsrc(struct fib_config *cfg, __be32 fib_prefsrc)
+{
+	if (cfg->fc_type != RTN_LOCAL || !cfg->fc_dst ||
+	    fib_prefsrc != cfg->fc_dst) {
+		u32 tb_id = cfg->fc_table;
+		int rc;
+
+		if (tb_id == RT_TABLE_MAIN)
+			tb_id = RT_TABLE_LOCAL;
+
+		rc = inet_addr_type_table(cfg->fc_nlinfo.nl_net,
+					  fib_prefsrc, tb_id);
+
+		if (rc != RTN_LOCAL && tb_id != RT_TABLE_LOCAL) {
+			rc = inet_addr_type_table(cfg->fc_nlinfo.nl_net,
+						  fib_prefsrc, RT_TABLE_LOCAL);
+		}
+
+		if (rc != RTN_LOCAL)
+			return false;
+	}
+	return true;
+}
+
+static int
+fib_convert_metrics(struct fib_info *fi, const struct fib_config *cfg)
+{
+	bool ecn_ca = false;
+	struct nlattr *nla;
+	int remaining;
+
+	if (!cfg->fc_mx)
+		return 0;
+
+	nla_for_each_attr(nla, cfg->fc_mx, cfg->fc_mx_len, remaining) {
+		int type = nla_type(nla);
+		u32 val;
+
+		if (!type)
+			continue;
+		if (type > RTAX_MAX)
+			return -EINVAL;
+
+		if (type == RTAX_CC_ALGO) {
+			char tmp[TCP_CA_NAME_MAX];
+
+			nla_strlcpy(tmp, nla, sizeof(tmp));
+			val = tcp_ca_get_key_by_name(tmp, &ecn_ca);
+			if (val == TCP_CA_UNSPEC)
+				return -EINVAL;
+		} else {
+			if (nla_len(nla) != sizeof(u32))
+				return -EINVAL;
+			val = nla_get_u32(nla);
+		}
+		if (type == RTAX_ADVMSS && val > 65535 - 40)
+			val = 65535 - 40;
+		if (type == RTAX_MTU && val > 65535 - 15)
+			val = 65535 - 15;
+		if (type == RTAX_HOPLIMIT && val > 255)
+			val = 255;
+		if (type == RTAX_FEATURES && (val & ~RTAX_FEATURE_MASK))
+			return -EINVAL;
+		fi->fib_metrics->metrics[type - 1] = val;
+	}
+
+	if (ecn_ca)
+		fi->fib_metrics->metrics[RTAX_FEATURES - 1] |= DST_FEATURE_ECN_CA;
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct fib_info *fib_create_info(struct fib_config *cfg)
 {
 	int err;
@@ -786,6 +1183,12 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 	if (fib_props[cfg->fc_type].scope > cfg->fc_scope)
 		goto err_inval;
 
+<<<<<<< HEAD
+=======
+	if (cfg->fc_flags & (RTNH_F_DEAD | RTNH_F_LINKDOWN))
+		goto err_inval;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
 	if (cfg->fc_mp) {
 		nhs = fib_count_nexthops(cfg->fc_mp, cfg->fc_mp_len);
@@ -817,6 +1220,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 	}
 
 	fi = kzalloc(sizeof(*fi)+nhs*sizeof(struct fib_nh), GFP_KERNEL);
+<<<<<<< HEAD
 	if (fi == NULL)
 		goto failure;
 	fib_info_cnt++;
@@ -828,12 +1232,32 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 		fi->fib_metrics = (u32 *) dst_default_metrics;
 
 	fi->fib_net = hold_net(net);
+=======
+	if (!fi)
+		goto failure;
+	if (cfg->fc_mx) {
+		fi->fib_metrics = kzalloc(sizeof(*fi->fib_metrics), GFP_KERNEL);
+		if (unlikely(!fi->fib_metrics)) {
+			kfree(fi);
+			return ERR_PTR(err);
+		}
+		atomic_set(&fi->fib_metrics->refcnt, 1);
+	} else {
+		fi->fib_metrics = (struct dst_metrics *)&dst_default_metrics;
+	}
+	fib_info_cnt++;
+	fi->fib_net = net;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fi->fib_protocol = cfg->fc_protocol;
 	fi->fib_scope = cfg->fc_scope;
 	fi->fib_flags = cfg->fc_flags;
 	fi->fib_priority = cfg->fc_priority;
 	fi->fib_prefsrc = cfg->fc_prefsrc;
 	fi->fib_type = cfg->fc_type;
+<<<<<<< HEAD
+=======
+	fi->fib_tb_id = cfg->fc_table;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fi->fib_nhs = nhs;
 	change_nexthops(fi) {
@@ -843,6 +1267,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 			goto failure;
 	} endfor_nexthops(fi)
 
+<<<<<<< HEAD
 	if (cfg->fc_mx) {
 		struct nlattr *nla;
 		int remaining;
@@ -864,6 +1289,11 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 			}
 		}
 	}
+=======
+	err = fib_convert_metrics(fi, cfg);
+	if (err)
+		goto failure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cfg->fc_mp) {
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
@@ -884,6 +1314,25 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 	} else {
 		struct fib_nh *nh = fi->fib_nh;
 
+<<<<<<< HEAD
+=======
+		if (cfg->fc_encap) {
+			struct lwtunnel_state *lwtstate;
+			struct net_device *dev = NULL;
+
+			if (cfg->fc_encap_type == LWTUNNEL_ENCAP_NONE)
+				goto err_inval;
+			if (cfg->fc_oif)
+				dev = __dev_get_by_index(net, cfg->fc_oif);
+			err = lwtunnel_build_state(dev, cfg->fc_encap_type,
+						   cfg->fc_encap, AF_INET, cfg,
+						   &lwtstate);
+			if (err)
+				goto failure;
+
+			nh->nh_lwtstate = lwtstate_get(lwtstate);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		nh->nh_oif = cfg->fc_oif;
 		nh->nh_gw = cfg->fc_gw;
 		nh->nh_flags = cfg->fc_flags;
@@ -926,13 +1375,22 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 		nh->nh_scope = RT_SCOPE_NOWHERE;
 		nh->nh_dev = dev_get_by_index(net, fi->fib_nh->nh_oif);
 		err = -ENODEV;
+<<<<<<< HEAD
 		if (nh->nh_dev == NULL)
 			goto failure;
 	} else {
+=======
+		if (!nh->nh_dev)
+			goto failure;
+	} else {
+		int linkdown = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		change_nexthops(fi) {
 			err = fib_check_nh(cfg, fi, nexthop_nh);
 			if (err != 0)
 				goto failure;
+<<<<<<< HEAD
 		} endfor_nexthops(fi)
 	}
 
@@ -947,6 +1405,25 @@ struct fib_info *fib_create_info(struct fib_config *cfg)
 		fib_info_update_nh_saddr(net, nexthop_nh);
 	} endfor_nexthops(fi)
 
+=======
+			if (nexthop_nh->nh_flags & RTNH_F_LINKDOWN)
+				linkdown++;
+		} endfor_nexthops(fi)
+		if (linkdown == fi->fib_nhs)
+			fi->fib_flags |= RTNH_F_LINKDOWN;
+	}
+
+	if (fi->fib_prefsrc && !fib_valid_prefsrc(cfg, fi->fib_prefsrc))
+		goto err_inval;
+
+	change_nexthops(fi) {
+		fib_info_update_nh_saddr(net, nexthop_nh);
+		fib_add_weight(fi, nexthop_nh);
+	} endfor_nexthops(fi)
+
+	fib_rebalance(fi);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 link_it:
 	ofi = fib_find_info(fi);
 	if (ofi) {
@@ -1000,7 +1477,11 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
 	struct rtmsg *rtm;
 
 	nlh = nlmsg_put(skb, portid, seq, event, sizeof(*rtm), flags);
+<<<<<<< HEAD
 	if (nlh == NULL)
+=======
+	if (!nlh)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EMSGSIZE;
 
 	rtm = nlmsg_data(nlh);
@@ -1020,11 +1501,16 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
 	rtm->rtm_protocol = fi->fib_protocol;
 
 	if (rtm->rtm_dst_len &&
+<<<<<<< HEAD
 	    nla_put_be32(skb, RTA_DST, dst))
+=======
+	    nla_put_in_addr(skb, RTA_DST, dst))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto nla_put_failure;
 	if (fi->fib_priority &&
 	    nla_put_u32(skb, RTA_PRIORITY, fi->fib_priority))
 		goto nla_put_failure;
+<<<<<<< HEAD
 	if (rtnetlink_put_metrics(skb, fi->fib_metrics) < 0)
 		goto nla_put_failure;
 
@@ -1034,15 +1520,43 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
 	if (fi->fib_nhs == 1) {
 		if (fi->fib_nh->nh_gw &&
 		    nla_put_be32(skb, RTA_GATEWAY, fi->fib_nh->nh_gw))
+=======
+	if (rtnetlink_put_metrics(skb, fi->fib_metrics->metrics) < 0)
+		goto nla_put_failure;
+
+	if (fi->fib_prefsrc &&
+	    nla_put_in_addr(skb, RTA_PREFSRC, fi->fib_prefsrc))
+		goto nla_put_failure;
+	if (fi->fib_nhs == 1) {
+		struct in_device *in_dev;
+
+		if (fi->fib_nh->nh_gw &&
+		    nla_put_in_addr(skb, RTA_GATEWAY, fi->fib_nh->nh_gw))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto nla_put_failure;
 		if (fi->fib_nh->nh_oif &&
 		    nla_put_u32(skb, RTA_OIF, fi->fib_nh->nh_oif))
 			goto nla_put_failure;
+<<<<<<< HEAD
+=======
+		if (fi->fib_nh->nh_flags & RTNH_F_LINKDOWN) {
+			in_dev = __in_dev_get_rtnl(fi->fib_nh->nh_dev);
+			if (in_dev &&
+			    IN_DEV_IGNORE_ROUTES_WITH_LINKDOWN(in_dev))
+				rtm->rtm_flags |= RTNH_F_DEAD;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_IP_ROUTE_CLASSID
 		if (fi->fib_nh[0].nh_tclassid &&
 		    nla_put_u32(skb, RTA_FLOW, fi->fib_nh[0].nh_tclassid))
 			goto nla_put_failure;
 #endif
+<<<<<<< HEAD
+=======
+		if (fi->fib_nh->nh_lwtstate &&
+		    lwtunnel_fill_encap(skb, fi->fib_nh->nh_lwtstate) < 0)
+			goto nla_put_failure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
 	if (fi->fib_nhs > 1) {
@@ -1050,6 +1564,7 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
 		struct nlattr *mp;
 
 		mp = nla_nest_start(skb, RTA_MULTIPATH);
+<<<<<<< HEAD
 		if (mp == NULL)
 			goto nla_put_failure;
 
@@ -1059,17 +1574,47 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
 				goto nla_put_failure;
 
 			rtnh->rtnh_flags = nh->nh_flags & 0xFF;
+=======
+		if (!mp)
+			goto nla_put_failure;
+
+		for_nexthops(fi) {
+			struct in_device *in_dev;
+
+			rtnh = nla_reserve_nohdr(skb, sizeof(*rtnh));
+			if (!rtnh)
+				goto nla_put_failure;
+
+			rtnh->rtnh_flags = nh->nh_flags & 0xFF;
+			if (nh->nh_flags & RTNH_F_LINKDOWN) {
+				in_dev = __in_dev_get_rtnl(nh->nh_dev);
+				if (in_dev &&
+				    IN_DEV_IGNORE_ROUTES_WITH_LINKDOWN(in_dev))
+					rtnh->rtnh_flags |= RTNH_F_DEAD;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rtnh->rtnh_hops = nh->nh_weight - 1;
 			rtnh->rtnh_ifindex = nh->nh_oif;
 
 			if (nh->nh_gw &&
+<<<<<<< HEAD
 			    nla_put_be32(skb, RTA_GATEWAY, nh->nh_gw))
+=======
+			    nla_put_in_addr(skb, RTA_GATEWAY, nh->nh_gw))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto nla_put_failure;
 #ifdef CONFIG_IP_ROUTE_CLASSID
 			if (nh->nh_tclassid &&
 			    nla_put_u32(skb, RTA_FLOW, nh->nh_tclassid))
 				goto nla_put_failure;
 #endif
+<<<<<<< HEAD
+=======
+			if (nh->nh_lwtstate &&
+			    lwtunnel_fill_encap(skb, nh->nh_lwtstate) < 0)
+				goto nla_put_failure;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* length of rtnetlink header + attributes */
 			rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *) rtnh;
 		} endfor_nexthops(fi);
@@ -1077,7 +1622,12 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
 		nla_nest_end(skb, mp);
 	}
 #endif
+<<<<<<< HEAD
 	return nlmsg_end(skb, nlh);
+=======
+	nlmsg_end(skb, nlh);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 nla_put_failure:
 	nlmsg_cancel(skb, nlh);
@@ -1090,11 +1640,16 @@ nla_put_failure:
  *   referring to it.
  * - device went down -> we must shutdown all nexthops going via it.
  */
+<<<<<<< HEAD
 int fib_sync_down_addr(struct net *net, __be32 local)
+=======
+int fib_sync_down_addr(struct net_device *dev, __be32 local)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret = 0;
 	unsigned int hash = fib_laddr_hashfn(local);
 	struct hlist_head *head = &fib_info_laddrhash[hash];
+<<<<<<< HEAD
 	struct fib_info *fi;
 
 	if (fib_info_laddrhash == NULL || local == 0)
@@ -1102,6 +1657,18 @@ int fib_sync_down_addr(struct net *net, __be32 local)
 
 	hlist_for_each_entry(fi, head, fib_lhash) {
 		if (!net_eq(fi->fib_net, net))
+=======
+	int tb_id = l3mdev_fib_table(dev) ? : RT_TABLE_MAIN;
+	struct net *net = dev_net(dev);
+	struct fib_info *fi;
+
+	if (!fib_info_laddrhash || local == 0)
+		return 0;
+
+	hlist_for_each_entry(fi, head, fib_lhash) {
+		if (!net_eq(fi->fib_net, net) ||
+		    fi->fib_tb_id != tb_id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		if (fi->fib_prefsrc == local) {
 			fi->fib_flags |= RTNH_F_DEAD;
@@ -1111,7 +1678,67 @@ int fib_sync_down_addr(struct net *net, __be32 local)
 	return ret;
 }
 
+<<<<<<< HEAD
 int fib_sync_down_dev(struct net_device *dev, int force)
+=======
+/* Update the PMTU of exceptions when:
+ * - the new MTU of the first hop becomes smaller than the PMTU
+ * - the old MTU was the same as the PMTU, and it limited discovery of
+ *   larger MTUs on the path. With that limit raised, we can now
+ *   discover larger MTUs
+ * A special case is locked exceptions, for which the PMTU is smaller
+ * than the minimal accepted PMTU:
+ * - if the new MTU is greater than the PMTU, don't make any change
+ * - otherwise, unlock and set PMTU
+ */
+static void nh_update_mtu(struct fib_nh *nh, u32 new, u32 orig)
+{
+	struct fnhe_hash_bucket *bucket;
+	int i;
+
+	bucket = rcu_dereference_protected(nh->nh_exceptions, 1);
+	if (!bucket)
+		return;
+
+	for (i = 0; i < FNHE_HASH_SIZE; i++) {
+		struct fib_nh_exception *fnhe;
+
+		for (fnhe = rcu_dereference_protected(bucket[i].chain, 1);
+		     fnhe;
+		     fnhe = rcu_dereference_protected(fnhe->fnhe_next, 1)) {
+			if (fnhe->fnhe_mtu_locked) {
+				if (new <= fnhe->fnhe_pmtu) {
+					fnhe->fnhe_pmtu = new;
+					fnhe->fnhe_mtu_locked = false;
+				}
+			} else if (new < fnhe->fnhe_pmtu ||
+				   orig == fnhe->fnhe_pmtu) {
+				fnhe->fnhe_pmtu = new;
+			}
+		}
+	}
+}
+
+void fib_sync_mtu(struct net_device *dev, u32 orig_mtu)
+{
+	unsigned int hash = fib_devindex_hashfn(dev->ifindex);
+	struct hlist_head *head = &fib_info_devhash[hash];
+	struct fib_nh *nh;
+
+	hlist_for_each_entry(nh, head, nh_hash) {
+		if (nh->nh_dev == dev)
+			nh_update_mtu(nh, dev->mtu, orig_mtu);
+	}
+}
+
+/* Event              force Flags           Description
+ * NETDEV_CHANGE      0     LINKDOWN        Carrier OFF, not for scope host
+ * NETDEV_DOWN        0     LINKDOWN|DEAD   Link down, not for scope host
+ * NETDEV_DOWN        1     LINKDOWN|DEAD   Last address removed
+ * NETDEV_UNREGISTER  1     LINKDOWN|DEAD   Device removed
+ */
+int fib_sync_down_dev(struct net_device *dev, unsigned long event, bool force)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret = 0;
 	int scope = RT_SCOPE_NOWHERE;
@@ -1137,6 +1764,7 @@ int fib_sync_down_dev(struct net_device *dev, int force)
 				dead++;
 			else if (nexthop_nh->nh_dev == dev &&
 				 nexthop_nh->nh_scope != scope) {
+<<<<<<< HEAD
 				nexthop_nh->nh_flags |= RTNH_F_DEAD;
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
 				spin_lock_bh(&fib_multipath_lock);
@@ -1148,21 +1776,54 @@ int fib_sync_down_dev(struct net_device *dev, int force)
 			}
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
 			if (force > 1 && nexthop_nh->nh_dev == dev) {
+=======
+				switch (event) {
+				case NETDEV_DOWN:
+				case NETDEV_UNREGISTER:
+					nexthop_nh->nh_flags |= RTNH_F_DEAD;
+					/* fall through */
+				case NETDEV_CHANGE:
+					nexthop_nh->nh_flags |= RTNH_F_LINKDOWN;
+					break;
+				}
+				dead++;
+			}
+#ifdef CONFIG_IP_ROUTE_MULTIPATH
+			if (event == NETDEV_UNREGISTER &&
+			    nexthop_nh->nh_dev == dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dead = fi->fib_nhs;
 				break;
 			}
 #endif
 		} endfor_nexthops(fi)
 		if (dead == fi->fib_nhs) {
+<<<<<<< HEAD
 			fi->fib_flags |= RTNH_F_DEAD;
 			ret++;
 		}
+=======
+			switch (event) {
+			case NETDEV_DOWN:
+			case NETDEV_UNREGISTER:
+				fi->fib_flags |= RTNH_F_DEAD;
+				/* fall through */
+			case NETDEV_CHANGE:
+				fi->fib_flags |= RTNH_F_LINKDOWN;
+				break;
+			}
+			ret++;
+		}
+
+		fib_rebalance(fi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return ret;
 }
 
 /* Must be invoked inside of an RCU protected region.  */
+<<<<<<< HEAD
 void fib_select_default(struct fib_result *res)
 {
 	struct fib_info *fi = NULL, *last_resort = NULL;
@@ -1180,12 +1841,49 @@ void fib_select_default(struct fib_result *res)
 
 		if (next_fi->fib_priority > res->fi->fib_priority)
 			break;
+=======
+void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
+{
+	struct fib_info *fi = NULL, *last_resort = NULL;
+	struct hlist_head *fa_head = res->fa_head;
+	struct fib_table *tb = res->table;
+	u8 slen = 32 - res->prefixlen;
+	int order = -1, last_idx = -1;
+	struct fib_alias *fa, *fa1 = NULL;
+	u32 last_prio = res->fi->fib_priority;
+	u8 last_tos = 0;
+
+	hlist_for_each_entry_rcu(fa, fa_head, fa_list) {
+		struct fib_info *next_fi = fa->fa_info;
+
+		if (fa->fa_slen != slen)
+			continue;
+		if (fa->fa_tos && fa->fa_tos != flp->flowi4_tos)
+			continue;
+		if (fa->tb_id != tb->tb_id)
+			continue;
+		if (next_fi->fib_priority > last_prio &&
+		    fa->fa_tos == last_tos) {
+			if (last_tos)
+				continue;
+			break;
+		}
+		if (next_fi->fib_flags & RTNH_F_DEAD)
+			continue;
+		last_tos = fa->fa_tos;
+		last_prio = next_fi->fib_priority;
+
+		if (next_fi->fib_scope != res->scope ||
+		    fa->fa_type != RTN_UNICAST)
+			continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!next_fi->fib_nh[0].nh_gw ||
 		    next_fi->fib_nh[0].nh_scope != RT_SCOPE_LINK)
 			continue;
 
 		fib_alias_accessed(fa);
 
+<<<<<<< HEAD
 		if (fi == NULL) {
 			if (next_fi != res->fi)
 				break;
@@ -1193,38 +1891,71 @@ void fib_select_default(struct fib_result *res)
 					     &last_idx, tb->tb_default)) {
 			fib_result_assign(res, fi);
 			tb->tb_default = order;
+=======
+		if (!fi) {
+			if (next_fi != res->fi)
+				break;
+			fa1 = fa;
+		} else if (!fib_detect_death(fi, order, &last_resort,
+					     &last_idx, fa1->fa_default)) {
+			fib_result_assign(res, fi);
+			fa1->fa_default = order;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		}
 		fi = next_fi;
 		order++;
 	}
 
+<<<<<<< HEAD
 	if (order <= 0 || fi == NULL) {
 		tb->tb_default = -1;
+=======
+	if (order <= 0 || !fi) {
+		if (fa1)
+			fa1->fa_default = -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
 	if (!fib_detect_death(fi, order, &last_resort, &last_idx,
+<<<<<<< HEAD
 				tb->tb_default)) {
 		fib_result_assign(res, fi);
 		tb->tb_default = order;
+=======
+			      fa1->fa_default)) {
+		fib_result_assign(res, fi);
+		fa1->fa_default = order;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
 	if (last_idx >= 0)
 		fib_result_assign(res, last_resort);
+<<<<<<< HEAD
 	tb->tb_default = last_idx;
+=======
+	fa1->fa_default = last_idx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_IP_ROUTE_MULTIPATH
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Dead device goes up. We wake up dead nexthops.
  * It takes sense only on multipath routes.
  */
+<<<<<<< HEAD
 int fib_sync_up(struct net_device *dev)
+=======
+int fib_sync_up(struct net_device *dev, unsigned int nh_flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fib_info *prev_fi;
 	unsigned int hash;
@@ -1235,6 +1966,16 @@ int fib_sync_up(struct net_device *dev)
 	if (!(dev->flags & IFF_UP))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (nh_flags & RTNH_F_DEAD) {
+		unsigned int flags = dev_get_flags(dev);
+
+		if (flags & (IFF_RUNNING | IFF_LOWER_UP))
+			nh_flags |= RTNH_F_LINKDOWN;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	prev_fi = NULL;
 	hash = fib_devindex_hashfn(dev->ifindex);
 	head = &fib_info_devhash[hash];
@@ -1251,17 +1992,26 @@ int fib_sync_up(struct net_device *dev)
 		prev_fi = fi;
 		alive = 0;
 		change_nexthops(fi) {
+<<<<<<< HEAD
 			if (!(nexthop_nh->nh_flags & RTNH_F_DEAD)) {
 				alive++;
 				continue;
 			}
 			if (nexthop_nh->nh_dev == NULL ||
+=======
+			if (!(nexthop_nh->nh_flags & nh_flags)) {
+				alive++;
+				continue;
+			}
+			if (!nexthop_nh->nh_dev ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    !(nexthop_nh->nh_dev->flags & IFF_UP))
 				continue;
 			if (nexthop_nh->nh_dev != dev ||
 			    !__in_dev_get_rtnl(dev))
 				continue;
 			alive++;
+<<<<<<< HEAD
 			spin_lock_bh(&fib_multipath_lock);
 			nexthop_nh->nh_power = 0;
 			nexthop_nh->nh_flags &= ~RTNH_F_DEAD;
@@ -1272,11 +2022,23 @@ int fib_sync_up(struct net_device *dev)
 			fi->fib_flags &= ~RTNH_F_DEAD;
 			ret++;
 		}
+=======
+			nexthop_nh->nh_flags &= ~nh_flags;
+		} endfor_nexthops(fi)
+
+		if (alive > 0) {
+			fi->fib_flags &= ~nh_flags;
+			ret++;
+		}
+
+		fib_rebalance(fi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 /*
  * The algorithm is suboptimal, but it provides really
  * fair weighted route distribution.
@@ -1330,3 +2092,77 @@ void fib_select_multipath(struct fib_result *res)
 	spin_unlock_bh(&fib_multipath_lock);
 }
 #endif
+=======
+#ifdef CONFIG_IP_ROUTE_MULTIPATH
+static bool fib_good_nh(const struct fib_nh *nh)
+{
+	int state = NUD_REACHABLE;
+
+	if (nh->nh_scope == RT_SCOPE_LINK) {
+		struct neighbour *n;
+
+		rcu_read_lock_bh();
+
+		n = __ipv4_neigh_lookup_noref(nh->nh_dev,
+					      (__force u32)nh->nh_gw);
+		if (n)
+			state = n->nud_state;
+
+		rcu_read_unlock_bh();
+	}
+
+	return !!(state & NUD_VALID);
+}
+
+void fib_select_multipath(struct fib_result *res, int hash)
+{
+	struct fib_info *fi = res->fi;
+	struct net *net = fi->fib_net;
+	bool first = false;
+
+	for_nexthops(fi) {
+		if (net->ipv4.sysctl_fib_multipath_use_neigh) {
+			if (!fib_good_nh(nh))
+				continue;
+			if (!first) {
+				res->nh_sel = nhsel;
+				first = true;
+			}
+		}
+
+		if (hash > atomic_read(&nh->nh_upper_bound))
+			continue;
+
+		res->nh_sel = nhsel;
+		return;
+	} endfor_nexthops(fi);
+}
+#endif
+
+void fib_select_path(struct net *net, struct fib_result *res,
+		     struct flowi4 *fl4, int mp_hash)
+{
+	bool oif_check;
+
+	oif_check = (fl4->flowi4_oif == 0 ||
+		     fl4->flowi4_flags & FLOWI_FLAG_SKIP_NH_OIF);
+
+#ifdef CONFIG_IP_ROUTE_MULTIPATH
+	if (res->fi->fib_nhs > 1 && oif_check) {
+		if (mp_hash < 0)
+			mp_hash = get_hash_from_flowi4(fl4) >> 1;
+
+		fib_select_multipath(res, mp_hash);
+	}
+	else
+#endif
+	if (!res->prefixlen &&
+	    res->table->tb_num_default > 1 &&
+	    res->type == RTN_UNICAST && oif_check)
+		fib_select_default(fl4, res);
+
+	if (!fl4->saddr)
+		fl4->saddr = FIB_RES_PREFSRC(net, *res);
+}
+EXPORT_SYMBOL_GPL(fib_select_path);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

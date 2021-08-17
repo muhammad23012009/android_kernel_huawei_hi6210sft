@@ -19,8 +19,13 @@ cpuid(unsigned int op, unsigned int *a, unsigned int *b, unsigned int *c,
 			: "a" (op));
 }
 
+<<<<<<< HEAD
 int
 get_cpuid(char *buffer, size_t sz)
+=======
+static int
+__get_cpuid(char *buffer, size_t sz, const char *fmt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int a, b, c, d, lvl;
 	int family = -1, model = -1, step = -1;
@@ -48,7 +53,11 @@ get_cpuid(char *buffer, size_t sz)
 		if (family >= 0x6)
 			model += ((a >> 16) & 0xf) << 4;
 	}
+<<<<<<< HEAD
 	nb = scnprintf(buffer, sz, "%s,%u,%u,%u$", vendor, family, model, step);
+=======
+	nb = scnprintf(buffer, sz, fmt, vendor, family, model, step);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* look for end marker to ensure the entire data fit */
 	if (strchr(buffer, '$')) {
@@ -57,3 +66,24 @@ get_cpuid(char *buffer, size_t sz)
 	}
 	return -1;
 }
+<<<<<<< HEAD
+=======
+
+int
+get_cpuid(char *buffer, size_t sz)
+{
+	return __get_cpuid(buffer, sz, "%s,%u,%u,%u$");
+}
+
+char *
+get_cpuid_str(void)
+{
+	char *buf = malloc(128);
+
+	if (buf && __get_cpuid(buf, 128, "%s-%u-%X$") < 0) {
+		free(buf);
+		return NULL;
+	}
+	return buf;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

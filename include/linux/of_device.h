@@ -5,12 +5,19 @@
 #include <linux/platform_device.h>
 #include <linux/of_platform.h> /* temporary until merge */
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF_DEVICE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of.h>
 #include <linux/mod_devicetable.h>
 
 struct device;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const struct of_device_id *of_match_device(
 	const struct of_device_id *matches, const struct device *dev);
 extern void of_device_make_bus_id(struct device *dev);
@@ -33,6 +40,11 @@ extern int of_device_add(struct platform_device *pdev);
 extern int of_device_register(struct platform_device *ofdev);
 extern void of_device_unregister(struct platform_device *ofdev);
 
+<<<<<<< HEAD
+=======
+extern const void *of_device_get_match_data(const struct device *dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern ssize_t of_device_get_modalias(struct device *dev,
 					char *str, ssize_t len);
 
@@ -53,10 +65,18 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
 	return of_node_get(cpu_dev->of_node);
 }
 
+<<<<<<< HEAD
 #else /* CONFIG_OF_DEVICE */
 
 static inline int of_driver_match_device(struct device *dev,
 					 struct device_driver *drv)
+=======
+void of_dma_configure(struct device *dev, struct device_node *np);
+#else /* CONFIG_OF */
+
+static inline int of_driver_match_device(struct device *dev,
+					 const struct device_driver *drv)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return 0;
 }
@@ -64,6 +84,20 @@ static inline int of_driver_match_device(struct device *dev,
 static inline void of_device_uevent(struct device *dev,
 			struct kobj_uevent_env *env) { }
 
+<<<<<<< HEAD
+=======
+static inline const void *of_device_get_match_data(const struct device *dev)
+{
+	return NULL;
+}
+
+static inline int of_device_get_modalias(struct device *dev,
+				   char *str, ssize_t len)
+{
+	return -ENODEV;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int of_device_uevent_modalias(struct device *dev,
 				   struct kobj_uevent_env *env)
 {
@@ -72,16 +106,31 @@ static inline int of_device_uevent_modalias(struct device *dev,
 
 static inline void of_device_node_put(struct device *dev) { }
 
+<<<<<<< HEAD
 static inline const struct of_device_id *of_match_device(
+=======
+static inline const struct of_device_id *__of_match_device(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		const struct of_device_id *matches, const struct device *dev)
 {
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+#define of_match_device(matches, dev)	\
+	__of_match_device(of_match_ptr(matches), (dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline struct device_node *of_cpu_device_node_get(int cpu)
 {
 	return NULL;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_OF_DEVICE */
+=======
+static inline void of_dma_configure(struct device *dev, struct device_node *np)
+{}
+#endif /* CONFIG_OF */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _LINUX_OF_DEVICE_H */

@@ -25,6 +25,7 @@ struct jz_nand_platform_data {
 	int			num_partitions;
 	struct mtd_partition	*partitions;
 
+<<<<<<< HEAD
 	struct nand_ecclayout	*ecc_layout;
 
 	unsigned int busy_gpio;
@@ -32,6 +33,11 @@ struct jz_nand_platform_data {
 	unsigned char banks[JZ_NAND_NUM_BANKS];
 
 	void (*ident_callback)(struct platform_device *, struct nand_chip *,
+=======
+	unsigned char banks[JZ_NAND_NUM_BANKS];
+
+	void (*ident_callback)(struct platform_device *, struct mtd_info *,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct mtd_partition **, int *num_partitions);
 };
 

@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2012 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2012 John Crispin <john@phrozen.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/of_irq.h>
@@ -25,6 +29,7 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
 
 int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
+<<<<<<< HEAD
 	struct of_irq dev_irq;
 	int irq;
 
@@ -37,4 +42,7 @@ int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 					dev_irq.size);
 	dev_info(&dev->dev, "SLOT:%d PIN:%d IRQ:%d\n", slot, pin, irq);
 	return irq;
+=======
+	return of_irq_parse_and_map_pci(dev, slot, pin);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

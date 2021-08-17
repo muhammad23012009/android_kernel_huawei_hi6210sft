@@ -19,9 +19,15 @@
 #include <linux/kernel.h>
 #include <linux/ptrace.h>
 #include <linux/hardirq.h>
+<<<<<<< HEAD
 
 #include <asm/pgtable.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+
+#include <asm/pgtable.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/gdb-stub.h>
 
 /*****************************************************************************/
@@ -78,7 +84,11 @@ asmlinkage void do_page_fault(int datammu, unsigned long esr0, unsigned long ear
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto no_context;
 
 	if (user_mode(__frame))
@@ -164,10 +174,19 @@ asmlinkage void do_page_fault(int datammu, unsigned long esr0, unsigned long ear
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, ear0, flags);
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+=======
+	fault = handle_mm_fault(vma, ear0, flags);
+	if (unlikely(fault & VM_FAULT_ERROR)) {
+		if (fault & VM_FAULT_OOM)
+			goto out_of_memory;
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();

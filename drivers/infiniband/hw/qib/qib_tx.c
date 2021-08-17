@@ -180,6 +180,10 @@ void qib_disarm_piobufs_set(struct qib_devdata *dd, unsigned long *mask,
 
 	for (i = 0; i < cnt; i++) {
 		int which;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!test_bit(i, mask))
 			continue;
 		/*

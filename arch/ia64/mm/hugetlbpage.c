@@ -38,7 +38,11 @@ huge_pte_alloc(struct mm_struct *mm, unsigned long addr, unsigned long sz)
 	if (pud) {
 		pmd = pmd_alloc(mm, pud, taddr);
 		if (pmd)
+<<<<<<< HEAD
 			pte = pte_alloc_map(mm, NULL, pmd, taddr);
+=======
+			pte = pte_alloc_map(mm, pmd, taddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return pte;
 }
@@ -65,11 +69,14 @@ huge_pte_offset (struct mm_struct *mm, unsigned long addr)
 	return pte;
 }
 
+<<<<<<< HEAD
 int huge_pmd_unshare(struct mm_struct *mm, unsigned long *addr, pte_t *ptep)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define mk_pte_huge(entry) { pte_val(entry) |= _PAGE_P; }
 
 /*
@@ -114,12 +121,15 @@ int pud_huge(pud_t pud)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct page *
 follow_huge_pmd(struct mm_struct *mm, unsigned long address, pmd_t *pmd, int write)
 {
 	return NULL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void hugetlb_free_pgd_range(struct mmu_gather *tlb,
 			unsigned long addr, unsigned long end,
 			unsigned long floor, unsigned long ceiling)

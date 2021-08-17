@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/notifier.h>
 
 #include <xen/xen.h>
@@ -9,17 +14,34 @@
 static void enable_hotplug_cpu(int cpu)
 {
 	if (!cpu_present(cpu))
+<<<<<<< HEAD
 		arch_register_cpu(cpu);
+=======
+		xen_arch_register_cpu(cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	set_cpu_present(cpu, true);
 }
 
 static void disable_hotplug_cpu(int cpu)
 {
+<<<<<<< HEAD
 	if (cpu_present(cpu))
 		arch_unregister_cpu(cpu);
 
 	set_cpu_present(cpu, false);
+=======
+	if (!cpu_is_hotpluggable(cpu))
+		return;
+	lock_device_hotplug();
+	if (cpu_online(cpu))
+		device_offline(get_cpu_device(cpu));
+	if (!cpu_online(cpu) && cpu_present(cpu)) {
+		xen_arch_unregister_cpu(cpu);
+		set_cpu_present(cpu, false);
+	}
+	unlock_device_hotplug();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vcpu_online(unsigned int cpu)
@@ -31,7 +53,11 @@ static int vcpu_online(unsigned int cpu)
 	err = xenbus_scanf(XBT_NIL, dir, "availability", "%15s", state);
 	if (err != 1) {
 		if (!xen_initial_domain())
+<<<<<<< HEAD
 			printk(KERN_ERR "XENBUS: Unable to read cpu state\n");
+=======
+			pr_err("Unable to read cpu state\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -40,12 +66,20 @@ static int vcpu_online(unsigned int cpu)
 	else if (strcmp(state, "offline") == 0)
 		return 0;
 
+<<<<<<< HEAD
 	printk(KERN_ERR "XENBUS: unknown state(%s) on CPU%d\n", state, cpu);
+=======
+	pr_err("unknown state(%s) on CPU%d\n", state, cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EINVAL;
 }
 static void vcpu_hotplug(unsigned int cpu)
 {
+<<<<<<< HEAD
 	if (!cpu_possible(cpu))
+=======
+	if (cpu >= nr_cpu_ids || !cpu_possible(cpu))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	switch (vcpu_online(cpu)) {
@@ -53,7 +87,10 @@ static void vcpu_hotplug(unsigned int cpu)
 		enable_hotplug_cpu(cpu);
 		break;
 	case 0:
+<<<<<<< HEAD
 		(void)cpu_down(cpu);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		disable_hotplug_cpu(cpu);
 		break;
 	default:
@@ -100,7 +137,15 @@ static int __init setup_vcpu_hotplug_event(void)
 	static struct notifier_block xsn_cpu = {
 		.notifier_call = setup_cpu_watcher };
 
+<<<<<<< HEAD
 	if (!xen_pv_domain())
+=======
+#ifdef CONFIG_X86
+	if (!xen_pv_domain())
+#else
+	if (!xen_domain())
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	register_xenstore_notifier(&xsn_cpu);

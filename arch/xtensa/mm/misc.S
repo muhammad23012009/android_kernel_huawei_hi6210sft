@@ -110,6 +110,7 @@ ENTRY(__tlbtemp_mapping_start)
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
 
 /*
+<<<<<<< HEAD
  * clear_user_page (void *addr, unsigned long vaddr, struct page *page)
  *                     a2              a3                 a4
  */
@@ -145,6 +146,26 @@ ENTRY(clear_user_page)
 	add	a6, a2, a4				# ppn
 	add	a2, a5, a3				# add 'color'
 
+=======
+ * clear_page_alias(void *addr, unsigned long paddr)
+ *                     a2              a3
+ */
+
+ENTRY(clear_page_alias)
+
+	entry	a1, 32
+
+	/* Skip setting up a temporary DTLB if not aliased low page. */
+
+	movi	a5, PAGE_OFFSET
+	movi	a6, 0
+	beqz	a3, 1f
+
+	/* Setup a temporary DTLB for the addr. */
+
+	addi	a6, a3, (PAGE_KERNEL | _PAGE_HW_WRITE)
+	mov	a4, a2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wdtlb	a6, a2
 	dsync
 
@@ -165,12 +186,17 @@ ENTRY(clear_user_page)
 
 	/* We need to invalidate the temporary idtlb entry, if any. */
 
+<<<<<<< HEAD
 1:	addi	a2, a2, -PAGE_SIZE
 	idtlb	a2
+=======
+1:	idtlb	a4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dsync
 
 	retw
 
+<<<<<<< HEAD
 ENDPROC(clear_user_page)
 
 /*
@@ -221,6 +247,40 @@ ENTRY(copy_user_page)
 	movi	a8, TLBTEMP_BASE_2			# base
 	add	a7, a3, a5				# ppn
 	add	a3, a8, a4
+=======
+ENDPROC(clear_page_alias)
+
+/*
+ * copy_page_alias(void *to, void *from,
+ *			a2	  a3
+ *                 unsigned long to_paddr, unsigned long from_paddr)
+ *	        		 a4			 a5
+ */
+
+ENTRY(copy_page_alias)
+
+	entry	a1, 32
+
+	/* Skip setting up a temporary DTLB for destination if not aliased. */
+
+	movi	a6, 0
+	movi	a7, 0
+	beqz	a4, 1f
+
+	/* Setup a temporary DTLB for destination. */
+
+	addi	a6, a4, (PAGE_KERNEL | _PAGE_HW_WRITE)
+	wdtlb	a6, a2
+	dsync
+
+	/* Skip setting up a temporary DTLB for source if not aliased. */
+
+1:	beqz	a5, 1f
+
+	/* Setup a temporary DTLB for source. */
+
+	addi	a7, a5, PAGE_KERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	addi	a8, a3, 1				# way1
 
 	wdtlb	a7, a8
@@ -271,7 +331,11 @@ ENTRY(copy_user_page)
 
 	retw
 
+<<<<<<< HEAD
 ENDPROC(copy_user_page)
+=======
+ENDPROC(copy_page_alias)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 
@@ -300,6 +364,33 @@ ENTRY(__flush_invalidate_dcache_page_alias)
 	retw
 
 ENDPROC(__flush_invalidate_dcache_page_alias)
+<<<<<<< HEAD
+=======
+
+/*
+ * void __invalidate_dcache_page_alias (addr, phys)
+ *                                       a2    a3
+ */
+
+ENTRY(__invalidate_dcache_page_alias)
+
+	entry	sp, 16
+
+	movi	a7, 0			# required for exception handler
+	addi	a6, a3, (PAGE_KERNEL | _PAGE_HW_WRITE)
+	mov	a4, a2
+	wdtlb	a6, a2
+	dsync
+
+	___invalidate_dcache_page a2 a3
+
+	idtlb	a4
+	dsync
+
+	retw
+
+ENDPROC(__invalidate_dcache_page_alias)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 ENTRY(__tlbtemp_mapping_itlb)

@@ -19,14 +19,22 @@ extern char cmd_line[COMMAND_LINE_SIZE];
 
 extern char *klimit;
 
+<<<<<<< HEAD
 void early_printk(const char *fmt, ...);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int setup_early_printk(char *opt);
 void remap_early_printk(void);
 void disable_early_printk(void);
 
+<<<<<<< HEAD
 void heartbeat(void);
 void setup_heartbeat(void);
+=======
+void microblaze_heartbeat(void);
+void microblaze_setup_heartbeat(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #   ifdef CONFIG_MMU
 extern void mmu_reset(void);

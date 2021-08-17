@@ -3,13 +3,21 @@
 #include <linux/slab.h>
 #include "rtl819x_TS.h"
 
+<<<<<<< HEAD
 void TsSetupTimeOut(unsigned long data)
+=======
+static void TsSetupTimeOut(unsigned long data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	// Not implement yet
 	// This is used for WMMSA and ACM , that would send ADDTSReq frame.
 }
 
+<<<<<<< HEAD
 void TsInactTimeout(unsigned long data)
+=======
+static void TsInactTimeout(unsigned long data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	// Not implement yet
 	// This is used for WMMSA and ACM.
@@ -22,7 +30,11 @@ void TsInactTimeout(unsigned long data)
  *  return:  NULL
  *  notice:
 ********************************************************************************************************************/
+<<<<<<< HEAD
 void RxPktPendingTimeout(unsigned long data)
+=======
+static void RxPktPendingTimeout(unsigned long data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	PRX_TS_RECORD	pRxTs = (PRX_TS_RECORD)data;
 	struct ieee80211_device *ieee = container_of(pRxTs, struct ieee80211_device, RxTsRecord[pRxTs->num]);
@@ -35,10 +47,15 @@ void RxPktPendingTimeout(unsigned long data)
 	u8 index = 0;
 	bool bPktInBuf = false;
 
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&(ieee->reorder_spinlock), flags);
 	//PlatformAcquireSpinLock(Adapter, RT_RX_SPINLOCK);
 	IEEE80211_DEBUG(IEEE80211_DL_REORDER,"==================>%s()\n",__FUNCTION__);
+=======
+	spin_lock_irqsave(&(ieee->reorder_spinlock), flags);
+	IEEE80211_DEBUG(IEEE80211_DL_REORDER,"==================>%s()\n",__func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if(pRxTs->RxTimeoutIndicateSeq != 0xffff)
 	{
 		// Indicate the pending packets sequentially according to SeqNum until meet the gap.
@@ -77,7 +94,11 @@ void RxPktPendingTimeout(unsigned long data)
 
 		// Indicate packets
 		if(index > REORDER_WIN_SIZE){
+<<<<<<< HEAD
 			IEEE80211_DEBUG(IEEE80211_DL_ERR, "RxReorderIndicatePacket(): Rx Reorer buffer full!! \n");
+=======
+			IEEE80211_DEBUG(IEEE80211_DL_ERR, "RxReorderIndicatePacket(): Rx Reorder buffer full!! \n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_unlock_irqrestore(&(ieee->reorder_spinlock), flags);
 			return;
 		}
@@ -87,10 +108,17 @@ void RxPktPendingTimeout(unsigned long data)
 	if(bPktInBuf && (pRxTs->RxTimeoutIndicateSeq==0xffff))
 	{
 		pRxTs->RxTimeoutIndicateSeq = pRxTs->RxIndicateSeq;
+<<<<<<< HEAD
 		mod_timer(&pRxTs->RxPktPendingTimer,  jiffies + MSECS(ieee->pHTInfo->RxReorderPendingTime));
 	}
 	spin_unlock_irqrestore(&(ieee->reorder_spinlock), flags);
 	//PlatformReleaseSpinLock(Adapter, RT_RX_SPINLOCK);
+=======
+		mod_timer(&pRxTs->RxPktPendingTimer,
+			  jiffies + msecs_to_jiffies(ieee->pHTInfo->RxReorderPendingTime));
+	}
+	spin_unlock_irqrestore(&(ieee->reorder_spinlock), flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /********************************************************************************************************************
@@ -99,7 +127,11 @@ void RxPktPendingTimeout(unsigned long data)
  *  return:  NULL
  *  notice:
 ********************************************************************************************************************/
+<<<<<<< HEAD
 void TsAddBaProcess(unsigned long data)
+=======
+static void TsAddBaProcess(unsigned long data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	PTX_TS_RECORD	pTxTs = (PTX_TS_RECORD)data;
 	u8 num = pTxTs->num;
@@ -110,16 +142,26 @@ void TsAddBaProcess(unsigned long data)
 }
 
 
+<<<<<<< HEAD
 void ResetTsCommonInfo(PTS_COMMON_INFO	pTsCommonInfo)
 {
 	memset(pTsCommonInfo->Addr, 0, 6);
+=======
+static void ResetTsCommonInfo(PTS_COMMON_INFO pTsCommonInfo)
+{
+	eth_zero_addr(pTsCommonInfo->Addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(&pTsCommonInfo->TSpec, 0, sizeof(TSPEC_BODY));
 	memset(&pTsCommonInfo->TClass, 0, sizeof(QOS_TCLAS)*TCLAS_NUM);
 	pTsCommonInfo->TClasProc = 0;
 	pTsCommonInfo->TClasNum = 0;
 }
 
+<<<<<<< HEAD
 void ResetTxTsEntry(PTX_TS_RECORD pTS)
+=======
+static void ResetTxTsEntry(PTX_TS_RECORD pTS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ResetTsCommonInfo(&pTS->TsCommonInfo);
 	pTS->TxCurSeq = 0;
@@ -130,7 +172,11 @@ void ResetTxTsEntry(PTX_TS_RECORD pTS)
 	ResetBaEntry(&pTS->TxPendingBARecord);
 }
 
+<<<<<<< HEAD
 void ResetRxTsEntry(PRX_TS_RECORD pTS)
+=======
+static void ResetRxTsEntry(PRX_TS_RECORD pTS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ResetTsCommonInfo(&pTS->TsCommonInfo);
 	pTS->RxIndicateSeq = 0xffff; // This indicate the RxIndicateSeq is not used now!!
@@ -144,7 +190,11 @@ void TSInitialize(struct ieee80211_device *ieee)
 	PRX_TS_RECORD		pRxTS  = ieee->RxTsRecord;
 	PRX_REORDER_ENTRY	pRxReorderEntry = ieee->RxReorderEntry;
 	u8				count = 0;
+<<<<<<< HEAD
 	IEEE80211_DEBUG(IEEE80211_DL_TS, "==========>%s()\n", __FUNCTION__);
+=======
+	IEEE80211_DEBUG(IEEE80211_DL_TS, "==========>%s()\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	// Initialize Tx TS related info.
 	INIT_LIST_HEAD(&ieee->Tx_TS_Admit_List);
 	INIT_LIST_HEAD(&ieee->Tx_TS_Pending_List);
@@ -156,6 +206,7 @@ void TSInitialize(struct ieee80211_device *ieee)
 		pTxTS->num = count;
 		// The timers for the operation of Traffic Stream and Block Ack.
 		// DLS related timer will be add here in the future!!
+<<<<<<< HEAD
 		init_timer(&pTxTS->TsCommonInfo.SetupTimer);
 		pTxTS->TsCommonInfo.SetupTimer.data = (unsigned long)pTxTS;
 		pTxTS->TsCommonInfo.SetupTimer.function = TsSetupTimeOut;
@@ -176,6 +227,18 @@ void TSInitialize(struct ieee80211_device *ieee)
 		pTxTS->TxAdmittedBARecord.Timer.data = (unsigned long)pTxTS;
 		pTxTS->TxAdmittedBARecord.Timer.function = TxBaInactTimeout;
 
+=======
+		setup_timer(&pTxTS->TsCommonInfo.SetupTimer, TsSetupTimeOut,
+			    (unsigned long)pTxTS);
+		setup_timer(&pTxTS->TsCommonInfo.InactTimer, TsInactTimeout,
+			    (unsigned long)pTxTS);
+		setup_timer(&pTxTS->TsAddBaTimer, TsAddBaProcess,
+			    (unsigned long)pTxTS);
+		setup_timer(&pTxTS->TxPendingBARecord.Timer, BaSetupTimeOut,
+			    (unsigned long)pTxTS);
+		setup_timer(&pTxTS->TxAdmittedBARecord.Timer,
+			    TxBaInactTimeout, (unsigned long)pTxTS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ResetTxTsEntry(pTxTS);
 		list_add_tail(&pTxTS->TsCommonInfo.List, &ieee->Tx_TS_Unused_List);
 		pTxTS++;
@@ -189,6 +252,7 @@ void TSInitialize(struct ieee80211_device *ieee)
 	{
 		pRxTS->num = count;
 		INIT_LIST_HEAD(&pRxTS->RxPendingPktList);
+<<<<<<< HEAD
 
 		init_timer(&pRxTS->TsCommonInfo.SetupTimer);
 		pRxTS->TsCommonInfo.SetupTimer.data = (unsigned long)pRxTS;
@@ -206,6 +270,16 @@ void TSInitialize(struct ieee80211_device *ieee)
 		pRxTS->RxPktPendingTimer.data = (unsigned long)pRxTS;
 		pRxTS->RxPktPendingTimer.function = RxPktPendingTimeout;
 
+=======
+		setup_timer(&pRxTS->TsCommonInfo.SetupTimer, TsSetupTimeOut,
+			    (unsigned long)pRxTS);
+		setup_timer(&pRxTS->TsCommonInfo.InactTimer, TsInactTimeout,
+			    (unsigned long)pRxTS);
+		setup_timer(&pRxTS->RxAdmittedBARecord.Timer,
+			    RxBaInactTimeout, (unsigned long)pRxTS);
+		setup_timer(&pRxTS->RxPktPendingTimer, RxPktPendingTimeout,
+			    (unsigned long)pRxTS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ResetRxTsEntry(pRxTS);
 		list_add_tail(&pRxTS->TsCommonInfo.List, &ieee->Rx_TS_Unused_List);
 		pRxTS++;
@@ -224,12 +298,18 @@ void TSInitialize(struct ieee80211_device *ieee)
 
 }
 
+<<<<<<< HEAD
 void AdmitTS(struct ieee80211_device *ieee, PTS_COMMON_INFO pTsCommonInfo, u32 InactTime)
+=======
+static void AdmitTS(struct ieee80211_device *ieee,
+		    PTS_COMMON_INFO pTsCommonInfo, u32 InactTime)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	del_timer_sync(&pTsCommonInfo->SetupTimer);
 	del_timer_sync(&pTsCommonInfo->InactTimer);
 
 	if(InactTime!=0)
+<<<<<<< HEAD
 		mod_timer(&pTsCommonInfo->InactTimer, jiffies + MSECS(InactTime));
 }
 
@@ -240,6 +320,21 @@ PTS_COMMON_INFO SearchAdmitTRStream(struct ieee80211_device *ieee, u8*	Addr, u8 
 	u8	dir;
 	bool				search_dir[4] = {0, 0, 0, 0};
 	struct list_head*		psearch_list; //FIXME
+=======
+		mod_timer(&pTsCommonInfo->InactTimer,
+			  jiffies + msecs_to_jiffies(InactTime));
+}
+
+
+static PTS_COMMON_INFO SearchAdmitTRStream(struct ieee80211_device *ieee,
+					   u8 *Addr, u8 TID,
+					   TR_SELECT TxRxSelect)
+{
+	//DIRECTION_VALUE	dir;
+	u8	dir;
+	bool				search_dir[4] = {0};
+	struct list_head		*psearch_list; //FIXME
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTS_COMMON_INFO	pRet = NULL;
 	if(ieee->iw_mode == IW_MODE_MASTER) //ap mode
 	{
@@ -285,7 +380,11 @@ PTS_COMMON_INFO SearchAdmitTRStream(struct ieee80211_device *ieee, u8*	Addr, u8 
 	//for(dir = DIR_UP; dir <= DIR_BI_DIR; dir++)
 	for(dir = 0; dir <= DIR_BI_DIR; dir++)
 	{
+<<<<<<< HEAD
 		if(search_dir[dir] ==false )
+=======
+		if (!search_dir[dir])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		list_for_each_entry(pRet, psearch_list, List){
 	//		IEEE80211_DEBUG(IEEE80211_DL_TS, "ADD:%pM, TID:%d, dir:%d\n", pRet->Addr, pRet->TSpec.f.TSInfo.field.ucTSID, pRet->TSpec.f.TSInfo.field.ucDirection);
@@ -309,6 +408,7 @@ PTS_COMMON_INFO SearchAdmitTRStream(struct ieee80211_device *ieee, u8*	Addr, u8 
 		return NULL;
 }
 
+<<<<<<< HEAD
 void MakeTSEntry(
 		PTS_COMMON_INFO	pTsCommonInfo,
 		u8*		Addr,
@@ -317,6 +417,11 @@ void MakeTSEntry(
 		u8		TCLAS_Num,
 		u8		TCLAS_Proc
 	)
+=======
+static void MakeTSEntry(PTS_COMMON_INFO pTsCommonInfo, u8 *Addr,
+			PTSPEC_BODY pTSPEC, PQOS_TCLAS pTCLAS, u8 TCLAS_Num,
+			u8 TCLAS_Proc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8	count;
 
@@ -326,10 +431,17 @@ void MakeTSEntry(
 	memcpy(pTsCommonInfo->Addr, Addr, 6);
 
 	if(pTSPEC != NULL)
+<<<<<<< HEAD
 		memcpy((u8*)(&(pTsCommonInfo->TSpec)), (u8*)pTSPEC, sizeof(TSPEC_BODY));
 
 	for(count = 0; count < TCLAS_Num; count++)
 		memcpy((u8*)(&(pTsCommonInfo->TClass[count])), (u8*)pTCLAS, sizeof(QOS_TCLAS));
+=======
+		memcpy((u8 *)(&(pTsCommonInfo->TSpec)), (u8 *)pTSPEC, sizeof(TSPEC_BODY));
+
+	for(count = 0; count < TCLAS_Num; count++)
+		memcpy((u8 *)(&(pTsCommonInfo->TClass[count])), (u8 *)pTCLAS, sizeof(QOS_TCLAS));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pTsCommonInfo->TClasProc = TCLAS_Proc;
 	pTsCommonInfo->TClasNum = TCLAS_Num;
@@ -337,9 +449,15 @@ void MakeTSEntry(
 
 
 bool GetTs(
+<<<<<<< HEAD
 	struct ieee80211_device*	ieee,
 	PTS_COMMON_INFO			*ppTS,
 	u8*				Addr,
+=======
+	struct ieee80211_device		*ieee,
+	PTS_COMMON_INFO			*ppTS,
+	u8				*Addr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8				TID,
 	TR_SELECT			TxRxSelect,  //Rx:1, Tx:0
 	bool				bAddNewTs
@@ -363,11 +481,19 @@ bool GetTs(
 		// In WMM case: we use 4 TID only
 		if (!IsACValid(TID))
 		{
+<<<<<<< HEAD
 			IEEE80211_DEBUG(IEEE80211_DL_ERR, " in %s(), TID(%d) is not valid\n", __FUNCTION__, TID);
 			return false;
 		}
 
 		switch(TID)
+=======
+			IEEE80211_DEBUG(IEEE80211_DL_ERR, " in %s(), TID(%d) is not valid\n", __func__, TID);
+			return false;
+		}
+
+		switch (TID)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{
 		case 0:
 		case 3:
@@ -402,8 +528,12 @@ bool GetTs(
 	}
 	else
 	{
+<<<<<<< HEAD
 		if(bAddNewTs == false)
 		{
+=======
+		if (!bAddNewTs) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			IEEE80211_DEBUG(IEEE80211_DL_TS, "add new TS failed(tid:%d)\n", UP);
 			return false;
 		}
@@ -416,12 +546,20 @@ bool GetTs(
 			//
 			TSPEC_BODY	TSpec;
 			PQOS_TSINFO		pTSInfo = &TSpec.f.TSInfo;
+<<<<<<< HEAD
 			struct list_head*	pUnusedList =
+=======
+			struct list_head	*pUnusedList =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 								(TxRxSelect == TX_DIR)?
 								(&ieee->Tx_TS_Unused_List):
 								(&ieee->Rx_TS_Unused_List);
 
+<<<<<<< HEAD
 			struct list_head*	pAddmitList =
+=======
+			struct list_head	*pAddmitList =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 								(TxRxSelect == TX_DIR)?
 								(&ieee->Tx_TS_Admit_List):
 								(&ieee->Rx_TS_Admit_List);
@@ -465,18 +603,27 @@ bool GetTs(
 			}
 			else
 			{
+<<<<<<< HEAD
 				IEEE80211_DEBUG(IEEE80211_DL_ERR, "in function %s() There is not enough TS record to be used!!", __FUNCTION__);
+=======
+				IEEE80211_DEBUG(IEEE80211_DL_ERR, "in function %s() There is not enough TS record to be used!!", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return false;
 			}
 		}
 	}
 }
 
+<<<<<<< HEAD
 void RemoveTsEntry(
 	struct ieee80211_device*	ieee,
 	PTS_COMMON_INFO			pTs,
 	TR_SELECT			TxRxSelect
 	)
+=======
+static void RemoveTsEntry(struct ieee80211_device *ieee, PTS_COMMON_INFO pTs,
+			  TR_SELECT TxRxSelect)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	//u32 flags = 0;
 	unsigned long flags = 0;
@@ -494,14 +641,21 @@ void RemoveTsEntry(
 
 		while(!list_empty(&pRxTS->RxPendingPktList))
 		{
+<<<<<<< HEAD
 		//      PlatformAcquireSpinLock(Adapter, RT_RX_SPINLOCK);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_lock_irqsave(&(ieee->reorder_spinlock), flags);
 			//pRxReorderEntry = list_entry(&pRxTS->RxPendingPktList.prev,RX_REORDER_ENTRY,List);
 			pRxReorderEntry = (PRX_REORDER_ENTRY)list_entry(pRxTS->RxPendingPktList.prev,RX_REORDER_ENTRY,List);
 			list_del_init(&pRxReorderEntry->List);
 			{
 				int i = 0;
+<<<<<<< HEAD
 				struct ieee80211_rxb * prxb = pRxReorderEntry->prxb;
+=======
+				struct ieee80211_rxb *prxb = pRxReorderEntry->prxb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (unlikely(!prxb))
 				{
 					spin_unlock_irqrestore(&(ieee->reorder_spinlock), flags);
@@ -514,7 +668,10 @@ void RemoveTsEntry(
 				prxb = NULL;
 			}
 			list_add_tail(&pRxReorderEntry->List,&ieee->RxReorder_Unused_List);
+<<<<<<< HEAD
 			//PlatformReleaseSpinLock(Adapter, RT_RX_SPINLOCK);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_unlock_irqrestore(&(ieee->reorder_spinlock), flags);
 		}
 
@@ -527,7 +684,11 @@ void RemoveTsEntry(
 	}
 }
 
+<<<<<<< HEAD
 void RemovePeerTS(struct ieee80211_device* ieee, u8* Addr)
+=======
+void RemovePeerTS(struct ieee80211_device *ieee, u8 *Addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	PTS_COMMON_INFO	pTS, pTmpTS;
 
@@ -574,7 +735,11 @@ void RemovePeerTS(struct ieee80211_device* ieee, u8* Addr)
 	}
 }
 
+<<<<<<< HEAD
 void RemoveAllTS(struct ieee80211_device* ieee)
+=======
+void RemoveAllTS(struct ieee80211_device *ieee)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	PTS_COMMON_INFO pTS, pTmpTS;
 
@@ -607,15 +772,26 @@ void RemoveAllTS(struct ieee80211_device* ieee)
 	}
 }
 
+<<<<<<< HEAD
 void TsStartAddBaProcess(struct ieee80211_device* ieee, PTX_TS_RECORD	pTxTS)
 {
 	if(pTxTS->bAddBaReqInProgress == false)
+=======
+void TsStartAddBaProcess(struct ieee80211_device *ieee, PTX_TS_RECORD	pTxTS)
+{
+	if(!pTxTS->bAddBaReqInProgress)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		pTxTS->bAddBaReqInProgress = true;
 		if(pTxTS->bAddBaReqDelayed)
 		{
 			IEEE80211_DEBUG(IEEE80211_DL_BA, "TsStartAddBaProcess(): Delayed Start ADDBA after 60 sec!!\n");
+<<<<<<< HEAD
 			mod_timer(&pTxTS->TsAddBaTimer, jiffies + MSECS(TS_ADDBA_DELAY));
+=======
+			mod_timer(&pTxTS->TsAddBaTimer,
+				  jiffies + msecs_to_jiffies(TS_ADDBA_DELAY));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		else
 		{
@@ -624,5 +800,9 @@ void TsStartAddBaProcess(struct ieee80211_device* ieee, PTX_TS_RECORD	pTxTS)
 		}
 	}
 	else
+<<<<<<< HEAD
 		IEEE80211_DEBUG(IEEE80211_DL_ERR, "%s()==>BA timer is already added\n", __FUNCTION__);
+=======
+		IEEE80211_DEBUG(IEEE80211_DL_ERR, "%s()==>BA timer is already added\n", __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

@@ -20,6 +20,7 @@
  */
 #define __IA64_BREAK_SYSCALL		0x100000
 
+<<<<<<< HEAD
 /*
  * Xen specific break numbers:
  */
@@ -29,4 +30,6 @@
 #define __IA64_XEN_HYPERPRIVOP_START	0x1
 #define __IA64_XEN_HYPERPRIVOP_MAX	0x1a
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_IA64_BREAK_H */

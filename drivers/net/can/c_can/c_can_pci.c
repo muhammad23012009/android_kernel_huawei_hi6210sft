@@ -19,9 +19,19 @@
 
 #include "c_can.h"
 
+<<<<<<< HEAD
 enum c_can_pci_reg_align {
 	C_CAN_REG_ALIGN_16,
 	C_CAN_REG_ALIGN_32,
+=======
+#define PCI_DEVICE_ID_PCH_CAN	0x8818
+#define PCH_PCI_SOFT_RESET	0x01fc
+
+enum c_can_pci_reg_align {
+	C_CAN_REG_ALIGN_16,
+	C_CAN_REG_ALIGN_32,
+	C_CAN_REG_32,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct c_can_pci_data {
@@ -31,6 +41,13 @@ struct c_can_pci_data {
 	enum c_can_pci_reg_align reg_align;
 	/* Set the frequency */
 	unsigned int freq;
+<<<<<<< HEAD
+=======
+	/* PCI bar number */
+	int bar;
+	/* Callback for reset */
+	void (*init)(const struct c_can_priv *priv, bool enable);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -39,30 +56,89 @@ struct c_can_pci_data {
  * registers can be aligned to a 16-bit boundary or 32-bit boundary etc.
  * Handle the same by providing a common read/write interface.
  */
+<<<<<<< HEAD
 static u16 c_can_pci_read_reg_aligned_to_16bit(struct c_can_priv *priv,
+=======
+static u16 c_can_pci_read_reg_aligned_to_16bit(const struct c_can_priv *priv,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						enum reg index)
 {
 	return readw(priv->base + priv->regs[index]);
 }
 
+<<<<<<< HEAD
 static void c_can_pci_write_reg_aligned_to_16bit(struct c_can_priv *priv,
+=======
+static void c_can_pci_write_reg_aligned_to_16bit(const struct c_can_priv *priv,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						enum reg index, u16 val)
 {
 	writew(val, priv->base + priv->regs[index]);
 }
 
+<<<<<<< HEAD
 static u16 c_can_pci_read_reg_aligned_to_32bit(struct c_can_priv *priv,
+=======
+static u16 c_can_pci_read_reg_aligned_to_32bit(const struct c_can_priv *priv,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						enum reg index)
 {
 	return readw(priv->base + 2 * priv->regs[index]);
 }
 
+<<<<<<< HEAD
 static void c_can_pci_write_reg_aligned_to_32bit(struct c_can_priv *priv,
+=======
+static void c_can_pci_write_reg_aligned_to_32bit(const struct c_can_priv *priv,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						enum reg index, u16 val)
 {
 	writew(val, priv->base + 2 * priv->regs[index]);
 }
 
+<<<<<<< HEAD
+=======
+static u16 c_can_pci_read_reg_32bit(const struct c_can_priv *priv,
+				    enum reg index)
+{
+	return (u16)ioread32(priv->base + 2 * priv->regs[index]);
+}
+
+static void c_can_pci_write_reg_32bit(const struct c_can_priv *priv,
+				      enum reg index, u16 val)
+{
+	iowrite32((u32)val, priv->base + 2 * priv->regs[index]);
+}
+
+static u32 c_can_pci_read_reg32(const struct c_can_priv *priv, enum reg index)
+{
+	u32 val;
+
+	val = priv->read_reg(priv, index);
+	val |= ((u32) priv->read_reg(priv, index + 1)) << 16;
+
+	return val;
+}
+
+static void c_can_pci_write_reg32(const struct c_can_priv *priv, enum reg index,
+		u32 val)
+{
+	priv->write_reg(priv, index + 1, val >> 16);
+	priv->write_reg(priv, index, val);
+}
+
+static void c_can_pci_reset_pch(const struct c_can_priv *priv, bool enable)
+{
+	if (enable) {
+		u32 __iomem *addr = priv->base + PCH_PCI_SOFT_RESET;
+
+		/* write to sw reset register */
+		iowrite32(1, addr);
+		iowrite32(0, addr);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int c_can_pci_probe(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
 {
@@ -84,10 +160,21 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 		goto out_disable_device;
 	}
 
+<<<<<<< HEAD
 	pci_set_master(pdev);
 	pci_enable_msi(pdev);
 
 	addr = pci_iomap(pdev, 0, pci_resource_len(pdev, 0));
+=======
+	ret = pci_enable_msi(pdev);
+	if (!ret) {
+		dev_info(&pdev->dev, "MSI enabled\n");
+		pci_set_master(pdev);
+	}
+
+	addr = pci_iomap(pdev, c_can_pci_data->bar,
+			 pci_resource_len(pdev, c_can_pci_data->bar));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!addr) {
 		dev_err(&pdev->dev,
 			"device has no PCI memory resources, "
@@ -126,13 +213,21 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 		break;
 	case BOSCH_D_CAN:
 		priv->regs = reg_map_d_can;
+<<<<<<< HEAD
 		priv->can.ctrlmode_supported |= CAN_CTRLMODE_3_SAMPLES;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		ret = -EINVAL;
 		goto out_free_c_can;
 	}
 
+<<<<<<< HEAD
+=======
+	priv->type = c_can_pci_data->type;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Configure access to registers */
 	switch (c_can_pci_data->reg_align) {
 	case C_CAN_REG_ALIGN_32:
@@ -143,10 +238,24 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 		priv->read_reg = c_can_pci_read_reg_aligned_to_16bit;
 		priv->write_reg = c_can_pci_write_reg_aligned_to_16bit;
 		break;
+<<<<<<< HEAD
+=======
+	case C_CAN_REG_32:
+		priv->read_reg = c_can_pci_read_reg_32bit;
+		priv->write_reg = c_can_pci_write_reg_32bit;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		ret = -EINVAL;
 		goto out_free_c_can;
 	}
+<<<<<<< HEAD
+=======
+	priv->read_reg32 = c_can_pci_read_reg32;
+	priv->write_reg32 = c_can_pci_write_reg32;
+
+	priv->raminit = c_can_pci_data->init;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = register_c_can_dev(dev);
 	if (ret) {
@@ -161,7 +270,10 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 	return 0;
 
 out_free_c_can:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_c_can_dev(dev);
 out_iounmap:
 	pci_iounmap(pdev, addr);
@@ -179,6 +291,7 @@ static void c_can_pci_remove(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct c_can_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 
 	unregister_c_can_dev(dev);
 
@@ -186,6 +299,15 @@ static void c_can_pci_remove(struct pci_dev *pdev)
 	free_c_can_dev(dev);
 
 	pci_iounmap(pdev, priv->base);
+=======
+	void __iomem *addr = priv->base;
+
+	unregister_c_can_dev(dev);
+
+	free_c_can_dev(dev);
+
+	pci_iounmap(pdev, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_disable_msi(pdev);
 	pci_clear_master(pdev);
 	pci_release_regions(pdev);
@@ -196,15 +318,36 @@ static struct c_can_pci_data c_can_sta2x11= {
 	.type = BOSCH_C_CAN,
 	.reg_align = C_CAN_REG_ALIGN_32,
 	.freq = 52000000, /* 52 Mhz */
+<<<<<<< HEAD
+=======
+	.bar = 0,
+};
+
+static struct c_can_pci_data c_can_pch = {
+	.type = BOSCH_C_CAN,
+	.reg_align = C_CAN_REG_32,
+	.freq = 50000000, /* 50 MHz */
+	.init = c_can_pci_reset_pch,
+	.bar = 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define C_CAN_ID(_vend, _dev, _driverdata) {		\
 	PCI_DEVICE(_vend, _dev),			\
 	.driver_data = (unsigned long)&_driverdata,	\
 }
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(c_can_pci_tbl) = {
 	C_CAN_ID(PCI_VENDOR_ID_STMICRO, PCI_DEVICE_ID_STMICRO_CAN,
 		 c_can_sta2x11),
+=======
+
+static const struct pci_device_id c_can_pci_tbl[] = {
+	C_CAN_ID(PCI_VENDOR_ID_STMICRO, PCI_DEVICE_ID_STMICRO_CAN,
+		 c_can_sta2x11),
+	C_CAN_ID(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_PCH_CAN,
+		 c_can_pch),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 static struct pci_driver c_can_pci_driver = {

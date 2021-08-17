@@ -12,7 +12,11 @@
 #include <linux/device.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <mach/lm.h>
+=======
+#include "lm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define to_lm_device(d)	container_of(d, struct lm_device, dev)
 #define to_lm_driver(d)	container_of(d, struct lm_driver, drv)

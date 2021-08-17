@@ -1,15 +1,29 @@
+<<<<<<< HEAD
 /* bnx2i.c: Broadcom NetXtreme II iSCSI driver.
  *
  * Copyright (c) 2006 - 2012 Broadcom Corporation
  * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
  * Copyright (c) 2007, 2008 Mike Christie
+=======
+/* bnx2i.c: QLogic NetXtreme II iSCSI driver.
+ *
+ * Copyright (c) 2006 - 2013 Broadcom Corporation
+ * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
+ * Copyright (c) 2007, 2008 Mike Christie
+ * Copyright (c) 2014, QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
  * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
+<<<<<<< HEAD
  * Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+=======
+ * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+ * Maintained by: QLogic-Storage-Upstream@qlogic.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include "bnx2i.h"
@@ -18,18 +32,30 @@ static struct list_head adapter_list = LIST_HEAD_INIT(adapter_list);
 static u32 adapter_count;
 
 #define DRV_MODULE_NAME		"bnx2i"
+<<<<<<< HEAD
 #define DRV_MODULE_VERSION	"2.7.2.2"
 #define DRV_MODULE_RELDATE	"Apr 25, 2012"
 
 static char version[] =
 		"Broadcom NetXtreme II iSCSI Driver " DRV_MODULE_NAME \
+=======
+#define DRV_MODULE_VERSION	"2.7.10.1"
+#define DRV_MODULE_RELDATE	"Jul 16, 2014"
+
+static char version[] =
+		"QLogic NetXtreme II iSCSI Driver " DRV_MODULE_NAME \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		" v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 
 
 MODULE_AUTHOR("Anil Veerabhadrappa <anilgv@broadcom.com> and "
 	      "Eddie Wai <eddie.wai@broadcom.com>");
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Broadcom NetXtreme II BCM5706/5708/5709/57710/57711/57712"
+=======
+MODULE_DESCRIPTION("QLogic NetXtreme II BCM5706/5708/5709/57710/57711/57712"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   "/57800/57810/57840 iSCSI Driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
@@ -172,6 +198,7 @@ void bnx2i_start(void *handle)
 	struct bnx2i_hba *hba = handle;
 	int i = HZ;
 
+<<<<<<< HEAD
 	/*
 	 * We should never register devices that don't support iSCSI
 	 * (see bnx2i_init_one), so something is wrong if we try to
@@ -182,6 +209,16 @@ void bnx2i_start(void *handle)
 
 	bnx2i_send_fw_iscsi_init_msg(hba);
 	while (!test_bit(ADAPTER_STATE_UP, &hba->adapter_state) && i--)
+=======
+	/* On some bnx2x devices, it is possible that iSCSI is no
+	 * longer supported after firmware is downloaded.  In that
+	 * case, the iscsi_init_msg will return failure.
+	 */
+
+	bnx2i_send_fw_iscsi_init_msg(hba);
+	while (!test_bit(ADAPTER_STATE_UP, &hba->adapter_state) &&
+	       !test_bit(ADAPTER_STATE_INIT_FAILED, &hba->adapter_state) && i--)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		msleep(BNX2I_INIT_POLL_TIME);
 }
 
@@ -539,11 +576,22 @@ static int __init bnx2i_mod_init(void)
 		p->iothread = NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	cpu_notifier_register_begin();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_online_cpu(cpu)
 		bnx2i_percpu_thread_create(cpu);
 
 	/* Initialize per CPU interrupt thread */
+<<<<<<< HEAD
 	register_hotcpu_notifier(&bnx2i_cpu_notifier);
+=======
+	__register_hotcpu_notifier(&bnx2i_cpu_notifier);
+
+	cpu_notifier_register_done();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -583,11 +631,22 @@ static void __exit bnx2i_mod_exit(void)
 	}
 	mutex_unlock(&bnx2i_dev_lock);
 
+<<<<<<< HEAD
 	unregister_hotcpu_notifier(&bnx2i_cpu_notifier);
+=======
+	cpu_notifier_register_begin();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_each_online_cpu(cpu)
 		bnx2i_percpu_thread_destroy(cpu);
 
+<<<<<<< HEAD
+=======
+	__unregister_hotcpu_notifier(&bnx2i_cpu_notifier);
+
+	cpu_notifier_register_done();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iscsi_unregister_transport(&bnx2i_iscsi_transport);
 	cnic_unregister_driver(CNIC_ULP_ISCSI);
 }

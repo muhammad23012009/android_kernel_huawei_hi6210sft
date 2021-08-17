@@ -7,8 +7,12 @@
  */
 
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <asm/page.h>
 #include <asm/mman.h>
+=======
+#include <asm/elf.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct vm_area_struct gate_vma;
 

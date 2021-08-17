@@ -2,7 +2,11 @@
  * lm78.c - Part of lm_sensors, Linux kernel modules for hardware
  *	    monitoring
  * Copyright (c) 1998, 1999  Frodo Looijaard <frodol@dds.nl>
+<<<<<<< HEAD
  * Copyright (c) 2007, 2011  Jean Delvare <khali@linux-fr.org>
+=======
+ * Copyright (c) 2007, 2011  Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,7 +127,10 @@ static inline int TEMP_FROM_REG(s8 val)
 
 struct lm78_data {
 	struct i2c_client *client;
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex lock;
 	enum chips type;
 
@@ -468,7 +475,11 @@ static SENSOR_DEVICE_ATTR(fan2_alarm, S_IRUGO, show_alarm, NULL, 7);
 static SENSOR_DEVICE_ATTR(fan3_alarm, S_IRUGO, show_alarm, NULL, 11);
 static SENSOR_DEVICE_ATTR(temp1_alarm, S_IRUGO, show_alarm, NULL, 4);
 
+<<<<<<< HEAD
 static struct attribute *lm78_attributes[] = {
+=======
+static struct attribute *lm78_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in0_min.dev_attr.attr,
 	&sensor_dev_attr_in0_max.dev_attr.attr,
@@ -519,9 +530,13 @@ static struct attribute *lm78_attributes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group lm78_group = {
 	.attrs = lm78_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(lm78);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * ISA related code
@@ -533,6 +548,7 @@ static struct platform_device *pdev;
 
 static unsigned short isa_address = 0x290;
 
+<<<<<<< HEAD
 /*
  * I2C devices get this name attribute automatically, but for ISA devices
  * we must create it by ourselves.
@@ -546,6 +562,8 @@ static ssize_t show_name(struct device *dev, struct device_attribute
 }
 static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct lm78_data *lm78_data_if_isa(void)
 {
 	return pdev ? platform_get_drvdata(pdev) : NULL;
@@ -661,6 +679,7 @@ static int lm78_i2c_detect(struct i2c_client *client,
 static int lm78_i2c_probe(struct i2c_client *client,
 			  const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct lm78_data *data;
 	int err;
 
@@ -669,12 +688,23 @@ static int lm78_i2c_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+=======
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct lm78_data *data;
+
+	data = devm_kzalloc(dev, sizeof(struct lm78_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->client = client;
 	data->type = id->driver_data;
 
 	/* Initialize the LM78 chip */
 	lm78_init_device(data);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &lm78_group);
 	if (err)
@@ -701,6 +731,11 @@ static int lm78_i2c_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &lm78_group);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, lm78_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id lm78_i2c_id[] = {
@@ -716,7 +751,10 @@ static struct i2c_driver lm78_driver = {
 		.name	= "lm78",
 	},
 	.probe		= lm78_i2c_probe,
+<<<<<<< HEAD
 	.remove		= lm78_i2c_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= lm78_i2c_id,
 	.detect		= lm78_i2c_detect,
 	.address_list	= normal_i2c,
@@ -839,17 +877,30 @@ static struct lm78_data *lm78_update_device(struct device *dev)
 #ifdef CONFIG_ISA
 static int lm78_isa_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	struct device *dev = &pdev->dev;
+	struct device *hwmon_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lm78_data *data;
 	struct resource *res;
 
 	/* Reserve the ISA region */
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
+<<<<<<< HEAD
 	if (!devm_request_region(&pdev->dev, res->start + LM78_ADDR_REG_OFFSET,
 				 2, "lm78"))
 		return -EBUSY;
 
 	data = devm_kzalloc(&pdev->dev, sizeof(struct lm78_data), GFP_KERNEL);
+=======
+	if (!devm_request_region(dev, res->start + LM78_ADDR_REG_OFFSET,
+				 2, "lm78"))
+		return -EBUSY;
+
+	data = devm_kzalloc(dev, sizeof(struct lm78_data), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!data)
 		return -ENOMEM;
 
@@ -868,6 +919,7 @@ static int lm78_isa_probe(struct platform_device *pdev)
 	/* Initialize the LM78 chip */
 	lm78_init_device(data);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&pdev->dev.kobj, &lm78_group);
 	if (err)
@@ -899,15 +951,26 @@ static int lm78_isa_remove(struct platform_device *pdev)
 	device_remove_file(&pdev->dev, &dev_attr_name);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, data->name,
+							   data, lm78_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver lm78_isa_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.name	= "lm78",
 	},
 	.probe		= lm78_isa_probe,
 	.remove		= lm78_isa_remove,
+=======
+		.name	= "lm78",
+	},
+	.probe		= lm78_isa_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* return 1 if a supported chip is found, 0 otherwise */
@@ -1108,7 +1171,11 @@ static void __exit sm_lm78_exit(void)
 	i2c_del_driver(&lm78_driver);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Frodo Looijaard, Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Frodo Looijaard, Jean Delvare <jdelvare@suse.de>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("LM78/LM79 driver");
 MODULE_LICENSE("GPL");
 

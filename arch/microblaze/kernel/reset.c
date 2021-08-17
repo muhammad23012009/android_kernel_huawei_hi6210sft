@@ -9,7 +9,10 @@
 
 #include <linux/init.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Trigger specific functions */
 #ifdef CONFIG_GPIOLIB
@@ -67,7 +70,15 @@ static void gpio_system_reset(void)
 		pr_notice("Reset GPIO unavailable - halting!\n");
 }
 #else
+<<<<<<< HEAD
 #define gpio_system_reset() do {} while (0)
+=======
+static void gpio_system_reset(void)
+{
+	pr_notice("No reset GPIO present - halting!\n");
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void of_platform_reset_gpio_probe(void)
 {
 	return;

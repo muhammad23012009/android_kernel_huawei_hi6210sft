@@ -19,6 +19,7 @@
  * or implied.
  */
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
 #include <linux/of.h>
@@ -42,6 +43,23 @@
 #define USB_HOST_NEED_CLK_EN	(1 << 21)
 #define PAD_CONTROL_LAST_DRIVEN	(1 << 19)
 
+=======
+#include <linux/dma-mapping.h>
+#include <linux/io.h>
+#include <linux/i2c.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/usb/isp1301.h>
+#include <linux/usb.h>
+#include <linux/usb/hcd.h>
+
+#include "ohci.h"
+
+#include <mach/hardware.h>
+
+#define USB_CONFIG_BASE		0x31020000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define USB_OTG_STAT_CONTROL	IO_ADDRESS(USB_CONFIG_BASE + 0x110)
 
 /* USB_OTG_STAT_CONTROL bit defines */
@@ -57,13 +75,25 @@
 #define start_int_umask(irq)
 #endif
 
+<<<<<<< HEAD
+=======
+#define DRIVER_DESC "OHCI NXP driver"
+
+static const char hcd_name[] = "ohci-nxp";
+static struct hc_driver __read_mostly ohci_nxp_hc_driver;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct i2c_client *isp1301_i2c_client;
 
 extern int usb_disabled(void);
 
+<<<<<<< HEAD
 static struct clk *usb_pll_clk;
 static struct clk *usb_dev_clk;
 static struct clk *usb_otg_clk;
+=======
+static struct clk *usb_host_clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void isp1301_configure_lpc32xx(void)
 {
@@ -103,9 +133,12 @@ static void isp1301_configure_lpc32xx(void)
 	i2c_smbus_write_byte_data(isp1301_i2c_client,
 		ISP1301_I2C_INTERRUPT_RISING | ISP1301_I2C_REG_CLEAR_ADDR, ~0);
 
+<<<<<<< HEAD
 	/* Enable usb_need_clk clock after transceiver is initialized */
 	__raw_writel(__raw_readl(USB_CTRL) | USB_HOST_NEED_CLK_EN, USB_CTRL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk(KERN_INFO "ISP1301 Vendor ID  : 0x%04x\n",
 	      i2c_smbus_read_word_data(isp1301_i2c_client, 0x00));
 	printk(KERN_INFO "ISP1301 Product ID : 0x%04x\n",
@@ -132,14 +165,22 @@ static inline void isp1301_vbus_off(void)
 		OTG1_VBUS_DRV);
 }
 
+<<<<<<< HEAD
 static void nxp_start_hc(void)
+=======
+static void ohci_nxp_start_hc(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp = __raw_readl(USB_OTG_STAT_CONTROL) | HOST_EN;
 	__raw_writel(tmp, USB_OTG_STAT_CONTROL);
 	isp1301_vbus_on();
 }
 
+<<<<<<< HEAD
 static void nxp_stop_hc(void)
+=======
+static void ohci_nxp_stop_hc(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long tmp;
 	isp1301_vbus_off();
@@ -147,6 +188,7 @@ static void nxp_stop_hc(void)
 	__raw_writel(tmp, USB_OTG_STAT_CONTROL);
 }
 
+<<<<<<< HEAD
 static int ohci_nxp_start(struct usb_hcd *hcd)
 {
 	struct ohci_hcd *ohci = hcd_to_ohci(hcd);
@@ -209,6 +251,11 @@ static int usb_hcd_nxp_probe(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = 0;
 	struct ohci_hcd *ohci;
+=======
+static int ohci_hcd_nxp_probe(struct platform_device *pdev)
+{
+	struct usb_hcd *hcd = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct hc_driver *driver = &ohci_nxp_hc_driver;
 	struct resource *res;
 	int ret = 0, irq;
@@ -226,8 +273,14 @@ static int usb_hcd_nxp_probe(struct platform_device *pdev)
 		return -EPROBE_DEFER;
 	}
 
+<<<<<<< HEAD
 	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 	pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
+=======
+	ret = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+	if (ret)
+		goto fail_disable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&pdev->dev, "%s: " DRIVER_DESC " (nxp)\n", hcd_name);
 	if (usb_disabled()) {
@@ -236,6 +289,7 @@ static int usb_hcd_nxp_probe(struct platform_device *pdev)
 		goto fail_disable;
 	}
 
+<<<<<<< HEAD
 	/* Enable AHB slave USB clock, needed for further USB clock control */
 	__raw_writel(USB_SLAVE_HCLK_EN | PAD_CONTROL_LAST_DRIVEN, USB_CTRL);
 
@@ -287,6 +341,20 @@ static int usb_hcd_nxp_probe(struct platform_device *pdev)
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to start USB DEV Clock\n");
 		goto fail_otgen;
+=======
+	/* Enable USB host clock */
+	usb_host_clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(usb_host_clk)) {
+		dev_err(&pdev->dev, "failed to acquire USB OHCI clock\n");
+		ret = PTR_ERR(usb_host_clk);
+		goto fail_disable;
+	}
+
+	ret = clk_prepare_enable(usb_host_clk);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "failed to start USB OHCI clock\n");
+		goto fail_disable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	isp1301_configure();
@@ -313,6 +381,7 @@ static int usb_hcd_nxp_probe(struct platform_device *pdev)
 		goto fail_resource;
 	}
 
+<<<<<<< HEAD
 	nxp_start_hc();
 	platform_set_drvdata(pdev, hcd);
 	ohci = hcd_to_ohci(hcd);
@@ -340,16 +409,38 @@ fail_rate:
 fail_pllen:
 	clk_put(usb_pll_clk);
 fail_pll:
+=======
+	ohci_nxp_start_hc();
+	platform_set_drvdata(pdev, hcd);
+
+	dev_info(&pdev->dev, "at 0x%p, irq %d\n", hcd->regs, hcd->irq);
+	ret = usb_add_hcd(hcd, irq, 0);
+	if (ret == 0) {
+		device_wakeup_enable(hcd->self.controller);
+		return ret;
+	}
+
+	ohci_nxp_stop_hc();
+fail_resource:
+	usb_put_hcd(hcd);
+fail_hcd:
+	clk_disable_unprepare(usb_host_clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail_disable:
 	isp1301_i2c_client = NULL;
 	return ret;
 }
 
+<<<<<<< HEAD
 static int usb_hcd_nxp_remove(struct platform_device *pdev)
+=======
+static int ohci_hcd_nxp_remove(struct platform_device *pdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
 
 	usb_remove_hcd(hcd);
+<<<<<<< HEAD
 	nxp_stop_hc();
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
 	usb_put_hcd(hcd);
@@ -362,6 +453,13 @@ static int usb_hcd_nxp_remove(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, NULL);
 
+=======
+	ohci_nxp_stop_hc();
+	usb_put_hcd(hcd);
+	clk_disable_unprepare(usb_host_clk);
+	isp1301_i2c_client = NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -369,6 +467,7 @@ static int usb_hcd_nxp_remove(struct platform_device *pdev)
 MODULE_ALIAS("platform:usb-ohci");
 
 #ifdef CONFIG_OF
+<<<<<<< HEAD
 static const struct of_device_id usb_hcd_nxp_match[] = {
 	{ .compatible = "nxp,ohci-nxp" },
 	{},
@@ -386,3 +485,41 @@ static struct platform_driver usb_hcd_nxp_driver = {
 	.remove = usb_hcd_nxp_remove,
 };
 
+=======
+static const struct of_device_id ohci_hcd_nxp_match[] = {
+	{ .compatible = "nxp,ohci-nxp" },
+	{},
+};
+MODULE_DEVICE_TABLE(of, ohci_hcd_nxp_match);
+#endif
+
+static struct platform_driver ohci_hcd_nxp_driver = {
+	.driver = {
+		.name = "usb-ohci",
+		.of_match_table = of_match_ptr(ohci_hcd_nxp_match),
+	},
+	.probe = ohci_hcd_nxp_probe,
+	.remove = ohci_hcd_nxp_remove,
+};
+
+static int __init ohci_nxp_init(void)
+{
+	if (usb_disabled())
+		return -ENODEV;
+
+	pr_info("%s: " DRIVER_DESC "\n", hcd_name);
+
+	ohci_init_driver(&ohci_nxp_hc_driver, NULL);
+	return platform_driver_register(&ohci_hcd_nxp_driver);
+}
+module_init(ohci_nxp_init);
+
+static void __exit ohci_nxp_cleanup(void)
+{
+	platform_driver_unregister(&ohci_hcd_nxp_driver);
+}
+module_exit(ohci_nxp_cleanup);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL v2");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

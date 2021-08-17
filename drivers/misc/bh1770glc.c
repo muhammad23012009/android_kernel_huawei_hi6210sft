@@ -651,8 +651,14 @@ static ssize_t bh1770_power_state_store(struct device *dev,
 	unsigned long value;
 	ssize_t ret;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&chip->mutex);
 	if (value) {
@@ -726,9 +732,17 @@ static ssize_t bh1770_prox_enable_store(struct device *dev,
 {
 	struct bh1770_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&chip->mutex);
 	/* Assume no proximity. Sensor will tell real state soon */
@@ -824,9 +838,17 @@ static ssize_t bh1770_set_prox_rate_above(struct device *dev,
 {
 	struct bh1770_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&chip->mutex);
 	chip->prox_rate_threshold = bh1770_prox_rate_validate(value);
@@ -840,9 +862,17 @@ static ssize_t bh1770_set_prox_rate_below(struct device *dev,
 {
 	struct bh1770_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&chip->mutex);
 	chip->prox_rate = bh1770_prox_rate_validate(value);
@@ -865,8 +895,15 @@ static ssize_t bh1770_set_prox_thres(struct device *dev,
 	unsigned long value;
 	int ret;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (value > BH1770_PROX_RANGE)
 		return -EINVAL;
 
@@ -893,9 +930,17 @@ static ssize_t bh1770_prox_persistence_store(struct device *dev,
 {
 	struct bh1770_chip *chip = dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (value > BH1770_PROX_MAX_PERSISTENCE)
 		return -EINVAL;
@@ -918,9 +963,17 @@ static ssize_t bh1770_prox_abs_thres_store(struct device *dev,
 {
 	struct bh1770_chip *chip = dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (value > BH1770_PROX_RANGE)
 		return -EINVAL;
@@ -963,9 +1016,17 @@ static ssize_t bh1770_lux_calib_store(struct device *dev,
 	unsigned long value;
 	u32 old_calib;
 	u32 new_corr;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&chip->mutex);
 	old_calib = chip->lux_calib;
@@ -1012,8 +1073,14 @@ static ssize_t bh1770_set_lux_rate(struct device *dev,
 	unsigned long rate_hz;
 	int ret, i;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &rate_hz))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 0, &rate_hz);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < ARRAY_SIZE(lux_rates_hz) - 1; i++)
 		if (rate_hz >= lux_rates_hz[i])
@@ -1047,11 +1114,20 @@ static ssize_t bh1770_get_lux_thresh_below(struct device *dev,
 static ssize_t bh1770_set_lux_thresh(struct bh1770_chip *chip, u16 *target,
 				const char *buf)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	unsigned long thresh;
 
 	if (strict_strtoul(buf, 0, &thresh))
 		return -EINVAL;
+=======
+	unsigned long thresh;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &thresh);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (thresh > BH1770_LUX_RANGE)
 		return -EINVAL;
@@ -1168,7 +1244,11 @@ static int bh1770_probe(struct i2c_client *client,
 	struct bh1770_chip *chip;
 	int err;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof *chip, GFP_KERNEL);
+=======
+	chip = devm_kzalloc(&client->dev, sizeof *chip, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!chip)
 		return -ENOMEM;
 
@@ -1181,8 +1261,12 @@ static int bh1770_probe(struct i2c_client *client,
 
 	if (client->dev.platform_data == NULL) {
 		dev_err(&client->dev, "platform data is mandatory\n");
+<<<<<<< HEAD
 		err = -EINVAL;
 		goto fail1;
+=======
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	chip->pdata		= client->dev.platform_data;
@@ -1207,24 +1291,40 @@ static int bh1770_probe(struct i2c_client *client,
 	chip->regs[0].supply = reg_vcc;
 	chip->regs[1].supply = reg_vleds;
 
+<<<<<<< HEAD
 	err = regulator_bulk_get(&client->dev,
 				 ARRAY_SIZE(chip->regs), chip->regs);
 	if (err < 0) {
 		dev_err(&client->dev, "Cannot get regulators\n");
 		goto fail1;
+=======
+	err = devm_regulator_bulk_get(&client->dev,
+				      ARRAY_SIZE(chip->regs), chip->regs);
+	if (err < 0) {
+		dev_err(&client->dev, "Cannot get regulators\n");
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	err = regulator_bulk_enable(ARRAY_SIZE(chip->regs),
 				chip->regs);
 	if (err < 0) {
 		dev_err(&client->dev, "Cannot enable regulators\n");
+<<<<<<< HEAD
 		goto fail2;
+=======
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	usleep_range(BH1770_STARTUP_DELAY, BH1770_STARTUP_DELAY * 2);
 	err = bh1770_detect(chip);
 	if (err < 0)
+<<<<<<< HEAD
 		goto fail3;
+=======
+		goto fail0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Start chip */
 	bh1770_chip_on(chip);
@@ -1235,14 +1335,22 @@ static int bh1770_probe(struct i2c_client *client,
 	if (chip->lux_corr == 0) {
 		dev_err(&client->dev, "Improper correction values\n");
 		err = -EINVAL;
+<<<<<<< HEAD
 		goto fail3;
+=======
+		goto fail0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (chip->pdata->setup_resources) {
 		err = chip->pdata->setup_resources();
 		if (err) {
 			err = -EINVAL;
+<<<<<<< HEAD
 			goto fail3;
+=======
+			goto fail0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -1250,7 +1358,11 @@ static int bh1770_probe(struct i2c_client *client,
 				&bh1770_attribute_group);
 	if (err < 0) {
 		dev_err(&chip->client->dev, "Sysfs registration failed\n");
+<<<<<<< HEAD
 		goto fail4;
+=======
+		goto fail1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -1266,6 +1378,7 @@ static int bh1770_probe(struct i2c_client *client,
 	if (err) {
 		dev_err(&client->dev, "could not get IRQ %d\n",
 			client->irq);
+<<<<<<< HEAD
 		goto fail5;
 	}
 	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
@@ -1282,6 +1395,20 @@ fail2:
 	regulator_bulk_free(ARRAY_SIZE(chip->regs), chip->regs);
 fail1:
 	kfree(chip);
+=======
+		goto fail2;
+	}
+	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
+	return err;
+fail2:
+	sysfs_remove_group(&chip->client->dev.kobj,
+			&bh1770_attribute_group);
+fail1:
+	if (chip->pdata->release_resources)
+		chip->pdata->release_resources();
+fail0:
+	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -1305,15 +1432,22 @@ static int bh1770_remove(struct i2c_client *client)
 	pm_runtime_disable(&client->dev);
 	pm_runtime_set_suspended(&client->dev);
 
+<<<<<<< HEAD
 	regulator_bulk_free(ARRAY_SIZE(chip->regs), chip->regs);
 	kfree(chip);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 #ifdef CONFIG_PM_SLEEP
 static int bh1770_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_off(chip);
@@ -1323,7 +1457,11 @@ static int bh1770_suspend(struct device *dev)
 
 static int bh1770_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 	int ret = 0;
 
@@ -1348,10 +1486,17 @@ static int bh1770_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int bh1770_runtime_suspend(struct device *dev)
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+#ifdef CONFIG_PM
+static int bh1770_runtime_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_off(chip);
@@ -1361,7 +1506,11 @@ static int bh1770_runtime_suspend(struct device *dev)
 
 static int bh1770_runtime_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_on(chip);
@@ -1386,7 +1535,10 @@ static const struct dev_pm_ops bh1770_pm_ops = {
 static struct i2c_driver bh1770_driver = {
 	.driver	 = {
 		.name	= "bh1770glc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &bh1770_pm_ops,
 	},
 	.probe	  = bh1770_probe,

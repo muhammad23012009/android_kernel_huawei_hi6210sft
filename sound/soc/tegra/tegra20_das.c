@@ -128,12 +128,20 @@ static const struct regmap_config tegra20_das_regmap_config = {
 	.max_register = LAST_REG(DAC_INPUT_DATA_CLK_SEL),
 	.writeable_reg = tegra20_das_wr_rd_reg,
 	.readable_reg = tegra20_das_wr_rd_reg,
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
+=======
+	.cache_type = REGCACHE_FLAT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int tegra20_das_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res, *region;
+=======
+	struct resource *res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *regs;
 	int ret = 0;
 
@@ -149,6 +157,7 @@ static int tegra20_das_probe(struct platform_device *pdev)
 	das->dev = &pdev->dev;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		dev_err(&pdev->dev, "No memory resource\n");
 		ret = -ENODEV;
@@ -167,6 +176,11 @@ static int tegra20_das_probe(struct platform_device *pdev)
 	if (!regs) {
 		dev_err(&pdev->dev, "ioremap failed\n");
 		ret = -ENOMEM;
+=======
+	regs = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(regs)) {
+		ret = PTR_ERR(regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 
@@ -233,7 +247,10 @@ static struct platform_driver tegra20_das_driver = {
 	.remove = tegra20_das_remove,
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = tegra20_das_of_match,
 	},
 };

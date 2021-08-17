@@ -89,7 +89,11 @@ snd_midi_process_event(struct snd_midi_op *ops,
 	int dest_channel = 0;
 
 	if (ev == NULL || chanset == NULL) {
+<<<<<<< HEAD
 		snd_printd("ev or chanbase NULL (snd_midi_process_event)\n");
+=======
+		pr_debug("ALSA: seq_midi_emul: ev or chanbase NULL (snd_midi_process_event)\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	if (chanset->channels == NULL)
@@ -98,7 +102,11 @@ snd_midi_process_event(struct snd_midi_op *ops,
 	if (snd_seq_ev_is_channel_type(ev)) {
 		dest_channel = ev->data.note.channel;
 		if (dest_channel >= chanset->max_channels) {
+<<<<<<< HEAD
 			snd_printd("dest channel is %d, max is %d\n",
+=======
+			pr_debug("ALSA: seq_midi_emul: dest channel is %d, max is %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   dest_channel, chanset->max_channels);
 			return;
 		}
@@ -232,7 +240,11 @@ snd_midi_process_event(struct snd_midi_op *ops,
 	case SNDRV_SEQ_EVENT_ECHO:
 	not_yet:
 	default:
+<<<<<<< HEAD
 		/*snd_printd("Unimplemented event %d\n", ev->type);*/
+=======
+		/*pr_debug("ALSA: seq_midi_emul: Unimplemented event %d\n", ev->type);*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -269,6 +281,12 @@ do_control(struct snd_midi_op *ops, void *drv, struct snd_midi_channel_set *chse
 {
 	int  i;
 
+<<<<<<< HEAD
+=======
+	if (control >= ARRAY_SIZE(chan->control))
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Switches */
 	if ((control >=64 && control <=69) || (control >= 80 && control <= 83)) {
 		/* These are all switches; either off or on so set to 0 or 127 */

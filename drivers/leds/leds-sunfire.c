@@ -135,10 +135,15 @@ static int sunfire_led_generic_probe(struct platform_device *pdev,
 	}
 
 	p = devm_kzalloc(&pdev->dev, sizeof(*p), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!p) {
 		dev_err(&pdev->dev, "Could not allocate struct sunfire_drvdata\n");
 		return -ENOMEM;
 	}
+=======
+	if (!p)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < NUM_LEDS_PER_BOARD; i++) {
 		struct led_classdev *lp = &p->leds[i].led_cdev;
@@ -159,14 +164,22 @@ static int sunfire_led_generic_probe(struct platform_device *pdev,
 		}
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, p);
+=======
+	platform_set_drvdata(pdev, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int sunfire_led_generic_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct sunfire_drvdata *p = dev_get_drvdata(&pdev->dev);
+=======
+	struct sunfire_drvdata *p = platform_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	for (i = 0; i < NUM_LEDS_PER_BOARD; i++)
@@ -225,7 +238,10 @@ static struct platform_driver sunfire_clockboard_led_driver = {
 	.remove		= sunfire_led_generic_remove,
 	.driver		= {
 		.name	= "sunfire-clockboard-leds",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -234,6 +250,7 @@ static struct platform_driver sunfire_fhc_led_driver = {
 	.remove		= sunfire_led_generic_remove,
 	.driver		= {
 		.name	= "sunfire-fhc-leds",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 };
@@ -254,12 +271,29 @@ static int __init sunfire_leds_init(void)
 	}
 
 	return err;
+=======
+	},
+};
+
+static struct platform_driver * const drivers[] = {
+	&sunfire_clockboard_led_driver,
+	&sunfire_fhc_led_driver,
+};
+
+static int __init sunfire_leds_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __exit sunfire_leds_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&sunfire_clockboard_led_driver);
 	platform_driver_unregister(&sunfire_fhc_led_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(sunfire_leds_init);

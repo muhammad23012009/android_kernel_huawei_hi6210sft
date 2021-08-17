@@ -11,13 +11,35 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/platform_device.h>
+=======
+#include <linux/dma-mapping.h>
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/usb.h>
+#include <linux/usb/hcd.h>
+
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* enable phy0 and phy1 for w90p910 */
 #define	ENPHY		(0x01<<8)
 #define PHY0_CTR	(0xA4)
 #define PHY1_CTR	(0xA8)
 
+<<<<<<< HEAD
+=======
+#define DRIVER_DESC "EHCI w90x900 driver"
+
+static const char hcd_name[] = "ehci-w90x900 ";
+
+static struct hc_driver __read_mostly ehci_w90x900_hc_driver;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int usb_w90x900_probe(const struct hc_driver *driver,
 		      struct platform_device *pdev)
 {
@@ -27,6 +49,7 @@ static int usb_w90x900_probe(const struct hc_driver *driver,
 	int retval = 0, irq;
 	unsigned long val;
 
+<<<<<<< HEAD
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
@@ -34,12 +57,15 @@ static int usb_w90x900_probe(const struct hc_driver *driver,
 		goto err1;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hcd = usb_create_hcd(driver, &pdev->dev, "w90x900 EHCI");
 	if (!hcd) {
 		retval = -ENOMEM;
 		goto err1;
 	}
 
+<<<<<<< HEAD
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
 
@@ -53,6 +79,16 @@ static int usb_w90x900_probe(const struct hc_driver *driver,
 		retval = -EFAULT;
 		goto err3;
 	}
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(hcd->regs)) {
+		retval = PTR_ERR(hcd->regs);
+		goto err2;
+	}
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ehci = hcd_to_ehci(hcd);
 	ehci->caps = hcd->regs;
@@ -72,6 +108,7 @@ static int usb_w90x900_probe(const struct hc_driver *driver,
 	__raw_writel(val, ehci->regs+PHY1_CTR);
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (irq < 0)
 		goto err4;
 
@@ -84,12 +121,26 @@ err4:
 	iounmap(hcd->regs);
 err3:
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
+=======
+	if (irq < 0) {
+		retval = irq;
+		goto err2;
+	}
+
+	retval = usb_add_hcd(hcd, irq, IRQF_SHARED);
+	if (retval != 0)
+		goto err2;
+
+	device_wakeup_enable(hcd->self.controller);
+	return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err2:
 	usb_put_hcd(hcd);
 err1:
 	return retval;
 }
 
+<<<<<<< HEAD
 static
 void usb_w90x900_remove(struct usb_hcd *hcd, struct platform_device *pdev)
 {
@@ -147,6 +198,15 @@ static const struct hc_driver ehci_w90x900_hc_driver = {
 	.clear_tt_buffer_complete = ehci_clear_tt_buffer_complete,
 };
 
+=======
+static void usb_w90x900_remove(struct usb_hcd *hcd,
+			struct platform_device *pdev)
+{
+	usb_remove_hcd(hcd);
+	usb_put_hcd(hcd);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ehci_w90x900_probe(struct platform_device *pdev)
 {
 	if (usb_disabled())
@@ -169,6 +229,7 @@ static struct platform_driver ehci_hcd_w90x900_driver = {
 	.remove = ehci_w90x900_remove,
 	.driver = {
 		.name = "w90x900-ehci",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 };
@@ -177,3 +238,30 @@ MODULE_AUTHOR("Wan ZongShun <mcuos.com@gmail.com>");
 MODULE_DESCRIPTION("w90p910 usb ehci driver!");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:w90p910-ehci");
+=======
+	},
+};
+
+static int __init ehci_w90X900_init(void)
+{
+	if (usb_disabled())
+		return -ENODEV;
+
+	pr_info("%s: " DRIVER_DESC "\n", hcd_name);
+
+	ehci_init_driver(&ehci_w90x900_hc_driver, NULL);
+	return platform_driver_register(&ehci_hcd_w90x900_driver);
+}
+module_init(ehci_w90X900_init);
+
+static void __exit ehci_w90X900_cleanup(void)
+{
+	platform_driver_unregister(&ehci_hcd_w90x900_driver);
+}
+module_exit(ehci_w90X900_cleanup);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_AUTHOR("Wan ZongShun <mcuos.com@gmail.com>");
+MODULE_ALIAS("platform:w90p910-ehci");
+MODULE_LICENSE("GPL v2");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

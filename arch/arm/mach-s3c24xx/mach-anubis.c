@@ -17,6 +17,10 @@
 #include <linux/init.h>
 #include <linux/gpio.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/ata_platform.h>
 #include <linux/i2c.h>
@@ -32,9 +36,15 @@
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
+=======
+#include <mach/regs-gpio.h>
+#include <mach/regs-lcd.h>
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/mtd-nand-s3c2410.h>
 #include <linux/platform_data/i2c-s3c2410.h>
 
@@ -45,7 +55,10 @@
 
 #include <net/ax88796.h>
 
+<<<<<<< HEAD
 #include <plat/clock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/devs.h>
 #include <plat/cpu.h>
 #include <linux/platform_data/asoc-s3c24xx_simtec.h>
@@ -351,6 +364,10 @@ static struct platform_device anubis_device_sm501 = {
 /* Standard Anubis devices */
 
 static struct platform_device *anubis_devices[] __initdata = {
+<<<<<<< HEAD
+=======
+	&s3c2410_device_dclk,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&s3c_device_ohci,
 	&s3c_device_wdt,
 	&s3c_device_adc,
@@ -363,6 +380,7 @@ static struct platform_device *anubis_devices[] __initdata = {
 	&anubis_device_sm501,
 };
 
+<<<<<<< HEAD
 static struct clk *anubis_clocks[] __initdata = {
 	&s3c24xx_dclk0,
 	&s3c24xx_dclk1,
@@ -371,6 +389,8 @@ static struct clk *anubis_clocks[] __initdata = {
 	&s3c24xx_uclk,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* I2C devices. */
 
 static struct i2c_board_info anubis_i2c_devs[] __initdata = {
@@ -393,6 +413,7 @@ static struct s3c24xx_audio_simtec_pdata __initdata anubis_audio = {
 
 static void __init anubis_map_io(void)
 {
+<<<<<<< HEAD
 	/* initialise the clocks */
 
 	s3c24xx_dclk0.parent = &clk_upll;
@@ -410,6 +431,9 @@ static void __init anubis_map_io(void)
 
 	s3c24xx_init_io(anubis_iodesc, ARRAY_SIZE(anubis_iodesc));
 	s3c24xx_init_clocks(0);
+=======
+	s3c24xx_init_io(anubis_iodesc, ARRAY_SIZE(anubis_iodesc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(anubis_uartcfgs, ARRAY_SIZE(anubis_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 
@@ -427,6 +451,15 @@ static void __init anubis_map_io(void)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void __init anubis_init_time(void)
+{
+	s3c2440_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init anubis_init(void)
 {
 	s3c_i2c0_set_platdata(NULL);
@@ -446,6 +479,10 @@ MACHINE_START(ANUBIS, "Simtec-Anubis")
 	.map_io		= anubis_map_io,
 	.init_machine	= anubis_init,
 	.init_irq	= s3c2440_init_irq,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c244x_restart,
+=======
+	.init_time	= anubis_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

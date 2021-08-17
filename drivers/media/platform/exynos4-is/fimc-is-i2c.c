@@ -12,7 +12,11 @@
 
 #include <linux/clk.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/of_i2c.h>
+=======
+#include <linux/i2c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 #include <linux/slab.h>
@@ -55,6 +59,7 @@ static int fimc_is_i2c_probe(struct platform_device *pdev)
 	i2c_adap->algo = &fimc_is_i2c_algorithm;
 	i2c_adap->class = I2C_CLASS_SPD;
 
+<<<<<<< HEAD
 	ret = i2c_add_adapter(i2c_adap);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to add I2C bus %s\n",
@@ -70,26 +75,61 @@ static int fimc_is_i2c_probe(struct platform_device *pdev)
 	of_i2c_register_devices(i2c_adap);
 
 	return 0;
+=======
+	platform_set_drvdata(pdev, isp_i2c);
+	pm_runtime_enable(&pdev->dev);
+
+	ret = i2c_add_adapter(i2c_adap);
+	if (ret < 0)
+		goto err_pm_dis;
+	/*
+	 * Client drivers of this adapter don't do any I2C transfers as that
+	 * is handled by the ISP firmware.  But we rely on the runtime PM
+	 * state propagation from the clients up to the adapter driver so
+	 * clear the ignore_children flags here.  PM rutnime calls are not
+	 * used in probe() handler of clients of this adapter so there is
+	 * no issues with clearing the flag right after registering the I2C
+	 * adapter.
+	 */
+	pm_suspend_ignore_children(&i2c_adap->dev, false);
+	return 0;
+
+err_pm_dis:
+	pm_runtime_disable(&pdev->dev);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int fimc_is_i2c_remove(struct platform_device *pdev)
 {
 	struct fimc_is_i2c *isp_i2c = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	pm_runtime_disable(&isp_i2c->adapter.dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pm_runtime_disable(&pdev->dev);
 	i2c_del_adapter(&isp_i2c->adapter);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int fimc_is_i2c_suspend(struct device *dev)
 {
 	struct fimc_is_i2c *isp_i2c = dev_get_drvdata(dev);
+=======
+#ifdef CONFIG_PM
+static int fimc_is_i2c_runtime_suspend(struct device *dev)
+{
+	struct fimc_is_i2c *isp_i2c = dev_get_drvdata(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_disable_unprepare(isp_i2c->clock);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int fimc_is_i2c_resume(struct device *dev)
 {
 	struct fimc_is_i2c *isp_i2c = dev_get_drvdata(dev);
@@ -98,6 +138,39 @@ static int fimc_is_i2c_resume(struct device *dev)
 
 UNIVERSAL_DEV_PM_OPS(fimc_is_i2c_pm_ops, fimc_is_i2c_suspend,
 		     fimc_is_i2c_resume, NULL);
+=======
+static int fimc_is_i2c_runtime_resume(struct device *dev)
+{
+	struct fimc_is_i2c *isp_i2c = dev_get_drvdata(dev);
+
+	return clk_prepare_enable(isp_i2c->clock);
+}
+#endif
+
+#ifdef CONFIG_PM_SLEEP
+static int fimc_is_i2c_suspend(struct device *dev)
+{
+	if (pm_runtime_suspended(dev))
+		return 0;
+
+	return fimc_is_i2c_runtime_suspend(dev);
+}
+
+static int fimc_is_i2c_resume(struct device *dev)
+{
+	if (pm_runtime_suspended(dev))
+		return 0;
+
+	return fimc_is_i2c_runtime_resume(dev);
+}
+#endif
+
+static struct dev_pm_ops fimc_is_i2c_pm_ops = {
+	SET_RUNTIME_PM_OPS(fimc_is_i2c_runtime_suspend,
+					fimc_is_i2c_runtime_resume, NULL)
+	SET_SYSTEM_SLEEP_PM_OPS(fimc_is_i2c_suspend, fimc_is_i2c_resume)
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct of_device_id fimc_is_i2c_of_match[] = {
 	{ .compatible = FIMC_IS_I2C_COMPATIBLE },
@@ -110,7 +183,10 @@ static struct platform_driver fimc_is_i2c_driver = {
 	.driver = {
 		.of_match_table = fimc_is_i2c_of_match,
 		.name		= "fimc-isp-i2c",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm		= &fimc_is_i2c_pm_ops,
 	}
 };

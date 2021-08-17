@@ -568,6 +568,12 @@ int __init register_led_driver(int model, unsigned long cmd_reg, unsigned long d
 		break;
 
 	case DISPLAY_MODEL_LASI:
+<<<<<<< HEAD
+=======
+		/* Skip to register LED in QEMU */
+		if (running_on_qemu)
+			return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LED_DATA_REG = data_reg;
 		led_func_ptr = led_LASI_driver;
 		printk(KERN_INFO "LED display at %lx registered\n", LED_DATA_REG);

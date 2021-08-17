@@ -21,8 +21,15 @@
 #include <asm/mach/arch.h>
 
 #include <video/samsung_fimd.h>
+<<<<<<< HEAD
 #include <mach/map.h>
 #include <mach/regs-gpio.h>
+=======
+#include <mach/irqs.h>
+#include <mach/map.h>
+#include <mach/regs-gpio.h>
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <plat/cpu.h>
 #include <plat/devs.h>
@@ -168,10 +175,17 @@ static void __init smartq7_machine_init(void)
 MACHINE_START(SMARTQ7, "SmartQ 7")
 	/* Maintainer: Maurus Cuelenaere <mcuelenaere AT gmail DOT com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
 	.init_irq	= s3c6410_init_irq,
 	.map_io		= smartq_map_io,
 	.init_machine	= smartq7_machine_init,
 	.init_late	= s3c64xx_init_late,
+=======
+	.nr_irqs	= S3C64XX_NR_IRQS,
+	.init_irq	= s3c6410_init_irq,
+	.map_io		= smartq_map_io,
+	.init_machine	= smartq7_machine_init,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_time	= samsung_timer_init,
 	.restart	= s3c64xx_restart,
 MACHINE_END

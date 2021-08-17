@@ -1,12 +1,18 @@
 config BTRFS_FS
 	tristate "Btrfs filesystem support"
+<<<<<<< HEAD
 	select LIBCRC32C
+=======
+	select CRYPTO
+	select CRYPTO_CRC32C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select ZLIB_INFLATE
 	select ZLIB_DEFLATE
 	select LZO_COMPRESS
 	select LZO_DECOMPRESS
 	select RAID6_PQ
 	select XOR_BLOCKS
+<<<<<<< HEAD
 
 	help
 	  Btrfs is a new filesystem with extents, writable snapshotting,
@@ -15,6 +21,24 @@ config BTRFS_FS
 	  Btrfs is highly experimental, and THE DISK FORMAT IS NOT YET
 	  FINALIZED.  You should say N here unless you are interested in
 	  testing Btrfs with non-critical data.
+=======
+	select SRCU
+	depends on !PPC_256K_PAGES	# powerpc
+	depends on !PAGE_SIZE_256KB	# hexagon
+
+	help
+	  Btrfs is a general purpose copy-on-write filesystem with extents,
+	  writable snapshotting, support for multiple devices and many more
+	  features focused on fault tolerance, repair and easy administration.
+
+	  The filesystem disk format is no longer unstable, and it's not
+	  expected to change unless there are strong reasons to do so. If there
+	  is a format change, file systems with a unchanged format will
+	  continue to be mountable and usable by newer kernels.
+
+	  For more information, please see the web pages at
+	  http://btrfs.wiki.kernel.org.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  To compile this file system support as a module, choose M here. The
 	  module will be called btrfs.
@@ -59,7 +83,12 @@ config BTRFS_FS_RUN_SANITY_TESTS
 	help
 	  This will run some basic sanity tests on the free space cache
 	  code to make sure it is acting as it should.  These are mostly
+<<<<<<< HEAD
 	  regression tests and are only really interesting to btrfs devlopers.
+=======
+	  regression tests and are only really interesting to btrfs
+	  developers.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  If unsure, say N.
 
@@ -72,3 +101,15 @@ config BTRFS_DEBUG
 	  performance, or export extra information via sysfs.
 
 	  If unsure, say N.
+<<<<<<< HEAD
+=======
+
+config BTRFS_ASSERT
+	bool "Btrfs assert support"
+	depends on BTRFS_FS
+	help
+	  Enable run-time assertion checking.  This will result in panics if
+	  any of the assertions trip.  This is meant for btrfs developers only.
+
+	  If unsure, say N.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

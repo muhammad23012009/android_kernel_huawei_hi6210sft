@@ -1403,7 +1403,11 @@ static void amb_free_rx_skb (struct atm_vcc * atm_vcc, struct sk_buff * skb) {
   rx.host_address = cpu_to_be32 (virt_to_bus (skb->data));
   
   skb->data = skb->head;
+<<<<<<< HEAD
   skb->tail = skb->head;
+=======
+  skb_reset_tail_pointer(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   skb->len = 0;
   
   if (!rx_give (dev, &rx, pool)) {
@@ -1925,7 +1929,11 @@ static int ucode_init(loader_block *lb, amb_dev *dev)
   const struct firmware *fw;
   unsigned long start_address;
   const struct ihex_binrec *rec;
+<<<<<<< HEAD
   const char *errmsg = 0;
+=======
+  const char *errmsg = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   int res;
 
   res = request_ihex_firmware(&fw, "atmsar11.fw", &dev->pci_dev->dev);

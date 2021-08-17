@@ -37,7 +37,10 @@
  *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -418,7 +421,11 @@ static int carl9170_rx_mac_status(struct ar9170 *ar,
 
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		if (status->band == IEEE80211_BAND_2GHZ)
+=======
+		if (status->band == NL80211_BAND_2GHZ)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status->rate_idx += 4;
 		break;
 
@@ -454,7 +461,11 @@ static void carl9170_rx_phy_status(struct ar9170 *ar,
 	/* post-process RSSI */
 	for (i = 0; i < 7; i++)
 		if (phy->rssi[i] & 0x80)
+<<<<<<< HEAD
 			phy->rssi[i] = ((phy->rssi[i] & 0x7f) + 1) & 0x7f;
+=======
+			phy->rssi[i] = ((~phy->rssi[i] & 0x7f) + 1) & 0x7f;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* TODO: we could do something with phy_errors */
 	status->signal = ar->noise[0] + phy->rssi_combined;
@@ -520,6 +531,10 @@ static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 {
 	struct ieee80211_hdr *hdr = data;
 	struct ieee80211_tim_ie *tim_ie;
+<<<<<<< HEAD
+=======
+	struct ath_common *common = &ar->common;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *tim;
 	u8 tim_len;
 	bool cam;
@@ -527,17 +542,26 @@ static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 	if (likely(!(ar->hw->conf.flags & IEEE80211_CONF_PS)))
 		return;
 
+<<<<<<< HEAD
 	/* check if this really is a beacon */
 	if (!ieee80211_is_beacon(hdr->frame_control))
 		return;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* min. beacon length + FCS_LEN */
 	if (len <= 40 + FCS_LEN)
 		return;
 
+<<<<<<< HEAD
 	/* and only beacons from the associated BSSID, please */
 	if (!ether_addr_equal(hdr->addr3, ar->common.curbssid) ||
 	    !ar->common.curaid)
+=======
+	/* check if this really is a beacon */
+	/* and only beacons from the associated BSSID, please */
+	if (!ath_is_mybeacon(common, hdr) || !common->curaid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	ar->ps.last_beacon = jiffies;
@@ -576,7 +600,11 @@ static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 
 static void carl9170_ba_check(struct ar9170 *ar, void *data, unsigned int len)
 {
+<<<<<<< HEAD
 	struct ieee80211_bar *bar = (void *) data;
+=======
+	struct ieee80211_bar *bar = data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct carl9170_bar_list_entry *entry;
 	unsigned int queue;
 
@@ -602,8 +630,13 @@ static void carl9170_ba_check(struct ar9170 *ar, void *data, unsigned int len)
 
 		if (bar->start_seq_num == entry_bar->start_seq_num &&
 		    TID_CHECK(bar->control, entry_bar->control) &&
+<<<<<<< HEAD
 		    compare_ether_addr(bar->ra, entry_bar->ta) == 0 &&
 		    compare_ether_addr(bar->ta, entry_bar->ra) == 0) {
+=======
+		    ether_addr_equal_64bits(bar->ra, entry_bar->ta) &&
+		    ether_addr_equal_64bits(bar->ta, entry_bar->ra)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct ieee80211_tx_info *tx_info;
 
 			tx_info = IEEE80211_SKB_CB(entry_skb);

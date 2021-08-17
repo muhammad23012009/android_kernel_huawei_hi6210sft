@@ -28,6 +28,10 @@
 #include <linux/fs_uart_pd.h>
 #include <linux/fsl_devices.h>
 #include <linux/mii.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_fdt.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 
 #include <asm/delay.h>
@@ -36,7 +40,10 @@
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/mpc8xx.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/8xx_immap.h>
 #include <asm/cpm1.h>
 #include <asm/fs_pd.h>
@@ -48,7 +55,11 @@ struct cpm_pin {
 	int port, pin, flags;
 };
 
+<<<<<<< HEAD
 static struct __initdata cpm_pin tqm8xx_pins[] = {
+=======
+static struct cpm_pin tqm8xx_pins[] __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* SMC1 */
 	{CPM_PORTB, 24, CPM_PIN_INPUT}, /* RX */
 	{CPM_PORTB, 25, CPM_PIN_INPUT | CPM_PIN_SECONDARY}, /* TX */
@@ -63,7 +74,11 @@ static struct __initdata cpm_pin tqm8xx_pins[] = {
 	{CPM_PORTC, 11, CPM_PIN_INPUT | CPM_PIN_SECONDARY | CPM_PIN_GPIO},
 };
 
+<<<<<<< HEAD
 static struct __initdata cpm_pin tqm8xx_fec_pins[] = {
+=======
+static struct cpm_pin tqm8xx_fec_pins[] __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* MII */
 	{CPM_PORTD, 3, CPM_PIN_OUTPUT},
 	{CPM_PORTD, 4, CPM_PIN_OUTPUT},
@@ -119,12 +134,19 @@ static void __init tqm8xx_setup_arch(void)
 
 static int __init tqm8xx_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long node = of_get_flat_dt_root();
 
 	return of_flat_dt_is_compatible(node, "tqc,tqm8xx");
 }
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+	return of_machine_is_compatible("tqc,tqm8xx");
+}
+
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name = "soc", },
 	{ .name = "cpm", },
 	{ .name = "localbus", },

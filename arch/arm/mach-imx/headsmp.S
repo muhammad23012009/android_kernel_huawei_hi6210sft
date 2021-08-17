@@ -12,12 +12,17 @@
 
 #include <linux/linkage.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/asm-offsets.h>
 #include <asm/hardware/cache-l2x0.h>
 
 	.section ".text.head", "ax"
 
 #ifdef CONFIG_SMP
+=======
+#include <asm/assembler.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 diag_reg_offset:
 	.word	g_diag_reg - .
 
@@ -30,6 +35,7 @@ diag_reg_offset:
 	.endm
 
 ENTRY(v7_secondary_startup)
+<<<<<<< HEAD
 	bl	v7_invalidate_l1
 	set_diag_reg
 	b	secondary_startup
@@ -69,3 +75,9 @@ ENTRY(v7_cpu_resume)
 	b	cpu_resume
 ENDPROC(v7_cpu_resume)
 #endif
+=======
+ARM_BE8(setend be)			@ go BE8 if entered LE
+	set_diag_reg
+	b	secondary_startup
+ENDPROC(v7_secondary_startup)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

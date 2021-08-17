@@ -995,7 +995,11 @@ static int daio_mgr_dao_init(void *blk, unsigned int idx, unsigned int conf)
 
 	if (idx < 4) {
 		/* S/PDIF output */
+<<<<<<< HEAD
 		switch ((conf & 0x7)) {
+=======
+		switch ((conf & 0xf)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case 1:
 			set_field(&ctl->txctl[idx], ATXCTL_NUC, 0);
 			break;
@@ -1181,7 +1185,12 @@ static int hw_daio_init(struct hw *hw, const struct daio_conf *info)
 		hw_write_20kx(hw, AUDIO_IO_TX_BLRCLK, 0x21212121);
 		hw_write_20kx(hw, AUDIO_IO_RX_BLRCLK, 0);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: ERROR!!! Invalid sampling rate!!!\n");
+=======
+		dev_alert(hw->card->dev,
+			  "ERROR!!! Invalid sampling rate!!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -1240,8 +1249,13 @@ static int hw_trn_init(struct hw *hw, const struct trn_conf *info)
 
 	/* Set up device page table */
 	if ((~0UL) == info->vm_pgt_phys) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: "
 		       "Wrong device page table page address!!!\n");
+=======
+		dev_alert(hw->card->dev,
+			  "Wrong device page table page address!!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	}
 
@@ -1346,7 +1360,12 @@ static int hw_pll_init(struct hw *hw, unsigned int rsr)
 		break;
 	}
 	if (i >= 1000) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: PLL initialization failed!!!\n");
+=======
+		dev_alert(hw->card->dev,
+			  "PLL initialization failed!!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -1370,7 +1389,11 @@ static int hw_auto_init(struct hw *hw)
 			break;
 	}
 	if (!get_field(gctl, GCTL_AID)) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: Card Auto-init failed!!!\n");
+=======
+		dev_alert(hw->card->dev, "Card Auto-init failed!!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -1607,6 +1630,7 @@ static int hw_dac_init(struct hw *hw, const struct dac_conf *info)
 	int i;
 	struct regs_cs4382 cs_read = {0};
 	struct regs_cs4382 cs_def = {
+<<<<<<< HEAD
 				   0x00000001,  /* Mode Control 1 */
 				   0x00000000,  /* Mode Control 2 */
 				   0x00000084,  /* Mode Control 3 */
@@ -1624,6 +1648,25 @@ static int hw_dac_init(struct hw *hw, const struct dac_conf *info)
 				   0x00000024,  /* Mixing Control Pair 4 */
 				   0x00000000,  /* Vol Control A4 */
 				   0x00000000   /* Vol Control B4 */
+=======
+		.mode_control_1 = 0x00000001, /* Mode Control 1 */
+		.mode_control_2 = 0x00000000, /* Mode Control 2 */
+		.mode_control_3 = 0x00000084, /* Mode Control 3 */
+		.filter_control = 0x00000000, /* Filter Control */
+		.invert_control = 0x00000000, /* Invert Control */
+		.mix_control_P1 = 0x00000024, /* Mixing Control Pair 1 */
+		.vol_control_A1 = 0x00000000, /* Vol Control A1 */
+		.vol_control_B1 = 0x00000000, /* Vol Control B1 */
+		.mix_control_P2 = 0x00000024, /* Mixing Control Pair 2 */
+		.vol_control_A2 = 0x00000000, /* Vol Control A2 */
+		.vol_control_B2 = 0x00000000, /* Vol Control B2 */
+		.mix_control_P3 = 0x00000024, /* Mixing Control Pair 3 */
+		.vol_control_A3 = 0x00000000, /* Vol Control A3 */
+		.vol_control_B3 = 0x00000000, /* Vol Control B3 */
+		.mix_control_P4 = 0x00000024, /* Mixing Control Pair 4 */
+		.vol_control_A4 = 0x00000000, /* Vol Control A4 */
+		.vol_control_B4 = 0x00000000  /* Vol Control B4 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 };
 
 	if (hw->model == CTSB1270) {
@@ -1841,7 +1884,11 @@ static int hw_adc_init(struct hw *hw, const struct adc_conf *info)
 	/* Initialize I2C */
 	err = hw20k2_i2c_init(hw, 0x1A, 1, 1);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: Failure to acquire I2C!!!\n");
+=======
+		dev_alert(hw->card->dev, "Failure to acquire I2C!!!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 	}
 
@@ -1884,8 +1931,14 @@ static int hw_adc_init(struct hw *hw, const struct adc_conf *info)
 		hw20k2_i2c_write(hw, MAKE_WM8775_ADDR(WM8775_MMC, 0x0A),
 						MAKE_WM8775_DATA(0x0A));
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: Invalid master sampling "
 				  "rate (msr %d)!!!\n", info->msr);
+=======
+		dev_alert(hw->card->dev,
+			  "Invalid master sampling rate (msr %d)!!!\n",
+			  info->msr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EINVAL;
 		goto error;
 	}
@@ -2040,8 +2093,13 @@ static int hw_card_start(struct hw *hw)
 			goto error1;
 
 		hw->io_base = pci_resource_start(hw->pci, 2);
+<<<<<<< HEAD
 		hw->mem_base = (unsigned long)ioremap(hw->io_base,
 					pci_resource_len(hw->pci, 2));
+=======
+		hw->mem_base = ioremap(hw->io_base,
+				       pci_resource_len(hw->pci, 2));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!hw->mem_base) {
 			err = -ENOENT;
 			goto error2;
@@ -2057,7 +2115,12 @@ static int hw_card_start(struct hw *hw)
 		err = request_irq(pci->irq, ct_20k2_interrupt, IRQF_SHARED,
 				  KBUILD_MODNAME, hw);
 		if (err < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "XFi: Cannot get irq %d\n", pci->irq);
+=======
+			dev_err(hw->card->dev,
+				"XFi: Cannot get irq %d\n", pci->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto error2;
 		}
 		hw->irq = pci->irq;
@@ -2099,11 +2162,16 @@ static int hw_card_shutdown(struct hw *hw)
 		free_irq(hw->irq, hw);
 
 	hw->irq	= -1;
+<<<<<<< HEAD
 
 	if (hw->mem_base)
 		iounmap((void *)hw->mem_base);
 
 	hw->mem_base = (unsigned long)NULL;
+=======
+	iounmap(hw->mem_base);
+	hw->mem_base = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (hw->io_base)
 		pci_release_regions(hw->pci);
@@ -2198,6 +2266,7 @@ static int hw_card_init(struct hw *hw, struct card_conf *info)
 #ifdef CONFIG_PM_SLEEP
 static int hw_suspend(struct hw *hw)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = hw->pci;
 
 	hw_card_stop(hw);
@@ -2206,16 +2275,22 @@ static int hw_suspend(struct hw *hw)
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
 
+=======
+	hw_card_stop(hw);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int hw_resume(struct hw *hw, struct card_conf *info)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = hw->pci;
 
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Re-initialize card hardware. */
 	return hw_card_init(hw, info);
 }
@@ -2223,12 +2298,20 @@ static int hw_resume(struct hw *hw, struct card_conf *info)
 
 static u32 hw_read_20kx(struct hw *hw, u32 reg)
 {
+<<<<<<< HEAD
 	return readl((void *)(hw->mem_base + reg));
+=======
+	return readl(hw->mem_base + reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void hw_write_20kx(struct hw *hw, u32 reg, u32 data)
 {
+<<<<<<< HEAD
 	writel(data, (void *)(hw->mem_base + reg));
+=======
+	writel(data, hw->mem_base + reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct hw ct20k2_preset = {

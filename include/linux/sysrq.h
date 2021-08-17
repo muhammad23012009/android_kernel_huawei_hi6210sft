@@ -17,9 +17,12 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
 /* Enable/disable SYSRQ support by default (0==no, 1==yes). */
 #define SYSRQ_DEFAULT_ENABLE	0
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Possible values of bitmask for enabling sysrq functions */
 /* 0x0001 is reserved for enable everything */
 #define SYSRQ_ENABLE_LOG	0x0002
@@ -45,7 +48,10 @@ struct sysrq_key_op {
  * are available -- else NULL's).
  */
 
+<<<<<<< HEAD
 bool sysrq_on(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void handle_sysrq(int key);
 void __handle_sysrq(int key, bool check_mask);
 int register_sysrq_key(int key, struct sysrq_key_op *op);

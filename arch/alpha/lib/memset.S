@@ -13,17 +13,31 @@
  * The scheduling comments are according to the EV5 documentation (and done by 
  * hand, so they might well be incorrect, please do tell me about it..)
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set noat
 	.set noreorder
 .text
 	.globl memset
 	.globl __memset
+<<<<<<< HEAD
 	.globl __memsetw
 	.globl __constant_c_memset
 	.ent __memset
 .align 5
 __memset:
+=======
+	.globl ___memset
+	.globl __memsetw
+	.globl __constant_c_memset
+
+	.ent ___memset
+.align 5
+___memset:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.frame $30,0,$26,0
 	.prologue 0
 
@@ -103,7 +117,13 @@ within_one_quad:
 
 end:
 	ret $31,($26),1		/* E1 */
+<<<<<<< HEAD
 	.end __memset
+=======
+	.end ___memset
+EXPORT_SYMBOL(___memset)
+EXPORT_SYMBOL(__constant_c_memset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.align 5
 	.ent __memsetw
@@ -120,5 +140,14 @@ __memsetw:
 	br __constant_c_memset	/* .. E1 */
 
 	.end __memsetw
+<<<<<<< HEAD
 
 memset = __memset
+=======
+EXPORT_SYMBOL(__memsetw)
+
+memset = ___memset
+__memset = ___memset
+	EXPORT_SYMBOL(memset)
+	EXPORT_SYMBOL(__memset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

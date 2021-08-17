@@ -596,6 +596,7 @@ int pvr2_ctrl_value_to_sym(struct pvr2_ctrl *cptr,
 	} while(0); LOCK_GIVE(cptr->hdw->big_lock);
 	return ret;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -607,3 +608,5 @@ int pvr2_ctrl_value_to_sym(struct pvr2_ctrl *cptr,
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

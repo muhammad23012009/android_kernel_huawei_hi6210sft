@@ -17,6 +17,7 @@
  */
 #include "xfs.h"
 #include "xfs_fs.h"
+<<<<<<< HEAD
 #include "xfs_log.h"
 #include "xfs_trans.h"
 #include "xfs_sb.h"
@@ -34,6 +35,20 @@
 #include "xfs_buf_item.h"
 #include "xfs_trans_priv.h"
 #include "xfs_qm.h"
+=======
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+#include "xfs_mount.h"
+#include "xfs_inode.h"
+#include "xfs_quota.h"
+#include "xfs_error.h"
+#include "xfs_trans.h"
+#include "xfs_buf_item.h"
+#include "xfs_trans_priv.h"
+#include "xfs_qm.h"
+#include "xfs_log.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline struct xfs_dq_logitem *DQUOT_ITEM(struct xfs_log_item *lip)
 {
@@ -43,6 +58,7 @@ static inline struct xfs_dq_logitem *DQUOT_ITEM(struct xfs_log_item *lip)
 /*
  * returns the number of iovecs needed to log the given dquot item.
  */
+<<<<<<< HEAD
 STATIC uint
 xfs_qm_dquot_logitem_size(
 	struct xfs_log_item	*lip)
@@ -51,6 +67,17 @@ xfs_qm_dquot_logitem_size(
 	 * we need only two iovecs, one for the format, one for the real thing
 	 */
 	return 2;
+=======
+STATIC void
+xfs_qm_dquot_logitem_size(
+	struct xfs_log_item	*lip,
+	int			*nvecs,
+	int			*nbytes)
+{
+	*nvecs += 2;
+	*nbytes += sizeof(struct xfs_dq_logformat) +
+		   sizeof(struct xfs_disk_dquot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -59,6 +86,7 @@ xfs_qm_dquot_logitem_size(
 STATIC void
 xfs_qm_dquot_logitem_format(
 	struct xfs_log_item	*lip,
+<<<<<<< HEAD
 	struct xfs_log_iovec	*logvec)
 {
 	struct xfs_dq_logitem	*qlip = DQUOT_ITEM(lip);
@@ -73,6 +101,26 @@ xfs_qm_dquot_logitem_format(
 
 	qlip->qli_format.qlf_size = 2;
 
+=======
+	struct xfs_log_vec	*lv)
+{
+	struct xfs_dq_logitem	*qlip = DQUOT_ITEM(lip);
+	struct xfs_log_iovec	*vecp = NULL;
+	struct xfs_dq_logformat	*qlf;
+
+	qlf = xlog_prepare_iovec(lv, &vecp, XLOG_REG_TYPE_QFORMAT);
+	qlf->qlf_type = XFS_LI_DQUOT;
+	qlf->qlf_size = 2;
+	qlf->qlf_id = be32_to_cpu(qlip->qli_dquot->q_core.d_id);
+	qlf->qlf_blkno = qlip->qli_dquot->q_blkno;
+	qlf->qlf_len = 1;
+	qlf->qlf_boffset = qlip->qli_dquot->q_bufoffset;
+	xlog_finish_iovec(lv, vecp, sizeof(struct xfs_dq_logformat));
+
+	xlog_copy_iovec(lv, &vecp, XLOG_REG_TYPE_DQUOT,
+			&qlip->qli_dquot->q_core,
+			sizeof(struct xfs_disk_dquot));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -137,6 +185,7 @@ xfs_qm_dqunpin_wait(
 	wait_event(dqp->q_pinwait, (atomic_read(&dqp->q_pincount) == 0));
 }
 
+<<<<<<< HEAD
 STATIC uint
 xfs_qm_dquot_logitem_push(
 	struct xfs_log_item	*lip,
@@ -144,12 +193,60 @@ xfs_qm_dquot_logitem_push(
 {
 	struct xfs_dquot	*dqp = DQUOT_ITEM(lip)->qli_dquot;
 	struct xfs_buf		*bp = NULL;
+=======
+/*
+ * Callback used to mark a buffer with XFS_LI_FAILED when items in the buffer
+ * have been failed during writeback
+ *
+ * this informs the AIL that the dquot is already flush locked on the next push,
+ * and acquires a hold on the buffer to ensure that it isn't reclaimed before
+ * dirty data makes it to disk.
+ */
+STATIC void
+xfs_dquot_item_error(
+	struct xfs_log_item	*lip,
+	struct xfs_buf		*bp)
+{
+	struct xfs_dquot	*dqp;
+
+	dqp = DQUOT_ITEM(lip)->qli_dquot;
+	ASSERT(!completion_done(&dqp->q_flush));
+	xfs_set_li_failed(lip, bp);
+}
+
+STATIC uint
+xfs_qm_dquot_logitem_push(
+	struct xfs_log_item	*lip,
+	struct list_head	*buffer_list) __releases(&lip->li_ailp->xa_lock)
+					      __acquires(&lip->li_ailp->xa_lock)
+{
+	struct xfs_dquot	*dqp = DQUOT_ITEM(lip)->qli_dquot;
+	struct xfs_buf		*bp = lip->li_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint			rval = XFS_ITEM_SUCCESS;
 	int			error;
 
 	if (atomic_read(&dqp->q_pincount) > 0)
 		return XFS_ITEM_PINNED;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The buffer containing this item failed to be written back
+	 * previously. Resubmit the buffer for IO
+	 */
+	if (lip->li_flags & XFS_LI_FAILED) {
+		if (!xfs_buf_trylock(bp))
+			return XFS_ITEM_LOCKED;
+
+		if (!xfs_buf_resubmit_failed_buffers(bp, lip, buffer_list))
+			rval = XFS_ITEM_FLUSHING;
+
+		xfs_buf_unlock(bp);
+		return rval;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!xfs_dqlock_nowait(dqp))
 		return XFS_ITEM_LOCKED;
 
@@ -241,7 +338,12 @@ static const struct xfs_item_ops xfs_dquot_item_ops = {
 	.iop_unlock	= xfs_qm_dquot_logitem_unlock,
 	.iop_committed	= xfs_qm_dquot_logitem_committed,
 	.iop_push	= xfs_qm_dquot_logitem_push,
+<<<<<<< HEAD
 	.iop_committing = xfs_qm_dquot_logitem_committing
+=======
+	.iop_committing = xfs_qm_dquot_logitem_committing,
+	.iop_error	= xfs_dquot_item_error
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -258,6 +360,7 @@ xfs_qm_dquot_logitem_init(
 	xfs_log_item_init(dqp->q_mount, &lp->qli_item, XFS_LI_DQUOT,
 					&xfs_dquot_item_ops);
 	lp->qli_dquot = dqp;
+<<<<<<< HEAD
 	lp->qli_format.qlf_type = XFS_LI_DQUOT;
 	lp->qli_format.qlf_id = be32_to_cpu(dqp->q_core.d_id);
 	lp->qli_format.qlf_blkno = dqp->q_blkno;
@@ -270,6 +373,8 @@ xfs_qm_dquot_logitem_init(
 	 * here, and recompute it at recovery time.
 	 */
 	lp->qli_format.qlf_boffset = (__uint32_t)dqp->q_bufoffset;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*------------------  QUOTAOFF LOG ITEMS  -------------------*/
@@ -285,6 +390,7 @@ static inline struct xfs_qoff_logitem *QOFF_ITEM(struct xfs_log_item *lip)
  * We only need 1 iovec for an quotaoff item.  It just logs the
  * quotaoff_log_format structure.
  */
+<<<<<<< HEAD
 STATIC uint
 xfs_qm_qoff_logitem_size(
 	struct xfs_log_item	*lip)
@@ -312,6 +418,32 @@ xfs_qm_qoff_logitem_format(
 	log_vector->i_len = sizeof(xfs_qoff_logitem_t);
 	log_vector->i_type = XLOG_REG_TYPE_QUOTAOFF;
 	qflip->qql_format.qf_size = 1;
+=======
+STATIC void
+xfs_qm_qoff_logitem_size(
+	struct xfs_log_item	*lip,
+	int			*nvecs,
+	int			*nbytes)
+{
+	*nvecs += 1;
+	*nbytes += sizeof(struct xfs_qoff_logitem);
+}
+
+STATIC void
+xfs_qm_qoff_logitem_format(
+	struct xfs_log_item	*lip,
+	struct xfs_log_vec	*lv)
+{
+	struct xfs_qoff_logitem	*qflip = QOFF_ITEM(lip);
+	struct xfs_log_iovec	*vecp = NULL;
+	struct xfs_qoff_logformat *qlf;
+
+	qlf = xlog_prepare_iovec(lv, &vecp, XLOG_REG_TYPE_QUOTAOFF);
+	qlf->qf_type = XFS_LI_QUOTAOFF;
+	qlf->qf_size = 1;
+	qlf->qf_flags = qflip->qql_flags;
+	xlog_finish_iovec(lv, vecp, sizeof(struct xfs_qoff_logitem));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -384,6 +516,11 @@ xfs_qm_qoffend_logitem_committed(
 	spin_lock(&ailp->xa_lock);
 	xfs_trans_ail_delete(ailp, &qfs->qql_item, SHUTDOWN_LOG_IO_ERROR);
 
+<<<<<<< HEAD
+=======
+	kmem_free(qfs->qql_item.li_lv_shadow);
+	kmem_free(lip->li_lv_shadow);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kmem_free(qfs);
 	kmem_free(qfe);
 	return (xfs_lsn_t)-1;
@@ -451,8 +588,13 @@ xfs_qm_qoff_logitem_init(
 	xfs_log_item_init(mp, &qf->qql_item, XFS_LI_QUOTAOFF, start ?
 			&xfs_qm_qoffend_logitem_ops : &xfs_qm_qoff_logitem_ops);
 	qf->qql_item.li_mountp = mp;
+<<<<<<< HEAD
 	qf->qql_format.qf_type = XFS_LI_QUOTAOFF;
 	qf->qql_format.qf_flags = flags;
 	qf->qql_start_lip = start;
+=======
+	qf->qql_start_lip = start;
+	qf->qql_flags = flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return qf;
 }

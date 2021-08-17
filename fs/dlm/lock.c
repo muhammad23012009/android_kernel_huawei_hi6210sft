@@ -687,6 +687,10 @@ static int find_rsb_dir(struct dlm_ls *ls, char *name, int len,
 		log_error(ls, "find_rsb new from_other %d dir %d our %d %s",
 			  from_nodeid, dir_nodeid, our_nodeid, r->res_name);
 		dlm_free_rsb(r);
+<<<<<<< HEAD
+=======
+		r = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error = -ENOTBLK;
 		goto out_unlock;
 	}
@@ -1209,6 +1213,10 @@ static int create_lkb(struct dlm_ls *ls, struct dlm_lkb **lkb_ret)
 
 	if (rv < 0) {
 		log_error(ls, "create_lkb idr error %d", rv);
+<<<<<<< HEAD
+=======
+		dlm_free_lkb(lkb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return rv;
 	}
 
@@ -2038,8 +2046,13 @@ static void set_lvb_lock_pc(struct dlm_rsb *r, struct dlm_lkb *lkb,
 	b = dlm_lvb_operations[lkb->lkb_grmode + 1][lkb->lkb_rqmode + 1];
 	if (b == 1) {
 		int len = receive_extralen(ms);
+<<<<<<< HEAD
 		if (len > DLM_RESNAME_MAXLEN)
 			len = DLM_RESNAME_MAXLEN;
+=======
+		if (len > r->res_ls->ls_lvblen)
+			len = r->res_ls->ls_lvblen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(lkb->lkb_lvbptr, ms->m_extra, len);
 		lkb->lkb_lvbseq = ms->m_lvbseq;
 	}
@@ -3893,8 +3906,13 @@ static int receive_lvb(struct dlm_ls *ls, struct dlm_lkb *lkb,
 		if (!lkb->lkb_lvbptr)
 			return -ENOMEM;
 		len = receive_extralen(ms);
+<<<<<<< HEAD
 		if (len > DLM_RESNAME_MAXLEN)
 			len = DLM_RESNAME_MAXLEN;
+=======
+		if (len > ls->ls_lvblen)
+			len = ls->ls_lvblen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(lkb->lkb_lvbptr, ms->m_extra, len);
 	}
 	return 0;
@@ -4176,6 +4194,10 @@ static int receive_convert(struct dlm_ls *ls, struct dlm_message *ms)
 			  (unsigned long long)lkb->lkb_recover_seq,
 			  ms->m_header.h_nodeid, ms->m_lkid);
 		error = -ENOENT;
+<<<<<<< HEAD
+=======
+		dlm_put_lkb(lkb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto fail;
 	}
 
@@ -4229,6 +4251,10 @@ static int receive_unlock(struct dlm_ls *ls, struct dlm_message *ms)
 			  lkb->lkb_id, lkb->lkb_remid,
 			  ms->m_header.h_nodeid, ms->m_lkid);
 		error = -ENOENT;
+<<<<<<< HEAD
+=======
+		dlm_put_lkb(lkb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto fail;
 	}
 
@@ -5462,7 +5488,11 @@ void dlm_recover_purge(struct dlm_ls *ls)
 	up_write(&ls->ls_root_sem);
 
 	if (lkb_count)
+<<<<<<< HEAD
 		log_debug(ls, "dlm_recover_purge %u locks for %u nodes",
+=======
+		log_rinfo(ls, "dlm_recover_purge %u locks for %u nodes",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  lkb_count, nodes_count);
 }
 
@@ -5536,7 +5566,11 @@ void dlm_recover_grant(struct dlm_ls *ls)
 	}
 
 	if (lkb_count)
+<<<<<<< HEAD
 		log_debug(ls, "dlm_recover_grant %u locks on %u resources",
+=======
+		log_rinfo(ls, "dlm_recover_grant %u locks on %u resources",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  lkb_count, rsb_count);
 }
 
@@ -5695,7 +5729,11 @@ int dlm_recover_master_copy(struct dlm_ls *ls, struct dlm_rcom *rc)
 	put_rsb(r);
  out:
 	if (error && error != -EEXIST)
+<<<<<<< HEAD
 		log_debug(ls, "dlm_recover_master_copy remote %d %x error %d",
+=======
+		log_rinfo(ls, "dlm_recover_master_copy remote %d %x error %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  from_nodeid, remid, error);
 	rl->rl_result = cpu_to_le32(error);
 	return error;
@@ -5791,6 +5829,7 @@ int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua,
 			goto out;
 		}
 	}
+<<<<<<< HEAD
 
 	/* After ua is attached to lkb it will be freed by dlm_free_lkb().
 	   When DLM_IFL_USER is set, the dlm knows that this is a userspace
@@ -5801,10 +5840,25 @@ int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua,
 	lkb->lkb_flags |= DLM_IFL_USER;
 
 	if (error) {
+=======
+	error = set_lock_args(mode, &ua->lksb, flags, namelen, timeout_cs,
+			      fake_astfn, ua, fake_bastfn, &args);
+	if (error) {
+		kfree(ua->lksb.sb_lvbptr);
+		ua->lksb.sb_lvbptr = NULL;
+		kfree(ua);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__put_lkb(ls, lkb);
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	/* After ua is attached to lkb it will be freed by dlm_free_lkb().
+	   When DLM_IFL_USER is set, the dlm knows that this is a userspace
+	   lock and that lkb_astparam is the dlm_user_args structure. */
+	lkb->lkb_flags |= DLM_IFL_USER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = request_lock(ls, lkb, name, namelen, &args);
 
 	switch (error) {
@@ -5885,6 +5939,81 @@ int dlm_user_convert(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * The caller asks for an orphan lock on a given resource with a given mode.
+ * If a matching lock exists, it's moved to the owner's list of locks and
+ * the lkid is returned.
+ */
+
+int dlm_user_adopt_orphan(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
+		     int mode, uint32_t flags, void *name, unsigned int namelen,
+		     unsigned long timeout_cs, uint32_t *lkid)
+{
+	struct dlm_lkb *lkb;
+	struct dlm_user_args *ua;
+	int found_other_mode = 0;
+	int found = 0;
+	int rv = 0;
+
+	mutex_lock(&ls->ls_orphans_mutex);
+	list_for_each_entry(lkb, &ls->ls_orphans, lkb_ownqueue) {
+		if (lkb->lkb_resource->res_length != namelen)
+			continue;
+		if (memcmp(lkb->lkb_resource->res_name, name, namelen))
+			continue;
+		if (lkb->lkb_grmode != mode) {
+			found_other_mode = 1;
+			continue;
+		}
+
+		found = 1;
+		list_del_init(&lkb->lkb_ownqueue);
+		lkb->lkb_flags &= ~DLM_IFL_ORPHAN;
+		*lkid = lkb->lkb_id;
+		break;
+	}
+	mutex_unlock(&ls->ls_orphans_mutex);
+
+	if (!found && found_other_mode) {
+		rv = -EAGAIN;
+		goto out;
+	}
+
+	if (!found) {
+		rv = -ENOENT;
+		goto out;
+	}
+
+	lkb->lkb_exflags = flags;
+	lkb->lkb_ownpid = (int) current->pid;
+
+	ua = lkb->lkb_ua;
+
+	ua->proc = ua_tmp->proc;
+	ua->xid = ua_tmp->xid;
+	ua->castparam = ua_tmp->castparam;
+	ua->castaddr = ua_tmp->castaddr;
+	ua->bastparam = ua_tmp->bastparam;
+	ua->bastaddr = ua_tmp->bastaddr;
+	ua->user_lksb = ua_tmp->user_lksb;
+
+	/*
+	 * The lkb reference from the ls_orphans list was not
+	 * removed above, and is now considered the reference
+	 * for the proc locks list.
+	 */
+
+	spin_lock(&ua->proc->locks_spin);
+	list_add_tail(&lkb->lkb_ownqueue, &ua->proc->locks);
+	spin_unlock(&ua->proc->locks_spin);
+ out:
+	kfree(ua_tmp);
+	return rv;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int dlm_user_unlock(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 		    uint32_t flags, uint32_t lkid, char *lvb_in)
 {
@@ -6028,7 +6157,11 @@ static int orphan_proc_lock(struct dlm_ls *ls, struct dlm_lkb *lkb)
 	struct dlm_args args;
 	int error;
 
+<<<<<<< HEAD
 	hold_lkb(lkb);
+=======
+	hold_lkb(lkb); /* reference for the ls_orphans list */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&ls->ls_orphans_mutex);
 	list_add_tail(&lkb->lkb_ownqueue, &ls->ls_orphans);
 	mutex_unlock(&ls->ls_orphans_mutex);
@@ -6216,7 +6349,11 @@ int dlm_user_purge(struct dlm_ls *ls, struct dlm_user_proc *proc,
 {
 	int error = 0;
 
+<<<<<<< HEAD
 	if (nodeid != dlm_our_nodeid()) {
+=======
+	if (nodeid && (nodeid != dlm_our_nodeid())) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error = send_purge(ls, nodeid, pid);
 	} else {
 		dlm_lock_recovery(ls);

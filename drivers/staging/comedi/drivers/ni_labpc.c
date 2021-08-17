@@ -12,18 +12,26 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
  * Driver: ni_labpc
  * Description: National Instruments Lab-PC (& compatibles)
+<<<<<<< HEAD
  * Devices: (National Instruments) Lab-PC-1200 [lab-pc-1200]
  *	    (National Instruments) Lab-PC-1200AI [lab-pc-1200ai]
  *	    (National Instruments) Lab-PC+ [lab-pc+]
+=======
+ * Devices: [National Instruments] Lab-PC-1200 (lab-pc-1200),
+ *   Lab-PC-1200AI (lab-pc-1200ai), Lab-PC+ (lab-pc+)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Author: Frank Mori Hess <fmhess@users.sourceforge.net>
  * Status: works
  *
@@ -61,6 +69,7 @@
  * 320502b (lab-pc+)
  */
 
+<<<<<<< HEAD
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -235,10 +244,20 @@ static inline void labpc_writeb(unsigned int byte, unsigned long address)
 }
 
 #if IS_ENABLED(CONFIG_COMEDI_NI_LABPC_ISA)
+=======
+#include <linux/module.h>
+
+#include "../comedidev.h"
+
+#include "ni_labpc.h"
+#include "ni_labpc_isadma.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct labpc_boardinfo labpc_boards[] = {
 	{
 		.name			= "lab-pc-1200",
 		.ai_speed		= 10000,
+<<<<<<< HEAD
 		.register_layout	= labpc_1200_layout,
 		.has_ao			= 1,
 		.ai_range_table		= &range_labpc_1200_ai,
@@ -1713,16 +1732,39 @@ EXPORT_SYMBOL_GPL(labpc_common_detach);
 static int labpc_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 {
 	struct labpc_private *devpriv;
+=======
+		.ai_scan_up		= 1,
+		.has_ao			= 1,
+		.is_labpc1200		= 1,
+	}, {
+		.name			= "lab-pc-1200ai",
+		.ai_speed		= 10000,
+		.ai_scan_up		= 1,
+		.is_labpc1200		= 1,
+	}, {
+		.name			= "lab-pc+",
+		.ai_speed		= 12000,
+		.has_ao			= 1,
+	},
+};
+
+static int labpc_attach(struct comedi_device *dev, struct comedi_devconfig *it)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int irq = it->options[1];
 	unsigned int dma_chan = it->options[2];
 	int ret;
 
+<<<<<<< HEAD
 	devpriv = kzalloc(sizeof(*devpriv), GFP_KERNEL);
 	if (!devpriv)
 		return -ENOMEM;
 	dev->private = devpriv;
 
 	ret = comedi_request_region(dev, it->options[0], LABPC_SIZE);
+=======
+	ret = comedi_request_region(dev, it->options[0], 0x20);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -1730,6 +1772,7 @@ static int labpc_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 #ifdef CONFIG_ISA_DMA_API
 	if (dev->irq && (dma_chan == 1 || dma_chan == 3)) {
 		devpriv->dma_buffer = kmalloc(dma_buffer_size,
@@ -1753,12 +1796,17 @@ static int labpc_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		}
 	}
 #endif
+=======
+	if (dev->irq)
+		labpc_init_dma_chan(dev, dma_chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static void labpc_detach(struct comedi_device *dev)
 {
+<<<<<<< HEAD
 	struct labpc_private *devpriv = dev->private;
 
 	labpc_common_detach(dev);
@@ -1768,6 +1816,10 @@ static void labpc_detach(struct comedi_device *dev)
 		if (devpriv->dma_chan)
 			free_dma(devpriv->dma_chan);
 	}
+=======
+	labpc_free_dma_chan(dev);
+	labpc_common_detach(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	comedi_legacy_detach(dev);
 }
 
@@ -1781,6 +1833,7 @@ static struct comedi_driver labpc_driver = {
 	.offset		= sizeof(struct labpc_boardinfo),
 };
 module_comedi_driver(labpc_driver);
+<<<<<<< HEAD
 #else
 static int __init labpc_common_init(void)
 {
@@ -1796,4 +1849,9 @@ module_exit(labpc_common_exit);
 
 MODULE_AUTHOR("Comedi http://www.comedi.org");
 MODULE_DESCRIPTION("Comedi low-level driver");
+=======
+
+MODULE_AUTHOR("Comedi http://www.comedi.org");
+MODULE_DESCRIPTION("Comedi driver for NI Lab-PC ISA boards");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");

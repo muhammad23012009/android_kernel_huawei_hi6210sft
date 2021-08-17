@@ -20,6 +20,10 @@
 */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -551,7 +555,12 @@ int stb0899_write_regs(struct stb0899_state *state, unsigned int reg, u8 *data, 
 
 int stb0899_write_reg(struct stb0899_state *state, unsigned int reg, u8 data)
 {
+<<<<<<< HEAD
 	return stb0899_write_regs(state, reg, &data, 1);
+=======
+	u8 tmp = data;
+	return stb0899_write_regs(state, reg, &tmp, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -691,7 +700,11 @@ static int stb0899_wait_diseqc_fifo_empty(struct stb0899_state *state, int timeo
 		reg = stb0899_read_reg(state, STB0899_DISSTATUS);
 		if (!STB0899_GETFIELD(FIFOFULL, reg))
 			break;
+<<<<<<< HEAD
 		if ((jiffies - start) > timeout) {
+=======
+		if (time_after(jiffies, start + timeout)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dprintk(state->verbose, FE_ERROR, 1, "timed out !!");
 			return -ETIMEDOUT;
 		}
@@ -705,7 +718,11 @@ static int stb0899_send_diseqc_msg(struct dvb_frontend *fe, struct dvb_diseqc_ma
 	struct stb0899_state *state = fe->demodulator_priv;
 	u8 reg, i;
 
+<<<<<<< HEAD
 	if (cmd->msg_len > 8)
+=======
+	if (cmd->msg_len > sizeof(cmd->msg))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	/* enable FIFO precharge	*/
@@ -733,7 +750,11 @@ static int stb0899_wait_diseqc_rxidle(struct stb0899_state *state, int timeout)
 
 	while (!STB0899_GETFIELD(RXEND, reg)) {
 		reg = stb0899_read_reg(state, STB0899_DISRX_ST0);
+<<<<<<< HEAD
 		if (jiffies - start > timeout) {
+=======
+		if (time_after(jiffies, start + timeout)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dprintk(state->verbose, FE_ERROR, 1, "timed out!!");
 			return -ETIMEDOUT;
 		}
@@ -782,7 +803,11 @@ static int stb0899_wait_diseqc_txidle(struct stb0899_state *state, int timeout)
 
 	while (!STB0899_GETFIELD(TXIDLE, reg)) {
 		reg = stb0899_read_reg(state, STB0899_DISSTATUS);
+<<<<<<< HEAD
 		if (jiffies - start > timeout) {
+=======
+		if (time_after(jiffies, start + timeout)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dprintk(state->verbose, FE_ERROR, 1, "timed out!!");
 			return -ETIMEDOUT;
 		}
@@ -791,7 +816,12 @@ static int stb0899_wait_diseqc_txidle(struct stb0899_state *state, int timeout)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stb0899_send_diseqc_burst(struct dvb_frontend *fe, fe_sec_mini_cmd_t burst)
+=======
+static int stb0899_send_diseqc_burst(struct dvb_frontend *fe,
+				     enum fe_sec_mini_cmd burst)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct stb0899_state *state = fe->demodulator_priv;
 	u8 reg, old_state;
@@ -1177,7 +1207,12 @@ static int stb0899_read_ber(struct dvb_frontend *fe, u32 *ber)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stb0899_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage)
+=======
+static int stb0899_set_voltage(struct dvb_frontend *fe,
+			       enum fe_sec_voltage voltage)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct stb0899_state *state = fe->demodulator_priv;
 
@@ -1204,7 +1239,11 @@ static int stb0899_set_voltage(struct dvb_frontend *fe, fe_sec_voltage_t voltage
 	return 0;
 }
 
+<<<<<<< HEAD
 static int stb0899_set_tone(struct dvb_frontend *fe, fe_sec_tone_mode_t tone)
+=======
+static int stb0899_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct stb0899_state *state = fe->demodulator_priv;
 	struct stb0899_internal *internal = &state->internal;
@@ -1565,9 +1604,15 @@ static enum dvbfe_search stb0899_search(struct dvb_frontend *fe)
 	return DVBFE_ALGO_SEARCH_ERROR;
 }
 
+<<<<<<< HEAD
 static int stb0899_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
+=======
+static int stb0899_get_frontend(struct dvb_frontend *fe,
+				struct dtv_frontend_properties *p)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct stb0899_state *state		= fe->demodulator_priv;
 	struct stb0899_internal *internal	= &state->internal;
 
@@ -1628,19 +1673,30 @@ static struct dvb_frontend_ops stb0899_ops = {
 struct dvb_frontend *stb0899_attach(struct stb0899_config *config, struct i2c_adapter *i2c)
 {
 	struct stb0899_state *state = NULL;
+<<<<<<< HEAD
 	enum stb0899_inversion inversion;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	state = kzalloc(sizeof (struct stb0899_state), GFP_KERNEL);
 	if (state == NULL)
 		goto error;
 
+<<<<<<< HEAD
 	inversion				= config->inversion;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	state->verbose				= &verbose;
 	state->config				= config;
 	state->i2c				= i2c;
 	state->frontend.ops			= stb0899_ops;
 	state->frontend.demodulator_priv	= state;
+<<<<<<< HEAD
 	state->internal.inversion		= inversion;
+=======
+	/* use configured inversion as default -- we'll later autodetect inversion */
+	state->internal.inversion		= config->inversion;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	stb0899_wakeup(&state->frontend);
 	if (stb0899_get_dev_id(state) == -ENODEV) {

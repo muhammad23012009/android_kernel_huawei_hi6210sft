@@ -1,7 +1,11 @@
 /*
  *  Driver for the NXP SAA7164 PCIe bridge
  *
+<<<<<<< HEAD
  *  Copyright (c) 2010 Steven Toth <stoth@kernellabs.com>
+=======
+ *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -680,7 +684,10 @@ static int saa7164_api_set_dif(struct saa7164_port *port, u8 reg, u8 val)
 int saa7164_api_configure_dif(struct saa7164_port *port, u32 std)
 {
 	struct saa7164_dev *dev = port->dev;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 agc_disable;
 
 	dprintk(DBGLVL_API, "%s(nr=%d, 0x%x)\n", __func__, port->nr, std);
@@ -733,7 +740,11 @@ int saa7164_api_configure_dif(struct saa7164_port *port, u32 std)
 	saa7164_api_set_dif(port, 0x04, 0x00); /* Active (again) */
 	msleep(100);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Ensure the dif is in the correct state for the operating mode
@@ -1374,7 +1385,12 @@ int saa7164_api_i2c_read(struct saa7164_i2c *bus, u8 addr, u32 reglen, u8 *reg,
 	u8 buf[256];
 	int ret;
 
+<<<<<<< HEAD
 	dprintk(DBGLVL_API, "%s()\n", __func__);
+=======
+	dprintk(DBGLVL_API, "%s() addr=%x reglen=%d datalen=%d\n",
+		__func__, addr, reglen, datalen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (reglen > 4)
 		return -EIO;
@@ -1435,7 +1451,12 @@ int saa7164_api_i2c_write(struct saa7164_i2c *bus, u8 addr, u32 datalen,
 	u8 buf[256];
 	int ret;
 
+<<<<<<< HEAD
 	dprintk(DBGLVL_API, "%s()\n", __func__);
+=======
+	dprintk(DBGLVL_API, "%s() addr=0x%2x len=0x%x\n",
+		__func__, addr, datalen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((datalen == 0) || (datalen > 232))
 		return -EIO;
@@ -1465,7 +1486,12 @@ int saa7164_api_i2c_write(struct saa7164_i2c *bus, u8 addr, u32 datalen,
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	dprintk(DBGLVL_API, "%s() len = %d bytes\n", __func__, len);
+=======
+	dprintk(DBGLVL_API, "%s() len = %d bytes unitid=0x%x\n", __func__,
+		len, unitid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Prepare the send buffer */
 	/* Bytes 00-03 dest register length

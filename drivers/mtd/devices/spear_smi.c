@@ -1,12 +1,21 @@
 /*
  * SMI (Serial Memory Controller) device driver for Serial NOR Flash on
  * SPEAr platform
+<<<<<<< HEAD
  * The serial nor interface is largely based on drivers/mtd/m25p80.c,
  * however the SPI interface has been replaced by SMI.
  *
  * Copyright © 2010 STMicroelectronics.
  * Ashish Priyadarshi
  * Shiraz Hashim <shiraz.hashim@st.com>
+=======
+ * The serial nor interface is largely based on m25p80.c, however the SPI
+ * interface has been replaced by SMI.
+ *
+ * Copyright © 2010 STMicroelectronics.
+ * Ashish Priyadarshi
+ * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -550,7 +559,11 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 {
 	struct spear_snor_flash *flash = get_flash_data(mtd);
 	struct spear_smi *dev = mtd->priv;
+<<<<<<< HEAD
 	void *src;
+=======
+	void __iomem *src;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 ctrlreg1, val;
 	int ret;
 
@@ -583,7 +596,11 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 
 	writel(val, dev->io_base + SMI_CR1);
 
+<<<<<<< HEAD
 	memcpy_fromio(buf, (u8 *)src, len);
+=======
+	memcpy_fromio(buf, src, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* restore ctrl reg1 */
 	writel(ctrlreg1, dev->io_base + SMI_CR1);
@@ -595,8 +612,33 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int spear_smi_cpy_toio(struct spear_smi *dev, u32 bank,
 		void *dest, const void *src, size_t len)
+=======
+/*
+ * The purpose of this function is to ensure a memcpy_toio() with byte writes
+ * only. Its structure is inspired from the ARM implementation of _memcpy_toio()
+ * which also does single byte writes but cannot be used here as this is just an
+ * implementation detail and not part of the API. Not mentioning the comment
+ * stating that _memcpy_toio() should be optimized.
+ */
+static void spear_smi_memcpy_toio_b(volatile void __iomem *dest,
+				    const void *src, size_t len)
+{
+	const unsigned char *from = src;
+
+	while (len) {
+		len--;
+		writeb(*from, dest);
+		from++;
+		dest++;
+	}
+}
+
+static inline int spear_smi_cpy_toio(struct spear_smi *dev, u32 bank,
+		void __iomem *dest, const void *src, size_t len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	u32 ctrlreg1;
@@ -617,7 +659,27 @@ static inline int spear_smi_cpy_toio(struct spear_smi *dev, u32 bank,
 	ctrlreg1 = readl(dev->io_base + SMI_CR1);
 	writel((ctrlreg1 | WB_MODE) & ~SW_MODE, dev->io_base + SMI_CR1);
 
+<<<<<<< HEAD
 	memcpy_toio(dest, src, len);
+=======
+	/*
+	 * In Write Burst mode (WB_MODE), the specs states that writes must be:
+	 * - incremental
+	 * - of the same size
+	 * The ARM implementation of memcpy_toio() will optimize the number of
+	 * I/O by using as much 4-byte writes as possible, surrounded by
+	 * 2-byte/1-byte access if:
+	 * - the destination is not 4-byte aligned
+	 * - the length is not a multiple of 4-byte.
+	 * Avoid this alternance of write access size by using our own 'byte
+	 * access' helper if at least one of the two conditions above is true.
+	 */
+	if (IS_ALIGNED(len, sizeof(u32)) &&
+	    IS_ALIGNED((uintptr_t)dest, sizeof(u32)))
+		memcpy_toio(dest, src, len);
+	else
+		spear_smi_memcpy_toio_b(dest, src, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	writel(ctrlreg1, dev->io_base + SMI_CR1);
 
@@ -643,7 +705,11 @@ static int spear_mtd_write(struct mtd_info *mtd, loff_t to, size_t len,
 {
 	struct spear_snor_flash *flash = get_flash_data(mtd);
 	struct spear_smi *dev = mtd->priv;
+<<<<<<< HEAD
 	void *dest;
+=======
+	void __iomem *dest;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 page_offset, page_size;
 	int ret;
 
@@ -810,7 +876,10 @@ static int spear_smi_setup_banks(struct platform_device *pdev,
 				 u32 bank, struct device_node *np)
 {
 	struct spear_smi *dev = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	struct mtd_part_parser_data ppdata = {};
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct spear_smi_flash_info *flash_info;
 	struct spear_smi_plat_data *pdata;
 	struct spear_snor_flash *flash;
@@ -854,6 +923,11 @@ static int spear_smi_setup_banks(struct platform_device *pdev,
 	else
 		flash->mtd.name = flash_devices[flash_index].name;
 
+<<<<<<< HEAD
+=======
+	flash->mtd.dev.parent = &pdev->dev;
+	mtd_set_of_node(&flash->mtd, np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	flash->mtd.type = MTD_NORFLASH;
 	flash->mtd.writesize = 1;
 	flash->mtd.flags = MTD_CAP_NORFLASH;
@@ -880,10 +954,15 @@ static int spear_smi_setup_banks(struct platform_device *pdev,
 		count = flash_info->nr_partitions;
 	}
 #endif
+<<<<<<< HEAD
 	ppdata.of_node = np;
 
 	ret = mtd_device_parse_register(&flash->mtd, NULL, &ppdata, parts,
 					count);
+=======
+
+	ret = mtd_device_register(&flash->mtd, parts, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(&dev->pdev->dev, "Err MTD partition=%d\n", ret);
 		return ret;
@@ -913,7 +992,10 @@ static int spear_smi_probe(struct platform_device *pdev)
 	if (np) {
 		pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
 		if (!pdata) {
+<<<<<<< HEAD
 			pr_err("%s: ERROR: no memory", __func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -ENOMEM;
 			goto err;
 		}
@@ -943,7 +1025,10 @@ static int spear_smi_probe(struct platform_device *pdev)
 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_ATOMIC);
 	if (!dev) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "mem alloc fail\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 
@@ -995,14 +1080,21 @@ static int spear_smi_probe(struct platform_device *pdev)
 		ret = spear_smi_setup_banks(pdev, i, pdata->np[i]);
 		if (ret) {
 			dev_err(&dev->pdev->dev, "bank setup failed\n");
+<<<<<<< HEAD
 			goto err_bank_setup;
+=======
+			goto err_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	return 0;
 
+<<<<<<< HEAD
 err_bank_setup:
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_irq:
 	clk_disable_unprepare(dev->clk);
 err:
@@ -1040,12 +1132,19 @@ static int spear_smi_remove(struct platform_device *pdev)
 	}
 
 	clk_disable_unprepare(dev->clk);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int spear_smi_suspend(struct device *dev)
 {
 	struct spear_smi *sdev = dev_get_drvdata(dev);
@@ -1068,9 +1167,15 @@ static int spear_smi_resume(struct device *dev)
 		spear_smi_hw_init(sdev);
 	return ret;
 }
+<<<<<<< HEAD
 
 static SIMPLE_DEV_PM_OPS(spear_smi_pm_ops, spear_smi_suspend, spear_smi_resume);
 #endif
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(spear_smi_pm_ops, spear_smi_suspend, spear_smi_resume);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_OF
 static const struct of_device_id spear_smi_id_table[] = {
@@ -1084,11 +1189,16 @@ static struct platform_driver spear_smi_driver = {
 	.driver = {
 		.name = "smi",
 		.bus = &platform_bus_type,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(spear_smi_id_table),
 #ifdef CONFIG_PM
 		.pm = &spear_smi_pm_ops,
 #endif
+=======
+		.of_match_table = of_match_ptr(spear_smi_id_table),
+		.pm = &spear_smi_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = spear_smi_probe,
 	.remove = spear_smi_remove,
@@ -1096,5 +1206,9 @@ static struct platform_driver spear_smi_driver = {
 module_platform_driver(spear_smi_driver);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Ashish Priyadarshi, Shiraz Hashim <shiraz.hashim@st.com>");
+=======
+MODULE_AUTHOR("Ashish Priyadarshi, Shiraz Hashim <shiraz.linux.kernel@gmail.com>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("MTD SMI driver for serial nor flash chips");

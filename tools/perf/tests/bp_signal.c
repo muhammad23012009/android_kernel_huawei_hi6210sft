@@ -4,6 +4,15 @@
  * (git://github.com/deater/perf_event_tests)
  */
 
+<<<<<<< HEAD
+=======
+/*
+ * Powerpc needs __SANE_USERSPACE_TYPES__ before <linux/types.h> to select
+ * 'int-ll64.h' and avoid compile warnings when printing __u64 with %llu.
+ */
+#define __SANE_USERSPACE_TYPES__
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -19,17 +28,76 @@
 #include "tests.h"
 #include "debug.h"
 #include "perf.h"
+<<<<<<< HEAD
 
 static int fd1;
 static int fd2;
 static int overflows;
+=======
+#include "cloexec.h"
+
+static int fd1;
+static int fd2;
+static int fd3;
+static int overflows;
+static int overflows_2;
+
+volatile long the_var;
+
+
+/*
+ * Use ASM to ensure watchpoint and breakpoint can be triggered
+ * at one instruction.
+ */
+#if defined (__x86_64__)
+extern void __test_function(volatile long *ptr);
+asm (
+	".globl __test_function\n"
+	"__test_function:\n"
+	"incq (%rdi)\n"
+	"ret\n");
+#elif defined (__aarch64__)
+extern void __test_function(volatile long *ptr);
+asm (
+	".globl __test_function\n"
+	"__test_function:\n"
+	"str x30, [x0]\n"
+	"ret\n");
+
+#else
+static void __test_function(volatile long *ptr)
+{
+	*ptr = 0x1234;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 __attribute__ ((noinline))
 static int test_function(void)
 {
+<<<<<<< HEAD
 	return time(NULL);
 }
 
+=======
+	__test_function(&the_var);
+	the_var++;
+	return time(NULL);
+}
+
+static void sig_handler_2(int signum __maybe_unused,
+			  siginfo_t *oh __maybe_unused,
+			  void *uc __maybe_unused)
+{
+	overflows_2++;
+	if (overflows_2 > 10) {
+		ioctl(fd1, PERF_EVENT_IOC_DISABLE, 0);
+		ioctl(fd2, PERF_EVENT_IOC_DISABLE, 0);
+		ioctl(fd3, PERF_EVENT_IOC_DISABLE, 0);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sig_handler(int signum __maybe_unused,
 			siginfo_t *oh __maybe_unused,
 			void *uc __maybe_unused)
@@ -47,10 +115,18 @@ static void sig_handler(int signum __maybe_unused,
 		 */
 		ioctl(fd1, PERF_EVENT_IOC_DISABLE, 0);
 		ioctl(fd2, PERF_EVENT_IOC_DISABLE, 0);
+<<<<<<< HEAD
 	}
 }
 
 static int bp_event(void *fn, int setup_signal)
+=======
+		ioctl(fd3, PERF_EVENT_IOC_DISABLE, 0);
+	}
+}
+
+static int __event(bool is_x, void *addr, int sig)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct perf_event_attr pe;
 	int fd;
@@ -60,8 +136,13 @@ static int bp_event(void *fn, int setup_signal)
 	pe.size = sizeof(struct perf_event_attr);
 
 	pe.config = 0;
+<<<<<<< HEAD
 	pe.bp_type = HW_BREAKPOINT_X;
 	pe.bp_addr = (unsigned long) fn;
+=======
+	pe.bp_type = is_x ? HW_BREAKPOINT_X : HW_BREAKPOINT_W;
+	pe.bp_addr = (unsigned long) addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pe.bp_len = sizeof(long);
 
 	pe.sample_period = 1;
@@ -72,23 +153,47 @@ static int bp_event(void *fn, int setup_signal)
 	pe.exclude_kernel = 1;
 	pe.exclude_hv = 1;
 
+<<<<<<< HEAD
 	fd = sys_perf_event_open(&pe, 0, -1, -1, 0);
+=======
+	fd = sys_perf_event_open(&pe, 0, -1, -1,
+				 perf_event_open_cloexec_flag());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (fd < 0) {
 		pr_debug("failed opening event %llx\n", pe.config);
 		return TEST_FAIL;
 	}
 
+<<<<<<< HEAD
 	if (setup_signal) {
 		fcntl(fd, F_SETFL, O_RDWR|O_NONBLOCK|O_ASYNC);
 		fcntl(fd, F_SETSIG, SIGIO);
 		fcntl(fd, F_SETOWN, getpid());
 	}
+=======
+	fcntl(fd, F_SETFL, O_RDWR|O_NONBLOCK|O_ASYNC);
+	fcntl(fd, F_SETSIG, sig);
+	fcntl(fd, F_SETOWN, getpid());
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ioctl(fd, PERF_EVENT_IOC_RESET, 0);
 
 	return fd;
 }
 
+<<<<<<< HEAD
+=======
+static int bp_event(void *addr, int sig)
+{
+	return __event(true, addr, sig);
+}
+
+static int wp_event(void *addr, int sig)
+{
+	return __event(false, addr, sig);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static long long bp_count(int fd)
 {
 	long long count;
@@ -103,10 +208,17 @@ static long long bp_count(int fd)
 	return count;
 }
 
+<<<<<<< HEAD
 int test__bp_signal(void)
 {
 	struct sigaction sa;
 	long long count1, count2;
+=======
+int test__bp_signal(int subtest __maybe_unused)
+{
+	struct sigaction sa;
+	long long count1, count2, count3;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* setup SIGIO signal handler */
 	memset(&sa, 0, sizeof(struct sigaction));
@@ -118,6 +230,7 @@ int test__bp_signal(void)
 		return TEST_FAIL;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * We create following events:
 	 *
@@ -133,6 +246,54 @@ int test__bp_signal(void)
 	 *   - fd1 event breakpoint hit -> count1 == 1
 	 *   - SIGIO is delivered       -> overflows == 1
 	 *   - fd2 event breakpoint hit -> count2 == 1
+=======
+	sa.sa_sigaction = (void *) sig_handler_2;
+	if (sigaction(SIGUSR1, &sa, NULL) < 0) {
+		pr_debug("failed setting up signal handler 2\n");
+		return TEST_FAIL;
+	}
+
+	/*
+	 * We create following events:
+	 *
+	 * fd1 - breakpoint event on __test_function with SIGIO
+	 *       signal configured. We should get signal
+	 *       notification each time the breakpoint is hit
+	 *
+	 * fd2 - breakpoint event on sig_handler with SIGUSR1
+	 *       configured. We should get SIGUSR1 each time when
+	 *       breakpoint is hit
+	 *
+	 * fd3 - watchpoint event on __test_function with SIGIO
+	 *       configured.
+	 *
+	 * Following processing should happen:
+	 *   Exec:               Action:                       Result:
+	 *   incq (%rdi)       - fd1 event breakpoint hit   -> count1 == 1
+	 *                     - SIGIO is delivered
+	 *   sig_handler       - fd2 event breakpoint hit   -> count2 == 1
+	 *                     - SIGUSR1 is delivered
+	 *   sig_handler_2                                  -> overflows_2 == 1  (nested signal)
+	 *   sys_rt_sigreturn  - return from sig_handler_2
+	 *   overflows++                                    -> overflows = 1
+	 *   sys_rt_sigreturn  - return from sig_handler
+	 *   incq (%rdi)       - fd3 event watchpoint hit   -> count3 == 1       (wp and bp in one insn)
+	 *                     - SIGIO is delivered
+	 *   sig_handler       - fd2 event breakpoint hit   -> count2 == 2
+	 *                     - SIGUSR1 is delivered
+	 *   sig_handler_2                                  -> overflows_2 == 2  (nested signal)
+	 *   sys_rt_sigreturn  - return from sig_handler_2
+	 *   overflows++                                    -> overflows = 2
+	 *   sys_rt_sigreturn  - return from sig_handler
+	 *   the_var++         - fd3 event watchpoint hit   -> count3 == 2       (standalone watchpoint)
+	 *                     - SIGIO is delivered
+	 *   sig_handler       - fd2 event breakpoint hit   -> count2 == 3
+	 *                     - SIGUSR1 is delivered
+	 *   sig_handler_2                                  -> overflows_2 == 3  (nested signal)
+	 *   sys_rt_sigreturn  - return from sig_handler_2
+	 *   overflows++                                    -> overflows == 3
+	 *   sys_rt_sigreturn  - return from sig_handler
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 *
 	 * The test case check following error conditions:
 	 * - we get stuck in signal handler because of debug
@@ -144,11 +305,21 @@ int test__bp_signal(void)
 	 *
 	 */
 
+<<<<<<< HEAD
 	fd1 = bp_event(test_function, 1);
 	fd2 = bp_event(sig_handler, 0);
 
 	ioctl(fd1, PERF_EVENT_IOC_ENABLE, 0);
 	ioctl(fd2, PERF_EVENT_IOC_ENABLE, 0);
+=======
+	fd1 = bp_event(__test_function, SIGIO);
+	fd2 = bp_event(sig_handler, SIGUSR1);
+	fd3 = wp_event((void *)&the_var, SIGIO);
+
+	ioctl(fd1, PERF_EVENT_IOC_ENABLE, 0);
+	ioctl(fd2, PERF_EVENT_IOC_ENABLE, 0);
+	ioctl(fd3, PERF_EVENT_IOC_ENABLE, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Kick off the test by trigering 'fd1'
@@ -158,6 +329,7 @@ int test__bp_signal(void)
 
 	ioctl(fd1, PERF_EVENT_IOC_DISABLE, 0);
 	ioctl(fd2, PERF_EVENT_IOC_DISABLE, 0);
+<<<<<<< HEAD
 
 	count1 = bp_count(fd1);
 	count2 = bp_count(fd2);
@@ -167,6 +339,20 @@ int test__bp_signal(void)
 
 	pr_debug("count1 %lld, count2 %lld, overflow %d\n",
 		 count1, count2, overflows);
+=======
+	ioctl(fd3, PERF_EVENT_IOC_DISABLE, 0);
+
+	count1 = bp_count(fd1);
+	count2 = bp_count(fd2);
+	count3 = bp_count(fd3);
+
+	close(fd1);
+	close(fd2);
+	close(fd3);
+
+	pr_debug("count1 %lld, count2 %lld, count3 %lld, overflow %d, overflows_2 %d\n",
+		 count1, count2, count3, overflows, overflows_2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (count1 != 1) {
 		if (count1 == 11)
@@ -175,6 +361,7 @@ int test__bp_signal(void)
 			pr_debug("failed: wrong count for bp1%lld\n", count1);
 	}
 
+<<<<<<< HEAD
 	if (overflows != 1)
 		pr_debug("failed: wrong overflow hit\n");
 
@@ -182,5 +369,20 @@ int test__bp_signal(void)
 		pr_debug("failed: wrong count for bp2\n");
 
 	return count1 == 1 && overflows == 1 && count2 == 1 ?
+=======
+	if (overflows != 3)
+		pr_debug("failed: wrong overflow hit\n");
+
+	if (overflows_2 != 3)
+		pr_debug("failed: wrong overflow_2 hit\n");
+
+	if (count2 != 3)
+		pr_debug("failed: wrong count for bp2\n");
+
+	if (count3 != 2)
+		pr_debug("failed: wrong count for bp3\n");
+
+	return count1 == 1 && overflows == 3 && count2 == 3 && overflows_2 == 3 && count3 == 2 ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		TEST_OK : TEST_FAIL;
 }

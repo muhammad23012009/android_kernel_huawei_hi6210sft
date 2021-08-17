@@ -69,7 +69,11 @@ static const struct firmware card_fw[] = {
 	{0, "indigo_iox_dsp.fw"}
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_echo_ids) = {
+=======
+static const struct pci_device_id snd_echo_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x1057, 0x3410, 0xECC0, 0x00D0, 0, 0, 0},	/* Indigo IOx */
 	{0,}
 };

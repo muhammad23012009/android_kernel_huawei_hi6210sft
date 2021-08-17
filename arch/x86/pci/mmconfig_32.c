@@ -14,7 +14,10 @@
 #include <linux/rcupdate.h>
 #include <asm/e820.h>
 #include <asm/pci_x86.h>
+<<<<<<< HEAD
 #include <acpi/acpi.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Assume systems with more busses have correct MCFG */
 #define mmcfg_virt_addr ((void __iomem *) fix_to_virt(FIX_PCIE_MCFG))

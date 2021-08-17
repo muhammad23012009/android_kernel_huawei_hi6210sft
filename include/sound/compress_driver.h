@@ -27,6 +27,10 @@
 
 #include <linux/types.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <sound/core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/compress_offload.h>
 #include <sound/asound.h>
 #include <sound/pcm.h>
@@ -42,12 +46,19 @@ struct snd_compr_ops;
  * @buffer_size: size of the above buffer
  * @fragment_size: size of buffer fragment in bytes
  * @fragments: number of such fragments
+<<<<<<< HEAD
  * @hw_pointer: offset of last location in buffer where DSP copied data
  * @app_pointer: offset of last location in buffer where app wrote data
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @total_bytes_available: cumulative number of bytes made available in
  *	the ring buffer
  * @total_bytes_transferred: cumulative bytes transferred by offload DSP
  * @sleep: poll sleep
+<<<<<<< HEAD
+=======
+ * @private_data: driver private data pointer
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct snd_compr_runtime {
 	snd_pcm_state_t state;
@@ -68,9 +79,17 @@ struct snd_compr_runtime {
  * @ops: pointer to DSP callbacks
  * @runtime: pointer to runtime structure
  * @device: device pointer
+<<<<<<< HEAD
  * @direction: stream direction, playback/recording
  * @metadata_set: metadata set flag, true when set
  * @next_track: has userspace signall next track transistion, true when set
+=======
+ * @error_work: delayed work used when closing the stream due to an error
+ * @direction: stream direction, playback/recording
+ * @metadata_set: metadata set flag, true when set
+ * @next_track: has userspace signal next track transition, true when set
+ * @partial_drain: undergoing partial_drain for stream, true when set
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @private_data: pointer to DSP private data
  */
 struct snd_compr_stream {
@@ -78,9 +97,17 @@ struct snd_compr_stream {
 	struct snd_compr_ops *ops;
 	struct snd_compr_runtime *runtime;
 	struct snd_compr *device;
+<<<<<<< HEAD
 	enum snd_compr_direction direction;
 	bool metadata_set;
 	bool next_track;
+=======
+	struct delayed_work error_work;
+	enum snd_compr_direction direction;
+	bool metadata_set;
+	bool next_track;
+	bool partial_drain;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *private_data;
 };
 
@@ -94,6 +121,11 @@ struct snd_compr_stream {
  * This can be called in during stream creation only to set codec params
  * and the stream properties
  * @get_params: retrieve the codec parameters, mandatory
+<<<<<<< HEAD
+=======
+ * @set_metadata: Set the metadata values for a stream
+ * @get_metadata: retrieves the requested metadata values from stream
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @trigger: Trigger operations like start, pause, resume, drain, stop.
  * This callback is mandatory
  * @pointer: Retrieve current h/w pointer information. Mandatory
@@ -133,7 +165,11 @@ struct snd_compr_ops {
 /**
  * struct snd_compr: Compressed device
  * @name: DSP device name
+<<<<<<< HEAD
  * @dev: Device pointer
+=======
+ * @dev: associated device instance
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @ops: pointer to DSP callbacks
  * @private_data: pointer to DSP pvt data
  * @card: sound card pointer
@@ -143,20 +179,36 @@ struct snd_compr_ops {
  */
 struct snd_compr {
 	const char *name;
+<<<<<<< HEAD
 	struct device *dev;
+=======
+	struct device dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_compr_ops *ops;
 	void *private_data;
 	struct snd_card *card;
 	unsigned int direction;
 	struct mutex lock;
 	int device;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SND_VERBOSE_PROCFS
+	char id[64];
+	struct snd_info_entry *proc_root;
+	struct snd_info_entry *proc_info_entry;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* compress device register APIs */
 int snd_compress_register(struct snd_compr *device);
 int snd_compress_deregister(struct snd_compr *device);
 int snd_compress_new(struct snd_card *card, int device,
+<<<<<<< HEAD
 			int type, struct snd_compr *compr);
+=======
+			int type, const char *id, struct snd_compr *compr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* dsp driver callback apis
  * For playback: driver should call snd_compress_fragment_elapsed() to let the
@@ -176,8 +228,25 @@ static inline void snd_compr_drain_notify(struct snd_compr_stream *stream)
 	if (snd_BUG_ON(!stream))
 		return;
 
+<<<<<<< HEAD
 	stream->runtime->state = SNDRV_PCM_STATE_SETUP;
 	wake_up(&stream->runtime->sleep);
 }
 
+=======
+	/* for partial_drain case we are back to running state on success */
+	if (stream->partial_drain) {
+		stream->runtime->state = SNDRV_PCM_STATE_RUNNING;
+		stream->partial_drain = false; /* clear this flag as well */
+	} else {
+		stream->runtime->state = SNDRV_PCM_STATE_SETUP;
+	}
+
+	wake_up(&stream->runtime->sleep);
+}
+
+int snd_compr_stop_error(struct snd_compr_stream *stream,
+			 snd_pcm_state_t state);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

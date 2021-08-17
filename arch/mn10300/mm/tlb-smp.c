@@ -78,9 +78,15 @@ void smp_flush_tlb(void *unused)
 	else
 		local_flush_tlb_page(flush_mm, flush_va);
 
+<<<<<<< HEAD
 	smp_mb__before_clear_bit();
 	cpumask_clear_cpu(cpu_id, &flush_cpumask);
 	smp_mb__after_clear_bit();
+=======
+	smp_mb__before_atomic();
+	cpumask_clear_cpu(cpu_id, &flush_cpumask);
+	smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	put_cpu();
 }
@@ -119,7 +125,11 @@ static void flush_tlb_others(cpumask_t cpumask, struct mm_struct *mm,
 	flush_mm = mm;
 	flush_va = va;
 #if NR_CPUS <= BITS_PER_LONG
+<<<<<<< HEAD
 	atomic_set_mask(cpumask.bits[0], &flush_cpumask.bits[0]);
+=======
+	atomic_or(cpumask.bits[0], (atomic_t *)&flush_cpumask.bits[0]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #error Not supported.
 #endif

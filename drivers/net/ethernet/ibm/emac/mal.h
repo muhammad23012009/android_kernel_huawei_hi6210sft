@@ -95,10 +95,15 @@
 
 
 #define MAL_IER			0x02
+<<<<<<< HEAD
+=======
+/* MAL IER bits */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define   MAL_IER_DE		0x00000010
 #define   MAL_IER_OTE		0x00000004
 #define   MAL_IER_OE		0x00000002
 #define   MAL_IER_PE		0x00000001
+<<<<<<< HEAD
 /* MAL V1 IER bits */
 #define   MAL1_IER_NWE		0x00000008
 #define   MAL1_IER_SOC_EVENTS	MAL1_IER_NWE
@@ -113,6 +118,17 @@
 #define   MAL2_IER_EVENTS	(MAL2_IER_SOC_EVENTS | MAL_IER_DE | \
 				 MAL_IER_OTE | MAL_IER_OE | MAL_IER_PE)
 
+=======
+
+/* PLB read/write/timeout errors */
+#define   MAL_IER_PTE		0x00000080
+#define   MAL_IER_PRE		0x00000040
+#define   MAL_IER_PWE		0x00000020
+
+#define   MAL_IER_SOC_EVENTS	(MAL_IER_PTE | MAL_IER_PRE | MAL_IER_PWE)
+#define   MAL_IER_EVENTS	(MAL_IER_SOC_EVENTS | MAL_IER_DE | \
+				 MAL_IER_OTE | MAL_IER_OE | MAL_IER_PE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MAL_TXCASR		0x04
 #define MAL_TXCARR		0x05

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for Lexar "Jumpshot" Compact Flash reader
+=======
+/*
+ * Driver for Lexar "Jumpshot" Compact Flash reader
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * jumpshot driver v0.1:
  *
@@ -56,7 +61,13 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
 
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-jumpshot"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Driver for Lexar \"Jumpshot\" Compact Flash reader");
 MODULE_AUTHOR("Jimmie Mayfield <mayfield+usb@sackheads.org>");
@@ -616,18 +627,37 @@ static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == ALLOW_MEDIUM_REMOVAL) {
+<<<<<<< HEAD
 		// sure.  whatever.  not like we can stop the user from popping
 		// the media out of the device (no locking doors, etc)
 		//
+=======
+		/*
+		 * sure.  whatever.  not like we can stop the user from popping
+		 * the media out of the device (no locking doors, etc)
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 
 	if (srb->cmnd[0] == START_STOP) {
+<<<<<<< HEAD
 		/* this is used by sd.c'check_scsidisk_media_change to detect
 		   media change */
 		usb_stor_dbg(us, "START_STOP\n");
 		/* the first jumpshot_id_device after a media change returns
 		   an error (determined experimentally) */
+=======
+		/*
+		 * this is used by sd.c'check_scsidisk_media_change to detect
+		 * media change
+		 */
+		usb_stor_dbg(us, "START_STOP\n");
+		/*
+		 * the first jumpshot_id_device after a media change returns
+		 * an error (determined experimentally)
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = jumpshot_id_device(us, info);
 		if (rc == USB_STOR_TRANSPORT_GOOD) {
 			info->sense_key = NO_SENSE;
@@ -647,6 +677,11 @@ static int jumpshot_transport(struct scsi_cmnd *srb, struct us_data *us)
 	return USB_STOR_TRANSPORT_FAILED;
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template jumpshot_host_template;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int jumpshot_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -654,7 +689,12 @@ static int jumpshot_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - jumpshot_usb_ids) + jumpshot_unusual_dev_list);
+=======
+			(id - jumpshot_usb_ids) + jumpshot_unusual_dev_list,
+			&jumpshot_host_template);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result)
 		return result;
 
@@ -668,7 +708,11 @@ static int jumpshot_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver jumpshot_driver = {
+<<<<<<< HEAD
 	.name =		"ums-jumpshot",
+=======
+	.name =		DRV_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe =	jumpshot_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -681,4 +725,8 @@ static struct usb_driver jumpshot_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(jumpshot_driver);
+=======
+module_usb_stor_driver(jumpshot_driver, jumpshot_host_template, DRV_NAME);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

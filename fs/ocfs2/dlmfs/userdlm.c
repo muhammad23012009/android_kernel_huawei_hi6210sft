@@ -667,7 +667,11 @@ void user_dlm_set_locking_protocol(void)
 	ocfs2_stack_glue_set_max_proto_version(&user_dlm_lproto.lp_max_version);
 }
 
+<<<<<<< HEAD
 struct ocfs2_cluster_connection *user_dlm_register(struct qstr *name)
+=======
+struct ocfs2_cluster_connection *user_dlm_register(const struct qstr *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int rc;
 	struct ocfs2_cluster_connection *conn;

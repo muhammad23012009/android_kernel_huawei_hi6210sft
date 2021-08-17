@@ -19,6 +19,12 @@
 /* Required for AArch32 compatibility. */
 #define SA_RESTORER	0x04000000
 
+<<<<<<< HEAD
+=======
+#define MINSIGSTKSZ 5120
+#define SIGSTKSZ    16384
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/signal.h>
 
 #endif

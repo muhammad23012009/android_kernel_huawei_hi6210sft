@@ -13,7 +13,11 @@
  */
 #include <linux/of.h>
 
+<<<<<<< HEAD
 #include <asm/pmu.h>
+=======
+#include <asm/system_info.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "soc.h"
 #include "omap_hwmod.h"
@@ -37,7 +41,12 @@ static int __init omap2_init_pmu(unsigned oh_num, char *oh_names[])
 {
 	int i;
 	struct omap_hwmod *oh[3];
+<<<<<<< HEAD
 	char *dev_name = "arm-pmu";
+=======
+	char *dev_name = cpu_architecture() == CPU_ARCH_ARMv6 ?
+			 "armv6-pmu" : "armv7-pmu";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((!oh_num) || (oh_num > 3))
 		return -EINVAL;
@@ -54,10 +63,14 @@ static int __init omap2_init_pmu(unsigned oh_num, char *oh_names[])
 	WARN(IS_ERR(omap_pmu_dev), "Can't build omap_device for %s.\n",
 	     dev_name);
 
+<<<<<<< HEAD
 	if (IS_ERR(omap_pmu_dev))
 		return PTR_ERR(omap_pmu_dev);
 
 	return 0;
+=======
+	return PTR_ERR_OR_ZERO(omap_pmu_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init omap_init_pmu(void)

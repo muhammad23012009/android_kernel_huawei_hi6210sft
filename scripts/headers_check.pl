@@ -65,7 +65,19 @@ sub check_include
 
 sub check_declarations
 {
+<<<<<<< HEAD
 	if ($line =~m/^(\s*extern|unsigned|char|short|int|long|void)\b/) {
+=======
+	# soundcard.h is what it is
+	if ($line =~ m/^void seqbuf_dump\(void\);/) {
+		return;
+	}
+	# drm headers are being C++ friendly
+	if ($line =~ m/^extern "C"/) {
+		return;
+	}
+	if ($line =~ m/^(\s*extern|unsigned|char|short|int|long|void)\b/) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printf STDERR "$filename:$lineno: " .
 			      "userspace cannot reference function or " .
 			      "variable defined in the kernel\n";

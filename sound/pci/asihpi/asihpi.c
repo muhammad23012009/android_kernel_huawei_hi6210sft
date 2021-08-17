@@ -1,6 +1,10 @@
 /*
  *  Asihpi soundcard
+<<<<<<< HEAD
  *  Copyright (c) by AudioScience Inc <alsa@audioscience.com>
+=======
+ *  Copyright (c) by AudioScience Inc <support@audioscience.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of version 2 of the GNU General Public License as
@@ -28,7 +32,10 @@
 #include "hpioctl.h"
 #include "hpicmn.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/jiffies.h>
@@ -47,7 +54,11 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("AudioScience inc. <support@audioscience.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("AudioScience ALSA ASI5000 ASI6000 ASI87xx ASI89xx "
+=======
+MODULE_DESCRIPTION("AudioScience ALSA ASI5xxx ASI6xxx ASI87xx ASI89xx "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			HPI_VER_STRING);
 
 #if defined CONFIG_SND_DEBUG_VERBOSE
@@ -87,11 +98,19 @@ MODULE_PARM_DESC(enable_hpi_hwdep,
 #ifdef KERNEL_ALSA_BUILD
 static char *build_info = "Built using headers from kernel source";
 module_param(build_info, charp, S_IRUGO);
+<<<<<<< HEAD
 MODULE_PARM_DESC(build_info, "built using headers from kernel source");
 #else
 static char *build_info = "Built within ALSA source";
 module_param(build_info, charp, S_IRUGO);
 MODULE_PARM_DESC(build_info, "built within ALSA source");
+=======
+MODULE_PARM_DESC(build_info, "Built using headers from kernel source");
+#else
+static char *build_info = "Built within ALSA source";
+module_param(build_info, charp, S_IRUGO);
+MODULE_PARM_DESC(build_info, "Built within ALSA source");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* set to 1 to dump every control from adapter to log */
@@ -110,7 +129,11 @@ static int adapter_fs = DEFAULT_SAMPLERATE;
 struct clk_source {
 	int source;
 	int index;
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct clk_cache {
@@ -125,6 +148,19 @@ struct snd_card_asihpi {
 	struct pci_dev *pci;
 	struct hpi_adapter *hpi;
 
+<<<<<<< HEAD
+=======
+	/* In low latency mode there is only one stream, a pointer to its
+	 * private data is stored here on trigger and cleared on stop.
+	 * The interrupt handler uses it as a parameter when calling
+	 * snd_card_asihpi_timer_function().
+	 */
+	struct snd_card_asihpi_pcm *llmode_streampriv;
+	struct tasklet_struct t;
+	void (*pcm_start)(struct snd_pcm_substream *substream);
+	void (*pcm_stop)(struct snd_pcm_substream *substream);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 h_mixer;
 	struct clk_cache cc;
 
@@ -289,6 +325,7 @@ static void print_hwparams(struct snd_pcm_substream *substream,
 {
 	char name[16];
 	snd_pcm_debug_name(substream, name, sizeof(name));
+<<<<<<< HEAD
 	snd_printd("%s HWPARAMS\n", name);
 	snd_printd(" samplerate %d Hz\n", params_rate(p));
 	snd_printd(" channels %d\n", params_channels(p));
@@ -304,6 +341,19 @@ static void print_hwparams(struct snd_pcm_substream *substream,
 		params_channels(p) *
 		snd_pcm_format_width(params_format(p)) / 8);
 
+=======
+	snd_printdd("%s HWPARAMS\n", name);
+	snd_printdd(" samplerate=%dHz channels=%d format=%d subformat=%d\n",
+		params_rate(p), params_channels(p),
+		params_format(p), params_subformat(p));
+	snd_printdd(" buffer=%dB period=%dB period_size=%dB periods=%d\n",
+		params_buffer_bytes(p), params_period_bytes(p),
+		params_period_size(p), params_periods(p));
+	snd_printdd(" buffer_size=%d access=%d data_rate=%dB/s\n",
+		params_buffer_size(p), params_access(p),
+		params_rate(p) * params_channels(p) *
+		snd_pcm_format_width(params_format(p)) / 8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static snd_pcm_format_t hpi_to_alsa_formats[] = {
@@ -375,7 +425,11 @@ static void snd_card_asihpi_pcm_samplerates(struct snd_card_asihpi *asihpi,
 					  HPI_SOURCENODE_CLOCK_SOURCE, 0, 0, 0,
 					  HPI_CONTROL_SAMPLECLOCK, &h_control);
 		if (err) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR
+=======
+			dev_err(&asihpi->pci->dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				"No local sampleclock, err %d\n", err);
 		}
 
@@ -481,7 +535,11 @@ static int snd_card_asihpi_pcm_hw_params(struct snd_pcm_substream *substream,
 			params_buffer_bytes(params),  runtime->dma_addr);
 		if (err == 0) {
 			snd_printdd(
+<<<<<<< HEAD
 				"stream_host_buffer_attach succeeded %u %lu\n",
+=======
+				"stream_host_buffer_attach success %u %lu\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				params_buffer_bytes(params),
 				(unsigned long)runtime->dma_addr);
 		} else {
@@ -491,12 +549,16 @@ static int snd_card_asihpi_pcm_hw_params(struct snd_pcm_substream *substream,
 		}
 
 		err = hpi_stream_get_info_ex(dpcm->h_stream, NULL,
+<<<<<<< HEAD
 						&dpcm->hpi_buffer_attached,
 						NULL, NULL, NULL);
 
 		snd_printdd("stream_host_buffer_attach status 0x%x\n",
 				dpcm->hpi_buffer_attached);
 
+=======
+				&dpcm->hpi_buffer_attached, NULL, NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	bytes_per_sec = params_rate(params) * params_channels(params);
 	width = snd_pcm_format_width(params_format(params));
@@ -538,11 +600,18 @@ static void snd_card_asihpi_pcm_timer_start(struct snd_pcm_substream *
 	int expiry;
 
 	expiry = HZ / 200;
+<<<<<<< HEAD
 	/*? (dpcm->period_bytes * HZ / dpcm->bytes_per_sec); */
 	expiry = max(expiry, 1); /* don't let it be zero! */
 	dpcm->timer.expires = jiffies + expiry;
 	dpcm->respawn_timer = 1;
 	add_timer(&dpcm->timer);
+=======
+
+	expiry = max(expiry, 1); /* don't let it be zero! */
+	mod_timer(&dpcm->timer, jiffies + expiry);
+	dpcm->respawn_timer = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void snd_card_asihpi_pcm_timer_stop(struct snd_pcm_substream *substream)
@@ -554,6 +623,51 @@ static void snd_card_asihpi_pcm_timer_stop(struct snd_pcm_substream *substream)
 	del_timer(&dpcm->timer);
 }
 
+<<<<<<< HEAD
+=======
+static void snd_card_asihpi_pcm_int_start(struct snd_pcm_substream *substream)
+{
+	struct snd_card_asihpi_pcm *dpcm;
+	struct snd_card_asihpi *card;
+
+	BUG_ON(!substream);
+
+	dpcm = (struct snd_card_asihpi_pcm *)substream->runtime->private_data;
+	card = snd_pcm_substream_chip(substream);
+
+	BUG_ON(in_interrupt());
+	tasklet_disable(&card->t);
+	card->llmode_streampriv = dpcm;
+	tasklet_enable(&card->t);
+
+	hpi_handle_error(hpi_adapter_set_property(card->hpi->adapter->index,
+		HPI_ADAPTER_PROPERTY_IRQ_RATE,
+		card->update_interval_frames, 0));
+}
+
+static void snd_card_asihpi_pcm_int_stop(struct snd_pcm_substream *substream)
+{
+	struct snd_card_asihpi_pcm *dpcm;
+	struct snd_card_asihpi *card;
+
+	BUG_ON(!substream);
+
+	dpcm = (struct snd_card_asihpi_pcm *)substream->runtime->private_data;
+	card = snd_pcm_substream_chip(substream);
+
+	hpi_handle_error(hpi_adapter_set_property(card->hpi->adapter->index,
+		HPI_ADAPTER_PROPERTY_IRQ_RATE, 0, 0));
+
+	if (in_interrupt())
+		card->llmode_streampriv = NULL;
+	else {
+		tasklet_disable(&card->t);
+		card->llmode_streampriv = NULL;
+		tasklet_enable(&card->t);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 					   int cmd)
 {
@@ -564,10 +678,17 @@ static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 	char name[16];
 
 	snd_pcm_debug_name(substream, name, sizeof(name));
+<<<<<<< HEAD
 	snd_printdd("%s trigger\n", name);
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
+=======
+
+	switch (cmd) {
+	case SNDRV_PCM_TRIGGER_START:
+		snd_printdd("%s trigger start\n", name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_pcm_group_for_each_entry(s, substream) {
 			struct snd_pcm_runtime *runtime = s->runtime;
 			struct snd_card_asihpi_pcm *ds = runtime->private_data;
@@ -588,7 +709,11 @@ static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 				* data??
 				*/
 				unsigned int preload = ds->period_bytes * 1;
+<<<<<<< HEAD
 				snd_printddd("%d preload x%x\n", s->number, preload);
+=======
+				snd_printddd("%d preload %d\n", s->number, preload);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				hpi_handle_error(hpi_outstream_write_buf(
 						ds->h_stream,
 						&runtime->dma_area[0],
@@ -611,16 +736,26 @@ static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 			} else
 				break;
 		}
+<<<<<<< HEAD
 		snd_printdd("start\n");
 		/* start the master stream */
 		snd_card_asihpi_pcm_timer_start(substream);
+=======
+		/* start the master stream */
+		card->pcm_start(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((substream->stream == SNDRV_PCM_STREAM_CAPTURE) ||
 			!card->can_dma)
 			hpi_handle_error(hpi_stream_start(dpcm->h_stream));
 		break;
 
 	case SNDRV_PCM_TRIGGER_STOP:
+<<<<<<< HEAD
 		snd_card_asihpi_pcm_timer_stop(substream);
+=======
+		snd_printdd("%s trigger stop\n", name);
+		card->pcm_stop(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_pcm_group_for_each_entry(s, substream) {
 			if (snd_pcm_substream_chip(s) != card)
 				continue;
@@ -638,7 +773,10 @@ static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 			} else
 				break;
 		}
+<<<<<<< HEAD
 		snd_printdd("stop\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* _prepare and _hwparams reset the stream */
 		hpi_handle_error(hpi_stream_stop(dpcm->h_stream));
@@ -651,6 +789,7 @@ static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 		break;
 
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+<<<<<<< HEAD
 		snd_printdd("pause release\n");
 		hpi_handle_error(hpi_stream_start(dpcm->h_stream));
 		snd_card_asihpi_pcm_timer_start(substream);
@@ -658,6 +797,15 @@ static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 		snd_printdd("pause\n");
 		snd_card_asihpi_pcm_timer_stop(substream);
+=======
+		snd_printdd("%s trigger pause release\n", name);
+		card->pcm_start(substream);
+		hpi_handle_error(hpi_stream_start(dpcm->h_stream));
+		break;
+	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+		snd_printdd("%s trigger pause push\n", name);
+		card->pcm_stop(substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hpi_handle_error(hpi_stream_stop(dpcm->h_stream));
 		break;
 	default:
@@ -729,9 +877,14 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 	u32 buffer_size, bytes_avail, samples_played, on_card_bytes;
 	char name[16];
 
+<<<<<<< HEAD
 	snd_pcm_debug_name(substream, name, sizeof(name));
 
 	snd_printdd("%s snd_card_asihpi_timer_function\n", name);
+=======
+
+	snd_pcm_debug_name(substream, name, sizeof(name));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* find minimum newdata and buffer pos in group */
 	snd_pcm_group_for_each_entry(s, substream) {
@@ -769,10 +922,14 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 						s->number);
 				ds->drained_count++;
 				if (ds->drained_count > 20) {
+<<<<<<< HEAD
 					unsigned long flags;
 					snd_pcm_stream_lock_irqsave(s, flags);
 					snd_pcm_stop(s, SNDRV_PCM_STATE_XRUN);
 					snd_pcm_stream_unlock_irqrestore(s, flags);
+=======
+					snd_pcm_stop_xrun(s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					continue;
 				}
 			} else {
@@ -794,6 +951,7 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 				newdata);
 		}
 
+<<<<<<< HEAD
 		snd_printdd("hw_ptr 0x%04lX, appl_ptr 0x%04lX\n",
 			(unsigned long)frames_to_bytes(runtime,
 						runtime->status->hw_ptr),
@@ -807,6 +965,23 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 			ds->pcm_buf_host_rw_ofs, pcm_buf_dma_ofs,
 			(int)bytes_avail,
 			(int)on_card_bytes, buffer_size-bytes_avail);
+=======
+		snd_printddd(
+			"timer1, %s, %d, S=%d, elap=%d, rw=%d, dsp=%d, left=%d, aux=%d, space=%d, hw_ptr=%ld, appl_ptr=%ld\n",
+			name, s->number, state,
+			ds->pcm_buf_elapsed_dma_ofs,
+			ds->pcm_buf_host_rw_ofs,
+			pcm_buf_dma_ofs,
+			(int)bytes_avail,
+
+			(int)on_card_bytes,
+			buffer_size-bytes_avail,
+			(unsigned long)frames_to_bytes(runtime,
+						runtime->status->hw_ptr),
+			(unsigned long)frames_to_bytes(runtime,
+						runtime->control->appl_ptr)
+		);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		loops++;
 	}
 	pcm_buf_dma_ofs = min_buf_pos;
@@ -824,16 +999,28 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 
 	next_jiffies = max(next_jiffies, 1U);
 	dpcm->timer.expires = jiffies + next_jiffies;
+<<<<<<< HEAD
 	snd_printdd("jif %d buf pos 0x%04X newdata 0x%04X xfer 0x%04X\n",
+=======
+	snd_printddd("timer2, jif=%d, buf_pos=%d, newdata=%d, xfer=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			next_jiffies, pcm_buf_dma_ofs, newdata, xfercount);
 
 	snd_pcm_group_for_each_entry(s, substream) {
 		struct snd_card_asihpi_pcm *ds = s->runtime->private_data;
+<<<<<<< HEAD
+=======
+		runtime = s->runtime;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* don't link Cap and Play */
 		if (substream->stream != s->stream)
 			continue;
 
+<<<<<<< HEAD
+=======
+		/* Store dma offset for use by pointer callback */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ds->pcm_buf_dma_ofs = pcm_buf_dma_ofs;
 
 		if (xfercount &&
@@ -856,7 +1043,11 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 			}
 
 			if (s->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+<<<<<<< HEAD
 				snd_printddd("P%d write1 0x%04X 0x%04X\n",
+=======
+				snd_printddd("write1, P=%d, xfer=%d, buf_ofs=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					s->number, xfer1, buf_ofs);
 				hpi_handle_error(
 					hpi_outstream_write_buf(
@@ -866,7 +1057,11 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 				if (xfer2) {
 					pd = s->runtime->dma_area;
 
+<<<<<<< HEAD
 					snd_printddd("P%d write2 0x%04X 0x%04X\n",
+=======
+					snd_printddd("write2, P=%d, xfer=%d, buf_ofs=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							s->number,
 							xfercount - xfer1, buf_ofs);
 					hpi_handle_error(
@@ -876,7 +1071,11 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 							&ds->format));
 				}
 			} else {
+<<<<<<< HEAD
 				snd_printddd("C%d read1 0x%04x\n",
+=======
+				snd_printddd("read1, C=%d, xfer=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					s->number, xfer1);
 				hpi_handle_error(
 					hpi_instream_read_buf(
@@ -884,7 +1083,11 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 						pd, xfer1));
 				if (xfer2) {
 					pd = s->runtime->dma_area;
+<<<<<<< HEAD
 					snd_printddd("C%d read2 0x%04x\n",
+=======
+					snd_printddd("read2, C=%d, xfer=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						s->number, xfer2);
 					hpi_handle_error(
 						hpi_instream_read_buf(
@@ -892,16 +1095,48 @@ static void snd_card_asihpi_timer_function(unsigned long data)
 							pd, xfer2));
 				}
 			}
+<<<<<<< HEAD
+=======
+			/* ? host_rw_ofs always ahead of elapsed_dma_ofs by preload size? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ds->pcm_buf_host_rw_ofs += xfercount;
 			ds->pcm_buf_elapsed_dma_ofs += xfercount;
 			snd_pcm_period_elapsed(s);
 		}
 	}
 
+<<<<<<< HEAD
 	if (dpcm->respawn_timer)
 		add_timer(&dpcm->timer);
 }
 
+=======
+	if (!card->hpi->interrupt_mode && dpcm->respawn_timer)
+		add_timer(&dpcm->timer);
+}
+
+static void snd_card_asihpi_int_task(unsigned long data)
+{
+	struct hpi_adapter *a = (struct hpi_adapter *)data;
+	struct snd_card_asihpi *asihpi;
+
+	WARN_ON(!a || !a->snd_card || !a->snd_card->private_data);
+	asihpi = (struct snd_card_asihpi *)a->snd_card->private_data;
+	if (asihpi->llmode_streampriv)
+		snd_card_asihpi_timer_function(
+			(unsigned long)asihpi->llmode_streampriv);
+}
+
+static void snd_card_asihpi_isr(struct hpi_adapter *a)
+{
+	struct snd_card_asihpi *asihpi;
+
+	WARN_ON(!a || !a->snd_card || !a->snd_card->private_data);
+	asihpi = (struct snd_card_asihpi *)a->snd_card->private_data;
+	tasklet_schedule(&asihpi->t);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /***************************** PLAYBACK OPS ****************/
 static int snd_card_asihpi_playback_ioctl(struct snd_pcm_substream *substream,
 					  unsigned int cmd, void *arg)
@@ -937,7 +1172,11 @@ snd_card_asihpi_playback_pointer(struct snd_pcm_substream *substream)
 	snd_pcm_debug_name(substream, name, sizeof(name));
 
 	ptr = bytes_to_frames(runtime, dpcm->pcm_buf_dma_ofs  % dpcm->buffer_bytes);
+<<<<<<< HEAD
 	snd_printddd("%s pointer = 0x%04lx\n", name, (unsigned long)ptr);
+=======
+	snd_printddd("%s, pointer=%ld\n", name, (unsigned long)ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ptr;
 }
 
@@ -1001,14 +1240,20 @@ static int snd_card_asihpi_playback_open(struct snd_pcm_substream *substream)
 	    If internal and other stream playing, can't switch
 	*/
 
+<<<<<<< HEAD
 	init_timer(&dpcm->timer);
 	dpcm->timer.data = (unsigned long) dpcm;
 	dpcm->timer.function = snd_card_asihpi_timer_function;
+=======
+	setup_timer(&dpcm->timer, snd_card_asihpi_timer_function,
+		    (unsigned long) dpcm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dpcm->substream = substream;
 	runtime->private_data = dpcm;
 	runtime->private_free = snd_card_asihpi_runtime_free;
 
 	memset(&snd_card_asihpi_playback, 0, sizeof(snd_card_asihpi_playback));
+<<<<<<< HEAD
 	snd_card_asihpi_playback.buffer_bytes_max = BUFFER_BYTES_MAX;
 	snd_card_asihpi_playback.period_bytes_min = PERIOD_BYTES_MIN;
 	/*?snd_card_asihpi_playback.period_bytes_min =
@@ -1016,6 +1261,24 @@ static int snd_card_asihpi_playback_open(struct snd_pcm_substream *substream)
 	snd_card_asihpi_playback.period_bytes_max = BUFFER_BYTES_MAX / PERIODS_MIN;
 	snd_card_asihpi_playback.periods_min = PERIODS_MIN;
 	snd_card_asihpi_playback.periods_max = BUFFER_BYTES_MAX / PERIOD_BYTES_MIN;
+=======
+	if (!card->hpi->interrupt_mode) {
+		snd_card_asihpi_playback.buffer_bytes_max = BUFFER_BYTES_MAX;
+		snd_card_asihpi_playback.period_bytes_min = PERIOD_BYTES_MIN;
+		snd_card_asihpi_playback.period_bytes_max = BUFFER_BYTES_MAX / PERIODS_MIN;
+		snd_card_asihpi_playback.periods_min = PERIODS_MIN;
+		snd_card_asihpi_playback.periods_max = BUFFER_BYTES_MAX / PERIOD_BYTES_MIN;
+	} else {
+		size_t pbmin = card->update_interval_frames *
+			card->out_max_chans;
+		snd_card_asihpi_playback.buffer_bytes_max = BUFFER_BYTES_MAX;
+		snd_card_asihpi_playback.period_bytes_min = pbmin;
+		snd_card_asihpi_playback.period_bytes_max = BUFFER_BYTES_MAX / PERIODS_MIN;
+		snd_card_asihpi_playback.periods_min = PERIODS_MIN;
+		snd_card_asihpi_playback.periods_max = BUFFER_BYTES_MAX / pbmin;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* snd_card_asihpi_playback.fifo_size = 0; */
 	snd_card_asihpi_playback.channels_max = card->out_max_chans;
 	snd_card_asihpi_playback.channels_min = card->out_min_chans;
@@ -1050,7 +1313,11 @@ static int snd_card_asihpi_playback_open(struct snd_pcm_substream *substream)
 		card->update_interval_frames);
 
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
+<<<<<<< HEAD
 		card->update_interval_frames * 2, UINT_MAX);
+=======
+		card->update_interval_frames, UINT_MAX);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	snd_printdd("playback open\n");
 
@@ -1068,7 +1335,11 @@ static int snd_card_asihpi_playback_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_card_asihpi_playback_mmap_ops = {
+=======
+static const struct snd_pcm_ops snd_card_asihpi_playback_mmap_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = snd_card_asihpi_playback_open,
 	.close = snd_card_asihpi_playback_close,
 	.ioctl = snd_card_asihpi_playback_ioctl,
@@ -1085,9 +1356,16 @@ snd_card_asihpi_capture_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_card_asihpi_pcm *dpcm = runtime->private_data;
+<<<<<<< HEAD
 
 	snd_printddd("capture pointer %d=%d\n",
 			substream->number, dpcm->pcm_buf_dma_ofs);
+=======
+	char name[16];
+	snd_pcm_debug_name(substream, name, sizeof(name));
+
+	snd_printddd("%s, pointer=%d\n", name, dpcm->pcm_buf_dma_ofs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* NOTE Unlike playback can't use actual samples_played
 		for the capture position, because those samples aren't yet in
 		the local buffer available for reading.
@@ -1115,8 +1393,11 @@ static int snd_card_asihpi_capture_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u64 snd_card_asihpi_capture_formats(struct snd_card_asihpi *asihpi,
 					u32 h_stream)
 {
@@ -1175,19 +1456,42 @@ static int snd_card_asihpi_capture_open(struct snd_pcm_substream *substream)
 	if (err)
 		return -EIO;
 
+<<<<<<< HEAD
 	init_timer(&dpcm->timer);
 	dpcm->timer.data = (unsigned long) dpcm;
 	dpcm->timer.function = snd_card_asihpi_timer_function;
+=======
+	setup_timer(&dpcm->timer, snd_card_asihpi_timer_function,
+		    (unsigned long) dpcm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dpcm->substream = substream;
 	runtime->private_data = dpcm;
 	runtime->private_free = snd_card_asihpi_runtime_free;
 
 	memset(&snd_card_asihpi_capture, 0, sizeof(snd_card_asihpi_capture));
+<<<<<<< HEAD
 	snd_card_asihpi_capture.buffer_bytes_max = BUFFER_BYTES_MAX;
 	snd_card_asihpi_capture.period_bytes_min = PERIOD_BYTES_MIN;
 	snd_card_asihpi_capture.period_bytes_max = BUFFER_BYTES_MAX / PERIODS_MIN;
 	snd_card_asihpi_capture.periods_min = PERIODS_MIN;
 	snd_card_asihpi_capture.periods_max = BUFFER_BYTES_MAX / PERIOD_BYTES_MIN;
+=======
+	if (!card->hpi->interrupt_mode) {
+		snd_card_asihpi_capture.buffer_bytes_max = BUFFER_BYTES_MAX;
+		snd_card_asihpi_capture.period_bytes_min = PERIOD_BYTES_MIN;
+		snd_card_asihpi_capture.period_bytes_max = BUFFER_BYTES_MAX / PERIODS_MIN;
+		snd_card_asihpi_capture.periods_min = PERIODS_MIN;
+		snd_card_asihpi_capture.periods_max = BUFFER_BYTES_MAX / PERIOD_BYTES_MIN;
+	} else {
+		size_t pbmin = card->update_interval_frames *
+			card->out_max_chans;
+		snd_card_asihpi_capture.buffer_bytes_max = BUFFER_BYTES_MAX;
+		snd_card_asihpi_capture.period_bytes_min = pbmin;
+		snd_card_asihpi_capture.period_bytes_max = BUFFER_BYTES_MAX / PERIODS_MIN;
+		snd_card_asihpi_capture.periods_min = PERIODS_MIN;
+		snd_card_asihpi_capture.periods_max = BUFFER_BYTES_MAX / pbmin;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* snd_card_asihpi_capture.fifo_size = 0; */
 	snd_card_asihpi_capture.channels_max = card->in_max_chans;
 	snd_card_asihpi_capture.channels_min = card->in_min_chans;
@@ -1212,7 +1516,11 @@ static int snd_card_asihpi_capture_open(struct snd_pcm_substream *substream)
 	snd_pcm_hw_constraint_step(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
 		card->update_interval_frames);
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
+<<<<<<< HEAD
 		card->update_interval_frames * 2, UINT_MAX);
+=======
+		card->update_interval_frames, UINT_MAX);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	snd_pcm_set_sync(substream);
 
@@ -1227,7 +1535,11 @@ static int snd_card_asihpi_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_card_asihpi_capture_mmap_ops = {
+=======
+static const struct snd_pcm_ops snd_card_asihpi_capture_mmap_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = snd_card_asihpi_capture_open,
 	.close = snd_card_asihpi_capture_close,
 	.ioctl = snd_card_asihpi_capture_ioctl,
@@ -1253,11 +1565,20 @@ static int snd_card_asihpi_pcm_new(struct snd_card_asihpi *asihpi, int device)
 			num_outstreams,	num_instreams, &pcm);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	/* pointer to ops struct is stored, dont change ops afterwards! */
 		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
 				&snd_card_asihpi_playback_mmap_ops);
 		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 				&snd_card_asihpi_capture_mmap_ops);
+=======
+
+	/* pointer to ops struct is stored, dont change ops afterwards! */
+	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
+			&snd_card_asihpi_playback_mmap_ops);
+	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
+			&snd_card_asihpi_capture_mmap_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pcm->private_data = asihpi;
 	pcm->info_flags = 0;
@@ -1281,7 +1602,11 @@ struct hpi_control {
 	u16 dst_node_type;
 	u16 dst_node_index;
 	u16 band;
+<<<<<<< HEAD
 	char name[44]; /* copied to snd_ctl_elem_id.name[44]; */
+=======
+	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN]; /* copied to snd_ctl_elem_id.name[44]; */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const char * const asihpi_tuner_band_names[] = {
@@ -1295,8 +1620,14 @@ static const char * const asihpi_tuner_band_names[] = {
 	"TV PAL I",
 	"TV PAL DK",
 	"TV SECAM",
+<<<<<<< HEAD
 };
 
+=======
+	"TV DAB",
+};
+/* Number of strings must match the enumerations for HPI_TUNER_BAND in hpi.h */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 compile_time_assert(
 	(ARRAY_SIZE(asihpi_tuner_band_names) ==
 		(HPI_TUNER_BAND_LAST+1)),
@@ -1316,9 +1647,17 @@ static const char * const asihpi_src_names[] = {
 	"Analog",
 	"Adapter",
 	"RTP",
+<<<<<<< HEAD
 	"Internal"
 };
 
+=======
+	"Internal",
+	"AVB",
+	"BLU-Link"
+};
+/* Number of strings must match the enumerations for HPI_SOURCENODES in hpi.h */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 compile_time_assert(
 	(ARRAY_SIZE(asihpi_src_names) ==
 		(HPI_SOURCENODE_LAST_INDEX-HPI_SOURCENODE_NONE+1)),
@@ -1334,8 +1673,16 @@ static const char * const asihpi_dst_names[] = {
 	"Net",
 	"Analog",
 	"RTP",
+<<<<<<< HEAD
 };
 
+=======
+	"AVB",
+	"Internal",
+	"BLU-Link"
+};
+/* Number of strings must match the enumerations for HPI_DESTNODES in hpi.h */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 compile_time_assert(
 	(ARRAY_SIZE(asihpi_dst_names) ==
 		(HPI_DESTNODE_LAST_INDEX-HPI_DESTNODE_NONE+1)),
@@ -1350,7 +1697,11 @@ static inline int ctl_add(struct snd_card *card, struct snd_kcontrol_new *ctl,
 	if (err < 0)
 		return err;
 	else if (mixer_dump)
+<<<<<<< HEAD
 		snd_printk(KERN_INFO "added %s(%d)\n", ctl->name, ctl->index);
+=======
+		dev_info(&asihpi->pci->dev, "added %s(%d)\n", ctl->name, ctl->index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1624,6 +1975,7 @@ static const char * const asihpi_aesebu_format_names[] = {
 static int snd_asihpi_aesebu_format_info(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 3;
@@ -1636,6 +1988,9 @@ static int snd_asihpi_aesebu_format_info(struct snd_kcontrol *kcontrol,
 		asihpi_aesebu_format_names[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 3, asihpi_aesebu_format_names);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_asihpi_aesebu_format_get(struct snd_kcontrol *kcontrol,
@@ -1862,6 +2217,7 @@ static int snd_asihpi_tuner_band_info(struct snd_kcontrol *kcontrol,
 	if (num_bands < 0)
 		return num_bands;
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = num_bands;
@@ -1878,6 +2234,9 @@ static int snd_asihpi_tuner_band_info(struct snd_kcontrol *kcontrol,
 
 	}
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, num_bands, asihpi_tuner_band_names);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_asihpi_tuner_band_get(struct snd_kcontrol *kcontrol,
@@ -1913,6 +2272,10 @@ static int snd_asihpi_tuner_band_put(struct snd_kcontrol *kcontrol,
 	struct snd_card_asihpi *asihpi = snd_kcontrol_chip(kcontrol);
 	*/
 	u32 h_control = kcontrol->private_value;
+<<<<<<< HEAD
+=======
+	unsigned int idx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 band;
 	u16 tuner_bands[HPI_TUNER_BAND_LAST];
 	u32 num_bands = 0;
@@ -1920,7 +2283,14 @@ static int snd_asihpi_tuner_band_put(struct snd_kcontrol *kcontrol,
 	num_bands = asihpi_tuner_band_query(kcontrol, tuner_bands,
 			HPI_TUNER_BAND_LAST);
 
+<<<<<<< HEAD
 	band = tuner_bands[ucontrol->value.enumerated.item[0]];
+=======
+	idx = ucontrol->value.enumerated.item[0];
+	if (idx >= ARRAY_SIZE(tuner_bands))
+		idx = ARRAY_SIZE(tuner_bands) - 1;
+	band = tuner_bands[idx];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hpi_handle_error(hpi_tuner_set_band(h_control, band));
 
 	return 1;
@@ -2248,7 +2618,11 @@ static int snd_asihpi_cmode_info(struct snd_kcontrol *kcontrol,
 	u32 h_control = kcontrol->private_value;
 	u16 mode;
 	int i;
+<<<<<<< HEAD
 	u16 mode_map[6];
+=======
+	const char *mapped_names[6];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int valid_modes = 0;
 
 	/* HPI channel mode values can be from 1 to 6
@@ -2257,13 +2631,18 @@ static int snd_asihpi_cmode_info(struct snd_kcontrol *kcontrol,
 	for (i = 0; i < HPI_CHANNEL_MODE_LAST; i++)
 		if (!hpi_channel_mode_query_mode(
 			h_control, i, &mode)) {
+<<<<<<< HEAD
 			mode_map[valid_modes] = mode;
+=======
+			mapped_names[valid_modes] = mode_names[mode];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			valid_modes++;
 			}
 
 	if (!valid_modes)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = valid_modes;
@@ -2275,6 +2654,9 @@ static int snd_asihpi_cmode_info(struct snd_kcontrol *kcontrol,
 	       mode_names[mode_map[uinfo->value.enumerated.item]]);
 
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, valid_modes, mapped_names);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int snd_asihpi_cmode_get(struct snd_kcontrol *kcontrol,
@@ -2323,6 +2705,7 @@ static int snd_asihpi_cmode_add(struct snd_card_asihpi *asihpi,
 /*------------------------------------------------------------
    Sampleclock source  controls
  ------------------------------------------------------------*/
+<<<<<<< HEAD
 static char *sampleclock_sources[MAX_CLOCKSOURCES] = {
 	"N/A", "Local PLL", "Digital Sync", "Word External", "Word Header",
 	"SMPTE", "Digital1", "Auto", "Network", "Invalid",
@@ -2330,6 +2713,20 @@ static char *sampleclock_sources[MAX_CLOCKSOURCES] = {
 	"Digital2", "Digital3", "Digital4", "Digital5",
 	"Digital6", "Digital7", "Digital8"};
 
+=======
+static const char * const sampleclock_sources[] = {
+	"N/A", "Local PLL", "Digital Sync", "Word External", "Word Header",
+	"SMPTE", "Digital1", "Auto", "Network", "Invalid",
+	"Prev Module", "BLU-Link",
+	"Digital2", "Digital3", "Digital4", "Digital5",
+	"Digital6", "Digital7", "Digital8"};
+
+	/* Number of strings must match expected enumerated values */
+	compile_time_assert(
+		(ARRAY_SIZE(sampleclock_sources) == MAX_CLOCKSOURCES),
+		assert_sampleclock_sources_size);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int snd_asihpi_clksrc_info(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
@@ -2383,7 +2780,12 @@ static int snd_asihpi_clksrc_put(struct snd_kcontrol *kcontrol,
 	struct snd_card_asihpi *asihpi =
 			(struct snd_card_asihpi *)(kcontrol->private_data);
 	struct clk_cache *clkcache = &asihpi->cc;
+<<<<<<< HEAD
 	int change, item;
+=======
+	unsigned int item;
+	int change;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 h_control = kcontrol->private_value;
 
 	change = 1;
@@ -2476,15 +2878,29 @@ static int snd_asihpi_clkrate_get(struct snd_kcontrol *kcontrol,
 static int snd_asihpi_sampleclock_add(struct snd_card_asihpi *asihpi,
 				      struct hpi_control *hpi_ctl)
 {
+<<<<<<< HEAD
 	struct snd_card *card = asihpi->card;
 	struct snd_kcontrol_new snd_control;
 
 	struct clk_cache *clkcache = &asihpi->cc;
+=======
+	struct snd_card *card;
+	struct snd_kcontrol_new snd_control;
+
+	struct clk_cache *clkcache;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 hSC =  hpi_ctl->h_control;
 	int has_aes_in = 0;
 	int i, j;
 	u16 source;
 
+<<<<<<< HEAD
+=======
+	if (snd_BUG_ON(!asihpi))
+		return -EINVAL;
+	card = asihpi->card;
+	clkcache = &asihpi->cc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_control.private_value = hpi_ctl->h_control;
 
 	clkcache->has_local = 0;
@@ -2586,7 +3002,11 @@ static int snd_card_asihpi_mixer_new(struct snd_card_asihpi *asihpi)
 		if (err) {
 			if (err == HPI_ERROR_CONTROL_DISABLED) {
 				if (mixer_dump)
+<<<<<<< HEAD
 					snd_printk(KERN_INFO
+=======
+					dev_info(&asihpi->pci->dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						   "Disabled HPI Control(%d)\n",
 						   idx);
 				continue;
@@ -2651,9 +3071,14 @@ static int snd_card_asihpi_mixer_new(struct snd_card_asihpi *asihpi)
 		case HPI_CONTROL_COMPANDER:
 		default:
 			if (mixer_dump)
+<<<<<<< HEAD
 				snd_printk(KERN_INFO
 					"Untranslated HPI Control"
 					"(%d) %d %d %d %d %d\n",
+=======
+				dev_info(&asihpi->pci->dev,
+					"Untranslated HPI Control (%d) %d %d %d %d %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					idx,
 					hpi_ctl.control_type,
 					hpi_ctl.src_node_type,
@@ -2668,7 +3093,11 @@ static int snd_card_asihpi_mixer_new(struct snd_card_asihpi *asihpi)
 	if (HPI_ERROR_INVALID_OBJ_INDEX != err)
 		hpi_handle_error(err);
 
+<<<<<<< HEAD
 	snd_printk(KERN_INFO "%d mixer controls found\n", idx);
+=======
+	dev_info(&asihpi->pci->dev, "%d mixer controls found\n", idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -2767,14 +3196,21 @@ static int snd_asihpi_hpi_ioctl(struct snd_hwdep *hw, struct file *file,
 /* results in /dev/snd/hwC#D0 file for each card with index #
    also /proc/asound/hwdep will contain '#-00: asihpi (HPI) for each card'
 */
+<<<<<<< HEAD
 static int snd_asihpi_hpi_new(struct snd_card_asihpi *asihpi,
 			      int device, struct snd_hwdep **rhwdep)
+=======
+static int snd_asihpi_hpi_new(struct snd_card_asihpi *asihpi, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_hwdep *hw;
 	int err;
 
+<<<<<<< HEAD
 	if (rhwdep)
 		*rhwdep = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_hwdep_new(asihpi->card, "HPI", device, &hw);
 	if (err < 0)
 		return err;
@@ -2784,8 +3220,11 @@ static int snd_asihpi_hpi_new(struct snd_card_asihpi *asihpi,
 	hw->ops.ioctl = snd_asihpi_hpi_ioctl;
 	hw->ops.release = snd_asihpi_hpi_release;
 	hw->private_data = asihpi;
+<<<<<<< HEAD
 	if (rhwdep)
 		*rhwdep = hw;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2822,6 +3261,7 @@ static int snd_asihpi_probe(struct pci_dev *pci_dev,
 	hpi = pci_get_drvdata(pci_dev);
 	adapter_index = hpi->adapter->index;
 	/* first try to give the card the same index as its hardware index */
+<<<<<<< HEAD
 	err = snd_card_create(adapter_index,
 			      id[adapter_index], THIS_MODULE,
 			      sizeof(struct snd_card_asihpi),
@@ -2842,13 +3282,32 @@ static int snd_asihpi_probe(struct pci_dev *pci_dev,
 
 	snd_card_set_dev(card, &pci_dev->dev);
 
+=======
+	err = snd_card_new(&pci_dev->dev, adapter_index, id[adapter_index],
+			   THIS_MODULE, sizeof(struct snd_card_asihpi), &card);
+	if (err < 0) {
+		/* if that fails, try the default index==next available */
+		err = snd_card_new(&pci_dev->dev, index[dev], id[dev],
+				   THIS_MODULE, sizeof(struct snd_card_asihpi),
+				   &card);
+		if (err < 0)
+			return err;
+		dev_warn(&pci_dev->dev, "Adapter index %d->ALSA index %d\n",
+			adapter_index, card->number);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	asihpi = card->private_data;
 	asihpi->card = card;
 	asihpi->pci = pci_dev;
 	asihpi->hpi = hpi;
+<<<<<<< HEAD
 
 	snd_printk(KERN_INFO "adapter ID=%4X index=%d\n",
 			asihpi->hpi->adapter->type, adapter_index);
+=======
+	hpi->snd_card = card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = hpi_adapter_get_property(adapter_index,
 		HPI_ADAPTER_PROPERTY_CAPS1,
@@ -2868,8 +3327,21 @@ static int snd_asihpi_probe(struct pci_dev *pci_dev,
 	if (err)
 		asihpi->update_interval_frames = 512;
 
+<<<<<<< HEAD
 	if (!asihpi->can_dma)
 		asihpi->update_interval_frames *= 2;
+=======
+	if (hpi->interrupt_mode) {
+		asihpi->pcm_start = snd_card_asihpi_pcm_int_start;
+		asihpi->pcm_stop = snd_card_asihpi_pcm_int_stop;
+		tasklet_init(&asihpi->t, snd_card_asihpi_int_task,
+			(unsigned long)hpi);
+		hpi->interrupt_callback = snd_card_asihpi_isr;
+	} else {
+		asihpi->pcm_start = snd_card_asihpi_pcm_timer_start;
+		asihpi->pcm_stop = snd_card_asihpi_pcm_timer_stop;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hpi_handle_error(hpi_instream_open(adapter_index,
 			     0, &h_stream));
@@ -2879,6 +3351,12 @@ static int snd_asihpi_probe(struct pci_dev *pci_dev,
 
 	hpi_handle_error(hpi_instream_close(h_stream));
 
+<<<<<<< HEAD
+=======
+	if (!asihpi->can_dma)
+		asihpi->update_interval_frames *= 2;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = hpi_adapter_get_property(adapter_index,
 		HPI_ADAPTER_PROPERTY_CURCHANNELS,
 		&asihpi->in_max_chans, &asihpi->out_max_chans);
@@ -2896,20 +3374,36 @@ static int snd_asihpi_probe(struct pci_dev *pci_dev,
 		asihpi->in_min_chans = 1;
 	}
 
+<<<<<<< HEAD
 	snd_printk(KERN_INFO "Has dma:%d, grouping:%d, mrx:%d\n",
 			asihpi->can_dma,
 			asihpi->support_grouping,
 			asihpi->support_mrx
+=======
+	dev_info(&pci_dev->dev, "Has dma:%d, grouping:%d, mrx:%d, uif:%d\n",
+			asihpi->can_dma,
+			asihpi->support_grouping,
+			asihpi->support_mrx,
+			asihpi->update_interval_frames
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	      );
 
 	err = snd_card_asihpi_pcm_new(asihpi, 0);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pcm_new failed\n");
+=======
+		dev_err(&pci_dev->dev, "pcm_new failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto __nodev;
 	}
 	err = snd_card_asihpi_mixer_new(asihpi);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "mixer_new failed\n");
+=======
+		dev_err(&pci_dev->dev, "mixer_new failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto __nodev;
 	}
 
@@ -2925,7 +3419,11 @@ static int snd_asihpi_probe(struct pci_dev *pci_dev,
 
 	/* always create, can be enabled or disabled dynamically
 	    by enable_hwdep  module param*/
+<<<<<<< HEAD
 	snd_asihpi_hpi_new(asihpi, 0, NULL);
+=======
+	snd_asihpi_hpi_new(asihpi, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	strcpy(card->driver, "ASIHPI");
 
@@ -2936,13 +3434,20 @@ static int snd_asihpi_probe(struct pci_dev *pci_dev,
 	err = snd_card_register(card);
 
 	if (!err) {
+<<<<<<< HEAD
 		hpi->snd_card = card;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev++;
 		return 0;
 	}
 __nodev:
 	snd_card_free(card);
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "snd_asihpi_probe error %d\n", err);
+=======
+	dev_err(&pci_dev->dev, "snd_asihpi_probe error %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 
 }
@@ -2950,12 +3455,29 @@ __nodev:
 static void snd_asihpi_remove(struct pci_dev *pci_dev)
 {
 	struct hpi_adapter *hpi = pci_get_drvdata(pci_dev);
+<<<<<<< HEAD
+=======
+	struct snd_card_asihpi *asihpi = hpi->snd_card->private_data;
+
+	/* Stop interrupts */
+	if (hpi->interrupt_mode) {
+		hpi->interrupt_callback = NULL;
+		hpi_handle_error(hpi_adapter_set_property(hpi->adapter->index,
+			HPI_ADAPTER_PROPERTY_IRQ_RATE, 0, 0));
+		tasklet_kill(&asihpi->t);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_card_free(hpi->snd_card);
 	hpi->snd_card = NULL;
 	asihpi_adapter_remove(pci_dev);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(asihpi_pci_tbl) = {
+=======
+static const struct pci_device_id asihpi_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{HPI_PCI_VENDOR_ID_TI, HPI_PCI_DEV_ID_DSP6205,
 		HPI_PCI_VENDOR_ID_AUDIOSCIENCE, PCI_ANY_ID, 0, 0,
 		(kernel_ulong_t)HPI_6205},
@@ -2971,10 +3493,13 @@ static struct pci_driver driver = {
 	.id_table = asihpi_pci_tbl,
 	.probe = snd_asihpi_probe,
 	.remove = snd_asihpi_remove,
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 /*	.suspend = snd_asihpi_suspend,
 	.resume = snd_asihpi_resume, */
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init snd_asihpi_init(void)

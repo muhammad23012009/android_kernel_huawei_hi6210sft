@@ -91,8 +91,13 @@ struct tsl2x7x_settings {
  */
 struct tsl2X7X_platform_data {
 	int (*platform_power)(struct device *dev, pm_message_t);
+<<<<<<< HEAD
 	int (*power_on)      (struct iio_dev *indio_dev);
 	int (*power_off)     (struct i2c_client *dev);
+=======
+	int (*power_on)(struct iio_dev *indio_dev);
+	int (*power_off)(struct i2c_client *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tsl2x7x_lux platform_lux_table[TSL2X7X_MAX_LUX_TABLE_SIZE];
 	struct tsl2x7x_settings *platform_default_settings;
 };

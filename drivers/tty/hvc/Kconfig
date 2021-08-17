@@ -42,6 +42,7 @@ config HVC_RTAS
 	help
 	  IBM Console device driver which makes use of RTAS
 
+<<<<<<< HEAD
 config HVC_BEAT
 	bool "Toshiba's Beat Hypervisor Console support"
 	depends on PPC_CELLEB
@@ -49,6 +50,8 @@ config HVC_BEAT
 	help
 	  Toshiba's Cell Reference Set Beat Console device driver
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config HVC_IUCV
 	bool "z/VM IUCV Hypervisor console support (VM only)"
 	depends on S390
@@ -88,7 +91,11 @@ config HVC_UDBG
 
 config HVC_DCC
        bool "ARM JTAG DCC console"
+<<<<<<< HEAD
        depends on ARM
+=======
+       depends on ARM || ARM64
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
        select HVC_DRIVER
        help
          This console uses the JTAG DCC on ARM to create a console under the HVC

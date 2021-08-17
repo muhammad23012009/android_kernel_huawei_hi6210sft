@@ -1,6 +1,10 @@
 config BT_CMTP
 	tristate "CMTP protocol support"
+<<<<<<< HEAD
 	depends on BT && ISDN_CAPI
+=======
+	depends on BT_BREDR && ISDN_CAPI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  CMTP (CAPI Message Transport Protocol) is a transport layer
 	  for CAPI messages.  CMTP is required for the Bluetooth Common

@@ -92,7 +92,11 @@ static size_t get_kcore_size(int *nphdr, size_t *elf_buflen)
 			     roundup(sizeof(CORE_STR), 4)) +
 			roundup(sizeof(struct elf_prstatus), 4) +
 			roundup(sizeof(struct elf_prpsinfo), 4) +
+<<<<<<< HEAD
 			roundup(sizeof(struct task_struct), 4);
+=======
+			roundup(arch_task_struct_size, 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*elf_buflen = PAGE_ALIGN(*elf_buflen);
 	return size + *elf_buflen;
 }
@@ -172,7 +176,11 @@ get_sparsemem_vmemmap_info(struct kcore_list *ent, struct list_head *head)
 
 	start = ((unsigned long)pfn_to_page(pfn)) & PAGE_MASK;
 	end = ((unsigned long)pfn_to_page(pfn + nr_pages)) - 1;
+<<<<<<< HEAD
 	end = ALIGN(end, PAGE_SIZE);
+=======
+	end = PAGE_ALIGN(end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* overlap check (because we have to align page */
 	list_for_each_entry(tmp, head, list) {
 		if (tmp->type != KCORE_VMEMMAP)
@@ -255,8 +263,12 @@ static int kcore_update_ram(void)
 	end_pfn = 0;
 	for_each_node_state(nid, N_MEMORY) {
 		unsigned long node_end;
+<<<<<<< HEAD
 		node_end  = NODE_DATA(nid)->node_start_pfn +
 			NODE_DATA(nid)->node_spanned_pages;
+=======
+		node_end = node_end_pfn(nid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (end_pfn < node_end)
 			end_pfn = node_end;
 	}
@@ -408,7 +420,11 @@ static void elf_kcore_store_hdr(char *bufp, int nphdr, int dataoff)
 	prpsinfo.pr_zomb	= 0;
 
 	strcpy(prpsinfo.pr_fname, "vmlinux");
+<<<<<<< HEAD
 	strncpy(prpsinfo.pr_psargs, saved_command_line, ELF_PRARGSZ);
+=======
+	strlcpy(prpsinfo.pr_psargs, saved_command_line, sizeof(prpsinfo.pr_psargs));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nhdr->p_filesz	+= notesize(&notes[1]);
 	bufp = storenote(&notes[1], bufp);
@@ -416,7 +432,11 @@ static void elf_kcore_store_hdr(char *bufp, int nphdr, int dataoff)
 	/* set up the task structure */
 	notes[2].name	= CORE_STR;
 	notes[2].type	= NT_TASKSTRUCT;
+<<<<<<< HEAD
 	notes[2].datasz	= sizeof(struct task_struct);
+=======
+	notes[2].datasz	= arch_task_struct_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	notes[2].data	= current;
 
 	nhdr->p_filesz	+= notesize(&notes[2]);
@@ -431,6 +451,10 @@ static void elf_kcore_store_hdr(char *bufp, int nphdr, int dataoff)
 static ssize_t
 read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 {
+<<<<<<< HEAD
+=======
+	char *buf = file->private_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ssize_t acc = 0;
 	size_t size, tsz;
 	size_t elf_buflen;
@@ -501,6 +525,7 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 			if (clear_user(buffer, tsz))
 				return -EFAULT;
 		} else if (is_vmalloc_or_module_addr((void *)start)) {
+<<<<<<< HEAD
 			char * elf_buf;
 
 			elf_buf = kzalloc(tsz, GFP_KERNEL);
@@ -527,6 +552,27 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 				if (n) { 
 					if (clear_user(buffer + tsz - n,
 								n))
+=======
+			vread(buf, (char *)start, tsz);
+			/* we have to zero-fill user buffer even if no read */
+			if (copy_to_user(buffer, buf, tsz))
+				return -EFAULT;
+		} else if (m->type == KCORE_USER) {
+			/* User page is handled prior to normal kernel page: */
+			if (copy_to_user(buffer, (char *)start, tsz))
+				return -EFAULT;
+		} else {
+			if (kern_addr_valid(start)) {
+				/*
+				 * Using bounce buffer to bypass the
+				 * hardened user copy kernel text checks.
+				 */
+				if (probe_kernel_read(buf, (void *) start, tsz)) {
+					if (clear_user(buffer, tsz))
+						return -EFAULT;
+				} else {
+					if (copy_to_user(buffer, buf, tsz))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						return -EFAULT;
 				}
 			} else {
@@ -550,20 +596,46 @@ static int open_kcore(struct inode *inode, struct file *filp)
 {
 	if (!capable(CAP_SYS_RAWIO))
 		return -EPERM;
+<<<<<<< HEAD
 	if (kcore_need_update)
 		kcore_update_ram();
 	if (i_size_read(inode) != proc_root_kcore->size) {
 		mutex_lock(&inode->i_mutex);
 		i_size_write(inode, proc_root_kcore->size);
 		mutex_unlock(&inode->i_mutex);
+=======
+
+	filp->private_data = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!filp->private_data)
+		return -ENOMEM;
+
+	if (kcore_need_update)
+		kcore_update_ram();
+	if (i_size_read(inode) != proc_root_kcore->size) {
+		inode_lock(inode);
+		i_size_write(inode, proc_root_kcore->size);
+		inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int release_kcore(struct inode *inode, struct file *file)
+{
+	kfree(file->private_data);
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct file_operations proc_kcore_operations = {
 	.read		= read_kcore,
 	.open		= open_kcore,
+<<<<<<< HEAD
+=======
+	.release	= release_kcore,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.llseek		= default_llseek,
 };
 
@@ -611,8 +683,15 @@ static void __init proc_kcore_text_init(void)
 struct kcore_list kcore_modules;
 static void __init add_modules_range(void)
 {
+<<<<<<< HEAD
 	kclist_add(&kcore_modules, (void *)MODULES_VADDR,
 			MODULES_END - MODULES_VADDR, KCORE_VMALLOC);
+=======
+	if (MODULES_VADDR != VMALLOC_START && MODULES_END != VMALLOC_END) {
+		kclist_add(&kcore_modules, (void *)MODULES_VADDR,
+			MODULES_END - MODULES_VADDR, KCORE_VMALLOC);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else
 static void __init add_modules_range(void)
@@ -640,4 +719,8 @@ static int __init proc_kcore_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(proc_kcore_init);
+=======
+fs_initcall(proc_kcore_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

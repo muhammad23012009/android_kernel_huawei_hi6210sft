@@ -12,15 +12,21 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -78,10 +84,15 @@ static int simtec_i2c_probe(struct platform_device *dev)
 	int ret;
 
 	pd = kzalloc(sizeof(struct simtec_i2c_data), GFP_KERNEL);
+<<<<<<< HEAD
 	if (pd == NULL) {
 		dev_err(&dev->dev, "cannot allocate private data\n");
 		return -ENOMEM;
 	}
+=======
+	if (pd == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(dev, pd);
 
@@ -161,7 +172,10 @@ static int simtec_i2c_remove(struct platform_device *dev)
 static struct platform_driver simtec_i2c_driver = {
 	.driver		= {
 		.name		= "simtec-i2c",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= simtec_i2c_probe,
 	.remove		= simtec_i2c_remove,

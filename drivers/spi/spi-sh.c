@@ -14,11 +14,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -87,7 +90,10 @@ struct spi_sh_data {
 	int irq;
 	struct spi_master *master;
 	struct list_head queue;
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct work_struct ws;
 	unsigned long cr1;
 	wait_queue_head_t wait;
@@ -171,7 +177,10 @@ static int spi_sh_send(struct spi_sh_data *ss, struct spi_message *mesg,
 	int remain = t->len;
 	int cur_len;
 	unsigned char *data;
+<<<<<<< HEAD
 	unsigned long tmp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long ret;
 
 	if (t->len)
@@ -213,9 +222,13 @@ static int spi_sh_send(struct spi_sh_data *ss, struct spi_message *mesg,
 	}
 
 	if (list_is_last(&t->transfer_list, &mesg->transfers)) {
+<<<<<<< HEAD
 		tmp = spi_sh_read(ss, SPI_SH_CR1);
 		tmp = tmp & ~(SPI_SH_SSD | SPI_SH_SSDB);
 		spi_sh_write(ss, tmp, SPI_SH_CR1);
+=======
+		spi_sh_clear_bit(ss, SPI_SH_SSD | SPI_SH_SSDB, SPI_SH_CR1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spi_sh_set_bit(ss, SPI_SH_SSA, SPI_SH_CR1);
 
 		ss->cr1 &= ~SPI_SH_TBE;
@@ -239,7 +252,10 @@ static int spi_sh_receive(struct spi_sh_data *ss, struct spi_message *mesg,
 	int remain = t->len;
 	int cur_len;
 	unsigned char *data;
+<<<<<<< HEAD
 	unsigned long tmp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long ret;
 
 	if (t->len > SPI_SH_MAX_BYTE)
@@ -247,9 +263,13 @@ static int spi_sh_receive(struct spi_sh_data *ss, struct spi_message *mesg,
 	else
 		spi_sh_write(ss, t->len, SPI_SH_CR3);
 
+<<<<<<< HEAD
 	tmp = spi_sh_read(ss, SPI_SH_CR1);
 	tmp = tmp & ~(SPI_SH_SSD | SPI_SH_SSDB);
 	spi_sh_write(ss, tmp, SPI_SH_CR1);
+=======
+	spi_sh_clear_bit(ss, SPI_SH_SSD | SPI_SH_SSDB, SPI_SH_CR1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_sh_set_bit(ss, SPI_SH_SSA, SPI_SH_CR1);
 
 	spi_sh_wait_write_buffer_empty(ss);
@@ -328,7 +348,12 @@ static void spi_sh_work(struct work_struct *work)
 		spin_lock_irqsave(&ss->lock, flags);
 
 		mesg->status = 0;
+<<<<<<< HEAD
 		mesg->complete(mesg->context);
+=======
+		if (mesg->complete)
+			mesg->complete(mesg->context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	clear_fifo(ss);
@@ -346,7 +371,12 @@ static void spi_sh_work(struct work_struct *work)
 
  error:
 	mesg->status = ret;
+<<<<<<< HEAD
 	mesg->complete(mesg->context);
+=======
+	if (mesg->complete)
+		mesg->complete(mesg->context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spi_sh_clear_bit(ss, SPI_SH_SSA | SPI_SH_SSDB | SPI_SH_SSD,
 			 SPI_SH_CR1);
@@ -358,9 +388,12 @@ static int spi_sh_setup(struct spi_device *spi)
 {
 	struct spi_sh_data *ss = spi_master_get_devdata(spi->master);
 
+<<<<<<< HEAD
 	if (!spi->bits_per_word)
 		spi->bits_per_word = 8;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_debug("%s: enter\n", __func__);
 
 	spi_sh_write(ss, 0xfe, SPI_SH_CR1);	/* SPI sycle stop */
@@ -392,7 +425,11 @@ static int spi_sh_transfer(struct spi_device *spi, struct spi_message *mesg)
 	spi_sh_clear_bit(ss, SPI_SH_SSA, SPI_SH_CR1);
 
 	list_add_tail(&mesg->queue, &ss->queue);
+<<<<<<< HEAD
 	queue_work(ss->workqueue, &ss->ws);
+=======
+	schedule_work(&ss->ws);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_unlock_irqrestore(&ss->lock, flags);
 
@@ -434,12 +471,20 @@ static irqreturn_t spi_sh_irq(int irq, void *_ss)
 
 static int spi_sh_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct spi_sh_data *ss = dev_get_drvdata(&pdev->dev);
 
 	spi_unregister_master(ss->master);
 	destroy_workqueue(ss->workqueue);
 	free_irq(ss->irq, ss);
 	iounmap(ss->addr);
+=======
+	struct spi_sh_data *ss = platform_get_drvdata(pdev);
+
+	spi_unregister_master(ss->master);
+	flush_work(&ss->ws);
+	free_irq(ss->irq, ss);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -464,14 +509,22 @@ static int spi_sh_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	master = spi_alloc_master(&pdev->dev, sizeof(struct spi_sh_data));
+=======
+	master = devm_spi_alloc_master(&pdev->dev, sizeof(struct spi_sh_data));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (master == NULL) {
 		dev_err(&pdev->dev, "spi_alloc_master error.\n");
 		return -ENOMEM;
 	}
 
 	ss = spi_master_get_devdata(master);
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, ss);
+=======
+	platform_set_drvdata(pdev, ss);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (res->flags & IORESOURCE_MEM_TYPE_MASK) {
 	case IORESOURCE_MEM_8BIT:
@@ -482,6 +535,7 @@ static int spi_sh_probe(struct platform_device *pdev)
 		break;
 	default:
 		dev_err(&pdev->dev, "No support width\n");
+<<<<<<< HEAD
 		ret = -ENODEV;
 		goto error1;
 	}
@@ -492,11 +546,22 @@ static int spi_sh_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "ioremap error.\n");
 		ret = -ENOMEM;
 		goto error1;
+=======
+		return -ENODEV;
+	}
+	ss->irq = irq;
+	ss->master = master;
+	ss->addr = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+	if (ss->addr == NULL) {
+		dev_err(&pdev->dev, "ioremap error.\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	INIT_LIST_HEAD(&ss->queue);
 	spin_lock_init(&ss->lock);
 	INIT_WORK(&ss->ws, spi_sh_work);
 	init_waitqueue_head(&ss->wait);
+<<<<<<< HEAD
 	ss->workqueue = create_singlethread_workqueue(
 					dev_name(master->dev.parent));
 	if (ss->workqueue == NULL) {
@@ -504,11 +569,17 @@ static int spi_sh_probe(struct platform_device *pdev)
 		ret = -EBUSY;
 		goto error2;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = request_irq(irq, spi_sh_irq, 0, "spi_sh", ss);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "request_irq error\n");
+<<<<<<< HEAD
 		goto error3;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	master->num_chipselect = 2;
@@ -520,11 +591,16 @@ static int spi_sh_probe(struct platform_device *pdev)
 	ret = spi_register_master(master);
 	if (ret < 0) {
 		printk(KERN_ERR "spi_register_master error.\n");
+<<<<<<< HEAD
 		goto error4;
+=======
+		goto error3;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 
+<<<<<<< HEAD
  error4:
 	free_irq(irq, ss);
  error3:
@@ -534,6 +610,10 @@ static int spi_sh_probe(struct platform_device *pdev)
  error1:
 	spi_master_put(master);
 
+=======
+ error3:
+	free_irq(irq, ss);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -542,7 +622,10 @@ static struct platform_driver spi_sh_driver = {
 	.remove = spi_sh_remove,
 	.driver = {
 		.name = "sh_spi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 module_platform_driver(spi_sh_driver);

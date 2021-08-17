@@ -13,6 +13,10 @@ extern void btext_update_display(unsigned long phys, int width, int height,
 extern void btext_setup_display(int width, int height, int depth, int pitch,
 				unsigned long address);
 extern void btext_prepare_BAT(void);
+<<<<<<< HEAD
+=======
+extern void btext_map(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void btext_unmap(void);
 
 extern void btext_drawchar(char c);

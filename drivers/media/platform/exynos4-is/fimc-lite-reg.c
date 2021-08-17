@@ -2,16 +2,27 @@
  * Register interface file for EXYNOS FIMC-LITE (camera interface) driver
  *
  * Copyright (C) 2012 Samsung Electronics Co., Ltd.
+<<<<<<< HEAD
  * Sylwester Nawrocki <s.nawrocki@samsung.com>
+=======
+ * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
 #include <linux/io.h>
 #include <linux/delay.h>
 #include <media/s5p_fimc.h>
+=======
+#include <linux/bitops.h>
+#include <linux/delay.h>
+#include <linux/io.h>
+#include <media/drv-intf/exynos-fimc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "fimc-lite-reg.h"
 #include "fimc-lite.h"
@@ -68,7 +79,12 @@ void flite_hw_set_interrupt_mask(struct fimc_lite *dev)
 	if (atomic_read(&dev->out_path) == FIMC_IO_DMA) {
 		intsrc = FLITE_REG_CIGCTRL_IRQ_OVFEN |
 			 FLITE_REG_CIGCTRL_IRQ_LASTEN |
+<<<<<<< HEAD
 			 FLITE_REG_CIGCTRL_IRQ_STARTEN;
+=======
+			 FLITE_REG_CIGCTRL_IRQ_STARTEN |
+			 FLITE_REG_CIGCTRL_IRQ_ENDEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* An output to the FIMC-IS */
 		intsrc = FLITE_REG_CIGCTRL_IRQ_OVFEN |
@@ -110,6 +126,7 @@ void flite_hw_set_test_pattern(struct fimc_lite *dev, bool on)
 }
 
 static const u32 src_pixfmt_map[8][3] = {
+<<<<<<< HEAD
 	{ V4L2_MBUS_FMT_YUYV8_2X8, FLITE_REG_CISRCSIZE_ORDER422_IN_YCBYCR,
 	  FLITE_REG_CIGCTRL_YUV422_1P },
 	{ V4L2_MBUS_FMT_YVYU8_2X8, FLITE_REG_CISRCSIZE_ORDER422_IN_YCRYCB,
@@ -122,22 +139,48 @@ static const u32 src_pixfmt_map[8][3] = {
 	{ V4L2_MBUS_FMT_SGRBG10_1X10, 0, FLITE_REG_CIGCTRL_RAW10 },
 	{ V4L2_MBUS_FMT_SGRBG12_1X12, 0, FLITE_REG_CIGCTRL_RAW12 },
 	{ V4L2_MBUS_FMT_JPEG_1X8, 0, FLITE_REG_CIGCTRL_USER(1) },
+=======
+	{ MEDIA_BUS_FMT_YUYV8_2X8, FLITE_REG_CISRCSIZE_ORDER422_IN_YCBYCR,
+	  FLITE_REG_CIGCTRL_YUV422_1P },
+	{ MEDIA_BUS_FMT_YVYU8_2X8, FLITE_REG_CISRCSIZE_ORDER422_IN_YCRYCB,
+	  FLITE_REG_CIGCTRL_YUV422_1P },
+	{ MEDIA_BUS_FMT_UYVY8_2X8, FLITE_REG_CISRCSIZE_ORDER422_IN_CBYCRY,
+	  FLITE_REG_CIGCTRL_YUV422_1P },
+	{ MEDIA_BUS_FMT_VYUY8_2X8, FLITE_REG_CISRCSIZE_ORDER422_IN_CRYCBY,
+	  FLITE_REG_CIGCTRL_YUV422_1P },
+	{ MEDIA_BUS_FMT_SGRBG8_1X8, 0, FLITE_REG_CIGCTRL_RAW8 },
+	{ MEDIA_BUS_FMT_SGRBG10_1X10, 0, FLITE_REG_CIGCTRL_RAW10 },
+	{ MEDIA_BUS_FMT_SGRBG12_1X12, 0, FLITE_REG_CIGCTRL_RAW12 },
+	{ MEDIA_BUS_FMT_JPEG_1X8, 0, FLITE_REG_CIGCTRL_USER(1) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Set camera input pixel format and resolution */
 void flite_hw_set_source_format(struct fimc_lite *dev, struct flite_frame *f)
 {
+<<<<<<< HEAD
 	enum v4l2_mbus_pixelcode pixelcode = f->fmt->mbus_code;
 	int i = ARRAY_SIZE(src_pixfmt_map);
 	u32 cfg;
 
 	while (--i >= 0) {
+=======
+	u32 pixelcode = f->fmt->mbus_code;
+	int i = ARRAY_SIZE(src_pixfmt_map);
+	u32 cfg;
+
+	while (--i) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (src_pixfmt_map[i][0] == pixelcode)
 			break;
 	}
 
 	if (i == 0 && src_pixfmt_map[i][0] != pixelcode) {
+<<<<<<< HEAD
 		v4l2_err(&dev->vfd,
+=======
+		v4l2_err(&dev->ve.vdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 "Unsupported pixel code, falling back to %#08x\n",
 			 src_pixfmt_map[i][0]);
 	}
@@ -215,6 +258,7 @@ void flite_hw_set_camera_bus(struct fimc_lite *dev,
 	flite_hw_set_camera_port(dev, si->mux_id);
 }
 
+<<<<<<< HEAD
 static void flite_hw_set_out_order(struct fimc_lite *dev, struct flite_frame *f)
 {
 	static const u32 pixcode[4][2] = {
@@ -222,11 +266,36 @@ static void flite_hw_set_out_order(struct fimc_lite *dev, struct flite_frame *f)
 		{ V4L2_MBUS_FMT_YVYU8_2X8, FLITE_REG_CIODMAFMT_YCRYCB },
 		{ V4L2_MBUS_FMT_UYVY8_2X8, FLITE_REG_CIODMAFMT_CBYCRY },
 		{ V4L2_MBUS_FMT_VYUY8_2X8, FLITE_REG_CIODMAFMT_CRYCBY },
+=======
+static void flite_hw_set_pack12(struct fimc_lite *dev, int on)
+{
+	u32 cfg = readl(dev->regs + FLITE_REG_CIODMAFMT);
+
+	cfg &= ~FLITE_REG_CIODMAFMT_PACK12;
+
+	if (on)
+		cfg |= FLITE_REG_CIODMAFMT_PACK12;
+
+	writel(cfg, dev->regs + FLITE_REG_CIODMAFMT);
+}
+
+static void flite_hw_set_out_order(struct fimc_lite *dev, struct flite_frame *f)
+{
+	static const u32 pixcode[4][2] = {
+		{ MEDIA_BUS_FMT_YUYV8_2X8, FLITE_REG_CIODMAFMT_YCBYCR },
+		{ MEDIA_BUS_FMT_YVYU8_2X8, FLITE_REG_CIODMAFMT_YCRYCB },
+		{ MEDIA_BUS_FMT_UYVY8_2X8, FLITE_REG_CIODMAFMT_CBYCRY },
+		{ MEDIA_BUS_FMT_VYUY8_2X8, FLITE_REG_CIODMAFMT_CRYCBY },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 	u32 cfg = readl(dev->regs + FLITE_REG_CIODMAFMT);
 	int i = ARRAY_SIZE(pixcode);
 
+<<<<<<< HEAD
 	while (--i >= 0)
+=======
+	while (--i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (pixcode[i][0] == f->fmt->mbus_code)
 			break;
 	cfg &= ~FLITE_REG_CIODMAFMT_YCBCR_ORDER_MASK;
@@ -250,6 +319,41 @@ void flite_hw_set_dma_window(struct fimc_lite *dev, struct flite_frame *f)
 	writel(cfg, dev->regs + FLITE_REG_CIOOFF);
 }
 
+<<<<<<< HEAD
+=======
+void flite_hw_set_dma_buffer(struct fimc_lite *dev, struct flite_buffer *buf)
+{
+	unsigned int index;
+	u32 cfg;
+
+	if (dev->dd->max_dma_bufs == 1)
+		index = 0;
+	else
+		index = buf->index;
+
+	if (index == 0)
+		writel(buf->paddr, dev->regs + FLITE_REG_CIOSA);
+	else
+		writel(buf->paddr, dev->regs + FLITE_REG_CIOSAN(index - 1));
+
+	cfg = readl(dev->regs + FLITE_REG_CIFCNTSEQ);
+	cfg |= BIT(index);
+	writel(cfg, dev->regs + FLITE_REG_CIFCNTSEQ);
+}
+
+void flite_hw_mask_dma_buffer(struct fimc_lite *dev, u32 index)
+{
+	u32 cfg;
+
+	if (dev->dd->max_dma_bufs == 1)
+		index = 0;
+
+	cfg = readl(dev->regs + FLITE_REG_CIFCNTSEQ);
+	cfg &= ~BIT(index);
+	writel(cfg, dev->regs + FLITE_REG_CIFCNTSEQ);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Enable/disable output DMA, set output pixel size and offsets (composition) */
 void flite_hw_set_output_dma(struct fimc_lite *dev, struct flite_frame *f,
 			     bool enable)
@@ -267,6 +371,10 @@ void flite_hw_set_output_dma(struct fimc_lite *dev, struct flite_frame *f,
 
 	flite_hw_set_out_order(dev, f);
 	flite_hw_set_dma_window(dev, f);
+<<<<<<< HEAD
+=======
+	flite_hw_set_pack12(dev, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void flite_hw_dump_regs(struct fimc_lite *dev, const char *label)

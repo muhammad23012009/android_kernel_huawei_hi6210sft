@@ -1,7 +1,12 @@
 config MN10300
 	def_bool y
+<<<<<<< HEAD
 	select HAVE_OPROFILE
 	select HAVE_GENERIC_HARDIRQS
+=======
+	select HAVE_EXIT_THREAD
+	select HAVE_OPROFILE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select HAVE_UID16
 	select GENERIC_IRQ_SHOW
 	select ARCH_WANT_IPC_PARSE_VERSION
@@ -14,6 +19,11 @@ config MN10300
 	select MODULES_USE_ELF_RELA
 	select OLD_SIGSUSPEND3
 	select OLD_SIGACTION
+<<<<<<< HEAD
+=======
+	select HAVE_DEBUG_STACKOVERFLOW
+	select ARCH_NO_COHERENT_DMA_MMAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config AM33_2
 	def_bool n
@@ -52,6 +62,10 @@ config GENERIC_HWEIGHT
 
 config GENERIC_BUG
 	def_bool y
+<<<<<<< HEAD
+=======
+	depends on BUG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config QUICKLIST
 	def_bool y
@@ -179,6 +193,7 @@ endmenu
 config SMP
 	bool "Symmetric multi-processing support"
 	default y
+<<<<<<< HEAD
 	select USE_GENERIC_SMP_HELPERS
 	depends on MN10300_PROC_MN2WS0038 || MN10300_PROC_MN2WS0050
 	---help---
@@ -190,6 +205,18 @@ config SMP
 	  machines, but will use only one CPU of a multiprocessor machine. If
 	  you say Y here, the kernel will run on many, but not all,
 	  singleprocessor machines. On a singleprocessor machine, the kernel
+=======
+	depends on MN10300_PROC_MN2WS0050
+	---help---
+	  This enables support for systems with more than one CPU. If you have
+	  a system with only one CPU, say N. If you have a system with more
+	  than one CPU, say Y.
+
+	  If you say N here, the kernel will run on uni- and multiprocessor
+	  machines, but will use only one CPU of a multiprocessor machine. If
+	  you say Y here, the kernel will run on many, but not all,
+	  uniprocessor machines. On a uniprocessor machine, the kernel
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  will run faster if you say N here.
 
 	  See also <file:Documentation/x86/i386/IO-APIC.txt>,
@@ -234,7 +261,13 @@ source "kernel/Kconfig.hz"
 config MN10300_RTC
 	bool "Using MN10300 RTC"
 	depends on MN10300_PROC_MN103E010 || MN10300_PROC_MN2WS0050
+<<<<<<< HEAD
 	select GENERIC_CMOS_UPDATE
+=======
+	select RTC_CLASS
+	select RTC_DRV_CMOS
+	select RTC_SYSTOHC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default n
 	help
 	  This option enables support for the RTC, thus enabling time to be

@@ -50,7 +50,11 @@ static void nftl_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 	struct NFTLrecord *nftl;
 	unsigned long temp;
 
+<<<<<<< HEAD
 	if (mtd->type != MTD_NANDFLASH || mtd->size > UINT_MAX)
+=======
+	if (!mtd_type_is_nand(mtd) || mtd->size > UINT_MAX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	/* OK, this is moderately ugly.  But probably safe.  Alternatives? */
 	if (memcmp(mtd->name, "DiskOnChip", 10))

@@ -8,7 +8,10 @@
  *	Author: Maciej W. Rozycki <macro@mips.com>
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/addrspace.h>
 #include <asm/bug.h>
@@ -36,7 +39,11 @@
  * values, so we can avoid sharing the same stack area between a cached
  * and the uncached mode.
  */
+<<<<<<< HEAD
 unsigned long __cpuinit run_uncached(void *func)
+=======
+unsigned long run_uncached(void *func)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	register long sp __asm__("$sp");
 	register long ret __asm__("$2");

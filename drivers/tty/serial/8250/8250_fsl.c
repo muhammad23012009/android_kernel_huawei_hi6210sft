@@ -28,8 +28,12 @@ int fsl8250_handle_irq(struct uart_port *port)
 	unsigned char lsr, orig_lsr;
 	unsigned long flags;
 	unsigned int iir;
+<<<<<<< HEAD
 	struct uart_8250_port *up =
 		container_of(port, struct uart_8250_port, port);
+=======
+	struct uart_8250_port *up = up_to_u8250p(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&up->port.lock, flags);
 
@@ -61,3 +65,7 @@ int fsl8250_handle_irq(struct uart_port *port)
 	spin_unlock_irqrestore(&up->port.lock, flags);
 	return 1;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(fsl8250_handle_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

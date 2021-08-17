@@ -65,7 +65,11 @@ static void __init ebsa110_init_irq(void)
 	for (irq = 0; irq < NR_IRQS; irq++) {
 		irq_set_chip_and_handler(irq, &ebsa110_irq_chip,
 					 handle_level_irq);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -206,7 +210,11 @@ ebsa110_timer_interrupt(int irq, void *dev_id)
 
 static struct irqaction ebsa110_timer_irq = {
 	.name		= "EBSA110 Timer Tick",
+<<<<<<< HEAD
 	.flags		= IRQF_DISABLED | IRQF_TIMER | IRQF_IRQPOLL,
+=======
+	.flags		= IRQF_TIMER | IRQF_IRQPOLL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.handler	= ebsa110_timer_interrupt,
 };
 
@@ -311,7 +319,11 @@ static int __init ebsa110_init(void)
 
 arch_initcall(ebsa110_init);
 
+<<<<<<< HEAD
 static void ebsa110_restart(char mode, const char *cmd)
+=======
+static void ebsa110_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	soft_restart(0x80000000);
 }
@@ -321,7 +333,10 @@ MACHINE_START(EBSA110, "EBSA110")
 	.atag_offset	= 0x400,
 	.reserve_lp0	= 1,
 	.reserve_lp2	= 1,
+<<<<<<< HEAD
 	.restart_mode	= 's',
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.map_io		= ebsa110_map_io,
 	.init_early	= ebsa110_init_early,
 	.init_irq	= ebsa110_init_irq,

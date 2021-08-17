@@ -124,10 +124,21 @@ dasd_default_erp_action(struct dasd_ccw_req *cqr)
 struct dasd_ccw_req *dasd_default_erp_postaction(struct dasd_ccw_req *cqr)
 {
 	int success;
+<<<<<<< HEAD
+=======
+	unsigned long long startclk, stopclk;
+	struct dasd_device *startdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(cqr->refers == NULL || cqr->function == NULL);
 
 	success = cqr->status == DASD_CQR_DONE;
+<<<<<<< HEAD
+=======
+	startclk = cqr->startclk;
+	stopclk = cqr->stopclk;
+	startdev = cqr->startdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* free all ERPs - but NOT the original cqr */
 	while (cqr->refers != NULL) {
@@ -142,6 +153,12 @@ struct dasd_ccw_req *dasd_default_erp_postaction(struct dasd_ccw_req *cqr)
 	}
 
 	/* set corresponding status to original cqr */
+<<<<<<< HEAD
+=======
+	cqr->startclk = startclk;
+	cqr->stopclk = stopclk;
+	cqr->startdev = startdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (success)
 		cqr->status = DASD_CQR_DONE;
 	else {
@@ -159,6 +176,19 @@ dasd_log_sense(struct dasd_ccw_req *cqr, struct irb *irb)
 	struct dasd_device *device;
 
 	device = cqr->startdev;
+<<<<<<< HEAD
+=======
+	if (cqr->intrc == -ETIMEDOUT) {
+		dev_err(&device->cdev->dev,
+			"A timeout error occurred for cqr %p\n", cqr);
+		return;
+	}
+	if (cqr->intrc == -ENOLINK) {
+		dev_err(&device->cdev->dev,
+			"A transport error occurred for cqr %p\n", cqr);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* dump sense data */
 	if (device->discipline && device->discipline->dump_sense)
 		device->discipline->dump_sense(device, cqr, irb);

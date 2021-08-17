@@ -72,7 +72,11 @@ struct clk *tegra_clk_register_sync_source(const char *name,
 
 	init.ops = &tegra_clk_sync_source_ops;
 	init.name = name;
+<<<<<<< HEAD
 	init.flags = CLK_IS_ROOT;
+=======
+	init.flags = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	init.parent_names = NULL;
 	init.num_parents = 0;
 

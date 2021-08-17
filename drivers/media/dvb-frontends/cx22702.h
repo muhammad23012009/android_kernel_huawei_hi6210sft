@@ -28,7 +28,10 @@
 #ifndef CX22702_H
 #define CX22702_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 
 struct cx22702_config {
@@ -41,7 +44,11 @@ struct cx22702_config {
 	u8 output_mode;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_CX22702)
+=======
+#if IS_REACHABLE(CONFIG_DVB_CX22702)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *cx22702_attach(
 	const struct cx22702_config *config,
 	struct i2c_adapter *i2c);

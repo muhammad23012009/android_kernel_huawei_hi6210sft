@@ -98,4 +98,8 @@ static int __init sbf_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(sbf_init);
+=======
+arch_initcall(sbf_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

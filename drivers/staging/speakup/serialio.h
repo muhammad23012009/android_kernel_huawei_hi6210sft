@@ -4,8 +4,14 @@
 #include <linux/serial.h>	/* for rs_table, serial constants */
 #include <linux/serial_reg.h>	/* for more serial constants */
 #ifndef __sparc__
+<<<<<<< HEAD
 #include <asm/serial.h>
 #endif
+=======
+#include <linux/serial.h>
+#endif
+#include <linux/serial_core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * this is cut&paste from 8250.h. Get rid of the structure, the definitions
@@ -16,7 +22,11 @@ struct old_serial_port {
 	unsigned int baud_base;
 	unsigned int port;
 	unsigned int irq;
+<<<<<<< HEAD
 	unsigned int flags; /* unused */
+=======
+	upf_t flags; /* unused */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* countdown values for serial timeouts in us */
@@ -34,6 +44,7 @@ struct old_serial_port {
 #define SPK_TIMEOUT 100
 #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
 
+<<<<<<< HEAD
 #define spk_serial_tx_busy() ((inb(speakup_info.port_tts + UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
 
 /* 2.6.22 doesn't have them any more, hardcode it for now (these values should
@@ -61,5 +72,9 @@ struct old_serial_port {
 #ifndef IRQF_SHARED
 #define IRQF_SHARED SA_SHIRQ
 #endif
+=======
+#define spk_serial_tx_busy() \
+	((inb(speakup_info.port_tts + UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

@@ -54,14 +54,21 @@ static const char* version = "wanXL serial card driver version: 0.48";
 #define MBX2_MEMSZ_MASK 0xFFFF0000 /* PUTS Memory Size Register mask */
 
 
+<<<<<<< HEAD
 typedef struct {
 	struct net_device *dev;
 	struct card_t *card;
+=======
+struct port {
+	struct net_device *dev;
+	struct card *card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t lock;	/* for wanxl_xmit */
         int node;		/* physical port #0 - 3 */
 	unsigned int clock_type;
 	int tx_in, tx_out;
 	struct sk_buff *tx_skbs[TX_BUFFERS];
+<<<<<<< HEAD
 }port_t;
 
 
@@ -72,6 +79,18 @@ typedef struct {
 
 
 typedef struct card_t {
+=======
+};
+
+
+struct card_status {
+	desc_t rx_descs[RX_QUEUE_LENGTH];
+	port_status_t port_status[4];
+};
+
+
+struct card {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int n_ports;		/* 1, 2 or 4 ports */
 	u8 irq;
 
@@ -79,6 +98,7 @@ typedef struct card_t {
 	struct pci_dev *pdev;	/* for pci_name(pdev) */
 	int rx_in;
 	struct sk_buff *rx_skbs[RX_QUEUE_LENGTH];
+<<<<<<< HEAD
 	card_status_t *status;	/* shared between host and card */
 	dma_addr_t status_address;
 	port_t ports[0];	/* 1 - 4 port_t structures follow */
@@ -93,6 +113,22 @@ static inline port_t* dev_to_port(struct net_device *dev)
 
 
 static inline port_status_t* get_status(port_t *port)
+=======
+	struct card_status *status;	/* shared between host and card */
+	dma_addr_t status_address;
+	struct port ports[0];	/* 1 - 4 port structures follow */
+};
+
+
+
+static inline struct port *dev_to_port(struct net_device *dev)
+{
+	return (struct port *)dev_to_hdlc(dev)->priv;
+}
+
+
+static inline port_status_t *get_status(struct port *port)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return &port->card->status->port_status[port->node];
 }
@@ -115,7 +151,11 @@ static inline dma_addr_t pci_map_single_debug(struct pci_dev *pdev, void *ptr,
 
 
 /* Cable and/or personality module change interrupt service */
+<<<<<<< HEAD
 static inline void wanxl_cable_intr(port_t *port)
+=======
+static inline void wanxl_cable_intr(struct port *port)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 value = get_status(port)->cable;
 	int valid = 1;
@@ -160,7 +200,11 @@ static inline void wanxl_cable_intr(port_t *port)
 
 
 /* Transmit complete interrupt service */
+<<<<<<< HEAD
 static inline void wanxl_tx_intr(port_t *port)
+=======
+static inline void wanxl_tx_intr(struct port *port)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct net_device *dev = port->dev;
 	while (1) {
@@ -193,7 +237,11 @@ static inline void wanxl_tx_intr(port_t *port)
 
 
 /* Receive complete interrupt service */
+<<<<<<< HEAD
 static inline void wanxl_rx_intr(card_t *card)
+=======
+static inline void wanxl_rx_intr(struct card *card)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	desc_t *desc;
 	while (desc = &card->status->rx_descs[card->rx_in],
@@ -203,7 +251,11 @@ static inline void wanxl_rx_intr(card_t *card)
 				pci_name(card->pdev));
 		else {
 			struct sk_buff *skb = card->rx_skbs[card->rx_in];
+<<<<<<< HEAD
 			port_t *port = &card->ports[desc->stat &
+=======
+			struct port *port = &card->ports[desc->stat &
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						    PACKET_PORT_MASK];
 			struct net_device *dev = port->dev;
 
@@ -245,7 +297,11 @@ static inline void wanxl_rx_intr(card_t *card)
 
 static irqreturn_t wanxl_intr(int irq, void* dev_id)
 {
+<<<<<<< HEAD
         card_t *card = dev_id;
+=======
+	struct card *card = dev_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         int i;
         u32 stat;
         int handled = 0;
@@ -272,7 +328,11 @@ static irqreturn_t wanxl_intr(int irq, void* dev_id)
 
 static netdev_tx_t wanxl_xmit(struct sk_buff *skb, struct net_device *dev)
 {
+<<<<<<< HEAD
         port_t *port = dev_to_port(dev);
+=======
+	struct port *port = dev_to_port(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	desc_t *desc;
 
         spin_lock(&port->lock);
@@ -319,7 +379,11 @@ static netdev_tx_t wanxl_xmit(struct sk_buff *skb, struct net_device *dev)
 static int wanxl_attach(struct net_device *dev, unsigned short encoding,
 			unsigned short parity)
 {
+<<<<<<< HEAD
 	port_t *port = dev_to_port(dev);
+=======
+	struct port *port = dev_to_port(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (encoding != ENCODING_NRZ &&
 	    encoding != ENCODING_NRZI)
@@ -343,7 +407,11 @@ static int wanxl_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	const size_t size = sizeof(sync_serial_settings);
 	sync_serial_settings line;
+<<<<<<< HEAD
 	port_t *port = dev_to_port(dev);
+=======
+	struct port *port = dev_to_port(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cmd != SIOCWANDEV)
 		return hdlc_ioctl(dev, ifr, cmd);
@@ -393,7 +461,11 @@ static int wanxl_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 static int wanxl_open(struct net_device *dev)
 {
+<<<<<<< HEAD
 	port_t *port = dev_to_port(dev);
+=======
+	struct port *port = dev_to_port(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 __iomem *dbr = port->card->plx + PLX_DOORBELL_TO_CARD;
 	unsigned long timeout;
 	int i;
@@ -429,7 +501,11 @@ static int wanxl_open(struct net_device *dev)
 
 static int wanxl_close(struct net_device *dev)
 {
+<<<<<<< HEAD
 	port_t *port = dev_to_port(dev);
+=======
+	struct port *port = dev_to_port(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long timeout;
 	int i;
 
@@ -467,7 +543,11 @@ static int wanxl_close(struct net_device *dev)
 
 static struct net_device_stats *wanxl_get_stats(struct net_device *dev)
 {
+<<<<<<< HEAD
 	port_t *port = dev_to_port(dev);
+=======
+	struct port *port = dev_to_port(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->stats.rx_over_errors = get_status(port)->rx_overruns;
 	dev->stats.rx_frame_errors = get_status(port)->rx_frame_errors;
@@ -478,7 +558,11 @@ static struct net_device_stats *wanxl_get_stats(struct net_device *dev)
 
 
 
+<<<<<<< HEAD
 static int wanxl_puts_command(card_t *card, u32 cmd)
+=======
+static int wanxl_puts_command(struct card *card, u32 cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long timeout = jiffies + 5 * HZ;
 
@@ -495,7 +579,11 @@ static int wanxl_puts_command(card_t *card, u32 cmd)
 
 
 
+<<<<<<< HEAD
 static void wanxl_reset(card_t *card)
+=======
+static void wanxl_reset(struct card *card)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 old_value = readl(card->plx + PLX_CONTROL) & ~PLX_CTL_RESET;
 
@@ -511,7 +599,11 @@ static void wanxl_reset(card_t *card)
 
 static void wanxl_pci_remove_one(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	card_t *card = pci_get_drvdata(pdev);
+=======
+	struct card *card = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	for (i = 0; i < card->n_ports; i++) {
@@ -537,12 +629,19 @@ static void wanxl_pci_remove_one(struct pci_dev *pdev)
 		iounmap(card->plx);
 
 	if (card->status)
+<<<<<<< HEAD
 		pci_free_consistent(pdev, sizeof(card_status_t),
+=======
+		pci_free_consistent(pdev, sizeof(struct card_status),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    card->status, card->status_address);
 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(card);
 }
 
@@ -561,7 +660,11 @@ static const struct net_device_ops wanxl_ops = {
 static int wanxl_pci_init_one(struct pci_dev *pdev,
 			      const struct pci_device_id *ent)
 {
+<<<<<<< HEAD
 	card_t *card;
+=======
+	struct card *card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 ramsize, stat;
 	unsigned long timeout;
 	u32 plx_phy;		/* PLX PCI base address */
@@ -587,6 +690,10 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
 	if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(28)) ||
 	    pci_set_dma_mask(pdev, DMA_BIT_MASK(28))) {
 		pr_err("No usable DMA configuration\n");
+<<<<<<< HEAD
+=======
+		pci_disable_device(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 
@@ -602,7 +709,11 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
 	default: ports = 4;
 	}
 
+<<<<<<< HEAD
 	alloc_size = sizeof(card_t) + ports * sizeof(port_t);
+=======
+	alloc_size = sizeof(struct card) + ports * sizeof(struct port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	card = kzalloc(alloc_size, GFP_KERNEL);
 	if (card == NULL) {
 		pci_release_regions(pdev);
@@ -613,7 +724,12 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
 	pci_set_drvdata(pdev, card);
 	card->pdev = pdev;
 
+<<<<<<< HEAD
 	card->status = pci_alloc_consistent(pdev, sizeof(card_status_t),
+=======
+	card->status = pci_alloc_consistent(pdev,
+					    sizeof(struct card_status),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    &card->status_address);
 	if (card->status == NULL) {
 		wanxl_pci_remove_one(pdev);
@@ -767,7 +883,11 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
 
 	for (i = 0; i < ports; i++) {
 		hdlc_device *hdlc;
+<<<<<<< HEAD
 		port_t *port = &card->ports[i];
+=======
+		struct port *port = &card->ports[i];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct net_device *dev = alloc_hdlcdev(port);
 		if (!dev) {
 			pr_err("%s: unable to allocate memory\n",
@@ -808,7 +928,11 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(wanxl_pci_tbl) = {
+=======
+static const struct pci_device_id wanxl_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_SBE, PCI_DEVICE_ID_SBE_WANXL100, PCI_ANY_ID,
 	  PCI_ANY_ID, 0, 0, 0 },
 	{ PCI_VENDOR_ID_SBE, PCI_DEVICE_ID_SBE_WANXL200, PCI_ANY_ID,

@@ -2,7 +2,11 @@
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
  * Based on the r8180 driver, which is:
+<<<<<<< HEAD
  * Copyright 2004-2005 Andrea Merello <andreamrl@tiscali.it>, et al.
+=======
+ * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -12,10 +16,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
@@ -30,6 +37,7 @@
 struct net_device;
 
 #define RT_CHECK_FOR_HANG_PERIOD 2
+<<<<<<< HEAD
 #define INIT_DEFAULT_CHAN	 1
 
 void rtl8192_hw_wakeup(struct net_device *dev);
@@ -43,5 +51,19 @@ void IPSLeave(struct net_device *dev);
 
 void LeisurePSEnter(struct net_device *dev);
 void LeisurePSLeave(struct net_device *dev);
+=======
+
+void rtl92e_hw_wakeup(struct net_device *dev);
+void rtl92e_enter_sleep(struct net_device *dev, u64 time);
+void rtl92e_rtllib_ips_leave_wq(struct net_device *dev);
+void rtl92e_rtllib_ips_leave(struct net_device *dev);
+void rtl92e_ips_leave_wq(void *data);
+
+void rtl92e_ips_enter(struct net_device *dev);
+void rtl92e_ips_leave(struct net_device *dev);
+
+void rtl92e_leisure_ps_enter(struct net_device *dev);
+void rtl92e_leisure_ps_leave(struct net_device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

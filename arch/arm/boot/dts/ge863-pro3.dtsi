@@ -7,6 +7,7 @@
  * Licensed under GPLv2 or later.
  */
 
+<<<<<<< HEAD
 /include/ "at91sam9260.dtsi"
 
 / {
@@ -17,6 +18,13 @@
 
 		main_clock: clock@0 {
 			compatible = "atmel,osc", "fixed-clock";
+=======
+#include "at91sam9260.dtsi"
+
+/ {
+	clocks {
+		main_xtal {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-frequency = <6000000>;
 		};
 	};

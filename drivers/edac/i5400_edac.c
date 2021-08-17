@@ -6,7 +6,11 @@
  *
  * Copyright (c) 2008 by:
  *	 Ben Woodard <woodard@redhat.com>
+<<<<<<< HEAD
  *	 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ *	 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Red Hat Inc. http://www.redhat.com
  *
@@ -368,7 +372,11 @@ struct i5400_error_info {
 
 	/* These registers are input ONLY if there was a Non-Rec Error */
 	u16 nrecmema;		/* Non-Recoverable Mem log A */
+<<<<<<< HEAD
 	u16 nrecmemb;		/* Non-Recoverable Mem log B */
+=======
+	u32 nrecmemb;		/* Non-Recoverable Mem log B */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 };
 
@@ -458,7 +466,11 @@ static void i5400_get_error_info(struct mem_ctl_info *mci,
 				NERR_FAT_FBD, &info->nerr_fat_fbd);
 		pci_read_config_word(pvt->branchmap_werrors,
 				NRECMEMA, &info->nrecmema);
+<<<<<<< HEAD
 		pci_read_config_word(pvt->branchmap_werrors,
+=======
+		pci_read_config_dword(pvt->branchmap_werrors,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				NRECMEMB, &info->nrecmemb);
 
 		/* Clear the error bits, by writing them back */
@@ -1207,13 +1219,22 @@ static int i5400_init_dimms(struct mem_ctl_info *mci)
 
 			dimm->nr_pages = size_mb << 8;
 			dimm->grain = 8;
+<<<<<<< HEAD
 			dimm->dtype = MTR_DRAM_WIDTH(mtr) ? DEV_X8 : DEV_X4;
+=======
+			dimm->dtype = MTR_DRAM_WIDTH(mtr) == 8 ?
+				      DEV_X8 : DEV_X4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dimm->mtype = MEM_FB_DDR2;
 			/*
 			 * The eccc mechanism is SDDC (aka SECC), with
 			 * is similar to Chipkill.
 			 */
+<<<<<<< HEAD
 			dimm->edac_mode = MTR_DRAM_WIDTH(mtr) ?
+=======
+			dimm->edac_mode = MTR_DRAM_WIDTH(mtr) == 8 ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  EDAC_S8ECD8ED : EDAC_S4ECD4ED;
 			ndimms++;
 		}
@@ -1408,6 +1429,11 @@ static void i5400_remove_one(struct pci_dev *pdev)
 	/* retrieve references to resources, and free those resources */
 	i5400_put_devices(mci);
 
+<<<<<<< HEAD
+=======
+	pci_disable_device(pdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	edac_mc_free(mci);
 }
 
@@ -1416,7 +1442,11 @@ static void i5400_remove_one(struct pci_dev *pdev)
  *
  *	The "E500P" device is the first device supported.
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(i5400_pci_tbl) = {
+=======
+static const struct pci_device_id i5400_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5400_ERR)},
 	{0,}			/* 0 terminated list. */
 };
@@ -1467,7 +1497,11 @@ module_exit(i5400_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ben Woodard <woodard@redhat.com>");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Red Hat Inc. (http://www.redhat.com)");
 MODULE_DESCRIPTION("MC Driver for Intel I5400 memory controllers - "
 		   I5400_REVISION);

@@ -810,7 +810,11 @@ prfeatureind(char *dest, u_char *p)
 	dp += sprintf(dp, "    octet 3  ");
 	dp += prbits(dp, *p, 8, 8);
 	*dp++ = '\n';
+<<<<<<< HEAD
 	if (!(*p++ & 80)) {
+=======
+	if (!(*p++ & 0x80)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dp += sprintf(dp, "    octet 4  ");
 		dp += prbits(dp, *p++, 8, 8);
 		*dp++ = '\n';

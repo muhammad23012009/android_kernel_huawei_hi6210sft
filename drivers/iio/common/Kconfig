@@ -3,4 +3,9 @@
 #
 
 source "drivers/iio/common/hid-sensors/Kconfig"
+<<<<<<< HEAD
+=======
+source "drivers/iio/common/ms_sensors/Kconfig"
+source "drivers/iio/common/ssp_sensors/Kconfig"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "drivers/iio/common/st_sensors/Kconfig"

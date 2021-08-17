@@ -11,11 +11,15 @@
 #include <linux/init.h>
 #include <linux/pfn.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/kmemleak.h>
 #include <linux/range.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
 
 #include <asm/bug.h>
 #include <asm/io.h>
@@ -23,6 +27,19 @@
 
 #include "internal.h"
 
+=======
+#include <linux/bootmem.h>
+
+#include <asm/bug.h>
+#include <asm/io.h>
+
+#include "internal.h"
+
+#ifndef CONFIG_HAVE_MEMBLOCK
+#error CONFIG_HAVE_MEMBLOCK not defined
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef CONFIG_NEED_MULTIPLE_NODES
 struct pglist_data __refdata contig_page_data;
 EXPORT_SYMBOL(contig_page_data);
@@ -31,21 +48,47 @@ EXPORT_SYMBOL(contig_page_data);
 unsigned long max_low_pfn;
 unsigned long min_low_pfn;
 unsigned long max_pfn;
+<<<<<<< HEAD
+=======
+unsigned long long max_possible_pfn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void * __init __alloc_memory_core_early(int nid, u64 size, u64 align,
 					u64 goal, u64 limit)
 {
 	void *ptr;
 	u64 addr;
+<<<<<<< HEAD
+=======
+	ulong flags = choose_memblock_flags();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (limit > memblock.current_limit)
 		limit = memblock.current_limit;
 
+<<<<<<< HEAD
 	addr = memblock_find_in_range_node(goal, limit, size, align, nid);
 	if (!addr)
 		return NULL;
 
 	memblock_reserve(addr, size);
+=======
+again:
+	addr = memblock_find_in_range_node(size, align, goal, limit, nid,
+					   flags);
+	if (!addr && (flags & MEMBLOCK_MIRROR)) {
+		flags &= ~MEMBLOCK_MIRROR;
+		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+			&size);
+		goto again;
+	}
+	if (!addr)
+		return NULL;
+
+	if (memblock_reserve(addr, size))
+		return NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ptr = phys_to_virt(addr);
 	memset(ptr, 0, size);
 	/*
@@ -69,19 +112,28 @@ void __init free_bootmem_late(unsigned long addr, unsigned long size)
 {
 	unsigned long cursor, end;
 
+<<<<<<< HEAD
 	kmemleak_free_part(__va(addr), size);
+=======
+	kmemleak_free_part_phys(addr, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cursor = PFN_UP(addr);
 	end = PFN_DOWN(addr + size);
 
 	for (; cursor < end; cursor++) {
+<<<<<<< HEAD
 		__free_pages_bootmem(pfn_to_page(cursor), 0);
+=======
+		__free_pages_bootmem(pfn_to_page(cursor), cursor, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		totalram_pages++;
 	}
 }
 
 static void __init __free_pages_memory(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	unsigned long i, start_aligned, end_aligned;
 	int order = ilog2(BITS_PER_LONG);
 
@@ -103,6 +155,20 @@ static void __init __free_pages_memory(unsigned long start, unsigned long end)
 
 	for (i = end_aligned; i < end; i++)
 		__free_pages_bootmem(pfn_to_page(i), 0);
+=======
+	int order;
+
+	while (start < end) {
+		order = min(MAX_ORDER - 1UL, __ffs(start));
+
+		while (start + (1UL << order) > end)
+			order--;
+
+		__free_pages_bootmem(pfn_to_page(start), start, order);
+
+		start += (1UL << order);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned long __init __free_memory_core(phys_addr_t start,
@@ -123,6 +189,7 @@ static unsigned long __init __free_memory_core(phys_addr_t start,
 static unsigned long __init free_low_memory_core_early(void)
 {
 	unsigned long count = 0;
+<<<<<<< HEAD
 	phys_addr_t start, end, size;
 	u64 i;
 
@@ -133,10 +200,29 @@ static unsigned long __init free_low_memory_core_early(void)
 	size = get_allocated_memblock_reserved_regions_info(&start);
 	if (size)
 		count += __free_memory_core(start, start + size);
+=======
+	phys_addr_t start, end;
+	u64 i;
+
+	memblock_clear_hotplug(0, -1);
+
+	for_each_reserved_mem_region(i, &start, &end)
+		reserve_bootmem_region(start, end);
+
+	/*
+	 * We need to use NUMA_NO_NODE instead of NODE_DATA(0)->node_id
+	 *  because in some case like Node0 doesn't have RAM installed
+	 *  low ram will be on Node1
+	 */
+	for_each_free_mem_range(i, NUMA_NO_NODE, MEMBLOCK_NONE, &start, &end,
+				NULL)
+		count += __free_memory_core(start, end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }
 
+<<<<<<< HEAD
 static void reset_node_lowmem_managed_pages(pg_data_t *pgdat)
 {
 	struct zone *z;
@@ -151,6 +237,29 @@ static void reset_node_lowmem_managed_pages(pg_data_t *pgdat)
 	for (z = pgdat->node_zones; z < pgdat->node_zones + MAX_NR_ZONES; z++)
 		if (!is_highmem(z))
 			z->managed_pages = 0;
+=======
+static int reset_managed_pages_done __initdata;
+
+void reset_node_managed_pages(pg_data_t *pgdat)
+{
+	struct zone *z;
+
+	for (z = pgdat->node_zones; z < pgdat->node_zones + MAX_NR_ZONES; z++)
+		z->managed_pages = 0;
+}
+
+void __init reset_all_zones_managed_pages(void)
+{
+	struct pglist_data *pgdat;
+
+	if (reset_managed_pages_done)
+		return;
+
+	for_each_online_pgdat(pgdat)
+		reset_node_managed_pages(pgdat);
+
+	reset_managed_pages_done = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -160,6 +269,7 @@ static void reset_node_lowmem_managed_pages(pg_data_t *pgdat)
  */
 unsigned long __init free_all_bootmem(void)
 {
+<<<<<<< HEAD
 	struct pglist_data *pgdat;
 
 	for_each_online_pgdat(pgdat)
@@ -171,6 +281,16 @@ unsigned long __init free_all_bootmem(void)
 	 *  low ram will be on Node1
 	 */
 	return free_low_memory_core_early();
+=======
+	unsigned long pages;
+
+	reset_all_zones_managed_pages();
+
+	pages = free_low_memory_core_early();
+	totalram_pages += pages;
+
+	return pages;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -186,7 +306,10 @@ unsigned long __init free_all_bootmem(void)
 void __init free_bootmem_node(pg_data_t *pgdat, unsigned long physaddr,
 			      unsigned long size)
 {
+<<<<<<< HEAD
 	kmemleak_free_part(__va(physaddr), size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memblock_free(physaddr, size);
 }
 
@@ -201,7 +324,10 @@ void __init free_bootmem_node(pg_data_t *pgdat, unsigned long physaddr,
  */
 void __init free_bootmem(unsigned long addr, unsigned long size)
 {
+<<<<<<< HEAD
 	kmemleak_free_part(__va(addr), size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memblock_free(addr, size);
 }
 
@@ -217,7 +343,11 @@ static void * __init ___alloc_bootmem_nopanic(unsigned long size,
 
 restart:
 
+<<<<<<< HEAD
 	ptr = __alloc_memory_core_early(MAX_NUMNODES, size, align, goal, limit);
+=======
+	ptr = __alloc_memory_core_early(NUMA_NO_NODE, size, align, goal, limit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ptr)
 		return ptr;
@@ -261,7 +391,11 @@ static void * __init ___alloc_bootmem(unsigned long size, unsigned long align,
 	/*
 	 * Whoops, we cannot satisfy the allocation request.
 	 */
+<<<<<<< HEAD
 	printk(KERN_ALERT "bootmem alloc of %lu bytes failed!\n", size);
+=======
+	pr_alert("bootmem alloc of %lu bytes failed!\n", size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	panic("Out of memory");
 	return NULL;
 }
@@ -301,7 +435,11 @@ again:
 	if (ptr)
 		return ptr;
 
+<<<<<<< HEAD
 	ptr = __alloc_memory_core_early(MAX_NUMNODES, size, align,
+=======
+	ptr = __alloc_memory_core_early(NUMA_NO_NODE, size, align,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					goal, limit);
 	if (ptr)
 		return ptr;
@@ -323,7 +461,11 @@ void * __init __alloc_bootmem_node_nopanic(pg_data_t *pgdat, unsigned long size,
 	return ___alloc_bootmem_node_nopanic(pgdat, size, align, goal, 0);
 }
 
+<<<<<<< HEAD
 void * __init ___alloc_bootmem_node(pg_data_t *pgdat, unsigned long size,
+=======
+static void * __init ___alloc_bootmem_node(pg_data_t *pgdat, unsigned long size,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    unsigned long align, unsigned long goal,
 				    unsigned long limit)
 {
@@ -333,7 +475,11 @@ void * __init ___alloc_bootmem_node(pg_data_t *pgdat, unsigned long size,
 	if (ptr)
 		return ptr;
 
+<<<<<<< HEAD
 	printk(KERN_ALERT "bootmem alloc of %lu bytes failed!\n", size);
+=======
+	pr_alert("bootmem alloc of %lu bytes failed!\n", size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	panic("Out of memory");
 	return NULL;
 }
@@ -368,9 +514,12 @@ void * __init __alloc_bootmem_node_high(pg_data_t *pgdat, unsigned long size,
 	return __alloc_bootmem_node(pgdat, size, align, goal);
 }
 
+<<<<<<< HEAD
 #ifndef ARCH_LOW_ADDRESS_LIMIT
 #define ARCH_LOW_ADDRESS_LIMIT	0xffffffffUL
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * __alloc_bootmem_low - allocate low boot memory

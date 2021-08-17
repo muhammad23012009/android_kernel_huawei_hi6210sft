@@ -109,14 +109,23 @@ struct ath9k_pacal_info{
 
 bool ath9k_hw_reset_calvalid(struct ath_hw *ah);
 void ath9k_hw_start_nfcal(struct ath_hw *ah, bool update);
+<<<<<<< HEAD
 void ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan);
+=======
+int ath9k_hw_loadnf(struct ath_hw *ah, struct ath9k_channel *chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 bool ath9k_hw_getnf(struct ath_hw *ah, struct ath9k_channel *chan);
 void ath9k_init_nfcal_hist_buffer(struct ath_hw *ah,
 				  struct ath9k_channel *chan);
 void ath9k_hw_bstuck_nfcal(struct ath_hw *ah);
 void ath9k_hw_reset_calibration(struct ath_hw *ah,
 				struct ath9k_cal_list *currCal);
+<<<<<<< HEAD
 s16 ath9k_hw_getchan_noise(struct ath_hw *ah, struct ath9k_channel *chan);
+=======
+s16 ath9k_hw_getchan_noise(struct ath_hw *ah, struct ath9k_channel *chan,
+			   s16 nf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #endif /* CALIB_H */

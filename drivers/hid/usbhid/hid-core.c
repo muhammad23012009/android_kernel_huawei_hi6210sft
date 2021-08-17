@@ -58,7 +58,11 @@ module_param_named(ignoreled, ignoreled, uint, 0644);
 MODULE_PARM_DESC(ignoreled, "Autosuspend with active leds");
 
 /* Quirks specified at module load time */
+<<<<<<< HEAD
 static char *quirks_param[MAX_USBHID_BOOT_QUIRKS] = { [ 0 ... (MAX_USBHID_BOOT_QUIRKS - 1) ] = NULL };
+=======
+static char *quirks_param[MAX_USBHID_BOOT_QUIRKS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_param_array_named(quirks, quirks_param, charp, NULL, 0444);
 MODULE_PARM_DESC(quirks, "Add/modify USB HID quirks by specifying "
 		" quirks=vendorID:productID:quirks"
@@ -82,7 +86,11 @@ static int hid_start_in(struct hid_device *hid)
 	struct usbhid_device *usbhid = hid->driver_data;
 
 	spin_lock_irqsave(&usbhid->lock, flags);
+<<<<<<< HEAD
 	if (hid->open > 0 &&
+=======
+	if ((hid->open > 0 || hid->quirks & HID_QUIRK_ALWAYS_POLL) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			!test_bit(HID_DISCONNECTED, &usbhid->iofl) &&
 			!test_bit(HID_SUSPENDED, &usbhid->iofl) &&
 			!test_and_set_bit(HID_IN_RUNNING, &usbhid->iofl)) {
@@ -116,12 +124,17 @@ static void hid_reset(struct work_struct *work)
 	struct usbhid_device *usbhid =
 		container_of(work, struct usbhid_device, reset_work);
 	struct hid_device *hid = usbhid->hid;
+<<<<<<< HEAD
 	int rc = 0;
+=======
+	int rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (test_bit(HID_CLEAR_HALT, &usbhid->iofl)) {
 		dev_dbg(&usbhid->intf->dev, "clear halt\n");
 		rc = usb_clear_halt(hid_to_usb_dev(hid), usbhid->urbin->pipe);
 		clear_bit(HID_CLEAR_HALT, &usbhid->iofl);
+<<<<<<< HEAD
 		hid_start_in(hid);
 	}
 
@@ -150,6 +163,20 @@ static void hid_reset(struct work_struct *work)
 	case -ENODEV:
 	case -EINTR:
 		break;
+=======
+		if (rc == 0) {
+			hid_start_in(hid);
+		} else {
+			dev_dbg(&usbhid->intf->dev,
+					"clear-halt failed: %d\n", rc);
+			set_bit(HID_RESET_PENDING, &usbhid->iofl);
+		}
+	}
+
+	if (test_bit(HID_RESET_PENDING, &usbhid->iofl)) {
+		dev_dbg(&usbhid->intf->dev, "resetting device\n");
+		usb_queue_reset_device(usbhid->intf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -290,6 +317,7 @@ static void hid_irq_in(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:			/* success */
+<<<<<<< HEAD
 		usbhid_mark_busy(usbhid);
 		usbhid->retry_delay = 0;
 		hid_input_report(urb->context, HID_INPUT_REPORT,
@@ -304,6 +332,26 @@ static void hid_irq_in(struct urb *urb)
 			set_bit(HID_KEYS_PRESSED, &usbhid->iofl);
 		else
 			clear_bit(HID_KEYS_PRESSED, &usbhid->iofl);
+=======
+		usbhid->retry_delay = 0;
+		if ((hid->quirks & HID_QUIRK_ALWAYS_POLL) && !hid->open)
+			break;
+		usbhid_mark_busy(usbhid);
+		if (!test_bit(HID_RESUME_RUNNING, &usbhid->iofl)) {
+			hid_input_report(urb->context, HID_INPUT_REPORT,
+					 urb->transfer_buffer,
+					 urb->actual_length, 1);
+			/*
+			 * autosuspend refused while keys are pressed
+			 * because most keyboards don't wake up when
+			 * a key is released
+			 */
+			if (hid_check_keys_pressed(hid))
+				set_bit(HID_KEYS_PRESSED, &usbhid->iofl);
+			else
+				clear_bit(HID_KEYS_PRESSED, &usbhid->iofl);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case -EPIPE:		/* stall */
 		usbhid_mark_busy(usbhid);
@@ -352,8 +400,12 @@ static int hid_submit_out(struct hid_device *hid)
 	report = usbhid->out[usbhid->outtail].report;
 	raw_report = usbhid->out[usbhid->outtail].raw_report;
 
+<<<<<<< HEAD
 	usbhid->urbout->transfer_buffer_length = ((report->size - 1) >> 3) +
 						 1 + (report->id > 0);
+=======
+	usbhid->urbout->transfer_buffer_length = hid_report_len(report);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usbhid->urbout->dev = hid_to_usb_dev(hid);
 	if (raw_report) {
 		memcpy(usbhid->outbuf, raw_report,
@@ -385,7 +437,11 @@ static int hid_submit_ctrl(struct hid_device *hid)
 	raw_report = usbhid->ctrl[usbhid->ctrltail].raw_report;
 	dir = usbhid->ctrl[usbhid->ctrltail].dir;
 
+<<<<<<< HEAD
 	len = ((report->size - 1) >> 3) + 1 + (report->id > 0);
+=======
+	len = hid_report_len(report);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (dir == USB_DIR_OUT) {
 		usbhid->urbctrl->pipe = usb_sndctrlpipe(hid_to_usb_dev(hid), 0);
 		usbhid->urbctrl->transfer_buffer_length = len;
@@ -536,7 +592,12 @@ static void __usbhid_submit_report(struct hid_device *hid, struct hid_report *re
 	int head;
 	struct usbhid_device *usbhid = hid->driver_data;
 
+<<<<<<< HEAD
 	if ((hid->quirks & HID_QUIRK_NOGET) && dir == USB_DIR_IN)
+=======
+	if (((hid->quirks & HID_QUIRK_NOGET) && dir == USB_DIR_IN) ||
+		test_bit(HID_DISCONNECTED, &usbhid->iofl))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	if (usbhid->urbout && dir == USB_DIR_OUT && report->type == HID_OUTPUT_REPORT) {
@@ -648,6 +709,7 @@ static void usbhid_submit_report(struct hid_device *hid, struct hid_report *repo
 	spin_unlock_irqrestore(&usbhid->lock, flags);
 }
 
+<<<<<<< HEAD
 /* Workqueue routine to send requests to change LEDs */
 static void hid_led(struct work_struct *work)
 {
@@ -704,6 +766,8 @@ static int usb_hidinput_input_event(struct input_dev *dev, unsigned int type, un
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int usbhid_wait_io(struct hid_device *hid)
 {
 	struct usbhid_device *usbhid = hid->driver_data;
@@ -757,6 +821,10 @@ int usbhid_open(struct hid_device *hid)
 			goto done;
 		}
 		usbhid->intf->needs_remote_wakeup = 1;
+<<<<<<< HEAD
+=======
+		set_bit(HID_RESUME_RUNNING, &usbhid->iofl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		res = hid_start_in(hid);
 		if (res) {
 			if (res != -ENOSPC) {
@@ -770,6 +838,19 @@ int usbhid_open(struct hid_device *hid)
 			}
 		}
 		usb_autopm_put_interface(usbhid->intf);
+<<<<<<< HEAD
+=======
+
+		/*
+		 * In case events are generated while nobody was listening,
+		 * some are released when the device is re-opened.
+		 * Wait 50 msec for the queue to empty before allowing events
+		 * to go through hid.
+		 */
+		if (res == 0 && !(hid->quirks & HID_QUIRK_ALWAYS_POLL))
+			msleep(50);
+		clear_bit(HID_RESUME_RUNNING, &usbhid->iofl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 done:
 	mutex_unlock(&hid_open_mut);
@@ -790,8 +871,15 @@ void usbhid_close(struct hid_device *hid)
 	if (!--hid->open) {
 		spin_unlock_irq(&usbhid->lock);
 		hid_cancel_delayed_stuff(usbhid);
+<<<<<<< HEAD
 		usb_kill_urb(usbhid->urbin);
 		usbhid->intf->needs_remote_wakeup = 0;
+=======
+		if (!(hid->quirks & HID_QUIRK_ALWAYS_POLL)) {
+			usb_kill_urb(usbhid->urbin);
+			usbhid->intf->needs_remote_wakeup = 0;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		spin_unlock_irq(&usbhid->lock);
 	}
@@ -806,12 +894,26 @@ void usbhid_init_reports(struct hid_device *hid)
 {
 	struct hid_report *report;
 	struct usbhid_device *usbhid = hid->driver_data;
+<<<<<<< HEAD
 	int err, ret;
 
 	list_for_each_entry(report, &hid->report_enum[HID_INPUT_REPORT].report_list, list)
 		usbhid_submit_report(hid, report, USB_DIR_IN);
 
 	list_for_each_entry(report, &hid->report_enum[HID_FEATURE_REPORT].report_list, list)
+=======
+	struct hid_report_enum *report_enum;
+	int err, ret;
+
+	if (!(hid->quirks & HID_QUIRK_NO_INIT_INPUT_REPORTS)) {
+		report_enum = &hid->report_enum[HID_INPUT_REPORT];
+		list_for_each_entry(report, &report_enum->report_list, list)
+			usbhid_submit_report(hid, report, USB_DIR_IN);
+	}
+
+	report_enum = &hid->report_enum[HID_FEATURE_REPORT];
+	list_for_each_entry(report, &report_enum->report_list, list)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usbhid_submit_report(hid, report, USB_DIR_IN);
 
 	err = 0;
@@ -856,7 +958,11 @@ static int hid_find_field_early(struct hid_device *hid, unsigned int page,
 	return -1;
 }
 
+<<<<<<< HEAD
 void usbhid_set_leds(struct hid_device *hid)
+=======
+static void usbhid_set_leds(struct hid_device *hid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct hid_field *field;
 	int offset;
@@ -866,7 +972,10 @@ void usbhid_set_leds(struct hid_device *hid)
 		usbhid_submit_report(hid, field->report, USB_DIR_OUT);
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(usbhid_set_leds);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Traverse the supplied list of reports and find the longest
@@ -936,13 +1045,19 @@ static int usbhid_get_raw_report(struct hid_device *hid,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int usbhid_output_raw_report(struct hid_device *hid, __u8 *buf, size_t count,
 		unsigned char report_type)
+=======
+static int usbhid_set_raw_report(struct hid_device *hid, unsigned int reportnum,
+				 __u8 *buf, size_t count, unsigned char rtype)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct usbhid_device *usbhid = hid->driver_data;
 	struct usb_device *dev = hid_to_usb_dev(hid);
 	struct usb_interface *intf = usbhid->intf;
 	struct usb_host_interface *interface = intf->cur_altsetting;
+<<<<<<< HEAD
 	int ret;
 
 	if (usbhid->urbout && report_type != HID_FEATURE_REPORT) {
@@ -982,6 +1097,61 @@ static int usbhid_output_raw_report(struct hid_device *hid, __u8 *buf, size_t co
 			USB_CTRL_SET_TIMEOUT);
 		/* count also the report id, if this was a numbered report. */
 		if (ret > 0 && skipped_report_id)
+=======
+	int ret, skipped_report_id = 0;
+
+	/* Byte 0 is the report number. Report data starts at byte 1.*/
+	if ((rtype == HID_OUTPUT_REPORT) &&
+	    (hid->quirks & HID_QUIRK_SKIP_OUTPUT_REPORT_ID))
+		buf[0] = 0;
+	else
+		buf[0] = reportnum;
+
+	if (buf[0] == 0x0) {
+		/* Don't send the Report ID */
+		buf++;
+		count--;
+		skipped_report_id = 1;
+	}
+
+	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+			HID_REQ_SET_REPORT,
+			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+			((rtype + 1) << 8) | reportnum,
+			interface->desc.bInterfaceNumber, buf, count,
+			USB_CTRL_SET_TIMEOUT);
+	/* count also the report id, if this was a numbered report. */
+	if (ret > 0 && skipped_report_id)
+		ret++;
+
+	return ret;
+}
+
+static int usbhid_output_report(struct hid_device *hid, __u8 *buf, size_t count)
+{
+	struct usbhid_device *usbhid = hid->driver_data;
+	struct usb_device *dev = hid_to_usb_dev(hid);
+	int actual_length, skipped_report_id = 0, ret;
+
+	if (!usbhid->urbout)
+		return -ENOSYS;
+
+	if (buf[0] == 0x0) {
+		/* Don't send the Report ID */
+		buf++;
+		count--;
+		skipped_report_id = 1;
+	}
+
+	ret = usb_interrupt_msg(dev, usbhid->urbout->pipe,
+				buf, count, &actual_length,
+				USB_CTRL_SET_TIMEOUT);
+	/* return the number of bytes transferred */
+	if (ret == 0) {
+		ret = actual_length;
+		/* count also the report id */
+		if (skipped_report_id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret++;
 	}
 
@@ -1008,6 +1178,11 @@ static int usbhid_parse(struct hid_device *hid)
 	unsigned int rsize = 0;
 	char *rdesc;
 	int ret, n;
+<<<<<<< HEAD
+=======
+	int num_descriptors;
+	size_t offset = offsetof(struct hid_descriptor, desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	quirks = usbhid_lookup_quirk(le16_to_cpu(dev->descriptor.idVendor),
 			le16_to_cpu(dev->descriptor.idProduct));
@@ -1030,10 +1205,25 @@ static int usbhid_parse(struct hid_device *hid)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	hid->version = le16_to_cpu(hdesc->bcdHID);
 	hid->country = hdesc->bCountryCode;
 
 	for (n = 0; n < hdesc->bNumDescriptors; n++)
+=======
+	if (hdesc->bLength < sizeof(struct hid_descriptor)) {
+		dbg_hid("hid descriptor is too short\n");
+		return -EINVAL;
+	}
+
+	hid->version = le16_to_cpu(hdesc->bcdHID);
+	hid->country = hdesc->bCountryCode;
+
+	num_descriptors = min_t(int, hdesc->bNumDescriptors,
+	       (hdesc->bLength - offset) / sizeof(struct hid_class_descriptor));
+
+	for (n = 0; n < num_descriptors; n++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (hdesc->desc[n].bDescriptorType == HID_DT_REPORT)
 			rsize = le16_to_cpu(hdesc->desc[n].wDescriptorLength);
 
@@ -1163,6 +1353,22 @@ static int usbhid_start(struct hid_device *hid)
 
 	set_bit(HID_STARTED, &usbhid->iofl);
 
+<<<<<<< HEAD
+=======
+	if (hid->quirks & HID_QUIRK_ALWAYS_POLL) {
+		ret = usb_autopm_get_interface(usbhid->intf);
+		if (ret)
+			goto fail;
+		usbhid->intf->needs_remote_wakeup = 1;
+		ret = hid_start_in(hid);
+		if (ret) {
+			dev_err(&hid->dev,
+				"failed to start in urb: %d\n", ret);
+		}
+		usb_autopm_put_interface(usbhid->intf);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Some keyboards don't work until their LEDs have been set.
 	 * Since BIOSes do set the LEDs, it must be safe for any device
 	 * that supports the keyboard boot protocol.
@@ -1195,6 +1401,12 @@ static void usbhid_stop(struct hid_device *hid)
 	if (WARN_ON(!usbhid))
 		return;
 
+<<<<<<< HEAD
+=======
+	if (hid->quirks & HID_QUIRK_ALWAYS_POLL)
+		usbhid->intf->needs_remote_wakeup = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_bit(HID_STARTED, &usbhid->iofl);
 	spin_lock_irq(&usbhid->lock);	/* Sync with error and led handlers */
 	set_bit(HID_DISCONNECTED, &usbhid->iofl);
@@ -1244,6 +1456,23 @@ static void usbhid_request(struct hid_device *hid, struct hid_report *rep, int r
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int usbhid_raw_request(struct hid_device *hid, unsigned char reportnum,
+			      __u8 *buf, size_t len, unsigned char rtype,
+			      int reqtype)
+{
+	switch (reqtype) {
+	case HID_REQ_GET_REPORT:
+		return usbhid_get_raw_report(hid, reportnum, buf, len, rtype);
+	case HID_REQ_SET_REPORT:
+		return usbhid_set_raw_report(hid, reportnum, buf, len, rtype);
+	default:
+		return -EIO;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int usbhid_idle(struct hid_device *hid, int report, int idle,
 		int reqtype)
 {
@@ -1265,9 +1494,16 @@ static struct hid_ll_driver usb_hid_driver = {
 	.open = usbhid_open,
 	.close = usbhid_close,
 	.power = usbhid_power,
+<<<<<<< HEAD
 	.hidinput_input_event = usb_hidinput_input_event,
 	.request = usbhid_request,
 	.wait = usbhid_wait_io,
+=======
+	.request = usbhid_request,
+	.wait = usbhid_wait_io,
+	.raw_request = usbhid_raw_request,
+	.output_report = usbhid_output_report,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.idle = usbhid_idle,
 };
 
@@ -1298,8 +1534,11 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 
 	usb_set_intfdata(intf, hid);
 	hid->ll_driver = &usb_hid_driver;
+<<<<<<< HEAD
 	hid->hid_get_raw_report = usbhid_get_raw_report;
 	hid->hid_output_raw_report = usbhid_output_raw_report;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hid->ff_init = hid_pidff_init;
 #ifdef CONFIG_USB_HIDDEV
 	hid->hiddev_connect = hiddev_connect;
@@ -1359,8 +1598,11 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
 	setup_timer(&usbhid->io_retry, hid_retry_timeout, (unsigned long) hid);
 	spin_lock_init(&usbhid->lock);
 
+<<<<<<< HEAD
 	INIT_WORK(&usbhid->led_work, hid_led);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = hid_add_device(hid);
 	if (ret) {
 		if (ret != -ENODEV)
@@ -1385,6 +1627,12 @@ static void usbhid_disconnect(struct usb_interface *intf)
 		return;
 
 	usbhid = hid->driver_data;
+<<<<<<< HEAD
+=======
+	spin_lock_irq(&usbhid->lock);	/* Sync with error and led handlers */
+	set_bit(HID_DISCONNECTED, &usbhid->iofl);
+	spin_unlock_irq(&usbhid->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hid_destroy_device(hid);
 	kfree(usbhid);
 }
@@ -1393,7 +1641,10 @@ static void hid_cancel_delayed_stuff(struct usbhid_device *usbhid)
 {
 	del_timer_sync(&usbhid->io_retry);
 	cancel_work_sync(&usbhid->reset_work);
+<<<<<<< HEAD
 	cancel_work_sync(&usbhid->led_work);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void hid_cease_io(struct usbhid_device *usbhid)
@@ -1528,15 +1779,26 @@ static int hid_suspend(struct usb_interface *intf, pm_message_t message)
 	struct usbhid_device *usbhid = hid->driver_data;
 	int status = 0;
 	bool driver_suspended = false;
+<<<<<<< HEAD
 
 	if (PMSG_IS_AUTO(message)) {
+=======
+	unsigned int ledcount;
+
+	if (PMSG_IS_AUTO(message)) {
+		ledcount = hidinput_count_leds(hid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_irq(&usbhid->lock);	/* Sync with error handler */
 		if (!test_bit(HID_RESET_PENDING, &usbhid->iofl)
 		    && !test_bit(HID_CLEAR_HALT, &usbhid->iofl)
 		    && !test_bit(HID_OUT_RUNNING, &usbhid->iofl)
 		    && !test_bit(HID_CTRL_RUNNING, &usbhid->iofl)
 		    && !test_bit(HID_KEYS_PRESSED, &usbhid->iofl)
+<<<<<<< HEAD
 		    && (!usbhid->ledcount || ignoreled))
+=======
+		    && (!ledcount || ignoreled))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{
 			set_bit(HID_SUSPENDED, &usbhid->iofl);
 			spin_unlock_irq(&usbhid->lock);

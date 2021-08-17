@@ -57,12 +57,21 @@ static struct page *get_mapping_page(struct super_block *sb, pgoff_t index,
 	filler_t *filler = super->s_devops->readpage;
 	struct page *page;
 
+<<<<<<< HEAD
 	BUG_ON(mapping_gfp_mask(mapping) & __GFP_FS);
+=======
+	BUG_ON(mapping_gfp_constraint(mapping, __GFP_FS));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (use_filler)
 		page = read_cache_page(mapping, index, filler, sb);
 	else {
 		page = find_or_create_page(mapping, index, GFP_NOFS);
+<<<<<<< HEAD
 		unlock_page(page);
+=======
+		if (page)
+			unlock_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return page;
 }
@@ -89,9 +98,15 @@ int __logfs_buf_write(struct logfs_area *area, u64 ofs, void *buf, size_t len,
 
 		if (!PagePrivate(page)) {
 			SetPagePrivate(page);
+<<<<<<< HEAD
 			page_cache_get(page);
 		}
 		page_cache_release(page);
+=======
+			get_page(page);
+		}
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		buf += copylen;
 		len -= copylen;
@@ -116,9 +131,15 @@ static void pad_partial_page(struct logfs_area *area)
 		memset(page_address(page) + offset, 0xff, len);
 		if (!PagePrivate(page)) {
 			SetPagePrivate(page);
+<<<<<<< HEAD
 			page_cache_get(page);
 		}
 		page_cache_release(page);
+=======
+			get_page(page);
+		}
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -128,20 +149,34 @@ static void pad_full_pages(struct logfs_area *area)
 	struct logfs_super *super = logfs_super(sb);
 	u64 ofs = dev_ofs(sb, area->a_segno, area->a_used_bytes);
 	u32 len = super->s_segsize - area->a_used_bytes;
+<<<<<<< HEAD
 	pgoff_t index = PAGE_CACHE_ALIGN(ofs) >> PAGE_CACHE_SHIFT;
 	pgoff_t no_indizes = len >> PAGE_CACHE_SHIFT;
+=======
+	pgoff_t index = PAGE_ALIGN(ofs) >> PAGE_SHIFT;
+	pgoff_t no_indizes = len >> PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct page *page;
 
 	while (no_indizes) {
 		page = get_mapping_page(sb, index, 0);
 		BUG_ON(!page); /* FIXME: reserve a pool */
 		SetPageUptodate(page);
+<<<<<<< HEAD
 		memset(page_address(page), 0xff, PAGE_CACHE_SIZE);
 		if (!PagePrivate(page)) {
 			SetPagePrivate(page);
 			page_cache_get(page);
 		}
 		page_cache_release(page);
+=======
+		memset(page_address(page), 0xff, PAGE_SIZE);
+		if (!PagePrivate(page)) {
+			SetPagePrivate(page);
+			get_page(page);
+		}
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		index++;
 		no_indizes--;
 	}
@@ -196,7 +231,11 @@ static int btree_write_alias(struct super_block *sb, struct logfs_block *block,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct logfs_block_ops btree_block_ops = {
+=======
+static const struct logfs_block_ops btree_block_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.write_block	= btree_write_block,
 	.free_block	= __free_block,
 	.write_alias	= btree_write_alias,
@@ -410,7 +449,11 @@ int wbuf_read(struct super_block *sb, u64 ofs, size_t len, void *buf)
 		if (IS_ERR(page))
 			return PTR_ERR(page);
 		memcpy(buf, page_address(page) + offset, copylen);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		buf += copylen;
 		len -= copylen;
@@ -498,7 +541,11 @@ static void move_btree_to_page(struct inode *inode, struct page *page,
 
 	if (!PagePrivate(page)) {
 		SetPagePrivate(page);
+<<<<<<< HEAD
 		page_cache_get(page);
+=======
+		get_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_page_private(page, (unsigned long) block);
 	}
 	block->ops = &indirect_block_ops;
@@ -553,7 +600,11 @@ void move_page_to_btree(struct page *page)
 
 	if (PagePrivate(page)) {
 		ClearPagePrivate(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_page_private(page, 0);
 	}
 	block->ops = &btree_block_ops;
@@ -722,9 +773,15 @@ void freeseg(struct super_block *sb, u32 segno)
 			continue;
 		if (PagePrivate(page)) {
 			ClearPagePrivate(page);
+<<<<<<< HEAD
 			page_cache_release(page);
 		}
 		page_cache_release(page);
+=======
+			put_page(page);
+		}
+		put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -884,7 +941,12 @@ static struct logfs_area *alloc_area(struct super_block *sb)
 	return area;
 }
 
+<<<<<<< HEAD
 static void map_invalidatepage(struct page *page, unsigned long l)
+=======
+static void map_invalidatepage(struct page *page, unsigned int o,
+			       unsigned int l)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return;
 }

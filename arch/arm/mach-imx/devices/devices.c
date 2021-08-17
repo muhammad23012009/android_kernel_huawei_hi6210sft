@@ -22,14 +22,25 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
 struct device mxc_aips_bus = {
 	.init_name	= "mxc_aips",
 	.parent		= &platform_bus,
+=======
+#include "../common.h"
+#include "devices-common.h"
+
+struct device mxc_aips_bus = {
+	.init_name	= "mxc_aips",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct device mxc_ahb_bus = {
 	.init_name	= "mxc_ahb",
+<<<<<<< HEAD
 	.parent		= &platform_bus,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int __init mxc_device_init(void)

@@ -117,7 +117,11 @@ struct tda1004x_state {
 	enum tda1004x_demod demod_type;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_TDA1004X)
+=======
+#if IS_REACHABLE(CONFIG_DVB_TDA1004X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* tda10045_attach(const struct tda1004x_config* config,
 					    struct i2c_adapter* i2c);
 

@@ -12,7 +12,10 @@
  *  MCP read/write timeouts from Jordi Colomer, rehacked by rmk.
  */
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -156,7 +159,11 @@ static struct mcp_ops mcp_sa11x0 = {
 
 static int mcp_sa11x0_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct mcp_plat_data *data = dev->dev.platform_data;
+=======
+	struct mcp_plat_data *data = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct resource *mem0, *mem1;
 	struct mcp_sa11x0 *m;
 	struct mcp *mcp;
@@ -225,8 +232,11 @@ static int mcp_sa11x0_probe(struct platform_device *dev)
 	if (ret == 0)
 		return 0;
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  err_ioremap:
 	iounmap(m->base1);
 	iounmap(m->base0);
@@ -252,7 +262,10 @@ static int mcp_sa11x0_remove(struct platform_device *dev)
 	mem0 = platform_get_resource(dev, IORESOURCE_MEM, 0);
 	mem1 = platform_get_resource(dev, IORESOURCE_MEM, 1);
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mcp_host_del(mcp);
 	iounmap(m->base1);
 	iounmap(m->base0);
@@ -303,7 +316,10 @@ static struct platform_driver mcp_sa11x0_driver = {
 	.remove		= mcp_sa11x0_remove,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &mcp_sa11x0_pm_ops,
 	},
 };

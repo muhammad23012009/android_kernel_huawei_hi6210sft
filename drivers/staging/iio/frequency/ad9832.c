@@ -24,14 +24,23 @@
 
 static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
 {
+<<<<<<< HEAD
 	unsigned long long freqreg = (u64) fout *
 				     (u64) ((u64) 1L << AD9832_FREQ_BITS);
+=======
+	unsigned long long freqreg = (u64)fout *
+				     (u64)((u64)1L << AD9832_FREQ_BITS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do_div(freqreg, mclk);
 	return freqreg;
 }
 
 static int ad9832_write_frequency(struct ad9832_state *st,
+<<<<<<< HEAD
 				  unsigned addr, unsigned long fout)
+=======
+				  unsigned int addr, unsigned long fout)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long regval;
 
@@ -57,9 +66,15 @@ static int ad9832_write_frequency(struct ad9832_state *st,
 }
 
 static int ad9832_write_phase(struct ad9832_state *st,
+<<<<<<< HEAD
 				  unsigned long addr, unsigned long phase)
 {
 	if (phase > (1 << AD9832_PHASE_BITS))
+=======
+			      unsigned long addr, unsigned long phase)
+{
+	if (phase > BIT(AD9832_PHASE_BITS))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	st->phase_data[0] = cpu_to_be16((AD9832_CMD_PHA8BITSW << CMD_SHIFT) |
@@ -72,23 +87,38 @@ static int ad9832_write_phase(struct ad9832_state *st,
 	return spi_sync(st->spi, &st->phase_msg);
 }
 
+<<<<<<< HEAD
 static ssize_t ad9832_write(struct device *dev,
 		struct device_attribute *attr,
 		const char *buf,
 		size_t len)
+=======
+static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct ad9832_state *st = iio_priv(indio_dev);
 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
 	int ret;
+<<<<<<< HEAD
 	long val;
 
 	ret = strict_strtoul(buf, 10, &val);
+=======
+	unsigned long val;
+
+	ret = kstrtoul(buf, 10, &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto error_ret;
 
 	mutex_lock(&indio_dev->mlock);
+<<<<<<< HEAD
 	switch ((u32) this_attr->address) {
+=======
+	switch ((u32)this_attr->address) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case AD9832_FREQ0HM:
 	case AD9832_FREQ1HM:
 		ret = ad9832_write_frequency(st, this_attr->address, val);
@@ -109,11 +139,19 @@ static ssize_t ad9832_write(struct device *dev,
 		ret = spi_sync(st->spi, &st->msg);
 		break;
 	case AD9832_FREQ_SYM:
+<<<<<<< HEAD
 		if (val == 1)
 			st->ctrl_fp |= AD9832_FREQ;
 		else if (val == 0)
 			st->ctrl_fp &= ~AD9832_FREQ;
 		else {
+=======
+		if (val == 1) {
+			st->ctrl_fp |= AD9832_FREQ;
+		} else if (val == 0) {
+			st->ctrl_fp &= ~AD9832_FREQ;
+		} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -EINVAL;
 			break;
 		}
@@ -122,7 +160,11 @@ static ssize_t ad9832_write(struct device *dev,
 		ret = spi_sync(st->spi, &st->msg);
 		break;
 	case AD9832_PHASE_SYM:
+<<<<<<< HEAD
 		if (val < 0 || val > 3) {
+=======
+		if (val > 3) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -EINVAL;
 			break;
 		}
@@ -203,7 +245,11 @@ static const struct iio_info ad9832_info = {
 
 static int ad9832_probe(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	struct ad9832_platform_data *pdata = spi->dev.platform_data;
+=======
+	struct ad9832_platform_data *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct iio_dev *indio_dev;
 	struct ad9832_state *st;
 	struct regulator *reg;
@@ -214,6 +260,7 @@ static int ad9832_probe(struct spi_device *spi)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	reg = regulator_get(&spi->dev, "vcc");
 	if (!IS_ERR(reg)) {
 		ret = regulator_enable(reg);
@@ -223,6 +270,17 @@ static int ad9832_probe(struct spi_device *spi)
 
 	indio_dev = iio_device_alloc(sizeof(*st));
 	if (indio_dev == NULL) {
+=======
+	reg = devm_regulator_get(&spi->dev, "vcc");
+	if (!IS_ERR(reg)) {
+		ret = regulator_enable(reg);
+		if (ret)
+			return ret;
+	}
+
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+	if (!indio_dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 		goto error_disable_reg;
 	}
@@ -279,11 +337,16 @@ static int ad9832_probe(struct spi_device *spi)
 	ret = spi_sync(st->spi, &st->msg);
 	if (ret) {
 		dev_err(&spi->dev, "device init failed\n");
+<<<<<<< HEAD
 		goto error_free_device;
+=======
+		goto error_disable_reg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = ad9832_write_frequency(st, AD9832_FREQ0HM, pdata->freq0);
 	if (ret)
+<<<<<<< HEAD
 		goto error_free_device;
 
 	ret = ad9832_write_frequency(st, AD9832_FREQ1HM, pdata->freq1);
@@ -320,6 +383,39 @@ error_disable_reg:
 error_put_reg:
 	if (!IS_ERR(reg))
 		regulator_put(reg);
+=======
+		goto error_disable_reg;
+
+	ret = ad9832_write_frequency(st, AD9832_FREQ1HM, pdata->freq1);
+	if (ret)
+		goto error_disable_reg;
+
+	ret = ad9832_write_phase(st, AD9832_PHASE0H, pdata->phase0);
+	if (ret)
+		goto error_disable_reg;
+
+	ret = ad9832_write_phase(st, AD9832_PHASE1H, pdata->phase1);
+	if (ret)
+		goto error_disable_reg;
+
+	ret = ad9832_write_phase(st, AD9832_PHASE2H, pdata->phase2);
+	if (ret)
+		goto error_disable_reg;
+
+	ret = ad9832_write_phase(st, AD9832_PHASE3H, pdata->phase3);
+	if (ret)
+		goto error_disable_reg;
+
+	ret = iio_device_register(indio_dev);
+	if (ret)
+		goto error_disable_reg;
+
+	return 0;
+
+error_disable_reg:
+	if (!IS_ERR(reg))
+		regulator_disable(reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -330,11 +426,16 @@ static int ad9832_remove(struct spi_device *spi)
 	struct ad9832_state *st = iio_priv(indio_dev);
 
 	iio_device_unregister(indio_dev);
+<<<<<<< HEAD
 	if (!IS_ERR(st->reg)) {
 		regulator_disable(st->reg);
 		regulator_put(st->reg);
 	}
 	iio_device_free(indio_dev);
+=======
+	if (!IS_ERR(st->reg))
+		regulator_disable(st->reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -349,7 +450,10 @@ MODULE_DEVICE_TABLE(spi, ad9832_id);
 static struct spi_driver ad9832_driver = {
 	.driver = {
 		.name	= "ad9832",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= ad9832_probe,
 	.remove		= ad9832_remove,

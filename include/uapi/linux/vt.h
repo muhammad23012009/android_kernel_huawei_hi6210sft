@@ -8,7 +8,10 @@
  */
 #define MIN_NR_CONSOLES 1       /* must be at least 1 */
 #define MAX_NR_CONSOLES	63	/* serial lines start at 64 */
+<<<<<<< HEAD
 #define MAX_NR_USER_CONSOLES 63	/* must be root to allocate above this */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Note: the ioctl VT_GETSTATE does not work for
 		   consoles 16 and higher (since it returns a short) */
 
@@ -84,7 +87,10 @@ struct vt_setactivate {
 
 #define VT_SETACTIVATE	0x560F	/* Activate and set the mode of a console */
 
+<<<<<<< HEAD
 
 #define vt_get_kmsg_redirect() vt_kmsg_redirect(-1)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _UAPI_LINUX_VT_H */

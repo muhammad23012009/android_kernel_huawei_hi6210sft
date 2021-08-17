@@ -7,6 +7,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/bootmem.h>
@@ -62,10 +66,16 @@ int dvma_map_iommu(unsigned long kaddr, unsigned long baddr,
 
 }
 
+<<<<<<< HEAD
 void sun3_dvma_init(void)
 {
 
 	memset(ptelist, 0, sizeof(ptelist));
 
 
+=======
+void __init sun3_dvma_init(void)
+{
+	memset(ptelist, 0, sizeof(ptelist));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

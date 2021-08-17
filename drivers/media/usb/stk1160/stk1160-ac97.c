@@ -98,6 +98,7 @@ int stk1160_ac97_register(struct stk1160 *dev)
 	 * Just want a card to access ac96 controls,
 	 * the actual capture interface will be handled by snd-usb-audio
 	 */
+<<<<<<< HEAD
 	rc = snd_card_create(SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
 			      THIS_MODULE, 0, &card);
 	if (rc < 0)
@@ -105,12 +106,23 @@ int stk1160_ac97_register(struct stk1160 *dev)
 
 	snd_card_set_dev(card, dev->dev);
 
+=======
+	rc = snd_card_new(dev->dev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
+			  THIS_MODULE, 0, &card);
+	if (rc < 0)
+		return rc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* TODO: I'm not sure where should I get these names :-( */
 	snprintf(card->shortname, sizeof(card->shortname),
 		 "stk1160-mixer");
 	snprintf(card->longname, sizeof(card->longname),
 		 "stk1160 ac97 codec mixer control");
+<<<<<<< HEAD
 	strncpy(card->driver, dev->dev->driver->name, sizeof(card->driver));
+=======
+	strlcpy(card->driver, dev->dev->driver->name, sizeof(card->driver));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = snd_ac97_bus(card, 0, &stk1160_ac97_ops, NULL, &ac97_bus);
 	if (rc)

@@ -1,4 +1,8 @@
 #ifndef __MV_CRYPTO_H__
+<<<<<<< HEAD
+=======
+#define __MV_CRYPTO_H__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DIGEST_INITIAL_VAL_A	0xdd00
 #define DIGEST_INITIAL_VAL_B	0xdd04

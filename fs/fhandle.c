@@ -228,7 +228,11 @@ long do_handle_open(int mountdirfd,
 		path_put(&path);
 		return fd;
 	}
+<<<<<<< HEAD
 	file = file_open_root(path.dentry, path.mnt, "", open_flag);
+=======
+	file = file_open_root(path.dentry, path.mnt, "", open_flag, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(file)) {
 		put_unused_fd(fd);
 		retval =  PTR_ERR(file);

@@ -66,6 +66,9 @@
 #undef __ASM__MB
 #undef ____cmpxchg
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ALPHA_CMPXCHG_H */

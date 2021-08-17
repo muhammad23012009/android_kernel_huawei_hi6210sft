@@ -12,8 +12,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) IBM Corporation, 2003, 2010
  *
@@ -41,6 +45,11 @@
 #define IbmVethMcastRemoveFilter     0x2UL
 #define IbmVethMcastClearFilterTable 0x3UL
 
+<<<<<<< HEAD
+=======
+#define IBMVETH_ILLAN_LRG_SR_ENABLED	0x0000000000010000UL
+#define IBMVETH_ILLAN_LRG_SND_SUPPORT	0x0000000000008000UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IBMVETH_ILLAN_PADDED_PKT_CSUM	0x0000000000002000UL
 #define IBMVETH_ILLAN_TRUNK_PRI_MASK	0x0000000000000F00UL
 #define IBMVETH_ILLAN_IPV6_TCP_CSUM		0x0000000000000004UL
@@ -60,13 +69,29 @@
 static inline long h_send_logical_lan(unsigned long unit_address,
 		unsigned long desc1, unsigned long desc2, unsigned long desc3,
 		unsigned long desc4, unsigned long desc5, unsigned long desc6,
+<<<<<<< HEAD
 		unsigned long corellator_in, unsigned long *corellator_out)
+=======
+		unsigned long corellator_in, unsigned long *corellator_out,
+		unsigned long mss, unsigned long large_send_support)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	long rc;
 	unsigned long retbuf[PLPAR_HCALL9_BUFSIZE];
 
+<<<<<<< HEAD
 	rc = plpar_hcall9(H_SEND_LOGICAL_LAN, retbuf, unit_address, desc1,
 			desc2, desc3, desc4, desc5, desc6, corellator_in);
+=======
+	if (large_send_support)
+		rc = plpar_hcall9(H_SEND_LOGICAL_LAN, retbuf, unit_address,
+				  desc1, desc2, desc3, desc4, desc5, desc6,
+				  corellator_in, mss);
+	else
+		rc = plpar_hcall9(H_SEND_LOGICAL_LAN, retbuf, unit_address,
+				  desc1, desc2, desc3, desc4, desc5, desc6,
+				  corellator_in);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*corellator_out = retbuf[0];
 
@@ -105,7 +130,12 @@ static inline long h_illan_attributes(unsigned long unit_address,
 
 static int pool_size[] = { 512, 1024 * 2, 1024 * 16, 1024 * 32, 1024 * 64 };
 static int pool_count[] = { 256, 512, 256, 256, 256 };
+<<<<<<< HEAD
 static int pool_active[] = { 1, 1, 0, 0, 0};
+=======
+static int pool_count_cmo[] = { 256, 512, 256, 256, 64 };
+static int pool_active[] = { 1, 1, 0, 0, 1};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IBM_VETH_INVALID_MAP ((u16)0xffff)
 
@@ -139,7 +169,10 @@ struct ibmveth_adapter {
     struct napi_struct napi;
     struct net_device_stats stats;
     unsigned int mcastFilterSize;
+<<<<<<< HEAD
     unsigned long mac_addr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     void * buffer_list_addr;
     void * filter_list_addr;
     dma_addr_t buffer_list_dma;
@@ -148,11 +181,19 @@ struct ibmveth_adapter {
     struct ibmveth_rx_q rx_queue;
     int pool_config;
     int rx_csum;
+<<<<<<< HEAD
+=======
+    int large_send;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     void *bounce_buffer;
     dma_addr_t bounce_buffer_dma;
 
     u64 fw_ipv6_csum_support;
     u64 fw_ipv4_csum_support;
+<<<<<<< HEAD
+=======
+    u64 fw_large_send_support;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     /* adapter specific stats */
     u64 replenish_task_cycles;
     u64 replenish_no_mem;
@@ -162,6 +203,7 @@ struct ibmveth_adapter {
     u64 rx_no_buffer;
     u64 tx_map_failed;
     u64 tx_send_failed;
+<<<<<<< HEAD
 };
 
 struct ibmveth_buf_desc_fields {
@@ -172,6 +214,33 @@ struct ibmveth_buf_desc_fields {
 #define IBMVETH_BUF_CSUM_GOOD	0x01000000
 #define IBMVETH_BUF_LEN_MASK	0x00FFFFFF
 	u32 address;
+=======
+    u64 tx_large_packets;
+    u64 rx_large_packets;
+};
+
+/*
+ * We pass struct ibmveth_buf_desc_fields to the hypervisor in registers,
+ * so we don't need to byteswap the two elements. However since we use
+ * a union (ibmveth_buf_desc) to convert from the struct to a u64 we
+ * do end up with endian specific ordering of the elements and that
+ * needs correcting.
+ */
+struct ibmveth_buf_desc_fields {
+#ifdef __BIG_ENDIAN
+	u32 flags_len;
+	u32 address;
+#else
+	u32 address;
+	u32 flags_len;
+#endif
+#define IBMVETH_BUF_VALID	0x80000000
+#define IBMVETH_BUF_TOGGLE	0x40000000
+#define IBMVETH_BUF_LRG_SND     0x04000000
+#define IBMVETH_BUF_NO_CSUM	0x02000000
+#define IBMVETH_BUF_CSUM_GOOD	0x01000000
+#define IBMVETH_BUF_LEN_MASK	0x00FFFFFF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 union ibmveth_buf_desc {
@@ -180,15 +249,28 @@ union ibmveth_buf_desc {
 };
 
 struct ibmveth_rx_q_entry {
+<<<<<<< HEAD
 	u32 flags_off;
 #define IBMVETH_RXQ_TOGGLE		0x80000000
 #define IBMVETH_RXQ_TOGGLE_SHIFT	31
 #define IBMVETH_RXQ_VALID		0x40000000
+=======
+	__be32 flags_off;
+#define IBMVETH_RXQ_TOGGLE		0x80000000
+#define IBMVETH_RXQ_TOGGLE_SHIFT	31
+#define IBMVETH_RXQ_VALID		0x40000000
+#define IBMVETH_RXQ_LRG_PKT		0x04000000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IBMVETH_RXQ_NO_CSUM		0x02000000
 #define IBMVETH_RXQ_CSUM_GOOD		0x01000000
 #define IBMVETH_RXQ_OFF_MASK		0x0000FFFF
 
+<<<<<<< HEAD
 	u32 length;
+=======
+	__be32 length;
+	/* correlator is only used by the OS, no need to byte swap */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64 correlator;
 };
 

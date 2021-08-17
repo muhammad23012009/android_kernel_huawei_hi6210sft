@@ -88,6 +88,7 @@ struct gstr str_new(void)
 	return gs;
 }
 
+<<<<<<< HEAD
 /* Allocate and assign growable string */
 struct gstr str_assign(const char *s)
 {
@@ -98,6 +99,8 @@ struct gstr str_assign(const char *s)
 	return gs;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Free storage for growable string */
 void str_free(struct gstr *gs)
 {
@@ -155,5 +158,8 @@ void *xcalloc(size_t nmemb, size_t size)
 	fprintf(stderr, "Out of memory.\n");
 	exit(1);
 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -23,6 +23,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -33,6 +34,14 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -43,9 +52,12 @@
  *    Daisy Chang <daisyc@us.ibm.com>
  *    Sridhar Samudrala <sri@us.ibm.com>
  *    Ardelle Fan <ardelle.fan@intel.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/types.h>
@@ -87,6 +99,7 @@ static inline int sctp_rcv_checksum(struct net *net, struct sk_buff *skb)
 {
 	struct sctphdr *sh = sctp_hdr(skb);
 	__le32 cmp = sh->checksum;
+<<<<<<< HEAD
 	struct sk_buff *list;
 	__le32 val;
 	__u32 tmp = sctp_start_cksum((__u8 *)sh, skb_headlen(skb));
@@ -100,11 +113,19 @@ static inline int sctp_rcv_checksum(struct net *net, struct sk_buff *skb)
 	if (val != cmp) {
 		/* CRC failure, dump it. */
 		SCTP_INC_STATS_BH(net, SCTP_MIB_CHECKSUMERRORS);
+=======
+	__le32 val = sctp_compute_cksum(skb, 0);
+
+	if (val != cmp) {
+		/* CRC failure, dump it. */
+		__SCTP_INC_STATS(net, SCTP_MIB_CHECKSUMERRORS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 struct sctp_input_cb {
 	union {
 		struct inet_skb_parm	h4;
@@ -116,6 +137,8 @@ struct sctp_input_cb {
 };
 #define SCTP_INPUT_CB(__skb)	((struct sctp_input_cb *)&((__skb)->cb[0]))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This is the routine which IP calls when receiving an SCTP packet.
  */
@@ -127,13 +150,17 @@ int sctp_rcv(struct sk_buff *skb)
 	struct sctp_ep_common *rcvr;
 	struct sctp_transport *transport = NULL;
 	struct sctp_chunk *chunk;
+<<<<<<< HEAD
 	struct sctphdr *sh;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	union sctp_addr src;
 	union sctp_addr dest;
 	int family;
 	struct sctp_af *af;
 	struct net *net = dev_net(skb->dev);
 
+<<<<<<< HEAD
 	if (skb->pkt_type!=PACKET_HOST)
 		goto discard_it;
 
@@ -157,11 +184,51 @@ int sctp_rcv(struct sk_buff *skb)
 	/* Make sure we at least have chunk headers worth of data left. */
 	if (skb->len < sizeof(struct sctp_chunkhdr))
 		goto discard_it;
+=======
+	if (skb->pkt_type != PACKET_HOST)
+		goto discard_it;
+
+	__SCTP_INC_STATS(net, SCTP_MIB_INSCTPPACKS);
+
+	/* If packet is too small to contain a single chunk, let's not
+	 * waste time on it anymore.
+	 */
+	if (skb->len < sizeof(struct sctphdr) + sizeof(struct sctp_chunkhdr) +
+		       skb_transport_offset(skb))
+		goto discard_it;
+
+	/* If the packet is fragmented and we need to do crc checking,
+	 * it's better to just linearize it otherwise crc computing
+	 * takes longer.
+	 */
+	if ((!(skb_shinfo(skb)->gso_type & SKB_GSO_SCTP) &&
+	     skb_linearize(skb)) ||
+	    !pskb_may_pull(skb, sizeof(struct sctphdr)))
+		goto discard_it;
+
+	/* Pull up the IP header. */
+	__skb_pull(skb, skb_transport_offset(skb));
+
+	skb->csum_valid = 0; /* Previous value not applicable */
+	if (skb_csum_unnecessary(skb))
+		__skb_decr_checksum_unnecessary(skb);
+	else if (!sctp_checksum_disable &&
+		 !(skb_shinfo(skb)->gso_type & SKB_GSO_SCTP) &&
+		 sctp_rcv_checksum(net, skb) < 0)
+		goto discard_it;
+	skb->csum_valid = 1;
+
+	__skb_pull(skb, sizeof(struct sctphdr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	family = ipver2af(ip_hdr(skb)->version);
 	af = sctp_get_af_specific(family);
 	if (unlikely(!af))
 		goto discard_it;
+<<<<<<< HEAD
+=======
+	SCTP_INPUT_CB(skb)->af = af;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Initialize local addresses for lookups. */
 	af->from_skb(&src, skb, 1);
@@ -195,11 +262,19 @@ int sctp_rcv(struct sk_buff *skb)
 	 * If a frame arrives on an interface and the receiving socket is
 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
 	 */
+<<<<<<< HEAD
 	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb)))
 	{
 		if (asoc) {
 			sctp_association_put(asoc);
 			asoc = NULL;
+=======
+	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
+		if (transport) {
+			sctp_transport_put(transport);
+			asoc = NULL;
+			transport = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			sctp_endpoint_put(ep);
 			ep = NULL;
@@ -220,7 +295,11 @@ int sctp_rcv(struct sk_buff *skb)
 	 */
 	if (!asoc) {
 		if (sctp_rcv_ootb(skb)) {
+<<<<<<< HEAD
 			SCTP_INC_STATS_BH(net, SCTP_MIB_OUTOFBLUES);
+=======
+			__SCTP_INC_STATS(net, SCTP_MIB_OUTOFBLUES);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto discard_release;
 		}
 	}
@@ -233,7 +312,11 @@ int sctp_rcv(struct sk_buff *skb)
 		goto discard_release;
 
 	/* Create an SCTP packet structure. */
+<<<<<<< HEAD
 	chunk = sctp_chunkify(skb, asoc, sk);
+=======
+	chunk = sctp_chunkify(skb, asoc, sk, GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!chunk)
 		goto discard_release;
 	SCTP_INPUT_CB(skb)->chunk = chunk;
@@ -242,7 +325,11 @@ int sctp_rcv(struct sk_buff *skb)
 	chunk->rcvr = rcvr;
 
 	/* Remember the SCTP header. */
+<<<<<<< HEAD
 	chunk->sctp_hdr = sh;
+=======
+	chunk->sctp_hdr = sctp_hdr(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set the source and destination addresses of the incoming chunk.  */
 	sctp_init_addrs(chunk, &src, &dest);
@@ -254,7 +341,11 @@ int sctp_rcv(struct sk_buff *skb)
 	 * bottom halves on this lock, but a user may be in the lock too,
 	 * so check if it is busy.
 	 */
+<<<<<<< HEAD
 	sctp_bh_lock_sock(sk);
+=======
+	bh_lock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sk != rcvr->sk) {
 		/* Our cached sk is different from the rcvr->sk.  This is
@@ -264,18 +355,29 @@ int sctp_rcv(struct sk_buff *skb)
 		 * be doing something with the new socket.  Switch our veiw
 		 * of the current sk.
 		 */
+<<<<<<< HEAD
 		sctp_bh_unlock_sock(sk);
 		sk = rcvr->sk;
 		sctp_bh_lock_sock(sk);
+=======
+		bh_unlock_sock(sk);
+		sk = rcvr->sk;
+		bh_lock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (sock_owned_by_user(sk)) {
 		if (sctp_add_backlog(sk, skb)) {
+<<<<<<< HEAD
 			sctp_bh_unlock_sock(sk);
+=======
+			bh_unlock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sctp_chunk_free(chunk);
 			skb = NULL; /* sctp_chunk_free already freed the skb */
 			goto discard_release;
 		}
+<<<<<<< HEAD
 		SCTP_INC_STATS_BH(net, SCTP_MIB_IN_PKT_BACKLOG);
 	} else {
 		SCTP_INC_STATS_BH(net, SCTP_MIB_IN_PKT_SOFTIRQ);
@@ -287,20 +389,42 @@ int sctp_rcv(struct sk_buff *skb)
 	/* Release the asoc/ep ref we took in the lookup calls. */
 	if (asoc)
 		sctp_association_put(asoc);
+=======
+		__SCTP_INC_STATS(net, SCTP_MIB_IN_PKT_BACKLOG);
+	} else {
+		__SCTP_INC_STATS(net, SCTP_MIB_IN_PKT_SOFTIRQ);
+		sctp_inq_push(&chunk->rcvr->inqueue, chunk);
+	}
+
+	bh_unlock_sock(sk);
+
+	/* Release the asoc/ep ref we took in the lookup calls. */
+	if (transport)
+		sctp_transport_put(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		sctp_endpoint_put(ep);
 
 	return 0;
 
 discard_it:
+<<<<<<< HEAD
 	SCTP_INC_STATS_BH(net, SCTP_MIB_IN_PKT_DISCARDS);
+=======
+	__SCTP_INC_STATS(net, SCTP_MIB_IN_PKT_DISCARDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree_skb(skb);
 	return 0;
 
 discard_release:
 	/* Release the asoc/ep ref we took in the lookup calls. */
+<<<<<<< HEAD
 	if (asoc)
 		sctp_association_put(asoc);
+=======
+	if (transport)
+		sctp_transport_put(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		sctp_endpoint_put(ep);
 
@@ -316,6 +440,10 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 {
 	struct sctp_chunk *chunk = SCTP_INPUT_CB(skb)->chunk;
 	struct sctp_inq *inqueue = &chunk->rcvr->inqueue;
+<<<<<<< HEAD
+=======
+	struct sctp_transport *t = chunk->transport;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sctp_ep_common *rcvr = NULL;
 	int backloged = 0;
 
@@ -343,7 +471,12 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 		 */
 
 		sk = rcvr->sk;
+<<<<<<< HEAD
 		sctp_bh_lock_sock(sk);
+=======
+		local_bh_disable();
+		bh_lock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (sock_owned_by_user(sk)) {
 			if (sk_add_backlog(sk, skb, sk->sk_rcvbuf))
@@ -353,7 +486,12 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 		} else
 			sctp_inq_push(inqueue, chunk);
 
+<<<<<<< HEAD
 		sctp_bh_unlock_sock(sk);
+=======
+		bh_unlock_sock(sk);
+		local_bh_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* If the chunk was backloged again, don't drop refs */
 		if (backloged)
@@ -365,7 +503,11 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 done:
 	/* Release the refs we took in sctp_add_backlog */
 	if (SCTP_EP_TYPE_ASSOCIATION == rcvr->type)
+<<<<<<< HEAD
 		sctp_association_put(sctp_assoc(rcvr));
+=======
+		sctp_transport_put(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (SCTP_EP_TYPE_SOCKET == rcvr->type)
 		sctp_endpoint_put(sctp_ep(rcvr));
 	else
@@ -377,6 +519,10 @@ done:
 static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb)
 {
 	struct sctp_chunk *chunk = SCTP_INPUT_CB(skb)->chunk;
+<<<<<<< HEAD
+=======
+	struct sctp_transport *t = chunk->transport;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sctp_ep_common *rcvr = chunk->rcvr;
 	int ret;
 
@@ -387,7 +533,11 @@ static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb)
 		 * from us
 		 */
 		if (SCTP_EP_TYPE_ASSOCIATION == rcvr->type)
+<<<<<<< HEAD
 			sctp_association_hold(sctp_assoc(rcvr));
+=======
+			sctp_transport_hold(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (SCTP_EP_TYPE_SOCKET == rcvr->type)
 			sctp_endpoint_hold(sctp_ep(rcvr));
 		else
@@ -432,7 +582,11 @@ void sctp_icmp_redirect(struct sock *sk, struct sctp_transport *t,
 {
 	struct dst_entry *dst;
 
+<<<<<<< HEAD
 	if (!t)
+=======
+	if (sock_owned_by_user(sk) || !t)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	dst = sctp_transport_dst_check(t);
 	if (dst)
@@ -454,14 +608,18 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 			   struct sctp_association *asoc,
 			   struct sctp_transport *t)
 {
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("%s\n",  __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sock_owned_by_user(sk)) {
 		if (timer_pending(&t->proto_unreach_timer))
 			return;
 		else {
 			if (!mod_timer(&t->proto_unreach_timer,
 						jiffies + (HZ/20)))
+<<<<<<< HEAD
 				sctp_association_hold(asoc);
 		}
 			
@@ -470,6 +628,18 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 
 		if (del_timer(&t->proto_unreach_timer))
 			sctp_association_put(asoc);
+=======
+				sctp_transport_hold(t);
+		}
+	} else {
+		struct net *net = sock_net(sk);
+
+		pr_debug("%s: unrecognized next header type "
+			 "encountered!\n", __func__);
+
+		if (del_timer(&t->proto_unreach_timer))
+			sctp_transport_put(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		sctp_do_sm(net, SCTP_EVENT_T_OTHER,
 			   SCTP_ST_OTHER(SCTP_EVENT_ICMP_PROTO_UNREACH),
@@ -484,15 +654,23 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 			     struct sctp_association **app,
 			     struct sctp_transport **tpp)
 {
+<<<<<<< HEAD
+=======
+	struct sctp_init_chunk *chunkhdr, _chunkhdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	union sctp_addr saddr;
 	union sctp_addr daddr;
 	struct sctp_af *af;
 	struct sock *sk = NULL;
 	struct sctp_association *asoc;
 	struct sctp_transport *transport = NULL;
+<<<<<<< HEAD
 	struct sctp_init_chunk *chunkhdr;
 	__u32 vtag = ntohl(sctphdr->vtag);
 	int len = skb->len - ((void *)sctphdr - (void *)skb->data);
+=======
+	__u32 vtag = ntohl(sctphdr->vtag);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*app = NULL; *tpp = NULL;
 
@@ -527,6 +705,7 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 	 * discard the packet.
 	 */
 	if (vtag == 0) {
+<<<<<<< HEAD
 		chunkhdr = (void *)sctphdr + sizeof(struct sctphdr);
 		if (len < sizeof(struct sctphdr) + sizeof(sctp_chunkhdr_t)
 			  + sizeof(__be32) ||
@@ -534,34 +713,65 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 		    ntohl(chunkhdr->init_hdr.init_tag) != asoc->c.my_vtag) {
 			goto out;
 		}
+=======
+		/* chunk header + first 4 octects of init header */
+		chunkhdr = skb_header_pointer(skb, skb_transport_offset(skb) +
+					      sizeof(struct sctphdr),
+					      sizeof(struct sctp_chunkhdr) +
+					      sizeof(__be32), &_chunkhdr);
+		if (!chunkhdr ||
+		    chunkhdr->chunk_hdr.type != SCTP_CID_INIT ||
+		    ntohl(chunkhdr->init_hdr.init_tag) != asoc->c.my_vtag)
+			goto out;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (vtag != asoc->c.peer_vtag) {
 		goto out;
 	}
 
+<<<<<<< HEAD
 	sctp_bh_lock_sock(sk);
+=======
+	bh_lock_sock(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If too many ICMPs get dropped on busy
 	 * servers this needs to be solved differently.
 	 */
 	if (sock_owned_by_user(sk))
+<<<<<<< HEAD
 		NET_INC_STATS_BH(net, LINUX_MIB_LOCKDROPPEDICMPS);
+=======
+		__NET_INC_STATS(net, LINUX_MIB_LOCKDROPPEDICMPS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*app = asoc;
 	*tpp = transport;
 	return sk;
 
 out:
+<<<<<<< HEAD
 	if (asoc)
 		sctp_association_put(asoc);
+=======
+	sctp_transport_put(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NULL;
 }
 
 /* Common cleanup code for icmp/icmpv6 error handler. */
+<<<<<<< HEAD
 void sctp_err_finish(struct sock *sk, struct sctp_association *asoc)
 {
 	sctp_bh_unlock_sock(sk);
 	if (asoc)
 		sctp_association_put(asoc);
+=======
+void sctp_err_finish(struct sock *sk, struct sctp_transport *t)
+{
+	bh_unlock_sock(sk);
+	sctp_transport_put(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -589,6 +799,7 @@ void sctp_v4_err(struct sk_buff *skb, __u32 info)
 	struct sctp_association *asoc = NULL;
 	struct sctp_transport *transport;
 	struct inet_sock *inet;
+<<<<<<< HEAD
 	sk_buff_data_t saveip, savesctp;
 	int err;
 	struct net *net = dev_net(skb->dev);
@@ -598,6 +809,12 @@ void sctp_v4_err(struct sk_buff *skb, __u32 info)
 		return;
 	}
 
+=======
+	__u16 saveip, savesctp;
+	int err;
+	struct net *net = dev_net(skb->dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Fix up skb to look at the embedded net header. */
 	saveip = skb->network_header;
 	savesctp = skb->transport_header;
@@ -608,7 +825,11 @@ void sctp_v4_err(struct sk_buff *skb, __u32 info)
 	skb->network_header = saveip;
 	skb->transport_header = savesctp;
 	if (!sk) {
+<<<<<<< HEAD
 		ICMP_INC_STATS_BH(net, ICMP_MIB_INERRORS);
+=======
+		__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	/* Warning:  The sock lock is held.  Remember to call
@@ -625,10 +846,17 @@ void sctp_v4_err(struct sk_buff *skb, __u32 info)
 
 		/* PMTU discovery (RFC1191) */
 		if (ICMP_FRAG_NEEDED == code) {
+<<<<<<< HEAD
 			sctp_icmp_frag_needed(sk, asoc, transport, info);
 			goto out_unlock;
 		}
 		else {
+=======
+			sctp_icmp_frag_needed(sk, asoc, transport,
+					      SCTP_TRUNC4(info));
+			goto out_unlock;
+		} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ICMP_PROT_UNREACH == code) {
 				sctp_icmp_proto_unreachable(sk, asoc,
 							    transport);
@@ -662,7 +890,11 @@ void sctp_v4_err(struct sk_buff *skb, __u32 info)
 	}
 
 out_unlock:
+<<<<<<< HEAD
 	sctp_err_finish(sk, asoc);
+=======
+	sctp_err_finish(sk, transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -679,6 +911,7 @@ out_unlock:
  */
 static int sctp_rcv_ootb(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	sctp_chunkhdr_t *ch;
 	__u8 *ch_end;
 
@@ -686,12 +919,30 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
 
 	/* Scan through all the chunks in the packet.  */
 	do {
+=======
+	sctp_chunkhdr_t *ch, _ch;
+	int ch_end, offset = 0;
+
+	/* Scan through all the chunks in the packet.  */
+	do {
+		/* Make sure we have at least the header there */
+		if (offset + sizeof(sctp_chunkhdr_t) > skb->len)
+			break;
+
+		ch = skb_header_pointer(skb, offset, sizeof(*ch), &_ch);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Break out if chunk length is less then minimal. */
 		if (ntohs(ch->length) < sizeof(sctp_chunkhdr_t))
 			break;
 
+<<<<<<< HEAD
 		ch_end = ((__u8 *)ch) + WORD_ROUND(ntohs(ch->length));
 		if (ch_end > skb_tail_pointer(skb))
+=======
+		ch_end = offset + SCTP_PAD4(ntohs(ch->length));
+		if (ch_end > skb->len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		/* RFC 8.4, 2) If the OOTB packet contains an ABORT chunk, the
@@ -716,8 +967,13 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
 		if (SCTP_CID_INIT == ch->type && (void *)ch != skb->data)
 			goto discard;
 
+<<<<<<< HEAD
 		ch = (sctp_chunkhdr_t *) ch_end;
 	} while (ch_end < skb_tail_pointer(skb));
+=======
+		offset = ch_end;
+	} while (ch_end < skb->len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -737,17 +993,29 @@ static void __sctp_hash_endpoint(struct sctp_endpoint *ep)
 	epb->hashent = sctp_ep_hashfn(net, epb->bind_addr.port);
 	head = &sctp_ep_hashtable[epb->hashent];
 
+<<<<<<< HEAD
 	sctp_write_lock(&head->lock);
 	hlist_add_head(&epb->node, &head->chain);
 	sctp_write_unlock(&head->lock);
+=======
+	write_lock(&head->lock);
+	hlist_add_head(&epb->node, &head->chain);
+	write_unlock(&head->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Add an endpoint to the hash. Local BH-safe. */
 void sctp_hash_endpoint(struct sctp_endpoint *ep)
 {
+<<<<<<< HEAD
 	sctp_local_bh_disable();
 	__sctp_hash_endpoint(ep);
 	sctp_local_bh_enable();
+=======
+	local_bh_disable();
+	__sctp_hash_endpoint(ep);
+	local_bh_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Remove endpoint from the hash table.  */
@@ -763,17 +1031,29 @@ static void __sctp_unhash_endpoint(struct sctp_endpoint *ep)
 
 	head = &sctp_ep_hashtable[epb->hashent];
 
+<<<<<<< HEAD
 	sctp_write_lock(&head->lock);
 	hlist_del_init(&epb->node);
 	sctp_write_unlock(&head->lock);
+=======
+	write_lock(&head->lock);
+	hlist_del_init(&epb->node);
+	write_unlock(&head->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Remove endpoint from the hash.  Local BH-safe. */
 void sctp_unhash_endpoint(struct sctp_endpoint *ep)
 {
+<<<<<<< HEAD
 	sctp_local_bh_disable();
 	__sctp_unhash_endpoint(ep);
 	sctp_local_bh_enable();
+=======
+	local_bh_disable();
+	__sctp_unhash_endpoint(ep);
+	local_bh_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Look up an endpoint. */
@@ -802,6 +1082,7 @@ hit:
 	return ep;
 }
 
+<<<<<<< HEAD
 /* Insert association into the hash table.  */
 static void __sctp_hash_established(struct sctp_association *asoc)
 {
@@ -861,6 +1142,158 @@ void sctp_unhash_established(struct sctp_association *asoc)
 	sctp_local_bh_disable();
 	__sctp_unhash_established(asoc);
 	sctp_local_bh_enable();
+=======
+/* rhashtable for transport */
+struct sctp_hash_cmp_arg {
+	const struct sctp_endpoint	*ep;
+	const union sctp_addr		*laddr;
+	const union sctp_addr		*paddr;
+	const struct net		*net;
+};
+
+static inline int sctp_hash_cmp(struct rhashtable_compare_arg *arg,
+				const void *ptr)
+{
+	struct sctp_transport *t = (struct sctp_transport *)ptr;
+	const struct sctp_hash_cmp_arg *x = arg->key;
+	struct sctp_association *asoc;
+	int err = 1;
+
+	if (!sctp_cmp_addr_exact(&t->ipaddr, x->paddr))
+		return err;
+	if (!sctp_transport_hold(t))
+		return err;
+
+	asoc = t->asoc;
+	if (!net_eq(asoc->base.net, x->net))
+		goto out;
+	if (x->ep) {
+		if (x->ep != asoc->ep)
+			goto out;
+	} else {
+		if (x->laddr->v4.sin_port != htons(asoc->base.bind_addr.port))
+			goto out;
+		if (!sctp_bind_addr_match(&asoc->base.bind_addr,
+					  x->laddr, sctp_sk(asoc->base.sk)))
+			goto out;
+	}
+
+	err = 0;
+out:
+	sctp_transport_put(t);
+	return err;
+}
+
+static inline u32 sctp_hash_obj(const void *data, u32 len, u32 seed)
+{
+	const struct sctp_transport *t = data;
+	const union sctp_addr *paddr = &t->ipaddr;
+	const struct net *net = t->asoc->base.net;
+	u16 lport = htons(t->asoc->base.bind_addr.port);
+	u32 addr;
+
+	if (paddr->sa.sa_family == AF_INET6)
+		addr = jhash(&paddr->v6.sin6_addr, 16, seed);
+	else
+		addr = paddr->v4.sin_addr.s_addr;
+
+	return  jhash_3words(addr, ((__u32)paddr->v4.sin_port) << 16 |
+			     (__force __u32)lport, net_hash_mix(net), seed);
+}
+
+static inline u32 sctp_hash_key(const void *data, u32 len, u32 seed)
+{
+	const struct sctp_hash_cmp_arg *x = data;
+	const union sctp_addr *paddr = x->paddr;
+	const struct net *net = x->net;
+	u16 lport;
+	u32 addr;
+
+	lport = x->ep ? htons(x->ep->base.bind_addr.port) :
+			x->laddr->v4.sin_port;
+	if (paddr->sa.sa_family == AF_INET6)
+		addr = jhash(&paddr->v6.sin6_addr, 16, seed);
+	else
+		addr = paddr->v4.sin_addr.s_addr;
+
+	return  jhash_3words(addr, ((__u32)paddr->v4.sin_port) << 16 |
+			     (__force __u32)lport, net_hash_mix(net), seed);
+}
+
+static const struct rhashtable_params sctp_hash_params = {
+	.head_offset		= offsetof(struct sctp_transport, node),
+	.hashfn			= sctp_hash_key,
+	.obj_hashfn		= sctp_hash_obj,
+	.obj_cmpfn		= sctp_hash_cmp,
+	.automatic_shrinking	= true,
+};
+
+int sctp_transport_hashtable_init(void)
+{
+	return rhashtable_init(&sctp_transport_hashtable, &sctp_hash_params);
+}
+
+void sctp_transport_hashtable_destroy(void)
+{
+	rhashtable_destroy(&sctp_transport_hashtable);
+}
+
+void sctp_hash_transport(struct sctp_transport *t)
+{
+	struct sctp_hash_cmp_arg arg;
+
+	if (t->asoc->temp)
+		return;
+
+	arg.ep = t->asoc->ep;
+	arg.paddr = &t->ipaddr;
+	arg.net   = sock_net(t->asoc->base.sk);
+
+reinsert:
+	if (rhashtable_lookup_insert_key(&sctp_transport_hashtable, &arg,
+					 &t->node, sctp_hash_params) == -EBUSY)
+		goto reinsert;
+}
+
+void sctp_unhash_transport(struct sctp_transport *t)
+{
+	if (t->asoc->temp)
+		return;
+
+	rhashtable_remove_fast(&sctp_transport_hashtable, &t->node,
+			       sctp_hash_params);
+}
+
+struct sctp_transport *sctp_addrs_lookup_transport(
+				struct net *net,
+				const union sctp_addr *laddr,
+				const union sctp_addr *paddr)
+{
+	struct sctp_hash_cmp_arg arg = {
+		.ep    = NULL,
+		.laddr = laddr,
+		.paddr = paddr,
+		.net   = net,
+	};
+
+	return rhashtable_lookup_fast(&sctp_transport_hashtable, &arg,
+				      sctp_hash_params);
+}
+
+struct sctp_transport *sctp_epaddr_lookup_transport(
+				const struct sctp_endpoint *ep,
+				const union sctp_addr *paddr)
+{
+	struct net *net = sock_net(ep->base.sk);
+	struct sctp_hash_cmp_arg arg = {
+		.ep    = ep,
+		.paddr = paddr,
+		.net   = net,
+	};
+
+	return rhashtable_lookup_fast(&sctp_transport_hashtable, &arg,
+				      sctp_hash_params);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Look up an association. */
@@ -870,6 +1303,7 @@ static struct sctp_association *__sctp_lookup_association(
 					const union sctp_addr *peer,
 					struct sctp_transport **pt)
 {
+<<<<<<< HEAD
 	struct sctp_hashbucket *head;
 	struct sctp_ep_common *epb;
 	struct sctp_association *asoc;
@@ -913,6 +1347,34 @@ struct sctp_association *sctp_lookup_association(struct net *net,
 	sctp_local_bh_disable();
 	asoc = __sctp_lookup_association(net, laddr, paddr, transportp);
 	sctp_local_bh_enable();
+=======
+	struct sctp_transport *t;
+	struct sctp_association *asoc = NULL;
+
+	t = sctp_addrs_lookup_transport(net, local, peer);
+	if (!t || !sctp_transport_hold(t))
+		goto out;
+
+	asoc = t->asoc;
+	*pt = t;
+
+out:
+	return asoc;
+}
+
+/* Look up an association. protected by RCU read lock */
+static
+struct sctp_association *sctp_lookup_association(struct net *net,
+						 const union sctp_addr *laddr,
+						 const union sctp_addr *paddr,
+						 struct sctp_transport **transportp)
+{
+	struct sctp_association *asoc;
+
+	rcu_read_lock();
+	asoc = __sctp_lookup_association(net, laddr, paddr, transportp);
+	rcu_read_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return asoc;
 }
@@ -926,7 +1388,11 @@ int sctp_has_association(struct net *net,
 	struct sctp_transport *transport;
 
 	if ((asoc = sctp_lookup_association(net, laddr, paddr, &transport))) {
+<<<<<<< HEAD
 		sctp_association_put(asoc);
+=======
+		sctp_transport_put(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	}
 
@@ -961,7 +1427,10 @@ static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
 	struct sctphdr *sh = sctp_hdr(skb);
 	union sctp_params params;
 	sctp_init_chunk_t *init;
+<<<<<<< HEAD
 	struct sctp_transport *transport;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sctp_af *af;
 
 	/*
@@ -992,7 +1461,11 @@ static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
 
 		af->from_addr_param(paddr, params.addr, sh->source, 0);
 
+<<<<<<< HEAD
 		asoc = __sctp_lookup_association(net, laddr, paddr, &transport);
+=======
+		asoc = __sctp_lookup_association(net, laddr, paddr, transportp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (asoc)
 			return asoc;
 	}
@@ -1068,6 +1541,7 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 		if (ntohs(ch->length) < sizeof(sctp_chunkhdr_t))
 			break;
 
+<<<<<<< HEAD
 		ch_end = ((__u8 *)ch) + WORD_ROUND(ntohs(ch->length));
 		if (ch_end > skb_tail_pointer(skb))
 			break;
@@ -1097,6 +1571,37 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 							transportp);
 		    default:
 			    break;
+=======
+		ch_end = ((__u8 *)ch) + SCTP_PAD4(ntohs(ch->length));
+		if (ch_end > skb_tail_pointer(skb))
+			break;
+
+		switch (ch->type) {
+		case SCTP_CID_AUTH:
+			have_auth = chunk_num;
+			break;
+
+		case SCTP_CID_COOKIE_ECHO:
+			/* If a packet arrives containing an AUTH chunk as
+			 * a first chunk, a COOKIE-ECHO chunk as the second
+			 * chunk, and possibly more chunks after them, and
+			 * the receiver does not have an STCB for that
+			 * packet, then authentication is based on
+			 * the contents of the COOKIE- ECHO chunk.
+			 */
+			if (have_auth == 1 && chunk_num == 2)
+				return NULL;
+			break;
+
+		case SCTP_CID_ASCONF:
+			if (have_auth || net->sctp.addip_noauth)
+				asoc = __sctp_rcv_asconf_lookup(
+						net, ch, laddr,
+						sctp_hdr(skb)->source,
+						transportp);
+		default:
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		if (asoc)
@@ -1104,7 +1609,11 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 
 		ch = (sctp_chunkhdr_t *) ch_end;
 		chunk_num++;
+<<<<<<< HEAD
 	} while (ch_end < skb_tail_pointer(skb));
+=======
+	} while (ch_end + sizeof(*ch) < skb_tail_pointer(skb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return asoc;
 }
@@ -1122,6 +1631,17 @@ static struct sctp_association *__sctp_rcv_lookup_harder(struct net *net,
 {
 	sctp_chunkhdr_t *ch;
 
+<<<<<<< HEAD
+=======
+	/* We do not allow GSO frames here as we need to linearize and
+	 * then cannot guarantee frame boundaries. This shouldn't be an
+	 * issue as packets hitting this are mostly INIT or INIT-ACK and
+	 * those cannot be on GSO-style anyway.
+	 */
+	if ((skb_shinfo(skb)->gso_type & SKB_GSO_SCTP) == SKB_GSO_SCTP)
+		return NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ch = (sctp_chunkhdr_t *) skb->data;
 
 	/* The code below will attempt to walk the chunk and extract
@@ -1129,6 +1649,7 @@ static struct sctp_association *__sctp_rcv_lookup_harder(struct net *net,
 	 * that the chunk length doesn't cause overflow.  Otherwise, we'll
 	 * walk off the end.
 	 */
+<<<<<<< HEAD
 	if (WORD_ROUND(ntohs(ch->length)) > skb->len)
 		return NULL;
 
@@ -1146,6 +1667,16 @@ static struct sctp_association *__sctp_rcv_lookup_harder(struct net *net,
 
 
 	return NULL;
+=======
+	if (SCTP_PAD4(ntohs(ch->length)) > skb->len)
+		return NULL;
+
+	/* If this is INIT/INIT-ACK look inside the chunk too. */
+	if (ch->type == SCTP_CID_INIT || ch->type == SCTP_CID_INIT_ACK)
+		return __sctp_rcv_init_lookup(net, skb, laddr, transportp);
+
+	return __sctp_rcv_walk_lookup(net, skb, laddr, transportp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Lookup an association for an inbound skb. */

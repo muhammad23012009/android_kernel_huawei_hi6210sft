@@ -258,7 +258,11 @@ int metag_pmu_event_set_period(struct perf_event *event,
 
 static void metag_pmu_start(struct perf_event *event, int flags)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hw_perf_event *hwc = &event->hw;
 	int idx = hwc->idx;
 
@@ -306,7 +310,11 @@ static void metag_pmu_stop(struct perf_event *event, int flags)
 
 static int metag_pmu_add(struct perf_event *event, int flags)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hw_perf_event *hwc = &event->hw;
 	int idx = 0, ret = 0;
 
@@ -348,7 +356,11 @@ out:
 
 static void metag_pmu_del(struct perf_event *event, int flags)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hw_perf_event *hwc = &event->hw;
 	int idx = hwc->idx;
 
@@ -568,6 +580,7 @@ static int _hw_perf_event_init(struct perf_event *event)
 		return -EINVAL;
 
 	/*
+<<<<<<< HEAD
 	 * Early cores have "limited" counters - they have no overflow
 	 * interrupts - and so are unable to do sampling without extra work
 	 * and timer assistance.
@@ -578,6 +591,8 @@ static int _hw_perf_event_init(struct perf_event *event)
 	}
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Don't assign an index until the event is placed into the hardware.
 	 * -1 signifies that we're still deciding where to put it. On SMP
 	 * systems each core has its own set of counters, so we can't do any
@@ -607,7 +622,11 @@ static int _hw_perf_event_init(struct perf_event *event)
 
 static void metag_pmu_enable_counter(struct hw_perf_event *event, int idx)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *events = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *events = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int config = event->config;
 	unsigned int tmp = config & 0xf0;
 	unsigned long flags;
@@ -628,6 +647,11 @@ static void metag_pmu_enable_counter(struct hw_perf_event *event, int idx)
 
 	/* Check for a core internal or performance channel event. */
 	if (tmp) {
+<<<<<<< HEAD
+=======
+		/* PERF_ICORE/PERF_CHAN only exist since Meta2 */
+#ifdef METAC_2_1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		void *perf_addr;
 
 		/*
@@ -650,6 +674,10 @@ static void metag_pmu_enable_counter(struct hw_perf_event *event, int idx)
 
 		if (perf_addr)
 			metag_out32((config & 0x0f), perf_addr);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Now we use the high nibble as the performance event to
@@ -680,7 +708,11 @@ unlock:
 
 static void metag_pmu_disable_counter(struct hw_perf_event *event, int idx)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *events = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *events = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int tmp = 0;
 	unsigned long flags;
 
@@ -728,7 +760,11 @@ out:
 
 static void metag_pmu_write_counter(int idx, u32 val)
 {
+<<<<<<< HEAD
 	struct cpu_hw_events *events = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *events = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 tmp = 0;
 	unsigned long flags;
 
@@ -761,7 +797,11 @@ static int metag_pmu_event_map(int idx)
 static irqreturn_t metag_pmu_counter_overflow(int irq, void *dev)
 {
 	int idx = (int)dev;
+<<<<<<< HEAD
 	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
+=======
+	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct perf_event *event = cpuhw->events[idx];
 	struct hw_perf_event *hwc = &event->hw;
 	struct pt_regs *regs = get_irq_regs();
@@ -813,6 +853,7 @@ static struct metag_pmu _metag_pmu = {
 };
 
 /* PMU CPU hotplug notifier */
+<<<<<<< HEAD
 static int __cpuinit metag_pmu_cpu_notify(struct notifier_block *b,
 		unsigned long action, void *hcpu)
 {
@@ -832,6 +873,18 @@ static struct notifier_block __cpuinitdata metag_pmu_notifier = {
 	.notifier_call = metag_pmu_cpu_notify,
 };
 
+=======
+static int metag_pmu_starting_cpu(unsigned int cpu)
+{
+	struct cpu_hw_events *cpuc = &per_cpu(cpu_hw_events, cpu);
+
+	memset(cpuc, 0, sizeof(struct cpu_hw_events));
+	raw_spin_lock_init(&cpuc->pmu_lock);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* PMU Initialisation */
 static int __init init_hw_perf_events(void)
 {
@@ -866,6 +919,18 @@ static int __init init_hw_perf_events(void)
 	pr_info("enabled with %s PMU driver, %d counters available\n",
 			metag_pmu->name, metag_pmu->max_events);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Early cores have "limited" counters - they have no overflow
+	 * interrupts - and so are unable to do sampling without extra work
+	 * and timer assistance.
+	 */
+	if (metag_pmu->max_period == 0) {
+		metag_pmu->pmu.capabilities |= PERF_PMU_CAP_NO_INTERRUPT;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Initialise the active events and reservation mutex */
 	atomic_set(&metag_pmu->active_events, 0);
 	mutex_init(&metag_pmu->reserve_mutex);
@@ -874,6 +939,7 @@ static int __init init_hw_perf_events(void)
 	metag_out32(0, PERF_COUNT(0));
 	metag_out32(0, PERF_COUNT(1));
 
+<<<<<<< HEAD
 	for_each_possible_cpu(cpu) {
 		struct cpu_hw_events *cpuc = &per_cpu(cpu_hw_events, cpu);
 
@@ -884,6 +950,15 @@ static int __init init_hw_perf_events(void)
 	register_cpu_notifier(&metag_pmu_notifier);
 	ret = perf_pmu_register(&pmu, (char *)metag_pmu->name, PERF_TYPE_RAW);
 out:
+=======
+	cpuhp_setup_state(CPUHP_AP_PERF_METAG_STARTING,
+			  "AP_PERF_METAG_STARTING", metag_pmu_starting_cpu,
+			  NULL);
+
+	ret = perf_pmu_register(&pmu, metag_pmu->name, PERF_TYPE_RAW);
+	if (ret)
+		cpuhp_remove_state_nocalls(CPUHP_AP_PERF_METAG_STARTING);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 early_initcall(init_hw_perf_events);

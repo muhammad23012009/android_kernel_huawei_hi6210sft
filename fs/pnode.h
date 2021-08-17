@@ -19,14 +19,28 @@
 #define IS_MNT_MARKED(m) ((m)->mnt.mnt_flags & MNT_MARKED)
 #define SET_MNT_MARK(m) ((m)->mnt.mnt_flags |= MNT_MARKED)
 #define CLEAR_MNT_MARK(m) ((m)->mnt.mnt_flags &= ~MNT_MARKED)
+<<<<<<< HEAD
 
 #define CL_EXPIRE    		0x01
 #define CL_SLAVE     		0x02
 #define CL_COPY_ALL 		0x04
+=======
+#define IS_MNT_LOCKED(m) ((m)->mnt.mnt_flags & MNT_LOCKED)
+
+#define CL_EXPIRE    		0x01
+#define CL_SLAVE     		0x02
+#define CL_COPY_UNBINDABLE	0x04
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CL_MAKE_SHARED 		0x08
 #define CL_PRIVATE 		0x10
 #define CL_SHARED_TO_SLAVE	0x20
 #define CL_UNPRIVILEGED		0x40
+<<<<<<< HEAD
+=======
+#define CL_COPY_MNT_NS_FILE	0x80
+
+#define CL_COPY_ALL		(CL_COPY_UNBINDABLE | CL_COPY_MNT_NS_FILE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void set_mnt_shared(struct mount *mnt)
 {
@@ -36,17 +50,33 @@ static inline void set_mnt_shared(struct mount *mnt)
 
 void change_mnt_propagation(struct mount *, int);
 int propagate_mnt(struct mount *, struct mountpoint *, struct mount *,
+<<<<<<< HEAD
 		struct list_head *);
 int propagate_umount(struct list_head *);
 int propagate_mount_busy(struct mount *, int);
+=======
+		struct hlist_head *);
+int propagate_umount(struct list_head *);
+int propagate_mount_busy(struct mount *, int);
+void propagate_mount_unlock(struct mount *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void propagate_remount(struct mount *);
 void mnt_release_group_id(struct mount *);
 int get_dominating_id(struct mount *mnt, const struct path *root);
 unsigned int mnt_get_count(struct mount *mnt);
 void mnt_set_mountpoint(struct mount *, struct mountpoint *,
 			struct mount *);
+<<<<<<< HEAD
 void umount_tree(struct mount *, int);
 struct mount *copy_tree(struct mount *, struct dentry *, int);
 bool is_path_reachable(struct mount *, struct dentry *,
 			 const struct path *root);
+=======
+void mnt_change_mountpoint(struct mount *parent, struct mountpoint *mp,
+			   struct mount *mnt);
+struct mount *copy_tree(struct mount *, struct dentry *, int);
+bool is_path_reachable(struct mount *, struct dentry *,
+			 const struct path *root);
+int count_mounts(struct mnt_namespace *ns, struct mount *mnt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_PNODE_H */

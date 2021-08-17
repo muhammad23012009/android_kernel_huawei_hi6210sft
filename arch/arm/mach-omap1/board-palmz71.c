@@ -36,18 +36,28 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/flash.h>
 #include <mach/mux.h>
 #include <linux/omap-dma.h>
 #include <mach/tc.h>
 #include <mach/irda.h>
+=======
+#include "flash.h"
+#include <mach/mux.h>
+#include <linux/omap-dma.h>
+#include <mach/tc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/keypad-omap.h>
 
 #include <mach/hardware.h>
 #include <mach/usb.h>
 
 #include "common.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PALMZ71_USBDETECT_GPIO	0
 #define PALMZ71_PENIRQ_GPIO	6
@@ -153,6 +163,7 @@ static struct platform_device palmz71_lcd_device = {
 	.id	= -1,
 };
 
+<<<<<<< HEAD
 static struct omap_irda_config palmz71_irda_config = {
 	.transceiver_cap	= IR_SIRMODE,
 	.rx_channel		= OMAP_DMA_UART3_RX,
@@ -181,6 +192,8 @@ static struct platform_device palmz71_irda_device = {
 	.resource	= palmz71_irda_resources,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_device palmz71_spi_device = {
 	.name	= "spi_palmz71",
 	.id	= -1,
@@ -202,7 +215,10 @@ static struct platform_device *devices[] __initdata = {
 	&palmz71_rom_device,
 	&palmz71_kp_device,
 	&palmz71_lcd_device,
+<<<<<<< HEAD
 	&palmz71_irda_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&palmz71_spi_device,
 	&palmz71_backlight_device,
 };
@@ -328,6 +344,10 @@ MACHINE_START(OMAP_PALMZ71, "OMAP310 based Palm Zire71")
 	.map_io		= omap15xx_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= omap_palmz71_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

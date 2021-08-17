@@ -16,6 +16,15 @@
 #include <linux/ata_platform.h>
 #include <linux/libata.h>
 
+<<<<<<< HEAD
+=======
+#define DRV_NAME "pata_of_platform"
+
+static struct scsi_host_template pata_platform_sht = {
+	ATA_PIO_SHT(DRV_NAME),
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pata_of_platform_probe(struct platform_device *ofdev)
 {
 	int ret;
@@ -35,6 +44,7 @@ static int pata_of_platform_probe(struct platform_device *ofdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (of_device_is_compatible(dn, "electra-ide")) {
 		/* Altstatus is really at offset 0x3f6 from the primary window
 		 * on electra-ide. Adjust ctl_res and io_res accordingly.
@@ -54,6 +64,16 @@ static int pata_of_platform_probe(struct platform_device *ofdev)
 	irq_res = platform_get_resource(ofdev, IORESOURCE_IRQ, 0);
 	if (irq_res)
 		irq_res->flags = 0;
+=======
+	ret = of_address_to_resource(dn, 1, &ctl_res);
+	if (ret) {
+		dev_err(&ofdev->dev, "can't get CTL address from "
+			"device tree\n");
+		return -EINVAL;
+	}
+
+	irq_res = platform_get_resource(ofdev, IORESOURCE_IRQ, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	prop = of_get_property(dn, "reg-shift", NULL);
 	if (prop)
@@ -74,20 +94,32 @@ static int pata_of_platform_probe(struct platform_device *ofdev)
 	pio_mask |= (1 << pio_mode) - 1;
 
 	return __pata_platform_probe(&ofdev->dev, &io_res, &ctl_res, irq_res,
+<<<<<<< HEAD
 				     reg_shift, pio_mask);
+=======
+				     reg_shift, pio_mask, &pata_platform_sht);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct of_device_id pata_of_platform_match[] = {
 	{ .compatible = "ata-generic", },
+<<<<<<< HEAD
 	{ .compatible = "electra-ide", },
 	{},
+=======
+	{ },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 MODULE_DEVICE_TABLE(of, pata_of_platform_match);
 
 static struct platform_driver pata_of_platform_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name = "pata_of_platform",
 		.owner = THIS_MODULE,
+=======
+		.name = DRV_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = pata_of_platform_match,
 	},
 	.probe		= pata_of_platform_probe,

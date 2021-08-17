@@ -181,6 +181,7 @@ static unsigned long xpram_highest_page_index(void)
 /*
  * Block device make request function.
  */
+<<<<<<< HEAD
 static void xpram_make_request(struct request_queue *q, struct bio *bio)
 {
 	xpram_device_t *xdev = bio->bi_bdev->bd_disk->private_data;
@@ -203,6 +204,33 @@ static void xpram_make_request(struct request_queue *q, struct bio *bio)
 		page_addr = (unsigned long)
 			kmap(bvec->bv_page) + bvec->bv_offset;
 		bytes = bvec->bv_len;
+=======
+static blk_qc_t xpram_make_request(struct request_queue *q, struct bio *bio)
+{
+	xpram_device_t *xdev = bio->bi_bdev->bd_disk->private_data;
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+	unsigned int index;
+	unsigned long page_addr;
+	unsigned long bytes;
+
+	blk_queue_split(q, &bio, q->bio_split);
+
+	if ((bio->bi_iter.bi_sector & 7) != 0 ||
+	    (bio->bi_iter.bi_size & 4095) != 0)
+		/* Request is not page-aligned. */
+		goto fail;
+	if ((bio->bi_iter.bi_size >> 12) > xdev->size)
+		/* Request size is no page-aligned. */
+		goto fail;
+	if ((bio->bi_iter.bi_sector >> 3) > 0xffffffffU - xdev->offset)
+		goto fail;
+	index = (bio->bi_iter.bi_sector >> 3) + xdev->offset;
+	bio_for_each_segment(bvec, bio, iter) {
+		page_addr = (unsigned long)
+			kmap(bvec.bv_page) + bvec.bv_offset;
+		bytes = bvec.bv_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((page_addr & 4095) != 0 || (bytes & 4095) != 0)
 			/* More paranoia. */
 			goto fail;
@@ -219,11 +247,19 @@ static void xpram_make_request(struct request_queue *q, struct bio *bio)
 			index++;
 		}
 	}
+<<<<<<< HEAD
 	set_bit(BIO_UPTODATE, &bio->bi_flags);
 	bio_endio(bio, 0);
 	return;
 fail:
 	bio_io_error(bio);
+=======
+	bio_endio(bio);
+	return BLK_QC_T_NONE;
+fail:
+	bio_io_error(bio);
+	return BLK_QC_T_NONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int xpram_getgeo(struct block_device *bdev, struct hd_geometry *geo)
@@ -257,6 +293,10 @@ static int __init xpram_setup_sizes(unsigned long pages)
 	unsigned long mem_needed;
 	unsigned long mem_auto;
 	unsigned long long size;
+<<<<<<< HEAD
+=======
+	char *sizes_end;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int mem_auto_no;
 	int i;
 
@@ -275,8 +315,13 @@ static int __init xpram_setup_sizes(unsigned long pages)
 	mem_auto_no = 0;
 	for (i = 0; i < xpram_devs; i++) {
 		if (sizes[i]) {
+<<<<<<< HEAD
 			size = simple_strtoull(sizes[i], &sizes[i], 0);
 			switch (sizes[i][0]) {
+=======
+			size = simple_strtoull(sizes[i], &sizes_end, 0);
+			switch (*sizes_end) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			case 'g':
 			case 'G':
 				size <<= 20;
@@ -344,6 +389,10 @@ static int __init xpram_setup_blkdev(void)
 			goto out;
 		}
 		queue_flag_set_unlocked(QUEUE_FLAG_NONROT, xpram_queues[i]);
+<<<<<<< HEAD
+=======
+		queue_flag_clear_unlocked(QUEUE_FLAG_ADD_RANDOM, xpram_queues[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		blk_queue_make_request(xpram_queues[i], xpram_make_request);
 		blk_queue_logical_block_size(xpram_queues[i], 4096);
 	}
@@ -414,7 +463,10 @@ static const struct dev_pm_ops xpram_pm_ops = {
 static struct platform_driver xpram_pdrv = {
 	.driver = {
 		.name	= XPRAM_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &xpram_pm_ops,
 	},
 };

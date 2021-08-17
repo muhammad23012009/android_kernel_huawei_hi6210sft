@@ -167,6 +167,7 @@ static const struct m5602_sensor po1030 = {
 	.start = po1030_start,
 	.disconnect = po1030_disconnect,
 };
+<<<<<<< HEAD
 
 static const unsigned char preinit_po1030[][3] = {
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02},
@@ -271,4 +272,6 @@ static const unsigned char init_po1030[][3] = {
 	{BRIDGE, M5602_XB_GPIO_EN_H, 0x06},
 	{BRIDGE, M5602_XB_GPIO_EN_L, 0x00},
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

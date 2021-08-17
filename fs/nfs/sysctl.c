@@ -13,7 +13,11 @@
 
 static struct ctl_table_header *nfs_callback_sysctl_table;
 
+<<<<<<< HEAD
 static ctl_table nfs_cb_sysctls[] = {
+=======
+static struct ctl_table nfs_cb_sysctls[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "nfs_mountpoint_timeout",
 		.data		= &nfs_mountpoint_expiry_timeout,
@@ -31,7 +35,11 @@ static ctl_table nfs_cb_sysctls[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table nfs_cb_sysctl_dir[] = {
+=======
+static struct ctl_table nfs_cb_sysctl_dir[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname = "nfs",
 		.mode = 0555,
@@ -40,7 +48,11 @@ static ctl_table nfs_cb_sysctl_dir[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table nfs_cb_sysctl_root[] = {
+=======
+static struct ctl_table nfs_cb_sysctl_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname = "fs",
 		.mode = 0555,

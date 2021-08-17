@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # Makefile for the linux kernel.
 #
@@ -15,3 +16,6 @@ obj-$(CONFIG_ARCH_CLEP7312)	+= board-clep7312.o
 obj-$(CONFIG_ARCH_EDB7211)	+= board-edb7211.o
 obj-$(CONFIG_ARCH_FORTUNET)	+= board-fortunet.o
 obj-$(CONFIG_ARCH_P720T)	+= board-p720t.o
+=======
+obj-y += board-dt.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

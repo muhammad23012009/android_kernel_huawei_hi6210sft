@@ -20,7 +20,11 @@
 #include "squashfs.h"
 
 /* Read separately compressed datablock and memcopy into page cache */
+<<<<<<< HEAD
 int squashfs_readpage_block(struct page *page, u64 block, int bsize)
+=======
+int squashfs_readpage_block(struct page *page, u64 block, int bsize, int expected)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct inode *i = page->mapping->host;
 	struct squashfs_cache_entry *buffer = squashfs_get_datablock(i->i_sb,
@@ -31,7 +35,11 @@ int squashfs_readpage_block(struct page *page, u64 block, int bsize)
 		ERROR("Unable to read page, block %llx, size %x\n", block,
 			bsize);
 	else
+<<<<<<< HEAD
 		squashfs_copy_cache(page, buffer, buffer->length, 0);
+=======
+		squashfs_copy_cache(page, buffer, expected, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	squashfs_cache_put(buffer);
 	return res;

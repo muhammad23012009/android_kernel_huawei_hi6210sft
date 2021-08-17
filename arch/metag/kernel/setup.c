@@ -41,7 +41,10 @@
 #include <asm/mmu.h>
 #include <asm/mmzone.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/sections.h>
 #include <asm/setup.h>
 #include <asm/traps.h>
@@ -105,16 +108,23 @@
 
 extern char _heap_start[];
 
+<<<<<<< HEAD
 #ifdef CONFIG_METAG_BUILTIN_DTB
 extern u32 __dtb_start[];
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DA_CONSOLE
 /* Our early channel based console driver */
 extern struct console dash_console;
 #endif
 
+<<<<<<< HEAD
 struct machine_desc *machine_desc __initdata;
+=======
+const struct machine_desc *machine_desc __initdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Map a Linux CPU number to a hardware thread ID
@@ -301,6 +311,7 @@ void __init setup_arch(char **cmdline_p)
 	 * rather than the version from the bootloader. This makes call
 	 * stacks easier to understand and may allow us to unmap the
 	 * bootloader at some point.
+<<<<<<< HEAD
 	 *
 	 * We need to keep the LWK handler that TBI installed in order to
 	 * be able to do inter-thread comms.
@@ -308,6 +319,11 @@ void __init setup_arch(char **cmdline_p)
 	for (i = 0; i <= TBID_SIGNUM_MAX; i++)
 		if (i != TBID_SIGNUM_LWK)
 			_pTBI->fnSigs[i] = __TBIUnExpXXX;
+=======
+	 */
+	for (i = 0; i <= TBID_SIGNUM_MAX; i++)
+		_pTBI->fnSigs[i] = __TBIUnExpXXX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* A Meta requirement is that the kernel is loaded (virtually)
 	 * at the PAGE_OFFSET.
@@ -407,9 +423,13 @@ void __init setup_arch(char **cmdline_p)
 	cpu_2_hwthread_id[smp_processor_id()] = hard_processor_id();
 	hwthread_id_2_cpu[hard_processor_id()] = smp_processor_id();
 
+<<<<<<< HEAD
 	/* Copy device tree blob into non-init memory before unflattening */
 	copy_fdt();
 	unflatten_device_tree();
+=======
+	unflatten_and_copy_device_tree();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SMP
 	smp_init_cpus();
@@ -424,6 +444,10 @@ static int __init customize_machine(void)
 	/* customizes platform devices, or adds new ones */
 	if (machine_desc->init_machine)
 		machine_desc->init_machine();
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 arch_initcall(customize_machine);
@@ -587,6 +611,7 @@ PTBI pTBI_get(unsigned int cpu)
 EXPORT_SYMBOL(pTBI_get);
 
 #if defined(CONFIG_METAG_DSP) && defined(CONFIG_METAG_FPU)
+<<<<<<< HEAD
 char capabilites[] = "dsp fpu";
 #elif defined(CONFIG_METAG_DSP)
 char capabilites[] = "dsp";
@@ -594,13 +619,27 @@ char capabilites[] = "dsp";
 char capabilites[] = "fpu";
 #else
 char capabilites[] = "";
+=======
+static char capabilities[] = "dsp fpu";
+#elif defined(CONFIG_METAG_DSP)
+static char capabilities[] = "dsp";
+#elif defined(CONFIG_METAG_FPU)
+static char capabilities[] = "fpu";
+#else
+static char capabilities[] = "";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct ctl_table caps_kern_table[] = {
 	{
 		.procname	= "capabilities",
+<<<<<<< HEAD
 		.data		= capabilites,
 		.maxlen		= sizeof(capabilites),
+=======
+		.data		= capabilities,
+		.maxlen		= sizeof(capabilities),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.mode		= 0444,
 		.proc_handler	= proc_dostring,
 	},

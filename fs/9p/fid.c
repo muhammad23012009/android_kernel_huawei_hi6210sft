@@ -65,8 +65,13 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
 {
 	struct p9_fid *fid, *ret;
 
+<<<<<<< HEAD
 	p9_debug(P9_DEBUG_VFS, " dentry: %s (%p) uid %d any %d\n",
 		 dentry->d_name.name, dentry, from_kuid(&init_user_ns, uid),
+=======
+	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p) uid %d any %d\n",
+		 dentry, dentry, from_kuid(&init_user_ns, uid),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 any);
 	ret = NULL;
 	/* we'll recheck under lock if there's anything to look in */
@@ -257,6 +262,7 @@ struct p9_fid *v9fs_fid_lookup(struct dentry *dentry)
 	return v9fs_fid_lookup_with_uid(dentry, uid, any);
 }
 
+<<<<<<< HEAD
 struct p9_fid *v9fs_fid_clone(struct dentry *dentry)
 {
 	struct p9_fid *fid, *ret;
@@ -281,12 +287,18 @@ static struct p9_fid *v9fs_fid_clone_with_uid(struct dentry *dentry, kuid_t uid)
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
 {
 	int err;
 	struct p9_fid *fid;
 
+<<<<<<< HEAD
 	fid = v9fs_fid_clone_with_uid(dentry, GLOBAL_ROOT_UID);
+=======
+	fid = clone_fid(v9fs_fid_lookup_with_uid(dentry, GLOBAL_ROOT_UID, 0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(fid))
 		goto error_out;
 	/*

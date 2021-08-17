@@ -179,7 +179,12 @@ static int wl1271_tm_cmd_interrogate(struct wl1271 *wl, struct nlattr *tb[])
 		goto out_sleep;
 	}
 
+<<<<<<< HEAD
 	ret = wl1271_cmd_interrogate(wl, ie_id, cmd, sizeof(*cmd));
+=======
+	ret = wl1271_cmd_interrogate(wl, ie_id, cmd,
+				     sizeof(struct acx_header), sizeof(*cmd));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		wl1271_warning("testmode cmd interrogate failed: %d", ret);
 		goto out_free;
@@ -297,7 +302,12 @@ static int wl1271_tm_cmd_set_plt_mode(struct wl1271 *wl, struct nlattr *tb[])
 		ret = wl1271_plt_stop(wl);
 		break;
 	case PLT_ON:
+<<<<<<< HEAD
 		ret = wl1271_plt_start(wl, PLT_ON);
+=======
+	case PLT_CHIP_AWAKE:
+		ret = wl1271_plt_start(wl, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case PLT_FEM_DETECT:
 		ret = wl1271_tm_detect_fem(wl, tb);
@@ -356,10 +366,19 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int wl1271_tm_cmd(struct ieee80211_hw *hw, void *data, int len)
 {
 	struct wl1271 *wl = hw->priv;
 	struct nlattr *tb[WL1271_TM_ATTR_MAX + 1];
+=======
+int wl1271_tm_cmd(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+		  void *data, int len)
+{
+	struct wl1271 *wl = hw->priv;
+	struct nlattr *tb[WL1271_TM_ATTR_MAX + 1];
+	u32 nla_cmd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	err = nla_parse(tb, WL1271_TM_ATTR_MAX, data, len, wl1271_tm_policy);
@@ -369,7 +388,18 @@ int wl1271_tm_cmd(struct ieee80211_hw *hw, void *data, int len)
 	if (!tb[WL1271_TM_ATTR_CMD_ID])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	switch (nla_get_u32(tb[WL1271_TM_ATTR_CMD_ID])) {
+=======
+	nla_cmd = nla_get_u32(tb[WL1271_TM_ATTR_CMD_ID]);
+
+	/* Only SET_PLT_MODE is allowed in case of mode PLT_CHIP_AWAKE */
+	if (wl->plt_mode == PLT_CHIP_AWAKE &&
+	    nla_cmd != WL1271_TM_CMD_SET_PLT_MODE)
+		return -EOPNOTSUPP;
+
+	switch (nla_cmd) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case WL1271_TM_CMD_TEST:
 		return wl1271_tm_cmd_test(wl, tb);
 	case WL1271_TM_CMD_INTERROGATE:

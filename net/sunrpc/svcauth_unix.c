@@ -347,13 +347,21 @@ ip_map_cached_get(struct svc_xprt *xprt)
 		spin_lock(&xprt->xpt_lock);
 		ipm = xprt->xpt_auth_cache;
 		if (ipm != NULL) {
+<<<<<<< HEAD
 			if (!cache_valid(&ipm->h)) {
+=======
+			sn = net_generic(xprt->xpt_net, sunrpc_net_id);
+			if (cache_is_expired(sn->ip_map_cache, &ipm->h)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/*
 				 * The entry has been invalidated since it was
 				 * remembered, e.g. by a second mount from the
 				 * same IP address.
 				 */
+<<<<<<< HEAD
 				sn = net_generic(xprt->xpt_net, sunrpc_net_id);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				xprt->xpt_auth_cache = NULL;
 				spin_unlock(&xprt->xpt_lock);
 				cache_put(&ipm->h, sn->ip_map_cache);
@@ -517,9 +525,16 @@ static int unix_gid_parse(struct cache_detail *cd,
 		kgid = make_kgid(&init_user_ns, gid);
 		if (!gid_valid(kgid))
 			goto out;
+<<<<<<< HEAD
 		GROUP_AT(ug.gi, i) = kgid;
 	}
 
+=======
+		ug.gi->gid[i] = kgid;
+	}
+
+	groups_sort(ug.gi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ugp = unix_gid_lookup(cd, uid);
 	if (ugp) {
 		struct cache_head *ch;
@@ -564,7 +579,11 @@ static int unix_gid_show(struct seq_file *m,
 
 	seq_printf(m, "%u %d:", from_kuid_munged(user_ns, ug->uid), glen);
 	for (i = 0; i < glen; i++)
+<<<<<<< HEAD
 		seq_printf(m, " %d", from_kgid_munged(user_ns, GROUP_AT(ug->gi, i)));
+=======
+		seq_printf(m, " %d", from_kgid_munged(user_ns, ug->gi->gid[i]));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(m, "\n");
 	return 0;
 }
@@ -728,10 +747,13 @@ svcauth_null_accept(struct svc_rqst *rqstp, __be32 *authp)
 	struct kvec	*resv = &rqstp->rq_res.head[0];
 	struct svc_cred	*cred = &rqstp->rq_cred;
 
+<<<<<<< HEAD
 	cred->cr_group_info = NULL;
 	cred->cr_principal = NULL;
 	rqstp->rq_client = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (argv->iov_len < 3*4)
 		return SVC_GARBAGE;
 
@@ -794,10 +816,13 @@ svcauth_unix_accept(struct svc_rqst *rqstp, __be32 *authp)
 	u32		slen, i;
 	int		len   = argv->iov_len;
 
+<<<<<<< HEAD
 	cred->cr_group_info = NULL;
 	cred->cr_principal = NULL;
 	rqstp->rq_client = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((len -= 3*4) < 0)
 		return SVC_GARBAGE;
 
@@ -825,8 +850,14 @@ svcauth_unix_accept(struct svc_rqst *rqstp, __be32 *authp)
 		return SVC_CLOSE;
 	for (i = 0; i < slen; i++) {
 		kgid_t kgid = make_kgid(&init_user_ns, svc_getnl(argv));
+<<<<<<< HEAD
 		GROUP_AT(cred->cr_group_info, i) = kgid;
 	}
+=======
+		cred->cr_group_info->gid[i] = kgid;
+	}
+	groups_sort(cred->cr_group_info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (svc_getu32(argv) != htonl(RPC_AUTH_NULL) || svc_getu32(argv) != 0) {
 		*authp = rpc_autherr_badverf;
 		return SVC_DENIED;

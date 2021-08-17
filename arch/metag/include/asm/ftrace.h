@@ -6,7 +6,11 @@
 
 #ifndef __ASSEMBLY__
 extern void mcount_wrapper(void);
+<<<<<<< HEAD
 #define MCOUNT_ADDR		((long)(mcount_wrapper))
+=======
+#define MCOUNT_ADDR		((unsigned long)(mcount_wrapper))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long ftrace_call_adjust(unsigned long addr)
 {

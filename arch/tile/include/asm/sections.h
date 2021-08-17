@@ -19,6 +19,7 @@
 
 #include <asm-generic/sections.h>
 
+<<<<<<< HEAD
 /* Text and data are at different areas in the kernel VA space. */
 extern char _sinitdata[], _einitdata[];
 
@@ -29,12 +30,31 @@ extern char __w1data_begin[], __w1data_end[];
 /* Not exactly sections, but PC comparison points in the code. */
 extern char __rt_sigreturn[], __rt_sigreturn_end[];
 #ifndef __tilegx__
+=======
+/* Write-once data is writable only till the end of initialization. */
+extern char __w1data_begin[], __w1data_end[];
+
+extern char vdso_start[], vdso_end[];
+#ifdef CONFIG_COMPAT
+extern char vdso32_start[], vdso32_end[];
+#endif
+
+/* Not exactly sections, but PC comparison points in the code. */
+extern char __rt_sigreturn[], __rt_sigreturn_end[];
+#ifdef __tilegx__
+extern char __start_unalign_asm_code[], __end_unalign_asm_code[];
+#else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern char sys_cmpxchg[], __sys_cmpxchg_end[];
 extern char __sys_cmpxchg_grab_lock[];
 extern char __start_atomic_asm_code[], __end_atomic_asm_code[];
 #endif
 
+<<<<<<< HEAD
 /* Handle the discontiguity between _sdata and _stext. */
+=======
+/* Handle the discontiguity between _sdata and _text. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int arch_is_kernel_data(unsigned long addr)
 {
 	return addr >= (unsigned long)_sdata &&

@@ -3,6 +3,9 @@ ToDo list (incomplete, unordered)
 	- move half of the nvec init stuff to i2c-tegra.c
 	- move event handling to nvec_events
 	- finish suspend/resume support
+<<<<<<< HEAD
 	- modifiy the sync_write method to return the received
 	  message in a variable (and return the error code).
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	- add support for more device implementations

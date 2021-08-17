@@ -178,7 +178,11 @@ int tda18271_read_extended(struct dvb_frontend *fe)
 		    (i != R_EB17) &&
 		    (i != R_EB19) &&
 		    (i != R_EB20))
+<<<<<<< HEAD
 		regs[i] = regdump[i];
+=======
+			regs[i] = regdump[i];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (tda18271_debug & DBG_REG)
@@ -714,12 +718,20 @@ fail:
 	return ret;
 }
 
+<<<<<<< HEAD
 int _tda_printk(struct tda18271_priv *state, const char *level,
 		const char *func, const char *fmt, ...)
 {
 	struct va_format vaf;
 	va_list args;
 	int rtn;
+=======
+void _tda_printk(struct tda18271_priv *state, const char *level,
+		 const char *func, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	va_start(args, fmt);
 
@@ -727,6 +739,7 @@ int _tda_printk(struct tda18271_priv *state, const char *level,
 	vaf.va = &args;
 
 	if (state)
+<<<<<<< HEAD
 		rtn = printk("%s%s: [%d-%04x|%c] %pV",
 			     level, func, i2c_adapter_id(state->i2c_props.adap),
 			     state->i2c_props.addr,
@@ -738,4 +751,15 @@ int _tda_printk(struct tda18271_priv *state, const char *level,
 	va_end(args);
 
 	return rtn;
+=======
+		printk("%s%s: [%d-%04x|%c] %pV",
+		       level, func, i2c_adapter_id(state->i2c_props.adap),
+		       state->i2c_props.addr,
+		       (state->role == TDA18271_MASTER) ? 'M' : 'S',
+		       &vaf);
+	else
+		printk("%s%s: %pV", level, func, &vaf);
+
+	va_end(args);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

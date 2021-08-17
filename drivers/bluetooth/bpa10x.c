@@ -35,9 +35,17 @@
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
+<<<<<<< HEAD
 #define VERSION "0.10"
 
 static struct usb_device_id bpa10x_table[] = {
+=======
+#include "hci_uart.h"
+
+#define VERSION "0.11"
+
+static const struct usb_device_id bpa10x_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Tektronix BPA 100/105 (Digianswer) */
 	{ USB_DEVICE(0x08fd, 0x0002) },
 
@@ -56,6 +64,7 @@ struct bpa10x_data {
 	struct sk_buff *rx_skb[2];
 };
 
+<<<<<<< HEAD
 #define HCI_VENDOR_HDR_SIZE 5
 
 struct hci_vendor_hdr {
@@ -164,6 +173,8 @@ static int bpa10x_recv(struct hci_dev *hdev, int queue, void *buf, int count)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void bpa10x_tx_complete(struct urb *urb)
 {
 	struct sk_buff *skb = urb->context;
@@ -186,6 +197,25 @@ done:
 	kfree_skb(skb);
 }
 
+<<<<<<< HEAD
+=======
+#define HCI_VENDOR_HDR_SIZE 5
+
+#define HCI_RECV_VENDOR \
+	.type = HCI_VENDOR_PKT, \
+	.hlen = HCI_VENDOR_HDR_SIZE, \
+	.loff = 3, \
+	.lsize = 2, \
+	.maxlen = HCI_MAX_FRAME_SIZE
+
+static const struct h4_recv_pkt bpa10x_recv_pkts[] = {
+	{ H4_RECV_ACL,     .recv = hci_recv_frame },
+	{ H4_RECV_SCO,     .recv = hci_recv_frame },
+	{ H4_RECV_EVENT,   .recv = hci_recv_frame },
+	{ HCI_RECV_VENDOR, .recv = hci_recv_diag  },
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void bpa10x_rx_complete(struct urb *urb)
 {
 	struct hci_dev *hdev = urb->context;
@@ -199,11 +229,25 @@ static void bpa10x_rx_complete(struct urb *urb)
 		return;
 
 	if (urb->status == 0) {
+<<<<<<< HEAD
 		if (bpa10x_recv(hdev, usb_pipebulk(urb->pipe),
 						urb->transfer_buffer,
 						urb->actual_length) < 0) {
 			BT_ERR("%s corrupted event packet", hdev->name);
 			hdev->stat.err_rx++;
+=======
+		bool idx = usb_pipebulk(urb->pipe);
+
+		data->rx_skb[idx] = h4_recv_buf(hdev, data->rx_skb[idx],
+						urb->transfer_buffer,
+						urb->actual_length,
+						bpa10x_recv_pkts,
+						ARRAY_SIZE(bpa10x_recv_pkts));
+		if (IS_ERR(data->rx_skb[idx])) {
+			BT_ERR("%s corrupted event packet", hdev->name);
+			hdev->stat.err_rx++;
+			data->rx_skb[idx] = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -306,9 +350,12 @@ static int bpa10x_open(struct hci_dev *hdev)
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (test_and_set_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = bpa10x_submit_intr_urb(hdev);
 	if (err < 0)
 		goto error;
@@ -322,8 +369,11 @@ static int bpa10x_open(struct hci_dev *hdev)
 error:
 	usb_kill_anchored_urbs(&data->rx_anchor);
 
+<<<<<<< HEAD
 	clear_bit(HCI_RUNNING, &hdev->flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -333,9 +383,12 @@ static int bpa10x_close(struct hci_dev *hdev)
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_kill_anchored_urbs(&data->rx_anchor);
 
 	return 0;
@@ -352,9 +405,34 @@ static int bpa10x_flush(struct hci_dev *hdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int bpa10x_send_frame(struct sk_buff *skb)
 {
 	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
+=======
+static int bpa10x_setup(struct hci_dev *hdev)
+{
+	const u8 req[] = { 0x07 };
+	struct sk_buff *skb;
+
+	BT_DBG("%s", hdev->name);
+
+	/* Read revision string */
+	skb = __hci_cmd_sync(hdev, 0xfc0e, sizeof(req), req, HCI_INIT_TIMEOUT);
+	if (IS_ERR(skb))
+		return PTR_ERR(skb);
+
+	BT_INFO("%s: %s", hdev->name, (char *)(skb->data + 1));
+
+	hci_set_fw_info(hdev, "%s", skb->data + 1);
+
+	kfree_skb(skb);
+	return 0;
+}
+
+static int bpa10x_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bpa10x_data *data = hci_get_drvdata(hdev);
 	struct usb_ctrlrequest *dr;
 	struct urb *urb;
@@ -363,17 +441,27 @@ static int bpa10x_send_frame(struct sk_buff *skb)
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return -EBUSY;
+=======
+	skb->dev = (void *) hdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb)
 		return -ENOMEM;
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	*skb_push(skb, 1) = bt_cb(skb)->pkt_type;
 
 	switch (bt_cb(skb)->pkt_type) {
+=======
+	*skb_push(skb, 1) = hci_skb_pkt_type(skb);
+
+	switch (hci_skb_pkt_type(skb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case HCI_COMMAND_PKT:
 		dr = kmalloc(sizeof(*dr), GFP_ATOMIC);
 		if (!dr) {
@@ -432,6 +520,28 @@ static int bpa10x_send_frame(struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int bpa10x_set_diag(struct hci_dev *hdev, bool enable)
+{
+	const u8 req[] = { 0x00, enable };
+	struct sk_buff *skb;
+
+	BT_DBG("%s", hdev->name);
+
+	if (!test_bit(HCI_RUNNING, &hdev->flags))
+		return -ENETDOWN;
+
+	/* Enable sniffer operation */
+	skb = __hci_cmd_sync(hdev, 0xfc0e, sizeof(req), req, HCI_INIT_TIMEOUT);
+	if (IS_ERR(skb))
+		return PTR_ERR(skb);
+
+	kfree_skb(skb);
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int bpa10x_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
 	struct bpa10x_data *data;
@@ -466,7 +576,13 @@ static int bpa10x_probe(struct usb_interface *intf, const struct usb_device_id *
 	hdev->open     = bpa10x_open;
 	hdev->close    = bpa10x_close;
 	hdev->flush    = bpa10x_flush;
+<<<<<<< HEAD
 	hdev->send     = bpa10x_send_frame;
+=======
+	hdev->setup    = bpa10x_setup;
+	hdev->send     = bpa10x_send_frame;
+	hdev->set_diag = bpa10x_set_diag;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
 

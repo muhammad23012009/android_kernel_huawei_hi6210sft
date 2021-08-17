@@ -13,7 +13,11 @@ obj-$(CONFIG_AGP_HP_ZX1)	+= hp-agp.o
 obj-$(CONFIG_AGP_PARISC)	+= parisc-agp.o
 obj-$(CONFIG_AGP_I460)		+= i460-agp.o
 obj-$(CONFIG_AGP_INTEL)		+= intel-agp.o
+<<<<<<< HEAD
 obj-$(CONFIG_AGP_INTEL)		+= intel-gtt.o
+=======
+obj-$(CONFIG_INTEL_GTT)		+= intel-gtt.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_AGP_NVIDIA)	+= nvidia-agp.o
 obj-$(CONFIG_AGP_SGI_TIOCA)	+= sgi-agp.o
 obj-$(CONFIG_AGP_SIS)		+= sis-agp.o

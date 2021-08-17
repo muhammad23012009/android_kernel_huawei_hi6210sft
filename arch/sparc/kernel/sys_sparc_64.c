@@ -24,12 +24,20 @@
 #include <linux/personality.h>
 #include <linux/random.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/context_tracking.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/uaccess.h>
 #include <asm/utrap.h>
 #include <asm/unistd.h>
 
 #include "entry.h"
+<<<<<<< HEAD
+=======
+#include "kernel.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "systbls.h"
 
 /* #define DEBUG_UNIMP_SYSCALL */
@@ -39,9 +47,12 @@ asmlinkage unsigned long sys_getpagesize(void)
 	return PAGE_SIZE;
 }
 
+<<<<<<< HEAD
 #define VA_EXCLUDE_START (0x0000080000000000UL - (1UL << 32UL))
 #define VA_EXCLUDE_END   (0xfffff80000000000UL + (1UL << 32UL))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Does addr --> addr+len fall within 4GB of the VA-space hole or
  * overflow past the end of the 64-bit address space?
  */
@@ -290,7 +301,10 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 	    sysctl_legacy_va_layout) {
 		mm->mmap_base = TASK_UNMAPPED_BASE + random_factor;
 		mm->get_unmapped_area = arch_get_unmapped_area;
+<<<<<<< HEAD
 		mm->unmap_area = arch_unmap_area;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* We know it's 32-bit */
 		unsigned long task_size = STACK_TOP32;
@@ -302,7 +316,10 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 
 		mm->mmap_base = PAGE_ALIGN(task_size - gap - random_factor);
 		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
+<<<<<<< HEAD
 		mm->unmap_area = arch_unmap_area_topdown;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -340,10 +357,17 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 		switch (call) {
 		case SEMOP:
 			err = sys_semtimedop(first, ptr,
+<<<<<<< HEAD
 					     (unsigned)second, NULL);
 			goto out;
 		case SEMTIMEDOP:
 			err = sys_semtimedop(first, ptr, (unsigned)second,
+=======
+					     (unsigned int)second, NULL);
+			goto out;
+		case SEMTIMEDOP:
+			err = sys_semtimedop(first, ptr, (unsigned int)second,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				(const struct timespec __user *)
 					     (unsigned long) fifth);
 			goto out;
@@ -501,6 +525,10 @@ asmlinkage unsigned long c_sys_nis_syscall(struct pt_regs *regs)
 
 asmlinkage void sparc_breakpoint(struct pt_regs *regs)
 {
+<<<<<<< HEAD
+=======
+	enum ctx_state prev_state = exception_enter();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	siginfo_t info;
 
 	if (test_thread_flag(TIF_32BIT)) {
@@ -519,17 +547,27 @@ asmlinkage void sparc_breakpoint(struct pt_regs *regs)
 #ifdef DEBUG_SPARC_BREAKPOINT
 	printk ("TRAP: Returning to space: PC=%lx nPC=%lx\n", regs->tpc, regs->tnpc);
 #endif
+<<<<<<< HEAD
+=======
+	exception_exit(prev_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 extern void check_pending(int signum);
 
 SYSCALL_DEFINE2(getdomainname, char __user *, name, int, len)
 {
+<<<<<<< HEAD
         int nlen, err;
+=======
+	int nlen, err;
+	char tmp[__NEW_UTS_LEN + 1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (len < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
  	down_read(&uts_sem);
  	
 	nlen = strlen(utsname()->domainname) + 1;
@@ -542,6 +580,23 @@ SYSCALL_DEFINE2(getdomainname, char __user *, name, int, len)
 		err = 0;
 
 out:
+=======
+	down_read(&uts_sem);
+
+	nlen = strlen(utsname()->domainname) + 1;
+	err = -EINVAL;
+	if (nlen > len)
+		goto out_unlock;
+	memcpy(tmp, utsname()->domainname, nlen);
+
+	up_read(&uts_sem);
+
+	if (copy_to_user(name, tmp, nlen))
+		return -EFAULT;
+	return 0;
+
+out_unlock:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	up_read(&uts_sem);
 	return err;
 }

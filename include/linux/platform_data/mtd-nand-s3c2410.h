@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 /* arch/arm/mach-s3c2410/include/mach/nand.h
  *
+=======
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (c) 2004 Simtec Electronics
  *	Ben Dooks <ben@simtec.co.uk>
  *
@@ -10,6 +14,12 @@
  * published by the Free Software Foundation.
 */
 
+<<<<<<< HEAD
+=======
+#ifndef __MTD_NAND_S3C2410_H
+#define __MTD_NAND_S3C2410_H
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct s3c2410_nand_set - define a set of one or more nand chips
  * @disable_ecc:	Entirely disable ECC - Dangerous
@@ -38,7 +48,10 @@ struct s3c2410_nand_set {
 	char			*name;
 	int			*nr_map;
 	struct mtd_partition	*partitions;
+<<<<<<< HEAD
 	struct nand_ecclayout	*ecc_layout;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct s3c2410_platform_nand {
@@ -65,3 +78,8 @@ struct s3c2410_platform_nand {
  * it with the s3c_device_nand. This allows @nand to be __initdata.
 */
 extern void s3c_nand_set_platdata(struct s3c2410_platform_nand *nand);
+<<<<<<< HEAD
+=======
+
+#endif /*__MTD_NAND_S3C2410_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

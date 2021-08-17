@@ -36,6 +36,7 @@
  * of type casting from pmd_t * to pte_t *.
  */
 
+<<<<<<< HEAD
 pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr)
 {
 	pgd_t *pgd;
@@ -58,11 +59,14 @@ struct page *follow_huge_addr(struct mm_struct *mm, unsigned long address,
 	return ERR_PTR(-EINVAL);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int pud_huge(pud_t pud)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 int huge_pmd_unshare(struct mm_struct *mm, unsigned long *addr, pte_t *ptep)
 {
 	return 0;
@@ -95,6 +99,8 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
 	return page;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int pmd_huge(pmd_t pmd)
 {
 	return pmd_val(pmd) && !(pmd_val(pmd) & PMD_TABLE_BIT);

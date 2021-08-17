@@ -21,6 +21,7 @@
 #define imx_spi_imx_data_entry(soc, type, devid, id, hwid, size)	\
 	[id] = imx_spi_imx_data_entry_single(soc, type, devid, id, hwid, size)
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX1
 const struct imx_spi_imx_data imx1_cspi_data[] __initconst = {
 #define imx1_cspi_data_entry(_id, _hwid) \
@@ -30,6 +31,8 @@ const struct imx_spi_imx_data imx1_cspi_data[] __initconst = {
 };
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SOC_IMX21
 const struct imx_spi_imx_data imx21_cspi_data[] __initconst = {
 #define imx21_cspi_data_entry(_id, _hwid)                            \
@@ -39,6 +42,7 @@ const struct imx_spi_imx_data imx21_cspi_data[] __initconst = {
 };
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX25
 /* i.mx25 has the i.mx35 type cspi */
 const struct imx_spi_imx_data imx25_cspi_data[] __initconst = {
@@ -50,6 +54,8 @@ const struct imx_spi_imx_data imx25_cspi_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX25 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SOC_IMX27
 const struct imx_spi_imx_data imx27_cspi_data[] __initconst = {
 #define imx27_cspi_data_entry(_id, _hwid)				\
@@ -79,6 +85,7 @@ const struct imx_spi_imx_data imx35_cspi_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX35 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX51
 /* i.mx51 has the i.mx35 type cspi */
 const struct imx_spi_imx_data imx51_cspi_data __initconst =
@@ -106,6 +113,8 @@ const struct imx_spi_imx_data imx53_ecspi_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX53 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct platform_device *__init imx_add_spi_imx(
 		const struct imx_spi_imx_data *data,
 		const struct spi_imx_master *pdata)

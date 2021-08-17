@@ -9,6 +9,9 @@
  * 2 of the Licence, or (at your option) any later version.
  */
 
+<<<<<<< HEAD
 extern struct key *modsign_keyring;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int mod_verify_sig(const void *mod, unsigned long *_modlen);

@@ -100,7 +100,11 @@
 
 enum {
 	PIIX_IOCFG		= 0x54, /* IDE I/O configuration register */
+<<<<<<< HEAD
 	ICH5_PMR		= 0x90, /* port mapping register */
+=======
+	ICH5_PMR		= 0x90, /* address map register */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ICH5_PCS		= 0x92,	/* port control and status */
 	PIIX_SIDPR_BAR		= 5,
 	PIIX_SIDPR_LEN		= 16,
@@ -233,7 +237,11 @@ static const struct pci_device_id piix_pci_tbl[] = {
 	  PCI_CLASS_STORAGE_IDE << 8, 0xffff00, ich6m_sata },
 	/* 82801GB/GR/GH (ICH7, identical to ICH6) */
 	{ 0x8086, 0x27c0, PCI_ANY_ID, PCI_ANY_ID, 0, 0, ich6_sata },
+<<<<<<< HEAD
 	/* 2801GBM/GHM (ICH7M, identical to ICH6M) */
+=======
+	/* 82801GBM/GHM (ICH7M, identical to ICH6M)  */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x8086, 0x27c4, PCI_ANY_ID, PCI_ANY_ID, 0, 0, ich6m_sata },
 	/* Enterprise Southbridge 2 (631xESB/632xESB) */
 	{ 0x8086, 0x2680, PCI_ANY_ID, PCI_ANY_ID, 0, 0, ich6_sata },
@@ -525,7 +533,11 @@ static int ich_pata_cable_detect(struct ata_port *ap)
 	const struct ich_laptop *lap = &ich_laptop[0];
 	u8 mask;
 
+<<<<<<< HEAD
 	/* Check for specials - Acer Aspire 5602WLMi */
+=======
+	/* Check for specials */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (lap->device) {
 		if (lap->device == pdev->device &&
 		    lap->subvendor == pdev->subsystem_vendor &&
@@ -838,7 +850,11 @@ static bool piix_irq_check(struct ata_port *ap)
 	return ap->ops->bmdma_status(ap) & ATA_DMA_INTR;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int piix_broken_suspend(void)
 {
 	static const struct dmi_system_id sysids[] = {
@@ -1003,7 +1019,11 @@ static int piix_broken_suspend(void)
 
 static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int rc = 0;
 
@@ -1038,7 +1058,11 @@ static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 
 static int piix_pci_device_resume(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int rc;
 
@@ -1374,38 +1398,66 @@ static const int *piix_init_sata_map(struct pci_dev *pdev,
 	const int *map;
 	int i, invalid_map = 0;
 	u8 map_value;
+<<<<<<< HEAD
+=======
+	char buf[32];
+	char *p = buf, *end = buf + sizeof(buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_read_config_byte(pdev, ICH5_PMR, &map_value);
 
 	map = map_db->map[map_value & map_db->mask];
 
+<<<<<<< HEAD
 	dev_info(&pdev->dev, "MAP [");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < 4; i++) {
 		switch (map[i]) {
 		case RV:
 			invalid_map = 1;
+<<<<<<< HEAD
 			pr_cont(" XX");
 			break;
 
 		case NA:
 			pr_cont(" --");
+=======
+			p += scnprintf(p, end - p, " XX");
+			break;
+
+		case NA:
+			p += scnprintf(p, end - p, " --");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case IDE:
 			WARN_ON((i & 1) || map[i + 1] != IDE);
 			pinfo[i / 2] = piix_port_info[ich_pata_100];
 			i++;
+<<<<<<< HEAD
 			pr_cont(" IDE IDE");
 			break;
 
 		default:
 			pr_cont(" P%d", map[i]);
+=======
+			p += scnprintf(p, end - p, " IDE IDE");
+			break;
+
+		default:
+			p += scnprintf(p, end - p, " P%d", map[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (i & 1)
 				pinfo[i / 2].flags |= ATA_FLAG_SLAVE_POSS;
 			break;
 		}
 	}
+<<<<<<< HEAD
 	pr_cont(" ]\n");
+=======
+	dev_info(&pdev->dev, "MAP [%s ]\n", buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (invalid_map)
 		dev_err(&pdev->dev, "invalid MAP value %u\n", map_value);
@@ -1761,7 +1813,11 @@ static int piix_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 static void piix_remove_one(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct piix_host_priv *hpriv = host->private_data;
 
 	pci_write_config_dword(pdev, PIIX_IOCFG, hpriv->saved_iocfg);
@@ -1774,7 +1830,11 @@ static struct pci_driver piix_pci_driver = {
 	.id_table		= piix_pci_tbl,
 	.probe			= piix_init_one,
 	.remove			= piix_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= piix_pci_device_suspend,
 	.resume			= piix_pci_device_resume,
 #endif

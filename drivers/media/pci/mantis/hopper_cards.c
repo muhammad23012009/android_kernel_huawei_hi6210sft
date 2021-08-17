@@ -106,6 +106,13 @@ static irqreturn_t hopper_irq_handler(int irq, void *dev_id)
 	}
 	if (stat & MANTIS_INT_IRQ1) {
 		dprintk(MANTIS_DEBUG, 0, "<%s>", label[2]);
+<<<<<<< HEAD
+=======
+		spin_lock(&mantis->intmask_lock);
+		mmwrite(mmread(MANTIS_INT_MASK) & ~MANTIS_INT_IRQ1,
+			MANTIS_INT_MASK);
+		spin_unlock(&mantis->intmask_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		schedule_work(&mantis->uart_work);
 	}
 	if (stat & MANTIS_INT_OCERR) {
@@ -154,6 +161,10 @@ static irqreturn_t hopper_irq_handler(int irq, void *dev_id)
 static int hopper_pci_probe(struct pci_dev *pdev,
 			    const struct pci_device_id *pci_id)
 {
+<<<<<<< HEAD
+=======
+	struct mantis_pci_drvdata *drvdata;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mantis_pci *mantis;
 	struct mantis_hwconfig *config;
 	int err = 0;
@@ -165,12 +176,25 @@ static int hopper_pci_probe(struct pci_dev *pdev,
 		goto fail0;
 	}
 
+<<<<<<< HEAD
 	mantis->num		= devs;
 	mantis->verbose		= verbose;
 	mantis->pdev		= pdev;
 	config			= (struct mantis_hwconfig *) pci_id->driver_data;
 	config->irq_handler	= &hopper_irq_handler;
 	mantis->hwconfig	= config;
+=======
+	drvdata			= (void *)pci_id->driver_data;
+	mantis->num		= devs;
+	mantis->verbose		= verbose;
+	mantis->pdev		= pdev;
+	config			= drvdata->hwconfig;
+	config->irq_handler	= &hopper_irq_handler;
+	mantis->hwconfig	= config;
+	mantis->rc_map_name	= drvdata->rc_map_name;
+
+	spin_lock_init(&mantis->intmask_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = mantis_pci_init(mantis);
 	if (err) {
@@ -247,7 +271,12 @@ static void hopper_pci_remove(struct pci_dev *pdev)
 }
 
 static struct pci_device_id hopper_pci_table[] = {
+<<<<<<< HEAD
 	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_3028_DVB_T, &vp3028_config),
+=======
+	MAKE_ENTRY(TWINHAN_TECHNOLOGIES, MANTIS_VP_3028_DVB_T, &vp3028_config,
+		   NULL),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 
@@ -260,6 +289,7 @@ static struct pci_driver hopper_pci_driver = {
 	.remove		= hopper_pci_remove,
 };
 
+<<<<<<< HEAD
 static int hopper_init(void)
 {
 	return pci_register_driver(&hopper_pci_driver);
@@ -272,6 +302,9 @@ static void hopper_exit(void)
 
 module_init(hopper_init);
 module_exit(hopper_exit);
+=======
+module_pci_driver(hopper_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("HOPPER driver");
 MODULE_AUTHOR("Manu Abraham");

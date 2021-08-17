@@ -99,6 +99,10 @@ static int aat2870_ldo_is_enabled(struct regulator_dev *rdev)
 
 static struct regulator_ops aat2870_ldo_ops = {
 	.list_voltage = regulator_list_voltage_table,
+<<<<<<< HEAD
+=======
+	.map_voltage = regulator_map_voltage_ascend,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set_voltage_sel = aat2870_ldo_set_voltage_sel,
 	.get_voltage_sel = aat2870_ldo_get_voltage_sel,
 	.enable = aat2870_ldo_enable,
@@ -174,9 +178,15 @@ static int aat2870_regulator_probe(struct platform_device *pdev)
 
 	config.dev = &pdev->dev;
 	config.driver_data = ri;
+<<<<<<< HEAD
 	config.init_data = pdev->dev.platform_data;
 
 	rdev = regulator_register(&ri->desc, &config);
+=======
+	config.init_data = dev_get_platdata(&pdev->dev);
+
+	rdev = devm_regulator_register(&pdev->dev, &ri->desc, &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdev)) {
 		dev_err(&pdev->dev, "Failed to register regulator %s\n",
 			ri->desc.name);
@@ -187,6 +197,7 @@ static int aat2870_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int aat2870_regulator_remove(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev = platform_get_drvdata(pdev);
@@ -202,6 +213,13 @@ static struct platform_driver aat2870_regulator_driver = {
 	},
 	.probe	= aat2870_regulator_probe,
 	.remove	= aat2870_regulator_remove,
+=======
+static struct platform_driver aat2870_regulator_driver = {
+	.driver = {
+		.name	= "aat2870-regulator",
+	},
+	.probe	= aat2870_regulator_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init aat2870_regulator_init(void)

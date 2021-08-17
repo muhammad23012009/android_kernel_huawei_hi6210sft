@@ -38,6 +38,7 @@ extern int cpci_debug;
 #define dbg(format, arg...)					\
 	do {							\
 		if (cpci_debug)					\
+<<<<<<< HEAD
 			printk (KERN_DEBUG "%s: " format "\n",	\
 				MY_NAME , ## arg); 		\
 	} while (0)
@@ -47,6 +48,17 @@ extern int cpci_debug;
 
 
 u8 cpci_get_attention_status(struct slot* slot)
+=======
+			printk(KERN_DEBUG "%s: " format "\n",	\
+				MY_NAME, ## arg);		\
+	} while (0)
+#define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME, ## arg)
+#define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
+#define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
+
+
+u8 cpci_get_attention_status(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -66,7 +78,11 @@ u8 cpci_get_attention_status(struct slot* slot)
 	return hs_csr & 0x0008 ? 1 : 0;
 }
 
+<<<<<<< HEAD
 int cpci_set_attention_status(struct slot* slot, int status)
+=======
+int cpci_set_attention_status(struct slot *slot, int status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -93,7 +109,11 @@ int cpci_set_attention_status(struct slot* slot, int status)
 	return 1;
 }
 
+<<<<<<< HEAD
 u16 cpci_get_hs_csr(struct slot* slot)
+=======
+u16 cpci_get_hs_csr(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -111,7 +131,11 @@ u16 cpci_get_hs_csr(struct slot* slot)
 	return hs_csr;
 }
 
+<<<<<<< HEAD
 int cpci_check_and_clear_ins(struct slot* slot)
+=======
+int cpci_check_and_clear_ins(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -140,7 +164,11 @@ int cpci_check_and_clear_ins(struct slot* slot)
 	return ins;
 }
 
+<<<<<<< HEAD
 int cpci_check_ext(struct slot* slot)
+=======
+int cpci_check_ext(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -161,7 +189,11 @@ int cpci_check_ext(struct slot* slot)
 	return ext;
 }
 
+<<<<<<< HEAD
 int cpci_clear_ext(struct slot* slot)
+=======
+int cpci_clear_ext(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -187,7 +219,11 @@ int cpci_clear_ext(struct slot* slot)
 	return 0;
 }
 
+<<<<<<< HEAD
 int cpci_led_on(struct slot* slot)
+=======
+int cpci_led_on(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -216,7 +252,11 @@ int cpci_led_on(struct slot* slot)
 	return 0;
 }
 
+<<<<<<< HEAD
 int cpci_led_off(struct slot* slot)
+=======
+int cpci_led_off(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int hs_cap;
 	u16 hs_csr;
@@ -250,6 +290,7 @@ int cpci_led_off(struct slot* slot)
  * Device configuration functions
  */
 
+<<<<<<< HEAD
 int __ref cpci_configure_slot(struct slot *slot)
 {
 	struct pci_dev *dev;
@@ -257,6 +298,18 @@ int __ref cpci_configure_slot(struct slot *slot)
 
 	dbg("%s - enter", __func__);
 
+=======
+int cpci_configure_slot(struct slot *slot)
+{
+	struct pci_dev *dev;
+	struct pci_bus *parent;
+	int ret = 0;
+
+	dbg("%s - enter", __func__);
+
+	pci_lock_rescan_remove();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (slot->dev == NULL) {
 		dbg("pci_dev null, finding %02x:%02x:%x",
 		    slot->bus->number, PCI_SLOT(slot->devfn), PCI_FUNC(slot->devfn));
@@ -277,28 +330,52 @@ int __ref cpci_configure_slot(struct slot *slot)
 		slot->dev = pci_get_slot(slot->bus, slot->devfn);
 		if (slot->dev == NULL) {
 			err("Could not find PCI device for slot %02x", slot->number);
+<<<<<<< HEAD
 			return -ENODEV;
+=======
+			ret = -ENODEV;
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	parent = slot->dev->bus;
 
+<<<<<<< HEAD
 	list_for_each_entry(dev, &parent->devices, bus_list)
 		if (PCI_SLOT(dev->devfn) != PCI_SLOT(slot->devfn))
 			continue;
 		if ((dev->hdr_type == PCI_HEADER_TYPE_BRIDGE) ||
 		    (dev->hdr_type == PCI_HEADER_TYPE_CARDBUS))
 			pci_hp_add_bridge(dev);
+=======
+	list_for_each_entry(dev, &parent->devices, bus_list) {
+		if (PCI_SLOT(dev->devfn) != PCI_SLOT(slot->devfn))
+			continue;
+		if (pci_is_bridge(dev))
+			pci_hp_add_bridge(dev);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 	pci_assign_unassigned_bridge_resources(parent->self);
 
 	pci_bus_add_devices(parent);
 
+<<<<<<< HEAD
 	dbg("%s - exit", __func__);
 	return 0;
 }
 
 int cpci_unconfigure_slot(struct slot* slot)
+=======
+ out:
+	pci_unlock_rescan_remove();
+	dbg("%s - exit", __func__);
+	return ret;
+}
+
+int cpci_unconfigure_slot(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_dev *dev, *temp;
 
@@ -308,6 +385,11 @@ int cpci_unconfigure_slot(struct slot* slot)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	pci_lock_rescan_remove();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_for_each_entry_safe(dev, temp, &slot->bus->devices, bus_list) {
 		if (PCI_SLOT(dev->devfn) != PCI_SLOT(slot->devfn))
 			continue;
@@ -318,6 +400,11 @@ int cpci_unconfigure_slot(struct slot* slot)
 	pci_dev_put(slot->dev);
 	slot->dev = NULL;
 
+<<<<<<< HEAD
+=======
+	pci_unlock_rescan_remove();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dbg("%s - exit", __func__);
 	return 0;
 }

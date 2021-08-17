@@ -30,7 +30,10 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -151,7 +154,10 @@ static int  cyberjack_open(struct tty_struct *tty,
 {
 	struct cyberjack_private *priv;
 	unsigned long flags;
+<<<<<<< HEAD
 	int result = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&port->dev, "%s - usb_clear_halt\n", __func__);
 	usb_clear_halt(port->serial->dev, port->write_urb->pipe);
@@ -163,7 +169,11 @@ static int  cyberjack_open(struct tty_struct *tty,
 	priv->wrsent = 0;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
+<<<<<<< HEAD
 	return result;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void cyberjack_close(struct usb_serial_port *port)
@@ -231,7 +241,11 @@ static int cyberjack_write(struct tty_struct *tty,
 		result = usb_submit_urb(port->write_urb, GFP_ATOMIC);
 		if (result) {
 			dev_err(&port->dev,
+<<<<<<< HEAD
 				"%s - failed submitting write urb, error %d",
+=======
+				"%s - failed submitting write urb, error %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__func__, result);
 			/* Throw away data. No better idea what to do with it. */
 			priv->wrfilled = 0;
@@ -289,13 +303,21 @@ static void cyberjack_read_int_callback(struct urb *urb)
 
 		old_rdtodo = priv->rdtodo;
 
+<<<<<<< HEAD
 		if (old_rdtodo + size < old_rdtodo) {
+=======
+		if (old_rdtodo > SHRT_MAX - size) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_dbg(dev, "To many bulk_in urbs to do.\n");
 			spin_unlock(&priv->lock);
 			goto resubmit;
 		}
 
+<<<<<<< HEAD
 		/* "+=" is probably more fault tollerant than "=" */
+=======
+		/* "+=" is probably more fault tolerant than "=" */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		priv->rdtodo += size;
 
 		dev_dbg(dev, "%s - rdtodo: %d\n", __func__, priv->rdtodo);
@@ -369,11 +391,20 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 	struct cyberjack_private *priv = usb_get_serial_port_data(port);
 	struct device *dev = &port->dev;
 	int status = urb->status;
+<<<<<<< HEAD
 
 	set_bit(0, &port->write_urbs_free);
 	if (status) {
 		dev_dbg(dev, "%s - nonzero write bulk status received: %d\n",
 			__func__, status);
+=======
+	bool resubmitted = false;
+
+	if (status) {
+		dev_dbg(dev, "%s - nonzero write bulk status received: %d\n",
+			__func__, status);
+		set_bit(0, &port->write_urbs_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -406,6 +437,11 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 			goto exit;
 		}
 
+<<<<<<< HEAD
+=======
+		resubmitted = true;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(dev, "%s - priv->wrsent=%d\n", __func__, priv->wrsent);
 		dev_dbg(dev, "%s - priv->wrfilled=%d\n", __func__, priv->wrfilled);
 
@@ -422,6 +458,11 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 
 exit:
 	spin_unlock(&priv->lock);
+<<<<<<< HEAD
+=======
+	if (!resubmitted)
+		set_bit(0, &port->write_urbs_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_serial_port_softint(port);
 }
 

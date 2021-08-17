@@ -46,7 +46,11 @@
  * @write_length: length for I2C measurement request
  */
 struct hih6130 {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex lock;
 	bool valid;
 	unsigned long last_update;
@@ -62,7 +66,10 @@ struct hih6130 {
  */
 static inline int hih6130_temp_ticks_to_millicelsius(int ticks)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ticks = ticks >> 2;
 	/*
 	 * from data sheet section 5.0
@@ -78,7 +85,10 @@ static inline int hih6130_temp_ticks_to_millicelsius(int ticks)
  */
 static inline int hih6130_rh_ticks_to_per_cent_mille(int ticks)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ticks &= ~0xC000; /* clear status bits */
 	/*
 	 * from data sheet section 4.0
@@ -89,6 +99,7 @@ static inline int hih6130_rh_ticks_to_per_cent_mille(int ticks)
 
 /**
  * hih6130_update_measurements() - get updated measurements from device
+<<<<<<< HEAD
  * @client: I2C client device
  *
  * Returns 0 on success, else negative errno.
@@ -98,6 +109,18 @@ static int hih6130_update_measurements(struct i2c_client *client)
 	int ret = 0;
 	int t;
 	struct hih6130 *hih6130 = i2c_get_clientdata(client);
+=======
+ * @dev: device
+ *
+ * Returns 0 on success, else negative errno.
+ */
+static int hih6130_update_measurements(struct device *dev)
+{
+	struct hih6130 *hih6130 = dev_get_drvdata(dev);
+	struct i2c_client *client = hih6130->client;
+	int ret = 0;
+	int t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char tmp[4];
 	struct i2c_msg msgs[1] = {
 		{
@@ -176,9 +199,16 @@ static ssize_t hih6130_show_temperature(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct hih6130 *hih6130 = i2c_get_clientdata(client);
 	int ret = hih6130_update_measurements(client);
+=======
+	struct hih6130 *hih6130 = dev_get_drvdata(dev);
+	int ret;
+
+	ret = hih6130_update_measurements(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 	return sprintf(buf, "%d\n", hih6130->temperature);
@@ -196,9 +226,16 @@ static ssize_t hih6130_show_temperature(struct device *dev,
 static ssize_t hih6130_show_humidity(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct hih6130 *hih6130 = i2c_get_clientdata(client);
 	int ret = hih6130_update_measurements(client);
+=======
+	struct hih6130 *hih6130 = dev_get_drvdata(dev);
+	int ret;
+
+	ret = hih6130_update_measurements(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 	return sprintf(buf, "%d\n", hih6130->humidity);
@@ -210,12 +247,17 @@ static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, hih6130_show_temperature,
 static SENSOR_DEVICE_ATTR(humidity1_input, S_IRUGO, hih6130_show_humidity,
 	NULL, 0);
 
+<<<<<<< HEAD
 static struct attribute *hih6130_attributes[] = {
+=======
+static struct attribute *hih6130_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_humidity1_input.dev_attr.attr,
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group hih6130_attr_group = {
 	.attrs = hih6130_attributes,
 };
@@ -234,12 +276,23 @@ static int hih6130_probe(struct i2c_client *client,
 {
 	struct hih6130 *hih6130;
 	int err;
+=======
+ATTRIBUTE_GROUPS(hih6130);
+
+static int hih6130_probe(struct i2c_client *client,
+				   const struct i2c_device_id *id)
+{
+	struct device *dev = &client->dev;
+	struct hih6130 *hih6130;
+	struct device *hwmon_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		dev_err(&client->dev, "adapter does not support true I2C\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	hih6130 = devm_kzalloc(&client->dev, sizeof(*hih6130), GFP_KERNEL);
 	if (!hih6130)
 		return -ENOMEM;
@@ -283,6 +336,22 @@ static int hih6130_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &hih6130_attr_group);
 
 	return 0;
+=======
+	hih6130 = devm_kzalloc(dev, sizeof(*hih6130), GFP_KERNEL);
+	if (!hih6130)
+		return -ENOMEM;
+
+	hih6130->client = client;
+	mutex_init(&hih6130->lock);
+
+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_QUICK))
+		hih6130->write_length = 1;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   hih6130,
+							   hih6130_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Device ID table */
@@ -295,7 +364,10 @@ MODULE_DEVICE_TABLE(i2c, hih6130_id);
 static struct i2c_driver hih6130_driver = {
 	.driver.name = "hih6130",
 	.probe       = hih6130_probe,
+<<<<<<< HEAD
 	.remove      = hih6130_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table    = hih6130_id,
 };
 

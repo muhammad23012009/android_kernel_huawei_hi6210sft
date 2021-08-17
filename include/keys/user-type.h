@@ -15,6 +15,11 @@
 #include <linux/key.h>
 #include <linux/rcupdate.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KEYS
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************************/
 /*
  * the payload for a key of type "user" or "logon"
@@ -29,7 +34,11 @@
 struct user_key_payload {
 	struct rcu_head	rcu;		/* RCU destructor */
 	unsigned short	datalen;	/* length of this data */
+<<<<<<< HEAD
 	char		data[0];	/* actual data */
+=======
+	char		data[0] __aligned(__alignof__(u64)); /* actual data */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern struct key_type key_type_user;
@@ -37,14 +46,29 @@ extern struct key_type key_type_logon;
 
 struct key_preparsed_payload;
 
+<<<<<<< HEAD
 extern int user_instantiate(struct key *key, struct key_preparsed_payload *prep);
 extern int user_update(struct key *key, struct key_preparsed_payload *prep);
 extern int user_match(const struct key *key, const void *criterion);
+=======
+extern int user_preparse(struct key_preparsed_payload *prep);
+extern void user_free_preparse(struct key_preparsed_payload *prep);
+extern int user_update(struct key *key, struct key_preparsed_payload *prep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void user_revoke(struct key *key);
 extern void user_destroy(struct key *key);
 extern void user_describe(const struct key *user, struct seq_file *m);
 extern long user_read(const struct key *key,
 		      char __user *buffer, size_t buflen);
 
+<<<<<<< HEAD
+=======
+static inline const struct user_key_payload *user_key_payload(const struct key *key)
+{
+	return (struct user_key_payload *)rcu_dereference_key(key);
+}
+
+#endif /* CONFIG_KEYS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _KEYS_USER_TYPE_H */

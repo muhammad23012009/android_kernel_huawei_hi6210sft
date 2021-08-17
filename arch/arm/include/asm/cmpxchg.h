@@ -2,6 +2,10 @@
 #define __ASM_ARM_CMPXCHG_H
 
 #include <linux/irqflags.h>
+<<<<<<< HEAD
+=======
+#include <linux/prefetch.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/barrier.h>
 
 #if defined(CONFIG_CPU_SA1100) || defined(CONFIG_CPU_SA110)
@@ -34,10 +38,18 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 	unsigned int tmp;
 #endif
 
+<<<<<<< HEAD
 	smp_mb();
 
 	switch (size) {
 #if __LINUX_ARM_ARCH__ >= 6
+=======
+	prefetchw((const void *)ptr);
+
+	switch (size) {
+#if __LINUX_ARM_ARCH__ >= 6
+#ifndef CONFIG_CPU_V6 /* MIN ARCH >= V6K */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 1:
 		asm volatile("@	__xchg1\n"
 		"1:	ldrexb	%0, [%3]\n"
@@ -48,6 +60,20 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 			: "r" (x), "r" (ptr)
 			: "memory", "cc");
 		break;
+<<<<<<< HEAD
+=======
+	case 2:
+		asm volatile("@	__xchg2\n"
+		"1:	ldrexh	%0, [%3]\n"
+		"	strexh	%1, %2, [%3]\n"
+		"	teq	%1, #0\n"
+		"	bne	1b"
+			: "=&r" (ret), "=&r" (tmp)
+			: "r" (x), "r" (ptr)
+			: "memory", "cc");
+		break;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 4:
 		asm volatile("@	__xchg4\n"
 		"1:	ldrex	%0, [%3]\n"
@@ -92,16 +118,30 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 		break;
 #endif
 	default:
+<<<<<<< HEAD
 		__bad_xchg(ptr, size), ret = 0;
 		break;
 	}
 	smp_mb();
+=======
+		/* Cause a link-time error, the xchg() size is not supported */
+		__bad_xchg(ptr, size), ret = 0;
+		break;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
 #define xchg(ptr,x) \
 	((__typeof__(*(ptr)))__xchg((unsigned long)(x),(ptr),sizeof(*(ptr))))
+=======
+#define xchg_relaxed(ptr, x) ({						\
+	(__typeof__(*(ptr)))__xchg((unsigned long)(x), (ptr),		\
+				   sizeof(*(ptr)));			\
+})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm-generic/cmpxchg-local.h>
 
@@ -112,10 +152,16 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 #error "SMP is not supported on this platform"
 #endif
 
+<<<<<<< HEAD
+=======
+#define xchg xchg_relaxed
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * cmpxchg_local and cmpxchg64_local are atomic wrt current CPU. Always make
  * them available.
  */
+<<<<<<< HEAD
 #define cmpxchg_local(ptr, o, n)				  	       \
 	((__typeof__(*(ptr)))__cmpxchg_local_generic((ptr), (unsigned long)(o),\
 			(unsigned long)(n), sizeof(*(ptr))))
@@ -124,6 +170,18 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 #ifndef CONFIG_SMP
 #include <asm-generic/cmpxchg.h>
 #endif
+=======
+#define cmpxchg_local(ptr, o, n) ({					\
+	(__typeof(*ptr))__cmpxchg_local_generic((ptr),			\
+					        (unsigned long)(o),	\
+					        (unsigned long)(n),	\
+					        sizeof(*(ptr)));	\
+})
+
+#define cmpxchg64_local(ptr, o, n) __cmpxchg64_local_generic((ptr), (o), (n))
+
+#include <asm-generic/cmpxchg.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else	/* min ARCH >= ARMv6 */
 
@@ -138,6 +196,11 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 {
 	unsigned long oldval, res;
 
+<<<<<<< HEAD
+=======
+	prefetchw((const void *)ptr);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (size) {
 #ifndef CONFIG_CPU_V6	/* min ARCH >= ARMv6K */
 	case 1:
@@ -185,6 +248,7 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 	return oldval;
 }
 
+<<<<<<< HEAD
 static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 					 unsigned long new, int size)
 {
@@ -202,6 +266,14 @@ static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 					  (unsigned long)(o),		\
 					  (unsigned long)(n),		\
 					  sizeof(*(ptr))))
+=======
+#define cmpxchg_relaxed(ptr,o,n) ({					\
+	(__typeof__(*(ptr)))__cmpxchg((ptr),				\
+				      (unsigned long)(o),		\
+				      (unsigned long)(n),		\
+				      sizeof(*(ptr)));			\
+})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long __cmpxchg_local(volatile void *ptr,
 					    unsigned long old,
@@ -223,6 +295,7 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	return ret;
 }
 
+<<<<<<< HEAD
 #define cmpxchg_local(ptr,o,n)						\
 	((__typeof__(*(ptr)))__cmpxchg_local((ptr),			\
 				       (unsigned long)(o),		\
@@ -242,6 +315,47 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 						a),			\
 					     (unsigned long long)(o),	\
 					     (unsigned long long)(n)))
+=======
+#define cmpxchg_local(ptr, o, n) ({					\
+	(__typeof(*ptr))__cmpxchg_local((ptr),				\
+				        (unsigned long)(o),		\
+				        (unsigned long)(n),		\
+				        sizeof(*(ptr)));		\
+})
+
+static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
+					     unsigned long long old,
+					     unsigned long long new)
+{
+	unsigned long long oldval;
+	unsigned long res;
+
+	prefetchw(ptr);
+
+	__asm__ __volatile__(
+"1:	ldrexd		%1, %H1, [%3]\n"
+"	teq		%1, %4\n"
+"	teqeq		%H1, %H4\n"
+"	bne		2f\n"
+"	strexd		%0, %5, %H5, [%3]\n"
+"	teq		%0, #0\n"
+"	bne		1b\n"
+"2:"
+	: "=&r" (res), "=&r" (oldval), "+Qo" (*ptr)
+	: "r" (ptr), "r" (old), "r" (new)
+	: "cc");
+
+	return oldval;
+}
+
+#define cmpxchg64_relaxed(ptr, o, n) ({					\
+	(__typeof__(*(ptr)))__cmpxchg64((ptr),				\
+					(unsigned long long)(o),	\
+					(unsigned long long)(n));	\
+})
+
+#define cmpxchg64_local(ptr, o, n) cmpxchg64_relaxed((ptr), (o), (n))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __LINUX_ARM_ARCH__ >= 6 */
 

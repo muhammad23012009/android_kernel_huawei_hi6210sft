@@ -44,7 +44,10 @@ extern char *strstr(const char *, const char *);
 #undef __HAVE_ARCH_STRCHR
 #undef __HAVE_ARCH_STRNCHR
 #undef __HAVE_ARCH_STRNCMP
+<<<<<<< HEAD
 #undef __HAVE_ARCH_STRNICMP
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef __HAVE_ARCH_STRPBRK
 #undef __HAVE_ARCH_STRSEP
 #undef __HAVE_ARCH_STRSPN

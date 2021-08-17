@@ -20,6 +20,7 @@
 
 #include "common.h"
 
+<<<<<<< HEAD
 static void __iomem *scu_base;
 static void __iomem *rsc_base;
 
@@ -45,6 +46,13 @@ void __init sirfsoc_map_scu(void)
 }
 
 static void __cpuinit sirfsoc_secondary_init(unsigned int cpu)
+=======
+static void __iomem *clk_base;
+
+static DEFINE_SPINLOCK(boot_lock);
+
+static void sirfsoc_secondary_init(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * let the primary processor know we're out of the
@@ -60,16 +68,26 @@ static void __cpuinit sirfsoc_secondary_init(unsigned int cpu)
 	spin_unlock(&boot_lock);
 }
 
+<<<<<<< HEAD
 static struct of_device_id rsc_ids[]  = {
 	{ .compatible = "sirf,marco-rsc" },
 	{},
 };
 
 static int __cpuinit sirfsoc_boot_secondary(unsigned int cpu, struct task_struct *idle)
+=======
+static const struct of_device_id clk_ids[]  = {
+	{ .compatible = "sirf,atlas7-clkc" },
+	{},
+};
+
+static int sirfsoc_boot_secondary(unsigned int cpu, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long timeout;
 	struct device_node *np;
 
+<<<<<<< HEAD
 	np = of_find_matching_node(NULL, rsc_ids);
 	if (!np)
 		return -ENODEV;
@@ -91,6 +109,29 @@ static int __cpuinit sirfsoc_boot_secondary(unsigned int cpu, struct task_struct
 #define SIRFSOC_CPU1_WAKEMAGIC_OFFSET 0x28
 	__raw_writel(0x3CAF5D62,
 		rsc_base + SIRFSOC_CPU1_WAKEMAGIC_OFFSET);
+=======
+	np = of_find_matching_node(NULL, clk_ids);
+	if (!np)
+		return -ENODEV;
+
+	clk_base = of_iomap(np, 0);
+	if (!clk_base)
+		return -ENOMEM;
+
+	/*
+	 * write the address of secondary startup into the clkc register
+	 * at offset 0x2bC, then write the magic number 0x3CAF5D62 to the
+	 * clkc register at offset 0x2b8, which is what boot rom code is
+	 * waiting for. This would wake up the secondary core from WFE
+	 */
+#define SIRFSOC_CPU1_JUMPADDR_OFFSET 0x2bc
+	__raw_writel(virt_to_phys(sirfsoc_secondary_startup),
+		clk_base + SIRFSOC_CPU1_JUMPADDR_OFFSET);
+
+#define SIRFSOC_CPU1_WAKEMAGIC_OFFSET 0x2b8
+	__raw_writel(0x3CAF5D62,
+		clk_base + SIRFSOC_CPU1_WAKEMAGIC_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* make sure write buffer is drained */
 	mb();
@@ -106,8 +147,12 @@ static int __cpuinit sirfsoc_boot_secondary(unsigned int cpu, struct task_struct
 	 * "cpu" is Linux's internal ID.
 	 */
 	pen_release = cpu_logical_map(cpu);
+<<<<<<< HEAD
 	__cpuc_flush_dcache_area((void *)&pen_release, sizeof(pen_release));
 	outer_clean_range(__pa(&pen_release), __pa(&pen_release + 1));
+=======
+	sync_cache_w(&pen_release);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Send the secondary CPU SEV, thereby causing the boot monitor to read
@@ -133,6 +178,7 @@ static int __cpuinit sirfsoc_boot_secondary(unsigned int cpu, struct task_struct
 	return pen_release != -1 ? -ENOSYS : 0;
 }
 
+<<<<<<< HEAD
 static void __init sirfsoc_smp_prepare_cpus(unsigned int max_cpus)
 {
 	scu_enable(scu_base);
@@ -142,6 +188,11 @@ struct smp_operations sirfsoc_smp_ops __initdata = {
         .smp_prepare_cpus       = sirfsoc_smp_prepare_cpus,
         .smp_secondary_init     = sirfsoc_secondary_init,
         .smp_boot_secondary     = sirfsoc_boot_secondary,
+=======
+const struct smp_operations sirfsoc_smp_ops __initconst = {
+	.smp_secondary_init     = sirfsoc_secondary_init,
+	.smp_boot_secondary     = sirfsoc_boot_secondary,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_HOTPLUG_CPU
 	.cpu_die                = sirfsoc_cpu_die,
 #endif

@@ -55,10 +55,18 @@
 #include <linux/times.h>
 #include <linux/syscalls.h>
 #include <linux/mount.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/div64.h>
 #include <linux/blkdev.h> /* sector_div */
 #include <linux/pid_namespace.h>
+=======
+#include <linux/uaccess.h>
+#include <asm/div64.h>
+#include <linux/blkdev.h> /* sector_div */
+#include <linux/pid_namespace.h>
+#include <linux/fs_pin.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These constants control the amount of freespace that suspend and
@@ -75,6 +83,7 @@ int acct_parm[3] = {4, 2, 30};
 /*
  * External references and all of the globals.
  */
+<<<<<<< HEAD
 static void do_acct_process(struct bsd_acct_struct *acct,
 		struct pid_namespace *ns, struct file *);
 
@@ -84,19 +93,36 @@ static void do_acct_process(struct bsd_acct_struct *acct,
  * the cache line to have the data after getting the lock.
  */
 struct bsd_acct_struct {
+=======
+
+struct bsd_acct_struct {
+	struct fs_pin		pin;
+	atomic_long_t		count;
+	struct rcu_head		rcu;
+	struct mutex		lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			active;
 	unsigned long		needcheck;
 	struct file		*file;
 	struct pid_namespace	*ns;
+<<<<<<< HEAD
 	struct list_head	list;
 };
 
 static DEFINE_SPINLOCK(acct_lock);
 static LIST_HEAD(acct_list);
+=======
+	struct work_struct	work;
+	struct completion	done;
+};
+
+static void do_acct_process(struct bsd_acct_struct *acct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Check the amount of free space and suspend/resume accordingly.
  */
+<<<<<<< HEAD
 static int check_free_space(struct bsd_acct_struct *acct, struct file *file)
 {
 	struct kstatfs sbuf;
@@ -147,10 +173,37 @@ static int check_free_space(struct bsd_acct_struct *acct, struct file *file)
 		if (act > 0) {
 			acct->active = 1;
 			printk(KERN_INFO "Process accounting resumed\n");
+=======
+static int check_free_space(struct bsd_acct_struct *acct)
+{
+	struct kstatfs sbuf;
+
+	if (time_is_after_jiffies(acct->needcheck))
+		goto out;
+
+	/* May block */
+	if (vfs_statfs(&acct->file->f_path, &sbuf))
+		goto out;
+
+	if (acct->active) {
+		u64 suspend = sbuf.f_blocks * SUSPEND;
+		do_div(suspend, 100);
+		if (sbuf.f_bavail <= suspend) {
+			acct->active = 0;
+			pr_info("Process accounting paused\n");
+		}
+	} else {
+		u64 resume = sbuf.f_blocks * RESUME;
+		do_div(resume, 100);
+		if (sbuf.f_bavail >= resume) {
+			acct->active = 1;
+			pr_info("Process accounting resumed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	acct->needcheck = jiffies + ACCT_TIMEOUT*HZ;
+<<<<<<< HEAD
 	res = acct->active;
 out:
 	spin_unlock(&acct_lock);
@@ -191,11 +244,76 @@ static void acct_file_reopen(struct bsd_acct_struct *acct, struct file *file,
 		filp_close(old_acct, NULL);
 		spin_lock(&acct_lock);
 	}
+=======
+out:
+	return acct->active;
+}
+
+static void acct_put(struct bsd_acct_struct *p)
+{
+	if (atomic_long_dec_and_test(&p->count))
+		kfree_rcu(p, rcu);
+}
+
+static inline struct bsd_acct_struct *to_acct(struct fs_pin *p)
+{
+	return p ? container_of(p, struct bsd_acct_struct, pin) : NULL;
+}
+
+static struct bsd_acct_struct *acct_get(struct pid_namespace *ns)
+{
+	struct bsd_acct_struct *res;
+again:
+	smp_rmb();
+	rcu_read_lock();
+	res = to_acct(ACCESS_ONCE(ns->bacct));
+	if (!res) {
+		rcu_read_unlock();
+		return NULL;
+	}
+	if (!atomic_long_inc_not_zero(&res->count)) {
+		rcu_read_unlock();
+		cpu_relax();
+		goto again;
+	}
+	rcu_read_unlock();
+	mutex_lock(&res->lock);
+	if (res != to_acct(ACCESS_ONCE(ns->bacct))) {
+		mutex_unlock(&res->lock);
+		acct_put(res);
+		goto again;
+	}
+	return res;
+}
+
+static void acct_pin_kill(struct fs_pin *pin)
+{
+	struct bsd_acct_struct *acct = to_acct(pin);
+	mutex_lock(&acct->lock);
+	do_acct_process(acct);
+	schedule_work(&acct->work);
+	wait_for_completion(&acct->done);
+	cmpxchg(&acct->ns->bacct, pin, NULL);
+	mutex_unlock(&acct->lock);
+	pin_remove(pin);
+	acct_put(acct);
+}
+
+static void close_work(struct work_struct *work)
+{
+	struct bsd_acct_struct *acct = container_of(work, struct bsd_acct_struct, work);
+	struct file *file = acct->file;
+	if (file->f_op->flush)
+		file->f_op->flush(file, NULL);
+	__fput_sync(file);
+	complete(&acct->done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int acct_on(struct filename *pathname)
 {
 	struct file *file;
+<<<<<<< HEAD
 	struct vfsmount *mnt;
 	struct pid_namespace *ns;
 	struct bsd_acct_struct *acct = NULL;
@@ -206,10 +324,32 @@ static int acct_on(struct filename *pathname)
 		return PTR_ERR(file);
 
 	if (!S_ISREG(file_inode(file)->i_mode)) {
+=======
+	struct vfsmount *mnt, *internal;
+	struct pid_namespace *ns = task_active_pid_ns(current);
+	struct bsd_acct_struct *acct;
+	struct fs_pin *old;
+	int err;
+
+	acct = kzalloc(sizeof(struct bsd_acct_struct), GFP_KERNEL);
+	if (!acct)
+		return -ENOMEM;
+
+	/* Difference from BSD - they don't do O_APPEND */
+	file = file_open_name(pathname, O_WRONLY|O_APPEND|O_LARGEFILE, 0);
+	if (IS_ERR(file)) {
+		kfree(acct);
+		return PTR_ERR(file);
+	}
+
+	if (!S_ISREG(file_inode(file)->i_mode)) {
+		kfree(acct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		filp_close(file, NULL);
 		return -EACCES;
 	}
 
+<<<<<<< HEAD
 	if (!file->f_op->write) {
 		filp_close(file, NULL);
 		return -EIO;
@@ -241,6 +381,51 @@ static int acct_on(struct filename *pathname)
 	return 0;
 }
 
+=======
+	if (!(file->f_mode & FMODE_CAN_WRITE)) {
+		kfree(acct);
+		filp_close(file, NULL);
+		return -EIO;
+	}
+	internal = mnt_clone_internal(&file->f_path);
+	if (IS_ERR(internal)) {
+		kfree(acct);
+		filp_close(file, NULL);
+		return PTR_ERR(internal);
+	}
+	err = mnt_want_write(internal);
+	if (err) {
+		mntput(internal);
+		kfree(acct);
+		filp_close(file, NULL);
+		return err;
+	}
+	mnt = file->f_path.mnt;
+	file->f_path.mnt = internal;
+
+	atomic_long_set(&acct->count, 1);
+	init_fs_pin(&acct->pin, acct_pin_kill);
+	acct->file = file;
+	acct->needcheck = jiffies;
+	acct->ns = ns;
+	mutex_init(&acct->lock);
+	INIT_WORK(&acct->work, close_work);
+	init_completion(&acct->done);
+	mutex_lock_nested(&acct->lock, 1);	/* nobody has seen it yet */
+	pin_insert(&acct->pin, mnt);
+
+	rcu_read_lock();
+	old = xchg(&ns->bacct, &acct->pin);
+	mutex_unlock(&acct->lock);
+	pin_kill(old);
+	mnt_drop_write(mnt);
+	mntput(mnt);
+	return 0;
+}
+
+static DEFINE_MUTEX(acct_on_mutex);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * sys_acct - enable/disable process accounting
  * @name: file name for accounting records or NULL to shutdown accounting
@@ -261,6 +446,7 @@ SYSCALL_DEFINE1(acct, const char __user *, name)
 
 	if (name) {
 		struct filename *tmp = getname(name);
+<<<<<<< HEAD
 		if (IS_ERR(tmp))
 			return (PTR_ERR(tmp));
 		error = acct_on(tmp);
@@ -275,11 +461,24 @@ SYSCALL_DEFINE1(acct, const char __user *, name)
 		spin_lock(&acct_lock);
 		acct_file_reopen(acct, NULL, NULL);
 		spin_unlock(&acct_lock);
+=======
+
+		if (IS_ERR(tmp))
+			return PTR_ERR(tmp);
+		mutex_lock(&acct_on_mutex);
+		error = acct_on(tmp);
+		mutex_unlock(&acct_on_mutex);
+		putname(tmp);
+	} else {
+		rcu_read_lock();
+		pin_kill(task_active_pid_ns(current)->bacct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return error;
 }
 
+<<<<<<< HEAD
 /**
  * acct_auto_close - turn off a filesystem's accounting if it is on
  * @m: vfsmount being shut down
@@ -335,6 +534,12 @@ void acct_exit_ns(struct pid_namespace *ns)
 	spin_unlock(&acct_lock);
 
 	kfree(acct);
+=======
+void acct_exit_ns(struct pid_namespace *ns)
+{
+	rcu_read_lock();
+	pin_kill(ns->bacct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -376,7 +581,11 @@ static comp_t encode_comp_t(unsigned long value)
 	return exp;
 }
 
+<<<<<<< HEAD
 #if ACCT_VERSION==1 || ACCT_VERSION==2
+=======
+#if ACCT_VERSION == 1 || ACCT_VERSION == 2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * encode an u64 into a comp2_t (24 bits)
  *
@@ -389,7 +598,11 @@ static comp_t encode_comp_t(unsigned long value)
 #define MANTSIZE2       20                      /* 20 bit mantissa. */
 #define EXPSIZE2        5                       /* 5 bit base 2 exponent. */
 #define MAXFRACT2       ((1ul << MANTSIZE2) - 1) /* Maximum fractional value. */
+<<<<<<< HEAD
 #define MAXEXP2         ((1 <<EXPSIZE2) - 1)    /* Maximum exponent. */
+=======
+#define MAXEXP2         ((1 << EXPSIZE2) - 1)    /* Maximum exponent. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static comp2_t encode_comp2_t(u64 value)
 {
@@ -420,7 +633,11 @@ static comp2_t encode_comp2_t(u64 value)
 }
 #endif
 
+<<<<<<< HEAD
 #if ACCT_VERSION==3
+=======
+#if ACCT_VERSION == 3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * encode an u64 into a 32 bit IEEE float
  */
@@ -429,8 +646,14 @@ static u32 encode_float(u64 value)
 	unsigned exp = 190;
 	unsigned u;
 
+<<<<<<< HEAD
 	if (value==0) return 0;
 	while ((s64)value > 0){
+=======
+	if (value == 0)
+		return 0;
+	while ((s64)value > 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		value <<= 1;
 		exp--;
 	}
@@ -448,6 +671,7 @@ static u32 encode_float(u64 value)
  *  do_exit() or when switching to a different output file.
  */
 
+<<<<<<< HEAD
 /*
  *  do_acct_process does all actual work. Caller holds the reference to file.
  */
@@ -473,11 +697,19 @@ static void do_acct_process(struct bsd_acct_struct *acct,
 	 */
 	if (!check_free_space(acct, file))
 		goto out;
+=======
+static void fill_ac(acct_t *ac)
+{
+	struct pacct_struct *pacct = &current->signal->pacct;
+	u64 elapsed, run_time;
+	struct tty_struct *tty;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Fill the accounting struct with the needed info as recorded
 	 * by the different kernel functions.
 	 */
+<<<<<<< HEAD
 	memset(&ac, 0, sizeof(acct_t));
 
 	ac.ac_version = ACCT_VERSION | ACCT_BYTEORDER;
@@ -522,10 +754,42 @@ static void do_acct_process(struct bsd_acct_struct *acct,
 	rcu_read_lock();
 	ac.ac_ppid = task_tgid_nr_ns(rcu_dereference(current->real_parent), ns);
 	rcu_read_unlock();
+=======
+	memset(ac, 0, sizeof(acct_t));
+
+	ac->ac_version = ACCT_VERSION | ACCT_BYTEORDER;
+	strlcpy(ac->ac_comm, current->comm, sizeof(ac->ac_comm));
+
+	/* calculate run_time in nsec*/
+	run_time = ktime_get_ns();
+	run_time -= current->group_leader->start_time;
+	/* convert nsec -> AHZ */
+	elapsed = nsec_to_AHZ(run_time);
+#if ACCT_VERSION == 3
+	ac->ac_etime = encode_float(elapsed);
+#else
+	ac->ac_etime = encode_comp_t(elapsed < (unsigned long) -1l ?
+				(unsigned long) elapsed : (unsigned long) -1l);
+#endif
+#if ACCT_VERSION == 1 || ACCT_VERSION == 2
+	{
+		/* new enlarged etime field */
+		comp2_t etime = encode_comp2_t(elapsed);
+
+		ac->ac_etime_hi = etime >> 16;
+		ac->ac_etime_lo = (u16) etime;
+	}
+#endif
+	do_div(elapsed, AHZ);
+	ac->ac_btime = get_seconds() - elapsed;
+#if ACCT_VERSION==2
+	ac->ac_ahz = AHZ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	spin_lock_irq(&current->sighand->siglock);
 	tty = current->signal->tty;	/* Safe as we hold the siglock */
+<<<<<<< HEAD
 	ac.ac_tty = tty ? old_encode_dev(tty_devnum(tty)) : 0;
 	ac.ac_utime = encode_comp_t(jiffies_to_AHZ(cputime_to_jiffies(pacct->ac_utime)));
 	ac.ac_stime = encode_comp_t(jiffies_to_AHZ(cputime_to_jiffies(pacct->ac_stime)));
@@ -562,6 +826,75 @@ static void do_acct_process(struct bsd_acct_struct *acct,
 	set_fs(fs);
 	file_end_write(file);
 out:
+=======
+	ac->ac_tty = tty ? old_encode_dev(tty_devnum(tty)) : 0;
+	ac->ac_utime = encode_comp_t(jiffies_to_AHZ(cputime_to_jiffies(pacct->ac_utime)));
+	ac->ac_stime = encode_comp_t(jiffies_to_AHZ(cputime_to_jiffies(pacct->ac_stime)));
+	ac->ac_flag = pacct->ac_flag;
+	ac->ac_mem = encode_comp_t(pacct->ac_mem);
+	ac->ac_minflt = encode_comp_t(pacct->ac_minflt);
+	ac->ac_majflt = encode_comp_t(pacct->ac_majflt);
+	ac->ac_exitcode = pacct->ac_exitcode;
+	spin_unlock_irq(&current->sighand->siglock);
+}
+/*
+ *  do_acct_process does all actual work. Caller holds the reference to file.
+ */
+static void do_acct_process(struct bsd_acct_struct *acct)
+{
+	acct_t ac;
+	unsigned long flim;
+	const struct cred *orig_cred;
+	struct file *file = acct->file;
+
+	/*
+	 * Accounting records are not subject to resource limits.
+	 */
+	flim = current->signal->rlim[RLIMIT_FSIZE].rlim_cur;
+	current->signal->rlim[RLIMIT_FSIZE].rlim_cur = RLIM_INFINITY;
+	/* Perform file operations on behalf of whoever enabled accounting */
+	orig_cred = override_creds(file->f_cred);
+
+	/*
+	 * First check to see if there is enough free_space to continue
+	 * the process accounting system.
+	 */
+	if (!check_free_space(acct))
+		goto out;
+
+	fill_ac(&ac);
+	/* we really need to bite the bullet and change layout */
+	ac.ac_uid = from_kuid_munged(file->f_cred->user_ns, orig_cred->uid);
+	ac.ac_gid = from_kgid_munged(file->f_cred->user_ns, orig_cred->gid);
+#if ACCT_VERSION == 1 || ACCT_VERSION == 2
+	/* backward-compatible 16 bit fields */
+	ac.ac_uid16 = ac.ac_uid;
+	ac.ac_gid16 = ac.ac_gid;
+#endif
+#if ACCT_VERSION == 3
+	{
+		struct pid_namespace *ns = acct->ns;
+
+		ac.ac_pid = task_tgid_nr_ns(current, ns);
+		rcu_read_lock();
+		ac.ac_ppid = task_tgid_nr_ns(rcu_dereference(current->real_parent),
+					     ns);
+		rcu_read_unlock();
+	}
+#endif
+	/*
+	 * Get freeze protection. If the fs is frozen, just skip the write
+	 * as we could deadlock the system otherwise.
+	 */
+	if (file_start_write_trylock(file)) {
+		/* it's been opened O_APPEND, so position is irrelevant */
+		loff_t pos = 0;
+		__kernel_write(file, (char *)&ac, sizeof(acct_t), &pos);
+		file_end_write(file);
+	}
+out:
+	current->signal->rlim[RLIMIT_FSIZE].rlim_cur = flim;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	revert_creds(orig_cred);
 }
 
@@ -578,6 +911,10 @@ void acct_collect(long exitcode, int group_dead)
 
 	if (group_dead && current->mm) {
 		struct vm_area_struct *vma;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		down_read(&current->mm->mmap_sem);
 		vma = current->mm->mmap;
 		while (vma) {
@@ -609,6 +946,7 @@ void acct_collect(long exitcode, int group_dead)
 	spin_unlock_irq(&current->sighand->siglock);
 }
 
+<<<<<<< HEAD
 static void acct_process_in_ns(struct pid_namespace *ns)
 {
 	struct file *file = NULL;
@@ -637,6 +975,22 @@ static void acct_process_in_ns(struct pid_namespace *ns)
 /**
  * acct_process - now just a wrapper around acct_process_in_ns,
  * which in turn is a wrapper around do_acct_process.
+=======
+static void slow_acct_process(struct pid_namespace *ns)
+{
+	for ( ; ns; ns = ns->parent) {
+		struct bsd_acct_struct *acct = acct_get(ns);
+		if (acct) {
+			do_acct_process(acct);
+			mutex_unlock(&acct->lock);
+			acct_put(acct);
+		}
+	}
+}
+
+/**
+ * acct_process
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * handles process accounting for an exiting task
  */
@@ -649,6 +1003,15 @@ void acct_process(void)
 	 * alive and holds its namespace, which in turn holds
 	 * its parent.
 	 */
+<<<<<<< HEAD
 	for (ns = task_active_pid_ns(current); ns != NULL; ns = ns->parent)
 		acct_process_in_ns(ns);
+=======
+	for (ns = task_active_pid_ns(current); ns != NULL; ns = ns->parent) {
+		if (ns->bacct)
+			break;
+	}
+	if (unlikely(ns))
+		slow_acct_process(ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

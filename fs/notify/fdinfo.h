@@ -10,11 +10,19 @@ struct file;
 #ifdef CONFIG_PROC_FS
 
 #ifdef CONFIG_INOTIFY_USER
+<<<<<<< HEAD
 extern int inotify_show_fdinfo(struct seq_file *m, struct file *f);
 #endif
 
 #ifdef CONFIG_FANOTIFY
 extern int fanotify_show_fdinfo(struct seq_file *m, struct file *f);
+=======
+void inotify_show_fdinfo(struct seq_file *m, struct file *f);
+#endif
+
+#ifdef CONFIG_FANOTIFY
+void fanotify_show_fdinfo(struct seq_file *m, struct file *f);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #else /* CONFIG_PROC_FS */

@@ -20,6 +20,11 @@
 #include <linux/time.h>
 #include <linux/bug.h>
 #include <linux/cache.h>
+<<<<<<< HEAD
+=======
+#include <linux/rbtree.h>
+#include <linux/socket.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/atomic.h>
 #include <asm/types.h>
@@ -28,6 +33,7 @@
 #include <linux/textsearch.h>
 #include <net/checksum.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
 #include <linux/dmaengine.h>
 #include <linux/hrtimer.h>
 #include <linux/dma-mapping.h>
@@ -42,6 +48,201 @@
 
 #define SKB_DATA_ALIGN(X)	(((X) + (SMP_CACHE_BYTES - 1)) & \
 				 ~(SMP_CACHE_BYTES - 1))
+=======
+#include <linux/hrtimer.h>
+#include <linux/dma-mapping.h>
+#include <linux/netdev_features.h>
+#include <linux/sched.h>
+#include <net/flow_dissector.h>
+#include <linux/splice.h>
+#include <linux/in6.h>
+#include <linux/if_packet.h>
+#include <net/flow.h>
+
+/* The interface for checksum offload between the stack and networking drivers
+ * is as follows...
+ *
+ * A. IP checksum related features
+ *
+ * Drivers advertise checksum offload capabilities in the features of a device.
+ * From the stack's point of view these are capabilities offered by the driver,
+ * a driver typically only advertises features that it is capable of offloading
+ * to its device.
+ *
+ * The checksum related features are:
+ *
+ *	NETIF_F_HW_CSUM	- The driver (or its device) is able to compute one
+ *			  IP (one's complement) checksum for any combination
+ *			  of protocols or protocol layering. The checksum is
+ *			  computed and set in a packet per the CHECKSUM_PARTIAL
+ *			  interface (see below).
+ *
+ *	NETIF_F_IP_CSUM - Driver (device) is only able to checksum plain
+ *			  TCP or UDP packets over IPv4. These are specifically
+ *			  unencapsulated packets of the form IPv4|TCP or
+ *			  IPv4|UDP where the Protocol field in the IPv4 header
+ *			  is TCP or UDP. The IPv4 header may contain IP options
+ *			  This feature cannot be set in features for a device
+ *			  with NETIF_F_HW_CSUM also set. This feature is being
+ *			  DEPRECATED (see below).
+ *
+ *	NETIF_F_IPV6_CSUM - Driver (device) is only able to checksum plain
+ *			  TCP or UDP packets over IPv6. These are specifically
+ *			  unencapsulated packets of the form IPv6|TCP or
+ *			  IPv4|UDP where the Next Header field in the IPv6
+ *			  header is either TCP or UDP. IPv6 extension headers
+ *			  are not supported with this feature. This feature
+ *			  cannot be set in features for a device with
+ *			  NETIF_F_HW_CSUM also set. This feature is being
+ *			  DEPRECATED (see below).
+ *
+ *	NETIF_F_RXCSUM - Driver (device) performs receive checksum offload.
+ *			 This flag is used only used to disable the RX checksum
+ *			 feature for a device. The stack will accept receive
+ *			 checksum indication in packets received on a device
+ *			 regardless of whether NETIF_F_RXCSUM is set.
+ *
+ * B. Checksumming of received packets by device. Indication of checksum
+ *    verification is in set skb->ip_summed. Possible values are:
+ *
+ * CHECKSUM_NONE:
+ *
+ *   Device did not checksum this packet e.g. due to lack of capabilities.
+ *   The packet contains full (though not verified) checksum in packet but
+ *   not in skb->csum. Thus, skb->csum is undefined in this case.
+ *
+ * CHECKSUM_UNNECESSARY:
+ *
+ *   The hardware you're dealing with doesn't calculate the full checksum
+ *   (as in CHECKSUM_COMPLETE), but it does parse headers and verify checksums
+ *   for specific protocols. For such packets it will set CHECKSUM_UNNECESSARY
+ *   if their checksums are okay. skb->csum is still undefined in this case
+ *   though. A driver or device must never modify the checksum field in the
+ *   packet even if checksum is verified.
+ *
+ *   CHECKSUM_UNNECESSARY is applicable to following protocols:
+ *     TCP: IPv6 and IPv4.
+ *     UDP: IPv4 and IPv6. A device may apply CHECKSUM_UNNECESSARY to a
+ *       zero UDP checksum for either IPv4 or IPv6, the networking stack
+ *       may perform further validation in this case.
+ *     GRE: only if the checksum is present in the header.
+ *     SCTP: indicates the CRC in SCTP header has been validated.
+ *
+ *   skb->csum_level indicates the number of consecutive checksums found in
+ *   the packet minus one that have been verified as CHECKSUM_UNNECESSARY.
+ *   For instance if a device receives an IPv6->UDP->GRE->IPv4->TCP packet
+ *   and a device is able to verify the checksums for UDP (possibly zero),
+ *   GRE (checksum flag is set), and TCP-- skb->csum_level would be set to
+ *   two. If the device were only able to verify the UDP checksum and not
+ *   GRE, either because it doesn't support GRE checksum of because GRE
+ *   checksum is bad, skb->csum_level would be set to zero (TCP checksum is
+ *   not considered in this case).
+ *
+ * CHECKSUM_COMPLETE:
+ *
+ *   This is the most generic way. The device supplied checksum of the _whole_
+ *   packet as seen by netif_rx() and fills out in skb->csum. Meaning, the
+ *   hardware doesn't need to parse L3/L4 headers to implement this.
+ *
+ *   Note: Even if device supports only some protocols, but is able to produce
+ *   skb->csum, it MUST use CHECKSUM_COMPLETE, not CHECKSUM_UNNECESSARY.
+ *
+ * CHECKSUM_PARTIAL:
+ *
+ *   A checksum is set up to be offloaded to a device as described in the
+ *   output description for CHECKSUM_PARTIAL. This may occur on a packet
+ *   received directly from another Linux OS, e.g., a virtualized Linux kernel
+ *   on the same host, or it may be set in the input path in GRO or remote
+ *   checksum offload. For the purposes of checksum verification, the checksum
+ *   referred to by skb->csum_start + skb->csum_offset and any preceding
+ *   checksums in the packet are considered verified. Any checksums in the
+ *   packet that are after the checksum being offloaded are not considered to
+ *   be verified.
+ *
+ * C. Checksumming on transmit for non-GSO. The stack requests checksum offload
+ *    in the skb->ip_summed for a packet. Values are:
+ *
+ * CHECKSUM_PARTIAL:
+ *
+ *   The driver is required to checksum the packet as seen by hard_start_xmit()
+ *   from skb->csum_start up to the end, and to record/write the checksum at
+ *   offset skb->csum_start + skb->csum_offset. A driver may verify that the
+ *   csum_start and csum_offset values are valid values given the length and
+ *   offset of the packet, however they should not attempt to validate that the
+ *   checksum refers to a legitimate transport layer checksum-- it is the
+ *   purview of the stack to validate that csum_start and csum_offset are set
+ *   correctly.
+ *
+ *   When the stack requests checksum offload for a packet, the driver MUST
+ *   ensure that the checksum is set correctly. A driver can either offload the
+ *   checksum calculation to the device, or call skb_checksum_help (in the case
+ *   that the device does not support offload for a particular checksum).
+ *
+ *   NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM are being deprecated in favor of
+ *   NETIF_F_HW_CSUM. New devices should use NETIF_F_HW_CSUM to indicate
+ *   checksum offload capability. If a	device has limited checksum capabilities
+ *   (for instance can only perform NETIF_F_IP_CSUM or NETIF_F_IPV6_CSUM as
+ *   described above) a helper function can be called to resolve
+ *   CHECKSUM_PARTIAL. The helper functions are skb_csum_off_chk*. The helper
+ *   function takes a spec argument that describes the protocol layer that is
+ *   supported for checksum offload and can be called for each packet. If a
+ *   packet does not match the specification for offload, skb_checksum_help
+ *   is called to resolve the checksum.
+ *
+ * CHECKSUM_NONE:
+ *
+ *   The skb was already checksummed by the protocol, or a checksum is not
+ *   required.
+ *
+ * CHECKSUM_UNNECESSARY:
+ *
+ *   This has the same meaning on as CHECKSUM_NONE for checksum offload on
+ *   output.
+ *
+ * CHECKSUM_COMPLETE:
+ *   Not used in checksum output. If a driver observes a packet with this value
+ *   set in skbuff, if should treat as CHECKSUM_NONE being set.
+ *
+ * D. Non-IP checksum (CRC) offloads
+ *
+ *   NETIF_F_SCTP_CRC - This feature indicates that a device is capable of
+ *     offloading the SCTP CRC in a packet. To perform this offload the stack
+ *     will set ip_summed to CHECKSUM_PARTIAL and set csum_start and csum_offset
+ *     accordingly. Note the there is no indication in the skbuff that the
+ *     CHECKSUM_PARTIAL refers to an SCTP checksum, a driver that supports
+ *     both IP checksum offload and SCTP CRC offload must verify which offload
+ *     is configured for a packet presumably by inspecting packet headers.
+ *
+ *   NETIF_F_FCOE_CRC - This feature indicates that a device is capable of
+ *     offloading the FCOE CRC in a packet. To perform this offload the stack
+ *     will set ip_summed to CHECKSUM_PARTIAL and set csum_start and csum_offset
+ *     accordingly. Note the there is no indication in the skbuff that the
+ *     CHECKSUM_PARTIAL refers to an FCOE checksum, a driver that supports
+ *     both IP checksum offload and FCOE CRC offload must verify which offload
+ *     is configured for a packet presumably by inspecting packet headers.
+ *
+ * E. Checksumming on output with GSO.
+ *
+ * In the case of a GSO packet (skb_is_gso(skb) is true), checksum offload
+ * is implied by the SKB_GSO_* flags in gso_type. Most obviously, if the
+ * gso_type is SKB_GSO_TCPV4 or SKB_GSO_TCPV6, TCP checksum offload as
+ * part of the GSO operation is implied. If a checksum is being offloaded
+ * with GSO then ip_summed is CHECKSUM_PARTIAL, csum_start and csum_offset
+ * are set to refer to the outermost checksum being offload (two offloaded
+ * checksums are possible with UDP encapsulation).
+ */
+
+/* Don't change this without changing skb_csum_unnecessary! */
+#define CHECKSUM_NONE		0
+#define CHECKSUM_UNNECESSARY	1
+#define CHECKSUM_COMPLETE	2
+#define CHECKSUM_PARTIAL	3
+
+/* Maximum value in skb->csum_level */
+#define SKB_MAX_CSUM_LEVEL	3
+
+#define SKB_DATA_ALIGN(X)	ALIGN(X, SMP_CACHE_BYTES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SKB_WITH_OVERHEAD(X)	\
 	((X) - SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 #define SKB_MAX_ORDER(X, ORDER) \
@@ -54,6 +255,7 @@
 			 SKB_DATA_ALIGN(sizeof(struct sk_buff)) +	\
 			 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
+<<<<<<< HEAD
 /* A. Checksumming of received packets by device.
  *
  *	NONE: device failed to checksum this packet.
@@ -109,6 +311,13 @@
 struct net_device;
 struct scatterlist;
 struct pipe_inode_info;
+=======
+struct net_device;
+struct scatterlist;
+struct pipe_inode_info;
+struct iov_iter;
+struct napi_struct;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
 struct nf_conntrack {
@@ -116,6 +325,7 @@ struct nf_conntrack {
 };
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_BRIDGE_NETFILTER
 struct nf_bridge_info {
 	atomic_t		use;
@@ -123,6 +333,35 @@ struct nf_bridge_info {
 	struct net_device	*physindev;
 	struct net_device	*physoutdev;
 	unsigned long		data[32 / sizeof(unsigned long)];
+=======
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+struct nf_bridge_info {
+	atomic_t		use;
+	enum {
+		BRNF_PROTO_UNCHANGED,
+		BRNF_PROTO_8021Q,
+		BRNF_PROTO_PPPOE
+	} orig_proto:8;
+	u8			pkt_otherhost:1;
+	u8			in_prerouting:1;
+	u8			bridged_dnat:1;
+	__u16			frag_max_size;
+	struct net_device	*physindev;
+
+	/* always valid & non-NULL from FORWARD on, for physdev match */
+	struct net_device	*physoutdev;
+	union {
+		/* prerouting: detect dnat in orig/reply direction */
+		__be32          ipv4_daddr;
+		struct in6_addr ipv6_daddr;
+
+		/* after prerouting + nat detected: store original source
+		 * mac since neigh resolution overwrites it, only used while
+		 * skb is out in neigh layer.
+		 */
+		char neigh_header[8];
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #endif
 
@@ -149,6 +388,15 @@ struct sk_buff;
 #else
 #define MAX_SKB_FRAGS (65536/PAGE_SIZE + 1)
 #endif
+<<<<<<< HEAD
+=======
+extern int sysctl_max_skb_frags;
+
+/* Set skb_shinfo(skb)->gso_size to this in case you want skb_segment to
+ * segment using its current segmentation instead.
+ */
+#define GSO_BY_FRAGS	0xFFFF
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct skb_frag_struct skb_frag_t;
 
@@ -191,6 +439,7 @@ static inline void skb_frag_size_sub(skb_frag_t *frag, int delta)
  * struct skb_shared_hwtstamps - hardware time stamps
  * @hwtstamp:	hardware time stamp transformed into duration
  *		since arbitrary point in time
+<<<<<<< HEAD
  * @syststamp:	hwtstamp transformed to system time base
  *
  * Software time stamps generated by ktime_get_real() are stored in
@@ -203,6 +452,11 @@ static inline void skb_frag_size_sub(skb_frag_t *frag, int delta)
  * limited by the accuracy of the transformation into system time
  * base. This depends on the device driver and its underlying
  * hardware.
+=======
+ *
+ * Software time stamps generated by ktime_get_real() are stored in
+ * skb->tstamp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * hwtstamps can only be compared against other hwtstamps from
  * the same device.
@@ -212,7 +466,10 @@ static inline void skb_frag_size_sub(skb_frag_t *frag, int delta)
  */
 struct skb_shared_hwtstamps {
 	ktime_t	hwtstamp;
+<<<<<<< HEAD
 	ktime_t	syststamp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Definitions for tx_flags in struct skb_shared_info */
@@ -220,7 +477,11 @@ enum {
 	/* generate hardware time stamp */
 	SKBTX_HW_TSTAMP = 1 << 0,
 
+<<<<<<< HEAD
 	/* generate software time stamp */
+=======
+	/* generate software time stamp when queueing packet to NIC */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SKBTX_SW_TSTAMP = 1 << 1,
 
 	/* device driver is going to provide hardware time stamp */
@@ -238,8 +499,20 @@ enum {
 	 * all frags to avoid possible bad checksum
 	 */
 	SKBTX_SHARED_FRAG = 1 << 5,
+<<<<<<< HEAD
 };
 
+=======
+
+	/* generate software time stamp when entering packet scheduling */
+	SKBTX_SCHED_TSTAMP = 1 << 6,
+};
+
+#define SKBTX_ANY_SW_TSTAMP	(SKBTX_SW_TSTAMP    | \
+				 SKBTX_SCHED_TSTAMP)
+#define SKBTX_ANY_TSTAMP	(SKBTX_HW_TSTAMP | SKBTX_ANY_SW_TSTAMP)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The callback notifies userspace to release buffers when skb DMA is done in
  * lower device, the skb last reference should be 0 when calling this.
@@ -266,6 +539,10 @@ struct skb_shared_info {
 	unsigned short  gso_type;
 	struct sk_buff	*frag_list;
 	struct skb_shared_hwtstamps hwtstamps;
+<<<<<<< HEAD
+=======
+	u32		tskey;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__be32          ip6_frag_id;
 
 	/*
@@ -297,9 +574,15 @@ struct skb_shared_info {
 
 
 enum {
+<<<<<<< HEAD
 	SKB_FCLONE_UNAVAILABLE,
 	SKB_FCLONE_ORIG,
 	SKB_FCLONE_CLONE,
+=======
+	SKB_FCLONE_UNAVAILABLE,	/* skb has no fclone (from head_cache) */
+	SKB_FCLONE_ORIG,	/* orig skb (from fclone_cache) */
+	SKB_FCLONE_CLONE,	/* companion fclone skb (from fclone_cache) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum {
@@ -312,6 +595,7 @@ enum {
 	/* This indicates the tcp segment has CWR set. */
 	SKB_GSO_TCP_ECN = 1 << 3,
 
+<<<<<<< HEAD
 	SKB_GSO_TCPV6 = 1 << 4,
 
 	SKB_GSO_FCOE = 1 << 5,
@@ -319,6 +603,31 @@ enum {
 	SKB_GSO_GRE = 1 << 6,
 
 	SKB_GSO_UDP_TUNNEL = 1 << 7,
+=======
+	SKB_GSO_TCP_FIXEDID = 1 << 4,
+
+	SKB_GSO_TCPV6 = 1 << 5,
+
+	SKB_GSO_FCOE = 1 << 6,
+
+	SKB_GSO_GRE = 1 << 7,
+
+	SKB_GSO_GRE_CSUM = 1 << 8,
+
+	SKB_GSO_IPXIP4 = 1 << 9,
+
+	SKB_GSO_IPXIP6 = 1 << 10,
+
+	SKB_GSO_UDP_TUNNEL = 1 << 11,
+
+	SKB_GSO_UDP_TUNNEL_CSUM = 1 << 12,
+
+	SKB_GSO_PARTIAL = 1 << 13,
+
+	SKB_GSO_TUNNEL_REMCSUM = 1 << 14,
+
+	SKB_GSO_SCTP = 1 << 15,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #if BITS_PER_LONG > 32
@@ -331,11 +640,79 @@ typedef unsigned int sk_buff_data_t;
 typedef unsigned char *sk_buff_data_t;
 #endif
 
+<<<<<<< HEAD
+=======
+/**
+ * struct skb_mstamp - multi resolution time stamps
+ * @stamp_us: timestamp in us resolution
+ * @stamp_jiffies: timestamp in jiffies
+ */
+struct skb_mstamp {
+	union {
+		u64		v64;
+		struct {
+			u32	stamp_us;
+			u32	stamp_jiffies;
+		};
+	};
+};
+
+/**
+ * skb_mstamp_get - get current timestamp
+ * @cl: place to store timestamps
+ */
+static inline void skb_mstamp_get(struct skb_mstamp *cl)
+{
+	u64 val = local_clock();
+
+	do_div(val, NSEC_PER_USEC);
+	cl->stamp_us = (u32)val;
+	cl->stamp_jiffies = (u32)jiffies;
+}
+
+/**
+ * skb_mstamp_delta - compute the difference in usec between two skb_mstamp
+ * @t1: pointer to newest sample
+ * @t0: pointer to oldest sample
+ */
+static inline u32 skb_mstamp_us_delta(const struct skb_mstamp *t1,
+				      const struct skb_mstamp *t0)
+{
+	s32 delta_us = t1->stamp_us - t0->stamp_us;
+	u32 delta_jiffies = t1->stamp_jiffies - t0->stamp_jiffies;
+
+	/* If delta_us is negative, this might be because interval is too big,
+	 * or local_clock() drift is too big : fallback using jiffies.
+	 */
+	if (delta_us <= 0 ||
+	    delta_jiffies >= (INT_MAX / (USEC_PER_SEC / HZ)))
+
+		delta_us = jiffies_to_usecs(delta_jiffies);
+
+	return delta_us;
+}
+
+static inline bool skb_mstamp_after(const struct skb_mstamp *t1,
+				    const struct skb_mstamp *t0)
+{
+	s32 diff = t1->stamp_jiffies - t0->stamp_jiffies;
+
+	if (!diff)
+		diff = t1->stamp_us - t0->stamp_us;
+	return diff > 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /** 
  *	struct sk_buff - socket buffer
  *	@next: Next buffer in list
  *	@prev: Previous buffer in list
+<<<<<<< HEAD
  *	@tstamp: Time we arrived
+=======
+ *	@tstamp: Time we arrived/left
+ *	@rbnode: RB tree node, alternative to next/prev for netem/tcp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	@sk: Socket we are owned by
  *	@dev: Device we arrived on/are leaving by
  *	@cb: Control buffer. Free for use by every layer. Put private vars here
@@ -349,7 +726,11 @@ typedef unsigned char *sk_buff_data_t;
  *	@csum_start: Offset from skb->head where checksumming should start
  *	@csum_offset: Offset from csum_start where checksum should be stored
  *	@priority: Packet queueing priority
+<<<<<<< HEAD
  *	@local_df: allow local fragmentation
+=======
+ *	@ignore_df: allow local fragmentation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	@cloned: Head may be cloned (check refcnt to be sure)
  *	@ip_summed: Driver fed us an IP checksum
  *	@nohdr: Payload reference only, must not modify header
@@ -367,6 +748,7 @@ typedef unsigned char *sk_buff_data_t;
  *	@skb_iif: ifindex of device we arrived on
  *	@tc_index: Traffic control index
  *	@tc_verd: traffic control verdict
+<<<<<<< HEAD
  *	@rxhash: the packet hash computed on receive
  *	@queue_mapping: Queue mapping for multiqueue devices
  *	@ndisc_nodetype: router type (from link layer)
@@ -383,6 +765,26 @@ typedef unsigned char *sk_buff_data_t;
  *	@dropcount: total number of sk_receive_queue overflows
  *	@vlan_proto: vlan encapsulation protocol
  *	@vlan_tci: vlan tag control information
+=======
+ *	@hash: the packet hash
+ *	@queue_mapping: Queue mapping for multiqueue devices
+ *	@xmit_more: More SKBs are pending for this queue
+ *	@pfmemalloc: skbuff was allocated from PFMEMALLOC reserves
+ *	@ndisc_nodetype: router type (from link layer)
+ *	@ooo_okay: allow the mapping of a socket to a queue to be changed
+ *	@l4_hash: indicate hash is a canonical 4-tuple hash over transport
+ *		ports.
+ *	@sw_hash: indicates hash was computed in software stack
+ *	@wifi_acked_valid: wifi_acked was set
+ *	@wifi_acked: whether frame was acked on wifi or not
+ *	@no_fcs:  Request NIC to treat last 4 bytes as Ethernet FCS
+  *	@napi_id: id of the NAPI struct this skb came from
+ *	@secmark: security marking
+ *	@mark: Generic packet mark
+ *	@vlan_proto: vlan encapsulation protocol
+ *	@vlan_tci: vlan tag control information
+ *	@inner_protocol: Protocol (encapsulation)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	@inner_transport_header: Inner transport layer header (encapsulation)
  *	@inner_network_header: Network layer header (encapsulation)
  *	@inner_mac_header: Link layer header (encapsulation)
@@ -398,6 +800,7 @@ typedef unsigned char *sk_buff_data_t;
  */
 
 struct sk_buff {
+<<<<<<< HEAD
 	/* These two members must be first. */
 	struct sk_buff		*next;
 	struct sk_buff		*prev;
@@ -405,6 +808,27 @@ struct sk_buff {
 	ktime_t			tstamp;
 
 	struct sock		*sk;
+=======
+	union {
+		struct {
+			/* These two members must be first. */
+			struct sk_buff		*next;
+			struct sk_buff		*prev;
+
+			union {
+				ktime_t		tstamp;
+				struct skb_mstamp skb_mstamp;
+			};
+		};
+		struct rb_node		rbnode; /* used in netem, ip4 defrag, and tcp stack */
+	};
+
+	union {
+		struct sock		*sk;
+		int			ip_defrag_offset;
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net_device	*dev;
 
 	/*
@@ -416,13 +840,27 @@ struct sk_buff {
 	char			cb[48] __aligned(8);
 
 	unsigned long		_skb_refdst;
+<<<<<<< HEAD
 #ifdef CONFIG_XFRM
 	struct	sec_path	*sp;
 #endif
+=======
+	void			(*destructor)(struct sk_buff *skb);
+#ifdef CONFIG_XFRM
+	struct	sec_path	*sp;
+#endif
+#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
+	struct nf_conntrack	*nfct;
+#endif
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+	struct nf_bridge_info	*nf_bridge;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int		len,
 				data_len;
 	__u16			mac_len,
 				hdr_len;
+<<<<<<< HEAD
 	union {
 		__wsum		csum;
 		struct {
@@ -459,6 +897,80 @@ struct sk_buff {
 
 	__be16			vlan_proto;
 	__u16			vlan_tci;
+=======
+
+	/* Following fields are _not_ copied in __copy_skb_header()
+	 * Note that queue_mapping is here mostly to fill a hole.
+	 */
+	kmemcheck_bitfield_begin(flags1);
+	__u16			queue_mapping;
+
+/* if you move cloned around you also must adapt those constants */
+#ifdef __BIG_ENDIAN_BITFIELD
+#define CLONED_MASK	(1 << 7)
+#else
+#define CLONED_MASK	1
+#endif
+#define CLONED_OFFSET()		offsetof(struct sk_buff, __cloned_offset)
+
+	__u8			__cloned_offset[0];
+	__u8			cloned:1,
+				nohdr:1,
+				fclone:2,
+				peeked:1,
+				head_frag:1,
+				xmit_more:1,
+				pfmemalloc:1;
+	kmemcheck_bitfield_end(flags1);
+
+	/* fields enclosed in headers_start/headers_end are copied
+	 * using a single memcpy() in __copy_skb_header()
+	 */
+	/* private: */
+	__u32			headers_start[0];
+	/* public: */
+
+/* if you move pkt_type around you also must adapt those constants */
+#ifdef __BIG_ENDIAN_BITFIELD
+#define PKT_TYPE_MAX	(7 << 5)
+#else
+#define PKT_TYPE_MAX	7
+#endif
+#define PKT_TYPE_OFFSET()	offsetof(struct sk_buff, __pkt_type_offset)
+
+	__u8			__pkt_type_offset[0];
+	__u8			pkt_type:3;
+	__u8			ignore_df:1;
+	__u8			nfctinfo:3;
+	__u8			nf_trace:1;
+
+	__u8			ip_summed:2;
+	__u8			ooo_okay:1;
+	__u8			l4_hash:1;
+	__u8			sw_hash:1;
+	__u8			wifi_acked_valid:1;
+	__u8			wifi_acked:1;
+	__u8			no_fcs:1;
+
+	/* Indicates the inner headers are valid in the skbuff. */
+	__u8			encapsulation:1;
+	__u8			encap_hdr_csum:1;
+	__u8			csum_valid:1;
+	__u8			csum_complete_sw:1;
+	__u8			csum_level:2;
+	__u8			csum_bad:1;
+#ifdef CONFIG_IPV6_NDISC_NODETYPE
+	__u8			ndisc_nodetype:2;
+#endif
+	__u8			ipvs_property:1;
+
+	__u8			inner_protocol_type:1;
+	__u8			remcsum_offload:1;
+#ifdef CONFIG_NET_SWITCHDEV
+	__u8			offload_fwd_mark:1;
+#endif
+	/* 2, 4 or 5 bit hole */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_NET_SCHED
 	__u16			tc_index;	/* traffic control index */
@@ -467,6 +979,7 @@ struct sk_buff {
 #endif
 #endif
 
+<<<<<<< HEAD
 	__u16			queue_mapping;
 	kmemcheck_bitfield_begin(flags2);
 #ifdef CONFIG_IPV6_NDISC_NODETYPE
@@ -507,6 +1020,53 @@ struct sk_buff {
 	sk_buff_data_t		transport_header;
 	sk_buff_data_t		network_header;
 	sk_buff_data_t		mac_header;
+=======
+	union {
+		__wsum		csum;
+		struct {
+			__u16	csum_start;
+			__u16	csum_offset;
+		};
+	};
+	__u32			priority;
+	int			skb_iif;
+	__u32			hash;
+	__be16			vlan_proto;
+	__u16			vlan_tci;
+#if defined(CONFIG_NET_RX_BUSY_POLL) || defined(CONFIG_XPS)
+	union {
+		unsigned int	napi_id;
+		unsigned int	sender_cpu;
+	};
+#endif
+#ifdef CONFIG_NETWORK_SECMARK
+	__u32		secmark;
+#endif
+
+	union {
+		__u32		mark;
+		__u32		reserved_tailroom;
+	};
+
+	union {
+		__be16		inner_protocol;
+		__u8		inner_ipproto;
+	};
+
+	__u16			inner_transport_header;
+	__u16			inner_network_header;
+	__u16			inner_mac_header;
+
+	__be16			protocol;
+	__u16			transport_header;
+	__u16			network_header;
+	__u16			mac_header;
+
+	/* private: */
+	__u32			headers_end[0];
+	/* public: */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* These elements must be at the end, see alloc_skb() for details.  */
 	sk_buff_data_t		tail;
 	sk_buff_data_t		end;
@@ -525,6 +1085,10 @@ struct sk_buff {
 
 #define SKB_ALLOC_FCLONE	0x01
 #define SKB_ALLOC_RX		0x02
+<<<<<<< HEAD
+=======
+#define SKB_ALLOC_NAPI		0x04
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Returns true if the skb was allocated from PFMEMALLOC reserves */
 static inline bool skb_pfmemalloc(const struct sk_buff *skb)
@@ -569,9 +1133,12 @@ static inline void skb_dst_set(struct sk_buff *skb, struct dst_entry *dst)
 	skb->_skb_refdst = (unsigned long)dst;
 }
 
+<<<<<<< HEAD
 extern void __skb_dst_set_noref(struct sk_buff *skb, struct dst_entry *dst,
 				bool force);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * skb_dst_set_noref - sets skb dst, hopefully, without taking reference
  * @skb: buffer
@@ -584,6 +1151,7 @@ extern void __skb_dst_set_noref(struct sk_buff *skb, struct dst_entry *dst,
  */
 static inline void skb_dst_set_noref(struct sk_buff *skb, struct dst_entry *dst)
 {
+<<<<<<< HEAD
 	__skb_dst_set_noref(skb, dst, false);
 }
 
@@ -602,6 +1170,10 @@ static inline void skb_dst_set_noref_force(struct sk_buff *skb,
 					   struct dst_entry *dst)
 {
 	__skb_dst_set_noref(skb, dst, true);
+=======
+	WARN_ON(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
+	skb->_skb_refdst = (unsigned long)dst | SKB_DST_NOREF;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -618,6 +1190,7 @@ static inline struct rtable *skb_rtable(const struct sk_buff *skb)
 	return (struct rtable *)skb_dst(skb);
 }
 
+<<<<<<< HEAD
 extern void kfree_skb(struct sk_buff *skb);
 extern void kfree_skb_list(struct sk_buff *segs);
 extern void skb_tx_error(struct sk_buff *skb);
@@ -632,24 +1205,94 @@ extern bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
 extern struct sk_buff *__alloc_skb(unsigned int size,
 				   gfp_t priority, int flags, int node);
 extern struct sk_buff *build_skb(void *data, unsigned int frag_size);
+=======
+/* For mangling skb->pkt_type from user space side from applications
+ * such as nft, tc, etc, we only allow a conservative subset of
+ * possible pkt_types to be set.
+*/
+static inline bool skb_pkt_type_ok(u32 ptype)
+{
+	return ptype <= PACKET_OTHERHOST;
+}
+
+void kfree_skb(struct sk_buff *skb);
+void kfree_skb_list(struct sk_buff *segs);
+void skb_tx_error(struct sk_buff *skb);
+void consume_skb(struct sk_buff *skb);
+void  __kfree_skb(struct sk_buff *skb);
+extern struct kmem_cache *skbuff_head_cache;
+
+void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
+bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+		      bool *fragstolen, int *delta_truesize);
+
+struct sk_buff *__alloc_skb(unsigned int size, gfp_t priority, int flags,
+			    int node);
+struct sk_buff *__build_skb(void *data, unsigned int frag_size);
+struct sk_buff *build_skb(void *data, unsigned int frag_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct sk_buff *alloc_skb(unsigned int size,
 					gfp_t priority)
 {
 	return __alloc_skb(size, priority, 0, NUMA_NO_NODE);
 }
 
+<<<<<<< HEAD
+=======
+struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
+				     unsigned long data_len,
+				     int max_page_order,
+				     int *errcode,
+				     gfp_t gfp_mask);
+
+/* Layout of fast clones : [skb1][skb2][fclone_ref] */
+struct sk_buff_fclones {
+	struct sk_buff	skb1;
+
+	struct sk_buff	skb2;
+
+	atomic_t	fclone_ref;
+};
+
+/**
+ *	skb_fclone_busy - check if fclone is busy
+ *	@sk: socket
+ *	@skb: buffer
+ *
+ * Returns true if skb is a fast clone, and its clone is not freed.
+ * Some drivers call skb_orphan() in their ndo_start_xmit(),
+ * so we also check that this didnt happen.
+ */
+static inline bool skb_fclone_busy(const struct sock *sk,
+				   const struct sk_buff *skb)
+{
+	const struct sk_buff_fclones *fclones;
+
+	fclones = container_of(skb, struct sk_buff_fclones, skb1);
+
+	return skb->fclone == SKB_FCLONE_ORIG &&
+	       atomic_read(&fclones->fclone_ref) > 1 &&
+	       fclones->skb2.sk == sk;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct sk_buff *alloc_skb_fclone(unsigned int size,
 					       gfp_t priority)
 {
 	return __alloc_skb(size, priority, SKB_ALLOC_FCLONE, NUMA_NO_NODE);
 }
 
+<<<<<<< HEAD
 extern struct sk_buff *__alloc_skb_head(gfp_t priority, int node);
+=======
+struct sk_buff *__alloc_skb_head(gfp_t priority, int node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct sk_buff *alloc_skb_head(gfp_t priority)
 {
 	return __alloc_skb_head(priority, -1);
 }
 
+<<<<<<< HEAD
 extern struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src);
 extern int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask);
 extern struct sk_buff *skb_clone(struct sk_buff *skb,
@@ -679,6 +1322,40 @@ extern int skb_append_datato_frags(struct sock *sk, struct sk_buff *skb,
 			int getfrag(void *from, char *to, int offset,
 			int len,int odd, struct sk_buff *skb),
 			void *from, int length);
+=======
+struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src);
+int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask);
+struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t priority);
+struct sk_buff *skb_copy(const struct sk_buff *skb, gfp_t priority);
+struct sk_buff *__pskb_copy_fclone(struct sk_buff *skb, int headroom,
+				   gfp_t gfp_mask, bool fclone);
+static inline struct sk_buff *__pskb_copy(struct sk_buff *skb, int headroom,
+					  gfp_t gfp_mask)
+{
+	return __pskb_copy_fclone(skb, headroom, gfp_mask, false);
+}
+
+int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail, gfp_t gfp_mask);
+struct sk_buff *skb_realloc_headroom(struct sk_buff *skb,
+				     unsigned int headroom);
+struct sk_buff *skb_copy_expand(const struct sk_buff *skb, int newheadroom,
+				int newtailroom, gfp_t priority);
+int __must_check skb_to_sgvec_nomark(struct sk_buff *skb, struct scatterlist *sg,
+				     int offset, int len);
+int __must_check skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg,
+			      int offset, int len);
+int skb_cow_data(struct sk_buff *skb, int tailbits, struct sk_buff **trailer);
+int skb_pad(struct sk_buff *skb, int pad);
+#define dev_kfree_skb(a)	consume_skb(a)
+
+int skb_append_datato_frags(struct sock *sk, struct sk_buff *skb,
+			    int getfrag(void *from, char *to, int offset,
+					int len, int odd, struct sk_buff *skb),
+			    void *from, int length);
+
+int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
+			 int offset, size_t size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct skb_seq_state {
 	__u32		lower_offset;
@@ -690,6 +1367,7 @@ struct skb_seq_state {
 	__u8		*frag_data;
 };
 
+<<<<<<< HEAD
 extern void	      skb_prepare_seq_read(struct sk_buff *skb,
 					   unsigned int from, unsigned int to,
 					   struct skb_seq_state *st);
@@ -710,6 +1388,186 @@ static inline __u32 skb_get_rxhash(struct sk_buff *skb)
 	return skb->rxhash;
 }
 
+=======
+void skb_prepare_seq_read(struct sk_buff *skb, unsigned int from,
+			  unsigned int to, struct skb_seq_state *st);
+unsigned int skb_seq_read(unsigned int consumed, const u8 **data,
+			  struct skb_seq_state *st);
+void skb_abort_seq_read(struct skb_seq_state *st);
+
+unsigned int skb_find_text(struct sk_buff *skb, unsigned int from,
+			   unsigned int to, struct ts_config *config);
+
+/*
+ * Packet hash types specify the type of hash in skb_set_hash.
+ *
+ * Hash types refer to the protocol layer addresses which are used to
+ * construct a packet's hash. The hashes are used to differentiate or identify
+ * flows of the protocol layer for the hash type. Hash types are either
+ * layer-2 (L2), layer-3 (L3), or layer-4 (L4).
+ *
+ * Properties of hashes:
+ *
+ * 1) Two packets in different flows have different hash values
+ * 2) Two packets in the same flow should have the same hash value
+ *
+ * A hash at a higher layer is considered to be more specific. A driver should
+ * set the most specific hash possible.
+ *
+ * A driver cannot indicate a more specific hash than the layer at which a hash
+ * was computed. For instance an L3 hash cannot be set as an L4 hash.
+ *
+ * A driver may indicate a hash level which is less specific than the
+ * actual layer the hash was computed on. For instance, a hash computed
+ * at L4 may be considered an L3 hash. This should only be done if the
+ * driver can't unambiguously determine that the HW computed the hash at
+ * the higher layer. Note that the "should" in the second property above
+ * permits this.
+ */
+enum pkt_hash_types {
+	PKT_HASH_TYPE_NONE,	/* Undefined type */
+	PKT_HASH_TYPE_L2,	/* Input: src_MAC, dest_MAC */
+	PKT_HASH_TYPE_L3,	/* Input: src_IP, dst_IP */
+	PKT_HASH_TYPE_L4,	/* Input: src_IP, dst_IP, src_port, dst_port */
+};
+
+static inline void skb_clear_hash(struct sk_buff *skb)
+{
+	skb->hash = 0;
+	skb->sw_hash = 0;
+	skb->l4_hash = 0;
+}
+
+static inline void skb_clear_hash_if_not_l4(struct sk_buff *skb)
+{
+	if (!skb->l4_hash)
+		skb_clear_hash(skb);
+}
+
+static inline void
+__skb_set_hash(struct sk_buff *skb, __u32 hash, bool is_sw, bool is_l4)
+{
+	skb->l4_hash = is_l4;
+	skb->sw_hash = is_sw;
+	skb->hash = hash;
+}
+
+static inline void
+skb_set_hash(struct sk_buff *skb, __u32 hash, enum pkt_hash_types type)
+{
+	/* Used by drivers to set hash from HW */
+	__skb_set_hash(skb, hash, false, type == PKT_HASH_TYPE_L4);
+}
+
+static inline void
+__skb_set_sw_hash(struct sk_buff *skb, __u32 hash, bool is_l4)
+{
+	__skb_set_hash(skb, hash, true, is_l4);
+}
+
+void __skb_get_hash(struct sk_buff *skb);
+u32 __skb_get_hash_symmetric(struct sk_buff *skb);
+u32 skb_get_poff(const struct sk_buff *skb);
+u32 __skb_get_poff(const struct sk_buff *skb, void *data,
+		   const struct flow_keys *keys, int hlen);
+__be32 __skb_flow_get_ports(const struct sk_buff *skb, int thoff, u8 ip_proto,
+			    void *data, int hlen_proto);
+
+static inline __be32 skb_flow_get_ports(const struct sk_buff *skb,
+					int thoff, u8 ip_proto)
+{
+	return __skb_flow_get_ports(skb, thoff, ip_proto, NULL, 0);
+}
+
+void skb_flow_dissector_init(struct flow_dissector *flow_dissector,
+			     const struct flow_dissector_key *key,
+			     unsigned int key_count);
+
+bool __skb_flow_dissect(const struct sk_buff *skb,
+			struct flow_dissector *flow_dissector,
+			void *target_container,
+			void *data, __be16 proto, int nhoff, int hlen,
+			unsigned int flags);
+
+static inline bool skb_flow_dissect(const struct sk_buff *skb,
+				    struct flow_dissector *flow_dissector,
+				    void *target_container, unsigned int flags)
+{
+	return __skb_flow_dissect(skb, flow_dissector, target_container,
+				  NULL, 0, 0, 0, flags);
+}
+
+static inline bool skb_flow_dissect_flow_keys(const struct sk_buff *skb,
+					      struct flow_keys *flow,
+					      unsigned int flags)
+{
+	memset(flow, 0, sizeof(*flow));
+	return __skb_flow_dissect(skb, &flow_keys_dissector, flow,
+				  NULL, 0, 0, 0, flags);
+}
+
+static inline bool skb_flow_dissect_flow_keys_buf(struct flow_keys *flow,
+						  void *data, __be16 proto,
+						  int nhoff, int hlen,
+						  unsigned int flags)
+{
+	memset(flow, 0, sizeof(*flow));
+	return __skb_flow_dissect(NULL, &flow_keys_buf_dissector, flow,
+				  data, proto, nhoff, hlen, flags);
+}
+
+static inline __u32 skb_get_hash(struct sk_buff *skb)
+{
+	if (!skb->l4_hash && !skb->sw_hash)
+		__skb_get_hash(skb);
+
+	return skb->hash;
+}
+
+__u32 __skb_get_hash_flowi6(struct sk_buff *skb, const struct flowi6 *fl6);
+
+static inline __u32 skb_get_hash_flowi6(struct sk_buff *skb, const struct flowi6 *fl6)
+{
+	if (!skb->l4_hash && !skb->sw_hash) {
+		struct flow_keys keys;
+		__u32 hash = __get_hash_from_flowi6(fl6, &keys);
+
+		__skb_set_sw_hash(skb, hash, flow_keys_have_l4(&keys));
+	}
+
+	return skb->hash;
+}
+
+__u32 __skb_get_hash_flowi4(struct sk_buff *skb, const struct flowi4 *fl);
+
+static inline __u32 skb_get_hash_flowi4(struct sk_buff *skb, const struct flowi4 *fl4)
+{
+	if (!skb->l4_hash && !skb->sw_hash) {
+		struct flow_keys keys;
+		__u32 hash = __get_hash_from_flowi4(fl4, &keys);
+
+		__skb_set_sw_hash(skb, hash, flow_keys_have_l4(&keys));
+	}
+
+	return skb->hash;
+}
+
+__u32 skb_get_hash_perturb(const struct sk_buff *skb,
+			   const siphash_key_t *perturb);
+
+static inline __u32 skb_get_hash_raw(const struct sk_buff *skb)
+{
+	return skb->hash;
+}
+
+static inline void skb_copy_hash(struct sk_buff *to, const struct sk_buff *from)
+{
+	to->hash = from->hash;
+	to->sw_hash = from->sw_hash;
+	to->l4_hash = from->l4_hash;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef NET_SKBUFF_DATA_USES_OFFSET
 static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
 {
@@ -748,7 +1606,11 @@ static inline struct skb_shared_hwtstamps *skb_hwtstamps(struct sk_buff *skb)
  */
 static inline int skb_queue_empty(const struct sk_buff_head *list)
 {
+<<<<<<< HEAD
 	return list->next == (struct sk_buff *)list;
+=======
+	return list->next == (const struct sk_buff *) list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -761,7 +1623,11 @@ static inline int skb_queue_empty(const struct sk_buff_head *list)
 static inline bool skb_queue_is_last(const struct sk_buff_head *list,
 				     const struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	return skb->next == (struct sk_buff *)list;
+=======
+	return skb->next == (const struct sk_buff *) list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -774,7 +1640,11 @@ static inline bool skb_queue_is_last(const struct sk_buff_head *list,
 static inline bool skb_queue_is_first(const struct sk_buff_head *list,
 				      const struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	return skb->prev == (struct sk_buff *)list;
+=======
+	return skb->prev == (const struct sk_buff *) list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -847,7 +1717,11 @@ static inline int skb_cloned(const struct sk_buff *skb)
 
 static inline int skb_unclone(struct sk_buff *skb, gfp_t pri)
 {
+<<<<<<< HEAD
 	might_sleep_if(pri & __GFP_WAIT);
+=======
+	might_sleep_if(gfpflags_allow_blocking(pri));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (skb_cloned(skb))
 		return pskb_expand_head(skb, 0, 0, pri);
@@ -874,6 +1748,19 @@ static inline int skb_header_cloned(const struct sk_buff *skb)
 	return dataref != 1;
 }
 
+<<<<<<< HEAD
+=======
+static inline int skb_header_unclone(struct sk_buff *skb, gfp_t pri)
+{
+	might_sleep_if(gfpflags_allow_blocking(pri));
+
+	if (skb_header_cloned(skb))
+		return pskb_expand_head(skb, 0, 0, pri);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  *	skb_header_release - release reference to header
  *	@skb: buffer to operate on
@@ -881,6 +1768,10 @@ static inline int skb_header_cloned(const struct sk_buff *skb)
  *	Drop a reference to the header part of the buffer.  This is done
  *	by acquiring a payload reference.  You must not read from the header
  *	part of skb->data after this.
+<<<<<<< HEAD
+=======
+ *	Note : Check if you can use __skb_header_release() instead.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static inline void skb_header_release(struct sk_buff *skb)
 {
@@ -890,6 +1781,23 @@ static inline void skb_header_release(struct sk_buff *skb)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ *	__skb_header_release - release reference to header
+ *	@skb: buffer to operate on
+ *
+ *	Variant of skb_header_release() assuming skb is private to caller.
+ *	We can avoid one atomic operation.
+ */
+static inline void __skb_header_release(struct sk_buff *skb)
+{
+	skb->nohdr = 1;
+	atomic_set(&skb_shinfo(skb)->dataref, 1 + (1 << SKB_DATAREF_SHIFT));
+}
+
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	skb_shared - is the buffer shared
  *	@skb: buffer to check
  *
@@ -916,7 +1824,11 @@ static inline int skb_shared(const struct sk_buff *skb)
  */
 static inline struct sk_buff *skb_share_check(struct sk_buff *skb, gfp_t pri)
 {
+<<<<<<< HEAD
 	might_sleep_if(pri & __GFP_WAIT);
+=======
+	might_sleep_if(gfpflags_allow_blocking(pri));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (skb_shared(skb)) {
 		struct sk_buff *nskb = skb_clone(skb, pri);
 
@@ -952,10 +1864,22 @@ static inline struct sk_buff *skb_share_check(struct sk_buff *skb, gfp_t pri)
 static inline struct sk_buff *skb_unshare(struct sk_buff *skb,
 					  gfp_t pri)
 {
+<<<<<<< HEAD
 	might_sleep_if(pri & __GFP_WAIT);
 	if (skb_cloned(skb)) {
 		struct sk_buff *nskb = skb_copy(skb, pri);
 		kfree_skb(skb);	/* Free our shared copy */
+=======
+	might_sleep_if(gfpflags_allow_blocking(pri));
+	if (skb_cloned(skb)) {
+		struct sk_buff *nskb = skb_copy(skb, pri);
+
+		/* Free our shared copy */
+		if (likely(nskb))
+			consume_skb(skb);
+		else
+			kfree_skb(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb = nskb;
 	}
 	return skb;
@@ -1037,6 +1961,21 @@ static inline __u32 skb_queue_len(const struct sk_buff_head *list_)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ *	skb_queue_len_lockless	- get queue length
+ *	@list_: list to measure
+ *
+ *	Return the length of an &sk_buff queue.
+ *	This variant can be used in lockless contexts.
+ */
+static inline __u32 skb_queue_len_lockless(const struct sk_buff_head *list_)
+{
+	return READ_ONCE(list_->qlen);
+}
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	__skb_queue_head_init - initialize non-spinlock portions of sk_buff_head
  *	@list: queue to initialize
  *
@@ -1079,7 +2018,12 @@ static inline void skb_queue_head_init_class(struct sk_buff_head *list,
  *	The "__skb_xxxx()" functions are the non-atomic ones that
  *	can only be called with interrupts disabled.
  */
+<<<<<<< HEAD
 extern void        skb_insert(struct sk_buff *old, struct sk_buff *newsk, struct sk_buff_head *list);
+=======
+void skb_insert(struct sk_buff *old, struct sk_buff *newsk,
+		struct sk_buff_head *list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __skb_insert(struct sk_buff *newsk,
 				struct sk_buff *prev, struct sk_buff *next,
 				struct sk_buff_head *list)
@@ -1185,8 +2129,13 @@ static inline void __skb_queue_after(struct sk_buff_head *list,
 	__skb_insert(newsk, prev, prev->next, list);
 }
 
+<<<<<<< HEAD
 extern void skb_append(struct sk_buff *old, struct sk_buff *newsk,
 		       struct sk_buff_head *list);
+=======
+void skb_append(struct sk_buff *old, struct sk_buff *newsk,
+		struct sk_buff_head *list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void __skb_queue_before(struct sk_buff_head *list,
 				      struct sk_buff *next,
@@ -1205,7 +2154,11 @@ static inline void __skb_queue_before(struct sk_buff_head *list,
  *
  *	A buffer cannot be placed on two lists at the same time.
  */
+<<<<<<< HEAD
 extern void skb_queue_head(struct sk_buff_head *list, struct sk_buff *newsk);
+=======
+void skb_queue_head(struct sk_buff_head *list, struct sk_buff *newsk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __skb_queue_head(struct sk_buff_head *list,
 				    struct sk_buff *newsk)
 {
@@ -1222,7 +2175,11 @@ static inline void __skb_queue_head(struct sk_buff_head *list,
  *
  *	A buffer cannot be placed on two lists at the same time.
  */
+<<<<<<< HEAD
 extern void skb_queue_tail(struct sk_buff_head *list, struct sk_buff *newsk);
+=======
+void skb_queue_tail(struct sk_buff_head *list, struct sk_buff *newsk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __skb_queue_tail(struct sk_buff_head *list,
 				   struct sk_buff *newsk)
 {
@@ -1233,12 +2190,20 @@ static inline void __skb_queue_tail(struct sk_buff_head *list,
  * remove sk_buff from list. _Must_ be called atomically, and with
  * the list known..
  */
+<<<<<<< HEAD
 extern void	   skb_unlink(struct sk_buff *skb, struct sk_buff_head *list);
+=======
+void skb_unlink(struct sk_buff *skb, struct sk_buff_head *list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __skb_unlink(struct sk_buff *skb, struct sk_buff_head *list)
 {
 	struct sk_buff *next, *prev;
 
+<<<<<<< HEAD
 	list->qlen--;
+=======
+	WRITE_ONCE(list->qlen, list->qlen - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	next	   = skb->next;
 	prev	   = skb->prev;
 	skb->next  = skb->prev = NULL;
@@ -1254,7 +2219,11 @@ static inline void __skb_unlink(struct sk_buff *skb, struct sk_buff_head *list)
  *	so must be used with appropriate locks held only. The head item is
  *	returned or %NULL if the list is empty.
  */
+<<<<<<< HEAD
 extern struct sk_buff *skb_dequeue(struct sk_buff_head *list);
+=======
+struct sk_buff *skb_dequeue(struct sk_buff_head *list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct sk_buff *__skb_dequeue(struct sk_buff_head *list)
 {
 	struct sk_buff *skb = skb_peek(list);
@@ -1271,7 +2240,11 @@ static inline struct sk_buff *__skb_dequeue(struct sk_buff_head *list)
  *	so must be used with appropriate locks held only. The tail item is
  *	returned or %NULL if the list is empty.
  */
+<<<<<<< HEAD
 extern struct sk_buff *skb_dequeue_tail(struct sk_buff_head *list);
+=======
+struct sk_buff *skb_dequeue_tail(struct sk_buff_head *list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct sk_buff *__skb_dequeue_tail(struct sk_buff_head *list)
 {
 	struct sk_buff *skb = skb_peek_tail(list);
@@ -1300,11 +2273,14 @@ static inline int skb_pagelen(const struct sk_buff *skb)
 	return len + skb_headlen(skb);
 }
 
+<<<<<<< HEAD
 static inline bool skb_has_frags(const struct sk_buff *skb)
 {
 	return skb_shinfo(skb)->nr_frags;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * __skb_fill_page_desc - initialise a paged fragment in an skb
  * @skb: buffer containing fragment to be initialised
@@ -1324,6 +2300,7 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
 	skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 
 	/*
+<<<<<<< HEAD
 	 * Propagate page->pfmemalloc to the skb if we can. The problem is
 	 * that not all callers have unique ownership of the page. If
 	 * pfmemalloc is set, we check the mapping as a mapping implies
@@ -1331,13 +2308,22 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
 	 * If it's a valid mapping, we cannot use page->pfmemalloc but we
 	 * do not lose pfmemalloc information as the pages would not be
 	 * allocated using __GFP_MEMALLOC.
+=======
+	 * Propagate page pfmemalloc to the skb if we can. The problem is
+	 * that not all callers have unique ownership of the page but rely
+	 * on page_is_pfmemalloc doing the right thing(tm).
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	frag->page.p		  = page;
 	frag->page_offset	  = off;
 	skb_frag_size_set(frag, size);
 
 	page = compound_head(page);
+<<<<<<< HEAD
 	if (page->pfmemalloc && !page->mapping)
+=======
+	if (page_is_pfmemalloc(page))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb->pfmemalloc	= true;
 }
 
@@ -1350,7 +2336,11 @@ static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
  * @size: the length of the data
  *
  * As per __skb_fill_page_desc() -- initialises the @i'th fragment of
+<<<<<<< HEAD
  * @skb to point to &size bytes at offset @off within @page. In
+=======
+ * @skb to point to @size bytes at offset @off within @page. In
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * addition updates @skb such that @i is the last fragment.
  *
  * Does not take any additional reference on the fragment.
@@ -1362,8 +2352,16 @@ static inline void skb_fill_page_desc(struct sk_buff *skb, int i,
 	skb_shinfo(skb)->nr_frags = i + 1;
 }
 
+<<<<<<< HEAD
 extern void skb_add_rx_frag(struct sk_buff *skb, int i, struct page *page,
 			    int off, int size, unsigned int truesize);
+=======
+void skb_add_rx_frag(struct sk_buff *skb, int i, struct page *page, int off,
+		     int size, unsigned int truesize);
+
+void skb_coalesce_rx_frag(struct sk_buff *skb, int i, int size,
+			  unsigned int truesize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SKB_PAGE_ASSERT(skb) 	BUG_ON(skb_shinfo(skb)->nr_frags)
 #define SKB_FRAG_ASSERT(skb) 	BUG_ON(skb_has_frag_list(skb))
@@ -1385,6 +2383,10 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
 	skb_reset_tail_pointer(skb);
 	skb->tail += offset;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* NET_SKBUFF_DATA_USES_OFFSET */
 static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
 {
@@ -1406,7 +2408,12 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
 /*
  *	Add data to an sk_buff
  */
+<<<<<<< HEAD
 extern unsigned char *skb_put(struct sk_buff *skb, unsigned int len);
+=======
+unsigned char *pskb_put(struct sk_buff *skb, struct sk_buff *tail, int len);
+unsigned char *skb_put(struct sk_buff *skb, unsigned int len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned char *__skb_put(struct sk_buff *skb, unsigned int len)
 {
 	unsigned char *tmp = skb_tail_pointer(skb);
@@ -1416,7 +2423,11 @@ static inline unsigned char *__skb_put(struct sk_buff *skb, unsigned int len)
 	return tmp;
 }
 
+<<<<<<< HEAD
 extern unsigned char *skb_push(struct sk_buff *skb, unsigned int len);
+=======
+unsigned char *skb_push(struct sk_buff *skb, unsigned int len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned char *__skb_push(struct sk_buff *skb, unsigned int len)
 {
 	skb->data -= len;
@@ -1424,7 +2435,11 @@ static inline unsigned char *__skb_push(struct sk_buff *skb, unsigned int len)
 	return skb->data;
 }
 
+<<<<<<< HEAD
 extern unsigned char *skb_pull(struct sk_buff *skb, unsigned int len);
+=======
+unsigned char *skb_pull(struct sk_buff *skb, unsigned int len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned char *__skb_pull(struct sk_buff *skb, unsigned int len)
 {
 	skb->len -= len;
@@ -1437,7 +2452,11 @@ static inline unsigned char *skb_pull_inline(struct sk_buff *skb, unsigned int l
 	return unlikely(len > skb->len) ? NULL : __skb_pull(skb, len);
 }
 
+<<<<<<< HEAD
 extern unsigned char *__pskb_pull_tail(struct sk_buff *skb, int delta);
+=======
+unsigned char *__pskb_pull_tail(struct sk_buff *skb, int delta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned char *__pskb_pull(struct sk_buff *skb, unsigned int len)
 {
@@ -1513,6 +2532,50 @@ static inline void skb_reserve(struct sk_buff *skb, int len)
 	skb->tail += len;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ *	skb_tailroom_reserve - adjust reserved_tailroom
+ *	@skb: buffer to alter
+ *	@mtu: maximum amount of headlen permitted
+ *	@needed_tailroom: minimum amount of reserved_tailroom
+ *
+ *	Set reserved_tailroom so that headlen can be as large as possible but
+ *	not larger than mtu and tailroom cannot be smaller than
+ *	needed_tailroom.
+ *	The required headroom should already have been reserved before using
+ *	this function.
+ */
+static inline void skb_tailroom_reserve(struct sk_buff *skb, unsigned int mtu,
+					unsigned int needed_tailroom)
+{
+	SKB_LINEAR_ASSERT(skb);
+	if (mtu < skb_tailroom(skb) - needed_tailroom)
+		/* use at most mtu */
+		skb->reserved_tailroom = skb_tailroom(skb) - mtu;
+	else
+		/* use up to all available space */
+		skb->reserved_tailroom = needed_tailroom;
+}
+
+#define ENCAP_TYPE_ETHER	0
+#define ENCAP_TYPE_IPPROTO	1
+
+static inline void skb_set_inner_protocol(struct sk_buff *skb,
+					  __be16 protocol)
+{
+	skb->inner_protocol = protocol;
+	skb->inner_protocol_type = ENCAP_TYPE_ETHER;
+}
+
+static inline void skb_set_inner_ipproto(struct sk_buff *skb,
+					 __u8 ipproto)
+{
+	skb->inner_ipproto = ipproto;
+	skb->inner_protocol_type = ENCAP_TYPE_IPPROTO;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void skb_reset_inner_headers(struct sk_buff *skb)
 {
 	skb->inner_mac_header = skb->mac_header;
@@ -1525,13 +2588,24 @@ static inline void skb_reset_mac_len(struct sk_buff *skb)
 	skb->mac_len = skb->network_header - skb->mac_header;
 }
 
+<<<<<<< HEAD
 #ifdef NET_SKBUFF_DATA_USES_OFFSET
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned char *skb_inner_transport_header(const struct sk_buff
 							*skb)
 {
 	return skb->head + skb->inner_transport_header;
 }
 
+<<<<<<< HEAD
+=======
+static inline int skb_inner_transport_offset(const struct sk_buff *skb)
+{
+	return skb_inner_transport_header(skb) - skb->data;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void skb_reset_inner_transport_header(struct sk_buff *skb)
 {
 	skb->inner_transport_header = skb->data - skb->head;
@@ -1579,7 +2653,11 @@ static inline void skb_set_inner_mac_header(struct sk_buff *skb,
 }
 static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	return skb->transport_header != ~0U;
+=======
+	return skb->transport_header != (typeof(skb->transport_header))~0U;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
@@ -1622,7 +2700,11 @@ static inline unsigned char *skb_mac_header(const struct sk_buff *skb)
 
 static inline int skb_mac_header_was_set(const struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	return skb->mac_header != ~0U;
+=======
+	return skb->mac_header != (typeof(skb->mac_header))~0U;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void skb_reset_mac_header(struct sk_buff *skb)
@@ -1636,6 +2718,7 @@ static inline void skb_set_mac_header(struct sk_buff *skb, const int offset)
 	skb->mac_header += offset;
 }
 
+<<<<<<< HEAD
 #else /* NET_SKBUFF_DATA_USES_OFFSET */
 static inline unsigned char *skb_inner_transport_header(const struct sk_buff
 							*skb)
@@ -1742,6 +2825,8 @@ static inline void skb_set_mac_header(struct sk_buff *skb, const int offset)
 }
 #endif /* NET_SKBUFF_DATA_USES_OFFSET */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void skb_pop_mac_header(struct sk_buff *skb)
 {
 	skb->mac_header = skb->network_header;
@@ -1754,8 +2839,13 @@ static inline void skb_probe_transport_header(struct sk_buff *skb,
 
 	if (skb_transport_header_was_set(skb))
 		return;
+<<<<<<< HEAD
 	else if (skb_flow_dissect(skb, &keys))
 		skb_set_transport_header(skb, keys.thoff);
+=======
+	else if (skb_flow_dissect_flow_keys(skb, &keys, 0))
+		skb_set_transport_header(skb, keys.control.thoff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		skb_set_transport_header(skb, offset_hint);
 }
@@ -1775,6 +2865,14 @@ static inline int skb_checksum_start_offset(const struct sk_buff *skb)
 	return skb->csum_start - skb_headroom(skb);
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned char *skb_checksum_start(const struct sk_buff *skb)
+{
+	return skb->head + skb->csum_start;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int skb_transport_offset(const struct sk_buff *skb)
 {
 	return skb_transport_header(skb) - skb->data;
@@ -1853,9 +2951,15 @@ static inline int pskb_network_may_pull(struct sk_buff *skb, unsigned int len)
 #define NET_SKB_PAD	max(32, L1_CACHE_BYTES)
 #endif
 
+<<<<<<< HEAD
 extern int ___pskb_trim(struct sk_buff *skb, unsigned int len);
 
 static inline void __skb_trim(struct sk_buff *skb, unsigned int len)
+=======
+int ___pskb_trim(struct sk_buff *skb, unsigned int len);
+
+static inline void __skb_set_length(struct sk_buff *skb, unsigned int len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (unlikely(skb_is_nonlinear(skb))) {
 		WARN_ON(1);
@@ -1865,7 +2969,16 @@ static inline void __skb_trim(struct sk_buff *skb, unsigned int len)
 	skb_set_tail_pointer(skb, len);
 }
 
+<<<<<<< HEAD
 extern void skb_trim(struct sk_buff *skb, unsigned int len);
+=======
+static inline void __skb_trim(struct sk_buff *skb, unsigned int len)
+{
+	__skb_set_length(skb, len);
+}
+
+void skb_trim(struct sk_buff *skb, unsigned int len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int __pskb_trim(struct sk_buff *skb, unsigned int len)
 {
@@ -1895,6 +3008,23 @@ static inline void pskb_trim_unique(struct sk_buff *skb, unsigned int len)
 	BUG_ON(err);
 }
 
+<<<<<<< HEAD
+=======
+static inline int __skb_grow(struct sk_buff *skb, unsigned int len)
+{
+	unsigned int diff = len - skb->len;
+
+	if (skb_tailroom(skb) < diff) {
+		int ret = pskb_expand_head(skb, 0, diff - skb_tailroom(skb),
+					   GFP_ATOMIC);
+		if (ret)
+			return ret;
+	}
+	__skb_set_length(skb, len);
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  *	skb_orphan - orphan a buffer
  *	@skb: buffer to orphan
@@ -1905,10 +3035,20 @@ static inline void pskb_trim_unique(struct sk_buff *skb, unsigned int len)
  */
 static inline void skb_orphan(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	if (skb->destructor)
 		skb->destructor(skb);
 	skb->destructor = NULL;
 	skb->sk		= NULL;
+=======
+	if (skb->destructor) {
+		skb->destructor(skb);
+		skb->destructor = NULL;
+		skb->sk		= NULL;
+	} else {
+		BUG_ON(skb->sk);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -1935,7 +3075,11 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
  *	the list and one reference dropped. This function does not take the
  *	list lock and the caller must hold the relevant locks to use it.
  */
+<<<<<<< HEAD
 extern void skb_queue_purge(struct sk_buff_head *list);
+=======
+void skb_queue_purge(struct sk_buff_head *list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __skb_queue_purge(struct sk_buff_head *list)
 {
 	struct sk_buff *skb;
@@ -1943,6 +3087,7 @@ static inline void __skb_queue_purge(struct sk_buff_head *list)
 		kfree_skb(skb);
 }
 
+<<<<<<< HEAD
 #define NETDEV_FRAG_PAGE_MAX_ORDER get_order(32768)
 #define NETDEV_FRAG_PAGE_MAX_SIZE  (PAGE_SIZE << NETDEV_FRAG_PAGE_MAX_ORDER)
 #define NETDEV_PAGECNT_MAX_BIAS	   NETDEV_FRAG_PAGE_MAX_SIZE
@@ -1952,6 +3097,14 @@ extern void *netdev_alloc_frag(unsigned int fragsz);
 extern struct sk_buff *__netdev_alloc_skb(struct net_device *dev,
 					  unsigned int length,
 					  gfp_t gfp_mask);
+=======
+unsigned int skb_rbtree_purge(struct rb_root *root);
+
+void *netdev_alloc_frag(unsigned int fragsz);
+
+struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
+				   gfp_t gfp_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  *	netdev_alloc_skb - allocate an skbuff for rx on a specific device
@@ -2002,6 +3155,7 @@ static inline struct sk_buff *netdev_alloc_skb_ip_align(struct net_device *dev,
 	return __netdev_alloc_skb_ip_align(dev, length, GFP_ATOMIC);
 }
 
+<<<<<<< HEAD
 /*
  *	__skb_alloc_page - allocate pages for ps-rx on a skb and preserve pfmemalloc data
  *	@gfp_mask: alloc_pages_node mask. Set __GFP_NOMEMALLOC if not for network packet RX
@@ -2043,6 +3197,72 @@ static inline struct page *__skb_alloc_page(gfp_t gfp_mask,
 					     struct sk_buff *skb)
 {
 	return __skb_alloc_pages(gfp_mask, skb, 0);
+=======
+static inline void skb_free_frag(void *addr)
+{
+	__free_page_frag(addr);
+}
+
+void *napi_alloc_frag(unsigned int fragsz);
+struct sk_buff *__napi_alloc_skb(struct napi_struct *napi,
+				 unsigned int length, gfp_t gfp_mask);
+static inline struct sk_buff *napi_alloc_skb(struct napi_struct *napi,
+					     unsigned int length)
+{
+	return __napi_alloc_skb(napi, length, GFP_ATOMIC);
+}
+void napi_consume_skb(struct sk_buff *skb, int budget);
+
+void __kfree_skb_flush(void);
+void __kfree_skb_defer(struct sk_buff *skb);
+
+/**
+ * __dev_alloc_pages - allocate page for network Rx
+ * @gfp_mask: allocation priority. Set __GFP_NOMEMALLOC if not for network Rx
+ * @order: size of the allocation
+ *
+ * Allocate a new page.
+ *
+ * %NULL is returned if there is no free memory.
+*/
+static inline struct page *__dev_alloc_pages(gfp_t gfp_mask,
+					     unsigned int order)
+{
+	/* This piece of code contains several assumptions.
+	 * 1.  This is for device Rx, therefor a cold page is preferred.
+	 * 2.  The expectation is the user wants a compound page.
+	 * 3.  If requesting a order 0 page it will not be compound
+	 *     due to the check to see if order has a value in prep_new_page
+	 * 4.  __GFP_MEMALLOC is ignored if __GFP_NOMEMALLOC is set due to
+	 *     code in gfp_to_alloc_flags that should be enforcing this.
+	 */
+	gfp_mask |= __GFP_COLD | __GFP_COMP | __GFP_MEMALLOC;
+
+	return alloc_pages_node(NUMA_NO_NODE, gfp_mask, order);
+}
+
+static inline struct page *dev_alloc_pages(unsigned int order)
+{
+	return __dev_alloc_pages(GFP_ATOMIC | __GFP_NOWARN, order);
+}
+
+/**
+ * __dev_alloc_page - allocate a page for network Rx
+ * @gfp_mask: allocation priority. Set __GFP_NOMEMALLOC if not for network Rx
+ *
+ * Allocate a new page.
+ *
+ * %NULL is returned if there is no free memory.
+ */
+static inline struct page *__dev_alloc_page(gfp_t gfp_mask)
+{
+	return __dev_alloc_pages(gfp_mask, 0);
+}
+
+static inline struct page *dev_alloc_page(void)
+{
+	return dev_alloc_pages(0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -2053,12 +3273,20 @@ static inline struct page *__skb_alloc_page(gfp_t gfp_mask,
 static inline void skb_propagate_pfmemalloc(struct page *page,
 					     struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	if (page && page->pfmemalloc)
+=======
+	if (page_is_pfmemalloc(page))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb->pfmemalloc = true;
 }
 
 /**
+<<<<<<< HEAD
  * skb_frag_page - retrieve the page refered to by a paged fragment
+=======
+ * skb_frag_page - retrieve the page referred to by a paged fragment
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @frag: the paged fragment
  *
  * Returns the &struct page associated with @frag.
@@ -2168,6 +3396,11 @@ static inline void skb_frag_set_page(struct sk_buff *skb, int f,
 	__skb_frag_set_page(&skb_shinfo(skb)->frags[f], page);
 }
 
+<<<<<<< HEAD
+=======
+bool skb_page_frag_refill(unsigned int sz, struct page_frag *pfrag, gfp_t prio);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * skb_frag_dma_map - maps a paged fragment via the DMA API
  * @dev: the device to map the fragment to
@@ -2194,6 +3427,17 @@ static inline struct sk_buff *pskb_copy(struct sk_buff *skb,
 	return __pskb_copy(skb, skb_headroom(skb), gfp_mask);
 }
 
+<<<<<<< HEAD
+=======
+
+static inline struct sk_buff *pskb_copy_for_clone(struct sk_buff *skb,
+						  gfp_t gfp_mask)
+{
+	return __pskb_copy_fclone(skb, skb_headroom(skb), gfp_mask, true);
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  *	skb_clone_writable - is the header of a clone writable
  *	@skb: buffer to check
@@ -2208,6 +3452,16 @@ static inline int skb_clone_writable(const struct sk_buff *skb, unsigned int len
 	       skb_headroom(skb) + len <= skb->hdr_len;
 }
 
+<<<<<<< HEAD
+=======
+static inline int skb_try_make_writable(struct sk_buff *skb,
+					unsigned int write_len)
+{
+	return skb_cloned(skb) && !skb_clone_writable(skb, write_len) &&
+	       pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int __skb_cow(struct sk_buff *skb, unsigned int headroom,
 			    int cloned)
 {
@@ -2264,7 +3518,10 @@ static inline int skb_cow_head(struct sk_buff *skb, unsigned int headroom)
  *	is untouched. Otherwise it is extended. Returns zero on
  *	success. The skb is freed on error.
  */
+<<<<<<< HEAD
  
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int skb_padto(struct sk_buff *skb, unsigned int len)
 {
 	unsigned int size = skb->len;
@@ -2273,12 +3530,41 @@ static inline int skb_padto(struct sk_buff *skb, unsigned int len)
 	return skb_pad(skb, len - size);
 }
 
+<<<<<<< HEAD
 static inline int skb_add_data(struct sk_buff *skb,
 			       char __user *from, int copy)
+=======
+/**
+ *	skb_put_padto - increase size and pad an skbuff up to a minimal size
+ *	@skb: buffer to pad
+ *	@len: minimal length
+ *
+ *	Pads up a buffer to ensure the trailing bytes exist and are
+ *	blanked. If the buffer already contains sufficient data it
+ *	is untouched. Otherwise it is extended. Returns zero on
+ *	success. The skb is freed on error.
+ */
+static inline int __must_check skb_put_padto(struct sk_buff *skb, unsigned int len)
+{
+	unsigned int size = skb->len;
+
+	if (unlikely(size < len)) {
+		len -= size;
+		if (skb_pad(skb, len))
+			return -ENOMEM;
+		__skb_put(skb, len);
+	}
+	return 0;
+}
+
+static inline int skb_add_data(struct sk_buff *skb,
+			       struct iov_iter *from, int copy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const int off = skb->len;
 
 	if (skb->ip_summed == CHECKSUM_NONE) {
+<<<<<<< HEAD
 		int err = 0;
 		__wsum csum = csum_and_copy_from_user(from, skb_put(skb, copy),
 							    copy, 0, &err);
@@ -2287,6 +3573,15 @@ static inline int skb_add_data(struct sk_buff *skb,
 			return 0;
 		}
 	} else if (!copy_from_user(skb_put(skb, copy), from, copy))
+=======
+		__wsum csum = 0;
+		if (csum_and_copy_from_iter(skb_put(skb, copy), copy,
+					    &csum, from) == copy) {
+			skb->csum = csum_block_add(skb->csum, csum, off);
+			return 0;
+		}
+	} else if (copy_from_iter(skb_put(skb, copy), copy, from) == copy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	__skb_trim(skb, off);
@@ -2348,6 +3643,21 @@ static inline int skb_linearize_cow(struct sk_buff *skb)
 	       __skb_linearize(skb) : 0;
 }
 
+<<<<<<< HEAD
+=======
+static __always_inline void
+__skb_postpull_rcsum(struct sk_buff *skb, const void *start, unsigned int len,
+		     unsigned int off)
+{
+	if (skb->ip_summed == CHECKSUM_COMPLETE)
+		skb->csum = csum_block_sub(skb->csum,
+					   csum_partial(start, len, 0), off);
+	else if (skb->ip_summed == CHECKSUM_PARTIAL &&
+		 skb_checksum_start_offset(skb) < 0)
+		skb->ip_summed = CHECKSUM_NONE;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  *	skb_postpull_rcsum - update checksum for received skb after pull
  *	@skb: buffer to update
@@ -2358,6 +3668,7 @@ static inline int skb_linearize_cow(struct sk_buff *skb)
  *	update the CHECKSUM_COMPLETE checksum, or set ip_summed to
  *	CHECKSUM_NONE so that it can be recomputed from scratch.
  */
+<<<<<<< HEAD
 
 static inline void skb_postpull_rcsum(struct sk_buff *skb,
 				      const void *start, unsigned int len)
@@ -2367,28 +3678,114 @@ static inline void skb_postpull_rcsum(struct sk_buff *skb,
 	else if (skb->ip_summed == CHECKSUM_PARTIAL &&
 		 skb_checksum_start_offset(skb) < 0)
 		skb->ip_summed = CHECKSUM_NONE;
+=======
+static inline void skb_postpull_rcsum(struct sk_buff *skb,
+				      const void *start, unsigned int len)
+{
+	__skb_postpull_rcsum(skb, start, len, 0);
+}
+
+static __always_inline void
+__skb_postpush_rcsum(struct sk_buff *skb, const void *start, unsigned int len,
+		     unsigned int off)
+{
+	if (skb->ip_summed == CHECKSUM_COMPLETE)
+		skb->csum = csum_block_add(skb->csum,
+					   csum_partial(start, len, 0), off);
+}
+
+/**
+ *	skb_postpush_rcsum - update checksum for received skb after push
+ *	@skb: buffer to update
+ *	@start: start of data after push
+ *	@len: length of data pushed
+ *
+ *	After doing a push on a received packet, you need to call this to
+ *	update the CHECKSUM_COMPLETE checksum.
+ */
+static inline void skb_postpush_rcsum(struct sk_buff *skb,
+				      const void *start, unsigned int len)
+{
+	__skb_postpush_rcsum(skb, start, len, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 unsigned char *skb_pull_rcsum(struct sk_buff *skb, unsigned int len);
 
 /**
+<<<<<<< HEAD
+=======
+ *	skb_push_rcsum - push skb and update receive checksum
+ *	@skb: buffer to update
+ *	@len: length of data pulled
+ *
+ *	This function performs an skb_push on the packet and updates
+ *	the CHECKSUM_COMPLETE checksum.  It should be used on
+ *	receive path processing instead of skb_push unless you know
+ *	that the checksum difference is zero (e.g., a valid IP header)
+ *	or you are setting ip_summed to CHECKSUM_NONE.
+ */
+static inline unsigned char *skb_push_rcsum(struct sk_buff *skb,
+					    unsigned int len)
+{
+	skb_push(skb, len);
+	skb_postpush_rcsum(skb, skb->data, len);
+	return skb->data;
+}
+
+int pskb_trim_rcsum_slow(struct sk_buff *skb, unsigned int len);
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	pskb_trim_rcsum - trim received skb and update checksum
  *	@skb: buffer to trim
  *	@len: new length
  *
  *	This is exactly the same as pskb_trim except that it ensures the
  *	checksum of received packets are still valid after the operation.
+<<<<<<< HEAD
+=======
+ *	It can change skb pointers.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 static inline int pskb_trim_rcsum(struct sk_buff *skb, unsigned int len)
 {
 	if (likely(len >= skb->len))
 		return 0;
+<<<<<<< HEAD
 	if (skb->ip_summed == CHECKSUM_COMPLETE)
 		skb->ip_summed = CHECKSUM_NONE;
 	return __pskb_trim(skb, len);
 }
 
+=======
+	return pskb_trim_rcsum_slow(skb, len);
+}
+
+static inline int __skb_trim_rcsum(struct sk_buff *skb, unsigned int len)
+{
+	if (skb->ip_summed == CHECKSUM_COMPLETE)
+		skb->ip_summed = CHECKSUM_NONE;
+	__skb_trim(skb, len);
+	return 0;
+}
+
+static inline int __skb_grow_rcsum(struct sk_buff *skb, unsigned int len)
+{
+	if (skb->ip_summed == CHECKSUM_COMPLETE)
+		skb->ip_summed = CHECKSUM_NONE;
+	return __skb_grow(skb, len);
+}
+
+#define rb_to_skb(rb) rb_entry_safe(rb, struct sk_buff, rbnode)
+
+#define rb_to_skb(rb) rb_entry_safe(rb, struct sk_buff, rbnode)
+#define skb_rb_first(root) rb_to_skb(rb_first(root))
+#define skb_rb_last(root)  rb_to_skb(rb_last(root))
+#define skb_rb_next(skb)   rb_to_skb(rb_next(&(skb)->rbnode))
+#define skb_rb_prev(skb)   rb_to_skb(rb_prev(&(skb)->rbnode))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define skb_queue_walk(queue, skb) \
 		for (skb = (queue)->next;					\
 		     skb != (struct sk_buff *)(queue);				\
@@ -2403,6 +3800,21 @@ static inline int pskb_trim_rcsum(struct sk_buff *skb, unsigned int len)
 		for (; skb != (struct sk_buff *)(queue);			\
 		     skb = skb->next)
 
+<<<<<<< HEAD
+=======
+#define skb_rbtree_walk(skb, root)						\
+		for (skb = skb_rb_first(root); skb != NULL;			\
+		     skb = skb_rb_next(skb))
+
+#define skb_rbtree_walk_from(skb)						\
+		for (; skb != NULL;						\
+		     skb = skb_rb_next(skb))
+
+#define skb_rbtree_walk_from_safe(skb, tmp)					\
+		for (; tmp = skb ? skb_rb_next(skb) : NULL, (skb != NULL);	\
+		     skb = tmp)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define skb_queue_walk_from_safe(queue, skb, tmp)				\
 		for (tmp = skb->next;						\
 		     skb != (struct sk_buff *)(queue);				\
@@ -2433,6 +3845,7 @@ static inline void skb_frag_list_init(struct sk_buff *skb)
 	skb_shinfo(skb)->frag_list = NULL;
 }
 
+<<<<<<< HEAD
 static inline void skb_frag_add_head(struct sk_buff *skb, struct sk_buff *frag)
 {
 	frag->next = skb_shinfo(skb)->frag_list;
@@ -2504,11 +3917,131 @@ static inline void *skb_header_pointer(const struct sk_buff *skb, int offset,
 		return skb->data + offset;
 
 	if (skb_copy_bits(skb, offset, buffer, len) < 0)
+=======
+#define skb_walk_frags(skb, iter)	\
+	for (iter = skb_shinfo(skb)->frag_list; iter; iter = iter->next)
+
+
+int __skb_wait_for_more_packets(struct sock *sk, int *err, long *timeo_p,
+				const struct sk_buff *skb);
+struct sk_buff *__skb_try_recv_datagram(struct sock *sk, unsigned flags,
+					int *peeked, int *off, int *err,
+					struct sk_buff **last);
+struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned flags,
+				    int *peeked, int *off, int *err);
+struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned flags, int noblock,
+				  int *err);
+unsigned int datagram_poll(struct file *file, struct socket *sock,
+			   struct poll_table_struct *wait);
+int skb_copy_datagram_iter(const struct sk_buff *from, int offset,
+			   struct iov_iter *to, int size);
+static inline int skb_copy_datagram_msg(const struct sk_buff *from, int offset,
+					struct msghdr *msg, int size)
+{
+	return skb_copy_datagram_iter(from, offset, &msg->msg_iter, size);
+}
+int skb_copy_and_csum_datagram_msg(struct sk_buff *skb, int hlen,
+				   struct msghdr *msg);
+int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+				 struct iov_iter *from, int len);
+int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *frm);
+void skb_free_datagram(struct sock *sk, struct sk_buff *skb);
+void __skb_free_datagram_locked(struct sock *sk, struct sk_buff *skb, int len);
+static inline void skb_free_datagram_locked(struct sock *sk,
+					    struct sk_buff *skb)
+{
+	__skb_free_datagram_locked(sk, skb, 0);
+}
+int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags);
+int skb_copy_bits(const struct sk_buff *skb, int offset, void *to, int len);
+int skb_store_bits(struct sk_buff *skb, int offset, const void *from, int len);
+__wsum skb_copy_and_csum_bits(const struct sk_buff *skb, int offset, u8 *to,
+			      int len, __wsum csum);
+int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
+		    struct pipe_inode_info *pipe, unsigned int len,
+		    unsigned int flags);
+void skb_copy_and_csum_dev(const struct sk_buff *skb, u8 *to);
+unsigned int skb_zerocopy_headlen(const struct sk_buff *from);
+int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
+		 int len, int hlen);
+void skb_split(struct sk_buff *skb, struct sk_buff *skb1, const u32 len);
+int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen);
+void skb_scrub_packet(struct sk_buff *skb, bool xnet);
+unsigned int skb_gso_transport_seglen(const struct sk_buff *skb);
+bool skb_gso_validate_mtu(const struct sk_buff *skb, unsigned int mtu);
+bool skb_gso_validate_mac_len(const struct sk_buff *skb, unsigned int len);
+struct sk_buff *skb_segment(struct sk_buff *skb, netdev_features_t features);
+struct sk_buff *skb_vlan_untag(struct sk_buff *skb);
+int skb_ensure_writable(struct sk_buff *skb, int write_len);
+int __skb_vlan_pop(struct sk_buff *skb, u16 *vlan_tci);
+int skb_vlan_pop(struct sk_buff *skb);
+int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
+struct sk_buff *pskb_extract(struct sk_buff *skb, int off, int to_copy,
+			     gfp_t gfp);
+
+static inline int memcpy_from_msg(void *data, struct msghdr *msg, int len)
+{
+	return copy_from_iter(data, len, &msg->msg_iter) == len ? 0 : -EFAULT;
+}
+
+static inline int memcpy_to_msg(struct msghdr *msg, void *data, int len)
+{
+	return copy_to_iter(data, len, &msg->msg_iter) == len ? 0 : -EFAULT;
+}
+
+struct skb_checksum_ops {
+	__wsum (*update)(const void *mem, int len, __wsum wsum);
+	__wsum (*combine)(__wsum csum, __wsum csum2, int offset, int len);
+};
+
+__wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
+		      __wsum csum, const struct skb_checksum_ops *ops);
+__wsum skb_checksum(const struct sk_buff *skb, int offset, int len,
+		    __wsum csum);
+
+static inline void * __must_check
+__skb_header_pointer(const struct sk_buff *skb, int offset,
+		     int len, void *data, int hlen, void *buffer)
+{
+	if (hlen - offset >= len)
+		return data + offset;
+
+	if (!skb ||
+	    skb_copy_bits(skb, offset, buffer, len) < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	return buffer;
 }
 
+<<<<<<< HEAD
+=======
+static inline void * __must_check
+skb_header_pointer(const struct sk_buff *skb, int offset, int len, void *buffer)
+{
+	return __skb_header_pointer(skb, offset, len, skb->data,
+				    skb_headlen(skb), buffer);
+}
+
+/**
+ *	skb_needs_linearize - check if we need to linearize a given skb
+ *			      depending on the given device features.
+ *	@skb: socket buffer to check
+ *	@features: net device features
+ *
+ *	Returns true if either:
+ *	1. skb has frag_list and the device doesn't support FRAGLIST, or
+ *	2. skb is fragmented and the device does not support SG.
+ */
+static inline bool skb_needs_linearize(struct sk_buff *skb,
+				       netdev_features_t features)
+{
+	return skb_is_nonlinear(skb) &&
+	       ((skb_has_frag_list(skb) && !(features & NETIF_F_FRAGLIST)) ||
+		(skb_shinfo(skb)->nr_frags && !(features & NETIF_F_SG)));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void skb_copy_from_linear_data(const struct sk_buff *skb,
 					     void *to,
 					     const unsigned int len)
@@ -2538,7 +4071,11 @@ static inline void skb_copy_to_linear_data_offset(struct sk_buff *skb,
 	memcpy(skb->data + offset, from, len);
 }
 
+<<<<<<< HEAD
 extern void skb_init(void);
+=======
+void skb_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline ktime_t skb_get_ktime(const struct sk_buff *skb)
 {
@@ -2581,12 +4118,21 @@ static inline ktime_t net_invalid_timestamp(void)
 	return ktime_set(0, 0);
 }
 
+<<<<<<< HEAD
 extern void skb_timestamping_init(void);
 
 #ifdef CONFIG_NETWORK_PHY_TIMESTAMPING
 
 extern void skb_clone_tx_timestamp(struct sk_buff *skb);
 extern bool skb_defer_rx_timestamp(struct sk_buff *skb);
+=======
+struct sk_buff *skb_clone_sk(struct sk_buff *skb);
+
+#ifdef CONFIG_NETWORK_PHY_TIMESTAMPING
+
+void skb_clone_tx_timestamp(struct sk_buff *skb);
+bool skb_defer_rx_timestamp(struct sk_buff *skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else /* CONFIG_NETWORK_PHY_TIMESTAMPING */
 
@@ -2606,16 +4152,31 @@ static inline bool skb_defer_rx_timestamp(struct sk_buff *skb)
  *
  * PHY drivers may accept clones of transmitted packets for
  * timestamping via their phy_driver.txtstamp method. These drivers
+<<<<<<< HEAD
  * must call this function to return the skb back to the stack, with
  * or without a timestamp.
  *
  * @skb: clone of the the original outgoing packet
  * @hwtstamps: hardware time stamps, may be NULL if not available
+=======
+ * must call this function to return the skb back to the stack with a
+ * timestamp.
+ *
+ * @skb: clone of the the original outgoing packet
+ * @hwtstamps: hardware time stamps
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 void skb_complete_tx_timestamp(struct sk_buff *skb,
 			       struct skb_shared_hwtstamps *hwtstamps);
 
+<<<<<<< HEAD
+=======
+void __skb_tstamp_tx(struct sk_buff *orig_skb,
+		     struct skb_shared_hwtstamps *hwtstamps,
+		     struct sock *sk, int tstype);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * skb_tstamp_tx - queue clone of skb with send time stamps
  * @orig_skb:	the original outgoing packet
@@ -2627,8 +4188,13 @@ void skb_complete_tx_timestamp(struct sk_buff *skb,
  * generates a software time stamp (otherwise), then queues the clone
  * to the error queue of the socket.  Errors are silently ignored.
  */
+<<<<<<< HEAD
 extern void skb_tstamp_tx(struct sk_buff *orig_skb,
 			struct skb_shared_hwtstamps *hwtstamps);
+=======
+void skb_tstamp_tx(struct sk_buff *orig_skb,
+		   struct skb_shared_hwtstamps *hwtstamps);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void sw_tx_timestamp(struct sk_buff *skb)
 {
@@ -2643,6 +4209,13 @@ static inline void sw_tx_timestamp(struct sk_buff *skb)
  * Ethernet MAC Drivers should call this function in their hard_xmit()
  * function immediately before giving the sk_buff to the MAC hardware.
  *
+<<<<<<< HEAD
+=======
+ * Specifically, one should make absolutely sure that this function is
+ * called before TX completion of this packet can trigger.  Otherwise
+ * the packet could potentially already be freed.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @skb: A socket buffer.
  */
 static inline void skb_tx_timestamp(struct sk_buff *skb)
@@ -2660,12 +4233,24 @@ static inline void skb_tx_timestamp(struct sk_buff *skb)
  */
 void skb_complete_wifi_ack(struct sk_buff *skb, bool acked);
 
+<<<<<<< HEAD
 extern __sum16 __skb_checksum_complete_head(struct sk_buff *skb, int len);
 extern __sum16 __skb_checksum_complete(struct sk_buff *skb);
 
 static inline int skb_csum_unnecessary(const struct sk_buff *skb)
 {
 	return skb->ip_summed & CHECKSUM_UNNECESSARY;
+=======
+__sum16 __skb_checksum_complete_head(struct sk_buff *skb, int len);
+__sum16 __skb_checksum_complete(struct sk_buff *skb);
+
+static inline int skb_csum_unnecessary(const struct sk_buff *skb)
+{
+	return ((skb->ip_summed == CHECKSUM_UNNECESSARY) ||
+		skb->csum_valid ||
+		(skb->ip_summed == CHECKSUM_PARTIAL &&
+		 skb_checksum_start_offset(skb) >= 0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -2690,8 +4275,216 @@ static inline __sum16 skb_checksum_complete(struct sk_buff *skb)
 	       0 : __skb_checksum_complete(skb);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
 extern void nf_conntrack_destroy(struct nf_conntrack *nfct);
+=======
+static inline void __skb_decr_checksum_unnecessary(struct sk_buff *skb)
+{
+	if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
+		if (skb->csum_level == 0)
+			skb->ip_summed = CHECKSUM_NONE;
+		else
+			skb->csum_level--;
+	}
+}
+
+static inline void __skb_incr_checksum_unnecessary(struct sk_buff *skb)
+{
+	if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
+		if (skb->csum_level < SKB_MAX_CSUM_LEVEL)
+			skb->csum_level++;
+	} else if (skb->ip_summed == CHECKSUM_NONE) {
+		skb->ip_summed = CHECKSUM_UNNECESSARY;
+		skb->csum_level = 0;
+	}
+}
+
+static inline void __skb_mark_checksum_bad(struct sk_buff *skb)
+{
+	/* Mark current checksum as bad (typically called from GRO
+	 * path). In the case that ip_summed is CHECKSUM_NONE
+	 * this must be the first checksum encountered in the packet.
+	 * When ip_summed is CHECKSUM_UNNECESSARY, this is the first
+	 * checksum after the last one validated. For UDP, a zero
+	 * checksum can not be marked as bad.
+	 */
+
+	if (skb->ip_summed == CHECKSUM_NONE ||
+	    skb->ip_summed == CHECKSUM_UNNECESSARY)
+		skb->csum_bad = 1;
+}
+
+/* Check if we need to perform checksum complete validation.
+ *
+ * Returns true if checksum complete is needed, false otherwise
+ * (either checksum is unnecessary or zero checksum is allowed).
+ */
+static inline bool __skb_checksum_validate_needed(struct sk_buff *skb,
+						  bool zero_okay,
+						  __sum16 check)
+{
+	if (skb_csum_unnecessary(skb) || (zero_okay && !check)) {
+		skb->csum_valid = 1;
+		__skb_decr_checksum_unnecessary(skb);
+		return false;
+	}
+
+	return true;
+}
+
+/* For small packets <= CHECKSUM_BREAK peform checksum complete directly
+ * in checksum_init.
+ */
+#define CHECKSUM_BREAK 76
+
+/* Unset checksum-complete
+ *
+ * Unset checksum complete can be done when packet is being modified
+ * (uncompressed for instance) and checksum-complete value is
+ * invalidated.
+ */
+static inline void skb_checksum_complete_unset(struct sk_buff *skb)
+{
+	if (skb->ip_summed == CHECKSUM_COMPLETE)
+		skb->ip_summed = CHECKSUM_NONE;
+}
+
+/* Validate (init) checksum based on checksum complete.
+ *
+ * Return values:
+ *   0: checksum is validated or try to in skb_checksum_complete. In the latter
+ *	case the ip_summed will not be CHECKSUM_UNNECESSARY and the pseudo
+ *	checksum is stored in skb->csum for use in __skb_checksum_complete
+ *   non-zero: value of invalid checksum
+ *
+ */
+static inline __sum16 __skb_checksum_validate_complete(struct sk_buff *skb,
+						       bool complete,
+						       __wsum psum)
+{
+	if (skb->ip_summed == CHECKSUM_COMPLETE) {
+		if (!csum_fold(csum_add(psum, skb->csum))) {
+			skb->csum_valid = 1;
+			return 0;
+		}
+	} else if (skb->csum_bad) {
+		/* ip_summed == CHECKSUM_NONE in this case */
+		return (__force __sum16)1;
+	}
+
+	skb->csum = psum;
+
+	if (complete || skb->len <= CHECKSUM_BREAK) {
+		__sum16 csum;
+
+		csum = __skb_checksum_complete(skb);
+		skb->csum_valid = !csum;
+		return csum;
+	}
+
+	return 0;
+}
+
+static inline __wsum null_compute_pseudo(struct sk_buff *skb, int proto)
+{
+	return 0;
+}
+
+/* Perform checksum validate (init). Note that this is a macro since we only
+ * want to calculate the pseudo header which is an input function if necessary.
+ * First we try to validate without any computation (checksum unnecessary) and
+ * then calculate based on checksum complete calling the function to compute
+ * pseudo header.
+ *
+ * Return values:
+ *   0: checksum is validated or try to in skb_checksum_complete
+ *   non-zero: value of invalid checksum
+ */
+#define __skb_checksum_validate(skb, proto, complete,			\
+				zero_okay, check, compute_pseudo)	\
+({									\
+	__sum16 __ret = 0;						\
+	skb->csum_valid = 0;						\
+	if (__skb_checksum_validate_needed(skb, zero_okay, check))	\
+		__ret = __skb_checksum_validate_complete(skb,		\
+				complete, compute_pseudo(skb, proto));	\
+	__ret;								\
+})
+
+#define skb_checksum_init(skb, proto, compute_pseudo)			\
+	__skb_checksum_validate(skb, proto, false, false, 0, compute_pseudo)
+
+#define skb_checksum_init_zero_check(skb, proto, check, compute_pseudo)	\
+	__skb_checksum_validate(skb, proto, false, true, check, compute_pseudo)
+
+#define skb_checksum_validate(skb, proto, compute_pseudo)		\
+	__skb_checksum_validate(skb, proto, true, false, 0, compute_pseudo)
+
+#define skb_checksum_validate_zero_check(skb, proto, check,		\
+					 compute_pseudo)		\
+	__skb_checksum_validate(skb, proto, true, true, check, compute_pseudo)
+
+#define skb_checksum_simple_validate(skb)				\
+	__skb_checksum_validate(skb, 0, true, false, 0, null_compute_pseudo)
+
+static inline bool __skb_checksum_convert_check(struct sk_buff *skb)
+{
+	return (skb->ip_summed == CHECKSUM_NONE &&
+		skb->csum_valid && !skb->csum_bad);
+}
+
+static inline void __skb_checksum_convert(struct sk_buff *skb,
+					  __sum16 check, __wsum pseudo)
+{
+	skb->csum = ~pseudo;
+	skb->ip_summed = CHECKSUM_COMPLETE;
+}
+
+#define skb_checksum_try_convert(skb, proto, check, compute_pseudo)	\
+do {									\
+	if (__skb_checksum_convert_check(skb))				\
+		__skb_checksum_convert(skb, check,			\
+				       compute_pseudo(skb, proto));	\
+} while (0)
+
+static inline void skb_remcsum_adjust_partial(struct sk_buff *skb, void *ptr,
+					      u16 start, u16 offset)
+{
+	skb->ip_summed = CHECKSUM_PARTIAL;
+	skb->csum_start = ((unsigned char *)ptr + start) - skb->head;
+	skb->csum_offset = offset - start;
+}
+
+/* Update skbuf and packet to reflect the remote checksum offload operation.
+ * When called, ptr indicates the starting point for skb->csum when
+ * ip_summed is CHECKSUM_COMPLETE. If we need create checksum complete
+ * here, skb_postpull_rcsum is done so skb->csum start is ptr.
+ */
+static inline void skb_remcsum_process(struct sk_buff *skb, void *ptr,
+				       int start, int offset, bool nopartial)
+{
+	__wsum delta;
+
+	if (!nopartial) {
+		skb_remcsum_adjust_partial(skb, ptr, start, offset);
+		return;
+	}
+
+	 if (unlikely(skb->ip_summed != CHECKSUM_COMPLETE)) {
+		__skb_checksum_complete(skb);
+		skb_postpull_rcsum(skb, skb->data, ptr - (void *)skb->data);
+	}
+
+	delta = remcsum_adjust(ptr, skb->csum, start, offset);
+
+	/* Adjust skb->csum since we changed the packet */
+	skb->csum = csum_add(skb->csum, delta);
+}
+
+#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
+void nf_conntrack_destroy(struct nf_conntrack *nfct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void nf_conntrack_put(struct nf_conntrack *nfct)
 {
 	if (nfct && atomic_dec_and_test(&nfct->use))
@@ -2703,7 +4496,11 @@ static inline void nf_conntrack_get(struct nf_conntrack *nfct)
 		atomic_inc(&nfct->use);
 }
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_BRIDGE_NETFILTER
+=======
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void nf_bridge_put(struct nf_bridge_info *nf_bridge)
 {
 	if (nf_bridge && atomic_dec_and_test(&nf_bridge->use))
@@ -2721,7 +4518,11 @@ static inline void nf_reset(struct sk_buff *skb)
 	nf_conntrack_put(skb->nfct);
 	skb->nfct = NULL;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_BRIDGE_NETFILTER
+=======
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nf_bridge_put(skb->nf_bridge);
 	skb->nf_bridge = NULL;
 #endif
@@ -2729,23 +4530,54 @@ static inline void nf_reset(struct sk_buff *skb)
 
 static inline void nf_reset_trace(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE)
+=======
+#if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb->nf_trace = 0;
 #endif
 }
 
+<<<<<<< HEAD
 /* Note: This doesn't put any conntrack and bridge info in dst. */
 static inline void __nf_copy(struct sk_buff *dst, const struct sk_buff *src)
+=======
+static inline void ipvs_reset(struct sk_buff *skb)
+{
+#if IS_ENABLED(CONFIG_IP_VS)
+	skb->ipvs_property = 0;
+#endif
+}
+
+/* Note: This doesn't put any conntrack and bridge info in dst. */
+static inline void __nf_copy(struct sk_buff *dst, const struct sk_buff *src,
+			     bool copy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
 	dst->nfct = src->nfct;
 	nf_conntrack_get(src->nfct);
+<<<<<<< HEAD
 	dst->nfctinfo = src->nfctinfo;
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 	dst->nf_bridge  = src->nf_bridge;
 	nf_bridge_get(src->nf_bridge);
 #endif
+=======
+	if (copy)
+		dst->nfctinfo = src->nfctinfo;
+#endif
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+	dst->nf_bridge  = src->nf_bridge;
+	nf_bridge_get(src->nf_bridge);
+#endif
+#if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
+	if (copy)
+		dst->nf_trace = src->nf_trace;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void nf_copy(struct sk_buff *dst, const struct sk_buff *src)
@@ -2753,10 +4585,17 @@ static inline void nf_copy(struct sk_buff *dst, const struct sk_buff *src)
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
 	nf_conntrack_put(dst->nfct);
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_BRIDGE_NETFILTER
 	nf_bridge_put(dst->nf_bridge);
 #endif
 	__nf_copy(dst, src);
+=======
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+	nf_bridge_put(dst->nf_bridge);
+#endif
+	__nf_copy(dst, src, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_NETWORK_SECMARK
@@ -2777,6 +4616,22 @@ static inline void skb_init_secmark(struct sk_buff *skb)
 { }
 #endif
 
+<<<<<<< HEAD
+=======
+static inline bool skb_irq_freeable(const struct sk_buff *skb)
+{
+	return !skb->destructor &&
+#if IS_ENABLED(CONFIG_XFRM)
+		!skb->sp &&
+#endif
+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+		!skb->nfct &&
+#endif
+		!skb->_skb_refdst &&
+		!skb_has_frag_list(skb);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void skb_set_queue_mapping(struct sk_buff *skb, u16 queue_mapping)
 {
 	skb->queue_mapping = queue_mapping;
@@ -2807,6 +4662,7 @@ static inline bool skb_rx_queue_recorded(const struct sk_buff *skb)
 	return skb->queue_mapping != 0;
 }
 
+<<<<<<< HEAD
 extern u16 __skb_tx_hash(const struct net_device *dev,
 			 const struct sk_buff *skb,
 			 unsigned int num_tx_queues);
@@ -2822,15 +4678,42 @@ static inline struct sec_path *skb_sec_path(struct sk_buff *skb)
 	return NULL;
 }
 #endif
+=======
+static inline struct sec_path *skb_sec_path(struct sk_buff *skb)
+{
+#ifdef CONFIG_XFRM
+	return skb->sp;
+#else
+	return NULL;
+#endif
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Keeps track of mac header offset relative to skb->head.
  * It is useful for TSO of Tunneling protocol. e.g. GRE.
  * For non-tunnel skb it points to skb_mac_header() and for
+<<<<<<< HEAD
  * tunnel skb it points to outer mac header. */
 struct skb_gso_cb {
 	int mac_offset;
 };
 #define SKB_GSO_CB(skb) ((struct skb_gso_cb *)(skb)->cb)
+=======
+ * tunnel skb it points to outer mac header.
+ * Keeps track of level of encapsulation of network headers.
+ */
+struct skb_gso_cb {
+	union {
+		int	mac_offset;
+		int	data_offset;
+	};
+	int	encap_level;
+	__wsum	csum;
+	__u16	csum_start;
+};
+#define SKB_SGO_CB_OFFSET	32
+#define SKB_GSO_CB(skb) ((struct skb_gso_cb *)((skb)->cb + SKB_SGO_CB_OFFSET))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int skb_tnl_header_len(const struct sk_buff *inner_skb)
 {
@@ -2853,17 +4736,65 @@ static inline int gso_pskb_expand_head(struct sk_buff *skb, int extra)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline void gso_reset_checksum(struct sk_buff *skb, __wsum res)
+{
+	/* Do not update partial checksums if remote checksum is enabled. */
+	if (skb->remcsum_offload)
+		return;
+
+	SKB_GSO_CB(skb)->csum = res;
+	SKB_GSO_CB(skb)->csum_start = skb_checksum_start(skb) - skb->head;
+}
+
+/* Compute the checksum for a gso segment. First compute the checksum value
+ * from the start of transport header to SKB_GSO_CB(skb)->csum_start, and
+ * then add in skb->csum (checksum from csum_start to end of packet).
+ * skb->csum and csum_start are then updated to reflect the checksum of the
+ * resultant packet starting from the transport header-- the resultant checksum
+ * is in the res argument (i.e. normally zero or ~ of checksum of a pseudo
+ * header.
+ */
+static inline __sum16 gso_make_checksum(struct sk_buff *skb, __wsum res)
+{
+	unsigned char *csum_start = skb_transport_header(skb);
+	int plen = (skb->head + SKB_GSO_CB(skb)->csum_start) - csum_start;
+	__wsum partial = SKB_GSO_CB(skb)->csum;
+
+	SKB_GSO_CB(skb)->csum = res;
+	SKB_GSO_CB(skb)->csum_start = csum_start - skb->head;
+
+	return csum_fold(csum_partial(csum_start, plen, partial));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool skb_is_gso(const struct sk_buff *skb)
 {
 	return skb_shinfo(skb)->gso_size;
 }
 
+<<<<<<< HEAD
+=======
+/* Note: Should be called only if skb_is_gso(skb) is true */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool skb_is_gso_v6(const struct sk_buff *skb)
 {
 	return skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6;
 }
 
+<<<<<<< HEAD
 extern void __skb_warn_lro_forwarding(const struct sk_buff *skb);
+=======
+static inline void skb_gso_reset(struct sk_buff *skb)
+{
+	skb_shinfo(skb)->gso_size = 0;
+	skb_shinfo(skb)->gso_segs = 0;
+	skb_shinfo(skb)->gso_type = 0;
+}
+
+void __skb_warn_lro_forwarding(const struct sk_buff *skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline bool skb_warn_if_lro(const struct sk_buff *skb)
 {
@@ -2903,7 +4834,14 @@ static inline void skb_checksum_none_assert(const struct sk_buff *skb)
 
 bool skb_partial_csum_set(struct sk_buff *skb, u16 start, u16 off);
 
+<<<<<<< HEAD
 u32 __skb_get_poff(const struct sk_buff *skb);
+=======
+int skb_checksum_setup(struct sk_buff *skb, bool recalculate);
+struct sk_buff *skb_checksum_trimmed(struct sk_buff *skb,
+				     unsigned int transport_len,
+				     __sum16(*skb_chkf)(struct sk_buff *skb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * skb_head_is_locked - Determine if the skb->head is locked down
@@ -2935,5 +4873,49 @@ static inline unsigned int skb_gso_network_seglen(const struct sk_buff *skb)
 			       skb_network_header(skb);
 	return hdr_len + skb_gso_transport_seglen(skb);
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * skb_gso_mac_seglen - Return length of individual segments of a gso packet
+ *
+ * @skb: GSO skb
+ *
+ * skb_gso_mac_seglen is used to determine the real size of the
+ * individual segments, including MAC/L2, Layer3 (IP, IPv6) and L4
+ * headers (TCP/UDP).
+ */
+static inline unsigned int skb_gso_mac_seglen(const struct sk_buff *skb)
+{
+	unsigned int hdr_len = skb_transport_header(skb) - skb_mac_header(skb);
+	return hdr_len + skb_gso_transport_seglen(skb);
+}
+
+/* Local Checksum Offload.
+ * Compute outer checksum based on the assumption that the
+ * inner checksum will be offloaded later.
+ * See Documentation/networking/checksum-offloads.txt for
+ * explanation of how this works.
+ * Fill in outer checksum adjustment (e.g. with sum of outer
+ * pseudo-header) before calling.
+ * Also ensure that inner checksum is in linear data area.
+ */
+static inline __wsum lco_csum(struct sk_buff *skb)
+{
+	unsigned char *csum_start = skb_checksum_start(skb);
+	unsigned char *l4_hdr = skb_transport_header(skb);
+	__wsum partial;
+
+	/* Start with complement of inner checksum adjustment */
+	partial = ~csum_unfold(*(__force __sum16 *)(csum_start +
+						    skb->csum_offset));
+
+	/* Add in checksum of our headers (incl. outer checksum
+	 * adjustment filled in by caller) and return result.
+	 */
+	return csum_partial(l4_hdr, csum_start - l4_hdr, partial);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* __KERNEL__ */
 #endif	/* _LINUX_SKBUFF_H */

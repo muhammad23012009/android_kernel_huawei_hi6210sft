@@ -67,7 +67,11 @@ static const u8 DS620_REG_TEMP[3] = {
 
 /* Each client has this additional data */
 struct ds620_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex update_lock;
 	char valid;		/* !=0 if following fields are valid */
 	unsigned long last_updated;	/* In jiffies */
@@ -77,7 +81,11 @@ struct ds620_data {
 
 static void ds620_init_client(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	struct ds620_platform_data *ds620_info = client->dev.platform_data;
+=======
+	struct ds620_platform_data *ds620_info = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 conf, new_conf;
 
 	new_conf = conf =
@@ -106,8 +114,13 @@ static void ds620_init_client(struct i2c_client *client)
 
 static struct ds620_data *ds620_update_client(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ds620_data *data = i2c_get_clientdata(client);
+=======
+	struct ds620_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ds620_data *ret = data;
 
 	mutex_lock(&data->update_lock);
@@ -158,8 +171,13 @@ static ssize_t set_temp(struct device *dev, struct device_attribute *da,
 	long val;
 
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ds620_data *data = i2c_get_clientdata(client);
+=======
+	struct ds620_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	res = kstrtol(buf, 10, &val);
 
@@ -181,13 +199,22 @@ static ssize_t show_alarm(struct device *dev, struct device_attribute *da,
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	struct ds620_data *data = ds620_update_client(dev);
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 conf, new_conf;
 	int res;
 
 	if (IS_ERR(data))
 		return PTR_ERR(data);
 
+<<<<<<< HEAD
+=======
+	client = data->client;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* reset alarms if necessary */
 	res = i2c_smbus_read_word_swapped(client, DS620_REG_CONF);
 	if (res < 0)
@@ -213,7 +240,11 @@ static SENSOR_DEVICE_ATTR(temp1_min_alarm, S_IRUGO, show_alarm, NULL,
 static SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL,
 			  DS620_REG_CONFIG_THF);
 
+<<<<<<< HEAD
 static struct attribute *ds620_attributes[] = {
+=======
+static struct attribute *ds620_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_min.dev_attr.attr,
 	&sensor_dev_attr_temp1_max.dev_attr.attr,
@@ -222,13 +253,18 @@ static struct attribute *ds620_attributes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group ds620_group = {
 	.attrs = ds620_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(ds620);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int ds620_probe(struct i2c_client *client,
 		       const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct ds620_data *data;
 	int err;
 
@@ -238,11 +274,23 @@ static int ds620_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+=======
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct ds620_data *data;
+
+	data = devm_kzalloc(dev, sizeof(struct ds620_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&data->update_lock);
 
 	/* Initialize the DS620 chip */
 	ds620_init_client(client);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &ds620_group);
 	if (err)
@@ -271,6 +319,11 @@ static int ds620_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &ds620_group);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, ds620_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id ds620_id[] = {
@@ -287,7 +340,10 @@ static struct i2c_driver ds620_driver = {
 		   .name = "ds620",
 	},
 	.probe = ds620_probe,
+<<<<<<< HEAD
 	.remove = ds620_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = ds620_id,
 };
 

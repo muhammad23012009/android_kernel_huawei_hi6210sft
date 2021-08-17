@@ -14,11 +14,19 @@
 #include <linux/tty.h>
 #include <linux/seq_file.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
+=======
+#include "internal.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The /proc/tty directory inodes...
  */
+<<<<<<< HEAD
 static struct proc_dir_entry *proc_tty_ldisc, *proc_tty_driver;
+=======
+static struct proc_dir_entry *proc_tty_driver;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This is the handler for /proc/tty/drivers
@@ -164,7 +172,11 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
 	if (!ent)
 		return;
 		
+<<<<<<< HEAD
 	remove_proc_entry(driver->driver_name, proc_tty_driver);
+=======
+	remove_proc_entry(ent->name, proc_tty_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 	driver->proc_entry = NULL;
 }
@@ -176,7 +188,11 @@ void __init proc_tty_init(void)
 {
 	if (!proc_mkdir("tty", NULL))
 		return;
+<<<<<<< HEAD
 	proc_tty_ldisc = proc_mkdir("tty/ldisc", NULL);
+=======
+	proc_mkdir("tty/ldisc", NULL);	/* Preserved: it's userspace visible */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * /proc/tty/driver/serial reveals the exact character counts for
 	 * serial links which is just too easy to abuse for inferring

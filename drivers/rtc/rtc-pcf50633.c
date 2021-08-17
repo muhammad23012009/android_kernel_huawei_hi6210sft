@@ -232,7 +232,11 @@ static int pcf50633_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops pcf50633_rtc_ops = {
+=======
+static const struct rtc_class_ops pcf50633_rtc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read_time		= pcf50633_rtc_read_time,
 	.set_time		= pcf50633_rtc_set_time,
 	.read_alarm		= pcf50633_rtc_read_alarm,

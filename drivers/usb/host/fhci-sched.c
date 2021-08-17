@@ -25,7 +25,11 @@
 #include <linux/io.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
+=======
+#include <soc/fsl/qe/qe.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/fsl_gtm.h>
 #include "fhci.h"
 
@@ -288,7 +292,11 @@ static int scan_ed_list(struct fhci_usb *usb,
 	list_for_each_entry(ed, list, node) {
 		td = ed->td_head;
 
+<<<<<<< HEAD
 		if (!td || (td && td->status == USB_TD_INPROGRESS))
+=======
+		if (!td || td->status == USB_TD_INPROGRESS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		if (ed->state != FHCI_ED_OPER) {
@@ -739,9 +747,19 @@ void fhci_queue_urb(struct fhci_hcd *fhci, struct urb *urb)
 	}
 
 	/* for ISO transfer calculate start frame index */
+<<<<<<< HEAD
 	if (ed->mode == FHCI_TF_ISO && urb->transfer_flags & URB_ISO_ASAP)
 		urb->start_frame = ed->td_head ? ed->last_iso + 1 :
 						 get_frame_num(fhci);
+=======
+	if (ed->mode == FHCI_TF_ISO) {
+		/* Ignore the possibility of underruns */
+		urb->start_frame = ed->td_head ? ed->next_iso :
+						 get_frame_num(fhci);
+		ed->next_iso = (urb->start_frame + urb->interval *
+				urb->number_of_packets) & 0x07ff;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * OHCI handles the DATA toggle itself,we just use the USB

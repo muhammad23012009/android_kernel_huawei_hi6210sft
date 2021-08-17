@@ -83,7 +83,11 @@ static DEFINE_MUTEX(mce_inject_mutex);
 static int mce_raise_notify(unsigned int cmd, struct pt_regs *regs)
 {
 	int cpu = smp_processor_id();
+<<<<<<< HEAD
 	struct mce *m = &__get_cpu_var(injectm);
+=======
+	struct mce *m = this_cpu_ptr(&injectm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!cpumask_test_cpu(cpu, mce_inject_cpumask))
 		return NMI_DONE;
 	cpumask_clear_cpu(cpu, mce_inject_cpumask);
@@ -97,7 +101,11 @@ static int mce_raise_notify(unsigned int cmd, struct pt_regs *regs)
 static void mce_irq_ipi(void *info)
 {
 	int cpu = smp_processor_id();
+<<<<<<< HEAD
 	struct mce *m = &__get_cpu_var(injectm);
+=======
+	struct mce *m = this_cpu_ptr(&injectm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cpumask_test_cpu(cpu, mce_inject_cpumask) &&
 			m->inject_flags & MCJ_EXCEPTION) {
@@ -109,13 +117,21 @@ static void mce_irq_ipi(void *info)
 /* Inject mce on current CPU */
 static int raise_local(void)
 {
+<<<<<<< HEAD
 	struct mce *m = &__get_cpu_var(injectm);
+=======
+	struct mce *m = this_cpu_ptr(&injectm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int context = MCJ_CTX(m->inject_flags);
 	int ret = 0;
 	int cpu = m->extcpu;
 
 	if (m->inject_flags & MCJ_EXCEPTION) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Triggering MCE exception on CPU %d\n", cpu);
+=======
+		pr_info("Triggering MCE exception on CPU %d\n", cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (context) {
 		case MCJ_CTX_IRQ:
 			/*
@@ -128,6 +144,7 @@ static int raise_local(void)
 			raise_exception(m, NULL);
 			break;
 		default:
+<<<<<<< HEAD
 			printk(KERN_INFO "Invalid MCE context\n");
 			ret = -EINVAL;
 		}
@@ -137,6 +154,17 @@ static int raise_local(void)
 		raise_poll(m);
 		mce_notify_irq();
 		printk(KERN_INFO "Machine check poll done on CPU %d\n", cpu);
+=======
+			pr_info("Invalid MCE context\n");
+			ret = -EINVAL;
+		}
+		pr_info("MCE exception done on CPU %d\n", cpu);
+	} else if (m->status) {
+		pr_info("Starting machine check poll CPU %d\n", cpu);
+		raise_poll(m);
+		mce_notify_irq();
+		pr_info("Machine check poll done on CPU %d\n", cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		m->finished = 0;
 
@@ -152,8 +180,12 @@ static void raise_mce(struct mce *m)
 	if (context == MCJ_CTX_RANDOM)
 		return;
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_LOCAL_APIC
 	if (m->inject_flags & (MCJ_IRQ_BRAODCAST | MCJ_NMI_BROADCAST)) {
+=======
+	if (m->inject_flags & (MCJ_IRQ_BROADCAST | MCJ_NMI_BROADCAST)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long start;
 		int cpu;
 
@@ -167,7 +199,11 @@ static void raise_mce(struct mce *m)
 				cpumask_clear_cpu(cpu, mce_inject_cpumask);
 		}
 		if (!cpumask_empty(mce_inject_cpumask)) {
+<<<<<<< HEAD
 			if (m->inject_flags & MCJ_IRQ_BRAODCAST) {
+=======
+			if (m->inject_flags & MCJ_IRQ_BROADCAST) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/*
 				 * don't wait because mce_irq_ipi is necessary
 				 * to be sync with following raise_local
@@ -183,8 +219,12 @@ static void raise_mce(struct mce *m)
 		start = jiffies;
 		while (!cpumask_empty(mce_inject_cpumask)) {
 			if (!time_before(jiffies, start + 2*HZ)) {
+<<<<<<< HEAD
 				printk(KERN_ERR
 				"Timeout waiting for mce inject %lx\n",
+=======
+				pr_err("Timeout waiting for mce inject %lx\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					*cpumask_bits(mce_inject_cpumask));
 				break;
 			}
@@ -193,9 +233,13 @@ static void raise_mce(struct mce *m)
 		raise_local();
 		put_cpu();
 		put_online_cpus();
+<<<<<<< HEAD
 	} else
 #endif
 	{
+=======
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		preempt_disable();
 		raise_local();
 		preempt_enable();
@@ -241,7 +285,11 @@ static int inject_init(void)
 {
 	if (!alloc_cpumask_var(&mce_inject_cpumask, GFP_KERNEL))
 		return -ENOMEM;
+<<<<<<< HEAD
 	printk(KERN_INFO "Machine check injector initialized\n");
+=======
+	pr_info("Machine check injector initialized\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	register_mce_write_callback(mce_write);
 	register_nmi_handler(NMI_LOCAL, mce_raise_notify, 0,
 				"mce_notify");

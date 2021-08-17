@@ -45,6 +45,7 @@ ebt_ip6_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	ih6 = skb_header_pointer(skb, 0, sizeof(_ip6h), &_ip6h);
 	if (ih6 == NULL)
 		return false;
+<<<<<<< HEAD
 	if (info->bitmask & EBT_IP6_TCLASS &&
 	   FWINV(info->tclass != ipv6_get_dsfield(ih6), EBT_IP6_TCLASS))
 		return false;
@@ -52,6 +53,20 @@ ebt_ip6_mt(const struct sk_buff *skb, struct xt_action_param *par)
 				       &info->saddr), EBT_IP6_SOURCE) ||
 	    FWINV(ipv6_masked_addr_cmp(&ih6->daddr, &info->dmsk,
 				       &info->daddr), EBT_IP6_DEST))
+=======
+	if ((info->bitmask & EBT_IP6_TCLASS) &&
+	    NF_INVF(info, EBT_IP6_TCLASS,
+		    info->tclass != ipv6_get_dsfield(ih6)))
+		return false;
+	if (((info->bitmask & EBT_IP6_SOURCE) &&
+	     NF_INVF(info, EBT_IP6_SOURCE,
+		     ipv6_masked_addr_cmp(&ih6->saddr, &info->smsk,
+					  &info->saddr))) ||
+	    ((info->bitmask & EBT_IP6_DEST) &&
+	     NF_INVF(info, EBT_IP6_DEST,
+		     ipv6_masked_addr_cmp(&ih6->daddr, &info->dmsk,
+					  &info->daddr))))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 	if (info->bitmask & EBT_IP6_PROTO) {
 		uint8_t nexthdr = ih6->nexthdr;
@@ -61,10 +76,17 @@ ebt_ip6_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		offset_ph = ipv6_skip_exthdr(skb, sizeof(_ip6h), &nexthdr, &frag_off);
 		if (offset_ph == -1)
 			return false;
+<<<<<<< HEAD
 		if (FWINV(info->protocol != nexthdr, EBT_IP6_PROTO))
 			return false;
 		if (!(info->bitmask & ( EBT_IP6_DPORT |
 					EBT_IP6_SPORT | EBT_IP6_ICMP6)))
+=======
+		if (NF_INVF(info, EBT_IP6_PROTO, info->protocol != nexthdr))
+			return false;
+		if (!(info->bitmask & (EBT_IP6_DPORT |
+				       EBT_IP6_SPORT | EBT_IP6_ICMP6)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return true;
 
 		/* min icmpv6 headersize is 4, so sizeof(_pkthdr) is ok. */
@@ -74,12 +96,19 @@ ebt_ip6_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			return false;
 		if (info->bitmask & EBT_IP6_DPORT) {
 			u16 dst = ntohs(pptr->tcpudphdr.dst);
+<<<<<<< HEAD
 			if (FWINV(dst < info->dport[0] ||
 				  dst > info->dport[1], EBT_IP6_DPORT))
+=======
+			if (NF_INVF(info, EBT_IP6_DPORT,
+				    dst < info->dport[0] ||
+				    dst > info->dport[1]))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return false;
 		}
 		if (info->bitmask & EBT_IP6_SPORT) {
 			u16 src = ntohs(pptr->tcpudphdr.src);
+<<<<<<< HEAD
 			if (FWINV(src < info->sport[0] ||
 				  src > info->sport[1], EBT_IP6_SPORT))
 			return false;
@@ -90,6 +119,19 @@ ebt_ip6_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			   pptr->icmphdr.code < info->icmpv6_code[0] ||
 			   pptr->icmphdr.code > info->icmpv6_code[1],
 							EBT_IP6_ICMP6))
+=======
+			if (NF_INVF(info, EBT_IP6_SPORT,
+				    src < info->sport[0] ||
+				    src > info->sport[1]))
+			return false;
+		}
+		if ((info->bitmask & EBT_IP6_ICMP6) &&
+		    NF_INVF(info, EBT_IP6_ICMP6,
+			    pptr->icmphdr.type < info->icmpv6_type[0] ||
+			    pptr->icmphdr.type > info->icmpv6_type[1] ||
+			    pptr->icmphdr.code < info->icmpv6_code[0] ||
+			    pptr->icmphdr.code > info->icmpv6_code[1]))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return false;
 	}
 	return true;

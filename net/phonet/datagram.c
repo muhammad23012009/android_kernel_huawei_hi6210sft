@@ -83,10 +83,16 @@ static int pn_init(struct sock *sk)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pn_sendmsg(struct kiocb *iocb, struct sock *sk,
 			struct msghdr *msg, size_t len)
 {
 	struct sockaddr_pn *target;
+=======
+static int pn_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+{
+	DECLARE_SOCKADDR(struct sockaddr_pn *, target, msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *skb;
 	int err;
 
@@ -94,13 +100,20 @@ static int pn_sendmsg(struct kiocb *iocb, struct sock *sk,
 				MSG_CMSG_COMPAT))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (msg->msg_name == NULL)
+=======
+	if (target == NULL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EDESTADDRREQ;
 
 	if (msg->msg_namelen < sizeof(struct sockaddr_pn))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	target = (struct sockaddr_pn *)msg->msg_name;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (target->spn_family != AF_PHONET)
 		return -EAFNOSUPPORT;
 
@@ -110,7 +123,11 @@ static int pn_sendmsg(struct kiocb *iocb, struct sock *sk,
 		return err;
 	skb_reserve(skb, MAX_PHONET_HEADER);
 
+<<<<<<< HEAD
 	err = memcpy_fromiovec((void *)skb_put(skb, len), msg->msg_iov, len);
+=======
+	err = memcpy_from_msg((void *)skb_put(skb, len), msg, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 		kfree_skb(skb);
 		return err;
@@ -126,9 +143,14 @@ static int pn_sendmsg(struct kiocb *iocb, struct sock *sk,
 	return (err >= 0) ? len : err;
 }
 
+<<<<<<< HEAD
 static int pn_recvmsg(struct kiocb *iocb, struct sock *sk,
 			struct msghdr *msg, size_t len, int noblock,
 			int flags, int *addr_len)
+=======
+static int pn_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+		      int noblock, int flags, int *addr_len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sk_buff *skb = NULL;
 	struct sockaddr_pn sa;
@@ -151,7 +173,11 @@ static int pn_recvmsg(struct kiocb *iocb, struct sock *sk,
 		copylen = len;
 	}
 
+<<<<<<< HEAD
 	rval = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copylen);
+=======
+	rval = skb_copy_datagram_msg(skb, 0, msg, copylen);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rval) {
 		rval = -EFAULT;
 		goto out;
@@ -160,6 +186,10 @@ static int pn_recvmsg(struct kiocb *iocb, struct sock *sk,
 	rval = (flags & MSG_TRUNC) ? skb->len : copylen;
 
 	if (msg->msg_name != NULL) {
+<<<<<<< HEAD
+=======
+		__sockaddr_check_size(sizeof(sa));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(msg->msg_name, &sa, sizeof(sa));
 		*addr_len = sizeof(sa);
 	}

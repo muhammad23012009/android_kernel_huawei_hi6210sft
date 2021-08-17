@@ -205,10 +205,18 @@ K256:
 .global	sha256_block_data_order
 .type	sha256_block_data_order,%function
 sha256_block_data_order:
+<<<<<<< HEAD
 #if __ARM_ARCH__<7
 	sub	r3,pc,#8		@ sha256_block_data_order
 #else
 	adr	r3,sha256_block_data_order
+=======
+.Lsha256_block_data_order:
+#if __ARM_ARCH__<7
+	sub	r3,pc,#8		@ sha256_block_data_order
+#else
+	adr	r3,.Lsha256_block_data_order
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
 	ldr	r12,.LOPENSSL_armcap

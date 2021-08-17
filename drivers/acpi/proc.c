@@ -3,6 +3,7 @@
 #include <linux/export.h>
 #include <linux/suspend.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 #include <acpi/acpi_bus.h>
@@ -13,17 +14,28 @@
 #endif
 
 #include "sleep.h"
+=======
+#include <linux/acpi.h>
+#include <asm/uaccess.h>
+
+#include "sleep.h"
+#include "internal.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define _COMPONENT		ACPI_SYSTEM_COMPONENT
 
 /*
  * this file provides support for:
+<<<<<<< HEAD
  * /proc/acpi/alarm
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * /proc/acpi/wakeup
  */
 
 ACPI_MODULE_NAME("sleep")
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_DRV_CMOS) || defined(CONFIG_RTC_DRV_CMOS_MODULE) || !defined(CONFIG_X86)
 /* use /sys/class/rtc/rtcX/wakealarm instead; it's not ACPI-specific */
 #else
@@ -291,6 +303,8 @@ acpi_system_write_alarm(struct file *file,
 }
 #endif				/* HAVE_ACPI_LEGACY_ALARM */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int
 acpi_system_wakeup_device_seq_show(struct seq_file *seq, void *offset)
 {
@@ -333,7 +347,11 @@ acpi_system_wakeup_device_seq_show(struct seq_file *seq, void *offset)
 				seq_printf(seq, "%c%-8s  %s:%s\n",
 					dev->wakeup.flags.run_wake ? '*' : ' ',
 					(device_may_wakeup(&dev->dev) ||
+<<<<<<< HEAD
 					(ldev && device_may_wakeup(ldev))) ?
+=======
+					device_may_wakeup(ldev)) ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					"enabled" : "disabled",
 					ldev->bus ? ldev->bus->name :
 					"no-bus", dev_name(ldev));
@@ -417,6 +435,7 @@ static const struct file_operations acpi_system_wakeup_device_fops = {
 	.release = single_release,
 };
 
+<<<<<<< HEAD
 #ifdef	HAVE_ACPI_LEGACY_ALARM
 static const struct file_operations acpi_system_alarm_fops = {
 	.owner = THIS_MODULE,
@@ -457,4 +476,11 @@ int __init acpi_sleep_proc_init(void)
 		    acpi_root_dir, &acpi_system_wakeup_device_fops);
 
 	return 0;
+=======
+void __init acpi_sleep_proc_init(void)
+{
+	/* 'wakeup device' [R/W] */
+	proc_create("wakeup", S_IFREG | S_IRUGO | S_IWUSR,
+		    acpi_root_dir, &acpi_system_wakeup_device_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

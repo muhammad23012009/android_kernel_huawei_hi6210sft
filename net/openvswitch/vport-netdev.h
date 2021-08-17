@@ -26,6 +26,7 @@
 
 struct vport *ovs_netdev_get_vport(struct net_device *dev);
 
+<<<<<<< HEAD
 struct netdev_vport {
 	struct rcu_head rcu;
 
@@ -41,4 +42,13 @@ netdev_vport_priv(const struct vport *vport)
 const char *ovs_netdev_get_name(const struct vport *);
 const char *ovs_netdev_get_config(const struct vport *);
 
+=======
+struct vport *ovs_netdev_link(struct vport *vport, const char *name);
+void ovs_netdev_detach_dev(struct vport *);
+
+int __init ovs_netdev_init(void);
+void ovs_netdev_exit(void);
+
+void ovs_netdev_tunnel_destroy(struct vport *vport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* vport_netdev.h */

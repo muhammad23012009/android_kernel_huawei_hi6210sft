@@ -7,6 +7,7 @@ menu "Character devices"
 source "drivers/tty/Kconfig"
 
 config DEVMEM
+<<<<<<< HEAD
 	bool "Memory device driver"
 	default y
 	help
@@ -18,6 +19,15 @@ config DEVMEM
 	  than physical memory. These devices are standard parts of a Linux
 	  system and most users should say Y here. You might say N if very
 	  security conscience or memory is tight.
+=======
+	bool "/dev/mem virtual device support"
+	default y
+	help
+	  Say Y here if you want to support the /dev/mem device.
+	  The /dev/mem device is used to access areas of physical
+	  memory.
+	  When in doubt, say "Y".
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config DEVKMEM
 	bool "/dev/kmem virtual device support"
@@ -28,6 +38,7 @@ config DEVKMEM
 	  kind of kernel debugging operations.
 	  When in doubt, say "N".
 
+<<<<<<< HEAD
 config STALDRV
 	bool "Stallion multiport serial support"
 	depends on SERIAL_NONSTANDARD
@@ -40,6 +51,8 @@ config STALDRV
 	  in this case.  If you have never heard about all this, it's safe to
 	  say N.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config SGI_SNSC
 	bool "SGI Altix system controller communication support"
 	depends on (IA64_SGI_SN2 || IA64_GENERIC)
@@ -65,7 +78,11 @@ config SGI_MBCS
 source "drivers/tty/serial/Kconfig"
 
 config TTY_PRINTK
+<<<<<<< HEAD
 	bool "TTY driver to output user messages via printk"
+=======
+	tristate "TTY driver to output user messages via printk"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on EXPERT && TTY
 	default n
 	---help---
@@ -194,6 +211,23 @@ config IBM_BSR
 	  of threads across a large system which avoids bouncing a cacheline
 	  between several cores on a system
 
+<<<<<<< HEAD
+=======
+config POWERNV_OP_PANEL
+	tristate "IBM POWERNV Operator Panel Display support"
+	depends on PPC_POWERNV
+	default m
+	help
+	  If you say Y here, a special character device node, /dev/op_panel,
+	  will be created which exposes the operator panel display on IBM
+	  Power Systems machines with FSPs.
+
+	  If you don't require access to the operator panel display from user
+	  space, say N.
+
+	  If unsure, say M here to build it as a module called powernv-op-panel.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "drivers/char/ipmi/Kconfig"
 
 config DS1620
@@ -261,8 +295,11 @@ config NWFLASH
 
 source "drivers/char/hw_random/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/char/pppoesta/Kconfig"
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config NVRAM
 	tristate "/dev/nvram support"
 	depends on ATARI || X86 || (ARM && RTC_DRV_CMOS) || GENERIC_NVRAM
@@ -297,8 +334,12 @@ if RTC_LIB=n
 
 config RTC
 	tristate "Enhanced Real Time Clock Support (legacy PC RTC driver)"
+<<<<<<< HEAD
 	depends on !PPC && !PARISC && !IA64 && !M68K && !SPARC && !FRV \
 			&& !ARM && !SUPERH && !S390 && !AVR32 && !BLACKFIN && !UML
+=======
+	depends on ALPHA || (MIPS && MACH_LOONGSON64)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  If you say Y here and create a character special file /dev/rtc with
 	  major number 10 and minor number 135 using mknod ("man mknod"), you
@@ -344,6 +385,7 @@ config JS_RTC
 	  To compile this driver as a module, choose M here: the
 	  module will be called js-rtc.
 
+<<<<<<< HEAD
 config GEN_RTC
 	tristate "Generic /dev/rtc emulation"
 	depends on RTC!=y && !IA64 && !ARM && !M32R && !MIPS && !SPARC && !FRV && !S390 && !SUPERH && !AVR32 && !BLACKFIN && !UML
@@ -369,6 +411,8 @@ config GEN_RTC_X
 	  Provides an emulation for RTC_UIE which is required by some programs
 	  and may improve precision of the generic RTC support in some cases.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config EFI_RTC
 	bool "EFI Real Time Clock Services"
 	depends on IA64
@@ -407,7 +451,11 @@ config XILINX_HWICAP
 
 config R3964
 	tristate "Siemens R3964 line discipline"
+<<<<<<< HEAD
 	depends on TTY
+=======
+	depends on TTY && BROKEN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  This driver allows synchronous communication with devices using the
 	  Siemens R3964 packet protocol. Unless you are dealing with special
@@ -435,7 +483,11 @@ config APPLICOM
 
 config SONYPI
 	tristate "Sony Vaio Programmable I/O Control Device support"
+<<<<<<< HEAD
 	depends on X86 && PCI && INPUT && !64BIT
+=======
+	depends on X86_32 && PCI && INPUT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  This driver enables access to the Sony Programmable I/O Control
 	  Device which can be found in many (all ?) Sony Vaio laptops.
@@ -526,6 +578,10 @@ config RAW_DRIVER
 config MAX_RAW_DEVS
 	int "Maximum number of RAW devices to support (1-65536)"
 	depends on RAW_DRIVER
+<<<<<<< HEAD
+=======
+	range 1 65536
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default "256"
 	help
 	  The maximum number of RAW devices that are supported.
@@ -549,10 +605,23 @@ config HPET_MMAP
 	  If you say Y here, user applications will be able to mmap
 	  the HPET registers.
 
+<<<<<<< HEAD
 	  In some hardware implementations, the page containing HPET
 	  registers may also contain other things that shouldn't be
 	  exposed to the user.  If this applies to your hardware,
 	  say N here.
+=======
+config HPET_MMAP_DEFAULT
+	bool "Enable HPET MMAP access by default"
+	default y
+	depends on HPET_MMAP
+	help
+	  In some hardware implementations, the page containing HPET
+	  registers may also contain other things that shouldn't be
+	  exposed to the user.  This option selects the default (if
+	  kernel parameter hpet_mmap is not set) user access to the
+	  registers for applications that require it.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config HANGCHECK_TIMER
 	tristate "Hangcheck timer"
@@ -601,6 +670,7 @@ config DEVPORT
 	  Say Y here if you want to support the /dev/port device. The /dev/port
 	  device is similar to /dev/mem, but for I/O ports.
 
+<<<<<<< HEAD
 config DCC_TTY
 	tristate "DCC tty driver"
 	depends on ARM
@@ -615,6 +685,10 @@ config MSM_SMD_PKT
 	  Enables userspace clients to read and write to some packet SMD
 	  ports via device interface for MSM chipset.
 
+=======
+source "drivers/s390/char/Kconfig"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config TILE_SROM
 	bool "Character-device access via hypervisor to the Tilera SPI ROM"
 	depends on TILE
@@ -626,5 +700,10 @@ config TILE_SROM
 	  device appear much like a simple EEPROM, and knows
 	  how to partition a single ROM for multiple purposes.
 
+<<<<<<< HEAD
+=======
+source "drivers/char/xillybus/Kconfig"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu
 

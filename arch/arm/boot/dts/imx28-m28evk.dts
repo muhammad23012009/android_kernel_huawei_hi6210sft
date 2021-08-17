@@ -10,12 +10,17 @@
  */
 
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "imx28.dtsi"
+=======
+#include "imx28-m28.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "DENX M28EVK";
 	compatible = "denx,m28evk", "fsl,imx28";
 
+<<<<<<< HEAD
 	memory {
 		reg = <0x40000000 0x08000000>;
 	};
@@ -56,6 +61,10 @@
 				};
 			};
 
+=======
+	apb@80000000 {
+		apbh@80000000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ssp0: ssp@80010000 {
 				compatible = "fsl,imx28-mmc";
 				pinctrl-names = "default";
@@ -79,7 +88,11 @@
 				flash: m25p80@0 {
 					#address-cells = <1>;
 					#size-cells = <1>;
+<<<<<<< HEAD
 					compatible = "m25p80";
+=======
+					compatible = "m25p80", "jedec,spi-nor";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					spi-max-frequency = <40000000>;
 					reg = <0>;
 				};
@@ -92,6 +105,7 @@
 				hog_pins_a: hog@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x31c3 /* MX28_PAD_PWM3__GPIO_3_28 */
 						0x30a3 /* MX28_PAD_AUART2_CTS__GPIO_3_10 */
 						0x30b3 /* MX28_PAD_AUART2_RTS__GPIO_3_11 */
@@ -101,17 +115,37 @@
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX28_PAD_PWM3__GPIO_3_28
+						MX28_PAD_AUART2_CTS__GPIO_3_10
+						MX28_PAD_AUART2_RTS__GPIO_3_11
+						MX28_PAD_AUART3_RX__GPIO_3_12
+						MX28_PAD_AUART3_TX__GPIO_3_13
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				lcdif_pins_m28: lcdif-m28@0 {
 					reg = <0>;
 					fsl,pinmux-ids = <
+<<<<<<< HEAD
 						0x11e0 /* MX28_PAD_LCD_DOTCLK__LCD_DOTCLK */
 						0x11f0 /* MX28_PAD_LCD_ENABLE__LCD_ENABLE */
 					>;
 					fsl,drive-strength = <0>;
 					fsl,voltage = <1>;
 					fsl,pull-up = <0>;
+=======
+						MX28_PAD_LCD_DOTCLK__LCD_DOTCLK
+						MX28_PAD_LCD_ENABLE__LCD_ENABLE
+					>;
+					fsl,drive-strength = <MXS_DRIVE_4mA>;
+					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+					fsl,pull-up = <MXS_PULL_DISABLE>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -119,10 +153,17 @@
 				pinctrl-names = "default";
 				pinctrl-0 = <&lcdif_24bit_pins_a
 					     &lcdif_pins_m28>;
+<<<<<<< HEAD
 				display = <&display>;
 				status = "okay";
 
 				display: display {
+=======
+				display = <&display0>;
+				status = "okay";
+
+				display0: display0 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					bits-per-pixel = <16>;
 					bus-width = <18>;
 
@@ -175,16 +216,23 @@
 			};
 
 			i2c0: i2c@80058000 {
+<<<<<<< HEAD
 				pinctrl-names = "default";
 				pinctrl-0 = <&i2c0_pins_a>;
 				status = "okay";
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				sgtl5000: codec@0a {
 					compatible = "fsl,sgtl5000";
 					reg = <0x0a>;
 					VDDA-supply = <&reg_3p3v>;
 					VDDIO-supply = <&reg_3p3v>;
+<<<<<<< HEAD
 
+=======
+					clocks = <&saif0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				eeprom: eeprom@51 {
@@ -192,11 +240,14 @@
 					reg = <0x51>;
 					pagesize = <32>;
 				};
+<<<<<<< HEAD
 
 				rtc: rtc@68 {
 					compatible = "stm,mt41t62";
 					reg = <0x68>;
 				};
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			};
 
 			lradc@80050000 {
@@ -220,7 +271,29 @@
 
 			auart0: serial@8006a000 {
 				pinctrl-names = "default";
+<<<<<<< HEAD
 				pinctrl-0 = <&auart0_2pins_a>;
+=======
+				pinctrl-0 = <&auart0_pins_a>;
+				status = "okay";
+			};
+
+			auart1: serial@8006c000 {
+				pinctrl-names = "default";
+				pinctrl-0 = <&auart1_pins_a>;
+				status = "okay";
+			};
+
+			auart2: serial@8006e000 {
+				pinctrl-names = "default";
+				pinctrl-0 = <&auart2_2pins_b>;
+				status = "okay";
+			};
+
+			pwm: pwm@80064000 {
+				pinctrl-names = "default";
+				pinctrl-0 = <&pwm4_pins_a>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "okay";
 			};
 		};
@@ -230,14 +303,22 @@
 		usb0: usb@80080000 {
 			vbus-supply = <&reg_usb0_vbus>;
 			pinctrl-names = "default";
+<<<<<<< HEAD
 			pinctrl-0 = <&usbphy0_pins_a>;
+=======
+			pinctrl-0 = <&usb0_pins_a>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "okay";
 		};
 
 		usb1: usb@80090000 {
 			vbus-supply = <&reg_usb1_vbus>;
 			pinctrl-names = "default";
+<<<<<<< HEAD
 			pinctrl-0 = <&usbphy1_pins_a>;
+=======
+			pinctrl-0 = <&usb1_pins_a>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status = "okay";
 		};
 
@@ -258,6 +339,7 @@
 		};
 	};
 
+<<<<<<< HEAD
 	regulators {
 		compatible = "simple-bus";
 
@@ -271,22 +353,47 @@
 
 		reg_vddio_sd0: vddio-sd0 {
 			compatible = "regulator-fixed";
+=======
+	backlight {
+		compatible = "pwm-backlight";
+		pwms = <&pwm 4 5000000>;
+		brightness-levels = <0 4 8 16 32 64 128 255>;
+		default-brightness-level = <6>;
+	};
+
+	regulators {
+		reg_vddio_sd0: regulator@1 {
+			compatible = "regulator-fixed";
+			reg = <1>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "vddio-sd0";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
 			gpio = <&gpio3 28 0>;
 		};
 
+<<<<<<< HEAD
 		reg_usb0_vbus: usb0_vbus {
 			compatible = "regulator-fixed";
+=======
+		reg_usb0_vbus: regulator@2 {
+			compatible = "regulator-fixed";
+			reg = <2>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "usb0_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
 			gpio = <&gpio3 12 0>;
 		};
 
+<<<<<<< HEAD
 		reg_usb1_vbus: usb1_vbus {
 			compatible = "regulator-fixed";
+=======
+		reg_usb1_vbus: regulator@3 {
+			compatible = "regulator-fixed";
+			reg = <3>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regulator-name = "usb1_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;

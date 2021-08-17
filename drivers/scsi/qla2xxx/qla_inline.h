@@ -1,10 +1,18 @@
 /*
  * QLogic Fibre Channel HBA Driver
+<<<<<<< HEAD
  * Copyright (c)  2003-2013 QLogic Corporation
+=======
+ * Copyright (c)  2003-2014 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * See LICENSE.qla2xxx for copyright and licensing details.
  */
 
+<<<<<<< HEAD
+=======
+#include "qla_target.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * qla24xx_calc_iocbs() - Determine number of Command Type 3 and
  * Continuation Type 1 IOCBs to allocate.
@@ -59,7 +67,11 @@ qla2x00_poll(struct rsp_que *rsp)
 	unsigned long flags;
 	struct qla_hw_data *ha = rsp->hw;
 	local_irq_save(flags);
+<<<<<<< HEAD
 	if (IS_QLA82XX(ha))
+=======
+	if (IS_P3P_TYPE(ha))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		qla82xx_poll(0, rsp);
 	else
 		ha->isp_ops->intr_handler(0, rsp);
@@ -83,11 +95,19 @@ static inline void
 host_to_adap(uint8_t *src, uint8_t *dst, uint32_t bsize)
 {
 	uint32_t *isrc = (uint32_t *) src;
+<<<<<<< HEAD
 	uint32_t *odest = (uint32_t *) dst;
 	uint32_t iter = bsize >> 2;
 
 	for (; iter ; iter--)
 		*odest++ = cpu_to_le32(*isrc++);
+=======
+	__le32 *odest = (__le32 *) dst;
+	uint32_t iter = bsize >> 2;
+
+	for ( ; iter--; isrc++)
+		*odest++ = cpu_to_le32(*isrc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
@@ -128,12 +148,28 @@ qla2x00_clear_loop_id(fc_port_t *fcport) {
 }
 
 static inline void
+<<<<<<< HEAD
 qla2x00_clean_dsd_pool(struct qla_hw_data *ha, srb_t *sp)
+=======
+qla2x00_clean_dsd_pool(struct qla_hw_data *ha, srb_t *sp,
+	struct qla_tgt_cmd *tc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dsd_dma *dsd_ptr, *tdsd_ptr;
 	struct crc_context *ctx;
 
+<<<<<<< HEAD
 	ctx = (struct crc_context *)GET_CMD_CTX_SP(sp);
+=======
+	if (sp)
+		ctx = (struct crc_context *)GET_CMD_CTX_SP(sp);
+	else if (tc)
+		ctx = (struct crc_context *)tc->ctx;
+	else {
+		BUG();
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* clean up allocated prev pool */
 	list_for_each_entry_safe(dsd_ptr, tdsd_ptr,
@@ -249,6 +285,11 @@ qla2x00_init_timer(srb_t *sp, unsigned long tmo)
 	if ((IS_QLAFX00(sp->fcport->vha->hw)) &&
 	    (sp->type == SRB_FXIOCB_DCMD))
 		init_completion(&sp->u.iocb_cmd.u.fxiocb.fxiocb_comp);
+<<<<<<< HEAD
+=======
+	if (sp->type == SRB_ELS_DCMD)
+		init_completion(&sp->u.iocb_cmd.u.els_logo.comp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int
@@ -261,6 +302,7 @@ qla2x00_gid_list_size(struct qla_hw_data *ha)
 }
 
 static inline void
+<<<<<<< HEAD
 qla2x00_do_host_ramp_up(scsi_qla_host_t *vha)
 {
 	if (vha->hw->cfg_lun_q_depth >= ql2xmaxqdepth)
@@ -280,6 +322,8 @@ qla2x00_do_host_ramp_up(scsi_qla_host_t *vha)
 }
 
 static inline void
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 qla2x00_handle_mbx_completion(struct qla_hw_data *ha, int status)
 {
 	if (test_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags) &&
@@ -289,3 +333,14 @@ qla2x00_handle_mbx_completion(struct qla_hw_data *ha, int status)
 		complete(&ha->mbx_intr_comp);
 	}
 }
+<<<<<<< HEAD
+=======
+
+static inline void
+qla2x00_set_retry_delay_timestamp(fc_port_t *fcport, uint16_t retry_delay)
+{
+	if (retry_delay)
+		fcport->retry_delay_timestamp = jiffies +
+		    (retry_delay * HZ / 10);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

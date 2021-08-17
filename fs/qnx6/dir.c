@@ -32,6 +32,7 @@ static struct page *qnx6_get_page(struct inode *dir, unsigned long n)
 	return page;
 }
 
+<<<<<<< HEAD
 static inline unsigned long dir_pages(struct inode *inode)
 {
 	return (inode->i_size+PAGE_CACHE_SIZE-1)>>PAGE_CACHE_SHIFT;
@@ -43,6 +44,14 @@ static unsigned last_entry(struct inode *inode, unsigned long page_nr)
 	last_byte -= page_nr << PAGE_CACHE_SHIFT;
 	if (last_byte > PAGE_CACHE_SIZE)
 		last_byte = PAGE_CACHE_SIZE;
+=======
+static unsigned last_entry(struct inode *inode, unsigned long page_nr)
+{
+	unsigned long last_byte = inode->i_size;
+	last_byte -= page_nr << PAGE_SHIFT;
+	if (last_byte > PAGE_SIZE)
+		last_byte = PAGE_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return last_byte / QNX6_DIR_ENTRY_SIZE;
 }
 
@@ -52,9 +61,15 @@ static struct qnx6_long_filename *qnx6_longname(struct super_block *sb,
 {
 	struct qnx6_sb_info *sbi = QNX6_SB(sb);
 	u32 s = fs32_to_cpu(sbi, de->de_long_inode); /* in block units */
+<<<<<<< HEAD
 	u32 n = s >> (PAGE_CACHE_SHIFT - sb->s_blocksize_bits); /* in pages */
 	/* within page */
 	u32 offs = (s << sb->s_blocksize_bits) & ~PAGE_CACHE_MASK;
+=======
+	u32 n = s >> (PAGE_SHIFT - sb->s_blocksize_bits); /* in pages */
+	/* within page */
+	u32 offs = (s << sb->s_blocksize_bits) & ~PAGE_MASK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct address_space *mapping = sbi->longfile->i_mapping;
 	struct page *page = read_mapping_page(mapping, n, NULL);
 	if (IS_ERR(page))
@@ -65,8 +80,13 @@ static struct qnx6_long_filename *qnx6_longname(struct super_block *sb,
 
 static int qnx6_dir_longfilename(struct inode *inode,
 			struct qnx6_long_dir_entry *de,
+<<<<<<< HEAD
 			void *dirent, loff_t pos,
 			unsigned de_inode, filldir_t filldir)
+=======
+			struct dir_context *ctx,
+			unsigned de_inode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct qnx6_long_filename *lf;
 	struct super_block *s = inode->i_sb;
@@ -77,21 +97,34 @@ static int qnx6_dir_longfilename(struct inode *inode,
 	if (de->de_size != 0xff) {
 		/* error - long filename entries always have size 0xff
 		   in direntry */
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: invalid direntry size (%i).\n",
 				de->de_size);
+=======
+		pr_err("invalid direntry size (%i).\n", de->de_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	lf = qnx6_longname(s, de, &page);
 	if (IS_ERR(lf)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6:Error reading longname\n");
+=======
+		pr_err("Error reading longname\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
 	lf_size = fs16_to_cpu(sbi, lf->lf_size);
 
 	if (lf_size > QNX6_LONG_NAME_MAX) {
+<<<<<<< HEAD
 		QNX6DEBUG((KERN_INFO "file %s\n", lf->lf_fname));
 		printk(KERN_ERR "qnx6:Filename too long (%i)\n", lf_size);
+=======
+		pr_debug("file %s\n", lf->lf_fname);
+		pr_err("Filename too long (%i)\n", lf_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		qnx6_put_page(page);
 		return 0;
 	}
@@ -100,12 +133,20 @@ static int qnx6_dir_longfilename(struct inode *inode,
 	   mmi 3g filesystem does not have that checksum */
 	if (!test_opt(s, MMI_FS) && fs32_to_cpu(sbi, de->de_checksum) !=
 			qnx6_lfile_checksum(lf->lf_fname, lf_size))
+<<<<<<< HEAD
 		printk(KERN_INFO "qnx6: long filename checksum error.\n");
 
 	QNX6DEBUG((KERN_INFO "qnx6_readdir:%.*s inode:%u\n",
 					lf_size, lf->lf_fname, de_inode));
 	if (filldir(dirent, lf->lf_fname, lf_size, pos, de_inode,
 			DT_UNKNOWN) < 0) {
+=======
+		pr_info("long filename checksum error.\n");
+
+	pr_debug("qnx6_readdir:%.*s inode:%u\n",
+		 lf_size, lf->lf_fname, de_inode);
+	if (!dir_emit(ctx, lf->lf_fname, lf_size, de_inode, DT_UNKNOWN)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		qnx6_put_page(page);
 		return 0;
 	}
@@ -115,6 +156,7 @@ static int qnx6_dir_longfilename(struct inode *inode,
 	return 1;
 }
 
+<<<<<<< HEAD
 static int qnx6_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *inode = file_inode(filp);
@@ -127,6 +169,21 @@ static int qnx6_readdir(struct file *filp, void *dirent, filldir_t filldir)
 	bool done = false;
 
 	if (filp->f_pos >= inode->i_size)
+=======
+static int qnx6_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *inode = file_inode(file);
+	struct super_block *s = inode->i_sb;
+	struct qnx6_sb_info *sbi = QNX6_SB(s);
+	loff_t pos = ctx->pos & ~(QNX6_DIR_ENTRY_SIZE - 1);
+	unsigned long npages = dir_pages(inode);
+	unsigned long n = pos >> PAGE_SHIFT;
+	unsigned start = (pos & ~PAGE_MASK) / QNX6_DIR_ENTRY_SIZE;
+	bool done = false;
+
+	ctx->pos = pos;
+	if (ctx->pos >= inode->i_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	for ( ; !done && n < npages; n++, start = 0) {
@@ -136,12 +193,21 @@ static int qnx6_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		int i = start;
 
 		if (IS_ERR(page)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6_readdir: read failed\n");
 			filp->f_pos = (n + 1) << PAGE_CACHE_SHIFT;
 			return PTR_ERR(page);
 		}
 		de = ((struct qnx6_dir_entry *)page_address(page)) + start;
 		for (; i < limit; i++, de++, pos += QNX6_DIR_ENTRY_SIZE) {
+=======
+			pr_err("%s(): read failed\n", __func__);
+			ctx->pos = (n + 1) << PAGE_SHIFT;
+			return PTR_ERR(page);
+		}
+		de = ((struct qnx6_dir_entry *)page_address(page)) + start;
+		for (; i < limit; i++, de++, ctx->pos += QNX6_DIR_ENTRY_SIZE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			int size = de->de_size;
 			u32 no_inode = fs32_to_cpu(sbi, de->de_inode);
 
@@ -154,18 +220,30 @@ static int qnx6_readdir(struct file *filp, void *dirent, filldir_t filldir)
 				   structure / block */
 				if (!qnx6_dir_longfilename(inode,
 					(struct qnx6_long_dir_entry *)de,
+<<<<<<< HEAD
 					dirent, pos, no_inode,
 					filldir)) {
+=======
+					ctx, no_inode)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					done = true;
 					break;
 				}
 			} else {
+<<<<<<< HEAD
 				QNX6DEBUG((KERN_INFO "qnx6_readdir:%.*s"
 				   " inode:%u\n", size, de->de_fname,
 							no_inode));
 				if (filldir(dirent, de->de_fname, size,
 				      pos, no_inode, DT_UNKNOWN)
 					< 0) {
+=======
+				pr_debug("%s():%.*s inode:%u\n",
+					 __func__, size, de->de_fname,
+					 no_inode);
+				if (!dir_emit(ctx, de->de_fname, size,
+				      no_inode, DT_UNKNOWN)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					done = true;
 					break;
 				}
@@ -173,7 +251,10 @@ static int qnx6_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		}
 		qnx6_put_page(page);
 	}
+<<<<<<< HEAD
 	filp->f_pos = pos;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -262,8 +343,12 @@ unsigned qnx6_find_entry(int len, struct inode *dir, const char *name,
 					if (ino)
 						goto found;
 				} else
+<<<<<<< HEAD
 					printk(KERN_ERR "qnx6: undefined "
 						"filename size in inode.\n");
+=======
+					pr_err("undefined filename size in inode.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			qnx6_put_page(page);
 		}
@@ -282,7 +367,11 @@ found:
 const struct file_operations qnx6_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= qnx6_readdir,
+=======
+	.iterate_shared	= qnx6_readdir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fsync		= generic_file_fsync,
 };
 

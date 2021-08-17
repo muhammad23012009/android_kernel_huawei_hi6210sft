@@ -35,9 +35,12 @@ void sigio_handler(int sig, struct siginfo *unused_si, struct uml_pt_regs *regs)
 	struct irq_fd *irq_fd;
 	int n;
 
+<<<<<<< HEAD
 	if (smp_sigio_handler())
 		return;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (1) {
 		n = os_waiting_for_events(active_fds);
 		if (n <= 0) {
@@ -337,6 +340,11 @@ static struct irq_chip normal_irq_type = {
 	.irq_disable = dummy,
 	.irq_enable = dummy,
 	.irq_ack = dummy,
+<<<<<<< HEAD
+=======
+	.irq_mask = dummy,
+	.irq_unmask = dummy,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct irq_chip SIGVTALRM_irq_type = {
@@ -344,6 +352,11 @@ static struct irq_chip SIGVTALRM_irq_type = {
 	.irq_disable = dummy,
 	.irq_enable = dummy,
 	.irq_ack = dummy,
+<<<<<<< HEAD
+=======
+	.irq_mask = dummy,
+	.irq_unmask = dummy,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void __init init_IRQ(void)

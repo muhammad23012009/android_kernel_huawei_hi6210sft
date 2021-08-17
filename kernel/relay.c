@@ -81,10 +81,14 @@ static struct page **relay_alloc_page_array(unsigned int n_pages)
  */
 static void relay_free_page_array(struct page **array)
 {
+<<<<<<< HEAD
 	if (is_vmalloc_addr(array))
 		vfree(array);
 	else
 		kfree(array);
+=======
+	kvfree(array);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -166,7 +170,11 @@ static struct rchan_buf *relay_create_buf(struct rchan *chan)
 {
 	struct rchan_buf *buf;
 
+<<<<<<< HEAD
 	if (chan->n_subbufs > UINT_MAX / sizeof(size_t *))
+=======
+	if (chan->n_subbufs > KMALLOC_MAX_SIZE / sizeof(size_t *))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	buf = kzalloc(sizeof(struct rchan_buf), GFP_KERNEL);
@@ -199,6 +207,10 @@ free_buf:
 static void relay_destroy_channel(struct kref *kref)
 {
 	struct rchan *chan = container_of(kref, struct rchan, kref);
+<<<<<<< HEAD
+=======
+	free_percpu(chan->buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(chan);
 }
 
@@ -217,7 +229,11 @@ static void relay_destroy_buf(struct rchan_buf *buf)
 			__free_page(buf->page_array[i]);
 		relay_free_page_array(buf->page_array);
 	}
+<<<<<<< HEAD
 	chan->buf[buf->cpu] = NULL;
+=======
+	*per_cpu_ptr(chan->buf, buf->cpu) = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(buf->padding);
 	kfree(buf);
 	kref_put(&chan->kref, relay_destroy_channel);
@@ -227,7 +243,11 @@ static void relay_destroy_buf(struct rchan_buf *buf)
  *	relay_remove_buf - remove a channel buffer
  *	@kref: target kernel reference that contains the relay buffer
  *
+<<<<<<< HEAD
  *	Removes the file from the fileystem, which also frees the
+=======
+ *	Removes the file from the filesystem, which also frees the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	rchan_buf_struct and the channel buffer.  Should only be called from
  *	kref_put().
  */
@@ -331,6 +351,7 @@ static struct rchan_callbacks default_channel_callbacks = {
 
 /**
  *	wakeup_readers - wake up readers waiting on a channel
+<<<<<<< HEAD
  *	@data: contains the channel buffer
  *
  *	This is the timer function used to defer reader waking.
@@ -338,6 +359,17 @@ static struct rchan_callbacks default_channel_callbacks = {
 static void wakeup_readers(unsigned long data)
 {
 	struct rchan_buf *buf = (struct rchan_buf *)data;
+=======
+ *	@work: contains the channel buffer
+ *
+ *	This is the function used to defer reader waking
+ */
+static void wakeup_readers(struct irq_work *work)
+{
+	struct rchan_buf *buf;
+
+	buf = container_of(work, struct rchan_buf, wakeup_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wake_up_interruptible(&buf->read_wait);
 }
 
@@ -355,9 +387,16 @@ static void __relay_reset(struct rchan_buf *buf, unsigned int init)
 	if (init) {
 		init_waitqueue_head(&buf->read_wait);
 		kref_init(&buf->kref);
+<<<<<<< HEAD
 		setup_timer(&buf->timer, wakeup_readers, (unsigned long)buf);
 	} else
 		del_timer_sync(&buf->timer);
+=======
+		init_irq_work(&buf->wakeup_work, wakeup_readers);
+	} else {
+		irq_work_sync(&buf->wakeup_work);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf->subbufs_produced = 0;
 	buf->subbufs_consumed = 0;
@@ -385,20 +424,34 @@ static void __relay_reset(struct rchan_buf *buf, unsigned int init)
  */
 void relay_reset(struct rchan *chan)
 {
+<<<<<<< HEAD
+=======
+	struct rchan_buf *buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int i;
 
 	if (!chan)
 		return;
 
+<<<<<<< HEAD
 	if (chan->is_global && chan->buf[0]) {
 		__relay_reset(chan->buf[0], 0);
+=======
+	if (chan->is_global && (buf = *per_cpu_ptr(chan->buf, 0))) {
+		__relay_reset(buf, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	mutex_lock(&relay_channels_mutex);
 	for_each_possible_cpu(i)
+<<<<<<< HEAD
 		if (chan->buf[i])
 			__relay_reset(chan->buf[i], 0);
+=======
+		if ((buf = *per_cpu_ptr(chan->buf, i)))
+			__relay_reset(buf, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&relay_channels_mutex);
 }
 EXPORT_SYMBOL_GPL(relay_reset);
@@ -407,7 +460,11 @@ static inline void relay_set_buf_dentry(struct rchan_buf *buf,
 					struct dentry *dentry)
 {
 	buf->dentry = dentry;
+<<<<<<< HEAD
 	buf->dentry->d_inode->i_size = buf->early_bytes;
+=======
+	d_inode(buf->dentry)->i_size = buf->early_bytes;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct dentry *relay_create_buf_file(struct rchan *chan,
@@ -443,7 +500,11 @@ static struct rchan_buf *relay_open_buf(struct rchan *chan, unsigned int cpu)
 	struct dentry *dentry;
 
  	if (chan->is_global)
+<<<<<<< HEAD
 		return chan->buf[0];
+=======
+		return *per_cpu_ptr(chan->buf, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf = relay_create_buf(chan);
 	if (!buf)
@@ -454,13 +515,27 @@ static struct rchan_buf *relay_open_buf(struct rchan *chan, unsigned int cpu)
 		if (!dentry)
 			goto free_buf;
 		relay_set_buf_dentry(buf, dentry);
+<<<<<<< HEAD
+=======
+	} else {
+		/* Only retrieve global info, nothing more, nothing less */
+		dentry = chan->cb->create_buf_file(NULL, NULL,
+						   S_IRUSR, buf,
+						   &chan->is_global);
+		if (WARN_ON(dentry))
+			goto free_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
  	buf->cpu = cpu;
  	__relay_reset(buf, 1);
 
  	if(chan->is_global) {
+<<<<<<< HEAD
  		chan->buf[0] = buf;
+=======
+		*per_cpu_ptr(chan->buf, 0) = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  		buf->cpu = 0;
   	}
 
@@ -482,7 +557,11 @@ free_buf:
 static void relay_close_buf(struct rchan_buf *buf)
 {
 	buf->finalized = 1;
+<<<<<<< HEAD
 	del_timer_sync(&buf->timer);
+=======
+	irq_work_sync(&buf->wakeup_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buf->chan->cb->remove_buf_file(buf->dentry);
 	kref_put(&buf->kref, relay_remove_buf);
 }
@@ -508,6 +587,7 @@ static void setup_callbacks(struct rchan *chan,
 	chan->cb = cb;
 }
 
+<<<<<<< HEAD
 /**
  * 	relay_hotcpu_callback - CPU hotplug callback
  * 	@nb: notifier block
@@ -548,6 +628,27 @@ static int __cpuinit relay_hotcpu_callback(struct notifier_block *nb,
 		break;
 	}
 	return NOTIFY_OK;
+=======
+int relay_prepare_cpu(unsigned int cpu)
+{
+	struct rchan *chan;
+	struct rchan_buf *buf;
+
+	mutex_lock(&relay_channels_mutex);
+	list_for_each_entry(chan, &relay_channels, list) {
+		if ((buf = *per_cpu_ptr(chan->buf, cpu)))
+			continue;
+		buf = relay_open_buf(chan, cpu);
+		if (!buf) {
+			pr_err("relay: cpu %d buffer creation failed\n", cpu);
+			mutex_unlock(&relay_channels_mutex);
+			return -ENOMEM;
+		}
+		*per_cpu_ptr(chan->buf, cpu) = buf;
+	}
+	mutex_unlock(&relay_channels_mutex);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -565,6 +666,13 @@ static int __cpuinit relay_hotcpu_callback(struct notifier_block *nb,
  *	attributes specified.  The created channel buffer files
  *	will be named base_filename0...base_filenameN-1.  File
  *	permissions will be %S_IRUSR.
+<<<<<<< HEAD
+=======
+ *
+ *	If opening a buffer (@parent = NULL) that you later wish to register
+ *	in a filesystem, call relay_late_setup_files() once the @parent dentry
+ *	is available.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct rchan *relay_open(const char *base_filename,
 			 struct dentry *parent,
@@ -575,6 +683,10 @@ struct rchan *relay_open(const char *base_filename,
 {
 	unsigned int i;
 	struct rchan *chan;
+<<<<<<< HEAD
+=======
+	struct rchan_buf *buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(subbuf_size && n_subbufs))
 		return NULL;
@@ -585,6 +697,15 @@ struct rchan *relay_open(const char *base_filename,
 	if (!chan)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	chan->buf = alloc_percpu(struct rchan_buf *);
+	if (!chan->buf) {
+		kfree(chan);
+		return NULL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chan->version = RELAYFS_CHANNEL_VERSION;
 	chan->n_subbufs = n_subbufs;
 	chan->subbuf_size = subbuf_size;
@@ -600,9 +721,16 @@ struct rchan *relay_open(const char *base_filename,
 
 	mutex_lock(&relay_channels_mutex);
 	for_each_online_cpu(i) {
+<<<<<<< HEAD
 		chan->buf[i] = relay_open_buf(chan, i);
 		if (!chan->buf[i])
 			goto free_bufs;
+=======
+		buf = relay_open_buf(chan, i);
+		if (!buf)
+			goto free_bufs;
+		*per_cpu_ptr(chan->buf, i) = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	list_add(&chan->list, &relay_channels);
 	mutex_unlock(&relay_channels_mutex);
@@ -611,8 +739,13 @@ struct rchan *relay_open(const char *base_filename,
 
 free_bufs:
 	for_each_possible_cpu(i) {
+<<<<<<< HEAD
 		if (chan->buf[i])
 			relay_close_buf(chan->buf[i]);
+=======
+		if ((buf = *per_cpu_ptr(chan->buf, i)))
+			relay_close_buf(buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	kref_put(&chan->kref, relay_destroy_channel);
@@ -642,8 +775,17 @@ static void __relay_set_buf_dentry(void *info)
  *
  *	Returns 0 if successful, non-zero otherwise.
  *
+<<<<<<< HEAD
  *	Use to setup files for a previously buffer-only channel.
  *	Useful to do early tracing in kernel, before VFS is up, for example.
+=======
+ *	Use to setup files for a previously buffer-only channel created
+ *	by relay_open() with a NULL parent dentry.
+ *
+ *	For example, this is useful for perfomring early tracing in kernel,
+ *	before VFS is up and then exposing the early results once the dentry
+ *	is available.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 int relay_late_setup_files(struct rchan *chan,
 			   const char *base_filename,
@@ -653,6 +795,10 @@ int relay_late_setup_files(struct rchan *chan,
 	unsigned int i, curr_cpu;
 	unsigned long flags;
 	struct dentry *dentry;
+<<<<<<< HEAD
+=======
+	struct rchan_buf *buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rchan_percpu_buf_dispatcher disp;
 
 	if (!chan || !base_filename)
@@ -668,6 +814,24 @@ int relay_late_setup_files(struct rchan *chan,
 	}
 	chan->has_base_filename = 1;
 	chan->parent = parent;
+<<<<<<< HEAD
+=======
+
+	if (chan->is_global) {
+		err = -EINVAL;
+		buf = *per_cpu_ptr(chan->buf, 0);
+		if (!WARN_ON_ONCE(!buf)) {
+			dentry = relay_create_buf_file(chan, buf, 0);
+			if (dentry && !WARN_ON_ONCE(!chan->is_global)) {
+				relay_set_buf_dentry(buf, dentry);
+				err = 0;
+			}
+		}
+		mutex_unlock(&relay_channels_mutex);
+		return err;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	curr_cpu = get_cpu();
 	/*
 	 * The CPU hotplug notifier ran before us and created buffers with
@@ -675,13 +839,22 @@ int relay_late_setup_files(struct rchan *chan,
 	 * on all currently online CPUs.
 	 */
 	for_each_online_cpu(i) {
+<<<<<<< HEAD
 		if (unlikely(!chan->buf[i])) {
+=======
+		buf = *per_cpu_ptr(chan->buf, i);
+		if (unlikely(!buf)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			WARN_ONCE(1, KERN_ERR "CPU has no buffer!\n");
 			err = -EINVAL;
 			break;
 		}
 
+<<<<<<< HEAD
 		dentry = relay_create_buf_file(chan, chan->buf[i], i);
+=======
+		dentry = relay_create_buf_file(chan, buf, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (unlikely(!dentry)) {
 			err = -EINVAL;
 			break;
@@ -689,10 +862,17 @@ int relay_late_setup_files(struct rchan *chan,
 
 		if (curr_cpu == i) {
 			local_irq_save(flags);
+<<<<<<< HEAD
 			relay_set_buf_dentry(chan->buf[i], dentry);
 			local_irq_restore(flags);
 		} else {
 			disp.buf = chan->buf[i];
+=======
+			relay_set_buf_dentry(buf, dentry);
+			local_irq_restore(flags);
+		} else {
+			disp.buf = buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			disp.dentry = dentry;
 			smp_mb();
 			/* relay_channels_mutex must be held, so wait. */
@@ -708,6 +888,10 @@ int relay_late_setup_files(struct rchan *chan,
 
 	return err;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(relay_late_setup_files);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  *	relay_switch_subbuf - switch to a new sub-buffer
@@ -733,21 +917,34 @@ size_t relay_switch_subbuf(struct rchan_buf *buf, size_t length)
 		buf->padding[old_subbuf] = buf->prev_padding;
 		buf->subbufs_produced++;
 		if (buf->dentry)
+<<<<<<< HEAD
 			buf->dentry->d_inode->i_size +=
+=======
+			d_inode(buf->dentry)->i_size +=
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				buf->chan->subbuf_size -
 				buf->padding[old_subbuf];
 		else
 			buf->early_bytes += buf->chan->subbuf_size -
 					    buf->padding[old_subbuf];
 		smp_mb();
+<<<<<<< HEAD
 		if (waitqueue_active(&buf->read_wait))
+=======
+		if (waitqueue_active(&buf->read_wait)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Calling wake_up_interruptible() from here
 			 * will deadlock if we happen to be logging
 			 * from the scheduler (trying to re-grab
 			 * rq->lock), so defer it.
 			 */
+<<<<<<< HEAD
 			mod_timer(&buf->timer, jiffies + 1);
+=======
+			irq_work_queue(&buf->wakeup_work);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	old = buf->data;
@@ -791,6 +988,7 @@ void relay_subbufs_consumed(struct rchan *chan,
 {
 	struct rchan_buf *buf;
 
+<<<<<<< HEAD
 	if (!chan)
 		return;
 
@@ -799,6 +997,15 @@ void relay_subbufs_consumed(struct rchan *chan,
 		return;
 
 	buf = chan->buf[cpu];
+=======
+	if (!chan || cpu >= NR_CPUS)
+		return;
+
+	buf = *per_cpu_ptr(chan->buf, cpu);
+	if (!buf || subbufs_consumed > chan->n_subbufs)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (subbufs_consumed > buf->subbufs_produced - buf->subbufs_consumed)
 		buf->subbufs_consumed = buf->subbufs_produced;
 	else
@@ -814,18 +1021,31 @@ EXPORT_SYMBOL_GPL(relay_subbufs_consumed);
  */
 void relay_close(struct rchan *chan)
 {
+<<<<<<< HEAD
+=======
+	struct rchan_buf *buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int i;
 
 	if (!chan)
 		return;
 
 	mutex_lock(&relay_channels_mutex);
+<<<<<<< HEAD
 	if (chan->is_global && chan->buf[0])
 		relay_close_buf(chan->buf[0]);
 	else
 		for_each_possible_cpu(i)
 			if (chan->buf[i])
 				relay_close_buf(chan->buf[i]);
+=======
+	if (chan->is_global && (buf = *per_cpu_ptr(chan->buf, 0)))
+		relay_close_buf(buf);
+	else
+		for_each_possible_cpu(i)
+			if ((buf = *per_cpu_ptr(chan->buf, i)))
+				relay_close_buf(buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (chan->last_toobig)
 		printk(KERN_WARNING "relay: one or more items not logged "
@@ -846,20 +1066,34 @@ EXPORT_SYMBOL_GPL(relay_close);
  */
 void relay_flush(struct rchan *chan)
 {
+<<<<<<< HEAD
+=======
+	struct rchan_buf *buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int i;
 
 	if (!chan)
 		return;
 
+<<<<<<< HEAD
 	if (chan->is_global && chan->buf[0]) {
 		relay_switch_subbuf(chan->buf[0], 0);
+=======
+	if (chan->is_global && (buf = *per_cpu_ptr(chan->buf, 0))) {
+		relay_switch_subbuf(buf, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	mutex_lock(&relay_channels_mutex);
 	for_each_possible_cpu(i)
+<<<<<<< HEAD
 		if (chan->buf[i])
 			relay_switch_subbuf(chan->buf[i], 0);
+=======
+		if ((buf = *per_cpu_ptr(chan->buf, i)))
+			relay_switch_subbuf(buf, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&relay_channels_mutex);
 }
 EXPORT_SYMBOL_GPL(relay_flush);
@@ -1093,6 +1327,7 @@ static size_t relay_file_read_end_pos(struct rchan_buf *buf,
 	return end_pos;
 }
 
+<<<<<<< HEAD
 /*
  *	subbuf_read_actor - read up to one subbuf's worth of data
  */
@@ -1138,6 +1373,25 @@ static ssize_t relay_file_read_subbufs(struct file *filp, loff_t *ppos,
 
 	mutex_lock(&file_inode(filp)->i_mutex);
 	do {
+=======
+static ssize_t relay_file_read(struct file *filp,
+			       char __user *buffer,
+			       size_t count,
+			       loff_t *ppos)
+{
+	struct rchan_buf *buf = filp->private_data;
+	size_t read_start, avail;
+	size_t written = 0;
+	int ret;
+
+	if (!count)
+		return 0;
+
+	inode_lock(file_inode(filp));
+	do {
+		void *from;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!relay_file_read_avail(buf, *ppos))
 			break;
 
@@ -1146,6 +1400,7 @@ static ssize_t relay_file_read_subbufs(struct file *filp, loff_t *ppos,
 		if (!avail)
 			break;
 
+<<<<<<< HEAD
 		avail = min(desc->count, avail);
 		ret = subbuf_actor(read_start, buf, avail, desc);
 		if (desc->error < 0)
@@ -1172,6 +1427,24 @@ static ssize_t relay_file_read(struct file *filp,
 	desc.arg.buf = buffer;
 	desc.error = 0;
 	return relay_file_read_subbufs(filp, ppos, subbuf_read_actor, &desc);
+=======
+		avail = min(count, avail);
+		from = buf->start + read_start;
+		ret = avail;
+		if (copy_to_user(buffer, from, avail))
+			break;
+
+		buffer += ret;
+		written += ret;
+		count -= ret;
+
+		relay_file_read_consume(buf, read_start, ret);
+		*ppos = relay_file_read_end_pos(buf, read_start, ret);
+	} while (count);
+	inode_unlock(file_inode(filp));
+
+	return written;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void relay_consume_bytes(struct rchan_buf *rbuf, int bytes_consumed)
@@ -1195,8 +1468,11 @@ static void relay_pipe_buf_release(struct pipe_inode_info *pipe,
 
 static const struct pipe_buf_operations relay_pipe_buf_ops = {
 	.can_merge = 0,
+<<<<<<< HEAD
 	.map = generic_pipe_buf_map,
 	.unmap = generic_pipe_buf_unmap,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.confirm = generic_pipe_buf_confirm,
 	.release = relay_pipe_buf_release,
 	.steal = generic_pipe_buf_steal,
@@ -1253,7 +1529,11 @@ static ssize_t subbuf_splice_actor(struct file *in,
 	subbuf_pages = rbuf->chan->alloc_size >> PAGE_SHIFT;
 	pidx = (read_start / PAGE_SIZE) % subbuf_pages;
 	poff = read_start & ~PAGE_MASK;
+<<<<<<< HEAD
 	nr_pages = min_t(unsigned int, subbuf_pages, pipe->buffers);
+=======
+	nr_pages = min_t(unsigned int, subbuf_pages, spd.nr_pages_max);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (total_len = 0; spd.nr_pages < nr_pages; spd.nr_pages++) {
 		unsigned int this_len, this_end, private;
@@ -1351,6 +1631,7 @@ const struct file_operations relay_file_operations = {
 	.splice_read	= relay_file_splice_read,
 };
 EXPORT_SYMBOL_GPL(relay_file_operations);
+<<<<<<< HEAD
 
 static __init int relay_init(void)
 {
@@ -1360,3 +1641,5 @@ static __init int relay_init(void)
 }
 
 early_initcall(relay_init);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

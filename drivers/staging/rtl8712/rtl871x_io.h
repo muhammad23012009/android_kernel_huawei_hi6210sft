@@ -166,7 +166,11 @@ struct reg_protocol_rd {
 	u32 Byte4Access:1;
 	u32 Byte2Access:1;
 	u32 Byte1Access:1;
+<<<<<<< HEAD
 	u32 BurstMode:1 ;
+=======
+	u32 BurstMode:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 FixOrContinuous:1;
 	u32 Reserved4:16;
 	/*DW3*/
@@ -232,6 +236,7 @@ struct io_queue {
 	struct	intf_hdl intf;
 };
 
+<<<<<<< HEAD
 static inline u32 _RND4(u32 sz)
 {
 	u32	val;
@@ -239,6 +244,8 @@ static inline u32 _RND4(u32 sz)
 	return val;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u8 r8712_read8(struct _adapter *adapter, u32 addr);
 u16 r8712_read16(struct _adapter *adapter, u32 addr);
 u32 r8712_read32(struct _adapter *adapter, u32 addr);

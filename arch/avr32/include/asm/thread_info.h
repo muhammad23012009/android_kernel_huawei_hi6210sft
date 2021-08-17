@@ -17,11 +17,17 @@
 #include <asm/types.h>
 
 struct task_struct;
+<<<<<<< HEAD
 struct exec_domain;
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+
+struct thread_info {
+	struct task_struct	*task;		/* main task structure */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long		flags;		/* low level flags */
 	__u32			cpu;
 	__s32			preempt_count;	/* 0 => preemptable, <0 => BUG */
@@ -30,13 +36,17 @@ struct thread_info {
 						   saved by debug handler
 						   when setting up
 						   trampoline */
+<<<<<<< HEAD
 	struct restart_block	restart_block;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8			supervisor_stack[0];
 };
 
 #define INIT_THREAD_INFO(tsk)						\
 {									\
 	.task		= &tsk,						\
+<<<<<<< HEAD
 	.exec_domain	= &default_exec_domain,				\
 	.flags		= 0,						\
 	.cpu		= 0,						\
@@ -44,6 +54,11 @@ struct thread_info {
 	.restart_block	= {						\
 		.fn	= do_no_restart_syscall				\
 	}								\
+=======
+	.flags		= 0,						\
+	.cpu		= 0,						\
+	.preempt_count	= INIT_PREEMPT_COUNT,				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
@@ -66,8 +81,11 @@ static inline struct thread_info *current_thread_info(void)
 
 #endif /* !__ASSEMBLY__ */
 
+<<<<<<< HEAD
 #define PREEMPT_ACTIVE		0x40000000
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Thread information flags
  * - these are process state flags that various assembly files may need to access

@@ -7,12 +7,19 @@
 /* This header used to share core functionality between the standalone
    NAT module, and the compatibility layer's use of NAT for masquerading. */
 
+<<<<<<< HEAD
 extern unsigned int nf_nat_packet(struct nf_conn *ct,
 				  enum ip_conntrack_info ctinfo,
 				  unsigned int hooknum,
 				  struct sk_buff *skb);
 
 extern int nf_xfrm_me_harder(struct sk_buff *skb, unsigned int family);
+=======
+unsigned int nf_nat_packet(struct nf_conn *ct, enum ip_conntrack_info ctinfo,
+			   unsigned int hooknum, struct sk_buff *skb);
+
+int nf_xfrm_me_harder(struct net *net, struct sk_buff *skb, unsigned int family);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int nf_nat_initialized(struct nf_conn *ct,
 				     enum nf_nat_manip_type manip)

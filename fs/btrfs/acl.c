@@ -35,6 +35,7 @@ struct posix_acl *btrfs_get_acl(struct inode *inode, int type)
 	char *value = NULL;
 	struct posix_acl *acl;
 
+<<<<<<< HEAD
 	if (!IS_POSIXACL(inode))
 		return NULL;
 
@@ -48,6 +49,14 @@ struct posix_acl *btrfs_get_acl(struct inode *inode, int type)
 		break;
 	case ACL_TYPE_DEFAULT:
 		name = POSIX_ACL_XATTR_DEFAULT;
+=======
+	switch (type) {
+	case ACL_TYPE_ACCESS:
+		name = XATTR_NAME_POSIX_ACL_ACCESS;
+		break;
+	case ACL_TYPE_DEFAULT:
+		name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		BUG();
@@ -55,21 +64,30 @@ struct posix_acl *btrfs_get_acl(struct inode *inode, int type)
 
 	size = __btrfs_getxattr(inode, name, "", 0);
 	if (size > 0) {
+<<<<<<< HEAD
 		value = kzalloc(size, GFP_NOFS);
+=======
+		value = kzalloc(size, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!value)
 			return ERR_PTR(-ENOMEM);
 		size = __btrfs_getxattr(inode, name, value, size);
 	}
 	if (size > 0) {
 		acl = posix_acl_from_xattr(&init_user_ns, value, size);
+<<<<<<< HEAD
 	} else if (size == -ENOENT || size == -ENODATA || size == 0) {
 		/* FIXME, who returns -ENOENT?  I think nobody */
+=======
+	} else if (size == -ERANGE || size == -ENODATA || size == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		acl = NULL;
 	} else {
 		acl = ERR_PTR(-EIO);
 	}
 	kfree(value);
 
+<<<<<<< HEAD
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
 
@@ -101,12 +119,22 @@ static int btrfs_xattr_acl_get(struct dentry *dentry, const char *name,
  * Needs to be called with fs_mutex held
  */
 static int btrfs_set_acl(struct btrfs_trans_handle *trans,
+=======
+	return acl;
+}
+
+/*
+ * Needs to be called with fs_mutex held
+ */
+static int __btrfs_set_acl(struct btrfs_trans_handle *trans,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 struct inode *inode, struct posix_acl *acl, int type)
 {
 	int ret, size = 0;
 	const char *name;
 	char *value = NULL;
 
+<<<<<<< HEAD
 	if (acl) {
 		ret = posix_acl_valid(acl);
 		if (ret < 0)
@@ -123,11 +151,20 @@ static int btrfs_set_acl(struct btrfs_trans_handle *trans,
 				return ret;
 		}
 		ret = 0;
+=======
+	switch (type) {
+	case ACL_TYPE_ACCESS:
+		name = XATTR_NAME_POSIX_ACL_ACCESS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case ACL_TYPE_DEFAULT:
 		if (!S_ISDIR(inode->i_mode))
 			return acl ? -EINVAL : 0;
+<<<<<<< HEAD
 		name = POSIX_ACL_XATTR_DEFAULT;
+=======
+		name = XATTR_NAME_POSIX_ACL_DEFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		return -EINVAL;
@@ -135,7 +172,11 @@ static int btrfs_set_acl(struct btrfs_trans_handle *trans,
 
 	if (acl) {
 		size = posix_acl_xattr_size(acl->a_count);
+<<<<<<< HEAD
 		value = kmalloc(size, GFP_NOFS);
+=======
+		value = kmalloc(size, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!value) {
 			ret = -ENOMEM;
 			goto out;
@@ -156,6 +197,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int btrfs_xattr_acl_set(struct dentry *dentry, const char *name,
 		const void *value, size_t size, int flags, int type)
 {
@@ -184,6 +226,21 @@ static int btrfs_xattr_acl_set(struct dentry *dentry, const char *name,
 out:
 	posix_acl_release(acl);
 
+=======
+int btrfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
+{
+	int ret;
+	umode_t old_mode = inode->i_mode;
+
+	if (type == ACL_TYPE_ACCESS && acl) {
+		ret = posix_acl_update_mode(inode, &inode->i_mode, &acl);
+		if (ret)
+			return ret;
+	}
+	ret = __btrfs_set_acl(NULL, inode, acl, type);
+	if (ret)
+		inode->i_mode = old_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -195,13 +252,18 @@ out:
 int btrfs_init_acl(struct btrfs_trans_handle *trans,
 		   struct inode *inode, struct inode *dir)
 {
+<<<<<<< HEAD
 	struct posix_acl *acl = NULL;
+=======
+	struct posix_acl *default_acl, *acl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	/* this happens with subvols */
 	if (!dir)
 		return 0;
 
+<<<<<<< HEAD
 	if (!S_ISLNK(inode->i_mode)) {
 		if (IS_POSIXACL(dir)) {
 			acl = btrfs_get_acl(dir, ACL_TYPE_DEFAULT);
@@ -275,3 +337,26 @@ const struct xattr_handler btrfs_xattr_acl_access_handler = {
 	.get	= btrfs_xattr_acl_get,
 	.set	= btrfs_xattr_acl_set,
 };
+=======
+	ret = posix_acl_create(dir, &inode->i_mode, &default_acl, &acl);
+	if (ret)
+		return ret;
+
+	if (default_acl) {
+		ret = __btrfs_set_acl(trans, inode, default_acl,
+				      ACL_TYPE_DEFAULT);
+		posix_acl_release(default_acl);
+	}
+
+	if (acl) {
+		if (!ret)
+			ret = __btrfs_set_acl(trans, inode, acl,
+					      ACL_TYPE_ACCESS);
+		posix_acl_release(acl);
+	}
+
+	if (!default_acl && !acl)
+		cache_no_acl(inode);
+	return ret;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

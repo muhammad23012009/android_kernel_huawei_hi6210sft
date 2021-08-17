@@ -2,8 +2,12 @@ config VIDEO_CX25821
 	tristate "Conexant cx25821 support"
 	depends on VIDEO_DEV && PCI && I2C
 	select I2C_ALGOBIT
+<<<<<<< HEAD
 	select VIDEO_BTCX
 	select VIDEOBUF_DMA_SG
+=======
+	select VIDEOBUF2_DMA_SG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  This is a video4linux driver for Conexant 25821 based
 	  TV cards.

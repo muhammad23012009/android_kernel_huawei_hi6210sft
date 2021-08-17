@@ -8,7 +8,11 @@
  */
 #include <linux/threads.h>
 #include <linux/cpumask.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
@@ -72,7 +76,11 @@ static int probe_default(void)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct apic apic_default = {
+=======
+static struct apic apic_default __ro_after_init = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.name				= "default",
 	.probe				= probe_default,
@@ -88,13 +96,17 @@ static struct apic apic_default = {
 	.disable_esr			= 0,
 	.dest_logical			= APIC_DEST_LOGICAL,
 	.check_apicid_used		= default_check_apicid_used,
+<<<<<<< HEAD
 	.check_apicid_present		= default_check_apicid_present,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.vector_allocation_domain	= flat_vector_allocation_domain,
 	.init_apic_ldr			= default_init_apic_ldr,
 
 	.ioapic_phys_id_map		= default_ioapic_phys_id_map,
 	.setup_apic_routing		= setup_apic_flat_routing,
+<<<<<<< HEAD
 	.multi_timer_check		= NULL,
 	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
 	.apicid_to_cpu_present		= physid_set_mask_of_physid,
@@ -110,18 +122,34 @@ static struct apic apic_default = {
 
 	.cpu_mask_to_apicid_and		= flat_cpu_mask_to_apicid_and,
 
+=======
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+	.apicid_to_cpu_present		= physid_set_mask_of_physid,
+	.check_phys_apicid_present	= default_check_phys_apicid_present,
+	.phys_pkg_id			= default_phys_pkg_id,
+
+	.get_apic_id			= default_get_apic_id,
+	.set_apic_id			= NULL,
+
+	.cpu_mask_to_apicid_and		= flat_cpu_mask_to_apicid_and,
+
+	.send_IPI			= default_send_IPI_single,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.send_IPI_mask			= default_send_IPI_mask_logical,
 	.send_IPI_mask_allbutself	= default_send_IPI_mask_allbutself_logical,
 	.send_IPI_allbutself		= default_send_IPI_allbutself,
 	.send_IPI_all			= default_send_IPI_all,
 	.send_IPI_self			= default_send_IPI_self,
 
+<<<<<<< HEAD
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
 
 	.wait_for_init_deassert		= default_wait_for_init_deassert,
 
 	.smp_callin_clear_local_apic	= NULL,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.inquire_remote_apic		= default_inquire_remote_apic,
 
 	.read				= native_apic_mem_read,
@@ -137,7 +165,11 @@ static struct apic apic_default = {
 
 apic_driver(apic_default);
 
+<<<<<<< HEAD
 struct apic *apic = &apic_default;
+=======
+struct apic *apic __ro_after_init = &apic_default;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL_GPL(apic);
 
 static int cmdline_apic __initdata;
@@ -163,7 +195,11 @@ early_param("apic", parse_apic);
 
 void __init default_setup_apic_routing(void)
 {
+<<<<<<< HEAD
 	int version = apic_version[boot_cpu_physical_apicid];
+=======
+	int version = boot_cpu_apic_version;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (num_possible_cpus() > 8) {
 		switch (boot_cpu_data.x86_vendor) {
@@ -215,6 +251,7 @@ void __init generic_apic_probe(void)
 	printk(KERN_INFO "Using APIC driver %s\n", apic->name);
 }
 
+<<<<<<< HEAD
 /* These functions can switch the APIC even after the initial ->probe() */
 
 int __init
@@ -238,6 +275,9 @@ generic_mps_oem_check(struct mpc_table *mpc, char *oem, char *productid)
 	return 0;
 }
 
+=======
+/* This function can switch the APIC even after the initial ->probe() */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __init default_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 {
 	struct apic **drv;

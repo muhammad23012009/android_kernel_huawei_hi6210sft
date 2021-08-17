@@ -15,7 +15,10 @@
  *   Copyright (C) 2007 David Sterba
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -94,11 +97,14 @@ static int ipw_open(struct tty_struct *linux_tty, struct file *filp)
 		return -ENODEV;
 
 	mutex_lock(&tty->ipw_tty_mutex);
+<<<<<<< HEAD
 
 	if (tty->closing) {
 		mutex_unlock(&tty->ipw_tty_mutex);
 		return -ENODEV;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (tty->port.count == 0)
 		tty->tx_bytes_queued = 0;
 
@@ -177,9 +183,12 @@ void ipwireless_tty_received(struct ipw_tty *tty, unsigned char *data,
 				": %d chars not inserted to flip buffer!\n",
 				length - work);
 
+<<<<<<< HEAD
 	/*
 	 * This may sleep if ->low_latency is set
 	 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (work)
 		tty_flip_buffer_push(&tty->port);
 }
@@ -226,7 +235,11 @@ static int ipw_write(struct tty_struct *linux_tty,
 	ret = ipwireless_send_packet(tty->hardware, IPW_CHANNEL_RAS,
 			       buf, count,
 			       ipw_write_packet_sent_callback, tty);
+<<<<<<< HEAD
 	if (ret == -1) {
+=======
+	if (ret < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&tty->ipw_tty_mutex);
 		return 0;
 	}
@@ -261,6 +274,7 @@ static int ipwireless_get_serial_info(struct ipw_tty *tty,
 {
 	struct serial_struct tmp;
 
+<<<<<<< HEAD
 	if (!retinfo)
 		return (-EFAULT);
 
@@ -275,6 +289,13 @@ static int ipwireless_get_serial_info(struct ipw_tty *tty,
 	tmp.closing_wait = 0;
 	tmp.custom_divisor = 0;
 	tmp.hub6 = 0;
+=======
+	memset(&tmp, 0, sizeof(tmp));
+	tmp.type = PORT_UNKNOWN;
+	tmp.line = tty->index;
+	tmp.baud_base = 115200;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (copy_to_user(retinfo, &tmp, sizeof(*retinfo)))
 		return -EFAULT;
 

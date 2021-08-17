@@ -12,9 +12,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) "hci: %s: " fmt, __func__
@@ -126,6 +130,7 @@ out_skb_err:
 	return err;
 }
 
+<<<<<<< HEAD
 u8 nfc_hci_pipe2gate(struct nfc_hci_dev *hdev, u8 pipe)
 {
 	int gate;
@@ -137,6 +142,8 @@ u8 nfc_hci_pipe2gate(struct nfc_hci_dev *hdev, u8 pipe)
 	return 0xff;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Receive hcp message for pipe, with type and cmd.
  * skb contains optional message data only.

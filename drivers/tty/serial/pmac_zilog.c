@@ -57,6 +57,11 @@
 #include <linux/bitops.h>
 #include <linux/sysrq.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/sections.h>
 #include <asm/io.h>
 #include <asm/irq.h>
@@ -651,6 +656,11 @@ static void pmz_start_tx(struct uart_port *port)
 	} else {
 		struct circ_buf *xmit = &port->state->xmit;
 
+<<<<<<< HEAD
+=======
+		if (uart_circ_empty(xmit))
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		write_zsdata(uap, xmit->buf[xmit->tail]);
 		zssync(uap);
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
@@ -659,6 +669,10 @@ static void pmz_start_tx(struct uart_port *port)
 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 			uart_write_wakeup(&uap->port);
 	}
+<<<<<<< HEAD
+=======
+ out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pmz_debug("pmz: start_tx() done.\n");
 }
 
@@ -1072,7 +1086,11 @@ static void pmz_convert_to_zs(struct uart_pmac_port *uap, unsigned int cflag,
 		uap->curregs[5] |= Tx8;
 		uap->parity_mask = 0xff;
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uap->curregs[4] &= ~(SB_MASK);
 	if (cflag & CSTOPB)
 		uap->curregs[4] |= SB2;
@@ -1090,7 +1108,11 @@ static void pmz_convert_to_zs(struct uart_pmac_port *uap, unsigned int cflag,
 	uap->port.read_status_mask = Rx_OVR;
 	if (iflag & INPCK)
 		uap->port.read_status_mask |= CRC_ERR | PAR_ERR;
+<<<<<<< HEAD
 	if (iflag & (BRKINT | PARMRK))
+=======
+	if (iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		uap->port.read_status_mask |= BRK_ABRT;
 
 	uap->port.ignore_status_mask = 0;
@@ -1347,7 +1369,12 @@ static int pmz_verify_port(struct uart_port *port, struct serial_struct *ser)
 
 static int pmz_poll_get_char(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_pmac_port *uap = (struct uart_pmac_port *)port;
+=======
+	struct uart_pmac_port *uap =
+		container_of(port, struct uart_pmac_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int tries = 2;
 
 	while (tries) {
@@ -1362,7 +1389,12 @@ static int pmz_poll_get_char(struct uart_port *port)
 
 static void pmz_poll_put_char(struct uart_port *port, unsigned char c)
 {
+<<<<<<< HEAD
 	struct uart_pmac_port *uap = (struct uart_pmac_port *)port;
+=======
+	struct uart_pmac_port *uap =
+		container_of(port, struct uart_pmac_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Wait for the transmit buffer to empty. */
 	while ((read_zsreg(uap, R0) & Tx_BUF_EMP) == 0)
@@ -1648,8 +1680,12 @@ static int __init pmz_probe(void)
 	/*
 	 * Find all escc chips in the system
 	 */
+<<<<<<< HEAD
 	node_p = of_find_node_by_name(NULL, "escc");
 	while (node_p) {
+=======
+	for_each_node_by_name(node_p, "escc") {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * First get channel A/B node pointers
 		 * 
@@ -1667,7 +1703,11 @@ static int __init pmz_probe(void)
 			of_node_put(node_b);
 			printk(KERN_ERR "pmac_zilog: missing node %c for escc %s\n",
 				(!node_a) ? 'a' : 'b', node_p->full_name);
+<<<<<<< HEAD
 			goto next;
+=======
+			continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		/*
@@ -1694,11 +1734,17 @@ static int __init pmz_probe(void)
 			of_node_put(node_b);
 			memset(&pmz_ports[count], 0, sizeof(struct uart_pmac_port));
 			memset(&pmz_ports[count+1], 0, sizeof(struct uart_pmac_port));
+<<<<<<< HEAD
 			goto next;
 		}
 		count += 2;
 next:
 		node_p = of_find_node_by_name(node_p, "escc");
+=======
+			continue;
+		}
+		count += 2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	pmz_ports_count = count;
 
@@ -1716,7 +1762,11 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
 
 	r_ports = platform_get_resource(uap->pdev, IORESOURCE_MEM, 0);
 	irq = platform_get_irq(uap->pdev, 0);
+<<<<<<< HEAD
 	if (!r_ports || !irq)
+=======
+	if (!r_ports || irq <= 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	uap->port.mapbase  = r_ports->start;
@@ -1798,7 +1848,10 @@ static int __exit pmz_detach(struct platform_device *pdev)
 
 	uart_remove_one_port(&pmz_uart_reg, &uap->port);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uap->port.dev = NULL;
 
 	return 0;
@@ -1843,7 +1896,11 @@ static int __init pmz_register(void)
 
 #ifdef CONFIG_PPC_PMAC
 
+<<<<<<< HEAD
 static struct of_device_id pmz_match[] = 
+=======
+static const struct of_device_id pmz_match[] =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	{
 	.name		= "ch-a",
@@ -1873,7 +1930,10 @@ static struct platform_driver pmz_driver = {
 	.remove		= __exit_p(pmz_detach),
 	.driver		= {
 		.name		= "scc",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -1953,7 +2013,12 @@ static void __exit exit_pmz(void)
 
 static void pmz_console_putchar(struct uart_port *port, int ch)
 {
+<<<<<<< HEAD
 	struct uart_pmac_port *uap = (struct uart_pmac_port *)port;
+=======
+	struct uart_pmac_port *uap =
+		container_of(port, struct uart_pmac_port, port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Wait for the transmit buffer to empty. */
 	while ((read_zsreg(uap, R0) & Tx_BUF_EMP) == 0)

@@ -16,10 +16,24 @@
 
 #include "util.h"
 
+<<<<<<< HEAD
+=======
+static struct ucounts *inc_ipc_namespaces(struct user_namespace *ns)
+{
+	return inc_ucount(ns, current_euid(), UCOUNT_IPC_NAMESPACES);
+}
+
+static void dec_ipc_namespaces(struct ucounts *ucounts)
+{
+	dec_ucount(ucounts, UCOUNT_IPC_NAMESPACES);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
 					   struct ipc_namespace *old_ns)
 {
 	struct ipc_namespace *ns;
+<<<<<<< HEAD
 	int err;
 
 	ns = kmalloc(sizeof(struct ipc_namespace), GFP_KERNEL);
@@ -40,11 +54,39 @@ static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
 		return ERR_PTR(err);
 	}
 	atomic_inc(&nr_ipc_ns);
+=======
+	struct ucounts *ucounts;
+	int err;
+
+	err = -ENOSPC;
+	ucounts = inc_ipc_namespaces(user_ns);
+	if (!ucounts)
+		goto fail;
+
+	err = -ENOMEM;
+	ns = kmalloc(sizeof(struct ipc_namespace), GFP_KERNEL);
+	if (ns == NULL)
+		goto fail_dec;
+
+	err = ns_alloc_inum(&ns->ns);
+	if (err)
+		goto fail_free;
+	ns->ns.ops = &ipcns_operations;
+
+	atomic_set(&ns->count, 1);
+	ns->user_ns = get_user_ns(user_ns);
+	ns->ucounts = ucounts;
+
+	err = mq_init_ns(ns);
+	if (err)
+		goto fail_put;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sem_init_ns(ns);
 	msg_init_ns(ns);
 	shm_init_ns(ns);
 
+<<<<<<< HEAD
 	/*
 	 * msgmni has already been computed for the new ipc ns.
 	 * Thus, do the ipcns creation notification before registering that
@@ -56,6 +98,19 @@ static struct ipc_namespace *create_ipc_ns(struct user_namespace *user_ns,
 	ns->user_ns = get_user_ns(user_ns);
 
 	return ns;
+=======
+	return ns;
+
+fail_put:
+	put_user_ns(ns->user_ns);
+	ns_free_inum(&ns->ns);
+fail_free:
+	kfree(ns);
+fail_dec:
+	dec_ipc_namespaces(ucounts);
+fail:
+	return ERR_PTR(err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct ipc_namespace *copy_ipcs(unsigned long flags,
@@ -99,6 +154,7 @@ void free_ipcs(struct ipc_namespace *ns, struct ipc_ids *ids,
 
 static void free_ipc_ns(struct ipc_namespace *ns)
 {
+<<<<<<< HEAD
 	/*
 	 * Unregistering the hotplug notifier at the beginning guarantees
 	 * that the ipc namespace won't be freed while we are inside the
@@ -120,6 +176,15 @@ static void free_ipc_ns(struct ipc_namespace *ns)
 	ipcns_notify(IPCNS_REMOVED);
 	put_user_ns(ns->user_ns);
 	proc_free_inum(ns->proc_inum);
+=======
+	sem_exit_ns(ns);
+	msg_exit_ns(ns);
+	shm_exit_ns(ns);
+
+	dec_ipc_namespaces(ns->ucounts);
+	put_user_ns(ns->user_ns);
+	ns_free_inum(&ns->ns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(ns);
 }
 
@@ -149,11 +214,21 @@ void put_ipc_ns(struct ipc_namespace *ns)
 	}
 }
 
+<<<<<<< HEAD
 static void *ipcns_get(struct task_struct *task)
+=======
+static inline struct ipc_namespace *to_ipc_ns(struct ns_common *ns)
+{
+	return container_of(ns, struct ipc_namespace, ns);
+}
+
+static struct ns_common *ipcns_get(struct task_struct *task)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ipc_namespace *ns = NULL;
 	struct nsproxy *nsproxy;
 
+<<<<<<< HEAD
 	rcu_read_lock();
 	nsproxy = task_nsproxy(task);
 	if (nsproxy)
@@ -173,6 +248,27 @@ static int ipcns_install(struct nsproxy *nsproxy, void *new)
 	struct ipc_namespace *ns = new;
 	if (!ns_capable(ns->user_ns, CAP_SYS_ADMIN) ||
 	    !nsown_capable(CAP_SYS_ADMIN))
+=======
+	task_lock(task);
+	nsproxy = task->nsproxy;
+	if (nsproxy)
+		ns = get_ipc_ns(nsproxy->ipc_ns);
+	task_unlock(task);
+
+	return ns ? &ns->ns : NULL;
+}
+
+static void ipcns_put(struct ns_common *ns)
+{
+	return put_ipc_ns(to_ipc_ns(ns));
+}
+
+static int ipcns_install(struct nsproxy *nsproxy, struct ns_common *new)
+{
+	struct ipc_namespace *ns = to_ipc_ns(new);
+	if (!ns_capable(ns->user_ns, CAP_SYS_ADMIN) ||
+	    !ns_capable(current_user_ns(), CAP_SYS_ADMIN))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EPERM;
 
 	/* Ditch state from the old ipc namespace */
@@ -182,11 +278,17 @@ static int ipcns_install(struct nsproxy *nsproxy, void *new)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int ipcns_inum(void *vp)
 {
 	struct ipc_namespace *ns = vp;
 
 	return ns->proc_inum;
+=======
+static struct user_namespace *ipcns_owner(struct ns_common *ns)
+{
+	return to_ipc_ns(ns)->user_ns;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct proc_ns_operations ipcns_operations = {
@@ -195,5 +297,9 @@ const struct proc_ns_operations ipcns_operations = {
 	.get		= ipcns_get,
 	.put		= ipcns_put,
 	.install	= ipcns_install,
+<<<<<<< HEAD
 	.inum		= ipcns_inum,
+=======
+	.owner		= ipcns_owner,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

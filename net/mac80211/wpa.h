@@ -24,6 +24,7 @@ ieee80211_rx_result
 ieee80211_crypto_tkip_decrypt(struct ieee80211_rx_data *rx);
 
 ieee80211_tx_result
+<<<<<<< HEAD
 ieee80211_crypto_ccmp_encrypt(struct ieee80211_tx_data *tx);
 ieee80211_rx_result
 ieee80211_crypto_ccmp_decrypt(struct ieee80211_rx_data *rx);
@@ -34,5 +35,34 @@ ieee80211_rx_result
 ieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx);
 ieee80211_tx_result
 ieee80211_crypto_hw_encrypt(struct ieee80211_tx_data *tx);
+=======
+ieee80211_crypto_ccmp_encrypt(struct ieee80211_tx_data *tx,
+			      unsigned int mic_len);
+ieee80211_rx_result
+ieee80211_crypto_ccmp_decrypt(struct ieee80211_rx_data *rx,
+			      unsigned int mic_len);
+
+ieee80211_tx_result
+ieee80211_crypto_aes_cmac_encrypt(struct ieee80211_tx_data *tx);
+ieee80211_tx_result
+ieee80211_crypto_aes_cmac_256_encrypt(struct ieee80211_tx_data *tx);
+ieee80211_rx_result
+ieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx);
+ieee80211_rx_result
+ieee80211_crypto_aes_cmac_256_decrypt(struct ieee80211_rx_data *rx);
+ieee80211_tx_result
+ieee80211_crypto_aes_gmac_encrypt(struct ieee80211_tx_data *tx);
+ieee80211_rx_result
+ieee80211_crypto_aes_gmac_decrypt(struct ieee80211_rx_data *rx);
+ieee80211_tx_result
+ieee80211_crypto_hw_encrypt(struct ieee80211_tx_data *tx);
+ieee80211_rx_result
+ieee80211_crypto_hw_decrypt(struct ieee80211_rx_data *rx);
+
+ieee80211_tx_result
+ieee80211_crypto_gcmp_encrypt(struct ieee80211_tx_data *tx);
+ieee80211_rx_result
+ieee80211_crypto_gcmp_decrypt(struct ieee80211_rx_data *rx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* WPA_H */

@@ -1,6 +1,9 @@
 /*
+<<<<<<< HEAD
  * linux/arch/arm/plat-s3c/include/plat/regs-onenand.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  Copyright (C) 2008-2010 Samsung Electronics
  *  Kyungmin Park <kyungmin.park@samsung.com>
  *

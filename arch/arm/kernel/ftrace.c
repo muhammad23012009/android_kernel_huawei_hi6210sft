@@ -13,14 +13,24 @@
  */
 
 #include <linux/ftrace.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/uaccess.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/module.h>
+#include <linux/stop_machine.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/cacheflush.h>
 #include <asm/opcodes.h>
 #include <asm/ftrace.h>
+<<<<<<< HEAD
 
 #include "insn.h"
+=======
+#include <asm/insn.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_THUMB2_KERNEL
 #define	NOP		0xf85deb04	/* pop.w {lr} */
@@ -29,6 +39,26 @@
 #endif
 
 #ifdef CONFIG_DYNAMIC_FTRACE
+<<<<<<< HEAD
+=======
+
+static int __ftrace_modify_code(void *data)
+{
+	int *command = data;
+
+	set_kernel_text_rw();
+	ftrace_modify_all_code(*command);
+	set_kernel_text_ro();
+
+	return 0;
+}
+
+void arch_ftrace_update_code(int command)
+{
+	stop_machine(__ftrace_modify_code, &command, NULL);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_OLD_MCOUNT
 #define OLD_MCOUNT_ADDR	((unsigned long) mcount)
 #define OLD_FTRACE_ADDR ((unsigned long) ftrace_caller_old)
@@ -66,7 +96,10 @@ static unsigned long adjust_address(struct dyn_ftrace *rec, unsigned long addr)
 
 int ftrace_arch_code_modify_prepare(void)
 {
+<<<<<<< HEAD
 	set_kernel_text_rw();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_all_modules_text_rw();
 	return 0;
 }
@@ -74,7 +107,12 @@ int ftrace_arch_code_modify_prepare(void)
 int ftrace_arch_code_modify_post_process(void)
 {
 	set_all_modules_text_ro();
+<<<<<<< HEAD
 	set_kernel_text_ro();
+=======
+	/* Make sure any TLB misses during machine stop are cleared. */
+	flush_tlb_all();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -171,10 +209,15 @@ int ftrace_make_nop(struct module *mod,
 	return ret;
 }
 
+<<<<<<< HEAD
 int __init ftrace_dyn_arch_init(void *data)
 {
 	*(unsigned long *)data = 0;
 
+=======
+int __init ftrace_dyn_arch_init(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 #endif /* CONFIG_DYNAMIC_FTRACE */
@@ -204,7 +247,11 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr,
 	}
 
 	err = ftrace_push_return_trace(old, self_addr, &trace.depth,
+<<<<<<< HEAD
 				       frame_pointer);
+=======
+				       frame_pointer, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err == -EBUSY) {
 		*parent = old;
 		return;

@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,7 +91,11 @@ acpi_rs_convert_aml_to_resource(struct acpi_resource *resource,
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	if (((acpi_size) resource) & 0x3) {
+=======
+	if (((acpi_size)resource) & 0x3) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Each internal resource struct is expected to be 32-bit aligned */
 
@@ -119,7 +127,11 @@ acpi_rs_convert_aml_to_resource(struct acpi_resource *resource,
 			/*
 			 * Get the resource type and the initial (minimum) length
 			 */
+<<<<<<< HEAD
 			ACPI_MEMSET(resource, 0, INIT_RESOURCE_LENGTH(info));
+=======
+			memset(resource, 0, INIT_RESOURCE_LENGTH(info));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			resource->type = INIT_RESOURCE_TYPE(info);
 			resource->length = INIT_RESOURCE_LENGTH(info);
 			break;
@@ -189,12 +201,20 @@ acpi_rs_convert_aml_to_resource(struct acpi_resource *resource,
 			item_count = ACPI_GET8(source);
 			ACPI_SET8(destination, item_count);
 
+<<<<<<< HEAD
 			resource->length = resource->length +
 			    (info->value * item_count);
 			break;
 
 		case ACPI_RSC_COUNT_GPIO_RES:
 
+=======
+			resource->length =
+			    resource->length + (info->value * item_count);
+			break;
+
+		case ACPI_RSC_COUNT_GPIO_RES:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Vendor data is optional (length/offset may both be zero)
 			 * Examine vendor data length field first
@@ -325,13 +345,21 @@ acpi_rs_convert_aml_to_resource(struct acpi_resource *resource,
 
 		case ACPI_RSC_SET8:
 
+<<<<<<< HEAD
 			ACPI_MEMSET(destination, info->aml_offset, info->value);
+=======
+			memset(destination, info->aml_offset, info->value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case ACPI_RSC_DATA8:
 
 			target = ACPI_ADD_PTR(char, resource, info->value);
+<<<<<<< HEAD
 			ACPI_MEMCPY(destination, source, ACPI_GET16(target));
+=======
+			memcpy(destination, source, ACPI_GET16(target));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case ACPI_RSC_ADDRESS:
@@ -410,12 +438,20 @@ acpi_rs_convert_aml_to_resource(struct acpi_resource *resource,
 			 */
 			switch (info->resource_offset) {
 			case ACPI_RSC_COMPARE_AML_LENGTH:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (aml_resource_length != info->value) {
 					goto exit;
 				}
 				break;
 
 			case ACPI_RSC_COMPARE_VALUE:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (ACPI_GET8(source) != info->value) {
 					goto exit;
 				}
@@ -439,13 +475,22 @@ acpi_rs_convert_aml_to_resource(struct acpi_resource *resource,
 		info++;
 	}
 
+<<<<<<< HEAD
       exit:
+=======
+exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!flags_mode) {
 
 		/* Round the resource struct length up to the next boundary (32 or 64) */
 
+<<<<<<< HEAD
 		resource->length =
 		    (u32) ACPI_ROUND_UP_TO_NATIVE_WORD(resource->length);
+=======
+		resource->length = (u32)
+		    ACPI_ROUND_UP_TO_NATIVE_WORD(resource->length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return_ACPI_STATUS(AE_OK);
 }
@@ -501,7 +546,11 @@ acpi_rs_convert_resource_to_aml(struct acpi_resource *resource,
 		switch (info->opcode) {
 		case ACPI_RSC_INITSET:
 
+<<<<<<< HEAD
 			ACPI_MEMSET(aml, 0, INIT_RESOURCE_LENGTH(info));
+=======
+			memset(aml, 0, INIT_RESOURCE_LENGTH(info));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			aml_length = INIT_RESOURCE_LENGTH(info);
 			acpi_rs_set_resource_header(INIT_RESOURCE_TYPE(info),
 						    aml_length, aml);
@@ -549,9 +598,14 @@ acpi_rs_convert_resource_to_aml(struct acpi_resource *resource,
 			item_count = ACPI_GET8(source);
 			ACPI_SET8(destination, item_count);
 
+<<<<<<< HEAD
 			aml_length =
 			    (u16) (aml_length +
 				   (info->value * (item_count - 1)));
+=======
+			aml_length = (u16)
+			    (aml_length + (info->value * (item_count - 1)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case ACPI_RSC_COUNT16:
@@ -722,11 +776,18 @@ acpi_rs_convert_resource_to_aml(struct acpi_resource *resource,
 			/*
 			 * 16-bit encoded bitmask (IRQ macro)
 			 */
+<<<<<<< HEAD
 			temp16 = acpi_rs_encode_bitmask(source,
 							*ACPI_ADD_PTR(u8,
 								      resource,
 								      info->
 								      value));
+=======
+			temp16 =
+			    acpi_rs_encode_bitmask(source,
+						   *ACPI_ADD_PTR(u8, resource,
+								 info->value));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ACPI_MOVE_16_TO_16(destination, &temp16);
 			break;
 
@@ -782,7 +843,11 @@ acpi_rs_convert_resource_to_aml(struct acpi_resource *resource,
 		info++;
 	}
 
+<<<<<<< HEAD
       exit:
+=======
+exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(AE_OK);
 }
 

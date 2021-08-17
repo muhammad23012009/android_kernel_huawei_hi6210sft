@@ -28,6 +28,11 @@ struct dyn_arch_ftrace {
 
 extern unsigned long ftrace_graph_call;
 
+<<<<<<< HEAD
+=======
+extern void return_to_handler(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline unsigned long ftrace_call_adjust(unsigned long addr)
 {
 	/*
@@ -46,7 +51,11 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
  * See kernel/trace/trace_syscalls.c
  *
  * x86 code says:
+<<<<<<< HEAD
  * If the user realy wants these, then they should use the
+=======
+ * If the user really wants these, then they should use the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * raw syscall tracepoints with filtering.
  */
 #define ARCH_TRACE_IGNORE_COMPAT_SYSCALLS

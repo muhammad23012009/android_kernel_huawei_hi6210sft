@@ -4,7 +4,11 @@
  * Copyright (C) 2005, 2006
  * Avishay Traeger (avishay@gmail.com)
  * Copyright (C) 2008, 2009
+<<<<<<< HEAD
  * Boaz Harrosh <bharrosh@panasas.com>
+=======
+ * Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyrights for code taken from ext2:
  *     Copyright (C) 1992, 1993, 1994, 1995

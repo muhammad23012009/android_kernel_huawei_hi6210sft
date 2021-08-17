@@ -13,6 +13,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>	/* symbol_get ; symbol_put */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/gpio_keys.h>
@@ -20,7 +24,11 @@
 #include <linux/leds.h>
 #include <linux/i2c.h>
 #include <linux/i2c/pxa-i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c/pca953x.h>
+=======
+#include <linux/platform_data/pca953x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
 #include <linux/spi/corgi_lcd.h>
@@ -31,6 +39,11 @@
 #include <linux/regulator/machine.h>
 #include <linux/io.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+#include <linux/memblock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/setup.h>
 #include <asm/mach-types.h>
@@ -38,15 +51,24 @@
 #include <asm/mach/sharpsl_param.h>
 #include <asm/hardware/scoop.h>
 
+<<<<<<< HEAD
 #include <mach/pxa27x.h>
 #include <mach/pxa27x-udc.h>
+=======
+#include "pxa27x.h"
+#include "pxa27x-udc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/reset.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/spitz.h>
+<<<<<<< HEAD
 #include <mach/sharpsl_pm.h>
+=======
+#include "sharpsl_pm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/smemc.h>
 
 #include "generic.h"
@@ -199,7 +221,11 @@ static void __init spitz_scoop_init(void)
 }
 
 /* Power control is shared with between one of the CF slots and SD */
+<<<<<<< HEAD
 static void spitz_card_pwr_ctrl(uint8_t enable, uint8_t new_cpr)
+=======
+static void __maybe_unused spitz_card_pwr_ctrl(uint8_t enable, uint8_t new_cpr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned short cpr;
 	unsigned long flags;
@@ -462,7 +488,11 @@ static struct gpio_led spitz_gpio_leds[] = {
 	},
 	{
 		.name			= "spitz:green:hddactivity",
+<<<<<<< HEAD
 		.default_trigger	= "ide-disk",
+=======
+		.default_trigger	= "disk-activity",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.gpio			= SPITZ_GPIO_LED_GREEN,
 	},
 };
@@ -597,7 +627,11 @@ static inline void spitz_spi_init(void) {}
  * NOTE: The card detect interrupt isn't debounced so we delay it by 250ms to
  * give the card a chance to fully insert/eject.
  */
+<<<<<<< HEAD
 static void spitz_mci_setpower(struct device *dev, unsigned int vdd)
+=======
+static int spitz_mci_setpower(struct device *dev, unsigned int vdd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pxamci_platform_data* p_d = dev->platform_data;
 
@@ -605,6 +639,11 @@ static void spitz_mci_setpower(struct device *dev, unsigned int vdd)
 		spitz_card_pwr_ctrl(SCOOP_CPR_SD_3V, SCOOP_CPR_SD_3V);
 	else
 		spitz_card_pwr_ctrl(SCOOP_CPR_SD_3V, 0x0);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pxamci_platform_data spitz_mci_platform_data = {
@@ -759,6 +798,7 @@ static struct nand_bbt_descr spitz_nand_bbt = {
 	.pattern	= scan_ff_pattern
 };
 
+<<<<<<< HEAD
 static struct nand_ecclayout akita_oobinfo = {
 	.oobfree	= { {0x08, 0x09} },
 	.eccbytes	= 24,
@@ -767,6 +807,51 @@ static struct nand_ecclayout akita_oobinfo = {
 			0x12, 0x13, 0x16, 0x17, 0x25, 0x21, 0x22, 0x23,
 			0x26, 0x27, 0x35, 0x31, 0x32, 0x33, 0x36, 0x37,
 	},
+=======
+static int akita_ooblayout_ecc(struct mtd_info *mtd, int section,
+			       struct mtd_oob_region *oobregion)
+{
+	if (section > 12)
+		return -ERANGE;
+
+	switch (section % 3) {
+	case 0:
+		oobregion->offset = 5;
+		oobregion->length = 1;
+		break;
+
+	case 1:
+		oobregion->offset = 1;
+		oobregion->length = 3;
+		break;
+
+	case 2:
+		oobregion->offset = 6;
+		oobregion->length = 2;
+		break;
+	}
+
+	oobregion->offset += (section / 3) * 0x10;
+
+	return 0;
+}
+
+static int akita_ooblayout_free(struct mtd_info *mtd, int section,
+				struct mtd_oob_region *oobregion)
+{
+	if (section)
+		return -ERANGE;
+
+	oobregion->offset = 8;
+	oobregion->length = 9;
+
+	return 0;
+}
+
+static const struct mtd_ooblayout_ops akita_ooblayout_ops = {
+	.ecc = akita_ooblayout_ecc,
+	.free = akita_ooblayout_free,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct sharpsl_nand_platform_data spitz_nand_pdata = {
@@ -800,11 +885,19 @@ static void __init spitz_nand_init(void)
 	} else if (machine_is_akita()) {
 		spitz_nand_partitions[1].size = 58 * 1024 * 1024;
 		spitz_nand_bbt.len = 1;
+<<<<<<< HEAD
 		spitz_nand_pdata.ecc_layout = &akita_oobinfo;
 	} else if (machine_is_borzoi()) {
 		spitz_nand_partitions[1].size = 32 * 1024 * 1024;
 		spitz_nand_bbt.len = 1;
 		spitz_nand_pdata.ecc_layout = &akita_oobinfo;
+=======
+		spitz_nand_pdata.ecc_layout = &akita_ooblayout_ops;
+	} else if (machine_is_borzoi()) {
+		spitz_nand_partitions[1].size = 32 * 1024 * 1024;
+		spitz_nand_bbt.len = 1;
+		spitz_nand_pdata.ecc_layout = &akita_ooblayout_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_device_register(&spitz_nand_device);
@@ -920,14 +1013,32 @@ static inline void spitz_i2c_init(void) {}
 #endif
 
 /******************************************************************************
+<<<<<<< HEAD
+=======
+ * Audio devices
+ ******************************************************************************/
+static inline void spitz_audio_init(void)
+{
+	platform_device_register_simple("spitz-audio", -1, NULL, 0);
+}
+
+/******************************************************************************
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Machine init
  ******************************************************************************/
 static void spitz_poweroff(void)
 {
+<<<<<<< HEAD
 	pxa_restart('g', NULL);
 }
 
 static void spitz_restart(char mode, const char *cmd)
+=======
+	pxa_restart(REBOOT_GPIO, NULL);
+}
+
+static void spitz_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	uint32_t msc0 = __raw_readl(MSC0);
 	/* Bootloader magic for a reboot */
@@ -966,6 +1077,7 @@ static void __init spitz_init(void)
 	spitz_nor_init();
 	spitz_nand_init();
 	spitz_i2c_init();
+<<<<<<< HEAD
 }
 
 static void __init spitz_fixup(struct tag *tags, char **cmdline,
@@ -975,11 +1087,25 @@ static void __init spitz_fixup(struct tag *tags, char **cmdline,
 	mi->nr_banks = 1;
 	mi->bank[0].start = 0xa0000000;
 	mi->bank[0].size = (64*1024*1024);
+=======
+	spitz_audio_init();
+
+	regulator_has_full_constraints();
+}
+
+static void __init spitz_fixup(struct tag *tags, char **cmdline)
+{
+	sharpsl_save_param();
+	memblock_add(0xa0000000, SZ_64M);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_MACH_SPITZ
 MACHINE_START(SPITZ, "SHARP Spitz")
+<<<<<<< HEAD
 	.restart_mode	= 'g',
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fixup		= spitz_fixup,
 	.map_io		= pxa27x_map_io,
 	.nr_irqs	= PXA_NR_IRQS,
@@ -993,7 +1119,10 @@ MACHINE_END
 
 #ifdef CONFIG_MACH_BORZOI
 MACHINE_START(BORZOI, "SHARP Borzoi")
+<<<<<<< HEAD
 	.restart_mode	= 'g',
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fixup		= spitz_fixup,
 	.map_io		= pxa27x_map_io,
 	.nr_irqs	= PXA_NR_IRQS,
@@ -1007,7 +1136,10 @@ MACHINE_END
 
 #ifdef CONFIG_MACH_AKITA
 MACHINE_START(AKITA, "SHARP Akita")
+<<<<<<< HEAD
 	.restart_mode	= 'g',
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fixup		= spitz_fixup,
 	.map_io		= pxa27x_map_io,
 	.nr_irqs	= PXA_NR_IRQS,

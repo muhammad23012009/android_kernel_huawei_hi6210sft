@@ -600,7 +600,11 @@ static int hvcs_io(struct hvcs_struct *hvcsd)
 
 	hvcs_try_write(hvcsd);
 
+<<<<<<< HEAD
 	if (!tty || test_bit(TTY_THROTTLED, &tty->flags)) {
+=======
+	if (!tty || tty_throttled(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hvcsd->todo_mask &= ~(HVCS_READ_MASK);
 		goto bail;
 	} else if (!(hvcsd->todo_mask & (HVCS_READ_MASK)))
@@ -1044,8 +1048,13 @@ static int hvcs_enable_device(struct hvcs_struct *hvcsd, uint32_t unit_address,
 	 * It is possible that the vty-server was removed between the time that
 	 * the conn was registered and now.
 	 */
+<<<<<<< HEAD
 	if (!(rc = request_irq(irq, &hvcs_handle_interrupt,
 				0, "ibmhvcs", hvcsd))) {
+=======
+	rc = request_irq(irq, &hvcs_handle_interrupt, 0, "ibmhvcs", hvcsd);
+	if (!rc) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * It is possible the vty-server was removed after the irq was
 		 * requested but before we have time to enable interrupts.
@@ -1230,6 +1239,7 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
 		irq = hvcsd->vdev->irq;
 		spin_unlock_irqrestore(&hvcsd->lock, flags);
 
+<<<<<<< HEAD
 		tty_wait_until_sent_from_close(tty, HVCS_CLOSE_WAIT);
 
 		/*
@@ -1238,6 +1248,9 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
 		 * called.
 		 */
 		tty->driver_data = NULL;
+=======
+		tty_wait_until_sent(tty, HVCS_CLOSE_WAIT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		free_irq(irq, hvcsd);
 		return;
@@ -1254,6 +1267,16 @@ static void hvcs_cleanup(struct tty_struct * tty)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * This line is important because it tells hvcs_open that this
+	 * device needs to be re-configured the next time hvcs_open is
+	 * called.
+	 */
+	tty->driver_data = NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tty_port_put(&hvcsd->port);
 }
 
@@ -1575,7 +1598,11 @@ static int __init hvcs_module_init(void)
 	 */
 	rc = driver_create_file(&(hvcs_vio_driver.driver), &driver_attr_rescan);
 	if (rc)
+<<<<<<< HEAD
 		pr_warning(KERN_ERR "HVCS: Failed to create rescan file (err %d)\n", rc);
+=======
+		pr_warning("HVCS: Failed to create rescan file (err %d)\n", rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

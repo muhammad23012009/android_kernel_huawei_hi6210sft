@@ -12,11 +12,15 @@
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<<<<<<< HEAD
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.		     */
+=======
+    GNU General Public License for more details.			     */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ------------------------------------------------------------------------- */
 
 /* With some changes from Kyösti Mälkki <kmalkki@cc.hut.fi> and even
@@ -323,6 +327,7 @@ static struct isa_driver i2c_elektor_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static int __init i2c_pcfisa_init(void)
 {
 	return isa_register_driver(&i2c_elektor_driver, 1);
@@ -333,6 +338,8 @@ static void __exit i2c_pcfisa_exit(void)
 	isa_unregister_driver(&i2c_elektor_driver);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Hans Berglund <hb@spacetec.no>");
 MODULE_DESCRIPTION("I2C-Bus adapter routines for PCF8584 ISA bus adapter");
 MODULE_LICENSE("GPL");
@@ -342,6 +349,10 @@ module_param(irq, int, 0);
 module_param(clock, int, 0);
 module_param(own, int, 0);
 module_param(mmapped, int, 0);
+<<<<<<< HEAD
 
 module_init(i2c_pcfisa_init);
 module_exit(i2c_pcfisa_exit);
+=======
+module_isa_driver(i2c_elektor_driver, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

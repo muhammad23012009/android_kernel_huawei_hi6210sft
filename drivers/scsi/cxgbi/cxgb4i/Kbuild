@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 EXTRA_CFLAGS += -I$(srctree)/drivers/net/ethernet/chelsio/cxgb4
+=======
+ccflags-y += -I$(srctree)/drivers/net/ethernet/chelsio/cxgb4
+ccflags-y += -I$(srctree)/drivers/net/ethernet/chelsio/libcxgb
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_SCSI_CXGB4_ISCSI) += cxgb4i.o

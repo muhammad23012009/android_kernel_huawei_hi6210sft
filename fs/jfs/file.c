@@ -19,6 +19,10 @@
 
 #include <linux/mm.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/posix_acl.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/quotaops.h>
 #include "jfs_incore.h"
 #include "jfs_inode.h"
@@ -37,17 +41,30 @@ int jfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	if (!(inode->i_state & I_DIRTY) ||
 	    (datasync && !(inode->i_state & I_DIRTY_DATASYNC))) {
 		/* Make sure committed changes hit the disk */
 		jfs_flush_journal(JFS_SBI(inode->i_sb)->log, 1);
 		mutex_unlock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+	if (!(inode->i_state & I_DIRTY_ALL) ||
+	    (datasync && !(inode->i_state & I_DIRTY_DATASYNC))) {
+		/* Make sure committed changes hit the disk */
+		jfs_flush_journal(JFS_SBI(inode->i_sb)->log, 1);
+		inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return rc;
 	}
 
 	rc |= jfs_commit_inode(inode, 1);
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc ? -EIO : 0;
 }
@@ -75,7 +92,11 @@ static int jfs_open(struct inode *inode, struct file *file)
 		if (ji->active_ag == -1) {
 			struct jfs_sb_info *jfs_sb = JFS_SBI(inode->i_sb);
 			ji->active_ag = BLKTOAG(addressPXD(&ji->ixpxd), jfs_sb);
+<<<<<<< HEAD
 			atomic_inc( &jfs_sb->bmap->db_active[ji->active_ag]);
+=======
+			atomic_inc(&jfs_sb->bmap->db_active[ji->active_ag]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		spin_unlock_irq(&ji->ag_lock);
 	}
@@ -99,6 +120,7 @@ static int jfs_release(struct inode *inode, struct file *file)
 
 int jfs_setattr(struct dentry *dentry, struct iattr *iattr)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	int rc;
 
@@ -108,6 +130,20 @@ int jfs_setattr(struct dentry *dentry, struct iattr *iattr)
 
 	if (is_quota_modification(inode, iattr))
 		dquot_initialize(inode);
+=======
+	struct inode *inode = d_inode(dentry);
+	int rc;
+
+	rc = setattr_prepare(dentry, iattr);
+	if (rc)
+		return rc;
+
+	if (is_quota_modification(inode, iattr)) {
+		rc = dquot_initialize(inode);
+		if (rc)
+			return rc;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((iattr->ia_valid & ATTR_UID && !uid_eq(iattr->ia_uid, inode->i_uid)) ||
 	    (iattr->ia_valid & ATTR_GID && !gid_eq(iattr->ia_gid, inode->i_gid))) {
 		rc = dquot_transfer(inode, iattr);
@@ -131,11 +167,16 @@ int jfs_setattr(struct dentry *dentry, struct iattr *iattr)
 	mark_inode_dirty(inode);
 
 	if (iattr->ia_valid & ATTR_MODE)
+<<<<<<< HEAD
 		rc = jfs_acl_chmod(inode);
+=======
+		rc = posix_acl_chmod(inode, inode->i_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
 const struct inode_operations jfs_file_inode_operations = {
+<<<<<<< HEAD
 	.setxattr	= jfs_setxattr,
 	.getxattr	= jfs_getxattr,
 	.listxattr	= jfs_listxattr,
@@ -143,12 +184,20 @@ const struct inode_operations jfs_file_inode_operations = {
 	.setattr	= jfs_setattr,
 #ifdef CONFIG_JFS_POSIX_ACL
 	.get_acl	= jfs_get_acl,
+=======
+	.listxattr	= jfs_listxattr,
+	.setattr	= jfs_setattr,
+#ifdef CONFIG_JFS_POSIX_ACL
+	.get_acl	= jfs_get_acl,
+	.set_acl	= jfs_set_acl,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 };
 
 const struct file_operations jfs_file_operations = {
 	.open		= jfs_open,
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.write		= do_sync_write,
 	.read		= do_sync_read,
 	.aio_read	= generic_file_aio_read,
@@ -156,6 +205,13 @@ const struct file_operations jfs_file_operations = {
 	.mmap		= generic_file_mmap,
 	.splice_read	= generic_file_splice_read,
 	.splice_write	= generic_file_splice_write,
+=======
+	.read_iter	= generic_file_read_iter,
+	.write_iter	= generic_file_write_iter,
+	.mmap		= generic_file_mmap,
+	.splice_read	= generic_file_splice_read,
+	.splice_write	= iter_file_splice_write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fsync		= jfs_fsync,
 	.release	= jfs_release,
 	.unlocked_ioctl = jfs_ioctl,

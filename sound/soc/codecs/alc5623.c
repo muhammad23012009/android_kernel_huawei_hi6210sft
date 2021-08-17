@@ -21,7 +21,13 @@
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
+=======
+#include <linux/regmap.h>
+#include <linux/slab.h>
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -38,14 +44,21 @@ MODULE_PARM_DESC(caps_charge, "ALC5623 cap charge time (msecs)");
 
 /* codec private data */
 struct alc5623_priv {
+<<<<<<< HEAD
 	enum snd_soc_control_type control_type;
 	u8 id;
 	unsigned int sysclk;
 	u16 reg_cache[ALC5623_VENDOR_ID2+2];
+=======
+	struct regmap *regmap;
+	u8 id;
+	unsigned int sysclk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int add_ctrl;
 	unsigned int jack_det_ctrl;
 };
 
+<<<<<<< HEAD
 static void alc5623_fill_cache(struct snd_soc_codec *codec)
 {
 	int i, step = codec->driver->reg_cache_step;
@@ -58,6 +71,8 @@ static void alc5623_fill_cache(struct snd_soc_codec *codec)
 	codec->cache_bypass = 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int alc5623_reset(struct snd_soc_codec *codec)
 {
 	return snd_soc_write(codec, ALC5623_RESET, 0);
@@ -66,10 +81,16 @@ static inline int alc5623_reset(struct snd_soc_codec *codec)
 static int amp_mixer_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
+=======
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* to power-on/off class-d amp generators/speaker */
 	/* need to write to 'index-46h' register :        */
 	/* so write index num (here 0x46) to reg 0x6a     */
 	/* and then 0xffff/0 to reg 0x6c                  */
+<<<<<<< HEAD
 	snd_soc_write(w->codec, ALC5623_HID_CTRL_INDEX, 0x46);
 
 	switch (event) {
@@ -78,6 +99,16 @@ static int amp_mixer_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		snd_soc_write(w->codec, ALC5623_HID_CTRL_DATA, 0);
+=======
+	snd_soc_write(codec, ALC5623_HID_CTRL_INDEX, 0x46);
+
+	switch (event) {
+	case SND_SOC_DAPM_PRE_PMU:
+		snd_soc_write(codec, ALC5623_HID_CTRL_DATA, 0xFFFF);
+		break;
+	case SND_SOC_DAPM_POST_PMD:
+		snd_soc_write(codec, ALC5623_HID_CTRL_DATA, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -91,12 +122,20 @@ static int amp_mixer_event(struct snd_soc_dapm_widget *w,
 static const DECLARE_TLV_DB_SCALE(vol_tlv, -3450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(hp_tlv, -4650, 150, 0);
 static const DECLARE_TLV_DB_SCALE(adc_rec_tlv, -1650, 150, 0);
+<<<<<<< HEAD
 static const unsigned int boost_tlv[] = {
 	TLV_DB_RANGE_HEAD(3),
 	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
 	2, 2, TLV_DB_SCALE_ITEM(3000, 0, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(boost_tlv,
+	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
+	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
+	2, 2, TLV_DB_SCALE_ITEM(3000, 0, 0)
+);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const DECLARE_TLV_DB_SCALE(dig_tlv, 0, 600, 0);
 
 static const struct snd_kcontrol_new alc5621_vol_snd_controls[] = {
@@ -228,32 +267,62 @@ static const char *alc5623_aux_out_input_sel[] = {
 		"Vmid", "HPOut Mix", "Speaker Mix", "Mono Mix"};
 
 /* auxout output mux */
+<<<<<<< HEAD
 static const struct soc_enum alc5623_aux_out_input_enum =
 SOC_ENUM_SINGLE(ALC5623_OUTPUT_MIXER_CTRL, 6, 4, alc5623_aux_out_input_sel);
+=======
+static SOC_ENUM_SINGLE_DECL(alc5623_aux_out_input_enum,
+			    ALC5623_OUTPUT_MIXER_CTRL, 6,
+			    alc5623_aux_out_input_sel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_kcontrol_new alc5623_auxout_mux_controls =
 SOC_DAPM_ENUM("Route", alc5623_aux_out_input_enum);
 
 /* speaker output mux */
+<<<<<<< HEAD
 static const struct soc_enum alc5623_spkout_input_enum =
 SOC_ENUM_SINGLE(ALC5623_OUTPUT_MIXER_CTRL, 10, 4, alc5623_spkout_input_sel);
+=======
+static SOC_ENUM_SINGLE_DECL(alc5623_spkout_input_enum,
+			    ALC5623_OUTPUT_MIXER_CTRL, 10,
+			    alc5623_spkout_input_sel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_kcontrol_new alc5623_spkout_mux_controls =
 SOC_DAPM_ENUM("Route", alc5623_spkout_input_enum);
 
 /* headphone left output mux */
+<<<<<<< HEAD
 static const struct soc_enum alc5623_hpl_out_input_enum =
 SOC_ENUM_SINGLE(ALC5623_OUTPUT_MIXER_CTRL, 9, 2, alc5623_hpl_out_input_sel);
+=======
+static SOC_ENUM_SINGLE_DECL(alc5623_hpl_out_input_enum,
+			    ALC5623_OUTPUT_MIXER_CTRL, 9,
+			    alc5623_hpl_out_input_sel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_kcontrol_new alc5623_hpl_out_mux_controls =
 SOC_DAPM_ENUM("Route", alc5623_hpl_out_input_enum);
 
 /* headphone right output mux */
+<<<<<<< HEAD
 static const struct soc_enum alc5623_hpr_out_input_enum =
 SOC_ENUM_SINGLE(ALC5623_OUTPUT_MIXER_CTRL, 8, 2, alc5623_hpr_out_input_sel);
+=======
+static SOC_ENUM_SINGLE_DECL(alc5623_hpr_out_input_enum,
+			    ALC5623_OUTPUT_MIXER_CTRL, 8,
+			    alc5623_hpr_out_input_sel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_kcontrol_new alc5623_hpr_out_mux_controls =
 SOC_DAPM_ENUM("Route", alc5623_hpr_out_input_enum);
 
 /* speaker output N select */
+<<<<<<< HEAD
 static const struct soc_enum alc5623_spk_n_sour_enum =
 SOC_ENUM_SINGLE(ALC5623_OUTPUT_MIXER_CTRL, 14, 4, alc5623_spk_n_sour_sel);
+=======
+static SOC_ENUM_SINGLE_DECL(alc5623_spk_n_sour_enum,
+			    ALC5623_OUTPUT_MIXER_CTRL, 14,
+			    alc5623_spk_n_sour_sel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_kcontrol_new alc5623_spkoutn_mux_controls =
 SOC_DAPM_ENUM("Route", alc5623_spk_n_sour_enum);
 
@@ -338,8 +407,14 @@ SND_SOC_DAPM_VMID("Vmid"),
 };
 
 static const char *alc5623_amp_names[] = {"AB Amp", "D Amp"};
+<<<<<<< HEAD
 static const struct soc_enum alc5623_amp_enum =
 	SOC_ENUM_SINGLE(ALC5623_OUTPUT_MIXER_CTRL, 13, 2, alc5623_amp_names);
+=======
+static SOC_ENUM_SINGLE_DECL(alc5623_amp_enum,
+			    ALC5623_OUTPUT_MIXER_CTRL, 13,
+			    alc5623_amp_names);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_kcontrol_new alc5623_amp_mux_controls =
 	SOC_DAPM_ENUM("Route", alc5623_amp_enum);
 
@@ -714,6 +789,7 @@ static int alc5623_pcm_hw_params(struct snd_pcm_substream *substream,
 	iface &= ~ALC5623_DAI_I2S_DL_MASK;
 
 	/* bit size */
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		iface |= ALC5623_DAI_I2S_DL_16;
@@ -725,6 +801,19 @@ static int alc5623_pcm_hw_params(struct snd_pcm_substream *substream,
 		iface |= ALC5623_DAI_I2S_DL_24;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		iface |= ALC5623_DAI_I2S_DL_16;
+		break;
+	case 20:
+		iface |= ALC5623_DAI_I2S_DL_20;
+		break;
+	case 24:
+		iface |= ALC5623_DAI_I2S_DL_24;
+		break;
+	case 32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iface |= ALC5623_DAI_I2S_DL_32;
 		break;
 	default:
@@ -829,7 +918,10 @@ static int alc5623_set_bias_level(struct snd_soc_codec *codec,
 		snd_soc_write(codec, ALC5623_PWR_MANAG_ADD1, 0);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -869,12 +961,20 @@ static struct snd_soc_dai_driver alc5623_dai = {
 
 static int alc5623_suspend(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	alc5623_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+	struct alc5623_priv *alc5623 = snd_soc_codec_get_drvdata(codec);
+
+	regcache_cache_only(alc5623->regmap, true);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int alc5623_resume(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	int i, step = codec->driver->reg_cache_step;
 	u16 *cache = codec->reg_cache;
 
@@ -889,6 +989,19 @@ static int alc5623_resume(struct snd_soc_codec *codec)
 		alc5623_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 		codec->dapm.bias_level = SND_SOC_BIAS_ON;
 		alc5623_set_bias_level(codec, codec->dapm.bias_level);
+=======
+	struct alc5623_priv *alc5623 = snd_soc_codec_get_drvdata(codec);
+	int ret;
+
+	/* Sync reg_cache with the hardware */
+	regcache_cache_only(alc5623->regmap, false);
+	ret = regcache_sync(alc5623->regmap);
+	if (ret != 0) {
+		dev_err(codec->dev, "Failed to sync register cache: %d\n",
+			ret);
+		regcache_cache_only(alc5623->regmap, true);
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -897,6 +1010,7 @@ static int alc5623_resume(struct snd_soc_codec *codec)
 static int alc5623_probe(struct snd_soc_codec *codec)
 {
 	struct alc5623_priv *alc5623 = snd_soc_codec_get_drvdata(codec);
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 	int ret;
 
@@ -911,6 +1025,11 @@ static int alc5623_probe(struct snd_soc_codec *codec)
 
 	/* power on device */
 	alc5623_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+
+	alc5623_reset(codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (alc5623->add_ctrl) {
 		snd_soc_write(codec, ALC5623_ADD_CTRL_REG,
@@ -964,6 +1083,7 @@ static int alc5623_probe(struct snd_soc_codec *codec)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	return ret;
 }
 
@@ -971,11 +1091,14 @@ static int alc5623_probe(struct snd_soc_codec *codec)
 static int alc5623_remove(struct snd_soc_codec *codec)
 {
 	alc5623_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct snd_soc_codec_driver soc_codec_device_alc5623 = {
 	.probe = alc5623_probe,
+<<<<<<< HEAD
 	.remove = alc5623_remove,
 	.suspend = alc5623_suspend,
 	.resume = alc5623_resume,
@@ -983,6 +1106,21 @@ static struct snd_soc_codec_driver soc_codec_device_alc5623 = {
 	.reg_cache_size = ALC5623_VENDOR_ID2+2,
 	.reg_word_size = sizeof(u16),
 	.reg_cache_step = 2,
+=======
+	.suspend = alc5623_suspend,
+	.resume = alc5623_resume,
+	.set_bias_level = alc5623_set_bias_level,
+	.suspend_bias_off = true,
+};
+
+static const struct regmap_config alc5623_regmap = {
+	.reg_bits = 8,
+	.val_bits = 16,
+	.reg_stride = 2,
+
+	.max_register = ALC5623_VENDOR_ID2,
+	.cache_type = REGCACHE_RBTREE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -996,6 +1134,7 @@ static int alc5623_i2c_probe(struct i2c_client *client,
 {
 	struct alc5623_platform_data *pdata;
 	struct alc5623_priv *alc5623;
+<<<<<<< HEAD
 	int ret, vid1, vid2;
 
 	vid1 = i2c_smbus_read_word_data(client, ALC5623_VENDOR_ID1);
@@ -1011,6 +1150,38 @@ static int alc5623_i2c_probe(struct i2c_client *client,
 		return -EIO;
 	}
 
+=======
+	struct device_node *np;
+	unsigned int vid1, vid2;
+	int ret;
+	u32 val32;
+
+	alc5623 = devm_kzalloc(&client->dev, sizeof(struct alc5623_priv),
+			       GFP_KERNEL);
+	if (alc5623 == NULL)
+		return -ENOMEM;
+
+	alc5623->regmap = devm_regmap_init_i2c(client, &alc5623_regmap);
+	if (IS_ERR(alc5623->regmap)) {
+		ret = PTR_ERR(alc5623->regmap);
+		dev_err(&client->dev, "Failed to initialise I/O: %d\n", ret);
+		return ret;
+	}
+
+	ret = regmap_read(alc5623->regmap, ALC5623_VENDOR_ID1, &vid1);
+	if (ret < 0) {
+		dev_err(&client->dev, "failed to read vendor ID1: %d\n", ret);
+		return ret;
+	}
+
+	ret = regmap_read(alc5623->regmap, ALC5623_VENDOR_ID2, &vid2);
+	if (ret < 0) {
+		dev_err(&client->dev, "failed to read vendor ID2: %d\n", ret);
+		return ret;
+	}
+	vid2 >>= 8;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((vid1 != 0x10ec) || (vid2 != id->driver_data)) {
 		dev_err(&client->dev, "unknown or wrong codec\n");
 		dev_err(&client->dev, "Expected %x:%lx, got %x:%x\n",
@@ -1021,15 +1192,31 @@ static int alc5623_i2c_probe(struct i2c_client *client,
 
 	dev_dbg(&client->dev, "Found codec id : alc56%02x\n", vid2);
 
+<<<<<<< HEAD
 	alc5623 = devm_kzalloc(&client->dev, sizeof(struct alc5623_priv),
 			       GFP_KERNEL);
 	if (alc5623 == NULL)
 		return -ENOMEM;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pdata = client->dev.platform_data;
 	if (pdata) {
 		alc5623->add_ctrl = pdata->add_ctrl;
 		alc5623->jack_det_ctrl = pdata->jack_det_ctrl;
+<<<<<<< HEAD
+=======
+	} else {
+		if (client->dev.of_node) {
+			np = client->dev.of_node;
+			ret = of_property_read_u32(np, "add-ctrl", &val32);
+			if (!ret)
+				alc5623->add_ctrl = val32;
+			ret = of_property_read_u32(np, "jack-det-ctrl", &val32);
+			if (!ret)
+				alc5623->jack_det_ctrl = val32;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	alc5623->id = vid2;
@@ -1048,7 +1235,10 @@ static int alc5623_i2c_probe(struct i2c_client *client,
 	}
 
 	i2c_set_clientdata(client, alc5623);
+<<<<<<< HEAD
 	alc5623->control_type = SND_SOC_I2C;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret =  snd_soc_register_codec(&client->dev,
 		&soc_codec_device_alc5623, &alc5623_dai, 1);
@@ -1072,11 +1262,24 @@ static const struct i2c_device_id alc5623_i2c_table[] = {
 };
 MODULE_DEVICE_TABLE(i2c, alc5623_i2c_table);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id alc5623_of_match[] = {
+	{ .compatible = "realtek,alc5623", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, alc5623_of_match);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*  i2c codec control layer */
 static struct i2c_driver alc5623_i2c_driver = {
 	.driver = {
 		.name = "alc562x-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table = of_match_ptr(alc5623_of_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = alc5623_i2c_probe,
 	.remove =  alc5623_i2c_remove,

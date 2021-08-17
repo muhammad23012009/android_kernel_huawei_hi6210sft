@@ -137,6 +137,10 @@ EXPORT_SYMBOL(mcp_reg_read);
 void mcp_enable(struct mcp *mcp)
 {
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&mcp->lock, flags);
 	if (mcp->use_count++ == 0)
 		mcp->ops->enable(mcp);

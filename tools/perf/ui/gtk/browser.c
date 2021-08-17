@@ -43,7 +43,11 @@ const char *perf_gtk__get_percent_color(double percent)
 	return NULL;
 }
 
+<<<<<<< HEAD
 #ifdef HAVE_GTK_INFO_BAR
+=======
+#ifdef HAVE_GTK_INFO_BAR_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 GtkWidget *perf_gtk__setup_info_bar(void)
 {
 	GtkWidget *info_bar;

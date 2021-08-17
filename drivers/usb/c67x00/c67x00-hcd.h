@@ -45,7 +45,11 @@
 /*
  * The current implementation switches between _STD (default) and _ISO (when
  * isochronous transfers are scheduled), in order to optimize the throughput
+<<<<<<< HEAD
  * in normal cicrumstances, but also provide good isochronous behaviour.
+=======
+ * in normal circumstances, but also provide good isochronous behaviour.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Bandwidth is described in bit time so with a 12MHz USB clock and 1ms
  * frames; there are 12000 bit times per frame.

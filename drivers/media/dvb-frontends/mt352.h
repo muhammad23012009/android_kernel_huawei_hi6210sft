@@ -51,7 +51,11 @@ struct mt352_config
 	int (*demod_init)(struct dvb_frontend* fe);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_MT352)
+=======
+#if IS_REACHABLE(CONFIG_DVB_MT352)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* mt352_attach(const struct mt352_config* config,
 					 struct i2c_adapter* i2c);
 #else

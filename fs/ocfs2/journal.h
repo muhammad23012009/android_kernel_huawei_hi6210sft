@@ -200,7 +200,10 @@ void ocfs2_complete_quota_recovery(struct ocfs2_super *osb);
 
 static inline void ocfs2_start_checkpoint(struct ocfs2_super *osb)
 {
+<<<<<<< HEAD
 	atomic_set(&osb->needs_checkpoint, 1);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wake_up(&osb->checkpoint_event);
 }
 
@@ -259,6 +262,20 @@ handle_t		    *ocfs2_start_trans(struct ocfs2_super *osb,
 int			     ocfs2_commit_trans(struct ocfs2_super *osb,
 						handle_t *handle);
 int			     ocfs2_extend_trans(handle_t *handle, int nblocks);
+<<<<<<< HEAD
+=======
+int			     ocfs2_allocate_extend_trans(handle_t *handle,
+						int thresh);
+
+/*
+ * Define an arbitrary limit for the amount of data we will anticipate
+ * writing to any given transaction.  For unbounded transactions such as
+ * fallocate(2) we can write more than this, but we always
+ * start off at the maximum transaction size and grow the transaction
+ * optimistically as we go.
+ */
+#define OCFS2_MAX_TRANS_DATA	64U
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Create access is for when we get a newly created buffer and we're
@@ -462,6 +479,14 @@ static inline int ocfs2_unlink_credits(struct super_block *sb)
  * orphan dir index leaf */
 #define OCFS2_DELETE_INODE_CREDITS (3 * OCFS2_INODE_UPDATE_CREDITS + 4)
 
+<<<<<<< HEAD
+=======
+/* dinode + orphan dir dinode + extent tree leaf block + orphan dir entry +
+ * orphan dir index root + orphan dir index leaf */
+#define OCFS2_INODE_ADD_TO_ORPHAN_CREDITS  (2 * OCFS2_INODE_UPDATE_CREDITS + 4)
+#define OCFS2_INODE_DEL_FROM_ORPHAN_CREDITS  OCFS2_INODE_ADD_TO_ORPHAN_CREDITS
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* dinode update, old dir dinode update, new dir dinode update, old
  * dir dir entry, new dir dir entry, dir entry update for renaming
  * directory + target unlink + 3 x dir index leaves */
@@ -514,8 +539,12 @@ static inline int ocfs2_calc_dxi_expand_credits(struct super_block *sb)
  * the result may be wrong.
  */
 static inline int ocfs2_calc_extend_credits(struct super_block *sb,
+<<<<<<< HEAD
 					    struct ocfs2_extent_list *root_el,
 					    u32 bits_wanted)
+=======
+					    struct ocfs2_extent_list *root_el)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int bitmap_blocks, sysfile_bitmap_blocks, extent_blocks;
 
@@ -605,7 +634,11 @@ static inline int ocfs2_calc_tree_trunc_credits(struct super_block *sb,
 
 static inline int ocfs2_jbd2_file_inode(handle_t *handle, struct inode *inode)
 {
+<<<<<<< HEAD
 	return jbd2_journal_file_inode(handle, &OCFS2_I(inode)->ip_jinode);
+=======
+	return jbd2_journal_inode_add_write(handle, &OCFS2_I(inode)->ip_jinode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int ocfs2_begin_ordered_truncate(struct inode *inode,
@@ -617,4 +650,20 @@ static inline int ocfs2_begin_ordered_truncate(struct inode *inode,
 				new_size);
 }
 
+<<<<<<< HEAD
+=======
+static inline void ocfs2_update_inode_fsync_trans(handle_t *handle,
+						  struct inode *inode,
+						  int datasync)
+{
+	struct ocfs2_inode_info *oi = OCFS2_I(inode);
+
+	if (!is_handle_aborted(handle)) {
+		oi->i_sync_tid = handle->h_transaction->t_tid;
+		if (datasync)
+			oi->i_datasync_tid = handle->h_transaction->t_tid;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* OCFS2_JOURNAL_H */

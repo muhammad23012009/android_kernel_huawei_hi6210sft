@@ -20,6 +20,11 @@
 #include <linux/workqueue.h>
 #include <linux/bitops.h>
 #include <linux/time.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+#include <xen/platform_pci.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/xen/swiotlb-xen.h>
 #define INVALID_GRANT_REF (0)
@@ -116,7 +121,10 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 	evtchn_port_t port = pdev->evtchn;
 	unsigned irq = pdev->irq;
 	s64 ns, ns_timeout;
+<<<<<<< HEAD
 	struct timeval tv;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&pdev->sh_info_lock, irq_flags);
 
@@ -133,8 +141,12 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 	 * (in the latter case we end up continually re-executing poll() with a
 	 * timeout in the past). 1s difference gives plenty of slack for error.
 	 */
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 	ns_timeout = timeval_to_ns(&tv) + 2 * (s64)NSEC_PER_SEC;
+=======
+	ns_timeout = ktime_get_ns() + 2 * (s64)NSEC_PER_SEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	xen_clear_irq_pending(irq);
 
@@ -142,8 +154,12 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 			(unsigned long *)&pdev->sh_info->flags)) {
 		xen_poll_irq_timeout(irq, jiffies + 3*HZ);
 		xen_clear_irq_pending(irq);
+<<<<<<< HEAD
 		do_gettimeofday(&tv);
 		ns = timeval_to_ns(&tv);
+=======
+		ns = ktime_get_ns();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ns > ns_timeout) {
 			dev_err(&pdev->xdev->dev,
 				"pciback not responding!!!\n");
@@ -268,7 +284,11 @@ static int pci_frontend_enable_msix(struct pci_dev *dev,
 	}
 
 	i = 0;
+<<<<<<< HEAD
 	list_for_each_entry(entry, &dev->msi_list, list) {
+=======
+	for_each_pci_msi_entry(entry, dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		op.msix_entries[i].entry = entry->msi_attrib.entry_nr;
 		/* Vector is useless at this point. */
 		op.msix_entries[i].vector = -1;
@@ -447,9 +467,21 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
 				 unsigned int domain, unsigned int bus)
 {
 	struct pci_bus *b;
+<<<<<<< HEAD
 	struct pcifront_sd *sd = NULL;
 	struct pci_bus_entry *bus_entry = NULL;
 	int err = 0;
+=======
+	LIST_HEAD(resources);
+	struct pcifront_sd *sd = NULL;
+	struct pci_bus_entry *bus_entry = NULL;
+	int err = 0;
+	static struct resource busn_res = {
+		.start = 0,
+		.end = 255,
+		.flags = IORESOURCE_BUS,
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef CONFIG_PCI_DOMAINS
 	if (domain != 0) {
@@ -471,14 +503,31 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
 		err = -ENOMEM;
 		goto err_out;
 	}
+<<<<<<< HEAD
 	pcifront_init_sd(sd, domain, bus, pdev);
 
 	b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
 				  &pcifront_bus_ops, sd);
+=======
+	pci_add_resource(&resources, &ioport_resource);
+	pci_add_resource(&resources, &iomem_resource);
+	pci_add_resource(&resources, &busn_res);
+	pcifront_init_sd(sd, domain, bus, pdev);
+
+	pci_lock_rescan_remove();
+
+	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
+				  &pcifront_bus_ops, sd, &resources);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!b) {
 		dev_err(&pdev->xdev->dev,
 			"Error creating PCI Frontend Bus!\n");
 		err = -ENOMEM;
+<<<<<<< HEAD
+=======
+		pci_unlock_rescan_remove();
+		pci_free_resource_list(&resources);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out;
 	}
 
@@ -486,7 +535,11 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
 
 	list_add(&bus_entry->list, &pdev->root_buses);
 
+<<<<<<< HEAD
 	/* pci_scan_bus_parented skips devices which do not have a have
+=======
+	/* pci_scan_root_bus skips devices which do not have a
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
 	err = pcifront_scan_bus(pdev, domain, bus, b);
 
@@ -496,6 +549,10 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
 	/* Create SysFS and notify udev of the devices. Aka: "going live" */
 	pci_bus_add_devices(b);
 
+<<<<<<< HEAD
+=======
+	pci_unlock_rescan_remove();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 
 err_out:
@@ -558,6 +615,10 @@ static void pcifront_free_roots(struct pcifront_device *pdev)
 
 	dev_dbg(&pdev->xdev->dev, "cleaning up root buses\n");
 
+<<<<<<< HEAD
+=======
+	pci_lock_rescan_remove();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_for_each_entry_safe(bus_entry, t, &pdev->root_buses, list) {
 		list_del(&bus_entry->list);
 
@@ -570,6 +631,10 @@ static void pcifront_free_roots(struct pcifront_device *pdev)
 
 		kfree(bus_entry);
 	}
+<<<<<<< HEAD
+=======
+	pci_unlock_rescan_remove();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static pci_ers_result_t pcifront_common_process(int cmd,
@@ -591,8 +656,12 @@ static pci_ers_result_t pcifront_common_process(int cmd,
 	pcidev = pci_get_bus_and_slot(bus, devfn);
 	if (!pcidev || !pcidev->driver) {
 		dev_err(&pdev->xdev->dev, "device or AER driver is NULL\n");
+<<<<<<< HEAD
 		if (pcidev)
 			pci_dev_put(pcidev);
+=======
+		pci_dev_put(pcidev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return result;
 	}
 	pdrv = pcidev->driver;
@@ -657,9 +726,15 @@ static void pcifront_do_aer(struct work_struct *data)
 	notify_remote_via_evtchn(pdev->evtchn);
 
 	/*in case of we lost an aer request in four lines time_window*/
+<<<<<<< HEAD
 	smp_mb__before_clear_bit();
 	clear_bit(_PDEVB_op_active, &pdev->flags);
 	smp_mb__after_clear_bit();
+=======
+	smp_mb__before_atomic();
+	clear_bit(_PDEVB_op_active, &pdev->flags);
+	smp_mb__after_atomic();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	schedule_pcifront_aer_op(pdev);
 
@@ -773,12 +848,22 @@ static int pcifront_publish_info(struct pcifront_device *pdev)
 {
 	int err = 0;
 	struct xenbus_transaction trans;
+<<<<<<< HEAD
 
 	err = xenbus_grant_ring(pdev->xdev, virt_to_mfn(pdev->sh_info));
 	if (err < 0)
 		goto out;
 
 	pdev->gnt_ref = err;
+=======
+	grant_ref_t gref;
+
+	err = xenbus_grant_ring(pdev->xdev, pdev->sh_info, 1, &gref);
+	if (err < 0)
+		goto out;
+
+	pdev->gnt_ref = gref;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = xenbus_alloc_evtchn(pdev->xdev, &pdev->evtchn);
 	if (err)
@@ -861,6 +946,14 @@ static int pcifront_try_connect(struct pcifront_device *pdev)
 		xenbus_dev_error(pdev->xdev, err,
 				 "No PCI Roots found, trying 0000:00");
 		err = pcifront_scan_root(pdev, 0, 0);
+<<<<<<< HEAD
+=======
+		if (err) {
+			xenbus_dev_fatal(pdev->xdev, err,
+					 "Error scanning PCI root 0000:00");
+			goto out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		num_roots = 0;
 	} else if (err != 1) {
 		if (err == 0)
@@ -942,6 +1035,14 @@ static int pcifront_attach_devices(struct pcifront_device *pdev)
 		xenbus_dev_error(pdev->xdev, err,
 				 "No PCI Roots found, trying 0000:00");
 		err = pcifront_rescan_root(pdev, 0, 0);
+<<<<<<< HEAD
+=======
+		if (err) {
+			xenbus_dev_fatal(pdev->xdev, err,
+					 "Error scanning PCI root 0000:00");
+			goto out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		num_roots = 0;
 	} else if (err != 1) {
 		if (err == 0)
@@ -1045,8 +1146,15 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 				domain, bus, slot, func);
 			continue;
 		}
+<<<<<<< HEAD
 		pci_stop_and_remove_bus_device(pci_dev);
 		pci_dev_put(pci_dev);
+=======
+		pci_lock_rescan_remove();
+		pci_stop_and_remove_bus_device(pci_dev);
+		pci_dev_put(pci_dev);
+		pci_unlock_rescan_remove();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		dev_dbg(&pdev->xdev->dev,
 			"PCI device %04x:%02x:%02x.%d removed.\n",
@@ -1059,7 +1167,11 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static void __init_refok pcifront_backend_changed(struct xenbus_device *xdev,
+=======
+static void __ref pcifront_backend_changed(struct xenbus_device *xdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						  enum xenbus_state be_state)
 {
 	struct pcifront_device *pdev = dev_get_drvdata(&xdev->dev);
@@ -1129,17 +1241,33 @@ static const struct xenbus_device_id xenpci_ids[] = {
 	{""},
 };
 
+<<<<<<< HEAD
 static DEFINE_XENBUS_DRIVER(xenpci, "pcifront",
 	.probe			= pcifront_xenbus_probe,
 	.remove			= pcifront_xenbus_remove,
 	.otherend_changed	= pcifront_backend_changed,
 );
+=======
+static struct xenbus_driver xenpci_driver = {
+	.name			= "pcifront",
+	.ids			= xenpci_ids,
+	.probe			= pcifront_xenbus_probe,
+	.remove			= pcifront_xenbus_remove,
+	.otherend_changed	= pcifront_backend_changed,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init pcifront_init(void)
 {
 	if (!xen_pv_domain() || xen_initial_domain())
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (!xen_has_pv_devices())
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_frontend_registrar(1 /* enable */);
 
 	return xenbus_register_frontend(&xenpci_driver);

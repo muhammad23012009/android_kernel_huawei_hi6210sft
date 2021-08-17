@@ -5,7 +5,10 @@
 #else
 #include <asm/processor_32.h>
 #endif
+<<<<<<< HEAD
 
 #define nop() 		__asm__ __volatile__ ("nop")
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -14,12 +14,22 @@
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/irqdomain.h>
+<<<<<<< HEAD
+=======
+
+struct gpio_desc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Orion-specific GPIO API extensions.
  */
 void orion_gpio_set_unused(unsigned pin);
 void orion_gpio_set_blink(unsigned pin, int blink);
+<<<<<<< HEAD
 int orion_gpio_led_blink_set(unsigned gpio, int state,
+=======
+int orion_gpio_led_blink_set(struct gpio_desc *desc, int state,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long *delay_on, unsigned long *delay_off);
 
 #define GPIO_INPUT_OK		(1 << 0)
@@ -33,5 +43,8 @@ void __init orion_gpio_init(struct device_node *np,
 			    int secondary_irq_base,
 			    int irq[4]);
 
+<<<<<<< HEAD
 void __init orion_gpio_of_init(int irq_gpio_base);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

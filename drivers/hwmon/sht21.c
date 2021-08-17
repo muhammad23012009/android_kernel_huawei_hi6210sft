@@ -45,7 +45,11 @@
  * @humidity: cached humidity measurement value
  */
 struct sht21 {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex lock;
 	char valid;
 	unsigned long last_update;
@@ -85,6 +89,7 @@ static inline int sht21_rh_ticks_to_per_cent_mille(int ticks)
 
 /**
  * sht21_update_measurements() - get updated measurements from device
+<<<<<<< HEAD
  * @client: I2C client device
  *
  * Returns 0 on success, else negative errno.
@@ -93,6 +98,17 @@ static int sht21_update_measurements(struct i2c_client *client)
 {
 	int ret = 0;
 	struct sht21 *sht21 = i2c_get_clientdata(client);
+=======
+ * @dev: device
+ *
+ * Returns 0 on success, else negative errno.
+ */
+static int sht21_update_measurements(struct device *dev)
+{
+	int ret = 0;
+	struct sht21 *sht21 = dev_get_drvdata(dev);
+	struct i2c_client *client = sht21->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&sht21->lock);
 	/*
@@ -133,9 +149,16 @@ static ssize_t sht21_show_temperature(struct device *dev,
 	struct device_attribute *attr,
 	char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct sht21 *sht21 = i2c_get_clientdata(client);
 	int ret = sht21_update_measurements(client);
+=======
+	struct sht21 *sht21 = dev_get_drvdata(dev);
+	int ret;
+
+	ret = sht21_update_measurements(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 	return sprintf(buf, "%d\n", sht21->temperature);
@@ -154,9 +177,16 @@ static ssize_t sht21_show_humidity(struct device *dev,
 	struct device_attribute *attr,
 	char *buf)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct sht21 *sht21 = i2c_get_clientdata(client);
 	int ret = sht21_update_measurements(client);
+=======
+	struct sht21 *sht21 = dev_get_drvdata(dev);
+	int ret;
+
+	ret = sht21_update_measurements(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 	return sprintf(buf, "%d\n", sht21->humidity);
@@ -168,12 +198,17 @@ static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, sht21_show_temperature,
 static SENSOR_DEVICE_ATTR(humidity1_input, S_IRUGO, sht21_show_humidity,
 	NULL, 0);
 
+<<<<<<< HEAD
 static struct attribute *sht21_attributes[] = {
+=======
+static struct attribute *sht21_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_humidity1_input.dev_attr.attr,
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group sht21_attr_group = {
 	.attrs = sht21_attributes,
 };
@@ -192,6 +227,16 @@ static int sht21_probe(struct i2c_client *client,
 {
 	struct sht21 *sht21;
 	int err;
+=======
+ATTRIBUTE_GROUPS(sht21);
+
+static int sht21_probe(struct i2c_client *client,
+	const struct i2c_device_id *id)
+{
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct sht21 *sht21;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_WORD_DATA)) {
@@ -200,6 +245,7 @@ static int sht21_probe(struct i2c_client *client,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	sht21 = devm_kzalloc(&client->dev, sizeof(*sht21), GFP_KERNEL);
 	if (!sht21)
 		return -ENOMEM;
@@ -241,6 +287,19 @@ static int sht21_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &sht21_attr_group);
 
 	return 0;
+=======
+	sht21 = devm_kzalloc(dev, sizeof(*sht21), GFP_KERNEL);
+	if (!sht21)
+		return -ENOMEM;
+
+	sht21->client = client;
+
+	mutex_init(&sht21->lock);
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   sht21, sht21_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Device ID table */
@@ -253,7 +312,10 @@ MODULE_DEVICE_TABLE(i2c, sht21_id);
 static struct i2c_driver sht21_driver = {
 	.driver.name = "sht21",
 	.probe       = sht21_probe,
+<<<<<<< HEAD
 	.remove      = sht21_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table    = sht21_id,
 };
 

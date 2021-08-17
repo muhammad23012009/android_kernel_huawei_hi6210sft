@@ -118,5 +118,8 @@ typedef struct sigaltstack {
 	size_t ss_size;
 } stack_t;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _UAPI__ASM_AVR32_SIGNAL_H */

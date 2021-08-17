@@ -57,7 +57,10 @@
 #include "hardware.h"
 
 static struct clock_event_device clockevent_epit;
+<<<<<<< HEAD
 static enum clock_event_mode clockevent_mode = CLOCK_EVT_MODE_UNUSED;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __iomem *timer_base;
 
@@ -65,23 +68,39 @@ static inline void epit_irq_disable(void)
 {
 	u32 val;
 
+<<<<<<< HEAD
 	val = __raw_readl(timer_base + EPITCR);
 	val &= ~EPITCR_OCIEN;
 	__raw_writel(val, timer_base + EPITCR);
+=======
+	val = imx_readl(timer_base + EPITCR);
+	val &= ~EPITCR_OCIEN;
+	imx_writel(val, timer_base + EPITCR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void epit_irq_enable(void)
 {
 	u32 val;
 
+<<<<<<< HEAD
 	val = __raw_readl(timer_base + EPITCR);
 	val |= EPITCR_OCIEN;
 	__raw_writel(val, timer_base + EPITCR);
+=======
+	val = imx_readl(timer_base + EPITCR);
+	val |= EPITCR_OCIEN;
+	imx_writel(val, timer_base + EPITCR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void epit_irq_acknowledge(void)
 {
+<<<<<<< HEAD
 	__raw_writel(EPITSR_OCIF, timer_base + EPITSR);
+=======
+	imx_writel(EPITSR_OCIF, timer_base + EPITSR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init epit_clocksource_init(struct clk *timer_clk)
@@ -99,15 +118,26 @@ static int epit_set_next_event(unsigned long evt,
 {
 	unsigned long tcmp;
 
+<<<<<<< HEAD
 	tcmp = __raw_readl(timer_base + EPITCNR);
 
 	__raw_writel(tcmp - evt, timer_base + EPITCMPR);
+=======
+	tcmp = imx_readl(timer_base + EPITCNR);
+
+	imx_writel(tcmp - evt, timer_base + EPITCMPR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void epit_set_mode(enum clock_event_mode mode,
 				struct clock_event_device *evt)
+=======
+/* Left event sources disabled, no more interrupts appear */
+static int epit_shutdown(struct clock_event_device *evt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 
@@ -120,6 +150,7 @@ static void epit_set_mode(enum clock_event_mode mode,
 	/* Disable interrupt in GPT module */
 	epit_irq_disable();
 
+<<<<<<< HEAD
 	if (mode != clockevent_mode) {
 		/* Set event time into far-far future */
 
@@ -137,12 +168,40 @@ static void epit_set_mode(enum clock_event_mode mode,
 				"supported for i.MX EPIT\n");
 		break;
 	case CLOCK_EVT_MODE_ONESHOT:
+=======
+	/* Clear pending interrupt */
+	epit_irq_acknowledge();
+
+	local_irq_restore(flags);
+
+	return 0;
+}
+
+static int epit_set_oneshot(struct clock_event_device *evt)
+{
+	unsigned long flags;
+
+	/*
+	 * The timer interrupt generation is disabled at least
+	 * for enough time to call epit_set_next_event()
+	 */
+	local_irq_save(flags);
+
+	/* Disable interrupt in GPT module */
+	epit_irq_disable();
+
+	/* Clear pending interrupt, only while switching mode */
+	if (!clockevent_state_oneshot(evt))
+		epit_irq_acknowledge();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Do not put overhead of interrupt enable/disable into
 	 * epit_set_next_event(), the core has about 4 minutes
 	 * to call epit_set_next_event() or shutdown clock after
 	 * mode switching
 	 */
+<<<<<<< HEAD
 		local_irq_save(flags);
 		epit_irq_enable();
 		local_irq_restore(flags);
@@ -153,6 +212,12 @@ static void epit_set_mode(enum clock_event_mode mode,
 		/* Left event sources disabled, no more interrupts appear */
 		break;
 	}
+=======
+	epit_irq_enable();
+	local_irq_restore(flags);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -171,16 +236,30 @@ static irqreturn_t epit_timer_interrupt(int irq, void *dev_id)
 
 static struct irqaction epit_timer_irq = {
 	.name		= "i.MX EPIT Timer Tick",
+<<<<<<< HEAD
 	.flags		= IRQF_DISABLED | IRQF_TIMER | IRQF_IRQPOLL,
+=======
+	.flags		= IRQF_TIMER | IRQF_IRQPOLL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.handler	= epit_timer_interrupt,
 };
 
 static struct clock_event_device clockevent_epit = {
+<<<<<<< HEAD
 	.name		= "epit",
 	.features	= CLOCK_EVT_FEAT_ONESHOT,
 	.set_mode	= epit_set_mode,
 	.set_next_event	= epit_set_next_event,
 	.rating		= 200,
+=======
+	.name			= "epit",
+	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.set_state_shutdown	= epit_shutdown,
+	.tick_resume		= epit_shutdown,
+	.set_state_oneshot	= epit_set_oneshot,
+	.set_next_event		= epit_set_next_event,
+	.rating			= 200,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init epit_clockevent_init(struct clk *timer_clk)
@@ -210,11 +289,19 @@ void __init epit_timer_init(void __iomem *base, int irq)
 	/*
 	 * Initialise to a known state (all timers off, and timing reset)
 	 */
+<<<<<<< HEAD
 	__raw_writel(0x0, timer_base + EPITCR);
 
 	__raw_writel(0xffffffff, timer_base + EPITLR);
 	__raw_writel(EPITCR_EN | EPITCR_CLKSRC_REF_HIGH | EPITCR_WAITEN,
 			timer_base + EPITCR);
+=======
+	imx_writel(0x0, timer_base + EPITCR);
+
+	imx_writel(0xffffffff, timer_base + EPITLR);
+	imx_writel(EPITCR_EN | EPITCR_CLKSRC_REF_HIGH | EPITCR_WAITEN,
+		   timer_base + EPITCR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* init and register the timer to the framework */
 	epit_clocksource_init(timer_clk);

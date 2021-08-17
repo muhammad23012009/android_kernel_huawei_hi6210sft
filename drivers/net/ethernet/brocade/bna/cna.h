@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Linux network driver for Brocade Converged Network Adapter.
+=======
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -11,9 +15,16 @@
  * General Public License for more details.
  */
 /*
+<<<<<<< HEAD
  * Copyright (c) 2006-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+ * Copyright (c) 2006-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __CNA_H__
@@ -37,6 +48,7 @@
 
 extern char bfa_version[];
 
+<<<<<<< HEAD
 #define CNA_FW_FILE_CT	"ctfw-3.1.0.0.bin"
 #define CNA_FW_FILE_CT2	"ct2fw-3.1.0.0.bin"
 #define FC_SYMNAME_MAX	256	/*!< max name server symbolic name size */
@@ -103,4 +115,10 @@ typedef struct mac { u8 mac[ETH_ALEN]; } mac_t;
 	bfa_q_next(_q) = (struct list_head *) (_qe);			\
 }
 
+=======
+#define CNA_FW_FILE_CT	"ctfw-3.2.5.1.bin"
+#define CNA_FW_FILE_CT2	"ct2fw-3.2.5.1.bin"
+#define FC_SYMNAME_MAX	256	/*!< max name server symbolic name size */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __CNA_H__ */

@@ -29,7 +29,11 @@
 
 static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long addr)
 {
+<<<<<<< HEAD
 	return (pmd_t *)get_zeroed_page(GFP_KERNEL | __GFP_REPEAT);
+=======
+	return (pmd_t *)get_zeroed_page(GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void pmd_free(struct mm_struct *mm, pmd_t *pmd)
@@ -57,7 +61,11 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
 extern pgd_t *pgd_alloc(struct mm_struct *mm);
 extern void pgd_free(struct mm_struct *mm, pgd_t *pgd);
 
+<<<<<<< HEAD
 #define PGALLOC_GFP	(GFP_KERNEL | __GFP_NOTRACK | __GFP_REPEAT | __GFP_ZERO)
+=======
+#define PGALLOC_GFP	(GFP_KERNEL | __GFP_NOTRACK | __GFP_ZERO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void clean_pte_table(pte_t *pte)
 {
@@ -102,12 +110,23 @@ pte_alloc_one(struct mm_struct *mm, unsigned long addr)
 #else
 	pte = alloc_pages(PGALLOC_GFP, 0);
 #endif
+<<<<<<< HEAD
 	if (pte) {
 		if (!PageHighMem(pte))
 			clean_pte_table(page_address(pte));
 		pgtable_page_ctor(pte);
 	}
 
+=======
+	if (!pte)
+		return NULL;
+	if (!PageHighMem(pte))
+		clean_pte_table(page_address(pte));
+	if (!pgtable_page_ctor(pte)) {
+		__free_page(pte);
+		return NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pte;
 }
 
@@ -155,7 +174,19 @@ pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmdp, pte_t *ptep)
 static inline void
 pmd_populate(struct mm_struct *mm, pmd_t *pmdp, pgtable_t ptep)
 {
+<<<<<<< HEAD
 	__pmd_populate(pmdp, page_to_phys(ptep), _PAGE_USER_TABLE);
+=======
+	extern pmdval_t user_pmd_table;
+	pmdval_t prot;
+
+	if (__LINUX_ARM_ARCH__ >= 6 && !IS_ENABLED(CONFIG_ARM_LPAE))
+		prot = user_pmd_table;
+	else
+		prot = _PAGE_USER_TABLE;
+
+	__pmd_populate(pmdp, page_to_phys(ptep), prot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #define pmd_pgtable(pmd) pmd_page(pmd)
 

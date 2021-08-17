@@ -11,10 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -23,11 +26,20 @@
  * Larry Finger <Larry.Finger@lwfinger.net>
  *
  ******************************************************************************/
+<<<<<<< HEAD
 /*---------------------------------------------------------------------
 
 	For type defines and data structure defines
 
 -----------------------------------------------------------------------*/
+=======
+/* ---------------------------------------------------------------------
+ *
+ *	For type defines and data structure defines
+ *
+ * ---------------------------------------------------------------------
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __DRV_TYPES_H__
 #define __DRV_TYPES_H__
 
@@ -129,8 +141,13 @@ struct dvobj_priv {
 	struct _adapter *padapter;
 	u32 nr_endpoint;
 	u8   ishighspeed;
+<<<<<<< HEAD
 	uint(*inirp_init)(struct _adapter *adapter);
 	uint(*inirp_deinit)(struct _adapter *adapter);
+=======
+	uint (*inirp_init)(struct _adapter *adapter);
+	uint (*inirp_deinit)(struct _adapter *adapter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_device *pusbdev;
 };
 
@@ -158,23 +175,38 @@ struct _adapter {
 	struct mp_priv  mppriv;
 	s32	bDriverStopped;
 	s32	bSurpriseRemoved;
+<<<<<<< HEAD
 	u32	IsrContent;
 	u32	ImrContent;
 	bool	fw_found;
+=======
+	s32	bSuspended;
+	u32	IsrContent;
+	u32	ImrContent;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8	EepromAddressSize;
 	u8	hw_init_completed;
 	struct task_struct *cmdThread;
 	 pid_t evtThread;
 	struct task_struct *xmitThread;
 	pid_t recvThread;
+<<<<<<< HEAD
 	uint(*dvobj_init)(struct _adapter *adapter);
 	void  (*dvobj_deinit)(struct _adapter *adapter);
+=======
+	uint (*dvobj_init)(struct _adapter *adapter);
+	void (*dvobj_deinit)(struct _adapter *adapter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net_device *pnetdev;
 	int bup;
 	struct net_device_stats stats;
 	struct iw_statistics iwstats;
 	int pid; /*process id from UI*/
+<<<<<<< HEAD
 	_workitem wkFilterRxFF0;
+=======
+	struct work_struct wkFilterRxFF0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 blnEnableRxFF0Filter;
 	spinlock_t lockRxFF0Filter;
 	const struct firmware *fw;

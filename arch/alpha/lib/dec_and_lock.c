@@ -7,6 +7,10 @@
 
 #include <linux/spinlock.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
   asm (".text					\n\
 	.global _atomic_dec_and_lock		\n\
@@ -39,3 +43,7 @@ static int __used atomic_dec_and_lock_1(atomic_t *atomic, spinlock_t *lock)
 	spin_unlock(lock);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(_atomic_dec_and_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -345,6 +345,7 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 {
 	struct hif_scatter_req *s_req;
 	struct bus_request *bus_req;
+<<<<<<< HEAD
 	int i, scat_req_sz, scat_list_sz, sg_sz, buf_sz;
 	u8 *virt_buf;
 
@@ -356,6 +357,19 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 	else
 		buf_sz =  2 * L1_CACHE_BYTES +
 			  ATH6KL_MAX_TRANSFER_SIZE_PER_SCATTER;
+=======
+	int i, scat_req_sz, scat_list_sz, size;
+	u8 *virt_buf;
+
+	scat_list_sz = n_scat_entry * sizeof(struct hif_scatter_item);
+	scat_req_sz = sizeof(*s_req) + scat_list_sz;
+
+	if (!virt_scat)
+		size = sizeof(struct scatterlist) * n_scat_entry;
+	else
+		size =  2 * L1_CACHE_BYTES +
+			ATH6KL_MAX_TRANSFER_SIZE_PER_SCATTER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < n_scat_req; i++) {
 		/* allocate the scatter request */
@@ -364,7 +378,11 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 			return -ENOMEM;
 
 		if (virt_scat) {
+<<<<<<< HEAD
 			virt_buf = kzalloc(buf_sz, GFP_KERNEL);
+=======
+			virt_buf = kzalloc(size, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!virt_buf) {
 				kfree(s_req);
 				return -ENOMEM;
@@ -374,7 +392,11 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 				(u8 *)L1_CACHE_ALIGN((unsigned long)virt_buf);
 		} else {
 			/* allocate sglist */
+<<<<<<< HEAD
 			s_req->sgentries = kzalloc(sg_sz, GFP_KERNEL);
+=======
+			s_req->sgentries = kzalloc(size, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (!s_req->sgentries) {
 				kfree(s_req);
@@ -425,8 +447,14 @@ static int ath6kl_sdio_read_write_sync(struct ath6kl *ar, u32 addr, u8 *buf,
 			memcpy(tbuf, buf, len);
 
 		bounced = true;
+<<<<<<< HEAD
 	} else
 		tbuf = buf;
+=======
+	} else {
+		tbuf = buf;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = ath6kl_sdio_io(ar_sdio->func, request, addr, tbuf, len);
 	if ((request & HIF_READ) && bounced)
@@ -441,9 +469,15 @@ static int ath6kl_sdio_read_write_sync(struct ath6kl *ar, u32 addr, u8 *buf,
 static void __ath6kl_sdio_write_async(struct ath6kl_sdio *ar_sdio,
 				      struct bus_request *req)
 {
+<<<<<<< HEAD
 	if (req->scat_req)
 		ath6kl_sdio_scat_rw(ar_sdio, req);
 	else {
+=======
+	if (req->scat_req) {
+		ath6kl_sdio_scat_rw(ar_sdio, req);
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		void *context;
 		int status;
 
@@ -656,7 +690,10 @@ static void ath6kl_sdio_scatter_req_add(struct ath6kl *ar,
 	list_add_tail(&s_req->list, &ar_sdio->scat_req);
 
 	spin_unlock_bh(&ar_sdio->scat_lock);
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* scatter gather read write request */
@@ -674,9 +711,15 @@ static int ath6kl_sdio_async_rw_scatter(struct ath6kl *ar,
 		   "hif-scatter: total len: %d scatter entries: %d\n",
 		   scat_req->len, scat_req->scat_entries);
 
+<<<<<<< HEAD
 	if (request & HIF_SYNCHRONOUS)
 		status = ath6kl_sdio_scat_rw(ar_sdio, scat_req->busrequest);
 	else {
+=======
+	if (request & HIF_SYNCHRONOUS) {
+		status = ath6kl_sdio_scat_rw(ar_sdio, scat_req->busrequest);
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_bh(&ar_sdio->wr_async_lock);
 		list_add_tail(&scat_req->busrequest->list, &ar_sdio->wr_asyncq);
 		spin_unlock_bh(&ar_sdio->wr_async_lock);
@@ -856,7 +899,10 @@ static int ath6kl_sdio_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 
 	if (ar->suspend_mode == WLAN_POWER_STATE_WOW ||
 	    (!ar->suspend_mode && wow)) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = ath6kl_set_sdio_pm_caps(ar);
 		if (ret)
 			goto cut_pwr;
@@ -878,7 +924,10 @@ static int ath6kl_sdio_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 
 	if (ar->suspend_mode == WLAN_POWER_STATE_DEEP_SLEEP ||
 	    !ar->suspend_mode || try_deepsleep) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		flags = sdio_get_host_pm_caps(func);
 		if (!(flags & MMC_PM_KEEP_POWER))
 			goto cut_pwr;
@@ -1061,7 +1110,10 @@ static int ath6kl_sdio_bmi_credits(struct ath6kl *ar)
 
 	timeout = jiffies + msecs_to_jiffies(BMI_COMMUNICATION_TIMEOUT);
 	while (time_before(jiffies, timeout) && !ar->bmi.cmd_credits) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Hit the credit counter with a 4-byte access, the first byte
 		 * read will hit the counter and cause a decrement, while the
@@ -1403,6 +1455,11 @@ static const struct sdio_device_id ath6kl_sdio_devices[] = {
 	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6003_BASE | 0x1))},
 	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6004_BASE | 0x0))},
 	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6004_BASE | 0x1))},
+<<<<<<< HEAD
+=======
+	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6004_BASE | 0x2))},
+	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6004_BASE | 0x18))},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 

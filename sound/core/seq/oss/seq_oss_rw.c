@@ -174,7 +174,11 @@ insert_queue(struct seq_oss_devinfo *dp, union evrec *rec, struct file *opt)
 	memset(&event, 0, sizeof(event));
 	/* set dummy -- to be sure */
 	event.type = SNDRV_SEQ_EVENT_NOTEOFF;
+<<<<<<< HEAD
 	snd_seq_oss_fill_addr(dp, &event, dp->addr.port, dp->addr.client);
+=======
+	snd_seq_oss_fill_addr(dp, &event, dp->addr.client, dp->addr.port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (snd_seq_oss_process_event(dp, rec, &event))
 		return 0; /* invalid event - no need to insert queue */

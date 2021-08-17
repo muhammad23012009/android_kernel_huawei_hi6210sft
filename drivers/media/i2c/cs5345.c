@@ -24,7 +24,10 @@
 #include <linux/videodev2.h>
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-ctrls.h>
 
 MODULE_DESCRIPTION("i2c device driver for cs5345 Audio ADC");
@@ -99,12 +102,15 @@ static int cs5345_s_ctrl(struct v4l2_ctrl *ctrl)
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int cs5345_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	if (!v4l2_chip_match_i2c_client(client, &reg->match))
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg->size = 1;
 	reg->val = cs5345_read(sd, reg->reg & 0x1f);
 	return 0;
@@ -112,17 +118,21 @@ static int cs5345_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *r
 
 static int cs5345_s_register(struct v4l2_subdev *sd, const struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	if (!v4l2_chip_match_i2c_client(client, &reg->match))
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cs5345_write(sd, reg->reg & 0x1f, reg->val & 0xff);
 	return 0;
 }
 #endif
 
+<<<<<<< HEAD
 static int cs5345_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -130,6 +140,8 @@ static int cs5345_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_iden
 	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_CS5345, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int cs5345_log_status(struct v4l2_subdev *sd)
 {
 	u8 v = cs5345_read(sd, 0x09) & 7;
@@ -152,6 +164,7 @@ static const struct v4l2_ctrl_ops cs5345_ctrl_ops = {
 
 static const struct v4l2_subdev_core_ops cs5345_core_ops = {
 	.log_status = cs5345_log_status,
+<<<<<<< HEAD
 	.g_chip_ident = cs5345_g_chip_ident,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
@@ -160,6 +173,8 @@ static const struct v4l2_subdev_core_ops cs5345_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.g_register = cs5345_g_register,
 	.s_register = cs5345_s_register,
@@ -190,7 +205,11 @@ static int cs5345_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	state = kzalloc(sizeof(struct cs5345_state), GFP_KERNEL);
+=======
+	state = devm_kzalloc(&client->dev, sizeof(*state), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (state == NULL)
 		return -ENOMEM;
 	sd = &state->sd;
@@ -206,7 +225,10 @@ static int cs5345_probe(struct i2c_client *client,
 		int err = state->hdl.error;
 
 		v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 		kfree(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 	/* set volume/mute */
@@ -227,7 +249,10 @@ static int cs5345_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&state->hdl);
+<<<<<<< HEAD
 	kfree(state);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -241,7 +266,10 @@ MODULE_DEVICE_TABLE(i2c, cs5345_id);
 
 static struct i2c_driver cs5345_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "cs5345",
 	},
 	.probe		= cs5345_probe,

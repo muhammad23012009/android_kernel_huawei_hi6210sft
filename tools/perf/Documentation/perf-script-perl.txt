@@ -181,8 +181,13 @@ strings for flag and symbolic fields.  These correspond to the strings
 and values parsed from the 'print fmt' fields of the event format
 files:
 
+<<<<<<< HEAD
   flag_str($event_name, $field_name, $field_value) - returns the string represention corresponding to $field_value for the flag field $field_name of event $event_name
   symbol_str($event_name, $field_name, $field_value) - returns the string represention corresponding to $field_value for the symbolic field $field_name of event $event_name
+=======
+  flag_str($event_name, $field_name, $field_value) - returns the string representation corresponding to $field_value for the flag field $field_name of event $event_name
+  symbol_str($event_name, $field_name, $field_value) - returns the string representation corresponding to $field_value for the symbolic field $field_name of event $event_name
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 Perf::Trace::Context Module
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

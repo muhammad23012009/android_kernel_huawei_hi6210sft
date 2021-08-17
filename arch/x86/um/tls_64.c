@@ -1,4 +1,8 @@
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <asm/ptrace-abi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void clear_flushed_tls(struct task_struct *task)
 {

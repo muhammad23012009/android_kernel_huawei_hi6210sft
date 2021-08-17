@@ -42,6 +42,11 @@
  * and <dustin.kirkland@us.ibm.com> for LSPP certification compliance.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <asm/types.h>
 #include <linux/atomic.h>
@@ -61,6 +66,7 @@
 #include <asm/unistd.h>
 #include <linux/security.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/tty.h>
 #include <linux/binfmts.h>
 #include <linux/highmem.h>
@@ -69,6 +75,19 @@
 #include <linux/fs_struct.h>
 #include <linux/compat.h>
 #include <linux/uaccess.h>
+=======
+#include <linux/binfmts.h>
+#include <linux/highmem.h>
+#include <linux/syscalls.h>
+#include <asm/syscall.h>
+#include <linux/capability.h>
+#include <linux/fs_struct.h>
+#include <linux/compat.h>
+#include <linux/ctype.h>
+#include <linux/string.h>
+#include <linux/uaccess.h>
+#include <uapi/linux/limits.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "audit.h"
 
@@ -81,6 +100,12 @@
  * see the note near the top of audit_log_execve_info() about this value */
 #define MAX_EXECVE_AUDIT_LEN 7500
 
+<<<<<<< HEAD
+=======
+/* max length to print of cmdline/proctitle value during audit */
+#define MAX_PROCTITLE_AUDIT_LEN 128
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* number of audit rules */
 int audit_n_rules;
 
@@ -97,6 +122,7 @@ struct audit_aux_data {
 /* Number of target pids per aux struct. */
 #define AUDIT_AUX_PIDS	16
 
+<<<<<<< HEAD
 struct audit_aux_data_execve {
 	struct audit_aux_data	d;
 	int argc;
@@ -104,6 +130,8 @@ struct audit_aux_data_execve {
 	struct mm_struct *mm;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct audit_aux_data_pids {
 	struct audit_aux_data	d;
 	pid_t			target_pid[AUDIT_AUX_PIDS];
@@ -123,17 +151,21 @@ struct audit_aux_data_bprm_fcaps {
 	struct audit_cap_data	new_pcap;
 };
 
+<<<<<<< HEAD
 struct audit_aux_data_capset {
 	struct audit_aux_data	d;
 	pid_t			pid;
 	struct audit_cap_data	cap;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct audit_tree_refs {
 	struct audit_tree_refs *next;
 	struct audit_chunk *c[31];
 };
 
+<<<<<<< HEAD
 static inline int open_arg(int flags, int mask)
 {
 	int n = ACC_MODE(flags);
@@ -142,6 +174,8 @@ static inline int open_arg(int flags, int mask)
 	return n & mask;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int audit_match_perm(struct audit_context *ctx, int mask)
 {
 	unsigned n;
@@ -194,7 +228,11 @@ static int audit_match_filetype(struct audit_context *ctx, int val)
 		return 0;
 
 	list_for_each_entry(n, &ctx->names_list, list) {
+<<<<<<< HEAD
 		if ((n->ino != -1) &&
+=======
+		if ((n->ino != AUDIT_INO_UNSET) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    ((n->mode & S_IFMT) == mode))
 			return 1;
 	}
@@ -466,18 +504,39 @@ static int audit_filter_rules(struct task_struct *tsk,
 		struct audit_field *f = &rule->fields[i];
 		struct audit_names *n;
 		int result = 0;
+<<<<<<< HEAD
 
 		switch (f->type) {
 		case AUDIT_PID:
 			result = audit_comparator(tsk->pid, f->op, f->val);
+=======
+		pid_t pid;
+
+		switch (f->type) {
+		case AUDIT_PID:
+			pid = task_tgid_nr(tsk);
+			result = audit_comparator(pid, f->op, f->val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case AUDIT_PPID:
 			if (ctx) {
 				if (!ctx->ppid)
+<<<<<<< HEAD
 					ctx->ppid = sys_getppid();
 				result = audit_comparator(ctx->ppid, f->op, f->val);
 			}
 			break;
+=======
+					ctx->ppid = task_ppid_nr(tsk);
+				result = audit_comparator(ctx->ppid, f->op, f->val);
+			}
+			break;
+		case AUDIT_EXE:
+			result = audit_exe_compare(tsk, rule->exe);
+			if (f->op == Audit_not_equal)
+				result = !result;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case AUDIT_UID:
 			result = audit_uid_comparator(cred->uid, f->op, f->uid);
 			break;
@@ -568,7 +627,11 @@ static int audit_filter_rules(struct task_struct *tsk,
 			break;
 		case AUDIT_INODE:
 			if (name)
+<<<<<<< HEAD
 				result = (name->ino == f->val);
+=======
+				result = audit_comparator(name->ino, f->op, f->val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			else if (ctx) {
 				list_for_each_entry(n, &ctx->names_list, list) {
 					if (audit_comparator(n->ino, f->op, f->val)) {
@@ -611,9 +674,13 @@ static int audit_filter_rules(struct task_struct *tsk,
 				result = match_tree_refs(ctx, rule->tree);
 			break;
 		case AUDIT_LOGINUID:
+<<<<<<< HEAD
 			result = 0;
 			if (ctx)
 				result = audit_uid_comparator(tsk->loginuid, f->op, f->uid);
+=======
+			result = audit_uid_comparator(tsk->loginuid, f->op, f->uid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case AUDIT_LOGINUID_SET:
 			result = audit_comparator(audit_loginuid_set(tsk), f->op, f->val);
@@ -706,8 +773,17 @@ static int audit_filter_rules(struct task_struct *tsk,
 		ctx->prio = rule->prio;
 	}
 	switch (rule->action) {
+<<<<<<< HEAD
 	case AUDIT_NEVER:    *state = AUDIT_DISABLED;	    break;
 	case AUDIT_ALWAYS:   *state = AUDIT_RECORD_CONTEXT; break;
+=======
+	case AUDIT_NEVER:
+		*state = AUDIT_DISABLED;
+		break;
+	case AUDIT_ALWAYS:
+		*state = AUDIT_RECORD_CONTEXT;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 1;
 }
@@ -829,7 +905,12 @@ void audit_filter_inodes(struct task_struct *tsk, struct audit_context *ctx)
 	rcu_read_unlock();
 }
 
+<<<<<<< HEAD
 static inline struct audit_context *audit_get_context(struct task_struct *tsk,
+=======
+/* Transfer the audit context pointer to the caller, clearing it in the tsk's struct */
+static inline struct audit_context *audit_take_context(struct task_struct *tsk,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						      int return_valid,
 						      long return_code)
 {
@@ -866,10 +947,21 @@ static inline struct audit_context *audit_get_context(struct task_struct *tsk,
 	return context;
 }
 
+<<<<<<< HEAD
+=======
+static inline void audit_proctitle_free(struct audit_context *context)
+{
+	kfree(context->proctitle.value);
+	context->proctitle.value = NULL;
+	context->proctitle.len = 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void audit_free_names(struct audit_context *context)
 {
 	struct audit_names *n, *next;
 
+<<<<<<< HEAD
 #if AUDIT_DEBUG == 2
 	if (context->put_count + context->ino_count != context->name_count) {
 		int i = 0;
@@ -898,6 +990,12 @@ static inline void audit_free_names(struct audit_context *context)
 		list_del(&n->list);
 		if (n->name && n->name_put)
 			final_putname(n->name);
+=======
+	list_for_each_entry_safe(n, next, &context->names_list, list) {
+		list_del(&n->list);
+		if (n->name)
+			putname(n->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (n->should_free)
 			kfree(n);
 	}
@@ -954,8 +1052,15 @@ int audit_alloc(struct task_struct *tsk)
 		return 0; /* Return if not auditing. */
 
 	state = audit_filter_task(tsk, &key);
+<<<<<<< HEAD
 	if (state == AUDIT_DISABLED)
 		return 0;
+=======
+	if (state == AUDIT_DISABLED) {
+		clear_tsk_thread_flag(tsk, TIF_SYSCALL_AUDIT);
+		return 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(context = audit_alloc_context(state))) {
 		kfree(key);
@@ -977,6 +1082,10 @@ static inline void audit_free_context(struct audit_context *context)
 	audit_free_aux(context);
 	kfree(context->filterkey);
 	kfree(context->sockaddr);
+<<<<<<< HEAD
+=======
+	audit_proctitle_free(context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(context);
 }
 
@@ -1013,8 +1122,12 @@ static int audit_log_pid_context(struct audit_context *context, pid_t pid,
 }
 
 static void audit_log_execve_info(struct audit_context *context,
+<<<<<<< HEAD
 				  struct audit_buffer **ab,
 				  struct audit_aux_data_execve *axi)
+=======
+				  struct audit_buffer **ab)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	long len_max;
 	long len_rem;
@@ -1028,18 +1141,25 @@ static void audit_log_execve_info(struct audit_context *context,
 	unsigned int arg;
 	char *buf_head;
 	char *buf;
+<<<<<<< HEAD
 	const char __user *p;
+=======
+	const char __user *p = (const char __user *)current->mm->arg_start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* NOTE: this buffer needs to be large enough to hold all the non-arg
 	 *       data we put in the audit record for this argument (see the
 	 *       code below) ... at this point in time 96 is plenty */
 	char abuf[96];
 
+<<<<<<< HEAD
 	if (axi->mm != current->mm)
 		return; /* execve failed, no additional info */
 
 	p = (const char __user *)axi->mm->arg_start;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* NOTE: we set MAX_EXECVE_AUDIT_LEN to a rather arbitrary limit, the
 	 *       current value of 7500 is not as important as the fact that it
 	 *       is less than 8k, a setting of 7500 gives us plenty of wiggle
@@ -1055,7 +1175,11 @@ static void audit_log_execve_info(struct audit_context *context,
 	}
 	buf = buf_head;
 
+<<<<<<< HEAD
 	audit_log_format(*ab, "argc=%d", axi->argc);
+=======
+	audit_log_format(*ab, "argc=%d", context->execve.argc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len_rem = len_max;
 	len_buf = 0;
@@ -1119,7 +1243,11 @@ static void audit_log_execve_info(struct audit_context *context,
 		}
 
 		/* write as much as we can to the audit log */
+<<<<<<< HEAD
 		if (len_buf > 0) {
+=======
+		if (len_buf >= 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* NOTE: some magic numbers here - basically if we
 			 *       can't fit a reasonable amount of data into the
 			 *       existing audit buffer, flush it and start with
@@ -1184,7 +1312,11 @@ static void audit_log_execve_info(struct audit_context *context,
 			require_data = true;
 			encode = false;
 		}
+<<<<<<< HEAD
 	} while (arg < axi->argc);
+=======
+	} while (arg < context->execve.argc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* NOTE: the caller handles the final audit_log_end() call */
 
@@ -1285,7 +1417,67 @@ static void show_special(struct audit_context *context, int *call_panic)
 		audit_log_format(ab, "fd=%d flags=0x%x", context->mmap.fd,
 				 context->mmap.flags);
 		break; }
+<<<<<<< HEAD
 	}
+=======
+	case AUDIT_EXECVE: {
+		audit_log_execve_info(context, &ab);
+		break; }
+	}
+	audit_log_end(ab);
+}
+
+static inline int audit_proctitle_rtrim(char *proctitle, int len)
+{
+	char *end = proctitle + len - 1;
+	while (end > proctitle && !isprint(*end))
+		end--;
+
+	/* catch the case where proctitle is only 1 non-print character */
+	len = end - proctitle + 1;
+	len -= isprint(proctitle[len-1]) == 0;
+	return len;
+}
+
+static void audit_log_proctitle(struct task_struct *tsk,
+			 struct audit_context *context)
+{
+	int res;
+	char *buf;
+	char *msg = "(null)";
+	int len = strlen(msg);
+	struct audit_buffer *ab;
+
+	ab = audit_log_start(context, GFP_KERNEL, AUDIT_PROCTITLE);
+	if (!ab)
+		return;	/* audit_panic or being filtered */
+
+	audit_log_format(ab, "proctitle=");
+
+	/* Not  cached */
+	if (!context->proctitle.value) {
+		buf = kmalloc(MAX_PROCTITLE_AUDIT_LEN, GFP_KERNEL);
+		if (!buf)
+			goto out;
+		/* Historically called this from procfs naming */
+		res = get_cmdline(tsk, buf, MAX_PROCTITLE_AUDIT_LEN);
+		if (res == 0) {
+			kfree(buf);
+			goto out;
+		}
+		res = audit_proctitle_rtrim(buf, res);
+		if (res == 0) {
+			kfree(buf);
+			goto out;
+		}
+		context->proctitle.value = buf;
+		context->proctitle.len = res;
+	}
+	msg = context->proctitle.value;
+	len = context->proctitle.len;
+out:
+	audit_log_n_untrustedstring(ab, msg, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	audit_log_end(ab);
 }
 
@@ -1331,11 +1523,14 @@ static void audit_log_exit(struct audit_context *context, struct task_struct *ts
 
 		switch (aux->type) {
 
+<<<<<<< HEAD
 		case AUDIT_EXECVE: {
 			struct audit_aux_data_execve *axi = (void *)aux;
 			audit_log_execve_info(context, &ab, axi);
 			break; }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case AUDIT_BPRM_FCAPS: {
 			struct audit_aux_data_bprm_fcaps *axs = (void *)aux;
 			audit_log_format(ab, "fver=%x", axs->fcap_ver);
@@ -1399,7 +1594,11 @@ static void audit_log_exit(struct audit_context *context, struct task_struct *ts
 	if (context->pwd.dentry && context->pwd.mnt) {
 		ab = audit_log_start(context, GFP_KERNEL, AUDIT_CWD);
 		if (ab) {
+<<<<<<< HEAD
 			audit_log_d_path(ab, " cwd=", &context->pwd);
+=======
+			audit_log_d_path(ab, "cwd=", &context->pwd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			audit_log_end(ab);
 		}
 	}
@@ -1411,6 +1610,11 @@ static void audit_log_exit(struct audit_context *context, struct task_struct *ts
 		audit_log_name(context, n, NULL, i++, &call_panic);
 	}
 
+<<<<<<< HEAD
+=======
+	audit_log_proctitle(tsk, context);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Send end of event record to help user space know we are finished */
 	ab = audit_log_start(context, GFP_KERNEL, AUDIT_EOE);
 	if (ab)
@@ -1429,7 +1633,11 @@ void __audit_free(struct task_struct *tsk)
 {
 	struct audit_context *context;
 
+<<<<<<< HEAD
 	context = audit_get_context(tsk, 0, 0);
+=======
+	context = audit_take_context(tsk, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!context)
 		return;
 
@@ -1448,7 +1656,10 @@ void __audit_free(struct task_struct *tsk)
 
 /**
  * audit_syscall_entry - fill in an audit record at syscall entry
+<<<<<<< HEAD
  * @arch: architecture type
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @major: major syscall type (function)
  * @a1: additional syscall register 1
  * @a2: additional syscall register 2
@@ -1463,9 +1674,14 @@ void __audit_free(struct task_struct *tsk)
  * will only be written if another part of the kernel requests that it
  * be written).
  */
+<<<<<<< HEAD
 void __audit_syscall_entry(int arch, int major,
 			 unsigned long a1, unsigned long a2,
 			 unsigned long a3, unsigned long a4)
+=======
+void __audit_syscall_entry(int major, unsigned long a1, unsigned long a2,
+			   unsigned long a3, unsigned long a4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct task_struct *tsk = current;
 	struct audit_context *context = tsk->audit_context;
@@ -1479,7 +1695,11 @@ void __audit_syscall_entry(int arch, int major,
 	if (!audit_enabled)
 		return;
 
+<<<<<<< HEAD
 	context->arch	    = arch;
+=======
+	context->arch	    = syscall_get_arch();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	context->major      = major;
 	context->argv[0]    = a1;
 	context->argv[1]    = a2;
@@ -1523,7 +1743,11 @@ void __audit_syscall_exit(int success, long return_code)
 	else
 		success = AUDITSC_FAILURE;
 
+<<<<<<< HEAD
 	context = audit_get_context(tsk, success, return_code);
+=======
+	context = audit_take_context(tsk, success, return_code);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!context)
 		return;
 
@@ -1573,7 +1797,11 @@ static inline void handle_one(const struct inode *inode)
 	if (likely(put_tree_ref(context, chunk)))
 		return;
 	if (unlikely(!grow_tree_refs(context))) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "out of memory, audit has lost a tree reference\n");
+=======
+		pr_warn("out of memory, audit has lost a tree reference\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		audit_set_auditable(context);
 		audit_put_chunk(chunk);
 		unroll_tree_refs(context, p, count);
@@ -1602,7 +1830,11 @@ retry:
 	rcu_read_lock();
 	seq = read_seqbegin(&rename_lock);
 	for(;;) {
+<<<<<<< HEAD
 		struct inode *inode = d->d_inode;
+=======
+		struct inode *inode = d_backing_inode(d);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (inode && unlikely(!hlist_empty(&inode->i_fsnotify_marks))) {
 			struct audit_chunk *chunk;
 			chunk = audit_tree_lookup(inode);
@@ -1632,8 +1864,12 @@ retry:
 			goto retry;
 		}
 		/* too bad */
+<<<<<<< HEAD
 		printk(KERN_WARNING
 			"out of memory, audit has lost a tree reference\n");
+=======
+		pr_warn("out of memory, audit has lost a tree reference\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unroll_tree_refs(context, p, count);
 		audit_set_auditable(context);
 		return;
@@ -1657,14 +1893,21 @@ static struct audit_names *audit_alloc_name(struct audit_context *context,
 		aname->should_free = true;
 	}
 
+<<<<<<< HEAD
 	aname->ino = (unsigned long)-1;
+=======
+	aname->ino = AUDIT_INO_UNSET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	aname->type = type;
 	list_add_tail(&aname->list, &context->names_list);
 
 	context->name_count++;
+<<<<<<< HEAD
 #if AUDIT_DEBUG
 	context->ino_count++;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return aname;
 }
 
@@ -1685,8 +1928,15 @@ __audit_reusename(const __user char *uptr)
 	list_for_each_entry(n, &context->names_list, list) {
 		if (!n->name)
 			continue;
+<<<<<<< HEAD
 		if (n->name->uptr == uptr)
 			return n->name;
+=======
+		if (n->name->uptr == uptr) {
+			n->name->refcnt++;
+			return n->name;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return NULL;
 }
@@ -1703,6 +1953,7 @@ void __audit_getname(struct filename *name)
 	struct audit_context *context = current->audit_context;
 	struct audit_names *n;
 
+<<<<<<< HEAD
 	if (!context->in_syscall) {
 #if AUDIT_DEBUG == 2
 		printk(KERN_ERR "%s:%d(:%d): ignoring getname(%p)\n",
@@ -1716,6 +1967,10 @@ void __audit_getname(struct filename *name)
 	/* The filename _must_ have a populated ->name */
 	BUG_ON(!name->name);
 #endif
+=======
+	if (!context->in_syscall)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	n = audit_alloc_name(context, AUDIT_TYPE_UNKNOWN);
 	if (!n)
@@ -1723,13 +1978,19 @@ void __audit_getname(struct filename *name)
 
 	n->name = name;
 	n->name_len = AUDIT_NAME_FULL;
+<<<<<<< HEAD
 	n->name_put = true;
 	name->aname = n;
+=======
+	name->aname = n;
+	name->refcnt++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!context->pwd.dentry)
 		get_fs_pwd(current->fs, &context->pwd);
 }
 
+<<<<<<< HEAD
 /* audit_putname - intercept a putname request
  * @name: name to intercept and delay for putname
  *
@@ -1774,6 +2035,8 @@ void audit_putname(struct filename *name)
 #endif
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * __audit_inode - store the inode and device from a lookup
  * @name: name being audited
@@ -1784,7 +2047,11 @@ void __audit_inode(struct filename *name, const struct dentry *dentry,
 		   unsigned int flags)
 {
 	struct audit_context *context = current->audit_context;
+<<<<<<< HEAD
 	const struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_backing_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct audit_names *n;
 	bool parent = flags & AUDIT_INODE_PARENT;
 
@@ -1794,10 +2061,13 @@ void __audit_inode(struct filename *name, const struct dentry *dentry,
 	if (!name)
 		goto out_alloc;
 
+<<<<<<< HEAD
 #if AUDIT_DEBUG
 	/* The struct filename _must_ have a populated ->name */
 	BUG_ON(!name->name);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * If we have a pointer to an audit_names entry already, then we can
 	 * just use it directly if the type is correct.
@@ -1815,8 +2085,22 @@ void __audit_inode(struct filename *name, const struct dentry *dentry,
 	}
 
 	list_for_each_entry_reverse(n, &context->names_list, list) {
+<<<<<<< HEAD
 		/* does the name pointer match? */
 		if (!n->name || n->name->name != name->name)
+=======
+		if (n->ino) {
+			/* valid inode number, use that for the comparison */
+			if (n->ino != inode->i_ino ||
+			    n->dev != inode->i_sb->s_dev)
+				continue;
+		} else if (n->name) {
+			/* inode number has not been set, check the name */
+			if (strcmp(n->name->name, name->name))
+				continue;
+		} else
+			/* no inode and no name (?!) ... this is odd ... */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		/* match the correct record type */
@@ -1831,12 +2115,24 @@ void __audit_inode(struct filename *name, const struct dentry *dentry,
 	}
 
 out_alloc:
+<<<<<<< HEAD
 	/* unable to find the name from a previous getname(). Allocate a new
 	 * anonymous entry.
 	 */
 	n = audit_alloc_name(context, AUDIT_TYPE_NORMAL);
 	if (!n)
 		return;
+=======
+	/* unable to find an entry with both a matching name and type */
+	n = audit_alloc_name(context, AUDIT_TYPE_UNKNOWN);
+	if (!n)
+		return;
+	if (name) {
+		n->name = name;
+		name->refcnt++;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	if (parent) {
 		n->name_len = n->name ? parent_len(n->name->name) : AUDIT_NAME_FULL;
@@ -1851,6 +2147,14 @@ out:
 	audit_copy_inode(n, dentry, inode);
 }
 
+<<<<<<< HEAD
+=======
+void __audit_file(const struct file *file)
+{
+	__audit_inode(NULL, file->f_path.dentry, 0);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * __audit_inode_child - collect inode info for created/removed objects
  * @parent: inode of dentry parent
@@ -1865,12 +2169,20 @@ out:
  * must be hooked prior, in order to capture the target inode during
  * unsuccessful attempts.
  */
+<<<<<<< HEAD
 void __audit_inode_child(const struct inode *parent,
+=======
+void __audit_inode_child(struct inode *parent,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 const struct dentry *dentry,
 			 const unsigned char type)
 {
 	struct audit_context *context = current->audit_context;
+<<<<<<< HEAD
 	const struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_backing_inode(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char *dname = dentry->d_name.name;
 	struct audit_names *n, *found_parent = NULL, *found_child = NULL;
 
@@ -1882,11 +2194,24 @@ void __audit_inode_child(const struct inode *parent,
 
 	/* look for a parent entry first */
 	list_for_each_entry(n, &context->names_list, list) {
+<<<<<<< HEAD
 		if (!n->name || n->type != AUDIT_TYPE_PARENT)
 			continue;
 
 		if (n->ino == parent->i_ino &&
 		    !audit_compare_dname_path(dname, n->name->name, n->name_len)) {
+=======
+		if (!n->name ||
+		    (n->type != AUDIT_TYPE_PARENT &&
+		     n->type != AUDIT_TYPE_UNKNOWN))
+			continue;
+
+		if (n->ino == parent->i_ino && n->dev == parent->i_sb->s_dev &&
+		    !audit_compare_dname_path(dname,
+					      n->name->name, n->name_len)) {
+			if (n->type == AUDIT_TYPE_UNKNOWN)
+				n->type = AUDIT_TYPE_PARENT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			found_parent = n;
 			break;
 		}
@@ -1895,11 +2220,16 @@ void __audit_inode_child(const struct inode *parent,
 	/* is there a matching child entry? */
 	list_for_each_entry(n, &context->names_list, list) {
 		/* can only match entries that have a name */
+<<<<<<< HEAD
 		if (!n->name || n->type != type)
 			continue;
 
 		/* if we found a parent, make sure this one is a child of it */
 		if (found_parent && (n->name != found_parent->name))
+=======
+		if (!n->name ||
+		    (n->type != type && n->type != AUDIT_TYPE_UNKNOWN))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		if (!strcmp(dname, n->name->name) ||
@@ -1907,6 +2237,11 @@ void __audit_inode_child(const struct inode *parent,
 						found_parent ?
 						found_parent->name_len :
 						AUDIT_NAME_FULL)) {
+<<<<<<< HEAD
+=======
+			if (n->type == AUDIT_TYPE_UNKNOWN)
+				n->type = type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			found_child = n;
 			break;
 		}
@@ -1931,6 +2266,7 @@ void __audit_inode_child(const struct inode *parent,
 		if (found_parent) {
 			found_child->name = found_parent->name;
 			found_child->name_len = AUDIT_NAME_FULL;
+<<<<<<< HEAD
 			/* don't call __putname() */
 			found_child->name_put = false;
 		}
@@ -1939,6 +2275,16 @@ void __audit_inode_child(const struct inode *parent,
 		audit_copy_inode(found_child, dentry, inode);
 	else
 		found_child->ino = (unsigned long)-1;
+=======
+			found_child->name->refcnt++;
+		}
+	}
+
+	if (inode)
+		audit_copy_inode(found_child, dentry, inode);
+	else
+		found_child->ino = AUDIT_INO_UNSET;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(__audit_inode_child);
 
@@ -1970,6 +2316,55 @@ int auditsc_get_stamp(struct audit_context *ctx,
 /* global counter which is incremented every time something logs in */
 static atomic_t session_id = ATOMIC_INIT(0);
 
+<<<<<<< HEAD
+=======
+static int audit_set_loginuid_perm(kuid_t loginuid)
+{
+	/* if we are unset, we don't need privs */
+	if (!audit_loginuid_set(current))
+		return 0;
+	/* if AUDIT_FEATURE_LOGINUID_IMMUTABLE means never ever allow a change*/
+	if (is_audit_feature_set(AUDIT_FEATURE_LOGINUID_IMMUTABLE))
+		return -EPERM;
+	/* it is set, you need permission */
+	if (!capable(CAP_AUDIT_CONTROL))
+		return -EPERM;
+	/* reject if this is not an unset and we don't allow that */
+	if (is_audit_feature_set(AUDIT_FEATURE_ONLY_UNSET_LOGINUID) && uid_valid(loginuid))
+		return -EPERM;
+	return 0;
+}
+
+static void audit_log_set_loginuid(kuid_t koldloginuid, kuid_t kloginuid,
+				   unsigned int oldsessionid, unsigned int sessionid,
+				   int rc)
+{
+	struct audit_buffer *ab;
+	uid_t uid, oldloginuid, loginuid;
+	struct tty_struct *tty;
+
+	if (!audit_enabled)
+		return;
+
+	ab = audit_log_start(NULL, GFP_KERNEL, AUDIT_LOGIN);
+	if (!ab)
+		return;
+
+	uid = from_kuid(&init_user_ns, task_uid(current));
+	oldloginuid = from_kuid(&init_user_ns, koldloginuid);
+	loginuid = from_kuid(&init_user_ns, kloginuid),
+	tty = audit_get_tty(current);
+
+	audit_log_format(ab, "pid=%d uid=%u", task_tgid_nr(current), uid);
+	audit_log_task_context(ab);
+	audit_log_format(ab, " old-auid=%u auid=%u tty=%s old-ses=%u ses=%u res=%d",
+			 oldloginuid, loginuid, tty ? tty_name(tty) : "(none)",
+			 oldsessionid, sessionid, !rc);
+	audit_put_tty(tty);
+	audit_log_end(ab);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * audit_set_loginuid - set current task's audit_context loginuid
  * @loginuid: loginuid value
@@ -1981,6 +2376,7 @@ static atomic_t session_id = ATOMIC_INIT(0);
 int audit_set_loginuid(kuid_t loginuid)
 {
 	struct task_struct *task = current;
+<<<<<<< HEAD
 	struct audit_context *context = task->audit_context;
 	unsigned int sessionid;
 
@@ -2012,6 +2408,28 @@ int audit_set_loginuid(kuid_t loginuid)
 	task->sessionid = sessionid;
 	task->loginuid = loginuid;
 	return 0;
+=======
+	unsigned int oldsessionid, sessionid = (unsigned int)-1;
+	kuid_t oldloginuid;
+	int rc;
+
+	oldloginuid = audit_get_loginuid(current);
+	oldsessionid = audit_get_sessionid(current);
+
+	rc = audit_set_loginuid_perm(loginuid);
+	if (rc)
+		goto out;
+
+	/* are we setting or clearing? */
+	if (uid_valid(loginuid))
+		sessionid = (unsigned int)atomic_inc_return(&session_id);
+
+	task->sessionid = sessionid;
+	task->loginuid = loginuid;
+out:
+	audit_log_set_loginuid(oldloginuid, loginuid, oldsessionid, sessionid, rc);
+	return rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -2132,6 +2550,7 @@ void __audit_ipc_set_perm(unsigned long qbytes, uid_t uid, gid_t gid, umode_t mo
 	context->ipc.has_perm = 1;
 }
 
+<<<<<<< HEAD
 int __audit_bprm(struct linux_binprm *bprm)
 {
 	struct audit_aux_data_execve *ax;
@@ -2148,6 +2567,14 @@ int __audit_bprm(struct linux_binprm *bprm)
 	ax->d.next = context->aux;
 	context->aux = (void *)ax;
 	return 0;
+=======
+void __audit_bprm(struct linux_binprm *bprm)
+{
+	struct audit_context *context = current->audit_context;
+
+	context->type = AUDIT_EXECVE;
+	context->execve.argc = bprm->argc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -2209,7 +2636,11 @@ void __audit_ptrace(struct task_struct *t)
 {
 	struct audit_context *context = current->audit_context;
 
+<<<<<<< HEAD
 	context->target_pid = t->pid;
+=======
+	context->target_pid = task_tgid_nr(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	context->target_auid = audit_get_loginuid(t);
 	context->target_uid = task_uid(t);
 	context->target_sessionid = audit_get_sessionid(t);
@@ -2234,7 +2665,11 @@ int __audit_signal_info(int sig, struct task_struct *t)
 
 	if (audit_pid && t->tgid == audit_pid) {
 		if (sig == SIGTERM || sig == SIGHUP || sig == SIGUSR1 || sig == SIGUSR2) {
+<<<<<<< HEAD
 			audit_sig_pid = tsk->pid;
+=======
+			audit_sig_pid = task_tgid_nr(tsk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (uid_valid(tsk->loginuid))
 				audit_sig_uid = tsk->loginuid;
 			else
@@ -2248,7 +2683,11 @@ int __audit_signal_info(int sig, struct task_struct *t)
 	/* optimize the common case by putting first signal recipient directly
 	 * in audit_context */
 	if (!ctx->target_pid) {
+<<<<<<< HEAD
 		ctx->target_pid = t->tgid;
+=======
+		ctx->target_pid = task_tgid_nr(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ctx->target_auid = audit_get_loginuid(t);
 		ctx->target_uid = t_uid;
 		ctx->target_sessionid = audit_get_sessionid(t);
@@ -2269,7 +2708,11 @@ int __audit_signal_info(int sig, struct task_struct *t)
 	}
 	BUG_ON(axp->pid_count >= AUDIT_AUX_PIDS);
 
+<<<<<<< HEAD
 	axp->target_pid[axp->pid_count] = t->tgid;
+=======
+	axp->target_pid[axp->pid_count] = task_tgid_nr(t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	axp->target_auid[axp->pid_count] = audit_get_loginuid(t);
 	axp->target_uid[axp->pid_count] = t_uid;
 	axp->target_sessionid[axp->pid_count] = audit_get_sessionid(t);
@@ -2297,7 +2740,10 @@ int __audit_log_bprm_fcaps(struct linux_binprm *bprm,
 	struct audit_aux_data_bprm_fcaps *ax;
 	struct audit_context *context = current->audit_context;
 	struct cpu_vfs_cap_data vcaps;
+<<<<<<< HEAD
 	struct dentry *dentry;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ax = kmalloc(sizeof(*ax), GFP_KERNEL);
 	if (!ax)
@@ -2307,9 +2753,13 @@ int __audit_log_bprm_fcaps(struct linux_binprm *bprm,
 	ax->d.next = context->aux;
 	context->aux = (void *)ax;
 
+<<<<<<< HEAD
 	dentry = dget(bprm->file->f_dentry);
 	get_vfs_caps_from_disk(dentry, &vcaps);
 	dput(dentry);
+=======
+	get_vfs_caps_from_disk(bprm->file->f_path.dentry, &vcaps);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ax->fcap.permitted = vcaps.permitted;
 	ax->fcap.inheritable = vcaps.inheritable;
@@ -2328,6 +2778,7 @@ int __audit_log_bprm_fcaps(struct linux_binprm *bprm,
 
 /**
  * __audit_log_capset - store information about the arguments to the capset syscall
+<<<<<<< HEAD
  * @pid: target pid of the capset call
  * @new: the new credentials
  * @old: the old (current) credentials
@@ -2340,6 +2791,18 @@ void __audit_log_capset(pid_t pid,
 {
 	struct audit_context *context = current->audit_context;
 	context->capset.pid = pid;
+=======
+ * @new: the new credentials
+ * @old: the old (current) credentials
+ *
+ * Record the arguments userspace sent to sys_capset for later printing by the
+ * audit system if applicable
+ */
+void __audit_log_capset(const struct cred *new, const struct cred *old)
+{
+	struct audit_context *context = current->audit_context;
+	context->capset.pid = task_tgid_nr(current);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	context->capset.cap.effective   = new->cap_effective;
 	context->capset.cap.inheritable = new->cap_effective;
 	context->capset.cap.permitted   = new->cap_permitted;
@@ -2359,6 +2822,10 @@ static void audit_log_task(struct audit_buffer *ab)
 	kuid_t auid, uid;
 	kgid_t gid;
 	unsigned int sessionid;
+<<<<<<< HEAD
+=======
+	char comm[sizeof(current->comm)];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	auid = audit_get_loginuid(current);
 	sessionid = audit_get_sessionid(current);
@@ -2370,6 +2837,7 @@ static void audit_log_task(struct audit_buffer *ab)
 			 from_kgid(&init_user_ns, gid),
 			 sessionid);
 	audit_log_task_context(ab);
+<<<<<<< HEAD
 	audit_log_format(ab, " pid=%d comm=", current->pid);
 	audit_log_untrustedstring(ab, current->comm);
 }
@@ -2381,6 +2849,13 @@ static void audit_log_abend(struct audit_buffer *ab, char *reason, long signr)
 	audit_log_string(ab, reason);
 	audit_log_format(ab, " sig=%ld", signr);
 }
+=======
+	audit_log_format(ab, " pid=%d comm=", task_tgid_nr(current));
+	audit_log_untrustedstring(ab, get_task_comm(comm, current));
+	audit_log_d_path_exe(ab, current->mm);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * audit_core_dumps - record information about processes that end abnormally
  * @signr: signal value
@@ -2401,7 +2876,12 @@ void audit_core_dumps(long signr)
 	ab = audit_log_start(NULL, GFP_KERNEL, AUDIT_ANOM_ABEND);
 	if (unlikely(!ab))
 		return;
+<<<<<<< HEAD
 	audit_log_abend(ab, "memory violation", signr);
+=======
+	audit_log_task(ab);
+	audit_log_format(ab, " sig=%ld", signr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	audit_log_end(ab);
 }
 
@@ -2413,11 +2893,17 @@ void __audit_seccomp(unsigned long syscall, long signr, int code)
 	if (unlikely(!ab))
 		return;
 	audit_log_task(ab);
+<<<<<<< HEAD
 	audit_log_format(ab, " sig=%ld", signr);
 	audit_log_format(ab, " syscall=%ld", syscall);
 	audit_log_format(ab, " compat=%d", is_compat_task());
 	audit_log_format(ab, " ip=0x%lx", KSTK_EIP(current));
 	audit_log_format(ab, " code=0x%x", code);
+=======
+	audit_log_format(ab, " sig=%ld arch=%x syscall=%ld compat=%d ip=0x%lx code=0x%x",
+			 signr, syscall_get_arch(), syscall,
+			 in_compat_syscall(), KSTK_EIP(current), code);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	audit_log_end(ab);
 }
 

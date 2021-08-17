@@ -9,7 +9,11 @@
  * past count, whereas libc may write to count+1.  This follows the generic
  * implementation in lib/string.c and is, IMHO, more sensible.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.text
 
 	.align 3
@@ -82,3 +86,7 @@ $zerocount:
 	ret
 
 	.end strncat
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strncat)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

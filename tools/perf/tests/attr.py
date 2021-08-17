@@ -104,7 +104,10 @@ class Event(dict):
                 continue
             if not self.compare_data(self[t], other[t]):
 		log.warning("expected %s=%s, got %s" % (t, self[t], other[t]))
+<<<<<<< HEAD
                 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Test file description needs to have following sections:
 # [config]

@@ -11,6 +11,10 @@
 
 #include <linux/dm-io.h>
 #include <linux/dm-kcopyd.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/mempool.h>
 #include <linux/module.h>
@@ -24,6 +28,82 @@ DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(cache_copy_throttle,
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+#define IOT_RESOLUTION 4
+
+struct io_tracker {
+	spinlock_t lock;
+
+	/*
+	 * Sectors of in-flight IO.
+	 */
+	sector_t in_flight;
+
+	/*
+	 * The time, in jiffies, when this device became idle (if it is
+	 * indeed idle).
+	 */
+	unsigned long idle_time;
+	unsigned long last_update_time;
+};
+
+static void iot_init(struct io_tracker *iot)
+{
+	spin_lock_init(&iot->lock);
+	iot->in_flight = 0ul;
+	iot->idle_time = 0ul;
+	iot->last_update_time = jiffies;
+}
+
+static bool __iot_idle_for(struct io_tracker *iot, unsigned long jifs)
+{
+	if (iot->in_flight)
+		return false;
+
+	return time_after(jiffies, iot->idle_time + jifs);
+}
+
+static bool iot_idle_for(struct io_tracker *iot, unsigned long jifs)
+{
+	bool r;
+	unsigned long flags;
+
+	spin_lock_irqsave(&iot->lock, flags);
+	r = __iot_idle_for(iot, jifs);
+	spin_unlock_irqrestore(&iot->lock, flags);
+
+	return r;
+}
+
+static void iot_io_begin(struct io_tracker *iot, sector_t len)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&iot->lock, flags);
+	iot->in_flight += len;
+	spin_unlock_irqrestore(&iot->lock, flags);
+}
+
+static void __iot_io_end(struct io_tracker *iot, sector_t len)
+{
+	iot->in_flight -= len;
+	if (!iot->in_flight)
+		iot->idle_time = jiffies;
+}
+
+static void iot_io_end(struct io_tracker *iot, sector_t len)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&iot->lock, flags);
+	__iot_io_end(iot, len);
+	spin_unlock_irqrestore(&iot->lock, flags);
+}
+
+/*----------------------------------------------------------------*/
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Glossary:
  *
@@ -37,6 +117,7 @@ DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(cache_copy_throttle,
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static size_t bitset_size_in_bytes(unsigned nr_entries)
 {
 	return sizeof(unsigned long) * dm_div_up(nr_entries, BITS_PER_LONG);
@@ -57,16 +138,43 @@ static void clear_bitset(void *bitset, unsigned nr_entries)
 static void free_bitset(unsigned long *bits)
 {
 	vfree(bits);
+=======
+/*
+ * There are a couple of places where we let a bio run, but want to do some
+ * work before calling its endio function.  We do this by temporarily
+ * changing the endio fn.
+ */
+struct dm_hook_info {
+	bio_end_io_t *bi_end_io;
+};
+
+static void dm_hook_bio(struct dm_hook_info *h, struct bio *bio,
+			bio_end_io_t *bi_end_io, void *bi_private)
+{
+	h->bi_end_io = bio->bi_end_io;
+
+	bio->bi_end_io = bi_end_io;
+	bio->bi_private = bi_private;
+}
+
+static void dm_unhook_bio(struct dm_hook_info *h, struct bio *bio)
+{
+	bio->bi_end_io = h->bi_end_io;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #define PRISON_CELLS 1024
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MIGRATION_POOL_SIZE 128
 #define COMMIT_PERIOD HZ
 #define MIGRATION_COUNT_WINDOW 10
 
 /*
+<<<<<<< HEAD
  * The block size of the device holding cache data must be >= 32KB
  */
 #define DATA_DEV_BLOCK_SIZE_MIN_SECTORS (32 * 1024 >> SECTOR_SHIFT)
@@ -82,6 +190,46 @@ enum cache_mode {
 struct cache_features {
 	enum cache_mode mode;
 	bool write_through:1;
+=======
+ * The block size of the device holding cache data must be
+ * between 32KB and 1GB.
+ */
+#define DATA_DEV_BLOCK_SIZE_MIN_SECTORS (32 * 1024 >> SECTOR_SHIFT)
+#define DATA_DEV_BLOCK_SIZE_MAX_SECTORS (1024 * 1024 * 1024 >> SECTOR_SHIFT)
+
+enum cache_metadata_mode {
+	CM_WRITE,		/* metadata may be changed */
+	CM_READ_ONLY,		/* metadata may not be changed */
+	CM_FAIL
+};
+
+enum cache_io_mode {
+	/*
+	 * Data is written to cached blocks only.  These blocks are marked
+	 * dirty.  If you lose the cache device you will lose data.
+	 * Potential performance increase for both reads and writes.
+	 */
+	CM_IO_WRITEBACK,
+
+	/*
+	 * Data is written to both cache and origin.  Blocks are never
+	 * dirty.  Potential performance benfit for reads only.
+	 */
+	CM_IO_WRITETHROUGH,
+
+	/*
+	 * A degraded mode useful for various cache coherency situations
+	 * (eg, rolling back snapshots).  Reads and writes always go to the
+	 * origin.  If a write goes to a cached oblock, then the cache
+	 * block is invalidated.
+	 */
+	CM_IO_PASSTHROUGH
+};
+
+struct cache_features {
+	enum cache_metadata_mode mode;
+	enum cache_io_mode io_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct cache_stats {
@@ -97,10 +245,37 @@ struct cache_stats {
 	atomic_t discard_count;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * Defines a range of cblocks, begin to (end - 1) are in the range.  end is
+ * the one-past-the-end value.
+ */
+struct cblock_range {
+	dm_cblock_t begin;
+	dm_cblock_t end;
+};
+
+struct invalidation_request {
+	struct list_head list;
+	struct cblock_range *cblocks;
+
+	atomic_t complete;
+	int err;
+
+	wait_queue_head_t result_wait;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cache {
 	struct dm_target *ti;
 	struct dm_target_callbacks callbacks;
 
+<<<<<<< HEAD
+=======
+	struct dm_cache_metadata *cmd;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Metadata is written to this device.
 	 */
@@ -117,11 +292,14 @@ struct cache {
 	struct dm_dev *cache_dev;
 
 	/*
+<<<<<<< HEAD
 	 * Cache features such as write-through.
 	 */
 	struct cache_features features;
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Size of the origin device in _complete_ blocks and native sectors.
 	 */
 	dm_oblock_t origin_blocks;
@@ -135,12 +313,20 @@ struct cache {
 	/*
 	 * Fields for converting from sectors to blocks.
 	 */
+<<<<<<< HEAD
 	uint32_t sectors_per_block;
 	int sectors_per_block_shift;
 
 	struct dm_cache_metadata *cmd;
 
 	spinlock_t lock;
+=======
+	sector_t sectors_per_block;
+	int sectors_per_block_shift;
+
+	spinlock_t lock;
+	struct list_head deferred_cells;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct bio_list deferred_bios;
 	struct bio_list deferred_flush_bios;
 	struct bio_list deferred_writethrough_bios;
@@ -148,24 +334,55 @@ struct cache {
 	struct list_head completed_migrations;
 	struct list_head need_commit_migrations;
 	sector_t migration_threshold;
+<<<<<<< HEAD
 	atomic_t nr_migrations;
 	wait_queue_head_t migration_wait;
 
 	wait_queue_head_t quiescing_wait;
+=======
+	wait_queue_head_t migration_wait;
+	atomic_t nr_allocated_migrations;
+
+	/*
+	 * The number of in flight migrations that are performing
+	 * background io. eg, promotion, writeback.
+	 */
+	atomic_t nr_io_migrations;
+
+	wait_queue_head_t quiescing_wait;
+	atomic_t quiescing;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_t quiescing_ack;
 
 	/*
 	 * cache_size entries, dirty if set
 	 */
+<<<<<<< HEAD
 	dm_cblock_t nr_dirty;
+=======
+	atomic_t nr_dirty;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long *dirty_bitset;
 
 	/*
 	 * origin_blocks entries, discarded if set.
 	 */
+<<<<<<< HEAD
 	uint32_t discard_block_size; /* a power of 2 times sectors per block */
 	dm_dblock_t discard_nr_blocks;
 	unsigned long *discard_bitset;
+=======
+	dm_dblock_t discard_nr_blocks;
+	unsigned long *discard_bitset;
+	uint32_t discard_block_size; /* a power of 2 times sectors per block */
+
+	/*
+	 * Rather than reconstructing the table line for the status we just
+	 * save it and regurgitate.
+	 */
+	unsigned nr_ctr_args;
+	const char **ctr_args;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct dm_kcopyd_client *copier;
 	struct workqueue_struct *wq;
@@ -178,18 +395,26 @@ struct cache {
 	struct dm_deferred_set *all_io_ds;
 
 	mempool_t *migration_pool;
+<<<<<<< HEAD
 	struct dm_cache_migration *next_migration;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct dm_cache_policy *policy;
 	unsigned policy_nr_args;
 
 	bool need_tick_bio:1;
 	bool sized:1;
+<<<<<<< HEAD
 	bool quiescing:1;
+=======
+	bool invalidate:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool commit_requested:1;
 	bool loaded_mappings:1;
 	bool loaded_discards:1;
 
+<<<<<<< HEAD
 	struct cache_stats stats;
 
 	/*
@@ -198,12 +423,33 @@ struct cache {
 	 */
 	unsigned nr_ctr_args;
 	const char **ctr_args;
+=======
+	/*
+	 * Cache features such as write-through.
+	 */
+	struct cache_features features;
+
+	struct cache_stats stats;
+
+	/*
+	 * Invalidation fields.
+	 */
+	spinlock_t invalidation_lock;
+	struct list_head invalidation_requests;
+
+	struct io_tracker origin_tracker;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct per_bio_data {
 	bool tick:1;
 	unsigned req_nr:2;
 	struct dm_deferred_entry *all_io_entry;
+<<<<<<< HEAD
+=======
+	struct dm_hook_info hook_info;
+	sector_t len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * writethrough fields.  These MUST remain at the end of this
@@ -212,7 +458,10 @@ struct per_bio_data {
 	 */
 	struct cache *cache;
 	dm_cblock_t cblock;
+<<<<<<< HEAD
 	bio_end_io_t *saved_bi_end_io;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dm_bio_details bio_details;
 };
 
@@ -226,9 +475,18 @@ struct dm_cache_migration {
 	dm_cblock_t cblock;
 
 	bool err:1;
+<<<<<<< HEAD
 	bool writeback:1;
 	bool demote:1;
 	bool promote:1;
+=======
+	bool discard:1;
+	bool writeback:1;
+	bool demote:1;
+	bool promote:1;
+	bool requeue_holder:1;
+	bool invalidate:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct dm_bio_prison_cell *old_ocell;
 	struct dm_bio_prison_cell *new_ocell;
@@ -245,6 +503,11 @@ struct prealloc {
 	struct dm_bio_prison_cell *cell2;
 };
 
+<<<<<<< HEAD
+=======
+static enum cache_metadata_mode get_cache_mode(struct cache *cache);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void wake_worker(struct cache *cache)
 {
 	queue_work(cache->wq, &cache->worker);
@@ -263,10 +526,40 @@ static void free_prison_cell(struct cache *cache, struct dm_bio_prison_cell *cel
 	dm_bio_prison_free_cell(cache->prison, cell);
 }
 
+<<<<<<< HEAD
 static int prealloc_data_structs(struct cache *cache, struct prealloc *p)
 {
 	if (!p->mg) {
 		p->mg = mempool_alloc(cache->migration_pool, GFP_NOWAIT);
+=======
+static struct dm_cache_migration *alloc_migration(struct cache *cache)
+{
+	struct dm_cache_migration *mg;
+
+	mg = mempool_alloc(cache->migration_pool, GFP_NOWAIT);
+	if (mg) {
+		mg->cache = cache;
+		atomic_inc(&mg->cache->nr_allocated_migrations);
+	}
+
+	return mg;
+}
+
+static void free_migration(struct dm_cache_migration *mg)
+{
+	struct cache *cache = mg->cache;
+
+	if (atomic_dec_and_test(&cache->nr_allocated_migrations))
+		wake_up(&cache->migration_wait);
+
+	mempool_free(mg, cache->migration_pool);
+}
+
+static int prealloc_data_structs(struct cache *cache, struct prealloc *p)
+{
+	if (!p->mg) {
+		p->mg = alloc_migration(cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!p->mg)
 			return -ENOMEM;
 	}
@@ -295,7 +588,11 @@ static void prealloc_free_structs(struct cache *cache, struct prealloc *p)
 		free_prison_cell(cache, p->cell1);
 
 	if (p->mg)
+<<<<<<< HEAD
 		mempool_free(p->mg, cache->migration_pool);
+=======
+		free_migration(p->mg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct dm_cache_migration *prealloc_get_migration(struct prealloc *p)
@@ -347,11 +644,20 @@ static void prealloc_put_cell(struct prealloc *p, struct dm_bio_prison_cell *cel
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void build_key(dm_oblock_t oblock, struct dm_cell_key *key)
 {
 	key->virtual = 0;
 	key->dev = 0;
 	key->block = from_oblock(oblock);
+=======
+static void build_key(dm_oblock_t begin, dm_oblock_t end, struct dm_cell_key *key)
+{
+	key->virtual = 0;
+	key->dev = 0;
+	key->block_begin = from_oblock(begin);
+	key->block_end = from_oblock(end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -361,15 +667,26 @@ static void build_key(dm_oblock_t oblock, struct dm_cell_key *key)
  */
 typedef void (*cell_free_fn)(void *context, struct dm_bio_prison_cell *cell);
 
+<<<<<<< HEAD
 static int bio_detain(struct cache *cache, dm_oblock_t oblock,
 		      struct bio *bio, struct dm_bio_prison_cell *cell_prealloc,
 		      cell_free_fn free_fn, void *free_context,
 		      struct dm_bio_prison_cell **cell_result)
+=======
+static int bio_detain_range(struct cache *cache, dm_oblock_t oblock_begin, dm_oblock_t oblock_end,
+			    struct bio *bio, struct dm_bio_prison_cell *cell_prealloc,
+			    cell_free_fn free_fn, void *free_context,
+			    struct dm_bio_prison_cell **cell_result)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int r;
 	struct dm_cell_key key;
 
+<<<<<<< HEAD
 	build_key(oblock, &key);
+=======
+	build_key(oblock_begin, oblock_end, &key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r = dm_bio_detain(cache->prison, &key, bio, cell_prealloc, cell_result);
 	if (r)
 		free_fn(free_context, cell_prealloc);
@@ -377,6 +694,19 @@ static int bio_detain(struct cache *cache, dm_oblock_t oblock,
 	return r;
 }
 
+<<<<<<< HEAD
+=======
+static int bio_detain(struct cache *cache, dm_oblock_t oblock,
+		      struct bio *bio, struct dm_bio_prison_cell *cell_prealloc,
+		      cell_free_fn free_fn, void *free_context,
+		      struct dm_bio_prison_cell **cell_result)
+{
+	dm_oblock_t end = to_oblock(from_oblock(oblock) + 1ULL);
+	return bio_detain_range(cache, oblock, end, bio,
+				cell_prealloc, free_fn, free_context, cell_result);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int get_cell(struct cache *cache,
 		    dm_oblock_t oblock,
 		    struct prealloc *structs,
@@ -388,7 +718,11 @@ static int get_cell(struct cache *cache,
 
 	cell_prealloc = prealloc_get_cell(structs);
 
+<<<<<<< HEAD
 	build_key(oblock, &key);
+=======
+	build_key(oblock, to_oblock(from_oblock(oblock) + 1ULL), &key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r = dm_get_cell(cache->prison, &key, cell_prealloc, cell_result);
 	if (r)
 		prealloc_put_cell(structs, cell_prealloc);
@@ -406,7 +740,11 @@ static bool is_dirty(struct cache *cache, dm_cblock_t b)
 static void set_dirty(struct cache *cache, dm_oblock_t oblock, dm_cblock_t cblock)
 {
 	if (!test_and_set_bit(from_cblock(cblock), cache->dirty_bitset)) {
+<<<<<<< HEAD
 		cache->nr_dirty = to_cblock(from_cblock(cache->nr_dirty) + 1);
+=======
+		atomic_inc(&cache->nr_dirty);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		policy_set_dirty(cache->policy, oblock);
 	}
 }
@@ -415,8 +753,12 @@ static void clear_dirty(struct cache *cache, dm_oblock_t oblock, dm_cblock_t cbl
 {
 	if (test_and_clear_bit(from_cblock(cblock), cache->dirty_bitset)) {
 		policy_clear_dirty(cache->policy, oblock);
+<<<<<<< HEAD
 		cache->nr_dirty = to_cblock(from_cblock(cache->nr_dirty) - 1);
 		if (!from_cblock(cache->nr_dirty))
+=======
+		if (atomic_dec_return(&cache->nr_dirty) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dm_table_event(cache->ti->table);
 	}
 }
@@ -428,6 +770,13 @@ static bool block_size_is_power_of_two(struct cache *cache)
 	return cache->sectors_per_block_shift >= 0;
 }
 
+<<<<<<< HEAD
+=======
+/* gcc on ARM generates spurious references to __udivdi3 and __umoddi3 */
+#if defined(CONFIG_ARM) && __GNUC__ == 4 && __GNUC_MINOR__ <= 6
+__always_inline
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static dm_block_t block_div(dm_block_t b, uint32_t n)
 {
 	do_div(b, n);
@@ -435,6 +784,7 @@ static dm_block_t block_div(dm_block_t b, uint32_t n)
 	return b;
 }
 
+<<<<<<< HEAD
 static dm_dblock_t oblock_to_dblock(struct cache *cache, dm_oblock_t oblock)
 {
 	uint32_t discard_blocks = cache->discard_block_size;
@@ -448,12 +798,39 @@ static dm_dblock_t oblock_to_dblock(struct cache *cache, dm_oblock_t oblock)
 	b = block_div(b, discard_blocks);
 
 	return to_dblock(b);
+=======
+static dm_block_t oblocks_per_dblock(struct cache *cache)
+{
+	dm_block_t oblocks = cache->discard_block_size;
+
+	if (block_size_is_power_of_two(cache))
+		oblocks >>= cache->sectors_per_block_shift;
+	else
+		oblocks = block_div(oblocks, cache->sectors_per_block);
+
+	return oblocks;
+}
+
+static dm_dblock_t oblock_to_dblock(struct cache *cache, dm_oblock_t oblock)
+{
+	return to_dblock(block_div(from_oblock(oblock),
+				   oblocks_per_dblock(cache)));
+}
+
+static dm_oblock_t dblock_to_oblock(struct cache *cache, dm_dblock_t dblock)
+{
+	return to_oblock(from_dblock(dblock) * oblocks_per_dblock(cache));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void set_discard(struct cache *cache, dm_dblock_t b)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	BUG_ON(from_dblock(b) >= from_dblock(cache->discard_nr_blocks));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_inc(&cache->stats.discard_count);
 
 	spin_lock_irqsave(&cache->lock, flags);
@@ -512,6 +889,12 @@ static void save_stats(struct cache *cache)
 {
 	struct dm_cache_statistics stats;
 
+<<<<<<< HEAD
+=======
+	if (get_cache_mode(cache) >= CM_READ_ONLY)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stats.read_hits = atomic_read(&cache->stats.read_hit);
 	stats.read_misses = atomic_read(&cache->stats.read_miss);
 	stats.write_hits = atomic_read(&cache->stats.write_hit);
@@ -530,9 +913,30 @@ static void save_stats(struct cache *cache)
 #define PB_DATA_SIZE_WB (offsetof(struct per_bio_data, cache))
 #define PB_DATA_SIZE_WT (sizeof(struct per_bio_data))
 
+<<<<<<< HEAD
 static size_t get_per_bio_data_size(struct cache *cache)
 {
 	return cache->features.write_through ? PB_DATA_SIZE_WT : PB_DATA_SIZE_WB;
+=======
+static bool writethrough_mode(struct cache_features *f)
+{
+	return f->io_mode == CM_IO_WRITETHROUGH;
+}
+
+static bool writeback_mode(struct cache_features *f)
+{
+	return f->io_mode == CM_IO_WRITEBACK;
+}
+
+static bool passthrough_mode(struct cache_features *f)
+{
+	return f->io_mode == CM_IO_PASSTHROUGH;
+}
+
+static size_t get_per_bio_data_size(struct cache *cache)
+{
+	return writethrough_mode(&cache->features) ? PB_DATA_SIZE_WT : PB_DATA_SIZE_WB;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct per_bio_data *get_per_bio_data(struct bio *bio, size_t data_size)
@@ -549,6 +953,10 @@ static struct per_bio_data *init_per_bio_data(struct bio *bio, size_t data_size)
 	pb->tick = false;
 	pb->req_nr = dm_bio_get_target_bio_nr(bio);
 	pb->all_io_entry = NULL;
+<<<<<<< HEAD
+=======
+	pb->len = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return pb;
 }
@@ -564,6 +972,7 @@ static void remap_to_origin(struct cache *cache, struct bio *bio)
 static void remap_to_cache(struct cache *cache, struct bio *bio,
 			   dm_cblock_t cblock)
 {
+<<<<<<< HEAD
 	sector_t bi_sector = bio->bi_sector;
 
 	bio->bi_bdev = cache->cache_dev->bdev;
@@ -573,6 +982,20 @@ static void remap_to_cache(struct cache *cache, struct bio *bio,
 	else
 		bio->bi_sector = (from_cblock(cblock) << cache->sectors_per_block_shift) |
 				(bi_sector & (cache->sectors_per_block - 1));
+=======
+	sector_t bi_sector = bio->bi_iter.bi_sector;
+	sector_t block = from_cblock(cblock);
+
+	bio->bi_bdev = cache->cache_dev->bdev;
+	if (!block_size_is_power_of_two(cache))
+		bio->bi_iter.bi_sector =
+			(block * cache->sectors_per_block) +
+			sector_div(bi_sector, cache->sectors_per_block);
+	else
+		bio->bi_iter.bi_sector =
+			(block << cache->sectors_per_block_shift) |
+			(bi_sector & (cache->sectors_per_block - 1));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void check_if_tick_bio_needed(struct cache *cache, struct bio *bio)
@@ -583,7 +1006,12 @@ static void check_if_tick_bio_needed(struct cache *cache, struct bio *bio)
 
 	spin_lock_irqsave(&cache->lock, flags);
 	if (cache->need_tick_bio &&
+<<<<<<< HEAD
 	    !(bio->bi_rw & (REQ_FUA | REQ_FLUSH | REQ_DISCARD))) {
+=======
+	    !(bio->bi_opf & (REQ_FUA | REQ_PREFLUSH)) &&
+	    bio_op(bio) != REQ_OP_DISCARD) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pb->tick = true;
 		cache->need_tick_bio = false;
 	}
@@ -602,6 +1030,10 @@ static void remap_to_origin_clear_discard(struct cache *cache, struct bio *bio,
 static void remap_to_cache_dirty(struct cache *cache, struct bio *bio,
 				 dm_oblock_t oblock, dm_cblock_t cblock)
 {
+<<<<<<< HEAD
+=======
+	check_if_tick_bio_needed(cache, bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	remap_to_cache(cache, bio, cblock);
 	if (bio_data_dir(bio) == WRITE) {
 		set_dirty(cache, oblock, cblock);
@@ -611,7 +1043,11 @@ static void remap_to_cache_dirty(struct cache *cache, struct bio *bio,
 
 static dm_oblock_t get_bio_block(struct cache *cache, struct bio *bio)
 {
+<<<<<<< HEAD
 	sector_t block_nr = bio->bi_sector;
+=======
+	sector_t block_nr = bio->bi_iter.bi_sector;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!block_size_is_power_of_two(cache))
 		(void) sector_div(block_nr, cache->sectors_per_block);
@@ -623,7 +1059,58 @@ static dm_oblock_t get_bio_block(struct cache *cache, struct bio *bio)
 
 static int bio_triggers_commit(struct cache *cache, struct bio *bio)
 {
+<<<<<<< HEAD
 	return bio->bi_rw & (REQ_FLUSH | REQ_FUA);
+=======
+	return bio->bi_opf & (REQ_PREFLUSH | REQ_FUA);
+}
+
+/*
+ * You must increment the deferred set whilst the prison cell is held.  To
+ * encourage this, we ask for 'cell' to be passed in.
+ */
+static void inc_ds(struct cache *cache, struct bio *bio,
+		   struct dm_bio_prison_cell *cell)
+{
+	size_t pb_data_size = get_per_bio_data_size(cache);
+	struct per_bio_data *pb = get_per_bio_data(bio, pb_data_size);
+
+	BUG_ON(!cell);
+	BUG_ON(pb->all_io_entry);
+
+	pb->all_io_entry = dm_deferred_entry_inc(cache->all_io_ds);
+}
+
+static bool accountable_bio(struct cache *cache, struct bio *bio)
+{
+	return ((bio->bi_bdev == cache->origin_dev->bdev) &&
+		bio_op(bio) != REQ_OP_DISCARD);
+}
+
+static void accounted_begin(struct cache *cache, struct bio *bio)
+{
+	size_t pb_data_size = get_per_bio_data_size(cache);
+	struct per_bio_data *pb = get_per_bio_data(bio, pb_data_size);
+
+	if (accountable_bio(cache, bio)) {
+		pb->len = bio_sectors(bio);
+		iot_io_begin(&cache->origin_tracker, pb->len);
+	}
+}
+
+static void accounted_complete(struct cache *cache, struct bio *bio)
+{
+	size_t pb_data_size = get_per_bio_data_size(cache);
+	struct per_bio_data *pb = get_per_bio_data(bio, pb_data_size);
+
+	iot_io_end(&cache->origin_tracker, pb->len);
+}
+
+static void accounted_request(struct cache *cache, struct bio *bio)
+{
+	accounted_begin(cache, bio);
+	generic_make_request(bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void issue(struct cache *cache, struct bio *bio)
@@ -631,7 +1118,11 @@ static void issue(struct cache *cache, struct bio *bio)
 	unsigned long flags;
 
 	if (!bio_triggers_commit(cache, bio)) {
+<<<<<<< HEAD
 		generic_make_request(bio);
+=======
+		accounted_request(cache, bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -645,6 +1136,15 @@ static void issue(struct cache *cache, struct bio *bio)
 	spin_unlock_irqrestore(&cache->lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+static void inc_and_issue(struct cache *cache, struct bio *bio, struct dm_bio_prison_cell *cell)
+{
+	inc_ds(cache, bio, cell);
+	issue(cache, bio);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void defer_writethrough_bio(struct cache *cache, struct bio *bio)
 {
 	unsigned long flags;
@@ -656,6 +1156,7 @@ static void defer_writethrough_bio(struct cache *cache, struct bio *bio)
 	wake_worker(cache);
 }
 
+<<<<<<< HEAD
 static void writethrough_endio(struct bio *bio, int err)
 {
 	struct per_bio_data *pb = get_per_bio_data(bio, PB_DATA_SIZE_WT);
@@ -663,6 +1164,16 @@ static void writethrough_endio(struct bio *bio, int err)
 
 	if (err) {
 		bio_endio(bio, err);
+=======
+static void writethrough_endio(struct bio *bio)
+{
+	struct per_bio_data *pb = get_per_bio_data(bio, PB_DATA_SIZE_WT);
+
+	dm_unhook_bio(&pb->hook_info, bio);
+
+	if (bio->bi_error) {
+		bio_endio(bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -690,19 +1201,121 @@ static void remap_to_origin_then_cache(struct cache *cache, struct bio *bio,
 
 	pb->cache = cache;
 	pb->cblock = cblock;
+<<<<<<< HEAD
 	pb->saved_bi_end_io = bio->bi_end_io;
 	dm_bio_record(&pb->bio_details, bio);
 	bio->bi_end_io = writethrough_endio;
+=======
+	dm_hook_bio(&pb->hook_info, bio, writethrough_endio, NULL);
+	dm_bio_record(&pb->bio_details, bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	remap_to_origin_clear_discard(pb->cache, bio, oblock);
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
+=======
+ * Failure modes
+ *--------------------------------------------------------------*/
+static enum cache_metadata_mode get_cache_mode(struct cache *cache)
+{
+	return cache->features.mode;
+}
+
+static const char *cache_device_name(struct cache *cache)
+{
+	return dm_device_name(dm_table_get_md(cache->ti->table));
+}
+
+static void notify_mode_switch(struct cache *cache, enum cache_metadata_mode mode)
+{
+	const char *descs[] = {
+		"write",
+		"read-only",
+		"fail"
+	};
+
+	dm_table_event(cache->ti->table);
+	DMINFO("%s: switching cache to %s mode",
+	       cache_device_name(cache), descs[(int)mode]);
+}
+
+static void set_cache_mode(struct cache *cache, enum cache_metadata_mode new_mode)
+{
+	bool needs_check;
+	enum cache_metadata_mode old_mode = get_cache_mode(cache);
+
+	if (dm_cache_metadata_needs_check(cache->cmd, &needs_check)) {
+		DMERR("unable to read needs_check flag, setting failure mode");
+		new_mode = CM_FAIL;
+	}
+
+	if (new_mode == CM_WRITE && needs_check) {
+		DMERR("%s: unable to switch cache to write mode until repaired.",
+		      cache_device_name(cache));
+		if (old_mode != new_mode)
+			new_mode = old_mode;
+		else
+			new_mode = CM_READ_ONLY;
+	}
+
+	/* Never move out of fail mode */
+	if (old_mode == CM_FAIL)
+		new_mode = CM_FAIL;
+
+	switch (new_mode) {
+	case CM_FAIL:
+	case CM_READ_ONLY:
+		dm_cache_metadata_set_read_only(cache->cmd);
+		break;
+
+	case CM_WRITE:
+		dm_cache_metadata_set_read_write(cache->cmd);
+		break;
+	}
+
+	cache->features.mode = new_mode;
+
+	if (new_mode != old_mode)
+		notify_mode_switch(cache, new_mode);
+}
+
+static void abort_transaction(struct cache *cache)
+{
+	const char *dev_name = cache_device_name(cache);
+
+	if (get_cache_mode(cache) >= CM_READ_ONLY)
+		return;
+
+	if (dm_cache_metadata_set_needs_check(cache->cmd)) {
+		DMERR("%s: failed to set 'needs_check' flag in metadata", dev_name);
+		set_cache_mode(cache, CM_FAIL);
+	}
+
+	DMERR_LIMIT("%s: aborting current metadata transaction", dev_name);
+	if (dm_cache_metadata_abort(cache->cmd)) {
+		DMERR("%s: failed to abort metadata transaction", dev_name);
+		set_cache_mode(cache, CM_FAIL);
+	}
+}
+
+static void metadata_operation_failed(struct cache *cache, const char *op, int r)
+{
+	DMERR_LIMIT("%s: metadata operation '%s' failed: error = %d",
+		    cache_device_name(cache), op, r);
+	abort_transaction(cache);
+	set_cache_mode(cache, CM_READ_ONLY);
+}
+
+/*----------------------------------------------------------------
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Migration processing
  *
  * Migration covers moving data from the origin device to the cache, or
  * vice versa.
  *--------------------------------------------------------------*/
+<<<<<<< HEAD
 static void free_migration(struct dm_cache_migration *mg)
 {
 	mempool_free(mg, mg->cache->migration_pool);
@@ -738,28 +1351,102 @@ static void cell_defer(struct cache *cache, struct dm_bio_prison_cell *cell,
 
 	spin_lock_irqsave(&cache->lock, flags);
 	__cell_defer(cache, cell, holder);
+=======
+static void inc_io_migrations(struct cache *cache)
+{
+	atomic_inc(&cache->nr_io_migrations);
+}
+
+static void dec_io_migrations(struct cache *cache)
+{
+	atomic_dec(&cache->nr_io_migrations);
+}
+
+static bool discard_or_flush(struct bio *bio)
+{
+	return bio_op(bio) == REQ_OP_DISCARD ||
+	       bio->bi_opf & (REQ_PREFLUSH | REQ_FUA);
+}
+
+static void __cell_defer(struct cache *cache, struct dm_bio_prison_cell *cell)
+{
+	if (discard_or_flush(cell->holder)) {
+		/*
+		 * We have to handle these bios individually.
+		 */
+		dm_cell_release(cache->prison, cell, &cache->deferred_bios);
+		free_prison_cell(cache, cell);
+	} else
+		list_add_tail(&cell->user_list, &cache->deferred_cells);
+}
+
+static void cell_defer(struct cache *cache, struct dm_bio_prison_cell *cell, bool holder)
+{
+	unsigned long flags;
+
+	if (!holder && dm_cell_promote_or_release(cache->prison, cell)) {
+		/*
+		 * There was no prisoner to promote to holder, the
+		 * cell has been released.
+		 */
+		free_prison_cell(cache, cell);
+		return;
+	}
+
+	spin_lock_irqsave(&cache->lock, flags);
+	__cell_defer(cache, cell);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&cache->lock, flags);
 
 	wake_worker(cache);
 }
 
+<<<<<<< HEAD
 static void cleanup_migration(struct dm_cache_migration *mg)
 {
 	struct cache *cache = mg->cache;
 	free_migration(mg);
 	dec_nr_migrations(cache);
+=======
+static void cell_error_with_code(struct cache *cache, struct dm_bio_prison_cell *cell, int err)
+{
+	dm_cell_error(cache->prison, cell, err);
+	free_prison_cell(cache, cell);
+}
+
+static void cell_requeue(struct cache *cache, struct dm_bio_prison_cell *cell)
+{
+	cell_error_with_code(cache, cell, DM_ENDIO_REQUEUE);
+}
+
+static void free_io_migration(struct dm_cache_migration *mg)
+{
+	struct cache *cache = mg->cache;
+
+	dec_io_migrations(cache);
+	free_migration(mg);
+	wake_worker(cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void migration_failure(struct dm_cache_migration *mg)
 {
 	struct cache *cache = mg->cache;
+<<<<<<< HEAD
 
 	if (mg->writeback) {
 		DMWARN_LIMIT("writeback failed; couldn't copy block");
+=======
+	const char *dev_name = cache_device_name(cache);
+
+	if (mg->writeback) {
+		DMERR_LIMIT("%s: writeback failed; couldn't copy block", dev_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_dirty(cache, mg->old_oblock, mg->cblock);
 		cell_defer(cache, mg->old_ocell, false);
 
 	} else if (mg->demote) {
+<<<<<<< HEAD
 		DMWARN_LIMIT("demotion failed; couldn't copy block");
 		policy_force_mapping(cache->policy, mg->new_oblock, mg->old_oblock);
 
@@ -773,14 +1460,34 @@ static void migration_failure(struct dm_cache_migration *mg)
 	}
 
 	cleanup_migration(mg);
+=======
+		DMERR_LIMIT("%s: demotion failed; couldn't copy block", dev_name);
+		policy_force_mapping(cache->policy, mg->new_oblock, mg->old_oblock);
+
+		cell_defer(cache, mg->old_ocell, mg->promote ? false : true);
+		if (mg->promote)
+			cell_defer(cache, mg->new_ocell, true);
+	} else {
+		DMERR_LIMIT("%s: promotion failed; couldn't copy block", dev_name);
+		policy_remove_mapping(cache->policy, mg->new_oblock);
+		cell_defer(cache, mg->new_ocell, true);
+	}
+
+	free_io_migration(mg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void migration_success_pre_commit(struct dm_cache_migration *mg)
 {
+<<<<<<< HEAD
+=======
+	int r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	struct cache *cache = mg->cache;
 
 	if (mg->writeback) {
+<<<<<<< HEAD
 		cell_defer(cache, mg->old_ocell, false);
 		clear_dirty(cache, mg->old_oblock, mg->cblock);
 		cleanup_migration(mg);
@@ -789,10 +1496,24 @@ static void migration_success_pre_commit(struct dm_cache_migration *mg)
 	} else if (mg->demote) {
 		if (dm_cache_remove_mapping(cache->cmd, mg->cblock)) {
 			DMWARN_LIMIT("demotion failed; couldn't update on disk metadata");
+=======
+		clear_dirty(cache, mg->old_oblock, mg->cblock);
+		cell_defer(cache, mg->old_ocell, false);
+		free_io_migration(mg);
+		return;
+
+	} else if (mg->demote) {
+		r = dm_cache_remove_mapping(cache->cmd, mg->cblock);
+		if (r) {
+			DMERR_LIMIT("%s: demotion failed; couldn't update on disk metadata",
+				    cache_device_name(cache));
+			metadata_operation_failed(cache, "dm_cache_remove_mapping", r);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			policy_force_mapping(cache->policy, mg->new_oblock,
 					     mg->old_oblock);
 			if (mg->promote)
 				cell_defer(cache, mg->new_ocell, true);
+<<<<<<< HEAD
 			cleanup_migration(mg);
 			return;
 		}
@@ -801,6 +1522,19 @@ static void migration_success_pre_commit(struct dm_cache_migration *mg)
 			DMWARN_LIMIT("promotion failed; couldn't update on disk metadata");
 			policy_remove_mapping(cache->policy, mg->new_oblock);
 			cleanup_migration(mg);
+=======
+			free_io_migration(mg);
+			return;
+		}
+	} else {
+		r = dm_cache_insert_mapping(cache->cmd, mg->cblock, mg->new_oblock);
+		if (r) {
+			DMERR_LIMIT("%s: promotion failed; couldn't update on disk metadata",
+				    cache_device_name(cache));
+			metadata_operation_failed(cache, "dm_cache_insert_mapping", r);
+			policy_remove_mapping(cache->policy, mg->new_oblock);
+			free_io_migration(mg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 		}
 	}
@@ -817,11 +1551,20 @@ static void migration_success_post_commit(struct dm_cache_migration *mg)
 	struct cache *cache = mg->cache;
 
 	if (mg->writeback) {
+<<<<<<< HEAD
 		DMWARN("writeback unexpectedly triggered commit");
 		return;
 
 	} else if (mg->demote) {
 		cell_defer(cache, mg->old_ocell, mg->promote ? 0 : 1);
+=======
+		DMWARN_LIMIT("%s: writeback unexpectedly triggered commit",
+			     cache_device_name(cache));
+		return;
+
+	} else if (mg->demote) {
+		cell_defer(cache, mg->old_ocell, mg->promote ? false : true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (mg->promote) {
 			mg->demote = false;
@@ -830,6 +1573,7 @@ static void migration_success_post_commit(struct dm_cache_migration *mg)
 			list_add_tail(&mg->list, &cache->quiesced_migrations);
 			spin_unlock_irqrestore(&cache->lock, flags);
 
+<<<<<<< HEAD
 		} else
 			cleanup_migration(mg);
 
@@ -837,6 +1581,27 @@ static void migration_success_post_commit(struct dm_cache_migration *mg)
 		cell_defer(cache, mg->new_ocell, true);
 		clear_dirty(cache, mg->new_oblock, mg->cblock);
 		cleanup_migration(mg);
+=======
+		} else {
+			if (mg->invalidate)
+				policy_remove_mapping(cache->policy, mg->old_oblock);
+			free_io_migration(mg);
+		}
+
+	} else {
+		if (mg->requeue_holder) {
+			clear_dirty(cache, mg->new_oblock, mg->cblock);
+			cell_defer(cache, mg->new_ocell, true);
+		} else {
+			/*
+			 * The block was promoted via an overwrite, so it's dirty.
+			 */
+			set_dirty(cache, mg->new_oblock, mg->cblock);
+			bio_endio(mg->new_ocell->holder);
+			cell_defer(cache, mg->new_ocell, false);
+		}
+		free_io_migration(mg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -856,7 +1621,11 @@ static void copy_complete(int read_err, unsigned long write_err, void *context)
 	wake_worker(cache);
 }
 
+<<<<<<< HEAD
 static void issue_copy_real(struct dm_cache_migration *mg)
+=======
+static void issue_copy(struct dm_cache_migration *mg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int r;
 	struct dm_io_region o_region, c_region;
@@ -880,8 +1649,58 @@ static void issue_copy_real(struct dm_cache_migration *mg)
 		r = dm_kcopyd_copy(cache->copier, &o_region, 1, &c_region, 0, copy_complete, mg);
 	}
 
+<<<<<<< HEAD
 	if (r < 0)
 		migration_failure(mg);
+=======
+	if (r < 0) {
+		DMERR_LIMIT("%s: issuing migration failed", cache_device_name(cache));
+		migration_failure(mg);
+	}
+}
+
+static void overwrite_endio(struct bio *bio)
+{
+	struct dm_cache_migration *mg = bio->bi_private;
+	struct cache *cache = mg->cache;
+	size_t pb_data_size = get_per_bio_data_size(cache);
+	struct per_bio_data *pb = get_per_bio_data(bio, pb_data_size);
+	unsigned long flags;
+
+	dm_unhook_bio(&pb->hook_info, bio);
+
+	if (bio->bi_error)
+		mg->err = true;
+
+	mg->requeue_holder = false;
+
+	spin_lock_irqsave(&cache->lock, flags);
+	list_add_tail(&mg->list, &cache->completed_migrations);
+	spin_unlock_irqrestore(&cache->lock, flags);
+
+	wake_worker(cache);
+}
+
+static void issue_overwrite(struct dm_cache_migration *mg, struct bio *bio)
+{
+	size_t pb_data_size = get_per_bio_data_size(mg->cache);
+	struct per_bio_data *pb = get_per_bio_data(bio, pb_data_size);
+
+	dm_hook_bio(&pb->hook_info, bio, overwrite_endio, mg);
+	remap_to_cache_dirty(mg->cache, bio, mg->new_oblock, mg->cblock);
+
+	/*
+	 * No need to inc_ds() here, since the cell will be held for the
+	 * duration of the io.
+	 */
+	accounted_request(mg->cache, bio);
+}
+
+static bool bio_writes_complete_block(struct cache *cache, struct bio *bio)
+{
+	return (bio_data_dir(bio) == WRITE) &&
+		(bio->bi_iter.bi_size == (cache->sectors_per_block << SECTOR_SHIFT));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void avoid_copy(struct dm_cache_migration *mg)
@@ -890,11 +1709,48 @@ static void avoid_copy(struct dm_cache_migration *mg)
 	migration_success_pre_commit(mg);
 }
 
+<<<<<<< HEAD
 static void issue_copy(struct dm_cache_migration *mg)
+=======
+static void calc_discard_block_range(struct cache *cache, struct bio *bio,
+				     dm_dblock_t *b, dm_dblock_t *e)
+{
+	sector_t sb = bio->bi_iter.bi_sector;
+	sector_t se = bio_end_sector(bio);
+
+	*b = to_dblock(dm_sector_div_up(sb, cache->discard_block_size));
+
+	if (se - sb < cache->discard_block_size)
+		*e = *b;
+	else
+		*e = to_dblock(block_div(se, cache->discard_block_size));
+}
+
+static void issue_discard(struct dm_cache_migration *mg)
+{
+	dm_dblock_t b, e;
+	struct bio *bio = mg->new_ocell->holder;
+	struct cache *cache = mg->cache;
+
+	calc_discard_block_range(cache, bio, &b, &e);
+	while (b != e) {
+		set_discard(cache, b);
+		b = to_dblock(from_dblock(b) + 1);
+	}
+
+	bio_endio(bio);
+	cell_defer(cache, mg->new_ocell, false);
+	free_migration(mg);
+	wake_worker(cache);
+}
+
+static void issue_copy_or_discard(struct dm_cache_migration *mg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	bool avoid;
 	struct cache *cache = mg->cache;
 
+<<<<<<< HEAD
 	if (mg->writeback || mg->demote)
 		avoid = !is_dirty(cache, mg->cblock) ||
 			is_discarded_oblock(cache, mg->old_oblock);
@@ -902,6 +1758,29 @@ static void issue_copy(struct dm_cache_migration *mg)
 		avoid = is_discarded_oblock(cache, mg->new_oblock);
 
 	avoid ? avoid_copy(mg) : issue_copy_real(mg);
+=======
+	if (mg->discard) {
+		issue_discard(mg);
+		return;
+	}
+
+	if (mg->writeback || mg->demote)
+		avoid = !is_dirty(cache, mg->cblock) ||
+			is_discarded_oblock(cache, mg->old_oblock);
+	else {
+		struct bio *bio = mg->new_ocell->holder;
+
+		avoid = is_discarded_oblock(cache, mg->new_oblock);
+
+		if (writeback_mode(&cache->features) &&
+		    !avoid && bio_writes_complete_block(cache, bio)) {
+			issue_overwrite(mg, bio);
+			return;
+		}
+	}
+
+	avoid ? avoid_copy(mg) : issue_copy(mg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void complete_migration(struct dm_cache_migration *mg)
@@ -967,8 +1846,12 @@ static void check_for_quiesced_migrations(struct cache *cache,
 		return;
 
 	INIT_LIST_HEAD(&work);
+<<<<<<< HEAD
 	if (pb->all_io_entry)
 		dm_deferred_entry_dec(pb->all_io_entry, &work);
+=======
+	dm_deferred_entry_dec(pb->all_io_entry, &work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!list_empty(&work))
 		queue_quiesced_migrations(cache, &work);
@@ -987,9 +1870,18 @@ static void promote(struct cache *cache, struct prealloc *structs,
 	struct dm_cache_migration *mg = prealloc_get_migration(structs);
 
 	mg->err = false;
+<<<<<<< HEAD
 	mg->writeback = false;
 	mg->demote = false;
 	mg->promote = true;
+=======
+	mg->discard = false;
+	mg->writeback = false;
+	mg->demote = false;
+	mg->promote = true;
+	mg->requeue_holder = true;
+	mg->invalidate = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mg->cache = cache;
 	mg->new_oblock = oblock;
 	mg->cblock = cblock;
@@ -997,7 +1889,11 @@ static void promote(struct cache *cache, struct prealloc *structs,
 	mg->new_ocell = cell;
 	mg->start_jiffies = jiffies;
 
+<<<<<<< HEAD
 	inc_nr_migrations(cache);
+=======
+	inc_io_migrations(cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	quiesce_migration(mg);
 }
 
@@ -1008,9 +1904,18 @@ static void writeback(struct cache *cache, struct prealloc *structs,
 	struct dm_cache_migration *mg = prealloc_get_migration(structs);
 
 	mg->err = false;
+<<<<<<< HEAD
 	mg->writeback = true;
 	mg->demote = false;
 	mg->promote = false;
+=======
+	mg->discard = false;
+	mg->writeback = true;
+	mg->demote = false;
+	mg->promote = false;
+	mg->requeue_holder = true;
+	mg->invalidate = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mg->cache = cache;
 	mg->old_oblock = oblock;
 	mg->cblock = cblock;
@@ -1018,7 +1923,11 @@ static void writeback(struct cache *cache, struct prealloc *structs,
 	mg->new_ocell = NULL;
 	mg->start_jiffies = jiffies;
 
+<<<<<<< HEAD
 	inc_nr_migrations(cache);
+=======
+	inc_io_migrations(cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	quiesce_migration(mg);
 }
 
@@ -1031,9 +1940,18 @@ static void demote_then_promote(struct cache *cache, struct prealloc *structs,
 	struct dm_cache_migration *mg = prealloc_get_migration(structs);
 
 	mg->err = false;
+<<<<<<< HEAD
 	mg->writeback = false;
 	mg->demote = true;
 	mg->promote = true;
+=======
+	mg->discard = false;
+	mg->writeback = false;
+	mg->demote = true;
+	mg->promote = true;
+	mg->requeue_holder = true;
+	mg->invalidate = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mg->cache = cache;
 	mg->old_oblock = old_oblock;
 	mg->new_oblock = new_oblock;
@@ -1042,7 +1960,59 @@ static void demote_then_promote(struct cache *cache, struct prealloc *structs,
 	mg->new_ocell = new_ocell;
 	mg->start_jiffies = jiffies;
 
+<<<<<<< HEAD
 	inc_nr_migrations(cache);
+=======
+	inc_io_migrations(cache);
+	quiesce_migration(mg);
+}
+
+/*
+ * Invalidate a cache entry.  No writeback occurs; any changes in the cache
+ * block are thrown away.
+ */
+static void invalidate(struct cache *cache, struct prealloc *structs,
+		       dm_oblock_t oblock, dm_cblock_t cblock,
+		       struct dm_bio_prison_cell *cell)
+{
+	struct dm_cache_migration *mg = prealloc_get_migration(structs);
+
+	mg->err = false;
+	mg->discard = false;
+	mg->writeback = false;
+	mg->demote = true;
+	mg->promote = false;
+	mg->requeue_holder = true;
+	mg->invalidate = true;
+	mg->cache = cache;
+	mg->old_oblock = oblock;
+	mg->cblock = cblock;
+	mg->old_ocell = cell;
+	mg->new_ocell = NULL;
+	mg->start_jiffies = jiffies;
+
+	inc_io_migrations(cache);
+	quiesce_migration(mg);
+}
+
+static void discard(struct cache *cache, struct prealloc *structs,
+		    struct dm_bio_prison_cell *cell)
+{
+	struct dm_cache_migration *mg = prealloc_get_migration(structs);
+
+	mg->err = false;
+	mg->discard = true;
+	mg->writeback = false;
+	mg->demote = false;
+	mg->promote = false;
+	mg->requeue_holder = false;
+	mg->invalidate = false;
+	mg->cache = cache;
+	mg->old_ocell = NULL;
+	mg->new_ocell = cell;
+	mg->start_jiffies = jiffies;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	quiesce_migration(mg);
 }
 
@@ -1065,12 +2035,17 @@ static void process_flush_bio(struct cache *cache, struct bio *bio)
 	size_t pb_data_size = get_per_bio_data_size(cache);
 	struct per_bio_data *pb = get_per_bio_data(bio, pb_data_size);
 
+<<<<<<< HEAD
 	BUG_ON(bio->bi_size);
+=======
+	BUG_ON(bio->bi_iter.bi_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pb->req_nr)
 		remap_to_origin(cache, bio);
 	else
 		remap_to_cache(cache, bio, 0);
 
+<<<<<<< HEAD
 	issue(cache, bio);
 }
 
@@ -1099,15 +2074,51 @@ static void process_discard_bio(struct cache *cache, struct bio *bio)
 		set_discard(cache, to_dblock(b));
 
 	bio_endio(bio, 0);
+=======
+	/*
+	 * REQ_PREFLUSH is not directed at any particular block so we don't
+	 * need to inc_ds().  REQ_FUA's are split into a write + REQ_PREFLUSH
+	 * by dm-core.
+	 */
+	issue(cache, bio);
+}
+
+static void process_discard_bio(struct cache *cache, struct prealloc *structs,
+				struct bio *bio)
+{
+	int r;
+	dm_dblock_t b, e;
+	struct dm_bio_prison_cell *cell_prealloc, *new_ocell;
+
+	calc_discard_block_range(cache, bio, &b, &e);
+	if (b == e) {
+		bio_endio(bio);
+		return;
+	}
+
+	cell_prealloc = prealloc_get_cell(structs);
+	r = bio_detain_range(cache, dblock_to_oblock(cache, b), dblock_to_oblock(cache, e), bio, cell_prealloc,
+			     (cell_free_fn) prealloc_put_cell,
+			     structs, &new_ocell);
+	if (r > 0)
+		return;
+
+	discard(cache, structs, new_ocell);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool spare_migration_bandwidth(struct cache *cache)
 {
+<<<<<<< HEAD
 	sector_t current_volume = (atomic_read(&cache->nr_migrations) + 1) *
+=======
+	sector_t current_volume = (atomic_read(&cache->nr_io_migrations) + 1) *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cache->sectors_per_block;
 	return current_volume < cache->migration_threshold;
 }
 
+<<<<<<< HEAD
 static bool is_writethrough_io(struct cache *cache, struct bio *bio,
 			       dm_cblock_t cblock)
 {
@@ -1115,6 +2126,8 @@ static bool is_writethrough_io(struct cache *cache, struct bio *bio,
 		cache->features.write_through && !is_dirty(cache, cblock);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void inc_hit_counter(struct cache *cache, struct bio *bio)
 {
 	atomic_inc(bio_data_dir(bio) == READ ?
@@ -1127,6 +2140,7 @@ static void inc_miss_counter(struct cache *cache, struct bio *bio)
 		   &cache->stats.read_miss : &cache->stats.write_miss);
 }
 
+<<<<<<< HEAD
 static void process_bio(struct cache *cache, struct prealloc *structs,
 			struct bio *bio)
 {
@@ -1152,6 +2166,160 @@ static void process_bio(struct cache *cache, struct prealloc *structs,
 
 	r = policy_map(cache->policy, block, true, can_migrate, discarded_block,
 		       bio, &lookup_result);
+=======
+/*----------------------------------------------------------------*/
+
+struct inc_detail {
+	struct cache *cache;
+	struct bio_list bios_for_issue;
+	struct bio_list unhandled_bios;
+	bool any_writes;
+};
+
+static void inc_fn(void *context, struct dm_bio_prison_cell *cell)
+{
+	struct bio *bio;
+	struct inc_detail *detail = context;
+	struct cache *cache = detail->cache;
+
+	inc_ds(cache, cell->holder, cell);
+	if (bio_data_dir(cell->holder) == WRITE)
+		detail->any_writes = true;
+
+	while ((bio = bio_list_pop(&cell->bios))) {
+		if (discard_or_flush(bio)) {
+			bio_list_add(&detail->unhandled_bios, bio);
+			continue;
+		}
+
+		if (bio_data_dir(bio) == WRITE)
+			detail->any_writes = true;
+
+		bio_list_add(&detail->bios_for_issue, bio);
+		inc_ds(cache, bio, cell);
+	}
+}
+
+// FIXME: refactor these two
+static void remap_cell_to_origin_clear_discard(struct cache *cache,
+					       struct dm_bio_prison_cell *cell,
+					       dm_oblock_t oblock, bool issue_holder)
+{
+	struct bio *bio;
+	unsigned long flags;
+	struct inc_detail detail;
+
+	detail.cache = cache;
+	bio_list_init(&detail.bios_for_issue);
+	bio_list_init(&detail.unhandled_bios);
+	detail.any_writes = false;
+
+	spin_lock_irqsave(&cache->lock, flags);
+	dm_cell_visit_release(cache->prison, inc_fn, &detail, cell);
+	bio_list_merge(&cache->deferred_bios, &detail.unhandled_bios);
+	spin_unlock_irqrestore(&cache->lock, flags);
+
+	remap_to_origin(cache, cell->holder);
+	if (issue_holder)
+		issue(cache, cell->holder);
+	else
+		accounted_begin(cache, cell->holder);
+
+	if (detail.any_writes)
+		clear_discard(cache, oblock_to_dblock(cache, oblock));
+
+	while ((bio = bio_list_pop(&detail.bios_for_issue))) {
+		remap_to_origin(cache, bio);
+		issue(cache, bio);
+	}
+
+	free_prison_cell(cache, cell);
+}
+
+static void remap_cell_to_cache_dirty(struct cache *cache, struct dm_bio_prison_cell *cell,
+				      dm_oblock_t oblock, dm_cblock_t cblock, bool issue_holder)
+{
+	struct bio *bio;
+	unsigned long flags;
+	struct inc_detail detail;
+
+	detail.cache = cache;
+	bio_list_init(&detail.bios_for_issue);
+	bio_list_init(&detail.unhandled_bios);
+	detail.any_writes = false;
+
+	spin_lock_irqsave(&cache->lock, flags);
+	dm_cell_visit_release(cache->prison, inc_fn, &detail, cell);
+	bio_list_merge(&cache->deferred_bios, &detail.unhandled_bios);
+	spin_unlock_irqrestore(&cache->lock, flags);
+
+	remap_to_cache(cache, cell->holder, cblock);
+	if (issue_holder)
+		issue(cache, cell->holder);
+	else
+		accounted_begin(cache, cell->holder);
+
+	if (detail.any_writes) {
+		set_dirty(cache, oblock, cblock);
+		clear_discard(cache, oblock_to_dblock(cache, oblock));
+	}
+
+	while ((bio = bio_list_pop(&detail.bios_for_issue))) {
+		remap_to_cache(cache, bio, cblock);
+		issue(cache, bio);
+	}
+
+	free_prison_cell(cache, cell);
+}
+
+/*----------------------------------------------------------------*/
+
+struct old_oblock_lock {
+	struct policy_locker locker;
+	struct cache *cache;
+	struct prealloc *structs;
+	struct dm_bio_prison_cell *cell;
+};
+
+static int null_locker(struct policy_locker *locker, dm_oblock_t b)
+{
+	/* This should never be called */
+	BUG();
+	return 0;
+}
+
+static int cell_locker(struct policy_locker *locker, dm_oblock_t b)
+{
+	struct old_oblock_lock *l = container_of(locker, struct old_oblock_lock, locker);
+	struct dm_bio_prison_cell *cell_prealloc = prealloc_get_cell(l->structs);
+
+	return bio_detain(l->cache, b, NULL, cell_prealloc,
+			  (cell_free_fn) prealloc_put_cell,
+			  l->structs, &l->cell);
+}
+
+static void process_cell(struct cache *cache, struct prealloc *structs,
+			 struct dm_bio_prison_cell *new_ocell)
+{
+	int r;
+	bool release_cell = true;
+	struct bio *bio = new_ocell->holder;
+	dm_oblock_t block = get_bio_block(cache, bio);
+	struct policy_result lookup_result;
+	bool passthrough = passthrough_mode(&cache->features);
+	bool fast_promotion, can_migrate;
+	struct old_oblock_lock ool;
+
+	fast_promotion = is_discarded_oblock(cache, block) || bio_writes_complete_block(cache, bio);
+	can_migrate = !passthrough && (fast_promotion || spare_migration_bandwidth(cache));
+
+	ool.locker.fn = cell_locker;
+	ool.cache = cache;
+	ool.structs = structs;
+	ool.cell = NULL;
+	r = policy_map(cache->policy, block, true, can_migrate, fast_promotion,
+		       bio, &ool.locker, &lookup_result);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (r == -EWOULDBLOCK)
 		/* migration has been denied */
@@ -1159,6 +2327,7 @@ static void process_bio(struct cache *cache, struct prealloc *structs,
 
 	switch (lookup_result.op) {
 	case POLICY_HIT:
+<<<<<<< HEAD
 		inc_hit_counter(cache, bio);
 		pb->all_io_entry = dm_deferred_entry_inc(cache->all_io_ds);
 
@@ -1168,13 +2337,54 @@ static void process_bio(struct cache *cache, struct prealloc *structs,
 			remap_to_cache_dirty(cache, bio, block, lookup_result.cblock);
 
 		issue(cache, bio);
+=======
+		if (passthrough) {
+			inc_miss_counter(cache, bio);
+
+			/*
+			 * Passthrough always maps to the origin,
+			 * invalidating any cache blocks that are written
+			 * to.
+			 */
+
+			if (bio_data_dir(bio) == WRITE) {
+				atomic_inc(&cache->stats.demotion);
+				invalidate(cache, structs, block, lookup_result.cblock, new_ocell);
+				release_cell = false;
+
+			} else {
+				/* FIXME: factor out issue_origin() */
+				remap_to_origin_clear_discard(cache, bio, block);
+				inc_and_issue(cache, bio, new_ocell);
+			}
+		} else {
+			inc_hit_counter(cache, bio);
+
+			if (bio_data_dir(bio) == WRITE &&
+			    writethrough_mode(&cache->features) &&
+			    !is_dirty(cache, lookup_result.cblock)) {
+				remap_to_origin_then_cache(cache, bio, block, lookup_result.cblock);
+				inc_and_issue(cache, bio, new_ocell);
+
+			} else {
+				remap_cell_to_cache_dirty(cache, new_ocell, block, lookup_result.cblock, true);
+				release_cell = false;
+			}
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case POLICY_MISS:
 		inc_miss_counter(cache, bio);
+<<<<<<< HEAD
 		pb->all_io_entry = dm_deferred_entry_inc(cache->all_io_ds);
 		remap_to_origin_clear_discard(cache, bio, block);
 		issue(cache, bio);
+=======
+		remap_cell_to_origin_clear_discard(cache, new_ocell, block, true);
+		release_cell = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case POLICY_NEW:
@@ -1184,6 +2394,7 @@ static void process_bio(struct cache *cache, struct prealloc *structs,
 		break;
 
 	case POLICY_REPLACE:
+<<<<<<< HEAD
 		cell_prealloc = prealloc_get_cell(structs);
 		r = bio_detain(cache, lookup_result.old_oblock, bio, cell_prealloc,
 			       (cell_free_fn) prealloc_put_cell,
@@ -1205,11 +2416,23 @@ static void process_bio(struct cache *cache, struct prealloc *structs,
 		demote_then_promote(cache, structs, lookup_result.old_oblock,
 				    block, lookup_result.cblock,
 				    old_ocell, new_ocell);
+=======
+		atomic_inc(&cache->stats.demotion);
+		atomic_inc(&cache->stats.promotion);
+		demote_then_promote(cache, structs, lookup_result.old_oblock,
+				    block, lookup_result.cblock,
+				    ool.cell, new_ocell);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		release_cell = false;
 		break;
 
 	default:
+<<<<<<< HEAD
 		DMERR_LIMIT("%s: erroring bio, unknown policy op: %u", __func__,
+=======
+		DMERR_LIMIT("%s: %s: erroring bio, unknown policy op: %u",
+			    cache_device_name(cache), __func__,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    (unsigned) lookup_result.op);
 		bio_io_error(bio);
 	}
@@ -1218,12 +2441,36 @@ static void process_bio(struct cache *cache, struct prealloc *structs,
 		cell_defer(cache, new_ocell, false);
 }
 
+<<<<<<< HEAD
+=======
+static void process_bio(struct cache *cache, struct prealloc *structs,
+			struct bio *bio)
+{
+	int r;
+	dm_oblock_t block = get_bio_block(cache, bio);
+	struct dm_bio_prison_cell *cell_prealloc, *new_ocell;
+
+	/*
+	 * Check to see if that block is currently migrating.
+	 */
+	cell_prealloc = prealloc_get_cell(structs);
+	r = bio_detain(cache, block, bio, cell_prealloc,
+		       (cell_free_fn) prealloc_put_cell,
+		       structs, &new_ocell);
+	if (r > 0)
+		return;
+
+	process_cell(cache, structs, new_ocell);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int need_commit_due_to_time(struct cache *cache)
 {
 	return jiffies < cache->last_commit_jiffies ||
 	       jiffies > cache->last_commit_jiffies + COMMIT_PERIOD;
 }
 
+<<<<<<< HEAD
 static int commit_if_needed(struct cache *cache)
 {
 	if (dm_cache_changed_this_transaction(cache->cmd) &&
@@ -1235,10 +2482,46 @@ static int commit_if_needed(struct cache *cache)
 	}
 
 	return 0;
+=======
+/*
+ * A non-zero return indicates read_only or fail_io mode.
+ */
+static int commit(struct cache *cache, bool clean_shutdown)
+{
+	int r;
+
+	if (get_cache_mode(cache) >= CM_READ_ONLY)
+		return -EINVAL;
+
+	atomic_inc(&cache->stats.commit_count);
+	r = dm_cache_commit(cache->cmd, clean_shutdown);
+	if (r)
+		metadata_operation_failed(cache, "dm_cache_commit", r);
+
+	return r;
+}
+
+static int commit_if_needed(struct cache *cache)
+{
+	int r = 0;
+
+	if ((cache->commit_requested || need_commit_due_to_time(cache)) &&
+	    dm_cache_changed_this_transaction(cache->cmd)) {
+		r = commit(cache, false);
+		cache->commit_requested = false;
+		cache->last_commit_jiffies = jiffies;
+	}
+
+	return r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void process_deferred_bios(struct cache *cache)
 {
+<<<<<<< HEAD
+=======
+	bool prealloc_used = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	struct bio_list bios;
 	struct bio *bio;
@@ -1258,6 +2541,10 @@ static void process_deferred_bios(struct cache *cache)
 		 * this bio might require one, we pause until there are some
 		 * prepared mappings to process.
 		 */
+<<<<<<< HEAD
+=======
+		prealloc_used = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (prealloc_data_structs(cache, &structs)) {
 			spin_lock_irqsave(&cache->lock, flags);
 			bio_list_merge(&cache->deferred_bios, &bios);
@@ -1267,15 +2554,64 @@ static void process_deferred_bios(struct cache *cache)
 
 		bio = bio_list_pop(&bios);
 
+<<<<<<< HEAD
 		if (bio->bi_rw & REQ_FLUSH)
 			process_flush_bio(cache, bio);
 		else if (bio->bi_rw & REQ_DISCARD)
 			process_discard_bio(cache, bio);
+=======
+		if (bio->bi_opf & REQ_PREFLUSH)
+			process_flush_bio(cache, bio);
+		else if (bio_op(bio) == REQ_OP_DISCARD)
+			process_discard_bio(cache, &structs, bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			process_bio(cache, &structs, bio);
 	}
 
+<<<<<<< HEAD
 	prealloc_free_structs(cache, &structs);
+=======
+	if (prealloc_used)
+		prealloc_free_structs(cache, &structs);
+}
+
+static void process_deferred_cells(struct cache *cache)
+{
+	bool prealloc_used = false;
+	unsigned long flags;
+	struct dm_bio_prison_cell *cell, *tmp;
+	struct list_head cells;
+	struct prealloc structs;
+
+	memset(&structs, 0, sizeof(structs));
+
+	INIT_LIST_HEAD(&cells);
+
+	spin_lock_irqsave(&cache->lock, flags);
+	list_splice_init(&cache->deferred_cells, &cells);
+	spin_unlock_irqrestore(&cache->lock, flags);
+
+	list_for_each_entry_safe(cell, tmp, &cells, user_list) {
+		/*
+		 * If we've got no free migration structs, and processing
+		 * this bio might require one, we pause until there are some
+		 * prepared mappings to process.
+		 */
+		prealloc_used = true;
+		if (prealloc_data_structs(cache, &structs)) {
+			spin_lock_irqsave(&cache->lock, flags);
+			list_splice(&cells, &cache->deferred_cells);
+			spin_unlock_irqrestore(&cache->lock, flags);
+			break;
+		}
+
+		process_cell(cache, &structs, cell);
+	}
+
+	if (prealloc_used)
+		prealloc_free_structs(cache, &structs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void process_deferred_flush_bios(struct cache *cache, bool submit_bios)
@@ -1291,8 +2627,16 @@ static void process_deferred_flush_bios(struct cache *cache, bool submit_bios)
 	bio_list_init(&cache->deferred_flush_bios);
 	spin_unlock_irqrestore(&cache->lock, flags);
 
+<<<<<<< HEAD
 	while ((bio = bio_list_pop(&bios)))
 		submit_bios ? generic_make_request(bio) : bio_io_error(bio);
+=======
+	/*
+	 * These bios have already been through inc_ds()
+	 */
+	while ((bio = bio_list_pop(&bios)))
+		submit_bios ? accounted_request(cache, bio) : bio_io_error(bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void process_deferred_writethrough_bios(struct cache *cache)
@@ -1308,21 +2652,38 @@ static void process_deferred_writethrough_bios(struct cache *cache)
 	bio_list_init(&cache->deferred_writethrough_bios);
 	spin_unlock_irqrestore(&cache->lock, flags);
 
+<<<<<<< HEAD
 	while ((bio = bio_list_pop(&bios)))
 		generic_make_request(bio);
+=======
+	/*
+	 * These bios have already been through inc_ds()
+	 */
+	while ((bio = bio_list_pop(&bios)))
+		accounted_request(cache, bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void writeback_some_dirty_blocks(struct cache *cache)
 {
+<<<<<<< HEAD
 	int r = 0;
+=======
+	bool prealloc_used = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dm_oblock_t oblock;
 	dm_cblock_t cblock;
 	struct prealloc structs;
 	struct dm_bio_prison_cell *old_ocell;
+<<<<<<< HEAD
+=======
+	bool busy = !iot_idle_for(&cache->origin_tracker, HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(&structs, 0, sizeof(structs));
 
 	while (spare_migration_bandwidth(cache)) {
+<<<<<<< HEAD
 		if (prealloc_data_structs(cache, &structs))
 			break;
 
@@ -1332,6 +2693,14 @@ static void writeback_some_dirty_blocks(struct cache *cache)
 
 		r = get_cell(cache, oblock, &structs, &old_ocell);
 		if (r) {
+=======
+		if (policy_writeback_work(cache->policy, &oblock, &cblock, busy))
+			break; /* no work to do */
+
+		prealloc_used = true;
+		if (prealloc_data_structs(cache, &structs) ||
+		    get_cell(cache, oblock, &structs, &old_ocell)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			policy_set_dirty(cache->policy, oblock);
 			break;
 		}
@@ -1339,6 +2708,7 @@ static void writeback_some_dirty_blocks(struct cache *cache)
 		writeback(cache, &structs, oblock, cblock, old_ocell);
 	}
 
+<<<<<<< HEAD
 	prealloc_free_structs(cache, &structs);
 }
 
@@ -1355,6 +2725,72 @@ static bool is_quiescing(struct cache *cache)
 	spin_unlock_irqrestore(&cache->lock, flags);
 
 	return r;
+=======
+	if (prealloc_used)
+		prealloc_free_structs(cache, &structs);
+}
+
+/*----------------------------------------------------------------
+ * Invalidations.
+ * Dropping something from the cache *without* writing back.
+ *--------------------------------------------------------------*/
+
+static void process_invalidation_request(struct cache *cache, struct invalidation_request *req)
+{
+	int r = 0;
+	uint64_t begin = from_cblock(req->cblocks->begin);
+	uint64_t end = from_cblock(req->cblocks->end);
+
+	while (begin != end) {
+		r = policy_remove_cblock(cache->policy, to_cblock(begin));
+		if (!r) {
+			r = dm_cache_remove_mapping(cache->cmd, to_cblock(begin));
+			if (r) {
+				metadata_operation_failed(cache, "dm_cache_remove_mapping", r);
+				break;
+			}
+
+		} else if (r == -ENODATA) {
+			/* harmless, already unmapped */
+			r = 0;
+
+		} else {
+			DMERR("%s: policy_remove_cblock failed", cache_device_name(cache));
+			break;
+		}
+
+		begin++;
+        }
+
+	cache->commit_requested = true;
+
+	req->err = r;
+	atomic_set(&req->complete, 1);
+
+	wake_up(&req->result_wait);
+}
+
+static void process_invalidation_requests(struct cache *cache)
+{
+	struct list_head list;
+	struct invalidation_request *req, *tmp;
+
+	INIT_LIST_HEAD(&list);
+	spin_lock(&cache->invalidation_lock);
+	list_splice_init(&cache->invalidation_requests, &list);
+	spin_unlock(&cache->invalidation_lock);
+
+	list_for_each_entry_safe (req, tmp, &list, list)
+		process_invalidation_request(cache, req);
+}
+
+/*----------------------------------------------------------------
+ * Main worker loop
+ *--------------------------------------------------------------*/
+static bool is_quiescing(struct cache *cache)
+{
+	return atomic_read(&cache->quiescing);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ack_quiescing(struct cache *cache)
@@ -1372,6 +2808,7 @@ static void wait_for_quiescing_ack(struct cache *cache)
 
 static void start_quiescing(struct cache *cache)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&cache->lock, flags);
@@ -1389,21 +2826,57 @@ static void stop_quiescing(struct cache *cache)
 	cache->quiescing = false;
 	spin_unlock_irqrestore(&cache->lock, flags);
 
+=======
+	atomic_inc(&cache->quiescing);
+	wait_for_quiescing_ack(cache);
+}
+
+static void stop_quiescing(struct cache *cache)
+{
+	atomic_set(&cache->quiescing, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_set(&cache->quiescing_ack, 0);
 }
 
 static void wait_for_migrations(struct cache *cache)
 {
+<<<<<<< HEAD
 	wait_event(cache->migration_wait, !atomic_read(&cache->nr_migrations));
+=======
+	wait_event(cache->migration_wait, !atomic_read(&cache->nr_allocated_migrations));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void stop_worker(struct cache *cache)
 {
+<<<<<<< HEAD
 	cancel_delayed_work(&cache->waker);
 	flush_workqueue(cache->wq);
 }
 
 static void requeue_deferred_io(struct cache *cache)
+=======
+	cancel_delayed_work_sync(&cache->waker);
+	drain_workqueue(cache->wq);
+}
+
+static void requeue_deferred_cells(struct cache *cache)
+{
+	unsigned long flags;
+	struct list_head cells;
+	struct dm_bio_prison_cell *cell, *tmp;
+
+	INIT_LIST_HEAD(&cells);
+	spin_lock_irqsave(&cache->lock, flags);
+	list_splice_init(&cache->deferred_cells, &cells);
+	spin_unlock_irqrestore(&cache->lock, flags);
+
+	list_for_each_entry_safe(cell, tmp, &cells, user_list)
+		cell_requeue(cache, cell);
+}
+
+static void requeue_deferred_bios(struct cache *cache)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct bio *bio;
 	struct bio_list bios;
@@ -1412,8 +2885,15 @@ static void requeue_deferred_io(struct cache *cache)
 	bio_list_merge(&bios, &cache->deferred_bios);
 	bio_list_init(&cache->deferred_bios);
 
+<<<<<<< HEAD
 	while ((bio = bio_list_pop(&bios)))
 		bio_endio(bio, DM_ENDIO_REQUEUE);
+=======
+	while ((bio = bio_list_pop(&bios))) {
+		bio->bi_error = DM_ENDIO_REQUEUE;
+		bio_endio(bio);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int more_work(struct cache *cache)
@@ -1424,11 +2904,20 @@ static int more_work(struct cache *cache)
 			!list_empty(&cache->need_commit_migrations);
 	else
 		return !bio_list_empty(&cache->deferred_bios) ||
+<<<<<<< HEAD
+=======
+			!list_empty(&cache->deferred_cells) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			!bio_list_empty(&cache->deferred_flush_bios) ||
 			!bio_list_empty(&cache->deferred_writethrough_bios) ||
 			!list_empty(&cache->quiesced_migrations) ||
 			!list_empty(&cache->completed_migrations) ||
+<<<<<<< HEAD
 			!list_empty(&cache->need_commit_migrations);
+=======
+			!list_empty(&cache->need_commit_migrations) ||
+			cache->invalidate;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void do_worker(struct work_struct *ws)
@@ -1440,18 +2929,30 @@ static void do_worker(struct work_struct *ws)
 			writeback_some_dirty_blocks(cache);
 			process_deferred_writethrough_bios(cache);
 			process_deferred_bios(cache);
+<<<<<<< HEAD
 		}
 
 		process_migrations(cache, &cache->quiesced_migrations, issue_copy);
+=======
+			process_deferred_cells(cache);
+			process_invalidation_requests(cache);
+		}
+
+		process_migrations(cache, &cache->quiesced_migrations, issue_copy_or_discard);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		process_migrations(cache, &cache->completed_migrations, complete_migration);
 
 		if (commit_if_needed(cache)) {
 			process_deferred_flush_bios(cache, false);
+<<<<<<< HEAD
 
 			/*
 			 * FIXME: rollback metadata or just go into a
 			 * failure mode and error everything
 			 */
+=======
+			process_migrations(cache, &cache->need_commit_migrations, migration_failure);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			process_deferred_flush_bios(cache, true);
 			process_migrations(cache, &cache->need_commit_migrations,
@@ -1470,7 +2971,11 @@ static void do_worker(struct work_struct *ws)
 static void do_waker(struct work_struct *ws)
 {
 	struct cache *cache = container_of(to_delayed_work(ws), struct cache, waker);
+<<<<<<< HEAD
 	policy_tick(cache->policy);
+=======
+	policy_tick(cache->policy, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wake_worker(cache);
 	queue_delayed_work(cache->wq, &cache->waker, COMMIT_PERIOD);
 }
@@ -1503,11 +3008,15 @@ static void destroy(struct cache *cache)
 {
 	unsigned i;
 
+<<<<<<< HEAD
 	if (cache->next_migration)
 		mempool_free(cache->next_migration, cache->migration_pool);
 
 	if (cache->migration_pool)
 		mempool_destroy(cache->migration_pool);
+=======
+	mempool_destroy(cache->migration_pool);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cache->all_io_ds)
 		dm_deferred_set_destroy(cache->all_io_ds);
@@ -1707,24 +3216,43 @@ static int parse_origin_dev(struct cache_args *ca, struct dm_arg_set *as,
 static int parse_block_size(struct cache_args *ca, struct dm_arg_set *as,
 			    char **error)
 {
+<<<<<<< HEAD
 	unsigned long tmp;
+=======
+	unsigned long block_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!at_least_one_arg(as, error))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (kstrtoul(dm_shift_arg(as), 10, &tmp) || !tmp ||
 	    tmp < DATA_DEV_BLOCK_SIZE_MIN_SECTORS ||
 	    tmp & (DATA_DEV_BLOCK_SIZE_MIN_SECTORS - 1)) {
+=======
+	if (kstrtoul(dm_shift_arg(as), 10, &block_size) || !block_size ||
+	    block_size < DATA_DEV_BLOCK_SIZE_MIN_SECTORS ||
+	    block_size > DATA_DEV_BLOCK_SIZE_MAX_SECTORS ||
+	    block_size & (DATA_DEV_BLOCK_SIZE_MIN_SECTORS - 1)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*error = "Invalid data block size";
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (tmp > ca->cache_sectors) {
+=======
+	if (block_size > ca->cache_sectors) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*error = "Data block size is larger than the cache device";
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ca->block_size = tmp;
+=======
+	ca->block_size = block_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1732,7 +3260,11 @@ static int parse_block_size(struct cache_args *ca, struct dm_arg_set *as,
 static void init_features(struct cache_features *cf)
 {
 	cf->mode = CM_WRITE;
+<<<<<<< HEAD
 	cf->write_through = false;
+=======
+	cf->io_mode = CM_IO_WRITEBACK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int parse_features(struct cache_args *ca, struct dm_arg_set *as,
@@ -1757,10 +3289,20 @@ static int parse_features(struct cache_args *ca, struct dm_arg_set *as,
 		arg = dm_shift_arg(as);
 
 		if (!strcasecmp(arg, "writeback"))
+<<<<<<< HEAD
 			cf->write_through = false;
 
 		else if (!strcasecmp(arg, "writethrough"))
 			cf->write_through = true;
+=======
+			cf->io_mode = CM_IO_WRITEBACK;
+
+		else if (!strcasecmp(arg, "writethrough"))
+			cf->io_mode = CM_IO_WRITETHROUGH;
+
+		else if (!strcasecmp(arg, "passthrough"))
+			cf->io_mode = CM_IO_PASSTHROUGH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		else {
 			*error = "Unrecognised cache feature requested";
@@ -1889,6 +3431,7 @@ static int set_config_values(struct cache *cache, int argc, const char **argv)
 static int create_cache_policy(struct cache *cache, struct cache_args *ca,
 			       char **error)
 {
+<<<<<<< HEAD
 	cache->policy =	dm_cache_policy_create(ca->policy_name,
 					       cache->cache_size,
 					       cache->origin_sectors,
@@ -1897,14 +3440,30 @@ static int create_cache_policy(struct cache *cache, struct cache_args *ca,
 		*error = "Error creating cache's policy";
 		return -ENOMEM;
 	}
+=======
+	struct dm_cache_policy *p = dm_cache_policy_create(ca->policy_name,
+							   cache->cache_size,
+							   cache->origin_sectors,
+							   cache->sectors_per_block);
+	if (IS_ERR(p)) {
+		*error = "Error creating cache's policy";
+		return PTR_ERR(p);
+	}
+	cache->policy = p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  * We want the discard block size to be a power of two, at least the size
  * of the cache block size, and have no more than 2^14 discard blocks
  * across the origin.
+=======
+ * We want the discard block size to be at least the size of the cache
+ * block size and have no more than 2^14 discard blocks across the origin.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define MAX_DISCARD_BLOCKS (1 << 14)
 
@@ -1919,9 +3478,13 @@ static bool too_many_discard_blocks(sector_t discard_block_size,
 static sector_t calculate_discard_block_size(sector_t cache_block_size,
 					     sector_t origin_size)
 {
+<<<<<<< HEAD
 	sector_t discard_block_size;
 
 	discard_block_size = roundup_pow_of_two(cache_block_size);
+=======
+	sector_t discard_block_size = cache_block_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (origin_size)
 		while (too_many_discard_blocks(discard_block_size, origin_size))
@@ -1930,6 +3493,22 @@ static sector_t calculate_discard_block_size(sector_t cache_block_size,
 	return discard_block_size;
 }
 
+<<<<<<< HEAD
+=======
+static void set_cache_size(struct cache *cache, dm_cblock_t size)
+{
+	dm_block_t nr_blocks = from_cblock(size);
+
+	if (nr_blocks > (1 << 20) && cache->cache_size != size)
+		DMWARN_LIMIT("You have created a cache device with a lot of individual cache blocks (%llu)\n"
+			     "All these mappings can consume a lot of kernel memory, and take some time to read/write.\n"
+			     "Please consider increasing the cache block size to reduce the overall cache block count.",
+			     (unsigned long long) nr_blocks);
+
+	cache->cache_size = size;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DEFAULT_MIGRATION_THRESHOLD 2048
 
 static int cache_create(struct cache_args *ca, struct cache **result)
@@ -1954,11 +3533,18 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 	ti->num_discard_bios = 1;
 	ti->discards_supported = true;
 	ti->discard_zeroes_data_unsupported = true;
+<<<<<<< HEAD
 	/* Discard bios must be split on a block boundary */
 	ti->split_discard_bios = true;
 
 	cache->features = ca->features;
 	ti->per_bio_data_size = get_per_bio_data_size(cache);
+=======
+	ti->split_discard_bios = false;
+
+	cache->features = ca->features;
+	ti->per_io_data_size = get_per_bio_data_size(cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cache->callbacks.congested_fn = cache_is_congested;
 	dm_table_add_target_callbacks(ti->table, &cache->callbacks);
@@ -1985,10 +3571,17 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 
 		cache->sectors_per_block_shift = -1;
 		cache_size = block_div(cache_size, ca->block_size);
+<<<<<<< HEAD
 		cache->cache_size = to_cblock(cache_size);
 	} else {
 		cache->sectors_per_block_shift = __ffs(ca->block_size);
 		cache->cache_size = to_cblock(ca->cache_sectors >> cache->sectors_per_block_shift);
+=======
+		set_cache_size(cache, to_cblock(cache_size));
+	} else {
+		cache->sectors_per_block_shift = __ffs(ca->block_size);
+		set_cache_size(cache, to_cblock(ca->cache_sectors >> cache->sectors_per_block_shift));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	r = create_cache_policy(cache, ca, error);
@@ -2013,14 +3606,43 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 		goto bad;
 	}
 	cache->cmd = cmd;
+<<<<<<< HEAD
 
 	spin_lock_init(&cache->lock);
+=======
+	set_cache_mode(cache, CM_WRITE);
+	if (get_cache_mode(cache) != CM_WRITE) {
+		*error = "Unable to get write access to metadata, please check/repair metadata.";
+		r = -EINVAL;
+		goto bad;
+	}
+
+	if (passthrough_mode(&cache->features)) {
+		bool all_clean;
+
+		r = dm_cache_metadata_all_clean(cache->cmd, &all_clean);
+		if (r) {
+			*error = "dm_cache_metadata_all_clean() failed";
+			goto bad;
+		}
+
+		if (!all_clean) {
+			*error = "Cannot enter passthrough mode unless all blocks are clean";
+			r = -EINVAL;
+			goto bad;
+		}
+	}
+
+	spin_lock_init(&cache->lock);
+	INIT_LIST_HEAD(&cache->deferred_cells);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bio_list_init(&cache->deferred_bios);
 	bio_list_init(&cache->deferred_flush_bios);
 	bio_list_init(&cache->deferred_writethrough_bios);
 	INIT_LIST_HEAD(&cache->quiesced_migrations);
 	INIT_LIST_HEAD(&cache->completed_migrations);
 	INIT_LIST_HEAD(&cache->need_commit_migrations);
+<<<<<<< HEAD
 	atomic_set(&cache->nr_migrations, 0);
 	init_waitqueue_head(&cache->migration_wait);
 
@@ -2029,6 +3651,18 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 
 	r = -ENOMEM;
 	cache->nr_dirty = 0;
+=======
+	atomic_set(&cache->nr_allocated_migrations, 0);
+	atomic_set(&cache->nr_io_migrations, 0);
+	init_waitqueue_head(&cache->migration_wait);
+
+	init_waitqueue_head(&cache->quiescing_wait);
+	atomic_set(&cache->quiescing, 0);
+	atomic_set(&cache->quiescing_ack, 0);
+
+	r = -ENOMEM;
+	atomic_set(&cache->nr_dirty, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cache->dirty_bitset = alloc_bitset(from_cblock(cache->cache_size));
 	if (!cache->dirty_bitset) {
 		*error = "could not allocate dirty bitset";
@@ -2039,7 +3673,12 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 	cache->discard_block_size =
 		calculate_discard_block_size(cache->sectors_per_block,
 					     cache->origin_sectors);
+<<<<<<< HEAD
 	cache->discard_nr_blocks = oblock_to_dblock(cache, cache->origin_blocks);
+=======
+	cache->discard_nr_blocks = to_dblock(dm_sector_div_up(cache->origin_sectors,
+							      cache->discard_block_size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cache->discard_bitset = alloc_bitset(from_dblock(cache->discard_nr_blocks));
 	if (!cache->discard_bitset) {
 		*error = "could not allocate discard bitset";
@@ -2063,7 +3702,11 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 	INIT_DELAYED_WORK(&cache->waker, do_waker);
 	cache->last_commit_jiffies = jiffies;
 
+<<<<<<< HEAD
 	cache->prison = dm_bio_prison_create(PRISON_CELLS);
+=======
+	cache->prison = dm_bio_prison_create();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!cache->prison) {
 		*error = "could not create bio prison";
 		goto bad;
@@ -2082,11 +3725,17 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 		goto bad;
 	}
 
+<<<<<<< HEAD
 	cache->next_migration = NULL;
 
 	cache->need_tick_bio = true;
 	cache->sized = false;
 	cache->quiescing = false;
+=======
+	cache->need_tick_bio = true;
+	cache->sized = false;
+	cache->invalidate = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cache->commit_requested = false;
 	cache->loaded_mappings = false;
 	cache->loaded_discards = false;
@@ -2100,6 +3749,14 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 	atomic_set(&cache->stats.commit_count, 0);
 	atomic_set(&cache->stats.discard_count, 0);
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&cache->invalidation_lock);
+	INIT_LIST_HEAD(&cache->invalidation_requests);
+
+	iot_init(&cache->origin_tracker);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*result = cache;
 	return 0;
 
@@ -2166,11 +3823,17 @@ out:
 	return r;
 }
 
+<<<<<<< HEAD
+=======
+/*----------------------------------------------------------------*/
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int cache_map(struct dm_target *ti, struct bio *bio)
 {
 	struct cache *cache = ti->private;
 
 	int r;
+<<<<<<< HEAD
 	dm_oblock_t block = get_bio_block(cache, bio);
 	size_t pb_data_size = get_per_bio_data_size(cache);
 	bool can_migrate = false;
@@ -2178,6 +3841,18 @@ static int cache_map(struct dm_target *ti, struct bio *bio)
 	struct dm_bio_prison_cell *cell;
 	struct policy_result lookup_result;
 	struct per_bio_data *pb = init_per_bio_data(bio, pb_data_size);
+=======
+	struct dm_bio_prison_cell *cell = NULL;
+	dm_oblock_t block = get_bio_block(cache, bio);
+	size_t pb_data_size = get_per_bio_data_size(cache);
+	bool can_migrate = false;
+	bool fast_promotion;
+	struct policy_result lookup_result;
+	struct per_bio_data *pb = init_per_bio_data(bio, pb_data_size);
+	struct old_oblock_lock ool;
+
+	ool.locker.fn = null_locker;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(from_oblock(block) >= from_oblock(cache->origin_blocks))) {
 		/*
@@ -2186,10 +3861,18 @@ static int cache_map(struct dm_target *ti, struct bio *bio)
 		 * Just remap to the origin and carry on.
 		 */
 		remap_to_origin(cache, bio);
+<<<<<<< HEAD
 		return DM_MAPIO_REMAPPED;
 	}
 
 	if (bio->bi_rw & (REQ_FLUSH | REQ_FUA | REQ_DISCARD)) {
+=======
+		accounted_begin(cache, bio);
+		return DM_MAPIO_REMAPPED;
+	}
+
+	if (discard_or_flush(bio)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		defer_bio(cache, bio);
 		return DM_MAPIO_SUBMITTED;
 	}
@@ -2213,20 +3896,34 @@ static int cache_map(struct dm_target *ti, struct bio *bio)
 		return DM_MAPIO_SUBMITTED;
 	}
 
+<<<<<<< HEAD
 	discarded_block = is_discarded_oblock(cache, block);
 
 	r = policy_map(cache->policy, block, false, can_migrate, discarded_block,
 		       bio, &lookup_result);
+=======
+	fast_promotion = is_discarded_oblock(cache, block) || bio_writes_complete_block(cache, bio);
+
+	r = policy_map(cache->policy, block, false, can_migrate, fast_promotion,
+		       bio, &ool.locker, &lookup_result);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (r == -EWOULDBLOCK) {
 		cell_defer(cache, cell, true);
 		return DM_MAPIO_SUBMITTED;
 
 	} else if (r) {
+<<<<<<< HEAD
 		DMERR_LIMIT("Unexpected return from cache replacement policy: %d", r);
+=======
+		DMERR_LIMIT("%s: Unexpected return from cache replacement policy: %d",
+			    cache_device_name(cache), r);
+		cell_defer(cache, cell, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bio_io_error(bio);
 		return DM_MAPIO_SUBMITTED;
 	}
 
+<<<<<<< HEAD
 	switch (lookup_result.op) {
 	case POLICY_HIT:
 		inc_hit_counter(cache, bio);
@@ -2238,17 +3935,57 @@ static int cache_map(struct dm_target *ti, struct bio *bio)
 			remap_to_cache_dirty(cache, bio, block, lookup_result.cblock);
 
 		cell_defer(cache, cell, false);
+=======
+	r = DM_MAPIO_REMAPPED;
+	switch (lookup_result.op) {
+	case POLICY_HIT:
+		if (passthrough_mode(&cache->features)) {
+			if (bio_data_dir(bio) == WRITE) {
+				/*
+				 * We need to invalidate this block, so
+				 * defer for the worker thread.
+				 */
+				cell_defer(cache, cell, true);
+				r = DM_MAPIO_SUBMITTED;
+
+			} else {
+				inc_miss_counter(cache, bio);
+				remap_to_origin_clear_discard(cache, bio, block);
+				accounted_begin(cache, bio);
+				inc_ds(cache, bio, cell);
+				// FIXME: we want to remap hits or misses straight
+				// away rather than passing over to the worker.
+				cell_defer(cache, cell, false);
+			}
+
+		} else {
+			inc_hit_counter(cache, bio);
+			if (bio_data_dir(bio) == WRITE && writethrough_mode(&cache->features) &&
+			    !is_dirty(cache, lookup_result.cblock)) {
+				remap_to_origin_then_cache(cache, bio, block, lookup_result.cblock);
+				accounted_begin(cache, bio);
+				inc_ds(cache, bio, cell);
+				cell_defer(cache, cell, false);
+
+			} else
+				remap_cell_to_cache_dirty(cache, cell, block, lookup_result.cblock, false);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case POLICY_MISS:
 		inc_miss_counter(cache, bio);
+<<<<<<< HEAD
 		pb->all_io_entry = dm_deferred_entry_inc(cache->all_io_ds);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (pb->req_nr != 0) {
 			/*
 			 * This is a duplicate writethrough io that is no
 			 * longer needed because the block has been demoted.
 			 */
+<<<<<<< HEAD
 			bio_endio(bio, 0);
 			cell_defer(cache, cell, false);
 			return DM_MAPIO_SUBMITTED;
@@ -2266,6 +4003,27 @@ static int cache_map(struct dm_target *ti, struct bio *bio)
 	}
 
 	return DM_MAPIO_REMAPPED;
+=======
+			bio_endio(bio);
+			// FIXME: remap everything as a miss
+			cell_defer(cache, cell, false);
+			r = DM_MAPIO_SUBMITTED;
+
+		} else
+			remap_cell_to_origin_clear_discard(cache, cell, block, false);
+		break;
+
+	default:
+		DMERR_LIMIT("%s: %s: erroring bio: unknown policy op: %u",
+			    cache_device_name(cache), __func__,
+			    (unsigned) lookup_result.op);
+		cell_defer(cache, cell, false);
+		bio_io_error(bio);
+		r = DM_MAPIO_SUBMITTED;
+	}
+
+	return r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int cache_end_io(struct dm_target *ti, struct bio *bio, int error)
@@ -2276,7 +4034,11 @@ static int cache_end_io(struct dm_target *ti, struct bio *bio, int error)
 	struct per_bio_data *pb = get_per_bio_data(bio, pb_data_size);
 
 	if (pb->tick) {
+<<<<<<< HEAD
 		policy_tick(cache->policy);
+=======
+		policy_tick(cache->policy, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		spin_lock_irqsave(&cache->lock, flags);
 		cache->need_tick_bio = true;
@@ -2284,6 +4046,10 @@ static int cache_end_io(struct dm_target *ti, struct bio *bio, int error)
 	}
 
 	check_for_quiesced_migrations(cache, pb);
+<<<<<<< HEAD
+=======
+	accounted_complete(cache, bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -2292,11 +4058,24 @@ static int write_dirty_bitset(struct cache *cache)
 {
 	unsigned i, r;
 
+<<<<<<< HEAD
 	for (i = 0; i < from_cblock(cache->cache_size); i++) {
 		r = dm_cache_set_dirty(cache->cmd, to_cblock(i),
 				       is_dirty(cache, to_cblock(i)));
 		if (r)
 			return r;
+=======
+	if (get_cache_mode(cache) >= CM_READ_ONLY)
+		return -EINVAL;
+
+	for (i = 0; i < from_cblock(cache->cache_size); i++) {
+		r = dm_cache_set_dirty(cache->cmd, to_cblock(i),
+				       is_dirty(cache, to_cblock(i)));
+		if (r) {
+			metadata_operation_failed(cache, "dm_cache_set_dirty", r);
+			return r;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -2306,23 +4085,42 @@ static int write_discard_bitset(struct cache *cache)
 {
 	unsigned i, r;
 
+<<<<<<< HEAD
 	r = dm_cache_discard_bitset_resize(cache->cmd, cache->discard_block_size,
 					   cache->discard_nr_blocks);
 	if (r) {
 		DMERR("could not resize on-disk discard bitset");
+=======
+	if (get_cache_mode(cache) >= CM_READ_ONLY)
+		return -EINVAL;
+
+	r = dm_cache_discard_bitset_resize(cache->cmd, cache->discard_block_size,
+					   cache->discard_nr_blocks);
+	if (r) {
+		DMERR("%s: could not resize on-disk discard bitset", cache_device_name(cache));
+		metadata_operation_failed(cache, "dm_cache_discard_bitset_resize", r);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return r;
 	}
 
 	for (i = 0; i < from_dblock(cache->discard_nr_blocks); i++) {
 		r = dm_cache_set_discard(cache->cmd, to_dblock(i),
 					 is_discarded(cache, to_dblock(i)));
+<<<<<<< HEAD
 		if (r)
 			return r;
+=======
+		if (r) {
+			metadata_operation_failed(cache, "dm_cache_set_discard", r);
+			return r;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int save_hint(void *context, dm_cblock_t cblock, dm_oblock_t oblock,
 		     uint32_t hint)
 {
@@ -2330,10 +4128,13 @@ static int save_hint(void *context, dm_cblock_t cblock, dm_oblock_t oblock,
 	return dm_cache_save_hint(cache->cmd, cblock, hint);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int write_hints(struct cache *cache)
 {
 	int r;
 
+<<<<<<< HEAD
 	r = dm_cache_begin_hints(cache->cmd, cache->policy);
 	if (r) {
 		DMERR("dm_cache_begin_hints failed");
@@ -2345,6 +4146,18 @@ static int write_hints(struct cache *cache)
 		DMERR("policy_walk_mappings failed");
 
 	return r;
+=======
+	if (get_cache_mode(cache) >= CM_READ_ONLY)
+		return -EINVAL;
+
+	r = dm_cache_write_hints(cache->cmd, cache->policy);
+	if (r) {
+		metadata_operation_failed(cache, "dm_cache_write_hints", r);
+		return r;
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -2356,26 +4169,44 @@ static bool sync_metadata(struct cache *cache)
 
 	r1 = write_dirty_bitset(cache);
 	if (r1)
+<<<<<<< HEAD
 		DMERR("could not write dirty bitset");
 
 	r2 = write_discard_bitset(cache);
 	if (r2)
 		DMERR("could not write discard bitset");
+=======
+		DMERR("%s: could not write dirty bitset", cache_device_name(cache));
+
+	r2 = write_discard_bitset(cache);
+	if (r2)
+		DMERR("%s: could not write discard bitset", cache_device_name(cache));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	save_stats(cache);
 
 	r3 = write_hints(cache);
 	if (r3)
+<<<<<<< HEAD
 		DMERR("could not write hints");
+=======
+		DMERR("%s: could not write hints", cache_device_name(cache));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * If writing the above metadata failed, we still commit, but don't
 	 * set the clean shutdown flag.  This will effectively force every
 	 * dirty bit to be set on reload.
 	 */
+<<<<<<< HEAD
 	r4 = dm_cache_commit(cache->cmd, !r1 && !r2 && !r3);
 	if (r4)
 		DMERR("could not write cache metadata.  Data loss may occur.");
+=======
+	r4 = commit(cache, !r1 && !r2 && !r3);
+	if (r4)
+		DMERR("%s: could not write cache metadata", cache_device_name(cache));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return !r1 && !r2 && !r3 && !r4;
 }
@@ -2387,10 +4218,19 @@ static void cache_postsuspend(struct dm_target *ti)
 	start_quiescing(cache);
 	wait_for_migrations(cache);
 	stop_worker(cache);
+<<<<<<< HEAD
 	requeue_deferred_io(cache);
 	stop_quiescing(cache);
 
 	(void) sync_metadata(cache);
+=======
+	requeue_deferred_bios(cache);
+	requeue_deferred_cells(cache);
+	stop_quiescing(cache);
+
+	if (get_cache_mode(cache) == CM_WRITE)
+		(void) sync_metadata(cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int load_mapping(void *context, dm_oblock_t oblock, dm_cblock_t cblock,
@@ -2411,6 +4251,7 @@ static int load_mapping(void *context, dm_oblock_t oblock, dm_cblock_t cblock,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int load_discard(void *context, sector_t discard_block_size,
 			dm_dblock_t dblock, bool discard)
 {
@@ -2422,6 +4263,137 @@ static int load_discard(void *context, sector_t discard_block_size,
 		set_discard(cache, dblock);
 	else
 		clear_discard(cache, dblock);
+=======
+/*
+ * The discard block size in the on disk metadata is not
+ * neccessarily the same as we're currently using.  So we have to
+ * be careful to only set the discarded attribute if we know it
+ * covers a complete block of the new size.
+ */
+struct discard_load_info {
+	struct cache *cache;
+
+	/*
+	 * These blocks are sized using the on disk dblock size, rather
+	 * than the current one.
+	 */
+	dm_block_t block_size;
+	dm_block_t discard_begin, discard_end;
+};
+
+static void discard_load_info_init(struct cache *cache,
+				   struct discard_load_info *li)
+{
+	li->cache = cache;
+	li->discard_begin = li->discard_end = 0;
+}
+
+static void set_discard_range(struct discard_load_info *li)
+{
+	sector_t b, e;
+
+	if (li->discard_begin == li->discard_end)
+		return;
+
+	/*
+	 * Convert to sectors.
+	 */
+	b = li->discard_begin * li->block_size;
+	e = li->discard_end * li->block_size;
+
+	/*
+	 * Then convert back to the current dblock size.
+	 */
+	b = dm_sector_div_up(b, li->cache->discard_block_size);
+	sector_div(e, li->cache->discard_block_size);
+
+	/*
+	 * The origin may have shrunk, so we need to check we're still in
+	 * bounds.
+	 */
+	if (e > from_dblock(li->cache->discard_nr_blocks))
+		e = from_dblock(li->cache->discard_nr_blocks);
+
+	for (; b < e; b++)
+		set_discard(li->cache, to_dblock(b));
+}
+
+static int load_discard(void *context, sector_t discard_block_size,
+			dm_dblock_t dblock, bool discard)
+{
+	struct discard_load_info *li = context;
+
+	li->block_size = discard_block_size;
+
+	if (discard) {
+		if (from_dblock(dblock) == li->discard_end)
+			/*
+			 * We're already in a discard range, just extend it.
+			 */
+			li->discard_end = li->discard_end + 1ULL;
+
+		else {
+			/*
+			 * Emit the old range and start a new one.
+			 */
+			set_discard_range(li);
+			li->discard_begin = from_dblock(dblock);
+			li->discard_end = li->discard_begin + 1ULL;
+		}
+	} else {
+		set_discard_range(li);
+		li->discard_begin = li->discard_end = 0;
+	}
+
+	return 0;
+}
+
+static dm_cblock_t get_cache_dev_size(struct cache *cache)
+{
+	sector_t size = get_dev_size(cache->cache_dev);
+	(void) sector_div(size, cache->sectors_per_block);
+	return to_cblock(size);
+}
+
+static bool can_resize(struct cache *cache, dm_cblock_t new_size)
+{
+	if (from_cblock(new_size) > from_cblock(cache->cache_size)) {
+		if (cache->sized) {
+			DMERR("%s: unable to extend cache due to missing cache table reload",
+			      cache_device_name(cache));
+			return false;
+		}
+	}
+
+	/*
+	 * We can't drop a dirty block when shrinking the cache.
+	 */
+	while (from_cblock(new_size) < from_cblock(cache->cache_size)) {
+		new_size = to_cblock(from_cblock(new_size) + 1);
+		if (is_dirty(cache, new_size)) {
+			DMERR("%s: unable to shrink cache; cache block %llu is dirty",
+			      cache_device_name(cache),
+			      (unsigned long long) from_cblock(new_size));
+			return false;
+		}
+	}
+
+	return true;
+}
+
+static int resize_cache_dev(struct cache *cache, dm_cblock_t new_size)
+{
+	int r;
+
+	r = dm_cache_resize(cache->cmd, new_size);
+	if (r) {
+		DMERR("%s: could not resize cache metadata", cache_device_name(cache));
+		metadata_operation_failed(cache, "dm_cache_resize", r);
+		return r;
+	}
+
+	set_cache_size(cache, new_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -2430,12 +4402,17 @@ static int cache_preresume(struct dm_target *ti)
 {
 	int r = 0;
 	struct cache *cache = ti->private;
+<<<<<<< HEAD
 	sector_t actual_cache_size = get_dev_size(cache->cache_dev);
 	(void) sector_div(actual_cache_size, cache->sectors_per_block);
+=======
+	dm_cblock_t csize = get_cache_dev_size(cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Check to see if the cache has resized.
 	 */
+<<<<<<< HEAD
 	if (from_cblock(cache->cache_size) != actual_cache_size || !cache->sized) {
 		cache->cache_size = to_cblock(actual_cache_size);
 
@@ -2446,13 +4423,34 @@ static int cache_preresume(struct dm_target *ti)
 		}
 
 		cache->sized = true;
+=======
+	if (!cache->sized) {
+		r = resize_cache_dev(cache, csize);
+		if (r)
+			return r;
+
+		cache->sized = true;
+
+	} else if (csize != cache->cache_size) {
+		if (!can_resize(cache, csize))
+			return -EINVAL;
+
+		r = resize_cache_dev(cache, csize);
+		if (r)
+			return r;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!cache->loaded_mappings) {
 		r = dm_cache_load_mappings(cache->cmd, cache->policy,
 					   load_mapping, cache);
 		if (r) {
+<<<<<<< HEAD
 			DMERR("could not load cache mappings");
+=======
+			DMERR("%s: could not load cache mappings", cache_device_name(cache));
+			metadata_operation_failed(cache, "dm_cache_load_mappings", r);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return r;
 		}
 
@@ -2460,11 +4458,31 @@ static int cache_preresume(struct dm_target *ti)
 	}
 
 	if (!cache->loaded_discards) {
+<<<<<<< HEAD
 		r = dm_cache_load_discards(cache->cmd, load_discard, cache);
 		if (r) {
 			DMERR("could not load origin discards");
 			return r;
 		}
+=======
+		struct discard_load_info li;
+
+		/*
+		 * The discard bitset could have been resized, or the
+		 * discard block size changed.  To be safe we start by
+		 * setting every dblock to not discarded.
+		 */
+		clear_bitset(cache->discard_bitset, from_dblock(cache->discard_nr_blocks));
+
+		discard_load_info_init(cache, &li);
+		r = dm_cache_load_discards(cache->cmd, load_discard, &li);
+		if (r) {
+			DMERR("%s: could not load origin discards", cache_device_name(cache));
+			metadata_operation_failed(cache, "dm_cache_load_discards", r);
+			return r;
+		}
+		set_discard_range(&li);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		cache->loaded_discards = true;
 	}
@@ -2483,12 +4501,22 @@ static void cache_resume(struct dm_target *ti)
 /*
  * Status format:
  *
+<<<<<<< HEAD
  * <#used metadata blocks>/<#total metadata blocks>
  * <#read hits> <#read misses> <#write hits> <#write misses>
  * <#demotions> <#promotions> <#blocks in cache> <#dirty>
  * <#features> <features>*
  * <#core args> <core args>
  * <#policy args> <policy args>*
+=======
+ * <metadata block size> <#used metadata blocks>/<#total metadata blocks>
+ * <cache block size> <#used cache blocks>/<#total cache blocks>
+ * <#read hits> <#read misses> <#write hits> <#write misses>
+ * <#demotions> <#promotions> <#dirty>
+ * <#features> <features>*
+ * <#core args> <core args>
+ * <policy name> <#policy args> <policy args>* <cache metadata mode> <needs_check>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static void cache_status(struct dm_target *ti, status_type_t type,
 			 unsigned status_flags, char *result, unsigned maxlen)
@@ -2501,6 +4529,7 @@ static void cache_status(struct dm_target *ti, status_type_t type,
 	char buf[BDEVNAME_SIZE];
 	struct cache *cache = ti->private;
 	dm_cblock_t residency;
+<<<<<<< HEAD
 
 	switch (type) {
 	case STATUSTYPE_INFO:
@@ -2515,26 +4544,61 @@ static void cache_status(struct dm_target *ti, status_type_t type,
 							   &nr_free_blocks_metadata);
 		if (r) {
 			DMERR("could not get metadata free block count");
+=======
+	bool needs_check;
+
+	switch (type) {
+	case STATUSTYPE_INFO:
+		if (get_cache_mode(cache) == CM_FAIL) {
+			DMEMIT("Fail");
+			break;
+		}
+
+		/* Commit to ensure statistics aren't out-of-date */
+		if (!(status_flags & DM_STATUS_NOFLUSH_FLAG) && !dm_suspended(ti))
+			(void) commit(cache, false);
+
+		r = dm_cache_get_free_metadata_block_count(cache->cmd, &nr_free_blocks_metadata);
+		if (r) {
+			DMERR("%s: dm_cache_get_free_metadata_block_count returned %d",
+			      cache_device_name(cache), r);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto err;
 		}
 
 		r = dm_cache_get_metadata_dev_size(cache->cmd, &nr_blocks_metadata);
 		if (r) {
+<<<<<<< HEAD
 			DMERR("could not get metadata device size");
+=======
+			DMERR("%s: dm_cache_get_metadata_dev_size returned %d",
+			      cache_device_name(cache), r);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto err;
 		}
 
 		residency = policy_residency(cache->policy);
 
+<<<<<<< HEAD
 		DMEMIT("%llu/%llu %u %u %u %u %u %u %llu %u ",
 		       (unsigned long long)(nr_blocks_metadata - nr_free_blocks_metadata),
 		       (unsigned long long)nr_blocks_metadata,
+=======
+		DMEMIT("%u %llu/%llu %llu %llu/%llu %u %u %u %u %u %u %lu ",
+		       (unsigned)DM_CACHE_METADATA_BLOCK_SIZE,
+		       (unsigned long long)(nr_blocks_metadata - nr_free_blocks_metadata),
+		       (unsigned long long)nr_blocks_metadata,
+		       (unsigned long long)cache->sectors_per_block,
+		       (unsigned long long) from_cblock(residency),
+		       (unsigned long long) from_cblock(cache->cache_size),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       (unsigned) atomic_read(&cache->stats.read_hit),
 		       (unsigned) atomic_read(&cache->stats.read_miss),
 		       (unsigned) atomic_read(&cache->stats.write_hit),
 		       (unsigned) atomic_read(&cache->stats.write_miss),
 		       (unsigned) atomic_read(&cache->stats.demotion),
 		       (unsigned) atomic_read(&cache->stats.promotion),
+<<<<<<< HEAD
 		       (unsigned long long) from_cblock(residency),
 		       cache->nr_dirty);
 
@@ -2550,6 +4614,47 @@ static void cache_status(struct dm_target *ti, status_type_t type,
 				DMERR("policy_emit_config_values returned %d", r);
 		}
 
+=======
+		       (unsigned long) atomic_read(&cache->nr_dirty));
+
+		if (writethrough_mode(&cache->features))
+			DMEMIT("1 writethrough ");
+
+		else if (passthrough_mode(&cache->features))
+			DMEMIT("1 passthrough ");
+
+		else if (writeback_mode(&cache->features))
+			DMEMIT("1 writeback ");
+
+		else {
+			DMERR("%s: internal error: unknown io mode: %d",
+			      cache_device_name(cache), (int) cache->features.io_mode);
+			goto err;
+		}
+
+		DMEMIT("2 migration_threshold %llu ", (unsigned long long) cache->migration_threshold);
+
+		DMEMIT("%s ", dm_cache_policy_get_name(cache->policy));
+		if (sz < maxlen) {
+			r = policy_emit_config_values(cache->policy, result, maxlen, &sz);
+			if (r)
+				DMERR("%s: policy_emit_config_values returned %d",
+				      cache_device_name(cache), r);
+		}
+
+		if (get_cache_mode(cache) == CM_READ_ONLY)
+			DMEMIT("ro ");
+		else
+			DMEMIT("rw ");
+
+		r = dm_cache_metadata_needs_check(cache->cmd, &needs_check);
+
+		if (r || needs_check)
+			DMEMIT("needs_check ");
+		else
+			DMEMIT("- ");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case STATUSTYPE_TABLE:
@@ -2573,7 +4678,136 @@ err:
 }
 
 /*
+<<<<<<< HEAD
  * Supports <key> <value>.
+=======
+ * A cache block range can take two forms:
+ *
+ * i) A single cblock, eg. '3456'
+ * ii) A begin and end cblock with dots between, eg. 123-234
+ */
+static int parse_cblock_range(struct cache *cache, const char *str,
+			      struct cblock_range *result)
+{
+	char dummy;
+	uint64_t b, e;
+	int r;
+
+	/*
+	 * Try and parse form (ii) first.
+	 */
+	r = sscanf(str, "%llu-%llu%c", &b, &e, &dummy);
+	if (r < 0)
+		return r;
+
+	if (r == 2) {
+		result->begin = to_cblock(b);
+		result->end = to_cblock(e);
+		return 0;
+	}
+
+	/*
+	 * That didn't work, try form (i).
+	 */
+	r = sscanf(str, "%llu%c", &b, &dummy);
+	if (r < 0)
+		return r;
+
+	if (r == 1) {
+		result->begin = to_cblock(b);
+		result->end = to_cblock(from_cblock(result->begin) + 1u);
+		return 0;
+	}
+
+	DMERR("%s: invalid cblock range '%s'", cache_device_name(cache), str);
+	return -EINVAL;
+}
+
+static int validate_cblock_range(struct cache *cache, struct cblock_range *range)
+{
+	uint64_t b = from_cblock(range->begin);
+	uint64_t e = from_cblock(range->end);
+	uint64_t n = from_cblock(cache->cache_size);
+
+	if (b >= n) {
+		DMERR("%s: begin cblock out of range: %llu >= %llu",
+		      cache_device_name(cache), b, n);
+		return -EINVAL;
+	}
+
+	if (e > n) {
+		DMERR("%s: end cblock out of range: %llu > %llu",
+		      cache_device_name(cache), e, n);
+		return -EINVAL;
+	}
+
+	if (b >= e) {
+		DMERR("%s: invalid cblock range: %llu >= %llu",
+		      cache_device_name(cache), b, e);
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+static int request_invalidation(struct cache *cache, struct cblock_range *range)
+{
+	struct invalidation_request req;
+
+	INIT_LIST_HEAD(&req.list);
+	req.cblocks = range;
+	atomic_set(&req.complete, 0);
+	req.err = 0;
+	init_waitqueue_head(&req.result_wait);
+
+	spin_lock(&cache->invalidation_lock);
+	list_add(&req.list, &cache->invalidation_requests);
+	spin_unlock(&cache->invalidation_lock);
+	wake_worker(cache);
+
+	wait_event(req.result_wait, atomic_read(&req.complete));
+	return req.err;
+}
+
+static int process_invalidate_cblocks_message(struct cache *cache, unsigned count,
+					      const char **cblock_ranges)
+{
+	int r = 0;
+	unsigned i;
+	struct cblock_range range;
+
+	if (!passthrough_mode(&cache->features)) {
+		DMERR("%s: cache has to be in passthrough mode for invalidation",
+		      cache_device_name(cache));
+		return -EPERM;
+	}
+
+	for (i = 0; i < count; i++) {
+		r = parse_cblock_range(cache, cblock_ranges[i], &range);
+		if (r)
+			break;
+
+		r = validate_cblock_range(cache, &range);
+		if (r)
+			break;
+
+		/*
+		 * Pass begin and end origin blocks to the worker and wake it.
+		 */
+		r = request_invalidation(cache, &range);
+		if (r)
+			break;
+	}
+
+	return r;
+}
+
+/*
+ * Supports
+ *	"<key> <value>"
+ * and
+ *     "invalidate_cblocks [(<begin>)|(<begin>-<end>)]*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The key migration_threshold is supported by the cache target core.
  */
@@ -2581,6 +4815,21 @@ static int cache_message(struct dm_target *ti, unsigned argc, char **argv)
 {
 	struct cache *cache = ti->private;
 
+<<<<<<< HEAD
+=======
+	if (!argc)
+		return -EINVAL;
+
+	if (get_cache_mode(cache) >= CM_READ_ONLY) {
+		DMERR("%s: unable to service cache target messages in READ_ONLY or FAIL mode",
+		      cache_device_name(cache));
+		return -EOPNOTSUPP;
+	}
+
+	if (!strcasecmp(argv[0], "invalidate_cblocks"))
+		return process_invalidate_cblocks_message(cache, argc - 1, (const char **) argv + 1);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (argc != 2)
 		return -EINVAL;
 
@@ -2600,6 +4849,7 @@ static int cache_iterate_devices(struct dm_target *ti,
 	return r;
 }
 
+<<<<<<< HEAD
 /*
  * We assume I/O is going to the origin (which is the volume
  * more likely to have restrictions e.g. by being striped).
@@ -2620,21 +4870,42 @@ static int cache_bvec_merge(struct dm_target *ti,
 	return min(max_size, q->merge_bvec_fn(q, bvm, biovec));
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void set_discard_limits(struct cache *cache, struct queue_limits *limits)
 {
 	/*
 	 * FIXME: these limits may be incompatible with the cache device
 	 */
+<<<<<<< HEAD
 	limits->max_discard_sectors = cache->discard_block_size * 1024;
+=======
+	limits->max_discard_sectors = min_t(sector_t, cache->discard_block_size * 1024,
+					    cache->origin_sectors);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	limits->discard_granularity = cache->discard_block_size << SECTOR_SHIFT;
 }
 
 static void cache_io_hints(struct dm_target *ti, struct queue_limits *limits)
 {
 	struct cache *cache = ti->private;
+<<<<<<< HEAD
 
 	blk_limits_io_min(limits, 0);
 	blk_limits_io_opt(limits, cache->sectors_per_block << SECTOR_SHIFT);
+=======
+	uint64_t io_opt_sectors = limits->io_opt >> SECTOR_SHIFT;
+
+	/*
+	 * If the system-determined stacked limits are compatible with the
+	 * cache's blocksize (io_opt is a factor) do not override them.
+	 */
+	if (io_opt_sectors < cache->sectors_per_block ||
+	    do_div(io_opt_sectors, cache->sectors_per_block)) {
+		blk_limits_io_min(limits, cache->sectors_per_block << SECTOR_SHIFT);
+		blk_limits_io_opt(limits, cache->sectors_per_block << SECTOR_SHIFT);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_discard_limits(cache, limits);
 }
 
@@ -2642,7 +4913,11 @@ static void cache_io_hints(struct dm_target *ti, struct queue_limits *limits)
 
 static struct target_type cache_target = {
 	.name = "cache",
+<<<<<<< HEAD
 	.version = {1, 1, 1},
+=======
+	.version = {1, 9, 0},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.module = THIS_MODULE,
 	.ctr = cache_ctr,
 	.dtr = cache_dtr,
@@ -2654,7 +4929,10 @@ static struct target_type cache_target = {
 	.status = cache_status,
 	.message = cache_message,
 	.iterate_devices = cache_iterate_devices,
+<<<<<<< HEAD
 	.merge = cache_bvec_merge,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.io_hints = cache_io_hints,
 };
 

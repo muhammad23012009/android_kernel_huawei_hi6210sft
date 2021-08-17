@@ -1,5 +1,11 @@
 #ifndef _IOP13XX_TIME_H_
 #define _IOP13XX_TIME_H_
+<<<<<<< HEAD
+=======
+
+#include <mach/irqs.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IRQ_IOP_TIMER0 IRQ_IOP13XX_TIMER0
 
 #define IOP_TMR_EN	    0x02
@@ -39,7 +45,11 @@ static inline unsigned long iop13xx_core_freq(void)
 	case IOP13XX_CORE_FREQ_1200:
 		return 1200000000;
 	default:
+<<<<<<< HEAD
 		printk("%s: warning unknown frequency, defaulting to 800Mhz\n",
+=======
+		printk("%s: warning unknown frequency, defaulting to 800MHz\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__func__);
 	}
 

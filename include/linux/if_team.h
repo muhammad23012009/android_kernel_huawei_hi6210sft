@@ -10,9 +10,15 @@
 #ifndef _LINUX_IF_TEAM_H_
 #define _LINUX_IF_TEAM_H_
 
+<<<<<<< HEAD
 
 #include <linux/netpoll.h>
 #include <net/sch_generic.h>
+=======
+#include <linux/netpoll.h>
+#include <net/sch_generic.h>
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <uapi/linux/if_team.h>
 
 struct team_pcpu_stats {
@@ -24,6 +30,10 @@ struct team_pcpu_stats {
 	struct u64_stats_sync	syncp;
 	u32			rx_dropped;
 	u32			tx_dropped;
+<<<<<<< HEAD
+=======
+	u32			rx_nohandler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct team;
@@ -69,6 +79,10 @@ struct team_port {
 	s32 priority; /* lower number ~ higher priority */
 	u16 queue_id;
 	struct list_head qom_list; /* node in queue override mapping list */
+<<<<<<< HEAD
+=======
+	struct rcu_head	rcu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long mode_priv[0];
 };
 
@@ -163,6 +177,10 @@ struct team_mode {
 	size_t priv_size;
 	size_t port_priv_size;
 	const struct team_mode_ops *ops;
+<<<<<<< HEAD
+=======
+	enum netdev_lag_tx_type lag_tx_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define TEAM_PORT_HASHBITS 4
@@ -194,6 +212,21 @@ struct team {
 	bool queue_override_enabled;
 	struct list_head *qom_lists; /* array of queue override mapping lists */
 	bool port_mtu_change_allowed;
+<<<<<<< HEAD
+=======
+	struct {
+		unsigned int count;
+		unsigned int interval; /* in ms */
+		atomic_t count_pending;
+		struct delayed_work dw;
+	} notify_peers;
+	struct {
+		unsigned int count;
+		unsigned int interval; /* in ms */
+		atomic_t count_pending;
+		struct delayed_work dw;
+	} mcast_rejoin;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long mode_priv[TEAM_MODE_PRIV_LONGS];
 };
 
@@ -229,6 +262,19 @@ static inline struct team_port *team_get_port_by_index(struct team *team,
 			return port;
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+
+static inline int team_num_to_port_index(struct team *team, unsigned int num)
+{
+	int en_port_count = ACCESS_ONCE(team->en_port_count);
+
+	if (unlikely(!en_port_count))
+		return 0;
+	return num % en_port_count;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline struct team_port *team_get_port_by_index_rcu(struct team *team,
 							   int port_index)
 {

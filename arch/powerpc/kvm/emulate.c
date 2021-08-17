@@ -30,6 +30,7 @@
 #include <asm/byteorder.h>
 #include <asm/kvm_ppc.h>
 #include <asm/disassemble.h>
+<<<<<<< HEAD
 #include "timing.h"
 #include "trace.h"
 
@@ -77,6 +78,12 @@
 #define OP_STH  44
 #define OP_STHU 45
 
+=======
+#include <asm/ppc-opcode.h>
+#include "timing.h"
+#include "trace.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void kvmppc_emulate_dec(struct kvm_vcpu *vcpu)
 {
 	unsigned long dec_nsec;
@@ -140,10 +147,17 @@ static int kvmppc_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, int rs)
 
 	switch (sprn) {
 	case SPRN_SRR0:
+<<<<<<< HEAD
 		vcpu->arch.shared->srr0 = spr_val;
 		break;
 	case SPRN_SRR1:
 		vcpu->arch.shared->srr1 = spr_val;
+=======
+		kvmppc_set_srr0(vcpu, spr_val);
+		break;
+	case SPRN_SRR1:
+		kvmppc_set_srr1(vcpu, spr_val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	/* XXX We need to context-switch the timebase for
@@ -157,6 +171,7 @@ static int kvmppc_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, int rs)
 		break;
 
 	case SPRN_SPRG0:
+<<<<<<< HEAD
 		vcpu->arch.shared->sprg0 = spr_val;
 		break;
 	case SPRN_SPRG1:
@@ -172,6 +187,26 @@ static int kvmppc_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, int rs)
 	default:
 		emulated = kvmppc_core_emulate_mtspr(vcpu, sprn,
 						     spr_val);
+=======
+		kvmppc_set_sprg0(vcpu, spr_val);
+		break;
+	case SPRN_SPRG1:
+		kvmppc_set_sprg1(vcpu, spr_val);
+		break;
+	case SPRN_SPRG2:
+		kvmppc_set_sprg2(vcpu, spr_val);
+		break;
+	case SPRN_SPRG3:
+		kvmppc_set_sprg3(vcpu, spr_val);
+		break;
+
+	/* PIR can legally be written, but we ignore it */
+	case SPRN_PIR: break;
+
+	default:
+		emulated = vcpu->kvm->arch.kvm_ops->emulate_mtspr(vcpu, sprn,
+								  spr_val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (emulated == EMULATE_FAIL)
 			printk(KERN_INFO "mtspr: unknown spr "
 				"0x%x\n", sprn);
@@ -190,10 +225,17 @@ static int kvmppc_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
 
 	switch (sprn) {
 	case SPRN_SRR0:
+<<<<<<< HEAD
 		spr_val = vcpu->arch.shared->srr0;
 		break;
 	case SPRN_SRR1:
 		spr_val = vcpu->arch.shared->srr1;
+=======
+		spr_val = kvmppc_get_srr0(vcpu);
+		break;
+	case SPRN_SRR1:
+		spr_val = kvmppc_get_srr1(vcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case SPRN_PVR:
 		spr_val = vcpu->arch.pvr;
@@ -213,6 +255,7 @@ static int kvmppc_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
 		break;
 
 	case SPRN_SPRG0:
+<<<<<<< HEAD
 		spr_val = vcpu->arch.shared->sprg0;
 		break;
 	case SPRN_SPRG1:
@@ -223,6 +266,18 @@ static int kvmppc_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
 		break;
 	case SPRN_SPRG3:
 		spr_val = vcpu->arch.shared->sprg3;
+=======
+		spr_val = kvmppc_get_sprg0(vcpu);
+		break;
+	case SPRN_SPRG1:
+		spr_val = kvmppc_get_sprg1(vcpu);
+		break;
+	case SPRN_SPRG2:
+		spr_val = kvmppc_get_sprg2(vcpu);
+		break;
+	case SPRN_SPRG3:
+		spr_val = kvmppc_get_sprg3(vcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	/* Note: SPRG4-7 are user-readable, so we don't get
 	 * a trap. */
@@ -231,8 +286,13 @@ static int kvmppc_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
 		spr_val = kvmppc_get_dec(vcpu, get_tb());
 		break;
 	default:
+<<<<<<< HEAD
 		emulated = kvmppc_core_emulate_mfspr(vcpu, sprn,
 						     &spr_val);
+=======
+		emulated = vcpu->kvm->arch.kvm_ops->emulate_mfspr(vcpu, sprn,
+								  &spr_val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (unlikely(emulated == EMULATE_FAIL)) {
 			printk(KERN_INFO "mfspr: unknown spr "
 				"0x%x\n", sprn);
@@ -247,6 +307,7 @@ static int kvmppc_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
 	return emulated;
 }
 
+<<<<<<< HEAD
 /* XXX to do:
  * lhax
  * lhaux
@@ -261,23 +322,44 @@ static int kvmppc_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
  *
  * XXX is_bigendian should depend on MMU mapping or MSR[LE]
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* XXX Should probably auto-generate instruction decoding for a particular core
  * from opcode tables in the future. */
 int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	u32 inst = kvmppc_get_last_inst(vcpu);
 	int ra = get_ra(inst);
 	int rs = get_rs(inst);
 	int rt = get_rt(inst);
 	int sprn = get_sprn(inst);
 	enum emulation_result emulated = EMULATE_DONE;
+=======
+	u32 inst;
+	int rs, rt, sprn;
+	enum emulation_result emulated;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int advance = 1;
 
 	/* this default type might be overwritten by subcategories */
 	kvmppc_set_exit_type(vcpu, EMULATED_INST_EXITS);
 
+<<<<<<< HEAD
 	pr_debug("Emulating opcode %d / %d\n", get_op(inst), get_xop(inst));
 
+=======
+	emulated = kvmppc_get_last_inst(vcpu, INST_GENERIC, &inst);
+	if (emulated != EMULATE_DONE)
+		return emulated;
+
+	pr_debug("Emulating opcode %d / %d\n", get_op(inst), get_xop(inst));
+
+	rs = get_rs(inst);
+	rt = get_rt(inst);
+	sprn = get_sprn(inst);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (get_op(inst)) {
 	case OP_TRAP:
 #ifdef CONFIG_PPC_BOOK3S
@@ -305,6 +387,7 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 #endif
 			advance = 0;
 			break;
+<<<<<<< HEAD
 		case OP_31_XOP_LWZX:
 			emulated = kvmppc_handle_load(run, vcpu, rt, 4, 1);
 			break;
@@ -349,11 +432,14 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			emulated = kvmppc_handle_load(run, vcpu, rt, 2, 1);
 			kvmppc_set_gpr(vcpu, ra, vcpu->arch.vaddr_accessed);
 			break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		case OP_31_XOP_MFSPR:
 			emulated = kvmppc_emulate_mfspr(vcpu, sprn, rt);
 			break;
 
+<<<<<<< HEAD
 		case OP_31_XOP_STHX:
 			emulated = kvmppc_handle_store(run, vcpu,
 						       kvmppc_get_gpr(vcpu, rs),
@@ -367,10 +453,13 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			kvmppc_set_gpr(vcpu, ra, vcpu->arch.vaddr_accessed);
 			break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case OP_31_XOP_MTSPR:
 			emulated = kvmppc_emulate_mtspr(vcpu, sprn, rs);
 			break;
 
+<<<<<<< HEAD
 		case OP_31_XOP_DCBST:
 		case OP_31_XOP_DCBF:
 		case OP_31_XOP_DCBI:
@@ -404,12 +493,18 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			                               2, 0);
 			break;
 
+=======
+		case OP_31_XOP_TLBSYNC:
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			/* Attempt core-specific emulation below. */
 			emulated = EMULATE_FAIL;
 		}
 		break;
 
+<<<<<<< HEAD
 	case OP_LWZ:
 		emulated = kvmppc_handle_load(run, vcpu, rt, 4, 1);
 		break;
@@ -497,6 +592,21 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 					       kvmppc_get_gpr(vcpu, rs),
 		                               2, 1);
 		kvmppc_set_gpr(vcpu, ra, vcpu->arch.vaddr_accessed);
+=======
+	case 0:
+		/*
+		 * Instruction with primary opcode 0. Based on PowerISA
+		 * these are illegal instructions.
+		 */
+		if (inst == KVMPPC_INST_SW_BREAKPOINT) {
+			run->exit_reason = KVM_EXIT_DEBUG;
+			run->debug.arch.address = kvmppc_get_pc(vcpu);
+			emulated = EMULATE_EXIT_USER;
+			advance = 0;
+		} else
+			emulated = EMULATE_FAIL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:
@@ -504,7 +614,12 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 	}
 
 	if (emulated == EMULATE_FAIL) {
+<<<<<<< HEAD
 		emulated = kvmppc_core_emulate_op(run, vcpu, inst, &advance);
+=======
+		emulated = vcpu->kvm->arch.kvm_ops->emulate_op(run, vcpu, inst,
+							       &advance);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (emulated == EMULATE_AGAIN) {
 			advance = 0;
 		} else if (emulated == EMULATE_FAIL) {
@@ -522,3 +637,7 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 
 	return emulated;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(kvmppc_emulate_instruction);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

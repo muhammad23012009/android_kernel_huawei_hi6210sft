@@ -3,7 +3,10 @@
  *
  * (C) Copyright 2004 Linus Torvalds
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 #include <linux/mm.h>
 #include <linux/export.h>
@@ -24,7 +27,11 @@ unsigned int ioread16(void __iomem *addr)
 }
 unsigned int ioread16be(void __iomem *addr)
 {
+<<<<<<< HEAD
 	return in_be16(addr);
+=======
+	return readw_be(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 unsigned int ioread32(void __iomem *addr)
 {
@@ -32,13 +39,32 @@ unsigned int ioread32(void __iomem *addr)
 }
 unsigned int ioread32be(void __iomem *addr)
 {
+<<<<<<< HEAD
 	return in_be32(addr);
+=======
+	return readl_be(addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(ioread8);
 EXPORT_SYMBOL(ioread16);
 EXPORT_SYMBOL(ioread16be);
 EXPORT_SYMBOL(ioread32);
 EXPORT_SYMBOL(ioread32be);
+<<<<<<< HEAD
+=======
+#ifdef __powerpc64__
+u64 ioread64(void __iomem *addr)
+{
+	return readq(addr);
+}
+u64 ioread64be(void __iomem *addr)
+{
+	return readq_be(addr);
+}
+EXPORT_SYMBOL(ioread64);
+EXPORT_SYMBOL(ioread64be);
+#endif /* __powerpc64__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void iowrite8(u8 val, void __iomem *addr)
 {
@@ -50,7 +76,11 @@ void iowrite16(u16 val, void __iomem *addr)
 }
 void iowrite16be(u16 val, void __iomem *addr)
 {
+<<<<<<< HEAD
 	out_be16(addr, val);
+=======
+	writew_be(val, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 void iowrite32(u32 val, void __iomem *addr)
 {
@@ -58,13 +88,32 @@ void iowrite32(u32 val, void __iomem *addr)
 }
 void iowrite32be(u32 val, void __iomem *addr)
 {
+<<<<<<< HEAD
 	out_be32(addr, val);
+=======
+	writel_be(val, addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(iowrite8);
 EXPORT_SYMBOL(iowrite16);
 EXPORT_SYMBOL(iowrite16be);
 EXPORT_SYMBOL(iowrite32);
 EXPORT_SYMBOL(iowrite32be);
+<<<<<<< HEAD
+=======
+#ifdef __powerpc64__
+void iowrite64(u64 val, void __iomem *addr)
+{
+	writeq(val, addr);
+}
+void iowrite64be(u64 val, void __iomem *addr)
+{
+	writeq_be(val, addr);
+}
+EXPORT_SYMBOL(iowrite64);
+EXPORT_SYMBOL(iowrite64be);
+#endif /* __powerpc64__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These are the "repeat read/write" functions. Note the
@@ -76,6 +125,7 @@ EXPORT_SYMBOL(iowrite32be);
  */
 void ioread8_rep(void __iomem *addr, void *dst, unsigned long count)
 {
+<<<<<<< HEAD
 	_insb((u8 __iomem *) addr, dst, count);
 }
 void ioread16_rep(void __iomem *addr, void *dst, unsigned long count)
@@ -85,6 +135,17 @@ void ioread16_rep(void __iomem *addr, void *dst, unsigned long count)
 void ioread32_rep(void __iomem *addr, void *dst, unsigned long count)
 {
 	_insl_ns((u32 __iomem *) addr, dst, count);
+=======
+	readsb(addr, dst, count);
+}
+void ioread16_rep(void __iomem *addr, void *dst, unsigned long count)
+{
+	readsw(addr, dst, count);
+}
+void ioread32_rep(void __iomem *addr, void *dst, unsigned long count)
+{
+	readsl(addr, dst, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(ioread8_rep);
 EXPORT_SYMBOL(ioread16_rep);
@@ -92,6 +153,7 @@ EXPORT_SYMBOL(ioread32_rep);
 
 void iowrite8_rep(void __iomem *addr, const void *src, unsigned long count)
 {
+<<<<<<< HEAD
 	_outsb((u8 __iomem *) addr, src, count);
 }
 void iowrite16_rep(void __iomem *addr, const void *src, unsigned long count)
@@ -101,6 +163,17 @@ void iowrite16_rep(void __iomem *addr, const void *src, unsigned long count)
 void iowrite32_rep(void __iomem *addr, const void *src, unsigned long count)
 {
 	_outsl_ns((u32 __iomem *) addr, src, count);
+=======
+	writesb(addr, src, count);
+}
+void iowrite16_rep(void __iomem *addr, const void *src, unsigned long count)
+{
+	writesw(addr, src, count);
+}
+void iowrite32_rep(void __iomem *addr, const void *src, unsigned long count)
+{
+	writesl(addr, src, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(iowrite8_rep);
 EXPORT_SYMBOL(iowrite16_rep);

@@ -169,7 +169,11 @@ drop:
 	return NET_RX_DROP;
 }
 
+<<<<<<< HEAD
 static void pppopns_recv(struct sock *sk_raw, int length)
+=======
+static void pppopns_recv(struct sock *sk_raw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sk_buff *skb;
 	while ((skb = skb_dequeue(&sk_raw->sk_receive_queue))) {
@@ -190,11 +194,20 @@ static void pppopns_xmit_core(struct work_struct *delivery_work)
 		struct sock *sk_raw = skb->sk;
 		struct kvec iov = {.iov_base = skb->data, .iov_len = skb->len};
 		struct msghdr msg = {
+<<<<<<< HEAD
 			.msg_iov = (struct iovec *)&iov,
 			.msg_iovlen = 1,
 			.msg_flags = MSG_NOSIGNAL | MSG_DONTWAIT,
 		};
 		sk_raw->sk_prot->sendmsg(NULL, sk_raw, &msg, skb->len);
+=======
+			.msg_flags = MSG_NOSIGNAL | MSG_DONTWAIT,
+		};
+
+		iov_iter_kvec(&msg.msg_iter, WRITE | ITER_KVEC, &iov, 1,
+			      skb->len);
+		sk_raw->sk_prot->sendmsg(sk_raw, &msg, skb->len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree_skb(skb);
 	}
 	set_fs(old_fs);
@@ -375,11 +388,19 @@ static struct proto_ops pppopns_proto_ops = {
 	.mmap = sock_no_mmap,
 };
 
+<<<<<<< HEAD
 static int pppopns_create(struct net *net, struct socket *sock)
 {
 	struct sock *sk;
 
 	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pppopns_proto);
+=======
+static int pppopns_create(struct net *net, struct socket *sock, int kern)
+{
+	struct sock *sk;
+
+	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pppopns_proto, kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sk)
 		return -ENOMEM;
 

@@ -96,6 +96,7 @@ static u32 get_ff_hwaddr(struct xmit_frame *pxmitframe)
 	u32 addr = 0;
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	struct _adapter *padapter = pxmitframe->padapter;
+<<<<<<< HEAD
 	struct dvobj_priv *pdvobj = (struct dvobj_priv *)&padapter->dvobjpriv;
 
 	if (pxmitframe->frame_tag == TXAGG_FRAMETAG)
@@ -103,6 +104,15 @@ static u32 get_ff_hwaddr(struct xmit_frame *pxmitframe)
 	else if (pxmitframe->frame_tag == MGNT_FRAMETAG)
 		addr = RTL8712_DMA_MGTQ;
 	else if (pdvobj->nr_endpoint == 6) {
+=======
+	struct dvobj_priv *pdvobj = &padapter->dvobjpriv;
+
+	if (pxmitframe->frame_tag == TXAGG_FRAMETAG) {
+		addr = RTL8712_DMA_H2CCMD;
+	} else if (pxmitframe->frame_tag == MGNT_FRAMETAG) {
+		addr = RTL8712_DMA_MGTQ;
+	} else if (pdvobj->nr_endpoint == 6) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (pattrib->priority) {
 		case 0:
 		case 3:
@@ -166,12 +176,21 @@ static struct xmit_frame *dequeue_one_xmitframe(struct xmit_priv *pxmitpriv,
 	struct list_head *xmitframe_plist, *xmitframe_phead;
 	struct	xmit_frame *pxmitframe = NULL;
 
+<<<<<<< HEAD
 	xmitframe_phead = get_list_head(pframe_queue);
 	xmitframe_plist = get_next(xmitframe_phead);
 	if ((end_of_queue_search(xmitframe_phead, xmitframe_plist)) == false) {
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist,
 			     struct xmit_frame, list);
 		list_delete(&pxmitframe->list);
+=======
+	xmitframe_phead = &pframe_queue->queue;
+	xmitframe_plist = xmitframe_phead->next;
+	if (!end_of_queue_search(xmitframe_phead, xmitframe_plist)) {
+		pxmitframe = container_of(xmitframe_plist,
+					  struct xmit_frame, list);
+		list_del_init(&pxmitframe->list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ptxservq->qcnt--;
 		phwxmit->txcmdcnt++;
 	}
@@ -188,7 +207,11 @@ static struct xmit_frame *dequeue_xframe_ex(struct xmit_priv *pxmitpriv,
 	struct  __queue *pframe_queue = NULL;
 	struct	xmit_frame *pxmitframe = NULL;
 	int i, inx[4];
+<<<<<<< HEAD
 	int j, tmp, acirp_cnt[4];
+=======
+	int j, acirp_cnt[4];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*entry indx: 0->vo, 1->vi, 2->be, 3->bk.*/
 	inx[0] = 0; acirp_cnt[0] = pxmitpriv->voq_cnt;
@@ -198,23 +221,36 @@ static struct xmit_frame *dequeue_xframe_ex(struct xmit_priv *pxmitpriv,
 	for (i = 0; i < 4; i++) {
 		for (j = i + 1; j < 4; j++) {
 			if (acirp_cnt[j] < acirp_cnt[i]) {
+<<<<<<< HEAD
 				tmp = acirp_cnt[i];
 				acirp_cnt[i] = acirp_cnt[j];
 				acirp_cnt[j] = tmp;
 				tmp = inx[i];
 				inx[i] = inx[j];
 				inx[j] = tmp;
+=======
+				swap(acirp_cnt[i], acirp_cnt[j]);
+				swap(inx[i], inx[j]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
 	spin_lock_irqsave(&pxmitpriv->lock, irqL0);
 	for (i = 0; i < entry; i++) {
 		phwxmit = phwxmit_i + inx[i];
+<<<<<<< HEAD
 		sta_phead = get_list_head(phwxmit->sta_queue);
 		sta_plist = get_next(sta_phead);
 		while ((end_of_queue_search(sta_phead, sta_plist)) == false) {
 			ptxservq = LIST_CONTAINOR(sta_plist, struct tx_servq,
 				  tx_pending);
+=======
+		sta_phead = &phwxmit->sta_queue->queue;
+		sta_plist = sta_phead->next;
+		while (!end_of_queue_search(sta_phead, sta_plist)) {
+			ptxservq = container_of(sta_plist, struct tx_servq,
+						tx_pending);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pframe_queue = &ptxservq->sta_pending;
 			pxmitframe = dequeue_one_xmitframe(pxmitpriv, phwxmit,
 				     ptxservq, pframe_queue);
@@ -222,11 +258,21 @@ static struct xmit_frame *dequeue_xframe_ex(struct xmit_priv *pxmitpriv,
 				phwxmit->accnt--;
 				goto exit_dequeue_xframe_ex;
 			}
+<<<<<<< HEAD
 			sta_plist = get_next(sta_plist);
 			/*Remove sta node when there are no pending packets.*/
 			if (_queue_empty(pframe_queue)) {
 				/*must be done after get_next and before break*/
 				list_delete(&ptxservq->tx_pending);
+=======
+			sta_plist = sta_plist->next;
+			/*Remove sta node when there are no pending packets.*/
+			if (list_empty(&pframe_queue->queue)) {
+				/* must be done after sta_plist->next
+				 * and before break
+				 */
+				list_del_init(&ptxservq->tx_pending);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
@@ -239,11 +285,19 @@ void r8712_do_queue_select(struct _adapter *padapter,
 			   struct pkt_attrib *pattrib)
 {
 	unsigned int qsel = 0;
+<<<<<<< HEAD
 	struct dvobj_priv *pdvobj = (struct dvobj_priv *)&padapter->dvobjpriv;
 
 	if (pdvobj->nr_endpoint == 6)
 		qsel = (unsigned int) pattrib->priority;
 	else if (pdvobj->nr_endpoint == 4) {
+=======
+	struct dvobj_priv *pdvobj = &padapter->dvobjpriv;
+
+	if (pdvobj->nr_endpoint == 6) {
+		qsel = (unsigned int) pattrib->priority;
+	} else if (pdvobj->nr_endpoint == 4) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		qsel = (unsigned int) pattrib->priority;
 		if (qsel == 0 || qsel == 3)
 			qsel = 3;
@@ -266,6 +320,7 @@ u8 r8712_construct_txaggr_cmd_desc(struct xmit_buf *pxmitbuf)
 
 	/* Fill up TxCmd Descriptor according as USB FW Tx Aaggregation info.*/
 	/* dw0 */
+<<<<<<< HEAD
 	ptx_desc->txdw0 = cpu_to_le32(CMD_HDR_SZ&0xffff);
 	ptx_desc->txdw0 |=
 		cpu_to_le32(((TXDESC_SIZE+OFFSET_SZ)<<OFFSET_SHT)&0x00ff0000);
@@ -273,6 +328,16 @@ u8 r8712_construct_txaggr_cmd_desc(struct xmit_buf *pxmitbuf)
 
 	/* dw1 */
 	ptx_desc->txdw1 |= cpu_to_le32((0x13<<QSEL_SHT)&0x00001f00);
+=======
+	ptx_desc->txdw0 = cpu_to_le32(CMD_HDR_SZ & 0xffff);
+	ptx_desc->txdw0 |=
+		cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) &
+			    0x00ff0000);
+	ptx_desc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
+
+	/* dw1 */
+	ptx_desc->txdw1 |= cpu_to_le32((0x13 << QSEL_SHT) & 0x00001f00);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return _SUCCESS;
 }
@@ -322,6 +387,7 @@ u8 r8712_append_mpdu_unit(struct xmit_buf *pxmitbuf,
 	padding_sz = (8 - (last_txcmdsz % 8));
 	if ((last_txcmdsz % 8) != 0) {
 		int i;
+<<<<<<< HEAD
 		for (i = 0; i < padding_sz; i++)
 			*(pxmitframe->buf_addr+TXDESC_SIZE+last_txcmdsz+i) = 0;
 	}
@@ -329,6 +395,18 @@ u8 r8712_append_mpdu_unit(struct xmit_buf *pxmitbuf,
 	ptx_desc->txdw0 = cpu_to_le32((ptx_desc->txdw0&0xffff0000) |
 		((ptx_desc->txdw0&0x0000ffff)+
 			((TXDESC_SIZE+last_txcmdsz+padding_sz)&0x0000ffff)));
+=======
+
+		for (i = 0; i < padding_sz; i++)
+			*(pxmitframe->buf_addr + TXDESC_SIZE + last_txcmdsz +
+			  i) = 0;
+	}
+	/* Add the new mpdu's length */
+	ptx_desc->txdw0 = cpu_to_le32((ptx_desc->txdw0 & 0xffff0000) |
+		((ptx_desc->txdw0 & 0x0000ffff) +
+			((TXDESC_SIZE + last_txcmdsz + padding_sz) &
+			 0x0000ffff)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return _SUCCESS;
 }
@@ -337,12 +415,20 @@ u8 r8712_append_mpdu_unit(struct xmit_buf *pxmitbuf,
 u8 r8712_xmitframe_aggr_1st(struct xmit_buf *pxmitbuf,
 			struct xmit_frame *pxmitframe)
 {
+<<<<<<< HEAD
 	/* linux complete context doesnt need to protect */
+=======
+	/* linux complete context doesn't need to protect */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pxmitframe->pxmitbuf = pxmitbuf;
 	pxmitbuf->priv_data = pxmitframe;
 	pxmitframe->pxmit_urb[0] = pxmitbuf->pxmit_urb[0];
 	/* buffer addr assoc */
+<<<<<<< HEAD
 	pxmitframe->buf_addr = pxmitbuf->pbuf+TXDESC_SIZE+CMD_HDR_SZ;
+=======
+	pxmitframe->buf_addr = pxmitbuf->pbuf + TXDESC_SIZE + CMD_HDR_SZ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*RTL8712_DMA_H2CCMD */
 	r8712_construct_txaggr_cmd_desc(pxmitbuf);
 	r8712_construct_txaggr_cmd_hdr(pxmitbuf);
@@ -375,24 +461,40 @@ u8 r8712_dump_aggr_xframe(struct xmit_buf *pxmitbuf,
 			struct xmit_frame *pxmitframe)
 {
 	struct _adapter *padapter = pxmitframe->padapter;
+<<<<<<< HEAD
 	struct dvobj_priv *pdvobj = (struct dvobj_priv *) &padapter->dvobjpriv;
 	struct tx_desc *ptxdesc = (struct tx_desc *)pxmitbuf->pbuf;
+=======
+	struct dvobj_priv *pdvobj = &padapter->dvobjpriv;
+	struct tx_desc *ptxdesc = pxmitbuf->pbuf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cmd_hdr *pcmd_hdr = (struct cmd_hdr *)
 		(pxmitbuf->pbuf + TXDESC_SIZE);
 	u16 total_length = (u16) (ptxdesc->txdw0 & 0xffff);
 
 	/* use 1st xmitframe as media */
 	xmitframe_xmitbuf_attach(pxmitframe, pxmitbuf);
+<<<<<<< HEAD
 	pcmd_hdr->cmd_dw0 = cpu_to_le32(((total_length-CMD_HDR_SZ)&0x0000ffff)|
 					(pcmd_hdr->cmd_dw0&0xffff0000));
 
 	/* urb length in cmd_dw1 */
 	pcmd_hdr->cmd_dw1 = cpu_to_le32((pxmitbuf->aggr_nr & 0xff)|
 					((total_length+TXDESC_SIZE) << 16));
+=======
+	pcmd_hdr->cmd_dw0 = cpu_to_le32(((total_length - CMD_HDR_SZ) &
+					 0x0000ffff) | (pcmd_hdr->cmd_dw0 &
+							0xffff0000));
+
+	/* urb length in cmd_dw1 */
+	pcmd_hdr->cmd_dw1 = cpu_to_le32((pxmitbuf->aggr_nr & 0xff)|
+					((total_length + TXDESC_SIZE) << 16));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pxmitframe->last[0] = 1;
 	pxmitframe->bpending[0] = false;
 	pxmitframe->mem_addr = pxmitbuf->pbuf;
 
+<<<<<<< HEAD
 	if ((pdvobj->ishighspeed && ((total_length+TXDESC_SIZE)%0x200) == 0) ||
 		((!pdvobj->ishighspeed &&
 			((total_length+TXDESC_SIZE)%0x40) == 0))) {
@@ -406,6 +508,23 @@ u8 r8712_dump_aggr_xframe(struct xmit_buf *pxmitbuf,
 	}
 	r8712_write_port(pxmitframe->padapter, RTL8712_DMA_H2CCMD,
 			total_length+TXDESC_SIZE, (u8 *)pxmitframe);
+=======
+	if ((pdvobj->ishighspeed && ((total_length + TXDESC_SIZE) % 0x200) ==
+	     0) || ((!pdvobj->ishighspeed && ((total_length + TXDESC_SIZE) %
+					      0x40) == 0))) {
+		ptxdesc->txdw0 |= cpu_to_le32
+			(((TXDESC_SIZE + OFFSET_SZ + 8) << OFFSET_SHT) &
+			 0x00ff0000);
+		/*32 bytes for TX Desc + 8 bytes pending*/
+	} else {
+		ptxdesc->txdw0 |= cpu_to_le32
+			(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) &
+			 0x00ff0000);
+		/*default = 32 bytes for TX Desc*/
+	}
+	r8712_write_port(pxmitframe->padapter, RTL8712_DMA_H2CCMD,
+			total_length + TXDESC_SIZE, (u8 *)pxmitframe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return _SUCCESS;
 }
@@ -421,9 +540,15 @@ static void update_txdesc(struct xmit_frame *pxmitframe, uint *pmem, int sz)
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	struct tx_desc *ptxdesc = (struct tx_desc *)pmem;
+<<<<<<< HEAD
 	struct dvobj_priv *pdvobj = (struct dvobj_priv *)&padapter->dvobjpriv;
 #ifdef CONFIG_R8712_TX_AGGR
 	struct cmd_priv *pcmdpriv = (struct cmd_priv *)&padapter->cmdpriv;
+=======
+	struct dvobj_priv *pdvobj = &padapter->dvobjpriv;
+#ifdef CONFIG_R8712_TX_AGGR
+	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	u8 blnSetTxDescOffset;
 	sint bmcst = IS_MCAST(pattrib->ra);
@@ -433,7 +558,11 @@ static void update_txdesc(struct xmit_frame *pxmitframe, uint *pmem, int sz)
 	memcpy(&txdesc_mp, ptxdesc, sizeof(struct tx_desc));
 	memset(ptxdesc, 0, sizeof(struct tx_desc));
 	/* offset 0 */
+<<<<<<< HEAD
 	ptxdesc->txdw0 |= cpu_to_le32(sz&0x0000ffff);
+=======
+	ptxdesc->txdw0 |= cpu_to_le32(sz & 0x0000ffff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdvobj->ishighspeed) {
 		if (((sz + TXDESC_SIZE) % 512) == 0)
 			blnSetTxDescOffset = 1;
@@ -447,42 +576,71 @@ static void update_txdesc(struct xmit_frame *pxmitframe, uint *pmem, int sz)
 	}
 	if (blnSetTxDescOffset) {
 		/* 32 bytes for TX Desc + 8 bytes pending */
+<<<<<<< HEAD
 		ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE+OFFSET_SZ + 8) <<
 			      OFFSET_SHT) & 0x00ff0000);
 	} else {
 		/* default = 32 bytes for TX Desc */
 		ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE+OFFSET_SZ) <<
+=======
+		ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ + 8) <<
+			      OFFSET_SHT) & 0x00ff0000);
+	} else {
+		/* default = 32 bytes for TX Desc */
+		ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) <<
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  OFFSET_SHT) & 0x00ff0000);
 	}
 	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
 	if (pxmitframe->frame_tag == DATA_FRAMETAG) {
 		/* offset 4 */
+<<<<<<< HEAD
 		ptxdesc->txdw1 |= cpu_to_le32((pattrib->mac_id)&0x1f);
+=======
+		ptxdesc->txdw1 |= cpu_to_le32((pattrib->mac_id) & 0x1f);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_R8712_TX_AGGR
 		/* dirty workaround, need to check if it is aggr cmd. */
 		if ((u8 *)pmem != (u8 *)pxmitframe->pxmitbuf->pbuf) {
 			ptxdesc->txdw0 |= cpu_to_le32
+<<<<<<< HEAD
 				((0x3 << TYPE_SHT)&TYPE_MSK);
+=======
+				((0x3 << TYPE_SHT) & TYPE_MSK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			qsel = (uint)(pattrib->qsel & 0x0000001f);
 			if (qsel == 2)
 				qsel = 0;
 			ptxdesc->txdw1 |= cpu_to_le32
 				((qsel << QSEL_SHT) & 0x00001f00);
 			ptxdesc->txdw2 = cpu_to_le32
+<<<<<<< HEAD
 				((qsel << RTS_RC_SHT)&0x001f0000);
 			ptxdesc->txdw6 |= cpu_to_le32
 				((0x5 << RSVD6_SHT)&RSVD6_MSK);
 		} else {
 			ptxdesc->txdw0 |= cpu_to_le32
 				((0x3 << TYPE_SHT)&TYPE_MSK);
+=======
+				((qsel << RTS_RC_SHT) & 0x001f0000);
+			ptxdesc->txdw6 |= cpu_to_le32
+				((0x5 << RSVD6_SHT) & RSVD6_MSK);
+		} else {
+			ptxdesc->txdw0 |= cpu_to_le32
+				((0x3 << TYPE_SHT) & TYPE_MSK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ptxdesc->txdw1 |= cpu_to_le32
 				((0x13 << QSEL_SHT) & 0x00001f00);
 			qsel = (uint)(pattrib->qsel & 0x0000001f);
 			if (qsel == 2)
 				qsel = 0;
 			ptxdesc->txdw2 = cpu_to_le32
+<<<<<<< HEAD
 				((qsel << RTS_RC_SHT)&0x0001f000);
+=======
+				((qsel << RTS_RC_SHT) & 0x0001f000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ptxdesc->txdw7 |= cpu_to_le32
 				(pcmdpriv->cmd_seq << 24);
 			pcmdpriv->cmd_seq++;
@@ -530,7 +688,12 @@ static void update_txdesc(struct xmit_frame *pxmitframe, uint *pmem, int sz)
 		 * seqnum per tid. about usb using 4-endpoint, qsel points out
 		 * the correct mapping between AC&Endpoint,
 		 * the purpose is that correct mapping lets the MAC release
+<<<<<<< HEAD
 		 * the AC Queue list correctly. */
+=======
+		 * the AC Queue list correctly.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ptxdesc->txdw3 = cpu_to_le32((pattrib->priority << SEQ_SHT) &
 				 0x0fff0000);
 		if ((pattrib->ether_type != 0x888e) &&
@@ -552,6 +715,10 @@ static void update_txdesc(struct xmit_frame *pxmitframe, uint *pmem, int sz)
 		}
 		if (pattrib->pctrl == 1) { /* mp tx packets */
 			struct tx_desc *ptxdesc_mp;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ptxdesc_mp = &txdesc_mp;
 			/* offset 8 */
 			ptxdesc->txdw2 = cpu_to_le32(ptxdesc_mp->txdw2);
@@ -580,7 +747,12 @@ static void update_txdesc(struct xmit_frame *pxmitframe, uint *pmem, int sz)
 		 * per tid. about usb using 4-endpoint, qsel points out the
 		 * correct mapping between AC&Endpoint,
 		 * the purpose is that correct mapping let the MAC releases
+<<<<<<< HEAD
 		 * the AC Queue list correctly. */
+=======
+		 * the AC Queue list correctly.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ptxdesc->txdw3 = cpu_to_le32((pattrib->priority << SEQ_SHT) &
 					      0x0fff0000);
 		/* offset 16 */
@@ -593,7 +765,11 @@ static void update_txdesc(struct xmit_frame *pxmitframe, uint *pmem, int sz)
 		ptxdesc->txdw1 |= cpu_to_le32((qsel << QSEL_SHT) & 0x00001f00);
 	} else {
 		/* offset 4 */
+<<<<<<< HEAD
 		qsel = (uint)(pattrib->priority&0x0000001f);
+=======
+		qsel = (uint)(pattrib->priority & 0x0000001f);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ptxdesc->txdw1 |= cpu_to_le32((qsel << QSEL_SHT) & 0x00001f00);
 		/*offset 8*/
 		/*offset 12*/
@@ -621,7 +797,11 @@ int r8712_xmitframe_complete(struct _adapter *padapter,
 
 	phwxmits = pxmitpriv->hwxmits;
 	hwentry = pxmitpriv->hwxmit_entry;
+<<<<<<< HEAD
 	if (pxmitbuf == NULL) {
+=======
+	if (!pxmitbuf) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pxmitbuf = r8712_alloc_xmitbuf(pxmitpriv);
 		if (!pxmitbuf)
 			return false;
@@ -653,6 +833,10 @@ int r8712_xmitframe_complete(struct _adapter *padapter,
 		r8712_xmitframe_aggr_1st(pxmitbuf, pxmitframe);
 		if (p2ndxmitframe != NULL) {
 			u16 total_length;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			total_length = r8712_xmitframe_aggr_next(
 				pxmitbuf, p2ndxmitframe);
 			do {
@@ -679,7 +863,12 @@ int r8712_xmitframe_complete(struct _adapter *padapter,
 				res = r8712_xmitframe_coalesce(padapter,
 					pxmitframe->pkt, pxmitframe);
 			/* always return ndis_packet after
+<<<<<<< HEAD
 			 * r8712_xmitframe_coalesce */
+=======
+			 * r8712_xmitframe_coalesce
+			 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			r8712_xmit_complete(padapter, pxmitframe);
 		}
 		if (res == _SUCCESS)

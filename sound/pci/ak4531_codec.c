@@ -35,11 +35,15 @@ MODULE_DESCRIPTION("Universal routines for AK4531 codec");
 MODULE_LICENSE("GPL");
 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 static void snd_ak4531_proc_init(struct snd_card *card, struct snd_ak4531 *ak4531);
 #else
 #define snd_ak4531_proc_init(card,ak)
 #endif
+=======
+static void snd_ak4531_proc_init(struct snd_card *card, struct snd_ak4531 *ak4531);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *
@@ -466,7 +470,10 @@ void snd_ak4531_resume(struct snd_ak4531 *ak4531)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * /proc interface
  */
@@ -491,4 +498,7 @@ snd_ak4531_proc_init(struct snd_card *card, struct snd_ak4531 *ak4531)
 	if (! snd_card_proc_new(card, "ak4531", &entry))
 		snd_info_set_text_ops(entry, ak4531, snd_ak4531_proc_read);
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

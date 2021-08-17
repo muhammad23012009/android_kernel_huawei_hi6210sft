@@ -52,9 +52,15 @@
 #define ADV7183_VS_FIELD_CTRL_1    0x31 /* Vsync field control 1 */
 #define ADV7183_VS_FIELD_CTRL_2    0x32 /* Vsync field control 2 */
 #define ADV7183_VS_FIELD_CTRL_3    0x33 /* Vsync field control 3 */
+<<<<<<< HEAD
 #define ADV7183_HS_POS_CTRL_1      0x34 /* Hsync positon control 1 */
 #define ADV7183_HS_POS_CTRL_2      0x35 /* Hsync positon control 2 */
 #define ADV7183_HS_POS_CTRL_3      0x36 /* Hsync positon control 3 */
+=======
+#define ADV7183_HS_POS_CTRL_1      0x34 /* Hsync position control 1 */
+#define ADV7183_HS_POS_CTRL_2      0x35 /* Hsync position control 2 */
+#define ADV7183_HS_POS_CTRL_3      0x36 /* Hsync position control 3 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ADV7183_POLARITY           0x37 /* Polarity */
 #define ADV7183_NTSC_COMB_CTRL     0x38 /* NTSC comb control */
 #define ADV7183_PAL_COMB_CTRL      0x39 /* PAL comb control */

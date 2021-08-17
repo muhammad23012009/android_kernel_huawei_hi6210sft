@@ -12,7 +12,15 @@
 #include <linux/types.h>
 #include <uapi/asm/setup.h>
 
+<<<<<<< HEAD
 #define COMMAND_LINE_SIZE 256
+=======
+#ifdef CONFIG_ARC_PLAT_EZNPS
+#define COMMAND_LINE_SIZE 2048
+#else
+#define COMMAND_LINE_SIZE 256
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Data structure to map a ID to string
@@ -23,6 +31,7 @@ struct id_to_str {
 	const char *str;
 };
 
+<<<<<<< HEAD
 struct cpuinfo_data {
 	struct id_to_str info;
 	int up_range;
@@ -34,4 +43,19 @@ extern int running_on_hw;
 void __init setup_processor(void);
 void __init setup_arch_memory(void);
 
+=======
+extern int root_mountflags, end_mem;
+
+void setup_processor(void);
+void __init setup_arch_memory(void);
+
+/* Helpers used in arc_*_mumbojumbo routines */
+#define IS_AVAIL1(v, s)		((v) ? s : "")
+#define IS_DISABLED_RUN(v)	((v) ? "" : "(disabled) ")
+#define IS_USED_RUN(v)		((v) ? "" : "(not used) ")
+#define IS_USED_CFG(cfg)	IS_USED_RUN(IS_ENABLED(cfg))
+#define IS_AVAIL2(v, s, cfg)	IS_AVAIL1(v, s), IS_AVAIL1(v, IS_USED_CFG(cfg))
+#define IS_AVAIL3(v, v2, s)	IS_AVAIL1(v, s), IS_AVAIL1(v, IS_DISABLED_RUN(v2))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASMARC_SETUP_H */

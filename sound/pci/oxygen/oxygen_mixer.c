@@ -190,6 +190,10 @@ void oxygen_update_dac_routing(struct oxygen *chip)
 	if (chip->model.update_center_lfe_mix)
 		chip->model.update_center_lfe_mix(chip, chip->dac_routing > 2);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(oxygen_update_dac_routing);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int upmix_put(struct snd_kcontrol *ctl, struct snd_ctl_elem_value *value)
 {
@@ -785,6 +789,12 @@ static const struct snd_kcontrol_new controls[] = {
 		.get = upmix_get,
 		.put = upmix_put,
 	},
+<<<<<<< HEAD
+=======
+};
+
+static const struct snd_kcontrol_new spdif_output_controls[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = SNDRV_CTL_NAME_IEC958("", PLAYBACK, SWITCH),
@@ -937,6 +947,36 @@ static const struct {
 		},
 	},
 	{
+<<<<<<< HEAD
+=======
+		.pcm_dev = CAPTURE_3_FROM_I2S_3,
+		.controls = {
+			{
+				.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+				.name = "Analog Input Monitor Playback Switch",
+				.index = 2,
+				.info = snd_ctl_boolean_mono_info,
+				.get = monitor_get,
+				.put = monitor_put,
+				.private_value = OXYGEN_ADC_MONITOR_C,
+			},
+			{
+				.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+				.name = "Analog Input Monitor Playback Volume",
+				.index = 2,
+				.access = SNDRV_CTL_ELEM_ACCESS_READWRITE |
+					  SNDRV_CTL_ELEM_ACCESS_TLV_READ,
+				.info = monitor_volume_info,
+				.get = monitor_get,
+				.put = monitor_put,
+				.private_value = OXYGEN_ADC_MONITOR_C_HALF_VOL
+						| (1 << 8),
+				.tlv = { .p = monitor_db_scale, },
+			},
+		},
+	},
+	{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pcm_dev = CAPTURE_1_FROM_SPDIF,
 		.controls = {
 			{
@@ -1072,6 +1112,15 @@ int oxygen_mixer_init(struct oxygen *chip)
 	err = add_controls(chip, controls, ARRAY_SIZE(controls));
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
+=======
+	if (chip->model.device_config & PLAYBACK_1_TO_SPDIF) {
+		err = add_controls(chip, spdif_output_controls,
+				   ARRAY_SIZE(spdif_output_controls));
+		if (err < 0)
+			return err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (chip->model.device_config & CAPTURE_1_FROM_SPDIF) {
 		err = add_controls(chip, spdif_input_controls,
 				   ARRAY_SIZE(spdif_input_controls));

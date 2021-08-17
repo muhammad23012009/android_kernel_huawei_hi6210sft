@@ -278,4 +278,7 @@ module_exit(watchdog_exit);
 MODULE_AUTHOR("Daniel Laird/Andre McCurdy");
 MODULE_DESCRIPTION("Hardware Watchdog Device for PNX833x");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

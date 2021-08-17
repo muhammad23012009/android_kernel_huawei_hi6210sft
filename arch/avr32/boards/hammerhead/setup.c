@@ -77,7 +77,11 @@ static struct fb_monspecs __initdata hammerhead_hda350t_monspecs = {
 	.dclkmax		= 10000000,
 };
 
+<<<<<<< HEAD
 struct atmel_lcdfb_info __initdata hammerhead_lcdc_data = {
+=======
+struct atmel_lcdfb_pdata __initdata hammerhead_lcdc_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.default_bpp		= 24,
 	.default_dmacon		= ATMEL_LCDC_DMAEN | ATMEL_LCDC_DMA2DEN,
 	.default_lcdcon2	= (ATMEL_LCDC_DISTYPE_TFT

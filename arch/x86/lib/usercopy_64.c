@@ -5,8 +5,13 @@
  * Copyright 1997 Linus Torvalds
  * Copyright 2002 Andi Kleen <ak@suse.de>
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/export.h>
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Zero Userspace
@@ -68,6 +73,7 @@ EXPORT_SYMBOL(copy_in_user);
  * Since protection fault in copy_from/to_user is not a normal situation,
  * it is not necessary to optimize tail handling.
  */
+<<<<<<< HEAD
 unsigned long
 copy_user_handle_tail(char *to, char *from, unsigned len, unsigned zerorest)
 {
@@ -75,15 +81,31 @@ copy_user_handle_tail(char *to, char *from, unsigned len, unsigned zerorest)
 	unsigned zero_len;
 
 	for (; len; --len, to++) {
+=======
+__visible unsigned long
+copy_user_handle_tail(char *to, char *from, unsigned len)
+{
+	for (; len; --len, to++) {
+		char c;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (__get_user_nocheck(c, from++, sizeof(char)))
 			break;
 		if (__put_user_nocheck(c, to, sizeof(char)))
 			break;
 	}
+<<<<<<< HEAD
 
 	for (c = 0, zero_len = len; zerorest && zero_len; --zero_len)
 		if (__put_user_nocheck(c, to++, sizeof(char)))
 			break;
 	clac();
+=======
+	clac();
+
+	/* If the destination is a kernel buffer, we always clear the end */
+	if (!__addr_ok(to))
+		memset(to, 0, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return len;
 }

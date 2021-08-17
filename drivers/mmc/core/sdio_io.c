@@ -26,8 +26,13 @@
  */
 void sdio_claim_host(struct sdio_func *func)
 {
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (WARN_ON(!func))
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mmc_claim_host(func->card->host);
 }
@@ -42,8 +47,13 @@ EXPORT_SYMBOL_GPL(sdio_claim_host);
  */
 void sdio_release_host(struct sdio_func *func)
 {
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (WARN_ON(!func))
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mmc_release_host(func->card->host);
 }
@@ -62,8 +72,13 @@ int sdio_enable_func(struct sdio_func *func)
 	unsigned char reg;
 	unsigned long timeout;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (!func)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("SDIO: Enabling device %s...\n", sdio_func_id(func));
 
@@ -76,7 +91,11 @@ int sdio_enable_func(struct sdio_func *func)
 	ret = mmc_io_rw_direct(func->card, 1, 0, SDIO_CCCR_IOEx, reg, NULL);
 	if (ret)
 		goto err;
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	timeout = jiffies + msecs_to_jiffies(func->enable_timeout);
 
 	while (1) {
@@ -112,8 +131,13 @@ int sdio_disable_func(struct sdio_func *func)
 	int ret;
 	unsigned char reg;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (!func)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("SDIO: Disabling device %s...\n", sdio_func_id(func));
 
@@ -307,6 +331,12 @@ static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 	unsigned max_blocks;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!func || (func->num > 7))
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Do the bulk of the transfer using block mode (if supported). */
 	if (func->card->cccr.multi_block && (size > sdio_max_byte_size(func))) {
 		/* Blocks per command is limited by host count, host transfer
@@ -336,7 +366,11 @@ static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 
 	/* Write the remainder using byte mode. */
 	while (remainder > 0) {
+<<<<<<< HEAD
 		size = min(remainder, sdio_max_byte_size(func));/*lint !e666*/
+=======
+		size = min(remainder, sdio_max_byte_size(func));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Indicate byte mode by setting "blocks" = 0 */
 		ret = mmc_io_rw_extended(func->card, write, func->num, addr,
@@ -367,7 +401,14 @@ u8 sdio_readb(struct sdio_func *func, unsigned int addr, int *err_ret)
 	int ret;
 	u8 val;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
+=======
+	if (!func) {
+		*err_ret = -EINVAL;
+		return 0xFF;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (err_ret)
 		*err_ret = 0;
@@ -431,7 +472,14 @@ void sdio_writeb(struct sdio_func *func, u8 b, unsigned int addr, int *err_ret)
 {
 	int ret;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
+=======
+	if (!func) {
+		*err_ret = -EINVAL;
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = mmc_io_rw_direct(func->card, 1, func->num, addr, b, NULL);
 	if (err_ret)
@@ -656,7 +704,14 @@ unsigned char sdio_f0_readb(struct sdio_func *func, unsigned int addr,
 	int ret;
 	unsigned char val;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
+=======
+	if (!func) {
+		*err_ret = -EINVAL;
+		return 0xFF;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (err_ret)
 		*err_ret = 0;
@@ -691,7 +746,14 @@ void sdio_f0_writeb(struct sdio_func *func, unsigned char b, unsigned int addr,
 {
 	int ret;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
+=======
+	if (!func) {
+		*err_ret = -EINVAL;
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((addr < 0xF0 || addr > 0xFF) && (!mmc_card_lenient_fn0(func->card))) {
 		if (err_ret)
@@ -717,8 +779,13 @@ EXPORT_SYMBOL_GPL(sdio_f0_writeb);
  */
 mmc_pm_flag_t sdio_get_host_pm_caps(struct sdio_func *func)
 {
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (!func)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return func->card->host->pm_caps;
 }
@@ -740,6 +807,7 @@ int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags)
 {
 	struct mmc_host *host;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
 
@@ -749,6 +817,17 @@ int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags)
 	    return -EINVAL;
  
     /* function suspend methods are serialized, hence no lock needed */
+=======
+	if (!func)
+		return -EINVAL;
+
+	host = func->card->host;
+
+	if (flags & ~host->pm_caps)
+		return -EINVAL;
+
+	/* function suspend methods are serialized, hence no lock needed */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	host->pm_flags |= flags;
 	return 0;
 }

@@ -182,11 +182,15 @@ asmlinkage void sb1_cache_error(void)
 
 #ifdef CONFIG_SIBYTE_BW_TRACE
 	/* Freeze the trace buffer now */
+<<<<<<< HEAD
 #if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
 	csr_out32(M_BCM1480_SCD_TRACE_CFG_FREEZE, IOADDR(A_SCD_TRACE_CFG));
 #else
 	csr_out32(M_SCD_TRACE_CFG_FREEZE, IOADDR(A_SCD_TRACE_CFG));
 #endif
+=======
+	csr_out32(M_SCD_TRACE_CFG_FREEZE, IOADDR(A_SCD_TRACE_CFG));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	printk("Trace buffer frozen\n");
 #endif
 

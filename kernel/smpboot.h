@@ -14,7 +14,14 @@ static inline void idle_threads_init(void) { }
 #endif
 
 int smpboot_create_threads(unsigned int cpu);
+<<<<<<< HEAD
 void smpboot_park_threads(unsigned int cpu);
 void smpboot_unpark_threads(unsigned int cpu);
+=======
+int smpboot_park_threads(unsigned int cpu);
+int smpboot_unpark_threads(unsigned int cpu);
+
+void __init cpuhp_threads_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

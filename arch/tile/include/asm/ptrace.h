@@ -33,12 +33,20 @@ typedef unsigned long pt_reg_t;
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
+=======
+#define regs_return_value(regs) ((regs)->regs[0])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define instruction_pointer(regs) ((regs)->pc)
 #define profile_pc(regs) instruction_pointer(regs)
 #define user_stack_pointer(regs) ((regs)->sp)
 
 /* Does the process account for user or for system time? */
+<<<<<<< HEAD
 #define user_mode(regs) (EX1_PL((regs)->ex1) == USER_PL)
+=======
+#define user_mode(regs) (EX1_PL((regs)->ex1) < KERNEL_PL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Fill in a struct pt_regs with the current kernel registers. */
 struct pt_regs *get_pt_regs(struct pt_regs *);
@@ -79,8 +87,12 @@ extern void single_step_execve(void);
 
 struct task_struct;
 
+<<<<<<< HEAD
 extern void send_sigtrap(struct task_struct *tsk, struct pt_regs *regs,
 			 int error_code);
+=======
+extern void send_sigtrap(struct task_struct *tsk, struct pt_regs *regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef __tilegx__
 /* We need this since sigval_t has a user pointer in it, for GETSIGINFO etc. */

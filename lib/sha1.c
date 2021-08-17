@@ -198,3 +198,7 @@ void sha_init(__u32 *buf)
 	buf[3] = 0x10325476;
 	buf[4] = 0xc3d2e1f0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sha_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

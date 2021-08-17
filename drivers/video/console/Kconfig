@@ -6,7 +6,14 @@ menu "Console display driver support"
 
 config VGA_CONSOLE
 	bool "VGA text console" if EXPERT || !X86
+<<<<<<< HEAD
 	depends on !4xx && !8xx && !SPARC && !M68K && !PARISC && !FRV && !SUPERH && !BLACKFIN && !AVR32 && !MN10300 && (!ARM || ARCH_FOOTBRIDGE || ARCH_INTEGRATOR || ARCH_NETWINDER) && !ARM64
+=======
+	depends on !4xx && !8xx && !SPARC && !M68K && !PARISC && !FRV && \
+		!SUPERH && !BLACKFIN && !AVR32 && !MN10300 && !CRIS && \
+		(!ARM || ARCH_FOOTBRIDGE || ARCH_INTEGRATOR || ARCH_NETWINDER) && \
+		!ARM64 && !ARC && !MICROBLAZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default y
 	help
 	  Saying Y here will allow you to use Linux in text mode through a
@@ -19,6 +26,7 @@ config VGA_CONSOLE
 
 	  Say Y.
 
+<<<<<<< HEAD
 config VGACON_SOFT_SCROLLBACK
        bool "Enable Scrollback Buffer in System RAM"
        depends on VGA_CONSOLE
@@ -44,6 +52,8 @@ config VGACON_SOFT_SCROLLBACK_SIZE
 	 buffer.  Each 64KB will give you approximately 16 80x25
 	 screenfuls of scrollback buffer
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config MDA_CONSOLE
 	depends on !M68K && !PARISC && ISA
 	tristate "MDA text console (dual-headed)"
@@ -62,6 +72,10 @@ config MDA_CONSOLE
 config SGI_NEWPORT_CONSOLE
         tristate "SGI Newport Console support"
         depends on SGI_IP22 
+<<<<<<< HEAD
+=======
+        select FONT_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         help
           Say Y here if you want the console on the Newport aka XL graphics
           card of your Indy.  Most people say Y here.
@@ -73,24 +87,49 @@ config DUMMY_CONSOLE
 
 config DUMMY_CONSOLE_COLUMNS
         int "Initial number of console screen columns"
+<<<<<<< HEAD
         depends on PARISC && DUMMY_CONSOLE
         default "160"
         help
           The default value is 160, which should fit a 1280x1024 monitor.
+=======
+        depends on DUMMY_CONSOLE && !ARM
+        default 160 if PARISC
+        default 80
+        help
+          On PA-RISC, the default value is 160, which should fit a 1280x1024
+          monitor.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
           Select 80 if you use a 640x480 resolution by default.
 
 config DUMMY_CONSOLE_ROWS
         int "Initial number of console screen rows"
+<<<<<<< HEAD
         depends on PARISC && DUMMY_CONSOLE
         default "64"
         help
           The default value is 64, which should fit a 1280x1024 monitor.
+=======
+        depends on DUMMY_CONSOLE && !ARM
+        default 64 if PARISC
+        default 25
+        help
+          On PA-RISC, the default value is 64, which should fit a 1280x1024
+          monitor.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
           Select 25 if you use a 640x480 resolution by default.
 
 config FRAMEBUFFER_CONSOLE
 	tristate "Framebuffer Console support"
+<<<<<<< HEAD
 	depends on FB
 	select CRC32
+=======
+	depends on FB && !UML
+	select VT_HW_CONSOLE_BINDING
+	select CRC32
+	select FONT_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Low-level framebuffer-based console driver.
 
@@ -123,12 +162,17 @@ config FRAMEBUFFER_CONSOLE_ROTATION
 config STI_CONSOLE
         bool "STI text console"
         depends on PARISC
+<<<<<<< HEAD
+=======
+        select FONT_SUPPORT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         default y
         help
           The STI console is the builtin display/keyboard on HP-PARISC
           machines.  Say Y here to build support for it into your kernel.
           The alternative is to use your primary serial port as a console.
 
+<<<<<<< HEAD
 config FONTS
 	bool "Select compiled-in fonts"
 	depends on FRAMEBUFFER_CONSOLE || STI_CONSOLE
@@ -238,5 +282,7 @@ config FONT_AUTOSELECT
 	depends on !FONT_10x18
 	select FONT_8x16
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu
 

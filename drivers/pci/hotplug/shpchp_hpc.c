@@ -116,7 +116,11 @@
 #define SLOT_REG_RSVDZ_MASK	((1 << 15) | (7 << 21))
 
 /*
+<<<<<<< HEAD
  * SHPC Command Code definitnions
+=======
+ * SHPC Command Code definitions
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *     Slot Operation				00h - 3Fh
  *     Set Bus Segment Speed/Mode A		40h - 47h
@@ -341,8 +345,12 @@ static int shpc_write_cmd(struct slot *slot, u8 t_slot, u8 cmd)
 
 	cmd_status = hpc_check_cmd_status(slot->ctrl);
 	if (cmd_status) {
+<<<<<<< HEAD
 		ctrl_err(ctrl,
 			 "Failed to issued command 0x%x (error code = %d)\n",
+=======
+		ctrl_err(ctrl, "Failed to issued command 0x%x (error code = %d)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 cmd, cmd_status);
 		retval = -EIO;
 	}
@@ -404,7 +412,11 @@ static int hpc_get_attention_status(struct slot *slot, u8 *status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hpc_get_power_status(struct slot * slot, u8 *status)
+=======
+static int hpc_get_power_status(struct slot *slot, u8 *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct controller *ctrl = slot->ctrl;
 	u32 slot_reg = shpc_readl(ctrl, SLOT_REG(slot->hp_slot));
@@ -467,7 +479,12 @@ static int hpc_get_adapter_speed(struct slot *slot, enum pci_bus_speed *value)
 	u8 m66_cap  = !!(slot_reg & MHZ66_CAP);
 	u8 pi, pcix_cap;
 
+<<<<<<< HEAD
 	if ((retval = hpc_get_prog_int(slot, &pi)))
+=======
+	retval = hpc_get_prog_int(slot, &pi);
+	if (retval)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return retval;
 
 	switch (pi) {
@@ -528,7 +545,11 @@ static int hpc_get_mode1_ECC_cap(struct slot *slot, u8 *mode)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int hpc_query_power_fault(struct slot * slot)
+=======
+static int hpc_query_power_fault(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct controller *ctrl = slot->ctrl;
 	u32 slot_reg = shpc_readl(ctrl, SLOT_REG(slot->hp_slot));
@@ -542,7 +563,11 @@ static int hpc_set_attention_status(struct slot *slot, u8 value)
 	u8 slot_cmd = 0;
 
 	switch (value) {
+<<<<<<< HEAD
 		case 0 :
+=======
+		case 0:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			slot_cmd = SET_ATTN_OFF;	/* OFF */
 			break;
 		case 1:
@@ -614,7 +639,11 @@ static void hpc_release_ctlr(struct controller *ctrl)
 	release_mem_region(ctrl->mmio_base, ctrl->mmio_size);
 }
 
+<<<<<<< HEAD
 static int hpc_power_on_slot(struct slot * slot)
+=======
+static int hpc_power_on_slot(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int retval;
 
@@ -625,7 +654,11 @@ static int hpc_power_on_slot(struct slot * slot)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int hpc_slot_enable(struct slot * slot)
+=======
+static int hpc_slot_enable(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int retval;
 
@@ -638,7 +671,11 @@ static int hpc_slot_enable(struct slot * slot)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int hpc_slot_disable(struct slot * slot)
+=======
+static int hpc_slot_disable(struct slot *slot)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int retval;
 
@@ -720,7 +757,11 @@ static int shpc_get_cur_bus_speed(struct controller *ctrl)
 }
 
 
+<<<<<<< HEAD
 static int hpc_set_bus_speed_mode(struct slot * slot, enum pci_bus_speed value)
+=======
+static int hpc_set_bus_speed_mode(struct slot *slot, enum pci_bus_speed value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int retval;
 	struct controller *ctrl = slot->ctrl;
@@ -799,7 +840,11 @@ static irqreturn_t shpc_isr(int irq, void *dev_id)
 
 	ctrl_dbg(ctrl, "%s: intr_loc = %x\n", __func__, intr_loc);
 
+<<<<<<< HEAD
 	if(!shpchp_poll_mode) {
+=======
+	if (!shpchp_poll_mode) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Mask Global Interrupt Mask - see implementation
 		 * note on p. 139 of SHPC spec rev 1.0
@@ -910,7 +955,11 @@ static int shpc_get_max_bus_speed(struct controller *ctrl)
 	return retval;
 }
 
+<<<<<<< HEAD
 static struct hpc_ops shpchp_hpc_ops = {
+=======
+static const struct hpc_ops shpchp_hpc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.power_on_slot			= hpc_power_on_slot,
 	.slot_enable			= hpc_slot_enable,
 	.slot_disable			= hpc_slot_disable,
@@ -974,8 +1023,13 @@ int shpc_init(struct controller *ctrl, struct pci_dev *pdev)
 		for (i = 0; i < 9 + num_slots; i++) {
 			rc = shpc_indirect_read(ctrl, i, &tempdword);
 			if (rc) {
+<<<<<<< HEAD
 				ctrl_err(ctrl,
 					 "Cannot read creg (index = %d)\n", i);
+=======
+				ctrl_err(ctrl, "Cannot read creg (index = %d)\n",
+					 i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto abort;
 			}
 			ctrl_dbg(ctrl, " offset %d: value %x\n", i, tempdword);
@@ -1060,10 +1114,17 @@ int shpc_init(struct controller *ctrl, struct pci_dev *pdev)
 		/* Installs the interrupt handler */
 		rc = pci_enable_msi(pdev);
 		if (rc) {
+<<<<<<< HEAD
 			ctrl_info(ctrl,
 				  "Can't get msi for the hotplug controller\n");
 			ctrl_info(ctrl,
 				  "Use INTx for the hotplug controller\n");
+=======
+			ctrl_info(ctrl, "Can't get msi for the hotplug controller\n");
+			ctrl_info(ctrl, "Use INTx for the hotplug controller\n");
+		} else {
+			pci_set_master(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		rc = request_irq(ctrl->pci_dev->irq, shpc_isr, IRQF_SHARED,
@@ -1071,8 +1132,13 @@ int shpc_init(struct controller *ctrl, struct pci_dev *pdev)
 		ctrl_dbg(ctrl, "request_irq %d (returns %d)\n",
 			 ctrl->pci_dev->irq, rc);
 		if (rc) {
+<<<<<<< HEAD
 			ctrl_err(ctrl, "Can't get irq %d for the hotplug "
 				 "controller\n", ctrl->pci_dev->irq);
+=======
+			ctrl_err(ctrl, "Can't get irq %d for the hotplug controller\n",
+				 ctrl->pci_dev->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto abort_iounmap;
 		}
 	}

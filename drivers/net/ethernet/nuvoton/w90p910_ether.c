@@ -476,7 +476,11 @@ static void w90p910_reset_mac(struct net_device *dev)
 
 	w90p910_init_desc(dev);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ether->cur_tx = 0x0;
 	ether->finish_tx = 0x0;
 	ether->cur_rx = 0x0;
@@ -490,7 +494,11 @@ static void w90p910_reset_mac(struct net_device *dev)
 	w90p910_trigger_tx(dev);
 	w90p910_trigger_rx(dev);
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (netif_queue_stopped(dev))
 		netif_wake_queue(dev);
@@ -751,7 +759,11 @@ static void netdev_rx(struct net_device *dev)
 				dev_err(&pdev->dev, "rx crc err\n");
 				ether->stats.rx_crc_errors++;
 			} else if (status & RXDS_ALIE) {
+<<<<<<< HEAD
 				dev_err(&pdev->dev, "rx aligment err\n");
+=======
+				dev_err(&pdev->dev, "rx alignment err\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				ether->stats.rx_frame_errors++;
 			} else if (status & RXDS_PTLE) {
 				dev_err(&pdev->dev, "rx longer err\n");
@@ -918,11 +930,19 @@ static const struct net_device_ops w90p910_ether_netdev_ops = {
 	.ndo_change_mtu		= eth_change_mtu,
 };
 
+<<<<<<< HEAD
 static void __init get_mac_address(struct net_device *dev)
 {
 	struct w90p910_ether *ether = netdev_priv(dev);
 	struct platform_device *pdev;
 	char addr[6];
+=======
+static void get_mac_address(struct net_device *dev)
+{
+	struct w90p910_ether *ether = netdev_priv(dev);
+	struct platform_device *pdev;
+	char addr[ETH_ALEN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pdev = ether->pdev;
 
@@ -934,7 +954,11 @@ static void __init get_mac_address(struct net_device *dev)
 	addr[5] = 0xa8;
 
 	if (is_valid_ether_addr(addr))
+<<<<<<< HEAD
 		memcpy(dev->dev_addr, &addr, 0x06);
+=======
+		memcpy(dev->dev_addr, &addr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		dev_err(&pdev->dev, "invalid mac address\n");
 }
@@ -943,7 +967,10 @@ static int w90p910_ether_setup(struct net_device *dev)
 {
 	struct w90p910_ether *ether = netdev_priv(dev);
 
+<<<<<<< HEAD
 	ether_setup(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->netdev_ops = &w90p910_ether_netdev_ops;
 	dev->ethtool_ops = &w90p910_ether_ethtool_ops;
 
@@ -1014,7 +1041,11 @@ static int w90p910_ether_probe(struct platform_device *pdev)
 	if (ether->rxirq < 0) {
 		dev_err(&pdev->dev, "failed to get ether rx irq\n");
 		error = -ENXIO;
+<<<<<<< HEAD
 		goto failed_free_txirq;
+=======
+		goto failed_free_io;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	platform_set_drvdata(pdev, dev);
@@ -1023,7 +1054,11 @@ static int w90p910_ether_probe(struct platform_device *pdev)
 	if (IS_ERR(ether->clk)) {
 		dev_err(&pdev->dev, "failed to get ether clock\n");
 		error = PTR_ERR(ether->clk);
+<<<<<<< HEAD
 		goto failed_free_rxirq;
+=======
+		goto failed_free_io;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ether->rmiiclk = clk_get(&pdev->dev, "RMII");
@@ -1039,7 +1074,11 @@ static int w90p910_ether_probe(struct platform_device *pdev)
 
 	error = register_netdev(dev);
 	if (error != 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Regiter EMC w90p910 FAILED\n");
+=======
+		dev_err(&pdev->dev, "Register EMC w90p910 FAILED\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error = -ENODEV;
 		goto failed_put_rmiiclk;
 	}
@@ -1049,11 +1088,14 @@ failed_put_rmiiclk:
 	clk_put(ether->rmiiclk);
 failed_put_clk:
 	clk_put(ether->clk);
+<<<<<<< HEAD
 failed_free_rxirq:
 	free_irq(ether->rxirq, pdev);
 	platform_set_drvdata(pdev, NULL);
 failed_free_txirq:
 	free_irq(ether->txirq, pdev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 failed_free_io:
 	iounmap(ether->reg);
 failed_free_mem:
@@ -1076,11 +1118,15 @@ static int w90p910_ether_remove(struct platform_device *pdev)
 	iounmap(ether->reg);
 	release_mem_region(ether->res->start, resource_size(ether->res));
 
+<<<<<<< HEAD
 	free_irq(ether->txirq, dev);
 	free_irq(ether->rxirq, dev);
 
 	del_timer_sync(&ether->check_timer);
 	platform_set_drvdata(pdev, NULL);
+=======
+	del_timer_sync(&ether->check_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	free_netdev(dev);
 	return 0;
@@ -1091,7 +1137,10 @@ static struct platform_driver w90p910_ether_driver = {
 	.remove		= w90p910_ether_remove,
 	.driver		= {
 		.name	= "nuc900-emc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

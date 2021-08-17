@@ -226,8 +226,11 @@ int sb_dsp_reset(sb_devc * devc)
 {
 	int loopc;
 
+<<<<<<< HEAD
 	DEB(printk("Entered sb_dsp_reset()\n"));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (devc->model == MDL_ESS) return ess_dsp_reset (devc);
 
 	/* This is only for non-ESS chips */
@@ -246,8 +249,11 @@ int sb_dsp_reset(sb_devc * devc)
 		return 0;	/* Sorry */
 	}
 
+<<<<<<< HEAD
 	DEB(printk("sb_dsp_reset() OK\n"));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 

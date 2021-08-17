@@ -54,8 +54,13 @@ ENTRY(swsusp_arch_resume)
 	 nop
 
 	/* Write PAGE_OFFSET to %g7 */
+<<<<<<< HEAD
 	sethi	%uhi(PAGE_OFFSET), %g7
 	sllx	%g7, 32, %g7
+=======
+	sethi	%hi(PAGE_OFFSET), %g7
+	ldx	[%g7 + %lo(PAGE_OFFSET)], %g7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	setuw	(PAGE_SIZE-8), %g3
 

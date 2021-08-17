@@ -6,10 +6,18 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/memblock.h>
+#include <linux/init.h>
+#include <linux/debugfs.h>
+#include <linux/seq_file.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/ipl.h>
 #include <asm/sclp.h>
 #include <asm/setup.h>
 
+<<<<<<< HEAD
 #define ADDR2G (1ULL << 31)
 
 static void find_memory_chunks(struct mem_chunk chunk[], unsigned long maxsize)
@@ -29,11 +37,37 @@ static void find_memory_chunks(struct mem_chunk chunk[], unsigned long maxsize)
 	}
 	if (maxsize)
 		memsize = memsize ? min((unsigned long)memsize, maxsize) : maxsize;
+=======
+#define CHUNK_READ_WRITE 0
+#define CHUNK_READ_ONLY  1
+
+static inline void memblock_physmem_add(phys_addr_t start, phys_addr_t size)
+{
+	memblock_add_range(&memblock.memory, start, size, 0, 0);
+	memblock_add_range(&memblock.physmem, start, size, 0, 0);
+}
+
+void __init detect_memory_memblock(void)
+{
+	unsigned long memsize, rnmax, rzm, addr, size;
+	int type;
+
+	rzm = sclp.rzm;
+	rnmax = sclp.rnmax;
+	memsize = rzm * rnmax;
+	if (!rzm)
+		rzm = 1UL << 17;
+	max_physmem_end = memsize;
+	addr = 0;
+	/* keep memblock lists close to the kernel */
+	memblock_set_bottom_up(true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		size = 0;
 		type = tprot(addr);
 		do {
 			size += rzm;
+<<<<<<< HEAD
 			if (memsize && addr + size >= memsize)
 				break;
 		} while (type == tprot(addr + size));
@@ -132,4 +166,19 @@ void create_mem_hole(struct mem_chunk mem_chunk[], unsigned long addr,
 			chunk->size = addr - chunk->addr;
 		}
 	}
+=======
+			if (max_physmem_end && addr + size >= max_physmem_end)
+				break;
+		} while (type == tprot(addr + size));
+		if (type == CHUNK_READ_WRITE || type == CHUNK_READ_ONLY) {
+			if (max_physmem_end && (addr + size > max_physmem_end))
+				size = max_physmem_end - addr;
+			memblock_physmem_add(addr, size);
+		}
+		addr += size;
+	} while (addr < max_physmem_end);
+	memblock_set_bottom_up(false);
+	if (!max_physmem_end)
+		max_physmem_end = memblock_end_of_DRAM();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

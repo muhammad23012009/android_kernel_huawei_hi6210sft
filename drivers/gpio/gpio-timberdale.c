@@ -1,5 +1,9 @@
 /*
  * Timberdale FPGA GPIO driver
+<<<<<<< HEAD
+=======
+ * Author: Mocean Laboratories
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (c) 2009 Intel Corporation
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,7 +24,11 @@
  * Timberdale FPGA GPIO
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/gpio.h>
 #include <linux/platform_device.h>
 #include <linux/irq.h>
@@ -53,7 +61,11 @@ struct timbgpio {
 static int timbgpio_update_bit(struct gpio_chip *gpio, unsigned index,
 	unsigned offset, bool enabled)
 {
+<<<<<<< HEAD
 	struct timbgpio *tgpio = container_of(gpio, struct timbgpio, gpio);
+=======
+	struct timbgpio *tgpio = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 reg;
 
 	spin_lock(&tgpio->lock);
@@ -77,7 +89,11 @@ static int timbgpio_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 
 static int timbgpio_gpio_get(struct gpio_chip *gpio, unsigned nr)
 {
+<<<<<<< HEAD
 	struct timbgpio *tgpio = container_of(gpio, struct timbgpio, gpio);
+=======
+	struct timbgpio *tgpio = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 value;
 
 	value = ioread32(tgpio->membase + TGPIOVAL);
@@ -98,7 +114,11 @@ static void timbgpio_gpio_set(struct gpio_chip *gpio,
 
 static int timbgpio_to_irq(struct gpio_chip *gpio, unsigned offset)
 {
+<<<<<<< HEAD
 	struct timbgpio *tgpio = container_of(gpio, struct timbgpio, gpio);
+=======
+	struct timbgpio *tgpio = gpiochip_get_data(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (tgpio->irq_base <= 0)
 		return -EINVAL;
@@ -192,6 +212,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void timbgpio_irq(unsigned int irq, struct irq_desc *desc)
 {
 	struct timbgpio *tgpio = irq_get_handler_data(irq);
@@ -199,6 +220,16 @@ static void timbgpio_irq(unsigned int irq, struct irq_desc *desc)
 	int offset;
 
 	desc->irq_data.chip->irq_ack(irq_get_irq_data(irq));
+=======
+static void timbgpio_irq(struct irq_desc *desc)
+{
+	struct timbgpio *tgpio = irq_desc_get_handler_data(desc);
+	struct irq_data *data = irq_desc_get_irq_data(desc);
+	unsigned long ipr;
+	int offset;
+
+	data->chip->irq_ack(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ipr = ioread32(tgpio->membase + TGPIO_IPR);
 	iowrite32(ipr, tgpio->membase + TGPIO_ICR);
 
@@ -224,6 +255,7 @@ static struct irq_chip timbgpio_irqchip = {
 static int timbgpio_probe(struct platform_device *pdev)
 {
 	int err, i;
+<<<<<<< HEAD
 	struct gpio_chip *gc;
 	struct timbgpio *tgpio;
 	struct resource *iomem;
@@ -245,11 +277,30 @@ static int timbgpio_probe(struct platform_device *pdev)
 	if (!tgpio) {
 		err = -EINVAL;
 		goto err_mem;
+=======
+	struct device *dev = &pdev->dev;
+	struct gpio_chip *gc;
+	struct timbgpio *tgpio;
+	struct resource *iomem;
+	struct timbgpio_platform_data *pdata = dev_get_platdata(&pdev->dev);
+	int irq = platform_get_irq(pdev, 0);
+
+	if (!pdata || pdata->nr_pins > 32) {
+		dev_err(dev, "Invalid platform data\n");
+		return -EINVAL;
+	}
+
+	tgpio = devm_kzalloc(dev, sizeof(struct timbgpio), GFP_KERNEL);
+	if (!tgpio) {
+		dev_err(dev, "Memory alloc failed\n");
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	tgpio->irq_base = pdata->irq_base;
 
 	spin_lock_init(&tgpio->lock);
 
+<<<<<<< HEAD
 	if (!request_mem_region(iomem->start, resource_size(iomem),
 		DRIVER_NAME)) {
 		err = -EBUSY;
@@ -261,12 +312,22 @@ static int timbgpio_probe(struct platform_device *pdev)
 		err = -ENOMEM;
 		goto err_ioremap;
 	}
+=======
+	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	tgpio->membase = devm_ioremap_resource(dev, iomem);
+	if (IS_ERR(tgpio->membase))
+		return PTR_ERR(tgpio->membase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	gc = &tgpio->gpio;
 
 	gc->label = dev_name(&pdev->dev);
 	gc->owner = THIS_MODULE;
+<<<<<<< HEAD
 	gc->dev = &pdev->dev;
+=======
+	gc->parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gc->direction_input = timbgpio_gpio_direction_input;
 	gc->get = timbgpio_gpio_get;
 	gc->direction_output = timbgpio_gpio_direction_output;
@@ -275,11 +336,19 @@ static int timbgpio_probe(struct platform_device *pdev)
 	gc->dbg_show = NULL;
 	gc->base = pdata->gpio_base;
 	gc->ngpio = pdata->nr_pins;
+<<<<<<< HEAD
 	gc->can_sleep = 0;
 
 	err = gpiochip_add(gc);
 	if (err)
 		goto err_chipadd;
+=======
+	gc->can_sleep = false;
+
+	err = devm_gpiochip_add_data(&pdev->dev, gc, tgpio);
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, tgpio);
 
@@ -290,6 +359,7 @@ static int timbgpio_probe(struct platform_device *pdev)
 		return 0;
 
 	for (i = 0; i < pdata->nr_pins; i++) {
+<<<<<<< HEAD
 		irq_set_chip_and_handler_name(tgpio->irq_base + i,
 			&timbgpio_irqchip, handle_simple_irq, "mux");
 		irq_set_chip_data(tgpio->irq_base + i, tgpio);
@@ -343,21 +413,38 @@ static int timbgpio_remove(struct platform_device *pdev)
 	kfree(tgpio);
 
 	platform_set_drvdata(pdev, NULL);
+=======
+		irq_set_chip_and_handler(tgpio->irq_base + i,
+			&timbgpio_irqchip, handle_simple_irq);
+		irq_set_chip_data(tgpio->irq_base + i, tgpio);
+		irq_clear_status_flags(tgpio->irq_base + i, IRQ_NOREQUEST | IRQ_NOPROBE);
+	}
+
+	irq_set_chained_handler_and_data(irq, timbgpio_irq, tgpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static struct platform_driver timbgpio_platform_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name	= DRIVER_NAME,
 		.owner	= THIS_MODULE,
 	},
 	.probe		= timbgpio_probe,
 	.remove		= timbgpio_remove,
+=======
+		.name			= DRIVER_NAME,
+		.suppress_bind_attrs	= true,
+	},
+	.probe		= timbgpio_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*--------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 module_platform_driver(timbgpio_platform_driver);
 
 MODULE_DESCRIPTION("Timberdale GPIO driver");
@@ -365,3 +452,6 @@ MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Mocean Laboratories");
 MODULE_ALIAS("platform:"DRIVER_NAME);
 
+=======
+builtin_platform_driver(timbgpio_platform_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -2267,13 +2267,20 @@ static unsigned int tomoyo_stat_modified[TOMOYO_MAX_POLICY_STAT];
  */
 void tomoyo_update_stat(const u8 index)
 {
+<<<<<<< HEAD
 	struct timeval tv;
 	do_gettimeofday(&tv);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * I don't use atomic operations because race condition is not fatal.
 	 */
 	tomoyo_stat_updated[index]++;
+<<<<<<< HEAD
 	tomoyo_stat_modified[index] = tv.tv_sec;
+=======
+	tomoyo_stat_modified[index] = get_seconds();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

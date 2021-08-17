@@ -135,7 +135,11 @@ static int mperf_get_count_percent(unsigned int id, double *percent,
 		dprint("%s: TSC Ref - mperf_diff: %llu, tsc_diff: %llu\n",
 		       mperf_cstates[id].name, mperf_diff, tsc_diff);
 	} else if (max_freq_mode == MAX_FREQ_SYSFS) {
+<<<<<<< HEAD
 		timediff = timespec_diff_us(time_start, time_end);
+=======
+		timediff = max_frequency * timespec_diff_us(time_start, time_end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*percent = 100.0 * mperf_diff / timediff;
 		dprint("%s: MAXFREQ - mperf_diff: %llu, time_diff: %llu\n",
 		       mperf_cstates[id].name, mperf_diff, timediff);
@@ -176,7 +180,11 @@ static int mperf_get_count_freq(unsigned int id, unsigned long long *count,
 	dprint("%s: Average freq based on %s maximum frequency:\n",
 	       mperf_cstates[id].name,
 	       (max_freq_mode == MAX_FREQ_TSC_REF) ? "TSC calculated" : "sysfs read");
+<<<<<<< HEAD
 	dprint("%max_frequency: %lu", max_frequency);
+=======
+	dprint("max_frequency: %lu\n", max_frequency);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dprint("aperf_diff: %llu\n", aperf_diff);
 	dprint("mperf_diff: %llu\n", mperf_diff);
 	dprint("avg freq:   %llu\n", *count);
@@ -237,7 +245,11 @@ static int init_maxfreq_mode(void)
 	unsigned long long hwcr;
 	unsigned long min;
 
+<<<<<<< HEAD
 	if (!cpupower_cpu_info.caps & CPUPOWER_CAP_INV_TSC)
+=======
+	if (!(cpupower_cpu_info.caps & CPUPOWER_CAP_INV_TSC))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto use_sysfs;
 
 	if (cpupower_cpu_info.vendor == X86_VENDOR_AMD) {
@@ -279,6 +291,10 @@ use_sysfs:
 		return -1;
 	}
 	max_freq_mode = MAX_FREQ_SYSFS;
+<<<<<<< HEAD
+=======
+	max_frequency /= 1000; /* Default automatically to MHz value */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

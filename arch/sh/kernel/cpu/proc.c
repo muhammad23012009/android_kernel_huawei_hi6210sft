@@ -27,6 +27,10 @@ static const char *cpu_name[] = {
 	[CPU_MXG]	= "MX-G",	[CPU_SH7723]	= "SH7723",
 	[CPU_SH7366]	= "SH7366",	[CPU_SH7724]	= "SH7724",
 	[CPU_SH7372]	= "SH7372",	[CPU_SH7734]	= "SH7734",
+<<<<<<< HEAD
+=======
+	[CPU_J2]	= "J2",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	[CPU_SH_NONE]	= "Unknown"
 };
 

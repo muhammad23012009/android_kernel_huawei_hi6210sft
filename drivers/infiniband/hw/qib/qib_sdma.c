@@ -423,8 +423,16 @@ void qib_sdma_intr(struct qib_pportdata *ppd)
 
 void __qib_sdma_intr(struct qib_pportdata *ppd)
 {
+<<<<<<< HEAD
 	if (__qib_sdma_running(ppd))
 		qib_sdma_make_progress(ppd);
+=======
+	if (__qib_sdma_running(ppd)) {
+		qib_sdma_make_progress(ppd);
+		if (!list_empty(&ppd->sdma_userpending))
+			qib_user_sdma_send_desc(ppd, &ppd->sdma_userpending);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int qib_setup_sdma(struct qib_pportdata *ppd)
@@ -452,6 +460,12 @@ int qib_setup_sdma(struct qib_pportdata *ppd)
 	ppd->sdma_descq_removed = 0;
 	ppd->sdma_descq_added = 0;
 
+<<<<<<< HEAD
+=======
+	ppd->sdma_intrequest = 0;
+	INIT_LIST_HEAD(&ppd->sdma_userpending);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INIT_LIST_HEAD(&ppd->sdma_activelist);
 
 	tasklet_init(&ppd->sdma_sw_clean_up_task, sdma_sw_clean_up_task,
@@ -507,7 +521,13 @@ int qib_sdma_running(struct qib_pportdata *ppd)
 static void complete_sdma_err_req(struct qib_pportdata *ppd,
 				  struct qib_verbs_txreq *tx)
 {
+<<<<<<< HEAD
 	atomic_inc(&tx->qp->s_dma_busy);
+=======
+	struct qib_qp_priv *priv = tx->qp->priv;
+
+	atomic_inc(&priv->s_dma_busy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* no sdma descriptors, so no unmap_desc */
 	tx->txreq.start_idx = 0;
 	tx->txreq.next_descq_idx = 0;
@@ -525,18 +545,31 @@ static void complete_sdma_err_req(struct qib_pportdata *ppd,
  * 3) The SGE addresses are suitable for passing to dma_map_single().
  */
 int qib_sdma_verbs_send(struct qib_pportdata *ppd,
+<<<<<<< HEAD
 			struct qib_sge_state *ss, u32 dwords,
 			struct qib_verbs_txreq *tx)
 {
 	unsigned long flags;
 	struct qib_sge *sge;
 	struct qib_qp *qp;
+=======
+			struct rvt_sge_state *ss, u32 dwords,
+			struct qib_verbs_txreq *tx)
+{
+	unsigned long flags;
+	struct rvt_sge *sge;
+	struct rvt_qp *qp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 	u16 tail;
 	__le64 *descqp;
 	u64 sdmadesc[2];
 	u32 dwoffset;
 	dma_addr_t addr;
+<<<<<<< HEAD
+=======
+	struct qib_qp_priv *priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&ppd->sdma_lock, flags);
 
@@ -591,8 +624,15 @@ retry:
 		dw = (len + 3) >> 2;
 		addr = dma_map_single(&ppd->dd->pcidev->dev, sge->vaddr,
 				      dw << 2, DMA_TO_DEVICE);
+<<<<<<< HEAD
 		if (dma_mapping_error(&ppd->dd->pcidev->dev, addr))
 			goto unmap;
+=======
+		if (dma_mapping_error(&ppd->dd->pcidev->dev, addr)) {
+			ret = -ENOMEM;
+			goto unmap;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sdmadesc[0] = 0;
 		make_sdma_desc(ppd, sdmadesc, (u64) addr, dw, dwoffset);
 		/* SDmaUseLargeBuf has to be set in every descriptor */
@@ -615,7 +655,11 @@ retry:
 			if (--ss->num_sge)
 				*sge = *ss->sg_list++;
 		} else if (sge->length == 0 && sge->mr->lkey) {
+<<<<<<< HEAD
 			if (++sge->n >= QIB_SEGSZ) {
+=======
+			if (++sge->n >= RVT_SEGSZ) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (++sge->m >= sge->mr->mapsz)
 					break;
 				sge->n = 0;
@@ -638,8 +682,13 @@ retry:
 		descqp[0] |= cpu_to_le64(SDMA_DESC_DMA_HEAD);
 	if (tx->txreq.flags & QIB_SDMA_TXREQ_F_INTREQ)
 		descqp[0] |= cpu_to_le64(SDMA_DESC_INTR);
+<<<<<<< HEAD
 
 	atomic_inc(&tx->qp->s_dma_busy);
+=======
+	priv = tx->qp->priv;
+	atomic_inc(&priv->s_dma_busy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tx->txreq.next_descq_idx = tail;
 	ppd->dd->f_sdma_update_tail(ppd, tail);
 	ppd->sdma_descq_added += tx->txreq.sg_count;
@@ -657,13 +706,22 @@ unmap:
 		unmap_desc(ppd, tail);
 	}
 	qp = tx->qp;
+<<<<<<< HEAD
+=======
+	priv = qp->priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	qib_put_txreq(tx);
 	spin_lock(&qp->r_lock);
 	spin_lock(&qp->s_lock);
 	if (qp->ibqp.qp_type == IB_QPT_RC) {
 		/* XXX what about error sending RDMA read responses? */
+<<<<<<< HEAD
 		if (ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK)
 			qib_error_qp(qp, IB_WC_GENERAL_ERR);
+=======
+		if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK)
+			rvt_error_qp(qp, IB_WC_GENERAL_ERR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (qp->s_wqe)
 		qib_send_complete(qp, qp->s_wqe, IB_WC_GENERAL_ERR);
 	spin_unlock(&qp->s_lock);
@@ -673,8 +731,14 @@ unmap:
 
 busy:
 	qp = tx->qp;
+<<<<<<< HEAD
 	spin_lock(&qp->s_lock);
 	if (ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK) {
+=======
+	priv = qp->priv;
+	spin_lock(&qp->s_lock);
+	if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct qib_ibdev *dev;
 
 		/*
@@ -684,6 +748,7 @@ busy:
 		 */
 		tx->ss = ss;
 		tx->dwords = dwords;
+<<<<<<< HEAD
 		qp->s_tx = tx;
 		dev = &ppd->dd->verbs_dev;
 		spin_lock(&dev->pending_lock);
@@ -697,6 +762,21 @@ busy:
 		}
 		spin_unlock(&dev->pending_lock);
 		qp->s_flags &= ~QIB_S_BUSY;
+=======
+		priv->s_tx = tx;
+		dev = &ppd->dd->verbs_dev;
+		spin_lock(&dev->rdi.pending_lock);
+		if (list_empty(&priv->iowait)) {
+			struct qib_ibport *ibp;
+
+			ibp = &ppd->ibport_data;
+			ibp->rvp.n_dmawait++;
+			qp->s_flags |= RVT_S_WAIT_DMA_DESC;
+			list_add_tail(&priv->iowait, &dev->dmawait);
+		}
+		spin_unlock(&dev->rdi.pending_lock);
+		qp->s_flags &= ~RVT_S_BUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_unlock(&qp->s_lock);
 		ret = -EBUSY;
 	} else {
@@ -708,6 +788,65 @@ unlock:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * sdma_lock should be acquired before calling this routine
+ */
+void dump_sdma_state(struct qib_pportdata *ppd)
+{
+	struct qib_sdma_desc *descq;
+	struct qib_sdma_txreq *txp, *txpnext;
+	__le64 *descqp;
+	u64 desc[2];
+	u64 addr;
+	u16 gen, dwlen, dwoffset;
+	u16 head, tail, cnt;
+
+	head = ppd->sdma_descq_head;
+	tail = ppd->sdma_descq_tail;
+	cnt = qib_sdma_descq_freecnt(ppd);
+	descq = ppd->sdma_descq;
+
+	qib_dev_porterr(ppd->dd, ppd->port,
+		"SDMA ppd->sdma_descq_head: %u\n", head);
+	qib_dev_porterr(ppd->dd, ppd->port,
+		"SDMA ppd->sdma_descq_tail: %u\n", tail);
+	qib_dev_porterr(ppd->dd, ppd->port,
+		"SDMA sdma_descq_freecnt: %u\n", cnt);
+
+	/* print info for each entry in the descriptor queue */
+	while (head != tail) {
+		char flags[6] = { 'x', 'x', 'x', 'x', 'x', 0 };
+
+		descqp = &descq[head].qw[0];
+		desc[0] = le64_to_cpu(descqp[0]);
+		desc[1] = le64_to_cpu(descqp[1]);
+		flags[0] = (desc[0] & 1<<15) ? 'I' : '-';
+		flags[1] = (desc[0] & 1<<14) ? 'L' : 'S';
+		flags[2] = (desc[0] & 1<<13) ? 'H' : '-';
+		flags[3] = (desc[0] & 1<<12) ? 'F' : '-';
+		flags[4] = (desc[0] & 1<<11) ? 'L' : '-';
+		addr = (desc[1] << 32) | ((desc[0] >> 32) & 0xfffffffcULL);
+		gen = (desc[0] >> 30) & 3ULL;
+		dwlen = (desc[0] >> 14) & (0x7ffULL << 2);
+		dwoffset = (desc[0] & 0x7ffULL) << 2;
+		qib_dev_porterr(ppd->dd, ppd->port,
+			"SDMA sdmadesc[%u]: flags:%s addr:0x%016llx gen:%u len:%u bytes offset:%u bytes\n",
+			 head, flags, addr, gen, dwlen, dwoffset);
+		if (++head == ppd->sdma_descq_cnt)
+			head = 0;
+	}
+
+	/* print dma descriptor indices from the TX requests */
+	list_for_each_entry_safe(txp, txpnext, &ppd->sdma_activelist,
+				 list)
+		qib_dev_porterr(ppd->dd, ppd->port,
+			"SDMA txp->start_idx: %u txp->next_descq_idx: %u\n",
+			txp->start_idx, txp->next_descq_idx);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void qib_sdma_process_event(struct qib_pportdata *ppd,
 	enum qib_sdma_events event)
 {

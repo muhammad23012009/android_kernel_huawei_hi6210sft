@@ -8,6 +8,10 @@ config PINCTRL_MVEBU
 config PINCTRL_DOVE
 	bool
 	select PINCTRL_MVEBU
+<<<<<<< HEAD
+=======
+	select MFD_SYSCON
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config PINCTRL_KIRKWOOD
 	bool
@@ -17,8 +21,30 @@ config PINCTRL_ARMADA_370
 	bool
 	select PINCTRL_MVEBU
 
+<<<<<<< HEAD
+=======
+config PINCTRL_ARMADA_375
+	bool
+	select PINCTRL_MVEBU
+
+config PINCTRL_ARMADA_38X
+	bool
+	select PINCTRL_MVEBU
+
+config PINCTRL_ARMADA_39X
+	bool
+	select PINCTRL_MVEBU
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config PINCTRL_ARMADA_XP
 	bool
 	select PINCTRL_MVEBU
 
+<<<<<<< HEAD
+=======
+config PINCTRL_ORION
+	bool
+	select PINCTRL_MVEBU
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif

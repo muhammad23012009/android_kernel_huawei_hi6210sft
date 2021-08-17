@@ -9,7 +9,11 @@ endif
 extra-y	:= head.o init_task.o vmlinux.lds
 
 obj-y := entry.o efi.o efi_stub.o gate-data.o fsys.o ia64_ksyms.o irq.o irq_ia64.o	\
+<<<<<<< HEAD
 	 irq_lsapic.o ivt.o machvec.o pal.o paravirt_patchlist.o patch.o process.o perfmon.o ptrace.o sal.o		\
+=======
+	 irq_lsapic.o ivt.o machvec.o pal.o patch.o process.o perfmon.o ptrace.o sal.o		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 salinfo.o setup.o signal.o sys_ia64.o time.o traps.o unaligned.o \
 	 unwind.o mca.o mca_asm.o topology.o dma-mapping.o
 
@@ -35,9 +39,12 @@ mca_recovery-y			+= mca_drv.o mca_drv_asm.o
 obj-$(CONFIG_IA64_MC_ERR_INJECT)+= err_inject.o
 obj-$(CONFIG_STACKTRACE)	+= stacktrace.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_PARAVIRT)		+= paravirt.o paravirtentry.o \
 				   paravirt_patch.o
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_IA64_ESI)		+= esi.o
 ifneq ($(CONFIG_IA64_ESI),)
 obj-y				+= esi_stub.o	# must be in kernel proper
@@ -45,12 +52,17 @@ endif
 obj-$(CONFIG_INTEL_IOMMU)	+= pci-dma.o
 obj-$(CONFIG_SWIOTLB)		+= pci-swiotlb.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_BINFMT_ELF)	+= elfcore.o
+=======
+obj-$(CONFIG_ELF_CORE)		+= elfcore.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # fp_emulate() expects f2-f5,f16-f31 to contain the user-level state.
 CFLAGS_traps.o  += -mfixed-range=f2-f5,f16-f31
 
 # The gate DSO image is built using a special linker script.
+<<<<<<< HEAD
 include $(srctree)/arch/ia64/kernel/Makefile.gate
 # tell compiled for native
 CPPFLAGS_gate.lds += -D__IA64_GATE_PARAVIRTUALIZED_NATIVE
@@ -75,12 +87,16 @@ define cmd_nr_irqs
 	 echo ""; \
 	 echo "#endif" ) > $@
 endef
+=======
+include $(src)/Makefile.gate
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # We use internal kbuild rules to avoid the "is up to date" message from make
 arch/$(SRCARCH)/kernel/nr-irqs.s: arch/$(SRCARCH)/kernel/nr-irqs.c
 	$(Q)mkdir -p $(dir $@)
 	$(call if_changed_dep,cc_s_c)
 
+<<<<<<< HEAD
 include/generated/nr-irqs.h: arch/$(SRCARCH)/kernel/nr-irqs.s
 	$(Q)mkdir -p $(dir $@)
 	$(call cmd,nr_irqs)
@@ -111,3 +127,7 @@ $(obj)/pvchk-%.s: $(obj)/pvchk-sed-%.s FORCE
 $(obj)/pvchk-%.o: $(obj)/pvchk-%.s FORCE
 	$(call if_changed,as_o_S)
 .PRECIOUS: $(obj)/pvchk-sed-%.s $(obj)/pvchk-%.s $(obj)/pvchk-%.o
+=======
+include/generated/nr-irqs.h: arch/$(SRCARCH)/kernel/nr-irqs.s FORCE
+	$(call filechk,offsets,__ASM_NR_IRQS_H__)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

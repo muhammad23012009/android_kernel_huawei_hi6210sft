@@ -12,9 +12,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * File: desc.h
  *
@@ -34,6 +37,7 @@
 #include <linux/types.h>
 #include <linux/mm.h>
 
+<<<<<<< HEAD
 #include "tether.h"
 
 /* max transmit or receive buffer size */
@@ -46,21 +50,32 @@
 
 #define CB_BEACON_BUF_SIZE  512U        /* default beacon buffer size */
 
+=======
+/* max transmit or receive buffer size */
+#define CB_MAX_BUF_SIZE     2900U       /* NOTE: must be multiple of 4 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MAX_TOTAL_SIZE_WITH_ALL_HEADERS CB_MAX_BUF_SIZE
 
 #define MAX_INTERRUPT_SIZE              32
 
+<<<<<<< HEAD
 #define RX_BLOCKS           64          /* from 0x60 to 0xA0 */
 #define TX_BLOCKS           32          /* from 0xA0 to 0xC0 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CB_MAX_RX_DESC      128         /* max # of descriptors */
 #define CB_MIN_RX_DESC      16          /* min # of RX descriptors */
 #define CB_MAX_TX_DESC      128         /* max # of descriptors */
 #define CB_MIN_TX_DESC      16          /* min # of TX descriptors */
 
+<<<<<<< HEAD
 #define CB_RD_NUM           64          /* default # of RD */
 #define CB_TD_NUM           64          /* default # of TD */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * bits in the RSR register
  */
@@ -91,6 +106,7 @@
 #define TSR_ACKDATA         0x02
 #define TSR_VALID           0x01
 
+<<<<<<< HEAD
 #define CB_PROTOCOL_RESERVED_SECTION    16
 
 /*
@@ -100,6 +116,8 @@
  */
 #define CB_MAX_TX_ABORT_RETRY   3
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FIFOCTL_AUTO_FB_1   0x1000
 #define FIFOCTL_AUTO_FB_0   0x0800
 #define FIFOCTL_GRPACK      0x0400
@@ -126,6 +144,7 @@
 #define FRAGCTL_STAFRAG     0x0001
 #define FRAGCTL_NONFRAG     0x0000
 
+<<<<<<< HEAD
 #define TYPE_TXDMA0     0
 #define TYPE_AC0DMA     1
 #define TYPE_ATIMDMA    2
@@ -413,4 +432,6 @@ typedef struct tagSKeyEntry {
 } __attribute__ ((__packed__))
 SKeyEntry;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __DESC_H__ */

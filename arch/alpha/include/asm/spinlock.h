@@ -3,6 +3,11 @@
 
 #include <linux/kernel.h>
 #include <asm/current.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+#include <asm/processor.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Simple spin lock operations.  There are two variants, one clears IRQ's
@@ -13,8 +18,21 @@
 
 #define arch_spin_lock_flags(lock, flags) arch_spin_lock(lock)
 #define arch_spin_is_locked(x)	((x)->lock != 0)
+<<<<<<< HEAD
 #define arch_spin_unlock_wait(x) \
 		do { cpu_relax(); } while ((x)->lock)
+=======
+
+static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
+{
+	smp_cond_load_acquire(&lock->lock, !VAL);
+}
+
+static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+{
+        return lock.lock == 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void arch_spin_unlock(arch_spinlock_t * lock)
 {
@@ -168,8 +186,11 @@ static inline void arch_write_unlock(arch_rwlock_t * lock)
 #define arch_read_lock_flags(lock, flags) arch_read_lock(lock)
 #define arch_write_lock_flags(lock, flags) arch_write_lock(lock)
 
+<<<<<<< HEAD
 #define arch_spin_relax(lock)	cpu_relax()
 #define arch_read_relax(lock)	cpu_relax()
 #define arch_write_relax(lock)	cpu_relax()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ALPHA_SPINLOCK_H */

@@ -39,12 +39,19 @@
 #include <linux/ipc_namespace.h>
 
 #include <asm/current.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include "util.h"
 
 /*
  * one msg_receiver structure for each sleeping receiver:
  */
+=======
+#include <linux/uaccess.h>
+#include "util.h"
+
+/* one msg_receiver structure for each sleeping receiver */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct msg_receiver {
 	struct list_head	r_list;
 	struct task_struct	*r_tsk;
@@ -53,13 +60,21 @@ struct msg_receiver {
 	long			r_msgtype;
 	long			r_maxsize;
 
+<<<<<<< HEAD
 	struct msg_msg		*volatile r_msg;
+=======
+	struct msg_msg		*r_msg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* one msg_sender for each sleeping sender */
 struct msg_sender {
 	struct list_head	list;
 	struct task_struct	*tsk;
+<<<<<<< HEAD
+=======
+	size_t                  msgsz;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define SEARCH_ANY		1
@@ -70,6 +85,7 @@ struct msg_sender {
 
 #define msg_ids(ns)	((ns)->ids[IPC_MSG_IDS])
 
+<<<<<<< HEAD
 static void freeque(struct ipc_namespace *, struct kern_ipc_perm *);
 static int newque(struct ipc_namespace *, struct ipc_params *);
 #ifdef CONFIG_PROC_FS
@@ -142,6 +158,11 @@ void __init msg_init(void)
 static inline struct msg_queue *msq_obtain_object(struct ipc_namespace *ns, int id)
 {
 	struct kern_ipc_perm *ipcp = ipc_obtain_object(&msg_ids(ns), id);
+=======
+static inline struct msg_queue *msq_obtain_object(struct ipc_namespace *ns, int id)
+{
+	struct kern_ipc_perm *ipcp = ipc_obtain_object_idr(&msg_ids(ns), id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (IS_ERR(ipcp))
 		return ERR_CAST(ipcp);
@@ -224,15 +245,31 @@ static int newque(struct ipc_namespace *ns, struct ipc_params *params)
 	return msq->q_perm.id;
 }
 
+<<<<<<< HEAD
 static inline void ss_add(struct msg_queue *msq, struct msg_sender *mss)
 {
 	mss->tsk = current;
 	current->state = TASK_INTERRUPTIBLE;
+=======
+static inline bool msg_fits_inqueue(struct msg_queue *msq, size_t msgsz)
+{
+	return msgsz + msq->q_cbytes <= msq->q_qbytes &&
+		1 + msq->q_qnum <= msq->q_qbytes;
+}
+
+static inline void ss_add(struct msg_queue *msq,
+			  struct msg_sender *mss, size_t msgsz)
+{
+	mss->tsk = current;
+	mss->msgsz = msgsz;
+	__set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_add_tail(&mss->list, &msq->q_senders);
 }
 
 static inline void ss_del(struct msg_sender *mss)
 {
+<<<<<<< HEAD
 	if (mss->list.next != NULL)
 		list_del(&mss->list);
 }
@@ -240,23 +277,72 @@ static inline void ss_del(struct msg_sender *mss)
 static void ss_wakeup(struct list_head *h, int kill)
 {
 	struct msg_sender *mss, *t;
+=======
+	if (mss->list.next)
+		list_del(&mss->list);
+}
+
+static void ss_wakeup(struct msg_queue *msq,
+		      struct wake_q_head *wake_q, bool kill)
+{
+	struct msg_sender *mss, *t;
+	struct task_struct *stop_tsk = NULL;
+	struct list_head *h = &msq->q_senders;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_for_each_entry_safe(mss, t, h, list) {
 		if (kill)
 			mss->list.next = NULL;
+<<<<<<< HEAD
 		wake_up_process(mss->tsk);
 	}
 }
 
 static void expunge_all(struct msg_queue *msq, int res)
+=======
+
+		/*
+		 * Stop at the first task we don't wakeup,
+		 * we've already iterated the original
+		 * sender queue.
+		 */
+		else if (stop_tsk == mss->tsk)
+			break;
+		/*
+		 * We are not in an EIDRM scenario here, therefore
+		 * verify that we really need to wakeup the task.
+		 * To maintain current semantics and wakeup order,
+		 * move the sender to the tail on behalf of the
+		 * blocked task.
+		 */
+		else if (!msg_fits_inqueue(msq, mss->msgsz)) {
+			if (!stop_tsk)
+				stop_tsk = mss->tsk;
+
+			list_move_tail(&mss->list, &msq->q_senders);
+			continue;
+		}
+
+		wake_q_add(wake_q, mss->tsk);
+	}
+}
+
+static void expunge_all(struct msg_queue *msq, int res,
+			struct wake_q_head *wake_q)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct msg_receiver *msr, *t;
 
 	list_for_each_entry_safe(msr, t, &msq->q_receivers, r_list) {
+<<<<<<< HEAD
 		msr->r_msg = NULL;
 		wake_up_process(msr->r_tsk);
 		smp_mb();
 		msr->r_msg = ERR_PTR(res);
+=======
+		wake_q_add(wake_q, msr->r_tsk);
+		WRITE_ONCE(msr->r_msg, ERR_PTR(res));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -272,11 +358,21 @@ static void freeque(struct ipc_namespace *ns, struct kern_ipc_perm *ipcp)
 {
 	struct msg_msg *msg, *t;
 	struct msg_queue *msq = container_of(ipcp, struct msg_queue, q_perm);
+<<<<<<< HEAD
 
 	expunge_all(msq, -EIDRM);
 	ss_wakeup(&msq->q_senders, 1);
 	msg_rmid(ns, msq);
 	ipc_unlock_object(&msq->q_perm);
+=======
+	WAKE_Q(wake_q);
+
+	expunge_all(msq, -EIDRM, &wake_q);
+	ss_wakeup(msq, &wake_q, true);
+	msg_rmid(ns, msq);
+	ipc_unlock_object(&msq->q_perm);
+	wake_up_q(&wake_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_read_unlock();
 
 	list_for_each_entry_safe(msg, t, &msq->q_messages, m_list) {
@@ -300,15 +396,25 @@ static inline int msg_security(struct kern_ipc_perm *ipcp, int msgflg)
 SYSCALL_DEFINE2(msgget, key_t, key, int, msgflg)
 {
 	struct ipc_namespace *ns;
+<<<<<<< HEAD
 	struct ipc_ops msg_ops;
+=======
+	static const struct ipc_ops msg_ops = {
+		.getnew = newque,
+		.associate = msg_security,
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ipc_params msg_params;
 
 	ns = current->nsproxy->ipc_ns;
 
+<<<<<<< HEAD
 	msg_ops.getnew = newque;
 	msg_ops.associate = msg_security;
 	msg_ops.more_checks = NULL;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	msg_params.key = key;
 	msg_params.flg = msgflg;
 
@@ -318,7 +424,11 @@ SYSCALL_DEFINE2(msgget, key_t, key, int, msgflg)
 static inline unsigned long
 copy_msqid_to_user(void __user *buf, struct msqid64_ds *in, int version)
 {
+<<<<<<< HEAD
 	switch(version) {
+=======
+	switch (version) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case IPC_64:
 		return copy_to_user(buf, in, sizeof(*in));
 	case IPC_OLD:
@@ -363,7 +473,11 @@ copy_msqid_to_user(void __user *buf, struct msqid64_ds *in, int version)
 static inline unsigned long
 copy_msqid_from_user(struct msqid64_ds *out, void __user *buf, int version)
 {
+<<<<<<< HEAD
 	switch(version) {
+=======
+	switch (version) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case IPC_64:
 		if (copy_from_user(out, buf, sizeof(*out)))
 			return -EFAULT;
@@ -375,9 +489,15 @@ copy_msqid_from_user(struct msqid64_ds *out, void __user *buf, int version)
 		if (copy_from_user(&tbuf_old, buf, sizeof(tbuf_old)))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		out->msg_perm.uid      	= tbuf_old.msg_perm.uid;
 		out->msg_perm.gid      	= tbuf_old.msg_perm.gid;
 		out->msg_perm.mode     	= tbuf_old.msg_perm.mode;
+=======
+		out->msg_perm.uid	= tbuf_old.msg_perm.uid;
+		out->msg_perm.gid	= tbuf_old.msg_perm.gid;
+		out->msg_perm.mode	= tbuf_old.msg_perm.mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (tbuf_old.msg_qbytes == 0)
 			out->msg_qbytes	= tbuf_old.msg_lqbytes;
@@ -432,6 +552,12 @@ static int msgctl_down(struct ipc_namespace *ns, int msqid, int cmd,
 		freeque(ns, ipcp);
 		goto out_up;
 	case IPC_SET:
+<<<<<<< HEAD
+=======
+	{
+		WAKE_Q(wake_q);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (msqid64.msg_qbytes > ns->msg_ctlmnb &&
 		    !capable(CAP_SYS_RESOURCE)) {
 			err = -EPERM;
@@ -446,6 +572,7 @@ static int msgctl_down(struct ipc_namespace *ns, int msqid, int cmd,
 		msq->q_qbytes = msqid64.msg_qbytes;
 
 		msq->q_ctime = get_seconds();
+<<<<<<< HEAD
 		/* sleeping receivers might be excluded by
 		 * stricter permissions.
 		 */
@@ -455,6 +582,23 @@ static int msgctl_down(struct ipc_namespace *ns, int msqid, int cmd,
 		 */
 		ss_wakeup(&msq->q_senders, 0);
 		break;
+=======
+		/*
+		 * Sleeping receivers might be excluded by
+		 * stricter permissions.
+		 */
+		expunge_all(msq, -EAGAIN, &wake_q);
+		/*
+		 * Sleeping senders might be able to send
+		 * due to a larger queue size.
+		 */
+		ss_wakeup(msq, &wake_q, false);
+		ipc_unlock_object(&msq->q_perm);
+		wake_up_q(&wake_q);
+
+		goto out_unlock1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		err = -EINVAL;
 		goto out_unlock1;
@@ -606,6 +750,7 @@ SYSCALL_DEFINE3(msgctl, int, msqid, int, cmd, struct msqid_ds __user *, buf)
 
 static int testmsg(struct msg_msg *msg, long type, int mode)
 {
+<<<<<<< HEAD
 	switch(mode)
 	{
 		case SEARCH_ANY:
@@ -623,11 +768,34 @@ static int testmsg(struct msg_msg *msg, long type, int mode)
 			if (msg->m_type != type)
 				return 1;
 			break;
+=======
+	switch (mode) {
+	case SEARCH_ANY:
+	case SEARCH_NUMBER:
+		return 1;
+	case SEARCH_LESSEQUAL:
+		if (msg->m_type <= type)
+			return 1;
+		break;
+	case SEARCH_EQUAL:
+		if (msg->m_type == type)
+			return 1;
+		break;
+	case SEARCH_NOTEQUAL:
+		if (msg->m_type != type)
+			return 1;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int pipelined_send(struct msg_queue *msq, struct msg_msg *msg)
+=======
+static inline int pipelined_send(struct msg_queue *msq, struct msg_msg *msg,
+				 struct wake_q_head *wake_q)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct msg_receiver *msr, *t;
 
@@ -638,6 +806,7 @@ static inline int pipelined_send(struct msg_queue *msq, struct msg_msg *msg)
 
 			list_del(&msr->r_list);
 			if (msr->r_maxsize < msg->m_ts) {
+<<<<<<< HEAD
 				msr->r_msg = NULL;
 				wake_up_process(msr->r_tsk);
 				smp_mb();
@@ -650,10 +819,24 @@ static inline int pipelined_send(struct msg_queue *msq, struct msg_msg *msg)
 				smp_mb();
 				msr->r_msg = msg;
 
+=======
+				wake_q_add(wake_q, msr->r_tsk);
+				WRITE_ONCE(msr->r_msg, ERR_PTR(-E2BIG));
+			} else {
+				msq->q_lrpid = task_pid_vnr(msr->r_tsk);
+				msq->q_rtime = get_seconds();
+
+				wake_q_add(wake_q, msr->r_tsk);
+				WRITE_ONCE(msr->r_msg, msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				return 1;
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -664,6 +847,10 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 	struct msg_msg *msg;
 	int err;
 	struct ipc_namespace *ns;
+<<<<<<< HEAD
+=======
+	WAKE_Q(wake_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ns = current->nsproxy->ipc_ns;
 
@@ -696,7 +883,11 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 			goto out_unlock0;
 
 		/* raced with RMID? */
+<<<<<<< HEAD
 		if (msq->q_perm.deleted) {
+=======
+		if (!ipc_valid_object(&msq->q_perm)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EIDRM;
 			goto out_unlock0;
 		}
@@ -705,10 +896,15 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 		if (err)
 			goto out_unlock0;
 
+<<<<<<< HEAD
 		if (msgsz + msq->q_cbytes <= msq->q_qbytes &&
 				1 + msq->q_qnum <= msq->q_qbytes) {
 			break;
 		}
+=======
+		if (msg_fits_inqueue(msq, msgsz))
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* queue full, wait: */
 		if (msgflg & IPC_NOWAIT) {
@@ -716,7 +912,12 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 			goto out_unlock0;
 		}
 
+<<<<<<< HEAD
 		ss_add(msq, &s);
+=======
+		/* enqueue the sender and prepare to block */
+		ss_add(msq, &s, msgsz);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!ipc_rcu_getref(msq)) {
 			err = -EIDRM;
@@ -730,12 +931,21 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 		rcu_read_lock();
 		ipc_lock_object(&msq->q_perm);
 
+<<<<<<< HEAD
 		ipc_rcu_putref(msq, ipc_rcu_free);
 		if (msq->q_perm.deleted) {
 			err = -EIDRM;
 			goto out_unlock0;
 		}
 
+=======
+		ipc_rcu_putref(msq, msg_rcu_free);
+		/* raced with RMID? */
+		if (!ipc_valid_object(&msq->q_perm)) {
+			err = -EIDRM;
+			goto out_unlock0;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ss_del(&s);
 
 		if (signal_pending(current)) {
@@ -744,10 +954,18 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 		}
 
 	}
+<<<<<<< HEAD
 	msq->q_lspid = task_tgid_vnr(current);
 	msq->q_stime = get_seconds();
 
 	if (!pipelined_send(msq, msg)) {
+=======
+
+	msq->q_lspid = task_tgid_vnr(current);
+	msq->q_stime = get_seconds();
+
+	if (!pipelined_send(msq, msg, &wake_q)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* no one is waiting for this message, enqueue it */
 		list_add_tail(&msg->m_list, &msq->q_messages);
 		msq->q_cbytes += msgsz;
@@ -761,6 +979,10 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 
 out_unlock0:
 	ipc_unlock_object(&msq->q_perm);
+<<<<<<< HEAD
+=======
+	wake_up_q(&wake_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_unlock1:
 	rcu_read_unlock();
 	if (msg != NULL)
@@ -791,7 +1013,14 @@ static inline int convert_mode(long *msgtyp, int msgflg)
 	if (*msgtyp == 0)
 		return SEARCH_ANY;
 	if (*msgtyp < 0) {
+<<<<<<< HEAD
 		*msgtyp = -*msgtyp;
+=======
+		if (*msgtyp == LONG_MIN) /* -LONG_MIN is undefined */
+			*msgtyp = LONG_MAX;
+		else
+			*msgtyp = -*msgtyp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return SEARCH_LESSEQUAL;
 	}
 	if (msgflg & MSG_EXCEPT)
@@ -878,6 +1107,10 @@ long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, int msgfl
 	struct msg_queue *msq;
 	struct ipc_namespace *ns;
 	struct msg_msg *msg, *copy = NULL;
+<<<<<<< HEAD
+=======
+	WAKE_Q(wake_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ns = current->nsproxy->ipc_ns;
 
@@ -911,7 +1144,11 @@ long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, int msgfl
 		ipc_lock_object(&msq->q_perm);
 
 		/* raced with RMID? */
+<<<<<<< HEAD
 		if (msq->q_perm.deleted) {
+=======
+		if (!ipc_valid_object(&msq->q_perm)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			msg = ERR_PTR(-EIDRM);
 			goto out_unlock0;
 		}
@@ -942,7 +1179,11 @@ long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, int msgfl
 			msq->q_cbytes -= msg->m_ts;
 			atomic_sub(msg->m_ts, &ns->msg_bytes);
 			atomic_dec(&ns->msg_hdrs);
+<<<<<<< HEAD
 			ss_wakeup(&msq->q_senders, 0);
+=======
+			ss_wakeup(msq, &wake_q, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			goto out_unlock0;
 		}
@@ -962,12 +1203,17 @@ long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, int msgfl
 		else
 			msr_d.r_maxsize = bufsz;
 		msr_d.r_msg = ERR_PTR(-EAGAIN);
+<<<<<<< HEAD
 		current->state = TASK_INTERRUPTIBLE;
+=======
+		__set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ipc_unlock_object(&msq->q_perm);
 		rcu_read_unlock();
 		schedule();
 
+<<<<<<< HEAD
 		/* Lockless receive, part 1:
 		 * Disable preemption.  We don't hold a reference to the queue
 		 * and getting a reference would defeat the idea of a lockless
@@ -1007,6 +1253,40 @@ long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, int msgfl
 		 * Repeat test after acquiring the spinlock.
 		 */
 		msg = (struct msg_msg*)msr_d.r_msg;
+=======
+		/*
+		 * Lockless receive, part 1:
+		 * We don't hold a reference to the queue and getting a
+		 * reference would defeat the idea of a lockless operation,
+		 * thus the code relies on rcu to guarantee the existence of
+		 * msq:
+		 * Prior to destruction, expunge_all(-EIRDM) changes r_msg.
+		 * Thus if r_msg is -EAGAIN, then the queue not yet destroyed.
+		 */
+		rcu_read_lock();
+
+		/*
+		 * Lockless receive, part 2:
+		 * The work in pipelined_send() and expunge_all():
+		 * - Set pointer to message
+		 * - Queue the receiver task for later wakeup
+		 * - Wake up the process after the lock is dropped.
+		 *
+		 * Should the process wake up before this wakeup (due to a
+		 * signal) it will either see the message and continue ...
+		 */
+		msg = READ_ONCE(msr_d.r_msg);
+		if (msg != ERR_PTR(-EAGAIN))
+			goto out_unlock1;
+
+		 /*
+		  * ... or see -EAGAIN, acquire the lock to check the message
+		  * again.
+		  */
+		ipc_lock_object(&msq->q_perm);
+
+		msg = msr_d.r_msg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (msg != ERR_PTR(-EAGAIN))
 			goto out_unlock0;
 
@@ -1021,6 +1301,10 @@ long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, int msgfl
 
 out_unlock0:
 	ipc_unlock_object(&msq->q_perm);
+<<<<<<< HEAD
+=======
+	wake_up_q(&wake_q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_unlock1:
 	rcu_read_unlock();
 	if (IS_ERR(msg)) {
@@ -1040,12 +1324,36 @@ SYSCALL_DEFINE5(msgrcv, int, msqid, struct msgbuf __user *, msgp, size_t, msgsz,
 	return do_msgrcv(msqid, msgp, msgsz, msgtyp, msgflg, do_msg_fill);
 }
 
+<<<<<<< HEAD
+=======
+
+void msg_init_ns(struct ipc_namespace *ns)
+{
+	ns->msg_ctlmax = MSGMAX;
+	ns->msg_ctlmnb = MSGMNB;
+	ns->msg_ctlmni = MSGMNI;
+
+	atomic_set(&ns->msg_bytes, 0);
+	atomic_set(&ns->msg_hdrs, 0);
+	ipc_init_ids(&ns->ids[IPC_MSG_IDS]);
+}
+
+#ifdef CONFIG_IPC_NS
+void msg_exit_ns(struct ipc_namespace *ns)
+{
+	free_ipcs(ns, &msg_ids(ns), freeque);
+	idr_destroy(&ns->ids[IPC_MSG_IDS].ipcs_idr);
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PROC_FS
 static int sysvipc_msg_proc_show(struct seq_file *s, void *it)
 {
 	struct user_namespace *user_ns = seq_user_ns(s);
 	struct msg_queue *msq = it;
 
+<<<<<<< HEAD
 	return seq_printf(s,
 			"%10d %10d  %4o  %10lu %10lu %5u %5u %5u %5u %5u %5u %10lu %10lu %10lu\n",
 			msq->q_perm.key,
@@ -1064,3 +1372,34 @@ static int sysvipc_msg_proc_show(struct seq_file *s, void *it)
 			msq->q_ctime);
 }
 #endif
+=======
+	seq_printf(s,
+		   "%10d %10d  %4o  %10lu %10lu %5u %5u %5u %5u %5u %5u %10lu %10lu %10lu\n",
+		   msq->q_perm.key,
+		   msq->q_perm.id,
+		   msq->q_perm.mode,
+		   msq->q_cbytes,
+		   msq->q_qnum,
+		   msq->q_lspid,
+		   msq->q_lrpid,
+		   from_kuid_munged(user_ns, msq->q_perm.uid),
+		   from_kgid_munged(user_ns, msq->q_perm.gid),
+		   from_kuid_munged(user_ns, msq->q_perm.cuid),
+		   from_kgid_munged(user_ns, msq->q_perm.cgid),
+		   msq->q_stime,
+		   msq->q_rtime,
+		   msq->q_ctime);
+
+	return 0;
+}
+#endif
+
+void __init msg_init(void)
+{
+	msg_init_ns(&init_ipc_ns);
+
+	ipc_init_proc_interface("sysvipc/msg",
+				"       key      msqid perms      cbytes       qnum lspid lrpid   uid   gid  cuid  cgid      stime      rtime      ctime\n",
+				IPC_MSG_IDS, sysvipc_msg_proc_show);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

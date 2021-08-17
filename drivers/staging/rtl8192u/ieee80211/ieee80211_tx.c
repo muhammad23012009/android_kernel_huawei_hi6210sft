@@ -25,14 +25,21 @@
 ******************************************************************************
 
   Few modifications for Realtek's Wi-Fi drivers by
+<<<<<<< HEAD
   Andrea Merello <andreamrl@tiscali.it>
+=======
+  Andrea Merello <andrea.merello@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
   A special thanks goes to Realtek for their support !
 
 ******************************************************************************/
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 //#include <linux/config.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/if_arp.h>
 #include <linux/in6.h>
@@ -49,7 +56,11 @@
 #include <linux/types.h>
 #include <linux/wireless.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/if_vlan.h>
 
 #include "ieee80211.h"
@@ -183,11 +194,16 @@ int ieee80211_encrypt_fragment(
 	struct sk_buff *frag,
 	int hdr_len)
 {
+<<<<<<< HEAD
 	struct ieee80211_crypt_data* crypt = ieee->crypt[ieee->tx_keyidx];
+=======
+	struct ieee80211_crypt_data *crypt = ieee->crypt[ieee->tx_keyidx];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int res;
 
 	if (!(crypt && crypt->ops))
 	{
+<<<<<<< HEAD
 		printk("=========>%s(), crypt is null\n", __FUNCTION__);
 		return -1;
 	}
@@ -198,13 +214,29 @@ int ieee80211_encrypt_fragment(
 	    crypt && crypt->ops && strcmp(crypt->ops->name, "TKIP") == 0) {
 		header = (struct ieee80211_hdr *) frag->data;
 		if (net_ratelimit()) {
+=======
+		printk("=========>%s(), crypt is null\n", __func__);
+		return -1;
+	}
+
+	if (ieee->tkip_countermeasures &&
+	    crypt && crypt->ops && strcmp(crypt->ops->name, "TKIP") == 0) {
+		if (net_ratelimit()) {
+			struct rtl_80211_hdr_3addrqos *header;
+
+			header = (struct rtl_80211_hdr_3addrqos *)frag->data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			printk(KERN_DEBUG "%s: TKIP countermeasures: dropped "
 			       "TX packet to %pM\n",
 			       ieee->dev->name, header->addr1);
 		}
 		return -1;
 	}
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* To encrypt, frame format is:
 	 * IV (4 bytes), clear payload (including SNAP), ICV (4 bytes) */
 
@@ -236,14 +268,25 @@ void ieee80211_txb_free(struct ieee80211_txb *txb) {
 		return;
 	kfree(txb);
 }
+<<<<<<< HEAD
 
 struct ieee80211_txb *ieee80211_alloc_txb(int nr_frags, int txb_size,
 					  int gfp_mask)
+=======
+EXPORT_SYMBOL(ieee80211_txb_free);
+
+static struct ieee80211_txb *ieee80211_alloc_txb(int nr_frags, int txb_size,
+						 gfp_t gfp_mask)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ieee80211_txb *txb;
 	int i;
 	txb = kmalloc(
+<<<<<<< HEAD
 		sizeof(struct ieee80211_txb) + (sizeof(u8*) * nr_frags),
+=======
+		sizeof(struct ieee80211_txb) + (sizeof(u8 *) * nr_frags),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		gfp_mask);
 	if (!txb)
 		return NULL;
@@ -303,11 +346,20 @@ ieee80211_classify(struct sk_buff *skb, struct ieee80211_network *network)
 }
 
 #define SN_LESS(a, b)		(((a-b)&0x800)!=0)
+<<<<<<< HEAD
 void ieee80211_tx_query_agg_cap(struct ieee80211_device* ieee, struct sk_buff* skb, cb_desc* tcb_desc)
 {
 	PRT_HIGH_THROUGHPUT	pHTInfo = ieee->pHTInfo;
 	PTX_TS_RECORD			pTxTs = NULL;
 	struct ieee80211_hdr_1addr* hdr = (struct ieee80211_hdr_1addr*)skb->data;
+=======
+static void ieee80211_tx_query_agg_cap(struct ieee80211_device *ieee,
+				       struct sk_buff *skb, cb_desc *tcb_desc)
+{
+	PRT_HIGH_THROUGHPUT	pHTInfo = ieee->pHTInfo;
+	PTX_TS_RECORD			pTxTs = NULL;
+	struct rtl_80211_hdr_1addr *hdr = (struct rtl_80211_hdr_1addr *)skb->data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pHTInfo->bCurrentHTSupport||!pHTInfo->bEnableHT)
 		return;
@@ -330,17 +382,29 @@ void ieee80211_tx_query_agg_cap(struct ieee80211_device* ieee, struct sk_buff* s
 	}
 	if(pHTInfo->bCurrentAMPDUEnable)
 	{
+<<<<<<< HEAD
 		if (!GetTs(ieee, (PTS_COMMON_INFO*)(&pTxTs), hdr->addr1, skb->priority, TX_DIR, true))
+=======
+		if (!GetTs(ieee, (PTS_COMMON_INFO *)(&pTxTs), hdr->addr1, skb->priority, TX_DIR, true))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{
 			printk("===>can't get TS\n");
 			return;
 		}
+<<<<<<< HEAD
 		if (pTxTs->TxAdmittedBARecord.bValid == false)
+=======
+		if (!pTxTs->TxAdmittedBARecord.bValid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{
 			TsStartAddBaProcess(ieee, pTxTs);
 			goto FORCED_AGG_SETTING;
 		}
+<<<<<<< HEAD
 		else if (pTxTs->bUsingBa == false)
+=======
+		else if (!pTxTs->bUsingBa)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{
 			if (SN_LESS(pTxTs->TxAdmittedBARecord.BaStartSeqCtrl.field.SeqNum, (pTxTs->TxCurSeq+1)%4096))
 				pTxTs->bUsingBa = true;
@@ -356,7 +420,11 @@ void ieee80211_tx_query_agg_cap(struct ieee80211_device* ieee, struct sk_buff* s
 		}
 	}
 FORCED_AGG_SETTING:
+<<<<<<< HEAD
 	switch(pHTInfo->ForcedAMPDUMode )
+=======
+	switch (pHTInfo->ForcedAMPDUMode )
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		case HT_AGG_AUTO:
 			break;
@@ -377,7 +445,12 @@ FORCED_AGG_SETTING:
 		return;
 }
 
+<<<<<<< HEAD
 extern void ieee80211_qurey_ShortPreambleMode(struct ieee80211_device* ieee, cb_desc* tcb_desc)
+=======
+static void ieee80211_qurey_ShortPreambleMode(struct ieee80211_device *ieee,
+					      cb_desc *tcb_desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	tcb_desc->bUseShortPreamble = false;
 	if (tcb_desc->data_rate == 2)
@@ -390,7 +463,11 @@ extern void ieee80211_qurey_ShortPreambleMode(struct ieee80211_device* ieee, cb_
 	}
 	return;
 }
+<<<<<<< HEAD
 extern	void
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ieee80211_query_HTCapShortGI(struct ieee80211_device *ieee, cb_desc *tcb_desc)
 {
 	PRT_HIGH_THROUGHPUT		pHTInfo = ieee->pHTInfo;
@@ -412,7 +489,12 @@ ieee80211_query_HTCapShortGI(struct ieee80211_device *ieee, cb_desc *tcb_desc)
 		tcb_desc->bUseShortGI = true;
 }
 
+<<<<<<< HEAD
 void ieee80211_query_BandwidthMode(struct ieee80211_device* ieee, cb_desc *tcb_desc)
+=======
+static void ieee80211_query_BandwidthMode(struct ieee80211_device *ieee,
+					  cb_desc *tcb_desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	PRT_HIGH_THROUGHPUT	pHTInfo = ieee->pHTInfo;
 
@@ -432,7 +514,13 @@ void ieee80211_query_BandwidthMode(struct ieee80211_device* ieee, cb_desc *tcb_d
 	return;
 }
 
+<<<<<<< HEAD
 void ieee80211_query_protectionmode(struct ieee80211_device* ieee, cb_desc* tcb_desc, struct sk_buff* skb)
+=======
+static void ieee80211_query_protectionmode(struct ieee80211_device *ieee,
+					   cb_desc *tcb_desc,
+					   struct sk_buff *skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	// Common Settings
 	tcb_desc->bRTSSTBC			= false;
@@ -523,8 +611,12 @@ void ieee80211_query_protectionmode(struct ieee80211_device* ieee, cb_desc* tcb_
 		}
 		}
 	// For test , CTS replace with RTS
+<<<<<<< HEAD
 	if( 0 )
 	{
+=======
+	if (0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tcb_desc->bCTSEnable	= true;
 		tcb_desc->rts_rate = MGN_24M;
 		tcb_desc->bRTSEnable	= true;
@@ -543,21 +635,36 @@ NO_PROTECTION:
 }
 
 
+<<<<<<< HEAD
 void ieee80211_txrate_selectmode(struct ieee80211_device* ieee, cb_desc* tcb_desc)
+=======
+static void ieee80211_txrate_selectmode(struct ieee80211_device *ieee,
+					cb_desc *tcb_desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef TO_DO_LIST
 	if(!IsDataFrame(pFrame))
 	{
+<<<<<<< HEAD
 		pTcb->bTxDisableRateFallBack = TRUE;
 		pTcb->bTxUseDriverAssingedRate = TRUE;
+=======
+		pTcb->bTxDisableRateFallBack = true;
+		pTcb->bTxUseDriverAssingedRate = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pTcb->RATRIndex = 7;
 		return;
 	}
 
 	if(pMgntInfo->ForcedDataRate!= 0)
 	{
+<<<<<<< HEAD
 		pTcb->bTxDisableRateFallBack = TRUE;
 		pTcb->bTxUseDriverAssingedRate = TRUE;
+=======
+		pTcb->bTxDisableRateFallBack = true;
+		pTcb->bTxUseDriverAssingedRate = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 #endif
@@ -573,14 +680,23 @@ void ieee80211_txrate_selectmode(struct ieee80211_device* ieee, cb_desc* tcb_des
 	}
 }
 
+<<<<<<< HEAD
 void ieee80211_query_seqnum(struct ieee80211_device*ieee, struct sk_buff* skb, u8* dst)
+=======
+static void ieee80211_query_seqnum(struct ieee80211_device *ieee,
+				   struct sk_buff *skb, u8 *dst)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (is_multicast_ether_addr(dst))
 		return;
 	if (IsQoSDataFrame(skb->data)) //we deal qos data only
 	{
 		PTX_TS_RECORD pTS = NULL;
+<<<<<<< HEAD
 		if (!GetTs(ieee, (PTS_COMMON_INFO*)(&pTS), dst, skb->priority, TX_DIR, true))
+=======
+		if (!GetTs(ieee, (PTS_COMMON_INFO *)(&pTS), dst, skb->priority, TX_DIR, true))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{
 			return;
 		}
@@ -592,14 +708,22 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct ieee80211_device *ieee = netdev_priv(dev);
 	struct ieee80211_txb *txb = NULL;
+<<<<<<< HEAD
 	struct ieee80211_hdr_3addrqos *frag_hdr;
+=======
+	struct rtl_80211_hdr_3addrqos *frag_hdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, bytes_per_frag, nr_frags, bytes_last_frag, frag_size;
 	unsigned long flags;
 	struct net_device_stats *stats = &ieee->stats;
 	int ether_type = 0, encrypt;
 	int bytes, fc, qos_ctl = 0, hdr_len;
 	struct sk_buff *skb_frag;
+<<<<<<< HEAD
 	struct ieee80211_hdr_3addrqos header = { /* Ensure zero initialized */
+=======
+	struct rtl_80211_hdr_3addrqos header = { /* Ensure zero initialized */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.duration_id = 0,
 		.seq_ctl = 0,
 		.qos_ctl = 0
@@ -607,7 +731,11 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 	u8 dest[ETH_ALEN], src[ETH_ALEN];
 	int qos_actived = ieee->current_network.qos_data.active;
 
+<<<<<<< HEAD
 	struct ieee80211_crypt_data* crypt;
+=======
+	struct ieee80211_crypt_data *crypt;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cb_desc *tcb_desc;
 
@@ -781,7 +909,11 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 			{
 				tcb_desc->bHwSec = 0;
 			}
+<<<<<<< HEAD
 			frag_hdr = (struct ieee80211_hdr_3addrqos *)skb_put(skb_frag, hdr_len);
+=======
+			frag_hdr = (struct rtl_80211_hdr_3addrqos *)skb_put(skb_frag, hdr_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			memcpy(frag_hdr, &header, hdr_len);
 
 			/* If this is not the last fragment, then add the MOREFRAGS
@@ -839,7 +971,11 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 			ieee->seq_ctrl[0]++;
 		}
 	}else{
+<<<<<<< HEAD
 		if (unlikely(skb->len < sizeof(struct ieee80211_hdr_3addr))) {
+=======
+		if (unlikely(skb->len < sizeof(struct rtl_80211_hdr_3addr))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			printk(KERN_WARNING "%s: skb too small (%d).\n",
 			ieee->dev->name, skb->len);
 			goto success;
@@ -868,7 +1004,11 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 		if (is_broadcast_ether_addr(header.addr1))
 			tcb_desc->bBroadcast = 1;
 		ieee80211_txrate_selectmode(ieee, tcb_desc);
+<<<<<<< HEAD
 		if ( tcb_desc->bMulticast ||  tcb_desc->bBroadcast)
+=======
+		if (tcb_desc->bMulticast ||  tcb_desc->bBroadcast)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			tcb_desc->data_rate = ieee->basic_rate;
 		else
 			//tcb_desc->data_rate = CURRENT_RATE(ieee->current_network.mode, ieee->rate, ieee->HTCurrentOperaRate);
@@ -906,5 +1046,8 @@ int ieee80211_xmit(struct sk_buff *skb, struct net_device *dev)
 	return 1;
 
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(ieee80211_txb_free);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

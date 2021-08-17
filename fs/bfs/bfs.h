@@ -46,6 +46,10 @@ static inline struct bfs_inode_info *BFS_I(struct inode *inode)
 
 /* inode.c */
 extern struct inode *bfs_iget(struct super_block *sb, unsigned long ino);
+<<<<<<< HEAD
+=======
+extern void bfs_dump_imap(const char *, struct super_block *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* file.c */
 extern const struct inode_operations bfs_file_inops;

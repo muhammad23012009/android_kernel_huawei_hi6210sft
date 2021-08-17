@@ -398,6 +398,7 @@ v4l2_std_id pvr2_std_get_usable(void)
 {
 	return CSTD_ALL;
 }
+<<<<<<< HEAD
 
 
 /*
@@ -409,3 +410,5 @@ v4l2_std_id pvr2_std_get_usable(void)
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -22,5 +22,9 @@ ENTRY(strrchr)
 		teq	r2, #0
 		bne	1b
 		mov	r0, r3
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(strrchr)

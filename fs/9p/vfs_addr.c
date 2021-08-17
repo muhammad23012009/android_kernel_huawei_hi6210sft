@@ -33,7 +33,11 @@
 #include <linux/pagemap.h>
 #include <linux/idr.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+#include <linux/uio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
 
@@ -49,6 +53,7 @@
  * @page: structure to page
  *
  */
+<<<<<<< HEAD
 static int v9fs_fid_readpage(struct p9_fid *fid, struct page *page)
 {
 	int retval;
@@ -57,6 +62,16 @@ static int v9fs_fid_readpage(struct p9_fid *fid, struct page *page)
 	struct inode *inode;
 
 	inode = page->mapping->host;
+=======
+static int v9fs_fid_readpage(void *data, struct page *page)
+{
+	struct p9_fid *fid = data;
+	struct inode *inode = page->mapping->host;
+	struct bio_vec bvec = {.bv_page = page, .bv_len = PAGE_SIZE};
+	struct iov_iter to;
+	int retval, err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	p9_debug(P9_DEBUG_VFS, "\n");
 
 	BUG_ON(!PageLocked(page));
@@ -65,6 +80,7 @@ static int v9fs_fid_readpage(struct p9_fid *fid, struct page *page)
 	if (retval == 0)
 		return retval;
 
+<<<<<<< HEAD
 	buffer = kmap(page);
 	offset = page_offset(page);
 
@@ -75,6 +91,18 @@ static int v9fs_fid_readpage(struct p9_fid *fid, struct page *page)
 	}
 
 	memset(buffer + retval, 0, PAGE_CACHE_SIZE - retval);
+=======
+	iov_iter_bvec(&to, ITER_BVEC | READ, &bvec, 1, PAGE_SIZE);
+
+	retval = p9_client_read(fid, page_offset(page), &to, &err);
+	if (err) {
+		v9fs_uncache_page(inode, page);
+		retval = err;
+		goto done;
+	}
+
+	zero_user(page, retval, PAGE_SIZE - retval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	flush_dcache_page(page);
 	SetPageUptodate(page);
 
@@ -82,7 +110,10 @@ static int v9fs_fid_readpage(struct p9_fid *fid, struct page *page)
 	retval = 0;
 
 done:
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return retval;
 }
@@ -123,7 +154,12 @@ static int v9fs_vfs_readpages(struct file *filp, struct address_space *mapping,
 	if (ret == 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = read_cache_pages(mapping, pages, (void *)v9fs_vfs_readpage, filp);
+=======
+	ret = read_cache_pages(mapping, pages, v9fs_fid_readpage,
+			filp->private_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	p9_debug(P9_DEBUG_VFS, "  = %d\n", ret);
 	return ret;
 }
@@ -148,18 +184,28 @@ static int v9fs_release_page(struct page *page, gfp_t gfp)
  * @offset: offset in the page
  */
 
+<<<<<<< HEAD
 static void v9fs_invalidate_page(struct page *page, unsigned long offset)
+=======
+static void v9fs_invalidate_page(struct page *page, unsigned int offset,
+				 unsigned int length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * If called with zero offset, we should release
 	 * the private state assocated with the page
 	 */
+<<<<<<< HEAD
 	if (offset == 0)
+=======
+	if (offset == 0 && length == PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		v9fs_fscache_invalidate_page(page);
 }
 
 static int v9fs_vfs_writepage_locked(struct page *page)
 {
+<<<<<<< HEAD
 	char *buffer;
 	int retval, len;
 	loff_t offset, size;
@@ -195,12 +241,45 @@ static int v9fs_vfs_writepage_locked(struct page *page)
 	kunmap(page);
 	end_page_writeback(page);
 	return retval;
+=======
+	struct inode *inode = page->mapping->host;
+	struct v9fs_inode *v9inode = V9FS_I(inode);
+	loff_t size = i_size_read(inode);
+	struct iov_iter from;
+	struct bio_vec bvec;
+	int err, len;
+
+	if (page->index == size >> PAGE_SHIFT)
+		len = size & ~PAGE_MASK;
+	else
+		len = PAGE_SIZE;
+
+	bvec.bv_page = page;
+	bvec.bv_offset = 0;
+	bvec.bv_len = len;
+	iov_iter_bvec(&from, ITER_BVEC | WRITE, &bvec, 1, len);
+
+	/* We should have writeback_fid always set */
+	BUG_ON(!v9inode->writeback_fid);
+
+	set_page_writeback(page);
+
+	p9_client_write(v9inode->writeback_fid, page_offset(page), &from, &err);
+
+	end_page_writeback(page);
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int v9fs_vfs_writepage(struct page *page, struct writeback_control *wbc)
 {
 	int retval;
 
+<<<<<<< HEAD
+=======
+	p9_debug(P9_DEBUG_VFS, "page %p\n", page);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	retval = v9fs_vfs_writepage_locked(page);
 	if (retval < 0) {
 		if (retval == -EAGAIN) {
@@ -238,11 +317,15 @@ static int v9fs_launder_page(struct page *page)
 
 /**
  * v9fs_direct_IO - 9P address space operation for direct I/O
+<<<<<<< HEAD
  * @rw: direction (read or write)
  * @iocb: target I/O control block
  * @iov: array of vectors that define I/O buffer
  * @pos: offset in file to begin the operation
  * @nr_segs: size of iovec array
+=======
+ * @iocb: target I/O control block
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The presence of v9fs_direct_IO() in the address space ops vector
  * allowes open() O_DIRECT flags which would have failed otherwise.
@@ -256,6 +339,7 @@ static int v9fs_launder_page(struct page *page)
  *
  */
 static ssize_t
+<<<<<<< HEAD
 v9fs_direct_IO(int rw, struct kiocb *iocb, const struct iovec *iov,
 	       loff_t pos, unsigned long nr_segs)
 {
@@ -269,6 +353,26 @@ v9fs_direct_IO(int rw, struct kiocb *iocb, const struct iovec *iov,
 		 (long long)pos, nr_segs);
 
 	return -EINVAL;
+=======
+v9fs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+{
+	struct file *file = iocb->ki_filp;
+	loff_t pos = iocb->ki_pos;
+	ssize_t n;
+	int err = 0;
+	if (iov_iter_rw(iter) == WRITE) {
+		n = p9_client_write(file->private_data, pos, iter, &err);
+		if (n) {
+			struct inode *inode = file_inode(file);
+			loff_t i_size = i_size_read(inode);
+			if (pos + n > i_size)
+				inode_add_bytes(inode, pos + n - i_size);
+		}
+	} else {
+		n = p9_client_read(file->private_data, pos, iter, &err);
+	}
+	return n ? n : err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int v9fs_write_begin(struct file *filp, struct address_space *mapping,
@@ -278,9 +382,18 @@ static int v9fs_write_begin(struct file *filp, struct address_space *mapping,
 	int retval = 0;
 	struct page *page;
 	struct v9fs_inode *v9inode;
+<<<<<<< HEAD
 	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
 	struct inode *inode = mapping->host;
 
+=======
+	pgoff_t index = pos >> PAGE_SHIFT;
+	struct inode *inode = mapping->host;
+
+
+	p9_debug(P9_DEBUG_VFS, "filp %p, mapping %p\n", filp, mapping);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v9inode = V9FS_I(inode);
 start:
 	page = grab_cache_page_write_begin(mapping, index, flags);
@@ -292,11 +405,19 @@ start:
 	if (PageUptodate(page))
 		goto out;
 
+<<<<<<< HEAD
 	if (len == PAGE_CACHE_SIZE)
 		goto out;
 
 	retval = v9fs_fid_readpage(v9inode->writeback_fid, page);
 	page_cache_release(page);
+=======
+	if (len == PAGE_SIZE)
+		goto out;
+
+	retval = v9fs_fid_readpage(v9inode->writeback_fid, page);
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!retval)
 		goto start;
 out:
@@ -311,11 +432,20 @@ static int v9fs_write_end(struct file *filp, struct address_space *mapping,
 	loff_t last_pos = pos + copied;
 	struct inode *inode = page->mapping->host;
 
+<<<<<<< HEAD
+=======
+	p9_debug(P9_DEBUG_VFS, "filp %p, mapping %p\n", filp, mapping);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(copied < len)) {
 		/*
 		 * zero out the rest of the area
 		 */
+<<<<<<< HEAD
 		unsigned from = pos & (PAGE_CACHE_SIZE - 1);
+=======
+		unsigned from = pos & (PAGE_SIZE - 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		zero_user(page, from + copied, len - copied);
 		flush_dcache_page(page);
@@ -333,7 +463,11 @@ static int v9fs_write_end(struct file *filp, struct address_space *mapping,
 	}
 	set_page_dirty(page);
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return copied;
 }

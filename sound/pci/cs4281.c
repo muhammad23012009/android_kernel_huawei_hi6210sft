@@ -19,7 +19,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -494,7 +498,11 @@ struct cs4281 {
 
 static irqreturn_t snd_cs4281_interrupt(int irq, void *dev_id);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_cs4281_ids) = {
+=======
+static const struct pci_device_id snd_cs4281_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VDEVICE(CIRRUS, 0x6005), 0, },	/* CS4281 */
 	{ 0, }
 };
@@ -564,7 +572,12 @@ static void snd_cs4281_ac97_write(struct snd_ac97 *ac97,
 			return;
 		}
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 write problem, reg = 0x%x, val = 0x%x\n", reg, val);
+=======
+	dev_err(chip->card->dev,
+		"AC'97 write problem, reg = 0x%x, val = 0x%x\n", reg, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned short snd_cs4281_ac97_read(struct snd_ac97 *ac97,
@@ -624,7 +637,12 @@ static unsigned short snd_cs4281_ac97_read(struct snd_ac97 *ac97,
 			goto __ok1;
 	}
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 read problem (ACCTL_DCV), reg = 0x%x\n", reg);
+=======
+	dev_err(chip->card->dev,
+		"AC'97 read problem (ACCTL_DCV), reg = 0x%x\n", reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	result = 0xffff;
 	goto __end;
 	
@@ -643,7 +661,12 @@ static unsigned short snd_cs4281_ac97_read(struct snd_ac97 *ac97,
 		udelay(10);
 	}
 	
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 read problem (ACSTS_VSTS), reg = 0x%x\n", reg);
+=======
+	dev_err(chip->card->dev,
+		"AC'97 read problem (ACSTS_VSTS), reg = 0x%x\n", reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	result = 0xffff;
 	goto __end;
 
@@ -835,8 +858,14 @@ static snd_pcm_uframes_t snd_cs4281_pointer(struct snd_pcm_substream *substream)
 	struct cs4281 *chip = snd_pcm_substream_chip(substream);
 
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "DCC = 0x%x, buffer_size = 0x%x, jiffies = %li\n",
 	       snd_cs4281_peekBA0(chip, dma->regDCC), runtime->buffer_size,
+=======
+	dev_dbg(chip->card->dev,
+		"DCC = 0x%x, buffer_size = 0x%x, jiffies = %li\n",
+		snd_cs4281_peekBA0(chip, dma->regDCC), runtime->buffer_size,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       jiffies);
 	*/
 	return runtime->buffer_size -
@@ -947,7 +976,11 @@ static int snd_cs4281_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs4281_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_cs4281_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_cs4281_playback_open,
 	.close =	snd_cs4281_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -958,7 +991,11 @@ static struct snd_pcm_ops snd_cs4281_playback_ops = {
 	.pointer =	snd_cs4281_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs4281_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_cs4281_capture_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open =		snd_cs4281_capture_open,
 	.close =	snd_cs4281_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
@@ -969,14 +1006,21 @@ static struct snd_pcm_ops snd_cs4281_capture_ops = {
 	.pointer =	snd_cs4281_pointer,
 };
 
+<<<<<<< HEAD
 static int snd_cs4281_pcm(struct cs4281 *chip, int device,
 			  struct snd_pcm **rpcm)
+=======
+static int snd_cs4281_pcm(struct cs4281 *chip, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_pcm_new(chip->card, "CS4281", device, 1, 1, &pcm);
 	if (err < 0)
 		return err;
@@ -992,8 +1036,11 @@ static int snd_cs4281_pcm(struct cs4281 *chip, int device,
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci), 64*1024, 512*1024);
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1265,7 +1312,12 @@ static int snd_cs4281_create_gameport(struct cs4281 *chip)
 
 	chip->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cs4281: cannot allocate memory for gameport\n");
+=======
+		dev_err(chip->card->dev,
+			"cannot allocate memory for gameport\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 
@@ -1312,6 +1364,7 @@ static int snd_cs4281_free(struct cs4281 *chip)
 	/* Sound System Power Management - Turn Everything OFF */
 	snd_cs4281_pokeBA0(chip, BA0_SSPM, 0);
 	/* PCI interface - D3 state */
+<<<<<<< HEAD
 	pci_set_power_state(chip->pci, 3);
 
 	if (chip->irq >= 0)
@@ -1320,6 +1373,14 @@ static int snd_cs4281_free(struct cs4281 *chip)
 		iounmap(chip->ba0);
 	if (chip->ba1)
 		iounmap(chip->ba1);
+=======
+	pci_set_power_state(chip->pci, PCI_D3hot);
+
+	if (chip->irq >= 0)
+		free_irq(chip->irq, chip);
+	iounmap(chip->ba0);
+	iounmap(chip->ba1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_release_regions(chip->pci);
 	pci_disable_device(chip->pci);
 
@@ -1361,7 +1422,11 @@ static int snd_cs4281_create(struct snd_card *card,
 	chip->irq = -1;
 	pci_set_master(pci);
 	if (dual_codec < 0 || dual_codec > 3) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "invalid dual_codec option %d\n", dual_codec);
+=======
+		dev_err(card->dev, "invalid dual_codec option %d\n", dual_codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dual_codec = 0;
 	}
 	chip->dual_codec = dual_codec;
@@ -1383,7 +1448,11 @@ static int snd_cs4281_create(struct snd_card *card,
 	
 	if (request_irq(pci->irq, snd_cs4281_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
+=======
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_cs4281_free(chip);
 		return -ENOMEM;
 	}
@@ -1402,8 +1471,11 @@ static int snd_cs4281_create(struct snd_card *card,
 
 	snd_cs4281_proc_init(chip);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*rchip = chip;
 	return 0;
 }
@@ -1425,7 +1497,12 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 		snd_cs4281_pokeBA0(chip, BA0_CFLR, BA0_CFLR_DEFAULT);
 		tmp = snd_cs4281_peekBA0(chip, BA0_CFLR);
 		if (tmp != BA0_CFLR_DEFAULT) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "CFLR setup failed (0x%x)\n", tmp);
+=======
+			dev_err(chip->card->dev,
+				"CFLR setup failed (0x%x)\n", tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EIO;
 		}
 	}
@@ -1436,11 +1513,21 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 	snd_cs4281_pokeBA0(chip, BA0_CWPR, 0x4281);
 	
 	if ((tmp = snd_cs4281_peekBA0(chip, BA0_SERC1)) != (BA0_SERC1_SO1EN | BA0_SERC1_AC97)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "SERC1 AC'97 check failed (0x%x)\n", tmp);
 		return -EIO;
 	}
 	if ((tmp = snd_cs4281_peekBA0(chip, BA0_SERC2)) != (BA0_SERC2_SI1EN | BA0_SERC2_AC97)) {
 		snd_printk(KERN_ERR "SERC2 AC'97 check failed (0x%x)\n", tmp);
+=======
+		dev_err(chip->card->dev,
+			"SERC1 AC'97 check failed (0x%x)\n", tmp);
+		return -EIO;
+	}
+	if ((tmp = snd_cs4281_peekBA0(chip, BA0_SERC2)) != (BA0_SERC2_SI1EN | BA0_SERC2_AC97)) {
+		dev_err(chip->card->dev,
+			"SERC2 AC'97 check failed (0x%x)\n", tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EIO;
 	}
 
@@ -1502,7 +1589,11 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 		schedule_timeout_uninterruptible(1);
 	} while (time_after_eq(end_time, jiffies));
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "DLLRDY not seen\n");
+=======
+	dev_err(chip->card->dev, "DLLRDY not seen\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 
       __ok0:
@@ -1528,7 +1619,13 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 		schedule_timeout_uninterruptible(1);
 	} while (time_after_eq(end_time, jiffies));
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "never read codec ready from AC'97 (0x%x)\n", snd_cs4281_peekBA0(chip, BA0_ACSTS));
+=======
+	dev_err(chip->card->dev,
+		"never read codec ready from AC'97 (0x%x)\n",
+		snd_cs4281_peekBA0(chip, BA0_ACSTS));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 
       __ok1:
@@ -1539,7 +1636,12 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 				goto __codec2_ok;
 			schedule_timeout_uninterruptible(1);
 		} while (time_after_eq(end_time, jiffies));
+<<<<<<< HEAD
 		snd_printk(KERN_INFO "secondary codec doesn't respond. disable it...\n");
+=======
+		dev_info(chip->card->dev,
+			 "secondary codec doesn't respond. disable it...\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		chip->dual_codec = 0;
 	__codec2_ok: ;
 	}
@@ -1569,7 +1671,11 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 
 	if (--retry_count > 0)
 		goto __retry;
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "never read ISV3 and ISV4 from AC'97\n");
+=======
+	dev_err(chip->card->dev, "never read ISV3 and ISV4 from AC'97\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EIO;
 
       __ok2:
@@ -1779,14 +1885,21 @@ static struct snd_rawmidi_ops snd_cs4281_midi_input =
 	.trigger =	snd_cs4281_midi_input_trigger,
 };
 
+<<<<<<< HEAD
 static int snd_cs4281_midi(struct cs4281 *chip, int device,
 			   struct snd_rawmidi **rrawmidi)
+=======
+static int snd_cs4281_midi(struct cs4281 *chip, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_rawmidi_new(chip->card, "CS4281", device, 1, 1, &rmidi)) < 0)
 		return err;
 	strcpy(rmidi->name, "CS4281");
@@ -1795,8 +1908,11 @@ static int snd_cs4281_midi(struct cs4281 *chip, int device,
 	rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = chip;
 	chip->rmidi = rmidi;
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = rmidi;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1917,7 +2033,12 @@ static int snd_cs4281_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -1931,11 +2052,19 @@ static int snd_cs4281_probe(struct pci_dev *pci,
 		snd_card_free(card);
 		return err;
 	}
+<<<<<<< HEAD
 	if ((err = snd_cs4281_pcm(chip, 0, NULL)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
 	if ((err = snd_cs4281_midi(chip, 0, NULL)) < 0) {
+=======
+	if ((err = snd_cs4281_pcm(chip, 0)) < 0) {
+		snd_card_free(card);
+		return err;
+	}
+	if ((err = snd_cs4281_midi(chip, 0)) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_card_free(card);
 		return err;
 	}
@@ -1971,7 +2100,10 @@ static int snd_cs4281_probe(struct pci_dev *pci,
 static void snd_cs4281_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
+<<<<<<< HEAD
 	pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1999,7 +2131,10 @@ static int saved_regs[SUSPEND_REGISTERS] = {
 
 static int cs4281_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct cs4281 *chip = card->private_data;
 	u32 ulCLK;
@@ -2038,21 +2173,28 @@ static int cs4281_suspend(struct device *dev)
 	ulCLK = snd_cs4281_peekBA0(chip, BA0_CLKCR1);
 	ulCLK &= ~CLKCR1_CKRA;
 	snd_cs4281_pokeBA0(chip, BA0_CLKCR1, ulCLK);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int cs4281_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct cs4281 *chip = card->private_data;
 	unsigned int i;
 	u32 ulCLK;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -2063,6 +2205,8 @@ static int cs4281_resume(struct device *dev)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ulCLK = snd_cs4281_peekBA0(chip, BA0_CLKCR1);
 	ulCLK |= CLKCR1_CKRA;
 	snd_cs4281_pokeBA0(chip, BA0_CLKCR1, ulCLK);

@@ -19,5 +19,8 @@ octeon-ethernet-y += ethernet-rx.o
 octeon-ethernet-y += ethernet-sgmii.o
 octeon-ethernet-y += ethernet-spi.o
 octeon-ethernet-y += ethernet-tx.o
+<<<<<<< HEAD
 octeon-ethernet-y += ethernet-xaui.o
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

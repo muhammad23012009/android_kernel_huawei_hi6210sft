@@ -13,6 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -167,6 +168,29 @@ void __init r8a7778_init_irq_extpin(int irlm)
 			&platform_bus, "renesas_intc_irqpin", -1,
 			irqpin_resources, ARRAY_SIZE(irqpin_resources),
 			&irqpin_platform_data, sizeof(irqpin_platform_data));
+=======
+ */
+
+#include <linux/clk/renesas.h>
+#include <linux/io.h>
+#include <linux/irqchip.h>
+
+#include <asm/mach/arch.h>
+
+#include "common.h"
+
+#define MODEMR 0xffcc0020
+
+static void __init r8a7778_timer_init(void)
+{
+	u32 mode;
+	void __iomem *modemr = ioremap_nocache(MODEMR, 4);
+
+	BUG_ON(!modemr);
+	mode = ioread32(modemr);
+	iounmap(modemr);
+	r8a7778_clocks_init(mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define INT2SMSKCR0	0x82288 /* 0xfe782288 */
@@ -174,12 +198,22 @@ void __init r8a7778_init_irq_extpin(int irlm)
 
 #define INT2NTSR0	0x00018 /* 0xfe700018 */
 #define INT2NTSR1	0x0002c /* 0xfe70002c */
+<<<<<<< HEAD
 static void __init r8a7778_init_irq_common(void)
+=======
+
+static void __init r8a7778_init_irq_dt(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem *base = ioremap_nocache(0xfe700000, 0x00100000);
 
 	BUG_ON(!base);
 
+<<<<<<< HEAD
+=======
+	irqchip_init();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* route all interrupts to ARM */
 	__raw_writel(0x73ffffff, base + INT2NTSR0);
 	__raw_writel(0xffffffff, base + INT2NTSR1);
@@ -191,6 +225,7 @@ static void __init r8a7778_init_irq_common(void)
 	iounmap(base);
 }
 
+<<<<<<< HEAD
 void __init r8a7778_init_irq(void)
 {
 	void __iomem *gic_dist_base;
@@ -229,11 +264,15 @@ void __init r8a7778_add_standard_devices_dt(void)
 }
 
 static const char *r8a7778_compat_dt[] __initdata = {
+=======
+static const char *const r8a7778_compat_dt[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"renesas,r8a7778",
 	NULL,
 };
 
 DT_MACHINE_START(R8A7778_DT, "Generic R8A7778 (Flattened Device Tree)")
+<<<<<<< HEAD
 	.init_early	= r8a7778_init_delay,
 	.init_irq	= r8a7778_init_irq_dt,
 	.init_machine	= r8a7778_add_standard_devices_dt,
@@ -242,3 +281,11 @@ DT_MACHINE_START(R8A7778_DT, "Generic R8A7778 (Flattened Device Tree)")
 MACHINE_END
 
 #endif /* CONFIG_USE_OF */
+=======
+	.init_early	= shmobile_init_delay,
+	.init_irq	= r8a7778_init_irq_dt,
+	.init_late	= shmobile_init_late,
+	.init_time	= r8a7778_timer_init,
+	.dt_compat	= r8a7778_compat_dt,
+MACHINE_END
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

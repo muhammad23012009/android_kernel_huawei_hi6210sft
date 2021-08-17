@@ -16,15 +16,24 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/dwarf2.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * override generic version in lib/iomap_copy.c
  */
 ENTRY(__iowrite32_copy)
+<<<<<<< HEAD
 	CFI_STARTPROC
 	movl %edx,%ecx
 	rep movsd
 	ret
 	CFI_ENDPROC
+=======
+	movl %edx,%ecx
+	rep movsd
+	ret
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(__iowrite32_copy)

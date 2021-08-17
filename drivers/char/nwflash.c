@@ -277,6 +277,7 @@ static loff_t flash_llseek(struct file *file, loff_t offset, int orig)
 		printk(KERN_DEBUG "flash_llseek: offset=0x%X, orig=0x%X.\n",
 		       (unsigned int) offset, orig);
 
+<<<<<<< HEAD
 	switch (orig) {
 	case 0:
 		if (offset < 0) {
@@ -307,6 +308,9 @@ static loff_t flash_llseek(struct file *file, loff_t offset, int orig)
 	default:
 		ret = -EINVAL;
 	}
+=======
+	ret = no_seek_end_llseek_size(file, offset, orig, gbFlashSize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&flash_mutex);
 	return ret;
 }

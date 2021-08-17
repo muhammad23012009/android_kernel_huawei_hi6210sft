@@ -549,7 +549,11 @@ static void redo_fd_request(struct request_queue *q)
 		case READ:
 			err = floppy_read_sectors(fs, blk_rq_pos(req),
 						  blk_rq_cur_sectors(req),
+<<<<<<< HEAD
 						  req->buffer);
+=======
+						  bio_data(req->bio));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	done:
@@ -868,8 +872,22 @@ static int swim_floppy_init(struct swim_priv *swd)
 
 exit_put_disks:
 	unregister_blkdev(FLOPPY_MAJOR, "fd");
+<<<<<<< HEAD
 	while (drive--)
 		put_disk(swd->unit[drive].disk);
+=======
+	do {
+		struct gendisk *disk = swd->unit[drive].disk;
+
+		if (disk) {
+			if (disk->queue) {
+				blk_cleanup_queue(disk->queue);
+				disk->queue = NULL;
+			}
+			put_disk(disk);
+		}
+	} while (drive--);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -893,7 +911,11 @@ static int swim_probe(struct platform_device *dev)
 
 	swim_base = ioremap(res->start, resource_size(res));
 	if (!swim_base) {
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		ret = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_release_io;
 	}
 
@@ -924,7 +946,10 @@ static int swim_probe(struct platform_device *dev)
 	return 0;
 
 out_kfree:
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(swd);
 out_iounmap:
 	iounmap(swim_base);
@@ -962,7 +987,10 @@ static int swim_remove(struct platform_device *dev)
 	if (res)
 		release_mem_region(res->start, resource_size(res));
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(swd);
 
 	return 0;
@@ -973,7 +1001,10 @@ static struct platform_driver swim_driver = {
 	.remove = swim_remove,
 	.driver   = {
 		.name	= CARDNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

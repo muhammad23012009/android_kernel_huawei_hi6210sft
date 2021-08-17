@@ -14,6 +14,7 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/dmaengine.h>
@@ -22,18 +23,30 @@
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/dmaengine.h>
+
+#include <sound/pcm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/soc.h>
 #include <sound/dmaengine_pcm.h>
 
 #include <linux/platform_data/dma-ep93xx.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/ep93xx-regs.h>
+=======
+
+#include "ep93xx-pcm.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_pcm_hardware ep93xx_pcm_hardware = {
 	.info			= (SNDRV_PCM_INFO_MMAP		|
 				   SNDRV_PCM_INFO_MMAP_VALID	|
 				   SNDRV_PCM_INFO_INTERLEAVED	|
 				   SNDRV_PCM_INFO_BLOCK_TRANSFER),
+<<<<<<< HEAD
 				   
 	.rates			= SNDRV_PCM_RATE_8000_192000,
 	.rate_min		= SNDRV_PCM_RATE_8000,
@@ -43,6 +56,8 @@ static const struct snd_pcm_hardware ep93xx_pcm_hardware = {
 				   SNDRV_PCM_FMTBIT_S24_LE |
 				   SNDRV_PCM_FMTBIT_S32_LE),
 	
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.buffer_bytes_max	= 131072,
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 32768,
@@ -63,6 +78,7 @@ static bool ep93xx_pcm_dma_filter(struct dma_chan *chan, void *filter_param)
 	return false;
 }
 
+<<<<<<< HEAD
 static int ep93xx_pcm_open(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
@@ -205,8 +221,27 @@ static struct platform_driver ep93xx_pcm_driver = {
 };
 
 module_platform_driver(ep93xx_pcm_driver);
+=======
+static const struct snd_dmaengine_pcm_config ep93xx_dmaengine_pcm_config = {
+	.pcm_hardware = &ep93xx_pcm_hardware,
+	.compat_filter_fn = ep93xx_pcm_dma_filter,
+	.prealloc_buffer_size = 131072,
+};
+
+int devm_ep93xx_pcm_platform_register(struct device *dev)
+{
+	return devm_snd_dmaengine_pcm_register(dev,
+		&ep93xx_dmaengine_pcm_config,
+		SND_DMAENGINE_PCM_FLAG_NO_DT |
+		SND_DMAENGINE_PCM_FLAG_COMPAT);
+}
+EXPORT_SYMBOL_GPL(devm_ep93xx_pcm_platform_register);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Ryan Mallon");
 MODULE_DESCRIPTION("EP93xx ALSA PCM interface");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS("platform:ep93xx-pcm-audio");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

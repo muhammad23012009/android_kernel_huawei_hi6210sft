@@ -22,11 +22,18 @@ header-y += ipcbuf.h
 header-y += ist.h
 header-y += kvm.h
 header-y += kvm_para.h
+<<<<<<< HEAD
+=======
+header-y += kvm_perf.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += ldt.h
 header-y += mce.h
 header-y += mman.h
 header-y += msgbuf.h
+<<<<<<< HEAD
 header-y += msr-index.h
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 header-y += msr.h
 header-y += mtrr.h
 header-y += param.h

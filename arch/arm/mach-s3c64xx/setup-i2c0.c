@@ -20,6 +20,10 @@ struct platform_device; /* don't need the contents */
 
 #include <linux/platform_data/i2c-s3c2410.h>
 #include <plat/gpio-cfg.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void s3c_i2c0_cfg_gpio(struct platform_device *dev)
 {

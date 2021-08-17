@@ -10,6 +10,10 @@
 
 #include <linux/bug.h>
 #include <linux/irqflags.h>
+<<<<<<< HEAD
+=======
+#include <asm/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/war.h>
 
 static inline unsigned long __xchg_u32(volatile int * m, unsigned int val)
@@ -22,6 +26,7 @@ static inline unsigned long __xchg_u32(volatile int * m, unsigned int val)
 		unsigned long dummy;
 
 		__asm__ __volatile__(
+<<<<<<< HEAD
 		"	.set	mips3					\n"
 		"1:	ll	%0, %3			# xchg_u32	\n"
 		"	.set	mips0					\n"
@@ -32,12 +37,25 @@ static inline unsigned long __xchg_u32(volatile int * m, unsigned int val)
 		"	.set	mips0					\n"
 		: "=&r" (retval), "=m" (*m), "=&r" (dummy)
 		: "R" (*m), "Jr" (val)
+=======
+		"	.set	arch=r4000				\n"
+		"1:	ll	%0, %3			# xchg_u32	\n"
+		"	.set	mips0					\n"
+		"	move	%2, %z4					\n"
+		"	.set	arch=r4000				\n"
+		"	sc	%2, %1					\n"
+		"	beqzl	%2, 1b					\n"
+		"	.set	mips0					\n"
+		: "=&r" (retval), "=" GCC_OFF_SMALL_ASM() (*m), "=&r" (dummy)
+		: GCC_OFF_SMALL_ASM() (*m), "Jr" (val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "memory");
 	} else if (kernel_uses_llsc) {
 		unsigned long dummy;
 
 		do {
 			__asm__ __volatile__(
+<<<<<<< HEAD
 			"	.set	mips3				\n"
 			"	ll	%0, %3		# xchg_u32	\n"
 			"	.set	mips0				\n"
@@ -47,6 +65,18 @@ static inline unsigned long __xchg_u32(volatile int * m, unsigned int val)
 			"	.set	mips0				\n"
 			: "=&r" (retval), "=m" (*m), "=&r" (dummy)
 			: "R" (*m), "Jr" (val)
+=======
+			"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"
+			"	ll	%0, %3		# xchg_u32	\n"
+			"	.set	mips0				\n"
+			"	move	%2, %z4				\n"
+			"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"
+			"	sc	%2, %1				\n"
+			"	.set	mips0				\n"
+			: "=&r" (retval), "=" GCC_OFF_SMALL_ASM() (*m),
+			  "=&r" (dummy)
+			: GCC_OFF_SMALL_ASM() (*m), "Jr" (val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			: "memory");
 		} while (unlikely(!dummy));
 	} else {
@@ -74,27 +104,46 @@ static inline __u64 __xchg_u64(volatile __u64 * m, __u64 val)
 		unsigned long dummy;
 
 		__asm__ __volatile__(
+<<<<<<< HEAD
 		"	.set	mips3					\n"
+=======
+		"	.set	arch=r4000				\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"1:	lld	%0, %3			# xchg_u64	\n"
 		"	move	%2, %z4					\n"
 		"	scd	%2, %1					\n"
 		"	beqzl	%2, 1b					\n"
 		"	.set	mips0					\n"
+<<<<<<< HEAD
 		: "=&r" (retval), "=m" (*m), "=&r" (dummy)
 		: "R" (*m), "Jr" (val)
+=======
+		: "=&r" (retval), "=" GCC_OFF_SMALL_ASM() (*m), "=&r" (dummy)
+		: GCC_OFF_SMALL_ASM() (*m), "Jr" (val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "memory");
 	} else if (kernel_uses_llsc) {
 		unsigned long dummy;
 
 		do {
 			__asm__ __volatile__(
+<<<<<<< HEAD
 			"	.set	mips3				\n"
+=======
+			"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"	lld	%0, %3		# xchg_u64	\n"
 			"	move	%2, %z4				\n"
 			"	scd	%2, %1				\n"
 			"	.set	mips0				\n"
+<<<<<<< HEAD
 			: "=&r" (retval), "=m" (*m), "=&r" (dummy)
 			: "R" (*m), "Jr" (val)
+=======
+			: "=&r" (retval), "=" GCC_OFF_SMALL_ASM() (*m),
+			  "=&r" (dummy)
+			: GCC_OFF_SMALL_ASM() (*m), "Jr" (val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			: "memory");
 		} while (unlikely(!dummy));
 	} else {
@@ -135,8 +184,11 @@ static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int siz
 		__xchg((unsigned long)(x), (ptr), sizeof(*(ptr))));	\
 })
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG 1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __cmpxchg_asm(ld, st, m, old, new)				\
 ({									\
 	__typeof(*(m)) __ret;						\
@@ -145,35 +197,61 @@ static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int siz
 		__asm__ __volatile__(					\
 		"	.set	push				\n"	\
 		"	.set	noat				\n"	\
+<<<<<<< HEAD
 		"	.set	mips3				\n"	\
+=======
+		"	.set	arch=r4000			\n"	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"1:	" ld "	%0, %2		# __cmpxchg_asm \n"	\
 		"	bne	%0, %z3, 2f			\n"	\
 		"	.set	mips0				\n"	\
 		"	move	$1, %z4				\n"	\
+<<<<<<< HEAD
 		"	.set	mips3				\n"	\
+=======
+		"	.set	arch=r4000			\n"	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	" st "	$1, %1				\n"	\
 		"	beqzl	$1, 1b				\n"	\
 		"2:						\n"	\
 		"	.set	pop				\n"	\
+<<<<<<< HEAD
 		: "=&r" (__ret), "=R" (*m)				\
 		: "R" (*m), "Jr" (old), "Jr" (new)			\
+=======
+		: "=&r" (__ret), "=" GCC_OFF_SMALL_ASM() (*m)		\
+		: GCC_OFF_SMALL_ASM() (*m), "Jr" (old), "Jr" (new)		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "memory");						\
 	} else if (kernel_uses_llsc) {					\
 		__asm__ __volatile__(					\
 		"	.set	push				\n"	\
 		"	.set	noat				\n"	\
+<<<<<<< HEAD
 		"	.set	mips3				\n"	\
+=======
+		"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"1:	" ld "	%0, %2		# __cmpxchg_asm \n"	\
 		"	bne	%0, %z3, 2f			\n"	\
 		"	.set	mips0				\n"	\
 		"	move	$1, %z4				\n"	\
+<<<<<<< HEAD
 		"	.set	mips3				\n"	\
+=======
+		"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	" st "	$1, %1				\n"	\
 		"	beqz	$1, 1b				\n"	\
 		"	.set	pop				\n"	\
 		"2:						\n"	\
+<<<<<<< HEAD
 		: "=&r" (__ret), "=R" (*m)				\
 		: "R" (*m), "Jr" (old), "Jr" (new)			\
+=======
+		: "=&r" (__ret), "=" GCC_OFF_SMALL_ASM() (*m)		\
+		: GCC_OFF_SMALL_ASM() (*m), "Jr" (old), "Jr" (new)		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "memory");						\
 	} else {							\
 		unsigned long __flags;					\
@@ -226,6 +304,7 @@ extern void __cmpxchg_called_with_bad_pointer(void);
 #define cmpxchg(ptr, old, new)		__cmpxchg(ptr, old, new, smp_mb__before_llsc(), smp_llsc_mb())
 #define cmpxchg_local(ptr, old, new)	__cmpxchg(ptr, old, new, , )
 
+<<<<<<< HEAD
 #define cmpxchg64(ptr, o, n)						\
   ({									\
 	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
@@ -237,10 +316,27 @@ extern void __cmpxchg_called_with_bad_pointer(void);
   ({									\
 	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
 	cmpxchg_local((ptr), (o), (n));					\
+=======
+#ifdef CONFIG_64BIT
+#define cmpxchg64_local(ptr, o, n)					\
+  ({									\
+	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
+	cmpxchg_local((ptr), (o), (n));					\
+  })
+
+#define cmpxchg64(ptr, o, n)						\
+  ({									\
+	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
+	cmpxchg((ptr), (o), (n));					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   })
 #else
 #include <asm-generic/cmpxchg-local.h>
 #define cmpxchg64_local(ptr, o, n) __cmpxchg64_local_generic((ptr), (o), (n))
+<<<<<<< HEAD
+=======
+#define cmpxchg64(ptr, o, n) cmpxchg64_local((ptr), (o), (n))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* __ASM_CMPXCHG_H */

@@ -48,9 +48,15 @@ enum {
 	FRA_UNUSED5,
 	FRA_FWMARK,	/* mark */
 	FRA_FLOW,	/* flow/class id */
+<<<<<<< HEAD
 	FRA_UNUSED6,
 	FRA_UNUSED7,
 	FRA_UNUSED8,
+=======
+	FRA_TUN_ID,
+	FRA_SUPPRESS_IFGROUP,
+	FRA_SUPPRESS_PREFIXLEN,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	FRA_TABLE,	/* Extended table id */
 	FRA_FWMASK,	/* mask for netfilter mark */
 	FRA_OIFNAME,

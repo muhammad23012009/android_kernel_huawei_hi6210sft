@@ -104,7 +104,12 @@ int __must_check rfkill_register(struct rfkill *rfkill);
  *
  * Pause polling -- say transmitter is off for other reasons.
  * NOTE: not necessary for suspend/resume -- in that case the
+<<<<<<< HEAD
  * core stops polling anyway
+=======
+ * core stops polling anyway (but will also correctly handle
+ * the case of polling having been paused before suspend.)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void rfkill_pause_polling(struct rfkill *rfkill);
 
@@ -212,6 +217,18 @@ void rfkill_set_states(struct rfkill *rfkill, bool sw, bool hw);
  * @rfkill: rfkill struct to query
  */
 bool rfkill_blocked(struct rfkill *rfkill);
+<<<<<<< HEAD
+=======
+
+/**
+ * rfkill_find_type - Helpper for finding rfkill type by name
+ * @name: the name of the type
+ *
+ * Returns enum rfkill_type that conrresponds the name.
+ */
+enum rfkill_type rfkill_find_type(const char *name);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* !RFKILL */
 static inline struct rfkill * __must_check
 rfkill_alloc(const char *name,
@@ -268,6 +285,15 @@ static inline bool rfkill_blocked(struct rfkill *rfkill)
 {
 	return false;
 }
+<<<<<<< HEAD
+=======
+
+static inline enum rfkill_type rfkill_find_type(const char *name)
+{
+	return RFKILL_TYPE_ALL;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* RFKILL || RFKILL_MODULE */
 
 

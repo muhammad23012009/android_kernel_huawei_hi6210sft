@@ -23,6 +23,10 @@
 #include <linux/workqueue.h>
 #include <linux/sched.h>	/* HZ */
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/timekeeping.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*#include <asm/io.h>*/
 
@@ -30,6 +34,13 @@ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION("Generic gameport layer");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
+=======
+static bool use_ktime = true;
+module_param(use_ktime, bool, 0400);
+MODULE_PARM_DESC(use_ktime, "Use ktime for measuring I/O speed");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * gameport_mutex protects entire gameport subsystem and is taken
  * every time gameport port or driver registrered or unregistered.
@@ -76,6 +87,41 @@ static unsigned int get_time_pit(void)
 
 static int gameport_measure_speed(struct gameport *gameport)
 {
+<<<<<<< HEAD
+=======
+	unsigned int i, t, tx;
+	u64 t1, t2, t3;
+	unsigned long flags;
+
+	if (gameport_open(gameport, NULL, GAMEPORT_MODE_RAW))
+		return 0;
+
+	tx = ~0;
+
+	for (i = 0; i < 50; i++) {
+		local_irq_save(flags);
+		t1 = ktime_get_ns();
+		for (t = 0; t < 50; t++)
+			gameport_read(gameport);
+		t2 = ktime_get_ns();
+		t3 = ktime_get_ns();
+		local_irq_restore(flags);
+		udelay(i * 10);
+		t = (t2 - t1) - (t3 - t2);
+		if (t < tx)
+			tx = t;
+	}
+
+	gameport_close(gameport);
+	t = 1000000 * 50;
+	if (tx)
+		t /= tx;
+	return t;
+}
+
+static int old_gameport_measure_speed(struct gameport *gameport)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(__i386__)
 
 	unsigned int i, t, t1, t2, t3, tx;
@@ -112,9 +158,15 @@ static int gameport_measure_speed(struct gameport *gameport)
 
 	for(i = 0; i < 50; i++) {
 		local_irq_save(flags);
+<<<<<<< HEAD
 		rdtscl(t1);
 		for (t = 0; t < 50; t++) gameport_read(gameport);
 		rdtscl(t2);
+=======
+		t1 = rdtsc();
+		for (t = 0; t < 50; t++) gameport_read(gameport);
+		t2 = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		local_irq_restore(flags);
 		udelay(i * 10);
 		if (t2 - t1 < tx) tx = t2 - t1;
@@ -422,14 +474,24 @@ static struct gameport *gameport_get_pending_child(struct gameport *parent)
  * Gameport port operations
  */
 
+<<<<<<< HEAD
 static ssize_t gameport_show_description(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static ssize_t gameport_description_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct gameport *gameport = to_gameport_port(dev);
 
 	return sprintf(buf, "%s\n", gameport->name);
 }
+<<<<<<< HEAD
 
 static ssize_t gameport_rebind_driver(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+=======
+static DEVICE_ATTR(description, S_IRUGO, gameport_description_show, NULL);
+
+static ssize_t drvctl_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct gameport *gameport = to_gameport_port(dev);
 	struct device_driver *drv;
@@ -457,12 +519,23 @@ static ssize_t gameport_rebind_driver(struct device *dev, struct device_attribut
 
 	return error ? error : count;
 }
+<<<<<<< HEAD
 
 static struct device_attribute gameport_device_attrs[] = {
 	__ATTR(description, S_IRUGO, gameport_show_description, NULL),
 	__ATTR(drvctl, S_IWUSR, NULL, gameport_rebind_driver),
 	__ATTR_NULL
 };
+=======
+static DEVICE_ATTR_WO(drvctl);
+
+static struct attribute *gameport_device_attrs[] = {
+	&dev_attr_description.attr,
+	&dev_attr_drvctl.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(gameport_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void gameport_release_port(struct device *dev)
 {
@@ -487,14 +560,22 @@ EXPORT_SYMBOL(gameport_set_phys);
  */
 static void gameport_init_port(struct gameport *gameport)
 {
+<<<<<<< HEAD
 	static atomic_t gameport_no = ATOMIC_INIT(0);
+=======
+	static atomic_t gameport_no = ATOMIC_INIT(-1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__module_get(THIS_MODULE);
 
 	mutex_init(&gameport->drv_mutex);
 	device_initialize(&gameport->dev);
 	dev_set_name(&gameport->dev, "gameport%lu",
+<<<<<<< HEAD
 			(unsigned long)atomic_inc_return(&gameport_no) - 1);
+=======
+			(unsigned long)atomic_inc_return(&gameport_no));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gameport->dev.bus = &gameport_bus;
 	gameport->dev.release = gameport_release_port;
 	if (gameport->parent)
@@ -518,7 +599,13 @@ static void gameport_add_port(struct gameport *gameport)
 	if (gameport->parent)
 		gameport->parent->child = gameport;
 
+<<<<<<< HEAD
 	gameport->speed = gameport_measure_speed(gameport);
+=======
+	gameport->speed = use_ktime ?
+		gameport_measure_speed(gameport) :
+		old_gameport_measure_speed(gameport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_add_tail(&gameport->node, &gameport_list);
 
@@ -639,16 +726,30 @@ EXPORT_SYMBOL(gameport_unregister_port);
  * Gameport driver operations
  */
 
+<<<<<<< HEAD
 static ssize_t gameport_driver_show_description(struct device_driver *drv, char *buf)
+=======
+static ssize_t description_show(struct device_driver *drv, char *buf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct gameport_driver *driver = to_gameport_driver(drv);
 	return sprintf(buf, "%s\n", driver->description ? driver->description : "(none)");
 }
+<<<<<<< HEAD
 
 static struct driver_attribute gameport_driver_attrs[] = {
 	__ATTR(description, S_IRUGO, gameport_driver_show_description, NULL),
 	__ATTR_NULL
 };
+=======
+static DRIVER_ATTR_RO(description);
+
+static struct attribute *gameport_driver_attrs[] = {
+	&driver_attr_description.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(gameport_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int gameport_driver_probe(struct device *dev)
 {
@@ -748,8 +849,13 @@ static int gameport_bus_match(struct device *dev, struct device_driver *drv)
 
 static struct bus_type gameport_bus = {
 	.name		= "gameport",
+<<<<<<< HEAD
 	.dev_attrs	= gameport_device_attrs,
 	.drv_attrs	= gameport_driver_attrs,
+=======
+	.dev_groups	= gameport_device_groups,
+	.drv_groups	= gameport_driver_groups,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.match		= gameport_bus_match,
 	.probe		= gameport_driver_probe,
 	.remove		= gameport_driver_remove,

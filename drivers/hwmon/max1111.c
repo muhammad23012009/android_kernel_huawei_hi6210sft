@@ -195,10 +195,15 @@ static int max1111_probe(struct spi_device *spi)
 		return err;
 
 	data = devm_kzalloc(&spi->dev, sizeof(struct max1111_data), GFP_KERNEL);
+<<<<<<< HEAD
 	if (data == NULL) {
 		dev_err(&spi->dev, "failed to allocate memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (data == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (chip) {
 	case max1110:
@@ -285,7 +290,10 @@ MODULE_DEVICE_TABLE(spi, max1111_ids);
 static struct spi_driver max1111_driver = {
 	.driver		= {
 		.name	= "max1111",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table	= max1111_ids,
 	.probe		= max1111_probe,

@@ -21,7 +21,11 @@
 static void kdb_show_stack(struct task_struct *p, void *addr)
 {
 	int old_lvl = console_loglevel;
+<<<<<<< HEAD
 	console_loglevel = 15;
+=======
+	console_loglevel = CONSOLE_LOGLEVEL_MOTORMOUTH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kdb_trap_printk++;
 	kdb_set_current_task(p);
 	if (addr) {

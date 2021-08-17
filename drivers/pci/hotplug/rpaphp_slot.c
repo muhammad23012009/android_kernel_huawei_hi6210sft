@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * RPA Virtual I/O device functions 
+=======
+ * RPA Virtual I/O device functions
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2004 Linda Xie <lxie@us.ibm.com>
  *
  * All rights reserved.
@@ -48,30 +52,49 @@ void dealloc_slot_struct(struct slot *slot)
 }
 
 struct slot *alloc_slot_struct(struct device_node *dn,
+<<<<<<< HEAD
                        int drc_index, char *drc_name, int power_domain)
 {
 	struct slot *slot;
 	
+=======
+		int drc_index, char *drc_name, int power_domain)
+{
+	struct slot *slot;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	slot = kzalloc(sizeof(struct slot), GFP_KERNEL);
 	if (!slot)
 		goto error_nomem;
 	slot->hotplug_slot = kzalloc(sizeof(struct hotplug_slot), GFP_KERNEL);
 	if (!slot->hotplug_slot)
+<<<<<<< HEAD
 		goto error_slot;	
+=======
+		goto error_slot;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	slot->hotplug_slot->info = kzalloc(sizeof(struct hotplug_slot_info),
 					   GFP_KERNEL);
 	if (!slot->hotplug_slot->info)
 		goto error_hpslot;
 	slot->name = kstrdup(drc_name, GFP_KERNEL);
 	if (!slot->name)
+<<<<<<< HEAD
 		goto error_info;	
+=======
+		goto error_info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	slot->dn = dn;
 	slot->index = drc_index;
 	slot->power_domain = power_domain;
 	slot->hotplug_slot->private = slot;
 	slot->hotplug_slot->ops = &rpaphp_hotplug_slot_ops;
 	slot->hotplug_slot->release = &rpaphp_release_slot;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (slot);
 
 error_info:
@@ -91,7 +114,11 @@ static int is_registered(struct slot *slot)
 	list_for_each_entry(tmp_slot, &rpaphp_slot_head, rpaphp_slot_list) {
 		if (!strcmp(tmp_slot->name, slot->name))
 			return 1;
+<<<<<<< HEAD
 	}	
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -104,7 +131,11 @@ int rpaphp_deregister_slot(struct slot *slot)
 		__func__, slot->name);
 
 	list_del(&slot->rpaphp_slot_list);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	retval = pci_hp_deregister(php_slot);
 	if (retval)
 		err("Problem unregistering a slot %s\n", slot->name);
@@ -117,10 +148,19 @@ EXPORT_SYMBOL_GPL(rpaphp_deregister_slot);
 int rpaphp_register_slot(struct slot *slot)
 {
 	struct hotplug_slot *php_slot = slot->hotplug_slot;
+<<<<<<< HEAD
 	int retval;
 	int slotno;
 
 	dbg("%s registering slot:path[%s] index[%x], name[%s] pdomain[%x] type[%d]\n", 
+=======
+	struct device_node *child;
+	u32 my_index;
+	int retval;
+	int slotno = -1;
+
+	dbg("%s registering slot:path[%s] index[%x], name[%s] pdomain[%x] type[%d]\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__func__, slot->dn->full_name, slot->index, slot->name,
 		slot->power_domain, slot->type);
 
@@ -128,12 +168,26 @@ int rpaphp_register_slot(struct slot *slot)
 	if (is_registered(slot)) {
 		err("rpaphp_register_slot: slot[%s] is already registered\n", slot->name);
 		return -EAGAIN;
+<<<<<<< HEAD
 	}	
 
 	if (slot->dn->child)
 		slotno = PCI_SLOT(PCI_DN(slot->dn->child)->devfn);
 	else
 		slotno = -1;
+=======
+	}
+
+	for_each_child_of_node(slot->dn, child) {
+		retval = of_property_read_u32(child, "ibm,my-drc-index", &my_index);
+		if (my_index == slot->index) {
+			slotno = PCI_SLOT(PCI_DN(child)->devfn);
+			of_node_put(child);
+			break;
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	retval = pci_hp_register(php_slot, slot->bus, slotno, slot->name);
 	if (retval) {
 		err("pci_hp_register failed with error %d\n", retval);
@@ -145,4 +199,7 @@ int rpaphp_register_slot(struct slot *slot)
 	info("Slot [%s] registered\n", slot->name);
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

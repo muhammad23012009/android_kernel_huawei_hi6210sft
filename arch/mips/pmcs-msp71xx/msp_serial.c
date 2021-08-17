@@ -110,7 +110,11 @@ void __init msp_serial_setup(void)
 	up.uartclk	= uartclk;
 	up.regshift	= 2;
 	up.iotype	= UPIO_MEM;
+<<<<<<< HEAD
 	up.flags	= ASYNC_BOOT_AUTOCONF | ASYNC_SKIP_TEST;
+=======
+	up.flags	= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	up.type		= PORT_16550A;
 	up.line		= 0;
 	up.serial_out	= msp_serial_out;

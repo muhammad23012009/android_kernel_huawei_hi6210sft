@@ -36,7 +36,11 @@
  * no advantages to be gotten from x86-64 here anyways.
  */
 
+<<<<<<< HEAD
 #include <asm/i387.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_X86_32
 /* reduce register pressure */

@@ -15,8 +15,17 @@
 	compatible = "st,spear600";
 
 	cpus {
+<<<<<<< HEAD
 		cpu@0 {
 			compatible = "arm,arm926ejs";
+=======
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		cpu {
+			compatible = "arm,arm926ej-s";
+			device_type = "cpu";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
@@ -190,6 +199,10 @@
 			rtc@fc900000 {
 				compatible = "st,spear600-rtc";
 				reg = <0xfc900000 0x1000>;
+<<<<<<< HEAD
+=======
+				interrupt-parent = <&vic0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				interrupts = <10>;
 				status = "disabled";
 			};

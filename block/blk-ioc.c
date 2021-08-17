@@ -6,7 +6,10 @@
 #include <linux/init.h>
 #include <linux/bio.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>	/* for max_pfn/max_low_pfn */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 
 #include "blk.h"
@@ -69,7 +72,11 @@ static void ioc_destroy_icq(struct io_cq *icq)
 	 * under queue_lock.  If it's not pointing to @icq now, it never
 	 * will.  Hint assignment itself can race safely.
 	 */
+<<<<<<< HEAD
 	if (rcu_dereference_raw(ioc->icq_hint) == icq)
+=======
+	if (rcu_access_pointer(ioc->icq_hint) == icq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rcu_assign_pointer(ioc->icq_hint, NULL);
 
 	ioc_exit_icq(icq);
@@ -290,7 +297,11 @@ struct io_context *get_task_io_context(struct task_struct *task,
 {
 	struct io_context *ioc;
 
+<<<<<<< HEAD
 	might_sleep_if(gfp_flags & __GFP_WAIT);
+=======
+	might_sleep_if(gfpflags_allow_blocking(gfp_flags));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	do {
 		task_lock(task);
@@ -367,7 +378,11 @@ struct io_cq *ioc_create_icq(struct io_context *ioc, struct request_queue *q,
 	if (!icq)
 		return NULL;
 
+<<<<<<< HEAD
 	if (radix_tree_preload(gfp_mask) < 0) {
+=======
+	if (radix_tree_maybe_preload(gfp_mask) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kmem_cache_free(et->icq_cache, icq);
 		return NULL;
 	}

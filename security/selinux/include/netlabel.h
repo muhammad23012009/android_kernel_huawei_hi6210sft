@@ -40,7 +40,12 @@
 #ifdef CONFIG_NETLABEL
 void selinux_netlbl_cache_invalidate(void);
 
+<<<<<<< HEAD
 void selinux_netlbl_err(struct sk_buff *skb, int error, int gateway);
+=======
+void selinux_netlbl_err(struct sk_buff *skb, u16 family, int error,
+			int gateway);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void selinux_netlbl_sk_security_free(struct sk_security_struct *sksec);
 void selinux_netlbl_sk_security_reset(struct sk_security_struct *sksec);
@@ -72,6 +77,10 @@ static inline void selinux_netlbl_cache_invalidate(void)
 }
 
 static inline void selinux_netlbl_err(struct sk_buff *skb,
+<<<<<<< HEAD
+=======
+				      u16 family,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      int error,
 				      int gateway)
 {

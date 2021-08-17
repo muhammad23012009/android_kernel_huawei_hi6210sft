@@ -18,11 +18,18 @@
  *
  *  H. Peter Anvin <hpa@linux.intel.com>
  *
+<<<<<<< HEAD
  * ----------------------------------------------------------------------- */
 
 /*
  * Compute the desired load offset from a compressed program; outputs
  * a small assembly wrapper with the appropriate symbols defined.
+=======
+ * -----------------------------------------------------------------------
+ *
+ * Outputs a small assembly wrapper with the appropriate symbols defined.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <stdlib.h>
@@ -35,12 +42,21 @@ int main(int argc, char *argv[])
 {
 	uint32_t olen;
 	long ilen;
+<<<<<<< HEAD
 	unsigned long offs;
 	FILE *f;
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s compressed_file\n", argv[0]);
 		return 1;
+=======
+	FILE *f = NULL;
+	int retval = 1;
+
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s compressed_file\n", argv[0]);
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Get the information for the compressed kernel image first */
@@ -48,7 +64,11 @@ int main(int argc, char *argv[])
 	f = fopen(argv[1], "r");
 	if (!f) {
 		perror(argv[1]);
+<<<<<<< HEAD
 		return 1;
+=======
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 
@@ -58,11 +78,16 @@ int main(int argc, char *argv[])
 
 	if (fread(&olen, sizeof(olen), 1, f) != 1) {
 		perror(argv[1]);
+<<<<<<< HEAD
 		return 1;
+=======
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ilen = ftell(f);
 	olen = get_unaligned_le32(&olen);
+<<<<<<< HEAD
 	fclose(f);
 
 	/*
@@ -74,22 +99,35 @@ int main(int argc, char *argv[])
 	offs += olen >> 12;	/* Add 8 bytes for each 32K block */
 	offs += 64*1024 + 128;	/* Add 64K + 128 bytes slack */
 	offs = (offs+4095) & ~4095; /* Round to a 4K boundary */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printf(".section \".rodata..compressed\",\"a\",@progbits\n");
 	printf(".globl z_input_len\n");
 	printf("z_input_len = %lu\n", ilen);
 	printf(".globl z_output_len\n");
 	printf("z_output_len = %lu\n", (unsigned long)olen);
+<<<<<<< HEAD
 	printf(".globl z_extract_offset\n");
 	printf("z_extract_offset = 0x%lx\n", offs);
 	/* z_extract_offset_negative allows simplification of head_32.S */
 	printf(".globl z_extract_offset_negative\n");
 	printf("z_extract_offset_negative = -0x%lx\n", offs);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printf(".globl input_data, input_data_end\n");
 	printf("input_data:\n");
 	printf(".incbin \"%s\"\n", argv[1]);
 	printf("input_data_end:\n");
 
+<<<<<<< HEAD
 	return 0;
+=======
+	retval = 0;
+bail:
+	if (f)
+		fclose(f);
+	return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

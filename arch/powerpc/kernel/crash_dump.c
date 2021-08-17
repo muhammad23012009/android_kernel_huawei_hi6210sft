@@ -12,7 +12,11 @@
 #undef DEBUG
 
 #include <linux/crash_dump.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/memblock.h>
 #include <asm/code-patching.h>
 #include <asm/kdump.h>
@@ -69,6 +73,7 @@ void __init setup_kdump_trampoline(void)
 }
 #endif /* CONFIG_NONSTATIC_KERNEL */
 
+<<<<<<< HEAD
 static int __init parse_savemaxmem(char *p)
 {
 	if (p)
@@ -79,6 +84,8 @@ static int __init parse_savemaxmem(char *p)
 __setup("savemaxmem=", parse_savemaxmem);
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static size_t copy_oldmem_vaddr(void *vaddr, char *buf, size_t csize,
                                unsigned long offset, int userbuf)
 {
@@ -136,15 +143,24 @@ ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
 void crash_free_reserved_phys_range(unsigned long begin, unsigned long end)
 {
 	unsigned long addr;
+<<<<<<< HEAD
 	const u32 *basep, *sizep;
+=======
+	const __be32 *basep, *sizep;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int rtas_start = 0, rtas_end = 0;
 
 	basep = of_get_property(rtas.dev, "linux,rtas-base", NULL);
 	sizep = of_get_property(rtas.dev, "rtas-size", NULL);
 
 	if (basep && sizep) {
+<<<<<<< HEAD
 		rtas_start = *basep;
 		rtas_end = *basep + *sizep;
+=======
+		rtas_start = be32_to_cpup(basep);
+		rtas_end = rtas_start + be32_to_cpup(sizep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (addr = begin; addr < end; addr += PAGE_SIZE) {

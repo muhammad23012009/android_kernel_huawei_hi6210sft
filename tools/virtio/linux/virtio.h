@@ -3,6 +3,7 @@
 #include <linux/scatterlist.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
 /* TODO: empty stubs for now. Broken but enough for virtio_ring.c */
 #define list_add_tail(a, b) do {} while (0)
 #define list_del(a) do {} while (0)
@@ -31,6 +32,15 @@ static inline int test_bit(int nr, const volatile unsigned long *addr)
 struct virtio_device {
 	void *dev;
 	unsigned long features[1];
+=======
+struct device {
+	void *parent;
+};
+
+struct virtio_device {
+	struct device dev;
+	u64 features;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct virtqueue {
@@ -45,9 +55,12 @@ struct virtqueue {
 	void *priv;
 };
 
+<<<<<<< HEAD
 #define MODULE_LICENSE(__MODULE_LICENSE_value) \
 	const char *__MODULE_LICENSE_name = __MODULE_LICENSE_value
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Interfaces exported by virtio_ring. */
 int virtqueue_add_sgs(struct virtqueue *vq,
 		      struct scatterlist *sgs[],
@@ -66,7 +79,11 @@ int virtqueue_add_inbuf(struct virtqueue *vq,
 			void *data,
 			gfp_t gfp);
 
+<<<<<<< HEAD
 void virtqueue_kick(struct virtqueue *vq);
+=======
+bool virtqueue_kick(struct virtqueue *vq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void *virtqueue_get_buf(struct virtqueue *vq, unsigned int *len);
 
@@ -82,7 +99,11 @@ struct virtqueue *vring_new_virtqueue(unsigned int index,
 				      struct virtio_device *vdev,
 				      bool weak_barriers,
 				      void *pages,
+<<<<<<< HEAD
 				      void (*notify)(struct virtqueue *vq),
+=======
+				      bool (*notify)(struct virtqueue *vq),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      void (*callback)(struct virtqueue *vq),
 				      const char *name);
 void vring_del_virtqueue(struct virtqueue *vq);

@@ -39,7 +39,11 @@ static int __init example_init(void)
 	kfifo_in(&fifo, "test", 4);
 
 	for (i = 0; i != 9; i++)
+<<<<<<< HEAD
 		kfifo_put(&fifo, &i);
+=======
+		kfifo_put(&fifo, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* kick away first byte */
 	kfifo_skip(&fifo);

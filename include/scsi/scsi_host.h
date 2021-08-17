@@ -7,6 +7,10 @@
 #include <linux/workqueue.h>
 #include <linux/mutex.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/blk-mq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <scsi/scsi.h>
 
 struct request_queue;
@@ -15,6 +19,10 @@ struct completion;
 struct module;
 struct scsi_cmnd;
 struct scsi_device;
+<<<<<<< HEAD
+=======
+struct scsi_host_cmd_pool;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct scsi_target;
 struct Scsi_Host;
 struct scsi_host_cmd_pool;
@@ -35,7 +43,11 @@ struct blk_queue_tags;
  *	 used in one scatter-gather request.
  */
 #define SG_NONE 0
+<<<<<<< HEAD
 #define SG_ALL	SCSI_MAX_SG_SEGMENTS
+=======
+#define SG_ALL	SG_CHUNK_SIZE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MODE_UNKNOWN 0x00
 #define MODE_INITIATOR 0x01
@@ -44,12 +56,15 @@ struct blk_queue_tags;
 #define DISABLE_CLUSTERING 0
 #define ENABLE_CLUSTERING 1
 
+<<<<<<< HEAD
 enum {
 	SCSI_QDEPTH_DEFAULT,	/* default requested change, e.g. from sysfs */
 	SCSI_QDEPTH_QFULL,	/* scsi-ml requested due to queue full */
 	SCSI_QDEPTH_RAMP_UP,	/* scsi-ml requested due to threshold event */
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct scsi_host_template {
 	struct module *module;
 	const char *name;
@@ -131,6 +146,7 @@ struct scsi_host_template {
 	int (* queuecommand)(struct Scsi_Host *, struct scsi_cmnd *);
 
 	/*
+<<<<<<< HEAD
 	 * The transfer functions are used to queue a scsi command to
 	 * the LLD. When the driver is finished processing the command
 	 * the done callback is invoked.
@@ -152,6 +168,8 @@ struct scsi_host_template {
 				  void (*done)(struct scsi_cmnd *));
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * This is an error handling strategy routine.  You don't need to
 	 * define one of these if you don't want to - there is a default
 	 * routine that is present that should work in most cases.  For those
@@ -214,7 +232,11 @@ struct scsi_host_template {
 	 * Things currently recommended to be handled at this time include:
 	 *
 	 * 1.  Setting the device queue depth.  Proper setting of this is
+<<<<<<< HEAD
 	 *     described in the comments for scsi_adjust_queue_depth.
+=======
+	 *     described in the comments for scsi_change_queue_depth.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * 2.  Determining if the device supports the various synchronous
 	 *     negotiation protocols.  The device struct will already have
 	 *     responded to INQUIRY and the results of the standard items
@@ -300,6 +322,7 @@ struct scsi_host_template {
 	 *
 	 * Status: OPTIONAL
 	 */
+<<<<<<< HEAD
 	int (* change_queue_depth)(struct scsi_device *, int, int);
 
 	/*
@@ -314,6 +337,9 @@ struct scsi_host_template {
 	 * Status: OPTIONAL
 	 */
 	int (* change_queue_type)(struct scsi_device *, int);
+=======
+	int (* change_queue_depth)(struct scsi_device *, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * This function determines the BIOS parameters for a given
@@ -407,7 +433,11 @@ struct scsi_host_template {
 	/*
 	 * Set this if the host adapter has limitations beside segment count.
 	 */
+<<<<<<< HEAD
 	unsigned short max_sectors;
+=======
+	unsigned int max_sectors;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * DMA scatter gather segment boundary limit. A segment crossing this
@@ -440,6 +470,17 @@ struct scsi_host_template {
 	 */
 	unsigned char present;
 
+<<<<<<< HEAD
+=======
+	/* If use block layer to manage tags, this is tag allocation policy */
+	int tag_alloc_policy;
+
+	/*
+	 * Track QUEUE_FULL events and reduce queue depth on demand.
+	 */
+	unsigned track_queue_depth:1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * This specifies the mode that a LLD supports.
 	 */
@@ -470,15 +511,26 @@ struct scsi_host_template {
 	 */
 	unsigned skip_settle_delay:1;
 
+<<<<<<< HEAD
 	/*
 	 * True if we are using ordered write support.
 	 */
 	unsigned ordered_tag:1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* True if the controller does not support WRITE SAME */
 	unsigned no_write_same:1;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * True if asynchronous aborts are not supported
+	 */
+	unsigned no_async_abort:1;
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Countdown for host blocking with no commands outstanding.
 	 */
 	unsigned int max_host_blocked;
@@ -519,6 +571,15 @@ struct scsi_host_template {
 	 *   scsi_netlink.h
 	 */
 	u64 vendor_id;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Additional per-command data allocated for the driver.
+	 */
+	unsigned int cmd_size;
+	struct scsi_host_cmd_pool *cmd_pool;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -560,7 +621,11 @@ struct Scsi_Host {
 	 * __devices is protected by the host_lock, but you should
 	 * usually use scsi_device_lookup / shost_for_each_device
 	 * to access it and don't care about locking yourself.
+<<<<<<< HEAD
 	 * In the rare case of beeing in irq context you can use
+=======
+	 * In the rare case of being in irq context you can use
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * their __ prefixed variants with the lock held. NEVER
 	 * access this list directly from a driver.
 	 */
@@ -589,6 +654,7 @@ struct Scsi_Host {
 	 * Area to keep a shared tag map (if needed, will be
 	 * NULL if not).
 	 */
+<<<<<<< HEAD
 	struct blk_queue_tag	*bqt;
 
 	/*
@@ -613,6 +679,36 @@ struct Scsi_Host {
 	unsigned int max_id;
 	unsigned int max_lun;
 	unsigned int max_channel;
+=======
+	union {
+		struct blk_queue_tag	*bqt;
+		struct blk_mq_tag_set	tag_set;
+	};
+
+	atomic_t host_busy;		   /* commands actually active on low-level */
+	atomic_t host_blocked;
+
+	unsigned int host_failed;	   /* commands that failed.
+					      protected by host_lock */
+	unsigned int host_eh_scheduled;    /* EH scheduled without command */
+    
+	unsigned int host_no;  /* Used for IOCTL_GET_IDLUN, /proc/scsi et al. */
+
+	/* next two fields are used to bound the time spent in error handling */
+	int eh_deadline;
+	unsigned long last_reset;
+
+
+	/*
+	 * These three parameters can be used to allow for wide scsi,
+	 * and for host adapters that support multiple busses
+	 * The last two should be set to 1 more than the actual max id
+	 * or lun (e.g. 8 for SCSI parallel systems).
+	 */
+	unsigned int max_channel;
+	unsigned int max_id;
+	u64 max_lun;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * This is a unique identifier that must be assigned so that we
@@ -637,8 +733,21 @@ struct Scsi_Host {
 	short cmd_per_lun;
 	short unsigned int sg_tablesize;
 	short unsigned int sg_prot_tablesize;
+<<<<<<< HEAD
 	short unsigned int max_sectors;
 	unsigned long dma_boundary;
+=======
+	unsigned int max_sectors;
+	unsigned long dma_boundary;
+	/*
+	 * In scsi-mq mode, the number of hardware queues supported by the LLD.
+	 *
+	 * Note: it is assumed that each hardware queue has a queue depth of
+	 * can_queue. In other words, the total queue depth per host
+	 * is nr_hw_queues * can_queue.
+	 */
+	unsigned nr_hw_queues;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 
 	 * Used to assign serial numbers to the cmds.
 	 * Protected by the host lock.
@@ -648,7 +757,10 @@ struct Scsi_Host {
 	unsigned active_mode:2;
 	unsigned unchecked_isa_dma:1;
 	unsigned use_clustering:1;
+<<<<<<< HEAD
 	unsigned use_blk_tcq:1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Host has requested that no further requests come through for the
@@ -663,11 +775,14 @@ struct Scsi_Host {
 	 */
 	unsigned reverse_ordering:1;
 
+<<<<<<< HEAD
 	/*
 	 * Ordered write support
 	 */
 	unsigned ordered_tag:1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Task mgmt function in progress */
 	unsigned tmf_in_progress:1;
 
@@ -680,6 +795,15 @@ struct Scsi_Host {
 	/* The controller does not support WRITE SAME */
 	unsigned no_write_same:1;
 
+<<<<<<< HEAD
+=======
+	unsigned use_blk_mq:1;
+	unsigned use_cmd_list:1;
+
+	/* Host responded with short (<36 bytes) INQUIRY result */
+	unsigned short_inquiry:1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Optional work queue to be utilized by the transport
 	 */
@@ -687,9 +811,18 @@ struct Scsi_Host {
 	struct workqueue_struct *work_q;
 
 	/*
+<<<<<<< HEAD
 	 * Host has rejected a command because it was busy.
 	 */
 	unsigned int host_blocked;
+=======
+	 * Task management function work queue
+	 */
+	struct workqueue_struct *tmf_work_q;
+
+	/* The transport requires the LUN bits NOT to be stored in CDB[1] */
+	unsigned no_scsi2_lun_in_cdb:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Value host_blocked counts down from
@@ -780,6 +913,14 @@ static inline int scsi_host_in_recovery(struct Scsi_Host *shost)
 		shost->tmf_in_progress;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool shost_use_blk_mq(struct Scsi_Host *shost)
+{
+	return shost->use_blk_mq;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int scsi_queue_work(struct Scsi_Host *, struct work_struct *);
 extern void scsi_flush_work(struct Scsi_Host *);
 
@@ -796,8 +937,11 @@ extern struct Scsi_Host *scsi_host_lookup(unsigned short);
 extern const char *scsi_host_state_name(enum scsi_host_state);
 extern void scsi_cmd_get_serial(struct Scsi_Host *, struct scsi_cmnd *);
 
+<<<<<<< HEAD
 extern u64 scsi_calculate_bounce_limit(struct Scsi_Host *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int __must_check scsi_add_host(struct Scsi_Host *host,
 					     struct device *dev)
 {

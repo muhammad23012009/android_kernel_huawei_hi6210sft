@@ -13,10 +13,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/pci.h>
@@ -25,6 +28,7 @@
 #include <linux/slab.h>
 
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/tuner.h>
 #include <media/tveeprom.h>
 #include <media/videobuf-dma-sg.h>
@@ -38,6 +42,22 @@
 #include <linux/mutex.h>
 
 #define CX23885_VERSION "0.0.3"
+=======
+#include <media/v4l2-fh.h>
+#include <media/v4l2-ctrls.h>
+#include <media/tuner.h>
+#include <media/tveeprom.h>
+#include <media/videobuf2-dma-sg.h>
+#include <media/videobuf2-dvb.h>
+#include <media/rc-core.h>
+
+#include "cx23885-reg.h"
+#include "media/drv-intf/cx2341x.h"
+
+#include <linux/mutex.h>
+
+#define CX23885_VERSION "0.0.4"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define UNSET (-1U)
 
@@ -46,9 +66,12 @@
 /* Max number of inputs by card */
 #define MAX_CX23885_INPUT 8
 #define INPUT(nr) (&cx23885_boards[dev->board].input[nr])
+<<<<<<< HEAD
 #define RESOURCE_OVERLAY       1
 #define RESOURCE_VIDEO         2
 #define RESOURCE_VBI           4
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BUFFER_TIMEOUT     (HZ)  /* 0.5 seconds */
 
@@ -93,6 +116,27 @@
 #define CX23885_BOARD_PROF_8000                37
 #define CX23885_BOARD_HAUPPAUGE_HVR4400        38
 #define CX23885_BOARD_AVERMEDIA_HC81R          39
+<<<<<<< HEAD
+=======
+#define CX23885_BOARD_TBS_6981                 40
+#define CX23885_BOARD_TBS_6980                 41
+#define CX23885_BOARD_LEADTEK_WINFAST_PXPVR2200 42
+#define CX23885_BOARD_HAUPPAUGE_IMPACTVCBE     43
+#define CX23885_BOARD_DVICO_FUSIONHDTV_DVB_T_DUAL_EXP2 44
+#define CX23885_BOARD_DVBSKY_T9580             45
+#define CX23885_BOARD_DVBSKY_T980C             46
+#define CX23885_BOARD_DVBSKY_S950C             47
+#define CX23885_BOARD_TT_CT2_4500_CI           48
+#define CX23885_BOARD_DVBSKY_S950              49
+#define CX23885_BOARD_DVBSKY_S952              50
+#define CX23885_BOARD_DVBSKY_T982              51
+#define CX23885_BOARD_HAUPPAUGE_HVR5525        52
+#define CX23885_BOARD_HAUPPAUGE_STARBURST      53
+#define CX23885_BOARD_VIEWCAST_260E            54
+#define CX23885_BOARD_VIEWCAST_460E            55
+#define CX23885_BOARD_HAUPPAUGE_QUADHD_DVB     56
+#define CX23885_BOARD_HAUPPAUGE_QUADHD_ATSC    57
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define GPIO_0 0x00000001
 #define GPIO_1 0x00000002
@@ -126,6 +170,7 @@ struct cx23885_fmt {
 	u32   cxformat;
 };
 
+<<<<<<< HEAD
 struct cx23885_ctrl {
 	struct v4l2_queryctrl v;
 	u32                   off;
@@ -134,6 +179,8 @@ struct cx23885_ctrl {
 	u32                   shift;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cx23885_tvnorm {
 	char		*name;
 	v4l2_std_id	id;
@@ -141,6 +188,7 @@ struct cx23885_tvnorm {
 	u32		cxoformat;
 };
 
+<<<<<<< HEAD
 struct cx23885_fh {
 	struct cx23885_dev         *dev;
 	enum v4l2_buf_type         type;
@@ -165,6 +213,8 @@ struct cx23885_fh {
 	atomic_t                   v4l_reading;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum cx23885_itype {
 	CX23885_VMUX_COMPOSITE1 = 1,
 	CX23885_VMUX_COMPOSITE2,
@@ -184,6 +234,7 @@ enum cx23885_src_sel_type {
 	CX23885_SRC_SEL_PARALLEL_MPEG_VIDEO
 };
 
+<<<<<<< HEAD
 /* buffer for one video frame */
 struct cx23885_buffer {
 	/* common v4l buffer stuff -- must be first */
@@ -192,6 +243,24 @@ struct cx23885_buffer {
 	/* cx23885 specific */
 	unsigned int           bpl;
 	struct btcx_riscmem    risc;
+=======
+struct cx23885_riscmem {
+	unsigned int   size;
+	__le32         *cpu;
+	__le32         *jmp;
+	dma_addr_t     dma;
+};
+
+/* buffer for one video frame */
+struct cx23885_buffer {
+	/* common v4l buffer stuff -- must be first */
+	struct vb2_v4l2_buffer vb;
+	struct list_head queue;
+
+	/* cx23885 specific */
+	unsigned int           bpl;
+	struct cx23885_riscmem risc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cx23885_fmt     *fmt;
 	u32                    count;
 };
@@ -263,19 +332,29 @@ struct cx23885_i2c {
 
 struct cx23885_dmaqueue {
 	struct list_head       active;
+<<<<<<< HEAD
 	struct list_head       queued;
 	struct timer_list      timeout;
 	struct btcx_riscmem    stopper;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32                    count;
 };
 
 struct cx23885_tsport {
 	struct cx23885_dev *dev;
 
+<<<<<<< HEAD
 	int                        nr;
 	int                        sram_chno;
 
 	struct videobuf_dvb_frontends frontends;
+=======
+	unsigned                   nr;
+	int                        sram_chno;
+
+	struct vb2_dvb_frontends   frontends;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* dma queues */
 	struct cx23885_dmaqueue    mpegq;
@@ -320,6 +399,18 @@ struct cx23885_tsport {
 
 	/* Workaround for a temp dvb_frontend that the tuner can attached to */
 	struct dvb_frontend analog_fe;
+<<<<<<< HEAD
+=======
+
+	struct i2c_client *i2c_client_demod;
+	struct i2c_client *i2c_client_tuner;
+	struct i2c_client *i2c_client_sec;
+	struct i2c_client *i2c_client_ci;
+
+	int (*set_frontend)(struct dvb_frontend *fe);
+	int (*fe_set_voltage)(struct dvb_frontend *fe,
+			      enum fe_sec_voltage voltage);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct cx23885_kernel_ir {
@@ -332,8 +423,16 @@ struct cx23885_kernel_ir {
 
 struct cx23885_audio_buffer {
 	unsigned int		bpl;
+<<<<<<< HEAD
 	struct btcx_riscmem	risc;
 	struct videobuf_dmabuf	dma;
+=======
+	struct cx23885_riscmem	risc;
+	void			*vaddr;
+	struct scatterlist	*sglist;
+	int                     sglen;
+	int                     nr_pages;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct cx23885_audio_dev {
@@ -351,8 +450,11 @@ struct cx23885_audio_dev {
 	unsigned int		period_size;
 	unsigned int		num_periods;
 
+<<<<<<< HEAD
 	struct videobuf_dmabuf	*dma_risc;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cx23885_audio_buffer   *buf;
 
 	struct snd_pcm_substream *substream;
@@ -361,6 +463,10 @@ struct cx23885_audio_dev {
 struct cx23885_dev {
 	atomic_t                   refcount;
 	struct v4l2_device 	   v4l2_dev;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler   ctrl_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* pci stuff */
 	struct pci_dev             *pci;
@@ -400,7 +506,10 @@ struct cx23885_dev {
 	} bridge;
 
 	/* Analog video */
+<<<<<<< HEAD
 	u32                        resources;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int               input;
 	unsigned int               audinput; /* Selectable audio input */
 	u32                        tvaudio;
@@ -410,7 +519,10 @@ struct cx23885_dev {
 	unsigned int               tuner_bus;
 	unsigned int               radio_type;
 	unsigned char              radio_addr;
+<<<<<<< HEAD
 	unsigned int               has_radio;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct v4l2_subdev 	   *sd_cx25840;
 	struct work_struct	   cx25840_work;
 
@@ -428,17 +540,37 @@ struct cx23885_dev {
 	u32                        freq;
 	struct video_device        *video_dev;
 	struct video_device        *vbi_dev;
+<<<<<<< HEAD
 	struct video_device        *radio_dev;
 
 	struct cx23885_dmaqueue    vidq;
 	struct cx23885_dmaqueue    vbiq;
+=======
+
+	/* video capture */
+	struct cx23885_fmt         *fmt;
+	unsigned int               width, height;
+	unsigned		   field;
+
+	struct cx23885_dmaqueue    vidq;
+	struct vb2_queue           vb2_vidq;
+	struct cx23885_dmaqueue    vbiq;
+	struct vb2_queue           vb2_vbiq;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t                 slock;
 
 	/* MPEG Encoder ONLY settings */
 	u32                        cx23417_mailbox;
+<<<<<<< HEAD
 	struct cx2341x_mpeg_params mpeg_params;
 	struct video_device        *v4l_device;
 	atomic_t                   v4l_reader_count;
+=======
+	struct cx2341x_handler     cxhdl;
+	struct video_device        *v4l_device;
+	struct vb2_queue           vb2_mpegq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cx23885_tvnorm      encodernorm;
 
 	/* Analog raw audio */
@@ -514,15 +646,20 @@ extern int cx23885_sram_channel_setup(struct cx23885_dev *dev,
 extern void cx23885_sram_channel_dump(struct cx23885_dev *dev,
 	struct sram_channel *ch);
 
+<<<<<<< HEAD
 extern int cx23885_risc_stopper(struct pci_dev *pci, struct btcx_riscmem *risc,
 	u32 reg, u32 mask, u32 value);
 
 extern int cx23885_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
+=======
+extern int cx23885_risc_buffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct scatterlist *sglist,
 	unsigned int top_offset, unsigned int bottom_offset,
 	unsigned int bpl, unsigned int padding, unsigned int lines);
 
 extern int cx23885_risc_vbibuffer(struct pci_dev *pci,
+<<<<<<< HEAD
 	struct btcx_riscmem *risc, struct scatterlist *sglist,
 	unsigned int top_offset, unsigned int bottom_offset,
 	unsigned int bpl, unsigned int padding, unsigned int lines);
@@ -534,6 +671,17 @@ extern int cx23885_restart_queue(struct cx23885_tsport *port,
 
 extern void cx23885_wakeup(struct cx23885_tsport *port,
 			   struct cx23885_dmaqueue *q, u32 count);
+=======
+	struct cx23885_riscmem *risc, struct scatterlist *sglist,
+	unsigned int top_offset, unsigned int bottom_offset,
+	unsigned int bpl, unsigned int padding, unsigned int lines);
+
+int cx23885_start_dma(struct cx23885_tsport *port,
+			     struct cx23885_dmaqueue *q,
+			     struct cx23885_buffer   *buf);
+void cx23885_cancel_buffers(struct cx23885_tsport *port);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void cx23885_gpio_set(struct cx23885_dev *dev, u32 mask);
 extern void cx23885_gpio_clear(struct cx23885_dev *dev, u32 mask);
@@ -567,6 +715,7 @@ extern void cx23885_card_setup_pre_i2c(struct cx23885_dev *dev);
 extern int cx23885_dvb_register(struct cx23885_tsport *port);
 extern int cx23885_dvb_unregister(struct cx23885_tsport *port);
 
+<<<<<<< HEAD
 extern int cx23885_buf_prepare(struct videobuf_queue *q,
 			       struct cx23885_tsport *port,
 			       struct cx23885_buffer *buf,
@@ -574,6 +723,13 @@ extern int cx23885_buf_prepare(struct videobuf_queue *q,
 extern void cx23885_buf_queue(struct cx23885_tsport *port,
 			      struct cx23885_buffer *buf);
 extern void cx23885_free_buffer(struct videobuf_queue *q,
+=======
+extern int cx23885_buf_prepare(struct cx23885_buffer *buf,
+			       struct cx23885_tsport *port);
+extern void cx23885_buf_queue(struct cx23885_tsport *port,
+			      struct cx23885_buffer *buf);
+extern void cx23885_free_buffer(struct cx23885_dev *dev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct cx23885_buffer *buf);
 
 /* ----------------------------------------------------------- */
@@ -588,8 +744,11 @@ int cx23885_enum_input(struct cx23885_dev *dev, struct v4l2_input *i);
 int cx23885_set_input(struct file *file, void *priv, unsigned int i);
 int cx23885_get_input(struct file *file, void *priv, unsigned int *i);
 int cx23885_set_frequency(struct file *file, void *priv, const struct v4l2_frequency *f);
+<<<<<<< HEAD
 int cx23885_set_control(struct cx23885_dev *dev, struct v4l2_control *ctl);
 int cx23885_get_control(struct cx23885_dev *dev, struct v4l2_control *ctl);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int cx23885_set_tvnorm(struct cx23885_dev *dev, v4l2_std_id norm);
 
 /* ----------------------------------------------------------- */
@@ -597,9 +756,13 @@ int cx23885_set_tvnorm(struct cx23885_dev *dev, v4l2_std_id norm);
 extern int cx23885_vbi_fmt(struct file *file, void *priv,
 	struct v4l2_format *f);
 extern void cx23885_vbi_timeout(unsigned long data);
+<<<<<<< HEAD
 extern struct videobuf_queue_ops cx23885_vbi_qops;
 extern int cx23885_restart_vbi_queue(struct cx23885_dev *dev,
 	struct cx23885_dmaqueue *q);
+=======
+extern struct vb2_ops cx23885_vbi_qops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int cx23885_vbi_irq(struct cx23885_dev *dev, u32 status);
 
 /* cx23885-i2c.c                                                */
@@ -631,7 +794,11 @@ extern struct cx23885_audio_dev *cx23885_audio_register(
 extern void cx23885_audio_unregister(struct cx23885_dev *dev);
 extern int cx23885_audio_irq(struct cx23885_dev *dev, u32 status, u32 mask);
 extern int cx23885_risc_databuffer(struct pci_dev *pci,
+<<<<<<< HEAD
 				   struct btcx_riscmem *risc,
+=======
+				   struct cx23885_riscmem *risc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct scatterlist *sglist,
 				   unsigned int bpl,
 				   unsigned int lines,
@@ -640,6 +807,7 @@ extern int cx23885_risc_databuffer(struct pci_dev *pci,
 /* ----------------------------------------------------------- */
 /* tv norms                                                    */
 
+<<<<<<< HEAD
 static inline unsigned int norm_maxw(v4l2_std_id norm)
 {
 	return (norm & (V4L2_STD_MN & ~V4L2_STD_PAL_Nc)) ? 720 : 768;
@@ -653,4 +821,9 @@ static inline unsigned int norm_maxh(v4l2_std_id norm)
 static inline unsigned int norm_swidth(v4l2_std_id norm)
 {
 	return (norm & (V4L2_STD_MN & ~V4L2_STD_PAL_Nc)) ? 754 : 922;
+=======
+static inline unsigned int norm_maxh(v4l2_std_id norm)
+{
+	return (norm & V4L2_STD_525_60) ? 480 : 576;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

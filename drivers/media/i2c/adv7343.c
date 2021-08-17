@@ -25,10 +25,19 @@
 #include <linux/module.h>
 #include <linux/videodev2.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 
 #include <media/adv7343.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-chip-ident.h>
+=======
+#include <linux/of.h>
+#include <linux/of_graph.h>
+
+#include <media/i2c/adv7343.h>
+#include <media/v4l2-async.h>
+#include <media/v4l2-device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/v4l2-ctrls.h>
 
 #include "adv7343_regs.h"
@@ -227,12 +236,21 @@ static int adv7343_setoutput(struct v4l2_subdev *sd, u32 output_type)
 	else
 		val = state->pdata->mode_config.sleep_mode << 0 |
 		      state->pdata->mode_config.pll_control << 1 |
+<<<<<<< HEAD
 		      state->pdata->mode_config.dac_3 << 2 |
 		      state->pdata->mode_config.dac_2 << 3 |
 		      state->pdata->mode_config.dac_1 << 4 |
 		      state->pdata->mode_config.dac_6 << 5 |
 		      state->pdata->mode_config.dac_5 << 6 |
 		      state->pdata->mode_config.dac_4 << 7;
+=======
+		      state->pdata->mode_config.dac[2] << 2 |
+		      state->pdata->mode_config.dac[1] << 3 |
+		      state->pdata->mode_config.dac[0] << 4 |
+		      state->pdata->mode_config.dac[5] << 5 |
+		      state->pdata->mode_config.dac[4] << 6 |
+		      state->pdata->mode_config.dac[3] << 7;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = adv7343_write(sd, ADV7343_POWER_MODE_REG, val);
 	if (err < 0)
@@ -251,6 +269,7 @@ static int adv7343_setoutput(struct v4l2_subdev *sd, u32 output_type)
 	/* configure SD DAC Output 2 and SD DAC Output 1 bit to zero */
 	val = state->reg82 & (SD_DAC_1_DI & SD_DAC_2_DI);
 
+<<<<<<< HEAD
 	if (state->pdata && state->pdata->sd_config.sd_dac_out1)
 		val = val | (state->pdata->sd_config.sd_dac_out1 << 1);
 	else if (state->pdata && !state->pdata->sd_config.sd_dac_out1)
@@ -260,6 +279,17 @@ static int adv7343_setoutput(struct v4l2_subdev *sd, u32 output_type)
 		val = val | (state->pdata->sd_config.sd_dac_out2 << 2);
 	else if (state->pdata && !state->pdata->sd_config.sd_dac_out2)
 		val = val & ~(state->pdata->sd_config.sd_dac_out2 << 2);
+=======
+	if (state->pdata && state->pdata->sd_config.sd_dac_out[0])
+		val = val | (state->pdata->sd_config.sd_dac_out[0] << 1);
+	else if (state->pdata && !state->pdata->sd_config.sd_dac_out[0])
+		val = val & ~(state->pdata->sd_config.sd_dac_out[0] << 1);
+
+	if (state->pdata && state->pdata->sd_config.sd_dac_out[1])
+		val = val | (state->pdata->sd_config.sd_dac_out[1] << 2);
+	else if (state->pdata && !state->pdata->sd_config.sd_dac_out[1])
+		val = val & ~(state->pdata->sd_config.sd_dac_out[1] << 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = adv7343_write(sd, ADV7343_SD_MODE_REG2, val);
 	if (err < 0)
@@ -311,6 +341,7 @@ static int adv7343_s_ctrl(struct v4l2_ctrl *ctrl)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int adv7343_g_chip_ident(struct v4l2_subdev *sd,
 				struct v4l2_dbg_chip_ident *chip)
 {
@@ -319,12 +350,15 @@ static int adv7343_g_chip_ident(struct v4l2_subdev *sd,
 	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_ADV7343, 0);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_ctrl_ops adv7343_ctrl_ops = {
 	.s_ctrl = adv7343_s_ctrl,
 };
 
 static const struct v4l2_subdev_core_ops adv7343_core_ops = {
 	.log_status = adv7343_log_status,
+<<<<<<< HEAD
 	.g_chip_ident = adv7343_g_chip_ident,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
@@ -333,6 +367,8 @@ static const struct v4l2_subdev_core_ops adv7343_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int adv7343_s_std_output(struct v4l2_subdev *sd, v4l2_std_id std)
@@ -408,6 +444,43 @@ static int adv7343_initialize(struct v4l2_subdev *sd)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static struct adv7343_platform_data *
+adv7343_get_pdata(struct i2c_client *client)
+{
+	struct adv7343_platform_data *pdata;
+	struct device_node *np;
+
+	if (!IS_ENABLED(CONFIG_OF) || !client->dev.of_node)
+		return client->dev.platform_data;
+
+	np = of_graph_get_next_endpoint(client->dev.of_node, NULL);
+	if (!np)
+		return NULL;
+
+	pdata = devm_kzalloc(&client->dev, sizeof(*pdata), GFP_KERNEL);
+	if (!pdata)
+		goto done;
+
+	pdata->mode_config.sleep_mode =
+			of_property_read_bool(np, "adi,power-mode-sleep-mode");
+
+	pdata->mode_config.pll_control =
+			of_property_read_bool(np, "adi,power-mode-pll-ctrl");
+
+	of_property_read_u32_array(np, "adi,dac-enable",
+				   pdata->mode_config.dac, 6);
+
+	of_property_read_u32_array(np, "adi,sd-dac-enable",
+				   pdata->sd_config.sd_dac_out, 2);
+
+done:
+	of_node_put(np);
+	return pdata;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int adv7343_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
 {
@@ -426,7 +499,11 @@ static int adv7343_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	/* Copy board specific information here */
+<<<<<<< HEAD
 	state->pdata = client->dev.platform_data;
+=======
+	state->pdata = adv7343_get_pdata(client);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	state->reg00	= 0x80;
 	state->reg01	= 0x00;
@@ -455,16 +532,32 @@ static int adv7343_probe(struct i2c_client *client,
 				       ADV7343_GAIN_DEF);
 	state->sd.ctrl_handler = &state->hdl;
 	if (state->hdl.error) {
+<<<<<<< HEAD
 		int err = state->hdl.error;
 
 		v4l2_ctrl_handler_free(&state->hdl);
 		return err;
+=======
+		err = state->hdl.error;
+		goto done;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	v4l2_ctrl_handler_setup(&state->hdl);
 
 	err = adv7343_initialize(&state->sd);
 	if (err)
+<<<<<<< HEAD
 		v4l2_ctrl_handler_free(&state->hdl);
+=======
+		goto done;
+
+	err = v4l2_async_register_subdev(&state->sd);
+
+done:
+	if (err < 0)
+		v4l2_ctrl_handler_free(&state->hdl);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -473,7 +566,11 @@ static int adv7343_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct adv7343_state *state = to_state(sd);
 
+<<<<<<< HEAD
 	v4l2_device_unregister_subdev(sd);
+=======
+	v4l2_async_unregister_subdev(&state->sd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_ctrl_handler_free(&state->hdl);
 
 	return 0;
@@ -486,9 +583,23 @@ static const struct i2c_device_id adv7343_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, adv7343_id);
 
+<<<<<<< HEAD
 static struct i2c_driver adv7343_driver = {
 	.driver = {
 		.owner	= THIS_MODULE,
+=======
+#if IS_ENABLED(CONFIG_OF)
+static const struct of_device_id adv7343_of_match[] = {
+	{.compatible = "adi,adv7343", },
+	{ /* sentinel */ },
+};
+MODULE_DEVICE_TABLE(of, adv7343_of_match);
+#endif
+
+static struct i2c_driver adv7343_driver = {
+	.driver = {
+		.of_match_table = of_match_ptr(adv7343_of_match),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "adv7343",
 	},
 	.probe		= adv7343_probe,

@@ -48,6 +48,7 @@ static int openrisc_timer_set_next_event(unsigned long delta,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void openrisc_timer_set_mode(enum clock_event_mode mode,
 				    struct clock_event_device *evt)
 {
@@ -71,6 +72,8 @@ static void openrisc_timer_set_mode(enum clock_event_mode mode,
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* This is the clock event device based on the OR1K tick timer.
  * As the timer is being used as a continuous clock-source (required for HR
  * timers) we cannot enable the PERIODIC feature.  The tick timer can run using
@@ -82,7 +85,10 @@ static struct clock_event_device clockevent_openrisc_timer = {
 	.features = CLOCK_EVT_FEAT_ONESHOT,
 	.rating = 300,
 	.set_next_event = openrisc_timer_set_next_event,
+<<<<<<< HEAD
 	.set_mode = openrisc_timer_set_mode,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline void timer_ack(void)

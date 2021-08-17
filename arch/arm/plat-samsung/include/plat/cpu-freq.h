@@ -126,7 +126,11 @@ struct s3c_cpufreq_board {
 };
 
 /* Things depending on frequency scaling. */
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ_S3C
+=======
+#ifdef CONFIG_ARM_S3C_CPUFREQ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __init_or_cpufreq
 #else
 #define __init_or_cpufreq __init
@@ -134,7 +138,11 @@ struct s3c_cpufreq_board {
 
 /* Board functions */
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_FREQ_S3C
+=======
+#ifdef CONFIG_ARM_S3C_CPUFREQ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int s3c_cpufreq_setboard(struct s3c_cpufreq_board *board);
 #else
 
@@ -142,4 +150,8 @@ static inline int s3c_cpufreq_setboard(struct s3c_cpufreq_board *board)
 {
 	return 0;
 }
+<<<<<<< HEAD
 #endif  /* CONFIG_CPU_FREQ_S3C */
+=======
+#endif  /* CONFIG_ARM_S3C_CPUFREQ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

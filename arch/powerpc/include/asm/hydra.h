@@ -89,13 +89,20 @@ extern volatile struct Hydra __iomem *Hydra;
 #define HYDRA_INT_EXT2		13	/* PCI IRQX */
 #define HYDRA_INT_EXT3		14	/* PCI IRQY */
 #define HYDRA_INT_EXT4		15	/* PCI IRQZ */
+<<<<<<< HEAD
 #define HYDRA_INT_EXT5		16	/* IDE Primay/Secondary */
+=======
+#define HYDRA_INT_EXT5		16	/* IDE Primary/Secondary */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HYDRA_INT_EXT6		17	/* IDE Secondary */
 #define HYDRA_INT_EXT7		18	/* Power Off Request */
 #define HYDRA_INT_SPARE		19
 
 extern int hydra_init(void);
+<<<<<<< HEAD
 extern void macio_adb_init(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __KERNEL__ */
 

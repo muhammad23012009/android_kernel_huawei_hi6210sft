@@ -18,7 +18,10 @@
 #include <linux/leds.h>
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
+<<<<<<< HEAD
 #include <linux/mdio-gpio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 
 #include <asm/setup.h>

@@ -6,7 +6,11 @@
  * This file supports the user system call for file open, close, mmap, etc.
  * This also incudes the driver initialization code.
  *
+<<<<<<< HEAD
  *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
+=======
+ *  Copyright (c) 2008-2014 Silicon Graphics, Inc.  All Rights Reserved.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,6 +62,14 @@ static int max_user_cbrs, max_user_dsr_bytes;
 
 static struct miscdevice gru_miscdev;
 
+<<<<<<< HEAD
+=======
+static int gru_supported(void)
+{
+	return is_uv_system() &&
+		(uv_hub_info->hub_revision < UV3_HUB_REVISION_BASE);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * gru_vma_close
@@ -518,7 +530,11 @@ static int __init gru_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (!is_uv_system() || (is_uvx_hub() && !is_uv2_hub()))
+=======
+	if (!gru_supported())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 #if defined CONFIG_IA64
@@ -573,7 +589,11 @@ exit0:
 
 static void __exit gru_exit(void)
 {
+<<<<<<< HEAD
 	if (!is_uv_system())
+=======
+	if (!gru_supported())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	gru_teardown_tlb_irqs();

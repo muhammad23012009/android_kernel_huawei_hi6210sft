@@ -41,12 +41,15 @@ static int next_event(unsigned long delta,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void set_clock_mode(enum clock_event_mode mode,
 			   struct clock_event_device *evt)
 {
 	/* Nothing to do ...  */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static DEFINE_PER_CPU(struct clock_event_device, mn10300_clockevent_device);
 static DEFINE_PER_CPU(struct irqaction, timer_irq);
 
@@ -108,12 +111,19 @@ int __init init_clockevents(void)
 
 	cd->rating		= 200;
 	cd->cpumask		= cpumask_of(smp_processor_id());
+<<<<<<< HEAD
 	cd->set_mode		= set_clock_mode;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cd->event_handler	= event_handler;
 	cd->set_next_event	= next_event;
 
 	iact = &per_cpu(timer_irq, cpu);
+<<<<<<< HEAD
 	iact->flags = IRQF_DISABLED | IRQF_SHARED | IRQF_TIMER;
+=======
+	iact->flags = IRQF_SHARED | IRQF_TIMER;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iact->handler = timer_interrupt;
 
 	clockevents_register_device(cd);
@@ -123,7 +133,11 @@ int __init init_clockevents(void)
 	{
 		struct irq_data *data;
 		data = irq_get_irq_data(cd->irq);
+<<<<<<< HEAD
 		cpumask_copy(data->affinity, cpumask_of(cpu));
+=======
+		cpumask_copy(irq_data_get_affinity_mask(data), cpumask_of(cpu));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iact->flags |= IRQF_NOBALANCING;
 	}
 #endif

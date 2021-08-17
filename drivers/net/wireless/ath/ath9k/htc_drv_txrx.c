@@ -471,8 +471,16 @@ static void ath9k_htc_tx_process(struct ath9k_htc_priv *priv,
 	if (!txok || !vif || !txs)
 		goto send_mac80211;
 
+<<<<<<< HEAD
 	if (txs->ts_flags & ATH9K_HTC_TXSTAT_ACK)
 		tx_info->flags |= IEEE80211_TX_STAT_ACK;
+=======
+	if (txs->ts_flags & ATH9K_HTC_TXSTAT_ACK) {
+		tx_info->flags |= IEEE80211_TX_STAT_ACK;
+		if (tx_info->flags & IEEE80211_TX_CTL_AMPDU)
+			tx_info->flags |= IEEE80211_TX_STAT_AMPDU;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (txs->ts_flags & ATH9K_HTC_TXSTAT_FILT)
 		tx_info->flags |= IEEE80211_TX_STAT_TX_FILTERED;
@@ -491,7 +499,11 @@ static void ath9k_htc_tx_process(struct ath9k_htc_priv *priv,
 		if (txs->ts_flags & ATH9K_HTC_TXSTAT_SGI)
 			rate->flags |= IEEE80211_TX_RC_SHORT_GI;
 	} else {
+<<<<<<< HEAD
 		if (cur_conf->chandef.chan->band == IEEE80211_BAND_5GHZ)
+=======
+		if (cur_conf->chandef.chan->band == NL80211_BAND_5GHZ)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rate->idx += 4; /* No CCK rates */
 	}
 
@@ -869,6 +881,7 @@ u32 ath9k_htc_calcrxfilter(struct ath9k_htc_priv *priv)
 	if (priv->rxfilter & FIF_PROBE_REQ)
 		rfilt |= ATH9K_RX_FILTER_PROBEREQ;
 
+<<<<<<< HEAD
 	/*
 	 * Set promiscuous mode when FIF_PROMISC_IN_BSS is enabled for station
 	 * mode interface or when in monitor mode. AP mode does not need this
@@ -877,6 +890,9 @@ u32 ath9k_htc_calcrxfilter(struct ath9k_htc_priv *priv)
 	if (((ah->opmode != NL80211_IFTYPE_AP) &&
 	     (priv->rxfilter & FIF_PROMISC_IN_BSS)) ||
 	    ah->is_monitoring)
+=======
+	if (ah->is_monitoring)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rfilt |= ATH9K_RX_FILTER_PROM;
 
 	if (priv->rxfilter & FIF_CONTROL)
@@ -897,7 +913,11 @@ u32 ath9k_htc_calcrxfilter(struct ath9k_htc_priv *priv)
 	if (priv->rxfilter & FIF_PSPOLL)
 		rfilt |= ATH9K_RX_FILTER_PSPOLL;
 
+<<<<<<< HEAD
 	if (priv->nvifs > 1)
+=======
+	if (priv->nvifs > 1 || priv->rxfilter & FIF_OTHER_BSS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rfilt |= ATH9K_RX_FILTER_MCAST_BCAST_ALL;
 
 	return rfilt;
@@ -924,6 +944,7 @@ static void ath9k_htc_opmode_init(struct ath9k_htc_priv *priv)
 
 void ath9k_host_rx_init(struct ath9k_htc_priv *priv)
 {
+<<<<<<< HEAD
 	ath9k_hw_rxena(priv->ah);
 	ath9k_htc_opmode_init(priv);
 	ath9k_hw_startpcureceive(priv->ah, test_bit(OP_SCANNING, &priv->op_flags));
@@ -964,6 +985,45 @@ static void ath9k_process_rate(struct ieee80211_hw *hw,
 		}
 	}
 
+=======
+	struct ath_common *common = ath9k_hw_common(priv->ah);
+	ath9k_hw_rxena(priv->ah);
+	ath9k_htc_opmode_init(priv);
+	ath9k_hw_startpcureceive(priv->ah, test_bit(ATH_OP_SCANNING, &common->op_flags));
+}
+
+static inline void convert_htc_flag(struct ath_rx_status *rx_stats,
+				   struct ath_htc_rx_status *rxstatus)
+{
+	rx_stats->flag = 0;
+	if (rxstatus->rs_flags & ATH9K_RX_2040)
+		rx_stats->flag |= RX_FLAG_40MHZ;
+	if (rxstatus->rs_flags & ATH9K_RX_GI)
+		rx_stats->flag |= RX_FLAG_SHORT_GI;
+}
+
+static void rx_status_htc_to_ath(struct ath_rx_status *rx_stats,
+				 struct ath_htc_rx_status *rxstatus)
+{
+	rx_stats->rs_datalen	= be16_to_cpu(rxstatus->rs_datalen);
+	rx_stats->rs_status	= rxstatus->rs_status;
+	rx_stats->rs_phyerr	= rxstatus->rs_phyerr;
+	rx_stats->rs_rssi	= rxstatus->rs_rssi;
+	rx_stats->rs_keyix	= rxstatus->rs_keyix;
+	rx_stats->rs_rate	= rxstatus->rs_rate;
+	rx_stats->rs_antenna	= rxstatus->rs_antenna;
+	rx_stats->rs_more	= rxstatus->rs_more;
+
+	memcpy(rx_stats->rs_rssi_ctl, rxstatus->rs_rssi_ctl,
+		sizeof(rx_stats->rs_rssi_ctl));
+	memcpy(rx_stats->rs_rssi_ext, rxstatus->rs_rssi_ext,
+		sizeof(rx_stats->rs_rssi_ext));
+
+	rx_stats->rs_isaggr	= rxstatus->rs_isaggr;
+	rx_stats->rs_moreaggr	= rxstatus->rs_moreaggr;
+	rx_stats->rs_num_delims	= rxstatus->rs_num_delims;
+	convert_htc_flag(rx_stats, rxstatus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
@@ -975,10 +1035,19 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
 	struct ieee80211_hw *hw = priv->hw;
 	struct sk_buff *skb = rxbuf->skb;
 	struct ath_common *common = ath9k_hw_common(priv->ah);
+<<<<<<< HEAD
 	struct ath_htc_rx_status *rxstatus;
 	int hdrlen, padsize;
 	int last_rssi = ATH_RSSI_DUMMY_MARKER;
 	__le16 fc;
+=======
+	struct ath_hw *ah = common->ah;
+	struct ath_htc_rx_status *rxstatus;
+	struct ath_rx_status rx_stats;
+	bool decrypt_error = false;
+	u16 rs_datalen;
+	bool is_phyerr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (skb->len < HTC_RX_FRAME_HEADER_SIZE) {
 		ath_err(common, "Corrupted RX frame, dropping (len: %d)\n",
@@ -988,6 +1057,7 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
 
 	rxstatus = (struct ath_htc_rx_status *)skb->data;
 
+<<<<<<< HEAD
 	if (be16_to_cpu(rxstatus->rs_datalen) -
 	    (skb->len - HTC_RX_FRAME_HEADER_SIZE) != 0) {
 		ath_err(common,
@@ -1098,6 +1168,78 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
 
 	return true;
 
+=======
+	rs_datalen = be16_to_cpu(rxstatus->rs_datalen);
+	if (unlikely(rs_datalen -
+	    (skb->len - HTC_RX_FRAME_HEADER_SIZE) != 0)) {
+		ath_err(common,
+			"Corrupted RX data len, dropping (dlen: %d, skblen: %d)\n",
+			rs_datalen, skb->len);
+		goto rx_next;
+	}
+
+	is_phyerr = rxstatus->rs_status & ATH9K_RXERR_PHY;
+	/*
+	 * Discard zero-length packets and packets smaller than an ACK
+	 * which are not PHY_ERROR (short radar pulses have a length of 3)
+	 */
+	if (unlikely(!rs_datalen || (rs_datalen < 10 && !is_phyerr))) {
+		ath_dbg(common, ANY,
+			"Short RX data len, dropping (dlen: %d)\n",
+			rs_datalen);
+		goto rx_next;
+	}
+
+	/* Get the RX status information */
+
+	memset(rx_status, 0, sizeof(struct ieee80211_rx_status));
+
+	/* Copy everything from ath_htc_rx_status (HTC_RX_FRAME_HEADER).
+	 * After this, we can drop this part of skb. */
+	rx_status_htc_to_ath(&rx_stats, rxstatus);
+	ath9k_htc_err_stat_rx(priv, &rx_stats);
+	rx_status->mactime = be64_to_cpu(rxstatus->rs_tstamp);
+	skb_pull(skb, HTC_RX_FRAME_HEADER_SIZE);
+
+	/*
+	 * everything but the rate is checked here, the rate check is done
+	 * separately to avoid doing two lookups for a rate for each frame.
+	 */
+	hdr = (struct ieee80211_hdr *)skb->data;
+
+	/*
+	 * Process PHY errors and return so that the packet
+	 * can be dropped.
+	 */
+	if (unlikely(is_phyerr)) {
+		/* TODO: Not using DFS processing now. */
+		if (ath_cmn_process_fft(&priv->spec_priv, hdr,
+				    &rx_stats, rx_status->mactime)) {
+			/* TODO: Code to collect spectral scan statistics */
+		}
+		goto rx_next;
+	}
+
+	if (!ath9k_cmn_rx_accept(common, hdr, rx_status, &rx_stats,
+			&decrypt_error, priv->rxfilter))
+		goto rx_next;
+
+	ath9k_cmn_rx_skb_postprocess(common, skb, &rx_stats,
+				     rx_status, decrypt_error);
+
+	if (ath9k_cmn_process_rate(common, hw, &rx_stats, rx_status))
+		goto rx_next;
+
+	rx_stats.is_mybeacon = ath_is_mybeacon(common, hdr);
+	ath9k_cmn_process_rssi(common, hw, &rx_stats, rx_status);
+
+	rx_status->band = ah->curchan->chan->band;
+	rx_status->freq = ah->curchan->chan->center_freq;
+	rx_status->antenna = rx_stats.rs_antenna;
+	rx_status->flag |= RX_FLAG_MACTIME_END;
+
+	return true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 rx_next:
 	return false;
 }

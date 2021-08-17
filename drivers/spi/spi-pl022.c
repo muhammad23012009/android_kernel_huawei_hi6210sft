@@ -31,7 +31,10 @@
 #include <linux/spi/spi.h>
 #include <linux/delay.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/clk-private.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/err.h>
 #include <linux/amba/bus.h>
 #include <linux/amba/pl022.h>
@@ -44,6 +47,7 @@
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
 #include <linux/pinctrl/consumer.h>
+<<<<<<< HEAD
 #include <linux/of_address.h>
 #include <linux/of.h>
 #ifdef CONFIG_ARCH_HI6XXX
@@ -51,6 +55,9 @@
 #include <soc_peri_sctrl_interface.h>
 #endif
 #include<dsm/dsm_pub.h>
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This macro is used to define some register default values.
  * reg is masked with mask, the OR:ed with an (again masked)
@@ -66,7 +73,11 @@
  */
 #define GEN_MASK_BITS(val, mask, sb) \
  (((val)<<(sb)) & (mask))
+<<<<<<< HEAD
 /*lint -e750*/
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DRIVE_TX		0
 #define DO_NOT_DRIVE_TX		1
 
@@ -89,6 +100,10 @@
 #define SSP_MIS(r)	(r + 0x01C)
 #define SSP_ICR(r)	(r + 0x020)
 #define SSP_DMACR(r)	(r + 0x024)
+<<<<<<< HEAD
+=======
+#define SSP_CSR(r)	(r + 0x030) /* vendor extension */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SSP_ITCR(r)	(r + 0x080)
 #define SSP_ITIP(r)	(r + 0x084)
 #define SSP_ITOP(r)	(r + 0x088)
@@ -103,7 +118,11 @@
 #define SSP_CID1(r)	(r + 0xFF4)
 #define SSP_CID2(r)	(r + 0xFF8)
 #define SSP_CID3(r)	(r + 0xFFC)
+<<<<<<< HEAD
 /*lint +e750*/
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * SSP Control Register 0  - SSP_CR0
  */
@@ -142,7 +161,10 @@
 /* This one is only in the PL023 variant */
 #define SSP_CR1_MASK_FBCLKDEL_ST (0x7UL << 13)
 
+<<<<<<< HEAD
 /*lint -e750*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * SSP Status Register - SSP_SR
  */
@@ -206,6 +228,15 @@
 #define SSP_DMACR_MASK_TXDMAE		(0x1UL << 1)
 
 /*
+<<<<<<< HEAD
+=======
+ * SSP Chip Select Control Register - SSP_CSR
+ * (vendor extension)
+ */
+#define SSP_CSR_CSVALUE_MASK		(0x1FUL << 0)
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SSP Integration Test control Register - SSP_ITCR
  */
 #define SSP_ITCR_MASK_ITEN		(0x1UL << 0)
@@ -260,7 +291,11 @@
  */
 #define SSP_DISABLED			(0)
 #define SSP_ENABLED			(1)
+<<<<<<< HEAD
 /*lint +e750*/
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * SSP DMA State - Whether DMA Enabled or Disabled
  */
@@ -286,7 +321,16 @@
  */
 #define DEFAULT_SSP_REG_IMSC  0x0UL
 #define DISABLE_ALL_INTERRUPTS DEFAULT_SSP_REG_IMSC
+<<<<<<< HEAD
 #define ENABLE_ALL_INTERRUPTS (~DEFAULT_SSP_REG_IMSC)
+=======
+#define ENABLE_ALL_INTERRUPTS ( \
+	SSP_IMSC_MASK_RORIM | \
+	SSP_IMSC_MASK_RTIM | \
+	SSP_IMSC_MASK_RXIM | \
+	SSP_IMSC_MASK_TXIM \
+)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CLEAR_ALL_INTERRUPTS  0x3
 
@@ -321,6 +365,10 @@ enum ssp_writing {
  * @extended_cr: 32 bit wide control register 0 with extra
  * features and extra features in CR1 as found in the ST variants
  * @pl023: supports a subset of the ST extensions called "PL023"
+<<<<<<< HEAD
+=======
+ * @internal_cs_ctrl: supports chip select control register
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct vendor_data {
 	int fifodepth;
@@ -329,6 +377,10 @@ struct vendor_data {
 	bool extended_cr;
 	bool pl023;
 	bool loopback;
+<<<<<<< HEAD
+=======
+	bool internal_cs_ctrl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -340,6 +392,7 @@ struct vendor_data {
  * @clk: outgoing clock "SPICLK" for the SPI bus
  * @master: SPI framework hookup
  * @master_info: controller-specific data from machine setup
+<<<<<<< HEAD
  * @kworker: thread struct for message pump
  * @kworker_task: pointer to task for message pump kworker thread
  * @pump_messages: work struct for scheduling work to the message pump
@@ -347,6 +400,8 @@ struct vendor_data {
  * @queue: message queue
  * @busy: message pump is busy
  * @running: message pump is running
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @pump_transfers: Tasklet used in Interrupt Transfer mode
  * @cur_msg: Pointer to current spi_message being processed
  * @cur_transfer: Pointer to current spi_transfer
@@ -376,11 +431,14 @@ struct pl022 {
 	resource_size_t			phybase;
 	void __iomem			*virtbase;
 	struct clk			*clk;
+<<<<<<< HEAD
 	/* Two optional pin states - default & sleep */
 	struct pinctrl			*pinctrl;
 	struct pinctrl_state		*pins_default;
 	struct pinctrl_state		*pins_idle;
 	struct pinctrl_state		*pins_sleep;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct spi_master		*master;
 	struct pl022_ssp_controller	*master_info;
 	/* Message per-transfer pump */
@@ -406,6 +464,7 @@ struct pl022 {
 	struct sg_table			sgt_tx;
 	char				*dummypage;
 	bool				dma_running;
+<<<<<<< HEAD
 	unsigned int				dma_callback_enter;
 #endif
 #if defined(CONFIG_SPI_HI3XXX_CS_USE_PCTRL)
@@ -417,6 +476,13 @@ struct pl022 {
 	int clkin_fpga;
 };
 static struct clk *spi0_clk = NULL;
+=======
+#endif
+	int cur_cs;
+	int *chipselects;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct chip_data - To maintain runtime state of SSP for each client chip
  * @cr0: Value of control register CR0 of SSP - on later ST variants this
@@ -447,6 +513,7 @@ struct chip_data {
 	int xfer_type;
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_HI3630FPGA) || defined(CONFIG_ARCH_HI3630) || defined(CONFIG_ARCH_KIRIN)
 #define SSP_TXFIFOCR(r)	(r + 0x028)
 #define SSP_RXFIFOCR(r)	(r + 0x02C)
@@ -511,6 +578,8 @@ void put_hdres_lock(void)
 }
 static enum ssp_hierarchy  s_hierarchy ;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * null_cs_control - Dummy chip select function
  * @command: select/delect the chip
@@ -523,6 +592,7 @@ static void null_cs_control(u32 command)
 	pr_debug("pl022: dummy chip select control, CS=0x%x\n", command);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_HI3XXX_CS_USE_PCTRL)
 static inline bool pctrl_cs_is_valid(int cs)
 {
@@ -548,6 +618,35 @@ static void pl022_cs_control(struct pl022 *pl022, u32 command)
 	if (gpio_is_valid(pl022->cur_cs))
 		gpio_set_value(pl022->cur_cs, command);
 #endif
+=======
+/**
+ * internal_cs_control - Control chip select signals via SSP_CSR.
+ * @pl022: SSP driver private data structure
+ * @command: select/delect the chip
+ *
+ * Used on controller with internal chip select control via SSP_CSR register
+ * (vendor extension). Each of the 5 LSB in the register controls one chip
+ * select signal.
+ */
+static void internal_cs_control(struct pl022 *pl022, u32 command)
+{
+	u32 tmp;
+
+	tmp = readw(SSP_CSR(pl022->virtbase));
+	if (command == SSP_CHIP_SELECT)
+		tmp &= ~BIT(pl022->cur_cs);
+	else
+		tmp |= BIT(pl022->cur_cs);
+	writew(tmp, SSP_CSR(pl022->virtbase));
+}
+
+static void pl022_cs_control(struct pl022 *pl022, u32 command)
+{
+	if (pl022->vendor->internal_cs_ctrl)
+		internal_cs_control(pl022, command);
+	else if (gpio_is_valid(pl022->cur_cs))
+		gpio_set_value(pl022->cur_cs, command);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pl022->cur_chip->cs_control(command);
 }
@@ -563,12 +662,17 @@ static void giveback(struct pl022 *pl022)
 	struct spi_transfer *last_transfer;
 	pl022->next_msg_cs_active = false;
 
+<<<<<<< HEAD
 	if (NULL == pl022->cur_msg)
 		return;
 
 	last_transfer = list_entry(pl022->cur_msg->transfers.prev,
 					struct spi_transfer,
 					transfer_list);
+=======
+	last_transfer = list_last_entry(&pl022->cur_msg->transfers,
+					struct spi_transfer, transfer_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Delay if requested before any change in chip select */
 	if (last_transfer->delay_usecs)
@@ -610,6 +714,10 @@ static void giveback(struct pl022 *pl022)
 	pl022->cur_msg = NULL;
 	pl022->cur_transfer = NULL;
 	pl022->cur_chip = NULL;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* disable the SPI/SSP operation */
 	writew((readw(SSP_CR1(pl022->virtbase)) &
 		(~SSP_CR1_MASK_SSE)), SSP_CR1(pl022->virtbase));
@@ -624,6 +732,7 @@ static void giveback(struct pl022 *pl022)
 static int flush(struct pl022 *pl022)
 {
 	unsigned long limit = loops_per_jiffy << 1;
+<<<<<<< HEAD
 	unsigned int i=0,j=0;
 
 	if((SSP_SLAVE == s_hierarchy)&&(pl022->write != WRITING_NULL)&&(pl022->read != READING_NULL)) {
@@ -649,6 +758,13 @@ static int flush(struct pl022 *pl022)
 			dev_err(&pl022->adev->dev, "SPI is BUSY the circle times is %d! limit=%lu!\n", i, limit);
 			print_spi_registers(pl022->master);
 		}
+=======
+
+	dev_dbg(&pl022->adev->dev, "flush\n");
+	do {
+		while (readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_RNE)
+			readw(SSP_DR(pl022->virtbase));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while ((readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_BSY) && limit--);
 
 	pl022->exp_fifo_level = 0;
@@ -673,10 +789,13 @@ static void restore_state(struct pl022 *pl022)
 	writew(chip->cpsr, SSP_CPSR(pl022->virtbase));
 	writew(DISABLE_ALL_INTERRUPTS, SSP_IMSC(pl022->virtbase));
 	writew(CLEAR_ALL_INTERRUPTS, SSP_ICR(pl022->virtbase));
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_HI3630FPGA) || defined(CONFIG_ARCH_HI3630) || defined(CONFIG_ARCH_KIRIN)
 	writew(DEFAULT_SSP_REG_TXFIFOCR, SSP_TXFIFOCR(pl022->virtbase));
 	writew(DEFAULT_SSP_REG_RXFIFOCR, SSP_RXFIFOCR(pl022->virtbase));
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -690,7 +809,10 @@ static void restore_state(struct pl022 *pl022)
 	GEN_MASK_BITS(SSP_DEFAULT_CLKRATE, SSP_CR0_MASK_SCR, 8) \
 )
 
+<<<<<<< HEAD
 /*lint -e750*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ST versions have slightly different bit layout */
 #define DEFAULT_SSP_REG_CR0_ST ( \
 	GEN_MASK_BITS(SSP_DATA_BITS_12, SSP_CR0_MASK_DSS_ST, 0)	| \
@@ -709,7 +831,10 @@ static void restore_state(struct pl022 *pl022)
 	GEN_MASK_BITS(SSP_CLK_SECOND_EDGE, SSP_CR0_MASK_SPH, 7) | \
 	GEN_MASK_BITS(SSP_DEFAULT_CLKRATE, SSP_CR0_MASK_SCR, 8) \
 )
+<<<<<<< HEAD
 /*lint +e750*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DEFAULT_SSP_REG_CR1 ( \
 	GEN_MASK_BITS(LOOPBACK_DISABLED, SSP_CR1_MASK_LBM, 0) | \
@@ -752,8 +877,11 @@ static void restore_state(struct pl022 *pl022)
 	GEN_MASK_BITS(SSP_DMA_DISABLED, SSP_DMACR_MASK_TXDMAE, 1) \
 )
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * load_ssp_default_config - Load default configuration for SSP
  * @pl022: SSP driver private data structure
@@ -870,10 +998,13 @@ static void readwriter(struct pl022 *pl022)
 			pl022->exp_fifo_level--;
 		}
 	}
+<<<<<<< HEAD
 	if((SSP_SLAVE == s_hierarchy)&&(pl022->write != WRITING_NULL)&&(pl022->read != READING_NULL)) {
         pl022->exp_fifo_level = 0;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * When we exit here the TX FIFO should be full and the RX FIFO
 	 * should be empty
@@ -927,8 +1058,11 @@ static void dma_callback(void *data)
 
 	BUG_ON(!pl022->sgt_rx.sgl);
 
+<<<<<<< HEAD
 	pl022->dma_callback_enter = 0xAA;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef VERBOSE_DEBUG
 	/*
 	 * Optionally dump out buffers to inspect contents, this is
@@ -1046,12 +1180,18 @@ static int configure_dma(struct pl022 *pl022)
 		.direction = DMA_MEM_TO_DEV,
 		.device_fc = false,
 	};
+<<<<<<< HEAD
 	unsigned int tx_pages;
 	unsigned int rx_pages;
 	int ret;
 	int rx_sglen, tx_sglen;
 	int tx_order_data_len = 0;
 	int rx_order_data_len = 0;
+=======
+	unsigned int pages;
+	int ret;
+	int rx_sglen, tx_sglen;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dma_chan *rxchan = pl022->dma_rx_channel;
 	struct dma_chan *txchan = pl022->dma_tx_channel;
 	struct dma_async_tx_descriptor *rxdesc;
@@ -1152,6 +1292,7 @@ static int configure_dma(struct pl022 *pl022)
 	dmaengine_slave_config(txchan, &tx_conf);
 
 	/* Create sglists for the transfers */
+<<<<<<< HEAD
 	rx_order_data_len =
 	pl022->cur_transfer->len - (PAGE_SIZE - offset_in_page(pl022->rx));
 
@@ -1180,6 +1321,16 @@ static int configure_dma(struct pl022 *pl022)
 
 
 	ret = sg_alloc_table(&pl022->sgt_tx, tx_pages, GFP_ATOMIC);
+=======
+	pages = DIV_ROUND_UP(pl022->cur_transfer->len, PAGE_SIZE);
+	dev_dbg(&pl022->adev->dev, "using %d pages for transfer\n", pages);
+
+	ret = sg_alloc_table(&pl022->sgt_rx, pages, GFP_ATOMIC);
+	if (ret)
+		goto err_alloc_rx_sg;
+
+	ret = sg_alloc_table(&pl022->sgt_tx, pages, GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto err_alloc_tx_sg;
 
@@ -1227,7 +1378,10 @@ static int configure_dma(struct pl022 *pl022)
 	dma_async_issue_pending(rxchan);
 	dma_async_issue_pending(txchan);
 	pl022->dma_running = true;
+<<<<<<< HEAD
 	pl022->dma_callback_enter = 0x55;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -1238,6 +1392,7 @@ err_rxdesc:
 	dma_unmap_sg(txchan->device->dev, pl022->sgt_tx.sgl,
 		     pl022->sgt_tx.nents, DMA_TO_DEVICE);
 err_tx_sgmap:
+<<<<<<< HEAD
 	dev_dbg(&pl022->adev->dev, "err_tx_sgmap\n");
 	dma_unmap_sg(rxchan->device->dev, pl022->sgt_rx.sgl,
 		     pl022->sgt_rx.nents, DMA_FROM_DEVICE);
@@ -1250,6 +1405,15 @@ err_alloc_tx_sg:
 err_alloc_rx_sg:
 	dev_dbg(&pl022->adev->dev, "rx sg_alloc_table error\n");
 err_rx_tx_pages:
+=======
+	dma_unmap_sg(rxchan->device->dev, pl022->sgt_rx.sgl,
+		     pl022->sgt_rx.nents, DMA_FROM_DEVICE);
+err_rx_sgmap:
+	sg_free_table(&pl022->sgt_tx);
+err_alloc_tx_sg:
+	sg_free_table(&pl022->sgt_rx);
+err_alloc_rx_sg:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENOMEM;
 }
 
@@ -1280,11 +1444,17 @@ static int pl022_dma_probe(struct pl022 *pl022)
 		goto err_no_txchan;
 	}
 
+<<<<<<< HEAD
 	pl022->dummypage = __get_free_pages(GFP_KERNEL, 0);
 	if (!pl022->dummypage) {
 		dev_dbg(&pl022->adev->dev, "no DMA dummypage!\n");
 		goto err_no_dummypage;
 	}
+=======
+	pl022->dummypage = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!pl022->dummypage)
+		goto err_no_dummypage;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&pl022->adev->dev, "setup for DMA on RX %s, TX %s\n",
 		 dma_chan_name(pl022->dma_rx_channel),
@@ -1306,6 +1476,7 @@ err_no_rxchan:
 static int pl022_dma_autoprobe(struct pl022 *pl022)
 {
 	struct device *dev = &pl022->adev->dev;
+<<<<<<< HEAD
 
 	/* automatically configure DMA channels from platform, normally using DT */
 	pl022->dma_rx_channel = dma_request_slave_channel(dev, "rx");
@@ -1319,6 +1490,33 @@ static int pl022_dma_autoprobe(struct pl022 *pl022)
 	pl022->dummypage = __get_free_pages(GFP_KERNEL, 0);
 	if (!pl022->dummypage)
 		goto err_no_dummypage;
+=======
+	struct dma_chan *chan;
+	int err;
+
+	/* automatically configure DMA channels from platform, normally using DT */
+	chan = dma_request_slave_channel_reason(dev, "rx");
+	if (IS_ERR(chan)) {
+		err = PTR_ERR(chan);
+		goto err_no_rxchan;
+	}
+
+	pl022->dma_rx_channel = chan;
+
+	chan = dma_request_slave_channel_reason(dev, "tx");
+	if (IS_ERR(chan)) {
+		err = PTR_ERR(chan);
+		goto err_no_txchan;
+	}
+
+	pl022->dma_tx_channel = chan;
+
+	pl022->dummypage = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!pl022->dummypage) {
+		err = -ENOMEM;
+		goto err_no_dummypage;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -1329,7 +1527,11 @@ err_no_txchan:
 	dma_release_channel(pl022->dma_rx_channel);
 	pl022->dma_rx_channel = NULL;
 err_no_rxchan:
+<<<<<<< HEAD
 	return -ENODEV;
+=======
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 		
 static void terminate_dma(struct pl022 *pl022)
@@ -1351,7 +1553,11 @@ static void pl022_dma_remove(struct pl022 *pl022)
 		dma_release_channel(pl022->dma_tx_channel);
 	if (pl022->dma_rx_channel)
 		dma_release_channel(pl022->dma_rx_channel);
+<<<<<<< HEAD
 	free_page(pl022->dummypage);
+=======
+	kfree(pl022->dummypage);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #else
@@ -1375,6 +1581,7 @@ static inline void pl022_dma_remove(struct pl022 *pl022)
 }
 #endif
 
+<<<<<<< HEAD
 void print_spi_registers(struct spi_master *master)
 {
 	unsigned int k = 0;
@@ -1442,6 +1649,8 @@ void cleanup_spi(struct spi_master *master)
 }
 EXPORT_SYMBOL(cleanup_spi);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * pl022_interrupt_handler - Interrupt handler for SSP controller
  *
@@ -1458,7 +1667,10 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 	struct pl022 *pl022 = dev_id;
 	struct spi_message *msg = pl022->cur_msg;
 	u16 irq_status = 0;
+<<<<<<< HEAD
 	u16 flag = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (unlikely(!msg)) {
 		dev_err(&pl022->adev->dev,
@@ -1487,9 +1699,12 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 		if (readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_RFF)
 			dev_err(&pl022->adev->dev,
 				"RXFIFO is full\n");
+<<<<<<< HEAD
 		if (readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_TNF)
 			dev_err(&pl022->adev->dev,
 				"TXFIFO is full\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Disable and clear interrupts, disable SSP,
@@ -1509,9 +1724,14 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 	}
 
 	readwriter(pl022);
+<<<<<<< HEAD
 	if(SSP_MASTER == s_hierarchy) {
    	    if ((pl022->tx == pl022->tx_end) && (flag == 0)) {
 		flag = 1;
+=======
+
+	if (pl022->tx == pl022->tx_end) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Disable Transmit interrupt, enable receive interrupt */
 		writew((readw(SSP_IMSC(pl022->virtbase)) &
 		       ~SSP_IMSC_MASK_TXIM) | SSP_IMSC_MASK_RXIM,
@@ -1541,6 +1761,7 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 		msg->state = next_transfer(pl022);
 		tasklet_schedule(&pl022->pump_transfers);
 		return IRQ_HANDLED;
+<<<<<<< HEAD
 		}
 	}
     else
@@ -1586,6 +1807,10 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 				tasklet_schedule(&pl022->pump_transfers);
 		}
 	   }
+=======
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return IRQ_HANDLED;
 }
 
@@ -1616,6 +1841,7 @@ static int set_up_next_transfer(struct pl022 *pl022,
 	pl022->write =
 	    pl022->tx ? pl022->cur_chip->write : WRITING_NULL;
 	pl022->read = pl022->rx ? pl022->cur_chip->read : READING_NULL;
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_HI3630FPGA) || defined(CONFIG_ARCH_HI3630)
 	dev_dbg(&pl022->adev->dev, "pl022->tx %08x\n", (u32)pl022->tx);
 	dev_dbg(&pl022->adev->dev, "pl022->rx %08x\n", (u32)pl022->rx);
@@ -1624,6 +1850,8 @@ static int set_up_next_transfer(struct pl022 *pl022,
 	dev_dbg(&pl022->adev->dev, "pl022->tx %08llx\n", (u64)pl022->tx);
 	dev_dbg(&pl022->adev->dev, "pl022->rx %08llx\n", (u64)pl022->rx);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1664,13 +1892,19 @@ static void pump_transfers(unsigned long data)
 					struct spi_transfer,
 					transfer_list);
 		if (previous->delay_usecs)
+<<<<<<< HEAD
 		{
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * FIXME: This runs in interrupt context.
 			 * Is this really smart?
 			 */
 			udelay(previous->delay_usecs);
+<<<<<<< HEAD
 		}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Reselect chip select only if cs_change was requested */
 		if (previous->cs_change)
@@ -1709,6 +1943,7 @@ static void do_interrupt_dma_transfer(struct pl022 *pl022)
 	 * Default is to enable all interrupts except RX -
 	 * this will be enabled once TX is complete
 	 */
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_HI3630FPGA) || defined(CONFIG_ARCH_HI3630)
 	u32 irqflags = 0;
 #else
@@ -1720,6 +1955,9 @@ static void do_interrupt_dma_transfer(struct pl022 *pl022)
 	else {
 	    irqflags |=  (~SSP_IMSC_MASK_TXIM);
 	}
+=======
+	u32 irqflags = (u32)(ENABLE_ALL_INTERRUPTS & ~SSP_IMSC_MASK_RXIM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable target chip, if not already active */
 	if (!pl022->next_msg_cs_active)
@@ -1732,7 +1970,10 @@ static void do_interrupt_dma_transfer(struct pl022 *pl022)
 		giveback(pl022);
 		return;
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* If we're using DMA, set up DMA here */
 	if (pl022->cur_chip->enable_dma) {
 		/* Configure DMA transfer */
@@ -1855,6 +2096,7 @@ static int pl022_transfer_one_message(struct spi_master *master,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pl022_prepare_transfer_hardware(struct spi_master *master)
 {
 	struct pl022 *pl022 = spi_master_get_devdata(master);
@@ -1871,6 +2113,8 @@ static int pl022_prepare_transfer_hardware(struct spi_master *master)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pl022_unprepare_transfer_hardware(struct spi_master *master)
 {
 	struct pl022 *pl022 = spi_master_get_devdata(master);
@@ -1879,6 +2123,7 @@ static int pl022_unprepare_transfer_hardware(struct spi_master *master)
 	writew((readw(SSP_CR1(pl022->virtbase)) &
 		(~SSP_CR1_MASK_SSE)), SSP_CR1(pl022->virtbase));
 
+<<<<<<< HEAD
 	if (pl022->master_info->autosuspend_delay > 0) {
 		pm_runtime_mark_last_busy(&pl022->adev->dev);
 		pm_runtime_put_autosuspend(&pl022->adev->dev);
@@ -1889,6 +2134,8 @@ static int pl022_unprepare_transfer_hardware(struct spi_master *master)
 	if (pl022->hardware_mutex)
 		put_hdres_lock();
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2019,8 +2266,12 @@ static int calculate_effective_freq(struct pl022 *pl022, int freq, struct
 	u32 rate, max_tclk, min_tclk, best_freq = 0, best_cpsdvsr = 0,
 		best_scr = 0, tmp, found = 0;
 
+<<<<<<< HEAD
 	rate =  clk_get_rate(pl022->clk);
 
+=======
+	rate = clk_get_rate(pl022->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* cpsdvscr = 2 & scr 0 */
 	max_tclk = spi_rate(rate, CPSDVR_MIN, SCR_MIN);
 	/* cpsdvsr = 254 & scr = 255 */
@@ -2080,8 +2331,13 @@ static int calculate_effective_freq(struct pl022 *pl022, int freq, struct
 	clk_freq->cpsdvsr = (u8) (best_cpsdvsr & 0xFF);
 	clk_freq->scr = (u8) (best_scr & 0xFF);
 	dev_dbg(&pl022->adev->dev,
+<<<<<<< HEAD
 		"SSP Target Frequency is: %u, Effective Frequency is %u, pclk=%u\n",
 		freq, best_freq, rate);
+=======
+		"SSP Target Frequency is: %u, Effective Frequency is %u\n",
+		freq, best_freq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(&pl022->adev->dev, "SSP cpsdvsr = %d, scr = %d\n",
 		clk_freq->cpsdvsr, clk_freq->scr);
 
@@ -2137,11 +2393,16 @@ static int pl022_setup(struct spi_device *spi)
 
 	if (chip == NULL) {
 		chip = kzalloc(sizeof(struct chip_data), GFP_KERNEL);
+<<<<<<< HEAD
 		if (!chip) {
 			dev_err(&spi->dev,
 				"cannot allocate controller state\n");
 			return -ENOMEM;
 		}
+=======
+		if (!chip)
+			return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(&spi->dev,
 			"allocated memory for controller's runtime state\n");
 	}
@@ -2153,6 +2414,7 @@ static int pl022_setup(struct spi_device *spi)
 		if (np) {
 			chip_info_dt = pl022_default_chip_info;
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_HI6XXX
                      if (of_property_read_u32(np, "pl022,hierarchy",&chip_info_dt.hierarchy)){
             		       printk(KERN_ERR " Failed to get hierarchy!!!!\n");
@@ -2184,6 +2446,23 @@ static int pl022_setup(struct spi_device *spi)
 #if defined(CONFIG_ARCH_HI3630FPGA) || defined(CONFIG_ARCH_HI3630) || defined(CONFIG_ARCH_KIRIN)
 			chip_info_dt.slave_tx_disable = of_property_read_bool(np, "pl022,slave-tx-disable");
 #endif
+=======
+			chip_info_dt.hierarchy = SSP_MASTER;
+			of_property_read_u32(np, "pl022,interface",
+				&chip_info_dt.iface);
+			of_property_read_u32(np, "pl022,com-mode",
+				&chip_info_dt.com_mode);
+			of_property_read_u32(np, "pl022,rx-level-trig",
+				&chip_info_dt.rx_lev_trig);
+			of_property_read_u32(np, "pl022,tx-level-trig",
+				&chip_info_dt.tx_lev_trig);
+			of_property_read_u32(np, "pl022,ctrl-len",
+				&chip_info_dt.ctrl_len);
+			of_property_read_u32(np, "pl022,wait-state",
+				&chip_info_dt.wait_state);
+			of_property_read_u32(np, "pl022,duplex",
+				&chip_info_dt.duplex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			chip_info = &chip_info_dt;
 		} else {
@@ -2234,6 +2513,7 @@ static int pl022_setup(struct spi_device *spi)
 	chip->xfer_type = chip_info->com_mode;
 	if (!chip_info->cs_control) {
 		chip->cs_control = null_cs_control;
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_HI3XXX_CS_USE_PCTRL)
 		dev_dbg(&spi->dev, "using pctrl\n");;
 #else
@@ -2241,6 +2521,11 @@ static int pl022_setup(struct spi_device *spi)
 			dev_warn(&spi->dev,
 				 "invalid chip select\n");
 #endif
+=======
+		if (!gpio_is_valid(pl022->chipselects[spi->chip_select]))
+			dev_warn(&spi->dev,
+				 "invalid chip select\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		chip->cs_control = chip_info->cs_control;
 
@@ -2360,6 +2645,7 @@ static int pl022_setup(struct spi_device *spi)
 	SSP_WRITE_BITS(chip->cr1, chip_info->hierarchy, SSP_CR1_MASK_MS, 2);
 	SSP_WRITE_BITS(chip->cr1, chip_info->slave_tx_disable, SSP_CR1_MASK_SOD,
 		3);
+<<<<<<< HEAD
 	//s_hierarchy = chip_info->hierarchy;
 	s_hierarchy = SSP_MASTER;
 #ifdef CONFIG_ARCH_HI6XXX
@@ -2367,6 +2653,9 @@ static int pl022_setup(struct spi_device *spi)
 #else
 	s_hierarchy = SSP_MASTER;
 #endif
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Save controller_state */
 	spi_set_ctldata(spi, chip);
 	return status;
@@ -2396,8 +2685,12 @@ pl022_platform_data_dt_get(struct device *dev)
 {
 	struct device_node *np = dev->of_node;
 	struct pl022_ssp_controller *pd;
+<<<<<<< HEAD
 	u32 tmp = 0;
 	int ret = 0;
+=======
+	u32 tmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!np) {
 		dev_err(dev, "no dt node defined\n");
@@ -2405,6 +2698,7 @@ pl022_platform_data_dt_get(struct device *dev)
 	}
 
 	pd = devm_kzalloc(dev, sizeof(struct pl022_ssp_controller), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pd) {
 		dev_err(dev, "cannot allocate platform data memory\n");
 		return NULL;
@@ -2430,6 +2724,17 @@ pl022_platform_data_dt_get(struct device *dev)
 			     &pd->autosuspend_delay);
 	if (ret < 0)
 		dev_err(dev, "spi cannot get the autosuspend-delay value\n");
+=======
+	if (!pd)
+		return NULL;
+
+	pd->bus_id = -1;
+	pd->enable_dma = 1;
+	of_property_read_u32(np, "num-cs", &tmp);
+	pd->num_chipselect = tmp;
+	of_property_read_u32(np, "pl022,autosuspend-delay",
+			     &pd->autosuspend_delay);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pd->rt = of_property_read_bool(np, "pl022,rt");
 
 	return pd;
@@ -2438,6 +2743,7 @@ pl022_platform_data_dt_get(struct device *dev)
 static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 {
 	struct device *dev = &adev->dev;
+<<<<<<< HEAD
 	struct pl022_ssp_controller *platform_info = adev->dev.platform_data;
 	struct spi_master *master;
 	struct pl022 *pl022 = NULL;	/*Data for this driver */
@@ -2446,6 +2752,13 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 #if defined(CONFIG_ARCH_HI3630FPGA) || defined(CONFIG_ARCH_HI3630)
 	struct device_node *np_crgctrl;
 #endif
+=======
+	struct pl022_ssp_controller *platform_info =
+			dev_get_platdata(&adev->dev);
+	struct spi_master *master;
+	struct pl022 *pl022 = NULL;	/*Data for this driver */
+	struct device_node *np = adev->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int status = 0, i, num_cs;
 
 	dev_info(&adev->dev,
@@ -2479,6 +2792,7 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	pl022->vendor = id->data;
 	pl022->chipselects = devm_kzalloc(dev, num_cs * sizeof(int),
 					  GFP_KERNEL);
+<<<<<<< HEAD
 
 	pl022->pinctrl = devm_pinctrl_get(dev);
 	if (IS_ERR(pl022->pinctrl)) {
@@ -2543,6 +2857,13 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 		}
 #endif
 	}
+=======
+	if (!pl022->chipselects) {
+		status = -ENOMEM;
+		goto err_no_mem;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Bus Number Which has been Assigned to this SSP controller
 	 * on this board
@@ -2551,12 +2872,17 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	master->num_chipselect = num_cs;
 	master->cleanup = pl022_cleanup;
 	master->setup = pl022_setup;
+<<<<<<< HEAD
 	master->prepare_transfer_hardware = pl022_prepare_transfer_hardware;
+=======
+	master->auto_runtime_pm = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	master->transfer_one_message = pl022_transfer_one_message;
 	master->unprepare_transfer_hardware = pl022_unprepare_transfer_hardware;
 	master->rt = platform_info->rt;
 	master->dev.of_node = dev->of_node;
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_HI3XXX_CS_USE_PCTRL)
 	np = of_find_compatible_node(NULL, NULL, "hisilicon,pctrl");
 	pl022->pctrl_base = of_iomap(np, 0);
@@ -2579,6 +2905,14 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	if (platform_info->num_chipselect && platform_info->chipselects) {
 		for (i = 0; i < num_cs; i++)
 			pl022->chipselects[i] = platform_info->chipselects[i];
+=======
+	if (platform_info->num_chipselect && platform_info->chipselects) {
+		for (i = 0; i < num_cs; i++)
+			pl022->chipselects[i] = platform_info->chipselects[i];
+	} else if (pl022->vendor->internal_cs_ctrl) {
+		for (i = 0; i < num_cs; i++)
+			pl022->chipselects[i] = i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (IS_ENABLED(CONFIG_OF)) {
 		for (i = 0; i < num_cs; i++) {
 			int cs_gpio = of_get_named_gpio(np, "cs-gpios", i);
@@ -2597,7 +2931,11 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 						cs_gpio);
 				else if (gpio_direction_output(cs_gpio, 1))
 					dev_err(&adev->dev,
+<<<<<<< HEAD
 						"could set gpio %d as output\n",
+=======
+						"could not set gpio %d as output\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						cs_gpio);
 			}
 		}
@@ -2624,8 +2962,13 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 		status = -ENOMEM;
 		goto err_no_ioremap;
 	}
+<<<<<<< HEAD
 	dev_info(&adev->dev, "pl022: mapped registers from %lld to %p\n",
 		adev->res.start, pl022->virtbase);
+=======
+	dev_info(&adev->dev, "mapped registers from %pa to %p\n",
+		&adev->res.start, pl022->virtbase);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pl022->clk = devm_clk_get(&adev->dev, NULL);
 	if (IS_ERR(pl022->clk)) {
@@ -2634,6 +2977,7 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 		goto err_no_clk;
 	}
 
+<<<<<<< HEAD
 	status = clk_prepare(pl022->clk);
 	if (status) {
 		dev_err(&adev->dev, "could not prepare SSP/SPI bus clock\n");
@@ -2648,10 +2992,17 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 		}
 	}
 	status = clk_enable(pl022->clk);
+=======
+	status = clk_prepare_enable(pl022->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (status) {
 		dev_err(&adev->dev, "could not enable SSP/SPI bus clock\n");
 		goto err_no_clk_en;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Initialize transfer pump */
 	tasklet_init(&pl022->pump_transfers, pump_transfers,
 		     (unsigned long)pl022);
@@ -2659,9 +3010,12 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	/* Disable SSP */
 	writew((readw(SSP_CR1(pl022->virtbase)) & (~SSP_CR1_MASK_SSE)),
 	       SSP_CR1(pl022->virtbase));
+<<<<<<< HEAD
 	if (pl022->hardware_mutex) {
 		spi0_clk = pl022->clk;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	load_ssp_default_config(pl022);
 
 	status = devm_request_irq(dev, adev->irq[0], pl022_interrupt_handler,
@@ -2673,6 +3027,13 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 
 	/* Get DMA channels, try autoconfiguration first */
 	status = pl022_dma_autoprobe(pl022);
+<<<<<<< HEAD
+=======
+	if (status == -EPROBE_DEFER) {
+		dev_dbg(dev, "deferring probe to get DMA channel\n");
+		goto err_no_irq;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If that failed, use channels from platform_info */
 	if (status == 0)
@@ -2685,13 +3046,22 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 
 	/* Register with the SPI framework */
 	amba_set_drvdata(adev, pl022);
+<<<<<<< HEAD
 	status = spi_register_master(master);
+=======
+	status = devm_spi_register_master(&adev->dev, master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (status != 0) {
 		dev_err(&adev->dev,
 			"probe - problem registering spi master\n");
 		goto err_spi_register;
 	}
+<<<<<<< HEAD
 	dev_info(dev, "probe succeeded\n");
+=======
+	dev_dbg(dev, "probe succeeded\n");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* let runtime pm put suspend */
 	if (platform_info->autosuspend_delay > 0) {
 		dev_info(&adev->dev,
@@ -2702,24 +3072,37 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 		pm_runtime_use_autosuspend(dev);
 	}
 	pm_runtime_put(dev);
+<<<<<<< HEAD
 	printk(KERN_INFO "\nspi probe init sucess\n");
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
  err_spi_register:
 	if (platform_info->enable_dma)
 		pl022_dma_remove(pl022);
  err_no_irq:
+<<<<<<< HEAD
 	clk_disable(pl022->clk);
  err_no_clk_en:
 	clk_unprepare(pl022->clk);
  err_clk_prep:
+=======
+	clk_disable_unprepare(pl022->clk);
+ err_no_clk_en:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  err_no_clk:
  err_no_ioremap:
 	amba_release_regions(adev);
  err_no_ioregion:
  err_no_gpio:
+<<<<<<< HEAD
  hwspin_lock_err0:
  err_no_pinctrl:
+=======
+ err_no_mem:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_master_put(master);
 	return status;
 }
@@ -2731,15 +3114,24 @@ pl022_remove(struct amba_device *adev)
 
 	if (!pl022)
 		return 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * undo pm_runtime_put() in probe.  I assume that we're not
 	 * accessing the primecell here.
 	 */
 	pm_runtime_get_noresume(&adev->dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	load_ssp_default_config(pl022);
 	if (pl022->master_info->enable_dma)
 		pl022_dma_remove(pl022);
 
+<<<<<<< HEAD
 	clk_disable(pl022->clk);
 	clk_unprepare(pl022->clk);
 
@@ -2816,22 +3208,47 @@ void spi0_clk_ctrl(bool on)
 }
 EXPORT_SYMBOL_GPL(spi0_clk_ctrl);
 #ifdef CONFIG_SUSPEND
+=======
+	clk_disable_unprepare(pl022->clk);
+	amba_release_regions(adev);
+	tasklet_disable(&pl022->pump_transfers);
+	return 0;
+}
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pl022_suspend(struct device *dev)
 {
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 	int ret;
 
+<<<<<<< HEAD
 	dev_info(dev, "%s: +\n", __func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = spi_master_suspend(pl022->master);
 	if (ret) {
 		dev_warn(dev, "cannot suspend master\n");
 		return ret;
 	}
+<<<<<<< HEAD
 	pm_runtime_get_sync(dev);
 	pl022_suspend_resources(pl022, false);
 
 	dev_dbg(dev, "suspended\n");
 	dev_info(dev, "%s: -\n", __func__);
+=======
+
+	ret = pm_runtime_force_suspend(dev);
+	if (ret) {
+		spi_master_resume(pl022->master);
+		return ret;
+	}
+
+	pinctrl_pm_select_sleep_state(dev);
+
+	dev_dbg(dev, "suspended\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2840,9 +3257,16 @@ static int pl022_resume(struct device *dev)
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 	int ret;
 
+<<<<<<< HEAD
 	dev_info(dev, "%s: +\n", __func__);
 	pl022_resume_resources(pl022, false);
 	pm_runtime_put(dev);
+=======
+	ret = pm_runtime_force_resume(dev);
+	if (ret)
+		dev_err(dev, "problem resuming\n");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Start the queue running */
 	ret = spi_master_resume(pl022->master);
 	if (ret)
@@ -2850,22 +3274,36 @@ static int pl022_resume(struct device *dev)
 	else
 		dev_dbg(dev, "resumed\n");
 
+<<<<<<< HEAD
 	dev_info(dev, "%s: -\n", __func__);
 	return ret;
 }
 #endif	/* CONFIG_PM */
 
 #ifdef CONFIG_PM_RUNTIME
+=======
+	return ret;
+}
+#endif
+
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int pl022_runtime_suspend(struct device *dev)
 {
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 
 	//dev_info(dev, "%s: +\n", __func__);
 
 	pl022_suspend_resources(pl022, true);
 
 	//dev_info(dev, "%s: -\n", __func__);
+=======
+	clk_disable_unprepare(pl022->clk);
+	pinctrl_pm_select_idle_state(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -2873,12 +3311,17 @@ static int pl022_runtime_resume(struct device *dev)
 {
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 
 	//dev_info(dev, "%s: +\n", __func__);
 
 	pl022_resume_resources(pl022, true);
 
 	//dev_info(dev, "%s: -\n", __func__);
+=======
+	pinctrl_pm_select_default_state(dev);
+	clk_prepare_enable(pl022->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -2889,6 +3332,7 @@ static const struct dev_pm_ops pl022_dev_pm_ops = {
 	SET_RUNTIME_PM_OPS(pl022_runtime_suspend, pl022_runtime_resume, NULL)
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_HI3630FPGA) || defined(CONFIG_ARCH_HI3630) || defined(CONFIG_ARCH_KIRIN)
 static struct vendor_data vendor_arm = {
 	.fifodepth = 256,
@@ -2899,6 +3343,8 @@ static struct vendor_data vendor_arm = {
 	.loopback = true,
 };
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct vendor_data vendor_arm = {
 	.fifodepth = 8,
 	.max_bpw = 16,
@@ -2906,8 +3352,13 @@ static struct vendor_data vendor_arm = {
 	.extended_cr = false,
 	.pl023 = false,
 	.loopback = true,
+<<<<<<< HEAD
 };
 #endif
+=======
+	.internal_cs_ctrl = false,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct vendor_data vendor_st = {
 	.fifodepth = 32,
@@ -2916,6 +3367,10 @@ static struct vendor_data vendor_st = {
 	.extended_cr = true,
 	.pl023 = false,
 	.loopback = true,
+<<<<<<< HEAD
+=======
+	.internal_cs_ctrl = false,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct vendor_data vendor_st_pl023 = {
@@ -2925,6 +3380,20 @@ static struct vendor_data vendor_st_pl023 = {
 	.extended_cr = true,
 	.pl023 = true,
 	.loopback = false,
+<<<<<<< HEAD
+=======
+	.internal_cs_ctrl = false,
+};
+
+static struct vendor_data vendor_lsi = {
+	.fifodepth = 8,
+	.max_bpw = 16,
+	.unidir = false,
+	.extended_cr = false,
+	.pl023 = false,
+	.loopback = true,
+	.internal_cs_ctrl = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct amba_id pl022_ids[] = {
@@ -2958,6 +3427,18 @@ static struct amba_id pl022_ids[] = {
 		.mask	= 0xffffffff,
 		.data	= &vendor_st_pl023,
 	},
+<<<<<<< HEAD
+=======
+	{
+		/*
+		 * PL022 variant that has a chip select control register whih
+		 * allows control of 5 output signals nCS[0:4].
+		 */
+		.id	= 0x000b6022,
+		.mask	= 0x000fffff,
+		.data	= &vendor_lsi,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0, 0 },
 };
 
@@ -2984,6 +3465,7 @@ static void __exit pl022_exit(void)
 	amba_driver_unregister(&pl022_driver);
 }
 module_exit(pl022_exit);
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_HI6XXX
 
 static void  dwc_ssp_enable_clk(int enable)
@@ -3087,6 +3569,9 @@ void spi0_deassert(void)
 postcore_initcall_sync(spi0_deassert);
 
 #endif
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Linus Walleij <linus.walleij@stericsson.com>");
 MODULE_DESCRIPTION("PL022 SSP Controller Driver");
 MODULE_LICENSE("GPL");

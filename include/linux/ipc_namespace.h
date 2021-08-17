@@ -6,6 +6,7 @@
 #include <linux/rwsem.h>
 #include <linux/notifier.h>
 #include <linux/nsproxy.h>
+<<<<<<< HEAD
 
 /*
  * ipc namespace events
@@ -15,13 +16,19 @@
 #define IPCNS_REMOVED  0x00000003   /* Notify ipc namespace removed */
 
 #define IPCNS_CALLBACK_PRI 0
+=======
+#include <linux/ns_common.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct user_namespace;
 
 struct ipc_ids {
 	int in_use;
 	unsigned short seq;
+<<<<<<< HEAD
 	unsigned short seq_max;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rw_semaphore rwsem;
 	struct idr ipcs_idr;
 	int next_id;
@@ -39,7 +46,10 @@ struct ipc_namespace {
 	unsigned int	msg_ctlmni;
 	atomic_t	msg_bytes;
 	atomic_t	msg_hdrs;
+<<<<<<< HEAD
 	int		auto_msgmni;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	size_t		shm_ctlmax;
 	size_t		shm_ctlall;
@@ -68,6 +78,7 @@ struct ipc_namespace {
 
 	/* user_ns which owns the ipc ns */
 	struct user_namespace *user_ns;
+<<<<<<< HEAD
 
 	unsigned int	proc_inum;
 };
@@ -90,6 +101,19 @@ static inline int cond_register_ipcns_notifier(struct ipc_namespace *ns)
 { return 0; }
 static inline void unregister_ipcns_notifier(struct ipc_namespace *ns) { }
 static inline int ipcns_notify(unsigned long l) { return 0; }
+=======
+	struct ucounts *ucounts;
+
+	struct ns_common ns;
+};
+
+extern struct ipc_namespace init_ipc_ns;
+extern spinlock_t mq_lock;
+
+#ifdef CONFIG_SYSVIPC
+extern void shm_destroy_orphaned(struct ipc_namespace *ns);
+#else /* CONFIG_SYSVIPC */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void shm_destroy_orphaned(struct ipc_namespace *ns) {}
 #endif /* CONFIG_SYSVIPC */
 

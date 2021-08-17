@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -43,6 +52,15 @@ static void bfa_ioc_ct_sync_join(struct bfa_ioc_s *ioc);
 static void bfa_ioc_ct_sync_leave(struct bfa_ioc_s *ioc);
 static void bfa_ioc_ct_sync_ack(struct bfa_ioc_s *ioc);
 static bfa_boolean_t bfa_ioc_ct_sync_complete(struct bfa_ioc_s *ioc);
+<<<<<<< HEAD
+=======
+static void bfa_ioc_ct_set_cur_ioc_fwstate(
+			struct bfa_ioc_s *ioc, enum bfi_ioc_state fwstate);
+static enum bfi_ioc_state bfa_ioc_ct_get_cur_ioc_fwstate(struct bfa_ioc_s *ioc);
+static void bfa_ioc_ct_set_alt_ioc_fwstate(
+			struct bfa_ioc_s *ioc, enum bfi_ioc_state fwstate);
+static enum bfi_ioc_state bfa_ioc_ct_get_alt_ioc_fwstate(struct bfa_ioc_s *ioc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct bfa_ioc_hwif_s hwif_ct;
 static struct bfa_ioc_hwif_s hwif_ct2;
@@ -512,6 +530,13 @@ bfa_ioc_set_ctx_hwif(struct bfa_ioc_s *ioc, struct bfa_ioc_hwif_s *hwif)
 	hwif->ioc_sync_leave = bfa_ioc_ct_sync_leave;
 	hwif->ioc_sync_ack = bfa_ioc_ct_sync_ack;
 	hwif->ioc_sync_complete = bfa_ioc_ct_sync_complete;
+<<<<<<< HEAD
+=======
+	hwif->ioc_set_fwstate = bfa_ioc_ct_set_cur_ioc_fwstate;
+	hwif->ioc_get_fwstate = bfa_ioc_ct_get_cur_ioc_fwstate;
+	hwif->ioc_set_alt_fwstate = bfa_ioc_ct_set_alt_ioc_fwstate;
+	hwif->ioc_get_alt_fwstate = bfa_ioc_ct_get_alt_ioc_fwstate;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -918,6 +943,19 @@ bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode mode)
 
 		}
 	}
+<<<<<<< HEAD
+=======
+	/*
+	* The very first PCIe DMA Read done by LPU fails with a fatal error,
+	* when Address Translation Cache (ATC) has been enabled by system BIOS.
+	*
+	* Workaround:
+	* Disable Invalidated Tag Match Enable capability by setting the bit 26
+	* of CHIP_MISC_PRG to 0, by default it is set to 1.
+	*/
+	r32 = readl(rb + CT2_CHIP_MISC_PRG);
+	writel((r32 & 0xfbffffff), (rb + CT2_CHIP_MISC_PRG));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Mask the interrupts and clear any
@@ -949,3 +987,32 @@ bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode mode)
 
 	return BFA_STATUS_OK;
 }
+<<<<<<< HEAD
+=======
+
+static void
+bfa_ioc_ct_set_cur_ioc_fwstate(struct bfa_ioc_s *ioc,
+		enum bfi_ioc_state fwstate)
+{
+	writel(fwstate, ioc->ioc_regs.ioc_fwstate);
+}
+
+static enum bfi_ioc_state
+bfa_ioc_ct_get_cur_ioc_fwstate(struct bfa_ioc_s *ioc)
+{
+	return (enum bfi_ioc_state)readl(ioc->ioc_regs.ioc_fwstate);
+}
+
+static void
+bfa_ioc_ct_set_alt_ioc_fwstate(struct bfa_ioc_s *ioc,
+		enum bfi_ioc_state fwstate)
+{
+	writel(fwstate, ioc->ioc_regs.alt_ioc_fwstate);
+}
+
+static enum bfi_ioc_state
+bfa_ioc_ct_get_alt_ioc_fwstate(struct bfa_ioc_s *ioc)
+{
+	return (enum bfi_ioc_state) readl(ioc->ioc_regs.alt_ioc_fwstate);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

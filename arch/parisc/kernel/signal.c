@@ -9,8 +9,12 @@
  *
  *  Like the IA-64, we are a recent enough port (we are *starting*
  *  with glibc2.2) that we do not need to support the old non-realtime
+<<<<<<< HEAD
  *  Linux signals.  Therefore we don't.  HP/UX signals will go in
  *  arch/parisc/hpux/signal.c when we figure out how to do them.
+=======
+ *  Linux signals.  Therefore we don't.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/sched.h>
@@ -56,6 +60,7 @@
 #define A(__x)	((unsigned long)(__x))
 
 /*
+<<<<<<< HEAD
  * Atomically swap in the new signal mask, and wait for a signal.
  */
 #ifdef CONFIG_64BIT
@@ -63,6 +68,8 @@
 #endif
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Do a signal return - restore sigcontext.
  */
 
@@ -85,7 +92,11 @@ restore_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs)
 	err |= __copy_from_user(regs->iaoq, sc->sc_iaoq, sizeof(regs->iaoq));
 	err |= __copy_from_user(regs->iasq, sc->sc_iasq, sizeof(regs->iasq));
 	err |= __get_user(regs->sar, &sc->sc_sar);
+<<<<<<< HEAD
 	DBG(2,"restore_sigcontext: iaoq is 0x%#lx / 0x%#lx\n", 
+=======
+	DBG(2,"restore_sigcontext: iaoq is %#lx / %#lx\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regs->iaoq[0],regs->iaoq[1]);
 	DBG(2,"restore_sigcontext: r28 is %ld\n", regs->gr[28]);
 	return err;
@@ -106,7 +117,11 @@ sys_rt_sigreturn(struct pt_regs *regs, int in_syscall)
 		sigframe_size = PARISC_RT_SIGFRAME_SIZE32;
 #endif
 
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Unwind the user stack to get the rt_sigframe structure. */
 	frame = (struct rt_sigframe __user *)
@@ -234,8 +249,13 @@ setup_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs, int in_sysc
 }
 
 static long
+<<<<<<< HEAD
 setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	       sigset_t *set, struct pt_regs *regs, int in_syscall)
+=======
+setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs,
+	       int in_syscall)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct rt_sigframe __user *frame;
 	unsigned long rp, usp;
@@ -248,10 +268,17 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	
 	usp = (regs->gr[30] & ~(0x01UL));
 	/*FIXME: frame_size parameter is unused, remove it. */
+<<<<<<< HEAD
 	frame = get_sigframe(ka, usp, sizeof(*frame));
 
 	DBG(1,"SETUP_RT_FRAME: START\n");
 	DBG(1,"setup_rt_frame: frame %p info %p\n", frame, info);
+=======
+	frame = get_sigframe(&ksig->ka, usp, sizeof(*frame));
+
+	DBG(1,"SETUP_RT_FRAME: START\n");
+	DBG(1,"setup_rt_frame: frame %p info %p\n", frame, ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	
 #ifdef CONFIG_64BIT
@@ -260,7 +287,11 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	
 	if (is_compat_task()) {
 		DBG(1,"setup_rt_frame: frame->info = 0x%p\n", &compat_frame->info);
+<<<<<<< HEAD
 		err |= copy_siginfo_to_user32(&compat_frame->info, info);
+=======
+		err |= copy_siginfo_to_user32(&compat_frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err |= __compat_save_altstack( &compat_frame->uc.uc_stack, regs->gr[30]);
 		DBG(1,"setup_rt_frame: frame->uc = 0x%p\n", &compat_frame->uc);
 		DBG(1,"setup_rt_frame: frame->uc.uc_mcontext = 0x%p\n", &compat_frame->uc.uc_mcontext);
@@ -272,7 +303,11 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 #endif
 	{	
 		DBG(1,"setup_rt_frame: frame->info = 0x%p\n", &frame->info);
+<<<<<<< HEAD
 		err |= copy_siginfo_to_user(&frame->info, info);
+=======
+		err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err |= __save_altstack(&frame->uc.uc_stack, regs->gr[30]);
 		DBG(1,"setup_rt_frame: frame->uc = 0x%p\n", &frame->uc);
 		DBG(1,"setup_rt_frame: frame->uc.uc_mcontext = 0x%p\n", &frame->uc.uc_mcontext);
@@ -282,7 +317,11 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	}
 	
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
+=======
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set up to return from userspace.  If provided, use a stub
 	   already in userspace. The first words of tramp are used to
@@ -319,9 +358,15 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	rp = (unsigned long) &frame->tramp[SIGRESTARTBLOCK_TRAMP];
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	haddr = A(ka->sa.sa_handler);
+=======
+		return -EFAULT;
+
+	haddr = A(ksig->ka.sa.sa_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* The sa_handler may be a pointer to a function descriptor */
 #ifdef CONFIG_64BIT
 	if (is_compat_task()) {
@@ -333,7 +378,11 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 			err = __copy_from_user(&fdesc, ufdesc, sizeof(fdesc));
 
 			if (err)
+<<<<<<< HEAD
 				goto give_sigsegv;
+=======
+				return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			haddr = fdesc.addr;
 			regs->gr[19] = fdesc.gp;
@@ -346,7 +395,11 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		err = __copy_from_user(&fdesc, ufdesc, sizeof(fdesc));
 		
 		if (err)
+<<<<<<< HEAD
 			goto give_sigsegv;
+=======
+			return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		
 		haddr = fdesc.addr;
 		regs->gr[19] = fdesc.gp;
@@ -393,7 +446,11 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	}
 
 	regs->gr[2]  = rp;                /* userland return pointer */
+<<<<<<< HEAD
 	regs->gr[26] = sig;               /* signal number */
+=======
+	regs->gr[26] = ksig->sig;               /* signal number */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 #ifdef CONFIG_64BIT
 	if (is_compat_task()) {
@@ -417,11 +474,14 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	       current->comm, current->pid, frame, regs->gr[30],
 	       regs->iaoq[0], regs->iaoq[1], rp);
 
+<<<<<<< HEAD
 	return 1;
 
 give_sigsegv:
 	DBG(1,"setup_rt_frame: sending SIGSEGV\n");
 	force_sigsegv(sig, current);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -430,6 +490,7 @@ give_sigsegv:
  */	
 
 static void
+<<<<<<< HEAD
 handle_signal(unsigned long sig, siginfo_t *info, struct k_sigaction *ka,
 		struct pt_regs *regs, int in_syscall)
 {
@@ -444,6 +505,21 @@ handle_signal(unsigned long sig, siginfo_t *info, struct k_sigaction *ka,
 	signal_delivered(sig, info, ka, regs, 
 		test_thread_flag(TIF_SINGLESTEP) ||
 		test_thread_flag(TIF_BLOCKSTEP));
+=======
+handle_signal(struct ksignal *ksig, struct pt_regs *regs, int in_syscall)
+{
+	int ret;
+	sigset_t *oldset = sigmask_to_save();
+
+	DBG(1,"handle_signal: sig=%ld, ka=%p, info=%p, oldset=%p, regs=%p\n",
+	       ksig->sig, ksig->ka, ksig->info, oldset, regs);
+	
+	/* Set up the stack frame */
+	ret = setup_rt_frame(ksig, oldset, regs, in_syscall);
+
+	signal_setup_done(ret, ksig, test_thread_flag(TIF_SINGLESTEP) ||
+			  test_thread_flag(TIF_BLOCKSTEP));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	DBG(1,KERN_DEBUG "do_signal: Exit (success), regs->gr[28] = %ld\n",
 		regs->gr[28]);
@@ -535,6 +611,12 @@ insert_restart_trampoline(struct pt_regs *regs)
 	case -ERESTART_RESTARTBLOCK: {
 		/* Restart the system call - no handlers present */
 		unsigned int *usp = (unsigned int *)regs->gr[30];
+<<<<<<< HEAD
+=======
+		unsigned long start = (unsigned long) &usp[2];
+		unsigned long end  = (unsigned long) &usp[5];
+		long err = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Setup a trampoline to restart the syscall
 		 * with __NR_restart_syscall
@@ -546,6 +628,7 @@ insert_restart_trampoline(struct pt_regs *regs)
 		 * 16: ldi __NR_restart_syscall, %r20
 		 */
 #ifdef CONFIG_64BIT
+<<<<<<< HEAD
 		put_user(regs->gr[31] >> 32, &usp[0]);
 		put_user(regs->gr[31] & 0xffffffff, &usp[1]);
 		put_user(0x0fc010df, &usp[2]);
@@ -563,6 +646,23 @@ insert_restart_trampoline(struct pt_regs *regs)
 		 */
 		flush_user_dcache_range(regs->gr[30], regs->gr[30] + 4);
 		flush_user_icache_range(regs->gr[30], regs->gr[30] + 4);
+=======
+		err |= put_user(regs->gr[31] >> 32, &usp[0]);
+		err |= put_user(regs->gr[31] & 0xffffffff, &usp[1]);
+		err |= put_user(0x0fc010df, &usp[2]);
+#else
+		err |= put_user(regs->gr[31], &usp[0]);
+		err |= put_user(0x0fc0109f, &usp[2]);
+#endif
+		err |= put_user(0xe0008200, &usp[3]);
+		err |= put_user(0x34140000, &usp[4]);
+
+		WARN_ON(err);
+
+		/* flush data/instruction cache for new insns */
+		flush_user_dcache_range(start, end);
+		flush_user_icache_range(start, end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		regs->gr[31] = regs->gr[30] + 8;
 		return;
@@ -591,13 +691,18 @@ insert_restart_trampoline(struct pt_regs *regs)
 asmlinkage void
 do_signal(struct pt_regs *regs, long in_syscall)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 	struct k_sigaction ka;
 	int signr;
+=======
+	struct ksignal ksig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	DBG(1,"\ndo_signal: regs=0x%p, sr7 %#lx, in_syscall=%d\n",
 	       regs, regs->sr[7], in_syscall);
 
+<<<<<<< HEAD
 	signr = get_signal_to_deliver(&info, &ka, regs, NULL);
 	DBG(3,"do_signal: signr = %d, regs->gr[28] = %ld\n", signr, regs->gr[28]); 
 	
@@ -607,6 +712,15 @@ do_signal(struct pt_regs *regs, long in_syscall)
 			syscall_restart(regs, &ka);
 
 		handle_signal(signr, &info, &ka, regs, in_syscall);
+=======
+	if (get_signal(&ksig)) {
+		DBG(3,"do_signal: signr = %d, regs->gr[28] = %ld\n", signr, regs->gr[28]);
+		/* Restart a system call if necessary. */
+		if (in_syscall)
+			syscall_restart(regs, &ksig.ka);
+
+		handle_signal(&ksig, regs, in_syscall);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 

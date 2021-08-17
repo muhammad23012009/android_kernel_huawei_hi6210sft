@@ -3,9 +3,19 @@
 #ifndef _ASM_PARISC_SYSCALL_H_
 #define _ASM_PARISC_SYSCALL_H_
 
+<<<<<<< HEAD
 #include <linux/err.h>
 #include <asm/ptrace.h>
 
+=======
+#include <uapi/linux/audit.h>
+#include <linux/compat.h>
+#include <linux/err.h>
+#include <asm/ptrace.h>
+
+#define NR_syscalls (__NR_Linux_syscalls)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline long syscall_get_nr(struct task_struct *tsk,
 				  struct pt_regs *regs)
 {
@@ -31,10 +41,45 @@ static inline void syscall_get_arguments(struct task_struct *tsk,
 		args[1] = regs->gr[25];
 	case 1:
 		args[0] = regs->gr[26];
+<<<<<<< HEAD
+=======
+	case 0:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		BUG();
 	}
 }
 
+<<<<<<< HEAD
+=======
+static inline long syscall_get_return_value(struct task_struct *task,
+						struct pt_regs *regs)
+{
+	return regs->gr[28];
+}
+
+static inline void syscall_set_return_value(struct task_struct *task,
+					    struct pt_regs *regs,
+					    int error, long val)
+{
+	regs->gr[28] = error ? error : val;
+}
+
+static inline void syscall_rollback(struct task_struct *task,
+				    struct pt_regs *regs)
+{
+	/* do nothing */
+}
+
+static inline int syscall_get_arch(void)
+{
+	int arch = AUDIT_ARCH_PARISC;
+#ifdef CONFIG_64BIT
+	if (!is_compat_task())
+		arch = AUDIT_ARCH_PARISC64;
+#endif
+	return arch;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /*_ASM_PARISC_SYSCALL_H_*/

@@ -63,7 +63,15 @@ TRACE_EVENT(xen_mc_callback,
 	    TP_PROTO(xen_mc_callback_fn_t fn, void *data),
 	    TP_ARGS(fn, data),
 	    TP_STRUCT__entry(
+<<<<<<< HEAD
 		    __field(xen_mc_callback_fn_t, fn)
+=======
+		    /*
+		     * Use field_struct to avoid is_signed_type()
+		     * comparison of a function pointer.
+		     */
+		    __field_struct(xen_mc_callback_fn_t, fn)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    __field(void *, data)
 		    ),
 	    TP_fast_assign(
@@ -224,7 +232,11 @@ TRACE_EVENT(xen_mmu_pmd_clear,
 	    TP_printk("pmdp %p", __entry->pmdp)
 	);
 
+<<<<<<< HEAD
 #if PAGETABLE_LEVELS >= 4
+=======
+#if CONFIG_PGTABLE_LEVELS >= 4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 TRACE_EVENT(xen_mmu_set_pud,
 	    TP_PROTO(pud_t *pudp, pud_t pudval),
@@ -377,6 +389,7 @@ DECLARE_EVENT_CLASS(xen_mmu_pgd,
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_pin);
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_unpin);
 
+<<<<<<< HEAD
 TRACE_EVENT(xen_mmu_flush_tlb_all,
 	    TP_PROTO(int x),
 	    TP_ARGS(x),
@@ -393,6 +406,8 @@ TRACE_EVENT(xen_mmu_flush_tlb,
 	    TP_printk("%s", "")
 	);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 TRACE_EVENT(xen_mmu_flush_tlb_single,
 	    TP_PROTO(unsigned long addr),
 	    TP_ARGS(addr),

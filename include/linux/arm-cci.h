@@ -24,16 +24,32 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/arm-cci.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct device_node;
 
 #ifdef CONFIG_ARM_CCI
 extern bool cci_probed(void);
+<<<<<<< HEAD
+=======
+#else
+static inline bool cci_probed(void) { return false; }
+#endif
+
+#ifdef CONFIG_ARM_CCI400_PORT_CTRL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int cci_ace_get_port(struct device_node *dn);
 extern int cci_disable_port_by_cpu(u64 mpidr);
 extern int __cci_control_port_by_device(struct device_node *dn, bool enable);
 extern int __cci_control_port_by_index(u32 port, bool enable);
 #else
+<<<<<<< HEAD
 static inline bool cci_probed(void) { return false; }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int cci_ace_get_port(struct device_node *dn)
 {
 	return -ENODEV;
@@ -50,6 +66,7 @@ static inline int __cci_control_port_by_index(u32 port, bool enable)
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARM_CCI) && defined(CONFIG_ARCH_HI3XXX)
 extern void hisi_cci_enable_detect(u32 cluster);
 #else
@@ -59,6 +76,8 @@ static inline void hisi_cci_enable_detect(u32 cluster)
 }
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cci_disable_port_by_device(dev) \
 	__cci_control_port_by_device(dev, false)
 #define cci_enable_port_by_device(dev) \

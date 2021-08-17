@@ -17,6 +17,10 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/kthread.h>
+<<<<<<< HEAD
+=======
+#include <linux/moduleparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mutex.h>
 #include <linux/sched.h>
 #include <linux/serial.h>
@@ -70,6 +74,18 @@ static struct tty_driver *channel_driver;
 static struct timer_list put_timer;
 static struct task_struct *dashtty_thread;
 
+<<<<<<< HEAD
+=======
+/*
+ * The console_poll parameter determines whether the console channel should be
+ * polled for input.
+ * By default the console channel isn't polled at all, in order to avoid the
+ * overhead, but that means it isn't possible to have a login on /dev/console.
+ */
+static bool console_poll;
+module_param(console_poll, bool, S_IRUGO);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RX_BUF_SIZE 1024
 
 enum {
@@ -313,12 +329,20 @@ static void dashtty_timer(unsigned long ignored)
 	if (channel >= 0)
 		fetch_data(channel);
 
+<<<<<<< HEAD
 	mod_timer_pinned(&poll_timer, jiffies + DA_TTY_POLL);
+=======
+	mod_timer(&poll_timer, jiffies + DA_TTY_POLL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void add_poll_timer(struct timer_list *poll_timer)
 {
+<<<<<<< HEAD
 	setup_timer(poll_timer, dashtty_timer, 0);
+=======
+	setup_pinned_timer(poll_timer, dashtty_timer, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	poll_timer->expires = jiffies + DA_TTY_POLL;
 
 	/*
@@ -353,7 +377,11 @@ static int dashtty_port_activate(struct tty_port *port, struct tty_struct *tty)
 	 * possible to have a login on /dev/console.
 	 *
 	 */
+<<<<<<< HEAD
 	if (dport != &dashtty_ports[CONSOLE_CHANNEL])
+=======
+	if (console_poll || dport != &dashtty_ports[CONSOLE_CHANNEL])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (atomic_inc_return(&num_channels_need_poll) == 1)
 			add_poll_timer(&poll_timer);
 
@@ -372,7 +400,11 @@ static void dashtty_port_shutdown(struct tty_port *port)
 	unsigned int count;
 
 	/* stop reading */
+<<<<<<< HEAD
 	if (dport != &dashtty_ports[CONSOLE_CHANNEL])
+=======
+	if (console_poll || dport != &dashtty_ports[CONSOLE_CHANNEL])
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (atomic_dec_and_test(&num_channels_need_poll))
 			del_timer_sync(&poll_timer);
 
@@ -495,7 +527,11 @@ static int dashtty_write(struct tty_struct *tty, const unsigned char *buf,
 	count = dport->xmit_cnt;
 	/* xmit buffer no longer empty? */
 	if (count)
+<<<<<<< HEAD
 		INIT_COMPLETION(dport->xmit_empty);
+=======
+		reinit_completion(&dport->xmit_empty);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&dport->xmit_lock);
 
 	if (total) {
@@ -630,6 +666,7 @@ err_destroy_ports:
 	put_tty_driver(channel_driver);
 	return ret;
 }
+<<<<<<< HEAD
 
 static void dashtty_exit(void)
 {
@@ -649,6 +686,9 @@ static void dashtty_exit(void)
 
 module_init(dashtty_init);
 module_exit(dashtty_exit);
+=======
+device_initcall(dashtty_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_DA_CONSOLE
 

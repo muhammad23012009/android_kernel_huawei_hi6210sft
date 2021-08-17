@@ -38,9 +38,15 @@ static void nw_en_write(void)
 	 * we want to write a bit pattern XXX1 to Xilinx to enable
 	 * the write gate, which will be open for about the next 2ms.
 	 */
+<<<<<<< HEAD
 	spin_lock_irqsave(&nw_gpio_lock, flags);
 	nw_cpld_modify(CPLD_FLASH_WR_ENABLE, CPLD_FLASH_WR_ENABLE);
 	spin_unlock_irqrestore(&nw_gpio_lock, flags);
+=======
+	raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+	nw_cpld_modify(CPLD_FLASH_WR_ENABLE, CPLD_FLASH_WR_ENABLE);
+	raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * let the ISA bus to catch on...

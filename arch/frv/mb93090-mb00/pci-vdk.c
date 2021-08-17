@@ -25,7 +25,10 @@
 
 unsigned int __nongpreldata pci_probe = 1;
 
+<<<<<<< HEAD
 int  __nongpreldata pcibios_last_bus = -1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct pci_ops *__nongpreldata pci_root_ops;
 
 /*
@@ -169,8 +172,13 @@ static int pci_frv_write_config(struct pci_bus *bus, unsigned int devfn, int whe
 }
 
 static struct pci_ops pci_direct_frv = {
+<<<<<<< HEAD
 	pci_frv_read_config,
 	pci_frv_write_config,
+=======
+	.read = pci_frv_read_config,
+	.write = pci_frv_write_config,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -220,6 +228,7 @@ static struct pci_ops * __init pci_check_direct(void)
 }
 
 /*
+<<<<<<< HEAD
  * Discover remaining PCI buses in case there are peer host bridges.
  * We use the number of last PCI bus provided by the PCI BIOS.
  */
@@ -251,6 +260,8 @@ static void __init pcibios_fixup_peer_bridges(void)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Exceptions for specific devices. Usually work-arounds for fatal design flaws.
  */
 
@@ -320,7 +331,11 @@ DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, pci_fixup_ide_bases);
  *  are examined.
  */
 
+<<<<<<< HEAD
 void __init pcibios_fixup_bus(struct pci_bus *bus)
+=======
+void pcibios_fixup_bus(struct pci_bus *bus)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #if 0
 	printk("### PCIBIOS_FIXUP_BUS(%d)\n",bus->number);
@@ -348,6 +363,10 @@ void __init pcibios_fixup_bus(struct pci_bus *bus)
 
 int __init pcibios_init(void)
 {
+<<<<<<< HEAD
+=======
+	struct pci_bus *bus;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_ops *dir = NULL;
 	LIST_HEAD(resources);
 
@@ -415,6 +434,7 @@ int __init pcibios_init(void)
 	printk("PCI: Probing PCI hardware\n");
 	pci_add_resource(&resources, &pci_ioport_resource);
 	pci_add_resource(&resources, &pci_iomem_resource);
+<<<<<<< HEAD
 	pci_scan_root_bus(NULL, 0, pci_root_ops, NULL, &resources);
 
 	pcibios_irq_init();
@@ -422,6 +442,17 @@ int __init pcibios_init(void)
 	pcibios_fixup_irqs();
 	pcibios_resource_survey();
 
+=======
+	bus = pci_scan_root_bus(NULL, 0, pci_root_ops, NULL, &resources);
+
+	pcibios_irq_init();
+	pcibios_fixup_irqs();
+	pcibios_resource_survey();
+	if (!bus)
+		return 0;
+
+	pci_bus_add_devices(bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -432,9 +463,12 @@ char * __init pcibios_setup(char *str)
 	if (!strcmp(str, "off")) {
 		pci_probe = 0;
 		return NULL;
+<<<<<<< HEAD
 	} else if (!strncmp(str, "lastbus=", 8)) {
 		pcibios_last_bus = simple_strtol(str+8, NULL, 0);
 		return NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return str;
 }

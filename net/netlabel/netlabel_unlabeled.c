@@ -23,8 +23,12 @@
  * the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+ * along with this program;  if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 
@@ -117,11 +121,19 @@ struct netlbl_unlhsh_walk_arg {
 static DEFINE_SPINLOCK(netlbl_unlhsh_lock);
 #define netlbl_unlhsh_rcu_deref(p) \
 	rcu_dereference_check(p, lockdep_is_held(&netlbl_unlhsh_lock))
+<<<<<<< HEAD
 static struct netlbl_unlhsh_tbl *netlbl_unlhsh = NULL;
 static struct netlbl_unlhsh_iface *netlbl_unlhsh_def = NULL;
 
 /* Accept unlabeled packets flag */
 static u8 netlabel_unlabel_acceptflg = 0;
+=======
+static struct netlbl_unlhsh_tbl __rcu *netlbl_unlhsh;
+static struct netlbl_unlhsh_iface __rcu *netlbl_unlhsh_def;
+
+/* Accept unlabeled packets flag */
+static u8 netlabel_unlabel_acceptflg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* NetLabel Generic NETLINK unlabeled family */
 static struct genl_family netlbl_unlabel_gnl_family = {
@@ -708,7 +720,11 @@ unlhsh_remove_return:
  * netlbl_unlhsh_netdev_handler - Network device notification handler
  * @this: notifier block
  * @event: the event
+<<<<<<< HEAD
  * @ptr: the network device (cast to void)
+=======
+ * @ptr: the netdevice notifier info (cast to void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Description:
  * Handle network device events, although at present all we care about is a
@@ -717,10 +733,16 @@ unlhsh_remove_return:
  *
  */
 static int netlbl_unlhsh_netdev_handler(struct notifier_block *this,
+<<<<<<< HEAD
 					unsigned long event,
 					void *ptr)
 {
 	struct net_device *dev = ptr;
+=======
+					unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct netlbl_unlhsh_iface *iface = NULL;
 
 	if (!net_eq(dev_net(dev), &init_net))
@@ -789,7 +811,12 @@ static int netlbl_unlabel_addrinfo_get(struct genl_info *info,
 {
 	u32 addr_len;
 
+<<<<<<< HEAD
 	if (info->attrs[NLBL_UNLABEL_A_IPV4ADDR]) {
+=======
+	if (info->attrs[NLBL_UNLABEL_A_IPV4ADDR] &&
+	    info->attrs[NLBL_UNLABEL_A_IPV4MASK]) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		addr_len = nla_len(info->attrs[NLBL_UNLABEL_A_IPV4ADDR]);
 		if (addr_len != sizeof(struct in_addr) &&
 		    addr_len != nla_len(info->attrs[NLBL_UNLABEL_A_IPV4MASK]))
@@ -1119,23 +1146,36 @@ static int netlbl_unlabel_staticlist_gen(u32 cmd,
 		struct in_addr addr_struct;
 
 		addr_struct.s_addr = addr4->list.addr;
+<<<<<<< HEAD
 		ret_val = nla_put(cb_arg->skb,
 				  NLBL_UNLABEL_A_IPV4ADDR,
 				  sizeof(struct in_addr),
 				  &addr_struct);
+=======
+		ret_val = nla_put_in_addr(cb_arg->skb,
+					  NLBL_UNLABEL_A_IPV4ADDR,
+					  addr_struct.s_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret_val != 0)
 			goto list_cb_failure;
 
 		addr_struct.s_addr = addr4->list.mask;
+<<<<<<< HEAD
 		ret_val = nla_put(cb_arg->skb,
 				  NLBL_UNLABEL_A_IPV4MASK,
 				  sizeof(struct in_addr),
 				  &addr_struct);
+=======
+		ret_val = nla_put_in_addr(cb_arg->skb,
+					  NLBL_UNLABEL_A_IPV4MASK,
+					  addr_struct.s_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret_val != 0)
 			goto list_cb_failure;
 
 		secid = addr4->secid;
 	} else {
+<<<<<<< HEAD
 		ret_val = nla_put(cb_arg->skb,
 				  NLBL_UNLABEL_A_IPV6ADDR,
 				  sizeof(struct in6_addr),
@@ -1147,6 +1187,17 @@ static int netlbl_unlabel_staticlist_gen(u32 cmd,
 				  NLBL_UNLABEL_A_IPV6MASK,
 				  sizeof(struct in6_addr),
 				  &addr6->list.mask);
+=======
+		ret_val = nla_put_in6_addr(cb_arg->skb,
+					   NLBL_UNLABEL_A_IPV6ADDR,
+					   &addr6->list.addr);
+		if (ret_val != 0)
+			goto list_cb_failure;
+
+		ret_val = nla_put_in6_addr(cb_arg->skb,
+					   NLBL_UNLABEL_A_IPV6MASK,
+					   &addr6->list.mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret_val != 0)
 			goto list_cb_failure;
 
@@ -1165,7 +1216,12 @@ static int netlbl_unlabel_staticlist_gen(u32 cmd,
 		goto list_cb_failure;
 
 	cb_arg->seq++;
+<<<<<<< HEAD
 	return genlmsg_end(cb_arg->skb, data);
+=======
+	genlmsg_end(cb_arg->skb, data);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 list_cb_failure:
 	genlmsg_cancel(cb_arg->skb, data);
@@ -1189,12 +1245,21 @@ static int netlbl_unlabel_staticlist(struct sk_buff *skb,
 	struct netlbl_unlhsh_walk_arg cb_arg;
 	u32 skip_bkt = cb->args[0];
 	u32 skip_chain = cb->args[1];
+<<<<<<< HEAD
 	u32 iter_bkt;
 	u32 iter_chain = 0, iter_addr4 = 0, iter_addr6 = 0;
+=======
+	u32 skip_addr4 = cb->args[2];
+	u32 iter_bkt, iter_chain = 0, iter_addr4 = 0, iter_addr6 = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct netlbl_unlhsh_iface *iface;
 	struct list_head *iter_list;
 	struct netlbl_af4list *addr4;
 #if IS_ENABLED(CONFIG_IPV6)
+<<<<<<< HEAD
+=======
+	u32 skip_addr6 = cb->args[3];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct netlbl_af6list *addr6;
 #endif
 
@@ -1205,7 +1270,11 @@ static int netlbl_unlabel_staticlist(struct sk_buff *skb,
 	rcu_read_lock();
 	for (iter_bkt = skip_bkt;
 	     iter_bkt < rcu_dereference(netlbl_unlhsh)->size;
+<<<<<<< HEAD
 	     iter_bkt++, iter_chain = 0, iter_addr4 = 0, iter_addr6 = 0) {
+=======
+	     iter_bkt++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iter_list = &rcu_dereference(netlbl_unlhsh)->tbl[iter_bkt];
 		list_for_each_entry_rcu(iface, iter_list, list) {
 			if (!iface->valid ||
@@ -1213,7 +1282,11 @@ static int netlbl_unlabel_staticlist(struct sk_buff *skb,
 				continue;
 			netlbl_af4list_foreach_rcu(addr4,
 						   &iface->addr4_list) {
+<<<<<<< HEAD
 				if (iter_addr4++ < cb->args[2])
+=======
+				if (iter_addr4++ < skip_addr4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					continue;
 				if (netlbl_unlabel_staticlist_gen(
 					      NLBL_UNLABEL_C_STATICLIST,
@@ -1226,10 +1299,19 @@ static int netlbl_unlabel_staticlist(struct sk_buff *skb,
 					goto unlabel_staticlist_return;
 				}
 			}
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_IPV6)
 			netlbl_af6list_foreach_rcu(addr6,
 						   &iface->addr6_list) {
 				if (iter_addr6++ < cb->args[3])
+=======
+			iter_addr4 = 0;
+			skip_addr4 = 0;
+#if IS_ENABLED(CONFIG_IPV6)
+			netlbl_af6list_foreach_rcu(addr6,
+						   &iface->addr6_list) {
+				if (iter_addr6++ < skip_addr6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					continue;
 				if (netlbl_unlabel_staticlist_gen(
 					      NLBL_UNLABEL_C_STATICLIST,
@@ -1242,8 +1324,17 @@ static int netlbl_unlabel_staticlist(struct sk_buff *skb,
 					goto unlabel_staticlist_return;
 				}
 			}
+<<<<<<< HEAD
 #endif /* IPv6 */
 		}
+=======
+			iter_addr6 = 0;
+			skip_addr6 = 0;
+#endif /* IPv6 */
+		}
+		iter_chain = 0;
+		skip_chain = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 unlabel_staticlist_return:
@@ -1324,7 +1415,11 @@ unlabel_staticlistdef_return:
  * NetLabel Generic NETLINK Command Definitions
  */
 
+<<<<<<< HEAD
 static struct genl_ops netlbl_unlabel_genl_ops[] = {
+=======
+static const struct genl_ops netlbl_unlabel_genl_ops[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	.cmd = NLBL_UNLABEL_C_STATICADD,
 	.flags = GENL_ADMIN_PERM,
@@ -1398,7 +1493,11 @@ static struct genl_ops netlbl_unlabel_genl_ops[] = {
 int __init netlbl_unlabel_genl_init(void)
 {
 	return genl_register_family_with_ops(&netlbl_unlabel_gnl_family,
+<<<<<<< HEAD
 		netlbl_unlabel_genl_ops, ARRAY_SIZE(netlbl_unlabel_genl_ops));
+=======
+					     netlbl_unlabel_genl_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1474,6 +1573,19 @@ int netlbl_unlabel_getattr(const struct sk_buff *skb,
 		iface = rcu_dereference(netlbl_unlhsh_def);
 	if (iface == NULL || !iface->valid)
 		goto unlabel_getattr_nolabel;
+<<<<<<< HEAD
+=======
+
+#if IS_ENABLED(CONFIG_IPV6)
+	/* When resolving a fallback label, check the sk_buff version as
+	 * it is possible (e.g. SCTP) to have family = PF_INET6 while
+	 * receiving ip_hdr(skb)->version = 4.
+	 */
+	if (family == PF_INET6 && ip_hdr(skb)->version == 4)
+		family = PF_INET;
+#endif /* IPv6 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (family) {
 	case PF_INET: {
 		struct iphdr *hdr4;
@@ -1542,7 +1654,12 @@ int __init netlbl_unlabel_defconf(void)
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 	if (entry == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	entry->type = NETLBL_NLTYPE_UNLABELED;
+=======
+	entry->family = AF_UNSPEC;
+	entry->def.type = NETLBL_NLTYPE_UNLABELED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret_val = netlbl_domhsh_add_default(entry, &audit_info);
 	if (ret_val != 0)
 		return ret_val;

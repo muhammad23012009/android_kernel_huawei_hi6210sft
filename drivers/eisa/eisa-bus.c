@@ -232,8 +232,15 @@ static int __init eisa_init_device(struct eisa_root_device *root,
 static int __init eisa_register_device(struct eisa_device *edev)
 {
 	int rc = device_register(&edev->dev);
+<<<<<<< HEAD
 	if (rc)
 		return rc;
+=======
+	if (rc) {
+		put_device(&edev->dev);
+		return rc;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = device_create_file(&edev->dev, &dev_attr_signature);
 	if (rc)
@@ -288,7 +295,10 @@ static int __init eisa_request_resources(struct eisa_root_device *root,
 			edev->res[i].flags = IORESOURCE_IO | IORESOURCE_BUSY;
 		}
 
+<<<<<<< HEAD
 		dev_printk(KERN_DEBUG, &edev->dev, "%pR\n", &edev->res[i]);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (request_resource(root->res, &edev->res[i]))
 			goto failed;
 	}

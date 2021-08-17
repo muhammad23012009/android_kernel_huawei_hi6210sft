@@ -59,7 +59,11 @@ struct ttl_module {
 
 static int ttl_get_value(struct gpio_chip *gpio, unsigned offset)
 {
+<<<<<<< HEAD
 	struct ttl_module *mod = dev_get_drvdata(gpio->dev);
+=======
+	struct ttl_module *mod = dev_get_drvdata(gpio->parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *shadow;
 	int ret;
 
@@ -76,12 +80,20 @@ static int ttl_get_value(struct gpio_chip *gpio, unsigned offset)
 	spin_lock(&mod->lock);
 	ret = *shadow & (1 << offset);
 	spin_unlock(&mod->lock);
+<<<<<<< HEAD
 	return ret;
+=======
+	return !!ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ttl_set_value(struct gpio_chip *gpio, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct ttl_module *mod = dev_get_drvdata(gpio->dev);
+=======
+	struct ttl_module *mod = dev_get_drvdata(gpio->parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *port;
 	u8 *shadow;
 
@@ -149,6 +161,7 @@ static int ttl_probe(struct platform_device *pdev)
 	struct resource *res;
 	int ret;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
 	if (!pdata) {
 		dev_err(dev, "no platform data\n");
@@ -162,12 +175,24 @@ static int ttl_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto out_return;
 	}
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+	if (!pdata) {
+		dev_err(dev, "no platform data\n");
+		return -ENXIO;
+	}
+
+	mod = devm_kzalloc(dev, sizeof(*mod), GFP_KERNEL);
+	if (!mod)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	platform_set_drvdata(pdev, mod);
 	spin_lock_init(&mod->lock);
 
 	/* get access to the MODULbus registers for this module */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		dev_err(dev, "MODULbus registers not found\n");
 		ret = -ENODEV;
@@ -180,12 +205,21 @@ static int ttl_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto out_free_mod;
 	}
+=======
+	mod->regs = devm_ioremap_resource(dev, res);
+	if (IS_ERR(mod->regs))
+		return PTR_ERR(mod->regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ttl_setup_device(mod);
 
 	/* Initialize the GPIO data structures */
 	gpio = &mod->gpio;
+<<<<<<< HEAD
 	gpio->dev = &pdev->dev;
+=======
+	gpio->parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpio->label = pdev->name;
 	gpio->get = ttl_get_value;
 	gpio->set = ttl_set_value;
@@ -195,6 +229,7 @@ static int ttl_probe(struct platform_device *pdev)
 	gpio->base = -1;
 	gpio->ngpio = 20;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(gpio);
 	if (ret) {
 		dev_err(dev, "unable to add GPIO chip\n");
@@ -225,16 +260,29 @@ static int ttl_remove(struct platform_device *pdev)
 
 	iounmap(mod->regs);
 	kfree(mod);
+=======
+	ret = devm_gpiochip_add_data(dev, gpio, NULL);
+	if (ret) {
+		dev_err(dev, "unable to add GPIO chip\n");
+		return ret;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver ttl_driver = {
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= ttl_probe,
 	.remove		= ttl_remove,
+=======
+	},
+	.probe		= ttl_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(ttl_driver);

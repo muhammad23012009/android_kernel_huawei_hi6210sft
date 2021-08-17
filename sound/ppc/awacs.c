@@ -20,7 +20,11 @@
  */
 
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/nvram.h>
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -991,6 +995,10 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 		if (err < 0)
 			return err;
 	}
+<<<<<<< HEAD
+=======
+	master_vol = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pm7500)
 		err = build_mixers(chip,
 				   ARRAY_SIZE(snd_pmac_awacs_mixers_pmac7500),

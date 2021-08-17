@@ -17,6 +17,7 @@ config CAN_SJA1000_PLATFORM
 	  the "platform bus" (Linux abstraction for directly to the
 	  processor attached devices).  Which can be found on various
 	  boards from Phytec (http://www.phytec.de) like the PCM027,
+<<<<<<< HEAD
 	  PCM038.
 
 config CAN_SJA1000_OF_PLATFORM
@@ -27,6 +28,11 @@ config CAN_SJA1000_OF_PLATFORM
 	  the OpenFirmware "platform bus" found on embedded systems with
 	  OpenFirmware bindings, e.g. if you have a PowerPC based system
 	  you may want to enable this option.
+=======
+	  PCM038. It also provides the OpenFirmware "platform bus" found
+	  on embedded systems with OpenFirmware bindings, e.g. if you
+	  have a PowerPC based system you may want to enable this option.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config CAN_EMS_PCMCIA
 	tristate "EMS CPC-CARD Card"
@@ -46,7 +52,11 @@ config CAN_EMS_PCI
 config CAN_PEAK_PCMCIA
 	tristate "PEAK PCAN-PC Card"
 	depends on PCMCIA
+<<<<<<< HEAD
 	depends on HAS_IOPORT
+=======
+	depends on HAS_IOPORT_MAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	---help---
 	  This driver is for the PCAN-PC Card PCMCIA adapter (1 or 2 channels)
 	  from PEAK-System (http://www.peak-system.com). To compile this

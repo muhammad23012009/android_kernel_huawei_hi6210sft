@@ -10,5 +10,8 @@ obj-$(CONFIG_BLK_DEV_SR)	+=              cdrom.o
 obj-$(CONFIG_PARIDE_PCD)	+=		cdrom.o
 obj-$(CONFIG_CDROM_PKTCDVD)	+=		cdrom.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_VIOCD)		+= viocd.o      cdrom.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_GDROM)		+= gdrom.o      cdrom.o

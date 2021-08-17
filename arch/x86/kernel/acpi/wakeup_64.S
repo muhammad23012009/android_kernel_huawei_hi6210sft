@@ -5,6 +5,10 @@
 #include <asm/page_types.h>
 #include <asm/msr.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/frame.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Copyright 2003 Pavel Machek <pavel@suse.cz>, distribute under GPLv2
 
@@ -39,6 +43,10 @@ bogus_64_magic:
 	jmp	bogus_64_magic
 
 ENTRY(do_suspend_lowlevel)
+<<<<<<< HEAD
+=======
+	FRAME_BEGIN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	subq	$8, %rsp
 	xorl	%eax, %eax
 	call	save_processor_state
@@ -62,7 +70,11 @@ ENTRY(do_suspend_lowlevel)
 	pushfq
 	popq	pt_regs_flags(%rax)
 
+<<<<<<< HEAD
 	movq	$resume_point, saved_rip(%rip)
+=======
+	movq	$.Lresume_point, saved_rip(%rip)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	movq	%rsp, saved_rsp
 	movq	%rbp, saved_rbp
@@ -73,12 +85,21 @@ ENTRY(do_suspend_lowlevel)
 	addq	$8, %rsp
 	movl	$3, %edi
 	xorl	%eax, %eax
+<<<<<<< HEAD
 	call	acpi_enter_sleep_state
 	/* in case something went wrong, restore the machine status and go on */
 	jmp	resume_point
 
 	.align 4
 resume_point:
+=======
+	call	x86_acpi_enter_sleep_state
+	/* in case something went wrong, restore the machine status and go on */
+	jmp	.Lresume_point
+
+	.align 4
+.Lresume_point:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* We don't restore %rax, it must be 0 anyway */
 	movq	$saved_context, %rax
 	movq	saved_context_cr4(%rax), %rbx
@@ -107,8 +128,23 @@ resume_point:
 	movq	pt_regs_r14(%rax), %r14
 	movq	pt_regs_r15(%rax), %r15
 
+<<<<<<< HEAD
 	xorl	%eax, %eax
 	addq	$8, %rsp
+=======
+#ifdef CONFIG_KASAN
+	/*
+	 * The suspend path may have poisoned some areas deeper in the stack,
+	 * which we now need to unpoison.
+	 */
+	movq	%rsp, %rdi
+	call	kasan_unpoison_task_stack_below
+#endif
+
+	xorl	%eax, %eax
+	addq	$8, %rsp
+	FRAME_END
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jmp	restore_processor_state
 ENDPROC(do_suspend_lowlevel)
 

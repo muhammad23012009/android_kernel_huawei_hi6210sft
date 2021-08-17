@@ -902,7 +902,12 @@ static void sdma_7220_errors(struct qib_pportdata *ppd, u64 errs)
 	errs &= QLOGIC_IB_E_SDMAERRS;
 
 	msg = dd->cspec->sdmamsgbuf;
+<<<<<<< HEAD
 	qib_decode_7220_sdma_errs(ppd, errs, msg, sizeof dd->cspec->sdmamsgbuf);
+=======
+	qib_decode_7220_sdma_errs(ppd, errs, msg,
+		sizeof(dd->cspec->sdmamsgbuf));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&ppd->sdma_lock, flags);
 
 	if (errs & ERR_MASK(SendBufMisuseErr)) {
@@ -1043,6 +1048,10 @@ done:
 static void reenable_7220_chase(unsigned long opaque)
 {
 	struct qib_pportdata *ppd = (struct qib_pportdata *)opaque;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ppd->cpspec->chase_timer.expires = 0;
 	qib_set_ib_7220_lstate(ppd, QLOGIC_IB_IBCC_LINKCMD_DOWN,
 		QLOGIC_IB_IBCC_LINKINITCMD_POLL);
@@ -1101,7 +1110,11 @@ static void handle_7220_errors(struct qib_devdata *dd, u64 errs)
 
 	/* do these first, they are most important */
 	if (errs & ERR_MASK(HardwareErr))
+<<<<<<< HEAD
 		qib_7220_handle_hwerrors(dd, msg, sizeof dd->cspec->emsgbuf);
+=======
+		qib_7220_handle_hwerrors(dd, msg, sizeof(dd->cspec->emsgbuf));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		for (log_idx = 0; log_idx < QIB_EEP_LOG_CNT; ++log_idx)
 			if (errs & dd->eep_st_masks[log_idx].errs_to_log)
@@ -1155,7 +1168,11 @@ static void handle_7220_errors(struct qib_devdata *dd, u64 errs)
 		ERR_MASK(RcvEgrFullErr) | ERR_MASK(RcvHdrFullErr) |
 		ERR_MASK(HardwareErr) | ERR_MASK(SDmaDisabledErr);
 
+<<<<<<< HEAD
 	qib_decode_7220_err(dd, msg, sizeof dd->cspec->emsgbuf, errs & ~mask);
+=======
+	qib_decode_7220_err(dd, msg, sizeof(dd->cspec->emsgbuf), errs & ~mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (errs & E_SUM_PKTERRS)
 		qib_stats.sps_rcverrs++;
@@ -1380,7 +1397,11 @@ static void qib_7220_handle_hwerrors(struct qib_devdata *dd, char *msg,
 		bits = (u32) ((hwerrs >>
 			       QLOGIC_IB_HWE_PCIEMEMPARITYERR_SHIFT) &
 			      QLOGIC_IB_HWE_PCIEMEMPARITYERR_MASK);
+<<<<<<< HEAD
 		snprintf(bitsmsg, sizeof dd->cspec->bitsmsgbuf,
+=======
+		snprintf(bitsmsg, sizeof(dd->cspec->bitsmsgbuf),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 "[PCIe Mem Parity Errs %x] ", bits);
 		strlcat(msg, bitsmsg, msgl);
 	}
@@ -1390,7 +1411,11 @@ static void qib_7220_handle_hwerrors(struct qib_devdata *dd, char *msg,
 
 	if (hwerrs & _QIB_PLL_FAIL) {
 		isfatal = 1;
+<<<<<<< HEAD
 		snprintf(bitsmsg, sizeof dd->cspec->bitsmsgbuf,
+=======
+		snprintf(bitsmsg, sizeof(dd->cspec->bitsmsgbuf),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 "[PLL failed (%llx), InfiniPath hardware unusable]",
 			 (unsigned long long) hwerrs & _QIB_PLL_FAIL);
 		strlcat(msg, bitsmsg, msgl);
@@ -1962,10 +1987,14 @@ static irqreturn_t qib_7220intr(int irq, void *data)
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	qib_stats.sps_ints++;
 	if (dd->int_counter != (u32) -1)
 		dd->int_counter++;
 
+=======
+	this_cpu_inc(*dd->int_counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(istat & (~QLOGIC_IB_I_BITSEXTANT |
 			      QLOGIC_IB_I_GPIO | QLOGIC_IB_I_ERROR)))
 		unlikely_7220_intr(dd, istat);
@@ -2120,7 +2149,12 @@ static int qib_setup_7220_reset(struct qib_devdata *dd)
 	 * isn't set.
 	 */
 	dd->flags &= ~(QIB_INITTED | QIB_PRESENT);
+<<<<<<< HEAD
 	dd->int_counter = 0; /* so we check interrupts work again */
+=======
+	/* so we check interrupts work again */
+	dd->z_int_counter = qib_int_counter(dd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	val = dd->control | QLOGIC_IB_C_RESET;
 	writeq(val, &dd->kregbase[kr_control]);
 	mb(); /* prevent compiler reordering around actual reset */
@@ -4059,7 +4093,13 @@ static int qib_init_7220_variables(struct qib_devdata *dd)
 	init_waitqueue_head(&cpspec->autoneg_wait);
 	INIT_DELAYED_WORK(&cpspec->autoneg_work, autoneg_7220_work);
 
+<<<<<<< HEAD
 	qib_init_pportdata(ppd, dd, 0, 1);
+=======
+	ret = qib_init_pportdata(ppd, dd, 0, 1);
+	if (ret)
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ppd->link_width_supported = IB_WIDTH_1X | IB_WIDTH_4X;
 	ppd->link_speed_supported = QIB_IB_SDR | QIB_IB_DDR;
 
@@ -4124,11 +4164,17 @@ static int qib_init_7220_variables(struct qib_devdata *dd)
 	qib_7220_config_ctxts(dd);
 	qib_set_ctxtcnt(dd);  /* needed for PAT setup */
 
+<<<<<<< HEAD
 	if (qib_wc_pat) {
 		ret = init_chip_wc_pat(dd, 0);
 		if (ret)
 			goto bail;
 	}
+=======
+	ret = init_chip_wc_pat(dd, 0);
+	if (ret)
+		goto bail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_7220_baseaddrs(dd); /* set chip access pointers now */
 
 	ret = 0;
@@ -4511,6 +4557,16 @@ bail:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_INFINIBAND_QIB_DCA
+static int qib_7220_notify_dca(struct qib_devdata *dd, unsigned long event)
+{
+	return 0;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Dummy function, as 7220 boards never disable EEPROM Write */
 static int qib_7220_eeprom_wen(struct qib_devdata *dd, int wen)
 {
@@ -4585,6 +4641,12 @@ struct qib_devdata *qib_init_iba7220_funcs(struct pci_dev *pdev,
 	dd->f_xgxs_reset        = qib_7220_xgxs_reset;
 	dd->f_writescratch      = writescratch;
 	dd->f_tempsense_rd	= qib_7220_tempsense_rd;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_INFINIBAND_QIB_DCA
+	dd->f_notify_dca = qib_7220_notify_dca;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Do remaining pcie setup and save pcie values in dd.
 	 * Any error printing is already done by the init code.

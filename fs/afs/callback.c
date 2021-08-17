@@ -362,7 +362,11 @@ static void afs_callback_updater(struct work_struct *work)
 {
 	struct afs_server *server;
 	struct afs_vnode *vnode, *xvnode;
+<<<<<<< HEAD
 	time_t now;
+=======
+	time64_t now;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long timeout;
 	int ret;
 
@@ -370,7 +374,11 @@ static void afs_callback_updater(struct work_struct *work)
 
 	_enter("");
 
+<<<<<<< HEAD
 	now = get_seconds();
+=======
+	now = ktime_get_real_seconds();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* find the first vnode to update */
 	spin_lock(&server->cb_lock);
@@ -424,7 +432,12 @@ static void afs_callback_updater(struct work_struct *work)
 
 	/* and then reschedule */
 	_debug("reschedule");
+<<<<<<< HEAD
 	vnode->update_at = get_seconds() + afs_vnode_update_timeout;
+=======
+	vnode->update_at = ktime_get_real_seconds() +
+			afs_vnode_update_timeout;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock(&server->cb_lock);
 
@@ -461,8 +474,13 @@ static void afs_callback_updater(struct work_struct *work)
  */
 int __init afs_callback_update_init(void)
 {
+<<<<<<< HEAD
 	afs_callback_update_worker =
 		create_singlethread_workqueue("kafs_callbackd");
+=======
+	afs_callback_update_worker = alloc_ordered_workqueue("kafs_callbackd",
+							     WQ_MEM_RECLAIM);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return afs_callback_update_worker ? 0 : -ENOMEM;
 }
 

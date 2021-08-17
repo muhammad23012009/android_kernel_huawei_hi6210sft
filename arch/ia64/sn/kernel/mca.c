@@ -142,5 +142,9 @@ static int __init sn_salinfo_init(void)
 		salinfo_platform_oemdata = &sn_salinfo_platform_oemdata;
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(sn_salinfo_init)
+=======
+device_initcall(sn_salinfo_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -92,12 +92,15 @@ nf_ct_l3proto_find_get(u_int16_t l3proto)
 }
 EXPORT_SYMBOL_GPL(nf_ct_l3proto_find_get);
 
+<<<<<<< HEAD
 void nf_ct_l3proto_put(struct nf_conntrack_l3proto *p)
 {
 	module_put(p->me);
 }
 EXPORT_SYMBOL_GPL(nf_ct_l3proto_put);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int
 nf_ct_l3proto_try_module_get(unsigned short l3proto)
 {
@@ -165,6 +168,7 @@ static int kill_l4proto(struct nf_conn *i, void *data)
 	       nf_ct_l3num(i) == l4proto->l3proto;
 }
 
+<<<<<<< HEAD
 static struct nf_ip_net *nf_ct_l3proto_net(struct net *net,
 					   struct nf_conntrack_l3proto *l3proto)
 {
@@ -213,6 +217,8 @@ static void nf_ct_l3proto_unregister_sysctl(struct net *net,
 #endif
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int nf_ct_l3proto_register(struct nf_conntrack_l3proto *proto)
 {
 	int ret = 0;
@@ -247,7 +253,11 @@ EXPORT_SYMBOL_GPL(nf_ct_l3proto_register);
 int nf_ct_l3proto_pernet_register(struct net *net,
 				  struct nf_conntrack_l3proto *proto)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (proto->init_net) {
 		ret = proto->init_net(net);
@@ -255,7 +265,11 @@ int nf_ct_l3proto_pernet_register(struct net *net,
 			return ret;
 	}
 
+<<<<<<< HEAD
 	return nf_ct_l3proto_register_sysctl(net, proto);
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(nf_ct_l3proto_pernet_register);
 
@@ -278,10 +292,15 @@ EXPORT_SYMBOL_GPL(nf_ct_l3proto_unregister);
 void nf_ct_l3proto_pernet_unregister(struct net *net,
 				     struct nf_conntrack_l3proto *proto)
 {
+<<<<<<< HEAD
 	nf_ct_l3proto_unregister_sysctl(net, proto);
 
 	/* Remove all contrack entries for this protocol */
 	nf_ct_iterate_cleanup(net, kill_l3proto, proto);
+=======
+	/* Remove all contrack entries for this protocol */
+	nf_ct_iterate_cleanup(net, kill_l3proto, proto, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(nf_ct_l3proto_pernet_unregister);
 
@@ -318,6 +337,7 @@ int nf_ct_l4proto_register_sysctl(struct net *net,
 			}
 		}
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_NF_CONNTRACK_PROC_COMPAT
 	if (l4proto->l3proto != AF_INET6 && pn->ctl_compat_table != NULL) {
 		if (err < 0) {
@@ -338,6 +358,8 @@ int nf_ct_l4proto_register_sysctl(struct net *net,
 	}
 out:
 #endif /* CONFIG_NF_CONNTRACK_PROC_COMPAT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SYSCTL */
 	return err;
 }
@@ -352,6 +374,7 @@ void nf_ct_l4proto_unregister_sysctl(struct net *net,
 		nf_ct_unregister_sysctl(&pn->ctl_table_header,
 					&pn->ctl_table,
 					pn->users);
+<<<<<<< HEAD
 
 #ifdef CONFIG_NF_CONNTRACK_PROC_COMPAT
 	if (l4proto->l3proto != AF_INET6 && pn->ctl_compat_header != NULL)
@@ -359,6 +382,8 @@ void nf_ct_l4proto_unregister_sysctl(struct net *net,
 					&pn->ctl_compat_table,
 					0);
 #endif /* CONFIG_NF_CONNTRACK_PROC_COMPAT */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SYSCTL */
 }
 
@@ -476,7 +501,11 @@ void nf_ct_l4proto_pernet_unregister(struct net *net,
 	nf_ct_l4proto_unregister_sysctl(net, pn, l4proto);
 
 	/* Remove all contrack entries for this protocol */
+<<<<<<< HEAD
 	nf_ct_iterate_cleanup(net, kill_l4proto, l4proto);
+=======
+	nf_ct_iterate_cleanup(net, kill_l4proto, l4proto, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(nf_ct_l4proto_pernet_unregister);
 

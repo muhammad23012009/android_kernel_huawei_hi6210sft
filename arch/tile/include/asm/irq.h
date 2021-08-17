@@ -18,10 +18,19 @@
 #include <linux/hardirq.h>
 
 /* The hypervisor interface provides 32 IRQs. */
+<<<<<<< HEAD
 #define NR_IRQS 32
 
 /* IRQ numbers used for linux IPIs. */
 #define IRQ_RESCHEDULE 0
+=======
+#define NR_IRQS			32
+
+/* IRQ numbers used for linux IPIs. */
+#define IRQ_RESCHEDULE	0
+/* Interrupts for dynamic allocation start at 1. Let the core allocate irq0 */
+#define NR_IRQS_LEGACY	1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define irq_canonicalize(irq)   (irq)
 
@@ -76,4 +85,13 @@ void tile_irq_activate(unsigned int irq, int tile_irq_type);
 
 void setup_irq_regs(void);
 
+<<<<<<< HEAD
+=======
+#ifdef __tilegx__
+void arch_trigger_cpumask_backtrace(const struct cpumask *mask,
+				    bool exclude_self);
+#define arch_trigger_cpumask_backtrace arch_trigger_cpumask_backtrace
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_TILE_IRQ_H */

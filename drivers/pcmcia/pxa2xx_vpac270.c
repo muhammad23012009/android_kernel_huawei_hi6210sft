@@ -17,7 +17,10 @@
 
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include <asm/gpio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/vpac270.h>
 
 #include "soc_common.h"

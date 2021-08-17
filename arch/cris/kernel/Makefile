@@ -7,6 +7,11 @@ CPPFLAGS_vmlinux.lds := -DDRAM_VIRTUAL_BASE=0x$(CONFIG_ETRAX_DRAM_VIRTUAL_BASE)
 extra-y	:= vmlinux.lds
 
 obj-y   := process.o traps.o irq.o ptrace.o setup.o time.o sys_cris.o
+<<<<<<< HEAD
+=======
+obj-y += devicetree.o
+obj-y += stacktrace.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_MODULES)    += crisksyms.o
 obj-$(CONFIG_MODULES)	 += module.o

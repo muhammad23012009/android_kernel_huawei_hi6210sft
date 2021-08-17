@@ -1,32 +1,69 @@
 config PARISC
 	def_bool y
+<<<<<<< HEAD
 	select ARCH_HAS_DEBUG_STRICT_USER_COPY_CHECKS
 	select HAVE_IDE
 	select HAVE_OPROFILE
 	select HAVE_FUNCTION_TRACER if 64BIT
 	select HAVE_FUNCTION_GRAPH_TRACER if 64BIT
 	select HAVE_FUNCTION_TRACE_MCOUNT_TEST if 64BIT
+=======
+	select ARCH_MIGHT_HAVE_PC_PARPORT
+	select HAVE_IDE
+	select HAVE_OPROFILE
+	select HAVE_FUNCTION_TRACER
+	select HAVE_FUNCTION_GRAPH_TRACER
+	select HAVE_SYSCALL_TRACEPOINTS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select ARCH_WANT_FRAME_POINTERS
 	select RTC_CLASS
 	select RTC_DRV_GENERIC
 	select INIT_ALL_POSSIBLE
+<<<<<<< HEAD
 	select BUG
 	select HAVE_PERF_EVENTS
 	select GENERIC_ATOMIC64 if !64BIT
 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
 	select HAVE_GENERIC_HARDIRQS
 	select BROKEN_RODATA
+=======
+	select HAVE_MEMBLOCK
+	select NO_BOOTMEM
+	select BUG
+	select BUILDTIME_EXTABLE_SORT
+	select HAVE_PERF_EVENTS
+	select GENERIC_ATOMIC64 if !64BIT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select GENERIC_IRQ_PROBE
 	select GENERIC_PCI_IOMAP
 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
 	select GENERIC_SMP_IDLE_THREAD
 	select GENERIC_STRNCPY_FROM_USER
 	select SYSCTL_ARCH_UNALIGN_ALLOW
+<<<<<<< HEAD
 	select HAVE_MOD_ARCH_SPECIFIC
+=======
+	select SYSCTL_EXCEPTION_TRACE
+	select HAVE_MOD_ARCH_SPECIFIC
+	select HAVE_ARCH_HARDENED_USERCOPY
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select VIRT_TO_BUS
 	select MODULES_USE_ELF_RELA
 	select CLONE_BACKWARDS
 	select TTY # Needed for pdc_cons.c
+<<<<<<< HEAD
+=======
+	select HAVE_DEBUG_STACKOVERFLOW
+	select HAVE_ARCH_AUDITSYSCALL
+	select HAVE_ARCH_HASH
+	select HAVE_ARCH_SECCOMP_FILTER
+	select HAVE_ARCH_TRACEHOOK
+	select GENERIC_SCHED_CLOCK
+	select HAVE_UNSTABLE_SCHED_CLOCK if SMP
+	select GENERIC_CLOCKEVENTS
+	select ARCH_NO_COHERENT_DMA_MMAP
+	select CPU_NO_EFFICIENT_FFS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	help
 	  The PA-RISC microprocessor is designed by Hewlett-Packard and used
@@ -77,9 +114,12 @@ config TIME_LOW_RES
 	depends on SMP
 	default y
 
+<<<<<<< HEAD
 config HAVE_LATENCYTOP_SUPPORT
         def_bool y
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # unless you want to implement ACPI on PA-RISC ... ;-)
 config PM
 	bool
@@ -101,6 +141,17 @@ config ARCH_MAY_HAVE_PC_FDC
 	depends on BROKEN
 	default y
 
+<<<<<<< HEAD
+=======
+config PGTABLE_LEVELS
+	int
+	default 3 if 64BIT && PARISC_PAGE_SIZE_4KB
+	default 2
+
+config SYS_SUPPORTS_HUGETLBFS
+	def_bool y if PA20
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "init/Kconfig"
 
 source "kernel/Kconfig.freezer"
@@ -167,7 +218,11 @@ config PREFETCH
 
 config MLONGCALLS
 	bool "Enable the -mlong-calls compiler option for big kernels"
+<<<<<<< HEAD
 	def_bool y if (!MODULES)
+=======
+	default y
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	depends on PA8X00
 	help
 	  If you configure the kernel to include many drivers built-in instead
@@ -226,6 +281,7 @@ endchoice
 
 config SMP
 	bool "Symmetric multi-processing support"
+<<<<<<< HEAD
 	select USE_GENERIC_SMP_HELPERS
 	---help---
 	  This enables support for systems with more than one CPU. If you have
@@ -236,6 +292,17 @@ config SMP
 	  machines, but will use only one CPU of a multiprocessor machine. If
 	  you say Y here, the kernel will run on many, but not all,
 	  singleprocessor machines. On a singleprocessor machine, the kernel
+=======
+	---help---
+	  This enables support for systems with more than one CPU. If you have
+	  a system with only one CPU, say N. If you have a system with more
+	  than one CPU, say Y.
+
+	  If you say N here, the kernel will run on uni- and multiprocessor
+	  machines, but will use only one CPU of a multiprocessor machine. If
+	  you say Y here, the kernel will run on many, but not all,
+	  uniprocessor machines. On a uniprocessor machine, the kernel
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  will run faster if you say N here.
 
 	  See also <file:Documentation/nmi_watchdog.txt> and the SMP-HOWTO
@@ -254,7 +321,10 @@ config IRQSTACKS
 config HOTPLUG_CPU
 	bool
 	default y if SMP
+<<<<<<< HEAD
 	select HOTPLUG
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config ARCH_SELECT_MEMORY_MODEL
 	def_bool y
@@ -288,9 +358,14 @@ config SYSVIPC_COMPAT
 	def_bool y
 	depends on COMPAT && SYSVIPC
 
+<<<<<<< HEAD
 config HPUX
 	bool "Support for HP-UX binaries"
 	depends on !64BIT
+=======
+config AUDIT_ARCH
+	def_bool y
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config NR_CPUS
 	int "Maximum number of CPUs (2-32)"
@@ -318,6 +393,25 @@ source "fs/Kconfig"
 
 source "arch/parisc/Kconfig.debug"
 
+<<<<<<< HEAD
+=======
+config SECCOMP
+	def_bool y
+	prompt "Enable seccomp to safely compute untrusted bytecode"
+	---help---
+	  This kernel feature is useful for number crunching applications
+	  that may need to compute untrusted bytecode during their
+	  execution. By using pipes or other transports made available to
+	  the process as file descriptors supporting the read/write
+	  syscalls, it's possible to isolate those applications in
+	  their own address space using seccomp. Once seccomp is
+	  enabled via prctl(PR_SET_SECCOMP), it cannot be disabled
+	  and the task is only allowed to execute a few safe syscalls
+	  defined by each seccomp mode.
+
+	  If unsure, say Y. Only embedded should say N here.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 source "security/Kconfig"
 
 source "crypto/Kconfig"

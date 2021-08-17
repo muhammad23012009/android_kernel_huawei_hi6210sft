@@ -159,7 +159,11 @@ int omfs_allocate_range(struct super_block *sb,
 	goto out;
 
 found:
+<<<<<<< HEAD
 	*return_block = i * bits_per_entry + bit;
+=======
+	*return_block = (u64) i * bits_per_entry + bit;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*return_size = run;
 	ret = set_run(sb, i, bits_per_entry, bit, run, 1);
 

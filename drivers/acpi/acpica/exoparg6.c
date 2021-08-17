@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -119,7 +123,10 @@ acpi_ex_do_match(u32 match_op,
 		break;
 
 	case MATCH_MEQ:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * True if equal: (P[i] == M)
 		 * Change to:     (M == P[i])
@@ -133,7 +140,10 @@ acpi_ex_do_match(u32 match_op,
 		break;
 
 	case MATCH_MLE:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * True if less than or equal: (P[i] <= M) (P[i] not_greater than M)
 		 * Change to:                  (M >= P[i]) (M not_less than P[i])
@@ -148,7 +158,10 @@ acpi_ex_do_match(u32 match_op,
 		break;
 
 	case MATCH_MLT:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * True if less than: (P[i] < M)
 		 * Change to:         (M > P[i])
@@ -162,7 +175,10 @@ acpi_ex_do_match(u32 match_op,
 		break;
 
 	case MATCH_MGE:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * True if greater than or equal: (P[i] >= M) (P[i] not_less than M)
 		 * Change to:                     (M <= P[i]) (M not_greater than P[i])
@@ -177,7 +193,10 @@ acpi_ex_do_match(u32 match_op,
 		break;
 
 	case MATCH_MGT:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * True if greater than: (P[i] > M)
 		 * Change to:            (M < P[i])
@@ -212,7 +231,11 @@ acpi_ex_do_match(u32 match_op,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_ex_opcode_6A_0T_1R(struct acpi_walk_state * walk_state)
+=======
+acpi_status acpi_ex_opcode_6A_0T_1R(struct acpi_walk_state *walk_state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	union acpi_operand_object **operand = &walk_state->operands[0];
 	union acpi_operand_object *return_desc = NULL;
@@ -315,11 +338,19 @@ acpi_status acpi_ex_opcode_6A_0T_1R(struct acpi_walk_state * walk_state)
 
 		ACPI_ERROR((AE_INFO, "Unknown AML opcode 0x%X",
 			    walk_state->opcode));
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = AE_AML_BAD_OPCODE;
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Delete return object on error */
 

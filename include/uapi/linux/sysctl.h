@@ -22,12 +22,19 @@
 #ifndef _UAPI_LINUX_SYSCTL_H
 #define _UAPI_LINUX_SYSCTL_H
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/compiler.h>
 
 struct completion;
 
+=======
+#include <linux/const.h>
+#include <linux/types.h>
+#include <linux/compiler.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CTL_MAXNAME 10		/* how many path components do we allow in a
 				   call to sysctl?   In other words, what is
 				   the largest acceptable value for the nlen
@@ -153,6 +160,10 @@ enum
 	KERN_MAX_LOCK_DEPTH=74, /* int: rtmutex's maximum lock depth */
 	KERN_NMI_WATCHDOG=75, /* int: enable/disable nmi watchdog */
 	KERN_PANIC_ON_NMI=76, /* int: whether we will panic on an unrecovered */
+<<<<<<< HEAD
+=======
+	KERN_PANIC_ON_WARN=77, /* int: call panic() in WARN() functions */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -568,6 +579,11 @@ enum {
 	NET_IPV6_ACCEPT_RA_RT_INFO_MAX_PLEN=22,
 	NET_IPV6_PROXY_NDP=23,
 	NET_IPV6_ACCEPT_SOURCE_ROUTE=25,
+<<<<<<< HEAD
+=======
+	NET_IPV6_ACCEPT_RA_FROM_LOCAL=26,
+	NET_IPV6_ACCEPT_RA_RT_INFO_MIN_PLEN=27,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__NET_IPV6_MAX
 };
 

@@ -20,7 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/debugfs.h>
 #include <linux/spinlock.h>
@@ -29,8 +32,13 @@
 #include <asm/firmware.h>
 #include <asm/lppaca.h>
 #include <asm/debug.h>
+<<<<<<< HEAD
 
 #include "plpar_wrappers.h"
+=======
+#include <asm/plpar_wrappers.h>
+#include <asm/machdep.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct dtl {
 	struct dtl_entry	*buf;
@@ -76,7 +84,11 @@ static atomic_t dtl_count;
  */
 static void consume_dtle(struct dtl_entry *dtle, u64 index)
 {
+<<<<<<< HEAD
 	struct dtl_ring *dtlr = &__get_cpu_var(dtl_rings);
+=======
+	struct dtl_ring *dtlr = this_cpu_ptr(&dtl_rings);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dtl_entry *wp = dtlr->write_ptr;
 	struct lppaca *vpa = local_paca->lppaca_ptr;
 
@@ -87,7 +99,11 @@ static void consume_dtle(struct dtl_entry *dtle, u64 index)
 	barrier();
 
 	/* check for hypervisor ring buffer overflow, ignore this entry if so */
+<<<<<<< HEAD
 	if (index + N_DISPATCH_LOG < vpa->dtl_idx)
+=======
+	if (index + N_DISPATCH_LOG < be64_to_cpu(vpa->dtl_idx))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	++wp;
@@ -151,7 +167,11 @@ static int dtl_start(struct dtl *dtl)
 
 	/* Register our dtl buffer with the hypervisor. The HV expects the
 	 * buffer size to be passed in the second word of the buffer */
+<<<<<<< HEAD
 	((u32 *)dtl->buf)[1] = DISPATCH_LOG_BYTES;
+=======
+	((u32 *)dtl->buf)[1] = cpu_to_be32(DISPATCH_LOG_BYTES);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hwcpu = get_hard_smp_processor_id(dtl->cpu);
 	addr = __pa(dtl->buf);
@@ -186,7 +206,11 @@ static void dtl_stop(struct dtl *dtl)
 
 static u64 dtl_current_index(struct dtl *dtl)
 {
+<<<<<<< HEAD
 	return lppaca_of(dtl->cpu).dtl_idx;
+=======
+	return be64_to_cpu(lppaca_of(dtl->cpu).dtl_idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* CONFIG_VIRT_CPU_ACCOUNTING_NATIVE */
 
@@ -393,4 +417,8 @@ err_remove_dir:
 err:
 	return rc;
 }
+<<<<<<< HEAD
 arch_initcall(dtl_init);
+=======
+machine_arch_initcall(pseries, dtl_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

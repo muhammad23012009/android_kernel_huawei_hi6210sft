@@ -2,7 +2,11 @@
 #define _UAPI_XT_PHYSDEV_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/if.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define XT_PHYSDEV_OP_IN		0x01
 #define XT_PHYSDEV_OP_OUT		0x02

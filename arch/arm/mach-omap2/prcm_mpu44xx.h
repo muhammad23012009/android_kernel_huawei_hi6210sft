@@ -25,11 +25,15 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_PRCM_MPU44XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRCM_MPU44XX_H
 
+<<<<<<< HEAD
 #include "common.h"
 
 # ifndef __ASSEMBLER__
 extern void __iomem *prcm_mpu_base;
 # endif
+=======
+#include "prcm_mpu_44xx_54xx.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define OMAP4430_PRCM_MPU_BASE			0x48243000
 
@@ -98,6 +102,7 @@ extern void __iomem *prcm_mpu_base;
 #define OMAP4_CM_CPU1_CLKSTCTRL_OFFSET		0x0018
 #define OMAP4430_CM_CPU1_CLKSTCTRL		OMAP44XX_PRCM_MPU_REGADDR(OMAP4430_PRCM_MPU_CPU1_INST, 0x0018)
 
+<<<<<<< HEAD
 /* Function prototypes */
 # ifndef __ASSEMBLER__
 extern u32 omap4_prcm_mpu_read_inst_reg(s16 inst, u16 idx);
@@ -107,4 +112,6 @@ extern u32 omap4_prcm_mpu_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst,
 extern void __init omap2_set_globals_prcm_mpu(void __iomem *prcm_mpu);
 # endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

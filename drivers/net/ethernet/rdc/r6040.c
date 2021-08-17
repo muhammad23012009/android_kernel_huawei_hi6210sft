@@ -4,7 +4,11 @@
  * Copyright (C) 2004 Sten Wang <sten.wang@rdc.com.tw>
  * Copyright (C) 2007
  *	Daniel Gimpelevich <daniel@gimpelevich.san-francisco.ca.us>
+<<<<<<< HEAD
  * Copyright (C) 2007-2012 Florian Fainelli <florian@openwrt.org>
+=======
+ * Copyright (C) 2007-2012 Florian Fainelli <f.fainelli@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +38,10 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/mii.h>
 #include <linux/ethtool.h>
@@ -49,8 +56,13 @@
 #include <asm/processor.h>
 
 #define DRV_NAME	"r6040"
+<<<<<<< HEAD
 #define DRV_VERSION	"0.28"
 #define DRV_RELDATE	"07Oct2011"
+=======
+#define DRV_VERSION	"0.29"
+#define DRV_RELDATE	"04Jul2016"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Time in jiffies before concluding the transmitter is hung. */
 #define TX_TIMEOUT	(6000 * HZ / 1000)
@@ -163,7 +175,11 @@
 
 MODULE_AUTHOR("Sten Wang <sten.wang@rdc.com.tw>,"
 	"Daniel Gimpelevich <daniel@gimpelevich.san-francisco.ca.us>,"
+<<<<<<< HEAD
 	"Florian Fainelli <florian@openwrt.org>");
+=======
+	"Florian Fainelli <f.fainelli@gmail.com>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("RDC R6040 NAPI PCI FastEthernet driver");
 MODULE_VERSION(DRV_VERSION " " DRV_RELDATE);
@@ -201,7 +217,10 @@ struct r6040_private {
 	struct mii_bus *mii_bus;
 	struct napi_struct napi;
 	void __iomem *base;
+<<<<<<< HEAD
 	struct phy_device *phydev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int old_link;
 	int old_duplex;
 };
@@ -222,6 +241,10 @@ static int r6040_phy_read(void __iomem *ioaddr, int phy_addr, int reg)
 		cmd = ioread16(ioaddr + MMDIO);
 		if (!(cmd & MDIO_READ))
 			break;
+<<<<<<< HEAD
+=======
+		udelay(1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (limit < 0)
@@ -245,6 +268,10 @@ static int r6040_phy_write(void __iomem *ioaddr,
 		cmd = ioread16(ioaddr + MMDIO);
 		if (!(cmd & MDIO_WRITE))
 			break;
+<<<<<<< HEAD
+=======
+		udelay(1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return (limit < 0) ? -ETIMEDOUT : 0;
@@ -269,11 +296,14 @@ static int r6040_mdiobus_write(struct mii_bus *bus, int phy_addr,
 	return r6040_phy_write(ioaddr, phy_addr, reg, value);
 }
 
+<<<<<<< HEAD
 static int r6040_mdiobus_reset(struct mii_bus *bus)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void r6040_free_txbufs(struct net_device *dev)
 {
 	struct r6040_private *lp = netdev_priv(dev);
@@ -478,7 +508,11 @@ static void r6040_down(struct net_device *dev)
 	iowrite16(adrp[1], ioaddr + MID_0M);
 	iowrite16(adrp[2], ioaddr + MID_0H);
 
+<<<<<<< HEAD
 	phy_stop(lp->phydev);
+=======
+	phy_stop(dev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int r6040_close(struct net_device *dev)
@@ -519,12 +553,19 @@ static int r6040_close(struct net_device *dev)
 
 static int r6040_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
 	struct r6040_private *lp = netdev_priv(dev);
 
 	if (!lp->phydev)
 		return -EINVAL;
 
 	return phy_mii_ioctl(lp->phydev, rq, cmd);
+=======
+	if (!dev->phydev)
+		return -EINVAL;
+
+	return phy_mii_ioctl(dev->phydev, rq, cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int r6040_rx(struct net_device *dev, int limit)
@@ -621,10 +662,22 @@ static void r6040_tx(struct net_device *dev)
 		if (descptr->status & DSC_OWNER_MAC)
 			break; /* Not complete */
 		skb_ptr = descptr->skb_ptr;
+<<<<<<< HEAD
 		pci_unmap_single(priv->pdev, le32_to_cpu(descptr->buf),
 			skb_ptr->len, PCI_DMA_TODEVICE);
 		/* Free buffer */
 		dev_kfree_skb_irq(skb_ptr);
+=======
+
+		/* Statistic Counter */
+		dev->stats.tx_packets++;
+		dev->stats.tx_bytes += skb_ptr->len;
+
+		pci_unmap_single(priv->pdev, le32_to_cpu(descptr->buf),
+			skb_ptr->len, PCI_DMA_TODEVICE);
+		/* Free buffer */
+		dev_kfree_skb(skb_ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		descptr->skb_ptr = NULL;
 		/* To next descriptor */
 		descptr = descptr->vndescp;
@@ -645,12 +698,24 @@ static int r6040_poll(struct napi_struct *napi, int budget)
 	void __iomem *ioaddr = priv->base;
 	int work_done;
 
+<<<<<<< HEAD
 	work_done = r6040_rx(dev, budget);
 
 	if (work_done < budget) {
 		napi_complete(napi);
 		/* Enable RX interrupt */
 		iowrite16(ioread16(ioaddr + MIER) | RX_INTS, ioaddr + MIER);
+=======
+	r6040_tx(dev);
+
+	work_done = r6040_rx(dev, budget);
+
+	if (work_done < budget) {
+		napi_complete_done(napi, work_done);
+		/* Enable RX/TX interrupt */
+		iowrite16(ioread16(ioaddr + MIER) | RX_INTS | TX_INTS,
+			  ioaddr + MIER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return work_done;
 }
@@ -677,7 +742,11 @@ static irqreturn_t r6040_interrupt(int irq, void *dev_id)
 	}
 
 	/* RX interrupt request */
+<<<<<<< HEAD
 	if (status & RX_INTS) {
+=======
+	if (status & (RX_INTS | TX_INTS)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (status & RX_NO_DESC) {
 			/* RX descriptor unavailable */
 			dev->stats.rx_dropped++;
@@ -688,6 +757,7 @@ static irqreturn_t r6040_interrupt(int irq, void *dev_id)
 
 		if (likely(napi_schedule_prep(&lp->napi))) {
 			/* Mask off RX interrupt */
+<<<<<<< HEAD
 			misr &= ~RX_INTS;
 			__napi_schedule(&lp->napi);
 		}
@@ -697,6 +767,13 @@ static irqreturn_t r6040_interrupt(int irq, void *dev_id)
 	if (status & TX_INTS)
 		r6040_tx(dev);
 
+=======
+			misr &= ~(RX_INTS | TX_INTS);
+			__napi_schedule_irqoff(&lp->napi);
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Restore RDC MAC interrupt */
 	iowrite16(misr, ioaddr + MIER);
 
@@ -736,7 +813,11 @@ static int r6040_up(struct net_device *dev)
 	/* Initialize all MAC registers */
 	r6040_init_mac_regs(dev);
 
+<<<<<<< HEAD
 	phy_start(lp->phydev);
+=======
+	phy_start(dev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -817,6 +898,12 @@ static netdev_tx_t r6040_start_xmit(struct sk_buff *skb,
 	void __iomem *ioaddr = lp->base;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	if (skb_put_padto(skb, ETH_ZLEN) < 0)
+		return NETDEV_TX_OK;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Critical Section */
 	spin_lock_irqsave(&lp->lock, flags);
 
@@ -828,6 +915,7 @@ static netdev_tx_t r6040_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_BUSY;
 	}
 
+<<<<<<< HEAD
 	/* Statistic Counter */
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
@@ -839,6 +927,12 @@ static netdev_tx_t r6040_start_xmit(struct sk_buff *skb,
 	else
 		descptr->len = skb->len;
 
+=======
+	/* Set TX descriptor & Transmit it */
+	lp->tx_free_desc--;
+	descptr = lp->tx_insert_ptr;
+	descptr->len = skb->len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	descptr->skb_ptr = skb;
 	descptr->buf = cpu_to_le32(pci_map_single(lp->pdev,
 		skb->data, skb->len, PCI_DMA_TODEVICE));
@@ -847,7 +941,12 @@ static netdev_tx_t r6040_start_xmit(struct sk_buff *skb,
 	skb_tx_timestamp(skb);
 
 	/* Trigger the MAC to check the TX descriptor */
+<<<<<<< HEAD
 	iowrite16(TM2TX, ioaddr + MTPR);
+=======
+	if (!skb->xmit_more || netif_queue_stopped(dev))
+		iowrite16(TM2TX, ioaddr + MTPR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lp->tx_insert_ptr = descptr->vndescp;
 
 	/* If no tx resource, stop */
@@ -961,6 +1060,7 @@ static void netdev_get_drvinfo(struct net_device *dev,
 	strlcpy(info->bus_info, pci_name(rp->pdev), sizeof(info->bus_info));
 }
 
+<<<<<<< HEAD
 static int netdev_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct r6040_private *rp = netdev_priv(dev);
@@ -981,6 +1081,14 @@ static const struct ethtool_ops netdev_ethtool_ops = {
 	.set_settings		= netdev_set_settings,
 	.get_link		= ethtool_op_get_link,
 	.get_ts_info		= ethtool_op_get_ts_info,
+=======
+static const struct ethtool_ops netdev_ethtool_ops = {
+	.get_drvinfo		= netdev_get_drvinfo,
+	.get_link		= ethtool_op_get_link,
+	.get_ts_info		= ethtool_op_get_ts_info,
+	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct net_device_ops r6040_netdev_ops = {
@@ -1002,7 +1110,11 @@ static const struct net_device_ops r6040_netdev_ops = {
 static void r6040_adjust_link(struct net_device *dev)
 {
 	struct r6040_private *lp = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = lp->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int status_changed = 0;
 	void __iomem *ioaddr = lp->base;
 
@@ -1022,6 +1134,7 @@ static void r6040_adjust_link(struct net_device *dev)
 		lp->old_duplex = phydev->duplex;
 	}
 
+<<<<<<< HEAD
 	if (status_changed) {
 		pr_info("%s: link %s", dev->name, phydev->link ?
 			"UP" : "DOWN");
@@ -1030,6 +1143,10 @@ static void r6040_adjust_link(struct net_device *dev)
 			DUPLEX_FULL == phydev->duplex ? "full" : "half");
 		pr_cont("\n");
 	}
+=======
+	if (status_changed)
+		phy_print_status(phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int r6040_mii_probe(struct net_device *dev)
@@ -1043,7 +1160,11 @@ static int r6040_mii_probe(struct net_device *dev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	phydev = phy_connect(dev, dev_name(&phydev->dev), &r6040_adjust_link,
+=======
+	phydev = phy_connect(dev, phydev_name(phydev), &r6040_adjust_link,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     PHY_INTERFACE_MODE_MII);
 
 	if (IS_ERR(phydev)) {
@@ -1061,6 +1182,7 @@ static int r6040_mii_probe(struct net_device *dev)
 				| SUPPORTED_TP);
 
 	phydev->advertising = phydev->supported;
+<<<<<<< HEAD
 	lp->phydev = phydev;
 	lp->old_link = 0;
 	lp->old_duplex = -1;
@@ -1068,6 +1190,12 @@ static int r6040_mii_probe(struct net_device *dev)
 	dev_info(&lp->pdev->dev, "attached PHY driver [%s] "
 		"(mii_bus:phy_addr=%s)\n",
 		phydev->drv->name, dev_name(&phydev->dev));
+=======
+	lp->old_link = 0;
+	lp->old_duplex = -1;
+
+	phy_attached_info(phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1081,7 +1209,10 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	static int card_idx = -1;
 	int bar = 0;
 	u16 *adrp;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_info("%s\n", version);
 
@@ -1092,14 +1223,22 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* this should always be supported */
 	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
 	if (err) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "32-bit PCI DMA addresses"
 				"not supported by the card\n");
+=======
+		dev_err(&pdev->dev, "32-bit PCI DMA addresses not supported by the card\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out_disable_dev;
 	}
 	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
 	if (err) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "32-bit PCI DMA addresses"
 				"not supported by the card\n");
+=======
+		dev_err(&pdev->dev, "32-bit PCI DMA addresses not supported by the card\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out_disable_dev;
 	}
 
@@ -1190,6 +1329,7 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	lp->mii_bus->priv = dev;
 	lp->mii_bus->read = r6040_mdiobus_read;
 	lp->mii_bus->write = r6040_mdiobus_write;
+<<<<<<< HEAD
 	lp->mii_bus->reset = r6040_mdiobus_reset;
 	lp->mii_bus->name = "r6040_eth_mii";
 	snprintf(lp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
@@ -1202,11 +1342,20 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	for (i = 0; i < PHY_MAX_ADDR; i++)
 		lp->mii_bus->irq[i] = PHY_POLL;
+=======
+	lp->mii_bus->name = "r6040_eth_mii";
+	snprintf(lp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+		dev_name(&pdev->dev), card_idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = mdiobus_register(lp->mii_bus);
 	if (err) {
 		dev_err(&pdev->dev, "failed to register MII bus\n");
+<<<<<<< HEAD
 		goto err_out_mdio_irq;
+=======
+		goto err_out_mdio;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	err = r6040_mii_probe(dev);
@@ -1225,13 +1374,19 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 err_out_mdio_unregister:
 	mdiobus_unregister(lp->mii_bus);
+<<<<<<< HEAD
 err_out_mdio_irq:
 	kfree(lp->mii_bus->irq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out_mdio:
 	mdiobus_free(lp->mii_bus);
 err_out_unmap:
 	netif_napi_del(&lp->napi);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pci_iounmap(pdev, ioaddr);
 err_out_free_res:
 	pci_release_regions(pdev);
@@ -1250,18 +1405,28 @@ static void r6040_remove_one(struct pci_dev *pdev)
 
 	unregister_netdev(dev);
 	mdiobus_unregister(lp->mii_bus);
+<<<<<<< HEAD
 	kfree(lp->mii_bus->irq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mdiobus_free(lp->mii_bus);
 	netif_napi_del(&lp->napi);
 	pci_iounmap(pdev, lp->base);
 	pci_release_regions(pdev);
 	free_netdev(dev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
 }
 
 
 static DEFINE_PCI_DEVICE_TABLE(r6040_pci_tbl) = {
+=======
+}
+
+
+static const struct pci_device_id r6040_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_RDC, 0x6040) },
 	{ 0 }
 };

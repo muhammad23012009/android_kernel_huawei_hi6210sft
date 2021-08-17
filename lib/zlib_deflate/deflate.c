@@ -250,6 +250,7 @@ int zlib_deflateInit2(
 }
 
 /* ========================================================================= */
+<<<<<<< HEAD
 #if 0
 int zlib_deflateSetDictionary(
 	z_streamp strm,
@@ -296,6 +297,8 @@ int zlib_deflateSetDictionary(
 #endif  /*  0  */
 
 /* ========================================================================= */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int zlib_deflateReset(
 	z_streamp strm
 )
@@ -326,6 +329,7 @@ int zlib_deflateReset(
     return Z_OK;
 }
 
+<<<<<<< HEAD
 /* ========================================================================= */
 #if 0
 int zlib_deflateParams(
@@ -365,6 +369,8 @@ int zlib_deflateParams(
 }
 #endif  /*  0  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* =========================================================================
  * Put a short in the pending buffer. The 16-bit value is put in MSB order.
  * IN assertion: the stream state is correct and there is enough room in
@@ -568,6 +574,7 @@ int zlib_deflateEnd(
     return status == BUSY_STATE ? Z_DATA_ERROR : Z_OK;
 }
 
+<<<<<<< HEAD
 /* =========================================================================
  * Copy the source state to the destination state.
  */
@@ -626,6 +633,8 @@ int zlib_deflateCopy (
 }
 #endif  /*  0  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* ===========================================================================
  * Read a new buffer from the current input stream, update the adler32
  * and total number of bytes read.  All deflate() input goes through

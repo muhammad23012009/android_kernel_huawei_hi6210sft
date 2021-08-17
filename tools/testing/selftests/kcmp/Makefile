@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 uname_M := $(shell uname -m 2>/dev/null || echo not)
 ARCH ?= $(shell echo $(uname_M) | sed -e s/i.86/i386/)
 ifeq ($(ARCH),i386)
@@ -27,3 +28,15 @@ run_tests: all
 clean:
 	rm -fr ./run_test
 	rm -fr ./test-file
+=======
+CFLAGS += -I../../../../usr/include/
+
+all: kcmp_test
+
+TEST_PROGS := kcmp_test
+
+include ../lib.mk
+
+clean:
+	$(RM) kcmp_test kcmp-test-file
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

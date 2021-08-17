@@ -9,9 +9,16 @@
  * The Hamming Weight of a number is the total number of bits set in it.
  */
 
+<<<<<<< HEAD
 unsigned int __sw_hweight32(unsigned int w)
 {
 #ifdef ARCH_HAS_FAST_MULTIPLIER
+=======
+#ifndef __HAVE_ARCH_SW_HWEIGHT
+unsigned int __sw_hweight32(unsigned int w)
+{
+#ifdef CONFIG_ARCH_HAS_FAST_MULTIPLIER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	w -= (w >> 1) & 0x55555555;
 	w =  (w & 0x33333333) + ((w >> 2) & 0x33333333);
 	w =  (w + (w >> 4)) & 0x0f0f0f0f;
@@ -25,6 +32,10 @@ unsigned int __sw_hweight32(unsigned int w)
 #endif
 }
 EXPORT_SYMBOL(__sw_hweight32);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned int __sw_hweight16(unsigned int w)
 {
@@ -43,13 +54,21 @@ unsigned int __sw_hweight8(unsigned int w)
 }
 EXPORT_SYMBOL(__sw_hweight8);
 
+<<<<<<< HEAD
+=======
+#ifndef __HAVE_ARCH_SW_HWEIGHT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long __sw_hweight64(__u64 w)
 {
 #if BITS_PER_LONG == 32
 	return __sw_hweight32((unsigned int)(w >> 32)) +
 	       __sw_hweight32((unsigned int)w);
 #elif BITS_PER_LONG == 64
+<<<<<<< HEAD
 #ifdef ARCH_HAS_FAST_MULTIPLIER
+=======
+#ifdef CONFIG_ARCH_HAS_FAST_MULTIPLIER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	w -= (w >> 1) & 0x5555555555555555ul;
 	w =  (w & 0x3333333333333333ul) + ((w >> 2) & 0x3333333333333333ul);
 	w =  (w + (w >> 4)) & 0x0f0f0f0f0f0f0f0ful;
@@ -65,3 +84,7 @@ unsigned long __sw_hweight64(__u64 w)
 #endif
 }
 EXPORT_SYMBOL(__sw_hweight64);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

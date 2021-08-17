@@ -10,17 +10,29 @@
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
         .section        ".toc","aw"
 PPC64_CACHES:
         .tc             ppc64_caches[TC],ppc64_caches
         .section        ".text"
 
+<<<<<<< HEAD
 _GLOBAL(copy_page)
 BEGIN_FTR_SECTION
 	lis	r5,PAGE_SIZE@h
 FTR_SECTION_ELSE
 	b	.copypage_power7
+=======
+_GLOBAL_TOC(copy_page)
+BEGIN_FTR_SECTION
+	lis	r5,PAGE_SIZE@h
+FTR_SECTION_ELSE
+	b	copypage_power7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ALT_FTR_SECTION_END_IFCLR(CPU_FTR_VMX_COPY)
 	ori	r5,r5,PAGE_SIZE@l
 BEGIN_FTR_SECTION
@@ -110,3 +122,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_CP_USE_DCBTZ)
 	std	r11,120(r3)
 	std	r12,128(r3)
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(copy_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

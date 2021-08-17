@@ -445,7 +445,11 @@ void __init paging_init(void)
  * the user-mode pages.  This will then ensure that we have predictable
  * results when turning the mmu off
  */
+<<<<<<< HEAD
 void setup_mm_for_reboot(char mode)
+=======
+void setup_mm_for_reboot(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long base_pmdval;
 	pgd_t *pgd;

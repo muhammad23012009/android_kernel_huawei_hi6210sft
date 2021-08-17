@@ -72,7 +72,11 @@ send_socklist(struct mISDN_sock_list *sl, struct sk_buff *skb)
 		if (sk->sk_state != MISDN_BOUND)
 			continue;
 		if (!cskb)
+<<<<<<< HEAD
 			cskb = skb_copy(skb, GFP_KERNEL);
+=======
+			cskb = skb_copy(skb, GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!cskb) {
 			printk(KERN_WARNING "%s no skb\n", __func__);
 			break;

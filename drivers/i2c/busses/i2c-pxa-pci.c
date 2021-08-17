@@ -148,7 +148,11 @@ static void ce4100_i2c_remove(struct pci_dev *dev)
 	kfree(sds);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ce4100_i2c_devices) = {
+=======
+static const struct pci_device_id ce4100_i2c_devices[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x2e68)},
 	{ },
 };

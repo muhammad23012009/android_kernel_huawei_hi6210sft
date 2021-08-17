@@ -35,8 +35,16 @@
 #ifndef _AHCI_H
 #define _AHCI_H
 
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/libata.h>
+=======
+#include <linux/pci.h>
+#include <linux/clk.h>
+#include <linux/libata.h>
+#include <linux/phy/phy.h>
+#include <linux/regulator/consumer.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Enclosure Management Control */
 #define EM_CTRL_MSG_TYPE              0x000f0000
@@ -51,6 +59,10 @@
 
 enum {
 	AHCI_MAX_PORTS		= 32,
+<<<<<<< HEAD
+=======
+	AHCI_MAX_CLKS		= 5,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	AHCI_MAX_SG		= 168, /* hardware max is 64K */
 	AHCI_DMA_BOUNDARY	= 0xffffffff,
 	AHCI_MAX_CMDS		= 32,
@@ -91,6 +103,10 @@ enum {
 	/* HOST_CTL bits */
 	HOST_RESET		= (1 << 0),  /* reset controller; self-clear */
 	HOST_IRQ_EN		= (1 << 1),  /* global IRQ enable */
+<<<<<<< HEAD
+=======
+	HOST_MRSM		= (1 << 2),  /* MSI Revert to Single Message */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	HOST_AHCI_EN		= (1 << 31), /* AHCI enabled */
 
 	/* HOST_CAP bits */
@@ -177,6 +193,11 @@ enum {
 	PORT_CMD_ALPE		= (1 << 26), /* Aggressive Link PM enable */
 	PORT_CMD_ATAPI		= (1 << 24), /* Device is ATAPI */
 	PORT_CMD_FBSCP		= (1 << 22), /* FBS Capable Port */
+<<<<<<< HEAD
+=======
+	PORT_CMD_ESP		= (1 << 21), /* External Sata Port */
+	PORT_CMD_HPCP		= (1 << 18), /* HotPlug Capable Port */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PORT_CMD_PMP		= (1 << 17), /* PMP attached */
 	PORT_CMD_LIST_ON	= (1 << 15), /* cmd list DMA engine running */
 	PORT_CMD_FIS_ON		= (1 << 14), /* FIS DMA engine running */
@@ -231,7 +252,20 @@ enum {
 	AHCI_HFLAG_DELAY_ENGINE		= (1 << 15), /* do not start engine on
 						        port start (wait until
 						        error-handling stage) */
+<<<<<<< HEAD
 	AHCI_HFLAG_MULTI_MSI		= (1 << 16), /* multiple PCI MSIs */
+=======
+	AHCI_HFLAG_NO_DEVSLP		= (1 << 17), /* no device sleep */
+	AHCI_HFLAG_NO_FBS		= (1 << 18), /* no FBS */
+
+#ifdef CONFIG_PCI_MSI
+	AHCI_HFLAG_MULTI_MSI		= (1 << 20), /* per-port MSI(-X) */
+#else
+	/* compile out MSI infrastructure */
+	AHCI_HFLAG_MULTI_MSI		= 0,
+#endif
+	AHCI_HFLAG_WAKE_BEFORE_STOP	= (1 << 22), /* wake before DMA stop */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* ap->flags bits */
 
@@ -298,7 +332,10 @@ struct ahci_port_priv {
 	unsigned int		ncq_saw_d2h:1;
 	unsigned int		ncq_saw_dmas:1;
 	unsigned int		ncq_saw_sdb:1;
+<<<<<<< HEAD
 	u32			intr_status;	/* interrupts to handle */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t		lock;		/* protects parent ata_port */
 	u32 			intr_mask;	/* interrupts to enable */
 	bool			fbs_supported;	/* set iff FBS is supported */
@@ -306,6 +343,7 @@ struct ahci_port_priv {
 	int			fbs_last_dev;	/* save FBS.DEV of last FIS */
 	/* enclosure management info per PM slot */
 	struct ahci_em_priv	em_priv[EM_MAX_SLOTS];
+<<<<<<< HEAD
 };
 
 struct ahci_host_priv {
@@ -313,6 +351,21 @@ struct ahci_host_priv {
 	unsigned int		flags;		/* AHCI_HFLAG_* */
 	u32			cap;		/* cap to use */
 	u32			cap2;		/* cap2 to use */
+=======
+	char			*irq_desc;	/* desc in /proc/interrupts */
+};
+
+struct ahci_host_priv {
+	/* Input fields */
+	unsigned int		flags;		/* AHCI_HFLAG_* */
+	u32			force_port_map;	/* force port map */
+	u32			mask_port_map;	/* mask out particular bits */
+
+	void __iomem *		mmio;		/* bus-independent mem map */
+	u32			cap;		/* cap to use */
+	u32			cap2;		/* cap2 to use */
+	u32			version;	/* cached version */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32			port_map;	/* port map to use */
 	u32			saved_cap;	/* saved initial cap */
 	u32			saved_cap2;	/* saved initial cap2 */
@@ -320,7 +373,32 @@ struct ahci_host_priv {
 	u32 			em_loc; /* enclosure management location */
 	u32			em_buf_sz;	/* EM buffer size in byte */
 	u32			em_msg_type;	/* EM message type */
+<<<<<<< HEAD
 	struct clk		*clk;		/* Only for platforms supporting clk */
+=======
+	bool			got_runtime_pm; /* Did we do pm_runtime_get? */
+	struct clk		*clks[AHCI_MAX_CLKS]; /* Optional */
+	struct regulator	**target_pwrs;	/* Optional */
+	/*
+	 * If platform uses PHYs. There is a 1:1 relation between the port number and
+	 * the PHY position in this array.
+	 */
+	struct phy		**phys;
+	unsigned		nports;		/* Number of ports */
+	void			*plat_data;	/* Other platform data */
+	unsigned int		irq;		/* interrupt line */
+	/*
+	 * Optional ahci_start_engine override, if not set this gets set to the
+	 * default ahci_start_engine during ahci_save_initial_config, this can
+	 * be overridden anytime before the host is activated.
+	 */
+	void			(*start_engine)(struct ata_port *ap);
+	irqreturn_t 		(*irq_handler)(int irq, void *dev_instance);
+
+	/* only required for per-port MSI(-X) support */
+	int			(*get_irq_vector)(struct ata_host *host,
+						  int port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern int ahci_ignore_sss;
@@ -328,6 +406,13 @@ extern int ahci_ignore_sss;
 extern struct device_attribute *ahci_shost_attrs[];
 extern struct device_attribute *ahci_sdev_attrs[];
 
+<<<<<<< HEAD
+=======
+/*
+ * This must be instantiated by the edge drivers.  Read the comments
+ * for ATA_BASE_SHT
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AHCI_SHT(drv_name)						\
 	ATA_NCQ_SHT(drv_name),						\
 	.can_queue		= AHCI_MAX_CMDS - 1,			\
@@ -337,15 +422,23 @@ extern struct device_attribute *ahci_sdev_attrs[];
 	.sdev_attrs		= ahci_sdev_attrs
 
 extern struct ata_port_operations ahci_ops;
+<<<<<<< HEAD
+=======
+extern struct ata_port_operations ahci_platform_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct ata_port_operations ahci_pmp_retry_srst_ops;
 
 unsigned int ahci_dev_classify(struct ata_port *ap);
 void ahci_fill_cmd_slot(struct ahci_port_priv *pp, unsigned int tag,
 			u32 opts);
 void ahci_save_initial_config(struct device *dev,
+<<<<<<< HEAD
 			      struct ahci_host_priv *hpriv,
 			      unsigned int force_port_map,
 			      unsigned int mask_port_map);
+=======
+			      struct ahci_host_priv *hpriv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void ahci_init_controller(struct ata_host *host);
 int ahci_reset_controller(struct ata_host *host);
 
@@ -353,7 +446,13 @@ int ahci_do_softreset(struct ata_link *link, unsigned int *class,
 		      int pmp, unsigned long deadline,
 		      int (*check_ready)(struct ata_link *link));
 
+<<<<<<< HEAD
 int ahci_stop_engine(struct ata_port *ap);
+=======
+unsigned int ahci_qc_issue(struct ata_queued_cmd *qc);
+int ahci_stop_engine(struct ata_port *ap);
+void ahci_start_fis_rx(struct ata_port *ap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void ahci_start_engine(struct ata_port *ap);
 int ahci_check_ready(struct ata_link *link);
 int ahci_kick_engine(struct ata_port *ap);
@@ -361,11 +460,18 @@ int ahci_port_resume(struct ata_port *ap);
 void ahci_set_em_messages(struct ahci_host_priv *hpriv,
 			  struct ata_port_info *pi);
 int ahci_reset_em(struct ata_host *host);
+<<<<<<< HEAD
 irqreturn_t ahci_interrupt(int irq, void *dev_instance);
 irqreturn_t ahci_hw_interrupt(int irq, void *dev_instance);
 irqreturn_t ahci_thread_fn(int irq, void *dev_instance);
 void ahci_print_info(struct ata_host *host, const char *scc_s);
 int ahci_host_activate(struct ata_host *host, int irq, unsigned int n_msis);
+=======
+void ahci_print_info(struct ata_host *host, const char *scc_s);
+int ahci_host_activate(struct ata_host *host, struct scsi_host_template *sht);
+void ahci_error_handler(struct ata_port *ap);
+u32 ahci_handle_port_intr(struct ata_host *host, u32 irq_masked);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void __iomem *__ahci_port_base(struct ata_host *host,
 					     unsigned int port_no)

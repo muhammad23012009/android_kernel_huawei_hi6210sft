@@ -12,6 +12,10 @@
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+<<<<<<< HEAD
+=======
+#include <asm/unwind.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define LDR1W_SHIFT	0
 #define STR1W_SHIFT	0
@@ -48,6 +52,13 @@
 	stmdb sp!, {r0, \reg1, \reg2}
 	.endm
 
+<<<<<<< HEAD
+=======
+	.macro usave reg1 reg2
+	UNWIND(	.save	{r0, \reg1, \reg2}	)
+	.endm
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.macro exit reg1 reg2
 	ldmfd sp!, {r0, \reg1, \reg2}
 	.endm
@@ -56,8 +67,16 @@
 
 /* Prototype: void *memcpy(void *dest, const void *src, size_t n); */
 
+<<<<<<< HEAD
+=======
+ENTRY(mmiocpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENTRY(memcpy)
 
 #include "copy_template.S"
 
 ENDPROC(memcpy)
+<<<<<<< HEAD
+=======
+ENDPROC(mmiocpy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

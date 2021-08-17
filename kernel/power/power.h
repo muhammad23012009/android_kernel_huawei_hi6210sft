@@ -2,6 +2,10 @@
 #include <linux/suspend_ioctls.h>
 #include <linux/utsname.h>
 #include <linux/freezer.h>
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct swsusp_info {
 	struct new_utsname	uts;
@@ -11,7 +15,11 @@ struct swsusp_info {
 	unsigned long		image_pages;
 	unsigned long		pages;
 	unsigned long		size;
+<<<<<<< HEAD
 } __attribute__((aligned(PAGE_SIZE)));
+=======
+} __aligned(PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_HIBERNATION
 /* kernel/power/snapshot.c */
@@ -37,6 +45,11 @@ static inline char *check_image_kernel(struct swsusp_info *info)
 }
 #endif /* CONFIG_ARCH_HIBERNATION_HEADER */
 
+<<<<<<< HEAD
+=======
+extern int hibernate_resume_nonboot_cpu_disable(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Keep some memory free so that I/O operations can succeed without paging
  * [Might this be more than 4 MB?]
@@ -49,6 +62,11 @@ static inline char *check_image_kernel(struct swsusp_info *info)
  */
 #define SPARE_PAGES	((1024 * 1024) >> PAGE_SHIFT)
 
+<<<<<<< HEAD
+=======
+asmlinkage int swsusp_save(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* kernel/power/hibernate.c */
 extern bool freezer_test_done;
 
@@ -56,6 +74,16 @@ extern int hibernation_snapshot(int platform_mode);
 extern int hibernation_restore(int platform_mode);
 extern int hibernation_platform_enter(void);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_RODATA
+/* kernel/power/snapshot.c */
+extern void enable_restore_image_protection(void);
+#else
+static inline void enable_restore_image_protection(void) {}
+#endif /* CONFIG_DEBUG_RODATA */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* !CONFIG_HIBERNATION */
 
 static inline void hibernate_reserved_size_init(void) {}
@@ -74,6 +102,18 @@ static struct kobj_attribute _name##_attr = {	\
 	.store	= _name##_store,		\
 }
 
+<<<<<<< HEAD
+=======
+#define power_attr_ro(_name) \
+static struct kobj_attribute _name##_attr = {	\
+	.attr	= {				\
+		.name = __stringify(_name),	\
+		.mode = S_IRUGO,		\
+	},					\
+	.show	= _name##_show,			\
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Preferred image size in bytes (default 500 MB) */
 extern unsigned long image_size;
 /* Size of memory reserved for drivers (default SPARE_PAGES x PAGE_SIZE) */
@@ -82,13 +122,21 @@ extern int in_suspend;
 extern dev_t swsusp_resume_device;
 extern sector_t swsusp_resume_block;
 
+<<<<<<< HEAD
 extern asmlinkage int swsusp_arch_suspend(void);
 extern asmlinkage int swsusp_arch_resume(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int create_basic_memory_bitmaps(void);
 extern void free_basic_memory_bitmaps(void);
 extern int hibernate_preallocate_memory(void);
 
+<<<<<<< HEAD
+=======
+extern void clear_free_pages(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  *	Auxiliary structure used for reading the snapshot image data and
  *	metadata from and writing them to the list of page backup entries
@@ -160,6 +208,7 @@ extern void swsusp_close(fmode_t);
 extern int swsusp_unmark(void);
 #endif
 
+<<<<<<< HEAD
 /* kernel/power/block_io.c */
 extern struct block_device *hib_resume_bdev;
 
@@ -182,6 +231,16 @@ struct pm_sleep_state {
 
 /* kernel/power/suspend.c */
 extern struct pm_sleep_state pm_states[];
+=======
+struct timeval;
+/* kernel/power/swsusp.c */
+extern void swsusp_show_speed(ktime_t, ktime_t, unsigned int, char *);
+
+#ifdef CONFIG_SUSPEND
+/* kernel/power/suspend.c */
+extern const char *pm_labels[];
+extern const char *pm_states[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int suspend_devices_and_enter(suspend_state_t state);
 #else /* !CONFIG_SUSPEND */
@@ -202,6 +261,11 @@ static inline void suspend_test_finish(const char *label) {}
 
 #ifdef CONFIG_PM_SLEEP
 /* kernel/power/main.c */
+<<<<<<< HEAD
+=======
+extern int __pm_notifier_call_chain(unsigned long val, int nr_to_call,
+				    int *nr_calls);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int pm_notifier_call_chain(unsigned long val);
 #endif
 
@@ -246,7 +310,10 @@ static inline int suspend_freeze_processes(void)
 		return error;
 
 	error = freeze_kernel_threads();
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * freeze_kernel_threads() thaws only kernel threads upon freezing
 	 * failure. So we have to thaw the userspace tasks ourselves.

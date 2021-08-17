@@ -11,6 +11,7 @@
  *  option) any later version.
  */
 
+<<<<<<< HEAD
 #include <linux/i2c.h>
 #include <linux/spi/spi.h>
 #include <sound/soc.h>
@@ -126,12 +127,37 @@ static int snd_soc_flat_cache_init(struct snd_soc_codec *codec)
 					   codec->reg_size, GFP_KERNEL);
 	else
 		codec->reg_cache = kzalloc(codec->reg_size, GFP_KERNEL);
+=======
+#include <sound/soc.h>
+#include <linux/export.h>
+#include <linux/slab.h>
+
+int snd_soc_cache_init(struct snd_soc_codec *codec)
+{
+	const struct snd_soc_codec_driver *codec_drv = codec->driver;
+	size_t reg_size;
+
+	reg_size = codec_drv->reg_cache_size * codec_drv->reg_word_size;
+
+	if (!reg_size)
+		return 0;
+
+	dev_dbg(codec->dev, "ASoC: Initializing cache for %s codec\n",
+				codec->component.name);
+
+	if (codec_drv->reg_cache_default)
+		codec->reg_cache = kmemdup(codec_drv->reg_cache_default,
+					   reg_size, GFP_KERNEL);
+	else
+		codec->reg_cache = kzalloc(reg_size, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!codec->reg_cache)
 		return -ENOMEM;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /* an array of all supported compression types */
 static const struct snd_soc_cache_ops cache_types[] = {
 	/* Flat *must* be the first entry for fallback */
@@ -173,12 +199,15 @@ int snd_soc_cache_init(struct snd_soc_codec *codec)
 	return -ENOSYS;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * NOTE: keep in mind that this function might be called
  * multiple times.
  */
 int snd_soc_cache_exit(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	if (codec->cache_ops && codec->cache_ops->exit) {
 		if (codec->cache_ops->name)
 			dev_dbg(codec->dev, "ASoC: Destroying %s cache for %s codec\n",
@@ -338,3 +367,11 @@ int snd_soc_default_writable_register(struct snd_soc_codec *codec,
 	return codec->driver->reg_access_default[index].write;
 }
 EXPORT_SYMBOL_GPL(snd_soc_default_writable_register);
+=======
+	dev_dbg(codec->dev, "ASoC: Destroying cache for %s codec\n",
+			codec->component.name);
+	kfree(codec->reg_cache);
+	codec->reg_cache = NULL;
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -19,12 +19,17 @@
 #ifndef __LPC32XX_COMMON_H
 #define __LPC32XX_COMMON_H
 
+<<<<<<< HEAD
 #include <mach/board.h>
 #include <linux/platform_device.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Other arch specific structures and functions
  */
+<<<<<<< HEAD
 extern void lpc32xx_timer_init(void);
 extern void __init lpc32xx_init_irq(void);
 extern void __init lpc32xx_map_io(void);
@@ -49,6 +54,11 @@ extern int clk_is_sysclk_mainosc(void);
 extern u32 clk_check_pll_setup(u32 ifreq, struct clk_pll_setup *pllsetup);
 extern u32 clk_get_pllrate_from_reg(u32 inputclk, u32 regval);
 extern u32 clk_get_pclk_div(void);
+=======
+extern void __init lpc32xx_init_irq(void);
+extern void __init lpc32xx_map_io(void);
+extern void __init lpc32xx_serial_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Returns the LPC32xx unique 128-bit chip ID

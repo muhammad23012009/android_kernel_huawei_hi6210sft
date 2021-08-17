@@ -20,7 +20,11 @@
  */
 #define clear_bit_unlock(nr, addr)	\
 do {					\
+<<<<<<< HEAD
 	smp_mb__before_clear_bit();	\
+=======
+	smp_mb__before_atomic();	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_bit(nr, addr);		\
 } while (0)
 
@@ -29,6 +33,7 @@ do {					\
  * @nr: the bit to set
  * @addr: the address to start counting from
  *
+<<<<<<< HEAD
  * This operation is like clear_bit_unlock, however it is not atomic.
  * It does provide release barrier semantics so it can be used to unlock
  * a bit lock, however it would only be used if no other CPU can modify
@@ -39,6 +44,18 @@ do {					\
 do {					\
 	smp_mb();			\
 	__clear_bit(nr, addr);		\
+=======
+ * A weaker form of clear_bit_unlock() as used by __bit_lock_unlock(). If all
+ * the bits in the word are protected by this lock some archs can use weaker
+ * ops to safely unlock.
+ *
+ * See for example x86's implementation.
+ */
+#define __clear_bit_unlock(nr, addr)	\
+do {					\
+	smp_mb__before_atomic();	\
+	clear_bit(nr, addr);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } while (0)
 
 #endif /* _ASM_GENERIC_BITOPS_LOCK_H_ */

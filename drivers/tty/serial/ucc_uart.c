@@ -25,11 +25,20 @@
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/dma-mapping.h>
 
 #include <linux/fs_uart_pd.h>
+<<<<<<< HEAD
 #include <asm/ucc_slow.h>
+=======
+#include <soc/fsl/qe/ucc_slow.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/firmware.h>
 #include <asm/reg.h>
@@ -269,7 +278,11 @@ static unsigned int qe_uart_tx_empty(struct uart_port *port)
 			return 1;
 
 		bdp++;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -433,6 +446,7 @@ static void qe_uart_stop_rx(struct uart_port *port)
 	clrbits16(&qe_port->uccp->uccm, UCC_UART_UCCE_RX);
 }
 
+<<<<<<< HEAD
 /*
  * Enable status change interrupts
  *
@@ -443,6 +457,8 @@ static void qe_uart_enable_ms(struct uart_port *port)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Start or stop sending  break signal
  *
  * This function controls the sending of a break signal.  If break_state=1,
@@ -934,7 +950,11 @@ static void qe_uart_set_termios(struct uart_port *port,
 	port->read_status_mask = BD_SC_EMPTY | BD_SC_OV;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= BD_SC_FR | BD_SC_PR;
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port->read_status_mask |= BD_SC_BR;
 
 	/*
@@ -958,7 +978,11 @@ static void qe_uart_set_termios(struct uart_port *port,
 	if ((termios->c_cflag & CREAD) == 0)
 		port->read_status_mask &= ~BD_SC_EMPTY;
 
+<<<<<<< HEAD
 	baud = uart_get_baud_rate(port, termios, old, 0, 115200);
+=======
+	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Do we really need a spinlock here? */
 	spin_lock_irqsave(&port->lock, flags);
@@ -1100,7 +1124,10 @@ static struct uart_ops qe_uart_pops = {
 	.stop_tx	= qe_uart_stop_tx,
 	.start_tx       = qe_uart_start_tx,
 	.stop_rx	= qe_uart_stop_rx,
+<<<<<<< HEAD
 	.enable_ms      = qe_uart_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl      = qe_uart_break_ctl,
 	.startup	= qe_uart_startup,
 	.shutdown       = qe_uart_shutdown,
@@ -1451,7 +1478,11 @@ static int ucc_uart_probe(struct platform_device *ofdev)
 		goto out_np;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, qe_port);
+=======
+	platform_set_drvdata(ofdev, qe_port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&ofdev->dev, "UCC%u assigned to /dev/ttyQE%u\n",
 		qe_port->ucc_num + 1, qe_port->port.line);
@@ -1471,23 +1502,40 @@ out_free:
 
 static int ucc_uart_remove(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct uart_qe_port *qe_port = dev_get_drvdata(&ofdev->dev);
+=======
+	struct uart_qe_port *qe_port = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&ofdev->dev, "removing /dev/ttyQE%u\n", qe_port->port.line);
 
 	uart_remove_one_port(&ucc_uart_driver, &qe_port->port);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(qe_port);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id ucc_uart_match[] = {
+=======
+static const struct of_device_id ucc_uart_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.type = "serial",
 		.compatible = "ucc_uart",
 	},
+<<<<<<< HEAD
+=======
+	{
+		.compatible = "fsl,t1040-ucc-uart",
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 MODULE_DEVICE_TABLE(of, ucc_uart_match);
@@ -1495,7 +1543,10 @@ MODULE_DEVICE_TABLE(of, ucc_uart_match);
 static struct platform_driver ucc_uart_of_driver = {
 	.driver = {
 		.name = "ucc_uart",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table    = ucc_uart_match,
 	},
 	.probe  	= ucc_uart_probe,
@@ -1518,9 +1569,17 @@ static int __init ucc_uart_init(void)
 	}
 
 	ret = platform_driver_register(&ucc_uart_of_driver);
+<<<<<<< HEAD
 	if (ret)
 		printk(KERN_ERR
 		       "ucc-uart: could not register platform driver\n");
+=======
+	if (ret) {
+		printk(KERN_ERR
+		       "ucc-uart: could not register platform driver\n");
+		uart_unregister_driver(&ucc_uart_driver);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }

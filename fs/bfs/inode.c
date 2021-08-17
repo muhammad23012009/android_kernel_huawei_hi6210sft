@@ -15,6 +15,10 @@
 #include <linux/buffer_head.h>
 #include <linux/vfs.h>
 #include <linux/writeback.h>
+<<<<<<< HEAD
+=======
+#include <linux/uio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/uaccess.h>
 #include "bfs.h"
 
@@ -30,8 +34,11 @@ MODULE_LICENSE("GPL");
 #define dprintf(x...)
 #endif
 
+<<<<<<< HEAD
 void dump_imap(const char *prefix, struct super_block *s);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct inode *bfs_iget(struct super_block *sb, unsigned long ino)
 {
 	struct bfs_inode *di;
@@ -40,7 +47,11 @@ struct inode *bfs_iget(struct super_block *sb, unsigned long ino)
 	int block, off;
 
 	inode = iget_locked(sb, ino);
+<<<<<<< HEAD
 	if (IS_ERR(inode))
+=======
+	if (!inode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ERR_PTR(-ENOMEM);
 	if (!(inode->i_state & I_NEW))
 		return inode;
@@ -172,7 +183,11 @@ static void bfs_evict_inode(struct inode *inode)
 
 	dprintf("ino=%08lx\n", ino);
 
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	invalidate_inode_buffers(inode);
 	clear_inode(inode);
 
@@ -194,7 +209,11 @@ static void bfs_evict_inode(struct inode *inode)
 			info->si_freeb += bi->i_eblock + 1 - bi->i_sblock;
 		info->si_freei++;
 		clear_bit(ino, info->si_imap);
+<<<<<<< HEAD
 		dump_imap("delete_inode", s);
+=======
+		bfs_dump_imap("delete_inode", s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         }
 
 	/*
@@ -266,12 +285,20 @@ static void init_once(void *foo)
 	inode_init_once(&bi->vfs_inode);
 }
 
+<<<<<<< HEAD
 static int init_inodecache(void)
+=======
+static int __init init_inodecache(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	bfs_inode_cachep = kmem_cache_create("bfs_inode_cache",
 					     sizeof(struct bfs_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     init_once);
 	if (bfs_inode_cachep == NULL)
 		return -ENOMEM;
@@ -297,7 +324,11 @@ static const struct super_operations bfs_sops = {
 	.statfs		= bfs_statfs,
 };
 
+<<<<<<< HEAD
 void dump_imap(const char *prefix, struct super_block *s)
+=======
+void bfs_dump_imap(const char *prefix, struct super_block *s)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef DEBUG
 	int i;
@@ -351,7 +382,12 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 
 	s->s_magic = BFS_MAGIC;
 
+<<<<<<< HEAD
 	if (le32_to_cpu(bfs_sb->s_start) > le32_to_cpu(bfs_sb->s_end)) {
+=======
+	if (le32_to_cpu(bfs_sb->s_start) > le32_to_cpu(bfs_sb->s_end) ||
+	    le32_to_cpu(bfs_sb->s_start) < BFS_BSIZE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printf("Superblock is corrupted\n");
 		goto out1;
 	}
@@ -360,9 +396,17 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 					sizeof(struct bfs_inode)
 					+ BFS_ROOT_INO - 1;
 	imap_len = (info->si_lasti / 8) + 1;
+<<<<<<< HEAD
 	info->si_imap = kzalloc(imap_len, GFP_KERNEL);
 	if (!info->si_imap)
 		goto out1;
+=======
+	info->si_imap = kzalloc(imap_len, GFP_KERNEL | __GFP_NOWARN);
+	if (!info->si_imap) {
+		printf("Cannot allocate %u bytes\n", imap_len);
+		goto out1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < BFS_ROOT_INO; i++)
 		set_bit(i, info->si_imap);
 
@@ -443,7 +487,11 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 	}
 	brelse(bh);
 	brelse(sbh);
+<<<<<<< HEAD
 	dump_imap("read_super", s);
+=======
+	bfs_dump_imap("read_super", s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 out3:

@@ -26,7 +26,10 @@
 
 struct da9052_hwmon {
 	struct da9052	*da9052;
+<<<<<<< HEAD
 	struct device	*class_device;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex	hwmon_lock;
 };
 
@@ -45,7 +48,11 @@ static const char * const input_names[] = {
 /* Conversion function for VDDOUT and VBAT */
 static inline int volt_reg_to_mv(int value)
 {
+<<<<<<< HEAD
 	return DIV_ROUND_CLOSEST(value * 1000, 512) + 2500;
+=======
+	return DIV_ROUND_CLOSEST(value * 2000, 1023) + 2500;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Conversion function for ADC channels 4, 5 and 6 */
@@ -57,7 +64,11 @@ static inline int input_reg_to_mv(int value)
 /* Conversion function for VBBAT */
 static inline int vbbat_reg_to_mv(int value)
 {
+<<<<<<< HEAD
 	return DIV_ROUND_CLOSEST(value * 2500, 512);
+=======
+	return DIV_ROUND_CLOSEST(value * 5000, 1023);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int da9052_enable_vddout_channel(struct da9052 *da9052)
@@ -190,6 +201,7 @@ static ssize_t da9052_read_vbbat(struct device *dev,
 	return sprintf(buf, "%d\n", vbbat_reg_to_mv(ret));
 }
 
+<<<<<<< HEAD
 static ssize_t da9052_hwmon_show_name(struct device *dev,
 				      struct device_attribute *devattr,
 				      char *buf)
@@ -197,6 +209,8 @@ static ssize_t da9052_hwmon_show_name(struct device *dev,
 	return sprintf(buf, "da9052\n");
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t show_label(struct device *dev,
 			  struct device_attribute *devattr, char *buf)
 {
@@ -243,10 +257,14 @@ static SENSOR_DEVICE_ATTR(temp8_input, S_IRUGO, da9052_read_tjunc, NULL,
 static SENSOR_DEVICE_ATTR(temp8_label, S_IRUGO, show_label, NULL,
 			  DA9052_ADC_TJUNC);
 
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, da9052_hwmon_show_name, NULL);
 
 static struct attribute *da9052_attr[] = {
 	&dev_attr_name.attr,
+=======
+static struct attribute *da9052_attrs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in0_label.dev_attr.attr,
 	&sensor_dev_attr_in3_input.dev_attr.attr,
@@ -268,6 +286,7 @@ static struct attribute *da9052_attr[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group da9052_attr_group = {.attrs = da9052_attr};
 
 static int da9052_hwmon_probe(struct platform_device *pdev)
@@ -277,12 +296,24 @@ static int da9052_hwmon_probe(struct platform_device *pdev)
 
 	hwmon = devm_kzalloc(&pdev->dev, sizeof(struct da9052_hwmon),
 			     GFP_KERNEL);
+=======
+ATTRIBUTE_GROUPS(da9052);
+
+static int da9052_hwmon_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct da9052_hwmon *hwmon;
+	struct device *hwmon_dev;
+
+	hwmon = devm_kzalloc(dev, sizeof(struct da9052_hwmon), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!hwmon)
 		return -ENOMEM;
 
 	mutex_init(&hwmon->hwmon_lock);
 	hwmon->da9052 = dev_get_drvdata(pdev->dev.parent);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, hwmon);
 
 	ret = sysfs_create_group(&pdev->dev.kobj, &da9052_attr_group);
@@ -311,14 +342,25 @@ static int da9052_hwmon_remove(struct platform_device *pdev)
 	sysfs_remove_group(&pdev->dev.kobj, &da9052_attr_group);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, "da9052",
+							   hwmon,
+							   da9052_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver da9052_hwmon_driver = {
 	.probe = da9052_hwmon_probe,
+<<<<<<< HEAD
 	.remove = da9052_hwmon_remove,
 	.driver = {
 		.name = "da9052-hwmon",
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.name = "da9052-hwmon",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

@@ -1,7 +1,13 @@
 #ifndef __ASMARM_ELF_H
 #define __ASMARM_ELF_H
 
+<<<<<<< HEAD
 #include <asm/hwcap.h>
+=======
+#include <asm/auxvec.h>
+#include <asm/hwcap.h>
+#include <asm/vdso_datapage.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * ELF register definitions..
@@ -50,6 +56,10 @@ typedef struct user_fp elf_fpregset_t;
 #define R_ARM_ABS32		2
 #define R_ARM_CALL		28
 #define R_ARM_JUMP24		29
+<<<<<<< HEAD
+=======
+#define R_ARM_TARGET1		38
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define R_ARM_V4BX		40
 #define R_ARM_PREL31		42
 #define R_ARM_MOVW_ABS_NC	43
@@ -114,7 +124,11 @@ int dump_task_regs(struct task_struct *t, elf_gregset_t *elfregs);
    the loader.  We need to make sure that it is out of the way of the program
    that it will "exec", and that there is sufficient room for the brk.  */
 
+<<<<<<< HEAD
 #define ELF_ET_DYN_BASE	(2 * TASK_SIZE / 3)
+=======
+#define ELF_ET_DYN_BASE	(TASK_SIZE / 3 * 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* When the program starts, a1 contains a pointer to a function to be 
    registered with atexit, as per the SVR4 ABI.  A value of 0 means we 
@@ -124,11 +138,22 @@ int dump_task_regs(struct task_struct *t, elf_gregset_t *elfregs);
 extern void elf_set_personality(const struct elf32_hdr *);
 #define SET_PERSONALITY(ex)	elf_set_personality(&(ex))
 
+<<<<<<< HEAD
 struct mm_struct;
 extern unsigned long arch_randomize_brk(struct mm_struct *mm);
 #define arch_randomize_brk arch_randomize_brk
 
 #ifdef CONFIG_MMU
+=======
+#ifdef CONFIG_MMU
+#ifdef CONFIG_VDSO
+#define ARCH_DLINFO						\
+do {								\
+	NEW_AUX_ENT(AT_SYSINFO_EHDR,				\
+		    (elf_addr_t)current->mm->context.vdso);	\
+} while (0)
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
 struct linux_binprm;
 int arch_setup_additional_pages(struct linux_binprm *, int);

@@ -916,7 +916,10 @@ static __init int probe_chip_type(struct legacy_probe *probe)
 			local_irq_restore(flags);
 			return BIOS;
 		}
+<<<<<<< HEAD
 		local_irq_restore(flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (ht6560a & mask)

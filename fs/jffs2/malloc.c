@@ -97,6 +97,7 @@ int __init jffs2_create_slab_caches(void)
 
 void jffs2_destroy_slab_caches(void)
 {
+<<<<<<< HEAD
 	if(full_dnode_slab)
 		kmem_cache_destroy(full_dnode_slab);
 	if(raw_dirent_slab)
@@ -116,6 +117,18 @@ void jffs2_destroy_slab_caches(void)
 		kmem_cache_destroy(xattr_datum_cache);
 	if (xattr_ref_cache)
 		kmem_cache_destroy(xattr_ref_cache);
+=======
+	kmem_cache_destroy(full_dnode_slab);
+	kmem_cache_destroy(raw_dirent_slab);
+	kmem_cache_destroy(raw_inode_slab);
+	kmem_cache_destroy(tmp_dnode_info_slab);
+	kmem_cache_destroy(raw_node_ref_slab);
+	kmem_cache_destroy(node_frag_slab);
+	kmem_cache_destroy(inode_cache_slab);
+#ifdef CONFIG_JFFS2_FS_XATTR
+	kmem_cache_destroy(xattr_datum_cache);
+	kmem_cache_destroy(xattr_ref_cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 }
 
@@ -288,6 +301,11 @@ struct jffs2_xattr_datum *jffs2_alloc_xattr_datum(void)
 	struct jffs2_xattr_datum *xd;
 	xd = kmem_cache_zalloc(xattr_datum_cache, GFP_KERNEL);
 	dbg_memalloc("%p\n", xd);
+<<<<<<< HEAD
+=======
+	if (!xd)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	xd->class = RAWNODE_CLASS_XATTR_DATUM;
 	xd->node = (void *)xd;
@@ -306,6 +324,11 @@ struct jffs2_xattr_ref *jffs2_alloc_xattr_ref(void)
 	struct jffs2_xattr_ref *ref;
 	ref = kmem_cache_zalloc(xattr_ref_cache, GFP_KERNEL);
 	dbg_memalloc("%p\n", ref);
+<<<<<<< HEAD
+=======
+	if (!ref)
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ref->class = RAWNODE_CLASS_XATTR_REF;
 	ref->node = (void *)ref;

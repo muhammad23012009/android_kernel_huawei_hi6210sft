@@ -34,6 +34,10 @@
 #define RTF_PREF(pref)	((pref) << 27)
 #define RTF_PREF_MASK	0x18000000
 
+<<<<<<< HEAD
+=======
+#define RTF_PCPU	0x40000000	/* read-only: can not be set by user */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RTF_LOCAL	0x80000000
 
 

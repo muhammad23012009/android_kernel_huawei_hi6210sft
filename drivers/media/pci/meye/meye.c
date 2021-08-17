@@ -1031,9 +1031,12 @@ static int vidioc_querycap(struct file *file, void *fh,
 	strcpy(cap->card, "meye");
 	sprintf(cap->bus_info, "PCI:%s", pci_name(meye.mchip_dev));
 
+<<<<<<< HEAD
 	cap->version = (MEYE_DRIVER_MAJORVERSION << 8) +
 		       MEYE_DRIVER_MINORVERSION;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cap->device_caps = V4L2_CAP_VIDEO_CAPTURE |
 			    V4L2_CAP_STREAMING;
 	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
@@ -1166,7 +1169,10 @@ static int vidioc_try_fmt_vid_cap(struct file *file, void *fh,
 	f->fmt.pix.sizeimage = f->fmt.pix.height *
 			       f->fmt.pix.bytesperline;
 	f->fmt.pix.colorspace = 0;
+<<<<<<< HEAD
 	f->fmt.pix.priv = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1232,7 +1238,10 @@ static int vidioc_s_fmt_vid_cap(struct file *file, void *fh,
 	f->fmt.pix.sizeimage = f->fmt.pix.height *
 			       f->fmt.pix.bytesperline;
 	f->fmt.pix.colorspace = 0;
+<<<<<<< HEAD
 	f->fmt.pix.priv = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1474,7 +1483,11 @@ static int meye_mmap(struct file *file, struct vm_area_struct *vma)
 	unsigned long page, pos;
 
 	mutex_lock(&meye.lock);
+<<<<<<< HEAD
 	if (size > gbuffers * gbufsize) {
+=======
+	if (size > gbuffers * gbufsize || offset > gbuffers * gbufsize - size) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&meye.lock);
 		return -EINVAL;
 	}
@@ -1551,7 +1564,11 @@ static struct video_device meye_template = {
 	.name		= "meye",
 	.fops		= &meye_fops,
 	.ioctl_ops 	= &meye_ioctl_ops,
+<<<<<<< HEAD
 	.release	= video_device_release,
+=======
+	.release	= video_device_release_empty,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct v4l2_ctrl_ops meye_ctrl_ops = {
@@ -1628,7 +1645,11 @@ static int meye_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 
 	if (meye.mchip_dev != NULL) {
 		printk(KERN_ERR "meye: only one device allowed!\n");
+<<<<<<< HEAD
 		goto outnotdev;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = v4l2_device_register(&pcidev->dev, v4l2_dev);
@@ -1638,11 +1659,14 @@ static int meye_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 	}
 	ret = -ENOMEM;
 	meye.mchip_dev = pcidev;
+<<<<<<< HEAD
 	meye.vdev = video_device_alloc();
 	if (!meye.vdev) {
 		v4l2_err(v4l2_dev, "video_device_alloc() failed!\n");
 		goto outnotdev;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	meye.grab_temp = vmalloc(MCHIP_NB_PAGES_MJPEG * PAGE_SIZE);
 	if (!meye.grab_temp) {
@@ -1663,8 +1687,13 @@ static int meye_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 		goto outkfifoalloc2;
 	}
 
+<<<<<<< HEAD
 	memcpy(meye.vdev, &meye_template, sizeof(meye_template));
 	meye.vdev->v4l2_dev = &meye.v4l2_dev;
+=======
+	meye.vdev = meye_template;
+	meye.vdev.v4l2_dev = &meye.v4l2_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = -EIO;
 	if ((ret = sony_pic_camera_command(SONY_PIC_COMMAND_SETCAMERA, 1))) {
@@ -1698,7 +1727,11 @@ static int meye_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 
 	meye.mchip_irq = pcidev->irq;
 	if (request_irq(meye.mchip_irq, meye_irq,
+<<<<<<< HEAD
 			IRQF_DISABLED | IRQF_SHARED, "meye", meye_irq)) {
+=======
+			IRQF_SHARED, "meye", meye_irq)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		v4l2_err(v4l2_dev, "request_irq failed\n");
 		goto outreqirq;
 	}
@@ -1748,10 +1781,16 @@ static int meye_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 	}
 
 	v4l2_ctrl_handler_setup(&meye.hdl);
+<<<<<<< HEAD
 	meye.vdev->ctrl_handler = &meye.hdl;
 	set_bit(V4L2_FL_USE_FH_PRIO, &meye.vdev->flags);
 
 	if (video_register_device(meye.vdev, VFL_TYPE_GRABBER,
+=======
+	meye.vdev.ctrl_handler = &meye.hdl;
+
+	if (video_register_device(&meye.vdev, VFL_TYPE_GRABBER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  video_nr) < 0) {
 		v4l2_err(v4l2_dev, "video_register_device failed\n");
 		goto outvideoreg;
@@ -1783,14 +1822,21 @@ outkfifoalloc2:
 outkfifoalloc1:
 	vfree(meye.grab_temp);
 outvmalloc:
+<<<<<<< HEAD
 	video_device_release(meye.vdev);
 outnotdev:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static void meye_remove(struct pci_dev *pcidev)
 {
+<<<<<<< HEAD
 	video_unregister_device(meye.vdev);
+=======
+	video_unregister_device(&meye.vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mchip_hic_stop();
 

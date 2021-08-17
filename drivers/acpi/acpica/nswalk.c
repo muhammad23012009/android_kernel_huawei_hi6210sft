@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -156,9 +160,15 @@ struct acpi_namespace_node *acpi_ns_get_next_node_typed(acpi_object_type type,
  *              max_depth           - Depth to which search is to reach
  *              flags               - Whether to unlock the NS before invoking
  *                                    the callback routine
+<<<<<<< HEAD
  *              pre_order_visit     - Called during tree pre-order visit
  *                                    when an object of "Type" is found
  *              post_order_visit    - Called during tree post-order visit
+=======
+ *              descending_callback - Called during tree descent
+ *                                    when an object of "Type" is found
+ *              ascending_callback  - Called during tree ascent
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *                                    when an object of "Type" is found
  *              context             - Passed to user function(s) above
  *              return_value        - from the user_function if terminated
@@ -185,8 +195,13 @@ acpi_ns_walk_namespace(acpi_object_type type,
 		       acpi_handle start_node,
 		       u32 max_depth,
 		       u32 flags,
+<<<<<<< HEAD
 		       acpi_walk_callback pre_order_visit,
 		       acpi_walk_callback post_order_visit,
+=======
+		       acpi_walk_callback descending_callback,
+		       acpi_walk_callback ascending_callback,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       void *context, void **return_value)
 {
 	acpi_status status;
@@ -255,6 +270,7 @@ acpi_ns_walk_namespace(acpi_object_type type,
 			}
 
 			/*
+<<<<<<< HEAD
 			 * Invoke the user function, either pre-order or post-order
 			 * or both.
 			 */
@@ -271,6 +287,24 @@ acpi_ns_walk_namespace(acpi_object_type type,
 					    post_order_visit(child_node, level,
 							     context,
 							     return_value);
+=======
+			 * Invoke the user function, either descending, ascending,
+			 * or both.
+			 */
+			if (!node_previously_visited) {
+				if (descending_callback) {
+					status =
+					    descending_callback(child_node,
+								level, context,
+								return_value);
+				}
+			} else {
+				if (ascending_callback) {
+					status =
+					    ascending_callback(child_node,
+							       level, context,
+							       return_value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			}
 

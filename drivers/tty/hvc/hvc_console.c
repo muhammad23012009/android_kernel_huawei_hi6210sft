@@ -29,7 +29,11 @@
 #include <linux/kernel.h>
 #include <linux/kthread.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/major.h>
 #include <linux/atomic.h>
 #include <linux/sysrq.h>
@@ -289,10 +293,13 @@ int hvc_instantiate(uint32_t vtermno, int index, const struct hv_ops *ops)
 	vtermnos[index] = vtermno;
 	cons_ops[index] = ops;
 
+<<<<<<< HEAD
 	/* reserve all indices up to and including this index */
 	if (last_hvc < index)
 		last_hvc = index;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* check if we need to re-register the kernel console */
 	hvc_check_console(index);
 
@@ -319,7 +326,12 @@ static int hvc_install(struct tty_driver *driver, struct tty_struct *tty)
 	int rc;
 
 	/* Auto increments kref reference if found. */
+<<<<<<< HEAD
 	if (!(hp = hvc_get_by_index(tty->index)))
+=======
+	hp = hvc_get_by_index(tty->index);
+	if (!hp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	tty->driver_data = hp;
@@ -361,11 +373,23 @@ static int hvc_open(struct tty_struct *tty, struct file * filp)
 	 * tty fields and return the kref reference.
 	 */
 	if (rc) {
+<<<<<<< HEAD
 		tty_port_tty_set(&hp->port, NULL);
 		tty->driver_data = NULL;
 		tty_port_put(&hp->port);
 		printk(KERN_ERR "hvc_open: request_irq failed with rc %d.\n", rc);
 	}
+=======
+		printk(KERN_ERR "hvc_open: request_irq failed with rc %d.\n", rc);
+	} else {
+		/* We are ready... raise DTR/RTS */
+		if (C_BAUD(tty))
+			if (hp->ops->dtr_rts)
+				hp->ops->dtr_rts(hp, 1);
+		tty_port_set_initialized(&hp->port, true);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Force wakeup of the polling thread */
 	hvc_kick();
 
@@ -374,12 +398,17 @@ static int hvc_open(struct tty_struct *tty, struct file * filp)
 
 static void hvc_close(struct tty_struct *tty, struct file * filp)
 {
+<<<<<<< HEAD
 	struct hvc_struct *hp;
+=======
+	struct hvc_struct *hp = tty->driver_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	if (tty_hung_up_p(filp))
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * No driver_data means that this close was issued after a failed
 	 * hvc_open by the tty layer's release_dev() function and we can just
@@ -390,6 +419,8 @@ static void hvc_close(struct tty_struct *tty, struct file * filp)
 
 	hp = tty->driver_data;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&hp->port.lock, flags);
 
 	if (--hp->port.count == 0) {
@@ -397,6 +428,16 @@ static void hvc_close(struct tty_struct *tty, struct file * filp)
 		/* We are done with the tty pointer now. */
 		tty_port_tty_set(&hp->port, NULL);
 
+<<<<<<< HEAD
+=======
+		if (!tty_port_initialized(&hp->port))
+			return;
+
+		if (C_HUPCL(tty))
+			if (hp->ops->dtr_rts)
+				hp->ops->dtr_rts(hp, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (hp->ops->notifier_del)
 			hp->ops->notifier_del(hp, hp->data);
 
@@ -408,7 +449,12 @@ static void hvc_close(struct tty_struct *tty, struct file * filp)
 		 * there is no buffered data otherwise sleeps on a wait queue
 		 * waking periodically to check chars_in_buffer().
 		 */
+<<<<<<< HEAD
 		tty_wait_until_sent_from_close(tty, HVC_CLOSE_WAIT);
+=======
+		tty_wait_until_sent(tty, HVC_CLOSE_WAIT);
+		tty_port_set_initialized(&hp->port, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		if (hp->port.count < 0)
 			printk(KERN_ERR "hvc_close %X: oops, count is %d\n",
@@ -622,7 +668,11 @@ int hvc_poll(struct hvc_struct *hp)
 		goto bail;
 
 	/* Now check if we can get data (are we throttled ?) */
+<<<<<<< HEAD
 	if (test_bit(TTY_THROTTLED, &tty->flags))
+=======
+	if (tty_throttled(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto throttled;
 
 	/* If we aren't notifier driven and aren't throttled, we always
@@ -751,10 +801,24 @@ static int khvcd(void *unused)
 			if (poll_mask == 0)
 				schedule();
 			else {
+<<<<<<< HEAD
 				if (timeout < MAX_TIMEOUT)
 					timeout += (timeout >> 6) + 1;
 
 				msleep_interruptible(timeout);
+=======
+				unsigned long j_timeout;
+
+				if (timeout < MAX_TIMEOUT)
+					timeout += (timeout >> 6) + 1;
+
+				/*
+				 * We don't use msleep_interruptible otherwise
+				 * "kick" will fail to wake us up
+				 */
+				j_timeout = msecs_to_jiffies(timeout) + 1;
+				schedule_timeout_interruptible(j_timeout);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 		__set_current_state(TASK_RUNNING);
@@ -783,7 +847,11 @@ static int hvc_tiocmset(struct tty_struct *tty,
 }
 
 #ifdef CONFIG_CONSOLE_POLL
+<<<<<<< HEAD
 int hvc_poll_init(struct tty_driver *driver, int line, char *options)
+=======
+static int hvc_poll_init(struct tty_driver *driver, int line, char *options)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return 0;
 }
@@ -797,7 +865,11 @@ static int hvc_poll_get_char(struct tty_driver *driver, int line)
 
 	n = hp->ops->get_chars(hp->vtermno, &ch, 1);
 
+<<<<<<< HEAD
 	if (n == 0)
+=======
+	if (n <= 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NO_POLL_CHAR;
 
 	return ch;
@@ -879,6 +951,7 @@ struct hvc_struct *hvc_alloc(uint32_t vtermno, int data,
 		    cons_ops[i] == hp->ops)
 			break;
 
+<<<<<<< HEAD
 	/* no matching slot, just use a counter */
 	if (i >= MAX_NR_HVC_CONSOLES)
 		i = ++last_hvc;
@@ -886,6 +959,24 @@ struct hvc_struct *hvc_alloc(uint32_t vtermno, int data,
 	hp->index = i;
 	cons_ops[i] = ops;
 	vtermnos[i] = vtermno;
+=======
+	if (i >= MAX_NR_HVC_CONSOLES) {
+
+		/* find 'empty' slot for console */
+		for (i = 0; i < MAX_NR_HVC_CONSOLES && vtermnos[i] != -1; i++) {
+		}
+
+		/* no matching slot, just use a counter */
+		if (i == MAX_NR_HVC_CONSOLES)
+			i = ++last_hvc + MAX_NR_HVC_CONSOLES;
+	}
+
+	hp->index = i;
+	if (i < MAX_NR_HVC_CONSOLES) {
+		cons_ops[i] = ops;
+		vtermnos[i] = vtermno;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	list_add_tail(&(hp->next), &hvc_structs);
 	spin_unlock(&hvc_structs_lock);
@@ -988,6 +1079,7 @@ put_tty:
 out:
 	return err;
 }
+<<<<<<< HEAD
 
 /* This isn't particularly necessary due to this being a console driver
  * but it is nice to be thorough.
@@ -1004,3 +1096,5 @@ static void __exit hvc_exit(void)
 	}
 }
 module_exit(hvc_exit);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

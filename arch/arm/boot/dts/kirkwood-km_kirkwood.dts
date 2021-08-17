@@ -1,7 +1,13 @@
 /dts-v1/;
 
+<<<<<<< HEAD
 /include/ "kirkwood.dtsi"
 /include/ "kirkwood-98dx4122.dtsi"
+=======
+#include "kirkwood.dtsi"
+#include "kirkwood-98dx4122.dtsi"
+#include "kirkwood-km_common.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Keymile Kirkwood Reference Design";
@@ -11,6 +17,7 @@
 		device_type = "memory";
 		reg = <0x00000000 0x08000000>;
 	};
+<<<<<<< HEAD
 
 	chosen {
 		bootargs = "console=ttyS0,115200n8 earlyprintk";
@@ -41,5 +48,21 @@
 			status = "ok";
 			chip-delay = <25>;
 		};
+=======
+};
+
+&mdio {
+	status = "okay";
+
+	ethphy0: ethernet-phy@0 {
+		reg = <0>;
+	};
+};
+
+&eth0 {
+	status = "okay";
+	ethernet0-port@0 {
+		phy-handle = <&ethphy0>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

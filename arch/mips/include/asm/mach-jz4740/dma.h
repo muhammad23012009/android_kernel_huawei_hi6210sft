@@ -16,16 +16,22 @@
 #ifndef __ASM_MACH_JZ4740_DMA_H__
 #define __ASM_MACH_JZ4740_DMA_H__
 
+<<<<<<< HEAD
 struct jz4740_dma_chan;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum jz4740_dma_request_type {
 	JZ4740_DMA_TYPE_AUTO_REQUEST	= 8,
 	JZ4740_DMA_TYPE_UART_TRANSMIT	= 20,
 	JZ4740_DMA_TYPE_UART_RECEIVE	= 21,
 	JZ4740_DMA_TYPE_SPI_TRANSMIT	= 22,
 	JZ4740_DMA_TYPE_SPI_RECEIVE	= 23,
+<<<<<<< HEAD
 	JZ4740_DMA_TYPE_AIC_TRANSMIT	= 24,
 	JZ4740_DMA_TYPE_AIC_RECEIVE	= 25,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	JZ4740_DMA_TYPE_MMC_TRANSMIT	= 26,
 	JZ4740_DMA_TYPE_MMC_RECEIVE	= 27,
 	JZ4740_DMA_TYPE_TCU		= 28,
@@ -33,6 +39,7 @@ enum jz4740_dma_request_type {
 	JZ4740_DMA_TYPE_SLCD		= 30,
 };
 
+<<<<<<< HEAD
 enum jz4740_dma_width {
 	JZ4740_DMA_WIDTH_32BIT	= 0,
 	JZ4740_DMA_WIDTH_8BIT	= 1,
@@ -87,4 +94,6 @@ uint32_t jz4740_dma_get_residue(const struct jz4740_dma_chan *dma);
 void jz4740_dma_set_complete_cb(struct jz4740_dma_chan *dma,
 	jz4740_dma_complete_callback_t cb);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* __ASM_JZ4740_DMA_H__ */

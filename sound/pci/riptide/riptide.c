@@ -99,7 +99,11 @@
 #include <linux/firmware.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -508,7 +512,11 @@ static int riptide_reset(struct cmdif *cif, struct snd_riptide *chip);
 /*
  */
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_riptide_ids) = {
+=======
+static const struct pci_device_id snd_riptide_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(0x127a, 0x4310) },
 	{ PCI_DEVICE(0x127a, 0x4320) },
 	{ PCI_DEVICE(0x127a, 0x4330) },
@@ -517,7 +525,11 @@ static DEFINE_PCI_DEVICE_TABLE(snd_riptide_ids) = {
 };
 
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_riptide_joystick_ids) = {
+=======
+static const struct pci_device_id snd_riptide_joystick_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(0x127a, 0x4312) },
 	{ PCI_DEVICE(0x127a, 0x4322) },
 	{ PCI_DEVICE(0x127a, 0x4332) },
@@ -644,7 +656,11 @@ static struct lbuspath lbus_play_paths[] = {
 	 .mono = lbus_play_mono3,
 	 },
 };
+<<<<<<< HEAD
 static struct lbuspath lbus_rec_path = {
+=======
+static const struct lbuspath lbus_rec_path = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.noconv = lbus_rec_noconv1,
 	.stereo = lbus_rec_stereo1,
 	.mono = lbus_rec_mono1,
@@ -941,7 +957,11 @@ setmixer(struct cmdif *cif, short num, unsigned short rval, unsigned short lval)
 	union cmdret rptr = CMDRET_ZERO;
 	int i = 0;
 
+<<<<<<< HEAD
 	snd_printdd("sent mixer %d: 0x%d 0x%d\n", num, rval, lval);
+=======
+	snd_printdd("sent mixer %d: 0x%x 0x%x\n", num, rval, lval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		SEND_SDGV(cif, num, num, rval, lval);
 		SEND_RDGV(cif, num, num, &rptr);
@@ -1080,7 +1100,11 @@ getmixer(struct cmdif *cif, short num, unsigned short *rval,
 		return -EIO;
 	*rval = rptr.retwords[0];
 	*lval = rptr.retwords[1];
+<<<<<<< HEAD
 	snd_printdd("got mixer %d: 0x%d 0x%d\n", num, *rval, *lval);
+=======
+	snd_printdd("got mixer %d: 0x%x 0x%x\n", num, *rval, *lval);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1153,7 +1177,10 @@ static void riptide_handleirq(unsigned long dev_id)
 #ifdef CONFIG_PM_SLEEP
 static int riptide_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_riptide *chip = card->private_data;
 
@@ -1161,14 +1188,18 @@ static int riptide_suspend(struct device *dev)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
+<<<<<<< HEAD
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, PCI_D3hot);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int riptide_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct snd_riptide *chip = card->private_data;
@@ -1182,6 +1213,11 @@ static int riptide_resume(struct device *dev)
 		return -EIO;
 	}
 	pci_set_master(pci);
+=======
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_riptide *chip = card->private_data;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_riptide_initialize(chip);
 	snd_ac97_resume(chip->ac97);
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
@@ -1510,7 +1546,11 @@ static int snd_riptide_prepare(struct snd_pcm_substream *substream)
 		f = PAGE_SIZE;
 		while ((size + (f >> 1) - 1) <= (f << 7) && (f << 1) > period)
 			f = f >> 1;
+<<<<<<< HEAD
 		pages = (size + f - 1) / f;
+=======
+		pages = DIV_ROUND_UP(size, f);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data->size = size;
 		data->pages = pages;
 		snd_printdd
@@ -1683,7 +1723,11 @@ static int snd_riptide_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_riptide_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_riptide_playback_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = snd_riptide_playback_open,
 	.close = snd_riptide_playback_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -1694,7 +1738,11 @@ static struct snd_pcm_ops snd_riptide_playback_ops = {
 	.trigger = snd_riptide_trigger,
 	.pointer = snd_riptide_pointer,
 };
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_riptide_capture_ops = {
+=======
+static const struct snd_pcm_ops snd_riptide_capture_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = snd_riptide_capture_open,
 	.close = snd_riptide_capture_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -1706,14 +1754,21 @@ static struct snd_pcm_ops snd_riptide_capture_ops = {
 	.pointer = snd_riptide_pointer,
 };
 
+<<<<<<< HEAD
 static int
 snd_riptide_pcm(struct snd_riptide *chip, int device, struct snd_pcm **rpcm)
+=======
+static int snd_riptide_pcm(struct snd_riptide *chip, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err =
 	     snd_pcm_new(chip->card, "RIPTIDE", device, PLAYBACK_SUBSTREAMS, 1,
 			 &pcm)) < 0)
@@ -1729,8 +1784,11 @@ snd_riptide_pcm(struct snd_riptide *chip, int device, struct snd_pcm **rpcm)
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 					      snd_dma_pci_data(chip->pci),
 					      64 * 1024, 128 * 1024);
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1916,8 +1974,11 @@ snd_riptide_create(struct snd_card *card, struct pci_dev *pci,
 		return err;
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*rchip = chip;
 	return 0;
 }
@@ -2077,7 +2138,10 @@ static void snd_riptide_joystick_remove(struct pci_dev *pci)
 	if (gameport) {
 		release_region(gameport->io, 8);
 		gameport_unregister_port(gameport);
+<<<<<<< HEAD
 		pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 #endif
@@ -2098,14 +2162,23 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	err = snd_riptide_create(card, pci, &chip);
 	if (err < 0)
 		goto error;
 	card->private_data = chip;
+<<<<<<< HEAD
 	err = snd_riptide_pcm(chip, 0, NULL);
+=======
+	err = snd_riptide_pcm(chip, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		goto error;
 	err = snd_riptide_mixer(chip);
@@ -2190,7 +2263,10 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 static void snd_card_riptide_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
+<<<<<<< HEAD
 	pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pci_driver driver = {

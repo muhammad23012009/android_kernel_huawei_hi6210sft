@@ -15,6 +15,7 @@
  * Default implementation of macro that returns current
  * instruction pointer ("program counter").
  */
+<<<<<<< HEAD
 #define current_text_addr() ({ __label__ _l; _l: &&_l;})
 
 #include <linux/compiler.h>
@@ -31,6 +32,27 @@ static inline unsigned long rdusp(void) {
 static inline void wrusp(unsigned long usp) {
 	extern unsigned int	sw_usp;
 	sw_usp = usp;
+=======
+#define current_text_addr() ({ __label__ _l; _l: &&_l; })
+
+#include <linux/compiler.h>
+#include <asm/segment.h>
+#include <asm/ptrace.h>
+#include <asm/current.h>
+
+static inline unsigned long rdusp(void)
+{
+	extern unsigned int	_sw_usp;
+
+	return _sw_usp;
+}
+
+static inline void wrusp(unsigned long usp)
+{
+	extern unsigned int	_sw_usp;
+
+	_sw_usp = usp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -78,6 +100,7 @@ struct thread_struct {
  * pass the data segment into user programs if it exists,
  * it can't hurt anything as far as I can tell
  */
+<<<<<<< HEAD
 #if defined(__H8300H__)
 #define start_thread(_regs, _pc, _usp)			        \
 do {							        \
@@ -97,6 +120,27 @@ do {							        \
 	/* 14 = space for retaddr(4), vector(4), er0(4) and ext(2) on stack */ \
 	wrusp(((unsigned long)(_usp)) - 14);                    \
 } while(0)
+=======
+#if defined(CONFIG_CPU_H8300H)
+#define start_thread(_regs, _pc, _usp)				\
+do {								\
+	(_regs)->pc = (_pc);					\
+	(_regs)->ccr = 0x00;	   /* clear all flags */	\
+	(_regs)->er5 = current->mm->start_data;	/* GOT base */	\
+	(_regs)->sp = ((unsigned long)(_usp)) - sizeof(unsigned long) * 3; \
+} while (0)
+#endif
+#if defined(CONFIG_CPU_H8S)
+#define start_thread(_regs, _pc, _usp)				\
+do {								\
+	(_regs)->pc = (_pc);					\
+	(_regs)->ccr = 0x00;	   /* clear kernel flag */	\
+	(_regs)->exr = 0x78;	   /* enable all interrupts */	\
+	(_regs)->er5 = current->mm->start_data;	/* GOT base */	\
+	/* 14 = space for retaddr(4), vector(4), er0(4) and exr(2) on stack */ \
+	(_regs)->sp = ((unsigned long)(_usp)) - 14;		\
+} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* Forward declaration, a strange C thing */
@@ -108,6 +152,7 @@ static inline void release_thread(struct task_struct *dead_task)
 }
 
 /*
+<<<<<<< HEAD
  * Free current thread data structures etc..
  */
 static inline void exit_thread(void)
@@ -115,12 +160,15 @@ static inline void exit_thread(void)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Return saved PC of a blocked thread.
  */
 unsigned long thread_saved_pc(struct task_struct *tsk);
 unsigned long get_wchan(struct task_struct *p);
 
 #define	KSTK_EIP(tsk)	\
+<<<<<<< HEAD
     ({			\
 	unsigned long eip = 0;	 \
 	if ((tsk)->thread.esp0 > PAGE_SIZE && \
@@ -134,6 +182,23 @@ unsigned long get_wchan(struct task_struct *p);
 #define HARD_RESET_NOW() ({		\
         local_irq_disable();		\
         asm("jmp @@0");			\
+=======
+	({			 \
+		unsigned long eip = 0;	      \
+		if ((tsk)->thread.esp0 > PAGE_SIZE &&	\
+		    MAP_NR((tsk)->thread.esp0) < max_mapnr)	 \
+			eip = ((struct pt_regs *) (tsk)->thread.esp0)->pc; \
+		eip; })
+
+#define	KSTK_ESP(tsk)	((tsk) == current ? rdusp() : (tsk)->thread.usp)
+
+#define cpu_relax()    barrier()
+#define cpu_relax_lowlatency()	cpu_relax()
+
+#define HARD_RESET_NOW() ({		\
+	local_irq_disable();		\
+	asm("jmp @@0");			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 
 #endif

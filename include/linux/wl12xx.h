@@ -26,6 +26,7 @@
 
 #include <linux/err.h>
 
+<<<<<<< HEAD
 /* Reference clock values */
 enum {
 	WL12XX_REFCLOCK_19	= 0, /* 19.2 MHz */
@@ -67,17 +68,39 @@ struct wl12xx_platform_data {
 int wl12xx_set_platform_data(const struct wl12xx_platform_data *data);
 
 struct wl12xx_platform_data *wl12xx_get_platform_data(void);
+=======
+struct wl1251_platform_data {
+	int power_gpio;
+	/* SDIO only: IRQ number if WLAN_IRQ line is used, 0 for SDIO IRQs */
+	int irq;
+	bool use_eeprom;
+};
+
+#ifdef CONFIG_WILINK_PLATFORM_DATA
+
+int wl1251_set_platform_data(const struct wl1251_platform_data *data);
+
+struct wl1251_platform_data *wl1251_get_platform_data(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 
 static inline
+<<<<<<< HEAD
 int wl12xx_set_platform_data(const struct wl12xx_platform_data *data)
+=======
+int wl1251_set_platform_data(const struct wl1251_platform_data *data)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return -ENOSYS;
 }
 
 static inline
+<<<<<<< HEAD
 struct wl12xx_platform_data *wl12xx_get_platform_data(void)
+=======
+struct wl1251_platform_data *wl1251_get_platform_data(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return ERR_PTR(-ENODATA);
 }

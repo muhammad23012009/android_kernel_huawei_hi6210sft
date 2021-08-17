@@ -12,7 +12,10 @@
 #include <linux/irq.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpu.h>
 #include <linux/of.h>
 
@@ -113,10 +116,17 @@ static unsigned int icp_hv_get_irq(void)
 	unsigned int irq;
 
 	if (vec == XICS_IRQ_SPURIOUS)
+<<<<<<< HEAD
 		return NO_IRQ;
 
 	irq = irq_find_mapping(xics_host, vec);
 	if (likely(irq != NO_IRQ)) {
+=======
+		return 0;
+
+	irq = irq_find_mapping(xics_host, vec);
+	if (likely(irq)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		xics_push_cppr(vec);
 		return irq;
 	}
@@ -127,7 +137,11 @@ static unsigned int icp_hv_get_irq(void)
 	/* We might learn about it later, so EOI it */
 	icp_hv_set_xirr(xirr);
 
+<<<<<<< HEAD
 	return NO_IRQ;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void icp_hv_set_cpu_priority(unsigned char cppr)
@@ -180,6 +194,10 @@ int icp_hv_init(void)
 
 	icp_ops = &icp_hv_ops;
 
+<<<<<<< HEAD
+=======
+	of_node_put(np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -1,13 +1,24 @@
 #
 # Makefile for Marvell's PXA168 processors line
 #
+<<<<<<< HEAD
 
 obj-y				+= common.o devices.o time.o irq.o
+=======
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-pxa/include
+
+obj-y				+= common.o devices.o time.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # SoC support
 obj-$(CONFIG_CPU_PXA168)	+= pxa168.o
 obj-$(CONFIG_CPU_PXA910)	+= pxa910.o
+<<<<<<< HEAD
 obj-$(CONFIG_CPU_MMP2)		+= mmp2.o sram.o
+=======
+obj-$(CONFIG_CPU_MMP2)		+= mmp2.o
+obj-$(CONFIG_MMP_SRAM)		+= sram.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ifeq ($(CONFIG_COMMON_CLK), )
 obj-y				+= clock.o

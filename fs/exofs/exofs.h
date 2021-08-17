@@ -2,7 +2,11 @@
  * Copyright (C) 2005, 2006
  * Avishay Traeger (avishay@gmail.com)
  * Copyright (C) 2008, 2009
+<<<<<<< HEAD
  * Boaz Harrosh <bharrosh@panasas.com>
+=======
+ * Boaz Harrosh <ooo@electrozaur.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyrights for code taken from ext2:
  *     Copyright (C) 1992, 1993, 1994, 1995
@@ -207,10 +211,13 @@ extern const struct address_space_operations exofs_aops;
 extern const struct inode_operations exofs_dir_inode_operations;
 extern const struct inode_operations exofs_special_inode_operations;
 
+<<<<<<< HEAD
 /* symlink.c         */
 extern const struct inode_operations exofs_symlink_inode_operations;
 extern const struct inode_operations exofs_fast_symlink_inode_operations;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* exofs_init_comps will initialize an ore_components device array
  * pointing to a single ore_comp struct, and a round-robin view
  * of the device table.

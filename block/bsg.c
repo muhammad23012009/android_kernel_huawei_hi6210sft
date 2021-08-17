@@ -136,6 +136,7 @@ static inline struct hlist_head *bsg_dev_idx_hash(int index)
 	return &bsg_device_list[index & (BSG_LIST_ARRAY_SIZE - 1)];
 }
 
+<<<<<<< HEAD
 static int bsg_io_schedule(struct bsg_device *bd)
 {
 	DEFINE_WAIT(wait);
@@ -172,6 +173,8 @@ unlock:
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int blk_fill_sgv4_hdr_rq(struct request_queue *q, struct request *rq,
 				struct sg_io_v4 *hdr, struct bsg_device *bd,
 				fmode_t has_write_perm)
@@ -270,8 +273,13 @@ bsg_map_hdr(struct bsg_device *bd, struct sg_io_v4 *hdr, fmode_t has_write_perm,
 	 * map scatter-gather elements separately and string them to request
 	 */
 	rq = blk_get_request(q, rw, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!rq)
 		return ERR_PTR(-ENOMEM);
+=======
+	if (IS_ERR(rq))
+		return rq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	blk_rq_set_block_pc(rq);
 
 	ret = blk_fill_sgv4_hdr_rq(q, rq, hdr, bd, has_write_perm);
@@ -285,8 +293,14 @@ bsg_map_hdr(struct bsg_device *bd, struct sg_io_v4 *hdr, fmode_t has_write_perm,
 		}
 
 		next_rq = blk_get_request(q, READ, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!next_rq) {
 			ret = -ENOMEM;
+=======
+		if (IS_ERR(next_rq)) {
+			ret = PTR_ERR(next_rq);
+			next_rq = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 		}
 		rq->next_rq = next_rq;
@@ -481,6 +495,33 @@ static int blk_complete_sgv4_hdr_rq(struct request *rq, struct sg_io_v4 *hdr,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static bool bsg_complete(struct bsg_device *bd)
+{
+	bool ret = false;
+	bool spin;
+
+	do {
+		spin_lock_irq(&bd->lock);
+
+		BUG_ON(bd->done_cmds > bd->queued_cmds);
+
+		/*
+		 * All commands consumed.
+		 */
+		if (bd->done_cmds == bd->queued_cmds)
+			ret = true;
+
+		spin = !test_bit(BSG_F_BLOCK, &bd->flags);
+
+		spin_unlock_irq(&bd->lock);
+	} while (!ret && spin);
+
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int bsg_complete_all_commands(struct bsg_device *bd)
 {
 	struct bsg_command *bc;
@@ -491,6 +532,7 @@ static int bsg_complete_all_commands(struct bsg_device *bd)
 	/*
 	 * wait for all commands to complete
 	 */
+<<<<<<< HEAD
 	ret = 0;
 	do {
 		ret = bsg_io_schedule(bd);
@@ -502,6 +544,9 @@ static int bsg_complete_all_commands(struct bsg_device *bd)
 		 * the bsg_device.
 		 */
 	} while (ret != -ENODATA);
+=======
+	io_wait_event(bd->wq_done, bsg_complete(bd));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * discard done commands
@@ -1012,7 +1057,11 @@ int bsg_register_queue(struct request_queue *q, struct device *parent,
 	/*
 	 * we need a proper transport to send commands, not a stacked device
 	 */
+<<<<<<< HEAD
 	if (!q->request_fn)
+=======
+	if (!queue_is_rq_based(q))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	bcd = &q->bsg_dev;

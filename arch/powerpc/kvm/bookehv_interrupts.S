@@ -24,15 +24,26 @@
 #include <asm/ppc_asm.h>
 #include <asm/kvm_asm.h>
 #include <asm/reg.h>
+<<<<<<< HEAD
 #include <asm/mmu-44x.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/page.h>
 #include <asm/asm-compat.h>
 #include <asm/asm-offsets.h>
 #include <asm/bitsperlong.h>
+<<<<<<< HEAD
 #include <asm/thread_info.h>
 
 #ifdef CONFIG_64BIT
 #include <asm/exception-64e.h>
+=======
+
+#ifdef CONFIG_64BIT
+#include <asm/exception-64e.h>
+#include <asm/hw_irq.h>
+#include <asm/irqflags.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #include "../kernel/head_booke.h" /* for THREAD_NORMSAVE() */
 #endif
@@ -75,6 +86,13 @@
 	PPC_LL	r1, VCPU_HOST_STACK(r4)
 	PPC_LL	r2, HOST_R2(r1)
 
+<<<<<<< HEAD
+=======
+START_BTB_FLUSH_SECTION
+	BTB_FLUSH(r10)
+END_BTB_FLUSH_SECTION
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mfspr	r10, SPRN_PID
 	lwz	r8, VCPU_HOST_PID(r4)
 	PPC_LL	r11, VCPU_SHARED(r4)
@@ -120,6 +138,7 @@
 1:
 
 	.if	\flags & NEED_EMU
+<<<<<<< HEAD
 	/*
 	 * This assumes you have external PID support.
 	 * To support a bookehv CPU without external PID, you'll
@@ -140,11 +159,14 @@
 	 */
 
 	mfspr	r3, SPRN_EPLC	/* will already have correct ELPID and EGS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PPC_STL	r15, VCPU_GPR(R15)(r4)
 	PPC_STL	r16, VCPU_GPR(R16)(r4)
 	PPC_STL	r17, VCPU_GPR(R17)(r4)
 	PPC_STL	r18, VCPU_GPR(R18)(r4)
 	PPC_STL	r19, VCPU_GPR(R19)(r4)
+<<<<<<< HEAD
 	mr	r8, r3
 	PPC_STL	r20, VCPU_GPR(R20)(r4)
 	rlwimi	r8, r6, EPC_EAS_SHIFT - MSR_IR_LG, EPC_EAS
@@ -152,6 +174,11 @@
 	rlwimi	r8, r6, EPC_EPR_SHIFT - MSR_PR_LG, EPC_EPR
 	PPC_STL	r22, VCPU_GPR(R22)(r4)
 	rlwimi	r8, r10, EPC_EPID_SHIFT, EPC_EPID
+=======
+	PPC_STL	r20, VCPU_GPR(R20)(r4)
+	PPC_STL	r21, VCPU_GPR(R21)(r4)
+	PPC_STL	r22, VCPU_GPR(R22)(r4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PPC_STL	r23, VCPU_GPR(R23)(r4)
 	PPC_STL	r24, VCPU_GPR(R24)(r4)
 	PPC_STL	r25, VCPU_GPR(R25)(r4)
@@ -161,6 +188,7 @@
 	PPC_STL	r29, VCPU_GPR(R29)(r4)
 	PPC_STL	r30, VCPU_GPR(R30)(r4)
 	PPC_STL	r31, VCPU_GPR(R31)(r4)
+<<<<<<< HEAD
 	mtspr	SPRN_EPLC, r8
 
 	/* disable preemption, so we are sure we hit the fixup handler */
@@ -188,6 +216,17 @@
 	mtspr	SPRN_EPLC, r3
 	li	r7, 0
 	stw	r7, TI_PREEMPT(r8)
+=======
+
+	/*
+	 * We don't use external PID support. lwepx faults would need to be
+	 * handled by KVM and this implies aditional code in DO_KVM (for
+	 * DTB_MISS, DSI and LRAT) to check ESR[EPID] and EPLC[EGS] which
+	 * is too intrusive for the host. Get last instuction in
+	 * kvmppc_get_last_inst().
+	 */
+	li	r9, KVM_INST_FETCH_FAILED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stw	r9, VCPU_LAST_INST(r4)
 	.endif
 
@@ -227,6 +266,7 @@
 	stw	r10, VCPU_CR(r4)
 	PPC_STL r11, VCPU_GPR(R4)(r4)
 	PPC_STL	r5, VCPU_GPR(R5)(r4)
+<<<<<<< HEAD
 	.if \type == EX_CRIT
 	PPC_LL	r5, (\paca_ex + EX_R13)(r13)
 	.else
@@ -238,6 +278,22 @@
 	PPC_STL r5, VCPU_GPR(R13)(r4)
 	PPC_LL	r6, (\paca_ex + \ex_r10)(r13)
 	PPC_LL	r8, (\paca_ex + \ex_r11)(r13)
+=======
+	PPC_STL	r6, VCPU_GPR(R6)(r4)
+	PPC_STL	r8, VCPU_GPR(R8)(r4)
+	PPC_STL	r9, VCPU_GPR(R9)(r4)
+	.if \type == EX_TLB
+	PPC_LL	r5, EX_TLB_R13(r12)
+	PPC_LL	r6, EX_TLB_R10(r12)
+	PPC_LL	r8, EX_TLB_R11(r12)
+	mfspr	r12, \scratch
+	.else
+	mfspr	r5, \scratch
+	PPC_LL	r6, (\paca_ex + \ex_r10)(r13)
+	PPC_LL	r8, (\paca_ex + \ex_r11)(r13)
+	.endif
+	PPC_STL r5, VCPU_GPR(R13)(r4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PPC_STL r3, VCPU_GPR(R3)(r4)
 	PPC_STL r7, VCPU_GPR(R7)(r4)
 	PPC_STL r12, VCPU_GPR(R12)(r4)
@@ -277,7 +333,11 @@ kvm_handler BOOKE_INTERRUPT_EXTERNAL, EX_PARAMS(GEN), \
 kvm_handler BOOKE_INTERRUPT_ALIGNMENT, EX_PARAMS(GEN), \
 	SPRN_SRR0, SPRN_SRR1,(NEED_DEAR | NEED_ESR)
 kvm_handler BOOKE_INTERRUPT_PROGRAM, EX_PARAMS(GEN), \
+<<<<<<< HEAD
 	SPRN_SRR0, SPRN_SRR1,NEED_ESR
+=======
+	SPRN_SRR0, SPRN_SRR1, (NEED_ESR | NEED_EMU)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 kvm_handler BOOKE_INTERRUPT_FP_UNAVAIL, EX_PARAMS(GEN), \
 	SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_AP_UNAVAIL, EX_PARAMS(GEN), \
@@ -295,11 +355,17 @@ kvm_handler BOOKE_INTERRUPT_DTLB_MISS, EX_PARAMS_TLB, \
 	SPRN_SRR0, SPRN_SRR1, (NEED_EMU | NEED_DEAR | NEED_ESR)
 kvm_handler BOOKE_INTERRUPT_ITLB_MISS, EX_PARAMS_TLB, \
 	SPRN_SRR0, SPRN_SRR1, 0
+<<<<<<< HEAD
 kvm_handler BOOKE_INTERRUPT_SPE_UNAVAIL, EX_PARAMS(GEN), \
 	SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_SPE_FP_DATA, EX_PARAMS(GEN), \
 	SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_SPE_FP_ROUND, EX_PARAMS(GEN), \
+=======
+kvm_handler BOOKE_INTERRUPT_ALTIVEC_UNAVAIL, EX_PARAMS(GEN), \
+	SPRN_SRR0, SPRN_SRR1, 0
+kvm_handler BOOKE_INTERRUPT_ALTIVEC_ASSIST, EX_PARAMS(GEN), \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_PERFORMANCE_MONITOR, EX_PARAMS(GEN), \
 	SPRN_SRR0, SPRN_SRR1, 0
@@ -319,6 +385,11 @@ kvm_handler BOOKE_INTERRUPT_DEBUG, EX_PARAMS(DBG), \
 	SPRN_DSRR0, SPRN_DSRR1, 0
 kvm_handler BOOKE_INTERRUPT_DEBUG, EX_PARAMS(CRIT), \
 	SPRN_CSRR0, SPRN_CSRR1, 0
+<<<<<<< HEAD
+=======
+kvm_handler BOOKE_INTERRUPT_LRAT_ERROR, EX_PARAMS(GEN), \
+	SPRN_SRR0, SPRN_SRR1, (NEED_EMU | NEED_DEAR | NEED_ESR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 /*
  * For input register values, see arch/powerpc/include/asm/kvm_booke_hv_asm.h
@@ -387,7 +458,11 @@ kvm_handler BOOKE_INTERRUPT_INST_STORAGE, SPRN_SRR0, SPRN_SRR1, NEED_ESR
 kvm_handler BOOKE_INTERRUPT_EXTERNAL, SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_ALIGNMENT, \
 	SPRN_SRR0, SPRN_SRR1, (NEED_DEAR | NEED_ESR)
+<<<<<<< HEAD
 kvm_handler BOOKE_INTERRUPT_PROGRAM, SPRN_SRR0, SPRN_SRR1, NEED_ESR
+=======
+kvm_handler BOOKE_INTERRUPT_PROGRAM, SPRN_SRR0, SPRN_SRR1, (NEED_ESR | NEED_EMU)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 kvm_handler BOOKE_INTERRUPT_FP_UNAVAIL, SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_SYSCALL, SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_AP_UNAVAIL, SPRN_SRR0, SPRN_SRR1, 0
@@ -398,9 +473,12 @@ kvm_lvl_handler BOOKE_INTERRUPT_WATCHDOG, \
 kvm_handler BOOKE_INTERRUPT_DTLB_MISS, \
 	SPRN_SRR0, SPRN_SRR1, (NEED_EMU | NEED_DEAR | NEED_ESR)
 kvm_handler BOOKE_INTERRUPT_ITLB_MISS, SPRN_SRR0, SPRN_SRR1, 0
+<<<<<<< HEAD
 kvm_handler BOOKE_INTERRUPT_SPE_UNAVAIL, SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_SPE_FP_DATA, SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_SPE_FP_ROUND, SPRN_SRR0, SPRN_SRR1, 0
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 kvm_handler BOOKE_INTERRUPT_PERFORMANCE_MONITOR, SPRN_SRR0, SPRN_SRR1, 0
 kvm_handler BOOKE_INTERRUPT_DOORBELL, SPRN_SRR0, SPRN_SRR1, 0
 kvm_lvl_handler BOOKE_INTERRUPT_DOORBELL_CRITICAL, \
@@ -431,10 +509,24 @@ _GLOBAL(kvmppc_resume_host)
 	PPC_STL	r5, VCPU_LR(r4)
 	mfspr	r7, SPRN_SPRG5
 	stw	r3, VCPU_VRSAVE(r4)
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_64BIT
+	PPC_LL	r3, PACA_SPRG_VDSO(r13)
+#endif
+	mfspr	r5, SPRN_SPRG9
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PPC_STD(r6, VCPU_SHARED_SPRG4, r11)
 	mfspr	r8, SPRN_SPRG6
 	PPC_STD(r7, VCPU_SHARED_SPRG5, r11)
 	mfspr	r9, SPRN_SPRG7
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_64BIT
+	mtspr	SPRN_SPRG_VDSO_WRITE, r3
+#endif
+	PPC_STD(r5, VCPU_SPRG9, r4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PPC_STD(r8, VCPU_SHARED_SPRG6, r11)
 	mfxer	r3
 	PPC_STD(r9, VCPU_SHARED_SPRG7, r11)
@@ -465,6 +557,18 @@ _GLOBAL(kvmppc_resume_host)
 	mtspr	SPRN_EPCR, r3
 	isync
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_64BIT
+	/*
+	 * We enter with interrupts disabled in hardware, but
+	 * we need to call RECONCILE_IRQ_STATE to ensure
+	 * that the software state is kept in sync.
+	 */
+	RECONCILE_IRQ_STATE(r3,r5)
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Switch to kernel stack and jump to handler. */
 	PPC_LL	r3, HOST_RUN(r1)
 	mr	r5, r14 /* intno */
@@ -660,7 +764,13 @@ lightweight_exit:
 	mtspr	SPRN_SPRG5W, r6
 	PPC_LD(r8, VCPU_SHARED_SPRG7, r11)
 	mtspr	SPRN_SPRG6W, r7
+<<<<<<< HEAD
 	mtspr	SPRN_SPRG7W, r8
+=======
+	PPC_LD(r5, VCPU_SPRG9, r4)
+	mtspr	SPRN_SPRG7W, r8
+	mtspr	SPRN_SPRG9, r5
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Load some guest volatiles. */
 	PPC_LL	r3, VCPU_LR(r4)

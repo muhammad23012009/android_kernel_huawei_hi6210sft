@@ -19,6 +19,7 @@
  */
 #include "xfs.h"
 #include "xfs_fs.h"
+<<<<<<< HEAD
 #include "xfs_types.h"
 #include "xfs_log.h"
 #include "xfs_trans.h"
@@ -30,6 +31,19 @@
 #include "xfs_inode.h"
 #include "xfs_extent_busy.h"
 #include "xfs_trace.h"
+=======
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_shared.h"
+#include "xfs_trans_resv.h"
+#include "xfs_sb.h"
+#include "xfs_mount.h"
+#include "xfs_alloc.h"
+#include "xfs_extent_busy.h"
+#include "xfs_trace.h"
+#include "xfs_trans.h"
+#include "xfs_log.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void
 xfs_extent_busy_insert(
@@ -45,6 +59,7 @@ xfs_extent_busy_insert(
 	struct rb_node		**rbp;
 	struct rb_node		*parent = NULL;
 
+<<<<<<< HEAD
 	new = kmem_zalloc(sizeof(struct xfs_extent_busy), KM_MAYFAIL);
 	if (!new) {
 		/*
@@ -57,6 +72,9 @@ xfs_extent_busy_insert(
 		return;
 	}
 
+=======
+	new = kmem_zalloc(sizeof(struct xfs_extent_busy), KM_SLEEP);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	new->agno = agno;
 	new->bno = bno;
 	new->length = len;
@@ -147,7 +165,11 @@ xfs_extent_busy_search(
  * extent.  If the overlap covers the beginning, the end, or all of the busy
  * extent, the overlapping portion can be made unbusy and used for the
  * allocation.  We can't split a busy extent because we can't modify a
+<<<<<<< HEAD
  * transaction/CIL context busy list, but we can update an entries block
+=======
+ * transaction/CIL context busy list, but we can update an entry's block
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * number or length.
  *
  * Returns true if the extent can safely be reused, or false if the search
@@ -160,7 +182,12 @@ xfs_extent_busy_update_extent(
 	struct xfs_extent_busy	*busyp,
 	xfs_agblock_t		fbno,
 	xfs_extlen_t		flen,
+<<<<<<< HEAD
 	bool			userdata)
+=======
+	bool			userdata) __releases(&pag->pagb_lock)
+					  __acquires(&pag->pagb_lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	xfs_agblock_t		fend = fbno + flen;
 	xfs_agblock_t		bbno = busyp->bno;
@@ -383,7 +410,11 @@ restart:
 		 * If this is a metadata allocation, try to reuse the busy
 		 * extent instead of trimming the allocation.
 		 */
+<<<<<<< HEAD
 		if (!args->userdata &&
+=======
+		if (!xfs_alloc_is_userdata(args->datatype) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    !(busyp->flags & XFS_EXTENT_BUSY_DISCARDED)) {
 			if (!xfs_extent_busy_update_extent(args->mp, args->pag,
 							  busyp, fbno, flen,

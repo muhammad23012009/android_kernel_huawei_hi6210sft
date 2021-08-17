@@ -60,7 +60,10 @@
  * };
  *
  * static struct sccnxp_pdata sc2892_info = {
+<<<<<<< HEAD
  *	.frequency	= 3686400,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	.mctrl_cfg[0]	= MCTRL_SIG(DIR_OP, LINE_OP0),
  *	.mctrl_cfg[1]	= MCTRL_SIG(DIR_OP, LINE_OP1),
  * };
@@ -78,8 +81,11 @@
 
 /* SCCNXP platform data structure */
 struct sccnxp_pdata {
+<<<<<<< HEAD
 	/* Frequency (extrenal clock or crystal) */
 	int			frequency;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Shift for A0 line */
 	const u8		reg_shift;
 	/* Modem control lines configuration */

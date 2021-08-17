@@ -20,6 +20,7 @@
 # Will compile qconf as a C++ program, and menu as a C program.
 # They are linked as C++ code to the executable qconf
 
+<<<<<<< HEAD
 # hostprogs-y := conf
 # conf-objs  := conf.o libkconfig.so
 # libkconfig-objs := expr.o type.o
@@ -35,6 +36,16 @@ __hostprogs := $(sort $(hostprogs-y) $(hostprogs-m))
 # C code
 # Executables compiled from a single .c file
 host-csingle	:= $(foreach m,$(__hostprogs),$(if $($(m)-objs),,$(m)))
+=======
+__hostprogs := $(sort $(hostprogs-y) $(hostprogs-m))
+host-cshlib := $(sort $(hostlibs-y) $(hostlibs-m))
+host-cxxshlib := $(sort $(hostcxxlibs-y) $(hostcxxlibs-m))
+
+# C code
+# Executables compiled from a single .c file
+host-csingle	:= $(foreach m,$(__hostprogs), \
+			$(if $($(m)-objs)$($(m)-cxxobjs),,$(m)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # C executables linked based on several .o files
 host-cmulti	:= $(foreach m,$(__hostprogs),\
@@ -44,13 +55,18 @@ host-cmulti	:= $(foreach m,$(__hostprogs),\
 host-cobjs	:= $(sort $(foreach m,$(__hostprogs),$($(m)-objs)))
 
 # C++ code
+<<<<<<< HEAD
 # C++ executables compiled from at least on .cc file
+=======
+# C++ executables compiled from at least one .cc file
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # and zero or more .c files
 host-cxxmulti	:= $(foreach m,$(__hostprogs),$(if $($(m)-cxxobjs),$(m)))
 
 # C++ Object (.o) files compiled from .cc files
 host-cxxobjs	:= $(sort $(foreach m,$(host-cxxmulti),$($(m)-cxxobjs)))
 
+<<<<<<< HEAD
 # Shared libaries (only .c supported)
 # Shared libraries (.so) - all .so files referenced in "xxx-objs"
 host-cshlib	:= $(sort $(filter %.so, $(host-cobjs)))
@@ -71,6 +87,16 @@ host-objdirs += $(foreach f,$(host-cmulti),                  \
 host-objdirs += $(foreach f,$(host-cxxmulti),                  \
                     $(foreach m,$($(f)-cxxobjs),                \
                         $(if $(dir $(m)),$(dir $(m)))))
+=======
+# Object (.o) files used by the shared libaries
+host-cshobjs	:= $(sort $(foreach m,$(host-cshlib),$($(m:.so=-objs))))
+host-cxxshobjs	:= $(sort $(foreach m,$(host-cxxshlib),$($(m:.so=-objs))))
+
+# output directory for programs/.o files
+# hostprogs-y := tools/build may have been specified.
+# Retrieve also directory of .o files from prog-objs or prog-cxxobjs notation
+host-objdirs := $(dir $(__hostprogs) $(host-cobjs) $(host-cxxobjs))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 host-objdirs := $(strip $(sort $(filter-out ./,$(host-objdirs))))
 
@@ -82,7 +108,13 @@ host-cobjs	:= $(addprefix $(obj)/,$(host-cobjs))
 host-cxxmulti	:= $(addprefix $(obj)/,$(host-cxxmulti))
 host-cxxobjs	:= $(addprefix $(obj)/,$(host-cxxobjs))
 host-cshlib	:= $(addprefix $(obj)/,$(host-cshlib))
+<<<<<<< HEAD
 host-cshobjs	:= $(addprefix $(obj)/,$(host-cshobjs))
+=======
+host-cxxshlib	:= $(addprefix $(obj)/,$(host-cxxshlib))
+host-cshobjs	:= $(addprefix $(obj)/,$(host-cshobjs))
+host-cxxshobjs	:= $(addprefix $(obj)/,$(host-cxxshobjs))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 host-objdirs    := $(addprefix $(obj)/,$(host-objdirs))
 
 obj-dirs += $(host-objdirs)
@@ -123,8 +155,14 @@ quiet_cmd_host-cmulti	= HOSTLD  $@
       cmd_host-cmulti	= $(HOSTCC) $(HOSTLDFLAGS) -o $@ \
 			  $(addprefix $(obj)/,$($(@F)-objs)) \
 			  $(HOST_LOADLIBES) $(HOSTLOADLIBES_$(@F))
+<<<<<<< HEAD
 $(host-cmulti): $(obj)/%: $(host-cobjs) $(host-cshlib) FORCE
 	$(call if_changed,host-cmulti)
+=======
+$(host-cmulti): FORCE
+	$(call if_changed,host-cmulti)
+$(call multi_depend, $(host-cmulti), , -objs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Create .o file from a single .c file
 # host-cobjs -> .o
@@ -140,8 +178,14 @@ quiet_cmd_host-cxxmulti	= HOSTLD  $@
 			  $(foreach o,objs cxxobjs,\
 			  $(addprefix $(obj)/,$($(@F)-$(o)))) \
 			  $(HOST_LOADLIBES) $(HOSTLOADLIBES_$(@F))
+<<<<<<< HEAD
 $(host-cxxmulti): $(obj)/%: $(host-cobjs) $(host-cxxobjs) $(host-cshlib) FORCE
 	$(call if_changed,host-cxxmulti)
+=======
+$(host-cxxmulti): FORCE
+	$(call if_changed,host-cxxmulti)
+$(call multi_depend, $(host-cxxmulti), , -objs -cxxobjs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Create .o file from a single .cc (C++) file
 quiet_cmd_host-cxxobjs	= HOSTCXX $@
@@ -156,15 +200,47 @@ quiet_cmd_host-cshobjs	= HOSTCC  -fPIC $@
 $(host-cshobjs): $(obj)/%.o: $(src)/%.c FORCE
 	$(call if_changed_dep,host-cshobjs)
 
+<<<<<<< HEAD
+=======
+# Compile .c file, create position independent .o file
+# Note that plugin capable gcc versions can be either C or C++ based
+# therefore plugin source files have to be compilable in both C and C++ mode.
+# This is why a C++ compiler is invoked on a .c file.
+# host-cxxshobjs -> .o
+quiet_cmd_host-cxxshobjs	= HOSTCXX -fPIC $@
+      cmd_host-cxxshobjs	= $(HOSTCXX) $(hostcxx_flags) -fPIC -c -o $@ $<
+$(host-cxxshobjs): $(obj)/%.o: $(src)/%.c FORCE
+	$(call if_changed_dep,host-cxxshobjs)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Link a shared library, based on position independent .o files
 # *.o -> .so shared library (host-cshlib)
 quiet_cmd_host-cshlib	= HOSTLLD -shared $@
       cmd_host-cshlib	= $(HOSTCC) $(HOSTLDFLAGS) -shared -o $@ \
 			  $(addprefix $(obj)/,$($(@F:.so=-objs))) \
 			  $(HOST_LOADLIBES) $(HOSTLOADLIBES_$(@F))
+<<<<<<< HEAD
 $(host-cshlib): $(obj)/%: $(host-cshobjs) FORCE
 	$(call if_changed,host-cshlib)
 
 targets += $(host-csingle)  $(host-cmulti) $(host-cobjs)\
 	   $(host-cxxmulti) $(host-cxxobjs) $(host-cshlib) $(host-cshobjs) 
 
+=======
+$(host-cshlib): FORCE
+	$(call if_changed,host-cshlib)
+$(call multi_depend, $(host-cshlib), .so, -objs)
+
+# Link a shared library, based on position independent .o files
+# *.o -> .so shared library (host-cxxshlib)
+quiet_cmd_host-cxxshlib	= HOSTLLD -shared $@
+      cmd_host-cxxshlib	= $(HOSTCXX) $(HOSTLDFLAGS) -shared -o $@ \
+			  $(addprefix $(obj)/,$($(@F:.so=-objs))) \
+			  $(HOST_LOADLIBES) $(HOSTLOADLIBES_$(@F))
+$(host-cxxshlib): FORCE
+	$(call if_changed,host-cxxshlib)
+$(call multi_depend, $(host-cxxshlib), .so, -objs)
+
+targets += $(host-csingle)  $(host-cmulti) $(host-cobjs)\
+	   $(host-cxxmulti) $(host-cxxobjs) $(host-cshlib) $(host-cshobjs) $(host-cxxshlib) $(host-cxxshobjs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

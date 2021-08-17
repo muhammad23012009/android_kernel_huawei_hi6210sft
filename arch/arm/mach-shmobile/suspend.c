@@ -17,6 +17,11 @@
 #include <asm/io.h>
 #include <asm/system_misc.h>
 
+<<<<<<< HEAD
+=======
+#include "common.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int shmobile_suspend_default_enter(suspend_state_t suspend_state)
 {
 	cpu_do_idle();

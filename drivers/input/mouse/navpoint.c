@@ -9,7 +9,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
@@ -287,7 +290,11 @@ static int navpoint_probe(struct platform_device *pdev)
 	return 0;
 
 err_free_irq:
+<<<<<<< HEAD
 	free_irq(ssp->irq, &pdev->dev);
+=======
+	free_irq(ssp->irq, navpoint);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_free_mem:
 	input_free_device(input);
 	kfree(navpoint);
@@ -319,8 +326,12 @@ static int navpoint_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int navpoint_suspend(struct device *dev)
+=======
+static int __maybe_unused navpoint_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct navpoint *navpoint = platform_get_drvdata(pdev);
@@ -334,7 +345,11 @@ static int navpoint_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int navpoint_resume(struct device *dev)
+=======
+static int __maybe_unused navpoint_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct navpoint *navpoint = platform_get_drvdata(pdev);
@@ -347,7 +362,10 @@ static int navpoint_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(navpoint_pm_ops, navpoint_suspend, navpoint_resume);
 
@@ -356,7 +374,10 @@ static struct platform_driver navpoint_driver = {
 	.remove		= navpoint_remove,
 	.driver = {
 		.name	= "navpoint",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &navpoint_pm_ops,
 	},
 };

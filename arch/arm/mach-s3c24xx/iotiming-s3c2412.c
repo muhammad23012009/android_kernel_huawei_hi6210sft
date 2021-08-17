@@ -29,9 +29,14 @@
 
 #include <plat/cpu.h>
 #include <plat/cpu-freq-core.h>
+<<<<<<< HEAD
 #include <plat/clock.h>
 
 #include "s3c2412.h"
+=======
+
+#include <mach/s3c2412.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define print_ns(x) ((x) / 10), ((x) % 10)
 

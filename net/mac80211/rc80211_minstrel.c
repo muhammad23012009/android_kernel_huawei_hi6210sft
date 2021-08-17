@@ -69,14 +69,50 @@ rix_to_ndx(struct minstrel_sta_info *mi, int rix)
 	return i;
 }
 
+<<<<<<< HEAD
+=======
+/* return current EMWA throughput */
+int minstrel_get_tp_avg(struct minstrel_rate *mr, int prob_ewma)
+{
+	int usecs;
+
+	usecs = mr->perfect_tx_time;
+	if (!usecs)
+		usecs = 1000000;
+
+	/* reset thr. below 10% success */
+	if (mr->stats.prob_ewma < MINSTREL_FRAC(10, 100))
+		return 0;
+
+	if (prob_ewma > MINSTREL_FRAC(90, 100))
+		return MINSTREL_TRUNC(100000 * (MINSTREL_FRAC(90, 100) / usecs));
+	else
+		return MINSTREL_TRUNC(100000 * (prob_ewma / usecs));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* find & sort topmost throughput rates */
 static inline void
 minstrel_sort_best_tp_rates(struct minstrel_sta_info *mi, int i, u8 *tp_list)
 {
+<<<<<<< HEAD
 	int j = MAX_THR_RATES;
 
 	while (j > 0 && mi->r[i].cur_tp > mi->r[tp_list[j - 1]].cur_tp)
 		j--;
+=======
+	int j;
+	struct minstrel_rate_stats *tmp_mrs;
+	struct minstrel_rate_stats *cur_mrs = &mi->r[i].stats;
+
+	for (j = MAX_THR_RATES; j > 0; --j) {
+		tmp_mrs = &mi->r[tp_list[j - 1]].stats;
+		if (minstrel_get_tp_avg(&mi->r[i], cur_mrs->prob_ewma) <=
+		    minstrel_get_tp_avg(&mi->r[tp_list[j - 1]], tmp_mrs->prob_ewma))
+			break;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (j < MAX_THR_RATES - 1)
 		memmove(&tp_list[j + 1], &tp_list[j], MAX_THR_RATES - (j + 1));
 	if (j < MAX_THR_RATES)
@@ -92,7 +128,11 @@ minstrel_set_rate(struct minstrel_sta_info *mi, struct ieee80211_sta_rates *rate
 	ratetbl->rate[offset].idx = r->rix;
 	ratetbl->rate[offset].count = r->adjusted_retry_count;
 	ratetbl->rate[offset].count_cts = r->retry_count_cts;
+<<<<<<< HEAD
 	ratetbl->rate[offset].count_rts = r->retry_count_rtscts;
+=======
+	ratetbl->rate[offset].count_rts = r->stats.retry_count_rtscts;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -127,19 +167,64 @@ minstrel_update_rates(struct minstrel_priv *mp, struct minstrel_sta_info *mi)
 	rate_control_set_rates(mp->hw, mi->sta, ratetbl);
 }
 
+<<<<<<< HEAD
+=======
+/*
+* Recalculate statistics and counters of a given rate
+*/
+void
+minstrel_calc_rate_stats(struct minstrel_rate_stats *mrs)
+{
+	if (unlikely(mrs->attempts > 0)) {
+		mrs->sample_skipped = 0;
+		mrs->cur_prob = MINSTREL_FRAC(mrs->success, mrs->attempts);
+		if (unlikely(!mrs->att_hist)) {
+			mrs->prob_ewma = mrs->cur_prob;
+		} else {
+			/* update exponential weighted moving variance */
+			mrs->prob_ewmsd = minstrel_ewmsd(mrs->prob_ewmsd,
+							 mrs->cur_prob,
+							 mrs->prob_ewma,
+							 EWMA_LEVEL);
+
+			/*update exponential weighted moving avarage */
+			mrs->prob_ewma = minstrel_ewma(mrs->prob_ewma,
+						       mrs->cur_prob,
+						       EWMA_LEVEL);
+		}
+		mrs->att_hist += mrs->attempts;
+		mrs->succ_hist += mrs->success;
+	} else {
+		mrs->sample_skipped++;
+	}
+
+	mrs->last_success = mrs->success;
+	mrs->last_attempts = mrs->attempts;
+	mrs->success = 0;
+	mrs->attempts = 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 minstrel_update_stats(struct minstrel_priv *mp, struct minstrel_sta_info *mi)
 {
 	u8 tmp_tp_rate[MAX_THR_RATES];
 	u8 tmp_prob_rate = 0;
+<<<<<<< HEAD
 	u32 usecs;
 	int i;
 
 	for (i=0; i < MAX_THR_RATES; i++)
+=======
+	int i, tmp_cur_tp, tmp_prob_tp;
+
+	for (i = 0; i < MAX_THR_RATES; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    tmp_tp_rate[i] = 0;
 
 	for (i = 0; i < mi->n_rates; i++) {
 		struct minstrel_rate *mr = &mi->r[i];
+<<<<<<< HEAD
 
 		usecs = mr->perfect_tx_time;
 		if (!usecs)
@@ -172,12 +257,29 @@ minstrel_update_stats(struct minstrel_priv *mp, struct minstrel_sta_info *mi)
 		if (mr->probability > MINSTREL_FRAC(95, 100) ||
 		    mr->probability < MINSTREL_FRAC(10, 100)) {
 			mr->adjusted_retry_count = mr->retry_count >> 1;
+=======
+		struct minstrel_rate_stats *mrs = &mi->r[i].stats;
+		struct minstrel_rate_stats *tmp_mrs = &mi->r[tmp_prob_rate].stats;
+
+		/* Update statistics of success probability per rate */
+		minstrel_calc_rate_stats(mrs);
+
+		/* Sample less often below the 10% chance of success.
+		 * Sample less often above the 95% chance of success. */
+		if (mrs->prob_ewma > MINSTREL_FRAC(95, 100) ||
+		    mrs->prob_ewma < MINSTREL_FRAC(10, 100)) {
+			mr->adjusted_retry_count = mrs->retry_count >> 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (mr->adjusted_retry_count > 2)
 				mr->adjusted_retry_count = 2;
 			mr->sample_limit = 4;
 		} else {
 			mr->sample_limit = -1;
+<<<<<<< HEAD
 			mr->adjusted_retry_count = mr->retry_count;
+=======
+			mr->adjusted_retry_count = mrs->retry_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		if (!mr->adjusted_retry_count)
 			mr->adjusted_retry_count = 2;
@@ -189,12 +291,24 @@ minstrel_update_stats(struct minstrel_priv *mp, struct minstrel_sta_info *mi)
 		 * (1) if any success probabilitiy >= 95%, out of those rates
 		 * choose the maximum throughput rate as max_prob_rate
 		 * (2) if all success probabilities < 95%, the rate with
+<<<<<<< HEAD
 		 * highest success probability is choosen as max_prob_rate */
 		if (mr->probability >= MINSTREL_FRAC(95,100)) {
 			if (mr->cur_tp >= mi->r[tmp_prob_rate].cur_tp)
 				tmp_prob_rate = i;
 		} else {
 			if (mr->probability >= mi->r[tmp_prob_rate].probability)
+=======
+		 * highest success probability is chosen as max_prob_rate */
+		if (mrs->prob_ewma >= MINSTREL_FRAC(95, 100)) {
+			tmp_cur_tp = minstrel_get_tp_avg(mr, mrs->prob_ewma);
+			tmp_prob_tp = minstrel_get_tp_avg(&mi->r[tmp_prob_rate],
+							  tmp_mrs->prob_ewma);
+			if (tmp_cur_tp >= tmp_prob_tp)
+				tmp_prob_rate = i;
+		} else {
+			if (mrs->prob_ewma >= tmp_mrs->prob_ewma)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				tmp_prob_rate = i;
 		}
 	}
@@ -203,20 +317,42 @@ minstrel_update_stats(struct minstrel_priv *mp, struct minstrel_sta_info *mi)
 	memcpy(mi->max_tp_rate, tmp_tp_rate, sizeof(mi->max_tp_rate));
 	mi->max_prob_rate = tmp_prob_rate;
 
+<<<<<<< HEAD
 	/* Reset update timer */
 	mi->stats_update = jiffies;
+=======
+#ifdef CONFIG_MAC80211_DEBUGFS
+	/* use fixed index if set */
+	if (mp->fixed_rate_idx != -1) {
+		mi->max_tp_rate[0] = mp->fixed_rate_idx;
+		mi->max_tp_rate[1] = mp->fixed_rate_idx;
+		mi->max_prob_rate = mp->fixed_rate_idx;
+	}
+#endif
+
+	/* Reset update timer */
+	mi->last_stats_update = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	minstrel_update_rates(mp, mi);
 }
 
 static void
 minstrel_tx_status(void *priv, struct ieee80211_supported_band *sband,
+<<<<<<< HEAD
                    struct ieee80211_sta *sta, void *priv_sta,
 		   struct sk_buff *skb)
 {
 	struct minstrel_priv *mp = priv;
 	struct minstrel_sta_info *mi = priv_sta;
 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
+=======
+		   struct ieee80211_sta *sta, void *priv_sta,
+		   struct ieee80211_tx_info *info)
+{
+	struct minstrel_priv *mp = priv;
+	struct minstrel_sta_info *mi = priv_sta;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ieee80211_tx_rate *ar = info->status.rates;
 	int i, ndx;
 	int success;
@@ -224,13 +360,18 @@ minstrel_tx_status(void *priv, struct ieee80211_supported_band *sband,
 	success = !!(info->flags & IEEE80211_TX_STAT_ACK);
 
 	for (i = 0; i < IEEE80211_TX_MAX_RATES; i++) {
+<<<<<<< HEAD
 		if (ar[i].idx < 0)
+=======
+		if (ar[i].idx < 0 || !ar[i].count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		ndx = rix_to_ndx(mi, ar[i].idx);
 		if (ndx < 0)
 			continue;
 
+<<<<<<< HEAD
 		mi->r[ndx].attempts += ar[i].count;
 
 		if ((i != IEEE80211_TX_MAX_RATES - 1) && (ar[i + 1].idx < 0))
@@ -244,6 +385,15 @@ minstrel_tx_status(void *priv, struct ieee80211_supported_band *sband,
 		mi->sample_deferred--;
 
 	if (time_after(jiffies, mi->stats_update +
+=======
+		mi->r[ndx].stats.attempts += ar[i].count;
+
+		if ((i != IEEE80211_TX_MAX_RATES - 1) && (ar[i + 1].idx < 0))
+			mi->r[ndx].stats.success += success;
+	}
+
+	if (time_after(jiffies, mi->last_stats_update +
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				(mp->update_interval * HZ) / 1000))
 		minstrel_update_stats(mp, mi);
 }
@@ -251,6 +401,7 @@ minstrel_tx_status(void *priv, struct ieee80211_supported_band *sband,
 
 static inline unsigned int
 minstrel_get_retry_count(struct minstrel_rate *mr,
+<<<<<<< HEAD
                          struct ieee80211_tx_info *info)
 {
 	unsigned int retry = mr->adjusted_retry_count;
@@ -259,6 +410,16 @@ minstrel_get_retry_count(struct minstrel_rate *mr,
 		retry = max(2U, min(mr->retry_count_rtscts, retry));
 	else if (info->control.use_cts_prot)
 		retry = max(2U, min(mr->retry_count_cts, retry));
+=======
+			 struct ieee80211_tx_info *info)
+{
+	u8 retry = mr->adjusted_retry_count;
+
+	if (info->control.use_rts)
+		retry = max_t(u8, 2, min(mr->stats.retry_count_rtscts, retry));
+	else if (info->control.use_cts_prot)
+		retry = max_t(u8, 2, min(mr->retry_count_cts, retry));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retry;
 }
 
@@ -308,10 +469,22 @@ minstrel_get_rate(void *priv, struct ieee80211_sta *sta,
 		sampling_ratio = mp->lookaround_rate;
 
 	/* increase sum packet counter */
+<<<<<<< HEAD
 	mi->packet_count++;
 
 	delta = (mi->packet_count * sampling_ratio / 100) -
 			(mi->sample_count + mi->sample_deferred / 2);
+=======
+	mi->total_packets++;
+
+#ifdef CONFIG_MAC80211_DEBUGFS
+	if (mp->fixed_rate_idx != -1)
+		return;
+#endif
+
+	delta = (mi->total_packets * sampling_ratio / 100) -
+			mi->sample_packets;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* delta < 0: no sampling required */
 	prev_sample = mi->prev_sample;
@@ -319,10 +492,16 @@ minstrel_get_rate(void *priv, struct ieee80211_sta *sta,
 	if (delta < 0 || (!mrr_capable && prev_sample))
 		return;
 
+<<<<<<< HEAD
 	if (mi->packet_count >= 10000) {
 		mi->sample_deferred = 0;
 		mi->sample_count = 0;
 		mi->packet_count = 0;
+=======
+	if (mi->total_packets >= 10000) {
+		mi->sample_packets = 0;
+		mi->total_packets = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else if (delta > mi->n_rates * 2) {
 		/* With multi-rate retry, not every planned sample
 		 * attempt actually gets used, due to the way the retry
@@ -333,7 +512,11 @@ minstrel_get_rate(void *priv, struct ieee80211_sta *sta,
 		 * starts getting worse, minstrel would start bursting
 		 * out lots of sampling frames, which would result
 		 * in a large throughput loss. */
+<<<<<<< HEAD
 		mi->sample_count += (delta - mi->n_rates * 2);
+=======
+		mi->sample_packets += (delta - mi->n_rates * 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* get next random rate sample */
@@ -345,6 +528,7 @@ minstrel_get_rate(void *priv, struct ieee80211_sta *sta,
 	 * rate sampling method should be used.
 	 * Respect such rates that are not sampled for 20 interations.
 	 */
+<<<<<<< HEAD
 	if (mrr_capable &&
 	    msr->perfect_tx_time > mr->perfect_tx_time &&
 	    msr->sample_skipped < 20) {
@@ -362,6 +546,14 @@ minstrel_get_rate(void *priv, struct ieee80211_sta *sta,
 			return;
 
 		mi->sample_count++;
+=======
+	if (msr->perfect_tx_time < mr->perfect_tx_time ||
+	    msr->stats.sample_skipped >= 20) {
+		if (!msr->sample_limit)
+			return;
+
+		mi->sample_packets++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (msr->sample_limit > 0)
 			msr->sample_limit--;
 	}
@@ -370,17 +562,26 @@ minstrel_get_rate(void *priv, struct ieee80211_sta *sta,
 	 * has a probability of >95%, we shouldn't be attempting
 	 * to use it, as this only wastes precious airtime */
 	if (!mrr_capable &&
+<<<<<<< HEAD
 	   (mi->r[ndx].probability > MINSTREL_FRAC(95, 100)))
+=======
+	   (mi->r[ndx].stats.prob_ewma > MINSTREL_FRAC(95, 100)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	mi->prev_sample = true;
 
 	rate->idx = mi->r[ndx].rix;
 	rate->count = minstrel_get_retry_count(&mi->r[ndx], info);
+<<<<<<< HEAD
+=======
+	info->flags |= IEEE80211_TX_CTL_RATE_CTRL_PROBE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
 static void
+<<<<<<< HEAD
 calc_rate_durations(enum ieee80211_band band,
 		    struct minstrel_rate *d,
 		    struct ieee80211_rate *rate)
@@ -391,6 +592,22 @@ calc_rate_durations(enum ieee80211_band band,
 			rate->bitrate, erp, 1);
 	d->ack_time = ieee80211_frame_duration(band, 10,
 			rate->bitrate, erp, 1);
+=======
+calc_rate_durations(enum nl80211_band band,
+		    struct minstrel_rate *d,
+		    struct ieee80211_rate *rate,
+		    struct cfg80211_chan_def *chandef)
+{
+	int erp = !!(rate->flags & IEEE80211_RATE_ERP_G);
+	int shift = ieee80211_chandef_get_shift(chandef);
+
+	d->perfect_tx_time = ieee80211_frame_duration(band, 1200,
+			DIV_ROUND_UP(rate->bitrate, 1 << shift), erp, 1,
+			shift);
+	d->ack_time = ieee80211_frame_duration(band, 10,
+			DIV_ROUND_UP(rate->bitrate, 1 << shift), erp, 1,
+			shift);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -404,10 +621,16 @@ init_sample_table(struct minstrel_sta_info *mi)
 	memset(mi->sample_table, 0xff, SAMPLE_COLUMNS * mi->n_rates);
 
 	for (col = 0; col < SAMPLE_COLUMNS; col++) {
+<<<<<<< HEAD
 		for (i = 0; i < mi->n_rates; i++) {
 			get_random_bytes(rnd, sizeof(rnd));
 			new_idx = (i + rnd[i & 7]) % mi->n_rates;
 
+=======
+		prandom_bytes(rnd, sizeof(rnd));
+		for (i = 0; i < mi->n_rates; i++) {
+			new_idx = (i + rnd[i & 7]) % mi->n_rates;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			while (SAMPLE_TBL(mi, new_idx, col) != 0xff)
 				new_idx = (new_idx + 1) % mi->n_rates;
 
@@ -418,26 +641,43 @@ init_sample_table(struct minstrel_sta_info *mi)
 
 static void
 minstrel_rate_init(void *priv, struct ieee80211_supported_band *sband,
+<<<<<<< HEAD
                struct ieee80211_sta *sta, void *priv_sta)
+=======
+		   struct cfg80211_chan_def *chandef,
+		   struct ieee80211_sta *sta, void *priv_sta)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct minstrel_sta_info *mi = priv_sta;
 	struct minstrel_priv *mp = priv;
 	struct ieee80211_rate *ctl_rate;
 	unsigned int i, n = 0;
 	unsigned int t_slot = 9; /* FIXME: get real slot time */
+<<<<<<< HEAD
+=======
+	u32 rate_flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mi->sta = sta;
 	mi->lowest_rix = rate_lowest_index(sband, sta);
 	ctl_rate = &sband->bitrates[mi->lowest_rix];
 	mi->sp_ack_dur = ieee80211_frame_duration(sband->band, 10,
 				ctl_rate->bitrate,
+<<<<<<< HEAD
 				!!(ctl_rate->flags & IEEE80211_RATE_ERP_G), 1);
 
+=======
+				!!(ctl_rate->flags & IEEE80211_RATE_ERP_G), 1,
+				ieee80211_chandef_get_shift(chandef));
+
+	rate_flags = ieee80211_chandef_rate_flags(&mp->hw->conf.chandef);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(mi->max_tp_rate, 0, sizeof(mi->max_tp_rate));
 	mi->max_prob_rate = 0;
 
 	for (i = 0; i < sband->n_bitrates; i++) {
 		struct minstrel_rate *mr = &mi->r[n];
+<<<<<<< HEAD
 		unsigned int tx_time = 0, tx_time_cts = 0, tx_time_rtscts = 0;
 		unsigned int tx_time_single;
 		unsigned int cw = mp->cw_min;
@@ -450,13 +690,42 @@ minstrel_rate_init(void *priv, struct ieee80211_supported_band *sband,
 		mr->rix = i;
 		mr->bitrate = sband->bitrates[i].bitrate / 5;
 		calc_rate_durations(sband->band, mr, &sband->bitrates[i]);
+=======
+		struct minstrel_rate_stats *mrs = &mi->r[n].stats;
+		unsigned int tx_time = 0, tx_time_cts = 0, tx_time_rtscts = 0;
+		unsigned int tx_time_single;
+		unsigned int cw = mp->cw_min;
+		int shift;
+
+		if (!rate_supported(sta, sband->band, i))
+			continue;
+		if ((rate_flags & sband->bitrates[i].flags) != rate_flags)
+			continue;
+
+		n++;
+		memset(mr, 0, sizeof(*mr));
+		memset(mrs, 0, sizeof(*mrs));
+
+		mr->rix = i;
+		shift = ieee80211_chandef_get_shift(chandef);
+		mr->bitrate = DIV_ROUND_UP(sband->bitrates[i].bitrate,
+					   (1 << shift) * 5);
+		calc_rate_durations(sband->band, mr, &sband->bitrates[i],
+				    chandef);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* calculate maximum number of retransmissions before
 		 * fallback (based on maximum segment size) */
 		mr->sample_limit = -1;
+<<<<<<< HEAD
 		mr->retry_count = 1;
 		mr->retry_count_cts = 1;
 		mr->retry_count_rtscts = 1;
+=======
+		mrs->retry_count = 1;
+		mr->retry_count_cts = 1;
+		mrs->retry_count_rtscts = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tx_time = mr->perfect_tx_time + mi->sp_ack_dur;
 		do {
 			/* add one retransmission */
@@ -473,6 +742,7 @@ minstrel_rate_init(void *priv, struct ieee80211_supported_band *sband,
 				(mr->retry_count_cts < mp->max_retry))
 				mr->retry_count_cts++;
 			if ((tx_time_rtscts < mp->segment_size) &&
+<<<<<<< HEAD
 				(mr->retry_count_rtscts < mp->max_retry))
 				mr->retry_count_rtscts++;
 		} while ((tx_time < mp->segment_size) &&
@@ -480,6 +750,15 @@ minstrel_rate_init(void *priv, struct ieee80211_supported_band *sband,
 		mr->adjusted_retry_count = mr->retry_count;
 		if (!(sband->bitrates[i].flags & IEEE80211_RATE_ERP_G))
 			mr->retry_count_cts = mr->retry_count;
+=======
+				(mrs->retry_count_rtscts < mp->max_retry))
+				mrs->retry_count_rtscts++;
+		} while ((tx_time < mp->segment_size) &&
+				(++mr->stats.retry_count < mp->max_retry));
+		mr->adjusted_retry_count = mrs->retry_count;
+		if (!(sband->bitrates[i].flags & IEEE80211_RATE_ERP_G))
+			mr->retry_count_cts = mrs->retry_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = n; i < sband->n_bitrates; i++) {
@@ -488,7 +767,11 @@ minstrel_rate_init(void *priv, struct ieee80211_supported_band *sband,
 	}
 
 	mi->n_rates = n;
+<<<<<<< HEAD
 	mi->stats_update = jiffies;
+=======
+	mi->last_stats_update = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	init_sample_table(mi);
 	minstrel_update_rates(mp, mi);
@@ -508,7 +791,11 @@ minstrel_alloc_sta(void *priv, struct ieee80211_sta *sta, gfp_t gfp)
 	if (!mi)
 		return NULL;
 
+<<<<<<< HEAD
 	for (i = 0; i < IEEE80211_NUM_BANDS; i++) {
+=======
+	for (i = 0; i < NUM_NL80211_BANDS; i++) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sband = hw->wiphy->bands[i];
 		if (sband && sband->n_bitrates > max_rates)
 			max_rates = sband->n_bitrates;
@@ -522,7 +809,11 @@ minstrel_alloc_sta(void *priv, struct ieee80211_sta *sta, gfp_t gfp)
 	if (!mi->sample_table)
 		goto error1;
 
+<<<<<<< HEAD
 	mi->stats_update = jiffies;
+=======
+	mi->last_stats_update = jiffies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return mi;
 
 error1:
@@ -547,9 +838,16 @@ minstrel_init_cck_rates(struct minstrel_priv *mp)
 {
 	static const int bitrates[4] = { 10, 20, 55, 110 };
 	struct ieee80211_supported_band *sband;
+<<<<<<< HEAD
 	int i, j;
 
 	sband = mp->hw->wiphy->bands[IEEE80211_BAND_2GHZ];
+=======
+	u32 rate_flags = ieee80211_chandef_rate_flags(&mp->hw->conf.chandef);
+	int i, j;
+
+	sband = mp->hw->wiphy->bands[NL80211_BAND_2GHZ];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sband)
 		return;
 
@@ -559,6 +857,12 @@ minstrel_init_cck_rates(struct minstrel_priv *mp)
 		if (rate->flags & IEEE80211_RATE_ERP_G)
 			continue;
 
+<<<<<<< HEAD
+=======
+		if ((rate_flags & sband->bitrates[i].flags) != rate_flags)
+			continue;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (j = 0; j < ARRAY_SIZE(bitrates); j++) {
 			if (rate->bitrate != bitrates[j])
 				continue;
@@ -625,9 +929,32 @@ minstrel_free(void *priv)
 	kfree(priv);
 }
 
+<<<<<<< HEAD
 struct rate_control_ops mac80211_minstrel = {
 	.name = "minstrel",
 	.tx_status = minstrel_tx_status,
+=======
+static u32 minstrel_get_expected_throughput(void *priv_sta)
+{
+	struct minstrel_sta_info *mi = priv_sta;
+	struct minstrel_rate_stats *tmp_mrs;
+	int idx = mi->max_tp_rate[0];
+	int tmp_cur_tp;
+
+	/* convert pkt per sec in kbps (1200 is the average pkt size used for
+	 * computing cur_tp
+	 */
+	tmp_mrs = &mi->r[idx].stats;
+	tmp_cur_tp = minstrel_get_tp_avg(&mi->r[idx], tmp_mrs->prob_ewma) * 10;
+	tmp_cur_tp = tmp_cur_tp * 1200 * 8 / 1024;
+
+	return tmp_cur_tp;
+}
+
+const struct rate_control_ops mac80211_minstrel = {
+	.name = "minstrel",
+	.tx_status_noskb = minstrel_tx_status,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_rate = minstrel_get_rate,
 	.rate_init = minstrel_rate_init,
 	.alloc = minstrel_alloc,
@@ -638,6 +965,10 @@ struct rate_control_ops mac80211_minstrel = {
 	.add_sta_debugfs = minstrel_add_sta_debugfs,
 	.remove_sta_debugfs = minstrel_remove_sta_debugfs,
 #endif
+<<<<<<< HEAD
+=======
+	.get_expected_throughput = minstrel_get_expected_throughput,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int __init

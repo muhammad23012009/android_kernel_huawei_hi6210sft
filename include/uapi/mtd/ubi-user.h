@@ -134,6 +134,19 @@
  * used. A pointer to a &struct ubi_set_vol_prop_req object is expected to be
  * passed. The object describes which property should be set, and to which value
  * it should be set.
+<<<<<<< HEAD
+=======
+ *
+ * Block devices on UBI volumes
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * To create a R/O block device on top of an UBI volume the %UBI_IOCVOLCRBLK
+ * should be used. A pointer to a &struct ubi_blkcreate_req object is expected
+ * to be passed, which is not used and reserved for future usage.
+ *
+ * Conversely, to remove a block device the %UBI_IOCVOLRMBLK should be used,
+ * which takes no arguments.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /*
@@ -173,7 +186,14 @@
 
 #define UBI_VOL_IOC_MAGIC 'O'
 
+<<<<<<< HEAD
 /* Start UBI volume update */
+=======
+/* Start UBI volume update
+ * Note: This actually takes a pointer (__s64*), but we can't change
+ *       that without breaking the ABI on 32bit systems
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define UBI_IOCVOLUP _IOW(UBI_VOL_IOC_MAGIC, 0, __s64)
 /* LEB erasure command, used for debugging, disabled by default */
 #define UBI_IOCEBER _IOW(UBI_VOL_IOC_MAGIC, 1, __s32)
@@ -188,6 +208,13 @@
 /* Set an UBI volume property */
 #define UBI_IOCSETVOLPROP _IOW(UBI_VOL_IOC_MAGIC, 6, \
 			       struct ubi_set_vol_prop_req)
+<<<<<<< HEAD
+=======
+/* Create a R/O block device on top of an UBI volume */
+#define UBI_IOCVOLCRBLK _IOW(UBI_VOL_IOC_MAGIC, 7, struct ubi_blkcreate_req)
+/* Remove the R/O block device */
+#define UBI_IOCVOLRMBLK _IO(UBI_VOL_IOC_MAGIC, 8)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Maximum MTD device name length supported by UBI */
 #define MAX_UBI_MTD_NAME_LEN 127
@@ -417,4 +444,15 @@ struct ubi_set_vol_prop_req {
 	__u64 value;
 }  __packed;
 
+<<<<<<< HEAD
+=======
+/**
+ * struct ubi_blkcreate_req - a data structure used in block creation requests.
+ * @padding: reserved for future, not used, has to be zeroed
+ */
+struct ubi_blkcreate_req {
+	__s8  padding[128];
+}  __packed;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __UBI_USER_H__ */

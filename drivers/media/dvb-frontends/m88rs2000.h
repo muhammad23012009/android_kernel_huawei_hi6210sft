@@ -20,7 +20,10 @@
 #ifndef M88RS2000_H
 #define M88RS2000_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 #include "dvb_frontend.h"
 
@@ -41,7 +44,11 @@ enum {
 	CALL_IS_READ,
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_M88RS2000)
+=======
+#if IS_REACHABLE(CONFIG_DVB_M88RS2000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *m88rs2000_attach(
 	const struct m88rs2000_config *config, struct i2c_adapter *i2c);
 #else

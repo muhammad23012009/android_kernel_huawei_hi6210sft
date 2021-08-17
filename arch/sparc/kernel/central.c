@@ -152,7 +152,10 @@ static struct platform_driver clock_board_driver = {
 	.probe		= clock_board_probe,
 	.driver = {
 		.name = "clock_board",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = clock_board_match,
 	},
 };
@@ -257,7 +260,10 @@ static struct platform_driver fhc_driver = {
 	.probe		= fhc_probe,
 	.driver = {
 		.name = "fhc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = fhc_match,
 	},
 };

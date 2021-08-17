@@ -17,6 +17,10 @@
 
 #include <asm/cacheflush.h>
 #include <asm/cpudata.h>
+<<<<<<< HEAD
+=======
+#include <asm/setup.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/pcic.h>
 #include <asm/leon.h>
 
@@ -164,7 +168,11 @@ void irq_link(unsigned int irq)
 
 	p = &irq_table[irq];
 	pil = p->pil;
+<<<<<<< HEAD
 	BUG_ON(pil > SUN4D_MAX_IRQ);
+=======
+	BUG_ON(pil >= SUN4D_MAX_IRQ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	p->next = irq_map[pil];
 	irq_map[pil] = p;
 
@@ -181,7 +189,11 @@ void irq_unlink(unsigned int irq)
 	spin_lock_irqsave(&irq_map_lock, flags);
 
 	p = &irq_table[irq];
+<<<<<<< HEAD
 	BUG_ON(p->pil > SUN4D_MAX_IRQ);
+=======
+	BUG_ON(p->pil >= SUN4D_MAX_IRQ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pnext = &irq_map[p->pil];
 	while (*pnext != p)
 		pnext = &(*pnext)->next;

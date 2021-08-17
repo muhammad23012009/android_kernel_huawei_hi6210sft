@@ -30,9 +30,15 @@ int nfs_mountpoint_expiry_timeout = 500 * HZ;
 /*
  * nfs_path - reconstruct the path given an arbitrary dentry
  * @base - used to return pointer to the end of devname part of path
+<<<<<<< HEAD
  * @dentry - pointer to dentry
  * @buffer - result buffer
  * @buflen - length of buffer
+=======
+ * @dentry_in - pointer to dentry
+ * @buffer - result buffer
+ * @buflen_in - length of buffer
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @flags - options (see below)
  *
  * Helper function for constructing the server pathname
@@ -47,15 +53,29 @@ int nfs_mountpoint_expiry_timeout = 500 * HZ;
  *		       the original device (export) name
  *		       (if unset, the original name is returned verbatim)
  */
+<<<<<<< HEAD
 char *nfs_path(char **p, struct dentry *dentry, char *buffer, ssize_t buflen,
 	       unsigned flags)
+=======
+char *nfs_path(char **p, struct dentry *dentry_in, char *buffer,
+	       ssize_t buflen_in, unsigned flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *end;
 	int namelen;
 	unsigned seq;
 	const char *base;
+<<<<<<< HEAD
 
 rename_retry:
+=======
+	struct dentry *dentry;
+	ssize_t buflen;
+
+rename_retry:
+	buflen = buflen_in;
+	dentry = dentry_in;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	end = buffer+buflen;
 	*--end = '\0';
 	buflen--;
@@ -98,7 +118,11 @@ rename_retry:
 		return end;
 	}
 	namelen = strlen(base);
+<<<<<<< HEAD
 	if (flags & NFS_PATH_CANONICAL) {
+=======
+	if (*end == '/') {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Strip off excess slashes in base string */
 		while (namelen > 0 && base[namelen - 1] == '/')
 			namelen--;
@@ -139,7 +163,11 @@ EXPORT_SYMBOL_GPL(nfs_path);
 struct vfsmount *nfs_d_automount(struct path *path)
 {
 	struct vfsmount *mnt;
+<<<<<<< HEAD
 	struct nfs_server *server = NFS_SERVER(path->dentry->d_inode);
+=======
+	struct nfs_server *server = NFS_SERVER(d_inode(path->dentry));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct nfs_fh *fh = NULL;
 	struct nfs_fattr *fattr = NULL;
 
@@ -180,16 +208,26 @@ out_nofree:
 static int
 nfs_namespace_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 {
+<<<<<<< HEAD
 	if (NFS_FH(dentry->d_inode)->size != 0)
 		return nfs_getattr(mnt, dentry, stat);
 	generic_fillattr(dentry->d_inode, stat);
+=======
+	if (NFS_FH(d_inode(dentry))->size != 0)
+		return nfs_getattr(mnt, dentry, stat);
+	generic_fillattr(d_inode(dentry), stat);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int
 nfs_namespace_setattr(struct dentry *dentry, struct iattr *attr)
 {
+<<<<<<< HEAD
 	if (NFS_FH(dentry->d_inode)->size != 0)
+=======
+	if (NFS_FH(d_inode(dentry))->size != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return nfs_setattr(dentry, attr);
 	return -EACCES;
 }
@@ -226,7 +264,11 @@ static struct vfsmount *nfs_do_clone_mount(struct nfs_server *server,
 					   const char *devname,
 					   struct nfs_clone_mount *mountdata)
 {
+<<<<<<< HEAD
 	return vfs_kern_mount(&nfs_xdev_fs_type, 0, devname, mountdata);
+=======
+	return vfs_submount(mountdata->dentry, &nfs_xdev_fs_type, devname, mountdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -253,9 +295,14 @@ struct vfsmount *nfs_do_submount(struct dentry *dentry, struct nfs_fh *fh,
 
 	dprintk("--> nfs_do_submount()\n");
 
+<<<<<<< HEAD
 	dprintk("%s: submounting on %s/%s\n", __func__,
 			dentry->d_parent->d_name.name,
 			dentry->d_name.name);
+=======
+	dprintk("%s: submounting on %pd2\n", __func__,
+			dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (page == NULL)
 		goto out;
 	devname = nfs_devname(dentry, page, PAGE_SIZE);
@@ -280,7 +327,11 @@ struct vfsmount *nfs_submount(struct nfs_server *server, struct dentry *dentry,
 	struct dentry *parent = dget_parent(dentry);
 
 	/* Look it up again to get its attributes */
+<<<<<<< HEAD
 	err = server->nfs_client->rpc_ops->lookup(parent->d_inode, &dentry->d_name, fh, fattr);
+=======
+	err = server->nfs_client->rpc_ops->lookup(d_inode(parent), &dentry->d_name, fh, fattr, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dput(parent);
 	if (err != 0)
 		return ERR_PTR(err);

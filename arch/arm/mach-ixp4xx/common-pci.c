@@ -315,6 +315,7 @@ static int abort_handler(unsigned long addr, unsigned int fsr, struct pt_regs *r
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static int ixp4xx_needs_bounce(struct device *dev, dma_addr_t dma_addr, size_t size)
 {
@@ -342,6 +343,8 @@ static int ixp4xx_pci_platform_notify_remove(struct device *dev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init ixp4xx_pci_preinit(void)
 {
 	unsigned long cpuid = read_cpuid_id();
@@ -475,6 +478,7 @@ int ixp4xx_setup(int nr, struct pci_sys_data *sys)
 	pci_add_resource_offset(&sys->resources, &res[0], sys->io_offset);
 	pci_add_resource_offset(&sys->resources, &res[1], sys->mem_offset);
 
+<<<<<<< HEAD
 	platform_notify = ixp4xx_pci_platform_notify;
 	platform_notify_remove = ixp4xx_pci_platform_notify_remove;
 
@@ -492,3 +496,10 @@ int dma_set_coherent_mask(struct device *dev, u64 mask)
 EXPORT_SYMBOL(ixp4xx_pci_read);
 EXPORT_SYMBOL(ixp4xx_pci_write);
 EXPORT_SYMBOL(dma_set_coherent_mask);
+=======
+	return 1;
+}
+
+EXPORT_SYMBOL(ixp4xx_pci_read);
+EXPORT_SYMBOL(ixp4xx_pci_write);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

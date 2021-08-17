@@ -30,7 +30,11 @@
 MODULE_AUTHOR("Torsten Schenk <torsten.schenk@zoho.com>");
 MODULE_DESCRIPTION("TerraTec DMX 6Fire USB audio driver");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{TerraTec, DMX 6Fire USB}}");
+=======
+MODULE_SUPPORTED_DEVICE("{{TerraTec,DMX 6Fire USB}}");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX; /* Index 0-max */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR; /* Id for card */
@@ -106,7 +110,11 @@ static int usb6fire_chip_probe(struct usb_interface *intf,
 	}
 	if (regidx < 0) {
 		mutex_unlock(&register_mutex);
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "too many cards registered.\n");
+=======
+		dev_err(&intf->dev, "too many cards registered.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 	devices[regidx] = device;
@@ -121,6 +129,7 @@ static int usb6fire_chip_probe(struct usb_interface *intf,
 
 	/* if we are here, card can be registered in alsa. */
 	if (usb_set_interface(device, 0, 0) != 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "can't set first interface.\n");
 		return -EIO;
 	}
@@ -128,13 +137,25 @@ static int usb6fire_chip_probe(struct usb_interface *intf,
 			sizeof(struct sfire_chip), &card);
 	if (ret < 0) {
 		snd_printk(KERN_ERR PREFIX "cannot create alsa card.\n");
+=======
+		dev_err(&intf->dev, "can't set first interface.\n");
+		return -EIO;
+	}
+	ret = snd_card_new(&intf->dev, index[regidx], id[regidx],
+			   THIS_MODULE, sizeof(struct sfire_chip), &card);
+	if (ret < 0) {
+		dev_err(&intf->dev, "cannot create alsa card.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 	strcpy(card->driver, "6FireUSB");
 	strcpy(card->shortname, "TerraTec DMX6FireUSB");
 	sprintf(card->longname, "%s at %d:%d", card->shortname,
 			device->bus->busnum, device->devnum);
+<<<<<<< HEAD
 	snd_card_set_dev(card, &intf->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	chip = card->private_data;
 	chips[regidx] = chip;
@@ -169,7 +190,11 @@ static int usb6fire_chip_probe(struct usb_interface *intf,
 
 	ret = snd_card_register(card);
 	if (ret < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "cannot register card.");
+=======
+		dev_err(&intf->dev, "cannot register card.");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usb6fire_chip_destroy(chip);
 		return ret;
 	}

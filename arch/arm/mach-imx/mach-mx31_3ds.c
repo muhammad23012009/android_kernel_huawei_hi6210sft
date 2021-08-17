@@ -40,6 +40,10 @@
 #include "3ds_debugboard.h"
 #include "common.h"
 #include "devices-imx31.h"
+<<<<<<< HEAD
+=======
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hardware.h"
 #include "iomux-mx3.h"
 #include "ulpi.h"
@@ -306,16 +310,28 @@ static int mx31_3ds_sdhc1_init(struct device *dev,
 	ret = gpio_request_array(mx31_3ds_sdhc1_gpios,
 				 ARRAY_SIZE(mx31_3ds_sdhc1_gpios));
 	if (ret) {
+<<<<<<< HEAD
 		pr_warning("Unable to request the SD/MMC GPIOs.\n");
+=======
+		pr_warn("Unable to request the SD/MMC GPIOs.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 
 	ret = request_irq(gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO3_1)),
+<<<<<<< HEAD
 			  detect_irq, IRQF_DISABLED |
 			  IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
 			  "sdhc1-detect", data);
 	if (ret) {
 		pr_warning("Unable to request the SD/MMC card-detect IRQ.\n");
+=======
+			  detect_irq,
+			  IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
+			  "sdhc1-detect", data);
+	if (ret) {
+		pr_warn("Unable to request the SD/MMC card-detect IRQ.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto gpio_free;
 	}
 
@@ -693,8 +709,11 @@ static struct platform_device *devices[] __initdata = {
 
 static void __init mx31_3ds_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	imx31_soc_init();
 
 	/* Configure SPI1 IOMUX */
@@ -707,6 +726,7 @@ static void __init mx31_3ds_init(void)
 	imx31_add_mxc_nand(&mx31_3ds_nand_board_info);
 
 	imx31_add_spi_imx1(&spi1_pdata);
+<<<<<<< HEAD
 	mx31_3ds_spi_devs[0].irq = gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_3));
 	spi_register_board_info(mx31_3ds_spi_devs,
 						ARRAY_SIZE(mx31_3ds_spi_devs));
@@ -715,6 +735,33 @@ static void __init mx31_3ds_init(void)
 
 	imx31_add_imx_keypad(&mx31_3ds_keymap_data);
 
+=======
+
+	imx31_add_imx_keypad(&mx31_3ds_keymap_data);
+
+	imx31_add_imx2_wdt();
+	imx31_add_imx_i2c0(&mx31_3ds_i2c0_data);
+
+	imx31_add_spi_imx0(&spi0_pdata);
+	imx31_add_ipu_core();
+	imx31_add_mx3_sdc_fb(&mx3fb_pdata);
+
+	imx31_add_imx_ssi(0, &mx31_3ds_ssi_pdata);
+
+	imx_add_platform_device("imx_mc13783", 0, NULL, 0, NULL, 0);
+}
+
+static void __init mx31_3ds_late(void)
+{
+	int ret;
+
+	mx31_3ds_spi_devs[0].irq = gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_3));
+	spi_register_board_info(mx31_3ds_spi_devs,
+				ARRAY_SIZE(mx31_3ds_spi_devs));
+
+	platform_add_devices(devices, ARRAY_SIZE(devices));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mx31_3ds_usbotg_init();
 	if (otg_mode_host) {
 		otg_pdata.otg = imx_otg_ulpi_create(ULPI_OTG_DRVVBUS |
@@ -732,6 +779,7 @@ static void __init mx31_3ds_init(void)
 
 	if (mxc_expio_init(MX31_CS5_BASE_ADDR, IOMUX_TO_GPIO(MX31_PIN_GPIO1_1)))
 		printk(KERN_WARNING "Init of the debug board failed, all "
+<<<<<<< HEAD
 				    "devices on the debug board are unusable.\n");
 	imx31_add_imx2_wdt();
 	imx31_add_imx_i2c0(&mx31_3ds_i2c0_data);
@@ -740,6 +788,11 @@ static void __init mx31_3ds_init(void)
 	imx31_add_spi_imx0(&spi0_pdata);
 	imx31_add_ipu_core();
 	imx31_add_mx3_sdc_fb(&mx3fb_pdata);
+=======
+		       "devices on the debug board are unusable.\n");
+
+	imx31_add_mxc_mmc(0, &sdhc1_pdata);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* CSI */
 	/* Camera power: default - off */
@@ -751,10 +804,13 @@ static void __init mx31_3ds_init(void)
 	}
 
 	mx31_3ds_init_camera();
+<<<<<<< HEAD
 
 	imx31_add_imx_ssi(0, &mx31_3ds_ssi_pdata);
 
 	imx_add_platform_device("imx_mc13783", 0, NULL, 0, NULL, 0);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __init mx31_3ds_timer_init(void)
@@ -775,9 +831,15 @@ MACHINE_START(MX31_3DS, "Freescale MX31PDK (3DS)")
 	.map_io = mx31_map_io,
 	.init_early = imx31_init_early,
 	.init_irq = mx31_init_irq,
+<<<<<<< HEAD
 	.handle_irq = imx31_handle_irq,
 	.init_time	= mx31_3ds_timer_init,
 	.init_machine = mx31_3ds_init,
+=======
+	.init_time	= mx31_3ds_timer_init,
+	.init_machine = mx31_3ds_init,
+	.init_late	= mx31_3ds_late,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reserve = mx31_3ds_reserve,
 	.restart	= mxc_restart,
 MACHINE_END

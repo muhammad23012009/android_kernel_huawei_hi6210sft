@@ -46,7 +46,11 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/flash.h>
+=======
+#include "flash.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/mux.h>
 #include <mach/tc.h>
 
@@ -172,7 +176,11 @@ static struct gpio_led tps_leds[] = {
 	 * Also, D9 requires non-battery power.
 	 */
 	{ .gpio = OSK_TPS_GPIO_LED_D9, .name = "d9",
+<<<<<<< HEAD
 			.default_trigger = "ide-disk", },
+=======
+			.default_trigger = "disk-activity", },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .gpio = OSK_TPS_GPIO_LED_D2, .name = "d2", },
 	{ .gpio = OSK_TPS_GPIO_LED_D3, .name = "d3", .active_low = 1,
 			.default_trigger = "heartbeat", },
@@ -191,6 +199,12 @@ static struct platform_device osk5912_tps_leds = {
 
 static int osk_tps_setup(struct i2c_client *client, void *context)
 {
+<<<<<<< HEAD
+=======
+	if (!IS_BUILTIN(CONFIG_TPS65010))
+		return -ENOSYS;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set GPIO 1 HIGH to disable VBUS power supply;
 	 * OHCI driver powers it up/down as needed.
 	 */
@@ -300,7 +314,11 @@ static struct omap_lcd_config osk_lcd_config __initdata = {
 #ifdef	CONFIG_OMAP_OSK_MISTRAL
 
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/i2c/at24.h>
+=======
+#include <linux/platform_data/at24.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
 
@@ -607,6 +625,10 @@ MACHINE_START(OMAP_OSK, "TI-OSK")
 	.map_io		= omap16xx_map_io,
 	.init_early	= omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= osk_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

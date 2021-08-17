@@ -11,6 +11,10 @@
  */
 
 #ifndef __FAN53555_H__
+<<<<<<< HEAD
+=======
+#define __FAN53555_H__
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* VSEL ID */
 enum {

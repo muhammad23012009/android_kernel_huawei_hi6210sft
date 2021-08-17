@@ -30,8 +30,13 @@ struct scm_blk_dev {
 
 struct scm_request {
 	struct scm_blk_dev *bdev;
+<<<<<<< HEAD
 	struct request *request;
 	struct aidaw *aidaw;
+=======
+	struct aidaw *next_aidaw;
+	struct request **request;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct aob *aob;
 	struct list_head list;
 	u8 retries;
@@ -55,6 +60,11 @@ void scm_blk_irq(struct scm_device *, void *, int);
 void scm_request_finish(struct scm_request *);
 void scm_request_requeue(struct scm_request *);
 
+<<<<<<< HEAD
+=======
+struct aidaw *scm_aidaw_fetch(struct scm_request *scmrq, unsigned int bytes);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int scm_drv_init(void);
 void scm_drv_cleanup(void);
 
@@ -107,7 +117,11 @@ extern debug_info_t *scm_debug;
 
 static inline void SCM_LOG_HEX(int level, void *data, int length)
 {
+<<<<<<< HEAD
 	if (level > scm_debug->level)
+=======
+	if (!debug_level_enabled(scm_debug, level))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	while (length > 0) {
 		debug_event(scm_debug, level, data, length);

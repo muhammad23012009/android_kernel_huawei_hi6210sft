@@ -20,9 +20,13 @@ void save_processor_state(void)
 	 * flush out all the special registers so we don't need
 	 * to save them in the snapshot
 	 */
+<<<<<<< HEAD
 	flush_fp_to_thread(current);
 	flush_altivec_to_thread(current);
 	flush_spe_to_thread(current);
+=======
+	flush_all_to_thread(current);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PPC64
 	hard_irq_disable();
@@ -33,6 +37,10 @@ void save_processor_state(void)
 void restore_processor_state(void)
 {
 #ifdef CONFIG_PPC32
+<<<<<<< HEAD
 	switch_mmu_context(current->active_mm, current->active_mm);
+=======
+	switch_mmu_context(current->active_mm, current->active_mm, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 }

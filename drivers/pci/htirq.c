@@ -23,6 +23,7 @@
  */
 static DEFINE_SPINLOCK(ht_irq_lock);
 
+<<<<<<< HEAD
 struct ht_irq_cfg {
 	struct pci_dev *dev;
 	 /* Update callback used to cope with buggy hardware */
@@ -33,10 +34,16 @@ struct ht_irq_cfg {
 };
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void write_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
 {
 	struct ht_irq_cfg *cfg = irq_get_handler_data(irq);
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&ht_irq_lock, flags);
 	if (cfg->msg.address_lo != msg->address_lo) {
 		pci_write_config_byte(cfg->dev, cfg->pos + 2, cfg->idx);
@@ -55,6 +62,10 @@ void write_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
 void fetch_ht_irq_msg(unsigned int irq, struct ht_irq_msg *msg)
 {
 	struct ht_irq_cfg *cfg = irq_get_handler_data(irq);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*msg = cfg->msg;
 }
 
@@ -86,6 +97,7 @@ void unmask_ht_irq(struct irq_data *data)
  */
 int __ht_create_irq(struct pci_dev *dev, int idx, ht_irq_update_t *update)
 {
+<<<<<<< HEAD
 	struct ht_irq_cfg *cfg;
 	unsigned long flags;
 	u32 data;
@@ -93,6 +105,11 @@ int __ht_create_irq(struct pci_dev *dev, int idx, ht_irq_update_t *update)
 	int pos;
 	int irq;
 	int node;
+=======
+	int max_irq, pos, irq;
+	unsigned long flags;
+	u32 data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pos = pci_find_ht_capability(dev, HT_CAPTYPE_IRQ);
 	if (!pos)
@@ -105,6 +122,7 @@ int __ht_create_irq(struct pci_dev *dev, int idx, ht_irq_update_t *update)
 	spin_unlock_irqrestore(&ht_irq_lock, flags);
 
 	max_irq = (data >> 16) & 0xff;
+<<<<<<< HEAD
 	if ( idx > max_irq)
 		return -EINVAL;
 
@@ -136,6 +154,18 @@ int __ht_create_irq(struct pci_dev *dev, int idx, ht_irq_update_t *update)
 
 	return irq;
 }
+=======
+	if (idx > max_irq)
+		return -EINVAL;
+
+	irq = arch_setup_ht_irq(idx, pos, dev, update);
+	if (irq > 0)
+		dev_dbg(&dev->dev, "irq %d for HT\n", irq);
+
+	return irq;
+}
+EXPORT_SYMBOL(__ht_create_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * ht_create_irq - create an irq and attach it to a device.
@@ -151,6 +181,10 @@ int ht_create_irq(struct pci_dev *dev, int idx)
 {
 	return __ht_create_irq(dev, idx, NULL);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ht_create_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * ht_destroy_irq - destroy an irq created with ht_create_irq
@@ -161,6 +195,7 @@ int ht_create_irq(struct pci_dev *dev, int idx)
  */
 void ht_destroy_irq(unsigned int irq)
 {
+<<<<<<< HEAD
 	struct ht_irq_cfg *cfg;
 
 	cfg = irq_get_handler_data(irq);
@@ -173,4 +208,8 @@ void ht_destroy_irq(unsigned int irq)
 
 EXPORT_SYMBOL(__ht_create_irq);
 EXPORT_SYMBOL(ht_create_irq);
+=======
+	arch_teardown_ht_irq(irq);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(ht_destroy_irq);

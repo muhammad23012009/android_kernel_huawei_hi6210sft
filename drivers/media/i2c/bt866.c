@@ -36,7 +36,10 @@
 #include <linux/i2c.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Brooktree-866 video encoder driver");
 MODULE_AUTHOR("Mike Bernson & Dave Perks");
@@ -175,6 +178,7 @@ static int bt866_s_routing(struct v4l2_subdev *sd,
 	bt866_write(client, 0xdc, val);
 #endif
 
+<<<<<<< HEAD
 static int bt866_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -188,13 +192,20 @@ static const struct v4l2_subdev_core_ops bt866_core_ops = {
 	.g_chip_ident = bt866_g_chip_ident,
 };
 
+=======
+/* ----------------------------------------------------------------------- */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_subdev_video_ops bt866_video_ops = {
 	.s_std_output = bt866_s_std_output,
 	.s_routing = bt866_s_routing,
 };
 
 static const struct v4l2_subdev_ops bt866_ops = {
+<<<<<<< HEAD
 	.core = &bt866_core_ops,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.video = &bt866_video_ops,
 };
 
@@ -207,7 +218,11 @@ static int bt866_probe(struct i2c_client *client,
 	v4l_info(client, "chip found @ 0x%x (%s)\n",
 			client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	encoder = kzalloc(sizeof(*encoder), GFP_KERNEL);
+=======
+	encoder = devm_kzalloc(&client->dev, sizeof(*encoder), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (encoder == NULL)
 		return -ENOMEM;
 	sd = &encoder->sd;
@@ -220,7 +235,10 @@ static int bt866_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 
 	v4l2_device_unregister_subdev(sd);
+<<<<<<< HEAD
 	kfree(to_bt866(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -232,7 +250,10 @@ MODULE_DEVICE_TABLE(i2c, bt866_id);
 
 static struct i2c_driver bt866_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "bt866",
 	},
 	.probe		= bt866_probe,

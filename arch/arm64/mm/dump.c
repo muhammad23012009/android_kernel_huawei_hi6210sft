@@ -14,6 +14,7 @@
  * of the License.
  */
 #include <linux/debugfs.h>
+<<<<<<< HEAD
 #include <linux/fs.h>
 #include <linux/mm.h>
 #include <linux/seq_file.h>
@@ -35,6 +36,50 @@ static struct addr_marker address_markers[] = {
 	{ -1,			NULL },
 };
 
+=======
+#include <linux/errno.h>
+#include <linux/fs.h>
+#include <linux/io.h>
+#include <linux/init.h>
+#include <linux/mm.h>
+#include <linux/sched.h>
+#include <linux/seq_file.h>
+
+#include <asm/fixmap.h>
+#include <asm/kasan.h>
+#include <asm/memory.h>
+#include <asm/pgtable.h>
+#include <asm/pgtable-hwdef.h>
+#include <asm/ptdump.h>
+
+static const struct addr_marker address_markers[] = {
+#ifdef CONFIG_KASAN
+	{ KASAN_SHADOW_START,		"Kasan shadow start" },
+	{ KASAN_SHADOW_END,		"Kasan shadow end" },
+#endif
+	{ MODULES_VADDR,		"Modules start" },
+	{ MODULES_END,			"Modules end" },
+	{ VMALLOC_START,		"vmalloc() Area" },
+	{ VMALLOC_END,			"vmalloc() End" },
+	{ FIXADDR_START,		"Fixmap start" },
+	{ FIXADDR_TOP,			"Fixmap end" },
+	{ PCI_IO_START,			"PCI I/O start" },
+	{ PCI_IO_END,			"PCI I/O end" },
+#ifdef CONFIG_SPARSEMEM_VMEMMAP
+	{ VMEMMAP_START,		"vmemmap start" },
+	{ VMEMMAP_START + VMEMMAP_SIZE,	"vmemmap end" },
+#endif
+	{ PAGE_OFFSET,			"Linear Mapping" },
+	{ -1,				NULL },
+};
+
+/*
+ * The page dumper groups page table entries of the same type into a single
+ * description. It uses pg_state to track the range information while
+ * iterating over the pte entries. When the continuity is broken it then
+ * dumps out a description of the range.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct pg_state {
 	struct seq_file *seq;
 	const struct addr_marker *marker;
@@ -52,6 +97,14 @@ struct prot_bits {
 
 static const struct prot_bits pte_bits[] = {
 	{
+<<<<<<< HEAD
+=======
+		.mask	= PTE_VALID,
+		.val	= PTE_VALID,
+		.set	= " ",
+		.clear	= "F",
+	}, {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.mask	= PTE_USER,
 		.val	= PTE_USER,
 		.set	= "USR",
@@ -82,6 +135,7 @@ static const struct prot_bits pte_bits[] = {
 		.set	= "NG",
 		.clear	= "  ",
 	}, {
+<<<<<<< HEAD
 		.mask	= PTE_UXN,
 		.val	= PTE_UXN,
 		.set	= "UXN",
@@ -141,6 +195,20 @@ static const struct prot_bits section_bits[] = {
 	}, {
 		.mask	= PMD_SECT_UXN,
 		.val	= PMD_SECT_UXN,
+=======
+		.mask	= PTE_CONT,
+		.val	= PTE_CONT,
+		.set	= "CON",
+		.clear	= "   ",
+	}, {
+		.mask	= PTE_TABLE_BIT,
+		.val	= PTE_TABLE_BIT,
+		.set	= "   ",
+		.clear	= "BLK",
+	}, {
+		.mask	= PTE_UXN,
+		.val	= PTE_UXN,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.set	= "UXN",
 	}, {
 		.mask	= PTE_ATTRINDX_MASK,
@@ -157,7 +225,11 @@ static const struct prot_bits section_bits[] = {
 	}, {
 		.mask	= PTE_ATTRINDX_MASK,
 		.val	= PTE_ATTRINDX(MT_NORMAL_NC),
+<<<<<<< HEAD
 		.set	= "MEM/BUFFERABLE",
+=======
+		.set	= "MEM/NORMAL-NC",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}, {
 		.mask	= PTE_ATTRINDX_MASK,
 		.val	= PTE_ATTRINDX(MT_NORMAL),
@@ -167,6 +239,10 @@ static const struct prot_bits section_bits[] = {
 
 struct pg_level {
 	const struct prot_bits *bits;
+<<<<<<< HEAD
+=======
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	size_t num;
 	u64 mask;
 };
@@ -174,11 +250,27 @@ struct pg_level {
 static struct pg_level pg_level[] = {
 	{
 	}, { /* pgd */
+<<<<<<< HEAD
 	}, { /* pud */
 	}, { /* pmd */
 		.bits	= section_bits,
 		.num	= ARRAY_SIZE(section_bits),
 	}, { /* pte */
+=======
+		.name	= "PGD",
+		.bits	= pte_bits,
+		.num	= ARRAY_SIZE(pte_bits),
+	}, { /* pud */
+		.name	= (CONFIG_PGTABLE_LEVELS > 3) ? "PUD" : "PGD",
+		.bits	= pte_bits,
+		.num	= ARRAY_SIZE(pte_bits),
+	}, { /* pmd */
+		.name	= (CONFIG_PGTABLE_LEVELS > 2) ? "PMD" : "PGD",
+		.bits	= pte_bits,
+		.num	= ARRAY_SIZE(pte_bits),
+	}, { /* pte */
+		.name	= "PTE",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.bits	= pte_bits,
 		.num	= ARRAY_SIZE(pte_bits),
 	},
@@ -208,9 +300,12 @@ static void note_page(struct pg_state *st, unsigned long addr, unsigned level,
 	static const char units[] = "KMGTPE";
 	u64 prot = val & pg_level[level].mask;
 
+<<<<<<< HEAD
 	if (addr < LOWEST_ADDR)
 		return;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!st->level) {
 		st->level = level;
 		st->current_prot = prot;
@@ -222,7 +317,11 @@ static void note_page(struct pg_state *st, unsigned long addr, unsigned level,
 		unsigned long delta;
 
 		if (st->current_prot) {
+<<<<<<< HEAD
 			seq_printf(st->seq, "0x%16lx-0x%16lx   ",
+=======
+			seq_printf(st->seq, "0x%016lx-0x%016lx   ",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   st->start_address, addr);
 
 			delta = (addr - st->start_address) >> 10;
@@ -230,7 +329,12 @@ static void note_page(struct pg_state *st, unsigned long addr, unsigned level,
 				delta >>= 10;
 				unit++;
 			}
+<<<<<<< HEAD
 			seq_printf(st->seq, "%9lu%c", delta, *unit);
+=======
+			seq_printf(st->seq, "%9lu%c %s", delta, *unit,
+				   pg_level[st->level].name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (pg_level[st->level].bits)
 				dump_prot(st, pg_level[st->level].bits,
 					  pg_level[st->level].num);
@@ -241,15 +345,32 @@ static void note_page(struct pg_state *st, unsigned long addr, unsigned level,
 			st->marker++;
 			seq_printf(st->seq, "---[ %s ]---\n", st->marker->name);
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		st->start_address = addr;
 		st->current_prot = prot;
 		st->level = level;
 	}
+<<<<<<< HEAD
+=======
+
+	if (addr >= st->marker[1].start_address) {
+		st->marker++;
+		seq_printf(st->seq, "---[ %s ]---\n", st->marker->name);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void walk_pte(struct pg_state *st, pmd_t *pmd, unsigned long start)
 {
+<<<<<<< HEAD
 	pte_t *pte = pte_offset_kernel(pmd, 0);
+=======
+	pte_t *pte = pte_offset_kernel(pmd, 0UL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long addr;
 	unsigned i;
 
@@ -261,27 +382,45 @@ static void walk_pte(struct pg_state *st, pmd_t *pmd, unsigned long start)
 
 static void walk_pmd(struct pg_state *st, pud_t *pud, unsigned long start)
 {
+<<<<<<< HEAD
 	pmd_t *pmd = pmd_offset(pud, 0);
+=======
+	pmd_t *pmd = pmd_offset(pud, 0UL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long addr;
 	unsigned i;
 
 	for (i = 0; i < PTRS_PER_PMD; i++, pmd++) {
 		addr = start + i * PMD_SIZE;
+<<<<<<< HEAD
 		if (pmd_none(*pmd) || !pmd_present(*pmd) || pmd_bad(*pmd))
 			note_page(st, addr, 3, pmd_val(*pmd));
 		else
 			walk_pte(st, pmd, addr);
+=======
+		if (pmd_none(*pmd) || pmd_sect(*pmd)) {
+			note_page(st, addr, 3, pmd_val(*pmd));
+		} else {
+			BUG_ON(pmd_bad(*pmd));
+			walk_pte(st, pmd, addr);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
 static void walk_pud(struct pg_state *st, pgd_t *pgd, unsigned long start)
 {
+<<<<<<< HEAD
 	pud_t *pud = pud_offset(pgd, 0);
+=======
+	pud_t *pud = pud_offset(pgd, 0UL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long addr;
 	unsigned i;
 
 	for (i = 0; i < PTRS_PER_PUD; i++, pud++) {
 		addr = start + i * PUD_SIZE;
+<<<<<<< HEAD
 		if (!pud_none(*pud))
 			walk_pmd(st, pud, addr);
 		else
@@ -314,17 +453,60 @@ static void walk_pgd(struct seq_file *m)
 	}
 
 	note_page(&st, 0, 0, 0);
+=======
+		if (pud_none(*pud) || pud_sect(*pud)) {
+			note_page(st, addr, 2, pud_val(*pud));
+		} else {
+			BUG_ON(pud_bad(*pud));
+			walk_pmd(st, pud, addr);
+		}
+	}
+}
+
+static void walk_pgd(struct pg_state *st, struct mm_struct *mm,
+		     unsigned long start)
+{
+	pgd_t *pgd = pgd_offset(mm, 0UL);
+	unsigned i;
+	unsigned long addr;
+
+	for (i = 0; i < PTRS_PER_PGD; i++, pgd++) {
+		addr = start + i * PGDIR_SIZE;
+		if (pgd_none(*pgd)) {
+			note_page(st, addr, 1, pgd_val(*pgd));
+		} else {
+			BUG_ON(pgd_bad(*pgd));
+			walk_pud(st, pgd, addr);
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ptdump_show(struct seq_file *m, void *v)
 {
+<<<<<<< HEAD
 	walk_pgd(m);
+=======
+	struct ptdump_info *info = m->private;
+	struct pg_state st = {
+		.seq = m,
+		.marker = info->markers,
+	};
+
+	walk_pgd(&st, info->mm, info->base_addr);
+
+	note_page(&st, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int ptdump_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	return single_open(file, ptdump_show, NULL);
+=======
+	return single_open(file, ptdump_show, inode->i_private);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations ptdump_fops = {
@@ -334,7 +516,11 @@ static const struct file_operations ptdump_fops = {
 	.release	= single_release,
 };
 
+<<<<<<< HEAD
 static int ptdump_init(void)
+=======
+int ptdump_register(struct ptdump_info *info, const char *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dentry *pe;
 	unsigned i, j;
@@ -344,10 +530,27 @@ static int ptdump_init(void)
 			for (j = 0; j < pg_level[i].num; j++)
 				pg_level[i].mask |= pg_level[i].bits[j].mask;
 
+<<<<<<< HEAD
 	address_markers[0].start_address = VMALLOC_START;
 
 	pe = debugfs_create_file("kernel_page_tables", 0400, NULL, NULL,
 				 &ptdump_fops);
 	return pe ? 0 : -ENOMEM;
 }
+=======
+	pe = debugfs_create_file(name, 0400, NULL, info, &ptdump_fops);
+	return pe ? 0 : -ENOMEM;
+}
+
+static struct ptdump_info kernel_ptdump_info = {
+	.mm		= &init_mm,
+	.markers	= address_markers,
+	.base_addr	= VA_START,
+};
+
+static int ptdump_init(void)
+{
+	return ptdump_register(&kernel_ptdump_info, "kernel_page_tables");
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 device_initcall(ptdump_init);

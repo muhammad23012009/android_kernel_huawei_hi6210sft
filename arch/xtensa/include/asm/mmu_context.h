@@ -1,13 +1,20 @@
 /*
+<<<<<<< HEAD
  * include/asm-xtensa/mmu_context.h
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Switch an MMU context.
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
  * Copyright (C) 2001 - 2005 Tensilica Inc.
+=======
+ * Copyright (C) 2001 - 2013 Tensilica Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _XTENSA_MMU_CONTEXT_H
@@ -20,22 +27,40 @@
 #include <linux/stringify.h>
 #include <linux/sched.h>
 
+<<<<<<< HEAD
 #include <variant/core.h>
+=======
+#include <asm/vectors.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/pgtable.h>
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 #include <asm-generic/mm_hooks.h>
+<<<<<<< HEAD
+=======
+#include <asm-generic/percpu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if (XCHAL_HAVE_TLBS != 1)
 # error "Linux must have an MMU!"
 #endif
 
+<<<<<<< HEAD
 extern unsigned long asid_cache;
 
 /*
  * NO_CONTEXT is the invalid ASID value that we don't ever assign to
  * any user or kernel context.
+=======
+DECLARE_PER_CPU(unsigned long, asid_cache);
+#define cpu_asid_cache(cpu) per_cpu(asid_cache, cpu)
+
+/*
+ * NO_CONTEXT is the invalid ASID value that we don't ever assign to
+ * any user or kernel context.  We use the reserved values in the
+ * ASID_INSERT macro below.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * 0 invalid
  * 1 kernel
@@ -49,6 +74,11 @@ extern unsigned long asid_cache;
 #define ASID_MASK	((1 << XCHAL_MMU_ASID_BITS) - 1)
 #define ASID_INSERT(x)	(0x03020001 | (((x) & ASID_MASK) << 8))
 
+<<<<<<< HEAD
+=======
+void init_mmu(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void set_rasid_register (unsigned long val)
 {
 	__asm__ __volatile__ (" wsr %0, rasid\n\t"
@@ -62,6 +92,7 @@ static inline unsigned long get_rasid_register (void)
 	return tmp;
 }
 
+<<<<<<< HEAD
 static inline void
 __get_new_mmu_context(struct mm_struct *mm)
 {
@@ -77,11 +108,49 @@ static inline void
 __load_mmu_context(struct mm_struct *mm)
 {
 	set_rasid_register(ASID_INSERT(mm->context));
+=======
+static inline void get_new_mmu_context(struct mm_struct *mm, unsigned int cpu)
+{
+	unsigned long asid = cpu_asid_cache(cpu);
+	if ((++asid & ASID_MASK) == 0) {
+		/*
+		 * Start new asid cycle; continue counting with next
+		 * incarnation bits; skipping over 0, 1, 2, 3.
+		 */
+		local_flush_tlb_all();
+		asid += ASID_USER_FIRST;
+	}
+	cpu_asid_cache(cpu) = asid;
+	mm->context.asid[cpu] = asid;
+	mm->context.cpu = cpu;
+}
+
+static inline void get_mmu_context(struct mm_struct *mm, unsigned int cpu)
+{
+	/*
+	 * Check if our ASID is of an older version and thus invalid.
+	 */
+
+	if (mm) {
+		unsigned long asid = mm->context.asid[cpu];
+
+		if (asid == NO_CONTEXT ||
+				((asid ^ cpu_asid_cache(cpu)) & ~ASID_MASK))
+			get_new_mmu_context(mm, cpu);
+	}
+}
+
+static inline void activate_context(struct mm_struct *mm, unsigned int cpu)
+{
+	get_mmu_context(mm, cpu);
+	set_rasid_register(ASID_INSERT(mm->context.asid[cpu]));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	invalidate_page_directory();
 }
 
 /*
  * Initialize the context related info for a new mm_struct
+<<<<<<< HEAD
  * instance.
  */
 
@@ -120,6 +189,39 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 }
 
 #define deactivate_mm(tsk, mm)	do { } while(0)
+=======
+ * instance.  Valid cpu values are 0..(NR_CPUS-1), so initializing
+ * to -1 says the process has never run on any core.
+ */
+
+static inline int init_new_context(struct task_struct *tsk,
+		struct mm_struct *mm)
+{
+	int cpu;
+	for_each_possible_cpu(cpu) {
+		mm->context.asid[cpu] = NO_CONTEXT;
+	}
+	mm->context.cpu = -1;
+	return 0;
+}
+
+static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+			     struct task_struct *tsk)
+{
+	unsigned int cpu = smp_processor_id();
+	int migrated = next->context.cpu != cpu;
+	/* Flush the icache if we migrated to a new core. */
+	if (migrated) {
+		__invalidate_icache_all();
+		next->context.cpu = cpu;
+	}
+	if (migrated || prev != next)
+		activate_context(next, cpu);
+}
+
+#define activate_mm(prev, next)	switch_mm((prev), (next), NULL)
+#define deactivate_mm(tsk, mm)	do { } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Destroy context related info for an mm_struct that is about

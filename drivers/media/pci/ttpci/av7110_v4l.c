@@ -22,7 +22,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org/ 
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt

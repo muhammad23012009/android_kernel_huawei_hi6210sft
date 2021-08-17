@@ -898,7 +898,10 @@ struct wmi_start_scan_cmd {
  *  flags here
  */
 enum wmi_scan_ctrl_flags_bits {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* set if can scan in the connect cmd */
 	CONNECT_SCAN_CTRL_FLAGS = 0x01,
 
@@ -1068,7 +1071,11 @@ struct wmi_power_mode_cmd {
 } __packed;
 
 /*
+<<<<<<< HEAD
  * Policy to determnine whether power save failure event should be sent to
+=======
+ * Policy to determine whether power save failure event should be sent to
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * host during scanning
  */
 enum power_save_fail_event_policy {
@@ -1528,8 +1535,13 @@ struct wmi_connect_event {
 			__le32 nw_type;
 		} sta;
 		struct {
+<<<<<<< HEAD
 			u8 phymode;
 			u8 aid;
+=======
+			u8 aid;
+			u8 phymode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			u8 mac_addr[ETH_ALEN];
 			u8 auth;
 			u8 keymgmt;
@@ -2617,7 +2629,11 @@ int ath6kl_wmi_addkey_cmd(struct wmi *wmi, u8 if_idx, u8 key_index,
 			  u8 *key_material,
 			  u8 key_op_ctrl, u8 *mac_addr,
 			  enum wmi_sync_flag sync_flag);
+<<<<<<< HEAD
 int ath6kl_wmi_add_krk_cmd(struct wmi *wmi, u8 if_idx, u8 *krk);
+=======
+int ath6kl_wmi_add_krk_cmd(struct wmi *wmi, u8 if_idx, const u8 *krk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ath6kl_wmi_deletekey_cmd(struct wmi *wmi, u8 if_idx, u8 key_index);
 int ath6kl_wmi_setpmkid_cmd(struct wmi *wmi, u8 if_idx, const u8 *bssid,
 			    const u8 *pmkid, bool set);
@@ -2629,11 +2645,19 @@ int ath6kl_wmi_set_wmm_txop(struct wmi *wmi, u8 if_idx, enum wmi_txop_cfg cfg);
 int ath6kl_wmi_set_keepalive_cmd(struct wmi *wmi, u8 if_idx,
 				 u8 keep_alive_intvl);
 int ath6kl_wmi_set_htcap_cmd(struct wmi *wmi, u8 if_idx,
+<<<<<<< HEAD
 			     enum ieee80211_band band,
 			     struct ath6kl_htcap *htcap);
 int ath6kl_wmi_test_cmd(struct wmi *wmi, void *buf, size_t len);
 
 s32 ath6kl_wmi_get_rate(s8 rate_index);
+=======
+			     enum nl80211_band band,
+			     struct ath6kl_htcap *htcap);
+int ath6kl_wmi_test_cmd(struct wmi *wmi, void *buf, size_t len);
+
+s32 ath6kl_wmi_get_rate(struct wmi *wmi, s8 rate_index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ath6kl_wmi_set_ip_cmd(struct wmi *wmi, u8 if_idx,
 			  __be32 ips0, __be32 ips1);

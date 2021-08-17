@@ -70,16 +70,28 @@
 #define TPS51632_POWER_STATE_SINGLE_PHASE_CCM	0x1
 #define TPS51632_POWER_STATE_SINGLE_PHASE_DCM	0x2
 
+<<<<<<< HEAD
 #define TPS51632_MIN_VOLATGE			500000
 #define TPS51632_MAX_VOLATGE			1520000
 #define TPS51632_VOLATGE_STEP_10mV		10000
 #define TPS51632_VOLATGE_STEP_20mV		20000
+=======
+#define TPS51632_MIN_VOLTAGE			500000
+#define TPS51632_MAX_VOLTAGE			1520000
+#define TPS51632_VOLTAGE_STEP_10mV		10000
+#define TPS51632_VOLTAGE_STEP_20mV		20000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TPS51632_MAX_VSEL			0x7F
 #define TPS51632_MIN_VSEL			0x19
 #define TPS51632_DEFAULT_RAMP_DELAY		6000
 #define TPS51632_VOLT_VSEL(uV)					\
+<<<<<<< HEAD
 		(DIV_ROUND_UP(uV - TPS51632_MIN_VOLATGE,	\
 			TPS51632_VOLATGE_STEP_10mV) +		\
+=======
+		(DIV_ROUND_UP(uV - TPS51632_MIN_VOLTAGE,	\
+			TPS51632_VOLTAGE_STEP_10mV) +		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			TPS51632_MIN_VSEL)
 
 /* TPS51632 chip information */
@@ -94,11 +106,22 @@ static int tps51632_dcdc_set_ramp_delay(struct regulator_dev *rdev,
 		int ramp_delay)
 {
 	struct tps51632_chip *tps = rdev_get_drvdata(rdev);
+<<<<<<< HEAD
 	int bit = ramp_delay/6000;
 	int ret;
 
 	if (bit)
 		bit--;
+=======
+	int bit;
+	int ret;
+
+	if (ramp_delay == 0)
+		bit = 0;
+	else
+		bit = DIV_ROUND_UP(ramp_delay, 6000) - 1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = regmap_write(tps->regmap, TPS51632_SLEW_REGS, BIT(bit));
 	if (ret < 0)
 		dev_err(tps->dev, "SLEW reg write failed, err %d\n", ret);
@@ -221,18 +244,31 @@ static const struct of_device_id tps51632_of_match[] = {
 MODULE_DEVICE_TABLE(of, tps51632_of_match);
 
 static struct tps51632_regulator_platform_data *
+<<<<<<< HEAD
 	of_get_tps51632_platform_data(struct device *dev)
+=======
+	of_get_tps51632_platform_data(struct device *dev,
+				      const struct regulator_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct tps51632_regulator_platform_data *pdata;
 	struct device_node *np = dev->of_node;
 
 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pdata) {
 		dev_err(dev, "Memory alloc failed for platform data\n");
 		return NULL;
 	}
 
 	pdata->reg_init_data = of_get_regulator_init_data(dev, dev->of_node);
+=======
+	if (!pdata)
+		return NULL;
+
+	pdata->reg_init_data = of_get_regulator_init_data(dev, dev->of_node,
+							  desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata->reg_init_data) {
 		dev_err(dev, "Not able to get OF regulator init data\n");
 		return NULL;
@@ -243,14 +279,25 @@ static struct tps51632_regulator_platform_data *
 	pdata->dvfs_step_20mV = of_property_read_bool(np, "ti,dvfs-step-20mV");
 
 	pdata->base_voltage_uV = pdata->reg_init_data->constraints.min_uV ? :
+<<<<<<< HEAD
 					TPS51632_MIN_VOLATGE;
 	pdata->max_voltage_uV = pdata->reg_init_data->constraints.max_uV ? :
 					TPS51632_MAX_VOLATGE;
+=======
+					TPS51632_MIN_VOLTAGE;
+	pdata->max_voltage_uV = pdata->reg_init_data->constraints.max_uV ? :
+					TPS51632_MAX_VOLTAGE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pdata;
 }
 #else
 static struct tps51632_regulator_platform_data *
+<<<<<<< HEAD
 	of_get_tps51632_platform_data(struct device *dev)
+=======
+	of_get_tps51632_platform_data(struct device *dev,
+				      const struct regulator_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return NULL;
 }
@@ -275,29 +322,62 @@ static int tps51632_probe(struct i2c_client *client,
 		}
 	}
 
+<<<<<<< HEAD
 	pdata = client->dev.platform_data;
 	if (!pdata && client->dev.of_node)
 		pdata = of_get_tps51632_platform_data(&client->dev);
+=======
+	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
+	if (!tps)
+		return -ENOMEM;
+
+	tps->dev = &client->dev;
+	tps->desc.name = client->name;
+	tps->desc.id = 0;
+	tps->desc.ramp_delay = TPS51632_DEFAULT_RAMP_DELAY;
+	tps->desc.min_uV = TPS51632_MIN_VOLTAGE;
+	tps->desc.uV_step = TPS51632_VOLTAGE_STEP_10mV;
+	tps->desc.linear_min_sel = TPS51632_MIN_VSEL;
+	tps->desc.n_voltages = TPS51632_MAX_VSEL + 1;
+	tps->desc.ops = &tps51632_dcdc_ops;
+	tps->desc.type = REGULATOR_VOLTAGE;
+	tps->desc.owner = THIS_MODULE;
+
+	pdata = dev_get_platdata(&client->dev);
+	if (!pdata && client->dev.of_node)
+		pdata = of_get_tps51632_platform_data(&client->dev, &tps->desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_err(&client->dev, "No Platform data\n");
 		return -EINVAL;
 	}
 
 	if (pdata->enable_pwm_dvfs) {
+<<<<<<< HEAD
 		if ((pdata->base_voltage_uV < TPS51632_MIN_VOLATGE) ||
 		    (pdata->base_voltage_uV > TPS51632_MAX_VOLATGE)) {
+=======
+		if ((pdata->base_voltage_uV < TPS51632_MIN_VOLTAGE) ||
+		    (pdata->base_voltage_uV > TPS51632_MAX_VOLTAGE)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_err(&client->dev, "Invalid base_voltage_uV setting\n");
 			return -EINVAL;
 		}
 
 		if ((pdata->max_voltage_uV) &&
+<<<<<<< HEAD
 		    ((pdata->max_voltage_uV < TPS51632_MIN_VOLATGE) ||
 		     (pdata->max_voltage_uV > TPS51632_MAX_VOLATGE))) {
+=======
+		    ((pdata->max_voltage_uV < TPS51632_MIN_VOLTAGE) ||
+		     (pdata->max_voltage_uV > TPS51632_MAX_VOLTAGE))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_err(&client->dev, "Invalid max_voltage_uV setting\n");
 			return -EINVAL;
 		}
 	}
 
+<<<<<<< HEAD
 	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
 	if (!tps) {
 		dev_err(&client->dev, "Memory allocation failed\n");
@@ -316,6 +396,8 @@ static int tps51632_probe(struct i2c_client *client,
 	tps->desc.type = REGULATOR_VOLTAGE;
 	tps->desc.owner = THIS_MODULE;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata->enable_pwm_dvfs)
 		tps->desc.vsel_reg = TPS51632_VOLTAGE_BASE_REG;
 	else
@@ -343,7 +425,11 @@ static int tps51632_probe(struct i2c_client *client,
 	config.regmap = tps->regmap;
 	config.of_node = client->dev.of_node;
 
+<<<<<<< HEAD
 	rdev = regulator_register(&tps->desc, &config);
+=======
+	rdev = devm_regulator_register(&client->dev, &tps->desc, &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdev)) {
 		dev_err(tps->dev, "regulator register failed\n");
 		return PTR_ERR(rdev);
@@ -353,6 +439,7 @@ static int tps51632_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tps51632_remove(struct i2c_client *client)
 {
 	struct tps51632_chip *tps = i2c_get_clientdata(client);
@@ -361,6 +448,8 @@ static int tps51632_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct i2c_device_id tps51632_id[] = {
 	{.name = "tps51632",},
 	{},
@@ -371,11 +460,17 @@ MODULE_DEVICE_TABLE(i2c, tps51632_id);
 static struct i2c_driver tps51632_i2c_driver = {
 	.driver = {
 		.name = "tps51632",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(tps51632_of_match),
 	},
 	.probe = tps51632_probe,
 	.remove = tps51632_remove,
+=======
+		.of_match_table = of_match_ptr(tps51632_of_match),
+	},
+	.probe = tps51632_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = tps51632_id,
 };
 

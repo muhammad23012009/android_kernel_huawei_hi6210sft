@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #
 # Makefile for the linux kernel.
 #
@@ -20,6 +24,10 @@ CFLAGS_REMOVE_perf_event.o := -pg
 CFLAGS_REMOVE_pcr.o := -pg
 endif
 
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SPARC64)   += urtt_fill.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_SPARC32)   += entry.o wof.o wuf.o
 obj-$(CONFIG_SPARC32)   += etrap_32.o
 obj-$(CONFIG_SPARC32)   += rtrap_32.o
@@ -41,7 +49,10 @@ obj-y                   += time_$(BITS).o
 obj-$(CONFIG_SPARC32)   += windows.o
 obj-y                   += cpu.o
 obj-$(CONFIG_SPARC32)   += devices.o
+<<<<<<< HEAD
 obj-$(CONFIG_SPARC32)   += tadpole.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-y                   += ptrace_$(BITS).o
 obj-y                   += unaligned_$(BITS).o
 obj-y                   += una_asm_$(BITS).o
@@ -85,7 +96,11 @@ obj-y                     += auxio_$(BITS).o
 obj-$(CONFIG_SUN_PM)      += apc.o pmc.o
 
 obj-$(CONFIG_MODULES)     += module.o
+<<<<<<< HEAD
 obj-$(CONFIG_MODULES)     += sparc_ksyms_$(BITS).o
+=======
+obj-$(CONFIG_MODULES)     += sparc_ksyms.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_SPARC_LED)   += led.o
 obj-$(CONFIG_KGDB)        += kgdb_$(BITS).o
 
@@ -99,7 +114,11 @@ obj-$(CONFIG_STACKTRACE)     += stacktrace.o
 obj-$(CONFIG_SPARC64_PCI)    += pci.o pci_common.o psycho_common.o
 obj-$(CONFIG_SPARC64_PCI)    += pci_psycho.o pci_sabre.o pci_schizo.o
 obj-$(CONFIG_SPARC64_PCI)    += pci_sun4v.o pci_sun4v_asm.o pci_fire.o
+<<<<<<< HEAD
 obj-$(CONFIG_PCI_MSI)        += pci_msi.o
+=======
+obj-$(CONFIG_SPARC64_PCI_MSI) += pci_msi.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_COMPAT)         += sys32.o sys_sparc32.o signal32.o
 

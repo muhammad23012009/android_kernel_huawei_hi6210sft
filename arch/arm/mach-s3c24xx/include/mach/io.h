@@ -190,7 +190,11 @@ DECLARE_IO(int,l,"")
 	result;								\
 })
 
+<<<<<<< HEAD
 #define __ioaddrc(port)	((__PORT_PCIO(port) ? PCIO_BASE + (port) : (void __iomem *)(port)))
+=======
+#define __ioaddrc(port)	((__PORT_PCIO(port) ? PCIO_BASE + (port) : (void __iomem *)0 + (port)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define inb(p)		(__builtin_constant_p((p)) ? __inbc(p)	   : __inb(p))
 #define inw(p)		(__builtin_constant_p((p)) ? __inwc(p)	   : __inw(p))

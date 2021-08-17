@@ -26,7 +26,11 @@
 int fw_iso_resources_init(struct fw_iso_resources *r, struct fw_unit *unit)
 {
 	r->channels_mask = ~0uLL;
+<<<<<<< HEAD
 	r->unit = fw_unit_get(unit);
+=======
+	r->unit = unit;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&r->mutex);
 	r->allocated = false;
 
@@ -42,7 +46,10 @@ void fw_iso_resources_destroy(struct fw_iso_resources *r)
 {
 	WARN_ON(r->allocated);
 	mutex_destroy(&r->mutex);
+<<<<<<< HEAD
 	fw_unit_put(r->unit);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(fw_iso_resources_destroy);
 
@@ -211,9 +218,20 @@ EXPORT_SYMBOL(fw_iso_resources_update);
  */
 void fw_iso_resources_free(struct fw_iso_resources *r)
 {
+<<<<<<< HEAD
 	struct fw_card *card = fw_parent_device(r->unit)->card;
 	int bandwidth, channel;
 
+=======
+	struct fw_card *card;
+	int bandwidth, channel;
+
+	/* Not initialized. */
+	if (r->unit == NULL)
+		return;
+	card = fw_parent_device(r->unit)->card;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&r->mutex);
 
 	if (r->allocated) {

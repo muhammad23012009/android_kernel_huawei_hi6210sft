@@ -44,7 +44,11 @@ void pnic_do_nway(struct net_device *dev)
 			tp->csr6 = new_csr6;
 			/* Restart Tx */
 			tulip_restart_rxtx(tp);
+<<<<<<< HEAD
 			dev->trans_start = jiffies;
+=======
+			netif_trans_update(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }
@@ -70,7 +74,11 @@ void pnic_lnk_change(struct net_device *dev, int csr5)
 			iowrite32(tp->csr6, ioaddr + CSR6);
 			iowrite32(0x30, ioaddr + CSR12);
 			iowrite32(0x0201F078, ioaddr + 0xB8); /* Turn on autonegotiation. */
+<<<<<<< HEAD
 			dev->trans_start = jiffies;
+=======
+			netif_trans_update(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else if (ioread32(ioaddr + CSR5) & TPLnkPass) {
 		if (tulip_media_cap[dev->if_port] & MediaIsMII) {
@@ -147,7 +155,11 @@ void pnic_timer(unsigned long data)
 				tp->csr6 = new_csr6;
 				/* Restart Tx */
 				tulip_restart_rxtx(tp);
+<<<<<<< HEAD
 				dev->trans_start = jiffies;
+=======
+				netif_trans_update(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if (tulip_debug > 1)
 					dev_info(&dev->dev,
 						 "Changing PNIC configuration to %s %s-duplex, CSR6 %08x\n",

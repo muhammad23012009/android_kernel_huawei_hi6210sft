@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/perl
+=======
+#!/usr/bin/env perl
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 use File::Basename;
 use Math::BigInt;
@@ -367,4 +371,7 @@ OPTION:
 EOT
 	exit;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

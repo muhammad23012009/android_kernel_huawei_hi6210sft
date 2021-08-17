@@ -88,10 +88,16 @@ static int snd_ad1848_probe(struct device *dev, unsigned int n)
 {
 	struct snd_card *card;
 	struct snd_wss *chip;
+<<<<<<< HEAD
 	struct snd_pcm *pcm;
 	int error;
 
 	error = snd_card_create(index[n], id[n], THIS_MODULE, 0, &card);
+=======
+	int error;
+
+	error = snd_card_new(dev, index[n], id[n], THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		return error;
 
@@ -103,7 +109,11 @@ static int snd_ad1848_probe(struct device *dev, unsigned int n)
 
 	card->private_data = chip;
 
+<<<<<<< HEAD
 	error = snd_wss_pcm(chip, 0, &pcm);
+=======
+	error = snd_wss_pcm(chip, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error < 0)
 		goto out;
 
@@ -112,6 +122,7 @@ static int snd_ad1848_probe(struct device *dev, unsigned int n)
 		goto out;
 
 	strcpy(card->driver, "AD1848");
+<<<<<<< HEAD
 	strcpy(card->shortname, pcm->name);
 
 	sprintf(card->longname, "%s at 0x%lx, irq %d, dma %d",
@@ -121,6 +132,15 @@ static int snd_ad1848_probe(struct device *dev, unsigned int n)
 
 	snd_card_set_dev(card, dev);
 
+=======
+	strcpy(card->shortname, chip->pcm->name);
+
+	sprintf(card->longname, "%s at 0x%lx, irq %d, dma %d",
+		chip->pcm->name, chip->port, irq[n], dma1[n]);
+	if (thinkpad[n])
+		strcat(card->longname, " [Thinkpad]");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = snd_card_register(card);
 	if (error < 0)
 		goto out;
@@ -135,7 +155,10 @@ out:	snd_card_free(card);
 static int snd_ad1848_remove(struct device *dev, unsigned int n)
 {
 	snd_card_free(dev_get_drvdata(dev));
+<<<<<<< HEAD
 	dev_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -174,6 +197,7 @@ static struct isa_driver snd_ad1848_driver = {
 	}
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_ad1848_init(void)
 {
 	return isa_register_driver(&snd_ad1848_driver, SNDRV_CARDS);
@@ -186,3 +210,6 @@ static void __exit alsa_card_ad1848_exit(void)
 
 module_init(alsa_card_ad1848_init);
 module_exit(alsa_card_ad1848_exit);
+=======
+module_isa_driver(snd_ad1848_driver, SNDRV_CARDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

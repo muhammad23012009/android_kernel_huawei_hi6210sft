@@ -14,7 +14,11 @@
 #include <linux/genalloc.h>
 
 #include <mach/common.h>
+<<<<<<< HEAD
 #include <mach/sram.h>
+=======
+#include "sram.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct gen_pool *sram_pool;
 
@@ -25,7 +29,10 @@ struct gen_pool *sram_get_gen_pool(void)
 
 void *sram_alloc(size_t len, dma_addr_t *dma)
 {
+<<<<<<< HEAD
 	unsigned long vaddr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_addr_t dma_base = davinci_soc_info.sram_dma;
 
 	if (dma)
@@ -33,6 +40,7 @@ void *sram_alloc(size_t len, dma_addr_t *dma)
 	if (!sram_pool || (dma && !dma_base))
 		return NULL;
 
+<<<<<<< HEAD
 	vaddr = gen_pool_alloc(sram_pool, len);
 	if (!vaddr)
 		return NULL;
@@ -40,6 +48,9 @@ void *sram_alloc(size_t len, dma_addr_t *dma)
 	if (dma)
 		*dma = gen_pool_virt_to_phys(sram_pool, vaddr);
 	return (void *)vaddr;
+=======
+	return gen_pool_dma_alloc(sram_pool, len, dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 }
 EXPORT_SYMBOL(sram_alloc);

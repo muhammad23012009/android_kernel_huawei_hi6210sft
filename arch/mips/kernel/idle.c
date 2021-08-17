@@ -18,6 +18,10 @@
 #include <linux/sched.h>
 #include <asm/cpu.h>
 #include <asm/cpu-info.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu-type.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/idle.h>
 #include <asm/mipsregs.h>
 
@@ -63,6 +67,7 @@ void r4k_wait_irqoff(void)
 	if (!need_resched())
 		__asm__(
 		"	.set	push		\n"
+<<<<<<< HEAD
 		"	.set	mips3		\n"
 		"	wait			\n"
 		"	.set	pop		\n");
@@ -70,6 +75,12 @@ void r4k_wait_irqoff(void)
 	__asm__(
 	"	.globl __pastwait	\n"
 	"__pastwait:			\n");
+=======
+		"	.set	arch=r4000	\n"
+		"	wait			\n"
+		"	.set	pop		\n");
+	local_irq_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -81,7 +92,11 @@ static void rm7k_wait_irqoff(void)
 	if (!need_resched())
 		__asm__(
 		"	.set	push					\n"
+<<<<<<< HEAD
 		"	.set	mips3					\n"
+=======
+		"	.set	arch=r4000				\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	.set	noat					\n"
 		"	mfc0	$1, $12					\n"
 		"	sync						\n"
@@ -102,7 +117,11 @@ static void au1k_wait(void)
 	unsigned long c0status = read_c0_status() | 1;	/* irqs on */
 
 	__asm__(
+<<<<<<< HEAD
 	"	.set	mips3			\n"
+=======
+	"	.set	arch=r4000			\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"	cache	0x14, 0(%0)		\n"
 	"	cache	0x14, 32(%0)		\n"
 	"	sync				\n"
@@ -136,7 +155,21 @@ void __init check_wait(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	switch (c->cputype) {
+=======
+	/*
+	 * MIPSr6 specifies that masked interrupts should unblock an executing
+	 * wait instruction, and thus that it is safe for us to use
+	 * r4k_wait_irqoff. Yippee!
+	 */
+	if (cpu_has_mips_r6) {
+		cpu_wait = r4k_wait_irqoff;
+		return;
+	}
+
+	switch (current_cpu_type()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CPU_R3081:
 	case CPU_R3081E:
 		cpu_wait = r3081_wait;
@@ -157,31 +190,74 @@ void __init check_wait(void)
 	case CPU_4KEC:
 	case CPU_4KSC:
 	case CPU_5KC:
+<<<<<<< HEAD
+=======
+	case CPU_5KE:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CPU_25KF:
 	case CPU_PR4450:
 	case CPU_BMIPS3300:
 	case CPU_BMIPS4350:
 	case CPU_BMIPS4380:
+<<<<<<< HEAD
 	case CPU_BMIPS5000:
 	case CPU_CAVIUM_OCTEON:
 	case CPU_CAVIUM_OCTEON_PLUS:
 	case CPU_CAVIUM_OCTEON2:
+=======
+	case CPU_CAVIUM_OCTEON:
+	case CPU_CAVIUM_OCTEON_PLUS:
+	case CPU_CAVIUM_OCTEON2:
+	case CPU_CAVIUM_OCTEON3:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CPU_JZRISC:
 	case CPU_LOONGSON1:
 	case CPU_XLR:
 	case CPU_XLP:
 		cpu_wait = r4k_wait;
 		break;
+<<<<<<< HEAD
 
+=======
+	case CPU_LOONGSON3:
+		if ((c->processor_id & PRID_REV_MASK) >= PRID_REV_LOONGSON3A_R2)
+			cpu_wait = r4k_wait;
+		break;
+
+	case CPU_BMIPS5000:
+		cpu_wait = r4k_wait_irqoff;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CPU_RM7000:
 		cpu_wait = rm7k_wait_irqoff;
 		break;
 
+<<<<<<< HEAD
+=======
+	case CPU_PROAPTIV:
+	case CPU_P5600:
+		/*
+		 * Incoming Fast Debug Channel (FDC) data during a wait
+		 * instruction causes the wait never to resume, even if an
+		 * interrupt is received. Avoid using wait at all if FDC data is
+		 * likely to be received.
+		 */
+		if (IS_ENABLED(CONFIG_MIPS_EJTAG_FDC_TTY))
+			break;
+		/* fall through */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CPU_M14KC:
 	case CPU_M14KEC:
 	case CPU_24K:
 	case CPU_34K:
 	case CPU_1004K:
+<<<<<<< HEAD
+=======
+	case CPU_1074K:
+	case CPU_INTERAPTIV:
+	case CPU_M5150:
+	case CPU_QEMU_GENERIC:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cpu_wait = r4k_wait;
 		if (read_c0_config7() & MIPS_CONF7_WII)
 			cpu_wait = r4k_wait_irqoff;
@@ -217,15 +293,19 @@ void __init check_wait(void)
 		   cpu_wait = r4k_wait;
 		 */
 		break;
+<<<<<<< HEAD
 	case CPU_RM9000:
 		if ((c->processor_id & 0x00ff) >= 0x40)
 			cpu_wait = r4k_wait;
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		break;
 	}
 }
 
+<<<<<<< HEAD
 static void smtc_idle_hook(void)
 {
 #ifdef CONFIG_MIPS_MT_SMTC
@@ -238,8 +318,26 @@ static void smtc_idle_hook(void)
 void arch_cpu_idle(void)
 {
 	smtc_idle_hook();
+=======
+void arch_cpu_idle(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cpu_wait)
 		cpu_wait();
 	else
 		local_irq_enable();
 }
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_CPU_IDLE
+
+int mips_cpuidle_wait_enter(struct cpuidle_device *dev,
+			    struct cpuidle_driver *drv, int index)
+{
+	arch_cpu_idle();
+	return index;
+}
+
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

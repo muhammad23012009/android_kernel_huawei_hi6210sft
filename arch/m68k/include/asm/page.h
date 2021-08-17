@@ -48,6 +48,15 @@ extern unsigned long _ramend;
 #include <asm/page_no.h>
 #endif
 
+<<<<<<< HEAD
+=======
+#define __phys_to_pfn(paddr)	((unsigned long)((paddr) >> PAGE_SHIFT))
+#define __pfn_to_phys(pfn)	PFN_PHYS(pfn)
+
+#define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
+				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/getorder.h>
 
 #endif /* _M68K_PAGE_H */

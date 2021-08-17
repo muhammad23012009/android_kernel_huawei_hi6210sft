@@ -217,9 +217,12 @@
 #define OMAP4_CM1_ABE_WDT3_CLKCTRL_OFFSET		0x0088
 #define OMAP4430_CM1_ABE_WDT3_CLKCTRL			OMAP44XX_CM1_REGADDR(OMAP4430_CM1_ABE_INST, 0x0088)
 
+<<<<<<< HEAD
 /* Function prototypes */
 extern u32 omap4_cm1_read_inst_reg(s16 inst, u16 idx);
 extern void omap4_cm1_write_inst_reg(u32 val, s16 inst, u16 idx);
 extern u32 omap4_cm1_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

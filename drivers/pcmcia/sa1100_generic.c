@@ -93,14 +93,20 @@ static int sa11x0_drv_pcmcia_remove(struct platform_device *dev)
 	for (i = 0; i < sinfo->nskt; i++)
 		soc_pcmcia_remove_one(&sinfo->skt[i]);
 
+<<<<<<< HEAD
 	kfree(sinfo);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver sa11x0_pcmcia_driver = {
 	.driver = {
 		.name		= "sa11x0-pcmcia",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= sa11x0_drv_pcmcia_probe,
 	.remove		= sa11x0_drv_pcmcia_remove,

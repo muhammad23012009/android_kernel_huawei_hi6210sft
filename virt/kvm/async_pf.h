@@ -29,8 +29,13 @@ void kvm_async_pf_deinit(void);
 void kvm_async_pf_vcpu_init(struct kvm_vcpu *vcpu);
 #else
 #define kvm_async_pf_init() (0)
+<<<<<<< HEAD
 #define kvm_async_pf_deinit() do{}while(0)
 #define kvm_async_pf_vcpu_init(C) do{}while(0)
+=======
+#define kvm_async_pf_deinit() do {} while (0)
+#define kvm_async_pf_vcpu_init(C) do {} while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif

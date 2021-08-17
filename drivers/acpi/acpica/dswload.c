@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +77,24 @@ acpi_ds_init_callbacks(struct acpi_walk_state *walk_state, u32 pass_number)
 {
 
 	switch (pass_number) {
+<<<<<<< HEAD
 	case 1:
+=======
+	case 0:
+
+		/* Parse only - caller will setup callbacks */
+
+		walk_state->parse_flags = ACPI_PARSE_LOAD_PASS1 |
+		    ACPI_PARSE_DELETE_TREE | ACPI_PARSE_DISASSEMBLE;
+		walk_state->descending_callback = NULL;
+		walk_state->ascending_callback = NULL;
+		break;
+
+	case 1:
+
+		/* Load pass 1 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		walk_state->parse_flags = ACPI_PARSE_LOAD_PASS1 |
 		    ACPI_PARSE_DELETE_TREE;
 		walk_state->descending_callback = acpi_ds_load1_begin_op;
@@ -81,6 +102,12 @@ acpi_ds_init_callbacks(struct acpi_walk_state *walk_state, u32 pass_number)
 		break;
 
 	case 2:
+<<<<<<< HEAD
+=======
+
+		/* Load pass 2 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		walk_state->parse_flags = ACPI_PARSE_LOAD_PASS1 |
 		    ACPI_PARSE_DELETE_TREE;
 		walk_state->descending_callback = acpi_ds_load2_begin_op;
@@ -88,6 +115,12 @@ acpi_ds_init_callbacks(struct acpi_walk_state *walk_state, u32 pass_number)
 		break;
 
 	case 3:
+<<<<<<< HEAD
+=======
+
+		/* Execution pass */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef ACPI_NO_METHOD_EXECUTION
 		walk_state->parse_flags |= ACPI_PARSE_EXECUTE |
 		    ACPI_PARSE_DELETE_TREE;
@@ -97,6 +130,10 @@ acpi_ds_init_callbacks(struct acpi_walk_state *walk_state, u32 pass_number)
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -117,8 +154,13 @@ acpi_ds_init_callbacks(struct acpi_walk_state *walk_state, u32 pass_number)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 		       union acpi_parse_object ** out_op)
+=======
+acpi_ds_load1_begin_op(struct acpi_walk_state *walk_state,
+		       union acpi_parse_object **out_op)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	union acpi_parse_object *op;
 	struct acpi_namespace_node *node;
@@ -161,7 +203,10 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 
 	switch (walk_state->opcode) {
 	case AML_SCOPE_OP:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * The target name of the Scope() operator must exist at this point so
 		 * that we can actually open the scope to enter new names underneath it.
@@ -178,8 +223,13 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 			 * Target of Scope() not found. Generate an External for it, and
 			 * insert the name into the namespace.
 			 */
+<<<<<<< HEAD
 			acpi_dm_add_to_external_list(op, path, ACPI_TYPE_DEVICE,
 						     0);
+=======
+			acpi_dm_add_op_to_external_list(op, path,
+							ACPI_TYPE_DEVICE, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status =
 			    acpi_ns_lookup(walk_state->scope_info, path,
 					   object_type, ACPI_IMODE_LOAD_PASS1,
@@ -210,7 +260,10 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 		case ACPI_TYPE_INTEGER:
 		case ACPI_TYPE_STRING:
 		case ACPI_TYPE_BUFFER:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * These types we will allow, but we will change the type.
 			 * This enables some existing code of the form:
@@ -232,7 +285,10 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 			break;
 
 		case ACPI_TYPE_METHOD:
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Allow scope change to root during execution of module-level
 			 * code. Root is typed METHOD during this time.
@@ -298,10 +354,26 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 		flags = ACPI_NS_NO_UPSEARCH;
 		if ((walk_state->opcode != AML_SCOPE_OP) &&
 		    (!(walk_state->parse_flags & ACPI_PARSE_DEFERRED_OP))) {
+<<<<<<< HEAD
 			flags |= ACPI_NS_ERROR_IF_FOUND;
 			ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 					  "[%s] Cannot already exist\n",
 					  acpi_ut_get_type_name(object_type)));
+=======
+			if (walk_state->namespace_override) {
+				flags |= ACPI_NS_OVERRIDE_IF_FOUND;
+				ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
+						  "[%s] Override allowed\n",
+						  acpi_ut_get_type_name
+						  (object_type)));
+			} else {
+				flags |= ACPI_NS_ERROR_IF_FOUND;
+				ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
+						  "[%s] Cannot already exist\n",
+						  acpi_ut_get_type_name
+						  (object_type)));
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 					  "[%s] Both Find or Create allowed\n",
@@ -362,7 +434,11 @@ acpi_ds_load1_begin_op(struct acpi_walk_state * walk_state,
 
 		/* Create a new op */
 
+<<<<<<< HEAD
 		op = acpi_ps_alloc_op(walk_state->opcode);
+=======
+		op = acpi_ps_alloc_op(walk_state->opcode, walk_state->aml);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!op) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -414,6 +490,30 @@ acpi_status acpi_ds_load1_end_op(struct acpi_walk_state *walk_state)
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH, "Op=%p State=%p\n", op,
 			  walk_state));
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Disassembler: handle create field operators here.
+	 *
+	 * create_buffer_field is a deferred op that is typically processed in load
+	 * pass 2. However, disassembly of control method contents walk the parse
+	 * tree with ACPI_PARSE_LOAD_PASS1 and AML_CREATE operators are processed
+	 * in a later walk. This is a problem when there is a control method that
+	 * has the same name as the AML_CREATE object. In this case, any use of the
+	 * name segment will be detected as a method call rather than a reference
+	 * to a buffer field.
+	 *
+	 * This earlier creation during disassembly solves this issue by inserting
+	 * the named object in the ACPI namespace so that references to this name
+	 * would be a name string rather than a method call.
+	 */
+	if ((walk_state->parse_flags & ACPI_PARSE_DISASSEMBLE) &&
+	    (walk_state->op_info->flags & AML_CREATE)) {
+		status = acpi_ds_create_buffer_field(op, walk_state);
+		return_ACPI_STATUS(status);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* We are only interested in opcodes that have an associated name */
 
 	if (!(walk_state->op_info->flags & (AML_NAMED | AML_FIELD))) {
@@ -450,6 +550,7 @@ acpi_status acpi_ds_load1_end_op(struct acpi_walk_state *walk_state)
 			status =
 			    acpi_ex_create_region(op->named.data,
 						  op->named.length,
+<<<<<<< HEAD
 						  (acpi_adr_space_type) ((op->
 									  common.
 									  value.
@@ -457,6 +558,11 @@ acpi_status acpi_ds_load1_end_op(struct acpi_walk_state *walk_state)
 									 common.
 									 value.
 									 integer),
+=======
+						  (acpi_adr_space_type)
+						  ((op->common.value.arg)->
+						   common.value.integer),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						  walk_state);
 			if (ACPI_FAILURE(status)) {
 				return_ACPI_STATUS(status);

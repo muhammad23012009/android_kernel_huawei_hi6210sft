@@ -6,7 +6,10 @@
  * version 2 as published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/signal.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -278,12 +281,29 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
 		return 1;
 }
 
+<<<<<<< HEAD
 static inline void set_ethernet_addr(rtl8150_t * dev)
 {
 	u8 node_id[6];
 
 	get_registers(dev, IDR, sizeof(node_id), node_id);
 	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
+=======
+static void set_ethernet_addr(rtl8150_t *dev)
+{
+	u8 node_id[ETH_ALEN];
+	int ret;
+
+	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
+
+	if (ret == sizeof(node_id)) {
+		ether_addr_copy(dev->netdev->dev_addr, node_id);
+	} else {
+		eth_hw_addr_random(dev->netdev);
+		netdev_notice(dev->netdev, "Assigned a random MAC address: %pM\n",
+			      dev->netdev->dev_addr);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int rtl8150_set_mac_address(struct net_device *netdev, void *p)
@@ -472,7 +492,11 @@ static void write_bulk_callback(struct urb *urb)
 	if (status)
 		dev_info(&urb->dev->dev, "%s: Tx status %d\n",
 			 dev->netdev->name, status);
+<<<<<<< HEAD
 	dev->netdev->trans_start = jiffies;
+=======
+	netif_trans_update(dev->netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_wake_queue(dev->netdev);
 }
 
@@ -682,7 +706,11 @@ static void rtl8150_set_multicast(struct net_device *netdev)
 		   (netdev->flags & IFF_ALLMULTI)) {
 		rx_creg &= 0xfffe;
 		rx_creg |= 0x0002;
+<<<<<<< HEAD
 		dev_info(&netdev->dev, "%s: allmulti set\n", netdev->name);
+=======
+		dev_dbg(&netdev->dev, "%s: allmulti set\n", netdev->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/* ~RX_MULTICAST, ~RX_PROMISCUOUS */
 		rx_creg &= 0x00fc;
@@ -715,7 +743,11 @@ static netdev_tx_t rtl8150_start_xmit(struct sk_buff *skb,
 	} else {
 		netdev->stats.tx_packets++;
 		netdev->stats.tx_bytes += skb->len;
+<<<<<<< HEAD
 		netdev->trans_start = jiffies;
+=======
+		netif_trans_update(netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return NETDEV_TX_OK;
@@ -774,14 +806,21 @@ static int rtl8150_open(struct net_device *netdev)
 static int rtl8150_close(struct net_device *netdev)
 {
 	rtl8150_t *dev = netdev_priv(netdev);
+<<<<<<< HEAD
 	int res = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	netif_stop_queue(netdev);
 	if (!test_bit(RTL8150_UNPLUG, &dev->flags))
 		disable_net_traffic(dev);
 	unlink_all_urbs(dev);
 
+<<<<<<< HEAD
 	return res;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void rtl8150_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info)
@@ -899,7 +938,11 @@ static int rtl8150_probe(struct usb_interface *intf,
 	dev->netdev = netdev;
 	netdev->netdev_ops = &rtl8150_netdev_ops;
 	netdev->watchdog_timeo = RTL8150_TX_TIMEOUT;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &ops);
+=======
+	netdev->ethtool_ops = &ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->intr_interval = 100;	/* 100ms */
 
 	if (!alloc_all_urbs(dev)) {

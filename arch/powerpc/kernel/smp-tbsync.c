@@ -9,7 +9,10 @@
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/unistd.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/atomic.h>
 #include <asm/smp.h>

@@ -19,7 +19,11 @@
 #include <net/ip.h>
 #include <net/pkt_cls.h>
 
+<<<<<<< HEAD
 static int em_ipset_change(struct tcf_proto *tp, void *data, int data_len,
+=======
+static int em_ipset_change(struct net *net, void *data, int data_len,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct tcf_ematch *em)
 {
 	struct xt_set_info *set = data;
@@ -28,7 +32,11 @@ static int em_ipset_change(struct tcf_proto *tp, void *data, int data_len,
 	if (data_len != sizeof(*set))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	index = ip_set_nfnl_get_byindex(set->index);
+=======
+	index = ip_set_nfnl_get_byindex(net, set->index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (index == IPSET_INVALID_ID)
 		return -ENOENT;
 
@@ -37,6 +45,7 @@ static int em_ipset_change(struct tcf_proto *tp, void *data, int data_len,
 	if (em->data)
 		return 0;
 
+<<<<<<< HEAD
 	ip_set_nfnl_put(index);
 	return -ENOMEM;
 }
@@ -46,6 +55,17 @@ static void em_ipset_destroy(struct tcf_proto *p, struct tcf_ematch *em)
 	const struct xt_set_info *set = (const void *) em->data;
 	if (set) {
 		ip_set_nfnl_put(set->index);
+=======
+	ip_set_nfnl_put(net, index);
+	return -ENOMEM;
+}
+
+static void em_ipset_destroy(struct tcf_ematch *em)
+{
+	const struct xt_set_info *set = (const void *) em->data;
+	if (set) {
+		ip_set_nfnl_put(em->net, set->index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree((void *) em->data);
 	}
 }
@@ -59,7 +79,11 @@ static int em_ipset_match(struct sk_buff *skb, struct tcf_ematch *em,
 	struct net_device *dev, *indev = NULL;
 	int ret, network_offset;
 
+<<<<<<< HEAD
 	switch (skb->protocol) {
+=======
+	switch (tc_skb_protocol(skb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case htons(ETH_P_IP):
 		acpar.family = NFPROTO_IPV4;
 		if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
@@ -92,9 +116,16 @@ static int em_ipset_match(struct sk_buff *skb, struct tcf_ematch *em,
 
 	rcu_read_lock();
 
+<<<<<<< HEAD
 	if (dev && skb->skb_iif)
 		indev = dev_get_by_index_rcu(dev_net(dev), skb->skb_iif);
 
+=======
+	if (skb->skb_iif)
+		indev = dev_get_by_index_rcu(em->net, skb->skb_iif);
+
+	acpar.net     = em->net;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpar.in      = indev ? indev : dev;
 	acpar.out     = dev;
 

@@ -34,7 +34,11 @@ void *kmap_atomic_prot(struct page *page, pgprot_t prot)
 	unsigned long vaddr;
 	int idx, type;
 
+<<<<<<< HEAD
 	/* even !CONFIG_PREEMPT needs this, for in_atomic in do_page_fault */
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 	if (!PageHighMem(page))
 		return page_address(page);
@@ -59,6 +63,10 @@ void __kunmap_atomic(void *kvaddr)
 
 	if (vaddr < __fix_to_virt(FIX_KMAP_END)) {
 		pagefault_enable();
+<<<<<<< HEAD
+=======
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -82,5 +90,9 @@ void __kunmap_atomic(void *kvaddr)
 
 	kmap_atomic_idx_pop();
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__kunmap_atomic);

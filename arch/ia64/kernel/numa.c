@@ -30,7 +30,11 @@ EXPORT_SYMBOL(cpu_to_node_map);
 cpumask_t node_to_cpu_mask[MAX_NUMNODES] __cacheline_aligned;
 EXPORT_SYMBOL(node_to_cpu_mask);
 
+<<<<<<< HEAD
 void __cpuinit map_cpu_to_node(int cpu, int nid)
+=======
+void map_cpu_to_node(int cpu, int nid)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int oldnid;
 	if (nid < 0) { /* just initialize by zero */
@@ -39,7 +43,11 @@ void __cpuinit map_cpu_to_node(int cpu, int nid)
 	}
 	/* sanity check first */
 	oldnid = cpu_to_node_map[cpu];
+<<<<<<< HEAD
 	if (cpu_isset(cpu, node_to_cpu_mask[oldnid])) {
+=======
+	if (cpumask_test_cpu(cpu, &node_to_cpu_mask[oldnid])) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return; /* nothing to do */
 	}
 	/* we don't have cpu-driven node hot add yet...
@@ -47,6 +55,7 @@ void __cpuinit map_cpu_to_node(int cpu, int nid)
 	if (!node_online(nid))
 		nid = first_online_node;
 	cpu_to_node_map[cpu] = nid;
+<<<<<<< HEAD
 	cpu_set(cpu, node_to_cpu_mask[nid]);
 	return;
 }
@@ -57,6 +66,18 @@ void __cpuinit unmap_cpu_from_node(int cpu, int nid)
 	WARN_ON(cpu_to_node_map[cpu] != nid);
 	cpu_to_node_map[cpu] = 0;
 	cpu_clear(cpu, node_to_cpu_mask[nid]);
+=======
+	cpumask_set_cpu(cpu, &node_to_cpu_mask[nid]);
+	return;
+}
+
+void unmap_cpu_from_node(int cpu, int nid)
+{
+	WARN_ON(!cpumask_test_cpu(cpu, &node_to_cpu_mask[nid]));
+	WARN_ON(cpu_to_node_map[cpu] != nid);
+	cpu_to_node_map[cpu] = 0;
+	cpumask_clear_cpu(cpu, &node_to_cpu_mask[nid]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -71,7 +92,11 @@ void __init build_cpu_to_node_map(void)
 	int cpu, i, node;
 
 	for(node=0; node < MAX_NUMNODES; node++)
+<<<<<<< HEAD
 		cpus_clear(node_to_cpu_mask[node]);
+=======
+		cpumask_clear(&node_to_cpu_mask[node]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for_each_possible_early_cpu(cpu) {
 		node = -1;

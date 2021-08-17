@@ -27,10 +27,18 @@ extern void udbg_printf(const char *fmt, ...)
 	__attribute__ ((format (printf, 1, 2)));
 extern void udbg_progress(char *s, unsigned short hex);
 
+<<<<<<< HEAD
 extern void udbg_init_uart(void __iomem *comport, unsigned int speed,
 			   unsigned int clock);
 extern unsigned int udbg_probe_uart_speed(void __iomem *comport,
 					  unsigned int clock);
+=======
+extern void udbg_uart_init_mmio(void __iomem *addr, unsigned int stride);
+extern void udbg_uart_init_pio(unsigned long port, unsigned int stride);
+
+extern void udbg_uart_setup(unsigned int speed, unsigned int clock);
+extern unsigned int udbg_probe_uart_speed(unsigned int clock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct device_node;
 extern void udbg_scc_init(int force_scc);
@@ -51,7 +59,10 @@ extern void __init udbg_init_44x_as1(void);
 extern void __init udbg_init_40x_realmode(void);
 extern void __init udbg_init_cpm(void);
 extern void __init udbg_init_usbgecko(void);
+<<<<<<< HEAD
 extern void __init udbg_init_wsp(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void __init udbg_init_memcons(void);
 extern void __init udbg_init_ehv_bc(void);
 extern void __init udbg_init_ps3gelic(void);

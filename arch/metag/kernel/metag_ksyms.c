@@ -1,5 +1,11 @@
 #include <linux/export.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/types.h>
+
+#include <asm/checksum.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/div64.h>
 #include <asm/ftrace.h>
 #include <asm/page.h>
@@ -15,6 +21,12 @@ EXPORT_SYMBOL(max_pfn);
 EXPORT_SYMBOL(min_low_pfn);
 #endif
 
+<<<<<<< HEAD
+=======
+/* Network checksum functions */
+EXPORT_SYMBOL(csum_partial);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* TBI symbols */
 EXPORT_SYMBOL(__TBI);
 EXPORT_SYMBOL(__TBIFindSeg);

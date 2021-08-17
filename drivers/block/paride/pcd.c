@@ -69,8 +69,13 @@
             nice        This parameter controls the driver's use of
                         idle CPU time, at the expense of some speed.
  
+<<<<<<< HEAD
 	If this driver is built into the kernel, you can use kernel
         the following command line parameters, with the same values
+=======
+	If this driver is built into the kernel, you can use the
+        following kernel command line parameters, with the same values
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         as the corresponding module parameters listed above:
 
 	    pcd.drive0
@@ -221,6 +226,10 @@ static int pcd_busy;		/* request being processed ? */
 static int pcd_sector;		/* address of next requested sector */
 static int pcd_count;		/* number of blocks still to do */
 static char *pcd_buf;		/* buffer for request in progress */
+<<<<<<< HEAD
+=======
+static void *par_drv;		/* reference of parport driver */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* kernel glue structures */
 
@@ -229,6 +238,11 @@ static int pcd_block_open(struct block_device *bdev, fmode_t mode)
 	struct pcd_unit *cd = bdev->bd_disk->private_data;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	check_disk_change(bdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&pcd_mutex);
 	ret = cdrom_open(&cd->info, bdev, mode);
 	mutex_unlock(&pcd_mutex);
@@ -690,6 +704,15 @@ static int pcd_detect(void)
 	printk("%s: %s version %s, major %d, nice %d\n",
 	       name, name, PCD_VERSION, major, nice);
 
+<<<<<<< HEAD
+=======
+	par_drv = pi_register_driver(name);
+	if (!par_drv) {
+		pr_err("failed to register %s driver\n", name);
+		return -1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	k = 0;
 	if (pcd_drive_count == 0) { /* nothing spec'd - so autoprobe for 1 */
 		cd = pcd;
@@ -723,6 +746,10 @@ static int pcd_detect(void)
 	printk("%s: No CD-ROM drive found\n", name);
 	for (unit = 0, cd = pcd; unit < PCD_UNITS; unit++, cd++)
 		put_disk(cd->disk);
+<<<<<<< HEAD
+=======
+	pi_unregister_driver(par_drv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -1;
 }
 
@@ -747,7 +774,11 @@ static void do_pcd_request(struct request_queue * q)
 			pcd_current = cd;
 			pcd_sector = blk_rq_pos(pcd_req);
 			pcd_count = blk_rq_cur_sectors(pcd_req);
+<<<<<<< HEAD
 			pcd_buf = pcd_req->buffer;
+=======
+			pcd_buf = bio_data(pcd_req->bio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pcd_busy = 1;
 			ps_set_intr(do_pcd_read, NULL, 0, nice);
 			return;
@@ -984,6 +1015,10 @@ static void __exit pcd_exit(void)
 	}
 	blk_cleanup_queue(pcd_queue);
 	unregister_blkdev(major, name);
+<<<<<<< HEAD
+=======
+	pi_unregister_driver(par_drv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MODULE_LICENSE("GPL");

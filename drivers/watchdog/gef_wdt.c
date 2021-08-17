@@ -34,6 +34,10 @@
 #include <linux/watchdog.h>
 #include <linux/fs.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/io.h>
 #include <linux/uaccess.h>
@@ -302,11 +306,18 @@ static const struct of_device_id gef_wdt_ids[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, gef_wdt_ids);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver gef_wdt_driver = {
 	.driver = {
 		.name = "gef_wdt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = gef_wdt_ids,
 	},
 	.probe		= gef_wdt_probe,
@@ -330,5 +341,8 @@ module_exit(gef_wdt_exit);
 MODULE_AUTHOR("Martyn Welch <martyn.welch@ge.com>");
 MODULE_DESCRIPTION("GE watchdog driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS("platform:gef_wdt");

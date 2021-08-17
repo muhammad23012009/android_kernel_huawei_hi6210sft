@@ -68,10 +68,16 @@ EXPORT_SYMBOL(touch_nmi_watchdog);
 
 static void die_nmi(const char *str, struct pt_regs *regs, int do_panic)
 {
+<<<<<<< HEAD
+=======
+	int this_cpu = smp_processor_id();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (notify_die(DIE_NMIWATCHDOG, str, regs, 0,
 		       pt_regs_trap_type(regs), SIGINT) == NOTIFY_STOP)
 		return;
 
+<<<<<<< HEAD
 	console_verbose();
 	bust_spinlocks(1);
 
@@ -89,6 +95,12 @@ static void die_nmi(const char *str, struct pt_regs *regs, int do_panic)
 	nmi_exit();
 	local_irq_enable();
 	do_exit(SIGBUS);
+=======
+	if (do_panic || panic_on_oops)
+		panic("Watchdog detected hard LOCKUP on cpu %d", this_cpu);
+	else
+		WARN(1, "Watchdog detected hard LOCKUP on cpu %d", this_cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 notrace __kprobes void perfctr_irq(int irq, struct pt_regs *regs)
@@ -111,20 +123,35 @@ notrace __kprobes void perfctr_irq(int irq, struct pt_regs *regs)
 		pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);
 
 	sum = local_cpu_data().irq0_irqs;
+<<<<<<< HEAD
 	if (__get_cpu_var(nmi_touch)) {
 		__get_cpu_var(nmi_touch) = 0;
 		touched = 1;
 	}
 	if (!touched && __get_cpu_var(last_irq_sum) == sum) {
+=======
+	if (__this_cpu_read(nmi_touch)) {
+		__this_cpu_write(nmi_touch, 0);
+		touched = 1;
+	}
+	if (!touched && __this_cpu_read(last_irq_sum) == sum) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__this_cpu_inc(alert_counter);
 		if (__this_cpu_read(alert_counter) == 30 * nmi_hz)
 			die_nmi("BUG: NMI Watchdog detected LOCKUP",
 				regs, panic_on_timeout);
 	} else {
+<<<<<<< HEAD
 		__get_cpu_var(last_irq_sum) = sum;
 		__this_cpu_write(alert_counter, 0);
 	}
 	if (__get_cpu_var(wd_enabled)) {
+=======
+		__this_cpu_write(last_irq_sum, sum);
+		__this_cpu_write(alert_counter, 0);
+	}
+	if (__this_cpu_read(wd_enabled)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pcr_ops->write_pic(0, pcr_ops->nmi_picl_value(nmi_hz));
 		pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_enable);
 	}
@@ -141,7 +168,10 @@ static inline unsigned int get_nmi_count(int cpu)
 
 static __init void nmi_cpu_busy(void *data)
 {
+<<<<<<< HEAD
 	local_irq_enable_in_hardirq();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (endflag == 0)
 		mb();
 }
@@ -166,7 +196,11 @@ static void report_broken_nmi(int cpu, int *prev_nmi_count)
 void stop_nmi_watchdog(void *unused)
 {
 	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);
+<<<<<<< HEAD
 	__get_cpu_var(wd_enabled) = 0;
+=======
+	__this_cpu_write(wd_enabled, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_dec(&nmi_active);
 }
 
@@ -219,7 +253,11 @@ error:
 
 void start_nmi_watchdog(void *unused)
 {
+<<<<<<< HEAD
 	__get_cpu_var(wd_enabled) = 1;
+=======
+	__this_cpu_write(wd_enabled, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_inc(&nmi_active);
 
 	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);
@@ -230,7 +268,11 @@ void start_nmi_watchdog(void *unused)
 
 static void nmi_adjust_hz_one(void *unused)
 {
+<<<<<<< HEAD
 	if (!__get_cpu_var(wd_enabled))
+=======
+	if (!__this_cpu_read(wd_enabled))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);

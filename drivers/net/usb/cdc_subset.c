@@ -13,13 +13,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
 #include <linux/kmod.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -87,14 +94,38 @@ static int always_connected (struct usbnet *dev)
  *
  *-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static const struct driver_info	ali_m5632_info = {
 	.description =	"ALi M5632",
 	.flags       = FLAG_POINTTOPOINT,
+=======
+static void m5632_recover(struct usbnet *dev)
+{
+	struct usb_device	*udev = dev->udev;
+	struct usb_interface	*intf = dev->intf;
+	int r;
+
+	r = usb_lock_device_for_reset(udev, intf);
+	if (r < 0)
+		return;
+
+	usb_reset_device(udev);
+	usb_unlock_device(udev);
+}
+
+static const struct driver_info	ali_m5632_info = {
+	.description =	"ALi M5632",
+	.flags       = FLAG_POINTTOPOINT,
+	.recover     = m5632_recover,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef	CONFIG_USB_AN2720
 #define	HAVE_HARDWARE
 
@@ -328,12 +359,29 @@ static const struct usb_device_id	products [] = {
 MODULE_DEVICE_TABLE(usb, products);
 
 /*-------------------------------------------------------------------------*/
+<<<<<<< HEAD
+=======
+static int dummy_prereset(struct usb_interface *intf)
+{
+        return 0;
+}
+
+static int dummy_postreset(struct usb_interface *intf)
+{
+        return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct usb_driver cdc_subset_driver = {
 	.name =		"cdc_subset",
 	.probe =	usbnet_probe,
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
+<<<<<<< HEAD
+=======
+	.pre_reset =	dummy_prereset,
+	.post_reset =	dummy_postreset,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.disconnect =	usbnet_disconnect,
 	.id_table =	products,
 	.disable_hub_initiated_lpm = 1,

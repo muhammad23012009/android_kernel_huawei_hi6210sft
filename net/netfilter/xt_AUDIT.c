@@ -146,11 +146,19 @@ audit_tg(struct sk_buff *skb, const struct xt_action_param *par)
 
 		if (par->family == NFPROTO_BRIDGE) {
 			switch (eth_hdr(skb)->h_proto) {
+<<<<<<< HEAD
 			case __constant_htons(ETH_P_IP):
 				audit_ip4(ab, skb);
 				break;
 
 			case __constant_htons(ETH_P_IPV6):
+=======
+			case htons(ETH_P_IP):
+				audit_ip4(ab, skb);
+				break;
+
+			case htons(ETH_P_IPV6):
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				audit_ip6(ab, skb);
 				break;
 			}

@@ -6,6 +6,7 @@
  * Copyright (c) 2006 Trond Myklebust <Trond.Myklebust@netapp.com>
  */
 #include <linux/sysctl.h>
+<<<<<<< HEAD
 #include <linux/nfs_idmap.h>
 #include <linux/nfs_fs.h>
 
@@ -17,6 +18,19 @@ static const int nfs_set_port_max = 65535;
 static struct ctl_table_header *nfs4_callback_sysctl_table;
 
 static ctl_table nfs4_cb_sysctls[] = {
+=======
+#include <linux/nfs_fs.h>
+
+#include "nfs4_fs.h"
+#include "nfs4idmap.h"
+#include "callback.h"
+
+static const int nfs_set_port_min;
+static const int nfs_set_port_max = 65535;
+static struct ctl_table_header *nfs4_callback_sysctl_table;
+
+static struct ctl_table nfs4_cb_sysctls[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname = "nfs_callback_tcpport",
 		.data = &nfs_callback_set_tcpport,
@@ -31,12 +45,20 @@ static ctl_table nfs4_cb_sysctls[] = {
 		.data = &nfs_idmap_cache_timeout,
 		.maxlen = sizeof(int),
 		.mode = 0644,
+<<<<<<< HEAD
 		.proc_handler = proc_dointvec_jiffies,
+=======
+		.proc_handler = proc_dointvec,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table nfs4_cb_sysctl_dir[] = {
+=======
+static struct ctl_table nfs4_cb_sysctl_dir[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname = "nfs",
 		.mode = 0555,
@@ -45,7 +67,11 @@ static ctl_table nfs4_cb_sysctl_dir[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table nfs4_cb_sysctl_root[] = {
+=======
+static struct ctl_table nfs4_cb_sysctl_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname = "fs",
 		.mode = 0555,

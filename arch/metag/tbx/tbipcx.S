@@ -15,7 +15,11 @@
 #include <asm/tbx.h>
 
 /* BEGIN HACK */
+<<<<<<< HEAD
 /* define these for now while doing inital conversion to GAS 
+=======
+/* define these for now while doing initial conversion to GAS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
    will fix properly later */
 
 /* Signal identifiers always have the TBID_SIGNAL_BIT set and contain the

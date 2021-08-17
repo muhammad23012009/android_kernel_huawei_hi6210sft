@@ -1,6 +1,7 @@
 #ifndef _SCHED_RT_H
 #define _SCHED_RT_H
 
+<<<<<<< HEAD
 /*
  * Priority of a process goes from 0..MAX_PRIO-1, valid RT
  * priority is 0..MAX_RT_PRIO-1, and SCHED_NORMAL/SCHED_BATCH
@@ -19,6 +20,9 @@
 
 #define MAX_PRIO		(MAX_RT_PRIO + 40)
 #define DEFAULT_PRIO		(MAX_RT_PRIO + 20)
+=======
+#include <linux/sched/prio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int rt_prio(int prio)
 {
@@ -35,6 +39,11 @@ static inline int rt_task(struct task_struct *p)
 #ifdef CONFIG_RT_MUTEXES
 extern int rt_mutex_getprio(struct task_struct *p);
 extern void rt_mutex_setprio(struct task_struct *p, int prio);
+<<<<<<< HEAD
+=======
+extern int rt_mutex_get_effective_prio(struct task_struct *task, int newprio);
+extern struct task_struct *rt_mutex_get_top_task(struct task_struct *task);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void rt_mutex_adjust_pi(struct task_struct *p);
 static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
 {
@@ -45,6 +54,20 @@ static inline int rt_mutex_getprio(struct task_struct *p)
 {
 	return p->normal_prio;
 }
+<<<<<<< HEAD
+=======
+
+static inline int rt_mutex_get_effective_prio(struct task_struct *task,
+					      int newprio)
+{
+	return newprio;
+}
+
+static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
+{
+	return NULL;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define rt_mutex_adjust_pi(p)		do { } while (0)
 static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
 {

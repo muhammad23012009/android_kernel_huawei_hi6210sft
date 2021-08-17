@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * File: channel.h
  *
@@ -32,6 +35,7 @@
 
 #include "device.h"
 
+<<<<<<< HEAD
 typedef struct tagSChannelTblElement {
     u8    byChannelNumber;
     unsigned int    uFrequency;
@@ -40,5 +44,8 @@ typedef struct tagSChannelTblElement {
 
 bool    ChannelValid(unsigned int CountryCode, unsigned int ChannelNum);
 void    CHvInitChannelTable(struct vnt_private *pDevice);
+=======
+void vnt_init_bands(struct vnt_private *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif  /* _CHANNEL_H_ */

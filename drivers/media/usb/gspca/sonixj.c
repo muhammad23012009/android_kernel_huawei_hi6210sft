@@ -54,7 +54,10 @@ struct sd {
 	u32 exposure;
 
 	struct work_struct work;
+<<<<<<< HEAD
 	struct workqueue_struct *work_thread;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u32 pktsz;			/* (used by pkt_scan) */
 	u16 npkt;
@@ -1175,6 +1178,14 @@ static void reg_r(struct gspca_dev *gspca_dev,
 	if (ret < 0) {
 		pr_err("reg_r err %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(gspca_dev->usb_buf, 0, USB_BUF_SZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1789,7 +1800,11 @@ static u32 expo_adjust(struct gspca_dev *gspca_dev,
 
 		if (expo > 0x03ff)
 			expo = 0x03ff;
+<<<<<<< HEAD
 		 if (expo < 0x0001)
+=======
+		if (expo < 0x0001)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			expo = 0x0001;
 		gainOm[3] = expo >> 2;
 		i2c_w8(gspca_dev, gainOm);
@@ -2204,7 +2219,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 				{ 0x14, 0xe7, 0x1e, 0xdd };
 
 	/* create the JPEG header */
+<<<<<<< HEAD
 	jpeg_define(sd->jpeg_hdr, gspca_dev->height, gspca_dev->width,
+=======
+	jpeg_define(sd->jpeg_hdr, gspca_dev->pixfmt.height,
+			gspca_dev->pixfmt.width,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			0x21);		/* JPEG 422 */
 
 	/* initialize the bridge */
@@ -2484,7 +2504,10 @@ static int sd_start(struct gspca_dev *gspca_dev)
 
 	sd->pktsz = sd->npkt = 0;
 	sd->nchg = sd->short_mark = 0;
+<<<<<<< HEAD
 	sd->work_thread = create_singlethread_workqueue(MODULE_NAME);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return gspca_dev->usb_err;
 }
@@ -2568,12 +2591,18 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
 
+<<<<<<< HEAD
 	if (sd->work_thread != NULL) {
 		mutex_unlock(&gspca_dev->usb_lock);
 		destroy_workqueue(sd->work_thread);
 		mutex_lock(&gspca_dev->usb_lock);
 		sd->work_thread = NULL;
 	}
+=======
+	mutex_unlock(&gspca_dev->usb_lock);
+	flush_work(&sd->work);
+	mutex_lock(&gspca_dev->usb_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void do_autogain(struct gspca_dev *gspca_dev)
@@ -2784,7 +2813,11 @@ marker_found:
 				new_qual = QUALITY_MAX;
 			if (new_qual != sd->quality) {
 				sd->quality = new_qual;
+<<<<<<< HEAD
 				queue_work(sd->work_thread, &sd->work);
+=======
+				schedule_work(&sd->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	} else {

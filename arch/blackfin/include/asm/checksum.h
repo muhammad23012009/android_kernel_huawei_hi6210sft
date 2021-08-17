@@ -14,8 +14,13 @@
  */
 
 static inline __wsum
+<<<<<<< HEAD
 __csum_tcpudp_nofold(__be32 saddr, __be32 daddr, unsigned short len,
 		   unsigned short proto, __wsum sum)
+=======
+__csum_tcpudp_nofold(__be32 saddr, __be32 daddr, __u32 len,
+		     __u8 proto, __wsum sum)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int carry;
 

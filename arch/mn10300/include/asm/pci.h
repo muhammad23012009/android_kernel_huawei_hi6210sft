@@ -44,12 +44,18 @@ extern void unit_pci_init(void);
 #define pcibios_assign_all_busses()	0
 #endif
 
+<<<<<<< HEAD
 extern unsigned long pci_mem_start;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PCIBIOS_MIN_IO		0xBE000004
 #define PCIBIOS_MIN_MEM		0xB8000000
 
 void pcibios_set_master(struct pci_dev *dev);
+<<<<<<< HEAD
 void pcibios_penalize_isa_irq(int irq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Dynamic DMA mapping stuff.
  * i386 has everything mapped statically.
@@ -57,7 +63,11 @@ void pcibios_penalize_isa_irq(int irq);
 
 #include <linux/types.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/string.h>
 #include <asm/io.h>
 
@@ -82,6 +92,7 @@ extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 
 #endif /* __KERNEL__ */
 
+<<<<<<< HEAD
 /* implement the pci_ DMA API in terms of the generic device dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
@@ -98,6 +109,8 @@ pcibios_select_root(struct pci_dev *pdev, struct resource *res)
 	return root;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {
 	return channel ? 15 : 14;

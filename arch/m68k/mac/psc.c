@@ -21,15 +21,23 @@
 #include <linux/irq.h>
 
 #include <asm/traps.h>
+<<<<<<< HEAD
 #include <asm/bootinfo.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/macintosh.h>
 #include <asm/macints.h>
 #include <asm/mac_psc.h>
 
 #define DEBUG_PSC
 
+<<<<<<< HEAD
 int psc_present;
 volatile __u8 *psc;
+=======
+volatile __u8 *psc;
+EXPORT_SYMBOL_GPL(psc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Debugging dump, used in various places to see what's going on.
@@ -39,7 +47,13 @@ static void psc_debug_dump(void)
 {
 	int	i;
 
+<<<<<<< HEAD
 	if (!psc_present) return;
+=======
+	if (!psc)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0x30 ; i < 0x70 ; i += 0x10) {
 		printk("PSC #%d:  IFR = 0x%02X IER = 0x%02X\n",
 			i >> 4,
@@ -54,7 +68,11 @@ static void psc_debug_dump(void)
  * expanded to cover what I think are the other 7 channels.
  */
 
+<<<<<<< HEAD
 static void psc_dma_die_die_die(void)
+=======
+static __init void psc_dma_die_die_die(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 
@@ -81,7 +99,10 @@ void __init psc_init(void)
 	 && macintosh_config->ident != MAC_MODEL_Q840)
 	{
 		psc = NULL;
+<<<<<<< HEAD
 		psc_present = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -91,7 +112,10 @@ void __init psc_init(void)
 	 */
 
 	psc = (void *) PSC_BASE;
+<<<<<<< HEAD
 	psc_present = 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk("PSC detected at %p\n", psc);
 
@@ -114,9 +138,16 @@ void __init psc_init(void)
  * PSC interrupt handler. It's a lot like the VIA interrupt handler.
  */
 
+<<<<<<< HEAD
 static void psc_irq(unsigned int irq, struct irq_desc *desc)
 {
 	unsigned int offset = (unsigned int)irq_desc_get_handler_data(desc);
+=======
+static void psc_irq(struct irq_desc *desc)
+{
+	unsigned int offset = (unsigned int)irq_desc_get_handler_data(desc);
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int pIFR	= pIFRbase + offset;
 	int pIER	= pIERbase + offset;
 	int irq_num;
@@ -149,6 +180,7 @@ static void psc_irq(unsigned int irq, struct irq_desc *desc)
 
 void __init psc_register_interrupts(void)
 {
+<<<<<<< HEAD
 	irq_set_chained_handler(IRQ_AUTO_3, psc_irq);
 	irq_set_handler_data(IRQ_AUTO_3, (void *)0x30);
 	irq_set_chained_handler(IRQ_AUTO_4, psc_irq);
@@ -157,6 +189,12 @@ void __init psc_register_interrupts(void)
 	irq_set_handler_data(IRQ_AUTO_5, (void *)0x50);
 	irq_set_chained_handler(IRQ_AUTO_6, psc_irq);
 	irq_set_handler_data(IRQ_AUTO_6, (void *)0x60);
+=======
+	irq_set_chained_handler_and_data(IRQ_AUTO_3, psc_irq, (void *)0x30);
+	irq_set_chained_handler_and_data(IRQ_AUTO_4, psc_irq, (void *)0x40);
+	irq_set_chained_handler_and_data(IRQ_AUTO_5, psc_irq, (void *)0x50);
+	irq_set_chained_handler_and_data(IRQ_AUTO_6, psc_irq, (void *)0x60);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void psc_irq_enable(int irq) {

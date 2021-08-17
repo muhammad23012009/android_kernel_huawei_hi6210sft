@@ -19,13 +19,21 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/cpu.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/cpufreq.h>
 #include <linux/device.h>
 #include <linux/export.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/opp.h>
+=======
+#include <linux/of_device.h>
+#include <linux/pm_opp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -34,6 +42,7 @@
 /* get cpu node with valid operating-points */
 static struct device_node *get_cpu_node_with_valid_op(int cpu)
 {
+<<<<<<< HEAD
 	struct device_node *np = NULL, *parent;
 	int count = 0;
 
@@ -74,14 +83,34 @@ static int dt_init_opp_table(struct device *cpu_dev)
 	return ret;
 }
 
+=======
+	struct device_node *np = of_cpu_device_node_get(cpu);
+
+	if (!of_get_property(np, "operating-points", NULL)) {
+		of_node_put(np);
+		np = NULL;
+	}
+
+	return np;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int dt_get_transition_latency(struct device *cpu_dev)
 {
 	struct device_node *np;
 	u32 transition_latency = CPUFREQ_ETERNAL;
 
+<<<<<<< HEAD
 	np = get_cpu_node_with_valid_op(cpu_dev->id);
 	if (!np)
 		return CPUFREQ_ETERNAL;
+=======
+	np = of_node_get(cpu_dev->of_node);
+	if (!np) {
+		pr_info("Failed to find cpu node. Use CPUFREQ_ETERNAL transition latency\n");
+		return CPUFREQ_ETERNAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	of_property_read_u32(np, "clock-latency", &transition_latency);
 	of_node_put(np);
@@ -93,7 +122,12 @@ static int dt_get_transition_latency(struct device *cpu_dev)
 static struct cpufreq_arm_bL_ops dt_bL_ops = {
 	.name	= "dt-bl",
 	.get_transition_latency = dt_get_transition_latency,
+<<<<<<< HEAD
 	.init_opp_table = dt_init_opp_table,
+=======
+	.init_opp_table = dev_pm_opp_of_cpumask_add_table,
+	.free_opp_table = dev_pm_opp_of_cpumask_remove_table,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int generic_bL_probe(struct platform_device *pdev)
@@ -114,6 +148,7 @@ static int generic_bL_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 static const struct of_device_id generic_bL_cpufreq[] = {
 	{ .compatible = "arm,generic-bL-cpufreq" },
@@ -129,6 +164,11 @@ static struct platform_driver generic_bL_platdrv = {
 #ifdef CONFIG_OF
 		.of_match_table = of_match_ptr(generic_bL_cpufreq),
 #endif
+=======
+static struct platform_driver generic_bL_platdrv = {
+	.driver = {
+		.name	= "arm-bL-cpufreq-dt",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= generic_bL_probe,
 	.remove		= generic_bL_remove,
@@ -137,4 +177,8 @@ module_platform_driver(generic_bL_platdrv);
 
 MODULE_AUTHOR("Viresh Kumar <viresh.kumar@linaro.org>");
 MODULE_DESCRIPTION("Generic ARM big LITTLE cpufreq driver via DT");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

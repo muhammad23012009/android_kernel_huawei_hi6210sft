@@ -92,7 +92,10 @@ snd_seq_oss_create_client(void)
 		goto __error;
 
 	system_client = rc;
+<<<<<<< HEAD
 	debug_printk(("new client = %d\n", rc));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* create annoucement receiver port */
 	memset(port, 0, sizeof(*port));
@@ -189,11 +192,16 @@ snd_seq_oss_open(struct file *file, int level)
 	struct seq_oss_devinfo *dp;
 
 	dp = kzalloc(sizeof(*dp), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dp) {
 		snd_printk(KERN_ERR "can't malloc device info\n");
 		return -ENOMEM;
 	}
 	debug_printk(("oss_open: dp = %p\n", dp));
+=======
+	if (!dp)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dp->cseq = system_client;
 	dp->port = -1;
@@ -206,7 +214,11 @@ snd_seq_oss_open(struct file *file, int level)
 
 	dp->index = i;
 	if (i >= SNDRV_SEQ_OSS_MAX_CLIENTS) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "too many applications\n");
+=======
+		pr_debug("ALSA: seq_oss: too many applications\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -ENOMEM;
 		goto _error;
 	}
@@ -216,21 +228,34 @@ snd_seq_oss_open(struct file *file, int level)
 	snd_seq_oss_midi_setup(dp);
 
 	if (dp->synth_opened == 0 && dp->max_mididev == 0) {
+<<<<<<< HEAD
 		/* snd_printk(KERN_ERR "no device found\n"); */
+=======
+		/* pr_err("ALSA: seq_oss: no device found\n"); */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rc = -ENODEV;
 		goto _error;
 	}
 
 	/* create port */
+<<<<<<< HEAD
 	debug_printk(("create new port\n"));
 	rc = create_port(dp);
 	if (rc < 0) {
 		snd_printk(KERN_ERR "can't create port\n");
+=======
+	rc = create_port(dp);
+	if (rc < 0) {
+		pr_err("ALSA: seq_oss: can't create port\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto _error;
 	}
 
 	/* allocate queue */
+<<<<<<< HEAD
 	debug_printk(("allocate queue\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = alloc_seq_queue(dp);
 	if (rc < 0)
 		goto _error;
@@ -247,7 +272,10 @@ snd_seq_oss_open(struct file *file, int level)
 	dp->file_mode = translate_mode(file);
 
 	/* initialize read queue */
+<<<<<<< HEAD
 	debug_printk(("initialize read queue\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (is_read_mode(dp->file_mode)) {
 		dp->readq = snd_seq_oss_readq_new(dp, maxqlen);
 		if (!dp->readq) {
@@ -257,7 +285,10 @@ snd_seq_oss_open(struct file *file, int level)
 	}
 
 	/* initialize write queue */
+<<<<<<< HEAD
 	debug_printk(("initialize write queue\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (is_write_mode(dp->file_mode)) {
 		dp->writeq = snd_seq_oss_writeq_new(dp, maxqlen);
 		if (!dp->writeq) {
@@ -267,6 +298,7 @@ snd_seq_oss_open(struct file *file, int level)
 	}
 
 	/* initialize timer */
+<<<<<<< HEAD
 	debug_printk(("initialize timer\n"));
 	dp->timer = snd_seq_oss_timer_new(dp);
 	if (!dp->timer) {
@@ -275,6 +307,14 @@ snd_seq_oss_open(struct file *file, int level)
 		goto _error;
 	}
 	debug_printk(("timer initialized\n"));
+=======
+	dp->timer = snd_seq_oss_timer_new(dp);
+	if (!dp->timer) {
+		pr_err("ALSA: seq_oss: can't alloc timer\n");
+		rc = -ENOMEM;
+		goto _error;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set private data pointer */
 	file->private_data = dp;
@@ -288,7 +328,10 @@ snd_seq_oss_open(struct file *file, int level)
 	client_table[dp->index] = dp;
 	num_clients++;
 
+<<<<<<< HEAD
 	debug_printk(("open done\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
  _error:
@@ -347,7 +390,10 @@ create_port(struct seq_oss_devinfo *dp)
 		return rc;
 
 	dp->port = port.addr.port;
+<<<<<<< HEAD
 	debug_printk(("new port = %d\n", port.addr.port));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -363,7 +409,10 @@ delete_port(struct seq_oss_devinfo *dp)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	debug_printk(("delete_port %i\n", dp->port));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return snd_seq_event_port_detach(dp->cseq, dp->port);
 }
 
@@ -401,7 +450,11 @@ delete_seq_queue(int queue)
 	qinfo.queue = queue;
 	rc = call_ctl(SNDRV_SEQ_IOCTL_DELETE_QUEUE, &qinfo);
 	if (rc < 0)
+<<<<<<< HEAD
 		printk(KERN_ERR "seq-oss: unable to delete queue %d (%d)\n", queue, rc);
+=======
+		pr_err("ALSA: seq_oss: unable to delete queue %d (%d)\n", queue, rc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
@@ -414,6 +467,7 @@ free_devinfo(void *private)
 {
 	struct seq_oss_devinfo *dp = (struct seq_oss_devinfo *)private;
 
+<<<<<<< HEAD
 	if (dp->timer)
 		snd_seq_oss_timer_delete(dp->timer);
 		
@@ -422,6 +476,13 @@ free_devinfo(void *private)
 
 	if (dp->readq)
 		snd_seq_oss_readq_delete(dp->readq);
+=======
+	snd_seq_oss_timer_delete(dp->timer);
+		
+	snd_seq_oss_writeq_delete(dp->writeq);
+
+	snd_seq_oss_readq_delete(dp->readq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 	kfree(dp);
 }
@@ -438,21 +499,32 @@ snd_seq_oss_release(struct seq_oss_devinfo *dp)
 	client_table[dp->index] = NULL;
 	num_clients--;
 
+<<<<<<< HEAD
 	debug_printk(("resetting..\n"));
 	snd_seq_oss_reset(dp);
 
 	debug_printk(("cleaning up..\n"));
+=======
+	snd_seq_oss_reset(dp);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_seq_oss_synth_cleanup(dp);
 	snd_seq_oss_midi_cleanup(dp);
 
 	/* clear slot */
+<<<<<<< HEAD
 	debug_printk(("releasing resource..\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	queue = dp->queue;
 	if (dp->port >= 0)
 		delete_port(dp);
 	delete_seq_queue(queue);
+<<<<<<< HEAD
 
 	debug_printk(("release done\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -484,8 +556,12 @@ snd_seq_oss_reset(struct seq_oss_devinfo *dp)
 	snd_seq_oss_timer_stop(dp->timer);
 }
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * misc. functions for proc interface
  */
@@ -536,4 +612,8 @@ snd_seq_oss_system_info_read(struct snd_info_buffer *buf)
 			snd_seq_oss_readq_info_read(dp->readq, buf);
 	}
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

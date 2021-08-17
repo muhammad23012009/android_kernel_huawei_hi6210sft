@@ -21,7 +21,12 @@
 #define __RTL8712_CMDCTRL_BITDEF_H__
 
 /*
+<<<<<<< HEAD
  * 2. Command Control Registers	 (Offset: 0x0040 - 0x004F)*/
+=======
+ * 2. Command Control Registers	 (Offset: 0x0040 - 0x004F)
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*--------------------------------------------------------------------------*/
 /*       8192S (CMD) command register bits	(Offset 0x40, 16 bits)*/
 /*--------------------------------------------------------------------------*/

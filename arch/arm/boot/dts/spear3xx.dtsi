@@ -1,7 +1,11 @@
 /*
  * DTS file for all SPEAr3xx SoCs
  *
+<<<<<<< HEAD
  * Copyright 2012 Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Copyright 2012 Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The code contained herein is licensed under the GNU General Public
  * License. You may obtain a copy of the GNU General Public License
@@ -17,8 +21,17 @@
 	interrupt-parent = <&vic>;
 
 	cpus {
+<<<<<<< HEAD
 		cpu@0 {
 			compatible = "arm,arm926ejs";
+=======
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		cpu {
+			compatible = "arm,arm926ej-s";
+			device_type = "cpu";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 

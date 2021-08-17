@@ -112,7 +112,10 @@ struct unwind_frame_info {
 
 extern int arc_unwind(struct unwind_frame_info *frame);
 extern void arc_unwind_init(void);
+<<<<<<< HEAD
 extern void arc_unwind_setup(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void *unwind_add_table(struct module *module, const void *table_start,
 			      unsigned long table_size);
 extern void unwind_remove_table(void *handle, int init_only);
@@ -152,9 +155,12 @@ static inline void arc_unwind_init(void)
 {
 }
 
+<<<<<<< HEAD
 static inline void arc_unwind_setup(void)
 {
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define unwind_add_table(a, b, c)
 #define unwind_remove_table(a, b)
 

@@ -42,7 +42,10 @@
 #include <linux/videodev2.h>
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "ks0127.h"
 
 MODULE_DESCRIPTION("KS0127 video decoder driver");
@@ -200,7 +203,10 @@ struct adjust {
 struct ks0127 {
 	struct v4l2_subdev sd;
 	v4l2_std_id	norm;
+<<<<<<< HEAD
 	int		ident;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 		regs[256];
 };
 
@@ -371,12 +377,18 @@ static void ks0127_and_or(struct v4l2_subdev *sd, u8 reg, u8 and_v, u8 or_v)
 ****************************************************************************/
 static void ks0127_init(struct v4l2_subdev *sd)
 {
+<<<<<<< HEAD
 	struct ks0127 *ks = to_ks0127(sd);
 	u8 *table = reg_defaults;
 	int i;
 
 	ks->ident = V4L2_IDENT_KS0127;
 
+=======
+	u8 *table = reg_defaults;
+	int i;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_dbg(1, debug, sd, "reset\n");
 	msleep(1);
 
@@ -397,7 +409,10 @@ static void ks0127_init(struct v4l2_subdev *sd)
 
 
 	if ((ks0127_read(sd, KS_STAT) & 0x80) == 0) {
+<<<<<<< HEAD
 		ks->ident = V4L2_IDENT_KS0122S;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		v4l2_dbg(1, debug, sd, "ks0122s found\n");
 		return;
 	}
@@ -408,7 +423,10 @@ static void ks0127_init(struct v4l2_subdev *sd)
 		break;
 
 	case 9:
+<<<<<<< HEAD
 		ks->ident = V4L2_IDENT_KS0127B;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		v4l2_dbg(1, debug, sd, "ks0127B Revision A found\n");
 		break;
 
@@ -616,17 +634,37 @@ static int ks0127_status(struct v4l2_subdev *sd, u32 *pstatus, v4l2_std_id *pstd
 {
 	int stat = V4L2_IN_ST_NO_SIGNAL;
 	u8 status;
+<<<<<<< HEAD
 	v4l2_std_id std = V4L2_STD_ALL;
+=======
+	v4l2_std_id std = pstd ? *pstd : V4L2_STD_ALL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	status = ks0127_read(sd, KS_STAT);
 	if (!(status & 0x20))		 /* NOVID not set */
 		stat = 0;
+<<<<<<< HEAD
 	if (!(status & 0x01))		      /* CLOCK set */
 		stat |= V4L2_IN_ST_NO_COLOR;
 	if ((status & 0x08))		   /* PALDET set */
 		std = V4L2_STD_PAL;
 	else
 		std = V4L2_STD_NTSC;
+=======
+	if (!(status & 0x01)) {		      /* CLOCK set */
+		stat |= V4L2_IN_ST_NO_COLOR;
+		std = V4L2_STD_UNKNOWN;
+	} else {
+		if ((status & 0x08))		   /* PALDET set */
+			std &= V4L2_STD_PAL;
+		else
+			std &= V4L2_STD_NTSC;
+	}
+	if ((status & 0x10))		   /* PALDET set */
+		std &= V4L2_STD_525_60;
+	else
+		std &= V4L2_STD_625_50;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pstd)
 		*pstd = std;
 	if (pstatus)
@@ -646,6 +684,7 @@ static int ks0127_g_input_status(struct v4l2_subdev *sd, u32 *status)
 	return ks0127_status(sd, status, NULL);
 }
 
+<<<<<<< HEAD
 static int ks0127_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -662,6 +701,12 @@ static const struct v4l2_subdev_core_ops ks0127_core_ops = {
 };
 
 static const struct v4l2_subdev_video_ops ks0127_video_ops = {
+=======
+/* ----------------------------------------------------------------------- */
+
+static const struct v4l2_subdev_video_ops ks0127_video_ops = {
+	.s_std = ks0127_s_std,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.s_routing = ks0127_s_routing,
 	.s_stream = ks0127_s_stream,
 	.querystd = ks0127_querystd,
@@ -669,7 +714,10 @@ static const struct v4l2_subdev_video_ops ks0127_video_ops = {
 };
 
 static const struct v4l2_subdev_ops ks0127_ops = {
+<<<<<<< HEAD
 	.core = &ks0127_core_ops,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.video = &ks0127_video_ops,
 };
 
@@ -685,7 +733,11 @@ static int ks0127_probe(struct i2c_client *client, const struct i2c_device_id *i
 		client->addr == (I2C_KS0127_ADDON >> 1) ? "addon" : "on-board",
 		client->addr << 1, client->adapter->name);
 
+<<<<<<< HEAD
 	ks = kzalloc(sizeof(*ks), GFP_KERNEL);
+=======
+	ks = devm_kzalloc(&client->dev, sizeof(*ks), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ks == NULL)
 		return -ENOMEM;
 	sd = &ks->sd;
@@ -708,7 +760,10 @@ static int ks0127_remove(struct i2c_client *client)
 	v4l2_device_unregister_subdev(sd);
 	ks0127_write(sd, KS_OFMTA, 0x20); /* tristate */
 	ks0127_write(sd, KS_CMDA, 0x2c | 0x80); /* power down */
+<<<<<<< HEAD
 	kfree(to_ks0127(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -722,7 +777,10 @@ MODULE_DEVICE_TABLE(i2c, ks0127_id);
 
 static struct i2c_driver ks0127_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "ks0127",
 	},
 	.probe		= ks0127_probe,

@@ -16,13 +16,26 @@
 #ifndef __CLKSOURCE_ARM_ARCH_TIMER_H
 #define __CLKSOURCE_ARM_ARCH_TIMER_H
 
+<<<<<<< HEAD
 #include <linux/clocksource.h>
+=======
+#include <linux/timecounter.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 
 #define ARCH_TIMER_CTRL_ENABLE		(1 << 0)
 #define ARCH_TIMER_CTRL_IT_MASK		(1 << 1)
 #define ARCH_TIMER_CTRL_IT_STAT		(1 << 2)
 
+<<<<<<< HEAD
+=======
+#define CNTHCTL_EL1PCTEN		(1 << 0)
+#define CNTHCTL_EL1PCEN			(1 << 1)
+#define CNTHCTL_EVNTEN			(1 << 2)
+#define CNTHCTL_EVNTDIR			(1 << 3)
+#define CNTHCTL_EVNTI			(0xF << 4)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum arch_timer_reg {
 	ARCH_TIMER_REG_CTRL,
 	ARCH_TIMER_REG_TVAL,
@@ -43,11 +56,23 @@ enum arch_timer_reg {
 
 #define ARCH_TIMER_EVT_STREAM_FREQ	10000	/* 100us */
 
+<<<<<<< HEAD
+=======
+struct arch_timer_kvm_info {
+	struct timecounter timecounter;
+	int virtual_irq;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_ARM_ARCH_TIMER
 
 extern u32 arch_timer_get_rate(void);
 extern u64 (*arch_timer_read_counter)(void);
+<<<<<<< HEAD
 extern struct timecounter *arch_timer_get_timecounter(void);
+=======
+extern struct arch_timer_kvm_info *arch_timer_get_kvm_info(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 
@@ -61,11 +86,14 @@ static inline u64 arch_timer_read_counter(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline struct timecounter *arch_timer_get_timecounter(void)
 {
 	return NULL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif

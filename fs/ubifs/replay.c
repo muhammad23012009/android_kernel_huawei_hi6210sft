@@ -210,6 +210,41 @@ static int trun_remove_range(struct ubifs_info *c, struct replay_entry *r)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * inode_still_linked - check whether inode in question will be re-linked.
+ * @c: UBIFS file-system description object
+ * @rino: replay entry to test
+ *
+ * O_TMPFILE files can be re-linked, this means link count goes from 0 to 1.
+ * This case needs special care, otherwise all references to the inode will
+ * be removed upon the first replay entry of an inode with link count 0
+ * is found.
+ */
+static bool inode_still_linked(struct ubifs_info *c, struct replay_entry *rino)
+{
+	struct replay_entry *r;
+
+	ubifs_assert(rino->deletion);
+	ubifs_assert(key_type(c, &rino->key) == UBIFS_INO_KEY);
+
+	/*
+	 * Find the most recent entry for the inode behind @rino and check
+	 * whether it is a deletion.
+	 */
+	list_for_each_entry_reverse(r, &c->replay_list, list) {
+		ubifs_assert(r->sqnum >= rino->sqnum);
+		if (key_inum(c, &r->key) == key_inum(c, &rino->key))
+			return r->deletion == 0;
+
+	}
+
+	ubifs_assert(0);
+	return false;
+}
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * apply_replay_entry - apply a replay entry to the TNC.
  * @c: UBIFS file-system description object
  * @r: replay entry to apply
@@ -239,6 +274,14 @@ static int apply_replay_entry(struct ubifs_info *c, struct replay_entry *r)
 			{
 				ino_t inum = key_inum(c, &r->key);
 
+<<<<<<< HEAD
+=======
+				if (inode_still_linked(c, r)) {
+					err = 0;
+					break;
+				}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				err = ubifs_tnc_remove_ino(c, inum);
 				break;
 			}
@@ -267,7 +310,11 @@ static int apply_replay_entry(struct ubifs_info *c, struct replay_entry *r)
  * replay_entries_cmp - compare 2 replay entries.
  * @priv: UBIFS file-system description object
  * @a: first replay entry
+<<<<<<< HEAD
  * @a: second replay entry
+=======
+ * @b: second replay entry
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This is a comparios function for 'list_sort()' which compares 2 replay
  * entries @a and @b by comparing their sequence numer.  Returns %1 if @a has
@@ -458,13 +505,21 @@ int ubifs_validate_entry(struct ubifs_info *c,
 	    nlen > UBIFS_MAX_NLEN || dent->name[nlen] != 0 ||
 	    strnlen(dent->name, nlen) != nlen ||
 	    le64_to_cpu(dent->inum) > MAX_INUM) {
+<<<<<<< HEAD
 		ubifs_err("bad %s node", key_type == UBIFS_DENT_KEY ?
+=======
+		ubifs_err(c, "bad %s node", key_type == UBIFS_DENT_KEY ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  "directory entry" : "extended attribute entry");
 		return -EINVAL;
 	}
 
 	if (key_type != UBIFS_DENT_KEY && key_type != UBIFS_XENT_KEY) {
+<<<<<<< HEAD
 		ubifs_err("bad key type %d", key_type);
+=======
+		ubifs_err(c, "bad key type %d", key_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -589,7 +644,11 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 		cond_resched();
 
 		if (snod->sqnum >= SQNUM_WATERMARK) {
+<<<<<<< HEAD
 			ubifs_err("file system's life ended");
+=======
+			ubifs_err(c, "file system's life ended");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out_dump;
 		}
 
@@ -647,7 +706,11 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 			if (old_size < 0 || old_size > c->max_inode_sz ||
 			    new_size < 0 || new_size > c->max_inode_sz ||
 			    old_size <= new_size) {
+<<<<<<< HEAD
 				ubifs_err("bad truncation node");
+=======
+				ubifs_err(c, "bad truncation node");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto out_dump;
 			}
 
@@ -662,7 +725,11 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 			break;
 		}
 		default:
+<<<<<<< HEAD
 			ubifs_err("unexpected node type %d in bud LEB %d:%d",
+=======
+			ubifs_err(c, "unexpected node type %d in bud LEB %d:%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  snod->type, lnum, snod->offs);
 			err = -EINVAL;
 			goto out_dump;
@@ -685,7 +752,11 @@ out:
 	return err;
 
 out_dump:
+<<<<<<< HEAD
 	ubifs_err("bad node is at LEB %d:%d", lnum, snod->offs);
+=======
+	ubifs_err(c, "bad node is at LEB %d:%d", lnum, snod->offs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ubifs_dump_node(c, snod->node);
 	ubifs_scan_destroy(sleb);
 	return -EINVAL;
@@ -805,7 +876,11 @@ static int validate_ref(struct ubifs_info *c, const struct ubifs_ref_node *ref)
 	if (bud) {
 		if (bud->jhead == jhead && bud->start <= offs)
 			return 1;
+<<<<<<< HEAD
 		ubifs_err("bud at LEB %d:%d was already referred", lnum, offs);
+=======
+		ubifs_err(c, "bud at LEB %d:%d was already referred", lnum, offs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
@@ -861,12 +936,20 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 		 * numbers.
 		 */
 		if (snod->type != UBIFS_CS_NODE) {
+<<<<<<< HEAD
 			ubifs_err("first log node at LEB %d:%d is not CS node",
+=======
+			ubifs_err(c, "first log node at LEB %d:%d is not CS node",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  lnum, offs);
 			goto out_dump;
 		}
 		if (le64_to_cpu(node->cmt_no) != c->cmt_no) {
+<<<<<<< HEAD
 			ubifs_err("first CS node at LEB %d:%d has wrong commit number %llu expected %llu",
+=======
+			ubifs_err(c, "first CS node at LEB %d:%d has wrong commit number %llu expected %llu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  lnum, offs,
 				  (unsigned long long)le64_to_cpu(node->cmt_no),
 				  c->cmt_no);
@@ -891,7 +974,11 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 
 	/* Make sure the first node sits at offset zero of the LEB */
 	if (snod->offs != 0) {
+<<<<<<< HEAD
 		ubifs_err("first node is not at zero offset");
+=======
+		ubifs_err(c, "first node is not at zero offset");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_dump;
 	}
 
@@ -899,12 +986,20 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 		cond_resched();
 
 		if (snod->sqnum >= SQNUM_WATERMARK) {
+<<<<<<< HEAD
 			ubifs_err("file system's life ended");
+=======
+			ubifs_err(c, "file system's life ended");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out_dump;
 		}
 
 		if (snod->sqnum < c->cs_sqnum) {
+<<<<<<< HEAD
 			ubifs_err("bad sqnum %llu, commit sqnum %llu",
+=======
+			ubifs_err(c, "bad sqnum %llu, commit sqnum %llu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  snod->sqnum, c->cs_sqnum);
 			goto out_dump;
 		}
@@ -934,12 +1029,20 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 		case UBIFS_CS_NODE:
 			/* Make sure it sits at the beginning of LEB */
 			if (snod->offs != 0) {
+<<<<<<< HEAD
 				ubifs_err("unexpected node in log");
+=======
+				ubifs_err(c, "unexpected node in log");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				goto out_dump;
 			}
 			break;
 		default:
+<<<<<<< HEAD
 			ubifs_err("unexpected node in log");
+=======
+			ubifs_err(c, "unexpected node in log");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out_dump;
 		}
 	}
@@ -955,7 +1058,11 @@ out:
 	return err;
 
 out_dump:
+<<<<<<< HEAD
 	ubifs_err("log error detected while replaying the log at LEB %d:%d",
+=======
+	ubifs_err(c, "log error detected while replaying the log at LEB %d:%d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  lnum, offs + snod->offs);
 	ubifs_dump_node(c, snod->node);
 	ubifs_scan_destroy(sleb);
@@ -1017,7 +1124,11 @@ int ubifs_replay_journal(struct ubifs_info *c)
 		return free; /* Error code */
 
 	if (c->ihead_offs != c->leb_size - free) {
+<<<<<<< HEAD
 		ubifs_err("bad index head LEB %d:%d", c->ihead_lnum,
+=======
+		ubifs_err(c, "bad index head LEB %d:%d", c->ihead_lnum,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  c->ihead_offs);
 		return -EINVAL;
 	}
@@ -1028,9 +1139,28 @@ int ubifs_replay_journal(struct ubifs_info *c)
 
 	do {
 		err = replay_log_leb(c, lnum, 0, c->sbuf);
+<<<<<<< HEAD
 		if (err == 1)
 			/* We hit the end of the log */
 			break;
+=======
+		if (err == 1) {
+			if (lnum != c->lhead_lnum)
+				/* We hit the end of the log */
+				break;
+
+			/*
+			 * The head of the log must always start with the
+			 * "commit start" node on a properly formatted UBIFS.
+			 * But we found no nodes at all, which means that
+			 * someting went wrong and we cannot proceed mounting
+			 * the file-system.
+			 */
+			ubifs_err(c, "no UBIFS nodes found at the log head LEB %d:%d, possibly corrupted",
+				  lnum, 0);
+			err = -EINVAL;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)
 			goto out;
 		lnum = ubifs_next_log_lnum(c, lnum);

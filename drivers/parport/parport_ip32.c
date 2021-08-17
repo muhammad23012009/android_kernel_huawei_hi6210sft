@@ -1331,7 +1331,11 @@ static unsigned int parport_ip32_fwp_wait_interrupt(struct parport *p)
 			break;
 
 		/* Initialize mutex used to take interrupts into account */
+<<<<<<< HEAD
 		INIT_COMPLETION(priv->irq_complete);
+=======
+		reinit_completion(&priv->irq_complete);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Enable serviceIntr */
 		parport_ip32_frob_econtrol(p, ECR_SERVINTR, 0);
@@ -1446,7 +1450,11 @@ static size_t parport_ip32_fifo_write_block_dma(struct parport *p,
 	priv->irq_mode = PARPORT_IP32_IRQ_HERE;
 
 	parport_ip32_dma_start(DMA_TO_DEVICE, (void *)buf, len);
+<<<<<<< HEAD
 	INIT_COMPLETION(priv->irq_complete);
+=======
+	reinit_completion(&priv->irq_complete);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	parport_ip32_frob_econtrol(p, ECR_DMAEN | ECR_SERVINTR, ECR_DMAEN);
 
 	nfault_timeout = min((unsigned long)physport->cad->timeout,
@@ -2204,7 +2212,11 @@ static int __init parport_ip32_init(void)
 {
 	pr_info(PPIP32 "SGI IP32 built-in parallel port driver v0.6\n");
 	this_port = parport_ip32_probe_port();
+<<<<<<< HEAD
 	return IS_ERR(this_port) ? PTR_ERR(this_port) : 0;
+=======
+	return PTR_ERR_OR_ZERO(this_port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

@@ -1,15 +1,29 @@
+<<<<<<< HEAD
 /* bnx2i.h: Broadcom NetXtreme II iSCSI driver.
  *
  * Copyright (c) 2006 - 2012 Broadcom Corporation
  * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
  * Copyright (c) 2007, 2008 Mike Christie
+=======
+/* bnx2i.h: QLogic NetXtreme II iSCSI driver.
+ *
+ * Copyright (c) 2006 - 2013 Broadcom Corporation
+ * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
+ * Copyright (c) 2007, 2008 Mike Christie
+ * Copyright (c) 2014, QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
  * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
+<<<<<<< HEAD
  * Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+=======
+ * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+ * Maintained by: QLogic-Storage-Upstream@qlogic.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef _BNX2I_H_
@@ -64,7 +78,11 @@
 #define MAX_PAGES_PER_CTRL_STRUCT_POOL	8
 #define BNX2I_RESERVED_SLOW_PATH_CMD_SLOTS	4
 
+<<<<<<< HEAD
 #define BNX2I_5771X_DBELL_PAGE_SIZE	128
+=======
+#define BNX2X_DB_SHIFT			3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* 5706/08 hardware has limit on maximum buffer size per BD it can handle */
 #define MAX_BD_LENGTH			65535

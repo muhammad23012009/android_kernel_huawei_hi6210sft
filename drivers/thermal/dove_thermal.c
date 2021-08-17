@@ -93,7 +93,11 @@ static int dove_init_sensor(const struct dove_thermal_priv *priv)
 }
 
 static int dove_get_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 			  unsigned long *temp)
+=======
+			  int *temp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long reg;
 	struct dove_thermal_priv *priv = thermal->devdata;
@@ -134,16 +138,23 @@ static int dove_thermal_probe(struct platform_device *pdev)
 	struct resource *res;
 	int ret;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "Failed to get platform resource\n");
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->sensor = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(priv->sensor))
 		return PTR_ERR(priv->sensor);
@@ -178,7 +189,10 @@ static int dove_thermal_exit(struct platform_device *pdev)
 		platform_get_drvdata(pdev);
 
 	thermal_zone_device_unregister(dove_thermal);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -190,8 +204,12 @@ static struct platform_driver dove_thermal_driver = {
 	.remove = dove_thermal_exit,
 	.driver = {
 		.name = "dove_thermal",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = of_match_ptr(dove_thermal_id_table),
+=======
+		.of_match_table = dove_thermal_id_table,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

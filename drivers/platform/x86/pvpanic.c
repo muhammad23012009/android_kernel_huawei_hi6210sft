@@ -24,8 +24,12 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Hu Tao <hutao@cn.fujitsu.com>");
 MODULE_DESCRIPTION("pvpanic device driver");
@@ -71,6 +75,10 @@ pvpanic_panic_notify(struct notifier_block *nb, unsigned long code,
 
 static struct notifier_block pvpanic_panic_nb = {
 	.notifier_call = pvpanic_panic_notify,
+<<<<<<< HEAD
+=======
+	.priority = 1, /* let this called before broken drm_fb_helper */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -92,6 +100,7 @@ pvpanic_walk_resources(struct acpi_resource *res, void *context)
 
 static int pvpanic_add(struct acpi_device *device)
 {
+<<<<<<< HEAD
 	acpi_status status;
 	u64 ret;
 
@@ -99,6 +108,15 @@ static int pvpanic_add(struct acpi_device *device)
 				       &ret);
 
 	if (ACPI_FAILURE(status) || (ret & 0x0B) != 0x0B)
+=======
+	int ret;
+
+	ret = acpi_bus_get_status(device);
+	if (ret < 0)
+		return ret;
+
+	if (!device->status.enabled || !device->status.functional)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	acpi_walk_resources(device->handle, METHOD_NAME__CRS,

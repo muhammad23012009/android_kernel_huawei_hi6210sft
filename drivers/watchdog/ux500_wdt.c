@@ -12,7 +12,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
 #include <linux/miscdevice.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/err.h>
 #include <linux/uaccess.h>
 #include <linux/watchdog.h>
@@ -88,7 +91,11 @@ static struct watchdog_device ux500_wdt = {
 static int ux500_wdt_probe(struct platform_device *pdev)
 {
 	int ret;
+<<<<<<< HEAD
 	struct ux500_wdt_data *pdata = pdev->dev.platform_data;
+=======
+	struct ux500_wdt_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pdata) {
 		if (pdata->timeout > 0)
@@ -97,6 +104,10 @@ static int ux500_wdt_probe(struct platform_device *pdev)
 			ux500_wdt.max_timeout = WATCHDOG_MAX28;
 	}
 
+<<<<<<< HEAD
+=======
+	ux500_wdt.parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	watchdog_set_nowayout(&ux500_wdt, nowayout);
 
 	/* disable auto off on sleep */
@@ -157,7 +168,10 @@ static struct platform_driver ux500_wdt_driver = {
 	.suspend	= ux500_wdt_suspend,
 	.resume		= ux500_wdt_resume,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "ux500_wdt",
 	},
 };
@@ -167,5 +181,8 @@ module_platform_driver(ux500_wdt_driver);
 MODULE_AUTHOR("Jonas Aaberg <jonas.aberg@stericsson.com>");
 MODULE_DESCRIPTION("Ux500 Watchdog Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_ALIAS("platform:ux500_wdt");

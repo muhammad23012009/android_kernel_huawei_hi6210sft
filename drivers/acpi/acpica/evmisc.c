@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,6 +72,10 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context);
 
 u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 {
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (node->type) {
 	case ACPI_TYPE_DEVICE:
 	case ACPI_TYPE_PROCESSOR:
@@ -78,6 +86,10 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 		return (TRUE);
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return (FALSE);
 	}
 }
@@ -97,8 +109,12 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 			     u32 notify_value)
+=======
+acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	union acpi_operand_object *obj_desc;
 	union acpi_operand_object *handler_list_head = NULL;
@@ -166,10 +182,18 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 			  "Dispatching Notify on [%4.4s] (%s) Value 0x%2.2X (%s) Node %p\n",
 			  acpi_ut_get_node_name(node),
 			  acpi_ut_get_type_name(node->type), notify_value,
+<<<<<<< HEAD
 			  acpi_ut_get_notify_name(notify_value), node));
 
 	status = acpi_os_execute(OSL_NOTIFY_HANDLER, acpi_ev_notify_dispatch,
 				 info);
+=======
+			  acpi_ut_get_notify_name(notify_value, ACPI_TYPE_ANY),
+			  node));
+
+	status = acpi_os_execute(OSL_NOTIFY_HANDLER,
+				 acpi_ev_notify_dispatch, info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		acpi_ut_delete_generic_state(info);
 	}
@@ -263,6 +287,7 @@ void acpi_ev_terminate(void)
 
 		status = acpi_ev_walk_gpe_list(acpi_hw_disable_gpe_block, NULL);
 
+<<<<<<< HEAD
 		/* Remove SCI handler */
 
 		status = acpi_ev_remove_sci_handler();
@@ -270,11 +295,25 @@ void acpi_ev_terminate(void)
 			ACPI_ERROR((AE_INFO, "Could not remove SCI handler"));
 		}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = acpi_ev_remove_global_lock_handler();
 		if (ACPI_FAILURE(status)) {
 			ACPI_ERROR((AE_INFO,
 				    "Could not remove Global Lock handler"));
 		}
+<<<<<<< HEAD
+=======
+
+		acpi_gbl_events_initialized = FALSE;
+	}
+
+	/* Remove SCI handlers */
+
+	status = acpi_ev_remove_all_sci_handlers();
+	if (ACPI_FAILURE(status)) {
+		ACPI_ERROR((AE_INFO, "Could not remove SCI handler"));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Deallocate all handler objects installed within GPE info structs */

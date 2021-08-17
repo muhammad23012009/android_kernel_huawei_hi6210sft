@@ -97,6 +97,7 @@ static int set_next_event(unsigned long delta, struct clock_event_device *evt)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Sets the mode (periodic, shutdown, oneshot, etc) of a timer.
  */
@@ -111,6 +112,8 @@ static void set_mode(enum clock_event_mode mode,
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 /*  Broadcast mechanism  */
 static void broadcast(const struct cpumask *mask)
@@ -119,13 +122,20 @@ static void broadcast(const struct cpumask *mask)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+/* XXX Implement set_state_shutdown() */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct clock_event_device hexagon_clockevent_dev = {
 	.name		= "clockevent",
 	.features	= CLOCK_EVT_FEAT_ONESHOT,
 	.rating		= 400,
 	.irq		= RTOS_TIMER_INT,
 	.set_next_event = set_next_event,
+<<<<<<< HEAD
 	.set_mode	= set_mode,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 	.broadcast	= broadcast,
 #endif
@@ -146,7 +156,10 @@ void setup_percpu_clockdev(void)
 
 	dummy_clock_dev->features = CLOCK_EVT_FEAT_DUMMY;
 	dummy_clock_dev->cpumask = cpumask_of(cpu);
+<<<<<<< HEAD
 	dummy_clock_dev->mode = CLOCK_EVT_MODE_UNUSED;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clockevents_register_device(dummy_clock_dev);
 }
@@ -191,9 +204,12 @@ void __init time_init_deferred(void)
 {
 	struct resource *resource = NULL;
 	struct clock_event_device *ce_dev = &hexagon_clockevent_dev;
+<<<<<<< HEAD
 	struct device_node *dn;
 	struct resource r;
 	int err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ce_dev->cpumask = cpu_all_mask;
 
@@ -232,6 +248,18 @@ void __init time_init(void)
 	late_time_init = time_init_deferred;
 }
 
+<<<<<<< HEAD
+=======
+void __delay(unsigned long cycles)
+{
+	unsigned long long start = __vmgettime();
+
+	while ((__vmgettime() - start) < cycles)
+		cpu_relax();
+}
+EXPORT_SYMBOL(__delay);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This could become parametric or perhaps even computed at run-time,
  * but for now we take the observed simulator jitter.

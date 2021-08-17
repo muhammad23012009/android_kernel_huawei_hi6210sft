@@ -10,6 +10,10 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/cacheflush.h>
 #include <asm/pgtable.h>
@@ -36,7 +40,11 @@ enum {
 
 static int pte_testbit(pte_t pte)
 {
+<<<<<<< HEAD
 	return pte_flags(pte) & _PAGE_UNUSED1;
+=======
+	return pte_flags(pte) & _PAGE_SOFTW1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct split_state {
@@ -256,5 +264,9 @@ static int start_pageattr_test(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(start_pageattr_test);
+=======
+device_initcall(start_pageattr_test);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

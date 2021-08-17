@@ -132,9 +132,15 @@ long arch_ptrace(struct task_struct *child, long request,
 	return rval;
 }
 
+<<<<<<< HEAD
 asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
 {
 	long ret = 0;
+=======
+asmlinkage unsigned long do_syscall_trace_enter(struct pt_regs *regs)
+{
+	unsigned long ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	secure_computing_strict(regs->r12);
 
@@ -147,8 +153,12 @@ asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
 		 */
 		ret = -1L;
 
+<<<<<<< HEAD
 	audit_syscall_entry(EM_MICROBLAZE, regs->r12, regs->r5, regs->r6,
 			    regs->r7, regs->r8);
+=======
+	audit_syscall_entry(regs->r12, regs->r5, regs->r6, regs->r7, regs->r8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret ?: regs->r12;
 }

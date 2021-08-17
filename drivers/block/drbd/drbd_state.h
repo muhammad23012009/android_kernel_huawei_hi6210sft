@@ -1,8 +1,13 @@
 #ifndef DRBD_STATE_H
 #define DRBD_STATE_H
 
+<<<<<<< HEAD
 struct drbd_conf;
 struct drbd_tconn;
+=======
+struct drbd_device;
+struct drbd_connection;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * DOC: DRBD State macros
@@ -107,6 +112,7 @@ union drbd_dev_state {
 	unsigned int i;
 };
 
+<<<<<<< HEAD
 extern enum drbd_state_rv drbd_change_state(struct drbd_conf *mdev,
 					    enum chg_state_flags f,
 					    union drbd_state mask,
@@ -137,6 +143,43 @@ extern bool conn_all_vols_unconf(struct drbd_tconn *tconn);
 /**
  * drbd_request_state() - Reqest a state change
  * @mdev:	DRBD device.
+=======
+extern enum drbd_state_rv drbd_change_state(struct drbd_device *device,
+					    enum chg_state_flags f,
+					    union drbd_state mask,
+					    union drbd_state val);
+extern void drbd_force_state(struct drbd_device *, union drbd_state,
+			union drbd_state);
+extern enum drbd_state_rv _drbd_request_state(struct drbd_device *,
+					      union drbd_state,
+					      union drbd_state,
+					      enum chg_state_flags);
+
+extern enum drbd_state_rv
+_drbd_request_state_holding_state_mutex(struct drbd_device *, union drbd_state,
+					union drbd_state, enum chg_state_flags);
+
+extern enum drbd_state_rv _drbd_set_state(struct drbd_device *, union drbd_state,
+					  enum chg_state_flags,
+					  struct completion *done);
+extern void print_st_err(struct drbd_device *, union drbd_state,
+			union drbd_state, enum drbd_state_rv);
+
+enum drbd_state_rv
+_conn_request_state(struct drbd_connection *connection, union drbd_state mask, union drbd_state val,
+		    enum chg_state_flags flags);
+
+enum drbd_state_rv
+conn_request_state(struct drbd_connection *connection, union drbd_state mask, union drbd_state val,
+		   enum chg_state_flags flags);
+
+extern void drbd_resume_al(struct drbd_device *device);
+extern bool conn_all_vols_unconf(struct drbd_connection *connection);
+
+/**
+ * drbd_request_state() - Request a state change
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @mask:	mask of state bits to change.
  * @val:	value of new state bits.
  *
@@ -144,6 +187,7 @@ extern bool conn_all_vols_unconf(struct drbd_tconn *tconn);
  * quite verbose in case the state change is not possible, and all those
  * state changes are globally serialized.
  */
+<<<<<<< HEAD
 static inline int drbd_request_state(struct drbd_conf *mdev,
 				     union drbd_state mask,
 				     union drbd_state val)
@@ -157,5 +201,20 @@ enum drbd_disk_state conn_highest_disk(struct drbd_tconn *tconn);
 enum drbd_disk_state conn_lowest_disk(struct drbd_tconn *tconn);
 enum drbd_disk_state conn_highest_pdsk(struct drbd_tconn *tconn);
 enum drbd_conns conn_lowest_conn(struct drbd_tconn *tconn);
+=======
+static inline int drbd_request_state(struct drbd_device *device,
+				     union drbd_state mask,
+				     union drbd_state val)
+{
+	return _drbd_request_state(device, mask, val, CS_VERBOSE + CS_ORDERED);
+}
+
+enum drbd_role conn_highest_role(struct drbd_connection *connection);
+enum drbd_role conn_highest_peer(struct drbd_connection *connection);
+enum drbd_disk_state conn_highest_disk(struct drbd_connection *connection);
+enum drbd_disk_state conn_lowest_disk(struct drbd_connection *connection);
+enum drbd_disk_state conn_highest_pdsk(struct drbd_connection *connection);
+enum drbd_conns conn_lowest_conn(struct drbd_connection *connection);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

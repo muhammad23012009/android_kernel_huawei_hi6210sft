@@ -14,6 +14,7 @@
  * more details.
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <acpi/acpi_bus.h>
@@ -21,6 +22,16 @@
 #include <asm/xen/hypercall.h>
 #include <xen/interface/version.h>
 #include <xen/xen-ops.h>
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/kernel.h>
+#include <linux/types.h>
+#include <linux/acpi.h>
+#include <xen/interface/version.h>
+#include <xen/xen-ops.h>
+#include <asm/xen/hypercall.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ACPI_PROCESSOR_AGGREGATOR_CLASS	"acpi_pad"
 #define ACPI_PROCESSOR_AGGREGATOR_DEVICE_NAME "Processor Aggregator"
@@ -35,7 +46,11 @@ static int xen_acpi_pad_idle_cpus(unsigned int idle_nums)
 	op.u.core_parking.type = XEN_CORE_PARKING_SET;
 	op.u.core_parking.idle_nums = idle_nums;
 
+<<<<<<< HEAD
 	return HYPERVISOR_dom0_op(&op);
+=======
+	return HYPERVISOR_platform_op(&op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int xen_acpi_pad_idle_cpus_num(void)
@@ -45,7 +60,11 @@ static int xen_acpi_pad_idle_cpus_num(void)
 	op.cmd = XENPF_core_parking;
 	op.u.core_parking.type = XEN_CORE_PARKING_GET;
 
+<<<<<<< HEAD
 	return HYPERVISOR_dom0_op(&op)
+=======
+	return HYPERVISOR_platform_op(&op)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       ?: op.u.core_parking.idle_nums;
 }
 
@@ -76,6 +95,7 @@ static int acpi_pad_pur(acpi_handle handle)
 	return num;
 }
 
+<<<<<<< HEAD
 /* Notify firmware how many CPUs are idle */
 static void acpi_pad_ost(acpi_handle handle, int stat,
 	uint32_t idle_nums)
@@ -97,6 +117,16 @@ static void acpi_pad_ost(acpi_handle handle, int stat,
 static void acpi_pad_handle_notify(acpi_handle handle)
 {
 	int idle_nums;
+=======
+static void acpi_pad_handle_notify(acpi_handle handle)
+{
+	int idle_nums;
+	struct acpi_buffer param = {
+		.length = 4,
+		.pointer = (void *)&idle_nums,
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&xen_cpu_lock);
 	idle_nums = acpi_pad_pur(handle);
@@ -108,7 +138,12 @@ static void acpi_pad_handle_notify(acpi_handle handle)
 	idle_nums = xen_acpi_pad_idle_cpus(idle_nums)
 		    ?: xen_acpi_pad_idle_cpus_num();
 	if (idle_nums >= 0)
+<<<<<<< HEAD
 		acpi_pad_ost(handle, 0, idle_nums);
+=======
+		acpi_evaluate_ost(handle, ACPI_PROCESSOR_AGGREGATOR_NOTIFY,
+				  0, &param);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&xen_cpu_lock);
 }
 

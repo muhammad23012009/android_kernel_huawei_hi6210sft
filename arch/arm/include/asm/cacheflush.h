@@ -16,7 +16,10 @@
 #include <asm/shmparam.h>
 #include <asm/cachetype.h>
 #include <asm/outercache.h>
+<<<<<<< HEAD
 #include <asm/rodata.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CACHE_COLOUR(vaddr)	((vaddr & (SHMLBA - 1)) >> PAGE_SHIFT)
 
@@ -116,8 +119,11 @@ struct cpu_cache_fns {
 	void (*dma_map_area)(const void *, size_t, int);
 	void (*dma_unmap_area)(const void *, size_t, int);
 
+<<<<<<< HEAD
 	void (*dma_inv_range)(const void *, const void *);
 	void (*dma_clean_range)(const void *, const void *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*dma_flush_range)(const void *, const void *);
 };
 
@@ -143,10 +149,13 @@ extern struct cpu_cache_fns cpu_cache;
  * is visible to DMA, or data written by DMA to system memory is
  * visible to the CPU.
  */
+<<<<<<< HEAD
 #define dmac_map_area			cpu_cache.dma_map_area
 #define dmac_unmap_area			cpu_cache.dma_unmap_area
 #define dmac_inv_range			cpu_cache.dma_inv_range
 #define dmac_clean_range		cpu_cache.dma_clean_range
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define dmac_flush_range		cpu_cache.dma_flush_range
 
 #else
@@ -159,8 +168,11 @@ extern void __cpuc_flush_user_range(unsigned long, unsigned long, unsigned int);
 extern void __cpuc_coherent_kern_range(unsigned long, unsigned long);
 extern int  __cpuc_coherent_user_range(unsigned long, unsigned long);
 extern void __cpuc_flush_dcache_area(void *, size_t);
+<<<<<<< HEAD
 extern void __cpuc_flush_kern_louis_pm(void);
 extern void __cpuc_flush_kern_all_pm(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * These are private to the dma-mapping API.  Do not use directly.
@@ -168,10 +180,13 @@ extern void __cpuc_flush_kern_all_pm(void);
  * is visible to DMA, or data written by DMA to system memory is
  * visible to the CPU.
  */
+<<<<<<< HEAD
 extern void dmac_map_area(const void *, size_t, int);
 extern void dmac_unmap_area(const void *, size_t, int);
 extern void dmac_inv_range(const void *, const void *);
 extern void dmac_clean_range(const void *, const void *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void dmac_flush_range(const void *, const void *);
 
 #endif
@@ -221,7 +236,11 @@ extern void copy_to_user_page(struct vm_area_struct *, struct page *,
 static inline void __flush_icache_all(void)
 {
 	__flush_icache_preferred();
+<<<<<<< HEAD
 	dsb();
+=======
+	dsb(ishst);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -230,6 +249,7 @@ static inline void __flush_icache_all(void)
 #define flush_cache_louis()		__cpuc_flush_kern_louis()
 
 #define flush_cache_all()		__cpuc_flush_kern_all()
+<<<<<<< HEAD
 #define flush_cache_louis_pm()		__cpuc_flush_kern_louis_pm()
 #define flush_cache_all_pm()		__cpuc_flush_kern_all_pm()
 
@@ -241,6 +261,8 @@ extern void hi3630_fc_allcpu_allcache(void);
 #endif
 /*HI3630: flush all cpu all cache*/
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void vivt_flush_cache_mm(struct mm_struct *mm)
 {
@@ -289,8 +311,12 @@ extern void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr
  * Harvard caches are synchronised for the user space address range.
  * This is used for the ARM private sys_cacheflush system call.
  */
+<<<<<<< HEAD
 #define flush_cache_user_range(start,end) \
 	__cpuc_coherent_user_range((start) & PAGE_MASK, PAGE_ALIGN(end))
+=======
+#define flush_cache_user_range(s,e)	__cpuc_coherent_user_range(s,e)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Perform necessary cache operations to ensure that data previously
@@ -373,7 +399,11 @@ static inline void flush_cache_vmap(unsigned long start, unsigned long end)
 		 * set_pte_at() called from vmap_pte_range() does not
 		 * have a DSB after cleaning the cache line.
 		 */
+<<<<<<< HEAD
 		dsb();
+=======
+		dsb(ishst);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void flush_cache_vunmap(unsigned long start, unsigned long end)
@@ -457,6 +487,7 @@ static inline void __sync_cache_range_r(volatile void *p, size_t size)
 #define sync_cache_w(ptr) __sync_cache_range_w(ptr, sizeof *(ptr))
 #define sync_cache_r(ptr) __sync_cache_range_r(ptr, sizeof *(ptr))
 
+<<<<<<< HEAD
 #ifdef CONFIG_FREE_PAGES_RDONLY
 int set_memory_ro(unsigned long addr, int numpages);
 int set_memory_rw(unsigned long addr, int numpages);
@@ -468,6 +499,8 @@ int set_memory_rw(unsigned long addr, int numpages);
 #define mark_addr_rdwrite(a)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Disabling cache access for one CPU in an ARMv7 SMP system is tricky.
  * To do so we must:
@@ -498,13 +531,20 @@ int set_memory_rw(unsigned long addr, int numpages);
  */
 #define v7_exit_coherency_flush(level) \
 	asm volatile( \
+<<<<<<< HEAD
+=======
+	".arch	armv7-a \n\t" \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"stmfd	sp!, {fp, ip} \n\t" \
 	"mrc	p15, 0, r0, c1, c0, 0	@ get SCTLR \n\t" \
 	"bic	r0, r0, #"__stringify(CR_C)" \n\t" \
 	"mcr	p15, 0, r0, c1, c0, 0	@ set SCTLR \n\t" \
 	"isb	\n\t" \
 	"bl	v7_flush_dcache_"__stringify(level)" \n\t" \
+<<<<<<< HEAD
 	"clrex	\n\t" \
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"mrc	p15, 0, r0, c1, c0, 1	@ get ACTLR \n\t" \
 	"bic	r0, r0, #(1 << 6)	@ disable local coherency \n\t" \
 	"mcr	p15, 0, r0, c1, c0, 1	@ set ACTLR \n\t" \
@@ -514,4 +554,30 @@ int set_memory_rw(unsigned long addr, int numpages);
 	: : : "r0","r1","r2","r3","r4","r5","r6","r7", \
 	      "r9","r10","lr","memory" )
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+int set_memory_ro(unsigned long addr, int numpages);
+int set_memory_rw(unsigned long addr, int numpages);
+int set_memory_x(unsigned long addr, int numpages);
+int set_memory_nx(unsigned long addr, int numpages);
+#else
+static inline int set_memory_ro(unsigned long addr, int numpages) { return 0; }
+static inline int set_memory_rw(unsigned long addr, int numpages) { return 0; }
+static inline int set_memory_x(unsigned long addr, int numpages) { return 0; }
+static inline int set_memory_nx(unsigned long addr, int numpages) { return 0; }
+#endif
+
+#ifdef CONFIG_DEBUG_RODATA
+void set_kernel_text_rw(void);
+void set_kernel_text_ro(void);
+#else
+static inline void set_kernel_text_rw(void) { }
+static inline void set_kernel_text_ro(void) { }
+#endif
+
+void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
+			     void *kaddr, unsigned long len);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -161,11 +161,20 @@ static int zorro_uevent(struct device *dev, struct kobj_uevent_env *env)
 }
 
 struct bus_type zorro_bus_type = {
+<<<<<<< HEAD
 	.name	= "zorro",
 	.match	= zorro_bus_match,
 	.uevent	= zorro_uevent,
 	.probe	= zorro_device_probe,
 	.remove	= zorro_device_remove,
+=======
+	.name     = "zorro",
+	.dev_name = "zorro",
+	.match    = zorro_bus_match,
+	.uevent   = zorro_uevent,
+	.probe    = zorro_device_probe,
+	.remove   = zorro_device_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 EXPORT_SYMBOL(zorro_bus_type);
 

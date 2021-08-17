@@ -73,6 +73,7 @@ config TABLET_USB_KBTAB
 	  To compile this driver as a module, choose M here: the
 	  module will be called kbtab.
 
+<<<<<<< HEAD
 config TABLET_USB_WACOM
 	tristate "Wacom Intuos/Graphire tablet support (USB)"
 	depends on USB_ARCH_HAS_HCD
@@ -88,5 +89,31 @@ config TABLET_USB_WACOM
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called wacom.
+=======
+config TABLET_USB_PEGASUS
+	tristate "Pegasus Mobile Notetaker Pen input tablet support"
+	depends on USB_ARCH_HAS_HCD
+	select USB
+	help
+	  Say Y here if you want to use the Pegasus Mobile Notetaker,
+	  also known as:
+	  Genie e-note The Notetaker,
+	  Staedtler Digital ballpoint pen 990 01,
+	  IRISnotes Express or
+	  NEWLink Digital Note Taker.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called pegasus_notetaker.
+
+config TABLET_SERIAL_WACOM4
+	tristate "Wacom protocol 4 serial tablet support"
+	select SERIO
+	help
+	  Say Y here if you want to use Wacom protocol 4 serial tablets.
+	  E.g. serial versions of the Cintiq, Graphire or Penpartner.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called wacom_serial4.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endif

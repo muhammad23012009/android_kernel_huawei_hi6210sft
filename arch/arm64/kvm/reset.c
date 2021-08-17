@@ -22,13 +22,23 @@
 #include <linux/errno.h>
 #include <linux/kvm_host.h>
 #include <linux/kvm.h>
+<<<<<<< HEAD
+=======
+#include <linux/hw_breakpoint.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <kvm/arm_arch_timer.h>
 
 #include <asm/cputype.h>
 #include <asm/ptrace.h>
 #include <asm/kvm_arm.h>
+<<<<<<< HEAD
 #include <asm/kvm_coproc.h>
+=======
+#include <asm/kvm_asm.h>
+#include <asm/kvm_coproc.h>
+#include <asm/kvm_mmu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * ARMv8 Reset Values
@@ -52,11 +62,25 @@ static bool cpu_has_32bit_el1(void)
 {
 	u64 pfr0;
 
+<<<<<<< HEAD
 	pfr0 = read_cpuid(ID_AA64PFR0_EL1);
 	return !!(pfr0 & 0x20);
 }
 
 int kvm_arch_dev_ioctl_check_extension(long ext)
+=======
+	pfr0 = read_system_reg(SYS_ID_AA64PFR0_EL1);
+	return !!(pfr0 & 0x20);
+}
+
+/**
+ * kvm_arch_dev_ioctl_check_extension
+ *
+ * We currently assume that the number of HW registers is uniform
+ * across all CPUs (see cpuinfo_sanity_check).
+ */
+int kvm_arch_dev_ioctl_check_extension(struct kvm *kvm, long ext)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int r;
 
@@ -64,6 +88,28 @@ int kvm_arch_dev_ioctl_check_extension(long ext)
 	case KVM_CAP_ARM_EL1_32BIT:
 		r = cpu_has_32bit_el1();
 		break;
+<<<<<<< HEAD
+=======
+	case KVM_CAP_GUEST_DEBUG_HW_BPS:
+		r = get_num_brps();
+		break;
+	case KVM_CAP_GUEST_DEBUG_HW_WPS:
+		r = get_num_wrps();
+		break;
+	case KVM_CAP_ARM_PMU_V3:
+		r = kvm_arm_support_pmu_v3();
+		break;
+	case KVM_CAP_SET_GUEST_DEBUG:
+	case KVM_CAP_VCPU_ATTRIBUTES:
+		r = 1;
+		break;
+	case KVM_CAP_MSI_DEVID:
+		if (!kvm)
+			r = -EINVAL;
+		else
+			r = kvm->arch.vgic.msis_require_devid;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		r = 0;
 	}
@@ -76,7 +122,11 @@ int kvm_arch_dev_ioctl_check_extension(long ext)
  * @vcpu: The VCPU pointer
  *
  * This function finds the right table above and sets the registers on
+<<<<<<< HEAD
  * the virtual CPU struct to their architectually defined reset
+=======
+ * the virtual CPU struct to their architecturally defined reset
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * values.
  */
 int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
@@ -90,7 +140,10 @@ int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
 			if (!cpu_has_32bit_el1())
 				return -EINVAL;
 			cpu_reset = &default_regs_reset32;
+<<<<<<< HEAD
 			vcpu->arch.hcr_el2 &= ~HCR_RW;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			cpu_reset = &default_regs_reset;
 		}
@@ -105,8 +158,20 @@ int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
 	/* Reset system registers */
 	kvm_reset_sys_regs(vcpu);
 
+<<<<<<< HEAD
 	/* Reset timer */
 	kvm_timer_vcpu_reset(vcpu, cpu_vtimer_irq);
 
 	return 0;
+=======
+	/* Reset PMU */
+	kvm_pmu_vcpu_reset(vcpu);
+
+	/* Default workaround setup is enabled (if supported) */
+	if (kvm_arm_have_ssbd() == KVM_SSBD_KERNEL)
+		vcpu->arch.workaround_flags |= VCPU_WORKAROUND_2_FLAG;
+
+	/* Reset timer */
+	return kvm_timer_vcpu_reset(vcpu, cpu_vtimer_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

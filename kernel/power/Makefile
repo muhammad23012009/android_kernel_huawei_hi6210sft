@@ -1,10 +1,16 @@
 
 ccflags-$(CONFIG_PM_DEBUG)	:= -DDEBUG
 
+<<<<<<< HEAD
+=======
+KASAN_SANITIZE_snapshot.o	:= n
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-y				+= qos.o
 obj-$(CONFIG_PM)		+= main.o
 obj-$(CONFIG_VT_CONSOLE_SLEEP)	+= console.o
 obj-$(CONFIG_FREEZER)		+= process.o
+<<<<<<< HEAD
 obj-$(CONFIG_SUSPEND)		+= suspend.o hw_power_monitor.o
 obj-$(CONFIG_PM_TEST_SUSPEND)	+= suspend_test.o
 obj-$(CONFIG_HIBERNATION)	+= hibernate.o snapshot.o swap.o user.o \
@@ -12,6 +18,13 @@ obj-$(CONFIG_HIBERNATION)	+= hibernate.o snapshot.o swap.o user.o \
 obj-$(CONFIG_PM_AUTOSLEEP)	+= autosleep.o
 obj-$(CONFIG_PM_WAKELOCKS)	+= wakelock.o
 obj-$(CONFIG_SUSPEND_TIME)	+= suspend_time.o
+=======
+obj-$(CONFIG_SUSPEND)		+= suspend.o
+obj-$(CONFIG_PM_TEST_SUSPEND)	+= suspend_test.o
+obj-$(CONFIG_HIBERNATION)	+= hibernate.o snapshot.o swap.o user.o
+obj-$(CONFIG_PM_AUTOSLEEP)	+= autosleep.o
+obj-$(CONFIG_PM_WAKELOCKS)	+= wakelock.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_MAGIC_SYSRQ)	+= poweroff.o
 

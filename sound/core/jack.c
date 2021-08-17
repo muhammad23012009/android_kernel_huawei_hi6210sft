@@ -24,7 +24,19 @@
 #include <linux/module.h>
 #include <sound/jack.h>
 #include <sound/core.h>
+<<<<<<< HEAD
 
+=======
+#include <sound/control.h>
+
+struct snd_jack_kctl {
+	struct snd_kcontrol *kctl;
+	struct list_head list;  /* list of controls belong to the same jack */
+	unsigned int mask_bits; /* only masked status bits are reported via kctl */
+};
+
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int jack_switch_types[SND_JACK_SWITCH_TYPES] = {
 	SW_HEADPHONE_INSERT,
 	SW_MICROPHONE_INSERT,
@@ -33,6 +45,7 @@ static int jack_switch_types[SND_JACK_SWITCH_TYPES] = {
 	SW_VIDEOOUT_INSERT,
 	SW_LINEIN_INSERT,
 };
+<<<<<<< HEAD
 
 static int snd_jack_dev_free(struct snd_device *device)
 {
@@ -40,6 +53,17 @@ static int snd_jack_dev_free(struct snd_device *device)
 
 	if (jack->private_free)
 		jack->private_free(jack);
+=======
+#endif /* CONFIG_SND_JACK_INPUT_DEV */
+
+static int snd_jack_dev_disconnect(struct snd_device *device)
+{
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+	struct snd_jack *jack = device->device_data;
+
+	if (!jack->input_dev)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If the input device is registered with the input subsystem
 	 * then we need to use a different deallocator. */
@@ -47,6 +71,28 @@ static int snd_jack_dev_free(struct snd_device *device)
 		input_unregister_device(jack->input_dev);
 	else
 		input_free_device(jack->input_dev);
+<<<<<<< HEAD
+=======
+	jack->input_dev = NULL;
+#endif /* CONFIG_SND_JACK_INPUT_DEV */
+	return 0;
+}
+
+static int snd_jack_dev_free(struct snd_device *device)
+{
+	struct snd_jack *jack = device->device_data;
+	struct snd_card *card = device->card;
+	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
+
+	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
+		list_del_init(&jack_kctl->list);
+		snd_ctl_remove(card, jack_kctl->kctl);
+	}
+	if (jack->private_free)
+		jack->private_free(jack);
+
+	snd_jack_dev_disconnect(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kfree(jack->id);
 	kfree(jack);
@@ -54,6 +100,10 @@ static int snd_jack_dev_free(struct snd_device *device)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int snd_jack_dev_register(struct snd_device *device)
 {
 	struct snd_jack *jack = device->device_data;
@@ -62,6 +112,13 @@ static int snd_jack_dev_register(struct snd_device *device)
 
 	snprintf(jack->name, sizeof(jack->name), "%s %s",
 		 card->shortname, jack->id);
+<<<<<<< HEAD
+=======
+
+	if (!jack->input_dev)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jack->input_dev->name = jack->name;
 
 	/* Default to the sound card device. */
@@ -87,6 +144,81 @@ static int snd_jack_dev_register(struct snd_device *device)
 
 	return err;
 }
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_SND_JACK_INPUT_DEV */
+
+static void snd_jack_kctl_private_free(struct snd_kcontrol *kctl)
+{
+	struct snd_jack_kctl *jack_kctl;
+
+	jack_kctl = kctl->private_data;
+	if (jack_kctl) {
+		list_del(&jack_kctl->list);
+		kfree(jack_kctl);
+	}
+}
+
+static void snd_jack_kctl_add(struct snd_jack *jack, struct snd_jack_kctl *jack_kctl)
+{
+	list_add_tail(&jack_kctl->list, &jack->kctl_list);
+}
+
+static struct snd_jack_kctl * snd_jack_kctl_new(struct snd_card *card, const char *name, unsigned int mask)
+{
+	struct snd_kcontrol *kctl;
+	struct snd_jack_kctl *jack_kctl;
+	int err;
+
+	kctl = snd_kctl_jack_new(name, card);
+	if (!kctl)
+		return NULL;
+
+	err = snd_ctl_add(card, kctl);
+	if (err < 0)
+		return NULL;
+
+	jack_kctl = kzalloc(sizeof(*jack_kctl), GFP_KERNEL);
+
+	if (!jack_kctl)
+		goto error;
+
+	jack_kctl->kctl = kctl;
+	jack_kctl->mask_bits = mask;
+
+	kctl->private_data = jack_kctl;
+	kctl->private_free = snd_jack_kctl_private_free;
+
+	return jack_kctl;
+error:
+	snd_ctl_free_one(kctl);
+	return NULL;
+}
+
+/**
+ * snd_jack_add_new_kctl - Create a new snd_jack_kctl and add it to jack
+ * @jack:  the jack instance which the kctl will attaching to
+ * @name:  the name for the snd_kcontrol object
+ * @mask:  a bitmask of enum snd_jack_type values that can be detected
+ *         by this snd_jack_kctl object.
+ *
+ * Creates a new snd_kcontrol object and adds it to the jack kctl_list.
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+ */
+int snd_jack_add_new_kctl(struct snd_jack *jack, const char * name, int mask)
+{
+	struct snd_jack_kctl *jack_kctl;
+
+	jack_kctl = snd_jack_kctl_new(jack->card, name, mask);
+	if (!jack_kctl)
+		return -ENOMEM;
+
+	snd_jack_kctl_add(jack, jack_kctl);
+	return 0;
+}
+EXPORT_SYMBOL(snd_jack_add_new_kctl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * snd_jack_new - Create a new jack
@@ -95,6 +227,11 @@ static int snd_jack_dev_register(struct snd_device *device)
  * @type:  a bitmask of enum snd_jack_type values that can be detected by
  *         this jack
  * @jjack: Used to provide the allocated jack object to the caller.
+<<<<<<< HEAD
+=======
+ * @initial_kctl: if true, create a kcontrol and add it to the jack list.
+ * @phantom_jack: Don't create a input device for phantom jacks.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Creates a new jack object.
  *
@@ -102,6 +239,7 @@ static int snd_jack_dev_register(struct snd_device *device)
  * On success @jjack will be initialised.
  */
 int snd_jack_new(struct snd_card *card, const char *id, int type,
+<<<<<<< HEAD
 		 struct snd_jack **jjack)
 {
 	struct snd_jack *jack;
@@ -112,12 +250,34 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
 		.dev_register = snd_jack_dev_register,
 	};
 
+=======
+		 struct snd_jack **jjack, bool initial_kctl, bool phantom_jack)
+{
+	struct snd_jack *jack;
+	struct snd_jack_kctl *jack_kctl = NULL;
+	int err;
+	static struct snd_device_ops ops = {
+		.dev_free = snd_jack_dev_free,
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+		.dev_register = snd_jack_dev_register,
+		.dev_disconnect = snd_jack_dev_disconnect,
+#endif /* CONFIG_SND_JACK_INPUT_DEV */
+	};
+
+	if (initial_kctl) {
+		jack_kctl = snd_jack_kctl_new(card, id, type);
+		if (!jack_kctl)
+			return -ENOMEM;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jack = kzalloc(sizeof(struct snd_jack), GFP_KERNEL);
 	if (jack == NULL)
 		return -ENOMEM;
 
 	jack->id = kstrdup(id, GFP_KERNEL);
 
+<<<<<<< HEAD
 	jack->input_dev = input_allocate_device();
 	if (jack->input_dev == NULL) {
 		err = -ENOMEM;
@@ -132,23 +292,66 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
 		if (type & (1 << i))
 			input_set_capability(jack->input_dev, EV_SW,
 					     jack_switch_types[i]);
+=======
+	/* don't creat input device for phantom jack */
+	if (!phantom_jack) {
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+		int i;
+
+		jack->input_dev = input_allocate_device();
+		if (jack->input_dev == NULL) {
+			err = -ENOMEM;
+			goto fail_input;
+		}
+
+		jack->input_dev->phys = "ALSA";
+
+		jack->type = type;
+
+		for (i = 0; i < SND_JACK_SWITCH_TYPES; i++)
+			if (type & (1 << i))
+				input_set_capability(jack->input_dev, EV_SW,
+						     jack_switch_types[i]);
+
+#endif /* CONFIG_SND_JACK_INPUT_DEV */
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
 	if (err < 0)
 		goto fail_input;
 
+<<<<<<< HEAD
+=======
+	jack->card = card;
+	INIT_LIST_HEAD(&jack->kctl_list);
+
+	if (initial_kctl)
+		snd_jack_kctl_add(jack, jack_kctl);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*jjack = jack;
 
 	return 0;
 
 fail_input:
+<<<<<<< HEAD
 	input_free_device(jack->input_dev);
+=======
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+	input_free_device(jack->input_dev);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(jack->id);
 	kfree(jack);
 	return err;
 }
 EXPORT_SYMBOL(snd_jack_new);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * snd_jack_set_parent - Set the parent device for a jack
  *
@@ -162,6 +365,11 @@ EXPORT_SYMBOL(snd_jack_new);
 void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
 {
 	WARN_ON(jack->registered);
+<<<<<<< HEAD
+=======
+	if (!jack->input_dev)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	jack->input_dev->dev.parent = parent;
 }
@@ -204,10 +412,17 @@ int snd_jack_set_key(struct snd_jack *jack, enum snd_jack_types type,
 
 	jack->type |= type;
 	jack->key[key] = keytype;
+<<<<<<< HEAD
 
 	return 0;
 }
 EXPORT_SYMBOL(snd_jack_set_key);
+=======
+	return 0;
+}
+EXPORT_SYMBOL(snd_jack_set_key);
+#endif /* CONFIG_SND_JACK_INPUT_DEV */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * snd_jack_report - Report the current status of a jack
@@ -217,11 +432,29 @@ EXPORT_SYMBOL(snd_jack_set_key);
  */
 void snd_jack_report(struct snd_jack *jack, int status)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	struct snd_jack_kctl *jack_kctl;
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+	int i;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!jack)
 		return;
 
+<<<<<<< HEAD
+=======
+	list_for_each_entry(jack_kctl, &jack->kctl_list, list)
+		snd_kctl_jack_report(jack->card, jack_kctl->kctl,
+					    status & jack_kctl->mask_bits);
+
+#ifdef CONFIG_SND_JACK_INPUT_DEV
+	if (!jack->input_dev)
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
 		int testbit = SND_JACK_BTN_0 >> i;
 
@@ -239,9 +472,15 @@ void snd_jack_report(struct snd_jack *jack, int status)
 	}
 
 	input_sync(jack->input_dev);
+<<<<<<< HEAD
 }
 EXPORT_SYMBOL(snd_jack_report);
 
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("Jack detection support for ALSA");
 MODULE_LICENSE("GPL");
+=======
+#endif /* CONFIG_SND_JACK_INPUT_DEV */
+}
+EXPORT_SYMBOL(snd_jack_report);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

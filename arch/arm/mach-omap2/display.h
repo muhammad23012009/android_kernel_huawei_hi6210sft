@@ -26,4 +26,19 @@ struct omap_dss_dispc_dev_attr {
 	bool	has_framedonetv_irq;
 };
 
+<<<<<<< HEAD
+=======
+int omap_init_drm(void);
+int omap_init_vrfb(void);
+int omap_init_fb(void);
+int omap_init_vout(void);
+
+struct device_node * __init omapdss_find_dss_of_node(void);
+
+struct omap_dss_board_info;
+
+/* Init with the board info */
+int omap_display_init(struct omap_dss_board_info *board_data);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

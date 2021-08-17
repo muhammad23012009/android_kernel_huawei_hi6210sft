@@ -4,7 +4,11 @@
 #define SAS_HOST_ATTRS		0
 #define SAS_PHY_ATTRS		17
 #define SAS_PORT_ATTRS		1
+<<<<<<< HEAD
 #define SAS_RPORT_ATTRS		7
+=======
+#define SAS_RPORT_ATTRS		8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SAS_END_DEV_ATTRS	5
 #define SAS_EXPANDER_ATTRS	7
 

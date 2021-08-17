@@ -56,7 +56,11 @@ struct iwcm_id_private {
 	struct list_head work_free_list;
 };
 
+<<<<<<< HEAD
 #define IWCM_F_CALLBACK_DESTROY   1
+=======
+#define IWCM_F_DROP_EVENTS	  1
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define IWCM_F_CONNECT_WAIT       2
 
 #endif /* IWCM_H */

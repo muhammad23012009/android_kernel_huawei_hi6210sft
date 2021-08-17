@@ -6,10 +6,13 @@
  *		 and date_dos2unix for date==0 by Igor Zhbanov(bsg@uniyar.ac.ru)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
 #include <linux/time.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "fat.h"
 
 /*
@@ -30,7 +33,11 @@ void __fat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
 		va_start(args, fmt);
 		vaf.fmt = fmt;
 		vaf.va = &args;
+<<<<<<< HEAD
 		printk(KERN_ERR "FAT-fs (%s): error, %pV\n", sb->s_id, &vaf);
+=======
+		fat_msg(sb, KERN_ERR, "error, %pV", &vaf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		va_end(args);
 	}
 
@@ -38,8 +45,12 @@ void __fat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
 		panic("FAT-fs (%s): fs panic from previous error\n", sb->s_id);
 	else if (opts->errors == FAT_ERRORS_RO && !(sb->s_flags & MS_RDONLY)) {
 		sb->s_flags |= MS_RDONLY;
+<<<<<<< HEAD
 		printk(KERN_ERR "FAT-fs (%s): Filesystem has been "
 				"set read-only\n", sb->s_id);
+=======
+		fat_msg(sb, KERN_ERR, "Filesystem has been set read-only");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 EXPORT_SYMBOL_GPL(__fat_fs_error);
@@ -165,8 +176,11 @@ int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster)
 	return 0;
 }
 
+<<<<<<< HEAD
 extern struct timezone sys_tz;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The epoch of FAT timestamp is 1980.
  *     :  bits :     value
@@ -274,7 +288,11 @@ int fat_sync_bhs(struct buffer_head **bhs, int nr_bhs)
 	int i, err = 0;
 
 	for (i = 0; i < nr_bhs; i++)
+<<<<<<< HEAD
 		write_dirty_buffer(bhs[i], WRITE);
+=======
+		write_dirty_buffer(bhs[i], 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < nr_bhs; i++) {
 		wait_on_buffer(bhs[i]);

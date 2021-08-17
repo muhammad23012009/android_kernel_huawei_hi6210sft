@@ -220,7 +220,11 @@ static const struct ps2pp_info *get_model_info(unsigned char model)
 		{ 61,	PS2PP_KIND_MX,					/* MX700 */
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN },
+<<<<<<< HEAD
 		{ 66,	PS2PP_KIND_MX,					/* MX3100 reciver */
+=======
+		{ 66,	PS2PP_KIND_MX,					/* MX3100 receiver */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				PS2PP_WHEEL | PS2PP_SIDE_BTN | PS2PP_TASK_BTN |
 				PS2PP_EXTRA_BTN | PS2PP_NAV_BTN | PS2PP_HWHEEL },
 		{ 72,	PS2PP_KIND_TRACKMAN,	0 },			/* T-CH11: TrackMan Marble */
@@ -325,7 +329,11 @@ static void ps2pp_set_model_properties(struct psmouse *psmouse,
  * that support it.
  */
 
+<<<<<<< HEAD
 int ps2pp_init(struct psmouse *psmouse, bool set_properties)
+=======
+int ps2pp_detect(struct psmouse *psmouse, bool set_properties)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
 	unsigned char param[4];

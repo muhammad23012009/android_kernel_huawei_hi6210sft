@@ -30,12 +30,21 @@
 
 #include <linux/kernel.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb/input.h>
 #include "usb.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-onetouch"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Maxtor USB OneTouch hard drive button driver");
 MODULE_AUTHOR("Nick Sillik <n.sillik@temple.edu>");
@@ -284,6 +293,11 @@ static void onetouch_release_input(void *onetouch_)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template onetouch_host_template;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int onetouch_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -291,7 +305,12 @@ static int onetouch_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - onetouch_usb_ids) + onetouch_unusual_dev_list);
+=======
+			(id - onetouch_usb_ids) + onetouch_unusual_dev_list,
+			&onetouch_host_template);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result)
 		return result;
 
@@ -302,7 +321,11 @@ static int onetouch_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver onetouch_driver = {
+<<<<<<< HEAD
 	.name =		"ums-onetouch",
+=======
+	.name =		DRV_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe =	onetouch_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -315,4 +338,8 @@ static struct usb_driver onetouch_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(onetouch_driver);
+=======
+module_usb_stor_driver(onetouch_driver, onetouch_host_template, DRV_NAME);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

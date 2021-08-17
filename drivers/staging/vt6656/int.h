@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * File: int.h
  *
@@ -32,6 +35,7 @@
 
 #include "device.h"
 
+<<<<<<< HEAD
 typedef struct tagSINTData {
 	u8 byTSR0;
 	u8 byPkt0;
@@ -58,5 +62,32 @@ SINTData, *PSINTData;
 
 void INTvWorkItem(struct vnt_private *);
 void INTnsProcessData(struct vnt_private *);
+=======
+struct vnt_interrupt_data {
+	u8 tsr0;
+	u8 pkt0;
+	u16 time0;
+	u8 tsr1;
+	u8 pkt1;
+	u16 time1;
+	u8 tsr2;
+	u8 pkt2;
+	u16 time2;
+	u8 tsr3;
+	u8 pkt3;
+	u16 time3;
+	__le64 tsf;
+	u8 isr0;
+	u8 isr1;
+	u8 rts_success;
+	u8 rts_fail;
+	u8 ack_fail;
+	u8 fcs_err;
+	u8 sw[2];
+} __packed;
+
+void vnt_int_start_interrupt(struct vnt_private *);
+void vnt_int_process_data(struct vnt_private *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __INT_H__ */

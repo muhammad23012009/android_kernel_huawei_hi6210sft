@@ -34,6 +34,7 @@ struct pci_host_bridge;
 struct machdep_calls {
 	char		*name;
 #ifdef CONFIG_PPC64
+<<<<<<< HEAD
 	void            (*hpte_invalidate)(unsigned long slot,
 					   unsigned long vpn,
 					   int psize, int ssize,
@@ -75,6 +76,8 @@ struct machdep_calls {
 				    long index);
 	void		(*tce_flush)(struct iommu_table *tbl);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *	(*ioremap)(phys_addr_t addr, unsigned long size,
 				   unsigned long flags, void *caller);
 	void		(*iounmap)(volatile void __iomem *token);
@@ -83,17 +86,26 @@ struct machdep_calls {
 	void		(*iommu_save)(void);
 	void		(*iommu_restore)(void);
 #endif
+<<<<<<< HEAD
 #endif /* CONFIG_PPC64 */
 
 	void		(*pci_dma_dev_setup)(struct pci_dev *dev);
 	void		(*pci_dma_bus_setup)(struct pci_bus *bus);
 
+=======
+#ifdef CONFIG_MEMORY_HOTPLUG_SPARSE
+	unsigned long	(*memory_block_size)(void);
+#endif
+#endif /* CONFIG_PPC64 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Platform set_dma_mask and dma_get_required_mask overrides */
 	int		(*dma_set_mask)(struct device *dev, u64 dma_mask);
 	u64		(*dma_get_required_mask)(struct device *dev);
 
 	int		(*probe)(void);
 	void		(*setup_arch)(void); /* Optional, may be NULL */
+<<<<<<< HEAD
 	void		(*init_early)(void);
 	/* Optional, may be NULL. */
 	void		(*show_cpuinfo)(struct seq_file *m);
@@ -108,6 +120,22 @@ struct machdep_calls {
 	/* Called after scanning the bus, before allocating resources */
 	void		(*pcibios_fixup)(void);
 	int		(*pci_probe_mode)(struct pci_bus *);
+=======
+	/* Optional, may be NULL. */
+	void		(*show_cpuinfo)(struct seq_file *m);
+	void		(*show_percpuinfo)(struct seq_file *m, int i);
+	/* Returns the current operating frequency of "cpu" in Hz */
+	unsigned long  	(*get_proc_freq)(unsigned int cpu);
+
+	void		(*init_IRQ)(void);
+
+	/* Return an irq, or 0 to indicate there are none pending. */
+	unsigned int	(*get_irq)(void);
+
+	/* PCI stuff */
+	/* Called after allocating resources */
+	void		(*pcibios_fixup)(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void		(*pci_irq_fixup)(struct pci_dev *dev);
 	int		(*pcibios_root_bridge_prepare)(struct pci_host_bridge
 				*bridge);
@@ -115,6 +143,7 @@ struct machdep_calls {
 	/* To setup PHBs when using automatic OF platform driver for PCI */
 	int		(*pci_setup_phb)(struct pci_controller *host);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI_MSI
 	int		(*msi_check_device)(struct pci_dev* dev,
 					    int nvec, int type);
@@ -126,6 +155,10 @@ struct machdep_calls {
 	void		(*restart)(char *cmd);
 	void		(*power_off)(void);
 	void		(*halt)(void);
+=======
+	void __noreturn	(*restart)(char *cmd);
+	void __noreturn (*halt)(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void		(*panic)(char *str);
 	void		(*cpu_die)(void);
 
@@ -154,6 +187,16 @@ struct machdep_calls {
 	/* Exception handlers */
 	int		(*system_reset_exception)(struct pt_regs *regs);
 	int 		(*machine_check_exception)(struct pt_regs *regs);
+<<<<<<< HEAD
+=======
+	int		(*handle_hmi_exception)(struct pt_regs *regs);
+
+	/* Early exception handlers called in realmode */
+	int		(*hmi_exception_early)(struct pt_regs *regs);
+
+	/* Called during machine check exception to retrive fixup address. */
+	bool		(*mce_check_early_recovery)(struct pt_regs *regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Motherboard/chipset features. This is a kind of general purpose
 	 * hook used to control some machine specific features (like reset
@@ -180,11 +223,19 @@ struct machdep_calls {
 	   platform, called once per cpu. */
 	void		(*enable_pmcs)(void);
 
+<<<<<<< HEAD
 	/* Set DABR for this platform, leave empty for default implemenation */
 	int		(*set_dabr)(unsigned long dabr,
 				    unsigned long dabrx);
 
 	/* Set DAWR for this platform, leave empty for default implemenation */
+=======
+	/* Set DABR for this platform, leave empty for default implementation */
+	int		(*set_dabr)(unsigned long dabr,
+				    unsigned long dabrx);
+
+	/* Set DAWR for this platform, leave empty for default implementation */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int		(*set_dawr)(unsigned long dawr,
 				    unsigned long dawrx);
 
@@ -213,6 +264,7 @@ struct machdep_calls {
 	/* Called for each PCI bus in the system when it's probed */
 	void (*pcibios_fixup_bus)(struct pci_bus *);
 
+<<<<<<< HEAD
 	/* Called when pci_enable_device() is called. Returns 0 to
 	 * allow assignment/enabling of the device. */
 	int  (*pcibios_enable_device_hook)(struct pci_dev *);
@@ -222,6 +274,15 @@ struct machdep_calls {
 
 	/* Called during PCI resource reassignment */
 	resource_size_t (*pcibios_window_alignment)(struct pci_bus *, unsigned long type);
+=======
+	/* Called after scan and before resource survey */
+	void (*pcibios_fixup_phb)(struct pci_controller *hose);
+
+#ifdef CONFIG_PCI_IOV
+	void (*pcibios_fixup_sriov)(struct pci_dev *pdev);
+	resource_size_t (*pcibios_iov_resource_alignment)(struct pci_dev *, int resno);
+#endif /* CONFIG_PCI_IOV */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Called to shutdown machine specific hardware not already controlled
 	 * by other drivers.
@@ -260,6 +321,13 @@ struct machdep_calls {
 	ssize_t (*cpu_probe)(const char *, size_t);
 	ssize_t (*cpu_release)(const char *, size_t);
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_ARCH_RANDOM
+	int (*get_random_seed)(unsigned long *v);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern void e500_idle(void);
@@ -292,8 +360,11 @@ extern struct machdep_calls *machine_id;
 
 extern void probe_machine(void);
 
+<<<<<<< HEAD
 extern char cmd_line[COMMAND_LINE_SIZE];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PPC_PMAC
 /*
  * Power macintoshes have either a CUDA, PMU or SMU controlling
@@ -309,6 +380,7 @@ extern sys_ctrler_t sys_ctrler;
 
 #endif /* CONFIG_PPC_PMAC */
 
+<<<<<<< HEAD
 
 /* Functions to produce codes on the leds.
  * The SRC code should be unique for the message category and should
@@ -319,6 +391,8 @@ extern sys_ctrler_t sys_ctrler;
 /* Print a boot progress message. */
 void ppc64_boot_msg(unsigned int src, const char *msg);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void log_error(char *buf, unsigned int err_type, int fatal)
 {
 	if (ppc_md.log_error)
@@ -332,6 +406,10 @@ static inline void log_error(char *buf, unsigned int err_type, int fatal)
 	} \
 	__define_initcall(__machine_initcall_##mach##_##fn, id);
 
+<<<<<<< HEAD
+=======
+#define machine_early_initcall(mach, fn)	__define_machine_initcall(mach, fn, early)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define machine_core_initcall(mach, fn)		__define_machine_initcall(mach, fn, 1)
 #define machine_core_initcall_sync(mach, fn)	__define_machine_initcall(mach, fn, 1s)
 #define machine_postcore_initcall(mach, fn)	__define_machine_initcall(mach, fn, 2)

@@ -9,7 +9,11 @@
  * GNU General Public License version 2 only.
  *
  * Copyright (c) 2009-2010 by:
+<<<<<<< HEAD
  *	 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ *	 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Red Hat Inc. http://www.redhat.com
  *
@@ -271,6 +275,7 @@ struct i7core_pvt {
 
 	bool		is_registered, enable_scrub;
 
+<<<<<<< HEAD
 	/* Fifo double buffers */
 	struct mce		mce_entry[MCE_LOG_LEN];
 	struct mce		mce_outentry[MCE_LOG_LEN];
@@ -281,6 +286,8 @@ struct i7core_pvt {
 	/* Count indicator to show errors not got */
 	unsigned		mce_overrun;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* DCLK Frequency used for computing scrub rate */
 	int			dclk_freq;
 
@@ -394,7 +401,11 @@ static const struct pci_id_table pci_dev_table[] = {
 /*
  *	pci_device_id	table for which devices we are looking for
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(i7core_pci_tbl) = {
+=======
+static const struct pci_device_id i7core_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_X58_HUB_MGMT)},
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_LYNNFIELD_QPI_LINK0)},
 	{0,}			/* 0 terminated list. */
@@ -704,7 +715,11 @@ static ssize_t i7core_inject_section_store(struct device *dev,
 	if (pvt->inject.enable)
 		disable_inject(mci);
 
+<<<<<<< HEAD
 	rc = strict_strtoul(data, 10, &value);
+=======
+	rc = kstrtoul(data, 10, &value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((rc < 0) || (value > 3))
 		return -EIO;
 
@@ -741,7 +756,11 @@ struct i7core_pvt *pvt = mci->pvt_info;
 	if (pvt->inject.enable)
 		disable_inject(mci);
 
+<<<<<<< HEAD
 	rc = strict_strtoul(data, 10, &value);
+=======
+	rc = kstrtoul(data, 10, &value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((rc < 0) || (value > 7))
 		return -EIO;
 
@@ -781,7 +800,11 @@ static ssize_t i7core_inject_eccmask_store(struct device *dev,
 	if (pvt->inject.enable)
 		disable_inject(mci);
 
+<<<<<<< HEAD
 	rc = strict_strtoul(data, 10, &value);
+=======
+	rc = kstrtoul(data, 10, &value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc < 0)
 		return -EIO;
 
@@ -830,7 +853,11 @@ static ssize_t i7core_inject_store_##param(			\
 	if (!strcasecmp(data, "any") || !strcasecmp(data, "any\n"))\
 		value = -1;					\
 	else {							\
+<<<<<<< HEAD
 		rc = strict_strtoul(data, 10, &value);		\
+=======
+		rc = kstrtoul(data, 10, &value);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ((rc < 0) || (value >= limit))		\
 			return -EIO;				\
 	}							\
@@ -934,7 +961,11 @@ static ssize_t i7core_inject_enable_store(struct device *dev,
 	if (!pvt->pci_ch[pvt->inject.channel][0])
 		return 0;
 
+<<<<<<< HEAD
 	rc = strict_strtoul(data, 10, &enable);
+=======
+	rc = kstrtoul(data, 10, &enable);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((rc < 0))
 		return 0;
 
@@ -1157,11 +1188,25 @@ static DEVICE_ATTR(inject_eccmask, S_IRUGO | S_IWUSR,
 static DEVICE_ATTR(inject_enable, S_IRUGO | S_IWUSR,
 		   i7core_inject_enable_show, i7core_inject_enable_store);
 
+<<<<<<< HEAD
+=======
+static struct attribute *i7core_dev_attrs[] = {
+	&dev_attr_inject_section.attr,
+	&dev_attr_inject_type.attr,
+	&dev_attr_inject_eccmask.attr,
+	&dev_attr_inject_enable.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(i7core_dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 {
 	struct i7core_pvt *pvt = mci->pvt_info;
 	int rc;
 
+<<<<<<< HEAD
 	rc = device_create_file(&mci->dev, &dev_attr_inject_section);
 	if (rc < 0)
 		return rc;
@@ -1178,6 +1223,11 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 	pvt->addrmatch_dev = kzalloc(sizeof(*pvt->addrmatch_dev), GFP_KERNEL);
 	if (!pvt->addrmatch_dev)
 		return rc;
+=======
+	pvt->addrmatch_dev = kzalloc(sizeof(*pvt->addrmatch_dev), GFP_KERNEL);
+	if (!pvt->addrmatch_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pvt->addrmatch_dev->type = &addrmatch_type;
 	pvt->addrmatch_dev->bus = mci->dev.bus;
@@ -1190,15 +1240,24 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 
 	rc = device_add(pvt->addrmatch_dev);
 	if (rc < 0)
+<<<<<<< HEAD
 		return rc;
+=======
+		goto err_put_addrmatch;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!pvt->is_registered) {
 		pvt->chancounts_dev = kzalloc(sizeof(*pvt->chancounts_dev),
 					      GFP_KERNEL);
 		if (!pvt->chancounts_dev) {
+<<<<<<< HEAD
 			put_device(pvt->addrmatch_dev);
 			device_del(pvt->addrmatch_dev);
 			return rc;
+=======
+			rc = -ENOMEM;
+			goto err_del_addrmatch;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		pvt->chancounts_dev->type = &all_channel_counts_type;
@@ -1212,9 +1271,24 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 
 		rc = device_add(pvt->chancounts_dev);
 		if (rc < 0)
+<<<<<<< HEAD
 			return rc;
 	}
 	return 0;
+=======
+			goto err_put_chancounts;
+	}
+	return 0;
+
+err_put_chancounts:
+	put_device(pvt->chancounts_dev);
+err_del_addrmatch:
+	device_del(pvt->addrmatch_dev);
+err_put_addrmatch:
+	put_device(pvt->addrmatch_dev);
+
+	return rc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
@@ -1223,6 +1297,7 @@ static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
 
 	edac_dbg(1, "\n");
 
+<<<<<<< HEAD
 	device_remove_file(&mci->dev, &dev_attr_inject_section);
 	device_remove_file(&mci->dev, &dev_attr_inject_type);
 	device_remove_file(&mci->dev, &dev_attr_inject_eccmask);
@@ -1234,6 +1309,14 @@ static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
 	}
 	put_device(pvt->addrmatch_dev);
 	device_del(pvt->addrmatch_dev);
+=======
+	if (!pvt->is_registered) {
+		device_del(pvt->chancounts_dev);
+		put_device(pvt->chancounts_dev);
+	}
+	device_del(pvt->addrmatch_dev);
+	put_device(pvt->addrmatch_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /****************************************************************************
@@ -1708,7 +1791,11 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
 				    const struct mce *m)
 {
 	struct i7core_pvt *pvt = mci->pvt_info;
+<<<<<<< HEAD
 	char *type, *optype, *err;
+=======
+	char *optype, *err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum hw_event_mc_err_type tp_event;
 	unsigned long error = m->status & 0x1ff0000l;
 	bool uncorrected_error = m->mcgstatus & 1ll << 61;
@@ -1721,6 +1808,7 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
 	u32 errnum = find_first_bit(&error, 32);
 
 	if (uncorrected_error) {
+<<<<<<< HEAD
 		if (ripv) {
 			type = "FATAL";
 			tp_event = HW_EVENT_ERR_FATAL;
@@ -1730,6 +1818,14 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
 		}
 	} else {
 		type = "CORRECTED";
+=======
+		core_err_cnt = 1;
+		if (ripv)
+			tp_event = HW_EVENT_ERR_FATAL;
+		else
+			tp_event = HW_EVENT_ERR_UNCORRECTED;
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tp_event = HW_EVENT_ERR_CORRECTED;
 	}
 
@@ -1804,6 +1900,7 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
  *	i7core_check_error	Retrieve and process errors reported by the
  *				hardware. Called by the Core module.
  */
+<<<<<<< HEAD
 static void i7core_check_error(struct mem_ctl_info *mci)
 {
 	struct i7core_pvt *pvt = mci->pvt_info;
@@ -1849,11 +1946,21 @@ static void i7core_check_error(struct mem_ctl_info *mci)
 	 */
 	for (i = 0; i < count; i++)
 		i7core_mce_output_error(mci, &pvt->mce_outentry[i]);
+=======
+static void i7core_check_error(struct mem_ctl_info *mci, struct mce *m)
+{
+	struct i7core_pvt *pvt = mci->pvt_info;
+
+	i7core_mce_output_error(mci, m);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Now, let's increment CE error counts
 	 */
+<<<<<<< HEAD
 check_ce_error:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pvt->is_registered)
 		i7core_udimm_check_mc_ecc_err(mci);
 	else
@@ -1861,12 +1968,17 @@ check_ce_error:
 }
 
 /*
+<<<<<<< HEAD
  * i7core_mce_check_error	Replicates mcelog routine to get errors
  *				This routine simply queues mcelog errors, and
  *				return. The error itself should be handled later
  *				by i7core_check_error.
  * WARNING: As this routine should be called at NMI time, extra care should
  * be taken to avoid deadlocks, and to be as fast as possible.
+=======
+ * Check that logging is enabled and that this is the right type
+ * of error for us to handle.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int i7core_mce_check_error(struct notifier_block *nb, unsigned long val,
 				  void *data)
@@ -1894,6 +2006,7 @@ static int i7core_mce_check_error(struct notifier_block *nb, unsigned long val,
 	if (mce->bank != 8)
 		return NOTIFY_DONE;
 
+<<<<<<< HEAD
 	smp_rmb();
 	if ((pvt->mce_out + 1) % MCE_LOG_LEN == pvt->mce_in) {
 		smp_wmb();
@@ -1909,6 +2022,9 @@ static int i7core_mce_check_error(struct notifier_block *nb, unsigned long val,
 	/* Handle fatal errors immediately */
 	if (mce->mcgstatus & 1)
 		i7core_check_error(mci);
+=======
+	i7core_check_error(mci, mce);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Advise mcelog that the errors were handled */
 	return NOTIFY_STOP;
@@ -2255,15 +2371,22 @@ static int i7core_register_mci(struct i7core_dev *i7core_dev)
 	get_dimm_config(mci);
 	/* record ptr to the generic device */
 	mci->pdev = &i7core_dev->pdev[0]->dev;
+<<<<<<< HEAD
 	/* Set the function pointer to an actual operation function */
 	mci->edac_check = i7core_check_error;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Enable scrubrate setting */
 	if (pvt->enable_scrub)
 		enable_sdram_scrub_setting(mci);
 
 	/* add this new MC control structure to EDAC's list of MCs */
+<<<<<<< HEAD
 	if (unlikely(edac_mc_add_mc(mci))) {
+=======
+	if (unlikely(edac_mc_add_mc_with_groups(mci, i7core_dev_groups))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		edac_dbg(0, "MC: failed edac_mc_add_mc()\n");
 		/* FIXME: perhaps some code should go here that disables error
 		 * reporting if we just enabled it
@@ -2461,7 +2584,11 @@ module_init(i7core_init);
 module_exit(i7core_exit);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Red Hat Inc. (http://www.redhat.com)");
 MODULE_DESCRIPTION("MC Driver for Intel i7 Core memory controllers - "
 		   I7CORE_REVISION);

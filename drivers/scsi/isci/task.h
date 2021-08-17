@@ -131,7 +131,10 @@ static inline void isci_print_tmf(struct isci_host *ihost, struct isci_tmf *tmf)
 
 int isci_task_execute_task(
 	struct sas_task *task,
+<<<<<<< HEAD
 	int num,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gfp_t gfp_flags);
 
 int isci_task_abort_task(

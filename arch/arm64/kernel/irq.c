@@ -27,6 +27,7 @@
 #include <linux/init.h>
 #include <linux/irqchip.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/ratelimit.h>
 
 #include <linux/huawei/rdr_private.h>
@@ -77,10 +78,22 @@ int arch_show_interrupts(struct seq_file *p, int prec)
 #ifdef CONFIG_SMP
 	show_ipi_list(p, prec);
 #endif
+=======
+
+unsigned long irq_err_count;
+
+/* irq stack only needs to be 16 byte aligned - not IRQ_STACK_SIZE aligned. */
+DEFINE_PER_CPU(unsigned long [IRQ_STACK_SIZE/sizeof(long)], irq_stack) __aligned(16);
+
+int arch_show_interrupts(struct seq_file *p, int prec)
+{
+	show_ipi_list(p, prec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_count);
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * handle_IRQ handles all hardware IRQ's.  Decoded IRQs should
  * not come via this function.  Instead, they should provide their
@@ -145,6 +158,9 @@ void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 
 	set_irq_regs(old_regs);
 }
+=======
+void (*handle_arch_irq)(struct pt_regs *) = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void __init set_handle_irq(void (*handle_irq)(struct pt_regs *))
 {
@@ -160,6 +176,7 @@ void __init init_IRQ(void)
 	if (!handle_arch_irq)
 		panic("No interrupt controller found.");
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_HOTPLUG_CPU
 static bool migrate_one_irq(struct irq_desc *desc)
@@ -221,3 +238,5 @@ void migrate_irqs(void)
 	local_irq_restore(flags);
 }
 #endif /* CONFIG_HOTPLUG_CPU */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

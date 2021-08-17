@@ -11,11 +11,17 @@
 
 #include <linux/threads.h>
 #include <linux/cpumask.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>
 #include <linux/init.h>
+=======
+#include <linux/string.h>
+#include <linux/kernel.h>
+#include <linux/ctype.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <asm/fixmap.h>
 #include <asm/mpspec.h>
@@ -31,6 +37,10 @@
 #include <asm/e820.h>
 
 static void noop_init_apic_ldr(void) { }
+<<<<<<< HEAD
+=======
+static void noop_send_IPI(int cpu, int vector) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void noop_send_IPI_mask(const struct cpumask *cpumask, int vector) { }
 static void noop_send_IPI_mask_allbutself(const struct cpumask *cpumask, int vector) { }
 static void noop_send_IPI_allbutself(int vector) { }
@@ -90,6 +100,7 @@ static const struct cpumask *noop_target_cpus(void)
 	return cpumask_of(0);
 }
 
+<<<<<<< HEAD
 static unsigned long noop_check_apicid_used(physid_mask_t *map, int apicid)
 {
 	return physid_isset(apicid, *map);
@@ -100,6 +111,8 @@ static unsigned long noop_check_apicid_present(int bit)
 	return physid_isset(bit, phys_cpu_present_map);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void noop_vector_allocation_domain(int cpu, struct cpumask *retmask,
 					  const struct cpumask *mask)
 {
@@ -110,16 +123,27 @@ static void noop_vector_allocation_domain(int cpu, struct cpumask *retmask,
 
 static u32 noop_apic_read(u32 reg)
 {
+<<<<<<< HEAD
 	WARN_ON_ONCE((cpu_has_apic && !disable_apic));
+=======
+	WARN_ON_ONCE(boot_cpu_has(X86_FEATURE_APIC) && !disable_apic);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static void noop_apic_write(u32 reg, u32 v)
 {
+<<<<<<< HEAD
 	WARN_ON_ONCE(cpu_has_apic && !disable_apic);
 }
 
 struct apic apic_noop = {
+=======
+	WARN_ON_ONCE(boot_cpu_has(X86_FEATURE_APIC) && !disable_apic);
+}
+
+struct apic apic_noop __ro_after_init = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name				= "noop",
 	.probe				= noop_probe,
 	.acpi_madt_oem_check		= NULL,
@@ -134,19 +158,27 @@ struct apic apic_noop = {
 	.target_cpus			= noop_target_cpus,
 	.disable_esr			= 0,
 	.dest_logical			= APIC_DEST_LOGICAL,
+<<<<<<< HEAD
 	.check_apicid_used		= noop_check_apicid_used,
 	.check_apicid_present		= noop_check_apicid_present,
+=======
+	.check_apicid_used		= default_check_apicid_used,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.vector_allocation_domain	= noop_vector_allocation_domain,
 	.init_apic_ldr			= noop_init_apic_ldr,
 
 	.ioapic_phys_id_map		= default_ioapic_phys_id_map,
 	.setup_apic_routing		= NULL,
+<<<<<<< HEAD
 	.multi_timer_check		= NULL,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
 	.apicid_to_cpu_present		= physid_set_mask_of_physid,
 
+<<<<<<< HEAD
 	.setup_portio_remap		= NULL,
 	.check_phys_apicid_present	= default_check_phys_apicid_present,
 	.enable_apic_mode		= NULL,
@@ -161,6 +193,18 @@ struct apic apic_noop = {
 
 	.cpu_mask_to_apicid_and		= flat_cpu_mask_to_apicid_and,
 
+=======
+	.check_phys_apicid_present	= default_check_phys_apicid_present,
+
+	.phys_pkg_id			= noop_phys_pkg_id,
+
+	.get_apic_id			= noop_get_apic_id,
+	.set_apic_id			= NULL,
+
+	.cpu_mask_to_apicid_and		= flat_cpu_mask_to_apicid_and,
+
+	.send_IPI			= noop_send_IPI,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.send_IPI_mask			= noop_send_IPI_mask,
 	.send_IPI_mask_allbutself	= noop_send_IPI_mask_allbutself,
 	.send_IPI_allbutself		= noop_send_IPI_allbutself,
@@ -169,6 +213,7 @@ struct apic apic_noop = {
 
 	.wakeup_secondary_cpu		= noop_wakeup_secondary_cpu,
 
+<<<<<<< HEAD
 	/* should be safe */
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
@@ -176,6 +221,8 @@ struct apic apic_noop = {
 	.wait_for_init_deassert		= NULL,
 
 	.smp_callin_clear_local_apic	= NULL,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.inquire_remote_apic		= NULL,
 
 	.read				= noop_apic_read,

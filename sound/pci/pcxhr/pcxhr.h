@@ -78,6 +78,7 @@ struct pcxhr_mgr {
 	char shortname[32];		/* short name of this soundcard */
 	char longname[96];		/* name of this soundcard */
 
+<<<<<<< HEAD
 	/* message tasklet */
 	struct tasklet_struct msg_taskq;
 	struct pcxhr_rmh *prmh;
@@ -86,6 +87,12 @@ struct pcxhr_mgr {
 
 	spinlock_t lock;		/* interrupt spinlock */
 	spinlock_t msg_lock;		/* message spinlock */
+=======
+	struct pcxhr_rmh *prmh;
+
+	struct mutex lock;		/* interrupt lock */
+	struct mutex msg_lock;		/* message lock */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex setup_mutex;	/* mutex used in hw_params, open and close */
 	struct mutex mixer_mutex;	/* mutex for mixer */

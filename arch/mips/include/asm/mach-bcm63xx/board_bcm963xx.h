@@ -24,6 +24,10 @@ struct board_info {
 	/* enabled feature/device */
 	unsigned int	has_enet0:1;
 	unsigned int	has_enet1:1;
+<<<<<<< HEAD
+=======
+	unsigned int	has_enetsw:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int	has_pci:1;
 	unsigned int	has_pccard:1;
 	unsigned int	has_ohci0:1;
@@ -36,6 +40,10 @@ struct board_info {
 	/* ethernet config */
 	struct bcm63xx_enet_platform_data enet0;
 	struct bcm63xx_enet_platform_data enet1;
+<<<<<<< HEAD
+=======
+	struct bcm63xx_enetsw_platform_data enetsw;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* USB config */
 	struct bcm63xx_usbd_platform_data usbd;
@@ -45,6 +53,15 @@ struct board_info {
 
 	/* GPIO LEDs */
 	struct gpio_led leds[5];
+<<<<<<< HEAD
+=======
+
+	/* External PHY reset GPIO */
+	unsigned int ephy_reset_gpio;
+
+	/* External PHY reset GPIO flags from gpio.h */
+	unsigned long ephy_reset_gpio_flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* ! BOARD_BCM963XX_H_ */

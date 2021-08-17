@@ -66,7 +66,11 @@ int superhyway_add_device(unsigned long base, struct superhyway_device *sdev,
 	superhyway_read_vcr(dev, base, &dev->vcr);
 
 	if (!dev->resource) {
+<<<<<<< HEAD
 		dev->resource = kmalloc(sizeof(struct resource), GFP_KERNEL);
+=======
+		dev->resource = kzalloc(sizeof(struct resource), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!dev->resource) {
 			kfree(dev);
 			return -ENOMEM;

@@ -264,6 +264,11 @@ void ax25_disconnect(ax25_cb *ax25, int reason)
 {
 	ax25_clear_queues(ax25);
 
+<<<<<<< HEAD
+=======
+	if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
+		ax25_stop_heartbeat(ax25);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ax25_stop_t1timer(ax25);
 	ax25_stop_t2timer(ax25);
 	ax25_stop_t3timer(ax25);

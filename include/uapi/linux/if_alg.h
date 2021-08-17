@@ -32,6 +32,11 @@ struct af_alg_iv {
 #define ALG_SET_KEY			1
 #define ALG_SET_IV			2
 #define ALG_SET_OP			3
+<<<<<<< HEAD
+=======
+#define ALG_SET_AEAD_ASSOCLEN		4
+#define ALG_SET_AEAD_AUTHSIZE		5
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Operations */
 #define ALG_OP_DECRYPT			0

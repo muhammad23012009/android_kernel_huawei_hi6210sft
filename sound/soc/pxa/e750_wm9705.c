@@ -70,6 +70,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"MIC1", NULL, "Mic (Internal)"},
 };
 
+<<<<<<< HEAD
 static int e750_ac97_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
@@ -93,6 +94,8 @@ static int e750_ac97_init(struct snd_soc_pcm_runtime *rtd)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct snd_soc_dai_link e750_dai[] = {
 	{
 		.name = "AC97",
@@ -101,7 +104,10 @@ static struct snd_soc_dai_link e750_dai[] = {
 		.codec_dai_name = "wm9705-hifi",
 		.platform_name = "pxa-pcm-audio",
 		.codec_name = "wm9705-codec",
+<<<<<<< HEAD
 		.init = e750_ac97_init,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* use ops to check startup state */
 	},
 	{
@@ -119,6 +125,15 @@ static struct snd_soc_card e750 = {
 	.owner = THIS_MODULE,
 	.dai_link = e750_dai,
 	.num_links = ARRAY_SIZE(e750_dai),
+<<<<<<< HEAD
+=======
+
+	.dapm_widgets = e750_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(e750_dapm_widgets),
+	.dapm_routes = audio_map,
+	.num_dapm_routes = ARRAY_SIZE(audio_map),
+	.fully_routed = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct gpio e750_audio_gpios[] = {
@@ -138,7 +153,11 @@ static int e750_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 			ret);
@@ -149,17 +168,25 @@ static int e750_probe(struct platform_device *pdev)
 
 static int e750_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 
 	gpio_free_array(e750_audio_gpios, ARRAY_SIZE(e750_audio_gpios));
 	snd_soc_unregister_card(card);
+=======
+	gpio_free_array(e750_audio_gpios, ARRAY_SIZE(e750_audio_gpios));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver e750_driver = {
 	.driver		= {
 		.name	= "e750-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.pm     = &snd_soc_pm_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= e750_probe,
 	.remove		= e750_remove,

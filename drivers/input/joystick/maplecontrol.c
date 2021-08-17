@@ -61,7 +61,11 @@ static void dc_pad_callback(struct mapleq *mq)
 
 static int dc_pad_open(struct input_dev *dev)
 {
+<<<<<<< HEAD
 	struct dc_pad *pad = dev->dev.platform_data;
+=======
+	struct dc_pad *pad = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	maple_getcond_callback(pad->mdev, dc_pad_callback, HZ/20,
 		MAPLE_FUNC_CONTROLLER);
@@ -71,7 +75,11 @@ static int dc_pad_open(struct input_dev *dev)
 
 static void dc_pad_close(struct input_dev *dev)
 {
+<<<<<<< HEAD
 	struct dc_pad *pad = dev->dev.platform_data;
+=======
+	struct dc_pad *pad = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	maple_getcond_callback(pad->mdev, dc_pad_callback, 0,
 		MAPLE_FUNC_CONTROLLER);

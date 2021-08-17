@@ -21,6 +21,11 @@
 typedef u64 __nocast cputime_t;
 typedef u64 __nocast cputime64_t;
 
+<<<<<<< HEAD
+=======
+#define cmpxchg_cputime(ptr, old, new) cmpxchg64(ptr, old, new)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cputime_one_jiffy		jiffies_to_cputime(1)
 
 #define cputime_div(__ct, divisor)  div_u64((__force u64)__ct, divisor)
@@ -44,7 +49,16 @@ typedef u64 __nocast cputime64_t;
 /*
  * Convert cputime <-> nanoseconds
  */
+<<<<<<< HEAD
 #define nsecs_to_cputime(__nsecs)	((__force u64)(__nsecs))
+=======
+#define cputime_to_nsecs(__ct)		\
+	(__force u64)(__ct)
+#define nsecs_to_cputime(__nsecs)	\
+	(__force cputime_t)(__nsecs)
+#define nsecs_to_cputime64(__nsecs)	\
+	(__force cputime64_t)(__nsecs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*
@@ -70,7 +84,11 @@ typedef u64 __nocast cputime64_t;
  */
 static inline cputime_t timespec_to_cputime(const struct timespec *val)
 {
+<<<<<<< HEAD
 	u64 ret = val->tv_sec * NSEC_PER_SEC + val->tv_nsec;
+=======
+	u64 ret = (u64)val->tv_sec * NSEC_PER_SEC + val->tv_nsec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (__force cputime_t) ret;
 }
 static inline void cputime_to_timespec(const cputime_t ct, struct timespec *val)
@@ -86,7 +104,12 @@ static inline void cputime_to_timespec(const cputime_t ct, struct timespec *val)
  */
 static inline cputime_t timeval_to_cputime(const struct timeval *val)
 {
+<<<<<<< HEAD
 	u64 ret = val->tv_sec * NSEC_PER_SEC + val->tv_usec * NSEC_PER_USEC;
+=======
+	u64 ret = (u64)val->tv_sec * NSEC_PER_SEC +
+			val->tv_usec * NSEC_PER_USEC;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (__force cputime_t) ret;
 }
 static inline void cputime_to_timeval(const cputime_t ct, struct timeval *val)

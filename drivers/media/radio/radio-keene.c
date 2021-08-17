@@ -93,7 +93,11 @@ static int keene_cmd_main(struct keene_device *radio, unsigned freq, bool play)
 	/* If bit 4 is set, then tune to the frequency.
 	   If bit 3 is set, then unmute; if bit 2 is set, then mute.
 	   If bit 1 is set, then enter idle mode; if bit 0 is set,
+<<<<<<< HEAD
 	   then enter transit mode.
+=======
+	   then enter transmit mode.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	radio->buffer[5] = (radio->muted ? 4 : 8) | (play ? 1 : 2) |
 							(freq ? 0x10 : 0);
@@ -123,7 +127,11 @@ static int keene_cmd_set(struct keene_device *radio)
 	/* If bit 0 is set, then transmit mono, otherwise stereo.
 	   If bit 2 is set, then enable 75 us preemphasis, otherwise
 	   it is 50 us. */
+<<<<<<< HEAD
 	radio->buffer[3] = (!radio->stereo) | (radio->preemph_75_us ? 4 : 0);
+=======
+	radio->buffer[3] = (radio->stereo ? 0 : 1) | (radio->preemph_75_us ? 4 : 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	radio->buffer[4] = 0x00;
 	radio->buffer[5] = 0x00;
 	radio->buffer[6] = 0x00;
@@ -265,7 +273,11 @@ static int keene_s_ctrl(struct v4l2_ctrl *ctrl)
 		return keene_cmd_set(radio);
 
 	case V4L2_CID_AUDIO_COMPRESSION_GAIN:
+<<<<<<< HEAD
 		radio->tx = db2tx[(ctrl->val - ctrl->minimum) / ctrl->step];
+=======
+		radio->tx = db2tx[(ctrl->val - (s32)ctrl->minimum) / (s32)ctrl->step];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return keene_cmd_set(radio);
 	}
 	return -EINVAL;
@@ -350,7 +362,10 @@ static int usb_keene_probe(struct usb_interface *intf,
 	radio->pa = 118;
 	radio->tx = 0x32;
 	radio->stereo = true;
+<<<<<<< HEAD
 	radio->curfreq = 95.16 * FREQ_MUL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (hdl->error) {
 		retval = hdl->error;
 
@@ -381,7 +396,14 @@ static int usb_keene_probe(struct usb_interface *intf,
 	usb_set_intfdata(intf, &radio->v4l2_dev);
 
 	video_set_drvdata(&radio->vdev, radio);
+<<<<<<< HEAD
 	set_bit(V4L2_FL_USE_FH_PRIO, &radio->vdev.flags);
+=======
+
+	/* at least 11ms is needed in order to settle hardware */
+	msleep(20);
+	keene_cmd_main(radio, 95.16 * FREQ_MUL, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = video_register_device(&radio->vdev, VFL_TYPE_RADIO, -1);
 	if (retval < 0) {
@@ -413,6 +435,7 @@ static struct usb_driver usb_keene_driver = {
 	.reset_resume		= usb_keene_resume,
 };
 
+<<<<<<< HEAD
 static int __init keene_init(void)
 {
 	int retval = usb_register(&usb_keene_driver);
@@ -431,4 +454,7 @@ static void __exit keene_exit(void)
 
 module_init(keene_init);
 module_exit(keene_exit);
+=======
+module_usb_driver(usb_keene_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 

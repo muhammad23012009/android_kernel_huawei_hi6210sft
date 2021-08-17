@@ -8,12 +8,20 @@
 
 / {
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
 
 		main_clock: clock@0 {
 			compatible = "atmel,osc", "fixed-clock";
+=======
+		slow_xtal {
+			clock-frequency = <32768>;
+		};
+
+		main_xtal {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			clock-frequency = <12000000>;
 		};
 	};
@@ -30,7 +38,11 @@
 			};
 
 			usb1: gadget@fffa4000 {
+<<<<<<< HEAD
 				atmel,vbus-gpio = <&pioC 5 0>;
+=======
+				atmel,vbus-gpio = <&pioC 5 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				status = "okay";
 			};
 		};
@@ -82,7 +94,11 @@
 			};
 		};
 
+<<<<<<< HEAD
 		usb0: ohci@00500000 {
+=======
+		usb0: ohci@500000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			num-ports = <2>;
 			status = "okay";
 		};
@@ -93,7 +109,11 @@
 
 		user_led {
 			label = "user_led";
+<<<<<<< HEAD
 			gpios = <&pioB 21 1>;
+=======
+			gpios = <&pioB 21 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "heartbeat";
 		};
 	};
@@ -105,6 +125,7 @@
 
 		user_pb {
 			label = "user_pb";
+<<<<<<< HEAD
 			gpios = <&pioB 10 1>;
 			linux,code = <28>;
 			gpio-key,wakeup;
@@ -112,6 +133,15 @@
 	};
 
 	i2c@0 {
+=======
+			gpios = <&pioB 10 GPIO_ACTIVE_LOW>;
+			linux,code = <28>;
+			wakeup-source;
+		};
+	};
+
+	i2c-gpio-0 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = "okay";
 	};
 };

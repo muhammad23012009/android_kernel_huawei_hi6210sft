@@ -182,7 +182,10 @@
 			};
 
 			mdio@10d40 {
+<<<<<<< HEAD
 				device_type = "mdio";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				compatible = "fsl,mpc8272ads-mdio-bitbang",
 				             "fsl,mpc8272-mdio-bitbang",
 				             "fsl,cpm2-mdio-bitbang";
@@ -196,14 +199,20 @@
 					interrupt-parent = <&PIC>;
 					interrupts = <23 8>;
 					reg = <0x0>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 
 				PHY1: ethernet-phy@1 {
 					interrupt-parent = <&PIC>;
 					interrupts = <23 8>;
 					reg = <0x3>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 

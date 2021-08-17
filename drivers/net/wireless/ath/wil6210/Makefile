@@ -1,5 +1,6 @@
 obj-$(CONFIG_WIL6210) += wil6210.o
 
+<<<<<<< HEAD
 wil6210-objs := main.o
 wil6210-objs += netdev.o
 wil6210-objs += cfg80211.o
@@ -12,4 +13,29 @@ wil6210-objs += txrx.o
 ifeq (, $(findstring -W,$(EXTRA_CFLAGS)))
 	subdir-ccflags-y += -Werror
 endif
+=======
+wil6210-y := main.o
+wil6210-y += netdev.o
+wil6210-y += cfg80211.o
+wil6210-y += pcie_bus.o
+wil6210-y += debugfs.o
+wil6210-y += wmi.o
+wil6210-y += interrupt.o
+wil6210-y += txrx.o
+wil6210-y += debug.o
+wil6210-y += rx_reorder.o
+wil6210-y += ioctl.o
+wil6210-y += fw.o
+wil6210-y += pm.o
+wil6210-y += pmc.o
+wil6210-$(CONFIG_WIL6210_TRACING) += trace.o
+wil6210-y += wil_platform.o
+wil6210-y += ethtool.o
+wil6210-y += wil_crash_dump.o
+wil6210-y += p2p.o
+
+# for tracing framework to find trace.h
+CFLAGS_trace.o := -I$(src)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 subdir-ccflags-y += -D__CHECK_ENDIAN__

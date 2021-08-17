@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * File: key.h
  *
@@ -30,6 +33,7 @@
 #ifndef __KEY_H__
 #define __KEY_H__
 
+<<<<<<< HEAD
 #include "tether.h"
 #include "80211mgr.h"
 
@@ -44,11 +48,17 @@
 #define TRANSMIT_KEY        0x80000000
 
 #define GROUP_KEY           0x00000000
+=======
+#include "device.h"
+
+#define MAX_KEY_TABLE       11
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define KEY_CTL_WEP         0x00
 #define KEY_CTL_NONE        0x01
 #define KEY_CTL_TKIP        0x02
 #define KEY_CTL_CCMP        0x03
+<<<<<<< HEAD
 #define KEY_CTL_INVALID     0xFF
 
 typedef struct tagSKeyItem
@@ -108,5 +118,20 @@ int KeybSetDefaultKey(struct vnt_private *, PSKeyManagement pTable,
 int KeybSetAllGroupKey(struct vnt_private *, PSKeyManagement pTable,
 	u32 dwKeyIndex, u32 uKeyLength, u64 *KeyRSC, u8 *pbyKey,
 	u8 byKeyDecMode);
+=======
+
+#define VNT_KEY_DEFAULTKEY	0x1
+#define VNT_KEY_GROUP_ADDRESS	0x2
+#define VNT_KEY_ALLGROUP	0x4
+#define VNT_KEY_GROUP		0x40
+#define VNT_KEY_PAIRWISE	0x00
+#define VNT_KEY_ONFLY		0x8000
+#define VNT_KEY_ONFLY_ALL	0x4000
+
+int vnt_key_init_table(struct vnt_private *);
+
+int vnt_set_keys(struct ieee80211_hw *hw, struct ieee80211_sta *sta,
+	struct ieee80211_vif *vif, struct ieee80211_key_conf *key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __KEY_H__ */

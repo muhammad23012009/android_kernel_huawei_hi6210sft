@@ -33,6 +33,7 @@
 #define CMD_ALIVE	BIT(2)
 
 enum Power_Mgnt {
+<<<<<<< HEAD
 	PS_MODE_ACTIVE	= 0	,
 	PS_MODE_MIN			,
 	PS_MODE_MAX			,
@@ -44,6 +45,19 @@ enum Power_Mgnt {
 	PS_MODE_WWLAN		,
 	PM_Radio_Off			,
 	PM_Card_Disable		,
+=======
+	PS_MODE_ACTIVE	= 0,
+	PS_MODE_MIN,
+	PS_MODE_MAX,
+	PS_MODE_DTIM,
+	PS_MODE_VOIP,
+	PS_MODE_UAPSD_WMM,
+	PS_MODE_UAPSD,
+	PS_MODE_IBSS,
+	PS_MODE_WWLAN,
+	PM_Radio_Off,
+	PM_Card_Disable,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PS_MODE_NUM
 };
 
@@ -87,6 +101,7 @@ struct reportpwrstate_parm {
 	unsigned short rsvd;
 };
 
+<<<<<<< HEAD
 static inline void _enter_pwrlock(struct semaphore *plock)
 {
 	_down_sema(plock);
@@ -97,6 +112,14 @@ struct	pwrctrl_priv {
 	/*volatile*/ u8 rpwm; /* requested power state for fw */
 	/* fw current power state. updated when 1. read from HCPWM or
 	 * 2. driver lowers power level */
+=======
+struct	pwrctrl_priv {
+	struct mutex mutex_lock;
+	/*volatile*/ u8 rpwm; /* requested power state for fw */
+	/* fw current power state. updated when 1. read from HCPWM or
+	 * 2. driver lowers power level
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*volatile*/ u8 cpwm;
 	/*volatile*/ u8 tog; /* toggling */
 	/*volatile*/ u8 cpwm_tog; /* toggling */
@@ -107,8 +130,13 @@ struct	pwrctrl_priv {
 	uint ImrContent;	/* used to store original imr. */
 	uint bSleep; /* sleep -> active is different from active -> sleep. */
 
+<<<<<<< HEAD
 	_workitem SetPSModeWorkItem;
 	_workitem rpwm_workitem;
+=======
+	struct work_struct SetPSModeWorkItem;
+	struct work_struct rpwm_workitem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct timer_list rpwm_check_timer;
 	u8	rpwm_retry;
 	uint	bSetPSModeWorkItemInProgress;

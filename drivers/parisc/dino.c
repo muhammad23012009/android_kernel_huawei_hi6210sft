@@ -154,9 +154,27 @@ struct dino_device
 };
 
 /* Looks nice and keeps the compiler happy */
+<<<<<<< HEAD
 #define DINO_DEV(d) ((struct dino_device *) d)
 
 
+=======
+#define DINO_DEV(d) ({				\
+	void *__pdata = d;			\
+	BUG_ON(!__pdata);			\
+	(struct dino_device *)__pdata; })
+
+
+/* Check if PCI device is behind a Card-mode Dino. */
+static int pci_dev_is_behind_card_dino(struct pci_dev *dev)
+{
+	struct dino_device *dino_dev;
+
+	dino_dev = DINO_DEV(parisc_walk_tree(dev->bus->bridge));
+	return is_card_dino(&dino_dev->hba.dev->id);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Dino Configuration Space Accessor Functions
  */
@@ -439,6 +457,24 @@ static void quirk_cirrus_cardbus(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_ENABLE(PCI_VENDOR_ID_CIRRUS, PCI_DEVICE_ID_CIRRUS_6832, quirk_cirrus_cardbus );
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TULIP
+static void pci_fixup_tulip(struct pci_dev *dev)
+{
+	if (!pci_dev_is_behind_card_dino(dev))
+		return;
+	if (!(pci_resource_flags(dev, 1) & IORESOURCE_MEM))
+		return;
+	pr_warn("%s: HP HSC-PCI Cards with card-mode Dino not yet supported.\n",
+		pci_name(dev));
+	/* Disable this card by zeroing the PCI resources */
+	memset(&dev->resource[0], 0, sizeof(dev->resource[0]));
+	memset(&dev->resource[1], 0, sizeof(dev->resource[1]));
+}
+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_DEC, PCI_ANY_ID, pci_fixup_tulip);
+#endif /* CONFIG_TULIP */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __init
 dino_bios_init(void)
@@ -599,8 +635,15 @@ dino_fixup_bus(struct pci_bus *bus)
 		** P2PB's only have 2 BARs, no IRQs.
 		** I'd like to just ignore them for now.
 		*/
+<<<<<<< HEAD
 		if ((dev->class >> 8) == PCI_CLASS_BRIDGE_PCI)
 			continue;
+=======
+		if ((dev->class >> 8) == PCI_CLASS_BRIDGE_PCI)  {
+			pcibios_init_bridge(dev);
+			continue;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* null out the ROM resource if there is one (we don't
 		 * care about an expansion rom on parisc, since it
@@ -913,7 +956,11 @@ static int __init dino_probe(struct parisc_device *dev)
 	printk("%s version %s found at 0x%lx\n", name, version, hpa);
 
 	if (!request_mem_region(hpa, PAGE_SIZE, name)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "DINO: Hey! Someone took my MMIO space (0x%ld)!\n",
+=======
+		printk(KERN_ERR "DINO: Hey! Someone took my MMIO space (0x%lx)!\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			hpa);
 		return 1;
 	}
@@ -951,7 +998,11 @@ static int __init dino_probe(struct parisc_device *dev)
 
 	dino_dev->hba.dev = dev;
 	dino_dev->hba.base_addr = ioremap_nocache(hpa, 4096);
+<<<<<<< HEAD
 	dino_dev->hba.lmmio_space_offset = 0;	/* CPU addrs == bus addrs */
+=======
+	dino_dev->hba.lmmio_space_offset = PCI_F_EXTEND;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_init(&dino_dev->dinosaur_pen);
 	dino_dev->hba.iommu = ccio_get_iommu(dev);
 

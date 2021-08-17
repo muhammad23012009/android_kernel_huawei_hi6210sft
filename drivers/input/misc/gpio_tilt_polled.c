@@ -16,7 +16,10 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/input-polldev.h>
@@ -98,7 +101,12 @@ static void gpio_tilt_polled_close(struct input_polled_dev *dev)
 
 static int gpio_tilt_polled_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	const struct gpio_tilt_platform_data *pdata = pdev->dev.platform_data;
+=======
+	const struct gpio_tilt_platform_data *pdata =
+			dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *dev = &pdev->dev;
 	struct gpio_tilt_polled_dev *tdev;
 	struct input_polled_dev *poll_dev;
@@ -184,8 +192,11 @@ static int gpio_tilt_polled_remove(struct platform_device *pdev)
 	struct gpio_tilt_polled_dev *tdev = platform_get_drvdata(pdev);
 	const struct gpio_tilt_platform_data *pdata = tdev->pdata;
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_unregister_polled_device(tdev->poll_dev);
 	input_free_polled_device(tdev->poll_dev);
 
@@ -201,7 +212,10 @@ static struct platform_driver gpio_tilt_polled_driver = {
 	.remove	= gpio_tilt_polled_remove,
 	.driver	= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

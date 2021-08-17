@@ -92,8 +92,12 @@ void picolcd_exit_lcd(struct picolcd_data *data)
 	struct lcd_device *ldev = data->lcd;
 
 	data->lcd = NULL;
+<<<<<<< HEAD
 	if (ldev)
 		lcd_device_unregister(ldev);
+=======
+	lcd_device_unregister(ldev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int picolcd_resume_lcd(struct picolcd_data *data)

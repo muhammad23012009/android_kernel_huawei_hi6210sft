@@ -115,10 +115,24 @@ unsigned long alpha_agpgart_size = DEFAULT_AGP_APER_SIZE;
 
 #ifdef CONFIG_ALPHA_GENERIC
 struct alpha_machine_vector alpha_mv;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(alpha_mv);
+#endif
+
+#ifndef alpha_using_srm
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int alpha_using_srm;
 EXPORT_SYMBOL(alpha_using_srm);
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef alpha_using_qemu
+int alpha_using_qemu;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct alpha_machine_vector *get_sysvec(unsigned long, unsigned long,
 					       unsigned long);
 static struct alpha_machine_vector *get_sysvec_byname(const char *);
@@ -529,11 +543,22 @@ setup_arch(char **cmdline_p)
 	atomic_notifier_chain_register(&panic_notifier_list,
 			&alpha_panic_block);
 
+<<<<<<< HEAD
 #ifdef CONFIG_ALPHA_GENERIC
+=======
+#ifndef alpha_using_srm
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Assume that we've booted from SRM if we haven't booted from MILO.
 	   Detect the later by looking for "MILO" in the system serial nr.  */
 	alpha_using_srm = strncmp((const char *)hwrpb->ssn, "MILO", 4) != 0;
 #endif
+<<<<<<< HEAD
+=======
+#ifndef alpha_using_qemu
+	/* Similarly, look for QEMU.  */
+	alpha_using_qemu = strstr((const char *)hwrpb->ssn, "QEMU") != 0;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If we are using SRM, we want to allow callbacks
 	   as early as possible, so do this NOW, and then
@@ -1207,6 +1232,10 @@ show_cpuinfo(struct seq_file *f, void *slot)
 	char *systype_name;
 	char *sysvariation_name;
 	int nr_processors;
+<<<<<<< HEAD
+=======
+	unsigned long timer_freq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cpu_index = (unsigned) (cpu->type - 1);
 	cpu_name = "Unknown";
@@ -1218,6 +1247,15 @@ show_cpuinfo(struct seq_file *f, void *slot)
 
 	nr_processors = get_nr_processors(cpu, hwrpb->nr_processors);
 
+<<<<<<< HEAD
+=======
+#if CONFIG_HZ == 1024 || CONFIG_HZ == 1200
+	timer_freq = (100UL * hwrpb->intr_freq) / 4096;
+#else
+	timer_freq = 100UL * CONFIG_HZ;
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	seq_printf(f, "cpu\t\t\t: Alpha\n"
 		      "cpu model\t\t: %s\n"
 		      "cpu variation\t\t: %ld\n"
@@ -1243,8 +1281,12 @@ show_cpuinfo(struct seq_file *f, void *slot)
 		       (char*)hwrpb->ssn,
 		       est_cycle_freq ? : hwrpb->cycle_freq,
 		       est_cycle_freq ? "est." : "",
+<<<<<<< HEAD
 		       hwrpb->intr_freq / 4096,
 		       (100 * hwrpb->intr_freq / 4096) % 100,
+=======
+		       timer_freq / 100, timer_freq % 100,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       hwrpb->pagesize,
 		       hwrpb->pa_bits,
 		       hwrpb->max_asn,

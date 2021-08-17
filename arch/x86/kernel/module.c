@@ -24,13 +24,26 @@
 #include <linux/fs.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/kasan.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/bug.h>
 #include <linux/mm.h>
 #include <linux/gfp.h>
 #include <linux/jump_label.h>
+<<<<<<< HEAD
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/random.h>
+
+#include <asm/text-patching.h>
+#include <asm/page.h>
+#include <asm/pgtable.h>
+#include <asm/setup.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if 0
 #define DEBUGP(fmt, ...)				\
@@ -43,6 +56,7 @@ do {							\
 } while (0)
 #endif
 
+<<<<<<< HEAD
 void *module_alloc(unsigned long size)
 {
 	if (PAGE_ALIGN(size) > MODULES_LEN)
@@ -50,6 +64,55 @@ void *module_alloc(unsigned long size)
 	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
 				GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL_EXEC,
 				-1, __builtin_return_address(0));
+=======
+#ifdef CONFIG_RANDOMIZE_BASE
+static unsigned long module_load_offset;
+
+/* Mutex protects the module_load_offset. */
+static DEFINE_MUTEX(module_kaslr_mutex);
+
+static unsigned long int get_module_load_offset(void)
+{
+	if (kaslr_enabled()) {
+		mutex_lock(&module_kaslr_mutex);
+		/*
+		 * Calculate the module_load_offset the first time this
+		 * code is called. Once calculated it stays the same until
+		 * reboot.
+		 */
+		if (module_load_offset == 0)
+			module_load_offset =
+				(get_random_int() % 1024 + 1) * PAGE_SIZE;
+		mutex_unlock(&module_kaslr_mutex);
+	}
+	return module_load_offset;
+}
+#else
+static unsigned long int get_module_load_offset(void)
+{
+	return 0;
+}
+#endif
+
+void *module_alloc(unsigned long size)
+{
+	void *p;
+
+	if (PAGE_ALIGN(size) > MODULES_LEN)
+		return NULL;
+
+	p = __vmalloc_node_range(size, MODULE_ALIGN,
+				    MODULES_VADDR + get_module_load_offset(),
+				    MODULES_END, GFP_KERNEL | __GFP_HIGHMEM,
+				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+				    __builtin_return_address(0));
+	if (p && (kasan_module_alloc(p, size) < 0)) {
+		vfree(p);
+		return NULL;
+	}
+
+	return p;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_X86_32
@@ -81,6 +144,10 @@ int apply_relocate(Elf32_Shdr *sechdrs,
 			*location += sym->st_value;
 			break;
 		case R_386_PC32:
+<<<<<<< HEAD
+=======
+		case R_386_PLT32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Add the value, subtract its position */
 			*location += sym->st_value - (uint32_t)location;
 			break;
@@ -127,19 +194,40 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		case R_X86_64_NONE:
 			break;
 		case R_X86_64_64:
+<<<<<<< HEAD
 			*(u64 *)loc = val;
 			break;
 		case R_X86_64_32:
+=======
+			if (*(u64 *)loc != 0)
+				goto invalid_relocation;
+			*(u64 *)loc = val;
+			break;
+		case R_X86_64_32:
+			if (*(u32 *)loc != 0)
+				goto invalid_relocation;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*(u32 *)loc = val;
 			if (val != *(u32 *)loc)
 				goto overflow;
 			break;
 		case R_X86_64_32S:
+<<<<<<< HEAD
+=======
+			if (*(s32 *)loc != 0)
+				goto invalid_relocation;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*(s32 *)loc = val;
 			if ((s64)val != *(s32 *)loc)
 				goto overflow;
 			break;
 		case R_X86_64_PC32:
+<<<<<<< HEAD
+=======
+		case R_X86_64_PLT32:
+			if (*(u32 *)loc != 0)
+				goto invalid_relocation;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			val -= (u64)loc;
 			*(u32 *)loc = val;
 #if 0
@@ -155,6 +243,14 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 	}
 	return 0;
 
+<<<<<<< HEAD
+=======
+invalid_relocation:
+	pr_err("x86/modules: Skipping invalid relocation target, existing value is nonzero for type %d, loc %p, val %Lx\n",
+	       (int)ELF64_R_TYPE(rel[i].r_info), loc, val);
+	return -ENOEXEC;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 overflow:
 	pr_err("overflow in relocation type %d val %Lx\n",
 	       (int)ELF64_R_TYPE(rel[i].r_info), val);

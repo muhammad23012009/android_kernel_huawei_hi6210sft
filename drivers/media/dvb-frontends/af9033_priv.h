@@ -24,6 +24,10 @@
 
 #include "dvb_frontend.h"
 #include "af9033.h"
+<<<<<<< HEAD
+=======
+#include <linux/math64.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct reg_val {
 	u32 reg;
@@ -180,7 +184,14 @@ static const struct val_snr qam64_snr_lut[] = {
 	{ 0x05570d, 26 },
 	{ 0x059feb, 27 },
 	{ 0x05bf38, 28 },
+<<<<<<< HEAD
 	{ 0xffffff, 29 },
+=======
+	{ 0x05f78f, 29 },
+	{ 0x0612c3, 30 },
+	{ 0x0626be, 31 },
+	{ 0xffffff, 32 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct reg_val ofsm_init[] = {
@@ -1418,7 +1429,11 @@ static const struct reg_val tuner_init_it9135_60[] = {
 	{ 0x800068, 0x0a },
 	{ 0x80006a, 0x03 },
 	{ 0x800070, 0x0a },
+<<<<<<< HEAD
 	{ 0x800071, 0x05 },
+=======
+	{ 0x800071, 0x0a },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x800072, 0x02 },
 	{ 0x800075, 0x8c },
 	{ 0x800076, 0x8c },
@@ -1484,7 +1499,10 @@ static const struct reg_val tuner_init_it9135_60[] = {
 	{ 0x800104, 0x02 },
 	{ 0x800105, 0xbe },
 	{ 0x800106, 0x00 },
+<<<<<<< HEAD
 	{ 0x800109, 0x02 },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x800115, 0x0a },
 	{ 0x800116, 0x03 },
 	{ 0x80011a, 0xbe },
@@ -1510,7 +1528,10 @@ static const struct reg_val tuner_init_it9135_60[] = {
 	{ 0x80014b, 0x8c },
 	{ 0x80014d, 0xac },
 	{ 0x80014e, 0xc6 },
+<<<<<<< HEAD
 	{ 0x80014f, 0x03 },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x800151, 0x1e },
 	{ 0x800153, 0xbc },
 	{ 0x800178, 0x09 },
@@ -1522,9 +1543,16 @@ static const struct reg_val tuner_init_it9135_60[] = {
 	{ 0x80018d, 0x5f },
 	{ 0x80018f, 0xa0 },
 	{ 0x800190, 0x5a },
+<<<<<<< HEAD
 	{ 0x80ed02, 0xff },
 	{ 0x80ee42, 0xff },
 	{ 0x80ee82, 0xff },
+=======
+	{ 0x800191, 0x00 },
+	{ 0x80ed02, 0x40 },
+	{ 0x80ee42, 0x40 },
+	{ 0x80ee82, 0x40 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x80f000, 0x0f },
 	{ 0x80f01f, 0x8c },
 	{ 0x80f020, 0x00 },
@@ -1699,7 +1727,10 @@ static const struct reg_val tuner_init_it9135_61[] = {
 	{ 0x800104, 0x02 },
 	{ 0x800105, 0xc8 },
 	{ 0x800106, 0x00 },
+<<<<<<< HEAD
 	{ 0x800109, 0x02 },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x800115, 0x0a },
 	{ 0x800116, 0x03 },
 	{ 0x80011a, 0xc6 },
@@ -1725,7 +1756,10 @@ static const struct reg_val tuner_init_it9135_61[] = {
 	{ 0x80014b, 0x8c },
 	{ 0x80014d, 0xa8 },
 	{ 0x80014e, 0xc6 },
+<<<<<<< HEAD
 	{ 0x80014f, 0x03 },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x800151, 0x28 },
 	{ 0x800153, 0xcc },
 	{ 0x800178, 0x09 },
@@ -1737,9 +1771,16 @@ static const struct reg_val tuner_init_it9135_61[] = {
 	{ 0x80018d, 0x5f },
 	{ 0x80018f, 0xfb },
 	{ 0x800190, 0x5c },
+<<<<<<< HEAD
 	{ 0x80ed02, 0xff },
 	{ 0x80ee42, 0xff },
 	{ 0x80ee82, 0xff },
+=======
+	{ 0x800191, 0x00 },
+	{ 0x80ed02, 0x40 },
+	{ 0x80ee42, 0x40 },
+	{ 0x80ee82, 0x40 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x80f000, 0x0f },
 	{ 0x80f01f, 0x8c },
 	{ 0x80f020, 0x00 },
@@ -2052,4 +2093,13 @@ static const struct reg_val tuner_init_it9135_62[] = {
 	{ 0x80fd8b, 0x00 },
 };
 
+<<<<<<< HEAD
+=======
+/* NorDig power reference table */
+static const int power_reference[][5] = {
+	{-93, -91, -90, -89, -88}, /* QPSK 1/2 ~ 7/8 */
+	{-87, -85, -84, -83, -82}, /* 16QAM 1/2 ~ 7/8 */
+	{-82, -80, -78, -77, -76}, /* 64QAM 1/2 ~ 7/8 */
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* AF9033_PRIV_H */

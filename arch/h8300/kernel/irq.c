@@ -1,6 +1,7 @@
 /*
  * linux/arch/h8300/kernel/irq.c
  *
+<<<<<<< HEAD
  * Copyright 2007 Yoshinori Sato <ysato@users.sourceforge.jp>
  */
 
@@ -79,20 +80,59 @@ static unsigned long __init *get_vector_address(void)
 {
 	unsigned long *rom_vector = CPU_VECTOR;
 	unsigned long base,tmp;
+=======
+ * Copyright 2014-2015 Yoshinori Sato <ysato@users.sourceforge.jp>
+ */
+
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/irq.h>
+#include <linux/irqdomain.h>
+#include <linux/of_irq.h>
+#include <asm/traps.h>
+
+#ifdef CONFIG_RAMKERNEL
+typedef void (*h8300_vector)(void);
+
+static const h8300_vector __initconst trap_table[] = {
+	0, 0, 0, 0,
+	_trace_break,
+	0, 0,
+	_nmi,
+	_system_call,
+	0, 0,
+	_trace_break,
+};
+
+static unsigned long __init *get_vector_address(void)
+{
+	unsigned long *rom_vector = CPU_VECTOR;
+	unsigned long base, tmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int vec_no;
 
 	base = rom_vector[EXT_IRQ0] & ADDR_MASK;
 
 	/* check romvector format */
+<<<<<<< HEAD
 	for (vec_no = EXT_IRQ1; vec_no <= EXT_IRQ0+EXT_IRQS; vec_no++) {
 		if ((base+(vec_no - EXT_IRQ0)*4) != (rom_vector[vec_no] & ADDR_MASK))
+=======
+	for (vec_no = EXT_IRQ0 + 1; vec_no <= EXT_IRQ0+EXT_IRQS; vec_no++) {
+		if ((base+(vec_no - EXT_IRQ0)*4) !=
+		    (rom_vector[vec_no] & ADDR_MASK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return NULL;
 	}
 
 	/* ramvector base address */
 	base -= EXT_IRQ0*4;
 
+<<<<<<< HEAD
 	/* writerble check */
+=======
+	/* writerble? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tmp = ~(*(volatile unsigned long *)base);
 	(*(volatile unsigned long *)base) = tmp;
 	if ((*(volatile unsigned long *)base) != tmp)
@@ -103,14 +143,20 @@ static unsigned long __init *get_vector_address(void)
 static void __init setup_vector(void)
 {
 	int i;
+<<<<<<< HEAD
 	unsigned long *ramvec,*ramvec_p;
 	const h8300_vector *trap_entry;
 	const int *saved_vector;
+=======
+	unsigned long *ramvec, *ramvec_p;
+	const h8300_vector *trap_entry;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ramvec = get_vector_address();
 	if (ramvec == NULL)
 		panic("interrupt vector serup failed.");
 	else
+<<<<<<< HEAD
 		printk(KERN_INFO "virtual vector at 0x%08lx\n",(unsigned long)ramvec);
 
 	/* create redirect table */
@@ -145,16 +191,44 @@ static void __init setup_vector(void)
 }
 #else
 #define setup_vector() do { } while(0)
+=======
+		pr_debug("virtual vector at 0x%p\n", ramvec);
+
+	/* create redirect table */
+	ramvec_p = ramvec;
+	trap_entry = trap_table;
+	for (i = 0; i < NR_IRQS; i++) {
+		if (i < 12) {
+			if (*trap_entry)
+				*ramvec_p = VECTOR(*trap_entry);
+			ramvec_p++;
+			trap_entry++;
+		} else
+			*ramvec_p++ = REDIRECT(_interrupt_entry);
+	}
+	_interrupt_redirect_table = ramvec;
+}
+#else
+void setup_vector(void)
+{
+	/* noting do */
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 void __init init_IRQ(void)
 {
+<<<<<<< HEAD
 	int c;
 
 	setup_vector();
 
 	for (c = 0; c < NR_IRQS; c++)
 		irq_set_chip_and_handler(c, &h8300irq_chip, handle_simple_irq);
+=======
+	setup_vector();
+	irqchip_init();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 asmlinkage void do_IRQ(int irq)

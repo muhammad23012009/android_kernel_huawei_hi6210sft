@@ -287,12 +287,21 @@ retry:
 				goto retry;
 			}
 			spin_unlock(&sound_loader_lock);
+<<<<<<< HEAD
 			return -EBUSY;
+=======
+			r = -EBUSY;
+			goto fail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	device_create(sound_class, dev, MKDEV(SOUND_MAJOR, s->unit_minor),
+<<<<<<< HEAD
 		      NULL, s->name+6);
+=======
+		      NULL, "%s", s->name+6);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return s->unit_minor;
 
 fail:
@@ -626,6 +635,7 @@ static int soundcore_open(struct inode *inode, struct file *file)
 		if (s)
 			new_fops = fops_get(s->unit_fops);
 	}
+<<<<<<< HEAD
 	if (new_fops) {
 		/*
 		 * We rely upon the fact that we can't be unloaded while the
@@ -638,10 +648,21 @@ static int soundcore_open(struct inode *inode, struct file *file)
 		const struct file_operations *old_fops = file->f_op;
 		file->f_op = new_fops;
 		spin_unlock(&sound_loader_lock);
+=======
+	spin_unlock(&sound_loader_lock);
+	if (new_fops) {
+		/*
+		 * We rely upon the fact that we can't be unloaded while the
+		 * subdriver is there.
+		 */
+		int err = 0;
+		replace_fops(file, new_fops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (file->f_op->open)
 			err = file->f_op->open(inode,file);
 
+<<<<<<< HEAD
 		if (err) {
 			fops_put(file->f_op);
 			file->f_op = fops_get(old_fops);
@@ -651,6 +672,10 @@ static int soundcore_open(struct inode *inode, struct file *file)
 		return err;
 	}
 	spin_unlock(&sound_loader_lock);
+=======
+		return err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENODEV;
 }
 
@@ -666,7 +691,11 @@ static void cleanup_oss_soundcore(void)
 static int __init init_oss_soundcore(void)
 {
 	if (preclaim_oss &&
+<<<<<<< HEAD
 	    register_chrdev(SOUND_MAJOR, "sound", &soundcore_fops) == -1) {
+=======
+	    register_chrdev(SOUND_MAJOR, "sound", &soundcore_fops) < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "soundcore: sound device already in use.\n");
 		return -EBUSY;
 	}

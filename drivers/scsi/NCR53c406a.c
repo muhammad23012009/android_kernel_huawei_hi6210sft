@@ -595,7 +595,11 @@ static int NCR53c406a_release(struct Scsi_Host *shost)
 {
 	if (shost->irq)
 		free_irq(shost->irq, NULL);
+<<<<<<< HEAD
 #ifdef USE_DMA
+=======
+#if USE_DMA
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (shost->dma_channel != 0xff)
 		free_dma(shost->dma_channel);
 #endif
@@ -698,7 +702,11 @@ static int NCR53c406a_queue_lck(Scsi_Cmnd * SCpnt, void (*done) (Scsi_Cmnd *))
 	int i;
 
 	VDEB(printk("NCR53c406a_queue called\n"));
+<<<<<<< HEAD
 	DEB(printk("cmd=%02x, cmd_len=%02x, target=%02x, lun=%02x, bufflen=%d\n", SCpnt->cmnd[0], SCpnt->cmd_len, SCpnt->target, SCpnt->lun, scsi_bufflen(SCpnt)));
+=======
+        DEB(printk("cmd=%02x, cmd_len=%02x, target=%02x, lun=%02x, bufflen=%d\n", SCpnt->cmnd[0], SCpnt->cmd_len, SCpnt->device->target, (u8)SCpnt->device->lun, scsi_bufflen(SCpnt)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if 0
 	VDEB(for (i = 0; i < SCpnt->cmd_len; i++)
@@ -1064,7 +1072,10 @@ static struct scsi_host_template driver_template =
      .can_queue         	= 1			/* can_queue */,        
      .this_id           	= 7			/* SCSI ID of the chip */,
      .sg_tablesize      	= 32			/*SG_ALL*/ /*SG_NONE*/, 
+<<<<<<< HEAD
      .cmd_per_lun       	= 1			/* commands per lun */, 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
      .unchecked_isa_dma 	= 1			/* unchecked_isa_dma */,
      .use_clustering    	= ENABLE_CLUSTERING,
 };

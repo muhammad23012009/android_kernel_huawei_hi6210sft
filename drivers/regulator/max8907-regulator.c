@@ -34,7 +34,10 @@
 
 struct max8907_regulator {
 	struct regulator_desc desc[MAX8907_NUM_REGULATORS];
+<<<<<<< HEAD
 	struct regulator_dev *rdev[MAX8907_NUM_REGULATORS];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define REG_MBATT() \
@@ -227,11 +230,19 @@ static int max8907_regulator_parse_dt(struct platform_device *pdev)
 	struct device_node *np, *regulators;
 	int ret;
 
+<<<<<<< HEAD
 	np = of_node_get(pdev->dev.parent->of_node);
 	if (!np)
 		return 0;
 
 	regulators = of_find_node_by_name(np, "regulators");
+=======
+	np = pdev->dev.parent->of_node;
+	if (!np)
+		return 0;
+
+	regulators = of_get_child_by_name(np, "regulators");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!regulators) {
 		dev_err(&pdev->dev, "regulators node not found\n");
 		return -EINVAL;
@@ -292,16 +303,29 @@ static int max8907_regulator_probe(struct platform_device *pdev)
 		return ret;
 
 	pmic = devm_kzalloc(&pdev->dev, sizeof(*pmic), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pmic) {
 		dev_err(&pdev->dev, "Failed to alloc pmic\n");
 		return -ENOMEM;
 	}
+=======
+	if (!pmic)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_set_drvdata(pdev, pmic);
 
 	memcpy(pmic->desc, max8907_regulators, sizeof(pmic->desc));
 
 	/* Backwards compatibility with MAX8907B; SD1 uses different voltages */
+<<<<<<< HEAD
 	regmap_read(max8907->regmap_gen, MAX8907_REG_II2RR, &val);
+=======
+	ret = regmap_read(max8907->regmap_gen, MAX8907_REG_II2RR, &val);
+	if (ret)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((val & MAX8907_II2RR_VERSION_MASK) ==
 	    MAX8907_II2RR_VERSION_REV_B) {
 		pmic->desc[MAX8907_SD1].min_uV = 637500;
@@ -311,6 +335,11 @@ static int max8907_regulator_probe(struct platform_device *pdev)
 	}
 
 	for (i = 0; i < MAX8907_NUM_REGULATORS; i++) {
+<<<<<<< HEAD
+=======
+		struct regulator_dev *rdev;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		config.dev = pdev->dev.parent;
 		if (pdata)
 			idata = pdata->init_data[i];
@@ -336,20 +365,37 @@ static int max8907_regulator_probe(struct platform_device *pdev)
 		}
 
 		if (pmic->desc[i].ops == &max8907_ldo_ops) {
+<<<<<<< HEAD
 			regmap_read(config.regmap, pmic->desc[i].enable_reg,
 				    &val);
+=======
+			ret = regmap_read(config.regmap, pmic->desc[i].enable_reg,
+				    &val);
+			if (ret)
+				return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if ((val & MAX8907_MASK_LDO_SEQ) !=
 			    MAX8907_MASK_LDO_SEQ)
 				pmic->desc[i].ops = &max8907_ldo_hwctl_ops;
 		} else if (pmic->desc[i].ops == &max8907_out5v_ops) {
+<<<<<<< HEAD
 			regmap_read(config.regmap, pmic->desc[i].enable_reg,
 				    &val);
+=======
+			ret = regmap_read(config.regmap, pmic->desc[i].enable_reg,
+				    &val);
+			if (ret)
+				return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if ((val & (MAX8907_MASK_OUT5V_VINEN |
 						MAX8907_MASK_OUT5V_ENSRC)) !=
 			    MAX8907_MASK_OUT5V_ENSRC)
 				pmic->desc[i].ops = &max8907_out5v_hwctl_ops;
 		}
 
+<<<<<<< HEAD
 		pmic->rdev[i] = regulator_register(&pmic->desc[i], &config);
 		if (IS_ERR(pmic->rdev[i])) {
 			dev_err(&pdev->dev,
@@ -357,10 +403,20 @@ static int max8907_regulator_probe(struct platform_device *pdev)
 				pmic->desc[i].name);
 			ret = PTR_ERR(pmic->rdev[i]);
 			goto err_unregister_regulator;
+=======
+		rdev = devm_regulator_register(&pdev->dev,
+						&pmic->desc[i], &config);
+		if (IS_ERR(rdev)) {
+			dev_err(&pdev->dev,
+				"failed to register %s regulator\n",
+				pmic->desc[i].name);
+			return PTR_ERR(rdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 err_unregister_regulator:
 	while (--i >= 0)
@@ -377,15 +433,22 @@ static int max8907_regulator_remove(struct platform_device *pdev)
 		regulator_unregister(pmic->rdev[i]);
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver max8907_regulator_driver = {
 	.driver = {
 		   .name = "max8907-regulator",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   },
 	.probe = max8907_regulator_probe,
 	.remove = max8907_regulator_remove,
+=======
+		   },
+	.probe = max8907_regulator_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init max8907_regulator_init(void)

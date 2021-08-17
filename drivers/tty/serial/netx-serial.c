@@ -196,7 +196,11 @@ static void netx_txint(struct uart_port *port)
 		uart_write_wakeup(port);
 }
 
+<<<<<<< HEAD
 static void netx_rxint(struct uart_port *port)
+=======
+static void netx_rxint(struct uart_port *port, unsigned long *flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned char rx, flg, status;
 
@@ -236,7 +240,13 @@ static void netx_rxint(struct uart_port *port)
 		uart_insert_char(port, status, SR_OE, rx, flg);
 	}
 
+<<<<<<< HEAD
 	tty_flip_buffer_push(&port->state->port);
+=======
+	spin_unlock_irqrestore(&port->lock, *flags);
+	tty_flip_buffer_push(&port->state->port);
+	spin_lock_irqsave(&port->lock, *flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static irqreturn_t netx_int(int irq, void *dev_id)
@@ -250,7 +260,11 @@ static irqreturn_t netx_int(int irq, void *dev_id)
 	status = readl(port->membase + UART_IIR) & IIR_MASK;
 	while (status) {
 		if (status & IIR_RIS)
+<<<<<<< HEAD
 			netx_rxint(port);
+=======
+			netx_rxint(port, &flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (status & IIR_TIS)
 			netx_txint(port);
 		if (status & IIR_MIS) {
@@ -417,7 +431,11 @@ netx_set_termios(struct uart_port *port, struct ktermios *termios,
 	}
 
 	port->read_status_mask = 0;
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port->read_status_mask |= SR_BE;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= SR_PE | SR_FE;
@@ -693,8 +711,11 @@ static int serial_netx_remove(struct platform_device *pdev)
 {
 	struct netx_port *sport = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sport)
 		uart_remove_one_port(&netx_reg, &sport->port);
 
@@ -710,7 +731,10 @@ static struct platform_driver serial_netx_driver = {
 
 	.driver		= {
 		.name   = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

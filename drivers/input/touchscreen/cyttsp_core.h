@@ -112,9 +112,16 @@ struct cyttsp;
 
 struct cyttsp_bus_ops {
 	u16 bustype;
+<<<<<<< HEAD
 	int (*write)(struct cyttsp *ts,
 		     u8 addr, u8 length, const void *values);
 	int (*read)(struct cyttsp *ts, u8 addr, u8 length, void *values);
+=======
+	int (*write)(struct device *dev, u8 *xfer_buf, u16 addr, u8 length,
+			const void *values);
+	int (*read)(struct device *dev, u8 *xfer_buf, u16 addr, u8 length,
+			void *values);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum cyttsp_state {
@@ -128,7 +135,10 @@ struct cyttsp {
 	int irq;
 	struct input_dev *input;
 	char phys[32];
+<<<<<<< HEAD
 	const struct cyttsp_platform_data *pdata;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct cyttsp_bus_ops *bus_ops;
 	struct cyttsp_bootloader_data bl_data;
 	struct cyttsp_sysinfo_data sysinfo_data;
@@ -137,13 +147,32 @@ struct cyttsp {
 	enum cyttsp_state state;
 	bool suspended;
 
+<<<<<<< HEAD
+=======
+	struct gpio_desc *reset_gpio;
+	bool use_hndshk;
+	u8 act_dist;
+	u8 act_intrvl;
+	u8 tch_tmout;
+	u8 lp_intrvl;
+	u8 *bl_keys;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 xfer_buf[] ____cacheline_aligned;
 };
 
 struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 			    struct device *dev, int irq, size_t xfer_buf_size);
+<<<<<<< HEAD
 void cyttsp_remove(struct cyttsp *ts);
 
+=======
+
+int cyttsp_i2c_write_block_data(struct device *dev, u8 *xfer_buf, u16 addr,
+		u8 length, const void *values);
+int cyttsp_i2c_read_block_data(struct device *dev, u8 *xfer_buf, u16 addr,
+		u8 length, void *values);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const struct dev_pm_ops cyttsp_pm_ops;
 
 #endif /* __CYTTSP_CORE_H__ */

@@ -18,6 +18,7 @@ struct task_struct;
 void show_regs(struct pt_regs *regs);
 void show_stacktrace(struct task_struct *tsk, struct pt_regs *regs);
 void show_kernel_fault_diag(const char *str, struct pt_regs *regs,
+<<<<<<< HEAD
 			    unsigned long address, unsigned long cause_reg);
 void die(const char *str, struct pt_regs *regs, unsigned long address,
 	 unsigned long cause_reg);
@@ -26,6 +27,15 @@ void die(const char *str, struct pt_regs *regs, unsigned long address,
 	dump_stack();					\
 	pr_warn("Kernel BUG in %s: %s: %d!\n",	\
 		__FILE__, __func__,  __LINE__);	\
+=======
+			    unsigned long address);
+void die(const char *str, struct pt_regs *regs, unsigned long address);
+
+#define BUG()	do {								\
+	pr_warn("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
+	barrier_before_unreachable();						\
+	__builtin_trap();							\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } while (0)
 
 #define HAVE_ARCH_BUG

@@ -42,7 +42,11 @@
 #include <linux/personality.h>
 #include <linux/tty.h>
 #include <linux/binfmts.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/tracehook.h>
 
 #include <asm/setup.h>
@@ -50,6 +54,10 @@
 #include <asm/pgtable.h>
 #include <asm/traps.h>
 #include <asm/ucontext.h>
+<<<<<<< HEAD
+=======
+#include <asm/cacheflush.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_MMU
 
@@ -181,6 +189,16 @@ static inline void push_cache (unsigned long vaddr)
 		asm volatile ("movec %0,%%caar\n\t"
 			      "movec %1,%%cacr"
 			      : : "r" (vaddr + 4), "r" (temp));
+<<<<<<< HEAD
+=======
+	} else {
+		/* CPU_IS_COLDFIRE */
+#if defined(CONFIG_CACHE_COPYBACK)
+		flush_cf_dcache(0, DCACHE_MAX_ADDR);
+#endif
+		/* Invalidate instruction cache for the pushed bytes */
+		clear_cf_icache(vaddr, vaddr + 8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -205,7 +223,10 @@ static inline int frame_extra_sizes(int f)
 
 static inline void adjustformat(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	((struct switch_stack *)regs - 1)->a5 = current->mm->start_data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * set format byte to make stack appear modulo 4, which it will
 	 * be when doing the rte
@@ -647,7 +668,11 @@ restore_sigcontext(struct pt_regs *regs, struct sigcontext __user *usc, void __u
 	int err = 0;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* get previous context */
 	if (copy_from_user(&context, usc, sizeof(context)))
@@ -685,7 +710,11 @@ rt_restore_ucontext(struct pt_regs *regs, struct switch_stack *sw,
 	int err;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = __get_user(temp, &uc->uc_mcontext.version);
 	if (temp != MCONTEXT_VERSION)
@@ -729,10 +758,15 @@ badframe:
 	return 1;
 }
 
+<<<<<<< HEAD
 asmlinkage int do_sigreturn(unsigned long __unused)
 {
 	struct switch_stack *sw = (struct switch_stack *) &__unused;
 	struct pt_regs *regs = (struct pt_regs *) (sw + 1);
+=======
+asmlinkage int do_sigreturn(struct pt_regs *regs, struct switch_stack *sw)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long usp = rdusp();
 	struct sigframe __user *frame = (struct sigframe __user *)(usp - 4);
 	sigset_t set;
@@ -756,10 +790,15 @@ badframe:
 	return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage int do_rt_sigreturn(unsigned long __unused)
 {
 	struct switch_stack *sw = (struct switch_stack *) &__unused;
 	struct pt_regs *regs = (struct pt_regs *) (sw + 1);
+=======
+asmlinkage int do_rt_sigreturn(struct pt_regs *regs, struct switch_stack *sw)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long usp = rdusp();
 	struct rt_sigframe __user *frame = (struct rt_sigframe __user *)(usp - 4);
 	sigset_t set;
@@ -827,6 +866,7 @@ static inline int rt_setup_ucontext(struct ucontext __user *uc, struct pt_regs *
 }
 
 static inline void __user *
+<<<<<<< HEAD
 get_sigframe(struct k_sigaction *ka, struct pt_regs *regs, size_t frame_size)
 {
 	unsigned long usp;
@@ -844,31 +884,57 @@ get_sigframe(struct k_sigaction *ka, struct pt_regs *regs, size_t frame_size)
 
 static int setup_frame (int sig, struct k_sigaction *ka,
 			 sigset_t *set, struct pt_regs *regs)
+=======
+get_sigframe(struct ksignal *ksig, size_t frame_size)
+{
+	unsigned long usp = sigsp(rdusp(), ksig);
+
+	return (void __user *)((usp - frame_size) & -8UL);
+}
+
+static int setup_frame(struct ksignal *ksig, sigset_t *set,
+			struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sigframe __user *frame;
 	int fsize = frame_extra_sizes(regs->format);
 	struct sigcontext context;
+<<<<<<< HEAD
 	int err = 0;
+=======
+	int err = 0, sig = ksig->sig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fsize < 0) {
 #ifdef DEBUG
 		printk ("setup_frame: Unknown frame format %#x\n",
 			regs->format);
 #endif
+<<<<<<< HEAD
 		goto give_sigsegv;
 	}
 
 	frame = get_sigframe(ka, regs, sizeof(*frame) + fsize);
+=======
+		return -EFAULT;
+	}
+
+	frame = get_sigframe(ksig, sizeof(*frame) + fsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fsize)
 		err |= copy_to_user (frame + 1, regs + 1, fsize);
 
+<<<<<<< HEAD
 	err |= __put_user((current_thread_info()->exec_domain
 			   && current_thread_info()->exec_domain->signal_invmap
 			   && sig < 32
 			   ? current_thread_info()->exec_domain->signal_invmap[sig]
 			   : sig),
 			  &frame->sig);
+=======
+	err |= __put_user(sig, &frame->sig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err |= __put_user(regs->vector, &frame->code);
 	err |= __put_user(&frame->sc, &frame->psc);
@@ -891,7 +957,11 @@ static int setup_frame (int sig, struct k_sigaction *ka,
 #endif
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
+=======
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	push_cache ((unsigned long) &frame->retcode);
 
@@ -900,7 +970,11 @@ static int setup_frame (int sig, struct k_sigaction *ka,
 	 * to destroy is successfully copied to sigframe.
 	 */
 	wrusp ((unsigned long) frame);
+<<<<<<< HEAD
 	regs->pc = (unsigned long) ka->sa.sa_handler;
+=======
+	regs->pc = (unsigned long) ksig->ka.sa.sa_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adjustformat(regs);
 
 	/*
@@ -926,6 +1000,7 @@ static int setup_frame (int sig, struct k_sigaction *ka,
 		tregs->sr = regs->sr;
 	}
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
@@ -938,20 +1013,38 @@ static int setup_rt_frame (int sig, struct k_sigaction *ka, siginfo_t *info,
 	struct rt_sigframe __user *frame;
 	int fsize = frame_extra_sizes(regs->format);
 	int err = 0;
+=======
+}
+
+static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+			   struct pt_regs *regs)
+{
+	struct rt_sigframe __user *frame;
+	int fsize = frame_extra_sizes(regs->format);
+	int err = 0, sig = ksig->sig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fsize < 0) {
 #ifdef DEBUG
 		printk ("setup_frame: Unknown frame format %#x\n",
 			regs->format);
 #endif
+<<<<<<< HEAD
 		goto give_sigsegv;
 	}
 
 	frame = get_sigframe(ka, regs, sizeof(*frame));
+=======
+		return -EFAULT;
+	}
+
+	frame = get_sigframe(ksig, sizeof(*frame));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fsize)
 		err |= copy_to_user (&frame->uc.uc_extra, regs + 1, fsize);
 
+<<<<<<< HEAD
 	err |= __put_user((current_thread_info()->exec_domain
 			   && current_thread_info()->exec_domain->signal_invmap
 			   && sig < 32
@@ -961,6 +1054,12 @@ static int setup_rt_frame (int sig, struct k_sigaction *ka, siginfo_t *info,
 	err |= __put_user(&frame->info, &frame->pinfo);
 	err |= __put_user(&frame->uc, &frame->puc);
 	err |= copy_siginfo_to_user(&frame->info, info);
+=======
+	err |= __put_user(sig, &frame->sig);
+	err |= __put_user(&frame->info, &frame->pinfo);
+	err |= __put_user(&frame->uc, &frame->puc);
+	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Create the ucontext.  */
 	err |= __put_user(0, &frame->uc.uc_flags);
@@ -988,7 +1087,11 @@ static int setup_rt_frame (int sig, struct k_sigaction *ka, siginfo_t *info,
 #endif /* CONFIG_MMU */
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
+=======
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	push_cache ((unsigned long) &frame->retcode);
 
@@ -997,7 +1100,11 @@ static int setup_rt_frame (int sig, struct k_sigaction *ka, siginfo_t *info,
 	 * to destroy is successfully copied to sigframe.
 	 */
 	wrusp ((unsigned long) frame);
+<<<<<<< HEAD
 	regs->pc = (unsigned long) ka->sa.sa_handler;
+=======
+	regs->pc = (unsigned long) ksig->ka.sa.sa_handler;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	adjustformat(regs);
 
 	/*
@@ -1023,10 +1130,13 @@ static int setup_rt_frame (int sig, struct k_sigaction *ka, siginfo_t *info,
 		tregs->sr = regs->sr;
 	}
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
 	return err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void
@@ -1066,14 +1176,19 @@ handle_restart(struct pt_regs *regs, struct k_sigaction *ka, int has_handler)
  * OK, we're invoking a handler
  */
 static void
+<<<<<<< HEAD
 handle_signal(int sig, struct k_sigaction *ka, siginfo_t *info,
 	      struct pt_regs *regs)
+=======
+handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sigset_t *oldset = sigmask_to_save();
 	int err;
 	/* are we from a system call? */
 	if (regs->orig_d0 >= 0)
 		/* If so, check system call restarting.. */
+<<<<<<< HEAD
 		handle_restart(regs, ka, 1);
 
 	/* set up the stack frame */
@@ -1086,6 +1201,17 @@ handle_signal(int sig, struct k_sigaction *ka, siginfo_t *info,
 		return;
 
 	signal_delivered(sig, info, ka, regs, 0);
+=======
+		handle_restart(regs, &ksig->ka, 1);
+
+	/* set up the stack frame */
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO)
+		err = setup_rt_frame(ksig, oldset, regs);
+	else
+		err = setup_frame(ksig, oldset, regs);
+
+	signal_setup_done(err, ksig, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (test_thread_flag(TIF_DELAYED_TRACE)) {
 		regs->sr &= ~0x8000;
@@ -1100,6 +1226,7 @@ handle_signal(int sig, struct k_sigaction *ka, siginfo_t *info,
  */
 static void do_signal(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 	struct k_sigaction ka;
 	int signr;
@@ -1110,6 +1237,15 @@ static void do_signal(struct pt_regs *regs)
 	if (signr > 0) {
 		/* Whee!  Actually deliver the signal.  */
 		handle_signal(signr, &ka, &info, regs);
+=======
+	struct ksignal ksig;
+
+	current->thread.esp0 = (unsigned long) regs;
+
+	if (get_signal(&ksig)) {
+		/* Whee!  Actually deliver the signal.  */
+		handle_signal(&ksig, regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 

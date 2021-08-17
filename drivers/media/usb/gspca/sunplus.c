@@ -255,6 +255,13 @@ static void reg_r(struct gspca_dev *gspca_dev,
 		PERR("reg_r: buffer overflow\n");
 		return;
 	}
+<<<<<<< HEAD
+=======
+	if (len == 0) {
+		PERR("reg_r: zero-length read\n");
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (gspca_dev->usb_err < 0)
 		return;
 	ret = usb_control_msg(gspca_dev->dev,
@@ -263,11 +270,23 @@ static void reg_r(struct gspca_dev *gspca_dev,
 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			0,		/* value */
 			index,
+<<<<<<< HEAD
 			len ? gspca_dev->usb_buf : NULL, len,
+=======
+			gspca_dev->usb_buf, len,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			500);
 	if (ret < 0) {
 		pr_err("reg_r err %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(gspca_dev->usb_buf, 0, USB_BUF_SZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -715,7 +734,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	int enable;
 
 	/* create the JPEG header */
+<<<<<<< HEAD
 	jpeg_define(sd->jpeg_hdr, gspca_dev->height, gspca_dev->width,
+=======
+	jpeg_define(sd->jpeg_hdr, gspca_dev->pixfmt.height,
+			gspca_dev->pixfmt.width,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			0x22);		/* JPEG 411 */
 	jpeg_set_qual(sd->jpeg_hdr, QUALITY);
 
@@ -733,7 +757,11 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		case MegaImageVI:
 			reg_w_riv(gspca_dev, 0xf0, 0, 0);
 			spca504B_WaitCmdStatus(gspca_dev);
+<<<<<<< HEAD
 			reg_r(gspca_dev, 0xf0, 4, 0);
+=======
+			reg_w_riv(gspca_dev, 0xf0, 4, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spca504B_WaitCmdStatus(gspca_dev);
 			break;
 		default:
@@ -1026,6 +1054,10 @@ static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x055f, 0xc650), BS(SPCA533, 0)},
 	{USB_DEVICE(0x05da, 0x1018), BS(SPCA504B, 0)},
 	{USB_DEVICE(0x06d6, 0x0031), BS(SPCA533, 0)},
+<<<<<<< HEAD
+=======
+	{USB_DEVICE(0x06d6, 0x0041), BS(SPCA504B, 0)},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{USB_DEVICE(0x0733, 0x1311), BS(SPCA533, 0)},
 	{USB_DEVICE(0x0733, 0x1314), BS(SPCA533, 0)},
 	{USB_DEVICE(0x0733, 0x2211), BS(SPCA533, 0)},

@@ -206,6 +206,22 @@ static void garp_attr_destroy(struct garp_applicant *app, struct garp_attr *attr
 	kfree(attr);
 }
 
+<<<<<<< HEAD
+=======
+static void garp_attr_destroy_all(struct garp_applicant *app)
+{
+	struct rb_node *node, *next;
+	struct garp_attr *attr;
+
+	for (node = rb_first(&app->gid);
+	     next = node ? rb_next(node) : NULL, node != NULL;
+	     node = next) {
+		attr = rb_entry(node, struct garp_attr, node);
+		garp_attr_destroy(app, attr);
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int garp_pdu_init(struct garp_applicant *app)
 {
 	struct sk_buff *skb;
@@ -397,7 +413,11 @@ static void garp_join_timer_arm(struct garp_applicant *app)
 {
 	unsigned long delay;
 
+<<<<<<< HEAD
 	delay = (u64)msecs_to_jiffies(garp_join_time) * net_random() >> 32;
+=======
+	delay = (u64)msecs_to_jiffies(garp_join_time) * prandom_u32() >> 32;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mod_timer(&app->join_timer, jiffies + delay);
 }
 
@@ -612,6 +632,10 @@ void garp_uninit_applicant(struct net_device *dev, struct garp_application *appl
 
 	spin_lock_bh(&app->lock);
 	garp_gid_event(app, GARP_EVENT_TRANSMIT_PDU);
+<<<<<<< HEAD
+=======
+	garp_attr_destroy_all(app);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	garp_pdu_queue(app);
 	spin_unlock_bh(&app->lock);
 

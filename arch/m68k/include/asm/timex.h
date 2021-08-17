@@ -28,4 +28,17 @@ static inline cycles_t get_cycles(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+extern unsigned long (*mach_random_get_entropy)(void);
+
+static inline unsigned long random_get_entropy(void)
+{
+	if (mach_random_get_entropy)
+		return mach_random_get_entropy();
+	return 0;
+}
+#define random_get_entropy	random_get_entropy
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

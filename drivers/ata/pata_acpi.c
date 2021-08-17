@@ -7,16 +7,26 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <scsi/scsi_host.h>
 #include <acpi/acpi_bus.h>
 
 #include <linux/libata.h>
 #include <linux/ata.h>
+=======
+#include <linux/acpi.h>
+#include <linux/libata.h>
+#include <linux/ata.h>
+#include <scsi/scsi_host.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRV_NAME	"pata_acpi"
 #define DRV_VERSION	"0.2.3"
@@ -39,7 +49,11 @@ static int pacpi_pre_reset(struct ata_link *link, unsigned long deadline)
 {
 	struct ata_port *ap = link->ap;
 	struct pata_acpi *acpi = ap->private_data;
+<<<<<<< HEAD
 	if (ata_ap_acpi_handle(ap) == NULL || ata_acpi_gtm(ap, &acpi->gtm) < 0)
+=======
+	if (ACPI_HANDLE(&ap->tdev) == NULL || ata_acpi_gtm(ap, &acpi->gtm) < 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	return ata_sff_prereset(link, deadline);
@@ -195,7 +209,11 @@ static int pacpi_port_start(struct ata_port *ap)
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	struct pata_acpi *acpi;
 
+<<<<<<< HEAD
 	if (ata_ap_acpi_handle(ap) == NULL)
+=======
+	if (ACPI_HANDLE(&ap->tdev) == NULL)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	acpi = ap->private_data = devm_kzalloc(&pdev->dev, sizeof(struct pata_acpi), GFP_KERNEL);
@@ -267,7 +285,11 @@ static struct pci_driver pacpi_pci_driver = {
 	.id_table		= pacpi_pci_tbl,
 	.probe			= pacpi_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif

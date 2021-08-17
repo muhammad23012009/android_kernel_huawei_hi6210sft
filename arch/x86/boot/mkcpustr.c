@@ -16,7 +16,12 @@
 #include <stdio.h>
 
 #include "../include/asm/required-features.h"
+<<<<<<< HEAD
 #include "../include/asm/cpufeature.h"
+=======
+#include "../include/asm/disabled-features.h"
+#include "../include/asm/cpufeatures.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "../kernel/cpu/capflags.c"
 
 int main(void)

@@ -62,6 +62,10 @@ static unsigned int card_alloc;
  */
 static void vxpocket_release(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
+=======
+	free_irq(link->irq, link->priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pcmcia_disable_device(link);
 }
 
@@ -173,6 +177,10 @@ static int snd_vxpocket_new(struct snd_card *card, int ibl,
 
 /**
  * snd_vxpocket_assign_resources - initialize the hardware and card instance.
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @port: i/o port for the card
  * @irq: irq number for the card
  *
@@ -227,18 +235,31 @@ static int vxpocket_config(struct pcmcia_device *link)
 
 	ret = pcmcia_request_io(link);
 	if (ret)
+<<<<<<< HEAD
 		goto failed;
 
 	ret = pcmcia_request_irq(link, snd_vx_irq_handler);
 	if (ret)
 		goto failed;
+=======
+		goto failed_preirq;
+
+	ret = request_threaded_irq(link->irq, snd_vx_irq_handler,
+				   snd_vx_threaded_irq_handler,
+				   IRQF_SHARED, link->devname, link->priv);
+	if (ret)
+		goto failed_preirq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = pcmcia_enable_device(link);
 	if (ret)
 		goto failed;
 
 	chip->dev = &link->dev;
+<<<<<<< HEAD
 	snd_card_set_dev(chip->card, chip->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (snd_vxpocket_assign_resources(chip, link->resource[0]->start,
 						link->irq) < 0)
@@ -246,7 +267,13 @@ static int vxpocket_config(struct pcmcia_device *link)
 
 	return 0;
 
+<<<<<<< HEAD
 failed:
+=======
+ failed:
+	free_irq(link->irq, link->priv);
+failed_preirq:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pcmcia_disable_device(link);
 	return -ENODEV;
 }
@@ -307,7 +334,12 @@ static int vxpocket_probe(struct pcmcia_device *p_dev)
 		return -ENODEV; /* disabled explicitly */
 
 	/* ok, create a card instance */
+<<<<<<< HEAD
 	err = snd_card_create(index[i], id[i], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&p_dev->dev, index[i], id[i], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 		snd_printk(KERN_ERR "vxpocket: cannot create a card instance\n");
 		return err;

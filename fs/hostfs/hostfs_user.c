@@ -14,6 +14,10 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/vfs.h>
+<<<<<<< HEAD
+=======
+#include <sys/syscall.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hostfs.h"
 #include <utime.h>
 
@@ -96,21 +100,39 @@ void *open_dir(char *path, int *err_out)
 	return dir;
 }
 
+<<<<<<< HEAD
 char *read_dir(void *stream, unsigned long long *pos,
+=======
+void seek_dir(void *stream, unsigned long long pos)
+{
+	DIR *dir = stream;
+
+	seekdir(dir, pos);
+}
+
+char *read_dir(void *stream, unsigned long long *pos_out,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       unsigned long long *ino_out, int *len_out,
 	       unsigned int *type_out)
 {
 	DIR *dir = stream;
 	struct dirent *ent;
 
+<<<<<<< HEAD
 	seekdir(dir, *pos);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ent = readdir(dir);
 	if (ent == NULL)
 		return NULL;
 	*len_out = strlen(ent->d_name);
 	*ino_out = ent->d_ino;
 	*type_out = ent->d_type;
+<<<<<<< HEAD
 	*pos = telldir(dir);
+=======
+	*pos_out = ent->d_off;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ent->d_name;
 }
 
@@ -174,6 +196,7 @@ void close_dir(void *stream)
 	closedir(stream);
 }
 
+<<<<<<< HEAD
 int file_create(char *name, int ur, int uw, int ux, int gr,
 		int gw, int gx, int or, int ow, int ox)
 {
@@ -189,6 +212,12 @@ int file_create(char *name, int ur, int uw, int ux, int gr,
 	mode |= or ? S_IROTH : 0;
 	mode |= ow ? S_IWOTH : 0;
 	mode |= ox ? S_IXOTH : 0;
+=======
+int file_create(char *name, int mode)
+{
+	int fd;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fd = open64(name, O_CREAT | O_RDWR, mode);
 	if (fd < 0)
 		return -errno;
@@ -360,6 +389,36 @@ int rename_file(char *from, char *to)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int rename2_file(char *from, char *to, unsigned int flags)
+{
+	int err;
+
+#ifndef SYS_renameat2
+#  ifdef __x86_64__
+#    define SYS_renameat2 316
+#  endif
+#  ifdef __i386__
+#    define SYS_renameat2 353
+#  endif
+#endif
+
+#ifdef SYS_renameat2
+	err = syscall(SYS_renameat2, AT_FDCWD, from, AT_FDCWD, to, flags);
+	if (err < 0) {
+		if (errno != ENOSYS)
+			return -errno;
+		else
+			return -EINVAL;
+	}
+	return 0;
+#else
+	return -EINVAL;
+#endif
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int do_statfs(char *root, long *bsize_out, long long *blocks_out,
 	      long long *bfree_out, long long *bavail_out,
 	      long long *files_out, long long *ffree_out,

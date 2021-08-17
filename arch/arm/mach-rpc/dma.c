@@ -131,7 +131,11 @@ static irqreturn_t iomd_dma_handle(int irq, void *dev_id)
 	} while (1);
 
 	idma->state = ~DMA_ST_AB;
+<<<<<<< HEAD
 	disable_irq(irq);
+=======
+	disable_irq_nosync(irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_HANDLED;
 }
@@ -141,7 +145,11 @@ static int iomd_request_dma(unsigned int chan, dma_t *dma)
 	struct iomd_dma *idma = container_of(dma, struct iomd_dma, dma);
 
 	return request_irq(idma->irq, iomd_dma_handle,
+<<<<<<< HEAD
 			   IRQF_DISABLED, idma->dma.device_id, idma);
+=======
+			   0, idma->dma.device_id, idma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void iomd_free_dma(unsigned int chan, dma_t *dma)
@@ -174,6 +182,12 @@ static void iomd_enable_dma(unsigned int chan, dma_t *dma)
 				DMA_FROM_DEVICE : DMA_TO_DEVICE);
 		}
 
+<<<<<<< HEAD
+=======
+		idma->dma_addr = idma->dma.sg->dma_address;
+		idma->dma_len = idma->dma.sg->length;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iomd_writeb(DMA_CR_C, dma_base + CR);
 		idma->state = DMA_ST_AB;
 	}

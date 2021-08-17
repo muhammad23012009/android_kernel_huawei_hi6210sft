@@ -1,15 +1,24 @@
 #ifndef __LINUX_SERIAL_SCI_H
 #define __LINUX_SERIAL_SCI_H
 
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/serial_core.h>
 #include <linux/sh_dma.h>
 
 /*
+<<<<<<< HEAD
  * Generic header for SuperH SCI(F) (used by sh/sh64/h8300 and related parts)
+=======
+ * Generic header for SuperH (H)SCI(F) (used by sh/sh64 and related parts)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #define SCIx_NOT_SUPPORTED	(-1)
 
+<<<<<<< HEAD
 enum {
 	SCBRR_ALGO_1,		/* ((clk + 16 * bps) / (16 * bps) - 1) */
 	SCBRR_ALGO_2,		/* ((clk + 16 * bps) / (32 * bps) - 1) */
@@ -76,6 +85,18 @@ enum {
 
 	SCIx_NR_FNS,
 };
+=======
+/* Serial Control Register (@ = not supported by all parts) */
+#define SCSCR_TIE	BIT(7)	/* Transmit Interrupt Enable */
+#define SCSCR_RIE	BIT(6)	/* Receive Interrupt Enable */
+#define SCSCR_TE	BIT(5)	/* Transmit Enable */
+#define SCSCR_RE	BIT(4)	/* Receive Enable */
+#define SCSCR_REIE	BIT(3)	/* Receive Error Interrupt Enable @ */
+#define SCSCR_TOIE	BIT(2)	/* Timeout Interrupt Enable @ */
+#define SCSCR_CKE1	BIT(1)	/* Clock Enable 1 */
+#define SCSCR_CKE0	BIT(0)	/* Clock Enable 0 */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum {
 	SCIx_PROBE_REGTYPE,
@@ -87,13 +108,22 @@ enum {
 	SCIx_SH2_SCIF_FIFODATA_REGTYPE,
 	SCIx_SH3_SCIF_REGTYPE,
 	SCIx_SH4_SCIF_REGTYPE,
+<<<<<<< HEAD
 	SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
 	SCIx_SH4_SCIF_FIFODATA_REGTYPE,
 	SCIx_SH7705_SCIF_REGTYPE,
+=======
+	SCIx_SH4_SCIF_BRG_REGTYPE,
+	SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+	SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+	SCIx_SH7705_SCIF_REGTYPE,
+	SCIx_HSCIF_REGTYPE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	SCIx_NR_REGTYPES,
 };
 
+<<<<<<< HEAD
 #define SCIx_IRQ_MUXED(irq)		\
 {					\
 	[SCIx_ERI_IRQ]	= (irq),	\
@@ -119,6 +149,8 @@ enum {
 	SCIx_NR_REGS,
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct device;
 
 struct plat_sci_port_ops {
@@ -128,12 +160,17 @@ struct plat_sci_port_ops {
 /*
  * Port-specific capabilities
  */
+<<<<<<< HEAD
 #define SCIx_HAVE_RTSCTS	(1 << 0)
+=======
+#define SCIx_HAVE_RTSCTS	BIT(0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Platform device specific platform_data struct
  */
 struct plat_sci_port {
+<<<<<<< HEAD
 	unsigned long	mapbase;		/* resource base */
 	unsigned int	irqs[SCIx_NR_IRQS];	/* ERI, RXI, TXI, BRI */
 	unsigned int	gpios[SCIx_NR_FNS];	/* SCK, RXD, TXD, CTS, RTS */
@@ -142,14 +179,24 @@ struct plat_sci_port {
 	unsigned long	capabilities;		/* Port features/capabilities */
 
 	unsigned int	scbrr_algo_id;		/* SCBRR calculation algo */
+=======
+	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
+	upf_t		flags;			/* UPF_* flags */
+	unsigned long	capabilities;		/* Port features/capabilities */
+
+	unsigned int	sampling_rate;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int	scscr;			/* SCSCR initialization */
 
 	/*
 	 * Platform overrides if necessary, defaults otherwise.
 	 */
+<<<<<<< HEAD
 	int		overrun_bit;
 	unsigned int	error_mask;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int		port_reg;
 	unsigned char	regshift;
 	unsigned char	regtype;

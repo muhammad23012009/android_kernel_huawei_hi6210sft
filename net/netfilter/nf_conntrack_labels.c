@@ -8,16 +8,22 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <linux/ctype.h>
 #include <linux/export.h>
 #include <linux/jhash.h>
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/slab.h>
+=======
+#include <linux/export.h>
+#include <linux/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <net/netfilter/nf_conntrack_ecache.h>
 #include <net/netfilter/nf_conntrack_labels.h>
 
+<<<<<<< HEAD
 static unsigned int label_bits(const struct nf_conn_labels *l)
 {
 	unsigned int longs = l->words;
@@ -54,13 +60,26 @@ EXPORT_SYMBOL_GPL(nf_connlabel_set);
 
 #if IS_ENABLED(CONFIG_NF_CT_NETLINK)
 static void replace_u32(u32 *address, u32 mask, u32 new)
+=======
+static spinlock_t nf_connlabels_lock;
+
+static int replace_u32(u32 *address, u32 mask, u32 new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 old, tmp;
 
 	do {
 		old = *address;
 		tmp = (old & mask) ^ new;
+<<<<<<< HEAD
 	} while (cmpxchg(address, old, tmp) != old);
+=======
+		if (old == tmp)
+			return 0;
+	} while (cmpxchg(address, old, tmp) != old);
+
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int nf_connlabels_replace(struct nf_conn *ct,
@@ -69,31 +88,73 @@ int nf_connlabels_replace(struct nf_conn *ct,
 {
 	struct nf_conn_labels *labels;
 	unsigned int size, i;
+<<<<<<< HEAD
+=======
+	int changed = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 *dst;
 
 	labels = nf_ct_labels_find(ct);
 	if (!labels)
 		return -ENOSPC;
 
+<<<<<<< HEAD
 	size = labels->words * sizeof(long);
+=======
+	size = sizeof(labels->bits);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (size < (words32 * sizeof(u32)))
 		words32 = size / sizeof(u32);
 
 	dst = (u32 *) labels->bits;
+<<<<<<< HEAD
 	if (words32) {
 		for (i = 0; i < words32; i++)
 			replace_u32(&dst[i], mask ? ~mask[i] : 0, data[i]);
 	}
+=======
+	for (i = 0; i < words32; i++)
+		changed |= replace_u32(&dst[i], mask ? ~mask[i] : 0, data[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	size /= sizeof(u32);
 	for (i = words32; i < size; i++) /* pad */
 		replace_u32(&dst[i], 0, 0);
 
+<<<<<<< HEAD
 	nf_conntrack_event_cache(IPCT_LABEL, ct);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(nf_connlabels_replace);
 #endif
+=======
+	if (changed)
+		nf_conntrack_event_cache(IPCT_LABEL, ct);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(nf_connlabels_replace);
+
+int nf_connlabels_get(struct net *net, unsigned int bits)
+{
+	if (BIT_WORD(bits) >= NF_CT_LABELS_MAX_SIZE / sizeof(long))
+		return -ERANGE;
+
+	spin_lock(&nf_connlabels_lock);
+	net->ct.labels_used++;
+	spin_unlock(&nf_connlabels_lock);
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(nf_connlabels_get);
+
+void nf_connlabels_put(struct net *net)
+{
+	spin_lock(&nf_connlabels_lock);
+	net->ct.labels_used--;
+	spin_unlock(&nf_connlabels_lock);
+}
+EXPORT_SYMBOL_GPL(nf_connlabels_put);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct nf_ct_ext_type labels_extend __read_mostly = {
 	.len    = sizeof(struct nf_conn_labels),
@@ -103,6 +164,12 @@ static struct nf_ct_ext_type labels_extend __read_mostly = {
 
 int nf_conntrack_labels_init(void)
 {
+<<<<<<< HEAD
+=======
+	BUILD_BUG_ON(NF_CT_LABELS_MAX_SIZE / sizeof(long) >= U8_MAX);
+
+	spin_lock_init(&nf_connlabels_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nf_ct_extend_register(&labels_extend);
 }
 

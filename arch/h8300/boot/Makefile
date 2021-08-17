@@ -7,6 +7,7 @@ OBJCOPYFLAGS_vmlinux.srec := -Osrec
 OBJCOPYFLAGS_vmlinux.bin  := -Obinary
 OBJCOPYFLAGS_zImage := -O binary -R .note -R .comment -R .stab -R .stabstr -S
 
+<<<<<<< HEAD
 $(obj)/vmlinux.srec $(obj)/vmlinux.bin:  vmlinux FORCE
 	$(call if_changed,objcopy)
 	@echo '  Kernel: $@ is ready'
@@ -14,9 +15,27 @@ $(obj)/vmlinux.srec $(obj)/vmlinux.bin:  vmlinux FORCE
 $(obj)/zImage: $(obj)/compressed/vmlinux FORCE
 	$(call if_changed,objcopy)
 	@echo 'Kernel: $@ is ready'
+=======
+UIMAGE_LOADADDR = $(CONFIG_RAMBASE)
+UIMAGE_ENTRYADDR = $(shell /bin/bash -c 'printf "0x%08x" \
+	$$[$(CONFIG_RAMBASE) + $(CONFIG_OFFSET)]')
+
+$(obj)/vmlinux.srec $(obj)/vmlinux.bin:  vmlinux FORCE
+	$(call if_changed,objcopy)
+
+$(obj)/zImage: $(obj)/compressed/vmlinux FORCE
+	$(call if_changed,objcopy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 $(obj)/compressed/vmlinux: FORCE
 	$(Q)$(MAKE) $(build)=$(obj)/compressed $@
 
+<<<<<<< HEAD
 CLEAN_FILES += arch/$(ARCH)/vmlinux.bin arch/$(ARCH)/vmlinux.srec
 
+=======
+$(obj)/uImage.bin: $(obj)/vmlinux.bin
+	$(call if_changed,uimage,none)
+
+CLEAN_FILES += arch/$(ARCH)/vmlinux.bin arch/$(ARCH)/vmlinux.srec arch/$(ARCH)/uImage.bin
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

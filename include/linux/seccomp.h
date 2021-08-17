@@ -3,7 +3,12 @@
 
 #include <uapi/linux/seccomp.h>
 
+<<<<<<< HEAD
 #define SECCOMP_FILTER_FLAG_MASK	(SECCOMP_FILTER_FLAG_TSYNC)
+=======
+#define SECCOMP_FILTER_FLAG_MASK	(SECCOMP_FILTER_FLAG_TSYNC	| \
+					 SECCOMP_FILTER_FLAG_SPEC_ALLOW)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SECCOMP
 
@@ -27,6 +32,7 @@ struct seccomp {
 	struct seccomp_filter *filter;
 };
 
+<<<<<<< HEAD
 extern int __secure_computing(int);
 static inline int secure_computing(int this_syscall)
 {
@@ -40,6 +46,19 @@ static inline void secure_computing_strict(int this_syscall)
 {
 	BUG_ON(secure_computing(this_syscall) != 0);
 }
+=======
+#ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+extern int __secure_computing(const struct seccomp_data *sd);
+static inline int secure_computing(const struct seccomp_data *sd)
+{
+	if (unlikely(test_thread_flag(TIF_SECCOMP)))
+		return  __secure_computing(sd);
+	return 0;
+}
+#else
+extern void secure_computing_strict(int this_syscall);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern long prctl_get_seccomp(void);
 extern long prctl_set_seccomp(unsigned long, char __user *);
@@ -56,8 +75,16 @@ static inline int seccomp_mode(struct seccomp *s)
 struct seccomp { };
 struct seccomp_filter { };
 
+<<<<<<< HEAD
 static inline int secure_computing(int this_syscall) { return 0; }
 static inline void secure_computing_strict(int this_syscall) { return; }
+=======
+#ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+static inline int secure_computing(struct seccomp_data *sd) { return 0; }
+#else
+static inline void secure_computing_strict(int this_syscall) { return; }
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline long prctl_get_seccomp(void)
 {
@@ -71,14 +98,21 @@ static inline long prctl_set_seccomp(unsigned long arg2, char __user *arg3)
 
 static inline int seccomp_mode(struct seccomp *s)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return SECCOMP_MODE_DISABLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* CONFIG_SECCOMP */
 
 #ifdef CONFIG_SECCOMP_FILTER
 extern void put_seccomp_filter(struct task_struct *tsk);
 extern void get_seccomp_filter(struct task_struct *tsk);
+<<<<<<< HEAD
 extern u32 seccomp_bpf_load(int off);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else  /* CONFIG_SECCOMP_FILTER */
 static inline void put_seccomp_filter(struct task_struct *tsk)
 {
@@ -89,4 +123,18 @@ static inline void get_seccomp_filter(struct task_struct *tsk)
 	return;
 }
 #endif /* CONFIG_SECCOMP_FILTER */
+<<<<<<< HEAD
+=======
+
+#if defined(CONFIG_SECCOMP_FILTER) && defined(CONFIG_CHECKPOINT_RESTORE)
+extern long seccomp_get_filter(struct task_struct *task,
+			       unsigned long filter_off, void __user *data);
+#else
+static inline long seccomp_get_filter(struct task_struct *task,
+				      unsigned long n, void __user *data)
+{
+	return -EINVAL;
+}
+#endif /* CONFIG_SECCOMP_FILTER && CONFIG_CHECKPOINT_RESTORE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_SECCOMP_H */

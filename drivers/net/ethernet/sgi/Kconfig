@@ -7,9 +7,13 @@ config NET_VENDOR_SGI
 	default y
 	depends on (PCI && SGI_IP27) || SGI_IP32
 	---help---
+<<<<<<< HEAD
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -22,12 +26,18 @@ config SGI_IOC3_ETH
 	bool "SGI IOC3 Ethernet"
 	depends on PCI && SGI_IP27
 	select CRC32
+<<<<<<< HEAD
 	select NET_CORE
 	select MII
 	---help---
 	  If you have a network (Ethernet) card of this type, say Y and read
 	  the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	select MII
+	---help---
+	  If you have a network (Ethernet) card of this type, say Y here.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 config SGI_O2MACE_ETH
 	tristate "SGI O2 MACE Fast Ethernet support"

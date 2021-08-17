@@ -81,8 +81,13 @@ static struct x25_asy *x25_asy_alloc(void)
 		char name[IFNAMSIZ];
 		sprintf(name, "x25asy%d", i);
 
+<<<<<<< HEAD
 		dev = alloc_netdev(sizeof(struct x25_asy),
 				   name, x25_asy_setup);
+=======
+		dev = alloc_netdev(sizeof(struct x25_asy), name,
+				   NET_NAME_UNKNOWN, x25_asy_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!dev)
 			return NULL;
 
@@ -122,8 +127,17 @@ static int x25_asy_change_mtu(struct net_device *dev, int newmtu)
 {
 	struct x25_asy *sl = netdev_priv(dev);
 	unsigned char *xbuff, *rbuff;
+<<<<<<< HEAD
 	int len = 2 * newmtu;
 
+=======
+	int len;
+
+	if (newmtu > 65534)
+		return -EINVAL;
+
+	len = 2 * newmtu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	xbuff = kmalloc(len + 4, GFP_ATOMIC);
 	rbuff = kmalloc(len + 4, GFP_ATOMIC);
 
@@ -182,7 +196,11 @@ static inline void x25_asy_unlock(struct x25_asy *sl)
 	netif_wake_queue(sl->dev);
 }
 
+<<<<<<< HEAD
 /* Send one completely decapsulated IP datagram to the IP layer. */
+=======
+/* Send an LAPB frame to the LAPB module to process. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void x25_asy_bump(struct x25_asy *sl)
 {
@@ -194,13 +212,20 @@ static void x25_asy_bump(struct x25_asy *sl)
 	count = sl->rcount;
 	dev->stats.rx_bytes += count;
 
+<<<<<<< HEAD
 	skb = dev_alloc_skb(count+1);
+=======
+	skb = dev_alloc_skb(count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (skb == NULL) {
 		netdev_warn(sl->dev, "memory squeeze, dropping packet\n");
 		dev->stats.rx_dropped++;
 		return;
 	}
+<<<<<<< HEAD
 	skb_push(skb, 1);	/* LAPB internal control */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(skb_put(skb, count), sl->rbuff, count);
 	skb->protocol = x25_type_trans(skb, sl->dev);
 	err = lapb_data_received(skb->dev, skb);
@@ -208,7 +233,10 @@ static void x25_asy_bump(struct x25_asy *sl)
 		kfree_skb(skb);
 		printk(KERN_DEBUG "x25_asy: data received err - %d\n", err);
 	} else {
+<<<<<<< HEAD
 		netif_rx(skb);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev->stats.rx_packets++;
 	}
 }
@@ -354,12 +382,29 @@ static netdev_tx_t x25_asy_xmit(struct sk_buff *skb,
  */
 
 /*
+<<<<<<< HEAD
  *	Called when I frame data arrives. We did the work above - throw it
  *	at the net layer.
+=======
+ *	Called when I frame data arrive. We add a pseudo header for upper
+ *	layers and pass it to upper layers.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 static int x25_asy_data_indication(struct net_device *dev, struct sk_buff *skb)
 {
+<<<<<<< HEAD
+=======
+	if (skb_cow(skb, 1)) {
+		kfree_skb(skb);
+		return NET_RX_DROP;
+	}
+	skb_push(skb, 1);
+	skb->data[0] = X25_IFACE_DATA;
+
+	skb->protocol = x25_type_trans(skb, dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return netif_rx(skb);
 }
 
@@ -484,8 +529,15 @@ static int x25_asy_open(struct net_device *dev)
 
 	/* Cleanup */
 	kfree(sl->xbuff);
+<<<<<<< HEAD
 noxbuff:
 	kfree(sl->rbuff);
+=======
+	sl->xbuff = NULL;
+noxbuff:
+	kfree(sl->rbuff);
+	sl->rbuff = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 norbuff:
 	return -ENOMEM;
 }
@@ -567,8 +619,15 @@ static int x25_asy_open_tty(struct tty_struct *tty)
 
 	/* Perform the low-level X.25 async init */
 	err = x25_asy_open(sl->dev);
+<<<<<<< HEAD
 	if (err)
 		return err;
+=======
+	if (err) {
+		x25_asy_free(sl);
+		return err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Done.  We have linked the TTY line to a channel. */
 	return 0;
 }
@@ -651,7 +710,11 @@ static void x25_asy_unesc(struct x25_asy *sl, unsigned char s)
 	switch (s) {
 	case X25_END:
 		if (!test_and_clear_bit(SLF_ERROR, &sl->flags) &&
+<<<<<<< HEAD
 		    sl->rcount > 2)
+=======
+		    sl->rcount >= 2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			x25_asy_bump(sl);
 		clear_bit(SLF_ESCAPE, &sl->flags);
 		sl->rcount = 0;

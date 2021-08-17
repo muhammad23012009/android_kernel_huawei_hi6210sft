@@ -1,5 +1,16 @@
 
 generic-y += clkdev.h
 generic-y += exec.h
+<<<<<<< HEAD
 generic-y += kvm_para.h
 generic-y += trace_clock.h
+=======
+generic-y += irq_work.h
+generic-y += kvm_para.h
+generic-y += mcs_spinlock.h
+generic-y += mm-arch-hooks.h
+generic-y += preempt.h
+generic-y += trace_clock.h
+generic-y += vtime.h
+generic-y += word-at-a-time.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

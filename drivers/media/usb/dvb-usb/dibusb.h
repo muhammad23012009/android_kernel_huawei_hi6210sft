@@ -1,6 +1,10 @@
 /* Header file for all dibusb-based-receivers.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	This program is free software; you can redistribute it and/or modify it
  *	under the terms of the GNU General Public License as published by the Free
@@ -36,7 +40,11 @@
 
 /*
  * i2c read
+<<<<<<< HEAD
  * bulk write: 0x02 ((7bit i2c_addr << 1) & 0x01) register_bytes length_word
+=======
+ * bulk write: 0x02 ((7bit i2c_addr << 1) | 0x01) register_bytes length_word
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * bulk read:  byte_buffer (length_word bytes)
  */
 #define DIBUSB_REQ_I2C_READ			0x02
@@ -96,6 +104,12 @@
 #define DIBUSB_IOCTL_CMD_ENABLE_STREAM	0x01
 #define DIBUSB_IOCTL_CMD_DISABLE_STREAM	0x02
 
+<<<<<<< HEAD
+=======
+/* Max transfer size done by I2C transfer functions */
+#define MAX_XFER_SIZE  64
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dibusb_state {
 	struct dib_fe_xfer_ops ops;
 	int mt2060_present;

@@ -1,6 +1,11 @@
 #ifndef _LINUX_PRCTL_H
 #define _LINUX_PRCTL_H
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Values to pass as first argument to prctl() */
 
 #define PR_SET_PDEATHSIG  1  /* Second arg is a signal */
@@ -119,6 +124,34 @@
 # define PR_SET_MM_ENV_END		11
 # define PR_SET_MM_AUXV			12
 # define PR_SET_MM_EXE_FILE		13
+<<<<<<< HEAD
+=======
+# define PR_SET_MM_MAP			14
+# define PR_SET_MM_MAP_SIZE		15
+
+/*
+ * This structure provides new memory descriptor
+ * map which mostly modifies /proc/pid/stat[m]
+ * output for a task. This mostly done in a
+ * sake of checkpoint/restore functionality.
+ */
+struct prctl_mm_map {
+	__u64	start_code;		/* code section bounds */
+	__u64	end_code;
+	__u64	start_data;		/* data section bounds */
+	__u64	end_data;
+	__u64	start_brk;		/* heap for brk() syscall */
+	__u64	brk;
+	__u64	start_stack;		/* stack starts at */
+	__u64	arg_start;		/* command line arguments bounds */
+	__u64	arg_end;
+	__u64	env_start;		/* environment variables bounds */
+	__u64	env_end;
+	__u64	*auxv;			/* auxiliary vector */
+	__u32	auxv_size;		/* vector size */
+	__u32	exe_fd;			/* /proc/$pid/exe link file */
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Set specific pid that is allowed to ptrace the current task.
@@ -149,8 +182,24 @@
 
 #define PR_GET_TID_ADDRESS	40
 
+<<<<<<< HEAD
 #define PR_SET_VMA		0x53564d41
 # define PR_SET_VMA_ANON_NAME		0
+=======
+#define PR_SET_THP_DISABLE	41
+#define PR_GET_THP_DISABLE	42
+
+/*
+ * Tell the kernel to start/stop helping userspace manage bounds tables.
+ */
+#define PR_MPX_ENABLE_MANAGEMENT  43
+#define PR_MPX_DISABLE_MANAGEMENT 44
+
+#define PR_SET_FP_MODE		45
+#define PR_GET_FP_MODE		46
+# define PR_FP_MODE_FR		(1 << 0)	/* 64b FP registers */
+# define PR_FP_MODE_FRE		(1 << 1)	/* 32b compatibility */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Control the ambient capability set */
 #define PR_CAP_AMBIENT			47
@@ -159,4 +208,23 @@
 # define PR_CAP_AMBIENT_LOWER		3
 # define PR_CAP_AMBIENT_CLEAR_ALL	4
 
+<<<<<<< HEAD
+=======
+/* Per task speculation control */
+#define PR_GET_SPECULATION_CTRL		52
+#define PR_SET_SPECULATION_CTRL		53
+/* Speculation control variants */
+# define PR_SPEC_STORE_BYPASS		0
+# define PR_SPEC_INDIRECT_BRANCH	1
+/* Return and control values for PR_SET/GET_SPECULATION_CTRL */
+# define PR_SPEC_NOT_AFFECTED		0
+# define PR_SPEC_PRCTL			(1UL << 0)
+# define PR_SPEC_ENABLE			(1UL << 1)
+# define PR_SPEC_DISABLE		(1UL << 2)
+# define PR_SPEC_FORCE_DISABLE		(1UL << 3)
+
+#define PR_SET_VMA		0x53564d41
+# define PR_SET_VMA_ANON_NAME		0
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_PRCTL_H */

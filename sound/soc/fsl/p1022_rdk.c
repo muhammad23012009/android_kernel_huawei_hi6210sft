@@ -18,11 +18,20 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/interrupt.h>
 #include <linux/of_device.h>
 #include <linux/slab.h>
 #include <sound/soc.h>
 #include <asm/fsl_guts.h>
+=======
+#include <linux/fsl/guts.h>
+#include <linux/interrupt.h>
+#include <linux/of_address.h>
+#include <linux/of_device.h>
+#include <linux/slab.h>
+#include <sound/soc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "fsl_dma.h"
 #include "fsl_ssi.h"
@@ -202,8 +211,12 @@ static int p1022_rdk_probe(struct platform_device *pdev)
 {
 	struct device *dev = pdev->dev.parent;
 	/* ssi_pdev is the platform device for the SSI node that probed us */
+<<<<<<< HEAD
 	struct platform_device *ssi_pdev =
 		container_of(dev, struct platform_device, dev);
+=======
+	struct platform_device *ssi_pdev = to_platform_device(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device_node *np = ssi_pdev->dev.of_node;
 	struct device_node *codec_np = NULL;
 	struct machine_data *mdata;
@@ -347,7 +360,10 @@ static struct platform_driver p1022_rdk_driver = {
 		 * in lowercase letters.
 		 */
 		.name = "snd-soc-p1022rdk",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

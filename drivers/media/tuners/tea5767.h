@@ -39,7 +39,11 @@ struct tea5767_ctrl {
 	enum tea5767_xtal	xtal_freq;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_TEA5767)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_TEA5767)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int tea5767_autodetection(struct i2c_adapter* i2c_adap, u8 i2c_addr);
 
 extern struct dvb_frontend *tea5767_attach(struct dvb_frontend *fe,

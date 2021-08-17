@@ -35,7 +35,11 @@ struct uio_map;
 struct uio_mem {
 	const char		*name;
 	phys_addr_t		addr;
+<<<<<<< HEAD
 	unsigned long		size;
+=======
+	resource_size_t		size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			memtype;
 	void __iomem		*internal_addr;
 	struct uio_map		*map;
@@ -63,7 +67,21 @@ struct uio_port {
 
 #define MAX_UIO_PORT_REGIONS	5
 
+<<<<<<< HEAD
 struct uio_device;
+=======
+struct uio_device {
+        struct module           *owner;
+        struct device           *dev;
+        int                     minor;
+        atomic_t                event;
+        struct fasync_struct    *async_queue;
+        wait_queue_head_t       wait;
+        struct uio_info         *info;
+        struct kobject          *map_dir;
+        struct kobject          *portio_dir;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct uio_info - UIO device capabilities

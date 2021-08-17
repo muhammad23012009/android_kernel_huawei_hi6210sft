@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 #
+=======
+  #
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Industrial I/O standalone triggers
 #
 comment "Triggers - standalone"
 
 if IIO_TRIGGER
 
+<<<<<<< HEAD
 config IIO_PERIODIC_RTC_TRIGGER
 	tristate "Periodic RTC triggers"
 	depends on RTC_CLASS
@@ -29,6 +34,8 @@ config IIO_SYSFS_TRIGGER
 	  To compile this driver as a module, choose M here: the
 	  module will be called iio-trig-sysfs.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config IIO_BFIN_TMR_TRIGGER
 	tristate "Blackfin TIMER trigger"
 	depends on BLACKFIN

@@ -79,7 +79,10 @@ static ssize_t rng_dev_read (struct file *filp, char __user *buf, size_t size,
 			set_task_state(current, TASK_INTERRUPTIBLE);
 
 			schedule();
+<<<<<<< HEAD
 			set_task_state(current, TASK_RUNNING);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			remove_wait_queue(&host_read_wait, &wait);
 
 			if (atomic_dec_and_test(&host_sleep_count)) {

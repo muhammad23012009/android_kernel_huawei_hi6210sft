@@ -30,10 +30,13 @@ jiffies = jiffies_64 + 4;
 jiffies = jiffies_64;
 #endif
 
+<<<<<<< HEAD
 #ifndef KERNELOFFSET
 #define KERNELOFFSET 0xd0003000
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Note: In the following macros, it would be nice to specify only the
    vector name and section kind and construct "sym" and "section" using
    CPP concatenation, but that does not work reliably.  Concatenating a
@@ -93,6 +96,12 @@ SECTIONS
     VMLINUX_SYMBOL(__sched_text_start) = .;
     *(.sched.literal .sched.text)
     VMLINUX_SYMBOL(__sched_text_end) = .;
+<<<<<<< HEAD
+=======
+    VMLINUX_SYMBOL(__cpuidle_text_start) = .;
+    *(.cpuidle.literal .cpuidle.text)
+    VMLINUX_SYMBOL(__cpuidle_text_end) = .;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     VMLINUX_SYMBOL(__lock_text_start) = .;
     *(.spinlock.literal .spinlock.text)
     VMLINUX_SYMBOL(__lock_text_end) = .;
@@ -110,6 +119,10 @@ SECTIONS
   .fixup   : { *(.fixup) }
 
   EXCEPTION_TABLE(16)
+<<<<<<< HEAD
+=======
+  NOTES
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   /* Data section */
 
   _sdata = .;
@@ -165,6 +178,14 @@ SECTIONS
 		   .DoubleExceptionVector.text);
     RELOCATE_ENTRY(_DebugInterruptVector_text,
 		   .DebugInterruptVector.text);
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_SMP)
+    RELOCATE_ENTRY(_SecondaryResetVector_text,
+		   .SecondaryResetVector.text);
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   
     __boot_reloc_table_end = ABSOLUTE(.) ;
 
@@ -262,12 +283,17 @@ SECTIONS
 		  .UserExceptionVector.literal)
   SECTION_VECTOR (_DoubleExceptionVector_literal,
 		  .DoubleExceptionVector.literal,
+<<<<<<< HEAD
 		  DOUBLEEXC_VECTOR_VADDR - 16,
+=======
+		  DOUBLEEXC_VECTOR_VADDR - 48,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  SIZEOF(.UserExceptionVector.text),
 		  .UserExceptionVector.text)
   SECTION_VECTOR (_DoubleExceptionVector_text,
 		  .DoubleExceptionVector.text,
 		  DOUBLEEXC_VECTOR_VADDR,
+<<<<<<< HEAD
 		  32,
 		  .DoubleExceptionVector.literal)
 
@@ -304,6 +330,32 @@ SECTIONS
 	*(.SecondaryResetVector.remapped_text)
   }
 
+=======
+		  48,
+		  .DoubleExceptionVector.literal)
+
+  . = (LOADADDR( .DoubleExceptionVector.text ) + SIZEOF( .DoubleExceptionVector.text ) + 3) & ~ 3;
+
+#if defined(CONFIG_SMP)
+
+  SECTION_VECTOR (_SecondaryResetVector_text,
+		  .SecondaryResetVector.text,
+		  RESET_VECTOR1_VADDR,
+		  SIZEOF(.DoubleExceptionVector.text),
+		  .DoubleExceptionVector.text)
+
+  . = LOADADDR(.SecondaryResetVector.text)+SIZEOF(.SecondaryResetVector.text);
+
+#endif
+
+  . = ALIGN(PAGE_SIZE);
+
+  __init_end = .;
+
+  BSS_SECTION(0, 8192, 0)
+
+  _end = .;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
   .xt.lit : { *(.xt.lit) }
   .xt.prop : { *(.xt.prop) }

@@ -7,6 +7,10 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+#include <linux/clkdev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/irq.h>
 #include <linux/gpio.h>
 #include <linux/kernel.h>
@@ -14,7 +18,10 @@
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/omapfb.h>
 
 #include <linux/spi/spi.h>
@@ -156,9 +163,16 @@ static struct omap_usb_config nokia770_usb_config __initdata = {
 	.register_dev	= 1,
 	.hmc_mode	= 16,
 	.pins[0]	= 6,
+<<<<<<< HEAD
 };
 
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
+=======
+	.extcon		= "tahvo-usb",
+};
+
+#if IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define NOKIA770_GPIO_MMC_POWER		41
 #define NOKIA770_GPIO_MMC_SWITCH	23
@@ -215,7 +229,11 @@ static inline void nokia770_mmc_init(void)
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C_CBUS_GPIO) || defined(CONFIG_I2C_CBUS_GPIO_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C_CBUS_GPIO)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct i2c_cbus_platform_data nokia770_cbus_data = {
 	.clk_gpio = OMAP_MPUIO(9),
 	.dat_gpio = OMAP_MPUIO(10),
@@ -234,16 +252,37 @@ static struct i2c_board_info nokia770_i2c_board_info_2[] __initdata = {
 	{
 		I2C_BOARD_INFO("retu-mfd", 0x01),
 	},
+<<<<<<< HEAD
+=======
+	{
+		I2C_BOARD_INFO("tahvo-mfd", 0x02),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static void __init nokia770_cbus_init(void)
 {
 	const int retu_irq_gpio = 62;
+<<<<<<< HEAD
 
 	if (gpio_request_one(retu_irq_gpio, GPIOF_IN, "Retu IRQ"))
 		return;
 	irq_set_irq_type(gpio_to_irq(retu_irq_gpio), IRQ_TYPE_EDGE_RISING);
 	nokia770_i2c_board_info_2[0].irq = gpio_to_irq(retu_irq_gpio);
+=======
+	const int tahvo_irq_gpio = 40;
+
+	if (gpio_request_one(retu_irq_gpio, GPIOF_IN, "Retu IRQ"))
+		return;
+	if (gpio_request_one(tahvo_irq_gpio, GPIOF_IN, "Tahvo IRQ")) {
+		gpio_free(retu_irq_gpio);
+		return;
+	}
+	irq_set_irq_type(gpio_to_irq(retu_irq_gpio), IRQ_TYPE_EDGE_RISING);
+	irq_set_irq_type(gpio_to_irq(tahvo_irq_gpio), IRQ_TYPE_EDGE_RISING);
+	nokia770_i2c_board_info_2[0].irq = gpio_to_irq(retu_irq_gpio);
+	nokia770_i2c_board_info_2[1].irq = gpio_to_irq(tahvo_irq_gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i2c_register_board_info(2, nokia770_i2c_board_info_2,
 				ARRAY_SIZE(nokia770_i2c_board_info_2));
 	platform_device_register(&nokia770_cbus_device);
@@ -283,6 +322,10 @@ MACHINE_START(NOKIA770, "Nokia 770")
 	.map_io		= omap16xx_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
+<<<<<<< HEAD
+=======
+	.handle_irq	= omap1_handle_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.init_machine	= omap_nokia770_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,

@@ -154,7 +154,11 @@ static void my3126_destroy(struct cphy *cphy)
 	kfree(cphy);
 }
 
+<<<<<<< HEAD
 static struct cphy_ops my3126_ops = {
+=======
+static const struct cphy_ops my3126_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.destroy		= my3126_destroy,
 	.reset			= my3126_reset,
 	.interrupt_enable	= my3126_interrupt_enable,

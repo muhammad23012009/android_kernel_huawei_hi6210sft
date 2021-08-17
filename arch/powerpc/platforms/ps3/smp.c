@@ -57,7 +57,11 @@ static void ps3_smp_message_pass(int cpu, int msg)
 			" (%d)\n", __func__, __LINE__, cpu, msg, result);
 }
 
+<<<<<<< HEAD
 static int __init ps3_smp_probe(void)
+=======
+static void __init ps3_smp_probe(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpu;
 
@@ -76,7 +80,11 @@ static int __init ps3_smp_probe(void)
 
 		BUILD_BUG_ON(PPC_MSG_CALL_FUNCTION    != 0);
 		BUILD_BUG_ON(PPC_MSG_RESCHEDULE       != 1);
+<<<<<<< HEAD
 		BUILD_BUG_ON(PPC_MSG_CALL_FUNC_SINGLE != 2);
+=======
+		BUILD_BUG_ON(PPC_MSG_TICK_BROADCAST   != 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		BUILD_BUG_ON(PPC_MSG_DEBUGGER_BREAK   != 3);
 
 		for (i = 0; i < MSG_COUNT; i++) {
@@ -91,7 +99,11 @@ static int __init ps3_smp_probe(void)
 			result = smp_request_message_ipi(virqs[i], i);
 
 			if (result)
+<<<<<<< HEAD
 				virqs[i] = NO_IRQ;
+=======
+				virqs[i] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			else
 				ps3_register_ipi_irq(cpu, virqs[i]);
 		}
@@ -100,8 +112,11 @@ static int __init ps3_smp_probe(void)
 
 		DBG(" <- %s:%d: (%d)\n", __func__, __LINE__, cpu);
 	}
+<<<<<<< HEAD
 
 	return 2;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void ps3_smp_cleanup_cpu(int cpu)
@@ -114,7 +129,11 @@ void ps3_smp_cleanup_cpu(int cpu)
 	for (i = 0; i < MSG_COUNT; i++) {
 		/* Can't call free_irq from interrupt context. */
 		ps3_event_receive_port_destroy(virqs[i]);
+<<<<<<< HEAD
 		virqs[i] = NO_IRQ;
+=======
+		virqs[i] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	DBG(" <- %s:%d: (%d)\n", __func__, __LINE__, cpu);

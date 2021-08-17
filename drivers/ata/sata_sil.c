@@ -37,7 +37,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -113,14 +116,22 @@ enum {
 };
 
 static int sil_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int sil_pci_device_resume(struct pci_dev *pdev);
 #endif
 static void sil_dev_config(struct ata_device *dev);
 static int sil_scr_read(struct ata_link *link, unsigned int sc_reg, u32 *val);
 static int sil_scr_write(struct ata_link *link, unsigned int sc_reg, u32 val);
 static int sil_set_mode(struct ata_link *link, struct ata_device **r_failed);
+<<<<<<< HEAD
 static void sil_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors sil_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sil_bmdma_setup(struct ata_queued_cmd *qc);
 static void sil_bmdma_start(struct ata_queued_cmd *qc);
 static void sil_bmdma_stop(struct ata_queued_cmd *qc);
@@ -167,7 +178,11 @@ static struct pci_driver sil_pci_driver = {
 	.id_table		= sil_pci_tbl,
 	.probe			= sil_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= sil_pci_device_resume,
 #endif
@@ -334,12 +349,23 @@ static void sil_fill_sg(struct ata_queued_cmd *qc)
 		last_prd->flags_len |= cpu_to_le32(ATA_PRD_EOT);
 }
 
+<<<<<<< HEAD
 static void sil_qc_prep(struct ata_queued_cmd *qc)
 {
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
 		return;
 
 	sil_fill_sg(qc);
+=======
+static enum ata_completion_errors sil_qc_prep(struct ata_queued_cmd *qc)
+{
+	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+		return AC_ERR_OK;
+
+	sil_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned char sil_get_device_cache_line(struct pci_dev *pdev)
@@ -774,10 +800,17 @@ static int sil_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		return rc;
 	host->iomap = pcim_iomap_table(pdev);
 
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask(&pdev->dev, ATA_DMA_MASK);
+	if (rc)
+		return rc;
+	rc = dma_set_coherent_mask(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc)
 		return rc;
 
@@ -806,10 +839,17 @@ static int sil_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 				 &sil_sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sil_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sil_pci_device_resume(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);

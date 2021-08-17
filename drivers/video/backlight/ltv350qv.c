@@ -242,7 +242,12 @@ static int ltv350qv_probe(struct spi_device *spi)
 	if (!lcd->buffer)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ld = lcd_device_register("ltv350qv", &spi->dev, lcd, &ltv_ops);
+=======
+	ld = devm_lcd_device_register(&spi->dev, "ltv350qv", &spi->dev, lcd,
+					&ltv_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(ld))
 		return PTR_ERR(ld);
 
@@ -250,15 +255,22 @@ static int ltv350qv_probe(struct spi_device *spi)
 
 	ret = ltv350qv_power(lcd, FB_BLANK_UNBLANK);
 	if (ret)
+<<<<<<< HEAD
 		goto out_unregister;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spi_set_drvdata(spi, lcd);
 
 	return 0;
+<<<<<<< HEAD
 
 out_unregister:
 	lcd_device_unregister(ld);
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ltv350qv_remove(struct spi_device *spi)
@@ -266,8 +278,11 @@ static int ltv350qv_remove(struct spi_device *spi)
 	struct ltv350qv *lcd = spi_get_drvdata(spi);
 
 	ltv350qv_power(lcd, FB_BLANK_POWERDOWN);
+<<<<<<< HEAD
 	lcd_device_unregister(lcd->ld);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -300,7 +315,10 @@ static void ltv350qv_shutdown(struct spi_device *spi)
 static struct spi_driver ltv350qv_driver = {
 	.driver = {
 		.name		= "ltv350qv",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm		= &ltv350qv_pm_ops,
 	},
 

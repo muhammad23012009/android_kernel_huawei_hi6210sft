@@ -21,7 +21,10 @@
 #include <linux/fs.h>
 #include <linux/errno.h>
 #include <linux/major.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/miscdevice.h>
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
@@ -612,16 +615,24 @@ static int cpwd_probe(struct platform_device *op)
 	}
 
 	if (p->broken) {
+<<<<<<< HEAD
 		init_timer(&cpwd_timer);
 		cpwd_timer.function	= cpwd_brokentimer;
 		cpwd_timer.data		= (unsigned long) p;
+=======
+		setup_timer(&cpwd_timer, cpwd_brokentimer, (unsigned long)p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cpwd_timer.expires	= WD_BTIMEOUT;
 
 		pr_info("PLD defect workaround enabled for model %s\n",
 			WD_BADMODEL);
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, p);
+=======
+	platform_set_drvdata(op, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpwd_device = p;
 	err = 0;
 
@@ -642,7 +653,11 @@ out_free:
 
 static int cpwd_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct cpwd *p = dev_get_drvdata(&op->dev);
+=======
+	struct cpwd *p = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 
 	for (i = 0; i < WD_NUMDEVS; i++) {
@@ -680,7 +695,10 @@ MODULE_DEVICE_TABLE(of, cpwd_match);
 static struct platform_driver cpwd_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = cpwd_match,
 	},
 	.probe		= cpwd_probe,

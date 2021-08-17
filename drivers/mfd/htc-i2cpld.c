@@ -227,6 +227,7 @@ static irqreturn_t htcpld_handler(int irq, void *dev)
 static void htcpld_chip_set(struct gpio_chip *chip, unsigned offset, int val)
 {
 	struct i2c_client *client;
+<<<<<<< HEAD
 	struct htcpld_chip *chip_data;
 	unsigned long flags;
 
@@ -236,6 +237,13 @@ static void htcpld_chip_set(struct gpio_chip *chip, unsigned offset, int val)
 
 	client = chip_data->client;
 	if (client == NULL)
+=======
+	struct htcpld_chip *chip_data = gpiochip_get_data(chip);
+	unsigned long flags;
+
+	client = chip_data->client;
+	if (!client)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	spin_lock_irqsave(&chip_data->lock, flags);
@@ -260,6 +268,7 @@ static void htcpld_chip_set_ni(struct work_struct *work)
 
 static int htcpld_chip_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct htcpld_chip *chip_data;
 	int val = 0;
 	int is_input = 0;
@@ -286,6 +295,19 @@ static int htcpld_chip_get(struct gpio_chip *chip, unsigned offset)
 		return 1;
 	else
 		return 0;
+=======
+	struct htcpld_chip *chip_data = gpiochip_get_data(chip);
+	u8 cache;
+
+	if (!strncmp(chip->label, "htcpld-out", 10)) {
+		cache = chip_data->cache_out;
+	} else if (!strncmp(chip->label, "htcpld-in", 9)) {
+		cache = chip_data->cache_in;
+	} else
+		return -EINVAL;
+
+	return (cache >> offset) & 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int htcpld_direction_output(struct gpio_chip *chip,
@@ -307,9 +329,13 @@ static int htcpld_direction_input(struct gpio_chip *chip,
 
 static int htcpld_chip_to_irq(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct htcpld_chip *chip_data;
 
 	chip_data = container_of(chip, struct htcpld_chip, chip_in);
+=======
+	struct htcpld_chip *chip_data = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (offset < chip_data->nirqs)
 		return chip_data->irq_start + offset;
@@ -332,6 +358,7 @@ static int htcpld_setup_chip_irq(
 		int chip_index)
 {
 	struct htcpld_data *htcpld;
+<<<<<<< HEAD
 	struct device *dev = &pdev->dev;
 	struct htcpld_core_platform_data *pdata;
 	struct htcpld_chip *chip;
@@ -344,6 +371,14 @@ static int htcpld_setup_chip_irq(
 	htcpld = platform_get_drvdata(pdev);
 	chip = &htcpld->chip[chip_index];
 	plat_chip_data = &pdata->chip[chip_index];
+=======
+	struct htcpld_chip *chip;
+	unsigned int irq, irq_end;
+
+	/* Get the platform and driver data */
+	htcpld = platform_get_drvdata(pdev);
+	chip = &htcpld->chip[chip_index];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Setup irq handlers */
 	irq_end = chip->irq_start + chip->nirqs;
@@ -351,6 +386,7 @@ static int htcpld_setup_chip_irq(
 		irq_set_chip_and_handler(irq, &htcpld_muxed_chip,
 					 handle_simple_irq);
 		irq_set_chip_data(irq, chip);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
 #else
@@ -359,6 +395,12 @@ static int htcpld_setup_chip_irq(
 	}
 
 	return ret;
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int htcpld_register_chip_i2c(
@@ -375,13 +417,21 @@ static int htcpld_register_chip_i2c(
 	struct i2c_board_info info;
 
 	/* Get the platform and driver data */
+<<<<<<< HEAD
 	pdata = dev->platform_data;
+=======
+	pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	htcpld = platform_get_drvdata(pdev);
 	chip = &htcpld->chip[chip_index];
 	plat_chip_data = &pdata->chip[chip_index];
 
 	adapter = i2c_get_adapter(pdata->i2c_adapter_id);
+<<<<<<< HEAD
 	if (adapter == NULL) {
+=======
+	if (!adapter) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Eek, no such I2C adapter!  Bail out. */
 		dev_warn(dev, "Chip at i2c address 0x%x: Invalid i2c adapter %d\n",
 			 plat_chip_data->addr, pdata->i2c_adapter_id);
@@ -409,7 +459,11 @@ static int htcpld_register_chip_i2c(
 	}
 
 	i2c_set_clientdata(client, chip);
+<<<<<<< HEAD
 	snprintf(client->name, I2C_NAME_SIZE, "Chip_0x%d", client->addr);
+=======
+	snprintf(client->name, I2C_NAME_SIZE, "Chip_0x%x", client->addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->client = client;
 
 	/* Reset the chip */
@@ -447,7 +501,11 @@ static int htcpld_register_chip_gpio(
 	int ret = 0;
 
 	/* Get the platform and driver data */
+<<<<<<< HEAD
 	pdata = dev->platform_data;
+=======
+	pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	htcpld = platform_get_drvdata(pdev);
 	chip = &htcpld->chip[chip_index];
 	plat_chip_data = &pdata->chip[chip_index];
@@ -455,7 +513,11 @@ static int htcpld_register_chip_gpio(
 	/* Setup the GPIO chips */
 	gpio_chip = &(chip->chip_out);
 	gpio_chip->label           = "htcpld-out";
+<<<<<<< HEAD
 	gpio_chip->dev             = dev;
+=======
+	gpio_chip->parent             = dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpio_chip->owner           = THIS_MODULE;
 	gpio_chip->get             = htcpld_chip_get;
 	gpio_chip->set             = htcpld_chip_set;
@@ -466,7 +528,11 @@ static int htcpld_register_chip_gpio(
 
 	gpio_chip = &(chip->chip_in);
 	gpio_chip->label           = "htcpld-in";
+<<<<<<< HEAD
 	gpio_chip->dev             = dev;
+=======
+	gpio_chip->parent             = dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gpio_chip->owner           = THIS_MODULE;
 	gpio_chip->get             = htcpld_chip_get;
 	gpio_chip->set             = NULL;
@@ -477,13 +543,18 @@ static int htcpld_register_chip_gpio(
 	gpio_chip->ngpio           = plat_chip_data->num_gpios;
 
 	/* Add the GPIO chips */
+<<<<<<< HEAD
 	ret = gpiochip_add(&(chip->chip_out));
+=======
+	ret = gpiochip_add_data(&(chip->chip_out), chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_warn(dev, "Unable to register output GPIOs for 0x%x: %d\n",
 			 plat_chip_data->addr, ret);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&(chip->chip_in));
 	if (ret) {
 		int error;
@@ -495,6 +566,13 @@ static int htcpld_register_chip_gpio(
 		if (error)
 			dev_warn(dev, "Error while trying to unregister gpio chip: %d\n", error);
 
+=======
+	ret = gpiochip_add_data(&(chip->chip_in), chip);
+	if (ret) {
+		dev_warn(dev, "Unable to register input GPIOs for 0x%x: %d\n",
+			 plat_chip_data->addr, ret);
+		gpiochip_remove(&(chip->chip_out));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 
@@ -509,13 +587,22 @@ static int htcpld_setup_chips(struct platform_device *pdev)
 	int i;
 
 	/* Get the platform and driver data */
+<<<<<<< HEAD
 	pdata = dev->platform_data;
+=======
+	pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	htcpld = platform_get_drvdata(pdev);
 
 	/* Setup each chip's output GPIOs */
 	htcpld->nchips = pdata->num_chip;
+<<<<<<< HEAD
 	htcpld->chip = kzalloc(sizeof(struct htcpld_chip) * htcpld->nchips,
 			       GFP_KERNEL);
+=======
+	htcpld->chip = devm_kzalloc(dev, sizeof(struct htcpld_chip) * htcpld->nchips,
+				    GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!htcpld->chip) {
 		dev_warn(dev, "Unable to allocate memory for chips\n");
 		return -ENOMEM;
@@ -574,31 +661,51 @@ static int htcpld_core_probe(struct platform_device *pdev)
 	if (!dev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pdata = dev->platform_data;
+=======
+	pdata = dev_get_platdata(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_warn(dev, "Platform data not found for htcpld core!\n");
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	htcpld = kzalloc(sizeof(struct htcpld_data), GFP_KERNEL);
+=======
+	htcpld = devm_kzalloc(dev, sizeof(struct htcpld_data), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!htcpld)
 		return -ENOMEM;
 
 	/* Find chained irq */
+<<<<<<< HEAD
 	ret = -EINVAL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (res) {
 		int flags;
 		htcpld->chained_irq = res->start;
 
 		/* Setup the chained interrupt handler */
+<<<<<<< HEAD
 		flags = IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING;
+=======
+		flags = IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING |
+			IRQF_ONESHOT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = request_threaded_irq(htcpld->chained_irq,
 					   NULL, htcpld_handler,
 					   flags, pdev->name, htcpld);
 		if (ret) {
 			dev_warn(dev, "Unable to setup chained irq handler: %d\n", ret);
+<<<<<<< HEAD
 			goto fail;
+=======
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 			device_init_wakeup(dev, 0);
 	}
@@ -609,7 +716,11 @@ static int htcpld_core_probe(struct platform_device *pdev)
 	/* Setup the htcpld chips */
 	ret = htcpld_setup_chips(pdev);
 	if (ret)
+<<<<<<< HEAD
 		goto fail;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Request the GPIO(s) for the int reset and set them up */
 	if (pdata->int_reset_gpio_hi) {
@@ -644,10 +755,13 @@ static int htcpld_core_probe(struct platform_device *pdev)
 
 	dev_info(dev, "Initialized successfully\n");
 	return 0;
+<<<<<<< HEAD
 
 fail:
 	kfree(htcpld);
 	return ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* The I2C Driver -- used internally */

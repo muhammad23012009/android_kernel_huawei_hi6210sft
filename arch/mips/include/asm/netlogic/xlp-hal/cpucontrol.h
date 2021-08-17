@@ -46,6 +46,11 @@
 #define CPU_BLOCKID_FPU		9
 #define CPU_BLOCKID_MAP		10
 
+<<<<<<< HEAD
+=======
+#define IFU_BRUB_RESERVE	0x007
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ICU_DEFEATURE		0x100
 
 #define LSU_DEFEATURE		0x304

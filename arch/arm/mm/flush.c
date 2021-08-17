@@ -21,6 +21,24 @@
 
 #include "mm.h"
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM_HEAVY_MB
+void (*soc_mb)(void);
+
+void arm_heavy_mb(void)
+{
+#ifdef CONFIG_OUTER_CACHE_SYNC
+	if (outer_cache.sync)
+		outer_cache.sync();
+#endif
+	if (soc_mb)
+		soc_mb();
+}
+EXPORT_SYMBOL(arm_heavy_mb);
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_CPU_CACHE_VIPT
 
 static void flush_pfn_alias(unsigned long pfn, unsigned long vaddr)
@@ -33,7 +51,11 @@ static void flush_pfn_alias(unsigned long pfn, unsigned long vaddr)
 	asm(	"mcrr	p15, 0, %1, %0, c14\n"
 	"	mcr	p15, 0, %2, c7, c10, 4"
 	    :
+<<<<<<< HEAD
 	    : "r" (to), "r" (to + PAGE_SIZE - L1_CACHE_BYTES), "r" (zero)
+=======
+	    : "r" (to), "r" (to + PAGE_SIZE - 1), "r" (zero)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    : "cc");
 }
 
@@ -104,17 +126,32 @@ void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr, unsig
 #define flush_icache_alias(pfn,vaddr,len)	do { } while (0)
 #endif
 
+<<<<<<< HEAD
+=======
+#define FLAG_PA_IS_EXEC 1
+#define FLAG_PA_CORE_IN_MM 2
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void flush_ptrace_access_other(void *args)
 {
 	__flush_icache_all();
 }
 
+<<<<<<< HEAD
 static
 void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 			 unsigned long uaddr, void *kaddr, unsigned long len)
 {
 	if (cache_is_vivt()) {
 		if (cpumask_test_cpu(smp_processor_id(), mm_cpumask(vma->vm_mm))) {
+=======
+static inline
+void __flush_ptrace_access(struct page *page, unsigned long uaddr, void *kaddr,
+			   unsigned long len, unsigned int flags)
+{
+	if (cache_is_vivt()) {
+		if (flags & FLAG_PA_CORE_IN_MM) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			unsigned long addr = (unsigned long)kaddr;
 			__cpuc_coherent_kern_range(addr, addr + len);
 		}
@@ -128,7 +165,11 @@ void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 	}
 
 	/* VIPT non-aliasing D-cache */
+<<<<<<< HEAD
 	if (vma->vm_flags & VM_EXEC) {
+=======
+	if (flags & FLAG_PA_IS_EXEC) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned long addr = (unsigned long)kaddr;
 		if (icache_is_vipt_aliasing())
 			flush_icache_alias(page_to_pfn(page), uaddr, len);
@@ -140,6 +181,29 @@ void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static
+void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
+			 unsigned long uaddr, void *kaddr, unsigned long len)
+{
+	unsigned int flags = 0;
+	if (cpumask_test_cpu(smp_processor_id(), mm_cpumask(vma->vm_mm)))
+		flags |= FLAG_PA_CORE_IN_MM;
+	if (vma->vm_flags & VM_EXEC)
+		flags |= FLAG_PA_IS_EXEC;
+	__flush_ptrace_access(page, uaddr, kaddr, len, flags);
+}
+
+void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
+			     void *kaddr, unsigned long len)
+{
+	unsigned int flags = FLAG_PA_CORE_IN_MM|FLAG_PA_IS_EXEC;
+
+	__flush_ptrace_access(page, uaddr, kaddr, len, flags);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Copy user data from/to a page which is mapped into a different
  * processes address space.  Really, we want to allow our "user
@@ -175,16 +239,27 @@ void __flush_dcache_page(struct address_space *mapping, struct page *page)
 		unsigned long i;
 		if (cache_is_vipt_nonaliasing()) {
 			for (i = 0; i < (1 << compound_order(page)); i++) {
+<<<<<<< HEAD
 				void *addr = kmap_atomic(page);
+=======
+				void *addr = kmap_atomic(page + i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__cpuc_flush_dcache_area(addr, PAGE_SIZE);
 				kunmap_atomic(addr);
 			}
 		} else {
 			for (i = 0; i < (1 << compound_order(page)); i++) {
+<<<<<<< HEAD
 				void *addr = kmap_high_get(page);
 				if (addr) {
 					__cpuc_flush_dcache_area(addr, PAGE_SIZE);
 					kunmap_high(page);
+=======
+				void *addr = kmap_high_get(page + i);
+				if (addr) {
+					__cpuc_flush_dcache_area(addr, PAGE_SIZE);
+					kunmap_high(page + i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			}
 		}
@@ -197,7 +272,11 @@ void __flush_dcache_page(struct address_space *mapping, struct page *page)
 	 */
 	if (mapping && cache_is_vipt_aliasing())
 		flush_pfn_alias(page_to_pfn(page),
+<<<<<<< HEAD
 				page->index << PAGE_CACHE_SHIFT);
+=======
+				page->index << PAGE_SHIFT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __flush_dcache_aliases(struct address_space *mapping, struct page *page)
@@ -212,7 +291,11 @@ static void __flush_dcache_aliases(struct address_space *mapping, struct page *p
 	 *   data in the current VM view associated with this page.
 	 * - aliasing VIPT: we only need to find one mapping of this page.
 	 */
+<<<<<<< HEAD
 	pgoff = page->index << (PAGE_CACHE_SHIFT - PAGE_SHIFT);
+=======
+	pgoff = page->index;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	flush_dcache_mmap_lock(mapping);
 	vma_interval_tree_foreach(mpnt, &mapping->i_mmap, pgoff, pgoff) {
@@ -292,7 +375,11 @@ void flush_dcache_page(struct page *page)
 	mapping = page_mapping(page);
 
 	if (!cache_ops_need_broadcast() &&
+<<<<<<< HEAD
 	    mapping && !mapping_mapped(mapping))
+=======
+	    mapping && !page_mapcount(page))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		clear_bit(PG_dcache_clean, &page->flags);
 	else {
 		__flush_dcache_page(mapping, page);

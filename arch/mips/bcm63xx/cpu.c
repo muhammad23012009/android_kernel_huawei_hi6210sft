@@ -24,11 +24,28 @@ EXPORT_SYMBOL(bcm63xx_regs_base);
 const int *bcm63xx_irqs;
 EXPORT_SYMBOL(bcm63xx_irqs);
 
+<<<<<<< HEAD
 static u16 bcm63xx_cpu_id;
+=======
+u16 bcm63xx_cpu_id __read_mostly;
+EXPORT_SYMBOL(bcm63xx_cpu_id);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u8 bcm63xx_cpu_rev;
 static unsigned int bcm63xx_cpu_freq;
 static unsigned int bcm63xx_memory_size;
 
+<<<<<<< HEAD
+=======
+static const unsigned long bcm3368_regs_base[] = {
+	__GEN_CPU_REGS_TABLE(3368)
+};
+
+static const int bcm3368_irqs[] = {
+	__GEN_CPU_IRQ_TABLE(3368)
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const unsigned long bcm6328_regs_base[] = {
 	__GEN_CPU_REGS_TABLE(6328)
 };
@@ -89,6 +106,7 @@ static const int bcm6368_irqs[] = {
 
 };
 
+<<<<<<< HEAD
 u16 __bcm63xx_get_cpu_id(void)
 {
 	return bcm63xx_cpu_id;
@@ -96,6 +114,8 @@ u16 __bcm63xx_get_cpu_id(void)
 
 EXPORT_SYMBOL(__bcm63xx_get_cpu_id);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u8 bcm63xx_get_cpu_rev(void)
 {
 	return bcm63xx_cpu_rev;
@@ -115,7 +135,16 @@ unsigned int bcm63xx_get_memory_size(void)
 
 static unsigned int detect_cpu_clock(void)
 {
+<<<<<<< HEAD
 	switch (bcm63xx_get_cpu_id()) {
+=======
+	u16 cpu_id = bcm63xx_get_cpu_id();
+
+	switch (cpu_id) {
+	case BCM3368_CPU_ID:
+		return 300000000;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BCM6328_CPU_ID:
 	{
 		unsigned int tmp, mips_pll_fcvo;
@@ -238,7 +267,11 @@ static unsigned int detect_cpu_clock(void)
 	}
 
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		panic("Failed to detect clock for CPU with id=%04X\n", cpu_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -255,7 +288,11 @@ static unsigned int detect_memory_size(void)
 
 	if (BCMCPU_IS_6345()) {
 		val = bcm_sdram_readl(SDRAM_MBASE_REG);
+<<<<<<< HEAD
 		return (val * 8 * 1024 * 1024);
+=======
+		return val * 8 * 1024 * 1024;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (BCMCPU_IS_6338() || BCMCPU_IS_6348()) {
@@ -266,7 +303,11 @@ static unsigned int detect_memory_size(void)
 		banks = (val & SDRAM_CFG_BANK_MASK) ? 2 : 1;
 	}
 
+<<<<<<< HEAD
 	if (BCMCPU_IS_6358() || BCMCPU_IS_6368()) {
+=======
+	if (BCMCPU_IS_3368() || BCMCPU_IS_6358() || BCMCPU_IS_6368()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		val = bcm_memc_readl(MEMC_CFG_REG);
 		rows = (val & MEMC_CFG_ROW_MASK) >> MEMC_CFG_ROW_SHIFT;
 		cols = (val & MEMC_CFG_COL_MASK) >> MEMC_CFG_COL_SHIFT;
@@ -286,26 +327,49 @@ static unsigned int detect_memory_size(void)
 void __init bcm63xx_cpu_init(void)
 {
 	unsigned int tmp;
+<<<<<<< HEAD
 	struct cpuinfo_mips *c = &current_cpu_data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int cpu = smp_processor_id();
 	u32 chipid_reg;
 
 	/* soc registers location depends on cpu type */
 	chipid_reg = 0;
 
+<<<<<<< HEAD
 	switch (c->cputype) {
 	case CPU_BMIPS3300:
 		if ((read_c0_prid() & 0xff00) != PRID_IMP_BMIPS3300_ALT)
+=======
+	switch (current_cpu_type()) {
+	case CPU_BMIPS3300:
+		if ((read_c0_prid() & PRID_IMP_MASK) != PRID_IMP_BMIPS3300_ALT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			__cpu_name[cpu] = "Broadcom BCM6338";
 		/* fall-through */
 	case CPU_BMIPS32:
 		chipid_reg = BCM_6345_PERF_BASE;
 		break;
 	case CPU_BMIPS4350:
+<<<<<<< HEAD
 		if ((read_c0_prid() & 0xf0) == 0x10)
 			chipid_reg = BCM_6345_PERF_BASE;
 		else
 			chipid_reg = BCM_6368_PERF_BASE;
+=======
+		switch ((read_c0_prid() & PRID_REV_MASK)) {
+		case 0x04:
+			chipid_reg = BCM_3368_PERF_BASE;
+			break;
+		case 0x10:
+			chipid_reg = BCM_6345_PERF_BASE;
+			break;
+		default:
+			chipid_reg = BCM_6368_PERF_BASE;
+			break;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -322,6 +386,13 @@ void __init bcm63xx_cpu_init(void)
 	bcm63xx_cpu_rev = (tmp & REV_REVID_MASK) >> REV_REVID_SHIFT;
 
 	switch (bcm63xx_cpu_id) {
+<<<<<<< HEAD
+=======
+	case BCM3368_CPU_ID:
+		bcm63xx_regs_base = bcm3368_regs_base;
+		bcm63xx_irqs = bcm3368_irqs;
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case BCM6328_CPU_ID:
 		bcm63xx_regs_base = bcm6328_regs_base;
 		bcm63xx_irqs = bcm6328_irqs;
@@ -358,10 +429,19 @@ void __init bcm63xx_cpu_init(void)
 	bcm63xx_cpu_freq = detect_cpu_clock();
 	bcm63xx_memory_size = detect_memory_size();
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Detected Broadcom 0x%04x CPU revision %02x\n",
 	       bcm63xx_cpu_id, bcm63xx_cpu_rev);
 	printk(KERN_INFO "CPU frequency is %u MHz\n",
 	       bcm63xx_cpu_freq / 1000000);
 	printk(KERN_INFO "%uMB of RAM installed\n",
 	       bcm63xx_memory_size >> 20);
+=======
+	pr_info("Detected Broadcom 0x%04x CPU revision %02x\n",
+		bcm63xx_cpu_id, bcm63xx_cpu_rev);
+	pr_info("CPU frequency is %u MHz\n",
+		bcm63xx_cpu_freq / 1000000);
+	pr_info("%uMB of RAM installed\n",
+		bcm63xx_memory_size >> 20);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

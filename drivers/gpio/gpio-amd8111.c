@@ -25,6 +25,10 @@
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
+<<<<<<< HEAD
+=======
+#include <linux/ioport.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/gpio.h>
@@ -60,7 +64,11 @@
  * register a pci_driver, because someone else might one day
  * want to register another driver on the same PCI id.
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pci_tbl) = {
+=======
+static const struct pci_device_id pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_SMBUS), 0 },
 	{ 0, },	/* terminate list */
 };
@@ -75,11 +83,17 @@ struct amd_gpio {
 	u8			orig[32];
 };
 
+<<<<<<< HEAD
 #define to_agp(chip)	container_of(chip, struct amd_gpio, chip)
 
 static int amd_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	struct amd_gpio *agp = to_agp(chip);
+=======
+static int amd_gpio_request(struct gpio_chip *chip, unsigned offset)
+{
+	struct amd_gpio *agp = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	agp->orig[offset] = ioread8(agp->pm + AMD_REG_GPIO(offset)) &
 		(AMD_GPIO_DEBOUNCE | AMD_GPIO_MODE_MASK | AMD_GPIO_X_MASK);
@@ -91,7 +105,11 @@ static int amd_gpio_request(struct gpio_chip *chip, unsigned offset)
 
 static void amd_gpio_free(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct amd_gpio *agp = to_agp(chip);
+=======
+	struct amd_gpio *agp = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&agp->pdev->dev, "Freed gpio %d, data %x\n", offset, agp->orig[offset]);
 
@@ -100,7 +118,11 @@ static void amd_gpio_free(struct gpio_chip *chip, unsigned offset)
 
 static void amd_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct amd_gpio *agp = to_agp(chip);
+=======
+	struct amd_gpio *agp = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 temp;
 	unsigned long flags;
 
@@ -115,7 +137,11 @@ static void amd_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int amd_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct amd_gpio *agp = to_agp(chip);
+=======
+	struct amd_gpio *agp = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 temp;
 
 	temp = ioread8(agp->pm + AMD_REG_GPIO(offset));
@@ -127,7 +153,11 @@ static int amd_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static int amd_gpio_dirout(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct amd_gpio *agp = to_agp(chip);
+=======
+	struct amd_gpio *agp = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 temp;
 	unsigned long flags;
 
@@ -144,7 +174,11 @@ static int amd_gpio_dirout(struct gpio_chip *chip, unsigned offset, int value)
 
 static int amd_gpio_dirin(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct amd_gpio *agp = to_agp(chip);
+=======
+	struct amd_gpio *agp = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 temp;
 	unsigned long flags;
 
@@ -206,24 +240,47 @@ found:
 	gp.pmbase &= 0x0000FF00;
 	if (gp.pmbase == 0)
 		goto out;
+<<<<<<< HEAD
 	if (!request_region(gp.pmbase + PMBASE_OFFSET, PMBASE_SIZE, "AMD GPIO")) {
+=======
+	if (!devm_request_region(&pdev->dev, gp.pmbase + PMBASE_OFFSET,
+		PMBASE_SIZE, "AMD GPIO")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&pdev->dev, "AMD GPIO region 0x%x already in use!\n",
 			gp.pmbase + PMBASE_OFFSET);
 		err = -EBUSY;
 		goto out;
 	}
 	gp.pm = ioport_map(gp.pmbase + PMBASE_OFFSET, PMBASE_SIZE);
+<<<<<<< HEAD
 	gp.pdev = pdev;
 	gp.chip.dev = &pdev->dev;
+=======
+	if (!gp.pm) {
+		dev_err(&pdev->dev, "Couldn't map io port into io memory\n");
+		err = -ENOMEM;
+		goto out;
+	}
+	gp.pdev = pdev;
+	gp.chip.parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&gp.lock);
 
 	printk(KERN_INFO "AMD-8111 GPIO detected\n");
+<<<<<<< HEAD
 	err = gpiochip_add(&gp.chip);
 	if (err) {
 		printk(KERN_ERR "GPIO registering failed (%d)\n",
 		       err);
 		release_region(gp.pmbase + PMBASE_OFFSET, PMBASE_SIZE);
+=======
+	err = gpiochip_add_data(&gp.chip, &gp);
+	if (err) {
+		printk(KERN_ERR "GPIO registering failed (%d)\n",
+		       err);
+		ioport_unmap(gp.pm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 out:
@@ -232,10 +289,15 @@ out:
 
 static void __exit amd_gpio_exit(void)
 {
+<<<<<<< HEAD
 	int err = gpiochip_remove(&gp.chip);
 	WARN_ON(err);
 	ioport_unmap(gp.pm);
 	release_region(gp.pmbase + PMBASE_OFFSET, PMBASE_SIZE);
+=======
+	gpiochip_remove(&gp.chip);
+	ioport_unmap(gp.pm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(amd_gpio_init);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menu "Processor type and features"
 
 choice
@@ -12,6 +13,41 @@ config H8300H_GENERIC
 config H8300H_AKI3068NET
 	bool "AE-3068/69"
 	select H83068
+=======
+config CPU_H8300H
+	bool
+
+config CPU_H8S
+	bool
+
+config H83069
+	bool
+	select CPU_H8300H
+	select H8300_TMR16
+	select RENESAS_H8300H_INTC
+
+config H8S2678
+	bool
+	select CPU_H8S
+	select H8300_TPU
+	select RENESAS_H8S_INTC
+
+config RAMKERNEL
+	bool
+
+config ROMKERNEL
+	bool
+
+menu "Processor type and features"
+
+choice
+prompt "H8/300 platform"
+
+config H8300_AE3068
+	bool "AE-3068/69"
+	select H83069
+	select RAMKERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  AKI-H8/3068F / AKI-H8/3069F Flashmicom LAN Board Support
 	  More Information. (Japanese Only)
@@ -20,22 +56,47 @@ config H8300H_AKI3068NET
 	  More Information.
 	  <http://www.microtronique.com/ae3069lan.htm>
 
+<<<<<<< HEAD
 config H8300H_H8MAX
 	bool "H8MAX"
 	select H83068
+=======
+config H8300_H8MAX
+	bool "H8MAX"
+	select H83069
+	select RAMKERNEL
+	select HAVE_IDE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  H8MAX Evaluation Board Support
 	  More Information. (Japanese Only)
 	  <http://strawberry-linux.com/h8/index.html>
 
+<<<<<<< HEAD
 config H8300H_SIM
 	bool "H8/300H Simulator"
 	select H83007
+=======
+config H8300_KANEBEBE
+	bool "KaneBebe"
+	select H83069
+	select RAMKERNEL
+	help
+	  KaneBebe Evalition Board Support
+	  More Information. (Japanese Only)
+	  <http://www.nissin-tech.com/2009/10/uclinuxkane-bebe-h83069f.html>
+
+config H8300H_SIM
+	bool "H8/300H GDB Simulator"
+	select H83069
+	select ROMKERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  GDB Simulator Support
 	  More Information.
 	  <http://sourceware.org/sid/>
 
+<<<<<<< HEAD
 config H8S_GENERIC
 	bool "H8S Generic"
 	help
@@ -44,14 +105,29 @@ config H8S_GENERIC
 config H8S_EDOSK2674
 	bool "EDOSK-2674"
 	select H8S2678
+=======
+config H8S_EDOSK2674
+	bool "EDOSK-2674"
+	select H8S2678
+	select RAMKERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Renesas EDOSK-2674 Evaluation Board Support
 	  More Information.
 	  <http://www.azpower.com/H8-uClinux/index.html>
+<<<<<<< HEAD
  	  <http://www.renesas.eu/products/tools/introductory_evaluation_tools/evaluation_development_os_kits/edosk2674r/edosk2674r_software_tools_root.jsp>
 
 config H8S_SIM
 	bool "H8S Simulator"
+=======
+	  <http://www.renesas.eu/products/tools/introductory_evaluation_tools/evaluation_development_os_kits/edosk2674r/edosk2674r_software_tools_root.jsp>
+
+config H8S_SIM
+	bool "H8S GDB Simulator"
+	select H8S2678
+	select ROMKERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  GDB Simulator Support
 	  More Information.
@@ -59,6 +135,7 @@ config H8S_SIM
 
 endchoice
 
+<<<<<<< HEAD
 choice
 	prompt "CPU Selection"
 
@@ -163,5 +240,14 @@ config H8300_TPU_CH
 source "kernel/Kconfig.preempt"
 
 source "mm/Kconfig"
+=======
+config H8300_BUILTIN_DTB
+        string "Builtin DTB"
+	default ""
+
+config OFFSET
+        hex "Load offset"
+	default 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endmenu

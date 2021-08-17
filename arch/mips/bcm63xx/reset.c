@@ -30,6 +30,22 @@
 	[BCM63XX_RESET_PCIE]		= BCM## __cpu ##_RESET_PCIE,	\
 	[BCM63XX_RESET_PCIE_EXT]	= BCM## __cpu ##_RESET_PCIE_EXT,
 
+<<<<<<< HEAD
+=======
+#define BCM3368_RESET_SPI	SOFTRESET_3368_SPI_MASK
+#define BCM3368_RESET_ENET	SOFTRESET_3368_ENET_MASK
+#define BCM3368_RESET_USBH	0
+#define BCM3368_RESET_USBD	SOFTRESET_3368_USBS_MASK
+#define BCM3368_RESET_DSL	0
+#define BCM3368_RESET_SAR	0
+#define BCM3368_RESET_EPHY	SOFTRESET_3368_EPHY_MASK
+#define BCM3368_RESET_ENETSW	0
+#define BCM3368_RESET_PCM	SOFTRESET_3368_PCM_MASK
+#define BCM3368_RESET_MPI	SOFTRESET_3368_MPI_MASK
+#define BCM3368_RESET_PCIE	0
+#define BCM3368_RESET_PCIE_EXT	0
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define BCM6328_RESET_SPI	SOFTRESET_6328_SPI_MASK
 #define BCM6328_RESET_ENET	0
 #define BCM6328_RESET_USBH	SOFTRESET_6328_USBH_MASK
@@ -106,17 +122,31 @@
 #define BCM6368_RESET_DSL	0
 #define BCM6368_RESET_SAR	SOFTRESET_6368_SAR_MASK
 #define BCM6368_RESET_EPHY	SOFTRESET_6368_EPHY_MASK
+<<<<<<< HEAD
 #define BCM6368_RESET_ENETSW	0
+=======
+#define BCM6368_RESET_ENETSW	SOFTRESET_6368_ENETSW_MASK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define BCM6368_RESET_PCM	SOFTRESET_6368_PCM_MASK
 #define BCM6368_RESET_MPI	SOFTRESET_6368_MPI_MASK
 #define BCM6368_RESET_PCIE	0
 #define BCM6368_RESET_PCIE_EXT	0
 
+<<<<<<< HEAD
 #ifdef BCMCPU_RUNTIME_DETECT
 
 /*
  * core reset bits
  */
+=======
+/*
+ * core reset bits
+ */
+static const u32 bcm3368_reset_bits[] = {
+	__GEN_RESET_BITS_TABLE(3368)
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u32 bcm6328_reset_bits[] = {
 	__GEN_RESET_BITS_TABLE(6328)
 };
@@ -146,7 +176,14 @@ static int reset_reg;
 
 static int __init bcm63xx_reset_bits_init(void)
 {
+<<<<<<< HEAD
 	if (BCMCPU_IS_6328()) {
+=======
+	if (BCMCPU_IS_3368()) {
+		reset_reg = PERF_SOFTRESET_6358_REG;
+		bcm63xx_reset_bits = bcm3368_reset_bits;
+	} else if (BCMCPU_IS_6328()) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		reset_reg = PERF_SOFTRESET_6328_REG;
 		bcm63xx_reset_bits = bcm6328_reset_bits;
 	} else if (BCMCPU_IS_6338()) {
@@ -168,6 +205,7 @@ static int __init bcm63xx_reset_bits_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 
 #ifdef CONFIG_BCM63XX_CPU_6328
@@ -219,6 +257,8 @@ static const u32 bcm63xx_reset_bits[] = {
 
 static int __init bcm63xx_reset_bits_init(void) { return 0; }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_SPINLOCK(reset_mutex);
 

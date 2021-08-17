@@ -23,7 +23,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 #include <linux/time.h>
 #include <linux/mutex.h>
@@ -139,12 +143,19 @@ static inline void *offset_ptr(struct snd_trident *trident, int offset)
 static struct snd_util_memblk *
 search_empty(struct snd_util_memhdr *hdr, int size)
 {
+<<<<<<< HEAD
 	struct snd_util_memblk *blk, *prev;
+=======
+	struct snd_util_memblk *blk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int page, psize;
 	struct list_head *p;
 
 	psize = get_aligned_page(size + ALIGN_PAGE_SIZE -1);
+<<<<<<< HEAD
 	prev = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	page = 0;
 	list_for_each(p, &hdr->block) {
 		blk = list_entry(p, struct snd_util_memblk, list);

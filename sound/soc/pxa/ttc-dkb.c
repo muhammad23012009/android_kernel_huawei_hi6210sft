@@ -76,6 +76,7 @@ static const struct snd_soc_dapm_route ttc_audio_map[] = {
 static int ttc_pm860x_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
 
 	/* connected pins */
@@ -95,6 +96,16 @@ static int ttc_pm860x_init(struct snd_soc_pcm_runtime *rtd)
 			 &mic_jack);
 	snd_soc_jack_add_pins(&mic_jack, ARRAY_SIZE(mic_jack_pins),
 			      mic_jack_pins);
+=======
+
+	/* Headset jack detection */
+	snd_soc_card_jack_new(rtd->card, "Headphone Jack", SND_JACK_HEADPHONE |
+			      SND_JACK_BTN_0 | SND_JACK_BTN_1 | SND_JACK_BTN_2,
+			      &hs_jack, hs_jack_pins, ARRAY_SIZE(hs_jack_pins));
+	snd_soc_card_jack_new(rtd->card, "Microphone Jack", SND_JACK_MICROPHONE,
+			      &mic_jack, mic_jack_pins,
+			      ARRAY_SIZE(mic_jack_pins));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* headphone, microphone detection & headset short detection */
 	pm860x_hs_jack_detect(codec, &hs_jack, SND_JACK_HEADPHONE,
@@ -122,6 +133,10 @@ static struct snd_soc_dai_link ttc_pm860x_hifi_dai[] = {
 /* ttc/td audio machine driver */
 static struct snd_soc_card ttc_dkb_card = {
 	.name = "ttc-dkb-hifi",
+<<<<<<< HEAD
+=======
+	.owner = THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link = ttc_pm860x_hifi_dai,
 	.num_links = ARRAY_SIZE(ttc_pm860x_hifi_dai),
 
@@ -138,7 +153,11 @@ static int ttc_dkb_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
 			ret);
@@ -146,6 +165,7 @@ static int ttc_dkb_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ttc_dkb_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -162,6 +182,14 @@ static struct platform_driver ttc_dkb_driver = {
 	},
 	.probe		= ttc_dkb_probe,
 	.remove		= ttc_dkb_remove,
+=======
+static struct platform_driver ttc_dkb_driver = {
+	.driver		= {
+		.name	= "ttc-dkb-audio",
+		.pm     = &snd_soc_pm_ops,
+	},
+	.probe		= ttc_dkb_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(ttc_dkb_driver);

@@ -13,11 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>.
+=======
+ * Written by Koji Sato.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/slab.h>
@@ -343,12 +347,21 @@ static int nilfs_btree_node_lookup(const struct nilfs_btree_node *node,
  * nilfs_btree_node_broken - verify consistency of btree node
  * @node: btree node block to be examined
  * @size: node size (in bytes)
+<<<<<<< HEAD
+=======
+ * @inode: host inode of btree
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @blocknr: block number
  *
  * Return Value: If node is broken, 1 is returned. Otherwise, 0 is returned.
  */
 static int nilfs_btree_node_broken(const struct nilfs_btree_node *node,
+<<<<<<< HEAD
 				   size_t size, sector_t blocknr)
+=======
+				   size_t size, struct inode *inode,
+				   sector_t blocknr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int level, flags, nchildren;
 	int ret = 0;
@@ -362,9 +375,16 @@ static int nilfs_btree_node_broken(const struct nilfs_btree_node *node,
 		     (flags & NILFS_BTREE_NODE_ROOT) ||
 		     nchildren < 0 ||
 		     nchildren > NILFS_BTREE_NODE_NCHILDREN_MAX(size))) {
+<<<<<<< HEAD
 		printk(KERN_CRIT "NILFS: bad btree node (blocknr=%llu): "
 		       "level = %d, flags = 0x%x, nchildren = %d\n",
 		       (unsigned long long)blocknr, level, flags, nchildren);
+=======
+		nilfs_msg(inode->i_sb, KERN_CRIT,
+			  "bad btree node (ino=%lu, blocknr=%llu): level = %d, flags = 0x%x, nchildren = %d",
+			  inode->i_ino, (unsigned long long)blocknr, level,
+			  flags, nchildren);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = 1;
 	}
 	return ret;
@@ -373,12 +393,20 @@ static int nilfs_btree_node_broken(const struct nilfs_btree_node *node,
 /**
  * nilfs_btree_root_broken - verify consistency of btree root node
  * @node: btree root node to be examined
+<<<<<<< HEAD
  * @ino: inode number
+=======
+ * @inode: host inode of btree
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Return Value: If node is broken, 1 is returned. Otherwise, 0 is returned.
  */
 static int nilfs_btree_root_broken(const struct nilfs_btree_node *node,
+<<<<<<< HEAD
 				   unsigned long ino)
+=======
+				   struct inode *inode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int level, flags, nchildren;
 	int ret = 0;
@@ -388,11 +416,20 @@ static int nilfs_btree_root_broken(const struct nilfs_btree_node *node,
 	nchildren = nilfs_btree_node_get_nchildren(node);
 
 	if (unlikely(level < NILFS_BTREE_LEVEL_NODE_MIN ||
+<<<<<<< HEAD
 		     level > NILFS_BTREE_LEVEL_MAX ||
 		     nchildren < 0 ||
 		     nchildren > NILFS_BTREE_ROOT_NCHILDREN_MAX)) {
 		pr_crit("NILFS: bad btree root (inode number=%lu): level = %d, flags = 0x%x, nchildren = %d\n",
 			ino, level, flags, nchildren);
+=======
+		     level >= NILFS_BTREE_LEVEL_MAX ||
+		     nchildren < 0 ||
+		     nchildren > NILFS_BTREE_ROOT_NCHILDREN_MAX)) {
+		nilfs_msg(inode->i_sb, KERN_CRIT,
+			  "bad btree root (ino=%lu): level = %d, flags = 0x%x, nchildren = %d",
+			  inode->i_ino, level, flags, nchildren);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = 1;
 	}
 	return ret;
@@ -400,13 +437,23 @@ static int nilfs_btree_root_broken(const struct nilfs_btree_node *node,
 
 int nilfs_btree_broken_node_block(struct buffer_head *bh)
 {
+<<<<<<< HEAD
+=======
+	struct inode *inode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	if (buffer_nilfs_checked(bh))
 		return 0;
 
+<<<<<<< HEAD
 	ret = nilfs_btree_node_broken((struct nilfs_btree_node *)bh->b_data,
 				       bh->b_size, bh->b_blocknr);
+=======
+	inode = bh->b_page->mapping->host;
+	ret = nilfs_btree_node_broken((struct nilfs_btree_node *)bh->b_data,
+				      bh->b_size, inode, bh->b_blocknr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (likely(!ret))
 		set_buffer_nilfs_checked(bh);
 	return ret;
@@ -452,6 +499,7 @@ nilfs_btree_get_node(const struct nilfs_bmap *btree,
 	return node;
 }
 
+<<<<<<< HEAD
 static int
 nilfs_btree_bad_node(struct nilfs_btree_node *node, int level)
 {
@@ -459,6 +507,17 @@ nilfs_btree_bad_node(struct nilfs_btree_node *node, int level)
 		dump_stack();
 		printk(KERN_CRIT "NILFS: btree level mismatch: %d != %d\n",
 		       nilfs_btree_node_get_level(node), level);
+=======
+static int nilfs_btree_bad_node(const struct nilfs_bmap *btree,
+				struct nilfs_btree_node *node, int level)
+{
+	if (unlikely(nilfs_btree_node_get_level(node) != level)) {
+		dump_stack();
+		nilfs_msg(btree->b_inode->i_sb, KERN_CRIT,
+			  "btree level mismatch (ino=%lu): %d != %d",
+			  btree->b_inode->i_ino,
+			  nilfs_btree_node_get_level(node), level);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	}
 	return 0;
@@ -480,7 +539,12 @@ static int __nilfs_btree_get_block(const struct nilfs_bmap *btree, __u64 ptr,
 	sector_t submit_ptr = 0;
 	int ret;
 
+<<<<<<< HEAD
 	ret = nilfs_btnode_submit_block(btnc, ptr, 0, READ, &bh, &submit_ptr);
+=======
+	ret = nilfs_btnode_submit_block(btnc, ptr, 0, REQ_OP_READ, 0, &bh,
+					&submit_ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		if (ret != -EEXIST)
 			return ret;
@@ -496,7 +560,12 @@ static int __nilfs_btree_get_block(const struct nilfs_bmap *btree, __u64 ptr,
 		     n > 0 && i < ra->ncmax; n--, i++) {
 			ptr2 = nilfs_btree_node_get_ptr(ra->node, i, ra->ncmax);
 
+<<<<<<< HEAD
 			ret = nilfs_btnode_submit_block(btnc, ptr2, 0, READA,
+=======
+			ret = nilfs_btnode_submit_block(btnc, ptr2, 0,
+							REQ_OP_READ, REQ_RAHEAD,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							&ra_bh, &submit_ptr);
 			if (likely(!ret || ret == -EEXIST))
 				brelse(ra_bh);
@@ -511,6 +580,12 @@ static int __nilfs_btree_get_block(const struct nilfs_bmap *btree, __u64 ptr,
 
  out_no_wait:
 	if (!buffer_uptodate(bh)) {
+<<<<<<< HEAD
+=======
+		nilfs_msg(btree->b_inode->i_sb, KERN_ERR,
+			  "I/O error reading b-tree node block (ino=%lu, blocknr=%llu)",
+			  btree->b_inode->i_ino, (unsigned long long)ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		brelse(bh);
 		return -EIO;
 	}
@@ -570,7 +645,11 @@ static int nilfs_btree_do_lookup(const struct nilfs_bmap *btree,
 			return ret;
 
 		node = nilfs_btree_get_nonroot_node(path, level);
+<<<<<<< HEAD
 		if (nilfs_btree_bad_node(node, level))
+=======
+		if (nilfs_btree_bad_node(btree, node, level))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 		if (!found)
 			found = nilfs_btree_node_lookup(node, key, &index);
@@ -618,7 +697,11 @@ static int nilfs_btree_do_lookup_last(const struct nilfs_bmap *btree,
 		if (ret < 0)
 			return ret;
 		node = nilfs_btree_get_nonroot_node(path, level);
+<<<<<<< HEAD
 		if (nilfs_btree_bad_node(node, level))
+=======
+		if (nilfs_btree_bad_node(btree, node, level))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 		index = nilfs_btree_node_get_nchildren(node) - 1;
 		ptr = nilfs_btree_node_get_ptr(node, index, ncmax);
@@ -633,6 +716,47 @@ static int nilfs_btree_do_lookup_last(const struct nilfs_bmap *btree,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_btree_get_next_key - get next valid key from btree path array
+ * @btree: bmap struct of btree
+ * @path: array of nilfs_btree_path struct
+ * @minlevel: start level
+ * @nextkey: place to store the next valid key
+ *
+ * Return Value: If a next key was found, 0 is returned. Otherwise,
+ * -ENOENT is returned.
+ */
+static int nilfs_btree_get_next_key(const struct nilfs_bmap *btree,
+				    const struct nilfs_btree_path *path,
+				    int minlevel, __u64 *nextkey)
+{
+	struct nilfs_btree_node *node;
+	int maxlevel = nilfs_btree_height(btree) - 1;
+	int index, next_adj, level;
+
+	/* Next index is already set to bp_index for leaf nodes. */
+	next_adj = 0;
+	for (level = minlevel; level <= maxlevel; level++) {
+		if (level == maxlevel)
+			node = nilfs_btree_get_root(btree);
+		else
+			node = nilfs_btree_get_nonroot_node(path, level);
+
+		index = path[level].bp_index + next_adj;
+		if (index < nilfs_btree_node_get_nchildren(node)) {
+			/* Next key is in this node */
+			*nextkey = nilfs_btree_node_get_key(node, index);
+			return 0;
+		}
+		/* For non-leaf nodes, next index is stored at bp_index + 1. */
+		next_adj = 1;
+	}
+	return -ENOENT;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int nilfs_btree_lookup(const struct nilfs_bmap *btree,
 			      __u64 key, int level, __u64 *ptrp)
 {
@@ -651,7 +775,12 @@ static int nilfs_btree_lookup(const struct nilfs_bmap *btree,
 }
 
 static int nilfs_btree_lookup_contig(const struct nilfs_bmap *btree,
+<<<<<<< HEAD
 				     __u64 key, __u64 *ptrp, unsigned maxblocks)
+=======
+				     __u64 key, __u64 *ptrp,
+				     unsigned int maxblocks)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct nilfs_btree_path *path;
 	struct nilfs_btree_node *node;
@@ -881,8 +1010,11 @@ static void nilfs_btree_split(struct nilfs_bmap *btree,
 			      int level, __u64 *keyp, __u64 *ptrp)
 {
 	struct nilfs_btree_node *node, *right;
+<<<<<<< HEAD
 	__u64 newkey;
 	__u64 newptr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int nchildren, n, move, ncblk;
 
 	node = nilfs_btree_get_nonroot_node(path, level);
@@ -904,9 +1036,12 @@ static void nilfs_btree_split(struct nilfs_bmap *btree,
 	if (!buffer_dirty(path[level].bp_sib_bh))
 		mark_buffer_dirty(path[level].bp_sib_bh);
 
+<<<<<<< HEAD
 	newkey = nilfs_btree_node_get_key(right, 0);
 	newptr = path[level].bp_newreq.bpr_ptr;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (move) {
 		path[level].bp_index -= nilfs_btree_node_get_nchildren(node);
 		nilfs_btree_node_insert(right, path[level].bp_index,
@@ -999,12 +1134,21 @@ static __u64 nilfs_btree_find_target_v(const struct nilfs_bmap *btree,
 	if (ptr != NILFS_BMAP_INVALID_PTR)
 		/* sequential access */
 		return ptr;
+<<<<<<< HEAD
 	else {
 		ptr = nilfs_btree_find_near(btree, path);
 		if (ptr != NILFS_BMAP_INVALID_PTR)
 			/* near */
 			return ptr;
 	}
+=======
+
+	ptr = nilfs_btree_find_near(btree, path);
+	if (ptr != NILFS_BMAP_INVALID_PTR)
+		/* near */
+		return ptr;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* block group */
 	return nilfs_bmap_find_target_in_group(btree);
 }
@@ -1563,6 +1707,30 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int nilfs_btree_seek_key(const struct nilfs_bmap *btree, __u64 start,
+				__u64 *keyp)
+{
+	struct nilfs_btree_path *path;
+	const int minlevel = NILFS_BTREE_LEVEL_NODE_MIN;
+	int ret;
+
+	path = nilfs_btree_alloc_path();
+	if (!path)
+		return -ENOMEM;
+
+	ret = nilfs_btree_do_lookup(btree, path, start, NULL, minlevel, 0);
+	if (!ret)
+		*keyp = start;
+	else if (ret == -ENOENT)
+		ret = nilfs_btree_get_next_key(btree, path, minlevel, keyp);
+
+	nilfs_btree_free_path(path);
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int nilfs_btree_last_key(const struct nilfs_bmap *btree, __u64 *keyp)
 {
 	struct nilfs_btree_path *path;
@@ -1797,7 +1965,11 @@ int nilfs_btree_convert_and_insert(struct nilfs_bmap *btree,
 				   __u64 key, __u64 ptr,
 				   const __u64 *keys, const __u64 *ptrs, int n)
 {
+<<<<<<< HEAD
 	struct buffer_head *bh;
+=======
+	struct buffer_head *bh = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	union nilfs_bmap_ptr_req dreq, nreq, *di, *ni;
 	struct nilfs_bmap_stats stats;
 	int ret;
@@ -2019,8 +2191,15 @@ static int nilfs_btree_propagate(struct nilfs_bmap *btree,
 	ret = nilfs_btree_do_lookup(btree, path, key, NULL, level + 1, 0);
 	if (ret < 0) {
 		if (unlikely(ret == -ENOENT))
+<<<<<<< HEAD
 			printk(KERN_CRIT "%s: key = %llu, level == %d\n",
 			       __func__, (unsigned long long)key, level);
+=======
+			nilfs_msg(btree->b_inode->i_sb, KERN_CRIT,
+				  "writing node/leaf block does not appear in b-tree (ino=%lu) at key=%llu, level=%d",
+				  btree->b_inode->i_ino,
+				  (unsigned long long)key, level);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -2057,12 +2236,20 @@ static void nilfs_btree_add_dirty_buffer(struct nilfs_bmap *btree,
 	if (level < NILFS_BTREE_LEVEL_NODE_MIN ||
 	    level >= NILFS_BTREE_LEVEL_MAX) {
 		dump_stack();
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "%s: invalid btree level: %d (key=%llu, ino=%lu, "
 		       "blocknr=%llu)\n",
 		       __func__, level, (unsigned long long)key,
 		       NILFS_BMAP_I(btree)->vfs_inode.i_ino,
 		       (unsigned long long)bh->b_blocknr);
+=======
+		nilfs_msg(btree->b_inode->i_sb, KERN_WARNING,
+			  "invalid btree level: %d (key=%llu, ino=%lu, blocknr=%llu)",
+			  level, (unsigned long long)key,
+			  btree->b_inode->i_ino,
+			  (unsigned long long)bh->b_blocknr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -2298,7 +2485,13 @@ static const struct nilfs_bmap_operations nilfs_btree_ops = {
 	.bop_assign		=	nilfs_btree_assign,
 	.bop_mark		=	nilfs_btree_mark,
 
+<<<<<<< HEAD
 	.bop_last_key		=	nilfs_btree_last_key,
+=======
+	.bop_seek_key		=	nilfs_btree_seek_key,
+	.bop_last_key		=	nilfs_btree_last_key,
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.bop_check_insert	=	NULL,
 	.bop_check_delete	=	nilfs_btree_check_delete,
 	.bop_gather_data	=	nilfs_btree_gather_data,
@@ -2318,7 +2511,13 @@ static const struct nilfs_bmap_operations nilfs_btree_ops_gc = {
 	.bop_assign		=	nilfs_btree_assign_gc,
 	.bop_mark		=	NULL,
 
+<<<<<<< HEAD
 	.bop_last_key		=	NULL,
+=======
+	.bop_seek_key		=	NULL,
+	.bop_last_key		=	NULL,
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.bop_check_insert	=	NULL,
 	.bop_check_delete	=	NULL,
 	.bop_gather_data	=	NULL,
@@ -2337,8 +2536,12 @@ int nilfs_btree_init(struct nilfs_bmap *bmap)
 
 	__nilfs_btree_init(bmap);
 
+<<<<<<< HEAD
 	if (nilfs_btree_root_broken(nilfs_btree_get_root(bmap),
 				    bmap->b_inode->i_ino))
+=======
+	if (nilfs_btree_root_broken(nilfs_btree_get_root(bmap), bmap->b_inode))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EIO;
 	return ret;
 }

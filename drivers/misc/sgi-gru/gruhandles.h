@@ -524,7 +524,10 @@ int tfh_write_only(struct gru_tlb_fault_handle *tfh, unsigned long paddr,
 	int gaa, unsigned long vaddr, int asid, int dirty, int pagesize);
 void tfh_write_restart(struct gru_tlb_fault_handle *tfh, unsigned long paddr,
 	int gaa, unsigned long vaddr, int asid, int dirty, int pagesize);
+<<<<<<< HEAD
 void tfh_restart(struct gru_tlb_fault_handle *tfh);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void tfh_user_polling_mode(struct gru_tlb_fault_handle *tfh);
 void tfh_exception(struct gru_tlb_fault_handle *tfh);
 

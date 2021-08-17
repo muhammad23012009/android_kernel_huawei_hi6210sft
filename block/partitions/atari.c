@@ -42,6 +42,16 @@ int atari_partition(struct parsed_partitions *state)
 	int part_fmt = 0; /* 0:unknown, 1:AHDI, 2:ICD/Supra */
 #endif
 
+<<<<<<< HEAD
+=======
+	/*
+	 * ATARI partition scheme supports 512 lba only.  If this is not
+	 * the case, bail early to avoid miscalculating hd_size.
+	 */
+	if (bdev_logical_block_size(state->bdev) != 512)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rs = read_part_sector(state, 0, &sect);
 	if (!rs)
 		return -1;

@@ -38,7 +38,11 @@
 
 #include "mpc83xx.h"
 
+<<<<<<< HEAD
 static struct of_device_id __initdata mpc834x_itx_ids[] = {
+=======
+static const struct of_device_id mpc834x_itx_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,pq2pro-localbus", },
 	{},
 };
@@ -57,10 +61,14 @@ machine_device_initcall(mpc834x_itx, mpc834x_itx_declare_of_platform_devices);
  */
 static void __init mpc834x_itx_setup_arch(void)
 {
+<<<<<<< HEAD
 	if (ppc_md.progress)
 		ppc_md.progress("mpc834x_itx_setup_arch()", 0);
 
 	mpc83xx_setup_pci();
+=======
+	mpc83xx_setup_arch();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mpc834x_usb_cfg();
 }
@@ -70,9 +78,13 @@ static void __init mpc834x_itx_setup_arch(void)
  */
 static int __init mpc834x_itx_probe(void)
 {
+<<<<<<< HEAD
         unsigned long root = of_get_flat_dt_root();
 
         return of_flat_dt_is_compatible(root, "MPC834xMITX");
+=======
+	return of_machine_is_compatible("MPC834xMITX");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 define_machine(mpc834x_itx) {

@@ -28,12 +28,21 @@
 struct mb86a16_config {
 	u8 demod_address;
 
+<<<<<<< HEAD
 	int (*set_voltage)(struct dvb_frontend *fe, fe_sec_voltage_t voltage);
+=======
+	int (*set_voltage)(struct dvb_frontend *fe,
+			   enum fe_sec_voltage voltage);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_MB86A16)
+=======
+#if IS_REACHABLE(CONFIG_DVB_MB86A16)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct dvb_frontend *mb86a16_attach(const struct mb86a16_config *config,
 					   struct i2c_adapter *i2c_adap);

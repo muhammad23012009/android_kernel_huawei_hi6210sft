@@ -69,7 +69,10 @@ static int pcm030_fabric_probe(struct platform_device *op)
 		return -ENOMEM;
 
 	card->dev = &op->dev;
+<<<<<<< HEAD
 	platform_set_drvdata(op, pdata);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pdata->card = card;
 
@@ -98,6 +101,11 @@ static int pcm030_fabric_probe(struct platform_device *op)
 	if (ret)
 		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
 
+<<<<<<< HEAD
+=======
+	platform_set_drvdata(op, pdata);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -112,7 +120,11 @@ static int pcm030_fabric_remove(struct platform_device *op)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct of_device_id pcm030_audio_match[] = {
+=======
+static const struct of_device_id pcm030_audio_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "phytec,pcm030-audio-fabric", },
 	{}
 };
@@ -123,7 +135,10 @@ static struct platform_driver pcm030_fabric_driver = {
 	.remove		= pcm030_fabric_remove,
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table    = pcm030_audio_match,
 	},
 };

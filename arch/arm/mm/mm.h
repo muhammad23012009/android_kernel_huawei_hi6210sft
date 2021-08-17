@@ -2,6 +2,11 @@
 #include <linux/list.h>
 #include <linux/vmalloc.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/pgtable.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* the upper-most page table pointer */
 extern pmd_t *top_pmd;
 
@@ -38,6 +43,10 @@ static inline pmd_t *pmd_off_k(unsigned long virt)
 
 struct mem_type {
 	pteval_t prot_pte;
+<<<<<<< HEAD
+=======
+	pteval_t prot_pte_s2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pmdval_t prot_l1;
 	pmdval_t prot_sect;
 	unsigned int domain;
@@ -81,8 +90,15 @@ extern __init void add_static_vm_early(struct static_vm *svm);
 
 #ifdef CONFIG_ZONE_DMA
 extern phys_addr_t arm_dma_limit;
+<<<<<<< HEAD
 #else
 #define arm_dma_limit ((phys_addr_t)~0)
+=======
+extern unsigned long arm_dma_pfn_limit;
+#else
+#define arm_dma_limit ((phys_addr_t)~0)
+#define arm_dma_pfn_limit (~0ul >> PAGE_SHIFT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 extern phys_addr_t arm_lowmem_limit;
@@ -90,3 +106,8 @@ extern phys_addr_t arm_lowmem_limit;
 void __init bootmem_init(void);
 void arm_mm_memblock_reserve(void);
 void dma_contiguous_remap(void);
+<<<<<<< HEAD
+=======
+
+unsigned long __clear_cr(unsigned long mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

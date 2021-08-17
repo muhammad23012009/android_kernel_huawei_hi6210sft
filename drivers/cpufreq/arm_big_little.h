@@ -23,6 +23,7 @@
 #include <linux/device.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
 /* Currently we support only two clusters */
 #define A15_CLUSTER	0
 #define A7_CLUSTER	1
@@ -53,6 +54,21 @@ static inline int cpu_to_cluster(int cpu)
 	return is_bL_switching_enabled() ? MAX_CLUSTERS:
 		topology_physical_package_id(cpu);
 }
+=======
+struct cpufreq_arm_bL_ops {
+	char name[CPUFREQ_NAME_LEN];
+
+	/*
+	 * This must set opp table for cpu_dev in a similar way as done by
+	 * dev_pm_opp_of_add_table().
+	 */
+	int (*init_opp_table)(const struct cpumask *cpumask);
+
+	/* Optional */
+	int (*get_transition_latency)(struct device *cpu_dev);
+	void (*free_opp_table)(const struct cpumask *cpumask);
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int bL_cpufreq_register(struct cpufreq_arm_bL_ops *ops);
 void bL_cpufreq_unregister(struct cpufreq_arm_bL_ops *ops);

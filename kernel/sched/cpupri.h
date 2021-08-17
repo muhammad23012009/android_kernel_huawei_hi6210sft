@@ -17,7 +17,11 @@ struct cpupri_vec {
 
 struct cpupri {
 	struct cpupri_vec pri_to_cpu[CPUPRI_NR_PRIORITIES];
+<<<<<<< HEAD
 	int               cpu_to_pri[NR_CPUS];
+=======
+	int *cpu_to_pri;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #ifdef CONFIG_SMP
@@ -26,9 +30,12 @@ int  cpupri_find(struct cpupri *cp,
 void cpupri_set(struct cpupri *cp, int cpu, int pri);
 int cpupri_init(struct cpupri *cp);
 void cpupri_cleanup(struct cpupri *cp);
+<<<<<<< HEAD
 #else
 #define cpupri_set(cp, cpu, pri) do { } while (0)
 #define cpupri_init() do { } while (0)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* _LINUX_CPUPRI_H */

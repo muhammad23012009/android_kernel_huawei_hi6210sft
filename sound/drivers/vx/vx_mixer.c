@@ -32,17 +32,26 @@
  */
 static void vx_write_codec_reg(struct vx_core *chip, int codec, unsigned int data)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (snd_BUG_ON(!chip->ops->write_codec))
 		return;
 
 	if (chip->chip_status & VX_STAT_IS_STALE)
 		return;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chip->lock, flags);
 	chip->ops->write_codec(chip, codec, data);
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	mutex_lock(&chip->lock);
+	chip->ops->write_codec(chip, codec, data);
+	mutex_unlock(&chip->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -178,6 +187,7 @@ void vx_reset_codec(struct vx_core *chip, int cold_reset)
  */
 static void vx_change_audio_source(struct vx_core *chip, int src)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (chip->chip_status & VX_STAT_IS_STALE)
@@ -186,6 +196,14 @@ static void vx_change_audio_source(struct vx_core *chip, int src)
 	spin_lock_irqsave(&chip->lock, flags);
 	chip->ops->change_audio_source(chip, src);
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	if (chip->chip_status & VX_STAT_IS_STALE)
+		return;
+
+	mutex_lock(&chip->lock);
+	chip->ops->change_audio_source(chip, src);
+	mutex_unlock(&chip->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -475,14 +493,22 @@ static struct snd_kcontrol_new vx_control_output_level = {
  */
 static int vx_audio_src_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts_mic[3] = {
 		"Digital", "Line", "Mic"
 	};
 	static char *texts_vx2[2] = {
+=======
+	static const char * const texts_mic[3] = {
+		"Digital", "Line", "Mic"
+	};
+	static const char * const texts_vx2[2] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"Digital", "Analog"
 	};
 	struct vx_core *chip = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	if (chip->type >= VX_TYPE_VXPOCKET) {
@@ -499,6 +525,12 @@ static int vx_audio_src_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_
 		       texts_vx2[uinfo->value.enumerated.item]);
 	}
 	return 0;
+=======
+	if (chip->type >= VX_TYPE_VXPOCKET)
+		return snd_ctl_enum_info(uinfo, 1, 3, texts_mic);
+	else
+		return snd_ctl_enum_info(uinfo, 1, 2, texts_vx2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vx_audio_src_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -543,6 +575,7 @@ static struct snd_kcontrol_new vx_control_audio_src = {
  */
 static int vx_clock_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {
 		"Auto", "Internal", "External"
 	};
@@ -555,6 +588,13 @@ static int vx_clock_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"Auto", "Internal", "External"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int vx_clock_mode_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)

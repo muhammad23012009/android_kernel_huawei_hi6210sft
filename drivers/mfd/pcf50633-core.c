@@ -106,10 +106,14 @@ static ssize_t show_dump_regs(struct device *dev, struct device_attribute *attr,
 			} else
 				dump[n1] = pcf50633_reg_read(pcf, n + n1);
 
+<<<<<<< HEAD
 		hex_dump_to_buffer(dump, sizeof(dump), 16, 1, buf1, 128, 0);
 		buf1 += strlen(buf1);
 		*buf1++ = '\n';
 		*buf1 = '\0';
+=======
+		buf1 += sprintf(buf1, "%*ph\n", (int)sizeof(dump), dump);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return buf1 - buf;
@@ -186,7 +190,11 @@ static int pcf50633_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(pcf50633_pm, pcf50633_suspend, pcf50633_resume);
 
+<<<<<<< HEAD
 static struct regmap_config pcf50633_regmap_config = {
+=======
+static const struct regmap_config pcf50633_regmap_config = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.reg_bits = 8,
 	.val_bits = 8,
 };
@@ -195,8 +203,14 @@ static int pcf50633_probe(struct i2c_client *client,
 				const struct i2c_device_id *ids)
 {
 	struct pcf50633 *pcf;
+<<<<<<< HEAD
 	struct pcf50633_platform_data *pdata = client->dev.platform_data;
 	int i, ret;
+=======
+	struct platform_device *pdev;
+	struct pcf50633_platform_data *pdata = dev_get_platdata(&client->dev);
+	int i, j, ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int version, variant;
 
 	if (!client->irq) {
@@ -243,6 +257,7 @@ static int pcf50633_probe(struct i2c_client *client,
 
 
 	for (i = 0; i < PCF50633_NUM_REGULATORS; i++) {
+<<<<<<< HEAD
 		struct platform_device *pdev;
 
 		pdev = platform_device_alloc("pcf50633-regltr", i);
@@ -262,16 +277,47 @@ static int pcf50633_probe(struct i2c_client *client,
 		pcf->regulator_pdev[i] = pdev;
 
 		platform_device_add(pdev);
+=======
+		pdev = platform_device_alloc("pcf50633-regulator", i);
+		if (!pdev)
+			return -ENOMEM;
+
+		pdev->dev.parent = pcf->dev;
+		ret = platform_device_add_data(pdev, &pdata->reg_init_data[i],
+					       sizeof(pdata->reg_init_data[i]));
+		if (ret)
+			goto err;
+
+		ret = platform_device_add(pdev);
+		if (ret)
+			goto err;
+
+		pcf->regulator_pdev[i] = pdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = sysfs_create_group(&client->dev.kobj, &pcf_attr_group);
 	if (ret)
+<<<<<<< HEAD
 		dev_err(pcf->dev, "error creating sysfs entries\n");
+=======
+		dev_warn(pcf->dev, "error creating sysfs entries\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (pdata->probe_done)
 		pdata->probe_done(pcf);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err:
+	platform_device_put(pdev);
+	for (j = 0; j < i; j++)
+		platform_device_put(pcf->regulator_pdev[j]);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pcf50633_remove(struct i2c_client *client)

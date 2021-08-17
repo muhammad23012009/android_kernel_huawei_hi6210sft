@@ -23,7 +23,10 @@
  */
 #include <linux/types.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/ptrace.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define COMPAT_USER_HZ		100
 #ifdef __AARCH64EB__
@@ -161,7 +164,10 @@ typedef struct compat_siginfo {
 	int si_code;
 
 	union {
+<<<<<<< HEAD
 		/* The padding is the same size as AArch64. */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int _pad[128/sizeof(int) - 3];
 
 		/* kill() */
@@ -210,7 +216,11 @@ typedef struct compat_siginfo {
 		struct {
 			compat_uptr_t _call_addr; /* calling user insn */
 			int _syscall;	/* triggering system call number */
+<<<<<<< HEAD
 			unsigned int _arch;	/* AUDIT_ARCH_* of syscall */
+=======
+			compat_uint_t _arch;	/* AUDIT_ARCH_* of syscall */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} _sigsys;
 	} _sifields;
 } compat_siginfo_t;
@@ -235,7 +245,12 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
 	return (u32)(unsigned long)uptr;
 }
 
+<<<<<<< HEAD
 #define compat_user_stack_pointer() (user_stack_pointer(current_pt_regs()))
+=======
+#define compat_user_stack_pointer() (user_stack_pointer(task_pt_regs(current)))
+#define COMPAT_MINSIGSTKSZ	2048
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void __user *arch_compat_alloc_user_space(long len)
 {

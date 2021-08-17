@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 /*
  * drivers/net/phy/mdio_bus.c
  *
  * MDIO Bus interface
+=======
+/* MDIO Bus interface
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Author: Andy Fleming
  *
@@ -36,10 +40,59 @@
 #include <linux/mii.h>
 #include <linux/ethtool.h>
 #include <linux/phy.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/io.h>
+#include <linux/uaccess.h>
+
+#include <asm/irq.h>
+
+int mdiobus_register_device(struct mdio_device *mdiodev)
+{
+	if (mdiodev->bus->mdio_map[mdiodev->addr])
+		return -EBUSY;
+
+	mdiodev->bus->mdio_map[mdiodev->addr] = mdiodev;
+
+	return 0;
+}
+EXPORT_SYMBOL(mdiobus_register_device);
+
+int mdiobus_unregister_device(struct mdio_device *mdiodev)
+{
+	if (mdiodev->bus->mdio_map[mdiodev->addr] != mdiodev)
+		return -EINVAL;
+
+	mdiodev->bus->mdio_map[mdiodev->addr] = NULL;
+
+	return 0;
+}
+EXPORT_SYMBOL(mdiobus_unregister_device);
+
+struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr)
+{
+	struct mdio_device *mdiodev = bus->mdio_map[addr];
+
+	if (!mdiodev)
+		return NULL;
+
+	if (!(mdiodev->flags & MDIO_DEVICE_FLAG_PHY))
+		return NULL;
+
+	return container_of(mdiodev, struct phy_device, mdio);
+}
+EXPORT_SYMBOL(mdiobus_get_phy);
+
+bool mdiobus_is_registered_device(struct mii_bus *bus, int addr)
+{
+	return bus->mdio_map[addr];
+}
+EXPORT_SYMBOL(mdiobus_is_registered_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * mdiobus_alloc_size - allocate a mii_bus structure
@@ -54,6 +107,10 @@ struct mii_bus *mdiobus_alloc_size(size_t size)
 	struct mii_bus *bus;
 	size_t aligned_size = ALIGN(sizeof(*bus), NETDEV_ALIGN);
 	size_t alloc_size;
+<<<<<<< HEAD
+=======
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If we alloc extra space, it should be aligned */
 	if (size)
@@ -62,15 +119,98 @@ struct mii_bus *mdiobus_alloc_size(size_t size)
 		alloc_size = sizeof(*bus);
 
 	bus = kzalloc(alloc_size, GFP_KERNEL);
+<<<<<<< HEAD
 	if (bus) {
 		bus->state = MDIOBUS_ALLOCATED;
 		if (size)
 			bus->priv = (void *)bus + aligned_size;
-	}
+=======
+	if (!bus)
+		return NULL;
+
+	bus->state = MDIOBUS_ALLOCATED;
+	if (size)
+		bus->priv = (void *)bus + aligned_size;
+
+	/* Initialise the interrupts to polling */
+	for (i = 0; i < PHY_MAX_ADDR; i++)
+		bus->irq[i] = PHY_POLL;
 
 	return bus;
 }
 EXPORT_SYMBOL(mdiobus_alloc_size);
+
+static void _devm_mdiobus_free(struct device *dev, void *res)
+{
+	mdiobus_free(*(struct mii_bus **)res);
+}
+
+static int devm_mdiobus_match(struct device *dev, void *res, void *data)
+{
+	struct mii_bus **r = res;
+
+	if (WARN_ON(!r || !*r))
+		return 0;
+
+	return *r == data;
+}
+
+/**
+ * devm_mdiobus_alloc_size - Resource-managed mdiobus_alloc_size()
+ * @dev:		Device to allocate mii_bus for
+ * @sizeof_priv:	Space to allocate for private structure.
+ *
+ * Managed mdiobus_alloc_size. mii_bus allocated with this function is
+ * automatically freed on driver detach.
+ *
+ * If an mii_bus allocated with this function needs to be freed separately,
+ * devm_mdiobus_free() must be used.
+ *
+ * RETURNS:
+ * Pointer to allocated mii_bus on success, NULL on failure.
+ */
+struct mii_bus *devm_mdiobus_alloc_size(struct device *dev, int sizeof_priv)
+{
+	struct mii_bus **ptr, *bus;
+
+	ptr = devres_alloc(_devm_mdiobus_free, sizeof(*ptr), GFP_KERNEL);
+	if (!ptr)
+		return NULL;
+
+	/* use raw alloc_dr for kmalloc caller tracing */
+	bus = mdiobus_alloc_size(sizeof_priv);
+	if (bus) {
+		*ptr = bus;
+		devres_add(dev, ptr);
+	} else {
+		devres_free(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+	}
+
+	return bus;
+}
+<<<<<<< HEAD
+EXPORT_SYMBOL(mdiobus_alloc_size);
+=======
+EXPORT_SYMBOL_GPL(devm_mdiobus_alloc_size);
+
+/**
+ * devm_mdiobus_free - Resource-managed mdiobus_free()
+ * @dev:		Device this mii_bus belongs to
+ * @bus:		the mii_bus associated with the device
+ *
+ * Free mii_bus allocated with devm_mdiobus_alloc_size().
+ */
+void devm_mdiobus_free(struct device *dev, struct mii_bus *bus)
+{
+	int rc;
+
+	rc = devres_release(dev, _devm_mdiobus_free,
+			    devm_mdiobus_match, bus);
+	WARN_ON(rc);
+}
+EXPORT_SYMBOL_GPL(devm_mdiobus_free);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * mdiobus_release - mii_bus device release callback
@@ -103,7 +243,13 @@ static int of_mdio_bus_match(struct device *dev, const void *mdio_bus_np)
  * of_mdio_find_bus - Given an mii_bus node, find the mii_bus.
  * @mdio_bus_np: Pointer to the mii_bus.
  *
+<<<<<<< HEAD
  * Returns a pointer to the mii_bus, or NULL if none found.
+=======
+ * Returns a reference to the mii_bus, or NULL if none found.  The
+ * embedded struct device will have its reference count incremented,
+ * and this must be put once the bus is finished with.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Because the association of a device_node and mii_bus is made via
  * of_mdiobus_register(), the mii_bus cannot be found before it is
@@ -123,6 +269,7 @@ struct mii_bus *of_mdio_find_bus(struct device_node *mdio_bus_np)
 	return d ? to_mii_bus(d) : NULL;
 }
 EXPORT_SYMBOL(of_mdio_find_bus);
+<<<<<<< HEAD
 #endif
 
 /**
@@ -141,11 +288,85 @@ int mdiobus_register(struct mii_bus *bus)
 	if (NULL == bus || NULL == bus->name ||
 			NULL == bus->read ||
 			NULL == bus->write)
+=======
+
+/* Walk the list of subnodes of a mdio bus and look for a node that
+ * matches the mdio device's address with its 'reg' property. If
+ * found, set the of_node pointer for the mdio device. This allows
+ * auto-probed phy devices to be supplied with information passed in
+ * via DT.
+ */
+static void of_mdiobus_link_mdiodev(struct mii_bus *bus,
+				    struct mdio_device *mdiodev)
+{
+	struct device *dev = &mdiodev->dev;
+	struct device_node *child;
+
+	if (dev->of_node || !bus->dev.of_node)
+		return;
+
+	for_each_available_child_of_node(bus->dev.of_node, child) {
+		int addr;
+		int ret;
+
+		ret = of_property_read_u32(child, "reg", &addr);
+		if (ret < 0) {
+			dev_err(dev, "%s has invalid MDIO address\n",
+				child->full_name);
+			continue;
+		}
+
+		/* A MDIO device must have a reg property in the range [0-31] */
+		if (addr >= PHY_MAX_ADDR) {
+			dev_err(dev, "%s MDIO address %i is too large\n",
+				child->full_name, addr);
+			continue;
+		}
+
+		if (addr == mdiodev->addr) {
+			dev->of_node = child;
+			return;
+		}
+	}
+}
+#else /* !IS_ENABLED(CONFIG_OF_MDIO) */
+static inline void of_mdiobus_link_mdiodev(struct mii_bus *mdio,
+					   struct mdio_device *mdiodev)
+{
+}
+#endif
+
+/**
+ * __mdiobus_register - bring up all the PHYs on a given bus and attach them to bus
+ * @bus: target mii_bus
+ * @owner: module containing bus accessor functions
+ *
+ * Description: Called by a bus driver to bring up all the PHYs
+ *   on a given bus, and attach them to the bus. Drivers should use
+ *   mdiobus_register() rather than __mdiobus_register() unless they
+ *   need to pass a specific owner module. MDIO devices which are not
+ *   PHYs will not be brought up by this function. They are expected to
+ *   to be explicitly listed in DT and instantiated by of_mdiobus_register().
+ *
+ * Returns 0 on success or < 0 on error.
+ */
+int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+{
+	struct mdio_device *mdiodev;
+	int i, err;
+
+	if (NULL == bus || NULL == bus->name ||
+	    NULL == bus->read || NULL == bus->write)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	BUG_ON(bus->state != MDIOBUS_ALLOCATED &&
 	       bus->state != MDIOBUS_UNREGISTERED);
 
+<<<<<<< HEAD
+=======
+	bus->owner = owner;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bus->dev.parent = bus->parent;
 	bus->dev.class = &mdio_bus_class;
 	bus->dev.groups = NULL;
@@ -167,7 +388,11 @@ int mdiobus_register(struct mii_bus *bus)
 			struct phy_device *phydev;
 
 			phydev = mdiobus_scan(bus, i);
+<<<<<<< HEAD
 			if (IS_ERR(phydev)) {
+=======
+			if (IS_ERR(phydev) && (PTR_ERR(phydev) != -ENODEV)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				err = PTR_ERR(phydev);
 				goto error;
 			}
@@ -180,12 +405,22 @@ int mdiobus_register(struct mii_bus *bus)
 
 error:
 	while (--i >= 0) {
+<<<<<<< HEAD
 		if (bus->phy_map[i])
 			device_unregister(&bus->phy_map[i]->dev);
+=======
+		mdiodev = bus->mdio_map[i];
+		if (!mdiodev)
+			continue;
+
+		mdiodev->device_remove(mdiodev);
+		mdiodev->device_free(mdiodev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	device_del(&bus->dev);
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(mdiobus_register);
 
 void mdiobus_unregister(struct mii_bus *bus)
@@ -201,6 +436,28 @@ void mdiobus_unregister(struct mii_bus *bus)
 			device_unregister(&bus->phy_map[i]->dev);
 		bus->phy_map[i] = NULL;
 	}
+=======
+EXPORT_SYMBOL(__mdiobus_register);
+
+void mdiobus_unregister(struct mii_bus *bus)
+{
+	struct mdio_device *mdiodev;
+	int i;
+
+	if (WARN_ON_ONCE(bus->state != MDIOBUS_REGISTERED))
+		return;
+	bus->state = MDIOBUS_UNREGISTERED;
+
+	for (i = 0; i < PHY_MAX_ADDR; i++) {
+		mdiodev = bus->mdio_map[i];
+		if (!mdiodev)
+			continue;
+
+		mdiodev->device_remove(mdiodev);
+		mdiodev->device_free(mdiodev);
+	}
+	device_del(&bus->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(mdiobus_unregister);
 
@@ -214,9 +471,13 @@ EXPORT_SYMBOL(mdiobus_unregister);
  */
 void mdiobus_free(struct mii_bus *bus)
 {
+<<<<<<< HEAD
 	/*
 	 * For compatibility with error handling in drivers.
 	 */
+=======
+	/* For compatibility with error handling in drivers. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bus->state == MDIOBUS_ALLOCATED) {
 		kfree(bus);
 		return;
@@ -229,12 +490,28 @@ void mdiobus_free(struct mii_bus *bus)
 }
 EXPORT_SYMBOL(mdiobus_free);
 
+<<<<<<< HEAD
+=======
+/**
+ * mdiobus_scan - scan a bus for MDIO devices.
+ * @bus: mii_bus to scan
+ * @addr: address on bus to scan
+ *
+ * This function scans the MDIO bus, looking for devices which can be
+ * identified using a vendor/product ID in registers 2 and 3. Not all
+ * MDIO devices have such registers, but PHY devices typically
+ * do. Hence this function assumes anything found is a PHY, or can be
+ * treated as a PHY. Other MDIO devices, such as switches, will
+ * probably not be found during the scan.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
 {
 	struct phy_device *phydev;
 	int err;
 
 	phydev = get_phy_device(bus, addr, false);
+<<<<<<< HEAD
 	if (IS_ERR(phydev) || phydev == NULL)
 		return phydev;
 
@@ -242,6 +519,21 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
 	if (err) {
 		phy_device_free(phydev);
 		return NULL;
+=======
+	if (IS_ERR(phydev))
+		return phydev;
+
+	/*
+	 * For DT, see if the auto-probed phy has a correspoding child
+	 * in the bus node, and set the of_node pointer in this case.
+	 */
+	of_mdiobus_link_mdiodev(bus, &phydev->mdio);
+
+	err = phy_device_register(phydev);
+	if (err) {
+		phy_device_free(phydev);
+		return ERR_PTR(-ENODEV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return phydev;
@@ -249,6 +541,36 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
 EXPORT_SYMBOL(mdiobus_scan);
 
 /**
+<<<<<<< HEAD
+=======
+ * mdiobus_read_nested - Nested version of the mdiobus_read function
+ * @bus: the mii_bus struct
+ * @addr: the phy address
+ * @regnum: register number to read
+ *
+ * In case of nested MDIO bus access avoid lockdep false positives by
+ * using mutex_lock_nested().
+ *
+ * NOTE: MUST NOT be called from interrupt context,
+ * because the bus read/write functions may wait for an interrupt
+ * to conclude the operation.
+ */
+int mdiobus_read_nested(struct mii_bus *bus, int addr, u32 regnum)
+{
+	int retval;
+
+	BUG_ON(in_interrupt());
+
+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+	retval = bus->read(bus, addr, regnum);
+	mutex_unlock(&bus->mdio_lock);
+
+	return retval;
+}
+EXPORT_SYMBOL(mdiobus_read_nested);
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * mdiobus_read - Convenience function for reading a given MII mgmt register
  * @bus: the mii_bus struct
  * @addr: the phy address
@@ -273,6 +595,37 @@ int mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
 EXPORT_SYMBOL(mdiobus_read);
 
 /**
+<<<<<<< HEAD
+=======
+ * mdiobus_write_nested - Nested version of the mdiobus_write function
+ * @bus: the mii_bus struct
+ * @addr: the phy address
+ * @regnum: register number to write
+ * @val: value to write to @regnum
+ *
+ * In case of nested MDIO bus access avoid lockdep false positives by
+ * using mutex_lock_nested().
+ *
+ * NOTE: MUST NOT be called from interrupt context,
+ * because the bus read/write functions may wait for an interrupt
+ * to conclude the operation.
+ */
+int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+{
+	int err;
+
+	BUG_ON(in_interrupt());
+
+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+	err = bus->write(bus, addr, regnum, val);
+	mutex_unlock(&bus->mdio_lock);
+
+	return err;
+}
+EXPORT_SYMBOL(mdiobus_write_nested);
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * mdiobus_write - Convenience function for writing a given MII mgmt register
  * @bus: the mii_bus struct
  * @addr: the phy address
@@ -298,6 +651,7 @@ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
 EXPORT_SYMBOL(mdiobus_write);
 
 /**
+<<<<<<< HEAD
  * mdio_bus_match - determine if given PHY driver supports the given PHY device
  * @dev: target PHY device
  * @drv: given PHY driver
@@ -309,10 +663,26 @@ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
 {
 	struct phy_device *phydev = to_phy_device(dev);
 	struct phy_driver *phydrv = to_phy_driver(drv);
+=======
+ * mdio_bus_match - determine if given MDIO driver supports the given
+ *		    MDIO device
+ * @dev: target MDIO device
+ * @drv: given MDIO driver
+ *
+ * Description: Given a MDIO device, and a MDIO driver, return 1 if
+ *   the driver supports the device.  Otherwise, return 0. This may
+ *   require calling the devices own match function, since different classes
+ *   of MDIO devices have different match criteria.
+ */
+static int mdio_bus_match(struct device *dev, struct device_driver *drv)
+{
+	struct mdio_device *mdio = to_mdio_device(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (of_driver_match_device(dev, drv))
 		return 1;
 
+<<<<<<< HEAD
 	if (phydrv->match_phy_device)
 		return phydrv->match_phy_device(phydev);
 
@@ -371,10 +741,28 @@ static int mdio_bus_suspend(struct device *dev)
 		return 0;
 
 	return phydrv->suspend(phydev);
+=======
+	if (mdio->bus_match)
+		return mdio->bus_match(dev, drv);
+
+	return 0;
+}
+
+#ifdef CONFIG_PM
+static int mdio_bus_suspend(struct device *dev)
+{
+	struct mdio_device *mdio = to_mdio_device(dev);
+
+	if (mdio->pm_ops && mdio->pm_ops->suspend)
+		return mdio->pm_ops->suspend(dev);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mdio_bus_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct phy_driver *phydrv = to_phy_driver(dev->driver);
 	struct phy_device *phydev = to_phy_device(dev);
 	int ret;
@@ -389,12 +777,19 @@ static int mdio_bus_resume(struct device *dev)
 no_resume:
 	if (phydev->attached_dev && phydev->adjust_link)
 		phy_start_machine(phydev, NULL);
+=======
+	struct mdio_device *mdio = to_mdio_device(dev);
+
+	if (mdio->pm_ops && mdio->pm_ops->resume)
+		return mdio->pm_ops->resume(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int mdio_bus_restore(struct device *dev)
 {
+<<<<<<< HEAD
 	struct phy_device *phydev = to_phy_device(dev);
 	struct net_device *netdev = phydev->attached_dev;
 	int ret;
@@ -411,11 +806,21 @@ static int mdio_bus_restore(struct device *dev)
 	phydev->state = PHY_UP;
 
 	phy_start_machine(phydev, NULL);
+=======
+	struct mdio_device *mdio = to_mdio_device(dev);
+
+	if (mdio->pm_ops && mdio->pm_ops->restore)
+		return mdio->pm_ops->restore(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dev_pm_ops mdio_bus_pm_ops = {
+=======
+static const struct dev_pm_ops mdio_bus_pm_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend = mdio_bus_suspend,
 	.resume = mdio_bus_resume,
 	.freeze = mdio_bus_suspend,
@@ -431,6 +836,7 @@ static struct dev_pm_ops mdio_bus_pm_ops = {
 
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 static ssize_t
 phy_id_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -444,11 +850,16 @@ static struct device_attribute mdio_dev_attrs[] = {
 	__ATTR_NULL
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct bus_type mdio_bus_type = {
 	.name		= "mdio_bus",
 	.match		= mdio_bus_match,
 	.pm		= MDIO_BUS_PM_OPS,
+<<<<<<< HEAD
 	.dev_attrs	= mdio_dev_attrs,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 EXPORT_SYMBOL(mdio_bus_type);
 

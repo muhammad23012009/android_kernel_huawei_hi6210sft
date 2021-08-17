@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for Realtek RTS51xx USB card reader
+=======
+/*
+ * Driver for Realtek RTS51xx USB card reader
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.
  *
@@ -39,6 +44,12 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-realtek"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("Driver for Realtek USB Card Reader");
 MODULE_AUTHOR("wwang <wei_wang@realsil.com.cn>");
@@ -47,7 +58,11 @@ MODULE_VERSION("1.03");
 
 static int auto_delink_en = 1;
 module_param(auto_delink_en, int, S_IRUGO | S_IWUSR);
+<<<<<<< HEAD
 MODULE_PARM_DESC(auto_delink_en, "enable auto delink");
+=======
+MODULE_PARM_DESC(auto_delink_en, "auto delink mode (0=firmware, 1=software [default])");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_REALTEK_AUTOPM
 static int ss_en = 1;
@@ -115,7 +130,11 @@ struct rts51x_chip {
 	enum RTS51X_STAT state;
 	int support_auto_delink;
 #endif
+<<<<<<< HEAD
 	/* used to back up the protocal choosen in probe1 phase */
+=======
+	/* used to back up the protocol chosen in probe1 phase */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	proto_cmnd proto_handler_backup;
 };
 
@@ -264,8 +283,15 @@ static int rts51x_bulk_transport(struct us_data *us, u8 lun,
 	if (bcs->Tag != us->tag)
 		return USB_STOR_TRANSPORT_ERROR;
 
+<<<<<<< HEAD
 	/* try to compute the actual residue, based on how much data
 	 * was really transferred and what the device tells us */
+=======
+	/*
+	 * try to compute the actual residue, based on how much data
+	 * was really transferred and what the device tells us
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (residue)
 		residue = residue < buf_len ? residue : buf_len;
 
@@ -283,7 +309,12 @@ static int rts51x_bulk_transport(struct us_data *us, u8 lun,
 		return USB_STOR_TRANSPORT_FAILED;
 
 	case US_BULK_STAT_PHASE:
+<<<<<<< HEAD
 		/* phase error -- note that a transport reset will be
+=======
+		/*
+		 * phase error -- note that a transport reset will be
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * invoked by the invoke_transport() function
 		 */
 		return USB_STOR_TRANSPORT_ERROR;
@@ -626,6 +657,10 @@ static int config_autodelink_after_power_on(struct us_data *us)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int config_autodelink_before_power_down(struct us_data *us)
 {
 	struct rts51x_chip *chip = (struct rts51x_chip *)(us->extra);
@@ -716,6 +751,10 @@ static void fw5895_init(struct us_data *us)
 		}
 	}
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_REALTEK_AUTOPM
 static void fw5895_set_mmc_wp(struct us_data *us)
@@ -767,18 +806,29 @@ static void rts51x_suspend_timer_fn(unsigned long data)
 		break;
 	case RTS51X_STAT_IDLE:
 	case RTS51X_STAT_SS:
+<<<<<<< HEAD
 		usb_stor_dbg(us, "RTS51X_STAT_SS, intf->pm_usage_cnt:%d, power.usage:%d\n",
 			     atomic_read(&us->pusb_intf->pm_usage_cnt),
 			     atomic_read(&us->pusb_intf->dev.power.usage_count));
 
 		if (atomic_read(&us->pusb_intf->pm_usage_cnt) > 0) {
+=======
+		usb_stor_dbg(us, "RTS51X_STAT_SS, power.usage:%d\n",
+			     atomic_read(&us->pusb_intf->dev.power.usage_count));
+
+		if (atomic_read(&us->pusb_intf->dev.power.usage_count) > 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			usb_stor_dbg(us, "Ready to enter SS state\n");
 			rts51x_set_stat(chip, RTS51X_STAT_SS);
 			/* ignore mass storage interface's children */
 			pm_suspend_ignore_children(&us->pusb_intf->dev, true);
 			usb_autopm_put_interface_async(us->pusb_intf);
+<<<<<<< HEAD
 			usb_stor_dbg(us, "RTS51X_STAT_SS 01, intf->pm_usage_cnt:%d, power.usage:%d\n",
 				     atomic_read(&us->pusb_intf->pm_usage_cnt),
+=======
+			usb_stor_dbg(us, "RTS51X_STAT_SS 01, power.usage:%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     atomic_read(&us->pusb_intf->dev.power.usage_count));
 		}
 		break;
@@ -811,11 +861,18 @@ static void rts51x_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 	int ret;
 
 	if (working_scsi(srb)) {
+<<<<<<< HEAD
 		usb_stor_dbg(us, "working scsi, intf->pm_usage_cnt:%d, power.usage:%d\n",
 			     atomic_read(&us->pusb_intf->pm_usage_cnt),
 			     atomic_read(&us->pusb_intf->dev.power.usage_count));
 
 		if (atomic_read(&us->pusb_intf->pm_usage_cnt) <= 0) {
+=======
+		usb_stor_dbg(us, "working scsi, power.usage:%d\n",
+			     atomic_read(&us->pusb_intf->dev.power.usage_count));
+
+		if (atomic_read(&us->pusb_intf->dev.power.usage_count) <= 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = usb_autopm_get_interface(us->pusb_intf);
 			usb_stor_dbg(us, "working scsi, ret=%d\n", ret);
 		}
@@ -925,7 +982,11 @@ static int realtek_cr_autosuspend_setup(struct us_data *us)
 			(unsigned long)chip);
 	fw5895_init(us);
 
+<<<<<<< HEAD
 	/* enable autosuspend funciton of the usb device */
+=======
+	/* enable autosuspend function of the usb device */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_enable_autosuspend(us->pusb_dev);
 
 	return 0;
@@ -1004,12 +1065,24 @@ static int init_realtek_cr(struct us_data *us)
 			goto INIT_FAIL;
 	}
 
+<<<<<<< HEAD
 	if (CHECK_FW_VER(chip, 0x5888) || CHECK_FW_VER(chip, 0x5889) ||
 	    CHECK_FW_VER(chip, 0x5901))
 		SET_AUTO_DELINK(chip);
 	if (STATUS_LEN(chip) == 16) {
 		if (SUPPORT_AUTO_DELINK(chip))
 			SET_AUTO_DELINK(chip);
+=======
+	if (CHECK_PID(chip, 0x0138) || CHECK_PID(chip, 0x0158) ||
+	    CHECK_PID(chip, 0x0159)) {
+		if (CHECK_FW_VER(chip, 0x5888) || CHECK_FW_VER(chip, 0x5889) ||
+				CHECK_FW_VER(chip, 0x5901))
+			SET_AUTO_DELINK(chip);
+		if (STATUS_LEN(chip) == 16) {
+			if (SUPPORT_AUTO_DELINK(chip))
+				SET_AUTO_DELINK(chip);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #ifdef CONFIG_REALTEK_AUTOPM
 	if (ss_en)
@@ -1032,6 +1105,11 @@ INIT_FAIL:
 	return -EIO;
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template realtek_cr_host_template;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int realtek_cr_probe(struct usb_interface *intf,
 			    const struct usb_device_id *id)
 {
@@ -1042,7 +1120,12 @@ static int realtek_cr_probe(struct usb_interface *intf,
 
 	result = usb_stor_probe1(&us, intf, id,
 				 (id - realtek_cr_ids) +
+<<<<<<< HEAD
 				 realtek_cr_unusual_dev_list);
+=======
+				 realtek_cr_unusual_dev_list,
+				 &realtek_cr_host_template);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result)
 		return result;
 
@@ -1052,7 +1135,11 @@ static int realtek_cr_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver realtek_cr_driver = {
+<<<<<<< HEAD
 	.name = "ums-realtek",
+=======
+	.name = DRV_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe = realtek_cr_probe,
 	.disconnect = usb_stor_disconnect,
 	/* .suspend =      usb_stor_suspend, */
@@ -1068,4 +1155,8 @@ static struct usb_driver realtek_cr_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(realtek_cr_driver);
+=======
+module_usb_stor_driver(realtek_cr_driver, realtek_cr_host_template, DRV_NAME);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

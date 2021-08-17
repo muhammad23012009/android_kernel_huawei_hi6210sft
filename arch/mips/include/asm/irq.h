@@ -17,6 +17,7 @@
 
 #include <irq.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_I8259
 static inline int irq_canonicalize(int irq)
 {
@@ -123,6 +124,47 @@ extern void do_IRQ(unsigned int irq);
 extern void do_IRQ_no_affinity(unsigned int irq);
 
 #endif /* CONFIG_MIPS_MT_SMTC_IRQAFF */
+=======
+#define IRQ_STACK_SIZE			THREAD_SIZE
+#define IRQ_STACK_START			(IRQ_STACK_SIZE - 16)
+
+extern void *irq_stack[NR_CPUS];
+
+/*
+ * The highest address on the IRQ stack contains a dummy frame put down in
+ * genex.S (handle_int & except_vec_vi_handler) which is structured as follows:
+ *
+ *   top ------------
+ *       | task sp  | <- irq_stack[cpu] + IRQ_STACK_START
+ *       ------------
+ *       |          | <- First frame of IRQ context
+ *       ------------
+ *
+ * task sp holds a copy of the task stack pointer where the struct pt_regs
+ * from exception entry can be found.
+ */
+
+static inline bool on_irq_stack(int cpu, unsigned long sp)
+{
+	unsigned long low = (unsigned long)irq_stack[cpu];
+	unsigned long high = low + IRQ_STACK_SIZE;
+
+	return (low <= sp && sp <= high);
+}
+
+#ifdef CONFIG_I8259
+static inline int irq_canonicalize(int irq)
+{
+	return ((irq == I8259A_IRQ_BASE + 2) ? I8259A_IRQ_BASE + 9 : irq);
+}
+#else
+#define irq_canonicalize(irq) (irq)	/* Sane hardware, sane code ... */
+#endif
+
+asmlinkage void plat_irq_dispatch(void);
+
+extern void do_IRQ(unsigned int irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void arch_init_irq(void);
 extern void spurious_interrupt(void);
@@ -141,5 +183,15 @@ extern void free_irqno(unsigned int irq);
 extern int cp0_compare_irq;
 extern int cp0_compare_irq_shift;
 extern int cp0_perfcount_irq;
+<<<<<<< HEAD
+=======
+extern int cp0_fdc_irq;
+
+extern int get_c0_fdc_int(void);
+
+void arch_trigger_cpumask_backtrace(const struct cpumask *mask,
+				    bool exclude_self);
+#define arch_trigger_cpumask_backtrace arch_trigger_cpumask_backtrace
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_IRQ_H */

@@ -9,6 +9,11 @@
  * option) any later version.
  */
 
+<<<<<<< HEAD
+=======
+#include <dt-bindings/clock/mpc512x-clock.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /dts-v1/;
 
 / {
@@ -49,6 +54,13 @@
 		compatible = "fsl,mpc5121-mbx";
 		reg = <0x20000000 0x4000>;
 		interrupts = <66 0x8>;
+<<<<<<< HEAD
+=======
+		clocks = <&clks MPC512x_CLK_MBX_BUS>,
+			 <&clks MPC512x_CLK_MBX_3D>,
+			 <&clks MPC512x_CLK_MBX>;
+		clock-names = "mbx-bus", "mbx-3d", "mbx";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	sram@30000000 {
@@ -62,6 +74,11 @@
 		interrupts = <6 8>;
 		#address-cells = <1>;
 		#size-cells = <1>;
+<<<<<<< HEAD
+=======
+		clocks = <&clks MPC512x_CLK_NFC>;
+		clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	localbus@80000020 {
@@ -69,15 +86,35 @@
 		#address-cells = <2>;
 		#size-cells = <1>;
 		reg = <0x80000020 0x40>;
+<<<<<<< HEAD
 		interrupts = <7 0x8>;
 		ranges = <0x0 0x0 0xfc000000 0x04000000>;
 	};
 
+=======
+		ranges = <0x0 0x0 0xfc000000 0x04000000>;
+	};
+
+	clocks {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		osc: osc {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <33000000>;
+		};
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	soc@80000000 {
 		compatible = "fsl,mpc5121-immr";
 		#address-cells = <1>;
 		#size-cells = <1>;
+<<<<<<< HEAD
 		#interrupt-cells = <2>;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ranges = <0x0 0x80000000 0x400000>;
 		reg = <0x80000000 0x400000>;
 		bus-frequency = <66000000>;	/* 66 MHz ips bus */
@@ -118,9 +155,18 @@
 		};
 
 		/* Clock control */
+<<<<<<< HEAD
 		clock@f00 {
 			compatible = "fsl,mpc5121-clock";
 			reg = <0xf00 0x100>;
+=======
+		clks: clock@f00 {
+			compatible = "fsl,mpc5121-clock";
+			reg = <0xf00 0x100>;
+			#clock-cells = <1>;
+			clocks = <&osc>;
+			clock-names = "osc";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* Power Management Controller */
@@ -140,12 +186,30 @@
 			compatible = "fsl,mpc5121-mscan";
 			reg = <0x1300 0x80>;
 			interrupts = <12 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_BDLC>,
+				 <&clks MPC512x_CLK_IPS>,
+				 <&clks MPC512x_CLK_SYS>,
+				 <&clks MPC512x_CLK_REF>,
+				 <&clks MPC512x_CLK_MSCAN0_MCLK>;
+			clock-names = "ipg", "ips", "sys", "ref", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		can@1380 {
 			compatible = "fsl,mpc5121-mscan";
 			reg = <0x1380 0x80>;
 			interrupts = <13 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_BDLC>,
+				 <&clks MPC512x_CLK_IPS>,
+				 <&clks MPC512x_CLK_SYS>,
+				 <&clks MPC512x_CLK_REF>,
+				 <&clks MPC512x_CLK_MSCAN1_MCLK>;
+			clock-names = "ipg", "ips", "sys", "ref", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		sdhc@1500 {
@@ -154,6 +218,12 @@
 			interrupts = <8 0x8>;
 			dmas = <&dma0 30>;
 			dma-names = "rx-tx";
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_IPS>,
+				 <&clks MPC512x_CLK_SDHC>;
+			clock-names = "ipg", "per";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		i2c@1700 {
@@ -162,6 +232,11 @@
 			compatible = "fsl,mpc5121-i2c", "fsl-i2c";
 			reg = <0x1700 0x20>;
 			interrupts = <9 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_I2C>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		i2c@1720 {
@@ -170,6 +245,11 @@
 			compatible = "fsl,mpc5121-i2c", "fsl-i2c";
 			reg = <0x1720 0x20>;
 			interrupts = <10 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_I2C>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		i2c@1740 {
@@ -178,6 +258,11 @@
 			compatible = "fsl,mpc5121-i2c", "fsl-i2c";
 			reg = <0x1740 0x20>;
 			interrupts = <11 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_I2C>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		i2ccontrol@1760 {
@@ -189,30 +274,63 @@
 			compatible = "fsl,mpc5121-axe";
 			reg = <0x2000 0x100>;
 			interrupts = <42 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_AXE>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		display@2100 {
 			compatible = "fsl,mpc5121-diu";
 			reg = <0x2100 0x100>;
 			interrupts = <64 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_DIU>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		can@2300 {
 			compatible = "fsl,mpc5121-mscan";
 			reg = <0x2300 0x80>;
 			interrupts = <90 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_BDLC>,
+				 <&clks MPC512x_CLK_IPS>,
+				 <&clks MPC512x_CLK_SYS>,
+				 <&clks MPC512x_CLK_REF>,
+				 <&clks MPC512x_CLK_MSCAN2_MCLK>;
+			clock-names = "ipg", "ips", "sys", "ref", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		can@2380 {
 			compatible = "fsl,mpc5121-mscan";
 			reg = <0x2380 0x80>;
 			interrupts = <91 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_BDLC>,
+				 <&clks MPC512x_CLK_IPS>,
+				 <&clks MPC512x_CLK_SYS>,
+				 <&clks MPC512x_CLK_REF>,
+				 <&clks MPC512x_CLK_MSCAN3_MCLK>;
+			clock-names = "ipg", "ips", "sys", "ref", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		viu@2400 {
 			compatible = "fsl,mpc5121-viu";
 			reg = <0x2400 0x400>;
 			interrupts = <67 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_VIU>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		mdio@2800 {
@@ -220,6 +338,11 @@
 			reg = <0x2800 0x800>;
 			#address-cells = <1>;
 			#size-cells = <0>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_FEC>;
+			clock-names = "per";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		eth0: ethernet@2800 {
@@ -228,6 +351,11 @@
 			reg = <0x2800 0x800>;
 			local-mac-address = [ 00 00 00 00 00 00 ];
 			interrupts = <4 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_FEC>;
+			clock-names = "per";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* USB1 using external ULPI PHY */
@@ -239,6 +367,11 @@
 			interrupts = <43 0x8>;
 			dr_mode = "otg";
 			phy_type = "ulpi";
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_USB1>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* USB0 using internal UTMI PHY */
@@ -250,6 +383,11 @@
 			interrupts = <44 0x8>;
 			dr_mode = "otg";
 			phy_type = "utmi_wide";
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_USB2>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* IO control */
@@ -261,13 +399,30 @@
 		/* LocalPlus controller */
 		lpc@10000 {
 			compatible = "fsl,mpc5121-lpc";
+<<<<<<< HEAD
 			reg = <0x10000 0x200>;
+=======
+			reg = <0x10000 0x100>;
+		};
+
+		sclpc@10100 {
+			compatible = "fsl,mpc512x-lpbfifo";
+			reg = <0x10100 0x50>;
+			interrupts = <7 0x8>;
+			dmas = <&dma0 26>;
+			dma-names = "rx-tx";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		pata@10200 {
 			compatible = "fsl,mpc5121-pata";
 			reg = <0x10200 0x100>;
 			interrupts = <5 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PATA>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* 512x PSCs are not 52xx PSC compatible */
@@ -279,6 +434,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC0>,
+				 <&clks MPC512x_CLK_PSC0_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC1 */
@@ -288,6 +449,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC1>,
+				 <&clks MPC512x_CLK_PSC1_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC2 */
@@ -297,6 +464,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC2>,
+				 <&clks MPC512x_CLK_PSC2_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC3 */
@@ -306,6 +479,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC3>,
+				 <&clks MPC512x_CLK_PSC3_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC4 */
@@ -315,6 +494,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC4>,
+				 <&clks MPC512x_CLK_PSC4_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC5 */
@@ -324,6 +509,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC5>,
+				 <&clks MPC512x_CLK_PSC5_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC6 */
@@ -333,6 +524,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC6>,
+				 <&clks MPC512x_CLK_PSC6_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC7 */
@@ -342,6 +539,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC7>,
+				 <&clks MPC512x_CLK_PSC7_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC8 */
@@ -351,6 +554,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC8>,
+				 <&clks MPC512x_CLK_PSC8_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC9 */
@@ -360,6 +569,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC9>,
+				 <&clks MPC512x_CLK_PSC9_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC10 */
@@ -369,6 +584,12 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC10>,
+				 <&clks MPC512x_CLK_PSC10_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		/* PSC11 */
@@ -378,18 +599,33 @@
 			interrupts = <40 0x8>;
 			fsl,rx-fifo-size = <16>;
 			fsl,tx-fifo-size = <16>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC11>,
+				 <&clks MPC512x_CLK_PSC11_MCLK>;
+			clock-names = "ipg", "mclk";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		pscfifo@11f00 {
 			compatible = "fsl,mpc5121-psc-fifo";
 			reg = <0x11f00 0x100>;
 			interrupts = <40 0x8>;
+<<<<<<< HEAD
+=======
+			clocks = <&clks MPC512x_CLK_PSC_FIFO>;
+			clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		dma0: dma@14000 {
 			compatible = "fsl,mpc5121-dma";
 			reg = <0x14000 0x1800>;
 			interrupts = <65 0x8>;
+<<<<<<< HEAD
+=======
+			#dma-cells = <1>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
@@ -401,6 +637,11 @@
 		#address-cells = <3>;
 		#size-cells = <2>;
 		#interrupt-cells = <1>;
+<<<<<<< HEAD
+=======
+		clocks = <&clks MPC512x_CLK_PCI>;
+		clock-names = "ipg";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		reg = <0x80008500 0x100	/* internal registers */
 		       0x80008300 0x8>;	/* config space access registers */

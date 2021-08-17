@@ -13,8 +13,11 @@
 
 #include <linux/percpu.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/kobject.h>
 #include <linux/completion.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/hrtimer.h>
 
 #define CPUIDLE_STATE_MAX	10
@@ -52,21 +55,44 @@ struct cpuidle_state {
 			int index);
 
 	int (*enter_dead) (struct cpuidle_device *dev, int index);
+<<<<<<< HEAD
 };
 
 /* Idle State Flags */
 #define CPUIDLE_FLAG_TIME_VALID	(0x01) /* is residency time measurable? */
+=======
+
+	/*
+	 * CPUs execute ->enter_freeze with the local tick or entire timekeeping
+	 * suspended, so it must not re-enable interrupts at any point (even
+	 * temporarily) or attempt to change states of clock event devices.
+	 */
+	void (*enter_freeze) (struct cpuidle_device *dev,
+			      struct cpuidle_driver *drv,
+			      int index);
+};
+
+/* Idle State Flags */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define CPUIDLE_FLAG_COUPLED	(0x02) /* state applies to multiple cpus */
 #define CPUIDLE_FLAG_TIMER_STOP (0x04)  /* timer is stopped on this state */
 
 #define CPUIDLE_DRIVER_FLAGS_MASK (0xFFFF0000)
 
+<<<<<<< HEAD
+=======
+struct cpuidle_device_kobj;
+struct cpuidle_state_kobj;
+struct cpuidle_driver_kobj;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct cpuidle_device {
 	unsigned int		registered:1;
 	unsigned int		enabled:1;
 	unsigned int		cpu;
 
 	int			last_residency;
+<<<<<<< HEAD
 	int			state_count;
 	struct cpuidle_state_usage	states_usage[CPUIDLE_STATE_MAX];
 	struct cpuidle_state_kobj *kobjs[CPUIDLE_STATE_MAX];
@@ -77,18 +103,34 @@ struct cpuidle_device {
 
 #ifdef CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED
 	int			safe_state_index;
+=======
+	struct cpuidle_state_usage	states_usage[CPUIDLE_STATE_MAX];
+	struct cpuidle_state_kobj *kobjs[CPUIDLE_STATE_MAX];
+	struct cpuidle_driver_kobj *kobj_driver;
+	struct cpuidle_device_kobj *kobj_dev;
+	struct list_head 	device_list;
+
+#ifdef CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpumask_t		coupled_cpus;
 	struct cpuidle_coupled	*coupled;
 #endif
 };
 
 DECLARE_PER_CPU(struct cpuidle_device *, cpuidle_devices);
+<<<<<<< HEAD
+=======
+DECLARE_PER_CPU(struct cpuidle_device, cpuidle_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * cpuidle_get_last_residency - retrieves the last state's residency time
  * @dev: the target CPU
+<<<<<<< HEAD
  *
  * NOTE: this value is invalid if CPUIDLE_FLAG_TIME_VALID isn't set
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static inline int cpuidle_get_last_residency(struct cpuidle_device *dev)
 {
@@ -111,12 +153,29 @@ struct cpuidle_driver {
 	struct cpuidle_state	states[CPUIDLE_STATE_MAX];
 	int			state_count;
 	int			safe_state_index;
+<<<<<<< HEAD
+=======
+
+	/* the driver handles the cpus in cpumask */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cpumask		*cpumask;
 };
 
 #ifdef CONFIG_CPU_IDLE
 extern void disable_cpuidle(void);
+<<<<<<< HEAD
 extern int cpuidle_idle_call(void);
+=======
+extern bool cpuidle_not_available(struct cpuidle_driver *drv,
+				  struct cpuidle_device *dev);
+
+extern int cpuidle_select(struct cpuidle_driver *drv,
+			  struct cpuidle_device *dev);
+extern int cpuidle_enter(struct cpuidle_driver *drv,
+			 struct cpuidle_device *dev, int index);
+extern void cpuidle_reflect(struct cpuidle_device *dev, int index);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int cpuidle_register_driver(struct cpuidle_driver *drv);
 extern struct cpuidle_driver *cpuidle_get_driver(void);
 extern struct cpuidle_driver *cpuidle_driver_ref(void);
@@ -136,12 +195,29 @@ extern void cpuidle_disable_device(struct cpuidle_device *dev);
 extern int cpuidle_play_dead(void);
 
 extern struct cpuidle_driver *cpuidle_get_cpu_driver(struct cpuidle_device *dev);
+<<<<<<< HEAD
 extern int cpuidle_register_cpu_driver(struct cpuidle_driver *drv, int cpu);
 extern void cpuidle_unregister_cpu_driver(struct cpuidle_driver *drv, int cpu);
 
 #else
 static inline void disable_cpuidle(void) { }
 static inline int cpuidle_idle_call(void) { return -ENODEV; }
+=======
+static inline struct cpuidle_device *cpuidle_get_device(void)
+{return __this_cpu_read(cpuidle_devices); }
+#else
+static inline void disable_cpuidle(void) { }
+static inline bool cpuidle_not_available(struct cpuidle_driver *drv,
+					 struct cpuidle_device *dev)
+{return true; }
+static inline int cpuidle_select(struct cpuidle_driver *drv,
+				 struct cpuidle_device *dev)
+{return -ENODEV; }
+static inline int cpuidle_enter(struct cpuidle_driver *drv,
+				struct cpuidle_device *dev, int index)
+{return -ENODEV; }
+static inline void cpuidle_reflect(struct cpuidle_device *dev, int index) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int cpuidle_register_driver(struct cpuidle_driver *drv)
 {return -ENODEV; }
 static inline struct cpuidle_driver *cpuidle_get_driver(void) {return NULL; }
@@ -163,8 +239,34 @@ static inline int cpuidle_enable_device(struct cpuidle_device *dev)
 {return -ENODEV; }
 static inline void cpuidle_disable_device(struct cpuidle_device *dev) { }
 static inline int cpuidle_play_dead(void) {return -ENODEV; }
+<<<<<<< HEAD
 #endif
 
+=======
+static inline struct cpuidle_driver *cpuidle_get_cpu_driver(
+	struct cpuidle_device *dev) {return NULL; }
+static inline struct cpuidle_device *cpuidle_get_device(void) {return NULL; }
+#endif
+
+#if defined(CONFIG_CPU_IDLE) && defined(CONFIG_SUSPEND)
+extern int cpuidle_find_deepest_state(struct cpuidle_driver *drv,
+				      struct cpuidle_device *dev);
+extern int cpuidle_enter_freeze(struct cpuidle_driver *drv,
+				struct cpuidle_device *dev);
+#else
+static inline int cpuidle_find_deepest_state(struct cpuidle_driver *drv,
+					     struct cpuidle_device *dev)
+{return -ENODEV; }
+static inline int cpuidle_enter_freeze(struct cpuidle_driver *drv,
+				       struct cpuidle_device *dev)
+{return -ENODEV; }
+#endif
+
+/* kernel/sched/idle.c */
+extern void sched_idle_set_state(struct cpuidle_state *idle_state, int index);
+extern void default_idle_call(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED
 void cpuidle_coupled_parallel_barrier(struct cpuidle_device *dev, atomic_t *a);
 #else
@@ -195,6 +297,7 @@ struct cpuidle_governor {
 };
 
 #ifdef CONFIG_CPU_IDLE
+<<<<<<< HEAD
 
 extern int cpuidle_register_governor(struct cpuidle_governor *gov);
 extern void cpuidle_unregister_governor(struct cpuidle_governor *gov);
@@ -205,6 +308,12 @@ static inline int cpuidle_register_governor(struct cpuidle_governor *gov)
 {return 0;}
 static inline void cpuidle_unregister_governor(struct cpuidle_governor *gov) { }
 
+=======
+extern int cpuidle_register_governor(struct cpuidle_governor *gov);
+#else
+static inline int cpuidle_register_governor(struct cpuidle_governor *gov)
+{return 0;}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_ARCH_HAS_CPU_RELAX
@@ -213,4 +322,25 @@ static inline void cpuidle_unregister_governor(struct cpuidle_governor *gov) { }
 #define CPUIDLE_DRIVER_STATE_START	0
 #endif
 
+<<<<<<< HEAD
+=======
+#define CPU_PM_CPU_IDLE_ENTER(low_level_idle_enter, idx)	\
+({								\
+	int __ret;						\
+								\
+	if (!idx) {						\
+		cpu_do_idle();					\
+		return idx;					\
+	}							\
+								\
+	__ret = cpu_pm_enter();					\
+	if (!__ret) {						\
+		__ret = low_level_idle_enter(idx);		\
+		cpu_pm_exit();					\
+	}							\
+								\
+	__ret ? -1 : idx;					\
+})
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_CPUIDLE_H */

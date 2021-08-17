@@ -1,6 +1,10 @@
 /* dvb-usb-common.h is part of the DVB USB library.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * see dvb-usb-init.c for copyright information.
  *
  * a header file containing prototypes and types for internal use of the dvb-usb-lib

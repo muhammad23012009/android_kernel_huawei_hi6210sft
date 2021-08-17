@@ -5,6 +5,7 @@
 #
 # Licensed under GPLv2
 
+<<<<<<< HEAD
 obj-y				:=
 obj-m				:=
 obj-n				:=
@@ -40,3 +41,14 @@ obj-$(CONFIG_S5PV210_SETUP_KEYPAD)	+= setup-keypad.o
 obj-$(CONFIG_S5PV210_SETUP_SDHCI_GPIO)	+= setup-sdhci-gpio.o
 obj-$(CONFIG_S5PV210_SETUP_SPI)		+= setup-spi.o
 obj-$(CONFIG_S5PV210_SETUP_USB_PHY) += setup-usb-phy.o
+=======
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/plat-samsung/include
+
+# Core
+
+obj-$(CONFIG_PM_SLEEP)		+= pm.o sleep.o
+
+# machine support
+
+obj-y				+= s5pv210.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -13,8 +13,11 @@
  * published by the Free Software Foundation.
  */
 
+<<<<<<< HEAD
 #include <asm/mach-types.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -43,8 +46,12 @@ static int tegra_alc5632_asoc_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct snd_soc_card *card = codec->card;
+=======
+	struct snd_soc_card *card = rtd->card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tegra_alc5632 *alc5632 = snd_soc_card_get_drvdata(card);
 	int srate, mclk;
 	int err;
@@ -104,6 +111,7 @@ static const struct snd_kcontrol_new tegra_alc5632_controls[] = {
 
 static int tegra_alc5632_asoc_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
@@ -114,6 +122,18 @@ static int tegra_alc5632_asoc_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_jack_add_pins(&tegra_alc5632_hs_jack,
 			ARRAY_SIZE(tegra_alc5632_hs_jack_pins),
 			tegra_alc5632_hs_jack_pins);
+=======
+	int ret;
+	struct tegra_alc5632 *machine = snd_soc_card_get_drvdata(rtd->card);
+
+	ret = snd_soc_card_jack_new(rtd->card, "Headset Jack",
+				    SND_JACK_HEADSET,
+				    &tegra_alc5632_hs_jack,
+				    tegra_alc5632_hs_jack_pins,
+				    ARRAY_SIZE(tegra_alc5632_hs_jack_pins));
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (gpio_is_valid(machine->gpio_hp_det)) {
 		tegra_alc5632_hp_jack_gpio.gpio = machine->gpio_hp_det;
@@ -122,7 +142,23 @@ static int tegra_alc5632_asoc_init(struct snd_soc_pcm_runtime *rtd)
 						&tegra_alc5632_hp_jack_gpio);
 	}
 
+<<<<<<< HEAD
 	snd_soc_dapm_force_enable_pin(dapm, "MICBIAS1");
+=======
+	snd_soc_dapm_force_enable_pin(&rtd->card->dapm, "MICBIAS1");
+
+	return 0;
+}
+
+static int tegra_alc5632_card_remove(struct snd_soc_card *card)
+{
+	struct tegra_alc5632 *machine = snd_soc_card_get_drvdata(card);
+
+	if (gpio_is_valid(machine->gpio_hp_det)) {
+		snd_soc_jack_free_gpios(&tegra_alc5632_hs_jack, 1,
+					&tegra_alc5632_hp_jack_gpio);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -140,7 +176,13 @@ static struct snd_soc_dai_link tegra_alc5632_dai = {
 
 static struct snd_soc_card snd_soc_tegra_alc5632 = {
 	.name = "tegra-alc5632",
+<<<<<<< HEAD
 	.owner = THIS_MODULE,
+=======
+	.driver_name = "tegra",
+	.owner = THIS_MODULE,
+	.remove = tegra_alc5632_card_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dai_link = &tegra_alc5632_dai,
 	.num_links = 1,
 	.controls = tegra_alc5632_controls,
@@ -225,9 +267,12 @@ static int tegra_alc5632_remove(struct platform_device *pdev)
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 	struct tegra_alc5632 *machine = snd_soc_card_get_drvdata(card);
 
+<<<<<<< HEAD
 	snd_soc_jack_free_gpios(&tegra_alc5632_hs_jack, 1,
 				&tegra_alc5632_hp_jack_gpio);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_soc_unregister_card(card);
 
 	tegra_asoc_utils_fini(&machine->util_data);
@@ -243,7 +288,10 @@ static const struct of_device_id tegra_alc5632_of_match[] = {
 static struct platform_driver tegra_alc5632_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &snd_soc_pm_ops,
 		.of_match_table = tegra_alc5632_of_match,
 	},

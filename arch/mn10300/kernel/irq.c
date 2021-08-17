@@ -87,7 +87,12 @@ static void mn10300_cpupic_mask_ack(struct irq_data *d)
 		tmp2 = GxICR(irq);
 
 		irq_affinity_online[irq] =
+<<<<<<< HEAD
 			cpumask_any_and(d->affinity, cpu_online_mask);
+=======
+			cpumask_any_and(irq_data_get_affinity_mask(d),
+					cpu_online_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		CROSS_GxICR(irq, irq_affinity_online[irq]) =
 			(tmp & (GxICR_LEVEL | GxICR_ENABLE)) | GxICR_DETECT;
 		tmp = CROSS_GxICR(irq, irq_affinity_online[irq]);
@@ -124,7 +129,11 @@ static void mn10300_cpupic_unmask_clear(struct irq_data *d)
 	} else {
 		tmp = GxICR(irq);
 
+<<<<<<< HEAD
 		irq_affinity_online[irq] = cpumask_any_and(d->affinity,
+=======
+		irq_affinity_online[irq] = cpumask_any_and(irq_data_get_affinity_mask(d),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							   cpu_online_mask);
 		CROSS_GxICR(irq, irq_affinity_online[irq]) = (tmp & GxICR_LEVEL) | GxICR_ENABLE | GxICR_DETECT;
 		tmp = CROSS_GxICR(irq, irq_affinity_online[irq]);
@@ -316,15 +325,27 @@ void migrate_irqs(void)
 	self = smp_processor_id();
 	for (irq = 0; irq < NR_IRQS; irq++) {
 		struct irq_data *data = irq_get_irq_data(irq);
+<<<<<<< HEAD
+=======
+		struct cpumask *mask = irq_data_get_affinity_mask(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (irqd_is_per_cpu(data))
 			continue;
 
+<<<<<<< HEAD
 		if (cpumask_test_cpu(self, &data->affinity) &&
 		    !cpumask_intersects(&irq_affinity[irq], cpu_online_mask)) {
 			int cpu_id;
 			cpu_id = cpumask_first(cpu_online_mask);
 			cpumask_set_cpu(cpu_id, &data->affinity);
+=======
+		if (cpumask_test_cpu(self, mask) &&
+		    !cpumask_intersects(&irq_affinity[irq], cpu_online_mask)) {
+			int cpu_id;
+			cpu_id = cpumask_first(cpu_online_mask);
+			cpumask_set_cpu(cpu_id, mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		/* We need to operate irq_affinity_online atomically. */
 		arch_local_cli_save(flags);
@@ -335,8 +356,12 @@ void migrate_irqs(void)
 			GxICR(irq) = x & GxICR_LEVEL;
 			tmp = GxICR(irq);
 
+<<<<<<< HEAD
 			new = cpumask_any_and(&data->affinity,
 					      cpu_online_mask);
+=======
+			new = cpumask_any_and(mask, cpu_online_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			irq_affinity_online[irq] = new;
 
 			CROSS_GxICR(irq, new) =

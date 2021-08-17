@@ -285,7 +285,11 @@ hdlc_empty_fifo(struct BCState *bcs, int count)
 		t += sprintf(t, "hdlc_empty_fifo %c cnt %d",
 			     bcs->channel ? 'B' : 'A', count);
 		QuickHex(t, p, count);
+<<<<<<< HEAD
 		debugl1(cs, bcs->blog);
+=======
+		debugl1(cs, "%s", bcs->blog);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -345,7 +349,11 @@ hdlc_fill_fifo(struct BCState *bcs)
 		t += sprintf(t, "hdlc_fill_fifo %c cnt %d",
 			     bcs->channel ? 'B' : 'A', count);
 		QuickHex(t, p, count);
+<<<<<<< HEAD
 		debugl1(cs, bcs->blog);
+=======
+		debugl1(cs, "%s", bcs->blog);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 

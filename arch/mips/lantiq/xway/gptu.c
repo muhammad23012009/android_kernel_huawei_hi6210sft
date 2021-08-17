@@ -3,7 +3,11 @@
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
+<<<<<<< HEAD
  *  Copyright (C) 2012 John Crispin <blogic@openwrt.org>
+=======
+ *  Copyright (C) 2012 John Crispin <john@phrozen.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *  Copyright (C) 2012 Lantiq GmbH
  */
 
@@ -193,7 +197,10 @@ static struct platform_driver dma_driver = {
 	.probe = gptu_probe,
 	.driver = {
 		.name = "gptu-xway",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = gptu_match,
 	},
 };

@@ -174,7 +174,11 @@ struct sym_slcb {
  */
 struct sym_shcb {
 	/*
+<<<<<<< HEAD
 	 *  Chip and controller indentification.
+=======
+	 *  Chip and controller identification.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	int		unit;
 	char		inst_name[16];

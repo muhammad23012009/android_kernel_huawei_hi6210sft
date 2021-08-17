@@ -1716,9 +1716,20 @@ struct snd_cs46xx {
 	struct snd_pcm *pcm_rear;
 	struct snd_pcm *pcm_center_lfe;
 	struct snd_pcm *pcm_iec958;
+<<<<<<< HEAD
 #else /* for compatibility */
 	struct snd_cs46xx_pcm *playback_pcm;
 	unsigned int play_ctl;
+=======
+
+#define CS46XX_DSP_MODULES	5
+	struct dsp_module_desc *modules[CS46XX_DSP_MODULES];
+#else /* for compatibility */
+	struct snd_cs46xx_pcm *playback_pcm;
+	unsigned int play_ctl;
+
+	struct ba1_struct *ba1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifdef CONFIG_PM_SLEEP
@@ -1732,12 +1743,21 @@ int snd_cs46xx_create(struct snd_card *card,
 		      struct snd_cs46xx **rcodec);
 extern const struct dev_pm_ops snd_cs46xx_pm;
 
+<<<<<<< HEAD
 int snd_cs46xx_pcm(struct snd_cs46xx *chip, int device, struct snd_pcm **rpcm);
 int snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device, struct snd_pcm **rpcm);
 int snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device, struct snd_pcm **rpcm);
 int snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device, struct snd_pcm **rpcm);
 int snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device);
 int snd_cs46xx_midi(struct snd_cs46xx *chip, int device, struct snd_rawmidi **rmidi);
+=======
+int snd_cs46xx_pcm(struct snd_cs46xx *chip, int device);
+int snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device);
+int snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device);
+int snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device);
+int snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device);
+int snd_cs46xx_midi(struct snd_cs46xx *chip, int device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_cs46xx_start_dsp(struct snd_cs46xx *chip);
 int snd_cs46xx_gameport(struct snd_cs46xx *chip);
 

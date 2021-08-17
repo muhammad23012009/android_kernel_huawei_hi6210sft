@@ -29,9 +29,19 @@ rq_sched_info_dequeued(struct rq *rq, unsigned long long delta)
 	if (rq)
 		rq->rq_sched_info.run_delay += delta;
 }
+<<<<<<< HEAD
 # define schedstat_inc(rq, field)	do { (rq)->field++; } while (0)
 # define schedstat_add(rq, field, amt)	do { (rq)->field += (amt); } while (0)
 # define schedstat_set(var, val)	do { var = (val); } while (0)
+=======
+#define schedstat_enabled()		static_branch_unlikely(&sched_schedstats)
+#define schedstat_inc(var)		do { if (schedstat_enabled()) { var++; } } while (0)
+#define schedstat_add(var, amt)		do { if (schedstat_enabled()) { var += (amt); } } while (0)
+#define schedstat_set(var, val)		do { if (schedstat_enabled()) { var = (val); } } while (0)
+#define schedstat_val(var)		(var)
+#define schedstat_val_or_zero(var)	((schedstat_enabled()) ? (var) : 0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* !CONFIG_SCHEDSTATS */
 static inline void
 rq_sched_info_arrive(struct rq *rq, unsigned long long delta)
@@ -42,52 +52,86 @@ rq_sched_info_dequeued(struct rq *rq, unsigned long long delta)
 static inline void
 rq_sched_info_depart(struct rq *rq, unsigned long long delta)
 {}
+<<<<<<< HEAD
 # define schedstat_inc(rq, field)	do { } while (0)
 # define schedstat_add(rq, field, amt)	do { } while (0)
 # define schedstat_set(var, val)	do { } while (0)
 #endif
 
 #if defined(CONFIG_SCHEDSTATS) || defined(CONFIG_TASK_DELAY_ACCT)
+=======
+#define schedstat_enabled()		0
+#define schedstat_inc(var)		do { } while (0)
+#define schedstat_add(var, amt)		do { } while (0)
+#define schedstat_set(var, val)		do { } while (0)
+#define schedstat_val(var)		0
+#define schedstat_val_or_zero(var)	0
+#endif /* CONFIG_SCHEDSTATS */
+
+#ifdef CONFIG_SCHED_INFO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void sched_info_reset_dequeued(struct task_struct *t)
 {
 	t->sched_info.last_queued = 0;
 }
 
+<<<<<<< HEAD
 /* We can't include trace/events/sched.h here */
 extern void trace_sched_task_queued(struct task_struct *, unsigned int);
 extern void trace_sched_task_dequeued(struct task_struct *, unsigned int);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * We are interested in knowing how long it was from the *first* time a
  * task was queued to the time that it finally hit a cpu, we call this routine
  * from dequeue_task() to account for possible rq->clock skew across cpus. The
  * delta taken on each cpu would annul the skew.
  */
+<<<<<<< HEAD
 static inline void sched_info_dequeued(struct task_struct *t)
 {
 	unsigned long long now = task_rq(t)->clock, delta = 0;
 
 	trace_sched_task_dequeued(t, task_cpu(t));
+=======
+static inline void sched_info_dequeued(struct rq *rq, struct task_struct *t)
+{
+	unsigned long long now = rq_clock(rq), delta = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(sched_info_on()))
 		if (t->sched_info.last_queued)
 			delta = now - t->sched_info.last_queued;
 	sched_info_reset_dequeued(t);
 	t->sched_info.run_delay += delta;
 
+<<<<<<< HEAD
 	rq_sched_info_dequeued(task_rq(t), delta);
 }
 
 /* We can't include trace/events/sched.h here */
 extern void trace_sched_task_arrive(struct task_struct *, unsigned int);
 extern void trace_sched_task_depart(struct task_struct *, unsigned int);
+=======
+	rq_sched_info_dequeued(rq, delta);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Called when a task finally hits the cpu.  We can now calculate how
  * long it was waiting to run.  We also note when it began so that we
  * can keep stats on how long its timeslice is.
  */
+<<<<<<< HEAD
 static void sched_info_arrive(struct task_struct *t)
 {
 	unsigned long long now = task_rq(t)->clock, delta = 0;
+=======
+static void sched_info_arrive(struct rq *rq, struct task_struct *t)
+{
+	unsigned long long now = rq_clock(rq), delta = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (t->sched_info.last_queued)
 		delta = now - t->sched_info.last_queued;
@@ -95,9 +139,14 @@ static void sched_info_arrive(struct task_struct *t)
 	t->sched_info.run_delay += delta;
 	t->sched_info.last_arrival = now;
 	t->sched_info.pcount++;
+<<<<<<< HEAD
 	trace_sched_task_arrive(t, task_cpu(t));
 
 	rq_sched_info_arrive(task_rq(t), delta);
+=======
+
+	rq_sched_info_arrive(rq, delta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -105,6 +154,7 @@ static void sched_info_arrive(struct task_struct *t)
  * the timestamp if it is already not set.  It's assumed that
  * sched_info_dequeued() will clear that stamp when appropriate.
  */
+<<<<<<< HEAD
 static inline void sched_info_queued(struct task_struct *t)
 {
 	trace_sched_task_queued(t, task_cpu(t));
@@ -116,10 +166,24 @@ static inline void sched_info_queued(struct task_struct *t)
 /*
  * Called when a process ceases being the active-running process, either
  * voluntarily or involuntarily.  Now we can calculate how long we ran.
+=======
+static inline void sched_info_queued(struct rq *rq, struct task_struct *t)
+{
+	if (unlikely(sched_info_on()))
+		if (!t->sched_info.last_queued)
+			t->sched_info.last_queued = rq_clock(rq);
+}
+
+/*
+ * Called when a process ceases being the active-running process involuntarily
+ * due, typically, to expiring its time slice (this may also be called when
+ * switching to the idle task).  Now we can calculate how long we ran.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Also, if the process is still in the TASK_RUNNING state, call
  * sched_info_queued() to mark that it has now again started waiting on
  * the runqueue.
  */
+<<<<<<< HEAD
 static inline void sched_info_depart(struct task_struct *t)
 {
 	unsigned long long delta = task_rq(t)->clock -
@@ -130,6 +194,17 @@ static inline void sched_info_depart(struct task_struct *t)
 
 	if (t->state == TASK_RUNNING)
 		sched_info_queued(t);
+=======
+static inline void sched_info_depart(struct rq *rq, struct task_struct *t)
+{
+	unsigned long long delta = rq_clock(rq) -
+					t->sched_info.last_arrival;
+
+	rq_sched_info_depart(rq, delta);
+
+	if (t->state == TASK_RUNNING)
+		sched_info_queued(rq, t);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -138,16 +213,23 @@ static inline void sched_info_depart(struct task_struct *t)
  * the idle task.)  We are only called when prev != next.
  */
 static inline void
+<<<<<<< HEAD
 __sched_info_switch(struct task_struct *prev, struct task_struct *next)
 {
 	struct rq *rq = task_rq(prev);
 
+=======
+__sched_info_switch(struct rq *rq,
+		    struct task_struct *prev, struct task_struct *next)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * prev now departs the cpu.  It's not interesting to record
 	 * stats about how efficient we were at scheduling the idle
 	 * process, however.
 	 */
 	if (prev != rq->idle)
+<<<<<<< HEAD
 		sched_info_depart(prev);
 
 	if (next != rq->idle)
@@ -165,6 +247,28 @@ sched_info_switch(struct task_struct *prev, struct task_struct *next)
 #define sched_info_dequeued(t)			do { } while (0)
 #define sched_info_switch(t, next)		do { } while (0)
 #endif /* CONFIG_SCHEDSTATS || CONFIG_TASK_DELAY_ACCT */
+=======
+		sched_info_depart(rq, prev);
+
+	if (next != rq->idle)
+		sched_info_arrive(rq, next);
+}
+static inline void
+sched_info_switch(struct rq *rq,
+		  struct task_struct *prev, struct task_struct *next)
+{
+	if (unlikely(sched_info_on()))
+		__sched_info_switch(rq, prev, next);
+}
+#else
+#define sched_info_queued(rq, t)		do { } while (0)
+#define sched_info_reset_dequeued(t)	do { } while (0)
+#define sched_info_dequeued(rq, t)		do { } while (0)
+#define sched_info_depart(rq, t)		do { } while (0)
+#define sched_info_arrive(rq, next)		do { } while (0)
+#define sched_info_switch(rq, t, next)		do { } while (0)
+#endif /* CONFIG_SCHED_INFO */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The following are functions that support scheduler-internal time accounting.
@@ -173,6 +277,43 @@ sched_info_switch(struct task_struct *prev, struct task_struct *next)
  */
 
 /**
+<<<<<<< HEAD
+=======
+ * cputimer_running - return true if cputimer is running
+ *
+ * @tsk:	Pointer to target task.
+ */
+static inline bool cputimer_running(struct task_struct *tsk)
+
+{
+	struct thread_group_cputimer *cputimer = &tsk->signal->cputimer;
+
+	/* Check if cputimer isn't running. This is accessed without locking. */
+	if (!READ_ONCE(cputimer->running))
+		return false;
+
+	/*
+	 * After we flush the task's sum_exec_runtime to sig->sum_sched_runtime
+	 * in __exit_signal(), we won't account to the signal struct further
+	 * cputime consumed by that task, even though the task can still be
+	 * ticking after __exit_signal().
+	 *
+	 * In order to keep a consistent behaviour between thread group cputime
+	 * and thread group cputimer accounting, lets also ignore the cputime
+	 * elapsing after __exit_signal() in any thread group timer running.
+	 *
+	 * This makes sure that POSIX CPU clocks and timers are synchronized, so
+	 * that a POSIX CPU timer won't expire while the corresponding POSIX CPU
+	 * clock delta is behind the expiring timer value.
+	 */
+	if (unlikely(!tsk->sighand))
+		return false;
+
+	return true;
+}
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * account_group_user_time - Maintain utime for a thread group.
  *
  * @tsk:	Pointer to task structure.
@@ -187,12 +328,19 @@ static inline void account_group_user_time(struct task_struct *tsk,
 {
 	struct thread_group_cputimer *cputimer = &tsk->signal->cputimer;
 
+<<<<<<< HEAD
 	if (!cputimer->running)
 		return;
 
 	raw_spin_lock(&cputimer->lock);
 	cputimer->cputime.utime += cputime;
 	raw_spin_unlock(&cputimer->lock);
+=======
+	if (!cputimer_running(tsk))
+		return;
+
+	atomic64_add(cputime, &cputimer->cputime_atomic.utime);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -210,12 +358,19 @@ static inline void account_group_system_time(struct task_struct *tsk,
 {
 	struct thread_group_cputimer *cputimer = &tsk->signal->cputimer;
 
+<<<<<<< HEAD
 	if (!cputimer->running)
 		return;
 
 	raw_spin_lock(&cputimer->lock);
 	cputimer->cputime.stime += cputime;
 	raw_spin_unlock(&cputimer->lock);
+=======
+	if (!cputimer_running(tsk))
+		return;
+
+	atomic64_add(cputime, &cputimer->cputime_atomic.stime);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -233,10 +388,17 @@ static inline void account_group_exec_runtime(struct task_struct *tsk,
 {
 	struct thread_group_cputimer *cputimer = &tsk->signal->cputimer;
 
+<<<<<<< HEAD
 	if (!cputimer->running)
 		return;
 
 	raw_spin_lock(&cputimer->lock);
 	cputimer->cputime.sum_exec_runtime += ns;
 	raw_spin_unlock(&cputimer->lock);
+=======
+	if (!cputimer_running(tsk))
+		return;
+
+	atomic64_add(ns, &cputimer->cputime_atomic.sum_exec_runtime);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

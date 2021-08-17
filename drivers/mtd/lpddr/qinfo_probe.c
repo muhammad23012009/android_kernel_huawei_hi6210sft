@@ -135,11 +135,16 @@ static int lpddr_chip_setup(struct map_info *map, struct lpddr_private *lpddr)
 {
 
 	lpddr->qinfo = kzalloc(sizeof(struct qinfo_chip), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!lpddr->qinfo) {
 		printk(KERN_WARNING "%s: no memory for LPDDR qinfo structure\n",
 				map->name);
 		return 0;
 	}
+=======
+	if (!lpddr->qinfo)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Get the ManuID */
 	lpddr->ManufactId = CMDVAL(map_read(map, map->pfow_base + PFOW_MANUFACTURER_ID));

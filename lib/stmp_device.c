@@ -15,7 +15,12 @@
 #include <linux/io.h>
 #include <linux/errno.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/compiler.h>
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/stmp_device.h>
 
 #define STMP_MODULE_CLKGATE	(1 << 30)

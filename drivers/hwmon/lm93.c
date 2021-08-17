@@ -12,7 +12,11 @@
  *	Copyright (c) 2003       Margit Schubert-While <margitsw@t-online.de>
  *
  * derived in part from w83l785ts.c:
+<<<<<<< HEAD
  *	Copyright (c) 2003-2004 Jean Delvare <khali@linux-fr.org>
+=======
+ *	Copyright (c) 2003-2004 Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Ported to Linux 2.6 by Eric J. Bowersox <ericb@aspsys.com>
  *	Copyright (c) 2005 Aspen Systems, Inc.
@@ -207,7 +211,11 @@ struct block1_t {
  * Client-specific data
  */
 struct lm93_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex update_lock;
 	unsigned long last_updated;	/* In jiffies */
@@ -919,8 +927,13 @@ static void lm93_read_block(struct i2c_client *client, u8 fbn, u8 *values)
 
 static struct lm93_data *lm93_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const unsigned long interval = HZ + (HZ / 2);
 
 	mutex_lock(&data->update_lock);
@@ -1158,8 +1171,13 @@ static ssize_t store_in_min(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int vccp = nr - 6;
 	long vid;
 	unsigned long val;
@@ -1239,8 +1257,13 @@ static ssize_t store_in_max(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int vccp = nr - 6;
 	long vid;
 	unsigned long val;
@@ -1323,8 +1346,13 @@ static ssize_t store_temp_min(struct device *dev, struct device_attribute *attr,
 			      const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long val;
 	int err;
 
@@ -1358,8 +1386,13 @@ static ssize_t store_temp_max(struct device *dev, struct device_attribute *attr,
 			      const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long val;
 	int err;
 
@@ -1394,8 +1427,13 @@ static ssize_t store_temp_auto_base(struct device *dev,
 					const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long val;
 	int err;
 
@@ -1430,8 +1468,13 @@ static ssize_t store_temp_auto_boost(struct device *dev,
 				     const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	long val;
 	int err;
 
@@ -1469,8 +1512,13 @@ static ssize_t store_temp_auto_boost_hyst(struct device *dev,
 					  const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -1520,8 +1568,13 @@ static ssize_t store_temp_auto_offset(struct device *dev,
 	struct sensor_device_attribute_2 *s_attr = to_sensor_dev_attr_2(attr);
 	int nr = s_attr->index;
 	int ofs = s_attr->nr;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -1632,8 +1685,13 @@ static ssize_t store_temp_auto_pwm_min(struct device *dev,
 					const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 reg, ctl4;
 	unsigned long val;
 	int err;
@@ -1680,8 +1738,13 @@ static ssize_t store_temp_auto_offset_hyst(struct device *dev,
 						const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 reg;
 	unsigned long val;
 	int err;
@@ -1741,8 +1804,13 @@ static ssize_t store_fan_min(struct device *dev, struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -1824,8 +1892,13 @@ static ssize_t store_fan_smart_tach(struct device *dev,
 					const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -1880,8 +1953,13 @@ static ssize_t store_pwm(struct device *dev, struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ctl2, ctl4;
 	unsigned long val;
 	int err;
@@ -1928,8 +2006,13 @@ static ssize_t store_pwm_enable(struct device *dev,
 				const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ctl2;
 	unsigned long val;
 	int err;
@@ -2006,8 +2089,13 @@ static ssize_t store_pwm_freq(struct device *dev,
 				const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ctl4;
 	unsigned long val;
 	int err;
@@ -2046,8 +2134,13 @@ static ssize_t store_pwm_auto_channels(struct device *dev,
 					const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -2087,8 +2180,13 @@ static ssize_t store_pwm_auto_spinup_min(struct device *dev,
 						const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ctl3, ctl4;
 	unsigned long val;
 	int err;
@@ -2130,8 +2228,13 @@ static ssize_t store_pwm_auto_spinup_time(struct device *dev,
 						const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ctl3;
 	unsigned long val;
 	int err;
@@ -2168,8 +2271,13 @@ static ssize_t store_pwm_auto_prochot_ramp(struct device *dev,
 						struct device_attribute *attr,
 						const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ramp;
 	unsigned long val;
 	int err;
@@ -2202,8 +2310,13 @@ static ssize_t store_pwm_auto_vrdhot_ramp(struct device *dev,
 						struct device_attribute *attr,
 						const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 ramp;
 	unsigned long val;
 	int err;
@@ -2270,8 +2383,13 @@ static ssize_t store_prochot_max(struct device *dev,
 					const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -2308,8 +2426,13 @@ static ssize_t store_prochot_override(struct device *dev,
 					const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -2351,8 +2474,13 @@ static ssize_t store_prochot_interval(struct device *dev,
 					const char *buf, size_t count)
 {
 	int nr = (to_sensor_dev_attr(attr))->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 tmp;
 	unsigned long val;
 	int err;
@@ -2390,8 +2518,13 @@ static ssize_t store_prochot_override_duty_cycle(struct device *dev,
 						struct device_attribute *attr,
 						const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -2423,8 +2556,13 @@ static ssize_t store_prochot_short(struct device *dev,
 					struct device_attribute *attr,
 					const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm93_data *data = i2c_get_clientdata(client);
+=======
+	struct lm93_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 	int err;
 
@@ -2631,9 +2769,13 @@ static struct attribute *lm93_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct attribute_group lm93_attr_grp = {
 	.attrs = lm93_attrs,
 };
+=======
+ATTRIBUTE_GROUPS(lm93);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void lm93_init_client(struct i2c_client *client)
 {
@@ -2726,14 +2868,22 @@ static int lm93_detect(struct i2c_client *client, struct i2c_board_info *info)
 static int lm93_probe(struct i2c_client *client,
 		      const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct lm93_data *data;
 	int err, func;
+=======
+	struct device *dev = &client->dev;
+	struct lm93_data *data;
+	struct device *hwmon_dev;
+	int func;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void (*update)(struct lm93_data *, struct i2c_client *);
 
 	/* choose update routine based on bus capabilities */
 	func = i2c_get_functionality(client->adapter);
 	if (((LM93_SMBUS_FUNC_FULL & func) == LM93_SMBUS_FUNC_FULL) &&
 			(!disable_block)) {
+<<<<<<< HEAD
 		dev_dbg(&client->dev, "using SMBus block data transactions\n");
 		update = lm93_update_client_full;
 	} else if ((LM93_SMBUS_FUNC_MIN & func) == LM93_SMBUS_FUNC_MIN) {
@@ -2755,12 +2905,31 @@ static int lm93_probe(struct i2c_client *client,
 
 	/* housekeeping */
 	data->valid = 0;
+=======
+		dev_dbg(dev, "using SMBus block data transactions\n");
+		update = lm93_update_client_full;
+	} else if ((LM93_SMBUS_FUNC_MIN & func) == LM93_SMBUS_FUNC_MIN) {
+		dev_dbg(dev, "disabled SMBus block data transactions\n");
+		update = lm93_update_client_min;
+	} else {
+		dev_dbg(dev, "detect failed, smbus byte and/or word data not supported!\n");
+		return -ENODEV;
+	}
+
+	data = devm_kzalloc(dev, sizeof(struct lm93_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	/* housekeeping */
+	data->client = client;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->update = update;
 	mutex_init(&data->update_lock);
 
 	/* initialize the chip */
 	lm93_init_client(client);
 
+<<<<<<< HEAD
 	err = sysfs_create_group(&client->dev.kobj, &lm93_attr_grp);
 	if (err)
 		return err;
@@ -2784,6 +2953,12 @@ static int lm93_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &lm93_attr_grp);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   lm93_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct i2c_device_id lm93_id[] = {
@@ -2799,7 +2974,10 @@ static struct i2c_driver lm93_driver = {
 		.name	= "lm93",
 	},
 	.probe		= lm93_probe,
+<<<<<<< HEAD
 	.remove		= lm93_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table	= lm93_id,
 	.detect		= lm93_detect,
 	.address_list	= normal_i2c,

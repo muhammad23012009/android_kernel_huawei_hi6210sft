@@ -38,7 +38,11 @@ struct spear_thermal_dev {
 };
 
 static inline int thermal_get_temp(struct thermal_zone_device *thermal,
+<<<<<<< HEAD
 				unsigned long *temp)
+=======
+				int *temp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct spear_thermal_dev *stdev = thermal->devdata;
 
@@ -54,8 +58,12 @@ static struct thermal_zone_device_ops ops = {
 	.get_temp = thermal_get_temp,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int spear_thermal_suspend(struct device *dev)
+=======
+static int __maybe_unused spear_thermal_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct thermal_zone_device *spear_thermal = platform_get_drvdata(pdev);
@@ -72,7 +80,11 @@ static int spear_thermal_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int spear_thermal_resume(struct device *dev)
+=======
+static int __maybe_unused spear_thermal_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct thermal_zone_device *spear_thermal = platform_get_drvdata(pdev);
@@ -94,7 +106,10 @@ static int spear_thermal_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static SIMPLE_DEV_PM_OPS(spear_thermal_pm_ops, spear_thermal_suspend,
 		spear_thermal_resume);
@@ -104,7 +119,11 @@ static int spear_thermal_probe(struct platform_device *pdev)
 	struct thermal_zone_device *spear_thermal = NULL;
 	struct spear_thermal_dev *stdev;
 	struct device_node *np = pdev->dev.of_node;
+<<<<<<< HEAD
 	struct resource *stres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+=======
+	struct resource *res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0, val;
 
 	if (!np || !of_property_read_u32(np, "st,thermal-flags", &val)) {
@@ -112,6 +131,7 @@ static int spear_thermal_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!stres) {
 		dev_err(&pdev->dev, "memory resource missing\n");
 		return -ENODEV;
@@ -130,6 +150,17 @@ static int spear_thermal_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "ioremap failed\n");
 		return -ENOMEM;
 	}
+=======
+	stdev = devm_kzalloc(&pdev->dev, sizeof(*stdev), GFP_KERNEL);
+	if (!stdev)
+		return -ENOMEM;
+
+	/* Enable thermal sensor */
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	stdev->thermal_base = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(stdev->thermal_base))
+		return PTR_ERR(stdev->thermal_base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	stdev->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(stdev->clk)) {
@@ -174,7 +205,10 @@ static int spear_thermal_exit(struct platform_device *pdev)
 	struct spear_thermal_dev *stdev = spear_thermal->devdata;
 
 	thermal_zone_device_unregister(spear_thermal);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Disable SPEAr Thermal Sensor */
 	actual_mask = readl_relaxed(stdev->thermal_base);
@@ -196,9 +230,14 @@ static struct platform_driver spear_thermal_driver = {
 	.remove = spear_thermal_exit,
 	.driver = {
 		.name = "spear_thermal",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.pm = &spear_thermal_pm_ops,
 		.of_match_table = of_match_ptr(spear_thermal_id_table),
+=======
+		.pm = &spear_thermal_pm_ops,
+		.of_match_table = spear_thermal_id_table,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

@@ -85,7 +85,11 @@ int mac_partition(struct parsed_partitions *state)
 			be32_to_cpu(part->start_block) * (secsize/512),
 			be32_to_cpu(part->block_count) * (secsize/512));
 
+<<<<<<< HEAD
 		if (!strnicmp(part->type, "Linux_RAID", 10))
+=======
+		if (!strncasecmp(part->type, "Linux_RAID", 10))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			state->parts[slot].flags = ADDPART_FLAG_RAID;
 #ifdef CONFIG_PPC_PMAC
 		/*
@@ -104,7 +108,11 @@ int mac_partition(struct parsed_partitions *state)
 				goodness++;
 
 			if (strcasecmp(part->type, "Apple_UNIX_SVR2") == 0
+<<<<<<< HEAD
 			    || (strnicmp(part->type, "Linux", 5) == 0
+=======
+			    || (strncasecmp(part->type, "Linux", 5) == 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			        && strcasecmp(part->type, "Linux_swap") != 0)) {
 				int i, l;
 
@@ -113,13 +121,21 @@ int mac_partition(struct parsed_partitions *state)
 				if (strcmp(part->name, "/") == 0)
 					goodness++;
 				for (i = 0; i <= l - 4; ++i) {
+<<<<<<< HEAD
 					if (strnicmp(part->name + i, "root",
+=======
+					if (strncasecmp(part->name + i, "root",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						     4) == 0) {
 						goodness += 2;
 						break;
 					}
 				}
+<<<<<<< HEAD
 				if (strnicmp(part->name, "swap", 4) == 0)
+=======
+				if (strncasecmp(part->name, "swap", 4) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					goodness--;
 			}
 

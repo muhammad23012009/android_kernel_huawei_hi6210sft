@@ -16,6 +16,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -32,6 +33,17 @@
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+ *
+ * Written or modified by:
+ *    Sridhar Samudrala <sri@us.ibm.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/types.h>
@@ -80,6 +92,7 @@ static const struct snmp_mib sctp_snmp_list[] = {
 /* Display sctp snmp mib statistics(/proc/net/sctp/snmp). */
 static int sctp_snmp_seq_show(struct seq_file *seq, void *v)
 {
+<<<<<<< HEAD
 	struct net *net = seq->private;
 	int i;
 
@@ -87,6 +100,19 @@ static int sctp_snmp_seq_show(struct seq_file *seq, void *v)
 		seq_printf(seq, "%-32s\t%ld\n", sctp_snmp_list[i].name,
 			   snmp_fold_field((void __percpu **)net->sctp.sctp_statistics,
 				      sctp_snmp_list[i].entry));
+=======
+	unsigned long buff[SCTP_MIB_MAX];
+	struct net *net = seq->private;
+	int i;
+
+	memset(buff, 0, sizeof(unsigned long) * SCTP_MIB_MAX);
+
+	snmp_get_cpu_field_batch(buff, sctp_snmp_list,
+				 net->sctp.sctp_statistics);
+	for (i = 0; sctp_snmp_list[i].name; i++)
+		seq_printf(seq, "%-32s\t%ld\n", sctp_snmp_list[i].name,
+						buff[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -134,9 +160,21 @@ static void sctp_seq_dump_local_addrs(struct seq_file *seq, struct sctp_ep_commo
 	struct sctp_af *af;
 
 	if (epb->type == SCTP_EP_TYPE_ASSOCIATION) {
+<<<<<<< HEAD
 	    asoc = sctp_assoc(epb);
 	    peer = asoc->peer.primary_path;
 	    primary = &peer->saddr;
+=======
+		asoc = sctp_assoc(epb);
+
+		peer = asoc->peer.primary_path;
+		if (unlikely(peer == NULL)) {
+			WARN(1, "Association %p with NULL primary path!\n", asoc);
+			return;
+		}
+
+		primary = &peer->saddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	rcu_read_lock();
@@ -162,12 +200,18 @@ static void sctp_seq_dump_remote_addrs(struct seq_file *seq, struct sctp_associa
 	struct sctp_af *af;
 
 	primary = &assoc->peer.primary_addr;
+<<<<<<< HEAD
 	rcu_read_lock();
 	list_for_each_entry_rcu(transport, &assoc->peer.transport_addr_list,
 			transports) {
 		addr = &transport->ipaddr;
 		if (transport->dead)
 			continue;
+=======
+	list_for_each_entry_rcu(transport, &assoc->peer.transport_addr_list,
+			transports) {
+		addr = &transport->ipaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		af = sctp_get_af_specific(addr->sa.sa_family);
 		if (af->cmp_addr(addr, primary)) {
@@ -175,10 +219,16 @@ static void sctp_seq_dump_remote_addrs(struct seq_file *seq, struct sctp_associa
 		}
 		af->seq_dump_addr(seq, addr);
 	}
+<<<<<<< HEAD
 	rcu_read_unlock();
 }
 
 static void * sctp_eps_seq_start(struct seq_file *seq, loff_t *pos)
+=======
+}
+
+static void *sctp_eps_seq_start(struct seq_file *seq, loff_t *pos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (*pos >= sctp_ep_hashsize)
 		return NULL;
@@ -197,7 +247,11 @@ static void sctp_eps_seq_stop(struct seq_file *seq, void *v)
 }
 
 
+<<<<<<< HEAD
 static void * sctp_eps_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+=======
+static void *sctp_eps_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (++*pos >= sctp_ep_hashsize)
 		return NULL;
@@ -219,14 +273,22 @@ static int sctp_eps_seq_show(struct seq_file *seq, void *v)
 		return -ENOMEM;
 
 	head = &sctp_ep_hashtable[hash];
+<<<<<<< HEAD
 	sctp_local_bh_disable();
+=======
+	local_bh_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	read_lock(&head->lock);
 	sctp_for_each_hentry(epb, &head->chain) {
 		ep = sctp_ep(epb);
 		sk = epb->sk;
 		if (!net_eq(sock_net(sk), seq_file_net(seq)))
 			continue;
+<<<<<<< HEAD
 		seq_printf(seq, "%8pK %8pK %-3d %-3d %-4d %-5d %5d %5lu ", ep, sk,
+=======
+		seq_printf(seq, "%8pK %8pK %-3d %-3d %-4d %-5d %5u %5lu ", ep, sk,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   sctp_sk(sk)->type, sk->sk_state, hash,
 			   epb->bind_addr.port,
 			   from_kuid_munged(seq_user_ns(seq), sock_i_uid(sk)),
@@ -236,7 +298,11 @@ static int sctp_eps_seq_show(struct seq_file *seq, void *v)
 		seq_printf(seq, "\n");
 	}
 	read_unlock(&head->lock);
+<<<<<<< HEAD
 	sctp_local_bh_enable();
+=======
+	local_bh_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -282,6 +348,7 @@ void sctp_eps_proc_exit(struct net *net)
 	remove_proc_entry("eps", net->sctp.proc_net_sctp);
 }
 
+<<<<<<< HEAD
 
 static void * sctp_assocs_seq_start(struct seq_file *seq, loff_t *pos)
 {
@@ -312,11 +379,50 @@ static void * sctp_assocs_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 		return NULL;
 
 	return pos;
+=======
+struct sctp_ht_iter {
+	struct seq_net_private p;
+	struct rhashtable_iter hti;
+	int start_fail;
+};
+
+static void *sctp_transport_seq_start(struct seq_file *seq, loff_t *pos)
+{
+	struct sctp_ht_iter *iter = seq->private;
+	int err = sctp_transport_walk_start(&iter->hti);
+
+	if (err) {
+		iter->start_fail = 1;
+		return ERR_PTR(err);
+	}
+
+	iter->start_fail = 0;
+	return sctp_transport_get_idx(seq_file_net(seq), &iter->hti, *pos);
+}
+
+static void sctp_transport_seq_stop(struct seq_file *seq, void *v)
+{
+	struct sctp_ht_iter *iter = seq->private;
+
+	if (iter->start_fail)
+		return;
+	sctp_transport_walk_stop(&iter->hti);
+}
+
+static void *sctp_transport_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+{
+	struct sctp_ht_iter *iter = seq->private;
+
+	++*pos;
+
+	return sctp_transport_get_next(seq_file_net(seq), &iter->hti);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Display sctp associations (/proc/net/sctp/assocs). */
 static int sctp_assocs_seq_show(struct seq_file *seq, void *v)
 {
+<<<<<<< HEAD
 	struct sctp_hashbucket *head;
 	struct sctp_ep_common *epb;
 	struct sctp_association *assoc;
@@ -364,14 +470,70 @@ static int sctp_assocs_seq_show(struct seq_file *seq, void *v)
 	}
 	read_unlock(&head->lock);
 	sctp_local_bh_enable();
+=======
+	struct sctp_transport *transport;
+	struct sctp_association *assoc;
+	struct sctp_ep_common *epb;
+	struct sock *sk;
+
+	if (v == SEQ_START_TOKEN) {
+		seq_printf(seq, " ASSOC     SOCK   STY SST ST HBKT "
+				"ASSOC-ID TX_QUEUE RX_QUEUE UID INODE LPORT "
+				"RPORT LADDRS <-> RADDRS "
+				"HBINT INS OUTS MAXRT T1X T2X RTXC "
+				"wmema wmemq sndbuf rcvbuf\n");
+		return 0;
+	}
+
+	transport = (struct sctp_transport *)v;
+	assoc = transport->asoc;
+	epb = &assoc->base;
+	sk = epb->sk;
+
+	seq_printf(seq,
+		   "%8pK %8pK %-3d %-3d %-2d %-4d "
+		   "%4d %8d %8d %7u %5lu %-5d %5d ",
+		   assoc, sk, sctp_sk(sk)->type, sk->sk_state,
+		   assoc->state, 0,
+		   assoc->assoc_id,
+		   assoc->sndbuf_used,
+		   atomic_read(&assoc->rmem_alloc),
+		   from_kuid_munged(seq_user_ns(seq), sock_i_uid(sk)),
+		   sock_i_ino(sk),
+		   epb->bind_addr.port,
+		   assoc->peer.port);
+	seq_printf(seq, " ");
+	sctp_seq_dump_local_addrs(seq, epb);
+	seq_printf(seq, "<-> ");
+	sctp_seq_dump_remote_addrs(seq, assoc);
+	seq_printf(seq, "\t%8lu %5d %5d %4d %4d %4d %8d "
+		   "%8d %8d %8d %8d",
+		assoc->hbinterval, assoc->c.sinit_max_instreams,
+		assoc->c.sinit_num_ostreams, assoc->max_retrans,
+		assoc->init_retries, assoc->shutdown_retries,
+		assoc->rtx_data_chunks,
+		atomic_read(&sk->sk_wmem_alloc),
+		sk->sk_wmem_queued,
+		sk->sk_sndbuf,
+		sk->sk_rcvbuf);
+	seq_printf(seq, "\n");
+
+	sctp_transport_put(transport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static const struct seq_operations sctp_assoc_ops = {
+<<<<<<< HEAD
 	.start = sctp_assocs_seq_start,
 	.next  = sctp_assocs_seq_next,
 	.stop  = sctp_assocs_seq_stop,
+=======
+	.start = sctp_transport_seq_start,
+	.next  = sctp_transport_seq_next,
+	.stop  = sctp_transport_seq_stop,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.show  = sctp_assocs_seq_show,
 };
 
@@ -379,7 +541,11 @@ static const struct seq_operations sctp_assoc_ops = {
 static int sctp_assocs_seq_open(struct inode *inode, struct file *file)
 {
 	return seq_open_net(inode, file, &sctp_assoc_ops,
+<<<<<<< HEAD
 			    sizeof(struct seq_net_private));
+=======
+			    sizeof(struct sctp_ht_iter));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations sctp_assocs_seq_fops = {
@@ -408,6 +574,7 @@ void sctp_assocs_proc_exit(struct net *net)
 	remove_proc_entry("assocs", net->sctp.proc_net_sctp);
 }
 
+<<<<<<< HEAD
 static void *sctp_remaddr_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	if (*pos >= sctp_assoc_hashsize)
@@ -516,6 +683,82 @@ static const struct seq_operations sctp_remaddr_ops = {
 	.start = sctp_remaddr_seq_start,
 	.next  = sctp_remaddr_seq_next,
 	.stop  = sctp_remaddr_seq_stop,
+=======
+static int sctp_remaddr_seq_show(struct seq_file *seq, void *v)
+{
+	struct sctp_association *assoc;
+	struct sctp_transport *transport, *tsp;
+
+	if (v == SEQ_START_TOKEN) {
+		seq_printf(seq, "ADDR ASSOC_ID HB_ACT RTO MAX_PATH_RTX "
+				"REM_ADDR_RTX START STATE\n");
+		return 0;
+	}
+
+	transport = (struct sctp_transport *)v;
+	assoc = transport->asoc;
+
+	list_for_each_entry_rcu(tsp, &assoc->peer.transport_addr_list,
+				transports) {
+		/*
+		 * The remote address (ADDR)
+		 */
+		tsp->af_specific->seq_dump_addr(seq, &tsp->ipaddr);
+		seq_printf(seq, " ");
+		/*
+		 * The association ID (ASSOC_ID)
+		 */
+		seq_printf(seq, "%d ", tsp->asoc->assoc_id);
+
+		/*
+		 * If the Heartbeat is active (HB_ACT)
+		 * Note: 1 = Active, 0 = Inactive
+		 */
+		seq_printf(seq, "%d ", timer_pending(&tsp->hb_timer));
+
+		/*
+		 * Retransmit time out (RTO)
+		 */
+		seq_printf(seq, "%lu ", tsp->rto);
+
+		/*
+		 * Maximum path retransmit count (PATH_MAX_RTX)
+		 */
+		seq_printf(seq, "%d ", tsp->pathmaxrxt);
+
+		/*
+		 * remote address retransmit count (REM_ADDR_RTX)
+		 * Note: We don't have a way to tally this at the moment
+		 * so lets just leave it as zero for the moment
+		 */
+		seq_puts(seq, "0 ");
+
+		/*
+		 * remote address start time (START).  This is also not
+		 * currently implemented, but we can record it with a
+		 * jiffies marker in a subsequent patch
+		 */
+		seq_puts(seq, "0 ");
+
+		/*
+		 * The current state of this destination. I.e.
+		 * SCTP_ACTIVE, SCTP_INACTIVE, ...
+		 */
+		seq_printf(seq, "%d", tsp->state);
+
+		seq_printf(seq, "\n");
+	}
+
+	sctp_transport_put(transport);
+
+	return 0;
+}
+
+static const struct seq_operations sctp_remaddr_ops = {
+	.start = sctp_transport_seq_start,
+	.next  = sctp_transport_seq_next,
+	.stop  = sctp_transport_seq_stop,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.show  = sctp_remaddr_seq_show,
 };
 
@@ -528,7 +771,11 @@ void sctp_remaddr_proc_exit(struct net *net)
 static int sctp_remaddr_seq_open(struct inode *inode, struct file *file)
 {
 	return seq_open_net(inode, file, &sctp_remaddr_ops,
+<<<<<<< HEAD
 			    sizeof(struct seq_net_private));
+=======
+			    sizeof(struct sctp_ht_iter));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct file_operations sctp_remaddr_seq_fops = {

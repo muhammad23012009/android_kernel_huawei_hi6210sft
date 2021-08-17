@@ -207,8 +207,12 @@ static int __init pdc_console_tty_driver_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(pdc_console_tty_driver_init);
+=======
+device_initcall(pdc_console_tty_driver_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct tty_driver * pdc_console_device (struct console *c, int *index)
 {

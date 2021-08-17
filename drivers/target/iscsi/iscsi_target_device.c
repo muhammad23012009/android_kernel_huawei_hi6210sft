@@ -2,9 +2,13 @@
  * This file contains the iSCSI Virtual Device and Disk Transport
  * agnostic related functions.
  *
+<<<<<<< HEAD
  \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
  *
  * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
+=======
+ * (c) Copyright 2007-2013 Datera, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
  *
@@ -19,11 +23,18 @@
  * GNU General Public License for more details.
  ******************************************************************************/
 
+<<<<<<< HEAD
 #include <scsi/scsi_device.h>
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 
 #include "iscsi_target_core.h"
+=======
+#include <target/target_core_base.h>
+#include <target/target_core_fabric.h>
+
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "iscsi_target_device.h"
 #include "iscsi_target_tpg.h"
 #include "iscsi_target_util.h"
@@ -50,19 +61,33 @@ void iscsit_determine_maxcmdsn(struct iscsi_session *sess)
 	 * core_set_queue_depth_for_node().
 	 */
 	sess->cmdsn_window = se_nacl->queue_depth;
+<<<<<<< HEAD
 	sess->max_cmd_sn = (sess->max_cmd_sn + se_nacl->queue_depth) - 1;
+=======
+	atomic_add(se_nacl->queue_depth - 1, &sess->max_cmd_sn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void iscsit_increment_maxcmdsn(struct iscsi_cmd *cmd, struct iscsi_session *sess)
 {
+<<<<<<< HEAD
+=======
+	u32 max_cmd_sn;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cmd->immediate_cmd || cmd->maxcmdsn_inc)
 		return;
 
 	cmd->maxcmdsn_inc = 1;
 
+<<<<<<< HEAD
 	mutex_lock(&sess->cmdsn_mutex);
 	sess->max_cmd_sn += 1;
 	pr_debug("Updated MaxCmdSN to 0x%08x\n", sess->max_cmd_sn);
 	mutex_unlock(&sess->cmdsn_mutex);
+=======
+	max_cmd_sn = atomic_inc_return(&sess->max_cmd_sn);
+	pr_debug("Updated MaxCmdSN to 0x%08x\n", max_cmd_sn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(iscsit_increment_maxcmdsn);

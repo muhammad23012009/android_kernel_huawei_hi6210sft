@@ -74,7 +74,11 @@
 	__tmp ^ __in;						\
 })
 
+<<<<<<< HEAD
 #elif (ARC_BSWAP_TYPE == 2)	/* Custom single cycle bwap instruction */
+=======
+#elif (ARC_BSWAP_TYPE == 2)	/* Custom single cycle bswap instruction */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define __arch_swab32(x)						\
 ({									\

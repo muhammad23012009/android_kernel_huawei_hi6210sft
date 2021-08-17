@@ -206,18 +206,27 @@ void uvc_status_cleanup(struct uvc_device *dev)
 	uvc_input_cleanup(dev);
 }
 
+<<<<<<< HEAD
 int uvc_status_start(struct uvc_device *dev)
+=======
+int uvc_status_start(struct uvc_device *dev, gfp_t flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (dev->int_urb == NULL)
 		return 0;
 
+<<<<<<< HEAD
 	return usb_submit_urb(dev->int_urb, GFP_KERNEL);
+=======
+	return usb_submit_urb(dev->int_urb, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void uvc_status_stop(struct uvc_device *dev)
 {
 	usb_kill_urb(dev->int_urb);
 }
+<<<<<<< HEAD
 
 int uvc_status_suspend(struct uvc_device *dev)
 {
@@ -235,3 +244,5 @@ int uvc_status_resume(struct uvc_device *dev)
 	return usb_submit_urb(dev->int_urb, GFP_NOIO);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -1,6 +1,10 @@
 /*
  * QLogic Fibre Channel HBA Driver
+<<<<<<< HEAD
  * Copyright (c)  2003-2013 QLogic Corporation
+=======
+ * Copyright (c)  2003-2014 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * See LICENSE.qla2xxx for copyright and licensing details.
  */
@@ -22,6 +26,7 @@ struct cmd_type_7_fx00 {
 	uint8_t entry_status;		/* Entry Status. */
 
 	uint32_t handle;		/* System handle. */
+<<<<<<< HEAD
 	uint32_t handle_hi;
 
 	uint16_t tgt_idx;		/* Target Idx. */
@@ -29,6 +34,18 @@ struct cmd_type_7_fx00 {
 
 	uint16_t dseg_count;		/* Data segment count. */
 	uint16_t scsi_rsp_dsd_len;
+=======
+	uint8_t reserved_0;
+	uint8_t port_path_ctrl;
+	uint16_t reserved_1;
+
+	__le16 tgt_idx;		/* Target Idx. */
+	uint16_t timeout;		/* Command timeout. */
+
+	__le16 dseg_count;		/* Data segment count. */
+	uint8_t	scsi_rsp_dsd_len;
+	uint8_t reserved_2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct scsi_lun lun;		/* LUN (LE). */
 
@@ -41,12 +58,17 @@ struct cmd_type_7_fx00 {
 	uint8_t crn;
 
 	uint8_t fcp_cdb[MAX_CMDSZ];	/* SCSI command words. */
+<<<<<<< HEAD
 	uint32_t byte_count;		/* Total byte count. */
+=======
+	__le32 byte_count;		/* Total byte count. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint32_t dseg_0_address[2];	/* Data segment 0 address. */
 	uint32_t dseg_0_len;		/* Data segment 0 length. */
 };
 
+<<<<<<< HEAD
 /*
  * ISP queue - marker entry structure definition.
  */
@@ -71,6 +93,8 @@ struct mrk_entry_fx00 {
 };
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	STATUS_TYPE_FX00	0x01		/* Status entry. */
 struct sts_entry_fx00 {
 	uint8_t entry_type;		/* Entry type. */
@@ -79,18 +103,31 @@ struct sts_entry_fx00 {
 	uint8_t entry_status;		/* Entry Status. */
 
 	uint32_t handle;		/* System handle. */
+<<<<<<< HEAD
 	uint32_t handle_hi;		/* System handle. */
 
 	uint16_t comp_status;		/* Completion status. */
 	uint16_t reserved_0;		/* OX_ID used by the firmware. */
 
 	uint32_t residual_len;		/* FW calc residual transfer length. */
+=======
+	uint32_t reserved_3;		/* System handle. */
+
+	__le16 comp_status;		/* Completion status. */
+	uint16_t reserved_0;		/* OX_ID used by the firmware. */
+
+	__le32 residual_len;		/* FW calc residual transfer length. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint16_t reserved_1;
 	uint16_t state_flags;		/* State flags. */
 
 	uint16_t reserved_2;
+<<<<<<< HEAD
 	uint16_t scsi_status;		/* SCSI status. */
+=======
+	__le16 scsi_status;		/* SCSI status. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint32_t sense_len;		/* FCP SENSE length. */
 	uint8_t data[32];		/* FCP response/sense information. */
@@ -102,11 +139,19 @@ struct sts_entry_fx00 {
 
 struct multi_sts_entry_fx00 {
 	uint8_t entry_type;		/* Entry type. */
+<<<<<<< HEAD
 	uint8_t sys_define;		/* System defined. */
 	uint8_t handle_count;
 	uint8_t entry_status;
 
 	uint32_t handles[MAX_HANDLE_COUNT];
+=======
+	uint8_t entry_count;		/* Entry count. */
+	uint8_t handle_count;
+	uint8_t entry_status;
+
+	__le32 handles[MAX_HANDLE_COUNT];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define TSK_MGMT_IOCB_TYPE_FX00		0x05
@@ -116,6 +161,7 @@ struct tsk_mgmt_entry_fx00 {
 	uint8_t sys_define;
 	uint8_t entry_status;		/* Entry Status. */
 
+<<<<<<< HEAD
 	uint32_t handle;		/* System handle. */
 
 	uint32_t handle_hi;		/* System handle. */
@@ -131,6 +177,21 @@ struct tsk_mgmt_entry_fx00 {
 	struct scsi_lun lun;		/* LUN (LE). */
 
 	uint32_t control_flags;		/* Control Flags. */
+=======
+	__le32 handle;		/* System handle. */
+
+	uint32_t reserved_0;
+
+	__le16 tgt_id;		/* Target Idx. */
+
+	uint16_t reserved_1;
+	uint16_t reserved_3;
+	uint16_t reserved_4;
+
+	struct scsi_lun lun;		/* LUN (LE). */
+
+	__le32 control_flags;		/* Control Flags. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint8_t reserved_2[32];
 };
@@ -143,6 +204,7 @@ struct abort_iocb_entry_fx00 {
 	uint8_t sys_define;		/* System defined. */
 	uint8_t entry_status;		/* Entry Status. */
 
+<<<<<<< HEAD
 	uint32_t handle;		/* System handle. */
 	uint32_t handle_hi;		/* System handle. */
 
@@ -153,6 +215,18 @@ struct abort_iocb_entry_fx00 {
 	uint32_t abort_handle_hi;	/* System handle. */
 
 	uint16_t req_que_no;
+=======
+	__le32 handle;		/* System handle. */
+	__le32 reserved_0;
+
+	__le16 tgt_id_sts;		/* Completion status. */
+	__le16 options;
+
+	__le32 abort_handle;		/* System handle. */
+	__le32 reserved_2;
+
+	__le16 req_que_no;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint8_t reserved_1[38];
 };
 
@@ -167,6 +241,7 @@ struct ioctl_iocb_entry_fx00 {
 	uint32_t reserved_0;		/* System handle. */
 
 	uint16_t comp_func_num;
+<<<<<<< HEAD
 	uint16_t fw_iotcl_flags;
 
 	uint32_t dataword_r;		/* Data word returned */
@@ -178,6 +253,18 @@ struct ioctl_iocb_entry_fx00 {
 	uint8_t reserved_2[20];
 	uint32_t residuallen;
 	uint32_t status;
+=======
+	__le16 fw_iotcl_flags;
+
+	__le32 dataword_r;		/* Data word returned */
+	uint32_t adapid;		/* Adapter ID */
+	uint32_t dataword_r_extra;
+
+	__le32 seq_no;
+	uint8_t reserved_2[20];
+	uint32_t residuallen;
+	__le32 status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define STATUS_CONT_TYPE_FX00 0x04
@@ -189,6 +276,7 @@ struct fxdisc_entry_fx00 {
 	uint8_t sys_define;		/* System Defined. */
 	uint8_t entry_status;		/* Entry Status. */
 
+<<<<<<< HEAD
 	uint32_t handle;		/* System handle. */
 	uint32_t reserved_0;		/* System handle. */
 
@@ -209,6 +297,28 @@ struct fxdisc_entry_fx00 {
 	uint32_t adapid;
 	uint32_t adapid_hi;
 	uint32_t dataword_extra;
+=======
+	__le32 handle;		/* System handle. */
+	__le32 reserved_0;		/* System handle. */
+
+	__le16 func_num;
+	__le16 req_xfrcnt;
+	__le16 req_dsdcnt;
+	__le16 rsp_xfrcnt;
+	__le16 rsp_dsdcnt;
+	uint8_t flags;
+	uint8_t reserved_1;
+
+	__le32 dseg_rq_address[2];	/* Data segment 0 address. */
+	__le32 dseg_rq_len;		/* Data segment 0 length. */
+	__le32 dseg_rsp_address[2];	/* Data segment 1 address. */
+	__le32 dseg_rsp_len;		/* Data segment 1 length. */
+
+	__le32 dataword;
+	__le32 adapid;
+	__le32 adapid_hi;
+	__le32 dataword_extra;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct qlafx00_tgt_node_info {
@@ -304,7 +414,13 @@ struct register_host_info {
 #define QLAFX00_TGT_NODE_LIST_SIZE (sizeof(uint32_t) * 32)
 
 struct config_info_data {
+<<<<<<< HEAD
 	uint8_t		product_name[256];
+=======
+	uint8_t		model_num[16];
+	uint8_t		model_description[80];
+	uint8_t		reserved0[160];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint8_t		symbolic_name[64];
 	uint8_t		serial_num[32];
 	uint8_t		hw_version[16];
@@ -329,11 +445,20 @@ struct config_info_data {
 	uint64_t	adapter_id;
 
 	uint32_t	cluster_key_len;
+<<<<<<< HEAD
 	uint8_t		cluster_key[10];
+=======
+	uint8_t		cluster_key[16];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint64_t	cluster_master_id;
 	uint64_t	cluster_slave_id;
 	uint8_t		cluster_flags;
+<<<<<<< HEAD
+=======
+	uint32_t	enabled_capabilities;
+	uint32_t	nominal_temp_value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 #define FXDISC_GET_CONFIG_INFO		0x01
@@ -341,11 +466,21 @@ struct config_info_data {
 #define FXDISC_GET_TGT_NODE_INFO	0x80
 #define FXDISC_GET_TGT_NODE_LIST	0x81
 #define FXDISC_REG_HOST_INFO		0x99
+<<<<<<< HEAD
 
 #define QLAFX00_HBA_ICNTRL_REG		0x21B08
 #define QLAFX00_ICR_ENB_MASK            0x80000000
 #define QLAFX00_ICR_DIS_MASK            0x7fffffff
 #define QLAFX00_HST_RST_REG		0x18264
+=======
+#define FXDISC_ABORT_IOCTL		0xff
+
+#define QLAFX00_HBA_ICNTRL_REG		0x20B08
+#define QLAFX00_ICR_ENB_MASK            0x80000000
+#define QLAFX00_ICR_DIS_MASK            0x7fffffff
+#define QLAFX00_HST_RST_REG		0x18264
+#define QLAFX00_SOC_TEMP_REG		0x184C4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define QLAFX00_HST_TO_HBA_REG		0x20A04
 #define QLAFX00_HBA_TO_HOST_REG		0x21B70
 #define QLAFX00_HST_INT_STS_BITS	0x7
@@ -354,6 +489,7 @@ struct config_info_data {
 
 #define QLAFX00_INTR_MB_CMPLT		0x1
 #define QLAFX00_INTR_RSP_CMPLT		0x2
+<<<<<<< HEAD
 #define QLAFX00_INTR_MB_RSP_CMPLT	0x3
 #define QLAFX00_INTR_ASYNC_CMPLT	0x4
 #define QLAFX00_INTR_MB_ASYNC_CMPLT	0x5
@@ -361,6 +497,14 @@ struct config_info_data {
 #define QLAFX00_INTR_ALL_CMPLT		0x7
 
 #define QLAFX00_MBA_SYSTEM_ERR		0x8002
+=======
+#define QLAFX00_INTR_ASYNC_CMPLT	0x4
+
+#define QLAFX00_MBA_SYSTEM_ERR		0x8002
+#define QLAFX00_MBA_TEMP_OVER		0x8005
+#define QLAFX00_MBA_TEMP_NORM		0x8006
+#define	QLAFX00_MBA_TEMP_CRIT		0x8007
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define QLAFX00_MBA_LINK_UP		0x8011
 #define QLAFX00_MBA_LINK_DOWN		0x8012
 #define QLAFX00_MBA_PORT_UPDATE		0x8014
@@ -370,6 +514,10 @@ struct config_info_data {
 #define SOC_FABRIC_RST_CONTROL_REG       0x0020840
 #define SOC_FABRIC_CONTROL_REG           0x0020200
 #define SOC_FABRIC_CONFIG_REG            0x0020204
+<<<<<<< HEAD
+=======
+#define SOC_PWR_MANAGEMENT_PWR_DOWN_REG  0x001820C
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SOC_INTERRUPT_SOURCE_I_CONTROL_REG     0x0020B00
 #define SOC_CORE_TIMER_REG                     0x0021850
@@ -421,6 +569,7 @@ struct config_info_data {
 	WRT_REG_DWORD((ha)->cregbase + off, val)
 
 struct qla_mt_iocb_rqst_fx00 {
+<<<<<<< HEAD
 	uint32_t reserved_0;
 
 	uint16_t func_type;
@@ -437,27 +586,61 @@ struct qla_mt_iocb_rqst_fx00 {
 	uint32_t req_len;
 
 	uint32_t rsp_len;
+=======
+	__le32 reserved_0;
+
+	__le16 func_type;
+	uint8_t flags;
+	uint8_t reserved_1;
+
+	__le32 dataword;
+
+	__le32 adapid;
+	__le32 adapid_hi;
+
+	__le32 dataword_extra;
+
+	__le16 req_len;
+	__le16 reserved_2;
+
+	__le16 rsp_len;
+	__le16 reserved_3;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct qla_mt_iocb_rsp_fx00 {
 	uint32_t reserved_1;
 
 	uint16_t func_type;
+<<<<<<< HEAD
 	uint16_t ioctl_flags;
 
 	uint32_t ioctl_data;
+=======
+	__le16 ioctl_flags;
+
+	__le32 ioctl_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint32_t adapid;
 	uint32_t adapid_hi;
 
 	uint32_t reserved_2;
+<<<<<<< HEAD
 	uint32_t seq_number;
+=======
+	__le32 seq_number;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint8_t reserved_3[20];
 
 	int32_t res_count;
 
+<<<<<<< HEAD
 	uint32_t status;
+=======
+	__le32 status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -482,7 +665,10 @@ struct qla_mt_iocb_rsp_fx00 {
 #define FX00_DEF_RATOV	10
 
 struct mr_data_fx00 {
+<<<<<<< HEAD
 	uint8_t	product_name[256];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint8_t	symbolic_name[64];
 	uint8_t	serial_num[32];
 	uint8_t	hw_version[16];
@@ -499,12 +685,55 @@ struct mr_data_fx00 {
 	uint32_t old_fw_hbt_cnt;
 	uint16_t fw_reset_timer_tick;
 	uint8_t fw_reset_timer_exp;
+<<<<<<< HEAD
 	uint32_t old_aenmbx0_state;
 };
 
+=======
+	uint16_t fw_critemp_timer_tick;
+	uint32_t old_aenmbx0_state;
+	uint32_t critical_temperature;
+	bool extended_io_enabled;
+	bool host_info_resend;
+	uint8_t hinfo_resend_timer_tick;
+};
+
+#define QLAFX00_EXTENDED_IO_EN_MASK    0x20
+
+/*
+ * SoC Junction Temperature is stored in
+ * bits 9:1 of SoC Junction Temperature Register
+ * in a firmware specific format format.
+ * To get the temperature in Celsius degrees
+ * the value from this bitfiled should be converted
+ * using this formula:
+ * Temperature (degrees C) = ((3,153,000 - (10,000 * X)) / 13,825)
+ * where X is the bit field value
+ * this macro reads the register, extracts the bitfield value,
+ * performs the calcualtions and returns temperature in Celsius
+ */
+#define QLAFX00_GET_TEMPERATURE(ha) ((3153000 - (10000 * \
+	((QLAFX00_RD_REG(ha, QLAFX00_SOC_TEMP_REG) & 0x3FE) >> 1))) / 13825)
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define QLAFX00_LOOP_DOWN_TIME		615     /* 600 */
 #define QLAFX00_HEARTBEAT_INTERVAL	6	/* number of seconds */
 #define QLAFX00_HEARTBEAT_MISS_CNT	3	/* number of miss */
 #define QLAFX00_RESET_INTERVAL		120	/* number of seconds */
 #define QLAFX00_MAX_RESET_INTERVAL	600	/* number of seconds */
+<<<<<<< HEAD
+=======
+#define QLAFX00_CRITEMP_INTERVAL	60	/* number of seconds */
+#define QLAFX00_HINFO_RESEND_INTERVAL	60	/* number of seconds */
+
+#define QLAFX00_CRITEMP_THRSHLD		80	/* Celsius degrees */
+
+/* Max conncurrent IOs that can be queued */
+#define QLAFX00_MAX_CANQUEUE		1024
+
+/* IOCTL IOCB abort success */
+#define QLAFX00_IOCTL_ICOB_ABORT_SUCCESS	0x68
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

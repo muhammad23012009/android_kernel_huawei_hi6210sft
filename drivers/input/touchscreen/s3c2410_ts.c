@@ -28,7 +28,10 @@
 #include <linux/module.h>
 #include <linux/gpio.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
@@ -251,7 +254,11 @@ static int s3c2410ts_probe(struct platform_device *pdev)
 
 	ts.dev = dev;
 
+<<<<<<< HEAD
 	info = pdev->dev.platform_data;
+=======
+	info = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!info) {
 		dev_err(dev, "no platform data, cannot attach\n");
 		return -EINVAL;
@@ -265,7 +272,11 @@ static int s3c2410ts_probe(struct platform_device *pdev)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	clk_enable(ts.clock);
+=======
+	clk_prepare_enable(ts.clock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(dev, "got and enabled clocks\n");
 
 	ts.irq_tc = ret = platform_get_irq(pdev, 0);
@@ -370,7 +381,11 @@ static int s3c2410ts_remove(struct platform_device *pdev)
 	free_irq(ts.irq_tc, ts.input);
 	del_timer_sync(&touch_timer);
 
+<<<<<<< HEAD
 	clk_disable(ts.clock);
+=======
+	clk_disable_unprepare(ts.clock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clk_put(ts.clock);
 
 	input_unregister_device(ts.input);
@@ -392,7 +407,11 @@ static int s3c2410ts_suspend(struct device *dev)
 static int s3c2410ts_resume(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct s3c2410_ts_mach_info *info = pdev->dev.platform_data;
+=======
+	struct s3c2410_ts_mach_info *info = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clk_enable(ts.clock);
 	enable_irq(ts.irq_tc);
@@ -412,7 +431,11 @@ static const struct dev_pm_ops s3c_ts_pmops = {
 };
 #endif
 
+<<<<<<< HEAD
 static struct platform_device_id s3cts_driver_ids[] = {
+=======
+static const struct platform_device_id s3cts_driver_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "s3c2410-ts", 0 },
 	{ "s3c2440-ts", 0 },
 	{ "s3c64xx-ts", FEAT_PEN_IRQ },
@@ -423,7 +446,10 @@ MODULE_DEVICE_TABLE(platform, s3cts_driver_ids);
 static struct platform_driver s3c_ts_driver = {
 	.driver         = {
 		.name   = "samsung-ts",
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM
 		.pm	= &s3c_ts_pmops,
 #endif

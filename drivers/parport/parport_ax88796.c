@@ -412,7 +412,10 @@ MODULE_ALIAS("platform:ax88796-pp");
 static struct platform_driver axdrv = {
 	.driver		= {
 		.name	= "ax88796-pp",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= parport_ax88796_probe,
 	.remove		= parport_ax88796_remove,

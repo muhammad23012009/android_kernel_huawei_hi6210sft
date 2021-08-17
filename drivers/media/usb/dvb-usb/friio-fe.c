@@ -210,7 +210,12 @@ error:
 	return -EREMOTEIO;
 }
 
+<<<<<<< HEAD
 static int jdvbt90502_read_status(struct dvb_frontend *fe, fe_status_t *state)
+=======
+static int jdvbt90502_read_status(struct dvb_frontend *fe,
+				  enum fe_status *state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 result;
 	int ret;
@@ -260,6 +265,7 @@ static int jdvbt90502_read_signal_strength(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
 
 /* filter out un-supported properties to notify users */
 static int jdvbt90502_set_property(struct dvb_frontend *fe,
@@ -296,6 +302,8 @@ static int jdvbt90502_get_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int jdvbt90502_set_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
@@ -311,8 +319,21 @@ static int jdvbt90502_set_frontend(struct dvb_frontend *fe)
 
 	deb_fe("%s: Freq:%d\n", __func__, p->frequency);
 
+<<<<<<< HEAD
 	/* for recovery from DTV_CLEAN */
 	fe->dtv_property_cache.delivery_system = SYS_ISDBT;
+=======
+	/* This driver only works on auto mode */
+	p->inversion = INVERSION_AUTO;
+	p->bandwidth_hz = 6000000;
+	p->code_rate_HP = FEC_AUTO;
+	p->code_rate_LP = FEC_AUTO;
+	p->modulation = QAM_64;
+	p->transmission_mode = TRANSMISSION_MODE_AUTO;
+	p->guard_interval = GUARD_INTERVAL_AUTO;
+	p->hierarchy = HIERARCHY_AUTO;
+	p->delivery_system = SYS_ISDBT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = jdvbt90502_pll_set_freq(state, p->frequency);
 	if (ret) {
@@ -462,10 +483,14 @@ static struct dvb_frontend_ops jdvbt90502_ops = {
 	.init = jdvbt90502_init,
 	.write = _jdvbt90502_write,
 
+<<<<<<< HEAD
 	.set_property = jdvbt90502_set_property,
 
 	.set_frontend = jdvbt90502_set_frontend,
 	.get_frontend = jdvbt90502_get_frontend,
+=======
+	.set_frontend = jdvbt90502_set_frontend,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.read_status = jdvbt90502_read_status,
 	.read_signal_strength = jdvbt90502_read_signal_strength,

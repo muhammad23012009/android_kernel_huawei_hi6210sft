@@ -334,14 +334,24 @@ snd_wavefront_free(struct snd_card *card)
 	}
 }
 
+<<<<<<< HEAD
 static int snd_wavefront_card_new(int dev, struct snd_card **cardp)
+=======
+static int snd_wavefront_card_new(struct device *pdev, int dev,
+				  struct snd_card **cardp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_card *card;
 	snd_wavefront_card_t *acard;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(snd_wavefront_card_t), &card);
+=======
+	err = snd_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+			   sizeof(snd_wavefront_card_t), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -379,11 +389,19 @@ snd_wavefront_probe (struct snd_card *card, int dev)
 		return err;
 	}
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(chip, 0, NULL);
 	if (err < 0)
 		return err;
 
 	err = snd_wss_timer(chip, 0, NULL);
+=======
+	err = snd_wss_pcm(chip, 0);
+	if (err < 0)
+		return err;
+
+	err = snd_wss_timer(chip, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -564,10 +582,16 @@ static int snd_wavefront_isa_probe(struct device *pdev,
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_wavefront_card_new(dev, &card);
 	if (err < 0)
 		return err;
 	snd_card_set_dev(card, pdev);
+=======
+	err = snd_wavefront_card_new(pdev, dev, &card);
+	if (err < 0)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_wavefront_probe(card, dev)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -581,7 +605,10 @@ static int snd_wavefront_isa_remove(struct device *devptr,
 				    unsigned int dev)
 {
 	snd_card_free(dev_get_drvdata(devptr));
+<<<<<<< HEAD
 	dev_set_drvdata(devptr, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -613,7 +640,11 @@ static int snd_wavefront_pnp_detect(struct pnp_card_link *pcard,
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	res = snd_wavefront_card_new(dev, &card);
+=======
+	res = snd_wavefront_card_new(&pcard->card->dev, dev, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (res < 0)
 		return res;
 
@@ -624,7 +655,10 @@ static int snd_wavefront_pnp_detect(struct pnp_card_link *pcard,
 			return -ENODEV;
 		}
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pcard->card->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((res = snd_wavefront_probe(card, dev)) < 0)
 		return res;

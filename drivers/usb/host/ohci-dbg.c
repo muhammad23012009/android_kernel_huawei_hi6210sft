@@ -9,14 +9,18 @@
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #ifdef DEBUG
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define edstring(ed_type) ({ char *temp; \
 	switch (ed_type) { \
 	case PIPE_CONTROL:	temp = "ctrl"; break; \
 	case PIPE_BULK:		temp = "bulk"; break; \
 	case PIPE_INTERRUPT:	temp = "intr"; break; \
 	default:		temp = "isoc"; break; \
+<<<<<<< HEAD
 	}; temp;})
 #define pipestring(pipe) edstring(usb_pipetype(pipe))
 
@@ -71,6 +75,11 @@ urb_print(struct urb * urb, char * str, int small, int status)
 	}
 #endif
 }
+=======
+	} temp;})
+#define pipestring(pipe) edstring(usb_pipetype(pipe))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ohci_dbg_sw(ohci, next, size, format, arg...) \
 	do { \
@@ -289,7 +298,11 @@ ohci_dump_roothub (
 	}
 }
 
+<<<<<<< HEAD
 static void ohci_dump (struct ohci_hcd *controller, int verbose)
+=======
+static void ohci_dump(struct ohci_hcd *controller)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	ohci_dbg (controller, "OHCI controller state\n");
 
@@ -407,6 +420,7 @@ ohci_dump_ed (const struct ohci_hcd *ohci, const char *label,
 	}
 }
 
+<<<<<<< HEAD
 #else
 static inline void ohci_dump (struct ohci_hcd *controller, int verbose) {}
 
@@ -423,6 +437,10 @@ static inline void remove_debug_files (struct ohci_hcd *bus) { }
 
 #else
 
+=======
+/*-------------------------------------------------------------------------*/
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int debug_async_open(struct inode *, struct file *);
 static int debug_periodic_open(struct inode *, struct file *);
 static int debug_registers_open(struct inode *, struct file *);
@@ -531,6 +549,7 @@ show_list (struct ohci_hcd *ohci, char *buf, size_t count, struct ed *ed)
 static ssize_t fill_async_buffer(struct debug_buffer *buf)
 {
 	struct ohci_hcd		*ohci;
+<<<<<<< HEAD
 	size_t			temp;
 	unsigned long		flags;
 
@@ -540,6 +559,18 @@ static ssize_t fill_async_buffer(struct debug_buffer *buf)
 	spin_lock_irqsave (&ohci->lock, flags);
 	temp = show_list(ohci, buf->page, buf->count, ohci->ed_controltail);
 	temp += show_list(ohci, buf->page + temp, buf->count - temp,
+=======
+	size_t			temp, size;
+	unsigned long		flags;
+
+	ohci = buf->ohci;
+	size = PAGE_SIZE;
+
+	/* display control and bulk lists together, for simplicity */
+	spin_lock_irqsave (&ohci->lock, flags);
+	temp = show_list(ohci, buf->page, size, ohci->ed_controltail);
+	temp += show_list(ohci, buf->page + temp, size - temp,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  ohci->ed_bulktail);
 	spin_unlock_irqrestore (&ohci->lock, flags);
 
@@ -557,7 +588,12 @@ static ssize_t fill_periodic_buffer(struct debug_buffer *buf)
 	char			*next;
 	unsigned		i;
 
+<<<<<<< HEAD
 	if (!(seen = kmalloc (DBG_SCHED_LIMIT * sizeof *seen, GFP_ATOMIC)))
+=======
+	seen = kmalloc(DBG_SCHED_LIMIT * sizeof *seen, GFP_ATOMIC);
+	if (!seen)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	seen_count = 0;
 
@@ -572,7 +608,12 @@ static ssize_t fill_periodic_buffer(struct debug_buffer *buf)
 	/* dump a snapshot of the periodic schedule (and load) */
 	spin_lock_irqsave (&ohci->lock, flags);
 	for (i = 0; i < NUM_INTS; i++) {
+<<<<<<< HEAD
 		if (!(ed = ohci->periodic [i]))
+=======
+		ed = ohci->periodic[i];
+		if (!ed)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		temp = scnprintf (next, size, "%2d [%3d]:", i, ohci->load [i]);
@@ -871,7 +912,10 @@ static inline void remove_debug_files (struct ohci_hcd *ohci)
 	debugfs_remove(ohci->debug_dir);
 }
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*-------------------------------------------------------------------------*/
 

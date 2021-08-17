@@ -17,6 +17,7 @@
 #ifndef __XFS_SYMLINK_H
 #define __XFS_SYMLINK_H 1
 
+<<<<<<< HEAD
 struct xfs_mount;
 struct xfs_trans;
 struct xfs_inode;
@@ -56,11 +57,19 @@ void xfs_symlink_local_to_remote(struct xfs_trans *tp, struct xfs_buf *bp,
 extern const struct xfs_buf_ops xfs_symlink_buf_ops;
 
 #ifdef __KERNEL__
+=======
+/* Kernel only symlink defintions */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int xfs_symlink(struct xfs_inode *dp, struct xfs_name *link_name,
 		const char *target_path, umode_t mode, struct xfs_inode **ipp);
 int xfs_readlink(struct xfs_inode *ip, char *link);
+<<<<<<< HEAD
 int xfs_inactive_symlink_rmt(struct xfs_inode *ip, struct xfs_trans **tpp);
 
 #endif /* __KERNEL__ */
+=======
+int xfs_inactive_symlink(struct xfs_inode *ip);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __XFS_SYMLINK_H */

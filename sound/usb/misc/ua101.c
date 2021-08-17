@@ -613,6 +613,7 @@ static int start_usb_playback(struct ua101 *ua)
 
 static void abort_alsa_capture(struct ua101 *ua)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (test_bit(ALSA_CAPTURE_RUNNING, &ua->states)) {
@@ -620,10 +621,15 @@ static void abort_alsa_capture(struct ua101 *ua)
 		snd_pcm_stop(ua->capture.substream, SNDRV_PCM_STATE_XRUN);
 		snd_pcm_stream_unlock_irqrestore(ua->capture.substream, flags);
 	}
+=======
+	if (test_bit(ALSA_CAPTURE_RUNNING, &ua->states))
+		snd_pcm_stop_xrun(ua->capture.substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void abort_alsa_playback(struct ua101 *ua)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (test_bit(ALSA_PLAYBACK_RUNNING, &ua->states)) {
@@ -631,6 +637,10 @@ static void abort_alsa_playback(struct ua101 *ua)
 		snd_pcm_stop(ua->playback.substream, SNDRV_PCM_STATE_XRUN);
 		snd_pcm_stream_unlock_irqrestore(ua->playback.substream, flags);
 	}
+=======
+	if (test_bit(ALSA_PLAYBACK_RUNNING, &ua->states))
+		snd_pcm_stop_xrun(ua->playback.substream);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int set_stream_hw(struct ua101 *ua, struct snd_pcm_substream *substream,
@@ -1047,7 +1057,11 @@ static int detect_usb_format(struct ua101 *ua)
 		return -ENXIO;
 	}
 	ua->capture.usb_pipe = usb_rcvisocpipe(ua->dev, usb_endpoint_num(epd));
+<<<<<<< HEAD
 	ua->capture.max_packet_bytes = le16_to_cpu(epd->wMaxPacketSize);
+=======
+	ua->capture.max_packet_bytes = usb_endpoint_maxp(epd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	epd = &ua->intf[INTF_PLAYBACK]->altsetting[1].endpoint[0].desc;
 	if (!usb_endpoint_is_isoc_out(epd)) {
@@ -1055,7 +1069,11 @@ static int detect_usb_format(struct ua101 *ua)
 		return -ENXIO;
 	}
 	ua->playback.usb_pipe = usb_sndisocpipe(ua->dev, usb_endpoint_num(epd));
+<<<<<<< HEAD
 	ua->playback.max_packet_bytes = le16_to_cpu(epd->wMaxPacketSize);
+=======
+	ua->playback.max_packet_bytes = usb_endpoint_maxp(epd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1243,8 +1261,14 @@ static int ua101_probe(struct usb_interface *interface,
 		mutex_unlock(&devices_mutex);
 		return -ENOENT;
 	}
+<<<<<<< HEAD
 	err = snd_card_create(index[card_index], id[card_index], THIS_MODULE,
 			      sizeof(*ua), &card);
+=======
+	err = snd_card_new(&interface->dev,
+			   index[card_index], id[card_index], THIS_MODULE,
+			   sizeof(*ua), &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 		mutex_unlock(&devices_mutex);
 		return err;
@@ -1283,8 +1307,11 @@ static int ua101_probe(struct usb_interface *interface,
 		}
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &interface->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = detect_usb_format(ua);
 	if (err < 0)
 		goto probe_error;
@@ -1359,7 +1386,11 @@ static void ua101_disconnect(struct usb_interface *interface)
 	snd_card_disconnect(ua->card);
 
 	/* make sure that there are no pending USB requests */
+<<<<<<< HEAD
 	__list_for_each(midi, &ua->midi_list)
+=======
+	list_for_each(midi, &ua->midi_list)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_usbmidi_disconnect(midi);
 	abort_alsa_playback(ua);
 	abort_alsa_capture(ua);

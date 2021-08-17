@@ -3,8 +3,13 @@
  *
  * Copyright (c) 2012 Dongjin Kim <tobetter@gmail.com>
  *
+<<<<<<< HEAD
  * Device tree source file for Hardkernel's ODROID-X board which is based on
  * Samsung's Exynos4412 SoC.
+=======
+ * Device tree source file for Hardkernel's ODROID-X board which is based
+ * on Samsung's Exynos4412 SoC.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -12,6 +17,7 @@
 */
 
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "exynos4412.dtsi"
 
 / {
@@ -20,24 +26,44 @@
 
 	memory {
 		reg = <0x40000000 0x40000000>;
+=======
+#include "exynos4412-odroid-common.dtsi"
+
+/ {
+	model = "Hardkernel ODROID-X board based on Exynos4412";
+	compatible = "hardkernel,odroid-x", "samsung,exynos4412", "samsung,exynos4";
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0x40000000 0x3FF00000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 
 	leds {
 		compatible = "gpio-leds";
 		led1 {
 			label = "led1:heart";
+<<<<<<< HEAD
 			gpios = <&gpc1 0 1>;
+=======
+			gpios = <&gpc1 0 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			default-state = "on";
 			linux,default-trigger = "heartbeat";
 		};
 		led2 {
 			label = "led2:mmc0";
+<<<<<<< HEAD
 			gpios = <&gpc1 2 1>;
+=======
+			gpios = <&gpc1 2 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			default-state = "on";
 			linux,default-trigger = "mmc0";
 		};
 	};
 
+<<<<<<< HEAD
 	mshc@12550000 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -57,6 +83,19 @@
 		slot@0 {
 			reg = <0>;
 			bus-width = <8>;
+=======
+	gpio_keys {
+		pinctrl-0 = <&gpio_power_key &gpio_home_key>;
+
+		home_key {
+			interrupt-parent = <&gpx2>;
+			interrupts = <2 0>;
+			gpios = <&gpx2 2 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_HOME>;
+			label = "home key";
+			debounce-interval = <10>;
+			wakeup-source;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
@@ -65,6 +104,7 @@
 		regulator-name = "p3v3_en";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
+<<<<<<< HEAD
 		gpio = <&gpa1 1 1>;
 		enable-active-high;
 		regulator-boot-on;
@@ -108,4 +148,42 @@
 			clock-frequency = <24000000>;
 		};
 	};
+=======
+		gpio = <&gpa1 1 GPIO_ACTIVE_LOW>;
+		enable-active-high;
+		regulator-always-on;
+	};
+};
+
+/* VDDQ for MSHC (eMMC card) */
+&buck8_reg {
+	regulator-name = "BUCK8_VDDQ_MMC4_2.8V";
+	regulator-min-microvolt = <2800000>;
+	regulator-max-microvolt = <2800000>;
+};
+
+&ehci {
+	port@1 {
+		status = "okay";
+	};
+};
+
+&mshc_0 {
+	vqmmc-supply = <&buck8_reg>;
+};
+
+&pinctrl_1 {
+	gpio_home_key: home_key {
+		samsung,pins = "gpx2-2";
+		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+	};
+};
+
+&serial_2 {
+	status = "okay";
+};
+
+&serial_3 {
+	status = "okay";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

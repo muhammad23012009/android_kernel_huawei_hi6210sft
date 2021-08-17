@@ -26,6 +26,11 @@
 #ifndef NET_9P_CLIENT_H
 #define NET_9P_CLIENT_H
 
+<<<<<<< HEAD
+=======
+#include <linux/utsname.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Number of requests per row */
 #define P9_ROW_MAXTAG 255
 
@@ -65,7 +70,10 @@ enum p9_trans_status {
  * @REQ_STATUS_ALLOC: request has been allocated but not sent
  * @REQ_STATUS_UNSENT: request waiting to be sent
  * @REQ_STATUS_SENT: request sent to server
+<<<<<<< HEAD
  * @REQ_STATUS_FLSH: a flush has been sent for this request
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @REQ_STATUS_RCVD: response received from server
  * @REQ_STATUS_FLSHD: request has been flushed
  * @REQ_STATUS_ERROR: request encountered an error on the client side
@@ -81,7 +89,10 @@ enum p9_req_status_t {
 	REQ_STATUS_ALLOC,
 	REQ_STATUS_UNSENT,
 	REQ_STATUS_SENT,
+<<<<<<< HEAD
 	REQ_STATUS_FLSH,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	REQ_STATUS_RCVD,
 	REQ_STATUS_FLSHD,
 	REQ_STATUS_ERROR,
@@ -128,12 +139,19 @@ struct p9_req_t {
  * @proto_version: 9P protocol version to use
  * @trans_mod: module API instantiated with this client
  * @trans: tranport instance state and API
+<<<<<<< HEAD
  * @conn: connection state information used by trans_fd
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @fidpool: fid handle accounting for session
  * @fidlist: List of active fid handles
  * @tagpool - transaction id accounting for session
  * @reqs - 2D array of requests
  * @max_tag - current maximum tag id allocated
+<<<<<<< HEAD
+=======
+ * @name - node name used as client id
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * The client structure is used to keep track of various per-client
  * state that has been instantiated.
@@ -156,7 +174,10 @@ struct p9_client {
 	struct p9_trans_module *trans_mod;
 	enum p9_trans_status status;
 	void *trans;
+<<<<<<< HEAD
 	struct p9_conn *conn;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct p9_idpool *fidpool;
 	struct list_head fidlist;
@@ -164,6 +185,11 @@ struct p9_client {
 	struct p9_idpool *tagpool;
 	struct p9_req_t *reqs[P9_ROW_MAXTAG];
 	int max_tag;
+<<<<<<< HEAD
+=======
+
+	char name[__NEW_UTS_LEN + 1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -210,6 +236,11 @@ struct p9_dirent {
 	char d_name[256];
 };
 
+<<<<<<< HEAD
+=======
+struct iov_iter;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int p9_client_statfs(struct p9_fid *fid, struct p9_rstatfs *sb);
 int p9_client_rename(struct p9_fid *fid, struct p9_fid *newdirfid,
 		     const char *name);
@@ -235,10 +266,15 @@ int p9_client_clunk(struct p9_fid *fid);
 int p9_client_fsync(struct p9_fid *fid, int datasync);
 int p9_client_remove(struct p9_fid *fid);
 int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags);
+<<<<<<< HEAD
 int p9_client_read(struct p9_fid *fid, char *data, char __user *udata,
 							u64 offset, u32 count);
 int p9_client_write(struct p9_fid *fid, char *data, const char __user *udata,
 							u64 offset, u32 count);
+=======
+int p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err);
+int p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int p9_client_readdir(struct p9_fid *fid, char *data, u32 count, u64 offset);
 int p9dirent_read(struct p9_client *clnt, char *buf, int len,
 		  struct p9_dirent *dirent);
@@ -256,7 +292,11 @@ int p9_client_mkdir_dotl(struct p9_fid *fid, char *name, int mode,
 int p9_client_lock_dotl(struct p9_fid *fid, struct p9_flock *flock, u8 *status);
 int p9_client_getlock_dotl(struct p9_fid *fid, struct p9_getlock *fl);
 struct p9_req_t *p9_tag_lookup(struct p9_client *, u16);
+<<<<<<< HEAD
 void p9_client_cb(struct p9_client *c, struct p9_req_t *req);
+=======
+void p9_client_cb(struct p9_client *c, struct p9_req_t *req, int status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int p9_parse_header(struct p9_fcall *, int32_t *, int8_t *, int16_t *, int);
 int p9stat_read(struct p9_client *, char *, int, struct p9_wstat *);

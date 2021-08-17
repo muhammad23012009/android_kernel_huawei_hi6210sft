@@ -11,6 +11,24 @@
 / {
 	compatible = "wm,wm8650";
 
+<<<<<<< HEAD
+=======
+	cpus {
+		#address-cells = <0>;
+		#size-cells = <0>;
+
+		cpu {
+			device_type = "cpu";
+			compatible = "arm,arm926ej-s";
+		};
+	};
+
+ 	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+	};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -77,6 +95,58 @@
 					reg = <0x204>;
 				};
 
+<<<<<<< HEAD
+=======
+				pllc: pllc {
+					#clock-cells = <0>;
+					compatible = "wm,wm8650-pll-clock";
+					clocks = <&ref25>;
+					reg = <0x208>;
+				};
+
+				plld: plld {
+					#clock-cells = <0>;
+					compatible = "wm,wm8650-pll-clock";
+					clocks = <&ref25>;
+					reg = <0x20c>;
+				};
+
+				plle: plle {
+					#clock-cells = <0>;
+					compatible = "wm,wm8650-pll-clock";
+					clocks = <&ref25>;
+					reg = <0x210>;
+				};
+
+				clkarm: arm {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&plla>;
+					divisor-reg = <0x300>;
+				};
+
+				clkahb: ahb {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&pllb>;
+					divisor-reg = <0x304>;
+				};
+
+				clkapb: apb {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&pllb>;
+					divisor-reg = <0x320>;
+				};
+
+				clkddr: ddr {
+					#clock-cells = <0>;
+					compatible = "via,vt8500-device-clock";
+					clocks = <&plld>;
+					divisor-reg = <0x310>;
+				};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				clkuart0: uart0 {
  					#clock-cells = <0>;
  					compatible = "via,vt8500-device-clock";
@@ -93,6 +163,7 @@
 					enable-bit = <2>;
 				};
 
+<<<<<<< HEAD
 				arm: arm {
 					#clock-cells = <0>;
 					compatible = "via,vt8500-device-clock";
@@ -101,6 +172,9 @@
 				};
 
 				sdhc: sdhc {
+=======
+				clksdhc: sdhc {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					#clock-cells = <0>;
 					compatible = "via,vt8500-device-clock";
 					clocks = <&pllb>;
@@ -130,6 +204,18 @@
 			interrupts = <43>;
 		};
 
+<<<<<<< HEAD
+=======
+		sdhc@d800a000 {
+			compatible = "wm,wm8505-sdhc";
+			reg = <0xd800a000 0x400>;
+			interrupts = <20>, <21>;
+			clocks = <&clksdhc>;
+			bus-width = <4>;
+			sdon-inverted;
+		};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fb: fb@d8050800 {
 			compatible = "wm,wm8505-fb";
 			reg = <0xd8050800 0x200>;
@@ -140,18 +226,33 @@
 			reg = <0xd8050400 0x100>;
 		};
 
+<<<<<<< HEAD
 		uart@d8200000 {
+=======
+		uart0: serial@d8200000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd8200000 0x1040>;
 			interrupts = <32>;
 			clocks = <&clkuart0>;
+<<<<<<< HEAD
 		};
 
 		uart@d82b0000 {
+=======
+			status = "disabled";
+		};
+
+		uart1: serial@d82b0000 {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			compatible = "via,vt8500-uart";
 			reg = <0xd82b0000 0x1040>;
 			interrupts = <33>;
 			clocks = <&clkuart1>;
+<<<<<<< HEAD
+=======
+			status = "disabled";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 
 		rtc@d8100000 {
@@ -159,5 +260,14 @@
 			reg = <0xd8100000 0x10000>;
 			interrupts = <48>;
 		};
+<<<<<<< HEAD
+=======
+
+		ethernet@d8004000 {
+			compatible = "via,vt8500-rhine";
+			reg = <0xd8004000 0x100>;
+			interrupts = <10>;
+		};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	};
 };

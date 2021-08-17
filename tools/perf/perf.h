@@ -1,6 +1,7 @@
 #ifndef _PERF_PERF_H
 #define _PERF_PERF_H
 
+<<<<<<< HEAD
 #include <asm/unistd.h>
 
 #if defined(__i386__)
@@ -125,6 +126,20 @@
 #ifndef NSEC_PER_SEC
 # define NSEC_PER_SEC			1000000000ULL
 #endif
+=======
+#include <time.h>
+#include <stdbool.h>
+#include <linux/types.h>
+#include <linux/perf_event.h>
+
+extern bool test_attr__enabled;
+void test_attr__init(void);
+void test_attr__open(struct perf_event_attr *attr, pid_t pid, int cpu,
+		     int fd, int group_fd, unsigned long flags);
+
+#define HAVE_ATTR_TEST
+#include "perf-sys.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline unsigned long long rdclock(void)
 {
@@ -134,6 +149,7 @@ static inline unsigned long long rdclock(void)
 	return ts.tv_sec * 1000000000ULL + ts.tv_nsec;
 }
 
+<<<<<<< HEAD
 /*
  * Pick up some kernel type conventions:
  */
@@ -192,6 +208,11 @@ struct branch_stack {
 	u64				nr;
 	struct branch_entry	entries[0];
 };
+=======
+#ifndef MAX_NR_CPUS
+#define MAX_NR_CPUS			2048
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern const char *input_name;
 extern bool perf_host, perf_guest;
@@ -201,6 +222,7 @@ void pthread__unblock_sigwinch(void);
 
 #include "util/target.h"
 
+<<<<<<< HEAD
 enum perf_call_graph_mode {
 	CALLCHAIN_NONE,
 	CALLCHAIN_FP,
@@ -216,10 +238,21 @@ struct perf_record_opts {
 	bool	     no_inherit;
 	bool	     no_samples;
 	bool	     pipe_output;
+=======
+struct record_opts {
+	struct target target;
+	bool	     group;
+	bool	     inherit_stat;
+	bool	     no_buffering;
+	bool	     no_inherit;
+	bool	     no_inherit_set;
+	bool	     no_samples;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool	     raw_samples;
 	bool	     sample_address;
 	bool	     sample_weight;
 	bool	     sample_time;
+<<<<<<< HEAD
 	bool	     period;
 	unsigned int freq;
 	unsigned int mmap_pages;
@@ -230,4 +263,37 @@ struct perf_record_opts {
 	u16	     stack_dump_size;
 };
 
+=======
+	bool	     sample_time_set;
+	bool	     sample_cpu;
+	bool	     period;
+	bool	     running_time;
+	bool	     full_auxtrace;
+	bool	     auxtrace_snapshot_mode;
+	bool	     record_switch_events;
+	bool	     all_kernel;
+	bool	     all_user;
+	bool	     tail_synthesize;
+	bool	     overwrite;
+	unsigned int freq;
+	unsigned int mmap_pages;
+	unsigned int auxtrace_mmap_pages;
+	unsigned int user_freq;
+	u64          branch_stack;
+	u64	     sample_intr_regs;
+	u64	     default_interval;
+	u64	     user_interval;
+	size_t	     auxtrace_snapshot_size;
+	const char   *auxtrace_snapshot_opts;
+	bool	     sample_transaction;
+	unsigned     initial_delay;
+	bool         use_clockid;
+	clockid_t    clockid;
+	unsigned int proc_map_timeout;
+};
+
+struct option;
+extern const char * const *record_usage;
+extern struct option *record_options;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

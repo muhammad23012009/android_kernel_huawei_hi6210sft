@@ -22,16 +22,22 @@
 #include <linux/amba/serial.h>
 #include <linux/io.h>
 #include <linux/stat.h>
+<<<<<<< HEAD
 
 #include <mach/hardware.h>
 #include <mach/platform.h>
 #include <mach/cm.h>
 #include <mach/irqs.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 #include <asm/mach/time.h>
 #include <asm/pgtable.h>
 
+<<<<<<< HEAD
 #include "common.h"
 
 #ifdef CONFIG_ATAGS
@@ -93,6 +99,23 @@ int __init integrator_init(bool is_cp)
 
 static DEFINE_RAW_SPINLOCK(cm_lock);
 
+=======
+#include "hardware.h"
+#include "cm.h"
+#include "common.h"
+
+static DEFINE_RAW_SPINLOCK(cm_lock);
+static void __iomem *cm_base;
+
+/**
+ * cm_get - get the value from the CM_CTRL register
+ */
+u32 cm_get(void)
+{
+	return readl(cm_base + INTEGRATOR_HDR_CTRL_OFFSET);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * cm_control - update the CM_CTRL register.
  * @mask: bits to change
@@ -104,6 +127,7 @@ void cm_control(u32 mask, u32 set)
 	u32 val;
 
 	raw_spin_lock_irqsave(&cm_lock, flags);
+<<<<<<< HEAD
 	val = readl(CM_CTRL) & ~mask;
 	writel(val | set, CM_CTRL);
 	raw_spin_unlock_irqrestore(&cm_lock, flags);
@@ -217,4 +241,47 @@ void integrator_init_sysfs(struct device *parent, u32 id)
 	device_create_file(parent, &intcp_arch_attr);
 	device_create_file(parent, &intcp_fpga_attr);
 	device_create_file(parent, &intcp_build_attr);
+=======
+	val = readl(cm_base + INTEGRATOR_HDR_CTRL_OFFSET) & ~mask;
+	writel(val | set, cm_base + INTEGRATOR_HDR_CTRL_OFFSET);
+	raw_spin_unlock_irqrestore(&cm_lock, flags);
+}
+
+void cm_clear_irqs(void)
+{
+	/* disable core module IRQs */
+	writel(0xffffffffU, cm_base + INTEGRATOR_HDR_IC_OFFSET +
+		IRQ_ENABLE_CLEAR);
+}
+
+static const struct of_device_id cm_match[] = {
+	{ .compatible = "arm,core-module-integrator"},
+	{ },
+};
+
+void cm_init(void)
+{
+	struct device_node *cm = of_find_matching_node(NULL, cm_match);
+
+	if (!cm) {
+		pr_crit("no core module node found in device tree\n");
+		return;
+	}
+	cm_base = of_iomap(cm, 0);
+	if (!cm_base) {
+		pr_crit("could not remap core module\n");
+		return;
+	}
+	cm_clear_irqs();
+}
+
+/*
+ * We need to stop things allocating the low memory; ideally we need a
+ * better implementation of GFP_DMA which does not assume that DMA-able
+ * memory starts at zero.
+ */
+void __init integrator_reserve(void)
+{
+	memblock_reserve(PHYS_OFFSET, __pa(swapper_pg_dir) - PHYS_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

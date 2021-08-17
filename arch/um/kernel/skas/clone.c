@@ -1,4 +1,8 @@
 /*
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
  */
@@ -35,11 +39,14 @@ stub_clone_handler(void)
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	err = stub_syscall3(__NR_setitimer, ITIMER_VIRTUAL,
 			    (long) &data->timer, 0);
 	if (err)
 		goto out;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	remap_stack(data->fd, data->offset);
 	goto done;
 

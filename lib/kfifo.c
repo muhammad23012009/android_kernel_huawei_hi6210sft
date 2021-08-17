@@ -82,7 +82,12 @@ int __kfifo_init(struct __kfifo *fifo, void *buffer,
 {
 	size /= esize;
 
+<<<<<<< HEAD
 	size = roundup_pow_of_two(size);
+=======
+	if (!is_power_of_2(size))
+		size = rounddown_pow_of_two(size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fifo->in = 0;
 	fifo->out = 0;
@@ -215,7 +220,11 @@ static unsigned long kfifo_copy_from_user(struct __kfifo *fifo,
 	 * incrementing the fifo->in index counter
 	 */
 	smp_wmb();
+<<<<<<< HEAD
 	*copied = len - ret;
+=======
+	*copied = len - ret * esize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* return the number of elements which are not copied */
 	return ret;
 }
@@ -275,7 +284,11 @@ static unsigned long kfifo_copy_to_user(struct __kfifo *fifo, void __user *to,
 	 * incrementing the fifo->out index counter
 	 */
 	smp_wmb();
+<<<<<<< HEAD
 	*copied = len - ret;
+=======
+	*copied = len - ret * esize;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* return the number of elements which are not copied */
 	return ret;
 }
@@ -561,8 +574,12 @@ EXPORT_SYMBOL(__kfifo_to_user_r);
 unsigned int __kfifo_dma_in_prepare_r(struct __kfifo *fifo,
 	struct scatterlist *sgl, int nents, unsigned int len, size_t recsize)
 {
+<<<<<<< HEAD
 	if (!nents)
 		BUG();
+=======
+	BUG_ON(!nents);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len = __kfifo_max_r(len, recsize);
 
@@ -585,8 +602,12 @@ EXPORT_SYMBOL(__kfifo_dma_in_finish_r);
 unsigned int __kfifo_dma_out_prepare_r(struct __kfifo *fifo,
 	struct scatterlist *sgl, int nents, unsigned int len, size_t recsize)
 {
+<<<<<<< HEAD
 	if (!nents)
 		BUG();
+=======
+	BUG_ON(!nents);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len = __kfifo_max_r(len, recsize);
 

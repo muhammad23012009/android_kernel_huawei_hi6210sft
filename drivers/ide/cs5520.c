@@ -123,7 +123,11 @@ static int cs5520_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		return -ENODEV;
 	}
 	pci_set_master(dev);
+<<<<<<< HEAD
 	if (pci_set_dma_mask(dev, DMA_BIT_MASK(32))) {
+=======
+	if (dma_set_mask(&dev->dev, DMA_BIT_MASK(32))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING "%s: No suitable DMA available.\n",
 			d->name);
 		return -ENODEV;

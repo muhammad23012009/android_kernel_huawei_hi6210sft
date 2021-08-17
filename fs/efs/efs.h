@@ -7,6 +7,15 @@
 #ifndef _EFS_EFS_H_
 #define _EFS_EFS_H_
 
+<<<<<<< HEAD
+=======
+#ifdef pr_fmt
+#undef pr_fmt
+#endif
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/fs.h>
 #include <asm/uaccess.h>
 

@@ -6,7 +6,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,7 +87,11 @@ acpi_ns_print_node_pathname(struct acpi_namespace_node *node,
 
 	buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
 
+<<<<<<< HEAD
 	status = acpi_ns_handle_to_pathname(node, &buffer);
+=======
+	status = acpi_ns_handle_to_pathname(node, &buffer, TRUE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_SUCCESS(status)) {
 		if (message) {
 			acpi_os_printf("%s ", message);
@@ -173,9 +181,16 @@ void acpi_ns_get_internal_name_length(struct acpi_namestring_info *info)
 	info->fully_qualified = FALSE;
 
 	/*
+<<<<<<< HEAD
 	 * For the internal name, the required length is 4 bytes per segment, plus
 	 * 1 each for root_prefix, multi_name_prefix_op, segment count, trailing null
 	 * (which is not really needed, but no there's harm in putting it there)
+=======
+	 * For the internal name, the required length is 4 bytes per segment,
+	 * plus 1 each for root_prefix, multi_name_prefix_op, segment count,
+	 * trailing null (which is not really needed, but no there's harm in
+	 * putting it there)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 *
 	 * strlen() + 1 covers the first name_seg, which has no path separator
 	 */
@@ -271,11 +286,19 @@ acpi_status acpi_ns_build_internal_name(struct acpi_namestring_info *info)
 			result = &internal_name[i];
 		} else if (num_segments == 2) {
 			internal_name[i] = AML_DUAL_NAME_PREFIX;
+<<<<<<< HEAD
 			result = &internal_name[(acpi_size) i + 1];
 		} else {
 			internal_name[i] = AML_MULTI_NAME_PREFIX_OP;
 			internal_name[(acpi_size) i + 1] = (char)num_segments;
 			result = &internal_name[(acpi_size) i + 2];
+=======
+			result = &internal_name[(acpi_size)i + 1];
+		} else {
+			internal_name[i] = AML_MULTI_NAME_PREFIX_OP;
+			internal_name[(acpi_size)i + 1] = (char)num_segments;
+			result = &internal_name[(acpi_size)i + 2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -292,8 +315,12 @@ acpi_status acpi_ns_build_internal_name(struct acpi_namestring_info *info)
 			} else {
 				/* Convert the character to uppercase and save it */
 
+<<<<<<< HEAD
 				result[i] =
 				    (char)ACPI_TOUPPER((int)*external_name);
+=======
+				result[i] = (char)toupper((int)*external_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				external_name++;
 			}
 		}
@@ -419,10 +446,18 @@ acpi_ns_externalize_name(u32 internal_name_length,
 
 	switch (internal_name[0]) {
 	case AML_ROOT_PREFIX:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		prefix_length = 1;
 		break;
 
 	case AML_PARENT_PREFIX:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		for (i = 0; i < internal_name_length; i++) {
 			if (ACPI_IS_PARENT_PREFIX(internal_name[i])) {
 				prefix_length = i + 1;
@@ -438,6 +473,10 @@ acpi_ns_externalize_name(u32 internal_name_length,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 
@@ -453,7 +492,11 @@ acpi_ns_externalize_name(u32 internal_name_length,
 
 			names_index = prefix_length + 2;
 			num_segments = (u8)
+<<<<<<< HEAD
 			    internal_name[(acpi_size) prefix_length + 1];
+=======
+			    internal_name[(acpi_size)prefix_length + 1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case AML_DUAL_NAME_PREFIX:
@@ -590,6 +633,7 @@ struct acpi_namespace_node *acpi_ns_validate_handle(acpi_handle handle)
 
 void acpi_ns_terminate(void)
 {
+<<<<<<< HEAD
 	union acpi_operand_object *obj_desc;
 
 	ACPI_FUNCTION_TRACE(ns_terminate);
@@ -608,6 +652,40 @@ void acpi_ns_terminate(void)
 		acpi_ns_detach_object(acpi_gbl_root_node);
 	}
 
+=======
+	acpi_status status;
+	union acpi_operand_object *prev;
+	union acpi_operand_object *next;
+
+	ACPI_FUNCTION_TRACE(ns_terminate);
+
+	/* Delete any module-level code blocks */
+
+	next = acpi_gbl_module_code_list;
+	while (next) {
+		prev = next;
+		next = next->method.mutex;
+		prev->method.mutex = NULL;	/* Clear the Mutex (cheated) field */
+		acpi_ut_remove_reference(prev);
+	}
+
+	/*
+	 * Free the entire namespace -- all nodes and all objects
+	 * attached to the nodes
+	 */
+	acpi_ns_delete_namespace_subtree(acpi_gbl_root_node);
+
+	/* Delete any objects attached to the root node */
+
+	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
+	if (ACPI_FAILURE(status)) {
+		return_VOID;
+	}
+
+	acpi_ns_delete_node(acpi_gbl_root_node);
+	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "Namespace freed\n"));
 	return_VOID;
 }
@@ -640,6 +718,123 @@ u32 acpi_ns_opens_scope(acpi_object_type type)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
+ * FUNCTION:    acpi_ns_get_node
+=======
+ * FUNCTION:    acpi_ns_get_node_unlocked
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+ *
+ * PARAMETERS:  *pathname   - Name to be found, in external (ASL) format. The
+ *                            \ (backslash) and ^ (carat) prefixes, and the
+ *                            . (period) to separate segments are supported.
+ *              prefix_node  - Root of subtree to be searched, or NS_ALL for the
+ *                            root of the name space. If Name is fully
+ *                            qualified (first s8 is '\'), the passed value
+ *                            of Scope will not be accessed.
+ *              flags       - Used to indicate whether to perform upsearch or
+ *                            not.
+ *              return_node - Where the Node is returned
+ *
+ * DESCRIPTION: Look up a name relative to a given scope and return the
+ *              corresponding Node. NOTE: Scope can be null.
+ *
+<<<<<<< HEAD
+ * MUTEX:       Locks namespace
+=======
+ * MUTEX:       Doesn't locks namespace
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+ *
+ ******************************************************************************/
+
+acpi_status
+<<<<<<< HEAD
+acpi_ns_get_node(struct acpi_namespace_node *prefix_node,
+		 const char *pathname,
+		 u32 flags, struct acpi_namespace_node **return_node)
+=======
+acpi_ns_get_node_unlocked(struct acpi_namespace_node *prefix_node,
+			  const char *pathname,
+			  u32 flags, struct acpi_namespace_node **return_node)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+{
+	union acpi_generic_state scope_info;
+	acpi_status status;
+	char *internal_path;
+
+<<<<<<< HEAD
+	ACPI_FUNCTION_TRACE_PTR(ns_get_node, ACPI_CAST_PTR(char, pathname));
+=======
+	ACPI_FUNCTION_TRACE_PTR(ns_get_node_unlocked,
+				ACPI_CAST_PTR(char, pathname));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
+	/* Simplest case is a null pathname */
+
+	if (!pathname) {
+		*return_node = prefix_node;
+		if (!prefix_node) {
+			*return_node = acpi_gbl_root_node;
+		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+		return_ACPI_STATUS(AE_OK);
+	}
+
+	/* Quick check for a reference to the root */
+
+	if (ACPI_IS_ROOT_PREFIX(pathname[0]) && (!pathname[1])) {
+		*return_node = acpi_gbl_root_node;
+		return_ACPI_STATUS(AE_OK);
+	}
+
+	/* Convert path to internal representation */
+
+	status = acpi_ns_internalize_name(pathname, &internal_path);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+<<<<<<< HEAD
+	/* Must lock namespace during lookup */
+
+	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
+	if (ACPI_FAILURE(status)) {
+		goto cleanup;
+	}
+
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+	/* Setup lookup scope (search starting point) */
+
+	scope_info.scope.node = prefix_node;
+
+	/* Lookup the name in the namespace */
+
+	status = acpi_ns_lookup(&scope_info, internal_path, ACPI_TYPE_ANY,
+				ACPI_IMODE_EXECUTE,
+				(flags | ACPI_NS_DONT_OPEN_SCOPE), NULL,
+				return_node);
+	if (ACPI_FAILURE(status)) {
+		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "%s, %s\n",
+				  pathname, acpi_format_exception(status)));
+	}
+
+<<<<<<< HEAD
+	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+
+      cleanup:
+	ACPI_FREE(internal_path);
+	return_ACPI_STATUS(status);
+}
+=======
+	ACPI_FREE(internal_path);
+	return_ACPI_STATUS(status);
+}
+
+/*******************************************************************************
+ *
  * FUNCTION:    acpi_ns_get_node
  *
  * PARAMETERS:  *pathname   - Name to be found, in external (ASL) format. The
@@ -665,61 +860,19 @@ acpi_ns_get_node(struct acpi_namespace_node *prefix_node,
 		 const char *pathname,
 		 u32 flags, struct acpi_namespace_node **return_node)
 {
-	union acpi_generic_state scope_info;
 	acpi_status status;
-	char *internal_path;
 
 	ACPI_FUNCTION_TRACE_PTR(ns_get_node, ACPI_CAST_PTR(char, pathname));
 
-	/* Simplest case is a null pathname */
-
-	if (!pathname) {
-		*return_node = prefix_node;
-		if (!prefix_node) {
-			*return_node = acpi_gbl_root_node;
-		}
-		return_ACPI_STATUS(AE_OK);
-	}
-
-	/* Quick check for a reference to the root */
-
-	if (ACPI_IS_ROOT_PREFIX(pathname[0]) && (!pathname[1])) {
-		*return_node = acpi_gbl_root_node;
-		return_ACPI_STATUS(AE_OK);
-	}
-
-	/* Convert path to internal representation */
-
-	status = acpi_ns_internalize_name(pathname, &internal_path);
+	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
-	/* Must lock namespace during lookup */
-
-	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
-	if (ACPI_FAILURE(status)) {
-		goto cleanup;
-	}
-
-	/* Setup lookup scope (search starting point) */
-
-	scope_info.scope.node = prefix_node;
-
-	/* Lookup the name in the namespace */
-
-	status = acpi_ns_lookup(&scope_info, internal_path, ACPI_TYPE_ANY,
-				ACPI_IMODE_EXECUTE,
-				(flags | ACPI_NS_DONT_OPEN_SCOPE), NULL,
-				return_node);
-	if (ACPI_FAILURE(status)) {
-		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "%s, %s\n",
-				  pathname, acpi_format_exception(status)));
-	}
+	status = acpi_ns_get_node_unlocked(prefix_node, pathname,
+					   flags, return_node);
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
-
-      cleanup:
-	ACPI_FREE(internal_path);
 	return_ACPI_STATUS(status);
 }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

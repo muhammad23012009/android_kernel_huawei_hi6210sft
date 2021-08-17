@@ -185,11 +185,14 @@ static const struct ts5500_dio ts5500_lcd[] = {
 	TS5500_DIO_IN_IRQ(0x73, 7, 1),
 };
 
+<<<<<<< HEAD
 static inline struct ts5500_priv *ts5500_gc_to_priv(struct gpio_chip *chip)
 {
 	return container_of(chip, struct ts5500_priv, gpio_chip);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void ts5500_set_mask(u8 mask, u8 addr)
 {
 	u8 val = inb(addr);
@@ -206,7 +209,11 @@ static inline void ts5500_clear_mask(u8 mask, u8 addr)
 
 static int ts5500_gpio_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct ts5500_priv *priv = ts5500_gc_to_priv(chip);
+=======
+	struct ts5500_priv *priv = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct ts5500_dio line = priv->pinout[offset];
 	unsigned long flags;
 
@@ -225,7 +232,11 @@ static int ts5500_gpio_input(struct gpio_chip *chip, unsigned offset)
 
 static int ts5500_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct ts5500_priv *priv = ts5500_gc_to_priv(chip);
+=======
+	struct ts5500_priv *priv = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct ts5500_dio line = priv->pinout[offset];
 
 	return !!(inb(line.value_addr) & line.value_mask);
@@ -233,7 +244,11 @@ static int ts5500_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static int ts5500_gpio_output(struct gpio_chip *chip, unsigned offset, int val)
 {
+<<<<<<< HEAD
 	struct ts5500_priv *priv = ts5500_gc_to_priv(chip);
+=======
+	struct ts5500_priv *priv = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct ts5500_dio line = priv->pinout[offset];
 	unsigned long flags;
 
@@ -255,7 +270,11 @@ static int ts5500_gpio_output(struct gpio_chip *chip, unsigned offset, int val)
 
 static void ts5500_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 {
+<<<<<<< HEAD
 	struct ts5500_priv *priv = ts5500_gc_to_priv(chip);
+=======
+	struct ts5500_priv *priv = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct ts5500_dio line = priv->pinout[offset];
 	unsigned long flags;
 
@@ -269,7 +288,11 @@ static void ts5500_gpio_set(struct gpio_chip *chip, unsigned offset, int val)
 
 static int ts5500_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct ts5500_priv *priv = ts5500_gc_to_priv(chip);
+=======
+	struct ts5500_priv *priv = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct ts5500_dio *block = priv->pinout;
 	const struct ts5500_dio line = block[offset];
 
@@ -315,14 +338,23 @@ static void ts5500_disable_irq(struct ts5500_priv *priv)
 	else if (priv->hwirq == 1)
 		ts5500_clear_mask(BIT(6), 0x7d); /* LCD_RS on IRQ1 */
 	else
+<<<<<<< HEAD
 		dev_err(priv->gpio_chip.dev, "invalid hwirq %d\n", priv->hwirq);
+=======
+		dev_err(priv->gpio_chip.parent, "invalid hwirq %d\n",
+			priv->hwirq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&priv->lock, flags);
 }
 
 static int ts5500_dio_probe(struct platform_device *pdev)
 {
 	enum ts5500_blocks block = platform_get_device_id(pdev)->driver_data;
+<<<<<<< HEAD
 	struct ts5500_dio_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct ts5500_dio_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *dev = &pdev->dev;
 	const char *name = dev_name(dev);
 	struct ts5500_priv *priv;
@@ -346,7 +378,11 @@ static int ts5500_dio_probe(struct platform_device *pdev)
 
 	priv->gpio_chip.owner = THIS_MODULE;
 	priv->gpio_chip.label = name;
+<<<<<<< HEAD
 	priv->gpio_chip.dev = dev;
+=======
+	priv->gpio_chip.parent = dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->gpio_chip.direction_input = ts5500_gpio_input;
 	priv->gpio_chip.direction_output = ts5500_gpio_output;
 	priv->gpio_chip.get = ts5500_gpio_get;
@@ -413,7 +449,11 @@ static int ts5500_dio_probe(struct platform_device *pdev)
 		break;
 	}
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&priv->gpio_chip);
+=======
+	ret = devm_gpiochip_add_data(dev, &priv->gpio_chip, priv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(dev, "failed to register the gpio chip\n");
 		return ret;
@@ -422,6 +462,7 @@ static int ts5500_dio_probe(struct platform_device *pdev)
 	ret = ts5500_enable_irq(priv);
 	if (ret) {
 		dev_err(dev, "invalid interrupt %d\n", priv->hwirq);
+<<<<<<< HEAD
 		goto cleanup;
 	}
 
@@ -430,6 +471,12 @@ cleanup:
 	if (gpiochip_remove(&priv->gpio_chip))
 		dev_err(dev, "failed to remove gpio chip\n");
 	return ret;
+=======
+		return ret;
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ts5500_dio_remove(struct platform_device *pdev)
@@ -437,10 +484,18 @@ static int ts5500_dio_remove(struct platform_device *pdev)
 	struct ts5500_priv *priv = platform_get_drvdata(pdev);
 
 	ts5500_disable_irq(priv);
+<<<<<<< HEAD
 	return gpiochip_remove(&priv->gpio_chip);
 }
 
 static struct platform_device_id ts5500_dio_ids[] = {
+=======
+
+	return 0;
+}
+
+static const struct platform_device_id ts5500_dio_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "ts5500-dio1", TS5500_DIO1 },
 	{ "ts5500-dio2", TS5500_DIO2 },
 	{ "ts5500-dio-lcd", TS5500_LCD },
@@ -452,7 +507,10 @@ MODULE_DEVICE_TABLE(platform, ts5500_dio_ids);
 static struct platform_driver ts5500_dio_driver = {
 	.driver = {
 		.name = "ts5500-dio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = ts5500_dio_probe,
 	.remove = ts5500_dio_remove,

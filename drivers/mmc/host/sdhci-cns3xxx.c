@@ -30,13 +30,21 @@ static void sdhci_cns3xxx_set_clock(struct sdhci_host *host, unsigned int clock)
 	u16 clk;
 	unsigned long timeout;
 
+<<<<<<< HEAD
 	if (clock == host->clock)
 		return;
+=======
+	host->mmc->actual_clock = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sdhci_writew(host, 0, SDHCI_CLOCK_CONTROL);
 
 	if (clock == 0)
+<<<<<<< HEAD
 		goto out;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (host->max_clk / div > clock) {
 		/*
@@ -75,13 +83,22 @@ static void sdhci_cns3xxx_set_clock(struct sdhci_host *host, unsigned int clock)
 
 	clk |= SDHCI_CLOCK_CARD_EN;
 	sdhci_writew(host, clk, SDHCI_CLOCK_CONTROL);
+<<<<<<< HEAD
 out:
 	host->clock = clock;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct sdhci_ops sdhci_cns3xxx_ops = {
 	.get_max_clock	= sdhci_cns3xxx_get_max_clk,
 	.set_clock	= sdhci_cns3xxx_set_clock,
+<<<<<<< HEAD
+=======
+	.set_bus_width	= sdhci_set_bus_width,
+	.reset          = sdhci_reset,
+	.set_uhs_signaling = sdhci_set_uhs_signaling,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct sdhci_pltfm_data sdhci_cns3xxx_pdata = {
@@ -90,28 +107,43 @@ static const struct sdhci_pltfm_data sdhci_cns3xxx_pdata = {
 		  SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK |
 		  SDHCI_QUIRK_INVERTED_WRITE_PROTECT |
 		  SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN |
+<<<<<<< HEAD
 		  SDHCI_QUIRK_BROKEN_TIMEOUT_VAL |
 		  SDHCI_QUIRK_NONSTANDARD_CLOCK,
+=======
+		  SDHCI_QUIRK_BROKEN_TIMEOUT_VAL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int sdhci_cns3xxx_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return sdhci_pltfm_register(pdev, &sdhci_cns3xxx_pdata);
 }
 
 static int sdhci_cns3xxx_remove(struct platform_device *pdev)
 {
 	return sdhci_pltfm_unregister(pdev);
+=======
+	return sdhci_pltfm_register(pdev, &sdhci_cns3xxx_pdata, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver sdhci_cns3xxx_driver = {
 	.driver		= {
 		.name	= "sdhci-cns3xxx",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= SDHCI_PLTFM_PMOPS,
 	},
 	.probe		= sdhci_cns3xxx_probe,
 	.remove		= sdhci_cns3xxx_remove,
+=======
+		.pm	= &sdhci_pltfm_pmops,
+	},
+	.probe		= sdhci_cns3xxx_probe,
+	.remove		= sdhci_pltfm_unregister,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(sdhci_cns3xxx_driver);

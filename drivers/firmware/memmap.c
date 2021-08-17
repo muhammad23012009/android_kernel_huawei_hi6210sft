@@ -144,7 +144,13 @@ static struct kobj_type __refdata memmap_ktype = {
  *
  * Common implementation of firmware_map_add() and firmware_map_add_early()
  * which expects a pre-allocated struct firmware_map_entry.
+<<<<<<< HEAD
  **/
+=======
+ *
+ * Return: 0 always
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int firmware_map_add_entry(u64 start, u64 end,
 				  const char *type,
 				  struct firmware_map_entry *entry)
@@ -170,7 +176,11 @@ static int firmware_map_add_entry(u64 start, u64 end,
  * @entry: removed entry.
  *
  * The caller must hold map_entries_lock, and release it properly.
+<<<<<<< HEAD
  **/
+=======
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void firmware_map_remove_entry(struct firmware_map_entry *entry)
 {
 	list_del(&entry->list);
@@ -184,6 +194,12 @@ static int add_sysfs_fw_map_entry(struct firmware_map_entry *entry)
 	static int map_entries_nr;
 	static struct kset *mmap_kset;
 
+<<<<<<< HEAD
+=======
+	if (entry->kobj.state_in_sysfs)
+		return -EEXIST;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!mmap_kset) {
 		mmap_kset = kset_create_and_add("memmap", NULL, firmware_kobj);
 		if (!mmap_kset)
@@ -205,7 +221,11 @@ static inline void remove_sysfs_fw_map_entry(struct firmware_map_entry *entry)
 	kobject_put(&entry->kobj);
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * firmware_map_find_entry_in_list() - Search memmap entry in a given list.
  * @start: Start of the memory range.
  * @end:   End of the memory range (exclusive).
@@ -233,7 +253,11 @@ firmware_map_find_entry_in_list(u64 start, u64 end, const char *type,
 	return NULL;
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * firmware_map_find_entry() - Search memmap entry in map_entries.
  * @start: Start of the memory range.
  * @end:   End of the memory range (exclusive).
@@ -251,7 +275,11 @@ firmware_map_find_entry(u64 start, u64 end, const char *type)
 	return firmware_map_find_entry_in_list(start, end, type, &map_entries);
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * firmware_map_find_entry_bootmem() - Search memmap entry in map_entries_bootmem.
  * @start: Start of the memory range.
  * @end:   End of the memory range (exclusive).
@@ -280,13 +308,26 @@ firmware_map_find_entry_bootmem(u64 start, u64 end, const char *type)
  * similar to function firmware_map_add_early(). The only difference is that
  * it will create the syfs entry dynamically.
  *
+<<<<<<< HEAD
  * Returns 0 on success, or -ENOMEM if no memory could be allocated.
  **/
+=======
+ * Return: 0 on success, or -ENOMEM if no memory could be allocated.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __meminit firmware_map_add_hotplug(u64 start, u64 end, const char *type)
 {
 	struct firmware_map_entry *entry;
 
+<<<<<<< HEAD
 	entry = firmware_map_find_entry_bootmem(start, end, type);
+=======
+	entry = firmware_map_find_entry(start, end - 1, type);
+	if (entry)
+		return 0;
+
+	entry = firmware_map_find_entry_bootmem(start, end - 1, type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!entry) {
 		entry = kzalloc(sizeof(struct firmware_map_entry), GFP_ATOMIC);
 		if (!entry)
@@ -318,13 +359,22 @@ int __meminit firmware_map_add_hotplug(u64 start, u64 end, const char *type)
  *
  * That function must be called before late_initcall.
  *
+<<<<<<< HEAD
  * Returns 0 on success, or -ENOMEM if no memory could be allocated.
  **/
+=======
+ * Return: 0 on success, or -ENOMEM if no memory could be allocated.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __init firmware_map_add_early(u64 start, u64 end, const char *type)
 {
 	struct firmware_map_entry *entry;
 
+<<<<<<< HEAD
 	entry = alloc_bootmem(sizeof(struct firmware_map_entry));
+=======
+	entry = memblock_virt_alloc(sizeof(struct firmware_map_entry), 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (WARN_ON(!entry))
 		return -ENOMEM;
 
@@ -339,8 +389,13 @@ int __init firmware_map_add_early(u64 start, u64 end, const char *type)
  *
  * removes a firmware mapping entry.
  *
+<<<<<<< HEAD
  * Returns 0 on success, or -EINVAL if no entry.
  **/
+=======
+ * Return: 0 on success, or -EINVAL if no entry.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __meminit firmware_map_remove(u64 start, u64 end, const char *type)
 {
 	struct firmware_map_entry *entry;

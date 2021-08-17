@@ -174,13 +174,17 @@ static irqreturn_t ad7923_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct ad7923_state *st = iio_priv(indio_dev);
+<<<<<<< HEAD
 	s64 time_ns = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int b_sent;
 
 	b_sent = spi_sync(st->spi, &st->ring_msg);
 	if (b_sent)
 		goto done;
 
+<<<<<<< HEAD
 	if (indio_dev->scan_timestamp) {
 		time_ns = iio_get_time_ns();
 		memcpy((u8 *)st->rx_buf + indio_dev->scan_bytes - sizeof(s64),
@@ -188,6 +192,10 @@ static irqreturn_t ad7923_trigger_handler(int irq, void *p)
 	}
 
 	iio_push_to_buffers(indio_dev, (u8 *)st->rx_buf);
+=======
+	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
+		iio_get_time_ns(indio_dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 done:
 	iio_trigger_notify_done(indio_dev->trig);
@@ -239,12 +247,20 @@ static int ad7923_read_raw(struct iio_dev *indio_dev,
 
 	switch (m) {
 	case IIO_CHAN_INFO_RAW:
+<<<<<<< HEAD
 		mutex_lock(&indio_dev->mlock);
 		if (iio_buffer_enabled(indio_dev))
 			ret = -EBUSY;
 		else
 			ret = ad7923_scan_direct(st, chan->address);
 		mutex_unlock(&indio_dev->mlock);
+=======
+		ret = iio_device_claim_direct_mode(indio_dev);
+		if (ret)
+			return ret;
+		ret = ad7923_scan_direct(st, chan->address);
+		iio_device_release_direct_mode(indio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (ret < 0)
 			return ret;
@@ -275,10 +291,18 @@ static const struct iio_info ad7923_info = {
 static int ad7923_probe(struct spi_device *spi)
 {
 	struct ad7923_state *st;
+<<<<<<< HEAD
 	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
 	const struct ad7923_chip_info *info;
 	int ret;
 
+=======
+	struct iio_dev *indio_dev;
+	const struct ad7923_chip_info *info;
+	int ret;
+
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (indio_dev == NULL)
 		return -ENOMEM;
 
@@ -294,6 +318,10 @@ static int ad7923_probe(struct spi_device *spi)
 
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->dev.of_node = spi->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->channels = info->channels;
 	indio_dev->num_channels = info->num_channels;
@@ -311,6 +339,7 @@ static int ad7923_probe(struct spi_device *spi)
 	spi_message_add_tail(&st->scan_single_xfer[0], &st->scan_single_msg);
 	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
 
+<<<<<<< HEAD
 	st->reg = regulator_get(&spi->dev, "refin");
 	if (IS_ERR(st->reg)) {
 		ret = PTR_ERR(st->reg);
@@ -319,6 +348,15 @@ static int ad7923_probe(struct spi_device *spi)
 	ret = regulator_enable(st->reg);
 	if (ret)
 		goto error_put_reg;
+=======
+	st->reg = devm_regulator_get(&spi->dev, "refin");
+	if (IS_ERR(st->reg))
+		return PTR_ERR(st->reg);
+
+	ret = regulator_enable(st->reg);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
 			&ad7923_trigger_handler, NULL);
@@ -335,10 +373,13 @@ error_cleanup_ring:
 	iio_triggered_buffer_cleanup(indio_dev);
 error_disable_reg:
 	regulator_disable(st->reg);
+<<<<<<< HEAD
 error_put_reg:
 	regulator_put(st->reg);
 error_free:
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -351,8 +392,11 @@ static int ad7923_remove(struct spi_device *spi)
 	iio_device_unregister(indio_dev);
 	iio_triggered_buffer_cleanup(indio_dev);
 	regulator_disable(st->reg);
+<<<<<<< HEAD
 	regulator_put(st->reg);
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -369,7 +413,10 @@ MODULE_DEVICE_TABLE(spi, ad7923_id);
 static struct spi_driver ad7923_driver = {
 	.driver = {
 		.name	= "ad7923",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= ad7923_probe,
 	.remove		= ad7923_remove,

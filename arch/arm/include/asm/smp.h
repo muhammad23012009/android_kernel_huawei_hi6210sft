@@ -49,12 +49,15 @@ extern void smp_init_cpus(void);
 extern void set_smp_cross_call(void (*)(const struct cpumask *, unsigned int));
 
 /*
+<<<<<<< HEAD
  * Boot a secondary CPU, and assign it the specified idle task.
  * This also gives us the initial stack to use for this CPU.
  */
 extern int boot_secondary(unsigned int cpu, struct task_struct *);
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Called from platform specific assembly code, this is the
  * secondary CPU entry point.
  */
@@ -65,16 +68,29 @@ asmlinkage void secondary_start_kernel(void);
  * Initial data for bringing up a secondary CPU.
  */
 struct secondary_data {
+<<<<<<< HEAD
 	unsigned long pgdir;
+=======
+	union {
+		unsigned long mpu_rgn_szr;
+		u64 pgdir;
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long swapper_pg_dir;
 	void *stack;
 };
 extern struct secondary_data secondary_data;
 extern volatile int pen_release;
+<<<<<<< HEAD
+=======
+extern void secondary_startup(void);
+extern void secondary_startup_arm(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int __cpu_disable(void);
 
 extern void __cpu_die(unsigned int cpu);
+<<<<<<< HEAD
 extern void cpu_die(void);
 
 extern void arch_send_call_function_single_ipi(int cpu);
@@ -89,6 +105,14 @@ extern void arch_send_wakeup_ipi_mask(const struct cpumask *mask);
 extern int register_ipi_completion(struct completion *completion, int cpu);
 extern void smp_send_all_cpu_backtrace(void);
 
+=======
+
+extern void arch_send_call_function_single_ipi(int cpu);
+extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
+extern void arch_send_wakeup_ipi_mask(const struct cpumask *mask);
+
+extern int register_ipi_completion(struct completion *completion, int cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct smp_operations {
 #ifdef CONFIG_SMP
@@ -113,14 +137,34 @@ struct smp_operations {
 #ifdef CONFIG_HOTPLUG_CPU
 	int  (*cpu_kill)(unsigned int cpu);
 	void (*cpu_die)(unsigned int cpu);
+<<<<<<< HEAD
+=======
+	bool  (*cpu_can_disable)(unsigned int cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int  (*cpu_disable)(unsigned int cpu);
 #endif
 #endif
 };
 
+<<<<<<< HEAD
 /*
  * set platform specific SMP operations
  */
 extern void smp_set_ops(struct smp_operations *);
+=======
+struct of_cpu_method {
+	const char *method;
+	const struct smp_operations *ops;
+};
+
+#define CPU_METHOD_OF_DECLARE(name, _method, _ops)			\
+	static const struct of_cpu_method __cpu_method_of_table_##name	\
+		__used __section(__cpu_method_of_table)			\
+		= { .method = _method, .ops = _ops }
+/*
+ * set platform specific SMP operations
+ */
+extern void smp_set_ops(const struct smp_operations *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* ifndef __ASM_ARM_SMP_H */

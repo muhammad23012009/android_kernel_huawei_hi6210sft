@@ -96,7 +96,11 @@ static const struct hc_driver mv_ehci_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq = ehci_irq,
+<<<<<<< HEAD
 	.flags = HCD_MEMORY | HCD_USB2,
+=======
+	.flags = HCD_MEMORY | HCD_USB2 | HCD_BH,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * basic lifecycle operations
@@ -131,7 +135,11 @@ static const struct hc_driver mv_ehci_hc_driver = {
 
 static int mv_ehci_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct mv_usb_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct mv_usb_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_hcd *hcd;
 	struct ehci_hcd *ehci;
 	struct ehci_hcd_mv *ehci_mv;
@@ -153,7 +161,10 @@ static int mv_ehci_probe(struct platform_device *pdev)
 
 	ehci_mv = devm_kzalloc(&pdev->dev, sizeof(*ehci_mv), GFP_KERNEL);
 	if (ehci_mv == NULL) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "cannot allocate ehci_hcd_mv\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = -ENOMEM;
 		goto err_put_hcd;
 	}
@@ -166,6 +177,7 @@ static int mv_ehci_probe(struct platform_device *pdev)
 	if (IS_ERR(ehci_mv->clk)) {
 		dev_err(&pdev->dev, "error getting clock\n");
 		retval = PTR_ERR(ehci_mv->clk);
+<<<<<<< HEAD
 		goto err_clear_drvdata;
 	}
 
@@ -197,12 +209,33 @@ static int mv_ehci_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to map I/O memory\n");
 		retval = -EFAULT;
 		goto err_clear_drvdata;
+=======
+		goto err_put_hcd;
+	}
+
+	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "phyregs");
+	ehci_mv->phy_regs = devm_ioremap_resource(&pdev->dev, r);
+	if (IS_ERR(ehci_mv->phy_regs)) {
+		retval = PTR_ERR(ehci_mv->phy_regs);
+		goto err_put_hcd;
+	}
+
+	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "capregs");
+	ehci_mv->cap_regs = devm_ioremap_resource(&pdev->dev, r);
+	if (IS_ERR(ehci_mv->cap_regs)) {
+		retval = PTR_ERR(ehci_mv->cap_regs);
+		goto err_put_hcd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	retval = mv_ehci_enable(ehci_mv);
 	if (retval) {
 		dev_err(&pdev->dev, "init phy error %d\n", retval);
+<<<<<<< HEAD
 		goto err_clear_drvdata;
+=======
+		goto err_put_hcd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	offset = readl(ehci_mv->cap_regs) & CAPLENGTH_MASK;
@@ -213,12 +246,19 @@ static int mv_ehci_probe(struct platform_device *pdev)
 	hcd->rsrc_len = resource_size(r);
 	hcd->regs = ehci_mv->op_regs;
 
+<<<<<<< HEAD
 	hcd->irq = platform_get_irq(pdev, 0);
 	if (!hcd->irq) {
 		dev_err(&pdev->dev, "Cannot get irq.");
 		retval = -ENODEV;
 		goto err_disable_clk;
 	}
+=======
+	retval = platform_get_irq(pdev, 0);
+	if (retval < 0)
+		goto err_disable_clk;
+	hcd->irq = retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ehci = hcd_to_ehci(hcd);
 	ehci->caps = (struct ehci_caps *) ehci_mv->cap_regs;
@@ -257,6 +297,10 @@ static int mv_ehci_probe(struct platform_device *pdev)
 				"failed to add hcd with err %d\n", retval);
 			goto err_set_vbus;
 		}
+<<<<<<< HEAD
+=======
+		device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (pdata->private_init)
@@ -274,8 +318,11 @@ err_set_vbus:
 		pdata->set_vbus(0);
 err_disable_clk:
 	mv_ehci_disable(ehci_mv);
+<<<<<<< HEAD
 err_clear_drvdata:
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_put_hcd:
 	usb_put_hcd(hcd);
 
@@ -300,8 +347,11 @@ static int mv_ehci_remove(struct platform_device *pdev)
 		mv_ehci_disable(ehci_mv);
 	}
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_put_hcd(hcd);
 
 	return 0;

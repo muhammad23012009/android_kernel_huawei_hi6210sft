@@ -63,7 +63,10 @@ static struct {
 enum ipi_message_type {
 	IPI_RESCHEDULE,
 	IPI_CALL_FUNC,
+<<<<<<< HEAD
 	IPI_CALL_FUNC_SINGLE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IPI_CPU_STOP,
 };
 
@@ -116,7 +119,11 @@ wait_boot_cpu_to_stop(int cpuid)
 /*
  * Where secondaries begin a life of C.
  */
+<<<<<<< HEAD
 void __cpuinit
+=======
+void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 smp_callin(void)
 {
 	int cpuid = hard_smp_processor_id();
@@ -138,9 +145,17 @@ smp_callin(void)
 
 	/* Get our local ticker going. */
 	smp_setup_percpu_timer(cpuid);
+<<<<<<< HEAD
 
 	/* Call platform-specific callin, if specified */
 	if (alpha_mv.smp_callin) alpha_mv.smp_callin();
+=======
+	init_clockevent();
+
+	/* Call platform-specific callin, if specified */
+	if (alpha_mv.smp_callin)
+		alpha_mv.smp_callin();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* All kernel threads share the same mm context.  */
 	atomic_inc(&init_mm.mm_count);
@@ -167,7 +182,11 @@ smp_callin(void)
 	      cpuid, current, current->active_mm));
 
 	preempt_disable();
+<<<<<<< HEAD
 	cpu_startup_entry(CPUHP_ONLINE);
+=======
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Wait until hwrpb->txrdy is clear for cpu.  Return -1 on timeout.  */
@@ -194,7 +213,11 @@ wait_for_txrdy (unsigned long cpumask)
  * Send a message to a secondary's console.  "START" is one such
  * interesting message.  ;-)
  */
+<<<<<<< HEAD
 static void __cpuinit
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 send_secondary_console_msg(char *str, int cpuid)
 {
 	struct percpu_struct *cpu;
@@ -264,9 +287,16 @@ recv_secondary_console_msg(void)
 		if (cnt <= 0 || cnt >= 80)
 			strcpy(buf, "<<< BOGUS MSG >>>");
 		else {
+<<<<<<< HEAD
 			cp1 = (char *) &cpu->ipc_buffer[11];
 			cp2 = buf;
 			strcpy(cp2, cp1);
+=======
+			cp1 = (char *) &cpu->ipc_buffer[1];
+			cp2 = buf;
+			memcpy(cp2, cp1, cnt);
+			cp2[cnt] = '\0';
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			
 			while ((cp2 = strchr(cp2, '\r')) != 0) {
 				*cp2 = ' ';
@@ -285,7 +315,11 @@ recv_secondary_console_msg(void)
 /*
  * Convince the console to have a secondary cpu begin execution.
  */
+<<<<<<< HEAD
 static int __cpuinit
+=======
+static int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 secondary_cpu_start(int cpuid, struct task_struct *idle)
 {
 	struct percpu_struct *cpu;
@@ -356,7 +390,11 @@ secondary_cpu_start(int cpuid, struct task_struct *idle)
 /*
  * Bring one cpu online.
  */
+<<<<<<< HEAD
 static int __cpuinit
+=======
+static int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 smp_boot_one_cpu(int cpuid, struct task_struct *idle)
 {
 	unsigned long timeout;
@@ -472,7 +510,11 @@ smp_prepare_boot_cpu(void)
 {
 }
 
+<<<<<<< HEAD
 int __cpuinit
+=======
+int
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __cpu_up(unsigned int cpu, struct task_struct *tidle)
 {
 	smp_boot_one_cpu(cpu, tidle);
@@ -497,6 +539,7 @@ smp_cpus_done(unsigned int max_cpus)
 	       ((bogosum + 2500) / (5000/HZ)) % 100);
 }
 
+<<<<<<< HEAD
 
 void
 smp_percpu_timer_interrupt(struct pt_regs *regs)
@@ -526,13 +569,18 @@ smp_percpu_timer_interrupt(struct pt_regs *regs)
 	set_irq_regs(old_regs);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int
 setup_profiling_timer(unsigned int multiplier)
 {
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 send_ipi_message(const struct cpumask *to_whom, enum ipi_message_type operation)
 {
@@ -578,10 +626,13 @@ handle_ipi(struct pt_regs *regs)
 			generic_smp_call_function_interrupt();
 			break;
 
+<<<<<<< HEAD
 		case IPI_CALL_FUNC_SINGLE:
 			generic_smp_call_function_single_interrupt();
 			break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case IPI_CPU_STOP:
 			halt();
 
@@ -616,7 +667,11 @@ void
 smp_send_stop(void)
 {
 	cpumask_t to_whom;
+<<<<<<< HEAD
 	cpumask_copy(&to_whom, cpu_possible_mask);
+=======
+	cpumask_copy(&to_whom, cpu_online_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpumask_clear_cpu(smp_processor_id(), &to_whom);
 #ifdef DEBUG_IPI_MSG
 	if (hard_smp_processor_id() != boot_cpu_id)
@@ -632,7 +687,11 @@ void arch_send_call_function_ipi_mask(const struct cpumask *mask)
 
 void arch_send_call_function_single_ipi(int cpu)
 {
+<<<<<<< HEAD
 	send_ipi_message(cpumask_of(cpu), IPI_CALL_FUNC_SINGLE);
+=======
+	send_ipi_message(cpumask_of(cpu), IPI_CALL_FUNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void

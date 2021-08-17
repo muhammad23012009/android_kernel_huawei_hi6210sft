@@ -49,6 +49,7 @@ static void wusbhc_rsv_complete_cb(struct uwb_rsv *rsv)
 	struct wusbhc *wusbhc = rsv->pal_priv;
 	struct device *dev = wusbhc->dev;
 	struct uwb_mas_bm mas;
+<<<<<<< HEAD
 	char buf[72];
 
 	switch (rsv->state) {
@@ -56,6 +57,15 @@ static void wusbhc_rsv_complete_cb(struct uwb_rsv *rsv)
 		uwb_rsv_get_usable_mas(rsv, &mas);
 		bitmap_scnprintf(buf, sizeof(buf), mas.bm, UWB_NUM_MAS);
 		dev_dbg(dev, "established reservation: %s\n", buf);
+=======
+
+	dev_dbg(dev, "%s: state = %d\n", __func__, rsv->state);
+	switch (rsv->state) {
+	case UWB_RSV_STATE_O_ESTABLISHED:
+		uwb_rsv_get_usable_mas(rsv, &mas);
+		dev_dbg(dev, "established reservation: %*pb\n",
+			UWB_NUM_MAS, mas.bm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wusbhc_bwa_set(wusbhc, rsv->stream, &mas);
 		break;
 	case UWB_RSV_STATE_NONE:
@@ -80,6 +90,12 @@ int wusbhc_rsv_establish(struct wusbhc *wusbhc)
 	struct uwb_dev_addr bcid;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (rc == NULL)
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rsv = uwb_rsv_create(rc, wusbhc_rsv_complete_cb, wusbhc);
 	if (rsv == NULL)
 		return -ENOMEM;

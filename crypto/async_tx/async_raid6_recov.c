@@ -26,6 +26,10 @@
 #include <linux/dma-mapping.h>
 #include <linux/raid/pq.h>
 #include <linux/async_tx.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct dma_async_tx_descriptor *
 async_sum_product(struct page *dest, struct page **srcs, unsigned char *coef,
@@ -34,19 +38,33 @@ async_sum_product(struct page *dest, struct page **srcs, unsigned char *coef,
 	struct dma_chan *chan = async_tx_find_channel(submit, DMA_PQ,
 						      &dest, 1, srcs, 2, len);
 	struct dma_device *dma = chan ? chan->device : NULL;
+<<<<<<< HEAD
+=======
+	struct dmaengine_unmap_data *unmap = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const u8 *amul, *bmul;
 	u8 ax, bx;
 	u8 *a, *b, *c;
 
+<<<<<<< HEAD
 	if (dma) {
 		dma_addr_t dma_dest[2];
 		dma_addr_t dma_src[2];
 		struct device *dev = dma->dev;
+=======
+	if (dma)
+		unmap = dmaengine_get_unmap_data(dma->dev, 3, GFP_NOWAIT);
+
+	if (unmap) {
+		struct device *dev = dma->dev;
+		dma_addr_t pq[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct dma_async_tx_descriptor *tx;
 		enum dma_ctrl_flags dma_flags = DMA_PREP_PQ_DISABLE_P;
 
 		if (submit->flags & ASYNC_TX_FENCE)
 			dma_flags |= DMA_PREP_FENCE;
+<<<<<<< HEAD
 		dma_dest[1] = dma_map_page(dev, dest, 0, len, DMA_BIDIRECTIONAL);
 		dma_src[0] = dma_map_page(dev, srcs[0], 0, len, DMA_TO_DEVICE);
 		dma_src[1] = dma_map_page(dev, srcs[1], 0, len, DMA_TO_DEVICE);
@@ -54,15 +72,37 @@ async_sum_product(struct page *dest, struct page **srcs, unsigned char *coef,
 					     len, dma_flags);
 		if (tx) {
 			async_tx_submit(chan, tx, submit);
+=======
+		unmap->addr[0] = dma_map_page(dev, srcs[0], 0, len, DMA_TO_DEVICE);
+		unmap->addr[1] = dma_map_page(dev, srcs[1], 0, len, DMA_TO_DEVICE);
+		unmap->to_cnt = 2;
+
+		unmap->addr[2] = dma_map_page(dev, dest, 0, len, DMA_BIDIRECTIONAL);
+		unmap->bidi_cnt = 1;
+		/* engine only looks at Q, but expects it to follow P */
+		pq[1] = unmap->addr[2];
+
+		unmap->len = len;
+		tx = dma->device_prep_dma_pq(chan, pq, unmap->addr, 2, coef,
+					     len, dma_flags);
+		if (tx) {
+			dma_set_unmap(tx, unmap);
+			async_tx_submit(chan, tx, submit);
+			dmaengine_unmap_put(unmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return tx;
 		}
 
 		/* could not get a descriptor, unmap and fall through to
 		 * the synchronous path
 		 */
+<<<<<<< HEAD
 		dma_unmap_page(dev, dma_dest[1], len, DMA_BIDIRECTIONAL);
 		dma_unmap_page(dev, dma_src[0], len, DMA_TO_DEVICE);
 		dma_unmap_page(dev, dma_src[1], len, DMA_TO_DEVICE);
+=======
+		dmaengine_unmap_put(unmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* run the operation synchronously */
@@ -89,23 +129,55 @@ async_mult(struct page *dest, struct page *src, u8 coef, size_t len,
 	struct dma_chan *chan = async_tx_find_channel(submit, DMA_PQ,
 						      &dest, 1, &src, 1, len);
 	struct dma_device *dma = chan ? chan->device : NULL;
+<<<<<<< HEAD
 	const u8 *qmul; /* Q multiplier table */
 	u8 *d, *s;
 
 	if (dma) {
 		dma_addr_t dma_dest[2];
 		dma_addr_t dma_src[1];
+=======
+	struct dmaengine_unmap_data *unmap = NULL;
+	const u8 *qmul; /* Q multiplier table */
+	u8 *d, *s;
+
+	if (dma)
+		unmap = dmaengine_get_unmap_data(dma->dev, 3, GFP_NOWAIT);
+
+	if (unmap) {
+		dma_addr_t dma_dest[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct device *dev = dma->dev;
 		struct dma_async_tx_descriptor *tx;
 		enum dma_ctrl_flags dma_flags = DMA_PREP_PQ_DISABLE_P;
 
 		if (submit->flags & ASYNC_TX_FENCE)
 			dma_flags |= DMA_PREP_FENCE;
+<<<<<<< HEAD
 		dma_dest[1] = dma_map_page(dev, dest, 0, len, DMA_BIDIRECTIONAL);
 		dma_src[0] = dma_map_page(dev, src, 0, len, DMA_TO_DEVICE);
 		tx = dma->device_prep_dma_pq(chan, dma_dest, dma_src, 1, &coef,
 					     len, dma_flags);
 		if (tx) {
+=======
+		unmap->addr[0] = dma_map_page(dev, src, 0, len, DMA_TO_DEVICE);
+		unmap->to_cnt++;
+		unmap->addr[1] = dma_map_page(dev, dest, 0, len, DMA_BIDIRECTIONAL);
+		dma_dest[1] = unmap->addr[1];
+		unmap->bidi_cnt++;
+		unmap->len = len;
+
+		/* this looks funny, but the engine looks for Q at
+		 * dma_dest[1] and ignores dma_dest[0] as a dest
+		 * due to DMA_PREP_PQ_DISABLE_P
+		 */
+		tx = dma->device_prep_dma_pq(chan, dma_dest, unmap->addr,
+					     1, &coef, len, dma_flags);
+
+		if (tx) {
+			dma_set_unmap(tx, unmap);
+			dmaengine_unmap_put(unmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			async_tx_submit(chan, tx, submit);
 			return tx;
 		}
@@ -113,8 +185,12 @@ async_mult(struct page *dest, struct page *src, u8 coef, size_t len,
 		/* could not get a descriptor, unmap and fall through to
 		 * the synchronous path
 		 */
+<<<<<<< HEAD
 		dma_unmap_page(dev, dma_dest[1], len, DMA_BIDIRECTIONAL);
 		dma_unmap_page(dev, dma_src[0], len, DMA_TO_DEVICE);
+=======
+		dmaengine_unmap_put(unmap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* no channel available, or failed to allocate a descriptor, so

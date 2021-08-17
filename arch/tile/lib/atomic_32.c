@@ -20,6 +20,7 @@
 #include <linux/atomic.h>
 #include <arch/chip.h>
 
+<<<<<<< HEAD
 /* See <asm/atomic_32.h> */
 #if ATOMIC_LOCKS_FOUND_VIA_TABLE()
 
@@ -64,6 +65,14 @@ int *__atomic_hashed_lock(volatile void *v)
 
 	return &atomic_lock_ptr[l1_index]->lock[l2_index];
 #else
+=======
+/* This page is remapped on startup to be hash-for-home. */
+int atomic_locks[PAGE_SIZE / sizeof(int)] __page_aligned_bss;
+
+int *__atomic_hashed_lock(volatile void *v)
+{
+	/* NOTE: this code must match "sys_cmpxchg" in kernel/intvec_32.S */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Use bits [3, 3 + ATOMIC_HASH_SHIFT) as the lock index.
 	 * Using mm works here because atomic_locks is page aligned.
@@ -72,13 +81,17 @@ int *__atomic_hashed_lock(volatile void *v)
 				      (unsigned long)atomic_locks,
 				      2, (ATOMIC_HASH_SHIFT + 2) - 1);
 	return (int *)ptr;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_SMP
 /* Return whether the passed pointer is a valid atomic lock pointer. */
 static int is_atomic_lock(int *p)
 {
+<<<<<<< HEAD
 #if ATOMIC_LOCKS_FOUND_VIA_TABLE()
 	int i;
 	for (i = 0; i < ATOMIC_HASH_L1_SIZE; ++i) {
@@ -92,6 +105,9 @@ static int is_atomic_lock(int *p)
 #else
 	return p >= &atomic_locks[0] && p < &atomic_locks[ATOMIC_HASH_SIZE];
 #endif
+=======
+	return p >= &atomic_locks[0] && p < &atomic_locks[ATOMIC_HASH_SIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __atomic_fault_unlock(int *irqlock_word)
@@ -110,6 +126,7 @@ static inline int *__atomic_setup(volatile void *v)
 	return __atomic_hashed_lock(v);
 }
 
+<<<<<<< HEAD
 int _atomic_xchg(atomic_t *v, int n)
 {
 	return __atomic_xchg(&v->counter, __atomic_setup(v), n).val;
@@ -123,12 +140,28 @@ int _atomic_xchg_add(atomic_t *v, int i)
 EXPORT_SYMBOL(_atomic_xchg_add);
 
 int _atomic_xchg_add_unless(atomic_t *v, int a, int u)
+=======
+int _atomic_xchg(int *v, int n)
+{
+	return __atomic32_xchg(v, __atomic_setup(v), n).val;
+}
+EXPORT_SYMBOL(_atomic_xchg);
+
+int _atomic_xchg_add(int *v, int i)
+{
+	return __atomic32_xchg_add(v, __atomic_setup(v), i).val;
+}
+EXPORT_SYMBOL(_atomic_xchg_add);
+
+int _atomic_xchg_add_unless(int *v, int a, int u)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * Note: argument order is switched here since it is easier
 	 * to use the first argument consistently as the "old value"
 	 * in the assembly, as is done for _atomic_cmpxchg().
 	 */
+<<<<<<< HEAD
 	return __atomic_xchg_add_unless(&v->counter, __atomic_setup(v), u, a)
 		.val;
 }
@@ -172,12 +205,63 @@ u64 _atomic64_xchg_add(atomic64_t *v, u64 i)
 EXPORT_SYMBOL(_atomic64_xchg_add);
 
 u64 _atomic64_xchg_add_unless(atomic64_t *v, u64 a, u64 u)
+=======
+	return __atomic32_xchg_add_unless(v, __atomic_setup(v), u, a).val;
+}
+EXPORT_SYMBOL(_atomic_xchg_add_unless);
+
+int _atomic_cmpxchg(int *v, int o, int n)
+{
+	return __atomic32_cmpxchg(v, __atomic_setup(v), o, n).val;
+}
+EXPORT_SYMBOL(_atomic_cmpxchg);
+
+unsigned long _atomic_fetch_or(volatile unsigned long *p, unsigned long mask)
+{
+	return __atomic32_fetch_or((int *)p, __atomic_setup(p), mask).val;
+}
+EXPORT_SYMBOL(_atomic_fetch_or);
+
+unsigned long _atomic_fetch_and(volatile unsigned long *p, unsigned long mask)
+{
+	return __atomic32_fetch_and((int *)p, __atomic_setup(p), mask).val;
+}
+EXPORT_SYMBOL(_atomic_fetch_and);
+
+unsigned long _atomic_fetch_andn(volatile unsigned long *p, unsigned long mask)
+{
+	return __atomic32_fetch_andn((int *)p, __atomic_setup(p), mask).val;
+}
+EXPORT_SYMBOL(_atomic_fetch_andn);
+
+unsigned long _atomic_fetch_xor(volatile unsigned long *p, unsigned long mask)
+{
+	return __atomic32_fetch_xor((int *)p, __atomic_setup(p), mask).val;
+}
+EXPORT_SYMBOL(_atomic_fetch_xor);
+
+
+long long _atomic64_xchg(long long *v, long long n)
+{
+	return __atomic64_xchg(v, __atomic_setup(v), n);
+}
+EXPORT_SYMBOL(_atomic64_xchg);
+
+long long _atomic64_xchg_add(long long *v, long long i)
+{
+	return __atomic64_xchg_add(v, __atomic_setup(v), i);
+}
+EXPORT_SYMBOL(_atomic64_xchg_add);
+
+long long _atomic64_xchg_add_unless(long long *v, long long a, long long u)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * Note: argument order is switched here since it is easier
 	 * to use the first argument consistently as the "old value"
 	 * in the assembly, as is done for _atomic_cmpxchg().
 	 */
+<<<<<<< HEAD
 	return __atomic64_xchg_add_unless(&v->counter, __atomic_setup(v),
 					  u, a);
 }
@@ -189,6 +273,35 @@ u64 _atomic64_cmpxchg(atomic64_t *v, u64 o, u64 n)
 }
 EXPORT_SYMBOL(_atomic64_cmpxchg);
 
+=======
+	return __atomic64_xchg_add_unless(v, __atomic_setup(v), u, a);
+}
+EXPORT_SYMBOL(_atomic64_xchg_add_unless);
+
+long long _atomic64_cmpxchg(long long *v, long long o, long long n)
+{
+	return __atomic64_cmpxchg(v, __atomic_setup(v), o, n);
+}
+EXPORT_SYMBOL(_atomic64_cmpxchg);
+
+long long _atomic64_fetch_and(long long *v, long long n)
+{
+	return __atomic64_fetch_and(v, __atomic_setup(v), n);
+}
+EXPORT_SYMBOL(_atomic64_fetch_and);
+
+long long _atomic64_fetch_or(long long *v, long long n)
+{
+	return __atomic64_fetch_or(v, __atomic_setup(v), n);
+}
+EXPORT_SYMBOL(_atomic64_fetch_or);
+
+long long _atomic64_fetch_xor(long long *v, long long n)
+{
+	return __atomic64_fetch_xor(v, __atomic_setup(v), n);
+}
+EXPORT_SYMBOL(_atomic64_fetch_xor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * If any of the atomic or futex routines hit a bad address (not in
@@ -208,6 +321,7 @@ struct __get_user __atomic_bad_address(int __user *addr)
 }
 
 
+<<<<<<< HEAD
 #if CHIP_HAS_CBOX_HOME_MAP()
 static int __init noatomichash(char *str)
 {
@@ -256,6 +370,10 @@ void __init __init_atomic_per_cpu(void)
 
 #else /* ATOMIC_LOCKS_FOUND_VIA_TABLE() */
 
+=======
+void __init __init_atomic_per_cpu(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Validate power-of-two and "bigger than cpus" assumption */
 	BUILD_BUG_ON(ATOMIC_HASH_SIZE & (ATOMIC_HASH_SIZE-1));
 	BUG_ON(ATOMIC_HASH_SIZE < nr_cpu_ids);
@@ -279,6 +397,9 @@ void __init __init_atomic_per_cpu(void)
 	 * That should not produce more indices than ATOMIC_HASH_SIZE.
 	 */
 	BUILD_BUG_ON((PAGE_SIZE >> 3) > ATOMIC_HASH_SIZE);
+<<<<<<< HEAD
 
 #endif /* ATOMIC_LOCKS_FOUND_VIA_TABLE() */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

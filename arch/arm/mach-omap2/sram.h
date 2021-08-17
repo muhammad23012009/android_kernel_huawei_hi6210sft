@@ -15,12 +15,15 @@ extern void omap2_sram_reprogram_sdrc(u32 perf_level, u32 dll_val,
 				      u32 mem_type);
 extern u32 omap2_set_prcm(u32 dpll_ctrl_val, u32 sdrc_rfr_val, int bypass);
 
+<<<<<<< HEAD
 extern u32 omap3_configure_core_dpll(
 			u32 m2, u32 unlock_dll, u32 f, u32 inc,
 			u32 sdrc_rfr_ctrl_0, u32 sdrc_actim_ctrl_a_0,
 			u32 sdrc_actim_ctrl_b_0, u32 sdrc_mr_0,
 			u32 sdrc_rfr_ctrl_1, u32 sdrc_actim_ctrl_a_1,
 			u32 sdrc_actim_ctrl_b_1, u32 sdrc_mr_1);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void omap3_sram_restore_context(void);
 
 /* Do not use these */
@@ -52,6 +55,7 @@ extern void omap243x_sram_reprogram_sdrc(u32 perf_level, u32 dll_val,
 						u32 mem_type);
 extern unsigned long omap243x_sram_reprogram_sdrc_sz;
 
+<<<<<<< HEAD
 extern u32 omap3_sram_configure_core_dpll(
 			u32 m2, u32 unlock_dll, u32 f, u32 inc,
 			u32 sdrc_rfr_ctrl_0, u32 sdrc_actim_ctrl_a_0,
@@ -60,6 +64,8 @@ extern u32 omap3_sram_configure_core_dpll(
 			u32 sdrc_actim_ctrl_b_1, u32 sdrc_mr_1);
 extern unsigned long omap3_sram_configure_core_dpll_sz;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM
 extern void omap_push_sram_idle(void);
 #else
@@ -74,6 +80,7 @@ static inline void omap_push_sram_idle(void) {}
  */
 #define OMAP2_SRAM_PA		0x40200000
 #define OMAP3_SRAM_PA           0x40200000
+<<<<<<< HEAD
 #ifdef CONFIG_OMAP4_ERRATA_I688
 #define OMAP4_SRAM_PA		0x40304000
 #define OMAP4_SRAM_VA		0xfe404000
@@ -81,3 +88,5 @@ static inline void omap_push_sram_idle(void) {}
 #define OMAP4_SRAM_PA		0x40300000
 #endif
 #define AM33XX_SRAM_PA		0x40300000
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

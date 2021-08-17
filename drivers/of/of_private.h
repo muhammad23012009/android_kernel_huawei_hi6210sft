@@ -45,6 +45,11 @@ static inline struct device_node *kobj_to_device_node(struct kobject *kobj)
 extern int of_property_notify(int action, struct device_node *np,
 			      struct property *prop, struct property *old_prop);
 extern void of_node_release(struct kobject *kobj);
+<<<<<<< HEAD
+=======
+extern int __of_changeset_apply(struct of_changeset *ocs);
+extern int __of_changeset_revert(struct of_changeset *ocs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_OF_DYNAMIC */
 static inline int of_property_notify(int action, struct device_node *np,
 				     struct property *prop, struct property *old_prop)
@@ -81,6 +86,12 @@ extern int __of_attach_node_sysfs(struct device_node *np);
 extern void __of_detach_node(struct device_node *np);
 extern void __of_detach_node_sysfs(struct device_node *np);
 
+<<<<<<< HEAD
+=======
+extern void __of_sysfs_remove_bin_file(struct device_node *np,
+				       struct property *prop);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* iterators for transactions, used for overlays */
 /* forward iterator */
 #define for_each_transaction_entry(_oft, _te) \

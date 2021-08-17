@@ -13,14 +13,23 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 #include <linux/pm_runtime.h>
 #endif
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "s5p_mfc_common.h"
 #include "s5p_mfc_debug.h"
 #include "s5p_mfc_pm.h"
 
 #define MFC_GATE_CLK_NAME	"mfc"
+<<<<<<< HEAD
+=======
+#define MFC_SCLK_NAME		"sclk_mfc"
+#define MFC_SCLK_RATE		(200 * 1000000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CLK_DEBUG
 
@@ -50,8 +59,28 @@ int s5p_mfc_init_pm(struct s5p_mfc_dev *dev)
 		goto err_p_ip_clk;
 	}
 
+<<<<<<< HEAD
 	atomic_set(&pm->power, 0);
 #ifdef CONFIG_PM_RUNTIME
+=======
+	if (dev->variant->version != MFC_VERSION_V6) {
+		pm->clock = clk_get(&dev->plat_dev->dev, MFC_SCLK_NAME);
+		if (IS_ERR(pm->clock)) {
+			mfc_info("Failed to get MFC special clock control\n");
+			pm->clock = NULL;
+		} else {
+			clk_set_rate(pm->clock, MFC_SCLK_RATE);
+			ret = clk_prepare_enable(pm->clock);
+			if (ret) {
+				mfc_err("Failed to enable MFC special clock\n");
+				goto err_s_clk;
+			}
+		}
+	}
+
+	atomic_set(&pm->power, 0);
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pm->device = &dev->plat_dev->dev;
 	pm_runtime_enable(pm->device);
 #endif
@@ -59,29 +88,61 @@ int s5p_mfc_init_pm(struct s5p_mfc_dev *dev)
 	atomic_set(&clk_ref, 0);
 #endif
 	return 0;
+<<<<<<< HEAD
 err_p_ip_clk:
 	clk_put(pm->clock_gate);
+=======
+
+err_s_clk:
+	clk_put(pm->clock);
+	pm->clock = NULL;
+err_p_ip_clk:
+	clk_put(pm->clock_gate);
+	pm->clock_gate = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_g_ip_clk:
 	return ret;
 }
 
 void s5p_mfc_final_pm(struct s5p_mfc_dev *dev)
 {
+<<<<<<< HEAD
 	clk_unprepare(pm->clock_gate);
 	clk_put(pm->clock_gate);
 #ifdef CONFIG_PM_RUNTIME
+=======
+	if (dev->variant->version != MFC_VERSION_V6 &&
+	    pm->clock) {
+		clk_disable_unprepare(pm->clock);
+		clk_put(pm->clock);
+		pm->clock = NULL;
+	}
+	clk_unprepare(pm->clock_gate);
+	clk_put(pm->clock_gate);
+	pm->clock_gate = NULL;
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pm_runtime_disable(pm->device);
 #endif
 }
 
 int s5p_mfc_clock_on(void)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CLK_DEBUG
 	atomic_inc(&clk_ref);
 	mfc_debug(3, "+ %d\n", atomic_read(&clk_ref));
 #endif
+<<<<<<< HEAD
 	ret = clk_enable(pm->clock_gate);
+=======
+	if (!IS_ERR_OR_NULL(pm->clock_gate))
+		ret = clk_enable(pm->clock_gate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -91,12 +152,21 @@ void s5p_mfc_clock_off(void)
 	atomic_dec(&clk_ref);
 	mfc_debug(3, "- %d\n", atomic_read(&clk_ref));
 #endif
+<<<<<<< HEAD
 	clk_disable(pm->clock_gate);
+=======
+	if (!IS_ERR_OR_NULL(pm->clock_gate))
+		clk_disable(pm->clock_gate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int s5p_mfc_power_on(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pm_runtime_get_sync(pm->device);
 #else
 	atomic_set(&pm->power, 1);
@@ -106,7 +176,11 @@ int s5p_mfc_power_on(void)
 
 int s5p_mfc_power_off(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pm_runtime_put_sync(pm->device);
 #else
 	atomic_set(&pm->power, 0);

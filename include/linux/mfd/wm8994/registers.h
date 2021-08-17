@@ -2668,6 +2668,13 @@
 /*
  * R772 (0x304) - AIF1ADC LRCLK
  */
+<<<<<<< HEAD
+=======
+#define WM8958_AIF1_LRCLK_INV                   0x1000  /* AIF1_LRCLK_INV */
+#define WM8958_AIF1_LRCLK_INV_MASK              0x1000  /* AIF1_LRCLK_INV */
+#define WM8958_AIF1_LRCLK_INV_SHIFT                 12  /* AIF1_LRCLK_INV */
+#define WM8958_AIF1_LRCLK_INV_WIDTH                  1  /* AIF1_LRCLK_INV */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define WM8994_AIF1ADC_LRCLK_DIR                0x0800  /* AIF1ADC_LRCLK_DIR */
 #define WM8994_AIF1ADC_LRCLK_DIR_MASK           0x0800  /* AIF1ADC_LRCLK_DIR */
 #define WM8994_AIF1ADC_LRCLK_DIR_SHIFT              11  /* AIF1ADC_LRCLK_DIR */
@@ -2679,6 +2686,13 @@
 /*
  * R773 (0x305) - AIF1DAC LRCLK
  */
+<<<<<<< HEAD
+=======
+#define WM8958_AIF1_LRCLK_INV                   0x1000  /* AIF1_LRCLK_INV */
+#define WM8958_AIF1_LRCLK_INV_MASK              0x1000  /* AIF1_LRCLK_INV */
+#define WM8958_AIF1_LRCLK_INV_SHIFT                 12  /* AIF1_LRCLK_INV */
+#define WM8958_AIF1_LRCLK_INV_WIDTH                  1  /* AIF1_LRCLK_INV */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define WM8994_AIF1DAC_LRCLK_DIR                0x0800  /* AIF1DAC_LRCLK_DIR */
 #define WM8994_AIF1DAC_LRCLK_DIR_MASK           0x0800  /* AIF1DAC_LRCLK_DIR */
 #define WM8994_AIF1DAC_LRCLK_DIR_SHIFT              11  /* AIF1DAC_LRCLK_DIR */

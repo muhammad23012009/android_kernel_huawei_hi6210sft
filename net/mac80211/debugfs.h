@@ -1,6 +1,11 @@
 #ifndef __MAC80211_DEBUGFS_H
 #define __MAC80211_DEBUGFS_H
 
+<<<<<<< HEAD
+=======
+#include "ieee80211_i.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_MAC80211_DEBUGFS
 void debugfs_hw_add(struct ieee80211_local *local);
 int __printf(4, 5) mac80211_format_buffer(char __user *userbuf, size_t count,

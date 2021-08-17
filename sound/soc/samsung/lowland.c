@@ -56,6 +56,7 @@ static int lowland_wm5100_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_jack_new(codec, "Headset",
 			       SND_JACK_LINEOUT | SND_JACK_HEADSET |
 			       SND_JACK_BTN_0,
@@ -66,6 +67,12 @@ static int lowland_wm5100_init(struct snd_soc_pcm_runtime *rtd)
 	ret = snd_soc_jack_add_pins(&lowland_headset,
 				    ARRAY_SIZE(lowland_headset_pins),
 				    lowland_headset_pins);
+=======
+	ret = snd_soc_card_jack_new(rtd->card, "Headset", SND_JACK_LINEOUT |
+				    SND_JACK_HEADSET | SND_JACK_BTN_0,
+				    &lowland_headset, lowland_headset_pins,
+				    ARRAY_SIZE(lowland_headset_pins));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 
@@ -78,7 +85,11 @@ static int lowland_wm9081_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
 
+<<<<<<< HEAD
 	snd_soc_dapm_nc_pin(&codec->dapm, "LINEOUT");
+=======
+	snd_soc_dapm_nc_pin(&rtd->card->dapm, "LINEOUT");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* At any time the WM9081 is active it will have this clock */
 	return snd_soc_codec_set_sysclk(codec, WM9081_SYSCLK_MCLK, 0,
@@ -187,6 +198,7 @@ static int lowland_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	ret = snd_soc_register_card(card);
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
@@ -204,16 +216,30 @@ static int lowland_remove(struct platform_device *pdev)
 	snd_soc_unregister_card(card);
 
 	return 0;
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, card);
+	if (ret)
+		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
+			ret);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver lowland_driver = {
 	.driver = {
 		.name = "lowland",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe = lowland_probe,
 	.remove = lowland_remove,
+=======
+		.pm = &snd_soc_pm_ops,
+	},
+	.probe = lowland_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(lowland_driver);

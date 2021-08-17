@@ -56,6 +56,10 @@ static const struct team_mode bc_mode = {
 	.kind		= "broadcast",
 	.owner		= THIS_MODULE,
 	.ops		= &bc_mode_ops,
+<<<<<<< HEAD
+=======
+	.lag_tx_type	= NETDEV_LAG_TX_TYPE_BROADCAST,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init bc_init_module(void)

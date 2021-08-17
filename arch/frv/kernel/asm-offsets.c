@@ -34,13 +34,19 @@ void foo(void)
 {
 	/* offsets into the thread_info structure */
 	OFFSET(TI_TASK,			thread_info, task);
+<<<<<<< HEAD
 	OFFSET(TI_EXEC_DOMAIN,		thread_info, exec_domain);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	OFFSET(TI_FLAGS,		thread_info, flags);
 	OFFSET(TI_STATUS,		thread_info, status);
 	OFFSET(TI_CPU,			thread_info, cpu);
 	OFFSET(TI_PREEMPT_COUNT,	thread_info, preempt_count);
 	OFFSET(TI_ADDR_LIMIT,		thread_info, addr_limit);
+<<<<<<< HEAD
 	OFFSET(TI_RESTART_BLOCK,	thread_info, restart_block);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BLANK();
 
 	/* offsets into register file storage */

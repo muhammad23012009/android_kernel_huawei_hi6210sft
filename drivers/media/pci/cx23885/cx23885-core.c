@@ -13,10 +13,13 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/init.h>
@@ -420,11 +423,16 @@ static int cx23885_risc_decode(u32 risc)
 	return incr[risc >> 28] ? incr[risc >> 28] : 1;
 }
 
+<<<<<<< HEAD
 void cx23885_wakeup(struct cx23885_tsport *port,
+=======
+static void cx23885_wakeup(struct cx23885_tsport *port,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   struct cx23885_dmaqueue *q, u32 count)
 {
 	struct cx23885_dev *dev = port->dev;
 	struct cx23885_buffer *buf;
+<<<<<<< HEAD
 	int bc;
 
 	for (bc = 0;; bc++) {
@@ -453,6 +461,21 @@ void cx23885_wakeup(struct cx23885_tsport *port,
 	if (bc != 1)
 		printk(KERN_WARNING "%s: %d buffers handled (should be 1)\n",
 		       __func__, bc);
+=======
+
+	if (list_empty(&q->active))
+		return;
+	buf = list_entry(q->active.next,
+			 struct cx23885_buffer, queue);
+
+	buf->vb.vb2_buf.timestamp = ktime_get_ns();
+	buf->vb.sequence = q->count++;
+	dprintk(1, "[%p/%d] wakeup reg=%d buf=%d\n", buf,
+		buf->vb.vb2_buf.index,
+		count, q->count);
+	list_del(&buf->queue);
+	vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_DONE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int cx23885_sram_channel_setup(struct cx23885_dev *dev,
@@ -482,8 +505,13 @@ int cx23885_sram_channel_setup(struct cx23885_dev *dev,
 		lines = 6;
 	BUG_ON(lines < 2);
 
+<<<<<<< HEAD
 	cx_write(8 + 0, RISC_JUMP | RISC_IRQ1 | RISC_CNT_INC);
 	cx_write(8 + 4, 8);
+=======
+	cx_write(8 + 0, RISC_JUMP | RISC_CNT_RESET);
+	cx_write(8 + 4, 12);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cx_write(8 + 8, 0);
 
 	/* write CDT */
@@ -590,7 +618,11 @@ void cx23885_sram_channel_dump(struct cx23885_dev *dev,
 }
 
 static void cx23885_risc_disasm(struct cx23885_tsport *port,
+<<<<<<< HEAD
 				struct btcx_riscmem *risc)
+=======
+				struct cx23885_riscmem *risc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cx23885_dev *dev = port->dev;
 	unsigned int i, j, n;
@@ -699,10 +731,13 @@ static int get_resources(struct cx23885_dev *dev)
 	return -EBUSY;
 }
 
+<<<<<<< HEAD
 static void cx23885_timeout(unsigned long data);
 int cx23885_risc_stopper(struct pci_dev *pci, struct btcx_riscmem *risc,
 				u32 reg, u32 mask, u32 value);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int cx23885_init_tsport(struct cx23885_dev *dev,
 	struct cx23885_tsport *port, int portno)
 {
@@ -719,11 +754,14 @@ static int cx23885_init_tsport(struct cx23885_dev *dev,
 	port->nr = portno;
 
 	INIT_LIST_HEAD(&port->mpegq.active);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&port->mpegq.queued);
 	port->mpegq.timeout.function = cx23885_timeout;
 	port->mpegq.timeout.data = (unsigned long)port;
 	init_timer(&port->mpegq.timeout);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&port->frontends.lock);
 	INIT_LIST_HEAD(&port->frontends.felist);
 	port->frontends.active_fe_id = 0;
@@ -776,9 +814,12 @@ static int cx23885_init_tsport(struct cx23885_dev *dev,
 		BUG();
 	}
 
+<<<<<<< HEAD
 	cx23885_risc_stopper(dev->pci, &port->mpegq.stopper,
 		     port->reg_dma_ctl, port->dma_ctl_val, 0x00);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -857,6 +898,10 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	int i;
 
 	spin_lock_init(&dev->pci_irqmask_lock);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&dev->slock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_init(&dev->lock);
 	mutex_init(&dev->gpio_lock);
@@ -902,6 +947,19 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	if (cx23885_boards[dev->board].clk_freq > 0)
 		dev->clk_freq = cx23885_boards[dev->board].clk_freq;
 
+<<<<<<< HEAD
+=======
+	if (dev->board == CX23885_BOARD_HAUPPAUGE_IMPACTVCBE &&
+		dev->pci->subsystem_device == 0x7137) {
+		/* Hauppauge ImpactVCBe device ID 0x7137 is populated
+		 * with an 888, and a 25Mhz crystal, instead of the
+		 * usual third overtone 50Mhz. The default clock rate must
+		 * be overridden so the cx25840 is properly configured
+		 */
+		dev->clk_freq = 25000000;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->pci_bus  = dev->pci->bus->number;
 	dev->pci_slot = PCI_SLOT(dev->pci->devfn);
 	cx23885_irq_add(dev, 0x001f00);
@@ -998,6 +1056,19 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	call_all(dev, core, s_power, 0);
 	cx23885_ir_init(dev);
 
+<<<<<<< HEAD
+=======
+	if (dev->board == CX23885_BOARD_VIEWCAST_460E) {
+		/*
+		 * GPIOs 9/8 are input detection bits for the breakout video
+		 * (gpio 8) and audio (gpio 9) cables. When they're attached,
+		 * this gpios are pulled high. Make sure these GPIOs are marked
+		 * as inputs.
+		 */
+		cx23885_gpio_enable(dev, 0x300, 0);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cx23885_boards[dev->board].porta == CX23885_ANALOG_VIDEO) {
 		if (cx23885_video_register(dev) < 0) {
 			printk(KERN_ERR "%s() Failed to register analog "
@@ -1089,11 +1160,25 @@ static void cx23885_dev_unregister(struct cx23885_dev *dev)
 static __le32 *cx23885_risc_field(__le32 *rp, struct scatterlist *sglist,
 			       unsigned int offset, u32 sync_line,
 			       unsigned int bpl, unsigned int padding,
+<<<<<<< HEAD
 			       unsigned int lines,  unsigned int lpi)
+=======
+			       unsigned int lines,  unsigned int lpi, bool jump)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct scatterlist *sg;
 	unsigned int line, todo, sol;
 
+<<<<<<< HEAD
+=======
+
+	if (jump) {
+		*(rp++) = cpu_to_le32(RISC_JUMP);
+		*(rp++) = cpu_to_le32(0);
+		*(rp++) = cpu_to_le32(0); /* bits 63-32 */
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* sync instruction */
 	if (sync_line != NO_SYNC_LINE)
 		*(rp++) = cpu_to_le32(RISC_RESYNC | sync_line);
@@ -1103,7 +1188,11 @@ static __le32 *cx23885_risc_field(__le32 *rp, struct scatterlist *sglist,
 	for (line = 0; line < lines; line++) {
 		while (offset && offset >= sg_dma_len(sg)) {
 			offset -= sg_dma_len(sg);
+<<<<<<< HEAD
 			sg++;
+=======
+			sg = sg_next(sg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		if (lpi && line > 0 && !(line % lpi))
@@ -1126,14 +1215,22 @@ static __le32 *cx23885_risc_field(__le32 *rp, struct scatterlist *sglist,
 			*(rp++) = cpu_to_le32(0); /* bits 63-32 */
 			todo -= (sg_dma_len(sg)-offset);
 			offset = 0;
+<<<<<<< HEAD
 			sg++;
+=======
+			sg = sg_next(sg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			while (todo > sg_dma_len(sg)) {
 				*(rp++) = cpu_to_le32(RISC_WRITE|
 						    sg_dma_len(sg));
 				*(rp++) = cpu_to_le32(sg_dma_address(sg));
 				*(rp++) = cpu_to_le32(0); /* bits 63-32 */
 				todo -= sg_dma_len(sg);
+<<<<<<< HEAD
 				sg++;
+=======
+				sg = sg_next(sg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			*(rp++) = cpu_to_le32(RISC_WRITE|RISC_EOL|todo);
 			*(rp++) = cpu_to_le32(sg_dma_address(sg));
@@ -1146,14 +1243,21 @@ static __le32 *cx23885_risc_field(__le32 *rp, struct scatterlist *sglist,
 	return rp;
 }
 
+<<<<<<< HEAD
 int cx23885_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
+=======
+int cx23885_risc_buffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct scatterlist *sglist, unsigned int top_offset,
 			unsigned int bottom_offset, unsigned int bpl,
 			unsigned int padding, unsigned int lines)
 {
 	u32 instructions, fields;
 	__le32 *rp;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fields = 0;
 	if (UNSET != top_offset)
@@ -1168,19 +1272,34 @@ int cx23885_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 	/* write and jump need and extra dword */
 	instructions  = fields * (1 + ((bpl + padding) * lines)
 		/ PAGE_SIZE + lines);
+<<<<<<< HEAD
 	instructions += 2;
 	rc = btcx_riscmem_alloc(pci, risc, instructions*12);
 	if (rc < 0)
 		return rc;
+=======
+	instructions += 5;
+	risc->size = instructions * 12;
+	risc->cpu = pci_alloc_consistent(pci, risc->size, &risc->dma);
+	if (risc->cpu == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* write risc instructions */
 	rp = risc->cpu;
 	if (UNSET != top_offset)
 		rp = cx23885_risc_field(rp, sglist, top_offset, 0,
+<<<<<<< HEAD
 					bpl, padding, lines, 0);
 	if (UNSET != bottom_offset)
 		rp = cx23885_risc_field(rp, sglist, bottom_offset, 0x200,
 					bpl, padding, lines, 0);
+=======
+					bpl, padding, lines, 0, true);
+	if (UNSET != bottom_offset)
+		rp = cx23885_risc_field(rp, sglist, bottom_offset, 0x200,
+					bpl, padding, lines, 0, UNSET == top_offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* save pointer to jmp instruction address */
 	risc->jmp = rp;
@@ -1189,14 +1308,21 @@ int cx23885_risc_buffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 }
 
 int cx23885_risc_databuffer(struct pci_dev *pci,
+<<<<<<< HEAD
 				   struct btcx_riscmem *risc,
+=======
+				   struct cx23885_riscmem *risc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct scatterlist *sglist,
 				   unsigned int bpl,
 				   unsigned int lines, unsigned int lpi)
 {
 	u32 instructions;
 	__le32 *rp;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* estimate risc mem: worst case is one write per page border +
 	   one write per scan line + syncs + jump (all 2 dwords).  Here
@@ -1204,16 +1330,29 @@ int cx23885_risc_databuffer(struct pci_dev *pci,
 	   than PAGE_SIZE */
 	/* Jump and write need an extra dword */
 	instructions  = 1 + (bpl * lines) / PAGE_SIZE + lines;
+<<<<<<< HEAD
 	instructions += 1;
 
 	rc = btcx_riscmem_alloc(pci, risc, instructions*12);
 	if (rc < 0)
 		return rc;
+=======
+	instructions += 4;
+
+	risc->size = instructions * 12;
+	risc->cpu = pci_alloc_consistent(pci, risc->size, &risc->dma);
+	if (risc->cpu == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* write risc instructions */
 	rp = risc->cpu;
 	rp = cx23885_risc_field(rp, sglist, 0, NO_SYNC_LINE,
+<<<<<<< HEAD
 				bpl, 0, lines, lpi);
+=======
+				bpl, 0, lines, lpi, lpi == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* save pointer to jmp instruction address */
 	risc->jmp = rp;
@@ -1221,14 +1360,21 @@ int cx23885_risc_databuffer(struct pci_dev *pci,
 	return 0;
 }
 
+<<<<<<< HEAD
 int cx23885_risc_vbibuffer(struct pci_dev *pci, struct btcx_riscmem *risc,
+=======
+int cx23885_risc_vbibuffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct scatterlist *sglist, unsigned int top_offset,
 			unsigned int bottom_offset, unsigned int bpl,
 			unsigned int padding, unsigned int lines)
 {
 	u32 instructions, fields;
 	__le32 *rp;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fields = 0;
 	if (UNSET != top_offset)
@@ -1243,22 +1389,39 @@ int cx23885_risc_vbibuffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 	/* write and jump need and extra dword */
 	instructions  = fields * (1 + ((bpl + padding) * lines)
 		/ PAGE_SIZE + lines);
+<<<<<<< HEAD
 	instructions += 2;
 	rc = btcx_riscmem_alloc(pci, risc, instructions*12);
 	if (rc < 0)
 		return rc;
+=======
+	instructions += 5;
+	risc->size = instructions * 12;
+	risc->cpu = pci_alloc_consistent(pci, risc->size, &risc->dma);
+	if (risc->cpu == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* write risc instructions */
 	rp = risc->cpu;
 
 	/* Sync to line 6, so US CC line 21 will appear in line '12'
 	 * in the userland vbi payload */
 	if (UNSET != top_offset)
+<<<<<<< HEAD
 		rp = cx23885_risc_field(rp, sglist, top_offset, 6,
 					bpl, padding, lines, 0);
 
 	if (UNSET != bottom_offset)
 		rp = cx23885_risc_field(rp, sglist, bottom_offset, 0x207,
 					bpl, padding, lines, 0);
+=======
+		rp = cx23885_risc_field(rp, sglist, top_offset, 0,
+					bpl, padding, lines, 0, true);
+
+	if (UNSET != bottom_offset)
+		rp = cx23885_risc_field(rp, sglist, bottom_offset, 0x200,
+					bpl, padding, lines, 0, UNSET == top_offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 
@@ -1269,6 +1432,7 @@ int cx23885_risc_vbibuffer(struct pci_dev *pci, struct btcx_riscmem *risc,
 }
 
 
+<<<<<<< HEAD
 int cx23885_risc_stopper(struct pci_dev *pci, struct btcx_riscmem *risc,
 				u32 reg, u32 mask, u32 value)
 {
@@ -1301,6 +1465,14 @@ void cx23885_free_buffer(struct videobuf_queue *q, struct cx23885_buffer *buf)
 	videobuf_dma_free(dma);
 	btcx_riscmem_free(to_pci_dev(q->dev), &buf->risc);
 	buf->vb.state = VIDEOBUF_NEEDS_INIT;
+=======
+void cx23885_free_buffer(struct cx23885_dev *dev, struct cx23885_buffer *buf)
+{
+	struct cx23885_riscmem *risc = &buf->risc;
+
+	BUG_ON(in_interrupt());
+	pci_free_consistent(dev->pci, risc->size, risc->cpu, risc->dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void cx23885_tsport_reg_dump(struct cx23885_tsport *port)
@@ -1355,7 +1527,11 @@ static void cx23885_tsport_reg_dump(struct cx23885_tsport *port)
 		port->reg_ts_int_msk, cx_read(port->reg_ts_int_msk));
 }
 
+<<<<<<< HEAD
 static int cx23885_start_dma(struct cx23885_tsport *port,
+=======
+int cx23885_start_dma(struct cx23885_tsport *port,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     struct cx23885_dmaqueue *q,
 			     struct cx23885_buffer   *buf)
 {
@@ -1363,7 +1539,11 @@ static int cx23885_start_dma(struct cx23885_tsport *port,
 	u32 reg;
 
 	dprintk(1, "%s() w: %d, h: %d, f: %d\n", __func__,
+<<<<<<< HEAD
 		buf->vb.width, buf->vb.height, buf->vb.field);
+=======
+		dev->width, dev->height, dev->field);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Stop the fifo and risc engine for this port */
 	cx_clear(port->reg_dma_ctl, port->dma_ctl_val);
@@ -1379,7 +1559,11 @@ static int cx23885_start_dma(struct cx23885_tsport *port,
 	}
 
 	/* write TS length to chip */
+<<<<<<< HEAD
 	cx_write(port->reg_lngth, buf->vb.width);
+=======
+	cx_write(port->reg_lngth, port->ts_packet_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((!(cx23885_boards[dev->board].portb & CX23885_MPEG_DVB)) &&
 		(!(cx23885_boards[dev->board].portc & CX23885_MPEG_DVB))) {
@@ -1408,7 +1592,11 @@ static int cx23885_start_dma(struct cx23885_tsport *port,
 	/* NOTE: this is 2 (reserved) for portb, does it matter? */
 	/* reset counter to zero */
 	cx_write(port->reg_gpcnt_ctl, 3);
+<<<<<<< HEAD
 	q->count = 1;
+=======
+	q->count = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set VIDB pins to input */
 	if (cx23885_boards[dev->board].portb == CX23885_MPEG_DVB) {
@@ -1497,6 +1685,7 @@ static int cx23885_stop_dma(struct cx23885_tsport *port)
 	return 0;
 }
 
+<<<<<<< HEAD
 int cx23885_restart_queue(struct cx23885_tsport *port,
 				struct cx23885_dmaqueue *q)
 {
@@ -1587,11 +1776,54 @@ int cx23885_buf_prepare(struct videobuf_queue *q, struct cx23885_tsport *port,
 	return rc;
 }
 
+=======
+/* ------------------------------------------------------------------ */
+
+int cx23885_buf_prepare(struct cx23885_buffer *buf, struct cx23885_tsport *port)
+{
+	struct cx23885_dev *dev = port->dev;
+	int size = port->ts_packet_size * port->ts_packet_count;
+	struct sg_table *sgt = vb2_dma_sg_plane_desc(&buf->vb.vb2_buf, 0);
+
+	dprintk(1, "%s: %p\n", __func__, buf);
+	if (vb2_plane_size(&buf->vb.vb2_buf, 0) < size)
+		return -EINVAL;
+	vb2_set_plane_payload(&buf->vb.vb2_buf, 0, size);
+
+	cx23885_risc_databuffer(dev->pci, &buf->risc,
+				sgt->sgl,
+				port->ts_packet_size, port->ts_packet_count, 0);
+	return 0;
+}
+
+/*
+ * The risc program for each buffer works as follows: it starts with a simple
+ * 'JUMP to addr + 12', which is effectively a NOP. Then the code to DMA the
+ * buffer follows and at the end we have a JUMP back to the start + 12 (skipping
+ * the initial JUMP).
+ *
+ * This is the risc program of the first buffer to be queued if the active list
+ * is empty and it just keeps DMAing this buffer without generating any
+ * interrupts.
+ *
+ * If a new buffer is added then the initial JUMP in the code for that buffer
+ * will generate an interrupt which signals that the previous buffer has been
+ * DMAed successfully and that it can be returned to userspace.
+ *
+ * It also sets the final jump of the previous buffer to the start of the new
+ * buffer, thus chaining the new buffer into the DMA chain. This is a single
+ * atomic u32 write, so there is no race condition.
+ *
+ * The end-result of all this that you only get an interrupt when a buffer
+ * is ready, so the control flow is very easy.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void cx23885_buf_queue(struct cx23885_tsport *port, struct cx23885_buffer *buf)
 {
 	struct cx23885_buffer    *prev;
 	struct cx23885_dev *dev = port->dev;
 	struct cx23885_dmaqueue  *cx88q = &port->mpegq;
+<<<<<<< HEAD
 
 	/* add jump to stopper */
 	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP | RISC_IRQ1 | RISC_CNT_INC);
@@ -1619,12 +1851,40 @@ void cx23885_buf_queue(struct cx23885_tsport *port, struct cx23885_buffer *buf)
 		dprintk(1, "[%p/%d] %s - append to active\n",
 			 buf, buf->vb.i, __func__);
 	}
+=======
+	unsigned long flags;
+
+	buf->risc.cpu[1] = cpu_to_le32(buf->risc.dma + 12);
+	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP | RISC_CNT_INC);
+	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma + 12);
+	buf->risc.jmp[2] = cpu_to_le32(0); /* bits 63-32 */
+
+	spin_lock_irqsave(&dev->slock, flags);
+	if (list_empty(&cx88q->active)) {
+		list_add_tail(&buf->queue, &cx88q->active);
+		dprintk(1, "[%p/%d] %s - first active\n",
+			buf, buf->vb.vb2_buf.index, __func__);
+	} else {
+		buf->risc.cpu[0] |= cpu_to_le32(RISC_IRQ1);
+		prev = list_entry(cx88q->active.prev, struct cx23885_buffer,
+				  queue);
+		list_add_tail(&buf->queue, &cx88q->active);
+		prev->risc.jmp[1] = cpu_to_le32(buf->risc.dma);
+		dprintk(1, "[%p/%d] %s - append to active\n",
+			 buf, buf->vb.vb2_buf.index, __func__);
+	}
+	spin_unlock_irqrestore(&dev->slock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* ----------------------------------------------------------- */
 
+<<<<<<< HEAD
 static void do_cancel_buffers(struct cx23885_tsport *port, char *reason,
 			      int restart)
+=======
+static void do_cancel_buffers(struct cx23885_tsport *port, char *reason)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct cx23885_dev *dev = port->dev;
 	struct cx23885_dmaqueue *q = &port->mpegq;
@@ -1634,6 +1894,7 @@ static void do_cancel_buffers(struct cx23885_tsport *port, char *reason,
 	spin_lock_irqsave(&port->slock, flags);
 	while (!list_empty(&q->active)) {
 		buf = list_entry(q->active.next, struct cx23885_buffer,
+<<<<<<< HEAD
 				 vb.queue);
 		list_del(&buf->vb.queue);
 		buf->vb.state = VIDEOBUF_ERROR;
@@ -1644,6 +1905,14 @@ static void do_cancel_buffers(struct cx23885_tsport *port, char *reason,
 	if (restart) {
 		dprintk(1, "restarting queue\n");
 		cx23885_restart_queue(port, q);
+=======
+				 queue);
+		list_del(&buf->queue);
+		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
+		dprintk(1, "[%p/%d] %s - dma=0x%08lx\n",
+			buf, buf->vb.vb2_buf.index, reason,
+			(unsigned long)buf->risc.dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock_irqrestore(&port->slock, flags);
 }
@@ -1651,6 +1920,7 @@ static void do_cancel_buffers(struct cx23885_tsport *port, char *reason,
 void cx23885_cancel_buffers(struct cx23885_tsport *port)
 {
 	struct cx23885_dev *dev = port->dev;
+<<<<<<< HEAD
 	struct cx23885_dmaqueue *q = &port->mpegq;
 
 	dprintk(1, "%s()\n", __func__);
@@ -1672,6 +1942,12 @@ static void cx23885_timeout(unsigned long data)
 
 	cx23885_stop_dma(port);
 	do_cancel_buffers(port, "timeout", 1);
+=======
+
+	dprintk(1, "%s()\n", __func__);
+	cx23885_stop_dma(port);
+	do_cancel_buffers(port, "cancel");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int cx23885_irq_417(struct cx23885_dev *dev, u32 status)
@@ -1721,11 +1997,14 @@ int cx23885_irq_417(struct cx23885_dev *dev, u32 status)
 		spin_lock(&port->slock);
 		cx23885_wakeup(port, &port->mpegq, count);
 		spin_unlock(&port->slock);
+<<<<<<< HEAD
 	} else if (status & VID_B_MSK_RISCI2) {
 		dprintk(7, "        VID_B_MSK_RISCI2\n");
 		spin_lock(&port->slock);
 		cx23885_restart_queue(port, &port->mpegq);
 		spin_unlock(&port->slock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (status) {
 		cx_write(port->reg_ts_int_stat, status);
@@ -1777,6 +2056,7 @@ static int cx23885_irq_ts(struct cx23885_tsport *port, u32 status)
 		cx23885_wakeup(port, &port->mpegq, count);
 		spin_unlock(&port->slock);
 
+<<<<<<< HEAD
 	} else if (status & VID_BC_MSK_RISCI2) {
 
 		dprintk(7, " (RISCI2            0x%08x)\n", VID_BC_MSK_RISCI2);
@@ -1785,6 +2065,8 @@ static int cx23885_irq_ts(struct cx23885_tsport *port, u32 status)
 		cx23885_restart_queue(port, &port->mpegq);
 		spin_unlock(&port->slock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (status) {
 		cx_write(port->reg_ts_int_stat, status);
@@ -1941,10 +2223,14 @@ static irqreturn_t cx23885_irq(int irq, void *dev_id)
 
 	if ((pci_status & pci_mask) & PCI_MSK_AV_CORE) {
 		cx23885_irq_disable(dev, PCI_MSK_AV_CORE);
+<<<<<<< HEAD
 		if (!schedule_work(&dev->cx25840_work))
 			printk(KERN_ERR "%s: failed to set up deferred work for"
 			       " AV Core/IR interrupt. Interrupt is disabled"
 			       " and won't be re-enabled\n", dev->name);
+=======
+		schedule_work(&dev->cx25840_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		handled++;
 	}
 
@@ -2090,6 +2376,10 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 			   const struct pci_device_id *pci_id)
 {
 	struct cx23885_dev *dev;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler *hdl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
@@ -2100,6 +2390,17 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 	if (err < 0)
 		goto fail_free;
 
+<<<<<<< HEAD
+=======
+	hdl = &dev->ctrl_handler;
+	v4l2_ctrl_handler_init(hdl, 6);
+	if (hdl->error) {
+		err = hdl->error;
+		goto fail_ctrl;
+	}
+	dev->v4l2_dev.ctrl_handler = hdl;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Prepare to handle notifications from subdevices */
 	cx23885_v4l2_dev_notify_init(dev);
 
@@ -2107,12 +2408,20 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 	dev->pci = pci_dev;
 	if (pci_enable_device(pci_dev)) {
 		err = -EIO;
+<<<<<<< HEAD
 		goto fail_unreg;
+=======
+		goto fail_ctrl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (cx23885_dev_setup(dev) < 0) {
 		err = -EINVAL;
+<<<<<<< HEAD
 		goto fail_unreg;
+=======
+		goto fail_ctrl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* print pci info */
@@ -2125,6 +2434,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 		(unsigned long long)pci_resource_start(pci_dev, 0));
 
 	pci_set_master(pci_dev);
+<<<<<<< HEAD
 	if (!pci_dma_supported(pci_dev, 0xffffffff)) {
 		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
 		err = -EIO;
@@ -2133,6 +2443,16 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 
 	err = request_irq(pci_dev->irq, cx23885_irq,
 			  IRQF_SHARED | IRQF_DISABLED, dev->name, dev);
+=======
+	err = pci_set_dma_mask(pci_dev, 0xffffffff);
+	if (err) {
+		printk("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+		goto fail_ctrl;
+	}
+
+	err = request_irq(pci_dev->irq, cx23885_irq,
+			  IRQF_SHARED, dev->name, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 		printk(KERN_ERR "%s: can't get IRQ %d\n",
 		       dev->name, pci_dev->irq);
@@ -2160,7 +2480,12 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 
 fail_irq:
 	cx23885_dev_unregister(dev);
+<<<<<<< HEAD
 fail_unreg:
+=======
+fail_ctrl:
+	v4l2_ctrl_handler_free(hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(&dev->v4l2_dev);
 fail_free:
 	kfree(dev);
@@ -2177,12 +2502,22 @@ static void cx23885_finidev(struct pci_dev *pci_dev)
 
 	cx23885_shutdown(dev);
 
+<<<<<<< HEAD
 	pci_disable_device(pci_dev);
 
 	/* unregister stuff */
 	free_irq(pci_dev->irq, dev);
 
 	cx23885_dev_unregister(dev);
+=======
+	/* unregister stuff */
+	free_irq(pci_dev->irq, dev);
+
+	pci_disable_device(pci_dev);
+
+	cx23885_dev_unregister(dev);
+	v4l2_ctrl_handler_free(&dev->ctrl_handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v4l2_device_unregister(v4l2_dev);
 	kfree(dev);
 }

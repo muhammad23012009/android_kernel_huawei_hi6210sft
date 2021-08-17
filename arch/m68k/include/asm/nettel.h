@@ -92,7 +92,11 @@ static __inline__ unsigned int mcf_getppdata(void)
 
 static __inline__ void mcf_setppdata(unsigned int mask, unsigned int bits)
 {
+<<<<<<< HEAD
 	write((readw(MCFSIM_PBDAT) & ~mask) | bits, MCFSIM_PBDAT);
+=======
+	writew((readw(MCFSIM_PBDAT) & ~mask) | bits, MCFSIM_PBDAT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif
 

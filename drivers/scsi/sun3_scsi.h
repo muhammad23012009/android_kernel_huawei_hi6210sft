@@ -13,6 +13,7 @@
  *	(Unix and Linux consulting and custom programming)
  *	drew@colorado.edu
  *      +1 (303) 440-4894
+<<<<<<< HEAD
  *
  * ALPHA RELEASE 1.
  *
@@ -110,6 +111,12 @@ static int sun3scsi_release (struct Scsi_Host *);
 
 #define BOARD_NORMAL	0
 #define BOARD_NCR53C400	1
+=======
+ */
+
+#ifndef SUN3_SCSI_H
+#define SUN3_SCSI_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* additional registers - mainly DMA control regs */
 /* these start at regbase + 8 -- directly after the NCR regs */
@@ -191,6 +198,7 @@ struct sun3_udc_regs {
 
 #define VME_DATA24 0x3d00
 
+<<<<<<< HEAD
 // debugging printk's, taken from atari_scsi.h 
 /* Debugging printk definitions:
  *
@@ -376,4 +384,7 @@ struct sun3_udc_regs {
 
 #endif /* ndef HOSTS_C */
 #endif /* SUN3_NCR5380_H */
+=======
+#endif /* SUN3_SCSI_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 

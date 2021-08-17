@@ -264,11 +264,15 @@
 #define SCSI_NCR_SG_TABLESIZE	(SCSI_NCR_MAX_SCATTER)
 #define SCSI_NCR_TIMER_INTERVAL	(HZ)
 
+<<<<<<< HEAD
 #if 1 /* defined CONFIG_SCSI_MULTI_LUN */
 #define SCSI_NCR_MAX_LUN	(16)
 #else
 #define SCSI_NCR_MAX_LUN	(1)
 #endif
+=======
+#define SCSI_NCR_MAX_LUN	(16)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *  IO functions definition for big/little endian CPU support.

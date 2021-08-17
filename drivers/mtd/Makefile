@@ -27,12 +27,20 @@ obj-$(CONFIG_SM_FTL)		+= sm_ftl.o
 obj-$(CONFIG_MTD_OOPS)		+= mtdoops.o
 obj-$(CONFIG_MTD_SWAP)		+= mtdswap.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_HISI_NVE)		+= hisi_nve.o
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 nftl-objs		:= nftlcore.o nftlmount.o
 inftl-objs		:= inftlcore.o inftlmount.o
 
 obj-y		+= chips/ lpddr/ maps/ devices/ nand/ onenand/ tests/
 
+<<<<<<< HEAD
 obj-$(CONFIG_MTD_UBI)		+= ubi/
 obj-$(CONFIG_MISC_PWSTATE)	+= misc_nff.o
+=======
+obj-$(CONFIG_MTD_SPI_NOR)	+= spi-nor/
+obj-$(CONFIG_MTD_UBI)		+= ubi/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -1,7 +1,11 @@
 /*
  * Driver for mt2063 Micronas tuner
  *
+<<<<<<< HEAD
  * Copyright (c) 2011 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ * Copyright (c) 2011 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This driver came from a driver originally written by:
  *		Henry Wang <Henry.wang@AzureWave.com>
@@ -24,6 +28,10 @@
 #include <linux/module.h>
 #include <linux/string.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
+=======
+#include <linux/gcd.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "mt2063.h"
 
@@ -225,7 +233,10 @@ struct mt2063_state {
 	const struct mt2063_config *config;
 	struct dvb_tuner_ops ops;
 	struct dvb_frontend *frontend;
+<<<<<<< HEAD
 	struct tuner_state status;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u32 frequency;
 	u32 srate;
@@ -666,6 +677,7 @@ static u32 MT2063_ChooseFirstIF(struct MT2063_AvoidSpursData_t *pAS_Info)
 }
 
 /**
+<<<<<<< HEAD
  * gcd() - Uses Euclid's algorithm
  *
  * @u, @v:	Unsigned values whose GCD is desired.
@@ -687,6 +699,8 @@ static u32 MT2063_gcd(u32 u, u32 v)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * IsSpurInBand() - Checks to see if a spur will be present within the IF's
  *                  bandwidth. (fIFOut +/- fIFBW, -fIFOut +/- fIFBW)
  *
@@ -732,12 +746,21 @@ static u32 IsSpurInBand(struct MT2063_AvoidSpursData_t *pAS_Info,
 	 ** of f_LO1, f_LO2 and the edge value.  Use the larger of this
 	 ** gcd-based scale factor or f_Scale.
 	 */
+<<<<<<< HEAD
 	lo_gcd = MT2063_gcd(f_LO1, f_LO2);
 	gd_Scale = max((u32) MT2063_gcd(lo_gcd, d), f_Scale);
 	hgds = gd_Scale / 2;
 	gc_Scale = max((u32) MT2063_gcd(lo_gcd, c), f_Scale);
 	hgcs = gc_Scale / 2;
 	gf_Scale = max((u32) MT2063_gcd(lo_gcd, f), f_Scale);
+=======
+	lo_gcd = gcd(f_LO1, f_LO2);
+	gd_Scale = max((u32) gcd(lo_gcd, d), f_Scale);
+	hgds = gd_Scale / 2;
+	gc_Scale = max((u32) gcd(lo_gcd, c), f_Scale);
+	hgcs = gc_Scale / 2;
+	gf_Scale = max((u32) gcd(lo_gcd, f), f_Scale);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hgfs = gf_Scale / 2;
 
 	n0 = DIV_ROUND_UP(f_LO2 - d, f_LO1 - f_LO2);
@@ -1195,7 +1218,11 @@ static u32 mt2063_set_dnc_output_enable(struct mt2063_state *state,
  *   DNC Output is selected, the other is always off)
  *
  * @state:	ptr to mt2063_state structure
+<<<<<<< HEAD
  * @Mode:	desired reciever delivery system
+=======
+ * @Mode:	desired receiver delivery system
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Note: Register cache must be valid for it to work
  */
@@ -1216,7 +1243,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 	if (status >= 0) {
 		val =
 		    (state->
+<<<<<<< HEAD
 		     reg[MT2063_REG_PD1_TGT] & (u8) ~0x40) | (RFAGCEN[Mode]
+=======
+		     reg[MT2063_REG_PD1_TGT] & ~0x40) | (RFAGCEN[Mode]
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 								   ? 0x40 :
 								   0x00);
 		if (state->reg[MT2063_REG_PD1_TGT] != val)
@@ -1225,7 +1256,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* LNARin */
 	if (status >= 0) {
+<<<<<<< HEAD
 		u8 val = (state->reg[MT2063_REG_CTRL_2C] & (u8) ~0x03) |
+=======
+		u8 val = (state->reg[MT2063_REG_CTRL_2C] & ~0x03) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 (LNARIN[Mode] & 0x03);
 		if (state->reg[MT2063_REG_CTRL_2C] != val)
 			status |= mt2063_setreg(state, MT2063_REG_CTRL_2C, val);
@@ -1235,19 +1270,31 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 	if (status >= 0) {
 		val =
 		    (state->
+<<<<<<< HEAD
 		     reg[MT2063_REG_FIFF_CTRL2] & (u8) ~0xF0) |
+=======
+		     reg[MT2063_REG_FIFF_CTRL2] & ~0xF0) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    (FIFFQEN[Mode] << 7) | (FIFFQ[Mode] << 4);
 		if (state->reg[MT2063_REG_FIFF_CTRL2] != val) {
 			status |=
 			    mt2063_setreg(state, MT2063_REG_FIFF_CTRL2, val);
 			/* trigger FIFF calibration, needed after changing FIFFQ */
 			val =
+<<<<<<< HEAD
 			    (state->reg[MT2063_REG_FIFF_CTRL] | (u8) 0x01);
+=======
+			    (state->reg[MT2063_REG_FIFF_CTRL] | 0x01);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status |=
 			    mt2063_setreg(state, MT2063_REG_FIFF_CTRL, val);
 			val =
 			    (state->
+<<<<<<< HEAD
 			     reg[MT2063_REG_FIFF_CTRL] & (u8) ~0x01);
+=======
+			     reg[MT2063_REG_FIFF_CTRL] & ~0x01);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status |=
 			    mt2063_setreg(state, MT2063_REG_FIFF_CTRL, val);
 		}
@@ -1259,7 +1306,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* acLNAmax */
 	if (status >= 0) {
+<<<<<<< HEAD
 		u8 val = (state->reg[MT2063_REG_LNA_OV] & (u8) ~0x1F) |
+=======
+		u8 val = (state->reg[MT2063_REG_LNA_OV] & ~0x1F) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 (ACLNAMAX[Mode] & 0x1F);
 		if (state->reg[MT2063_REG_LNA_OV] != val)
 			status |= mt2063_setreg(state, MT2063_REG_LNA_OV, val);
@@ -1267,7 +1318,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* LNATGT */
 	if (status >= 0) {
+<<<<<<< HEAD
 		u8 val = (state->reg[MT2063_REG_LNA_TGT] & (u8) ~0x3F) |
+=======
+		u8 val = (state->reg[MT2063_REG_LNA_TGT] & ~0x3F) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 (LNATGT[Mode] & 0x3F);
 		if (state->reg[MT2063_REG_LNA_TGT] != val)
 			status |= mt2063_setreg(state, MT2063_REG_LNA_TGT, val);
@@ -1275,7 +1330,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* ACRF */
 	if (status >= 0) {
+<<<<<<< HEAD
 		u8 val = (state->reg[MT2063_REG_RF_OV] & (u8) ~0x1F) |
+=======
+		u8 val = (state->reg[MT2063_REG_RF_OV] & ~0x1F) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 (ACRFMAX[Mode] & 0x1F);
 		if (state->reg[MT2063_REG_RF_OV] != val)
 			status |= mt2063_setreg(state, MT2063_REG_RF_OV, val);
@@ -1283,7 +1342,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* PD1TGT */
 	if (status >= 0) {
+<<<<<<< HEAD
 		u8 val = (state->reg[MT2063_REG_PD1_TGT] & (u8) ~0x3F) |
+=======
+		u8 val = (state->reg[MT2063_REG_PD1_TGT] & ~0x3F) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 (PD1TGT[Mode] & 0x3F);
 		if (state->reg[MT2063_REG_PD1_TGT] != val)
 			status |= mt2063_setreg(state, MT2063_REG_PD1_TGT, val);
@@ -1294,7 +1357,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 		u8 val = ACFIFMAX[Mode];
 		if (state->reg[MT2063_REG_PART_REV] != MT2063_B3 && val > 5)
 			val = 5;
+<<<<<<< HEAD
 		val = (state->reg[MT2063_REG_FIF_OV] & (u8) ~0x1F) |
+=======
+		val = (state->reg[MT2063_REG_FIF_OV] & ~0x1F) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      (val & 0x1F);
 		if (state->reg[MT2063_REG_FIF_OV] != val)
 			status |= mt2063_setreg(state, MT2063_REG_FIF_OV, val);
@@ -1302,7 +1369,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* PD2TGT */
 	if (status >= 0) {
+<<<<<<< HEAD
 		u8 val = (state->reg[MT2063_REG_PD2_TGT] & (u8) ~0x3F) |
+=======
+		u8 val = (state->reg[MT2063_REG_PD2_TGT] & ~0x3F) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    (PD2TGT[Mode] & 0x3F);
 		if (state->reg[MT2063_REG_PD2_TGT] != val)
 			status |= mt2063_setreg(state, MT2063_REG_PD2_TGT, val);
@@ -1310,7 +1381,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* Ignore ATN Overload */
 	if (status >= 0) {
+<<<<<<< HEAD
 		val = (state->reg[MT2063_REG_LNA_TGT] & (u8) ~0x80) |
+=======
+		val = (state->reg[MT2063_REG_LNA_TGT] & ~0x80) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      (RFOVDIS[Mode] ? 0x80 : 0x00);
 		if (state->reg[MT2063_REG_LNA_TGT] != val)
 			status |= mt2063_setreg(state, MT2063_REG_LNA_TGT, val);
@@ -1318,7 +1393,11 @@ static u32 MT2063_SetReceiverMode(struct mt2063_state *state,
 
 	/* Ignore FIF Overload */
 	if (status >= 0) {
+<<<<<<< HEAD
 		val = (state->reg[MT2063_REG_PD1_TGT] & (u8) ~0x80) |
+=======
+		val = (state->reg[MT2063_REG_PD1_TGT] & ~0x80) |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      (FIFOVDIS[Mode] ? 0x80 : 0x00);
 		if (state->reg[MT2063_REG_PD1_TGT] != val)
 			status |= mt2063_setreg(state, MT2063_REG_PD1_TGT, val);
@@ -2119,7 +2198,11 @@ static int mt2063_set_analog_params(struct dvb_frontend *fe,
 
 /*
  * As defined on EN 300 429, the DVB-C roll-off factor is 0.15.
+<<<<<<< HEAD
  * So, the amount of the needed bandwith is given by:
+=======
+ * So, the amount of the needed bandwidth is given by:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	Bw = Symbol_rate * (1 + 0.15)
  * As such, the maximum symbol rate supported by 6 MHz is given by:
  *	max_symbol_rate = 6 MHz / 1.15 = 5217391 Bauds
@@ -2222,7 +2305,11 @@ static int mt2063_get_bandwidth(struct dvb_frontend *fe, u32 *bw)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops mt2063_ops = {
+=======
+static const struct dvb_tuner_ops mt2063_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.info = {
 		 .name = "MT2063 Silicon Tuner",
 		 .frequency_min = 45000000,
@@ -2298,6 +2385,10 @@ static int tuner_MT2063_ClearPowerMaskBits(struct dvb_frontend *fe)
 }
 #endif
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("MT2063 Silicon tuner");
 MODULE_LICENSE("GPL");

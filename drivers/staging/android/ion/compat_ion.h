@@ -1,6 +1,10 @@
 /*
+<<<<<<< HEAD
 
  * drivers/gpu/ion/compat_ion.h
+=======
+ * drivers/staging/android/ion/compat_ion.h
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (C) 2013 Google, Inc.
  *

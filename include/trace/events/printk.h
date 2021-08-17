@@ -16,8 +16,21 @@ TRACE_EVENT(console,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		memcpy(__get_dynamic_array(msg), text, len);
 		((char *)__get_dynamic_array(msg))[len] = 0;
+=======
+		/*
+		 * Each trace entry is printed in a new line.
+		 * If the msg finishes with '\n', cut it off
+		 * to avoid blank lines in the trace.
+		 */
+		if ((len > 0) && (text[len-1] == '\n'))
+			len -= 1;
+
+		memcpy(__get_str(msg), text, len);
+		__get_str(msg)[len] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	),
 
 	TP_printk("%s", __get_str(msg))

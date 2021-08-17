@@ -22,12 +22,19 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/of_pdt.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
 
 static struct of_pdt_ops *of_pdt_prom_ops __initdata;
 
 void __initdata (*of_pdt_build_more)(struct device_node *dp,
 		struct device_node ***nextp);
+=======
+
+static struct of_pdt_ops *of_pdt_prom_ops __initdata;
+
+void __initdata (*of_pdt_build_more)(struct device_node *dp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_SPARC)
 unsigned int of_pdt_unique_id __initdata;
@@ -193,8 +200,12 @@ static struct device_node * __init of_pdt_create_node(phandle node,
 }
 
 static struct device_node * __init of_pdt_build_tree(struct device_node *parent,
+<<<<<<< HEAD
 						   phandle node,
 						   struct device_node ***nextp)
+=======
+						   phandle node)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device_node *ret = NULL, *prev_sibling = NULL;
 	struct device_node *dp;
@@ -211,6 +222,7 @@ static struct device_node * __init of_pdt_build_tree(struct device_node *parent,
 			ret = dp;
 		prev_sibling = dp;
 
+<<<<<<< HEAD
 		*(*nextp) = dp;
 		*nextp = &dp->allnext;
 
@@ -221,6 +233,14 @@ static struct device_node * __init of_pdt_build_tree(struct device_node *parent,
 
 		if (of_pdt_build_more)
 			of_pdt_build_more(dp, nextp);
+=======
+		dp->full_name = of_pdt_build_full_name(dp);
+
+		dp->child = of_pdt_build_tree(dp, of_pdt_prom_ops->getchild(node));
+
+		if (of_pdt_build_more)
+			of_pdt_build_more(dp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		node = of_pdt_prom_ops->getsibling(node);
 	}
@@ -235,6 +255,7 @@ static void * __init kernel_tree_alloc(u64 size, u64 align)
 
 void __init of_pdt_build_devicetree(phandle root_node, struct of_pdt_ops *ops)
 {
+<<<<<<< HEAD
 	struct device_node **nextp;
 
 	BUG_ON(!ops);
@@ -251,5 +272,20 @@ void __init of_pdt_build_devicetree(phandle root_node, struct of_pdt_ops *ops)
 			of_pdt_prom_ops->getchild(of_allnodes->phandle), &nextp);
 
 	/* Get pointer to "/chosen" and "/aliasas" nodes for use everywhere */
+=======
+	BUG_ON(!ops);
+	of_pdt_prom_ops = ops;
+
+	of_root = of_pdt_create_node(root_node, NULL);
+#if defined(CONFIG_SPARC)
+	of_root->path_component_name = "";
+#endif
+	of_root->full_name = "/";
+
+	of_root->child = of_pdt_build_tree(of_root,
+				of_pdt_prom_ops->getchild(of_root->phandle));
+
+	/* Get pointer to "/chosen" and "/aliases" nodes for use everywhere */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	of_alias_scan(kernel_tree_alloc);
 }

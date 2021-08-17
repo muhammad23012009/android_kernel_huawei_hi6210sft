@@ -18,7 +18,11 @@
 #define __linux_video_vga_h__
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/vga.h>
 #include <asm/byteorder.h>
 

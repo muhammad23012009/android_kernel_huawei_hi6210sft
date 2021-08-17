@@ -1094,8 +1094,12 @@ static int snd_ml403_ac97cr_free(struct snd_ml403_ac97cr *ml403_ac97cr)
 	if (ml403_ac97cr->capture_irq >= 0)
 		free_irq(ml403_ac97cr->capture_irq, ml403_ac97cr);
 	/* give back "port" */
+<<<<<<< HEAD
 	if (ml403_ac97cr->port != NULL)
 		iounmap(ml403_ac97cr->port);
+=======
+	iounmap(ml403_ac97cr->port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(ml403_ac97cr);
 	PDEBUG(INIT_INFO, "free(): (done)\n");
 	return 0;
@@ -1238,14 +1242,21 @@ snd_ml403_ac97cr_mixer(struct snd_ml403_ac97cr *ml403_ac97cr)
 }
 
 static int
+<<<<<<< HEAD
 snd_ml403_ac97cr_pcm(struct snd_ml403_ac97cr *ml403_ac97cr, int device,
 		     struct snd_pcm **rpcm)
+=======
+snd_ml403_ac97cr_pcm(struct snd_ml403_ac97cr *ml403_ac97cr, int device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_pcm_new(ml403_ac97cr->card, "ML403AC97CR/1", device, 1, 1,
 			  &pcm);
 	if (err < 0)
@@ -1263,8 +1274,11 @@ snd_ml403_ac97cr_pcm(struct snd_ml403_ac97cr *ml403_ac97cr, int device,
 					  snd_dma_continuous_data(GFP_KERNEL),
 					  64 * 1024,
 					  128 * 1024);
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1280,7 +1294,12 @@ static int snd_ml403_ac97cr_probe(struct platform_device *pfdev)
 	if (!enable[dev])
 		return -ENOENT;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pfdev->dev, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	err = snd_ml403_ac97cr_create(card, pfdev, &ml403_ac97cr);
@@ -1297,7 +1316,11 @@ static int snd_ml403_ac97cr_probe(struct platform_device *pfdev)
 		return err;
 	}
 	PDEBUG(INIT_INFO, "probe(): mixer done\n");
+<<<<<<< HEAD
 	err = snd_ml403_ac97cr_pcm(ml403_ac97cr, 0, NULL);
+=======
+	err = snd_ml403_ac97cr_pcm(ml403_ac97cr, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0) {
 		snd_card_free(card);
 		return err;
@@ -1310,8 +1333,11 @@ static int snd_ml403_ac97cr_probe(struct platform_device *pfdev)
 		(unsigned long)ml403_ac97cr->port, ml403_ac97cr->irq,
 		ml403_ac97cr->capture_irq, dev + 1);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pfdev->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_card_register(card);
 	if (err < 0) {
 		snd_card_free(card);
@@ -1325,7 +1351,10 @@ static int snd_ml403_ac97cr_probe(struct platform_device *pfdev)
 static int snd_ml403_ac97cr_remove(struct platform_device *pfdev)
 {
 	snd_card_free(platform_get_drvdata(pfdev));
+<<<<<<< HEAD
 	platform_set_drvdata(pfdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1337,7 +1366,10 @@ static struct platform_driver snd_ml403_ac97cr_driver = {
 	.remove = snd_ml403_ac97cr_remove,
 	.driver = {
 		.name = SND_ML403_AC97CR_DRIVER,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

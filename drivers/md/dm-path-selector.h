@@ -50,6 +50,7 @@ struct path_selector_type {
 	/*
 	 * Chooses a path for this io, if no paths are available then
 	 * NULL will be returned.
+<<<<<<< HEAD
 	 *
 	 * repeat_count is the number of times to use the path before
 	 * calling the function again.  0 means don't call it again unless
@@ -57,6 +58,10 @@ struct path_selector_type {
 	 */
 	struct dm_path *(*select_path) (struct path_selector *ps,
 					unsigned *repeat_count,
+=======
+	 */
+	struct dm_path *(*select_path) (struct path_selector *ps,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					size_t nr_bytes);
 
 	/*

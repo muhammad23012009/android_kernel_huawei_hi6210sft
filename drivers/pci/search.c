@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * 	PCI searching functions.
+=======
+ *	PCI searching functions.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	Copyright (C) 1993 -- 1997 Drew Eckhardt, Frederic Potter,
  *					David Mosberger-Tang
@@ -7,7 +11,10 @@
  *	Copyright (C) 2003 -- 2004 Greg Kroah-Hartman <greg@kroah.com>
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -18,6 +25,7 @@ DECLARE_RWSEM(pci_bus_sem);
 EXPORT_SYMBOL_GPL(pci_bus_sem);
 
 /*
+<<<<<<< HEAD
  * find the upstream PCIe-to-PCI bridge of a PCI device
  * if the device is PCIE, return NULL
  * if the device isn't connected to a PCIe bridge (that is its parent is a
@@ -50,10 +58,101 @@ pci_find_upstream_pcie_bridge(struct pci_dev *pdev)
 	}
 
 	return tmp;
+=======
+ * pci_for_each_dma_alias - Iterate over DMA aliases for a device
+ * @pdev: starting downstream device
+ * @fn: function to call for each alias
+ * @data: opaque data to pass to @fn
+ *
+ * Starting @pdev, walk up the bus calling @fn for each possible alias
+ * of @pdev at the root bus.
+ */
+int pci_for_each_dma_alias(struct pci_dev *pdev,
+			   int (*fn)(struct pci_dev *pdev,
+				     u16 alias, void *data), void *data)
+{
+	struct pci_bus *bus;
+	int ret;
+
+	ret = fn(pdev, PCI_DEVID(pdev->bus->number, pdev->devfn), data);
+	if (ret)
+		return ret;
+
+	/*
+	 * If the device is broken and uses an alias requester ID for
+	 * DMA, iterate over that too.
+	 */
+	if (unlikely(pdev->dma_alias_mask)) {
+		u8 devfn;
+
+		for_each_set_bit(devfn, pdev->dma_alias_mask, U8_MAX) {
+			ret = fn(pdev, PCI_DEVID(pdev->bus->number, devfn),
+				 data);
+			if (ret)
+				return ret;
+		}
+	}
+
+	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
+		struct pci_dev *tmp;
+
+		/* Skip virtual buses */
+		if (!bus->self)
+			continue;
+
+		tmp = bus->self;
+
+		/*
+		 * PCIe-to-PCI/X bridges alias transactions from downstream
+		 * devices using the subordinate bus number (PCI Express to
+		 * PCI/PCI-X Bridge Spec, rev 1.0, sec 2.3).  For all cases
+		 * where the upstream bus is PCI/X we alias to the bridge
+		 * (there are various conditions in the previous reference
+		 * where the bridge may take ownership of transactions, even
+		 * when the secondary interface is PCI-X).
+		 */
+		if (pci_is_pcie(tmp)) {
+			switch (pci_pcie_type(tmp)) {
+			case PCI_EXP_TYPE_ROOT_PORT:
+			case PCI_EXP_TYPE_UPSTREAM:
+			case PCI_EXP_TYPE_DOWNSTREAM:
+				continue;
+			case PCI_EXP_TYPE_PCI_BRIDGE:
+				ret = fn(tmp,
+					 PCI_DEVID(tmp->subordinate->number,
+						   PCI_DEVFN(0, 0)), data);
+				if (ret)
+					return ret;
+				continue;
+			case PCI_EXP_TYPE_PCIE_BRIDGE:
+				ret = fn(tmp,
+					 PCI_DEVID(tmp->bus->number,
+						   tmp->devfn), data);
+				if (ret)
+					return ret;
+				continue;
+			}
+		} else {
+			if (tmp->dev_flags & PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS)
+				ret = fn(tmp,
+					 PCI_DEVID(tmp->subordinate->number,
+						   PCI_DEVFN(0, 0)), data);
+			else
+				ret = fn(tmp,
+					 PCI_DEVID(tmp->bus->number,
+						   tmp->devfn), data);
+			if (ret)
+				return ret;
+		}
+	}
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
 {
+<<<<<<< HEAD
 	struct pci_bus* child;
 	struct list_head *tmp;
 
@@ -63,6 +162,17 @@ static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
 	list_for_each(tmp, &bus->children) {
 		child = pci_do_find_bus(pci_bus_b(tmp), busnr);
 		if(child)
+=======
+	struct pci_bus *child;
+	struct pci_bus *tmp;
+
+	if (bus->number == busnr)
+		return bus;
+
+	list_for_each_entry(tmp, &bus->children, node) {
+		child = pci_do_find_bus(tmp, busnr);
+		if (child)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return child;
 	}
 	return NULL;
@@ -77,7 +187,11 @@ static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
  * in the global list of PCI buses.  If the bus is found, a pointer to its
  * data structure is returned.  If no bus is found, %NULL is returned.
  */
+<<<<<<< HEAD
 struct pci_bus * pci_find_bus(int domain, int busnr)
+=======
+struct pci_bus *pci_find_bus(int domain, int busnr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pci_bus *bus = NULL;
 	struct pci_bus *tmp_bus;
@@ -91,18 +205,30 @@ struct pci_bus * pci_find_bus(int domain, int busnr)
 	}
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_find_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_find_next_bus - begin or continue searching for a PCI bus
  * @from: Previous PCI bus found, or %NULL for new search.
  *
+<<<<<<< HEAD
  * Iterates through the list of known PCI busses.  A new search is
+=======
+ * Iterates through the list of known PCI buses.  A new search is
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * initiated by passing %NULL as the @from argument.  Otherwise if
  * @from is not %NULL, searches continue from next device on the
  * global list.
  */
+<<<<<<< HEAD
 struct pci_bus * 
 pci_find_next_bus(const struct pci_bus *from)
+=======
+struct pci_bus *pci_find_next_bus(const struct pci_bus *from)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct list_head *n;
 	struct pci_bus *b = NULL;
@@ -111,19 +237,35 @@ pci_find_next_bus(const struct pci_bus *from)
 	down_read(&pci_bus_sem);
 	n = from ? from->node.next : pci_root_buses.next;
 	if (n != &pci_root_buses)
+<<<<<<< HEAD
 		b = pci_bus_b(n);
 	up_read(&pci_bus_sem);
 	return b;
 }
+=======
+		b = list_entry(n, struct pci_bus, node);
+	up_read(&pci_bus_sem);
+	return b;
+}
+EXPORT_SYMBOL(pci_find_next_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_get_slot - locate PCI device for a given PCI slot
  * @bus: PCI bus on which desired PCI device resides
+<<<<<<< HEAD
  * @devfn: encodes number of PCI slot in which the desired PCI 
  * device resides and the logical device number within that slot 
  * in case of multi-function devices.
  *
  * Given a PCI bus and slot/function number, the desired PCI device 
+=======
+ * @devfn: encodes number of PCI slot in which the desired PCI
+ * device resides and the logical device number within that slot
+ * in case of multi-function devices.
+ *
+ * Given a PCI bus and slot/function number, the desired PCI device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * is located in the list of PCI devices.
  * If the device is found, its reference count is increased and this
  * function returns a pointer to its data structure.  The caller must
@@ -148,6 +290,10 @@ struct pci_dev *pci_get_slot(struct pci_bus *bus, unsigned int devfn)
 	up_read(&pci_bus_sem);
 	return dev;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_get_slot);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_get_domain_bus_and_slot - locate PCI device for a given PCI domain (segment), bus, and slot
@@ -218,8 +364,12 @@ static struct pci_dev *pci_get_dev_by_id(const struct pci_device_id *id,
 			      match_pci_dev_by_id);
 	if (dev)
 		pdev = to_pci_dev(dev);
+<<<<<<< HEAD
 	if (from)
 		pci_dev_put(from);
+=======
+	pci_dev_put(from);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return pdev;
 }
 
@@ -252,6 +402,10 @@ struct pci_dev *pci_get_subsys(unsigned int vendor, unsigned int device,
 
 	return pci_get_dev_by_id(&id, from);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_get_subsys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_get_device - begin or continue searching for a PCI device by vendor/device id
@@ -267,11 +421,20 @@ struct pci_dev *pci_get_subsys(unsigned int vendor, unsigned int device,
  * from next device on the global list.  The reference count for @from is
  * always decremented if it is not %NULL.
  */
+<<<<<<< HEAD
 struct pci_dev *
 pci_get_device(unsigned int vendor, unsigned int device, struct pci_dev *from)
 {
 	return pci_get_subsys(vendor, device, PCI_ANY_ID, PCI_ANY_ID, from);
 }
+=======
+struct pci_dev *pci_get_device(unsigned int vendor, unsigned int device,
+			       struct pci_dev *from)
+{
+	return pci_get_subsys(vendor, device, PCI_ANY_ID, PCI_ANY_ID, from);
+}
+EXPORT_SYMBOL(pci_get_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_get_class - begin or continue searching for a PCI device by class
@@ -300,6 +463,10 @@ struct pci_dev *pci_get_class(unsigned int class, struct pci_dev *from)
 
 	return pci_get_dev_by_id(&id, from);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pci_get_class);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * pci_dev_present - Returns 1 if device matching the device list is present, 0 if not.
@@ -329,6 +496,7 @@ int pci_dev_present(const struct pci_device_id *ids)
 	return 0;
 }
 EXPORT_SYMBOL(pci_dev_present);
+<<<<<<< HEAD
 
 /* For boot time work */
 EXPORT_SYMBOL(pci_find_bus);
@@ -338,3 +506,5 @@ EXPORT_SYMBOL(pci_get_device);
 EXPORT_SYMBOL(pci_get_subsys);
 EXPORT_SYMBOL(pci_get_slot);
 EXPORT_SYMBOL(pci_get_class);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

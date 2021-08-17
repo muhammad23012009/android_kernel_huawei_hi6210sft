@@ -6,6 +6,20 @@
 # Licensed under the GPL
 #
 
+<<<<<<< HEAD
+=======
+# select defconfig based on actual architecture
+ifeq ($(SUBARCH),x86)
+  ifeq ($(shell uname -m),x86_64)
+        KBUILD_DEFCONFIG := x86_64_defconfig
+  else
+        KBUILD_DEFCONFIG := i386_defconfig
+  endif
+else
+        KBUILD_DEFCONFIG := $(SUBARCH)_defconfig
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ARCH_DIR := arch/um
 OS := $(shell uname -s)
 # We require bash because the vmlinux link and loader script cpp use bash
@@ -22,19 +36,32 @@ MODE_INCLUDE	+= -I$(srctree)/$(ARCH_DIR)/include/shared/skas
 
 HEADER_ARCH 	:= $(SUBARCH)
 
+<<<<<<< HEAD
 # Additional ARCH settings for x86
 ifeq ($(SUBARCH),i386)
         HEADER_ARCH := x86
 endif
 ifeq ($(SUBARCH),x86_64)
         HEADER_ARCH := x86
+=======
+ifneq ($(filter $(SUBARCH),x86 x86_64 i386),)
+	HEADER_ARCH := x86
+endif
+
+ifdef CONFIG_64BIT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	KBUILD_CFLAGS += -mcmodel=large
 endif
 
 HOST_DIR := arch/$(HEADER_ARCH)
 
+<<<<<<< HEAD
 include $(srctree)/$(ARCH_DIR)/Makefile-skas
 include $(srctree)/$(HOST_DIR)/Makefile.um
+=======
+include $(ARCH_DIR)/Makefile-skas
+include $(HOST_DIR)/Makefile.um
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 core-y += $(HOST_DIR)/um/
 
@@ -58,6 +85,7 @@ KBUILD_CFLAGS += $(CFLAGS) $(CFLAGS-y) -D__arch_um__ \
 
 KBUILD_AFLAGS += $(ARCH_INCLUDE)
 
+<<<<<<< HEAD
 USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -D__KERNEL__,,\
 	$(patsubst -I%,,$(KBUILD_CFLAGS)))) $(ARCH_INCLUDE) $(MODE_INCLUDE) \
 	$(filter -I%,$(CFLAGS)) -D_FILE_OFFSET_BITS=64 -idirafter include
@@ -69,6 +97,20 @@ KBUILD_CPPFLAGS += -I$(srctree)/$(HOST_DIR)/include \
 		   -I$(srctree)/$(HOST_DIR)/include/uapi \
 		   -I$(HOST_DIR)/include/generated \
 		   -I$(HOST_DIR)/include/generated/uapi
+=======
+USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
+		$(ARCH_INCLUDE) $(MODE_INCLUDE) $(filter -I%,$(CFLAGS)) \
+		-D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
+		-idirafter $(obj)/include -D__KERNEL__ -D__UM_HOST__
+
+#This will adjust *FLAGS accordingly to the platform.
+include $(ARCH_DIR)/Makefile-os-$(OS)
+
+KBUILD_CPPFLAGS += -I$(srctree)/$(HOST_DIR)/include \
+		   -I$(srctree)/$(HOST_DIR)/include/uapi \
+		   -I$(objtree)/$(HOST_DIR)/include/generated \
+		   -I$(objtree)/$(HOST_DIR)/include/generated/uapi
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # -Derrno=kernel_errno - This turns all kernel references to errno into
 # kernel_errno to separate them from the libc errno.  This allows -fno-common
@@ -101,13 +143,21 @@ endef
 KBUILD_KCONFIG := $(HOST_DIR)/um/Kconfig
 
 archheaders:
+<<<<<<< HEAD
 	$(Q)$(MAKE) -C '$(srctree)' KBUILD_SRC= \
 		ARCH=$(HEADER_ARCH) O='$(objtree)' archheaders
+=======
+	$(Q)$(MAKE) KBUILD_SRC= ARCH=$(HEADER_ARCH) archheaders
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 archprepare: include/generated/user_constants.h
 
 LINK-$(CONFIG_LD_SCRIPT_STATIC) += -static
+<<<<<<< HEAD
 LINK-$(CONFIG_LD_SCRIPT_DYN) += -Wl,-rpath,/lib
+=======
+LINK-$(CONFIG_LD_SCRIPT_DYN) += -Wl,-rpath,/lib $(call cc-option, -no-pie)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 CFLAGS_NO_HARDENING := $(call cc-option, -fno-PIC,) $(call cc-option, -fno-pic,) \
 	$(call cc-option, -fno-stack-protector,) \

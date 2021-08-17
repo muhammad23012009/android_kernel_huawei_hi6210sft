@@ -1,7 +1,10 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/usb/input.h>
 #include <asm/unaligned.h>
 
@@ -32,7 +35,10 @@ struct kbtab {
 	unsigned char *data;
 	dma_addr_t data_dma;
 	struct input_dev *dev;
+<<<<<<< HEAD
 	struct usb_device *usbdev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct usb_interface *intf;
 	struct urb *irq;
 	char phys[32];
@@ -100,8 +106,14 @@ MODULE_DEVICE_TABLE(usb, kbtab_ids);
 static int kbtab_open(struct input_dev *dev)
 {
 	struct kbtab *kbtab = input_get_drvdata(dev);
+<<<<<<< HEAD
 
 	kbtab->irq->dev = kbtab->usbdev;
+=======
+	struct usb_device *udev = interface_to_usbdev(kbtab->intf);
+
+	kbtab->irq->dev = udev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (usb_submit_urb(kbtab->irq, GFP_KERNEL))
 		return -EIO;
 
@@ -126,6 +138,13 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 	if (intf->cur_altsetting->desc.bNumEndpoints < 1)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	endpoint = &intf->cur_altsetting->endpoint[0].desc;
+	if (!usb_endpoint_is_int_in(endpoint))
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kbtab = kzalloc(sizeof(struct kbtab), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!kbtab || !input_dev)
@@ -139,7 +158,10 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 	if (!kbtab->irq)
 		goto fail2;
 
+<<<<<<< HEAD
 	kbtab->usbdev = dev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kbtab->intf = intf;
 	kbtab->dev = input_dev;
 
@@ -165,8 +187,11 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 	input_set_abs_params(input_dev, ABS_Y, 0, 0x1750, 4, 0);
 	input_set_abs_params(input_dev, ABS_PRESSURE, 0, 0xff, 0, 0);
 
+<<<<<<< HEAD
 	endpoint = &intf->cur_altsetting->endpoint[0].desc;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usb_fill_int_urb(kbtab->irq, dev,
 			 usb_rcvintpipe(dev, endpoint->bEndpointAddress),
 			 kbtab->data, 8,
@@ -192,12 +217,20 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 static void kbtab_disconnect(struct usb_interface *intf)
 {
 	struct kbtab *kbtab = usb_get_intfdata(intf);
+<<<<<<< HEAD
+=======
+	struct usb_device *udev = interface_to_usbdev(intf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb_set_intfdata(intf, NULL);
 
 	input_unregister_device(kbtab->dev);
 	usb_free_urb(kbtab->irq);
+<<<<<<< HEAD
 	usb_free_coherent(kbtab->usbdev, 8, kbtab->data, kbtab->data_dma);
+=======
+	usb_free_coherent(udev, 8, kbtab->data, kbtab->data_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(kbtab);
 }
 

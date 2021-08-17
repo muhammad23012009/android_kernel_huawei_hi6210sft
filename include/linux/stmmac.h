@@ -80,21 +80,54 @@ struct stmmac_mdio_bus_data {
 	unsigned int phy_mask;
 	int *irqs;
 	int probed_phy_irq;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+	int reset_gpio, active_low;
+	u32 delays[3];
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct stmmac_dma_cfg {
 	int pbl;
 	int fixed_burst;
 	int mixed_burst;
+<<<<<<< HEAD
 	int burst_len;
 };
 
 struct plat_stmmacenet_data {
 	char *phy_bus_name;
+=======
+	bool aal;
+};
+
+#define AXI_BLEN	7
+struct stmmac_axi {
+	bool axi_lpi_en;
+	bool axi_xit_frm;
+	u32 axi_wr_osr_lmt;
+	u32 axi_rd_osr_lmt;
+	bool axi_kbbe;
+	bool axi_axi_all;
+	u32 axi_blen[AXI_BLEN];
+	bool axi_fb;
+	bool axi_mb;
+	bool axi_rb;
+};
+
+struct plat_stmmacenet_data {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int bus_id;
 	int phy_addr;
 	int interface;
 	struct stmmac_mdio_bus_data *mdio_bus_data;
+<<<<<<< HEAD
+=======
+	struct device_node *phy_node;
+	struct device_node *mdio_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct stmmac_dma_cfg *dma_cfg;
 	int clk_csr;
 	int has_gmac;
@@ -104,6 +137,7 @@ struct plat_stmmacenet_data {
 	int bugged_jumbo;
 	int pmt;
 	int force_sf_dma_mode;
+<<<<<<< HEAD
 	int riwt_off;
 	void (*fix_mac_speed)(void *priv, unsigned int speed);
 	void (*bus_setup)(void __iomem *ioaddr);
@@ -112,5 +146,26 @@ struct plat_stmmacenet_data {
 	void *custom_cfg;
 	void *custom_data;
 	void *bsp_priv;
+=======
+	int force_thresh_dma_mode;
+	int riwt_off;
+	int max_speed;
+	int maxmtu;
+	int multicast_filter_bins;
+	int unicast_filter_entries;
+	int tx_fifo_size;
+	int rx_fifo_size;
+	void (*fix_mac_speed)(void *priv, unsigned int speed);
+	void (*bus_setup)(void __iomem *ioaddr);
+	int (*init)(struct platform_device *pdev, void *priv);
+	void (*exit)(struct platform_device *pdev, void *priv);
+	void (*suspend)(struct platform_device *pdev, void *priv);
+	void (*resume)(struct platform_device *pdev, void *priv);
+	void *bsp_priv;
+	struct stmmac_axi *axi;
+	int has_gmac4;
+	bool tso_en;
+	int mac_port_sel_speed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #endif

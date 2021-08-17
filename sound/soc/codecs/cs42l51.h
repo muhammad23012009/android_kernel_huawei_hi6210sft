@@ -18,9 +18,22 @@
 #ifndef _CS42L51_H
 #define _CS42L51_H
 
+<<<<<<< HEAD
 #define CS42L51_CHIP_ID			0x1B
 #define CS42L51_CHIP_REV_A		0x00
 #define CS42L51_CHIP_REV_B		0x01
+=======
+struct device;
+
+extern const struct regmap_config cs42l51_regmap;
+int cs42l51_probe(struct device *dev, struct regmap *regmap);
+extern const struct of_device_id cs42l51_of_match[];
+
+#define CS42L51_CHIP_ID			0x1B
+#define CS42L51_CHIP_REV_A		0x00
+#define CS42L51_CHIP_REV_B		0x01
+#define CS42L51_CHIP_REV_MASK		0x07
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define CS42L51_CHIP_REV_ID		0x01
 #define CS42L51_MK_CHIP_REV(a, b)	((a)<<3|(b))

@@ -60,7 +60,11 @@ MODULE_DESCRIPTION(KBUILD_MODNAME "CAN netdevice driver");
  *
  * The message objects 1..14 can be used for TX and RX while the message
  * objects 15 is optimized for RX. It has a shadow register for reliable
+<<<<<<< HEAD
  * data receiption under heavy bus load. Therefore it makes sense to use
+=======
+ * data reception under heavy bus load. Therefore it makes sense to use
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * this message object for the needed use case. The frame type (EFF/SFF)
  * for the message object 15 can be defined via kernel module parameter
  * "msgobj15_eff". If not equal 0, it will receive 29-bit EFF frames,
@@ -390,16 +394,24 @@ static int cc770_get_berr_counter(const struct net_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static netdev_tx_t cc770_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct cc770_priv *priv = netdev_priv(dev);
 	struct net_device_stats *stats = &dev->stats;
 	struct can_frame *cf = (struct can_frame *)skb->data;
 	unsigned int mo = obj2msgobj(CC770_OBJ_TX);
+=======
+static void cc770_tx(struct net_device *dev, int mo)
+{
+	struct cc770_priv *priv = netdev_priv(dev);
+	struct can_frame *cf = (struct can_frame *)priv->tx_skb->data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 dlc, rtr;
 	u32 id;
 	int i;
 
+<<<<<<< HEAD
 	if (can_dropped_invalid_skb(dev, skb))
 		return NETDEV_TX_OK;
 
@@ -421,6 +433,17 @@ static netdev_tx_t cc770_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			RMTPND_RES | TXRQST_RES | CPUUPD_SET | NEWDAT_RES);
 	cc770_write_reg(priv, msgobj[mo].ctrl0,
 			MSGVAL_SET | TXIE_SET | RXIE_RES | INTPND_RES);
+=======
+	dlc = cf->can_dlc;
+	id = cf->can_id;
+	rtr = cf->can_id & CAN_RTR_FLAG ? 0 : MSGCFG_DIR;
+
+	cc770_write_reg(priv, msgobj[mo].ctrl0,
+			MSGVAL_RES | TXIE_RES | RXIE_RES | INTPND_RES);
+	cc770_write_reg(priv, msgobj[mo].ctrl1,
+			RMTPND_RES | TXRQST_RES | CPUUPD_SET | NEWDAT_RES);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (id & CAN_EFF_FLAG) {
 		id &= CAN_EFF_MASK;
 		cc770_write_reg(priv, msgobj[mo].config,
@@ -439,6 +462,7 @@ static netdev_tx_t cc770_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	for (i = 0; i < dlc; i++)
 		cc770_write_reg(priv, msgobj[mo].data[i], cf->data[i]);
 
+<<<<<<< HEAD
 	/* Store echo skb before starting the transfer */
 	can_put_echo_skb(skb, dev, 0);
 
@@ -455,6 +479,32 @@ static netdev_tx_t cc770_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	 */
 	cc770_write_reg(priv, msgobj[mo].ctrl0,
 			MSGVAL_UNC | TXIE_UNC | RXIE_UNC | INTPND_RES);
+=======
+	cc770_write_reg(priv, msgobj[mo].ctrl1,
+			RMTPND_UNC | TXRQST_SET | CPUUPD_RES | NEWDAT_UNC);
+	cc770_write_reg(priv, msgobj[mo].ctrl0,
+			MSGVAL_SET | TXIE_SET | RXIE_SET | INTPND_UNC);
+}
+
+static netdev_tx_t cc770_start_xmit(struct sk_buff *skb, struct net_device *dev)
+{
+	struct cc770_priv *priv = netdev_priv(dev);
+	unsigned int mo = obj2msgobj(CC770_OBJ_TX);
+
+	if (can_dropped_invalid_skb(dev, skb))
+		return NETDEV_TX_OK;
+
+	netif_stop_queue(dev);
+
+	if ((cc770_read_reg(priv,
+			    msgobj[mo].ctrl1) & TXRQST_UNC) == TXRQST_SET) {
+		netdev_err(dev, "TX register is still occupied!\n");
+		return NETDEV_TX_BUSY;
+	}
+
+	priv->tx_skb = skb;
+	cc770_tx(dev, mo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return NETDEV_TX_OK;
 }
@@ -504,10 +554,17 @@ static void cc770_rx(struct net_device *dev, unsigned int mo, u8 ctrl1)
 		for (i = 0; i < cf->can_dlc; i++)
 			cf->data[i] = cc770_read_reg(priv, msgobj[mo].data[i]);
 	}
+<<<<<<< HEAD
 	netif_rx(skb);
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int cc770_err(struct net_device *dev, u8 status)
@@ -535,6 +592,10 @@ static int cc770_err(struct net_device *dev, u8 status)
 		cc770_write_reg(priv, control, CTRL_INI);
 		cf->can_id |= CAN_ERR_BUSOFF;
 		priv->can.state = CAN_STATE_BUS_OFF;
+<<<<<<< HEAD
+=======
+		priv->can.can_stats.bus_off++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		can_bus_off(dev);
 	} else if (status & STAT_WARN) {
 		cf->can_id |= CAN_ERR_CRTL;
@@ -577,16 +638,27 @@ static int cc770_err(struct net_device *dev, u8 status)
 				cf->data[2] |= CAN_ERR_PROT_BIT0;
 				break;
 			case STAT_LEC_CRC:
+<<<<<<< HEAD
 				cf->data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ;
+=======
+				cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			}
 		}
 	}
 
+<<<<<<< HEAD
 	netif_rx(skb);
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+
+	stats->rx_packets++;
+	stats->rx_bytes += cf->can_dlc;
+	netif_rx(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -679,6 +751,7 @@ static void cc770_tx_interrupt(struct net_device *dev, unsigned int o)
 	struct cc770_priv *priv = netdev_priv(dev);
 	struct net_device_stats *stats = &dev->stats;
 	unsigned int mo = obj2msgobj(o);
+<<<<<<< HEAD
 
 	/* Nothing more to send, switch off interrupts */
 	cc770_write_reg(priv, msgobj[mo].ctrl0,
@@ -692,6 +765,48 @@ static void cc770_tx_interrupt(struct net_device *dev, unsigned int o)
 
 	stats->tx_packets++;
 	can_get_echo_skb(dev, 0);
+=======
+	struct can_frame *cf;
+	u8 ctrl1;
+
+	ctrl1 = cc770_read_reg(priv, msgobj[mo].ctrl1);
+
+	cc770_write_reg(priv, msgobj[mo].ctrl0,
+			MSGVAL_RES | TXIE_RES | RXIE_RES | INTPND_RES);
+	cc770_write_reg(priv, msgobj[mo].ctrl1,
+			RMTPND_RES | TXRQST_RES | MSGLST_RES | NEWDAT_RES);
+
+	if (unlikely(!priv->tx_skb)) {
+		netdev_err(dev, "missing tx skb in tx interrupt\n");
+		return;
+	}
+
+	if (unlikely(ctrl1 & MSGLST_SET)) {
+		stats->rx_over_errors++;
+		stats->rx_errors++;
+	}
+
+	/* When the CC770 is sending an RTR message and it receives a regular
+	 * message that matches the id of the RTR message, it will overwrite the
+	 * outgoing message in the TX register. When this happens we must
+	 * process the received message and try to transmit the outgoing skb
+	 * again.
+	 */
+	if (unlikely(ctrl1 & NEWDAT_SET)) {
+		cc770_rx(dev, mo, ctrl1);
+		cc770_tx(dev, mo);
+		return;
+	}
+
+	cf = (struct can_frame *)priv->tx_skb->data;
+	stats->tx_bytes += cf->can_dlc;
+	stats->tx_packets++;
+
+	can_put_echo_skb(priv->tx_skb, dev, 0);
+	can_get_echo_skb(dev, 0);
+	priv->tx_skb = NULL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_wake_queue(dev);
 }
 
@@ -803,6 +918,10 @@ struct net_device *alloc_cc770dev(int sizeof_priv)
 	priv->can.do_set_bittiming = cc770_set_bittiming;
 	priv->can.do_set_mode = cc770_set_mode;
 	priv->can.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES;
+<<<<<<< HEAD
+=======
+	priv->tx_skb = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memcpy(priv->obj_flags, cc770_obj_flags, sizeof(cc770_obj_flags));
 
@@ -823,6 +942,10 @@ static const struct net_device_ops cc770_netdev_ops = {
 	.ndo_open = cc770_open,
 	.ndo_stop = cc770_close,
 	.ndo_start_xmit = cc770_start_xmit,
+<<<<<<< HEAD
+=======
+	.ndo_change_mtu = can_change_mtu,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int register_cc770dev(struct net_device *dev)

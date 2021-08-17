@@ -41,6 +41,10 @@
 #include "ivtv-alsa-pcm.h"
 
 int ivtv_alsa_debug;
+<<<<<<< HEAD
+=======
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define IVTV_DEBUG_ALSA_INFO(fmt, arg...) \
 	do { \
@@ -54,6 +58,13 @@ MODULE_PARM_DESC(debug,
 		 "\t\t\t  1/0x0001: warning\n"
 		 "\t\t\t  2/0x0002: info\n");
 
+<<<<<<< HEAD
+=======
+module_param_array(index, int, NULL, 0444);
+MODULE_PARM_DESC(index,
+		 "Index value for IVTV ALSA capture interface(s).\n");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Andy Walls");
 MODULE_DESCRIPTION("CX23415/CX23416 ALSA Interface");
 MODULE_SUPPORTED_DEVICE("CX23415/CX23416 MPEG2 encoder");
@@ -137,7 +148,11 @@ static int snd_ivtv_init(struct v4l2_device *v4l2_dev)
 	struct ivtv *itv = to_ivtv(v4l2_dev);
 	struct snd_card *sc = NULL;
 	struct snd_ivtv_card *itvsc;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret, idx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Numbrs steps from "Writing an ALSA Driver" by Takashi Iwai */
 
@@ -145,11 +160,22 @@ static int snd_ivtv_init(struct v4l2_device *v4l2_dev)
 	/* This is a no-op for us.  We'll use the itv->instance */
 
 	/* (2) Create a card instance */
+<<<<<<< HEAD
 	ret = snd_card_create(SNDRV_DEFAULT_IDX1, /* use first available id */
 			      SNDRV_DEFAULT_STR1, /* xid from end of shortname*/
 			      THIS_MODULE, 0, &sc);
 	if (ret) {
 		IVTV_ALSA_ERR("%s: snd_card_create() failed with err %d\n",
+=======
+	/* use first available id if not specified otherwise*/
+	idx = index[itv->instance] == -1 ? SNDRV_DEFAULT_IDX1 : index[itv->instance];
+	ret = snd_card_new(&itv->pdev->dev,
+			   idx,
+			   SNDRV_DEFAULT_STR1, /* xid from end of shortname*/
+			   THIS_MODULE, 0, &sc);
+	if (ret) {
+		IVTV_ALSA_ERR("%s: snd_card_new() failed with err %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      __func__, ret);
 		goto err_exit;
 	}
@@ -195,6 +221,12 @@ static int snd_ivtv_init(struct v4l2_device *v4l2_dev)
 		goto err_exit_free;
 	}
 
+<<<<<<< HEAD
+=======
+	IVTV_ALSA_INFO("%s: Instance %d registered as ALSA card %d\n",
+			 __func__, itv->instance, sc->number);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 err_exit_free:
@@ -223,7 +255,11 @@ static int ivtv_alsa_load(struct ivtv *itv)
 	}
 
 	s = &itv->streams[IVTV_ENC_STREAM_TYPE_PCM];
+<<<<<<< HEAD
 	if (s->vdev == NULL) {
+=======
+	if (s->vdev.v4l2_dev == NULL) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		IVTV_DEBUG_ALSA_INFO("%s: PCM stream for card is disabled - "
 				     "skipping\n", __func__);
 		return 0;

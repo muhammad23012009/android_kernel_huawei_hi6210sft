@@ -1,14 +1,21 @@
 #ifndef _DRXK_H_
 #define _DRXK_H_
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/i2c.h>
 
 /**
  * struct drxk_config - Configure the initial parameters for DRX-K
  *
+<<<<<<< HEAD
  * @adr:		I2C Address of the DRX-K
+=======
+ * @adr:		I2C address of the DRX-K
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @parallel_ts:	True means that the device uses parallel TS,
  * 			Serial otherwise.
  * @dynamic_clk:	True means that the clock will be dynamically
@@ -29,7 +36,10 @@
  *				A value of 0 (default) or lower indicates that
  *				the correct number of parameters will be
  *				automatically detected.
+<<<<<<< HEAD
  * @load_firmware_sync:		Force the firmware load to be synchronous.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * On the *_gpio vars, bit 0 is UIO-1, bit 1 is UIO-2 and bit 2 is
  * UIO-3.
@@ -41,7 +51,10 @@ struct drxk_config {
 	bool	parallel_ts;
 	bool	dynamic_clk;
 	bool	enable_merr_cfg;
+<<<<<<< HEAD
 	bool	load_firmware_sync;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bool	antenna_dvbt;
 	u16	antenna_gpio;
@@ -53,7 +66,11 @@ struct drxk_config {
 	int		 qam_demod_parameter_count;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_DRXK)
+=======
+#if IS_REACHABLE(CONFIG_DVB_DRXK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *drxk_attach(const struct drxk_config *config,
 					struct i2c_adapter *i2c);
 #else

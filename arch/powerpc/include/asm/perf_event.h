@@ -34,7 +34,11 @@
 	do {							\
 		(regs)->result = 0;				\
 		(regs)->nip = __ip;				\
+<<<<<<< HEAD
 		(regs)->gpr[1] = *(unsigned long *)__get_SP();	\
+=======
+		(regs)->gpr[1] = current_stack_pointer();	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		asm volatile("mfmsr %0" : "=r" ((regs)->msr));	\
 	} while (0)
 #endif

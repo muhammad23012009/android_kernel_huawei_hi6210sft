@@ -44,7 +44,11 @@ static struct resource tps80031_rtc_resources[] = {
 };
 
 /* TPS80031 sub mfd devices */
+<<<<<<< HEAD
 static struct mfd_cell tps80031_cell[] = {
+=======
+static const struct mfd_cell tps80031_cell[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "tps80031-pmic",
 	},
@@ -418,7 +422,11 @@ static const struct regmap_config tps80031_regmap_configs[] = {
 static int tps80031_probe(struct i2c_client *client,
 			  const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct tps80031_platform_data *pdata = client->dev.platform_data;
+=======
+	struct tps80031_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tps80031 *tps80031;
 	int ret;
 	uint8_t es_version;
@@ -549,7 +557,10 @@ MODULE_DEVICE_TABLE(i2c, tps80031_id_table);
 static struct i2c_driver tps80031_driver = {
 	.driver	= {
 		.name	= "tps80031",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= tps80031_probe,
 	.remove		= tps80031_remove,

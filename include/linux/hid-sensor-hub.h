@@ -21,6 +21,11 @@
 
 #include <linux/hid.h>
 #include <linux/hid-sensor-ids.h>
+<<<<<<< HEAD
+=======
+#include <linux/iio/iio.h>
+#include <linux/iio/trigger.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct hid_sensor_hub_attribute_info - Attribute info
@@ -31,6 +36,11 @@
  * @units:		Measurment unit for this attribute.
  * @unit_expo:		Exponent used in the data.
  * @size:		Size in bytes for data size.
+<<<<<<< HEAD
+=======
+ * @logical_minimum:	Logical minimum value for this attribute.
+ * @logical_maximum:	Logical maximum value for this attribute.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct hid_sensor_hub_attribute_info {
 	u32 usage_id;
@@ -40,6 +50,29 @@ struct hid_sensor_hub_attribute_info {
 	s32 units;
 	s32 unit_expo;
 	s32 size;
+<<<<<<< HEAD
+=======
+	s32 logical_minimum;
+	s32 logical_maximum;
+};
+
+/**
+ * struct sensor_hub_pending - Synchronous read pending information
+ * @status:		Pending status true/false.
+ * @ready:		Completion synchronization data.
+ * @usage_id:		Usage id for physical device, E.g. Gyro usage id.
+ * @attr_usage_id:	Usage Id of a field, E.g. X-AXIS for a gyro.
+ * @raw_size:		Response size for a read request.
+ * @raw_data:		Place holder for received response.
+ */
+struct sensor_hub_pending {
+	bool status;
+	struct completion ready;
+	u32 usage_id;
+	u32 attr_usage_id;
+	int raw_size;
+	u8  *raw_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -47,11 +80,27 @@ struct hid_sensor_hub_attribute_info {
  * @hdev:		Stores the hid instance.
  * @vendor_id:		Vendor id of hub device.
  * @product_id:		Product id of hub device.
+<<<<<<< HEAD
+=======
+ * @usage:		Usage id for this hub device instance.
+ * @start_collection_index: Starting index for a phy type collection
+ * @end_collection_index: Last index for a phy type collection
+ * @mutex_ptr:		synchronizing mutex pointer.
+ * @pending:		Holds information of pending sync read request.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct hid_sensor_hub_device {
 	struct hid_device *hdev;
 	u32 vendor_id;
 	u32 product_id;
+<<<<<<< HEAD
+=======
+	u32 usage;
+	int start_collection_index;
+	int end_collection_index;
+	struct mutex *mutex_ptr;
+	struct sensor_hub_pending pending;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -74,6 +123,25 @@ struct hid_sensor_hub_callbacks {
 			 void *priv);
 };
 
+<<<<<<< HEAD
+=======
+/**
+* sensor_hub_device_open() - Open hub device
+* @hsdev:	Hub device instance.
+*
+* Used to open hid device for sensor hub.
+*/
+int sensor_hub_device_open(struct hid_sensor_hub_device *hsdev);
+
+/**
+* sensor_hub_device_clode() - Close hub device
+* @hsdev:	Hub device instance.
+*
+* Used to clode hid device for sensor hub.
+*/
+void sensor_hub_device_close(struct hid_sensor_hub_device *hsdev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Registration functions */
 
 /**
@@ -122,6 +190,7 @@ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
 
 /**
 * sensor_hub_input_attr_get_raw_value() - Synchronous read request
+<<<<<<< HEAD
 * @usage_id:	Attribute usage id of parent physical device as per spec
 * @attr_usage_id:	Attribute usage id as per spec
 * @report_id:	Report id to look for
@@ -139,11 +208,42 @@ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
 * @report_id:	Report id to look for
 * @field_index:	Field index inside a report
 * @value:	Value to set
+=======
+* @hsdev:	Hub device instance.
+* @usage_id:	Attribute usage id of parent physical device as per spec
+* @attr_usage_id:	Attribute usage id as per spec
+* @report_id:	Report id to look for
+* @flag:      Synchronous or asynchronous read
+*
+* Issues a synchronous or asynchronous read request for an input attribute.
+* Returns data upto 32 bits.
+*/
+
+enum sensor_hub_read_flags {
+	SENSOR_HUB_SYNC,
+	SENSOR_HUB_ASYNC,
+};
+
+int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+ 					u32 attr_usage_id, u32 report_id,
+ 					enum sensor_hub_read_flags flag
+);
+
+/**
+* sensor_hub_set_feature() - Feature set request
+* @hsdev:	Hub device instance.
+* @report_id:	Report id to look for
+* @field_index:	Field index inside a report
+* @buffer_size: size of the buffer
+* @buffer:	buffer to use in the feature set
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 *
 * Used to set a field in feature report. For example this can set polling
 * interval, sensitivity, activate/deactivate state.
 */
 int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+<<<<<<< HEAD
 			u32 field_index, s32 value);
 
 /**
@@ -157,6 +257,24 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
 */
 int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
 			u32 field_index, s32 *value);
+=======
+			   u32 field_index, int buffer_size, void *buffer);
+
+/**
+* sensor_hub_get_feature() - Feature get request
+* @hsdev:	Hub device instance.
+* @report_id:	Report id to look for
+* @field_index:	Field index inside a report
+* @buffer_size:	size of the buffer
+* @buffer:	buffer to copy output
+*
+* Used to get a field in feature report. For example this can get polling
+* interval, sensitivity, activate/deactivate state. On success it returns
+* number of bytes copied to buffer. On failure, it returns value < 0.
+*/
+int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+			   u32 field_index, int buffer_size, void *buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* hid-sensor-attributes */
 
@@ -165,14 +283,29 @@ struct hid_sensor_common {
 	struct hid_sensor_hub_device *hsdev;
 	struct platform_device *pdev;
 	unsigned usage_id;
+<<<<<<< HEAD
 	bool data_ready;
+=======
+	atomic_t data_ready;
+	atomic_t user_requested_state;
+	int poll_interval;
+	int raw_hystersis;
+	struct iio_trigger *trigger;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hid_sensor_hub_attribute_info poll;
 	struct hid_sensor_hub_attribute_info report_state;
 	struct hid_sensor_hub_attribute_info power_state;
 	struct hid_sensor_hub_attribute_info sensitivity;
+<<<<<<< HEAD
 };
 
 /*Convert from hid unit expo to regular exponent*/
+=======
+	struct work_struct work;
+};
+
+/* Convert from hid unit expo to regular exponent */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int hid_sensor_convert_exponent(int unit_expo)
 {
 	if (unit_expo < 0x08)
@@ -195,4 +328,16 @@ int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
 int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
 					int *val1, int *val2);
 
+<<<<<<< HEAD
+=======
+int hid_sensor_get_usage_index(struct hid_sensor_hub_device *hsdev,
+				u32 report_id, int field_index, u32 usage_id);
+
+int hid_sensor_format_scale(u32 usage_id,
+			    struct hid_sensor_hub_attribute_info *attr_info,
+			    int *val0, int *val1);
+
+s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

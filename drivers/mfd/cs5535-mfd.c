@@ -23,7 +23,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/core.h>
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -61,6 +64,10 @@ static int cs5535_mfd_res_enable(struct platform_device *pdev)
 static int cs5535_mfd_res_disable(struct platform_device *pdev)
 {
 	struct resource *res;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "can't fetch device resource info\n");
@@ -115,7 +122,14 @@ static struct mfd_cell cs5535_mfd_cells[] = {
 #ifdef CONFIG_OLPC
 static void cs5535_clone_olpc_cells(void)
 {
+<<<<<<< HEAD
 	const char *acpi_clones[] = { "olpc-xo1-pm-acpi", "olpc-xo1-sci-acpi" };
+=======
+	static const char *acpi_clones[] = {
+		"olpc-xo1-pm-acpi",
+		"olpc-xo1-sci-acpi"
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!machine_is_olpc())
 		return;
@@ -172,7 +186,11 @@ static void cs5535_mfd_remove(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(cs5535_mfd_pci_tbl) = {
+=======
+static const struct pci_device_id cs5535_mfd_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_NS, PCI_DEVICE_ID_NS_CS5535_ISA) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_CS5536_ISA) },
 	{ 0, }

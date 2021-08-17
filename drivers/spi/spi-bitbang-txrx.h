@@ -38,7 +38,11 @@
  *
  * Since this is software, the timings may not be exactly what your board's
  * chips need ... there may be several reasons you'd need to tweak timings
+<<<<<<< HEAD
  * in these routines, not just make to make it faster or slower to match a
+=======
+ * in these routines, not just to make it faster or slower to match a
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * particular CPU clock rate.
  */
 
@@ -49,12 +53,25 @@ bitbang_txrx_be_cpha0(struct spi_device *spi,
 {
 	/* if (cpol == 0) this is SPI_MODE_0; else this is SPI_MODE_2 */
 
+<<<<<<< HEAD
+=======
+	u32 oldbit = (!(word & (1<<(bits-1)))) << 31;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* clock starts at inactive polarity */
 	for (word <<= (32 - bits); likely(bits); bits--) {
 
 		/* setup MSB (to slave) on trailing edge */
+<<<<<<< HEAD
 		if ((flags & SPI_MASTER_NO_TX) == 0)
 			setmosi(spi, word & (1 << 31));
+=======
+		if ((flags & SPI_MASTER_NO_TX) == 0) {
+			if ((word & (1 << 31)) != oldbit) {
+				setmosi(spi, word & (1 << 31));
+				oldbit = word & (1 << 31);
+			}
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spidelay(nsecs);	/* T(setup) */
 
 		setsck(spi, !cpol);
@@ -76,13 +93,26 @@ bitbang_txrx_be_cpha1(struct spi_device *spi,
 {
 	/* if (cpol == 0) this is SPI_MODE_1; else this is SPI_MODE_3 */
 
+<<<<<<< HEAD
+=======
+	u32 oldbit = (!(word & (1<<(bits-1)))) << 31;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* clock starts at inactive polarity */
 	for (word <<= (32 - bits); likely(bits); bits--) {
 
 		/* setup MSB (to slave) on leading edge */
 		setsck(spi, !cpol);
+<<<<<<< HEAD
 		if ((flags & SPI_MASTER_NO_TX) == 0)
 			setmosi(spi, word & (1 << 31));
+=======
+		if ((flags & SPI_MASTER_NO_TX) == 0) {
+			if ((word & (1 << 31)) != oldbit) {
+				setmosi(spi, word & (1 << 31));
+				oldbit = word & (1 << 31);
+			}
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spidelay(nsecs); /* T(setup) */
 
 		setsck(spi, cpol);

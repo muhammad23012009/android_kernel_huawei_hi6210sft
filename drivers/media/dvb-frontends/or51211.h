@@ -37,7 +37,11 @@ struct or51211_config
 	void (*sleep)(struct dvb_frontend * fe);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_OR51211)
+=======
+#if IS_REACHABLE(CONFIG_DVB_OR51211)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* or51211_attach(const struct or51211_config* config,
 					   struct i2c_adapter* i2c);
 #else

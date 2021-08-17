@@ -1,6 +1,10 @@
 /* -----------------------------------------------------------------------
  *
+<<<<<<< HEAD
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
+=======
+ *   Copyright 2009-2014 Intel Corporation; author H. Peter Anvin
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *   This file is part of the Linux kernel, and is made available under
  *   the terms of the GNU General Public License version 2 or (at your
@@ -13,8 +17,13 @@
  * touching registers they shouldn't be.
  */
 
+<<<<<<< HEAD
 	.code16gcc
 	.text
+=======
+	.code16
+	.section ".inittext","ax"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.globl	intcall
 	.type	intcall, @function
 intcall:

@@ -53,12 +53,27 @@
 union cvmx_l2c_tag {
 	uint64_t u64;
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		uint64_t reserved:28;
 		uint64_t V:1;		/* Line valid */
 		uint64_t D:1;		/* Line dirty */
 		uint64_t L:1;		/* Line locked */
 		uint64_t U:1;		/* Use, LRU eviction */
 		uint64_t addr:32;	/* Phys mem (not all bits valid) */
+<<<<<<< HEAD
+=======
+#else
+		uint64_t addr:32;	/* Phys mem (not all bits valid) */
+		uint64_t U:1;		/* Use, LRU eviction */
+		uint64_t L:1;		/* Line locked */
+		uint64_t D:1;		/* Line dirty */
+		uint64_t V:1;		/* Line valid */
+		uint64_t reserved:28;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} s;
 };
 

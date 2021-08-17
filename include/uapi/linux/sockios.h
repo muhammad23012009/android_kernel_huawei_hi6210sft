@@ -27,7 +27,11 @@
 /* Routing table calls. */
 #define SIOCADDRT	0x890B		/* add routing table entry	*/
 #define SIOCDELRT	0x890C		/* delete routing table entry	*/
+<<<<<<< HEAD
 #define SIOCRTMSG	0x890D		/* call to routing system	*/
+=======
+#define SIOCRTMSG	0x890D		/* unused			*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Socket configuration controls. */
 #define SIOCGIFNAME	0x8910		/* get iface name		*/
@@ -65,7 +69,10 @@
 #define SIOCDIFADDR	0x8936		/* delete PA address		*/
 #define	SIOCSIFHWBROADCAST	0x8937	/* set hardware broadcast addr	*/
 #define SIOCGIFCOUNT	0x8938		/* get number of devices */
+<<<<<<< HEAD
 #define SIOCKILLADDR	0x8939		/* kill sockets with this local addr */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SIOCGIFBR	0x8940		/* Bridging support		*/
 #define SIOCSIFBR	0x8941		/* Set bridging options 	*/
@@ -126,7 +133,12 @@
 #define SIOCBRDELIF	0x89a3		/* remove interface from bridge */
 
 /* hardware time stamping: parameters in linux/net_tstamp.h */
+<<<<<<< HEAD
 #define SIOCSHWTSTAMP   0x89b0
+=======
+#define SIOCSHWTSTAMP	0x89b0		/* set and get config		*/
+#define SIOCGHWTSTAMP	0x89b1		/* get config			*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Device private ioctl calls */
 

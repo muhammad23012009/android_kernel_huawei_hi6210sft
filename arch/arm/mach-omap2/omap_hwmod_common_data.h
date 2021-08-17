@@ -18,9 +18,12 @@
 #include "common.h"
 #include "display.h"
 
+<<<<<<< HEAD
 /* Common address space across OMAP2xxx */
 extern struct omap_hwmod_addr_space omap2xxx_mcbsp2_addrs[];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Common address space across OMAP2xxx/3xxx */
 extern struct omap_hwmod_addr_space omap2_i2c1_addr_space[];
 extern struct omap_hwmod_addr_space omap2_i2c2_addr_space[];
@@ -36,13 +39,19 @@ extern struct omap_hwmod_addr_space omap2_mcspi1_addr_space[];
 extern struct omap_hwmod_addr_space omap2_mcspi2_addr_space[];
 extern struct omap_hwmod_addr_space omap2430_mcspi3_addr_space[];
 extern struct omap_hwmod_addr_space omap2_dma_system_addrs[];
+<<<<<<< HEAD
 extern struct omap_hwmod_addr_space omap2_mailbox_addrs[];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct omap_hwmod_addr_space omap2_mcbsp1_addrs[];
 extern struct omap_hwmod_addr_space omap2_hdq1w_addr_space[];
 
 /* Common IP block data across OMAP2xxx */
+<<<<<<< HEAD
 extern struct omap_hwmod_irq_info omap2xxx_timer12_mpu_irqs[];
 extern struct omap_hwmod_dma_info omap2xxx_dss_sdma_chs[];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct omap_gpio_dev_attr omap2xxx_gpio_dev_attr;
 extern struct omap_hwmod omap2xxx_l3_main_hwmod;
 extern struct omap_hwmod omap2xxx_l4_core_hwmod;

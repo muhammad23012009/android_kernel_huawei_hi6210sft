@@ -42,8 +42,11 @@
 #define cpu_has_mips64r1	0
 #define cpu_has_mips64r2	0
 
+<<<<<<< HEAD
 #define cpu_has_dsp		0
 #define cpu_has_dsp2		0
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define cpu_has_mipsmt		0
 
 #define cpu_has_64bits		0

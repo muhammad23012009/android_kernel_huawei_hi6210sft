@@ -38,7 +38,11 @@
 #include <linux/serial.h>
 #include <linux/serial_reg.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <pcmcia/cistpl.h>
 #include <pcmcia/ciscode.h>
@@ -62,7 +66,11 @@ MODULE_LICENSE("GPL");
 /* ======================== Local structures ======================== */
 
 
+<<<<<<< HEAD
 typedef struct btuart_info_t {
+=======
+struct btuart_info {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pcmcia_device *p_dev;
 
 	struct hci_dev *hdev;
@@ -75,7 +83,11 @@ typedef struct btuart_info_t {
 	unsigned long rx_state;
 	unsigned long rx_count;
 	struct sk_buff *rx_skb;
+<<<<<<< HEAD
 } btuart_info_t;
+=======
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 static int btuart_config(struct pcmcia_device *link);
@@ -127,7 +139,11 @@ static int btuart_write(unsigned int iobase, int fifo_size, __u8 *buf, int len)
 }
 
 
+<<<<<<< HEAD
 static void btuart_write_wakeup(btuart_info_t *info)
+=======
+static void btuart_write_wakeup(struct btuart_info *info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!info) {
 		BT_ERR("Unknown device");
@@ -149,7 +165,12 @@ static void btuart_write_wakeup(btuart_info_t *info)
 		if (!pcmcia_dev_present(info->p_dev))
 			return;
 
+<<<<<<< HEAD
 		if (!(skb = skb_dequeue(&(info->txq))))
+=======
+		skb = skb_dequeue(&(info->txq));
+		if (!skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		/* Send frame */
@@ -171,7 +192,11 @@ static void btuart_write_wakeup(btuart_info_t *info)
 }
 
 
+<<<<<<< HEAD
 static void btuart_receive(btuart_info_t *info)
+=======
+static void btuart_receive(struct btuart_info *info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned int iobase;
 	int boguscount = 0;
@@ -187,10 +212,18 @@ static void btuart_receive(btuart_info_t *info)
 		info->hdev->stat.byte_rx++;
 
 		/* Allocate packet */
+<<<<<<< HEAD
 		if (info->rx_skb == NULL) {
 			info->rx_state = RECV_WAIT_PACKET_TYPE;
 			info->rx_count = 0;
 			if (!(info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC))) {
+=======
+		if (!info->rx_skb) {
+			info->rx_state = RECV_WAIT_PACKET_TYPE;
+			info->rx_count = 0;
+			info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC);
+			if (!info->rx_skb) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				BT_ERR("Can't allocate mem for new packet");
 				return;
 			}
@@ -198,10 +231,16 @@ static void btuart_receive(btuart_info_t *info)
 
 		if (info->rx_state == RECV_WAIT_PACKET_TYPE) {
 
+<<<<<<< HEAD
 			info->rx_skb->dev = (void *) info->hdev;
 			bt_cb(info->rx_skb)->pkt_type = inb(iobase + UART_RX);
 
 			switch (bt_cb(info->rx_skb)->pkt_type) {
+=======
+			hci_skb_pkt_type(info->rx_skb) = inb(iobase + UART_RX);
+
+			switch (hci_skb_pkt_type(info->rx_skb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			case HCI_EVENT_PKT:
 				info->rx_state = RECV_WAIT_EVENT_HEADER;
@@ -220,9 +259,15 @@ static void btuart_receive(btuart_info_t *info)
 
 			default:
 				/* Unknown packet */
+<<<<<<< HEAD
 				BT_ERR("Unknown HCI packet with type 0x%02x received", bt_cb(info->rx_skb)->pkt_type);
 				info->hdev->stat.err_rx++;
 				clear_bit(HCI_RUNNING, &(info->hdev->flags));
+=======
+				BT_ERR("Unknown HCI packet with type 0x%02x received",
+				       hci_skb_pkt_type(info->rx_skb));
+				info->hdev->stat.err_rx++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				kfree_skb(info->rx_skb);
 				info->rx_skb = NULL;
@@ -265,7 +310,11 @@ static void btuart_receive(btuart_info_t *info)
 					break;
 
 				case RECV_WAIT_DATA:
+<<<<<<< HEAD
 					hci_recv_frame(info->rx_skb);
+=======
+					hci_recv_frame(info->hdev, info->rx_skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					info->rx_skb = NULL;
 					break;
 
@@ -285,7 +334,11 @@ static void btuart_receive(btuart_info_t *info)
 
 static irqreturn_t btuart_interrupt(int irq, void *dev_inst)
 {
+<<<<<<< HEAD
 	btuart_info_t *info = dev_inst;
+=======
+	struct btuart_info *info = dev_inst;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int iobase;
 	int boguscount = 0;
 	int iir, lsr;
@@ -339,7 +392,12 @@ static irqreturn_t btuart_interrupt(int irq, void *dev_inst)
 }
 
 
+<<<<<<< HEAD
 static void btuart_change_speed(btuart_info_t *info, unsigned int speed)
+=======
+static void btuart_change_speed(struct btuart_info *info,
+				unsigned int speed)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 	unsigned int iobase;
@@ -396,7 +454,11 @@ static void btuart_change_speed(btuart_info_t *info, unsigned int speed)
 
 static int btuart_hci_flush(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	btuart_info_t *info = hci_get_drvdata(hdev);
+=======
+	struct btuart_info *info = hci_get_drvdata(hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Drop TX queue */
 	skb_queue_purge(&(info->txq));
@@ -407,23 +469,30 @@ static int btuart_hci_flush(struct hci_dev *hdev)
 
 static int btuart_hci_open(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	set_bit(HCI_RUNNING, &(hdev->flags));
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 
 static int btuart_hci_close(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	if (!test_and_clear_bit(HCI_RUNNING, &(hdev->flags)))
 		return 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	btuart_hci_flush(hdev);
 
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static int btuart_hci_send_frame(struct sk_buff *skb)
 {
 	btuart_info_t *info;
@@ -437,6 +506,13 @@ static int btuart_hci_send_frame(struct sk_buff *skb)
 	info = hci_get_drvdata(hdev);
 
 	switch (bt_cb(skb)->pkt_type) {
+=======
+static int btuart_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
+{
+	struct btuart_info *info = hci_get_drvdata(hdev);
+
+	switch (hci_skb_pkt_type(skb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		break;
@@ -449,7 +525,11 @@ static int btuart_hci_send_frame(struct sk_buff *skb)
 	}
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_queue_tail(&(info->txq), skb);
 
 	btuart_write_wakeup(info);
@@ -458,17 +538,24 @@ static int btuart_hci_send_frame(struct sk_buff *skb)
 }
 
 
+<<<<<<< HEAD
 static int btuart_hci_ioctl(struct hci_dev *hdev, unsigned int cmd, unsigned long arg)
 {
 	return -ENOIOCTLCMD;
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* ======================== Card services HCI interaction ======================== */
 
 
+<<<<<<< HEAD
 static int btuart_open(btuart_info_t *info)
+=======
+static int btuart_open(struct btuart_info *info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 	unsigned int iobase = info->p_dev->resource[0]->start;
@@ -495,11 +582,18 @@ static int btuart_open(btuart_info_t *info)
 	hci_set_drvdata(hdev, info);
 	SET_HCIDEV_DEV(hdev, &info->p_dev->dev);
 
+<<<<<<< HEAD
 	hdev->open     = btuart_hci_open;
 	hdev->close    = btuart_hci_close;
 	hdev->flush    = btuart_hci_flush;
 	hdev->send     = btuart_hci_send_frame;
 	hdev->ioctl    = btuart_hci_ioctl;
+=======
+	hdev->open  = btuart_hci_open;
+	hdev->close = btuart_hci_close;
+	hdev->flush = btuart_hci_flush;
+	hdev->send  = btuart_hci_send_frame;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&(info->lock), flags);
 
@@ -535,7 +629,11 @@ static int btuart_open(btuart_info_t *info)
 }
 
 
+<<<<<<< HEAD
 static int btuart_close(btuart_info_t *info)
+=======
+static int btuart_close(struct btuart_info *info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 	unsigned int iobase = info->p_dev->resource[0]->start;
@@ -564,7 +662,11 @@ static int btuart_close(btuart_info_t *info)
 
 static int btuart_probe(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
 	btuart_info_t *info;
+=======
+	struct btuart_info *info;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Create new info device */
 	info = devm_kzalloc(&link->dev, sizeof(*info), GFP_KERNEL);
@@ -627,7 +729,11 @@ static int btuart_check_config_notpicky(struct pcmcia_device *p_dev,
 
 static int btuart_config(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
 	btuart_info_t *info = link->priv;
+=======
+	struct btuart_info *info = link->priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	int try;
 
@@ -668,7 +774,11 @@ failed:
 
 static void btuart_release(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
 	btuart_info_t *info = link->priv;
+=======
+	struct btuart_info *info = link->priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	btuart_close(info);
 

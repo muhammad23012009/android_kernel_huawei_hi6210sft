@@ -6,9 +6,17 @@
 # Networking Core Drivers
 #
 obj-$(CONFIG_BONDING) += bonding/
+<<<<<<< HEAD
 obj-$(CONFIG_DUMMY) += dummy.o
 obj-$(CONFIG_EQUALIZER) += eql.o
 obj-$(CONFIG_IFB) += ifb.o
+=======
+obj-$(CONFIG_IPVLAN) += ipvlan/
+obj-$(CONFIG_DUMMY) += dummy.o
+obj-$(CONFIG_EQUALIZER) += eql.o
+obj-$(CONFIG_IFB) += ifb.o
+obj-$(CONFIG_MACSEC) += macsec.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_MACVLAN) += macvlan.o
 obj-$(CONFIG_MACVTAP) += macvtap.o
 obj-$(CONFIG_MII) += mii.o
@@ -22,6 +30,13 @@ obj-$(CONFIG_TUN) += tun.o
 obj-$(CONFIG_VETH) += veth.o
 obj-$(CONFIG_VIRTIO_NET) += virtio_net.o
 obj-$(CONFIG_VXLAN) += vxlan.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_GENEVE) += geneve.o
+obj-$(CONFIG_GTP) += gtp.o
+obj-$(CONFIG_NLMON) += nlmon.o
+obj-$(CONFIG_NET_VRF) += vrf.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #
 # Networking Drivers
@@ -60,6 +75,7 @@ obj-$(CONFIG_VMXNET3) += vmxnet3/
 obj-$(CONFIG_XEN_NETDEV_FRONTEND) += xen-netfront.o
 obj-$(CONFIG_XEN_NETDEV_BACKEND) += xen-netback/
 
+<<<<<<< HEAD
 obj-$(CONFIG_USB_CATC)          += usb/
 obj-$(CONFIG_USB_KAWETH)        += usb/
 obj-$(CONFIG_USB_PEGASUS)       += usb/
@@ -72,3 +88,11 @@ obj-$(CONFIG_USB_CDC_PHONET)   += usb/
 
 obj-$(CONFIG_HYPERV_NET) += hyperv/
 obj-$(CONFIG_NTB_NETDEV) += ntb_netdev.o
+=======
+obj-$(CONFIG_USB_NET_DRIVERS) += usb/
+
+obj-$(CONFIG_HYPERV_NET) += hyperv/
+obj-$(CONFIG_NTB_NETDEV) += ntb_netdev.o
+
+obj-$(CONFIG_FUJITSU_ES) += fjes/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

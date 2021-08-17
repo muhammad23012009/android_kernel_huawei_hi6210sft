@@ -23,6 +23,7 @@
 					    usage_count */
 #define RPM_AUTO		0x08	/* Use autosuspend_delay */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 
 extern struct workqueue_struct *pm_wq;
@@ -30,6 +31,25 @@ extern struct workqueue_struct *pm_wq;
 extern int __pm_runtime_idle(struct device *dev, int rpmflags);
 extern int __pm_runtime_suspend(struct device *dev, int rpmflags);
 extern int __pm_runtime_resume(struct device *dev, int rpmflags);
+=======
+#ifdef CONFIG_PM
+extern struct workqueue_struct *pm_wq;
+
+static inline bool queue_pm_work(struct work_struct *work)
+{
+	return queue_work(pm_wq, work);
+}
+
+extern int pm_generic_runtime_suspend(struct device *dev);
+extern int pm_generic_runtime_resume(struct device *dev);
+extern int pm_runtime_force_suspend(struct device *dev);
+extern int pm_runtime_force_resume(struct device *dev);
+
+extern int __pm_runtime_idle(struct device *dev, int rpmflags);
+extern int __pm_runtime_suspend(struct device *dev, int rpmflags);
+extern int __pm_runtime_resume(struct device *dev, int rpmflags);
+extern int pm_runtime_get_if_in_use(struct device *dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int pm_schedule_suspend(struct device *dev, unsigned int delay);
 extern int __pm_runtime_set_status(struct device *dev, unsigned int status);
 extern int pm_runtime_barrier(struct device *dev);
@@ -37,9 +57,12 @@ extern void pm_runtime_enable(struct device *dev);
 extern void __pm_runtime_disable(struct device *dev, bool check_resume);
 extern void pm_runtime_allow(struct device *dev);
 extern void pm_runtime_forbid(struct device *dev);
+<<<<<<< HEAD
 extern int pm_generic_runtime_idle(struct device *dev);
 extern int pm_generic_runtime_suspend(struct device *dev);
 extern int pm_generic_runtime_resume(struct device *dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void pm_runtime_no_callbacks(struct device *dev);
 extern void pm_runtime_irq_safe(struct device *dev);
 extern void __pm_runtime_use_autosuspend(struct device *dev, bool use);
@@ -49,6 +72,14 @@ extern void pm_runtime_update_max_time_suspended(struct device *dev,
 						 s64 delta_ns);
 extern void pm_runtime_set_memalloc_noio(struct device *dev, bool enable);
 
+<<<<<<< HEAD
+=======
+static inline void pm_suspend_ignore_children(struct device *dev, bool enable)
+{
+	dev->power.ignore_children = enable;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool pm_children_suspended(struct device *dev)
 {
 	return dev->power.ignore_children
@@ -107,7 +138,23 @@ static inline void pm_runtime_mark_last_busy(struct device *dev)
 	ACCESS_ONCE(dev->power.last_busy) = jiffies;
 }
 
+<<<<<<< HEAD
 #else /* !CONFIG_PM_RUNTIME */
+=======
+static inline bool pm_runtime_is_irq_safe(struct device *dev)
+{
+	return dev->power.irq_safe;
+}
+
+#else /* !CONFIG_PM */
+
+static inline bool queue_pm_work(struct work_struct *work) { return false; }
+
+static inline int pm_generic_runtime_suspend(struct device *dev) { return 0; }
+static inline int pm_generic_runtime_resume(struct device *dev) { return 0; }
+static inline int pm_runtime_force_suspend(struct device *dev) { return 0; }
+static inline int pm_runtime_force_resume(struct device *dev) { return 0; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int __pm_runtime_idle(struct device *dev, int rpmflags)
 {
@@ -125,6 +172,13 @@ static inline int pm_schedule_suspend(struct device *dev, unsigned int delay)
 {
 	return -ENOSYS;
 }
+<<<<<<< HEAD
+=======
+static inline int pm_runtime_get_if_in_use(struct device *dev)
+{
+	return -EINVAL;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int __pm_runtime_set_status(struct device *dev,
 					    unsigned int status) { return 0; }
 static inline int pm_runtime_barrier(struct device *dev) { return 0; }
@@ -133,6 +187,10 @@ static inline void __pm_runtime_disable(struct device *dev, bool c) {}
 static inline void pm_runtime_allow(struct device *dev) {}
 static inline void pm_runtime_forbid(struct device *dev) {}
 
+<<<<<<< HEAD
+=======
+static inline void pm_suspend_ignore_children(struct device *dev, bool enable) {}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline bool pm_children_suspended(struct device *dev) { return false; }
 static inline void pm_runtime_get_noresume(struct device *dev) {}
 static inline void pm_runtime_put_noidle(struct device *dev) {}
@@ -143,11 +201,17 @@ static inline bool pm_runtime_active(struct device *dev) { return true; }
 static inline bool pm_runtime_status_suspended(struct device *dev) { return false; }
 static inline bool pm_runtime_enabled(struct device *dev) { return false; }
 
+<<<<<<< HEAD
 static inline int pm_generic_runtime_idle(struct device *dev) { return 0; }
 static inline int pm_generic_runtime_suspend(struct device *dev) { return 0; }
 static inline int pm_generic_runtime_resume(struct device *dev) { return 0; }
 static inline void pm_runtime_no_callbacks(struct device *dev) {}
 static inline void pm_runtime_irq_safe(struct device *dev) {}
+=======
+static inline void pm_runtime_no_callbacks(struct device *dev) {}
+static inline void pm_runtime_irq_safe(struct device *dev) {}
+static inline bool pm_runtime_is_irq_safe(struct device *dev) { return false; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline bool pm_runtime_callbacks_present(struct device *dev) { return false; }
 static inline void pm_runtime_mark_last_busy(struct device *dev) {}
@@ -160,7 +224,11 @@ static inline unsigned long pm_runtime_autosuspend_expiration(
 static inline void pm_runtime_set_memalloc_noio(struct device *dev,
 						bool enable){}
 
+<<<<<<< HEAD
 #endif /* !CONFIG_PM_RUNTIME */
+=======
+#endif /* !CONFIG_PM */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int pm_runtime_idle(struct device *dev)
 {

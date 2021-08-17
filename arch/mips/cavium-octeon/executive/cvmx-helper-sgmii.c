@@ -34,7 +34,10 @@
 
 #include <asm/octeon/cvmx-config.h>
 
+<<<<<<< HEAD
 #include <asm/octeon/cvmx-mdio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-board.h>
 
@@ -317,10 +320,21 @@ static int __cvmx_helper_sgmii_hardware_init(int interface, int num_ports)
 	for (index = 0; index < num_ports; index++) {
 		int ipd_port = cvmx_helper_get_ipd_port(interface, index);
 		__cvmx_helper_sgmii_hardware_init_one_time(interface, index);
+<<<<<<< HEAD
 		__cvmx_helper_sgmii_link_set(ipd_port,
 					     __cvmx_helper_sgmii_link_get
 					     (ipd_port));
 
+=======
+		/* Linux kernel driver will call ....link_set with the
+		 * proper link state. In the simulator there is no
+		 * link state polling and hence it is set from
+		 * here.
+		 */
+		if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_SIM)
+			__cvmx_helper_sgmii_link_set(ipd_port,
+				       __cvmx_helper_sgmii_link_get(ipd_port));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;

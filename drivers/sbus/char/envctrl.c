@@ -19,7 +19,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kthread.h>
 #include <linux/delay.h>
 #include <linux/ioport.h>
@@ -911,8 +914,15 @@ static void envctrl_init_i2c_child(struct device_node *dp,
 			for (len = 0; len < PCF8584_MAX_CHANNELS; ++len) {
 				pchild->mon_type[len] = ENVCTRL_NOMON;
 			}
+<<<<<<< HEAD
 			return;
 		}
+=======
+			of_node_put(root_node);
+			return;
+		}
+		of_node_put(root_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Get the monitor channels. */
@@ -971,18 +981,25 @@ static struct i2c_child_t *envctrl_get_i2c_child(unsigned char mon_type)
 static void envctrl_do_shutdown(void)
 {
 	static int inprog = 0;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (inprog != 0)
 		return;
 
 	inprog = 1;
 	printk(KERN_CRIT "kenvctrld: WARNING: Shutting down the system now.\n");
+<<<<<<< HEAD
 	ret = orderly_poweroff(true);
 	if (ret < 0) {
 		printk(KERN_CRIT "kenvctrld: WARNING: system shutdown failed!\n"); 
 		inprog = 0;  /* unlikely to succeed, but we could try again */
 	}
+=======
+	orderly_poweroff(true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct task_struct *kenvctrld_task;
@@ -1131,7 +1148,10 @@ MODULE_DEVICE_TABLE(of, envctrl_match);
 static struct platform_driver envctrl_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = envctrl_match,
 	},
 	.probe		= envctrl_probe,

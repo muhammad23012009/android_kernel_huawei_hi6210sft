@@ -12,13 +12,24 @@
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/console.h>
+<<<<<<< HEAD
 
 #include <asm/bootinfo.h>
+=======
+#include <linux/rtc.h>
+
+#include <asm/bootinfo.h>
+#include <asm/bootinfo-hp300.h>
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/machdep.h>
 #include <asm/blinken.h>
 #include <asm/io.h>                               /* readb() and writeb() */
 #include <asm/hp300hw.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "time.h"
 
@@ -70,6 +81,7 @@ extern int hp300_setup_serial_console(void) __init;
 int __init hp300_parse_bootinfo(const struct bi_record *record)
 {
 	int unknown = 0;
+<<<<<<< HEAD
 	const unsigned long *data = record->data;
 
 	switch (record->tag) {
@@ -79,13 +91,28 @@ int __init hp300_parse_bootinfo(const struct bi_record *record)
 
 	case BI_HP300_UART_SCODE:
 		hp300_uart_scode = *data;
+=======
+	const void *data = record->data;
+
+	switch (be16_to_cpu(record->tag)) {
+	case BI_HP300_MODEL:
+		hp300_model = be32_to_cpup(data);
+		break;
+
+	case BI_HP300_UART_SCODE:
+		hp300_uart_scode = be32_to_cpup(data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	case BI_HP300_UART_ADDR:
 		/* serial port address: ignored here */
 		break;
 
+<<<<<<< HEAD
         default:
+=======
+	default:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unknown = 1;
 	}
 
@@ -260,11 +287,20 @@ void __init config_hp300(void)
 #endif
 	mach_max_dma_address = 0xffffffff;
 
+<<<<<<< HEAD
 	if (hp300_model >= HP_330 && hp300_model <= HP_433S && hp300_model != HP_350) {
 		printk(KERN_INFO "Detected HP9000 model %s\n", hp300_models[hp300_model-HP_320]);
 		strcat(hp300_model_name, hp300_models[hp300_model-HP_320]);
 	}
 	else {
+=======
+	if (hp300_model >= HP_330 && hp300_model <= HP_433S &&
+	    hp300_model != HP_350) {
+		pr_info("Detected HP9000 model %s\n",
+			hp300_models[hp300_model-HP_320]);
+		strcat(hp300_model_name, hp300_models[hp300_model-HP_320]);
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		panic("Unknown HP9000 Model");
 	}
 #ifdef CONFIG_SERIAL_8250_CONSOLE

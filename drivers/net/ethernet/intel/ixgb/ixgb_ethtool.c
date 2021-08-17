@@ -107,8 +107,13 @@ ixgb_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
 		ethtool_cmd_speed_set(ecmd, SPEED_10000);
 		ecmd->duplex = DUPLEX_FULL;
 	} else {
+<<<<<<< HEAD
 		ethtool_cmd_speed_set(ecmd, -1);
 		ecmd->duplex = -1;
+=======
+		ethtool_cmd_speed_set(ecmd, SPEED_UNKNOWN);
+		ecmd->duplex = DUPLEX_UNKNOWN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ecmd->autoneg = AUTONEG_DISABLE;
@@ -479,9 +484,12 @@ ixgb_get_drvinfo(struct net_device *netdev,
 		sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
+<<<<<<< HEAD
 	drvinfo->n_stats = IXGB_STATS_LEN;
 	drvinfo->regdump_len = ixgb_get_regs_len(netdev);
 	drvinfo->eedump_len = ixgb_get_eeprom_len(netdev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -656,5 +664,9 @@ static const struct ethtool_ops ixgb_ethtool_ops = {
 
 void ixgb_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &ixgb_ethtool_ops);
+=======
+	netdev->ethtool_ops = &ixgb_ethtool_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

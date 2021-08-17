@@ -16,7 +16,10 @@
 #ifndef _UAPI__ASM_SIGCONTEXT_H
 #define _UAPI__ASM_SIGCONTEXT_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 
 /*
@@ -54,6 +57,7 @@ struct fpsimd_context {
 	__uint128_t vregs[32];
 };
 
+<<<<<<< HEAD
 
 #else /* CONFIG_64BIT */
 
@@ -86,4 +90,14 @@ struct sigcontext {
 	unsigned long fault_address;
 };
 #endif /* CONFIG_64BIT */
+=======
+/* ESR_EL1 context */
+#define ESR_MAGIC	0x45535201
+
+struct esr_context {
+	struct _aarch64_ctx head;
+	__u64 esr;
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _UAPI__ASM_SIGCONTEXT_H */

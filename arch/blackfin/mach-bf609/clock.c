@@ -73,6 +73,7 @@ static void clk_reg_write_mask(u32 reg, uint32_t val, uint32_t mask)
 	bfin_write32(reg, val2);
 }
 
+<<<<<<< HEAD
 static void clk_reg_set_bits(u32 reg, uint32_t mask)
 {
 	u32 val;
@@ -91,6 +92,8 @@ static void clk_reg_clear_bits(u32 reg, uint32_t mask)
 	bfin_write32(reg, val);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int wait_for_pll_align(void)
 {
 	int i = 10000;
@@ -120,6 +123,10 @@ void clk_disable(struct clk *clk)
 }
 EXPORT_SYMBOL(clk_disable);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long clk_get_rate(struct clk *clk)
 {
 	unsigned long ret = 0;
@@ -131,7 +138,11 @@ EXPORT_SYMBOL(clk_get_rate);
 
 long clk_round_rate(struct clk *clk, unsigned long rate)
 {
+<<<<<<< HEAD
 	long ret = -EIO;
+=======
+	long ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (clk->ops && clk->ops->round_rate)
 		ret = clk->ops->round_rate(clk, rate);
 	return ret;
@@ -220,6 +231,15 @@ unsigned long sys_clk_get_rate(struct clk *clk)
 	}
 }
 
+<<<<<<< HEAD
+=======
+unsigned long dummy_get_rate(struct clk *clk)
+{
+	clk->parent->rate = clk_get_rate(clk->parent);
+	return clk->parent->rate;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long sys_clk_round_rate(struct clk *clk, unsigned long rate)
 {
 	unsigned long max_rate;
@@ -283,6 +303,13 @@ static struct clk_ops sys_clk_ops = {
 	.round_rate = sys_clk_round_rate,
 };
 
+<<<<<<< HEAD
+=======
+static struct clk_ops dummy_clk_ops = {
+	.get_rate = dummy_get_rate,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct clk sys_clkin = {
 	.name       = "SYS_CLKIN",
 	.rate       = CONFIG_CLKIN_HZ,
@@ -364,6 +391,27 @@ static struct clk oclk = {
 	.parent     = &pll_clk,
 };
 
+<<<<<<< HEAD
+=======
+static struct clk ethclk = {
+	.name       = "stmmaceth",
+	.parent     = &sclk0,
+	.ops	    = &dummy_clk_ops,
+};
+
+static struct clk ethpclk = {
+	.name       = "pclk",
+	.parent     = &sclk0,
+	.ops	    = &dummy_clk_ops,
+};
+
+static struct clk spiclk = {
+	.name       = "spi",
+	.parent     = &sclk1,
+	.ops        = &dummy_clk_ops,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct clk_lookup bf609_clks[] = {
 	CLK(sys_clkin, NULL, "SYS_CLKIN"),
 	CLK(pll_clk, NULL, "PLLCLK"),
@@ -375,6 +423,12 @@ static struct clk_lookup bf609_clks[] = {
 	CLK(sclk1, NULL, "SCLK1"),
 	CLK(dclk, NULL, "DCLK"),
 	CLK(oclk, NULL, "OCLK"),
+<<<<<<< HEAD
+=======
+	CLK(ethclk, NULL, "stmmaceth"),
+	CLK(ethpclk, NULL, "pclk"),
+	CLK(spiclk, NULL, "spi"),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int __init clk_init(void)

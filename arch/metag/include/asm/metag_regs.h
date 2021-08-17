@@ -179,7 +179,11 @@
 ;   is best to dump these registers immediately at the start of a routine
 ;   using a MSETL or SETL instruction-
 ;
+<<<<<<< HEAD
 ;   MSETL   [A0StP],D0Ar6,D0Ar4,D0Ar2; Only dump argments expected
+=======
+;   MSETL   [A0StP],D0Ar6,D0Ar4,D0Ar2; Only dump arguments expected
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ;or SETL    [A0StP+#8++],D0Ar2       ; Up to two 32-bit args expected
 ;
 ; For non-leaf routines it is always necessary to save and restore at least
@@ -1165,7 +1169,11 @@
 #define TXSTATUS_IPTOGGLE_BIT           0x80000000 /* Prev PToggle of TXPRIVEXT */
 #define TXSTATUS_ISTATE_BIT             0x40000000 /* IState bit */
 #define TXSTATUS_IWAIT_BIT              0x20000000 /* wait indefinitely in decision step*/
+<<<<<<< HEAD
 #define TXSTATUS_IEXCEPT_BIT            0x10000000 /* Indicate an exception occured */
+=======
+#define TXSTATUS_IEXCEPT_BIT            0x10000000 /* Indicate an exception occurred */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TXSTATUS_IRPCOUNT_BITS          0x0E000000 /* Number of 'dirty' date entries*/
 #define TXSTATUS_IRPCOUNT_S             25
 #define TXSTATUS_IRQSTAT_BITS           0x0000F000 /* IRQEnc bits, trigger or interrupts */

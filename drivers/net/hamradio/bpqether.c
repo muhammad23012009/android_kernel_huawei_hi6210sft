@@ -76,7 +76,10 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/stat.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/rtnetlink.h>
@@ -90,10 +93,13 @@
 static const char banner[] __initconst = KERN_INFO \
 	"AX.25: bpqether driver version 004\n";
 
+<<<<<<< HEAD
 static char bcast_addr[6]={0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 
 static char bpq_eth_addr[6];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int bpq_rcv(struct sk_buff *, struct net_device *, struct packet_type *, struct net_device *);
 static int bpq_device_event(struct notifier_block *, unsigned long, void *);
 
@@ -103,7 +109,11 @@ static struct packet_type bpq_packet_type __read_mostly = {
 };
 
 static struct notifier_block bpq_dev_notifier = {
+<<<<<<< HEAD
 	.notifier_call =bpq_device_event,
+=======
+	.notifier_call = bpq_device_event,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -208,7 +218,11 @@ static int bpq_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_ty
 	eth = eth_hdr(skb);
 
 	if (!(bpq->acpt_addr[0] & 0x01) &&
+<<<<<<< HEAD
 	    memcmp(eth->h_source, bpq->acpt_addr, ETH_ALEN))
+=======
+	    !ether_addr_equal(eth->h_source, bpq->acpt_addr))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto drop_unlock;
 
 	if (skb_cow(skb, sizeof(struct ethhdr)))
@@ -251,6 +265,12 @@ static netdev_tx_t bpq_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct net_device *orig_dev;
 	int size;
 
+<<<<<<< HEAD
+=======
+	if (skb->protocol == htons(ETH_P_IP))
+		return ax25_ip_xmit(skb);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Just to be *really* sure not to send anything if the interface
 	 * is down, the ethernet device may have gone.
@@ -480,8 +500,14 @@ static void bpq_setup(struct net_device *dev)
 	memcpy(dev->dev_addr,  &ax25_defaddr, AX25_ADDR_LEN);
 
 	dev->flags      = 0;
+<<<<<<< HEAD
 
 #if defined(CONFIG_AX25) || defined(CONFIG_AX25_MODULE)
+=======
+	dev->features	= NETIF_F_LLTX;	/* Allow recursion */
+
+#if IS_ENABLED(CONFIG_AX25)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->header_ops      = &ax25_header_ops;
 #endif
 
@@ -501,8 +527,13 @@ static int bpq_new_device(struct net_device *edev)
 	struct net_device *ndev;
 	struct bpqdev *bpq;
 
+<<<<<<< HEAD
 	ndev = alloc_netdev(sizeof(struct bpqdev), "bpq%d",
 			   bpq_setup);
+=======
+	ndev = alloc_netdev(sizeof(struct bpqdev), "bpq%d", NET_NAME_UNKNOWN,
+			    bpq_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ndev)
 		return -ENOMEM;
 
@@ -512,8 +543,13 @@ static int bpq_new_device(struct net_device *edev)
 	bpq->ethdev = edev;
 	bpq->axdev = ndev;
 
+<<<<<<< HEAD
 	memcpy(bpq->dest_addr, bcast_addr, sizeof(bpq_eth_addr));
 	memcpy(bpq->acpt_addr, bcast_addr, sizeof(bpq_eth_addr));
+=======
+	eth_broadcast_addr(bpq->dest_addr);
+	eth_broadcast_addr(bpq->acpt_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = register_netdevice(ndev);
 	if (err)
@@ -544,9 +580,16 @@ static void bpq_free_device(struct net_device *ndev)
 /*
  *	Handle device status changes.
  */
+<<<<<<< HEAD
 static int bpq_device_event(struct notifier_block *this,unsigned long event, void *ptr)
 {
 	struct net_device *dev = (struct net_device *)ptr;
+=======
+static int bpq_device_event(struct notifier_block *this,
+			    unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;

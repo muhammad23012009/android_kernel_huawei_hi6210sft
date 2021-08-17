@@ -17,7 +17,11 @@
 #include <asm/processor.h>
 #include <asm/coprocessor.h>
 #include <asm/thread_info.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/asm-uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/unistd.h>
 #include <asm/ptrace.h>
 #include <asm/current.h>
@@ -32,9 +36,15 @@
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
@@ -225,9 +235,15 @@ ENDPROC(coprocessor_restore)
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
@@ -245,7 +261,10 @@ ENTRY(fast_coprocessor)
 
 	/* Save remaining registers a1-a3 and SAR */
 
+<<<<<<< HEAD
 	xsr	a3, excsave1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s32i	a3, a2, PT_AREG3
 	rsr	a3, sar
 	s32i	a1, a2, PT_AREG1

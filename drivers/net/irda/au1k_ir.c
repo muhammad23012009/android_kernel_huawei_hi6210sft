@@ -15,17 +15,27 @@
  *  for more details.
  *
  *  You should have received a copy of the GNU General Public License along
+<<<<<<< HEAD
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
  */
 
 #include <linux/init.h>
+=======
+ *  with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <linux/clk.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/netdevice.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/types.h>
 #include <linux/ioport.h>
 
@@ -164,8 +174,11 @@ struct au1k_private {
 	iobuff_t rx_buff;
 
 	struct net_device *netdev;
+<<<<<<< HEAD
 	struct timeval stamp;
 	struct timeval now;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct qos_info qos;
 	struct irlap_cb *irlap;
 
@@ -177,6 +190,10 @@ struct au1k_private {
 
 	struct resource *ioarea;
 	struct au1k_irda_platform_data *platdata;
+<<<<<<< HEAD
+=======
+	struct clk *irda_clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int qos_mtt_bits = 0x07;  /* 1 ms or more */
@@ -516,9 +533,45 @@ static irqreturn_t au1k_irda_interrupt(int dummy, void *dev_id)
 static int au1k_init(struct net_device *dev)
 {
 	struct au1k_private *aup = netdev_priv(dev);
+<<<<<<< HEAD
 	u32 enable, ring_address;
 	int i;
 
+=======
+	u32 enable, ring_address, phyck;
+	struct clk *c;
+	int i;
+
+	c = clk_get(NULL, "irda_clk");
+	if (IS_ERR(c))
+		return PTR_ERR(c);
+	i = clk_prepare_enable(c);
+	if (i) {
+		clk_put(c);
+		return i;
+	}
+
+	switch (clk_get_rate(c)) {
+	case 40000000:
+		phyck = IR_PHYCLK_40MHZ;
+		break;
+	case 48000000:
+		phyck = IR_PHYCLK_48MHZ;
+		break;
+	case 56000000:
+		phyck = IR_PHYCLK_56MHZ;
+		break;
+	case 64000000:
+		phyck = IR_PHYCLK_64MHZ;
+		break;
+	default:
+		clk_disable_unprepare(c);
+		clk_put(c);
+		return -EINVAL;
+	}
+	aup->irda_clk = c;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enable = IR_HC | IR_CE | IR_C;
 #ifndef CONFIG_CPU_LITTLE_ENDIAN
 	enable |= IR_BE;
@@ -547,7 +600,11 @@ static int au1k_init(struct net_device *dev)
 	irda_write(aup, IR_RING_SIZE,
 				(RING_SIZE_64 << 8) | (RING_SIZE_64 << 12));
 
+<<<<<<< HEAD
 	irda_write(aup, IR_CONFIG_2, IR_PHYCLK_48MHZ | IR_ONE_PIN);
+=======
+	irda_write(aup, IR_CONFIG_2, phyck | IR_ONE_PIN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irda_write(aup, IR_RING_ADDR_CMPR, 0);
 
 	au1k_irda_set_speed(dev, 9600);
@@ -621,6 +678,12 @@ static int au1k_irda_stop(struct net_device *dev)
 	free_irq(aup->irq_tx, dev);
 	free_irq(aup->irq_rx, dev);
 
+<<<<<<< HEAD
+=======
+	clk_disable_unprepare(aup->irda_clk);
+	clk_put(aup->irda_clk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -855,6 +918,10 @@ static int au1k_irda_probe(struct platform_device *pdev)
 	struct au1k_private *aup;
 	struct net_device *dev;
 	struct resource *r;
+<<<<<<< HEAD
+=======
+	struct clk *c;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	dev = alloc_irdadev(sizeof(struct au1k_private));
@@ -888,6 +955,17 @@ static int au1k_irda_probe(struct platform_device *pdev)
 	if (!aup->ioarea)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	/* bail out early if clock doesn't exist */
+	c = clk_get(NULL, "irda_clk");
+	if (IS_ERR(c)) {
+		err = PTR_ERR(c);
+		goto out;
+	}
+	clk_put(c);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	aup->iobase = ioremap_nocache(r->start, resource_size(r));
 	if (!aup->iobase)
 		goto out2;
@@ -947,7 +1025,10 @@ static int au1k_irda_remove(struct platform_device *pdev)
 static struct platform_driver au1k_irda_driver = {
 	.driver	= {
 		.name	= "au1000-irda",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= au1k_irda_probe,
 	.remove		= au1k_irda_remove,

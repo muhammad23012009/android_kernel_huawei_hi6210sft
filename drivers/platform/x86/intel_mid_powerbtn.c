@@ -24,6 +24,10 @@
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/mfd/intel_msic.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_wakeirq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_NAME "msic_power_btn"
 
@@ -66,10 +70,15 @@ static int mfld_pb_probe(struct platform_device *pdev)
 		return -EINVAL;
 
 	input = input_allocate_device();
+<<<<<<< HEAD
 	if (!input) {
 		dev_err(&pdev->dev, "Input device allocation error\n");
 		return -ENOMEM;
 	}
+=======
+	if (!input)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input->name = pdev->name;
 	input->phys = "power-button/input0";
@@ -78,14 +87,25 @@ static int mfld_pb_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_KEY, KEY_POWER);
 
+<<<<<<< HEAD
 	error = request_threaded_irq(irq, NULL, mfld_pb_isr, IRQF_NO_SUSPEND |
 			IRQF_ONESHOT, DRIVER_NAME, input);
+=======
+	error = request_threaded_irq(irq, NULL, mfld_pb_isr, IRQF_ONESHOT,
+				     DRIVER_NAME, input);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (error) {
 		dev_err(&pdev->dev, "Unable to request irq %d for mfld power"
 				"button\n", irq);
 		goto err_free_input;
 	}
 
+<<<<<<< HEAD
+=======
+	device_init_wakeup(&pdev->dev, true);
+	dev_pm_set_wake_irq(&pdev->dev, irq);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&pdev->dev, "Unable to register input dev, error "
@@ -126,9 +146,16 @@ static int mfld_pb_remove(struct platform_device *pdev)
 	struct input_dev *input = platform_get_drvdata(pdev);
 	int irq = platform_get_irq(pdev, 0);
 
+<<<<<<< HEAD
 	free_irq(irq, input);
 	input_unregister_device(input);
 	platform_set_drvdata(pdev, NULL);
+=======
+	dev_pm_clear_wake_irq(&pdev->dev);
+	device_init_wakeup(&pdev->dev, false);
+	free_irq(irq, input);
+	input_unregister_device(input);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -136,7 +163,10 @@ static int mfld_pb_remove(struct platform_device *pdev)
 static struct platform_driver mfld_pb_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe	= mfld_pb_probe,
 	.remove	= mfld_pb_remove,

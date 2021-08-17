@@ -25,6 +25,10 @@
 #include <linux/moduleparam.h>
 #include <linux/videodev2.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 #include <linux/i2c.h>
 
@@ -58,23 +62,45 @@ struct xc5000_priv {
 	u32 freq_hz, freq_offset;
 	u32 bandwidth;
 	u8  video_standard;
+<<<<<<< HEAD
 	u8  rf_mode;
 	u8  radio_input;
+=======
+	unsigned int mode;
+	u8  rf_mode;
+	u8  radio_input;
+	u16  output_amp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	int chip_id;
 	u16 pll_register_no;
 	u8 init_status_supported;
 	u8 fw_checksum_supported;
+<<<<<<< HEAD
+=======
+
+	struct dvb_frontend *fe;
+	struct delayed_work timer_sleep;
+
+	const struct firmware   *firmware;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Misc Defines */
 #define MAX_TV_STANDARD			24
 #define XC_MAX_I2C_WRITE_LENGTH		64
 
+<<<<<<< HEAD
+=======
+/* Time to suspend after the .sleep callback is called */
+#define XC5000_SLEEP_TIME		5000 /* ms */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Signal Types */
 #define XC_RF_MODE_AIR			0
 #define XC_RF_MODE_CABLE		1
 
+<<<<<<< HEAD
 /* Result codes */
 #define XC_RESULT_SUCCESS		0
 #define XC_RESULT_RESET_FAILURE		1
@@ -85,6 +111,11 @@ struct xc5000_priv {
 /* Product id */
 #define XC_PRODUCT_ID_FW_NOT_LOADED	0x2000
 #define XC_PRODUCT_ID_FW_LOADED 	0x1388
+=======
+/* Product id */
+#define XC_PRODUCT_ID_FW_NOT_LOADED	0x2000
+#define XC_PRODUCT_ID_FW_LOADED	0x1388
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Registers */
 #define XREG_INIT         0x00
@@ -152,16 +183,26 @@ struct xc5000_priv {
 
 */
 struct XC_TV_STANDARD {
+<<<<<<< HEAD
 	char *Name;
 	u16 AudioMode;
 	u16 VideoMode;
+=======
+	char *name;
+	u16 audio_mode;
+	u16 video_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Tuner standards */
 #define MN_NTSC_PAL_BTSC	0
 #define MN_NTSC_PAL_A2		1
 #define MN_NTSC_PAL_EIAJ	2
+<<<<<<< HEAD
 #define MN_NTSC_PAL_Mono	3
+=======
+#define MN_NTSC_PAL_MONO	3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define BG_PAL_A2		4
 #define BG_PAL_NICAM		5
 #define BG_PAL_MONO		6
@@ -171,19 +212,32 @@ struct XC_TV_STANDARD {
 #define DK_PAL_NICAM		10
 #define DK_PAL_MONO		11
 #define DK_SECAM_A2DK1		12
+<<<<<<< HEAD
 #define DK_SECAM_A2LDK3 	13
 #define DK_SECAM_A2MONO 	14
+=======
+#define DK_SECAM_A2LDK3		13
+#define DK_SECAM_A2MONO		14
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define L_SECAM_NICAM		15
 #define LC_SECAM_NICAM		16
 #define DTV6			17
 #define DTV8			18
 #define DTV7_8			19
 #define DTV7			20
+<<<<<<< HEAD
 #define FM_Radio_INPUT2 	21
 #define FM_Radio_INPUT1 	22
 #define FM_Radio_INPUT1_MONO	23
 
 static struct XC_TV_STANDARD XC5000_Standard[MAX_TV_STANDARD] = {
+=======
+#define FM_RADIO_INPUT2		21
+#define FM_RADIO_INPUT1		22
+#define FM_RADIO_INPUT1_MONO	23
+
+static struct XC_TV_STANDARD xc5000_standard[MAX_TV_STANDARD] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{"M/N-NTSC/PAL-BTSC", 0x0400, 0x8020},
 	{"M/N-NTSC/PAL-A2",   0x0600, 0x8020},
 	{"M/N-NTSC/PAL-EIAJ", 0x0440, 0x8020},
@@ -249,7 +303,11 @@ static inline const struct xc5000_fw_cfg *xc5000_assign_firmware(int chip_id)
 static int xc_load_fw_and_init_tuner(struct dvb_frontend *fe, int force);
 static int xc5000_is_firmware_loaded(struct dvb_frontend *fe);
 static int xc5000_readreg(struct xc5000_priv *priv, u16 reg, u16 *val);
+<<<<<<< HEAD
 static int xc5000_TunerReset(struct dvb_frontend *fe);
+=======
+static int xc5000_tuner_reset(struct dvb_frontend *fe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int xc_send_i2c_data(struct xc5000_priv *priv, u8 *buf, int len)
 {
@@ -258,9 +316,15 @@ static int xc_send_i2c_data(struct xc5000_priv *priv, u8 *buf, int len)
 
 	if (i2c_transfer(priv->i2c_props.adap, &msg, 1) != 1) {
 		printk(KERN_ERR "xc5000: I2C write failed (len=%i)\n", len);
+<<<<<<< HEAD
 		return XC_RESULT_I2C_WRITE_FAILURE;
 	}
 	return XC_RESULT_SUCCESS;
+=======
+		return -EREMOTEIO;
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #if 0
@@ -297,6 +361,7 @@ static int xc5000_readreg(struct xc5000_priv *priv, u16 reg, u16 *val)
 	}
 
 	*val = (bval[0] << 8) | bval[1];
+<<<<<<< HEAD
 	return XC_RESULT_SUCCESS;
 }
 
@@ -306,6 +371,12 @@ static void xc_wait(int wait_ms)
 }
 
 static int xc5000_TunerReset(struct dvb_frontend *fe)
+=======
+	return 0;
+}
+
+static int xc5000_tuner_reset(struct dvb_frontend *fe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct xc5000_priv *priv = fe->tuner_priv;
 	int ret;
@@ -320,6 +391,7 @@ static int xc5000_TunerReset(struct dvb_frontend *fe)
 					   XC5000_TUNER_RESET, 0);
 		if (ret) {
 			printk(KERN_ERR "xc5000: reset failed\n");
+<<<<<<< HEAD
 			return XC_RESULT_RESET_FAILURE;
 		}
 	} else {
@@ -345,18 +417,55 @@ static int xc_write_reg(struct xc5000_priv *priv, u16 regAddr, u16 i2cData)
 		while ((WatchDogTimer > 0) && (result == XC_RESULT_SUCCESS)) {
 			result = xc5000_readreg(priv, XREG_BUSY, (u16 *)buf);
 			if (result == XC_RESULT_SUCCESS) {
+=======
+			return ret;
+		}
+	} else {
+		printk(KERN_ERR "xc5000: no tuner reset callback function, fatal\n");
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static int xc_write_reg(struct xc5000_priv *priv, u16 reg_addr, u16 i2c_data)
+{
+	u8 buf[4];
+	int watch_dog_timer = 100;
+	int result;
+
+	buf[0] = (reg_addr >> 8) & 0xFF;
+	buf[1] = reg_addr & 0xFF;
+	buf[2] = (i2c_data >> 8) & 0xFF;
+	buf[3] = i2c_data & 0xFF;
+	result = xc_send_i2c_data(priv, buf, 4);
+	if (result == 0) {
+		/* wait for busy flag to clear */
+		while ((watch_dog_timer > 0) && (result == 0)) {
+			result = xc5000_readreg(priv, XREG_BUSY, (u16 *)buf);
+			if (result == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if ((buf[0] == 0) && (buf[1] == 0)) {
 					/* busy flag cleared */
 					break;
 				} else {
+<<<<<<< HEAD
 					xc_wait(5); /* wait 5 ms */
 					WatchDogTimer--;
+=======
+					msleep(5); /* wait 5 ms */
+					watch_dog_timer--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			}
 		}
 	}
+<<<<<<< HEAD
 	if (WatchDogTimer <= 0)
 		result = XC_RESULT_I2C_WRITE_FAILURE;
+=======
+	if (watch_dog_timer <= 0)
+		result = -EREMOTEIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return result;
 }
@@ -375,6 +484,7 @@ static int xc_load_i2c_sequence(struct dvb_frontend *fe, const u8 *i2c_sequence)
 		len = i2c_sequence[index] * 256 + i2c_sequence[index+1];
 		if (len == 0x0000) {
 			/* RESET command */
+<<<<<<< HEAD
 			result = xc5000_TunerReset(fe);
 			index += 2;
 			if (result != XC_RESULT_SUCCESS)
@@ -382,6 +492,15 @@ static int xc_load_i2c_sequence(struct dvb_frontend *fe, const u8 *i2c_sequence)
 		} else if (len & 0x8000) {
 			/* WAIT command */
 			xc_wait(len & 0x7FFF);
+=======
+			result = xc5000_tuner_reset(fe);
+			index += 2;
+			if (result != 0)
+				return result;
+		} else if (len & 0x8000) {
+			/* WAIT command */
+			msleep(len & 0x7FFF);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			index += 2;
 		} else {
 			/* Send i2c data whilst ensuring individual transactions
@@ -404,7 +523,11 @@ static int xc_load_i2c_sequence(struct dvb_frontend *fe, const u8 *i2c_sequence)
 				result = xc_send_i2c_data(priv, buf,
 					nbytes_to_send);
 
+<<<<<<< HEAD
 				if (result != XC_RESULT_SUCCESS)
+=======
+				if (result != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					return result;
 
 				pos += nbytes_to_send - 2;
@@ -412,7 +535,11 @@ static int xc_load_i2c_sequence(struct dvb_frontend *fe, const u8 *i2c_sequence)
 			index += len;
 		}
 	}
+<<<<<<< HEAD
 	return XC_RESULT_SUCCESS;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int xc_initialize(struct xc5000_priv *priv)
@@ -421,6 +548,7 @@ static int xc_initialize(struct xc5000_priv *priv)
 	return xc_write_reg(priv, XREG_INIT, 0);
 }
 
+<<<<<<< HEAD
 static int xc_SetTVStandard(struct xc5000_priv *priv,
 	u16 VideoMode, u16 AudioMode, u8 RadioMode)
 {
@@ -439,11 +567,35 @@ static int xc_SetTVStandard(struct xc5000_priv *priv,
 	ret = xc_write_reg(priv, XREG_VIDEO_MODE, VideoMode);
 	if (ret == XC_RESULT_SUCCESS)
 		ret = xc_write_reg(priv, XREG_AUDIO_MODE, AudioMode);
+=======
+static int xc_set_tv_standard(struct xc5000_priv *priv,
+	u16 video_mode, u16 audio_mode, u8 radio_mode)
+{
+	int ret;
+	dprintk(1, "%s(0x%04x,0x%04x)\n", __func__, video_mode, audio_mode);
+	if (radio_mode) {
+		dprintk(1, "%s() Standard = %s\n",
+			__func__,
+			xc5000_standard[radio_mode].name);
+	} else {
+		dprintk(1, "%s() Standard = %s\n",
+			__func__,
+			xc5000_standard[priv->video_standard].name);
+	}
+
+	ret = xc_write_reg(priv, XREG_VIDEO_MODE, video_mode);
+	if (ret == 0)
+		ret = xc_write_reg(priv, XREG_AUDIO_MODE, audio_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int xc_SetSignalSource(struct xc5000_priv *priv, u16 rf_mode)
+=======
+static int xc_set_signal_source(struct xc5000_priv *priv, u16 rf_mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	dprintk(1, "%s(%d) Source = %s\n", __func__, rf_mode,
 		rf_mode == XC_RF_MODE_AIR ? "ANTENNA" : "CABLE");
@@ -459,7 +611,11 @@ static int xc_SetSignalSource(struct xc5000_priv *priv, u16 rf_mode)
 
 static const struct dvb_tuner_ops xc5000_tuner_ops;
 
+<<<<<<< HEAD
 static int xc_set_RF_frequency(struct xc5000_priv *priv, u32 freq_hz)
+=======
+static int xc_set_rf_frequency(struct xc5000_priv *priv, u32 freq_hz)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u16 freq_code;
 
@@ -467,7 +623,11 @@ static int xc_set_RF_frequency(struct xc5000_priv *priv, u32 freq_hz)
 
 	if ((freq_hz > xc5000_tuner_ops.info.frequency_max) ||
 		(freq_hz < xc5000_tuner_ops.info.frequency_min))
+<<<<<<< HEAD
 		return XC_RESULT_OUT_OF_RANGE;
+=======
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	freq_code = (u16)(freq_hz / 15625);
 
@@ -488,7 +648,11 @@ static int xc_set_IF_frequency(struct xc5000_priv *priv, u32 freq_khz)
 }
 
 
+<<<<<<< HEAD
 static int xc_get_ADC_Envelope(struct xc5000_priv *priv, u16 *adc_envelope)
+=======
+static int xc_get_adc_envelope(struct xc5000_priv *priv, u16 *adc_envelope)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return xc5000_readreg(priv, XREG_ADC_ENV, adc_envelope);
 }
@@ -496,6 +660,7 @@ static int xc_get_ADC_Envelope(struct xc5000_priv *priv, u16 *adc_envelope)
 static int xc_get_frequency_error(struct xc5000_priv *priv, u32 *freq_error_hz)
 {
 	int result;
+<<<<<<< HEAD
 	u16 regData;
 	u32 tmp;
 
@@ -504,6 +669,16 @@ static int xc_get_frequency_error(struct xc5000_priv *priv, u32 *freq_error_hz)
 		return result;
 
 	tmp = (u32)regData;
+=======
+	u16 reg_data;
+	u32 tmp;
+
+	result = xc5000_readreg(priv, XREG_FREQ_ERROR, &reg_data);
+	if (result != 0)
+		return result;
+
+	tmp = (u32)reg_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(*freq_error_hz) = (tmp * 15625) / 1000;
 	return result;
 }
@@ -521,7 +696,11 @@ static int xc_get_version(struct xc5000_priv *priv,
 	int result;
 
 	result = xc5000_readreg(priv, XREG_VERSION, &data);
+<<<<<<< HEAD
 	if (result != XC_RESULT_SUCCESS)
+=======
+	if (result != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return result;
 
 	(*hw_majorversion) = (data >> 12) & 0x0F;
@@ -539,6 +718,7 @@ static int xc_get_buildversion(struct xc5000_priv *priv, u16 *buildrev)
 
 static int xc_get_hsync_freq(struct xc5000_priv *priv, u32 *hsync_freq_hz)
 {
+<<<<<<< HEAD
 	u16 regData;
 	int result;
 
@@ -547,6 +727,16 @@ static int xc_get_hsync_freq(struct xc5000_priv *priv, u32 *hsync_freq_hz)
 		return result;
 
 	(*hsync_freq_hz) = ((regData & 0x0fff) * 763)/100;
+=======
+	u16 reg_data;
+	int result;
+
+	result = xc5000_readreg(priv, XREG_HSYNC_FREQ, &reg_data);
+	if (result != 0)
+		return result;
+
+	(*hsync_freq_hz) = ((reg_data & 0x0fff) * 763)/100;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return result;
 }
 
@@ -570,6 +760,7 @@ static int xc_get_totalgain(struct xc5000_priv *priv, u16 *totalgain)
 	return xc5000_readreg(priv, XREG_TOTALGAIN, totalgain);
 }
 
+<<<<<<< HEAD
 static u16 WaitForLock(struct xc5000_priv *priv)
 {
 	u16 lockState = 0;
@@ -583,6 +774,21 @@ static u16 WaitForLock(struct xc5000_priv *priv)
 		}
 	}
 	return lockState;
+=======
+static u16 wait_for_lock(struct xc5000_priv *priv)
+{
+	u16 lock_state = 0;
+	int watch_dog_count = 40;
+
+	while ((lock_state == 0) && (watch_dog_count > 0)) {
+		xc_get_lock_status(priv, &lock_state);
+		if (lock_state != 1) {
+			msleep(5);
+			watch_dog_count--;
+		}
+	}
+	return lock_state;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define XC_TUNE_ANALOG  0
@@ -593,11 +799,19 @@ static int xc_tune_channel(struct xc5000_priv *priv, u32 freq_hz, int mode)
 
 	dprintk(1, "%s(%u)\n", __func__, freq_hz);
 
+<<<<<<< HEAD
 	if (xc_set_RF_frequency(priv, freq_hz) != XC_RESULT_SUCCESS)
 		return 0;
 
 	if (mode == XC_TUNE_ANALOG) {
 		if (WaitForLock(priv) == 1)
+=======
+	if (xc_set_rf_frequency(priv, freq_hz) != 0)
+		return 0;
+
+	if (mode == XC_TUNE_ANALOG) {
+		if (wait_for_lock(priv) == 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			found = 1;
 	}
 
@@ -607,7 +821,11 @@ static int xc_tune_channel(struct xc5000_priv *priv, u32 freq_hz, int mode)
 static int xc_set_xtal(struct dvb_frontend *fe)
 {
 	struct xc5000_priv *priv = fe->tuner_priv;
+<<<<<<< HEAD
 	int ret = XC_RESULT_SUCCESS;
+=======
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (priv->chip_id) {
 	default:
@@ -630,6 +848,7 @@ static int xc_set_xtal(struct dvb_frontend *fe)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int xc5000_fwupload(struct dvb_frontend *fe)
 {
 	struct xc5000_priv *priv = fe->tuner_priv;
@@ -673,6 +892,32 @@ static int xc5000_fwupload(struct dvb_frontend *fe)
 
 out:
 	release_firmware(fw);
+=======
+static int xc5000_fwupload(struct dvb_frontend *fe,
+			   const struct xc5000_fw_cfg *desired_fw,
+			   const struct firmware *fw)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+	int ret;
+
+	/* request the firmware, this will block and timeout */
+	dprintk(1, "waiting for firmware upload (%s)...\n",
+		desired_fw->name);
+
+	priv->pll_register_no = desired_fw->pll_reg;
+	priv->init_status_supported = desired_fw->init_status_supported;
+	priv->fw_checksum_supported = desired_fw->fw_checksum_supported;
+
+
+	dprintk(1, "firmware uploading...\n");
+	ret = xc_load_i2c_sequence(fe,  fw->data);
+	if (!ret) {
+		ret = xc_set_xtal(fe);
+		dprintk(1, "Firmware upload complete...\n");
+	} else
+		printk(KERN_ERR "xc5000: firmware upload failed...\n");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -695,9 +940,15 @@ static void xc_debug_dump(struct xc5000_priv *priv)
 	 * Frame Lines needs two frame times after initial lock
 	 * before it is valid.
 	 */
+<<<<<<< HEAD
 	xc_wait(100);
 
 	xc_get_ADC_Envelope(priv,  &adc_envelope);
+=======
+	msleep(100);
+
+	xc_get_adc_envelope(priv,  &adc_envelope);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dprintk(1, "*** ADC envelope (0-1023) = %d\n", adc_envelope);
 
 	xc_get_frequency_error(priv, &freq_error_hz);
@@ -736,15 +987,68 @@ static void xc_debug_dump(struct xc5000_priv *priv)
 	}
 }
 
+<<<<<<< HEAD
 static int xc5000_set_params(struct dvb_frontend *fe)
 {
 	int ret, b;
+=======
+static int xc5000_tune_digital(struct dvb_frontend *fe)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+	int ret;
+	u32 bw = fe->dtv_property_cache.bandwidth_hz;
+
+	ret = xc_set_signal_source(priv, priv->rf_mode);
+	if (ret != 0) {
+		printk(KERN_ERR
+			"xc5000: xc_set_signal_source(%d) failed\n",
+			priv->rf_mode);
+		return -EREMOTEIO;
+	}
+
+	ret = xc_set_tv_standard(priv,
+		xc5000_standard[priv->video_standard].video_mode,
+		xc5000_standard[priv->video_standard].audio_mode, 0);
+	if (ret != 0) {
+		printk(KERN_ERR "xc5000: xc_set_tv_standard failed\n");
+		return -EREMOTEIO;
+	}
+
+	ret = xc_set_IF_frequency(priv, priv->if_khz);
+	if (ret != 0) {
+		printk(KERN_ERR "xc5000: xc_Set_IF_frequency(%d) failed\n",
+		       priv->if_khz);
+		return -EIO;
+	}
+
+	dprintk(1, "%s() setting OUTPUT_AMP to 0x%x\n",
+		__func__, priv->output_amp);
+	xc_write_reg(priv, XREG_OUTPUT_AMP, priv->output_amp);
+
+	xc_tune_channel(priv, priv->freq_hz, XC_TUNE_DIGITAL);
+
+	if (debug)
+		xc_debug_dump(priv);
+
+	priv->bandwidth = bw;
+
+	return 0;
+}
+
+static int xc5000_set_digital_params(struct dvb_frontend *fe)
+{
+	int b;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct xc5000_priv *priv = fe->tuner_priv;
 	u32 bw = fe->dtv_property_cache.bandwidth_hz;
 	u32 freq = fe->dtv_property_cache.frequency;
 	u32 delsys  = fe->dtv_property_cache.delivery_system;
 
+<<<<<<< HEAD
 	if (xc_load_fw_and_init_tuner(fe, 0) != XC_RESULT_SUCCESS) {
+=======
+	if (xc_load_fw_and_init_tuner(fe, 0) != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dprintk(1, "Unable to load firmware and init tuner\n");
 		return -EINVAL;
 	}
@@ -818,10 +1122,15 @@ static int xc5000_set_params(struct dvb_frontend *fe)
 	}
 
 	priv->freq_hz = freq - priv->freq_offset;
+<<<<<<< HEAD
+=======
+	priv->mode = V4L2_TUNER_DIGITAL_TV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk(1, "%s() frequency=%d (compensated to %d)\n",
 		__func__, freq, priv->freq_hz);
 
+<<<<<<< HEAD
 	ret = xc_SetSignalSource(priv, priv->rf_mode);
 	if (ret != XC_RESULT_SUCCESS) {
 		printk(KERN_ERR
@@ -855,6 +1164,9 @@ static int xc5000_set_params(struct dvb_frontend *fe)
 	priv->bandwidth = bw;
 
 	return 0;
+=======
+	return xc5000_tune_digital(fe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int xc5000_is_firmware_loaded(struct dvb_frontend *fe)
@@ -864,6 +1176,7 @@ static int xc5000_is_firmware_loaded(struct dvb_frontend *fe)
 	u16 id;
 
 	ret = xc5000_readreg(priv, XREG_PRODUCT_ID, &id);
+<<<<<<< HEAD
 	if (ret == XC_RESULT_SUCCESS) {
 		if (id == XC_PRODUCT_ID_FW_NOT_LOADED)
 			ret = XC_RESULT_RESET_FAILURE;
@@ -882,6 +1195,24 @@ static int xc5000_set_tv_freq(struct dvb_frontend *fe,
 	struct xc5000_priv *priv = fe->tuner_priv;
 	u16 pll_lock_status;
 	int ret;
+=======
+	if (ret == 0) {
+		if (id == XC_PRODUCT_ID_FW_NOT_LOADED)
+			ret = -ENOENT;
+		else
+			ret = 0;
+	}
+
+	dprintk(1, "%s() returns %s id = 0x%x\n", __func__,
+		ret == 0 ? "True" : "False", id);
+	return ret;
+}
+
+static void xc5000_config_tv(struct dvb_frontend *fe,
+			     struct analog_parameters *params)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk(1, "%s() frequency=%d (in units of 62.5khz)\n",
 		__func__, params->frequency);
@@ -900,40 +1231,65 @@ static int xc5000_set_tv_freq(struct dvb_frontend *fe,
 	if (params->std & V4L2_STD_MN) {
 		/* default to BTSC audio standard */
 		priv->video_standard = MN_NTSC_PAL_BTSC;
+<<<<<<< HEAD
 		goto tune_channel;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (params->std & V4L2_STD_PAL_BG) {
 		/* default to NICAM audio standard */
 		priv->video_standard = BG_PAL_NICAM;
+<<<<<<< HEAD
 		goto tune_channel;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (params->std & V4L2_STD_PAL_I) {
 		/* default to NICAM audio standard */
 		priv->video_standard = I_PAL_NICAM;
+<<<<<<< HEAD
 		goto tune_channel;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (params->std & V4L2_STD_PAL_DK) {
 		/* default to NICAM audio standard */
 		priv->video_standard = DK_PAL_NICAM;
+<<<<<<< HEAD
 		goto tune_channel;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (params->std & V4L2_STD_SECAM_DK) {
 		/* default to A2 DK1 audio standard */
 		priv->video_standard = DK_SECAM_A2DK1;
+<<<<<<< HEAD
 		goto tune_channel;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (params->std & V4L2_STD_SECAM_L) {
 		priv->video_standard = L_SECAM_NICAM;
+<<<<<<< HEAD
 		goto tune_channel;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (params->std & V4L2_STD_SECAM_LC) {
 		priv->video_standard = LC_SECAM_NICAM;
+<<<<<<< HEAD
 		goto tune_channel;
 	}
 
@@ -942,15 +1298,40 @@ tune_channel:
 	if (ret != XC_RESULT_SUCCESS) {
 		printk(KERN_ERR
 			"xc5000: xc_SetSignalSource(%d) failed\n",
+=======
+		return;
+	}
+}
+
+static int xc5000_set_tv_freq(struct dvb_frontend *fe)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+	u16 pll_lock_status;
+	int ret;
+
+tune_channel:
+	ret = xc_set_signal_source(priv, priv->rf_mode);
+	if (ret != 0) {
+		printk(KERN_ERR
+			"xc5000: xc_set_signal_source(%d) failed\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			priv->rf_mode);
 		return -EREMOTEIO;
 	}
 
+<<<<<<< HEAD
 	ret = xc_SetTVStandard(priv,
 		XC5000_Standard[priv->video_standard].VideoMode,
 		XC5000_Standard[priv->video_standard].AudioMode, 0);
 	if (ret != XC_RESULT_SUCCESS) {
 		printk(KERN_ERR "xc5000: xc_SetTVStandard failed\n");
+=======
+	ret = xc_set_tv_standard(priv,
+		xc5000_standard[priv->video_standard].video_mode,
+		xc5000_standard[priv->video_standard].audio_mode, 0);
+	if (ret != 0) {
+		printk(KERN_ERR "xc5000: xc_set_tv_standard failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EREMOTEIO;
 	}
 
@@ -968,7 +1349,11 @@ tune_channel:
 			/* PLL is unlocked, force reload of the firmware */
 			dprintk(1, "xc5000: PLL not locked (0x%x).  Reloading...\n",
 				pll_lock_status);
+<<<<<<< HEAD
 			if (xc_load_fw_and_init_tuner(fe, 1) != XC_RESULT_SUCCESS) {
+=======
+			if (xc_load_fw_and_init_tuner(fe, 1) != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				printk(KERN_ERR "xc5000: Unable to reload fw\n");
 				return -EREMOTEIO;
 			}
@@ -979,12 +1364,20 @@ tune_channel:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int xc5000_set_radio_freq(struct dvb_frontend *fe,
 	struct analog_parameters *params)
 {
 	struct xc5000_priv *priv = fe->tuner_priv;
 	int ret = -EINVAL;
 	u8 radio_input;
+=======
+static int xc5000_config_radio(struct dvb_frontend *fe,
+			       struct analog_parameters *params)
+
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk(1, "%s() frequency=%d (in units of khz)\n",
 		__func__, params->frequency);
@@ -994,18 +1387,40 @@ static int xc5000_set_radio_freq(struct dvb_frontend *fe,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (priv->radio_input == XC5000_RADIO_FM1)
 		radio_input = FM_Radio_INPUT1;
 	else if  (priv->radio_input == XC5000_RADIO_FM2)
 		radio_input = FM_Radio_INPUT2;
 	else if  (priv->radio_input == XC5000_RADIO_FM1_MONO)
 		radio_input = FM_Radio_INPUT1_MONO;
+=======
+	priv->freq_hz = params->frequency * 125 / 2;
+	priv->rf_mode = XC_RF_MODE_AIR;
+
+	return 0;
+}
+
+static int xc5000_set_radio_freq(struct dvb_frontend *fe)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+	int ret;
+	u8 radio_input;
+
+	if (priv->radio_input == XC5000_RADIO_FM1)
+		radio_input = FM_RADIO_INPUT1;
+	else if  (priv->radio_input == XC5000_RADIO_FM2)
+		radio_input = FM_RADIO_INPUT2;
+	else if  (priv->radio_input == XC5000_RADIO_FM1_MONO)
+		radio_input = FM_RADIO_INPUT1_MONO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else {
 		dprintk(1, "%s() unknown radio input %d\n", __func__,
 			priv->radio_input);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	priv->freq_hz = params->frequency * 125 / 2;
 
 	priv->rf_mode = XC_RF_MODE_AIR;
@@ -1022,6 +1437,20 @@ static int xc5000_set_radio_freq(struct dvb_frontend *fe,
 	if (ret != XC_RESULT_SUCCESS) {
 		printk(KERN_ERR
 			"xc5000: xc_SetSignalSource(%d) failed\n",
+=======
+	ret = xc_set_tv_standard(priv, xc5000_standard[radio_input].video_mode,
+			       xc5000_standard[radio_input].audio_mode, radio_input);
+
+	if (ret != 0) {
+		printk(KERN_ERR "xc5000: xc_set_tv_standard failed\n");
+		return -EREMOTEIO;
+	}
+
+	ret = xc_set_signal_source(priv, priv->rf_mode);
+	if (ret != 0) {
+		printk(KERN_ERR
+			"xc5000: xc_set_signal_source(%d) failed\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			priv->rf_mode);
 		return -EREMOTEIO;
 	}
@@ -1037,15 +1466,44 @@ static int xc5000_set_radio_freq(struct dvb_frontend *fe,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int xc5000_set_params(struct dvb_frontend *fe)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+
+	if (xc_load_fw_and_init_tuner(fe, 0) != 0) {
+		dprintk(1, "Unable to load firmware and init tuner\n");
+		return -EINVAL;
+	}
+
+	switch (priv->mode) {
+	case V4L2_TUNER_RADIO:
+		return xc5000_set_radio_freq(fe);
+	case V4L2_TUNER_ANALOG_TV:
+		return xc5000_set_tv_freq(fe);
+	case V4L2_TUNER_DIGITAL_TV:
+		return xc5000_tune_digital(fe);
+	}
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int xc5000_set_analog_params(struct dvb_frontend *fe,
 			     struct analog_parameters *params)
 {
 	struct xc5000_priv *priv = fe->tuner_priv;
+<<<<<<< HEAD
 	int ret = -EINVAL;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (priv->i2c_props.adap == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (xc_load_fw_and_init_tuner(fe, 0) != XC_RESULT_SUCCESS) {
 		dprintk(1, "Unable to load firmware and init tuner\n");
 		return -EINVAL;
@@ -1065,6 +1523,25 @@ static int xc5000_set_analog_params(struct dvb_frontend *fe,
 }
 
 
+=======
+	switch (params->mode) {
+	case V4L2_TUNER_RADIO:
+		ret = xc5000_config_radio(fe, params);
+		if (ret)
+			return ret;
+		break;
+	case V4L2_TUNER_ANALOG_TV:
+		xc5000_config_tv(fe, params);
+		break;
+	default:
+		break;
+	}
+	priv->mode = params->mode;
+
+	return xc5000_set_params(fe);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int xc5000_get_frequency(struct dvb_frontend *fe, u32 *freq)
 {
 	struct xc5000_priv *priv = fe->tuner_priv;
@@ -1107,6 +1584,7 @@ static int xc5000_get_status(struct dvb_frontend *fe, u32 *status)
 static int xc_load_fw_and_init_tuner(struct dvb_frontend *fe, int force)
 {
 	struct xc5000_priv *priv = fe->tuner_priv;
+<<<<<<< HEAD
 	int ret = XC_RESULT_SUCCESS;
 	u16 pll_lock_status;
 	u16 fw_ck;
@@ -1118,10 +1596,50 @@ fw_retry:
 		ret = xc5000_fwupload(fe);
 		if (ret != XC_RESULT_SUCCESS)
 			return ret;
+=======
+	const struct xc5000_fw_cfg *desired_fw = xc5000_assign_firmware(priv->chip_id);
+	const struct firmware *fw;
+	int ret, i;
+	u16 pll_lock_status;
+	u16 fw_ck;
+
+	cancel_delayed_work(&priv->timer_sleep);
+
+	if (!force && xc5000_is_firmware_loaded(fe) == 0)
+		return 0;
+
+	if (!priv->firmware) {
+		ret = request_firmware(&fw, desired_fw->name,
+					priv->i2c_props.adap->dev.parent);
+		if (ret) {
+			pr_err("xc5000: Upload failed. rc %d\n", ret);
+			return ret;
+		}
+		dprintk(1, "firmware read %Zu bytes.\n", fw->size);
+
+		if (fw->size != desired_fw->size) {
+			pr_err("xc5000: Firmware file with incorrect size\n");
+			release_firmware(fw);
+			return -EINVAL;
+		}
+		priv->firmware = fw;
+	} else
+		fw = priv->firmware;
+
+	/* Try up to 5 times to load firmware */
+	for (i = 0; i < 5; i++) {
+		if (i)
+			printk(KERN_CONT " - retrying to upload firmware.\n");
+
+		ret = xc5000_fwupload(fe, desired_fw, fw);
+		if (ret != 0)
+			goto err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		msleep(20);
 
 		if (priv->fw_checksum_supported) {
+<<<<<<< HEAD
 			if (xc5000_readreg(priv, XREG_FW_CHECKSUM, &fw_ck)
 			    != XC_RESULT_SUCCESS) {
 				dprintk(1, "%s() FW checksum reading failed.\n",
@@ -1133,20 +1651,43 @@ fw_retry:
 				dprintk(1, "%s() FW checksum failed = 0x%04x\n",
 					__func__, fw_ck);
 				goto fw_retry;
+=======
+			if (xc5000_readreg(priv, XREG_FW_CHECKSUM, &fw_ck)) {
+				printk(KERN_ERR
+				       "xc5000: FW checksum reading failed.");
+				continue;
+			}
+
+			if (!fw_ck) {
+				printk(KERN_ERR
+				       "xc5000: FW checksum failed = 0x%04x.",
+				       fw_ck);
+				continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 
 		/* Start the tuner self-calibration process */
+<<<<<<< HEAD
 		ret |= xc_initialize(priv);
 
 		if (ret != XC_RESULT_SUCCESS)
 			goto fw_retry;
+=======
+		ret = xc_initialize(priv);
+		if (ret) {
+			printk(KERN_ERR
+			       "xc5000: Can't request Self-callibration.");
+			continue;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Wait for calibration to complete.
 		 * We could continue but XC5000 will clock stretch subsequent
 		 * I2C transactions until calibration is complete.  This way we
 		 * don't have to rely on clock stretching working.
 		 */
+<<<<<<< HEAD
 		xc_wait(100);
 
 		if (priv->init_status_supported) {
@@ -1159,6 +1700,22 @@ fw_retry:
 			if (fw_ck == 0) {
 				dprintk(1, "%s() FW init status failed = 0x%04x\n", __func__, fw_ck);
 				goto fw_retry;
+=======
+		msleep(100);
+
+		if (priv->init_status_supported) {
+			if (xc5000_readreg(priv, XREG_INIT_STATUS, &fw_ck)) {
+				printk(KERN_ERR
+				       "xc5000: FW failed reading init status.");
+				continue;
+			}
+
+			if (!fw_ck) {
+				printk(KERN_ERR
+				       "xc5000: FW init status failed = 0x%04x.",
+				       fw_ck);
+				continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 
@@ -1167,12 +1724,19 @@ fw_retry:
 				       &pll_lock_status);
 			if (pll_lock_status > 63) {
 				/* PLL is unlocked, force reload of the firmware */
+<<<<<<< HEAD
 				printk(KERN_ERR "xc5000: PLL not running after fwload.\n");
 				goto fw_retry;
+=======
+				printk(KERN_ERR
+				       "xc5000: PLL not running after fwload.");
+				continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 
 		/* Default to "CABLE" mode */
+<<<<<<< HEAD
 		ret |= xc_write_reg(priv, XREG_SIGNALSOURCE, XC_RF_MODE_CABLE);
 	}
 
@@ -1181,14 +1745,57 @@ fw_retry:
 
 static int xc5000_sleep(struct dvb_frontend *fe)
 {
+=======
+		ret = xc_write_reg(priv, XREG_SIGNALSOURCE, XC_RF_MODE_CABLE);
+		if (!ret)
+			break;
+		printk(KERN_ERR "xc5000: can't set to cable mode.");
+	}
+
+err:
+	if (!ret)
+		printk(KERN_INFO "xc5000: Firmware %s loaded and running.\n",
+		       desired_fw->name);
+	else
+		printk(KERN_CONT " - too many retries. Giving up\n");
+
+	return ret;
+}
+
+static void xc5000_do_timer_sleep(struct work_struct *timer_sleep)
+{
+	struct xc5000_priv *priv =container_of(timer_sleep, struct xc5000_priv,
+					       timer_sleep.work);
+	struct dvb_frontend *fe = priv->fe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	dprintk(1, "%s()\n", __func__);
 
+<<<<<<< HEAD
+=======
+	/* According to Xceive technical support, the "powerdown" register
+	   was removed in newer versions of the firmware.  The "supported"
+	   way to sleep the tuner is to pull the reset pin low for 10ms */
+	ret = xc5000_tuner_reset(fe);
+	if (ret != 0)
+		printk(KERN_ERR
+			"xc5000: %s() unable to shutdown tuner\n",
+			__func__);
+}
+
+static int xc5000_sleep(struct dvb_frontend *fe)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+
+	dprintk(1, "%s()\n", __func__);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Avoid firmware reload on slow devices */
 	if (no_poweroff)
 		return 0;
 
+<<<<<<< HEAD
 	/* According to Xceive technical support, the "powerdown" register
 	   was removed in newer versions of the firmware.  The "supported"
 	   way to sleep the tuner is to pull the reset pin low for 10ms */
@@ -1200,6 +1807,44 @@ static int xc5000_sleep(struct dvb_frontend *fe)
 		return -EREMOTEIO;
 	} else
 		return XC_RESULT_SUCCESS;
+=======
+	schedule_delayed_work(&priv->timer_sleep,
+			      msecs_to_jiffies(XC5000_SLEEP_TIME));
+
+	return 0;
+}
+
+static int xc5000_suspend(struct dvb_frontend *fe)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+	int ret;
+
+	dprintk(1, "%s()\n", __func__);
+
+	cancel_delayed_work(&priv->timer_sleep);
+
+	ret = xc5000_tuner_reset(fe);
+	if (ret != 0)
+		printk(KERN_ERR
+			"xc5000: %s() unable to shutdown tuner\n",
+			__func__);
+
+	return 0;
+}
+
+static int xc5000_resume(struct dvb_frontend *fe)
+{
+	struct xc5000_priv *priv = fe->tuner_priv;
+
+	dprintk(1, "%s()\n", __func__);
+
+	/* suspended before firmware is loaded.
+	   Avoid firmware load in resume path. */
+	if (!priv->firmware)
+		return 0;
+
+	return xc5000_set_params(fe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int xc5000_init(struct dvb_frontend *fe)
@@ -1207,7 +1852,11 @@ static int xc5000_init(struct dvb_frontend *fe)
 	struct xc5000_priv *priv = fe->tuner_priv;
 	dprintk(1, "%s()\n", __func__);
 
+<<<<<<< HEAD
 	if (xc_load_fw_and_init_tuner(fe, 0) != XC_RESULT_SUCCESS) {
+=======
+	if (xc_load_fw_and_init_tuner(fe, 0) != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "xc5000: Unable to initialise tuner\n");
 		return -EREMOTEIO;
 	}
@@ -1226,8 +1875,19 @@ static int xc5000_release(struct dvb_frontend *fe)
 
 	mutex_lock(&xc5000_list_mutex);
 
+<<<<<<< HEAD
 	if (priv)
 		hybrid_tuner_release_state(priv);
+=======
+	if (priv) {
+		cancel_delayed_work(&priv->timer_sleep);
+		if (priv->firmware) {
+			release_firmware(priv->firmware);
+			priv->firmware = NULL;
+		}
+		hybrid_tuner_release_state(priv);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&xc5000_list_mutex);
 
@@ -1249,6 +1909,12 @@ static int xc5000_set_config(struct dvb_frontend *fe, void *priv_cfg)
 	if (p->radio_input)
 		priv->radio_input = p->radio_input;
 
+<<<<<<< HEAD
+=======
+	if (p->output_amp)
+		priv->output_amp = p->output_amp;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1264,9 +1930,17 @@ static const struct dvb_tuner_ops xc5000_tuner_ops = {
 	.release	   = xc5000_release,
 	.init		   = xc5000_init,
 	.sleep		   = xc5000_sleep,
+<<<<<<< HEAD
 
 	.set_config	   = xc5000_set_config,
 	.set_params	   = xc5000_set_params,
+=======
+	.suspend	   = xc5000_suspend,
+	.resume		   = xc5000_resume,
+
+	.set_config	   = xc5000_set_config,
+	.set_params	   = xc5000_set_digital_params,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set_analog_params = xc5000_set_analog_params,
 	.get_frequency	   = xc5000_get_frequency,
 	.get_if_frequency  = xc5000_get_if_frequency,
@@ -1294,11 +1968,19 @@ struct dvb_frontend *xc5000_attach(struct dvb_frontend *fe,
 	switch (instance) {
 	case 0:
 		goto fail;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 1:
 		/* new tuner instance */
 		priv->bandwidth = 6000000;
 		fe->tuner_priv = priv;
+<<<<<<< HEAD
+=======
+		priv->fe = fe;
+		INIT_DELAYED_WORK(&priv->timer_sleep, xc5000_do_timer_sleep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	default:
 		/* existing tuner instance */
@@ -1326,10 +2008,23 @@ struct dvb_frontend *xc5000_attach(struct dvb_frontend *fe,
 		   it can be overridden if this is a hybrid driver */
 		priv->chip_id = (cfg->chip_id) ? cfg->chip_id : 0;
 
+<<<<<<< HEAD
 	/* Check if firmware has been loaded. It is possible that another
 	   instance of the driver has loaded the firmware.
 	 */
 	if (xc5000_readreg(priv, XREG_PRODUCT_ID, &id) != XC_RESULT_SUCCESS)
+=======
+	/* don't override output_amp if it's already been set
+	   unless explicitly specified */
+	if ((priv->output_amp == 0) || (cfg->output_amp))
+		/* use default output_amp value if none specified */
+		priv->output_amp = (cfg->output_amp) ? cfg->output_amp : 0x8a;
+
+	/* Check if firmware has been loaded. It is possible that another
+	   instance of the driver has loaded the firmware.
+	 */
+	if (xc5000_readreg(priv, XREG_PRODUCT_ID, &id) != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto fail;
 
 	switch (id) {

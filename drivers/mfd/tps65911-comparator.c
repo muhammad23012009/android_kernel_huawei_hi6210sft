@@ -166,7 +166,10 @@ static int tps65911_comparator_remove(struct platform_device *pdev)
 static struct platform_driver tps65911_comparator_driver = {
 	.driver = {
 		.name = "tps65911-comparator",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = tps65911_comparator_probe,
 	.remove = tps65911_comparator_remove,

@@ -6,7 +6,11 @@
 
 static inline int rtnh_ok(const struct rtnexthop *rtnh, int remaining)
 {
+<<<<<<< HEAD
 	return remaining >= sizeof(*rtnh) &&
+=======
+	return remaining >= (int)sizeof(*rtnh) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       rtnh->rtnh_len >= sizeof(*rtnh) &&
 	       rtnh->rtnh_len <= remaining;
 }

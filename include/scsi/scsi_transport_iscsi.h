@@ -152,6 +152,10 @@ struct iscsi_transport {
 	int (*get_chap) (struct Scsi_Host *shost, uint16_t chap_tbl_idx,
 			 uint32_t *num_entries, char *buf);
 	int (*delete_chap) (struct Scsi_Host *shost, uint16_t chap_tbl_idx);
+<<<<<<< HEAD
+=======
+	int (*set_chap) (struct Scsi_Host *shost, void *data, int len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int (*get_flashnode_param) (struct iscsi_bus_flash_session *fnode_sess,
 				    int param, char *buf);
 	int (*set_flashnode_param) (struct iscsi_bus_flash_session *fnode_sess,
@@ -165,6 +169,11 @@ struct iscsi_transport {
 	int (*logout_flashnode) (struct iscsi_bus_flash_session *fnode_sess,
 				 struct iscsi_bus_flash_conn *fnode_conn);
 	int (*logout_flashnode_sid) (struct iscsi_cls_session *cls_sess);
+<<<<<<< HEAD
+=======
+	int (*get_host_stats) (struct Scsi_Host *shost, char *buf, int len);
+	u8 (*check_protection)(struct iscsi_task *task, sector_t *sector);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -238,6 +247,10 @@ struct iscsi_cls_session {
 
 	/* recovery fields */
 	int recovery_tmo;
+<<<<<<< HEAD
+=======
+	bool recovery_tmo_sysfs_override;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct delayed_work recovery_work;
 
 	unsigned int target_id;
@@ -433,6 +446,11 @@ extern void iscsi_free_session(struct iscsi_cls_session *session);
 extern int iscsi_destroy_session(struct iscsi_cls_session *session);
 extern struct iscsi_cls_conn *iscsi_create_conn(struct iscsi_cls_session *sess,
 						int dd_size, uint32_t cid);
+<<<<<<< HEAD
+=======
+extern void iscsi_put_conn(struct iscsi_cls_conn *conn);
+extern void iscsi_get_conn(struct iscsi_cls_conn *conn);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int iscsi_destroy_conn(struct iscsi_cls_conn *conn);
 extern void iscsi_unblock_session(struct iscsi_cls_session *session);
 extern void iscsi_block_session(struct iscsi_cls_session *session);
@@ -477,4 +495,10 @@ iscsi_find_flashnode_sess(struct Scsi_Host *shost, void *data,
 extern struct device *
 iscsi_find_flashnode_conn(struct iscsi_bus_flash_session *fnode_sess);
 
+<<<<<<< HEAD
+=======
+extern char *
+iscsi_get_ipaddress_state_name(enum iscsi_ipaddress_state port_state);
+extern char *iscsi_get_router_state_name(enum iscsi_router_state router_state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

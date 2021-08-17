@@ -38,7 +38,10 @@ MODULE_LICENSE("GPL");
 static LIST_HEAD(snd_hwdep_devices);
 static DEFINE_MUTEX(register_mutex);
 
+<<<<<<< HEAD
 static int snd_hwdep_free(struct snd_hwdep *hwdep);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int snd_hwdep_dev_free(struct snd_device *device);
 static int snd_hwdep_dev_register(struct snd_device *device);
 static int snd_hwdep_dev_disconnect(struct snd_device *device);
@@ -229,14 +232,22 @@ static int snd_hwdep_dsp_load(struct snd_hwdep *hw,
 	if (copy_from_user(&info, _info, sizeof(info)))
 		return -EFAULT;
 	/* check whether the dsp was already loaded */
+<<<<<<< HEAD
 	if (hw->dsp_loaded & (1 << info.index))
+=======
+	if (hw->dsp_loaded & (1u << info.index))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	if (!access_ok(VERIFY_READ, info.image, info.length))
 		return -EFAULT;
 	err = hw->ops.dsp_load(hw, &info);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	hw->dsp_loaded |= (1 << info.index);
+=======
+	hw->dsp_loaded |= (1u << info.index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -345,6 +356,14 @@ static const struct file_operations snd_hwdep_f_ops =
 	.mmap =		snd_hwdep_mmap,
 };
 
+<<<<<<< HEAD
+=======
+static void release_hwdep_device(struct device *dev)
+{
+	kfree(container_of(dev, struct snd_hwdep, dev));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * snd_hwdep_new - create a new hwdep instance
  * @card: the card instance
@@ -374,14 +393,23 @@ int snd_hwdep_new(struct snd_card *card, char *id, int device,
 	if (rhwdep)
 		*rhwdep = NULL;
 	hwdep = kzalloc(sizeof(*hwdep), GFP_KERNEL);
+<<<<<<< HEAD
 	if (hwdep == NULL) {
 		snd_printk(KERN_ERR "hwdep: cannot allocate\n");
 		return -ENOMEM;
 	}
+=======
+	if (!hwdep)
+		return -ENOMEM;
+
+	init_waitqueue_head(&hwdep->open_wait);
+	mutex_init(&hwdep->open_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hwdep->card = card;
 	hwdep->device = device;
 	if (id)
 		strlcpy(hwdep->id, id, sizeof(hwdep->id));
+<<<<<<< HEAD
 #ifdef CONFIG_SND_OSSEMUL
 	hwdep->oss_type = -1;
 #endif
@@ -391,17 +419,42 @@ int snd_hwdep_new(struct snd_card *card, char *id, int device,
 	}
 	init_waitqueue_head(&hwdep->open_wait);
 	mutex_init(&hwdep->open_mutex);
+=======
+
+	snd_device_initialize(&hwdep->dev, card);
+	hwdep->dev.release = release_hwdep_device;
+	dev_set_name(&hwdep->dev, "hwC%iD%i", card->number, device);
+#ifdef CONFIG_SND_OSSEMUL
+	hwdep->oss_type = -1;
+#endif
+
+	err = snd_device_new(card, SNDRV_DEV_HWDEP, hwdep, &ops);
+	if (err < 0) {
+		put_device(&hwdep->dev);
+		return err;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rhwdep)
 		*rhwdep = hwdep;
 	return 0;
 }
+<<<<<<< HEAD
 
 static int snd_hwdep_free(struct snd_hwdep *hwdep)
 {
+=======
+EXPORT_SYMBOL(snd_hwdep_new);
+
+static int snd_hwdep_dev_free(struct snd_device *device)
+{
+	struct snd_hwdep *hwdep = device->device_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!hwdep)
 		return 0;
 	if (hwdep->private_free)
 		hwdep->private_free(hwdep);
+<<<<<<< HEAD
 	kfree(hwdep);
 	return 0;
 }
@@ -420,20 +473,43 @@ static int snd_hwdep_dev_register(struct snd_device *device)
 
 	mutex_lock(&register_mutex);
 	if (snd_hwdep_search(hwdep->card, hwdep->device)) {
+=======
+	put_device(&hwdep->dev);
+	return 0;
+}
+
+static int snd_hwdep_dev_register(struct snd_device *device)
+{
+	struct snd_hwdep *hwdep = device->device_data;
+	struct snd_card *card = hwdep->card;
+	int err;
+
+	mutex_lock(&register_mutex);
+	if (snd_hwdep_search(card, hwdep->device)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&register_mutex);
 		return -EBUSY;
 	}
 	list_add_tail(&hwdep->list, &snd_hwdep_devices);
+<<<<<<< HEAD
 	sprintf(name, "hwC%iD%i", hwdep->card->number, hwdep->device);
 	if ((err = snd_register_device(SNDRV_DEVICE_TYPE_HWDEP,
 				       hwdep->card, hwdep->device,
 				       &snd_hwdep_f_ops, hwdep, name)) < 0) {
 		snd_printk(KERN_ERR "unable to register hardware dependent device %i:%i\n",
 			   hwdep->card->number, hwdep->device);
+=======
+	err = snd_register_device(SNDRV_DEVICE_TYPE_HWDEP,
+				  hwdep->card, hwdep->device,
+				  &snd_hwdep_f_ops, hwdep, &hwdep->dev);
+	if (err < 0) {
+		dev_err(&hwdep->dev, "unable to register\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_del(&hwdep->list);
 		mutex_unlock(&register_mutex);
 		return err;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_SND_OSSEMUL
 	hwdep->ossreg = 0;
 	if (hwdep->oss_type >= 0) {
@@ -449,6 +525,23 @@ static int snd_hwdep_dev_register(struct snd_device *device)
 			} else
 				hwdep->ossreg = 1;
 		}
+=======
+
+#ifdef CONFIG_SND_OSSEMUL
+	hwdep->ossreg = 0;
+	if (hwdep->oss_type >= 0) {
+		if (hwdep->oss_type == SNDRV_OSS_DEVICE_TYPE_DMFM &&
+		    hwdep->device)
+			dev_warn(&hwdep->dev,
+				 "only hwdep device 0 can be registered as OSS direct FM device!\n");
+		else if (snd_register_oss_device(hwdep->oss_type,
+						 card, hwdep->device,
+						 &snd_hwdep_f_ops, hwdep) < 0)
+			dev_warn(&hwdep->dev,
+				 "unable to register OSS compatibility device\n");
+		else
+			hwdep->ossreg = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 	mutex_unlock(&register_mutex);
@@ -472,14 +565,22 @@ static int snd_hwdep_dev_disconnect(struct snd_device *device)
 	if (hwdep->ossreg)
 		snd_unregister_oss_device(hwdep->oss_type, hwdep->card, hwdep->device);
 #endif
+<<<<<<< HEAD
 	snd_unregister_device(SNDRV_DEVICE_TYPE_HWDEP, hwdep->card, hwdep->device);
+=======
+	snd_unregister_device(&hwdep->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_del_init(&hwdep->list);
 	mutex_unlock(&hwdep->open_mutex);
 	mutex_unlock(&register_mutex);
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *  Info interface
  */
@@ -516,10 +617,17 @@ static void __exit snd_hwdep_proc_done(void)
 {
 	snd_info_free_entry(snd_hwdep_proc_entry);
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
 #define snd_hwdep_proc_init()
 #define snd_hwdep_proc_done()
 #endif /* CONFIG_PROC_FS */
+=======
+#else /* !CONFIG_SND_PROC_FS */
+#define snd_hwdep_proc_init()
+#define snd_hwdep_proc_done()
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 /*
@@ -543,5 +651,8 @@ static void __exit alsa_hwdep_exit(void)
 
 module_init(alsa_hwdep_init)
 module_exit(alsa_hwdep_exit)
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_hwdep_new);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

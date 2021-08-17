@@ -10,7 +10,10 @@ extern void cmp_smp_setup(void);
 extern void cmp_smp_finish(void);
 extern void cmp_boot_secondary(int cpu, struct task_struct *t);
 extern void cmp_init_secondary(void);
+<<<<<<< HEAD
 extern void cmp_cpus_done(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void cmp_prepare_cpus(unsigned int max_cpus);
 
 /* This is platform specific */

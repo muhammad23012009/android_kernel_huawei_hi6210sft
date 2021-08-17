@@ -88,6 +88,10 @@ static int bfin_i2s_hw_params(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_FORMAT_S8:
 		param.spctl |= 0x70;
 		sport->wdsize = 1;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case SNDRV_PCM_FORMAT_S16_LE:
 		param.spctl |= 0xf0;
 		sport->wdsize = 2;
@@ -228,7 +232,10 @@ static struct platform_driver bfin_i2s_driver = {
 	.remove = bfin_i2s_remove,
 	.driver = {
 		.name = "bfin-i2s",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

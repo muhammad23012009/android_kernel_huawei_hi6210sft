@@ -46,12 +46,16 @@
 static ssize_t show_admin_alias_guid(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	int record_num;/*0-15*/
 	int guid_index_in_rec; /*0 - 7*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mlx4_ib_iov_sysfs_attr *mlx4_ib_iov_dentry =
 		container_of(attr, struct mlx4_ib_iov_sysfs_attr, dentry);
 	struct mlx4_ib_iov_port *port = mlx4_ib_iov_dentry->ctx;
 	struct mlx4_ib_dev *mdev = port->dev;
+<<<<<<< HEAD
 
 	record_num = mlx4_ib_iov_dentry->entry_num / 8 ;
 	guid_index_in_rec = mlx4_ib_iov_dentry->entry_num % 8 ;
@@ -61,6 +65,15 @@ static ssize_t show_admin_alias_guid(struct device *dev,
 				   ports_guid[port->num - 1].
 				   all_rec_per_port[record_num].
 				   all_recs[8 * guid_index_in_rec]));
+=======
+	__be64 sysadmin_ag_val;
+
+	sysadmin_ag_val = mlx4_get_admin_guid(mdev->dev,
+					      mlx4_ib_iov_dentry->entry_num,
+					      port->num);
+
+	return sprintf(buf, "%llx\n", be64_to_cpu(sysadmin_ag_val));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* store_admin_alias_guid stores the (new) administratively assigned value of that GUID.
@@ -80,6 +93,10 @@ static ssize_t store_admin_alias_guid(struct device *dev,
 	struct mlx4_ib_iov_port *port = mlx4_ib_iov_dentry->ctx;
 	struct mlx4_ib_dev *mdev = port->dev;
 	u64 sysadmin_ag_val;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	record_num = mlx4_ib_iov_dentry->entry_num / 8;
 	guid_index_in_rec = mlx4_ib_iov_dentry->entry_num % 8;
@@ -87,6 +104,10 @@ static ssize_t store_admin_alias_guid(struct device *dev,
 		pr_err("GUID 0 block 0 is RO\n");
 		return count;
 	}
+<<<<<<< HEAD
+=======
+	spin_lock_irqsave(&mdev->sriov.alias_guid.ag_work_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sscanf(buf, "%llx", &sysadmin_ag_val);
 	*(__be64 *)&mdev->sriov.alias_guid.ports_guid[port->num - 1].
 		all_rec_per_port[record_num].
@@ -96,6 +117,7 @@ static ssize_t store_admin_alias_guid(struct device *dev,
 	/* Change the state to be pending for update */
 	mdev->sriov.alias_guid.ports_guid[port->num - 1].all_rec_per_port[record_num].status
 		= MLX4_GUID_INFO_STATUS_IDLE ;
+<<<<<<< HEAD
 
 	mdev->sriov.alias_guid.ports_guid[port->num - 1].all_rec_per_port[record_num].method
 		= MLX4_GUID_INFO_RECORD_SET;
@@ -123,6 +145,17 @@ static ssize_t store_admin_alias_guid(struct device *dev,
 	mdev->sriov.alias_guid.ports_guid[port->num - 1].all_rec_per_port[record_num].guid_indexes
 		= mlx4_ib_get_aguid_comp_mask_from_ix(guid_index_in_rec);
 
+=======
+	mlx4_set_admin_guid(mdev->dev, cpu_to_be64(sysadmin_ag_val),
+			    mlx4_ib_iov_dentry->entry_num,
+			    port->num);
+
+	/* set the record index */
+	mdev->sriov.alias_guid.ports_guid[port->num - 1].all_rec_per_port[record_num].guid_indexes
+		|= mlx4_ib_get_aguid_comp_mask_from_ix(guid_index_in_rec);
+
+	spin_unlock_irqrestore(&mdev->sriov.alias_guid.ag_work_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mlx4_ib_init_alias_guid_work(mdev, port->num - 1);
 
 	return count;
@@ -372,6 +405,7 @@ err:
 
 static void get_name(struct mlx4_ib_dev *dev, char *name, int i, int max)
 {
+<<<<<<< HEAD
 	char base_name[9];
 
 	/* pci_name format is: bus:dev:func -> xxxx:yy:zz.n */
@@ -382,6 +416,14 @@ static void get_name(struct mlx4_ib_dev *dev, char *name, int i, int max)
 	 * need to add it to the dev num, so count in the last number will be
 	 * modulo 8 */
 	sprintf(name, "%s%.2d.%d", base_name, (i/8), (i%8));
+=======
+	/* pci_name format is: bus:dev:func -> xxxx:yy:zz.n
+	 * with no ARI only 3 last bits are used so when the fn is higher than 8
+	 * need to add it to the dev num, so count in the last number will be
+	 * modulo 8 */
+	snprintf(name, max, "%.8s%.2d.%d", pci_name(dev->dev->persist->pdev),
+		 i / 8, i % 8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct mlx4_port {
@@ -389,8 +431,15 @@ struct mlx4_port {
 	struct mlx4_ib_dev    *dev;
 	struct attribute_group pkey_group;
 	struct attribute_group gid_group;
+<<<<<<< HEAD
 	u8                     port_num;
 	int		       slave;
+=======
+	struct device_attribute	enable_smi_admin;
+	struct device_attribute	smi_enabled;
+	int		       slave;
+	u8                     port_num;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -558,6 +607,104 @@ err:
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t sysfs_show_smi_enabled(struct device *dev,
+				      struct device_attribute *attr, char *buf)
+{
+	struct mlx4_port *p =
+		container_of(attr, struct mlx4_port, smi_enabled);
+	ssize_t len = 0;
+
+	if (mlx4_vf_smi_enabled(p->dev->dev, p->slave, p->port_num))
+		len = sprintf(buf, "%d\n", 1);
+	else
+		len = sprintf(buf, "%d\n", 0);
+
+	return len;
+}
+
+static ssize_t sysfs_show_enable_smi_admin(struct device *dev,
+					   struct device_attribute *attr,
+					   char *buf)
+{
+	struct mlx4_port *p =
+		container_of(attr, struct mlx4_port, enable_smi_admin);
+	ssize_t len = 0;
+
+	if (mlx4_vf_get_enable_smi_admin(p->dev->dev, p->slave, p->port_num))
+		len = sprintf(buf, "%d\n", 1);
+	else
+		len = sprintf(buf, "%d\n", 0);
+
+	return len;
+}
+
+static ssize_t sysfs_store_enable_smi_admin(struct device *dev,
+					    struct device_attribute *attr,
+					    const char *buf, size_t count)
+{
+	struct mlx4_port *p =
+		container_of(attr, struct mlx4_port, enable_smi_admin);
+	int enable;
+
+	if (sscanf(buf, "%i", &enable) != 1 ||
+	    enable < 0 || enable > 1)
+		return -EINVAL;
+
+	if (mlx4_vf_set_enable_smi_admin(p->dev->dev, p->slave, p->port_num, enable))
+		return -EINVAL;
+	return count;
+}
+
+static int add_vf_smi_entries(struct mlx4_port *p)
+{
+	int is_eth = rdma_port_get_link_layer(&p->dev->ib_dev, p->port_num) ==
+			IB_LINK_LAYER_ETHERNET;
+	int ret;
+
+	/* do not display entries if eth transport, or if master */
+	if (is_eth || p->slave == mlx4_master_func_num(p->dev->dev))
+		return 0;
+
+	sysfs_attr_init(&p->smi_enabled.attr);
+	p->smi_enabled.show = sysfs_show_smi_enabled;
+	p->smi_enabled.store = NULL;
+	p->smi_enabled.attr.name = "smi_enabled";
+	p->smi_enabled.attr.mode = 0444;
+	ret = sysfs_create_file(&p->kobj, &p->smi_enabled.attr);
+	if (ret) {
+		pr_err("failed to create smi_enabled\n");
+		return ret;
+	}
+
+	sysfs_attr_init(&p->enable_smi_admin.attr);
+	p->enable_smi_admin.show = sysfs_show_enable_smi_admin;
+	p->enable_smi_admin.store = sysfs_store_enable_smi_admin;
+	p->enable_smi_admin.attr.name = "enable_smi_admin";
+	p->enable_smi_admin.attr.mode = 0644;
+	ret = sysfs_create_file(&p->kobj, &p->enable_smi_admin.attr);
+	if (ret) {
+		pr_err("failed to create enable_smi_admin\n");
+		sysfs_remove_file(&p->kobj, &p->smi_enabled.attr);
+		return ret;
+	}
+	return 0;
+}
+
+static void remove_vf_smi_entries(struct mlx4_port *p)
+{
+	int is_eth = rdma_port_get_link_layer(&p->dev->ib_dev, p->port_num) ==
+			IB_LINK_LAYER_ETHERNET;
+
+	if (is_eth || p->slave == mlx4_master_func_num(p->dev->dev))
+		return;
+
+	sysfs_remove_file(&p->kobj, &p->smi_enabled.attr);
+	sysfs_remove_file(&p->kobj, &p->enable_smi_admin.attr);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int add_port(struct mlx4_ib_dev *dev, int port_num, int slave)
 {
 	struct mlx4_port *p;
@@ -585,8 +732,15 @@ static int add_port(struct mlx4_ib_dev *dev, int port_num, int slave)
 		alloc_group_attrs(show_port_pkey,
 				  is_eth ? NULL : store_port_pkey,
 				  dev->dev->caps.pkey_table_len[port_num]);
+<<<<<<< HEAD
 	if (!p->pkey_group.attrs)
 		goto err_alloc;
+=======
+	if (!p->pkey_group.attrs) {
+		ret = -ENOMEM;
+		goto err_alloc;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = sysfs_create_group(&p->kobj, &p->pkey_group);
 	if (ret)
@@ -594,13 +748,27 @@ static int add_port(struct mlx4_ib_dev *dev, int port_num, int slave)
 
 	p->gid_group.name  = "gid_idx";
 	p->gid_group.attrs = alloc_group_attrs(show_port_gid_idx, NULL, 1);
+<<<<<<< HEAD
 	if (!p->gid_group.attrs)
 		goto err_free_pkey;
+=======
+	if (!p->gid_group.attrs) {
+		ret = -ENOMEM;
+		goto err_free_pkey;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = sysfs_create_group(&p->kobj, &p->gid_group);
 	if (ret)
 		goto err_free_gid;
 
+<<<<<<< HEAD
+=======
+	ret = add_vf_smi_entries(p);
+	if (ret)
+		goto err_free_gid;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_add_tail(&p->kobj.entry, &dev->pkeys.pkey_port_list[slave]);
 	return 0;
 
@@ -626,6 +794,10 @@ static int register_one_pkey_tree(struct mlx4_ib_dev *dev, int slave)
 	int port;
 	struct kobject *p, *t;
 	struct mlx4_port *mport;
+<<<<<<< HEAD
+=======
+	struct mlx4_active_ports actv_ports;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	get_name(dev, name, slave, sizeof name);
 
@@ -648,7 +820,15 @@ static int register_one_pkey_tree(struct mlx4_ib_dev *dev, int slave)
 		goto err_ports;
 	}
 
+<<<<<<< HEAD
 	for (port = 1; port <= dev->dev->caps.num_ports; ++port) {
+=======
+	actv_ports = mlx4_get_active_ports(dev->dev, slave);
+
+	for (port = 1; port <= dev->dev->caps.num_ports; ++port) {
+		if (!test_bit(port - 1, actv_ports.ports))
+			continue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = add_port(dev, port, slave);
 		if (err)
 			goto err_add;
@@ -663,6 +843,10 @@ err_add:
 		mport = container_of(p, struct mlx4_port, kobj);
 		sysfs_remove_group(p, &mport->pkey_group);
 		sysfs_remove_group(p, &mport->gid_group);
+<<<<<<< HEAD
+=======
+		remove_vf_smi_entries(mport);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kobject_put(p);
 	}
 	kobject_put(dev->dev_ports_parent[slave]);
@@ -684,7 +868,11 @@ static int register_pkey_tree(struct mlx4_ib_dev *device)
 	if (!mlx4_is_master(device->dev))
 		return 0;
 
+<<<<<<< HEAD
 	for (i = 0; i <= device->dev->num_vfs; ++i)
+=======
+	for (i = 0; i <= device->dev->persist->num_vfs; ++i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		register_one_pkey_tree(device, i);
 
 	return 0;
@@ -699,7 +887,11 @@ static void unregister_pkey_tree(struct mlx4_ib_dev *device)
 	if (!mlx4_is_master(device->dev))
 		return;
 
+<<<<<<< HEAD
 	for (slave = device->dev->num_vfs; slave >= 0; --slave) {
+=======
+	for (slave = device->dev->persist->num_vfs; slave >= 0; --slave) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_for_each_entry_safe(p, t,
 					 &device->pkeys.pkey_port_list[slave],
 					 entry) {
@@ -707,6 +899,10 @@ static void unregister_pkey_tree(struct mlx4_ib_dev *device)
 			port = container_of(p, struct mlx4_port, kobj);
 			sysfs_remove_group(p, &port->pkey_group);
 			sysfs_remove_group(p, &port->gid_group);
+<<<<<<< HEAD
+=======
+			remove_vf_smi_entries(port);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			kobject_put(p);
 			kobject_put(device->dev_ports_parent[slave]);
 		}

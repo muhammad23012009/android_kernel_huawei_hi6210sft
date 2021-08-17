@@ -8,9 +8,15 @@
  * Author: Linus Walleij <triad@df.lth.se>
  */
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
+=======
+#include <linux/interrupt.h>
+#include <linux/platform_device.h>
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/completion.h>
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -291,13 +297,21 @@ static int __init charlcd_probe(struct platform_device *pdev)
 	lcd->virtbase = ioremap(lcd->phybase, lcd->physize);
 	if (!lcd->virtbase) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto out_no_remap;
+=======
+		goto out_no_memregion;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	lcd->irq = platform_get_irq(pdev, 0);
 	/* If no IRQ is supplied, we'll survive without it */
 	if (lcd->irq >= 0) {
+<<<<<<< HEAD
 		if (request_irq(lcd->irq, charlcd_interrupt, IRQF_DISABLED,
+=======
+		if (request_irq(lcd->irq, charlcd_interrupt, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				DRIVERNAME, lcd)) {
 			ret = -EIO;
 			goto out_no_irq;
@@ -320,8 +334,11 @@ static int __init charlcd_probe(struct platform_device *pdev)
 
 out_no_irq:
 	iounmap(lcd->virtbase);
+<<<<<<< HEAD
 out_no_remap:
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_no_memregion:
 	release_mem_region(lcd->phybase, SZ_4K);
 out_no_resource:
@@ -329,6 +346,7 @@ out_no_resource:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __exit charlcd_remove(struct platform_device *pdev)
 {
 	struct charlcd *lcd = platform_get_drvdata(pdev);
@@ -344,6 +362,8 @@ static int __exit charlcd_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int charlcd_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -369,6 +389,7 @@ static const struct dev_pm_ops charlcd_pm_ops = {
 	.resume = charlcd_resume,
 };
 
+<<<<<<< HEAD
 static struct platform_driver charlcd_driver = {
 	.driver = {
 		.name = DRIVERNAME,
@@ -383,3 +404,19 @@ module_platform_driver_probe(charlcd_driver, charlcd_probe);
 MODULE_AUTHOR("Linus Walleij <triad@df.lth.se>");
 MODULE_DESCRIPTION("ARM Character LCD Driver");
 MODULE_LICENSE("GPL v2");
+=======
+static const struct of_device_id charlcd_match[] = {
+	{ .compatible = "arm,versatile-lcd", },
+	{}
+};
+
+static struct platform_driver charlcd_driver = {
+	.driver = {
+		.name = DRIVERNAME,
+		.pm = &charlcd_pm_ops,
+		.suppress_bind_attrs = true,
+		.of_match_table = of_match_ptr(charlcd_match),
+	},
+};
+builtin_platform_driver_probe(charlcd_driver, charlcd_probe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

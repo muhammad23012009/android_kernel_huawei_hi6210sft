@@ -20,14 +20,21 @@
  */
 
 #include "udfdecl.h"
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/time.h>
 #include <linux/mm.h>
 #include <linux/stat.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "udf_i.h"
 
 static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
@@ -42,14 +49,25 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 	tolen--;
 	while (elen < fromlen) {
 		pc = (struct pathComponent *)(from + elen);
+<<<<<<< HEAD
+=======
+		elen += sizeof(struct pathComponent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (pc->componentType) {
 		case 1:
 			/*
 			 * Symlink points to some place which should be agreed
  			 * upon between originator and receiver of the media. Ignore.
 			 */
+<<<<<<< HEAD
 			if (pc->lengthComponentIdent > 0)
 				break;
+=======
+			if (pc->lengthComponentIdent > 0) {
+				elen += pc->lengthComponentIdent;
+				break;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* Fall through */
 		case 2:
 			if (tolen == 0)
@@ -74,9 +92,21 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 			/* that would be . - just ignore */
 			break;
 		case 5:
+<<<<<<< HEAD
 			comp_len = udf_get_filename(sb, pc->componentIdent,
 						    pc->lengthComponentIdent,
 						    p, tolen);
+=======
+			elen += pc->lengthComponentIdent;
+			if (elen > fromlen)
+				return -EIO;
+			comp_len = udf_get_filename(sb, pc->componentIdent,
+						    pc->lengthComponentIdent,
+						    p, tolen);
+			if (comp_len < 0)
+				return comp_len;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			p += comp_len;
 			tolen -= comp_len;
 			if (tolen == 0)
@@ -85,7 +115,10 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 			tolen--;
 			break;
 		}
+<<<<<<< HEAD
 		elen += sizeof(struct pathComponent) + pc->lengthComponentIdent;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (p > to + 1)
 		p[-1] = '\0';
@@ -100,7 +133,11 @@ static int udf_symlink_filler(struct file *file, struct page *page)
 	struct buffer_head *bh = NULL;
 	unsigned char *symlink;
 	int err;
+<<<<<<< HEAD
 	unsigned char *p = kmap(page);
+=======
+	unsigned char *p = page_address(page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct udf_inode_info *iinfo;
 	uint32_t pos;
 
@@ -134,7 +171,10 @@ static int udf_symlink_filler(struct file *file, struct page *page)
 
 	up_read(&iinfo->i_data_sem);
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return 0;
 
@@ -142,7 +182,10 @@ out_unlock_inode:
 	up_read(&iinfo->i_data_sem);
 	SetPageError(page);
 out_unmap:
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unlock_page(page);
 	return err;
 }

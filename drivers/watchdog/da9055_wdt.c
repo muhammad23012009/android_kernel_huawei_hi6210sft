@@ -35,7 +35,10 @@ MODULE_PARM_DESC(nowayout,
 struct da9055_wdt_data {
 	struct watchdog_device wdt;
 	struct da9055 *da9055;
+<<<<<<< HEAD
 	struct kref kref;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct {
@@ -99,6 +102,7 @@ static int da9055_wdt_ping(struct watchdog_device *wdt_dev)
 				 DA9055_WATCHDOG_MASK, 1);
 }
 
+<<<<<<< HEAD
 static void da9055_wdt_release_resources(struct kref *r)
 {
 }
@@ -117,6 +121,8 @@ static void da9055_wdt_unref(struct watchdog_device *wdt_dev)
 	kref_put(&driver_data->kref, da9055_wdt_release_resources);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int da9055_wdt_start(struct watchdog_device *wdt_dev)
 {
 	return da9055_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
@@ -138,8 +144,11 @@ static const struct watchdog_ops da9055_wdt_ops = {
 	.stop = da9055_wdt_stop,
 	.ping = da9055_wdt_ping,
 	.set_timeout = da9055_wdt_set_timeout,
+<<<<<<< HEAD
 	.ref = da9055_wdt_ref,
 	.unref = da9055_wdt_unref,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int da9055_wdt_probe(struct platform_device *pdev)
@@ -151,10 +160,15 @@ static int da9055_wdt_probe(struct platform_device *pdev)
 
 	driver_data = devm_kzalloc(&pdev->dev, sizeof(*driver_data),
 				   GFP_KERNEL);
+<<<<<<< HEAD
 	if (!driver_data) {
 		dev_err(da9055->dev, "Failed to allocate watchdog device\n");
 		return -ENOMEM;
 	}
+=======
+	if (!driver_data)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	driver_data->da9055 = da9055;
 
@@ -163,18 +177,29 @@ static int da9055_wdt_probe(struct platform_device *pdev)
 	da9055_wdt->timeout = DA9055_DEF_TIMEOUT;
 	da9055_wdt->info = &da9055_wdt_info;
 	da9055_wdt->ops = &da9055_wdt_ops;
+<<<<<<< HEAD
 	watchdog_set_nowayout(da9055_wdt, nowayout);
 	watchdog_set_drvdata(da9055_wdt, driver_data);
 
 	kref_init(&driver_data->kref);
 
+=======
+	da9055_wdt->parent = &pdev->dev;
+	watchdog_set_nowayout(da9055_wdt, nowayout);
+	watchdog_set_drvdata(da9055_wdt, driver_data);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = da9055_wdt_stop(da9055_wdt);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to stop watchdog, %d\n", ret);
 		goto err;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, driver_data);
+=======
+	platform_set_drvdata(pdev, driver_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = watchdog_register_device(&driver_data->wdt);
 	if (ret != 0)
@@ -187,10 +212,16 @@ err:
 
 static int da9055_wdt_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct da9055_wdt_data *driver_data = dev_get_drvdata(&pdev->dev);
 
 	watchdog_unregister_device(&driver_data->wdt);
 	kref_put(&driver_data->kref, da9055_wdt_release_resources);
+=======
+	struct da9055_wdt_data *driver_data = platform_get_drvdata(pdev);
+
+	watchdog_unregister_device(&driver_data->wdt);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

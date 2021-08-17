@@ -20,6 +20,10 @@
 #include <linux/mount.h>
 #include <linux/statfs.h>
 #include <linux/ctype.h>
+<<<<<<< HEAD
+=======
+#include <linux/xattr.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "internal.h"
 
 static int cachefiles_daemon_add_cache(struct cachefiles_cache *caches);
@@ -50,18 +54,30 @@ int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
 	       cache->brun_percent  < 100);
 
 	if (*args) {
+<<<<<<< HEAD
 		kerror("'bind' command doesn't take an argument");
+=======
+		pr_err("'bind' command doesn't take an argument\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	if (!cache->rootdirname) {
+<<<<<<< HEAD
 		kerror("No cache directory specified");
+=======
+		pr_err("No cache directory specified\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	/* don't permit already bound caches to be re-bound */
 	if (test_bit(CACHEFILES_READY, &cache->flags)) {
+<<<<<<< HEAD
 		kerror("Cache already bound");
+=======
+		pr_err("Cache already bound\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -123,12 +139,19 @@ static int cachefiles_daemon_add_cache(struct cachefiles_cache *cache)
 
 	/* check parameters */
 	ret = -EOPNOTSUPP;
+<<<<<<< HEAD
 	if (!root->d_inode ||
 	    !root->d_inode->i_op ||
 	    !root->d_inode->i_op->lookup ||
 	    !root->d_inode->i_op->mkdir ||
 	    !root->d_inode->i_op->setxattr ||
 	    !root->d_inode->i_op->getxattr ||
+=======
+	if (d_is_negative(root) ||
+	    !d_backing_inode(root)->i_op->lookup ||
+	    !d_backing_inode(root)->i_op->mkdir ||
+	    !(d_backing_inode(root)->i_opflags & IOP_XATTR) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    !root->d_sb->s_op->statfs ||
 	    !root->d_sb->s_op->sync_fs)
 		goto error_unsupported;
@@ -229,9 +252,13 @@ static int cachefiles_daemon_add_cache(struct cachefiles_cache *cache)
 	set_bit(CACHEFILES_READY, &cache->flags);
 	dput(root);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "CacheFiles:"
 	       " File cache on %s registered\n",
 	       cache->cache.identifier);
+=======
+	pr_info("File cache on %s registered\n", cache->cache.identifier);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check how much space the cache has */
 	cachefiles_has_space(cache, 0, 0);
@@ -251,7 +278,11 @@ error_open_root:
 	kmem_cache_free(cachefiles_object_jar, fsdef);
 error_root_object:
 	cachefiles_end_secure(cache, saved_cred);
+<<<<<<< HEAD
 	kerror("Failed to register: %d", ret);
+=======
+	pr_err("Failed to register: %d\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -263,9 +294,14 @@ void cachefiles_daemon_unbind(struct cachefiles_cache *cache)
 	_enter("");
 
 	if (test_bit(CACHEFILES_READY, &cache->flags)) {
+<<<<<<< HEAD
 		printk(KERN_INFO "CacheFiles:"
 		       " File cache on %s unregistering\n",
 		       cache->cache.identifier);
+=======
+		pr_info("File cache on %s unregistering\n",
+			cache->cache.identifier);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		fscache_withdraw_cache(&cache->cache);
 	}

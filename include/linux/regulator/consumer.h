@@ -35,8 +35,16 @@
 #ifndef __LINUX_REGULATOR_CONSUMER_H_
 #define __LINUX_REGULATOR_CONSUMER_H_
 
+<<<<<<< HEAD
 struct device;
 struct notifier_block;
+=======
+#include <linux/err.h>
+
+struct device;
+struct notifier_block;
+struct regmap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Regulator operating modes.
@@ -92,7 +100,18 @@ struct notifier_block;
  * OVER_TEMP      Regulator over temp.
  * FORCE_DISABLE  Regulator forcibly shut down by software.
  * VOLTAGE_CHANGE Regulator voltage changed.
+<<<<<<< HEAD
  * DISABLE        Regulator was disabled.
+=======
+ *                Data passed is old voltage cast to (void *).
+ * DISABLE        Regulator was disabled.
+ * PRE_VOLTAGE_CHANGE   Regulator is about to have voltage changed.
+ *                      Data passed is "struct pre_voltage_change_data"
+ * ABORT_VOLTAGE_CHANGE Regulator voltage change failed for some reason.
+ *                      Data passed is old voltage cast to (void *).
+ * PRE_DISABLE    Regulator is about to be disabled
+ * ABORT_DISABLE  Regulator disable failed for some reason
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * NOTE: These events can be OR'ed together when passed into handler.
  */
@@ -104,7 +123,28 @@ struct notifier_block;
 #define REGULATOR_EVENT_OVER_TEMP		0x10
 #define REGULATOR_EVENT_FORCE_DISABLE		0x20
 #define REGULATOR_EVENT_VOLTAGE_CHANGE		0x40
+<<<<<<< HEAD
 #define REGULATOR_EVENT_DISABLE 		0x80
+=======
+#define REGULATOR_EVENT_DISABLE			0x80
+#define REGULATOR_EVENT_PRE_VOLTAGE_CHANGE	0x100
+#define REGULATOR_EVENT_ABORT_VOLTAGE_CHANGE	0x200
+#define REGULATOR_EVENT_PRE_DISABLE		0x400
+#define REGULATOR_EVENT_ABORT_DISABLE		0x800
+
+/**
+ * struct pre_voltage_change_data - Data sent with PRE_VOLTAGE_CHANGE event
+ *
+ * @old_uV: Current voltage before change.
+ * @min_uV: Min voltage we'll change to.
+ * @max_uV: Max voltage we'll change to.
+ */
+struct pre_voltage_change_data {
+	unsigned long old_uV;
+	unsigned long min_uV;
+	unsigned long max_uV;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct regulator;
 
@@ -137,9 +177,49 @@ struct regulator *__must_check devm_regulator_get(struct device *dev,
 					     const char *id);
 struct regulator *__must_check regulator_get_exclusive(struct device *dev,
 						       const char *id);
+<<<<<<< HEAD
 void regulator_put(struct regulator *regulator);
 void devm_regulator_put(struct regulator *regulator);
 
+=======
+struct regulator *__must_check devm_regulator_get_exclusive(struct device *dev,
+							const char *id);
+struct regulator *__must_check regulator_get_optional(struct device *dev,
+						      const char *id);
+struct regulator *__must_check devm_regulator_get_optional(struct device *dev,
+							   const char *id);
+void regulator_put(struct regulator *regulator);
+void devm_regulator_put(struct regulator *regulator);
+
+int regulator_register_supply_alias(struct device *dev, const char *id,
+				    struct device *alias_dev,
+				    const char *alias_id);
+void regulator_unregister_supply_alias(struct device *dev, const char *id);
+
+int regulator_bulk_register_supply_alias(struct device *dev,
+					 const char *const *id,
+					 struct device *alias_dev,
+					 const char *const *alias_id,
+					 int num_id);
+void regulator_bulk_unregister_supply_alias(struct device *dev,
+					    const char * const *id, int num_id);
+
+int devm_regulator_register_supply_alias(struct device *dev, const char *id,
+					 struct device *alias_dev,
+					 const char *alias_id);
+void devm_regulator_unregister_supply_alias(struct device *dev,
+					    const char *id);
+
+int devm_regulator_bulk_register_supply_alias(struct device *dev,
+					      const char *const *id,
+					      struct device *alias_dev,
+					      const char *const *alias_id,
+					      int num_id);
+void devm_regulator_bulk_unregister_supply_alias(struct device *dev,
+						 const char *const *id,
+						 int num_id);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* regulator output control and status */
 int __must_check regulator_enable(struct regulator *regulator);
 int regulator_disable(struct regulator *regulator);
@@ -160,11 +240,18 @@ int regulator_bulk_force_disable(int num_consumers,
 void regulator_bulk_free(int num_consumers,
 			 struct regulator_bulk_data *consumers);
 
+<<<<<<< HEAD
 int regulator_can_change_voltage(struct regulator *regulator);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int regulator_count_voltages(struct regulator *regulator);
 int regulator_list_voltage(struct regulator *regulator, unsigned selector);
 int regulator_is_supported_voltage(struct regulator *regulator,
 				   int min_uV, int max_uV);
+<<<<<<< HEAD
+=======
+unsigned int regulator_get_linear_step(struct regulator *regulator);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int regulator_set_voltage(struct regulator *regulator, int min_uV, int max_uV);
 int regulator_set_voltage_time(struct regulator *regulator,
 			       int old_uV, int new_uV);
@@ -176,6 +263,7 @@ int regulator_get_current_limit(struct regulator *regulator);
 
 int regulator_set_mode(struct regulator *regulator, unsigned int mode);
 unsigned int regulator_get_mode(struct regulator *regulator);
+<<<<<<< HEAD
 int regulator_set_optimum_mode(struct regulator *regulator, int load_uA);
 
 int regulator_allow_bypass(struct regulator *regulator, bool allow);
@@ -185,6 +273,28 @@ int regulator_register_notifier(struct regulator *regulator,
 			      struct notifier_block *nb);
 int regulator_unregister_notifier(struct regulator *regulator,
 				struct notifier_block *nb);
+=======
+int regulator_set_load(struct regulator *regulator, int load_uA);
+
+int regulator_allow_bypass(struct regulator *regulator, bool allow);
+
+struct regmap *regulator_get_regmap(struct regulator *regulator);
+int regulator_get_hardware_vsel_register(struct regulator *regulator,
+					 unsigned *vsel_reg,
+					 unsigned *vsel_mask);
+int regulator_list_hardware_vsel(struct regulator *regulator,
+				 unsigned selector);
+
+/* regulator notifier block */
+int regulator_register_notifier(struct regulator *regulator,
+			      struct notifier_block *nb);
+int devm_regulator_register_notifier(struct regulator *regulator,
+				     struct notifier_block *nb);
+int regulator_unregister_notifier(struct regulator *regulator,
+				struct notifier_block *nb);
+void devm_regulator_unregister_notifier(struct regulator *regulator,
+					struct notifier_block *nb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* driver data - core doesn't touch */
 void *regulator_get_drvdata(struct regulator *regulator);
@@ -216,6 +326,28 @@ devm_regulator_get(struct device *dev, const char *id)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct regulator *__must_check
+regulator_get_exclusive(struct device *dev, const char *id)
+{
+	return ERR_PTR(-ENODEV);
+}
+
+static inline struct regulator *__must_check
+regulator_get_optional(struct device *dev, const char *id)
+{
+	return ERR_PTR(-ENODEV);
+}
+
+
+static inline struct regulator *__must_check
+devm_regulator_get_optional(struct device *dev, const char *id)
+{
+	return ERR_PTR(-ENODEV);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void regulator_put(struct regulator *regulator)
 {
 }
@@ -224,6 +356,64 @@ static inline void devm_regulator_put(struct regulator *regulator)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline int regulator_register_supply_alias(struct device *dev,
+						  const char *id,
+						  struct device *alias_dev,
+						  const char *alias_id)
+{
+	return 0;
+}
+
+static inline void regulator_unregister_supply_alias(struct device *dev,
+						    const char *id)
+{
+}
+
+static inline int regulator_bulk_register_supply_alias(struct device *dev,
+						const char *const *id,
+						struct device *alias_dev,
+						const char * const *alias_id,
+						int num_id)
+{
+	return 0;
+}
+
+static inline void regulator_bulk_unregister_supply_alias(struct device *dev,
+						const char * const *id,
+						int num_id)
+{
+}
+
+static inline int devm_regulator_register_supply_alias(struct device *dev,
+						       const char *id,
+						       struct device *alias_dev,
+						       const char *alias_id)
+{
+	return 0;
+}
+
+static inline void devm_regulator_unregister_supply_alias(struct device *dev,
+							  const char *id)
+{
+}
+
+static inline int devm_regulator_bulk_register_supply_alias(struct device *dev,
+						const char *const *id,
+						struct device *alias_dev,
+						const char *const *alias_id,
+						int num_id)
+{
+	return 0;
+}
+
+static inline void devm_regulator_bulk_unregister_supply_alias(
+	struct device *dev, const char *const *id, int num_id)
+{
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int regulator_enable(struct regulator *regulator)
 {
 	return 0;
@@ -292,6 +482,15 @@ static inline int regulator_set_voltage(struct regulator *regulator,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline int regulator_set_voltage_time(struct regulator *regulator,
+					     int old_uV, int new_uV)
+{
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int regulator_get_voltage(struct regulator *regulator)
 {
 	return -EINVAL;
@@ -325,10 +524,16 @@ static inline unsigned int regulator_get_mode(struct regulator *regulator)
 	return REGULATOR_MODE_NORMAL;
 }
 
+<<<<<<< HEAD
 static inline int regulator_set_optimum_mode(struct regulator *regulator,
 					int load_uA)
 {
 	return REGULATOR_MODE_NORMAL;
+=======
+static inline int regulator_set_load(struct regulator *regulator, int load_uA)
+{
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int regulator_allow_bypass(struct regulator *regulator,
@@ -337,18 +542,57 @@ static inline int regulator_allow_bypass(struct regulator *regulator,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct regmap *regulator_get_regmap(struct regulator *regulator)
+{
+	return ERR_PTR(-EOPNOTSUPP);
+}
+
+static inline int regulator_get_hardware_vsel_register(struct regulator *regulator,
+						       unsigned *vsel_reg,
+						       unsigned *vsel_mask)
+{
+	return -EOPNOTSUPP;
+}
+
+static inline int regulator_list_hardware_vsel(struct regulator *regulator,
+					       unsigned selector)
+{
+	return -EOPNOTSUPP;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int regulator_register_notifier(struct regulator *regulator,
 			      struct notifier_block *nb)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline int devm_regulator_register_notifier(struct regulator *regulator,
+						   struct notifier_block *nb)
+{
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int regulator_unregister_notifier(struct regulator *regulator,
 				struct notifier_block *nb)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline int devm_regulator_unregister_notifier(struct regulator *regulator,
+						     struct notifier_block *nb)
+{
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void *regulator_get_drvdata(struct regulator *regulator)
 {
 	return NULL;
@@ -363,6 +607,7 @@ static inline int regulator_count_voltages(struct regulator *regulator)
 {
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static inline int regulator_set_voltage_tol(struct regulator *regulator,
@@ -370,6 +615,34 @@ static inline int regulator_set_voltage_tol(struct regulator *regulator,
 {
 	return regulator_set_voltage(regulator,
 				     new_uV - tol_uV, new_uV + tol_uV);
+=======
+
+static inline int regulator_list_voltage(struct regulator *regulator, unsigned selector)
+{
+	return -EINVAL;
+}
+
+#endif
+
+static inline int regulator_set_voltage_triplet(struct regulator *regulator,
+						int min_uV, int target_uV,
+						int max_uV)
+{
+	if (regulator_set_voltage(regulator, target_uV, max_uV) == 0)
+		return 0;
+
+	return regulator_set_voltage(regulator, min_uV, max_uV);
+}
+
+static inline int regulator_set_voltage_tol(struct regulator *regulator,
+					    int new_uV, int tol_uV)
+{
+	if (regulator_set_voltage(regulator, new_uV, new_uV + tol_uV) == 0)
+		return 0;
+	else
+		return regulator_set_voltage(regulator,
+					     new_uV - tol_uV, new_uV + tol_uV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int regulator_is_supported_voltage_tol(struct regulator *regulator,

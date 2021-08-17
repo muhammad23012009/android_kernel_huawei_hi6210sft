@@ -36,7 +36,11 @@ static const struct hc_driver ehci_sh_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq				= ehci_irq,
+<<<<<<< HEAD
 	.flags				= HCD_USB2 | HCD_MEMORY,
+=======
+	.flags				= HCD_USB2 | HCD_MEMORY | HCD_BH,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * basic lifecycle operations
@@ -86,6 +90,7 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 	if (usb_disabled())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev,
@@ -95,6 +100,8 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 		goto fail_create_hcd;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq = platform_get_irq(pdev, 0);
 	if (irq <= 0) {
 		dev_err(&pdev->dev,
@@ -104,7 +111,11 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 		goto fail_create_hcd;
 	}
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* initialize hcd */
 	hcd = usb_create_hcd(&ehci_sh_hc_driver, &pdev->dev,
@@ -114,19 +125,31 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 		goto fail_create_hcd;
 	}
 
+<<<<<<< HEAD
 	hcd->rsrc_start = res->start;
 	hcd->rsrc_len = resource_size(res);
 
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hcd->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hcd->regs)) {
 		ret = PTR_ERR(hcd->regs);
 		goto fail_request_resource;
 	}
+<<<<<<< HEAD
+=======
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	priv = devm_kzalloc(&pdev->dev, sizeof(struct ehci_sh_priv),
 			    GFP_KERNEL);
 	if (!priv) {
+<<<<<<< HEAD
 		dev_dbg(&pdev->dev, "error allocating priv data\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOMEM;
 		goto fail_request_resource;
 	}
@@ -151,6 +174,10 @@ static int ehci_hcd_sh_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to add hcd");
 		goto fail_add_hcd;
 	}
+<<<<<<< HEAD
+=======
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	priv->hcd = hcd;
 	platform_set_drvdata(pdev, priv);
@@ -176,7 +203,10 @@ static int ehci_hcd_sh_remove(struct platform_device *pdev)
 
 	usb_remove_hcd(hcd);
 	usb_put_hcd(hcd);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clk_disable(priv->fclk);
 	clk_disable(priv->iclk);
@@ -199,7 +229,10 @@ static struct platform_driver ehci_hcd_sh_driver = {
 	.shutdown	= ehci_hcd_sh_shutdown,
 	.driver		= {
 		.name	= "sh_ehci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

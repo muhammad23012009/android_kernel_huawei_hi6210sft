@@ -21,7 +21,11 @@ SYSCALL_DEFINE5(pciconfig_read, unsigned long, bus, unsigned long, dfn,
 	u16 word;
 	u32 dword;
 	long err;
+<<<<<<< HEAD
 	long cfg_ret;
+=======
+	int cfg_ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -44,10 +48,17 @@ SYSCALL_DEFINE5(pciconfig_read, unsigned long, bus, unsigned long, dfn,
 	default:
 		err = -EINVAL;
 		goto error;
+<<<<<<< HEAD
 	};
 
 	err = -EIO;
 	if (cfg_ret != PCIBIOS_SUCCESSFUL)
+=======
+	}
+
+	err = -EIO;
+	if (cfg_ret)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 
 	switch (len) {
@@ -99,13 +110,21 @@ SYSCALL_DEFINE5(pciconfig_write, unsigned long, bus, unsigned long, dfn,
 	if (!dev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	switch(len) {
+=======
+	switch (len) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 1:
 		err = get_user(byte, (u8 __user *)buf);
 		if (err)
 			break;
 		err = pci_user_write_config_byte(dev, off, byte);
+<<<<<<< HEAD
 		if (err != PCIBIOS_SUCCESSFUL)
+=======
+		if (err)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EIO;
 		break;
 
@@ -114,7 +133,11 @@ SYSCALL_DEFINE5(pciconfig_write, unsigned long, bus, unsigned long, dfn,
 		if (err)
 			break;
 		err = pci_user_write_config_word(dev, off, word);
+<<<<<<< HEAD
 		if (err != PCIBIOS_SUCCESSFUL)
+=======
+		if (err)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EIO;
 		break;
 
@@ -123,7 +146,11 @@ SYSCALL_DEFINE5(pciconfig_write, unsigned long, bus, unsigned long, dfn,
 		if (err)
 			break;
 		err = pci_user_write_config_dword(dev, off, dword);
+<<<<<<< HEAD
 		if (err != PCIBIOS_SUCCESSFUL)
+=======
+		if (err)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			err = -EIO;
 		break;
 

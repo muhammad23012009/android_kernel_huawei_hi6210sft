@@ -22,7 +22,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org/
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /* for debugging ARM communication: */
@@ -56,11 +60,19 @@
    by Nathan Laredo <laredo@gnu.org> */
 
 int av7110_debiwrite(struct av7110 *av7110, u32 config,
+<<<<<<< HEAD
 		     int addr, u32 val, int count)
 {
 	struct saa7146_dev *dev = av7110->dev;
 
 	if (count <= 0 || count > 32764) {
+=======
+		     int addr, u32 val, unsigned int count)
+{
+	struct saa7146_dev *dev = av7110->dev;
+
+	if (count > 32764) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk("%s: invalid count %d\n", __func__, count);
 		return -1;
 	}
@@ -78,12 +90,20 @@ int av7110_debiwrite(struct av7110 *av7110, u32 config,
 	return 0;
 }
 
+<<<<<<< HEAD
 u32 av7110_debiread(struct av7110 *av7110, u32 config, int addr, int count)
+=======
+u32 av7110_debiread(struct av7110 *av7110, u32 config, int addr, unsigned int count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct saa7146_dev *dev = av7110->dev;
 	u32 result = 0;
 
+<<<<<<< HEAD
 	if (count > 32764 || count <= 0) {
+=======
+	if (count > 32764) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk("%s: invalid count %d\n", __func__, count);
 		return 0;
 	}
@@ -501,7 +521,11 @@ int av7110_fw_cmd(struct av7110 *av7110, int type, int com, int num, ...)
 
 //	dprintk(4, "%p\n", av7110);
 
+<<<<<<< HEAD
 	if (2 + num > sizeof(buf)) {
+=======
+	if (2 + num > ARRAY_SIZE(buf)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING
 		       "%s: %s len=%d is too big!\n",
 		       KBUILD_MODNAME, __func__, num);

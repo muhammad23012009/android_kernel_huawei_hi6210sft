@@ -17,6 +17,7 @@
  */
 #include "xfs.h"
 #include "xfs_fs.h"
+<<<<<<< HEAD
 #include "xfs_types.h"
 #include "xfs_log.h"
 #include "xfs_trans.h"
@@ -26,6 +27,20 @@
 #include "xfs_mount.h"
 #include "xfs_trans_priv.h"
 #include "xfs_extfree_item.h"
+=======
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+#include "xfs_bit.h"
+#include "xfs_mount.h"
+#include "xfs_trans.h"
+#include "xfs_trans_priv.h"
+#include "xfs_buf_item.h"
+#include "xfs_extfree_item.h"
+#include "xfs_log.h"
+#include "xfs_btree.h"
+#include "xfs_rmap.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 kmem_zone_t	*xfs_efi_zone;
@@ -40,6 +55,10 @@ void
 xfs_efi_item_free(
 	struct xfs_efi_log_item	*efip)
 {
+<<<<<<< HEAD
+=======
+	kmem_free(efip->efi_item.li_lv_shadow);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (efip->efi_format.efi_nextents > XFS_EFI_MAX_FAST_EXTENTS)
 		kmem_free(efip);
 	else
@@ -47,6 +66,7 @@ xfs_efi_item_free(
 }
 
 /*
+<<<<<<< HEAD
  * Freeing the efi requires that we remove it from the AIL if it has already
  * been placed there. However, the EFI may not yet have been placed in the AIL
  * when called by xfs_efi_release() from EFD processing due to the ordering of
@@ -69,15 +89,36 @@ __xfs_efi_release(
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * This returns the number of iovecs needed to log the given efi item.
  * We only need 1 iovec for an efi item.  It just logs the efi_log_format
  * structure.
  */
+<<<<<<< HEAD
 STATIC uint
 xfs_efi_item_size(
 	struct xfs_log_item	*lip)
 {
 	return 1;
+=======
+static inline int
+xfs_efi_item_sizeof(
+	struct xfs_efi_log_item *efip)
+{
+	return sizeof(struct xfs_efi_log_format) +
+	       (efip->efi_format.efi_nextents - 1) * sizeof(xfs_extent_t);
+}
+
+STATIC void
+xfs_efi_item_size(
+	struct xfs_log_item	*lip,
+	int			*nvecs,
+	int			*nbytes)
+{
+	*nvecs += 1;
+	*nbytes += xfs_efi_item_sizeof(EFI_ITEM(lip));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -90,15 +131,23 @@ xfs_efi_item_size(
 STATIC void
 xfs_efi_item_format(
 	struct xfs_log_item	*lip,
+<<<<<<< HEAD
 	struct xfs_log_iovec	*log_vector)
 {
 	struct xfs_efi_log_item	*efip = EFI_ITEM(lip);
 	uint			size;
+=======
+	struct xfs_log_vec	*lv)
+{
+	struct xfs_efi_log_item	*efip = EFI_ITEM(lip);
+	struct xfs_log_iovec	*vecp = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ASSERT(atomic_read(&efip->efi_next_extent) ==
 				efip->efi_format.efi_nextents);
 
 	efip->efi_format.efi_type = XFS_LI_EFI;
+<<<<<<< HEAD
 
 	size = sizeof(xfs_efi_log_format_t);
 	size += (efip->efi_format.efi_nextents - 1) * sizeof(xfs_extent_t);
@@ -108,6 +157,13 @@ xfs_efi_item_format(
 	log_vector->i_len = size;
 	log_vector->i_type = XLOG_REG_TYPE_EFI_FORMAT;
 	ASSERT(size >= sizeof(xfs_efi_log_format_t));
+=======
+	efip->efi_format.efi_size = 1;
+
+	xlog_copy_iovec(lv, &vecp, XLOG_REG_TYPE_EFI_FORMAT,
+			&efip->efi_format,
+			xfs_efi_item_sizeof(efip));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -121,12 +177,21 @@ xfs_efi_item_pin(
 }
 
 /*
+<<<<<<< HEAD
  * While EFIs cannot really be pinned, the unpin operation is the last place at
  * which the EFI is manipulated during a transaction.  If we are being asked to
  * remove the EFI it's because the transaction has been cancelled and by
  * definition that means the EFI cannot be in the AIL so remove it from the
  * transaction and free it.  Otherwise coordinate with xfs_efi_release()
  * to determine who gets to free the EFI.
+=======
+ * The unpin operation is the last place an EFI is manipulated in the log. It is
+ * either inserted in the AIL or aborted in the event of a log I/O error. In
+ * either case, the EFI transaction has been successfully committed to make it
+ * this far. Therefore, we expect whoever committed the EFI to either construct
+ * and commit the EFD or drop the EFD's reference in the event of error. Simply
+ * drop the log's EFI reference now that the log is done with it.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 STATIC void
 xfs_efi_item_unpin(
@@ -134,6 +199,7 @@ xfs_efi_item_unpin(
 	int			remove)
 {
 	struct xfs_efi_log_item	*efip = EFI_ITEM(lip);
+<<<<<<< HEAD
 
 	if (remove) {
 		ASSERT(!(lip->li_flags & XFS_LI_IN_AIL));
@@ -143,6 +209,9 @@ xfs_efi_item_unpin(
 		return;
 	}
 	__xfs_efi_release(efip);
+=======
+	xfs_efi_release(efip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -160,6 +229,14 @@ xfs_efi_item_push(
 	return XFS_ITEM_PINNED;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * The EFI has been either committed or aborted if the transaction has been
+ * cancelled. If the transaction was cancelled, an EFD isn't going to be
+ * constructed and thus we free the EFI here directly.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 STATIC void
 xfs_efi_item_unlock(
 	struct xfs_log_item	*lip)
@@ -232,7 +309,11 @@ xfs_efi_init(
 
 	xfs_log_item_init(mp, &efip->efi_item, XFS_LI_EFI, &xfs_efi_item_ops);
 	efip->efi_format.efi_nextents = nextents;
+<<<<<<< HEAD
 	efip->efi_format.efi_id = (__psint_t)(void*)efip;
+=======
+	efip->efi_format.efi_id = (uintptr_t)(void *)efip;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_set(&efip->efi_next_extent, 0);
 	atomic_set(&efip->efi_refcount, 2);
 
@@ -290,6 +371,7 @@ xfs_efi_copy_format(xfs_log_iovec_t *buf, xfs_efi_log_format_t *dst_efi_fmt)
 		}
 		return 0;
 	}
+<<<<<<< HEAD
 	return EFSCORRUPTED;
 }
 
@@ -311,6 +393,25 @@ xfs_efi_release(xfs_efi_log_item_t	*efip,
 
 		__xfs_efi_release(efip);
 		/* efip may now have been freed, do not reference it again. */
+=======
+	return -EFSCORRUPTED;
+}
+
+/*
+ * Freeing the efi requires that we remove it from the AIL if it has already
+ * been placed there. However, the EFI may not yet have been placed in the AIL
+ * when called by xfs_efi_release() from EFD processing due to the ordering of
+ * committed vs unpin operations in bulk insert operations. Hence the reference
+ * count to ensure only the last caller frees the EFI.
+ */
+void
+xfs_efi_release(
+	struct xfs_efi_log_item	*efip)
+{
+	if (atomic_dec_and_test(&efip->efi_refcount)) {
+		xfs_trans_ail_remove(&efip->efi_item, SHUTDOWN_LOG_IO_ERROR);
+		xfs_efi_item_free(efip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -322,6 +423,10 @@ static inline struct xfs_efd_log_item *EFD_ITEM(struct xfs_log_item *lip)
 STATIC void
 xfs_efd_item_free(struct xfs_efd_log_item *efdp)
 {
+<<<<<<< HEAD
+=======
+	kmem_free(efdp->efd_item.li_lv_shadow);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (efdp->efd_format.efd_nextents > XFS_EFD_MAX_FAST_EXTENTS)
 		kmem_free(efdp);
 	else
@@ -333,11 +438,30 @@ xfs_efd_item_free(struct xfs_efd_log_item *efdp)
  * We only need 1 iovec for an efd item.  It just logs the efd_log_format
  * structure.
  */
+<<<<<<< HEAD
 STATIC uint
 xfs_efd_item_size(
 	struct xfs_log_item	*lip)
 {
 	return 1;
+=======
+static inline int
+xfs_efd_item_sizeof(
+	struct xfs_efd_log_item *efdp)
+{
+	return sizeof(xfs_efd_log_format_t) +
+	       (efdp->efd_format.efd_nextents - 1) * sizeof(xfs_extent_t);
+}
+
+STATIC void
+xfs_efd_item_size(
+	struct xfs_log_item	*lip,
+	int			*nvecs,
+	int			*nbytes)
+{
+	*nvecs += 1;
+	*nbytes += xfs_efd_item_sizeof(EFD_ITEM(lip));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -350,14 +474,22 @@ xfs_efd_item_size(
 STATIC void
 xfs_efd_item_format(
 	struct xfs_log_item	*lip,
+<<<<<<< HEAD
 	struct xfs_log_iovec	*log_vector)
 {
 	struct xfs_efd_log_item	*efdp = EFD_ITEM(lip);
 	uint			size;
+=======
+	struct xfs_log_vec	*lv)
+{
+	struct xfs_efd_log_item	*efdp = EFD_ITEM(lip);
+	struct xfs_log_iovec	*vecp = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ASSERT(efdp->efd_next_extent == efdp->efd_format.efd_nextents);
 
 	efdp->efd_format.efd_type = XFS_LI_EFD;
+<<<<<<< HEAD
 
 	size = sizeof(xfs_efd_log_format_t);
 	size += (efdp->efd_format.efd_nextents - 1) * sizeof(xfs_extent_t);
@@ -367,6 +499,13 @@ xfs_efd_item_format(
 	log_vector->i_len = size;
 	log_vector->i_type = XLOG_REG_TYPE_EFD_FORMAT;
 	ASSERT(size >= sizeof(xfs_efd_log_format_t));
+=======
+	efdp->efd_format.efd_size = 1;
+
+	xlog_copy_iovec(lv, &vecp, XLOG_REG_TYPE_EFD_FORMAT,
+			&efdp->efd_format,
+			xfs_efd_item_sizeof(efdp));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -401,10 +540,18 @@ xfs_efd_item_push(
 	return XFS_ITEM_PINNED;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * The EFD is either committed or aborted if the transaction is cancelled. If
+ * the transaction is cancelled, drop our reference to the EFI and free the EFD.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 STATIC void
 xfs_efd_item_unlock(
 	struct xfs_log_item	*lip)
 {
+<<<<<<< HEAD
 	if (lip->li_flags & XFS_LI_ABORTED)
 		xfs_efd_item_free(EFD_ITEM(lip));
 }
@@ -415,6 +562,21 @@ xfs_efd_item_unlock(
  * free ourselves.  Since we're freeing ourselves we must
  * return -1 to keep the transaction code from further referencing
  * this item.
+=======
+	struct xfs_efd_log_item	*efdp = EFD_ITEM(lip);
+
+	if (lip->li_flags & XFS_LI_ABORTED) {
+		xfs_efi_release(efdp->efd_efip);
+		xfs_efd_item_free(efdp);
+	}
+}
+
+/*
+ * When the efd item is committed to disk, all we need to do is delete our
+ * reference to our partner efi item and then free ourselves. Since we're
+ * freeing ourselves we must return -1 to keep the transaction code from further
+ * referencing this item.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 STATIC xfs_lsn_t
 xfs_efd_item_committed(
@@ -424,6 +586,7 @@ xfs_efd_item_committed(
 	struct xfs_efd_log_item	*efdp = EFD_ITEM(lip);
 
 	/*
+<<<<<<< HEAD
 	 * If we got a log I/O error, it's always the case that the LR with the
 	 * EFI got unpinned and freed before the EFD got aborted.
 	 */
@@ -431,6 +594,16 @@ xfs_efd_item_committed(
 		xfs_efi_release(efdp->efd_efip, efdp->efd_format.efd_nextents);
 
 	xfs_efd_item_free(efdp);
+=======
+	 * Drop the EFI reference regardless of whether the EFD has been
+	 * aborted. Once the EFD transaction is constructed, it is the sole
+	 * responsibility of the EFD to release the EFI (even if the EFI is
+	 * aborted due to log I/O error).
+	 */
+	xfs_efi_release(efdp->efd_efip);
+	xfs_efd_item_free(efdp);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (xfs_lsn_t)-1;
 }
 
@@ -491,3 +664,72 @@ xfs_efd_init(
 
 	return efdp;
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Process an extent free intent item that was recovered from
+ * the log.  We need to free the extents that it describes.
+ */
+int
+xfs_efi_recover(
+	struct xfs_mount	*mp,
+	struct xfs_efi_log_item	*efip)
+{
+	struct xfs_efd_log_item	*efdp;
+	struct xfs_trans	*tp;
+	int			i;
+	int			error = 0;
+	xfs_extent_t		*extp;
+	xfs_fsblock_t		startblock_fsb;
+	struct xfs_owner_info	oinfo;
+
+	ASSERT(!test_bit(XFS_EFI_RECOVERED, &efip->efi_flags));
+
+	/*
+	 * First check the validity of the extents described by the
+	 * EFI.  If any are bad, then assume that all are bad and
+	 * just toss the EFI.
+	 */
+	for (i = 0; i < efip->efi_format.efi_nextents; i++) {
+		extp = &efip->efi_format.efi_extents[i];
+		startblock_fsb = XFS_BB_TO_FSB(mp,
+				   XFS_FSB_TO_DADDR(mp, extp->ext_start));
+		if (startblock_fsb == 0 ||
+		    extp->ext_len == 0 ||
+		    startblock_fsb >= mp->m_sb.sb_dblocks ||
+		    extp->ext_len >= mp->m_sb.sb_agblocks) {
+			/*
+			 * This will pull the EFI from the AIL and
+			 * free the memory associated with it.
+			 */
+			set_bit(XFS_EFI_RECOVERED, &efip->efi_flags);
+			xfs_efi_release(efip);
+			return -EIO;
+		}
+	}
+
+	error = xfs_trans_alloc(mp, &M_RES(mp)->tr_itruncate, 0, 0, 0, &tp);
+	if (error)
+		return error;
+	efdp = xfs_trans_get_efd(tp, efip, efip->efi_format.efi_nextents);
+
+	xfs_rmap_skip_owner_update(&oinfo);
+	for (i = 0; i < efip->efi_format.efi_nextents; i++) {
+		extp = &efip->efi_format.efi_extents[i];
+		error = xfs_trans_free_extent(tp, efdp, extp->ext_start,
+					      extp->ext_len, &oinfo);
+		if (error)
+			goto abort_error;
+
+	}
+
+	set_bit(XFS_EFI_RECOVERED, &efip->efi_flags);
+	error = xfs_trans_commit(tp);
+	return error;
+
+abort_error:
+	xfs_trans_cancel(tp);
+	return error;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

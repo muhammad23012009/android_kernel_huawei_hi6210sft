@@ -1,13 +1,22 @@
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/memblock.h>
 
 #include <asm/cacheflush.h>
 #include <asm/pgtable.h>
 #include <asm/realmode.h>
+<<<<<<< HEAD
+=======
+#include <asm/tlbflush.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct real_mode_header *real_mode_header;
 u32 *trampoline_cr4_features;
 
+<<<<<<< HEAD
 void __init reserve_real_mode(void)
 {
 	phys_addr_t mem;
@@ -35,6 +44,48 @@ void __init setup_real_mode(void)
 	u16 *seg;
 	int i;
 	unsigned char *base;
+=======
+/* Hold the pgd entry used on booting additional CPUs */
+pgd_t trampoline_pgd_entry;
+
+void __init set_real_mode_mem(phys_addr_t mem, size_t size)
+{
+	void *base = __va(mem);
+
+	real_mode_header = (struct real_mode_header *) base;
+	printk(KERN_DEBUG "Base memory trampoline at [%p] %llx size %zu\n",
+	       base, (unsigned long long)mem, size);
+}
+
+void __init reserve_real_mode(void)
+{
+	phys_addr_t mem;
+	size_t size = real_mode_size_needed();
+
+	if (!size)
+		return;
+
+	WARN_ON(slab_is_available());
+
+	/* Has to be under 1M so we can execute real-mode AP code. */
+	mem = memblock_find_in_range(0, 1<<20, size, PAGE_SIZE);
+	if (!mem) {
+		pr_info("No sub-1M memory is available for the trampoline\n");
+		return;
+	}
+
+	memblock_reserve(mem, size);
+	set_real_mode_mem(mem, size);
+}
+
+static void __init setup_real_mode(void)
+{
+	u16 real_mode_seg;
+	const u32 *rel;
+	u32 count;
+	unsigned char *base;
+	unsigned long phys_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct trampoline_header *trampoline_header;
 	size_t size = PAGE_ALIGN(real_mode_blob_end - real_mode_blob);
 #ifdef CONFIG_X86_64
@@ -46,6 +97,7 @@ void __init setup_real_mode(void)
 
 	memcpy(base, real_mode_blob, size);
 
+<<<<<<< HEAD
 	real_mode_seg = __pa(base) >> 4;
 	rel = (u32 *) real_mode_relocs;
 
@@ -54,15 +106,33 @@ void __init setup_real_mode(void)
 	rel = &rel[1];
 	for (i = 0; i < count; i++) {
 		seg = (u16 *) (base + rel[i]);
+=======
+	phys_base = __pa(base);
+	real_mode_seg = phys_base >> 4;
+
+	rel = (u32 *) real_mode_relocs;
+
+	/* 16-bit segment relocations. */
+	count = *rel++;
+	while (count--) {
+		u16 *seg = (u16 *) (base + *rel++);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*seg = real_mode_seg;
 	}
 
 	/* 32-bit linear relocations. */
+<<<<<<< HEAD
 	count = rel[i];
 	rel =  &rel[i + 1];
 	for (i = 0; i < count; i++) {
 		ptr = (u32 *) (base + rel[i]);
 		*ptr += __pa(base);
+=======
+	count = *rel++;
+	while (count--) {
+		u32 *ptr = (u32 *) (base + *rel++);
+		*ptr += phys_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Must be perfomed *after* relocation. */
@@ -83,10 +153,17 @@ void __init setup_real_mode(void)
 
 	trampoline_header->start = (u64) secondary_startup_64;
 	trampoline_cr4_features = &trampoline_header->cr4;
+<<<<<<< HEAD
 	*trampoline_cr4_features = read_cr4();
 
 	trampoline_pgd = (u64 *) __va(real_mode_header->trampoline_pgd);
 	trampoline_pgd[0] = init_level4_pgt[pgd_index(__PAGE_OFFSET)].pgd;
+=======
+	*trampoline_cr4_features = mmu_cr4_features;
+
+	trampoline_pgd = (u64 *) __va(real_mode_header->trampoline_pgd);
+	trampoline_pgd[0] = trampoline_pgd_entry.pgd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	trampoline_pgd[511] = init_level4_pgt[511].pgd;
 #endif
 }
@@ -99,7 +176,11 @@ void __init setup_real_mode(void)
  * need to mark it executable at do_pre_smp_initcalls() at least,
  * thus run it as a early_initcall().
  */
+<<<<<<< HEAD
 static int __init set_real_mode_permissions(void)
+=======
+static void __init set_real_mode_permissions(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned char *base = (unsigned char *) real_mode_header;
 	size_t size = PAGE_ALIGN(real_mode_blob_end - real_mode_blob);
@@ -118,7 +199,23 @@ static int __init set_real_mode_permissions(void)
 	set_memory_nx((unsigned long) base, size >> PAGE_SHIFT);
 	set_memory_ro((unsigned long) base, ro_size >> PAGE_SHIFT);
 	set_memory_x((unsigned long) text_start, text_size >> PAGE_SHIFT);
+<<<<<<< HEAD
 
 	return 0;
 }
 early_initcall(set_real_mode_permissions);
+=======
+}
+
+static int __init init_real_mode(void)
+{
+	if (!real_mode_header)
+		panic("Real mode trampoline was not allocated");
+
+	setup_real_mode();
+	set_real_mode_permissions();
+
+	return 0;
+}
+early_initcall(init_real_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

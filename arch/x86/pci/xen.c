@@ -9,7 +9,11 @@
  *           Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
  *           Stefano Stabellini <stefano.stabellini@eu.citrix.com>
  */
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/acpi.h>
@@ -23,6 +27,12 @@
 #include <xen/features.h>
 #include <xen/events.h>
 #include <asm/xen/pci.h>
+<<<<<<< HEAD
+=======
+#include <asm/xen/cpuid.h>
+#include <asm/apic.h>
+#include <asm/i8259.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int xen_pcifront_enable_irq(struct pci_dev *dev)
 {
@@ -40,7 +50,11 @@ static int xen_pcifront_enable_irq(struct pci_dev *dev)
 	/* In PV DomU the Xen PCI backend puts the PIRQ in the interrupt line.*/
 	pirq = gsi;
 
+<<<<<<< HEAD
 	if (gsi < NR_IRQS_LEGACY)
+=======
+	if (gsi < nr_legacy_irqs())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		share = 0;
 
 	rc = xen_bind_pirq_gsi_to_irq(gsi, pirq, share, "pcifront");
@@ -176,8 +190,14 @@ static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	if (ret)
 		goto error;
 	i = 0;
+<<<<<<< HEAD
 	list_for_each_entry(msidesc, &dev->msi_list, list) {
 		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, v[i],
+=======
+	for_each_pci_msi_entry(msidesc, dev) {
+		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, v[i],
+					       (type == PCI_CAP_ID_MSI) ? nvec : 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					       (type == PCI_CAP_ID_MSIX) ?
 					       "pcifront-msi-x" :
 					       "pcifront-msi",
@@ -192,7 +212,14 @@ static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	return 0;
 
 error:
+<<<<<<< HEAD
 	dev_err(&dev->dev, "Xen PCI frontend has not registered MSI/MSI-X support!\n");
+=======
+	if (ret == -ENOSYS)
+		dev_err(&dev->dev, "Xen PCI frontend has not registered MSI/MSI-X support!\n");
+	else if (ret)
+		dev_err(&dev->dev, "Xen PCI frontend error: %d!\n", ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 free:
 	kfree(v);
 	return ret;
@@ -226,16 +253,27 @@ static int xen_hvm_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	if (type == PCI_CAP_ID_MSI && nvec > 1)
 		return 1;
 
+<<<<<<< HEAD
 	list_for_each_entry(msidesc, &dev->msi_list, list) {
+=======
+	for_each_pci_msi_entry(msidesc, dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pirq = xen_allocate_pirq_msi(dev, msidesc);
 		if (pirq < 0) {
 			irq = -ENODEV;
 			goto error;
 		}
 		xen_msi_compose_msg(dev, pirq, &msg);
+<<<<<<< HEAD
 		__write_msi_msg(msidesc, &msg);
 		dev_dbg(&dev->dev, "xen: msi bound to pirq=%d\n", pirq);
 		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, pirq,
+=======
+		__pci_write_msi_msg(msidesc, &msg);
+		dev_dbg(&dev->dev, "xen: msi bound to pirq=%d\n", pirq);
+		irq = xen_bind_pirq_msi_to_irq(dev, msidesc, pirq,
+					       (type == PCI_CAP_ID_MSI) ? nvec : 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					       (type == PCI_CAP_ID_MSIX) ?
 					       "msi-x" : "msi",
 					       DOMID_SELF);
@@ -260,10 +298,14 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	int ret = 0;
 	struct msi_desc *msidesc;
 
+<<<<<<< HEAD
 	if (type == PCI_CAP_ID_MSI && nvec > 1)
 		return 1;
 
 	list_for_each_entry(msidesc, &dev->msi_list, list) {
+=======
+	for_each_pci_msi_entry(msidesc, dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct physdev_map_pirq map_irq;
 		domid_t domid;
 
@@ -282,14 +324,29 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 			      (pci_domain_nr(dev->bus) << 16);
 		map_irq.devfn = dev->devfn;
 
+<<<<<<< HEAD
 		if (type == PCI_CAP_ID_MSIX) {
 			int pos;
+=======
+		if (type == PCI_CAP_ID_MSI && nvec > 1) {
+			map_irq.type = MAP_PIRQ_TYPE_MULTI_MSI;
+			map_irq.entry_nr = nvec;
+		} else if (type == PCI_CAP_ID_MSIX) {
+			int pos;
+			unsigned long flags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			u32 table_offset, bir;
 
 			pos = dev->msix_cap;
 			pci_read_config_dword(dev, pos + PCI_MSIX_TABLE,
 					      &table_offset);
 			bir = (u8)(table_offset & PCI_MSIX_TABLE_BIR);
+<<<<<<< HEAD
+=======
+			flags = pci_resource_flags(dev, bir);
+			if (!flags || (flags & IORESOURCE_UNSET))
+				return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			map_irq.table_base = pci_resource_start(dev, bir);
 			map_irq.entry_nr = msidesc->msi_attrib.entry_nr;
@@ -299,6 +356,19 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 		if (pci_seg_supported)
 			ret = HYPERVISOR_physdev_op(PHYSDEVOP_map_pirq,
 						    &map_irq);
+<<<<<<< HEAD
+=======
+		if (type == PCI_CAP_ID_MSI && nvec > 1 && ret) {
+			/*
+			 * If MAP_PIRQ_TYPE_MULTI_MSI is not available
+			 * there's nothing else we can do in this case.
+			 * Just set ret > 0 so driver can retry with
+			 * single MSI.
+			 */
+			ret = 1;
+			goto out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret == -EINVAL && !pci_domain_nr(dev->bus)) {
 			map_irq.type = MAP_PIRQ_TYPE_MSI;
 			map_irq.index = -1;
@@ -315,11 +385,18 @@ static int xen_initdom_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 			goto out;
 		}
 
+<<<<<<< HEAD
 		ret = xen_bind_pirq_msi_to_irq(dev, msidesc,
 					       map_irq.pirq,
 					       (type == PCI_CAP_ID_MSIX) ?
 					       "msi-x" : "msi",
 						domid);
+=======
+		ret = xen_bind_pirq_msi_to_irq(dev, msidesc, map_irq.pirq,
+		                               (type == PCI_CAP_ID_MSI) ? nvec : 1,
+		                               (type == PCI_CAP_ID_MSIX) ? "msi-x" : "msi",
+		                               domid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0)
 			goto out;
 	}
@@ -328,7 +405,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void xen_initdom_restore_msi_irqs(struct pci_dev *dev, int irq)
+=======
+static void xen_initdom_restore_msi_irqs(struct pci_dev *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret = 0;
 
@@ -359,7 +440,11 @@ static void xen_teardown_msi_irqs(struct pci_dev *dev)
 {
 	struct msi_desc *msidesc;
 
+<<<<<<< HEAD
 	msidesc = list_entry(dev->msi_list.next, struct msi_desc, list);
+=======
+	msidesc = first_pci_msi_entry(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (msidesc->msi_attrib.is_msix)
 		xen_pci_frontend_disable_msix(dev);
 	else
@@ -397,10 +482,39 @@ int __init pci_xen_init(void)
 	x86_msi.setup_msi_irqs = xen_setup_msi_irqs;
 	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
 	x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
+<<<<<<< HEAD
+=======
+	pci_msi_ignore_mask = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PCI_MSI
+void __init xen_msi_init(void)
+{
+	if (!disable_apic) {
+		/*
+		 * If hardware supports (x2)APIC virtualization (as indicated
+		 * by hypervisor's leaf 4) then we don't need to use pirqs/
+		 * event channels for MSI handling and instead use regular
+		 * APIC processing
+		 */
+		uint32_t eax = cpuid_eax(xen_cpuid_base() + 4);
+
+		if (((eax & XEN_HVM_CPUID_X2APIC_VIRT) && x2apic_mode) ||
+		    ((eax & XEN_HVM_CPUID_APIC_ACCESS_VIRT) && boot_cpu_has(X86_FEATURE_APIC)))
+			return;
+	}
+
+	x86_msi.setup_msi_irqs = xen_hvm_setup_msi_irqs;
+	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __init pci_xen_hvm_init(void)
 {
 	if (!xen_have_vector_callback || !xen_feature(XENFEAT_hvm_pirqs))
@@ -412,16 +526,29 @@ int __init pci_xen_hvm_init(void)
 	 * just how GSIs get registered.
 	 */
 	__acpi_register_gsi = acpi_register_gsi_xen_hvm;
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_PCI_MSI
 	x86_msi.setup_msi_irqs = xen_hvm_setup_msi_irqs;
 	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
+=======
+	__acpi_unregister_gsi = NULL;
+#endif
+
+#ifdef CONFIG_PCI_MSI
+	/*
+	 * We need to wait until after x2apic is initialized
+	 * before we can set MSI IRQ ops.
+	 */
+	x86_platform.apic_post_init = xen_msi_init;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	return 0;
 }
 
 #ifdef CONFIG_XEN_DOM0
+<<<<<<< HEAD
 static __init void xen_setup_acpi_sci(void)
 {
 	int rc;
@@ -468,6 +595,8 @@ static __init void xen_setup_acpi_sci(void)
 	return;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __init pci_xen_initial_domain(void)
 {
 	int irq;
@@ -476,10 +605,21 @@ int __init pci_xen_initial_domain(void)
 	x86_msi.setup_msi_irqs = xen_initdom_setup_msi_irqs;
 	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
 	x86_msi.restore_msi_irqs = xen_initdom_restore_msi_irqs;
+<<<<<<< HEAD
 #endif
 	xen_setup_acpi_sci();
 	__acpi_register_gsi = acpi_register_gsi_xen;
 	/* Pre-allocate legacy irqs */
+=======
+	pci_msi_ignore_mask = 1;
+#endif
+	__acpi_register_gsi = acpi_register_gsi_xen;
+	__acpi_unregister_gsi = NULL;
+	/*
+	 * Pre-allocate the legacy IRQs.  Use NR_LEGACY_IRQS here
+	 * because we don't have a PIC and thus nr_legacy_irqs() is zero.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (irq = 0; irq < NR_IRQS_LEGACY; irq++) {
 		int trigger, polarity;
 
@@ -491,7 +631,11 @@ int __init pci_xen_initial_domain(void)
 			true /* Map GSI to PIRQ */);
 	}
 	if (0 == nr_ioapics) {
+<<<<<<< HEAD
 		for (irq = 0; irq < NR_IRQS_LEGACY; irq++)
+=======
+		for (irq = 0; irq < nr_legacy_irqs(); irq++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			xen_bind_pirq_gsi_to_irq(irq, irq, 0, "xt-pic");
 	}
 	return 0;

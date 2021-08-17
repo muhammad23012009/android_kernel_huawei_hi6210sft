@@ -23,18 +23,27 @@
 #include <ctype.h>
 
 /* Can be overridden */
+<<<<<<< HEAD
 void die(const char *fmt, ...);
 void *malloc_or_die(unsigned int size);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void warning(const char *fmt, ...);
 void pr_stat(const char *fmt, ...);
 void vpr_stat(const char *fmt, va_list ap);
 
 /* Always available */
+<<<<<<< HEAD
 void __die(const char *fmt, ...);
 void __warning(const char *fmt, ...);
 void __pr_stat(const char *fmt, ...);
 
 void __vdie(const char *fmt, ...);
+=======
+void __warning(const char *fmt, ...);
+void __pr_stat(const char *fmt, ...);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __vwarning(const char *fmt, ...);
 void __vpr_stat(const char *fmt, ...);
 

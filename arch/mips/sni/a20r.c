@@ -122,7 +122,10 @@ static struct resource sc26xx_rsrc[] = {
 
 static struct sccnxp_pdata sccnxp_data = {
 	.reg_shift	= 2,
+<<<<<<< HEAD
 	.frequency	= 3686400,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.mctrl_cfg[0]	= MCTRL_SIG(DTR_OP, LINE_OP7) |
 			  MCTRL_SIG(RTS_OP, LINE_OP3) |
 			  MCTRL_SIG(DSR_IP, LINE_IP5) |
@@ -144,7 +147,14 @@ static struct platform_device sc26xx_pdev = {
 	},
 };
 
+<<<<<<< HEAD
 static u32 a20r_ack_hwint(void)
+=======
+/*
+ * Trigger chipset to update CPU's CAUSE IP field
+ */
+static u32 a20r_update_cause_ip(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 status = read_c0_status();
 
@@ -206,12 +216,21 @@ static void a20r_hwint(void)
 	int irq;
 
 	clear_c0_status(IE_IRQ0);
+<<<<<<< HEAD
 	status = a20r_ack_hwint();
+=======
+	status = a20r_update_cause_ip();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cause = read_c0_cause();
 
 	irq = ffs(((cause & status) >> 8) & 0xf8);
 	if (likely(irq > 0))
 		do_IRQ(SNI_A20R_IRQ_BASE + irq - 1);
+<<<<<<< HEAD
+=======
+
+	a20r_update_cause_ip();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_c0_status(IE_IRQ0);
 }
 

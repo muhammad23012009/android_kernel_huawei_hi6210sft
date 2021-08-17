@@ -18,8 +18,11 @@
 #include <linux/console.h>
 #include <linux/i2c.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/pci_ids.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -62,7 +65,11 @@ static s32 dcon_read(struct dcon_priv *dcon, u8 reg)
 
 static int dcon_hw_init(struct dcon_priv *dcon, int is_init)
 {
+<<<<<<< HEAD
 	uint16_t ver;
+=======
+	u16 ver;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc = 0;
 
 	ver = dcon_read(dcon, DCON_REG_ID);
@@ -90,9 +97,16 @@ static int dcon_hw_init(struct dcon_priv *dcon, int is_init)
 
 	/* SDRAM setup/hold time */
 	dcon_write(dcon, 0x3a, 0xc040);
+<<<<<<< HEAD
 	dcon_write(dcon, 0x41, 0x0000);
 	dcon_write(dcon, 0x41, 0x0101);
 	dcon_write(dcon, 0x42, 0x0101);
+=======
+	dcon_write(dcon, DCON_REG_MEM_OPT_A, 0x0000);  /* clear option bits */
+	dcon_write(dcon, DCON_REG_MEM_OPT_A,
+				MEM_DLL_CLOCK_DELAY | MEM_POWER_DOWN);
+	dcon_write(dcon, DCON_REG_MEM_OPT_B, MEM_SOFT_RESET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Colour swizzle, AA, no passthrough, backlight */
 	if (is_init) {
@@ -101,7 +115,10 @@ static int dcon_hw_init(struct dcon_priv *dcon, int is_init)
 	}
 	dcon_write(dcon, DCON_REG_MODE, dcon->disp_mode);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set the scanline to interrupt on during resume */
 	dcon_write(dcon, DCON_REG_SCAN_INT, resumeline);
 
@@ -121,30 +138,52 @@ err:
 static int dcon_bus_stabilize(struct dcon_priv *dcon, int is_powered_down)
 {
 	unsigned long timeout;
+<<<<<<< HEAD
+=======
+	u8 pm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int x;
 
 power_up:
 	if (is_powered_down) {
+<<<<<<< HEAD
 		x = 1;
 		x = olpc_ec_cmd(0x26, (unsigned char *)&x, 1, NULL, 0);
+=======
+		pm = 1;
+		x = olpc_ec_cmd(EC_DCON_POWER_MODE, &pm, 1, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (x) {
 			pr_warn("unable to force dcon to power up: %d!\n", x);
 			return x;
 		}
+<<<<<<< HEAD
 		msleep(10); /* we'll be conservative */
+=======
+		usleep_range(10000, 11000);  /* we'll be conservative */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	pdata->bus_stabilize_wiggle();
 
 	for (x = -1, timeout = 50; timeout && x < 0; timeout--) {
+<<<<<<< HEAD
 		msleep(1);
+=======
+		usleep_range(1000, 1100);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		x = dcon_read(dcon, DCON_REG_ID);
 	}
 	if (x < 0) {
 		pr_err("unable to stabilize dcon's smbus, reasserting power and praying.\n");
 		BUG_ON(olpc_board_at_least(olpc_board(0xc2)));
+<<<<<<< HEAD
 		x = 0;
 		olpc_ec_cmd(0x26, (unsigned char *)&x, 1, NULL, 0);
+=======
+		pm = 0;
+		olpc_ec_cmd(EC_DCON_POWER_MODE, &pm, 1, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		msleep(100);
 		is_powered_down = 1;
 		goto power_up;	/* argh, stupid hardware.. */
@@ -207,8 +246,14 @@ static void dcon_sleep(struct dcon_priv *dcon, bool sleep)
 		return;
 
 	if (sleep) {
+<<<<<<< HEAD
 		x = 0;
 		x = olpc_ec_cmd(0x26, (unsigned char *)&x, 1, NULL, 0);
+=======
+		u8 pm = 0;
+
+		x = olpc_ec_cmd(EC_DCON_POWER_MODE, &pm, 1, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (x)
 			pr_warn("unable to force dcon to power down: %d!\n", x);
 		else
@@ -237,6 +282,7 @@ static void dcon_sleep(struct dcon_priv *dcon, bool sleep)
  */
 static void dcon_load_holdoff(struct dcon_priv *dcon)
 {
+<<<<<<< HEAD
 	struct timespec delta_t, now;
 	while (1) {
 		getnstimeofday(&now);
@@ -245,6 +291,15 @@ static void dcon_load_holdoff(struct dcon_priv *dcon)
 			delta_t.tv_nsec > NSEC_PER_MSEC * 20) {
 			break;
 		}
+=======
+	ktime_t delta_t, now;
+
+	while (1) {
+		now = ktime_get();
+		delta_t = ktime_sub(now, dcon->load_time);
+		if (ktime_to_ns(delta_t) > NSEC_PER_MSEC * 20)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mdelay(4);
 	}
 }
@@ -253,17 +308,32 @@ static bool dcon_blank_fb(struct dcon_priv *dcon, bool blank)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (!lock_fb_info(dcon->fbinfo)) {
 		dev_err(&dcon->client->dev, "unable to lock framebuffer\n");
 		return false;
 	}
 	console_lock();
+=======
+	console_lock();
+	if (!lock_fb_info(dcon->fbinfo)) {
+		console_unlock();
+		dev_err(&dcon->client->dev, "unable to lock framebuffer\n");
+		return false;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dcon->ignore_fb_events = true;
 	err = fb_blank(dcon->fbinfo,
 			blank ? FB_BLANK_POWERDOWN : FB_BLANK_UNBLANK);
 	dcon->ignore_fb_events = false;
+<<<<<<< HEAD
 	console_unlock();
 	unlock_fb_info(dcon->fbinfo);
+=======
+	unlock_fb_info(dcon->fbinfo);
+	console_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (err) {
 		dev_err(&dcon->client->dev, "couldn't %sblank framebuffer\n",
@@ -321,19 +391,31 @@ static void dcon_source_switch(struct work_struct *work)
 
 		/* And turn off the DCON */
 		pdata->set_dconload(1);
+<<<<<<< HEAD
 		getnstimeofday(&dcon->load_time);
+=======
+		dcon->load_time = ktime_get();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		pr_info("The CPU has control\n");
 		break;
 	case DCON_SOURCE_DCON:
 	{
+<<<<<<< HEAD
 		struct timespec delta_t;
+=======
+		ktime_t delta_t;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		pr_info("dcon_source_switch to DCON\n");
 
 		/* Clear DCONLOAD - this implies that the DCON is in control */
 		pdata->set_dconload(0);
+<<<<<<< HEAD
 		getnstimeofday(&dcon->load_time);
+=======
+		dcon->load_time = ktime_get();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		wait_event_timeout(dcon->waitq, dcon->switched, HZ/2);
 
@@ -351,14 +433,24 @@ static void dcon_source_switch(struct work_struct *work)
 			 * deassert and reassert, and hope for the best.
 			 * see http://dev.laptop.org/ticket/9664
 			 */
+<<<<<<< HEAD
 			delta_t = timespec_sub(dcon->irq_time, dcon->load_time);
 			if (dcon->switched && delta_t.tv_sec == 0 &&
 					delta_t.tv_nsec < NSEC_PER_MSEC * 20) {
+=======
+			delta_t = ktime_sub(dcon->irq_time, dcon->load_time);
+			if (dcon->switched && ktime_to_ns(delta_t)
+			    < NSEC_PER_MSEC * 20) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				pr_err("missed loading, retrying\n");
 				pdata->set_dconload(1);
 				mdelay(41);
 				pdata->set_dconload(0);
+<<<<<<< HEAD
 				getnstimeofday(&dcon->load_time);
+=======
+				dcon->load_time = ktime_get();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				mdelay(41);
 			}
 		}
@@ -381,7 +473,11 @@ static void dcon_set_source(struct dcon_priv *dcon, int arg)
 
 	dcon->pending_src = arg;
 
+<<<<<<< HEAD
 	if ((dcon->curr_src != arg) && !work_pending(&dcon->switch_source))
+=======
+	if (dcon->curr_src != arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		schedule_work(&dcon->switch_source);
 }
 
@@ -395,14 +491,23 @@ static ssize_t dcon_mode_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return sprintf(buf, "%4.4X\n", dcon->disp_mode);
 }
 
 static ssize_t dcon_sleep_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+=======
+	struct dcon_priv *dcon = dev_get_drvdata(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return sprintf(buf, "%d\n", dcon->asleep);
 }
 
@@ -410,6 +515,10 @@ static ssize_t dcon_freeze_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return sprintf(buf, "%d\n", dcon->curr_src == DCON_SOURCE_DCON ? 1 : 0);
 }
 
@@ -417,6 +526,10 @@ static ssize_t dcon_mono_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return sprintf(buf, "%d\n", dcon->mono);
 }
 
@@ -530,6 +643,10 @@ static int dcon_bl_update(struct backlight_device *dev)
 static int dcon_bl_get(struct backlight_device *dev)
 {
 	struct dcon_priv *dcon = bl_get_data(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return dcon->bl_val;
 }
 
@@ -611,7 +728,11 @@ static int dcon_probe(struct i2c_client *client, const struct i2c_device_id *id)
 
 	dcon_device = platform_device_alloc("dcon", -1);
 
+<<<<<<< HEAD
 	if (dcon_device == NULL) {
+=======
+	if (!dcon_device) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("Unable to create the DCON device\n");
 		rc = -ENOMEM;
 		goto eirq;
@@ -672,10 +793,16 @@ static int dcon_remove(struct i2c_client *client)
 
 	free_irq(DCON_IRQ, dcon);
 
+<<<<<<< HEAD
 	if (dcon->bl_dev)
 		backlight_device_unregister(dcon->bl_dev);
 
 	if (dcon_device != NULL)
+=======
+	backlight_device_unregister(dcon->bl_dev);
+
+	if (dcon_device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		platform_device_unregister(dcon_device);
 	cancel_work_sync(&dcon->switch_source);
 
@@ -718,7 +845,10 @@ static int dcon_resume(struct device *dev)
 
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 irqreturn_t dcon_interrupt(int irq, void *id)
 {
 	struct dcon_priv *dcon = id;
@@ -735,7 +865,11 @@ irqreturn_t dcon_interrupt(int irq, void *id)
 	case 2:	/* switch to DCON mode */
 	case 1: /* switch to CPU mode */
 		dcon->switched = true;
+<<<<<<< HEAD
 		getnstimeofday(&dcon->irq_time);
+=======
+		dcon->irq_time = ktime_get();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wake_up(&dcon->waitq);
 		break;
 
@@ -749,7 +883,11 @@ irqreturn_t dcon_interrupt(int irq, void *id)
 		 */
 		if (dcon->curr_src != dcon->pending_src && !dcon->switched) {
 			dcon->switched = true;
+<<<<<<< HEAD
 			getnstimeofday(&dcon->irq_time);
+=======
+			dcon->irq_time = ktime_get();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			wake_up(&dcon->waitq);
 			pr_debug("switching w/ status 0/0\n");
 		} else {
@@ -771,7 +909,11 @@ static const struct i2c_device_id dcon_idtable[] = {
 };
 MODULE_DEVICE_TABLE(i2c, dcon_idtable);
 
+<<<<<<< HEAD
 struct i2c_driver dcon_driver = {
+=======
+static struct i2c_driver dcon_driver = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.driver = {
 		.name	= "olpc_dcon",
 		.pm = &dcon_pm_ops,

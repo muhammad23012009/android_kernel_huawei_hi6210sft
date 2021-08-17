@@ -184,7 +184,11 @@ static int mpic_msgr_probe(struct platform_device *dev)
 		dev_info(&dev->dev, "Found %d message registers\n",
 				mpic_msgr_count);
 
+<<<<<<< HEAD
 		mpic_msgrs = kzalloc(sizeof(struct mpic_msgr) * mpic_msgr_count,
+=======
+		mpic_msgrs = kcalloc(mpic_msgr_count, sizeof(*mpic_msgrs),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							 GFP_KERNEL);
 		if (!mpic_msgrs) {
 			dev_err(&dev->dev,
@@ -196,7 +200,11 @@ static int mpic_msgr_probe(struct platform_device *dev)
 
 	/* IO map the message register block. */
 	of_address_to_resource(np, 0, &rsrc);
+<<<<<<< HEAD
 	msgr_block_addr = ioremap(rsrc.start, rsrc.end - rsrc.start);
+=======
+	msgr_block_addr = devm_ioremap(&dev->dev, rsrc.start, resource_size(&rsrc));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!msgr_block_addr) {
 		dev_err(&dev->dev, "Failed to iomap MPIC message registers");
 		return -EFAULT;
@@ -237,18 +245,29 @@ static int mpic_msgr_probe(struct platform_device *dev)
 		raw_spin_lock_init(&msgr->lock);
 
 		if (receive_mask & (1 << i)) {
+<<<<<<< HEAD
 			struct resource irq;
 
 			if (of_irq_to_resource(np, irq_index, &irq) == NO_IRQ) {
+=======
+			msgr->irq = irq_of_parse_and_map(np, irq_index);
+			if (!msgr->irq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dev_err(&dev->dev,
 						"Missing interrupt specifier");
 				kfree(msgr);
 				return -EFAULT;
 			}
+<<<<<<< HEAD
 			msgr->irq = irq.start;
 			irq_index += 1;
 		} else {
 			msgr->irq = NO_IRQ;
+=======
+			irq_index += 1;
+		} else {
+			msgr->irq = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		mpic_msgrs[reg_number] = msgr;
@@ -272,7 +291,10 @@ static const struct of_device_id mpic_msgr_ids[] = {
 static struct platform_driver mpic_msgr_driver = {
 	.driver = {
 		.name = "mpic-msgr",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mpic_msgr_ids,
 	},
 	.probe = mpic_msgr_probe,

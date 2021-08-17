@@ -29,7 +29,11 @@
 
 struct af9005_fe_state {
 	struct dvb_usb_device *d;
+<<<<<<< HEAD
 	fe_status_t stat;
+=======
+	enum fe_status stat;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* retraining parameters */
 	u32 original_fcw;
@@ -437,7 +441,12 @@ static int af9005_fe_refresh_state(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int af9005_fe_read_status(struct dvb_frontend *fe, fe_status_t * stat)
+=======
+static int af9005_fe_read_status(struct dvb_frontend *fe,
+				 enum fe_status *stat)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct af9005_fe_state *state = fe->demodulator_priv;
 	u8 temp;
@@ -481,7 +490,11 @@ static int af9005_fe_read_status(struct dvb_frontend *fe, fe_status_t * stat)
 		return ret;
 	if (temp != state->strong) {
 		deb_info("adjust for strong signal %d\n", temp);
+<<<<<<< HEAD
 			state->strong = temp;
+=======
+		state->strong = temp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -1226,9 +1239,15 @@ static int af9005_fe_set_frontend(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int af9005_fe_get_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *fep = &fe->dtv_property_cache;
+=======
+static int af9005_fe_get_frontend(struct dvb_frontend *fe,
+				  struct dtv_frontend_properties *fep)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct af9005_fe_state *state = fe->demodulator_priv;
 	int ret;
 	u8 temp;

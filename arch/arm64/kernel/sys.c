@@ -25,6 +25,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/syscalls.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpufeature.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 asmlinkage long sys_mmap(unsigned long addr, unsigned long len,
 			 unsigned long prot, unsigned long flags,
@@ -36,12 +40,29 @@ asmlinkage long sys_mmap(unsigned long addr, unsigned long len,
 	return sys_mmap_pgoff(addr, len, prot, flags, fd, off >> PAGE_SHIFT);
 }
 
+<<<<<<< HEAD
 /*
  * Wrappers to pass the pt_regs argument.
  */
 #define sys_rt_sigreturn	sys_rt_sigreturn_wrapper
 
 #include <asm/syscalls.h>
+=======
+SYSCALL_DEFINE1(arm64_personality, unsigned int, personality)
+{
+	if (personality(personality) == PER_LINUX32 &&
+		!system_supports_32bit_el0())
+		return -EINVAL;
+	return sys_personality(personality);
+}
+
+/*
+ * Wrappers to pass the pt_regs argument.
+ */
+asmlinkage long sys_rt_sigreturn_wrapper(void);
+#define sys_rt_sigreturn	sys_rt_sigreturn_wrapper
+#define sys_personality		sys_arm64_personality
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #undef __SYSCALL
 #define __SYSCALL(nr, sym)	[nr] = sym,

@@ -35,12 +35,16 @@ static LIST_HEAD(tc_list);
 /**
  * atmel_tc_alloc - allocate a specified TC block
  * @block: which block to allocate
+<<<<<<< HEAD
  * @name: name to be associated with the iomem resource
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Caller allocates a block.  If it is available, a pointer to a
  * pre-initialized struct atmel_tc is returned. The caller can access
  * the registers directly through the "regs" field.
  */
+<<<<<<< HEAD
 struct atmel_tc *atmel_tc_alloc(unsigned block, const char *name)
 {
 	struct atmel_tc		*tc;
@@ -89,6 +93,28 @@ fail_ioremap:
 fail:
 	tc = NULL;
 	goto out;
+=======
+struct atmel_tc *atmel_tc_alloc(unsigned block)
+{
+	struct atmel_tc		*tc;
+	struct platform_device	*pdev = NULL;
+
+	spin_lock(&tc_list_lock);
+	list_for_each_entry(tc, &tc_list, node) {
+		if (tc->allocated)
+			continue;
+
+		if ((tc->pdev->dev.of_node && tc->id == block) ||
+		    (tc->pdev->id == block)) {
+			pdev = tc->pdev;
+			tc->allocated = true;
+			break;
+		}
+	}
+	spin_unlock(&tc_list_lock);
+
+	return pdev ? tc : NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(atmel_tc_alloc);
 
@@ -96,19 +122,29 @@ EXPORT_SYMBOL_GPL(atmel_tc_alloc);
  * atmel_tc_free - release a specified TC block
  * @tc: Timer/counter block that was returned by atmel_tc_alloc()
  *
+<<<<<<< HEAD
  * This reverses the effect of atmel_tc_alloc(), unmapping the I/O
  * registers, invalidating the resource returned by that routine and
  * making the TC available to other drivers.
+=======
+ * This reverses the effect of atmel_tc_alloc(), invalidating the resource
+ * returned by that routine and making the TC available to other drivers.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void atmel_tc_free(struct atmel_tc *tc)
 {
 	spin_lock(&tc_list_lock);
+<<<<<<< HEAD
 	if (tc->regs) {
 		iounmap(tc->regs);
 		release_mem_region(tc->iomem->start, resource_size(tc->iomem));
 		tc->regs = NULL;
 		tc->iomem = NULL;
 	}
+=======
+	if (tc->allocated)
+		tc->allocated = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&tc_list_lock);
 }
 EXPORT_SYMBOL_GPL(atmel_tc_free);
@@ -142,25 +178,49 @@ static int __init tc_probe(struct platform_device *pdev)
 	struct atmel_tc *tc;
 	struct clk	*clk;
 	int		irq;
+<<<<<<< HEAD
 
 	if (!platform_get_resource(pdev, IORESOURCE_MEM, 0))
 		return -EINVAL;
+=======
+	struct resource	*r;
+	unsigned int	i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	tc = kzalloc(sizeof(struct atmel_tc), GFP_KERNEL);
+=======
+	tc = devm_kzalloc(&pdev->dev, sizeof(struct atmel_tc), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!tc)
 		return -ENOMEM;
 
 	tc->pdev = pdev;
 
+<<<<<<< HEAD
 	clk = clk_get(&pdev->dev, "t0_clk");
 	if (IS_ERR(clk)) {
 		kfree(tc);
 		return -EINVAL;
 	}
+=======
+	clk = devm_clk_get(&pdev->dev, "t0_clk");
+	if (IS_ERR(clk))
+		return PTR_ERR(clk);
+
+	tc->slow_clk = devm_clk_get(&pdev->dev, "slow_clk");
+	if (IS_ERR(tc->slow_clk))
+		return PTR_ERR(tc->slow_clk);
+
+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	tc->regs = devm_ioremap_resource(&pdev->dev, r);
+	if (IS_ERR(tc->regs))
+		return PTR_ERR(tc->regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Now take SoC information if available */
 	if (pdev->dev.of_node) {
@@ -168,6 +228,7 @@ static int __init tc_probe(struct platform_device *pdev)
 		match = of_match_node(atmel_tcb_dt_ids, pdev->dev.of_node);
 		if (match)
 			tc->tcb_config = match->data;
+<<<<<<< HEAD
 	}
 
 	tc->clk[0] = clk;
@@ -175,6 +236,19 @@ static int __init tc_probe(struct platform_device *pdev)
 	if (IS_ERR(tc->clk[1]))
 		tc->clk[1] = clk;
 	tc->clk[2] = clk_get(&pdev->dev, "t2_clk");
+=======
+
+		tc->id = of_alias_get_id(tc->pdev->dev.of_node, "tcb");
+	} else {
+		tc->id = pdev->id;
+	}
+
+	tc->clk[0] = clk;
+	tc->clk[1] = devm_clk_get(&pdev->dev, "t1_clk");
+	if (IS_ERR(tc->clk[1]))
+		tc->clk[1] = clk;
+	tc->clk[2] = devm_clk_get(&pdev->dev, "t2_clk");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(tc->clk[2]))
 		tc->clk[2] = clk;
 
@@ -186,18 +260,45 @@ static int __init tc_probe(struct platform_device *pdev)
 	if (tc->irq[2] < 0)
 		tc->irq[2] = irq;
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < 3; i++)
+		writel(ATMEL_TC_ALL_IRQ, tc->regs + ATMEL_TC_REG(i, IDR));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&tc_list_lock);
 	list_add_tail(&tc->node, &tc_list);
 	spin_unlock(&tc_list_lock);
 
+<<<<<<< HEAD
 	return 0;
 }
 
+=======
+	platform_set_drvdata(pdev, tc);
+
+	return 0;
+}
+
+static void tc_shutdown(struct platform_device *pdev)
+{
+	int i;
+	struct atmel_tc *tc = platform_get_drvdata(pdev);
+
+	for (i = 0; i < 3; i++)
+		writel(ATMEL_TC_ALL_IRQ, tc->regs + ATMEL_TC_REG(i, IDR));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver tc_driver = {
 	.driver = {
 		.name	= "atmel_tcb",
 		.of_match_table	= of_match_ptr(atmel_tcb_dt_ids),
 	},
+<<<<<<< HEAD
+=======
+	.shutdown = tc_shutdown,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init tc_init(void)

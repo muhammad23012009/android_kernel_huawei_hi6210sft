@@ -51,6 +51,10 @@
 #include <linux/zorro.h>
 #include <linux/bitops.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/byteorder.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/amigaints.h>
 #include <asm/amigahw.h>
 #include <asm/irq.h>
@@ -717,7 +721,11 @@ static int ariadne_init_one(struct zorro_dev *z,
 	unsigned long mem_start = board + ARIADNE_RAM;
 	struct resource *r1, *r2;
 	struct net_device *dev;
+<<<<<<< HEAD
 	struct ariadne_private *priv;
+=======
+	u32 serial;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	r1 = request_mem_region(base_addr, sizeof(struct Am79C960), "Am79C960");
@@ -736,6 +744,7 @@ static int ariadne_init_one(struct zorro_dev *z,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	priv = netdev_priv(dev);
 
 	r1->name = dev->name;
@@ -749,6 +758,20 @@ static int ariadne_init_one(struct zorro_dev *z,
 	dev->dev_addr[5] = z->rom.er_SerialNumber & 0xff;
 	dev->base_addr = ZTWO_VADDR(base_addr);
 	dev->mem_start = ZTWO_VADDR(mem_start);
+=======
+	r1->name = dev->name;
+	r2->name = dev->name;
+
+	serial = be32_to_cpu(z->rom.er_SerialNumber);
+	dev->dev_addr[0] = 0x00;
+	dev->dev_addr[1] = 0x60;
+	dev->dev_addr[2] = 0x30;
+	dev->dev_addr[3] = (serial >> 16) & 0xff;
+	dev->dev_addr[4] = (serial >> 8) & 0xff;
+	dev->dev_addr[5] = serial & 0xff;
+	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
+	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev->mem_end = dev->mem_start + ARIADNE_RAM_SIZE;
 
 	dev->netdev_ops = &ariadne_netdev_ops;

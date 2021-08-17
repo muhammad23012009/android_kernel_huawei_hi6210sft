@@ -8,12 +8,20 @@
 #define SIGTRAP		 5
 #define SIGABRT		 6
 #define SIGIOT		 6
+<<<<<<< HEAD
 #define SIGEMT		 7
+=======
+#define SIGSTKFLT	 7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SIGFPE		 8
 #define SIGKILL		 9
 #define SIGBUS		10
 #define SIGSEGV		11
+<<<<<<< HEAD
 #define SIGSYS		12 /* Linux doesn't use this */
+=======
+#define SIGXCPU		12
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SIGPIPE		13
 #define SIGALRM		14
 #define SIGTERM		15
@@ -32,6 +40,7 @@
 #define SIGTTIN		27
 #define SIGTTOU		28
 #define SIGURG		29
+<<<<<<< HEAD
 #define SIGLOST		30 /* Linux doesn't use this either */
 #define	SIGUNUSED	31
 #define SIGRESERVE	SIGUNUSED
@@ -42,6 +51,14 @@
 
 /* These should not be considered constants from userland.  */
 #define SIGRTMIN	37
+=======
+#define SIGXFSZ		30
+#define SIGUNUSED	31
+#define SIGSYS		31 /* Linux doesn't use this */
+
+/* These should not be considered constants from userland.  */
+#define SIGRTMIN	32
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SIGRTMAX	_NSIG /* it's 44 under HP/UX */
 
 /*
@@ -89,7 +106,11 @@
 struct siginfo;
 
 /* Type of a signal handler.  */
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+#if defined(__LP64__)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* function pointers on 64-bit parisc are pointers to little structs and the
  * compiler doesn't support code which changes or tests the address of
  * the function in the little struct.  This is really ugly -PB

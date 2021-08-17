@@ -40,6 +40,28 @@ extern int pinctrl_select_state(struct pinctrl *p, struct pinctrl_state *s);
 extern struct pinctrl * __must_check devm_pinctrl_get(struct device *dev);
 extern void devm_pinctrl_put(struct pinctrl *p);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM
+extern int pinctrl_pm_select_default_state(struct device *dev);
+extern int pinctrl_pm_select_sleep_state(struct device *dev);
+extern int pinctrl_pm_select_idle_state(struct device *dev);
+#else
+static inline int pinctrl_pm_select_default_state(struct device *dev)
+{
+	return 0;
+}
+static inline int pinctrl_pm_select_sleep_state(struct device *dev)
+{
+	return 0;
+}
+static inline int pinctrl_pm_select_idle_state(struct device *dev)
+{
+	return 0;
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* !CONFIG_PINCTRL */
 
 static inline int pinctrl_request_gpio(unsigned gpio)
@@ -92,6 +114,24 @@ static inline void devm_pinctrl_put(struct pinctrl *p)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline int pinctrl_pm_select_default_state(struct device *dev)
+{
+	return 0;
+}
+
+static inline int pinctrl_pm_select_sleep_state(struct device *dev)
+{
+	return 0;
+}
+
+static inline int pinctrl_pm_select_idle_state(struct device *dev)
+{
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_PINCTRL */
 
 static inline struct pinctrl * __must_check pinctrl_get_select(
@@ -108,7 +148,11 @@ static inline struct pinctrl * __must_check pinctrl_get_select(
 	s = pinctrl_lookup_state(p, name);
 	if (IS_ERR(s)) {
 		pinctrl_put(p);
+<<<<<<< HEAD
 		return ERR_PTR(PTR_ERR(s));
+=======
+		return ERR_CAST(s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ret = pinctrl_select_state(p, s);

@@ -80,8 +80,15 @@
  *	SA_RESTORER	0x04000000
  */
 
+<<<<<<< HEAD
 #define MINSIGSTKSZ	2048
 #define SIGSTKSZ	8192
+=======
+#if !defined MINSIGSTKSZ || !defined SIGSTKSZ
+#define MINSIGSTKSZ	2048
+#define SIGSTKSZ	8192
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef __ASSEMBLY__
 typedef struct {

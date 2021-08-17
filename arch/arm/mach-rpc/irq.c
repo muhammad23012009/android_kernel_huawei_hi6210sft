@@ -117,7 +117,11 @@ extern unsigned char rpc_default_fiq_start, rpc_default_fiq_end;
 
 void __init rpc_init_irq(void)
 {
+<<<<<<< HEAD
 	unsigned int irq, flags;
+=======
+	unsigned int irq, clr, set;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	iomd_writeb(0, IOMD_IRQMASKA);
 	iomd_writeb(0, IOMD_IRQMASKB);
@@ -128,6 +132,7 @@ void __init rpc_init_irq(void)
 		&rpc_default_fiq_end - &rpc_default_fiq_start);
 
 	for (irq = 0; irq < NR_IRQS; irq++) {
+<<<<<<< HEAD
 		flags = IRQF_VALID;
 
 		if (irq <= 6 || (irq >= 9 && irq <= 15))
@@ -136,29 +141,56 @@ void __init rpc_init_irq(void)
 		if (irq == 21 || (irq >= 16 && irq <= 19) ||
 		    irq == IRQ_KEYBOARDTX)
 			flags |= IRQF_NOAUTOEN;
+=======
+		clr = IRQ_NOREQUEST;
+		set = 0;
+
+		if (irq <= 6 || (irq >= 9 && irq <= 15))
+			clr |= IRQ_NOPROBE;
+
+		if (irq == 21 || (irq >= 16 && irq <= 19) ||
+		    irq == IRQ_KEYBOARDTX)
+			set |= IRQ_NOAUTOEN;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		switch (irq) {
 		case 0 ... 7:
 			irq_set_chip_and_handler(irq, &iomd_a_chip,
 						 handle_level_irq);
+<<<<<<< HEAD
 			set_irq_flags(irq, flags);
+=======
+			irq_modify_status(irq, clr, set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case 8 ... 15:
 			irq_set_chip_and_handler(irq, &iomd_b_chip,
 						 handle_level_irq);
+<<<<<<< HEAD
 			set_irq_flags(irq, flags);
+=======
+			irq_modify_status(irq, clr, set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case 16 ... 21:
 			irq_set_chip_and_handler(irq, &iomd_dma_chip,
 						 handle_level_irq);
+<<<<<<< HEAD
 			set_irq_flags(irq, flags);
+=======
+			irq_modify_status(irq, clr, set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case 64 ... 71:
 			irq_set_chip(irq, &iomd_fiq_chip);
+<<<<<<< HEAD
 			set_irq_flags(irq, IRQF_VALID);
+=======
+			irq_modify_status(irq, clr, set);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}

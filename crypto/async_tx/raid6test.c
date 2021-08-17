@@ -28,7 +28,11 @@
 #undef pr
 #define pr(fmt, args...) pr_info("raid6test: " fmt, ##args)
 
+<<<<<<< HEAD
 #define NDISKS 16 /* Including P and Q */
+=======
+#define NDISKS 64 /* Including P and Q */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct page *dataptrs[NDISKS];
 static addr_conv_t addr_conv[NDISKS];
@@ -219,6 +223,17 @@ static int raid6_test(void)
 		err += test(11, &tests);
 		err += test(12, &tests);
 	}
+<<<<<<< HEAD
+=======
+
+	/* the 24 disk case is special for ioatdma as it is the boudary point
+	 * at which it needs to switch from 8-source ops to 16-source
+	 * ops for continuation (assumes DMA_HAS_PQ_CONTINUE is not set)
+	 */
+	if (NDISKS > 24)
+		err += test(24, &tests);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err += test(NDISKS, &tests);
 
 	pr("\n");

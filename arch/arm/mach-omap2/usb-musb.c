@@ -38,11 +38,16 @@ static struct musb_hdrc_config musb_config = {
 };
 
 static struct musb_hdrc_platform_data musb_plat = {
+<<<<<<< HEAD
 #ifdef CONFIG_USB_GADGET_MUSB_HDRC
 	.mode		= MUSB_OTG,
 #else
 	.mode		= MUSB_HOST,
 #endif
+=======
+	.mode		= MUSB_OTG,
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* .clock is set dynamically */
 	.config		= &musb_config,
 
@@ -85,6 +90,7 @@ void __init usb_musb_init(struct omap_musb_board_data *musb_board_data)
 	musb_plat.mode = board_data->mode;
 	musb_plat.extvbus = board_data->extvbus;
 
+<<<<<<< HEAD
 	if (cpu_is_omap44xx())
 		musb_plat.has_mailbox = true;
 
@@ -98,6 +104,10 @@ void __init usb_musb_init(struct omap_musb_board_data *musb_board_data)
 		oh_name = "usb_otg_hs";
 		name = "musb-omap2430";
 	}
+=======
+	oh_name = "usb_otg_hs";
+	name = "musb-omap2430";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
         oh = omap_hwmod_lookup(oh_name);
         if (WARN(!oh, "%s: could not find omap_hwmod for %s\n",

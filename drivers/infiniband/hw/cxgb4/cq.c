@@ -33,12 +33,17 @@
 #include "iw_cxgb4.h"
 
 static int destroy_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
+<<<<<<< HEAD
 		      struct c4iw_dev_ucontext *uctx)
+=======
+		      struct c4iw_dev_ucontext *uctx, struct sk_buff *skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fw_ri_res_wr *res_wr;
 	struct fw_ri_res *res;
 	int wr_len;
 	struct c4iw_wr_wait wr_wait;
+<<<<<<< HEAD
 	struct sk_buff *skb;
 	int ret;
 
@@ -46,16 +51,29 @@ static int destroy_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 	skb = alloc_skb(wr_len, GFP_KERNEL);
 	if (!skb)
 		return -ENOMEM;
+=======
+	int ret;
+
+	wr_len = sizeof *res_wr + sizeof *res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_wr_txq(skb, CPL_PRIORITY_CONTROL, 0);
 
 	res_wr = (struct fw_ri_res_wr *)__skb_put(skb, wr_len);
 	memset(res_wr, 0, wr_len);
 	res_wr->op_nres = cpu_to_be32(
+<<<<<<< HEAD
 			FW_WR_OP(FW_RI_RES_WR) |
 			V_FW_RI_RES_WR_NRES(1) |
 			FW_WR_COMPL(1));
 	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
 	res_wr->cookie = (unsigned long) &wr_wait;
+=======
+			FW_WR_OP_V(FW_RI_RES_WR) |
+			FW_RI_RES_WR_NRES_V(1) |
+			FW_WR_COMPL_F);
+	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
+	res_wr->cookie = (uintptr_t)&wr_wait;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res = res_wr->res;
 	res->u.cq.restype = FW_RI_RES_TYPE_CQ;
 	res->u.cq.op = FW_RI_RES_OP_RESET;
@@ -121,16 +139,25 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 	res_wr = (struct fw_ri_res_wr *)__skb_put(skb, wr_len);
 	memset(res_wr, 0, wr_len);
 	res_wr->op_nres = cpu_to_be32(
+<<<<<<< HEAD
 			FW_WR_OP(FW_RI_RES_WR) |
 			V_FW_RI_RES_WR_NRES(1) |
 			FW_WR_COMPL(1));
 	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
 	res_wr->cookie = (unsigned long) &wr_wait;
+=======
+			FW_WR_OP_V(FW_RI_RES_WR) |
+			FW_RI_RES_WR_NRES_V(1) |
+			FW_WR_COMPL_F);
+	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
+	res_wr->cookie = (uintptr_t)&wr_wait;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res = res_wr->res;
 	res->u.cq.restype = FW_RI_RES_TYPE_CQ;
 	res->u.cq.op = FW_RI_RES_OP_WRITE;
 	res->u.cq.iqid = cpu_to_be32(cq->cqid);
 	res->u.cq.iqandst_to_iqandstindex = cpu_to_be32(
+<<<<<<< HEAD
 			V_FW_RI_RES_WR_IQANUS(0) |
 			V_FW_RI_RES_WR_IQANUD(1) |
 			F_FW_RI_RES_WR_IQANDST |
@@ -141,6 +168,19 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 			V_FW_RI_RES_WR_IQINTCNTTHRESH(0) |
 			F_FW_RI_RES_WR_IQO |
 			V_FW_RI_RES_WR_IQESIZE(1));
+=======
+			FW_RI_RES_WR_IQANUS_V(0) |
+			FW_RI_RES_WR_IQANUD_V(1) |
+			FW_RI_RES_WR_IQANDST_F |
+			FW_RI_RES_WR_IQANDSTINDEX_V(
+				rdev->lldi.ciq_ids[cq->vector]));
+	res->u.cq.iqdroprss_to_iqesize = cpu_to_be16(
+			FW_RI_RES_WR_IQDROPRSS_F |
+			FW_RI_RES_WR_IQPCIECH_V(2) |
+			FW_RI_RES_WR_IQINTCNTTHRESH_V(0) |
+			FW_RI_RES_WR_IQO_F |
+			FW_RI_RES_WR_IQESIZE_V(1));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	res->u.cq.iqsize = cpu_to_be16(cq->size);
 	res->u.cq.iqaddr = cpu_to_be64(cq->dma_addr);
 
@@ -157,10 +197,22 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 	cq->gen = 1;
 	cq->gts = rdev->lldi.gts_reg;
 	cq->rdev = rdev;
+<<<<<<< HEAD
 	if (user) {
 		cq->ugts = (u64)pci_resource_start(rdev->lldi.pdev, 2) +
 					(cq->cqid << rdev->cqshift);
 		cq->ugts &= PAGE_MASK;
+=======
+
+	cq->bar2_va = c4iw_bar2_addrs(rdev, cq->cqid, T4_BAR2_QTYPE_INGRESS,
+				      &cq->bar2_qid,
+				      user ? &cq->bar2_pa : NULL);
+	if (user && !cq->bar2_pa) {
+		pr_warn(MOD "%s: cqid %u not in BAR2 range.\n",
+			pci_name(rdev->lldi.pdev), cq->cqid);
+		ret = -EINVAL;
+		goto err4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 err4:
@@ -181,12 +233,21 @@ static void insert_recv_cqe(struct t4_wq *wq, struct t4_cq *cq)
 	PDBG("%s wq %p cq %p sw_cidx %u sw_pidx %u\n", __func__,
 	     wq, cq, cq->sw_cidx, cq->sw_pidx);
 	memset(&cqe, 0, sizeof(cqe));
+<<<<<<< HEAD
 	cqe.header = cpu_to_be32(V_CQE_STATUS(T4_ERR_SWFLUSH) |
 				 V_CQE_OPCODE(FW_RI_SEND) |
 				 V_CQE_TYPE(0) |
 				 V_CQE_SWCQE(1) |
 				 V_CQE_QPID(wq->sq.qid));
 	cqe.bits_type_ts = cpu_to_be64(V_CQE_GENBIT((u64)cq->gen));
+=======
+	cqe.header = cpu_to_be32(CQE_STATUS_V(T4_ERR_SWFLUSH) |
+				 CQE_OPCODE_V(FW_RI_SEND) |
+				 CQE_TYPE_V(0) |
+				 CQE_SWCQE_V(1) |
+				 CQE_QPID_V(wq->sq.qid));
+	cqe.bits_type_ts = cpu_to_be64(CQE_GENBIT_V((u64)cq->gen));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cq->sw_queue[cq->sw_pidx] = cqe;
 	t4_swcq_produce(cq);
 }
@@ -214,6 +275,7 @@ static void insert_sq_cqe(struct t4_wq *wq, struct t4_cq *cq,
 	PDBG("%s wq %p cq %p sw_cidx %u sw_pidx %u\n", __func__,
 	     wq, cq, cq->sw_cidx, cq->sw_pidx);
 	memset(&cqe, 0, sizeof(cqe));
+<<<<<<< HEAD
 	cqe.header = cpu_to_be32(V_CQE_STATUS(T4_ERR_SWFLUSH) |
 				 V_CQE_OPCODE(swcqe->opcode) |
 				 V_CQE_TYPE(1) |
@@ -221,10 +283,20 @@ static void insert_sq_cqe(struct t4_wq *wq, struct t4_cq *cq,
 				 V_CQE_QPID(wq->sq.qid));
 	CQE_WRID_SQ_IDX(&cqe) = swcqe->idx;
 	cqe.bits_type_ts = cpu_to_be64(V_CQE_GENBIT((u64)cq->gen));
+=======
+	cqe.header = cpu_to_be32(CQE_STATUS_V(T4_ERR_SWFLUSH) |
+				 CQE_OPCODE_V(swcqe->opcode) |
+				 CQE_TYPE_V(1) |
+				 CQE_SWCQE_V(1) |
+				 CQE_QPID_V(wq->sq.qid));
+	CQE_WRID_SQ_IDX(&cqe) = swcqe->idx;
+	cqe.bits_type_ts = cpu_to_be64(CQE_GENBIT_V((u64)cq->gen));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cq->sw_queue[cq->sw_pidx] = cqe;
 	t4_swcq_produce(cq);
 }
 
+<<<<<<< HEAD
 int c4iw_flush_sq(struct t4_wq *wq, struct t4_cq *cq, int count)
 {
 	int flushed = 0;
@@ -262,6 +334,188 @@ void c4iw_flush_hw_cq(struct t4_cq *cq)
 		t4_swcq_produce(cq);
 		t4_hwcq_consume(cq);
 		ret = t4_next_hw_cqe(cq, &cqe);
+=======
+static void advance_oldest_read(struct t4_wq *wq);
+
+int c4iw_flush_sq(struct c4iw_qp *qhp)
+{
+	int flushed = 0;
+	struct t4_wq *wq = &qhp->wq;
+	struct c4iw_cq *chp = to_c4iw_cq(qhp->ibqp.send_cq);
+	struct t4_cq *cq = &chp->cq;
+	int idx;
+	struct t4_swsqe *swsqe;
+
+	if (wq->sq.flush_cidx == -1)
+		wq->sq.flush_cidx = wq->sq.cidx;
+	idx = wq->sq.flush_cidx;
+	BUG_ON(idx >= wq->sq.size);
+	while (idx != wq->sq.pidx) {
+		swsqe = &wq->sq.sw_sq[idx];
+		BUG_ON(swsqe->flushed);
+		swsqe->flushed = 1;
+		insert_sq_cqe(wq, cq, swsqe);
+		if (wq->sq.oldest_read == swsqe) {
+			BUG_ON(swsqe->opcode != FW_RI_READ_REQ);
+			advance_oldest_read(wq);
+		}
+		flushed++;
+		if (++idx == wq->sq.size)
+			idx = 0;
+	}
+	wq->sq.flush_cidx += flushed;
+	if (wq->sq.flush_cidx >= wq->sq.size)
+		wq->sq.flush_cidx -= wq->sq.size;
+	return flushed;
+}
+
+static void flush_completed_wrs(struct t4_wq *wq, struct t4_cq *cq)
+{
+	struct t4_swsqe *swsqe;
+	int cidx;
+
+	if (wq->sq.flush_cidx == -1)
+		wq->sq.flush_cidx = wq->sq.cidx;
+	cidx = wq->sq.flush_cidx;
+	BUG_ON(cidx > wq->sq.size);
+
+	while (cidx != wq->sq.pidx) {
+		swsqe = &wq->sq.sw_sq[cidx];
+		if (!swsqe->signaled) {
+			if (++cidx == wq->sq.size)
+				cidx = 0;
+		} else if (swsqe->complete) {
+
+			BUG_ON(swsqe->flushed);
+
+			/*
+			 * Insert this completed cqe into the swcq.
+			 */
+			PDBG("%s moving cqe into swcq sq idx %u cq idx %u\n",
+					__func__, cidx, cq->sw_pidx);
+			swsqe->cqe.header |= htonl(CQE_SWCQE_V(1));
+			cq->sw_queue[cq->sw_pidx] = swsqe->cqe;
+			t4_swcq_produce(cq);
+			swsqe->flushed = 1;
+			if (++cidx == wq->sq.size)
+				cidx = 0;
+			wq->sq.flush_cidx = cidx;
+		} else
+			break;
+	}
+}
+
+static void create_read_req_cqe(struct t4_wq *wq, struct t4_cqe *hw_cqe,
+		struct t4_cqe *read_cqe)
+{
+	read_cqe->u.scqe.cidx = wq->sq.oldest_read->idx;
+	read_cqe->len = htonl(wq->sq.oldest_read->read_len);
+	read_cqe->header = htonl(CQE_QPID_V(CQE_QPID(hw_cqe)) |
+			CQE_SWCQE_V(SW_CQE(hw_cqe)) |
+			CQE_OPCODE_V(FW_RI_READ_REQ) |
+			CQE_TYPE_V(1));
+	read_cqe->bits_type_ts = hw_cqe->bits_type_ts;
+}
+
+static void advance_oldest_read(struct t4_wq *wq)
+{
+
+	u32 rptr = wq->sq.oldest_read - wq->sq.sw_sq + 1;
+
+	if (rptr == wq->sq.size)
+		rptr = 0;
+	while (rptr != wq->sq.pidx) {
+		wq->sq.oldest_read = &wq->sq.sw_sq[rptr];
+
+		if (wq->sq.oldest_read->opcode == FW_RI_READ_REQ)
+			return;
+		if (++rptr == wq->sq.size)
+			rptr = 0;
+	}
+	wq->sq.oldest_read = NULL;
+}
+
+/*
+ * Move all CQEs from the HWCQ into the SWCQ.
+ * Deal with out-of-order and/or completions that complete
+ * prior unsignalled WRs.
+ */
+void c4iw_flush_hw_cq(struct c4iw_cq *chp)
+{
+	struct t4_cqe *hw_cqe, *swcqe, read_cqe;
+	struct c4iw_qp *qhp;
+	struct t4_swsqe *swsqe;
+	int ret;
+
+	PDBG("%s  cqid 0x%x\n", __func__, chp->cq.cqid);
+	ret = t4_next_hw_cqe(&chp->cq, &hw_cqe);
+
+	/*
+	 * This logic is similar to poll_cq(), but not quite the same
+	 * unfortunately.  Need to move pertinent HW CQEs to the SW CQ but
+	 * also do any translation magic that poll_cq() normally does.
+	 */
+	while (!ret) {
+		qhp = get_qhp(chp->rhp, CQE_QPID(hw_cqe));
+
+		/*
+		 * drop CQEs with no associated QP
+		 */
+		if (qhp == NULL)
+			goto next_cqe;
+
+		if (CQE_OPCODE(hw_cqe) == FW_RI_TERMINATE)
+			goto next_cqe;
+
+		if (CQE_OPCODE(hw_cqe) == FW_RI_READ_RESP) {
+
+			/* If we have reached here because of async
+			 * event or other error, and have egress error
+			 * then drop
+			 */
+			if (CQE_TYPE(hw_cqe) == 1)
+				goto next_cqe;
+
+			/* drop peer2peer RTR reads.
+			 */
+			if (CQE_WRID_STAG(hw_cqe) == 1)
+				goto next_cqe;
+
+			/*
+			 * Eat completions for unsignaled read WRs.
+			 */
+			if (!qhp->wq.sq.oldest_read->signaled) {
+				advance_oldest_read(&qhp->wq);
+				goto next_cqe;
+			}
+
+			/*
+			 * Don't write to the HWCQ, create a new read req CQE
+			 * in local memory and move it into the swcq.
+			 */
+			create_read_req_cqe(&qhp->wq, hw_cqe, &read_cqe);
+			hw_cqe = &read_cqe;
+			advance_oldest_read(&qhp->wq);
+		}
+
+		/* if its a SQ completion, then do the magic to move all the
+		 * unsignaled and now in-order completions into the swcq.
+		 */
+		if (SQ_TYPE(hw_cqe)) {
+			swsqe = &qhp->wq.sq.sw_sq[CQE_WRID_SQ_IDX(hw_cqe)];
+			swsqe->cqe = *hw_cqe;
+			swsqe->complete = 1;
+			flush_completed_wrs(&qhp->wq, &chp->cq);
+		} else {
+			swcqe = &chp->cq.sw_queue[chp->cq.sw_pidx];
+			*swcqe = *hw_cqe;
+			swcqe->header |= cpu_to_be32(CQE_SWCQE_V(1));
+			t4_swcq_produce(&chp->cq);
+		}
+next_cqe:
+		t4_hwcq_consume(&chp->cq);
+		ret = t4_next_hw_cqe(&chp->cq, &hw_cqe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -281,6 +535,7 @@ static int cqe_completes_wr(struct t4_cqe *cqe, struct t4_wq *wq)
 	return 1;
 }
 
+<<<<<<< HEAD
 void c4iw_count_scqes(struct t4_cq *cq, struct t4_wq *wq, int *count)
 {
 	struct t4_cqe *cqe;
@@ -300,6 +555,8 @@ void c4iw_count_scqes(struct t4_cq *cq, struct t4_wq *wq, int *count)
 	PDBG("%s cq %p count %d\n", __func__, cq, *count);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void c4iw_count_rcqes(struct t4_cq *cq, struct t4_wq *wq, int *count)
 {
 	struct t4_cqe *cqe;
@@ -319,6 +576,7 @@ void c4iw_count_rcqes(struct t4_cq *cq, struct t4_wq *wq, int *count)
 	PDBG("%s cq %p count %d\n", __func__, cq, *count);
 }
 
+<<<<<<< HEAD
 static void flush_completed_wrs(struct t4_wq *wq, struct t4_cq *cq)
 {
 	struct t4_swsqe *swsqe;
@@ -383,6 +641,8 @@ static void advance_oldest_read(struct t4_wq *wq)
 	wq->sq.oldest_read = NULL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * poll_cq
  *
@@ -427,6 +687,25 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	}
 
 	/*
+<<<<<<< HEAD
+=======
+	* skip hw cqe's if the wq is flushed.
+	*/
+	if (wq->flushed && !SW_CQE(hw_cqe)) {
+		ret = -EAGAIN;
+		goto skip_cqe;
+	}
+
+	/*
+	 * skip TERMINATE cqes...
+	 */
+	if (CQE_OPCODE(hw_cqe) == FW_RI_TERMINATE) {
+		ret = -EAGAIN;
+		goto skip_cqe;
+	}
+
+	/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * Gotta tweak READ completions:
 	 *	1) the cqe doesn't contain the sq_wptr from the wr.
 	 *	2) opcode not reflected from the wr.
@@ -435,12 +714,31 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	 */
 	if (RQ_TYPE(hw_cqe) && (CQE_OPCODE(hw_cqe) == FW_RI_READ_RESP)) {
 
+<<<<<<< HEAD
 		/*
 		 * If this is an unsolicited read response, then the read
 		 * was generated by the kernel driver as part of peer-2-peer
 		 * connection setup.  So ignore the completion.
 		 */
 		if (!wq->sq.oldest_read) {
+=======
+		/* If we have reached here because of async
+		 * event or other error, and have egress error
+		 * then drop
+		 */
+		if (CQE_TYPE(hw_cqe) == 1) {
+			if (CQE_STATUS(hw_cqe))
+				t4_set_wq_in_error(wq);
+			ret = -EAGAIN;
+			goto skip_cqe;
+		}
+
+		/* If this is an unsolicited read response, then the read
+		 * was generated by the kernel driver as part of peer-2-peer
+		 * connection setup.  So ignore the completion.
+		 */
+		if (CQE_WRID_STAG(hw_cqe) == 1) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (CQE_STATUS(hw_cqe))
 				t4_set_wq_in_error(wq);
 			ret = -EAGAIN;
@@ -448,6 +746,18 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 		}
 
 		/*
+<<<<<<< HEAD
+=======
+		 * Eat completions for unsignaled read WRs.
+		 */
+		if (!wq->sq.oldest_read->signaled) {
+			advance_oldest_read(wq);
+			ret = -EAGAIN;
+			goto skip_cqe;
+		}
+
+		/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * Don't write to the HWCQ, so create a new read req CQE
 		 * in local memory.
 		 */
@@ -457,6 +767,7 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	}
 
 	if (CQE_STATUS(hw_cqe) || t4_wq_in_error(wq)) {
+<<<<<<< HEAD
 		*cqe_flushed = t4_wq_in_error(wq);
 		t4_set_wq_in_error(wq);
 		goto proc_cqe;
@@ -465,6 +776,10 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	if (CQE_OPCODE(hw_cqe) == FW_RI_TERMINATE) {
 		ret = -EAGAIN;
 		goto skip_cqe;
+=======
+		*cqe_flushed = (CQE_STATUS(hw_cqe) == T4_ERR_SWFLUSH);
+		t4_set_wq_in_error(wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
@@ -484,10 +799,17 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 			ret = -EAGAIN;
 			goto skip_cqe;
 		}
+<<<<<<< HEAD
 		if (unlikely((CQE_WRID_MSN(hw_cqe) != (wq->rq.msn)))) {
 			t4_set_wq_in_error(wq);
 			hw_cqe->header |= htonl(V_CQE_STATUS(T4_ERR_MSN));
 			goto proc_cqe;
+=======
+		if (unlikely(!CQE_STATUS(hw_cqe) &&
+			     CQE_WRID_MSN(hw_cqe) != wq->rq.msn)) {
+			t4_set_wq_in_error(wq);
+			hw_cqe->header |= cpu_to_be32(CQE_STATUS_V(T4_ERR_MSN));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		goto proc_cqe;
 	}
@@ -523,15 +845,47 @@ proc_cqe:
 	 * completion.
 	 */
 	if (SQ_TYPE(hw_cqe)) {
+<<<<<<< HEAD
 		wq->sq.cidx = CQE_WRID_SQ_IDX(hw_cqe);
 		PDBG("%s completing sq idx %u\n", __func__, wq->sq.cidx);
 		*cookie = wq->sq.sw_sq[wq->sq.cidx].wr_id;
+=======
+		int idx = CQE_WRID_SQ_IDX(hw_cqe);
+		BUG_ON(idx >= wq->sq.size);
+
+		/*
+		* Account for any unsignaled completions completed by
+		* this signaled completion.  In this case, cidx points
+		* to the first unsignaled one, and idx points to the
+		* signaled one.  So adjust in_use based on this delta.
+		* if this is not completing any unsigned wrs, then the
+		* delta will be 0. Handle wrapping also!
+		*/
+		if (idx < wq->sq.cidx)
+			wq->sq.in_use -= wq->sq.size + idx - wq->sq.cidx;
+		else
+			wq->sq.in_use -= idx - wq->sq.cidx;
+		BUG_ON(wq->sq.in_use <= 0 && wq->sq.in_use >= wq->sq.size);
+
+		wq->sq.cidx = (uint16_t)idx;
+		PDBG("%s completing sq idx %u\n", __func__, wq->sq.cidx);
+		*cookie = wq->sq.sw_sq[wq->sq.cidx].wr_id;
+		if (c4iw_wr_log)
+			c4iw_log_wr_stats(wq, hw_cqe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		t4_sq_consume(wq);
 	} else {
 		PDBG("%s completing rq idx %u\n", __func__, wq->rq.cidx);
 		*cookie = wq->rq.sw_rq[wq->rq.cidx].wr_id;
 		BUG_ON(t4_rq_empty(wq));
+<<<<<<< HEAD
 		t4_rq_consume(wq);
+=======
+		if (c4iw_wr_log)
+			c4iw_log_wr_stats(wq, hw_cqe);
+		t4_rq_consume(wq);
+		goto skip_cqe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 flush_wq:
@@ -565,7 +919,11 @@ skip_cqe:
 static int c4iw_poll_cq_one(struct c4iw_cq *chp, struct ib_wc *wc)
 {
 	struct c4iw_qp *qhp = NULL;
+<<<<<<< HEAD
 	struct t4_cqe cqe = {0, 0}, *rd_cqe;
+=======
+	struct t4_cqe uninitialized_var(cqe), *rd_cqe;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct t4_wq *wq;
 	u32 credit = 0;
 	u8 cqe_flushed;
@@ -608,6 +966,10 @@ static int c4iw_poll_cq_one(struct c4iw_cq *chp, struct ib_wc *wc)
 		    CQE_OPCODE(&cqe) == FW_RI_SEND_WITH_SE_INV) {
 			wc->ex.invalidate_rkey = CQE_WRID_STAG(&cqe);
 			wc->wc_flags |= IB_WC_WITH_INVALIDATE;
+<<<<<<< HEAD
+=======
+			c4iw_invalidate_mr(qhp->rhp, wc->ex.invalidate_rkey);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else {
 		switch (CQE_OPCODE(&cqe)) {
@@ -627,15 +989,27 @@ static int c4iw_poll_cq_one(struct c4iw_cq *chp, struct ib_wc *wc)
 		case FW_RI_SEND_WITH_SE:
 			wc->opcode = IB_WC_SEND;
 			break;
+<<<<<<< HEAD
 		case FW_RI_BIND_MW:
 			wc->opcode = IB_WC_BIND_MW;
 			break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		case FW_RI_LOCAL_INV:
 			wc->opcode = IB_WC_LOCAL_INV;
 			break;
 		case FW_RI_FAST_REGISTER:
+<<<<<<< HEAD
 			wc->opcode = IB_WC_FAST_REG_MR;
+=======
+			wc->opcode = IB_WC_REG_MR;
+
+			/* Invalidate the MR if the fastreg failed */
+			if (CQE_STATUS(&cqe) != T4_ERR_SUCCESS)
+				c4iw_invalidate_mr(qhp->rhp,
+						   CQE_WRID_FR_STAG(&cqe));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		default:
 			printk(KERN_ERR MOD "Unexpected opcode %d "
@@ -697,12 +1071,28 @@ static int c4iw_poll_cq_one(struct c4iw_cq *chp, struct ib_wc *wc)
 			printk(KERN_ERR MOD
 			       "Unexpected cqe_status 0x%x for QPID=0x%0x\n",
 			       CQE_STATUS(&cqe), CQE_QPID(&cqe));
+<<<<<<< HEAD
 			ret = -EINVAL;
 		}
 	}
 out:
 	if (wq)
 		spin_unlock(&qhp->lock);
+=======
+			wc->status = IB_WC_FATAL_ERR;
+		}
+	}
+out:
+	if (wq) {
+		if (unlikely(qhp->attr.state != C4IW_QP_STATE_RTS)) {
+			if (t4_sq_empty(wq))
+				complete(&qhp->sq_drained);
+			if (t4_rq_empty(wq))
+				complete(&qhp->rq_drained);
+		}
+		spin_unlock(&qhp->lock);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -742,31 +1132,75 @@ int c4iw_destroy_cq(struct ib_cq *ib_cq)
 	ucontext = ib_cq->uobject ? to_c4iw_ucontext(ib_cq->uobject->context)
 				  : NULL;
 	destroy_cq(&chp->rhp->rdev, &chp->cq,
+<<<<<<< HEAD
 		   ucontext ? &ucontext->uctx : &chp->cq.rdev->uctx);
+=======
+		   ucontext ? &ucontext->uctx : &chp->cq.rdev->uctx,
+		   chp->destroy_skb);
+	chp->destroy_skb = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(chp);
 	return 0;
 }
 
+<<<<<<< HEAD
 struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
 			     int vector, struct ib_ucontext *ib_context,
 			     struct ib_udata *udata)
 {
+=======
+struct ib_cq *c4iw_create_cq(struct ib_device *ibdev,
+			     const struct ib_cq_init_attr *attr,
+			     struct ib_ucontext *ib_context,
+			     struct ib_udata *udata)
+{
+	int entries = attr->cqe;
+	int vector = attr->comp_vector;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct c4iw_dev *rhp;
 	struct c4iw_cq *chp;
 	struct c4iw_create_cq_resp uresp;
 	struct c4iw_ucontext *ucontext = NULL;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret, wr_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	size_t memsize, hwentries;
 	struct c4iw_mm_entry *mm, *mm2;
 
 	PDBG("%s ib_dev %p entries %d\n", __func__, ibdev, entries);
+<<<<<<< HEAD
 
 	rhp = to_c4iw_dev(ibdev);
 
+=======
+	if (attr->flags)
+		return ERR_PTR(-EINVAL);
+
+	rhp = to_c4iw_dev(ibdev);
+
+	if (entries < 1 || entries > ibdev->attrs.max_cqe)
+		return ERR_PTR(-EINVAL);
+
+	if (vector >= rhp->rdev.lldi.nciq)
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chp = kzalloc(sizeof(*chp), GFP_KERNEL);
 	if (!chp)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
+=======
+	wr_len = sizeof(struct fw_ri_res_wr) + sizeof(struct fw_ri_res);
+	chp->destroy_skb = alloc_skb(wr_len, GFP_KERNEL);
+	if (!chp->destroy_skb) {
+		ret = -ENOMEM;
+		goto err1;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ib_context)
 		ucontext = to_c4iw_ucontext(ib_context);
 
@@ -784,7 +1218,11 @@ struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
 	/*
 	 * Make actual HW queue 2x to avoid cdix_inc overflows.
 	 */
+<<<<<<< HEAD
 	hwentries = entries * 2;
+=======
+	hwentries = min(entries * 2, rhp->rdev.hw_queue.t4_max_iq_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Make HW queue at least 64 entries so GTS updates aren't too
@@ -798,6 +1236,7 @@ struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
 	/*
 	 * memsize must be a multiple of the page size if its a user cq.
 	 */
+<<<<<<< HEAD
 	if (ucontext) {
 		memsize = roundup(memsize, PAGE_SIZE);
 		hwentries = memsize / sizeof *chp->cq.queue;
@@ -808,11 +1247,22 @@ struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
 	}
 	chp->cq.size = hwentries;
 	chp->cq.memsize = memsize;
+=======
+	if (ucontext)
+		memsize = roundup(memsize, PAGE_SIZE);
+	chp->cq.size = hwentries;
+	chp->cq.memsize = memsize;
+	chp->cq.vector = vector;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = create_cq(&rhp->rdev, &chp->cq,
 			ucontext ? &ucontext->uctx : &rhp->rdev.uctx);
 	if (ret)
+<<<<<<< HEAD
 		goto err1;
+=======
+		goto err2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	chp->rhp = rhp;
 	chp->cq.size--;				/* status page */
@@ -823,15 +1273,26 @@ struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
 	init_waitqueue_head(&chp->wait);
 	ret = insert_handle(rhp, &rhp->cqidr, chp, chp->cq.cqid);
 	if (ret)
+<<<<<<< HEAD
 		goto err2;
+=======
+		goto err3;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ucontext) {
 		mm = kmalloc(sizeof *mm, GFP_KERNEL);
 		if (!mm)
+<<<<<<< HEAD
 			goto err3;
 		mm2 = kmalloc(sizeof *mm2, GFP_KERNEL);
 		if (!mm2)
 			goto err4;
+=======
+			goto err4;
+		mm2 = kmalloc(sizeof *mm2, GFP_KERNEL);
+		if (!mm2)
+			goto err5;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		uresp.qid_mask = rhp->rdev.cqmask;
 		uresp.cqid = chp->cq.cqid;
@@ -843,9 +1304,16 @@ struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
 		uresp.gts_key = ucontext->key;
 		ucontext->key += PAGE_SIZE;
 		spin_unlock(&ucontext->mmap_lock);
+<<<<<<< HEAD
 		ret = ib_copy_to_udata(udata, &uresp, sizeof uresp);
 		if (ret)
 			goto err5;
+=======
+		ret = ib_copy_to_udata(udata, &uresp,
+				       sizeof(uresp) - sizeof(uresp.reserved));
+		if (ret)
+			goto err6;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		mm->key = uresp.key;
 		mm->addr = virt_to_phys(chp->cq.queue);
@@ -853,12 +1321,17 @@ struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
 		insert_mmap(ucontext, mm);
 
 		mm2->key = uresp.gts_key;
+<<<<<<< HEAD
 		mm2->addr = chp->cq.ugts;
+=======
+		mm2->addr = chp->cq.bar2_pa;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mm2->len = PAGE_SIZE;
 		insert_mmap(ucontext, mm2);
 	}
 	PDBG("%s cqid 0x%0x chp %p size %u memsize %zu, dma_addr 0x%0llx\n",
 	     __func__, chp->cq.cqid, chp, chp->cq.size,
+<<<<<<< HEAD
 	     chp->cq.memsize,
 	     (unsigned long long) chp->cq.dma_addr);
 	return &chp->ibcq;
@@ -871,6 +1344,22 @@ err3:
 err2:
 	destroy_cq(&chp->rhp->rdev, &chp->cq,
 		   ucontext ? &ucontext->uctx : &rhp->rdev.uctx);
+=======
+	     chp->cq.memsize, (unsigned long long) chp->cq.dma_addr);
+	return &chp->ibcq;
+err6:
+	kfree(mm2);
+err5:
+	kfree(mm);
+err4:
+	remove_handle(rhp, &rhp->cqidr, chp->cq.cqid);
+err3:
+	destroy_cq(&chp->rhp->rdev, &chp->cq,
+		   ucontext ? &ucontext->uctx : &rhp->rdev.uctx,
+		   chp->destroy_skb);
+err2:
+	kfree_skb(chp->destroy_skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err1:
 	kfree(chp);
 	return ERR_PTR(ret);
@@ -884,15 +1373,27 @@ int c4iw_resize_cq(struct ib_cq *cq, int cqe, struct ib_udata *udata)
 int c4iw_arm_cq(struct ib_cq *ibcq, enum ib_cq_notify_flags flags)
 {
 	struct c4iw_cq *chp;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flag;
 
 	chp = to_c4iw_cq(ibcq);
 	spin_lock_irqsave(&chp->lock, flag);
+<<<<<<< HEAD
 	ret = t4_arm_cq(&chp->cq,
 			(flags & IB_CQ_SOLICITED_MASK) == IB_CQ_SOLICITED);
 	spin_unlock_irqrestore(&chp->lock, flag);
 	if (ret && !(flags & IB_CQ_REPORT_MISSED_EVENTS))
 		ret = 0;
+=======
+	t4_arm_cq(&chp->cq,
+		  (flags & IB_CQ_SOLICITED_MASK) == IB_CQ_SOLICITED);
+	if (flags & IB_CQ_REPORT_MISSED_EVENTS)
+		ret = t4_cq_notempty(&chp->cq);
+	spin_unlock_irqrestore(&chp->lock, flag);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }

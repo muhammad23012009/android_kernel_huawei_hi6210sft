@@ -30,9 +30,12 @@
 
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(nfsacl_encode);
 EXPORT_SYMBOL_GPL(nfsacl_decode);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct nfsacl_encode_desc {
 	struct xdr_array2_desc desc;
 	unsigned int count;
@@ -136,6 +139,10 @@ int nfsacl_encode(struct xdr_buf *buf, unsigned int base, struct inode *inode,
 			  nfsacl_desc.desc.array_len;
 	return err;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(nfsacl_encode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct nfsacl_decode_desc {
 	struct xdr_array2_desc desc;
@@ -295,3 +302,7 @@ int nfsacl_decode(struct xdr_buf *buf, unsigned int base, unsigned int *aclcnt,
 	return 8 + nfsacl_desc.desc.elem_size *
 		   nfsacl_desc.desc.array_len;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(nfsacl_decode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

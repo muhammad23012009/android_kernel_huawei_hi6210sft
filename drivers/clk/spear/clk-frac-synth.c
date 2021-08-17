@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -116,7 +120,11 @@ static int clk_frac_set_rate(struct clk_hw *hw, unsigned long drate,
 	return 0;
 }
 
+<<<<<<< HEAD
 struct clk_ops clk_frac_ops = {
+=======
+static struct clk_ops clk_frac_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.recalc_rate = clk_frac_recalc_rate,
 	.round_rate = clk_frac_round_rate,
 	.set_rate = clk_frac_set_rate,

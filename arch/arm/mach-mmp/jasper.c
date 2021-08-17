@@ -20,12 +20,21 @@
 #include <linux/mfd/max8925.h>
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
 #include <mach/irqs.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <mach/addr-map.h>
 #include <mach/mfp-mmp2.h>
 #include <mach/mmp2.h>
+=======
+#include "irqs.h"
+#include <asm/mach-types.h>
+#include <asm/mach/arch.h>
+#include "addr-map.h"
+#include "mfp-mmp2.h"
+#include "mmp2.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "common.h"
 

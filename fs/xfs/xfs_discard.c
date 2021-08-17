@@ -16,6 +16,7 @@
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "xfs.h"
+<<<<<<< HEAD
 #include "xfs_sb.h"
 #include "xfs_log.h"
 #include "xfs_ag.h"
@@ -27,11 +28,26 @@
 #include "xfs_ialloc_btree.h"
 #include "xfs_btree.h"
 #include "xfs_inode.h"
+=======
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+#include "xfs_sb.h"
+#include "xfs_mount.h"
+#include "xfs_quota.h"
+#include "xfs_inode.h"
+#include "xfs_btree.h"
+#include "xfs_alloc_btree.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "xfs_alloc.h"
 #include "xfs_error.h"
 #include "xfs_extent_busy.h"
 #include "xfs_discard.h"
 #include "xfs_trace.h"
+<<<<<<< HEAD
+=======
+#include "xfs_log.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 STATIC int
 xfs_trim_extents(
@@ -51,6 +67,7 @@ xfs_trim_extents(
 
 	pag = xfs_perag_get(mp, agno);
 
+<<<<<<< HEAD
 	error = xfs_alloc_read_agf(mp, NULL, agno, 0, &agbp);
 	if (error || !agbp)
 		goto out_put_perag;
@@ -60,10 +77,24 @@ xfs_trim_extents(
 	/*
 	 * Force out the log.  This means any transactions that might have freed
 	 * space before we took the AGF buffer lock are now on disk, and the
+=======
+	/*
+	 * Force out the log.  This means any transactions that might have freed
+	 * space before we take the AGF buffer lock are now on disk, and the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * volatile disk cache is flushed.
 	 */
 	xfs_log_force(mp, XFS_LOG_SYNC);
 
+<<<<<<< HEAD
+=======
+	error = xfs_alloc_read_agf(mp, NULL, agno, 0, &agbp);
+	if (error || !agbp)
+		goto out_put_perag;
+
+	cur = xfs_allocbt_init_cursor(mp, NULL, agbp, agno, XFS_BTNUM_CNT);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Look up the longest btree in the AGF and start with it.
 	 */
@@ -85,7 +116,11 @@ xfs_trim_extents(
 		error = xfs_alloc_get_rec(cur, &fbno, &flen, &i);
 		if (error)
 			goto out_del_cursor;
+<<<<<<< HEAD
 		XFS_WANT_CORRUPTED_GOTO(i == 1, out_del_cursor);
+=======
+		XFS_WANT_CORRUPTED_GOTO(mp, i == 1, out_del_cursor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ASSERT(flen <= be32_to_cpu(XFS_BUF_TO_AGF(agbp)->agf_longest));
 
 		/*
@@ -124,7 +159,11 @@ xfs_trim_extents(
 		}
 
 		trace_xfs_discard_extent(mp, agno, fbno, flen);
+<<<<<<< HEAD
 		error = -blkdev_issue_discard(bdev, dbno, dlen, GFP_NOFS, 0);
+=======
+		error = blkdev_issue_discard(bdev, dbno, dlen, GFP_NOFS, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (error)
 			goto out_del_cursor;
 		*blocks_trimmed += flen;
@@ -157,7 +196,11 @@ xfs_ioc_trim(
 	struct xfs_mount		*mp,
 	struct fstrim_range __user	*urange)
 {
+<<<<<<< HEAD
 	struct request_queue	*q = mp->m_ddev_targp->bt_bdev->bd_disk->queue;
+=======
+	struct request_queue	*q = bdev_get_queue(mp->m_ddev_targp->bt_bdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int		granularity = q->limits.discard_granularity;
 	struct fstrim_range	range;
 	xfs_daddr_t		start, end, minlen;
@@ -166,11 +209,19 @@ xfs_ioc_trim(
 	int			error, last_error = 0;
 
 	if (!capable(CAP_SYS_ADMIN))
+<<<<<<< HEAD
 		return -XFS_ERROR(EPERM);
 	if (!blk_queue_discard(q))
 		return -XFS_ERROR(EOPNOTSUPP);
 	if (copy_from_user(&range, urange, sizeof(range)))
 		return -XFS_ERROR(EFAULT);
+=======
+		return -EPERM;
+	if (!blk_queue_discard(q))
+		return -EOPNOTSUPP;
+	if (copy_from_user(&range, urange, sizeof(range)))
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Truncating down the len isn't actually quite correct, but using
@@ -180,8 +231,14 @@ xfs_ioc_trim(
 	 * matter as trimming blocks is an advisory interface.
 	 */
 	if (range.start >= XFS_FSB_TO_B(mp, mp->m_sb.sb_dblocks) ||
+<<<<<<< HEAD
 	    range.minlen > XFS_FSB_TO_B(mp, XFS_ALLOC_AG_MAX_USABLE(mp)))
 		return -XFS_ERROR(EINVAL);
+=======
+	    range.minlen > XFS_FSB_TO_B(mp, mp->m_ag_max_usable) ||
+	    range.len < mp->m_sb.sb_blocksize)
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	start = BTOBB(range.start);
 	end = start + BTOBBT(range.len) - 1;
@@ -194,7 +251,11 @@ xfs_ioc_trim(
 	end_agno = xfs_daddr_to_agno(mp, end);
 
 	for (agno = start_agno; agno <= end_agno; agno++) {
+<<<<<<< HEAD
 		error = -xfs_trim_extents(mp, agno, start, end, minlen,
+=======
+		error = xfs_trim_extents(mp, agno, start, end, minlen,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  &blocks_trimmed);
 		if (error)
 			last_error = error;
@@ -205,7 +266,11 @@ xfs_ioc_trim(
 
 	range.len = XFS_FSB_TO_B(mp, blocks_trimmed);
 	if (copy_to_user(urange, &range, sizeof(range)))
+<<<<<<< HEAD
 		return -XFS_ERROR(EFAULT);
+=======
+		return -EFAULT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -221,6 +286,7 @@ xfs_discard_extents(
 		trace_xfs_discard_extent(mp, busyp->agno, busyp->bno,
 					 busyp->length);
 
+<<<<<<< HEAD
 		error = -blkdev_issue_discard(mp->m_ddev_targp->bt_bdev,
 				XFS_AGB_TO_DADDR(mp, busyp->agno, busyp->bno),
 				XFS_FSB_TO_BB(mp, busyp->length),
@@ -228,6 +294,15 @@ xfs_discard_extents(
 		if (error && error != EOPNOTSUPP) {
 			xfs_info(mp,
 	 "discard failed for extent [0x%llu,%u], error %d",
+=======
+		error = blkdev_issue_discard(mp->m_ddev_targp->bt_bdev,
+				XFS_AGB_TO_DADDR(mp, busyp->agno, busyp->bno),
+				XFS_FSB_TO_BB(mp, busyp->length),
+				GFP_NOFS, 0);
+		if (error && error != -EOPNOTSUPP) {
+			xfs_info(mp,
+	 "discard failed for extent [0x%llx,%u], error %d",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 (unsigned long long)busyp->bno,
 				 busyp->length,
 				 error);

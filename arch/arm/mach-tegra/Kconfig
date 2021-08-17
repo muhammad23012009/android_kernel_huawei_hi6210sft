@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config ARCH_TEGRA
 	bool "NVIDIA Tegra" if ARCH_MULTI_V7
 	select ARCH_HAS_CPUFREQ
@@ -88,3 +89,22 @@ config TEGRA_EMC_SCALING_ENABLE
 	bool "Enable scaling the memory frequency"
 
 endmenu
+=======
+menuconfig ARCH_TEGRA
+	bool "NVIDIA Tegra"
+	depends on ARCH_MULTI_V7
+	select ARCH_SUPPORTS_TRUSTED_FOUNDATIONS
+	select ARM_AMBA
+	select ARM_GIC
+	select CLKSRC_MMIO
+	select GPIOLIB
+	select HAVE_ARM_SCU if SMP
+	select HAVE_ARM_TWD if SMP
+	select PINCTRL
+	select PM_OPP
+	select ARCH_HAS_RESET_CONTROLLER
+	select RESET_CONTROLLER
+	select SOC_BUS
+	help
+	  This enables support for NVIDIA Tegra based systems.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

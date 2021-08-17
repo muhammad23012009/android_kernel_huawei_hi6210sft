@@ -1,11 +1,20 @@
 /*
+<<<<<<< HEAD
  *	HP WatchDog Driver
+=======
+ *	HPE WatchDog Driver
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	based on
  *
  *	SoftDog	0.05:	A Software Watchdog Device
  *
+<<<<<<< HEAD
  *	(c) Copyright 2007 Hewlett-Packard Development Company, L.P.
  *	Thomas Mingarelli <thomas.mingarelli@hp.com>
+=======
+ *	(c) Copyright 2015 Hewlett Packard Enterprise Development LP
+ *	Thomas Mingarelli <thomas.mingarelli@hpe.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
@@ -17,7 +26,10 @@
 
 #include <linux/device.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/io.h>
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -29,6 +41,7 @@
 #include <linux/types.h>
 #include <linux/uaccess.h>
 #include <linux/watchdog.h>
+<<<<<<< HEAD
 #ifdef CONFIG_HPWDT_NMI_DECODING
 #include <linux/dmi.h>
 #include <linux/spinlock.h>
@@ -40,6 +53,11 @@
 #include <asm/nmi.h>
 
 #define HPWDT_VERSION			"1.3.1"
+=======
+#include <asm/nmi.h>
+
+#define HPWDT_VERSION			"1.4.0"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SECS_TO_TICKS(secs)		((secs) * 1000 / 128)
 #define TICKS_TO_SECS(ticks)		((ticks) * 128 / 1000)
 #define HPWDT_MAX_TIMER			TICKS_TO_SECS(65535)
@@ -48,20 +66,35 @@
 static unsigned int soft_margin = DEFAULT_MARGIN;	/* in seconds */
 static unsigned int reload;			/* the computed soft_margin */
 static bool nowayout = WATCHDOG_NOWAYOUT;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HPWDT_NMI_DECODING
+static unsigned int allow_kdump = 1;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static char expect_release;
 static unsigned long hpwdt_is_open;
 
 static void __iomem *pci_mem_addr;		/* the PCI-memory address */
+<<<<<<< HEAD
 static unsigned long __iomem *hpwdt_timer_reg;
 static unsigned long __iomem *hpwdt_timer_con;
 
 static DEFINE_PCI_DEVICE_TABLE(hpwdt_devices) = {
+=======
+static unsigned long __iomem *hpwdt_nmistat;
+static unsigned long __iomem *hpwdt_timer_reg;
+static unsigned long __iomem *hpwdt_timer_con;
+
+static const struct pci_device_id hpwdt_devices[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_COMPAQ, 0xB203) },	/* iLO2 */
 	{ PCI_DEVICE(PCI_VENDOR_ID_HP, 0x3306) },	/* iLO3 */
 	{0},			/* terminate list */
 };
 MODULE_DEVICE_TABLE(pci, hpwdt_devices);
 
+<<<<<<< HEAD
 #ifdef CONFIG_HPWDT_NMI_DECODING
 #define PCI_BIOS32_SD_VALUE		0x5F32335F	/* "_32_" */
 #define CRU_BIOS_SIGNATURE_VALUE	0x55524324
@@ -426,6 +459,8 @@ static int detect_cru_service(void)
 /* ------------------------------------------------------------------------- */
 #endif /* CONFIG_X86_64 */
 #endif /* CONFIG_HPWDT_NMI_DECODING */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Watchdog operations
@@ -472,11 +507,20 @@ static int hpwdt_time_left(void)
 }
 
 #ifdef CONFIG_HPWDT_NMI_DECODING
+<<<<<<< HEAD
+=======
+static int hpwdt_my_nmi(void)
+{
+	return ioread8(hpwdt_nmistat) & 0x6;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  *	NMI Handler
  */
 static int hpwdt_pretimeout(unsigned int ulReason, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	unsigned long rom_pl;
 	static int die_nmi_called;
 
@@ -488,10 +532,15 @@ static int hpwdt_pretimeout(unsigned int ulReason, struct pt_regs *regs)
 		asminline_call(&cmn_regs, cru_rom_addr);
 	die_nmi_called = 1;
 	spin_unlock_irqrestore(&rom_lock, rom_pl);
+=======
+	if ((ulReason == NMI_UNKNOWN) && !hpwdt_my_nmi())
+		return NMI_DONE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (allow_kdump)
 		hpwdt_stop();
 
+<<<<<<< HEAD
 	if (!is_icru) {
 		if (cmn_regs.u1.ral == 0) {
 			panic("An NMI occurred, "
@@ -503,6 +552,17 @@ static int hpwdt_pretimeout(unsigned int ulReason, struct pt_regs *regs)
 
 out:
 	return NMI_DONE;
+=======
+	nmi_panic(regs, "An NMI occurred. Depending on your system the reason "
+		"for the NMI is logged in any one of the following "
+		"resources:\n"
+		"1. Integrated Management Log (IML)\n"
+		"2. OA Syslog\n"
+		"3. OA Forward Progress Log\n"
+		"4. iLO Event Log");
+
+	return NMI_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #endif /* CONFIG_HPWDT_NMI_DECODING */
 
@@ -573,7 +633,11 @@ static const struct watchdog_info ident = {
 	.options = WDIOF_SETTIMEOUT |
 		   WDIOF_KEEPALIVEPING |
 		   WDIOF_MAGICCLOSE,
+<<<<<<< HEAD
 	.identity = "HP iLO2+ HW Watchdog Timer",
+=======
+	.identity = "HPE iLO2+ HW Watchdog Timer",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static long hpwdt_ioctl(struct file *file, unsigned int cmd,
@@ -581,7 +645,11 @@ static long hpwdt_ioctl(struct file *file, unsigned int cmd,
 {
 	void __user *argp = (void __user *)arg;
 	int __user *p = argp;
+<<<<<<< HEAD
 	int new_margin;
+=======
+	int new_margin, options;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = -ENOTTY;
 
 	switch (cmd) {
@@ -601,6 +669,23 @@ static long hpwdt_ioctl(struct file *file, unsigned int cmd,
 		ret = 0;
 		break;
 
+<<<<<<< HEAD
+=======
+	case WDIOC_SETOPTIONS:
+		ret = get_user(options, p);
+		if (ret)
+			break;
+
+		if (options & WDIOS_DISABLECARD)
+			hpwdt_stop();
+
+		if (options & WDIOS_ENABLECARD) {
+			hpwdt_start();
+			hpwdt_ping();
+		}
+		break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case WDIOC_SETTIMEOUT:
 		ret = get_user(new_margin, p);
 		if (ret)
@@ -645,6 +730,7 @@ static struct miscdevice hpwdt_miscdev = {
  *	Init & Exit
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_HPWDT_NMI_DECODING
 #ifdef CONFIG_X86_LOCAL_APIC
 static void hpwdt_check_nmi_decoding(struct pci_dev *dev)
@@ -721,6 +807,13 @@ static int hpwdt_init_nmi_decoding(struct pci_dev *dev)
 		cmn_regs.u1.ral = 0x02;
 	}
 
+=======
+
+static int hpwdt_init_nmi_decoding(struct pci_dev *dev)
+{
+#ifdef CONFIG_HPWDT_NMI_DECODING
+	int retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Only one function can register for NMI_UNKNOWN
 	 */
@@ -735,8 +828,13 @@ static int hpwdt_init_nmi_decoding(struct pci_dev *dev)
 		goto error2;
 
 	dev_info(&dev->dev,
+<<<<<<< HEAD
 			"HP Watchdog Timer Driver: NMI decoding initialized"
 			", allow kernel dump: %s (default = 0/OFF)\n",
+=======
+			"HPE Watchdog Timer Driver: NMI decoding initialized"
+			", allow kernel dump: %s (default = 1/ON)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			(allow_kdump == 0) ? "OFF" : "ON");
 	return 0;
 
@@ -748,13 +846,20 @@ error:
 	dev_warn(&dev->dev,
 		"Unable to register a die notifier (err=%d).\n",
 		retval);
+<<<<<<< HEAD
 	if (cru_rom_addr)
 		iounmap(cru_rom_addr);
 	return retval;
+=======
+	return retval;
+#endif	/* CONFIG_HPWDT_NMI_DECODING */
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void hpwdt_exit_nmi_decoding(void)
 {
+<<<<<<< HEAD
 	unregister_nmi_handler(NMI_UNKNOWN, "hpwdt");
 	unregister_nmi_handler(NMI_SERR, "hpwdt");
 	unregister_nmi_handler(NMI_IO_CHECK, "hpwdt");
@@ -776,27 +881,54 @@ static void hpwdt_exit_nmi_decoding(void)
 }
 #endif /* CONFIG_HPWDT_NMI_DECODING */
 
+=======
+#ifdef CONFIG_HPWDT_NMI_DECODING
+	unregister_nmi_handler(NMI_UNKNOWN, "hpwdt");
+	unregister_nmi_handler(NMI_SERR, "hpwdt");
+	unregister_nmi_handler(NMI_IO_CHECK, "hpwdt");
+#endif
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int hpwdt_init_one(struct pci_dev *dev,
 					const struct pci_device_id *ent)
 {
 	int retval;
 
 	/*
+<<<<<<< HEAD
 	 * Check if we can do NMI decoding or not
 	 */
 	hpwdt_check_nmi_decoding(dev);
 
 	/*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * First let's find out if we are on an iLO2+ server. We will
 	 * not run on a legacy ASM box.
 	 * So we only support the G5 ProLiant servers and higher.
 	 */
+<<<<<<< HEAD
 	if (dev->subsystem_vendor != PCI_VENDOR_ID_HP) {
+=======
+	if (dev->subsystem_vendor != PCI_VENDOR_ID_HP &&
+	    dev->subsystem_vendor != PCI_VENDOR_ID_HP_3PAR) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_warn(&dev->dev,
 			"This server does not have an iLO2+ ASIC.\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Ignore all auxilary iLO devices with the following PCI ID
+	 */
+	if (dev->subsystem_vendor == PCI_VENDOR_ID_HP &&
+	    dev->subsystem_device == 0x1979)
+		return -ENODEV;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pci_enable_device(dev)) {
 		dev_warn(&dev->dev,
 			"Not possible to enable PCI Device: 0x%x:0x%x.\n",
@@ -811,6 +943,10 @@ static int hpwdt_init_one(struct pci_dev *dev,
 		retval = -ENOMEM;
 		goto error_pci_iomap;
 	}
+<<<<<<< HEAD
+=======
+	hpwdt_nmistat	= pci_mem_addr + 0x6e;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hpwdt_timer_reg = pci_mem_addr + 0x70;
 	hpwdt_timer_con = pci_mem_addr + 0x72;
 
@@ -834,7 +970,11 @@ static int hpwdt_init_one(struct pci_dev *dev,
 		goto error_misc_register;
 	}
 
+<<<<<<< HEAD
 	dev_info(&dev->dev, "HP Watchdog Timer Driver: %s"
+=======
+	dev_info(&dev->dev, "HPE Watchdog Timer Driver: %s"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			", timer margin: %d seconds (nowayout=%d).\n",
 			HPWDT_VERSION, soft_margin, nowayout);
 	return 0;
@@ -870,7 +1010,10 @@ MODULE_AUTHOR("Tom Mingarelli");
 MODULE_DESCRIPTION("hp watchdog driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(HPWDT_VERSION);
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_param(soft_margin, int, 0);
 MODULE_PARM_DESC(soft_margin, "Watchdog timeout in seconds");
@@ -882,6 +1025,10 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 #ifdef CONFIG_HPWDT_NMI_DECODING
 module_param(allow_kdump, int, 0);
 MODULE_PARM_DESC(allow_kdump, "Start a kernel dump after NMI occurs");
+<<<<<<< HEAD
 #endif /* !CONFIG_HPWDT_NMI_DECODING */
+=======
+#endif /* CONFIG_HPWDT_NMI_DECODING */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 module_pci_driver(hpwdt_driver);

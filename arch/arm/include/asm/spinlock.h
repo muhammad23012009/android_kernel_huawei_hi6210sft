@@ -5,12 +5,18 @@
 #error SMP not supported on pre-ARMv6 CPUs
 #endif
 
+<<<<<<< HEAD
+=======
+#include <linux/prefetch.h>
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h>
 
 /*
  * sev and wfe are ARMv6K extensions.  Uniprocessor ARMv6 may not have the K
  * extensions, so when running on UP, we have to patch these instructions away.
  */
+<<<<<<< HEAD
 #define ALT_SMP(smp, up)					\
 	"9998:	" smp "\n"					\
 	"	.pushsection \".alt.smp.init\", \"a\"\n"	\
@@ -20,6 +26,9 @@
 
 #ifdef CONFIG_THUMB2_KERNEL
 #define SEV		ALT_SMP("sev.w", "nop.w")
+=======
+#ifdef CONFIG_THUMB2_KERNEL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * For Thumb-2, special care is needed to ensure that the conditional WFE
  * instruction really does assemble to exactly 4 bytes (as required by
@@ -31,13 +40,18 @@
  * the assembler won't change IT instructions which are explicitly present
  * in the input.
  */
+<<<<<<< HEAD
 #define WFE(cond)	ALT_SMP(		\
+=======
+#define WFE(cond)	__ALT_SMP_ASM(		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	"it " cond "\n\t"			\
 	"wfe" cond ".n",			\
 						\
 	"nop.w"					\
 )
 #else
+<<<<<<< HEAD
 #define SEV		ALT_SMP("sev", "nop")
 #define WFE(cond)	ALT_SMP("wfe" cond, "nop")
 #endif
@@ -56,6 +70,18 @@ static inline void dsb_sev(void)
 		: : "r" (0)
 	);
 #endif
+=======
+#define WFE(cond)	__ALT_SMP_ASM("wfe" cond, "nop")
+#endif
+
+#define SEV		__ALT_SMP_ASM(WASM(sev), WASM(nop))
+
+static inline void dsb_sev(void)
+{
+
+	dsb(ishst);
+	__asm__(SEV);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -66,8 +92,26 @@ static inline void dsb_sev(void)
  * memory.
  */
 
+<<<<<<< HEAD
 #define arch_spin_unlock_wait(lock) \
 	do { while (arch_spin_is_locked(lock)) cpu_relax(); } while (0)
+=======
+static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
+{
+	u16 owner = READ_ONCE(lock->tickets.owner);
+
+	for (;;) {
+		arch_spinlock_t tmp = READ_ONCE(*lock);
+
+		if (tmp.tickets.owner == tmp.tickets.next ||
+		    tmp.tickets.owner != owner)
+			break;
+
+		wfe();
+	}
+	smp_acquire__after_ctrl_dep();
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define arch_spin_lock_flags(lock, flags) arch_spin_lock(lock)
 
@@ -77,6 +121,10 @@ static inline void arch_spin_lock(arch_spinlock_t *lock)
 	u32 newval;
 	arch_spinlock_t lockval;
 
+<<<<<<< HEAD
+=======
+	prefetchw(&lock->slock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(
 "1:	ldrex	%0, [%3]\n"
 "	add	%1, %0, %4\n"
@@ -100,6 +148,10 @@ static inline int arch_spin_trylock(arch_spinlock_t *lock)
 	unsigned long contended, res;
 	u32 slock;
 
+<<<<<<< HEAD
+=======
+	prefetchw(&lock->slock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		__asm__ __volatile__(
 		"	ldrex	%0, [%3]\n"
@@ -127,15 +179,30 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 	dsb_sev();
 }
 
+<<<<<<< HEAD
 static inline int arch_spin_is_locked(arch_spinlock_t *lock)
 {
 	struct __raw_tickets tickets = ACCESS_ONCE(lock->tickets);
 	return tickets.owner != tickets.next;
+=======
+static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+{
+	return lock.tickets.owner == lock.tickets.next;
+}
+
+static inline int arch_spin_is_locked(arch_spinlock_t *lock)
+{
+	return !arch_spin_value_unlocked(READ_ONCE(*lock));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int arch_spin_is_contended(arch_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	struct __raw_tickets tickets = ACCESS_ONCE(lock->tickets);
+=======
+	struct __raw_tickets tickets = READ_ONCE(lock->tickets);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (tickets.next - tickets.owner) > 1;
 }
 #define arch_spin_is_contended	arch_spin_is_contended
@@ -152,6 +219,10 @@ static inline void arch_write_lock(arch_rwlock_t *rw)
 {
 	unsigned long tmp;
 
+<<<<<<< HEAD
+=======
+	prefetchw(&rw->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(
 "1:	ldrex	%0, [%1]\n"
 "	teq	%0, #0\n"
@@ -170,6 +241,10 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 {
 	unsigned long contended, res;
 
+<<<<<<< HEAD
+=======
+	prefetchw(&rw->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		__asm__ __volatile__(
 		"	ldrex	%0, [%2]\n"
@@ -203,7 +278,11 @@ static inline void arch_write_unlock(arch_rwlock_t *rw)
 }
 
 /* write_can_lock - would write_trylock() succeed? */
+<<<<<<< HEAD
 #define arch_write_can_lock(x)		((x)->lock == 0)
+=======
+#define arch_write_can_lock(x)		(ACCESS_ONCE((x)->lock) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Read locks are a bit more hairy:
@@ -221,6 +300,10 @@ static inline void arch_read_lock(arch_rwlock_t *rw)
 {
 	unsigned long tmp, tmp2;
 
+<<<<<<< HEAD
+=======
+	prefetchw(&rw->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(
 "1:	ldrex	%0, [%2]\n"
 "	adds	%0, %0, #1\n"
@@ -241,6 +324,10 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
 
 	smp_mb();
 
+<<<<<<< HEAD
+=======
+	prefetchw(&rw->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__asm__ __volatile__(
 "1:	ldrex	%0, [%2]\n"
 "	sub	%0, %0, #1\n"
@@ -259,6 +346,10 @@ static inline int arch_read_trylock(arch_rwlock_t *rw)
 {
 	unsigned long contended, res;
 
+<<<<<<< HEAD
+=======
+	prefetchw(&rw->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		__asm__ __volatile__(
 		"	ldrex	%0, [%2]\n"
@@ -280,7 +371,11 @@ static inline int arch_read_trylock(arch_rwlock_t *rw)
 }
 
 /* read_can_lock - would read_trylock() succeed? */
+<<<<<<< HEAD
 #define arch_read_can_lock(x)		((x)->lock < 0x80000000)
+=======
+#define arch_read_can_lock(x)		(ACCESS_ONCE((x)->lock) < 0x80000000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define arch_read_lock_flags(lock, flags) arch_read_lock(lock)
 #define arch_write_lock_flags(lock, flags) arch_write_lock(lock)

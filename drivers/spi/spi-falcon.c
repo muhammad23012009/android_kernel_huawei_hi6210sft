@@ -11,7 +11,10 @@
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of.h>
 #include <linux/of_platform.h>
 
@@ -312,9 +315,12 @@ static int falcon_sflash_setup(struct spi_device *spi)
 	unsigned int i;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (spi->chip_select > 0)
 		return -ENODEV;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&ebu_lock, flags);
 
 	if (spi->max_speed_hz >= CLOCK_100M) {
@@ -357,6 +363,7 @@ static int falcon_sflash_setup(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int falcon_sflash_prepare_xfer(struct spi_master *master)
 {
 	return 0;
@@ -367,6 +374,8 @@ static int falcon_sflash_unprepare_xfer(struct spi_master *master)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int falcon_sflash_xfer_one(struct spi_master *master,
 					struct spi_message *m)
 {
@@ -422,6 +431,7 @@ static int falcon_sflash_probe(struct platform_device *pdev)
 	priv->master = master;
 
 	master->mode_bits = SPI_MODE_3;
+<<<<<<< HEAD
 	master->num_chipselect = 1;
 	master->flags = SPI_MASTER_HALF_DUPLEX;
 	master->bus_num = -1;
@@ -434,11 +444,20 @@ static int falcon_sflash_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, priv);
 
 	ret = spi_register_master(master);
+=======
+	master->flags = SPI_MASTER_HALF_DUPLEX;
+	master->setup = falcon_sflash_setup;
+	master->transfer_one_message = falcon_sflash_xfer_one;
+	master->dev.of_node = pdev->dev.of_node;
+
+	ret = devm_spi_register_master(&pdev->dev, master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		spi_master_put(master);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int falcon_sflash_remove(struct platform_device *pdev)
 {
 	struct falcon_sflash *priv = platform_get_drvdata(pdev);
@@ -448,6 +467,8 @@ static int falcon_sflash_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id falcon_sflash_match[] = {
 	{ .compatible = "lantiq,sflash-falcon" },
 	{},
@@ -456,10 +477,15 @@ MODULE_DEVICE_TABLE(of, falcon_sflash_match);
 
 static struct platform_driver falcon_sflash_driver = {
 	.probe	= falcon_sflash_probe,
+<<<<<<< HEAD
 	.remove	= falcon_sflash_remove,
 	.driver = {
 		.name	= DRV_NAME,
 		.owner	= THIS_MODULE,
+=======
+	.driver = {
+		.name	= DRV_NAME,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = falcon_sflash_match,
 	}
 };

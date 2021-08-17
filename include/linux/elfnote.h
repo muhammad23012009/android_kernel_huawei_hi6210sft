@@ -53,7 +53,11 @@
 .popsection				;
 
 #define ELFNOTE(name, type, desc)		\
+<<<<<<< HEAD
 	ELFNOTE_START(name, type, "")		\
+=======
+	ELFNOTE_START(name, type, "a")		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		desc			;	\
 	ELFNOTE_END
 

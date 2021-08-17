@@ -23,6 +23,10 @@
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
+=======
+#include <linux/reset.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
 
@@ -103,6 +107,7 @@ struct nvec_msg {
 };
 
 /**
+<<<<<<< HEAD
  * struct nvec_subdev - A subdevice of nvec, such as nvec_kbd
  * @name: The name of the sub device
  * @platform_data: Platform data
@@ -128,13 +133,20 @@ struct nvec_platform_data {
 };
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct nvec_chip - A single connection to an NVIDIA Embedded controller
  * @dev: The device
  * @gpio: The same as for &struct nvec_platform_data
  * @irq: The IRQ of the I2C device
  * @i2c_addr: The address of the I2C slave
  * @base: The base of the memory mapped region of the I2C device
+<<<<<<< HEAD
  * @clk: The clock of the I2C device
+=======
+ * @i2c_clk: The clock of the I2C device
+ * @rst: The reset of the I2C device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @notifier_list: Notifiers to be called on received messages, see
  *                 nvec_register_notifier()
  * @rx_data: Received messages that have to be processed
@@ -164,6 +176,10 @@ struct nvec_chip {
 	int i2c_addr;
 	void __iomem *base;
 	struct clk *i2c_clk;
+<<<<<<< HEAD
+=======
+	struct reset_control *rst;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct atomic_notifier_head notifier_list;
 	struct list_head rx_data, tx_data;
 	struct notifier_block nvec_status_notifier;
@@ -187,6 +203,7 @@ struct nvec_chip {
 	int state;
 };
 
+<<<<<<< HEAD
 extern int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
 			     short size);
 
@@ -201,5 +218,21 @@ extern int nvec_unregister_notifier(struct nvec_chip *dev,
 				    struct notifier_block *nb);
 
 extern void nvec_msg_free(struct nvec_chip *nvec, struct nvec_msg *msg);
+=======
+int nvec_write_async(struct nvec_chip *nvec, const unsigned char *data,
+		     short size);
+
+int nvec_write_sync(struct nvec_chip *nvec,
+		    const unsigned char *data, short size,
+		    struct nvec_msg **msg);
+
+int nvec_register_notifier(struct nvec_chip *nvec,
+			   struct notifier_block *nb,
+			   unsigned int events);
+
+int nvec_unregister_notifier(struct nvec_chip *dev, struct notifier_block *nb);
+
+void nvec_msg_free(struct nvec_chip *nvec, struct nvec_msg *msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

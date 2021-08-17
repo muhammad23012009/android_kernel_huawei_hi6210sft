@@ -14,7 +14,11 @@
 #include <linux/io.h>		/* outb, outb_p			*/
 #include <linux/isa.h>
 #include <linux/pnp.h>
+<<<<<<< HEAD
 #include <sound/tea575x-tuner.h>
+=======
+#include <media/drv-intf/tea575x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Ondrej Zary");
 MODULE_DESCRIPTION("MediaForte SF16-FMR2 and SF16-FMD2 FM radio card driver");
@@ -74,15 +78,24 @@ static u8 fmr2_tea575x_get_pins(struct snd_tea575x *tea)
 	struct fmr2 *fmr2 = tea->private_data;
 	u8 bits = inb(fmr2->io);
 
+<<<<<<< HEAD
 	return  (bits & STR_DATA) ? TEA575X_DATA : 0 |
 		(bits & STR_MOST) ? TEA575X_MOST : 0;
+=======
+	return  ((bits & STR_DATA) ? TEA575X_DATA : 0) |
+		((bits & STR_MOST) ? TEA575X_MOST : 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void fmr2_tea575x_set_direction(struct snd_tea575x *tea, bool output)
 {
 }
 
+<<<<<<< HEAD
 static struct snd_tea575x_ops fmr2_tea_ops = {
+=======
+static const struct snd_tea575x_ops fmr2_tea_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set_pins = fmr2_tea575x_set_pins,
 	.get_pins = fmr2_tea575x_get_pins,
 	.set_direction = fmr2_tea575x_set_direction,
@@ -295,7 +308,10 @@ static void fmr2_remove(struct fmr2 *fmr2)
 static int fmr2_isa_remove(struct device *pdev, unsigned int ndev)
 {
 	fmr2_remove(dev_get_drvdata(pdev));
+<<<<<<< HEAD
 	dev_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -306,7 +322,11 @@ static void fmr2_pnp_remove(struct pnp_dev *pdev)
 	pnp_set_drvdata(pdev, NULL);
 }
 
+<<<<<<< HEAD
 struct isa_driver fmr2_isa_driver = {
+=======
+static struct isa_driver fmr2_isa_driver = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.match		= fmr2_isa_match,
 	.remove		= fmr2_isa_remove,
 	.driver		= {
@@ -314,7 +334,11 @@ struct isa_driver fmr2_isa_driver = {
 	},
 };
 
+<<<<<<< HEAD
 struct pnp_driver fmr2_pnp_driver = {
+=======
+static struct pnp_driver fmr2_pnp_driver = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "radio-sf16fmr2",
 	.id_table	= fmr2_pnp_ids,
 	.probe		= fmr2_pnp_probe,

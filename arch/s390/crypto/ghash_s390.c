@@ -9,18 +9,32 @@
 
 #include <crypto/internal/hash.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include "crypt_s390.h"
+=======
+#include <linux/cpufeature.h>
+#include <asm/cpacf.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define GHASH_BLOCK_SIZE	16
 #define GHASH_DIGEST_SIZE	16
 
 struct ghash_ctx {
+<<<<<<< HEAD
 	u8 icv[16];
 	u8 key[16];
 };
 
 struct ghash_desc_ctx {
+=======
+	u8 key[GHASH_BLOCK_SIZE];
+};
+
+struct ghash_desc_ctx {
+	u8 icv[GHASH_BLOCK_SIZE];
+	u8 key[GHASH_BLOCK_SIZE];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 buffer[GHASH_BLOCK_SIZE];
 	u32 bytes;
 };
@@ -28,8 +42,15 @@ struct ghash_desc_ctx {
 static int ghash_init(struct shash_desc *desc)
 {
 	struct ghash_desc_ctx *dctx = shash_desc_ctx(desc);
+<<<<<<< HEAD
 
 	memset(dctx, 0, sizeof(*dctx));
+=======
+	struct ghash_ctx *ctx = crypto_shash_ctx(desc->tfm);
+
+	memset(dctx, 0, sizeof(*dctx));
+	memcpy(dctx->key, ctx->key, GHASH_BLOCK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -45,7 +66,10 @@ static int ghash_setkey(struct crypto_shash *tfm,
 	}
 
 	memcpy(ctx->key, key, GHASH_BLOCK_SIZE);
+<<<<<<< HEAD
 	memset(ctx->icv, 0, GHASH_BLOCK_SIZE);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -54,10 +78,15 @@ static int ghash_update(struct shash_desc *desc,
 			 const u8 *src, unsigned int srclen)
 {
 	struct ghash_desc_ctx *dctx = shash_desc_ctx(desc);
+<<<<<<< HEAD
 	struct ghash_ctx *ctx = crypto_shash_ctx(desc->tfm);
 	unsigned int n;
 	u8 *buf = dctx->buffer;
 	int ret;
+=======
+	unsigned int n;
+	u8 *buf = dctx->buffer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (dctx->bytes) {
 		u8 *pos = buf + (GHASH_BLOCK_SIZE - dctx->bytes);
@@ -70,18 +99,27 @@ static int ghash_update(struct shash_desc *desc,
 		src += n;
 
 		if (!dctx->bytes) {
+<<<<<<< HEAD
 			ret = crypt_s390_kimd(KIMD_GHASH, ctx, buf,
 					      GHASH_BLOCK_SIZE);
 			if (ret != GHASH_BLOCK_SIZE)
 				return -EIO;
+=======
+			cpacf_kimd(CPACF_KIMD_GHASH, dctx, buf,
+				   GHASH_BLOCK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	n = srclen & ~(GHASH_BLOCK_SIZE - 1);
 	if (n) {
+<<<<<<< HEAD
 		ret = crypt_s390_kimd(KIMD_GHASH, ctx, src, n);
 		if (ret != n)
 			return -EIO;
+=======
+		cpacf_kimd(CPACF_KIMD_GHASH, dctx, src, n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		src += n;
 		srclen -= n;
 	}
@@ -94,15 +132,22 @@ static int ghash_update(struct shash_desc *desc,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ghash_flush(struct ghash_ctx *ctx, struct ghash_desc_ctx *dctx)
 {
 	u8 *buf = dctx->buffer;
 	int ret;
+=======
+static int ghash_flush(struct ghash_desc_ctx *dctx)
+{
+	u8 *buf = dctx->buffer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (dctx->bytes) {
 		u8 *pos = buf + (GHASH_BLOCK_SIZE - dctx->bytes);
 
 		memset(pos, 0, dctx->bytes);
+<<<<<<< HEAD
 
 		ret = crypt_s390_kimd(KIMD_GHASH, ctx, buf, GHASH_BLOCK_SIZE);
 		if (ret != GHASH_BLOCK_SIZE)
@@ -110,18 +155,32 @@ static int ghash_flush(struct ghash_ctx *ctx, struct ghash_desc_ctx *dctx)
 	}
 
 	dctx->bytes = 0;
+=======
+		cpacf_kimd(CPACF_KIMD_GHASH, dctx, buf, GHASH_BLOCK_SIZE);
+		dctx->bytes = 0;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int ghash_final(struct shash_desc *desc, u8 *dst)
 {
 	struct ghash_desc_ctx *dctx = shash_desc_ctx(desc);
+<<<<<<< HEAD
 	struct ghash_ctx *ctx = crypto_shash_ctx(desc->tfm);
 	int ret;
 
 	ret = ghash_flush(ctx, dctx);
 	if (!ret)
 		memcpy(dst, ctx->icv, GHASH_BLOCK_SIZE);
+=======
+	int ret;
+
+	ret = ghash_flush(dctx);
+	if (!ret)
+		memcpy(dst, dctx->icv, GHASH_BLOCK_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -135,7 +194,11 @@ static struct shash_alg ghash_alg = {
 	.base		= {
 		.cra_name		= "ghash",
 		.cra_driver_name	= "ghash-s390",
+<<<<<<< HEAD
 		.cra_priority		= CRYPT_S390_PRIORITY,
+=======
+		.cra_priority		= 300,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.cra_flags		= CRYPTO_ALG_TYPE_SHASH,
 		.cra_blocksize		= GHASH_BLOCK_SIZE,
 		.cra_ctxsize		= sizeof(struct ghash_ctx),
@@ -145,8 +208,12 @@ static struct shash_alg ghash_alg = {
 
 static int __init ghash_mod_init(void)
 {
+<<<<<<< HEAD
 	if (!crypt_s390_func_available(KIMD_GHASH,
 				       CRYPT_S390_MSA | CRYPT_S390_MSA4))
+=======
+	if (!cpacf_query_func(CPACF_KIMD, CPACF_KIMD_GHASH))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EOPNOTSUPP;
 
 	return crypto_register_shash(&ghash_alg);
@@ -157,7 +224,11 @@ static void __exit ghash_mod_exit(void)
 	crypto_unregister_shash(&ghash_alg);
 }
 
+<<<<<<< HEAD
 module_init(ghash_mod_init);
+=======
+module_cpu_feature_match(MSA, ghash_mod_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 module_exit(ghash_mod_exit);
 
 MODULE_ALIAS_CRYPTO("ghash");

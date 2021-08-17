@@ -25,7 +25,10 @@
 
 #include <linux/device.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/onenand.h>
 #include <linux/mtd/partitions.h>
@@ -36,10 +39,17 @@
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
 
 #include <asm/mach/flash.h>
 #include <linux/platform_data/mtd-onenand-omap2.h>
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+
+#include <asm/mach/flash.h>
+#include <linux/platform_data/mtd-onenand-omap2.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/omap-dma.h>
 
@@ -159,7 +169,11 @@ static int omap2_onenand_wait(struct mtd_info *mtd, int state)
 				syscfg = read_reg(c, ONENAND_REG_SYS_CFG1);
 		}
 
+<<<<<<< HEAD
 		INIT_COMPLETION(c->irq_done);
+=======
+		reinit_completion(&c->irq_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (c->gpio_irq) {
 			result = gpio_get_value(c->gpio_irq);
 			if (result == -1) {
@@ -349,7 +363,11 @@ static int omap3_onenand_read_bufferram(struct mtd_info *mtd, int area,
 	omap_set_dma_dest_params(c->dma_channel, 0, OMAP_DMA_AMODE_POST_INC,
 				 dma_dst, 0, 0);
 
+<<<<<<< HEAD
 	INIT_COMPLETION(c->dma_done);
+=======
+	reinit_completion(&c->dma_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_start_dma(c->dma_channel);
 
 	timeout = jiffies + msecs_to_jiffies(20);
@@ -420,7 +438,11 @@ static int omap3_onenand_write_bufferram(struct mtd_info *mtd, int area,
 	omap_set_dma_dest_params(c->dma_channel, 0, OMAP_DMA_AMODE_POST_INC,
 				 dma_dst, 0, 0);
 
+<<<<<<< HEAD
 	INIT_COMPLETION(c->dma_done);
+=======
+	reinit_completion(&c->dma_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_start_dma(c->dma_channel);
 
 	timeout = jiffies + msecs_to_jiffies(20);
@@ -499,7 +521,11 @@ static int omap2_onenand_read_bufferram(struct mtd_info *mtd, int area,
 	omap_set_dma_dest_params(c->dma_channel, 0, OMAP_DMA_AMODE_POST_INC,
 				 dma_dst, 0, 0);
 
+<<<<<<< HEAD
 	INIT_COMPLETION(c->dma_done);
+=======
+	reinit_completion(&c->dma_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_start_dma(c->dma_channel);
 	wait_for_completion(&c->dma_done);
 
@@ -544,7 +570,11 @@ static int omap2_onenand_write_bufferram(struct mtd_info *mtd, int area,
 	omap_set_dma_dest_params(c->dma_channel, 0, OMAP_DMA_AMODE_POST_INC,
 				 dma_dst, 0, 0);
 
+<<<<<<< HEAD
 	INIT_COMPLETION(c->dma_done);
+=======
+	reinit_completion(&c->dma_done);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	omap_start_dma(c->dma_channel);
 	wait_for_completion(&c->dma_done);
 
@@ -573,6 +603,7 @@ static int omap2_onenand_write_bufferram(struct mtd_info *mtd, int area,
 
 static struct platform_driver omap2_onenand_driver;
 
+<<<<<<< HEAD
 static int __adjust_timing(struct device *dev, void *data)
 {
 	int ret = 0;
@@ -595,6 +626,8 @@ int omap2_onenand_rephase(void)
 				      NULL, __adjust_timing);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void omap2_onenand_shutdown(struct platform_device *pdev)
 {
 	struct omap2_onenand *c = dev_get_drvdata(&pdev->dev);
@@ -637,9 +670,14 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 	struct onenand_chip *this;
 	int r;
 	struct resource *res;
+<<<<<<< HEAD
 	struct mtd_part_parser_data ppdata = {};
 
 	pdata = pdev->dev.platform_data;
+=======
+
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata == NULL) {
 		dev_err(&pdev->dev, "platform data missing\n");
 		return -ENODEV;
@@ -733,11 +771,18 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 		 c->onenand.base, c->freq);
 
 	c->pdev = pdev;
+<<<<<<< HEAD
 	c->mtd.name = dev_name(&pdev->dev);
 	c->mtd.priv = &c->onenand;
 	c->mtd.owner = THIS_MODULE;
 
 	c->mtd.dev.parent = &pdev->dev;
+=======
+	c->mtd.priv = &c->onenand;
+
+	c->mtd.dev.parent = &pdev->dev;
+	mtd_set_of_node(&c->mtd, pdata->of_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	this = &c->onenand;
 	if (c->dma_channel >= 0) {
@@ -768,10 +813,15 @@ static int omap2_onenand_probe(struct platform_device *pdev)
 	if ((r = onenand_scan(&c->mtd, 1)) < 0)
 		goto err_release_regulator;
 
+<<<<<<< HEAD
 	ppdata.of_node = pdata->of_node;
 	r = mtd_device_parse_register(&c->mtd, NULL, &ppdata,
 				      pdata ? pdata->parts : NULL,
 				      pdata ? pdata->nr_parts : 0);
+=======
+	r = mtd_device_register(&c->mtd, pdata ? pdata->parts : NULL,
+				pdata ? pdata->nr_parts : 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (r)
 		goto err_release_onenand;
 
@@ -810,7 +860,10 @@ static int omap2_onenand_remove(struct platform_device *pdev)
 	if (c->dma_channel != -1)
 		omap_free_dma(c->dma_channel);
 	omap2_onenand_shutdown(pdev);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (c->gpio_irq) {
 		free_irq(gpio_to_irq(c->gpio_irq), c);
 		gpio_free(c->gpio_irq);
@@ -828,7 +881,10 @@ static struct platform_driver omap2_onenand_driver = {
 	.shutdown	= omap2_onenand_shutdown,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

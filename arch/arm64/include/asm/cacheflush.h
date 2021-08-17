@@ -40,10 +40,13 @@
  *	the implementation assumes non-aliasing VIPT D-cache and (aliasing)
  *	VIPT or ASID-tagged VIVT I-cache.
  *
+<<<<<<< HEAD
  *	flush_cache_all()
  *
  *		Unconditionally clean and invalidate the entire cache.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	flush_cache_mm(mm)
  *
  *		Clean and invalidate all user space cache entries
@@ -69,10 +72,18 @@
  *		- kaddr  - page address
  *		- size   - region size
  */
+<<<<<<< HEAD
 extern void flush_cache_all(void);
 extern void flush_cache_range(struct vm_area_struct *vma, unsigned long start, unsigned long end);
 extern void flush_icache_range(unsigned long start, unsigned long end);
 extern void __flush_dcache_area(void *addr, size_t len);
+=======
+extern void flush_cache_range(struct vm_area_struct *vma, unsigned long start, unsigned long end);
+extern void flush_icache_range(unsigned long start, unsigned long end);
+extern void __flush_dcache_area(void *addr, size_t len);
+extern void __clean_dcache_area_poc(void *addr, size_t len);
+extern void __clean_dcache_area_pou(void *addr, size_t len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern long __flush_cache_user_range(unsigned long start, unsigned long end);
 
 static inline void flush_cache_mm(struct mm_struct *mm)
@@ -89,6 +100,7 @@ static inline void flush_cache_page(struct vm_area_struct *vma,
  */
 extern void __dma_map_area(const void *, size_t, int);
 extern void __dma_unmap_area(const void *, size_t, int);
+<<<<<<< HEAD
 extern void __dma_flush_range(const void *, const void *);
 
 int set_memory_ro(unsigned long addr, int numpages);
@@ -103,6 +115,10 @@ int set_memory_nx(unsigned long addr, int numpages);
 #define mark_addr_rdonly(a)
 #define mark_addr_rdwrite(a)
 #endif
+=======
+extern void __dma_flush_area(const void *, size_t);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Copy user data from/to a page which is mapped into a different
  * processes address space.  Really, we want to allow our "user
@@ -164,8 +180,11 @@ int set_memory_ro(unsigned long addr, int numpages);
 int set_memory_rw(unsigned long addr, int numpages);
 int set_memory_x(unsigned long addr, int numpages);
 int set_memory_nx(unsigned long addr, int numpages);
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
 void mark_rodata_ro(void);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

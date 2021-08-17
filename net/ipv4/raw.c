@@ -46,7 +46,10 @@
 #include <linux/stddef.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/aio.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/spinlock.h>
@@ -58,6 +61,10 @@
 #include <linux/in_route.h>
 #include <linux/route.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <linux/igmp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/net_namespace.h>
 #include <net/dst.h>
 #include <net/sock.h>
@@ -78,12 +85,29 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/compat.h>
+<<<<<<< HEAD
+=======
+#include <linux/uio.h>
+
+struct raw_frag_vec {
+	struct msghdr *msg;
+	union {
+		struct icmphdr icmph;
+		char c[1];
+	} hdr;
+	int hlen;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct raw_hashinfo raw_v4_hashinfo = {
 	.lock = __RW_LOCK_UNLOCKED(raw_v4_hashinfo.lock),
 };
 
+<<<<<<< HEAD
 void raw_hash_sk(struct sock *sk)
+=======
+int raw_hash_sk(struct sock *sk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct raw_hashinfo *h = sk->sk_prot->h.raw_hash;
 	struct hlist_head *head;
@@ -94,6 +118,11 @@ void raw_hash_sk(struct sock *sk)
 	sk_add_node(sk, head);
 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
 	write_unlock_bh(&h->lock);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(raw_hash_sk);
 
@@ -157,6 +186,10 @@ static int icmp_filter(const struct sock *sk, const struct sk_buff *skb)
  */
 static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
 {
+<<<<<<< HEAD
+=======
+	int dif = inet_iif(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sock *sk;
 	struct hlist_head *head;
 	int delivered = 0;
@@ -169,12 +202,22 @@ static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
 
 	net = dev_net(skb->dev);
 	sk = __raw_v4_lookup(net, __sk_head(head), iph->protocol,
+<<<<<<< HEAD
 			     iph->saddr, iph->daddr,
 			     skb->dev->ifindex);
 
 	while (sk) {
 		delivered = 1;
 		if (iph->protocol != IPPROTO_ICMP || !icmp_filter(sk, skb)) {
+=======
+			     iph->saddr, iph->daddr, dif);
+
+	while (sk) {
+		delivered = 1;
+		if ((iph->protocol != IPPROTO_ICMP || !icmp_filter(sk, skb)) &&
+		    ip_mc_sf_allow(sk, iph->daddr, iph->saddr,
+				   skb->dev->ifindex)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			struct sk_buff *clone = skb_clone(skb, GFP_ATOMIC);
 
 			/* Not releasing hash table! */
@@ -183,7 +226,11 @@ static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
 		}
 		sk = __raw_v4_lookup(net, sk_next(sk), iph->protocol,
 				     iph->saddr, iph->daddr,
+<<<<<<< HEAD
 				     skb->dev->ifindex);
+=======
+				     dif);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 out:
 	read_unlock(&raw_v4_hashinfo.lock);
@@ -218,8 +265,15 @@ static void raw_err(struct sock *sk, struct sk_buff *skb, u32 info)
 
 	if (type == ICMP_DEST_UNREACH && code == ICMP_FRAG_NEEDED)
 		ipv4_sk_update_pmtu(skb, sk, info);
+<<<<<<< HEAD
 	else if (type == ICMP_REDIRECT)
 		ipv4_sk_redirect(skb, sk);
+=======
+	else if (type == ICMP_REDIRECT) {
+		ipv4_sk_redirect(skb, sk);
+		return;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Report error on raw socket, if:
 	   1. User requested ip_recverr.
@@ -278,7 +332,11 @@ void raw_icmp_error(struct sk_buff *skb, int protocol, u32 info)
 
 	read_lock(&raw_v4_hashinfo.lock);
 	raw_sk = sk_head(&raw_v4_hashinfo.ht[hash]);
+<<<<<<< HEAD
 	if (raw_sk != NULL) {
+=======
+	if (raw_sk) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iph = (const struct iphdr *)skb->data;
 		net = dev_net(skb->dev);
 
@@ -297,7 +355,11 @@ static int raw_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	/* Charge it to the socket. */
 
+<<<<<<< HEAD
 	ipv4_pktinfo_prepare(skb);
+=======
+	ipv4_pktinfo_prepare(sk, skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sock_queue_rcv_skb(sk, skb) < 0) {
 		kfree_skb(skb);
 		return NET_RX_DROP;
@@ -322,9 +384,15 @@ int raw_rcv(struct sock *sk, struct sk_buff *skb)
 }
 
 static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
+<<<<<<< HEAD
 			   void *from, size_t length,
 			   struct rtable **rtp,
 			   unsigned int flags)
+=======
+			   struct msghdr *msg, size_t length,
+			   struct rtable **rtp, unsigned int flags,
+			   const struct sockcm_cookie *sockc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct inet_sock *inet = inet_sk(sk);
 	struct net *net = sock_net(sk);
@@ -340,6 +408,12 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
 			       rt->dst.dev->mtu);
 		return -EMSGSIZE;
 	}
+<<<<<<< HEAD
+=======
+	if (length < sizeof(struct iphdr))
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (flags&MSG_PROBE)
 		goto out;
 
@@ -348,7 +422,11 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
 	skb = sock_alloc_send_skb(sk,
 				  length + hlen + tlen + 15,
 				  flags & MSG_DONTWAIT, &err);
+<<<<<<< HEAD
 	if (skb == NULL)
+=======
+	if (!skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 	skb_reserve(skb, hlen);
 
@@ -363,9 +441,17 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
 
 	skb->ip_summed = CHECKSUM_NONE;
 
+<<<<<<< HEAD
 	skb->transport_header = skb->network_header;
 	err = -EFAULT;
 	if (memcpy_fromiovecend((void *)iph, from, 0, length))
+=======
+	sock_tx_timestamp(sk, sockc->tsflags, &skb_shinfo(skb)->tx_flags);
+
+	skb->transport_header = skb->network_header;
+	err = -EFAULT;
+	if (memcpy_from_msg(iph, msg, length))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error_free;
 
 	iphlen = iph->ihl * 4;
@@ -387,6 +473,7 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
 		iph->check   = 0;
 		iph->tot_len = htons(length);
 		if (!iph->id)
+<<<<<<< HEAD
 			ip_select_ident(skb, NULL);
 
 		iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
@@ -397,6 +484,21 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
 
 	err = NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_OUT, skb, NULL,
 		      rt->dst.dev, dst_output);
+=======
+			ip_select_ident(net, skb, NULL);
+
+		iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
+		skb->transport_header += iphlen;
+		if (iph->protocol == IPPROTO_ICMP &&
+		    length >= iphlen + sizeof(struct icmphdr))
+			icmp_out_count(net, ((struct icmphdr *)
+				skb_transport_header(skb))->type);
+	}
+
+	err = NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_OUT,
+		      net, sk, skb, NULL, rt->dst.dev,
+		      dst_output);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err > 0)
 		err = net_xmit_errno(err);
 	if (err)
@@ -413,6 +515,7 @@ error:
 	return err;
 }
 
+<<<<<<< HEAD
 static int raw_probe_proto_opt(struct flowi4 *fl4, struct msghdr *msg)
 {
 	struct iovec *iov;
@@ -464,6 +567,63 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		       size_t len)
 {
 	struct inet_sock *inet = inet_sk(sk);
+=======
+static int raw_probe_proto_opt(struct raw_frag_vec *rfv, struct flowi4 *fl4)
+{
+	int err;
+
+	if (fl4->flowi4_proto != IPPROTO_ICMP)
+		return 0;
+
+	/* We only need the first two bytes. */
+	rfv->hlen = 2;
+
+	err = memcpy_from_msg(rfv->hdr.c, rfv->msg, rfv->hlen);
+	if (err)
+		return err;
+
+	fl4->fl4_icmp_type = rfv->hdr.icmph.type;
+	fl4->fl4_icmp_code = rfv->hdr.icmph.code;
+
+	return 0;
+}
+
+static int raw_getfrag(void *from, char *to, int offset, int len, int odd,
+		       struct sk_buff *skb)
+{
+	struct raw_frag_vec *rfv = from;
+
+	if (offset < rfv->hlen) {
+		int copy = min(rfv->hlen - offset, len);
+
+		if (skb->ip_summed == CHECKSUM_PARTIAL)
+			memcpy(to, rfv->hdr.c + offset, copy);
+		else
+			skb->csum = csum_block_add(
+				skb->csum,
+				csum_partial_copy_nocheck(rfv->hdr.c + offset,
+							  to, copy, 0),
+				odd);
+
+		odd = 0;
+		offset += copy;
+		to += copy;
+		len -= copy;
+
+		if (!len)
+			return 0;
+	}
+
+	offset -= rfv->hlen;
+
+	return ip_generic_getfrag(rfv->msg, to, offset, len, odd, skb);
+}
+
+static int raw_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+{
+	struct inet_sock *inet = inet_sk(sk);
+	struct net *net = sock_net(sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ipcm_cookie ipc;
 	struct rtable *rt = NULL;
 	struct flowi4 fl4;
@@ -473,11 +633,25 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	u8  tos;
 	int err;
 	struct ip_options_data opt_copy;
+<<<<<<< HEAD
+=======
+	struct raw_frag_vec rfv;
+	int hdrincl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = -EMSGSIZE;
 	if (len > 0xFFFF)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	/* hdrincl should be READ_ONCE(inet->hdrincl)
+	 * but READ_ONCE() doesn't work with bit fields.
+	 * Doing this indirectly yields the same result.
+	 */
+	hdrincl = inet->hdrincl;
+	hdrincl = READ_ONCE(hdrincl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 *	Check the flags.
 	 */
@@ -491,7 +665,11 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	 */
 
 	if (msg->msg_namelen) {
+<<<<<<< HEAD
 		struct sockaddr_in *usin = (struct sockaddr_in *)msg->msg_name;
+=======
+		DECLARE_SOCKADDR(struct sockaddr_in *, usin, msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EINVAL;
 		if (msg->msg_namelen < sizeof(*usin))
 			goto out;
@@ -514,6 +692,7 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		daddr = inet->inet_daddr;
 	}
 
+<<<<<<< HEAD
 	ipc.addr = inet->inet_saddr;
 	ipc.opt = NULL;
 	ipc.tx_flags = 0;
@@ -523,6 +702,22 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		err = ip_cmsg_send(sock_net(sk), msg, &ipc);
 		if (err)
 			goto out;
+=======
+	ipc.sockc.tsflags = sk->sk_tsflags;
+	ipc.addr = inet->inet_saddr;
+	ipc.opt = NULL;
+	ipc.tx_flags = 0;
+	ipc.ttl = 0;
+	ipc.tos = -1;
+	ipc.oif = sk->sk_bound_dev_if;
+
+	if (msg->msg_controllen) {
+		err = ip_cmsg_send(sk, msg, &ipc, false);
+		if (unlikely(err)) {
+			kfree(ipc.opt);
+			goto out;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ipc.opt)
 			free = 1;
 	}
@@ -548,7 +743,11 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		/* Linux does not mangle headers on raw sockets,
 		 * so that IP options + IP_HDRINCL is non-sense.
 		 */
+<<<<<<< HEAD
 		if (inet->hdrincl)
+=======
+		if (hdrincl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto done;
 		if (ipc.opt->opt.srr) {
 			if (!daddr)
@@ -556,7 +755,11 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 			daddr = ipc.opt->opt.faddr;
 		}
 	}
+<<<<<<< HEAD
 	tos = RT_CONN_FLAGS(sk);
+=======
+	tos = get_rtconn_flags(&ipc, sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (msg->msg_flags & MSG_DONTROUTE)
 		tos |= RTO_ONLINK;
 
@@ -570,18 +773,35 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 
 	flowi4_init_output(&fl4, ipc.oif, sk->sk_mark, tos,
 			   RT_SCOPE_UNIVERSE,
+<<<<<<< HEAD
 			   inet->hdrincl ? IPPROTO_RAW : sk->sk_protocol,
 			   inet_sk_flowi_flags(sk) | FLOWI_FLAG_CAN_SLEEP,
 			   daddr, saddr, 0, 0, sk->sk_uid);
 
 	if (!inet->hdrincl) {
 		err = raw_probe_proto_opt(&fl4, msg);
+=======
+			   hdrincl ? IPPROTO_RAW : sk->sk_protocol,
+			   inet_sk_flowi_flags(sk) |
+			    (hdrincl ? FLOWI_FLAG_KNOWN_NH : 0),
+			   daddr, saddr, 0, 0, sk->sk_uid);
+
+	if (!hdrincl) {
+		rfv.msg = msg;
+		rfv.hlen = 0;
+
+		err = raw_probe_proto_opt(&rfv, &fl4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err)
 			goto done;
 	}
 
 	security_sk_classify_flow(sk, flowi4_to_flowi(&fl4));
+<<<<<<< HEAD
 	rt = ip_route_output_flow(sock_net(sk), &fl4, sk);
+=======
+	rt = ip_route_output_flow(net, &fl4, sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rt)) {
 		err = PTR_ERR(rt);
 		rt = NULL;
@@ -596,6 +816,7 @@ static int raw_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		goto do_confirm;
 back_from_confirm:
 
+<<<<<<< HEAD
 	if (inet->hdrincl)
 		err = raw_send_hdrinc(sk, &fl4, msg->msg_iov, len,
 				      &rt, msg->msg_flags);
@@ -606,6 +827,20 @@ back_from_confirm:
 		lock_sock(sk);
 		err = ip_append_data(sk, &fl4, ip_generic_getfrag,
 				     msg->msg_iov, len, 0,
+=======
+	if (hdrincl)
+		err = raw_send_hdrinc(sk, &fl4, msg, len,
+				      &rt, msg->msg_flags, &ipc.sockc);
+
+	 else {
+		sock_tx_timestamp(sk, ipc.sockc.tsflags, &ipc.tx_flags);
+
+		if (!ipc.addr)
+			ipc.addr = fl4.daddr;
+		lock_sock(sk);
+		err = ip_append_data(sk, &fl4, raw_getfrag,
+				     &rfv, len, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     &ipc, &rt, msg->msg_flags);
 		if (err)
 			ip_flush_pending_frames(sk);
@@ -679,13 +914,22 @@ out:	return ret;
  *	we return it, otherwise we block.
  */
 
+<<<<<<< HEAD
 static int raw_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		       size_t len, int noblock, int flags, int *addr_len)
+=======
+static int raw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+		       int noblock, int flags, int *addr_len)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct inet_sock *inet = inet_sk(sk);
 	size_t copied = 0;
 	int err = -EOPNOTSUPP;
+<<<<<<< HEAD
 	struct sockaddr_in *sin = (struct sockaddr_in *)msg->msg_name;
+=======
+	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *skb;
 
 	if (flags & MSG_OOB)
@@ -706,7 +950,11 @@ static int raw_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		copied = len;
 	}
 
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	err = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		goto done;
 
@@ -843,7 +1091,11 @@ static int raw_ioctl(struct sock *sk, int cmd, unsigned long arg)
 
 		spin_lock_bh(&sk->sk_receive_queue.lock);
 		skb = skb_peek(&sk->sk_receive_queue);
+<<<<<<< HEAD
 		if (skb != NULL)
+=======
+		if (skb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			amount = skb->len;
 		spin_unlock_bh(&sk->sk_receive_queue.lock);
 		return put_user(amount, (int __user *)arg);
@@ -881,7 +1133,11 @@ struct proto raw_prot = {
 	.close		   = raw_close,
 	.destroy	   = raw_destroy,
 	.connect	   = ip4_datagram_connect,
+<<<<<<< HEAD
 	.disconnect	   = udp_disconnect,
+=======
+	.disconnect	   = __udp_disconnect,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ioctl		   = raw_ioctl,
 	.init		   = raw_init,
 	.setsockopt	   = raw_setsockopt,
@@ -985,7 +1241,11 @@ static void raw_sock_seq_show(struct seq_file *seq, struct sock *sp, int i)
 	      srcp  = inet->inet_num;
 
 	seq_printf(seq, "%4d: %08X:%04X %08X:%04X"
+<<<<<<< HEAD
 		" %02X %08X:%08X %02X:%08lX %08X %5d %8d %lu %d %pK %d\n",
+=======
+		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		i, src, srcp, dest, destp, sp->sk_state,
 		sk_wmem_alloc_get(sp),
 		sk_rmem_alloc_get(sp),

@@ -59,7 +59,74 @@
  *
  */
 
+<<<<<<< HEAD
 #if (DCACHE_WAY_SIZE > PAGE_SIZE) && XCHAL_DCACHE_IS_WRITEBACK
+=======
+#if (DCACHE_WAY_SIZE > PAGE_SIZE)
+static inline void kmap_invalidate_coherent(struct page *page,
+					    unsigned long vaddr)
+{
+	if (!DCACHE_ALIAS_EQ(page_to_phys(page), vaddr)) {
+		unsigned long kvaddr;
+
+		if (!PageHighMem(page)) {
+			kvaddr = (unsigned long)page_to_virt(page);
+
+			__invalidate_dcache_page(kvaddr);
+		} else {
+			kvaddr = TLBTEMP_BASE_1 +
+				(page_to_phys(page) & DCACHE_ALIAS_MASK);
+
+			preempt_disable();
+			__invalidate_dcache_page_alias(kvaddr,
+						       page_to_phys(page));
+			preempt_enable();
+		}
+	}
+}
+
+static inline void *coherent_kvaddr(struct page *page, unsigned long base,
+				    unsigned long vaddr, unsigned long *paddr)
+{
+	if (PageHighMem(page) || !DCACHE_ALIAS_EQ(page_to_phys(page), vaddr)) {
+		*paddr = page_to_phys(page);
+		return (void *)(base + (vaddr & DCACHE_ALIAS_MASK));
+	} else {
+		*paddr = 0;
+		return page_to_virt(page);
+	}
+}
+
+void clear_user_highpage(struct page *page, unsigned long vaddr)
+{
+	unsigned long paddr;
+	void *kvaddr = coherent_kvaddr(page, TLBTEMP_BASE_1, vaddr, &paddr);
+
+	preempt_disable();
+	kmap_invalidate_coherent(page, vaddr);
+	set_bit(PG_arch_1, &page->flags);
+	clear_page_alias(kvaddr, paddr);
+	preempt_enable();
+}
+EXPORT_SYMBOL(clear_user_highpage);
+
+void copy_user_highpage(struct page *dst, struct page *src,
+			unsigned long vaddr, struct vm_area_struct *vma)
+{
+	unsigned long dst_paddr, src_paddr;
+	void *dst_vaddr = coherent_kvaddr(dst, TLBTEMP_BASE_1, vaddr,
+					  &dst_paddr);
+	void *src_vaddr = coherent_kvaddr(src, TLBTEMP_BASE_2, vaddr,
+					  &src_paddr);
+
+	preempt_disable();
+	kmap_invalidate_coherent(dst, vaddr);
+	set_bit(PG_arch_1, &dst->flags);
+	copy_page_alias(dst_vaddr, src_vaddr, dst_paddr, src_paddr);
+	preempt_enable();
+}
+EXPORT_SYMBOL(copy_user_highpage);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Any time the kernel writes to a user page cache page, or it is about to
@@ -99,7 +166,13 @@ void flush_dcache_page(struct page *page)
 		if (!alias && !mapping)
 			return;
 
+<<<<<<< HEAD
 		__flush_invalidate_dcache_page((long)page_address(page));
+=======
+		preempt_disable();
+		virt = TLBTEMP_BASE_1 + (phys & DCACHE_ALIAS_MASK);
+		__flush_invalidate_dcache_page_alias(virt, phys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		virt = TLBTEMP_BASE_1 + (temp & DCACHE_ALIAS_MASK);
 
@@ -108,22 +181,38 @@ void flush_dcache_page(struct page *page)
 
 		if (mapping)
 			__invalidate_icache_page_alias(virt, phys);
+<<<<<<< HEAD
+=======
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* There shouldn't be an entry in the cache for this page anymore. */
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL(flush_dcache_page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * For now, flush the whole cache. FIXME??
  */
 
+<<<<<<< HEAD
 void flush_cache_range(struct vm_area_struct* vma,
+=======
+void local_flush_cache_range(struct vm_area_struct *vma,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       unsigned long start, unsigned long end)
 {
 	__flush_invalidate_dcache_all();
 	__invalidate_icache_all();
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(local_flush_cache_range);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* 
  * Remove any entry in the cache for this page. 
@@ -132,7 +221,11 @@ void flush_cache_range(struct vm_area_struct* vma,
  * alias versions of the cache flush functions.
  */
 
+<<<<<<< HEAD
 void flush_cache_page(struct vm_area_struct* vma, unsigned long address,
+=======
+void local_flush_cache_page(struct vm_area_struct *vma, unsigned long address,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      unsigned long pfn)
 {
 	/* Note that we have to use the 'alias' address to avoid multi-hit */
@@ -140,11 +233,22 @@ void flush_cache_page(struct vm_area_struct* vma, unsigned long address,
 	unsigned long phys = page_to_phys(pfn_to_page(pfn));
 	unsigned long virt = TLBTEMP_BASE_1 + (address & DCACHE_ALIAS_MASK);
 
+<<<<<<< HEAD
 	__flush_invalidate_dcache_page_alias(virt, phys);
 	__invalidate_icache_page_alias(virt, phys);
 }
 
 #endif
+=======
+	preempt_disable();
+	__flush_invalidate_dcache_page_alias(virt, phys);
+	__invalidate_icache_page_alias(virt, phys);
+	preempt_enable();
+}
+EXPORT_SYMBOL(local_flush_cache_page);
+
+#endif /* DCACHE_WAY_SIZE > PAGE_SIZE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void
 update_mmu_cache(struct vm_area_struct * vma, unsigned long addr, pte_t *ptep)
@@ -159,6 +263,7 @@ update_mmu_cache(struct vm_area_struct * vma, unsigned long addr, pte_t *ptep)
 
 	/* Invalidate old entry in TLBs */
 
+<<<<<<< HEAD
 	invalidate_itlb_mapping(addr);
 	invalidate_dtlb_mapping(addr);
 
@@ -174,16 +279,41 @@ update_mmu_cache(struct vm_area_struct * vma, unsigned long addr, pte_t *ptep)
 
 		__flush_invalidate_dcache_page_alias(tmp, phys);
 		__invalidate_icache_page_alias(tmp, phys);
+=======
+	flush_tlb_page(vma, addr);
+
+#if (DCACHE_WAY_SIZE > PAGE_SIZE)
+
+	if (!PageReserved(page) && test_bit(PG_arch_1, &page->flags)) {
+		unsigned long phys = page_to_phys(page);
+		unsigned long tmp;
+
+		preempt_disable();
+		tmp = TLBTEMP_BASE_1 + (phys & DCACHE_ALIAS_MASK);
+		__flush_invalidate_dcache_page_alias(tmp, phys);
+		tmp = TLBTEMP_BASE_1 + (addr & DCACHE_ALIAS_MASK);
+		__flush_invalidate_dcache_page_alias(tmp, phys);
+		__invalidate_icache_page_alias(tmp, phys);
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		clear_bit(PG_arch_1, &page->flags);
 	}
 #else
 	if (!PageReserved(page) && !test_bit(PG_arch_1, &page->flags)
 	    && (vma->vm_flags & VM_EXEC) != 0) {
+<<<<<<< HEAD
 	    	unsigned long paddr = (unsigned long) page_address(page);
 		__flush_dcache_page(paddr);
 		__invalidate_icache_page(paddr);
 		set_bit(PG_arch_1, &page->flags);
+=======
+		unsigned long paddr = (unsigned long)kmap_atomic(page);
+		__flush_dcache_page(paddr);
+		__invalidate_icache_page(paddr);
+		set_bit(PG_arch_1, &page->flags);
+		kunmap_atomic((void *)paddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 }
@@ -193,7 +323,11 @@ update_mmu_cache(struct vm_area_struct * vma, unsigned long addr, pte_t *ptep)
  * flush_dcache_page() on the page.
  */
 
+<<<<<<< HEAD
 #if (DCACHE_WAY_SIZE > PAGE_SIZE) && XCHAL_DCACHE_IS_WRITEBACK
+=======
+#if (DCACHE_WAY_SIZE > PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		unsigned long vaddr, void *dst, const void *src,
@@ -206,7 +340,13 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 
 	if (alias) {
 		unsigned long t = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
+<<<<<<< HEAD
 		__flush_invalidate_dcache_page_alias(t, phys);
+=======
+		preempt_disable();
+		__flush_invalidate_dcache_page_alias(t, phys);
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Copy data */
@@ -221,9 +361,17 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 	if (alias) {
 		unsigned long t = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
 
+<<<<<<< HEAD
 		__flush_invalidate_dcache_range((unsigned long) dst, len);
 		if ((vma->vm_flags & VM_EXEC) != 0)
 			__invalidate_icache_page_alias(t, phys);
+=======
+		preempt_disable();
+		__flush_invalidate_dcache_range((unsigned long) dst, len);
+		if ((vma->vm_flags & VM_EXEC) != 0)
+			__invalidate_icache_page_alias(t, phys);
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	} else if ((vma->vm_flags & VM_EXEC) != 0) {
 		__flush_dcache_range((unsigned long)dst,len);
@@ -245,7 +393,13 @@ extern void copy_from_user_page(struct vm_area_struct *vma, struct page *page,
 
 	if (alias) {
 		unsigned long t = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
+<<<<<<< HEAD
 		__flush_invalidate_dcache_page_alias(t, phys);
+=======
+		preempt_disable();
+		__flush_invalidate_dcache_page_alias(t, phys);
+		preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	memcpy(dst, src, len);

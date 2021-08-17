@@ -106,7 +106,11 @@ static int s35390a_get_reg(struct s35390a *s35390a, int reg, char *buf, int len)
  */
 static int s35390a_reset(struct s35390a *s35390a, char *status1)
 {
+<<<<<<< HEAD
 	char buf;
+=======
+	u8 buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	unsigned initcount = 0;
 
@@ -266,12 +270,20 @@ static int s35390a_set_alarm(struct i2c_client *client, struct rtc_wkalrm *alm)
 		alm->time.tm_min, alm->time.tm_hour, alm->time.tm_mday,
 		alm->time.tm_mon, alm->time.tm_year, alm->time.tm_wday);
 
+<<<<<<< HEAD
 	/* disable interrupt */
+=======
+	/* disable interrupt (which deasserts the irq line) */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = s35390a_set_reg(s35390a, S35390A_CMD_STATUS2, &sts, sizeof(sts));
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	/* clear pending interrupt, if any */
+=======
+	/* clear pending interrupt (in STATUS1 only), if any */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = s35390a_get_reg(s35390a, S35390A_CMD_STATUS1, &sts, sizeof(sts));
 	if (err < 0)
 		return err;
@@ -291,6 +303,11 @@ static int s35390a_set_alarm(struct i2c_client *client, struct rtc_wkalrm *alm)
 
 	if (alm->time.tm_wday != -1)
 		buf[S35390A_ALRM_BYTE_WDAY] = bin2bcd(alm->time.tm_wday) | 0x80;
+<<<<<<< HEAD
+=======
+	else
+		buf[S35390A_ALRM_BYTE_WDAY] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	buf[S35390A_ALRM_BYTE_HOURS] = s35390a_hr2reg(s35390a,
 			alm->time.tm_hour) | 0x80;
@@ -314,6 +331,7 @@ static int s35390a_read_alarm(struct i2c_client *client, struct rtc_wkalrm *alm)
 	char buf[3], sts;
 	int i, err;
 
+<<<<<<< HEAD
 	/*
 	 * initialize all members to -1 to signal the core that they are not
 	 * defined by the hardware.
@@ -328,18 +346,34 @@ static int s35390a_read_alarm(struct i2c_client *client, struct rtc_wkalrm *alm)
 	alm->time.tm_yday = -1;
 	alm->time.tm_isdst = -1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = s35390a_get_reg(s35390a, S35390A_CMD_STATUS2, &sts, sizeof(sts));
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	if (bitrev8(sts) != S35390A_INT2_MODE_ALARM)
 		return -EINVAL;
+=======
+	if ((bitrev8(sts) & S35390A_INT2_MODE_MASK) != S35390A_INT2_MODE_ALARM) {
+		/*
+		 * When the alarm isn't enabled, the register to configure
+		 * the alarm time isn't accessible.
+		 */
+		alm->enabled = 0;
+		return 0;
+	} else {
+		alm->enabled = 1;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = s35390a_get_reg(s35390a, S35390A_CMD_INT2_REG1, buf, sizeof(buf));
 	if (err < 0)
 		return err;
 
 	/* This chip returns the bits of each byte in reverse order */
+<<<<<<< HEAD
 	for (i = 0; i < 3; ++i) {
 		buf[i] = bitrev8(buf[i]);
 		buf[i] &= ~0x80;
@@ -349,6 +383,29 @@ static int s35390a_read_alarm(struct i2c_client *client, struct rtc_wkalrm *alm)
 	alm->time.tm_hour = s35390a_reg2hr(s35390a,
 						buf[S35390A_ALRM_BYTE_HOURS]);
 	alm->time.tm_min = bcd2bin(buf[S35390A_ALRM_BYTE_MINS]);
+=======
+	for (i = 0; i < 3; ++i)
+		buf[i] = bitrev8(buf[i]);
+
+	/*
+	 * B0 of the three matching registers is an enable flag. Iff it is set
+	 * the configured value is used for matching.
+	 */
+	if (buf[S35390A_ALRM_BYTE_WDAY] & 0x80)
+		alm->time.tm_wday =
+			bcd2bin(buf[S35390A_ALRM_BYTE_WDAY] & ~0x80);
+
+	if (buf[S35390A_ALRM_BYTE_HOURS] & 0x80)
+		alm->time.tm_hour =
+			s35390a_reg2hr(s35390a,
+				       buf[S35390A_ALRM_BYTE_HOURS] & ~0x80);
+
+	if (buf[S35390A_ALRM_BYTE_MINS] & 0x80)
+		alm->time.tm_min = bcd2bin(buf[S35390A_ALRM_BYTE_MINS] & ~0x80);
+
+	/* alarm triggers always at s=0 */
+	alm->time.tm_sec = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&client->dev, "%s: alm is mins=%d, hours=%d, wday=%d\n",
 			__func__, alm->time.tm_min, alm->time.tm_hour,

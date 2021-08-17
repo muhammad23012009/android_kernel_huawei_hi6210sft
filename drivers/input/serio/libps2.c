@@ -18,7 +18,10 @@
 #include <linux/input.h>
 #include <linux/serio.h>
 #include <linux/i8042.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/libps2.h>
 
 #define DRIVER_DESC	"PS/2 driver library"
@@ -211,12 +214,26 @@ int __ps2_command(struct ps2dev *ps2dev, unsigned char *param, int command)
 	 * time before the ACK arrives.
 	 */
 	if (ps2_sendbyte(ps2dev, command & 0xff,
+<<<<<<< HEAD
 			 command == PS2_CMD_RESET_BAT ? 1000 : 200))
 		goto out;
 
 	for (i = 0; i < send; i++)
 		if (ps2_sendbyte(ps2dev, param[i], 200))
 			goto out;
+=======
+			 command == PS2_CMD_RESET_BAT ? 1000 : 200)) {
+		serio_pause_rx(ps2dev->serio);
+		goto out_reset_flags;
+	}
+
+	for (i = 0; i < send; i++) {
+		if (ps2_sendbyte(ps2dev, param[i], 200)) {
+			serio_pause_rx(ps2dev->serio);
+			goto out_reset_flags;
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The reset command takes a long time to execute.
@@ -233,17 +250,30 @@ int __ps2_command(struct ps2dev *ps2dev, unsigned char *param, int command)
 				   !(ps2dev->flags & PS2_FLAG_CMD), timeout);
 	}
 
+<<<<<<< HEAD
+=======
+	serio_pause_rx(ps2dev->serio);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (param)
 		for (i = 0; i < receive; i++)
 			param[i] = ps2dev->cmdbuf[(receive - 1) - i];
 
 	if (ps2dev->cmdcnt && (command != PS2_CMD_RESET_BAT || ps2dev->cmdcnt != 1))
+<<<<<<< HEAD
 		goto out;
 
 	rc = 0;
 
  out:
 	serio_pause_rx(ps2dev->serio);
+=======
+		goto out_reset_flags;
+
+	rc = 0;
+
+ out_reset_flags:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ps2dev->flags = 0;
 	serio_continue_rx(ps2dev->serio);
 

@@ -76,8 +76,13 @@ int omap_msdi_reset(struct omap_hwmod *oh)
 			  MAX_MODULE_SOFTRESET_WAIT, c);
 
 	if (c == MAX_MODULE_SOFTRESET_WAIT)
+<<<<<<< HEAD
 		pr_warning("%s: %s: softreset failed (waited %d usec)\n",
 			   __func__, oh->name, MAX_MODULE_SOFTRESET_WAIT);
+=======
+		pr_warn("%s: %s: softreset failed (waited %d usec)\n",
+			__func__, oh->name, MAX_MODULE_SOFTRESET_WAIT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_debug("%s: %s: softreset in %d usec\n", __func__,
 			 oh->name, c);
@@ -88,6 +93,7 @@ int omap_msdi_reset(struct omap_hwmod *oh)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
 
@@ -157,3 +163,5 @@ void __init omap242x_init_mmc(struct omap_mmc_platform_data **mmc_data)
 }
 
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

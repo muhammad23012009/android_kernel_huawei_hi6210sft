@@ -38,7 +38,11 @@ __do_compat_cache_op(unsigned long start, unsigned long end)
 
 		if (fatal_signal_pending(current))
 			return 0;
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = __flush_cache_user_range(start, start + chunk);
 		if (ret)
 			return ret;
@@ -61,7 +65,10 @@ do_compat_cache_op(unsigned long start, unsigned long end, int flags)
 
 	return __do_compat_cache_op(start, end);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Handle all unrecognised system calls.
  */
@@ -95,7 +102,11 @@ long compat_arm_syscall(struct pt_regs *regs)
 		 * See comment in tls_thread_flush.
 		 */
 		barrier();
+<<<<<<< HEAD
 		asm ("msr tpidrro_el0, %0" : : "r" (regs->regs[0]));
+=======
+		write_sysreg(regs->regs[0], tpidrro_el0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	default:

@@ -31,6 +31,10 @@
 #include <linux/pfn.h>
 #include <linux/mm.h>
 #include <linux/tboot.h>
+<<<<<<< HEAD
+=======
+#include <linux/debugfs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/realmode.h>
 #include <asm/processor.h>
@@ -73,12 +77,15 @@ void __init tboot_probe(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	/* only a natively booted kernel should be using TXT */
 	if (paravirt_enabled()) {
 		pr_warning("non-0 tboot_addr but pv_ops is enabled\n");
 		return;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Map and check for tboot UUID. */
 	set_fixmap(FIX_TBOOT_BASE, boot_params.tboot_addr);
 	tboot = (struct tboot *)fix_to_virt(FIX_TBOOT_BASE);
@@ -134,11 +141,28 @@ static int map_tboot_page(unsigned long vaddr, unsigned long pfn,
 	pmd = pmd_alloc(&tboot_mm, pud, vaddr);
 	if (!pmd)
 		return -1;
+<<<<<<< HEAD
 	pte = pte_alloc_map(&tboot_mm, NULL, pmd, vaddr);
+=======
+	pte = pte_alloc_map(&tboot_mm, pmd, vaddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pte)
 		return -1;
 	set_pte_at(&tboot_mm, vaddr, pte, pfn_pte(pfn, prot));
 	pte_unmap(pte);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * PTI poisons low addresses in the kernel page tables in the
+	 * name of making them unusable for userspace.  To execute
+	 * code at such a low address, the poison must be cleared.
+	 *
+	 * Note: 'pgd' actually gets set in pud_alloc().
+	 */
+	pgd->pgd &= ~_PAGE_NX;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -193,12 +217,21 @@ static int tboot_setup_sleep(void)
 
 	tboot->num_mac_regions = 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < e820.nr_map; i++) {
 		if ((e820.map[i].type != E820_RAM)
 		 && (e820.map[i].type != E820_RESERVED_KERN))
 			continue;
 
 		add_mac_region(e820.map[i].addr, e820.map[i].size);
+=======
+	for (i = 0; i < e820->nr_map; i++) {
+		if ((e820->map[i].type != E820_RAM)
+		 && (e820->map[i].type != E820_RESERVED_KERN))
+			continue;
+
+		add_mac_region(e820->map[i].addr, e820->map[i].size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	tboot->acpi_sinfo.kernel_s3_resume_vector =
@@ -300,6 +333,18 @@ static int tboot_sleep(u8 sleep_state, u32 pm1a_control, u32 pm1b_control)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int tboot_extended_sleep(u8 sleep_state, u32 val_a, u32 val_b)
+{
+	if (!tboot_enabled())
+		return 0;
+
+	pr_warning("tboot is not able to suspend on platforms with reduced hardware sleep (ACPIv5)");
+	return -ENODEV;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static atomic_t ap_wfs_count;
 
 static int tboot_wait_for_aps(int num_aps)
@@ -319,6 +364,7 @@ static int tboot_wait_for_aps(int num_aps)
 	return !(atomic_read((atomic_t *)&tboot->num_in_wfs) == num_aps);
 }
 
+<<<<<<< HEAD
 static int __cpuinit tboot_cpu_callback(struct notifier_block *nfb,
 			unsigned long action, void *hcpu)
 {
@@ -338,6 +384,85 @@ static struct notifier_block tboot_cpu_notifier __cpuinitdata =
 	.notifier_call = tboot_cpu_callback,
 };
 
+=======
+static int tboot_dying_cpu(unsigned int cpu)
+{
+	atomic_inc(&ap_wfs_count);
+	if (num_online_cpus() == 1) {
+		if (tboot_wait_for_aps(atomic_read(&ap_wfs_count)))
+			return -EBUSY;
+	}
+	return 0;
+}
+
+#ifdef CONFIG_DEBUG_FS
+
+#define TBOOT_LOG_UUID	{ 0x26, 0x25, 0x19, 0xc0, 0x30, 0x6b, 0xb4, 0x4d, \
+			  0x4c, 0x84, 0xa3, 0xe9, 0x53, 0xb8, 0x81, 0x74 }
+
+#define TBOOT_SERIAL_LOG_ADDR	0x60000
+#define TBOOT_SERIAL_LOG_SIZE	0x08000
+#define LOG_MAX_SIZE_OFF	16
+#define LOG_BUF_OFF		24
+
+static uint8_t tboot_log_uuid[16] = TBOOT_LOG_UUID;
+
+static ssize_t tboot_log_read(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+{
+	void __iomem *log_base;
+	u8 log_uuid[16];
+	u32 max_size;
+	void *kbuf;
+	int ret = -EFAULT;
+
+	log_base = ioremap_nocache(TBOOT_SERIAL_LOG_ADDR, TBOOT_SERIAL_LOG_SIZE);
+	if (!log_base)
+		return ret;
+
+	memcpy_fromio(log_uuid, log_base, sizeof(log_uuid));
+	if (memcmp(&tboot_log_uuid, log_uuid, sizeof(log_uuid)))
+		goto err_iounmap;
+
+	max_size = readl(log_base + LOG_MAX_SIZE_OFF);
+	if (*ppos >= max_size) {
+		ret = 0;
+		goto err_iounmap;
+	}
+
+	if (*ppos + count > max_size)
+		count = max_size - *ppos;
+
+	kbuf = kmalloc(count, GFP_KERNEL);
+	if (!kbuf) {
+		ret = -ENOMEM;
+		goto err_iounmap;
+	}
+
+	memcpy_fromio(kbuf, log_base + LOG_BUF_OFF + *ppos, count);
+	if (copy_to_user(user_buf, kbuf, count))
+		goto err_kfree;
+
+	*ppos += count;
+
+	ret = count;
+
+err_kfree:
+	kfree(kbuf);
+
+err_iounmap:
+	iounmap(log_base);
+
+	return ret;
+}
+
+static const struct file_operations tboot_log_fops = {
+	.read	= tboot_log_read,
+	.llseek	= default_llseek,
+};
+
+#endif /* CONFIG_DEBUG_FS */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __init int tboot_late_init(void)
 {
 	if (!tboot_enabled())
@@ -346,9 +471,21 @@ static __init int tboot_late_init(void)
 	tboot_create_trampoline();
 
 	atomic_set(&ap_wfs_count, 0);
+<<<<<<< HEAD
 	register_hotcpu_notifier(&tboot_cpu_notifier);
 
 	acpi_os_set_prepare_sleep(&tboot_sleep);
+=======
+	cpuhp_setup_state(CPUHP_AP_X86_TBOOT_DYING, "AP_X86_TBOOT_DYING", NULL,
+			  tboot_dying_cpu);
+#ifdef CONFIG_DEBUG_FS
+	debugfs_create_file("tboot_log", S_IRUSR,
+			arch_debugfs_dir, NULL, &tboot_log_fops);
+#endif
+
+	acpi_os_set_prepare_sleep(&tboot_sleep);
+	acpi_os_set_prepare_extended_sleep(&tboot_extended_sleep);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

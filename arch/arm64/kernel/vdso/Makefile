@@ -15,12 +15,22 @@ ccflags-y := -shared -fno-common -fno-builtin
 ccflags-y += -nostdlib -Wl,-soname=linux-vdso.so.1 \
 		$(call cc-ldoption, -Wl$(comma)--hash-style=sysv)
 
+<<<<<<< HEAD
+=======
+# Disable gcov profiling for VDSO code
+GCOV_PROFILE := n
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Workaround for bare-metal (ELF) toolchains that neglect to pass -shared
 # down to collect2, resulting in silent corruption of the vDSO image.
 ccflags-y += -Wl,-shared
 
 obj-y += vdso.o
+<<<<<<< HEAD
 extra-y += vdso.lds vdso-offsets.h
+=======
+extra-y += vdso.lds
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 CPPFLAGS_vdso.lds += -P -C -U$(ARCH)
 
 # Force dependency (incbin is bad)
@@ -39,11 +49,18 @@ $(obj)/%.so: $(obj)/%.so.dbg FORCE
 gen-vdsosym := $(srctree)/$(src)/gen_vdso_offsets.sh
 quiet_cmd_vdsosym = VDSOSYM $@
 define cmd_vdsosym
+<<<<<<< HEAD
 	$(NM) $< | $(gen-vdsosym) | LC_ALL=C sort > $@ && \
 	cp $@ include/generated/
 endef
 
 $(obj)/vdso-offsets.h: $(obj)/vdso.so.dbg FORCE
+=======
+	$(NM) $< | $(gen-vdsosym) | LC_ALL=C sort > $@
+endef
+
+include/generated/vdso-offsets.h: $(obj)/vdso.so.dbg FORCE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	$(call if_changed,vdsosym)
 
 # Assembly rules for the .S files

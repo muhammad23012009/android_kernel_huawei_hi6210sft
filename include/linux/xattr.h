@@ -19,6 +19,7 @@
 struct inode;
 struct dentry;
 
+<<<<<<< HEAD
 struct xattr_handler {
 	const char *prefix;
 	int flags;	/* fs private flags passed back to the handlers */
@@ -32,11 +33,36 @@ struct xattr_handler {
 
 struct xattr {
 	char *name;
+=======
+/*
+ * struct xattr_handler: When @name is set, match attributes with exactly that
+ * name.  When @prefix is set instead, match attributes with that prefix and
+ * with a non-empty suffix.
+ */
+struct xattr_handler {
+	const char *name;
+	const char *prefix;
+	int flags;      /* fs private flags */
+	bool (*list)(struct dentry *dentry);
+	int (*get)(const struct xattr_handler *, struct dentry *dentry,
+		   struct inode *inode, const char *name, void *buffer,
+		   size_t size);
+	int (*set)(const struct xattr_handler *, struct dentry *dentry,
+		   struct inode *inode, const char *name, const void *buffer,
+		   size_t size, int flags);
+};
+
+const char *xattr_full_name(const struct xattr_handler *, const char *);
+
+struct xattr {
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void *value;
 	size_t value_len;
 };
 
 ssize_t xattr_getsecurity(struct inode *, const char *, void *, size_t);
+<<<<<<< HEAD
 ssize_t vfs_getxattr(struct dentry *, const char *, void *, size_t);
 ssize_t vfs_listxattr(struct dentry *d, char *list, size_t size);
 int __vfs_setxattr_noperm(struct dentry *, const char *, const void *, size_t, int);
@@ -51,6 +77,27 @@ ssize_t vfs_getxattr_alloc(struct dentry *dentry, const char *name,
 			   char **xattr_value, size_t size, gfp_t flags);
 int vfs_xattr_cmp(struct dentry *dentry, const char *xattr_name,
 		  const char *value, size_t size, gfp_t flags);
+=======
+ssize_t __vfs_getxattr(struct dentry *, struct inode *, const char *, void *, size_t);
+ssize_t vfs_getxattr(struct dentry *, const char *, void *, size_t);
+ssize_t vfs_listxattr(struct dentry *d, char *list, size_t size);
+int __vfs_setxattr(struct dentry *, struct inode *, const char *, const void *, size_t, int);
+int __vfs_setxattr_noperm(struct dentry *, const char *, const void *, size_t, int);
+int __vfs_setxattr_locked(struct dentry *, const char *, const void *, size_t, int, struct inode **);
+int vfs_setxattr(struct dentry *, const char *, const void *, size_t, int);
+int __vfs_removexattr(struct dentry *, const char *);
+int __vfs_removexattr_locked(struct dentry *, const char *, struct inode **);
+int vfs_removexattr(struct dentry *, const char *);
+
+ssize_t generic_listxattr(struct dentry *dentry, char *buffer, size_t buffer_size);
+ssize_t vfs_getxattr_alloc(struct dentry *dentry, const char *name,
+			   char **xattr_value, size_t size, gfp_t flags);
+
+static inline const char *xattr_prefix(const struct xattr_handler *handler)
+{
+	return handler->prefix ?: handler->name;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct simple_xattrs {
 	struct list_head head;
@@ -91,8 +138,12 @@ int simple_xattr_get(struct simple_xattrs *xattrs, const char *name,
 		     void *buffer, size_t size);
 int simple_xattr_set(struct simple_xattrs *xattrs, const char *name,
 		     const void *value, size_t size, int flags);
+<<<<<<< HEAD
 int simple_xattr_remove(struct simple_xattrs *xattrs, const char *name);
 ssize_t simple_xattr_list(struct simple_xattrs *xattrs, char *buffer,
+=======
+ssize_t simple_xattr_list(struct inode *inode, struct simple_xattrs *xattrs, char *buffer,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  size_t size);
 void simple_xattr_list_add(struct simple_xattrs *xattrs,
 			   struct simple_xattr *new_xattr);

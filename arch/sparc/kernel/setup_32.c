@@ -68,8 +68,11 @@ struct screen_info screen_info = {
  * prints out pretty messages and returns.
  */
 
+<<<<<<< HEAD
 extern unsigned long trapbase;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Pretty sick eh? */
 static void prom_sync_me(void)
 {
@@ -109,7 +112,11 @@ unsigned long cmdline_memory_size __initdata = 0;
 unsigned char boot_cpu_id = 0xff; /* 0xff will make it into DATA section... */
 
 static void
+<<<<<<< HEAD
 prom_console_write(struct console *con, const char *s, unsigned n)
+=======
+prom_console_write(struct console *con, const char *s, unsigned int n)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	prom_write(s, n);
 }
@@ -267,7 +274,11 @@ static __init void leon_patch(void)
 }
 
 struct tt_entry *sparc_ttable;
+<<<<<<< HEAD
 struct pt_regs fake_swapper_regs;
+=======
+static struct pt_regs fake_swapper_regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Called from head_32.S - before we have setup anything
  * in the kernel. Be very careful with what you do here.
@@ -300,7 +311,11 @@ void __init setup_arch(char **cmdline_p)
 	int i;
 	unsigned long highest_paddr;
 
+<<<<<<< HEAD
 	sparc_ttable = (struct tt_entry *) &trapbase;
+=======
+	sparc_ttable = &trapbase;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Initialize PROM console and command line. */
 	*cmdline_p = prom_getbootargs();
@@ -365,7 +380,11 @@ void __init setup_arch(char **cmdline_p)
 
 	prom_setsync(prom_sync_me);
 
+<<<<<<< HEAD
 	if((boot_flags&BOOTME_DEBUG) && (linux_dbvec!=0) && 
+=======
+	if((boot_flags & BOOTME_DEBUG) && (linux_dbvec != NULL) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   ((*(short *)linux_dbvec) != -1)) {
 		printk("Booted under KADB. Syncing trap table.\n");
 		(*(linux_dbvec->teach_debugger))();

@@ -45,7 +45,11 @@
  * NUMA support in SLOB is fairly simplistic, pushing most of the real
  * logic down to the page allocator, and simply doing the node accounting
  * on the upper levels. In the event that a node id is explicitly
+<<<<<<< HEAD
  * provided, alloc_pages_exact_node() with the specified node id is used
+=======
+ * provided, __alloc_pages_node() with the specified node id is used
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * instead. The common case (or when the node id isn't explicitly provided)
  * will default to the current node, as per numa_node_id().
  *
@@ -111,18 +115,30 @@ static inline int slob_page_free(struct page *sp)
 
 static void set_slob_page_free(struct page *sp, struct list_head *list)
 {
+<<<<<<< HEAD
 	list_add(&sp->list, list);
+=======
+	list_add(&sp->lru, list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__SetPageSlobFree(sp);
 }
 
 static inline void clear_slob_page_free(struct page *sp)
 {
+<<<<<<< HEAD
 	list_del(&sp->list);
+=======
+	list_del(&sp->lru);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__ClearPageSlobFree(sp);
 }
 
 #define SLOB_UNIT sizeof(slob_t)
+<<<<<<< HEAD
 #define SLOB_UNITS(size) (((size) + SLOB_UNIT - 1)/SLOB_UNIT)
+=======
+#define SLOB_UNITS(size) DIV_ROUND_UP(size, SLOB_UNIT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * struct slob_rcu is inserted at the tail of allocated slob blocks, which
@@ -193,7 +209,11 @@ static void *slob_new_pages(gfp_t gfp, int order, int node)
 
 #ifdef CONFIG_NUMA
 	if (node != NUMA_NO_NODE)
+<<<<<<< HEAD
 		page = alloc_pages_exact_node(node, gfp, order);
+=======
+		page = __alloc_pages_node(node, gfp, order);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 #endif
 		page = alloc_pages(gfp, order);
@@ -282,7 +302,11 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 
 	spin_lock_irqsave(&slob_lock, flags);
 	/* Iterate through each partially free page, try to find room */
+<<<<<<< HEAD
 	list_for_each_entry(sp, slob_list, list) {
+=======
+	list_for_each_entry(sp, slob_list, lru) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NUMA
 		/*
 		 * If there's a node specification, search for a partial
@@ -296,7 +320,11 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 			continue;
 
 		/* Attempt to alloc */
+<<<<<<< HEAD
 		prev = sp->list.prev;
+=======
+		prev = sp->lru.prev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		b = slob_page_alloc(sp, size, align);
 		if (!b)
 			continue;
@@ -322,7 +350,11 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		spin_lock_irqsave(&slob_lock, flags);
 		sp->units = SLOB_UNITS(PAGE_SIZE);
 		sp->freelist = b;
+<<<<<<< HEAD
 		INIT_LIST_HEAD(&sp->list);
+=======
+		INIT_LIST_HEAD(&sp->lru);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		set_slob(b, SLOB_UNITS(PAGE_SIZE), b + SLOB_UNITS(PAGE_SIZE));
 		set_slob_page_free(sp, slob_list);
 		b = slob_page_alloc(sp, size, align);
@@ -462,6 +494,7 @@ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
 	return ret;
 }
 
+<<<<<<< HEAD
 void *__kmalloc_node(size_t size, gfp_t gfp, int node)
 {
 	return __do_kmalloc_node(size, gfp, node, _RET_IP_);
@@ -469,6 +502,14 @@ void *__kmalloc_node(size_t size, gfp_t gfp, int node)
 EXPORT_SYMBOL(__kmalloc_node);
 
 #ifdef CONFIG_TRACING
+=======
+void *__kmalloc(size_t size, gfp_t gfp)
+{
+	return __do_kmalloc_node(size, gfp, NUMA_NO_NODE, _RET_IP_);
+}
+EXPORT_SYMBOL(__kmalloc);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void *__kmalloc_track_caller(size_t size, gfp_t gfp, unsigned long caller)
 {
 	return __do_kmalloc_node(size, gfp, NUMA_NO_NODE, caller);
@@ -481,7 +522,10 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfp,
 	return __do_kmalloc_node(size, gfp, node, caller);
 }
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void kfree(const void *block)
 {
@@ -534,7 +578,11 @@ int __kmem_cache_create(struct kmem_cache *c, unsigned long flags)
 	return 0;
 }
 
+<<<<<<< HEAD
 void *kmem_cache_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
+=======
+static void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *b;
 
@@ -554,13 +602,40 @@ void *kmem_cache_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
 					    flags, node);
 	}
 
+<<<<<<< HEAD
 	if (c->ctor)
+=======
+	if (b && c->ctor)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		c->ctor(b);
 
 	kmemleak_alloc_recursive(b, c->size, 1, c->flags, flags);
 	return b;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(kmem_cache_alloc_node);
+=======
+
+void *kmem_cache_alloc(struct kmem_cache *cachep, gfp_t flags)
+{
+	return slob_alloc_node(cachep, flags, NUMA_NO_NODE);
+}
+EXPORT_SYMBOL(kmem_cache_alloc);
+
+#ifdef CONFIG_NUMA
+void *__kmalloc_node(size_t size, gfp_t gfp, int node)
+{
+	return __do_kmalloc_node(size, gfp, node, _RET_IP_);
+}
+EXPORT_SYMBOL(__kmalloc_node);
+
+void *kmem_cache_alloc_node(struct kmem_cache *cachep, gfp_t gfp, int node)
+{
+	return slob_alloc_node(cachep, gfp, node);
+}
+EXPORT_SYMBOL(kmem_cache_alloc_node);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void __kmem_cache_free(void *b, int size)
 {
@@ -594,17 +669,44 @@ void kmem_cache_free(struct kmem_cache *c, void *b)
 }
 EXPORT_SYMBOL(kmem_cache_free);
 
+<<<<<<< HEAD
+=======
+void kmem_cache_free_bulk(struct kmem_cache *s, size_t size, void **p)
+{
+	__kmem_cache_free_bulk(s, size, p);
+}
+EXPORT_SYMBOL(kmem_cache_free_bulk);
+
+int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+								void **p)
+{
+	return __kmem_cache_alloc_bulk(s, flags, size, p);
+}
+EXPORT_SYMBOL(kmem_cache_alloc_bulk);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __kmem_cache_shutdown(struct kmem_cache *c)
 {
 	/* No way to check for remaining objects */
 	return 0;
 }
 
+<<<<<<< HEAD
 int kmem_cache_shrink(struct kmem_cache *d)
 {
 	return 0;
 }
 EXPORT_SYMBOL(kmem_cache_shrink);
+=======
+void __kmem_cache_release(struct kmem_cache *c)
+{
+}
+
+int __kmem_cache_shrink(struct kmem_cache *d)
+{
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct kmem_cache kmem_cache_boot = {
 	.name = "kmem_cache",

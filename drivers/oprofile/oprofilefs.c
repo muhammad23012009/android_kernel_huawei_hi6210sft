@@ -30,7 +30,11 @@ static struct inode *oprofilefs_get_inode(struct super_block *sb, int mode)
 	if (inode) {
 		inode->i_ino = get_next_ino();
 		inode->i_mode = mode;
+<<<<<<< HEAD
 		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+		inode->i_atime = inode->i_mtime = inode->i_ctime = current_time(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return inode;
 }
@@ -132,13 +136,19 @@ static const struct file_operations ulong_ro_fops = {
 };
 
 
+<<<<<<< HEAD
 static int __oprofilefs_create_file(struct super_block *sb,
 	struct dentry *root, char const *name, const struct file_operations *fops,
 	int perm, void *priv)
+=======
+static int __oprofilefs_create_file(struct dentry *root, char const *name,
+	const struct file_operations *fops, int perm, void *priv)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dentry *dentry;
 	struct inode *inode;
 
+<<<<<<< HEAD
 	mutex_lock(&root->d_inode->i_mutex);
 	dentry = d_alloc_name(root, name);
 	if (!dentry) {
@@ -149,28 +159,58 @@ static int __oprofilefs_create_file(struct super_block *sb,
 	if (!inode) {
 		dput(dentry);
 		mutex_unlock(&root->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(root));
+	dentry = d_alloc_name(root, name);
+	if (!dentry) {
+		inode_unlock(d_inode(root));
+		return -ENOMEM;
+	}
+	inode = oprofilefs_get_inode(root->d_sb, S_IFREG | perm);
+	if (!inode) {
+		dput(dentry);
+		inode_unlock(d_inode(root));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	}
 	inode->i_fop = fops;
 	inode->i_private = priv;
 	d_add(dentry, inode);
+<<<<<<< HEAD
 	mutex_unlock(&root->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(root));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 
+<<<<<<< HEAD
 int oprofilefs_create_ulong(struct super_block *sb, struct dentry *root,
 	char const *name, unsigned long *val)
 {
 	return __oprofilefs_create_file(sb, root, name,
+=======
+int oprofilefs_create_ulong(struct dentry *root,
+	char const *name, unsigned long *val)
+{
+	return __oprofilefs_create_file(root, name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					&ulong_fops, 0644, val);
 }
 
 
+<<<<<<< HEAD
 int oprofilefs_create_ro_ulong(struct super_block *sb, struct dentry *root,
 	char const *name, unsigned long *val)
 {
 	return __oprofilefs_create_file(sb, root, name,
+=======
+int oprofilefs_create_ro_ulong(struct dentry *root,
+	char const *name, unsigned long *val)
+{
+	return __oprofilefs_create_file(root, name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					&ulong_ro_fops, 0444, val);
 }
 
@@ -189,14 +229,22 @@ static const struct file_operations atomic_ro_fops = {
 };
 
 
+<<<<<<< HEAD
 int oprofilefs_create_ro_atomic(struct super_block *sb, struct dentry *root,
 	char const *name, atomic_t *val)
 {
 	return __oprofilefs_create_file(sb, root, name,
+=======
+int oprofilefs_create_ro_atomic(struct dentry *root,
+	char const *name, atomic_t *val)
+{
+	return __oprofilefs_create_file(root, name,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					&atomic_ro_fops, 0444, val);
 }
 
 
+<<<<<<< HEAD
 int oprofilefs_create_file(struct super_block *sb, struct dentry *root,
 	char const *name, const struct file_operations *fops)
 {
@@ -213,10 +261,28 @@ int oprofilefs_create_file_perm(struct super_block *sb, struct dentry *root,
 
 struct dentry *oprofilefs_mkdir(struct super_block *sb,
 	struct dentry *root, char const *name)
+=======
+int oprofilefs_create_file(struct dentry *root,
+	char const *name, const struct file_operations *fops)
+{
+	return __oprofilefs_create_file(root, name, fops, 0644, NULL);
+}
+
+
+int oprofilefs_create_file_perm(struct dentry *root,
+	char const *name, const struct file_operations *fops, int perm)
+{
+	return __oprofilefs_create_file(root, name, fops, perm, NULL);
+}
+
+
+struct dentry *oprofilefs_mkdir(struct dentry *parent, char const *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dentry *dentry;
 	struct inode *inode;
 
+<<<<<<< HEAD
 	mutex_lock(&root->d_inode->i_mutex);
 	dentry = d_alloc_name(root, name);
 	if (!dentry) {
@@ -227,12 +293,28 @@ struct dentry *oprofilefs_mkdir(struct super_block *sb,
 	if (!inode) {
 		dput(dentry);
 		mutex_unlock(&root->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(parent));
+	dentry = d_alloc_name(parent, name);
+	if (!dentry) {
+		inode_unlock(d_inode(parent));
+		return NULL;
+	}
+	inode = oprofilefs_get_inode(parent->d_sb, S_IFDIR | 0755);
+	if (!inode) {
+		dput(dentry);
+		inode_unlock(d_inode(parent));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 	}
 	inode->i_op = &simple_dir_inode_operations;
 	inode->i_fop = &simple_dir_operations;
 	d_add(dentry, inode);
+<<<<<<< HEAD
 	mutex_unlock(&root->d_inode->i_mutex);
+=======
+	inode_unlock(d_inode(parent));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return dentry;
 }
 
@@ -241,8 +323,13 @@ static int oprofilefs_fill_super(struct super_block *sb, void *data, int silent)
 {
 	struct inode *root_inode;
 
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sb->s_magic = OPROFILEFS_MAGIC;
 	sb->s_op = &s_ops;
 	sb->s_time_gran = 1;
@@ -256,7 +343,11 @@ static int oprofilefs_fill_super(struct super_block *sb, void *data, int silent)
 	if (!sb->s_root)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	oprofile_create_files(sb, sb->s_root);
+=======
+	oprofile_create_files(sb->s_root);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	// FIXME: verify kill_litter_super removes our dentries
 	return 0;

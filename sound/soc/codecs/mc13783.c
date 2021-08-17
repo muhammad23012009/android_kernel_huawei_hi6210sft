@@ -22,6 +22,10 @@
  */
 #include <linux/module.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/mc13xxx.h>
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -30,6 +34,7 @@
 #include <sound/soc.h>
 #include <sound/initval.h>
 #include <sound/soc-dapm.h>
+<<<<<<< HEAD
 
 #include "mc13783.h"
 
@@ -40,6 +45,12 @@
 #define MC13783_AUDIO_CODEC	40
 #define MC13783_AUDIO_DAC	41
 
+=======
+#include <linux/regmap.h>
+
+#include "mc13783.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AUDIO_RX0_ALSPEN		(1 << 5)
 #define AUDIO_RX0_ALSPSEL		(1 << 7)
 #define AUDIO_RX0_ADDCDC		(1 << 21)
@@ -94,13 +105,19 @@
 #define AUDIO_DAC_CFS_DLY_B		(1 << 10)
 
 struct mc13783_priv {
+<<<<<<< HEAD
 	struct snd_soc_codec codec;
 	struct mc13xxx *mc13xxx;
+=======
+	struct mc13xxx *mc13xxx;
+	struct regmap *regmap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	enum mc13783_ssi_port adc_ssi_port;
 	enum mc13783_ssi_port dac_ssi_port;
 };
 
+<<<<<<< HEAD
 static unsigned int mc13783_read(struct snd_soc_codec *codec,
 	unsigned int reg)
 {
@@ -135,6 +152,8 @@ static int mc13783_write(struct snd_soc_codec *codec,
 	return ret;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Mapping between sample rates and register value */
 static unsigned int mc13783_rates[] = {
 	8000, 11025, 12000, 16000,
@@ -146,8 +165,12 @@ static int mc13783_pcm_hw_params_dac(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
+=======
+	struct snd_soc_codec *codec = dai->codec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int rate = params_rate(params);
 	int i;
 
@@ -166,8 +189,12 @@ static int mc13783_pcm_hw_params_codec(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
+=======
+	struct snd_soc_codec *codec = dai->codec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int rate = params_rate(params);
 	unsigned int val;
 
@@ -369,6 +396,7 @@ static int mc13783_set_tdm_slot_dac(struct snd_soc_dai *dai,
 	}
 
 	switch (rx_mask) {
+<<<<<<< HEAD
 	case 0xfffffffc:
 		val |= SSI_NETWORK_DAC_RXSLOT_0_1;
 		break;
@@ -379,11 +407,27 @@ static int mc13783_set_tdm_slot_dac(struct snd_soc_dai *dai,
 		val |= SSI_NETWORK_DAC_RXSLOT_4_5;
 		break;
 	case 0xffffff3f:
+=======
+	case 0x03:
+		val |= SSI_NETWORK_DAC_RXSLOT_0_1;
+		break;
+	case 0x0c:
+		val |= SSI_NETWORK_DAC_RXSLOT_2_3;
+		break;
+	case 0x30:
+		val |= SSI_NETWORK_DAC_RXSLOT_4_5;
+		break;
+	case 0xc0:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		val |= SSI_NETWORK_DAC_RXSLOT_6_7;
 		break;
 	default:
 		return -EINVAL;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	snd_soc_update_bits(codec, MC13783_SSI_NETWORK, mask, val);
 
@@ -401,7 +445,11 @@ static int mc13783_set_tdm_slot_codec(struct snd_soc_dai *dai,
 	if (slots != 4)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (tx_mask != 0xfffffffc)
+=======
+	if (tx_mask != 0x3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	val |= (0x00 << 2);	/* primary timeslot RX/TX(?) is 0 */
@@ -448,25 +496,65 @@ static const char * const adcl_enum_text[] = {
 	"MC1L", "RXINL",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum adcl_enum =
 	SOC_ENUM_SINGLE(0, 0, ARRAY_SIZE(adcl_enum_text), adcl_enum_text);
 
 static const struct snd_kcontrol_new left_input_mux =
 	SOC_DAPM_ENUM_VIRT("Route", adcl_enum);
+=======
+static SOC_ENUM_SINGLE_VIRT_DECL(adcl_enum, adcl_enum_text);
+
+static const struct snd_kcontrol_new left_input_mux =
+	SOC_DAPM_ENUM("Route", adcl_enum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const char * const adcr_enum_text[] = {
 	"MC1R", "MC2", "RXINR", "TXIN",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum adcr_enum =
 	SOC_ENUM_SINGLE(0, 0, ARRAY_SIZE(adcr_enum_text), adcr_enum_text);
 
 static const struct snd_kcontrol_new right_input_mux =
 	SOC_DAPM_ENUM_VIRT("Route", adcr_enum);
+=======
+static SOC_ENUM_SINGLE_VIRT_DECL(adcr_enum, adcr_enum_text);
+
+static const struct snd_kcontrol_new right_input_mux =
+	SOC_DAPM_ENUM("Route", adcr_enum);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new samp_ctl =
 	SOC_DAPM_SINGLE("Switch", MC13783_AUDIO_RX0, 3, 1, 0);
 
+<<<<<<< HEAD
+=======
+static const char * const speaker_amp_source_text[] = {
+	"CODEC", "Right"
+};
+static SOC_ENUM_SINGLE_DECL(speaker_amp_source, MC13783_AUDIO_RX0, 4,
+			    speaker_amp_source_text);
+static const struct snd_kcontrol_new speaker_amp_source_mux =
+	SOC_DAPM_ENUM("Speaker Amp Source MUX", speaker_amp_source);
+
+static const char * const headset_amp_source_text[] = {
+	"CODEC", "Mixer"
+};
+
+static SOC_ENUM_SINGLE_DECL(headset_amp_source, MC13783_AUDIO_RX0, 11,
+			    headset_amp_source_text);
+static const struct snd_kcontrol_new headset_amp_source_mux =
+	SOC_DAPM_ENUM("Headset Amp Source MUX", headset_amp_source);
+
+static const struct snd_kcontrol_new cdcout_ctl =
+	SOC_DAPM_SINGLE("Switch", MC13783_AUDIO_RX0, 18, 1, 0);
+
+static const struct snd_kcontrol_new adc_bypass_ctl =
+	SOC_DAPM_SINGLE("Switch", MC13783_AUDIO_CODEC, 16, 1, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_kcontrol_new lamp_ctl =
 	SOC_DAPM_SINGLE("Switch", MC13783_AUDIO_RX0, 5, 1, 0);
 
@@ -499,17 +587,38 @@ static const struct snd_soc_dapm_widget mc13783_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("MC2 Amp", MC13783_AUDIO_TX, 9, 0, &mc2_amp_ctl),
 	SND_SOC_DAPM_SWITCH("TXIN Amp", MC13783_AUDIO_TX, 11, 0, &atx_amp_ctl),
 
+<<<<<<< HEAD
 	SND_SOC_DAPM_VIRT_MUX("PGA Left Input Mux", SND_SOC_NOPM, 0, 0,
 			      &left_input_mux),
 	SND_SOC_DAPM_VIRT_MUX("PGA Right Input Mux", SND_SOC_NOPM, 0, 0,
 			      &right_input_mux),
 
+=======
+	SND_SOC_DAPM_MUX("PGA Left Input Mux", SND_SOC_NOPM, 0, 0,
+			      &left_input_mux),
+	SND_SOC_DAPM_MUX("PGA Right Input Mux", SND_SOC_NOPM, 0, 0,
+			      &right_input_mux),
+
+	SND_SOC_DAPM_MUX("Speaker Amp Source MUX", SND_SOC_NOPM, 0, 0,
+			 &speaker_amp_source_mux),
+
+	SND_SOC_DAPM_MUX("Headset Amp Source MUX", SND_SOC_NOPM, 0, 0,
+			 &headset_amp_source_mux),
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SND_SOC_DAPM_PGA("PGA Left Input", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("PGA Right Input", SND_SOC_NOPM, 0, 0, NULL, 0),
 
 	SND_SOC_DAPM_ADC("ADC", "Capture", MC13783_AUDIO_CODEC, 11, 0),
 	SND_SOC_DAPM_SUPPLY("ADC_Reset", MC13783_AUDIO_CODEC, 15, 0, NULL, 0),
 
+<<<<<<< HEAD
+=======
+	SND_SOC_DAPM_PGA("Voice CODEC PGA", MC13783_AUDIO_RX1, 0, 0, NULL, 0),
+	SND_SOC_DAPM_SWITCH("Voice CODEC Bypass", MC13783_AUDIO_CODEC, 16, 0,
+			&adc_bypass_ctl),
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Output */
 	SND_SOC_DAPM_SUPPLY("DAC_E", MC13783_AUDIO_DAC, 11, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAC_Reset", MC13783_AUDIO_DAC, 15, 0, NULL, 0),
@@ -517,10 +626,22 @@ static const struct snd_soc_dapm_widget mc13783_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("RXOUTR"),
 	SND_SOC_DAPM_OUTPUT("HSL"),
 	SND_SOC_DAPM_OUTPUT("HSR"),
+<<<<<<< HEAD
 	SND_SOC_DAPM_OUTPUT("LSP"),
 	SND_SOC_DAPM_OUTPUT("SP"),
 
 	SND_SOC_DAPM_SWITCH("Speaker Amp", MC13783_AUDIO_RX0, 3, 0, &samp_ctl),
+=======
+	SND_SOC_DAPM_OUTPUT("LSPL"),
+	SND_SOC_DAPM_OUTPUT("LSP"),
+	SND_SOC_DAPM_OUTPUT("SP"),
+	SND_SOC_DAPM_OUTPUT("CDCOUT"),
+
+	SND_SOC_DAPM_SWITCH("CDCOUT Switch", MC13783_AUDIO_RX0, 18, 0,
+			&cdcout_ctl),
+	SND_SOC_DAPM_SWITCH("Speaker Amp Switch", MC13783_AUDIO_RX0, 3, 0,
+			&samp_ctl),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SND_SOC_DAPM_SWITCH("Loudspeaker Amp", SND_SOC_NOPM, 0, 0, &lamp_ctl),
 	SND_SOC_DAPM_SWITCH("Headset Amp Left", MC13783_AUDIO_RX0, 10, 0,
 			&hlamp_ctl),
@@ -555,42 +676,96 @@ static struct snd_soc_dapm_route mc13783_routes[] = {
 	{ "ADC", NULL, "PGA Right Input"},
 	{ "ADC", NULL, "ADC_Reset"},
 
+<<<<<<< HEAD
+=======
+	{ "Voice CODEC PGA", "Voice CODEC Bypass", "ADC" },
+
+	{ "Speaker Amp Source MUX", "CODEC", "Voice CODEC PGA"},
+	{ "Speaker Amp Source MUX", "Right", "DAC PGA"},
+
+	{ "Headset Amp Source MUX", "CODEC", "Voice CODEC PGA"},
+	{ "Headset Amp Source MUX", "Mixer", "DAC PGA"},
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Output */
 	{ "HSL", NULL, "Headset Amp Left" },
 	{ "HSR", NULL, "Headset Amp Right"},
 	{ "RXOUTL", NULL, "Line out Amp Left"},
 	{ "RXOUTR", NULL, "Line out Amp Right"},
+<<<<<<< HEAD
 	{ "SP", NULL, "Speaker Amp"},
 	{ "Speaker Amp", NULL, "DAC PGA"},
 	{ "LSP", NULL, "DAC PGA"},
 	{ "Headset Amp Left", NULL, "DAC PGA"},
 	{ "Headset Amp Right", NULL, "DAC PGA"},
+=======
+	{ "SP", "Speaker Amp Switch", "Speaker Amp Source MUX"},
+	{ "LSP", "Loudspeaker Amp", "Speaker Amp Source MUX"},
+	{ "HSL", "Headset Amp Left", "Headset Amp Source MUX"},
+	{ "HSR", "Headset Amp Right", "Headset Amp Source MUX"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "Line out Amp Left", NULL, "DAC PGA"},
 	{ "Line out Amp Right", NULL, "DAC PGA"},
 	{ "DAC PGA", NULL, "DAC"},
 	{ "DAC", NULL, "DAC_E"},
+<<<<<<< HEAD
+=======
+	{ "CDCOUT", "CDCOUT Switch", "Voice CODEC PGA"},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const char * const mc13783_3d_mixer[] = {"Stereo", "Phase Mix",
 						"Mono", "Mono Mix"};
 
+<<<<<<< HEAD
 static const struct soc_enum mc13783_enum_3d_mixer =
 	SOC_ENUM_SINGLE(MC13783_AUDIO_RX1, 16, ARRAY_SIZE(mc13783_3d_mixer),
 			mc13783_3d_mixer);
+=======
+static SOC_ENUM_SINGLE_DECL(mc13783_enum_3d_mixer,
+			    MC13783_AUDIO_RX1, 16,
+			    mc13783_3d_mixer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct snd_kcontrol_new mc13783_control_list[] = {
 	SOC_SINGLE("Loudspeaker enable", MC13783_AUDIO_RX0, 5, 1, 0),
 	SOC_SINGLE("PCM Playback Volume", MC13783_AUDIO_RX1, 6, 15, 0),
+<<<<<<< HEAD
 	SOC_DOUBLE("PCM Capture Volume", MC13783_AUDIO_TX, 19, 14, 31, 0),
 	SOC_ENUM("3D Control", mc13783_enum_3d_mixer),
+=======
+	SOC_SINGLE("PCM Playback Switch", MC13783_AUDIO_RX1, 5, 1, 0),
+	SOC_DOUBLE("PCM Capture Volume", MC13783_AUDIO_TX, 19, 14, 31, 0),
+	SOC_ENUM("3D Control", mc13783_enum_3d_mixer),
+
+	SOC_SINGLE("CDCOUT Switch", MC13783_AUDIO_RX0, 18, 1, 0),
+	SOC_SINGLE("Earpiece Amp Switch", MC13783_AUDIO_RX0, 3, 1, 0),
+	SOC_DOUBLE("Headset Amp Switch", MC13783_AUDIO_RX0, 10, 9, 1, 0),
+	SOC_DOUBLE("Line out Amp Switch", MC13783_AUDIO_RX0, 16, 15, 1, 0),
+
+	SOC_SINGLE("PCM Capture Mixin Switch", MC13783_AUDIO_RX0, 22, 1, 0),
+	SOC_SINGLE("Line in Capture Mixin Switch", MC13783_AUDIO_RX0, 23, 1, 0),
+
+	SOC_SINGLE("CODEC Capture Volume", MC13783_AUDIO_RX1, 1, 15, 0),
+	SOC_SINGLE("CODEC Capture Mixin Switch", MC13783_AUDIO_RX0, 21, 1, 0),
+
+	SOC_SINGLE("Line in Capture Volume", MC13783_AUDIO_RX1, 12, 15, 0),
+	SOC_SINGLE("Line in Capture Switch", MC13783_AUDIO_RX1, 10, 1, 0),
+
+	SOC_SINGLE("MC1 Capture Bias Switch", MC13783_AUDIO_TX, 0, 1, 0),
+	SOC_SINGLE("MC2 Capture Bias Switch", MC13783_AUDIO_TX, 1, 1, 0),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int mc13783_probe(struct snd_soc_codec *codec)
 {
 	struct mc13783_priv *priv = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* these are the reset values */
 	mc13xxx_reg_write(priv->mc13xxx, MC13783_AUDIO_RX0, 0x25893);
 	mc13xxx_reg_write(priv->mc13xxx, MC13783_AUDIO_RX1, 0x00d35A);
@@ -604,16 +779,24 @@ static int mc13783_probe(struct snd_soc_codec *codec)
 				AUDIO_SSI_SEL, 0);
 	else
 		mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_CODEC,
+<<<<<<< HEAD
 				0, AUDIO_SSI_SEL);
+=======
+				AUDIO_SSI_SEL, AUDIO_SSI_SEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (priv->dac_ssi_port == MC13783_SSI1_PORT)
 		mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_DAC,
 				AUDIO_SSI_SEL, 0);
 	else
 		mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_DAC,
+<<<<<<< HEAD
 				0, AUDIO_SSI_SEL);
 
 	mc13xxx_unlock(priv->mc13xxx);
+=======
+				AUDIO_SSI_SEL, AUDIO_SSI_SEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -622,6 +805,7 @@ static int mc13783_remove(struct snd_soc_codec *codec)
 {
 	struct mc13783_priv *priv = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 
 	/* Make sure VAUDIOON is off */
@@ -629,6 +813,11 @@ static int mc13783_remove(struct snd_soc_codec *codec)
 
 	mc13xxx_unlock(priv->mc13xxx);
 
+=======
+	/* Make sure VAUDIOON is off */
+	mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_RX0, 0x3, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -637,14 +826,22 @@ static int mc13783_remove(struct snd_soc_codec *codec)
 #define MC13783_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 	SNDRV_PCM_FMTBIT_S24_LE)
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops mc13783_ops_dac = {
+=======
+static const struct snd_soc_dai_ops mc13783_ops_dac = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= mc13783_pcm_hw_params_dac,
 	.set_fmt	= mc13783_set_fmt_async,
 	.set_sysclk	= mc13783_set_sysclk_dac,
 	.set_tdm_slot	= mc13783_set_tdm_slot_dac,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops mc13783_ops_codec = {
+=======
+static const struct snd_soc_dai_ops mc13783_ops_codec = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= mc13783_pcm_hw_params_codec,
 	.set_fmt	= mc13783_set_fmt_async,
 	.set_sysclk	= mc13783_set_sysclk_codec,
@@ -685,7 +882,11 @@ static struct snd_soc_dai_driver mc13783_dai_async[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops mc13783_ops_sync = {
+=======
+static const struct snd_soc_dai_ops mc13783_ops_sync = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= mc13783_pcm_hw_params_sync,
 	.set_fmt	= mc13783_set_fmt_sync,
 	.set_sysclk	= mc13783_set_sysclk_sync,
@@ -715,6 +916,7 @@ static struct snd_soc_dai_driver mc13783_dai_sync[] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_mc13783 = {
 	.probe		= mc13783_probe,
 	.remove		= mc13783_remove,
@@ -744,14 +946,71 @@ static int mc13783_codec_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(&pdev->dev, priv);
 	priv->mc13xxx = mc13xxx;
+=======
+static struct regmap *mc13783_get_regmap(struct device *dev)
+{
+	return dev_get_regmap(dev->parent, NULL);
+}
+
+static struct snd_soc_codec_driver soc_codec_dev_mc13783 = {
+	.probe		= mc13783_probe,
+	.remove		= mc13783_remove,
+	.get_regmap	= mc13783_get_regmap,
+	.component_driver = {
+		.controls		= mc13783_control_list,
+		.num_controls		= ARRAY_SIZE(mc13783_control_list),
+		.dapm_widgets		= mc13783_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(mc13783_dapm_widgets),
+		.dapm_routes		= mc13783_routes,
+		.num_dapm_routes	= ARRAY_SIZE(mc13783_routes),
+	},
+};
+
+static int __init mc13783_codec_probe(struct platform_device *pdev)
+{
+	struct mc13783_priv *priv;
+	struct mc13xxx_codec_platform_data *pdata = pdev->dev.platform_data;
+	struct device_node *np;
+	int ret;
+
+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata) {
 		priv->adc_ssi_port = pdata->adc_ssi_port;
 		priv->dac_ssi_port = pdata->dac_ssi_port;
 	} else {
+<<<<<<< HEAD
 		priv->adc_ssi_port = MC13783_SSI1_PORT;
 		priv->dac_ssi_port = MC13783_SSI2_PORT;
 	}
 
+=======
+		np = of_get_child_by_name(pdev->dev.parent->of_node, "codec");
+		if (!np)
+			return -ENOSYS;
+
+		ret = of_property_read_u32(np, "adc-port", &priv->adc_ssi_port);
+		if (ret) {
+			of_node_put(np);
+			return ret;
+		}
+
+		ret = of_property_read_u32(np, "dac-port", &priv->dac_ssi_port);
+		if (ret) {
+			of_node_put(np);
+			return ret;
+		}
+
+		of_node_put(np);
+	}
+
+	dev_set_drvdata(&pdev->dev, priv);
+	priv->mc13xxx = dev_get_drvdata(pdev->dev.parent);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (priv->adc_ssi_port == priv->dac_ssi_port)
 		ret = snd_soc_register_codec(&pdev->dev, &soc_codec_dev_mc13783,
 			mc13783_dai_sync, ARRAY_SIZE(mc13783_dai_sync));
@@ -759,6 +1018,7 @@ static int mc13783_codec_probe(struct platform_device *pdev)
 		ret = snd_soc_register_codec(&pdev->dev, &soc_codec_dev_mc13783,
 			mc13783_dai_async, ARRAY_SIZE(mc13783_dai_async));
 
+<<<<<<< HEAD
 	if (ret)
 		goto err_register_codec;
 
@@ -767,6 +1027,8 @@ static int mc13783_codec_probe(struct platform_device *pdev)
 err_register_codec:
 	dev_err(&pdev->dev, "register codec failed with %d\n", ret);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -779,6 +1041,7 @@ static int mc13783_codec_remove(struct platform_device *pdev)
 
 static struct platform_driver mc13783_codec_driver = {
 	.driver = {
+<<<<<<< HEAD
 		   .name = "mc13783-codec",
 		   .owner = THIS_MODULE,
 		   },
@@ -787,6 +1050,13 @@ static struct platform_driver mc13783_codec_driver = {
 };
 
 module_platform_driver(mc13783_codec_driver);
+=======
+		.name	= "mc13783-codec",
+	},
+	.remove = mc13783_codec_remove,
+};
+module_platform_driver_probe(mc13783_codec_driver, mc13783_codec_probe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_DESCRIPTION("ASoC MC13783 driver");
 MODULE_AUTHOR("Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>");

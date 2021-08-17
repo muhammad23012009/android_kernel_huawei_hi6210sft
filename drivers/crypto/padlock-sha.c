@@ -23,7 +23,11 @@
 #include <linux/kernel.h>
 #include <linux/scatterlist.h>
 #include <asm/cpu_device_id.h>
+<<<<<<< HEAD
 #include <asm/i387.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct padlock_sha_desc {
 	struct shash_desc fallback;
@@ -211,7 +215,11 @@ static int padlock_sha256_final(struct shash_desc *desc, u8 *out)
 static int padlock_cra_init(struct crypto_tfm *tfm)
 {
 	struct crypto_shash *hash = __crypto_shash_cast(tfm);
+<<<<<<< HEAD
 	const char *fallback_driver_name = tfm->__crt_alg->cra_name;
+=======
+	const char *fallback_driver_name = crypto_tfm_alg_name(tfm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct padlock_sha_ctx *ctx = crypto_tfm_ctx(tfm);
 	struct crypto_shash *fallback_tfm;
 	int err = -ENOMEM;
@@ -540,7 +548,11 @@ static int __init padlock_init(void)
 	struct shash_alg *sha1;
 	struct shash_alg *sha256;
 
+<<<<<<< HEAD
 	if (!x86_match_cpu(padlock_sha_ids) || !cpu_has_phe_enabled)
+=======
+	if (!x86_match_cpu(padlock_sha_ids) || !boot_cpu_has(X86_FEATURE_PHE_EN))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	/* Register the newly added algorithm module if on *

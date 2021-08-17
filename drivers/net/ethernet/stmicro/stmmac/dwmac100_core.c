@@ -32,8 +32,14 @@
 #include <asm/io.h>
 #include "dwmac100.h"
 
+<<<<<<< HEAD
 static void dwmac100_core_init(void __iomem *ioaddr)
 {
+=======
+static void dwmac100_core_init(struct mac_device_info *hw, int mtu)
+{
+	void __iomem *ioaddr = hw->pcsr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 value = readl(ioaddr + MAC_CONTROL);
 
 	writel((value | MAC_CORE_INIT), ioaddr + MAC_CONTROL);
@@ -43,8 +49,14 @@ static void dwmac100_core_init(void __iomem *ioaddr)
 #endif
 }
 
+<<<<<<< HEAD
 static void dwmac100_dump_mac_regs(void __iomem *ioaddr)
 {
+=======
+static void dwmac100_dump_mac_regs(struct mac_device_info *hw)
+{
+	void __iomem *ioaddr = hw->pcsr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_info("\t----------------------------------------------\n"
 		"\t  DWMAC 100 CSR (base addr = 0x%p)\n"
 		"\t----------------------------------------------\n", ioaddr);
@@ -66,17 +78,26 @@ static void dwmac100_dump_mac_regs(void __iomem *ioaddr)
 		readl(ioaddr + MAC_VLAN2));
 }
 
+<<<<<<< HEAD
 static int dwmac100_rx_ipc_enable(void __iomem *ioaddr)
+=======
+static int dwmac100_rx_ipc_enable(struct mac_device_info *hw)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dwmac100_irq_status(void __iomem *ioaddr,
+=======
+static int dwmac100_irq_status(struct mac_device_info *hw,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       struct stmmac_extra_stats *x)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static void dwmac100_set_umac_addr(void __iomem *ioaddr, unsigned char *addr,
 				   unsigned int reg_n)
 {
@@ -90,6 +111,26 @@ static void dwmac100_get_umac_addr(void __iomem *ioaddr, unsigned char *addr,
 }
 
 static void dwmac100_set_filter(struct net_device *dev, int id)
+=======
+static void dwmac100_set_umac_addr(struct mac_device_info *hw,
+				   unsigned char *addr,
+				   unsigned int reg_n)
+{
+	void __iomem *ioaddr = hw->pcsr;
+	stmmac_set_mac_addr(ioaddr, addr, MAC_ADDR_HIGH, MAC_ADDR_LOW);
+}
+
+static void dwmac100_get_umac_addr(struct mac_device_info *hw,
+				   unsigned char *addr,
+				   unsigned int reg_n)
+{
+	void __iomem *ioaddr = hw->pcsr;
+	stmmac_get_mac_addr(ioaddr, addr, MAC_ADDR_HIGH, MAC_ADDR_LOW);
+}
+
+static void dwmac100_set_filter(struct mac_device_info *hw,
+				struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void __iomem *ioaddr = (void __iomem *)dev->base_addr;
 	u32 value = readl(ioaddr + MAC_CONTROL);
@@ -135,6 +176,7 @@ static void dwmac100_set_filter(struct net_device *dev, int id)
 	}
 
 	writel(value, ioaddr + MAC_CONTROL);
+<<<<<<< HEAD
 
 	CHIP_DBG(KERN_INFO "%s: Filter: 0x%08x Hash: HI 0x%08x, LO 0x%08x\n",
 		 __func__, readl(ioaddr + MAC_CONTROL),
@@ -144,6 +186,14 @@ static void dwmac100_set_filter(struct net_device *dev, int id)
 static void dwmac100_flow_ctrl(void __iomem *ioaddr, unsigned int duplex,
 			       unsigned int fc, unsigned int pause_time)
 {
+=======
+}
+
+static void dwmac100_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
+			       unsigned int fc, unsigned int pause_time)
+{
+	void __iomem *ioaddr = hw->pcsr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int flow = MAC_FLOW_CTRL_ENABLE;
 
 	if (duplex)
@@ -152,7 +202,11 @@ static void dwmac100_flow_ctrl(void __iomem *ioaddr, unsigned int duplex,
 }
 
 /* No PMT module supported on ST boards with this Eth chip. */
+<<<<<<< HEAD
 static void dwmac100_pmt(void __iomem *ioaddr, unsigned long mode)
+=======
+static void dwmac100_pmt(struct mac_device_info *hw, unsigned long mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return;
 }
@@ -169,7 +223,11 @@ static const struct stmmac_ops dwmac100_ops = {
 	.get_umac_addr = dwmac100_get_umac_addr,
 };
 
+<<<<<<< HEAD
 struct mac_device_info *dwmac100_setup(void __iomem *ioaddr)
+=======
+struct mac_device_info *dwmac100_setup(void __iomem *ioaddr, int *synopsys_id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct mac_device_info *mac;
 
@@ -179,6 +237,10 @@ struct mac_device_info *dwmac100_setup(void __iomem *ioaddr)
 
 	pr_info("\tDWMAC100\n");
 
+<<<<<<< HEAD
+=======
+	mac->pcsr = ioaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mac->mac = &dwmac100_ops;
 	mac->dma = &dwmac100_dma_ops;
 
@@ -187,7 +249,12 @@ struct mac_device_info *dwmac100_setup(void __iomem *ioaddr)
 	mac->link.speed = 0;
 	mac->mii.addr = MAC_MII_ADDR;
 	mac->mii.data = MAC_MII_DATA;
+<<<<<<< HEAD
 	mac->synopsys_uid = 0;
+=======
+	/* Synopsys Id is not available on old chips */
+	*synopsys_id = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return mac;
 }

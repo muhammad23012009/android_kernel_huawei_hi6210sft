@@ -39,6 +39,7 @@ static inline void get_fs_pwd(struct fs_struct *fs, struct path *pwd)
 	spin_unlock(&fs->lock);
 }
 
+<<<<<<< HEAD
 static inline void get_fs_root_and_pwd(struct fs_struct *fs, struct path *root,
 				       struct path *pwd)
 {
@@ -50,6 +51,8 @@ static inline void get_fs_root_and_pwd(struct fs_struct *fs, struct path *root,
 	spin_unlock(&fs->lock);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern bool current_chrooted(void);
 
 #endif /* _LINUX_FS_STRUCT_H */

@@ -125,8 +125,14 @@ static int da9052_backlight_probe(struct platform_device *pdev)
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = DA9052_MAX_BRIGHTNESS;
 
+<<<<<<< HEAD
 	bl = backlight_device_register(pdev->name, wleds->da9052->dev, wleds,
 				       &da9052_backlight_ops, &props);
+=======
+	bl = devm_backlight_device_register(&pdev->dev, pdev->name,
+					wleds->da9052->dev, wleds,
+					&da9052_backlight_ops, &props);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "Failed to register backlight\n");
 		return PTR_ERR(bl);
@@ -147,12 +153,19 @@ static int da9052_backlight_remove(struct platform_device *pdev)
 	wleds->brightness = 0;
 	wleds->state = DA9052_WLEDS_OFF;
 	da9052_adjust_wled_brightness(wleds);
+<<<<<<< HEAD
 	backlight_device_unregister(bl);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_device_id da9052_wled_ids[] = {
+=======
+static const struct platform_device_id da9052_wled_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name		= "da9052-wled1",
 		.driver_data	= DA9052_TYPE_WLED1,
@@ -165,6 +178,10 @@ static struct platform_device_id da9052_wled_ids[] = {
 		.name		= "da9052-wled3",
 		.driver_data	= DA9052_TYPE_WLED3,
 	},
+<<<<<<< HEAD
+=======
+	{ },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_driver da9052_wled_driver = {
@@ -173,7 +190,10 @@ static struct platform_driver da9052_wled_driver = {
 	.id_table	= da9052_wled_ids,
 	.driver	= {
 		.name	= "da9052-wled",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

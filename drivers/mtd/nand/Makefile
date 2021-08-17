@@ -26,12 +26,21 @@ obj-$(CONFIG_MTD_NAND_CS553X)		+= cs553x_nand.o
 obj-$(CONFIG_MTD_NAND_NDFC)		+= ndfc.o
 obj-$(CONFIG_MTD_NAND_ATMEL)		+= atmel_nand.o
 obj-$(CONFIG_MTD_NAND_GPIO)		+= gpio.o
+<<<<<<< HEAD
 obj-$(CONFIG_MTD_NAND_OMAP2) 		+= omap2.o
+=======
+omap2_nand-objs := omap2.o
+obj-$(CONFIG_MTD_NAND_OMAP2) 		+= omap2_nand.o
+obj-$(CONFIG_MTD_NAND_OMAP_BCH_BUILD)	+= omap_elm.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_MTD_NAND_CM_X270)		+= cmx270_nand.o
 obj-$(CONFIG_MTD_NAND_PXA3xx)		+= pxa3xx_nand.o
 obj-$(CONFIG_MTD_NAND_TMIO)		+= tmio_nand.o
 obj-$(CONFIG_MTD_NAND_PLATFORM)		+= plat_nand.o
+<<<<<<< HEAD
 obj-$(CONFIG_MTD_ALAUDA)		+= alauda.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_MTD_NAND_PASEMI)		+= pasemi_nand.o
 obj-$(CONFIG_MTD_NAND_ORION)		+= orion_nand.o
 obj-$(CONFIG_MTD_NAND_FSL_ELBC)		+= fsl_elbc_nand.o
@@ -45,6 +54,7 @@ obj-$(CONFIG_MTD_NAND_SOCRATES)		+= socrates_nand.o
 obj-$(CONFIG_MTD_NAND_TXX9NDFMC)	+= txx9ndfmc.o
 obj-$(CONFIG_MTD_NAND_NUC900)		+= nuc900_nand.o
 obj-$(CONFIG_MTD_NAND_MPC5121_NFC)	+= mpc5121_nfc.o
+<<<<<<< HEAD
 obj-$(CONFIG_MTD_NAND_RICOH)		+= r852.o
 obj-$(CONFIG_MTD_NAND_JZ4740)		+= jz4740_nand.o
 obj-$(CONFIG_MTD_NAND_GPMI_NAND)	+= gpmi-nand/
@@ -52,3 +62,19 @@ obj-$(CONFIG_MTD_NAND_XWAY)		+= xway_nand.o
 obj-$(CONFIG_MTD_NAND_BCM47XXNFLASH)	+= bcm47xxnflash/
 
 nand-objs := nand_base.o nand_bbt.o
+=======
+obj-$(CONFIG_MTD_NAND_VF610_NFC)	+= vf610_nfc.o
+obj-$(CONFIG_MTD_NAND_RICOH)		+= r852.o
+obj-$(CONFIG_MTD_NAND_JZ4740)		+= jz4740_nand.o
+obj-$(CONFIG_MTD_NAND_JZ4780)		+= jz4780_nand.o jz4780_bch.o
+obj-$(CONFIG_MTD_NAND_GPMI_NAND)	+= gpmi-nand/
+obj-$(CONFIG_MTD_NAND_XWAY)		+= xway_nand.o
+obj-$(CONFIG_MTD_NAND_BCM47XXNFLASH)	+= bcm47xxnflash/
+obj-$(CONFIG_MTD_NAND_SUNXI)		+= sunxi_nand.o
+obj-$(CONFIG_MTD_NAND_HISI504)	        += hisi504_nand.o
+obj-$(CONFIG_MTD_NAND_BRCMNAND)		+= brcmnand/
+obj-$(CONFIG_MTD_NAND_QCOM)		+= qcom_nandc.o
+obj-$(CONFIG_MTD_NAND_MTK)		+= mtk_nand.o mtk_ecc.o
+
+nand-objs := nand_base.o nand_bbt.o nand_timings.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

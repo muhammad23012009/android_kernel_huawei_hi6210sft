@@ -15,6 +15,7 @@
 #define BCM_KONA_SMC_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #define FLAGS	(SEC_ROM_ICACHE_ENABLE_MASK | SEC_ROM_DCACHE_ENABLE_MASK | \
 			SEC_ROM_IRQ_ENABLE_MASK | SEC_ROM_FIQ_ENABLE_MASK)
 
@@ -65,6 +66,15 @@
 
 #ifndef	__ASSEMBLY__
 extern void bcm_kona_smc_init(void);
+=======
+
+/* Broadcom Secure Service API service IDs, return codes, and exit codes */
+#define SSAPI_ENABLE_L2_CACHE		0x01000002
+#define SEC_ROM_RET_OK			0x00000001
+#define SEC_EXIT_NORMAL			0x1
+
+extern int __init bcm_kona_smc_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern unsigned bcm_kona_smc(unsigned service_id,
 			     unsigned arg0,
@@ -72,9 +82,12 @@ extern unsigned bcm_kona_smc(unsigned service_id,
 			     unsigned arg2,
 			     unsigned arg3);
 
+<<<<<<< HEAD
 extern int bcm_kona_smc_asm(u32 service_id,
 			    u32 buffer_addr);
 
 #endif	/* __ASSEMBLY__ */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* BCM_KONA_SMC_H */

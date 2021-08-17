@@ -86,20 +86,33 @@ extern void nwfpe_enter(void);
 static int __init fpe_init(void)
 {
 	if (sizeof(FPA11) > sizeof(union fp_state)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "nwfpe: bad structure size\n");
+=======
+		pr_err("nwfpe: bad structure size\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	if (sizeof(FPREG) != 12) {
+<<<<<<< HEAD
 		printk(KERN_ERR "nwfpe: bad register size\n");
+=======
+		pr_err("nwfpe: bad register size\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	if (fpe_type[0] && strcmp(fpe_type, "nwfpe"))
 		return 0;
 
 	/* Display title, version and copyright information. */
+<<<<<<< HEAD
 	printk(KERN_WARNING "NetWinder Floating Point Emulator V0.97 ("
 	       NWFPE_BITS " precision)\n");
+=======
+	pr_info("NetWinder Floating Point Emulator V0.97 ("
+	        NWFPE_BITS " precision)\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	thread_register_notifier(&nwfpe_notifier_block);
 

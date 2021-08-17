@@ -506,6 +506,7 @@ static int snd_galaxy_probe(struct device *dev, unsigned int n)
 	u8 type;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[n], id[n], THIS_MODULE, sizeof *galaxy,
 			      &card);
 	if (err < 0)
@@ -513,6 +514,13 @@ static int snd_galaxy_probe(struct device *dev, unsigned int n)
 
 	snd_card_set_dev(card, dev);
 
+=======
+	err = snd_card_new(dev, index[n], id[n], THIS_MODULE,
+			   sizeof(*galaxy), &card);
+	if (err < 0)
+		return err;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	card->private_free = snd_galaxy_free;
 	galaxy = card->private_data;
 
@@ -571,7 +579,11 @@ static int snd_galaxy_probe(struct device *dev, unsigned int n)
 	if (err < 0)
 		goto error;
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(chip, 0, NULL);
+=======
+	err = snd_wss_pcm(chip, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		goto error;
 
@@ -579,7 +591,11 @@ static int snd_galaxy_probe(struct device *dev, unsigned int n)
 	if (err < 0)
 		goto error;
 
+<<<<<<< HEAD
 	err = snd_wss_timer(chip, 0, NULL);
+=======
+	err = snd_wss_timer(chip, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		goto error;
 
@@ -623,7 +639,10 @@ error:
 static int snd_galaxy_remove(struct device *dev, unsigned int n)
 {
 	snd_card_free(dev_get_drvdata(dev));
+<<<<<<< HEAD
 	dev_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -637,6 +656,7 @@ static struct isa_driver snd_galaxy_driver = {
 	}
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_galaxy_init(void)
 {
 	return isa_register_driver(&snd_galaxy_driver, SNDRV_CARDS);
@@ -649,3 +669,6 @@ static void __exit alsa_card_galaxy_exit(void)
 
 module_init(alsa_card_galaxy_init);
 module_exit(alsa_card_galaxy_exit);
+=======
+module_isa_driver(snd_galaxy_driver, SNDRV_CARDS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -27,10 +27,15 @@
 static int __init x86_rdrand_setup(char *s)
 {
 	setup_clear_cpu_cap(X86_FEATURE_RDRAND);
+<<<<<<< HEAD
+=======
+	setup_clear_cpu_cap(X86_FEATURE_RDSEED);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 __setup("nordrand", x86_rdrand_setup);
 
+<<<<<<< HEAD
 /* We can't use arch_get_random_long() here since alternatives haven't run */
 static inline int rdrand_long(unsigned long *v)
 {
@@ -71,3 +76,30 @@ void __cpuinit x86_init_rdrand(struct cpuinfo_x86 *c)
 		clear_cpu_cap(c, X86_FEATURE_RDRAND);
 #endif
 }
+=======
+/*
+ * RDRAND has Built-In-Self-Test (BIST) that runs on every invocation.
+ * Run the instruction a few times as a sanity check.
+ * If it fails, it is simple to disable RDRAND here.
+ */
+#define SANITY_CHECK_LOOPS 8
+
+#ifdef CONFIG_ARCH_RANDOM
+void x86_init_rdrand(struct cpuinfo_x86 *c)
+{
+	unsigned long tmp;
+	int i;
+
+	if (!cpu_has(c, X86_FEATURE_RDRAND))
+		return;
+
+	for (i = 0; i < SANITY_CHECK_LOOPS; i++) {
+		if (!rdrand_long(&tmp)) {
+			clear_cpu_cap(c, X86_FEATURE_RDRAND);
+			pr_warn_once("rdrand: disabled\n");
+			return;
+		}
+	}
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

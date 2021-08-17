@@ -113,7 +113,11 @@ isac_ph_state_bh(struct dchannel *dch)
 	pr_debug("%s: TE newstate %x\n", isac->name, dch->state);
 }
 
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 isac_empty_fifo(struct isac_hw *isac, int count)
 {
 	u8 *ptr;
@@ -711,7 +715,11 @@ isac_release(struct isac_hw *isac)
 {
 	if (isac->type & IPAC_TYPE_ISACX)
 		WriteISAC(isac, ISACX_MASK, 0xff);
+<<<<<<< HEAD
 	else
+=======
+	else if (isac->type != 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		WriteISAC(isac, ISAC_MASK, 0xff);
 	if (isac->dch.timer.function != NULL) {
 		del_timer(&isac->dch.timer);
@@ -756,10 +764,17 @@ dbusy_timer_handler(struct isac_hw *isac)
 }
 
 static int
+<<<<<<< HEAD
 open_dchannel(struct isac_hw *isac, struct channel_req *rq)
 {
 	pr_debug("%s: %s dev(%d) open from %p\n", isac->name, __func__,
 		 isac->dch.dev.id, __builtin_return_address(1));
+=======
+open_dchannel_caller(struct isac_hw *isac, struct channel_req *rq, void *caller)
+{
+	pr_debug("%s: %s dev(%d) open from %p\n", isac->name, __func__,
+		 isac->dch.dev.id, caller);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rq->protocol != ISDN_P_TE_S0)
 		return -EINVAL;
 	if (rq->adr.channel == 1)
@@ -773,6 +788,15 @@ open_dchannel(struct isac_hw *isac, struct channel_req *rq)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int
+open_dchannel(struct isac_hw *isac, struct channel_req *rq)
+{
+	return open_dchannel_caller(isac, rq, __builtin_return_address(0));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const char *ISACVer[] =
 {"2086/2186 V1.1", "2085 B1", "2085 B2",
  "2085 V2.3"};
@@ -1166,7 +1190,11 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 
 	if (ipac->type & IPAC_TYPE_IPACX) {
 		ista = ReadIPAC(ipac, ISACX_ISTA);
+<<<<<<< HEAD
 		while (ista && cnt--) {
+=======
+		while (ista && --cnt) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_debug("%s: ISTA %02x\n", ipac->name, ista);
 			if (ista & IPACX__ICA)
 				ipac_irq(&ipac->hscx[0], ista);
@@ -1178,7 +1206,11 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 		}
 	} else if (ipac->type & IPAC_TYPE_IPAC) {
 		ista = ReadIPAC(ipac, IPAC_ISTA);
+<<<<<<< HEAD
 		while (ista && cnt--) {
+=======
+		while (ista && --cnt) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			pr_debug("%s: ISTA %02x\n", ipac->name, ista);
 			if (ista & (IPAC__ICD | IPAC__EXD)) {
 				istad = ReadISAC(isac, ISAC_ISTA);
@@ -1196,7 +1228,11 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 			ista = ReadIPAC(ipac, IPAC_ISTA);
 		}
 	} else if (ipac->type & IPAC_TYPE_HSCX) {
+<<<<<<< HEAD
 		while (cnt) {
+=======
+		while (--cnt) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ista = ReadIPAC(ipac, IPAC_ISTAB + ipac->hscx[1].off);
 			pr_debug("%s: B2 ISTA %02x\n", ipac->name, ista);
 			if (ista)
@@ -1207,7 +1243,10 @@ mISDNipac_irq(struct ipac_hw *ipac, int maxloop)
 				mISDNisac_irq(isac, istad);
 			if (0 == (ista | istad))
 				break;
+<<<<<<< HEAD
 			cnt--;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	if (cnt > maxloop) /* only for ISAC/HSCX without PCI IRQ test */
@@ -1550,7 +1589,11 @@ ipac_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	case OPEN_CHANNEL:
 		rq = arg;
 		if (rq->protocol == ISDN_P_TE_S0)
+<<<<<<< HEAD
 			err = open_dchannel(isac, rq);
+=======
+			err = open_dchannel_caller(isac, rq, __builtin_return_address(0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else
 			err = open_bchannel(ipac, rq);
 		if (err)

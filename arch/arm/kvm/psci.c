@@ -15,12 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 #include <linux/kvm_host.h>
+=======
+#include <linux/arm-smccc.h>
+#include <linux/preempt.h>
+#include <linux/kvm_host.h>
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/wait.h>
 
 #include <asm/cputype.h>
 #include <asm/kvm_emulate.h>
+<<<<<<< HEAD
 #include <asm/kvm_psci.h>
+=======
+#include <asm/kvm_host.h>
+
+#include <kvm/arm_psci.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This is an implementation of the Power State Coordination Interface
@@ -29,6 +42,41 @@
 
 #define AFFINITY_MASK(level)	~((0x1UL << ((level) * MPIDR_LEVEL_BITS)) - 1)
 
+<<<<<<< HEAD
+=======
+static u32 smccc_get_function(struct kvm_vcpu *vcpu)
+{
+	return vcpu_get_reg(vcpu, 0);
+}
+
+static unsigned long smccc_get_arg1(struct kvm_vcpu *vcpu)
+{
+	return vcpu_get_reg(vcpu, 1);
+}
+
+static unsigned long smccc_get_arg2(struct kvm_vcpu *vcpu)
+{
+	return vcpu_get_reg(vcpu, 2);
+}
+
+static unsigned long smccc_get_arg3(struct kvm_vcpu *vcpu)
+{
+	return vcpu_get_reg(vcpu, 3);
+}
+
+static void smccc_set_retval(struct kvm_vcpu *vcpu,
+			     unsigned long a0,
+			     unsigned long a1,
+			     unsigned long a2,
+			     unsigned long a3)
+{
+	vcpu_set_reg(vcpu, 0, a0);
+	vcpu_set_reg(vcpu, 1, a1);
+	vcpu_set_reg(vcpu, 2, a2);
+	vcpu_set_reg(vcpu, 3, a3);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned long psci_affinity_mask(unsigned long affinity_level)
 {
 	if (affinity_level <= 3)
@@ -59,12 +107,17 @@ static unsigned long kvm_psci_vcpu_suspend(struct kvm_vcpu *vcpu)
 
 static void kvm_psci_vcpu_off(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	vcpu->arch.pause = true;
+=======
+	vcpu->arch.power_off = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 {
 	struct kvm *kvm = source_vcpu->kvm;
+<<<<<<< HEAD
 	struct kvm_vcpu *vcpu = NULL, *tmp;
 	wait_queue_head_t *wq;
 	unsigned long cpu_id;
@@ -84,6 +137,19 @@ static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 			break;
 		}
 	}
+=======
+	struct kvm_vcpu *vcpu = NULL;
+	struct swait_queue_head *wq;
+	unsigned long cpu_id;
+	unsigned long context_id;
+	phys_addr_t target_pc;
+
+	cpu_id = smccc_get_arg1(source_vcpu) & MPIDR_HWID_BITMASK;
+	if (vcpu_mode_is_32bit(source_vcpu))
+		cpu_id &= ~((u32) 0);
+
+	vcpu = kvm_mpidr_to_vcpu(kvm, cpu_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Make sure the caller requested a valid CPU and that the CPU is
@@ -91,15 +157,25 @@ static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 	 */
 	if (!vcpu)
 		return PSCI_RET_INVALID_PARAMS;
+<<<<<<< HEAD
 	if (!vcpu->arch.pause) {
 		if (kvm_psci_version(source_vcpu) != KVM_ARM_PSCI_0_1)
+=======
+	if (!vcpu->arch.power_off) {
+		if (kvm_psci_version(source_vcpu, kvm) != KVM_ARM_PSCI_0_1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return PSCI_RET_ALREADY_ON;
 		else
 			return PSCI_RET_INVALID_PARAMS;
 	}
 
+<<<<<<< HEAD
 	target_pc = *vcpu_reg(source_vcpu, 2);
 	context_id = *vcpu_reg(source_vcpu, 3);
+=======
+	target_pc = smccc_get_arg2(source_vcpu);
+	context_id = smccc_get_arg3(source_vcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kvm_reset_vcpu(vcpu);
 
@@ -118,19 +194,32 @@ static unsigned long kvm_psci_vcpu_on(struct kvm_vcpu *source_vcpu)
 	 * NOTE: We always update r0 (or x0) because for PSCI v0.1
 	 * the general puspose registers are undefined upon CPU_ON.
 	 */
+<<<<<<< HEAD
 	*vcpu_reg(vcpu, 0) = context_id;
 	vcpu->arch.pause = false;
 	smp_mb();		/* Make sure the above is visible */
 
 	wq = kvm_arch_vcpu_wq(vcpu);
 	wake_up_interruptible(wq);
+=======
+	smccc_set_retval(vcpu, context_id, 0, 0, 0);
+	vcpu->arch.power_off = false;
+	smp_mb();		/* Make sure the above is visible */
+
+	wq = kvm_arch_vcpu_wq(vcpu);
+	swake_up(wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return PSCI_RET_SUCCESS;
 }
 
 static unsigned long kvm_psci_vcpu_affinity_info(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	int i, matching_cpus = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long mpidr;
 	unsigned long target_affinity;
 	unsigned long target_affinity_mask;
@@ -138,8 +227,13 @@ static unsigned long kvm_psci_vcpu_affinity_info(struct kvm_vcpu *vcpu)
 	struct kvm *kvm = vcpu->kvm;
 	struct kvm_vcpu *tmp;
 
+<<<<<<< HEAD
 	target_affinity = *vcpu_reg(vcpu, 1);
 	lowest_affinity_level = *vcpu_reg(vcpu, 2);
+=======
+	target_affinity = smccc_get_arg1(vcpu);
+	lowest_affinity_level = smccc_get_arg2(vcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Determine target affinity mask */
 	target_affinity_mask = psci_affinity_mask(lowest_affinity_level);
@@ -154,6 +248,7 @@ static unsigned long kvm_psci_vcpu_affinity_info(struct kvm_vcpu *vcpu)
 	 * then ON else OFF
 	 */
 	kvm_for_each_vcpu(i, tmp, kvm) {
+<<<<<<< HEAD
 		mpidr = kvm_vcpu_get_mpidr(tmp);
 		if (((mpidr & target_affinity_mask) == target_affinity) &&
 		    !tmp->arch.pause) {
@@ -161,11 +256,44 @@ static unsigned long kvm_psci_vcpu_affinity_info(struct kvm_vcpu *vcpu)
 		}
 	}
 
+=======
+		mpidr = kvm_vcpu_get_mpidr_aff(tmp);
+		if ((mpidr & target_affinity_mask) == target_affinity) {
+			matching_cpus++;
+			if (!tmp->arch.power_off)
+				return PSCI_0_2_AFFINITY_LEVEL_ON;
+		}
+	}
+
+	if (!matching_cpus)
+		return PSCI_RET_INVALID_PARAMS;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return PSCI_0_2_AFFINITY_LEVEL_OFF;
 }
 
 static void kvm_prepare_system_event(struct kvm_vcpu *vcpu, u32 type)
 {
+<<<<<<< HEAD
+=======
+	int i;
+	struct kvm_vcpu *tmp;
+
+	/*
+	 * The KVM ABI specifies that a system event exit may call KVM_RUN
+	 * again and may perform shutdown/reboot at a later time that when the
+	 * actual request is made.  Since we are implementing PSCI and a
+	 * caller of PSCI reboot and shutdown expects that the system shuts
+	 * down or reboots immediately, let's make sure that VCPUs are not run
+	 * after this call is handled and before the VCPUs have been
+	 * re-initialized.
+	 */
+	kvm_for_each_vcpu(i, tmp, vcpu->kvm) {
+		tmp->arch.power_off = true;
+		kvm_vcpu_kick(tmp);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memset(&vcpu->run->system_event, 0, sizeof(vcpu->run->system_event));
 	vcpu->run->system_event.type = type;
 	vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
@@ -181,6 +309,7 @@ static void kvm_psci_system_reset(struct kvm_vcpu *vcpu)
 	kvm_prepare_system_event(vcpu, KVM_SYSTEM_EVENT_RESET);
 }
 
+<<<<<<< HEAD
 int kvm_psci_version(struct kvm_vcpu *vcpu)
 {
 	if (test_bit(KVM_ARM_VCPU_PSCI_0_2, vcpu->arch.features))
@@ -194,6 +323,14 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 	int ret = 1;
 	unsigned long psci_fn = *vcpu_reg(vcpu, 0) & ~((u32) 0);
 	unsigned long val;
+=======
+static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
+{
+	struct kvm *kvm = vcpu->kvm;
+	unsigned long psci_fn = smccc_get_function(vcpu);
+	unsigned long val;
+	int ret = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (psci_fn) {
 	case PSCI_0_2_FN_PSCI_VERSION:
@@ -201,7 +338,11 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 		 * Bits[31:16] = Major Version = 0
 		 * Bits[15:0] = Minor Version = 2
 		 */
+<<<<<<< HEAD
 		val = 2;
+=======
+		val = KVM_ARM_PSCI_0_2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case PSCI_0_2_FN_CPU_SUSPEND:
 	case PSCI_0_2_FN64_CPU_SUSPEND:
@@ -213,16 +354,25 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 		break;
 	case PSCI_0_2_FN_CPU_ON:
 	case PSCI_0_2_FN64_CPU_ON:
+<<<<<<< HEAD
 		val = kvm_psci_vcpu_on(vcpu);
+=======
+		mutex_lock(&kvm->lock);
+		val = kvm_psci_vcpu_on(vcpu);
+		mutex_unlock(&kvm->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case PSCI_0_2_FN_AFFINITY_INFO:
 	case PSCI_0_2_FN64_AFFINITY_INFO:
 		val = kvm_psci_vcpu_affinity_info(vcpu);
 		break;
+<<<<<<< HEAD
 	case PSCI_0_2_FN_MIGRATE:
 	case PSCI_0_2_FN64_MIGRATE:
 		val = PSCI_RET_NOT_SUPPORTED;
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case PSCI_0_2_FN_MIGRATE_INFO_TYPE:
 		/*
 		 * Trusted OS is MP hence does not require migration
@@ -231,10 +381,13 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 		 */
 		val = PSCI_0_2_TOS_MP;
 		break;
+<<<<<<< HEAD
 	case PSCI_0_2_FN_MIGRATE_INFO_UP_CPU:
 	case PSCI_0_2_FN64_MIGRATE_INFO_UP_CPU:
 		val = PSCI_RET_NOT_SUPPORTED;
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case PSCI_0_2_FN_SYSTEM_OFF:
 		kvm_psci_system_off(vcpu);
 		/*
@@ -260,16 +413,71 @@ static int kvm_psci_0_2_call(struct kvm_vcpu *vcpu)
 		ret = 0;
 		break;
 	default:
+<<<<<<< HEAD
 		return -EINVAL;
 	}
 
 	*vcpu_reg(vcpu, 0) = val;
+=======
+		val = PSCI_RET_NOT_SUPPORTED;
+		break;
+	}
+
+	smccc_set_retval(vcpu, val, 0, 0, 0);
+	return ret;
+}
+
+static int kvm_psci_1_0_call(struct kvm_vcpu *vcpu)
+{
+	u32 psci_fn = smccc_get_function(vcpu);
+	u32 feature;
+	unsigned long val;
+	int ret = 1;
+
+	switch(psci_fn) {
+	case PSCI_0_2_FN_PSCI_VERSION:
+		val = KVM_ARM_PSCI_1_0;
+		break;
+	case PSCI_1_0_FN_PSCI_FEATURES:
+		feature = smccc_get_arg1(vcpu);
+		switch(feature) {
+		case PSCI_0_2_FN_PSCI_VERSION:
+		case PSCI_0_2_FN_CPU_SUSPEND:
+		case PSCI_0_2_FN64_CPU_SUSPEND:
+		case PSCI_0_2_FN_CPU_OFF:
+		case PSCI_0_2_FN_CPU_ON:
+		case PSCI_0_2_FN64_CPU_ON:
+		case PSCI_0_2_FN_AFFINITY_INFO:
+		case PSCI_0_2_FN64_AFFINITY_INFO:
+		case PSCI_0_2_FN_MIGRATE_INFO_TYPE:
+		case PSCI_0_2_FN_SYSTEM_OFF:
+		case PSCI_0_2_FN_SYSTEM_RESET:
+		case PSCI_1_0_FN_PSCI_FEATURES:
+		case ARM_SMCCC_VERSION_FUNC_ID:
+			val = 0;
+			break;
+		default:
+			val = PSCI_RET_NOT_SUPPORTED;
+			break;
+		}
+		break;
+	default:
+		return kvm_psci_0_2_call(vcpu);
+	}
+
+	smccc_set_retval(vcpu, val, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int kvm_psci_0_1_call(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	unsigned long psci_fn = *vcpu_reg(vcpu, 0) & ~((u32) 0);
+=======
+	struct kvm *kvm = vcpu->kvm;
+	unsigned long psci_fn = smccc_get_function(vcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long val;
 
 	switch (psci_fn) {
@@ -278,6 +486,7 @@ static int kvm_psci_0_1_call(struct kvm_vcpu *vcpu)
 		val = PSCI_RET_SUCCESS;
 		break;
 	case KVM_PSCI_FN_CPU_ON:
+<<<<<<< HEAD
 		val = kvm_psci_vcpu_on(vcpu);
 		break;
 	case KVM_PSCI_FN_CPU_SUSPEND:
@@ -289,6 +498,18 @@ static int kvm_psci_0_1_call(struct kvm_vcpu *vcpu)
 	}
 
 	*vcpu_reg(vcpu, 0) = val;
+=======
+		mutex_lock(&kvm->lock);
+		val = kvm_psci_vcpu_on(vcpu);
+		mutex_unlock(&kvm->lock);
+		break;
+	default:
+		val = PSCI_RET_NOT_SUPPORTED;
+		break;
+	}
+
+	smccc_set_retval(vcpu, val, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 1;
 }
 
@@ -306,9 +527,17 @@ static int kvm_psci_0_1_call(struct kvm_vcpu *vcpu)
  * Errors:
  * -EINVAL: Unrecognized PSCI function
  */
+<<<<<<< HEAD
 int kvm_psci_call(struct kvm_vcpu *vcpu)
 {
 	switch (kvm_psci_version(vcpu)) {
+=======
+static int kvm_psci_call(struct kvm_vcpu *vcpu)
+{
+	switch (kvm_psci_version(vcpu, vcpu->kvm)) {
+	case KVM_ARM_PSCI_1_0:
+		return kvm_psci_1_0_call(vcpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case KVM_ARM_PSCI_0_2:
 		return kvm_psci_0_2_call(vcpu);
 	case KVM_ARM_PSCI_0_1:
@@ -317,3 +546,106 @@ int kvm_psci_call(struct kvm_vcpu *vcpu)
 		return -EINVAL;
 	};
 }
+<<<<<<< HEAD
+=======
+
+int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+{
+	u32 func_id = smccc_get_function(vcpu);
+	u32 val = SMCCC_RET_NOT_SUPPORTED;
+	u32 feature;
+
+	switch (func_id) {
+	case ARM_SMCCC_VERSION_FUNC_ID:
+		val = ARM_SMCCC_VERSION_1_1;
+		break;
+	case ARM_SMCCC_ARCH_FEATURES_FUNC_ID:
+		feature = smccc_get_arg1(vcpu);
+		switch(feature) {
+		case ARM_SMCCC_ARCH_WORKAROUND_1:
+			if (kvm_arm_harden_branch_predictor())
+				val = SMCCC_RET_SUCCESS;
+			break;
+		case ARM_SMCCC_ARCH_WORKAROUND_2:
+			switch (kvm_arm_have_ssbd()) {
+			case KVM_SSBD_FORCE_DISABLE:
+			case KVM_SSBD_UNKNOWN:
+				break;
+			case KVM_SSBD_KERNEL:
+				val = SMCCC_RET_SUCCESS;
+				break;
+			case KVM_SSBD_FORCE_ENABLE:
+			case KVM_SSBD_MITIGATED:
+				val = SMCCC_RET_NOT_REQUIRED;
+				break;
+			}
+			break;
+		}
+		break;
+	default:
+		return kvm_psci_call(vcpu);
+	}
+
+	smccc_set_retval(vcpu, val, 0, 0, 0);
+	return 1;
+}
+
+int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
+{
+	return 1;		/* PSCI version */
+}
+
+int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+{
+	if (put_user(KVM_REG_ARM_PSCI_VERSION, uindices))
+		return -EFAULT;
+
+	return 0;
+}
+
+int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+{
+	if (reg->id == KVM_REG_ARM_PSCI_VERSION) {
+		void __user *uaddr = (void __user *)(long)reg->addr;
+		u64 val;
+
+		val = kvm_psci_version(vcpu, vcpu->kvm);
+		if (copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id)))
+			return -EFAULT;
+
+		return 0;
+	}
+
+	return -EINVAL;
+}
+
+int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+{
+	if (reg->id == KVM_REG_ARM_PSCI_VERSION) {
+		void __user *uaddr = (void __user *)(long)reg->addr;
+		bool wants_02;
+		u64 val;
+
+		if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
+			return -EFAULT;
+
+		wants_02 = test_bit(KVM_ARM_VCPU_PSCI_0_2, vcpu->arch.features);
+
+		switch (val) {
+		case KVM_ARM_PSCI_0_1:
+			if (wants_02)
+				return -EINVAL;
+			vcpu->kvm->arch.psci_version = val;
+			return 0;
+		case KVM_ARM_PSCI_0_2:
+		case KVM_ARM_PSCI_1_0:
+			if (!wants_02)
+				return -EINVAL;
+			vcpu->kvm->arch.psci_version = val;
+			return 0;
+		}
+	}
+
+	return -EINVAL;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

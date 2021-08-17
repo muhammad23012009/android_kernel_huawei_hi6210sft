@@ -31,8 +31,12 @@ typedef struct {
 
 #define get_ds()		(KERNEL_DS)
 #define get_fs()		(__current_thread_info->addr_limit)
+<<<<<<< HEAD
 #define segment_eq(a,b)		((a).seg == (b).seg)
 #define __kernel_ds_p()		segment_eq(get_fs(), KERNEL_DS)
+=======
+#define segment_eq(a, b)	((a).seg == (b).seg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define get_addr_limit()	(get_fs().seg)
 
 #define set_fs(_x)					\

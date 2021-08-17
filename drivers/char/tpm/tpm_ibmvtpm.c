@@ -1,7 +1,11 @@
 /*
  * Copyright (C) 2012 IBM Corporation
  *
+<<<<<<< HEAD
  * Author: Ashley Lai <adlai@us.ibm.com>
+=======
+ * Author: Ashley Lai <ashleydlai@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Maintained by: <tpmdd-devel@lists.sourceforge.net>
  *
@@ -54,6 +58,7 @@ static int ibmvtpm_send_crq(struct vio_dev *vdev, u64 w1, u64 w2)
 }
 
 /**
+<<<<<<< HEAD
  * ibmvtpm_get_data - Retrieve ibm vtpm data
  * @dev:	device struct
  *
@@ -69,6 +74,8 @@ static struct ibmvtpm_dev *ibmvtpm_get_data(const struct device *dev)
 }
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * tpm_ibmvtpm_recv - Receive data after send
  * @chip:	tpm chip struct
  * @buf:	buffer to read
@@ -79,18 +86,29 @@ static struct ibmvtpm_dev *ibmvtpm_get_data(const struct device *dev)
  */
 static int tpm_ibmvtpm_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct ibmvtpm_dev *ibmvtpm;
 	u16 len;
 	int sig;
 
 	ibmvtpm = (struct ibmvtpm_dev *)TPM_VPRIV(chip);
 
+=======
+	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
+	u16 len;
+	int sig;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ibmvtpm->rtce_buf) {
 		dev_err(ibmvtpm->dev, "ibmvtpm device is not ready\n");
 		return 0;
 	}
 
+<<<<<<< HEAD
 	sig = wait_event_interruptible(ibmvtpm->wq, ibmvtpm->res_len != 0);
+=======
+	sig = wait_event_interruptible(ibmvtpm->wq, !ibmvtpm->tpm_processing_cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (sig)
 		return -EINTR;
 
@@ -98,7 +116,11 @@ static int tpm_ibmvtpm_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 
 	if (count < len) {
 		dev_err(ibmvtpm->dev,
+<<<<<<< HEAD
 			"Invalid size in recv: count=%ld, crq_size=%d\n",
+=======
+			"Invalid size in recv: count=%zd, crq_size=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			count, len);
 		return -EIO;
 	}
@@ -122,12 +144,19 @@ static int tpm_ibmvtpm_recv(struct tpm_chip *chip, u8 *buf, size_t count)
  */
 static int tpm_ibmvtpm_send(struct tpm_chip *chip, u8 *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct ibmvtpm_dev *ibmvtpm;
 	struct ibmvtpm_crq crq;
 	__be64 *word = (__be64 *)&crq;
 	int rc;
 
 	ibmvtpm = (struct ibmvtpm_dev *)TPM_VPRIV(chip);
+=======
+	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
+	struct ibmvtpm_crq crq;
+	__be64 *word = (__be64 *)&crq;
+	int rc, sig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!ibmvtpm->rtce_buf) {
 		dev_err(ibmvtpm->dev, "ibmvtpm device is not ready\n");
@@ -136,23 +165,54 @@ static int tpm_ibmvtpm_send(struct tpm_chip *chip, u8 *buf, size_t count)
 
 	if (count > ibmvtpm->rtce_size) {
 		dev_err(ibmvtpm->dev,
+<<<<<<< HEAD
 			"Invalid size in send: count=%ld, rtce_size=%d\n",
+=======
+			"Invalid size in send: count=%zd, rtce_size=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			count, ibmvtpm->rtce_size);
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&ibmvtpm->rtce_lock);
+=======
+	if (ibmvtpm->tpm_processing_cmd) {
+		dev_info(ibmvtpm->dev,
+		         "Need to wait for TPM to finish\n");
+		/* wait for previous command to finish */
+		sig = wait_event_interruptible(ibmvtpm->wq, !ibmvtpm->tpm_processing_cmd);
+		if (sig)
+			return -EINTR;
+	}
+
+	spin_lock(&ibmvtpm->rtce_lock);
+	ibmvtpm->res_len = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy((void *)ibmvtpm->rtce_buf, (void *)buf, count);
 	crq.valid = (u8)IBMVTPM_VALID_CMD;
 	crq.msg = (u8)VTPM_TPM_COMMAND;
 	crq.len = cpu_to_be16(count);
 	crq.data = cpu_to_be32(ibmvtpm->rtce_dma_handle);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * set the processing flag before the Hcall, since we may get the
+	 * result (interrupt) before even being able to check rc.
+	 */
+	ibmvtpm->tpm_processing_cmd = true;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = ibmvtpm_send_crq(ibmvtpm->vdev, be64_to_cpu(word[0]),
 			      be64_to_cpu(word[1]));
 	if (rc != H_SUCCESS) {
 		dev_err(ibmvtpm->dev, "tpm_ibmvtpm_send failed rc=%d\n", rc);
 		rc = 0;
+<<<<<<< HEAD
+=======
+		ibmvtpm->tpm_processing_cmd = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else
 		rc = count;
 
@@ -272,9 +332,18 @@ static int ibmvtpm_crq_send_init(struct ibmvtpm_dev *ibmvtpm)
  */
 static int tpm_ibmvtpm_remove(struct vio_dev *vdev)
 {
+<<<<<<< HEAD
 	struct ibmvtpm_dev *ibmvtpm = ibmvtpm_get_data(&vdev->dev);
 	int rc = 0;
 
+=======
+	struct tpm_chip *chip = dev_get_drvdata(&vdev->dev);
+	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
+	int rc = 0;
+
+	tpm_chip_unregister(chip);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_irq(vdev->irq, ibmvtpm);
 
 	do {
@@ -293,9 +362,15 @@ static int tpm_ibmvtpm_remove(struct vio_dev *vdev)
 		kfree(ibmvtpm->rtce_buf);
 	}
 
+<<<<<<< HEAD
 	tpm_remove_hardware(ibmvtpm->dev);
 
 	kfree(ibmvtpm);
+=======
+	kfree(ibmvtpm);
+	/* For tpm_ibmvtpm_get_desired_dma */
+	dev_set_drvdata(&vdev->dev, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -309,6 +384,7 @@ static int tpm_ibmvtpm_remove(struct vio_dev *vdev)
  */
 static unsigned long tpm_ibmvtpm_get_desired_dma(struct vio_dev *vdev)
 {
+<<<<<<< HEAD
 	struct ibmvtpm_dev *ibmvtpm = ibmvtpm_get_data(&vdev->dev);
 
 	/* ibmvtpm initializes at probe time, so the data we are
@@ -316,6 +392,19 @@ static unsigned long tpm_ibmvtpm_get_desired_dma(struct vio_dev *vdev)
 	* for TCE-mapped buffer in addition to CRQ.
 	*/
 	if (!ibmvtpm)
+=======
+	struct tpm_chip *chip = dev_get_drvdata(&vdev->dev);
+	struct ibmvtpm_dev *ibmvtpm;
+
+	/*
+	 * ibmvtpm initializes at probe time, so the data we are
+	 * asking for may not be set yet. Estimate that 4K required
+	 * for TCE-mapped buffer in addition to CRQ.
+	 */
+	if (chip)
+		ibmvtpm = dev_get_drvdata(&chip->dev);
+	else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return CRQ_RES_BUF_SIZE + PAGE_SIZE;
 
 	return CRQ_RES_BUF_SIZE + ibmvtpm->rtce_size;
@@ -330,7 +419,12 @@ static unsigned long tpm_ibmvtpm_get_desired_dma(struct vio_dev *vdev)
  */
 static int tpm_ibmvtpm_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct ibmvtpm_dev *ibmvtpm = ibmvtpm_get_data(dev);
+=======
+	struct tpm_chip *chip = dev_get_drvdata(dev);
+	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ibmvtpm_crq crq;
 	u64 *buf = (u64 *) &crq;
 	int rc = 0;
@@ -382,7 +476,12 @@ static int ibmvtpm_reset_crq(struct ibmvtpm_dev *ibmvtpm)
  */
 static int tpm_ibmvtpm_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct ibmvtpm_dev *ibmvtpm = ibmvtpm_get_data(dev);
+=======
+	struct tpm_chip *chip = dev_get_drvdata(dev);
+	struct ibmvtpm_dev *ibmvtpm = dev_get_drvdata(&chip->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int rc = 0;
 
 	do {
@@ -415,6 +514,7 @@ static bool tpm_ibmvtpm_req_canceled(struct tpm_chip *chip, u8 status)
 	return (status == 0);
 }
 
+<<<<<<< HEAD
 static const struct file_operations ibmvtpm_ops = {
 	.owner = THIS_MODULE,
 	.llseek = no_llseek,
@@ -452,6 +552,9 @@ static struct attribute *ibmvtpm_attrs[] = {
 static struct attribute_group ibmvtpm_attr_grp = { .attrs = ibmvtpm_attrs };
 
 static const struct tpm_vendor_specific tpm_ibmvtpm = {
+=======
+static const struct tpm_class_ops tpm_ibmvtpm = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.recv = tpm_ibmvtpm_recv,
 	.send = tpm_ibmvtpm_send,
 	.cancel = tpm_ibmvtpm_cancel,
@@ -459,8 +562,11 @@ static const struct tpm_vendor_specific tpm_ibmvtpm = {
 	.req_complete_mask = 0,
 	.req_complete_val = 0,
 	.req_canceled = tpm_ibmvtpm_req_canceled,
+<<<<<<< HEAD
 	.attr_group = &ibmvtpm_attr_grp,
 	.miscdev = { .fops = &ibmvtpm_ops, },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct dev_pm_ops tpm_ibmvtpm_pm_ops = {
@@ -519,7 +625,10 @@ static void ibmvtpm_crq_process(struct ibmvtpm_crq *crq,
 			dev_err(ibmvtpm->dev, "Unknown crq message type: %d\n", crq->msg);
 			return;
 		}
+<<<<<<< HEAD
 		return;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case IBMVTPM_VALID_CMD:
 		switch (crq->msg) {
 		case VTPM_GET_RTCE_BUFFER_SIZE_RES:
@@ -553,6 +662,10 @@ static void ibmvtpm_crq_process(struct ibmvtpm_crq *crq,
 		case VTPM_TPM_COMMAND_RES:
 			/* len of the data in rtce buffer */
 			ibmvtpm->res_len = be16_to_cpu(crq->len);
+<<<<<<< HEAD
+=======
+			ibmvtpm->tpm_processing_cmd = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			wake_up_interruptible(&ibmvtpm->wq);
 			return;
 		default:
@@ -581,6 +694,10 @@ static irqreturn_t ibmvtpm_interrupt(int irq, void *vtpm_instance)
 	 */
 	while ((crq = ibmvtpm_crq_get_next(ibmvtpm)) != NULL) {
 		ibmvtpm_crq_process(crq, ibmvtpm);
+<<<<<<< HEAD
+=======
+		wake_up_interruptible(&ibmvtpm->crq_queue.wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		crq->valid = 0;
 		smp_wmb();
 	}
@@ -606,11 +723,17 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 	struct tpm_chip *chip;
 	int rc = -ENOMEM, rc1;
 
+<<<<<<< HEAD
 	chip = tpm_register_hardware(dev, &tpm_ibmvtpm);
 	if (!chip) {
 		dev_err(dev, "tpm_register_hardware failed\n");
 		return -ENODEV;
 	}
+=======
+	chip = tpmm_chip_alloc(dev, &tpm_ibmvtpm);
+	if (IS_ERR(chip))
+		return PTR_ERR(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ibmvtpm = kzalloc(sizeof(struct ibmvtpm_dev), GFP_KERNEL);
 	if (!ibmvtpm) {
@@ -618,6 +741,12 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
+=======
+	ibmvtpm->dev = dev;
+	ibmvtpm->vdev = vio_dev;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	crq_q = &ibmvtpm->crq_queue;
 	crq_q->crq_addr = (struct ibmvtpm_crq *)get_zeroed_page(GFP_KERNEL);
 	if (!crq_q->crq_addr) {
@@ -626,6 +755,10 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 	}
 
 	crq_q->num_entry = CRQ_RES_BUF_SIZE / sizeof(*crq_q->crq_addr);
+<<<<<<< HEAD
+=======
+	init_waitqueue_head(&crq_q->wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ibmvtpm->crq_dma_handle = dma_map_single(dev, crq_q->crq_addr,
 						 CRQ_RES_BUF_SIZE,
 						 DMA_BIDIRECTIONAL);
@@ -662,9 +795,13 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 
 	crq_q->index = 0;
 
+<<<<<<< HEAD
 	ibmvtpm->dev = dev;
 	ibmvtpm->vdev = vio_dev;
 	TPM_VPRIV(chip) = (void *)ibmvtpm;
+=======
+	dev_set_drvdata(&chip->dev, ibmvtpm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&ibmvtpm->rtce_lock);
 
@@ -680,7 +817,18 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 	if (rc)
 		goto init_irq_cleanup;
 
+<<<<<<< HEAD
 	return rc;
+=======
+	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
+				ibmvtpm->rtce_buf != NULL,
+				HZ)) {
+		dev_err(dev, "CRQ response timed out\n");
+		goto init_irq_cleanup;
+	}
+
+	return tpm_chip_register(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 init_irq_cleanup:
 	do {
 		rc1 = plpar_hcall_norets(H_FREE_CRQ, vio_dev->unit_address);
@@ -695,8 +843,11 @@ cleanup:
 		kfree(ibmvtpm);
 	}
 
+<<<<<<< HEAD
 	tpm_remove_hardware(dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 

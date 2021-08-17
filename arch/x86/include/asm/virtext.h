@@ -19,6 +19,10 @@
 
 #include <asm/vmx.h>
 #include <asm/svm.h>
+<<<<<<< HEAD
+=======
+#include <asm/tlbflush.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * VMX functions:
@@ -40,12 +44,20 @@ static inline int cpu_has_vmx(void)
 static inline void cpu_vmxoff(void)
 {
 	asm volatile (ASM_VMX_VMXOFF : : : "cc");
+<<<<<<< HEAD
 	write_cr4(read_cr4() & ~X86_CR4_VMXE);
+=======
+	cr4_clear_bits(X86_CR4_VMXE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int cpu_vmx_enabled(void)
 {
+<<<<<<< HEAD
 	return read_cr4() & X86_CR4_VMXE;
+=======
+	return __read_cr4() & X86_CR4_VMXE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /** Disable VMX if it is enabled on the current CPU
@@ -82,23 +94,34 @@ static inline void cpu_emergency_vmxoff(void)
  */
 static inline int cpu_has_svm(const char **msg)
 {
+<<<<<<< HEAD
 	uint32_t eax, ebx, ecx, edx;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD) {
 		if (msg)
 			*msg = "not amd";
 		return 0;
 	}
 
+<<<<<<< HEAD
 	cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 	if (eax < SVM_CPUID_FUNC) {
+=======
+	if (boot_cpu_data.extended_cpuid_level < SVM_CPUID_FUNC) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (msg)
 			*msg = "can't execute cpuid_8000000a";
 		return 0;
 	}
 
+<<<<<<< HEAD
 	cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 	if (!(ecx & (1 << SVM_CPUID_FEATURE_SHIFT))) {
+=======
+	if (!boot_cpu_has(X86_FEATURE_SVM)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (msg)
 			*msg = "svm not available";
 		return 0;

@@ -5,7 +5,11 @@
  *                          Philip Edelbrock <phil@netroedge.com>
  *                          Stephen Rousset <stephen.rousset@rocketlogix.com>
  *                          Dan Eaton <dan.eaton@rocketlogix.com>
+<<<<<<< HEAD
  * Copyright (C) 2004-2008  Jean Delvare <khali@linux-fr.org>
+=======
+ * Copyright (C) 2004-2008  Jean Delvare <jdelvare@suse.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Original port to Linux 2.6 by Jeff Oliver.
  *
@@ -617,6 +621,13 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	err = kstrtoul(buf, 10, &val);
 	if (err)
 		return err;
+<<<<<<< HEAD
+=======
+
+	if (val > 255)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	data->vrm = val;
 	return count;
 }
@@ -855,8 +866,13 @@ static void lm87_init_client(struct i2c_client *client)
 {
 	struct lm87_data *data = i2c_get_clientdata(client);
 
+<<<<<<< HEAD
 	if (client->dev.platform_data) {
 		data->channel = *(u8 *)client->dev.platform_data;
+=======
+	if (dev_get_platdata(&client->dev)) {
+		data->channel = *(u8 *)dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lm87_write_value(client,
 				 LM87_REG_CHANNEL_MODE, data->channel);
 	} else {
@@ -903,7 +919,10 @@ static int lm87_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+<<<<<<< HEAD
 	data->valid = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&data->update_lock);
 
 	/* Initialize the LM87 chip */
@@ -1011,6 +1030,10 @@ static struct i2c_driver lm87_driver = {
 
 module_i2c_driver(lm87_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org> and others");
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de> and others");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("LM87 driver");
 MODULE_LICENSE("GPL");

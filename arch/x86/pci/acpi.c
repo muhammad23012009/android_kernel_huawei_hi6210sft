@@ -4,10 +4,15 @@
 #include <linux/irq.h>
 #include <linux/dmi.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/pci-acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/numa.h>
 #include <asm/pci_x86.h>
 
 struct pci_root_info {
+<<<<<<< HEAD
 	struct acpi_device *bridge;
 	char name[16];
 	unsigned int res_num;
@@ -17,6 +22,12 @@ struct pci_root_info {
 #ifdef	CONFIG_PCI_MMCONFIG
 	bool mcfg_added;
 	u16 segment;
+=======
+	struct acpi_pci_root_info common;
+	struct pci_sysdata sd;
+#ifdef	CONFIG_PCI_MMCONFIG
+	bool mcfg_added;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 start_bus;
 	u8 end_bus;
 #endif
@@ -84,6 +95,20 @@ static const struct dmi_system_id pci_crs_quirks[] __initconst = {
 			DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies, LTD"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	/* https://bugs.launchpad.net/ubuntu/+source/alsa-driver/+bug/931368 */
+	/* https://bugs.launchpad.net/ubuntu/+source/alsa-driver/+bug/1033299 */
+	{
+		.callback = set_use_crs,
+		.ident = "Foxconn K8M890-8237A",
+		.matches = {
+			DMI_MATCH(DMI_BOARD_VENDOR, "Foxconn"),
+			DMI_MATCH(DMI_BOARD_NAME, "K8M890-8237A"),
+			DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies, LTD"),
+		},
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Now for the blacklist.. */
 
@@ -134,8 +159,15 @@ void __init pci_acpi_crs_quirks(void)
 {
 	int year;
 
+<<<<<<< HEAD
 	if (dmi_get_date(DMI_BIOS_DATE, &year, NULL, NULL) && year < 2008)
 		pci_use_crs = false;
+=======
+	if (dmi_get_date(DMI_BIOS_DATE, &year, NULL, NULL) && year < 2008) {
+		if (iomem_resource.end <= 0xffffffff)
+			pci_use_crs = false;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dmi_check_system(pci_crs_quirks);
 
@@ -178,6 +210,7 @@ static int check_segment(u16 seg, struct device *dev, char *estr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int setup_mcfg_map(struct pci_root_info *info, u16 seg, u8 start,
 			  u8 end, phys_addr_t addr)
 {
@@ -187,6 +220,20 @@ static int setup_mcfg_map(struct pci_root_info *info, u16 seg, u8 start,
 	info->start_bus = start;
 	info->end_bus = end;
 	info->mcfg_added = false;
+=======
+static int setup_mcfg_map(struct acpi_pci_root_info *ci)
+{
+	int result, seg;
+	struct pci_root_info *info;
+	struct acpi_pci_root *root = ci->root;
+	struct device *dev = &ci->bridge->dev;
+
+	info = container_of(ci, struct pci_root_info, common);
+	info->start_bus = (u8)root->secondary.start;
+	info->end_bus = (u8)root->secondary.end;
+	info->mcfg_added = false;
+	seg = info->sd.domain;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* return success if MMCFG is not in use */
 	if (raw_pci_ext_ops && raw_pci_ext_ops != &pci_mmcfg)
@@ -195,7 +242,12 @@ static int setup_mcfg_map(struct pci_root_info *info, u16 seg, u8 start,
 	if (!(pci_probe & PCI_PROBE_MMCONF))
 		return check_segment(seg, dev, "MMCONFIG is disabled,");
 
+<<<<<<< HEAD
 	result = pci_mmconfig_insert(dev, seg, start, end, addr);
+=======
+	result = pci_mmconfig_insert(dev, seg, info->start_bus, info->end_bus,
+				     root->mcfg_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (result == 0) {
 		/* enable MMCFG if it hasn't been enabled yet */
 		if (raw_pci_ext_ops == NULL)
@@ -208,15 +260,27 @@ static int setup_mcfg_map(struct pci_root_info *info, u16 seg, u8 start,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void teardown_mcfg_map(struct pci_root_info *info)
 {
 	if (info->mcfg_added) {
 		pci_mmconfig_delete(info->segment, info->start_bus,
 				    info->end_bus);
+=======
+static void teardown_mcfg_map(struct acpi_pci_root_info *ci)
+{
+	struct pci_root_info *info;
+
+	info = container_of(ci, struct pci_root_info, common);
+	if (info->mcfg_added) {
+		pci_mmconfig_delete(info->sd.domain,
+				    info->start_bus, info->end_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		info->mcfg_added = false;
 	}
 }
 #else
+<<<<<<< HEAD
 static int setup_mcfg_map(struct pci_root_info *info,
 				    u16 seg, u8 start, u8 end,
 				    phys_addr_t addr)
@@ -499,6 +563,108 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 
 	if (pci_ignore_seg)
 		domain = 0;
+=======
+static int setup_mcfg_map(struct acpi_pci_root_info *ci)
+{
+	return 0;
+}
+
+static void teardown_mcfg_map(struct acpi_pci_root_info *ci)
+{
+}
+#endif
+
+static int pci_acpi_root_get_node(struct acpi_pci_root *root)
+{
+	int busnum = root->secondary.start;
+	struct acpi_device *device = root->device;
+	int node = acpi_get_node(device->handle);
+
+	if (node == NUMA_NO_NODE) {
+		node = x86_pci_root_bus_node(busnum);
+		if (node != 0 && node != NUMA_NO_NODE)
+			dev_info(&device->dev, FW_BUG "no _PXM; falling back to node %d from hardware (may be inconsistent with ACPI node numbers)\n",
+				node);
+	}
+	if (node != NUMA_NO_NODE && !node_online(node))
+		node = NUMA_NO_NODE;
+
+	return node;
+}
+
+static int pci_acpi_root_init_info(struct acpi_pci_root_info *ci)
+{
+	return setup_mcfg_map(ci);
+}
+
+static void pci_acpi_root_release_info(struct acpi_pci_root_info *ci)
+{
+	teardown_mcfg_map(ci);
+	kfree(container_of(ci, struct pci_root_info, common));
+}
+
+/*
+ * An IO port or MMIO resource assigned to a PCI host bridge may be
+ * consumed by the host bridge itself or available to its child
+ * bus/devices. The ACPI specification defines a bit (Producer/Consumer)
+ * to tell whether the resource is consumed by the host bridge itself,
+ * but firmware hasn't used that bit consistently, so we can't rely on it.
+ *
+ * On x86 and IA64 platforms, all IO port and MMIO resources are assumed
+ * to be available to child bus/devices except one special case:
+ *     IO port [0xCF8-0xCFF] is consumed by the host bridge itself
+ *     to access PCI configuration space.
+ *
+ * So explicitly filter out PCI CFG IO ports[0xCF8-0xCFF].
+ */
+static bool resource_is_pcicfg_ioport(struct resource *res)
+{
+	return (res->flags & IORESOURCE_IO) &&
+		res->start == 0xCF8 && res->end == 0xCFF;
+}
+
+static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
+{
+	struct acpi_device *device = ci->bridge;
+	int busnum = ci->root->secondary.start;
+	struct resource_entry *entry, *tmp;
+	int status;
+
+	status = acpi_pci_probe_root_resources(ci);
+	if (pci_use_crs) {
+		resource_list_for_each_entry_safe(entry, tmp, &ci->resources)
+			if (resource_is_pcicfg_ioport(entry->res))
+				resource_list_destroy_entry(entry);
+		return status;
+	}
+
+	resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
+		dev_printk(KERN_DEBUG, &device->dev,
+			   "host bridge window %pR (ignored)\n", entry->res);
+		resource_list_destroy_entry(entry);
+	}
+	x86_pci_root_bus_resources(busnum, &ci->resources);
+
+	return 0;
+}
+
+static struct acpi_pci_root_ops acpi_pci_root_ops = {
+	.pci_ops = &pci_root_ops,
+	.init_info = pci_acpi_root_init_info,
+	.release_info = pci_acpi_root_release_info,
+	.prepare_resources = pci_acpi_root_prepare_resources,
+};
+
+struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+{
+	int domain = root->segment;
+	int busnum = root->secondary.start;
+	int node = pci_acpi_root_get_node(root);
+	struct pci_bus *bus;
+
+	if (pci_ignore_seg)
+		root->segment = domain = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (domain && !pci_domains_supported) {
 		printk(KERN_WARNING "pci_bus %04x:%02x: "
@@ -507,6 +673,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	node = -1;
 #ifdef CONFIG_ACPI_NUMA
 	pxm = acpi_get_pxm(device->handle);
@@ -573,6 +740,35 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 		} else {
 			pci_free_resource_list(&resources);
 			__release_pci_root_info(info);
+=======
+	bus = pci_find_bus(domain, busnum);
+	if (bus) {
+		/*
+		 * If the desired bus has been scanned already, replace
+		 * its bus->sysdata.
+		 */
+		struct pci_sysdata sd = {
+			.domain = domain,
+			.node = node,
+			.companion = root->device
+		};
+
+		memcpy(bus->sysdata, &sd, sizeof(sd));
+	} else {
+		struct pci_root_info *info;
+
+		info = kzalloc_node(sizeof(*info), GFP_KERNEL, node);
+		if (!info)
+			dev_err(&root->device->dev,
+				"pci_bus %04x:%02x: ignored (out of memory)\n",
+				domain, busnum);
+		else {
+			info->sd.domain = domain;
+			info->sd.node = node;
+			info->sd.companion = root->device;
+			bus = acpi_pci_root_create(root, &acpi_pci_root_ops,
+						   &info->common, &info->sd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -581,6 +777,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 	 */
 	if (bus) {
 		struct pci_bus *child;
+<<<<<<< HEAD
 		list_for_each_entry(child, &bus->children, node) {
 			struct pci_dev *self = child->self;
 			if (!self)
@@ -598,6 +795,10 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 #else
 		dev_printk(KERN_DEBUG, &bus->dev, "on NUMA node %d\n", node);
 #endif
+=======
+		list_for_each_entry(child, &bus->children, node)
+			pcie_bus_configure_settings(child);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return bus;
@@ -605,9 +806,22 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 
 int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
 {
+<<<<<<< HEAD
 	struct pci_sysdata *sd = bridge->bus->sysdata;
 
 	ACPI_HANDLE_SET(&bridge->dev, sd->acpi);
+=======
+	/*
+	 * We pass NULL as parent to pci_create_root_bus(), so if it is not NULL
+	 * here, pci_create_root_bus() has been called by someone else and
+	 * sysdata is likely to be different from what we expect.  Let it go in
+	 * that case.
+	 */
+	if (!bridge->dev.parent) {
+		struct pci_sysdata *sd = bridge->bus->sysdata;
+		ACPI_COMPANION_SET(&bridge->dev, sd->companion);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

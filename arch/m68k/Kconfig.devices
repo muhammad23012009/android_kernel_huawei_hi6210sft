@@ -73,7 +73,11 @@ config ATARI_ETHERNEC
 	  ROM port. The driver works by polling instead of interrupts, so it
 	  is quite slow.
 
+<<<<<<< HEAD
 	  This driver also suppports the ethernet part of the NetUSBee ROM
+=======
+	  This driver also supports the ethernet part of the NetUSBee ROM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	  port combined Ethernet/USB adapter.
 
 	  To compile the actual ethernet driver, choose Y or M in for the NE2000
@@ -95,7 +99,11 @@ config ATARI_DSP56K
 
 config AMIGA_BUILTIN_SERIAL
 	tristate "Amiga builtin serial support"
+<<<<<<< HEAD
 	depends on AMIGA
+=======
+	depends on AMIGA && TTY
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  If you want to use your Amiga's built-in serial port in Linux,
 	  answer Y.

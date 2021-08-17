@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+#ifndef _METER_H
+#define _METER_H
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/iio/sysfs.h>
 
 /* metering ic types of attribute */
@@ -20,6 +26,7 @@
 #define IIO_DEV_ATTR_VOLT_C_OFFSET(_mode, _show, _store, _addr)      \
 	IIO_DEVICE_ATTR(volt_c_offset, _mode, _show, _store, _addr)
 
+<<<<<<< HEAD
 #define IIO_DEV_ATTR_REACTIVE_POWER_A_OFFSET(_mode, _show, _store, _addr)                \
 	IIO_DEVICE_ATTR(reactive_power_a_offset, _mode, _show, _store, _addr)
 
@@ -75,6 +82,63 @@
 	IIO_DEVICE_ATTR(reactive_power_b_gain, _mode, _show, _store, _addr)
 
 #define IIO_DEV_ATTR_REACTIVE_POWER_C_GAIN(_mode, _show, _store, _addr)                \
+=======
+#define IIO_DEV_ATTR_REACTIVE_POWER_A_OFFSET(_mode, _show, _store, _addr)   \
+	IIO_DEVICE_ATTR(reactive_power_a_offset, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_REACTIVE_POWER_B_OFFSET(_mode, _show, _store, _addr)   \
+	IIO_DEVICE_ATTR(reactive_power_b_offset, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_REACTIVE_POWER_C_OFFSET(_mode, _show, _store, _addr)   \
+	IIO_DEVICE_ATTR(reactive_power_c_offset, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_ACTIVE_POWER_A_OFFSET(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(active_power_a_offset, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_ACTIVE_POWER_B_OFFSET(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(active_power_b_offset, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_ACTIVE_POWER_C_OFFSET(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(active_power_c_offset, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_CURRENT_A_GAIN(_mode, _show, _store, _addr)	\
+	IIO_DEVICE_ATTR(current_a_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_CURRENT_B_GAIN(_mode, _show, _store, _addr)	\
+	IIO_DEVICE_ATTR(current_b_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_CURRENT_C_GAIN(_mode, _show, _store, _addr)	\
+	IIO_DEVICE_ATTR(current_c_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_APPARENT_POWER_A_GAIN(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(apparent_power_a_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_APPARENT_POWER_B_GAIN(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(apparent_power_b_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_APPARENT_POWER_C_GAIN(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(apparent_power_c_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_ACTIVE_POWER_GAIN(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(active_power_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_ACTIVE_POWER_A_GAIN(_mode, _show, _store, _addr)   \
+	IIO_DEVICE_ATTR(active_power_a_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_ACTIVE_POWER_B_GAIN(_mode, _show, _store, _addr)   \
+	IIO_DEVICE_ATTR(active_power_b_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_ACTIVE_POWER_C_GAIN(_mode, _show, _store, _addr)   \
+	IIO_DEVICE_ATTR(active_power_c_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_REACTIVE_POWER_A_GAIN(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(reactive_power_a_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_REACTIVE_POWER_B_GAIN(_mode, _show, _store, _addr)     \
+	IIO_DEVICE_ATTR(reactive_power_b_gain, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_REACTIVE_POWER_C_GAIN(_mode, _show, _store, _addr)     \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IIO_DEVICE_ATTR(reactive_power_c_gain, _mode, _show, _store, _addr)
 
 #define IIO_DEV_ATTR_CURRENT_A(_show, _addr)			\
@@ -332,12 +396,17 @@
 #define IIO_DEV_ATTR_IPEAK(_mode, _show, _store, _addr)			\
 	IIO_DEVICE_ATTR(ipeak, _mode, _show, _store, _addr)
 
+<<<<<<< HEAD
 #define IIO_DEV_ATTR_RIPEAK(_mode, _show, _store, _addr)			\
+=======
+#define IIO_DEV_ATTR_RIPEAK(_mode, _show, _store, _addr)		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IIO_DEVICE_ATTR(ripeak, _mode, _show, _store, _addr)
 
 #define IIO_DEV_ATTR_VPEAK(_mode, _show, _store, _addr)			\
 	IIO_DEVICE_ATTR(vpeak, _mode, _show, _store, _addr)
 
+<<<<<<< HEAD
 #define IIO_DEV_ATTR_RVPEAK(_mode, _show, _store, _addr)			\
 	IIO_DEVICE_ATTR(rvpeak, _mode, _show, _store, _addr)
 
@@ -346,6 +415,16 @@
 
 #define IIO_DEV_ATTR_CH_OFF(_num, _mode, _show, _store, _addr)			\
   IIO_DEVICE_ATTR(choff_##_num, _mode, _show, _store, _addr)
+=======
+#define IIO_DEV_ATTR_RVPEAK(_mode, _show, _store, _addr)		\
+	IIO_DEVICE_ATTR(rvpeak, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_VPERIOD(_mode, _show, _store, _addr)		\
+	IIO_DEVICE_ATTR(vperiod, _mode, _show, _store, _addr)
+
+#define IIO_DEV_ATTR_CH_OFF(_num, _mode, _show, _store, _addr)		\
+	IIO_DEVICE_ATTR(choff_##_num, _mode, _show, _store, _addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* active energy register, AENERGY, is more than half full */
 #define IIO_EVENT_ATTR_AENERGY_HALF_FULL(_evlist, _show, _store, _mask) \
@@ -394,3 +473,7 @@
 #define IIO_EVENT_ATTR_VPKLVL_EXC(_evlist, _show, _store, _mask) \
 	IIO_EVENT_ATTR_SH(vpklvl_exc, _evlist, _show, _store, _mask)
 
+<<<<<<< HEAD
+=======
+#endif /* _METER_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

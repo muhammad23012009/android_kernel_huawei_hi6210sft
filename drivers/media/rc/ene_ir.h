@@ -185,7 +185,11 @@
 #define __dbg(level, format, ...)				\
 do {								\
 	if (debug >= level)					\
+<<<<<<< HEAD
 		pr_debug(format "\n", ## __VA_ARGS__);		\
+=======
+		pr_info(format "\n", ## __VA_ARGS__);		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } while (0)
 
 #define dbg(format, ...)		__dbg(1, format, ## __VA_ARGS__)

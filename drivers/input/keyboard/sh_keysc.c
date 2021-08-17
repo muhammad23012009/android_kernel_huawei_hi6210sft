@@ -12,7 +12,10 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/delay.h>
@@ -171,7 +174,11 @@ static int sh_keysc_probe(struct platform_device *pdev)
 	int i;
 	int irq, error;
 
+<<<<<<< HEAD
 	if (!pdev->dev.platform_data) {
+=======
+	if (!dev_get_platdata(&pdev->dev)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&pdev->dev, "no platform data defined\n");
 		error = -EINVAL;
 		goto err0;
@@ -198,7 +205,11 @@ static int sh_keysc_probe(struct platform_device *pdev)
 	}
 
 	platform_set_drvdata(pdev, priv);
+<<<<<<< HEAD
 	memcpy(&priv->pdata, pdev->dev.platform_data, sizeof(priv->pdata));
+=======
+	memcpy(&priv->pdata, dev_get_platdata(&pdev->dev), sizeof(priv->pdata));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pdata = &priv->pdata;
 
 	priv->iomem_base = ioremap_nocache(res->start, resource_size(res));
@@ -266,7 +277,10 @@ static int sh_keysc_probe(struct platform_device *pdev)
  err2:
 	iounmap(priv->iomem_base);
  err1:
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(priv);
  err0:
 	return error;
@@ -285,7 +299,10 @@ static int sh_keysc_remove(struct platform_device *pdev)
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(priv);
 
 	return 0;

@@ -3,3 +3,14 @@
 #else
 #include <asm/io_mm.h>
 #endif
+<<<<<<< HEAD
+=======
+
+#define readb_relaxed(addr)	readb(addr)
+#define readw_relaxed(addr)	readw(addr)
+#define readl_relaxed(addr)	readl(addr)
+
+#define writeb_relaxed(b, addr)	writeb(b, addr)
+#define writew_relaxed(b, addr)	writew(b, addr)
+#define writel_relaxed(b, addr)	writel(b, addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

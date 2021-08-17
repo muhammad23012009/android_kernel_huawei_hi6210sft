@@ -110,6 +110,7 @@ static int pmu_backlight_update_status(struct backlight_device *bd)
 }
 
 
+<<<<<<< HEAD
 static int pmu_backlight_get_brightness(struct backlight_device *bd)
 {
 	return bd->props.brightness;
@@ -117,6 +118,9 @@ static int pmu_backlight_get_brightness(struct backlight_device *bd)
 
 static const struct backlight_ops pmu_backlight_data = {
 	.get_brightness	= pmu_backlight_get_brightness,
+=======
+static const struct backlight_ops pmu_backlight_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.update_status	= pmu_backlight_update_status,
 
 };

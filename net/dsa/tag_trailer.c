@@ -10,20 +10,30 @@
 
 #include <linux/etherdevice.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/netdevice.h>
 #include <linux/slab.h>
 #include "dsa_priv.h"
 
 netdev_tx_t trailer_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+#include <linux/slab.h>
+#include "dsa_priv.h"
+
+static struct sk_buff *trailer_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dsa_slave_priv *p = netdev_priv(dev);
 	struct sk_buff *nskb;
 	int padlen;
 	u8 *trailer;
 
+<<<<<<< HEAD
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * We have to make sure that the trailer ends up as the very
 	 * last 4 bytes of the packet.  This means that we have to pad
@@ -37,7 +47,11 @@ netdev_tx_t trailer_xmit(struct sk_buff *skb, struct net_device *dev)
 	nskb = alloc_skb(NET_IP_ALIGN + skb->len + padlen + 4, GFP_ATOMIC);
 	if (nskb == NULL) {
 		kfree_skb(skb);
+<<<<<<< HEAD
 		return NETDEV_TX_OK;
+=======
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	skb_reserve(nskb, NET_IP_ALIGN);
 
@@ -58,12 +72,16 @@ netdev_tx_t trailer_xmit(struct sk_buff *skb, struct net_device *dev)
 	trailer[2] = 0x10;
 	trailer[3] = 0x00;
 
+<<<<<<< HEAD
 	nskb->protocol = htons(ETH_P_TRAILER);
 
 	nskb->dev = p->parent->dst->master_netdev;
 	dev_queue_xmit(nskb);
 
 	return NETDEV_TX_OK;
+=======
+	return nskb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int trailer_rcv(struct sk_buff *skb, struct net_device *dev,
@@ -87,16 +105,28 @@ static int trailer_rcv(struct sk_buff *skb, struct net_device *dev,
 
 	trailer = skb_tail_pointer(skb) - 4;
 	if (trailer[0] != 0x80 || (trailer[1] & 0xf8) != 0x00 ||
+<<<<<<< HEAD
 	    (trailer[3] & 0xef) != 0x00 || trailer[3] != 0x00)
 		goto out_drop;
 
 	source_port = trailer[1] & 7;
 	if (source_port >= DSA_MAX_PORTS || ds->ports[source_port] == NULL)
+=======
+	    (trailer[2] & 0xef) != 0x00 || trailer[3] != 0x00)
+		goto out_drop;
+
+	source_port = trailer[1] & 7;
+	if (source_port >= DSA_MAX_PORTS || !ds->ports[source_port].netdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_drop;
 
 	pskb_trim_rcsum(skb, skb->len - 4);
 
+<<<<<<< HEAD
 	skb->dev = ds->ports[source_port];
+=======
+	skb->dev = ds->ports[source_port].netdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_push(skb, ETH_HLEN);
 	skb->pkt_type = PACKET_HOST;
 	skb->protocol = eth_type_trans(skb, skb->dev);
@@ -114,7 +144,13 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 struct packet_type trailer_packet_type __read_mostly = {
 	.type	= cpu_to_be16(ETH_P_TRAILER),
 	.func	= trailer_rcv,
+=======
+const struct dsa_device_ops trailer_netdev_ops = {
+	.xmit	= trailer_xmit,
+	.rcv	= trailer_rcv,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

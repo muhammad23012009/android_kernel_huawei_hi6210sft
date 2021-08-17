@@ -20,6 +20,14 @@
 
 struct kmem_cache *zfcp_fsf_qtcb_cache;
 
+<<<<<<< HEAD
+=======
+static bool ber_stop = true;
+module_param(ber_stop, bool, 0600);
+MODULE_PARM_DESC(ber_stop,
+		 "Shuts down FCP devices for FCP channels that report a bit-error count in excess of its threshold (default on)");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void zfcp_fsf_request_timeout_handler(unsigned long data)
 {
 	struct zfcp_adapter *adapter = (struct zfcp_adapter *) data;
@@ -114,7 +122,11 @@ static void zfcp_fsf_link_down_info_eval(struct zfcp_fsf_req *req,
 	if (atomic_read(&adapter->status) & ZFCP_STATUS_ADAPTER_LINK_UNPLUGGED)
 		return;
 
+<<<<<<< HEAD
 	atomic_set_mask(ZFCP_STATUS_ADAPTER_LINK_UNPLUGGED, &adapter->status);
+=======
+	atomic_or(ZFCP_STATUS_ADAPTER_LINK_UNPLUGGED, &adapter->status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	zfcp_scsi_schedule_rports_block(adapter);
 
@@ -204,7 +216,11 @@ static void zfcp_fsf_status_read_link_down(struct zfcp_fsf_req *req)
 		break;
 	case FSF_STATUS_READ_SUB_FIRMWARE_UPDATE:
 		zfcp_fsf_link_down_info_eval(req, NULL);
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void zfcp_fsf_status_read_handler(struct zfcp_fsf_req *req)
@@ -231,10 +247,22 @@ static void zfcp_fsf_status_read_handler(struct zfcp_fsf_req *req)
 	case FSF_STATUS_READ_SENSE_DATA_AVAIL:
 		break;
 	case FSF_STATUS_READ_BIT_ERROR_THRESHOLD:
+<<<<<<< HEAD
 		dev_warn(&adapter->ccw_device->dev,
 			 "The error threshold for checksum statistics "
 			 "has been exceeded\n");
 		zfcp_dbf_hba_bit_err("fssrh_3", req);
+=======
+		zfcp_dbf_hba_bit_err("fssrh_3", req);
+		if (ber_stop) {
+			dev_warn(&adapter->ccw_device->dev,
+				 "All paths over this FCP device are disused because of excessive bit errors\n");
+			zfcp_erp_adapter_shutdown(adapter, 0, "fssrh_b");
+		} else {
+			dev_warn(&adapter->ccw_device->dev,
+				 "The error threshold for checksum statistics has been exceeded\n");
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case FSF_STATUS_READ_LINK_DOWN:
 		zfcp_fsf_status_read_link_down(req);
@@ -254,6 +282,7 @@ static void zfcp_fsf_status_read_handler(struct zfcp_fsf_req *req)
 
 		break;
 	case FSF_STATUS_READ_NOTIFICATION_LOST:
+<<<<<<< HEAD
 		if (sr_buf->status_subtype & FSF_STATUS_READ_SUB_ACT_UPDATED)
 			zfcp_cfdc_adapter_access_changed(adapter);
 		if (sr_buf->status_subtype & FSF_STATUS_READ_SUB_INCOMING_ELS)
@@ -262,6 +291,11 @@ static void zfcp_fsf_status_read_handler(struct zfcp_fsf_req *req)
 	case FSF_STATUS_READ_CFDC_UPDATED:
 		zfcp_cfdc_adapter_access_changed(adapter);
 		break;
+=======
+		if (sr_buf->status_subtype & FSF_STATUS_READ_SUB_INCOMING_ELS)
+			zfcp_fc_conditional_port_scan(adapter);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case FSF_STATUS_READ_FEATURE_UPDATE_ALERT:
 		adapter->adapter_features = sr_buf->payload.word[0];
 		break;
@@ -350,7 +384,11 @@ static void zfcp_fsf_protstatus_eval(struct zfcp_fsf_req *req)
 		zfcp_erp_adapter_shutdown(adapter, 0, "fspse_3");
 		break;
 	case FSF_PROT_HOST_CONNECTION_INITIALIZING:
+<<<<<<< HEAD
 		atomic_set_mask(ZFCP_STATUS_ADAPTER_HOST_CON_INIT,
+=======
+		atomic_or(ZFCP_STATUS_ADAPTER_HOST_CON_INIT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				&adapter->status);
 		break;
 	case FSF_PROT_DUPLICATE_REQUEST_ID:
@@ -562,7 +600,11 @@ static void zfcp_fsf_exchange_config_data_handler(struct zfcp_fsf_req *req)
 			zfcp_erp_adapter_shutdown(adapter, 0, "fsecdh1");
 			return;
 		}
+<<<<<<< HEAD
 		atomic_set_mask(ZFCP_STATUS_ADAPTER_XCONFIG_OK,
+=======
+		atomic_or(ZFCP_STATUS_ADAPTER_XCONFIG_OK,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				&adapter->status);
 		break;
 	case FSF_EXCHANGE_CONFIG_DATA_INCOMPLETE:
@@ -575,7 +617,11 @@ static void zfcp_fsf_exchange_config_data_handler(struct zfcp_fsf_req *req)
 
 		/* avoids adapter shutdown to be able to recognize
 		 * events such as LINK UP */
+<<<<<<< HEAD
 		atomic_set_mask(ZFCP_STATUS_ADAPTER_XCONFIG_OK,
+=======
+		atomic_or(ZFCP_STATUS_ADAPTER_XCONFIG_OK,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				&adapter->status);
 		zfcp_fsf_link_down_info_eval(req,
 			&qtcb->header.fsf_status_qual.link_down_info);
@@ -777,7 +823,12 @@ int zfcp_fsf_status_read(struct zfcp_qdio *qdio)
 	if (zfcp_qdio_sbal_get(qdio))
 		goto out;
 
+<<<<<<< HEAD
 	req = zfcp_fsf_req_create(qdio, FSF_QTCB_UNSOLICITED_STATUS, 0,
+=======
+	req = zfcp_fsf_req_create(qdio, FSF_QTCB_UNSOLICITED_STATUS,
+				  SBAL_SFLAGS0_TYPE_STATUS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  adapter->pool.status_read_req);
 	if (IS_ERR(req)) {
 		retval = PTR_ERR(req);
@@ -932,8 +983,13 @@ static void zfcp_fsf_send_ct_handler(struct zfcp_fsf_req *req)
 
 	switch (header->fsf_status) {
         case FSF_GOOD:
+<<<<<<< HEAD
 		zfcp_dbf_san_res("fsscth2", req);
 		ct->status = 0;
+=======
+		ct->status = 0;
+		zfcp_dbf_san_res("fsscth2", req);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
         case FSF_SERVICE_CLASS_NOT_SUPPORTED:
 		zfcp_fsf_class_not_supp(req);
@@ -946,8 +1002,11 @@ static void zfcp_fsf_send_ct_handler(struct zfcp_fsf_req *req)
 			break;
                 }
                 break;
+<<<<<<< HEAD
 	case FSF_ACCESS_DENIED:
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         case FSF_PORT_BOXED:
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		break;
@@ -1106,7 +1165,10 @@ out:
 static void zfcp_fsf_send_els_handler(struct zfcp_fsf_req *req)
 {
 	struct zfcp_fsf_ct_els *send_els = req->data;
+<<<<<<< HEAD
 	struct zfcp_port *port = send_els->port;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fsf_qtcb_header *header = &req->qtcb->header;
 
 	send_els->status = -EINVAL;
@@ -1116,8 +1178,13 @@ static void zfcp_fsf_send_els_handler(struct zfcp_fsf_req *req)
 
 	switch (header->fsf_status) {
 	case FSF_GOOD:
+<<<<<<< HEAD
 		zfcp_dbf_san_res("fsselh1", req);
 		send_els->status = 0;
+=======
+		send_els->status = 0;
+		zfcp_dbf_san_res("fsselh1", req);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case FSF_SERVICE_CLASS_NOT_SUPPORTED:
 		zfcp_fsf_class_not_supp(req);
@@ -1136,12 +1203,15 @@ static void zfcp_fsf_send_els_handler(struct zfcp_fsf_req *req)
 	case FSF_REQUEST_SIZE_TOO_LARGE:
 	case FSF_RESPONSE_SIZE_TOO_LARGE:
 		break;
+<<<<<<< HEAD
 	case FSF_ACCESS_DENIED:
 		if (port) {
 			zfcp_cfdc_port_denied(port, &header->fsf_status_qual);
 			req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		}
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case FSF_SBAL_MISMATCH:
 		/* should never occur, avoided in zfcp_fsf_send_els */
 		/* fall through */
@@ -1230,8 +1300,11 @@ int zfcp_fsf_exchange_config_data(struct zfcp_erp_action *erp_action)
 	zfcp_qdio_set_sbale_last(qdio, &req->qdio_req);
 
 	req->qtcb->bottom.config.feature_selection =
+<<<<<<< HEAD
 			FSF_FEATURE_CFDC |
 			FSF_FEATURE_LUN_SHARING |
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			FSF_FEATURE_NOTIFICATION_LOST |
 			FSF_FEATURE_UPDATE_ALERT;
 	req->erp_action = erp_action;
@@ -1271,8 +1344,11 @@ int zfcp_fsf_exchange_config_data_sync(struct zfcp_qdio *qdio,
 	req->handler = zfcp_fsf_exchange_config_data_handler;
 
 	req->qtcb->bottom.config.feature_selection =
+<<<<<<< HEAD
 			FSF_FEATURE_CFDC |
 			FSF_FEATURE_LUN_SHARING |
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			FSF_FEATURE_NOTIFICATION_LOST |
 			FSF_FEATURE_UPDATE_ALERT;
 
@@ -1399,10 +1475,13 @@ static void zfcp_fsf_open_port_handler(struct zfcp_fsf_req *req)
 	switch (header->fsf_status) {
 	case FSF_PORT_ALREADY_OPEN:
 		break;
+<<<<<<< HEAD
 	case FSF_ACCESS_DENIED:
 		zfcp_cfdc_port_denied(port, &header->fsf_status_qual);
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case FSF_MAXIMUM_NUMBER_OF_PORTS_EXCEEDED:
 		dev_warn(&req->adapter->ccw_device->dev,
 			 "Not enough FCP adapter resources to open "
@@ -1423,10 +1502,16 @@ static void zfcp_fsf_open_port_handler(struct zfcp_fsf_req *req)
 		break;
 	case FSF_GOOD:
 		port->handle = header->port_handle;
+<<<<<<< HEAD
 		atomic_set_mask(ZFCP_STATUS_COMMON_OPEN |
 				ZFCP_STATUS_PORT_PHYS_OPEN, &port->status);
 		atomic_clear_mask(ZFCP_STATUS_COMMON_ACCESS_DENIED |
 		                  ZFCP_STATUS_COMMON_ACCESS_BOXED,
+=======
+		atomic_or(ZFCP_STATUS_COMMON_OPEN |
+				ZFCP_STATUS_PORT_PHYS_OPEN, &port->status);
+		atomic_andnot(ZFCP_STATUS_COMMON_ACCESS_BOXED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		                  &port->status);
 		/* check whether D_ID has changed during open */
 		/*
@@ -1585,8 +1670,11 @@ static void zfcp_fsf_open_wka_port_handler(struct zfcp_fsf_req *req)
 		/* fall through */
 	case FSF_ADAPTER_STATUS_AVAILABLE:
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
+<<<<<<< HEAD
 		/* fall through */
 	case FSF_ACCESS_DENIED:
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wka_port->status = ZFCP_FC_WKA_PORT_OFFLINE;
 		break;
 	case FSF_GOOD:
@@ -1608,6 +1696,10 @@ int zfcp_fsf_open_wka_port(struct zfcp_fc_wka_port *wka_port)
 {
 	struct zfcp_qdio *qdio = wka_port->adapter->qdio;
 	struct zfcp_fsf_req *req;
+<<<<<<< HEAD
+=======
+	unsigned long req_id = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval = -EIO;
 
 	spin_lock_irq(&qdio->req_q_lock);
@@ -1630,6 +1722,11 @@ int zfcp_fsf_open_wka_port(struct zfcp_fc_wka_port *wka_port)
 	hton24(req->qtcb->bottom.support.d_id, wka_port->d_id);
 	req->data = wka_port;
 
+<<<<<<< HEAD
+=======
+	req_id = req->req_id;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	zfcp_fsf_start_timer(req, ZFCP_FSF_REQUEST_TIMEOUT);
 	retval = zfcp_fsf_req_send(req);
 	if (retval)
@@ -1637,7 +1734,11 @@ int zfcp_fsf_open_wka_port(struct zfcp_fc_wka_port *wka_port)
 out:
 	spin_unlock_irq(&qdio->req_q_lock);
 	if (!retval)
+<<<<<<< HEAD
 		zfcp_dbf_rec_run_wka("fsowp_1", wka_port, req->req_id);
+=======
+		zfcp_dbf_rec_run_wka("fsowp_1", wka_port, req_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
@@ -1663,6 +1764,10 @@ int zfcp_fsf_close_wka_port(struct zfcp_fc_wka_port *wka_port)
 {
 	struct zfcp_qdio *qdio = wka_port->adapter->qdio;
 	struct zfcp_fsf_req *req;
+<<<<<<< HEAD
+=======
+	unsigned long req_id = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval = -EIO;
 
 	spin_lock_irq(&qdio->req_q_lock);
@@ -1685,6 +1790,11 @@ int zfcp_fsf_close_wka_port(struct zfcp_fc_wka_port *wka_port)
 	req->data = wka_port;
 	req->qtcb->header.port_handle = wka_port->handle;
 
+<<<<<<< HEAD
+=======
+	req_id = req->req_id;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	zfcp_fsf_start_timer(req, ZFCP_FSF_REQUEST_TIMEOUT);
 	retval = zfcp_fsf_req_send(req);
 	if (retval)
@@ -1692,7 +1802,11 @@ int zfcp_fsf_close_wka_port(struct zfcp_fc_wka_port *wka_port)
 out:
 	spin_unlock_irq(&qdio->req_q_lock);
 	if (!retval)
+<<<<<<< HEAD
 		zfcp_dbf_rec_run_wka("fscwp_1", wka_port, req->req_id);
+=======
+		zfcp_dbf_rec_run_wka("fscwp_1", wka_port, req_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return retval;
 }
 
@@ -1710,6 +1824,7 @@ static void zfcp_fsf_close_physical_port_handler(struct zfcp_fsf_req *req)
 		zfcp_erp_adapter_reopen(port->adapter, 0, "fscpph1");
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		break;
+<<<<<<< HEAD
 	case FSF_ACCESS_DENIED:
 		zfcp_cfdc_port_denied(port, &header->fsf_status_qual);
 		break;
@@ -1720,6 +1835,15 @@ static void zfcp_fsf_close_physical_port_handler(struct zfcp_fsf_req *req)
 		shost_for_each_device(sdev, port->adapter->scsi_host)
 			if (sdev_to_zfcp(sdev)->port == port)
 				atomic_clear_mask(ZFCP_STATUS_COMMON_OPEN,
+=======
+	case FSF_PORT_BOXED:
+		/* can't use generic zfcp_erp_modify_port_status because
+		 * ZFCP_STATUS_COMMON_OPEN must not be reset for the port */
+		atomic_andnot(ZFCP_STATUS_PORT_PHYS_OPEN, &port->status);
+		shost_for_each_device(sdev, port->adapter->scsi_host)
+			if (sdev_to_zfcp(sdev)->port == port)
+				atomic_andnot(ZFCP_STATUS_COMMON_OPEN,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						  &sdev_to_zfcp(sdev)->status);
 		zfcp_erp_set_port_status(port, ZFCP_STATUS_COMMON_ACCESS_BOXED);
 		zfcp_erp_port_reopen(port, ZFCP_STATUS_COMMON_ERP_FAILED,
@@ -1739,10 +1863,17 @@ static void zfcp_fsf_close_physical_port_handler(struct zfcp_fsf_req *req)
 		/* can't use generic zfcp_erp_modify_port_status because
 		 * ZFCP_STATUS_COMMON_OPEN must not be reset for the port
 		 */
+<<<<<<< HEAD
 		atomic_clear_mask(ZFCP_STATUS_PORT_PHYS_OPEN, &port->status);
 		shost_for_each_device(sdev, port->adapter->scsi_host)
 			if (sdev_to_zfcp(sdev)->port == port)
 				atomic_clear_mask(ZFCP_STATUS_COMMON_OPEN,
+=======
+		atomic_andnot(ZFCP_STATUS_PORT_PHYS_OPEN, &port->status);
+		shost_for_each_device(sdev, port->adapter->scsi_host)
+			if (sdev_to_zfcp(sdev)->port == port)
+				atomic_andnot(ZFCP_STATUS_COMMON_OPEN,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						  &sdev_to_zfcp(sdev)->status);
 		break;
 	}
@@ -1798,17 +1929,26 @@ static void zfcp_fsf_open_lun_handler(struct zfcp_fsf_req *req)
 	struct scsi_device *sdev = req->data;
 	struct zfcp_scsi_dev *zfcp_sdev;
 	struct fsf_qtcb_header *header = &req->qtcb->header;
+<<<<<<< HEAD
 	struct fsf_qtcb_bottom_support *bottom = &req->qtcb->bottom.support;
+=======
+	union fsf_status_qual *qual = &header->fsf_status_qual;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (req->status & ZFCP_STATUS_FSFREQ_ERROR)
 		return;
 
 	zfcp_sdev = sdev_to_zfcp(sdev);
 
+<<<<<<< HEAD
 	atomic_clear_mask(ZFCP_STATUS_COMMON_ACCESS_DENIED |
 			  ZFCP_STATUS_COMMON_ACCESS_BOXED |
 			  ZFCP_STATUS_LUN_SHARED |
 			  ZFCP_STATUS_LUN_READONLY,
+=======
+	atomic_andnot(ZFCP_STATUS_COMMON_ACCESS_DENIED |
+			  ZFCP_STATUS_COMMON_ACCESS_BOXED,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  &zfcp_sdev->status);
 
 	switch (header->fsf_status) {
@@ -1818,10 +1958,13 @@ static void zfcp_fsf_open_lun_handler(struct zfcp_fsf_req *req)
 		/* fall through */
 	case FSF_LUN_ALREADY_OPEN:
 		break;
+<<<<<<< HEAD
 	case FSF_ACCESS_DENIED:
 		zfcp_cfdc_lun_denied(sdev, &header->fsf_status_qual);
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case FSF_PORT_BOXED:
 		zfcp_erp_set_port_status(zfcp_sdev->port,
 					 ZFCP_STATUS_COMMON_ACCESS_BOXED);
@@ -1830,7 +1973,21 @@ static void zfcp_fsf_open_lun_handler(struct zfcp_fsf_req *req)
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		break;
 	case FSF_LUN_SHARING_VIOLATION:
+<<<<<<< HEAD
 		zfcp_cfdc_lun_shrng_vltn(sdev, &header->fsf_status_qual);
+=======
+		if (qual->word[0])
+			dev_warn(&zfcp_sdev->port->adapter->ccw_device->dev,
+				 "LUN 0x%Lx on port 0x%Lx is already in "
+				 "use by CSS%d, MIF Image ID %x\n",
+				 zfcp_scsi_dev_lun(sdev),
+				 (unsigned long long)zfcp_sdev->port->wwpn,
+				 qual->fsf_queue_designator.cssid,
+				 qual->fsf_queue_designator.hla);
+		zfcp_erp_set_lun_status(sdev,
+					ZFCP_STATUS_COMMON_ERP_FAILED |
+					ZFCP_STATUS_COMMON_ACCESS_DENIED);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		break;
 	case FSF_MAXIMUM_NUMBER_OF_LUNS_EXCEEDED:
@@ -1857,8 +2014,12 @@ static void zfcp_fsf_open_lun_handler(struct zfcp_fsf_req *req)
 
 	case FSF_GOOD:
 		zfcp_sdev->lun_handle = header->lun_handle;
+<<<<<<< HEAD
 		atomic_set_mask(ZFCP_STATUS_COMMON_OPEN, &zfcp_sdev->status);
 		zfcp_cfdc_open_lun_eval(sdev, bottom);
+=======
+		atomic_or(ZFCP_STATUS_COMMON_OPEN, &zfcp_sdev->status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -1949,7 +2110,11 @@ static void zfcp_fsf_close_lun_handler(struct zfcp_fsf_req *req)
 		}
 		break;
 	case FSF_GOOD:
+<<<<<<< HEAD
 		atomic_clear_mask(ZFCP_STATUS_COMMON_OPEN, &zfcp_sdev->status);
+=======
+		atomic_andnot(ZFCP_STATUS_COMMON_OPEN, &zfcp_sdev->status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -2086,10 +2251,13 @@ static void zfcp_fsf_fcp_handler_common(struct zfcp_fsf_req *req)
 	case FSF_SERVICE_CLASS_NOT_SUPPORTED:
 		zfcp_fsf_class_not_supp(req);
 		break;
+<<<<<<< HEAD
 	case FSF_ACCESS_DENIED:
 		zfcp_cfdc_lun_denied(sdev, &header->fsf_status_qual);
 		req->status |= ZFCP_STATUS_FSFREQ_ERROR;
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case FSF_DIRECTION_INDICATOR_NOT_VALID:
 		dev_err(&req->adapter->ccw_device->dev,
 			"Incorrect direction %d, LUN 0x%016Lx on port "
@@ -2391,6 +2559,7 @@ out:
 	return req;
 }
 
+<<<<<<< HEAD
 static void zfcp_fsf_control_file_handler(struct zfcp_fsf_req *req)
 {
 }
@@ -2464,6 +2633,8 @@ out:
 	return ERR_PTR(retval);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * zfcp_fsf_reqid_check - validate req_id contained in SBAL returned by QDIO
  * @adapter: pointer to struct zfcp_adapter
@@ -2501,6 +2672,7 @@ void zfcp_fsf_reqid_check(struct zfcp_qdio *qdio, int sbal_idx)
 			break;
 	}
 }
+<<<<<<< HEAD
 
 struct zfcp_fsf_req *zfcp_fsf_get_req(struct zfcp_qdio *qdio,
 				      struct qdio_buffer *sbal)
@@ -2510,3 +2682,5 @@ struct zfcp_fsf_req *zfcp_fsf_get_req(struct zfcp_qdio *qdio,
 
 	return zfcp_reqlist_find(qdio->adapter->req_list, req_id);
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

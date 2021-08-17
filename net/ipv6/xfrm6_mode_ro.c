@@ -15,8 +15,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 /*
  * Authors:
@@ -48,6 +52,11 @@ static int xfrm6_ro_output(struct xfrm_state *x, struct sk_buff *skb)
 	iph = ipv6_hdr(skb);
 
 	hdr_len = x->type->hdr_offset(x, skb, &prevhdr);
+<<<<<<< HEAD
+=======
+	if (hdr_len < 0)
+		return hdr_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_set_mac_header(skb, (prevhdr - x->props.header_len) - skb->data);
 	skb_set_network_header(skb, -x->props.header_len);
 	skb->transport_header = skb->network_header + hdr_len;

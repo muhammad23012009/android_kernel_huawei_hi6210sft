@@ -47,7 +47,11 @@ static const struct dove_mpp_grp dove_mpp_grp[] = {
 
 /* Enable gpio for a range of pins. mode should be a combination of
    GPIO_OUTPUT_OK | GPIO_INPUT_OK */
+<<<<<<< HEAD
 static void dove_mpp_gpio_mode(int start, int end, int gpio_mode)
+=======
+static void __init dove_mpp_gpio_mode(int start, int end, int gpio_mode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 

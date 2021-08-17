@@ -80,8 +80,13 @@ static ssize_t dummy_looptest(struct device *dev,
 		"in 8bit mode\n");
 	status = spi_w8r8(spi, 0xAA);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Siple test 1: FAILURE: spi_write_then_read "
 			   "failed with status %d\n", status);
+=======
+		pr_warn("Simple test 1: FAILURE: spi_write_then_read failed with status %d\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 1: SUCCESS!\n");
 
@@ -89,8 +94,13 @@ static ssize_t dummy_looptest(struct device *dev,
 		"in 8bit mode (full FIFO)\n");
 	status = spi_write_then_read(spi, &txbuf[0], 8, &rxbuf[0], 8);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 2: FAILURE: spi_write_then_read() "
 			   "failed with status %d\n", status);
+=======
+		pr_warn("Simple test 2: FAILURE: spi_write_then_read() failed with status %d\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 2: SUCCESS!\n");
 
@@ -98,8 +108,13 @@ static ssize_t dummy_looptest(struct device *dev,
 		"in 8bit mode (see if we overflow FIFO)\n");
 	status = spi_write_then_read(spi, &txbuf[0], 14, &rxbuf[0], 14);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 3: FAILURE: failed with status %d "
 			   "(probably FIFO overrun)\n", status);
+=======
+		pr_warn("Simple test 3: FAILURE: failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 3: SUCCESS!\n");
 
@@ -107,14 +122,24 @@ static ssize_t dummy_looptest(struct device *dev,
 		"bytes garbage with spi_read() in 8bit mode\n");
 	status = spi_write(spi, &txbuf[0], 8);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 4 step 1: FAILURE: spi_write() "
 			   "failed with status %d\n", status);
+=======
+		pr_warn("Simple test 4 step 1: FAILURE: spi_write() failed with status %d\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 4 step 1: SUCCESS!\n");
 	status = spi_read(spi, &rxbuf[0], 8);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 4 step 2: FAILURE: spi_read() "
 			   "failed with status %d\n", status);
+=======
+		pr_warn("Simple test 4 step 2: FAILURE: spi_read() failed with status %d\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 4 step 2: SUCCESS!\n");
 
@@ -122,16 +147,26 @@ static ssize_t dummy_looptest(struct device *dev,
 		"14 bytes garbage with spi_read() in 8bit mode\n");
 	status = spi_write(spi, &txbuf[0], 14);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 5 step 1: FAILURE: spi_write() "
 			   "failed with status %d (probably FIFO overrun)\n",
 			   status);
+=======
+		pr_warn("Simple test 5 step 1: FAILURE: spi_write() failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 5 step 1: SUCCESS!\n");
 	status = spi_read(spi, &rxbuf[0], 14);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 5 step 2: FAILURE: spi_read() "
 			   "failed with status %d (probably FIFO overrun)\n",
 			   status);
+=======
+		pr_warn("Simple test 5 step 2: FAILURE: spi_read() failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 5: SUCCESS!\n");
 
@@ -140,16 +175,26 @@ static ssize_t dummy_looptest(struct device *dev,
 		DMA_TEST_SIZE, DMA_TEST_SIZE);
 	status = spi_write(spi, &bigtxbuf_virtual[0], DMA_TEST_SIZE);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 6 step 1: FAILURE: spi_write() "
 			   "failed with status %d (probably FIFO overrun)\n",
 			   status);
+=======
+		pr_warn("Simple test 6 step 1: FAILURE: spi_write() failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 6 step 1: SUCCESS!\n");
 	status = spi_read(spi, &bigrxbuf_virtual[0], DMA_TEST_SIZE);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 6 step 2: FAILURE: spi_read() "
 			   "failed with status %d (probably FIFO overrun)\n",
 			   status);
+=======
+		pr_warn("Simple test 6 step 2: FAILURE: spi_read() failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 6: SUCCESS!\n");
 
@@ -169,18 +214,30 @@ static ssize_t dummy_looptest(struct device *dev,
 		pr_info("Simple test 7: SUCCESS! (expected failure with "
 			"status EIO)\n");
 	else if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Siple test 7: FAILURE: spi_write_then_read "
 			   "failed with status %d\n", status);
 	else
 		pr_warning("Siple test 7: FAILURE: spi_write_then_read "
 			   "succeeded but it was expected to fail!\n");
+=======
+		pr_warn("Simple test 7: FAILURE: spi_write_then_read failed with status %d\n",
+			status);
+	else
+		pr_warn("Simple test 7: FAILURE: spi_write_then_read succeeded but it was expected to fail!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_info("Simple test 8: write 8 bytes, read back 8 bytes garbage "
 		"in 16bit mode (full FIFO)\n");
 	status = spi_write_then_read(spi, &txbuf[0], 8, &rxbuf[0], 8);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 8: FAILURE: spi_write_then_read() "
 			   "failed with status %d\n", status);
+=======
+		pr_warn("Simple test 8: FAILURE: spi_write_then_read() failed with status %d\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 8: SUCCESS!\n");
 
@@ -188,8 +245,13 @@ static ssize_t dummy_looptest(struct device *dev,
 		"in 16bit mode (see if we overflow FIFO)\n");
 	status = spi_write_then_read(spi, &txbuf[0], 14, &rxbuf[0], 14);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 9: FAILURE: failed with status %d "
 			   "(probably FIFO overrun)\n", status);
+=======
+		pr_warn("Simple test 9: FAILURE: failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 9: SUCCESS!\n");
 
@@ -198,17 +260,27 @@ static ssize_t dummy_looptest(struct device *dev,
 	       DMA_TEST_SIZE, DMA_TEST_SIZE);
 	status = spi_write(spi, &bigtxbuf_virtual[0], DMA_TEST_SIZE);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 10 step 1: FAILURE: spi_write() "
 			   "failed with status %d (probably FIFO overrun)\n",
 			   status);
+=======
+		pr_warn("Simple test 10 step 1: FAILURE: spi_write() failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 10 step 1: SUCCESS!\n");
 
 	status = spi_read(spi, &bigrxbuf_virtual[0], DMA_TEST_SIZE);
 	if (status < 0)
+<<<<<<< HEAD
 		pr_warning("Simple test 10 step 2: FAILURE: spi_read() "
 			   "failed with status %d (probably FIFO overrun)\n",
 			   status);
+=======
+		pr_warn("Simple test 10 step 2: FAILURE: spi_read() failed with status %d (probably FIFO overrun)\n",
+			status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		pr_info("Simple test 10: SUCCESS!\n");
 
@@ -263,15 +335,28 @@ static int pl022_dummy_remove(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct spi_driver pl022_dummy_driver = {
 	.driver = {
 		.name	= "spi-dummy",
 		.owner	= THIS_MODULE,
+=======
+static const struct of_device_id pl022_dummy_dt_match[] = {
+	{ .compatible = "arm,pl022-dummy" },
+	{},
+};
+
+static struct spi_driver pl022_dummy_driver = {
+	.driver = {
+		.name	= "spi-dummy",
+		.of_match_table = pl022_dummy_dt_match,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe	= pl022_dummy_probe,
 	.remove	= pl022_dummy_remove,
 };
 
+<<<<<<< HEAD
 static int __init pl022_init_dummy(void)
 {
 	return spi_register_driver(&pl022_dummy_driver);
@@ -285,6 +370,9 @@ static void __exit pl022_exit_dummy(void)
 module_init(pl022_init_dummy);
 module_exit(pl022_exit_dummy);
 
+=======
+module_spi_driver(pl022_dummy_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Linus Walleij <linus.walleij@stericsson.com>");
 MODULE_DESCRIPTION("PL022 SSP/SPI DUMMY Linux driver");
 MODULE_LICENSE("GPL");

@@ -21,6 +21,11 @@
 #ifndef __TDA18271_PRIV_H__
 #define __TDA18271_PRIV_H__
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/mutex.h>
@@ -139,8 +144,13 @@ extern int tda18271_debug;
 #define DBG_CAL  16
 
 __attribute__((format(printf, 4, 5)))
+<<<<<<< HEAD
 int _tda_printk(struct tda18271_priv *state, const char *level,
 		const char *func, const char *fmt, ...);
+=======
+void _tda_printk(struct tda18271_priv *state, const char *level,
+		 const char *func, const char *fmt, ...);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define tda_printk(st, lvl, fmt, arg...)			\
 	_tda_printk(st, lvl, __func__, fmt, ##arg)
@@ -226,6 +236,7 @@ extern int tda18271_calc_ir_measure(struct dvb_frontend *fe, u32 *freq);
 extern int tda18271_calc_rf_cal(struct dvb_frontend *fe, u32 *freq);
 
 #endif /* __TDA18271_PRIV_H__ */
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we follow Linus's tabbing style.
@@ -234,3 +245,5 @@ extern int tda18271_calc_rf_cal(struct dvb_frontend *fe, u32 *freq);
  * c-basic-offset: 8
  * End:
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -279,7 +279,11 @@ MODULE_PARM_DESC(pc104_3, "set interface types for ISA(PC104) board #3 (e.g. pc1
 module_param_array(pc104_4, ulong, NULL, 0);
 MODULE_PARM_DESC(pc104_4, "set interface types for ISA(PC104) board #4 (e.g. pc104_4=232,232,485,485,...");
 
+<<<<<<< HEAD
 static int rp_init(void);
+=======
+static int __init rp_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void rp_cleanup_module(void);
 
 module_init(rp_init);
@@ -495,7 +499,11 @@ static void rp_handle_port(struct r_port *info)
 	if (!info)
 		return;
 
+<<<<<<< HEAD
 	if ((info->port.flags & ASYNC_INITIALIZED) == 0) {
+=======
+	if (!tty_port_initialized(&info->port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING "rp: WARNING: rp_handle_port called with "
 				"info->flags & NOT_INIT\n");
 		return;
@@ -615,7 +623,12 @@ static void rp_do_poll(unsigned long dummy)
  *  the board.  
  *  Inputs:  board, aiop, chan numbers
  */
+<<<<<<< HEAD
 static void init_r_port(int board, int aiop, int chan, struct pci_dev *pci_dev)
+=======
+static void __init
+init_r_port(int board, int aiop, int chan, struct pci_dev *pci_dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned rocketMode;
 	struct r_port *info;
@@ -643,6 +656,7 @@ static void init_r_port(int board, int aiop, int chan, struct pci_dev *pci_dev)
 	info->chan = chan;
 	tty_port_init(&info->port);
 	info->port.ops = &rocket_port_ops;
+<<<<<<< HEAD
 	init_completion(&info->close_wait);
 	info->flags &= ~ROCKET_MODE_MASK;
 	switch (pc104[board][line]) {
@@ -657,6 +671,24 @@ static void init_r_port(int board, int aiop, int chan, struct pci_dev *pci_dev)
 		info->flags |= ROCKET_MODE_RS232;
 		break;
 	}
+=======
+	info->flags &= ~ROCKET_MODE_MASK;
+	if (board < ARRAY_SIZE(pc104) && line < ARRAY_SIZE(pc104_1))
+		switch (pc104[board][line]) {
+		case 422:
+			info->flags |= ROCKET_MODE_RS422;
+			break;
+		case 485:
+			info->flags |= ROCKET_MODE_RS485;
+			break;
+		case 232:
+		default:
+			info->flags |= ROCKET_MODE_RS232;
+			break;
+		}
+	else
+		info->flags |= ROCKET_MODE_RS232;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	info->intmask = RXF_TRIG | TXFIFO_MT | SRC_INT | DELTA_CD | DELTA_CTS | DELTA_DSR;
 	if (sInitChan(ctlp, &info->channel, aiop, chan) == 0) {
@@ -895,6 +927,7 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
 	if (!page)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (port->flags & ASYNC_CLOSING) {
 		retval = wait_for_completion_interruptible(&info->close_wait);
 		free_page(page);
@@ -903,6 +936,8 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
 		return ((port->flags & ASYNC_HUP_NOTIFY) ? -EAGAIN : -ERESTARTSYS);
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * We must not sleep from here until the port is marked fully in use.
 	 */
@@ -929,7 +964,11 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
 	/*
 	 * Info->count is now 1; so it's safe to sleep now.
 	 */
+<<<<<<< HEAD
 	if (!test_bit(ASYNCB_INITIALIZED, &port->flags)) {
+=======
+	if (!tty_port_initialized(port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		cp = &info->channel;
 		sSetRxTrigger(cp, TRIG_1);
 		if (sGetChanStatus(cp) & CD_ACT)
@@ -953,7 +992,11 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
 		sEnRxFIFO(cp);
 		sEnTransmit(cp);
 
+<<<<<<< HEAD
 		set_bit(ASYNCB_INITIALIZED, &info->port.flags);
+=======
+		tty_port_set_initialized(&info->port, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Set up the tty->alt_speed kludge
@@ -968,7 +1011,11 @@ static int rp_open(struct tty_struct *tty, struct file *filp)
 			tty->alt_speed = 460800;
 
 		configure_r_port(tty, info, NULL);
+<<<<<<< HEAD
 		if (tty->termios.c_cflag & CBAUD) {
+=======
+		if (C_BAUD(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			sSetDTR(cp);
 			sSetRTS(cp);
 		}
@@ -1051,6 +1098,7 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
 		}
 	}
 	spin_lock_irq(&port->lock);
+<<<<<<< HEAD
 	info->port.flags &= ~(ASYNC_INITIALIZED | ASYNC_CLOSING | ASYNC_NORMAL_ACTIVE);
 	tty->closing = 0;
 	spin_unlock_irq(&port->lock);
@@ -1059,6 +1107,15 @@ static void rp_close(struct tty_struct *tty, struct file *filp)
 
 	wake_up_interruptible(&port->close_wait);
 	complete_all(&info->close_wait);
+=======
+	tty->closing = 0;
+	spin_unlock_irq(&port->lock);
+	tty_port_set_initialized(port, 0);
+	tty_port_set_active(port, 0);
+	mutex_unlock(&port->mutex);
+	tty_port_tty_set(port, NULL);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_dec(&rp_num_ports_open);
 
 #ifdef ROCKET_DEBUG_OPEN
@@ -1095,18 +1152,30 @@ static void rp_set_termios(struct tty_struct *tty,
 	cp = &info->channel;
 
 	/* Handle transition to B0 status */
+<<<<<<< HEAD
 	if ((old_termios->c_cflag & CBAUD) && !(tty->termios.c_cflag & CBAUD)) {
+=======
+	if ((old_termios->c_cflag & CBAUD) && !C_BAUD(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sClrDTR(cp);
 		sClrRTS(cp);
 	}
 
 	/* Handle transition away from B0 status */
+<<<<<<< HEAD
 	if (!(old_termios->c_cflag & CBAUD) && (tty->termios.c_cflag & CBAUD)) {
+=======
+	if (!(old_termios->c_cflag & CBAUD) && C_BAUD(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sSetRTS(cp);
 		sSetDTR(cp);
 	}
 
+<<<<<<< HEAD
 	if ((old_termios->c_cflag & CRTSCTS) && !(tty->termios.c_cflag & CRTSCTS))
+=======
+	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rp_start(tty);
 }
 
@@ -1369,8 +1438,12 @@ static void rp_throttle(struct tty_struct *tty)
 	struct r_port *info = tty->driver_data;
 
 #ifdef ROCKET_DEBUG_THROTTLE
+<<<<<<< HEAD
 	printk(KERN_INFO "throttle %s: %d....\n", tty->name,
 	       tty->ldisc.chars_in_buffer(tty));
+=======
+	printk(KERN_INFO "throttle %s ....\n", tty->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	if (rocket_paranoia_check(info, "rp_throttle"))
@@ -1386,11 +1459,18 @@ static void rp_unthrottle(struct tty_struct *tty)
 {
 	struct r_port *info = tty->driver_data;
 #ifdef ROCKET_DEBUG_THROTTLE
+<<<<<<< HEAD
 	printk(KERN_INFO "unthrottle %s: %d....\n", tty->name,
 	       tty->ldisc.chars_in_buffer(tty));
 #endif
 
 	if (rocket_paranoia_check(info, "rp_throttle"))
+=======
+	printk(KERN_INFO "unthrottle %s ....\n", tty->name);
+#endif
+
+	if (rocket_paranoia_check(info, "rp_unthrottle"))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	if (I_IXOFF(tty))
@@ -1458,7 +1538,11 @@ static void rp_wait_until_sent(struct tty_struct *tty, int timeout)
 
 	orig_jiffies = jiffies;
 #ifdef ROCKET_DEBUG_WAIT_UNTIL_SENT
+<<<<<<< HEAD
 	printk(KERN_INFO "In RP_wait_until_sent(%d) (jiff=%lu)...\n", timeout,
+=======
+	printk(KERN_INFO "In %s(%d) (jiff=%lu)...\n", __func__, timeout,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       jiffies);
 	printk(KERN_INFO "cps=%d...\n", info->cps);
 #endif
@@ -1511,10 +1595,13 @@ static void rp_hangup(struct tty_struct *tty)
 #endif
 	rp_flush_buffer(tty);
 	spin_lock_irqsave(&info->port.lock, flags);
+<<<<<<< HEAD
 	if (info->port.flags & ASYNC_CLOSING) {
 		spin_unlock_irqrestore(&info->port.lock, flags);
 		return;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (info->port.count)
 		atomic_dec(&rp_num_ports_open);
 	clear_bit((info->aiop * 8) + info->chan, (void *) &xmit_flags[info->board]);
@@ -1529,7 +1616,11 @@ static void rp_hangup(struct tty_struct *tty)
 	sDisCTSFlowCtl(cp);
 	sDisTxSoftFlowCtl(cp);
 	sClrTxXOFF(cp);
+<<<<<<< HEAD
 	clear_bit(ASYNCB_INITIALIZED, &info->port.flags);
+=======
+	tty_port_set_initialized(&info->port, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wake_up_interruptible(&info->port.open_wait);
 }
@@ -1641,7 +1732,11 @@ static int rp_write(struct tty_struct *tty,
 	/*  Write remaining data into the port's xmit_buf */
 	while (1) {
 		/* Hung up ? */
+<<<<<<< HEAD
 		if (!test_bit(ASYNCB_NORMAL_ACTIVE, &info->port.flags))
+=======
+		if (!tty_port_active(&info->port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto end;
 		c = min(count, XMIT_BUF_SIZE - info->xmit_cnt - 1);
 		c = min(c, XMIT_BUF_SIZE - info->xmit_head);
@@ -1744,7 +1839,11 @@ static void rp_flush_buffer(struct tty_struct *tty)
 
 #ifdef CONFIG_PCI
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(rocket_pci_ids) = {
+=======
+static const struct pci_device_id rocket_pci_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_RP, PCI_DEVICE_ID_RP4QUAD) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_RP, PCI_DEVICE_ID_RP8OCTA) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_RP, PCI_DEVICE_ID_URP8OCTA) },
@@ -1928,7 +2027,11 @@ static __init int register_PCI(int i, struct pci_dev *dev)
 	ByteIO_t UPCIRingInd = 0;
 
 	if (!dev || !pci_match_id(rocket_pci_ids, dev) ||
+<<<<<<< HEAD
 	    pci_enable_device(dev))
+=======
+	    pci_enable_device(dev) || i >= NUM_BOARDS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	rcktpt_io_addr[i] = pci_resource_start(dev, 0);

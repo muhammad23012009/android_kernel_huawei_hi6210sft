@@ -13,16 +13,41 @@
 #ifndef _WM_ARIZONA_CORE_H
 #define _WM_ARIZONA_CORE_H
 
+<<<<<<< HEAD
 #include <linux/interrupt.h>
+=======
+#include <linux/clk.h>
+#include <linux/interrupt.h>
+#include <linux/notifier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/mfd/arizona/pdata.h>
 
+<<<<<<< HEAD
 #define ARIZONA_MAX_CORE_SUPPLIES 3
+=======
+#define ARIZONA_MAX_CORE_SUPPLIES 2
+
+enum {
+	ARIZONA_MCLK1,
+	ARIZONA_MCLK2,
+	ARIZONA_NUM_MCLK
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum arizona_type {
 	WM5102 = 1,
 	WM5110 = 2,
+<<<<<<< HEAD
+=======
+	WM8997 = 3,
+	WM8280 = 4,
+	WM8998 = 5,
+	WM1814 = 6,
+	WM1831 = 7,
+	CS47L24 = 8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define ARIZONA_IRQ_GP1                    0
@@ -45,8 +70,13 @@ enum arizona_type {
 #define ARIZONA_IRQ_DSP_IRQ6              17
 #define ARIZONA_IRQ_DSP_IRQ7              18
 #define ARIZONA_IRQ_DSP_IRQ8              19
+<<<<<<< HEAD
 #define ARIZONA_IRQ_SPK_SHUTDOWN_WARN     20
 #define ARIZONA_IRQ_SPK_SHUTDOWN          21
+=======
+#define ARIZONA_IRQ_SPK_OVERHEAT_WARN     20
+#define ARIZONA_IRQ_SPK_OVERHEAT          21
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ARIZONA_IRQ_MICDET                22
 #define ARIZONA_IRQ_HPDET                 23
 #define ARIZONA_IRQ_WSEQ_DONE             24
@@ -77,8 +107,36 @@ enum arizona_type {
 #define ARIZONA_IRQ_FLL1_CLOCK_OK         49
 #define ARIZONA_IRQ_MICD_CLAMP_RISE	  50
 #define ARIZONA_IRQ_MICD_CLAMP_FALL	  51
+<<<<<<< HEAD
 
 #define ARIZONA_NUM_IRQ                   52
+=======
+#define ARIZONA_IRQ_HP3R_DONE             52
+#define ARIZONA_IRQ_HP3L_DONE             53
+#define ARIZONA_IRQ_HP2R_DONE             54
+#define ARIZONA_IRQ_HP2L_DONE             55
+#define ARIZONA_IRQ_HP1R_DONE             56
+#define ARIZONA_IRQ_HP1L_DONE             57
+#define ARIZONA_IRQ_ISRC3_CFG_ERR         58
+#define ARIZONA_IRQ_DSP_SHARED_WR_COLL    59
+#define ARIZONA_IRQ_SPK_SHUTDOWN          60
+#define ARIZONA_IRQ_SPK1R_SHORT           61
+#define ARIZONA_IRQ_SPK1L_SHORT           62
+#define ARIZONA_IRQ_HP3R_SC_NEG           63
+#define ARIZONA_IRQ_HP3R_SC_POS           64
+#define ARIZONA_IRQ_HP3L_SC_NEG           65
+#define ARIZONA_IRQ_HP3L_SC_POS           66
+#define ARIZONA_IRQ_HP2R_SC_NEG           67
+#define ARIZONA_IRQ_HP2R_SC_POS           68
+#define ARIZONA_IRQ_HP2L_SC_NEG           69
+#define ARIZONA_IRQ_HP2L_SC_POS           70
+#define ARIZONA_IRQ_HP1R_SC_NEG           71
+#define ARIZONA_IRQ_HP1R_SC_POS           72
+#define ARIZONA_IRQ_HP1L_SC_NEG           73
+#define ARIZONA_IRQ_HP1L_SC_POS           74
+
+#define ARIZONA_NUM_IRQ                   75
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct snd_soc_dapm_context;
 
@@ -92,23 +150,62 @@ struct arizona {
 	int num_core_supplies;
 	struct regulator_bulk_data core_supplies[ARIZONA_MAX_CORE_SUPPLIES];
 	struct regulator *dcvdd;
+<<<<<<< HEAD
 
 	struct arizona_pdata pdata;
 
+=======
+	bool has_fully_powered_off;
+
+	struct arizona_pdata pdata;
+
+	unsigned int external_dcvdd:1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int irq;
 	struct irq_domain *virq;
 	struct regmap_irq_chip_data *aod_irq_chip;
 	struct regmap_irq_chip_data *irq_chip;
 
+<<<<<<< HEAD
 	bool hpdet_magic;
+=======
+	bool hpdet_clamp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int hp_ena;
 
 	struct mutex clk_lock;
 	int clk32k_ref;
 
+<<<<<<< HEAD
 	struct snd_soc_dapm_context *dapm;
 };
 
+=======
+	struct clk *mclk[ARIZONA_NUM_MCLK];
+
+	bool ctrlif_error;
+
+	struct snd_soc_dapm_context *dapm;
+
+	int tdm_width[ARIZONA_MAX_AIF];
+	int tdm_slots[ARIZONA_MAX_AIF];
+
+	uint16_t dac_comp_coeff;
+	uint8_t dac_comp_enabled;
+	struct mutex dac_comp_lock;
+
+	struct blocking_notifier_head notifier;
+};
+
+static inline int arizona_call_notifiers(struct arizona *arizona,
+					 unsigned long event,
+					 void *data)
+{
+	return blocking_notifier_call_chain(&arizona->notifier, event, data);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int arizona_clk32k_enable(struct arizona *arizona);
 int arizona_clk32k_disable(struct arizona *arizona);
 
@@ -117,7 +214,23 @@ int arizona_request_irq(struct arizona *arizona, int irq, char *name,
 void arizona_free_irq(struct arizona *arizona, int irq, void *data);
 int arizona_set_irq_wake(struct arizona *arizona, int irq, int on);
 
+<<<<<<< HEAD
 int wm5102_patch(struct arizona *arizona);
 int wm5110_patch(struct arizona *arizona);
+=======
+#ifdef CONFIG_MFD_WM5102
+int wm5102_patch(struct arizona *arizona);
+#else
+static inline int wm5102_patch(struct arizona *arizona)
+{
+	return 0;
+}
+#endif
+
+int wm5110_patch(struct arizona *arizona);
+int cs47l24_patch(struct arizona *arizona);
+int wm8997_patch(struct arizona *arizona);
+int wm8998_patch(struct arizona *arizona);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

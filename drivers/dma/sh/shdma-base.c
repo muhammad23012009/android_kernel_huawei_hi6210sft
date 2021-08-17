@@ -73,8 +73,12 @@ static void shdma_chan_xfer_ld_queue(struct shdma_chan *schan)
 static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
 {
 	struct shdma_desc *chunk, *c, *desc =
+<<<<<<< HEAD
 		container_of(tx, struct shdma_desc, async_tx),
 		*last = desc;
+=======
+		container_of(tx, struct shdma_desc, async_tx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct shdma_chan *schan = to_shdma_chan(tx->chan);
 	dma_async_tx_callback callback = tx->callback;
 	dma_cookie_t cookie;
@@ -98,6 +102,7 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
 				      &chunk->node == &schan->ld_free))
 			break;
 		chunk->mark = DESC_SUBMITTED;
+<<<<<<< HEAD
 		/* Callback goes to the last chunk */
 		chunk->async_tx.callback = NULL;
 		chunk->cookie = cookie;
@@ -111,6 +116,22 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
 	last->async_tx.callback = callback;
 	last->async_tx.callback_param = tx->callback_param;
 
+=======
+		if (chunk->chunks == 1) {
+			chunk->async_tx.callback = callback;
+			chunk->async_tx.callback_param = tx->callback_param;
+		} else {
+			/* Callback goes to the last chunk */
+			chunk->async_tx.callback = NULL;
+		}
+		chunk->cookie = cookie;
+		list_move_tail(&chunk->node, &schan->ld_queue);
+
+		dev_dbg(schan->dev, "submit #%d@%p on %d\n",
+			tx->cookie, &chunk->async_tx, schan->id);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (power_up) {
 		int ret;
 		schan->pm_state = SHDMA_PM_BUSY;
@@ -171,6 +192,7 @@ static struct shdma_desc *shdma_get_desc(struct shdma_chan *schan)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int shdma_setup_slave(struct shdma_chan *schan, int slave_id)
 {
 	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
@@ -190,10 +212,41 @@ static int shdma_setup_slave(struct shdma_chan *schan, int slave_id)
 	}
 
 	schan->slave_id = slave_id;
+=======
+static int shdma_setup_slave(struct shdma_chan *schan, dma_addr_t slave_addr)
+{
+	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
+	const struct shdma_ops *ops = sdev->ops;
+	int ret, match;
+
+	if (schan->dev->of_node) {
+		match = schan->hw_req;
+		ret = ops->set_slave(schan, match, slave_addr, true);
+		if (ret < 0)
+			return ret;
+	} else {
+		match = schan->real_slave_id;
+	}
+
+	if (schan->real_slave_id < 0 || schan->real_slave_id >= slave_num)
+		return -EINVAL;
+
+	if (test_and_set_bit(schan->real_slave_id, shdma_slave_used))
+		return -EBUSY;
+
+	ret = ops->set_slave(schan, match, slave_addr, false);
+	if (ret < 0) {
+		clear_bit(schan->real_slave_id, shdma_slave_used);
+		return ret;
+	}
+
+	schan->slave_id = schan->real_slave_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * This is the standard shdma filter function to be used as a replacement to the
  * "old" method, using the .private pointer. If for some reason you allocate a
@@ -230,6 +283,8 @@ bool shdma_chan_filter(struct dma_chan *chan, void *arg)
 }
 EXPORT_SYMBOL(shdma_chan_filter);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int shdma_alloc_chan_resources(struct dma_chan *chan)
 {
 	struct shdma_chan *schan = to_shdma_chan(chan);
@@ -245,10 +300,19 @@ static int shdma_alloc_chan_resources(struct dma_chan *chan)
 	 */
 	if (slave) {
 		/* Legacy mode: .private is set in filter */
+<<<<<<< HEAD
 		ret = shdma_setup_slave(schan, slave->slave_id);
 		if (ret < 0)
 			goto esetslave;
 	} else {
+=======
+		schan->real_slave_id = slave->slave_id;
+		ret = shdma_setup_slave(schan, 0);
+		if (ret < 0)
+			goto esetslave;
+	} else {
+		/* Normal mode: real_slave_id was set by filter */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		schan->slave_id = -EINVAL;
 	}
 
@@ -280,6 +344,77 @@ esetslave:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * This is the standard shdma filter function to be used as a replacement to the
+ * "old" method, using the .private pointer.
+ * You always have to pass a valid slave id as the argument, old drivers that
+ * pass ERR_PTR(-EINVAL) as a filter parameter and set it up in dma_slave_config
+ * need to be updated so we can remove the slave_id field from dma_slave_config.
+ * parameter. If this filter is used, the slave driver, after calling
+ * dma_request_channel(), will also have to call dmaengine_slave_config() with
+ * .direction, and either .src_addr or .dst_addr set.
+ *
+ * NOTE: this filter doesn't support multiple DMAC drivers with the DMA_SLAVE
+ * capability! If this becomes a requirement, hardware glue drivers, using this
+ * services would have to provide their own filters, which first would check
+ * the device driver, similar to how other DMAC drivers, e.g., sa11x0-dma.c, do
+ * this, and only then, in case of a match, call this common filter.
+ * NOTE 2: This filter function is also used in the DT case by shdma_of_xlate().
+ * In that case the MID-RID value is used for slave channel filtering and is
+ * passed to this function in the "arg" parameter.
+ */
+bool shdma_chan_filter(struct dma_chan *chan, void *arg)
+{
+	struct shdma_chan *schan;
+	struct shdma_dev *sdev;
+	int slave_id = (long)arg;
+	int ret;
+
+	/* Only support channels handled by this driver. */
+	if (chan->device->device_alloc_chan_resources !=
+	    shdma_alloc_chan_resources)
+		return false;
+
+	schan = to_shdma_chan(chan);
+	sdev = to_shdma_dev(chan->device);
+
+	/*
+	 * For DT, the schan->slave_id field is generated by the
+	 * set_slave function from the slave ID that is passed in
+	 * from xlate. For the non-DT case, the slave ID is
+	 * directly passed into the filter function by the driver
+	 */
+	if (schan->dev->of_node) {
+		ret = sdev->ops->set_slave(schan, slave_id, 0, true);
+		if (ret < 0)
+			return false;
+
+		schan->real_slave_id = schan->slave_id;
+		return true;
+	}
+
+	if (slave_id < 0) {
+		/* No slave requested - arbitrary channel */
+		dev_warn(sdev->dma_dev.dev, "invalid slave ID passed to dma_request_slave\n");
+		return true;
+	}
+
+	if (slave_id >= slave_num)
+		return false;
+
+	ret = sdev->ops->set_slave(schan, slave_id, 0, true);
+	if (ret < 0)
+		return false;
+
+	schan->real_slave_id = slave_id;
+
+	return true;
+}
+EXPORT_SYMBOL(shdma_chan_filter);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static dma_async_tx_callback __ld_cleanup(struct shdma_chan *schan, bool all)
 {
 	struct shdma_desc *desc, *_desc;
@@ -287,9 +422,17 @@ static dma_async_tx_callback __ld_cleanup(struct shdma_chan *schan, bool all)
 	bool head_acked = false;
 	dma_cookie_t cookie = 0;
 	dma_async_tx_callback callback = NULL;
+<<<<<<< HEAD
 	void *param = NULL;
 	unsigned long flags;
 
+=======
+	struct dmaengine_desc_callback cb;
+	unsigned long flags;
+	LIST_HEAD(cyclic_list);
+
+	memset(&cb, 0, sizeof(cb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&schan->chan_lock, flags);
 	list_for_each_entry_safe(desc, _desc, &schan->ld_queue, node) {
 		struct dma_async_tx_descriptor *tx = &desc->async_tx;
@@ -323,8 +466,13 @@ static dma_async_tx_callback __ld_cleanup(struct shdma_chan *schan, bool all)
 		/* Call callback on the last chunk */
 		if (desc->mark == DESC_COMPLETED && tx->callback) {
 			desc->mark = DESC_WAITING;
+<<<<<<< HEAD
 			callback = tx->callback;
 			param = tx->callback_param;
+=======
+			dmaengine_desc_get_callback(tx, &cb);
+			callback = tx->callback;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_dbg(schan->dev, "descriptor #%d@%p on %d callback\n",
 				tx->cookie, tx, schan->id);
 			BUG_ON(desc->chunks != 1);
@@ -354,15 +502,33 @@ static dma_async_tx_callback __ld_cleanup(struct shdma_chan *schan, bool all)
 		if (((desc->mark == DESC_COMPLETED ||
 		      desc->mark == DESC_WAITING) &&
 		     async_tx_test_ack(&desc->async_tx)) || all) {
+<<<<<<< HEAD
 			/* Remove from ld_queue list */
 			desc->mark = DESC_IDLE;
 
 			list_move(&desc->node, &schan->ld_free);
+=======
+
+			if (all || !desc->cyclic) {
+				/* Remove from ld_queue list */
+				desc->mark = DESC_IDLE;
+				list_move(&desc->node, &schan->ld_free);
+			} else {
+				/* reuse as cyclic */
+				desc->mark = DESC_SUBMITTED;
+				list_move_tail(&desc->node, &cyclic_list);
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (list_empty(&schan->ld_queue)) {
 				dev_dbg(schan->dev, "Bring down channel %d\n", schan->id);
 				pm_runtime_put(schan->dev);
 				schan->pm_state = SHDMA_PM_ESTABLISHED;
+<<<<<<< HEAD
+=======
+			} else if (schan->pm_state == SHDMA_PM_PENDING) {
+				shdma_chan_xfer_ld_queue(schan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
@@ -374,10 +540,18 @@ static dma_async_tx_callback __ld_cleanup(struct shdma_chan *schan, bool all)
 		 */
 		schan->dma_chan.completed_cookie = schan->dma_chan.cookie;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&schan->chan_lock, flags);
 
 	if (callback)
 		callback(param);
+=======
+	list_splice_tail(&cyclic_list, &schan->ld_queue);
+
+	spin_unlock_irqrestore(&schan->chan_lock, flags);
+
+	dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return callback;
 }
@@ -420,6 +594,11 @@ static void shdma_free_chan_resources(struct dma_chan *chan)
 		chan->private = NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	schan->real_slave_id = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irq(&schan->chan_lock);
 
 	list_splice_init(&schan->ld_free, &list);
@@ -476,8 +655,13 @@ static struct shdma_desc *shdma_add_desc(struct shdma_chan *schan,
 	}
 
 	dev_dbg(schan->dev,
+<<<<<<< HEAD
 		"chaining (%u/%u)@%x -> %x with %p, cookie %d\n",
 		copy_size, *len, *src, *dst, &new->async_tx,
+=======
+		"chaining (%zu/%zu)@%pad -> %pad with %p, cookie %d\n",
+		copy_size, *len, src, dst, &new->async_tx,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		new->async_tx.cookie);
 
 	new->mark = DESC_PREPARED;
@@ -506,7 +690,11 @@ static struct shdma_desc *shdma_add_desc(struct shdma_chan *schan,
  */
 static struct dma_async_tx_descriptor *shdma_prep_sg(struct shdma_chan *schan,
 	struct scatterlist *sgl, unsigned int sg_len, dma_addr_t *addr,
+<<<<<<< HEAD
 	enum dma_transfer_direction direction, unsigned long flags)
+=======
+	enum dma_transfer_direction direction, unsigned long flags, bool cyclic)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct scatterlist *sg;
 	struct shdma_desc *first = NULL, *new = NULL /* compiler... */;
@@ -540,8 +728,13 @@ static struct dma_async_tx_descriptor *shdma_prep_sg(struct shdma_chan *schan,
 			goto err_get_desc;
 
 		do {
+<<<<<<< HEAD
 			dev_dbg(schan->dev, "Add SG #%d@%p[%d], dma %llx\n",
 				i, sg, len, (unsigned long long)sg_addr);
+=======
+			dev_dbg(schan->dev, "Add SG #%d@%p[%zu], dma %pad\n",
+				i, sg, len, &sg_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (direction == DMA_DEV_TO_MEM)
 				new = shdma_add_desc(schan, flags,
@@ -554,7 +747,15 @@ static struct dma_async_tx_descriptor *shdma_prep_sg(struct shdma_chan *schan,
 			if (!new)
 				goto err_get_desc;
 
+<<<<<<< HEAD
 			new->chunks = chunks--;
+=======
+			new->cyclic = cyclic;
+			if (cyclic)
+				new->chunks = 1;
+			else
+				new->chunks = chunks--;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			list_add_tail(&new->node, &tx_list);
 		} while (len);
 	}
@@ -597,7 +798,12 @@ static struct dma_async_tx_descriptor *shdma_prep_memcpy(
 	sg_dma_address(&sg) = dma_src;
 	sg_dma_len(&sg) = len;
 
+<<<<<<< HEAD
 	return shdma_prep_sg(schan, &sg, 1, &dma_dest, DMA_MEM_TO_MEM, flags);
+=======
+	return shdma_prep_sg(schan, &sg, 1, &dma_dest, DMA_MEM_TO_MEM,
+			     flags, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct dma_async_tx_descriptor *shdma_prep_slave_sg(
@@ -625,15 +831,87 @@ static struct dma_async_tx_descriptor *shdma_prep_slave_sg(
 	slave_addr = ops->slave_addr(schan);
 
 	return shdma_prep_sg(schan, sgl, sg_len, &slave_addr,
+<<<<<<< HEAD
 			      direction, flags);
 }
 
 static int shdma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 			  unsigned long arg)
+=======
+			     direction, flags, false);
+}
+
+#define SHDMA_MAX_SG_LEN 32
+
+static struct dma_async_tx_descriptor *shdma_prep_dma_cyclic(
+	struct dma_chan *chan, dma_addr_t buf_addr, size_t buf_len,
+	size_t period_len, enum dma_transfer_direction direction,
+	unsigned long flags)
+{
+	struct shdma_chan *schan = to_shdma_chan(chan);
+	struct shdma_dev *sdev = to_shdma_dev(schan->dma_chan.device);
+	struct dma_async_tx_descriptor *desc;
+	const struct shdma_ops *ops = sdev->ops;
+	unsigned int sg_len = buf_len / period_len;
+	int slave_id = schan->slave_id;
+	dma_addr_t slave_addr;
+	struct scatterlist *sgl;
+	int i;
+
+	if (!chan)
+		return NULL;
+
+	BUG_ON(!schan->desc_num);
+
+	if (sg_len > SHDMA_MAX_SG_LEN) {
+		dev_err(schan->dev, "sg length %d exceds limit %d",
+				sg_len, SHDMA_MAX_SG_LEN);
+		return NULL;
+	}
+
+	/* Someone calling slave DMA on a generic channel? */
+	if (slave_id < 0 || (buf_len < period_len)) {
+		dev_warn(schan->dev,
+			"%s: bad parameter: buf_len=%zu, period_len=%zu, id=%d\n",
+			__func__, buf_len, period_len, slave_id);
+		return NULL;
+	}
+
+	slave_addr = ops->slave_addr(schan);
+
+	/*
+	 * Allocate the sg list dynamically as it would consumer too much stack
+	 * space.
+	 */
+	sgl = kcalloc(sg_len, sizeof(*sgl), GFP_KERNEL);
+	if (!sgl)
+		return NULL;
+
+	sg_init_table(sgl, sg_len);
+
+	for (i = 0; i < sg_len; i++) {
+		dma_addr_t src = buf_addr + (period_len * i);
+
+		sg_set_page(&sgl[i], pfn_to_page(PFN_DOWN(src)), period_len,
+			    offset_in_page(src));
+		sg_dma_address(&sgl[i]) = src;
+		sg_dma_len(&sgl[i]) = period_len;
+	}
+
+	desc = shdma_prep_sg(schan, sgl, sg_len, &slave_addr,
+			     direction, flags, true);
+
+	kfree(sgl);
+	return desc;
+}
+
+static int shdma_terminate_all(struct dma_chan *chan)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct shdma_chan *schan = to_shdma_chan(chan);
 	struct shdma_dev *sdev = to_shdma_dev(chan->device);
 	const struct shdma_ops *ops = sdev->ops;
+<<<<<<< HEAD
 	struct dma_slave_config *config;
 	unsigned long flags;
 	int ret;
@@ -673,10 +951,59 @@ static int shdma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	default:
 		return -ENXIO;
 	}
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&schan->chan_lock, flags);
+	ops->halt_channel(schan);
+
+	if (ops->get_partial && !list_empty(&schan->ld_queue)) {
+		/* Record partial transfer */
+		struct shdma_desc *desc = list_first_entry(&schan->ld_queue,
+							   struct shdma_desc, node);
+		desc->partial = ops->get_partial(schan, desc);
+	}
+
+	spin_unlock_irqrestore(&schan->chan_lock, flags);
+
+	shdma_chan_ld_cleanup(schan, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int shdma_config(struct dma_chan *chan,
+			struct dma_slave_config *config)
+{
+	struct shdma_chan *schan = to_shdma_chan(chan);
+
+	/*
+	 * So far only .slave_id is used, but the slave drivers are
+	 * encouraged to also set a transfer direction and an address.
+	 */
+	if (!config)
+		return -EINVAL;
+
+	/*
+	 * overriding the slave_id through dma_slave_config is deprecated,
+	 * but possibly some out-of-tree drivers still do it.
+	 */
+	if (WARN_ON_ONCE(config->slave_id &&
+			 config->slave_id != schan->real_slave_id))
+		schan->real_slave_id = config->slave_id;
+
+	/*
+	 * We could lock this, but you shouldn't be configuring the
+	 * channel, while using it...
+	 */
+	return shdma_setup_slave(schan,
+				 config->direction == DMA_DEV_TO_MEM ?
+				 config->src_addr : config->dst_addr);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void shdma_issue_pending(struct dma_chan *chan)
 {
 	struct shdma_chan *schan = to_shdma_chan(chan);
@@ -707,7 +1034,11 @@ static enum dma_status shdma_tx_status(struct dma_chan *chan,
 	 * If we don't find cookie on the queue, it has been aborted and we have
 	 * to report error
 	 */
+<<<<<<< HEAD
 	if (status != DMA_SUCCESS) {
+=======
+	if (status != DMA_COMPLETE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct shdma_desc *sdesc;
 		status = DMA_ERROR;
 		list_for_each_entry(sdesc, &schan->ld_queue, node)
@@ -756,9 +1087,15 @@ bool shdma_reset(struct shdma_dev *sdev)
 		/* Complete all  */
 		list_for_each_entry(sdesc, &dl, node) {
 			struct dma_async_tx_descriptor *tx = &sdesc->async_tx;
+<<<<<<< HEAD
 			sdesc->mark = DESC_IDLE;
 			if (tx->callback)
 				tx->callback(tx->callback_param);
+=======
+
+			sdesc->mark = DESC_IDLE;
+			dmaengine_desc_get_callback_invoke(tx, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		spin_lock(&schan->chan_lock);
@@ -817,8 +1154,13 @@ static irqreturn_t chan_irqt(int irq, void *dev)
 int shdma_request_irq(struct shdma_chan *schan, int irq,
 			   unsigned long flags, const char *name)
 {
+<<<<<<< HEAD
 	int ret = request_threaded_irq(irq, chan_irq, chan_irqt,
 				       flags, name, schan);
+=======
+	int ret = devm_request_threaded_irq(schan->dev, irq, chan_irq,
+					    chan_irqt, flags, name, schan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	schan->irq = ret < 0 ? ret : irq;
 
@@ -826,6 +1168,7 @@ int shdma_request_irq(struct shdma_chan *schan, int irq,
 }
 EXPORT_SYMBOL(shdma_request_irq);
 
+<<<<<<< HEAD
 void shdma_free_irq(struct shdma_chan *schan)
 {
 	if (schan->irq >= 0)
@@ -833,6 +1176,8 @@ void shdma_free_irq(struct shdma_chan *schan)
 }
 EXPORT_SYMBOL(shdma_free_irq);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void shdma_chan_probe(struct shdma_dev *sdev,
 			   struct shdma_chan *schan, int id)
 {
@@ -857,7 +1202,11 @@ void shdma_chan_probe(struct shdma_dev *sdev,
 	/* Add the channel to DMA device channel list */
 	list_add_tail(&schan->dma_chan.device_node,
 			&sdev->dma_dev.channels);
+<<<<<<< HEAD
 	sdev->schan[sdev->dma_dev.chancnt++] = schan;
+=======
+	sdev->schan[id] = schan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(shdma_chan_probe);
 
@@ -905,7 +1254,13 @@ int shdma_init(struct device *dev, struct shdma_dev *sdev,
 
 	/* Compulsory for DMA_SLAVE fields */
 	dma_dev->device_prep_slave_sg = shdma_prep_slave_sg;
+<<<<<<< HEAD
 	dma_dev->device_control = shdma_control;
+=======
+	dma_dev->device_prep_dma_cyclic = shdma_prep_dma_cyclic;
+	dma_dev->device_config = shdma_config;
+	dma_dev->device_terminate_all = shdma_terminate_all;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dma_dev->dev = dev;
 

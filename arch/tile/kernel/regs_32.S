@@ -20,7 +20,11 @@
 #include <asm/switch_to.h>
 
 /*
+<<<<<<< HEAD
  * See <asm/system.h>; called with prev and next task_struct pointers.
+=======
+ * See <asm/switch_to.h>; called with prev and next task_struct pointers.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * "prev" is returned in r0 for _switch_to and also for ret_from_fork.
  *
  * We want to save pc/sp in "prev", and get the new pc/sp from "next".
@@ -39,7 +43,11 @@
  */
 
 #if CALLEE_SAVED_REGS_COUNT != 24
+<<<<<<< HEAD
 # error Mismatch between <asm/system.h> and kernel/entry.S
+=======
+# error Mismatch between <asm/switch_to.h> and kernel/entry.S
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #define FRAME_SIZE ((2 + CALLEE_SAVED_REGS_COUNT) * 4)
 

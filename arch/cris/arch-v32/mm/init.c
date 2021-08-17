@@ -40,6 +40,7 @@ void __init cris_mmu_init(void)
 	 */
 	per_cpu(current_pgd, smp_processor_id()) = init_mm.pgd;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	{
 		pgd_t **pgd;
@@ -51,6 +52,8 @@ void __init cris_mmu_init(void)
 	}
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Initialise the TLB. Function found in tlb.c. */
 	tlb_init();
 

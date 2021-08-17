@@ -156,8 +156,11 @@ static void dayna_block_output(struct net_device *dev, int count,
 #define memcpy_fromio(a, b, c)	memcpy((a), (void *)(b), (c))
 #define memcpy_toio(a, b, c)	memcpy((void *)(a), (b), (c))
 
+<<<<<<< HEAD
 #define memcmp_withio(a, b, c)	memcmp((a), (void *)(b), (c))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Slow Sane (16-bit chunk memory read/write) Cabletron uses this */
 static void slow_sane_get_8390_hdr(struct net_device *dev,
 				   struct e8390_pkt_hdr *hdr, int ring_page);
@@ -167,6 +170,10 @@ static void slow_sane_block_output(struct net_device *dev, int count,
 				   const unsigned char *buf, int start_page);
 static void word_memcpy_tocard(unsigned long tp, const void *fp, int count);
 static void word_memcpy_fromcard(void *tp, unsigned long fp, int count);
+<<<<<<< HEAD
+=======
+static u32 mac8390_msg_enable;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 {
@@ -177,10 +184,15 @@ static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 		case NUBUS_DRHW_APPLE_SONIC_LC:
 		case NUBUS_DRHW_SONNET:
 			return MAC8390_NONE;
+<<<<<<< HEAD
 			break;
 		default:
 			return MAC8390_APPLE;
 			break;
+=======
+		default:
+			return MAC8390_APPLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
@@ -188,6 +200,7 @@ static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 		switch (dev->dr_hw) {
 		case NUBUS_DRHW_ASANTE_LC:
 			return MAC8390_NONE;
+<<<<<<< HEAD
 			break;
 		case NUBUS_DRHW_CABLETRON:
 			return MAC8390_CABLETRON;
@@ -195,6 +208,12 @@ static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 		default:
 			return MAC8390_APPLE;
 			break;
+=======
+		case NUBUS_DRHW_CABLETRON:
+			return MAC8390_CABLETRON;
+		default:
+			return MAC8390_APPLE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
@@ -219,10 +238,15 @@ static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 		switch (dev->dr_hw) {
 		case NUBUS_DRHW_INTERLAN:
 			return MAC8390_INTERLAN;
+<<<<<<< HEAD
 			break;
 		default:
 			return MAC8390_KINETICS;
 			break;
+=======
+		default:
+			return MAC8390_KINETICS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 
@@ -243,6 +267,7 @@ static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 
 static enum mac8390_access __init mac8390_testio(volatile unsigned long membase)
 {
+<<<<<<< HEAD
 	unsigned long outdata = 0xA5A0B5B0;
 	unsigned long indata =  0x00000000;
 	/* Try writing 32 bits */
@@ -250,12 +275,31 @@ static enum mac8390_access __init mac8390_testio(volatile unsigned long membase)
 	/* Now compare them */
 	if (memcmp_withio(&outdata, membase, 4) == 0)
 		return ACCESS_32;
+=======
+	u32 outdata = 0xA5A0B5B0;
+	u32 indata = 0;
+
+	/* Try writing 32 bits */
+	nubus_writel(outdata, membase);
+	/* Now read it back */
+	indata = nubus_readl(membase);
+	if (outdata == indata)
+		return ACCESS_32;
+
+	outdata = 0xC5C0D5D0;
+	indata = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Write 16 bit output */
 	word_memcpy_tocard(membase, &outdata, 4);
 	/* Now read it back */
 	word_memcpy_fromcard(&indata, membase, 4);
 	if (outdata == indata)
 		return ACCESS_16;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ACCESS_UNKNOWN;
 }
 
@@ -402,6 +446,10 @@ struct net_device * __init mac8390_probe(int unit)
 	struct net_device *dev;
 	struct nubus_dev *ndev = NULL;
 	int err = -ENODEV;
+<<<<<<< HEAD
+=======
+	struct ei_device *ei_local;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	static unsigned int slots;
 
@@ -440,6 +488,13 @@ struct net_device * __init mac8390_probe(int unit)
 
 	if (!ndev)
 		goto out;
+<<<<<<< HEAD
+=======
+
+	 ei_local = netdev_priv(dev);
+	 ei_local->msg_enable = mac8390_msg_enable;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = register_netdev(dev);
 	if (err)
 		goto out;
@@ -455,6 +510,7 @@ MODULE_AUTHOR("David Huggins-Daines <dhd@debian.org> and others");
 MODULE_DESCRIPTION("Macintosh NS8390-based Nubus Ethernet driver");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 /* overkill, of course */
 static struct net_device *dev_mac8390[15];
 int init_module(void)
@@ -469,10 +525,21 @@ int init_module(void)
 	if (!i) {
 		pr_notice("No useable cards found, driver NOT installed.\n");
 		return -ENODEV;
+=======
+static struct net_device *dev_mac8390;
+
+int __init init_module(void)
+{
+	dev_mac8390 = mac8390_probe(-1);
+	if (IS_ERR(dev_mac8390)) {
+		pr_warn("mac8390: No card found\n");
+		return PTR_ERR(dev_mac8390);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 void cleanup_module(void)
 {
 	int i;
@@ -483,6 +550,12 @@ void cleanup_module(void)
 			free_netdev(dev);
 		}
 	}
+=======
+void __exit cleanup_module(void)
+{
+	unregister_netdev(dev_mac8390);
+	free_netdev(dev_mac8390);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* MODULE */
@@ -557,7 +630,10 @@ static int __init mac8390_initdev(struct net_device *dev,
 		case ACCESS_UNKNOWN:
 			pr_err("Don't know how to access card memory!\n");
 			return -ENODEV;
+<<<<<<< HEAD
 			break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		case ACCESS_16:
 			/* 16 bit card, register map is reversed */
@@ -660,19 +736,36 @@ static int mac8390_close(struct net_device *dev)
 
 static void mac8390_no_reset(struct net_device *dev)
 {
+<<<<<<< HEAD
 	ei_status.txing = 0;
 	if (ei_debug > 1)
 		pr_info("reset not supported\n");
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	ei_status.txing = 0;
+	netif_info(ei_local, hw, dev, "reset not supported\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void interlan_reset(struct net_device *dev)
 {
 	unsigned char *target = nubus_slot_addr(IRQ2SLOT(dev->irq));
+<<<<<<< HEAD
 	if (ei_debug > 1)
 		pr_info("Need to reset the NS8390 t=%lu...", jiffies);
 	ei_status.txing = 0;
 	target[0xC0000] = 0;
 	if (ei_debug > 1)
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_info(ei_local, hw, dev, "Need to reset the NS8390 t=%lu...",
+		   jiffies);
+	ei_status.txing = 0;
+	target[0xC0000] = 0;
+	if (netif_msg_hw(ei_local))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_cont("reset complete\n");
 }
 

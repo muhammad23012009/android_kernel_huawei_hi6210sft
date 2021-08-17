@@ -4,6 +4,10 @@
 #include <linux/sched.h>
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/timex.h>
 #include <linux/random.h>
 #include <linux/init.h>
@@ -111,8 +115,12 @@ static void make_8259A_irq(unsigned int irq)
 {
 	disable_irq_nosync(irq);
 	io_apic_irqs &= ~(1<<irq);
+<<<<<<< HEAD
 	irq_set_chip_and_handler_name(irq, &i8259A_chip, handle_level_irq,
 				      i8259A_chip.name);
+=======
+	irq_set_chip_and_handler(irq, &i8259A_chip, handle_level_irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enable_irq(irq);
 }
 
@@ -205,7 +213,11 @@ spurious_8259A_irq:
 		 * lets ACK and report it. [once per IRQ]
 		 */
 		if (!(spurious_irq_mask & irqmask)) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG
+=======
+			printk_deferred(KERN_DEBUG
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       "spurious 8259A interrupt: IRQ%d.\n", irq);
 			spurious_irq_mask |= irqmask;
 		}
@@ -296,6 +308,35 @@ static void unmask_8259A(void)
 	raw_spin_unlock_irqrestore(&i8259A_lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+static int probe_8259A(void)
+{
+	unsigned long flags;
+	unsigned char probe_val = ~(1 << PIC_CASCADE_IR);
+	unsigned char new_val;
+	/*
+	 * Check to see if we have a PIC.
+	 * Mask all except the cascade and read
+	 * back the value we just wrote. If we don't
+	 * have a PIC, we will read 0xff as opposed to the
+	 * value we wrote.
+	 */
+	raw_spin_lock_irqsave(&i8259A_lock, flags);
+
+	outb(0xff, PIC_SLAVE_IMR);	/* mask all of 8259A-2 */
+	outb(probe_val, PIC_MASTER_IMR);
+	new_val = inb(PIC_MASTER_IMR);
+	if (new_val != probe_val) {
+		printk(KERN_INFO "Using NULL legacy PIC\n");
+		legacy_pic = &null_legacy_pic;
+	}
+
+	raw_spin_unlock_irqrestore(&i8259A_lock, flags);
+	return nr_legacy_irqs();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void init_8259A(int auto_eoi)
 {
 	unsigned long flags;
@@ -305,16 +346,24 @@ static void init_8259A(int auto_eoi)
 	raw_spin_lock_irqsave(&i8259A_lock, flags);
 
 	outb(0xff, PIC_MASTER_IMR);	/* mask all of 8259A-1 */
+<<<<<<< HEAD
 	outb(0xff, PIC_SLAVE_IMR);	/* mask all of 8259A-2 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * outb_pic - this has to work on a wide range of PC hardware.
 	 */
 	outb_pic(0x11, PIC_MASTER_CMD);	/* ICW1: select 8259A-1 init */
 
+<<<<<<< HEAD
 	/* ICW2: 8259A-1 IR0-7 mapped to 0x30-0x37 on x86-64,
 	   to 0x20-0x27 on i386 */
 	outb_pic(IRQ0_VECTOR, PIC_MASTER_IMR);
+=======
+	/* ICW2: 8259A-1 IR0-7 mapped to ISA_IRQ_VECTOR(0) */
+	outb_pic(ISA_IRQ_VECTOR(0), PIC_MASTER_IMR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* 8259A-1 (the master) has a slave on IR2 */
 	outb_pic(1U << PIC_CASCADE_IR, PIC_MASTER_IMR);
@@ -326,8 +375,13 @@ static void init_8259A(int auto_eoi)
 
 	outb_pic(0x11, PIC_SLAVE_CMD);	/* ICW1: select 8259A-2 init */
 
+<<<<<<< HEAD
 	/* ICW2: 8259A-2 IR0-7 mapped to IRQ8_VECTOR */
 	outb_pic(IRQ8_VECTOR, PIC_SLAVE_IMR);
+=======
+	/* ICW2: 8259A-2 IR0-7 mapped to ISA_IRQ_VECTOR(8) */
+	outb_pic(ISA_IRQ_VECTOR(8), PIC_SLAVE_IMR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* 8259A-2 is a slave on master's IR2 */
 	outb_pic(PIC_CASCADE_IR, PIC_SLAVE_IMR);
 	/* (slave's support for AEOI in flat mode is to be investigated) */
@@ -363,6 +417,13 @@ static int legacy_pic_irq_pending_noop(unsigned int irq)
 {
 	return 0;
 }
+<<<<<<< HEAD
+=======
+static int legacy_pic_probe(void)
+{
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct legacy_pic null_legacy_pic = {
 	.nr_legacy_irqs = 0,
@@ -372,6 +433,10 @@ struct legacy_pic null_legacy_pic = {
 	.mask_all = legacy_pic_noop,
 	.restore_mask = legacy_pic_noop,
 	.init = legacy_pic_int_noop,
+<<<<<<< HEAD
+=======
+	.probe = legacy_pic_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.irq_pending = legacy_pic_irq_pending_noop,
 	.make_irq = legacy_pic_uint_noop,
 };
@@ -384,11 +449,19 @@ struct legacy_pic default_legacy_pic = {
 	.mask_all = mask_8259A,
 	.restore_mask = unmask_8259A,
 	.init = init_8259A,
+<<<<<<< HEAD
+=======
+	.probe = probe_8259A,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.irq_pending = i8259A_irq_pending,
 	.make_irq = make_8259A_irq,
 };
 
 struct legacy_pic *legacy_pic = &default_legacy_pic;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(legacy_pic);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init i8259A_init_ops(void)
 {

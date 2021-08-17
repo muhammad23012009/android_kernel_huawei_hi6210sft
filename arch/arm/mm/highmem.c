@@ -18,6 +18,25 @@
 #include <asm/tlbflush.h>
 #include "mm.h"
 
+<<<<<<< HEAD
+=======
+static inline void set_fixmap_pte(int idx, pte_t pte)
+{
+	unsigned long vaddr = __fix_to_virt(idx);
+	pte_t *ptep = pte_offset_kernel(pmd_off_k(vaddr), vaddr);
+
+	set_pte_ext(ptep, pte, 0);
+	local_flush_tlb_kernel_page(vaddr);
+}
+
+static inline pte_t get_fixmap_pte(unsigned long vaddr)
+{
+	pte_t *ptep = pte_offset_kernel(pmd_off_k(vaddr), vaddr);
+
+	return *ptep;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void *kmap(struct page *page)
 {
 	might_sleep();
@@ -43,6 +62,10 @@ void *kmap_atomic(struct page *page)
 	void *kmap;
 	int type;
 
+<<<<<<< HEAD
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 	if (!PageHighMem(page))
 		return page_address(page);
@@ -62,21 +85,34 @@ void *kmap_atomic(struct page *page)
 
 	type = kmap_atomic_idx_push();
 
+<<<<<<< HEAD
 	idx = type + KM_TYPE_NR * smp_processor_id();
 	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+=======
+	idx = FIX_KMAP_BEGIN + type + KM_TYPE_NR * smp_processor_id();
+	vaddr = __fix_to_virt(idx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DEBUG_HIGHMEM
 	/*
 	 * With debugging enabled, kunmap_atomic forces that entry to 0.
 	 * Make sure it was indeed properly unmapped.
 	 */
+<<<<<<< HEAD
 	BUG_ON(!pte_none(get_top_pte(vaddr)));
+=======
+	BUG_ON(!pte_none(get_fixmap_pte(vaddr)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	/*
 	 * When debugging is off, kunmap_atomic leaves the previous mapping
 	 * in place, so the contained TLB flush ensures the TLB is updated
 	 * with the new mapping.
 	 */
+<<<<<<< HEAD
 	set_top_pte(vaddr, mk_pte(page, kmap_prot));
+=======
+	set_fixmap_pte(idx, mk_pte(page, kmap_prot));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (void *)vaddr;
 }
@@ -89,13 +125,22 @@ void __kunmap_atomic(void *kvaddr)
 
 	if (kvaddr >= (void *)FIXADDR_START) {
 		type = kmap_atomic_idx();
+<<<<<<< HEAD
 		idx = type + KM_TYPE_NR * smp_processor_id();
+=======
+		idx = FIX_KMAP_BEGIN + type + KM_TYPE_NR * smp_processor_id();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (cache_is_vivt())
 			__cpuc_flush_dcache_area((void *)vaddr, PAGE_SIZE);
 #ifdef CONFIG_DEBUG_HIGHMEM
+<<<<<<< HEAD
 		BUG_ON(vaddr != __fix_to_virt(FIX_KMAP_BEGIN + idx));
 		set_top_pte(vaddr, __pte(0));
+=======
+		BUG_ON(vaddr != __fix_to_virt(idx));
+		set_fixmap_pte(idx, __pte(0));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 		(void) idx;  /* to kill a warning */
 #endif
@@ -105,6 +150,10 @@ void __kunmap_atomic(void *kvaddr)
 		kunmap_high(pte_page(pkmap_page_table[PKMAP_NR(vaddr)]));
 	}
 	pagefault_enable();
+<<<<<<< HEAD
+=======
+	preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__kunmap_atomic);
 
@@ -112,6 +161,7 @@ void *kmap_atomic_pfn(unsigned long pfn)
 {
 	unsigned long vaddr;
 	int idx, type;
+<<<<<<< HEAD
 
 	pagefault_disable();
 
@@ -135,3 +185,22 @@ struct page *kmap_atomic_to_page(const void *ptr)
 
 	return pte_page(get_top_pte(vaddr));
 }
+=======
+	struct page *page = pfn_to_page(pfn);
+
+	preempt_disable();
+	pagefault_disable();
+	if (!PageHighMem(page))
+		return page_address(page);
+
+	type = kmap_atomic_idx_push();
+	idx = FIX_KMAP_BEGIN + type + KM_TYPE_NR * smp_processor_id();
+	vaddr = __fix_to_virt(idx);
+#ifdef CONFIG_DEBUG_HIGHMEM
+	BUG_ON(!pte_none(get_fixmap_pte(vaddr)));
+#endif
+	set_fixmap_pte(idx, pfn_pte(pfn, kmap_prot));
+
+	return (void *)vaddr;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -40,7 +40,13 @@ static void br_hello_timer_expired(unsigned long arg)
 	if (br->dev->flags & IFF_UP) {
 		br_config_bpdu_generation(br);
 
+<<<<<<< HEAD
 		mod_timer(&br->hello_timer, round_jiffies(jiffies + br->hello_time));
+=======
+		if (br->stp_enabled == BR_KERNEL_STP)
+			mod_timer(&br->hello_timer,
+				  round_jiffies(jiffies + br->hello_time));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock(&br->lock);
 }
@@ -87,17 +93,31 @@ static void br_forward_delay_timer_expired(unsigned long arg)
 		 (unsigned int) p->port_no, p->dev->name);
 	spin_lock(&br->lock);
 	if (p->state == BR_STATE_LISTENING) {
+<<<<<<< HEAD
 		p->state = BR_STATE_LEARNING;
 		mod_timer(&p->forward_delay_timer,
 			  jiffies + br->forward_delay);
 	} else if (p->state == BR_STATE_LEARNING) {
 		p->state = BR_STATE_FORWARDING;
+=======
+		br_set_state(p, BR_STATE_LEARNING);
+		mod_timer(&p->forward_delay_timer,
+			  jiffies + br->forward_delay);
+	} else if (p->state == BR_STATE_LEARNING) {
+		br_set_state(p, BR_STATE_FORWARDING);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (br_is_designated_for_some_port(br))
 			br_topology_change_detection(br);
 		netif_carrier_on(br->dev);
 	}
+<<<<<<< HEAD
 	br_log_state(p);
 	br_ifinfo_notify(RTM_NEWLINK, p);
+=======
+	rcu_read_lock();
+	br_ifinfo_notify(RTM_NEWLINK, p);
+	rcu_read_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&br->lock);
 }
 
@@ -110,7 +130,11 @@ static void br_tcn_timer_expired(unsigned long arg)
 	if (!br_is_root_bridge(br) && (br->dev->flags & IFF_UP)) {
 		br_transmit_tcn(br);
 
+<<<<<<< HEAD
 		mod_timer(&br->tcn_timer,jiffies + br->bridge_hello_time);
+=======
+		mod_timer(&br->tcn_timer, jiffies + br->bridge_hello_time);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock(&br->lock);
 }

@@ -116,7 +116,11 @@ struct aoa_card {
 	struct snd_card *alsa_card;
 };
         
+<<<<<<< HEAD
 extern int aoa_snd_device_new(snd_device_type_t type,
+=======
+extern int aoa_snd_device_new(enum snd_device_type type,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void * device_data, struct snd_device_ops * ops);
 extern struct snd_card *aoa_get_card(void);
 extern int aoa_snd_ctl_add(struct snd_kcontrol* control);

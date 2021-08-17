@@ -29,6 +29,10 @@ enum wm8994_type {
 
 struct regulator_dev;
 struct regulator_bulk_data;
+<<<<<<< HEAD
+=======
+struct irq_domain;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define WM8994_NUM_GPIO_REGS 11
 #define WM8994_NUM_LDO_REGS   2
@@ -55,8 +59,11 @@ struct regulator_bulk_data;
 #define WM8994_IRQ_GPIO(x) (x + WM8994_IRQ_TEMP_WARN)
 
 struct wm8994 {
+<<<<<<< HEAD
 	struct mutex irq_lock;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct wm8994_pdata pdata;
 
 	enum wm8994_type type;
@@ -73,6 +80,10 @@ struct wm8994 {
 
 	int irq;
 	struct regmap_irq_chip_data *irq_data;
+<<<<<<< HEAD
+=======
+	struct irq_domain *edge_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Used over suspend/resume */
 	bool suspended;
@@ -83,6 +94,7 @@ struct wm8994 {
 };
 
 /* Device I/O API */
+<<<<<<< HEAD
 int wm8994_reg_read(struct wm8994 *wm8994, unsigned short reg);
 int wm8994_reg_write(struct wm8994 *wm8994, unsigned short reg,
 		 unsigned short val);
@@ -93,6 +105,45 @@ int wm8994_bulk_read(struct wm8994 *wm8994, unsigned short reg,
 int wm8994_bulk_write(struct wm8994 *wm8994, unsigned short reg,
 		     int count, const u16 *buf);
 
+=======
+
+static inline int wm8994_reg_read(struct wm8994 *wm8994, unsigned short reg)
+{
+	unsigned int val;
+	int ret;
+
+	ret = regmap_read(wm8994->regmap, reg, &val);
+
+	if (ret < 0)
+		return ret;
+	else
+		return val;
+}
+
+static inline int wm8994_reg_write(struct wm8994 *wm8994, unsigned short reg,
+				   unsigned short val)
+{
+	return regmap_write(wm8994->regmap, reg, val);
+}
+
+static inline int wm8994_bulk_read(struct wm8994 *wm8994, unsigned short reg,
+				   int count, u16 *buf)
+{
+	return regmap_bulk_read(wm8994->regmap, reg, buf, count);
+}
+
+static inline int wm8994_bulk_write(struct wm8994 *wm8994, unsigned short reg,
+				    int count, const u16 *buf)
+{
+	return regmap_raw_write(wm8994->regmap, reg, buf, count * sizeof(u16));
+}
+
+static inline int wm8994_set_bits(struct wm8994 *wm8994, unsigned short reg,
+		    unsigned short mask, unsigned short val)
+{
+	return regmap_update_bits(wm8994->regmap, reg, mask, val);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Helper to save on boilerplate */
 static inline int wm8994_request_irq(struct wm8994 *wm8994, int irq,

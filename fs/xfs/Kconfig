@@ -1,8 +1,15 @@
 config XFS_FS
 	tristate "XFS filesystem support"
 	depends on BLOCK
+<<<<<<< HEAD
 	select EXPORTFS
 	select LIBCRC32C
+=======
+	depends on (64BIT || LBDAF)
+	select EXPORTFS
+	select LIBCRC32C
+	select FS_IOMAP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  XFS is a high performance journaling filesystem which originated
 	  on the SGI IRIX platform.  It is completely multi-threaded, can

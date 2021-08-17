@@ -6,14 +6,21 @@
 
 #include <asm/io.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <linux/mc146818rtc.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef RTC_PORT
 #define RTC_PORT(x)	(0x70 + (x))
 #define RTC_ALWAYS_BCD	1	/* RTC operates in binary mode */
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_X86_32) && defined(__HAVE_ARCH_CMPXCHG)
+=======
+#if defined(CONFIG_X86_32)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This lock provides nmi access to the CMOS/RTC registers.  It has some
  * special properties.  It is owned by a CPU and stores the index register
@@ -95,8 +102,13 @@ static inline unsigned char current_lock_cmos_reg(void)
 unsigned char rtc_cmos_read(unsigned char addr);
 void rtc_cmos_write(unsigned char val, unsigned char addr);
 
+<<<<<<< HEAD
 extern int mach_set_rtc_mmss(unsigned long nowtime);
 extern unsigned long mach_get_cmos_time(void);
+=======
+extern int mach_set_rtc_mmss(const struct timespec *now);
+extern void mach_get_cmos_time(struct timespec *now);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define RTC_IRQ 8
 

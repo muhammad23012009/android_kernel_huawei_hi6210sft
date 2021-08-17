@@ -273,6 +273,7 @@ Converted from Intel HEX files, used in our binary representation of ihex.
 
 --------------------------------------------------------------------------
 
+<<<<<<< HEAD
 Driver: ip2 -- Computone IntelliPort Plus serial device
 
 File: intelliport2.bin
@@ -283,6 +284,8 @@ Found in hex form in kernel source.
 
 --------------------------------------------------------------------------
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 Driver: CPiA2 -- cameras based on Vision's CPiA2
 
 File: cpia2/stv0672_vp4.bin
@@ -687,7 +690,11 @@ File: av7110/bootcode.bin
 
 Licence: GPLv2 or later
 
+<<<<<<< HEAD
 ARM assembly source code available at http://www.linuxtv.org/downloads/firmware/Boot.S
+=======
+ARM assembly source code available at https://linuxtv.org/downloads/firmware/Boot.S
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 --------------------------------------------------------------------------
 

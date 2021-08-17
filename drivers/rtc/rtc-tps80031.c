@@ -287,7 +287,11 @@ static int tps80031_rtc_probe(struct platform_device *pdev)
 
 	ret = devm_request_threaded_irq(&pdev->dev, rtc->irq, NULL,
 			tps80031_rtc_irq,
+<<<<<<< HEAD
 			IRQF_ONESHOT | IRQF_EARLY_RESUME,
+=======
+			IRQF_ONESHOT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_name(&pdev->dev), rtc);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "request IRQ:%d failed, err = %d\n",
@@ -298,11 +302,14 @@ static int tps80031_rtc_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tps80031_rtc_remove(struct platform_device *pdev)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM_SLEEP
 static int tps80031_rtc_suspend(struct device *dev)
 {
@@ -329,11 +336,17 @@ static SIMPLE_DEV_PM_OPS(tps80031_pm_ops, tps80031_rtc_suspend,
 static struct platform_driver tps80031_rtc_driver = {
 	.driver	= {
 		.name	= "tps80031-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &tps80031_pm_ops,
 	},
 	.probe	= tps80031_rtc_probe,
 	.remove	= tps80031_rtc_remove,
+=======
+		.pm	= &tps80031_pm_ops,
+	},
+	.probe	= tps80031_rtc_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(tps80031_rtc_driver);

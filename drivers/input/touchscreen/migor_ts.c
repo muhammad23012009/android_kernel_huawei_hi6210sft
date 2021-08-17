@@ -202,7 +202,11 @@ static int migor_ts_remove(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int migor_ts_suspend(struct device *dev)
+=======
+static int __maybe_unused migor_ts_suspend(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct migor_ts_priv *priv = i2c_get_clientdata(client);
@@ -213,7 +217,11 @@ static int migor_ts_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int migor_ts_resume(struct device *dev)
+=======
+static int __maybe_unused migor_ts_resume(struct device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct migor_ts_priv *priv = i2c_get_clientdata(client);
@@ -230,7 +238,11 @@ static const struct i2c_device_id migor_ts_id[] = {
 	{ "migor_ts", 0 },
 	{ }
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(i2c, migor_ts);
+=======
+MODULE_DEVICE_TABLE(i2c, migor_ts_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct i2c_driver migor_ts_driver = {
 	.driver = {

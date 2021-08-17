@@ -25,8 +25,17 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #include <linux/compiler.h>
 #include <linux/gpio.h>
+=======
+#ifndef CONFIG_PINCTRL
+
+#include <linux/compiler.h>
+#include <asm/blackfin.h>
+#include <asm/portmux.h>
+#include <asm/irq_handler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /***********************************************************
 *
@@ -45,7 +54,10 @@
 * MODIFICATION HISTORY :
 **************************************************************/
 
+<<<<<<< HEAD
 #if !BFIN_GPIO_PINT
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void set_gpio_dir(unsigned, unsigned short);
 void set_gpio_inen(unsigned, unsigned short);
 void set_gpio_polar(unsigned, unsigned short);
@@ -115,7 +127,10 @@ struct gpio_port_t {
 	unsigned short dummy16;
 	unsigned short inen;
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef BFIN_SPECIAL_GPIO_BANKS
 void bfin_special_gpio_free(unsigned gpio);
@@ -127,15 +142,27 @@ void bfin_special_gpio_pm_hibernate_suspend(void);
 #endif
 
 #ifdef CONFIG_PM
+<<<<<<< HEAD
 int bfin_pm_standby_ctrl(unsigned ctrl);
 
 static inline int bfin_pm_standby_setup(void)
 {
 	return bfin_pm_standby_ctrl(1);
+=======
+void bfin_gpio_pm_hibernate_restore(void);
+void bfin_gpio_pm_hibernate_suspend(void);
+int bfin_gpio_pm_wakeup_ctrl(unsigned gpio, unsigned ctrl);
+int bfin_gpio_pm_standby_ctrl(unsigned ctrl);
+
+static inline int bfin_pm_standby_setup(void)
+{
+	return bfin_gpio_pm_standby_ctrl(1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void bfin_pm_standby_restore(void)
 {
+<<<<<<< HEAD
 	bfin_pm_standby_ctrl(0);
 }
 
@@ -146,6 +173,11 @@ void bfin_pint_resume(void);
 
 # if !BFIN_GPIO_PINT
 int gpio_pm_wakeup_ctrl(unsigned gpio, unsigned ctrl);
+=======
+	bfin_gpio_pm_standby_ctrl(0);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct gpio_port_s {
 	unsigned short data;
@@ -161,7 +193,10 @@ struct gpio_port_s {
 	unsigned short reserved;
 	unsigned short mux;
 };
+<<<<<<< HEAD
 # endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /*CONFIG_PM*/
 
 /***********************************************************
@@ -178,6 +213,7 @@ struct gpio_port_s {
 *************************************************************
 * MODIFICATION HISTORY :
 **************************************************************/
+<<<<<<< HEAD
 
 int bfin_gpio_request(unsigned gpio, const char *label);
 void bfin_gpio_free(unsigned gpio);
@@ -187,27 +223,49 @@ int bfin_gpio_direction_input(unsigned gpio);
 int bfin_gpio_direction_output(unsigned gpio, int value);
 int bfin_gpio_get_value(unsigned gpio);
 void bfin_gpio_set_value(unsigned gpio, int value);
+=======
+int bfin_gpio_irq_request(unsigned gpio, const char *label);
+void bfin_gpio_irq_free(unsigned gpio);
+void bfin_gpio_irq_prepare(unsigned gpio);
+
+static inline int irq_to_gpio(unsigned irq)
+{
+	return irq - GPIO_IRQ_BASE;
+}
+#endif /* CONFIG_PINCTRL */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/irq.h>
 #include <asm/errno.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_GPIOLIB
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/gpio.h>		/* cansleep wrappers */
 
 static inline int gpio_get_value(unsigned int gpio)
 {
+<<<<<<< HEAD
 	if (gpio < MAX_BLACKFIN_GPIOS)
 		return bfin_gpio_get_value(gpio);
 	else
 		return __gpio_get_value(gpio);
+=======
+	return __gpio_get_value(gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void gpio_set_value(unsigned int gpio, int value)
 {
+<<<<<<< HEAD
 	if (gpio < MAX_BLACKFIN_GPIOS)
 		bfin_gpio_set_value(gpio, value);
 	else
 		__gpio_set_value(gpio, value);
+=======
+	__gpio_set_value(gpio, value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int gpio_cansleep(unsigned int gpio)
@@ -219,6 +277,7 @@ static inline int gpio_to_irq(unsigned gpio)
 {
 	return __gpio_to_irq(gpio);
 }
+<<<<<<< HEAD
 
 #else /* !CONFIG_GPIOLIB */
 
@@ -326,6 +385,8 @@ static inline int irq_to_gpio(unsigned irq)
 	return (irq - GPIO_IRQ_BASE);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASSEMBLY__ */
 
 #endif /* __ARCH_BLACKFIN_GPIO_H__ */

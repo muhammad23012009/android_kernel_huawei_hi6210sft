@@ -1,5 +1,9 @@
 /* IEEE 802.11 SoftMAC layer
+<<<<<<< HEAD
  * Copyright (c) 2005 Andrea Merello <andreamrl@tiscali.it>
+=======
+ * Copyright (c) 2005 Andrea Merello <andrea.merello@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Mostly extracted from the rtl8180-sa2400 driver for the
  * in-kernel generic ieee802.11 stack.
@@ -26,17 +30,29 @@ const long ieee80211_wlan_frequencies[] = {
 	2452, 2457, 2462, 2467,
 	2472, 2484
 };
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL(ieee80211_wlan_frequencies);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_freq(struct ieee80211_device *ieee, struct iw_request_info *a,
 			     union iwreq_data *wrqu, char *b)
 {
 	int ret;
+<<<<<<< HEAD
 	struct iw_freq *fwrq = & wrqu->freq;
 
 	down(&ieee->wx_sem);
 
 	if(ieee->iw_mode == IW_MODE_INFRA){
+=======
+	struct iw_freq *fwrq = &wrqu->freq;
+
+	mutex_lock(&ieee->wx_mutex);
+
+	if (ieee->iw_mode == IW_MODE_INFRA) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EOPNOTSUPP;
 		goto out;
 	}
@@ -57,11 +73,19 @@ int ieee80211_wx_set_freq(struct ieee80211_device *ieee, struct iw_request_info 
 		}
 	}
 
+<<<<<<< HEAD
 	if (fwrq->e > 0 || fwrq->m > 14 || fwrq->m < 1 ){
 		ret = -EOPNOTSUPP;
 		goto out;
 
 	}else { /* Set the channel */
+=======
+	if (fwrq->e > 0 || fwrq->m > 14 || fwrq->m < 1) {
+		ret = -EOPNOTSUPP;
+		goto out;
+
+	} else { /* Set the channel */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!(GET_DOT11D_INFO(ieee)->channel_map)[fwrq->m]) {
 			ret = -EINVAL;
@@ -70,25 +94,40 @@ int ieee80211_wx_set_freq(struct ieee80211_device *ieee, struct iw_request_info 
 		ieee->current_network.channel = fwrq->m;
 		ieee->set_chan(ieee->dev, ieee->current_network.channel);
 
+<<<<<<< HEAD
 		if(ieee->iw_mode == IW_MODE_ADHOC || ieee->iw_mode == IW_MODE_MASTER)
 			if(ieee->state == IEEE80211_LINKED){
 
 			ieee80211_stop_send_beacons(ieee);
 			ieee80211_start_send_beacons(ieee);
+=======
+		if (ieee->iw_mode == IW_MODE_ADHOC || ieee->iw_mode == IW_MODE_MASTER)
+			if (ieee->state == IEEE80211_LINKED) {
+				ieee80211_stop_send_beacons(ieee);
+				ieee80211_start_send_beacons(ieee);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 	}
 
 	ret = 0;
 out:
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
 	return ret;
 }
 
+=======
+	mutex_unlock(&ieee->wx_mutex);
+	return ret;
+}
+EXPORT_SYMBOL(ieee80211_wx_set_freq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_get_freq(struct ieee80211_device *ieee,
 			     struct iw_request_info *a,
 			     union iwreq_data *wrqu, char *b)
 {
+<<<<<<< HEAD
 	struct iw_freq *fwrq = & wrqu->freq;
 
 	if (ieee->current_network.channel == 0)
@@ -101,6 +140,21 @@ int ieee80211_wx_get_freq(struct ieee80211_device *ieee,
 
 	return 0;
 }
+=======
+	struct iw_freq *fwrq = &wrqu->freq;
+
+	if (ieee->current_network.channel == 0)
+		return -1;
+	/* NM 0.7.0 will not accept channel any more. */
+	fwrq->m = ieee80211_wlan_frequencies[ieee->current_network.channel-1] * 100000;
+	fwrq->e = 1;
+	/* fwrq->m = ieee->current_network.channel; */
+	/* fwrq->e = 0; */
+
+	return 0;
+}
+EXPORT_SYMBOL(ieee80211_wx_get_freq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_get_wap(struct ieee80211_device *ieee,
 			    struct iw_request_info *info,
@@ -120,7 +174,11 @@ int ieee80211_wx_get_wap(struct ieee80211_device *ieee,
 		ieee->state != IEEE80211_LINKED_SCANNING &&
 		ieee->wap_set == 0)
 
+<<<<<<< HEAD
 		memset(wrqu->ap_addr.sa_data, 0, ETH_ALEN);
+=======
+		eth_zero_addr(wrqu->ap_addr.sa_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		memcpy(wrqu->ap_addr.sa_data,
 		       ieee->current_network.bssid, ETH_ALEN);
@@ -129,7 +187,11 @@ int ieee80211_wx_get_wap(struct ieee80211_device *ieee,
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_wap);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_wap(struct ieee80211_device *ieee,
 			 struct iw_request_info *info,
@@ -140,19 +202,33 @@ int ieee80211_wx_set_wap(struct ieee80211_device *ieee,
 	int ret = 0;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	short ifup = ieee->proto_started;//dev->flags & IFF_UP;
+=======
+	short ifup = ieee->proto_started; /* dev->flags & IFF_UP; */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sockaddr *temp = (struct sockaddr *)awrq;
 
 	ieee->sync_scan_hurryup = 1;
 
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
 	/* use ifconfig hw ether */
 	if (ieee->iw_mode == IW_MODE_MASTER){
+=======
+	mutex_lock(&ieee->wx_mutex);
+	/* use ifconfig hw ether */
+	if (ieee->iw_mode == IW_MODE_MASTER) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -1;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (temp->sa_family != ARPHRD_ETHER){
+=======
+	if (temp->sa_family != ARPHRD_ETHER) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 		goto out;
 	}
@@ -173,6 +249,7 @@ int ieee80211_wx_set_wap(struct ieee80211_device *ieee,
 	if (ifup)
 		ieee80211_start_protocol(ieee);
 out:
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
 	return ret;
 }
@@ -180,6 +257,16 @@ out:
  int ieee80211_wx_get_essid(struct ieee80211_device *ieee, struct iw_request_info *a,union iwreq_data *wrqu,char *b)
 {
 	int len,ret = 0;
+=======
+	mutex_unlock(&ieee->wx_mutex);
+	return ret;
+}
+EXPORT_SYMBOL(ieee80211_wx_set_wap);
+
+int ieee80211_wx_get_essid(struct ieee80211_device *ieee, struct iw_request_info *a, union iwreq_data *wrqu, char *b)
+{
+	int len, ret = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 
 	if (ieee->iw_mode == IW_MODE_MONITOR)
@@ -189,20 +276,32 @@ out:
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (ieee->current_network.ssid[0] == '\0' ||
+<<<<<<< HEAD
 		ieee->current_network.ssid_len == 0){
+=======
+		ieee->current_network.ssid_len == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -1;
 		goto out;
 	}
 
 	if (ieee->state != IEEE80211_LINKED &&
 		ieee->state != IEEE80211_LINKED_SCANNING &&
+<<<<<<< HEAD
 		ieee->ssid_set == 0){
+=======
+		ieee->ssid_set == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -1;
 		goto out;
 	}
 	len = ieee->current_network.ssid_len;
 	wrqu->essid.length = len;
+<<<<<<< HEAD
 	strncpy(b,ieee->current_network.ssid,len);
+=======
+	strncpy(b, ieee->current_network.ssid, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wrqu->essid.flags = 1;
 
 out:
@@ -211,6 +310,10 @@ out:
 	return ret;
 
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_essid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_rate(struct ieee80211_device *ieee,
 			     struct iw_request_info *info,
@@ -220,24 +323,39 @@ int ieee80211_wx_set_rate(struct ieee80211_device *ieee,
 	u32 target_rate = wrqu->bitrate.value;
 
 	ieee->rate = target_rate/100000;
+<<<<<<< HEAD
 	//FIXME: we might want to limit rate also in management protocols.
 	return 0;
 }
 
 
+=======
+	/* FIXME: we might want to limit rate also in management protocols. */
+	return 0;
+}
+EXPORT_SYMBOL(ieee80211_wx_set_rate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_get_rate(struct ieee80211_device *ieee,
 			     struct iw_request_info *info,
 			     union iwreq_data *wrqu, char *extra)
 {
 	u32 tmp_rate;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tmp_rate = TxCountToDataRate(ieee, ieee->softmac_stats.CurrentShowTxate);
 
 	wrqu->bitrate.value = tmp_rate * 500000;
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_rate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_rts(struct ieee80211_device *ieee,
 			     struct iw_request_info *info,
@@ -245,8 +363,12 @@ int ieee80211_wx_set_rts(struct ieee80211_device *ieee,
 {
 	if (wrqu->rts.disabled || !wrqu->rts.fixed)
 		ieee->rts = DEFAULT_RTS_THRESHOLD;
+<<<<<<< HEAD
 	else
 	{
+=======
+	else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (wrqu->rts.value < MIN_RTS_THRESHOLD ||
 				wrqu->rts.value > MAX_RTS_THRESHOLD)
 			return -EINVAL;
@@ -254,6 +376,10 @@ int ieee80211_wx_set_rts(struct ieee80211_device *ieee,
 	}
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_set_rts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_get_rts(struct ieee80211_device *ieee,
 			     struct iw_request_info *info,
@@ -264,17 +390,27 @@ int ieee80211_wx_get_rts(struct ieee80211_device *ieee,
 	wrqu->rts.disabled = (wrqu->rts.value == DEFAULT_RTS_THRESHOLD);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_rts);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int ieee80211_wx_set_mode(struct ieee80211_device *ieee, struct iw_request_info *a,
 			     union iwreq_data *wrqu, char *b)
 {
 
 	ieee->sync_scan_hurryup = 1;
 
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
+=======
+	mutex_lock(&ieee->wx_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (wrqu->mode == ieee->iw_mode)
 		goto out;
 
+<<<<<<< HEAD
 	if (wrqu->mode == IW_MODE_MONITOR){
 
 		ieee->dev->type = ARPHRD_IEEE80211;
@@ -285,24 +421,48 @@ int ieee80211_wx_set_mode(struct ieee80211_device *ieee, struct iw_request_info 
 	if (!ieee->proto_started){
 		ieee->iw_mode = wrqu->mode;
 	}else{
+=======
+	if (wrqu->mode == IW_MODE_MONITOR)
+		ieee->dev->type = ARPHRD_IEEE80211;
+	else
+		ieee->dev->type = ARPHRD_ETHER;
+
+	if (!ieee->proto_started) {
+		ieee->iw_mode = wrqu->mode;
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ieee80211_stop_protocol(ieee);
 		ieee->iw_mode = wrqu->mode;
 		ieee80211_start_protocol(ieee);
 	}
 
 out:
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
 	return 0;
 }
+=======
+	mutex_unlock(&ieee->wx_mutex);
+	return 0;
+}
+EXPORT_SYMBOL(ieee80211_wx_set_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void ieee80211_wx_sync_scan_wq(struct work_struct *work)
 {
 	struct ieee80211_device *ieee = container_of(work, struct ieee80211_device, wx_sync_scan_wq);
 	short chan;
+<<<<<<< HEAD
 	HT_EXTCHNL_OFFSET chan_offset=0;
 	HT_CHANNEL_WIDTH bandwidth=0;
 	int b40M = 0;
 	static int count;
+=======
+	HT_EXTCHNL_OFFSET chan_offset = 0;
+	HT_CHANNEL_WIDTH bandwidth = 0;
+	int b40M = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chan = ieee->current_network.channel;
 	netif_carrier_off(ieee->dev);
 
@@ -313,7 +473,11 @@ void ieee80211_wx_sync_scan_wq(struct work_struct *work)
 
 	ieee->state = IEEE80211_LINKED_SCANNING;
 	ieee->link_change(ieee->dev);
+<<<<<<< HEAD
 	ieee->InitialGainHandler(ieee->dev,IG_Backup);
+=======
+	ieee->InitialGainHandler(ieee->dev, IG_Backup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ieee->pHTInfo->bCurrentHTSupport && ieee->pHTInfo->bEnableHT && ieee->pHTInfo->bCurBW40MHz) {
 		b40M = 1;
 		chan_offset = ieee->pHTInfo->CurSTAExtChnlOffset;
@@ -335,6 +499,7 @@ void ieee80211_wx_sync_scan_wq(struct work_struct *work)
 		ieee->set_chan(ieee->dev, chan);
 	}
 
+<<<<<<< HEAD
 	ieee->InitialGainHandler(ieee->dev,IG_Restore);
 	ieee->state = IEEE80211_LINKED;
 	ieee->link_change(ieee->dev);
@@ -343,16 +508,33 @@ void ieee80211_wx_sync_scan_wq(struct work_struct *work)
 	{
 		ieee->LinkDetectInfo.NumRecvBcnInPeriod = 1;
 		ieee->LinkDetectInfo.NumRecvDataInPeriod= 1;
+=======
+	ieee->InitialGainHandler(ieee->dev, IG_Restore);
+	ieee->state = IEEE80211_LINKED;
+	ieee->link_change(ieee->dev);
+	/* To prevent the immediately calling watch_dog after scan. */
+	if (ieee->LinkDetectInfo.NumRecvBcnInPeriod == 0 || ieee->LinkDetectInfo.NumRecvDataInPeriod == 0) {
+		ieee->LinkDetectInfo.NumRecvBcnInPeriod = 1;
+		ieee->LinkDetectInfo.NumRecvDataInPeriod = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (ieee->data_hard_resume)
 		ieee->data_hard_resume(ieee->dev);
 
+<<<<<<< HEAD
 	if(ieee->iw_mode == IW_MODE_ADHOC || ieee->iw_mode == IW_MODE_MASTER)
 		ieee80211_start_send_beacons(ieee);
 
 	netif_carrier_on(ieee->dev);
 	count = 0;
 	up(&ieee->wx_sem);
+=======
+	if (ieee->iw_mode == IW_MODE_ADHOC || ieee->iw_mode == IW_MODE_MASTER)
+		ieee80211_start_send_beacons(ieee);
+
+	netif_carrier_on(ieee->dev);
+	mutex_unlock(&ieee->wx_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 }
 
@@ -361,34 +543,56 @@ int ieee80211_wx_set_scan(struct ieee80211_device *ieee, struct iw_request_info 
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
 
 	if (ieee->iw_mode == IW_MODE_MONITOR || !(ieee->proto_started)){
+=======
+	mutex_lock(&ieee->wx_mutex);
+
+	if (ieee->iw_mode == IW_MODE_MONITOR || !(ieee->proto_started)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -1;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if ( ieee->state == IEEE80211_LINKED){
+=======
+	if (ieee->state == IEEE80211_LINKED) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		queue_work(ieee->wq, &ieee->wx_sync_scan_wq);
 		/* intentionally forget to up sem */
 		return 0;
 	}
 
 out:
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
 	return ret;
 }
+=======
+	mutex_unlock(&ieee->wx_mutex);
+	return ret;
+}
+EXPORT_SYMBOL(ieee80211_wx_set_scan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_set_essid(struct ieee80211_device *ieee,
 			      struct iw_request_info *a,
 			      union iwreq_data *wrqu, char *extra)
 {
 
+<<<<<<< HEAD
 	int ret=0,len;
+=======
+	int ret = 0, len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	short proto_started;
 	unsigned long flags;
 
 	ieee->sync_scan_hurryup = 1;
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
 
 	proto_started = ieee->proto_started;
@@ -404,6 +608,23 @@ int ieee80211_wx_set_essid(struct ieee80211_device *ieee,
 	}
 
 	if(proto_started)
+=======
+	mutex_lock(&ieee->wx_mutex);
+
+	proto_started = ieee->proto_started;
+
+	if (wrqu->essid.length > IW_ESSID_MAX_SIZE) {
+		ret = -E2BIG;
+		goto out;
+	}
+
+	if (ieee->iw_mode == IW_MODE_MONITOR) {
+		ret = -1;
+		goto out;
+	}
+
+	if (proto_started)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ieee80211_stop_protocol(ieee);
 
 
@@ -413,13 +634,21 @@ int ieee80211_wx_set_essid(struct ieee80211_device *ieee,
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (wrqu->essid.flags && wrqu->essid.length) {
+<<<<<<< HEAD
 		//first flush current network.ssid
+=======
+		/* first flush current network.ssid */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		len = ((wrqu->essid.length-1) < IW_ESSID_MAX_SIZE) ? (wrqu->essid.length-1) : IW_ESSID_MAX_SIZE;
 		strncpy(ieee->current_network.ssid, extra, len+1);
 		ieee->current_network.ssid_len = len+1;
 		ieee->ssid_set = 1;
+<<<<<<< HEAD
 	}
 	else{
+=======
+	} else {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ieee->ssid_set = 0;
 		ieee->current_network.ssid[0] = '\0';
 		ieee->current_network.ssid_len = 0;
@@ -429,19 +658,34 @@ int ieee80211_wx_set_essid(struct ieee80211_device *ieee,
 	if (proto_started)
 		ieee80211_start_protocol(ieee);
 out:
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
 	return ret;
 }
 
  int ieee80211_wx_get_mode(struct ieee80211_device *ieee, struct iw_request_info *a,
+=======
+	mutex_unlock(&ieee->wx_mutex);
+	return ret;
+}
+EXPORT_SYMBOL(ieee80211_wx_set_essid);
+
+int ieee80211_wx_get_mode(struct ieee80211_device *ieee, struct iw_request_info *a,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     union iwreq_data *wrqu, char *b)
 {
 
 	wrqu->mode = ieee->iw_mode;
 	return 0;
 }
+<<<<<<< HEAD
 
  int ieee80211_wx_set_rawtx(struct ieee80211_device *ieee,
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_mode);
+
+int ieee80211_wx_set_rawtx(struct ieee80211_device *ieee,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       struct iw_request_info *info,
 			       union iwreq_data *wrqu, char *extra)
 {
@@ -450,9 +694,15 @@ out:
 	int enable = (parms[0] > 0);
 	short prev = ieee->raw_tx;
 
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
 
 	if(enable)
+=======
+	mutex_lock(&ieee->wx_mutex);
+
+	if (enable)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ieee->raw_tx = 1;
 	else
 		ieee->raw_tx = 0;
@@ -460,15 +710,21 @@ out:
 	printk(KERN_INFO"raw TX is %s\n",
 	      ieee->raw_tx ? "enabled" : "disabled");
 
+<<<<<<< HEAD
 	if(ieee->iw_mode == IW_MODE_MONITOR)
 	{
 		if(prev == 0 && ieee->raw_tx){
+=======
+	if (ieee->iw_mode == IW_MODE_MONITOR) {
+		if (prev == 0 && ieee->raw_tx) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ieee->data_hard_resume)
 				ieee->data_hard_resume(ieee->dev);
 
 			netif_carrier_on(ieee->dev);
 		}
 
+<<<<<<< HEAD
 		if(prev && ieee->raw_tx == 1)
 			netif_carrier_off(ieee->dev);
 	}
@@ -477,6 +733,17 @@ out:
 
 	return 0;
 }
+=======
+		if (prev && ieee->raw_tx == 1)
+			netif_carrier_off(ieee->dev);
+	}
+
+	mutex_unlock(&ieee->wx_mutex);
+
+	return 0;
+}
+EXPORT_SYMBOL(ieee80211_wx_set_rawtx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int ieee80211_wx_get_name(struct ieee80211_device *ieee,
 			     struct iw_request_info *info,
@@ -502,7 +769,11 @@ int ieee80211_wx_get_name(struct ieee80211_device *ieee,
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL(ieee80211_wx_get_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* this is mostly stolen from hostap */
 int ieee80211_wx_set_power(struct ieee80211_device *ieee,
@@ -510,22 +781,39 @@ int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 				 union iwreq_data *wrqu, char *extra)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	down(&ieee->wx_sem);
 
 	if (wrqu->power.disabled){
+=======
+
+	mutex_lock(&ieee->wx_mutex);
+
+	if (wrqu->power.disabled) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ieee->ps = IEEE80211_PS_DISABLED;
 		goto exit;
 	}
 	if (wrqu->power.flags & IW_POWER_TIMEOUT) {
+<<<<<<< HEAD
 		//ieee->ps_period = wrqu->power.value / 1000;
+=======
+		/* ieee->ps_period = wrqu->power.value / 1000; */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ieee->ps_timeout = wrqu->power.value / 1000;
 	}
 
 	if (wrqu->power.flags & IW_POWER_PERIOD) {
 
+<<<<<<< HEAD
 		//ieee->ps_timeout = wrqu->power.value / 1000;
 		ieee->ps_period = wrqu->power.value / 1000;
 		//wrq->value / 1024;
+=======
+		/* ieee->ps_timeout = wrqu->power.value / 1000; */
+		ieee->ps_period = wrqu->power.value / 1000;
+		/* wrq->value / 1024; */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	}
 	switch (wrqu->power.flags & IW_POWER_MODE) {
@@ -540,7 +828,11 @@ int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 		break;
 
 	case IW_POWER_ON:
+<<<<<<< HEAD
 	//	ieee->ps = IEEE80211_PS_DISABLED;
+=======
+		/* ieee->ps = IEEE80211_PS_DISABLED; */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 
 	default:
@@ -549,21 +841,35 @@ int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 
 	}
 exit:
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
 	return ret;
 
 }
+=======
+	mutex_unlock(&ieee->wx_mutex);
+	return ret;
+
+}
+EXPORT_SYMBOL(ieee80211_wx_set_power);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* this is stolen from hostap */
 int ieee80211_wx_get_power(struct ieee80211_device *ieee,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	int ret =0;
 
 	down(&ieee->wx_sem);
 
 	if(ieee->ps == IEEE80211_PS_DISABLED){
+=======
+	mutex_lock(&ieee->wx_mutex);
+
+	if (ieee->ps == IEEE80211_PS_DISABLED) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wrqu->power.disabled = 1;
 		goto exit;
 	}
@@ -574,6 +880,7 @@ int ieee80211_wx_get_power(struct ieee80211_device *ieee,
 		wrqu->power.flags = IW_POWER_TIMEOUT;
 		wrqu->power.value = ieee->ps_timeout * 1000;
 	} else {
+<<<<<<< HEAD
 //		ret = -EOPNOTSUPP;
 //		goto exit;
 		wrqu->power.flags = IW_POWER_PERIOD;
@@ -582,6 +889,16 @@ int ieee80211_wx_get_power(struct ieee80211_device *ieee,
 	}
 
        if ((ieee->ps & (IEEE80211_PS_MBCAST | IEEE80211_PS_UNICAST)) == (IEEE80211_PS_MBCAST | IEEE80211_PS_UNICAST))
+=======
+		/* ret = -EOPNOTSUPP; */
+		/* goto exit; */
+		wrqu->power.flags = IW_POWER_PERIOD;
+		wrqu->power.value = ieee->ps_period * 1000;
+		/* ieee->current_network.dtim_period * ieee->current_network.beacon_interval * 1024; */
+	}
+
+	if ((ieee->ps & (IEEE80211_PS_MBCAST | IEEE80211_PS_UNICAST)) == (IEEE80211_PS_MBCAST | IEEE80211_PS_UNICAST))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wrqu->power.flags |= IW_POWER_ALL_R;
 	else if (ieee->ps & IEEE80211_PS_MBCAST)
 		wrqu->power.flags |= IW_POWER_MULTICAST_R;
@@ -589,6 +906,7 @@ int ieee80211_wx_get_power(struct ieee80211_device *ieee,
 		wrqu->power.flags |= IW_POWER_UNICAST_R;
 
 exit:
+<<<<<<< HEAD
 	up(&ieee->wx_sem);
 	return ret;
 
@@ -611,3 +929,10 @@ EXPORT_SYMBOL(ieee80211_wx_get_power);
 EXPORT_SYMBOL(ieee80211_wlan_frequencies);
 EXPORT_SYMBOL(ieee80211_wx_set_rts);
 EXPORT_SYMBOL(ieee80211_wx_get_rts);
+=======
+	mutex_unlock(&ieee->wx_mutex);
+	return 0;
+
+}
+EXPORT_SYMBOL(ieee80211_wx_get_power);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

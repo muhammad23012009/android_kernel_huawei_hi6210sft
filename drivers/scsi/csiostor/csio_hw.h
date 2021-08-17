@@ -48,6 +48,10 @@
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_transport_fc.h>
 
+<<<<<<< HEAD
+=======
+#include "t4_hw.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "csio_hw_chip.h"
 #include "csio_wr.h"
 #include "csio_mb.h"
@@ -94,7 +98,11 @@ enum {
 };
 
 struct csio_msix_entries {
+<<<<<<< HEAD
 	unsigned short	vector;		/* Vector assigned by pci_enable_msix */
+=======
+	unsigned short	vector;		/* Assigned MSI-X vector */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void		*dev_id;	/* Priv object associated w/ this msix*/
 	char		desc[24];	/* Description of this vector */
 };
@@ -110,7 +118,10 @@ struct csio_scsi_cpu_info {
 };
 
 extern int csio_dbg_level;
+<<<<<<< HEAD
 extern int csio_force_master;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern unsigned int csio_port_mask;
 extern int csio_msi;
 
@@ -118,10 +129,17 @@ extern int csio_msi;
 #define CSIO_ASIC_DEVID_PROTO_MASK		0xFF00
 #define CSIO_ASIC_DEVID_TYPE_MASK		0x00FF
 
+<<<<<<< HEAD
 #define CSIO_GLBL_INTR_MASK		(CIM | MPS | PL | PCIE | MC | EDC0 | \
 					 EDC1 | LE | TP | MA | PM_TX | PM_RX | \
 					 ULP_RX | CPL_SWITCH | SGE | \
 					 ULP_TX | SF)
+=======
+#define CSIO_GLBL_INTR_MASK	(CIM_F | MPS_F | PL_F | PCIE_F | MC_F | \
+				 EDC0_F | EDC1_F | LE_F | TP_F | MA_F | \
+				 PM_TX_F | PM_RX_F | ULP_RX_F | \
+				 CPL_SWITCH_F | SGE_F | ULP_TX_F | SF_F)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Hard parameters used to initialize the card in the absence of a
@@ -153,6 +171,7 @@ enum {
 	CSIO_SGE_INT_CNT_VAL_1		= 4,
 	CSIO_SGE_INT_CNT_VAL_2		= 8,
 	CSIO_SGE_INT_CNT_VAL_3		= 16,
+<<<<<<< HEAD
 
 	/* Storage specific - used by FW_PFVF_CMD */
 	CSIO_WX_CAPS			= FW_CMD_CAP_PF, /* w/x all */
@@ -164,6 +183,8 @@ enum {
 	CSIO_NEXACTF			= 32,
 	CSIO_CMASK			= FW_PFVF_CMD_CMASK_MASK,
 	CSIO_PMASK			= FW_PFVF_CMD_PMASK_MASK,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Slowpath events */
@@ -186,6 +207,7 @@ struct csio_evt_msg {
 };
 
 enum {
+<<<<<<< HEAD
 	EEPROMVSIZE    = 32768, /* Serial EEPROM virtual address space size */
 	SERNUM_LEN     = 16,    /* Serial # length */
 	EC_LEN         = 16,    /* E/C length */
@@ -196,6 +218,14 @@ enum {
 enum {
 	SF_PAGE_SIZE = 256,           /* serial flash page size */
 	SF_SEC_SIZE = 64 * 1024,      /* serial flash sector size */
+=======
+	SERNUM_LEN     = 16,    /* Serial # length */
+	EC_LEN         = 16,    /* E/C length */
+	ID_LEN         = 16,    /* ID length */
+};
+
+enum {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SF_SIZE = SF_SEC_SIZE * 16,   /* serial flash size */
 };
 
@@ -211,6 +241,7 @@ enum {
 	SF_RD_DATA_FAST = 0xb,        /* read flash */
 	SF_RD_ID	= 0x9f,	      /* read ID */
 	SF_ERASE_SECTOR = 0xd8,       /* erase sector */
+<<<<<<< HEAD
 
 	FW_START_SEC = 8,             /* first flash sector for FW */
 	FW_END_SEC = 15,              /* last flash sector for FW */
@@ -244,6 +275,10 @@ enum {
 #undef FLASH_START
 #undef FLASH_MAX_SIZE
 
+=======
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Management module */
 enum {
 	CSIO_MGMT_EQ_WRSIZE = 512,
@@ -494,11 +529,14 @@ struct csio_hw {
 	uint32_t		tp_vers;
 	char			chip_ver;
 	uint16_t		chip_id;		/* Tells T4/T5 chip */
+<<<<<<< HEAD
 	uint32_t		cfg_finiver;
 	uint32_t		cfg_finicsum;
 	uint32_t		cfg_cfcsum;
 	uint8_t			cfg_csum_status;
 	uint8_t			cfg_store;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum csio_dev_state	fw_state;
 	struct csio_vpd		vpd;
 

@@ -9,6 +9,7 @@
 #include <linux/cpuidle.h>
 #include <linux/module.h>
 #include <asm/cpuidle.h>
+<<<<<<< HEAD
 #include <asm/proc-fns.h>
 
 #include "common.h"
@@ -16,10 +17,22 @@
 
 static atomic_t master = ATOMIC_INIT(0);
 static DEFINE_SPINLOCK(master_lock);
+=======
+
+#include <soc/imx/cpuidle.h>
+
+#include "common.h"
+#include "cpuidle.h"
+#include "hardware.h"
+
+static int num_idle_cpus = 0;
+static DEFINE_SPINLOCK(cpuidle_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int imx6q_enter_wait(struct cpuidle_device *dev,
 			    struct cpuidle_driver *drv, int index)
 {
+<<<<<<< HEAD
 	if (atomic_inc_return(&master) == num_online_cpus()) {
 		/*
 		 * With this lock, we prevent other cpu to exit and enter
@@ -38,6 +51,19 @@ idle:
 	cpu_do_idle();
 done:
 	atomic_dec(&master);
+=======
+	spin_lock(&cpuidle_lock);
+	if (++num_idle_cpus == num_online_cpus())
+		imx6_set_lpm(WAIT_UNCLOCKED);
+	spin_unlock(&cpuidle_lock);
+
+	cpu_do_idle();
+
+	spin_lock(&cpuidle_lock);
+	if (num_idle_cpus-- == num_online_cpus())
+		imx6_set_lpm(WAIT_CLOCKED);
+	spin_unlock(&cpuidle_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return index;
 }
@@ -52,8 +78,12 @@ static struct cpuidle_driver imx6q_cpuidle_driver = {
 		{
 			.exit_latency = 50,
 			.target_residency = 75,
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID |
 			         CPUIDLE_FLAG_TIMER_STOP,
+=======
+			.flags = CPUIDLE_FLAG_TIMER_STOP,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.enter = imx6q_enter_wait,
 			.name = "WAIT",
 			.desc = "Clock off",
@@ -63,6 +93,7 @@ static struct cpuidle_driver imx6q_cpuidle_driver = {
 	.safe_state_index = 0,
 };
 
+<<<<<<< HEAD
 int __init imx6q_cpuidle_init(void)
 {
 	/* Need to enable SCU standby for entering WAIT modes */
@@ -70,6 +101,30 @@ int __init imx6q_cpuidle_init(void)
 
 	/* Set chicken bit to get a reliable WAIT mode support */
 	imx6q_set_chicken_bit();
+=======
+/*
+ * i.MX6 Q/DL has an erratum (ERR006687) that prevents the FEC from waking the
+ * CPUs when they are in wait(unclocked) state. As the hardware workaround isn't
+ * applicable to all boards, disable the deeper idle state when the workaround
+ * isn't present and the FEC is in use.
+ */
+void imx6q_cpuidle_fec_irqs_used(void)
+{
+	imx6q_cpuidle_driver.states[1].disabled = true;
+}
+EXPORT_SYMBOL_GPL(imx6q_cpuidle_fec_irqs_used);
+
+void imx6q_cpuidle_fec_irqs_unused(void)
+{
+	imx6q_cpuidle_driver.states[1].disabled = false;
+}
+EXPORT_SYMBOL_GPL(imx6q_cpuidle_fec_irqs_unused);
+
+int __init imx6q_cpuidle_init(void)
+{
+	/* Set INT_MEM_CLK_LPM bit to get a reliable WAIT mode support */
+	imx6_set_int_mem_clk_lpm(true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return cpuidle_register(&imx6q_cpuidle_driver, NULL);
 }

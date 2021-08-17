@@ -26,9 +26,18 @@
 
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/drbd.h>
 #include <asm/uaccess.h>
+=======
+#define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
+
+#include <linux/module.h>
+#include <linux/jiffies.h>
+#include <linux/drbd.h>
+#include <linux/uaccess.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/types.h>
 #include <net/sock.h>
 #include <linux/ctype.h>
@@ -52,6 +61,7 @@
 
 #include <linux/drbd_limits.h>
 #include "drbd_int.h"
+<<<<<<< HEAD
 #include "drbd_req.h" /* only for _req_mod in tl_release and tl_clear */
 
 #include "drbd_vli.h"
@@ -68,6 +78,18 @@ static int w_md_sync(struct drbd_work *w, int unused);
 static void md_sync_timer_fn(unsigned long data);
 static int w_bitmap_io(struct drbd_work *w, int unused);
 static int w_go_diskless(struct drbd_work *w, int unused);
+=======
+#include "drbd_protocol.h"
+#include "drbd_req.h" /* only for _req_mod in tl_release and tl_clear */
+#include "drbd_vli.h"
+#include "drbd_debugfs.h"
+
+static DEFINE_MUTEX(drbd_main_mutex);
+static int drbd_open(struct block_device *bdev, fmode_t mode);
+static void drbd_release(struct gendisk *gd, fmode_t mode);
+static void md_sync_timer_fn(unsigned long data);
+static int w_bitmap_io(struct drbd_work *w, int unused);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Philipp Reisner <phil@linbit.com>, "
 	      "Lars Ellenberg <lars@linbit.com>");
@@ -118,8 +140,14 @@ module_param_string(usermode_helper, usermode_helper, sizeof(usermode_helper), 0
 /* in 2.6.x, our device mapping and config info contains our virtual gendisks
  * as member "struct gendisk *vdisk;"
  */
+<<<<<<< HEAD
 struct idr minors;
 struct list_head drbd_tconns;  /* list of struct drbd_tconn */
+=======
+struct idr drbd_devices;
+struct list_head drbd_resources;
+struct mutex resources_mutex;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct kmem_cache *drbd_request_cache;
 struct kmem_cache *drbd_ee_cache;	/* peer requests */
@@ -166,6 +194,7 @@ struct bio *bio_alloc_drbd(gfp_t gfp_mask)
 /* When checking with sparse, and this is an inline function, sparse will
    give tons of false positives. When this is a real functions sparse works.
  */
+<<<<<<< HEAD
 int _get_ldev_if_state(struct drbd_conf *mdev, enum drbd_disk_state mins)
 {
 	int io_allowed;
@@ -175,6 +204,17 @@ int _get_ldev_if_state(struct drbd_conf *mdev, enum drbd_disk_state mins)
 	if (!io_allowed) {
 		if (atomic_dec_and_test(&mdev->local_cnt))
 			wake_up(&mdev->misc_wait);
+=======
+int _get_ldev_if_state(struct drbd_device *device, enum drbd_disk_state mins)
+{
+	int io_allowed;
+
+	atomic_inc(&device->local_cnt);
+	io_allowed = (device->state.disk >= mins);
+	if (!io_allowed) {
+		if (atomic_dec_and_test(&device->local_cnt))
+			wake_up(&device->misc_wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return io_allowed;
 }
@@ -183,7 +223,11 @@ int _get_ldev_if_state(struct drbd_conf *mdev, enum drbd_disk_state mins)
 
 /**
  * tl_release() - mark as BARRIER_ACKED all requests in the corresponding transfer log epoch
+<<<<<<< HEAD
  * @tconn:	DRBD connection.
+=======
+ * @connection:	DRBD connection.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @barrier_nr:	Expected identifier of the DRBD write barrier packet.
  * @set_size:	Expected number of requests before that barrier.
  *
@@ -191,7 +235,11 @@ int _get_ldev_if_state(struct drbd_conf *mdev, enum drbd_disk_state mins)
  * epoch of not yet barrier-acked requests, this function will cause a
  * termination of the connection.
  */
+<<<<<<< HEAD
 void tl_release(struct drbd_tconn *tconn, unsigned int barrier_nr,
+=======
+void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		unsigned int set_size)
 {
 	struct drbd_request *r;
@@ -199,11 +247,19 @@ void tl_release(struct drbd_tconn *tconn, unsigned int barrier_nr,
 	int expect_epoch = 0;
 	int expect_size = 0;
 
+<<<<<<< HEAD
 	spin_lock_irq(&tconn->req_lock);
 
 	/* find oldest not yet barrier-acked write request,
 	 * count writes in its epoch. */
 	list_for_each_entry(r, &tconn->transfer_log, tl_requests) {
+=======
+	spin_lock_irq(&connection->resource->req_lock);
+
+	/* find oldest not yet barrier-acked write request,
+	 * count writes in its epoch. */
+	list_for_each_entry(r, &connection->transfer_log, tl_requests) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		const unsigned s = r->rq_state;
 		if (!req) {
 			if (!(s & RQ_WRITE))
@@ -228,18 +284,30 @@ void tl_release(struct drbd_tconn *tconn, unsigned int barrier_nr,
 
 	/* first some paranoia code */
 	if (req == NULL) {
+<<<<<<< HEAD
 		conn_err(tconn, "BAD! BarrierAck #%u received, but no epoch in tl!?\n",
+=======
+		drbd_err(connection, "BAD! BarrierAck #%u received, but no epoch in tl!?\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 barrier_nr);
 		goto bail;
 	}
 	if (expect_epoch != barrier_nr) {
+<<<<<<< HEAD
 		conn_err(tconn, "BAD! BarrierAck #%u received, expected #%u!\n",
+=======
+		drbd_err(connection, "BAD! BarrierAck #%u received, expected #%u!\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 barrier_nr, expect_epoch);
 		goto bail;
 	}
 
 	if (expect_size != set_size) {
+<<<<<<< HEAD
 		conn_err(tconn, "BAD! BarrierAck #%u received with n_writes=%u, expected n_writes=%u!\n",
+=======
+		drbd_err(connection, "BAD! BarrierAck #%u received with n_writes=%u, expected n_writes=%u!\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 barrier_nr, set_size, expect_size);
 		goto bail;
 	}
@@ -248,33 +316,54 @@ void tl_release(struct drbd_tconn *tconn, unsigned int barrier_nr,
 	/* this extra list walk restart is paranoia,
 	 * to catch requests being barrier-acked "unexpectedly".
 	 * It usually should find the same req again, or some READ preceding it. */
+<<<<<<< HEAD
 	list_for_each_entry(req, &tconn->transfer_log, tl_requests)
 		if (req->epoch == expect_epoch)
 			break;
 	list_for_each_entry_safe_from(req, r, &tconn->transfer_log, tl_requests) {
+=======
+	list_for_each_entry(req, &connection->transfer_log, tl_requests)
+		if (req->epoch == expect_epoch)
+			break;
+	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (req->epoch != expect_epoch)
 			break;
 		_req_mod(req, BARRIER_ACKED);
 	}
+<<<<<<< HEAD
 	spin_unlock_irq(&tconn->req_lock);
+=======
+	spin_unlock_irq(&connection->resource->req_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return;
 
 bail:
+<<<<<<< HEAD
 	spin_unlock_irq(&tconn->req_lock);
 	conn_request_state(tconn, NS(conn, C_PROTOCOL_ERROR), CS_HARD);
+=======
+	spin_unlock_irq(&connection->resource->req_lock);
+	conn_request_state(connection, NS(conn, C_PROTOCOL_ERROR), CS_HARD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
 /**
  * _tl_restart() - Walks the transfer log, and applies an action to all requests
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @connection:	DRBD connection to operate on.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @what:       The action/event to perform with all request objects
  *
  * @what might be one of CONNECTION_LOST_WHILE_PENDING, RESEND, FAIL_FROZEN_DISK_IO,
  * RESTART_FROZEN_DISK_IO.
  */
 /* must hold resource->req_lock */
+<<<<<<< HEAD
 void _tl_restart(struct drbd_tconn *tconn, enum drbd_req_event what)
 {
 	struct drbd_request *req, *r;
@@ -288,16 +377,36 @@ void tl_restart(struct drbd_tconn *tconn, enum drbd_req_event what)
 	spin_lock_irq(&tconn->req_lock);
 	_tl_restart(tconn, what);
 	spin_unlock_irq(&tconn->req_lock);
+=======
+void _tl_restart(struct drbd_connection *connection, enum drbd_req_event what)
+{
+	struct drbd_request *req, *r;
+
+	list_for_each_entry_safe(req, r, &connection->transfer_log, tl_requests)
+		_req_mod(req, what);
+}
+
+void tl_restart(struct drbd_connection *connection, enum drbd_req_event what)
+{
+	spin_lock_irq(&connection->resource->req_lock);
+	_tl_restart(connection, what);
+	spin_unlock_irq(&connection->resource->req_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * tl_clear() - Clears all requests and &struct drbd_tl_epoch objects out of the TL
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This is called after the connection to the peer was lost. The storage covered
  * by the requests on the transfer gets marked as our of sync. Called from the
  * receiver thread and the worker thread.
  */
+<<<<<<< HEAD
 void tl_clear(struct drbd_tconn *tconn)
 {
 	tl_restart(tconn, CONNECTION_LOST_WHILE_PENDING);
@@ -321,18 +430,55 @@ void tl_abort_disk_io(struct drbd_conf *mdev)
 		_req_mod(req, ABORT_DISK_IO);
 	}
 	spin_unlock_irq(&tconn->req_lock);
+=======
+void tl_clear(struct drbd_connection *connection)
+{
+	tl_restart(connection, CONNECTION_LOST_WHILE_PENDING);
+}
+
+/**
+ * tl_abort_disk_io() - Abort disk I/O for all requests for a certain device in the TL
+ * @device:	DRBD device.
+ */
+void tl_abort_disk_io(struct drbd_device *device)
+{
+	struct drbd_connection *connection = first_peer_device(device)->connection;
+	struct drbd_request *req, *r;
+
+	spin_lock_irq(&connection->resource->req_lock);
+	list_for_each_entry_safe(req, r, &connection->transfer_log, tl_requests) {
+		if (!(req->rq_state & RQ_LOCAL_PENDING))
+			continue;
+		if (req->device != device)
+			continue;
+		_req_mod(req, ABORT_DISK_IO);
+	}
+	spin_unlock_irq(&connection->resource->req_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int drbd_thread_setup(void *arg)
 {
 	struct drbd_thread *thi = (struct drbd_thread *) arg;
+<<<<<<< HEAD
 	struct drbd_tconn *tconn = thi->tconn;
+=======
+	struct drbd_resource *resource = thi->resource;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int retval;
 
 	snprintf(current->comm, sizeof(current->comm), "drbd_%c_%s",
+<<<<<<< HEAD
 		 thi->name[0], thi->tconn->name);
 
+=======
+		 thi->name[0],
+		 resource->name);
+
+	allow_kernel_signal(DRBD_SIGKILL);
+	allow_kernel_signal(SIGXCPU);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 restart:
 	retval = thi->function(thi);
 
@@ -349,7 +495,11 @@ restart:
 	 */
 
 	if (thi->t_state == RESTARTING) {
+<<<<<<< HEAD
 		conn_info(tconn, "Restarting %s thread\n", thi->name);
+=======
+		drbd_info(resource, "Restarting %s thread\n", thi->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		thi->t_state = RUNNING;
 		spin_unlock_irqrestore(&thi->t_lock, flags);
 		goto restart;
@@ -361,29 +511,54 @@ restart:
 	complete_all(&thi->stop);
 	spin_unlock_irqrestore(&thi->t_lock, flags);
 
+<<<<<<< HEAD
 	conn_info(tconn, "Terminating %s\n", current->comm);
 
 	/* Release mod reference taken when thread was started */
 
 	kref_put(&tconn->kref, &conn_destroy);
+=======
+	drbd_info(resource, "Terminating %s\n", current->comm);
+
+	/* Release mod reference taken when thread was started */
+
+	if (thi->connection)
+		kref_put(&thi->connection->kref, drbd_destroy_connection);
+	kref_put(&resource->kref, drbd_destroy_resource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	module_put(THIS_MODULE);
 	return retval;
 }
 
+<<<<<<< HEAD
 static void drbd_thread_init(struct drbd_tconn *tconn, struct drbd_thread *thi,
 			     int (*func) (struct drbd_thread *), char *name)
+=======
+static void drbd_thread_init(struct drbd_resource *resource, struct drbd_thread *thi,
+			     int (*func) (struct drbd_thread *), const char *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	spin_lock_init(&thi->t_lock);
 	thi->task    = NULL;
 	thi->t_state = NONE;
 	thi->function = func;
+<<<<<<< HEAD
 	thi->tconn = tconn;
 	strncpy(thi->name, name, ARRAY_SIZE(thi->name));
+=======
+	thi->resource = resource;
+	thi->connection = NULL;
+	thi->name = name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int drbd_thread_start(struct drbd_thread *thi)
 {
+<<<<<<< HEAD
 	struct drbd_tconn *tconn = thi->tconn;
+=======
+	struct drbd_resource *resource = thi->resource;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct task_struct *nt;
 	unsigned long flags;
 
@@ -393,17 +568,31 @@ int drbd_thread_start(struct drbd_thread *thi)
 
 	switch (thi->t_state) {
 	case NONE:
+<<<<<<< HEAD
 		conn_info(tconn, "Starting %s thread (from %s [%d])\n",
+=======
+		drbd_info(resource, "Starting %s thread (from %s [%d])\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 thi->name, current->comm, current->pid);
 
 		/* Get ref on module for thread - this is released when thread exits */
 		if (!try_module_get(THIS_MODULE)) {
+<<<<<<< HEAD
 			conn_err(tconn, "Failed to get module reference in drbd_thread_start\n");
+=======
+			drbd_err(resource, "Failed to get module reference in drbd_thread_start\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_unlock_irqrestore(&thi->t_lock, flags);
 			return false;
 		}
 
+<<<<<<< HEAD
 		kref_get(&thi->tconn->kref);
+=======
+		kref_get(&resource->kref);
+		if (thi->connection)
+			kref_get(&thi->connection->kref);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		init_completion(&thi->stop);
 		thi->reset_cpu_mask = 1;
@@ -412,12 +601,23 @@ int drbd_thread_start(struct drbd_thread *thi)
 		flush_signals(current); /* otherw. may get -ERESTARTNOINTR */
 
 		nt = kthread_create(drbd_thread_setup, (void *) thi,
+<<<<<<< HEAD
 				    "drbd_%c_%s", thi->name[0], thi->tconn->name);
 
 		if (IS_ERR(nt)) {
 			conn_err(tconn, "Couldn't start thread\n");
 
 			kref_put(&tconn->kref, &conn_destroy);
+=======
+				    "drbd_%c_%s", thi->name[0], thi->resource->name);
+
+		if (IS_ERR(nt)) {
+			drbd_err(resource, "Couldn't start thread\n");
+
+			if (thi->connection)
+				kref_put(&thi->connection->kref, drbd_destroy_connection);
+			kref_put(&resource->kref, drbd_destroy_resource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			module_put(THIS_MODULE);
 			return false;
 		}
@@ -429,7 +629,11 @@ int drbd_thread_start(struct drbd_thread *thi)
 		break;
 	case EXITING:
 		thi->t_state = RESTARTING;
+<<<<<<< HEAD
 		conn_info(tconn, "Restarting %s thread (from %s [%d])\n",
+=======
+		drbd_info(resource, "Restarting %s thread (from %s [%d])\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				thi->name, current->comm, current->pid);
 		/* fall through */
 	case RUNNING:
@@ -478,6 +682,7 @@ void _drbd_thread_stop(struct drbd_thread *thi, int restart, int wait)
 		wait_for_completion(&thi->stop);
 }
 
+<<<<<<< HEAD
 static struct drbd_thread *drbd_task_to_thread(struct drbd_tconn *tconn, struct task_struct *task)
 {
 	struct drbd_thread *thi =
@@ -505,11 +710,26 @@ int conn_lowest_minor(struct drbd_tconn *tconn)
 	rcu_read_unlock();
 
 	return m;
+=======
+int conn_lowest_minor(struct drbd_connection *connection)
+{
+	struct drbd_peer_device *peer_device;
+	int vnr = 0, minor = -1;
+
+	rcu_read_lock();
+	peer_device = idr_get_next(&connection->peer_devices, &vnr);
+	if (peer_device)
+		minor = device_to_minor(peer_device->device);
+	rcu_read_unlock();
+
+	return minor;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_SMP
 /**
  * drbd_calc_cpu_mask() - Generate CPU masks, spread over all CPUs
+<<<<<<< HEAD
  * @mdev:	DRBD device.
  *
  * Forces all threads of a device onto the same CPU. This is beneficial for
@@ -532,11 +752,49 @@ void drbd_calc_cpu_mask(struct drbd_tconn *tconn)
 	}
 	/* should not be reached */
 	cpumask_setall(tconn->cpu_mask);
+=======
+ *
+ * Forces all threads of a resource onto the same CPU. This is beneficial for
+ * DRBD's performance. May be overwritten by user's configuration.
+ */
+static void drbd_calc_cpu_mask(cpumask_var_t *cpu_mask)
+{
+	unsigned int *resources_per_cpu, min_index = ~0;
+
+	resources_per_cpu = kzalloc(nr_cpu_ids * sizeof(*resources_per_cpu), GFP_KERNEL);
+	if (resources_per_cpu) {
+		struct drbd_resource *resource;
+		unsigned int cpu, min = ~0;
+
+		rcu_read_lock();
+		for_each_resource_rcu(resource, &drbd_resources) {
+			for_each_cpu(cpu, resource->cpu_mask)
+				resources_per_cpu[cpu]++;
+		}
+		rcu_read_unlock();
+		for_each_online_cpu(cpu) {
+			if (resources_per_cpu[cpu] < min) {
+				min = resources_per_cpu[cpu];
+				min_index = cpu;
+			}
+		}
+		kfree(resources_per_cpu);
+	}
+	if (min_index == ~0) {
+		cpumask_setall(*cpu_mask);
+		return;
+	}
+	cpumask_set_cpu(min_index, *cpu_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * drbd_thread_current_set_cpu() - modifies the cpu mask of the _current_ thread
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @thi:	drbd_thread object
  *
  * call in the "main loop" of _all_ threads, no need for any mutex, current won't die
@@ -544,13 +802,24 @@ void drbd_calc_cpu_mask(struct drbd_tconn *tconn)
  */
 void drbd_thread_current_set_cpu(struct drbd_thread *thi)
 {
+<<<<<<< HEAD
+=======
+	struct drbd_resource *resource = thi->resource;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct task_struct *p = current;
 
 	if (!thi->reset_cpu_mask)
 		return;
 	thi->reset_cpu_mask = 0;
+<<<<<<< HEAD
 	set_cpus_allowed_ptr(p, thi->tconn->cpu_mask);
 }
+=======
+	set_cpus_allowed_ptr(p, resource->cpu_mask);
+}
+#else
+#define drbd_calc_cpu_mask(A) ({})
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /**
@@ -560,9 +829,15 @@ void drbd_thread_current_set_cpu(struct drbd_thread *thi)
  * word aligned on 64-bit architectures.  (The bitmap send and receive code
  * relies on this.)
  */
+<<<<<<< HEAD
 unsigned int drbd_header_size(struct drbd_tconn *tconn)
 {
 	if (tconn->agreed_pro_version >= 100) {
+=======
+unsigned int drbd_header_size(struct drbd_connection *connection)
+{
+	if (connection->agreed_pro_version >= 100) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		BUILD_BUG_ON(!IS_ALIGNED(sizeof(struct p_header100), 8));
 		return sizeof(struct p_header100);
 	} else {
@@ -600,44 +875,77 @@ static unsigned int prepare_header100(struct p_header100 *h, enum drbd_packet cm
 	return sizeof(struct p_header100);
 }
 
+<<<<<<< HEAD
 static unsigned int prepare_header(struct drbd_tconn *tconn, int vnr,
 				   void *buffer, enum drbd_packet cmd, int size)
 {
 	if (tconn->agreed_pro_version >= 100)
 		return prepare_header100(buffer, cmd, size, vnr);
 	else if (tconn->agreed_pro_version >= 95 &&
+=======
+static unsigned int prepare_header(struct drbd_connection *connection, int vnr,
+				   void *buffer, enum drbd_packet cmd, int size)
+{
+	if (connection->agreed_pro_version >= 100)
+		return prepare_header100(buffer, cmd, size, vnr);
+	else if (connection->agreed_pro_version >= 95 &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 size > DRBD_MAX_SIZE_H80_PACKET)
 		return prepare_header95(buffer, cmd, size);
 	else
 		return prepare_header80(buffer, cmd, size);
 }
 
+<<<<<<< HEAD
 static void *__conn_prepare_command(struct drbd_tconn *tconn,
+=======
+static void *__conn_prepare_command(struct drbd_connection *connection,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    struct drbd_socket *sock)
 {
 	if (!sock->socket)
 		return NULL;
+<<<<<<< HEAD
 	return sock->sbuf + drbd_header_size(tconn);
 }
 
 void *conn_prepare_command(struct drbd_tconn *tconn, struct drbd_socket *sock)
+=======
+	return sock->sbuf + drbd_header_size(connection);
+}
+
+void *conn_prepare_command(struct drbd_connection *connection, struct drbd_socket *sock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	void *p;
 
 	mutex_lock(&sock->mutex);
+<<<<<<< HEAD
 	p = __conn_prepare_command(tconn, sock);
+=======
+	p = __conn_prepare_command(connection, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		mutex_unlock(&sock->mutex);
 
 	return p;
 }
 
+<<<<<<< HEAD
 void *drbd_prepare_command(struct drbd_conf *mdev, struct drbd_socket *sock)
 {
 	return conn_prepare_command(mdev->tconn, sock);
 }
 
 static int __send_command(struct drbd_tconn *tconn, int vnr,
+=======
+void *drbd_prepare_command(struct drbd_peer_device *peer_device, struct drbd_socket *sock)
+{
+	return conn_prepare_command(peer_device->connection, sock);
+}
+
+static int __send_command(struct drbd_connection *connection, int vnr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  struct drbd_socket *sock, enum drbd_packet cmd,
 			  unsigned int header_size, void *data,
 			  unsigned int size)
@@ -654,6 +962,7 @@ static int __send_command(struct drbd_tconn *tconn, int vnr,
 	 */
 	msg_flags = data ? MSG_MORE : 0;
 
+<<<<<<< HEAD
 	header_size += prepare_header(tconn, vnr, sock->sbuf, cmd,
 				      header_size + size);
 	err = drbd_send_all(tconn, sock->socket, sock->sbuf, header_size,
@@ -671,28 +980,66 @@ static int __conn_send_command(struct drbd_tconn *tconn, struct drbd_socket *soc
 }
 
 int conn_send_command(struct drbd_tconn *tconn, struct drbd_socket *sock,
+=======
+	header_size += prepare_header(connection, vnr, sock->sbuf, cmd,
+				      header_size + size);
+	err = drbd_send_all(connection, sock->socket, sock->sbuf, header_size,
+			    msg_flags);
+	if (data && !err)
+		err = drbd_send_all(connection, sock->socket, data, size, 0);
+	/* DRBD protocol "pings" are latency critical.
+	 * This is supposed to trigger tcp_push_pending_frames() */
+	if (!err && (cmd == P_PING || cmd == P_PING_ACK))
+		drbd_tcp_nodelay(sock->socket);
+
+	return err;
+}
+
+static int __conn_send_command(struct drbd_connection *connection, struct drbd_socket *sock,
+			       enum drbd_packet cmd, unsigned int header_size,
+			       void *data, unsigned int size)
+{
+	return __send_command(connection, 0, sock, cmd, header_size, data, size);
+}
+
+int conn_send_command(struct drbd_connection *connection, struct drbd_socket *sock,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      enum drbd_packet cmd, unsigned int header_size,
 		      void *data, unsigned int size)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = __conn_send_command(tconn, sock, cmd, header_size, data, size);
+=======
+	err = __conn_send_command(connection, sock, cmd, header_size, data, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&sock->mutex);
 	return err;
 }
 
+<<<<<<< HEAD
 int drbd_send_command(struct drbd_conf *mdev, struct drbd_socket *sock,
+=======
+int drbd_send_command(struct drbd_peer_device *peer_device, struct drbd_socket *sock,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		      enum drbd_packet cmd, unsigned int header_size,
 		      void *data, unsigned int size)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = __send_command(mdev->tconn, mdev->vnr, sock, cmd, header_size,
 			     data, size);
+=======
+	err = __send_command(peer_device->connection, peer_device->device->vnr,
+			     sock, cmd, header_size, data, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&sock->mutex);
 	return err;
 }
 
+<<<<<<< HEAD
 int drbd_send_ping(struct drbd_tconn *tconn)
 {
 	struct drbd_socket *sock;
@@ -714,22 +1061,58 @@ int drbd_send_ping_ack(struct drbd_tconn *tconn)
 }
 
 int drbd_send_sync_param(struct drbd_conf *mdev)
+=======
+int drbd_send_ping(struct drbd_connection *connection)
+{
+	struct drbd_socket *sock;
+
+	sock = &connection->meta;
+	if (!conn_prepare_command(connection, sock))
+		return -EIO;
+	return conn_send_command(connection, sock, P_PING, 0, NULL, 0);
+}
+
+int drbd_send_ping_ack(struct drbd_connection *connection)
+{
+	struct drbd_socket *sock;
+
+	sock = &connection->meta;
+	if (!conn_prepare_command(connection, sock))
+		return -EIO;
+	return conn_send_command(connection, sock, P_PING_ACK, 0, NULL, 0);
+}
+
+int drbd_send_sync_param(struct drbd_peer_device *peer_device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_rs_param_95 *p;
 	int size;
+<<<<<<< HEAD
 	const int apv = mdev->tconn->agreed_pro_version;
+=======
+	const int apv = peer_device->connection->agreed_pro_version;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	enum drbd_packet cmd;
 	struct net_conf *nc;
 	struct disk_conf *dc;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	nc = rcu_dereference(mdev->tconn->net_conf);
+=======
+	nc = rcu_dereference(peer_device->connection->net_conf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	size = apv <= 87 ? sizeof(struct p_rs_param)
 		: apv == 88 ? sizeof(struct p_rs_param)
@@ -742,14 +1125,23 @@ int drbd_send_sync_param(struct drbd_conf *mdev)
 	/* initialize verify_alg and csums_alg */
 	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
 
+<<<<<<< HEAD
 	if (get_ldev(mdev)) {
 		dc = rcu_dereference(mdev->ldev->disk_conf);
+=======
+	if (get_ldev(peer_device->device)) {
+		dc = rcu_dereference(peer_device->device->ldev->disk_conf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		p->resync_rate = cpu_to_be32(dc->resync_rate);
 		p->c_plan_ahead = cpu_to_be32(dc->c_plan_ahead);
 		p->c_delay_target = cpu_to_be32(dc->c_delay_target);
 		p->c_fill_target = cpu_to_be32(dc->c_fill_target);
 		p->c_max_rate = cpu_to_be32(dc->c_max_rate);
+<<<<<<< HEAD
 		put_ldev(mdev);
+=======
+		put_ldev(peer_device->device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		p->resync_rate = cpu_to_be32(DRBD_RESYNC_RATE_DEF);
 		p->c_plan_ahead = cpu_to_be32(DRBD_C_PLAN_AHEAD_DEF);
@@ -764,33 +1156,57 @@ int drbd_send_sync_param(struct drbd_conf *mdev)
 		strcpy(p->csums_alg, nc->csums_alg);
 	rcu_read_unlock();
 
+<<<<<<< HEAD
 	return drbd_send_command(mdev, sock, cmd, size, NULL, 0);
 }
 
 int __drbd_send_protocol(struct drbd_tconn *tconn, enum drbd_packet cmd)
+=======
+	return drbd_send_command(peer_device, sock, cmd, size, NULL, 0);
+}
+
+int __drbd_send_protocol(struct drbd_connection *connection, enum drbd_packet cmd)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_protocol *p;
 	struct net_conf *nc;
 	int size, cf;
 
+<<<<<<< HEAD
 	sock = &tconn->data;
 	p = __conn_prepare_command(tconn, sock);
+=======
+	sock = &connection->data;
+	p = __conn_prepare_command(connection, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	nc = rcu_dereference(tconn->net_conf);
 
 	if (nc->tentative && tconn->agreed_pro_version < 92) {
 		rcu_read_unlock();
 		mutex_unlock(&sock->mutex);
 		conn_err(tconn, "--dry-run is not supported by peer");
+=======
+	nc = rcu_dereference(connection->net_conf);
+
+	if (nc->tentative && connection->agreed_pro_version < 92) {
+		rcu_read_unlock();
+		drbd_err(connection, "--dry-run is not supported by peer");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EOPNOTSUPP;
 	}
 
 	size = sizeof(*p);
+<<<<<<< HEAD
 	if (tconn->agreed_pro_version >= 87)
+=======
+	if (connection->agreed_pro_version >= 87)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		size += strlen(nc->integrity_alg) + 1;
 
 	p->protocol      = cpu_to_be32(nc->wire_protocol);
@@ -805,6 +1221,7 @@ int __drbd_send_protocol(struct drbd_tconn *tconn, enum drbd_packet cmd)
 		cf |= CF_DRY_RUN;
 	p->conn_flags    = cpu_to_be32(cf);
 
+<<<<<<< HEAD
 	if (tconn->agreed_pro_version >= 87)
 		strcpy(p->integrity_alg, nc->integrity_alg);
 	rcu_read_unlock();
@@ -819,16 +1236,39 @@ int drbd_send_protocol(struct drbd_tconn *tconn)
 	mutex_lock(&tconn->data.mutex);
 	err = __drbd_send_protocol(tconn, P_PROTOCOL);
 	mutex_unlock(&tconn->data.mutex);
+=======
+	if (connection->agreed_pro_version >= 87)
+		strcpy(p->integrity_alg, nc->integrity_alg);
+	rcu_read_unlock();
+
+	return __conn_send_command(connection, sock, cmd, size, NULL, 0);
+}
+
+int drbd_send_protocol(struct drbd_connection *connection)
+{
+	int err;
+
+	mutex_lock(&connection->data.mutex);
+	err = __drbd_send_protocol(connection, P_PROTOCOL);
+	mutex_unlock(&connection->data.mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
 
+<<<<<<< HEAD
 int _drbd_send_uuids(struct drbd_conf *mdev, u64 uuid_flags)
 {
+=======
+static int _drbd_send_uuids(struct drbd_peer_device *peer_device, u64 uuid_flags)
+{
+	struct drbd_device *device = peer_device->device;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct drbd_socket *sock;
 	struct p_uuids *p;
 	int i;
 
+<<<<<<< HEAD
 	if (!get_ldev_if_state(mdev, D_NEGOTIATING))
 		return 0;
 
@@ -871,11 +1311,56 @@ void drbd_print_uuids(struct drbd_conf *mdev, const char *text)
 	if (get_ldev_if_state(mdev, D_NEGOTIATING)) {
 		u64 *uuid = mdev->ldev->md.uuid;
 		dev_info(DEV, "%s %016llX:%016llX:%016llX:%016llX\n",
+=======
+	if (!get_ldev_if_state(device, D_NEGOTIATING))
+		return 0;
+
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+	if (!p) {
+		put_ldev(device);
+		return -EIO;
+	}
+	spin_lock_irq(&device->ldev->md.uuid_lock);
+	for (i = UI_CURRENT; i < UI_SIZE; i++)
+		p->uuid[i] = cpu_to_be64(device->ldev->md.uuid[i]);
+	spin_unlock_irq(&device->ldev->md.uuid_lock);
+
+	device->comm_bm_set = drbd_bm_total_weight(device);
+	p->uuid[UI_SIZE] = cpu_to_be64(device->comm_bm_set);
+	rcu_read_lock();
+	uuid_flags |= rcu_dereference(peer_device->connection->net_conf)->discard_my_data ? 1 : 0;
+	rcu_read_unlock();
+	uuid_flags |= test_bit(CRASHED_PRIMARY, &device->flags) ? 2 : 0;
+	uuid_flags |= device->new_state_tmp.disk == D_INCONSISTENT ? 4 : 0;
+	p->uuid[UI_FLAGS] = cpu_to_be64(uuid_flags);
+
+	put_ldev(device);
+	return drbd_send_command(peer_device, sock, P_UUIDS, sizeof(*p), NULL, 0);
+}
+
+int drbd_send_uuids(struct drbd_peer_device *peer_device)
+{
+	return _drbd_send_uuids(peer_device, 0);
+}
+
+int drbd_send_uuids_skip_initial_sync(struct drbd_peer_device *peer_device)
+{
+	return _drbd_send_uuids(peer_device, 8);
+}
+
+void drbd_print_uuids(struct drbd_device *device, const char *text)
+{
+	if (get_ldev_if_state(device, D_NEGOTIATING)) {
+		u64 *uuid = device->ldev->md.uuid;
+		drbd_info(device, "%s %016llX:%016llX:%016llX:%016llX\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     text,
 		     (unsigned long long)uuid[UI_CURRENT],
 		     (unsigned long long)uuid[UI_BITMAP],
 		     (unsigned long long)uuid[UI_HISTORY_START],
 		     (unsigned long long)uuid[UI_HISTORY_END]);
+<<<<<<< HEAD
 		put_ldev(mdev);
 	} else {
 		dev_info(DEV, "%s effective data uuid: %016llX\n",
@@ -886,17 +1371,37 @@ void drbd_print_uuids(struct drbd_conf *mdev, const char *text)
 
 void drbd_gen_and_send_sync_uuid(struct drbd_conf *mdev)
 {
+=======
+		put_ldev(device);
+	} else {
+		drbd_info(device, "%s effective data uuid: %016llX\n",
+				text,
+				(unsigned long long)device->ed_uuid);
+	}
+}
+
+void drbd_gen_and_send_sync_uuid(struct drbd_peer_device *peer_device)
+{
+	struct drbd_device *device = peer_device->device;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct drbd_socket *sock;
 	struct p_rs_uuid *p;
 	u64 uuid;
 
+<<<<<<< HEAD
 	D_ASSERT(mdev->state.disk == D_UP_TO_DATE);
 
 	uuid = mdev->ldev->md.uuid[UI_BITMAP];
+=======
+	D_ASSERT(device, device->state.disk == D_UP_TO_DATE);
+
+	uuid = device->ldev->md.uuid[UI_BITMAP];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (uuid && uuid != UUID_JUST_CREATED)
 		uuid = uuid + UUID_NEW_BM_OFFSET;
 	else
 		get_random_bytes(&uuid, sizeof(u64));
+<<<<<<< HEAD
 	drbd_uuid_set(mdev, UI_BITMAP, uuid);
 	drbd_print_uuids(mdev, "updated sync UUID");
 	drbd_md_sync(mdev);
@@ -911,11 +1416,54 @@ void drbd_gen_and_send_sync_uuid(struct drbd_conf *mdev)
 
 int drbd_send_sizes(struct drbd_conf *mdev, int trigger_reply, enum dds_flags flags)
 {
+=======
+	drbd_uuid_set(device, UI_BITMAP, uuid);
+	drbd_print_uuids(device, "updated sync UUID");
+	drbd_md_sync(device);
+
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+	if (p) {
+		p->uuid = cpu_to_be64(uuid);
+		drbd_send_command(peer_device, sock, P_SYNC_UUID, sizeof(*p), NULL, 0);
+	}
+}
+
+/* communicated if (agreed_features & DRBD_FF_WSAME) */
+void assign_p_sizes_qlim(struct drbd_device *device, struct p_sizes *p, struct request_queue *q)
+{
+	if (q) {
+		p->qlim->physical_block_size = cpu_to_be32(queue_physical_block_size(q));
+		p->qlim->logical_block_size = cpu_to_be32(queue_logical_block_size(q));
+		p->qlim->alignment_offset = cpu_to_be32(queue_alignment_offset(q));
+		p->qlim->io_min = cpu_to_be32(queue_io_min(q));
+		p->qlim->io_opt = cpu_to_be32(queue_io_opt(q));
+		p->qlim->discard_enabled = blk_queue_discard(q);
+		p->qlim->discard_zeroes_data = queue_discard_zeroes_data(q);
+		p->qlim->write_same_capable = !!q->limits.max_write_same_sectors;
+	} else {
+		q = device->rq_queue;
+		p->qlim->physical_block_size = cpu_to_be32(queue_physical_block_size(q));
+		p->qlim->logical_block_size = cpu_to_be32(queue_logical_block_size(q));
+		p->qlim->alignment_offset = 0;
+		p->qlim->io_min = cpu_to_be32(queue_io_min(q));
+		p->qlim->io_opt = cpu_to_be32(queue_io_opt(q));
+		p->qlim->discard_enabled = 0;
+		p->qlim->discard_zeroes_data = 0;
+		p->qlim->write_same_capable = 0;
+	}
+}
+
+int drbd_send_sizes(struct drbd_peer_device *peer_device, int trigger_reply, enum dds_flags flags)
+{
+	struct drbd_device *device = peer_device->device;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct drbd_socket *sock;
 	struct p_sizes *p;
 	sector_t d_size, u_size;
 	int q_order_type;
 	unsigned int max_bio_size;
+<<<<<<< HEAD
 
 	if (get_ldev_if_state(mdev, D_NEGOTIATING)) {
 		D_ASSERT(mdev->ldev->backing_bdev);
@@ -927,11 +1475,37 @@ int drbd_send_sizes(struct drbd_conf *mdev, int trigger_reply, enum dds_flags fl
 		max_bio_size = queue_max_hw_sectors(mdev->ldev->backing_bdev->bd_disk->queue) << 9;
 		max_bio_size = min(max_bio_size, DRBD_MAX_BIO_SIZE);
 		put_ldev(mdev);
+=======
+	unsigned int packet_size;
+
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+	if (!p)
+		return -EIO;
+
+	packet_size = sizeof(*p);
+	if (peer_device->connection->agreed_features & DRBD_FF_WSAME)
+		packet_size += sizeof(p->qlim[0]);
+
+	memset(p, 0, packet_size);
+	if (get_ldev_if_state(device, D_NEGOTIATING)) {
+		struct request_queue *q = bdev_get_queue(device->ldev->backing_bdev);
+		d_size = drbd_get_max_capacity(device->ldev);
+		rcu_read_lock();
+		u_size = rcu_dereference(device->ldev->disk_conf)->disk_size;
+		rcu_read_unlock();
+		q_order_type = drbd_queue_order_type(device);
+		max_bio_size = queue_max_hw_sectors(q) << 9;
+		max_bio_size = min(max_bio_size, DRBD_MAX_BIO_SIZE);
+		assign_p_sizes_qlim(device, p, q);
+		put_ldev(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		d_size = 0;
 		u_size = 0;
 		q_order_type = QUEUE_ORDERED_NONE;
 		max_bio_size = DRBD_MAX_BIO_SIZE; /* ... multiple BIOs per peer_request */
+<<<<<<< HEAD
 	}
 
 	sock = &mdev->tconn->data;
@@ -942,37 +1516,73 @@ int drbd_send_sizes(struct drbd_conf *mdev, int trigger_reply, enum dds_flags fl
 	if (mdev->tconn->agreed_pro_version <= 94)
 		max_bio_size = min(max_bio_size, DRBD_MAX_SIZE_H80_PACKET);
 	else if (mdev->tconn->agreed_pro_version < 100)
+=======
+		assign_p_sizes_qlim(device, p, NULL);
+	}
+
+	if (peer_device->connection->agreed_pro_version <= 94)
+		max_bio_size = min(max_bio_size, DRBD_MAX_SIZE_H80_PACKET);
+	else if (peer_device->connection->agreed_pro_version < 100)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		max_bio_size = min(max_bio_size, DRBD_MAX_BIO_SIZE_P95);
 
 	p->d_size = cpu_to_be64(d_size);
 	p->u_size = cpu_to_be64(u_size);
+<<<<<<< HEAD
 	p->c_size = cpu_to_be64(trigger_reply ? 0 : drbd_get_capacity(mdev->this_bdev));
 	p->max_bio_size = cpu_to_be32(max_bio_size);
 	p->queue_order_type = cpu_to_be16(q_order_type);
 	p->dds_flags = cpu_to_be16(flags);
 	return drbd_send_command(mdev, sock, P_SIZES, sizeof(*p), NULL, 0);
+=======
+	p->c_size = cpu_to_be64(trigger_reply ? 0 : drbd_get_capacity(device->this_bdev));
+	p->max_bio_size = cpu_to_be32(max_bio_size);
+	p->queue_order_type = cpu_to_be16(q_order_type);
+	p->dds_flags = cpu_to_be16(flags);
+
+	return drbd_send_command(peer_device, sock, P_SIZES, packet_size, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * drbd_send_current_state() - Sends the drbd state to the peer
+<<<<<<< HEAD
  * @mdev:	DRBD device.
  */
 int drbd_send_current_state(struct drbd_conf *mdev)
+=======
+ * @peer_device:	DRBD peer device.
+ */
+int drbd_send_current_state(struct drbd_peer_device *peer_device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_state *p;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
 	if (!p)
 		return -EIO;
 	p->state = cpu_to_be32(mdev->state.i); /* Within the send mutex */
 	return drbd_send_command(mdev, sock, P_STATE, sizeof(*p), NULL, 0);
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+	if (!p)
+		return -EIO;
+	p->state = cpu_to_be32(peer_device->device->state.i); /* Within the send mutex */
+	return drbd_send_command(peer_device, sock, P_STATE, sizeof(*p), NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * drbd_send_state() - After a state change, sends the new state to the peer
+<<<<<<< HEAD
  * @mdev:      DRBD device.
+=======
+ * @peer_device:      DRBD peer device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @state:     the state to send, not necessarily the current state.
  *
  * Each state change queues an "after_state_ch" work, which will eventually
@@ -980,11 +1590,16 @@ int drbd_send_current_state(struct drbd_conf *mdev)
  * between queuing and processing of the after_state_ch work, we still
  * want to send each intermediary state in the order it occurred.
  */
+<<<<<<< HEAD
 int drbd_send_state(struct drbd_conf *mdev, union drbd_state state)
+=======
+int drbd_send_state(struct drbd_peer_device *peer_device, union drbd_state state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_state *p;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
 	if (!p)
@@ -994,40 +1609,77 @@ int drbd_send_state(struct drbd_conf *mdev, union drbd_state state)
 }
 
 int drbd_send_state_req(struct drbd_conf *mdev, union drbd_state mask, union drbd_state val)
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+	if (!p)
+		return -EIO;
+	p->state = cpu_to_be32(state.i); /* Within the send mutex */
+	return drbd_send_command(peer_device, sock, P_STATE, sizeof(*p), NULL, 0);
+}
+
+int drbd_send_state_req(struct drbd_peer_device *peer_device, union drbd_state mask, union drbd_state val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_req_state *p;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 	p->mask = cpu_to_be32(mask.i);
 	p->val = cpu_to_be32(val.i);
+<<<<<<< HEAD
 	return drbd_send_command(mdev, sock, P_STATE_CHG_REQ, sizeof(*p), NULL, 0);
 }
 
 int conn_send_state_req(struct drbd_tconn *tconn, union drbd_state mask, union drbd_state val)
+=======
+	return drbd_send_command(peer_device, sock, P_STATE_CHG_REQ, sizeof(*p), NULL, 0);
+}
+
+int conn_send_state_req(struct drbd_connection *connection, union drbd_state mask, union drbd_state val)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	enum drbd_packet cmd;
 	struct drbd_socket *sock;
 	struct p_req_state *p;
 
+<<<<<<< HEAD
 	cmd = tconn->agreed_pro_version < 100 ? P_STATE_CHG_REQ : P_CONN_ST_CHG_REQ;
 	sock = &tconn->data;
 	p = conn_prepare_command(tconn, sock);
+=======
+	cmd = connection->agreed_pro_version < 100 ? P_STATE_CHG_REQ : P_CONN_ST_CHG_REQ;
+	sock = &connection->data;
+	p = conn_prepare_command(connection, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 	p->mask = cpu_to_be32(mask.i);
 	p->val = cpu_to_be32(val.i);
+<<<<<<< HEAD
 	return conn_send_command(tconn, sock, cmd, sizeof(*p), NULL, 0);
 }
 
 void drbd_send_sr_reply(struct drbd_conf *mdev, enum drbd_state_rv retcode)
+=======
+	return conn_send_command(connection, sock, cmd, sizeof(*p), NULL, 0);
+}
+
+void drbd_send_sr_reply(struct drbd_peer_device *peer_device, enum drbd_state_rv retcode)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_req_state_reply *p;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->meta;
 	p = drbd_prepare_command(mdev, sock);
 	if (p) {
@@ -1047,6 +1699,27 @@ void conn_send_sr_reply(struct drbd_tconn *tconn, enum drbd_state_rv retcode)
 	if (p) {
 		p->retcode = cpu_to_be32(retcode);
 		conn_send_command(tconn, sock, cmd, sizeof(*p), NULL, 0);
+=======
+	sock = &peer_device->connection->meta;
+	p = drbd_prepare_command(peer_device, sock);
+	if (p) {
+		p->retcode = cpu_to_be32(retcode);
+		drbd_send_command(peer_device, sock, P_STATE_CHG_REPLY, sizeof(*p), NULL, 0);
+	}
+}
+
+void conn_send_sr_reply(struct drbd_connection *connection, enum drbd_state_rv retcode)
+{
+	struct drbd_socket *sock;
+	struct p_req_state_reply *p;
+	enum drbd_packet cmd = connection->agreed_pro_version < 100 ? P_STATE_CHG_REPLY : P_CONN_ST_CHG_REPLY;
+
+	sock = &connection->meta;
+	p = conn_prepare_command(connection, sock);
+	if (p) {
+		p->retcode = cpu_to_be32(retcode);
+		conn_send_command(connection, sock, cmd, sizeof(*p), NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1067,7 +1740,11 @@ static void dcbp_set_pad_bits(struct p_compressed_bm *p, int n)
 	p->encoding = (p->encoding & (~0x7 << 4)) | (n << 4);
 }
 
+<<<<<<< HEAD
 int fill_bitmap_rle_bits(struct drbd_conf *mdev,
+=======
+static int fill_bitmap_rle_bits(struct drbd_device *device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 struct p_compressed_bm *p,
 			 unsigned int size,
 			 struct bm_xfer_ctx *c)
@@ -1082,9 +1759,15 @@ int fill_bitmap_rle_bits(struct drbd_conf *mdev,
 
 	/* may we use this feature? */
 	rcu_read_lock();
+<<<<<<< HEAD
 	use_rle = rcu_dereference(mdev->tconn->net_conf)->use_rle;
 	rcu_read_unlock();
 	if (!use_rle || mdev->tconn->agreed_pro_version < 90)
+=======
+	use_rle = rcu_dereference(first_peer_device(device)->connection->net_conf)->use_rle;
+	rcu_read_unlock();
+	if (!use_rle || first_peer_device(device)->connection->agreed_pro_version < 90)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	if (c->bit_offset >= c->bm_bits)
@@ -1104,8 +1787,13 @@ int fill_bitmap_rle_bits(struct drbd_conf *mdev,
 	/* see how much plain bits we can stuff into one packet
 	 * using RLE and VLI. */
 	do {
+<<<<<<< HEAD
 		tmp = (toggle == 0) ? _drbd_bm_find_next_zero(mdev, c->bit_offset)
 				    : _drbd_bm_find_next(mdev, c->bit_offset);
+=======
+		tmp = (toggle == 0) ? _drbd_bm_find_next_zero(device, c->bit_offset)
+				    : _drbd_bm_find_next(device, c->bit_offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (tmp == -1UL)
 			tmp = c->bm_bits;
 		rl = tmp - c->bit_offset;
@@ -1125,7 +1813,11 @@ int fill_bitmap_rle_bits(struct drbd_conf *mdev,
 		/* paranoia: catch zero runlength.
 		 * can only happen if bitmap is modified while we scan it. */
 		if (rl == 0) {
+<<<<<<< HEAD
 			dev_err(DEV, "unexpected zero runlength while encoding bitmap "
+=======
+			drbd_err(device, "unexpected zero runlength while encoding bitmap "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    "t:%u bo:%lu\n", toggle, c->bit_offset);
 			return -1;
 		}
@@ -1134,7 +1826,11 @@ int fill_bitmap_rle_bits(struct drbd_conf *mdev,
 		if (bits == -ENOBUFS) /* buffer full */
 			break;
 		if (bits <= 0) {
+<<<<<<< HEAD
 			dev_err(DEV, "error while encoding bitmap: %d\n", bits);
+=======
+			drbd_err(device, "error while encoding bitmap: %d\n", bits);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		}
 
@@ -1171,6 +1867,7 @@ int fill_bitmap_rle_bits(struct drbd_conf *mdev,
  * code upon failure.
  */
 static int
+<<<<<<< HEAD
 send_bitmap_rle_or_plain(struct drbd_conf *mdev, struct bm_xfer_ctx *c)
 {
 	struct drbd_socket *sock = &mdev->tconn->data;
@@ -1179,13 +1876,27 @@ send_bitmap_rle_or_plain(struct drbd_conf *mdev, struct bm_xfer_ctx *c)
 	int len, err;
 
 	len = fill_bitmap_rle_bits(mdev, p,
+=======
+send_bitmap_rle_or_plain(struct drbd_device *device, struct bm_xfer_ctx *c)
+{
+	struct drbd_socket *sock = &first_peer_device(device)->connection->data;
+	unsigned int header_size = drbd_header_size(first_peer_device(device)->connection);
+	struct p_compressed_bm *p = sock->sbuf + header_size;
+	int len, err;
+
+	len = fill_bitmap_rle_bits(device, p,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			DRBD_SOCKET_BUFFER_SIZE - header_size - sizeof(*p), c);
 	if (len < 0)
 		return -EIO;
 
 	if (len) {
 		dcbp_set_code(p, RLE_VLI_Bits);
+<<<<<<< HEAD
 		err = __send_command(mdev->tconn, mdev->vnr, sock,
+=======
+		err = __send_command(first_peer_device(device)->connection, device->vnr, sock,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     P_COMPRESSED_BITMAP, sizeof(*p) + len,
 				     NULL, 0);
 		c->packets[0]++;
@@ -1205,8 +1916,13 @@ send_bitmap_rle_or_plain(struct drbd_conf *mdev, struct bm_xfer_ctx *c)
 				  c->bm_words - c->word_offset);
 		len = num_words * sizeof(*p);
 		if (len)
+<<<<<<< HEAD
 			drbd_bm_get_lel(mdev, c->word_offset, num_words, p);
 		err = __send_command(mdev->tconn, mdev->vnr, sock, P_BITMAP, len, NULL, 0);
+=======
+			drbd_bm_get_lel(device, c->word_offset, num_words, p);
+		err = __send_command(first_peer_device(device)->connection, device->vnr, sock, P_BITMAP, len, NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		c->word_offset += num_words;
 		c->bit_offset = c->word_offset * BITS_PER_LONG;
 
@@ -1218,7 +1934,11 @@ send_bitmap_rle_or_plain(struct drbd_conf *mdev, struct bm_xfer_ctx *c)
 	}
 	if (!err) {
 		if (len == 0) {
+<<<<<<< HEAD
 			INFO_bm_xfer_stats(mdev, "send", c);
+=======
+			INFO_bm_xfer_stats(device, "send", c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		} else
 			return 1;
@@ -1227,11 +1947,16 @@ send_bitmap_rle_or_plain(struct drbd_conf *mdev, struct bm_xfer_ctx *c)
 }
 
 /* See the comment at receive_bitmap() */
+<<<<<<< HEAD
 static int _drbd_send_bitmap(struct drbd_conf *mdev)
+=======
+static int _drbd_send_bitmap(struct drbd_device *device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct bm_xfer_ctx c;
 	int err;
 
+<<<<<<< HEAD
 	if (!expect(mdev->bitmap))
 		return false;
 
@@ -1259,71 +1984,148 @@ static int _drbd_send_bitmap(struct drbd_conf *mdev)
 
 	do {
 		err = send_bitmap_rle_or_plain(mdev, &c);
+=======
+	if (!expect(device->bitmap))
+		return false;
+
+	if (get_ldev(device)) {
+		if (drbd_md_test_flag(device->ldev, MDF_FULL_SYNC)) {
+			drbd_info(device, "Writing the whole bitmap, MDF_FullSync was set.\n");
+			drbd_bm_set_all(device);
+			if (drbd_bm_write(device)) {
+				/* write_bm did fail! Leave full sync flag set in Meta P_DATA
+				 * but otherwise process as per normal - need to tell other
+				 * side that a full resync is required! */
+				drbd_err(device, "Failed to write bitmap to disk!\n");
+			} else {
+				drbd_md_clear_flag(device, MDF_FULL_SYNC);
+				drbd_md_sync(device);
+			}
+		}
+		put_ldev(device);
+	}
+
+	c = (struct bm_xfer_ctx) {
+		.bm_bits = drbd_bm_bits(device),
+		.bm_words = drbd_bm_words(device),
+	};
+
+	do {
+		err = send_bitmap_rle_or_plain(device, &c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (err > 0);
 
 	return err == 0;
 }
 
+<<<<<<< HEAD
 int drbd_send_bitmap(struct drbd_conf *mdev)
 {
 	struct drbd_socket *sock = &mdev->tconn->data;
+=======
+int drbd_send_bitmap(struct drbd_device *device)
+{
+	struct drbd_socket *sock = &first_peer_device(device)->connection->data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err = -1;
 
 	mutex_lock(&sock->mutex);
 	if (sock->socket)
+<<<<<<< HEAD
 		err = !_drbd_send_bitmap(mdev);
+=======
+		err = !_drbd_send_bitmap(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&sock->mutex);
 	return err;
 }
 
+<<<<<<< HEAD
 void drbd_send_b_ack(struct drbd_tconn *tconn, u32 barrier_nr, u32 set_size)
+=======
+void drbd_send_b_ack(struct drbd_connection *connection, u32 barrier_nr, u32 set_size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_barrier_ack *p;
 
+<<<<<<< HEAD
 	if (tconn->cstate < C_WF_REPORT_PARAMS)
 		return;
 
 	sock = &tconn->meta;
 	p = conn_prepare_command(tconn, sock);
+=======
+	if (connection->cstate < C_WF_REPORT_PARAMS)
+		return;
+
+	sock = &connection->meta;
+	p = conn_prepare_command(connection, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return;
 	p->barrier = barrier_nr;
 	p->set_size = cpu_to_be32(set_size);
+<<<<<<< HEAD
 	conn_send_command(tconn, sock, P_BARRIER_ACK, sizeof(*p), NULL, 0);
+=======
+	conn_send_command(connection, sock, P_BARRIER_ACK, sizeof(*p), NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * _drbd_send_ack() - Sends an ack packet
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @cmd:	Packet command code.
  * @sector:	sector, needs to be in big endian byte order
  * @blksize:	size in byte, needs to be in big endian byte order
  * @block_id:	Id, big endian byte order
  */
+<<<<<<< HEAD
 static int _drbd_send_ack(struct drbd_conf *mdev, enum drbd_packet cmd,
+=======
+static int _drbd_send_ack(struct drbd_peer_device *peer_device, enum drbd_packet cmd,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			  u64 sector, u32 blksize, u64 block_id)
 {
 	struct drbd_socket *sock;
 	struct p_block_ack *p;
 
+<<<<<<< HEAD
 	if (mdev->state.conn < C_CONNECTED)
 		return -EIO;
 
 	sock = &mdev->tconn->meta;
 	p = drbd_prepare_command(mdev, sock);
+=======
+	if (peer_device->device->state.conn < C_CONNECTED)
+		return -EIO;
+
+	sock = &peer_device->connection->meta;
+	p = drbd_prepare_command(peer_device, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 	p->sector = sector;
 	p->block_id = block_id;
 	p->blksize = blksize;
+<<<<<<< HEAD
 	p->seq_num = cpu_to_be32(atomic_inc_return(&mdev->packet_seq));
 	return drbd_send_command(mdev, sock, cmd, sizeof(*p), NULL, 0);
+=======
+	p->seq_num = cpu_to_be32(atomic_inc_return(&peer_device->device->packet_seq));
+	return drbd_send_command(peer_device, sock, cmd, sizeof(*p), NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* dp->sector and dp->block_id already/still in network byte order,
  * data_size is payload size according to dp->head,
  * and may need to be corrected for digest size. */
+<<<<<<< HEAD
 void drbd_send_ack_dp(struct drbd_conf *mdev, enum drbd_packet cmd,
 		      struct p_data *dp, int data_size)
 {
@@ -1337,10 +2139,26 @@ void drbd_send_ack_rp(struct drbd_conf *mdev, enum drbd_packet cmd,
 		      struct p_block_req *rp)
 {
 	_drbd_send_ack(mdev, cmd, rp->sector, rp->blksize, rp->block_id);
+=======
+void drbd_send_ack_dp(struct drbd_peer_device *peer_device, enum drbd_packet cmd,
+		      struct p_data *dp, int data_size)
+{
+	if (peer_device->connection->peer_integrity_tfm)
+		data_size -= crypto_ahash_digestsize(peer_device->connection->peer_integrity_tfm);
+	_drbd_send_ack(peer_device, cmd, dp->sector, cpu_to_be32(data_size),
+		       dp->block_id);
+}
+
+void drbd_send_ack_rp(struct drbd_peer_device *peer_device, enum drbd_packet cmd,
+		      struct p_block_req *rp)
+{
+	_drbd_send_ack(peer_device, cmd, rp->sector, rp->blksize, rp->block_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * drbd_send_ack() - Sends an ack packet
+<<<<<<< HEAD
  * @mdev:	DRBD device
  * @cmd:	packet command code
  * @peer_req:	peer request
@@ -1349,6 +2167,16 @@ int drbd_send_ack(struct drbd_conf *mdev, enum drbd_packet cmd,
 		  struct drbd_peer_request *peer_req)
 {
 	return _drbd_send_ack(mdev, cmd,
+=======
+ * @device:	DRBD device
+ * @cmd:	packet command code
+ * @peer_req:	peer request
+ */
+int drbd_send_ack(struct drbd_peer_device *peer_device, enum drbd_packet cmd,
+		  struct drbd_peer_request *peer_req)
+{
+	return _drbd_send_ack(peer_device, cmd,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      cpu_to_be64(peer_req->i.sector),
 			      cpu_to_be32(peer_req->i.size),
 			      peer_req->block_id);
@@ -1356,32 +2184,71 @@ int drbd_send_ack(struct drbd_conf *mdev, enum drbd_packet cmd,
 
 /* This function misuses the block_id field to signal if the blocks
  * are is sync or not. */
+<<<<<<< HEAD
 int drbd_send_ack_ex(struct drbd_conf *mdev, enum drbd_packet cmd,
 		     sector_t sector, int blksize, u64 block_id)
 {
 	return _drbd_send_ack(mdev, cmd,
+=======
+int drbd_send_ack_ex(struct drbd_peer_device *peer_device, enum drbd_packet cmd,
+		     sector_t sector, int blksize, u64 block_id)
+{
+	return _drbd_send_ack(peer_device, cmd,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      cpu_to_be64(sector),
 			      cpu_to_be32(blksize),
 			      cpu_to_be64(block_id));
 }
 
+<<<<<<< HEAD
 int drbd_send_drequest(struct drbd_conf *mdev, int cmd,
+=======
+int drbd_send_rs_deallocated(struct drbd_peer_device *peer_device,
+			     struct drbd_peer_request *peer_req)
+{
+	struct drbd_socket *sock;
+	struct p_block_desc *p;
+
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+	if (!p)
+		return -EIO;
+	p->sector = cpu_to_be64(peer_req->i.sector);
+	p->blksize = cpu_to_be32(peer_req->i.size);
+	p->pad = 0;
+	return drbd_send_command(peer_device, sock, P_RS_DEALLOCATED, sizeof(*p), NULL, 0);
+}
+
+int drbd_send_drequest(struct drbd_peer_device *peer_device, int cmd,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       sector_t sector, int size, u64 block_id)
 {
 	struct drbd_socket *sock;
 	struct p_block_req *p;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 	p->sector = cpu_to_be64(sector);
 	p->block_id = block_id;
 	p->blksize = cpu_to_be32(size);
+<<<<<<< HEAD
 	return drbd_send_command(mdev, sock, cmd, sizeof(*p), NULL, 0);
 }
 
 int drbd_send_drequest_csum(struct drbd_conf *mdev, sector_t sector, int size,
+=======
+	return drbd_send_command(peer_device, sock, cmd, sizeof(*p), NULL, 0);
+}
+
+int drbd_send_drequest_csum(struct drbd_peer_device *peer_device, sector_t sector, int size,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    void *digest, int digest_size, enum drbd_packet cmd)
 {
 	struct drbd_socket *sock;
@@ -1389,36 +2256,58 @@ int drbd_send_drequest_csum(struct drbd_conf *mdev, sector_t sector, int size,
 
 	/* FIXME: Put the digest into the preallocated socket buffer.  */
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 	p->sector = cpu_to_be64(sector);
 	p->block_id = ID_SYNCER /* unused */;
 	p->blksize = cpu_to_be32(size);
+<<<<<<< HEAD
 	return drbd_send_command(mdev, sock, cmd, sizeof(*p),
 				 digest, digest_size);
 }
 
 int drbd_send_ov_request(struct drbd_conf *mdev, sector_t sector, int size)
+=======
+	return drbd_send_command(peer_device, sock, cmd, sizeof(*p), digest, digest_size);
+}
+
+int drbd_send_ov_request(struct drbd_peer_device *peer_device, sector_t sector, int size)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_block_req *p;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 	p->sector = cpu_to_be64(sector);
 	p->block_id = ID_SYNCER /* unused */;
 	p->blksize = cpu_to_be32(size);
+<<<<<<< HEAD
 	return drbd_send_command(mdev, sock, P_OV_REQUEST, sizeof(*p), NULL, 0);
+=======
+	return drbd_send_command(peer_device, sock, P_OV_REQUEST, sizeof(*p), NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* called on sndtimeo
  * returns false if we should retry,
  * true if we think connection is dead
  */
+<<<<<<< HEAD
 static int we_should_drop_the_connection(struct drbd_tconn *tconn, struct socket *sock)
 {
 	int drop_it;
@@ -1428,10 +2317,22 @@ static int we_should_drop_the_connection(struct drbd_tconn *tconn, struct socket
 		|| !tconn->asender.task
 		|| get_t_state(&tconn->asender) != RUNNING
 		|| tconn->cstate < C_WF_REPORT_PARAMS;
+=======
+static int we_should_drop_the_connection(struct drbd_connection *connection, struct socket *sock)
+{
+	int drop_it;
+	/* long elapsed = (long)(jiffies - device->last_received); */
+
+	drop_it =   connection->meta.socket == sock
+		|| !connection->ack_receiver.task
+		|| get_t_state(&connection->ack_receiver) != RUNNING
+		|| connection->cstate < C_WF_REPORT_PARAMS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (drop_it)
 		return true;
 
+<<<<<<< HEAD
 	drop_it = !--tconn->ko_count;
 	if (!drop_it) {
 		conn_err(tconn, "[%s/%d] sock_sendmsg time expired, ko = %u\n",
@@ -1447,6 +2348,23 @@ static void drbd_update_congested(struct drbd_tconn *tconn)
 	struct sock *sk = tconn->data.socket->sk;
 	if (sk->sk_wmem_queued > sk->sk_sndbuf * 4 / 5)
 		set_bit(NET_CONGESTED, &tconn->flags);
+=======
+	drop_it = !--connection->ko_count;
+	if (!drop_it) {
+		drbd_err(connection, "[%s/%d] sock_sendmsg time expired, ko = %u\n",
+			 current->comm, current->pid, connection->ko_count);
+		request_ping(connection);
+	}
+
+	return drop_it; /* && (device->state == R_PRIMARY) */;
+}
+
+static void drbd_update_congested(struct drbd_connection *connection)
+{
+	struct sock *sk = connection->data.socket->sk;
+	if (sk->sk_wmem_queued > sk->sk_sndbuf * 4 / 5)
+		set_bit(NET_CONGESTED, &connection->flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* The idea of sendpage seems to be to put some kind of reference
@@ -1470,13 +2388,18 @@ static void drbd_update_congested(struct drbd_tconn *tconn)
  * As a workaround, we disable sendpage on pages
  * with page_count == 0 or PageSlab.
  */
+<<<<<<< HEAD
 static int _drbd_no_send_page(struct drbd_conf *mdev, struct page *page,
+=======
+static int _drbd_no_send_page(struct drbd_peer_device *peer_device, struct page *page,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      int offset, size_t size, unsigned msg_flags)
 {
 	struct socket *socket;
 	void *addr;
 	int err;
 
+<<<<<<< HEAD
 	socket = mdev->tconn->data.socket;
 	addr = kmap(page) + offset;
 	err = drbd_send_all(mdev->tconn, socket, addr, size, msg_flags);
@@ -1490,6 +2413,21 @@ static int _drbd_send_page(struct drbd_conf *mdev, struct page *page,
 		    int offset, size_t size, unsigned msg_flags)
 {
 	struct socket *socket = mdev->tconn->data.socket;
+=======
+	socket = peer_device->connection->data.socket;
+	addr = kmap(page) + offset;
+	err = drbd_send_all(peer_device->connection, socket, addr, size, msg_flags);
+	kunmap(page);
+	if (!err)
+		peer_device->device->send_cnt += size >> 9;
+	return err;
+}
+
+static int _drbd_send_page(struct drbd_peer_device *peer_device, struct page *page,
+		    int offset, size_t size, unsigned msg_flags)
+{
+	struct socket *socket = peer_device->connection->data.socket;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mm_segment_t oldfs = get_fs();
 	int len = size;
 	int err = -EIO;
@@ -1501,10 +2439,17 @@ static int _drbd_send_page(struct drbd_conf *mdev, struct page *page,
 	 * __page_cache_release a page that would actually still be referenced
 	 * by someone, leading to some obscure delayed Oops somewhere else. */
 	if (disable_sendpage || (page_count(page) < 1) || PageSlab(page))
+<<<<<<< HEAD
 		return _drbd_no_send_page(mdev, page, offset, size, msg_flags);
 
 	msg_flags |= MSG_NOSIGNAL;
 	drbd_update_congested(mdev->tconn);
+=======
+		return _drbd_no_send_page(peer_device, page, offset, size, msg_flags);
+
+	msg_flags |= MSG_NOSIGNAL;
+	drbd_update_congested(peer_device->connection);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_fs(KERNEL_DS);
 	do {
 		int sent;
@@ -1512,11 +2457,19 @@ static int _drbd_send_page(struct drbd_conf *mdev, struct page *page,
 		sent = socket->ops->sendpage(socket, page, offset, len, msg_flags);
 		if (sent <= 0) {
 			if (sent == -EAGAIN) {
+<<<<<<< HEAD
 				if (we_should_drop_the_connection(mdev->tconn, socket))
 					break;
 				continue;
 			}
 			dev_warn(DEV, "%s: size=%d len=%d sent=%d\n",
+=======
+				if (we_should_drop_the_connection(peer_device->connection, socket))
+					break;
+				continue;
+			}
+			drbd_warn(peer_device->device, "%s: size=%d len=%d sent=%d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     __func__, (int)size, len, sent);
 			if (sent < 0)
 				err = sent;
@@ -1524,6 +2477,7 @@ static int _drbd_send_page(struct drbd_conf *mdev, struct page *page,
 		}
 		len    -= sent;
 		offset += sent;
+<<<<<<< HEAD
 	} while (len > 0 /* THINK && mdev->cstate >= C_CONNECTED*/);
 	set_fs(oldfs);
 	clear_bit(NET_CONGESTED, &mdev->tconn->flags);
@@ -1531,10 +2485,20 @@ static int _drbd_send_page(struct drbd_conf *mdev, struct page *page,
 	if (len == 0) {
 		err = 0;
 		mdev->send_cnt += size >> 9;
+=======
+	} while (len > 0 /* THINK && device->cstate >= C_CONNECTED*/);
+	set_fs(oldfs);
+	clear_bit(NET_CONGESTED, &peer_device->connection->flags);
+
+	if (len == 0) {
+		err = 0;
+		peer_device->device->send_cnt += size >> 9;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 static int _drbd_send_bio(struct drbd_conf *mdev, struct bio *bio)
 {
 	struct bio_vec *bvec;
@@ -1548,10 +2512,31 @@ static int _drbd_send_bio(struct drbd_conf *mdev, struct bio *bio)
 					 i == bio->bi_vcnt - 1 ? 0 : MSG_MORE);
 		if (err)
 			return err;
+=======
+static int _drbd_send_bio(struct drbd_peer_device *peer_device, struct bio *bio)
+{
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+
+	/* hint all but last page with MSG_MORE */
+	bio_for_each_segment(bvec, bio, iter) {
+		int err;
+
+		err = _drbd_no_send_page(peer_device, bvec.bv_page,
+					 bvec.bv_offset, bvec.bv_len,
+					 bio_iter_last(bvec, iter)
+					 ? 0 : MSG_MORE);
+		if (err)
+			return err;
+		/* REQ_OP_WRITE_SAME has only one segment */
+		if (bio_op(bio) == REQ_OP_WRITE_SAME)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int _drbd_send_zc_bio(struct drbd_conf *mdev, struct bio *bio)
 {
 	struct bio_vec *bvec;
@@ -1565,11 +2550,34 @@ static int _drbd_send_zc_bio(struct drbd_conf *mdev, struct bio *bio)
 				      i == bio->bi_vcnt - 1 ? 0 : MSG_MORE);
 		if (err)
 			return err;
+=======
+static int _drbd_send_zc_bio(struct drbd_peer_device *peer_device, struct bio *bio)
+{
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+
+	/* hint all but last page with MSG_MORE */
+	bio_for_each_segment(bvec, bio, iter) {
+		int err;
+
+		err = _drbd_send_page(peer_device, bvec.bv_page,
+				      bvec.bv_offset, bvec.bv_len,
+				      bio_iter_last(bvec, iter) ? 0 : MSG_MORE);
+		if (err)
+			return err;
+		/* REQ_OP_WRITE_SAME has only one segment */
+		if (bio_op(bio) == REQ_OP_WRITE_SAME)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int _drbd_send_zc_ee(struct drbd_conf *mdev,
+=======
+static int _drbd_send_zc_ee(struct drbd_peer_device *peer_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    struct drbd_peer_request *peer_req)
 {
 	struct page *page = peer_req->pages;
@@ -1580,7 +2588,11 @@ static int _drbd_send_zc_ee(struct drbd_conf *mdev,
 	page_chain_for_each(page) {
 		unsigned l = min_t(unsigned, len, PAGE_SIZE);
 
+<<<<<<< HEAD
 		err = _drbd_send_page(mdev, page, 0, l,
+=======
+		err = _drbd_send_page(peer_device, page, 0, l,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      page_chain_next(page) ? MSG_MORE : 0);
 		if (err)
 			return err;
@@ -1589,6 +2601,7 @@ static int _drbd_send_zc_ee(struct drbd_conf *mdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32 bio_flags_to_wire(struct drbd_conf *mdev, unsigned long bi_rw)
 {
 	if (mdev->tconn->agreed_pro_version >= 95)
@@ -1614,11 +2627,45 @@ int drbd_send_dblock(struct drbd_conf *mdev, struct drbd_request *req)
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
 	dgs = mdev->tconn->integrity_tfm ? crypto_hash_digestsize(mdev->tconn->integrity_tfm) : 0;
+=======
+static u32 bio_flags_to_wire(struct drbd_connection *connection,
+			     struct bio *bio)
+{
+	if (connection->agreed_pro_version >= 95)
+		return  (bio->bi_opf & REQ_SYNC ? DP_RW_SYNC : 0) |
+			(bio->bi_opf & REQ_FUA ? DP_FUA : 0) |
+			(bio->bi_opf & REQ_PREFLUSH ? DP_FLUSH : 0) |
+			(bio_op(bio) == REQ_OP_WRITE_SAME ? DP_WSAME : 0) |
+			(bio_op(bio) == REQ_OP_DISCARD ? DP_DISCARD : 0);
+	else
+		return bio->bi_opf & REQ_SYNC ? DP_RW_SYNC : 0;
+}
+
+/* Used to send write or TRIM aka REQ_DISCARD requests
+ * R_PRIMARY -> Peer	(P_DATA, P_TRIM)
+ */
+int drbd_send_dblock(struct drbd_peer_device *peer_device, struct drbd_request *req)
+{
+	struct drbd_device *device = peer_device->device;
+	struct drbd_socket *sock;
+	struct p_data *p;
+	struct p_wsame *wsame = NULL;
+	void *digest_out;
+	unsigned int dp_flags = 0;
+	int digest_size;
+	int err;
+
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+	digest_size = peer_device->connection->integrity_tfm ?
+		      crypto_ahash_digestsize(peer_device->connection->integrity_tfm) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!p)
 		return -EIO;
 	p->sector = cpu_to_be64(req->i.sector);
 	p->block_id = (unsigned long)req;
+<<<<<<< HEAD
 	p->seq_num = cpu_to_be32(atomic_inc_return(&mdev->packet_seq));
 	dp_flags = bio_flags_to_wire(mdev, req->master_bio->bi_rw);
 	if (mdev->state.conn >= C_SYNC_SOURCE &&
@@ -1634,6 +2681,53 @@ int drbd_send_dblock(struct drbd_conf *mdev, struct drbd_request *req)
 	if (dgs)
 		drbd_csum_bio(mdev, mdev->tconn->integrity_tfm, req->master_bio, p + 1);
 	err = __send_command(mdev->tconn, mdev->vnr, sock, P_DATA, sizeof(*p) + dgs, NULL, req->i.size);
+=======
+	p->seq_num = cpu_to_be32(atomic_inc_return(&device->packet_seq));
+	dp_flags = bio_flags_to_wire(peer_device->connection, req->master_bio);
+	if (device->state.conn >= C_SYNC_SOURCE &&
+	    device->state.conn <= C_PAUSED_SYNC_T)
+		dp_flags |= DP_MAY_SET_IN_SYNC;
+	if (peer_device->connection->agreed_pro_version >= 100) {
+		if (req->rq_state & RQ_EXP_RECEIVE_ACK)
+			dp_flags |= DP_SEND_RECEIVE_ACK;
+		/* During resync, request an explicit write ack,
+		 * even in protocol != C */
+		if (req->rq_state & RQ_EXP_WRITE_ACK
+		|| (dp_flags & DP_MAY_SET_IN_SYNC))
+			dp_flags |= DP_SEND_WRITE_ACK;
+	}
+	p->dp_flags = cpu_to_be32(dp_flags);
+
+	if (dp_flags & DP_DISCARD) {
+		struct p_trim *t = (struct p_trim*)p;
+		t->size = cpu_to_be32(req->i.size);
+		err = __send_command(peer_device->connection, device->vnr, sock, P_TRIM, sizeof(*t), NULL, 0);
+		goto out;
+	}
+	if (dp_flags & DP_WSAME) {
+		/* this will only work if DRBD_FF_WSAME is set AND the
+		 * handshake agreed that all nodes and backend devices are
+		 * WRITE_SAME capable and agree on logical_block_size */
+		wsame = (struct p_wsame*)p;
+		digest_out = wsame + 1;
+		wsame->size = cpu_to_be32(req->i.size);
+	} else
+		digest_out = p + 1;
+
+	/* our digest is still only over the payload.
+	 * TRIM does not carry any payload. */
+	if (digest_size)
+		drbd_csum_bio(peer_device->connection->integrity_tfm, req->master_bio, digest_out);
+	if (wsame) {
+		err =
+		    __send_command(peer_device->connection, device->vnr, sock, P_WSAME,
+				   sizeof(*wsame) + digest_size, NULL,
+				   bio_iovec(req->master_bio).bv_len);
+	} else
+		err =
+		    __send_command(peer_device->connection, device->vnr, sock, P_DATA,
+				   sizeof(*p) + digest_size, NULL, req->i.size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!err) {
 		/* For protocol A, we have to memcpy the payload into
 		 * socket buffers, as we may complete right away
@@ -1646,6 +2740,7 @@ int drbd_send_dblock(struct drbd_conf *mdev, struct drbd_request *req)
 		 * out ok after sending on this side, but does not fit on the
 		 * receiving side, we sure have detected corruption elsewhere.
 		 */
+<<<<<<< HEAD
 		if (!(req->rq_state & (RQ_EXP_RECEIVE_ACK | RQ_EXP_WRITE_ACK)) || dgs)
 			err = _drbd_send_bio(mdev, req->master_bio);
 		else
@@ -1666,6 +2761,29 @@ int drbd_send_dblock(struct drbd_conf *mdev, struct drbd_request *req)
 		     ... Be noisy about digest too large ...
 		} */
 	}
+=======
+		if (!(req->rq_state & (RQ_EXP_RECEIVE_ACK | RQ_EXP_WRITE_ACK)) || digest_size)
+			err = _drbd_send_bio(peer_device, req->master_bio);
+		else
+			err = _drbd_send_zc_bio(peer_device, req->master_bio);
+
+		/* double check digest, sometimes buffers have been modified in flight. */
+		if (digest_size > 0 && digest_size <= 64) {
+			/* 64 byte, 512 bit, is the largest digest size
+			 * currently supported in kernel crypto. */
+			unsigned char digest[64];
+			drbd_csum_bio(peer_device->connection->integrity_tfm, req->master_bio, digest);
+			if (memcmp(p + 1, digest, digest_size)) {
+				drbd_warn(device,
+					"Digest mismatch, buffer modified by upper layers during write: %llus +%u\n",
+					(unsigned long long)req->i.sector, req->i.size);
+			}
+		} /* else if (digest_size > 64) {
+		     ... Be noisy about digest too large ...
+		} */
+	}
+out:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&sock->mutex);  /* locked by drbd_prepare_command() */
 
 	return err;
@@ -1675,6 +2793,7 @@ int drbd_send_dblock(struct drbd_conf *mdev, struct drbd_request *req)
  *  Peer       -> (diskless) R_PRIMARY   (P_DATA_REPLY)
  *  C_SYNC_SOURCE -> C_SYNC_TARGET         (P_RS_DATA_REPLY)
  */
+<<<<<<< HEAD
 int drbd_send_block(struct drbd_conf *mdev, enum drbd_packet cmd,
 		    struct drbd_peer_request *peer_req)
 {
@@ -1687,6 +2806,22 @@ int drbd_send_block(struct drbd_conf *mdev, enum drbd_packet cmd,
 	p = drbd_prepare_command(mdev, sock);
 
 	dgs = mdev->tconn->integrity_tfm ? crypto_hash_digestsize(mdev->tconn->integrity_tfm) : 0;
+=======
+int drbd_send_block(struct drbd_peer_device *peer_device, enum drbd_packet cmd,
+		    struct drbd_peer_request *peer_req)
+{
+	struct drbd_device *device = peer_device->device;
+	struct drbd_socket *sock;
+	struct p_data *p;
+	int err;
+	int digest_size;
+
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+
+	digest_size = peer_device->connection->integrity_tfm ?
+		      crypto_ahash_digestsize(peer_device->connection->integrity_tfm) : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!p)
 		return -EIO;
@@ -1694,28 +2829,49 @@ int drbd_send_block(struct drbd_conf *mdev, enum drbd_packet cmd,
 	p->block_id = peer_req->block_id;
 	p->seq_num = 0;  /* unused */
 	p->dp_flags = 0;
+<<<<<<< HEAD
 	if (dgs)
 		drbd_csum_ee(mdev, mdev->tconn->integrity_tfm, peer_req, p + 1);
 	err = __send_command(mdev->tconn, mdev->vnr, sock, cmd, sizeof(*p) + dgs, NULL, peer_req->i.size);
 	if (!err)
 		err = _drbd_send_zc_ee(mdev, peer_req);
+=======
+	if (digest_size)
+		drbd_csum_ee(peer_device->connection->integrity_tfm, peer_req, p + 1);
+	err = __send_command(peer_device->connection, device->vnr, sock, cmd, sizeof(*p) + digest_size, NULL, peer_req->i.size);
+	if (!err)
+		err = _drbd_send_zc_ee(peer_device, peer_req);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&sock->mutex);  /* locked by drbd_prepare_command() */
 
 	return err;
 }
 
+<<<<<<< HEAD
 int drbd_send_out_of_sync(struct drbd_conf *mdev, struct drbd_request *req)
+=======
+int drbd_send_out_of_sync(struct drbd_peer_device *peer_device, struct drbd_request *req)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct drbd_socket *sock;
 	struct p_block_desc *p;
 
+<<<<<<< HEAD
 	sock = &mdev->tconn->data;
 	p = drbd_prepare_command(mdev, sock);
+=======
+	sock = &peer_device->connection->data;
+	p = drbd_prepare_command(peer_device, sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!p)
 		return -EIO;
 	p->sector = cpu_to_be64(req->i.sector);
 	p->blksize = cpu_to_be32(req->i.size);
+<<<<<<< HEAD
 	return drbd_send_command(mdev, sock, P_OUT_OF_SYNC, sizeof(*p), NULL, 0);
+=======
+	return drbd_send_command(peer_device, sock, P_OUT_OF_SYNC, sizeof(*p), NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1734,7 +2890,11 @@ int drbd_send_out_of_sync(struct drbd_conf *mdev, struct drbd_request *req)
 /*
  * you must have down()ed the appropriate [m]sock_mutex elsewhere!
  */
+<<<<<<< HEAD
 int drbd_send(struct drbd_tconn *tconn, struct socket *sock,
+=======
+int drbd_send(struct drbd_connection *connection, struct socket *sock,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	      void *buf, size_t size, unsigned msg_flags)
 {
 	struct kvec iov;
@@ -1755,6 +2915,7 @@ int drbd_send(struct drbd_tconn *tconn, struct socket *sock,
 	msg.msg_controllen = 0;
 	msg.msg_flags      = msg_flags | MSG_NOSIGNAL;
 
+<<<<<<< HEAD
 	if (sock == tconn->data.socket) {
 		rcu_read_lock();
 		tconn->ko_count = rcu_dereference(tconn->net_conf)->ko_count;
@@ -1774,6 +2935,18 @@ int drbd_send(struct drbd_tconn *tconn, struct socket *sock,
 		rv = kernel_sendmsg(sock, &msg, &iov, 1, iov.iov_len);
 		if (rv == -EAGAIN) {
 			if (we_should_drop_the_connection(tconn, sock))
+=======
+	if (sock == connection->data.socket) {
+		rcu_read_lock();
+		connection->ko_count = rcu_dereference(connection->net_conf)->ko_count;
+		rcu_read_unlock();
+		drbd_update_congested(connection);
+	}
+	do {
+		rv = kernel_sendmsg(sock, &msg, &iov, 1, iov.iov_len);
+		if (rv == -EAGAIN) {
+			if (we_should_drop_the_connection(connection, sock))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 			else
 				continue;
@@ -1789,6 +2962,7 @@ int drbd_send(struct drbd_tconn *tconn, struct socket *sock,
 		iov.iov_len  -= rv;
 	} while (sent < size);
 
+<<<<<<< HEAD
 	if (sock == tconn->data.socket)
 		clear_bit(NET_CONGESTED, &tconn->flags);
 
@@ -1800,6 +2974,19 @@ int drbd_send(struct drbd_tconn *tconn, struct socket *sock,
 			conn_request_state(tconn, NS(conn, C_BROKEN_PIPE), CS_HARD);
 		} else
 			conn_request_state(tconn, NS(conn, C_TIMEOUT), CS_HARD);
+=======
+	if (sock == connection->data.socket)
+		clear_bit(NET_CONGESTED, &connection->flags);
+
+	if (rv <= 0) {
+		if (rv != -EAGAIN) {
+			drbd_err(connection, "%s_sendmsg returned %d\n",
+				 sock == connection->meta.socket ? "msock" : "sock",
+				 rv);
+			conn_request_state(connection, NS(conn, C_BROKEN_PIPE), CS_HARD);
+		} else
+			conn_request_state(connection, NS(conn, C_TIMEOUT), CS_HARD);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return sent;
@@ -1810,12 +2997,20 @@ int drbd_send(struct drbd_tconn *tconn, struct socket *sock,
  *
  * Returns 0 upon success and a negative error value otherwise.
  */
+<<<<<<< HEAD
 int drbd_send_all(struct drbd_tconn *tconn, struct socket *sock, void *buffer,
+=======
+int drbd_send_all(struct drbd_connection *connection, struct socket *sock, void *buffer,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  size_t size, unsigned msg_flags)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = drbd_send(tconn, sock, buffer, size, msg_flags);
+=======
+	err = drbd_send(connection, sock, buffer, size, msg_flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	if (err != size)
@@ -1825,16 +3020,28 @@ int drbd_send_all(struct drbd_tconn *tconn, struct socket *sock, void *buffer,
 
 static int drbd_open(struct block_device *bdev, fmode_t mode)
 {
+<<<<<<< HEAD
 	struct drbd_conf *mdev = bdev->bd_disk->private_data;
+=======
+	struct drbd_device *device = bdev->bd_disk->private_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int rv = 0;
 
 	mutex_lock(&drbd_main_mutex);
+<<<<<<< HEAD
 	spin_lock_irqsave(&mdev->tconn->req_lock, flags);
 	/* to have a stable mdev->state.role
 	 * and no race with updating open_cnt */
 
 	if (mdev->state.role != R_PRIMARY) {
+=======
+	spin_lock_irqsave(&device->resource->req_lock, flags);
+	/* to have a stable device->state.role
+	 * and no race with updating open_cnt */
+
+	if (device->state.role != R_PRIMARY) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (mode & FMODE_WRITE)
 			rv = -EROFS;
 		else if (!allow_oos)
@@ -1842,8 +3049,13 @@ static int drbd_open(struct block_device *bdev, fmode_t mode)
 	}
 
 	if (!rv)
+<<<<<<< HEAD
 		mdev->open_cnt++;
 	spin_unlock_irqrestore(&mdev->tconn->req_lock, flags);
+=======
+		device->open_cnt++;
+	spin_unlock_irqrestore(&device->resource->req_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&drbd_main_mutex);
 
 	return rv;
@@ -1851,6 +3063,7 @@ static int drbd_open(struct block_device *bdev, fmode_t mode)
 
 static void drbd_release(struct gendisk *gd, fmode_t mode)
 {
+<<<<<<< HEAD
 	struct drbd_conf *mdev = gd->private_data;
 	mutex_lock(&drbd_main_mutex);
 	mdev->open_cnt--;
@@ -1862,6 +3075,19 @@ static void drbd_set_defaults(struct drbd_conf *mdev)
 	/* Beware! The actual layout differs
 	 * between big endian and little endian */
 	mdev->state = (union drbd_dev_state) {
+=======
+	struct drbd_device *device = gd->private_data;
+	mutex_lock(&drbd_main_mutex);
+	device->open_cnt--;
+	mutex_unlock(&drbd_main_mutex);
+}
+
+static void drbd_set_defaults(struct drbd_device *device)
+{
+	/* Beware! The actual layout differs
+	 * between big endian and little endian */
+	device->state = (union drbd_dev_state) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{ .role = R_SECONDARY,
 		  .peer = R_UNKNOWN,
 		  .conn = C_STANDALONE,
@@ -1870,11 +3096,16 @@ static void drbd_set_defaults(struct drbd_conf *mdev)
 		} };
 }
 
+<<<<<<< HEAD
 void drbd_init_set_defaults(struct drbd_conf *mdev)
+=======
+void drbd_init_set_defaults(struct drbd_device *device)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* the memset(,0,) did most of this.
 	 * note: only assignments, no allocation in here */
 
+<<<<<<< HEAD
 	drbd_set_defaults(mdev);
 
 	atomic_set(&mdev->ap_bio_cnt, 0);
@@ -1994,6 +3225,118 @@ void drbd_mdev_cleanup(struct drbd_conf *mdev)
 	D_ASSERT(list_empty(&mdev->go_diskless.list));
 
 	drbd_set_defaults(mdev);
+=======
+	drbd_set_defaults(device);
+
+	atomic_set(&device->ap_bio_cnt, 0);
+	atomic_set(&device->ap_actlog_cnt, 0);
+	atomic_set(&device->ap_pending_cnt, 0);
+	atomic_set(&device->rs_pending_cnt, 0);
+	atomic_set(&device->unacked_cnt, 0);
+	atomic_set(&device->local_cnt, 0);
+	atomic_set(&device->pp_in_use_by_net, 0);
+	atomic_set(&device->rs_sect_in, 0);
+	atomic_set(&device->rs_sect_ev, 0);
+	atomic_set(&device->ap_in_flight, 0);
+	atomic_set(&device->md_io.in_use, 0);
+
+	mutex_init(&device->own_state_mutex);
+	device->state_mutex = &device->own_state_mutex;
+
+	spin_lock_init(&device->al_lock);
+	spin_lock_init(&device->peer_seq_lock);
+
+	INIT_LIST_HEAD(&device->active_ee);
+	INIT_LIST_HEAD(&device->sync_ee);
+	INIT_LIST_HEAD(&device->done_ee);
+	INIT_LIST_HEAD(&device->read_ee);
+	INIT_LIST_HEAD(&device->net_ee);
+	INIT_LIST_HEAD(&device->resync_reads);
+	INIT_LIST_HEAD(&device->resync_work.list);
+	INIT_LIST_HEAD(&device->unplug_work.list);
+	INIT_LIST_HEAD(&device->bm_io_work.w.list);
+	INIT_LIST_HEAD(&device->pending_master_completion[0]);
+	INIT_LIST_HEAD(&device->pending_master_completion[1]);
+	INIT_LIST_HEAD(&device->pending_completion[0]);
+	INIT_LIST_HEAD(&device->pending_completion[1]);
+
+	device->resync_work.cb  = w_resync_timer;
+	device->unplug_work.cb  = w_send_write_hint;
+	device->bm_io_work.w.cb = w_bitmap_io;
+
+	init_timer(&device->resync_timer);
+	init_timer(&device->md_sync_timer);
+	init_timer(&device->start_resync_timer);
+	init_timer(&device->request_timer);
+	device->resync_timer.function = resync_timer_fn;
+	device->resync_timer.data = (unsigned long) device;
+	device->md_sync_timer.function = md_sync_timer_fn;
+	device->md_sync_timer.data = (unsigned long) device;
+	device->start_resync_timer.function = start_resync_timer_fn;
+	device->start_resync_timer.data = (unsigned long) device;
+	device->request_timer.function = request_timer_fn;
+	device->request_timer.data = (unsigned long) device;
+
+	init_waitqueue_head(&device->misc_wait);
+	init_waitqueue_head(&device->state_wait);
+	init_waitqueue_head(&device->ee_wait);
+	init_waitqueue_head(&device->al_wait);
+	init_waitqueue_head(&device->seq_wait);
+
+	device->resync_wenr = LC_FREE;
+	device->peer_max_bio_size = DRBD_MAX_BIO_SIZE_SAFE;
+	device->local_max_bio_size = DRBD_MAX_BIO_SIZE_SAFE;
+}
+
+void drbd_device_cleanup(struct drbd_device *device)
+{
+	int i;
+	if (first_peer_device(device)->connection->receiver.t_state != NONE)
+		drbd_err(device, "ASSERT FAILED: receiver t_state == %d expected 0.\n",
+				first_peer_device(device)->connection->receiver.t_state);
+
+	device->al_writ_cnt  =
+	device->bm_writ_cnt  =
+	device->read_cnt     =
+	device->recv_cnt     =
+	device->send_cnt     =
+	device->writ_cnt     =
+	device->p_size       =
+	device->rs_start     =
+	device->rs_total     =
+	device->rs_failed    = 0;
+	device->rs_last_events = 0;
+	device->rs_last_sect_ev = 0;
+	for (i = 0; i < DRBD_SYNC_MARKS; i++) {
+		device->rs_mark_left[i] = 0;
+		device->rs_mark_time[i] = 0;
+	}
+	D_ASSERT(device, first_peer_device(device)->connection->net_conf == NULL);
+
+	drbd_set_my_capacity(device, 0);
+	if (device->bitmap) {
+		/* maybe never allocated. */
+		drbd_bm_resize(device, 0, 1);
+		drbd_bm_cleanup(device);
+	}
+
+	drbd_backing_dev_free(device, device->ldev);
+	device->ldev = NULL;
+
+	clear_bit(AL_SUSPENDED, &device->flags);
+
+	D_ASSERT(device, list_empty(&device->active_ee));
+	D_ASSERT(device, list_empty(&device->sync_ee));
+	D_ASSERT(device, list_empty(&device->done_ee));
+	D_ASSERT(device, list_empty(&device->read_ee));
+	D_ASSERT(device, list_empty(&device->net_ee));
+	D_ASSERT(device, list_empty(&device->resync_reads));
+	D_ASSERT(device, list_empty(&first_peer_device(device)->connection->sender_work.q));
+	D_ASSERT(device, list_empty(&device->resync_work.list));
+	D_ASSERT(device, list_empty(&device->unplug_work.list));
+
+	drbd_set_defaults(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -2008,7 +3351,11 @@ static void drbd_destroy_mempools(void)
 		drbd_pp_vacant--;
 	}
 
+<<<<<<< HEAD
 	/* D_ASSERT(atomic_read(&drbd_pp_vacant)==0); */
+=======
+	/* D_ASSERT(device, atomic_read(&drbd_pp_vacant)==0); */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (drbd_md_io_bio_set)
 		bioset_free(drbd_md_io_bio_set);
@@ -2085,6 +3432,7 @@ static int drbd_create_mempools(void)
 	if (drbd_md_io_page_pool == NULL)
 		goto Enomem;
 
+<<<<<<< HEAD
 	drbd_request_mempool = mempool_create(number,
 		mempool_alloc_slab, mempool_free_slab, drbd_request_cache);
 	if (drbd_request_mempool == NULL)
@@ -2092,6 +3440,14 @@ static int drbd_create_mempools(void)
 
 	drbd_ee_mempool = mempool_create(number,
 		mempool_alloc_slab, mempool_free_slab, drbd_ee_cache);
+=======
+	drbd_request_mempool = mempool_create_slab_pool(number,
+		drbd_request_cache);
+	if (drbd_request_mempool == NULL)
+		goto Enomem;
+
+	drbd_ee_mempool = mempool_create_slab_pool(number, drbd_ee_cache);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (drbd_ee_mempool == NULL)
 		goto Enomem;
 
@@ -2114,6 +3470,7 @@ Enomem:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 static int drbd_notify_sys(struct notifier_block *this, unsigned long code,
 	void *unused)
 {
@@ -2163,11 +3520,50 @@ void drbd_minor_destroy(struct kref *kref)
 
 	/* paranoia asserts */
 	D_ASSERT(mdev->open_cnt == 0);
+=======
+static void drbd_release_all_peer_reqs(struct drbd_device *device)
+{
+	int rr;
+
+	rr = drbd_free_peer_reqs(device, &device->active_ee);
+	if (rr)
+		drbd_err(device, "%d EEs in active list found!\n", rr);
+
+	rr = drbd_free_peer_reqs(device, &device->sync_ee);
+	if (rr)
+		drbd_err(device, "%d EEs in sync list found!\n", rr);
+
+	rr = drbd_free_peer_reqs(device, &device->read_ee);
+	if (rr)
+		drbd_err(device, "%d EEs in read list found!\n", rr);
+
+	rr = drbd_free_peer_reqs(device, &device->done_ee);
+	if (rr)
+		drbd_err(device, "%d EEs in done list found!\n", rr);
+
+	rr = drbd_free_peer_reqs(device, &device->net_ee);
+	if (rr)
+		drbd_err(device, "%d EEs in net list found!\n", rr);
+}
+
+/* caution. no locking. */
+void drbd_destroy_device(struct kref *kref)
+{
+	struct drbd_device *device = container_of(kref, struct drbd_device, kref);
+	struct drbd_resource *resource = device->resource;
+	struct drbd_peer_device *peer_device, *tmp_peer_device;
+
+	del_timer_sync(&device->request_timer);
+
+	/* paranoia asserts */
+	D_ASSERT(device, device->open_cnt == 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* end paranoia asserts */
 
 	/* cleanup stuff that may have been allocated during
 	 * device (re-)configuration or state changes */
 
+<<<<<<< HEAD
 	if (mdev->this_bdev)
 		bdput(mdev->this_bdev);
 
@@ -2191,6 +3587,39 @@ void drbd_minor_destroy(struct kref *kref)
 	kfree(mdev);
 
 	kref_put(&tconn->kref, &conn_destroy);
+=======
+	if (device->this_bdev)
+		bdput(device->this_bdev);
+
+	drbd_backing_dev_free(device, device->ldev);
+	device->ldev = NULL;
+
+	drbd_release_all_peer_reqs(device);
+
+	lc_destroy(device->act_log);
+	lc_destroy(device->resync);
+
+	kfree(device->p_uuid);
+	/* device->p_uuid = NULL; */
+
+	if (device->bitmap) /* should no longer be there. */
+		drbd_bm_cleanup(device);
+	__free_page(device->md_io.page);
+	put_disk(device->vdisk);
+	blk_cleanup_queue(device->rq_queue);
+	kfree(device->rs_plan_s);
+
+	/* not for_each_connection(connection, resource):
+	 * those may have been cleaned up and disassociated already.
+	 */
+	for_each_peer_device_safe(peer_device, tmp_peer_device, device) {
+		kref_put(&peer_device->connection->kref, drbd_destroy_connection);
+		kfree(peer_device);
+	}
+	memset(device, 0xfd, sizeof(*device));
+	kfree(device);
+	kref_put(&resource->kref, drbd_destroy_resource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* One global retry thread, if we need to push back some bio and have it
@@ -2215,19 +3644,32 @@ static void do_retry(struct work_struct *ws)
 	spin_unlock_irq(&retry->lock);
 
 	list_for_each_entry_safe(req, tmp, &writes, tl_requests) {
+<<<<<<< HEAD
 		struct drbd_conf *mdev = req->w.mdev;
 		struct bio *bio = req->master_bio;
 		unsigned long start_time = req->start_time;
 		bool expected;
 
 		expected = 
+=======
+		struct drbd_device *device = req->device;
+		struct bio *bio = req->master_bio;
+		unsigned long start_jif = req->start_jif;
+		bool expected;
+
+		expected =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			expect(atomic_read(&req->completion_ref) == 0) &&
 			expect(req->rq_state & RQ_POSTPONED) &&
 			expect((req->rq_state & RQ_LOCAL_PENDING) == 0 ||
 				(req->rq_state & RQ_LOCAL_ABORTED) != 0);
 
 		if (!expected)
+<<<<<<< HEAD
 			dev_err(DEV, "req=%p completion_ref=%d rq_state=%x\n",
+=======
+			drbd_err(device, "req=%p completion_ref=%d rq_state=%x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				req, atomic_read(&req->completion_ref),
 				req->rq_state);
 
@@ -2251,11 +3693,21 @@ static void do_retry(struct work_struct *ws)
 
 		/* We are not just doing generic_make_request(),
 		 * as we want to keep the start_time information. */
+<<<<<<< HEAD
 		inc_ap_bio(mdev);
 		__drbd_make_request(mdev, bio, start_time);
 	}
 }
 
+=======
+		inc_ap_bio(device);
+		__drbd_make_request(device, bio, start_jif);
+	}
+}
+
+/* called via drbd_req_put_completion_ref(),
+ * holds resource->req_lock */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void drbd_restart_request(struct drbd_request *req)
 {
 	unsigned long flags;
@@ -2266,19 +3718,55 @@ void drbd_restart_request(struct drbd_request *req)
 	/* Drop the extra reference that would otherwise
 	 * have been dropped by complete_master_bio.
 	 * do_retry() needs to grab a new one. */
+<<<<<<< HEAD
 	dec_ap_bio(req->w.mdev);
+=======
+	dec_ap_bio(req->device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	queue_work(retry.wq, &retry.worker);
 }
 
+<<<<<<< HEAD
+=======
+void drbd_destroy_resource(struct kref *kref)
+{
+	struct drbd_resource *resource =
+		container_of(kref, struct drbd_resource, kref);
+
+	idr_destroy(&resource->devices);
+	free_cpumask_var(resource->cpu_mask);
+	kfree(resource->name);
+	memset(resource, 0xf2, sizeof(*resource));
+	kfree(resource);
+}
+
+void drbd_free_resource(struct drbd_resource *resource)
+{
+	struct drbd_connection *connection, *tmp;
+
+	for_each_connection_safe(connection, tmp, resource) {
+		list_del(&connection->connections);
+		drbd_debugfs_connection_cleanup(connection);
+		kref_put(&connection->kref, drbd_destroy_connection);
+	}
+	drbd_debugfs_resource_cleanup(resource);
+	kref_put(&resource->kref, drbd_destroy_resource);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void drbd_cleanup(void)
 {
 	unsigned int i;
+<<<<<<< HEAD
 	struct drbd_conf *mdev;
 	struct drbd_tconn *tconn, *tmp;
 
 	unregister_reboot_notifier(&drbd_notifier);
+=======
+	struct drbd_device *device;
+	struct drbd_resource *resource, *tmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* first remove proc,
 	 * drbdsetup uses it's presence to detect
@@ -2295,6 +3783,7 @@ static void drbd_cleanup(void)
 		destroy_workqueue(retry.wq);
 
 	drbd_genl_unregister();
+<<<<<<< HEAD
 
 	idr_for_each_entry(&minors, mdev, i) {
 		idr_remove(&minors, mdev_to_minor(mdev));
@@ -2310,14 +3799,31 @@ static void drbd_cleanup(void)
 		list_del(&tconn->all_tconn); /* not _rcu no proc, not other threads */
 		/* synchronize_rcu(); */
 		kref_put(&tconn->kref, &conn_destroy);
+=======
+	drbd_debugfs_cleanup();
+
+	idr_for_each_entry(&drbd_devices, device, i)
+		drbd_delete_device(device);
+
+	/* not _rcu since, no other updater anymore. Genl already unregistered */
+	for_each_resource_safe(resource, tmp, &drbd_resources) {
+		list_del(&resource->resources);
+		drbd_free_resource(resource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	drbd_destroy_mempools();
 	unregister_blkdev(DRBD_MAJOR, "drbd");
 
+<<<<<<< HEAD
 	idr_destroy(&minors);
 
 	printk(KERN_INFO "drbd: module cleanup done.\n");
+=======
+	idr_destroy(&drbd_devices);
+
+	pr_info("module cleanup done.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -2325,53 +3831,94 @@ static void drbd_cleanup(void)
  * @congested_data:	User data
  * @bdi_bits:		Bits the BDI flusher thread is currently interested in
  *
+<<<<<<< HEAD
  * Returns 1<<BDI_async_congested and/or 1<<BDI_sync_congested if we are congested.
  */
 static int drbd_congested(void *congested_data, int bdi_bits)
 {
 	struct drbd_conf *mdev = congested_data;
+=======
+ * Returns 1<<WB_async_congested and/or 1<<WB_sync_congested if we are congested.
+ */
+static int drbd_congested(void *congested_data, int bdi_bits)
+{
+	struct drbd_device *device = congested_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct request_queue *q;
 	char reason = '-';
 	int r = 0;
 
+<<<<<<< HEAD
 	if (!may_inc_ap_bio(mdev)) {
+=======
+	if (!may_inc_ap_bio(device)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* DRBD has frozen IO */
 		r = bdi_bits;
 		reason = 'd';
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (test_bit(CALLBACK_PENDING, &mdev->tconn->flags)) {
 		r |= (1 << BDI_async_congested);
+=======
+	if (test_bit(CALLBACK_PENDING, &first_peer_device(device)->connection->flags)) {
+		r |= (1 << WB_async_congested);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Without good local data, we would need to read from remote,
 		 * and that would need the worker thread as well, which is
 		 * currently blocked waiting for that usermode helper to
 		 * finish.
 		 */
+<<<<<<< HEAD
 		if (!get_ldev_if_state(mdev, D_UP_TO_DATE))
 			r |= (1 << BDI_sync_congested);
 		else
 			put_ldev(mdev);
+=======
+		if (!get_ldev_if_state(device, D_UP_TO_DATE))
+			r |= (1 << WB_sync_congested);
+		else
+			put_ldev(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		r &= bdi_bits;
 		reason = 'c';
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (get_ldev(mdev)) {
 		q = bdev_get_queue(mdev->ldev->backing_bdev);
 		r = bdi_congested(&q->backing_dev_info, bdi_bits);
 		put_ldev(mdev);
+=======
+	if (get_ldev(device)) {
+		q = bdev_get_queue(device->ldev->backing_bdev);
+		r = bdi_congested(&q->backing_dev_info, bdi_bits);
+		put_ldev(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (r)
 			reason = 'b';
 	}
 
+<<<<<<< HEAD
 	if (bdi_bits & (1 << BDI_async_congested) && test_bit(NET_CONGESTED, &mdev->tconn->flags)) {
 		r |= (1 << BDI_async_congested);
+=======
+	if (bdi_bits & (1 << WB_async_congested) &&
+	    test_bit(NET_CONGESTED, &first_peer_device(device)->connection->flags)) {
+		r |= (1 << WB_async_congested);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		reason = reason == 'b' ? 'a' : 'n';
 	}
 
 out:
+<<<<<<< HEAD
 	mdev->congestion_reason = reason;
+=======
+	device->congestion_reason = reason;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return r;
 }
 
@@ -2382,14 +3929,45 @@ static void drbd_init_workqueue(struct drbd_work_queue* wq)
 	init_waitqueue_head(&wq->q_wait);
 }
 
+<<<<<<< HEAD
 struct drbd_tconn *conn_get_by_name(const char *name)
 {
 	struct drbd_tconn *tconn;
+=======
+struct completion_work {
+	struct drbd_work w;
+	struct completion done;
+};
+
+static int w_complete(struct drbd_work *w, int cancel)
+{
+	struct completion_work *completion_work =
+		container_of(w, struct completion_work, w);
+
+	complete(&completion_work->done);
+	return 0;
+}
+
+void drbd_flush_workqueue(struct drbd_work_queue *work_queue)
+{
+	struct completion_work completion_work;
+
+	completion_work.w.cb = w_complete;
+	init_completion(&completion_work.done);
+	drbd_queue_work(work_queue, &completion_work.w);
+	wait_for_completion(&completion_work.done);
+}
+
+struct drbd_resource *drbd_find_resource(const char *name)
+{
+	struct drbd_resource *resource;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!name || !name[0])
 		return NULL;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	list_for_each_entry_rcu(tconn, &drbd_tconns, all_tconn) {
 		if (!strcmp(tconn->name, name)) {
 			kref_get(&tconn->kref);
@@ -2421,6 +3999,42 @@ struct drbd_tconn *conn_get_by_addrs(void *my_addr, int my_addr_len,
 found:
 	rcu_read_unlock();
 	return tconn;
+=======
+	for_each_resource_rcu(resource, &drbd_resources) {
+		if (!strcmp(resource->name, name)) {
+			kref_get(&resource->kref);
+			goto found;
+		}
+	}
+	resource = NULL;
+found:
+	rcu_read_unlock();
+	return resource;
+}
+
+struct drbd_connection *conn_get_by_addrs(void *my_addr, int my_addr_len,
+				     void *peer_addr, int peer_addr_len)
+{
+	struct drbd_resource *resource;
+	struct drbd_connection *connection;
+
+	rcu_read_lock();
+	for_each_resource_rcu(resource, &drbd_resources) {
+		for_each_connection_rcu(connection, resource) {
+			if (connection->my_addr_len == my_addr_len &&
+			    connection->peer_addr_len == peer_addr_len &&
+			    !memcmp(&connection->my_addr, my_addr, my_addr_len) &&
+			    !memcmp(&connection->peer_addr, peer_addr, peer_addr_len)) {
+				kref_get(&connection->kref);
+				goto found;
+			}
+		}
+	}
+	connection = NULL;
+found:
+	rcu_read_unlock();
+	return connection;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int drbd_alloc_socket(struct drbd_socket *socket)
@@ -2440,6 +4054,7 @@ static void drbd_free_socket(struct drbd_socket *socket)
 	free_page((unsigned long) socket->rbuf);
 }
 
+<<<<<<< HEAD
 void conn_free_crypto(struct drbd_tconn *tconn)
 {
 	drbd_free_sock(tconn);
@@ -2463,11 +4078,38 @@ void conn_free_crypto(struct drbd_tconn *tconn)
 
 int set_resource_options(struct drbd_tconn *tconn, struct res_opts *res_opts)
 {
+=======
+void conn_free_crypto(struct drbd_connection *connection)
+{
+	drbd_free_sock(connection);
+
+	crypto_free_ahash(connection->csums_tfm);
+	crypto_free_ahash(connection->verify_tfm);
+	crypto_free_shash(connection->cram_hmac_tfm);
+	crypto_free_ahash(connection->integrity_tfm);
+	crypto_free_ahash(connection->peer_integrity_tfm);
+	kfree(connection->int_dig_in);
+	kfree(connection->int_dig_vv);
+
+	connection->csums_tfm = NULL;
+	connection->verify_tfm = NULL;
+	connection->cram_hmac_tfm = NULL;
+	connection->integrity_tfm = NULL;
+	connection->peer_integrity_tfm = NULL;
+	connection->int_dig_in = NULL;
+	connection->int_dig_vv = NULL;
+}
+
+int set_resource_options(struct drbd_resource *resource, struct res_opts *res_opts)
+{
+	struct drbd_connection *connection;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpumask_var_t new_cpu_mask;
 	int err;
 
 	if (!zalloc_cpumask_var(&new_cpu_mask, GFP_KERNEL))
 		return -ENOMEM;
+<<<<<<< HEAD
 		/*
 		retcode = ERR_NOMEM;
 		drbd_msg_put_info("unable to allocate cpumask");
@@ -2480,10 +4122,34 @@ int set_resource_options(struct drbd_tconn *tconn, struct res_opts *res_opts)
 				   cpumask_bits(new_cpu_mask), nr_cpu_ids);
 		if (err) {
 			conn_warn(tconn, "bitmap_parse() failed with %d\n", err);
+=======
+
+	/* silently ignore cpu mask on UP kernel */
+	if (nr_cpu_ids > 1 && res_opts->cpu_mask[0] != 0) {
+		err = bitmap_parse(res_opts->cpu_mask, DRBD_CPU_MASK_SIZE,
+				   cpumask_bits(new_cpu_mask), nr_cpu_ids);
+		if (err == -EOVERFLOW) {
+			/* So what. mask it out. */
+			cpumask_var_t tmp_cpu_mask;
+			if (zalloc_cpumask_var(&tmp_cpu_mask, GFP_KERNEL)) {
+				cpumask_setall(tmp_cpu_mask);
+				cpumask_and(new_cpu_mask, new_cpu_mask, tmp_cpu_mask);
+				drbd_warn(resource, "Overflow in bitmap_parse(%.12s%s), truncating to %u bits\n",
+					res_opts->cpu_mask,
+					strlen(res_opts->cpu_mask) > 12 ? "..." : "",
+					nr_cpu_ids);
+				free_cpumask_var(tmp_cpu_mask);
+				err = 0;
+			}
+		}
+		if (err) {
+			drbd_warn(resource, "bitmap_parse() failed with %d\n", err);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* retcode = ERR_CPU_MASK_PARSE; */
 			goto fail;
 		}
 	}
+<<<<<<< HEAD
 	tconn->res_opts = *res_opts;
 	if (!cpumask_equal(tconn->cpu_mask, new_cpu_mask)) {
 		cpumask_copy(tconn->cpu_mask, new_cpu_mask);
@@ -2491,6 +4157,18 @@ int set_resource_options(struct drbd_tconn *tconn, struct res_opts *res_opts)
 		tconn->receiver.reset_cpu_mask = 1;
 		tconn->asender.reset_cpu_mask = 1;
 		tconn->worker.reset_cpu_mask = 1;
+=======
+	resource->res_opts = *res_opts;
+	if (cpumask_empty(new_cpu_mask))
+		drbd_calc_cpu_mask(&new_cpu_mask);
+	if (!cpumask_equal(resource->cpu_mask, new_cpu_mask)) {
+		cpumask_copy(resource->cpu_mask, new_cpu_mask);
+		for_each_connection_rcu(connection, resource) {
+			connection->receiver.reset_cpu_mask = 1;
+			connection->ack_receiver.reset_cpu_mask = 1;
+			connection->worker.reset_cpu_mask = 1;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	err = 0;
 
@@ -2500,6 +4178,7 @@ fail:
 
 }
 
+<<<<<<< HEAD
 /* caller must be under genl_lock() */
 struct drbd_tconn *conn_create(const char *name, struct res_opts *res_opts)
 {
@@ -2629,17 +4308,193 @@ enum drbd_ret_code conn_new_minor(struct drbd_tconn *tconn, unsigned int minor, 
 	mdev->vnr = vnr;
 
 	drbd_init_set_defaults(mdev);
+=======
+struct drbd_resource *drbd_create_resource(const char *name)
+{
+	struct drbd_resource *resource;
+
+	resource = kzalloc(sizeof(struct drbd_resource), GFP_KERNEL);
+	if (!resource)
+		goto fail;
+	resource->name = kstrdup(name, GFP_KERNEL);
+	if (!resource->name)
+		goto fail_free_resource;
+	if (!zalloc_cpumask_var(&resource->cpu_mask, GFP_KERNEL))
+		goto fail_free_name;
+	kref_init(&resource->kref);
+	idr_init(&resource->devices);
+	INIT_LIST_HEAD(&resource->connections);
+	resource->write_ordering = WO_BDEV_FLUSH;
+	list_add_tail_rcu(&resource->resources, &drbd_resources);
+	mutex_init(&resource->conf_update);
+	mutex_init(&resource->adm_mutex);
+	spin_lock_init(&resource->req_lock);
+	drbd_debugfs_resource_add(resource);
+	return resource;
+
+fail_free_name:
+	kfree(resource->name);
+fail_free_resource:
+	kfree(resource);
+fail:
+	return NULL;
+}
+
+/* caller must be under adm_mutex */
+struct drbd_connection *conn_create(const char *name, struct res_opts *res_opts)
+{
+	struct drbd_resource *resource;
+	struct drbd_connection *connection;
+
+	connection = kzalloc(sizeof(struct drbd_connection), GFP_KERNEL);
+	if (!connection)
+		return NULL;
+
+	if (drbd_alloc_socket(&connection->data))
+		goto fail;
+	if (drbd_alloc_socket(&connection->meta))
+		goto fail;
+
+	connection->current_epoch = kzalloc(sizeof(struct drbd_epoch), GFP_KERNEL);
+	if (!connection->current_epoch)
+		goto fail;
+
+	INIT_LIST_HEAD(&connection->transfer_log);
+
+	INIT_LIST_HEAD(&connection->current_epoch->list);
+	connection->epochs = 1;
+	spin_lock_init(&connection->epoch_lock);
+
+	connection->send.seen_any_write_yet = false;
+	connection->send.current_epoch_nr = 0;
+	connection->send.current_epoch_writes = 0;
+
+	resource = drbd_create_resource(name);
+	if (!resource)
+		goto fail;
+
+	connection->cstate = C_STANDALONE;
+	mutex_init(&connection->cstate_mutex);
+	init_waitqueue_head(&connection->ping_wait);
+	idr_init(&connection->peer_devices);
+
+	drbd_init_workqueue(&connection->sender_work);
+	mutex_init(&connection->data.mutex);
+	mutex_init(&connection->meta.mutex);
+
+	drbd_thread_init(resource, &connection->receiver, drbd_receiver, "receiver");
+	connection->receiver.connection = connection;
+	drbd_thread_init(resource, &connection->worker, drbd_worker, "worker");
+	connection->worker.connection = connection;
+	drbd_thread_init(resource, &connection->ack_receiver, drbd_ack_receiver, "ack_recv");
+	connection->ack_receiver.connection = connection;
+
+	kref_init(&connection->kref);
+
+	connection->resource = resource;
+
+	if (set_resource_options(resource, res_opts))
+		goto fail_resource;
+
+	kref_get(&resource->kref);
+	list_add_tail_rcu(&connection->connections, &resource->connections);
+	drbd_debugfs_connection_add(connection);
+	return connection;
+
+fail_resource:
+	list_del(&resource->resources);
+	drbd_free_resource(resource);
+fail:
+	kfree(connection->current_epoch);
+	drbd_free_socket(&connection->meta);
+	drbd_free_socket(&connection->data);
+	kfree(connection);
+	return NULL;
+}
+
+void drbd_destroy_connection(struct kref *kref)
+{
+	struct drbd_connection *connection = container_of(kref, struct drbd_connection, kref);
+	struct drbd_resource *resource = connection->resource;
+
+	if (atomic_read(&connection->current_epoch->epoch_size) !=  0)
+		drbd_err(connection, "epoch_size:%d\n", atomic_read(&connection->current_epoch->epoch_size));
+	kfree(connection->current_epoch);
+
+	idr_destroy(&connection->peer_devices);
+
+	drbd_free_socket(&connection->meta);
+	drbd_free_socket(&connection->data);
+	kfree(connection->int_dig_in);
+	kfree(connection->int_dig_vv);
+	memset(connection, 0xfc, sizeof(*connection));
+	kfree(connection);
+	kref_put(&resource->kref, drbd_destroy_resource);
+}
+
+static int init_submitter(struct drbd_device *device)
+{
+	/* opencoded create_singlethread_workqueue(),
+	 * to be able to say "drbd%d", ..., minor */
+	device->submit.wq =
+		alloc_ordered_workqueue("drbd%u_submit", WQ_MEM_RECLAIM, device->minor);
+	if (!device->submit.wq)
+		return -ENOMEM;
+
+	INIT_WORK(&device->submit.worker, do_submit);
+	INIT_LIST_HEAD(&device->submit.writes);
+	return 0;
+}
+
+enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsigned int minor)
+{
+	struct drbd_resource *resource = adm_ctx->resource;
+	struct drbd_connection *connection;
+	struct drbd_device *device;
+	struct drbd_peer_device *peer_device, *tmp_peer_device;
+	struct gendisk *disk;
+	struct request_queue *q;
+	int id;
+	int vnr = adm_ctx->volume;
+	enum drbd_ret_code err = ERR_NOMEM;
+
+	device = minor_to_device(minor);
+	if (device)
+		return ERR_MINOR_OR_VOLUME_EXISTS;
+
+	/* GFP_KERNEL, we are outside of all write-out paths */
+	device = kzalloc(sizeof(struct drbd_device), GFP_KERNEL);
+	if (!device)
+		return ERR_NOMEM;
+	kref_init(&device->kref);
+
+	kref_get(&resource->kref);
+	device->resource = resource;
+	device->minor = minor;
+	device->vnr = vnr;
+
+	drbd_init_set_defaults(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	q = blk_alloc_queue(GFP_KERNEL);
 	if (!q)
 		goto out_no_q;
+<<<<<<< HEAD
 	mdev->rq_queue = q;
 	q->queuedata   = mdev;
+=======
+	device->rq_queue = q;
+	q->queuedata   = device;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	disk = alloc_disk(1);
 	if (!disk)
 		goto out_no_disk;
+<<<<<<< HEAD
 	mdev->vdisk = disk;
+=======
+	device->vdisk = disk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	set_disk_ro(disk, true);
 
@@ -2648,6 +4503,7 @@ enum drbd_ret_code conn_new_minor(struct drbd_tconn *tconn, unsigned int minor, 
 	disk->first_minor = minor;
 	disk->fops = &drbd_ops;
 	sprintf(disk->disk_name, "drbd%d", minor);
+<<<<<<< HEAD
 	disk->private_data = mdev;
 
 	mdev->this_bdev = bdget(MKDEV(DRBD_MAJOR, minor));
@@ -2659,10 +4515,24 @@ enum drbd_ret_code conn_new_minor(struct drbd_tconn *tconn, unsigned int minor, 
 
 	blk_queue_make_request(q, drbd_make_request);
 	blk_queue_flush(q, REQ_FLUSH | REQ_FUA);
+=======
+	disk->private_data = device;
+
+	device->this_bdev = bdget(MKDEV(DRBD_MAJOR, minor));
+	/* we have no partitions. we contain only ourselves. */
+	device->this_bdev->bd_contains = device->this_bdev;
+
+	q->backing_dev_info.congested_fn = drbd_congested;
+	q->backing_dev_info.congested_data = device;
+
+	blk_queue_make_request(q, drbd_make_request);
+	blk_queue_write_cache(q, true, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Setting the max_hw_sectors to an odd value of 8kibyte here
 	   This triggers a max_bio_size message upon first attach or connect */
 	blk_queue_max_hw_sectors(q, DRBD_MAX_BIO_SIZE_SAFE >> 8);
 	blk_queue_bounce_limit(q, BLK_BOUNCE_ANY);
+<<<<<<< HEAD
 	blk_queue_merge_bvec(q, drbd_merge_bvec);
 	q->queue_lock = &mdev->tconn->req_lock; /* needed since we use */
 
@@ -2696,10 +4566,64 @@ enum drbd_ret_code conn_new_minor(struct drbd_tconn *tconn, unsigned int minor, 
 	if (init_submitter(mdev)) {
 		err = ERR_NOMEM;
 		drbd_msg_put_info("unable to create submit workqueue");
+=======
+	q->queue_lock = &resource->req_lock;
+
+	device->md_io.page = alloc_page(GFP_KERNEL);
+	if (!device->md_io.page)
+		goto out_no_io_page;
+
+	if (drbd_bm_init(device))
+		goto out_no_bitmap;
+	device->read_requests = RB_ROOT;
+	device->write_requests = RB_ROOT;
+
+	id = idr_alloc(&drbd_devices, device, minor, minor + 1, GFP_KERNEL);
+	if (id < 0) {
+		if (id == -ENOSPC)
+			err = ERR_MINOR_OR_VOLUME_EXISTS;
+		goto out_no_minor_idr;
+	}
+	kref_get(&device->kref);
+
+	id = idr_alloc(&resource->devices, device, vnr, vnr + 1, GFP_KERNEL);
+	if (id < 0) {
+		if (id == -ENOSPC)
+			err = ERR_MINOR_OR_VOLUME_EXISTS;
+		goto out_idr_remove_minor;
+	}
+	kref_get(&device->kref);
+
+	INIT_LIST_HEAD(&device->peer_devices);
+	INIT_LIST_HEAD(&device->pending_bitmap_io);
+	for_each_connection(connection, resource) {
+		peer_device = kzalloc(sizeof(struct drbd_peer_device), GFP_KERNEL);
+		if (!peer_device)
+			goto out_idr_remove_from_resource;
+		peer_device->connection = connection;
+		peer_device->device = device;
+
+		list_add(&peer_device->peer_devices, &device->peer_devices);
+		kref_get(&device->kref);
+
+		id = idr_alloc(&connection->peer_devices, peer_device, vnr, vnr + 1, GFP_KERNEL);
+		if (id < 0) {
+			if (id == -ENOSPC)
+				err = ERR_INVALID_REQUEST;
+			goto out_idr_remove_from_resource;
+		}
+		kref_get(&connection->kref);
+		INIT_WORK(&peer_device->send_acks_work, drbd_send_acks_wf);
+	}
+
+	if (init_submitter(device)) {
+		err = ERR_NOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_idr_remove_vol;
 	}
 
 	add_disk(disk);
+<<<<<<< HEAD
 	kref_init(&mdev->kref); /* one ref for both idrs and the the add_disk */
 
 	/* inherit the connection state */
@@ -2718,23 +4642,95 @@ out_no_minor_idr:
 	drbd_bm_cleanup(mdev);
 out_no_bitmap:
 	__free_page(mdev->md_io_page);
+=======
+
+	/* inherit the connection state */
+	device->state.conn = first_connection(resource)->cstate;
+	if (device->state.conn == C_WF_REPORT_PARAMS) {
+		for_each_peer_device(peer_device, device)
+			drbd_connected(peer_device);
+	}
+	/* move to create_peer_device() */
+	for_each_peer_device(peer_device, device)
+		drbd_debugfs_peer_device_add(peer_device);
+	drbd_debugfs_device_add(device);
+	return NO_ERROR;
+
+out_idr_remove_vol:
+	idr_remove(&connection->peer_devices, vnr);
+out_idr_remove_from_resource:
+	for_each_connection(connection, resource) {
+		peer_device = idr_find(&connection->peer_devices, vnr);
+		if (peer_device) {
+			idr_remove(&connection->peer_devices, vnr);
+			kref_put(&connection->kref, drbd_destroy_connection);
+		}
+	}
+	for_each_peer_device_safe(peer_device, tmp_peer_device, device) {
+		list_del(&peer_device->peer_devices);
+		kfree(peer_device);
+	}
+	idr_remove(&resource->devices, vnr);
+out_idr_remove_minor:
+	idr_remove(&drbd_devices, minor);
+	synchronize_rcu();
+out_no_minor_idr:
+	drbd_bm_cleanup(device);
+out_no_bitmap:
+	__free_page(device->md_io.page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_no_io_page:
 	put_disk(disk);
 out_no_disk:
 	blk_cleanup_queue(q);
 out_no_q:
+<<<<<<< HEAD
 	kfree(mdev);
 	kref_put(&tconn->kref, &conn_destroy);
 	return err;
 }
 
 int __init drbd_init(void)
+=======
+	kref_put(&resource->kref, drbd_destroy_resource);
+	kfree(device);
+	return err;
+}
+
+void drbd_delete_device(struct drbd_device *device)
+{
+	struct drbd_resource *resource = device->resource;
+	struct drbd_connection *connection;
+	struct drbd_peer_device *peer_device;
+	int refs = 3;
+
+	/* move to free_peer_device() */
+	for_each_peer_device(peer_device, device)
+		drbd_debugfs_peer_device_cleanup(peer_device);
+	drbd_debugfs_device_cleanup(device);
+	for_each_connection(connection, resource) {
+		idr_remove(&connection->peer_devices, device->vnr);
+		refs++;
+	}
+	idr_remove(&resource->devices, device->vnr);
+	idr_remove(&drbd_devices, device_to_minor(device));
+	del_gendisk(device->vdisk);
+	synchronize_rcu();
+	kref_sub(&device->kref, refs, drbd_destroy_device);
+}
+
+static int __init drbd_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 
 	if (minor_count < DRBD_MINOR_COUNT_MIN || minor_count > DRBD_MINOR_COUNT_MAX) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "drbd: invalid minor_count (%d)\n", minor_count);
+=======
+		pr_err("invalid minor_count (%d)\n", minor_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef MODULE
 		return -EINVAL;
 #else
@@ -2744,12 +4740,17 @@ int __init drbd_init(void)
 
 	err = register_blkdev(DRBD_MAJOR, "drbd");
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "drbd: unable to register block device major %d\n",
+=======
+		pr_err("unable to register block device major %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       DRBD_MAJOR);
 		return err;
 	}
 
+<<<<<<< HEAD
 	err = drbd_genl_register();
 	if (err) {
 		printk(KERN_ERR "drbd: unable to register generic netlink family\n");
@@ -2768,11 +4769,30 @@ int __init drbd_init(void)
 
 	drbd_proc = NULL; /* play safe for drbd_cleanup */
 	idr_init(&minors);
+=======
+	/*
+	 * allocate all necessary structs
+	 */
+	init_waitqueue_head(&drbd_pp_wait);
+
+	drbd_proc = NULL; /* play safe for drbd_cleanup */
+	idr_init(&drbd_devices);
+
+	mutex_init(&resources_mutex);
+	INIT_LIST_HEAD(&drbd_resources);
+
+	err = drbd_genl_register();
+	if (err) {
+		pr_err("unable to register generic netlink family\n");
+		goto fail;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = drbd_create_mempools();
 	if (err)
 		goto fail;
 
+<<<<<<< HEAD
 	drbd_proc = proc_create_data("drbd", S_IFREG | S_IRUGO , NULL, &drbd_proc_fops, NULL);
 	if (!drbd_proc)	{
 		printk(KERN_ERR "drbd: unable to register proc file\n");
@@ -2785,12 +4805,25 @@ int __init drbd_init(void)
 	retry.wq = create_singlethread_workqueue("drbd-reissue");
 	if (!retry.wq) {
 		printk(KERN_ERR "drbd: unable to create retry workqueue\n");
+=======
+	err = -ENOMEM;
+	drbd_proc = proc_create_data("drbd", S_IFREG | S_IRUGO , NULL, &drbd_proc_fops, NULL);
+	if (!drbd_proc)	{
+		pr_err("unable to register proc file\n");
+		goto fail;
+	}
+
+	retry.wq = create_singlethread_workqueue("drbd-reissue");
+	if (!retry.wq) {
+		pr_err("unable to create retry workqueue\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto fail;
 	}
 	INIT_WORK(&retry.worker, do_retry);
 	spin_lock_init(&retry.lock);
 	INIT_LIST_HEAD(&retry.writes);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "drbd: initialized. "
 	       "Version: " REL_VERSION " (api:%d/proto:%d-%d)\n",
 	       API_VERSION, PRO_VERSION_MIN, PRO_VERSION_MAX);
@@ -2798,11 +4831,22 @@ int __init drbd_init(void)
 	printk(KERN_INFO "drbd: registered as block device major %d\n",
 		DRBD_MAJOR);
 
+=======
+	if (drbd_debugfs_init())
+		pr_notice("failed to initialize debugfs -- will not be available\n");
+
+	pr_info("initialized. "
+	       "Version: " REL_VERSION " (api:%d/proto:%d-%d)\n",
+	       API_VERSION, PRO_VERSION_MIN, PRO_VERSION_MAX);
+	pr_info("%s\n", drbd_buildtag());
+	pr_info("registered as block device major %d\n", DRBD_MAJOR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0; /* Success! */
 
 fail:
 	drbd_cleanup();
 	if (err == -ENOMEM)
+<<<<<<< HEAD
 		/* currently always the case */
 		printk(KERN_ERR "drbd: ran out of memory\n");
 	else
@@ -2838,10 +4882,40 @@ void drbd_free_sock(struct drbd_tconn *tconn)
 		tconn->meta.socket = NULL;
 		mutex_unlock(&tconn->meta.mutex);
 	}
+=======
+		pr_err("ran out of memory\n");
+	else
+		pr_err("initialization failure\n");
+	return err;
+}
+
+static void drbd_free_one_sock(struct drbd_socket *ds)
+{
+	struct socket *s;
+	mutex_lock(&ds->mutex);
+	s = ds->socket;
+	ds->socket = NULL;
+	mutex_unlock(&ds->mutex);
+	if (s) {
+		/* so debugfs does not need to mutex_lock() */
+		synchronize_rcu();
+		kernel_sock_shutdown(s, SHUT_RDWR);
+		sock_release(s);
+	}
+}
+
+void drbd_free_sock(struct drbd_connection *connection)
+{
+	if (connection->data.socket)
+		drbd_free_one_sock(&connection->data);
+	if (connection->meta.socket)
+		drbd_free_one_sock(&connection->meta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* meta data management */
 
+<<<<<<< HEAD
 void conn_md_sync(struct drbd_tconn *tconn)
 {
 	struct drbd_conf *mdev;
@@ -2853,6 +4927,21 @@ void conn_md_sync(struct drbd_tconn *tconn)
 		rcu_read_unlock();
 		drbd_md_sync(mdev);
 		kref_put(&mdev->kref, &drbd_minor_destroy);
+=======
+void conn_md_sync(struct drbd_connection *connection)
+{
+	struct drbd_peer_device *peer_device;
+	int vnr;
+
+	rcu_read_lock();
+	idr_for_each_entry(&connection->peer_devices, peer_device, vnr) {
+		struct drbd_device *device = peer_device->device;
+
+		kref_get(&device->kref);
+		rcu_read_unlock();
+		drbd_md_sync(device);
+		kref_put(&device->kref, drbd_destroy_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rcu_read_lock();
 	}
 	rcu_read_unlock();
@@ -2881,6 +4970,7 @@ struct meta_data_on_disk {
 	u8 reserved_u8[4096 - (7*8 + 10*4)];
 } __packed;
 
+<<<<<<< HEAD
 /**
  * drbd_md_sync() - Writes the meta data super block if the MD_DIRTY flag bit is set
  * @mdev:	DRBD device.
@@ -2890,18 +4980,72 @@ void drbd_md_sync(struct drbd_conf *mdev)
 	struct meta_data_on_disk *buffer;
 	sector_t sector;
 	int i;
+=======
+
+
+void drbd_md_write(struct drbd_device *device, void *b)
+{
+	struct meta_data_on_disk *buffer = b;
+	sector_t sector;
+	int i;
+
+	memset(buffer, 0, sizeof(*buffer));
+
+	buffer->la_size_sect = cpu_to_be64(drbd_get_capacity(device->this_bdev));
+	for (i = UI_CURRENT; i < UI_SIZE; i++)
+		buffer->uuid[i] = cpu_to_be64(device->ldev->md.uuid[i]);
+	buffer->flags = cpu_to_be32(device->ldev->md.flags);
+	buffer->magic = cpu_to_be32(DRBD_MD_MAGIC_84_UNCLEAN);
+
+	buffer->md_size_sect  = cpu_to_be32(device->ldev->md.md_size_sect);
+	buffer->al_offset     = cpu_to_be32(device->ldev->md.al_offset);
+	buffer->al_nr_extents = cpu_to_be32(device->act_log->nr_elements);
+	buffer->bm_bytes_per_bit = cpu_to_be32(BM_BLOCK_SIZE);
+	buffer->device_uuid = cpu_to_be64(device->ldev->md.device_uuid);
+
+	buffer->bm_offset = cpu_to_be32(device->ldev->md.bm_offset);
+	buffer->la_peer_max_bio_size = cpu_to_be32(device->peer_max_bio_size);
+
+	buffer->al_stripes = cpu_to_be32(device->ldev->md.al_stripes);
+	buffer->al_stripe_size_4k = cpu_to_be32(device->ldev->md.al_stripe_size_4k);
+
+	D_ASSERT(device, drbd_md_ss(device->ldev) == device->ldev->md.md_offset);
+	sector = device->ldev->md.md_offset;
+
+	if (drbd_md_sync_page_io(device, device->ldev, sector, REQ_OP_WRITE)) {
+		/* this was a try anyways ... */
+		drbd_err(device, "meta data update failed!\n");
+		drbd_chk_io_error(device, 1, DRBD_META_IO_ERROR);
+	}
+}
+
+/**
+ * drbd_md_sync() - Writes the meta data super block if the MD_DIRTY flag bit is set
+ * @device:	DRBD device.
+ */
+void drbd_md_sync(struct drbd_device *device)
+{
+	struct meta_data_on_disk *buffer;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Don't accidentally change the DRBD meta data layout. */
 	BUILD_BUG_ON(UI_SIZE != 4);
 	BUILD_BUG_ON(sizeof(struct meta_data_on_disk) != 4096);
 
+<<<<<<< HEAD
 	del_timer(&mdev->md_sync_timer);
 	/* timer may be rearmed by drbd_md_mark_dirty() now. */
 	if (!test_and_clear_bit(MD_DIRTY, &mdev->flags))
+=======
+	del_timer(&device->md_sync_timer);
+	/* timer may be rearmed by drbd_md_mark_dirty() now. */
+	if (!test_and_clear_bit(MD_DIRTY, &device->flags))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* We use here D_FAILED and not D_ATTACHING because we try to write
 	 * metadata even if we detach due to a disk failure! */
+<<<<<<< HEAD
 	if (!get_ldev_if_state(mdev, D_FAILED))
 		return;
 
@@ -2948,6 +5092,27 @@ out:
 }
 
 static int check_activity_log_stripe_size(struct drbd_conf *mdev,
+=======
+	if (!get_ldev_if_state(device, D_FAILED))
+		return;
+
+	buffer = drbd_md_get_buffer(device, __func__);
+	if (!buffer)
+		goto out;
+
+	drbd_md_write(device, buffer);
+
+	/* Update device->ldev->md.la_size_sect,
+	 * since we updated it on metadata. */
+	device->ldev->md.la_size_sect = drbd_get_capacity(device->this_bdev);
+
+	drbd_md_put_buffer(device);
+out:
+	put_ldev(device);
+}
+
+static int check_activity_log_stripe_size(struct drbd_device *device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct meta_data_on_disk *on_disk,
 		struct drbd_md *in_core)
 {
@@ -2987,12 +5152,20 @@ static int check_activity_log_stripe_size(struct drbd_conf *mdev,
 
 	return 0;
 err:
+<<<<<<< HEAD
 	dev_err(DEV, "invalid activity log striping: al_stripes=%u, al_stripe_size_4k=%u\n",
+=======
+	drbd_err(device, "invalid activity log striping: al_stripes=%u, al_stripe_size_4k=%u\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			al_stripes, al_stripe_size_4k);
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int check_offsets_and_sizes(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
+=======
+static int check_offsets_and_sizes(struct drbd_device *device, struct drbd_backing_dev *bdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	sector_t capacity = drbd_get_capacity(bdev->md_bdev);
 	struct drbd_md *in_core = &bdev->md;
@@ -3059,7 +5232,11 @@ static int check_offsets_and_sizes(struct drbd_conf *mdev, struct drbd_backing_d
 	return 0;
 
 err:
+<<<<<<< HEAD
 	dev_err(DEV, "meta data offsets don't make sense: idx=%d "
+=======
+	drbd_err(device, "meta data offsets don't make sense: idx=%d "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"al_s=%u, al_sz4k=%u, al_offset=%d, bm_offset=%d, "
 			"md_size_sect=%u, la_size=%llu, md_capacity=%llu\n",
 			in_core->meta_dev_idx,
@@ -3074,25 +5251,42 @@ err:
 
 /**
  * drbd_md_read() - Reads in the meta data super block
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @bdev:	Device from which the meta data should be read in.
  *
  * Return NO_ERROR on success, and an enum drbd_ret_code in case
  * something goes wrong.
  *
  * Called exactly once during drbd_adm_attach(), while still being D_DISKLESS,
+<<<<<<< HEAD
  * even before @bdev is assigned to @mdev->ldev.
  */
 int drbd_md_read(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
+=======
+ * even before @bdev is assigned to @device->ldev.
+ */
+int drbd_md_read(struct drbd_device *device, struct drbd_backing_dev *bdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct meta_data_on_disk *buffer;
 	u32 magic, flags;
 	int i, rv = NO_ERROR;
 
+<<<<<<< HEAD
 	if (mdev->state.disk != D_DISKLESS)
 		return ERR_DISK_CONFIGURED;
 
 	buffer = drbd_md_get_buffer(mdev);
+=======
+	if (device->state.disk != D_DISKLESS)
+		return ERR_DISK_CONFIGURED;
+
+	buffer = drbd_md_get_buffer(device, __func__);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!buffer)
 		return ERR_NOMEM;
 
@@ -3100,11 +5294,24 @@ int drbd_md_read(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
 	 * and read it. */
 	bdev->md.meta_dev_idx = bdev->disk_conf->meta_dev_idx;
 	bdev->md.md_offset = drbd_md_ss(bdev);
+<<<<<<< HEAD
 
 	if (drbd_md_sync_page_io(mdev, bdev, bdev->md.md_offset, READ)) {
 		/* NOTE: can't do normal error processing here as this is
 		   called BEFORE disk is attached */
 		dev_err(DEV, "Error while reading metadata.\n");
+=======
+	/* Even for (flexible or indexed) external meta data,
+	 * initially restrict us to the 4k superblock for now.
+	 * Affects the paranoia out-of-range access check in drbd_md_sync_page_io(). */
+	bdev->md.md_size_sect = 8;
+
+	if (drbd_md_sync_page_io(device, bdev, bdev->md.md_offset,
+				 REQ_OP_READ)) {
+		/* NOTE: can't do normal error processing here as this is
+		   called BEFORE disk is attached */
+		drbd_err(device, "Error while reading metadata.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rv = ERR_IO_MD_DISK;
 		goto err;
 	}
@@ -3114,7 +5321,11 @@ int drbd_md_read(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
 	if (magic == DRBD_MD_MAGIC_84_UNCLEAN ||
 	    (magic == DRBD_MD_MAGIC_08 && !(flags & MDF_AL_CLEAN))) {
 			/* btw: that's Activity Log clean, not "all" clean. */
+<<<<<<< HEAD
 		dev_err(DEV, "Found unclean meta data. Did you \"drbdadm apply-al\"?\n");
+=======
+		drbd_err(device, "Found unclean meta data. Did you \"drbdadm apply-al\"?\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rv = ERR_MD_UNCLEAN;
 		goto err;
 	}
@@ -3122,14 +5333,24 @@ int drbd_md_read(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
 	rv = ERR_MD_INVALID;
 	if (magic != DRBD_MD_MAGIC_08) {
 		if (magic == DRBD_MD_MAGIC_07)
+<<<<<<< HEAD
 			dev_err(DEV, "Found old (0.7) meta data magic. Did you \"drbdadm create-md\"?\n");
 		else
 			dev_err(DEV, "Meta data magic not found. Did you \"drbdadm create-md\"?\n");
+=======
+			drbd_err(device, "Found old (0.7) meta data magic. Did you \"drbdadm create-md\"?\n");
+		else
+			drbd_err(device, "Meta data magic not found. Did you \"drbdadm create-md\"?\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err;
 	}
 
 	if (be32_to_cpu(buffer->bm_bytes_per_bit) != BM_BLOCK_SIZE) {
+<<<<<<< HEAD
 		dev_err(DEV, "unexpected bm_bytes_per_bit: %u (expected %u)\n",
+=======
+		drbd_err(device, "unexpected bm_bytes_per_bit: %u (expected %u)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    be32_to_cpu(buffer->bm_bytes_per_bit), BM_BLOCK_SIZE);
 		goto err;
 	}
@@ -3146,6 +5367,7 @@ int drbd_md_read(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
 	bdev->md.al_offset = be32_to_cpu(buffer->al_offset);
 	bdev->md.bm_offset = be32_to_cpu(buffer->bm_offset);
 
+<<<<<<< HEAD
 	if (check_activity_log_stripe_size(mdev, buffer, &bdev->md))
 		goto err;
 	if (check_offsets_and_sizes(mdev, bdev))
@@ -3153,17 +5375,31 @@ int drbd_md_read(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
 
 	if (be32_to_cpu(buffer->bm_offset) != bdev->md.bm_offset) {
 		dev_err(DEV, "unexpected bm_offset: %d (expected %d)\n",
+=======
+	if (check_activity_log_stripe_size(device, buffer, &bdev->md))
+		goto err;
+	if (check_offsets_and_sizes(device, bdev))
+		goto err;
+
+	if (be32_to_cpu(buffer->bm_offset) != bdev->md.bm_offset) {
+		drbd_err(device, "unexpected bm_offset: %d (expected %d)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    be32_to_cpu(buffer->bm_offset), bdev->md.bm_offset);
 		goto err;
 	}
 	if (be32_to_cpu(buffer->md_size_sect) != bdev->md.md_size_sect) {
+<<<<<<< HEAD
 		dev_err(DEV, "unexpected md_size: %u (expected %u)\n",
+=======
+		drbd_err(device, "unexpected md_size: %u (expected %u)\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    be32_to_cpu(buffer->md_size_sect), bdev->md.md_size_sect);
 		goto err;
 	}
 
 	rv = NO_ERROR;
 
+<<<<<<< HEAD
 	spin_lock_irq(&mdev->tconn->req_lock);
 	if (mdev->state.conn < C_CONNECTED) {
 		unsigned int peer;
@@ -3175,19 +5411,37 @@ int drbd_md_read(struct drbd_conf *mdev, struct drbd_backing_dev *bdev)
 
  err:
 	drbd_md_put_buffer(mdev);
+=======
+	spin_lock_irq(&device->resource->req_lock);
+	if (device->state.conn < C_CONNECTED) {
+		unsigned int peer;
+		peer = be32_to_cpu(buffer->la_peer_max_bio_size);
+		peer = max(peer, DRBD_MAX_BIO_SIZE_SAFE);
+		device->peer_max_bio_size = peer;
+	}
+	spin_unlock_irq(&device->resource->req_lock);
+
+ err:
+	drbd_md_put_buffer(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rv;
 }
 
 /**
  * drbd_md_mark_dirty() - Mark meta data super block as dirty
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Call this function if you change anything that should be written to
  * the meta-data super block. This function sets MD_DIRTY, and starts a
  * timer that ensures that within five seconds you have to call drbd_md_sync().
  */
 #ifdef DEBUG
+<<<<<<< HEAD
 void drbd_md_mark_dirty_(struct drbd_conf *mdev, unsigned int line, const char *func)
 {
 	if (!test_and_set_bit(MD_DIRTY, &mdev->flags)) {
@@ -3205,10 +5459,30 @@ void drbd_md_mark_dirty(struct drbd_conf *mdev)
 #endif
 
 void drbd_uuid_move_history(struct drbd_conf *mdev) __must_hold(local)
+=======
+void drbd_md_mark_dirty_(struct drbd_device *device, unsigned int line, const char *func)
+{
+	if (!test_and_set_bit(MD_DIRTY, &device->flags)) {
+		mod_timer(&device->md_sync_timer, jiffies + HZ);
+		device->last_md_mark_dirty.line = line;
+		device->last_md_mark_dirty.func = func;
+	}
+}
+#else
+void drbd_md_mark_dirty(struct drbd_device *device)
+{
+	if (!test_and_set_bit(MD_DIRTY, &device->flags))
+		mod_timer(&device->md_sync_timer, jiffies + 5*HZ);
+}
+#endif
+
+void drbd_uuid_move_history(struct drbd_device *device) __must_hold(local)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 
 	for (i = UI_HISTORY_START; i < UI_HISTORY_END; i++)
+<<<<<<< HEAD
 		mdev->ldev->md.uuid[i+1] = mdev->ldev->md.uuid[i];
 }
 
@@ -3216,10 +5490,20 @@ void __drbd_uuid_set(struct drbd_conf *mdev, int idx, u64 val) __must_hold(local
 {
 	if (idx == UI_CURRENT) {
 		if (mdev->state.role == R_PRIMARY)
+=======
+		device->ldev->md.uuid[i+1] = device->ldev->md.uuid[i];
+}
+
+void __drbd_uuid_set(struct drbd_device *device, int idx, u64 val) __must_hold(local)
+{
+	if (idx == UI_CURRENT) {
+		if (device->state.role == R_PRIMARY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			val |= 1;
 		else
 			val &= ~((u64)1);
 
+<<<<<<< HEAD
 		drbd_set_ed_uuid(mdev, val);
 	}
 
@@ -3245,22 +5529,58 @@ void drbd_uuid_set(struct drbd_conf *mdev, int idx, u64 val) __must_hold(local)
 	}
 	__drbd_uuid_set(mdev, idx, val);
 	spin_unlock_irqrestore(&mdev->ldev->md.uuid_lock, flags);
+=======
+		drbd_set_ed_uuid(device, val);
+	}
+
+	device->ldev->md.uuid[idx] = val;
+	drbd_md_mark_dirty(device);
+}
+
+void _drbd_uuid_set(struct drbd_device *device, int idx, u64 val) __must_hold(local)
+{
+	unsigned long flags;
+	spin_lock_irqsave(&device->ldev->md.uuid_lock, flags);
+	__drbd_uuid_set(device, idx, val);
+	spin_unlock_irqrestore(&device->ldev->md.uuid_lock, flags);
+}
+
+void drbd_uuid_set(struct drbd_device *device, int idx, u64 val) __must_hold(local)
+{
+	unsigned long flags;
+	spin_lock_irqsave(&device->ldev->md.uuid_lock, flags);
+	if (device->ldev->md.uuid[idx]) {
+		drbd_uuid_move_history(device);
+		device->ldev->md.uuid[UI_HISTORY_START] = device->ldev->md.uuid[idx];
+	}
+	__drbd_uuid_set(device, idx, val);
+	spin_unlock_irqrestore(&device->ldev->md.uuid_lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * drbd_uuid_new_current() - Creates a new current UUID
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Creates a new current UUID, and rotates the old current UUID into
  * the bitmap slot. Causes an incremental resync upon next connect.
  */
+<<<<<<< HEAD
 void drbd_uuid_new_current(struct drbd_conf *mdev) __must_hold(local)
+=======
+void drbd_uuid_new_current(struct drbd_device *device) __must_hold(local)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u64 val;
 	unsigned long long bm_uuid;
 
 	get_random_bytes(&val, sizeof(u64));
 
+<<<<<<< HEAD
 	spin_lock_irq(&mdev->ldev->md.uuid_lock);
 	bm_uuid = mdev->ldev->md.uuid[UI_BITMAP];
 
@@ -3297,10 +5617,49 @@ void drbd_uuid_set_bm(struct drbd_conf *mdev, u64 val) __must_hold(local)
 	spin_unlock_irqrestore(&mdev->ldev->md.uuid_lock, flags);
 
 	drbd_md_mark_dirty(mdev);
+=======
+	spin_lock_irq(&device->ldev->md.uuid_lock);
+	bm_uuid = device->ldev->md.uuid[UI_BITMAP];
+
+	if (bm_uuid)
+		drbd_warn(device, "bm UUID was already set: %llX\n", bm_uuid);
+
+	device->ldev->md.uuid[UI_BITMAP] = device->ldev->md.uuid[UI_CURRENT];
+	__drbd_uuid_set(device, UI_CURRENT, val);
+	spin_unlock_irq(&device->ldev->md.uuid_lock);
+
+	drbd_print_uuids(device, "new current UUID");
+	/* get it to stable storage _now_ */
+	drbd_md_sync(device);
+}
+
+void drbd_uuid_set_bm(struct drbd_device *device, u64 val) __must_hold(local)
+{
+	unsigned long flags;
+	if (device->ldev->md.uuid[UI_BITMAP] == 0 && val == 0)
+		return;
+
+	spin_lock_irqsave(&device->ldev->md.uuid_lock, flags);
+	if (val == 0) {
+		drbd_uuid_move_history(device);
+		device->ldev->md.uuid[UI_HISTORY_START] = device->ldev->md.uuid[UI_BITMAP];
+		device->ldev->md.uuid[UI_BITMAP] = 0;
+	} else {
+		unsigned long long bm_uuid = device->ldev->md.uuid[UI_BITMAP];
+		if (bm_uuid)
+			drbd_warn(device, "bm UUID was already set: %llX\n", bm_uuid);
+
+		device->ldev->md.uuid[UI_BITMAP] = val & ~((u64)1);
+	}
+	spin_unlock_irqrestore(&device->ldev->md.uuid_lock, flags);
+
+	drbd_md_mark_dirty(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * drbd_bmio_set_n_write() - io_fn for drbd_queue_bitmap_io() or drbd_bitmap_io()
+<<<<<<< HEAD
  * @mdev:	DRBD device.
  *
  * Sets all bits in the bitmap and writes the whole bitmap to stable storage.
@@ -3322,6 +5681,25 @@ int drbd_bmio_set_n_write(struct drbd_conf *mdev)
 		}
 
 		put_ldev(mdev);
+=======
+ * @device:	DRBD device.
+ *
+ * Sets all bits in the bitmap and writes the whole bitmap to stable storage.
+ */
+int drbd_bmio_set_n_write(struct drbd_device *device) __must_hold(local)
+{
+	int rv = -EIO;
+
+	drbd_md_set_flag(device, MDF_FULL_SYNC);
+	drbd_md_sync(device);
+	drbd_bm_set_all(device);
+
+	rv = drbd_bm_write(device);
+
+	if (!rv) {
+		drbd_md_clear_flag(device, MDF_FULL_SYNC);
+		drbd_md_sync(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return rv;
@@ -3329,6 +5707,7 @@ int drbd_bmio_set_n_write(struct drbd_conf *mdev)
 
 /**
  * drbd_bmio_clear_n_write() - io_fn for drbd_queue_bitmap_io() or drbd_bitmap_io()
+<<<<<<< HEAD
  * @mdev:	DRBD device.
  *
  * Clears all bits in the bitmap and writes the whole bitmap to stable storage.
@@ -3345,10 +5724,22 @@ int drbd_bmio_clear_n_write(struct drbd_conf *mdev)
 	}
 
 	return rv;
+=======
+ * @device:	DRBD device.
+ *
+ * Clears all bits in the bitmap and writes the whole bitmap to stable storage.
+ */
+int drbd_bmio_clear_n_write(struct drbd_device *device) __must_hold(local)
+{
+	drbd_resume_al(device);
+	drbd_bm_clear_all(device);
+	return drbd_bm_write(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int w_bitmap_io(struct drbd_work *w, int unused)
 {
+<<<<<<< HEAD
 	struct bm_io_work *work = container_of(w, struct bm_io_work, w);
 	struct drbd_conf *mdev = w->mdev;
 	int rv = -EIO;
@@ -3369,12 +5760,41 @@ static int w_bitmap_io(struct drbd_work *w, int unused)
 		work->done(mdev, rv);
 
 	clear_bit(BITMAP_IO_QUEUED, &mdev->flags);
+=======
+	struct drbd_device *device =
+		container_of(w, struct drbd_device, bm_io_work.w);
+	struct bm_io_work *work = &device->bm_io_work;
+	int rv = -EIO;
+
+	if (work->flags != BM_LOCKED_CHANGE_ALLOWED) {
+		int cnt = atomic_read(&device->ap_bio_cnt);
+		if (cnt)
+			drbd_err(device, "FIXME: ap_bio_cnt %d, expected 0; queued for '%s'\n",
+					cnt, work->why);
+	}
+
+	if (get_ldev(device)) {
+		drbd_bm_lock(device, work->why, work->flags);
+		rv = work->io_fn(device);
+		drbd_bm_unlock(device);
+		put_ldev(device);
+	}
+
+	clear_bit_unlock(BITMAP_IO, &device->flags);
+	wake_up(&device->misc_wait);
+
+	if (work->done)
+		work->done(device, rv);
+
+	clear_bit(BITMAP_IO_QUEUED, &device->flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	work->why = NULL;
 	work->flags = 0;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void drbd_ldev_destroy(struct drbd_conf *mdev)
 {
 	lc_destroy(mdev->resync);
@@ -3432,6 +5852,11 @@ static int w_go_diskless(struct drbd_work *w, int unused)
 /**
  * drbd_queue_bitmap_io() - Queues an IO operation on the whole bitmap
  * @mdev:	DRBD device.
+=======
+/**
+ * drbd_queue_bitmap_io() - Queues an IO operation on the whole bitmap
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @io_fn:	IO callback to be called when bitmap IO is possible
  * @done:	callback to be called after the bitmap IO was performed
  * @why:	Descriptive text of the reason for doing the IO
@@ -3440,6 +5865,7 @@ static int w_go_diskless(struct drbd_work *w, int unused)
  * that drbd_set_out_of_sync() can not be called. This function MAY ONLY be
  * called from worker context. It MUST NOT be used while a previous such
  * work is still pending!
+<<<<<<< HEAD
  */
 void drbd_queue_bitmap_io(struct drbd_conf *mdev,
 			  int (*io_fn)(struct drbd_conf *),
@@ -3467,17 +5893,57 @@ void drbd_queue_bitmap_io(struct drbd_conf *mdev,
 			drbd_queue_work(&mdev->tconn->sender_work, &mdev->bm_io_work.w);
 	}
 	spin_unlock_irq(&mdev->tconn->req_lock);
+=======
+ *
+ * Its worker function encloses the call of io_fn() by get_ldev() and
+ * put_ldev().
+ */
+void drbd_queue_bitmap_io(struct drbd_device *device,
+			  int (*io_fn)(struct drbd_device *),
+			  void (*done)(struct drbd_device *, int),
+			  char *why, enum bm_flag flags)
+{
+	D_ASSERT(device, current == first_peer_device(device)->connection->worker.task);
+
+	D_ASSERT(device, !test_bit(BITMAP_IO_QUEUED, &device->flags));
+	D_ASSERT(device, !test_bit(BITMAP_IO, &device->flags));
+	D_ASSERT(device, list_empty(&device->bm_io_work.w.list));
+	if (device->bm_io_work.why)
+		drbd_err(device, "FIXME going to queue '%s' but '%s' still pending?\n",
+			why, device->bm_io_work.why);
+
+	device->bm_io_work.io_fn = io_fn;
+	device->bm_io_work.done = done;
+	device->bm_io_work.why = why;
+	device->bm_io_work.flags = flags;
+
+	spin_lock_irq(&device->resource->req_lock);
+	set_bit(BITMAP_IO, &device->flags);
+	/* don't wait for pending application IO if the caller indicates that
+	 * application IO does not conflict anyways. */
+	if (flags == BM_LOCKED_CHANGE_ALLOWED || atomic_read(&device->ap_bio_cnt) == 0) {
+		if (!test_and_set_bit(BITMAP_IO_QUEUED, &device->flags))
+			drbd_queue_work(&first_peer_device(device)->connection->sender_work,
+					&device->bm_io_work.w);
+	}
+	spin_unlock_irq(&device->resource->req_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
  * drbd_bitmap_io() -  Does an IO operation on the whole bitmap
+<<<<<<< HEAD
  * @mdev:	DRBD device.
+=======
+ * @device:	DRBD device.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @io_fn:	IO callback to be called when bitmap IO is possible
  * @why:	Descriptive text of the reason for doing the IO
  *
  * freezes application IO while that the actual IO operations runs. This
  * functions MAY NOT be called from worker context.
  */
+<<<<<<< HEAD
 int drbd_bitmap_io(struct drbd_conf *mdev, int (*io_fn)(struct drbd_conf *),
 		char *why, enum bm_flag flags)
 {
@@ -3494,10 +5960,31 @@ int drbd_bitmap_io(struct drbd_conf *mdev, int (*io_fn)(struct drbd_conf *),
 
 	if ((flags & BM_LOCKED_SET_ALLOWED) == 0)
 		drbd_resume_io(mdev);
+=======
+int drbd_bitmap_io(struct drbd_device *device, int (*io_fn)(struct drbd_device *),
+		char *why, enum bm_flag flags)
+{
+	/* Only suspend io, if some operation is supposed to be locked out */
+	const bool do_suspend_io = flags & (BM_DONT_CLEAR|BM_DONT_SET|BM_DONT_TEST);
+	int rv;
+
+	D_ASSERT(device, current != first_peer_device(device)->connection->worker.task);
+
+	if (do_suspend_io)
+		drbd_suspend_io(device);
+
+	drbd_bm_lock(device, why, flags);
+	rv = io_fn(device);
+	drbd_bm_unlock(device);
+
+	if (do_suspend_io)
+		drbd_resume_io(device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rv;
 }
 
+<<<<<<< HEAD
 void drbd_md_set_flag(struct drbd_conf *mdev, int flag) __must_hold(local)
 {
 	if ((mdev->ldev->md.flags & flag) != flag) {
@@ -3511,6 +5998,21 @@ void drbd_md_clear_flag(struct drbd_conf *mdev, int flag) __must_hold(local)
 	if ((mdev->ldev->md.flags & flag) != 0) {
 		drbd_md_mark_dirty(mdev);
 		mdev->ldev->md.flags &= ~flag;
+=======
+void drbd_md_set_flag(struct drbd_device *device, int flag) __must_hold(local)
+{
+	if ((device->ldev->md.flags & flag) != flag) {
+		drbd_md_mark_dirty(device);
+		device->ldev->md.flags |= flag;
+	}
+}
+
+void drbd_md_clear_flag(struct drbd_device *device, int flag) __must_hold(local)
+{
+	if ((device->ldev->md.flags & flag) != 0) {
+		drbd_md_mark_dirty(device);
+		device->ldev->md.flags &= ~flag;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 int drbd_md_test_flag(struct drbd_backing_dev *bdev, int flag)
@@ -3520,6 +6022,7 @@ int drbd_md_test_flag(struct drbd_backing_dev *bdev, int flag)
 
 static void md_sync_timer_fn(unsigned long data)
 {
+<<<<<<< HEAD
 	struct drbd_conf *mdev = (struct drbd_conf *) data;
 
 	/* must not double-queue! */
@@ -3538,6 +6041,10 @@ static int w_md_sync(struct drbd_work *w, int unused)
 #endif
 	drbd_md_sync(mdev);
 	return 0;
+=======
+	struct drbd_device *device = (struct drbd_device *) data;
+	drbd_device_post_work(device, MD_SYNC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const char *cmdname(enum drbd_packet cmd)
@@ -3547,6 +6054,11 @@ const char *cmdname(enum drbd_packet cmd)
 	 * one PRO_VERSION */
 	static const char *cmdnames[] = {
 		[P_DATA]	        = "Data",
+<<<<<<< HEAD
+=======
+		[P_WSAME]	        = "WriteSame",
+		[P_TRIM]	        = "Trim",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		[P_DATA_REPLY]	        = "DataReply",
 		[P_RS_DATA_REPLY]	= "RSDataReply",
 		[P_BARRIER]	        = "Barrier",
@@ -3591,6 +6103,11 @@ const char *cmdname(enum drbd_packet cmd)
 		[P_CONN_ST_CHG_REPLY]	= "conn_st_chg_reply",
 		[P_RETRY_WRITE]		= "retry_write",
 		[P_PROTOCOL_UPDATE]	= "protocol_update",
+<<<<<<< HEAD
+=======
+		[P_RS_THIN_REQ]         = "rs_thin_req",
+		[P_RS_DEALLOCATED]      = "rs_deallocated",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* enum drbd_packet, but not commands - obsoleted flags:
 		 *	P_MAY_IGNORE
@@ -3612,18 +6129,30 @@ const char *cmdname(enum drbd_packet cmd)
 
 /**
  * drbd_wait_misc  -  wait for a request to make progress
+<<<<<<< HEAD
  * @mdev:	device associated with the request
  * @i:		the struct drbd_interval embedded in struct drbd_request or
  *		struct drbd_peer_request
  */
 int drbd_wait_misc(struct drbd_conf *mdev, struct drbd_interval *i)
+=======
+ * @device:	device associated with the request
+ * @i:		the struct drbd_interval embedded in struct drbd_request or
+ *		struct drbd_peer_request
+ */
+int drbd_wait_misc(struct drbd_device *device, struct drbd_interval *i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct net_conf *nc;
 	DEFINE_WAIT(wait);
 	long timeout;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	nc = rcu_dereference(mdev->tconn->net_conf);
+=======
+	nc = rcu_dereference(first_peer_device(device)->connection->net_conf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!nc) {
 		rcu_read_unlock();
 		return -ETIMEDOUT;
@@ -3631,6 +6160,7 @@ int drbd_wait_misc(struct drbd_conf *mdev, struct drbd_interval *i)
 	timeout = nc->ko_count ? nc->timeout * HZ / 10 * nc->ko_count : MAX_SCHEDULE_TIMEOUT;
 	rcu_read_unlock();
 
+<<<<<<< HEAD
 	/* Indicate to wake up mdev->misc_wait on progress.  */
 	i->waiting = true;
 	prepare_to_wait(&mdev->misc_wait, &wait, TASK_INTERRUPTIBLE);
@@ -3639,12 +6169,46 @@ int drbd_wait_misc(struct drbd_conf *mdev, struct drbd_interval *i)
 	finish_wait(&mdev->misc_wait, &wait);
 	spin_lock_irq(&mdev->tconn->req_lock);
 	if (!timeout || mdev->state.conn < C_CONNECTED)
+=======
+	/* Indicate to wake up device->misc_wait on progress.  */
+	i->waiting = true;
+	prepare_to_wait(&device->misc_wait, &wait, TASK_INTERRUPTIBLE);
+	spin_unlock_irq(&device->resource->req_lock);
+	timeout = schedule_timeout(timeout);
+	finish_wait(&device->misc_wait, &wait);
+	spin_lock_irq(&device->resource->req_lock);
+	if (!timeout || device->state.conn < C_CONNECTED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ETIMEDOUT;
 	if (signal_pending(current))
 		return -ERESTARTSYS;
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+void lock_all_resources(void)
+{
+	struct drbd_resource *resource;
+	int __maybe_unused i = 0;
+
+	mutex_lock(&resources_mutex);
+	local_irq_disable();
+	for_each_resource(resource, &drbd_resources)
+		spin_lock_nested(&resource->req_lock, i++);
+}
+
+void unlock_all_resources(void)
+{
+	struct drbd_resource *resource;
+
+	for_each_resource(resource, &drbd_resources)
+		spin_unlock(&resource->req_lock);
+	local_irq_enable();
+	mutex_unlock(&resources_mutex);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_DRBD_FAULT_INJECTION
 /* Fault insertion support including random number generator shamelessly
  * stolen from kernel/rcutorture.c */
@@ -3694,20 +6258,32 @@ _drbd_fault_str(unsigned int type) {
 }
 
 unsigned int
+<<<<<<< HEAD
 _drbd_insert_fault(struct drbd_conf *mdev, unsigned int type)
+=======
+_drbd_insert_fault(struct drbd_device *device, unsigned int type)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static struct fault_random_state rrs = {0, 0};
 
 	unsigned int ret = (
 		(fault_devs == 0 ||
+<<<<<<< HEAD
 			((1 << mdev_to_minor(mdev)) & fault_devs) != 0) &&
+=======
+			((1 << device_to_minor(device)) & fault_devs) != 0) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(((_drbd_fault_random(&rrs) % 100) + 1) <= fault_rate));
 
 	if (ret) {
 		fault_count++;
 
 		if (__ratelimit(&drbd_ratelimit_state))
+<<<<<<< HEAD
 			dev_warn(DEV, "***Simulating %s failure\n",
+=======
+			drbd_warn(device, "***Simulating %s failure\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				_drbd_fault_str(type));
 	}
 

@@ -49,7 +49,10 @@
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <linux/hdlc.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/in.h>
 #include <linux/if_arp.h>
 #include <linux/netdevice.h>
@@ -77,7 +80,11 @@
 
 static int LMC_PKT_BUF_SZ = 1542;
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(lmc_pci_tbl) = {
+=======
+static const struct pci_device_id lmc_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_DEC, PCI_DEVICE_ID_DEC_TULIP_FAST,
 	  PCI_VENDOR_ID_LMC, PCI_ANY_ID },
 	{ PCI_VENDOR_ID_DEC, PCI_DEVICE_ID_DEC_TULIP_FAST,
@@ -827,7 +834,11 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* lmc_trace(dev, "lmc_init_one in"); */
 
+<<<<<<< HEAD
 	err = pci_enable_device(pdev);
+=======
+	err = pcim_enable_device(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err) {
 		printk(KERN_ERR "lmc: pci enable failed: %d\n", err);
 		return err;
@@ -836,22 +847,36 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	err = pci_request_regions(pdev, "lmc");
 	if (err) {
 		printk(KERN_ERR "lmc: pci_request_region failed\n");
+<<<<<<< HEAD
 		goto err_req_io;
+=======
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/*
 	 * Allocate our own device structure
 	 */
+<<<<<<< HEAD
 	sc = kzalloc(sizeof(lmc_softc_t), GFP_KERNEL);
 	if (!sc) {
 		err = -ENOMEM;
 		goto err_kzalloc;
 	}
+=======
+	sc = devm_kzalloc(&pdev->dev, sizeof(lmc_softc_t), GFP_KERNEL);
+	if (!sc)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev = alloc_hdlcdev(sc);
 	if (!dev) {
 		printk(KERN_ERR "lmc:alloc_netdev for device failed\n");
+<<<<<<< HEAD
 		goto err_hdlcdev;
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 
@@ -888,7 +913,11 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err) {
 		printk(KERN_ERR "%s: register_netdev failed.\n", dev->name);
 		free_netdev(dev);
+<<<<<<< HEAD
 		goto err_hdlcdev;
+=======
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
     sc->lmc_cardtype = LMC_CARDTYPE_UNKNOWN;
@@ -926,6 +955,11 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
         break;
     default:
 	printk(KERN_WARNING "%s: LMC UNKNOWN CARD!\n", dev->name);
+<<<<<<< HEAD
+=======
+	unregister_hdlc_device(dev);
+	return -EIO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         break;
     }
 
@@ -971,6 +1005,7 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
     lmc_trace(dev, "lmc_init_one out");
     return 0;
+<<<<<<< HEAD
 
 err_hdlcdev:
 	pci_set_drvdata(pdev, NULL);
@@ -980,6 +1015,8 @@ err_kzalloc:
 err_req_io:
 	pci_disable_device(pdev);
 	return err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -993,9 +1030,12 @@ static void lmc_remove_one(struct pci_dev *pdev)
 		printk(KERN_DEBUG "%s: removing...\n", dev->name);
 		unregister_hdlc_device(dev);
 		free_netdev(dev);
+<<<<<<< HEAD
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
 		pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -1387,7 +1427,11 @@ static irqreturn_t lmc_interrupt (int irq, void *dev_instance) /*fold00*/
             case 0x001:
                 printk(KERN_WARNING "%s: Master Abort (naughty)\n", dev->name);
                 break;
+<<<<<<< HEAD
             case 0x010:
+=======
+            case 0x002:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                 printk(KERN_WARNING "%s: Target Abort (not so naughty)\n", dev->name);
                 break;
             default:
@@ -2120,13 +2164,21 @@ static void lmc_driver_timeout(struct net_device *dev)
     sc->lmc_device->stats.tx_errors++;
     sc->extra_stats.tx_ProcTimeout++; /* -baz */
 
+<<<<<<< HEAD
     dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+    netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 bug_out:
 
     spin_unlock_irqrestore(&sc->lmc_lock, flags);
 
+<<<<<<< HEAD
     lmc_trace(dev, "lmc_driver_timout out");
+=======
+    lmc_trace(dev, "lmc_driver_timeout out");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 }

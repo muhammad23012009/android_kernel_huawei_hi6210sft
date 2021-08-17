@@ -68,9 +68,12 @@ static void usb_hcd_tdi_set_mode(struct ehci_hcd *ehci)
 
 	/* set TWI GPIO USB_HOST_DEV pin high */
 	gpio_direction_output(MSP_PIN_USB0_HOST_DEV, 1);
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 	gpio_direction_output(MSP_PIN_USB1_HOST_DEV, 1);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* called during probe() after chip reset completes */
@@ -210,8 +213,15 @@ int usb_hcd_msp_probe(const struct hc_driver *driver,
 
 
 	retval = usb_add_hcd(hcd, res->start, IRQF_SHARED);
+<<<<<<< HEAD
 	if (retval == 0)
 		return 0;
+=======
+	if (retval == 0) {
+		device_wakeup_enable(hcd->self.controller);
+		return 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usb_remove_hcd(hcd);
 err3:
@@ -246,6 +256,7 @@ void usb_hcd_msp_remove(struct usb_hcd *hcd, struct platform_device *dev)
 	usb_put_hcd(hcd);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 /*
  * Wrapper around the main ehci_irq.  Since both USB host controllers are
@@ -273,6 +284,8 @@ static irqreturn_t ehci_msp_irq(struct usb_hcd *hcd)
 }
 #endif /* DUAL_USB */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct hc_driver ehci_msp_hc_driver = {
 	.description =		hcd_name,
 	.product_desc =		"PMC MSP EHCI",
@@ -281,18 +294,27 @@ static const struct hc_driver ehci_msp_hc_driver = {
 	/*
 	 * generic hardware linkage
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 	.irq =			ehci_msp_irq,
 #else
 	.irq =			ehci_irq,
 #endif
 	.flags =		HCD_MEMORY | HCD_USB2,
+=======
+	.irq =			ehci_irq,
+	.flags =		HCD_MEMORY | HCD_USB2 | HCD_BH,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * basic lifecycle operations
 	 */
+<<<<<<< HEAD
 	.reset =		ehci_msp_setup,
 	.start =		ehci_run,
+=======
+	.reset			= ehci_msp_setup,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.shutdown		= ehci_shutdown,
 	.start			= ehci_run,
 	.stop			= ehci_stop,
@@ -333,9 +355,12 @@ static int ehci_hcd_msp_drv_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	gpio_request(MSP_PIN_USB0_HOST_DEV, "USB0_HOST_DEV_GPIO");
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 	gpio_request(MSP_PIN_USB1_HOST_DEV, "USB1_HOST_DEV_GPIO");
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = usb_hcd_msp_probe(&ehci_msp_hc_driver, pdev);
 
@@ -350,9 +375,12 @@ static int ehci_hcd_msp_drv_remove(struct platform_device *pdev)
 
 	/* free TWI GPIO USB_HOST_DEV pin */
 	gpio_free(MSP_PIN_USB0_HOST_DEV);
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_DUAL_USB
 	gpio_free(MSP_PIN_USB1_HOST_DEV);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -364,6 +392,9 @@ static struct platform_driver ehci_hcd_msp_driver = {
 	.remove		= ehci_hcd_msp_drv_remove,
 	.driver		= {
 		.name	= "pmcmsp-ehci",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };

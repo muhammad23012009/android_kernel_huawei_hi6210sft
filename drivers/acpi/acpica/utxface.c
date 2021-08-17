@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +45,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acdebug.h"
@@ -60,12 +69,17 @@ ACPI_MODULE_NAME("utxface")
  * DESCRIPTION: Shutdown the ACPICA subsystem and release all resources.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_terminate(void)
+=======
+acpi_status ACPI_INIT_FUNCTION acpi_terminate(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status;
 
 	ACPI_FUNCTION_TRACE(acpi_terminate);
 
+<<<<<<< HEAD
 	/* Just exit if subsystem is already shutdown */
 
 	if (acpi_gbl_shutdown) {
@@ -83,6 +97,8 @@ acpi_status acpi_terminate(void)
 
 	ACPI_DEBUGGER_EXEC(acpi_gbl_db_terminate_threads = TRUE);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Shutdown and free all resources */
 
 	acpi_ut_subsystem_shutdown();
@@ -91,6 +107,7 @@ acpi_status acpi_terminate(void)
 
 	acpi_ut_mutex_terminate();
 
+<<<<<<< HEAD
 #ifdef ACPI_DEBUGGER
 
 	/* Shut down the debugger */
@@ -98,13 +115,19 @@ acpi_status acpi_terminate(void)
 	acpi_db_terminate();
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Now we can shutdown the OS-dependent layer */
 
 	status = acpi_os_terminate();
 	return_ACPI_STATUS(status);
 }
 
+<<<<<<< HEAD
 ACPI_EXPORT_SYMBOL(acpi_terminate)
+=======
+ACPI_EXPORT_SYMBOL_INIT(acpi_terminate)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef ACPI_ASL_COMPILER
 #ifdef ACPI_FUTURE_USAGE
@@ -150,7 +173,11 @@ ACPI_EXPORT_SYMBOL(acpi_subsystem_status)
  *              and the value of out_buffer is undefined.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_get_system_info(struct acpi_buffer * out_buffer)
+=======
+acpi_status acpi_get_system_info(struct acpi_buffer *out_buffer)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_system_info *info_ptr;
 	acpi_status status;
@@ -177,7 +204,10 @@ acpi_status acpi_get_system_info(struct acpi_buffer * out_buffer)
 	 * Populate the return buffer
 	 */
 	info_ptr = (struct acpi_system_info *)out_buffer->pointer;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info_ptr->acpi_ca_version = ACPI_CA_VERSION;
 
 	/* System flags (ACPI capabilities) */
@@ -207,6 +237,46 @@ acpi_status acpi_get_system_info(struct acpi_buffer * out_buffer)
 
 ACPI_EXPORT_SYMBOL(acpi_get_system_info)
 
+<<<<<<< HEAD
+=======
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_get_statistics
+ *
+ * PARAMETERS:  stats           - Where the statistics are returned
+ *
+ * RETURN:      status          - the status of the call
+ *
+ * DESCRIPTION: Get the contents of the various system counters
+ *
+ ******************************************************************************/
+acpi_status acpi_get_statistics(struct acpi_statistics *stats)
+{
+	ACPI_FUNCTION_TRACE(acpi_get_statistics);
+
+	/* Parameter validation */
+
+	if (!stats) {
+		return_ACPI_STATUS(AE_BAD_PARAMETER);
+	}
+
+	/* Various interrupt-based event counters */
+
+	stats->sci_count = acpi_sci_count;
+	stats->gpe_count = acpi_gpe_count;
+
+	memcpy(stats->fixed_event_count, acpi_fixed_event_count,
+	       sizeof(acpi_fixed_event_count));
+
+	/* Other counters */
+
+	stats->method_count = acpi_method_count;
+	return_ACPI_STATUS(AE_OK);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_get_statistics)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************************
  *
  * FUNCTION:    acpi_install_initialization_handler
@@ -238,7 +308,11 @@ acpi_install_initialization_handler(acpi_init_handler handler, u32 function)
 }
 
 ACPI_EXPORT_SYMBOL(acpi_install_initialization_handler)
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*****************************************************************************
  *
@@ -283,7 +357,11 @@ acpi_status acpi_install_interface(acpi_string interface_name)
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if (!interface_name || (ACPI_STRLEN(interface_name) == 0)) {
+=======
+	if (!interface_name || (strlen(interface_name) == 0)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -335,7 +413,11 @@ acpi_status acpi_remove_interface(acpi_string interface_name)
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if (!interface_name || (ACPI_STRLEN(interface_name) == 0)) {
+=======
+	if (!interface_name || (strlen(interface_name) == 0)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -389,6 +471,37 @@ ACPI_EXPORT_SYMBOL(acpi_install_interface_handler)
 
 /*****************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * FUNCTION:    acpi_update_interfaces
+ *
+ * PARAMETERS:  action              - Actions to be performed during the
+ *                                    update
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Update _OSI interface strings, disabling or enabling OS vendor
+ *              string or/and feature group strings.
+ *
+ ****************************************************************************/
+acpi_status acpi_update_interfaces(u8 action)
+{
+	acpi_status status;
+
+	status = acpi_os_acquire_mutex(acpi_gbl_osi_mutex, ACPI_WAIT_FOREVER);
+	if (ACPI_FAILURE(status)) {
+		return (status);
+	}
+
+	status = acpi_ut_update_interfaces(action);
+
+	acpi_os_release_mutex(acpi_gbl_osi_mutex);
+	return (status);
+}
+
+/*****************************************************************************
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * FUNCTION:    acpi_check_address_range
  *
  * PARAMETERS:  space_id            - Address space ID
@@ -402,6 +515,10 @@ ACPI_EXPORT_SYMBOL(acpi_install_interface_handler)
  *              ASL operation region address ranges.
  *
  ****************************************************************************/
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 u32
 acpi_check_address_range(acpi_adr_space_type space_id,
 			 acpi_physical_address address,
@@ -441,7 +558,11 @@ ACPI_EXPORT_SYMBOL(acpi_check_address_range)
  ******************************************************************************/
 acpi_status
 acpi_decode_pld_buffer(u8 *in_buffer,
+<<<<<<< HEAD
 		       acpi_size length, struct acpi_pld_info ** return_buffer)
+=======
+		       acpi_size length, struct acpi_pld_info **return_buffer)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct acpi_pld_info *pld_info;
 	u32 *buffer = ACPI_CAST_PTR(u32, in_buffer);
@@ -449,7 +570,12 @@ acpi_decode_pld_buffer(u8 *in_buffer,
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if (!in_buffer || !return_buffer || (length < 16)) {
+=======
+	if (!in_buffer || !return_buffer
+	    || (length < ACPI_PLD_REV1_BUFFER_SIZE)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -463,7 +589,13 @@ acpi_decode_pld_buffer(u8 *in_buffer,
 	ACPI_MOVE_32_TO_32(&dword, &buffer[0]);
 	pld_info->revision = ACPI_PLD_GET_REVISION(&dword);
 	pld_info->ignore_color = ACPI_PLD_GET_IGNORE_COLOR(&dword);
+<<<<<<< HEAD
 	pld_info->color = ACPI_PLD_GET_COLOR(&dword);
+=======
+	pld_info->red = ACPI_PLD_GET_RED(&dword);
+	pld_info->green = ACPI_PLD_GET_GREEN(&dword);
+	pld_info->blue = ACPI_PLD_GET_BLUE(&dword);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Second 32-bit DWord */
 
@@ -497,7 +629,11 @@ acpi_decode_pld_buffer(u8 *in_buffer,
 	pld_info->rotation = ACPI_PLD_GET_ROTATION(&dword);
 	pld_info->order = ACPI_PLD_GET_ORDER(&dword);
 
+<<<<<<< HEAD
 	if (length >= ACPI_PLD_BUFFER_SIZE) {
+=======
+	if (length >= ACPI_PLD_REV2_BUFFER_SIZE) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Fifth 32-bit DWord (Revision 2 of _PLD) */
 

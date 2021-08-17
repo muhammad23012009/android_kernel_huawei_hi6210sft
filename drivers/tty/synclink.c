@@ -577,6 +577,7 @@ struct mgsl_struct {
 
 #define SICR_RXC_ACTIVE			BIT15
 #define SICR_RXC_INACTIVE		BIT14
+<<<<<<< HEAD
 #define SICR_RXC			(BIT15+BIT14)
 #define SICR_TXC_ACTIVE			BIT13
 #define SICR_TXC_INACTIVE		BIT12
@@ -593,6 +594,24 @@ struct mgsl_struct {
 #define SICR_CTS_ACTIVE			BIT5
 #define SICR_CTS_INACTIVE		BIT4
 #define SICR_CTS			(BIT5+BIT4)
+=======
+#define SICR_RXC			(BIT15|BIT14)
+#define SICR_TXC_ACTIVE			BIT13
+#define SICR_TXC_INACTIVE		BIT12
+#define SICR_TXC			(BIT13|BIT12)
+#define SICR_RI_ACTIVE			BIT11
+#define SICR_RI_INACTIVE		BIT10
+#define SICR_RI				(BIT11|BIT10)
+#define SICR_DSR_ACTIVE			BIT9
+#define SICR_DSR_INACTIVE		BIT8
+#define SICR_DSR			(BIT9|BIT8)
+#define SICR_DCD_ACTIVE			BIT7
+#define SICR_DCD_INACTIVE		BIT6
+#define SICR_DCD			(BIT7|BIT6)
+#define SICR_CTS_ACTIVE			BIT5
+#define SICR_CTS_INACTIVE		BIT4
+#define SICR_CTS			(BIT5|BIT4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SICR_RCC_UNDERFLOW		BIT3
 #define SICR_DPLL_NO_SYNC		BIT2
 #define SICR_BRG1_ZERO			BIT1
@@ -1161,7 +1180,11 @@ static void mgsl_isr_receive_status( struct mgsl_struct *info )
 {
 	u16 status = usc_InReg( info, RCSR );
 
+<<<<<<< HEAD
 	if ( debug_level >= DEBUG_LEVEL_ISR )	
+=======
+	if ( debug_level >= DEBUG_LEVEL_ISR )
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk("%s(%d):mgsl_isr_receive_status status=%04X\n",
 			__FILE__,__LINE__,status);
 			
@@ -1181,7 +1204,11 @@ static void mgsl_isr_receive_status( struct mgsl_struct *info )
  			(usc_InReg(info, RICR) & ~RXSTATUS_ABORT_RECEIVED));
  	}
 
+<<<<<<< HEAD
 	if (status & (RXSTATUS_EXITED_HUNT + RXSTATUS_IDLE_RECEIVED)) {
+=======
+	if (status & (RXSTATUS_EXITED_HUNT | RXSTATUS_IDLE_RECEIVED)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (status & RXSTATUS_EXITED_HUNT)
 			info->icount.exithunt++;
 		if (status & RXSTATUS_IDLE_RECEIVED)
@@ -1340,7 +1367,11 @@ static void mgsl_isr_io_pin( struct mgsl_struct *info )
 		wake_up_interruptible(&info->status_event_wait_q);
 		wake_up_interruptible(&info->event_wait_q);
 
+<<<<<<< HEAD
 		if ( (info->port.flags & ASYNC_CHECK_CD) && 
+=======
+		if (tty_port_check_carrier(&info->port) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		     (status & MISCSTATUS_DCD_LATCHED) ) {
 			if ( debug_level >= DEBUG_LEVEL_ISR )
 				printk("%s CD now %s...", info->device_name,
@@ -1361,8 +1392,12 @@ static void mgsl_isr_io_pin( struct mgsl_struct *info )
 				if (status & MISCSTATUS_CTS) {
 					if ( debug_level >= DEBUG_LEVEL_ISR )
 						printk("CTS tx start...");
+<<<<<<< HEAD
 					if (info->port.tty)
 						info->port.tty->hw_stopped = 0;
+=======
+					info->port.tty->hw_stopped = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					usc_start_transmitter(info);
 					info->pending_bh |= BH_TRANSMIT;
 					return;
@@ -1463,13 +1498,19 @@ static void mgsl_isr_receive_data( struct mgsl_struct *info )
 
 		/* get the status of the received byte */
 		status = usc_InReg(info, RCSR);
+<<<<<<< HEAD
 		if ( status & (RXSTATUS_FRAMING_ERROR + RXSTATUS_PARITY_ERROR +
 				RXSTATUS_OVERRUN + RXSTATUS_BREAK_RECEIVED) )
+=======
+		if ( status & (RXSTATUS_FRAMING_ERROR | RXSTATUS_PARITY_ERROR |
+				RXSTATUS_OVERRUN | RXSTATUS_BREAK_RECEIVED) )
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			usc_UnlatchRxstatusBits(info,RXSTATUS_ALL);
 		
 		icount->rx++;
 		
 		flag = 0;
+<<<<<<< HEAD
 		if ( status & (RXSTATUS_FRAMING_ERROR + RXSTATUS_PARITY_ERROR +
 				RXSTATUS_OVERRUN + RXSTATUS_BREAK_RECEIVED) ) {
 			printk("rxerr=%04X\n",status);					
@@ -1478,6 +1519,16 @@ static void mgsl_isr_receive_data( struct mgsl_struct *info )
 				status &= ~(RXSTATUS_FRAMING_ERROR + RXSTATUS_PARITY_ERROR);
 				icount->brk++;
 			} else if (status & RXSTATUS_PARITY_ERROR) 
+=======
+		if ( status & (RXSTATUS_FRAMING_ERROR | RXSTATUS_PARITY_ERROR |
+				RXSTATUS_OVERRUN | RXSTATUS_BREAK_RECEIVED) ) {
+			printk("rxerr=%04X\n",status);
+			/* update error statistics */
+			if ( status & RXSTATUS_BREAK_RECEIVED ) {
+				status &= ~(RXSTATUS_FRAMING_ERROR | RXSTATUS_PARITY_ERROR);
+				icount->brk++;
+			} else if (status & RXSTATUS_PARITY_ERROR)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				icount->parity++;
 			else if (status & RXSTATUS_FRAMING_ERROR)
 				icount->frame++;
@@ -1488,7 +1539,11 @@ static void mgsl_isr_receive_data( struct mgsl_struct *info )
 				icount->overrun++;
 			}
 
+<<<<<<< HEAD
 			/* discard char if tty control flags say so */					
+=======
+			/* discard char if tty control flags say so */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (status & info->ignore_status_mask)
 				continue;
 				
@@ -1545,8 +1600,13 @@ static void mgsl_isr_misc( struct mgsl_struct *info )
 		usc_EnableReceiver(info,DISABLE_UNCONDITIONAL);
 		usc_DmaCmd(info, DmaCmd_ResetRxChannel);
 		usc_UnlatchRxstatusBits(info, RXSTATUS_ALL);
+<<<<<<< HEAD
 		usc_ClearIrqPendingBits(info, RECEIVE_DATA + RECEIVE_STATUS);
 		usc_DisableInterrupts(info, RECEIVE_DATA + RECEIVE_STATUS);
+=======
+		usc_ClearIrqPendingBits(info, RECEIVE_DATA | RECEIVE_STATUS);
+		usc_DisableInterrupts(info, RECEIVE_DATA | RECEIVE_STATUS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* schedule BH handler to restart receiver */
 		info->pending_bh |= BH_RECEIVE;
@@ -1595,7 +1655,11 @@ static void mgsl_isr_receive_dma( struct mgsl_struct *info )
 	u16 status;
 	
 	/* clear interrupt pending and IUS bit for Rx DMA IRQ */
+<<<<<<< HEAD
 	usc_OutDmaReg( info, CDIR, BIT9+BIT1 );
+=======
+	usc_OutDmaReg( info, CDIR, BIT9 | BIT1 );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Read the receive DMA status to identify interrupt type. */
 	/* This also clears the status bits. */
@@ -1639,7 +1703,11 @@ static void mgsl_isr_transmit_dma( struct mgsl_struct *info )
 	u16 status;
 
 	/* clear interrupt pending and IUS bit for Tx DMA IRQ */
+<<<<<<< HEAD
 	usc_OutDmaReg(info, CDIR, BIT8+BIT0 );
+=======
+	usc_OutDmaReg(info, CDIR, BIT8 | BIT0 );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Read the transmit DMA status to identify interrupt type. */
 	/* This also clears the status bits. */
@@ -1749,6 +1817,7 @@ static irqreturn_t mgsl_interrupt(int dummy, void *dev_id)
 static int startup(struct mgsl_struct * info)
 {
 	int retval = 0;
+<<<<<<< HEAD
 	
 	if ( debug_level >= DEBUG_LEVEL_INFO )
 		printk("%s(%d):mgsl_startup(%s)\n",__FILE__,__LINE__,info->device_name);
@@ -1756,6 +1825,15 @@ static int startup(struct mgsl_struct * info)
 	if (info->port.flags & ASYNC_INITIALIZED)
 		return 0;
 	
+=======
+
+	if ( debug_level >= DEBUG_LEVEL_INFO )
+		printk("%s(%d):mgsl_startup(%s)\n",__FILE__,__LINE__,info->device_name);
+
+	if (tty_port_initialized(&info->port))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!info->xmit_buf) {
 		/* allocate a page of memory for a transmit buffer */
 		info->xmit_buf = (unsigned char *)get_zeroed_page(GFP_KERNEL);
@@ -1788,6 +1866,7 @@ static int startup(struct mgsl_struct * info)
 
 	/* program hardware for current parameters */
 	mgsl_change_params(info);
+<<<<<<< HEAD
 	
 	if (info->port.tty)
 		clear_bit(TTY_IO_ERROR, &info->port.tty->flags);
@@ -1796,6 +1875,15 @@ static int startup(struct mgsl_struct * info)
 	
 	return 0;
 	
+=======
+
+	if (info->port.tty)
+		clear_bit(TTY_IO_ERROR, &info->port.tty->flags);
+
+	tty_port_set_initialized(&info->port, 1);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }	/* end of startup() */
 
 /* shutdown()
@@ -1808,8 +1896,13 @@ static int startup(struct mgsl_struct * info)
 static void shutdown(struct mgsl_struct * info)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	
 	if (!(info->port.flags & ASYNC_INITIALIZED))
+=======
+
+	if (!tty_port_initialized(&info->port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	if (debug_level >= DEBUG_LEVEL_INFO)
@@ -1832,8 +1925,13 @@ static void shutdown(struct mgsl_struct * info)
 	usc_DisableMasterIrqBit(info);
 	usc_stop_receiver(info);
 	usc_stop_transmitter(info);
+<<<<<<< HEAD
 	usc_DisableInterrupts(info,RECEIVE_DATA + RECEIVE_STATUS +
 		TRANSMIT_DATA + TRANSMIT_STATUS + IO_PIN + MISC );
+=======
+	usc_DisableInterrupts(info,RECEIVE_DATA | RECEIVE_STATUS |
+		TRANSMIT_DATA | TRANSMIT_STATUS | IO_PIN | MISC );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usc_DisableDmaInterrupts(info,DICR_MASTER + DICR_TRANSMIT + DICR_RECEIVE);
 
 	/* Disable DMAEN (Port 7, Bit 14) */
@@ -1853,6 +1951,7 @@ static void shutdown(struct mgsl_struct * info)
 
 	spin_unlock_irqrestore(&info->irq_spinlock,flags);
 
+<<<<<<< HEAD
 	mgsl_release_resources(info);	
 	
 	if (info->port.tty)
@@ -1860,6 +1959,14 @@ static void shutdown(struct mgsl_struct * info)
 
 	info->port.flags &= ~ASYNC_INITIALIZED;
 	
+=======
+	mgsl_release_resources(info);
+
+	if (info->port.tty)
+		set_bit(TTY_IO_ERROR, &info->port.tty->flags);
+
+	tty_port_set_initialized(&info->port, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }	/* end of shutdown() */
 
 static void mgsl_program_hw(struct mgsl_struct *info)
@@ -1886,7 +1993,11 @@ static void mgsl_program_hw(struct mgsl_struct *info)
 	info->ri_chkcount = 0;
 	info->dsr_chkcount = 0;
 
+<<<<<<< HEAD
 	usc_EnableStatusIrqs(info,SICR_CTS+SICR_DSR+SICR_DCD+SICR_RI);		
+=======
+	usc_EnableStatusIrqs(info,SICR_CTS+SICR_DSR+SICR_DCD+SICR_RI);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	usc_EnableInterrupts(info, IO_PIN);
 	usc_get_serial_signals(info);
 		
@@ -1966,6 +2077,7 @@ static void mgsl_change_params(struct mgsl_struct *info)
 	}
 	info->timeout += HZ/50;		/* Add .02 seconds of slop */
 
+<<<<<<< HEAD
 	if (cflag & CRTSCTS)
 		info->port.flags |= ASYNC_CTS_FLOW;
 	else
@@ -1975,6 +2087,10 @@ static void mgsl_change_params(struct mgsl_struct *info)
 		info->port.flags &= ~ASYNC_CHECK_CD;
 	else
 		info->port.flags |= ASYNC_CHECK_CD;
+=======
+	tty_port_set_cts_flow(&info->port, cflag & CRTSCTS);
+	tty_port_set_check_carrier(&info->port, ~cflag & CLOCAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* process tty input control flags */
 	
@@ -2363,7 +2479,11 @@ static void mgsl_throttle(struct tty_struct * tty)
 	if (I_IXOFF(tty))
 		mgsl_send_xchar(tty, STOP_CHAR(tty));
 
+<<<<<<< HEAD
 	if (tty->termios.c_cflag & CRTSCTS) {
+=======
+	if (C_CRTSCTS(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_irqsave(&info->irq_spinlock,flags);
 		info->serial_signals &= ~SerialSignal_RTS;
 	 	usc_set_serial_signals(info);
@@ -2397,7 +2517,11 @@ static void mgsl_unthrottle(struct tty_struct * tty)
 			mgsl_send_xchar(tty, START_CHAR(tty));
 	}
 
+<<<<<<< HEAD
 	if (tty->termios.c_cflag & CRTSCTS) {
+=======
+	if (C_CRTSCTS(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_irqsave(&info->irq_spinlock,flags);
 		info->serial_signals |= SerialSignal_RTS;
 	 	usc_set_serial_signals(info);
@@ -2773,7 +2897,11 @@ static int mgsl_wait_event(struct mgsl_struct * info, int __user * mask_ptr)
 		if (!waitqueue_active(&info->event_wait_q)) {
 			/* disable enable exit hunt mode/idle rcvd IRQs */
 			usc_OutReg(info, RICR, usc_InReg(info,RICR) &
+<<<<<<< HEAD
 				~(RXSTATUS_EXITED_HUNT + RXSTATUS_IDLE_RECEIVED));
+=======
+				~(RXSTATUS_EXITED_HUNT | RXSTATUS_IDLE_RECEIVED));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		spin_unlock_irqrestore(&info->irq_spinlock,flags);
 	}
@@ -2972,7 +3100,11 @@ static int mgsl_ioctl(struct tty_struct *tty,
 
 	if ((cmd != TIOCGSERIAL) && (cmd != TIOCSSERIAL) &&
 	    (cmd != TIOCMIWAIT)) {
+<<<<<<< HEAD
 		if (tty->flags & (1 << TTY_IO_ERROR))
+=======
+		if (tty_io_error(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    return -EIO;
 	}
 
@@ -3039,13 +3171,18 @@ static void mgsl_set_termios(struct tty_struct *tty, struct ktermios *old_termio
 	mgsl_change_params(info);
 
 	/* Handle transition to B0 status */
+<<<<<<< HEAD
 	if (old_termios->c_cflag & CBAUD &&
 	    !(tty->termios.c_cflag & CBAUD)) {
+=======
+	if ((old_termios->c_cflag & CBAUD) && !C_BAUD(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		info->serial_signals &= ~(SerialSignal_RTS | SerialSignal_DTR);
 		spin_lock_irqsave(&info->irq_spinlock,flags);
 	 	usc_set_serial_signals(info);
 		spin_unlock_irqrestore(&info->irq_spinlock,flags);
 	}
+<<<<<<< HEAD
 	
 	/* Handle transition away from B0 status */
 	if (!(old_termios->c_cflag & CBAUD) &&
@@ -3055,14 +3192,28 @@ static void mgsl_set_termios(struct tty_struct *tty, struct ktermios *old_termio
  		    !test_bit(TTY_THROTTLED, &tty->flags)) {
 			info->serial_signals |= SerialSignal_RTS;
  		}
+=======
+
+	/* Handle transition away from B0 status */
+	if (!(old_termios->c_cflag & CBAUD) && C_BAUD(tty)) {
+		info->serial_signals |= SerialSignal_DTR;
+		if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+			info->serial_signals |= SerialSignal_RTS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_irqsave(&info->irq_spinlock,flags);
 	 	usc_set_serial_signals(info);
 		spin_unlock_irqrestore(&info->irq_spinlock,flags);
 	}
+<<<<<<< HEAD
 	
 	/* Handle turning off CRTSCTS */
 	if (old_termios->c_cflag & CRTSCTS &&
 	    !(tty->termios.c_cflag & CRTSCTS)) {
+=======
+
+	/* Handle turning off CRTSCTS */
+	if (old_termios->c_cflag & CRTSCTS && !C_CRTSCTS(tty)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tty->hw_stopped = 0;
 		mgsl_start(tty);
 	}
@@ -3092,11 +3243,19 @@ static void mgsl_close(struct tty_struct *tty, struct file * filp)
 		printk("%s(%d):mgsl_close(%s) entry, count=%d\n",
 			 __FILE__,__LINE__, info->device_name, info->port.count);
 
+<<<<<<< HEAD
 	if (tty_port_close_start(&info->port, tty, filp) == 0)			 
 		goto cleanup;
 
 	mutex_lock(&info->port.mutex);
  	if (info->port.flags & ASYNC_INITIALIZED)
+=======
+	if (tty_port_close_start(&info->port, tty, filp) == 0)
+		goto cleanup;
+
+	mutex_lock(&info->port.mutex);
+	if (tty_port_initialized(&info->port))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  		mgsl_wait_until_sent(tty, info->timeout);
 	mgsl_flush_buffer(tty);
 	tty_ldisc_flush(tty);
@@ -3134,6 +3293,7 @@ static void mgsl_wait_until_sent(struct tty_struct *tty, int timeout)
 	if (debug_level >= DEBUG_LEVEL_INFO)
 		printk("%s(%d):mgsl_wait_until_sent(%s) entry\n",
 			 __FILE__,__LINE__, info->device_name );
+<<<<<<< HEAD
       
 	if (mgsl_paranoia_check(info, tty->name, "mgsl_wait_until_sent"))
 		return;
@@ -3143,6 +3303,17 @@ static void mgsl_wait_until_sent(struct tty_struct *tty, int timeout)
 	 
 	orig_jiffies = jiffies;
       
+=======
+
+	if (mgsl_paranoia_check(info, tty->name, "mgsl_wait_until_sent"))
+		return;
+
+	if (!tty_port_initialized(&info->port))
+		goto exit;
+
+	orig_jiffies = jiffies;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set check interval to 1/5 of estimated time to
 	 * send a character, and make it at least 1. The check
 	 * interval should also be less than the timeout.
@@ -3209,7 +3380,11 @@ static void mgsl_hangup(struct tty_struct *tty)
 	shutdown(info);
 	
 	info->port.count = 0;	
+<<<<<<< HEAD
 	info->port.flags &= ~ASYNC_NORMAL_ACTIVE;
+=======
+	tty_port_set_active(&info->port, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->port.tty = NULL;
 
 	wake_up_interruptible(&info->port.open_wait);
@@ -3267,7 +3442,10 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 	DECLARE_WAITQUEUE(wait, current);
 	int		retval;
 	bool		do_clocal = false;
+<<<<<<< HEAD
 	bool		extra_count = false;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	flags;
 	int		dcd;
 	struct tty_port *port = &info->port;
@@ -3276,6 +3454,7 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 		printk("%s(%d):block_til_ready on %s\n",
 			 __FILE__,__LINE__, tty->driver->name );
 
+<<<<<<< HEAD
 	if (filp->f_flags & O_NONBLOCK || tty->flags & (1 << TTY_IO_ERROR)){
 		/* nonblock mode is set or port is not enabled */
 		port->flags |= ASYNC_NORMAL_ACTIVE;
@@ -3283,6 +3462,15 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 	}
 
 	if (tty->termios.c_cflag & CLOCAL)
+=======
+	if (filp->f_flags & O_NONBLOCK || tty_io_error(tty)) {
+		/* nonblock mode is set or port is not enabled */
+		tty_port_set_active(port, 1);
+		return 0;
+	}
+
+	if (C_CLOCAL(tty))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		do_clocal = true;
 
 	/* Wait for carrier detect and the line to become
@@ -3300,6 +3488,7 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 			 __FILE__,__LINE__, tty->driver->name, port->count );
 
 	spin_lock_irqsave(&info->irq_spinlock, flags);
+<<<<<<< HEAD
 	if (!tty_hung_up_p(filp)) {
 		extra_count = true;
 		port->count--;
@@ -3314,16 +3503,37 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 		set_current_state(TASK_INTERRUPTIBLE);
 		
 		if (tty_hung_up_p(filp) || !(port->flags & ASYNC_INITIALIZED)){
+=======
+	port->count--;
+	spin_unlock_irqrestore(&info->irq_spinlock, flags);
+	port->blocked_open++;
+
+	while (1) {
+		if (C_BAUD(tty) && tty_port_initialized(port))
+			tty_port_raise_dtr_rts(port);
+
+		set_current_state(TASK_INTERRUPTIBLE);
+
+		if (tty_hung_up_p(filp) || !tty_port_initialized(port)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			retval = (port->flags & ASYNC_HUP_NOTIFY) ?
 					-EAGAIN : -ERESTARTSYS;
 			break;
 		}
+<<<<<<< HEAD
 		
 		dcd = tty_port_carrier_raised(&info->port);
 		
  		if (!(port->flags & ASYNC_CLOSING) && (do_clocal || dcd))
  			break;
 			
+=======
+
+		dcd = tty_port_carrier_raised(&info->port);
+		if (do_clocal || dcd)
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (signal_pending(current)) {
 			retval = -ERESTARTSYS;
 			break;
@@ -3342,7 +3552,11 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 	remove_wait_queue(&port->open_wait, &wait);
 	
 	/* FIXME: Racy on hangup during close wait */
+<<<<<<< HEAD
 	if (extra_count)
+=======
+	if (!tty_hung_up_p(filp))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		port->count++;
 	port->blocked_open--;
 	
@@ -3351,7 +3565,11 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 			 __FILE__,__LINE__, tty->driver->name, port->count );
 			 
 	if (!retval)
+<<<<<<< HEAD
 		port->flags |= ASYNC_NORMAL_ACTIVE;
+=======
+		tty_port_set_active(port, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		
 	return retval;
 	
@@ -3402,6 +3620,7 @@ static int mgsl_open(struct tty_struct *tty, struct file * filp)
 		printk("%s(%d):mgsl_open(%s), old ref count = %d\n",
 			 __FILE__,__LINE__,tty->driver->name, info->port.count);
 
+<<<<<<< HEAD
 	/* If port is closing, signal caller to try again */
 	if (tty_hung_up_p(filp) || info->port.flags & ASYNC_CLOSING){
 		if (info->port.flags & ASYNC_CLOSING)
@@ -3411,6 +3630,8 @@ static int mgsl_open(struct tty_struct *tty, struct file * filp)
 		goto cleanup;
 	}
 	
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->port.low_latency = (info->port.flags & ASYNC_LOW_LATENCY) ? 1 : 0;
 
 	spin_lock_irqsave(&info->netlock, flags);
@@ -4297,7 +4518,11 @@ static struct mgsl_struct* mgsl_allocate_device(void)
 		spin_lock_init(&info->irq_spinlock);
 		spin_lock_init(&info->netlock);
 		memcpy(&info->params,&default_params,sizeof(MGSL_PARAMS));
+<<<<<<< HEAD
 		info->idle_mode = HDLC_TXIDLE_FLAGS;		
+=======
+		info->idle_mode = HDLC_TXIDLE_FLAGS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		info->num_tx_dma_buffers = 1;
 		info->num_tx_holding_buffers = 0;
 	}
@@ -4414,7 +4639,12 @@ static void synclink_cleanup(void)
 	printk("Unloading %s: %s\n", driver_name, driver_version);
 
 	if (serial_driver) {
+<<<<<<< HEAD
 		if ((rc = tty_unregister_driver(serial_driver)))
+=======
+		rc = tty_unregister_driver(serial_driver);
+		if (rc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			printk("%s(%d) failed to unregister tty driver err=%d\n",
 			       __FILE__,__LINE__,rc);
 		put_tty_driver(serial_driver);
@@ -4722,7 +4952,11 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 		else if ( info->params.flags & HDLC_FLAG_UNDERRUN_FLAG )
 			RegValue |= BIT15;
 		else if ( info->params.flags & HDLC_FLAG_UNDERRUN_CRC )
+<<<<<<< HEAD
 			RegValue |= BIT15 + BIT14;
+=======
+			RegValue |= BIT15 | BIT14;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		if ( info->params.preamble != HDLC_PREAMBLE_PATTERN_NONE )
@@ -4763,11 +4997,19 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 	switch ( info->params.encoding ) {
 	case HDLC_ENCODING_NRZB:               RegValue |= BIT13; break;
 	case HDLC_ENCODING_NRZI_MARK:          RegValue |= BIT14; break;
+<<<<<<< HEAD
 	case HDLC_ENCODING_NRZI_SPACE:	       RegValue |= BIT14 + BIT13; break;
 	case HDLC_ENCODING_BIPHASE_MARK:       RegValue |= BIT15; break;
 	case HDLC_ENCODING_BIPHASE_SPACE:      RegValue |= BIT15 + BIT13; break;
 	case HDLC_ENCODING_BIPHASE_LEVEL:      RegValue |= BIT15 + BIT14; break;
 	case HDLC_ENCODING_DIFF_BIPHASE_LEVEL: RegValue |= BIT15 + BIT14 + BIT13; break;
+=======
+	case HDLC_ENCODING_NRZI_SPACE:	       RegValue |= BIT14 | BIT13; break;
+	case HDLC_ENCODING_BIPHASE_MARK:       RegValue |= BIT15; break;
+	case HDLC_ENCODING_BIPHASE_SPACE:      RegValue |= BIT15 | BIT13; break;
+	case HDLC_ENCODING_BIPHASE_LEVEL:      RegValue |= BIT15 | BIT14; break;
+	case HDLC_ENCODING_DIFF_BIPHASE_LEVEL: RegValue |= BIT15 | BIT14 | BIT13; break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if ( (info->params.crc_type & HDLC_CRC_MASK) == HDLC_CRC_16_CCITT )
@@ -4838,6 +5080,7 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 	switch ( info->params.encoding ) {
 	case HDLC_ENCODING_NRZB:               RegValue |= BIT13; break;
 	case HDLC_ENCODING_NRZI_MARK:          RegValue |= BIT14; break;
+<<<<<<< HEAD
 	case HDLC_ENCODING_NRZI_SPACE:         RegValue |= BIT14 + BIT13; break;
 	case HDLC_ENCODING_BIPHASE_MARK:       RegValue |= BIT15; break;
 	case HDLC_ENCODING_BIPHASE_SPACE:      RegValue |= BIT15 + BIT13; break;
@@ -4847,6 +5090,17 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 
 	if ( (info->params.crc_type & HDLC_CRC_MASK) == HDLC_CRC_16_CCITT )
 		RegValue |= BIT9 + BIT8;
+=======
+	case HDLC_ENCODING_NRZI_SPACE:         RegValue |= BIT14 | BIT13; break;
+	case HDLC_ENCODING_BIPHASE_MARK:       RegValue |= BIT15; break;
+	case HDLC_ENCODING_BIPHASE_SPACE:      RegValue |= BIT15 | BIT13; break;
+	case HDLC_ENCODING_BIPHASE_LEVEL:      RegValue |= BIT15 | BIT14; break;
+	case HDLC_ENCODING_DIFF_BIPHASE_LEVEL: RegValue |= BIT15 | BIT14 | BIT13; break;
+	}
+
+	if ( (info->params.crc_type & HDLC_CRC_MASK) == HDLC_CRC_16_CCITT )
+		RegValue |= BIT9 | BIT8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if ( (info->params.crc_type & HDLC_CRC_MASK) == HDLC_CRC_32_CCITT )
 		RegValue |= ( BIT12 | BIT10 | BIT9 | BIT8);
 
@@ -4957,7 +5211,11 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 
 	RegValue = 0x0000;
 
+<<<<<<< HEAD
 	if ( info->params.flags & (HDLC_FLAG_RXC_DPLL + HDLC_FLAG_TXC_DPLL) ) {
+=======
+	if ( info->params.flags & (HDLC_FLAG_RXC_DPLL | HDLC_FLAG_TXC_DPLL) ) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u32 XtalSpeed;
 		u32 DpllDivisor;
 		u16 Tc;
@@ -5019,7 +5277,11 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 		case HDLC_ENCODING_BIPHASE_MARK:
 		case HDLC_ENCODING_BIPHASE_SPACE: RegValue |= BIT9; break;
 		case HDLC_ENCODING_BIPHASE_LEVEL:
+<<<<<<< HEAD
 		case HDLC_ENCODING_DIFF_BIPHASE_LEVEL: RegValue |= BIT9 + BIT8; break;
+=======
+		case HDLC_ENCODING_DIFF_BIPHASE_LEVEL: RegValue |= BIT9 | BIT8; break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -5056,8 +5318,13 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 	/* enable Master Interrupt Enable bit (MIE) */
 	usc_EnableMasterIrqBit( info );
 
+<<<<<<< HEAD
 	usc_ClearIrqPendingBits( info, RECEIVE_STATUS + RECEIVE_DATA +
 				TRANSMIT_STATUS + TRANSMIT_DATA + MISC);
+=======
+	usc_ClearIrqPendingBits( info, RECEIVE_STATUS | RECEIVE_DATA |
+				TRANSMIT_STATUS | TRANSMIT_DATA | MISC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* arm RCC underflow interrupt */
 	usc_OutReg(info, SICR, (u16)(usc_InReg(info,SICR) | BIT3));
@@ -5175,6 +5442,7 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 	switch ( info->params.preamble_length ) {
 	case HDLC_PREAMBLE_LENGTH_16BITS: RegValue |= BIT10; break;
 	case HDLC_PREAMBLE_LENGTH_32BITS: RegValue |= BIT11; break;
+<<<<<<< HEAD
 	case HDLC_PREAMBLE_LENGTH_64BITS: RegValue |= BIT11 + BIT10; break;
 	}
 
@@ -5183,6 +5451,16 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 	case HDLC_PREAMBLE_PATTERN_ONES:  RegValue |= BIT8; break;
 	case HDLC_PREAMBLE_PATTERN_10:    RegValue |= BIT9; break;
 	case HDLC_PREAMBLE_PATTERN_01:    RegValue |= BIT9 + BIT8; break;
+=======
+	case HDLC_PREAMBLE_LENGTH_64BITS: RegValue |= BIT11 | BIT10; break;
+	}
+
+	switch ( info->params.preamble ) {
+	case HDLC_PREAMBLE_PATTERN_FLAGS: RegValue |= BIT8 | BIT12; break;
+	case HDLC_PREAMBLE_PATTERN_ONES:  RegValue |= BIT8; break;
+	case HDLC_PREAMBLE_PATTERN_10:    RegValue |= BIT9; break;
+	case HDLC_PREAMBLE_PATTERN_01:    RegValue |= BIT9 | BIT8; break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	usc_OutReg( info, CCR, RegValue );
@@ -5221,7 +5499,11 @@ static void usc_enable_loopback(struct mgsl_struct *info, int enable)
 {
 	if (enable) {
 		/* blank external TXD output */
+<<<<<<< HEAD
 		usc_OutReg(info,IOCR,usc_InReg(info,IOCR) | (BIT7+BIT6));
+=======
+		usc_OutReg(info,IOCR,usc_InReg(info,IOCR) | (BIT7 | BIT6));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 		/* Clock mode Control Register (CMCR)
 		 *
@@ -5260,7 +5542,11 @@ static void usc_enable_loopback(struct mgsl_struct *info, int enable)
 		outw( 0x0300, info->io_base + CCAR );
 	} else {
 		/* enable external TXD output */
+<<<<<<< HEAD
 		usc_OutReg(info,IOCR,usc_InReg(info,IOCR) & ~(BIT7+BIT6));
+=======
+		usc_OutReg(info,IOCR,usc_InReg(info,IOCR) & ~(BIT7 | BIT6));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	
 		/* clear Internal Data loopback mode */
 		info->loopback_bits = 0;
@@ -5447,13 +5733,21 @@ static void usc_process_rxoverrun_sync( struct mgsl_struct *info )
 		usc_OutDmaReg( info, NRARU, (u16)(phys_addr >> 16) );
 
 		usc_UnlatchRxstatusBits( info, RXSTATUS_ALL );
+<<<<<<< HEAD
 		usc_ClearIrqPendingBits( info, RECEIVE_DATA + RECEIVE_STATUS );
+=======
+		usc_ClearIrqPendingBits( info, RECEIVE_DATA | RECEIVE_STATUS );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usc_EnableInterrupts( info, RECEIVE_STATUS );
 
 		/* 1. Arm End of Buffer (EOB) Receive DMA Interrupt (BIT2 of RDIAR) */
 		/* 2. Enable Receive DMA Interrupts (BIT1 of DICR) */
 
+<<<<<<< HEAD
 		usc_OutDmaReg( info, RDIAR, BIT3 + BIT2 );
+=======
+		usc_OutDmaReg( info, RDIAR, BIT3 | BIT2 );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usc_OutDmaReg( info, DICR, (u16)(usc_InDmaReg(info,DICR) | BIT1) );
 		usc_DmaCmd( info, DmaCmd_InitRxChannel );
 		if ( info->params.flags & HDLC_FLAG_AUTO_DCD )
@@ -5488,8 +5782,13 @@ static void usc_stop_receiver( struct mgsl_struct *info )
 	usc_DmaCmd( info, DmaCmd_ResetRxChannel );
 
 	usc_UnlatchRxstatusBits( info, RXSTATUS_ALL );
+<<<<<<< HEAD
 	usc_ClearIrqPendingBits( info, RECEIVE_DATA + RECEIVE_STATUS );
 	usc_DisableInterrupts( info, RECEIVE_DATA + RECEIVE_STATUS );
+=======
+	usc_ClearIrqPendingBits( info, RECEIVE_DATA | RECEIVE_STATUS );
+	usc_DisableInterrupts( info, RECEIVE_DATA | RECEIVE_STATUS );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usc_EnableReceiver(info,DISABLE_UNCONDITIONAL);
 
@@ -5536,13 +5835,21 @@ static void usc_start_receiver( struct mgsl_struct *info )
 		usc_OutDmaReg( info, NRARU, (u16)(phys_addr >> 16) );
 
 		usc_UnlatchRxstatusBits( info, RXSTATUS_ALL );
+<<<<<<< HEAD
 		usc_ClearIrqPendingBits( info, RECEIVE_DATA + RECEIVE_STATUS );
+=======
+		usc_ClearIrqPendingBits( info, RECEIVE_DATA | RECEIVE_STATUS );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usc_EnableInterrupts( info, RECEIVE_STATUS );
 
 		/* 1. Arm End of Buffer (EOB) Receive DMA Interrupt (BIT2 of RDIAR) */
 		/* 2. Enable Receive DMA Interrupts (BIT1 of DICR) */
 
+<<<<<<< HEAD
 		usc_OutDmaReg( info, RDIAR, BIT3 + BIT2 );
+=======
+		usc_OutDmaReg( info, RDIAR, BIT3 | BIT2 );
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usc_OutDmaReg( info, DICR, (u16)(usc_InDmaReg(info,DICR) | BIT1) );
 		usc_DmaCmd( info, DmaCmd_InitRxChannel );
 		if ( info->params.flags & HDLC_FLAG_AUTO_DCD )
@@ -5551,7 +5858,11 @@ static void usc_start_receiver( struct mgsl_struct *info )
 			usc_EnableReceiver(info,ENABLE_UNCONDITIONAL);
 	} else {
 		usc_UnlatchRxstatusBits(info, RXSTATUS_ALL);
+<<<<<<< HEAD
 		usc_ClearIrqPendingBits(info, RECEIVE_DATA + RECEIVE_STATUS);
+=======
+		usc_ClearIrqPendingBits(info, RECEIVE_DATA | RECEIVE_STATUS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usc_EnableInterrupts(info, RECEIVE_DATA);
 
 		usc_RTCmd( info, RTCmd_PurgeRxFifo );
@@ -5925,7 +6236,11 @@ static void usc_set_async_mode( struct mgsl_struct *info )
 	RegValue = 0;
 
 	if ( info->params.data_bits != 8 )
+<<<<<<< HEAD
 		RegValue |= BIT4+BIT3+BIT2;
+=======
+		RegValue |= BIT4 | BIT3 | BIT2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ( info->params.parity != ASYNC_PARITY_NONE ) {
 		RegValue |= BIT5;
@@ -5982,7 +6297,11 @@ static void usc_set_async_mode( struct mgsl_struct *info )
 	RegValue = 0;
 
 	if ( info->params.data_bits != 8 )
+<<<<<<< HEAD
 		RegValue |= BIT4+BIT3+BIT2;
+=======
+		RegValue |= BIT4 | BIT3 | BIT2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ( info->params.parity != ASYNC_PARITY_NONE ) {
 		RegValue |= BIT5;
@@ -6129,7 +6448,11 @@ static void usc_loopback_frame( struct mgsl_struct *info )
 							
 	/* WAIT FOR RECEIVE COMPLETE */
 	for (i=0 ; i<1000 ; i++)
+<<<<<<< HEAD
 		if (usc_InReg( info, RCSR ) & (BIT8 + BIT4 + BIT3 + BIT1))
+=======
+		if (usc_InReg( info, RCSR ) & (BIT8 | BIT4 | BIT3 | BIT1))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 	/* clear Internal Data loopback mode */
@@ -6579,8 +6902,13 @@ static bool mgsl_get_rx_frame(struct mgsl_struct *info)
 	
 	status = info->rx_buffer_list[EndIndex].status;
 
+<<<<<<< HEAD
 	if ( status & (RXSTATUS_SHORT_FRAME + RXSTATUS_OVERRUN +
 			RXSTATUS_CRC_ERROR + RXSTATUS_ABORT) ) {
+=======
+	if ( status & (RXSTATUS_SHORT_FRAME | RXSTATUS_OVERRUN |
+			RXSTATUS_CRC_ERROR | RXSTATUS_ABORT) ) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if ( status & RXSTATUS_SHORT_FRAME )
 			info->icount.rxshort++;
 		else if ( status & RXSTATUS_ABORT )
@@ -6638,7 +6966,11 @@ static bool mgsl_get_rx_frame(struct mgsl_struct *info)
 			unsigned char *ptmp = info->intermediate_rxbuffer;
 
 			if ( !(status & RXSTATUS_CRC_ERROR))
+<<<<<<< HEAD
 			info->icount.rxok++;
+=======
+				info->icount.rxok++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			
 			while(copy_count) {
 				int partial_count;
@@ -6762,8 +7094,13 @@ static bool mgsl_get_raw_rx_frame(struct mgsl_struct *info)
 
 		status = info->rx_buffer_list[CurrentIndex].status;
 
+<<<<<<< HEAD
 		if ( status & (RXSTATUS_SHORT_FRAME + RXSTATUS_OVERRUN +
 				RXSTATUS_CRC_ERROR + RXSTATUS_ABORT) ) {
+=======
+		if ( status & (RXSTATUS_SHORT_FRAME | RXSTATUS_OVERRUN |
+				RXSTATUS_CRC_ERROR | RXSTATUS_ABORT) ) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if ( status & RXSTATUS_SHORT_FRAME )
 				info->icount.rxshort++;
 			else if ( status & RXSTATUS_ABORT )
@@ -6899,7 +7236,11 @@ static void mgsl_load_tx_dma_buffer(struct mgsl_struct *info,
 		/* set CMR:13 to start transmit when
 		 * next GoAhead (abort) is received
 		 */
+<<<<<<< HEAD
 	 	info->cmr_value |= BIT13;			  
+=======
+	 	info->cmr_value |= BIT13;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 		
 	/* begin loading the frame in the next available tx dma
@@ -7278,7 +7619,11 @@ static bool mgsl_dma_test( struct mgsl_struct *info )
 		
 		spin_unlock_irqrestore(&info->irq_spinlock,flags);
 
+<<<<<<< HEAD
 						
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/******************************/
 		/* WAIT FOR TRANSMIT COMPLETE */
 		/******************************/
@@ -7292,7 +7637,11 @@ static bool mgsl_dma_test( struct mgsl_struct *info )
 		status = usc_InReg( info, TCSR );
 		spin_unlock_irqrestore(&info->irq_spinlock,flags);
 
+<<<<<<< HEAD
 		while ( !(status & (BIT6+BIT5+BIT4+BIT2+BIT1)) ) {
+=======
+		while ( !(status & (BIT6 | BIT5 | BIT4 | BIT2 | BIT1)) ) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (time_after(jiffies, EndTime)) {
 				rc = false;
 				break;
@@ -7307,7 +7656,11 @@ static bool mgsl_dma_test( struct mgsl_struct *info )
 
 	if ( rc ){
 		/* CHECK FOR TRANSMIT ERRORS */
+<<<<<<< HEAD
 		if ( status & (BIT5 + BIT1) ) 
+=======
+		if ( status & (BIT5 | BIT1) )
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			rc = false;
 	}
 
@@ -7333,7 +7686,11 @@ static bool mgsl_dma_test( struct mgsl_struct *info )
 		/* CHECK FOR RECEIVE ERRORS */
 		status = info->rx_buffer_list[0].status;
 
+<<<<<<< HEAD
 		if ( status & (BIT8 + BIT3 + BIT1) ) {
+=======
+		if ( status & (BIT8 | BIT3 | BIT1) ) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* receive error has occurred */
 			rc = false;
 		} else {
@@ -7605,7 +7962,11 @@ static void usc_loopmode_send_done( struct mgsl_struct * info )
 {
  	info->loopmode_send_done_requested = false;
  	/* clear CMR:13 to 0 to start echoing RxData to TxData */
+<<<<<<< HEAD
  	info->cmr_value &= ~BIT13;			  
+=======
+ 	info->cmr_value &= ~BIT13;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  	usc_OutReg(info, CMR, info->cmr_value);
 }
 
@@ -7726,7 +8087,11 @@ static netdev_tx_t hdlcdev_xmit(struct sk_buff *skb,
 	dev_kfree_skb(skb);
 
 	/* save start time for transmit timeout detection */
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* start hardware transmitter if necessary */
 	spin_lock_irqsave(&info->irq_spinlock,flags);
@@ -7755,7 +8120,12 @@ static int hdlcdev_open(struct net_device *dev)
 		printk("%s:hdlcdev_open(%s)\n",__FILE__,dev->name);
 
 	/* generic HDLC layer open processing */
+<<<<<<< HEAD
 	if ((rc = hdlc_open(dev)))
+=======
+	rc = hdlc_open(dev);
+	if (rc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return rc;
 
 	/* arbitrate between network and tty opens */
@@ -7781,7 +8151,11 @@ static int hdlcdev_open(struct net_device *dev)
 	mgsl_program_hw(info);
 
 	/* enable network layer transmit */
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	netif_start_queue(dev);
 
 	/* inform generic HDLC layer of current DCD status */
@@ -7866,6 +8240,10 @@ static int hdlcdev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 					      HDLC_FLAG_TXC_TXCPIN | HDLC_FLAG_TXC_DPLL |
 					      HDLC_FLAG_TXC_BRG    | HDLC_FLAG_TXC_RXCPIN);
 
+<<<<<<< HEAD
+=======
+		memset(&new_line, 0, sizeof(new_line));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (flags){
 		case (HDLC_FLAG_RXC_RXCPIN | HDLC_FLAG_TXC_TXCPIN): new_line.clock_type = CLOCK_EXT; break;
 		case (HDLC_FLAG_RXC_BRG    | HDLC_FLAG_TXC_BRG):    new_line.clock_type = CLOCK_INT; break;
@@ -8021,7 +8399,12 @@ static int hdlcdev_init(struct mgsl_struct *info)
 
 	/* allocate and initialize network and HDLC layer objects */
 
+<<<<<<< HEAD
 	if (!(dev = alloc_hdlcdev(info))) {
+=======
+	dev = alloc_hdlcdev(info);
+	if (!dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "%s:hdlc device allocation failure\n",__FILE__);
 		return -ENOMEM;
 	}
@@ -8042,7 +8425,12 @@ static int hdlcdev_init(struct mgsl_struct *info)
 	hdlc->xmit   = hdlcdev_xmit;
 
 	/* register objects with HDLC layer */
+<<<<<<< HEAD
 	if ((rc = register_hdlc_device(dev))) {
+=======
+	rc = register_hdlc_device(dev);
+	if (rc) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_WARNING "%s:unable to register hdlc device\n",__FILE__);
 		free_netdev(dev);
 		return rc;
@@ -8078,7 +8466,12 @@ static int synclink_init_one (struct pci_dev *dev,
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	if (!(info = mgsl_allocate_device())) {
+=======
+	info = mgsl_allocate_device();
+	if (!info) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk("can't allocate device instance data.\n");
 		return -EIO;
 	}

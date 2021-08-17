@@ -38,6 +38,7 @@
 #define MSP_ETHERNET_GPIO1	15
 #define MSP_ETHERNET_GPIO2	16
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_TSMAC
 #define MSP_TSMAC_SIZE	0x10020
 #define MSP_TSMAC_ID	"pmc_tsmac"
@@ -105,6 +106,8 @@ static struct platform_device tsmac_device[] = {
 
 #else
 /* If it is not TSMAC assume MSP_ETH (100Mbps) */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MSP_ETH_ID	"pmc_mspeth"
 #define MSP_ETH_SIZE	0xE0
 static struct resource msp_eth0_resources[] = {
@@ -152,7 +155,10 @@ static struct platform_device mspeth_device[] = {
 };
 #define msp_eth_devs	mspeth_device
 
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int __init msp_eth_setup(void)
 {
 	int i, ret = 0;
@@ -161,6 +167,7 @@ int __init msp_eth_setup(void)
 	msp_gpio_pin_mode(MSP_GPIO_OUTPUT, MSP_ETHERNET_GPIO0);
 	msp_gpio_pin_hi(MSP_ETHERNET_GPIO0);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MSP_HAS_TSMAC
 	/* 3 phys on boards with TSMAC */
 	msp_gpio_pin_mode(MSP_GPIO_OUTPUT, MSP_ETHERNET_GPIO1);
@@ -169,6 +176,8 @@ int __init msp_eth_setup(void)
 	msp_gpio_pin_mode(MSP_GPIO_OUTPUT, MSP_ETHERNET_GPIO2);
 	msp_gpio_pin_hi(MSP_ETHERNET_GPIO2);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < ARRAY_SIZE(msp_eth_devs); i++) {
 		ret = platform_device_register(&msp_eth_devs[i]);
 		printk(KERN_INFO "device: %d, return value = %d\n", i, ret);

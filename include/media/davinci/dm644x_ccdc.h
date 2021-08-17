@@ -114,7 +114,11 @@ struct ccdc_fault_pixel {
 	/* Number of fault pixel */
 	unsigned short fp_num;
 	/* Address of fault pixel table */
+<<<<<<< HEAD
 	unsigned int fpc_table_addr;
+=======
+	unsigned long fpc_table_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Structure for CCDC configuration parameters for raw capture mode passed

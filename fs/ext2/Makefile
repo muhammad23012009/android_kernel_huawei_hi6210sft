@@ -10,4 +10,7 @@ ext2-y := balloc.o dir.o file.o ialloc.o inode.o \
 ext2-$(CONFIG_EXT2_FS_XATTR)	 += xattr.o xattr_user.o xattr_trusted.o
 ext2-$(CONFIG_EXT2_FS_POSIX_ACL) += acl.o
 ext2-$(CONFIG_EXT2_FS_SECURITY)	 += xattr_security.o
+<<<<<<< HEAD
 ext2-$(CONFIG_EXT2_FS_XIP)	 += xip.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

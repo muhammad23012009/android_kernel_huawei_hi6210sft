@@ -1,10 +1,14 @@
 #include <linux/proc_fs.h>
 #include <linux/nsproxy.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/ptrace.h>
 #include <linux/fs_struct.h>
 #include <linux/mount.h>
 #include <linux/path.h>
+=======
+#include <linux/ptrace.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/namei.h>
 #include <linux/file.h>
 #include <linux/utsname.h>
@@ -32,6 +36,7 @@ static const struct proc_ns_operations *ns_entries[] = {
 	&userns_operations,
 #endif
 	&mntns_operations,
+<<<<<<< HEAD
 };
 
 static const struct file_operations ns_file_operations = {
@@ -117,10 +122,23 @@ static void *proc_ns_follow_link(struct dentry *dentry, struct nameidata *nd)
 	struct inode *inode = dentry->d_inode;
 	struct super_block *sb = inode->i_sb;
 	struct proc_inode *ei = PROC_I(inode);
+=======
+#ifdef CONFIG_CGROUPS
+	&cgroupns_operations,
+#endif
+};
+
+static const char *proc_ns_get_link(struct dentry *dentry,
+				    struct inode *inode,
+				    struct delayed_call *done)
+{
+	const struct proc_ns_operations *ns_ops = PROC_I(inode)->ns_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct task_struct *task;
 	struct path ns_path;
 	void *error = ERR_PTR(-EACCES);
 
+<<<<<<< HEAD
 	task = get_proc_task(inode);
 	if (!task)
 		goto out;
@@ -141,11 +159,27 @@ static void *proc_ns_follow_link(struct dentry *dentry, struct nameidata *nd)
 out_put_task:
 	put_task_struct(task);
 out:
+=======
+	if (!dentry)
+		return ERR_PTR(-ECHILD);
+
+	task = get_proc_task(inode);
+	if (!task)
+		return error;
+
+	if (ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS)) {
+		error = ns_get_path(&ns_path, task, ns_ops);
+		if (!error)
+			nd_jump_link(&ns_path);
+	}
+	put_task_struct(task);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return error;
 }
 
 static int proc_ns_readlink(struct dentry *dentry, char __user *buffer, int buflen)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	struct proc_inode *ei = PROC_I(inode);
 	const struct proc_ns_operations *ns_ops = ei->ns.ns_ops;
@@ -179,21 +213,51 @@ out_put_task:
 	put_task_struct(task);
 out:
 	return len;
+=======
+	struct inode *inode = d_inode(dentry);
+	const struct proc_ns_operations *ns_ops = PROC_I(inode)->ns_ops;
+	struct task_struct *task;
+	char name[50];
+	int res = -EACCES;
+
+	task = get_proc_task(inode);
+	if (!task)
+		return res;
+
+	if (ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS)) {
+		res = ns_get_name(name, sizeof(name), task, ns_ops);
+		if (res >= 0)
+			res = readlink_copy(buffer, buflen, name);
+	}
+	put_task_struct(task);
+	return res;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct inode_operations proc_ns_link_inode_operations = {
 	.readlink	= proc_ns_readlink,
+<<<<<<< HEAD
 	.follow_link	= proc_ns_follow_link,
 	.setattr	= proc_setattr,
 };
 
 static struct dentry *proc_ns_instantiate(struct inode *dir,
+=======
+	.get_link	= proc_ns_get_link,
+	.setattr	= proc_setattr,
+};
+
+static int proc_ns_instantiate(struct inode *dir,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct dentry *dentry, struct task_struct *task, const void *ptr)
 {
 	const struct proc_ns_operations *ns_ops = ptr;
 	struct inode *inode;
 	struct proc_inode *ei;
+<<<<<<< HEAD
 	struct dentry *error = ERR_PTR(-ENOENT);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	inode = proc_pid_make_inode(dir->i_sb, task);
 	if (!inode)
@@ -202,12 +266,17 @@ static struct dentry *proc_ns_instantiate(struct inode *dir,
 	ei = PROC_I(inode);
 	inode->i_mode = S_IFLNK|S_IRWXUGO;
 	inode->i_op = &proc_ns_link_inode_operations;
+<<<<<<< HEAD
 	ei->ns.ns_ops = ns_ops;
+=======
+	ei->ns_ops = ns_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	d_set_d_op(dentry, &pid_dentry_operations);
 	d_add(dentry, inode);
 	/* Close the race of the process dying before we return the dentry */
 	if (pid_revalidate(dentry, 0))
+<<<<<<< HEAD
 		error = NULL;
 out:
 	return error;
@@ -276,22 +345,67 @@ out:
 	put_task_struct(task);
 out_no_task:
 	return ret;
+=======
+		return 0;
+out:
+	return -ENOENT;
+}
+
+static int proc_ns_dir_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct task_struct *task = get_proc_task(file_inode(file));
+	const struct proc_ns_operations **entry, **last;
+
+	if (!task)
+		return -ENOENT;
+
+	if (!dir_emit_dots(file, ctx))
+		goto out;
+	if (ctx->pos >= 2 + ARRAY_SIZE(ns_entries))
+		goto out;
+	entry = ns_entries + (ctx->pos - 2);
+	last = &ns_entries[ARRAY_SIZE(ns_entries) - 1];
+	while (entry <= last) {
+		const struct proc_ns_operations *ops = *entry;
+		if (!proc_fill_cache(file, ctx, ops->name, strlen(ops->name),
+				     proc_ns_instantiate, task, ops))
+			break;
+		ctx->pos++;
+		entry++;
+	}
+out:
+	put_task_struct(task);
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct file_operations proc_ns_dir_operations = {
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= proc_ns_dir_readdir,
+=======
+	.iterate_shared	= proc_ns_dir_readdir,
+	.llseek		= generic_file_llseek,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct dentry *proc_ns_dir_lookup(struct inode *dir,
 				struct dentry *dentry, unsigned int flags)
 {
+<<<<<<< HEAD
 	struct dentry *error;
+=======
+	int error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct task_struct *task = get_proc_task(dir);
 	const struct proc_ns_operations **entry, **last;
 	unsigned int len = dentry->d_name.len;
 
+<<<<<<< HEAD
 	error = ERR_PTR(-ENOENT);
+=======
+	error = -ENOENT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!task)
 		goto out_no_task;
@@ -310,7 +424,11 @@ static struct dentry *proc_ns_dir_lookup(struct inode *dir,
 out:
 	put_task_struct(task);
 out_no_task:
+<<<<<<< HEAD
 	return error;
+=======
+	return ERR_PTR(error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 const struct inode_operations proc_ns_dir_inode_operations = {
@@ -318,6 +436,7 @@ const struct inode_operations proc_ns_dir_inode_operations = {
 	.getattr	= pid_getattr,
 	.setattr	= proc_setattr,
 };
+<<<<<<< HEAD
 
 struct file *proc_ns_fget(int fd)
 {
@@ -346,3 +465,5 @@ bool proc_ns_inode(struct inode *inode)
 {
 	return inode->i_fop == &ns_file_operations;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

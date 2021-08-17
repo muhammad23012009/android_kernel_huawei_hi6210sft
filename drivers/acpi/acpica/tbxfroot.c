@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +52,42 @@
 #define _COMPONENT          ACPI_TABLES
 ACPI_MODULE_NAME("tbxfroot")
 
+<<<<<<< HEAD
 /* Local prototypes */
 static u8 *acpi_tb_scan_memory_for_rsdp(u8 * start_address, u32 length);
 
 static acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp);
+=======
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_tb_get_rsdp_length
+ *
+ * PARAMETERS:  rsdp                - Pointer to RSDP
+ *
+ * RETURN:      Table length
+ *
+ * DESCRIPTION: Get the length of the RSDP
+ *
+ ******************************************************************************/
+u32 acpi_tb_get_rsdp_length(struct acpi_table_rsdp *rsdp)
+{
+
+	if (!ACPI_VALIDATE_RSDP_SIG(rsdp->signature)) {
+
+		/* BAD Signature */
+
+		return (0);
+	}
+
+	/* "Length" field is available if table version >= 2 */
+
+	if (rsdp->revision >= 2) {
+		return (rsdp->length);
+	} else {
+		return (ACPI_RSDP_CHECKSUM_LENGTH);
+	}
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*******************************************************************************
  *
@@ -65,7 +101,11 @@ static acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp);
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 static acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
+=======
+acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 
 	/*
@@ -74,8 +114,12 @@ static acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
 	 * Note: Sometimes there exists more than one RSDP in memory; the valid
 	 * RSDP has a valid checksum, all others have an invalid checksum.
 	 */
+<<<<<<< HEAD
 	if (ACPI_STRNCMP((char *)rsdp, ACPI_SIG_RSDP,
 			 sizeof(ACPI_SIG_RSDP) - 1) != 0) {
+=======
+	if (!ACPI_VALIDATE_RSDP_SIG(rsdp->signature)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Nope, BAD Signature */
 
@@ -118,7 +162,12 @@ static acpi_status acpi_tb_validate_rsdp(struct acpi_table_rsdp *rsdp)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_find_root_pointer(acpi_size *table_address)
+=======
+acpi_status ACPI_INIT_FUNCTION
+acpi_find_root_pointer(acpi_physical_address *table_address)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 *table_ptr;
 	u8 *mem_rover;
@@ -176,7 +225,12 @@ acpi_status acpi_find_root_pointer(acpi_size *table_address)
 			physical_address +=
 			    (u32) ACPI_PTR_DIFF(mem_rover, table_ptr);
 
+<<<<<<< HEAD
 			*table_address = physical_address;
+=======
+			*table_address =
+			    (acpi_physical_address)physical_address;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return_ACPI_STATUS(AE_OK);
 		}
 	}
@@ -209,7 +263,11 @@ acpi_status acpi_find_root_pointer(acpi_size *table_address)
 		    (ACPI_HI_RSDP_WINDOW_BASE +
 		     ACPI_PTR_DIFF(mem_rover, table_ptr));
 
+<<<<<<< HEAD
 		*table_address = physical_address;
+=======
+		*table_address = (acpi_physical_address)physical_address;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return_ACPI_STATUS(AE_OK);
 	}
 
@@ -219,6 +277,11 @@ acpi_status acpi_find_root_pointer(acpi_size *table_address)
 	return_ACPI_STATUS(AE_NOT_FOUND);
 }
 
+<<<<<<< HEAD
+=======
+ACPI_EXPORT_SYMBOL_INIT(acpi_find_root_pointer)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_tb_scan_memory_for_rsdp
@@ -231,7 +294,11 @@ acpi_status acpi_find_root_pointer(acpi_size *table_address)
  * DESCRIPTION: Search a block of memory for the RSDP signature
  *
  ******************************************************************************/
+<<<<<<< HEAD
 static u8 *acpi_tb_scan_memory_for_rsdp(u8 * start_address, u32 length)
+=======
+u8 *acpi_tb_scan_memory_for_rsdp(u8 *start_address, u32 length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status;
 	u8 *mem_rover;

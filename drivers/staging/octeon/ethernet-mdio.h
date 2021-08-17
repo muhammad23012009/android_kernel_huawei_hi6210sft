@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /*********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (c) 2003-2007 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -28,6 +34,13 @@
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/netdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/etherdevice.h>
 #include <linux/ip.h>
 #include <linux/string.h>
@@ -41,5 +54,11 @@
 #endif /* CONFIG_XFRM */
 
 extern const struct ethtool_ops cvm_oct_ethtool_ops;
+<<<<<<< HEAD
+=======
+
+void octeon_mdiobus_force_mod_depencency(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 int cvm_oct_phy_setup_device(struct net_device *dev);

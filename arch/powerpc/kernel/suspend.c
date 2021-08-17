@@ -9,9 +9,13 @@
 
 #include <linux/mm.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 
 /* References to section boundaries */
 extern const void __nosave_begin, __nosave_end;
+=======
+#include <asm/sections.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	pfn_is_nosave - check if given pfn is in the 'nosave' section

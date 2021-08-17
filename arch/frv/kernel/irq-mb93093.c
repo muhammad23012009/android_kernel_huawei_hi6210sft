@@ -105,7 +105,10 @@ static irqreturn_t fpga_interrupt(int irq, void *_mask)
 static struct irqaction fpga_irq[1]  = {
 	[0] = {
 		.handler	= fpga_interrupt,
+<<<<<<< HEAD
 		.flags		= IRQF_DISABLED,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name		= "fpga.0",
 		.dev_id		= (void *) 0x0700UL,
 	}

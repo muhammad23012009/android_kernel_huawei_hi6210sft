@@ -80,6 +80,7 @@ struct ccdc_hw_ops {
 	/* Pointer to function to get line length */
 	unsigned int (*get_line_length) (void);
 
+<<<<<<< HEAD
 	/* Query CCDC control IDs */
 	int (*queryctrl)(struct v4l2_queryctrl *qctrl);
 	/* Set CCDC control */
@@ -87,6 +88,8 @@ struct ccdc_hw_ops {
 	/* Get CCDC control */
 	int (*get_control)(struct v4l2_control *ctrl);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Pointer to function to set frame buffer address */
 	void (*setfbaddr) (unsigned long addr);
 	/* Pointer to function to get field id */

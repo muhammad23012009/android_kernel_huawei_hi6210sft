@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifdef CONFIG_ATAGS_PROC
 extern void save_atags(struct tag *tags);
 #else
@@ -10,6 +11,15 @@ void convert_to_tag_list(struct tag *tags);
 struct machine_desc *setup_machine_tags(phys_addr_t __atags_pointer, unsigned int machine_nr);
 #else
 static inline struct machine_desc *
+=======
+void convert_to_tag_list(struct tag *tags);
+
+#ifdef CONFIG_ATAGS
+const struct machine_desc *setup_machine_tags(phys_addr_t __atags_pointer,
+	unsigned int machine_nr);
+#else
+static inline const struct machine_desc *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 setup_machine_tags(phys_addr_t __atags_pointer, unsigned int machine_nr)
 {
 	early_print("no ATAGS support: can't continue\n");

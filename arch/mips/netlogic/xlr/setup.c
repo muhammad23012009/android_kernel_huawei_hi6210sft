@@ -60,6 +60,7 @@ unsigned int  nlm_threads_per_core = 1;
 struct nlm_soc_info nlm_nodes[NLM_NR_NODES];
 cpumask_t nlm_cpumask = CPU_MASK_CPU0;
 
+<<<<<<< HEAD
 static void __init nlm_early_serial_setup(void)
 {
 	struct uart_port s;
@@ -79,6 +80,8 @@ static void __init nlm_early_serial_setup(void)
 	early_serial_setup(&s);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void nlm_linux_exit(void)
 {
 	uint64_t gpiobase;
@@ -92,7 +95,10 @@ static void nlm_linux_exit(void)
 
 void __init plat_mem_setup(void)
 {
+<<<<<<< HEAD
 	panic_timeout	= 5;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_machine_restart = (void (*)(char *))nlm_linux_exit;
 	_machine_halt	= nlm_linux_exit;
 	pm_power_off	= nlm_linux_exit;
@@ -188,7 +194,11 @@ static void nlm_init_node(void)
 
 	nodep = nlm_current_node();
 	nodep->picbase = nlm_mmio_base(NETLOGIC_IO_PIC_OFFSET);
+<<<<<<< HEAD
 	nodep->ebase = read_c0_ebase() & (~((1 << 12) - 1));
+=======
+	nodep->ebase = read_c0_ebase() & MIPS_EBASE_BASE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_init(&nodep->piclock);
 }
 
@@ -196,6 +206,10 @@ void __init prom_init(void)
 {
 	int *argv, *envp;		/* passed as 32 bit ptrs */
 	struct psb_info *prom_infop;
+<<<<<<< HEAD
+=======
+	void *reset_vec;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SMP
 	int i;
 #endif
@@ -208,7 +222,16 @@ void __init prom_init(void)
 	nlm_prom_info = *prom_infop;
 	nlm_init_node();
 
+<<<<<<< HEAD
 	nlm_early_serial_setup();
+=======
+	/* Update reset entry point with CPU init code */
+	reset_vec = (void *)CKSEG1ADDR(RESET_VEC_PHYS);
+	memset(reset_vec, 0, RESET_VEC_SIZE);
+	memcpy(reset_vec, (void *)nlm_reset_entry,
+			(nlm_reset_entry_end - nlm_reset_entry));
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	build_arcs_cmdline(argv);
 	prom_add_memory();
 

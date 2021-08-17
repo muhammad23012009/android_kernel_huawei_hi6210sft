@@ -33,6 +33,10 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <mach/time.h>
+<<<<<<< HEAD
+=======
+#include "gpio-iop32x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * IQ80321 timer tick configuration.
@@ -170,6 +174,10 @@ static struct platform_device iq80321_serial_device = {
 
 static void __init iq80321_init_machine(void)
 {
+<<<<<<< HEAD
+=======
+	register_iop32x_gpio();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&iop3xx_i2c0_device);
 	platform_device_register(&iop3xx_i2c1_device);
 	platform_device_register(&iq80321_flash_device);

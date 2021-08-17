@@ -1,7 +1,11 @@
 config SCSI_CHELSIO_FCOE
 	tristate "Chelsio Communications FCoE support"
 	depends on PCI && SCSI
+<<<<<<< HEAD
 	select SCSI_FC_ATTRS
+=======
+	depends on SCSI_FC_ATTRS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select FW_LOADER
 	help
 	  This driver supports FCoE Offload functionality over

@@ -716,7 +716,10 @@ MODULE_DEVICE_TABLE(i2c, bu21013_id);
 static struct i2c_driver bu21013_driver = {
 	.driver	= {
 		.name	=	DRIVER_TP,
+<<<<<<< HEAD
 		.owner	=	THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM
 		.pm	=	&bu21013_dev_pm_ops,
 #endif

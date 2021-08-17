@@ -22,7 +22,11 @@
 
 static inline struct kvmppc_book3s_shadow_vcpu *svcpu_get(struct kvm_vcpu *vcpu)
 {
+<<<<<<< HEAD
 	return to_book3s(vcpu)->shadow_vcpu;
+=======
+	return vcpu->arch.shadow_vcpu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void svcpu_put(struct kvmppc_book3s_shadow_vcpu *svcpu)

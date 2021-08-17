@@ -467,5 +467,16 @@
 #define __NR_sendmmsg			503
 #define __NR_process_vm_readv		504
 #define __NR_process_vm_writev		505
+<<<<<<< HEAD
+=======
+#define __NR_kcmp			506
+#define __NR_finit_module		507
+#define __NR_sched_setattr		508
+#define __NR_sched_getattr		509
+#define __NR_renameat2			510
+#define __NR_getrandom			511
+#define __NR_memfd_create		512
+#define __NR_execveat			513
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _UAPI_ALPHA_UNISTD_H */

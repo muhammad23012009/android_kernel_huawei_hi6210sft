@@ -34,6 +34,7 @@
 #include <linux/numa.h>
 #include <asm/numa.h>
 
+<<<<<<< HEAD
 #define COMPILER_DEPENDENT_INT64	long
 #define COMPILER_DEPENDENT_UINT64	unsigned long
 
@@ -85,14 +86,29 @@ ia64_acpi_release_global_lock (unsigned int *lock)
 	((Acq) = ia64_acpi_release_global_lock(&facs->global_lock))
 
 #ifdef	CONFIG_ACPI
+=======
+#ifdef	CONFIG_ACPI
+extern int acpi_lapic;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define acpi_disabled 0	/* ACPI always enabled on IA64 */
 #define acpi_noirq 0	/* ACPI always enabled on IA64 */
 #define acpi_pci_disabled 0 /* ACPI PCI always enabled on IA64 */
 #define acpi_strict 1	/* no ACPI spec workarounds on IA64 */
+<<<<<<< HEAD
 #endif
 #define acpi_processor_cstate_check(x) (x) /* no idle limits on IA64 :) */
 static inline void disable_acpi(void) { }
 static inline void pci_acpi_crs_quirks(void) { }
+=======
+
+static inline bool acpi_has_cpu_in_madt(void)
+{
+	return !!acpi_lapic;
+}
+#endif
+#define acpi_processor_cstate_check(x) (x) /* no idle limits on IA64 :) */
+static inline void disable_acpi(void) { }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_IA64_GENERIC
 const char *acpi_get_sysname (void);
@@ -111,8 +127,11 @@ static inline const char *acpi_get_sysname (void)
 	return "uv";
 # elif defined (CONFIG_IA64_DIG)
 	return "dig";
+<<<<<<< HEAD
 # elif defined (CONFIG_IA64_XEN_GUEST)
 	return "xen";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # elif defined(CONFIG_IA64_DIG_VTD)
 	return "dig_vtd";
 # else
@@ -164,7 +183,11 @@ static inline void arch_acpi_set_pdc_bits(u32 *buf)
 #ifdef CONFIG_ACPI_NUMA
 extern cpumask_t early_cpu_possible_map;
 #define for_each_possible_early_cpu(cpu)  \
+<<<<<<< HEAD
 	for_each_cpu_mask((cpu), early_cpu_possible_map)
+=======
+	for_each_cpu((cpu), &early_cpu_possible_map)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void per_cpu_scan_finalize(int min_cpus, int reserve_cpus)
 {
@@ -172,13 +195,21 @@ static inline void per_cpu_scan_finalize(int min_cpus, int reserve_cpus)
 	int cpu;
 	int next_nid = 0;
 
+<<<<<<< HEAD
 	low_cpu = cpus_weight(early_cpu_possible_map);
+=======
+	low_cpu = cpumask_weight(&early_cpu_possible_map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	high_cpu = max(low_cpu, min_cpus);
 	high_cpu = min(high_cpu + reserve_cpus, NR_CPUS);
 
 	for (cpu = low_cpu; cpu < high_cpu; cpu++) {
+<<<<<<< HEAD
 		cpu_set(cpu, early_cpu_possible_map);
+=======
+		cpumask_set_cpu(cpu, &early_cpu_possible_map);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (node_cpuid[cpu].nid == NUMA_NO_NODE) {
 			node_cpuid[cpu].nid = next_nid;
 			next_nid++;
@@ -187,6 +218,12 @@ static inline void per_cpu_scan_finalize(int min_cpus, int reserve_cpus)
 		}
 	}
 }
+<<<<<<< HEAD
+=======
+
+extern void acpi_numa_fixup(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_ACPI_NUMA */
 
 #endif /*__KERNEL__*/

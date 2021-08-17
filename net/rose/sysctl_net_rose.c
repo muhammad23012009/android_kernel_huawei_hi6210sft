@@ -24,7 +24,11 @@ static int min_window[] = {1}, max_window[] = {7};
 
 static struct ctl_table_header *rose_table_header;
 
+<<<<<<< HEAD
 static ctl_table rose_table[] = {
+=======
+static struct ctl_table rose_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "restart_request_timeout",
 		.data		= &sysctl_rose_restart_request_timeout,

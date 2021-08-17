@@ -31,7 +31,11 @@ static int pnp_reserve_mem[16] = {[0 ... 15] = -1 };	/* reserve (don't use) some
  * option registration
  */
 
+<<<<<<< HEAD
 struct pnp_option *pnp_build_option(struct pnp_dev *dev, unsigned long type,
+=======
+static struct pnp_option *pnp_build_option(struct pnp_dev *dev, unsigned long type,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    unsigned int option_flags)
 {
 	struct pnp_option *option;
@@ -179,8 +183,14 @@ int pnp_check_port(struct pnp_dev *dev, struct resource *res)
 	/* check if the resource is already in use, skip if the
 	 * device is active because it itself may be in use */
 	if (!dev->active) {
+<<<<<<< HEAD
 		if (__check_region(&ioport_resource, *port, length(port, end)))
 			return 0;
+=======
+		if (!request_region(*port, length(port, end), "pnp"))
+			return 0;
+		release_region(*port, length(port, end));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* check if the resource is reserved */
@@ -241,8 +251,14 @@ int pnp_check_mem(struct pnp_dev *dev, struct resource *res)
 	/* check if the resource is already in use, skip if the
 	 * device is active because it itself may be in use */
 	if (!dev->active) {
+<<<<<<< HEAD
 		if (check_mem_region(*addr, length(addr, end)))
 			return 0;
+=======
+		if (!request_mem_region(*addr, length(addr, end), "pnp"))
+			return 0;
+		release_mem_region(*addr, length(addr, end));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* check if the resource is reserved */
@@ -360,7 +376,11 @@ int pnp_check_irq(struct pnp_dev *dev, struct resource *res)
 		return 1;
 
 	/* check if the resource is valid */
+<<<<<<< HEAD
 	if (*irq < 0 || *irq > 15)
+=======
+	if (*irq > 15)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* check if the resource is reserved */
@@ -385,7 +405,11 @@ int pnp_check_irq(struct pnp_dev *dev, struct resource *res)
 	 * device is active because it itself may be in use */
 	if (!dev->active) {
 		if (request_irq(*irq, pnp_test_handler,
+<<<<<<< HEAD
 				IRQF_DISABLED | IRQF_PROBE_SHARED, "pnp", NULL))
+=======
+				IRQF_PROBE_SHARED, "pnp", NULL))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 		free_irq(*irq, NULL);
 	}
@@ -424,7 +448,11 @@ int pnp_check_dma(struct pnp_dev *dev, struct resource *res)
 		return 1;
 
 	/* check if the resource is valid */
+<<<<<<< HEAD
 	if (*dma < 0 || *dma == 4 || *dma > 7)
+=======
+	if (*dma == 4 || *dma > 7)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* check if the resource is reserved */
@@ -515,6 +543,10 @@ struct pnp_resource *pnp_add_resource(struct pnp_dev *dev,
 	}
 
 	pnp_res->res = *res;
+<<<<<<< HEAD
+=======
+	pnp_res->res.name = dev->name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(&dev->dev, "%pR\n", res);
 	return pnp_res;
 }

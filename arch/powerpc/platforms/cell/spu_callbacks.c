@@ -39,6 +39,10 @@ static void *spu_syscall_table[] = {
 #define PPC_SYS(func)		sys_ni_syscall,
 #define OLDSYS(func)		sys_ni_syscall,
 #define SYS32ONLY(func)		sys_ni_syscall,
+<<<<<<< HEAD
+=======
+#define PPC64ONLY(func)		sys_ni_syscall,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SYSX(f, f3264, f32)	sys_ni_syscall,
 
 #define SYSCALL_SPU(func)	sys_##func,

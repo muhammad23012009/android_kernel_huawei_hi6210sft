@@ -8,7 +8,11 @@
 98:	x,y;			\
 	.section __ex_table,"a";\
 	.align 4;		\
+<<<<<<< HEAD
 	.word 98b, __retl_o1;	\
+=======
+	.word 98b, __retl_o1_asi;\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.text;			\
 	.align 4;
 

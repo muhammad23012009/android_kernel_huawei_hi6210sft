@@ -25,9 +25,12 @@ struct s3c24xx_uart_resources {
 
 extern struct s3c24xx_uart_resources s3c2410_uart_resources[];
 extern struct s3c24xx_uart_resources s3c64xx_uart_resources[];
+<<<<<<< HEAD
 extern struct s3c24xx_uart_resources s5p_uart_resources[];
 extern struct s3c24xx_uart_resources exynos4_uart_resources[];
 extern struct s3c24xx_uart_resources exynos5_uart_resources[];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern struct platform_device *s3c24xx_uart_devs[];
 extern struct platform_device *s3c24xx_uart_src[];
@@ -75,6 +78,7 @@ extern struct platform_device s3c_device_usb_hsotg;
 extern struct platform_device s3c_device_usb_hsudc;
 extern struct platform_device s3c_device_wdt;
 
+<<<<<<< HEAD
 extern struct platform_device s5p_device_ehci;
 extern struct platform_device s5p_device_fimc0;
 extern struct platform_device s5p_device_fimc1;
@@ -134,6 +138,11 @@ extern struct platform_device exynos4_device_spdif;
 
 extern struct platform_device samsung_asoc_idma;
 extern struct platform_device samsung_device_keypad;
+=======
+extern struct platform_device samsung_asoc_idma;
+extern struct platform_device samsung_device_keypad;
+extern struct platform_device samsung_device_pwm;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* s3c2440 specific devices */
 

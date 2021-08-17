@@ -322,6 +322,9 @@ module_exit(wafwdt_exit);
 MODULE_AUTHOR("Justin Cormack");
 MODULE_DESCRIPTION("ICP Wafer 5823 Single Board Computer WDT driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* end of wafer5823wdt.c */

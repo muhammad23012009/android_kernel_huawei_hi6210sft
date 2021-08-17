@@ -10,6 +10,7 @@
 #define SEG_GRANULARITY_4KB	(1 << 0)
 
 #define DESC_TYPE_CODE_DATA	(1 << 0)
+<<<<<<< HEAD
 #define EFI_READ_CHUNK_SIZE	(1024 * 1024)
 
 #define EFI_CONSOLE_OUT_DEVICE_GUID    \
@@ -85,6 +86,8 @@ struct efi_graphics_output_protocol {
 	unsigned long blt;
 	struct efi_graphics_output_protocol_mode *mode;
 };
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct efi_uga_draw_protocol_32 {
 	u32 get_mode;

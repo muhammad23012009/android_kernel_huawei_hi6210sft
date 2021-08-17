@@ -36,13 +36,20 @@ config W1_MASTER_DS2482
 
 config W1_MASTER_MXC
 	tristate "Freescale MXC 1-wire busmaster"
+<<<<<<< HEAD
 	depends on W1 && ARCH_MXC
+=======
+	depends on ARCH_MXC || COMPILE_TEST
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y here to enable MXC 1-wire host
 
 config W1_MASTER_DS1WM
 	tristate "Maxim DS1WM 1-wire busmaster"
+<<<<<<< HEAD
 	depends on W1 && GENERIC_HARDIRQS
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say Y here to enable the DS1WM 1-wire driver, such as that
 	  in HP iPAQ devices like h5xxx, h2200, and ASIC3-based like

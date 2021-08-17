@@ -28,6 +28,10 @@
 #include <linux/wl12xx.h>
 #include <linux/irq.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "wl1251.h"
 
@@ -182,8 +186,14 @@ static int wl1251_sdio_set_power(struct wl1251 *wl, bool enable)
 		 * callback in case it wants to do any additional setup,
 		 * for example enabling clock buffer for the module.
 		 */
+<<<<<<< HEAD
 		if (wl->set_power)
 			wl->set_power(true);
+=======
+		if (gpio_is_valid(wl->power_gpio))
+			gpio_set_value(wl->power_gpio, true);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ret = pm_runtime_get_sync(&func->dev);
 		if (ret < 0) {
@@ -203,8 +213,13 @@ static int wl1251_sdio_set_power(struct wl1251 *wl, bool enable)
 		if (ret < 0)
 			goto out;
 
+<<<<<<< HEAD
 		if (wl->set_power)
 			wl->set_power(false);
+=======
+		if (gpio_is_valid(wl->power_gpio))
+			gpio_set_value(wl->power_gpio, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 out:
@@ -227,7 +242,11 @@ static int wl1251_sdio_probe(struct sdio_func *func,
 	struct wl1251 *wl;
 	struct ieee80211_hw *hw;
 	struct wl1251_sdio *wl_sdio;
+<<<<<<< HEAD
 	const struct wl12xx_platform_data *wl12xx_board_data;
+=======
+	const struct wl1251_platform_data *wl1251_board_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	hw = wl1251_alloc_hw();
 	if (IS_ERR(hw))
@@ -254,11 +273,28 @@ static int wl1251_sdio_probe(struct sdio_func *func,
 	wl->if_priv = wl_sdio;
 	wl->if_ops = &wl1251_sdio_ops;
 
+<<<<<<< HEAD
 	wl12xx_board_data = wl12xx_get_platform_data();
 	if (!IS_ERR(wl12xx_board_data)) {
 		wl->set_power = wl12xx_board_data->set_power;
 		wl->irq = wl12xx_board_data->irq;
 		wl->use_eeprom = wl12xx_board_data->use_eeprom;
+=======
+	wl1251_board_data = wl1251_get_platform_data();
+	if (!IS_ERR(wl1251_board_data)) {
+		wl->power_gpio = wl1251_board_data->power_gpio;
+		wl->irq = wl1251_board_data->irq;
+		wl->use_eeprom = wl1251_board_data->use_eeprom;
+	}
+
+	if (gpio_is_valid(wl->power_gpio)) {
+		ret = devm_gpio_request(&func->dev, wl->power_gpio,
+								"wl1251 power");
+		if (ret) {
+			wl1251_error("Failed to request gpio: %d\n", ret);
+			goto disable;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (wl->irq) {

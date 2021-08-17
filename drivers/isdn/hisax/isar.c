@@ -74,7 +74,11 @@ sendmsg(struct IsdnCardState *cs, u_char his, u_char creg, u_char len,
 				t = tmp;
 				t += sprintf(t, "sendmbox cnt %d", len);
 				QuickHex(t, &msg[len-i], (i > 64) ? 64 : i);
+<<<<<<< HEAD
 				debugl1(cs, tmp);
+=======
+				debugl1(cs, "%s", tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				i -= 64;
 			}
 		}
@@ -105,7 +109,11 @@ rcv_mbox(struct IsdnCardState *cs, struct isar_reg *ireg, u_char *msg)
 				t = tmp;
 				t += sprintf(t, "rcv_mbox cnt %d", ireg->clsb);
 				QuickHex(t, &msg[ireg->clsb - i], (i > 64) ? 64 : i);
+<<<<<<< HEAD
 				debugl1(cs, tmp);
+=======
+				debugl1(cs, "%s", tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				i -= 64;
 			}
 		}
@@ -1248,7 +1256,11 @@ isar_int_main(struct IsdnCardState *cs)
 			tp += sprintf(debbuf, "msg iis(%x) msb(%x)",
 				      ireg->iis, ireg->cmsb);
 			QuickHex(tp, (u_char *)ireg->par, ireg->clsb);
+<<<<<<< HEAD
 			debugl1(cs, debbuf);
+=======
+			debugl1(cs, "%s", debbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	case ISAR_IIS_INVMSG:

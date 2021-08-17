@@ -78,7 +78,11 @@ static struct kb3886bl_machinfo *bl_machinfo;
 static unsigned long kb3886bl_flags;
 #define KB3886BL_SUSPENDED     0x01
 
+<<<<<<< HEAD
 static struct dmi_system_id __initdata kb3886bl_device_table[] = {
+=======
+static struct dmi_system_id kb3886bl_device_table[] __initdata = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.ident = "Sahara Touch-iT",
 		.matches = {
@@ -141,7 +145,11 @@ static const struct backlight_ops kb3886bl_ops = {
 static int kb3886bl_probe(struct platform_device *pdev)
 {
 	struct backlight_properties props;
+<<<<<<< HEAD
 	struct kb3886bl_machinfo *machinfo = pdev->dev.platform_data;
+=======
+	struct kb3886bl_machinfo *machinfo = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bl_machinfo = machinfo;
 	if (!machinfo->limit_mask)
@@ -150,10 +158,17 @@ static int kb3886bl_probe(struct platform_device *pdev)
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = machinfo->max_intensity;
+<<<<<<< HEAD
 	kb3886_backlight_device = backlight_device_register("kb3886-bl",
 							    &pdev->dev, NULL,
 							    &kb3886bl_ops,
 							    &props);
+=======
+	kb3886_backlight_device = devm_backlight_device_register(&pdev->dev,
+							"kb3886-bl", &pdev->dev,
+							NULL, &kb3886bl_ops,
+							&props);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(kb3886_backlight_device))
 		return PTR_ERR(kb3886_backlight_device);
 
@@ -166,6 +181,7 @@ static int kb3886bl_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int kb3886bl_remove(struct platform_device *pdev)
 {
 	struct backlight_device *bd = platform_get_drvdata(pdev);
@@ -178,6 +194,10 @@ static int kb3886bl_remove(struct platform_device *pdev)
 static struct platform_driver kb3886bl_driver = {
 	.probe		= kb3886bl_probe,
 	.remove		= kb3886bl_remove,
+=======
+static struct platform_driver kb3886bl_driver = {
+	.probe		= kb3886bl_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.driver		= {
 		.name	= "kb3886-bl",
 		.pm	= &kb3886bl_pm_ops,

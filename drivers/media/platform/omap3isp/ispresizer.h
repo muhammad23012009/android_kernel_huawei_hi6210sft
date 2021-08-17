@@ -12,6 +12,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,20 +23,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef OMAP3_ISP_RESIZER_H
 #define OMAP3_ISP_RESIZER_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 /*
  * Constants for filter coefficents count
+=======
+#include <linux/spinlock.h>
+#include <linux/types.h>
+
+/*
+ * Constants for filter coefficients count
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define COEFF_CNT		32
 
 /*
+<<<<<<< HEAD
  * struct isprsz_coef - Structure for resizer filter coeffcients.
+=======
+ * struct isprsz_coef - Structure for resizer filter coefficients.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @h_filter_coef_4tap: Horizontal filter coefficients for 8-phase/4-tap
  *			mode (.5x-4x)
  * @v_filter_coef_4tap: Vertical filter coefficients for 8-phase/4-tap
@@ -96,6 +111,10 @@ enum resizer_input_entity {
 
 /*
  * struct isp_res_device - OMAP3 ISP resizer module
+<<<<<<< HEAD
+=======
+ * @lock: Protects formats and crop rectangles between set_selection and IRQ
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @crop.request: Crop rectangle requested by the user
  * @crop.active: Active crop rectangle (based on hardware requirements)
  */
@@ -116,6 +135,10 @@ struct isp_res_device {
 	enum isp_pipeline_stream_state state;
 	wait_queue_head_t wait;
 	atomic_t stopping;
+<<<<<<< HEAD
+=======
+	spinlock_t lock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct {
 		struct v4l2_rect request;

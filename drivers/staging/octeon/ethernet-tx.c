@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 /*********************************************************************
  * Author: Cavium Networks
  *
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
+=======
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Copyright (c) 2003-2010 Cavium Networks
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This file is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
@@ -28,6 +34,13 @@
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/netdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/etherdevice.h>
 #include <linux/ip.h>
 #include <linux/ratelimit.h>
@@ -75,6 +88,7 @@ static DECLARE_TASKLET(cvm_oct_tx_cleanup_tasklet, cvm_oct_tx_do_cleanup, 0);
 /* Maximum number of SKBs to try to free per xmit packet. */
 #define MAX_SKB_TO_FREE (MAX_OUT_QUEUE_DEPTH * 2)
 
+<<<<<<< HEAD
 static inline int32_t cvm_oct_adjust_skb_to_free(int32_t skb_to_free, int fau)
 {
 	int32_t undo;
@@ -82,21 +96,43 @@ static inline int32_t cvm_oct_adjust_skb_to_free(int32_t skb_to_free, int fau)
 	if (undo > 0)
 		cvmx_fau_atomic_add32(fau, -undo);
 	skb_to_free = -skb_to_free > MAX_SKB_TO_FREE ? MAX_SKB_TO_FREE : -skb_to_free;
+=======
+static inline int cvm_oct_adjust_skb_to_free(int skb_to_free, int fau)
+{
+	int undo;
+
+	undo = skb_to_free > 0 ? MAX_SKB_TO_FREE : skb_to_free +
+						   MAX_SKB_TO_FREE;
+	if (undo > 0)
+		cvmx_fau_atomic_add32(fau, -undo);
+	skb_to_free = -skb_to_free > MAX_SKB_TO_FREE ? MAX_SKB_TO_FREE :
+						       -skb_to_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return skb_to_free;
 }
 
 static void cvm_oct_kick_tx_poll_watchdog(void)
 {
 	union cvmx_ciu_timx ciu_timx;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ciu_timx.u64 = 0;
 	ciu_timx.s.one_shot = 1;
 	ciu_timx.s.len = cvm_oct_tx_poll_interval;
 	cvmx_write_csr(CVMX_CIU_TIMX(1), ciu_timx.u64);
 }
 
+<<<<<<< HEAD
 void cvm_oct_free_tx_skbs(struct net_device *dev)
 {
 	int32_t skb_to_free;
+=======
+static void cvm_oct_free_tx_skbs(struct net_device *dev)
+{
+	int skb_to_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int qos, queues_per_port;
 	int total_freed = 0;
 	int total_remaining = 0;
@@ -108,6 +144,7 @@ void cvm_oct_free_tx_skbs(struct net_device *dev)
 	for (qos = 0; qos < queues_per_port; qos++) {
 		if (skb_queue_len(&priv->tx_free_list[qos]) == 0)
 			continue;
+<<<<<<< HEAD
 		skb_to_free = cvmx_fau_fetch_and_add32(priv->fau+qos*4, MAX_SKB_TO_FREE);
 		skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free, priv->fau+qos*4);
 
@@ -118,21 +155,49 @@ void cvm_oct_free_tx_skbs(struct net_device *dev)
 			spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
 			while (skb_to_free > 0) {
 				struct sk_buff *t = __skb_dequeue(&priv->tx_free_list[qos]);
+=======
+		skb_to_free = cvmx_fau_fetch_and_add32(priv->fau + qos * 4,
+						       MAX_SKB_TO_FREE);
+		skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free,
+							 priv->fau + qos * 4);
+		total_freed += skb_to_free;
+		if (skb_to_free > 0) {
+			struct sk_buff *to_free_list = NULL;
+
+			spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
+			while (skb_to_free > 0) {
+				struct sk_buff *t;
+
+				t = __skb_dequeue(&priv->tx_free_list[qos]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				t->next = to_free_list;
 				to_free_list = t;
 				skb_to_free--;
 			}
+<<<<<<< HEAD
 			spin_unlock_irqrestore(&priv->tx_free_list[qos].lock, flags);
 			/* Do the actual freeing outside of the lock. */
 			while (to_free_list) {
 				struct sk_buff *t = to_free_list;
+=======
+			spin_unlock_irqrestore(&priv->tx_free_list[qos].lock,
+					       flags);
+			/* Do the actual freeing outside of the lock. */
+			while (to_free_list) {
+				struct sk_buff *t = to_free_list;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				to_free_list = to_free_list->next;
 				dev_kfree_skb_any(t);
 			}
 		}
 		total_remaining += skb_queue_len(&priv->tx_free_list[qos]);
 	}
+<<<<<<< HEAD
 	if (total_freed >= 0 && netif_queue_stopped(dev))
+=======
+	if (total_remaining < MAX_OUT_QUEUE_DEPTH && netif_queue_stopped(dev))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		netif_wake_queue(dev);
 	if (total_remaining)
 		cvm_oct_kick_tx_poll_watchdog();
@@ -149,15 +214,25 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	cvmx_pko_command_word0_t pko_command;
 	union cvmx_buf_ptr hw_buffer;
+<<<<<<< HEAD
 	uint64_t old_scratch;
 	uint64_t old_scratch2;
+=======
+	u64 old_scratch;
+	u64 old_scratch2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int qos;
 	int i;
 	enum {QUEUE_CORE, QUEUE_HW, QUEUE_DROP} queue_type;
 	struct octeon_ethernet *priv = netdev_priv(dev);
 	struct sk_buff *to_free_list;
+<<<<<<< HEAD
 	int32_t skb_to_free;
 	int32_t buffers_to_free;
+=======
+	int skb_to_free;
+	int buffers_to_free;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 total_to_clean;
 	unsigned long flags;
 #if REUSE_SKBUFFS_WITHOUT_FREE
@@ -182,8 +257,14 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 			qos = 0;
 		else if (qos >= cvmx_pko_get_num_queues(priv->port))
 			qos = 0;
+<<<<<<< HEAD
 	} else
 		qos = 0;
+=======
+	} else {
+		qos = 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (USE_ASYNC_IOBDMA) {
 		/* Save scratch in case userspace is using it */
@@ -211,6 +292,7 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 		if (unlikely(__skb_linearize(skb))) {
 			queue_type = QUEUE_DROP;
 			if (USE_ASYNC_IOBDMA) {
+<<<<<<< HEAD
 				/* Get the number of skbuffs in use by the hardware */
 				CVMX_SYNCIOBDMA;
 				skb_to_free = cvmx_scratch_read64(CVMX_SCR_SCRATCH);
@@ -220,6 +302,26 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 								       MAX_SKB_TO_FREE);
 			}
 			skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free, priv->fau + qos * 4);
+=======
+				/*
+				 * Get the number of skbuffs in use
+				 * by the hardware
+				 */
+				CVMX_SYNCIOBDMA;
+				skb_to_free =
+					cvmx_scratch_read64(CVMX_SCR_SCRATCH);
+			} else {
+				/*
+				 * Get the number of skbuffs in use
+				 * by the hardware
+				 */
+				skb_to_free = cvmx_fau_fetch_and_add32(
+					priv->fau + qos * 4, MAX_SKB_TO_FREE);
+			}
+			skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free,
+								 priv->fau +
+								 qos * 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
 			goto skip_xmit;
 		}
@@ -245,6 +347,10 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 			    cvmx_read_csr(CVMX_GMXX_PRTX_CFG(index, interface));
 			if (gmx_prt_cfg.s.duplex == 0) {
 				int add_bytes = 64 - skb->len;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				if ((skb_tail_pointer(skb) + add_bytes) <=
 				    skb_end_pointer(skb))
 					memset(__skb_put(skb, add_bytes), 0,
@@ -255,6 +361,12 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	/* Build the PKO command */
 	pko_command.u64 = 0;
+<<<<<<< HEAD
+=======
+#ifdef __LITTLE_ENDIAN
+	pko_command.s.le = 1;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pko_command.s.n2 = 1;	/* Don't pollute L2 with the outgoing packet */
 	pko_command.s.segs = 1;
 	pko_command.s.total_bytes = skb->len;
@@ -276,7 +388,14 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 		CVM_OCT_SKB_CB(skb)[0] = hw_buffer.u64;
 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 			struct skb_frag_struct *fs = skb_shinfo(skb)->frags + i;
+<<<<<<< HEAD
 			hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)(page_address(fs->page.p) + fs->page_offset));
+=======
+
+			hw_buffer.s.addr = XKPHYS_TO_PHYS(
+				(u64)(page_address(fs->page.p) +
+				fs->page_offset));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			hw_buffer.s.size = fs->size;
 			CVM_OCT_SKB_CB(skb)[i + 1] = hw_buffer.u64;
 		}
@@ -300,14 +419,19 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 #if REUSE_SKBUFFS_WITHOUT_FREE
 	fpa_head = skb->head + 256 - ((unsigned long)skb->head & 0x7f);
 	if (unlikely(skb->data < fpa_head)) {
+<<<<<<< HEAD
 		/*
 		 * printk("TX buffer beginning can't meet FPA
 		 * alignment constraints\n");
 		 */
+=======
+		/* TX buffer beginning can't meet FPA alignment constraints */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto dont_put_skbuff_in_hw;
 	}
 	if (unlikely
 	    ((skb_end_pointer(skb) - fpa_head) < CVMX_FPA_PACKET_POOL_SIZE)) {
+<<<<<<< HEAD
 		/*
 		   printk("TX buffer isn't large enough for the FPA\n");
 		 */
@@ -341,14 +465,41 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 		/*
 		   printk("TX buffer has fragments\n");
 		 */
+=======
+		/* TX buffer isn't large enough for the FPA */
+		goto dont_put_skbuff_in_hw;
+	}
+	if (unlikely(skb_shared(skb))) {
+		/* TX buffer sharing data with someone else */
+		goto dont_put_skbuff_in_hw;
+	}
+	if (unlikely(skb_cloned(skb))) {
+		/* TX buffer has been cloned */
+		goto dont_put_skbuff_in_hw;
+	}
+	if (unlikely(skb_header_cloned(skb))) {
+		/* TX buffer header has been cloned */
+		goto dont_put_skbuff_in_hw;
+	}
+	if (unlikely(skb->destructor)) {
+		/* TX buffer has a destructor */
+		goto dont_put_skbuff_in_hw;
+	}
+	if (unlikely(skb_shinfo(skb)->nr_frags)) {
+		/* TX buffer has fragments */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto dont_put_skbuff_in_hw;
 	}
 	if (unlikely
 	    (skb->truesize !=
 	     sizeof(*skb) + skb_end_offset(skb))) {
+<<<<<<< HEAD
 		/*
 		   printk("TX buffer truesize has been changed\n");
 		 */
+=======
+		/* TX buffer truesize has been changed */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto dont_put_skbuff_in_hw;
 	}
 
@@ -358,7 +509,13 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 	 */
 	pko_command.s.dontfree = 0;
 
+<<<<<<< HEAD
 	hw_buffer.s.back = ((unsigned long)skb->data >> 7) - ((unsigned long)fpa_head >> 7);
+=======
+	hw_buffer.s.back = ((unsigned long)skb->data >> 7) -
+			   ((unsigned long)fpa_head >> 7);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*(struct sk_buff **)(fpa_head - sizeof(void *)) = skb;
 
 	/*
@@ -384,6 +541,7 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
 dont_put_skbuff_in_hw:
 
 	/* Check if we can use the hardware checksumming */
+<<<<<<< HEAD
 	if (USE_HW_TCPUDP_CHECKSUM && (skb->protocol == htons(ETH_P_IP)) &&
 	    (ip_hdr(skb)->version == 4) && (ip_hdr(skb)->ihl == 5) &&
 	    ((ip_hdr(skb)->frag_off == 0) || (ip_hdr(skb)->frag_off == 1 << 14))
@@ -391,6 +549,17 @@ dont_put_skbuff_in_hw:
 		|| (ip_hdr(skb)->protocol == IPPROTO_UDP))) {
 		/* Use hardware checksum calc */
 		pko_command.s.ipoffp1 = sizeof(struct ethhdr) + 1;
+=======
+	if ((skb->protocol == htons(ETH_P_IP)) &&
+	    (ip_hdr(skb)->version == 4) &&
+	    (ip_hdr(skb)->ihl == 5) &&
+	    ((ip_hdr(skb)->frag_off == 0) ||
+	     (ip_hdr(skb)->frag_off == htons(1 << 14))) &&
+	    ((ip_hdr(skb)->protocol == IPPROTO_TCP) ||
+	     (ip_hdr(skb)->protocol == IPPROTO_UDP))) {
+		/* Use hardware checksum calc */
+		pko_command.s.ipoffp1 = skb_network_offset(skb) + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (USE_ASYNC_IOBDMA) {
@@ -406,7 +575,12 @@ dont_put_skbuff_in_hw:
 		    cvmx_fau_fetch_and_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE, 0);
 	}
 
+<<<<<<< HEAD
 	skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free, priv->fau+qos*4);
+=======
+	skb_to_free = cvm_oct_adjust_skb_to_free(skb_to_free,
+						 priv->fau + qos * 4);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * If we're sending faster than the receive can free them then
@@ -417,22 +591,43 @@ dont_put_skbuff_in_hw:
 
 	if (pko_command.s.dontfree) {
 		queue_type = QUEUE_CORE;
+<<<<<<< HEAD
 		pko_command.s.reg0 = priv->fau+qos*4;
+=======
+		pko_command.s.reg0 = priv->fau + qos * 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		queue_type = QUEUE_HW;
 	}
 	if (USE_ASYNC_IOBDMA)
+<<<<<<< HEAD
 		cvmx_fau_async_fetch_and_add32(CVMX_SCR_SCRATCH, FAU_TOTAL_TX_TO_CLEAN, 1);
+=======
+		cvmx_fau_async_fetch_and_add32(
+				CVMX_SCR_SCRATCH, FAU_TOTAL_TX_TO_CLEAN, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
 
 	/* Drop this packet if we have too many already queued to the HW */
+<<<<<<< HEAD
 	if (unlikely(skb_queue_len(&priv->tx_free_list[qos]) >= MAX_OUT_QUEUE_DEPTH)) {
 		if (dev->tx_queue_len != 0) {
 			/* Drop the lock when notifying the core.  */
 			spin_unlock_irqrestore(&priv->tx_free_list[qos].lock, flags);
 			netif_stop_queue(dev);
 			spin_lock_irqsave(&priv->tx_free_list[qos].lock, flags);
+=======
+	if (unlikely(skb_queue_len(&priv->tx_free_list[qos]) >=
+		     MAX_OUT_QUEUE_DEPTH)) {
+		if (dev->tx_queue_len != 0) {
+			/* Drop the lock when notifying the core.  */
+			spin_unlock_irqrestore(&priv->tx_free_list[qos].lock,
+					       flags);
+			netif_stop_queue(dev);
+			spin_lock_irqsave(&priv->tx_free_list[qos].lock,
+					  flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			/* If not using normal queueing.  */
 			queue_type = QUEUE_DROP;
@@ -448,7 +643,12 @@ dont_put_skbuff_in_hw:
 						 priv->queue + qos,
 						 pko_command, hw_buffer,
 						 CVMX_PKO_LOCK_NONE))) {
+<<<<<<< HEAD
 		printk_ratelimited("%s: Failed to send the packet\n", dev->name);
+=======
+		printk_ratelimited("%s: Failed to send the packet\n",
+				   dev->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		queue_type = QUEUE_DROP;
 	}
 skip_xmit:
@@ -472,6 +672,10 @@ skip_xmit:
 
 	while (skb_to_free > 0) {
 		struct sk_buff *t = __skb_dequeue(&priv->tx_free_list[qos]);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		t->next = to_free_list;
 		to_free_list = t;
 		skb_to_free--;
@@ -482,6 +686,10 @@ skip_xmit:
 	/* Do the actual freeing outside of the lock. */
 	while (to_free_list) {
 		struct sk_buff *t = to_free_list;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		to_free_list = to_free_list->next;
 		dev_kfree_skb_any(t);
 	}
@@ -493,7 +701,12 @@ skip_xmit:
 		cvmx_scratch_write64(CVMX_SCR_SCRATCH, old_scratch);
 		cvmx_scratch_write64(CVMX_SCR_SCRATCH + 8, old_scratch2);
 	} else {
+<<<<<<< HEAD
 		total_to_clean = cvmx_fau_fetch_and_add32(FAU_TOTAL_TX_TO_CLEAN, 1);
+=======
+		total_to_clean = cvmx_fau_fetch_and_add32(
+						FAU_TOTAL_TX_TO_CLEAN, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (total_to_clean & 0x3ff) {
@@ -526,22 +739,40 @@ int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 
 	/* Get a work queue entry */
 	cvmx_wqe_t *work = cvmx_fpa_alloc(CVMX_FPA_WQE_POOL);
+<<<<<<< HEAD
 	if (unlikely(work == NULL)) {
 		printk_ratelimited("%s: Failed to allocate a work "
 				   "queue entry\n", dev->name);
 		priv->stats.tx_dropped++;
 		dev_kfree_skb(skb);
+=======
+
+	if (unlikely(!work)) {
+		printk_ratelimited("%s: Failed to allocate a work queue entry\n",
+				   dev->name);
+		priv->stats.tx_dropped++;
+		dev_kfree_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
 	/* Get a packet buffer */
 	packet_buffer = cvmx_fpa_alloc(CVMX_FPA_PACKET_POOL);
+<<<<<<< HEAD
 	if (unlikely(packet_buffer == NULL)) {
 		printk_ratelimited("%s: Failed to allocate a packet buffer\n",
 				   dev->name);
 		cvmx_fpa_free(work, CVMX_FPA_WQE_POOL, DONT_WRITEBACK(1));
 		priv->stats.tx_dropped++;
 		dev_kfree_skb(skb);
+=======
+	if (unlikely(!packet_buffer)) {
+		printk_ratelimited("%s: Failed to allocate a packet buffer\n",
+				   dev->name);
+		cvmx_fpa_free(work, CVMX_FPA_WQE_POOL, 1);
+		priv->stats.tx_dropped++;
+		dev_kfree_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -553,7 +784,11 @@ int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	 * calculation may add a little extra, but that doesn't
 	 * hurt.
 	 */
+<<<<<<< HEAD
 	copy_location = packet_buffer + sizeof(uint64_t);
+=======
+	copy_location = packet_buffer + sizeof(u64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	copy_location += ((CVMX_HELPER_FIRST_MBUFF_SKIP + 7) & 0xfff8) + 6;
 
 	/*
@@ -568,6 +803,7 @@ int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	 * Fill in some of the work queue fields. We may need to add
 	 * more if the software at the other end needs them.
 	 */
+<<<<<<< HEAD
 	work->hw_chksum = skb->csum;
 	work->len = skb->len;
 	work->ipprt = priv->port;
@@ -575,6 +811,16 @@ int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	work->grp = pow_send_group;
 	work->tag_type = CVMX_HELPER_INPUT_TAG_TYPE;
 	work->tag = pow_send_group;	/* FIXME */
+=======
+	if (!OCTEON_IS_MODEL(OCTEON_CN68XX))
+		work->word0.pip.cn38xx.hw_chksum = skb->csum;
+	work->word1.len = skb->len;
+	cvmx_wqe_set_port(work, priv->port);
+	cvmx_wqe_set_qos(work, priv->port & 0x7);
+	cvmx_wqe_set_grp(work, pow_send_group);
+	work->word1.tag_type = CVMX_HELPER_INPUT_TAG_TYPE;
+	work->word1.tag = pow_send_group;	/* FIXME */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Default to zero. Sets of zero later are commented out */
 	work->word2.u64 = 0;
 	work->word2.s.bufs = 1;
@@ -593,8 +839,13 @@ int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 		work->word2.s.dec_ipcomp = 0;	/* FIXME */
 #endif
 		work->word2.s.tcp_or_udp =
+<<<<<<< HEAD
 		    (ip_hdr(skb)->protocol == IPPROTO_TCP)
 		    || (ip_hdr(skb)->protocol == IPPROTO_UDP);
+=======
+		    (ip_hdr(skb)->protocol == IPPROTO_TCP) ||
+		    (ip_hdr(skb)->protocol == IPPROTO_UDP);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if 0
 		/* FIXME */
 		work->word2.s.dec_ipsec = 0;
@@ -605,8 +856,13 @@ int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 		/* No error, packet is internal */
 		work->word2.s.L4_error = 0;
 #endif
+<<<<<<< HEAD
 		work->word2.s.is_frag = !((ip_hdr(skb)->frag_off == 0)
 					  || (ip_hdr(skb)->frag_off ==
+=======
+		work->word2.s.is_frag = !((ip_hdr(skb)->frag_off == 0) ||
+					  (ip_hdr(skb)->frag_off ==
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					      1 << 14));
 #if 0
 		/* Assume Linux is sending a good packet */
@@ -654,11 +910,19 @@ int cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	/* Submit the packet to the POW */
+<<<<<<< HEAD
 	cvmx_pow_work_submit(work, work->tag, work->tag_type, work->qos,
 			     work->grp);
 	priv->stats.tx_packets++;
 	priv->stats.tx_bytes += skb->len;
 	dev_kfree_skb(skb);
+=======
+	cvmx_pow_work_submit(work, work->word1.tag, work->word1.tag_type,
+			     cvmx_wqe_get_qos(work), cvmx_wqe_get_grp(work));
+	priv->stats.tx_packets++;
+	priv->stats.tx_bytes += skb->len;
+	dev_consume_skb_any(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -689,6 +953,10 @@ static void cvm_oct_tx_do_cleanup(unsigned long arg)
 	for (port = 0; port < TOTAL_NUMBER_OF_PORTS; port++) {
 		if (cvm_oct_device[port]) {
 			struct net_device *dev = cvm_oct_device[port];
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			cvm_oct_free_tx_skbs(dev);
 		}
 	}
@@ -709,7 +977,11 @@ void cvm_oct_tx_initialize(void)
 
 	/* Disable the interrupt.  */
 	cvmx_write_csr(CVMX_CIU_TIMX(1), 0);
+<<<<<<< HEAD
 	/* Register an IRQ hander for to receive CIU_TIMX(1) interrupts */
+=======
+	/* Register an IRQ handler to receive CIU_TIMX(1) interrupts */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i = request_irq(OCTEON_IRQ_TIMER1,
 			cvm_oct_tx_cleanup_watchdog, 0,
 			"Ethernet", cvm_oct_device);

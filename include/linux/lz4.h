@@ -9,8 +9,13 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #define LZ4_MEM_COMPRESS	(4096 * sizeof(unsigned char *))
 #define LZ4HC_MEM_COMPRESS	(65538 * sizeof(unsigned char *))
+=======
+#define LZ4_MEM_COMPRESS	(16384)
+#define LZ4HC_MEM_COMPRESS	(262144 + (2 * sizeof(unsigned char *)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * lz4_compressbound()

@@ -39,18 +39,24 @@ NESTED(handle_sys64, PT_SIZE, sp)
 	.set	at
 #endif
 
+<<<<<<< HEAD
 	dsubu	t0, v0, __NR_64_Linux	# check syscall number
 	sltiu	t0, t0, __NR_64_Linux_syscalls + 1
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if !defined(CONFIG_MIPS32_O32) && !defined(CONFIG_MIPS32_N32)
 	ld	t1, PT_EPC(sp)		# skip syscall on return
 	daddiu	t1, 4			# skip to next instruction
 	sd	t1, PT_EPC(sp)
 #endif
+<<<<<<< HEAD
 	beqz	t0, illegal_syscall
 
 	dsll	t0, v0, 3		# offset into table
 	ld	t2, (sys_call_table - (__NR_64_Linux * 8))(t0)
 					# syscall routine
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sd	a3, PT_R26(sp)		# save a3 for syscall restarting
 
@@ -59,6 +65,20 @@ NESTED(handle_sys64, PT_SIZE, sp)
 	and	t0, t1, t0
 	bnez	t0, syscall_trace_entry
 
+<<<<<<< HEAD
+=======
+syscall_common:
+	dsubu	t2, v0, __NR_64_Linux
+	sltiu   t0, t2, __NR_64_Linux_syscalls + 1
+	beqz	t0, illegal_syscall
+
+	dsll	t0, t2, 3		# offset into table
+	dla	t2, sys_call_table
+	daddu	t0, t2, t0
+	ld	t2, (t0)		# syscall routine
+	beqz	t2, illegal_syscall
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jalr	t2			# Do The Real Thing (TM)
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -78,18 +98,30 @@ n64_syscall_exit:
 
 syscall_trace_entry:
 	SAVE_STATIC
+<<<<<<< HEAD
 	move	s0, t2
 	move	a0, sp
 	jal	syscall_trace_enter
 
 	move	t0, s0
 	RESTORE_STATIC
+=======
+	move	a0, sp
+	move	a1, v0
+	jal	syscall_trace_enter
+
+	bltz	v0, 1f			# seccomp failed? Skip syscall
+
+	RESTORE_STATIC
+	ld	v0, PT_R2(sp)		# Restore syscall (maybe modified)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ld	a0, PT_R4(sp)		# Restore argument registers
 	ld	a1, PT_R5(sp)
 	ld	a2, PT_R6(sp)
 	ld	a3, PT_R7(sp)
 	ld	a4, PT_R8(sp)
 	ld	a5, PT_R9(sp)
+<<<<<<< HEAD
 	jalr	t0
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -103,6 +135,11 @@ syscall_trace_entry:
 1:	sd	v0, PT_R2(sp)		# result
 
 	j	syscall_exit
+=======
+	j	syscall_common
+
+1:	j	syscall_exit
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 illegal_syscall:
 	/* This also isn't a 64-bit syscall, throw an error.  */
@@ -114,7 +151,12 @@ illegal_syscall:
 	END(handle_sys64)
 
 	.align	3
+<<<<<<< HEAD
 sys_call_table:
+=======
+	.type	sys_call_table, @object
+EXPORT(sys_call_table)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	sys_read			/* 5000 */
 	PTR	sys_write
 	PTR	sys_open
@@ -314,7 +356,11 @@ sys_call_table:
 	PTR	sys_sched_getaffinity
 	PTR	sys_cacheflush
 	PTR	sys_cachectl
+<<<<<<< HEAD
 	PTR	sys_sysmips
+=======
+	PTR	__sys_sysmips
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	sys_io_setup			/* 5200 */
 	PTR	sys_io_destroy
 	PTR	sys_io_getevents
@@ -343,8 +389,13 @@ sys_call_table:
 	PTR	sys_tgkill			/* 5225 */
 	PTR	sys_utimes
 	PTR	sys_mbind
+<<<<<<< HEAD
 	PTR	sys_ni_syscall			/* sys_get_mempolicy */
 	PTR	sys_ni_syscall			/* sys_set_mempolicy */
+=======
+	PTR	sys_get_mempolicy
+	PTR	sys_set_mempolicy
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	sys_mq_open			/* 5230 */
 	PTR	sys_mq_unlink
 	PTR	sys_mq_timedsend
@@ -424,4 +475,24 @@ sys_call_table:
 	PTR	sys_kcmp
 	PTR	sys_finit_module
 	PTR	sys_getdents64
+<<<<<<< HEAD
+=======
+	PTR	sys_sched_setattr
+	PTR	sys_sched_getattr		/* 5310 */
+	PTR	sys_renameat2
+	PTR	sys_seccomp
+	PTR	sys_getrandom
+	PTR	sys_memfd_create
+	PTR	sys_bpf				/* 5315 */
+	PTR	sys_execveat
+	PTR	sys_userfaultfd
+	PTR	sys_membarrier
+	PTR	sys_mlock2
+	PTR	sys_copy_file_range		/* 5320 */
+	PTR	sys_preadv2
+	PTR	sys_pwritev2
+	PTR	sys_pkey_mprotect
+	PTR	sys_pkey_alloc
+	PTR	sys_pkey_free			/* 5325 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.size	sys_call_table,.-sys_call_table

@@ -36,6 +36,10 @@
 #include <linux/gameport.h>
 #include <linux/jiffies.h>
 #include <linux/timex.h>
+<<<<<<< HEAD
+=======
+#include <linux/timekeeping.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_DESC	"Analog joystick and gamepad driver"
 
@@ -43,6 +47,13 @@ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
+=======
+static bool use_ktime = true;
+module_param(use_ktime, bool, 0400);
+MODULE_PARM_DESC(use_ktime, "Use ktime for measuring I/O speed");
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Option parsing.
  */
@@ -138,9 +149,15 @@ struct analog_port {
 
 #include <linux/i8253.h>
 
+<<<<<<< HEAD
 #define GET_TIME(x)	do { if (cpu_has_tsc) rdtscl(x); else x = get_time_pit(); } while (0)
 #define DELTA(x,y)	(cpu_has_tsc ? ((y) - (x)) : ((x) - (y) + ((x) < (y) ? PIT_TICK_RATE / HZ : 0)))
 #define TIME_NAME	(cpu_has_tsc?"TSC":"PIT")
+=======
+#define GET_TIME(x)	do { if (boot_cpu_has(X86_FEATURE_TSC)) x = (unsigned int)rdtsc(); else x = get_time_pit(); } while (0)
+#define DELTA(x,y)	(boot_cpu_has(X86_FEATURE_TSC) ? ((y) - (x)) : ((x) - (y) + ((x) < (y) ? PIT_TICK_RATE / HZ : 0)))
+#define TIME_NAME	(boot_cpu_has(X86_FEATURE_TSC)?"TSC":"PIT")
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int get_time_pit(void)
 {
         unsigned long flags;
@@ -155,10 +172,17 @@ static unsigned int get_time_pit(void)
         return count;
 }
 #elif defined(__x86_64__)
+<<<<<<< HEAD
 #define GET_TIME(x)	rdtscl(x)
 #define DELTA(x,y)	((y)-(x))
 #define TIME_NAME	"TSC"
 #elif defined(__alpha__) || defined(CONFIG_MN10300) || defined(CONFIG_ARM) || defined(CONFIG_TILE)
+=======
+#define GET_TIME(x)	do { x = (unsigned int)rdtsc(); } while (0)
+#define DELTA(x,y)	((y)-(x))
+#define TIME_NAME	"TSC"
+#elif defined(__alpha__) || defined(CONFIG_MN10300) || defined(CONFIG_ARM) || defined(CONFIG_ARM64) || defined(CONFIG_TILE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define GET_TIME(x)	do { x = get_cycles(); } while (0)
 #define DELTA(x,y)	((y)-(x))
 #define TIME_NAME	"get_cycles"
@@ -171,6 +195,28 @@ static unsigned long analog_faketime = 0;
 #warning Precise timer not defined for this architecture.
 #endif
 
+<<<<<<< HEAD
+=======
+static inline u64 get_time(void)
+{
+	if (use_ktime) {
+		return ktime_get_ns();
+	} else {
+		unsigned int x;
+		GET_TIME(x);
+		return x;
+	}
+}
+
+static inline unsigned int delta(u64 x, u64 y)
+{
+	if (use_ktime)
+		return y - x;
+	else
+		return DELTA((unsigned int)x, (unsigned int)y);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * analog_decode() decodes analog joystick data and reports input events.
  */
@@ -226,7 +272,12 @@ static void analog_decode(struct analog *analog, int *axes, int *initial, int bu
 static int analog_cooked_read(struct analog_port *port)
 {
 	struct gameport *gameport = port->gameport;
+<<<<<<< HEAD
 	unsigned int time[4], start, loop, now, loopout, timeout;
+=======
+	u64 time[4], start, loop, now;
+	unsigned int loopout, timeout;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char data[4], this, last;
 	unsigned long flags;
 	int i, j;
@@ -236,7 +287,11 @@ static int analog_cooked_read(struct analog_port *port)
 
 	local_irq_save(flags);
 	gameport_trigger(gameport);
+<<<<<<< HEAD
 	GET_TIME(now);
+=======
+	now = get_time();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	local_irq_restore(flags);
 
 	start = now;
@@ -249,16 +304,27 @@ static int analog_cooked_read(struct analog_port *port)
 
 		local_irq_disable();
 		this = gameport_read(gameport) & port->mask;
+<<<<<<< HEAD
 		GET_TIME(now);
 		local_irq_restore(flags);
 
 		if ((last ^ this) && (DELTA(loop, now) < loopout)) {
+=======
+		now = get_time();
+		local_irq_restore(flags);
+
+		if ((last ^ this) && (delta(loop, now) < loopout)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			data[i] = last ^ this;
 			time[i] = now;
 			i++;
 		}
 
+<<<<<<< HEAD
 	} while (this && (i < 4) && (DELTA(start, now) < timeout));
+=======
+	} while (this && (i < 4) && (delta(start, now) < timeout));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	this <<= 4;
 
@@ -266,7 +332,11 @@ static int analog_cooked_read(struct analog_port *port)
 		this |= data[i];
 		for (j = 0; j < 4; j++)
 			if (data[i] & (1 << j))
+<<<<<<< HEAD
 				port->axes[j] = (DELTA(start, time[i]) << ANALOG_FUZZ_BITS) / port->loop;
+=======
+				port->axes[j] = (delta(start, time[i]) << ANALOG_FUZZ_BITS) / port->loop;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return -(this != port->mask);
@@ -365,6 +435,7 @@ static void analog_close(struct input_dev *dev)
 static void analog_calibrate_timer(struct analog_port *port)
 {
 	struct gameport *gameport = port->gameport;
+<<<<<<< HEAD
 	unsigned int i, t, tx, t1, t2, t3;
 	unsigned long flags;
 
@@ -379,17 +450,50 @@ static void analog_calibrate_timer(struct analog_port *port)
 	local_irq_restore(flags);
 
 	port->speed = DELTA(t1, t2) - DELTA(t2, t3);
+=======
+	unsigned int i, t, tx;
+	u64 t1, t2, t3;
+	unsigned long flags;
+
+	if (use_ktime) {
+		port->speed = 1000000;
+	} else {
+		local_irq_save(flags);
+		t1 = get_time();
+#ifdef FAKE_TIME
+		analog_faketime += 830;
+#endif
+		mdelay(1);
+		t2 = get_time();
+		t3 = get_time();
+		local_irq_restore(flags);
+
+		port->speed = delta(t1, t2) - delta(t2, t3);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tx = ~0;
 
 	for (i = 0; i < 50; i++) {
 		local_irq_save(flags);
+<<<<<<< HEAD
 		GET_TIME(t1);
 		for (t = 0; t < 50; t++) { gameport_read(gameport); GET_TIME(t2); }
 		GET_TIME(t3);
 		local_irq_restore(flags);
 		udelay(i);
 		t = DELTA(t1, t2) - DELTA(t2, t3);
+=======
+		t1 = get_time();
+		for (t = 0; t < 50; t++) {
+			gameport_read(gameport);
+			t2 = get_time();
+		}
+		t3 = get_time();
+		local_irq_restore(flags);
+		udelay(i);
+		t = delta(t1, t2) - delta(t2, t3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (t < tx) tx = t;
 	}
 

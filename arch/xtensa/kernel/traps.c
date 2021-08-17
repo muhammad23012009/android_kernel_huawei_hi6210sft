@@ -39,11 +39,15 @@
 #include <asm/pgtable.h>
 #include <asm/processor.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_KGDB
 extern int gdb_enter;
 extern int return_from_debug_flag;
 #endif
+=======
+#include <asm/hw_breakpoint.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Machine specific interrupt handlers
@@ -62,6 +66,10 @@ extern void fast_coprocessor(void);
 
 extern void do_illegal_instruction (struct pt_regs*);
 extern void do_interrupt (struct pt_regs*);
+<<<<<<< HEAD
+=======
+extern void do_nmi(struct pt_regs *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void do_unaligned_user (struct pt_regs*);
 extern void do_multihit (struct pt_regs*, unsigned long);
 extern void do_page_fault (struct pt_regs*, unsigned long);
@@ -101,9 +109,14 @@ static dispatch_init_table_t __initdata dispatch_init_table[] = {
 #if XCHAL_UNALIGNED_LOAD_EXCEPTION || XCHAL_UNALIGNED_STORE_EXCEPTION
 #ifdef CONFIG_XTENSA_UNALIGNED_USER
 { EXCCAUSE_UNALIGNED,		USER,	   fast_unaligned },
+<<<<<<< HEAD
 #else
 { EXCCAUSE_UNALIGNED,		0,	   do_unaligned_user },
 #endif
+=======
+#endif
+{ EXCCAUSE_UNALIGNED,		0,	   do_unaligned_user },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 { EXCCAUSE_UNALIGNED,		KRNL,	   fast_unaligned },
 #endif
 #ifdef CONFIG_MMU
@@ -147,6 +160,12 @@ COPROCESSOR(6),
 #if XTENSA_HAVE_COPROCESSOR(7)
 COPROCESSOR(7),
 #endif
+<<<<<<< HEAD
+=======
+#if XTENSA_FAKE_NMI
+{ EXCCAUSE_MAPPED_NMI,			0,		do_nmi },
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 { EXCCAUSE_MAPPED_DEBUG,		0,		do_debug },
 { -1, -1, 0 }
 
@@ -157,7 +176,13 @@ COPROCESSOR(7),
  * 2. it is a temporary memory buffer for the exception handlers.
  */
 
+<<<<<<< HEAD
 unsigned long exc_table[EXC_TABLE_SIZE/4];
+=======
+DEFINE_PER_CPU(unsigned long, exc_table[EXC_TABLE_SIZE/4]);
+
+DEFINE_PER_CPU(struct debug_table, debug_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void die(const char*, struct pt_regs*, long);
 
@@ -200,6 +225,58 @@ void do_multihit(struct pt_regs *regs, unsigned long exccause)
 
 extern void do_IRQ(int, struct pt_regs *);
 
+<<<<<<< HEAD
+=======
+#if XTENSA_FAKE_NMI
+
+#define IS_POW2(v) (((v) & ((v) - 1)) == 0)
+
+#if !(PROFILING_INTLEVEL == XCHAL_EXCM_LEVEL && \
+      IS_POW2(XTENSA_INTLEVEL_MASK(PROFILING_INTLEVEL)))
+#warning "Fake NMI is requested for PMM, but there are other IRQs at or above its level."
+#warning "Fake NMI will be used, but there will be a bugcheck if one of those IRQs fire."
+
+static inline void check_valid_nmi(void)
+{
+	unsigned intread = get_sr(interrupt);
+	unsigned intenable = get_sr(intenable);
+
+	BUG_ON(intread & intenable &
+	       ~(XTENSA_INTLEVEL_ANDBELOW_MASK(PROFILING_INTLEVEL) ^
+		 XTENSA_INTLEVEL_MASK(PROFILING_INTLEVEL) ^
+		 BIT(XCHAL_PROFILING_INTERRUPT)));
+}
+
+#else
+
+static inline void check_valid_nmi(void)
+{
+}
+
+#endif
+
+irqreturn_t xtensa_pmu_irq_handler(int irq, void *dev_id);
+
+DEFINE_PER_CPU(unsigned long, nmi_count);
+
+void do_nmi(struct pt_regs *regs)
+{
+	struct pt_regs *old_regs;
+
+	if ((regs->ps & PS_INTLEVEL_MASK) < LOCKLEVEL)
+		trace_hardirqs_off();
+
+	old_regs = set_irq_regs(regs);
+	nmi_enter();
+	++*this_cpu_ptr(&nmi_count);
+	check_valid_nmi();
+	xtensa_pmu_irq_handler(0, NULL);
+	nmi_exit();
+	set_irq_regs(old_regs);
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void do_interrupt(struct pt_regs *regs)
 {
 	static const unsigned int_level_mask[] = {
@@ -212,6 +289,15 @@ void do_interrupt(struct pt_regs *regs)
 		XCHAL_INTLEVEL6_MASK,
 		XCHAL_INTLEVEL7_MASK,
 	};
+<<<<<<< HEAD
+=======
+	struct pt_regs *old_regs;
+
+	trace_hardirqs_off();
+
+	old_regs = set_irq_regs(regs);
+	irq_enter();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (;;) {
 		unsigned intread = get_sr(interrupt);
@@ -227,6 +313,7 @@ void do_interrupt(struct pt_regs *regs)
 		}
 
 		if (level == 0)
+<<<<<<< HEAD
 			return;
 
 		/*
@@ -242,6 +329,15 @@ void do_interrupt(struct pt_regs *regs)
 			do_IRQ(i, regs);
 		}
 	}
+=======
+			break;
+
+		do_IRQ(__ffs(int_at_level), regs);
+	}
+
+	irq_exit();
+	set_irq_regs(old_regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -269,7 +365,10 @@ do_illegal_instruction(struct pt_regs *regs)
  */
 
 #if XCHAL_UNALIGNED_LOAD_EXCEPTION || XCHAL_UNALIGNED_STORE_EXCEPTION
+<<<<<<< HEAD
 #ifndef CONFIG_XTENSA_UNALIGNED_USER
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void
 do_unaligned_user (struct pt_regs *regs)
 {
@@ -287,6 +386,7 @@ do_unaligned_user (struct pt_regs *regs)
 	info.si_errno = 0;
 	info.si_code = BUS_ADRALN;
 	info.si_addr = (void *) regs->excvaddr;
+<<<<<<< HEAD
 	force_sig_info(SIGSEGV, &info, current);
 
 }
@@ -310,6 +410,29 @@ do_debug(struct pt_regs *regs)
 	}
 #endif
 
+=======
+	force_sig_info(SIGBUS, &info, current);
+
+}
+#endif
+
+/* Handle debug events.
+ * When CONFIG_HAVE_HW_BREAKPOINT is on this handler is called with
+ * preemption disabled to avoid rescheduling and keep mapping of hardware
+ * breakpoint structures to debug registers intact, so that
+ * DEBUGCAUSE.DBNUM could be used in case of data breakpoint hit.
+ */
+void
+do_debug(struct pt_regs *regs)
+{
+#ifdef CONFIG_HAVE_HW_BREAKPOINT
+	int ret = check_hw_breakpoint(regs);
+
+	preempt_enable();
+	if (ret == 0)
+		return;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__die_if_kernel("Breakpoint in kernel", regs, SIGKILL);
 
 	/* If in user mode, send SIGTRAP signal to current process */
@@ -318,17 +441,52 @@ do_debug(struct pt_regs *regs)
 }
 
 
+<<<<<<< HEAD
+=======
+static void set_handler(int idx, void *handler)
+{
+	unsigned int cpu;
+
+	for_each_possible_cpu(cpu)
+		per_cpu(exc_table, cpu)[idx] = (unsigned long)handler;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Set exception C handler - for temporary use when probing exceptions */
 
 void * __init trap_set_handler(int cause, void *handler)
 {
+<<<<<<< HEAD
 	unsigned long *entry = &exc_table[EXC_TABLE_DEFAULT / 4 + cause];
 	void *previous = (void *)*entry;
 	*entry = (unsigned long)handler;
+=======
+	void *previous = (void *)per_cpu(exc_table, 0)[
+		EXC_TABLE_DEFAULT / 4 + cause];
+	set_handler(EXC_TABLE_DEFAULT / 4 + cause, handler);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return previous;
 }
 
 
+<<<<<<< HEAD
+=======
+static void trap_init_excsave(void)
+{
+	unsigned long excsave1 = (unsigned long)this_cpu_ptr(exc_table);
+	__asm__ __volatile__("wsr  %0, excsave1\n" : : "a" (excsave1));
+}
+
+static void trap_init_debug(void)
+{
+	unsigned long debugsave = (unsigned long)this_cpu_ptr(&debug_table);
+
+	this_cpu_ptr(&debug_table)->debug_exception = debug_exception;
+	__asm__ __volatile__("wsr %0, excsave" __stringify(XCHAL_DEBUGLEVEL)
+			     :: "a"(debugsave));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Initialize dispatch tables.
  *
@@ -342,8 +500,11 @@ void * __init trap_set_handler(int cause, void *handler)
  * See vectors.S for more details.
  */
 
+<<<<<<< HEAD
 #define set_handler(idx,handler) (exc_table[idx] = (unsigned long) (handler))
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init trap_init(void)
 {
 	int i;
@@ -373,10 +534,24 @@ void __init trap_init(void)
 	}
 
 	/* Initialize EXCSAVE_1 to hold the address of the exception table. */
+<<<<<<< HEAD
 
 	i = (unsigned long)exc_table;
 	__asm__ __volatile__("wsr  %0, excsave1\n" : : "a" (i));
 }
+=======
+	trap_init_excsave();
+	trap_init_debug();
+}
+
+#ifdef CONFIG_SMP
+void secondary_trap_init(void)
+{
+	trap_init_excsave();
+	trap_init_debug();
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This function dumps the current valid window frame and other base registers.
@@ -392,6 +567,7 @@ void show_regs(struct pt_regs * regs)
 
 	for (i = 0; i < 16; i++) {
 		if ((i % 8) == 0)
+<<<<<<< HEAD
 			printk(KERN_INFO "a%02d:", i);
 		printk(KERN_CONT " %08lx", regs->areg[i]);
 	}
@@ -405,13 +581,32 @@ void show_regs(struct pt_regs * regs)
 		printk("wb: %08lx, ws: %08lx, wmask: %08lx, syscall: %ld\n",
 		       regs->windowbase, regs->windowstart, regs->wmask,
 		       regs->syscall);
+=======
+			pr_info("a%02d:", i);
+		pr_cont(" %08lx", regs->areg[i]);
+	}
+	pr_cont("\n");
+	pr_info("pc: %08lx, ps: %08lx, depc: %08lx, excvaddr: %08lx\n",
+		regs->pc, regs->ps, regs->depc, regs->excvaddr);
+	pr_info("lbeg: %08lx, lend: %08lx lcount: %08lx, sar: %08lx\n",
+		regs->lbeg, regs->lend, regs->lcount, regs->sar);
+	if (user_mode(regs))
+		pr_cont("wb: %08lx, ws: %08lx, wmask: %08lx, syscall: %ld\n",
+			regs->windowbase, regs->windowstart, regs->wmask,
+			regs->syscall);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int show_trace_cb(struct stackframe *frame, void *data)
 {
 	if (kernel_text_address(frame->pc)) {
+<<<<<<< HEAD
 		printk(" [<%08lx>] ", frame->pc);
 		print_symbol("%s\n", frame->pc);
+=======
+		pr_cont(" [<%08lx>]", frame->pc);
+		print_symbol(" %s\n", frame->pc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -421,6 +616,7 @@ void show_trace(struct task_struct *task, unsigned long *sp)
 	if (!sp)
 		sp = stack_pointer(task);
 
+<<<<<<< HEAD
 	printk("Call Trace:");
 #ifdef CONFIG_KALLSYMS
 	printk("\n");
@@ -434,6 +630,15 @@ void show_trace(struct task_struct *task, unsigned long *sp)
  * with at least a bit of error checking ...
  */
 
+=======
+	pr_info("Call Trace:\n");
+	walk_stackframe(sp, show_trace_cb, NULL);
+#ifndef CONFIG_KALLSYMS
+	pr_cont("\n");
+#endif
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int kstack_depth_to_print = 24;
 
 void show_stack(struct task_struct *task, unsigned long *sp)
@@ -445,11 +650,16 @@ void show_stack(struct task_struct *task, unsigned long *sp)
 		sp = stack_pointer(task);
 	stack = sp;
 
+<<<<<<< HEAD
 	printk("\nStack: ");
+=======
+	pr_info("Stack:\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < kstack_depth_to_print; i++) {
 		if (kstack_end(sp))
 			break;
+<<<<<<< HEAD
 		if (i && ((i % 8) == 0))
 			printk("\n       ");
 		printk("%08lx ", *sp++);
@@ -474,16 +684,29 @@ void show_code(unsigned int *pc)
 	}
 }
 
+=======
+		pr_cont(" %08lx", *sp++);
+		if (i % 8 == 7)
+			pr_cont("\n");
+	}
+	show_trace(task, stack);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DEFINE_SPINLOCK(die_lock);
 
 void die(const char * str, struct pt_regs * regs, long err)
 {
 	static int die_counter;
+<<<<<<< HEAD
 	int nl = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	console_verbose();
 	spin_lock_irq(&die_lock);
 
+<<<<<<< HEAD
 	printk("%s: sig: %ld [#%d]\n", str, err, ++die_counter);
 #ifdef CONFIG_PREEMPT
 	printk("PREEMPT ");
@@ -491,6 +714,10 @@ void die(const char * str, struct pt_regs * regs, long err)
 #endif
 	if (nl)
 		printk("\n");
+=======
+	pr_info("%s: sig: %ld [#%d]%s\n", str, err, ++die_counter,
+		IS_ENABLED(CONFIG_PREEMPT) ? " PREEMPT" : "");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	show_regs(regs);
 	if (!user_mode(regs))
 		show_stack(NULL, (unsigned long*)regs->areg[1]);

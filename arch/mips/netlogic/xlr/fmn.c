@@ -74,13 +74,21 @@ static irqreturn_t fmn_message_handler(int irq, void *data)
 	struct nlm_fmn_msg msg;
 	uint32_t mflags, bkt_status;
 
+<<<<<<< HEAD
 	mflags = nlm_cop2_enable();
+=======
+	mflags = nlm_cop2_enable_irqsave();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Disable message ring interrupt */
 	nlm_fmn_setup_intr(irq, 0);
 	while (1) {
 		/* 8 bkts per core, [24:31] each bit represents one bucket
 		 * Bit is Zero if bucket is not empty */
+<<<<<<< HEAD
 		bkt_status = (nlm_read_c2_status() >> 24) & 0xff;
+=======
+		bkt_status = (nlm_read_c2_status0() >> 24) & 0xff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (bkt_status == 0xff)
 			break;
 		for (bucket = 0; bucket < 8; bucket++) {
@@ -97,16 +105,27 @@ static irqreturn_t fmn_message_handler(int irq, void *data)
 				pr_warn("No msgring handler for stnid %d\n",
 						src_stnid);
 			else {
+<<<<<<< HEAD
 				nlm_cop2_restore(mflags);
 				hndlr->action(bucket, src_stnid, size, code,
 					&msg, hndlr->arg);
 				mflags = nlm_cop2_enable();
+=======
+				nlm_cop2_disable_irqrestore(mflags);
+				hndlr->action(bucket, src_stnid, size, code,
+					&msg, hndlr->arg);
+				mflags = nlm_cop2_enable_irqsave();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	};
 	/* Enable message ring intr, to any thread in core */
 	nlm_fmn_setup_intr(irq, (1 << nlm_threads_per_core) - 1);
+<<<<<<< HEAD
 	nlm_cop2_restore(mflags);
+=======
+	nlm_cop2_disable_irqrestore(mflags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return IRQ_HANDLED;
 }
 
@@ -128,7 +147,11 @@ void xlr_percpu_fmn_init(void)
 
 	bucket_sizes = xlr_board_fmn_config.bucket_size;
 	cpu_fmn_info = &xlr_board_fmn_config.cpu[id];
+<<<<<<< HEAD
 	flags = nlm_cop2_enable();
+=======
+	flags = nlm_cop2_enable_irqsave();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Setup bucket sizes for the core. */
 	nlm_write_c2_bucksize(0, bucket_sizes[id * 8 + 0]);
@@ -166,7 +189,11 @@ void xlr_percpu_fmn_init(void)
 
 	/* enable FMN interrupts on this CPU */
 	nlm_fmn_setup_intr(IRQ_FMN, (1 << nlm_threads_per_core) - 1);
+<<<<<<< HEAD
 	nlm_cop2_restore(flags);
+=======
+	nlm_cop2_disable_irqrestore(flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -198,7 +225,13 @@ void nlm_setup_fmn_irq(void)
 	/* setup irq only once */
 	setup_irq(IRQ_FMN, &fmn_irqaction);
 
+<<<<<<< HEAD
 	flags = nlm_cop2_enable();
 	nlm_fmn_setup_intr(IRQ_FMN, (1 << nlm_threads_per_core) - 1);
 	nlm_cop2_restore(flags);
+=======
+	flags = nlm_cop2_enable_irqsave();
+	nlm_fmn_setup_intr(IRQ_FMN, (1 << nlm_threads_per_core) - 1);
+	nlm_cop2_disable_irqrestore(flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

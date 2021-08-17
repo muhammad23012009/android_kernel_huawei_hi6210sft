@@ -9,12 +9,21 @@
 #include <linux/pfn.h>
 #include <linux/suspend.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <asm/ctl_reg.h>
 
 /*
  * References to section boundaries
  */
 extern const void __nosave_begin, __nosave_end;
+=======
+#include <linux/pci.h>
+#include <asm/ctl_reg.h>
+#include <asm/ipl.h>
+#include <asm/cio.h>
+#include <asm/sections.h>
+#include "entry.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The restore of the saved pages in an hibernation image will set
@@ -138,6 +147,11 @@ int pfn_is_nosave(unsigned long pfn)
 {
 	unsigned long nosave_begin_pfn = PFN_DOWN(__pa(&__nosave_begin));
 	unsigned long nosave_end_pfn = PFN_DOWN(__pa(&__nosave_end));
+<<<<<<< HEAD
+=======
+	unsigned long eshared_pfn = PFN_DOWN(__pa(&_eshared)) - 1;
+	unsigned long stext_pfn = PFN_DOWN(__pa(&_stext));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Always save lowcore pages (LC protection might be enabled). */
 	if (pfn <= LC_PAGES)
@@ -145,6 +159,11 @@ int pfn_is_nosave(unsigned long pfn)
 	if (pfn >= nosave_begin_pfn && pfn < nosave_end_pfn)
 		return 1;
 	/* Skip memory holes and read-only pages (NSS, DCSS, ...). */
+<<<<<<< HEAD
+=======
+	if (pfn >= stext_pfn && pfn <= eshared_pfn)
+		return ipl_info.type == IPL_TYPE_NSS ? 1 : 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (tprot(PFN_PHYS(pfn)))
 		return 1;
 	return 0;
@@ -211,3 +230,14 @@ void restore_processor_state(void)
 	__ctl_set_bit(0,28);
 	local_mcck_enable();
 }
+<<<<<<< HEAD
+=======
+
+/* Called at the end of swsusp_arch_resume */
+void s390_early_resume(void)
+{
+	lgr_info_log();
+	channel_subsystem_reinit();
+	zpci_rescan();
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

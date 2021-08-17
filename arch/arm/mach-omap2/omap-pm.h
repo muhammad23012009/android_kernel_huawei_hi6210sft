@@ -17,7 +17,11 @@
 #include <linux/device.h>
 #include <linux/cpufreq.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/opp.h>
+=======
+#include <linux/pm_opp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * agent_id values for use with omap_pm_set_min_bus_tput():
@@ -50,6 +54,7 @@ int __init omap_pm_if_early_init(void);
  */
 int __init omap_pm_if_init(void);
 
+<<<<<<< HEAD
 /**
  * omap_pm_if_exit - OMAP PM exit code
  *
@@ -58,6 +63,8 @@ int __init omap_pm_if_init(void);
  */
 void omap_pm_if_exit(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Device-driver-originated constraints (via board-*.c files, platform_data)
  */
@@ -132,6 +139,7 @@ int omap_pm_set_max_mpu_wakeup_lat(struct device *dev, long t);
 int omap_pm_set_min_bus_tput(struct device *dev, u8 agent_id, unsigned long r);
 
 
+<<<<<<< HEAD
 /**
  * omap_pm_set_max_dev_wakeup_lat - set the maximum device enable latency
  * @req_dev: struct device * requesting the constraint, or NULL if none
@@ -289,6 +297,8 @@ void omap_pm_dsp_set_min_opp(u8 opp_id);
 u8 omap_pm_dsp_get_opp(void);
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * CPUFreq-originated constraint
  *
@@ -296,6 +306,7 @@ u8 omap_pm_dsp_get_opp(void);
  * functions.
  */
 
+<<<<<<< HEAD
 /**
  * omap_pm_cpu_get_freq_table - return a cpufreq_frequency_table array ptr
  *
@@ -323,6 +334,8 @@ void omap_pm_cpu_set_freq(unsigned long f);
  */
 unsigned long omap_pm_cpu_get_freq(void);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Device context loss tracking

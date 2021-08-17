@@ -16,6 +16,7 @@
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "xfs.h"
+<<<<<<< HEAD
 #include "xfs_fs.h"
 #include "xfs_types.h"
 #include "xfs_log.h"
@@ -27,10 +28,18 @@
 #include "xfs_dinode.h"
 #include "xfs_inode.h"
 #include "xfs_utils.h"
+=======
+#include "xfs_format.h"
+#include "xfs_fs.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+#include "xfs_mount.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "xfs_error.h"
 
 #ifdef DEBUG
 
+<<<<<<< HEAD
 int	xfs_etrap[XFS_ERROR_NTRAP] = {
 	0,
 };
@@ -54,6 +63,8 @@ xfs_error_trap(int e)
 	return e;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int	xfs_etest[XFS_NUM_INJECT_ERROR];
 int64_t	xfs_etest_fsid[XFS_NUM_INJECT_ERROR];
 char *	xfs_etest_fsname[XFS_NUM_INJECT_ERROR];
@@ -84,12 +95,22 @@ xfs_error_test(int error_tag, int *fsidp, char *expression,
 }
 
 int
+<<<<<<< HEAD
 xfs_errortag_add(int error_tag, xfs_mount_t *mp)
+=======
+xfs_errortag_add(unsigned int error_tag, xfs_mount_t *mp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 	int len;
 	int64_t fsid;
 
+<<<<<<< HEAD
+=======
+	if (error_tag >= XFS_ERRTAG_MAX)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(&fsid, mp->m_fixedfsid, sizeof(xfs_fsid_t));
 
 	for (i = 0; i < XFS_NUM_INJECT_ERROR; i++)  {
@@ -156,11 +177,19 @@ xfs_error_report(
 	struct xfs_mount	*mp,
 	const char		*filename,
 	int			linenum,
+<<<<<<< HEAD
 	inst_t			*ra)
 {
 	if (level <= xfs_error_level) {
 		xfs_alert_tag(mp, XFS_PTAG_ERROR_REPORT,
 		"Internal error %s at line %d of file %s.  Caller 0x%p\n",
+=======
+	void			*ra)
+{
+	if (level <= xfs_error_level) {
+		xfs_alert_tag(mp, XFS_PTAG_ERROR_REPORT,
+		"Internal error %s at line %d of file %s.  Caller %pS",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    tag, linenum, filename, ra);
 
 		xfs_stack_trace();
@@ -175,10 +204,42 @@ xfs_corruption_error(
 	void			*p,
 	const char		*filename,
 	int			linenum,
+<<<<<<< HEAD
 	inst_t			*ra)
+=======
+	void			*ra)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (level <= xfs_error_level)
 		xfs_hex_dump(p, 64);
 	xfs_error_report(tag, level, mp, filename, linenum, ra);
 	xfs_alert(mp, "Corruption detected. Unmount and run xfs_repair");
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Warnings specifically for verifier errors.  Differentiate CRC vs. invalid
+ * values, and omit the stack trace unless the error level is tuned high.
+ */
+void
+xfs_verifier_error(
+	struct xfs_buf		*bp)
+{
+	struct xfs_mount *mp = bp->b_target->bt_mount;
+
+	xfs_alert(mp, "Metadata %s detected at %pS, %s block 0x%llx",
+		  bp->b_error == -EFSBADCRC ? "CRC error" : "corruption",
+		  __return_address, bp->b_ops->name, bp->b_bn);
+
+	xfs_alert(mp, "Unmount and run xfs_repair");
+
+	if (xfs_error_level >= XFS_ERRLEVEL_LOW) {
+		xfs_alert(mp, "First 64 bytes of corrupted metadata buffer:");
+		xfs_hex_dump(xfs_buf_offset(bp, 0), 64);
+	}
+
+	if (xfs_error_level >= XFS_ERRLEVEL_HIGH)
+		xfs_stack_trace();
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -20,7 +20,11 @@
 /* D1Ar1:D0Ar2 -- State
  * D0Ar3       -- SigNum
  * D0Ar4       -- Triggers
+<<<<<<< HEAD
  * D1Ar5       -- InstOrSWSId
+=======
+ * D1Ar5       -- Inst
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * D0Ar6       -- pTBI (volatile)
  */
 ___TBIHandleDFR:

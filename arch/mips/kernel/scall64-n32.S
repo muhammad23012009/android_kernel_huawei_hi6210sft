@@ -42,9 +42,12 @@ NESTED(handle_sysn32, PT_SIZE, sp)
 #endif
 	beqz	t0, not_n32_scall
 
+<<<<<<< HEAD
 	dsll	t0, v0, 3		# offset into table
 	ld	t2, (sysn32_call_table - (__NR_N32_Linux * 8))(t0)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sd	a3, PT_R26(sp)		# save a3 for syscall restarting
 
 	li	t1, _TIF_WORK_SYSCALL_ENTRY
@@ -52,6 +55,13 @@ NESTED(handle_sysn32, PT_SIZE, sp)
 	and	t0, t1, t0
 	bnez	t0, n32_syscall_trace_entry
 
+<<<<<<< HEAD
+=======
+syscall_common:
+	dsll	t0, v0, 3		# offset into table
+	ld	t2, (sysn32_call_table - (__NR_N32_Linux * 8))(t0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	jalr	t2			# Do The Real Thing (TM)
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -70,18 +80,30 @@ NESTED(handle_sysn32, PT_SIZE, sp)
 
 n32_syscall_trace_entry:
 	SAVE_STATIC
+<<<<<<< HEAD
 	move	s0, t2
 	move	a0, sp
 	jal	syscall_trace_enter
 
 	move	t0, s0
 	RESTORE_STATIC
+=======
+	move	a0, sp
+	move	a1, v0
+	jal	syscall_trace_enter
+
+	bltz	v0, 1f			# seccomp failed? Skip syscall
+
+	RESTORE_STATIC
+	ld	v0, PT_R2(sp)		# Restore syscall (maybe modified)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ld	a0, PT_R4(sp)		# Restore argument registers
 	ld	a1, PT_R5(sp)
 	ld	a2, PT_R6(sp)
 	ld	a3, PT_R7(sp)
 	ld	a4, PT_R8(sp)
 	ld	a5, PT_R9(sp)
+<<<<<<< HEAD
 	jalr	t0
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -95,6 +117,16 @@ n32_syscall_trace_entry:
 1:	sd	v0, PT_R2(sp)		# result
 
 	j	syscall_exit
+=======
+
+	dsubu	t2, v0, __NR_N32_Linux	# check (new) syscall number
+	sltiu   t0, t2, __NR_N32_Linux_syscalls + 1
+	beqz	t0, not_n32_scall
+
+	j	syscall_common
+
+1:	j	syscall_exit
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 not_n32_scall:
 	/* This is not an n32 compatibility syscall, pass it on to
@@ -103,6 +135,10 @@ not_n32_scall:
 
 	END(handle_sysn32)
 
+<<<<<<< HEAD
+=======
+	.type	sysn32_call_table, @object
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT(sysn32_call_table)
 	PTR	sys_read			/* 6000 */
 	PTR	sys_write
@@ -158,7 +194,11 @@ EXPORT(sysn32_call_table)
 	PTR	sys_getpeername
 	PTR	sys_socketpair
 	PTR	compat_sys_setsockopt
+<<<<<<< HEAD
 	PTR	sys_getsockopt
+=======
+	PTR	compat_sys_getsockopt
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	__sys_clone			/* 6055 */
 	PTR	__sys_fork
 	PTR	compat_sys_execve
@@ -303,7 +343,11 @@ EXPORT(sysn32_call_table)
 	PTR	compat_sys_sched_getaffinity
 	PTR	sys_cacheflush
 	PTR	sys_cachectl
+<<<<<<< HEAD
 	PTR	sys_sysmips
+=======
+	PTR	__sys_sysmips
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	compat_sys_io_setup			/* 6200 */
 	PTR	sys_io_destroy
 	PTR	compat_sys_io_getevents
@@ -335,9 +379,15 @@ EXPORT(sysn32_call_table)
 	PTR	compat_sys_clock_nanosleep
 	PTR	sys_tgkill
 	PTR	compat_sys_utimes		/* 6230 */
+<<<<<<< HEAD
 	PTR	sys_ni_syscall			/* sys_mbind */
 	PTR	sys_ni_syscall			/* sys_get_mempolicy */
 	PTR	sys_ni_syscall			/* sys_set_mempolicy */
+=======
+	PTR	compat_sys_mbind
+	PTR	compat_sys_get_mempolicy
+	PTR	compat_sys_set_mempolicy
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	compat_sys_mq_open
 	PTR	sys_mq_unlink			/* 6235 */
 	PTR	compat_sys_mq_timedsend
@@ -354,7 +404,11 @@ EXPORT(sysn32_call_table)
 	PTR	sys_inotify_init
 	PTR	sys_inotify_add_watch
 	PTR	sys_inotify_rm_watch
+<<<<<<< HEAD
 	PTR	sys_migrate_pages		/* 6250 */
+=======
+	PTR	compat_sys_migrate_pages	/* 6250 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	sys_openat
 	PTR	sys_mkdirat
 	PTR	sys_mknodat
@@ -375,7 +429,11 @@ EXPORT(sysn32_call_table)
 	PTR	sys_sync_file_range
 	PTR	sys_tee
 	PTR	compat_sys_vmsplice		/* 6270 */
+<<<<<<< HEAD
 	PTR	sys_move_pages
+=======
+	PTR	compat_sys_move_pages
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	PTR	compat_sys_set_robust_list
 	PTR	compat_sys_get_robust_list
 	PTR	compat_sys_kexec_load
@@ -417,4 +475,24 @@ EXPORT(sysn32_call_table)
 	PTR	compat_sys_process_vm_writev	/* 6310 */
 	PTR	sys_kcmp
 	PTR	sys_finit_module
+<<<<<<< HEAD
+=======
+	PTR	sys_sched_setattr
+	PTR	sys_sched_getattr
+	PTR	sys_renameat2			/* 6315 */
+	PTR	sys_seccomp
+	PTR	sys_getrandom
+	PTR	sys_memfd_create
+	PTR	sys_bpf
+	PTR	compat_sys_execveat		/* 6320 */
+	PTR	sys_userfaultfd
+	PTR	sys_membarrier
+	PTR	sys_mlock2
+	PTR	sys_copy_file_range
+	PTR	compat_sys_preadv2		/* 6325 */
+	PTR	compat_sys_pwritev2
+	PTR	sys_pkey_mprotect
+	PTR	sys_pkey_alloc
+	PTR	sys_pkey_free
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.size	sysn32_call_table,.-sysn32_call_table

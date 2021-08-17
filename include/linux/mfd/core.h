@@ -17,6 +17,16 @@
 #include <linux/platform_device.h>
 
 struct irq_domain;
+<<<<<<< HEAD
+=======
+struct property_entry;
+
+/* Matches ACPI PNP id, either _HID or _CID, or ACPI _ADR */
+struct mfd_cell_acpi_match {
+	const char			*pnpid;
+	const unsigned long long	adr;
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * This struct describes the MFD part ("cell").
@@ -38,12 +48,25 @@ struct mfd_cell {
 	/* platform data passed to the sub devices drivers */
 	void			*platform_data;
 	size_t			pdata_size;
+<<<<<<< HEAD
+=======
+
+	/* device properties passed to the sub devices drivers */
+	struct property_entry *properties;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Device Tree compatible string
 	 * See: Documentation/devicetree/usage-model.txt Chapter 2.2 for details
 	 */
 	const char		*of_compatible;
 
+<<<<<<< HEAD
+=======
+	/* Matches ACPI */
+	const struct mfd_cell_acpi_match	*acpi_match;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * These resources can be specified relative to the parent device.
 	 * For accessing hardware you should use resources from the platform dev
@@ -59,6 +82,15 @@ struct mfd_cell {
 	 * pm_runtime_no_callbacks().
 	 */
 	bool			pm_runtime_no_callbacks;
+<<<<<<< HEAD
+=======
+
+	/* A list of regulator supplies that should be mapped to the MFD
+	 * device rather than the child device when requested
+	 */
+	const char * const	*parent_supplies;
+	int			num_parent_supplies;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -98,10 +130,30 @@ static inline const struct mfd_cell *mfd_get_cell(struct platform_device *pdev)
 }
 
 extern int mfd_add_devices(struct device *parent, int id,
+<<<<<<< HEAD
 			   struct mfd_cell *cells, int n_devs,
 			   struct resource *mem_base,
 			   int irq_base, struct irq_domain *irq_domain);
 
 extern void mfd_remove_devices(struct device *parent);
 
+=======
+			   const struct mfd_cell *cells, int n_devs,
+			   struct resource *mem_base,
+			   int irq_base, struct irq_domain *irq_domain);
+
+static inline int mfd_add_hotplug_devices(struct device *parent,
+		const struct mfd_cell *cells, int n_devs)
+{
+	return mfd_add_devices(parent, PLATFORM_DEVID_AUTO, cells, n_devs,
+			NULL, 0, NULL);
+}
+
+extern void mfd_remove_devices(struct device *parent);
+
+extern int devm_mfd_add_devices(struct device *dev, int id,
+				const struct mfd_cell *cells, int n_devs,
+				struct resource *mem_base,
+				int irq_base, struct irq_domain *irq_domain);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

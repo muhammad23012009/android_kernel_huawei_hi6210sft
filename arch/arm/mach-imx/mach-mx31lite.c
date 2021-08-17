@@ -42,6 +42,10 @@
 #include "board-mx31lite.h"
 #include "common.h"
 #include "devices-imx31.h"
+<<<<<<< HEAD
+=======
+#include "ehci.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "hardware.h"
 #include "iomux-mx3.h"
 #include "ulpi.h"
@@ -51,6 +55,22 @@
  */
 
 static unsigned int mx31lite_pins[] = {
+<<<<<<< HEAD
+=======
+	/* UART1 */
+	MX31_PIN_CTS1__CTS1,
+	MX31_PIN_RTS1__RTS1,
+	MX31_PIN_TXD1__TXD1,
+	MX31_PIN_RXD1__RXD1,
+	/* SPI 0 */
+	MX31_PIN_CSPI1_SCLK__SCLK,
+	MX31_PIN_CSPI1_MOSI__MOSI,
+	MX31_PIN_CSPI1_MISO__MISO,
+	MX31_PIN_CSPI1_SPI_RDY__SPI_RDY,
+	MX31_PIN_CSPI1_SS0__SS0,
+	MX31_PIN_CSPI1_SS1__SS1,
+	MX31_PIN_CSPI1_SS2__SS2,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* LAN9117 IRQ pin */
 	IOMUX_MODE(MX31_PIN_SFS6, IOMUX_CONFIG_GPIO),
 	/* SPI 1 */
@@ -63,6 +83,26 @@ static unsigned int mx31lite_pins[] = {
 	MX31_PIN_CSPI2_SS2__SS2,
 };
 
+<<<<<<< HEAD
+=======
+/* UART */
+static const struct imxuart_platform_data uart_pdata __initconst = {
+	.flags = IMXUART_HAVE_RTSCTS,
+};
+
+/* SPI */
+static int spi0_internal_chipselect[] = {
+	MXC_SPI_CS(0),
+	MXC_SPI_CS(1),
+	MXC_SPI_CS(2),
+};
+
+static const struct spi_imx_master spi0_pdata __initconst = {
+	.chipselect	= spi0_internal_chipselect,
+	.num_chipselect	= ARRAY_SIZE(spi0_internal_chipselect),
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct mxc_nand_platform_data
 mx31lite_nand_board_info __initconst  = {
 	.width = 1,
@@ -102,13 +142,22 @@ static struct platform_device smsc911x_device = {
  * The MC13783 is the only hard-wired SPI device on the module.
  */
 
+<<<<<<< HEAD
 static int spi_internal_chipselect[] = {
+=======
+static int spi1_internal_chipselect[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	MXC_SPI_CS(0),
 };
 
 static const struct spi_imx_master spi1_pdata __initconst = {
+<<<<<<< HEAD
 	.chipselect	= spi_internal_chipselect,
 	.num_chipselect	= ARRAY_SIZE(spi_internal_chipselect),
+=======
+	.chipselect	= spi1_internal_chipselect,
+	.num_chipselect	= ARRAY_SIZE(spi1_internal_chipselect),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct mc13xxx_platform_data mc13783_pdata __initdata = {
@@ -199,8 +248,11 @@ static struct platform_device physmap_flash_device = {
 	.num_resources = 1,
 };
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * This structure defines the MX31 memory map.
  */
@@ -232,6 +284,7 @@ static struct regulator_consumer_supply dummy_supplies[] = {
 
 static void __init mx31lite_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	imx31_soc_init();
@@ -250,11 +303,35 @@ static void __init mx31lite_init(void)
 	mxc_iomux_setup_multiple_pins(mx31lite_pins, ARRAY_SIZE(mx31lite_pins),
 				      "mx31lite");
 
+=======
+	imx31_soc_init();
+
+	mxc_iomux_setup_multiple_pins(mx31lite_pins, ARRAY_SIZE(mx31lite_pins),
+				      "mx31lite");
+
+	imx31_add_imx_uart0(&uart_pdata);
+	imx31_add_spi_imx0(&spi0_pdata);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* NOR and NAND flash */
 	platform_device_register(&physmap_flash_device);
 	imx31_add_mxc_nand(&mx31lite_nand_board_info);
 
 	imx31_add_spi_imx1(&spi1_pdata);
+<<<<<<< HEAD
+=======
+
+	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
+}
+
+static void __init mx31lite_late(void)
+{
+	int ret;
+
+	if (mx31lite_baseboard == MX31LITE_DB)
+		mx31lite_db_init();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mc13783_spi_dev.irq = gpio_to_irq(IOMUX_TO_GPIO(MX31_PIN_GPIO1_3));
 	spi_register_board_info(&mc13783_spi_dev, 1);
 
@@ -264,12 +341,19 @@ static void __init mx31lite_init(void)
 	if (usbh2_pdata.otg)
 		imx31_add_mxc_ehci_hs(2, &usbh2_pdata);
 
+<<<<<<< HEAD
 	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
 
 	/* SMSC9117 IRQ pin */
 	ret = gpio_request(IOMUX_TO_GPIO(MX31_PIN_SFS6), "sms9117-irq");
 	if (ret)
 		pr_warning("could not get LAN irq gpio\n");
+=======
+	/* SMSC9117 IRQ pin */
+	ret = gpio_request(IOMUX_TO_GPIO(MX31_PIN_SFS6), "sms9117-irq");
+	if (ret)
+		pr_warn("could not get LAN irq gpio\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else {
 		gpio_direction_input(IOMUX_TO_GPIO(MX31_PIN_SFS6));
 		smsc911x_resources[1].start =
@@ -291,8 +375,14 @@ MACHINE_START(MX31LITE, "LogicPD i.MX31 SOM")
 	.map_io = mx31lite_map_io,
 	.init_early = imx31_init_early,
 	.init_irq = mx31_init_irq,
+<<<<<<< HEAD
 	.handle_irq = imx31_handle_irq,
 	.init_time	= mx31lite_timer_init,
 	.init_machine = mx31lite_init,
+=======
+	.init_time	= mx31lite_timer_init,
+	.init_machine = mx31lite_init,
+	.init_late	= mx31lite_late,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.restart	= mxc_restart,
 MACHINE_END

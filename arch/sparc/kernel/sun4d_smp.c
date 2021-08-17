@@ -50,7 +50,11 @@ static inline void show_leds(int cpuid)
 			      "i" (ASI_M_CTL));
 }
 
+<<<<<<< HEAD
 void __cpuinit sun4d_cpu_pre_starting(void *arg)
+=======
+void sun4d_cpu_pre_starting(void *arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int cpuid = hard_smp_processor_id();
 
@@ -62,7 +66,11 @@ void __cpuinit sun4d_cpu_pre_starting(void *arg)
 	cc_set_imsk((cc_get_imsk() & ~0x8000) | 0x4000);
 }
 
+<<<<<<< HEAD
 void __cpuinit sun4d_cpu_pre_online(void *arg)
+=======
+void sun4d_cpu_pre_online(void *arg)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 	int cpuid;
@@ -118,7 +126,11 @@ void __init smp4d_boot_cpus(void)
 	local_ops->cache_all();
 }
 
+<<<<<<< HEAD
 int __cpuinit smp4d_boot_one_cpu(int i, struct task_struct *idle)
+=======
+int smp4d_boot_one_cpu(int i, struct task_struct *idle)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long *entry = &sun4d_cpu_startup;
 	int timeout;
@@ -204,7 +216,11 @@ static void __init smp4d_ipi_init(void)
 
 void sun4d_ipi_interrupt(void)
 {
+<<<<<<< HEAD
 	struct sun4d_ipi_work *work = &__get_cpu_var(sun4d_ipi_work);
+=======
+	struct sun4d_ipi_work *work = this_cpu_ptr(&sun4d_ipi_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (work->single) {
 		work->single = 0;

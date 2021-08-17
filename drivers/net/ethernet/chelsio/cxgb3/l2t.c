@@ -429,7 +429,11 @@ found:
 		} else {
 			e->state = neigh->nud_state & NUD_CONNECTED ?
 			    L2T_STATE_VALID : L2T_STATE_STALE;
+<<<<<<< HEAD
 			if (memcmp(e->dmac, neigh->ha, 6))
+=======
+			if (!ether_addr_equal(e->dmac, neigh->ha))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				setup_l2e_send_pending(dev, NULL, e);
 		}
 	}

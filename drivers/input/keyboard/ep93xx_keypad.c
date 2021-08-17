@@ -244,7 +244,11 @@ static int ep93xx_keypad_probe(struct platform_device *pdev)
 	if (!keypad)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	keypad->pdata = pdev->dev.platform_data;
+=======
+	keypad->pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!keypad->pdata) {
 		err = -EINVAL;
 		goto failed_free;
@@ -257,8 +261,13 @@ static int ep93xx_keypad_probe(struct platform_device *pdev)
 	}
 
 	keypad->irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (!keypad->irq) {
 		err = -ENXIO;
+=======
+	if (keypad->irq < 0) {
+		err = keypad->irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto failed_free;
 	}
 
@@ -329,8 +338,12 @@ static int ep93xx_keypad_probe(struct platform_device *pdev)
 	return 0;
 
 failed_free_irq:
+<<<<<<< HEAD
 	free_irq(keypad->irq, pdev);
 	platform_set_drvdata(pdev, NULL);
+=======
+	free_irq(keypad->irq, keypad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 failed_free_dev:
 	input_free_device(input_dev);
 failed_put_clk:
@@ -351,9 +364,13 @@ static int ep93xx_keypad_remove(struct platform_device *pdev)
 	struct ep93xx_keypad *keypad = platform_get_drvdata(pdev);
 	struct resource *res;
 
+<<<<<<< HEAD
 	free_irq(keypad->irq, pdev);
 
 	platform_set_drvdata(pdev, NULL);
+=======
+	free_irq(keypad->irq, keypad);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (keypad->enabled)
 		clk_disable(keypad->clk);
@@ -376,7 +393,10 @@ static int ep93xx_keypad_remove(struct platform_device *pdev)
 static struct platform_driver ep93xx_keypad_driver = {
 	.driver		= {
 		.name	= "ep93xx-keypad",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &ep93xx_keypad_pm_ops,
 	},
 	.probe		= ep93xx_keypad_probe,

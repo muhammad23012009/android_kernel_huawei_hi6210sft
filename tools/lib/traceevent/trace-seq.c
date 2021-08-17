@@ -22,6 +22,10 @@
 #include <string.h>
 #include <stdarg.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/bug.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "event-parse.h"
 #include "event-utils.h"
 
@@ -32,10 +36,28 @@
 #define TRACE_SEQ_POISON	((void *)0xdeadbeef)
 #define TRACE_SEQ_CHECK(s)						\
 do {									\
+<<<<<<< HEAD
 	if ((s)->buffer == TRACE_SEQ_POISON)			\
 		die("Usage of trace_seq after it was destroyed");	\
 } while (0)
 
+=======
+	if (WARN_ONCE((s)->buffer == TRACE_SEQ_POISON,			\
+		      "Usage of trace_seq after it was destroyed"))	\
+		(s)->state = TRACE_SEQ__BUFFER_POISONED;		\
+} while (0)
+
+#define TRACE_SEQ_CHECK_RET_N(s, n)		\
+do {						\
+	TRACE_SEQ_CHECK(s);			\
+	if ((s)->state != TRACE_SEQ__GOOD)	\
+		return n; 			\
+} while (0)
+
+#define TRACE_SEQ_CHECK_RET(s)   TRACE_SEQ_CHECK_RET_N(s, )
+#define TRACE_SEQ_CHECK_RET0(s)  TRACE_SEQ_CHECK_RET_N(s, 0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * trace_seq_init - initialize the trace_seq structure
  * @s: a pointer to the trace_seq structure to initialize
@@ -45,7 +67,28 @@ void trace_seq_init(struct trace_seq *s)
 	s->len = 0;
 	s->readpos = 0;
 	s->buffer_size = TRACE_SEQ_BUF_SIZE;
+<<<<<<< HEAD
 	s->buffer = malloc_or_die(s->buffer_size);
+=======
+	s->buffer = malloc(s->buffer_size);
+	if (s->buffer != NULL)
+		s->state = TRACE_SEQ__GOOD;
+	else
+		s->state = TRACE_SEQ__MEM_ALLOC_FAILED;
+}
+
+/**
+ * trace_seq_reset - re-initialize the trace_seq structure
+ * @s: a pointer to the trace_seq structure to reset
+ */
+void trace_seq_reset(struct trace_seq *s)
+{
+	if (!s)
+		return;
+	TRACE_SEQ_CHECK(s);
+	s->len = 0;
+	s->readpos = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -58,17 +101,34 @@ void trace_seq_destroy(struct trace_seq *s)
 {
 	if (!s)
 		return;
+<<<<<<< HEAD
 	TRACE_SEQ_CHECK(s);
+=======
+	TRACE_SEQ_CHECK_RET(s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free(s->buffer);
 	s->buffer = TRACE_SEQ_POISON;
 }
 
 static void expand_buffer(struct trace_seq *s)
 {
+<<<<<<< HEAD
 	s->buffer_size += TRACE_SEQ_BUF_SIZE;
 	s->buffer = realloc(s->buffer, s->buffer_size);
 	if (!s->buffer)
 		die("Can't allocate trace_seq buffer memory");
+=======
+	char *buf;
+
+	buf = realloc(s->buffer, s->buffer_size + TRACE_SEQ_BUF_SIZE);
+	if (WARN_ONCE(!buf, "Can't allocate trace_seq buffer memory")) {
+		s->state = TRACE_SEQ__MEM_ALLOC_FAILED;
+		return;
+	}
+
+	s->buffer = buf;
+	s->buffer_size += TRACE_SEQ_BUF_SIZE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -92,9 +152,15 @@ trace_seq_printf(struct trace_seq *s, const char *fmt, ...)
 	int len;
 	int ret;
 
+<<<<<<< HEAD
 	TRACE_SEQ_CHECK(s);
 
  try_again:
+=======
+ try_again:
+	TRACE_SEQ_CHECK_RET0(s);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	len = (s->buffer_size - 1) - s->len;
 
 	va_start(ap, fmt);
@@ -128,9 +194,15 @@ trace_seq_vprintf(struct trace_seq *s, const char *fmt, va_list args)
 	int len;
 	int ret;
 
+<<<<<<< HEAD
 	TRACE_SEQ_CHECK(s);
 
  try_again:
+=======
+ try_again:
+	TRACE_SEQ_CHECK_RET0(s);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	len = (s->buffer_size - 1) - s->len;
 
 	ret = vsnprintf(s->buffer + s->len, len, fmt, args);
@@ -159,13 +231,22 @@ int trace_seq_puts(struct trace_seq *s, const char *str)
 {
 	int len;
 
+<<<<<<< HEAD
 	TRACE_SEQ_CHECK(s);
+=======
+	TRACE_SEQ_CHECK_RET0(s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len = strlen(str);
 
 	while (len > ((s->buffer_size - 1) - s->len))
 		expand_buffer(s);
 
+<<<<<<< HEAD
+=======
+	TRACE_SEQ_CHECK_RET0(s);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	memcpy(s->buffer + s->len, str, len);
 	s->len += len;
 
@@ -174,11 +255,20 @@ int trace_seq_puts(struct trace_seq *s, const char *str)
 
 int trace_seq_putc(struct trace_seq *s, unsigned char c)
 {
+<<<<<<< HEAD
 	TRACE_SEQ_CHECK(s);
+=======
+	TRACE_SEQ_CHECK_RET0(s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (s->len >= (s->buffer_size - 1))
 		expand_buffer(s);
 
+<<<<<<< HEAD
+=======
+	TRACE_SEQ_CHECK_RET0(s);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s->buffer[s->len++] = c;
 
 	return 1;
@@ -186,14 +276,41 @@ int trace_seq_putc(struct trace_seq *s, unsigned char c)
 
 void trace_seq_terminate(struct trace_seq *s)
 {
+<<<<<<< HEAD
 	TRACE_SEQ_CHECK(s);
+=======
+	TRACE_SEQ_CHECK_RET(s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* There's always one character left on the buffer */
 	s->buffer[s->len] = 0;
 }
 
+<<<<<<< HEAD
 int trace_seq_do_printf(struct trace_seq *s)
 {
 	TRACE_SEQ_CHECK(s);
 	return printf("%.*s", s->len, s->buffer);
+=======
+int trace_seq_do_fprintf(struct trace_seq *s, FILE *fp)
+{
+	TRACE_SEQ_CHECK(s);
+
+	switch (s->state) {
+	case TRACE_SEQ__GOOD:
+		return fprintf(fp, "%.*s", s->len, s->buffer);
+	case TRACE_SEQ__BUFFER_POISONED:
+		fprintf(fp, "%s\n", "Usage of trace_seq after it was destroyed");
+		break;
+	case TRACE_SEQ__MEM_ALLOC_FAILED:
+		fprintf(fp, "%s\n", "Can't allocate trace_seq buffer memory");
+		break;
+	}
+	return -1;
+}
+
+int trace_seq_do_printf(struct trace_seq *s)
+{
+	return trace_seq_do_fprintf(s, stdout);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

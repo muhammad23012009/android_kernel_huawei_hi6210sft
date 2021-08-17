@@ -24,14 +24,22 @@ EXPORT_SYMBOL(sgimc);
 
 static inline unsigned long get_bank_addr(unsigned int memconfig)
 {
+<<<<<<< HEAD
 	return ((memconfig & SGIMC_MCONFIG_BASEADDR) <<
 		((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 24 : 22));
+=======
+	return (memconfig & SGIMC_MCONFIG_BASEADDR) << ((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 24 : 22);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline unsigned long get_bank_size(unsigned int memconfig)
 {
+<<<<<<< HEAD
 	return ((memconfig & SGIMC_MCONFIG_RMASK) + 0x0100) <<
 		((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 16 : 14);
+=======
+	return ((memconfig & SGIMC_MCONFIG_RMASK) + 0x0100) << ((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 16 : 14);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline unsigned int get_bank_config(int bank)

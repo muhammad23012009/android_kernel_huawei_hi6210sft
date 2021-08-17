@@ -14,10 +14,15 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/workqueue.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/leds.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 
 #include <linux/mfd/da9052/reg.h>
@@ -33,11 +38,17 @@
 
 struct da9052_led {
 	struct led_classdev cdev;
+<<<<<<< HEAD
 	struct work_struct work;
 	struct da9052 *da9052;
 	unsigned char led_index;
 	unsigned char id;
 	int brightness;
+=======
+	struct da9052 *da9052;
+	unsigned char led_index;
+	unsigned char id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static unsigned char led_reg[] = {
@@ -45,12 +56,21 @@ static unsigned char led_reg[] = {
 	DA9052_LED_CONT_5_REG,
 };
 
+<<<<<<< HEAD
 static int da9052_set_led_brightness(struct da9052_led *led)
+=======
+static int da9052_set_led_brightness(struct da9052_led *led,
+				     enum led_brightness brightness)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u8 val;
 	int error;
 
+<<<<<<< HEAD
 	val = (led->brightness & 0x7f) | DA9052_LED_CONT_DIM;
+=======
+	val = (brightness & 0x7f) | DA9052_LED_CONT_DIM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = da9052_reg_write(led->da9052, led_reg[led->led_index], val);
 	if (error < 0)
@@ -59,6 +79,7 @@ static int da9052_set_led_brightness(struct da9052_led *led)
 	return error;
 }
 
+<<<<<<< HEAD
 static void da9052_led_work(struct work_struct *work)
 {
 	struct da9052_led *led = container_of(work, struct da9052_led, work);
@@ -74,6 +95,15 @@ static void da9052_led_set(struct led_classdev *led_cdev,
 	led = container_of(led_cdev, struct da9052_led, cdev);
 	led->brightness = value;
 	schedule_work(&led->work);
+=======
+static int da9052_led_set(struct led_classdev *led_cdev,
+			   enum led_brightness value)
+{
+	struct da9052_led *led =
+			container_of(led_cdev, struct da9052_led, cdev);
+
+	return da9052_set_led_brightness(led, value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int da9052_configure_leds(struct da9052 *da9052)
@@ -112,7 +142,11 @@ static int da9052_led_probe(struct platform_device *pdev)
 	int i;
 
 	da9052 = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	pdata = da9052->dev->platform_data;
+=======
+	pdata = dev_get_platdata(da9052->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pdata == NULL) {
 		dev_err(&pdev->dev, "No platform data\n");
 		goto err;
@@ -127,14 +161,19 @@ static int da9052_led_probe(struct platform_device *pdev)
 	led = devm_kzalloc(&pdev->dev,
 			   sizeof(struct da9052_led) * pled->num_leds,
 			   GFP_KERNEL);
+<<<<<<< HEAD
 	if (led == NULL) {
 		dev_err(&pdev->dev, "Failed to alloc memory\n");
+=======
+	if (!led) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		error = -ENOMEM;
 		goto err;
 	}
 
 	for (i = 0; i < pled->num_leds; i++) {
 		led[i].cdev.name = pled->leds[i].name;
+<<<<<<< HEAD
 		led[i].cdev.brightness_set = da9052_led_set;
 		led[i].cdev.brightness = LED_OFF;
 		led[i].cdev.max_brightness = DA9052_MAX_BRIGHTNESS;
@@ -142,6 +181,13 @@ static int da9052_led_probe(struct platform_device *pdev)
 		led[i].led_index = pled->leds[i].flags;
 		led[i].da9052 = dev_get_drvdata(pdev->dev.parent);
 		INIT_WORK(&led[i].work, da9052_led_work);
+=======
+		led[i].cdev.brightness_set_blocking = da9052_led_set;
+		led[i].cdev.brightness = LED_OFF;
+		led[i].cdev.max_brightness = DA9052_MAX_BRIGHTNESS;
+		led[i].led_index = pled->leds[i].flags;
+		led[i].da9052 = dev_get_drvdata(pdev->dev.parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		error = led_classdev_register(pdev->dev.parent, &led[i].cdev);
 		if (error) {
@@ -150,7 +196,12 @@ static int da9052_led_probe(struct platform_device *pdev)
 			goto err_register;
 		}
 
+<<<<<<< HEAD
 		error = da9052_set_led_brightness(&led[i]);
+=======
+		error = da9052_set_led_brightness(&led[i],
+						  led[i].cdev.brightness);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (error) {
 			dev_err(&pdev->dev, "Unable to init led %d\n",
 				led[i].led_index);
@@ -168,10 +219,15 @@ static int da9052_led_probe(struct platform_device *pdev)
 	return 0;
 
 err_register:
+<<<<<<< HEAD
 	for (i = i - 1; i >= 0; i--) {
 		led_classdev_unregister(&led[i].cdev);
 		cancel_work_sync(&led[i].work);
 	}
+=======
+	for (i = i - 1; i >= 0; i--)
+		led_classdev_unregister(&led[i].cdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err:
 	return error;
 }
@@ -185,6 +241,7 @@ static int da9052_led_remove(struct platform_device *pdev)
 	int i;
 
 	da9052 = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	pdata = da9052->dev->platform_data;
 	pled = pdata->pled;
 
@@ -193,6 +250,14 @@ static int da9052_led_remove(struct platform_device *pdev)
 		da9052_set_led_brightness(&led[i]);
 		led_classdev_unregister(&led[i].cdev);
 		cancel_work_sync(&led[i].work);
+=======
+	pdata = dev_get_platdata(da9052->dev);
+	pled = pdata->pled;
+
+	for (i = 0; i < pled->num_leds; i++) {
+		da9052_set_led_brightness(&led[i], LED_OFF);
+		led_classdev_unregister(&led[i].cdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -201,7 +266,10 @@ static int da9052_led_remove(struct platform_device *pdev)
 static struct platform_driver da9052_led_driver = {
 	.driver		= {
 		.name	= "da9052-leds",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= da9052_led_probe,
 	.remove		= da9052_led_remove,

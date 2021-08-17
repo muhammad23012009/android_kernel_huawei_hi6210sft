@@ -182,7 +182,11 @@ sun4v_tsb_miss_common:
 	cmp	%g5, -1
 	be,pt	%xcc, 80f
 	 nop
+<<<<<<< HEAD
 	COMPUTE_TSB_PTR(%g5, %g4, HPAGE_SHIFT, %g2, %g7)
+=======
+	COMPUTE_TSB_PTR(%g5, %g4, REAL_HPAGE_SHIFT, %g2, %g7)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* That clobbered %g2, reload it.  */
 	ldxa	[%g0] ASI_SCRATCHPAD, %g2
@@ -195,6 +199,14 @@ sun4v_tsb_miss_common:
 	 ldx	[%g2 + TRAP_PER_CPU_PGD_PADDR], %g7
 
 sun4v_itlb_error:
+<<<<<<< HEAD
+=======
+	rdpr	%tl, %g1
+	cmp	%g1, 1
+	ble,pt	%icc, sun4v_bad_ra
+	 or	%g0, FAULT_CODE_BAD_RA | FAULT_CODE_ITLB, %g1
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sethi	%hi(sun4v_err_itlb_vaddr), %g1
 	stx	%g4, [%g1 + %lo(sun4v_err_itlb_vaddr)]
 	sethi	%hi(sun4v_err_itlb_ctx), %g1
@@ -206,6 +218,7 @@ sun4v_itlb_error:
 	sethi	%hi(sun4v_err_itlb_error), %g1
 	stx	%o0, [%g1 + %lo(sun4v_err_itlb_error)]
 
+<<<<<<< HEAD
 	rdpr	%tl, %g4
 	cmp	%g4, 1
 	ble,pt	%icc, 1f
@@ -215,6 +228,12 @@ sun4v_itlb_error:
 
 1:	ba,pt	%xcc, etrap
 2:	 or	%g7, %lo(2b), %g7
+=======
+	sethi	%hi(1f), %g7
+	rdpr	%tl, %g4
+	ba,pt	%xcc, etraptl1
+1:	 or	%g7, %lo(1f), %g7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov	%l4, %o1
 	call	sun4v_itlb_error_report
 	 add	%sp, PTREGS_OFF, %o0
@@ -222,6 +241,14 @@ sun4v_itlb_error:
 	/* NOTREACHED */
 
 sun4v_dtlb_error:
+<<<<<<< HEAD
+=======
+	rdpr	%tl, %g1
+	cmp	%g1, 1
+	ble,pt	%icc, sun4v_bad_ra
+	 or	%g0, FAULT_CODE_BAD_RA | FAULT_CODE_DTLB, %g1
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sethi	%hi(sun4v_err_dtlb_vaddr), %g1
 	stx	%g4, [%g1 + %lo(sun4v_err_dtlb_vaddr)]
 	sethi	%hi(sun4v_err_dtlb_ctx), %g1
@@ -233,6 +260,7 @@ sun4v_dtlb_error:
 	sethi	%hi(sun4v_err_dtlb_error), %g1
 	stx	%o0, [%g1 + %lo(sun4v_err_dtlb_error)]
 
+<<<<<<< HEAD
 	rdpr	%tl, %g4
 	cmp	%g4, 1
 	ble,pt	%icc, 1f
@@ -242,12 +270,28 @@ sun4v_dtlb_error:
 
 1:	ba,pt	%xcc, etrap
 2:	 or	%g7, %lo(2b), %g7
+=======
+	sethi	%hi(1f), %g7
+	rdpr	%tl, %g4
+	ba,pt	%xcc, etraptl1
+1:	 or	%g7, %lo(1f), %g7
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mov	%l4, %o1
 	call	sun4v_dtlb_error_report
 	 add	%sp, PTREGS_OFF, %o0
 
 	/* NOTREACHED */
 
+<<<<<<< HEAD
+=======
+sun4v_bad_ra:
+	or	%g0, %g4, %g5
+	ba,pt	%xcc, sparc64_realfault_common
+	 or	%g1, %g0, %g4
+
+	/* NOTREACHED */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Instruction Access Exception, tl0. */
 sun4v_iacc:
 	ldxa	[%g0] ASI_SCRATCHPAD, %g2

@@ -33,10 +33,17 @@ static loff_t hpfs_dir_lseek(struct file *filp, loff_t off, int whence)
 	if (whence == SEEK_DATA || whence == SEEK_HOLE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	mutex_lock(&i->i_mutex);
 	hpfs_lock(s);
 
 	/*printk("dir lseek\n");*/
+=======
+	inode_lock(i);
+	hpfs_lock(s);
+
+	/*pr_info("dir lseek\n");*/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (new_off == 0 || new_off == 1 || new_off == 11 || new_off == 12 || new_off == 13) goto ok;
 	pos = ((loff_t) hpfs_de_as_down_as_possible(s, hpfs_inode->i_dno) << 4) + 1;
 	while (pos != new_off) {
@@ -44,6 +51,7 @@ static loff_t hpfs_dir_lseek(struct file *filp, loff_t off, int whence)
 		else goto fail;
 		if (pos == 12) goto fail;
 	}
+<<<<<<< HEAD
 	hpfs_add_pos(i, &filp->f_pos);
 ok:
 	filp->f_pos = new_off;
@@ -60,11 +68,37 @@ fail:
 static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *inode = file_inode(filp);
+=======
+	if (unlikely(hpfs_add_pos(i, &filp->f_pos) < 0)) {
+		hpfs_unlock(s);
+		inode_unlock(i);
+		return -ENOMEM;
+	}
+ok:
+	filp->f_pos = new_off;
+	hpfs_unlock(s);
+	inode_unlock(i);
+	return new_off;
+fail:
+	/*pr_warn("illegal lseek: %016llx\n", new_off);*/
+	hpfs_unlock(s);
+	inode_unlock(i);
+	return -ESPIPE;
+}
+
+static int hpfs_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *inode = file_inode(file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hpfs_inode_info *hpfs_inode = hpfs_i(inode);
 	struct quad_buffer_head qbh;
 	struct hpfs_dirent *de;
 	int lc;
+<<<<<<< HEAD
 	long old_pos;
+=======
+	loff_t next_pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned char *tempname;
 	int c1, c2 = 0;
 	int ret = 0;
@@ -105,11 +139,19 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		}
 	}
 	lc = hpfs_sb(inode->i_sb)->sb_lowercase;
+<<<<<<< HEAD
 	if (filp->f_pos == 12) { /* diff -r requires this (note, that diff -r */
 		filp->f_pos = 13; /* also fails on msdos filesystem in 2.0) */
 		goto out;
 	}
 	if (filp->f_pos == 13) {
+=======
+	if (ctx->pos == 12) { /* diff -r requires this (note, that diff -r */
+		ctx->pos = 13; /* also fails on msdos filesystem in 2.0) */
+		goto out;
+	}
+	if (ctx->pos == 13) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -ENOENT;
 		goto out;
 	}
@@ -120,6 +162,7 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		   accepted by filldir, but what can I do?
 		   maybe killall -9 ls helps */
 		if (hpfs_sb(inode->i_sb)->sb_chk)
+<<<<<<< HEAD
 			if (hpfs_stop_cycles(inode->i_sb, filp->f_pos, &c1, &c2, "hpfs_readdir")) {
 				ret = -EFSERROR;
 				goto out;
@@ -147,6 +190,38 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		}
 		old_pos = filp->f_pos;
 		if (!(de = map_pos_dirent(inode, &filp->f_pos, &qbh))) {
+=======
+			if (hpfs_stop_cycles(inode->i_sb, ctx->pos, &c1, &c2, "hpfs_readdir")) {
+				ret = -EFSERROR;
+				goto out;
+			}
+		if (ctx->pos == 12)
+			goto out;
+		if (ctx->pos == 3 || ctx->pos == 4 || ctx->pos == 5) {
+			pr_err("pos==%d\n", (int)ctx->pos);
+			goto out;
+		}
+		if (ctx->pos == 0) {
+			if (!dir_emit_dot(file, ctx))
+				goto out;
+			ctx->pos = 11;
+		}
+		if (ctx->pos == 11) {
+			if (!dir_emit(ctx, "..", 2, hpfs_inode->i_parent_dir, DT_DIR))
+				goto out;
+			ctx->pos = 1;
+		}
+		if (ctx->pos == 1) {
+			ret = hpfs_add_pos(inode, &file->f_pos);
+			if (unlikely(ret < 0))
+				goto out;
+			ctx->pos = ((loff_t) hpfs_de_as_down_as_possible(inode->i_sb, hpfs_inode->i_dno) << 4) + 1;
+			file->f_version = inode->i_version;
+		}
+		next_pos = ctx->pos;
+		if (!(de = map_pos_dirent(inode, &next_pos, &qbh))) {
+			ctx->pos = next_pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -EIOERROR;
 			goto out;
 		}
@@ -154,6 +229,7 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			if (hpfs_sb(inode->i_sb)->sb_chk) {
 				if (de->first && !de->last && (de->namelen != 2
 				    || de ->name[0] != 1 || de->name[1] != 1))
+<<<<<<< HEAD
 					hpfs_error(inode->i_sb, "hpfs_readdir: bad ^A^A entry; pos = %08lx", old_pos);
 				if (de->last && (de->namelen != 1 || de ->name[0] != 255))
 					hpfs_error(inode->i_sb, "hpfs_readdir: bad \\377 entry; pos = %08lx", old_pos);
@@ -164,10 +240,26 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		tempname = hpfs_translate_name(inode->i_sb, de->name, de->namelen, lc, de->not_8x3);
 		if (filldir(dirent, tempname, de->namelen, old_pos, le32_to_cpu(de->fnode), DT_UNKNOWN) < 0) {
 			filp->f_pos = old_pos;
+=======
+					hpfs_error(inode->i_sb, "hpfs_readdir: bad ^A^A entry; pos = %08lx", (unsigned long)ctx->pos);
+				if (de->last && (de->namelen != 1 || de ->name[0] != 255))
+					hpfs_error(inode->i_sb, "hpfs_readdir: bad \\377 entry; pos = %08lx", (unsigned long)ctx->pos);
+			}
+			hpfs_brelse4(&qbh);
+			ctx->pos = next_pos;
+			goto again;
+		}
+		tempname = hpfs_translate_name(inode->i_sb, de->name, de->namelen, lc, de->not_8x3);
+		if (!dir_emit(ctx, tempname, de->namelen, le32_to_cpu(de->fnode), DT_UNKNOWN)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (tempname != de->name) kfree(tempname);
 			hpfs_brelse4(&qbh);
 			goto out;
 		}
+<<<<<<< HEAD
+=======
+		ctx->pos = next_pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (tempname != de->name) kfree(tempname);
 		hpfs_brelse4(&qbh);
 	}
@@ -322,7 +414,14 @@ const struct file_operations hpfs_dir_ops =
 {
 	.llseek		= hpfs_dir_lseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= hpfs_readdir,
 	.release	= hpfs_dir_release,
 	.fsync		= hpfs_file_fsync,
+=======
+	.iterate_shared	= hpfs_readdir,
+	.release	= hpfs_dir_release,
+	.fsync		= hpfs_file_fsync,
+	.unlocked_ioctl	= hpfs_ioctl,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };

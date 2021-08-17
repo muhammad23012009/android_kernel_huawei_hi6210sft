@@ -152,9 +152,15 @@ static u32 saa717x_read(struct v4l2_subdev *sd, u32 reg)
 	i2c_transfer(adap, msgs, 2);
 
 	if (fw_addr)
+<<<<<<< HEAD
 		value = (mm2[2] & 0xff)  | ((mm2[1] & 0xff) >> 8) | ((mm2[0] & 0xff) >> 16);
 	else
 		value = mm2[0] & 0xff;
+=======
+		value = (mm2[2] << 16)  | (mm2[1] << 8) | mm2[0];
+	else
+		value = mm2[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	v4l2_dbg(2, debug, sd, "read:  reg 0x%03x=0x%08x\n", reg, value);
 	return value;
@@ -977,12 +983,15 @@ static int saa717x_s_video_routing(struct v4l2_subdev *sd,
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int saa717x_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
 	if (!v4l2_chip_match_i2c_client(client, &reg->match))
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg->val = saa717x_read(sd, reg->reg);
 	reg->size = 1;
 	return 0;
@@ -990,6 +999,7 @@ static int saa717x_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *
 
 static int saa717x_s_register(struct v4l2_subdev *sd, const struct v4l2_dbg_register *reg)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	u16 addr = reg->reg & 0xffff;
 	u8 val = reg->val & 0xff;
@@ -998,18 +1008,35 @@ static int saa717x_s_register(struct v4l2_subdev *sd, const struct v4l2_dbg_regi
 		return -EINVAL;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
+=======
+	u16 addr = reg->reg & 0xffff;
+	u8 val = reg->val & 0xff;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	saa717x_write(sd, addr, val);
 	return 0;
 }
 #endif
 
+<<<<<<< HEAD
 static int saa717x_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *fmt)
 {
+=======
+static int saa717x_set_fmt(struct v4l2_subdev *sd,
+		struct v4l2_subdev_pad_config *cfg,
+		struct v4l2_subdev_format *format)
+{
+	struct v4l2_mbus_framefmt *fmt = &format->format;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int prescale, h_scale, v_scale;
 
 	v4l2_dbg(1, debug, sd, "decoder set size\n");
 
+<<<<<<< HEAD
 	if (fmt->code != V4L2_MBUS_FMT_FIXED)
+=======
+	if (format->pad || fmt->code != MEDIA_BUS_FMT_FIXED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	/* FIXME need better bounds checking here */
@@ -1021,6 +1048,12 @@ static int saa717x_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt 
 	fmt->field = V4L2_FIELD_INTERLACED;
 	fmt->colorspace = V4L2_COLORSPACE_SMPTE170M;
 
+<<<<<<< HEAD
+=======
+	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* scaling setting */
 	/* NTSC and interlace only */
 	prescale = SAA717X_NTSC_WIDTH / fmt->width;
@@ -1209,6 +1242,7 @@ static const struct v4l2_subdev_core_ops saa717x_core_ops = {
 	.g_register = saa717x_g_register,
 	.s_register = saa717x_s_register,
 #endif
+<<<<<<< HEAD
 	.s_std = saa717x_s_std,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
@@ -1217,6 +1251,8 @@ static const struct v4l2_subdev_core_ops saa717x_core_ops = {
 	.s_ctrl = v4l2_subdev_s_ctrl,
 	.queryctrl = v4l2_subdev_queryctrl,
 	.querymenu = v4l2_subdev_querymenu,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.log_status = saa717x_log_status,
 };
 
@@ -1227,8 +1263,13 @@ static const struct v4l2_subdev_tuner_ops saa717x_tuner_ops = {
 };
 
 static const struct v4l2_subdev_video_ops saa717x_video_ops = {
+<<<<<<< HEAD
 	.s_routing = saa717x_s_video_routing,
 	.s_mbus_fmt = saa717x_s_mbus_fmt,
+=======
+	.s_std = saa717x_s_std,
+	.s_routing = saa717x_s_video_routing,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.s_stream = saa717x_s_stream,
 };
 
@@ -1236,11 +1277,22 @@ static const struct v4l2_subdev_audio_ops saa717x_audio_ops = {
 	.s_routing = saa717x_s_audio_routing,
 };
 
+<<<<<<< HEAD
+=======
+static const struct v4l2_subdev_pad_ops saa717x_pad_ops = {
+	.set_fmt = saa717x_set_fmt,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct v4l2_subdev_ops saa717x_ops = {
 	.core = &saa717x_core_ops,
 	.tuner = &saa717x_tuner_ops,
 	.audio = &saa717x_audio_ops,
 	.video = &saa717x_video_ops,
+<<<<<<< HEAD
+=======
+	.pad = &saa717x_pad_ops,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* ----------------------------------------------------------------------- */
@@ -1262,7 +1314,11 @@ static int saa717x_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
+<<<<<<< HEAD
 	decoder = kzalloc(sizeof(struct saa717x_state), GFP_KERNEL);
+=======
+	decoder = devm_kzalloc(&client->dev, sizeof(*decoder), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (decoder == NULL)
 		return -ENOMEM;
 
@@ -1276,7 +1332,10 @@ static int saa717x_probe(struct i2c_client *client,
 		id = saa717x_read(sd, 0x5a0);
 	if (id != 0xc2 && id != 0x32 && id != 0xf2 && id != 0x6c) {
 		v4l2_dbg(1, debug, sd, "saa717x not found (id=%02x)\n", id);
+<<<<<<< HEAD
 		kfree(decoder);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 	}
 	if (id == 0xc2)
@@ -1316,7 +1375,10 @@ static int saa717x_probe(struct i2c_client *client,
 		int err = hdl->error;
 
 		v4l2_ctrl_handler_free(hdl);
+<<<<<<< HEAD
 		kfree(decoder);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
@@ -1353,7 +1415,10 @@ static int saa717x_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(sd->ctrl_handler);
+<<<<<<< HEAD
 	kfree(to_state(sd));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1367,7 +1432,10 @@ MODULE_DEVICE_TABLE(i2c, saa717x_id);
 
 static struct i2c_driver saa717x_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "saa717x",
 	},
 	.probe		= saa717x_probe,

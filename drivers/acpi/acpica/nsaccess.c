@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,14 +106,25 @@ acpi_status acpi_ns_root_initialize(void)
 
 		/* _OSI is optional for now, will be permanent later */
 
+<<<<<<< HEAD
 		if (!ACPI_STRCMP(init_val->name, "_OSI")
+=======
+		if (!strcmp(init_val->name, "_OSI")
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    && !acpi_gbl_create_osi_method) {
 			continue;
 		}
 
+<<<<<<< HEAD
 		status = acpi_ns_lookup(NULL, init_val->name, init_val->type,
 					ACPI_IMODE_LOAD_PASS2,
 					ACPI_NS_NO_UPSEARCH, NULL, &new_node);
+=======
+		status =
+		    acpi_ns_lookup(NULL, ACPI_CAST_PTR(char, init_val->name),
+				   init_val->type, ACPI_IMODE_LOAD_PASS2,
+				   ACPI_NS_NO_UPSEARCH, NULL, &new_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ACPI_FAILURE(status)) {
 			ACPI_EXCEPTION((AE_INFO, status,
 					"Could not create predefined name %s",
@@ -151,6 +166,10 @@ acpi_status acpi_ns_root_initialize(void)
 			 */
 			switch (init_val->type) {
 			case ACPI_TYPE_METHOD:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				obj_desc->method.param_count =
 				    (u8) ACPI_TO_INTEGER(val);
 				obj_desc->common.flags |= AOPOBJ_DATA_VALID;
@@ -179,7 +198,11 @@ acpi_status acpi_ns_root_initialize(void)
 
 				/* Build an object around the static string */
 
+<<<<<<< HEAD
 				obj_desc->string.length = (u32)ACPI_STRLEN(val);
+=======
+				obj_desc->string.length = (u32)strlen(val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				obj_desc->string.pointer = val;
 				obj_desc->common.flags |= AOPOBJ_STATIC_POINTER;
 				break;
@@ -202,7 +225,11 @@ acpi_status acpi_ns_root_initialize(void)
 
 				/* Special case for ACPI Global Lock */
 
+<<<<<<< HEAD
 				if (ACPI_STRCMP(init_val->name, "_GL_") == 0) {
+=======
+				if (strcmp(init_val->name, "_GL_") == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					acpi_gbl_global_lock_mutex = obj_desc;
 
 					/* Create additional counting semaphore for global lock */
@@ -239,7 +266,11 @@ acpi_status acpi_ns_root_initialize(void)
 		}
 	}
 
+<<<<<<< HEAD
       unlock_and_exit:
+=======
+unlock_and_exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 
 	/* Save a handle to "_GPE", it is always present */
@@ -303,7 +334,13 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	local_flags = flags & ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_SEARCH_PARENT);
+=======
+	local_flags = flags &
+	    ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_OVERRIDE_IF_FOUND |
+	      ACPI_NS_SEARCH_PARENT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*return_node = ACPI_ENTRY_NOT_FOUND;
 	acpi_gbl_ns_lookup_count++;
 
@@ -423,8 +460,14 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 					/* Current scope has no parent scope */
 
 					ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 						    "ACPI path has too many parent prefixes (^) "
 						    "- reached beyond root node"));
+=======
+						    "%s: Path has too many parent prefixes (^) "
+						    "- reached beyond root node",
+						    pathname));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					return_ACPI_STATUS(AE_NOT_FOUND);
 				}
 			}
@@ -545,6 +588,15 @@ acpi_ns_lookup(union acpi_generic_state *scope_info,
 			if (flags & ACPI_NS_ERROR_IF_FOUND) {
 				local_flags |= ACPI_NS_ERROR_IF_FOUND;
 			}
+<<<<<<< HEAD
+=======
+
+			/* Set override flag according to caller */
+
+			if (flags & ACPI_NS_OVERRIDE_IF_FOUND) {
+				local_flags |= ACPI_NS_OVERRIDE_IF_FOUND;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		/* Extract one ACPI name from the front of the pathname */

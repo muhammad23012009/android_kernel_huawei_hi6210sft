@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include <linux/kernel.h>
+=======
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/cryptohash.h>
 

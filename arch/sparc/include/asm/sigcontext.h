@@ -25,7 +25,11 @@ struct sigcontext32 {
 	int sigc_oswins;       /* outstanding windows */
 
 	/* stack ptrs for each regwin buf */
+<<<<<<< HEAD
 	unsigned sigc_spbuf[__SUNOS_MAXWIN];
+=======
+	unsigned int sigc_spbuf[__SUNOS_MAXWIN];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Windows to restore after signal */
 	struct reg_window32 sigc_wbuf[__SUNOS_MAXWIN];

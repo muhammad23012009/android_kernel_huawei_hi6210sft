@@ -76,7 +76,11 @@ int swarm_be_handler(struct pt_regs *regs, int is_fixup)
 		printk("DBE physical address: %010Lx\n",
 		       __read_64bit_c0_register($26, 1));
 	}
+<<<<<<< HEAD
 	return (is_fixup ? MIPS_BE_FIXUP : MIPS_BE_FATAL);
+=======
+	return is_fixup ? MIPS_BE_FIXUP : MIPS_BE_FATAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 enum swarm_rtc_type {
@@ -134,8 +138,11 @@ void __init plat_mem_setup(void)
 #error invalid SiByte board configuration
 #endif
 
+<<<<<<< HEAD
 	panic_timeout = 5;  /* For debug.  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	board_be_handler = swarm_be_handler;
 
 	if (xicor_probe())

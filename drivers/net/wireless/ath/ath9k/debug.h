@@ -18,7 +18,10 @@
 #define DEBUG_H
 
 #include "hw.h"
+<<<<<<< HEAD
 #include "rc.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "dfs_debug.h"
 
 struct ath_txq;
@@ -27,10 +30,23 @@ struct fft_sample_tlv;
 
 #ifdef CONFIG_ATH9K_DEBUGFS
 #define TX_STAT_INC(q, c) sc->debug.stats.txstats[q].c++
+<<<<<<< HEAD
 #define RESET_STAT_INC(sc, type) sc->debug.stats.reset[type]++
 #else
 #define TX_STAT_INC(q, c) do { } while (0)
 #define RESET_STAT_INC(sc, type) do { } while (0)
+=======
+#define RX_STAT_INC(c) (sc->debug.stats.rxstats.c++)
+#define RESET_STAT_INC(sc, type) sc->debug.stats.reset[type]++
+#define ANT_STAT_INC(i, c) sc->debug.stats.ant_stats[i].c++
+#define ANT_LNA_INC(i, c) sc->debug.stats.ant_stats[i].lna_recv_cnt[c]++;
+#else
+#define TX_STAT_INC(q, c) do { } while (0)
+#define RX_STAT_INC(c)
+#define RESET_STAT_INC(sc, type) do { } while (0)
+#define ANT_STAT_INC(i, c) do { } while (0)
+#define ANT_LNA_INC(i, c) do { } while (0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 enum ath_reset_type {
@@ -38,11 +54,21 @@ enum ath_reset_type {
 	RESET_TYPE_BB_WATCHDOG,
 	RESET_TYPE_FATAL_INT,
 	RESET_TYPE_TX_ERROR,
+<<<<<<< HEAD
+=======
+	RESET_TYPE_TX_GTT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	RESET_TYPE_TX_HANG,
 	RESET_TYPE_PLL_HANG,
 	RESET_TYPE_MAC_HANG,
 	RESET_TYPE_BEACON_STUCK,
 	RESET_TYPE_MCI,
+<<<<<<< HEAD
+=======
+	RESET_TYPE_CALIBRATION,
+	RESET_TX_DMA_ERROR,
+	RESET_RX_DMA_ERROR,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__RESET_TYPE_MAX
 };
 
@@ -189,6 +215,7 @@ struct ath_tx_stats {
 #define TXSTATS sc->debug.stats.txstats
 #define PR(str, elem)							\
 	do {								\
+<<<<<<< HEAD
 		len += snprintf(buf + len, size - len,			\
 				"%s%13u%11u%10u%10u\n", str,		\
 				TXSTATS[PR_QNUM(IEEE80211_AC_BE)].elem,	\
@@ -241,6 +268,41 @@ struct ath_rx_stats {
 	u32 rx_beacons;
 	u32 rx_frags;
 	u32 rx_spectral;
+=======
+		seq_printf(file, "%s%13u%11u%10u%10u\n", str,		\
+			   TXSTATS[PR_QNUM(IEEE80211_AC_BE)].elem,\
+			   TXSTATS[PR_QNUM(IEEE80211_AC_BK)].elem,\
+			   TXSTATS[PR_QNUM(IEEE80211_AC_VI)].elem,\
+			   TXSTATS[PR_QNUM(IEEE80211_AC_VO)].elem); \
+	} while(0)
+
+struct ath_rx_rate_stats {
+	struct {
+		u32 ht20_cnt;
+		u32 ht40_cnt;
+		u32 sgi_cnt;
+		u32 lgi_cnt;
+	} ht_stats[24];
+
+	struct {
+		u32 ofdm_cnt;
+	} ofdm_stats[8];
+
+	struct {
+		u32 cck_lp_cnt;
+		u32 cck_sp_cnt;
+	} cck_stats[4];
+};
+
+#define ANT_MAIN 0
+#define ANT_ALT  1
+
+struct ath_antenna_stats {
+	u32 recv_cnt;
+	u32 rssi_avg;
+	u32 lna_recv_cnt[4];
+	u32 lna_attempt_cnt[4];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct ath_stats {
@@ -248,6 +310,7 @@ struct ath_stats {
 	struct ath_tx_stats txstats[ATH9K_NUM_TX_QUEUES];
 	struct ath_rx_stats rxstats;
 	struct ath_dfs_stats dfs_stats;
+<<<<<<< HEAD
 	u32 reset[__RESET_TYPE_MAX];
 };
 
@@ -290,10 +353,17 @@ struct ath_dbg_bb_mac_samp {
 	struct ath9k_nfcal_hist nfCalHist[NUM_NF_READINGS];
 };
 
+=======
+	struct ath_antenna_stats ant_stats[2];
+	u32 reset[__RESET_TYPE_MAX];
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ath9k_debug {
 	struct dentry *debugfs_phy;
 	u32 regidx;
 	struct ath_stats stats;
+<<<<<<< HEAD
 #ifdef CONFIG_ATH9K_MAC_DEBUG
 	spinlock_t samp_lock;
 	struct ath_dbg_bb_mac_samp bb_mac_samp[ATH_DBG_MAX_SAMPLES];
@@ -301,6 +371,8 @@ struct ath9k_debug {
 	u8 tsidx;
 	u8 rsidx;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int ath9k_init_debug(struct ath_hw *ah);
@@ -323,6 +395,7 @@ void ath9k_sta_add_debugfs(struct ieee80211_hw *hw,
 			   struct ieee80211_vif *vif,
 			   struct ieee80211_sta *sta,
 			   struct dentry *dir);
+<<<<<<< HEAD
 void ath9k_sta_remove_debugfs(struct ieee80211_hw *hw,
 			      struct ieee80211_vif *vif,
 			      struct ieee80211_sta *sta,
@@ -335,6 +408,15 @@ void ath_debug_send_fft_sample(struct ath_softc *sc,
 
 #define RX_STAT_INC(c) /* NOP */
 
+=======
+void ath9k_debug_stat_ant(struct ath_softc *sc,
+			  struct ath_hw_antcomb_conf *div_ant_conf,
+			  int main_rssi_avg, int alt_rssi_avg);
+void ath9k_debug_sync_cause(struct ath_softc *sc, u32 sync_cause);
+
+#else
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int ath9k_init_debug(struct ath_hw *ah)
 {
 	return 0;
@@ -343,12 +425,18 @@ static inline int ath9k_init_debug(struct ath_hw *ah)
 static inline void ath9k_deinit_debug(struct ath_softc *sc)
 {
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void ath_debug_stat_interrupt(struct ath_softc *sc,
 					    enum ath9k_int status)
 {
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void ath_debug_stat_tx(struct ath_softc *sc,
 				     struct ath_buf *bf,
 				     struct ath_tx_status *ts,
@@ -356,11 +444,15 @@ static inline void ath_debug_stat_tx(struct ath_softc *sc,
 				     unsigned int flags)
 {
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void ath_debug_stat_rx(struct ath_softc *sc,
 				     struct ath_rx_status *rs)
 {
 }
+<<<<<<< HEAD
 
 #endif /* CONFIG_ATH9K_DEBUGFS */
 
@@ -376,5 +468,32 @@ static inline void ath9k_debug_samp_bb_mac(struct ath_softc *sc)
 
 #endif
 
+=======
+static inline void ath9k_debug_stat_ant(struct ath_softc *sc,
+					struct ath_hw_antcomb_conf *div_ant_conf,
+					int main_rssi_avg, int alt_rssi_avg)
+{
+
+}
+
+static inline void
+ath9k_debug_sync_cause(struct ath_softc *sc, u32 sync_cause)
+{
+}
+
+#endif /* CONFIG_ATH9K_DEBUGFS */
+
+#ifdef CONFIG_ATH9K_STATION_STATISTICS
+void ath_debug_rate_stats(struct ath_softc *sc,
+			  struct ath_rx_status *rs,
+			  struct sk_buff *skb);
+#else
+static inline void ath_debug_rate_stats(struct ath_softc *sc,
+					struct ath_rx_status *rs,
+					struct sk_buff *skb)
+{
+}
+#endif /* CONFIG_ATH9K_STATION_STATISTICS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* DEBUG_H */

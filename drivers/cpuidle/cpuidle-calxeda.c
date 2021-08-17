@@ -21,6 +21,7 @@
  */
 
 #include <linux/cpuidle.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/of.h>
@@ -60,14 +61,42 @@ static int calxeda_idle_finish(unsigned long val)
 	/* Restore things if we didn't enter power-gating */
 	calxeda_idle_restore();
 	return 1;
+=======
+#include <linux/cpu_pm.h>
+#include <linux/init.h>
+#include <linux/mm.h>
+#include <linux/platform_device.h>
+#include <linux/psci.h>
+
+#include <asm/cpuidle.h>
+#include <asm/suspend.h>
+
+#include <uapi/linux/psci.h>
+
+#define CALXEDA_IDLE_PARAM \
+	((0 << PSCI_0_2_POWER_STATE_ID_SHIFT) | \
+	 (0 << PSCI_0_2_POWER_STATE_AFFL_SHIFT) | \
+	 (PSCI_POWER_STATE_TYPE_POWER_DOWN << PSCI_0_2_POWER_STATE_TYPE_SHIFT))
+
+static int calxeda_idle_finish(unsigned long val)
+{
+	return psci_ops.cpu_suspend(CALXEDA_IDLE_PARAM, __pa(cpu_resume));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int calxeda_pwrdown_idle(struct cpuidle_device *dev,
 				struct cpuidle_driver *drv,
 				int index)
 {
+<<<<<<< HEAD
 	highbank_set_cpu_jump(smp_processor_id(), cpu_resume);
 	cpu_suspend(0, calxeda_idle_finish);
+=======
+	cpu_pm_enter();
+	cpu_suspend(0, calxeda_idle_finish);
+	cpu_pm_exit();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return index;
 }
 
@@ -78,7 +107,10 @@ static struct cpuidle_driver calxeda_idle_driver = {
 		{
 			.name = "PG",
 			.desc = "Power Gate",
+<<<<<<< HEAD
 			.flags = CPUIDLE_FLAG_TIME_VALID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.exit_latency = 30,
 			.power_usage = 50,
 			.target_residency = 200,
@@ -88,6 +120,7 @@ static struct cpuidle_driver calxeda_idle_driver = {
 	.state_count = 2,
 };
 
+<<<<<<< HEAD
 static int __init calxeda_cpuidle_init(void)
 {
 	if (!of_machine_is_compatible("calxeda,highbank"))
@@ -96,3 +129,17 @@ static int __init calxeda_cpuidle_init(void)
 	return cpuidle_register(&calxeda_idle_driver, NULL);
 }
 module_init(calxeda_cpuidle_init);
+=======
+static int calxeda_cpuidle_probe(struct platform_device *pdev)
+{
+	return cpuidle_register(&calxeda_idle_driver, NULL);
+}
+
+static struct platform_driver calxeda_cpuidle_plat_driver = {
+        .driver = {
+                .name = "cpuidle-calxeda",
+        },
+        .probe = calxeda_cpuidle_probe,
+};
+builtin_platform_driver(calxeda_cpuidle_plat_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

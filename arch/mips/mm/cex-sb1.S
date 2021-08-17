@@ -15,7 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/asm.h>
 #include <asm/regdef.h>
@@ -49,8 +52,11 @@
 	 * (0x170-0x17f) are used to preserve k0, k1, and ra.
 	 */
 
+<<<<<<< HEAD
 	__CPUINIT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 LEAF(except_vec2_sb1)
 	/*
 	 * If this error is recoverable, we need to exit the handler
@@ -142,8 +148,11 @@ unrecoverable:
 
 END(except_vec2_sb1)
 
+<<<<<<< HEAD
 	__FINIT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	LEAF(handle_vec2_sb1)
 	mfc0	k0,CP0_CONFIG
 	li	k1,~CONF_CM_CMASK

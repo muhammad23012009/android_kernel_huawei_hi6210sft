@@ -57,6 +57,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/etherdevice.h>
 #include <linux/dvb/net.h>
 #include <linux/uio.h>
@@ -68,6 +72,7 @@
 #include "dvb_demux.h"
 #include "dvb_net.h"
 
+<<<<<<< HEAD
 static int dvb_net_debug;
 module_param(dvb_net_debug, int, 0444);
 MODULE_PARM_DESC(dvb_net_debug, "enable debug messages");
@@ -75,6 +80,8 @@ MODULE_PARM_DESC(dvb_net_debug, "enable debug messages");
 #define dprintk(x...) do { if (dvb_net_debug) printk(x); } while (0)
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline __u32 iov_crc32( __u32 c, struct kvec *iov, unsigned int cnt )
 {
 	unsigned int j;
@@ -90,6 +97,7 @@ static inline __u32 iov_crc32( __u32 c, struct kvec *iov, unsigned int cnt )
 
 #ifdef ULE_DEBUG
 
+<<<<<<< HEAD
 #define MAC_ADDR_PRINTFMT "%.2x:%.2x:%.2x:%.2x:%.2x:%.2x"
 #define MAX_ADDR_PRINTFMT_ARGS(macap) (macap)[0],(macap)[1],(macap)[2],(macap)[3],(macap)[4],(macap)[5]
 
@@ -120,6 +128,11 @@ static void hexdump( const unsigned char *buf, unsigned short len )
 		str[l] = '\0';
 		printk( KERN_WARNING "%s\n", str );
 	}
+=======
+static void hexdump(const unsigned char *buf, unsigned short len)
+{
+	print_hex_dump_debug("", DUMP_PREFIX_OFFSET, 16, 1, buf, len, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif
@@ -179,7 +192,11 @@ static __be16 dvb_net_eth_type_trans(struct sk_buff *skb,
 	eth = eth_hdr(skb);
 
 	if (*eth->h_dest & 1) {
+<<<<<<< HEAD
 		if(memcmp(eth->h_dest,dev->broadcast, ETH_ALEN)==0)
+=======
+		if(ether_addr_equal(eth->h_dest,dev->broadcast))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			skb->pkt_type=PACKET_BROADCAST;
 		else
 			skb->pkt_type=PACKET_MULTICAST;
@@ -315,9 +332,15 @@ static int handle_ule_extensions( struct dvb_net_priv *p )
 			return l;	/* Stop extension header processing and discard SNDU. */
 		total_ext_len += l;
 #ifdef ULE_DEBUG
+<<<<<<< HEAD
 		dprintk("handle_ule_extensions: ule_next_hdr=%p, ule_sndu_type=%i, "
 			"l=%i, total_ext_len=%i\n", p->ule_next_hdr,
 			(int) p->ule_sndu_type, l, total_ext_len);
+=======
+		pr_debug("ule_next_hdr=%p, ule_sndu_type=%i, l=%i, total_ext_len=%i\n",
+			 p->ule_next_hdr, (int)p->ule_sndu_type,
+			 l, total_ext_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	} while (p->ule_sndu_type < ETH_P_802_3_MIN);
@@ -379,7 +402,13 @@ static void dvb_net_ule( struct net_device *dev, const u8 *buf, size_t buf_len )
 			/* Check TS error conditions: sync_byte, transport_error_indicator, scrambling_control . */
 			if ((ts[0] != TS_SYNC) || (ts[1] & TS_TEI) || ((ts[3] & TS_SC) != 0)) {
 				printk(KERN_WARNING "%lu: Invalid TS cell: SYNC %#x, TEI %u, SC %#x.\n",
+<<<<<<< HEAD
 				       priv->ts_count, ts[0], ts[1] & TS_TEI >> 7, ts[3] & 0xC0 >> 6);
+=======
+				       priv->ts_count, ts[0],
+				       (ts[1] & TS_TEI) >> 7,
+				       (ts[3] & TS_SC) >> 6);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				/* Drop partly decoded SNDU, reset state, resync on PUSI. */
 				if (priv->ule_skb) {
@@ -674,11 +703,21 @@ static void dvb_net_ule( struct net_device *dev, const u8 *buf, size_t buf_len )
 					if (priv->rx_mode != RX_MODE_PROMISC) {
 						if (priv->ule_skb->data[0] & 0x01) {
 							/* multicast or broadcast */
+<<<<<<< HEAD
 							if (memcmp(priv->ule_skb->data, bc_addr, ETH_ALEN)) {
 								/* multicast */
 								if (priv->rx_mode == RX_MODE_MULTI) {
 									int i;
 									for(i = 0; i < priv->multi_num && memcmp(priv->ule_skb->data, priv->multi_macs[i], ETH_ALEN); i++)
+=======
+							if (!ether_addr_equal(priv->ule_skb->data, bc_addr)) {
+								/* multicast */
+								if (priv->rx_mode == RX_MODE_MULTI) {
+									int i;
+									for(i = 0; i < priv->multi_num &&
+									    !ether_addr_equal(priv->ule_skb->data,
+											      priv->multi_macs[i]); i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 										;
 									if (i == priv->multi_num)
 										drop = 1;
@@ -688,7 +727,11 @@ static void dvb_net_ule( struct net_device *dev, const u8 *buf, size_t buf_len )
 							}
 							/* else: broadcast */
 						}
+<<<<<<< HEAD
 						else if (memcmp(priv->ule_skb->data, dev->dev_addr, ETH_ALEN))
+=======
+						else if (!ether_addr_equal(priv->ule_skb->data, dev->dev_addr))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 							drop = 1;
 						/* else: destination address matches the MAC address of our receiver device */
 					}
@@ -696,8 +739,13 @@ static void dvb_net_ule( struct net_device *dev, const u8 *buf, size_t buf_len )
 
 					if (drop) {
 #ifdef ULE_DEBUG
+<<<<<<< HEAD
 						dprintk("Dropping SNDU: MAC destination address does not match: dest addr: "MAC_ADDR_PRINTFMT", dev addr: "MAC_ADDR_PRINTFMT"\n",
 							MAX_ADDR_PRINTFMT_ARGS(priv->ule_skb->data), MAX_ADDR_PRINTFMT_ARGS(dev->dev_addr));
+=======
+						netdev_dbg(dev, "Dropping SNDU: MAC destination address does not match: dest addr: %pM, dev addr: %pM\n",
+							   priv->ule_skb->data, dev->dev_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 						dev_kfree_skb(priv->ule_skb);
 						goto sndu_done;
@@ -739,7 +787,11 @@ static void dvb_net_ule( struct net_device *dev, const u8 *buf, size_t buf_len )
 					if (!priv->ule_dbit) {
 						 /* dest_addr buffer is only valid if priv->ule_dbit == 0 */
 						memcpy(ethh->h_dest, dest_addr, ETH_ALEN);
+<<<<<<< HEAD
 						memset(ethh->h_source, 0, ETH_ALEN);
+=======
+						eth_zero_addr(ethh->h_source);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					}
 					else /* zeroize source and dest */
 						memset( ethh, 0, ETH_ALEN*2 );
@@ -791,7 +843,11 @@ static void dvb_net_ule( struct net_device *dev, const u8 *buf, size_t buf_len )
 
 static int dvb_net_ts_callback(const u8 *buffer1, size_t buffer1_len,
 			       const u8 *buffer2, size_t buffer2_len,
+<<<<<<< HEAD
 			       struct dmx_ts_feed *feed, enum dmx_success success)
+=======
+			       struct dmx_ts_feed *feed)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct net_device *dev = feed->priv;
 
@@ -900,8 +956,12 @@ static void dvb_net_sec(struct net_device *dev,
 
 static int dvb_net_sec_callback(const u8 *buffer1, size_t buffer1_len,
 		 const u8 *buffer2, size_t buffer2_len,
+<<<<<<< HEAD
 		 struct dmx_section_filter *filter,
 		 enum dmx_success success)
+=======
+		 struct dmx_section_filter *filter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct net_device *dev = filter->priv;
 
@@ -960,8 +1020,12 @@ static int dvb_net_filter_sec_set(struct net_device *dev,
 	(*secfilter)->filter_mask[10] = mac_mask[1];
 	(*secfilter)->filter_mask[11]=mac_mask[0];
 
+<<<<<<< HEAD
 	dprintk("%s: filter mac=%pM\n", dev->name, mac);
 	dprintk("%s: filter mask=%pM\n", dev->name, mac_mask);
+=======
+	netdev_dbg(dev, "filter mac=%pM mask=%pM\n", mac, mac_mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -973,7 +1037,11 @@ static int dvb_net_feed_start(struct net_device *dev)
 	struct dmx_demux *demux = priv->demux;
 	unsigned char *mac = (unsigned char *) dev->dev_addr;
 
+<<<<<<< HEAD
 	dprintk("%s: rx_mode %i\n", __func__, priv->rx_mode);
+=======
+	netdev_dbg(dev, "rx_mode %i\n", priv->rx_mode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&priv->mutex);
 	if (priv->tsfeed || priv->secfeed || priv->secfilter || priv->multi_secfilter[0])
 		printk("%s: BUG %d\n", __func__, __LINE__);
@@ -983,7 +1051,11 @@ static int dvb_net_feed_start(struct net_device *dev)
 	priv->tsfeed = NULL;
 
 	if (priv->feedtype == DVB_NET_FEEDTYPE_MPE) {
+<<<<<<< HEAD
 		dprintk("%s: alloc secfeed\n", __func__);
+=======
+		netdev_dbg(dev, "alloc secfeed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret=demux->allocate_section_feed(demux, &priv->secfeed,
 					 dvb_net_sec_callback);
 		if (ret<0) {
@@ -1001,31 +1073,48 @@ static int dvb_net_feed_start(struct net_device *dev)
 		}
 
 		if (priv->rx_mode != RX_MODE_PROMISC) {
+<<<<<<< HEAD
 			dprintk("%s: set secfilter\n", __func__);
+=======
+			netdev_dbg(dev, "set secfilter\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dvb_net_filter_sec_set(dev, &priv->secfilter, mac, mask_normal);
 		}
 
 		switch (priv->rx_mode) {
 		case RX_MODE_MULTI:
 			for (i = 0; i < priv->multi_num; i++) {
+<<<<<<< HEAD
 				dprintk("%s: set multi_secfilter[%d]\n", __func__, i);
+=======
+				netdev_dbg(dev, "set multi_secfilter[%d]\n", i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				dvb_net_filter_sec_set(dev, &priv->multi_secfilter[i],
 						       priv->multi_macs[i], mask_normal);
 			}
 			break;
 		case RX_MODE_ALL_MULTI:
 			priv->multi_num=1;
+<<<<<<< HEAD
 			dprintk("%s: set multi_secfilter[0]\n", __func__);
+=======
+			netdev_dbg(dev, "set multi_secfilter[0]\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dvb_net_filter_sec_set(dev, &priv->multi_secfilter[0],
 					       mac_allmulti, mask_allmulti);
 			break;
 		case RX_MODE_PROMISC:
 			priv->multi_num=0;
+<<<<<<< HEAD
 			dprintk("%s: set secfilter\n", __func__);
+=======
+			netdev_dbg(dev, "set secfilter\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dvb_net_filter_sec_set(dev, &priv->secfilter, mac, mask_promisc);
 			break;
 		}
 
+<<<<<<< HEAD
 		dprintk("%s: start filtering\n", __func__);
 		priv->secfeed->start_filtering(priv->secfeed);
 	} else if (priv->feedtype == DVB_NET_FEEDTYPE_ULE) {
@@ -1033,6 +1122,15 @@ static int dvb_net_feed_start(struct net_device *dev)
 
 		/* we have payloads encapsulated in TS */
 		dprintk("%s: alloc tsfeed\n", __func__);
+=======
+		netdev_dbg(dev, "start filtering\n");
+		priv->secfeed->start_filtering(priv->secfeed);
+	} else if (priv->feedtype == DVB_NET_FEEDTYPE_ULE) {
+		ktime_t timeout = ns_to_ktime(10 * NSEC_PER_MSEC);
+
+		/* we have payloads encapsulated in TS */
+		netdev_dbg(dev, "alloc tsfeed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = demux->allocate_ts_feed(demux, &priv->tsfeed, dvb_net_ts_callback);
 		if (ret < 0) {
 			printk("%s: could not allocate ts feed\n", dev->name);
@@ -1056,7 +1154,11 @@ static int dvb_net_feed_start(struct net_device *dev)
 			goto error;
 		}
 
+<<<<<<< HEAD
 		dprintk("%s: start filtering\n", __func__);
+=======
+		netdev_dbg(dev, "start filtering\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		priv->tsfeed->start_filtering(priv->tsfeed);
 	} else
 		ret = -EINVAL;
@@ -1071,17 +1173,28 @@ static int dvb_net_feed_stop(struct net_device *dev)
 	struct dvb_net_priv *priv = netdev_priv(dev);
 	int i, ret = 0;
 
+<<<<<<< HEAD
 	dprintk("%s\n", __func__);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&priv->mutex);
 	if (priv->feedtype == DVB_NET_FEEDTYPE_MPE) {
 		if (priv->secfeed) {
 			if (priv->secfeed->is_filtering) {
+<<<<<<< HEAD
 				dprintk("%s: stop secfeed\n", __func__);
+=======
+				netdev_dbg(dev, "stop secfeed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				priv->secfeed->stop_filtering(priv->secfeed);
 			}
 
 			if (priv->secfilter) {
+<<<<<<< HEAD
 				dprintk("%s: release secfilter\n", __func__);
+=======
+				netdev_dbg(dev, "release secfilter\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				priv->secfeed->release_filter(priv->secfeed,
 							      priv->secfilter);
 				priv->secfilter=NULL;
@@ -1089,8 +1202,13 @@ static int dvb_net_feed_stop(struct net_device *dev)
 
 			for (i=0; i<priv->multi_num; i++) {
 				if (priv->multi_secfilter[i]) {
+<<<<<<< HEAD
 					dprintk("%s: release multi_filter[%d]\n",
 						__func__, i);
+=======
+					netdev_dbg(dev, "release multi_filter[%d]\n",
+						   i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					priv->secfeed->release_filter(priv->secfeed,
 								      priv->multi_secfilter[i]);
 					priv->multi_secfilter[i] = NULL;
@@ -1104,7 +1222,11 @@ static int dvb_net_feed_stop(struct net_device *dev)
 	} else if (priv->feedtype == DVB_NET_FEEDTYPE_ULE) {
 		if (priv->tsfeed) {
 			if (priv->tsfeed->is_filtering) {
+<<<<<<< HEAD
 				dprintk("%s: stop tsfeed\n", __func__);
+=======
+				netdev_dbg(dev, "stop tsfeed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				priv->tsfeed->stop_filtering(priv->tsfeed);
 			}
 			priv->demux->release_ts_feed(priv->demux, priv->tsfeed);
@@ -1144,16 +1266,28 @@ static void wq_set_multicast_list (struct work_struct *work)
 	netif_addr_lock_bh(dev);
 
 	if (dev->flags & IFF_PROMISC) {
+<<<<<<< HEAD
 		dprintk("%s: promiscuous mode\n", dev->name);
 		priv->rx_mode = RX_MODE_PROMISC;
 	} else if ((dev->flags & IFF_ALLMULTI)) {
 		dprintk("%s: allmulti mode\n", dev->name);
+=======
+		netdev_dbg(dev, "promiscuous mode\n");
+		priv->rx_mode = RX_MODE_PROMISC;
+	} else if ((dev->flags & IFF_ALLMULTI)) {
+		netdev_dbg(dev, "allmulti mode\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		priv->rx_mode = RX_MODE_ALL_MULTI;
 	} else if (!netdev_mc_empty(dev)) {
 		struct netdev_hw_addr *ha;
 
+<<<<<<< HEAD
 		dprintk("%s: set_mc_list, %d entries\n",
 			dev->name, netdev_mc_count(dev));
+=======
+		netdev_dbg(dev, "set_mc_list, %d entries\n",
+			   netdev_mc_count(dev));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		priv->rx_mode = RX_MODE_MULTI;
 		priv->multi_num = 0;
@@ -1222,7 +1356,10 @@ static int dvb_net_stop(struct net_device *dev)
 static const struct header_ops dvb_header_ops = {
 	.create		= eth_header,
 	.parse		= eth_header_parse,
+<<<<<<< HEAD
 	.rebuild	= eth_rebuild_header,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -1274,7 +1411,12 @@ static int dvb_net_add_if(struct dvb_net *dvbnet, u16 pid, u8 feedtype)
 	if ((if_num = get_if(dvbnet)) < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	net = alloc_netdev(sizeof(struct dvb_net_priv), "dvb", dvb_net_setup);
+=======
+	net = alloc_netdev(sizeof(struct dvb_net_priv), "dvb",
+			   NET_NAME_UNKNOWN, dvb_net_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!net)
 		return -ENOMEM;
 
@@ -1383,14 +1525,30 @@ static int dvb_net_do_ioctl(struct file *file,
 		struct net_device *netdev;
 		struct dvb_net_priv *priv_data;
 		struct dvb_net_if *dvbnetif = parg;
+<<<<<<< HEAD
 
 		if (dvbnetif->if_num >= DVB_NET_DEVICES_MAX ||
 		    !dvbnet->state[dvbnetif->if_num]) {
+=======
+		int if_num = dvbnetif->if_num;
+
+		if (if_num >= DVB_NET_DEVICES_MAX) {
+			ret = -EINVAL;
+			goto ioctl_error;
+		}
+		if_num = array_index_nospec(if_num, DVB_NET_DEVICES_MAX);
+
+		if (!dvbnet->state[if_num]) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = -EINVAL;
 			goto ioctl_error;
 		}
 
+<<<<<<< HEAD
 		netdev = dvbnet->device[dvbnetif->if_num];
+=======
+		netdev = dvbnet->device[if_num];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		priv_data = netdev_priv(netdev);
 		dvbnetif->pid=priv_data->pid;
@@ -1443,6 +1601,7 @@ static int dvb_net_do_ioctl(struct file *file,
 		struct net_device *netdev;
 		struct dvb_net_priv *priv_data;
 		struct __dvb_net_if_old *dvbnetif = parg;
+<<<<<<< HEAD
 
 		if (dvbnetif->if_num >= DVB_NET_DEVICES_MAX ||
 		    !dvbnet->state[dvbnetif->if_num]) {
@@ -1451,6 +1610,22 @@ static int dvb_net_do_ioctl(struct file *file,
 		}
 
 		netdev = dvbnet->device[dvbnetif->if_num];
+=======
+		int if_num = dvbnetif->if_num;
+
+		if (if_num >= DVB_NET_DEVICES_MAX) {
+			ret = -EINVAL;
+			goto ioctl_error;
+		}
+		if_num = array_index_nospec(if_num, DVB_NET_DEVICES_MAX);
+
+		if (!dvbnet->state[if_num]) {
+			ret = -EINVAL;
+			goto ioctl_error;
+		}
+
+		netdev = dvbnet->device[if_num];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		priv_data = netdev_priv(netdev);
 		dvbnetif->pid=priv_data->pid;
@@ -1493,6 +1668,7 @@ static const struct file_operations dvb_net_fops = {
 	.llseek = noop_llseek,
 };
 
+<<<<<<< HEAD
 static struct dvb_device dvbdev_net = {
 	.priv = NULL,
 	.users = 1,
@@ -1501,6 +1677,18 @@ static struct dvb_device dvbdev_net = {
 };
 
 
+=======
+static const struct dvb_device dvbdev_net = {
+	.priv = NULL,
+	.users = 1,
+	.writers = 1,
+#if defined(CONFIG_MEDIA_CONTROLLER_DVB)
+	.name = "dvb-net",
+#endif
+	.fops = &dvb_net_fops,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void dvb_net_release (struct dvb_net *dvbnet)
 {
 	int i;
@@ -1533,6 +1721,10 @@ int dvb_net_init (struct dvb_adapter *adap, struct dvb_net *dvbnet,
 		dvbnet->state[i] = 0;
 
 	return dvb_register_device(adap, &dvbnet->dvbdev, &dvbdev_net,
+<<<<<<< HEAD
 			     dvbnet, DVB_DEVICE_NET);
+=======
+			     dvbnet, DVB_DEVICE_NET, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(dvb_net_init);

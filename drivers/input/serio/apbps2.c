@@ -203,7 +203,11 @@ static int apbps2_of_remove(struct platform_device *of_dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id apbps2_of_match[] = {
+=======
+static const struct of_device_id apbps2_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name = "GAISLER_APBPS2", },
 	{ .name = "01_060", },
 	{}
@@ -214,7 +218,10 @@ MODULE_DEVICE_TABLE(of, apbps2_of_match);
 static struct platform_driver apbps2_of_driver = {
 	.driver = {
 		.name = "grlib-apbps2",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = apbps2_of_match,
 	},
 	.probe = apbps2_of_probe,

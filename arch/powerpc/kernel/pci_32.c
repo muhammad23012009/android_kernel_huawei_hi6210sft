@@ -11,6 +11,10 @@
 #include <linux/sched.h>
 #include <linux/errno.h>
 #include <linux/bootmem.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscalls.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/irq.h>
 #include <linux/list.h>
 #include <linux/of.h>
@@ -32,6 +36,11 @@
 unsigned long isa_io_base     = 0;
 unsigned long pci_dram_offset = 0;
 int pcibios_assign_bus_offset = 1;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(isa_io_base);
+EXPORT_SYMBOL(pci_dram_offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void pcibios_make_OF_bus_map(void);
 
@@ -199,9 +208,13 @@ pci_create_OF_bus_map(void)
 	struct property* of_prop;
 	struct device_node *dn;
 
+<<<<<<< HEAD
 	of_prop = (struct property*) alloc_bootmem(sizeof(struct property) + 256);
 	if (!of_prop)
 		return;
+=======
+	of_prop = memblock_virt_alloc(sizeof(struct property) + 256, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dn = of_find_node_by_path("/");
 	if (dn) {
 		memset(of_prop, -1, sizeof(struct property) + 256);

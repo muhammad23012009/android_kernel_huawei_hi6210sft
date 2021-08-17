@@ -69,8 +69,14 @@ struct gss_cl_ctx {
 	enum rpc_gss_proc	gc_proc;
 	u32			gc_seq;
 	spinlock_t		gc_seq_lock;
+<<<<<<< HEAD
 	struct gss_ctx __rcu	*gc_gss_ctx;
 	struct xdr_netobj	gc_wire_ctx;
+=======
+	struct gss_ctx		*gc_gss_ctx;
+	struct xdr_netobj	gc_wire_ctx;
+	struct xdr_netobj	gc_acceptor;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32			gc_win;
 	unsigned long		gc_expiry;
 	struct rcu_head		gc_rcu;

@@ -24,7 +24,10 @@
 
 static struct vfsmount *anon_inode_mnt __read_mostly;
 static struct inode *anon_inode_inode;
+<<<<<<< HEAD
 static const struct file_operations anon_inode_fops;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * anon_inodefs_dname() is called from d_path().
@@ -39,6 +42,7 @@ static const struct dentry_operations anon_inodefs_dentry_operations = {
 	.d_dname	= anon_inodefs_dname,
 };
 
+<<<<<<< HEAD
 /*
  * nop .set_page_dirty method so that people can use .page_mkwrite on
  * anon inodes.
@@ -100,6 +104,13 @@ static struct dentry *anon_inodefs_mount(struct file_system_type *fs_type,
 		}
 	}
 	return root;
+=======
+static struct dentry *anon_inodefs_mount(struct file_system_type *fs_type,
+				int flags, const char *dev_name, void *data)
+{
+	return mount_pseudo(fs_type, "anon_inode:", NULL,
+			&anon_inodefs_dentry_operations, ANON_INODE_FS_MAGIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct file_system_type anon_inode_fs_type = {
@@ -221,6 +232,7 @@ EXPORT_SYMBOL_GPL(anon_inode_getfd);
 
 static int __init anon_inode_init(void)
 {
+<<<<<<< HEAD
 	int error;
 
 	error = register_filesystem(&anon_inode_fs_type);
@@ -237,6 +249,17 @@ err_unregister_filesystem:
 	unregister_filesystem(&anon_inode_fs_type);
 err_exit:
 	panic(KERN_ERR "anon_inode_init() failed (%d)\n", error);
+=======
+	anon_inode_mnt = kern_mount(&anon_inode_fs_type);
+	if (IS_ERR(anon_inode_mnt))
+		panic("anon_inode_init() kernel mount failed (%ld)\n", PTR_ERR(anon_inode_mnt));
+
+	anon_inode_inode = alloc_anon_inode(anon_inode_mnt->mnt_sb);
+	if (IS_ERR(anon_inode_inode))
+		panic("anon_inode_init() inode allocation failed (%ld)\n", PTR_ERR(anon_inode_inode));
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 fs_initcall(anon_inode_init);

@@ -39,8 +39,13 @@
 #include <linux/spi/max7301.h>
 #include <linux/spi/mc33880.h>
 
+<<<<<<< HEAD
 #include <media/timb_radio.h>
 #include <media/timb_video.h>
+=======
+#include <linux/platform_data/media/timb_radio.h>
+#include <linux/platform_data/media/timb_video.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/timb_dma.h>
 
@@ -115,11 +120,19 @@ static const struct resource timberdale_ocores_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 const struct max7301_platform_data timberdale_max7301_platform_data = {
 	.base = 200
 };
 
 const struct mc33880_platform_data timberdale_mc33880_platform_data = {
+=======
+static const struct max7301_platform_data timberdale_max7301_platform_data = {
+	.base = 200
+};
+
+static const struct mc33880_platform_data timberdale_mc33880_platform_data = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.base = 100
 };
 
@@ -145,7 +158,10 @@ static struct spi_board_info timberdale_spi_8bit_board_info[] = {
 
 static struct xspi_platform_data timberdale_xspi_platform_data = {
 	.num_chipselect = 3,
+<<<<<<< HEAD
 	.little_endian = true,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* bits per word and devices will be filled in runtime depending
 	 * on the HW config
 	 */
@@ -375,7 +391,11 @@ static const struct resource timberdale_dma_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell timberdale_cells_bar0_cfg0[] = {
+=======
+static const struct mfd_cell timberdale_cells_bar0_cfg0[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "timb-dma",
 		.num_resources = ARRAY_SIZE(timberdale_dma_resources),
@@ -432,7 +452,11 @@ static struct mfd_cell timberdale_cells_bar0_cfg0[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell timberdale_cells_bar0_cfg1[] = {
+=======
+static const struct mfd_cell timberdale_cells_bar0_cfg1[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "timb-dma",
 		.num_resources = ARRAY_SIZE(timberdale_dma_resources),
@@ -499,7 +523,11 @@ static struct mfd_cell timberdale_cells_bar0_cfg1[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell timberdale_cells_bar0_cfg2[] = {
+=======
+static const struct mfd_cell timberdale_cells_bar0_cfg2[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "timb-dma",
 		.num_resources = ARRAY_SIZE(timberdale_dma_resources),
@@ -549,7 +577,11 @@ static struct mfd_cell timberdale_cells_bar0_cfg2[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell timberdale_cells_bar0_cfg3[] = {
+=======
+static const struct mfd_cell timberdale_cells_bar0_cfg3[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "timb-dma",
 		.num_resources = ARRAY_SIZE(timberdale_dma_resources),
@@ -620,7 +652,11 @@ static const struct resource timberdale_sdhc_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell timberdale_cells_bar1[] = {
+=======
+static const struct mfd_cell timberdale_cells_bar1[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "sdhci",
 		.num_resources = ARRAY_SIZE(timberdale_sdhc_resources),
@@ -628,7 +664,11 @@ static struct mfd_cell timberdale_cells_bar1[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell timberdale_cells_bar2[] = {
+=======
+static const struct mfd_cell timberdale_cells_bar2[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.name = "sdhci",
 		.num_resources = ARRAY_SIZE(timberdale_sdhc_resources),
@@ -679,7 +719,11 @@ static int timb_probe(struct pci_dev *dev,
 	priv->ctl_mapbase = mapbase + CHIPCTLOFFSET;
 	if (!request_mem_region(priv->ctl_mapbase, CHIPCTLSIZE, "timb-ctl")) {
 		dev_err(&dev->dev, "Failed to request ctl mem\n");
+<<<<<<< HEAD
 		goto err_request;
+=======
+		goto err_start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	priv->ctl_membase = ioremap(priv->ctl_mapbase, CHIPCTLSIZE);
@@ -716,7 +760,11 @@ static int timb_probe(struct pci_dev *dev,
 	for (i = 0; i < TIMBERDALE_NR_IRQS; i++)
 		msix_entries[i].entry = i;
 
+<<<<<<< HEAD
 	err = pci_enable_msix(dev, msix_entries, TIMBERDALE_NR_IRQS);
+=======
+	err = pci_enable_msix_exact(dev, msix_entries, TIMBERDALE_NR_IRQS);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err) {
 		dev_err(&dev->dev,
 			"MSI-X init failed: %d, expected entries: %d\n",
@@ -782,7 +830,10 @@ static int timb_probe(struct pci_dev *dev,
 			priv->fw.major, priv->fw.minor, ip_setup);
 		err = -ENODEV;
 		goto err_mfd;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (err) {
@@ -830,13 +881,19 @@ err_config:
 	iounmap(priv->ctl_membase);
 err_ioremap:
 	release_mem_region(priv->ctl_mapbase, CHIPCTLSIZE);
+<<<<<<< HEAD
 err_request:
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_start:
 	pci_disable_device(dev);
 err_enable:
 	kfree(priv);
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -ENODEV;
 }
 
@@ -853,11 +910,18 @@ static void timb_remove(struct pci_dev *dev)
 
 	pci_disable_msix(dev);
 	pci_disable_device(dev);
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
 	kfree(priv);
 }
 
 static DEFINE_PCI_DEVICE_TABLE(timberdale_pci_tbl) = {
+=======
+	kfree(priv);
+}
+
+static const struct pci_device_id timberdale_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_DEVICE(PCI_VENDOR_ID_TIMB, PCI_DEVICE_ID_TIMB) },
 	{ 0 }
 };
@@ -870,6 +934,7 @@ static struct pci_driver timberdale_pci_driver = {
 	.remove = timb_remove,
 };
 
+<<<<<<< HEAD
 static int __init timberdale_init(void)
 {
 	int err;
@@ -898,6 +963,9 @@ static void __exit timberdale_exit(void)
 
 module_init(timberdale_init);
 module_exit(timberdale_exit);
+=======
+module_pci_driver(timberdale_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Mocean Laboratories <info@mocean-labs.com>");
 MODULE_VERSION(DRV_VERSION);

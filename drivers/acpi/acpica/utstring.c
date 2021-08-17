@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +52,7 @@
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utstring")
 
+<<<<<<< HEAD
 /*
  * Non-ANSI C library functions - strlwr, strupr, stricmp, and a 64-bit
  * version of strtoul.
@@ -325,12 +330,19 @@ acpi_status acpi_ut_strtoul64(char *string, u32 base, u64 *ret_integer)
 	}
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_print_string
  *
  * PARAMETERS:  string          - Null terminated ASCII string
+<<<<<<< HEAD
  *              max_length      - Maximum output length
+=======
+ *              max_length      - Maximum output length. Used to constrain the
+ *                                length of strings during debug output only.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * RETURN:      None
  *
@@ -338,8 +350,12 @@ acpi_status acpi_ut_strtoul64(char *string, u32 base, u64 *ret_integer)
  *              sequences.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
 void acpi_ut_print_string(char *string, u8 max_length)
+=======
+void acpi_ut_print_string(char *string, u16 max_length)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 i;
 
@@ -355,36 +371,68 @@ void acpi_ut_print_string(char *string, u8 max_length)
 
 		switch (string[i]) {
 		case 0x07:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\a");	/* BELL */
 			break;
 
 		case 0x08:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\b");	/* BACKSPACE */
 			break;
 
 		case 0x0C:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\f");	/* FORMFEED */
 			break;
 
 		case 0x0A:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\n");	/* LINEFEED */
 			break;
 
 		case 0x0D:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\r");	/* CARRIAGE RETURN */
 			break;
 
 		case 0x09:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\t");	/* HORIZONTAL TAB */
 			break;
 
 		case 0x0B:
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\v");	/* VERTICAL TAB */
 			break;
 
 		case '\'':	/* Single Quote */
 		case '\"':	/* Double Quote */
 		case '\\':	/* Backslash */
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			acpi_os_printf("\\%c", (int)string[i]);
 			break;
 
@@ -392,18 +440,30 @@ void acpi_ut_print_string(char *string, u8 max_length)
 
 			/* Check for printable character or hex escape */
 
+<<<<<<< HEAD
 			if (ACPI_IS_PRINT(string[i])) {
+=======
+			if (isprint((int)string[i])) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				/* This is a normal character */
 
 				acpi_os_printf("%c", (int)string[i]);
 			} else {
 				/* All others will be Hex escapes */
 
+<<<<<<< HEAD
 				acpi_os_printf("\\x%2.2X", (s32) string[i]);
+=======
+				acpi_os_printf("\\x%2.2X", (s32)string[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	acpi_os_printf("\"");
 
 	if (i == max_length && string[i]) {
@@ -413,6 +473,7 @@ void acpi_ut_print_string(char *string, u8 max_length)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_valid_acpi_char
  *
  * PARAMETERS:  char            - The character to be examined
@@ -480,6 +541,8 @@ u8 acpi_ut_valid_acpi_name(u32 name)
 
 /*******************************************************************************
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * FUNCTION:    acpi_ut_repair_name
  *
  * PARAMETERS:  name            - The ACPI name to be repaired
@@ -508,12 +571,27 @@ void acpi_ut_repair_name(char *name)
 
 	ACPI_FUNCTION_NAME(ut_repair_name);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Special case for the root node. This can happen if we get an
+	 * error during the execution of module-level code.
+	 */
+	if (ACPI_COMPARE_NAME(name, "\\___")) {
+		return;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ACPI_MOVE_NAME(&original_name, name);
 
 	/* Check each character in the name */
 
 	for (i = 0; i < ACPI_NAME_SIZE; i++) {
+<<<<<<< HEAD
 		if (acpi_ut_valid_acpi_char(name[i], i)) {
+=======
+		if (acpi_ut_valid_name_char(name[i], i)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		}
 

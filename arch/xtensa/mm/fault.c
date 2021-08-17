@@ -15,6 +15,7 @@
 #include <linux/mm.h>
 #include <linux/module.h>
 #include <linux/hardirq.h>
+<<<<<<< HEAD
 #include <asm/mmu_context.h>
 #include <asm/cacheflush.h>
 #include <asm/hardirq.h>
@@ -22,6 +23,16 @@
 #include <asm/pgalloc.h>
 
 unsigned long asid_cache = ASID_USER_FIRST;
+=======
+#include <linux/perf_event.h>
+#include <linux/uaccess.h>
+#include <asm/mmu_context.h>
+#include <asm/cacheflush.h>
+#include <asm/hardirq.h>
+#include <asm/pgalloc.h>
+
+DEFINE_PER_CPU(unsigned long, asid_cache) = ASID_USER_FIRST;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void bad_page_fault(struct pt_regs*, unsigned long, int);
 
 #undef DEBUG_PAGE_FAULT
@@ -57,7 +68,11 @@ void do_page_fault(struct pt_regs *regs)
 	/* If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm) {
+=======
+	if (faulthandler_disabled() || !mm) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		bad_page_fault(regs, address, SIGSEGV);
 		return;
 	}
@@ -109,7 +124,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
@@ -117,6 +136,11 @@ good_area:
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
+<<<<<<< HEAD
+=======
+		else if (fault & VM_FAULT_SIGSEGV)
+			goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		else if (fault & VM_FAULT_SIGBUS)
 			goto do_sigbus;
 		BUG();
@@ -140,6 +164,15 @@ good_area:
 	}
 
 	up_read(&mm->mmap_sem);
+<<<<<<< HEAD
+=======
+	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+	if (flags & VM_FAULT_MAJOR)
+		perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MAJ, 1, regs, address);
+	else
+		perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MIN, 1, regs, address);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 
 	/* Something tried to access memory that isn't in our memory map..

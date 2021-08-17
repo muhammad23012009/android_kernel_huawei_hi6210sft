@@ -93,7 +93,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <media/v4l2-chip-ident.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "gspca.h"
 /* Include pac common sof detection functions */
 #include "pac_common.h"
@@ -395,9 +398,15 @@ static void setbrightcont(struct gspca_dev *gspca_dev)
 	reg_w(gspca_dev, 0xff, 0x00);		/* page 0 */
 	for (i = 0; i < 10; i++) {
 		v = max[i];
+<<<<<<< HEAD
 		v += (sd->brightness->val - sd->brightness->maximum)
 			* 150 / sd->brightness->maximum; /* 200 ? */
 		v -= delta[i] * sd->contrast->val / sd->contrast->maximum;
+=======
+		v += (sd->brightness->val - (s32)sd->brightness->maximum)
+			* 150 / (s32)sd->brightness->maximum; /* 200 ? */
+		v -= delta[i] * sd->contrast->val / (s32)sd->contrast->maximum;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (v < 0)
 			v = 0;
 		else if (v > 0xff)
@@ -420,7 +429,11 @@ static void setcolors(struct gspca_dev *gspca_dev)
 	reg_w(gspca_dev, 0x11, 0x01);
 	reg_w(gspca_dev, 0xff, 0x00);			/* page 0 */
 	for (i = 0; i < 9; i++) {
+<<<<<<< HEAD
 		v = a[i] * sd->saturation->val / sd->saturation->maximum;
+=======
+		v = a[i] * sd->saturation->val / (s32)sd->saturation->maximum;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		v += b[i];
 		reg_w(gspca_dev, 0x0f + 2 * i, (v >> 8) & 0x07);
 		reg_w(gspca_dev, 0x0f + 2 * i + 1, v);
@@ -849,8 +862,12 @@ static int sd_dbg_s_register(struct gspca_dev *gspca_dev,
 	 * reg->reg: bit0..15: reserved for register index (wIndex is 16bit
 	 *		       long on the USB bus)
 	 */
+<<<<<<< HEAD
 	if (reg->match.type == V4L2_CHIP_MATCH_HOST &&
 	    reg->match.addr == 0 &&
+=======
+	if (reg->match.addr == 0 &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    (reg->reg < 0x000000ff) &&
 	    (reg->val <= 0x000000ff)
 	) {
@@ -871,6 +888,7 @@ static int sd_dbg_s_register(struct gspca_dev *gspca_dev,
 	}
 	return gspca_dev->usb_err;
 }
+<<<<<<< HEAD
 
 static int sd_chip_ident(struct gspca_dev *gspca_dev,
 			struct v4l2_dbg_chip_ident *chip)
@@ -885,12 +903,18 @@ static int sd_chip_ident(struct gspca_dev *gspca_dev,
 	}
 	return ret;
 }
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #if IS_ENABLED(CONFIG_INPUT)
 static int sd_int_pkt_scan(struct gspca_dev *gspca_dev,
 			u8 *data,		/* interrupt packet data */
+<<<<<<< HEAD
 			int len)		/* interrput packet length */
+=======
+			int len)		/* interrupt packet length */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret = -EINVAL;
 	u8 data0, data1;
@@ -931,7 +955,10 @@ static const struct sd_desc sd_desc = {
 	.dq_callback = do_autogain,
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.set_register = sd_dbg_s_register,
+<<<<<<< HEAD
 	.get_chip_ident = sd_chip_ident,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #if IS_ENABLED(CONFIG_INPUT)
 	.int_pkt_scan = sd_int_pkt_scan,

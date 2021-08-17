@@ -23,7 +23,10 @@
  * byte channel used for the console is designated as the default tty.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/err.h>
@@ -32,6 +35,10 @@
 #include <linux/poll.h>
 #include <asm/epapr_hcalls.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/cdev.h>
 #include <linux/console.h>
@@ -107,6 +114,7 @@ static void disable_tx_interrupt(struct ehv_bc_data *bc)
  *
  * The byte channel to be used for the console is specified via a "stdout"
  * property in the /chosen node.
+<<<<<<< HEAD
  *
  * For compatible with legacy device trees, we also look for a "stdout" alias.
  */
@@ -156,6 +164,24 @@ static int find_console_handle(void)
 	if (stdout_irq == NO_IRQ) {
 		pr_err("ehv-bc: no 'interrupts' property in %s node\n", sprop);
 		of_node_put(np);
+=======
+ */
+static int find_console_handle(void)
+{
+	struct device_node *np = of_stdout;
+	const uint32_t *iprop;
+
+	/* We don't care what the aliased node is actually called.  We only
+	 * care if it's compatible with "epapr,hv-byte-channel", because that
+	 * indicates that it's a byte channel node.
+	 */
+	if (!np || !of_device_is_compatible(np, "epapr,hv-byte-channel"))
+		return 0;
+
+	stdout_irq = irq_of_parse_and_map(np, 0);
+	if (stdout_irq == NO_IRQ) {
+		pr_err("ehv-bc: no 'interrupts' property in %s node\n", np->full_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -166,6 +192,7 @@ static int find_console_handle(void)
 	if (!iprop) {
 		pr_err("ehv-bc: no 'hv-handle' property in %s node\n",
 		       np->name);
+<<<<<<< HEAD
 		of_node_put(np);
 		return 0;
 	}
@@ -175,6 +202,29 @@ static int find_console_handle(void)
 	return 1;
 }
 
+=======
+		return 0;
+	}
+	stdout_bc = be32_to_cpu(*iprop);
+	return 1;
+}
+
+static unsigned int local_ev_byte_channel_send(unsigned int handle,
+					       unsigned int *count,
+					       const char *p)
+{
+	char buffer[EV_BYTE_CHANNEL_MAX_BYTES];
+	unsigned int c = *count;
+
+	if (c < sizeof(buffer)) {
+		memcpy(buffer, p, c);
+		memset(&buffer[c], 0, sizeof(buffer) - c);
+		p = buffer;
+	}
+	return ev_byte_channel_send(handle, count, p);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*************************** EARLY CONSOLE DRIVER ***************************/
 
 #ifdef CONFIG_PPC_EARLY_DEBUG_EHV_BC
@@ -193,7 +243,11 @@ static void byte_channel_spin_send(const char data)
 
 	do {
 		count = 1;
+<<<<<<< HEAD
 		ret = ev_byte_channel_send(CONFIG_PPC_EARLY_DEBUG_EHV_BC_HANDLE,
+=======
+		ret = local_ev_byte_channel_send(CONFIG_PPC_EARLY_DEBUG_EHV_BC_HANDLE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   &count, &data);
 	} while (ret == EV_EAGAIN);
 }
@@ -260,7 +314,11 @@ static int ehv_bc_console_byte_channel_send(unsigned int handle, const char *s,
 	while (count) {
 		len = min_t(unsigned int, count, EV_BYTE_CHANNEL_MAX_BYTES);
 		do {
+<<<<<<< HEAD
 			ret = ev_byte_channel_send(handle, &len, s);
+=======
+			ret = local_ev_byte_channel_send(handle, &len, s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} while (ret == EV_EAGAIN);
 		count -= len;
 		s += len;
@@ -343,8 +401,13 @@ static int __init ehv_bc_console_init(void)
 	 * handle for udbg.
 	 */
 	if (stdout_bc != CONFIG_PPC_EARLY_DEBUG_EHV_BC_HANDLE)
+<<<<<<< HEAD
 		pr_warning("ehv-bc: udbg handle %u is not the stdout handle\n",
 			   CONFIG_PPC_EARLY_DEBUG_EHV_BC_HANDLE);
+=======
+		pr_warn("ehv-bc: udbg handle %u is not the stdout handle\n",
+			CONFIG_PPC_EARLY_DEBUG_EHV_BC_HANDLE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* add_preferred_console() must be called before register_console(),
@@ -440,7 +503,11 @@ static void ehv_bc_tx_dequeue(struct ehv_bc_data *bc)
 			    CIRC_CNT_TO_END(bc->head, bc->tail, BUF_SIZE),
 			    EV_BYTE_CHANNEL_MAX_BYTES);
 
+<<<<<<< HEAD
 		ret = ev_byte_channel_send(bc->handle, &len, bc->buf + bc->tail);
+=======
+		ret = local_ev_byte_channel_send(bc->handle, &len, bc->buf + bc->tail);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* 'len' is valid only if the return code is 0 or EV_EAGAIN */
 		if (!ret || (ret == EV_EAGAIN))
@@ -754,6 +821,7 @@ error:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ehv_bc_tty_remove(struct platform_device *pdev)
 {
 	struct ehv_bc_data *bc = dev_get_drvdata(&pdev->dev);
@@ -767,6 +835,8 @@ static int ehv_bc_tty_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct of_device_id ehv_bc_tty_of_ids[] = {
 	{ .compatible = "epapr,hv-byte-channel" },
 	{}
@@ -774,18 +844,30 @@ static const struct of_device_id ehv_bc_tty_of_ids[] = {
 
 static struct platform_driver ehv_bc_tty_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.name = "ehv-bc",
 		.of_match_table = ehv_bc_tty_of_ids,
 	},
 	.probe		= ehv_bc_tty_probe,
 	.remove		= ehv_bc_tty_remove,
+=======
+		.name = "ehv-bc",
+		.of_match_table = ehv_bc_tty_of_ids,
+		.suppress_bind_attrs = true,
+	},
+	.probe		= ehv_bc_tty_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
  * ehv_bc_init - ePAPR hypervisor byte channel driver initialization
  *
+<<<<<<< HEAD
  * This function is called when this module is loaded.
+=======
+ * This function is called when this driver is loaded.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static int __init ehv_bc_init(void)
 {
@@ -850,6 +932,7 @@ error:
 
 	return ret;
 }
+<<<<<<< HEAD
 
 
 /**
@@ -871,3 +954,6 @@ module_exit(ehv_bc_exit);
 MODULE_AUTHOR("Timur Tabi <timur@freescale.com>");
 MODULE_DESCRIPTION("ePAPR hypervisor byte channel driver");
 MODULE_LICENSE("GPL v2");
+=======
+device_initcall(ehv_bc_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -47,7 +47,11 @@ static int rdc_gpio_get_value(struct gpio_chip *chip, unsigned gpio)
 	u32 value = 0;
 	int reg;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	reg = gpio < 32 ? gpch->reg1_data_base : gpch->reg2_data_base;
 
 	spin_lock(&gpch->lock);
@@ -65,7 +69,11 @@ static void rdc_gpio_set_value_impl(struct gpio_chip *chip,
 	struct rdc321x_gpio *gpch;
 	int reg = (gpio < 32) ? 0 : 1;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (value)
 		gpch->data_reg[reg] |= 1 << (gpio & 0x1f);
@@ -83,7 +91,11 @@ static void rdc_gpio_set_value(struct gpio_chip *chip,
 {
 	struct rdc321x_gpio *gpch;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock(&gpch->lock);
 	rdc_gpio_set_value_impl(chip, gpio, value);
 	spin_unlock(&gpch->lock);
@@ -96,7 +108,11 @@ static int rdc_gpio_config(struct gpio_chip *chip,
 	int err;
 	u32 reg;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock(&gpch->lock);
 	err = pci_read_config_dword(gpch->sb_pdev, gpio < 32 ?
@@ -135,23 +151,38 @@ static int rdc321x_gpio_probe(struct platform_device *pdev)
 	struct rdc321x_gpio *rdc321x_gpio_dev;
 	struct rdc321x_gpio_pdata *pdata;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_err(&pdev->dev, "no platform data supplied\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	rdc321x_gpio_dev = kzalloc(sizeof(struct rdc321x_gpio), GFP_KERNEL);
 	if (!rdc321x_gpio_dev) {
 		dev_err(&pdev->dev, "failed to allocate private data\n");
 		return -ENOMEM;
 	}
+=======
+	rdc321x_gpio_dev = devm_kzalloc(&pdev->dev, sizeof(struct rdc321x_gpio),
+					GFP_KERNEL);
+	if (!rdc321x_gpio_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	r = platform_get_resource_byname(pdev, IORESOURCE_IO, "gpio-reg1");
 	if (!r) {
 		dev_err(&pdev->dev, "failed to get gpio-reg1 resource\n");
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto out_free;
+=======
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	spin_lock_init(&rdc321x_gpio_dev->lock);
@@ -162,8 +193,12 @@ static int rdc321x_gpio_probe(struct platform_device *pdev)
 	r = platform_get_resource_byname(pdev, IORESOURCE_IO, "gpio-reg2");
 	if (!r) {
 		dev_err(&pdev->dev, "failed to get gpio-reg2 resource\n");
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto out_free;
+=======
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	rdc321x_gpio_dev->reg2_ctrl_base = r->start;
@@ -187,12 +222,17 @@ static int rdc321x_gpio_probe(struct platform_device *pdev)
 					rdc321x_gpio_dev->reg1_data_base,
 					&rdc321x_gpio_dev->data_reg[0]);
 	if (err)
+<<<<<<< HEAD
 		goto out_drvdata;
+=======
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = pci_read_config_dword(rdc321x_gpio_dev->sb_pdev,
 					rdc321x_gpio_dev->reg2_data_base,
 					&rdc321x_gpio_dev->data_reg[1]);
 	if (err)
+<<<<<<< HEAD
 		goto out_drvdata;
 
 	dev_info(&pdev->dev, "registering %d GPIOs\n",
@@ -219,13 +259,25 @@ static int rdc321x_gpio_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 
 	return ret;
+=======
+		return err;
+
+	dev_info(&pdev->dev, "registering %d GPIOs\n",
+					rdc321x_gpio_dev->chip.ngpio);
+	return devm_gpiochip_add_data(&pdev->dev, &rdc321x_gpio_dev->chip,
+				      rdc321x_gpio_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver rdc321x_gpio_driver = {
 	.driver.name	= "rdc321x-gpio",
+<<<<<<< HEAD
 	.driver.owner	= THIS_MODULE,
 	.probe		= rdc321x_gpio_probe,
 	.remove		= rdc321x_gpio_remove,
+=======
+	.probe		= rdc321x_gpio_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(rdc321x_gpio_driver);

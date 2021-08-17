@@ -287,8 +287,13 @@ static int wl1271_init_sta_beacon_filter(struct wl1271 *wl,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	/* enable beacon filtering */
 	ret = wl1271_acx_beacon_filter_opt(wl, wlvif, true);
+=======
+	/* disable beacon filtering until we get the first beacon */
+	ret = wl1271_acx_beacon_filter_opt(wl, wlvif, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
@@ -348,7 +353,11 @@ static int wl12xx_init_fwlog(struct wl1271 *wl)
 }
 
 /* generic sta initialization (non vif-specific) */
+<<<<<<< HEAD
 static int wl1271_sta_hw_init(struct wl1271 *wl, struct wl12xx_vif *wlvif)
+=======
+int wl1271_sta_hw_init(struct wl1271 *wl, struct wl12xx_vif *wlvif)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 
@@ -392,6 +401,14 @@ static int wl1271_ap_hw_init(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	/* configure AP sleep, if enabled */
+	ret = wlcore_hw_ap_sleep(wl);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -462,7 +479,11 @@ int wl1271_init_ap_rates(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	 * If the basic rates contain OFDM rates, use OFDM only
 	 * rates for unicast TX as well. Else use all supported rates.
 	 */
+<<<<<<< HEAD
 	if ((wlvif->basic_rate_set & CONF_TX_OFDM_RATES))
+=======
+	if (wl->ofdm_only_ap && (wlvif->basic_rate_set & CONF_TX_OFDM_RATES))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		supported_rates = CONF_TX_OFDM_RATES;
 	else
 		supported_rates = CONF_TX_ENABLED_RATES;
@@ -544,6 +565,14 @@ static int wl12xx_init_ap_role(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/* Disable filtering */
+	ret = wl1271_acx_group_address_tbl(wl, wlvif, false, NULL, 0);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = wl1271_acx_ap_max_tx_retry(wl, wlvif);
 	if (ret < 0)
 		return ret;
@@ -553,6 +582,14 @@ static int wl12xx_init_ap_role(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	if (wl->radar_debug_mode)
+		wlcore_cmd_generic_cfg(wl, wlvif,
+				       WLCORE_CFG_FEATURE_RADAR_DEBUG,
+				       wl->radar_debug_mode, 0);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -567,8 +604,18 @@ int wl1271_init_vif_specific(struct wl1271 *wl, struct ieee80211_vif *vif)
 	/* consider all existing roles before configuring psm. */
 
 	if (wl->ap_count == 0 && is_ap) { /* first AP */
+<<<<<<< HEAD
 		/* Configure for power always on */
 		ret = wl1271_acx_sleep_auth(wl, WL1271_PSM_CAM);
+=======
+		ret = wl1271_acx_sleep_auth(wl, WL1271_PSM_ELP);
+		if (ret < 0)
+			return ret;
+
+		/* unmask ap events */
+		wl->event_mask |= wl->ap_event_mask;
+		ret = wl1271_event_unmask(wl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0)
 			return ret;
 	/* first STA, no APs */

@@ -44,12 +44,21 @@ struct atmel_tcb_config {
 /**
  * struct atmel_tc - information about a Timer/Counter Block
  * @pdev: physical device
+<<<<<<< HEAD
  * @iomem: resource associated with the I/O register
  * @regs: mapping through which the I/O registers can be accessed
+=======
+ * @regs: mapping through which the I/O registers can be accessed
+ * @id: block id
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @tcb_config: configuration data from SoC
  * @irq: irq for each of the three channels
  * @clk: internal clock source for each of the three channels
  * @node: list node, for tclib internal use
+<<<<<<< HEAD
+=======
+ * @allocated: if already used, for tclib internal use
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * On some platforms, each TC channel has its own clocks and IRQs,
  * while on others, all TC channels share the same clock and IRQ.
@@ -61,6 +70,7 @@ struct atmel_tcb_config {
  */
 struct atmel_tc {
 	struct platform_device	*pdev;
+<<<<<<< HEAD
 	struct resource		*iomem;
 	void __iomem		*regs;
 	const struct atmel_tcb_config *tcb_config;
@@ -70,6 +80,19 @@ struct atmel_tc {
 };
 
 extern struct atmel_tc *atmel_tc_alloc(unsigned block, const char *name);
+=======
+	void __iomem		*regs;
+	int                     id;
+	const struct atmel_tcb_config *tcb_config;
+	int			irq[3];
+	struct clk		*clk[3];
+	struct clk		*slow_clk;
+	struct list_head	node;
+	bool			allocated;
+};
+
+extern struct atmel_tc *atmel_tc_alloc(unsigned block);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void atmel_tc_free(struct atmel_tc *tc);
 
 /* platform-specific ATMEL_TC_TIMER_CLOCKx divisors (0 means 32KiHz) */
@@ -258,5 +281,13 @@ extern const u8 atmel_tc_divisors[5];
 #define     ATMEL_TC_LDRAS	(1 <<  5)	/* RA loading */
 #define     ATMEL_TC_LDRBS	(1 <<  6)	/* RB loading */
 #define     ATMEL_TC_ETRGS	(1 <<  7)	/* external trigger */
+<<<<<<< HEAD
+=======
+#define     ATMEL_TC_ALL_IRQ	(ATMEL_TC_COVFS	| ATMEL_TC_LOVRS | \
+				 ATMEL_TC_CPAS | ATMEL_TC_CPBS | \
+				 ATMEL_TC_CPCS | ATMEL_TC_LDRAS | \
+				 ATMEL_TC_LDRBS | ATMEL_TC_ETRGS) \
+				 /* all IRQs */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

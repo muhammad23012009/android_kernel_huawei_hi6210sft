@@ -8,8 +8,12 @@
  * the Free Software Foundation version 2.
  */
 
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/acpi.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/wait.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
@@ -30,6 +34,10 @@ struct acpi_smb_hc {
 	u8 query_bit;
 	smbus_alarm_callback callback;
 	void *context;
+<<<<<<< HEAD
+=======
+	bool done;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int acpi_smbus_hc_add(struct acpi_device *device);
@@ -98,6 +106,7 @@ static inline int smb_hc_write(struct acpi_smb_hc *hc, u8 address, u8 data)
 	return ec_write(hc->offset + address, data);
 }
 
+<<<<<<< HEAD
 static inline int smb_check_done(struct acpi_smb_hc *hc)
 {
 	union acpi_smb_status status = {.raw = 0};
@@ -119,6 +128,13 @@ static int wait_transaction_complete(struct acpi_smb_hc *hc, int timeout)
 		return 0;
 	else
 		return -ETIME;
+=======
+static int wait_transaction_complete(struct acpi_smb_hc *hc, int timeout)
+{
+	if (wait_event_timeout(hc->wait, hc->done, msecs_to_jiffies(timeout)))
+		return 0;
+	return -ETIME;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int acpi_smbus_transaction(struct acpi_smb_hc *hc, u8 protocol,
@@ -133,6 +149,10 @@ static int acpi_smbus_transaction(struct acpi_smb_hc *hc, u8 protocol,
 	}
 
 	mutex_lock(&hc->lock);
+<<<<<<< HEAD
+=======
+	hc->done = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (smb_hc_read(hc, ACPI_SMB_PROTOCOL, &temp))
 		goto end;
 	if (temp) {
@@ -211,6 +231,10 @@ int acpi_smbus_unregister_callback(struct acpi_smb_hc *hc)
 	hc->callback = NULL;
 	hc->context = NULL;
 	mutex_unlock(&hc->lock);
+<<<<<<< HEAD
+=======
+	acpi_os_wait_events_complete();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -231,8 +255,15 @@ static int smbus_alarm(void *context)
 	if (smb_hc_read(hc, ACPI_SMB_STATUS, &status.raw))
 		return 0;
 	/* Check if it is only a completion notify */
+<<<<<<< HEAD
 	if (status.fields.done)
 		wake_up(&hc->wait);
+=======
+	if (status.fields.done && status.fields.status == SMBUS_OK) {
+		hc->done = true;
+		wake_up(&hc->wait);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!status.fields.alarm)
 		return 0;
 	mutex_lock(&hc->lock);
@@ -288,8 +319,13 @@ static int acpi_smbus_hc_add(struct acpi_device *device)
 	device->driver_data = hc;
 
 	acpi_ec_add_query_handler(hc->ec, hc->query_bit, NULL, smbus_alarm, hc);
+<<<<<<< HEAD
 	printk(KERN_INFO PREFIX "SBS HC: EC = 0x%p, offset = 0x%0x, query_bit = 0x%0x\n",
 		hc->ec, hc->offset, hc->query_bit);
+=======
+	dev_info(&device->dev, "SBS HC: offset = 0x%0x, query_bit = 0x%0x\n",
+		 hc->offset, hc->query_bit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -305,6 +341,10 @@ static int acpi_smbus_hc_remove(struct acpi_device *device)
 
 	hc = acpi_driver_data(device);
 	acpi_ec_remove_query_handler(hc->ec, hc->query_bit);
+<<<<<<< HEAD
+=======
+	acpi_os_wait_events_complete();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(hc);
 	device->driver_data = NULL;
 	return 0;

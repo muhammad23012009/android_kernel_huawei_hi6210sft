@@ -22,7 +22,10 @@
  */
 
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pci.h>
 #include <linux/msi.h>
 #include <linux/of_platform.h>
@@ -85,12 +88,25 @@ static int ppc4xx_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	struct msi_desc *entry;
 	struct ppc4xx_msi *msi_data = &ppc4xx_msi;
 
+<<<<<<< HEAD
 	msi_data->msi_virqs = kmalloc((msi_irqs) * sizeof(int),
 					    GFP_KERNEL);
 	if (!msi_data->msi_virqs)
 		return -ENOMEM;
 
 	list_for_each_entry(entry, &dev->msi_list, list) {
+=======
+	dev_dbg(&dev->dev, "PCIE-MSI:%s called. vec %x type %d\n",
+		__func__, nvec, type);
+	if (type == PCI_CAP_ID_MSIX)
+		pr_debug("ppc4xx msi: MSI-X untested, trying anyway.\n");
+
+	msi_data->msi_virqs = kmalloc((msi_irqs) * sizeof(int), GFP_KERNEL);
+	if (!msi_data->msi_virqs)
+		return -ENOMEM;
+
+	for_each_pci_msi_entry(entry, dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int_no = msi_bitmap_alloc_hwirqs(&msi_data->bitmap, 1);
 		if (int_no >= 0)
 			break;
@@ -99,7 +115,11 @@ static int ppc4xx_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 					__func__);
 		}
 		virq = irq_of_parse_and_map(msi_data->msi_dev, int_no);
+<<<<<<< HEAD
 		if (virq == NO_IRQ) {
+=======
+		if (!virq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_err(&dev->dev, "%s: fail mapping irq\n", __func__);
 			msi_bitmap_free_hwirqs(&msi_data->bitmap, int_no, 1);
 			return -ENOSPC;
@@ -112,7 +132,11 @@ static int ppc4xx_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 
 		irq_set_msi_desc(virq, entry);
 		msg.data = int_no;
+<<<<<<< HEAD
 		write_msi_msg(virq, &msg);
+=======
+		pci_write_msi_msg(virq, &msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -125,8 +149,13 @@ void ppc4xx_teardown_msi_irqs(struct pci_dev *dev)
 
 	dev_dbg(&dev->dev, "PCIE-MSI: tearing down msi irqs\n");
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, &dev->msi_list, list) {
 		if (entry->irq == NO_IRQ)
+=======
+	for_each_pci_msi_entry(entry, dev) {
+		if (!entry->irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 		hwirq = virq_to_hw(entry->irq);
 		irq_set_msi_desc(entry->irq, NULL);
@@ -135,6 +164,7 @@ void ppc4xx_teardown_msi_irqs(struct pci_dev *dev)
 	}
 }
 
+<<<<<<< HEAD
 static int ppc4xx_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 {
 	dev_dbg(&pdev->dev, "PCIE-MSI:%s called. vec %x type %d\n",
@@ -145,6 +175,8 @@ static int ppc4xx_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ppc4xx_setup_pcieh_hw(struct platform_device *dev,
 				 struct resource res, struct ppc4xx_msi *msi)
 {
@@ -208,7 +240,11 @@ static int ppc4xx_of_msi_remove(struct platform_device *dev)
 
 	for (i = 0; i < msi_irqs; i++) {
 		virq = msi->msi_virqs[i];
+<<<<<<< HEAD
 		if (virq != NO_IRQ)
+=======
+		if (virq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			irq_dispose_mapping(virq);
 	}
 
@@ -226,6 +262,10 @@ static int ppc4xx_msi_probe(struct platform_device *dev)
 	struct ppc4xx_msi *msi;
 	struct resource res;
 	int err = 0;
+<<<<<<< HEAD
+=======
+	struct pci_controller *phb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&dev->dev, "PCIE-MSI: Setting up MSI support...\n");
 
@@ -258,9 +298,16 @@ static int ppc4xx_msi_probe(struct platform_device *dev)
 	}
 	ppc4xx_msi = *msi;
 
+<<<<<<< HEAD
 	ppc_md.setup_msi_irqs = ppc4xx_setup_msi_irqs;
 	ppc_md.teardown_msi_irqs = ppc4xx_teardown_msi_irqs;
 	ppc_md.msi_check_device = ppc4xx_msi_check_device;
+=======
+	list_for_each_entry(phb, &hose_list, list_node) {
+		phb->controller_ops.setup_msi_irqs = ppc4xx_setup_msi_irqs;
+		phb->controller_ops.teardown_msi_irqs = ppc4xx_teardown_msi_irqs;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 
 error_out:
@@ -278,7 +325,10 @@ static struct platform_driver ppc4xx_msi_driver = {
 	.remove = ppc4xx_of_msi_remove,
 	.driver = {
 		   .name = "ppc4xx-msi",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   .of_match_table = ppc4xx_msi_ids,
 		   },
 

@@ -254,7 +254,16 @@ void attr_clear(WINDOW * win, int height, int width, chtype attr)
 
 void dialog_clear(void)
 {
+<<<<<<< HEAD
 	attr_clear(stdscr, LINES, COLS, dlg.screen.atr);
+=======
+	int lines, columns;
+
+	lines = getmaxy(stdscr);
+	columns = getmaxx(stdscr);
+
+	attr_clear(stdscr, lines, columns, dlg.screen.atr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Display background title if it exists ... - SLH */
 	if (dlg.backtitle != NULL) {
 		int i, len = 0, skip = 0;
@@ -269,10 +278,17 @@ void dialog_clear(void)
 		}
 
 		wmove(stdscr, 1, 1);
+<<<<<<< HEAD
 		if (len > COLS - 2) {
 			const char *ellipsis = "[...] ";
 			waddstr(stdscr, ellipsis);
 			skip = len - (COLS - 2 - strlen(ellipsis));
+=======
+		if (len > columns - 2) {
+			const char *ellipsis = "[...] ";
+			waddstr(stdscr, ellipsis);
+			skip = len - (columns - 2 - strlen(ellipsis));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		for (pos = dlg.subtitles; pos != NULL; pos = pos->next) {
@@ -298,7 +314,11 @@ void dialog_clear(void)
 				skip--;
 		}
 
+<<<<<<< HEAD
 		for (i = len + 1; i < COLS - 1; i++)
+=======
+		for (i = len + 1; i < columns - 1; i++)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			waddch(stdscr, ACS_HLINE);
 	}
 	wnoutrefresh(stdscr);
@@ -317,7 +337,11 @@ int init_dialog(const char *backtitle)
 	getyx(stdscr, saved_y, saved_x);
 
 	getmaxyx(stdscr, height, width);
+<<<<<<< HEAD
 	if (height < 19 || width < 80) {
+=======
+	if (height < WINDOW_HEIGTH_MIN || width < WINDOW_WIDTH_MIN) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		endwin();
 		return -ERRDISPLAYTOOSMALL;
 	}
@@ -371,19 +395,29 @@ void print_title(WINDOW *dialog, const char *title, int width)
 /*
  * Print a string of text in a window, automatically wrap around to the
  * next line if the string is too long to fit on one line. Newline
+<<<<<<< HEAD
  * characters '\n' are replaced by spaces.  We start on a new line
+=======
+ * characters '\n' are propperly processed.  We start on a new line
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * if there is no room for at least 4 nonblanks following a double-space.
  */
 void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 {
 	int newl, cur_x, cur_y;
+<<<<<<< HEAD
 	int i, prompt_len, room, wlen;
 	char tempstr[MAX_LEN + 1], *word, *sp, *sp2;
+=======
+	int prompt_len, room, wlen;
+	char tempstr[MAX_LEN + 1], *word, *sp, *sp2, *newline_separator = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	strcpy(tempstr, prompt);
 
 	prompt_len = strlen(tempstr);
 
+<<<<<<< HEAD
 	/*
 	 * Remove newlines
 	 */
@@ -392,6 +426,8 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			tempstr[i] = ' ';
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (prompt_len <= width - x * 2) {	/* If prompt is short */
 		wmove(win, y, (width - prompt_len) / 2);
 		waddstr(win, tempstr);
@@ -401,7 +437,14 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 		newl = 1;
 		word = tempstr;
 		while (word && *word) {
+<<<<<<< HEAD
 			sp = strchr(word, ' ');
+=======
+			sp = strpbrk(word, "\n ");
+			if (sp && *sp == '\n')
+				newline_separator = sp;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (sp)
 				*sp++ = 0;
 
@@ -413,7 +456,11 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			if (wlen > room ||
 			    (newl && wlen < 4 && sp
 			     && wlen + 1 + strlen(sp) > room
+<<<<<<< HEAD
 			     && (!(sp2 = strchr(sp, ' '))
+=======
+			     && (!(sp2 = strpbrk(sp, "\n "))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 || wlen + 1 + (sp2 - sp) > room))) {
 				cur_y++;
 				cur_x = x;
@@ -421,7 +468,19 @@ void print_autowrap(WINDOW * win, const char *prompt, int width, int y, int x)
 			wmove(win, cur_y, cur_x);
 			waddstr(win, word);
 			getyx(win, cur_y, cur_x);
+<<<<<<< HEAD
 			cur_x++;
+=======
+
+			/* Move to the next line if the word separator was a newline */
+			if (newline_separator) {
+				cur_y++;
+				cur_x = x;
+				newline_separator = 0;
+			} else
+				cur_x++;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (sp && *sp == ' ') {
 				cur_x++;	/* double space */
 				while (*++sp == ' ') ;
@@ -615,7 +674,11 @@ void item_make(const char *fmt, ...)
 void item_add_str(const char *fmt, ...)
 {
 	va_list ap;
+<<<<<<< HEAD
         size_t avail;
+=======
+	size_t avail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	avail = sizeof(item_cur->node.str) - strlen(item_cur->node.str);
 

@@ -22,6 +22,10 @@
 
 #include <linux/usb.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-dev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "pvrusb2-io.h"
 #include "pvrusb2-ctrl.h"
 
@@ -53,6 +57,10 @@
 #define PVR2_CVAL_INPUT_COMPOSITE 2
 #define PVR2_CVAL_INPUT_SVIDEO 3
 #define PVR2_CVAL_INPUT_RADIO 4
+<<<<<<< HEAD
+=======
+#define PVR2_CVAL_INPUT_MAX PVR2_CVAL_INPUT_RADIO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum pvr2_config {
 	pvr2_config_empty,    /* No configuration */
@@ -138,6 +146,12 @@ const char *pvr2_hdw_get_device_identifier(struct pvr2_hdw *);
 /* Called when hardware has been unplugged */
 void pvr2_hdw_disconnect(struct pvr2_hdw *);
 
+<<<<<<< HEAD
+=======
+/* Sets v4l2_dev of a video_device struct */
+void pvr2_hdw_set_v4l2_dev(struct pvr2_hdw *, struct video_device *);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Get the number of defined controls */
 unsigned int pvr2_hdw_get_ctrl_count(struct pvr2_hdw *);
 
@@ -234,6 +248,7 @@ int pvr2_hdw_v4l_get_minor_number(struct pvr2_hdw *,enum pvr2_v4l_type index);
 void pvr2_hdw_v4l_store_minor_number(struct pvr2_hdw *,
 				     enum pvr2_v4l_type index,int);
 
+<<<<<<< HEAD
 /* Direct read/write access to chip's registers:
    match - specify criteria to identify target chip (this is a v4l dbg struct)
    reg_id  - register number to access
@@ -243,6 +258,8 @@ int pvr2_hdw_register_access(struct pvr2_hdw *,
 			     const struct v4l2_dbg_match *match, u64 reg_id,
 			     int setFl, u64 *val_ptr);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* The following entry points are all lower level things you normally don't
    want to worry about. */
 
@@ -276,9 +293,12 @@ int pvr2_hdw_cmd_deep_reset(struct pvr2_hdw *);
 /* Execute simple reset command */
 int pvr2_hdw_cmd_powerup(struct pvr2_hdw *);
 
+<<<<<<< HEAD
 /* suspend */
 int pvr2_hdw_cmd_powerdown(struct pvr2_hdw *);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Order decoder to reset */
 int pvr2_hdw_cmd_decoder_reset(struct pvr2_hdw *);
 
@@ -348,6 +368,7 @@ void pvr2_hdw_trigger_module_log(struct pvr2_hdw *hdw);
 int pvr2_upload_firmware2(struct pvr2_hdw *hdw);
 
 #endif /* __PVRUSB2_HDW_H */
+<<<<<<< HEAD
 
 /*
   Stuff for Emacs to see, in order to encourage consistent editing style:
@@ -358,3 +379,5 @@ int pvr2_upload_firmware2(struct pvr2_hdw *hdw);
   *** c-basic-offset: 8 ***
   *** End: ***
   */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

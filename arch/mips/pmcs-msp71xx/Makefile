@@ -3,7 +3,10 @@
 #
 obj-y += msp_prom.o msp_setup.o msp_irq.o \
 	 msp_time.o msp_serial.o msp_elb.o
+<<<<<<< HEAD
 obj-$(CONFIG_HAVE_GPIO_LIB) += gpio.o gpio_extended.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_PMC_MSP7120_GW) += msp_hwbutton.o
 obj-$(CONFIG_IRQ_MSP_SLP) += msp_irq_slp.o
 obj-$(CONFIG_IRQ_MSP_CIC) += msp_irq_cic.o msp_irq_per.o
@@ -11,4 +14,7 @@ obj-$(CONFIG_PCI) += msp_pci.o
 obj-$(CONFIG_MSP_HAS_MAC) += msp_eth.o
 obj-$(CONFIG_MSP_HAS_USB) += msp_usb.o
 obj-$(CONFIG_MIPS_MT_SMP) += msp_smp.o
+<<<<<<< HEAD
 obj-$(CONFIG_MIPS_MT_SMTC) += msp_smtc.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

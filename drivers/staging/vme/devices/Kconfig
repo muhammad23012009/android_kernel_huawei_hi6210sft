@@ -8,6 +8,12 @@ config VME_USER
 	  VME windows in a manner at least semi-compatible with the interface
 	  provided with the original driver at <http://www.vmelinux.org/>.
 
+<<<<<<< HEAD
+=======
+	  To compile this driver as a module, choose M here. The module will
+	  be called vme_user. If unsure, say N.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config VME_PIO2
 	tristate "GE PIO2 VME"
 	depends on STAGING && GPIOLIB

@@ -3,7 +3,11 @@
  * temperature sensors
  * Copyright (C) 2007 IBM
  *
+<<<<<<< HEAD
  * Author: Darrick J. Wong <djwong@us.ibm.com>
+=======
+ * Author: Darrick J. Wong <darrick.wong@oracle.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -556,7 +560,10 @@ static int i5k_amb_probe(struct platform_device *pdev)
 
 err_init_failed:
 	iounmap(data->amb_mmio);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_map_failed:
 	release_mem_region(data->amb_base, data->amb_len);
 err:
@@ -576,14 +583,20 @@ static int i5k_amb_remove(struct platform_device *pdev)
 	kfree(data->attrs);
 	iounmap(data->amb_mmio);
 	release_mem_region(data->amb_base, data->amb_len);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(data);
 	return 0;
 }
 
 static struct platform_driver i5k_amb_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = DRVNAME,
 	},
 	.probe = i5k_amb_probe,
@@ -611,7 +624,11 @@ static void __exit i5k_amb_exit(void)
 	platform_driver_unregister(&i5k_amb_driver);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Darrick J. Wong <djwong@us.ibm.com>");
+=======
+MODULE_AUTHOR("Darrick J. Wong <darrick.wong@oracle.com>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("Intel 5000 chipset FB-DIMM AMB temperature sensor");
 MODULE_LICENSE("GPL");
 

@@ -152,9 +152,12 @@ struct r3964_info {
 	unsigned char *rx_buf;            /* ring buffer */
 	unsigned char *tx_buf;
 
+<<<<<<< HEAD
 	wait_queue_head_t read_wait;
 	//struct wait_queue *read_wait;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct r3964_block_header *rx_first;
 	struct r3964_block_header *rx_last;
 	struct r3964_block_header *tx_first;
@@ -164,8 +167,14 @@ struct r3964_info {
 	unsigned char last_rx;
 	unsigned char bcc;
         unsigned int  blocks_in_rx_queue;
+<<<<<<< HEAD
 	  
 	
+=======
+
+	struct mutex read_lock;		/* serialize r3964_read */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct r3964_client_info *firstClient;
 	unsigned int state;
 	unsigned int flags;

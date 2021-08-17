@@ -12,6 +12,11 @@
  * PS3 Eye camera enhanced by Richard Kaswy http://kaswy.free.fr
  * PS3 Eye camera - brightness, contrast, awb, agc, aec controls
  *                  added by Max Thrun <bear24rw@gmail.com>
+<<<<<<< HEAD
+=======
+ * PS3 Eye camera - FPS range extended by Joseph Howse
+ *                  <josephhowse@nummist.com> http://nummist.com
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +54,10 @@
 #define OV534_OP_READ_2		0xf9
 
 #define CTRL_TIMEOUT 500
+<<<<<<< HEAD
+=======
+#define DEFAULT_FRAME_RATE 30
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Antonio Ospite <ospite@studenti.unina.it>");
 MODULE_DESCRIPTION("GSPCA/OV534 USB Camera Driver");
@@ -116,7 +125,11 @@ static const struct v4l2_pix_format ov767x_mode[] = {
 		.colorspace = V4L2_COLORSPACE_JPEG},
 };
 
+<<<<<<< HEAD
 static const u8 qvga_rates[] = {125, 100, 75, 60, 50, 40, 30};
+=======
+static const u8 qvga_rates[] = {187, 150, 137, 125, 100, 75, 60, 50, 37, 30};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const u8 vga_rates[] = {60, 50, 40, 30, 15};
 
 static const struct framerates ov772x_framerates[] = {
@@ -642,6 +655,14 @@ static u8 ov534_reg_read(struct gspca_dev *gspca_dev, u16 reg)
 	if (ret < 0) {
 		pr_err("read failed %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the result is zeroed to avoid uninitialized
+		 * values.
+		 */
+		gspca_dev->usb_buf[0] = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return gspca_dev->usb_buf[0];
 }
@@ -769,12 +790,23 @@ static void set_frame_rate(struct gspca_dev *gspca_dev)
 		{15, 0x03, 0x41, 0x04},
 	};
 	static const struct rate_s rate_1[] = {	/* 320x240 */
+<<<<<<< HEAD
+=======
+/*		{205, 0x01, 0xc1, 0x02},  * 205 FPS: video is partly corrupt */
+		{187, 0x01, 0x81, 0x02}, /* 187 FPS or below: video is valid */
+		{150, 0x01, 0xc1, 0x04},
+		{137, 0x02, 0xc1, 0x02},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{125, 0x02, 0x81, 0x02},
 		{100, 0x02, 0xc1, 0x04},
 		{75, 0x03, 0xc1, 0x04},
 		{60, 0x04, 0xc1, 0x04},
 		{50, 0x02, 0x41, 0x04},
+<<<<<<< HEAD
 		{40, 0x03, 0x41, 0x04},
+=======
+		{37, 0x03, 0x41, 0x04},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		{30, 0x04, 0x41, 0x04},
 	};
 
@@ -810,21 +842,33 @@ static void sethue(struct gspca_dev *gspca_dev, s32 val)
 		s16 huesin;
 		s16 huecos;
 
+<<<<<<< HEAD
 		/* fixp_sin and fixp_cos accept only positive values, while
 		 * our val is between -90 and 90
 		 */
 		val += 360;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* According to the datasheet the registers expect HUESIN and
 		 * HUECOS to be the result of the trigonometric functions,
 		 * scaled by 0x80.
 		 *
+<<<<<<< HEAD
 		 * The 0x100 here represents the maximun absolute value
 		 * returned byt fixp_sin and fixp_cos, so the scaling will
 		 * consider the result like in the interval [-1.0, 1.0].
 		 */
 		huesin = fixp_sin(val) * 0x80 / 0x100;
 		huecos = fixp_cos(val) * 0x80 / 0x100;
+=======
+		 * The 0x7fff here represents the maximum absolute value
+		 * returned byt fixp_sin and fixp_cos, so the scaling will
+		 * consider the result like in the interval [-1.0, 1.0].
+		 */
+		huesin = fixp_sin16(val) * 0x80 / 0x7fff;
+		huecos = fixp_cos16(val) * 0x80 / 0x7fff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (huesin < 0) {
 			sccb_reg_write(gspca_dev, 0xab,
@@ -1060,7 +1104,11 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	cam->cam_mode = ov772x_mode;
 	cam->nmodes = ARRAY_SIZE(ov772x_mode);
 
+<<<<<<< HEAD
 	sd->frame_rate = 30;
+=======
+	sd->frame_rate = DEFAULT_FRAME_RATE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1305,8 +1353,12 @@ static int sd_init(struct gspca_dev *gspca_dev)
 	ov534_set_led(gspca_dev, 1);
 	sccb_w_array(gspca_dev, sensor_init[sd->sensor].val,
 			sensor_init[sd->sensor].len);
+<<<<<<< HEAD
 	if (sd->sensor == SENSOR_OV767x)
 		sd_start(gspca_dev);
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sd_stopN(gspca_dev);
 /*	set_frame_rate(gspca_dev);	*/
 
@@ -1441,9 +1493,16 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev,
 		/* If this packet is marked as EOF, end the frame */
 		} else if (data[1] & UVC_STREAM_EOF) {
 			sd->last_pts = 0;
+<<<<<<< HEAD
 			if (gspca_dev->pixfmt == V4L2_PIX_FMT_YUYV
 			 && gspca_dev->image_len + len - 12 !=
 				   gspca_dev->width * gspca_dev->height * 2) {
+=======
+			if (gspca_dev->pixfmt.pixelformat == V4L2_PIX_FMT_YUYV
+			 && gspca_dev->image_len + len - 12 !=
+				   gspca_dev->pixfmt.width *
+					gspca_dev->pixfmt.height * 2) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				PDEBUG(D_PACK, "wrong sized frame");
 				goto discard;
 			}
@@ -1491,10 +1550,15 @@ static void sd_set_streamparm(struct gspca_dev *gspca_dev,
 	struct sd *sd = (struct sd *) gspca_dev;
 
 	if (tpf->numerator == 0 || tpf->denominator == 0)
+<<<<<<< HEAD
 		/* Set default framerate */
 		sd->frame_rate = 30;
 	else
 		/* Set requested framerate */
+=======
+		sd->frame_rate = DEFAULT_FRAME_RATE;
+	else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sd->frame_rate = tpf->denominator / tpf->numerator;
 
 	if (gspca_dev->streaming)

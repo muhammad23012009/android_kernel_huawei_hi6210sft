@@ -20,7 +20,10 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "clk.h"
 

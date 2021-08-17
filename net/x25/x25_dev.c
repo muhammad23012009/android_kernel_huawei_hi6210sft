@@ -17,6 +17,11 @@
  *      2000-09-04	Henner Eisen	Prevent freeing a dangling skb.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "X25: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
@@ -89,7 +94,11 @@ static int x25_receive_data(struct sk_buff *skb, struct x25_neigh *nb)
 */
 
 	if (frametype != X25_CLEAR_CONFIRMATION)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "x25_receive_data(): unknown frame type %2x\n",frametype);
+=======
+		pr_debug("x25_receive_data(): unknown frame type %2x\n",frametype);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -114,12 +123,23 @@ int x25_lapb_receive_frame(struct sk_buff *skb, struct net_device *dev,
 	 */
 	nb = x25_get_neigh(dev);
 	if (!nb) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "X.25: unknown neighbour - %s\n", dev->name);
 		goto drop;
 	}
 
 	if (!pskb_may_pull(skb, 1))
 		return 0;
+=======
+		pr_debug("unknown neighbour - %s\n", dev->name);
+		goto drop;
+	}
+
+	if (!pskb_may_pull(skb, 1)) {
+		x25_neigh_put(nb);
+		return 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (skb->data[0]) {
 
@@ -154,7 +174,11 @@ void x25_establish_link(struct x25_neigh *nb)
 	switch (nb->dev->type) {
 	case ARPHRD_X25:
 		if ((skb = alloc_skb(1, GFP_ATOMIC)) == NULL) {
+<<<<<<< HEAD
 			printk(KERN_ERR "x25_dev: out of memory\n");
+=======
+			pr_err("x25_dev: out of memory\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 		}
 		ptr  = skb_put(skb, 1);
@@ -189,7 +213,11 @@ void x25_terminate_link(struct x25_neigh *nb)
 
 	skb = alloc_skb(1, GFP_ATOMIC);
 	if (!skb) {
+<<<<<<< HEAD
 		printk(KERN_ERR "x25_dev: out of memory\n");
+=======
+		pr_err("x25_dev: out of memory\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 

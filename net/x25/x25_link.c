@@ -21,6 +21,11 @@
  *	2000-09-04	Henner Eisen	  dev_hold() / dev_put() for x25_neigh.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "X25: " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/jiffies.h>
 #include <linux/timer.h>
@@ -93,13 +98,21 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
 		if (!pskb_may_pull(skb, X25_STD_MIN_LEN + 4))
 			break;
 
+<<<<<<< HEAD
 		printk(KERN_WARNING "x25: diagnostic #%d - %02X %02X %02X\n",
+=======
+		pr_warn("diagnostic #%d - %02X %02X %02X\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       skb->data[3], skb->data[4],
 		       skb->data[5], skb->data[6]);
 		break;
 
 	default:
+<<<<<<< HEAD
 		printk(KERN_WARNING "x25: received unknown %02X with LCI 000\n",
+=======
+		pr_warn("received unknown %02X with LCI 000\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       frametype);
 		break;
 	}

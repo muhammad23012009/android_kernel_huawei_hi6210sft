@@ -120,7 +120,11 @@ do {								\
 /*
  * Despite its name it doesn't necessarily has to be a full barrier.
  * It should only guarantee that a STORE before the critical section
+<<<<<<< HEAD
  * can not be reordered with a LOAD inside this section.
+=======
+ * can not be reordered with LOADs and STOREs inside this section.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * spin_lock() is the one-way barrier, this LOAD can not escape out
  * of the region. So the default implementation simply ensures that
  * a STORE can not move into the critical section, smp_wmb() should
@@ -180,6 +184,11 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 # define raw_spin_lock_nested(lock, subclass) \
 	_raw_spin_lock_nested(lock, subclass)
+<<<<<<< HEAD
+=======
+# define raw_spin_lock_bh_nested(lock, subclass) \
+	_raw_spin_lock_bh_nested(lock, subclass)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # define raw_spin_lock_nest_lock(lock, nest_lock)			\
 	 do {								\
@@ -187,8 +196,20 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 		 _raw_spin_lock_nest_lock(lock, &(nest_lock)->dep_map);	\
 	 } while (0)
 #else
+<<<<<<< HEAD
 # define raw_spin_lock_nested(lock, subclass)		_raw_spin_lock(lock)
 # define raw_spin_lock_nest_lock(lock, nest_lock)	_raw_spin_lock(lock)
+=======
+/*
+ * Always evaluate the 'subclass' argument to avoid that the compiler
+ * warns about set-but-not-used variables when building with
+ * CONFIG_DEBUG_LOCK_ALLOC=n and with W=1.
+ */
+# define raw_spin_lock_nested(lock, subclass)		\
+	_raw_spin_lock(((void)(subclass), (lock)))
+# define raw_spin_lock_nest_lock(lock, nest_lock)	_raw_spin_lock(lock)
+# define raw_spin_lock_bh_nested(lock, subclass)	_raw_spin_lock_bh(lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
@@ -277,7 +298,11 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
  * Map the spin_lock functions to the raw variants for PREEMPT_RT=n
  */
 
+<<<<<<< HEAD
 static inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
+=======
+static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return &lock->rlock;
 }
@@ -288,17 +313,29 @@ do {							\
 	raw_spin_lock_init(&(_lock)->rlock);		\
 } while (0)
 
+<<<<<<< HEAD
 static inline void spin_lock(spinlock_t *lock)
+=======
+static __always_inline void spin_lock(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_lock(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline void spin_lock_bh(spinlock_t *lock)
+=======
+static __always_inline void spin_lock_bh(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_lock_bh(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline int spin_trylock(spinlock_t *lock)
+=======
+static __always_inline int spin_trylock(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return raw_spin_trylock(&lock->rlock);
 }
@@ -308,12 +345,24 @@ do {								\
 	raw_spin_lock_nested(spinlock_check(lock), subclass);	\
 } while (0)
 
+<<<<<<< HEAD
+=======
+#define spin_lock_bh_nested(lock, subclass)			\
+do {								\
+	raw_spin_lock_bh_nested(spinlock_check(lock), subclass);\
+} while (0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define spin_lock_nest_lock(lock, nest_lock)				\
 do {									\
 	raw_spin_lock_nest_lock(spinlock_check(lock), nest_lock);	\
 } while (0)
 
+<<<<<<< HEAD
 static inline void spin_lock_irq(spinlock_t *lock)
+=======
+static __always_inline void spin_lock_irq(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_lock_irq(&lock->rlock);
 }
@@ -328,32 +377,56 @@ do {									\
 	raw_spin_lock_irqsave_nested(spinlock_check(lock), flags, subclass); \
 } while (0)
 
+<<<<<<< HEAD
 static inline void spin_unlock(spinlock_t *lock)
+=======
+static __always_inline void spin_unlock(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_unlock(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline void spin_unlock_bh(spinlock_t *lock)
+=======
+static __always_inline void spin_unlock_bh(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_unlock_bh(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline void spin_unlock_irq(spinlock_t *lock)
+=======
+static __always_inline void spin_unlock_irq(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_unlock_irq(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned long flags)
+=======
+static __always_inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned long flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_unlock_irqrestore(&lock->rlock, flags);
 }
 
+<<<<<<< HEAD
 static inline int spin_trylock_bh(spinlock_t *lock)
+=======
+static __always_inline int spin_trylock_bh(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return raw_spin_trylock_bh(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline int spin_trylock_irq(spinlock_t *lock)
+=======
+static __always_inline int spin_trylock_irq(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return raw_spin_trylock_irq(&lock->rlock);
 }
@@ -363,22 +436,38 @@ static inline int spin_trylock_irq(spinlock_t *lock)
 	raw_spin_trylock_irqsave(spinlock_check(lock), flags); \
 })
 
+<<<<<<< HEAD
 static inline void spin_unlock_wait(spinlock_t *lock)
+=======
+static __always_inline void spin_unlock_wait(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	raw_spin_unlock_wait(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline int spin_is_locked(spinlock_t *lock)
+=======
+static __always_inline int spin_is_locked(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return raw_spin_is_locked(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline int spin_is_contended(spinlock_t *lock)
+=======
+static __always_inline int spin_is_contended(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return raw_spin_is_contended(&lock->rlock);
 }
 
+<<<<<<< HEAD
 static inline int spin_can_lock(spinlock_t *lock)
+=======
+static __always_inline int spin_can_lock(spinlock_t *lock)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return raw_spin_can_lock(&lock->rlock);
 }

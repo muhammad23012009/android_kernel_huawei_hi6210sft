@@ -18,12 +18,17 @@
 #ifndef __XFS_AOPS_H__
 #define __XFS_AOPS_H__
 
+<<<<<<< HEAD
 extern mempool_t *xfs_ioend_pool;
+=======
+extern struct bio_set *xfs_ioend_bioset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Types of I/O for bmap clustering and I/O completion tracking.
  */
 enum {
+<<<<<<< HEAD
 	XFS_IO_DIRECT = 0,	/* special case for direct I/O ioends */
 	XFS_IO_DELALLOC,	/* covers delalloc region */
 	XFS_IO_UNWRITTEN,	/* covers allocated but uninitialized data */
@@ -50,10 +55,34 @@ typedef struct xfs_ioend {
 	struct inode		*io_inode;	/* file being written to */
 	struct buffer_head	*io_buffer_head;/* buffer linked list head */
 	struct buffer_head	*io_buffer_tail;/* buffer linked list tail */
+=======
+	XFS_IO_INVALID,		/* initial state */
+	XFS_IO_DELALLOC,	/* covers delalloc region */
+	XFS_IO_UNWRITTEN,	/* covers allocated but uninitialized data */
+	XFS_IO_OVERWRITE,	/* covers already allocated extent */
+	XFS_IO_COW,		/* covers copy-on-write extent */
+};
+
+#define XFS_IO_TYPES \
+	{ XFS_IO_INVALID,		"invalid" }, \
+	{ XFS_IO_DELALLOC,		"delalloc" }, \
+	{ XFS_IO_UNWRITTEN,		"unwritten" }, \
+	{ XFS_IO_OVERWRITE,		"overwrite" }, \
+	{ XFS_IO_COW,			"CoW" }
+
+/*
+ * Structure for buffered I/O completions.
+ */
+struct xfs_ioend {
+	struct list_head	io_list;	/* next ioend in chain */
+	unsigned int		io_type;	/* delalloc / unwritten */
+	struct inode		*io_inode;	/* file being written to */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	size_t			io_size;	/* size of the extent */
 	xfs_off_t		io_offset;	/* offset in the file */
 	struct work_struct	io_work;	/* xfsdatad work queue */
 	struct xfs_trans	*io_append_trans;/* xact. for size update */
+<<<<<<< HEAD
 	struct kiocb		*io_iocb;
 	int			io_result;
 } xfs_ioend_t;
@@ -62,5 +91,26 @@ extern const struct address_space_operations xfs_address_space_operations;
 extern int xfs_get_blocks(struct inode *, sector_t, struct buffer_head *, int);
 
 extern void xfs_count_page_state(struct page *, int *, int *);
+=======
+	struct bio		*io_bio;	/* bio being built */
+	struct bio		io_inline_bio;	/* MUST BE LAST! */
+};
+
+extern const struct address_space_operations xfs_address_space_operations;
+
+int	xfs_get_blocks(struct inode *inode, sector_t offset,
+		       struct buffer_head *map_bh, int create);
+int	xfs_get_blocks_direct(struct inode *inode, sector_t offset,
+			      struct buffer_head *map_bh, int create);
+int	xfs_get_blocks_dax_fault(struct inode *inode, sector_t offset,
+			         struct buffer_head *map_bh, int create);
+
+int	xfs_end_io_direct_write(struct kiocb *iocb, loff_t offset,
+		ssize_t size, void *private);
+int	xfs_setfilesize(struct xfs_inode *ip, xfs_off_t offset, size_t size);
+
+extern void xfs_count_page_state(struct page *, int *, int *);
+extern struct block_device *xfs_find_bdev_for_inode(struct inode *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __XFS_AOPS_H__ */

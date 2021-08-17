@@ -76,15 +76,35 @@ static void *tpm_bios_measurements_start(struct seq_file *m, loff_t *pos)
 	void *addr = log->bios_event_log;
 	void *limit = log->bios_event_log_end;
 	struct tcpa_event *event;
+<<<<<<< HEAD
+=======
+	u32 converted_event_size;
+	u32 converted_event_type;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* read over *pos measurements */
 	for (i = 0; i < *pos; i++) {
 		event = addr;
 
+<<<<<<< HEAD
 		if ((addr + sizeof(struct tcpa_event)) < limit) {
 			if (event->event_type == 0 && event->event_size == 0)
 				return NULL;
 			addr += sizeof(struct tcpa_event) + event->event_size;
+=======
+		converted_event_size =
+		    do_endian_conversion(event->event_size);
+		converted_event_type =
+		    do_endian_conversion(event->event_type);
+
+		if ((addr + sizeof(struct tcpa_event)) < limit) {
+			if ((converted_event_type == 0) &&
+			    (converted_event_size == 0))
+				return NULL;
+			addr += (sizeof(struct tcpa_event) +
+				 converted_event_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -94,8 +114,17 @@ static void *tpm_bios_measurements_start(struct seq_file *m, loff_t *pos)
 
 	event = addr;
 
+<<<<<<< HEAD
 	if ((event->event_type == 0 && event->event_size == 0) ||
 	    ((addr + sizeof(struct tcpa_event) + event->event_size) >= limit))
+=======
+	converted_event_size = do_endian_conversion(event->event_size);
+	converted_event_type = do_endian_conversion(event->event_type);
+
+	if (((converted_event_type == 0) && (converted_event_size == 0))
+	    || ((addr + sizeof(struct tcpa_event) + converted_event_size)
+		>= limit))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	return addr;
@@ -107,8 +136,17 @@ static void *tpm_bios_measurements_next(struct seq_file *m, void *v,
 	struct tcpa_event *event = v;
 	struct tpm_bios_log *log = m->private;
 	void *limit = log->bios_event_log_end;
+<<<<<<< HEAD
 
 	v += sizeof(struct tcpa_event) + event->event_size;
+=======
+	u32 converted_event_size;
+	u32 converted_event_type;
+
+	converted_event_size = do_endian_conversion(event->event_size);
+
+	v += sizeof(struct tcpa_event) + converted_event_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* now check if current entry is valid */
 	if ((v + sizeof(struct tcpa_event)) >= limit)
@@ -116,11 +154,19 @@ static void *tpm_bios_measurements_next(struct seq_file *m, void *v,
 
 	event = v;
 
+<<<<<<< HEAD
 	if (event->event_type == 0 && event->event_size == 0)
 		return NULL;
 
 	if ((event->event_type == 0 && event->event_size == 0) ||
 	    ((v + sizeof(struct tcpa_event) + event->event_size) >= limit))
+=======
+	converted_event_size = do_endian_conversion(event->event_size);
+	converted_event_type = do_endian_conversion(event->event_type);
+
+	if (((converted_event_type == 0) && (converted_event_size == 0)) ||
+	    ((v + sizeof(struct tcpa_event) + converted_event_size) >= limit))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	(*pos)++;
@@ -140,7 +186,11 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 	int i, n_len = 0, d_len = 0;
 	struct tcpa_pc_event *pc_event;
 
+<<<<<<< HEAD
 	switch(event->event_type) {
+=======
+	switch (do_endian_conversion(event->event_type)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case PREBOOT:
 	case POST_CODE:
 	case UNUSED:
@@ -156,14 +206,26 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 	case NONHOST_CODE:
 	case NONHOST_CONFIG:
 	case NONHOST_INFO:
+<<<<<<< HEAD
 		name = tcpa_event_type_strings[event->event_type];
+=======
+		name = tcpa_event_type_strings[do_endian_conversion
+						(event->event_type)];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		n_len = strlen(name);
 		break;
 	case SEPARATOR:
 	case ACTION:
+<<<<<<< HEAD
 		if (MAX_TEXT_EVENT > event->event_size) {
 			name = event_entry;
 			n_len = event->event_size;
+=======
+		if (MAX_TEXT_EVENT >
+		    do_endian_conversion(event->event_size)) {
+			name = event_entry;
+			n_len = do_endian_conversion(event->event_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		break;
 	case EVENT_TAG:
@@ -171,7 +233,11 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 
 		/* ToDo Row data -> Base64 */
 
+<<<<<<< HEAD
 		switch (pc_event->event_id) {
+=======
+		switch (do_endian_conversion(pc_event->event_id)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case SMBIOS:
 		case BIS_CERT:
 		case CMOS:
@@ -179,7 +245,12 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 		case OPTION_ROM_EXEC:
 		case OPTION_ROM_CONFIG:
 		case S_CRTM_VERSION:
+<<<<<<< HEAD
 			name = tcpa_pc_event_id_strings[pc_event->event_id];
+=======
+			name = tcpa_pc_event_id_strings[do_endian_conversion
+							(pc_event->event_id)];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			n_len = strlen(name);
 			break;
 		/* hash data */
@@ -188,7 +259,12 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 		case OPTION_ROM_MICROCODE:
 		case S_CRTM_CONTENTS:
 		case POST_CONTENTS:
+<<<<<<< HEAD
 			name = tcpa_pc_event_id_strings[pc_event->event_id];
+=======
+			name = tcpa_pc_event_id_strings[do_endian_conversion
+							(pc_event->event_id)];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			n_len = strlen(name);
 			for (i = 0; i < 20; i++)
 				d_len += sprintf(&data[2*i], "%02x",
@@ -209,6 +285,7 @@ static int get_event_name(char *dest, struct tcpa_event *event,
 static int tpm_binary_bios_measurements_show(struct seq_file *m, void *v)
 {
 	struct tcpa_event *event = v;
+<<<<<<< HEAD
 	char *data = v;
 	int i;
 
@@ -216,6 +293,32 @@ static int tpm_binary_bios_measurements_show(struct seq_file *m, void *v)
 		seq_putc(m, data[i]);
 
 	return 0;
+=======
+	struct tcpa_event temp_event;
+	char *temp_ptr;
+	int i;
+
+	memcpy(&temp_event, event, sizeof(struct tcpa_event));
+
+	/* convert raw integers for endianness */
+	temp_event.pcr_index = do_endian_conversion(event->pcr_index);
+	temp_event.event_type = do_endian_conversion(event->event_type);
+	temp_event.event_size = do_endian_conversion(event->event_size);
+
+	temp_ptr = (char *) &temp_event;
+
+	for (i = 0; i < (sizeof(struct tcpa_event) - 1) ; i++)
+		seq_putc(m, temp_ptr[i]);
+
+	temp_ptr = (char *) v;
+
+	for (i = (sizeof(struct tcpa_event) - 1);
+	     i < (sizeof(struct tcpa_event) + temp_event.event_size); i++)
+		seq_putc(m, temp_ptr[i]);
+
+	return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int tpm_bios_measurements_release(struct inode *inode,
@@ -235,11 +338,18 @@ static int tpm_bios_measurements_release(struct inode *inode,
 static int tpm_ascii_bios_measurements_show(struct seq_file *m, void *v)
 {
 	int len = 0;
+<<<<<<< HEAD
 	int i;
 	char *eventname;
 	struct tcpa_event *event = v;
 	unsigned char *event_entry =
 	    (unsigned char *) (v + sizeof(struct tcpa_event));
+=======
+	char *eventname;
+	struct tcpa_event *event = v;
+	unsigned char *event_entry =
+	    (unsigned char *)(v + sizeof(struct tcpa_event));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	eventname = kmalloc(MAX_TEXT_EVENT, GFP_KERNEL);
 	if (!eventname) {
@@ -248,6 +358,7 @@ static int tpm_ascii_bios_measurements_show(struct seq_file *m, void *v)
 		return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	seq_printf(m, "%2d ", event->pcr_index);
 
 	/* 2nd: SHA1 */
@@ -256,6 +367,16 @@ static int tpm_ascii_bios_measurements_show(struct seq_file *m, void *v)
 
 	/* 3rd: event type identifier */
 	seq_printf(m, " %02x", event->event_type);
+=======
+	/* 1st: PCR */
+	seq_printf(m, "%2d ", do_endian_conversion(event->pcr_index));
+
+	/* 2nd: SHA1 */
+	seq_printf(m, "%20phN", event->pcr_value);
+
+	/* 3rd: event type identifier */
+	seq_printf(m, " %02x", do_endian_conversion(event->event_type));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	len += get_event_name(eventname, event, event_entry);
 
@@ -365,7 +486,11 @@ static int is_bad(void *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct dentry **tpm_bios_log_setup(char *name)
+=======
+struct dentry **tpm_bios_log_setup(const char *name)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct dentry **ret = NULL, *tpm_dir, *bin_file, *ascii_file;
 
@@ -406,7 +531,10 @@ out_tpm:
 out:
 	return NULL;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(tpm_bios_log_setup);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void tpm_bios_log_teardown(struct dentry **lst)
 {
@@ -415,5 +543,8 @@ void tpm_bios_log_teardown(struct dentry **lst)
 	for (i = 0; i < 3; i++)
 		securityfs_remove(lst[i]);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(tpm_bios_log_teardown);
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

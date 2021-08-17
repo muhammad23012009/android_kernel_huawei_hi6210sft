@@ -29,7 +29,10 @@
 
 #include <linux/delay.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/in.h>
 #include <linux/kernel.h>
@@ -43,7 +46,11 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/wireless.h>
+<<<<<<< HEAD
 #include <linux/ieee80211.h>
+=======
+#include <net/cfg80211.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <net/iw_handler.h>
 
@@ -379,8 +386,12 @@ static int wl3501_esbq_exec(struct wl3501_card *this, void *sig, int sig_size)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int wl3501_get_mib_value(struct wl3501_card *this, u8 index,
 				void *bf, int size)
+=======
+static int wl3501_request_mib(struct wl3501_card *this, u8 index, void *bf)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct wl3501_get_req sig = {
 		.sig_id	    = WL3501_SIG_GET_REQ,
@@ -396,6 +407,7 @@ static int wl3501_get_mib_value(struct wl3501_card *this, u8 index,
 			wl3501_set_to_wla(this, ptr, &sig, sizeof(sig));
 			wl3501_esbq_req(this, &ptr);
 			this->sig_get_confirm.mib_status = 255;
+<<<<<<< HEAD
 			spin_unlock_irqrestore(&this->lock, flags);
 			rc = wait_event_interruptible(this->wait,
 				this->sig_get_confirm.mib_status != 255);
@@ -410,6 +422,34 @@ out:
 	return rc;
 }
 
+=======
+			rc = 0;
+		}
+	}
+	spin_unlock_irqrestore(&this->lock, flags);
+
+	return rc;
+}
+
+static int wl3501_get_mib_value(struct wl3501_card *this, u8 index,
+				void *bf, int size)
+{
+	int rc;
+
+	rc = wl3501_request_mib(this, index, bf);
+	if (rc)
+		return rc;
+
+	rc = wait_event_interruptible(this->wait,
+		this->sig_get_confirm.mib_status != 255);
+	if (rc)
+		return rc;
+
+	memcpy(bf, this->sig_get_confirm.mib_value, size);
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wl3501_pwr_mgmt(struct wl3501_card *this, int suspend)
 {
 	struct wl3501_pwr_mgmt_req sig = {
@@ -458,6 +498,10 @@ static int wl3501_send_pkt(struct wl3501_card *this, u8 *data, u16 len)
 	struct wl3501_md_req sig = {
 		.sig_id = WL3501_SIG_MD_REQ,
 	};
+<<<<<<< HEAD
+=======
+	size_t sig_addr_len = sizeof(sig.addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 *pdata = (char *)data;
 	int rc = -EIO;
 
@@ -473,9 +517,15 @@ static int wl3501_send_pkt(struct wl3501_card *this, u8 *data, u16 len)
 			goto out;
 		}
 		rc = 0;
+<<<<<<< HEAD
 		memcpy(&sig.daddr[0], pdata, 12);
 		pktlen = len - 12;
 		pdata += 12;
+=======
+		memcpy(&sig.addr, pdata, sig_addr_len);
+		pktlen = len - sig_addr_len;
+		pdata += sig_addr_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sig.data = bf;
 		if (((*pdata) * 256 + (*(pdata + 1))) > 1500) {
 			u8 addr4[ETH_ALEN] = {
@@ -578,7 +628,11 @@ static int wl3501_mgmt_join(struct wl3501_card *this, u16 stas)
 	struct wl3501_join_req sig = {
 		.sig_id		  = WL3501_SIG_JOIN_REQ,
 		.timeout	  = 10,
+<<<<<<< HEAD
 		.ds_pset = {
+=======
+		.req.ds_pset = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.el = {
 				.id  = IW_MGMT_INFO_ELEMENT_DS_PARAMETER_SET,
 				.len = 1,
@@ -587,7 +641,11 @@ static int wl3501_mgmt_join(struct wl3501_card *this, u16 stas)
 		},
 	};
 
+<<<<<<< HEAD
 	memcpy(&sig.beacon_period, &this->bss_set[stas].beacon_period, 72);
+=======
+	memcpy(&sig.req, &this->bss_set[stas].req, sizeof(sig.req));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return wl3501_esbq_exec(this, &sig, sizeof(sig));
 }
 
@@ -655,36 +713,61 @@ static void wl3501_mgmt_scan_confirm(struct wl3501_card *this, u16 addr)
 	if (sig.status == WL3501_STATUS_SUCCESS) {
 		pr_debug("success");
 		if ((this->net_type == IW_MODE_INFRA &&
+<<<<<<< HEAD
 		     (sig.cap_info & WL3501_MGMT_CAPABILITY_ESS)) ||
 		    (this->net_type == IW_MODE_ADHOC &&
 		     (sig.cap_info & WL3501_MGMT_CAPABILITY_IBSS)) ||
+=======
+		     (sig.req.cap_info & WL3501_MGMT_CAPABILITY_ESS)) ||
+		    (this->net_type == IW_MODE_ADHOC &&
+		     (sig.req.cap_info & WL3501_MGMT_CAPABILITY_IBSS)) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    this->net_type == IW_MODE_AUTO) {
 			if (!this->essid.el.len)
 				matchflag = 1;
 			else if (this->essid.el.len == 3 &&
 				 !memcmp(this->essid.essid, "ANY", 3))
 				matchflag = 1;
+<<<<<<< HEAD
 			else if (this->essid.el.len != sig.ssid.el.len)
 				matchflag = 0;
 			else if (memcmp(this->essid.essid, sig.ssid.essid,
+=======
+			else if (this->essid.el.len != sig.req.ssid.el.len)
+				matchflag = 0;
+			else if (memcmp(this->essid.essid, sig.req.ssid.essid,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					this->essid.el.len))
 				matchflag = 0;
 			else
 				matchflag = 1;
 			if (matchflag) {
 				for (i = 0; i < this->bss_cnt; i++) {
+<<<<<<< HEAD
 					if (!memcmp(this->bss_set[i].bssid,
 						    sig.bssid, ETH_ALEN)) {
+=======
+					if (ether_addr_equal_unaligned(this->bss_set[i].req.bssid,
+								       sig.req.bssid)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						matchflag = 0;
 						break;
 					}
 				}
 			}
 			if (matchflag && (i < 20)) {
+<<<<<<< HEAD
 				memcpy(&this->bss_set[i].beacon_period,
 				       &sig.beacon_period, 73);
 				this->bss_cnt++;
 				this->rssi = sig.rssi;
+=======
+				memcpy(&this->bss_set[i].req,
+				       &sig.req, sizeof(sig.req));
+				this->bss_cnt++;
+				this->rssi = sig.rssi;
+				this->bss_set[i].rssi = sig.rssi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	} else if (sig.status == WL3501_STATUS_TIMEOUT) {
@@ -876,19 +959,33 @@ static void wl3501_mgmt_join_confirm(struct net_device *dev, u16 addr)
 			if (this->join_sta_bss < this->bss_cnt) {
 				const int i = this->join_sta_bss;
 				memcpy(this->bssid,
+<<<<<<< HEAD
 				       this->bss_set[i].bssid, ETH_ALEN);
 				this->chan = this->bss_set[i].ds_pset.chan;
 				iw_copy_mgmt_info_element(&this->keep_essid.el,
 						     &this->bss_set[i].ssid.el);
+=======
+				       this->bss_set[i].req.bssid, ETH_ALEN);
+				this->chan = this->bss_set[i].req.ds_pset.chan;
+				iw_copy_mgmt_info_element(&this->keep_essid.el,
+						     &this->bss_set[i].req.ssid.el);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				wl3501_mgmt_auth(this);
 			}
 		} else {
 			const int i = this->join_sta_bss;
 
+<<<<<<< HEAD
 			memcpy(&this->bssid, &this->bss_set[i].bssid, ETH_ALEN);
 			this->chan = this->bss_set[i].ds_pset.chan;
 			iw_copy_mgmt_info_element(&this->keep_essid.el,
 						  &this->bss_set[i].ssid.el);
+=======
+			memcpy(&this->bssid, &this->bss_set[i].req.bssid, ETH_ALEN);
+			this->chan = this->bss_set[i].req.ds_pset.chan;
+			iw_copy_mgmt_info_element(&this->keep_essid.el,
+						  &this->bss_set[i].req.ssid.el);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			wl3501_online(dev);
 		}
 	} else {
@@ -970,7 +1067,12 @@ static inline void wl3501_md_ind_interrupt(struct net_device *dev,
 	} else {
 		skb->dev = dev;
 		skb_reserve(skb, 2); /* IP headers on 16 bytes boundaries */
+<<<<<<< HEAD
 		skb_copy_to_linear_data(skb, (unsigned char *)&sig.daddr, 12);
+=======
+		skb_copy_to_linear_data(skb, (unsigned char *)&sig.addr,
+					sizeof(sig.addr));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		wl3501_receive(this, skb->data, pkt_len);
 		skb_put(skb, pkt_len);
 		skb->protocol	= eth_type_trans(skb, dev);
@@ -1249,7 +1351,13 @@ static int wl3501_reset(struct net_device *dev)
 {
 	struct wl3501_card *this = netdev_priv(dev);
 	int rc = -ENODEV;
+<<<<<<< HEAD
 
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&this->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wl3501_block_interrupt(this);
 
 	if (wl3501_init_firmware(this)) {
@@ -1271,11 +1379,16 @@ static int wl3501_reset(struct net_device *dev)
 	pr_debug("%s: device reset", dev->name);
 	rc = 0;
 out:
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&this->lock, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
 static void wl3501_tx_timeout(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct wl3501_card *this = netdev_priv(dev);
 	struct net_device_stats *stats = &dev->stats;
 	unsigned long flags;
@@ -1285,11 +1398,22 @@ static void wl3501_tx_timeout(struct net_device *dev)
 	spin_lock_irqsave(&this->lock, flags);
 	rc = wl3501_reset(dev);
 	spin_unlock_irqrestore(&this->lock, flags);
+=======
+	struct net_device_stats *stats = &dev->stats;
+	int rc;
+
+	stats->tx_errors++;
+	rc = wl3501_reset(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (rc)
 		printk(KERN_ERR "%s: Error %d resetting card on Tx timeout!\n",
 		       dev->name, rc);
 	else {
+<<<<<<< HEAD
 		dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+		netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		netif_wake_queue(dev);
 	}
 }
@@ -1455,7 +1579,12 @@ static int wl3501_get_freq(struct net_device *dev, struct iw_request_info *info,
 {
 	struct wl3501_card *this = netdev_priv(dev);
 
+<<<<<<< HEAD
 	wrqu->freq.m = ieee80211_dsss_chan_to_freq(this->chan) * 100000;
+=======
+	wrqu->freq.m = 100000 *
+		ieee80211_channel_to_frequency(this->chan, NL80211_BAND_2GHZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wrqu->freq.e = 1;
 	return 0;
 }
@@ -1565,12 +1694,17 @@ static int wl3501_get_scan(struct net_device *dev, struct iw_request_info *info,
 	for (i = 0; i < this->bss_cnt; ++i) {
 		iwe.cmd			= SIOCGIWAP;
 		iwe.u.ap_addr.sa_family = ARPHRD_ETHER;
+<<<<<<< HEAD
 		memcpy(iwe.u.ap_addr.sa_data, this->bss_set[i].bssid, ETH_ALEN);
+=======
+		memcpy(iwe.u.ap_addr.sa_data, this->bss_set[i].req.bssid, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		current_ev = iwe_stream_add_event(info, current_ev,
 						  extra + IW_SCAN_MAX_DATA,
 						  &iwe, IW_EV_ADDR_LEN);
 		iwe.cmd		  = SIOCGIWESSID;
 		iwe.u.data.flags  = 1;
+<<<<<<< HEAD
 		iwe.u.data.length = this->bss_set[i].ssid.el.len;
 		current_ev = iwe_stream_add_point(info, current_ev,
 						  extra + IW_SCAN_MAX_DATA,
@@ -1578,17 +1712,34 @@ static int wl3501_get_scan(struct net_device *dev, struct iw_request_info *info,
 						  this->bss_set[i].ssid.essid);
 		iwe.cmd	   = SIOCGIWMODE;
 		iwe.u.mode = this->bss_set[i].bss_type;
+=======
+		iwe.u.data.length = this->bss_set[i].req.ssid.el.len;
+		current_ev = iwe_stream_add_point(info, current_ev,
+						  extra + IW_SCAN_MAX_DATA,
+						  &iwe,
+						  this->bss_set[i].req.ssid.essid);
+		iwe.cmd	   = SIOCGIWMODE;
+		iwe.u.mode = this->bss_set[i].req.bss_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		current_ev = iwe_stream_add_event(info, current_ev,
 						  extra + IW_SCAN_MAX_DATA,
 						  &iwe, IW_EV_UINT_LEN);
 		iwe.cmd = SIOCGIWFREQ;
+<<<<<<< HEAD
 		iwe.u.freq.m = this->bss_set[i].ds_pset.chan;
+=======
+		iwe.u.freq.m = this->bss_set[i].req.ds_pset.chan;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		iwe.u.freq.e = 0;
 		current_ev = iwe_stream_add_event(info, current_ev,
 						  extra + IW_SCAN_MAX_DATA,
 						  &iwe, IW_EV_FREQ_LEN);
 		iwe.cmd = SIOCGIWENCODE;
+<<<<<<< HEAD
 		if (this->bss_set[i].cap_info & WL3501_MGMT_CAPABILITY_PRIVACY)
+=======
+		if (this->bss_set[i].req.cap_info & WL3501_MGMT_CAPABILITY_PRIVACY)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			iwe.u.data.flags = IW_ENCODE_ENABLED | IW_ENCODE_NOKEY;
 		else
 			iwe.u.data.flags = IW_ENCODE_DISABLED;

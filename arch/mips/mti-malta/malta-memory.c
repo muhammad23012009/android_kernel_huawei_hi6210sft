@@ -16,6 +16,7 @@
 #include <linux/string.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
 #include <asm/sections.h>
 #include <asm/fw/fw.h>
 
@@ -103,10 +104,25 @@ static int __init fw_memtype_classify(unsigned int type)
 	default:
 		return BOOT_MEM_RESERVED;
 	}
+=======
+#include <asm/cdmm.h>
+#include <asm/maar.h>
+#include <asm/sections.h>
+#include <asm/fw/fw.h>
+
+/* determined physical memory size, not overridden by command line args	 */
+unsigned long physical_memsize = 0L;
+
+static void free_init_pages_eva_malta(void *begin, void *end)
+{
+	free_init_pages("unused kernel", __pa_symbol((unsigned long *)begin),
+			__pa_symbol((unsigned long *)end));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init fw_meminit(void)
 {
+<<<<<<< HEAD
 	fw_memblock_t *p;
 
 	p = fw_getmdesc();
@@ -122,6 +138,11 @@ void __init fw_meminit(void)
 		add_memory_region(base, size, type);
 		p++;
 	}
+=======
+	bool eva = IS_ENABLED(CONFIG_EVA);
+
+	free_init_pages_eva = eva ? free_init_pages_eva_malta : NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init prom_free_prom_memory(void)
@@ -138,3 +159,12 @@ void __init prom_free_prom_memory(void)
 				addr, addr + boot_mem_map.map[i].size);
 	}
 }
+<<<<<<< HEAD
+=======
+
+phys_addr_t mips_cdmm_phys_base(void)
+{
+	/* This address is "typically unused" */
+	return 0x1fc10000;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

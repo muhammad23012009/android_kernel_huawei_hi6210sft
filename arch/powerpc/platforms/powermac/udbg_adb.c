@@ -191,7 +191,11 @@ int __init udbg_adb_init(int force_btext)
 	 * of type "adb". If not, we return a failure, but we keep the
 	 * bext output set for now
 	 */
+<<<<<<< HEAD
 	for (np = NULL; (np = of_find_node_by_name(np, "keyboard")) != NULL;) {
+=======
+	for_each_node_by_name(np, "keyboard") {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct device_node *parent = of_get_parent(np);
 		int found = (parent && strcmp(parent->type, "adb") == 0);
 		of_node_put(parent);

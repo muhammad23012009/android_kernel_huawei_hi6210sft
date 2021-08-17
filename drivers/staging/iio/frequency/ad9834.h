@@ -10,6 +10,7 @@
 
 /* Registers */
 
+<<<<<<< HEAD
 #define AD9834_REG_CMD		(0 << 14)
 #define AD9834_REG_FREQ0	(1 << 14)
 #define AD9834_REG_FREQ1	(2 << 14)
@@ -30,11 +31,37 @@
 #define AD9834_SIGN_PIB		(1 << 4)
 #define AD9834_DIV2		(1 << 3)
 #define AD9834_MODE		(1 << 1)
+=======
+#define AD9834_REG_CMD		0
+#define AD9834_REG_FREQ0	BIT(14)
+#define AD9834_REG_FREQ1	BIT(15)
+#define AD9834_REG_PHASE0	(BIT(15) | BIT(14))
+#define AD9834_REG_PHASE1	(BIT(15) | BIT(14) | BIT(13))
+
+/* Command Control Bits */
+
+#define AD9834_B28		BIT(13)
+#define AD9834_HLB		BIT(12)
+#define AD9834_FSEL		BIT(11)
+#define AD9834_PSEL		BIT(10)
+#define AD9834_PIN_SW		BIT(9)
+#define AD9834_RESET		BIT(8)
+#define AD9834_SLEEP1		BIT(7)
+#define AD9834_SLEEP12		BIT(6)
+#define AD9834_OPBITEN		BIT(5)
+#define AD9834_SIGN_PIB		BIT(4)
+#define AD9834_DIV2		BIT(3)
+#define AD9834_MODE		BIT(1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define AD9834_FREQ_BITS	28
 #define AD9834_PHASE_BITS	12
 
+<<<<<<< HEAD
 #define RES_MASK(bits)	((1 << (bits)) - 1)
+=======
+#define RES_MASK(bits)	(BIT(bits) - 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * struct ad9834_state - driver instance specific data
@@ -65,11 +92,18 @@ struct ad9834_state {
 	 * DMA (thus cache coherency maintenance) requires the
 	 * transfer buffers to live in their own cache lines.
 	 */
+<<<<<<< HEAD
 	unsigned short			data ____cacheline_aligned;
 	unsigned short			freq_data[2] ;
 };
 
 
+=======
+	__be16				data ____cacheline_aligned;
+	__be16				freq_data[2];
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * TODO: struct ad7887_platform_data needs to go into include/linux/iio
  */

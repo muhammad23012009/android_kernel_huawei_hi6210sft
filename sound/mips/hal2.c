@@ -880,7 +880,11 @@ static int hal2_probe(struct platform_device *pdev)
 	struct snd_hal2 *chip;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pdev->dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 
@@ -889,7 +893,10 @@ static int hal2_probe(struct platform_device *pdev)
 		snd_card_free(card);
 		return err;
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = hal2_pcm_create(chip);
 	if (err < 0) {
@@ -930,7 +937,10 @@ static struct platform_driver hal2_driver = {
 	.remove	= hal2_remove,
 	.driver = {
 		.name	= "sgihal2",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 };
 

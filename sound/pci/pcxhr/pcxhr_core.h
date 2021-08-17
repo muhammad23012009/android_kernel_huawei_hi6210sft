@@ -200,6 +200,10 @@ int pcxhr_write_io_num_reg_cont(struct pcxhr_mgr *mgr, unsigned int mask,
 
 /* interrupt handling */
 irqreturn_t pcxhr_interrupt(int irq, void *dev_id);
+<<<<<<< HEAD
 void pcxhr_msg_tasklet(unsigned long arg);
+=======
+irqreturn_t pcxhr_threaded_irq(int irq, void *dev_id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __SOUND_PCXHR_CORE_H */

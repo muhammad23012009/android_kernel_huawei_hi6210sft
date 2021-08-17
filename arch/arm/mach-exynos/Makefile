@@ -5,6 +5,7 @@
 #
 # Licensed under GPLv2
 
+<<<<<<< HEAD
 obj-y				:=
 obj-m				:=
 obj-n				:=
@@ -67,3 +68,22 @@ obj-$(CONFIG_EXYNOS4_SETUP_KEYPAD)	+= setup-keypad.o
 obj-$(CONFIG_EXYNOS4_SETUP_SDHCI_GPIO)	+= setup-sdhci-gpio.o
 obj-$(CONFIG_EXYNOS4_SETUP_USB_PHY)	+= setup-usb-phy.o
 obj-$(CONFIG_EXYNOS_SETUP_SPI)		+= setup-spi.o
+=======
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/$(src)/include -I$(srctree)/arch/arm/plat-samsung/include
+
+# Core
+
+obj-$(CONFIG_ARCH_EXYNOS)	+= exynos.o exynos-smc.o firmware.o
+
+obj-$(CONFIG_EXYNOS_CPU_SUSPEND) += pm.o sleep.o
+obj-$(CONFIG_PM_SLEEP)		+= suspend.o
+
+obj-$(CONFIG_SMP)		+= platsmp.o headsmp.o
+
+plus_sec := $(call as-instr,.arch_extension sec,+sec)
+AFLAGS_exynos-smc.o		:=-Wa,-march=armv7-a$(plus_sec)
+AFLAGS_sleep.o			:=-Wa,-march=armv7-a$(plus_sec)
+
+obj-$(CONFIG_EXYNOS5420_MCPM)	+= mcpm-exynos.o
+CFLAGS_mcpm-exynos.o		+= -march=armv7-a
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -45,8 +45,13 @@ static const char nconf_global_help[] = N_(
 "<n> to remove it.  You may press the <Space> key to cycle through the\n"
 "available options.\n"
 "\n"
+<<<<<<< HEAD
 "A trailing \"--->\" designates a submenu.\n"
 "\n"
+=======
+"A trailing \"--->\" designates a submenu, a trailing \"----\" an\n"
+"empty submenu.\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 "\n"
 "Menu navigation keys\n"
 "----------------------------------------------------------------------\n"
@@ -131,7 +136,11 @@ static const char nconf_global_help[] = N_(
 "\n"),
 menu_no_f_instructions[] = N_(
 "Legend:  [*] built-in  [ ] excluded  <M> module  < > module capable.\n"
+<<<<<<< HEAD
 "Submenus are designated by a trailing \"--->\".\n"
+=======
+"Submenus are designated by a trailing \"--->\", empty ones by \"----\".\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 "\n"
 "Use the following keys to navigate the menus:\n"
 "Move up or down with <Up> and <Down>.\n"
@@ -148,7 +157,11 @@ menu_no_f_instructions[] = N_(
 "For help related to the current menu entry press <?> or <h>.\n"),
 menu_instructions[] = N_(
 "Legend:  [*] built-in  [ ] excluded  <M> module  < > module capable.\n"
+<<<<<<< HEAD
 "Submenus are designated by a trailing \"--->\".\n"
+=======
+"Submenus are designated by a trailing \"--->\", empty ones by \"----\".\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 "\n"
 "Use the following keys to navigate the menus:\n"
 "Move up or down with <Up> or <Down>.\n"
@@ -365,15 +378,27 @@ static void print_function_line(void)
 	int i;
 	int offset = 1;
 	const int skip = 1;
+<<<<<<< HEAD
 
 	for (i = 0; i < function_keys_num; i++) {
 		(void) wattrset(main_window, attributes[FUNCTION_HIGHLIGHT]);
 		mvwprintw(main_window, LINES-3, offset,
+=======
+	int lines = getmaxy(stdscr);
+
+	for (i = 0; i < function_keys_num; i++) {
+		(void) wattrset(main_window, attributes[FUNCTION_HIGHLIGHT]);
+		mvwprintw(main_window, lines-3, offset,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				"%s",
 				function_keys[i].key_str);
 		(void) wattrset(main_window, attributes[FUNCTION_TEXT]);
 		offset += strlen(function_keys[i].key_str);
+<<<<<<< HEAD
 		mvwprintw(main_window, LINES-3,
+=======
+		mvwprintw(main_window, lines-3,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				offset, "%s",
 				function_keys[i].func);
 		offset += strlen(function_keys[i].func) + skip;
@@ -501,8 +526,13 @@ static int get_mext_match(const char *match_str, match_f flag)
 	else if (flag == FIND_NEXT_MATCH_UP)
 		--match_start;
 
+<<<<<<< HEAD
 	index = match_start;
 	index = (index + items_num) % items_num;
+=======
+	match_start = (match_start + items_num) % items_num;
+	index = match_start;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (true) {
 		char *str = k_menu_items[index].str;
 		if (strcasestr(str, match_str) != 0)
@@ -694,8 +724,13 @@ static void search_conf(void)
 	int dres;
 
 	title = str_new();
+<<<<<<< HEAD
 	str_printf( &title, _("Enter %s (sub)string to search for "
 			      "(with or without \"%s\")"), CONFIG_, CONFIG_);
+=======
+	str_printf( &title, _("Enter (sub)string or regexp to search for "
+			      "(with or without \"%s\")"), CONFIG_);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 again:
 	dres = dialog_inputbox(main_window,
@@ -759,9 +794,15 @@ static void build_conf(struct menu *menu)
 						indent + 1, ' ', prompt);
 				} else
 					item_make(menu, 'm',
+<<<<<<< HEAD
 						"   %*c%s  --->",
 						indent + 1,
 						' ', prompt);
+=======
+						  "   %*c%s  %s",
+						  indent + 1, ' ', prompt,
+						  menu_is_empty(menu) ? "----" : "--->");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				if (single_menu_mode && menu->data)
 					goto conf_childs;
@@ -903,7 +944,11 @@ static void build_conf(struct menu *menu)
 				(sym_has_value(sym) || !sym_is_changable(sym)) ?
 				"" : _(" (NEW)"));
 		if (menu->prompt && menu->prompt->type == P_MENU) {
+<<<<<<< HEAD
 			item_add_str("  --->");
+=======
+			item_add_str("  %s", menu_is_empty(menu) ? "----" : "--->");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return;
 		}
 	}
@@ -954,7 +999,11 @@ static void show_menu(const char *prompt, const char *instructions,
 
 	clear();
 	(void) wattrset(main_window, attributes[NORMAL]);
+<<<<<<< HEAD
 	print_in_middle(stdscr, 1, 0, COLS,
+=======
+	print_in_middle(stdscr, 1, 0, getmaxx(stdscr),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			menu_backtitle,
 			attributes[MAIN_HEADING]);
 
@@ -1045,7 +1094,11 @@ static int do_match(int key, struct match_state *state, int *ans)
 		state->match_direction = FIND_NEXT_MATCH_UP;
 		*ans = get_mext_match(state->pattern,
 				state->match_direction);
+<<<<<<< HEAD
 	} else if (key == KEY_BACKSPACE || key == 127) {
+=======
+	} else if (key == KEY_BACKSPACE || key == 8 || key == 127) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		state->pattern[strlen(state->pattern)-1] = '\0';
 		adj_match_dir(&state->match_direction);
 	} else
@@ -1455,14 +1508,28 @@ static void conf_save(void)
 
 void setup_windows(void)
 {
+<<<<<<< HEAD
+=======
+	int lines, columns;
+
+	getmaxyx(stdscr, lines, columns);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (main_window != NULL)
 		delwin(main_window);
 
 	/* set up the menu and menu window */
+<<<<<<< HEAD
 	main_window = newwin(LINES-2, COLS-2, 2, 1);
 	keypad(main_window, TRUE);
 	mwin_max_lines = LINES-7;
 	mwin_max_cols = COLS-6;
+=======
+	main_window = newwin(lines-2, columns-2, 2, 1);
+	keypad(main_window, TRUE);
+	mwin_max_lines = lines-7;
+	mwin_max_cols = columns-6;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* panels order is from bottom to top */
 	new_panel(main_window);
@@ -1470,12 +1537,24 @@ void setup_windows(void)
 
 int main(int ac, char **av)
 {
+<<<<<<< HEAD
+=======
+	int lines, columns;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	char *mode;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 
+<<<<<<< HEAD
+=======
+	if (ac > 1 && strcmp(av[1], "-s") == 0) {
+		/* Silence conf_read() until the real callback is set up */
+		conf_set_message_callback(NULL);
+		av++;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	conf_parse(av[1]);
 	conf_read(NULL);
 
@@ -1495,7 +1574,12 @@ int main(int ac, char **av)
 	keypad(stdscr, TRUE);
 	curs_set(0);
 
+<<<<<<< HEAD
 	if (COLS < 75 || LINES < 20) {
+=======
+	getmaxyx(stdscr, lines, columns);
+	if (columns < 75 || lines < 20) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		endwin();
 		printf("Your terminal should have at "
 			"least 20 lines and 75 columns\n");
@@ -1547,4 +1631,7 @@ int main(int ac, char **av)
 	endwin();
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

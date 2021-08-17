@@ -12,10 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+<<<<<<< HEAD
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * File: firmware.h
  *
@@ -32,8 +35,14 @@
 
 #include "device.h"
 
+<<<<<<< HEAD
 int FIRMWAREbDownload(struct vnt_private *);
 int FIRMWAREbBrach2Sram(struct vnt_private *);
 int FIRMWAREbCheckVersion(struct vnt_private *);
+=======
+int vnt_download_firmware(struct vnt_private *);
+int vnt_firmware_branch_to_sram(struct vnt_private *);
+int vnt_check_firmware_version(struct vnt_private *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __FIRMWARE_H__ */

@@ -39,6 +39,12 @@
 #include <linux/i2c.h>			/* I2C				*/
 #include <media/v4l2-common.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-device.h>
+#include <media/v4l2-ctrls.h>
+#include <media/v4l2-event.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRIVER_VERSION	"0.0.2"
 
@@ -57,8 +63,13 @@
 
 /* Frequency limits in MHz -- these are European values.  For Japanese
 devices, that would be 76000 and 91000.  */
+<<<<<<< HEAD
 #define FREQ_MIN  87500
 #define FREQ_MAX 108000
+=======
+#define FREQ_MIN  87500U
+#define FREQ_MAX 108000U
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define FREQ_MUL 16
 
 /* TEA5764 registers */
@@ -121,11 +132,19 @@ struct tea5764_regs {
 
 struct tea5764_write_regs {
 	u8 intreg;				/* INTMSK */
+<<<<<<< HEAD
 	u16 frqset;				/* FRQSETMSB & FRQSETLSB */
 	u16 tnctrl;				/* TNCTRL1 & TNCTRL2 */
 	u16 testreg;				/* TESTBITS & TESTMODE */
 	u16 rdsctrl;				/* RDSCTRL1 & RDSCTRL2 */
 	u16 rdsbbl;				/* PAUSEDET & RDSBBL */
+=======
+	__be16 frqset;				/* FRQSETMSB & FRQSETLSB */
+	__be16 tnctrl;				/* TNCTRL1 & TNCTRL2 */
+	__be16 testreg;				/* TESTBITS & TESTMODE */
+	__be16 rdsctrl;				/* RDSCTRL1 & RDSCTRL2 */
+	__be16 rdsbbl;				/* PAUSEDET & RDSBBL */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __attribute__ ((packed));
 
 #ifdef CONFIG_RADIO_TEA5764_XTAL
@@ -138,8 +157,15 @@ static int radio_nr = -1;
 static int use_xtal = RADIO_TEA5764_XTAL;
 
 struct tea5764_device {
+<<<<<<< HEAD
 	struct i2c_client		*i2c_client;
 	struct video_device		*videodev;
+=======
+	struct v4l2_device		v4l2_dev;
+	struct v4l2_ctrl_handler	ctrl_handler;
+	struct i2c_client		*i2c_client;
+	struct video_device		vdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tea5764_regs		regs;
 	struct mutex			mutex;
 };
@@ -160,7 +186,11 @@ static int tea5764_i2c_read(struct tea5764_device *radio)
 	if (i2c_transfer(radio->i2c_client->adapter, msgs, 1) != 1)
 		return -EIO;
 	for (i = 0; i < sizeof(struct tea5764_regs) / sizeof(u16); i++)
+<<<<<<< HEAD
 		p[i] = __be16_to_cpu(p[i]);
+=======
+		p[i] = __be16_to_cpu((__force __be16)p[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -187,6 +217,7 @@ static int tea5764_i2c_write(struct tea5764_device *radio)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* V4L2 code related */
 static struct v4l2_queryctrl radio_qctrl[] = {
 	{
@@ -199,6 +230,8 @@ static struct v4l2_queryctrl radio_qctrl[] = {
 	}
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void tea5764_power_up(struct tea5764_device *radio)
 {
 	struct tea5764_regs *r = &radio->regs;
@@ -291,23 +324,35 @@ static void tea5764_mute(struct tea5764_device *radio, int on)
 		tea5764_i2c_write(radio);
 }
 
+<<<<<<< HEAD
 static int tea5764_is_muted(struct tea5764_device *radio)
 {
 	return radio->regs.tnctrl & TEA5764_TNCTRL_MU;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* V4L2 vidioc */
 static int vidioc_querycap(struct file *file, void  *priv,
 					struct v4l2_capability *v)
 {
 	struct tea5764_device *radio = video_drvdata(file);
+<<<<<<< HEAD
 	struct video_device *dev = radio->videodev;
+=======
+	struct video_device *dev = &radio->vdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	strlcpy(v->driver, dev->dev.driver->name, sizeof(v->driver));
 	strlcpy(v->card, dev->name, sizeof(v->card));
 	snprintf(v->bus_info, sizeof(v->bus_info),
 		 "I2C:%s", dev_name(&dev->dev));
+<<<<<<< HEAD
 	v->capabilities = V4L2_CAP_TUNER | V4L2_CAP_RADIO;
+=======
+	v->device_caps = V4L2_CAP_TUNER | V4L2_CAP_RADIO;
+	v->capabilities = v->device_caps | V4L2_CAP_DEVICE_CAPS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -320,8 +365,12 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	if (v->index > 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	memset(v, 0, sizeof(*v));
 	strcpy(v->name, "FM");
+=======
+	strlcpy(v->name, "FM", sizeof(v->name));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v->type = V4L2_TUNER_RADIO;
 	tea5764_i2c_read(radio);
 	v->rangelow   = FREQ_MIN * FREQ_MUL;
@@ -354,6 +403,7 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 				const struct v4l2_frequency *f)
 {
 	struct tea5764_device *radio = video_drvdata(file);
+<<<<<<< HEAD
 
 	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
 		return -EINVAL;
@@ -367,6 +417,25 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 		return -EINVAL;
 	tea5764_power_up(radio);
 	tea5764_tune(radio, (f->frequency * 125) / 2);
+=======
+	unsigned freq = f->frequency;
+
+	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
+		return -EINVAL;
+	if (freq == 0) {
+		/* We special case this as a power down control. */
+		tea5764_power_down(radio);
+		/* Yes, that's what is returned in this case. This
+		   whole special case is non-compliant and should really
+		   be replaced with something better, but changing this
+		   might well break code that depends on this behavior.
+		   So we keep it as-is. */
+		return -EINVAL;
+	}
+	freq = clamp(freq, FREQ_MIN * FREQ_MUL, FREQ_MAX * FREQ_MUL);
+	tea5764_power_up(radio);
+	tea5764_tune(radio, (freq * 125) / 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -379,7 +448,10 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 	if (f->tuner != 0)
 		return -EINVAL;
 	tea5764_i2c_read(radio);
+<<<<<<< HEAD
 	memset(f, 0, sizeof(*f));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	f->type = V4L2_TUNER_RADIO;
 	if (r->tnctrl & TEA5764_TNCTRL_PUPD0)
 		f->frequency = (tea5764_get_freq(radio) * 2) / 125;
@@ -389,6 +461,7 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_queryctrl(struct file *file, void *priv,
 			    struct v4l2_queryctrl *qc)
 {
@@ -425,11 +498,22 @@ static int vidioc_s_ctrl(struct file *file, void *priv,
 	switch (ctrl->id) {
 	case V4L2_CID_AUDIO_MUTE:
 		tea5764_mute(radio, ctrl->value);
+=======
+static int tea5764_s_ctrl(struct v4l2_ctrl *ctrl)
+{
+	struct tea5764_device *radio =
+		container_of(ctrl->handler, struct tea5764_device, ctrl_handler);
+
+	switch (ctrl->id) {
+	case V4L2_CID_AUDIO_MUTE:
+		tea5764_mute(radio, ctrl->val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int vidioc_g_input(struct file *filp, void *priv, unsigned int *i)
 {
 	*i = 0;
@@ -462,10 +546,21 @@ static int vidioc_s_audio(struct file *file, void *priv,
 
 	return 0;
 }
+=======
+static const struct v4l2_ctrl_ops tea5764_ctrl_ops = {
+	.s_ctrl = tea5764_s_ctrl,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* File system interface */
 static const struct v4l2_file_operations tea5764_fops = {
 	.owner		= THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.open		= v4l2_fh_open,
+	.release	= v4l2_fh_release,
+	.poll		= v4l2_ctrl_poll,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.unlocked_ioctl	= video_ioctl2,
 };
 
@@ -473,6 +568,7 @@ static const struct v4l2_ioctl_ops tea5764_ioctl_ops = {
 	.vidioc_querycap    = vidioc_querycap,
 	.vidioc_g_tuner     = vidioc_g_tuner,
 	.vidioc_s_tuner     = vidioc_s_tuner,
+<<<<<<< HEAD
 	.vidioc_g_audio     = vidioc_g_audio,
 	.vidioc_s_audio     = vidioc_s_audio,
 	.vidioc_g_input     = vidioc_g_input,
@@ -482,6 +578,13 @@ static const struct v4l2_ioctl_ops tea5764_ioctl_ops = {
 	.vidioc_queryctrl   = vidioc_queryctrl,
 	.vidioc_g_ctrl      = vidioc_g_ctrl,
 	.vidioc_s_ctrl      = vidioc_s_ctrl,
+=======
+	.vidioc_g_frequency = vidioc_g_frequency,
+	.vidioc_s_frequency = vidioc_s_frequency,
+	.vidioc_log_status  = v4l2_ctrl_log_status,
+	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
+	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* V4L2 interface */
@@ -489,7 +592,11 @@ static struct video_device tea5764_radio_template = {
 	.name		= "TEA5764 FM-Radio",
 	.fops           = &tea5764_fops,
 	.ioctl_ops 	= &tea5764_ioctl_ops,
+<<<<<<< HEAD
 	.release	= video_device_release,
+=======
+	.release	= video_device_release_empty,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* I2C probe: check if the device exists and register with v4l if it is */
@@ -497,6 +604,11 @@ static int tea5764_i2c_probe(struct i2c_client *client,
 			     const struct i2c_device_id *id)
 {
 	struct tea5764_device *radio;
+<<<<<<< HEAD
+=======
+	struct v4l2_device *v4l2_dev;
+	struct v4l2_ctrl_handler *hdl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct tea5764_regs *r;
 	int ret;
 
@@ -505,17 +617,43 @@ static int tea5764_i2c_probe(struct i2c_client *client,
 	if (!radio)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	v4l2_dev = &radio->v4l2_dev;
+	ret = v4l2_device_register(&client->dev, v4l2_dev);
+	if (ret < 0) {
+		v4l2_err(v4l2_dev, "could not register v4l2_device\n");
+		goto errfr;
+	}
+
+	hdl = &radio->ctrl_handler;
+	v4l2_ctrl_handler_init(hdl, 1);
+	v4l2_ctrl_new_std(hdl, &tea5764_ctrl_ops,
+			V4L2_CID_AUDIO_MUTE, 0, 1, 1, 1);
+	v4l2_dev->ctrl_handler = hdl;
+	if (hdl->error) {
+		ret = hdl->error;
+		v4l2_err(v4l2_dev, "Could not register controls\n");
+		goto errunreg;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_init(&radio->mutex);
 	radio->i2c_client = client;
 	ret = tea5764_i2c_read(radio);
 	if (ret)
+<<<<<<< HEAD
 		goto errfr;
+=======
+		goto errunreg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	r = &radio->regs;
 	PDEBUG("chipid = %04X, manid = %04X", r->chipid, r->manid);
 	if (r->chipid != TEA5764_CHIPID ||
 		(r->manid & 0x0fff) != TEA5764_MANID) {
 		PWARN("This chip is not a TEA5764!");
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto errfr;
 	}
 
@@ -530,6 +668,17 @@ static int tea5764_i2c_probe(struct i2c_client *client,
 	i2c_set_clientdata(client, radio);
 	video_set_drvdata(radio->videodev, radio);
 	radio->videodev->lock = &radio->mutex;
+=======
+		goto errunreg;
+	}
+
+	radio->vdev = tea5764_radio_template;
+
+	i2c_set_clientdata(client, radio);
+	video_set_drvdata(&radio->vdev, radio);
+	radio->vdev.lock = &radio->mutex;
+	radio->vdev.v4l2_dev = v4l2_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* initialize and power off the chip */
 	tea5764_i2c_read(radio);
@@ -537,16 +686,29 @@ static int tea5764_i2c_probe(struct i2c_client *client,
 	tea5764_mute(radio, 1);
 	tea5764_power_down(radio);
 
+<<<<<<< HEAD
 	ret = video_register_device(radio->videodev, VFL_TYPE_RADIO, radio_nr);
 	if (ret < 0) {
 		PWARN("Could not register video device!");
 		goto errrel;
+=======
+	ret = video_register_device(&radio->vdev, VFL_TYPE_RADIO, radio_nr);
+	if (ret < 0) {
+		PWARN("Could not register video device!");
+		goto errunreg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	PINFO("registered.");
 	return 0;
+<<<<<<< HEAD
 errrel:
 	video_device_release(radio->videodev);
+=======
+errunreg:
+	v4l2_ctrl_handler_free(hdl);
+	v4l2_device_unregister(v4l2_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 errfr:
 	kfree(radio);
 	return ret;
@@ -559,7 +721,13 @@ static int tea5764_i2c_remove(struct i2c_client *client)
 	PDEBUG("remove");
 	if (radio) {
 		tea5764_power_down(radio);
+<<<<<<< HEAD
 		video_unregister_device(radio->videodev);
+=======
+		video_unregister_device(&radio->vdev);
+		v4l2_ctrl_handler_free(&radio->ctrl_handler);
+		v4l2_device_unregister(&radio->v4l2_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(radio);
 	}
 	return 0;
@@ -575,7 +743,10 @@ MODULE_DEVICE_TABLE(i2c, tea5764_id);
 static struct i2c_driver tea5764_i2c_driver = {
 	.driver = {
 		.name = "radio-tea5764",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = tea5764_i2c_probe,
 	.remove = tea5764_i2c_remove,

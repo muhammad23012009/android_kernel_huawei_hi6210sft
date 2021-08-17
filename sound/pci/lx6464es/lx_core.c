@@ -24,6 +24,10 @@
 
 /* #define RMH_DEBUG 1 */
 
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -141,6 +145,7 @@ void lx_plx_reg_write(struct lx6464es *chip, int port, u32 data)
 	iowrite32(data, address);
 }
 
+<<<<<<< HEAD
 u32 lx_plx_mbox_read(struct lx6464es *chip, int mbox_nr)
 {
 	int index;
@@ -198,6 +203,8 @@ int lx_plx_mbox_write(struct lx6464es *chip, int mbox_nr, u32 value)
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* rmh */
 
 #ifdef CONFIG_SND_DEBUG
@@ -330,7 +337,11 @@ static int lx_message_send_atomic(struct lx6464es *chip, struct lx_rmh *rmh)
 	int dwloop;
 
 	if (lx_dsp_reg_read(chip, eReg_CSM) & (Reg_CSM_MC | Reg_CSM_MR)) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR LXP "PIOSendMessage eReg_CSM %x\n", reg);
+=======
+		dev_err(chip->card->dev, "PIOSendMessage eReg_CSM %x\n", reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EBUSY;
 	}
 
@@ -351,7 +362,11 @@ static int lx_message_send_atomic(struct lx6464es *chip, struct lx_rmh *rmh)
 		} else
 			udelay(1);
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_WARNING LXP "TIMEOUT lx_message_send_atomic! "
+=======
+	dev_warn(chip->card->dev, "TIMEOUT lx_message_send_atomic! "
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   "polling failed\n");
 
 polling_successful:
@@ -363,18 +378,30 @@ polling_successful:
 					   rmh->stat_len);
 		}
 	} else
+<<<<<<< HEAD
 		snd_printk(LXP "rmh error: %08x\n", reg);
+=======
+		dev_err(chip->card->dev, "rmh error: %08x\n", reg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* clear Reg_CSM_MR */
 	lx_dsp_reg_write(chip, eReg_CSM, 0);
 
 	switch (reg) {
 	case ED_DSP_TIMED_OUT:
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING LXP "lx_message_send: dsp timeout\n");
 		return -ETIMEDOUT;
 
 	case ED_DSP_CRASHED:
 		snd_printk(KERN_WARNING LXP "lx_message_send: dsp crashed\n");
+=======
+		dev_warn(chip->card->dev, "lx_message_send: dsp timeout\n");
+		return -ETIMEDOUT;
+
+	case ED_DSP_CRASHED:
+		dev_warn(chip->card->dev, "lx_message_send: dsp crashed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;
 	}
 
@@ -388,27 +415,43 @@ polling_successful:
 int lx_dsp_get_version(struct lx6464es *chip, u32 *rdsp_version)
 {
 	u16 ret;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	lx_message_init(&chip->rmh, CMD_01_GET_SYS_CFG);
 	ret = lx_message_send_atomic(chip, &chip->rmh);
 
 	*rdsp_version = chip->rmh.stat[1];
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 int lx_dsp_get_clock_frequency(struct lx6464es *chip, u32 *rfreq)
 {
 	u16 ret = 0;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 freq_raw = 0;
 	u32 freq = 0;
 	u32 frequency = 0;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	lx_message_init(&chip->rmh, CMD_01_GET_SYS_CFG);
 	ret = lx_message_send_atomic(chip, &chip->rmh);
@@ -426,7 +469,11 @@ int lx_dsp_get_clock_frequency(struct lx6464es *chip, u32 *rfreq)
 			frequency = 48000;
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*rfreq = frequency * chip->freq_ratio;
 
@@ -454,25 +501,41 @@ int lx_dsp_get_mac(struct lx6464es *chip)
 
 int lx_dsp_set_granularity(struct lx6464es *chip, u32 gran)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	int ret;
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	int ret;
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	lx_message_init(&chip->rmh, CMD_02_SET_GRANULARITY);
 	chip->rmh.cmd[0] |= gran;
 
 	ret = lx_message_send_atomic(chip, &chip->rmh);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 int lx_dsp_read_async_events(struct lx6464es *chip, u32 *data)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	int ret;
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	int ret;
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	lx_message_init(&chip->rmh, CMD_04_GET_EVENT);
 	chip->rmh.stat_len = 9;	/* we don't necessarily need the full length */
@@ -482,6 +545,7 @@ int lx_dsp_read_async_events(struct lx6464es *chip, u32 *data)
 	if (!ret)
 		memcpy(data, chip->rmh.stat, chip->rmh.stat_len * sizeof(u32));
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
 	return ret;
 }
@@ -518,6 +582,12 @@ int lx_dsp_es_check_pipeline(struct lx6464es *chip)
 }
 
 
+=======
+	mutex_unlock(&chip->msg_lock);
+	return ret;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PIPE_INFO_TO_CMD(capture, pipe)					\
 	((u32)((u32)(pipe) | ((capture) ? ID_IS_CAPTURE : 0L)) << ID_OFFSET)
 
@@ -528,21 +598,34 @@ int lx_pipe_allocate(struct lx6464es *chip, u32 pipe, int is_capture,
 		     int channels)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_06_ALLOCATE_PIPE);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
 	chip->rmh.cmd[0] |= channels;
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
 
 	if (err != 0)
 		snd_printk(KERN_ERR "lx6464es: could not allocate pipe\n");
+=======
+	mutex_unlock(&chip->msg_lock);
+
+	if (err != 0)
+		dev_err(chip->card->dev, "could not allocate pipe\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -550,17 +633,27 @@ int lx_pipe_allocate(struct lx6464es *chip, u32 pipe, int is_capture,
 int lx_pipe_release(struct lx6464es *chip, u32 pipe, int is_capture)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_07_RELEASE_PIPE);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -569,8 +662,11 @@ int lx_buffer_ask(struct lx6464es *chip, u32 pipe, int is_capture,
 		  u32 *r_needed, u32 *r_freed, u32 *size_array)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 #ifdef CONFIG_SND_DEBUG
@@ -581,7 +677,11 @@ int lx_buffer_ask(struct lx6464es *chip, u32 pipe, int is_capture,
 	*r_needed = 0;
 	*r_freed = 0;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_08_ASK_BUFFERS);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -603,6 +703,7 @@ int lx_buffer_ask(struct lx6464es *chip, u32 pipe, int is_capture,
 				*r_needed += 1;
 		}
 
+<<<<<<< HEAD
 #if 0
 		snd_printdd(LXP "CMD_08_ASK_BUFFERS: needed %d, freed %d\n",
 			    *r_needed, *r_freed);
@@ -616,6 +717,21 @@ int lx_buffer_ask(struct lx6464es *chip, u32 pipe, int is_capture,
 	}
 
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+		dev_dbg(chip->card->dev,
+			"CMD_08_ASK_BUFFERS: needed %d, freed %d\n",
+			    *r_needed, *r_freed);
+		for (i = 0; i < MAX_STREAM_BUFFER; ++i) {
+			for (i = 0; i != chip->rmh.stat_len; ++i)
+				dev_dbg(chip->card->dev,
+					"  stat[%d]: %x, %x\n", i,
+					    chip->rmh.stat[i],
+					    chip->rmh.stat[i] & MASK_DATA_SIZE);
+		}
+	}
+
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -623,36 +739,56 @@ int lx_buffer_ask(struct lx6464es *chip, u32 pipe, int is_capture,
 int lx_pipe_stop(struct lx6464es *chip, u32 pipe, int is_capture)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_09_STOP_PIPE);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
 static int lx_pipe_toggle_state(struct lx6464es *chip, u32 pipe, int is_capture)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0B_TOGGLE_PIPE_STATE);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -688,11 +824,17 @@ int lx_pipe_sample_count(struct lx6464es *chip, u32 pipe, int is_capture,
 			 u64 *rsample_count)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0A_GET_PIPE_SPL_COUNT);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -701,26 +843,41 @@ int lx_pipe_sample_count(struct lx6464es *chip, u32 pipe, int is_capture,
 	err = lx_message_send_atomic(chip, &chip->rmh); /* don't sleep! */
 
 	if (err != 0)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR
 			   "lx6464es: could not query pipe's sample count\n");
+=======
+		dev_err(chip->card->dev,
+			"could not query pipe's sample count\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else {
 		*rsample_count = ((u64)(chip->rmh.stat[0] & MASK_SPL_COUNT_HI)
 				  << 24)     /* hi part */
 			+ chip->rmh.stat[1]; /* lo part */
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
 int lx_pipe_state(struct lx6464es *chip, u32 pipe, int is_capture, u16 *rstate)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0A_GET_PIPE_SPL_COUNT);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -728,11 +885,19 @@ int lx_pipe_state(struct lx6464es *chip, u32 pipe, int is_capture, u16 *rstate)
 	err = lx_message_send_atomic(chip, &chip->rmh);
 
 	if (err != 0)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "lx6464es: could not query pipe's state\n");
 	else
 		*rstate = (chip->rmh.stat[0] >> PSTATE_OFFSET) & 0x0F;
 
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+		dev_err(chip->card->dev, "could not query pipe's state\n");
+	else
+		*rstate = (chip->rmh.stat[0] >> PSTATE_OFFSET) & 0x0F;
+
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -750,7 +915,11 @@ static int lx_pipe_wait_for_state(struct lx6464es *chip, u32 pipe,
 		if (err < 0)
 			return err;
 
+<<<<<<< HEAD
 		if (current_state == state)
+=======
+		if (!err && current_state == state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return 0;
 
 		mdelay(1);
@@ -774,18 +943,28 @@ int lx_stream_set_state(struct lx6464es *chip, u32 pipe,
 			       int is_capture, enum stream_state_t state)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_13_SET_STREAM_STATE);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
 	chip->rmh.cmd[0] |= state;
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -794,6 +973,7 @@ int lx_stream_set_format(struct lx6464es *chip, struct snd_pcm_runtime *runtime,
 			 u32 pipe, int is_capture)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
@@ -805,6 +985,16 @@ int lx_stream_set_format(struct lx6464es *chip, struct snd_pcm_runtime *runtime,
 			   runtime->channels, channels);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+	u32 channels = runtime->channels;
+
+	if (runtime->channels != channels)
+		dev_err(chip->card->dev, "channel count mismatch: %d vs %d",
+			   runtime->channels, channels);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0C_DEF_STREAM);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -820,7 +1010,11 @@ int lx_stream_set_format(struct lx6464es *chip, struct snd_pcm_runtime *runtime,
 	chip->rmh.cmd[0] |= channels-1;
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -829,11 +1023,17 @@ int lx_stream_state(struct lx6464es *chip, u32 pipe, int is_capture,
 		    int *rstate)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0E_GET_STREAM_SPL_COUNT);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -842,7 +1042,11 @@ int lx_stream_state(struct lx6464es *chip, u32 pipe, int is_capture,
 
 	*rstate = (chip->rmh.stat[0] & SF_START) ? START_STATE : PAUSE_STATE;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -850,11 +1054,17 @@ int lx_stream_sample_position(struct lx6464es *chip, u32 pipe, int is_capture,
 			      u64 *r_bytepos)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0E_GET_STREAM_SPL_COUNT);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -865,7 +1075,11 @@ int lx_stream_sample_position(struct lx6464es *chip, u32 pipe, int is_capture,
 		      << 32)	     /* hi part */
 		+ chip->rmh.stat[1]; /* lo part */
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -875,11 +1089,17 @@ int lx_buffer_give(struct lx6464es *chip, u32 pipe, int is_capture,
 		   u32 *r_buffer_index)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0F_UPDATE_BUFFER);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -904,6 +1124,7 @@ int lx_buffer_give(struct lx6464es *chip, u32 pipe, int is_capture,
 	}
 
 	if (err == EB_RBUFFERS_TABLE_OVERFLOW)
+<<<<<<< HEAD
 		snd_printk(LXP "lx_buffer_give EB_RBUFFERS_TABLE_OVERFLOW\n");
 
 	if (err == EB_INVALID_STREAM)
@@ -914,6 +1135,21 @@ int lx_buffer_give(struct lx6464es *chip, u32 pipe, int is_capture,
 
  done:
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+		dev_err(chip->card->dev,
+			"lx_buffer_give EB_RBUFFERS_TABLE_OVERFLOW\n");
+
+	if (err == EB_INVALID_STREAM)
+		dev_err(chip->card->dev,
+			"lx_buffer_give EB_INVALID_STREAM\n");
+
+	if (err == EB_CMD_REFUSED)
+		dev_err(chip->card->dev,
+			"lx_buffer_give EB_CMD_REFUSED\n");
+
+ done:
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -921,11 +1157,17 @@ int lx_buffer_free(struct lx6464es *chip, u32 pipe, int is_capture,
 		   u32 *r_buffer_size)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_11_CANCEL_BUFFER);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -937,7 +1179,11 @@ int lx_buffer_free(struct lx6464es *chip, u32 pipe, int is_capture,
 	if (err == 0)
 		*r_buffer_size = chip->rmh.stat[0]  & MASK_DATA_SIZE;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -945,11 +1191,17 @@ int lx_buffer_cancel(struct lx6464es *chip, u32 pipe, int is_capture,
 		     u32 buffer_index)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	u32 pipe_cmd = PIPE_INFO_TO_CMD(is_capture, pipe);
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_11_CANCEL_BUFFER);
 
 	chip->rmh.cmd[0] |= pipe_cmd;
@@ -957,7 +1209,11 @@ int lx_buffer_cancel(struct lx6464es *chip, u32 pipe, int is_capture,
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -970,12 +1226,19 @@ int lx_buffer_cancel(struct lx6464es *chip, u32 pipe, int is_capture,
 int lx_level_unmute(struct lx6464es *chip, int is_capture, int unmute)
 {
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	/* bit set to 1: channel muted */
 	u64 mute_mask = unmute ? 0 : 0xFFFFFFFFFFFFFFFFLLU;
 
 	spin_lock_irqsave(&chip->msg_lock, flags);
+=======
+	/* bit set to 1: channel muted */
+	u64 mute_mask = unmute ? 0 : 0xFFFFFFFFFFFFFFFFLLU;
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_message_init(&chip->rmh, CMD_0D_SET_MUTE);
 
 	chip->rmh.cmd[0] |= PIPE_INFO_TO_CMD(is_capture, 0);
@@ -983,12 +1246,21 @@ int lx_level_unmute(struct lx6464es *chip, int is_capture, int unmute)
 	chip->rmh.cmd[1] = (u32)(mute_mask >> (u64)32);	       /* hi part */
 	chip->rmh.cmd[2] = (u32)(mute_mask & (u64)0xFFFFFFFF); /* lo part */
 
+<<<<<<< HEAD
 	snd_printk("mute %x %x %x\n", chip->rmh.cmd[0], chip->rmh.cmd[1],
+=======
+	dev_dbg(chip->card->dev,
+		"mute %x %x %x\n", chip->rmh.cmd[0], chip->rmh.cmd[1],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   chip->rmh.cmd[2]);
 
 	err = lx_message_send_atomic(chip, &chip->rmh);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -1015,10 +1287,16 @@ int lx_level_peaks(struct lx6464es *chip, int is_capture, int channels,
 		   u32 *r_levels)
 {
 	int err = 0;
+<<<<<<< HEAD
 	unsigned long flags;
 	int i;
 	spin_lock_irqsave(&chip->msg_lock, flags);
 
+=======
+	int i;
+
+	mutex_lock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < channels; i += 4) {
 		u32 s0, s1, s2, s3;
 
@@ -1043,15 +1321,25 @@ int lx_level_peaks(struct lx6464es *chip, int is_capture, int channels,
 		r_levels += 4;
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
+=======
+	mutex_unlock(&chip->msg_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
 /* interrupt handling */
 #define PCX_IRQ_NONE 0
+<<<<<<< HEAD
 #define IRQCS_ACTIVE_PCIDB  0x00002000L         /* Bit nÃÂ¸ 13 */
 #define IRQCS_ENABLE_PCIIRQ 0x00000100L         /* Bit nÃÂ¸ 08 */
 #define IRQCS_ENABLE_PCIDB  0x00000200L         /* Bit nÃÂ¸ 09 */
+=======
+#define IRQCS_ACTIVE_PCIDB	BIT(13)
+#define IRQCS_ENABLE_PCIIRQ	BIT(8)
+#define IRQCS_ENABLE_PCIDB	BIT(9)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static u32 lx_interrupt_test_ack(struct lx6464es *chip)
 {
@@ -1093,7 +1381,11 @@ static int lx_interrupt_ack(struct lx6464es *chip, u32 *r_irqsrc,
 	}
 
 	if (irq_async) {
+<<<<<<< HEAD
 		/* snd_printd("interrupt: async event pending\n"); */
+=======
+		/* dev_dbg(chip->card->dev, "interrupt: async event pending\n"); */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*r_async_pending = 1;
 	}
 
@@ -1108,6 +1400,7 @@ static int lx_interrupt_handle_async_events(struct lx6464es *chip, u32 irqsrc,
 	int err;
 	u32 stat[9];		/* answer from CMD_04_GET_EVENT */
 
+<<<<<<< HEAD
 	/* On peut optimiser pour ne pas lire les evenements vides
 	 * les mots de rÃÂ©ponse sont dans l'ordre suivant :
 	 * Stat[0]	mot de status gÃÂ©nÃÂ©ral
@@ -1119,14 +1412,30 @@ static int lx_interrupt_handle_async_events(struct lx6464es *chip, u32 irqsrc,
 	 * Stat[6]	underrun poid faible
 	 * Stat[7]	overrun poid fort
 	 * Stat[8]	overrun poid faible
+=======
+	/* We can optimize this to not read dumb events.
+	 * Answer words are in the following order:
+	 * Stat[0]	general status
+	 * Stat[1]	end of buffer OUT pF
+	 * Stat[2]	end of buffer OUT pf
+	 * Stat[3]	end of buffer IN pF
+	 * Stat[4]	end of buffer IN pf
+	 * Stat[5]	MSB underrun
+	 * Stat[6]	LSB underrun
+	 * Stat[7]	MSB overrun
+	 * Stat[8]	LSB overrun
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * */
 
 	u64 orun_mask;
 	u64 urun_mask;
+<<<<<<< HEAD
 #if 0
 	int has_underrun   = (irqsrc & MASK_SYS_STATUS_URUN) ? 1 : 0;
 	int has_overrun    = (irqsrc & MASK_SYS_STATUS_ORUN) ? 1 : 0;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int eb_pending_out = (irqsrc & MASK_SYS_STATUS_EOBO) ? 1 : 0;
 	int eb_pending_in  = (irqsrc & MASK_SYS_STATUS_EOBI) ? 1 : 0;
 
@@ -1139,13 +1448,21 @@ static int lx_interrupt_handle_async_events(struct lx6464es *chip, u32 irqsrc,
 	if (eb_pending_in) {
 		*r_notified_in_pipe_mask = ((u64)stat[3] << 32)
 			+ stat[4];
+<<<<<<< HEAD
 		snd_printdd(LXP "interrupt: EOBI pending %llx\n",
+=======
+		dev_dbg(chip->card->dev, "interrupt: EOBI pending %llx\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    *r_notified_in_pipe_mask);
 	}
 	if (eb_pending_out) {
 		*r_notified_out_pipe_mask = ((u64)stat[1] << 32)
 			+ stat[2];
+<<<<<<< HEAD
 		snd_printdd(LXP "interrupt: EOBO pending %llx\n",
+=======
+		dev_dbg(chip->card->dev, "interrupt: EOBO pending %llx\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    *r_notified_out_pipe_mask);
 	}
 
@@ -1163,7 +1480,10 @@ static int lx_interrupt_request_new_buffer(struct lx6464es *chip,
 	struct snd_pcm_substream *substream = lx_stream->stream;
 	const unsigned int is_capture = lx_stream->is_capture;
 	int err;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	const u32 channels = substream->runtime->channels;
 	const u32 bytes_per_frame = channels * 3;
@@ -1181,16 +1501,27 @@ static int lx_interrupt_request_new_buffer(struct lx6464es *chip,
 	u32 needed, freed;
 	u32 size_array[MAX_STREAM_BUFFER];
 
+<<<<<<< HEAD
 	snd_printdd("->lx_interrupt_request_new_buffer\n");
 
 	spin_lock_irqsave(&chip->lock, flags);
 
 	err = lx_buffer_ask(chip, 0, is_capture, &needed, &freed, size_array);
 	snd_printdd(LXP "interrupt: needed %d, freed %d\n", needed, freed);
+=======
+	dev_dbg(chip->card->dev, "->lx_interrupt_request_new_buffer\n");
+
+	mutex_lock(&chip->lock);
+
+	err = lx_buffer_ask(chip, 0, is_capture, &needed, &freed, size_array);
+	dev_dbg(chip->card->dev,
+		"interrupt: needed %d, freed %d\n", needed, freed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	unpack_pointer(buf, &buf_lo, &buf_hi);
 	err = lx_buffer_give(chip, 0, is_capture, period_bytes, buf_lo, buf_hi,
 			     &buffer_index);
+<<<<<<< HEAD
 	snd_printdd(LXP "interrupt: gave buffer index %x on %p (%d bytes)\n",
 		    buffer_index, (void *)buf, period_bytes);
 
@@ -1248,16 +1579,28 @@ static int lx_interrupt_handle_audio_transfer(struct lx6464es *chip,
 		snd_printdd(LXP "requesting audio transfer for playback\n");
 		tasklet_hi_schedule(&chip->tasklet_playback);
 	}
+=======
+	dev_dbg(chip->card->dev,
+		"interrupt: gave buffer index %x on 0x%lx (%d bytes)\n",
+		    buffer_index, (unsigned long)buf, period_bytes);
+
+	lx_stream->frame_pos = next_pos;
+	mutex_unlock(&chip->lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 irqreturn_t lx_interrupt(int irq, void *dev_id)
 {
 	struct lx6464es *chip = dev_id;
 	int async_pending, async_escmd;
 	u32 irqsrc;
+<<<<<<< HEAD
 
 	spin_lock(&chip->lock);
 
@@ -1266,10 +1609,20 @@ irqreturn_t lx_interrupt(int irq, void *dev_id)
 	if (!lx_interrupt_ack(chip, &irqsrc, &async_pending, &async_escmd)) {
 		spin_unlock(&chip->lock);
 		snd_printdd("IRQ_NONE\n");
+=======
+	bool wake_thread = false;
+
+	dev_dbg(chip->card->dev,
+		"**************************************************\n");
+
+	if (!lx_interrupt_ack(chip, &irqsrc, &async_pending, &async_escmd)) {
+		dev_dbg(chip->card->dev, "IRQ_NONE\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return IRQ_NONE; /* this device did not cause the interrupt */
 	}
 
 	if (irqsrc & MASK_SYS_STATUS_CMD_DONE)
+<<<<<<< HEAD
 		goto exit;
 
 #if 0
@@ -1312,12 +1665,35 @@ irqreturn_t lx_interrupt(int irq, void *dev_id)
 
 	if (async_escmd) {
 #if 0
+=======
+		return IRQ_HANDLED;
+
+	if (irqsrc & MASK_SYS_STATUS_EOBI)
+		dev_dbg(chip->card->dev, "interrupt: EOBI\n");
+
+	if (irqsrc & MASK_SYS_STATUS_EOBO)
+		dev_dbg(chip->card->dev, "interrupt: EOBO\n");
+
+	if (irqsrc & MASK_SYS_STATUS_URUN)
+		dev_dbg(chip->card->dev, "interrupt: URUN\n");
+
+	if (irqsrc & MASK_SYS_STATUS_ORUN)
+		dev_dbg(chip->card->dev, "interrupt: ORUN\n");
+
+	if (async_pending) {
+		wake_thread = true;
+		chip->irqsrc = irqsrc;
+	}
+
+	if (async_escmd) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* backdoor for ethersound commands
 		 *
 		 * for now, we do not need this
 		 *
 		 * */
 
+<<<<<<< HEAD
 		snd_printdd("lx6464es: interrupt requests escmd handling\n");
 #endif
 	}
@@ -1325,6 +1701,55 @@ irqreturn_t lx_interrupt(int irq, void *dev_id)
 exit:
 	spin_unlock(&chip->lock);
 	return IRQ_HANDLED;	/* this device caused the interrupt */
+=======
+		dev_dbg(chip->card->dev, "interrupt requests escmd handling\n");
+	}
+
+	return wake_thread ? IRQ_WAKE_THREAD : IRQ_HANDLED;
+}
+
+irqreturn_t lx_threaded_irq(int irq, void *dev_id)
+{
+	struct lx6464es *chip = dev_id;
+	u64 notified_in_pipe_mask = 0;
+	u64 notified_out_pipe_mask = 0;
+	int freq_changed;
+	int err;
+
+	/* handle async events */
+	err = lx_interrupt_handle_async_events(chip, chip->irqsrc,
+					       &freq_changed,
+					       &notified_in_pipe_mask,
+					       &notified_out_pipe_mask);
+	if (err)
+		dev_err(chip->card->dev, "error handling async events\n");
+
+	if (notified_in_pipe_mask) {
+		struct lx_stream *lx_stream = &chip->capture_stream;
+
+		dev_dbg(chip->card->dev,
+			"requesting audio transfer for capture\n");
+		err = lx_interrupt_request_new_buffer(chip, lx_stream);
+		if (err < 0)
+			dev_err(chip->card->dev,
+				"cannot request new buffer for capture\n");
+		snd_pcm_period_elapsed(lx_stream->stream);
+	}
+
+	if (notified_out_pipe_mask) {
+		struct lx_stream *lx_stream = &chip->playback_stream;
+
+		dev_dbg(chip->card->dev,
+			"requesting audio transfer for playback\n");
+		err = lx_interrupt_request_new_buffer(chip, lx_stream);
+		if (err < 0)
+			dev_err(chip->card->dev,
+				"cannot request new buffer for playback\n");
+		snd_pcm_period_elapsed(lx_stream->stream);
+	}
+
+	return IRQ_HANDLED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -1346,12 +1771,20 @@ static void lx_irq_set(struct lx6464es *chip, int enable)
 
 void lx_irq_enable(struct lx6464es *chip)
 {
+<<<<<<< HEAD
 	snd_printdd("->lx_irq_enable\n");
+=======
+	dev_dbg(chip->card->dev, "->lx_irq_enable\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_irq_set(chip, 1);
 }
 
 void lx_irq_disable(struct lx6464es *chip)
 {
+<<<<<<< HEAD
 	snd_printdd("->lx_irq_disable\n");
+=======
+	dev_dbg(chip->card->dev, "->lx_irq_disable\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lx_irq_set(chip, 0);
 }

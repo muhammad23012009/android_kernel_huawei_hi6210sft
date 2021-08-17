@@ -200,7 +200,11 @@ skip_tuning:
 	if (btcoex->duty_cycle > ATH_MCI_MAX_DUTY_CYCLE)
 		btcoex->duty_cycle = ATH_MCI_MAX_DUTY_CYCLE;
 
+<<<<<<< HEAD
 	btcoex->btcoex_no_stomp =  btcoex->btcoex_period * 1000 *
+=======
+	btcoex->btcoex_no_stomp =  btcoex->btcoex_period *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		(100 - btcoex->duty_cycle) / 100;
 
 	ath9k_hw_btcoex_enable(sc->sc_ah);
@@ -495,7 +499,11 @@ void ath_mci_intr(struct ath_softc *sc)
 	ar9003_mci_get_interrupt(sc->sc_ah, &mci_int, &mci_int_rxmsg);
 
 	if (ar9003_mci_state(ah, MCI_STATE_ENABLE) == 0) {
+<<<<<<< HEAD
 		ar9003_mci_get_next_gpm_offset(ah, true, NULL);
+=======
+		ar9003_mci_state(ah, MCI_STATE_INIT_GPM_OFFSET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -555,12 +563,20 @@ void ath_mci_intr(struct ath_softc *sc)
 		mci_int_rxmsg &= ~AR_MCI_INTERRUPT_RX_MSG_GPM;
 
 		while (more_data == MCI_GPM_MORE) {
+<<<<<<< HEAD
 			if (test_bit(SC_OP_HW_RESET, &sc->sc_flags))
 				return;
 
 			pgpm = mci->gpm_buf.bf_addr;
 			offset = ar9003_mci_get_next_gpm_offset(ah, false,
 								&more_data);
+=======
+			if (test_bit(ATH_OP_HW_RESET, &common->op_flags))
+				return;
+
+			pgpm = mci->gpm_buf.bf_addr;
+			offset = ar9003_mci_get_next_gpm_offset(ah, &more_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (offset == MCI_GPM_INVALID)
 				break;
@@ -661,9 +677,15 @@ void ath9k_mci_update_wlan_channels(struct ath_softc *sc, bool allow_all)
 	chan_start = wlan_chan - 10;
 	chan_end = wlan_chan + 10;
 
+<<<<<<< HEAD
 	if (chan->chanmode == CHANNEL_G_HT40PLUS)
 		chan_end += 20;
 	else if (chan->chanmode == CHANNEL_G_HT40MINUS)
+=======
+	if (IS_CHAN_HT40PLUS(chan))
+		chan_end += 20;
+	else if (IS_CHAN_HT40MINUS(chan))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		chan_start -= 20;
 
 	/* adjust side band */
@@ -706,12 +728,21 @@ void ath9k_mci_set_txpower(struct ath_softc *sc, bool setchannel,
 		return;
 
 	if (setchannel) {
+<<<<<<< HEAD
 		struct ath9k_hw_cal_data *caldata = &sc->caldata;
 		if ((caldata->chanmode == CHANNEL_G_HT40PLUS) &&
 		    (ah->curchan->channel > caldata->channel) &&
 		    (ah->curchan->channel <= caldata->channel + 20))
 			return;
 		if ((caldata->chanmode == CHANNEL_G_HT40MINUS) &&
+=======
+		struct ath9k_hw_cal_data *caldata = &sc->cur_chan->caldata;
+		if (IS_CHAN_HT40PLUS(ah->curchan) &&
+		    (ah->curchan->channel > caldata->channel) &&
+		    (ah->curchan->channel <= caldata->channel + 20))
+			return;
+		if (IS_CHAN_HT40MINUS(ah->curchan) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    (ah->curchan->channel < caldata->channel) &&
 		    (ah->curchan->channel >= caldata->channel - 20))
 			return;
@@ -720,7 +751,11 @@ void ath9k_mci_set_txpower(struct ath_softc *sc, bool setchannel,
 		mci_hw->concur_tx = concur_tx;
 
 	if (old_concur_tx != mci_hw->concur_tx)
+<<<<<<< HEAD
 		ath9k_hw_set_txpowerlimit(ah, sc->config.txpowlimit, false);
+=======
+		ath9k_hw_set_txpowerlimit(ah, sc->cur_chan->txpower, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ath9k_mci_stomp_audio(struct ath_softc *sc)

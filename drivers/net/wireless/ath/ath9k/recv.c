@@ -15,11 +15,18 @@
  */
 
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/relay.h>
 #include "ath9k.h"
 #include "ar9003_mac.h"
 
 #define SKB_CB_ATHBUF(__skb)	(*((struct ath_buf **)__skb->cb))
+=======
+#include "ath9k.h"
+#include "ar9003_mac.h"
+
+#define SKB_CB_ATHBUF(__skb)	(*((struct ath_rxbuf **)__skb->cb))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline bool ath9k_check_auto_sleep(struct ath_softc *sc)
 {
@@ -35,7 +42,12 @@ static inline bool ath9k_check_auto_sleep(struct ath_softc *sc)
  * buffer (or rx fifo). This can incorrectly acknowledge packets
  * to a sender if last desc is self-linked.
  */
+<<<<<<< HEAD
 static void ath_rx_buf_link(struct ath_softc *sc, struct ath_buf *bf)
+=======
+static void ath_rx_buf_link(struct ath_softc *sc, struct ath_rxbuf *bf,
+			    bool flush)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -60,18 +72,33 @@ static void ath_rx_buf_link(struct ath_softc *sc, struct ath_buf *bf)
 			     common->rx_bufsize,
 			     0);
 
+<<<<<<< HEAD
 	if (sc->rx.rxlink == NULL)
 		ath9k_hw_putrxbuf(ah, bf->bf_daddr);
 	else
 		*sc->rx.rxlink = bf->bf_daddr;
+=======
+	if (sc->rx.rxlink)
+		*sc->rx.rxlink = bf->bf_daddr;
+	else if (!flush)
+		ath9k_hw_putrxbuf(ah, bf->bf_daddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sc->rx.rxlink = &ds->ds_link;
 }
 
+<<<<<<< HEAD
 static void ath_rx_buf_relink(struct ath_softc *sc, struct ath_buf *bf)
 {
 	if (sc->rx.buf_hold)
 		ath_rx_buf_link(sc, sc->rx.buf_hold);
+=======
+static void ath_rx_buf_relink(struct ath_softc *sc, struct ath_rxbuf *bf,
+			      bool flush)
+{
+	if (sc->rx.buf_hold)
+		ath_rx_buf_link(sc, sc->rx.buf_hold, flush);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	sc->rx.buf_hold = bf;
 }
@@ -112,13 +139,21 @@ static bool ath_rx_edma_buf_link(struct ath_softc *sc,
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_rx_edma *rx_edma;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rx_edma = &sc->rx.rx_edma[qtype];
 	if (skb_queue_len(&rx_edma->rx_fifo) >= rx_edma->rx_fifo_hwsize)
 		return false;
 
+<<<<<<< HEAD
 	bf = list_first_entry(&sc->rx.rxbuf, struct ath_buf, list);
+=======
+	bf = list_first_entry(&sc->rx.rxbuf, struct ath_rxbuf, list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	list_del_init(&bf->list);
 
 	skb = bf->bf_mpdu;
@@ -138,7 +173,11 @@ static void ath_rx_addbuffer_edma(struct ath_softc *sc,
 				  enum ath9k_rx_qtype qtype)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+<<<<<<< HEAD
 	struct ath_buf *bf, *tbf;
+=======
+	struct ath_rxbuf *bf, *tbf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (list_empty(&sc->rx.rxbuf)) {
 		ath_dbg(common, QUEUE, "No free rx buf available\n");
@@ -154,7 +193,11 @@ static void ath_rx_addbuffer_edma(struct ath_softc *sc,
 static void ath_rx_remove_buffer(struct ath_softc *sc,
 				 enum ath9k_rx_qtype qtype)
 {
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ath_rx_edma *rx_edma;
 	struct sk_buff *skb;
 
@@ -171,7 +214,11 @@ static void ath_rx_edma_cleanup(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ath_rx_remove_buffer(sc, ATH9K_RX_QUEUE_LP);
 	ath_rx_remove_buffer(sc, ATH9K_RX_QUEUE_HP);
@@ -190,7 +237,11 @@ static void ath_rx_edma_cleanup(struct ath_softc *sc)
 
 static void ath_rx_edma_init_queue(struct ath_rx_edma *rx_edma, int size)
 {
+<<<<<<< HEAD
 	skb_queue_head_init(&rx_edma->rx_fifo);
+=======
+	__skb_queue_head_init(&rx_edma->rx_fifo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rx_edma->rx_fifo_hwsize = size;
 }
 
@@ -199,7 +250,11 @@ static int ath_rx_edma_init(struct ath_softc *sc, int nbufs)
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct ath_hw *ah = sc->sc_ah;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int error = 0, i;
 	u32 size;
 
@@ -211,7 +266,11 @@ static int ath_rx_edma_init(struct ath_softc *sc, int nbufs)
 	ath_rx_edma_init_queue(&sc->rx.rx_edma[ATH9K_RX_QUEUE_HP],
 			       ah->caps.rx_hp_qdepth);
 
+<<<<<<< HEAD
 	size = sizeof(struct ath_buf) * nbufs;
+=======
+	size = sizeof(struct ath_rxbuf) * nbufs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bf = devm_kzalloc(sc->dev, size, GFP_KERNEL);
 	if (!bf)
 		return -ENOMEM;
@@ -258,7 +317,11 @@ static void ath_edma_start_recv(struct ath_softc *sc)
 	ath_rx_addbuffer_edma(sc, ATH9K_RX_QUEUE_HP);
 	ath_rx_addbuffer_edma(sc, ATH9K_RX_QUEUE_LP);
 	ath_opmode_init(sc);
+<<<<<<< HEAD
 	ath9k_hw_startpcureceive(sc->sc_ah, !!(sc->hw->conf.flags & IEEE80211_CONF_OFFCHANNEL));
+=======
+	ath9k_hw_startpcureceive(sc->sc_ah, sc->cur_chan->offchannel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ath_edma_stop_recv(struct ath_softc *sc)
@@ -271,7 +334,11 @@ int ath_rx_init(struct ath_softc *sc, int nbufs)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int error = 0;
 
 	spin_lock_init(&sc->sc_pcu_lock);
@@ -332,7 +399,11 @@ void ath_rx_cleanup(struct ath_softc *sc)
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) {
 		ath_rx_edma_cleanup(sc);
@@ -373,8 +444,17 @@ void ath_rx_cleanup(struct ath_softc *sc)
 
 u32 ath_calcrxfilter(struct ath_softc *sc)
 {
+<<<<<<< HEAD
 	u32 rfilt;
 
+=======
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+	u32 rfilt;
+
+	if (IS_ENABLED(CONFIG_ATH9K_TX99))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rfilt = ATH9K_RX_FILTER_UCAST | ATH9K_RX_FILTER_BCAST
 		| ATH9K_RX_FILTER_MCAST;
 
@@ -382,6 +462,7 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 	if (sc->hw->conf.radar_enabled)
 		rfilt |= ATH9K_RX_FILTER_PHYRADAR | ATH9K_RX_FILTER_PHYERR;
 
+<<<<<<< HEAD
 	if (sc->rx.rxfilter & FIF_PROBE_REQ)
 		rfilt |= ATH9K_RX_FILTER_PROBEREQ;
 
@@ -411,19 +492,65 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 		rfilt |= ATH9K_RX_FILTER_COMP_BAR;
 
 	if (sc->nvifs > 1 || (sc->rx.rxfilter & FIF_OTHER_BSS)) {
+=======
+	spin_lock_bh(&sc->chan_lock);
+
+	if (sc->cur_chan->rxfilter & FIF_PROBE_REQ)
+		rfilt |= ATH9K_RX_FILTER_PROBEREQ;
+
+	if (sc->sc_ah->is_monitoring)
+		rfilt |= ATH9K_RX_FILTER_PROM;
+
+	if ((sc->cur_chan->rxfilter & FIF_CONTROL) ||
+	    sc->sc_ah->dynack.enabled)
+		rfilt |= ATH9K_RX_FILTER_CONTROL;
+
+	if ((sc->sc_ah->opmode == NL80211_IFTYPE_STATION) &&
+	    (sc->cur_chan->nvifs <= 1) &&
+	    !(sc->cur_chan->rxfilter & FIF_BCN_PRBRESP_PROMISC))
+		rfilt |= ATH9K_RX_FILTER_MYBEACON;
+	else if (sc->sc_ah->opmode != NL80211_IFTYPE_OCB)
+		rfilt |= ATH9K_RX_FILTER_BEACON;
+
+	if ((sc->sc_ah->opmode == NL80211_IFTYPE_AP) ||
+	    (sc->cur_chan->rxfilter & FIF_PSPOLL))
+		rfilt |= ATH9K_RX_FILTER_PSPOLL;
+
+	if (sc->cur_chandef.width != NL80211_CHAN_WIDTH_20_NOHT)
+		rfilt |= ATH9K_RX_FILTER_COMP_BAR;
+
+	if (sc->cur_chan->nvifs > 1 || (sc->cur_chan->rxfilter & FIF_OTHER_BSS)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* This is needed for older chips */
 		if (sc->sc_ah->hw_version.macVersion <= AR_SREV_VERSION_9160)
 			rfilt |= ATH9K_RX_FILTER_PROM;
 		rfilt |= ATH9K_RX_FILTER_MCAST_BCAST_ALL;
 	}
 
+<<<<<<< HEAD
 	if (AR_SREV_9550(sc->sc_ah))
 		rfilt |= ATH9K_RX_FILTER_4ADDRESS;
 
+=======
+	if (AR_SREV_9550(sc->sc_ah) || AR_SREV_9531(sc->sc_ah) ||
+	    AR_SREV_9561(sc->sc_ah))
+		rfilt |= ATH9K_RX_FILTER_4ADDRESS;
+
+	if (AR_SREV_9462(sc->sc_ah) || AR_SREV_9565(sc->sc_ah))
+		rfilt |= ATH9K_RX_FILTER_CONTROL_WRAPPER;
+
+	if (ath9k_is_chanctx_enabled() &&
+	    test_bit(ATH_OP_SCANNING, &common->op_flags))
+		rfilt |= ATH9K_RX_FILTER_BEACON;
+
+	spin_unlock_bh(&sc->chan_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rfilt;
 
 }
 
+<<<<<<< HEAD
 int ath_startrecv(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
@@ -432,6 +559,16 @@ int ath_startrecv(struct ath_softc *sc)
 	if (ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) {
 		ath_edma_start_recv(sc);
 		return 0;
+=======
+void ath_startrecv(struct ath_softc *sc)
+{
+	struct ath_hw *ah = sc->sc_ah;
+	struct ath_rxbuf *bf, *tbf;
+
+	if (ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) {
+		ath_edma_start_recv(sc);
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (list_empty(&sc->rx.rxbuf))
@@ -440,22 +577,34 @@ int ath_startrecv(struct ath_softc *sc)
 	sc->rx.buf_hold = NULL;
 	sc->rx.rxlink = NULL;
 	list_for_each_entry_safe(bf, tbf, &sc->rx.rxbuf, list) {
+<<<<<<< HEAD
 		ath_rx_buf_link(sc, bf);
+=======
+		ath_rx_buf_link(sc, bf, false);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* We could have deleted elements so the list may be empty now */
 	if (list_empty(&sc->rx.rxbuf))
 		goto start_recv;
 
+<<<<<<< HEAD
 	bf = list_first_entry(&sc->rx.rxbuf, struct ath_buf, list);
+=======
+	bf = list_first_entry(&sc->rx.rxbuf, struct ath_rxbuf, list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ath9k_hw_putrxbuf(ah, bf->bf_daddr);
 	ath9k_hw_rxena(ah);
 
 start_recv:
 	ath_opmode_init(sc);
+<<<<<<< HEAD
 	ath9k_hw_startpcureceive(ah, !!(sc->hw->conf.flags & IEEE80211_CONF_OFFCHANNEL));
 
 	return 0;
+=======
+	ath9k_hw_startpcureceive(ah, sc->cur_chan->offchannel);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ath_flushrecv(struct ath_softc *sc)
@@ -483,10 +632,16 @@ bool ath_stoprecv(struct ath_softc *sc)
 
 	if (!(ah->ah_flags & AH_UNPLUGGED) &&
 	    unlikely(!stopped)) {
+<<<<<<< HEAD
 		ath_err(ath9k_hw_common(sc->sc_ah),
 			"Could not stop RX, we could be "
 			"confusing the DMA engine when we start RX up\n");
 		ATH_DBG_WARN_ON_ONCE(!stopped);
+=======
+		ath_dbg(ath9k_hw_common(sc->sc_ah), RESET,
+			"Failed to stop Rx DMA\n");
+		RESET_STAT_INC(sc, RESET_RX_DMA_ERROR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return stopped && !reset;
 }
@@ -526,6 +681,10 @@ static bool ath_beacon_dtim_pending_cab(struct sk_buff *skb)
 static void ath_rx_ps_beacon(struct ath_softc *sc, struct sk_buff *skb)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+<<<<<<< HEAD
+=======
+	bool skip_beacon = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (skb->len < 24 + 8 + 2 + 2)
 		return;
@@ -536,7 +695,23 @@ static void ath_rx_ps_beacon(struct ath_softc *sc, struct sk_buff *skb)
 		sc->ps_flags &= ~PS_BEACON_SYNC;
 		ath_dbg(common, PS,
 			"Reconfigure beacon timers based on synchronized timestamp\n");
+<<<<<<< HEAD
 		ath9k_set_beacon(sc);
+=======
+
+#ifdef CONFIG_ATH9K_CHANNEL_CONTEXT
+		if (ath9k_is_chanctx_enabled()) {
+			if (sc->cur_chan == &sc->offchannel.chan)
+				skip_beacon = true;
+		}
+#endif
+
+		if (!skip_beacon &&
+		    !(WARN_ON_ONCE(sc->cur_chan->beacon.beacon_interval == 0)))
+			ath9k_set_beacon(sc);
+
+		ath9k_p2p_beacon_sync(sc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (ath_beacon_dtim_pending_cab(skb)) {
@@ -603,13 +778,21 @@ static void ath_rx_ps(struct ath_softc *sc, struct sk_buff *skb, bool mybeacon)
 static bool ath_edma_get_buffers(struct ath_softc *sc,
 				 enum ath9k_rx_qtype qtype,
 				 struct ath_rx_status *rs,
+<<<<<<< HEAD
 				 struct ath_buf **dest)
+=======
+				 struct ath_rxbuf **dest)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ath_rx_edma *rx_edma = &sc->rx.rx_edma[qtype];
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	skb = skb_peek(&rx_edma->rx_fifo);
@@ -653,11 +836,19 @@ static bool ath_edma_get_buffers(struct ath_softc *sc,
 	return true;
 }
 
+<<<<<<< HEAD
 static struct ath_buf *ath_edma_get_next_rx_buf(struct ath_softc *sc,
 						struct ath_rx_status *rs,
 						enum ath9k_rx_qtype qtype)
 {
 	struct ath_buf *bf = NULL;
+=======
+static struct ath_rxbuf *ath_edma_get_next_rx_buf(struct ath_softc *sc,
+						struct ath_rx_status *rs,
+						enum ath9k_rx_qtype qtype)
+{
+	struct ath_rxbuf *bf = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (ath_edma_get_buffers(sc, qtype, rs, &bf)) {
 		if (!bf)
@@ -668,13 +859,21 @@ static struct ath_buf *ath_edma_get_next_rx_buf(struct ath_softc *sc,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
+=======
+static struct ath_rxbuf *ath_get_next_rx_buf(struct ath_softc *sc,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					   struct ath_rx_status *rs)
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath_desc *ds;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	if (list_empty(&sc->rx.rxbuf)) {
@@ -682,7 +881,11 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	bf = list_first_entry(&sc->rx.rxbuf, struct ath_buf, list);
+=======
+	bf = list_first_entry(&sc->rx.rxbuf, struct ath_rxbuf, list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bf == sc->rx.buf_hold)
 		return NULL;
 
@@ -702,7 +905,11 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 	ret = ath9k_hw_rxprocdesc(ah, ds, rs);
 	if (ret == -EINPROGRESS) {
 		struct ath_rx_status trs;
+<<<<<<< HEAD
 		struct ath_buf *tbf;
+=======
+		struct ath_rxbuf *tbf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		struct ath_desc *tds;
 
 		memset(&trs, 0, sizeof(trs));
@@ -711,7 +918,11 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 			return NULL;
 		}
 
+<<<<<<< HEAD
 		tbf = list_entry(bf->list.next, struct ath_buf, list);
+=======
+		tbf = list_entry(bf->list.next, struct ath_rxbuf, list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * On some hardware the descriptor status words could
@@ -730,11 +941,26 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 			return NULL;
 
 		/*
+<<<<<<< HEAD
 		 * mark descriptor as zero-length and set the 'more'
 		 * flag to ensure that both buffers get discarded
 		 */
 		rs->rs_datalen = 0;
 		rs->rs_more = true;
+=======
+		 * Re-check previous descriptor, in case it has been filled
+		 * in the mean time.
+		 */
+		ret = ath9k_hw_rxprocdesc(ah, ds, rs);
+		if (ret == -EINPROGRESS) {
+			/*
+			 * mark descriptor as zero-length and set the 'more'
+			 * flag to ensure that both buffers get discarded
+			 */
+			rs->rs_datalen = 0;
+			rs->rs_more = true;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	list_del(&bf->list);
@@ -753,6 +979,7 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 	return bf;
 }
 
+<<<<<<< HEAD
 /* Assumes you've already done the endian to CPU conversion */
 static bool ath9k_rx_accept(struct ath_common *common,
 			    struct ieee80211_hdr *hdr,
@@ -1143,6 +1370,196 @@ static int ath_process_fft(struct ath_softc *sc, struct ieee80211_hdr *hdr,
 #else
 	return 0;
 #endif
+=======
+static void ath9k_process_tsf(struct ath_rx_status *rs,
+			      struct ieee80211_rx_status *rxs,
+			      u64 tsf)
+{
+	u32 tsf_lower = tsf & 0xffffffff;
+
+	rxs->mactime = (tsf & ~0xffffffffULL) | rs->rs_tstamp;
+	if (rs->rs_tstamp > tsf_lower &&
+	    unlikely(rs->rs_tstamp - tsf_lower > 0x10000000))
+		rxs->mactime -= 0x100000000ULL;
+
+	if (rs->rs_tstamp < tsf_lower &&
+	    unlikely(tsf_lower - rs->rs_tstamp > 0x10000000))
+		rxs->mactime += 0x100000000ULL;
+}
+
+/*
+ * For Decrypt or Demic errors, we only mark packet status here and always push
+ * up the frame up to let mac80211 handle the actual error case, be it no
+ * decryption key or real decryption error. This let us keep statistics there.
+ */
+static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
+				   struct sk_buff *skb,
+				   struct ath_rx_status *rx_stats,
+				   struct ieee80211_rx_status *rx_status,
+				   bool *decrypt_error, u64 tsf)
+{
+	struct ieee80211_hw *hw = sc->hw;
+	struct ath_hw *ah = sc->sc_ah;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ieee80211_hdr *hdr;
+	bool discard_current = sc->rx.discard_next;
+
+	/*
+	 * Discard corrupt descriptors which are marked in
+	 * ath_get_next_rx_buf().
+	 */
+	if (discard_current)
+		goto corrupt;
+
+	sc->rx.discard_next = false;
+
+	/*
+	 * Discard zero-length packets.
+	 */
+	if (!rx_stats->rs_datalen) {
+		RX_STAT_INC(rx_len_err);
+		goto corrupt;
+	}
+
+	/*
+	 * rs_status follows rs_datalen so if rs_datalen is too large
+	 * we can take a hint that hardware corrupted it, so ignore
+	 * those frames.
+	 */
+	if (rx_stats->rs_datalen > (common->rx_bufsize - ah->caps.rx_status_len)) {
+		RX_STAT_INC(rx_len_err);
+		goto corrupt;
+	}
+
+	/* Only use status info from the last fragment */
+	if (rx_stats->rs_more)
+		return 0;
+
+	/*
+	 * Return immediately if the RX descriptor has been marked
+	 * as corrupt based on the various error bits.
+	 *
+	 * This is different from the other corrupt descriptor
+	 * condition handled above.
+	 */
+	if (rx_stats->rs_status & ATH9K_RXERR_CORRUPT_DESC)
+		goto corrupt;
+
+	hdr = (struct ieee80211_hdr *) (skb->data + ah->caps.rx_status_len);
+
+	ath9k_process_tsf(rx_stats, rx_status, tsf);
+	ath_debug_stat_rx(sc, rx_stats);
+
+	/*
+	 * Process PHY errors and return so that the packet
+	 * can be dropped.
+	 */
+	if (rx_stats->rs_status & ATH9K_RXERR_PHY) {
+		ath9k_dfs_process_phyerr(sc, hdr, rx_stats, rx_status->mactime);
+		if (ath_cmn_process_fft(&sc->spec_priv, hdr, rx_stats, rx_status->mactime))
+			RX_STAT_INC(rx_spectral);
+
+		return -EINVAL;
+	}
+
+	/*
+	 * everything but the rate is checked here, the rate check is done
+	 * separately to avoid doing two lookups for a rate for each frame.
+	 */
+	spin_lock_bh(&sc->chan_lock);
+	if (!ath9k_cmn_rx_accept(common, hdr, rx_status, rx_stats, decrypt_error,
+				 sc->cur_chan->rxfilter)) {
+		spin_unlock_bh(&sc->chan_lock);
+		return -EINVAL;
+	}
+	spin_unlock_bh(&sc->chan_lock);
+
+	if (ath_is_mybeacon(common, hdr)) {
+		RX_STAT_INC(rx_beacons);
+		rx_stats->is_mybeacon = true;
+	}
+
+	/*
+	 * This shouldn't happen, but have a safety check anyway.
+	 */
+	if (WARN_ON(!ah->curchan))
+		return -EINVAL;
+
+	if (ath9k_cmn_process_rate(common, hw, rx_stats, rx_status)) {
+		/*
+		 * No valid hardware bitrate found -- we should not get here
+		 * because hardware has already validated this frame as OK.
+		 */
+		ath_dbg(common, ANY, "unsupported hw bitrate detected 0x%02x using 1 Mbit\n",
+			rx_stats->rs_rate);
+		RX_STAT_INC(rx_rate_err);
+		return -EINVAL;
+	}
+
+	if (ath9k_is_chanctx_enabled()) {
+		if (rx_stats->is_mybeacon)
+			ath_chanctx_beacon_recv_ev(sc,
+					   ATH_CHANCTX_EVENT_BEACON_RECEIVED);
+	}
+
+	ath9k_cmn_process_rssi(common, hw, rx_stats, rx_status);
+
+	rx_status->band = ah->curchan->chan->band;
+	rx_status->freq = ah->curchan->chan->center_freq;
+	rx_status->antenna = rx_stats->rs_antenna;
+	rx_status->flag |= RX_FLAG_MACTIME_END;
+
+#ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
+	if (ieee80211_is_data_present(hdr->frame_control) &&
+	    !ieee80211_is_qos_nullfunc(hdr->frame_control))
+		sc->rx.num_pkts++;
+#endif
+
+	return 0;
+
+corrupt:
+	sc->rx.discard_next = rx_stats->rs_more;
+	return -EINVAL;
+}
+
+/*
+ * Run the LNA combining algorithm only in these cases:
+ *
+ * Standalone WLAN cards with both LNA/Antenna diversity
+ * enabled in the EEPROM.
+ *
+ * WLAN+BT cards which are in the supported card list
+ * in ath_pci_id_table and the user has loaded the
+ * driver with "bt_ant_diversity" set to true.
+ */
+static void ath9k_antenna_check(struct ath_softc *sc,
+				struct ath_rx_status *rs)
+{
+	struct ath_hw *ah = sc->sc_ah;
+	struct ath9k_hw_capabilities *pCap = &ah->caps;
+	struct ath_common *common = ath9k_hw_common(ah);
+
+	if (!(ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB))
+		return;
+
+	/*
+	 * Change the default rx antenna if rx diversity
+	 * chooses the other antenna 3 times in a row.
+	 */
+	if (sc->rx.defant != rs->rs_antenna) {
+		if (++sc->rx.rxotherant >= 3)
+			ath_setdefantenna(sc, rs->rs_antenna);
+	} else {
+		sc->rx.rxotherant = 0;
+	}
+
+	if (pCap->hw_caps & ATH9K_HW_CAP_BT_ANT_DIV) {
+		if (common->bt_ant_diversity)
+			ath_ant_comb_scan(sc, rs);
+	} else {
+		ath_ant_comb_scan(sc, rs);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ath9k_apply_ampdu_details(struct ath_softc *sc,
@@ -1165,23 +1582,38 @@ static void ath9k_apply_ampdu_details(struct ath_softc *sc,
 
 int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 {
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct sk_buff *skb = NULL, *requeue_skb, *hdr_skb;
 	struct ieee80211_rx_status *rxs;
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ieee80211_hw *hw = sc->hw;
+<<<<<<< HEAD
 	struct ieee80211_hdr *hdr;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int retval;
 	struct ath_rx_status rs;
 	enum ath9k_rx_qtype qtype;
 	bool edma = !!(ah->caps.hw_caps & ATH9K_HW_CAP_EDMA);
 	int dma_type;
+<<<<<<< HEAD
 	u8 rx_status_len = ah->caps.rx_status_len;
 	u64 tsf = 0;
 	u32 tsf_lower = 0;
 	unsigned long flags;
 	dma_addr_t new_buf_addr;
+=======
+	u64 tsf = 0;
+	unsigned long flags;
+	dma_addr_t new_buf_addr;
+	unsigned int budget = 512;
+	struct ieee80211_hdr *hdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (edma)
 		dma_type = DMA_BIDIRECTIONAL;
@@ -1191,7 +1623,10 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 	qtype = hp ? ATH9K_RX_QUEUE_HP : ATH9K_RX_QUEUE_LP;
 
 	tsf = ath9k_hw_gettsf64(ah);
+<<<<<<< HEAD
 	tsf_lower = tsf & 0xffffffff;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	do {
 		bool decrypt_error = false;
@@ -1218,6 +1653,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		else
 			hdr_skb = skb;
 
+<<<<<<< HEAD
 		hdr = (struct ieee80211_hdr *) (hdr_skb->data + rx_status_len);
 		rxs = IEEE80211_SKB_RXCB(hdr_skb);
 		if (ieee80211_is_beacon(hdr->frame_control)) {
@@ -1267,6 +1703,16 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			sc->hw_busy_count = 0;
 			ath_start_rx_poll(sc, 3);
 		}
+=======
+		rxs = IEEE80211_SKB_RXCB(hdr_skb);
+		memset(rxs, 0, sizeof(struct ieee80211_rx_status));
+
+		retval = ath9k_rx_skb_preprocess(sc, hdr_skb, &rs, rxs,
+						 &decrypt_error, tsf);
+		if (retval)
+			goto requeue_drop_frag;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Ensure we always have an skb to requeue once we are done
 		 * processing the current buffer's skb */
 		requeue_skb = ath_rxbuf_alloc(common, common->rx_bufsize, GFP_ATOMIC);
@@ -1300,8 +1746,13 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			skb_pull(skb, ah->caps.rx_status_len);
 
 		if (!rs.rs_more)
+<<<<<<< HEAD
 			ath9k_rx_skb_postprocess(common, hdr_skb, &rs,
 						 rxs, decrypt_error);
+=======
+			ath9k_cmn_rx_skb_postprocess(common, hdr_skb, &rs,
+						     rxs, decrypt_error);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (rs.rs_more) {
 			RX_STAT_INC(rx_frags);
@@ -1320,8 +1771,11 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			sc->rx.frag = skb;
 			goto requeue;
 		}
+<<<<<<< HEAD
 		if (rs.rs_status & ATH9K_RXERR_CORRUPT_DESC)
 			goto requeue_drop_frag;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (sc->rx.frag) {
 			int space = skb->len - skb_tailroom(hdr_skb);
@@ -1340,6 +1794,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			skb = hdr_skb;
 		}
 
+<<<<<<< HEAD
 
 		if (ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB) {
 
@@ -1356,6 +1811,8 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 
 		}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rxs->flag & RX_FLAG_MMIC_STRIPPED)
 			skb_trim(skb, skb->len - 8);
 
@@ -1367,10 +1824,20 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			ath_rx_ps(sc, skb, rs.is_mybeacon);
 		spin_unlock_irqrestore(&sc->sc_pm_lock, flags);
 
+<<<<<<< HEAD
 		if ((ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB) && sc->ant_rx == 3)
 			ath_ant_comb_scan(sc, &rs);
 
 		ath9k_apply_ampdu_details(sc, &rs, rxs);
+=======
+		ath9k_antenna_check(sc, &rs);
+		ath9k_apply_ampdu_details(sc, &rs, rxs);
+		ath_debug_rate_stats(sc, &rs, skb);
+
+		hdr = (struct ieee80211_hdr *)skb->data;
+		if (ieee80211_is_ack(hdr->frame_control))
+			ath_dynack_sample_ack_ts(sc->sc_ah, skb, rs.rs_tstamp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ieee80211_rx(hw, skb);
 
@@ -1381,6 +1848,7 @@ requeue_drop_frag:
 		}
 requeue:
 		list_add_tail(&bf->list, &sc->rx.rxbuf);
+<<<<<<< HEAD
 		if (flush)
 			continue;
 
@@ -1390,6 +1858,19 @@ requeue:
 			ath_rx_buf_relink(sc, bf);
 			ath9k_hw_rxena(ah);
 		}
+=======
+
+		if (!edma) {
+			ath_rx_buf_relink(sc, bf, flush);
+			if (!flush)
+				ath9k_hw_rxena(ah);
+		} else if (!flush) {
+			ath_rx_edma_buf_link(sc, qtype);
+		}
+
+		if (!budget--)
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (1);
 
 	if (!(ah->imask & ATH9K_INT_RXEOL)) {

@@ -78,10 +78,13 @@ static void serial21285_stop_rx(struct uart_port *port)
 	}
 }
 
+<<<<<<< HEAD
 static void serial21285_enable_ms(struct uart_port *port)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static irqreturn_t serial21285_rx_chars(int irq, void *dev_id)
 {
 	struct uart_port *port = dev_id;
@@ -345,7 +348,10 @@ static struct uart_ops serial21285_ops = {
 	.stop_tx	= serial21285_stop_tx,
 	.start_tx	= serial21285_start_tx,
 	.stop_rx	= serial21285_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= serial21285_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl	= serial21285_break_ctl,
 	.startup	= serial21285_startup,
 	.shutdown	= serial21285_shutdown,

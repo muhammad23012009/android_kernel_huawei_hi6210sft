@@ -30,9 +30,15 @@
 #include <asm/mach/map.h>
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <mach/h5000.h>
 #include <mach/udc.h>
+=======
+#include "pxa25x.h"
+#include "h5000.h"
+#include "udc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/smemc.h>
 
 #include "generic.h"

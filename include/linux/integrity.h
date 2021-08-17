@@ -14,6 +14,10 @@
 
 enum integrity_status {
 	INTEGRITY_PASS = 0,
+<<<<<<< HEAD
+=======
+	INTEGRITY_PASS_IMMUTABLE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	INTEGRITY_FAIL,
 	INTEGRITY_NOLABEL,
 	INTEGRITY_NOXATTRS,
@@ -24,6 +28,10 @@ enum integrity_status {
 #ifdef CONFIG_INTEGRITY
 extern struct integrity_iint_cache *integrity_inode_get(struct inode *inode);
 extern void integrity_inode_free(struct inode *inode);
+<<<<<<< HEAD
+=======
+extern void __init integrity_load_keys(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else
 static inline struct integrity_iint_cache *
@@ -36,5 +44,14 @@ static inline void integrity_inode_free(struct inode *inode)
 {
 	return;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_INTEGRITY */
+=======
+
+static inline void integrity_load_keys(void)
+{
+}
+#endif /* CONFIG_INTEGRITY */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _LINUX_INTEGRITY_H */

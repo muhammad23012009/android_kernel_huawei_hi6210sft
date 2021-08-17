@@ -34,11 +34,26 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/nfs_fs.h>
 #include <linux/export.h>
 #include "acl.h"
 
+=======
+#include <linux/fs.h>
+#include <linux/slab.h>
+#include <linux/posix_acl.h>
+
+#include "nfsfh.h"
+#include "nfsd.h"
+#include "acl.h"
+#include "vfs.h"
+
+#define NFS4_ACL_TYPE_DEFAULT	0x01
+#define NFS4_ACL_DIR		0x02
+#define NFS4_ACL_OWNER		0x04
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* mode bit translations: */
 #define NFS4_READ_MODE (NFS4_ACE_READ_DATA)
@@ -47,10 +62,13 @@
 #define NFS4_ANYONE_MODE (NFS4_ACE_READ_ATTRIBUTES | NFS4_ACE_READ_ACL | NFS4_ACE_SYNCHRONIZE)
 #define NFS4_OWNER_MODE (NFS4_ACE_WRITE_ATTRIBUTES | NFS4_ACE_WRITE_ACL)
 
+<<<<<<< HEAD
 /* We don't support these bits; insist they be neither allowed nor denied */
 #define NFS4_MASK_UNSUPP (NFS4_ACE_DELETE | NFS4_ACE_WRITE_OWNER \
 		| NFS4_ACE_READ_NAMED_ATTRS | NFS4_ACE_WRITE_NAMED_ATTRS)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* flags used to simulate posix default ACLs */
 #define NFS4_INHERITANCE_FLAGS (NFS4_ACE_FILE_INHERIT_ACE \
 		| NFS4_ACE_DIRECTORY_INHERIT_ACE)
@@ -59,9 +77,12 @@
 		| NFS4_ACE_INHERIT_ONLY_ACE \
 		| NFS4_ACE_IDENTIFIER_GROUP)
 
+<<<<<<< HEAD
 #define MASK_EQUAL(mask1, mask2) \
 	( ((mask1) & NFS4_ACE_MASK_ALL) == ((mask2) & NFS4_ACE_MASK_ALL) )
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u32
 mask_from_posix(unsigned short perm, unsigned int flags)
 {
@@ -102,7 +123,11 @@ deny_mask_from_posix(unsigned short perm, u32 flags)
 /* We only map from NFSv4 to POSIX ACLs when setting ACLs, when we err on the
  * side of being more restrictive, so the mode bit mapping below is
  * pessimistic.  An optimistic version would be needed to handle DENY's,
+<<<<<<< HEAD
  * but we espect to coalesce all ALLOWs and DENYs before mapping to mode
+=======
+ * but we expect to coalesce all ALLOWs and DENYs before mapping to mode
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * bits. */
 
 static void
@@ -121,15 +146,19 @@ low_mode_from_nfs4(u32 perm, unsigned short *mode, unsigned int flags)
 		*mode |= ACL_EXECUTE;
 }
 
+<<<<<<< HEAD
 struct ace_container {
 	struct nfs4_ace  *ace;
 	struct list_head  ace_l;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static short ace2type(struct nfs4_ace *);
 static void _posix_to_nfsv4_one(struct posix_acl *, struct nfs4_acl *,
 				unsigned int);
 
+<<<<<<< HEAD
 struct nfs4_acl *
 nfs4_acl_posix_to_nfsv4(struct posix_acl *pacl, struct posix_acl *dpacl,
 			unsigned int flags)
@@ -160,6 +189,57 @@ nfs4_acl_posix_to_nfsv4(struct posix_acl *pacl, struct posix_acl *dpacl,
 		_posix_to_nfsv4_one(dpacl, acl, flags | NFS4_ACL_TYPE_DEFAULT);
 
 	return acl;
+=======
+int
+nfsd4_get_nfs4_acl(struct svc_rqst *rqstp, struct dentry *dentry,
+		struct nfs4_acl **acl)
+{
+	struct inode *inode = d_inode(dentry);
+	int error = 0;
+	struct posix_acl *pacl = NULL, *dpacl = NULL;
+	unsigned int flags = 0;
+	int size = 0;
+
+	pacl = get_acl(inode, ACL_TYPE_ACCESS);
+	if (!pacl)
+		pacl = posix_acl_from_mode(inode->i_mode, GFP_KERNEL);
+
+	if (IS_ERR(pacl))
+		return PTR_ERR(pacl);
+
+	/* allocate for worst case: one (deny, allow) pair each: */
+	size += 2 * pacl->a_count;
+
+	if (S_ISDIR(inode->i_mode)) {
+		flags = NFS4_ACL_DIR;
+		dpacl = get_acl(inode, ACL_TYPE_DEFAULT);
+		if (IS_ERR(dpacl)) {
+			error = PTR_ERR(dpacl);
+			goto rel_pacl;
+		}
+
+		if (dpacl)
+			size += 2 * dpacl->a_count;
+	}
+
+	*acl = kmalloc(nfs4_acl_bytes(size), GFP_KERNEL);
+	if (*acl == NULL) {
+		error = -ENOMEM;
+		goto out;
+	}
+	(*acl)->naces = 0;
+
+	_posix_to_nfsv4_one(pacl, *acl, flags & ~NFS4_ACL_TYPE_DEFAULT);
+
+	if (dpacl)
+		_posix_to_nfsv4_one(dpacl, *acl, flags | NFS4_ACL_TYPE_DEFAULT);
+
+out:
+	posix_acl_release(dpacl);
+rel_pacl:
+	posix_acl_release(pacl);
+	return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct posix_acl_summary {
@@ -360,7 +440,10 @@ pace_gt(struct posix_acl_entry *pace1, struct posix_acl_entry *pace2)
 static void
 sort_pacl_range(struct posix_acl *pacl, int start, int end) {
 	int sorted = 0, i;
+<<<<<<< HEAD
 	struct posix_acl_entry tmp;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We just do a bubble sort; easy to do in place, and we're not
 	 * expecting acl's to be long enough to justify anything more. */
@@ -370,9 +453,14 @@ sort_pacl_range(struct posix_acl *pacl, int start, int end) {
 			if (pace_gt(&pacl->a_entries[i],
 				    &pacl->a_entries[i+1])) {
 				sorted = 0;
+<<<<<<< HEAD
 				tmp = pacl->a_entries[i];
 				pacl->a_entries[i] = pacl->a_entries[i+1];
 				pacl->a_entries[i+1] = tmp;
+=======
+				swap(pacl->a_entries[i],
+				     pacl->a_entries[i + 1]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 		}
 	}
@@ -448,7 +536,11 @@ init_state(struct posix_acl_state *state, int cnt)
 	state->empty = 1;
 	/*
 	 * In the worst case, each individual acl could be for a distinct
+<<<<<<< HEAD
 	 * named user or group, but we don't no which, so we allocate
+=======
+	 * named user or group, but we don't know which, so we allocate
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * enough space for either:
 	 */
 	alloc = sizeof(struct posix_ace_state_array)
@@ -475,6 +567,7 @@ static inline void add_to_mask(struct posix_acl_state *state, struct posix_ace_s
 	state->mask.allow |= astate->allow;
 }
 
+<<<<<<< HEAD
 /*
  * Certain bits (SYNCHRONIZE, DELETE, WRITE_OWNER, READ/WRITE_NAMED_ATTRS,
  * READ_ATTRIBUTES, READ_ACL) are currently unenforceable and don't translate
@@ -505,13 +598,19 @@ static inline int check_deny(u32 mask, int isowner)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct posix_acl *
 posix_state_to_acl(struct posix_acl_state *state, unsigned int flags)
 {
 	struct posix_acl_entry *pace;
 	struct posix_acl *pacl;
 	int nace;
+<<<<<<< HEAD
 	int i, error = 0;
+=======
+	int i;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * ACLs with no ACEs are treated differently in the inheritable
@@ -526,24 +625,37 @@ posix_state_to_acl(struct posix_acl_state *state, unsigned int flags)
 	 * up setting a 3-element effective posix ACL with all
 	 * permissions zero.
 	 */
+<<<<<<< HEAD
 	nace = 4 + state->users->n + state->groups->n;
+=======
+	if (!state->users->n && !state->groups->n)
+		nace = 3;
+	else /* Note we also include a MASK ACE in this case: */
+		nace = 4 + state->users->n + state->groups->n;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pacl = posix_acl_alloc(nace, GFP_KERNEL);
 	if (!pacl)
 		return ERR_PTR(-ENOMEM);
 
 	pace = pacl->a_entries;
 	pace->e_tag = ACL_USER_OBJ;
+<<<<<<< HEAD
 	error = check_deny(state->owner.deny, 1);
 	if (error)
 		goto out_err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	low_mode_from_nfs4(state->owner.allow, &pace->e_perm, flags);
 
 	for (i=0; i < state->users->n; i++) {
 		pace++;
 		pace->e_tag = ACL_USER;
+<<<<<<< HEAD
 		error = check_deny(state->users->aces[i].perms.deny, 0);
 		if (error)
 			goto out_err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		low_mode_from_nfs4(state->users->aces[i].perms.allow,
 					&pace->e_perm, flags);
 		pace->e_uid = state->users->aces[i].uid;
@@ -552,24 +664,31 @@ posix_state_to_acl(struct posix_acl_state *state, unsigned int flags)
 
 	pace++;
 	pace->e_tag = ACL_GROUP_OBJ;
+<<<<<<< HEAD
 	error = check_deny(state->group.deny, 0);
 	if (error)
 		goto out_err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	low_mode_from_nfs4(state->group.allow, &pace->e_perm, flags);
 	add_to_mask(state, &state->group);
 
 	for (i=0; i < state->groups->n; i++) {
 		pace++;
 		pace->e_tag = ACL_GROUP;
+<<<<<<< HEAD
 		error = check_deny(state->groups->aces[i].perms.deny, 0);
 		if (error)
 			goto out_err;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		low_mode_from_nfs4(state->groups->aces[i].perms.allow,
 					&pace->e_perm, flags);
 		pace->e_gid = state->groups->aces[i].gid;
 		add_to_mask(state, &state->groups->aces[i].perms);
 	}
 
+<<<<<<< HEAD
 	pace++;
 	pace->e_tag = ACL_MASK;
 	low_mode_from_nfs4(state->mask.allow, &pace->e_perm, flags);
@@ -585,6 +704,19 @@ posix_state_to_acl(struct posix_acl_state *state, unsigned int flags)
 out_err:
 	posix_acl_release(pacl);
 	return ERR_PTR(error);
+=======
+	if (state->users->n || state->groups->n) {
+		pace++;
+		pace->e_tag = ACL_MASK;
+		low_mode_from_nfs4(state->mask.allow, &pace->e_perm, flags);
+	}
+
+	pace++;
+	pace->e_tag = ACL_OTHER;
+	low_mode_from_nfs4(state->other.allow, &pace->e_perm, flags);
+
+	return pacl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void allow_bits(struct posix_ace_state *astate, u32 mask)
@@ -720,8 +852,14 @@ static void process_one_v4_ace(struct posix_acl_state *state,
 	}
 }
 
+<<<<<<< HEAD
 int nfs4_acl_nfsv4_to_posix(struct nfs4_acl *acl, struct posix_acl **pacl,
 			    struct posix_acl **dpacl, unsigned int flags)
+=======
+static int nfs4_acl_nfsv4_to_posix(struct nfs4_acl *acl,
+		struct posix_acl **pacl, struct posix_acl **dpacl,
+		unsigned int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct posix_acl_state effective_acl_state, default_acl_state;
 	struct nfs4_ace *ace;
@@ -781,6 +919,60 @@ out_estate:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+__be32
+nfsd4_set_nfs4_acl(struct svc_rqst *rqstp, struct svc_fh *fhp,
+		struct nfs4_acl *acl)
+{
+	__be32 error;
+	int host_error;
+	struct dentry *dentry;
+	struct inode *inode;
+	struct posix_acl *pacl = NULL, *dpacl = NULL;
+	unsigned int flags = 0;
+
+	/* Get inode */
+	error = fh_verify(rqstp, fhp, 0, NFSD_MAY_SATTR);
+	if (error)
+		return error;
+
+	dentry = fhp->fh_dentry;
+	inode = d_inode(dentry);
+
+	if (S_ISDIR(inode->i_mode))
+		flags = NFS4_ACL_DIR;
+
+	host_error = nfs4_acl_nfsv4_to_posix(acl, &pacl, &dpacl, flags);
+	if (host_error == -EINVAL)
+		return nfserr_attrnotsupp;
+	if (host_error < 0)
+		goto out_nfserr;
+
+	fh_lock(fhp);
+
+	host_error = set_posix_acl(inode, ACL_TYPE_ACCESS, pacl);
+	if (host_error < 0)
+		goto out_drop_lock;
+
+	if (S_ISDIR(inode->i_mode)) {
+		host_error = set_posix_acl(inode, ACL_TYPE_DEFAULT, dpacl);
+	}
+
+out_drop_lock:
+	fh_unlock(fhp);
+
+	posix_acl_release(pacl);
+	posix_acl_release(dpacl);
+out_nfserr:
+	if (host_error == -EOPNOTSUPP)
+		return nfserr_attrnotsupp;
+	else
+		return nfserrno(host_error);
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static short
 ace2type(struct nfs4_ace *ace)
 {
@@ -799,6 +991,7 @@ ace2type(struct nfs4_ace *ace)
 	return -1;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(nfs4_acl_posix_to_nfsv4);
 EXPORT_SYMBOL(nfs4_acl_nfsv4_to_posix);
 
@@ -812,6 +1005,15 @@ nfs4_acl_new(int n)
 		return NULL;
 	acl->naces = 0;
 	return acl;
+=======
+/*
+ * return the size of the struct nfs4_acl required to represent an acl
+ * with @entries entries.
+ */
+int nfs4_acl_bytes(int entries)
+{
+	return sizeof(struct nfs4_acl) + entries * sizeof(struct nfs4_ace);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct {
@@ -849,6 +1051,7 @@ nfs4_acl_get_whotype(char *p, u32 len)
 	return NFS4_ACL_WHO_NAMED;
 }
 
+<<<<<<< HEAD
 int
 nfs4_acl_write_who(int who, char *p)
 {
@@ -867,3 +1070,23 @@ nfs4_acl_write_who(int who, char *p)
 EXPORT_SYMBOL(nfs4_acl_new);
 EXPORT_SYMBOL(nfs4_acl_get_whotype);
 EXPORT_SYMBOL(nfs4_acl_write_who);
+=======
+__be32 nfs4_acl_write_who(struct xdr_stream *xdr, int who)
+{
+	__be32 *p;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(s2t_map); i++) {
+		if (s2t_map[i].type != who)
+			continue;
+		p = xdr_reserve_space(xdr, s2t_map[i].stringlen + 4);
+		if (!p)
+			return nfserr_resource;
+		p = xdr_encode_opaque(p, s2t_map[i].string,
+					s2t_map[i].stringlen);
+		return 0;
+	}
+	WARN_ON_ONCE(1);
+	return nfserr_serverfault;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

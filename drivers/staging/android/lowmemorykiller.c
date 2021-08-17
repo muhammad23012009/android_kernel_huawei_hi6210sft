@@ -32,11 +32,17 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+#include <linux/moduleparam.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/oom.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/rcupdate.h>
 #include <linux/notifier.h>
 #include <linux/swap.h>
@@ -53,12 +59,27 @@
 #endif
 
 static uint32_t lowmem_debug_level = 1;
+=======
+#include <linux/swap.h>
+#include <linux/rcupdate.h>
+#include <linux/profile.h>
+#include <linux/notifier.h>
+
+#define CREATE_TRACE_POINTS
+#include "trace/lowmemorykiller.h"
+
+static u32 lowmem_debug_level = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static short lowmem_adj[6] = {
 	0,
 	1,
 	6,
 	12,
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int lowmem_adj_size = 4;
 static int lowmem_minfree[6] = {
 	3 * 512,	/* 6MB */
@@ -66,6 +87,7 @@ static int lowmem_minfree[6] = {
 	4 * 1024,	/* 16MB */
 	16 * 1024,	/* 64MB */
 };
+<<<<<<< HEAD
 static int lowmem_minfree_size = 4;
 static int lmk_fast_run = 1;
 #ifdef CONFIG_HISI_MULTI_KILL
@@ -90,6 +112,10 @@ static int lmk_timeout_inter = 1;
 
 static ulong lowmem_kill_count;
 static ulong lowmem_free_mem;
+=======
+
+static int lowmem_minfree_size = 4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static unsigned long lowmem_deathpending_timeout;
 
@@ -99,6 +125,7 @@ static unsigned long lowmem_deathpending_timeout;
 			pr_info(x);			\
 	} while (0)
 
+<<<<<<< HEAD
 int can_use_cma_pages(gfp_t gfp_mask)
 {
 	int can_use = 0;
@@ -316,6 +343,22 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	struct task_struct *tsk;
 	struct task_struct *selected = NULL;
 	int rem = 0;
+=======
+static unsigned long lowmem_count(struct shrinker *s,
+				  struct shrink_control *sc)
+{
+	return global_node_page_state(NR_ACTIVE_ANON) +
+		global_node_page_state(NR_ACTIVE_FILE) +
+		global_node_page_state(NR_INACTIVE_ANON) +
+		global_node_page_state(NR_INACTIVE_FILE);
+}
+
+static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
+{
+	struct task_struct *tsk;
+	struct task_struct *selected = NULL;
+	unsigned long rem = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int tasksize;
 	int i;
 	short min_score_adj = OOM_SCORE_ADJ_MAX + 1;
@@ -323,6 +366,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	int selected_tasksize = 0;
 	short selected_oom_score_adj;
 	int array_size = ARRAY_SIZE(lowmem_adj);
+<<<<<<< HEAD
 	int other_free;
 	int other_file;
 	unsigned long nr_to_scan = sc->nr_to_scan;
@@ -342,6 +386,13 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		other_file = 0;
 
 	tune_lmk_param(&other_free, &other_file, sc);
+=======
+	int other_free = global_page_state(NR_FREE_PAGES) - totalreserve_pages;
+	int other_file = global_node_page_state(NR_FILE_PAGES) -
+				global_node_page_state(NR_SHMEM) -
+				global_node_page_state(NR_UNEVICTABLE) -
+				total_swapcache_pages();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (lowmem_adj_size < array_size)
 		array_size = lowmem_adj_size;
@@ -354,6 +405,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 			break;
 		}
 	}
+<<<<<<< HEAD
 	if (nr_to_scan > 0)
 		lowmem_print(3, "lowmem_shrink %lu, %x, ofree %d %d, ma %hd\n",
 				nr_to_scan, sc->gfp_mask, other_free,
@@ -379,6 +431,22 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 #ifdef CONFIG_HISI_MULTI_KILL
 kill_selected:
 #endif
+=======
+
+	lowmem_print(3, "lowmem_scan %lu, %x, ofree %d %d, ma %hd\n",
+		     sc->nr_to_scan, sc->gfp_mask, other_free,
+		     other_file, min_score_adj);
+
+	if (min_score_adj == OOM_SCORE_ADJ_MAX + 1) {
+		lowmem_print(5, "lowmem_scan %lu, %x, return 0\n",
+			     sc->nr_to_scan, sc->gfp_mask);
+		return 0;
+	}
+
+	selected_oom_score_adj = min_score_adj;
+
+	rcu_read_lock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_process(tsk) {
 		struct task_struct *p;
 		short oom_score_adj;
@@ -390,6 +458,7 @@ kill_selected:
 		if (!p)
 			continue;
 
+<<<<<<< HEAD
 		if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
 			if (time_before_eq(jiffies,
 					   lowmem_deathpending_timeout)) {
@@ -411,6 +480,14 @@ kill_selected:
 			}
 		}
 
+=======
+		if (task_lmk_waiting(p) &&
+		    time_before_eq(jiffies, lowmem_deathpending_timeout)) {
+			task_unlock(p);
+			rcu_read_unlock();
+			return 0;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		oom_score_adj = p->signal->oom_score_adj;
 		if (oom_score_adj < min_score_adj) {
 			task_unlock(p);
@@ -434,14 +511,32 @@ kill_selected:
 			     p->comm, p->pid, oom_score_adj, tasksize);
 	}
 	if (selected) {
+<<<<<<< HEAD
 		lowmem_print(1, "Killing '%s' (%d), tgid=%d, adj %hd,\n" \
 				"   to free %ldkB on behalf of '%s' (%d) because\n" \
 				"   cache %ldkB is below limit %ldkB for oom_score_adj %hd\n" \
 				"   Free memory is %ldkB above reserved\n",
+=======
+		long cache_size = other_file * (long)(PAGE_SIZE / 1024);
+		long cache_limit = minfree * (long)(PAGE_SIZE / 1024);
+		long free = other_free * (long)(PAGE_SIZE / 1024);
+
+		task_lock(selected);
+		send_sig(SIGKILL, selected, 0);
+		if (selected->mm)
+			task_set_lmk_waiting(selected);
+		task_unlock(selected);
+		trace_lowmemory_kill(selected, cache_size, cache_limit, free);
+		lowmem_print(1, "Killing '%s' (%d) (tgid %d), adj %hd,\n"
+				 "   to free %ldkB on behalf of '%s' (%d) because\n"
+				 "   cache %ldkB is below limit %ldkB for oom_score_adj %hd\n"
+				 "   Free memory is %ldkB above reserved\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     selected->comm, selected->pid, selected->tgid,
 			     selected_oom_score_adj,
 			     selected_tasksize * (long)(PAGE_SIZE / 1024),
 			     current->comm, current->pid,
+<<<<<<< HEAD
 			     other_file * (long)(PAGE_SIZE / 1024),
 			     minfree * (long)(PAGE_SIZE / 1024),
 			     min_score_adj,
@@ -490,11 +585,28 @@ kill_selected:
 		     nr_to_scan, sc->gfp_mask, rem);
 	rcu_read_unlock();
 	atomic_dec(&atomic_lmk);
+=======
+			     cache_size, cache_limit,
+			     min_score_adj,
+			     free);
+		lowmem_deathpending_timeout = jiffies + HZ;
+		rem += selected_tasksize;
+	}
+
+	lowmem_print(4, "lowmem_scan %lu, %x, return %lu\n",
+		     sc->nr_to_scan, sc->gfp_mask, rem);
+	rcu_read_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rem;
 }
 
 static struct shrinker lowmem_shrinker = {
+<<<<<<< HEAD
 	.shrink = lowmem_shrink,
+=======
+	.scan_objects = lowmem_scan,
+	.count_objects = lowmem_count,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.seeks = DEFAULT_SEEKS * 16
 };
 
@@ -503,11 +615,15 @@ static int __init lowmem_init(void)
 	register_shrinker(&lowmem_shrinker);
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit lowmem_exit(void)
 {
 	unregister_shrinker(&lowmem_shrinker);
 }
+=======
+device_initcall(lowmem_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
 static short lowmem_oom_adj_to_oom_score_adj(short oom_adj)
@@ -546,8 +662,11 @@ static void lowmem_autodetect_oom_adj_values(void)
 		lowmem_adj[i] = oom_score_adj;
 		lowmem_print(1, "oom_adj %d => oom_score_adj %d\n",
 			     oom_adj, oom_score_adj);
+<<<<<<< HEAD
 		lowmem_print(2, "oom_score_adj %d => min memory %d\n",
 			     oom_score_adj, lowmem_minfree[i]);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 }
 
@@ -588,6 +707,7 @@ static const struct kparam_array __param_arr_adj = {
 };
 #endif
 
+<<<<<<< HEAD
 module_param_named(cost, lowmem_shrinker.seeks, int, S_IRUGO | S_IWUSR);
 #ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
 __module_param_call(MODULE_PARAM_PREFIX, adj,
@@ -619,4 +739,22 @@ module_init(lowmem_init);
 module_exit(lowmem_exit);
 
 MODULE_LICENSE("GPL");
+=======
+/*
+ * not really modular, but the easiest way to keep compat with existing
+ * bootargs behaviour is to continue using module_param here.
+ */
+module_param_named(cost, lowmem_shrinker.seeks, int, 0644);
+#ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
+module_param_cb(adj, &lowmem_adj_array_ops,
+		.arr = &__param_arr_adj,
+		0644);
+__MODULE_PARM_TYPE(adj, "array of short");
+#else
+module_param_array_named(adj, lowmem_adj, short, &lowmem_adj_size, 0644);
+#endif
+module_param_array_named(minfree, lowmem_minfree, uint, &lowmem_minfree_size,
+			 0644);
+module_param_named(debug_level, lowmem_debug_level, uint, 0644);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 

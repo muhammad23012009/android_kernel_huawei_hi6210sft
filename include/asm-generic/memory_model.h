@@ -1,6 +1,11 @@
 #ifndef __ASM_MEMORY_MODEL_H
 #define __ASM_MEMORY_MODEL_H
 
+<<<<<<< HEAD
+=======
+#include <linux/pfn.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __ASSEMBLY__
 
 #if defined(CONFIG_FLATMEM)
@@ -53,7 +58,11 @@
 
 #elif defined(CONFIG_SPARSEMEM)
 /*
+<<<<<<< HEAD
  * Note: section's mem_map is encorded to reflect its start_pfn.
+=======
+ * Note: section's mem_map is encoded to reflect its start_pfn.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * section[i].section_mem_map == mem_map's address - start_pfn;
  */
 #define __page_to_pfn(pg)					\
@@ -69,6 +78,15 @@
 })
 #endif /* CONFIG_FLATMEM/DISCONTIGMEM/SPARSEMEM */
 
+<<<<<<< HEAD
+=======
+/*
+ * Convert a physical address to a Page Frame Number and back
+ */
+#define	__phys_to_pfn(paddr)	PHYS_PFN(paddr)
+#define	__pfn_to_phys(pfn)	PFN_PHYS(pfn)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define page_to_pfn __page_to_pfn
 #define pfn_to_page __pfn_to_page
 

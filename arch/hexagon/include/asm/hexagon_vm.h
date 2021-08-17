@@ -55,6 +55,7 @@
 #ifndef __ASSEMBLY__
 
 enum VM_CACHE_OPS {
+<<<<<<< HEAD
 	ickill,
 	dckill,
 	l2kill,
@@ -76,6 +77,29 @@ enum VM_INT_OPS {
 	status,
 	post,
 	clear
+=======
+	hvmc_ickill,
+	hvmc_dckill,
+	hvmc_l2kill,
+	hvmc_dccleaninva,
+	hvmc_icinva,
+	hvmc_idsync,
+	hvmc_fetch_cfg
+};
+
+enum VM_INT_OPS {
+	hvmi_nop,
+	hvmi_globen,
+	hvmi_globdis,
+	hvmi_locen,
+	hvmi_locdis,
+	hvmi_affinity,
+	hvmi_get,
+	hvmi_peek,
+	hvmi_status,
+	hvmi_post,
+	hvmi_clear
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 extern void _K_VM_event_vector(void);
@@ -98,95 +122,167 @@ long __vmvpid(void);
 
 static inline long __vmcache_ickill(void)
 {
+<<<<<<< HEAD
 	return __vmcache(ickill, 0, 0);
+=======
+	return __vmcache(hvmc_ickill, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmcache_dckill(void)
 {
+<<<<<<< HEAD
 	return __vmcache(dckill, 0, 0);
+=======
+	return __vmcache(hvmc_dckill, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmcache_l2kill(void)
 {
+<<<<<<< HEAD
 	return __vmcache(l2kill, 0, 0);
+=======
+	return __vmcache(hvmc_l2kill, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmcache_dccleaninva(unsigned long addr, unsigned long len)
 {
+<<<<<<< HEAD
 	return __vmcache(dccleaninva, addr, len);
+=======
+	return __vmcache(hvmc_dccleaninva, addr, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmcache_icinva(unsigned long addr, unsigned long len)
 {
+<<<<<<< HEAD
 	return __vmcache(icinva, addr, len);
+=======
+	return __vmcache(hvmc_icinva, addr, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmcache_idsync(unsigned long addr,
 					   unsigned long len)
 {
+<<<<<<< HEAD
 	return __vmcache(idsync, addr, len);
+=======
+	return __vmcache(hvmc_idsync, addr, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmcache_fetch_cfg(unsigned long val)
 {
+<<<<<<< HEAD
 	return __vmcache(fetch_cfg, val, 0);
+=======
+	return __vmcache(hvmc_fetch_cfg, val, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* interrupt operations  */
 
 static inline long __vmintop_nop(void)
 {
+<<<<<<< HEAD
 	return __vmintop(nop, 0, 0, 0, 0);
+=======
+	return __vmintop(hvmi_nop, 0, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_globen(long i)
 {
+<<<<<<< HEAD
 	return __vmintop(globen, i, 0, 0, 0);
+=======
+	return __vmintop(hvmi_globen, i, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_globdis(long i)
 {
+<<<<<<< HEAD
 	return __vmintop(globdis, i, 0, 0, 0);
+=======
+	return __vmintop(hvmi_globdis, i, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_locen(long i)
 {
+<<<<<<< HEAD
 	return __vmintop(locen, i, 0, 0, 0);
+=======
+	return __vmintop(hvmi_locen, i, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_locdis(long i)
 {
+<<<<<<< HEAD
 	return __vmintop(locdis, i, 0, 0, 0);
+=======
+	return __vmintop(hvmi_locdis, i, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_affinity(long i, long cpu)
 {
+<<<<<<< HEAD
 	return __vmintop(locdis, i, cpu, 0, 0);
+=======
+	return __vmintop(hvmi_affinity, i, cpu, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_get(void)
 {
+<<<<<<< HEAD
 	return __vmintop(get, 0, 0, 0, 0);
+=======
+	return __vmintop(hvmi_get, 0, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_peek(void)
 {
+<<<<<<< HEAD
 	return __vmintop(peek, 0, 0, 0, 0);
+=======
+	return __vmintop(hvmi_peek, 0, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_status(long i)
 {
+<<<<<<< HEAD
 	return __vmintop(status, i, 0, 0, 0);
+=======
+	return __vmintop(hvmi_status, i, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_post(long i)
 {
+<<<<<<< HEAD
 	return __vmintop(post, i, 0, 0, 0);
+=======
+	return __vmintop(hvmi_post, i, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline long __vmintop_clear(long i)
 {
+<<<<<<< HEAD
 	return __vmintop(clear, i, 0, 0, 0);
+=======
+	return __vmintop(hvmi_clear, i, 0, 0, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #else /* Only assembly code should reference these */
@@ -237,7 +333,11 @@ static inline long __vmintop_clear(long i)
 
 /*
  * The initial program gets to find a system environment descriptor
+<<<<<<< HEAD
  * on its stack when it begins exection. The first word is a version
+=======
+ * on its stack when it begins execution. The first word is a version
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * code to indicate what is there.  Zero means nothing more.
  */
 

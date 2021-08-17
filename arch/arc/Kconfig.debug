@@ -2,6 +2,7 @@ menu "Kernel hacking"
 
 source "lib/Kconfig.debug"
 
+<<<<<<< HEAD
 config EARLY_PRINTK
 	bool "Early printk" if EMBEDDED
 	default y
@@ -22,6 +23,8 @@ config DEBUG_STACKOVERFLOW
 	  This option will cause messages to be printed if free stack space
 	  drops below a certain limit.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config 16KSTACKS
 	bool "Use 16Kb for kernel stacks instead of 8Kb"
 	help

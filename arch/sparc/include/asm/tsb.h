@@ -133,15 +133,37 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	sub	TSB, 0x8, TSB;   \
 	TSB_STORE(TSB, TAG);
 
+<<<<<<< HEAD
 	/* Do a kernel page table walk.  Leaves physical PTE pointer in
 	 * REG1.  Jumps to FAIL_LABEL on early page table walk termination.
 	 * VADDR will not be clobbered, but REG2 will.
+=======
+	/* Do a kernel page table walk.  Leaves valid PTE value in
+	 * REG1.  Jumps to FAIL_LABEL on early page table walk
+	 * termination.  VADDR will not be clobbered, but REG2 will.
+	 *
+	 * There are two masks we must apply to propagate bits from
+	 * the virtual address into the PTE physical address field
+	 * when dealing with huge pages.  This is because the page
+	 * table boundaries do not match the huge page size(s) the
+	 * hardware supports.
+	 *
+	 * In these cases we propagate the bits that are below the
+	 * page table level where we saw the huge page mapping, but
+	 * are still within the relevant physical bits for the huge
+	 * page size in question.  So for PMD mappings (which fall on
+	 * bit 23, for 8MB per PMD) we must propagate bit 22 for a
+	 * 4MB huge page.  For huge PUDs (which fall on bit 33, for
+	 * 8GB per PUD), we have to accommodate 256MB and 2GB huge
+	 * pages.  So for those we propagate bits 32 to 28.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 #define KERN_PGTABLE_WALK(VADDR, REG1, REG2, FAIL_LABEL)	\
 	sethi		%hi(swapper_pg_dir), REG1; \
 	or		REG1, %lo(swapper_pg_dir), REG1; \
 	sllx		VADDR, 64 - (PGDIR_SHIFT + PGDIR_BITS), REG2; \
 	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+<<<<<<< HEAD
 	andn		REG2, 0x3, REG2; \
 	lduw		[REG1 + REG2], REG1; \
 	brz,pn		REG1, FAIL_LABEL; \
@@ -190,12 +212,52 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	.word		661b;						   \
 	or		REG, _PAGE_CP_4V|_PAGE_CV_4V|_PAGE_SZHUGE_4V, REG; \
 	.previous;
+=======
+	andn		REG2, 0x7, REG2; \
+	ldx		[REG1 + REG2], REG1; \
+	brz,pn		REG1, FAIL_LABEL; \
+	 sllx		VADDR, 64 - (PUD_SHIFT + PUD_BITS), REG2; \
+	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+	andn		REG2, 0x7, REG2; \
+	ldxa		[REG1 + REG2] ASI_PHYS_USE_EC, REG1; \
+	brz,pn		REG1, FAIL_LABEL; \
+	sethi		%uhi(_PAGE_PUD_HUGE), REG2; \
+	brz,pn		REG1, FAIL_LABEL; \
+	 sllx		REG2, 32, REG2; \
+	andcc		REG1, REG2, %g0; \
+	sethi		%hi(0xf8000000), REG2; \
+	bne,pt		%xcc, 697f; \
+	 sllx		REG2, 1, REG2; \
+	sllx		VADDR, 64 - (PMD_SHIFT + PMD_BITS), REG2; \
+	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+	andn		REG2, 0x7, REG2; \
+	ldxa		[REG1 + REG2] ASI_PHYS_USE_EC, REG1; \
+	sethi		%uhi(_PAGE_PMD_HUGE), REG2; \
+	brz,pn		REG1, FAIL_LABEL; \
+	 sllx		REG2, 32, REG2; \
+	andcc		REG1, REG2, %g0; \
+	be,pn		%xcc, 698f; \
+	 sethi		%hi(0x400000), REG2; \
+697:	brgez,pn	REG1, FAIL_LABEL; \
+	 andn		REG1, REG2, REG1; \
+	and		VADDR, REG2, REG2; \
+	ba,pt		%xcc, 699f; \
+	 or		REG1, REG2, REG1; \
+698:	sllx		VADDR, 64 - PMD_SHIFT, REG2; \
+	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+	andn		REG2, 0x7, REG2; \
+	ldxa		[REG1 + REG2] ASI_PHYS_USE_EC, REG1; \
+	brgez,pn	REG1, FAIL_LABEL; \
+	 nop; \
+699:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* PMD has been loaded into REG1, interpret the value, seeing
 	 * if it is a HUGE PMD or a normal one.  If it is not valid
 	 * then jump to FAIL_LABEL.  If it is a HUGE PMD, and it
 	 * translates to a valid PTE, branch to PTE_LABEL.
 	 *
+<<<<<<< HEAD
 	 * We translate the PMD by hand, one bit at a time,
 	 * constructing the huge PTE.
 	 *
@@ -234,6 +296,24 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 1:	BUILD_PTE_VALID_SZHUGE_CACHE(REG1);				      \
 	ba,pt		%xcc, PTE_LABEL;				      \
 	 or		REG1, REG2, REG1;				      \
+=======
+	 * We have to propagate the 4MB bit of the virtual address
+	 * because we are fabricating 8MB pages using 4MB hw pages.
+	 */
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+#define USER_PGTABLE_CHECK_PMD_HUGE(VADDR, REG1, REG2, FAIL_LABEL, PTE_LABEL) \
+	brz,pn		REG1, FAIL_LABEL;		\
+	 sethi		%uhi(_PAGE_PMD_HUGE), REG2;	\
+	sllx		REG2, 32, REG2;			\
+	andcc		REG1, REG2, %g0;		\
+	be,pt		%xcc, 700f;			\
+	 sethi		%hi(4 * 1024 * 1024), REG2;	\
+	brgez,pn	REG1, FAIL_LABEL;		\
+	 andn		REG1, REG2, REG1;		\
+	and		VADDR, REG2, REG2;		\
+	brlz,pt		REG1, PTE_LABEL;		\
+	 or		REG1, REG2, REG1;		\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 700:
 #else
 #define USER_PGTABLE_CHECK_PMD_HUGE(VADDR, REG1, REG2, FAIL_LABEL, PTE_LABEL) \
@@ -253,6 +333,7 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 #define USER_PGTABLE_WALK_TL1(VADDR, PHYS_PGD, REG1, REG2, FAIL_LABEL)	\
 	sllx		VADDR, 64 - (PGDIR_SHIFT + PGDIR_BITS), REG2; \
 	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+<<<<<<< HEAD
 	andn		REG2, 0x3, REG2; \
 	lduwa		[PHYS_PGD + REG2] ASI_PHYS_USE_EC, REG1; \
 	brz,pn		REG1, FAIL_LABEL; \
@@ -265,6 +346,23 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	sllx		VADDR, 64 - PMD_SHIFT, REG2; \
 	srlx		REG2, 64 - (PAGE_SHIFT - 1), REG2; \
 	sllx		REG1, PMD_PADDR_SHIFT, REG1; \
+=======
+	andn		REG2, 0x7, REG2; \
+	ldxa		[PHYS_PGD + REG2] ASI_PHYS_USE_EC, REG1; \
+	brz,pn		REG1, FAIL_LABEL; \
+	 sllx		VADDR, 64 - (PUD_SHIFT + PUD_BITS), REG2; \
+	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+	andn		REG2, 0x7, REG2; \
+	ldxa		[REG1 + REG2] ASI_PHYS_USE_EC, REG1; \
+	brz,pn		REG1, FAIL_LABEL; \
+	 sllx		VADDR, 64 - (PMD_SHIFT + PMD_BITS), REG2; \
+	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+	andn		REG2, 0x7, REG2; \
+	ldxa		[REG1 + REG2] ASI_PHYS_USE_EC, REG1; \
+	USER_PGTABLE_CHECK_PMD_HUGE(VADDR, REG1, REG2, FAIL_LABEL, 800f) \
+	sllx		VADDR, 64 - PMD_SHIFT, REG2; \
+	srlx		REG2, 64 - PAGE_SHIFT, REG2; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	andn		REG2, 0x7, REG2; \
 	add		REG1, REG2, REG1; \
 	ldxa		[REG1] ASI_PHYS_USE_EC, REG1; \
@@ -306,8 +404,11 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	(KERNEL_TSB_SIZE_BYTES / 16)
 #define KERNEL_TSB4M_NENTRIES	4096
 
+<<<<<<< HEAD
 #define KTSB_PHYS_SHIFT		15
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Do a kernel TSB lookup at tl>0 on VADDR+TAG, branch to OK_LABEL
 	 * on TSB hit.  REG1, REG2, REG3, and REG4 are used as temporaries
 	 * and the found TTE will be left in REG1.  REG3 and REG4 must
@@ -316,6 +417,7 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	 * VADDR and TAG will be preserved and not clobbered by this macro.
 	 */
 #define KERN_TSB_LOOKUP_TL1(VADDR, TAG, REG1, REG2, REG3, REG4, OK_LABEL) \
+<<<<<<< HEAD
 661:	sethi		%hi(swapper_tsb), REG1;			\
 	or		REG1, %lo(swapper_tsb), REG1; \
 	.section	.swapper_tsb_phys_patch, "ax"; \
@@ -327,6 +429,17 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
 	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
 	.previous; \
+=======
+661:	sethi		%uhi(swapper_tsb), REG1; \
+	sethi		%hi(swapper_tsb), REG2; \
+	or		REG1, %ulo(swapper_tsb), REG1; \
+	or		REG2, %lo(swapper_tsb), REG2; \
+	.section	.swapper_tsb_phys_patch, "ax"; \
+	.word		661b; \
+	.previous; \
+	sllx		REG1, 32, REG1; \
+	or		REG1, REG2, REG1; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	srlx		VADDR, PAGE_SHIFT, REG2; \
 	and		REG2, (KERNEL_TSB_NENTRIES - 1), REG2; \
 	sllx		REG2, 4, REG2; \
@@ -341,6 +454,7 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	 * we can make use of that for the index computation.
 	 */
 #define KERN_TSB4M_LOOKUP_TL1(TAG, REG1, REG2, REG3, REG4, OK_LABEL) \
+<<<<<<< HEAD
 661:	sethi		%hi(swapper_4m_tsb), REG1;	     \
 	or		REG1, %lo(swapper_4m_tsb), REG1; \
 	.section	.swapper_4m_tsb_phys_patch, "ax"; \
@@ -352,6 +466,17 @@ extern struct tsb_phys_patch_entry __tsb_phys_patch, __tsb_phys_patch_end;
 	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
 	sllx		REG1, KTSB_PHYS_SHIFT, REG1; \
 	.previous; \
+=======
+661:	sethi		%uhi(swapper_4m_tsb), REG1; \
+	sethi		%hi(swapper_4m_tsb), REG2; \
+	or		REG1, %ulo(swapper_4m_tsb), REG1; \
+	or		REG2, %lo(swapper_4m_tsb), REG2; \
+	.section	.swapper_4m_tsb_phys_patch, "ax"; \
+	.word		661b; \
+	.previous; \
+	sllx		REG1, 32, REG1; \
+	or		REG1, REG2, REG1; \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	and		TAG, (KERNEL_TSB4M_NENTRIES - 1), REG2; \
 	sllx		REG2, 4, REG2; \
 	add		REG1, REG2, REG2; \

@@ -23,26 +23,39 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/errno.h>
 #include <linux/stddef.h>
 #include <linux/i2c.h>
 #include <linux/io.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 #include <linux/of_i2c.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_device.h>
+#include <linux/of_irq.h>
+#include <linux/of_platform.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sysdev/fsl_soc.h>
 #include <asm/cpm.h>
 
@@ -78,6 +91,12 @@ struct i2c_ram {
 	char    res1[4];	/* Reserved */
 	ushort  rpbase;		/* Relocation pointer */
 	char    res2[2];	/* Reserved */
+<<<<<<< HEAD
+=======
+	/* The following elements are only for CPM2 */
+	char    res3[4];	/* Reserved */
+	uint    sdmatmp;	/* Internal */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define I2COM_START	0x80
@@ -201,9 +220,13 @@ static void cpm_i2c_parse_message(struct i2c_adapter *adap,
 	tbdf = cpm->tbase + tx;
 	rbdf = cpm->rbase + rx;
 
+<<<<<<< HEAD
 	addr = pmsg->addr << 1;
 	if (pmsg->flags & I2C_M_RD)
 		addr |= 1;
+=======
+	addr = i2c_8bit_addr_from_msg(pmsg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tb = cpm->txbuf[tx];
 	rb = cpm->rxbuf[rx];
@@ -312,12 +335,17 @@ static int cpm_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	struct i2c_reg __iomem *i2c_reg = cpm->i2c_reg;
 	struct i2c_ram __iomem *i2c_ram = cpm->i2c_ram;
 	struct i2c_msg *pmsg;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int tptr;
 	int rptr;
 	cbd_t __iomem *tbdf;
 	cbd_t __iomem *rbdf;
 
+<<<<<<< HEAD
 	if (num > CPM_MAXBD)
 		return -EINVAL;
 
@@ -328,6 +356,8 @@ static int cpm_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 			return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Reset to use first buffer */
 	out_be16(&i2c_ram->rbptr, in_be16(&i2c_ram->rbase));
 	out_be16(&i2c_ram->tbptr, in_be16(&i2c_ram->tbase));
@@ -338,6 +368,17 @@ static int cpm_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	tptr = 0;
 	rptr = 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If there was a collision in the last i2c transaction,
+	 * Set I2COM_MASTER as it was cleared during collision.
+	 */
+	if (in_be16(&tbdf->cbd_sc) & BD_SC_CL) {
+		out_8(&cpm->i2c_reg->i2com, I2COM_MASTER);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (tptr < num) {
 		pmsg = &msgs[tptr];
 		dev_dbg(&adap->dev, "R: %d T: %d\n", rptr, tptr);
@@ -420,10 +461,24 @@ static const struct i2c_algorithm cpm_i2c_algo = {
 	.functionality = cpm_i2c_func,
 };
 
+<<<<<<< HEAD
+=======
+/* CPM_MAX_READ is also limiting writes according to the code! */
+static struct i2c_adapter_quirks cpm_i2c_quirks = {
+	.max_num_msgs = CPM_MAXBD,
+	.max_read_len = CPM_MAX_READ,
+	.max_write_len = CPM_MAX_READ,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct i2c_adapter cpm_ops = {
 	.owner		= THIS_MODULE,
 	.name		= "i2c-cpm",
 	.algo		= &cpm_i2c_algo,
+<<<<<<< HEAD
+=======
+	.quirks		= &cpm_i2c_quirks,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int cpm_i2c_setup(struct cpm_i2c *cpm)
@@ -440,7 +495,11 @@ static int cpm_i2c_setup(struct cpm_i2c *cpm)
 
 	init_waitqueue_head(&cpm->i2c_wait);
 
+<<<<<<< HEAD
 	cpm->irq = of_irq_to_resource(ofdev->dev.of_node, 0, NULL);
+=======
+	cpm->irq = irq_of_parse_and_map(ofdev->dev.of_node, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!cpm->irq)
 		return -EINVAL;
 
@@ -646,7 +705,11 @@ static int cpm_i2c_probe(struct platform_device *ofdev)
 
 	cpm->ofdev = ofdev;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, cpm);
+=======
+	platform_set_drvdata(ofdev, cpm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cpm->adap = cpm_ops;
 	i2c_set_adapdata(&cpm->adap, cpm);
@@ -665,19 +728,27 @@ static int cpm_i2c_probe(struct platform_device *ofdev)
 	cpm->adap.nr = (data && len == 4) ? be32_to_cpup(data) : -1;
 	result = i2c_add_numbered_adapter(&cpm->adap);
 
+<<<<<<< HEAD
 	if (result < 0) {
 		dev_err(&ofdev->dev, "Unable to register with I2C\n");
 		goto out_shut;
 	}
+=======
+	if (result < 0)
+		goto out_shut;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_dbg(&ofdev->dev, "hw routines for %s registered.\n",
 		cpm->adap.name);
 
+<<<<<<< HEAD
 	/*
 	 * register OF I2C devices
 	 */
 	of_i2c_register_devices(&cpm->adap);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 out_shut:
 	cpm_i2c_shutdown(cpm);
@@ -689,7 +760,11 @@ out_free:
 
 static int cpm_i2c_remove(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct cpm_i2c *cpm = dev_get_drvdata(&ofdev->dev);
+=======
+	struct cpm_i2c *cpm = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	i2c_del_adapter(&cpm->adap);
 
@@ -717,7 +792,10 @@ static struct platform_driver cpm_i2c_driver = {
 	.remove		= cpm_i2c_remove,
 	.driver = {
 		.name = "fsl-i2c-cpm",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = cpm_i2c_match,
 	},
 };

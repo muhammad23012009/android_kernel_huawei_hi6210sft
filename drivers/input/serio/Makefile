@@ -27,3 +27,10 @@ obj-$(CONFIG_SERIO_XILINX_XPS_PS2)	+= xilinx_ps2.o
 obj-$(CONFIG_SERIO_ALTERA_PS2)	+= altera_ps2.o
 obj-$(CONFIG_SERIO_ARC_PS2)	+= arc_ps2.o
 obj-$(CONFIG_SERIO_APBPS2)	+= apbps2.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SERIO_OLPC_APSP)	+= olpc_apsp.o
+obj-$(CONFIG_HYPERV_KEYBOARD)	+= hyperv-keyboard.o
+obj-$(CONFIG_SERIO_SUN4I_PS2)	+= sun4i-ps2.o
+obj-$(CONFIG_USERIO)		+= userio.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

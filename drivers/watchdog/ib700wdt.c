@@ -277,7 +277,11 @@ static struct miscdevice ibwdt_miscdev = {
  *	Init & exit routines
  */
 
+<<<<<<< HEAD
 static int ibwdt_probe(struct platform_device *dev)
+=======
+static int __init ibwdt_probe(struct platform_device *dev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int res;
 
@@ -336,11 +340,17 @@ static void ibwdt_shutdown(struct platform_device *dev)
 }
 
 static struct platform_driver ibwdt_driver = {
+<<<<<<< HEAD
 	.probe		= ibwdt_probe,
 	.remove		= ibwdt_remove,
 	.shutdown	= ibwdt_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.remove		= ibwdt_remove,
+	.shutdown	= ibwdt_shutdown,
+	.driver		= {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= DRV_NAME,
 	},
 };
@@ -351,6 +361,7 @@ static int __init ibwdt_init(void)
 
 	pr_info("WDT driver for IB700 single board computer initialising\n");
 
+<<<<<<< HEAD
 	err = platform_driver_register(&ibwdt_driver);
 	if (err)
 		return err;
@@ -366,6 +377,21 @@ static int __init ibwdt_init(void)
 
 unreg_platform_driver:
 	platform_driver_unregister(&ibwdt_driver);
+=======
+	ibwdt_platform_device = platform_device_register_simple(DRV_NAME,
+								-1, NULL, 0);
+	if (IS_ERR(ibwdt_platform_device))
+		return PTR_ERR(ibwdt_platform_device);
+
+	err = platform_driver_probe(&ibwdt_driver, ibwdt_probe);
+	if (err)
+		goto unreg_platform_device;
+
+	return 0;
+
+unreg_platform_device:
+	platform_device_unregister(ibwdt_platform_device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -382,6 +408,9 @@ module_exit(ibwdt_exit);
 MODULE_AUTHOR("Charles Howes <chowes@vsol.net>");
 MODULE_DESCRIPTION("IB700 SBC watchdog driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* end of ib700wdt.c */

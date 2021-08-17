@@ -4,7 +4,12 @@ saa7134-y +=	saa7134-ts.o saa7134-tvaudio.o saa7134-vbi.o
 saa7134-y +=	saa7134-video.o
 saa7134-$(CONFIG_VIDEO_SAA7134_RC) += saa7134-input.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_VIDEO_SAA7134) +=  saa6752hs.o saa7134.o saa7134-empress.o
+=======
+obj-$(CONFIG_VIDEO_SAA7134) +=  saa7134.o saa7134-empress.o
+obj-$(CONFIG_VIDEO_SAA7134_GO7007) += saa7134-go7007.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_VIDEO_SAA7134_ALSA) += saa7134-alsa.o
 
@@ -14,3 +19,7 @@ ccflags-y += -I$(srctree)/drivers/media/i2c
 ccflags-y += -I$(srctree)/drivers/media/tuners
 ccflags-y += -I$(srctree)/drivers/media/dvb-core
 ccflags-y += -I$(srctree)/drivers/media/dvb-frontends
+<<<<<<< HEAD
+=======
+ccflags-y += -I$(srctree)/drivers/media/usb/go7007
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

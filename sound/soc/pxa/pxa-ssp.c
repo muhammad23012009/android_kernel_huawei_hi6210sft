@@ -21,6 +21,11 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/pxa2xx_ssp.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/dmaengine.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/irq.h>
 
@@ -30,9 +35,13 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 #include <sound/pxa2xx-lib.h>
+<<<<<<< HEAD
 
 #include <mach/hardware.h>
 #include <mach/dma.h>
+=======
+#include <sound/dmaengine_pcm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "../../arm/pxa2xx-pcm.h"
 #include "pxa-ssp.h"
@@ -79,6 +88,7 @@ static void pxa_ssp_disable(struct ssp_device *ssp)
 	__raw_writel(sscr0, ssp->mmio_base + SSCR0);
 }
 
+<<<<<<< HEAD
 struct pxa2xx_pcm_dma_data {
 	struct pxa2xx_pcm_dma_params params;
 	char name[20];
@@ -100,6 +110,15 @@ static void pxa_ssp_set_dma_params(struct ssp_device *ssp, int width4,
 				  (DCMD_INCTRGADDR | DCMD_FLOWSRC)) |
 			(width4 ? DCMD_WIDTH4 : DCMD_WIDTH2) | DCMD_BURST16;
 	dma->params.dev_addr = ssp->phys_base + SSDR;
+=======
+static void pxa_ssp_set_dma_params(struct ssp_device *ssp, int width4,
+			int out, struct snd_dmaengine_dai_dma_data *dma)
+{
+	dma->addr_width = width4 ? DMA_SLAVE_BUSWIDTH_4_BYTES :
+				   DMA_SLAVE_BUSWIDTH_2_BYTES;
+	dma->maxburst = 16;
+	dma->addr = ssp->phys_base + SSDR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int pxa_ssp_startup(struct snd_pcm_substream *substream,
@@ -107,6 +126,7 @@ static int pxa_ssp_startup(struct snd_pcm_substream *substream,
 {
 	struct ssp_priv *priv = snd_soc_dai_get_drvdata(cpu_dai);
 	struct ssp_device *ssp = priv->ssp;
+<<<<<<< HEAD
 	struct pxa2xx_pcm_dma_data *dma;
 	int ret = 0;
 
@@ -119,6 +139,24 @@ static int pxa_ssp_startup(struct snd_pcm_substream *substream,
 	if (!dma)
 		return -ENOMEM;
 	snd_soc_dai_set_dma_data(cpu_dai, substream, &dma->params);
+=======
+	struct snd_dmaengine_dai_dma_data *dma;
+	int ret = 0;
+
+	if (!cpu_dai->active) {
+		clk_prepare_enable(ssp->clk);
+		pxa_ssp_disable(ssp);
+	}
+
+	dma = kzalloc(sizeof(struct snd_dmaengine_dai_dma_data), GFP_KERNEL);
+	if (!dma)
+		return -ENOMEM;
+
+	dma->filter_data = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ?
+				&ssp->drcmr_tx : &ssp->drcmr_rx;
+
+	snd_soc_dai_set_dma_data(cpu_dai, substream, dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -131,7 +169,11 @@ static void pxa_ssp_shutdown(struct snd_pcm_substream *substream,
 
 	if (!cpu_dai->active) {
 		pxa_ssp_disable(ssp);
+<<<<<<< HEAD
 		clk_disable(ssp->clk);
+=======
+		clk_disable_unprepare(ssp->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	kfree(snd_soc_dai_get_dma_data(cpu_dai, substream));
@@ -146,7 +188,11 @@ static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
 	struct ssp_device *ssp = priv->ssp;
 
 	if (!cpu_dai->active)
+<<<<<<< HEAD
 		clk_enable(ssp->clk);
+=======
+		clk_prepare_enable(ssp->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	priv->cr0 = __raw_readl(ssp->mmio_base + SSCR0);
 	priv->cr1 = __raw_readl(ssp->mmio_base + SSCR1);
@@ -154,7 +200,11 @@ static int pxa_ssp_suspend(struct snd_soc_dai *cpu_dai)
 	priv->psp = __raw_readl(ssp->mmio_base + SSPSP);
 
 	pxa_ssp_disable(ssp);
+<<<<<<< HEAD
 	clk_disable(ssp->clk);
+=======
+	clk_disable_unprepare(ssp->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -164,7 +214,11 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
 	struct ssp_device *ssp = priv->ssp;
 	uint32_t sssr = SSSR_ROR | SSSR_TUR | SSSR_BCE;
 
+<<<<<<< HEAD
 	clk_enable(ssp->clk);
+=======
+	clk_prepare_enable(ssp->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__raw_writel(sssr, ssp->mmio_base + SSSR);
 	__raw_writel(priv->cr0 & ~SSCR0_SSE, ssp->mmio_base + SSCR0);
@@ -175,7 +229,11 @@ static int pxa_ssp_resume(struct snd_soc_dai *cpu_dai)
 	if (cpu_dai->active)
 		pxa_ssp_enable(ssp);
 	else
+<<<<<<< HEAD
 		clk_disable(ssp->clk);
+=======
+		clk_disable_unprepare(ssp->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -266,11 +324,19 @@ static int pxa_ssp_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 	/* The SSP clock must be disabled when changing SSP clock mode
 	 * on PXA2xx.  On PXA3xx it must be enabled when doing so. */
 	if (ssp->type != PXA3xx_SSP)
+<<<<<<< HEAD
 		clk_disable(ssp->clk);
 	val = pxa_ssp_read_reg(ssp, SSCR0) | sscr0;
 	pxa_ssp_write_reg(ssp, SSCR0, val);
 	if (ssp->type != PXA3xx_SSP)
 		clk_enable(ssp->clk);
+=======
+		clk_disable_unprepare(ssp->clk);
+	val = pxa_ssp_read_reg(ssp, SSCR0) | sscr0;
+	pxa_ssp_write_reg(ssp, SSCR0, val);
+	if (ssp->type != PXA3xx_SSP)
+		clk_prepare_enable(ssp->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -559,7 +625,11 @@ static int pxa_ssp_hw_params(struct snd_pcm_substream *substream,
 	u32 sspsp;
 	int width = snd_pcm_format_physical_width(params_format(params));
 	int ttsa = pxa_ssp_read_reg(ssp, SSTSA) & 0xf;
+<<<<<<< HEAD
 	struct pxa2xx_pcm_dma_params *dma_data;
+=======
+	struct snd_dmaengine_dai_dma_data *dma_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dma_data = snd_soc_dai_get_dma_data(cpu_dai, substream);
 
@@ -719,6 +789,10 @@ static int pxa_ssp_trigger(struct snd_pcm_substream *substream, int cmd,
 
 static int pxa_ssp_probe(struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = dai->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct ssp_priv *priv;
 	int ret;
 
@@ -726,10 +800,34 @@ static int pxa_ssp_probe(struct snd_soc_dai *dai)
 	if (!priv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	priv->ssp = pxa_ssp_request(dai->id + 1, "SoC audio");
 	if (priv->ssp == NULL) {
 		ret = -ENODEV;
 		goto err_priv;
+=======
+	if (dev->of_node) {
+		struct device_node *ssp_handle;
+
+		ssp_handle = of_parse_phandle(dev->of_node, "port", 0);
+		if (!ssp_handle) {
+			dev_err(dev, "unable to get 'port' phandle\n");
+			ret = -ENODEV;
+			goto err_priv;
+		}
+
+		priv->ssp = pxa_ssp_request_of(ssp_handle, "SoC audio");
+		if (priv->ssp == NULL) {
+			ret = -ENODEV;
+			goto err_priv;
+		}
+	} else {
+		priv->ssp = pxa_ssp_request(dai->id + 1, "SoC audio");
+		if (priv->ssp == NULL) {
+			ret = -ENODEV;
+			goto err_priv;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	priv->dai_fmt = (unsigned int) -1;
@@ -796,6 +894,7 @@ static const struct snd_soc_component_driver pxa_ssp_component = {
 	.name		= "pxa-ssp",
 };
 
+<<<<<<< HEAD
 static int asoc_ssp_probe(struct platform_device *pdev)
 {
 	return snd_soc_register_component(&pdev->dev, &pxa_ssp_component,
@@ -806,16 +905,38 @@ static int asoc_ssp_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_component(&pdev->dev);
 	return 0;
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id pxa_ssp_of_ids[] = {
+	{ .compatible = "mrvl,pxa-ssp-dai" },
+	{}
+};
+MODULE_DEVICE_TABLE(of, pxa_ssp_of_ids);
+#endif
+
+static int asoc_ssp_probe(struct platform_device *pdev)
+{
+	return devm_snd_soc_register_component(&pdev->dev, &pxa_ssp_component,
+					       &pxa_ssp_dai, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct platform_driver asoc_ssp_driver = {
 	.driver = {
+<<<<<<< HEAD
 			.name = "pxa-ssp-dai",
 			.owner = THIS_MODULE,
 	},
 
 	.probe = asoc_ssp_probe,
 	.remove = asoc_ssp_remove,
+=======
+		.name = "pxa-ssp-dai",
+		.of_match_table = of_match_ptr(pxa_ssp_of_ids),
+	},
+
+	.probe = asoc_ssp_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(asoc_ssp_driver);
@@ -824,3 +945,7 @@ module_platform_driver(asoc_ssp_driver);
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("PXA SSP/PCM SoC Interface");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:pxa-ssp-dai");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

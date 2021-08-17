@@ -154,20 +154,38 @@ static int perf_gtk__annotate_symbol(GtkWidget *window, struct symbol *sym,
 	return 0;
 }
 
+<<<<<<< HEAD
 int symbol__gtk_annotate(struct symbol *sym, struct map *map,
 			 struct perf_evsel *evsel,
 			 struct hist_browser_timer *hbt)
+=======
+static int symbol__gtk_annotate(struct symbol *sym, struct map *map,
+				struct perf_evsel *evsel,
+				struct hist_browser_timer *hbt)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	GtkWidget *window;
 	GtkWidget *notebook;
 	GtkWidget *scrolled_window;
 	GtkWidget *tab_label;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (map->dso->annotate_warned)
 		return -1;
 
+<<<<<<< HEAD
 	if (symbol__annotate(sym, map, 0) < 0) {
 		ui__error("%s", ui_helpline__current);
+=======
+	err = symbol__disassemble(sym, map, 0);
+	if (err) {
+		char msg[BUFSIZ];
+		symbol__strerror_disassemble(sym, map, err, msg, sizeof(msg));
+		ui__error("Couldn't annotate %s: %s\n", sym->name, msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -1;
 	}
 
@@ -226,6 +244,16 @@ int symbol__gtk_annotate(struct symbol *sym, struct map *map,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int hist_entry__gtk_annotate(struct hist_entry *he,
+			     struct perf_evsel *evsel,
+			     struct hist_browser_timer *hbt)
+{
+	return symbol__gtk_annotate(he->ms.sym, he->ms.map, evsel, hbt);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void perf_gtk__show_annotations(void)
 {
 	GtkWidget *window;

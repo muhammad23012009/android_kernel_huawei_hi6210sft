@@ -119,9 +119,20 @@ static void indy_local0_irqdispatch(void)
 	} else
 		irq = lc0msk_to_irqnr[mask];
 
+<<<<<<< HEAD
 	/* if irq == 0, then the interrupt has already been cleared */
 	if (irq)
 		do_IRQ(irq);
+=======
+	/*
+	 * workaround for INT2 bug; if irq == 0, INT2 has seen a fifo full
+	 * irq, but failed to latch it into status register
+	 */
+	if (irq)
+		do_IRQ(irq);
+	else
+		do_IRQ(SGINT_LOCAL0 + 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void indy_local1_irqdispatch(void)
@@ -148,7 +159,11 @@ static void __irq_entry indy_buserror_irq(void)
 	int irq = SGI_BUSERR_IRQ;
 
 	irq_enter();
+<<<<<<< HEAD
 	kstat_incr_irqs_this_cpu(irq, irq_to_desc(irq));
+=======
+	kstat_incr_irq_this_cpu(irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ip22_be_interrupt(irq);
 	irq_exit();
 }

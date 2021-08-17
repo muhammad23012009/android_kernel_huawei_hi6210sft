@@ -12,6 +12,11 @@
 #else
 
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <asm/processor.h>
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 asmlinkage int __raw_spin_is_locked_asm(volatile int *ptr);
 asmlinkage void __raw_spin_lock_asm(volatile int *ptr);
@@ -48,8 +53,12 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 
 static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	while (arch_spin_is_locked(lock))
 		cpu_relax();
+=======
+	smp_cond_load_acquire(&lock->lock, !VAL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int arch_read_can_lock(arch_rwlock_t *rw)

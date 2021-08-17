@@ -1106,7 +1106,11 @@ e100_send_packet(struct sk_buff *skb, struct net_device *dev)
 
 	myNextTxDesc->skb = skb;
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* NETIF_F_LLTX driver :( */
+=======
+	netif_trans_update(dev); /* NETIF_F_LLTX driver :( */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	e100_hardware_send_packet(np, buf, skb->len);
 
@@ -1496,7 +1500,10 @@ e100_set_config(struct net_device *dev, struct ifmap *map)
 		case IF_PORT_AUI:
 			spin_unlock(&np->lock);
 			return -EOPNOTSUPP;
+<<<<<<< HEAD
 			break;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			printk(KERN_ERR "%s: Invalid media selected", dev->name);
 			spin_unlock(&np->lock);

@@ -1,11 +1,18 @@
 #ifndef _AF_NETLINK_H
 #define _AF_NETLINK_H
 
+<<<<<<< HEAD
+=======
+#include <linux/rhashtable.h>
+#include <linux/atomic.h>
+#include <linux/workqueue.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <net/sock.h>
 
 #define NLGRPSZ(x)	(ALIGN(x, sizeof(unsigned long) * 8) / 8)
 #define NLGRPLONGS(x)	(NLGRPSZ(x)/sizeof(unsigned long))
 
+<<<<<<< HEAD
 struct netlink_ring {
 	void			**pg_vec;
 	unsigned int		head;
@@ -20,6 +27,8 @@ struct netlink_ring {
 	atomic_t		pending;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct netlink_sock {
 	/* struct sock has to be the first member of netlink_sock */
 	struct sock		sk;
@@ -31,6 +40,7 @@ struct netlink_sock {
 	u32			ngroups;
 	unsigned long		*groups;
 	unsigned long		state;
+<<<<<<< HEAD
 	wait_queue_head_t	wait;
 	struct netlink_callback	*cb;
 	struct mutex		*cb_mutex;
@@ -44,6 +54,24 @@ struct netlink_sock {
 	struct netlink_ring	tx_ring;
 	atomic_t		mapped;
 #endif /* CONFIG_NETLINK_MMAP */
+=======
+	size_t			max_recvmsg_len;
+	wait_queue_head_t	wait;
+	bool			bound;
+	bool			cb_running;
+	int			dump_done_errno;
+	struct netlink_callback	cb;
+	struct mutex		*cb_mutex;
+	struct mutex		cb_def_mutex;
+	void			(*netlink_rcv)(struct sk_buff *skb);
+	int			(*netlink_bind)(struct net *net, int group);
+	void			(*netlink_unbind)(struct net *net, int group);
+	struct module		*module;
+
+	struct rhash_head	node;
+	struct rcu_head		rcu;
+	struct work_struct	work;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct netlink_sock *nlk_sk(struct sock *sk)
@@ -51,6 +79,7 @@ static inline struct netlink_sock *nlk_sk(struct sock *sk)
 	return container_of(sk, struct netlink_sock, sk);
 }
 
+<<<<<<< HEAD
 struct nl_portid_hash {
 	struct hlist_head	*table;
 	unsigned long		rehash_time;
@@ -66,13 +95,23 @@ struct nl_portid_hash {
 
 struct netlink_table {
 	struct nl_portid_hash	hash;
+=======
+struct netlink_table {
+	struct rhashtable	hash;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct hlist_head	mc_list;
 	struct listeners __rcu	*listeners;
 	unsigned int		flags;
 	unsigned int		groups;
 	struct mutex		*cb_mutex;
 	struct module		*module;
+<<<<<<< HEAD
 	void			(*bind)(int group);
+=======
+	int			(*bind)(struct net *net, int group);
+	void			(*unbind)(struct net *net, int group);
+	bool			(*compare)(struct net *net, struct sock *sock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			registered;
 };
 

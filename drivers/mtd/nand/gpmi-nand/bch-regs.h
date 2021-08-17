@@ -54,7 +54,11 @@
 #define MX6Q_BP_BCH_FLASH0LAYOUT0_ECC0		11
 #define MX6Q_BM_BCH_FLASH0LAYOUT0_ECC0	(0x1f << MX6Q_BP_BCH_FLASH0LAYOUT0_ECC0)
 #define BF_BCH_FLASH0LAYOUT0_ECC0(v, x)				\
+<<<<<<< HEAD
 	(GPMI_IS_MX6Q(x)					\
+=======
+	(GPMI_IS_MX6(x)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		? (((v) << MX6Q_BP_BCH_FLASH0LAYOUT0_ECC0)	\
 			& MX6Q_BM_BCH_FLASH0LAYOUT0_ECC0)	\
 		: (((v) << BP_BCH_FLASH0LAYOUT0_ECC0)		\
@@ -65,7 +69,11 @@
 #define MX6Q_BM_BCH_FLASH0LAYOUT0_GF_13_14			\
 				(0x1 << MX6Q_BP_BCH_FLASH0LAYOUT0_GF_13_14)
 #define BF_BCH_FLASH0LAYOUT0_GF(v, x)				\
+<<<<<<< HEAD
 	((GPMI_IS_MX6Q(x) && ((v) == 14))			\
+=======
+	((GPMI_IS_MX6(x) && ((v) == 14))			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		? (((1) << MX6Q_BP_BCH_FLASH0LAYOUT0_GF_13_14)	\
 			& MX6Q_BM_BCH_FLASH0LAYOUT0_GF_13_14)	\
 		: 0						\
@@ -77,7 +85,11 @@
 #define MX6Q_BM_BCH_FLASH0LAYOUT0_DATA0_SIZE	\
 			(0x3ff << BP_BCH_FLASH0LAYOUT0_DATA0_SIZE)
 #define BF_BCH_FLASH0LAYOUT0_DATA0_SIZE(v, x)				\
+<<<<<<< HEAD
 	(GPMI_IS_MX6Q(x)						\
+=======
+	(GPMI_IS_MX6(x)						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		? (((v) >> 2) & MX6Q_BM_BCH_FLASH0LAYOUT0_DATA0_SIZE)	\
 		: ((v) & BM_BCH_FLASH0LAYOUT0_DATA0_SIZE)		\
 	)
@@ -96,7 +108,11 @@
 #define MX6Q_BP_BCH_FLASH0LAYOUT1_ECCN		11
 #define MX6Q_BM_BCH_FLASH0LAYOUT1_ECCN	(0x1f << MX6Q_BP_BCH_FLASH0LAYOUT1_ECCN)
 #define BF_BCH_FLASH0LAYOUT1_ECCN(v, x)				\
+<<<<<<< HEAD
 	(GPMI_IS_MX6Q(x)					\
+=======
+	(GPMI_IS_MX6(x)					\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		? (((v) << MX6Q_BP_BCH_FLASH0LAYOUT1_ECCN)	\
 			& MX6Q_BM_BCH_FLASH0LAYOUT1_ECCN)	\
 		: (((v) << BP_BCH_FLASH0LAYOUT1_ECCN)		\
@@ -107,7 +123,11 @@
 #define MX6Q_BM_BCH_FLASH0LAYOUT1_GF_13_14			\
 				(0x1 << MX6Q_BP_BCH_FLASH0LAYOUT1_GF_13_14)
 #define BF_BCH_FLASH0LAYOUT1_GF(v, x)				\
+<<<<<<< HEAD
 	((GPMI_IS_MX6Q(x) && ((v) == 14))			\
+=======
+	((GPMI_IS_MX6(x) && ((v) == 14))			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		? (((1) << MX6Q_BP_BCH_FLASH0LAYOUT1_GF_13_14)	\
 			& MX6Q_BM_BCH_FLASH0LAYOUT1_GF_13_14)	\
 		: 0						\
@@ -119,7 +139,11 @@
 #define MX6Q_BM_BCH_FLASH0LAYOUT1_DATAN_SIZE	\
 			(0x3ff << BP_BCH_FLASH0LAYOUT1_DATAN_SIZE)
 #define BF_BCH_FLASH0LAYOUT1_DATAN_SIZE(v, x)				\
+<<<<<<< HEAD
 	(GPMI_IS_MX6Q(x)						\
+=======
+	(GPMI_IS_MX6(x)						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		? (((v) >> 2) & MX6Q_BM_BCH_FLASH0LAYOUT1_DATAN_SIZE)	\
 		: ((v) & BM_BCH_FLASH0LAYOUT1_DATAN_SIZE)		\
 	)

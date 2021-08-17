@@ -6,9 +6,12 @@ ccflags-y += -O2
 ccflags-y += -DCONFIG_FORCE_HARD_FLOAT=y
 ccflags-y += -DJACKSON_NEW_8187 -DJACKSON_NEW_RX
 ccflags-y += -DTHOMAS_BEACON -DTHOMAS_TASKLET -DTHOMAS_SKB -DTHOMAS_TURBO
+<<<<<<< HEAD
 #ccflags-y += -DUSB_TX_DRIVER_AGGREGATION_ENABLE
 #ccflags-y += -DUSB_RX_AGGREGATION_SUPPORT
 ccflags-y += -DUSE_ONE_PIPE
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ccflags-y += -Idrivers/staging/rtl8192u/ieee80211
 
 r8192u_usb-y := r8192U_core.o r8180_93cx6.o r8192U_wx.o		\

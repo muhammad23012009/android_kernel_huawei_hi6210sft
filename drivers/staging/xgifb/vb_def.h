@@ -1,13 +1,20 @@
 #ifndef _VB_DEF_
 #define _VB_DEF_
+<<<<<<< HEAD
 #include "../../video/sis/initdef.h"
+=======
+#include "../../video/fbdev/sis/initdef.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define VB_XGI301C      0x0020 /* for 301C */
 
 #define SupportCRT2in301C       0x0100  /* for 301C */
 #define SetCHTVOverScan         0x8000
 
+<<<<<<< HEAD
 #define Panel_320x480            0x07 /*fstn*/
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PanelResInfo            0x1F /* CR36 Panel Type/LCDResInfo */
 #define Panel_1024x768x75        0x22
 #define Panel_1280x1024x75       0x23
@@ -30,11 +37,14 @@
 #define SetCRT2ToDualEdge   0x8000
 
 #define ReserveTVOption     0x0008
+<<<<<<< HEAD
 #define GatingCRT           0x0800
 #define DisableChB          0x1000
 #define EnableChB           0x2000
 #define DisableChA          0x4000
 #define EnableChA           0x8000
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SetTVLowResolution   0x0400
 #define TVSimuMode           0x0800
@@ -49,12 +59,18 @@
 #define SetLCDtoNonExpanding 0x0010
 #define SetLCDDualLink       0x0100
 #define SetLCDLowResolution  0x0200
+<<<<<<< HEAD
 #define SetLCDStdMode        0x0400
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* LCD Capability shampoo */
 #define DefaultLCDCap        0x80ea
 #define EnableLCD24bpp       0x0004 /* default */
+<<<<<<< HEAD
 #define DisableLCD24bpp      0x0000
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define LCDPolarity          0x00c0 /* default: SyncNN */
 #define XGI_LCDDualLink      0x0100
 #define EnableSpectrum       0x0200
@@ -236,7 +252,10 @@
 #define RES1280x960x85       0x46
 #define RES1280x960x120      0x47
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define XG27_CR8F 0x0C
 #define XG27_SR36 0x30
 #define XG27_SR40 0x04

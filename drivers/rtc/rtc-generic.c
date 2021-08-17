@@ -9,6 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/rtc.h>
 
+<<<<<<< HEAD
 #include <asm/rtc.h>
 
 static int generic_get_time(struct device *dev, struct rtc_time *tm)
@@ -40,6 +41,15 @@ static int __init generic_rtc_probe(struct platform_device *dev)
 
 	rtc = devm_rtc_device_register(&dev->dev, "rtc-generic",
 					&generic_rtc_ops, THIS_MODULE);
+=======
+static int __init generic_rtc_probe(struct platform_device *dev)
+{
+	struct rtc_device *rtc;
+	const struct rtc_class_ops *ops = dev_get_platdata(&dev->dev);
+
+	rtc = devm_rtc_device_register(&dev->dev, "rtc-generic",
+					ops, THIS_MODULE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
@@ -48,6 +58,7 @@ static int __init generic_rtc_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __exit generic_rtc_remove(struct platform_device *dev)
 {
 	return 0;
@@ -59,6 +70,12 @@ static struct platform_driver generic_rtc_driver = {
 		.owner = THIS_MODULE,
 	},
 	.remove = __exit_p(generic_rtc_remove),
+=======
+static struct platform_driver generic_rtc_driver = {
+	.driver = {
+		.name = "rtc-generic",
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver_probe(generic_rtc_driver, generic_rtc_probe);

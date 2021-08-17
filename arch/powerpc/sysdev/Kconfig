@@ -7,6 +7,15 @@ config PPC4xx_PCI_EXPRESS
 	depends on PCI && 4xx
 	default n
 
+<<<<<<< HEAD
+=======
+config PPC4xx_HSTA_MSI
+	bool
+	depends on PCI_MSI
+	depends on PCI && 4xx
+	default n
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config PPC4xx_MSI
 	bool
 	depends on PCI_MSI
@@ -19,7 +28,11 @@ config PPC_MSI_BITMAP
 	default y if MPIC
 	default y if FSL_PCI
 	default y if PPC4xx_MSI
+<<<<<<< HEAD
 	default y if POWERNV_MSI
+=======
+	default y if PPC_POWERNV
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 source "arch/powerpc/sysdev/xics/Kconfig"
 
@@ -28,9 +41,21 @@ config PPC_SCOM
 
 config SCOM_DEBUGFS
 	bool "Expose SCOM controllers via debugfs"
+<<<<<<< HEAD
 	depends on PPC_SCOM
+=======
+	depends on PPC_SCOM && DEBUG_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default n
 
 config GE_FPGA
 	bool
 	default n
+<<<<<<< HEAD
+=======
+
+config FSL_CORENET_RCPM
+	bool
+	help
+	  This option enables support for RCPM (Run Control/Power Management).
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

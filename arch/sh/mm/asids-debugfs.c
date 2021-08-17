@@ -17,7 +17,10 @@
  * for more details.
  */
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/spinlock.h>
@@ -67,6 +70,7 @@ static int __init asids_debugfs_init(void)
 					   NULL, &asids_debugfs_fops);
 	if (!asids_dentry)
 		return -ENOMEM;
+<<<<<<< HEAD
 	if (IS_ERR(asids_dentry))
 		return PTR_ERR(asids_dentry);
 
@@ -75,3 +79,9 @@ static int __init asids_debugfs_init(void)
 module_init(asids_debugfs_init);
 
 MODULE_LICENSE("GPL v2");
+=======
+
+	return PTR_ERR_OR_ZERO(asids_dentry);
+}
+device_initcall(asids_debugfs_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

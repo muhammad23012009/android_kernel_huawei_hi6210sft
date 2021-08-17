@@ -19,7 +19,11 @@ static int xen_dbgp_op(struct usb_hcd *hcd, int op)
 	dbgp.op = op;
 
 #ifdef CONFIG_PCI
+<<<<<<< HEAD
 	if (ctrlr->bus == &pci_bus_type) {
+=======
+	if (dev_is_pci(ctrlr)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		const struct pci_dev *pdev = to_pci_dev(ctrlr);
 
 		dbgp.u.pci.seg = pci_domain_nr(pdev->bus);

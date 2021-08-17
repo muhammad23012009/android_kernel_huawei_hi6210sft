@@ -15,10 +15,13 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+<<<<<<< HEAD
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -84,6 +87,85 @@ MODULE_PARM_DESC(audio_debug, "enable debug messages [analog audio]");
 #define AUD_INT_MCHG_IRQ        (1 << 21)
 #define GP_COUNT_CONTROL_RESET	0x3
 
+<<<<<<< HEAD
+=======
+static int cx23885_alsa_dma_init(struct cx23885_audio_dev *chip, int nr_pages)
+{
+	struct cx23885_audio_buffer *buf = chip->buf;
+	struct page *pg;
+	int i;
+
+	buf->vaddr = vmalloc_32(nr_pages << PAGE_SHIFT);
+	if (NULL == buf->vaddr) {
+		dprintk(1, "vmalloc_32(%d pages) failed\n", nr_pages);
+		return -ENOMEM;
+	}
+
+	dprintk(1, "vmalloc is at addr 0x%08lx, size=%d\n",
+				(unsigned long)buf->vaddr,
+				nr_pages << PAGE_SHIFT);
+
+	memset(buf->vaddr, 0, nr_pages << PAGE_SHIFT);
+	buf->nr_pages = nr_pages;
+
+	buf->sglist = vzalloc(buf->nr_pages * sizeof(*buf->sglist));
+	if (NULL == buf->sglist)
+		goto vzalloc_err;
+
+	sg_init_table(buf->sglist, buf->nr_pages);
+	for (i = 0; i < buf->nr_pages; i++) {
+		pg = vmalloc_to_page(buf->vaddr + i * PAGE_SIZE);
+		if (NULL == pg)
+			goto vmalloc_to_page_err;
+		sg_set_page(&buf->sglist[i], pg, PAGE_SIZE, 0);
+	}
+	return 0;
+
+vmalloc_to_page_err:
+	vfree(buf->sglist);
+	buf->sglist = NULL;
+vzalloc_err:
+	vfree(buf->vaddr);
+	buf->vaddr = NULL;
+	return -ENOMEM;
+}
+
+static int cx23885_alsa_dma_map(struct cx23885_audio_dev *dev)
+{
+	struct cx23885_audio_buffer *buf = dev->buf;
+
+	buf->sglen = dma_map_sg(&dev->pci->dev, buf->sglist,
+			buf->nr_pages, PCI_DMA_FROMDEVICE);
+
+	if (0 == buf->sglen) {
+		pr_warn("%s: cx23885_alsa_map_sg failed\n", __func__);
+		return -ENOMEM;
+	}
+	return 0;
+}
+
+static int cx23885_alsa_dma_unmap(struct cx23885_audio_dev *dev)
+{
+	struct cx23885_audio_buffer *buf = dev->buf;
+
+	if (!buf->sglen)
+		return 0;
+
+	dma_unmap_sg(&dev->pci->dev, buf->sglist, buf->sglen, PCI_DMA_FROMDEVICE);
+	buf->sglen = 0;
+	return 0;
+}
+
+static int cx23885_alsa_dma_free(struct cx23885_audio_buffer *buf)
+{
+	vfree(buf->sglist);
+	buf->sglist = NULL;
+	vfree(buf->vaddr);
+	buf->vaddr = NULL;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * BOARD Specific: Sets audio DMA
  */
@@ -198,6 +280,7 @@ int cx23885_audio_irq(struct cx23885_dev *dev, u32 status, u32 mask)
 
 static int dsp_buffer_free(struct cx23885_audio_dev *chip)
 {
+<<<<<<< HEAD
 	BUG_ON(!chip->dma_size);
 
 	dprintk(2, "Freeing buffer\n");
@@ -207,6 +290,20 @@ static int dsp_buffer_free(struct cx23885_audio_dev *chip)
 	kfree(chip->buf);
 
 	chip->dma_risc = NULL;
+=======
+	struct cx23885_riscmem *risc;
+
+	BUG_ON(!chip->dma_size);
+
+	dprintk(2, "Freeing buffer\n");
+	cx23885_alsa_dma_unmap(chip);
+	cx23885_alsa_dma_free(chip->buf);
+	risc = &chip->buf->risc;
+	pci_free_consistent(chip->pci, risc->size, risc->cpu, risc->dma);
+	kfree(chip->buf);
+
+	chip->buf = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->dma_size = 0;
 
 	return 0;
@@ -289,6 +386,10 @@ static int snd_cx23885_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * hw_params callback
  */
@@ -296,8 +397,11 @@ static int snd_cx23885_hw_params(struct snd_pcm_substream *substream,
 			      struct snd_pcm_hw_params *hw_params)
 {
 	struct cx23885_audio_dev *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	struct videobuf_dmabuf *dma;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cx23885_audio_buffer *buf;
 	int ret;
 
@@ -318,19 +422,33 @@ static int snd_cx23885_hw_params(struct snd_pcm_substream *substream,
 		return -ENOMEM;
 
 	buf->bpl = chip->period_size;
+<<<<<<< HEAD
 
 	dma = &buf->dma;
 	videobuf_dma_init(dma);
 	ret = videobuf_dma_init_kernel(dma, PCI_DMA_FROMDEVICE,
+=======
+	chip->buf = buf;
+
+	ret = cx23885_alsa_dma_init(chip,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			(PAGE_ALIGN(chip->dma_size) >> PAGE_SHIFT));
 	if (ret < 0)
 		goto error;
 
+<<<<<<< HEAD
 	ret = videobuf_dma_map(&chip->pci->dev, dma);
 	if (ret < 0)
 		goto error;
 
 	ret = cx23885_risc_databuffer(chip->pci, &buf->risc, dma->sglist,
+=======
+	ret = cx23885_alsa_dma_map(chip);
+	if (ret < 0)
+		goto error;
+
+	ret = cx23885_risc_databuffer(chip->pci, &buf->risc, buf->sglist,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   chip->period_size, chip->num_periods, 1);
 	if (ret < 0)
 		goto error;
@@ -340,10 +458,14 @@ static int snd_cx23885_hw_params(struct snd_pcm_substream *substream,
 	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma);
 	buf->risc.jmp[2] = cpu_to_le32(0); /* bits 63-32 */
 
+<<<<<<< HEAD
 	chip->buf = buf;
 	chip->dma_risc = dma;
 
 	substream->runtime->dma_area = chip->dma_risc->vaddr;
+=======
+	substream->runtime->dma_area = chip->buf->vaddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	substream->runtime->dma_bytes = chip->dma_size;
 	substream->runtime->dma_addr = 0;
 
@@ -351,6 +473,10 @@ static int snd_cx23885_hw_params(struct snd_pcm_substream *substream,
 
 error:
 	kfree(buf);
+<<<<<<< HEAD
+=======
+	chip->buf = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -435,7 +561,11 @@ static struct page *snd_cx23885_page(struct snd_pcm_substream *substream,
 /*
  * operators
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cx23885_pcm_ops = {
+=======
+static const struct snd_pcm_ops snd_cx23885_pcm_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open = snd_cx23885_pcm_open,
 	.close = snd_cx23885_close,
 	.ioctl = snd_pcm_lib_ioctl,
@@ -489,7 +619,12 @@ struct cx23885_audio_dev *cx23885_audio_register(struct cx23885_dev *dev)
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
+=======
+	err = snd_card_new(&dev->pci->dev,
+			   SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			THIS_MODULE, sizeof(struct cx23885_audio_dev), &card);
 	if (err < 0)
 		goto error;
@@ -500,8 +635,11 @@ struct cx23885_audio_dev *cx23885_audio_register(struct cx23885_dev *dev)
 	chip->card = card;
 	spin_lock_init(&chip->lock);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &dev->pci->dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = snd_cx23885_pcm(chip, 0, "CX23885 Digital");
 	if (err < 0)
 		goto error;

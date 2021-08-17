@@ -1,6 +1,10 @@
 /*
  * Copyright (C) 2012 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -87,7 +91,11 @@ static long clk_pll_round_rate_index(struct clk_hw *hw, unsigned long drate,
 	struct clk_pll *pll = to_clk_pll(hw);
 	unsigned long prev_rate, vco_prev_rate, rate = 0;
 	unsigned long vco_parent_rate =
+<<<<<<< HEAD
 		__clk_get_rate(__clk_get_parent(__clk_get_parent(hw->clk)));
+=======
+		clk_hw_get_rate(clk_hw_get_parent(clk_hw_get_parent(hw)));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!prate) {
 		pr_err("%s: prate is must for pll clk\n", __func__);

@@ -6,4 +6,29 @@
 #define __ALIGN .align 4, 0x07
 #define __ALIGN_STR __stringify(__ALIGN)
 
+<<<<<<< HEAD
+=======
+#ifndef __ASSEMBLY__
+
+/*
+ * Helper macro for exception table entries
+ */
+#define EX_TABLE(_fault, _target)	\
+	".section __ex_table,\"a\"\n"	\
+	".align	4\n"			\
+	".long	(" #_fault ") - .\n"	\
+	".long	(" #_target ") - .\n"	\
+	".previous\n"
+
+#else /* __ASSEMBLY__ */
+
+#define EX_TABLE(_fault, _target)	\
+	.section __ex_table,"a"	;	\
+	.align	4 ;			\
+	.long	(_fault) - . ;		\
+	.long	(_target) - . ;		\
+	.previous
+
+#endif /* __ASSEMBLY__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

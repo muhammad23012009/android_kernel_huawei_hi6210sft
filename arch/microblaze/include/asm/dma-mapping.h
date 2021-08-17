@@ -25,9 +25,13 @@
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
 #include <linux/dma-debug.h>
+<<<<<<< HEAD
 #include <linux/dma-attrs.h>
 #include <asm/io.h>
 #include <asm-generic/dma-coherent.h>
+=======
+#include <asm/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cacheflush.h>
 
 #define DMA_ERROR_CODE		(~(dma_addr_t)0x0)
@@ -35,6 +39,7 @@
 #define __dma_alloc_coherent(dev, gfp, size, handle)	NULL
 #define __dma_free_coherent(size, addr)		((void)0)
 
+<<<<<<< HEAD
 static inline unsigned long device_to_mask(struct device *dev)
 {
 	if (dev->dma_mask && *dev->dma_mask)
@@ -45,6 +50,8 @@ static inline unsigned long device_to_mask(struct device *dev)
 
 extern struct dma_map_ops *dma_ops;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Available generic sets of operations
  */
@@ -52,6 +59,7 @@ extern struct dma_map_ops dma_direct_ops;
 
 static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 {
+<<<<<<< HEAD
 	/* We don't handle the NULL dev case for ISA for now. We could
 	 * do it via an out of line call but it is not needed for now. The
 	 * only ISA DMA device we support is the floppy and we have a hack
@@ -95,6 +103,11 @@ static inline int dma_set_mask(struct device *dev, u64 dma_mask)
 
 #include <asm-generic/dma-mapping-common.h>
 
+=======
+	return &dma_direct_ops;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __dma_sync(unsigned long paddr,
 			      size_t size, enum dma_data_direction direction)
 {
@@ -111,6 +124,7 @@ static inline void __dma_sync(unsigned long paddr,
 	}
 }
 
+<<<<<<< HEAD
 static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
 	struct dma_map_ops *ops = get_dma_ops(dev);
@@ -155,6 +169,8 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 	ops->free(dev, size, cpu_addr, dma_handle, attrs);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 		enum dma_data_direction direction)
 {

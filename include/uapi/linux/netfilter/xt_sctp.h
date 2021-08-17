@@ -40,19 +40,31 @@ struct xt_sctp_info {
 #define SCTP_CHUNKMAP_SET(chunkmap, type) 		\
 	do { 						\
 		(chunkmap)[type / bytes(__u32)] |= 	\
+<<<<<<< HEAD
 			1 << (type % bytes(__u32));	\
+=======
+			1u << (type % bytes(__u32));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (0)
 
 #define SCTP_CHUNKMAP_CLEAR(chunkmap, type)		 	\
 	do {							\
 		(chunkmap)[type / bytes(__u32)] &= 		\
+<<<<<<< HEAD
 			~(1 << (type % bytes(__u32)));	\
+=======
+			~(1u << (type % bytes(__u32)));	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (0)
 
 #define SCTP_CHUNKMAP_IS_SET(chunkmap, type) 			\
 ({								\
 	((chunkmap)[type / bytes (__u32)] & 		\
+<<<<<<< HEAD
 		(1 << (type % bytes (__u32)))) ? 1: 0;	\
+=======
+		(1u << (type % bytes (__u32)))) ? 1: 0;	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 })
 
 #define SCTP_CHUNKMAP_RESET(chunkmap) \
@@ -66,26 +78,44 @@ struct xt_sctp_info {
 
 #define SCTP_CHUNKMAP_IS_CLEAR(chunkmap) \
 	__sctp_chunkmap_is_clear((chunkmap), ARRAY_SIZE(chunkmap))
+<<<<<<< HEAD
 static inline bool
+=======
+static inline _Bool
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __sctp_chunkmap_is_clear(const __u32 *chunkmap, unsigned int n)
 {
 	unsigned int i;
 	for (i = 0; i < n; ++i)
 		if (chunkmap[i])
+<<<<<<< HEAD
 			return false;
 	return true;
+=======
+			return 0;
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define SCTP_CHUNKMAP_IS_ALL_SET(chunkmap) \
 	__sctp_chunkmap_is_all_set((chunkmap), ARRAY_SIZE(chunkmap))
+<<<<<<< HEAD
 static inline bool
+=======
+static inline _Bool
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 __sctp_chunkmap_is_all_set(const __u32 *chunkmap, unsigned int n)
 {
 	unsigned int i;
 	for (i = 0; i < n; ++i)
 		if (chunkmap[i] != ~0U)
+<<<<<<< HEAD
 			return false;
 	return true;
+=======
+			return 0;
+	return 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #endif /* _XT_SCTP_H_ */

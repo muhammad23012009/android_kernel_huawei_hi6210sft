@@ -39,7 +39,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -388,6 +391,10 @@ static int synusb_probe(struct usb_interface *intf,
 		__set_bit(EV_REL, input_dev->evbit);
 		__set_bit(REL_X, input_dev->relbit);
 		__set_bit(REL_Y, input_dev->relbit);
+<<<<<<< HEAD
+=======
+		__set_bit(INPUT_PROP_POINTING_STICK, input_dev->propbit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		input_set_abs_params(input_dev, ABS_PRESSURE, 0, 127, 0, 0);
 	} else {
 		input_set_abs_params(input_dev, ABS_X,
@@ -402,6 +409,14 @@ static int synusb_probe(struct usb_interface *intf,
 		__set_bit(BTN_TOOL_TRIPLETAP, input_dev->keybit);
 	}
 
+<<<<<<< HEAD
+=======
+	if (synusb->flags & SYNUSB_TOUCHSCREEN)
+		__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
+	else
+		__set_bit(INPUT_PROP_POINTER, input_dev->propbit);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__set_bit(BTN_LEFT, input_dev->keybit);
 	__set_bit(BTN_RIGHT, input_dev->keybit);
 	__set_bit(BTN_MIDDLE, input_dev->keybit);

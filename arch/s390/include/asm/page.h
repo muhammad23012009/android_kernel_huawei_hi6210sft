@@ -21,6 +21,10 @@
 #define HPAGE_SIZE	(1UL << HPAGE_SHIFT)
 #define HPAGE_MASK	(~(HPAGE_SIZE - 1))
 #define HUGETLB_PAGE_ORDER	(HPAGE_SHIFT - PAGE_SHIFT)
+<<<<<<< HEAD
+=======
+#define HUGE_MAX_HSTATE		2
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define ARCH_HAS_SETCLEAR_HUGE_PTE
 #define ARCH_HAS_HUGE_PTE_TYPE
@@ -30,6 +34,7 @@
 #include <asm/setup.h>
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 void storage_key_init_range(unsigned long start, unsigned long end);
 
 static inline unsigned long pfmf(unsigned long function, unsigned long address)
@@ -80,6 +85,33 @@ static inline void copy_page(void *to, void *from)
 			"	mvc	3584(256,%0),3584(%1)\n"
 			"	mvc	3840(256,%0),3840(%1)\n"
 			: : "a" (to), "a" (from) : "memory");
+=======
+void __storage_key_init_range(unsigned long start, unsigned long end);
+
+static inline void storage_key_init_range(unsigned long start, unsigned long end)
+{
+	if (PAGE_DEFAULT_KEY != 0)
+		__storage_key_init_range(start, end);
+}
+
+#define clear_page(page)	memset((page), 0, PAGE_SIZE)
+
+/*
+ * copy_page uses the mvcl instruction with 0xb0 padding byte in order to
+ * bypass caches when copying a page. Especially when copying huge pages
+ * this keeps L1 and L2 data caches alive.
+ */
+static inline void copy_page(void *to, void *from)
+{
+	register void *reg2 asm ("2") = to;
+	register unsigned long reg3 asm ("3") = 0x1000;
+	register void *reg4 asm ("4") = from;
+	register unsigned long reg5 asm ("5") = 0xb0001000;
+	asm volatile(
+		"	mvcl	2,4"
+		: "+d" (reg2), "+d" (reg3), "+d" (reg4), "+d" (reg5)
+		: : "memory", "cc");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define clear_user_page(page, vaddr, pg)	clear_page(page)
@@ -135,13 +167,23 @@ static inline unsigned char page_get_storage_key(unsigned long addr)
 
 static inline int page_reset_referenced(unsigned long addr)
 {
+<<<<<<< HEAD
 	unsigned int ipm;
+=======
+	int cc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	asm volatile(
 		"	rrbe	0,%1\n"
 		"	ipm	%0\n"
+<<<<<<< HEAD
 		: "=d" (ipm) : "a" (addr) : "cc");
 	return !!(ipm & 0x20000000);
+=======
+		"	srl	%0,28\n"
+		: "=d" (cc) : "a" (addr) : "cc");
+	return cc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Bits int the storage key */
@@ -150,6 +192,7 @@ static inline int page_reset_referenced(unsigned long addr)
 #define _PAGE_FP_BIT		0x08	/* HW fetch protection bit	*/
 #define _PAGE_ACC_BITS		0xf0	/* HW access control bits	*/
 
+<<<<<<< HEAD
 /*
  * Test and clear referenced bit in storage key.
  */
@@ -159,6 +202,8 @@ static inline int page_test_and_clear_young(unsigned long pfn)
 	return page_reset_referenced(pfn << PAGE_SHIFT);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct page;
 void arch_free_page(struct page *page, int order);
 void arch_alloc_page(struct page *page, int order);
@@ -181,6 +226,11 @@ static inline int devmem_is_allowed(unsigned long pfn)
 #define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
 #define page_to_phys(page)	(page_to_pfn(page) << PAGE_SHIFT)
 #define virt_addr_valid(kaddr)	pfn_valid(__pa(kaddr) >> PAGE_SHIFT)
+<<<<<<< HEAD
+=======
+#define pfn_to_virt(pfn)	__va((pfn) << PAGE_SHIFT)
+#define page_to_virt(page)	pfn_to_virt(page_to_pfn(page))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | \
 				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
@@ -188,6 +238,9 @@ static inline int devmem_is_allowed(unsigned long pfn)
 #include <asm-generic/memory_model.h>
 #include <asm-generic/getorder.h>
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_GATE_AREA 1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _S390_PAGE_H */

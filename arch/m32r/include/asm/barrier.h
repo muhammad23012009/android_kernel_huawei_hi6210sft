@@ -11,6 +11,7 @@
 
 #define nop()  __asm__ __volatile__ ("nop" : : )
 
+<<<<<<< HEAD
 /*
  * Memory barrier.
  *
@@ -90,5 +91,8 @@
 #define smp_read_barrier_depends()	do { } while (0)
 #define set_mb(var, value) do { var = value; barrier(); } while (0)
 #endif
+=======
+#include <asm-generic/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* _ASM_M32R_BARRIER_H */

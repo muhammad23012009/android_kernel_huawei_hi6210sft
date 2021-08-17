@@ -10,12 +10,28 @@ util/ctype.c
 util/evlist.c
 util/evsel.c
 util/cpumap.c
+<<<<<<< HEAD
 util/hweight.c
+=======
+../lib/bitmap.c
+../lib/find_bit.c
+../lib/hweight.c
+../lib/vsprintf.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 util/thread_map.c
 util/util.c
 util/xyarray.c
 util/cgroup.c
 util/rblist.c
+<<<<<<< HEAD
 util/strlist.c
 util/sysfs.c
 ../../lib/rbtree.c
+=======
+util/counts.c
+util/strlist.c
+util/trace-event.c
+../lib/rbtree.c
+util/string.c
+util/symbol_fprintf.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

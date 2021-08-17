@@ -21,13 +21,25 @@
  */
 
 #ifndef __LINUX_MFD_DAVINCI_VOICECODEC_H_
+<<<<<<< HEAD
 #define __LINUX_MFD_DAVINIC_VOICECODEC_H_
+=======
+#define __LINUX_MFD_DAVINCI_VOICECODEC_H_
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/core.h>
+<<<<<<< HEAD
 
 #include <mach/edma.h>
+=======
+#include <linux/platform_data/edma.h>
+
+#include <mach/hardware.h>
+
+struct regmap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Register values.
@@ -96,12 +108,15 @@ struct davinci_vcif {
 	dma_addr_t dma_rx_addr;
 };
 
+<<<<<<< HEAD
 struct cq93vc {
 	struct platform_device *pdev;
 	struct snd_soc_codec *codec;
 	u32 sysclk;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct davinci_vc;
 
 struct davinci_vc {
@@ -112,15 +127,22 @@ struct davinci_vc {
 
 	/* Memory resources */
 	void __iomem *base;
+<<<<<<< HEAD
 	resource_size_t pbase;
 	size_t base_size;
+=======
+	struct regmap *regmap;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* MFD cells */
 	struct mfd_cell cells[DAVINCI_VC_CELLS];
 
 	/* Client devices */
 	struct davinci_vcif davinci_vcif;
+<<<<<<< HEAD
 	struct cq93vc cq93vc;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif

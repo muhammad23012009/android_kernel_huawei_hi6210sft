@@ -70,8 +70,12 @@ static void transient_usage(struct dm_exception_store *store,
 	*metadata_sectors = 0;
 }
 
+<<<<<<< HEAD
 static int transient_ctr(struct dm_exception_store *store,
 			 unsigned argc, char **argv)
+=======
+static int transient_ctr(struct dm_exception_store *store, char *options)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct transient_c *tc;
 

@@ -40,11 +40,18 @@
 #include <asm/netlogic/interrupt.h>
 #include <asm/netlogic/common.h>
 #include <asm/netlogic/haldefs.h>
+<<<<<<< HEAD
 #include <asm/netlogic/common.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_CPU_XLP)
 #include <asm/netlogic/xlp-hal/iomap.h>
 #include <asm/netlogic/xlp-hal/xlp.h>
+<<<<<<< HEAD
+=======
+#include <asm/netlogic/xlp-hal/sys.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/netlogic/xlp-hal/pic.h>
 #elif defined(CONFIG_CPU_XLR)
 #include <asm/netlogic/xlr/iomap.h>
@@ -54,7 +61,11 @@
 #error "Unknown CPU"
 #endif
 
+<<<<<<< HEAD
 unsigned int __cpuinit get_c0_compare_int(void)
+=======
+unsigned int get_c0_compare_int(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return IRQ_TIMER;
 }
@@ -81,6 +92,10 @@ static struct clocksource csrc_pic = {
 static void nlm_init_pic_timer(void)
 {
 	uint64_t picbase = nlm_get_node(0)->picbase;
+<<<<<<< HEAD
+=======
+	u32 picfreq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	nlm_pic_set_timer(picbase, PIC_CLOCK_TIMER, ~0ULL, 0, 0);
 	if (current_cpu_data.cputype == CPU_XLR) {
@@ -91,7 +106,13 @@ static void nlm_init_pic_timer(void)
 		csrc_pic.read	= nlm_get_pic_timer;
 	}
 	csrc_pic.rating = 1000;
+<<<<<<< HEAD
 	clocksource_register_hz(&csrc_pic, PIC_CLK_HZ);
+=======
+	picfreq = pic_timer_freq();
+	clocksource_register_hz(&csrc_pic, picfreq);
+	pr_info("PIC clock source added, frequency %d\n", picfreq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void __init plat_time_init(void)

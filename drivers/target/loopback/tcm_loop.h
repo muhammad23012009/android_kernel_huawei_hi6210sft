@@ -2,6 +2,7 @@
 #define TL_WWN_ADDR_LEN			256
 #define TL_TPGS_PER_HBA			32
 
+<<<<<<< HEAD
 /*
  * Used in tcm_loop_driver_probe() for struct Scsi_Host->max_cmd_len
  */
@@ -10,6 +11,13 @@
 struct tcm_loop_cmd {
 	/* State of Linux/SCSI CDB+Data descriptor */
 	u32 sc_cmd_state;
+=======
+struct tcm_loop_cmd {
+	/* State of Linux/SCSI CDB+Data descriptor */
+	u32 sc_cmd_state;
+	/* Tagged command queueing */
+	u32 sc_cmd_tag;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Pointer to the CDB+Data descriptor from Linux/SCSI subsystem */
 	struct scsi_cmnd *sc;
 	/* The TCM I/O descriptor that is accessed via container_of() */
@@ -31,12 +39,22 @@ struct tcm_loop_nexus {
 	struct se_session *se_sess;
 };
 
+<<<<<<< HEAD
 struct tcm_loop_nacl {
 	struct se_node_acl se_node_acl;
 };
 
 struct tcm_loop_tpg {
 	unsigned short tl_tpgt;
+=======
+#define TCM_TRANSPORT_ONLINE 0
+#define TCM_TRANSPORT_OFFLINE 1
+
+struct tcm_loop_tpg {
+	unsigned short tl_tpgt;
+	unsigned short tl_transport_status;
+	enum target_prot_type tl_fabric_prot_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	atomic_t tl_tpg_port_count;
 	struct se_portal_group tl_se_tpg;
 	struct tcm_loop_hba *tl_hba;

@@ -12,6 +12,7 @@
 #include <linux/sunrpc/debug.h>
 
 /*
+<<<<<<< HEAD
  * Enable debugging for nfsd.
  * Requires RPC_DEBUG.
  */
@@ -20,6 +21,8 @@
 #endif
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * knfsd debug flags
  */
 #define NFSDDBG_SOCK		0x0001
@@ -32,6 +35,10 @@
 #define NFSDDBG_REPCACHE	0x0080
 #define NFSDDBG_XDR		0x0100
 #define NFSDDBG_LOCKD		0x0200
+<<<<<<< HEAD
+=======
+#define NFSDDBG_PNFS		0x0400
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define NFSDDBG_ALL		0x7FFF
 #define NFSDDBG_NOCHANGE	0xFFFF
 

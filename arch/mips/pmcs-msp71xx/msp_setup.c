@@ -10,6 +10,11 @@
  * option) any later version.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/bootinfo.h>
 #include <asm/cacheflush.h>
 #include <asm/idle.h>
@@ -27,7 +32,10 @@
 #endif
 
 extern void msp_serial_setup(void);
+<<<<<<< HEAD
 extern void pmctwiled_setup(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_PMC_MSP7120_EVAL) || \
     defined(CONFIG_PMC_MSP7120_GW) || \
@@ -38,7 +46,10 @@ extern void pmctwiled_setup(void);
 void msp7120_reset(void)
 {
 	void *start, *end, *iptr;
+<<<<<<< HEAD
 	register int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Diasble all interrupts */
 	local_irq_disable();
@@ -49,7 +60,11 @@ void msp7120_reset(void)
 	/* Cache the reset code of this function */
 	__asm__ __volatile__ (
 		"	.set	push				\n"
+<<<<<<< HEAD
 		"	.set	mips3				\n"
+=======
+		"	.set	arch=r4000			\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		"	la	%0,startpoint			\n"
 		"	la	%1,endpoint			\n"
 		"	.set	pop				\n"
@@ -78,7 +93,11 @@ void msp7120_reset(void)
 	 */
 
 	/* Wait a bit for the DDRC to settle */
+<<<<<<< HEAD
 	for (i = 0; i < 100000000; i++);
+=======
+	mdelay(125);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_PMC_MSP7120_GW)
 	/*
@@ -118,7 +137,11 @@ void msp_restart(char *command)
 	/* No chip-specific reset code, just jump to the ROM reset vector */
 	set_c0_status(ST0_BEV | ST0_ERL);
 	change_c0_config(CONF_CM_CMASK, CONF_CM_UNCACHED);
+<<<<<<< HEAD
 	flush_cache_all();
+=======
+	__flush_cache_all();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	write_c0_wired(0);
 
 	__asm__ __volatile__("jr\t%0"::"r"(0xbfc00000));
@@ -148,8 +171,11 @@ void __init plat_mem_setup(void)
 	pm_power_off = msp_power_off;
 }
 
+<<<<<<< HEAD
 extern struct plat_smp_ops msp_smtc_smp_ops;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init prom_init(void)
 {
 	unsigned long family;
@@ -230,6 +256,7 @@ void __init prom_init(void)
 	 */
 	msp_serial_setup();
 
+<<<<<<< HEAD
 	if (register_vsmp_smp_ops()) {
 #ifdef CONFIG_MIPS_MT_SMTC
 		register_smp_ops(&msp_smtc_smp_ops);
@@ -243,4 +270,7 @@ void __init prom_init(void)
 	 */
 	pmctwiled_setup();
 #endif
+=======
+	register_vsmp_smp_ops();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

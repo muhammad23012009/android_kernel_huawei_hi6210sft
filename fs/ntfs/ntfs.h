@@ -1,8 +1,14 @@
 /*
+<<<<<<< HEAD
  * ntfs.h - Defines for NTFS Linux kernel driver. Part of the Linux-NTFS
  *	    project.
  *
  * Copyright (c) 2001-2005 Anton Altaparmakov
+=======
+ * ntfs.h - Defines for NTFS Linux kernel driver.
+ *
+ * Copyright (c) 2001-2014 Anton Altaparmakov and Tuxera Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (C) 2002 Richard Russon
  *
  * This program/include file is free software; you can redistribute it and/or
@@ -44,7 +50,11 @@ typedef enum {
 	NTFS_MAX_NAME_LEN	= 255,
 	NTFS_MAX_ATTR_NAME_LEN	= 255,
 	NTFS_MAX_CLUSTER_SIZE	= 64 * 1024,	/* 64kiB */
+<<<<<<< HEAD
 	NTFS_MAX_PAGES_PER_CLUSTER = NTFS_MAX_CLUSTER_SIZE / PAGE_CACHE_SIZE,
+=======
+	NTFS_MAX_PAGES_PER_CLUSTER = NTFS_MAX_CLUSTER_SIZE / PAGE_SIZE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } NTFS_CONSTANTS;
 
 /* Global variables. */
@@ -57,7 +67,12 @@ extern struct kmem_cache *ntfs_attr_ctx_cache;
 extern struct kmem_cache *ntfs_index_ctx_cache;
 
 /* The various operations structs defined throughout the driver files. */
+<<<<<<< HEAD
 extern const struct address_space_operations ntfs_aops;
+=======
+extern const struct address_space_operations ntfs_normal_aops;
+extern const struct address_space_operations ntfs_compressed_aops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern const struct address_space_operations ntfs_mst_aops;
 
 extern const struct  file_operations ntfs_file_ops;

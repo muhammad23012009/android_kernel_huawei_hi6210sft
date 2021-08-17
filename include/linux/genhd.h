@@ -13,6 +13,11 @@
 #include <linux/kdev_t.h>
 #include <linux/rcupdate.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/percpu-refcount.h>
+#include <linux/uuid.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_BLOCK
 
@@ -92,7 +97,11 @@ struct disk_stats {
  * Enough for the string representation of any kind of UUID plus NULL.
  * EFI UUID is 36 characters. MSDOS UUID is 11 characters.
  */
+<<<<<<< HEAD
 #define PARTITION_META_INFO_UUIDLTH	37
+=======
+#define PARTITION_META_INFO_UUIDLTH	(UUID_STRING_LEN + 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct partition_meta_info {
 	char uuid[PARTITION_META_INFO_UUIDLTH];
@@ -124,7 +133,11 @@ struct hd_struct {
 #else
 	struct disk_stats dkstats;
 #endif
+<<<<<<< HEAD
 	atomic_t ref;
+=======
+	struct percpu_ref ref;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct rcu_head rcu_head;
 };
 
@@ -161,6 +174,22 @@ struct disk_part_tbl {
 };
 
 struct disk_events;
+<<<<<<< HEAD
+=======
+struct badblocks;
+
+#if defined(CONFIG_BLK_DEV_INTEGRITY)
+
+struct blk_integrity {
+	struct blk_integrity_profile	*profile;
+	unsigned char			flags;
+	unsigned char			tuple_size;
+	unsigned char			interval_exp;
+	unsigned char			tag_size;
+};
+
+#endif	/* CONFIG_BLK_DEV_INTEGRITY */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct gendisk {
 	/* major, first_minor and minors are input parameters only,
@@ -190,16 +219,26 @@ struct gendisk {
 	void *private_data;
 
 	int flags;
+<<<<<<< HEAD
 	struct device *driverfs_dev;  // FIXME: remove
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct kobject *slave_dir;
 
 	struct timer_rand_state *random;
 	atomic_t sync_io;		/* RAID */
 	struct disk_events *ev;
 #ifdef  CONFIG_BLK_DEV_INTEGRITY
+<<<<<<< HEAD
 	struct blk_integrity *integrity;
 #endif
 	int node_id;
+=======
+	struct kobject integrity_kobj;
+#endif	/* CONFIG_BLK_DEV_INTEGRITY */
+	int node_id;
+	struct badblocks *bb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct gendisk *part_to_disk(struct hd_struct *part)
@@ -213,6 +252,7 @@ static inline struct gendisk *part_to_disk(struct hd_struct *part)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static inline void part_pack_uuid(const u8 *uuid_str, u8 *to)
 {
 	int i;
@@ -234,6 +274,11 @@ static inline void part_pack_uuid(const u8 *uuid_str, u8 *to)
 static inline int blk_part_pack_uuid(const u8 *uuid_str, u8 *to)
 {
 	part_pack_uuid(uuid_str, to);
+=======
+static inline int blk_part_pack_uuid(const u8 *uuid_str, u8 *to)
+{
+	uuid_be_to_bin(uuid_str, (uuid_be *)to);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -416,18 +461,30 @@ static inline void free_part_info(struct hd_struct *part)
 extern void part_round_stats(int cpu, struct hd_struct *part);
 
 /* block/genhd.c */
+<<<<<<< HEAD
 extern void add_disk(struct gendisk *disk);
+=======
+extern void device_add_disk(struct device *parent, struct gendisk *disk);
+static inline void add_disk(struct gendisk *disk)
+{
+	device_add_disk(NULL, disk);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void del_gendisk(struct gendisk *gp);
 extern struct gendisk *get_gendisk(dev_t dev, int *partno);
 extern struct block_device *bdget_disk(struct gendisk *disk, int partno);
 
 extern void set_device_ro(struct block_device *bdev, int flag);
 extern void set_disk_ro(struct gendisk *disk, int flag);
+<<<<<<< HEAD
 /* BEGIN PN:DTS2015110203565 , Modified by cwx212840, 2015/11/02 */
 #ifdef CONFIG_HW_SD_HEALTH_DETECT
 extern void set_sd_disk_health_status(struct gendisk *disk, char *status);
 #endif
 /* END PN:DTS2015110203565 , Modified by cwx212840, 2015/11/02 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int get_disk_ro(struct gendisk *disk)
 {
@@ -440,7 +497,11 @@ extern void disk_flush_events(struct gendisk *disk, unsigned int mask);
 extern unsigned int disk_clear_events(struct gendisk *disk, unsigned int mask);
 
 /* drivers/char/random.c */
+<<<<<<< HEAD
 extern void add_disk_randomness(struct gendisk *disk);
+=======
+extern void add_disk_randomness(struct gendisk *disk) __latent_entropy;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void rand_initialize_disk(struct gendisk *disk);
 
 static inline sector_t get_start_sect(struct block_device *bdev)
@@ -616,7 +677,11 @@ extern struct hd_struct * __must_check add_partition(struct gendisk *disk,
 						     sector_t len, int flags,
 						     struct partition_meta_info
 						       *info);
+<<<<<<< HEAD
 extern void __delete_partition(struct hd_struct *);
+=======
+extern void __delete_partition(struct percpu_ref *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void delete_partition(struct gendisk *, int);
 extern void printk_all_partitions(void);
 
@@ -645,27 +710,60 @@ extern ssize_t part_fail_store(struct device *dev,
 			       const char *buf, size_t count);
 #endif /* CONFIG_FAIL_MAKE_REQUEST */
 
+<<<<<<< HEAD
 static inline void hd_ref_init(struct hd_struct *part)
 {
 	atomic_set(&part->ref, 1);
 	smp_mb();
+=======
+static inline int hd_ref_init(struct hd_struct *part)
+{
+	if (percpu_ref_init(&part->ref, __delete_partition, 0,
+				GFP_KERNEL))
+		return -ENOMEM;
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void hd_struct_get(struct hd_struct *part)
 {
+<<<<<<< HEAD
 	atomic_inc(&part->ref);
 	smp_mb__after_atomic_inc();
+=======
+	percpu_ref_get(&part->ref);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int hd_struct_try_get(struct hd_struct *part)
 {
+<<<<<<< HEAD
 	return atomic_inc_not_zero(&part->ref);
+=======
+	return percpu_ref_tryget_live(&part->ref);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void hd_struct_put(struct hd_struct *part)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&part->ref))
 		__delete_partition(part);
+=======
+	percpu_ref_put(&part->ref);
+}
+
+static inline void hd_struct_kill(struct hd_struct *part)
+{
+	percpu_ref_kill(&part->ref);
+}
+
+static inline void hd_free_part(struct hd_struct *part)
+{
+	free_part_stats(part);
+	free_part_info(part);
+	percpu_ref_exit(&part->ref);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -707,9 +805,17 @@ static inline sector_t part_nr_sects_read(struct hd_struct *part)
 static inline void part_nr_sects_write(struct hd_struct *part, sector_t size)
 {
 #if BITS_PER_LONG==32 && defined(CONFIG_LBDAF) && defined(CONFIG_SMP)
+<<<<<<< HEAD
 	write_seqcount_begin(&part->nr_sects_seq);
 	part->nr_sects = size;
 	write_seqcount_end(&part->nr_sects_seq);
+=======
+	preempt_disable();
+	write_seqcount_begin(&part->nr_sects_seq);
+	part->nr_sects = size;
+	write_seqcount_end(&part->nr_sects_seq);
+	preempt_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #elif BITS_PER_LONG==32 && defined(CONFIG_LBDAF) && defined(CONFIG_PREEMPT)
 	preempt_disable();
 	part->nr_sects = size;
@@ -719,6 +825,17 @@ static inline void part_nr_sects_write(struct hd_struct *part, sector_t size)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_BLK_DEV_INTEGRITY)
+extern void blk_integrity_add(struct gendisk *);
+extern void blk_integrity_del(struct gendisk *);
+#else	/* CONFIG_BLK_DEV_INTEGRITY */
+static inline void blk_integrity_add(struct gendisk *disk) { }
+static inline void blk_integrity_del(struct gendisk *disk) { }
+#endif	/* CONFIG_BLK_DEV_INTEGRITY */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* CONFIG_BLOCK */
 
 static inline void printk_all_partitions(void) { }

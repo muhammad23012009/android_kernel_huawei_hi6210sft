@@ -2,9 +2,12 @@
 #define _M68K_IRQFLAGS_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 #include <linux/hardirq.h>
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/preempt.h>
 #include <asm/thread_info.h>
 #include <asm/entry.h>
@@ -67,6 +70,13 @@ static inline void arch_local_irq_restore(unsigned long flags)
 
 static inline bool arch_irqs_disabled_flags(unsigned long flags)
 {
+<<<<<<< HEAD
+=======
+	if (MACH_IS_ATARI) {
+		/* Ignore HSYNC = ipl 2 on Atari */
+		return (flags & ~(ALLOWINT | 0x200)) != 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return (flags & ~ALLOWINT) != 0;
 }
 

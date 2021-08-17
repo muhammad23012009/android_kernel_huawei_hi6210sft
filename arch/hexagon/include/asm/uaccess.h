@@ -36,7 +36,12 @@
  * @addr: User space pointer to start of block to check
  * @size: Size of block to check
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Checks if a pointer to a block of memory in user space is valid.
  *

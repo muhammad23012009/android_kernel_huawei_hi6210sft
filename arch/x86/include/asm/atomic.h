@@ -3,9 +3,16 @@
 
 #include <linux/compiler.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <asm/processor.h>
 #include <asm/alternative.h>
 #include <asm/cmpxchg.h>
+=======
+#include <asm/alternative.h>
+#include <asm/cmpxchg.h>
+#include <asm/rmwcc.h>
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Atomic operations that C can't guarantee us.  Useful for
@@ -20,9 +27,15 @@
  *
  * Atomically reads the value of @v.
  */
+<<<<<<< HEAD
 static inline int atomic_read(const atomic_t *v)
 {
 	return (*(volatile int *)&(v)->counter);
+=======
+static __always_inline int atomic_read(const atomic_t *v)
+{
+	return READ_ONCE((v)->counter);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -32,9 +45,15 @@ static inline int atomic_read(const atomic_t *v)
  *
  * Atomically sets the value of @v to @i.
  */
+<<<<<<< HEAD
 static inline void atomic_set(atomic_t *v, int i)
 {
 	v->counter = i;
+=======
+static __always_inline void atomic_set(atomic_t *v, int i)
+{
+	WRITE_ONCE(v->counter, i);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -44,11 +63,19 @@ static inline void atomic_set(atomic_t *v, int i)
  *
  * Atomically adds @i to @v.
  */
+<<<<<<< HEAD
 static inline void atomic_add(int i, atomic_t *v)
 {
 	asm volatile(LOCK_PREFIX "addl %1,%0"
 		     : "+m" (v->counter)
 		     : "ir" (i));
+=======
+static __always_inline void atomic_add(int i, atomic_t *v)
+{
+	asm volatile(LOCK_PREFIX "addl %1,%0"
+		     : "+m" (v->counter)
+		     : "ir" (i) : "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -58,11 +85,19 @@ static inline void atomic_add(int i, atomic_t *v)
  *
  * Atomically subtracts @i from @v.
  */
+<<<<<<< HEAD
 static inline void atomic_sub(int i, atomic_t *v)
 {
 	asm volatile(LOCK_PREFIX "subl %1,%0"
 		     : "+m" (v->counter)
 		     : "ir" (i));
+=======
+static __always_inline void atomic_sub(int i, atomic_t *v)
+{
+	asm volatile(LOCK_PREFIX "subl %1,%0"
+		     : "+m" (v->counter)
+		     : "ir" (i) : "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -74,6 +109,7 @@ static inline void atomic_sub(int i, atomic_t *v)
  * true if the result is zero, or false for all
  * other cases.
  */
+<<<<<<< HEAD
 static inline int atomic_sub_and_test(int i, atomic_t *v)
 {
 	unsigned char c;
@@ -82,6 +118,11 @@ static inline int atomic_sub_and_test(int i, atomic_t *v)
 		     : "+m" (v->counter), "=qm" (c)
 		     : "ir" (i) : "memory");
 	return c;
+=======
+static __always_inline bool atomic_sub_and_test(int i, atomic_t *v)
+{
+	GEN_BINARY_RMWcc(LOCK_PREFIX "subl", v->counter, "er", i, "%0", e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -90,10 +131,17 @@ static inline int atomic_sub_and_test(int i, atomic_t *v)
  *
  * Atomically increments @v by 1.
  */
+<<<<<<< HEAD
 static inline void atomic_inc(atomic_t *v)
 {
 	asm volatile(LOCK_PREFIX "incl %0"
 		     : "+m" (v->counter));
+=======
+static __always_inline void atomic_inc(atomic_t *v)
+{
+	asm volatile(LOCK_PREFIX "incl %0"
+		     : "+m" (v->counter) :: "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -102,10 +150,17 @@ static inline void atomic_inc(atomic_t *v)
  *
  * Atomically decrements @v by 1.
  */
+<<<<<<< HEAD
 static inline void atomic_dec(atomic_t *v)
 {
 	asm volatile(LOCK_PREFIX "decl %0"
 		     : "+m" (v->counter));
+=======
+static __always_inline void atomic_dec(atomic_t *v)
+{
+	asm volatile(LOCK_PREFIX "decl %0"
+		     : "+m" (v->counter) :: "memory");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -116,6 +171,7 @@ static inline void atomic_dec(atomic_t *v)
  * returns true if the result is 0, or false for all other
  * cases.
  */
+<<<<<<< HEAD
 static inline int atomic_dec_and_test(atomic_t *v)
 {
 	unsigned char c;
@@ -124,6 +180,11 @@ static inline int atomic_dec_and_test(atomic_t *v)
 		     : "+m" (v->counter), "=qm" (c)
 		     : : "memory");
 	return c != 0;
+=======
+static __always_inline bool atomic_dec_and_test(atomic_t *v)
+{
+	GEN_UNARY_RMWcc(LOCK_PREFIX "decl", v->counter, "%0", e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -134,6 +195,7 @@ static inline int atomic_dec_and_test(atomic_t *v)
  * and returns true if the result is zero, or false for all
  * other cases.
  */
+<<<<<<< HEAD
 static inline int atomic_inc_and_test(atomic_t *v)
 {
 	unsigned char c;
@@ -142,6 +204,11 @@ static inline int atomic_inc_and_test(atomic_t *v)
 		     : "+m" (v->counter), "=qm" (c)
 		     : : "memory");
 	return c != 0;
+=======
+static __always_inline bool atomic_inc_and_test(atomic_t *v)
+{
+	GEN_UNARY_RMWcc(LOCK_PREFIX "incl", v->counter, "%0", e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -153,6 +220,7 @@ static inline int atomic_inc_and_test(atomic_t *v)
  * if the result is negative, or false when
  * result is greater than or equal to zero.
  */
+<<<<<<< HEAD
 static inline int atomic_add_negative(int i, atomic_t *v)
 {
 	unsigned char c;
@@ -161,6 +229,11 @@ static inline int atomic_add_negative(int i, atomic_t *v)
 		     : "+m" (v->counter), "=qm" (c)
 		     : "ir" (i) : "memory");
 	return c;
+=======
+static __always_inline bool atomic_add_negative(int i, atomic_t *v)
+{
+	GEN_BINARY_RMWcc(LOCK_PREFIX "addl", v->counter, "er", i, "%0", s);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -170,7 +243,11 @@ static inline int atomic_add_negative(int i, atomic_t *v)
  *
  * Atomically adds @i to @v and returns @i + @v
  */
+<<<<<<< HEAD
 static inline int atomic_add_return(int i, atomic_t *v)
+=======
+static __always_inline int atomic_add_return(int i, atomic_t *v)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return i + xadd(&v->counter, i);
 }
@@ -182,7 +259,11 @@ static inline int atomic_add_return(int i, atomic_t *v)
  *
  * Atomically subtracts @i from @v and returns @v - @i
  */
+<<<<<<< HEAD
 static inline int atomic_sub_return(int i, atomic_t *v)
+=======
+static __always_inline int atomic_sub_return(int i, atomic_t *v)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return atomic_add_return(-i, v);
 }
@@ -190,7 +271,21 @@ static inline int atomic_sub_return(int i, atomic_t *v)
 #define atomic_inc_return(v)  (atomic_add_return(1, v))
 #define atomic_dec_return(v)  (atomic_sub_return(1, v))
 
+<<<<<<< HEAD
 static inline int atomic_cmpxchg(atomic_t *v, int old, int new)
+=======
+static __always_inline int atomic_fetch_add(int i, atomic_t *v)
+{
+	return xadd(&v->counter, i);
+}
+
+static __always_inline int atomic_fetch_sub(int i, atomic_t *v)
+{
+	return xadd(&v->counter, -i);
+}
+
+static __always_inline int atomic_cmpxchg(atomic_t *v, int old, int new)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return cmpxchg(&v->counter, old, new);
 }
@@ -200,6 +295,43 @@ static inline int atomic_xchg(atomic_t *v, int new)
 	return xchg(&v->counter, new);
 }
 
+<<<<<<< HEAD
+=======
+#define ATOMIC_OP(op)							\
+static inline void atomic_##op(int i, atomic_t *v)			\
+{									\
+	asm volatile(LOCK_PREFIX #op"l %1,%0"				\
+			: "+m" (v->counter)				\
+			: "ir" (i)					\
+			: "memory");					\
+}
+
+#define ATOMIC_FETCH_OP(op, c_op)					\
+static inline int atomic_fetch_##op(int i, atomic_t *v)		\
+{									\
+	int old, val = atomic_read(v);					\
+	for (;;) {							\
+		old = atomic_cmpxchg(v, val, val c_op i);		\
+		if (old == val)						\
+			break;						\
+		val = old;						\
+	}								\
+	return old;							\
+}
+
+#define ATOMIC_OPS(op, c_op)						\
+	ATOMIC_OP(op)							\
+	ATOMIC_FETCH_OP(op, c_op)
+
+ATOMIC_OPS(and, &)
+ATOMIC_OPS(or , |)
+ATOMIC_OPS(xor, ^)
+
+#undef ATOMIC_OPS
+#undef ATOMIC_FETCH_OP
+#undef ATOMIC_OP
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * __atomic_add_unless - add unless the number is already a given value
  * @v: pointer of type atomic_t
@@ -209,7 +341,11 @@ static inline int atomic_xchg(atomic_t *v, int new)
  * Atomically adds @a to @v, so long as @v was not already @u.
  * Returns the old value of @v.
  */
+<<<<<<< HEAD
 static inline int __atomic_add_unless(atomic_t *v, int a, int u)
+=======
+static __always_inline int __atomic_add_unless(atomic_t *v, int a, int u)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int c, old;
 	c = atomic_read(v);
@@ -224,6 +360,7 @@ static inline int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
+<<<<<<< HEAD
 /**
  * atomic_inc_short - increment of a short integer
  * @v: pointer to type int
@@ -268,6 +405,8 @@ static inline void atomic_or_long(unsigned long *v1, unsigned long v2)
 #define smp_mb__before_atomic_inc()	barrier()
 #define smp_mb__after_atomic_inc()	barrier()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_X86_32
 # include <asm/atomic64_32.h>
 #else

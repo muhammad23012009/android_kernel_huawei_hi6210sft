@@ -3,11 +3,27 @@
  * Copyright (C) 1999, 2000, 2004 David S. Miller (davem@redhat.com)
  */
 
+<<<<<<< HEAD
 #define EX_LD(x)		\
 98:	x;			\
 	.section __ex_table,"a";\
 	.align 4;		\
 	.word 98b, __retl_one;	\
+=======
+#define EX_LD(x,y)		\
+98:	x;			\
+	.section __ex_table,"a";\
+	.align 4;		\
+	.word 98b, y;		\
+	.text;			\
+	.align 4;
+
+#define EX_LD_FP(x,y)		\
+98:	x;			\
+	.section __ex_table,"a";\
+	.align 4;		\
+	.word 98b, y##_fp;	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.text;			\
 	.align 4;
 

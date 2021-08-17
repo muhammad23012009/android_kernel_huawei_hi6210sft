@@ -25,12 +25,19 @@
 #include <linux/compiler.h>
 #include <asm/byteorder.h>
 #include <asm/atomic.h>
+<<<<<<< HEAD
 
 #ifdef __KERNEL__
 
 #define smp_mb__before_clear_bit()	barrier()
 #define smp_mb__after_clear_bit()	barrier()
 
+=======
+#include <asm/barrier.h>
+
+#ifdef __KERNEL__
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * The offset calculations for these are based on BITS_PER_LONG == 32
  * (i.e. I get to shift by #5-2 (32 bits per long, 4 bytes per access),
@@ -54,7 +61,11 @@ static inline int test_and_clear_bit(int nr, volatile void *addr)
 	"1:	R12 = memw_locked(R10);\n"
 	"	{ P0 = tstbit(R12,R11); R12 = clrbit(R12,R11); }\n"
 	"	memw_locked(R10,P1) = R12;\n"
+<<<<<<< HEAD
 	"	{if !P1 jump 1b; %0 = mux(P0,#1,#0);}\n"
+=======
+	"	{if (!P1) jump 1b; %0 = mux(P0,#1,#0);}\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	: "=&r" (oldval)
 	: "r" (addr), "r" (nr)
 	: "r10", "r11", "r12", "p0", "p1", "memory"
@@ -78,7 +89,11 @@ static inline int test_and_set_bit(int nr, volatile void *addr)
 	"1:	R12 = memw_locked(R10);\n"
 	"	{ P0 = tstbit(R12,R11); R12 = setbit(R12,R11); }\n"
 	"	memw_locked(R10,P1) = R12;\n"
+<<<<<<< HEAD
 	"	{if !P1 jump 1b; %0 = mux(P0,#1,#0);}\n"
+=======
+	"	{if (!P1) jump 1b; %0 = mux(P0,#1,#0);}\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	: "=&r" (oldval)
 	: "r" (addr), "r" (nr)
 	: "r10", "r11", "r12", "p0", "p1", "memory"
@@ -104,7 +119,11 @@ static inline int test_and_change_bit(int nr, volatile void *addr)
 	"1:	R12 = memw_locked(R10);\n"
 	"	{ P0 = tstbit(R12,R11); R12 = togglebit(R12,R11); }\n"
 	"	memw_locked(R10,P1) = R12;\n"
+<<<<<<< HEAD
 	"	{if !P1 jump 1b; %0 = mux(P0,#1,#0);}\n"
+=======
+	"	{if (!P1) jump 1b; %0 = mux(P0,#1,#0);}\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	: "=&r" (oldval)
 	: "r" (addr), "r" (nr)
 	: "r10", "r11", "r12", "p0", "p1", "memory"
@@ -213,7 +232,11 @@ static inline long ffz(int x)
  * This is defined the same way as ffs.
  * Note fls(0) = 0, fls(1) = 1, fls(0x80000000) = 32.
  */
+<<<<<<< HEAD
 static inline long fls(int x)
+=======
+static inline int fls(int x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int r;
 
@@ -234,12 +257,20 @@ static inline long fls(int x)
  * the libc and compiler builtin ffs routines, therefore
  * differs in spirit from the above ffz (man ffs).
  */
+<<<<<<< HEAD
 static inline long ffs(int x)
+=======
+static inline int ffs(int x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int r;
 
 	asm("{ P0 = cmp.eq(%1,#0); %0 = ct0(%1);}\n"
+<<<<<<< HEAD
 		"{ if P0 %0 = #0; if !P0 %0 = add(%0,#1);}\n"
+=======
+		"{ if (P0) %0 = #0; if (!P0) %0 = add(%0,#1);}\n"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		: "=&r" (r)
 		: "r" (x)
 		: "p0");

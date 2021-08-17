@@ -17,6 +17,10 @@ int security_get_bools(int *len, char ***names, int **values);
 
 int security_set_bools(int len, int *values);
 
+<<<<<<< HEAD
 int security_get_bool_value(int bool);
+=======
+int security_get_bool_value(int index);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif

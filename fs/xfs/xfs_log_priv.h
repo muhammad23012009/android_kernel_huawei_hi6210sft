@@ -22,6 +22,7 @@ struct xfs_buf;
 struct xlog;
 struct xlog_ticket;
 struct xfs_mount;
+<<<<<<< HEAD
 
 /*
  * Macros, structures, prototypes for internal log manager use.
@@ -69,6 +70,18 @@ static inline uint xlog_get_cycle(char *ptr)
 #define BLK_AVG(blk1, blk2)	((blk1+blk2) >> 1)
 
 #ifdef __KERNEL__
+=======
+struct xfs_log_callback;
+
+/*
+ * Flags for log structure
+ */
+#define XLOG_ACTIVE_RECOVERY	0x2	/* in the middle of recovery */
+#define	XLOG_RECOVERY_NEEDED	0x4	/* log was recovered */
+#define XLOG_IO_ERROR		0x8	/* log hit an I/O error, and being
+					   shutdown */
+#define XLOG_TAIL_WARN		0x10	/* log tail verify warning issued */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * get client id from packed copy.
@@ -99,6 +112,7 @@ static inline uint xlog_get_client_id(__be32 i)
 #define XLOG_STATE_CALLBACK  0x0020 /* Callback functions now */
 #define XLOG_STATE_DIRTY     0x0040 /* Dirty IC log, not ready for ACTIVE status*/
 #define XLOG_STATE_IOERROR   0x0080 /* IO error happened in sync'ing log */
+<<<<<<< HEAD
 #define XLOG_STATE_ALL	     0x7FFF /* All possible valid flags */
 #define XLOG_STATE_NOTUSED   0x8000 /* This IC log not being used */
 #endif	/* __KERNEL__ */
@@ -123,6 +137,13 @@ static inline uint xlog_get_client_id(__be32 i)
 
 #ifdef __KERNEL__
 /*
+=======
+#define XLOG_STATE_IOABORT   0x0100 /* force abort on I/O completion (debug) */
+#define XLOG_STATE_ALL	     0x7FFF /* All possible valid flags */
+#define XLOG_STATE_NOTUSED   0x8000 /* This IC log not being used */
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Flags to log ticket
  */
 #define XLOG_TIC_INITED		0x1	/* has been initialized */
@@ -132,6 +153,7 @@ static inline uint xlog_get_client_id(__be32 i)
 	{ XLOG_TIC_INITED,	"XLOG_TIC_INITED" }, \
 	{ XLOG_TIC_PERM_RESERV,	"XLOG_TIC_PERM_RESERV" }
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
 
 #define XLOG_UNMOUNT_TYPE	0x556e	/* Un for Unmount */
@@ -148,6 +170,8 @@ static inline uint xlog_get_client_id(__be32 i)
 typedef __uint32_t xlog_tid_t;
 
 #ifdef __KERNEL__
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Below are states for covering allocation transactions.
  * By covering, we mean changing the h_tail_lsn in the last on-disk
@@ -223,7 +247,10 @@ typedef __uint32_t xlog_tid_t;
 
 #define XLOG_COVER_OPS		5
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Ticket reservation region accounting */ 
 #define XLOG_TIC_LEN_MAX	15
 
@@ -248,7 +275,10 @@ typedef struct xlog_ticket {
 	char		   t_cnt;	 /* current count		 : 1  */
 	char		   t_clientid;	 /* who does this belong to;	 : 1  */
 	char		   t_flags;	 /* properties of reservation	 : 1  */
+<<<<<<< HEAD
 	uint		   t_trans_type; /* transaction type             : 4  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
         /* reservation array fields */
 	uint		   t_res_num;                    /* num in array : 4 */
@@ -258,6 +288,7 @@ typedef struct xlog_ticket {
 	xlog_res_t	   t_res_arr[XLOG_TIC_LEN_MAX];  /* array of res : 8 * 15 */ 
 } xlog_ticket_t;
 
+<<<<<<< HEAD
 #endif
 
 
@@ -316,6 +347,8 @@ typedef union xlog_in_core2 {
 	char			hic_sector[XLOG_HEADER_SIZE];
 } xlog_in_core_2_t;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * - A log record header is 512 bytes.  There is plenty of room to grow the
  *	xlog_rec_header_t into the reserved space.
@@ -360,8 +393,13 @@ typedef struct xlog_in_core {
 
 	/* Callback structures need their own cacheline */
 	spinlock_t		ic_callback_lock ____cacheline_aligned_in_smp;
+<<<<<<< HEAD
 	xfs_log_callback_t	*ic_callback;
 	xfs_log_callback_t	**ic_callback_tail;
+=======
+	struct xfs_log_callback	*ic_callback;
+	struct xfs_log_callback	**ic_callback_tail;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* reference counts need their own cacheline */
 	atomic_t		ic_refcnt ____cacheline_aligned_in_smp;
@@ -387,7 +425,11 @@ struct xfs_cil_ctx {
 	int			space_used;	/* aggregate size of regions */
 	struct list_head	busy_extents;	/* busy extents in chkpt */
 	struct xfs_log_vec	*lv_chain;	/* logvecs being pushed */
+<<<<<<< HEAD
 	xfs_log_callback_t	log_cb;		/* completion callback hook. */
+=======
+	struct xfs_log_callback	log_cb;		/* completion callback hook. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head	committing;	/* ctx committing list */
 };
 
@@ -411,14 +453,27 @@ struct xfs_cil {
 	struct xlog		*xc_log;
 	struct list_head	xc_cil;
 	spinlock_t		xc_cil_lock;
+<<<<<<< HEAD
 	struct xfs_cil_ctx	*xc_ctx;
 	struct rw_semaphore	xc_ctx_lock;
+=======
+
+	struct rw_semaphore	xc_ctx_lock ____cacheline_aligned_in_smp;
+	struct xfs_cil_ctx	*xc_ctx;
+
+	spinlock_t		xc_push_lock ____cacheline_aligned_in_smp;
+	xfs_lsn_t		xc_push_seq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head	xc_committing;
 	wait_queue_head_t	xc_commit_wait;
 	xfs_lsn_t		xc_current_sequence;
 	struct work_struct	xc_push_work;
+<<<<<<< HEAD
 	xfs_lsn_t		xc_push_seq;
 };
+=======
+} ____cacheline_aligned_in_smp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * The amount of log space we allow the CIL to aggregate is difficult to size.
@@ -534,11 +589,24 @@ struct xlog {
 	struct xlog_grant_head	l_reserve_head;
 	struct xlog_grant_head	l_write_head;
 
+<<<<<<< HEAD
 	/* The following field are used for debugging; need to hold icloglock */
 #ifdef DEBUG
 	char			*l_iclog_bak[XLOG_MAX_ICLOGS];
 #endif
 
+=======
+	struct xfs_kobj		l_kobj;
+
+	/* The following field are used for debugging; need to hold icloglock */
+#ifdef DEBUG
+	void			*l_iclog_bak[XLOG_MAX_ICLOGS];
+	/* log record crc error injection factor */
+	uint32_t		l_badcrc_factor;
+#endif
+	/* log recovery lsn tracking (for buffer submission */
+	xfs_lsn_t		l_recovery_lsn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define XLOG_BUF_CANCEL_BUCKET(log, blkno) \
@@ -553,6 +621,11 @@ xlog_recover(
 extern int
 xlog_recover_finish(
 	struct xlog		*log);
+<<<<<<< HEAD
+=======
+extern int
+xlog_recover_cancel(struct xlog *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern __le32	 xlog_cksum(struct xlog *log, struct xlog_rec_header *rhead,
 			    char *dp, int size);
@@ -644,12 +717,19 @@ xlog_assign_grant_head(atomic64_t *head, int cycle, int space)
 /*
  * Committed Item List interfaces
  */
+<<<<<<< HEAD
 int
 xlog_cil_init(struct xlog *log);
 void
 xlog_cil_init_post_recovery(struct xlog *log);
 void
 xlog_cil_destroy(struct xlog *log);
+=======
+int	xlog_cil_init(struct xlog *log);
+void	xlog_cil_init_post_recovery(struct xlog *log);
+void	xlog_cil_destroy(struct xlog *log);
+bool	xlog_cil_empty(struct xlog *log);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * CIL force routines
@@ -686,6 +766,60 @@ static inline void xlog_wait(wait_queue_head_t *wq, spinlock_t *lock)
 	schedule();
 	remove_wait_queue(wq, &wait);
 }
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
+=======
+
+/*
+ * The LSN is valid so long as it is behind the current LSN. If it isn't, this
+ * means that the next log record that includes this metadata could have a
+ * smaller LSN. In turn, this means that the modification in the log would not
+ * replay.
+ */
+static inline bool
+xlog_valid_lsn(
+	struct xlog	*log,
+	xfs_lsn_t	lsn)
+{
+	int		cur_cycle;
+	int		cur_block;
+	bool		valid = true;
+
+	/*
+	 * First, sample the current lsn without locking to avoid added
+	 * contention from metadata I/O. The current cycle and block are updated
+	 * (in xlog_state_switch_iclogs()) and read here in a particular order
+	 * to avoid false negatives (e.g., thinking the metadata LSN is valid
+	 * when it is not).
+	 *
+	 * The current block is always rewound before the cycle is bumped in
+	 * xlog_state_switch_iclogs() to ensure the current LSN is never seen in
+	 * a transiently forward state. Instead, we can see the LSN in a
+	 * transiently behind state if we happen to race with a cycle wrap.
+	 */
+	cur_cycle = ACCESS_ONCE(log->l_curr_cycle);
+	smp_rmb();
+	cur_block = ACCESS_ONCE(log->l_curr_block);
+
+	if ((CYCLE_LSN(lsn) > cur_cycle) ||
+	    (CYCLE_LSN(lsn) == cur_cycle && BLOCK_LSN(lsn) > cur_block)) {
+		/*
+		 * If the metadata LSN appears invalid, it's possible the check
+		 * above raced with a wrap to the next log cycle. Grab the lock
+		 * to check for sure.
+		 */
+		spin_lock(&log->l_icloglock);
+		cur_cycle = log->l_curr_cycle;
+		cur_block = log->l_curr_block;
+		spin_unlock(&log->l_icloglock);
+
+		if ((CYCLE_LSN(lsn) > cur_cycle) ||
+		    (CYCLE_LSN(lsn) == cur_cycle && BLOCK_LSN(lsn) > cur_block))
+			valid = false;
+	}
+
+	return valid;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __XFS_LOG_PRIV_H__ */

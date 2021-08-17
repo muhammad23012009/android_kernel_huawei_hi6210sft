@@ -23,6 +23,7 @@
 #include <linux/io.h>
 #include <linux/bcd.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 #ifdef CONFIG_RTC_DRV_HI3635_PMU
 #include <linux/of_address.h>
@@ -34,6 +35,10 @@
 #include <linux/delay.h>
 #include <linux/mfd/hi3xxx_hi6421v300.h>
 #endif
+=======
+#include <linux/pm_wakeirq.h>
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Register definitions
@@ -79,6 +84,7 @@
 
 #define RTC_TIMER_FREQ 32768
 
+<<<<<<< HEAD
 #ifdef CONFIG_RTC_DRV_HI3635_PMU
 /*
  * Hi6421V300 RTC Register definitions
@@ -102,6 +108,8 @@
 #define HI6421V300_ALARM_ON             (0x001) /* Alarm current status */
 #define ALARM_ENABLE_MASK               0xFE
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * struct pl031_vendor_data - per-vendor variations
  * @ops: the vendor-specific operations used on this silicon version
@@ -122,6 +130,7 @@ struct pl031_local {
 	struct pl031_vendor_data *vendor;
 	struct rtc_device *rtc;
 	void __iomem *base;
+<<<<<<< HEAD
 #ifdef CONFIG_RTC_DRV_HI3635_PMU
 	void __iomem *hisi_pmurtc_base;
 #endif
@@ -321,6 +330,9 @@ static int hisi_pmu_rtc_config(struct device *dev) { return 0; }
 static void hisi_pmu_rtc_unconfig(struct device *dev) { }
 
 #endif
+=======
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int pl031_alarm_irq_enable(struct device *dev,
 	unsigned int enabled)
@@ -498,8 +510,11 @@ static int pl031_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret == 0)
 		writel(time, ldata->base + RTC_LR);
 
+<<<<<<< HEAD
 	hisi_pmu_rtc_settime(dev, tm);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -538,11 +553,20 @@ static int pl031_remove(struct amba_device *adev)
 {
 	struct pl031_local *ldata = dev_get_drvdata(&adev->dev);
 
+<<<<<<< HEAD
 	amba_set_drvdata(adev, NULL);
 	free_irq(adev->irq[0], ldata);
 	rtc_device_unregister(ldata->rtc);
 	iounmap(ldata->base);
 	hisi_pmu_rtc_unconfig(&adev->dev);
+=======
+	dev_pm_clear_wake_irq(&adev->dev);
+	device_init_wakeup(&adev->dev, false);
+	if (adev->irq[0])
+		free_irq(adev->irq[0], ldata);
+	rtc_device_unregister(ldata->rtc);
+	iounmap(ldata->base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(ldata);
 	amba_release_regions(adev);
 
@@ -555,8 +579,12 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 	struct pl031_local *ldata;
 	struct pl031_vendor_data *vendor = id->data;
 	struct rtc_class_ops *ops = &vendor->ops;
+<<<<<<< HEAD
 	unsigned long time = 0;
 	unsigned long data = 0;
+=======
+	unsigned long time, data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = amba_request_regions(adev, NULL);
 	if (ret)
@@ -577,9 +605,13 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 	}
 
 	amba_set_drvdata(adev, ldata);
+<<<<<<< HEAD
 #ifdef CONFIG_RTC_DRV_HI3635_PMU
 	pmurtcdata = ldata;
 #endif
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_dbg(&adev->dev, "designer ID = 0x%02x\n", amba_manf(adev));
 	dev_dbg(&adev->dev, "revision = 0x%01x\n", amba_rev(adev));
 
@@ -608,6 +640,7 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 		}
 	}
 
+<<<<<<< HEAD
 	device_init_wakeup(&adev->dev, 1);
 
 	ret = hisi_pmu_rtc_config(&adev->dev);
@@ -615,11 +648,17 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 		goto out_pmu_rtc_config;
 
 	ldata->rtc = rtc_device_register("pl031", &adev->dev, ops, THIS_MODULE);
+=======
+	device_init_wakeup(&adev->dev, true);
+	ldata->rtc = rtc_device_register("pl031", &adev->dev, ops,
+					THIS_MODULE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(ldata->rtc)) {
 		ret = PTR_ERR(ldata->rtc);
 		goto out_no_rtc;
 	}
 
+<<<<<<< HEAD
 	if (request_irq(adev->irq[0], pl031_interrupt,
 			vendor->irqflags, "rtc-pl031", ldata)) {
 		ret = -EIO;
@@ -628,15 +667,28 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 
 	device_init_wakeup(&adev->dev, 1);
 
+=======
+	if (adev->irq[0]) {
+		ret = request_irq(adev->irq[0], pl031_interrupt,
+				  vendor->irqflags, "rtc-pl031", ldata);
+		if (ret)
+			goto out_no_irq;
+		dev_pm_set_wake_irq(&adev->dev, adev->irq[0]);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 
 out_no_irq:
 	rtc_device_unregister(ldata->rtc);
 out_no_rtc:
+<<<<<<< HEAD
 	hisi_pmu_rtc_unconfig(&adev->dev);
 out_pmu_rtc_config:
 	iounmap(ldata->base);
 	amba_set_drvdata(adev, NULL);
+=======
+	iounmap(ldata->base);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_no_remap:
 	kfree(ldata);
 out:
@@ -646,6 +698,7 @@ err_req:
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int pl031_suspend(struct device *dev)
 {
@@ -682,6 +735,8 @@ static SIMPLE_DEV_PM_OPS(pl031_pm, pl031_suspend, pl031_resume);
 #define PL031_PM NULL
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Operations for the original ARM version */
 static struct pl031_vendor_data arm_pl031 = {
 	.ops = {
@@ -691,7 +746,10 @@ static struct pl031_vendor_data arm_pl031 = {
 		.set_alarm = pl031_set_alarm,
 		.alarm_irq_enable = pl031_alarm_irq_enable,
 	},
+<<<<<<< HEAD
 	.irqflags = IRQF_NO_SUSPEND,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* The First ST derivative */
@@ -705,7 +763,10 @@ static struct pl031_vendor_data stv1_pl031 = {
 	},
 	.clockwatch = true,
 	.st_weekday = true,
+<<<<<<< HEAD
 	.irqflags = IRQF_NO_SUSPEND,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* And the second ST derivative */
@@ -722,8 +783,15 @@ static struct pl031_vendor_data stv2_pl031 = {
 	/*
 	 * This variant shares the IRQ with another block and must not
 	 * suspend that IRQ line.
+<<<<<<< HEAD
 	 */
 	.irqflags = IRQF_SHARED | IRQF_NO_SUSPEND,
+=======
+	 * TODO check if it shares with IRQF_NO_SUSPEND user, else we can
+	 * remove IRQF_COND_SUSPEND
+	 */
+	.irqflags = IRQF_SHARED | IRQF_COND_SUSPEND,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct amba_id pl031_ids[] = {
@@ -751,7 +819,10 @@ MODULE_DEVICE_TABLE(amba, pl031_ids);
 static struct amba_driver pl031_driver = {
 	.drv = {
 		.name = "rtc-pl031",
+<<<<<<< HEAD
 		.pm = PL031_PM,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.id_table = pl031_ids,
 	.probe = pl031_probe,
@@ -760,6 +831,10 @@ static struct amba_driver pl031_driver = {
 
 module_amba_driver(pl031_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Deepak Saxena <dsaxena@plexity.net");
+=======
+MODULE_AUTHOR("Deepak Saxena <dsaxena@plexity.net>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("ARM AMBA PL031 RTC Driver");
 MODULE_LICENSE("GPL");

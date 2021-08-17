@@ -13,6 +13,10 @@
 #endif
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	Bit access functions vary across the ColdFire and 68k families.
@@ -67,12 +71,15 @@ static inline void bfset_mem_set_bit(int nr, volatile unsigned long *vaddr)
 #define __set_bit(nr, vaddr)	set_bit(nr, vaddr)
 
 
+<<<<<<< HEAD
 /*
  * clear_bit() doesn't provide any barrier for the compiler.
  */
 #define smp_mb__before_clear_bit()	barrier()
 #define smp_mb__after_clear_bit()	barrier()
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void bclr_reg_clear_bit(int nr, volatile unsigned long *vaddr)
 {
 	char *p = (char *)vaddr + (nr ^ 31) / 8;

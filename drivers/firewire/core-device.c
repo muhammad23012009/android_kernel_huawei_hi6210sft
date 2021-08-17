@@ -115,6 +115,12 @@ static int textual_leaf_to_string(const u32 *block, char *buf, size_t size)
  *
  * The string is taken from a minimal ASCII text descriptor leaf after
  * the immediate entry with @key.  The string is zero-terminated.
+<<<<<<< HEAD
+=======
+ * An overlong string is silently truncated such that it and the
+ * zero byte fit into @size.
+ *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Returns strlen(buf) or a negative error code.
  */
 int fw_csr_string(const u32 *directory, int key, char *buf, size_t size)
@@ -165,25 +171,63 @@ static bool match_ids(const struct ieee1394_device_id *id_table, int *id)
 	return (match & id_table->match_flags) == id_table->match_flags;
 }
 
+<<<<<<< HEAD
 static bool is_fw_unit(struct device *dev);
 
 static int fw_unit_match(struct device *dev, struct device_driver *drv)
+=======
+static const struct ieee1394_device_id *unit_match(struct device *dev,
+						   struct device_driver *drv)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	const struct ieee1394_device_id *id_table =
 			container_of(drv, struct fw_driver, driver)->id_table;
 	int id[] = {0, 0, 0, 0};
 
+<<<<<<< HEAD
 	/* We only allow binding to fw_units. */
 	if (!is_fw_unit(dev))
 		return 0;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	get_modalias_ids(fw_unit(dev), id);
 
 	for (; id_table->match_flags != 0; id_table++)
 		if (match_ids(id_table, id))
+<<<<<<< HEAD
 			return 1;
 
 	return 0;
+=======
+			return id_table;
+
+	return NULL;
+}
+
+static bool is_fw_unit(struct device *dev);
+
+static int fw_unit_match(struct device *dev, struct device_driver *drv)
+{
+	/* We only allow binding to fw_units. */
+	return is_fw_unit(dev) && unit_match(dev, drv) != NULL;
+}
+
+static int fw_unit_probe(struct device *dev)
+{
+	struct fw_driver *driver =
+			container_of(dev->driver, struct fw_driver, driver);
+
+	return driver->probe(fw_unit(dev), unit_match(dev, dev->driver));
+}
+
+static int fw_unit_remove(struct device *dev)
+{
+	struct fw_driver *driver =
+			container_of(dev->driver, struct fw_driver, driver);
+
+	return driver->remove(fw_unit(dev)), 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int get_modalias(struct fw_unit *unit, char *buffer, size_t buffer_size)
@@ -213,6 +257,11 @@ static int fw_unit_uevent(struct device *dev, struct kobj_uevent_env *env)
 struct bus_type fw_bus_type = {
 	.name = "firewire",
 	.match = fw_unit_match,
+<<<<<<< HEAD
+=======
+	.probe = fw_unit_probe,
+	.remove = fw_unit_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 EXPORT_SYMBOL(fw_bus_type);
 

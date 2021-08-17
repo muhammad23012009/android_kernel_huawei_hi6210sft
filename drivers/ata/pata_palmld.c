@@ -124,7 +124,10 @@ static int palmld_pata_remove(struct platform_device *dev)
 static struct platform_driver palmld_pata_platform_driver = {
 	.driver	 = {
 		.name   = DRV_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= palmld_pata_probe,
 	.remove		= palmld_pata_remove,

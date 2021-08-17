@@ -44,7 +44,10 @@ for_each_subchannel(int(*fn)(struct subchannel_id, void *), void *data)
 	int ret;
 
 	init_subchannel_id(&schid);
+<<<<<<< HEAD
 	ret = -ENODEV;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	do {
 		do {
 			ret = fn(schid, data);
@@ -69,7 +72,12 @@ static int call_fn_known_sch(struct device *dev, void *data)
 	struct cb_data *cb = data;
 	int rc = 0;
 
+<<<<<<< HEAD
 	idset_sch_del(cb->set, sch->schid);
+=======
+	if (cb->set)
+		idset_sch_del(cb->set, sch->schid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (cb->fn_known_sch)
 		rc = cb->fn_known_sch(sch, cb->data);
 	return rc;
@@ -115,6 +123,16 @@ int for_each_subchannel_staged(int (*fn_known)(struct subchannel *, void *),
 	cb.fn_known_sch = fn_known;
 	cb.fn_unknown_sch = fn_unknown;
 
+<<<<<<< HEAD
+=======
+	if (fn_known && !fn_unknown) {
+		/* Skip idset allocation in case of known-only loop. */
+		cb.set = NULL;
+		return bus_for_each_dev(&css_bus_type, NULL, &cb,
+					call_fn_known_sch);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cb.set = idset_sch_new();
 	if (!cb.set)
 		/* fall back to brute force scanning in case of oom */
@@ -383,7 +401,11 @@ static int css_evaluate_new_subchannel(struct subchannel_id schid, int slow)
 		/* Will be done on the slow path. */
 		return -EAGAIN;
 	}
+<<<<<<< HEAD
 	if (stsch_err(schid, &schib)) {
+=======
+	if (stsch(schid, &schib)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* Subchannel is not provided. */
 		return -ENXIO;
 	}
@@ -522,6 +544,14 @@ static int slow_eval_known_fn(struct subchannel *sch, void *data)
 		rc = css_evaluate_known_subchannel(sch, 1);
 		if (rc == -EAGAIN)
 			css_schedule_eval(sch->schid);
+<<<<<<< HEAD
+=======
+		/*
+		 * The loop might take long time for platforms with lots of
+		 * known devices. Allow scheduling here.
+		 */
+		cond_resched();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return 0;
 }
@@ -546,11 +576,23 @@ static int slow_eval_unknown_fn(struct subchannel_id schid, void *data)
 		case -ENOMEM:
 		case -EIO:
 			/* These should abort looping */
+<<<<<<< HEAD
 			idset_sch_del_subseq(slow_subchannel_set, schid);
+=======
+			spin_lock_irq(&slow_subchannel_lock);
+			idset_sch_del_subseq(slow_subchannel_set, schid);
+			spin_unlock_irq(&slow_subchannel_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		default:
 			rc = 0;
 		}
+<<<<<<< HEAD
+=======
+		/* Allow scheduling here since the containing loop might
+		 * take a while.  */
+		cond_resched();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return rc;
 }
@@ -570,7 +612,11 @@ static void css_slow_path_func(struct work_struct *unused)
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 }
 
+<<<<<<< HEAD
 static DECLARE_WORK(slow_path_work, css_slow_path_func);
+=======
+static DECLARE_DELAYED_WORK(slow_path_work, css_slow_path_func);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct workqueue_struct *cio_work_q;
 
 void css_schedule_eval(struct subchannel_id schid)
@@ -580,7 +626,11 @@ void css_schedule_eval(struct subchannel_id schid)
 	spin_lock_irqsave(&slow_subchannel_lock, flags);
 	idset_sch_add(slow_subchannel_set, schid);
 	atomic_set(&css_eval_scheduled, 1);
+<<<<<<< HEAD
 	queue_work(cio_work_q, &slow_path_work);
+=======
+	queue_delayed_work(cio_work_q, &slow_path_work, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 }
 
@@ -591,7 +641,11 @@ void css_schedule_eval_all(void)
 	spin_lock_irqsave(&slow_subchannel_lock, flags);
 	idset_fill(slow_subchannel_set);
 	atomic_set(&css_eval_scheduled, 1);
+<<<<<<< HEAD
 	queue_work(cio_work_q, &slow_path_work);
+=======
+	queue_delayed_work(cio_work_q, &slow_path_work, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 }
 
@@ -604,7 +658,11 @@ static int __unset_registered(struct device *dev, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void css_schedule_eval_all_unreg(void)
+=======
+void css_schedule_eval_all_unreg(unsigned long delay)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	unsigned long flags;
 	struct idset *unreg_set;
@@ -622,7 +680,11 @@ static void css_schedule_eval_all_unreg(void)
 	spin_lock_irqsave(&slow_subchannel_lock, flags);
 	idset_add_set(slow_subchannel_set, unreg_set);
 	atomic_set(&css_eval_scheduled, 1);
+<<<<<<< HEAD
 	queue_work(cio_work_q, &slow_path_work);
+=======
+	queue_delayed_work(cio_work_q, &slow_path_work, delay);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 	idset_free(unreg_set);
 }
@@ -635,7 +697,12 @@ void css_wait_for_slow_path(void)
 /* Schedule reprobing of all unregistered subchannels. */
 void css_schedule_reprobe(void)
 {
+<<<<<<< HEAD
 	css_schedule_eval_all_unreg();
+=======
+	/* Schedule with a delay to allow merging of subsequent calls. */
+	css_schedule_eval_all_unreg(1 * HZ);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL_GPL(css_schedule_reprobe);
 
@@ -689,17 +756,24 @@ css_generate_pgid(struct channel_subsystem *css, u32 tod_high)
 		css->global_pgid.pgid_high.ext_cssid.version = 0x80;
 		css->global_pgid.pgid_high.ext_cssid.cssid = css->cssid;
 	} else {
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 		css->global_pgid.pgid_high.cpu_addr = stap();
 #else
 		css->global_pgid.pgid_high.cpu_addr = 0;
 #endif
+=======
+		css->global_pgid.pgid_high.cpu_addr = stap();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	get_cpu_id(&cpu_id);
 	css->global_pgid.cpu_id = cpu_id.ident;
 	css->global_pgid.cpu_model = cpu_id.machine;
 	css->global_pgid.tod_high = tod_high;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -740,7 +814,11 @@ css_cm_enable_store(struct device *dev, struct device_attribute *attr,
 	int ret;
 	unsigned long val;
 
+<<<<<<< HEAD
 	ret = strict_strtoul(buf, 16, &val);
+=======
+	ret = kstrtoul(buf, 16, &val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		return ret;
 	mutex_lock(&css->mutex);
@@ -1075,6 +1153,10 @@ void channel_subsystem_reinit(void)
 		if (chp)
 			chp_update_desc(chp);
 	}
+<<<<<<< HEAD
+=======
+	cmf_reactivate();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #ifdef CONFIG_PROC_FS
@@ -1111,6 +1193,11 @@ device_initcall(cio_settle_init);
 
 int sch_is_pseudo_sch(struct subchannel *sch)
 {
+<<<<<<< HEAD
+=======
+	if (!sch->dev.parent)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return sch == to_css(sch->dev.parent)->pseudo_subchannel;
 }
 

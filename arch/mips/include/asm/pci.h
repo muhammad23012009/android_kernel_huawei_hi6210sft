@@ -17,15 +17,27 @@
  */
 
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 
+=======
+#include <linux/list.h>
+#include <linux/of.h>
+
+#ifdef CONFIG_PCI_DRIVERS_LEGACY
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Each pci channel is a top-level PCI bus seem by CPU.	 A machine  with
  * multiple PCI channels may have multiple PCI host controllers or a
  * single controller supporting multiple channels.
  */
 struct pci_controller {
+<<<<<<< HEAD
 	struct pci_controller *next;
+=======
+	struct list_head list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pci_bus *bus;
 	struct device_node *of_node;
 
@@ -35,13 +47,24 @@ struct pci_controller {
 	struct resource *io_resource;
 	unsigned long io_offset;
 	unsigned long io_map_base;
+<<<<<<< HEAD
 
+=======
+	struct resource *busn_resource;
+	unsigned long busn_offset;
+
+#ifndef CONFIG_PCI_DOMAINS_GENERIC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int index;
 	/* For compatibility with current (as of July 2003) pciutils
 	   and XFree86. Eventually will be removed. */
 	unsigned int need_domain_info;
+<<<<<<< HEAD
 
 	int iommu;
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Optional access methods for reading/writing the bus number
 	   of the PCI controller */
@@ -52,7 +75,10 @@ struct pci_controller {
 /*
  * Used by boards to register their PCI busses before the actual scanning.
  */
+<<<<<<< HEAD
 extern struct pci_controller * alloc_pci_controller(void);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void register_pci_controller(struct pci_controller *hose);
 
 /*
@@ -60,12 +86,51 @@ extern void register_pci_controller(struct pci_controller *hose);
  */
 extern int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin);
 
+<<<<<<< HEAD
+=======
+/* Do platform specific device initialization at pci_enable_device() time */
+extern int pcibios_plat_dev_init(struct pci_dev *dev);
+
+extern char * (*pcibios_plat_setup)(char *str);
+
+#ifdef CONFIG_OF
+/* this function parses memory ranges from a device node */
+extern void pci_load_of_ranges(struct pci_controller *hose,
+			       struct device_node *node);
+#else
+static inline void pci_load_of_ranges(struct pci_controller *hose,
+				      struct device_node *node) {}
+#endif
+
+#ifdef CONFIG_PCI_DOMAINS_GENERIC
+static inline void set_pci_need_domain_info(struct pci_controller *hose,
+					    int need_domain_info)
+{
+	/* nothing to do */
+}
+#elif defined(CONFIG_PCI_DOMAINS)
+static inline void set_pci_need_domain_info(struct pci_controller *hose,
+					    int need_domain_info)
+{
+	hose->need_domain_info = need_domain_info;
+}
+#endif /* CONFIG_PCI_DOMAINS */
+
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Can be used to override the logic in pci_scan_bus for skipping
    already-configured bus numbers - to be used for buggy BIOSes
    or architectures with incomplete PCI setup by the loader */
+<<<<<<< HEAD
 
 extern unsigned int pcibios_assign_all_busses(void);
+=======
+static inline unsigned int pcibios_assign_all_busses(void)
+{
+	return 1;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern unsigned long PCIBIOS_MIN_IO;
 extern unsigned long PCIBIOS_MIN_MEM;
@@ -74,16 +139,24 @@ extern unsigned long PCIBIOS_MIN_MEM;
 
 extern void pcibios_set_master(struct pci_dev *dev);
 
+<<<<<<< HEAD
 static inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define HAVE_PCI_MMAP
 
 extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	enum pci_mmap_state mmap_state, int write_combine);
 
+<<<<<<< HEAD
+=======
+#define HAVE_ARCH_PCI_RESOURCE_TO_USER
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Dynamic DMA mapping stuff.
  * MIPS has everything mapped statically.
@@ -91,14 +164,21 @@ extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 
 #include <linux/types.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
 #include <linux/string.h>
 #include <asm/io.h>
 #include <asm-generic/pci-bridge.h>
+=======
+#include <linux/scatterlist.h>
+#include <linux/string.h>
+#include <asm/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct pci_dev;
 
 /*
+<<<<<<< HEAD
  * The PCI address space does equal the physical memory address space.	The
  * networking and block device layers use this boolean for bounce buffer
  * decisions.  This is set if any hose does not have an IOMMU.
@@ -115,6 +195,20 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+ * The PCI address space does equal the physical memory address space.
+ * The networking and block device layers use this boolean for bounce
+ * buffer decisions.
+ */
+#define PCI_DMA_BUS_IS_PHYS     (1)
+
+#ifdef CONFIG_PCI_DOMAINS_GENERIC
+static inline int pci_proc_domain(struct pci_bus *bus)
+{
+	return pci_domain_nr(bus);
+}
+#elif defined(CONFIG_PCI_DOMAINS)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
 
 static inline int pci_proc_domain(struct pci_bus *bus)
@@ -122,12 +216,19 @@ static inline int pci_proc_domain(struct pci_bus *bus)
 	struct pci_controller *hose = bus->sysdata;
 	return hose->need_domain_info;
 }
+<<<<<<< HEAD
 
 #endif /* __KERNEL__ */
 
 /* implement the pci_ DMA API in terms of the generic device dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
+=======
+#endif /* CONFIG_PCI_DOMAINS */
+
+#endif /* __KERNEL__ */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Do platform specific device initialization at pci_enable_device() time */
 extern int pcibios_plat_dev_init(struct pci_dev *dev);
 
@@ -137,6 +238,7 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 	return channel ? 15 : 14;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_CAVIUM_OCTEON
 /* MSI arch hook for OCTEON */
 #define arch_setup_msi_irqs arch_setup_msi_irqs
@@ -153,4 +255,6 @@ static inline void pci_load_of_ranges(struct pci_controller *hose,
 				      struct device_node *node) {}
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_PCI_H */

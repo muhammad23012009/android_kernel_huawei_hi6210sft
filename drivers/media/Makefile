@@ -2,6 +2,13 @@
 # Makefile for the kernel multimedia device drivers.
 #
 
+<<<<<<< HEAD
+=======
+ifeq ($(CONFIG_MEDIA_CEC_EDID),y)
+  obj-$(CONFIG_MEDIA_SUPPORT) += cec-edid.o
+endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 media-objs	:= media-device.o media-devnode.o media-entity.o
 
 #
@@ -28,6 +35,10 @@ obj-y += rc/
 # Finally, merge the drivers that require the core
 #
 
+<<<<<<< HEAD
 obj-y += common/ platform/ pci/ usb/ mmc/ firewire/ parport/ huawei/
+=======
+obj-y += common/ platform/ pci/ usb/ mmc/ firewire/ spi/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_VIDEO_DEV) += radio/
 

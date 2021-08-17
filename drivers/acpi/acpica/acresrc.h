@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -124,7 +128,11 @@ typedef enum {
 typedef const struct acpi_rsdump_info {
 	u8 opcode;
 	u8 offset;
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char **pointer;
 
 } acpi_rsdump_info;
@@ -184,7 +192,11 @@ acpi_rs_create_resource_list(union acpi_operand_object *aml_buffer,
 			     struct acpi_buffer *output_buffer);
 
 acpi_status
+<<<<<<< HEAD
 acpi_rs_create_aml_resources(struct acpi_resource *linked_list_buffer,
+=======
+acpi_rs_create_aml_resources(struct acpi_buffer *resource_list,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     struct acpi_buffer *output_buffer);
 
 acpi_status
@@ -209,7 +221,11 @@ acpi_rs_get_prs_method_data(struct acpi_namespace_node *node,
 
 acpi_status
 acpi_rs_get_method_data(acpi_handle handle,
+<<<<<<< HEAD
 			char *path, struct acpi_buffer *ret_buffer);
+=======
+			const char *path, struct acpi_buffer *ret_buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 acpi_status
 acpi_rs_set_srs_method_data(struct acpi_namespace_node *node,
@@ -223,6 +239,7 @@ acpi_rs_get_aei_method_data(struct acpi_namespace_node *node,
  * rscalc
  */
 acpi_status
+<<<<<<< HEAD
 acpi_rs_get_list_length(u8 * aml_buffer,
 			u32 aml_buffer_length, acpi_size * size_needed);
 
@@ -233,6 +250,18 @@ acpi_rs_get_aml_length(struct acpi_resource *linked_list_buffer,
 acpi_status
 acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
 				     acpi_size * buffer_size_needed);
+=======
+acpi_rs_get_list_length(u8 *aml_buffer,
+			u32 aml_buffer_length, acpi_size *size_needed);
+
+acpi_status
+acpi_rs_get_aml_length(struct acpi_resource *resource_list,
+		       acpi_size resource_list_size, acpi_size *size_needed);
+
+acpi_status
+acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
+				     acpi_size *buffer_size_needed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 acpi_status
 acpi_rs_convert_aml_to_resources(u8 * aml,
@@ -299,11 +328,21 @@ acpi_rs_set_resource_length(acpi_rsdesc_size total_length,
 			    union aml_resource *aml);
 
 /*
+<<<<<<< HEAD
  * rsdump
  */
 void acpi_rs_dump_resource_list(struct acpi_resource *resource);
 
 void acpi_rs_dump_irq_list(u8 * route_table);
+=======
+ * rsdump - Debugger support
+ */
+#ifdef ACPI_DEBUGGER
+void acpi_rs_dump_resource_list(struct acpi_resource *resource);
+
+void acpi_rs_dump_irq_list(u8 *route_table);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Resource conversion tables

@@ -88,11 +88,15 @@ static int ir_rc6_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	struct rc6_dec *data = &dev->raw->rc6;
 	u32 scancode;
 	u8 toggle;
+<<<<<<< HEAD
 
 	if (!(dev->enabled_protocols &
 	      (RC_BIT_RC6_0 | RC_BIT_RC6_6A_20 | RC_BIT_RC6_6A_24 |
 	       RC_BIT_RC6_6A_32 | RC_BIT_RC6_MCE)))
 		return 0;
+=======
+	enum rc_type protocol;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!is_timing_event(ev)) {
 		if (ev.reset)
@@ -233,9 +237,17 @@ again:
 		case RC6_MODE_0:
 			scancode = data->body;
 			toggle = data->toggle;
+<<<<<<< HEAD
 			IR_dprintk(1, "RC6(0) scancode 0x%04x (toggle: %u)\n",
 				   scancode, toggle);
 			break;
+=======
+			protocol = RC_TYPE_RC6_0;
+			IR_dprintk(1, "RC6(0) scancode 0x%04x (toggle: %u)\n",
+				   scancode, toggle);
+			break;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case RC6_MODE_6A:
 			if (data->count > CHAR_BIT * sizeof data->body) {
 				IR_dprintk(1, "RC6 too many (%u) data bits\n",
@@ -244,6 +256,7 @@ again:
 			}
 
 			scancode = data->body;
+<<<<<<< HEAD
 			if (data->count == RC6_6A_32_NBITS &&
 					(scancode & RC6_6A_LCC_MASK) == RC6_6A_MCE_CC) {
 				/* MCE RC */
@@ -254,13 +267,45 @@ again:
 			}
 			IR_dprintk(1, "RC6(6A) scancode 0x%08x (toggle: %u)\n",
 				   scancode, toggle);
+=======
+			switch (data->count) {
+			case 20:
+				protocol = RC_TYPE_RC6_6A_20;
+				toggle = 0;
+				break;
+			case 24:
+				protocol = RC_TYPE_RC6_6A_24;
+				toggle = 0;
+				break;
+			case 32:
+				if ((scancode & RC6_6A_LCC_MASK) == RC6_6A_MCE_CC) {
+					protocol = RC_TYPE_RC6_MCE;
+					toggle = !!(scancode & RC6_6A_MCE_TOGGLE_MASK);
+					scancode &= ~RC6_6A_MCE_TOGGLE_MASK;
+				} else {
+					protocol = RC_TYPE_RC6_6A_32;
+					toggle = 0;
+				}
+				break;
+			default:
+				IR_dprintk(1, "RC6(6A) unsupported length\n");
+				goto out;
+			}
+
+			IR_dprintk(1, "RC6(6A) proto 0x%04x, scancode 0x%08x (toggle: %u)\n",
+				   protocol, scancode, toggle);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		default:
 			IR_dprintk(1, "RC6 unknown mode\n");
 			goto out;
 		}
 
+<<<<<<< HEAD
 		rc_keydown(dev, scancode, toggle);
+=======
+		rc_keydown(dev, protocol, scancode, toggle);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		data->state = STATE_INACTIVE;
 		return 0;
 	}

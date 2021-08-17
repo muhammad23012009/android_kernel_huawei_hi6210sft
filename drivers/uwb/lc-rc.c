@@ -56,8 +56,16 @@ static struct uwb_rc *uwb_rc_find_by_index(int index)
 	struct uwb_rc *rc = NULL;
 
 	dev = class_find_device(&uwb_rc_class, NULL, &index, uwb_rc_index_match);
+<<<<<<< HEAD
 	if (dev)
 		rc = dev_get_drvdata(dev);
+=======
+	if (dev) {
+		rc = dev_get_drvdata(dev);
+		put_device(dev);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
@@ -119,10 +127,115 @@ struct uwb_rc *uwb_rc_alloc(void)
 }
 EXPORT_SYMBOL_GPL(uwb_rc_alloc);
 
+<<<<<<< HEAD
+=======
+/*
+ * Show the ASIE that is broadcast in the UWB beacon by this uwb_rc device.
+ */
+static ssize_t ASIE_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+{
+	struct uwb_dev *uwb_dev = to_uwb_dev(dev);
+	struct uwb_rc *rc = uwb_dev->rc;
+	struct uwb_ie_hdr *ie;
+	void *ptr;
+	size_t len;
+	int result = 0;
+
+	/* init empty buffer. */
+	result = scnprintf(buf, PAGE_SIZE, "\n");
+	mutex_lock(&rc->ies_mutex);
+	/* walk IEData looking for an ASIE. */
+	ptr = rc->ies->IEData;
+	len = le16_to_cpu(rc->ies->wIELength);
+	for (;;) {
+		ie = uwb_ie_next(&ptr, &len);
+		if (!ie)
+			break;
+		if (ie->element_id == UWB_APP_SPEC_IE) {
+			result = uwb_ie_dump_hex(ie,
+					ie->length + sizeof(struct uwb_ie_hdr),
+					buf, PAGE_SIZE);
+			break;
+		}
+	}
+	mutex_unlock(&rc->ies_mutex);
+
+	return result;
+}
+
+/*
+ * Update the ASIE that is broadcast in the UWB beacon by this uwb_rc device.
+ */
+static ssize_t ASIE_store(struct device *dev,
+				 struct device_attribute *attr,
+				 const char *buf, size_t size)
+{
+	struct uwb_dev *uwb_dev = to_uwb_dev(dev);
+	struct uwb_rc *rc = uwb_dev->rc;
+	char ie_buf[255];
+	int result, ie_len = 0;
+	const char *cur_ptr = buf;
+	struct uwb_ie_hdr *ie;
+
+	/* empty string means clear the ASIE. */
+	if (strlen(buf) <= 1) {
+		uwb_rc_ie_rm(rc, UWB_APP_SPEC_IE);
+		return size;
+	}
+
+	/* if non-empty string, convert string of hex chars to binary. */
+	while (ie_len < sizeof(ie_buf)) {
+		int char_count;
+
+		if (sscanf(cur_ptr, " %02hhX %n",
+				&(ie_buf[ie_len]), &char_count) > 0) {
+			++ie_len;
+			/* skip chars read from cur_ptr. */
+			cur_ptr += char_count;
+		} else {
+			break;
+		}
+	}
+
+	/* validate IE length and type. */
+	if (ie_len < sizeof(struct uwb_ie_hdr)) {
+		dev_err(dev, "%s: Invalid ASIE size %d.\n", __func__, ie_len);
+		return -EINVAL;
+	}
+
+	ie = (struct uwb_ie_hdr *)ie_buf;
+	if (ie->element_id != UWB_APP_SPEC_IE) {
+		dev_err(dev, "%s: Invalid IE element type size = 0x%02X.\n",
+				__func__, ie->element_id);
+		return -EINVAL;
+	}
+
+	/* bounds check length field from user. */
+	if (ie->length > (ie_len - sizeof(struct uwb_ie_hdr)))
+		ie->length = ie_len - sizeof(struct uwb_ie_hdr);
+
+	/*
+	 * Valid ASIE received. Remove current ASIE then add the new one using
+	 * uwb_rc_ie_add.
+	 */
+	uwb_rc_ie_rm(rc, UWB_APP_SPEC_IE);
+
+	result = uwb_rc_ie_add(rc, ie, ie->length + sizeof(struct uwb_ie_hdr));
+
+	return result >= 0 ? size : result;
+}
+static DEVICE_ATTR_RW(ASIE);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct attribute *rc_attrs[] = {
 		&dev_attr_mac_address.attr,
 		&dev_attr_scan.attr,
 		&dev_attr_beacon.attr,
+<<<<<<< HEAD
+=======
+		&dev_attr_ASIE.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		NULL,
 };
 
@@ -368,7 +481,13 @@ struct uwb_rc *__uwb_rc_try_get(struct uwb_rc *target_rc)
 	if (dev) {
 		rc = dev_get_drvdata(dev);
 		__uwb_rc_get(rc);
+<<<<<<< HEAD
 	}
+=======
+		put_device(dev);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 EXPORT_SYMBOL_GPL(__uwb_rc_try_get);
@@ -421,8 +540,16 @@ struct uwb_rc *uwb_rc_get_by_grandpa(const struct device *grandpa_dev)
 
 	dev = class_find_device(&uwb_rc_class, NULL, grandpa_dev,
 				find_rc_grandpa);
+<<<<<<< HEAD
 	if (dev)
 		rc = dev_get_drvdata(dev);
+=======
+	if (dev) {
+		rc = dev_get_drvdata(dev);
+		put_device(dev);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 EXPORT_SYMBOL_GPL(uwb_rc_get_by_grandpa);
@@ -454,8 +581,15 @@ struct uwb_rc *uwb_rc_get_by_dev(const struct uwb_dev_addr *addr)
 	struct uwb_rc *rc = NULL;
 
 	dev = class_find_device(&uwb_rc_class, NULL, addr, find_rc_dev);
+<<<<<<< HEAD
 	if (dev)
 		rc = dev_get_drvdata(dev);
+=======
+	if (dev) {
+		rc = dev_get_drvdata(dev);
+		put_device(dev);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }

@@ -26,11 +26,16 @@
 #include <acpi/pdc_intel.h>
 
 #include <asm/numa.h>
+<<<<<<< HEAD
+=======
+#include <asm/fixmap.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/processor.h>
 #include <asm/mmu.h>
 #include <asm/mpspec.h>
 #include <asm/realmode.h>
 
+<<<<<<< HEAD
 #define COMPILER_DEPENDENT_INT64   long long
 #define COMPILER_DEPENDENT_UINT64  unsigned long long
 
@@ -75,6 +80,11 @@ int __acpi_release_global_lock(unsigned int *lock);
 	    "rcrl   $1,%3;"		\
 	    : "=r"(n_hi), "=r"(n_lo)	\
 	    : "0"(n_hi), "1"(n_lo))
+=======
+#ifdef CONFIG_ACPI_APEI
+# include <asm/pgtable_types.h>
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_ACPI
 extern int acpi_lapic;
@@ -86,6 +96,10 @@ extern int acpi_pci_disabled;
 extern int acpi_skip_timer_override;
 extern int acpi_use_timer_override;
 extern int acpi_fix_pin2_polarity;
+<<<<<<< HEAD
+=======
+extern int acpi_disable_cmcff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern u8 acpi_sci_flags;
 extern int acpi_sci_override_gsi;
@@ -93,6 +107,10 @@ void acpi_pic_sci_set_trigger(unsigned int, u16);
 
 extern int (*__acpi_register_gsi)(struct device *dev, u32 gsi,
 				  int trigger, int polarity);
+<<<<<<< HEAD
+=======
+extern void (*__acpi_unregister_gsi)(u32 gsi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void disable_acpi(void)
 {
@@ -111,7 +129,11 @@ static inline void acpi_disable_pci(void)
 }
 
 /* Low-level suspend routine. */
+<<<<<<< HEAD
 extern int acpi_suspend_lowlevel(void);
+=======
+extern int (*acpi_suspend_lowlevel)(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Physical address to resume after wakeup */
 #define acpi_wakeup_address ((unsigned long)(real_mode_header->wakeup_start))
@@ -130,7 +152,11 @@ static inline unsigned int acpi_processor_cstate_check(unsigned int max_cstate)
 	if (boot_cpu_data.x86 == 0x0F &&
 	    boot_cpu_data.x86_vendor == X86_VENDOR_AMD &&
 	    boot_cpu_data.x86_model <= 0x05 &&
+<<<<<<< HEAD
 	    boot_cpu_data.x86_mask < 0x0A)
+=======
+	    boot_cpu_data.x86_stepping < 0x0A)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 1;
 	else if (amd_e400_c1e_detected)
 		return 1;
@@ -164,10 +190,22 @@ static inline void arch_acpi_set_pdc_bits(u32 *buf)
 		buf[2] &= ~(ACPI_PDC_C_C2C3_FFH);
 }
 
+<<<<<<< HEAD
+=======
+static inline bool acpi_has_cpu_in_madt(void)
+{
+	return !!acpi_lapic;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else /* !CONFIG_ACPI */
 
 #define acpi_lapic 0
 #define acpi_ioapic 0
+<<<<<<< HEAD
+=======
+#define acpi_disable_cmcff 0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void acpi_noirq_set(void) { }
 static inline void acpi_disable_pci(void) { }
 static inline void disable_acpi(void) { }
@@ -177,10 +215,37 @@ static inline void disable_acpi(void) { }
 #define ARCH_HAS_POWER_INIT	1
 
 #ifdef CONFIG_ACPI_NUMA
+<<<<<<< HEAD
 extern int acpi_numa;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int x86_acpi_numa_init(void);
 #endif /* CONFIG_ACPI_NUMA */
 
 #define acpi_unlazy_tlb(x)	leave_mm(x)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ACPI_APEI
+static inline pgprot_t arch_apei_get_mem_attribute(phys_addr_t addr)
+{
+	/*
+	 * We currently have no way to look up the EFI memory map
+	 * attributes for a region in a consistent way, because the
+	 * memmap is discarded after efi_free_boot_services(). So if
+	 * you call efi_mem_attributes() during boot and at runtime,
+	 * you could theoretically see different attributes.
+	 *
+	 * Since we are yet to see any x86 platforms that require
+	 * anything other than PAGE_KERNEL (some arm64 platforms
+	 * require the equivalent of PAGE_KERNEL_NOCACHE), return that
+	 * until we know differently.
+	 */
+	 return PAGE_KERNEL;
+}
+#endif
+
+#define ACPI_TABLE_UPGRADE_MAX_PHYS (max_low_pfn_mapped << PAGE_SHIFT)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_X86_ACPI_H */

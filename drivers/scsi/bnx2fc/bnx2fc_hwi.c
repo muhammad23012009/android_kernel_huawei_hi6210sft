@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 /* bnx2fc_hwi.c: Broadcom NetXtreme II Linux FCoE offload driver.
  * This file contains the code that low level functions that interact
  * with 57712 FCoE firmware.
  *
  * Copyright (c) 2008 - 2013 Broadcom Corporation
+=======
+/* bnx2fc_hwi.c: QLogic Linux FCoE offload driver.
+ * This file contains the code that low level functions that interact
+ * with 57712 FCoE firmware.
+ *
+ * Copyright (c) 2008-2013 Broadcom Corporation
+ * Copyright (c) 2014-2015 QLogic Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -828,7 +837,11 @@ ret_err_rqe:
 			((u64)err_entry->data.err_warn_bitmap_hi << 32) |
 			(u64)err_entry->data.err_warn_bitmap_lo;
 		for (i = 0; i < BNX2FC_NUM_ERR_BITS; i++) {
+<<<<<<< HEAD
 			if (err_warn_bit_map & (u64) (1 << i)) {
+=======
+			if (err_warn_bit_map & ((u64)1 << i)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				err_warn = i;
 				break;
 			}
@@ -993,7 +1006,11 @@ void bnx2fc_arm_cq(struct bnx2fc_rport *tgt)
 
 }
 
+<<<<<<< HEAD
 struct bnx2fc_work *bnx2fc_alloc_work(struct bnx2fc_rport *tgt, u16 wqe)
+=======
+static struct bnx2fc_work *bnx2fc_alloc_work(struct bnx2fc_rport *tgt, u16 wqe)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct bnx2fc_work *work;
 	work = kzalloc(sizeof(struct bnx2fc_work), GFP_ATOMIC);
@@ -1421,8 +1438,12 @@ int bnx2fc_map_doorbell(struct bnx2fc_rport *tgt)
 
 	reg_base = pci_resource_start(hba->pcidev,
 					BNX2X_DOORBELL_PCI_BAR);
+<<<<<<< HEAD
 	reg_off = BNX2FC_5771X_DB_PAGE_SIZE *
 			(context_id & 0x1FFFF) + DPM_TRIGER_TYPE;
+=======
+	reg_off = (1 << BNX2X_DB_SHIFT) * (context_id & 0x1FFFF);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tgt->ctx_base = ioremap_nocache(reg_base + reg_off, 4);
 	if (!tgt->ctx_base)
 		return -ENOMEM;
@@ -1967,6 +1988,7 @@ static void bnx2fc_free_hash_table(struct bnx2fc_hba *hba)
 {
 	int i;
 	int segment_count;
+<<<<<<< HEAD
 	int hash_table_size;
 	u32 *pbl;
 
@@ -1987,6 +2009,31 @@ static void bnx2fc_free_hash_table(struct bnx2fc_hba *hba)
 				  hba->hash_tbl_segments[i],
 				  dma_address);
 
+=======
+	u32 *pbl;
+
+	if (hba->hash_tbl_segments) {
+
+		pbl = hba->hash_tbl_pbl;
+		if (pbl) {
+			segment_count = hba->hash_tbl_segment_count;
+			for (i = 0; i < segment_count; ++i) {
+				dma_addr_t dma_address;
+
+				dma_address = le32_to_cpu(*pbl);
+				++pbl;
+				dma_address += ((u64)le32_to_cpu(*pbl)) << 32;
+				++pbl;
+				dma_free_coherent(&hba->pcidev->dev,
+						  BNX2FC_HASH_TBL_CHUNK_SIZE,
+						  hba->hash_tbl_segments[i],
+						  dma_address);
+			}
+		}
+
+		kfree(hba->hash_tbl_segments);
+		hba->hash_tbl_segments = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (hba->hash_tbl_pbl) {
@@ -2024,7 +2071,11 @@ static int bnx2fc_allocate_hash_table(struct bnx2fc_hba *hba)
 	dma_segment_array = kzalloc(dma_segment_array_size, GFP_KERNEL);
 	if (!dma_segment_array) {
 		printk(KERN_ERR PFX "hash table pointers (dma) alloc failed\n");
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		goto cleanup_ht;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = 0; i < segment_count; ++i) {
@@ -2035,6 +2086,7 @@ static int bnx2fc_allocate_hash_table(struct bnx2fc_hba *hba)
 					   GFP_KERNEL);
 		if (!hba->hash_tbl_segments[i]) {
 			printk(KERN_ERR PFX "hash segment alloc failed\n");
+<<<<<<< HEAD
 			while (--i >= 0) {
 				dma_free_coherent(&hba->pcidev->dev,
 						    BNX2FC_HASH_TBL_CHUNK_SIZE,
@@ -2044,6 +2096,9 @@ static int bnx2fc_allocate_hash_table(struct bnx2fc_hba *hba)
 			}
 			kfree(dma_segment_array);
 			return -ENOMEM;
+=======
+			goto cleanup_dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		memset(hba->hash_tbl_segments[i], 0,
 		       BNX2FC_HASH_TBL_CHUNK_SIZE);
@@ -2055,8 +2110,12 @@ static int bnx2fc_allocate_hash_table(struct bnx2fc_hba *hba)
 					       GFP_KERNEL);
 	if (!hba->hash_tbl_pbl) {
 		printk(KERN_ERR PFX "hash table pbl alloc failed\n");
+<<<<<<< HEAD
 		kfree(dma_segment_array);
 		return -ENOMEM;
+=======
+		goto cleanup_dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	memset(hba->hash_tbl_pbl, 0, PAGE_SIZE);
 
@@ -2081,6 +2140,25 @@ static int bnx2fc_allocate_hash_table(struct bnx2fc_hba *hba)
 	}
 	kfree(dma_segment_array);
 	return 0;
+<<<<<<< HEAD
+=======
+
+cleanup_dma:
+	for (i = 0; i < segment_count; ++i) {
+		if (hba->hash_tbl_segments[i])
+			dma_free_coherent(&hba->pcidev->dev,
+					    BNX2FC_HASH_TBL_CHUNK_SIZE,
+					    hba->hash_tbl_segments[i],
+					    dma_segment_array[i]);
+	}
+
+	kfree(dma_segment_array);
+
+cleanup_ht:
+	kfree(hba->hash_tbl_segments);
+	hba->hash_tbl_segments = NULL;
+	return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**

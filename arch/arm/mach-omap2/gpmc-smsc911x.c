@@ -83,7 +83,11 @@ void __init gpmc_smsc911x_init(struct omap_smsc911x_platform_data *gpmc_cfg)
 	pdev = platform_device_register_resndata(NULL, "smsc911x", gpmc_cfg->id,
 		 gpmc_smsc911x_resources, ARRAY_SIZE(gpmc_smsc911x_resources),
 		 &gpmc_smsc911x_config, sizeof(gpmc_smsc911x_config));
+<<<<<<< HEAD
 	if (!pdev) {
+=======
+	if (IS_ERR(pdev)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("Unable to register platform device\n");
 		gpio_free(gpmc_cfg->gpio_reset);
 		goto free2;

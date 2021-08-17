@@ -5,7 +5,10 @@
 #include "btrfs_inode.h"
 #include "print-tree.h"
 #include "export.h"
+<<<<<<< HEAD
 #include "compat.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define BTRFS_FID_SIZE_NON_CONNECTABLE (offsetof(struct btrfs_fid, \
 						 parent_objectid) / 4)
@@ -56,9 +59,15 @@ static int btrfs_encode_fh(struct inode *inode, u32 *fh, int *max_len,
 	return type;
 }
 
+<<<<<<< HEAD
 static struct dentry *btrfs_get_dentry(struct super_block *sb, u64 objectid,
 				       u64 root_objectid, u32 generation,
 				       int check_generation)
+=======
+struct dentry *btrfs_get_dentry(struct super_block *sb, u64 objectid,
+				u64 root_objectid, u32 generation,
+				int check_generation)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct btrfs_fs_info *fs_info = btrfs_sb(sb);
 	struct btrfs_root *root;
@@ -71,7 +80,11 @@ static struct dentry *btrfs_get_dentry(struct super_block *sb, u64 objectid,
 		return ERR_PTR(-ESTALE);
 
 	key.objectid = root_objectid;
+<<<<<<< HEAD
 	btrfs_set_key_type(&key, BTRFS_ROOT_ITEM_KEY);
+=======
+	key.type = BTRFS_ROOT_ITEM_KEY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	key.offset = (u64)-1;
 
 	index = srcu_read_lock(&fs_info->subvol_srcu);
@@ -82,6 +95,7 @@ static struct dentry *btrfs_get_dentry(struct super_block *sb, u64 objectid,
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	if (btrfs_root_refs(&root->root_item) == 0) {
 		err = -ENOENT;
 		goto fail;
@@ -89,6 +103,10 @@ static struct dentry *btrfs_get_dentry(struct super_block *sb, u64 objectid,
 
 	key.objectid = objectid;
 	btrfs_set_key_type(&key, BTRFS_INODE_ITEM_KEY);
+=======
+	key.objectid = objectid;
+	key.type = BTRFS_INODE_ITEM_KEY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	key.offset = 0;
 
 	inode = btrfs_iget(sb, &key, root, NULL);
@@ -118,11 +136,19 @@ static struct dentry *btrfs_fh_to_parent(struct super_block *sb, struct fid *fh,
 	u32 generation;
 
 	if (fh_type == FILEID_BTRFS_WITH_PARENT) {
+<<<<<<< HEAD
 		if (fh_len !=  BTRFS_FID_SIZE_CONNECTABLE)
 			return NULL;
 		root_objectid = fid->root_objectid;
 	} else if (fh_type == FILEID_BTRFS_WITH_PARENT_ROOT) {
 		if (fh_len != BTRFS_FID_SIZE_CONNECTABLE_ROOT)
+=======
+		if (fh_len <  BTRFS_FID_SIZE_CONNECTABLE)
+			return NULL;
+		root_objectid = fid->root_objectid;
+	} else if (fh_type == FILEID_BTRFS_WITH_PARENT_ROOT) {
+		if (fh_len < BTRFS_FID_SIZE_CONNECTABLE_ROOT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return NULL;
 		root_objectid = fid->parent_root_objectid;
 	} else
@@ -142,11 +168,19 @@ static struct dentry *btrfs_fh_to_dentry(struct super_block *sb, struct fid *fh,
 	u32 generation;
 
 	if ((fh_type != FILEID_BTRFS_WITH_PARENT ||
+<<<<<<< HEAD
 	     fh_len != BTRFS_FID_SIZE_CONNECTABLE) &&
 	    (fh_type != FILEID_BTRFS_WITH_PARENT_ROOT ||
 	     fh_len != BTRFS_FID_SIZE_CONNECTABLE_ROOT) &&
 	    (fh_type != FILEID_BTRFS_WITHOUT_PARENT ||
 	     fh_len != BTRFS_FID_SIZE_NON_CONNECTABLE))
+=======
+	     fh_len < BTRFS_FID_SIZE_CONNECTABLE) &&
+	    (fh_type != FILEID_BTRFS_WITH_PARENT_ROOT ||
+	     fh_len < BTRFS_FID_SIZE_CONNECTABLE_ROOT) &&
+	    (fh_type != FILEID_BTRFS_WITHOUT_PARENT ||
+	     fh_len < BTRFS_FID_SIZE_NON_CONNECTABLE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	objectid = fid->objectid;
@@ -156,9 +190,15 @@ static struct dentry *btrfs_fh_to_dentry(struct super_block *sb, struct fid *fh,
 	return btrfs_get_dentry(sb, objectid, root_objectid, generation, 1);
 }
 
+<<<<<<< HEAD
 static struct dentry *btrfs_get_parent(struct dentry *child)
 {
 	struct inode *dir = child->d_inode;
+=======
+struct dentry *btrfs_get_parent(struct dentry *child)
+{
+	struct inode *dir = d_inode(child);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct btrfs_root *root = BTRFS_I(dir)->root;
 	struct btrfs_path *path;
 	struct extent_buffer *leaf;
@@ -226,8 +266,13 @@ fail:
 static int btrfs_get_name(struct dentry *parent, char *name,
 			  struct dentry *child)
 {
+<<<<<<< HEAD
 	struct inode *inode = child->d_inode;
 	struct inode *dir = parent->d_inode;
+=======
+	struct inode *inode = d_inode(child);
+	struct inode *dir = d_inode(parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct btrfs_path *path;
 	struct btrfs_root *root = BTRFS_I(dir)->root;
 	struct btrfs_inode_ref *iref;

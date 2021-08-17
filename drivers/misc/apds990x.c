@@ -609,7 +609,11 @@ static int apds990x_detect(struct apds990x_chip *chip)
 	return ret;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_PM) || defined(CONFIG_PM_RUNTIME)
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int apds990x_chip_on(struct apds990x_chip *chip)
 {
 	int err	 = regulator_bulk_enable(ARRAY_SIZE(chip->regs),
@@ -696,9 +700,17 @@ static ssize_t apds990x_lux_calib_store(struct device *dev,
 {
 	struct apds990x_chip *chip = dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	chip->lux_calib = value;
 
@@ -759,8 +771,14 @@ static ssize_t apds990x_rate_store(struct device *dev,
 	unsigned long value;
 	int ret;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&chip->mutex);
 	ret = apds990x_set_arate(chip, value);
@@ -813,9 +831,17 @@ static ssize_t apds990x_prox_enable_store(struct device *dev,
 {
 	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&chip->mutex);
 
@@ -892,11 +918,20 @@ static ssize_t apds990x_lux_thresh_below_show(struct device *dev,
 static ssize_t apds990x_set_lux_thresh(struct apds990x_chip *chip, u32 *target,
 				const char *buf)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	unsigned long thresh;
 
 	if (strict_strtoul(buf, 0, &thresh))
 		return -EINVAL;
+=======
+	unsigned long thresh;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &thresh);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (thresh > APDS_RANGE)
 		return -EINVAL;
@@ -957,9 +992,17 @@ static ssize_t apds990x_prox_threshold_store(struct device *dev,
 {
 	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ((value > APDS_RANGE) || (value == 0) ||
 		(value < APDS_PROX_HYSTERESIS))
@@ -990,9 +1033,18 @@ static ssize_t apds990x_power_state_store(struct device *dev,
 {
 	struct apds990x_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (value) {
 		pm_runtime_get_sync(dev);
 		mutex_lock(&chip->mutex);
@@ -1204,7 +1256,11 @@ static int apds990x_remove(struct i2c_client *client)
 #ifdef CONFIG_PM_SLEEP
 static int apds990x_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct apds990x_chip *chip = i2c_get_clientdata(client);
 
 	apds990x_chip_off(chip);
@@ -1213,7 +1269,11 @@ static int apds990x_suspend(struct device *dev)
 
 static int apds990x_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct apds990x_chip *chip = i2c_get_clientdata(client);
 
 	/*
@@ -1226,10 +1286,17 @@ static int apds990x_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int apds990x_runtime_suspend(struct device *dev)
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+#ifdef CONFIG_PM
+static int apds990x_runtime_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct apds990x_chip *chip = i2c_get_clientdata(client);
 
 	apds990x_chip_off(chip);
@@ -1238,7 +1305,11 @@ static int apds990x_runtime_suspend(struct device *dev)
 
 static int apds990x_runtime_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct apds990x_chip *chip = i2c_get_clientdata(client);
 
 	apds990x_chip_on(chip);
@@ -1264,7 +1335,10 @@ static const struct dev_pm_ops apds990x_pm_ops = {
 static struct i2c_driver apds990x_driver = {
 	.driver	 = {
 		.name	= "apds990x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &apds990x_pm_ops,
 	},
 	.probe	  = apds990x_probe,

@@ -44,6 +44,10 @@ void set_fs_pwd(struct fs_struct *fs, const struct path *path)
 	if (old_pwd.dentry)
 		path_put(&old_pwd);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(set_fs_pwd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int replace_path(struct path *p, const struct path *old, const struct path *new)
 {
@@ -89,6 +93,10 @@ void free_fs_struct(struct fs_struct *fs)
 	path_put(&fs->pwd);
 	kmem_cache_free(fs_cachep, fs);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(free_fs_struct);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void exit_fs(struct task_struct *tsk)
 {
@@ -162,6 +170,10 @@ EXPORT_SYMBOL(current_umask);
 struct fs_struct init_fs = {
 	.users		= 1,
 	.lock		= __SPIN_LOCK_UNLOCKED(init_fs.lock),
+<<<<<<< HEAD
 	.seq		= SEQCNT_ZERO,
+=======
+	.seq		= SEQCNT_ZERO(init_fs.seq),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.umask		= 0022,
 };

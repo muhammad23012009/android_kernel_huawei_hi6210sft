@@ -9,6 +9,7 @@
 
 #include "persistent-data/dm-block-manager.h"
 #include "persistent-data/dm-space-map.h"
+<<<<<<< HEAD
 
 #define THIN_METADATA_BLOCK_SIZE 4096
 
@@ -19,6 +20,16 @@
  * index entry contains allocation info about 16k metadata blocks.
  */
 #define THIN_METADATA_MAX_SECTORS (255 * (1 << 14) * (THIN_METADATA_BLOCK_SIZE / (1 << SECTOR_SHIFT)))
+=======
+#include "persistent-data/dm-space-map-metadata.h"
+
+#define THIN_METADATA_BLOCK_SIZE DM_SM_METADATA_BLOCK_SIZE
+
+/*
+ * The metadata device is currently limited in size.
+ */
+#define THIN_METADATA_MAX_SECTORS DM_SM_METADATA_MAX_SECTORS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * A metadata device larger than 16GB triggers a warning.
@@ -27,6 +38,14 @@
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+/*
+ * Thin metadata superblock flags.
+ */
+#define THIN_METADATA_NEEDS_CHECK_FLAG (1 << 0)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dm_pool_metadata;
 struct dm_thin_device;
 
@@ -131,17 +150,38 @@ dm_thin_id dm_thin_dev_id(struct dm_thin_device *td);
 
 struct dm_thin_lookup_result {
 	dm_block_t block;
+<<<<<<< HEAD
 	unsigned shared:1;
+=======
+	bool shared:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
  * Returns:
+<<<<<<< HEAD
  *   -EWOULDBLOCK iff @can_block is set and would block.
+=======
+ *   -EWOULDBLOCK iff @can_issue_io is set and would issue IO
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *   -ENODATA iff that mapping is not present.
  *   0 success
  */
 int dm_thin_find_block(struct dm_thin_device *td, dm_block_t block,
+<<<<<<< HEAD
 		       int can_block, struct dm_thin_lookup_result *result);
+=======
+		       int can_issue_io, struct dm_thin_lookup_result *result);
+
+/*
+ * Retrieve the next run of contiguously mapped blocks.  Useful for working
+ * out where to break up IO.  Returns 0 on success, < 0 on error.
+ */
+int dm_thin_find_mapped_range(struct dm_thin_device *td,
+			      dm_block_t begin, dm_block_t end,
+			      dm_block_t *thin_begin, dm_block_t *thin_end,
+			      dm_block_t *pool_begin, bool *maybe_shared);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Obtain an unused block.
@@ -155,6 +195,11 @@ int dm_thin_insert_block(struct dm_thin_device *td, dm_block_t block,
 			 dm_block_t data_block);
 
 int dm_thin_remove_block(struct dm_thin_device *td, dm_block_t block);
+<<<<<<< HEAD
+=======
+int dm_thin_remove_range(struct dm_thin_device *td,
+			 dm_block_t begin, dm_block_t end);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Queries.
@@ -179,11 +224,20 @@ int dm_pool_get_free_metadata_block_count(struct dm_pool_metadata *pmd,
 int dm_pool_get_metadata_dev_size(struct dm_pool_metadata *pmd,
 				  dm_block_t *result);
 
+<<<<<<< HEAD
 int dm_pool_get_data_block_size(struct dm_pool_metadata *pmd, sector_t *result);
 
 int dm_pool_get_data_dev_size(struct dm_pool_metadata *pmd, dm_block_t *result);
 
 int dm_pool_block_is_used(struct dm_pool_metadata *pmd, dm_block_t b, bool *result);
+=======
+int dm_pool_get_data_dev_size(struct dm_pool_metadata *pmd, dm_block_t *result);
+
+int dm_pool_block_is_shared(struct dm_pool_metadata *pmd, dm_block_t b, bool *result);
+
+int dm_pool_inc_data_range(struct dm_pool_metadata *pmd, dm_block_t b, dm_block_t e);
+int dm_pool_dec_data_range(struct dm_pool_metadata *pmd, dm_block_t b, dm_block_t e);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Returns -ENOSPC if the new size is too small and already allocated
@@ -197,12 +251,30 @@ int dm_pool_resize_metadata_dev(struct dm_pool_metadata *pmd, dm_block_t new_siz
  * that nothing is changing.
  */
 void dm_pool_metadata_read_only(struct dm_pool_metadata *pmd);
+<<<<<<< HEAD
+=======
+void dm_pool_metadata_read_write(struct dm_pool_metadata *pmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int dm_pool_register_metadata_threshold(struct dm_pool_metadata *pmd,
 					dm_block_t threshold,
 					dm_sm_threshold_fn fn,
 					void *context);
 
+<<<<<<< HEAD
+=======
+/*
+ * Updates the superblock immediately.
+ */
+int dm_pool_metadata_set_needs_check(struct dm_pool_metadata *pmd);
+bool dm_pool_metadata_needs_check(struct dm_pool_metadata *pmd);
+
+/*
+ * Issue any prefetches that may be useful.
+ */
+void dm_pool_issue_prefetches(struct dm_pool_metadata *pmd);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*----------------------------------------------------------------*/
 
 #endif

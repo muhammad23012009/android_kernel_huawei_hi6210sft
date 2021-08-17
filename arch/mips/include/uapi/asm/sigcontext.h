@@ -12,11 +12,30 @@
 #include <linux/types.h>
 #include <asm/sgidefs.h>
 
+<<<<<<< HEAD
+=======
+/* scalar FP context was used */
+#define USED_FP			(1 << 0)
+
+/* the value of Status.FR when context was saved */
+#define USED_FR1		(1 << 1)
+
+/* FR=1, but with odd singles in bits 63:32 of preceding even double */
+#define USED_HYBRID_FPRS	(1 << 2)
+
+/* extended context was used, see struct extcontext for details */
+#define USED_EXTCONTEXT		(1 << 3)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if _MIPS_SIM == _MIPS_SIM_ABI32
 
 /*
  * Keep this struct definition in sync with the sigcontext fragment
+<<<<<<< HEAD
  * in arch/mips/tools/offset.c
+=======
+ * in arch/mips/kernel/asm-offsets.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct sigcontext {
 	unsigned int		sc_regmask;	/* Unused */
@@ -46,7 +65,11 @@ struct sigcontext {
 #include <linux/posix_types.h>
 /*
  * Keep this struct definition in sync with the sigcontext fragment
+<<<<<<< HEAD
  * in arch/mips/tools/offset.c
+=======
+ * in arch/mips/kernel/asm-offsets.c
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Warning: this structure illdefined with sc_badvaddr being just an unsigned
  * int so it was changed to unsigned long in 2.6.0-test1.  This may break

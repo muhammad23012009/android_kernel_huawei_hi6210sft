@@ -26,6 +26,10 @@ static struct sighand_struct init_sighand = INIT_SIGHAND(init_sighand);
  * handled. This is done by having a special ".data..init_task" section...
  */
 #define init_thread_info	init_task_mem.s.thread_info
+<<<<<<< HEAD
+=======
+#define init_stack		init_task_mem.stack
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 union {
 	struct {

@@ -29,7 +29,10 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pm.h>
 #include <linux/sysctl.h>
 #include <linux/jiffies.h>
@@ -55,6 +58,7 @@ static unsigned int sleep_static_memctlr[4][3];
 static void save_core_regs(void)
 {
 	/* Clocks and PLLs. */
+<<<<<<< HEAD
 	sleep_sys_clocks[0] = au_readl(SYS_FREQCTRL0);
 	sleep_sys_clocks[1] = au_readl(SYS_FREQCTRL1);
 	sleep_sys_clocks[2] = au_readl(SYS_CLKSRC);
@@ -77,6 +81,30 @@ static void save_core_regs(void)
 	sleep_static_memctlr[3][0] = au_readl(MEM_STCFG3);
 	sleep_static_memctlr[3][1] = au_readl(MEM_STTIME3);
 	sleep_static_memctlr[3][2] = au_readl(MEM_STADDR3);
+=======
+	sleep_sys_clocks[0] = alchemy_rdsys(AU1000_SYS_FREQCTRL0);
+	sleep_sys_clocks[1] = alchemy_rdsys(AU1000_SYS_FREQCTRL1);
+	sleep_sys_clocks[2] = alchemy_rdsys(AU1000_SYS_CLKSRC);
+	sleep_sys_clocks[3] = alchemy_rdsys(AU1000_SYS_CPUPLL);
+	sleep_sys_clocks[4] = alchemy_rdsys(AU1000_SYS_AUXPLL);
+
+	/* pin mux config */
+	sleep_sys_pinfunc = alchemy_rdsys(AU1000_SYS_PINFUNC);
+
+	/* Save the static memory controller configuration. */
+	sleep_static_memctlr[0][0] = alchemy_rdsmem(AU1000_MEM_STCFG0);
+	sleep_static_memctlr[0][1] = alchemy_rdsmem(AU1000_MEM_STTIME0);
+	sleep_static_memctlr[0][2] = alchemy_rdsmem(AU1000_MEM_STADDR0);
+	sleep_static_memctlr[1][0] = alchemy_rdsmem(AU1000_MEM_STCFG1);
+	sleep_static_memctlr[1][1] = alchemy_rdsmem(AU1000_MEM_STTIME1);
+	sleep_static_memctlr[1][2] = alchemy_rdsmem(AU1000_MEM_STADDR1);
+	sleep_static_memctlr[2][0] = alchemy_rdsmem(AU1000_MEM_STCFG2);
+	sleep_static_memctlr[2][1] = alchemy_rdsmem(AU1000_MEM_STTIME2);
+	sleep_static_memctlr[2][2] = alchemy_rdsmem(AU1000_MEM_STADDR2);
+	sleep_static_memctlr[3][0] = alchemy_rdsmem(AU1000_MEM_STCFG3);
+	sleep_static_memctlr[3][1] = alchemy_rdsmem(AU1000_MEM_STTIME3);
+	sleep_static_memctlr[3][2] = alchemy_rdsmem(AU1000_MEM_STADDR3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void restore_core_regs(void)
@@ -86,6 +114,7 @@ static void restore_core_regs(void)
 	 * one of those Au1000 with a write-only PLL, where we dont
 	 * have a valid value)
 	 */
+<<<<<<< HEAD
 	au_writel(sleep_sys_clocks[0], SYS_FREQCTRL0);
 	au_writel(sleep_sys_clocks[1], SYS_FREQCTRL1);
 	au_writel(sleep_sys_clocks[2], SYS_CLKSRC);
@@ -110,6 +139,30 @@ static void restore_core_regs(void)
 	au_writel(sleep_static_memctlr[3][0], MEM_STCFG3);
 	au_writel(sleep_static_memctlr[3][1], MEM_STTIME3);
 	au_writel(sleep_static_memctlr[3][2], MEM_STADDR3);
+=======
+	alchemy_wrsys(sleep_sys_clocks[0], AU1000_SYS_FREQCTRL0);
+	alchemy_wrsys(sleep_sys_clocks[1], AU1000_SYS_FREQCTRL1);
+	alchemy_wrsys(sleep_sys_clocks[2], AU1000_SYS_CLKSRC);
+	alchemy_wrsys(sleep_sys_clocks[4], AU1000_SYS_AUXPLL);
+	if (!au1xxx_cpu_has_pll_wo())
+		alchemy_wrsys(sleep_sys_clocks[3], AU1000_SYS_CPUPLL);
+
+	alchemy_wrsys(sleep_sys_pinfunc, AU1000_SYS_PINFUNC);
+
+	/* Restore the static memory controller configuration. */
+	alchemy_wrsmem(sleep_static_memctlr[0][0], AU1000_MEM_STCFG0);
+	alchemy_wrsmem(sleep_static_memctlr[0][1], AU1000_MEM_STTIME0);
+	alchemy_wrsmem(sleep_static_memctlr[0][2], AU1000_MEM_STADDR0);
+	alchemy_wrsmem(sleep_static_memctlr[1][0], AU1000_MEM_STCFG1);
+	alchemy_wrsmem(sleep_static_memctlr[1][1], AU1000_MEM_STTIME1);
+	alchemy_wrsmem(sleep_static_memctlr[1][2], AU1000_MEM_STADDR1);
+	alchemy_wrsmem(sleep_static_memctlr[2][0], AU1000_MEM_STCFG2);
+	alchemy_wrsmem(sleep_static_memctlr[2][1], AU1000_MEM_STTIME2);
+	alchemy_wrsmem(sleep_static_memctlr[2][2], AU1000_MEM_STADDR2);
+	alchemy_wrsmem(sleep_static_memctlr[3][0], AU1000_MEM_STCFG3);
+	alchemy_wrsmem(sleep_static_memctlr[3][1], AU1000_MEM_STTIME3);
+	alchemy_wrsmem(sleep_static_memctlr[3][2], AU1000_MEM_STADDR3);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void au_sleep(void)

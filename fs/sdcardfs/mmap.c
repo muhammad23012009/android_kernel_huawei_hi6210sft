@@ -66,9 +66,13 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static ssize_t sdcardfs_direct_IO(int rw, struct kiocb *iocb,
 			      const struct iovec *iov, loff_t offset,
 			      unsigned long nr_segs)
+=======
+static ssize_t sdcardfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * This function should never be called directly.  We need it

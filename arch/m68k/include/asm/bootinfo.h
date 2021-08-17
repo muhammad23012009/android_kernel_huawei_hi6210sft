@@ -6,6 +6,7 @@
 ** This file is subject to the terms and conditions of the GNU General Public
 ** License.  See the file COPYING in the main directory of this archive
 ** for more details.
+<<<<<<< HEAD
 **
 ** Created 09/29/92 by Greg Harp
 **
@@ -19,11 +20,14 @@
 **   Redesign of the boot information structure; renamed to bootinfo.h again
 ** 27/11/96 Geert Uytterhoeven:
 **   Backwards compatibility with bootinfo interface version 1.0
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 #ifndef _M68K_BOOTINFO_H
 #define _M68K_BOOTINFO_H
 
+<<<<<<< HEAD
 
     /*
      *  Bootinfo definitions
@@ -373,6 +377,26 @@ struct compat_bootinfo {
 #define bi_mac		bi_un.bi_mac
 
 #endif /* BOOTINFO_COMPAT_1_0 */
+=======
+#include <uapi/asm/bootinfo.h>
+
+
+#ifndef __ASSEMBLY__
+
+#ifdef CONFIG_BOOTINFO_PROC
+extern void save_bootinfo(const struct bi_record *bi);
+#else
+static inline void save_bootinfo(const struct bi_record *bi) {}
+#endif
+
+#ifdef CONFIG_UBOOT
+void process_uboot_commandline(char *commandp, int size);
+#else
+static inline void process_uboot_commandline(char *commandp, int size) {}
+#endif
+
+#endif /* __ASSEMBLY__ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #endif /* _M68K_BOOTINFO_H */

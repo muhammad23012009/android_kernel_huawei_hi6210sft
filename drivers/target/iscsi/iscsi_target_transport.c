@@ -26,8 +26,12 @@ struct iscsit_transport *iscsit_get_transport(int type)
 
 void iscsit_put_transport(struct iscsit_transport *t)
 {
+<<<<<<< HEAD
 	if (t->owner)
 		module_put(t->owner);
+=======
+	module_put(t->owner);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int iscsit_register_transport(struct iscsit_transport *t)

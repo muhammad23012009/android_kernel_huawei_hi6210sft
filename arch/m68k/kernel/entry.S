@@ -45,7 +45,11 @@
 .globl system_call, buserr, trap, resume
 .globl sys_call_table
 .globl __sys_fork, __sys_clone, __sys_vfork
+<<<<<<< HEAD
 .globl ret_from_interrupt, bad_interrupt
+=======
+.globl bad_interrupt
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 .globl auto_irqhandler_fixup
 .globl user_irqvec_fixup
 
@@ -71,13 +75,27 @@ ENTRY(__sys_vfork)
 
 ENTRY(sys_sigreturn)
 	SAVE_SWITCH_STACK
+<<<<<<< HEAD
 	jbsr	do_sigreturn
+=======
+	movel	%sp,%sp@-		  | switch_stack pointer
+	pea	%sp@(SWITCH_STACK_SIZE+4) | pt_regs pointer
+	jbsr	do_sigreturn
+	addql	#8,%sp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	RESTORE_SWITCH_STACK
 	rts
 
 ENTRY(sys_rt_sigreturn)
 	SAVE_SWITCH_STACK
+<<<<<<< HEAD
 	jbsr	do_rt_sigreturn
+=======
+	movel	%sp,%sp@-		  | switch_stack pointer
+	pea	%sp@(SWITCH_STACK_SIZE+4) | pt_regs pointer
+	jbsr	do_rt_sigreturn
+	addql	#8,%sp
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	RESTORE_SWITCH_STACK
 	rts
 
@@ -275,8 +293,11 @@ do_delayed_trace:
 ENTRY(auto_inthandler)
 	SAVE_ALL_INT
 	GET_CURRENT(%d0)
+<<<<<<< HEAD
 	movel	%d0,%a1
 	addqb	#1,%a1@(TINFO_PREEMPT+1)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					|  put exception # in d0
 	bfextu	%sp@(PT_OFF_FORMATVEC){#4,#10},%d0
 	subw	#VEC_SPUR,%d0
@@ -286,6 +307,7 @@ ENTRY(auto_inthandler)
 auto_irqhandler_fixup = . + 2
 	jsr	do_IRQ			|  process the IRQ
 	addql	#8,%sp			|  pop parameters off stack
+<<<<<<< HEAD
 
 ret_from_interrupt:
 	movel	%curptr@(TASK_STACK),%a1
@@ -304,14 +326,20 @@ ret_from_last_interrupt:
 	jeq	.Lret_from_exception
 	pea	ret_from_exception
 	jra	do_softirq
+=======
+	jra	ret_from_exception
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Handler for user defined interrupt vectors */
 
 ENTRY(user_inthandler)
 	SAVE_ALL_INT
 	GET_CURRENT(%d0)
+<<<<<<< HEAD
 	movel	%d0,%a1
 	addqb	#1,%a1@(TINFO_PREEMPT+1)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					|  put exception # in d0
 	bfextu	%sp@(PT_OFF_FORMATVEC){#4,#10},%d0
 user_irqvec_fixup = . + 2
@@ -321,29 +349,40 @@ user_irqvec_fixup = . + 2
 	movel	%d0,%sp@-		|  put vector # on stack
 	jsr	do_IRQ			|  process the IRQ
 	addql	#8,%sp			|  pop parameters off stack
+<<<<<<< HEAD
 
 	movel	%curptr@(TASK_STACK),%a1
 	subqb	#1,%a1@(TINFO_PREEMPT+1)
 	jeq	ret_from_last_interrupt
 	RESTORE_ALL
+=======
+	jra	ret_from_exception
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Handler for uninitialized and spurious interrupts */
 
 ENTRY(bad_inthandler)
 	SAVE_ALL_INT
 	GET_CURRENT(%d0)
+<<<<<<< HEAD
 	movel	%d0,%a1
 	addqb	#1,%a1@(TINFO_PREEMPT+1)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	movel	%sp,%sp@-
 	jsr	handle_badint
 	addql	#4,%sp
+<<<<<<< HEAD
 
 	movel	%curptr@(TASK_STACK),%a1
 	subqb	#1,%a1@(TINFO_PREEMPT+1)
 	jeq	ret_from_last_interrupt
 	RESTORE_ALL
 
+=======
+	jra	ret_from_exception
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 resume:
 	/*

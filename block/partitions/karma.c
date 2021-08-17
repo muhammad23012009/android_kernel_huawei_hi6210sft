@@ -8,6 +8,10 @@
 
 #include "check.h"
 #include "karma.h"
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 int karma_partition(struct parsed_partitions *state)
 {
@@ -26,7 +30,11 @@ int karma_partition(struct parsed_partitions *state)
 		} d_partitions[2];
 		u8 d_blank[208];
 		__le16 d_magic;
+<<<<<<< HEAD
 	} __attribute__((packed)) *label;
+=======
+	} __packed *label;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct d_partition *p;
 
 	data = read_part_sector(state, 0, &sect);

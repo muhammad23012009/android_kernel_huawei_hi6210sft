@@ -78,6 +78,18 @@ static inline u32 arch_timer_get_cntfrq(void)
 	return val;
 }
 
+<<<<<<< HEAD
+=======
+static inline u64 arch_counter_get_cntpct(void)
+{
+	u64 cval;
+
+	isb();
+	asm volatile("mrrc p15, 0, %Q0, %R0, c14" : "=r" (cval));
+	return cval;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline u64 arch_counter_get_cntvct(void)
 {
 	u64 cval;
@@ -99,6 +111,7 @@ static inline void arch_timer_set_cntkctl(u32 cntkctl)
 	asm volatile("mcr p15, 0, %0, c14, c1, 0" : : "r" (cntkctl));
 }
 
+<<<<<<< HEAD
 static inline void __cpuinit arch_counter_set_user_access(void)
 {
 	u32 cntkctl = arch_timer_get_cntkctl();
@@ -126,6 +139,8 @@ static inline void arch_timer_evtstrm_enable(int divider)
 	elf_hwcap |= HWCAP_EVTSTRM;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif

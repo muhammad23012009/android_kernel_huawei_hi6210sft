@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  *	Sysfs attributes of bridge ports
+=======
+ *	Sysfs attributes of bridge
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	Linux ethernet bridge
  *
  *	Authors:
@@ -22,7 +26,10 @@
 
 #include "br_private.h"
 
+<<<<<<< HEAD
 #define to_dev(obj)	container_of(obj, struct device, kobj)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define to_bridge(cd)	((struct net_bridge *)netdev_priv(to_net_dev(cd)))
 
 /*
@@ -44,58 +51,103 @@ static ssize_t store_bridge_parm(struct device *d,
 	if (endp == buf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	err = (*set)(br, val);
+=======
+	if (!rtnl_trylock())
+		return restart_syscall();
+
+	err = (*set)(br, val);
+	if (!err)
+		netdev_state_change(br->dev);
+	rtnl_unlock();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err ? err : len;
 }
 
 
+<<<<<<< HEAD
 static ssize_t show_forward_delay(struct device *d,
+=======
+static ssize_t forward_delay_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%lu\n", jiffies_to_clock_t(br->forward_delay));
 }
 
+<<<<<<< HEAD
 static ssize_t store_forward_delay(struct device *d,
+=======
+static ssize_t forward_delay_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct device_attribute *attr,
 				   const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_set_forward_delay);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(forward_delay, S_IRUGO | S_IWUSR,
 		   show_forward_delay, store_forward_delay);
 
 static ssize_t show_hello_time(struct device *d, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RW(forward_delay);
+
+static ssize_t hello_time_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       char *buf)
 {
 	return sprintf(buf, "%lu\n",
 		       jiffies_to_clock_t(to_bridge(d)->hello_time));
 }
 
+<<<<<<< HEAD
 static ssize_t store_hello_time(struct device *d,
+=======
+static ssize_t hello_time_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct device_attribute *attr, const char *buf,
 				size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_set_hello_time);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(hello_time, S_IRUGO | S_IWUSR, show_hello_time,
 		   store_hello_time);
 
 static ssize_t show_max_age(struct device *d, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RW(hello_time);
+
+static ssize_t max_age_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    char *buf)
 {
 	return sprintf(buf, "%lu\n",
 		       jiffies_to_clock_t(to_bridge(d)->max_age));
 }
 
+<<<<<<< HEAD
 static ssize_t store_max_age(struct device *d, struct device_attribute *attr,
+=======
+static ssize_t max_age_store(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_set_max_age);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(max_age, S_IRUGO | S_IWUSR, show_max_age, store_max_age);
 
 static ssize_t show_ageing_time(struct device *d,
+=======
+static DEVICE_ATTR_RW(max_age);
+
+static ssize_t ageing_time_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -104,20 +156,33 @@ static ssize_t show_ageing_time(struct device *d,
 
 static int set_ageing_time(struct net_bridge *br, unsigned long val)
 {
+<<<<<<< HEAD
 	br->ageing_time = clock_t_to_jiffies(val);
 	return 0;
 }
 
 static ssize_t store_ageing_time(struct device *d,
+=======
+	return br_set_ageing_time(br, val);
+}
+
+static ssize_t ageing_time_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 struct device_attribute *attr,
 				 const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_ageing_time);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(ageing_time, S_IRUGO | S_IWUSR, show_ageing_time,
 		   store_ageing_time);
 
 static ssize_t show_stp_state(struct device *d,
+=======
+static DEVICE_ATTR_RW(ageing_time);
+
+static ssize_t stp_state_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -125,6 +190,7 @@ static ssize_t show_stp_state(struct device *d,
 }
 
 
+<<<<<<< HEAD
 static ssize_t store_stp_state(struct device *d,
 			       struct device_attribute *attr, const char *buf,
 			       size_t len)
@@ -173,17 +239,60 @@ static ssize_t store_group_fwd_mask(struct device *d,
 	if (endp == buf)
 		return -EINVAL;
 
+=======
+static int set_stp_state(struct net_bridge *br, unsigned long val)
+{
+	br_stp_set_enabled(br, val);
+
+	return 0;
+}
+
+static ssize_t stp_state_store(struct device *d,
+			       struct device_attribute *attr, const char *buf,
+			       size_t len)
+{
+	return store_bridge_parm(d, buf, len, set_stp_state);
+}
+static DEVICE_ATTR_RW(stp_state);
+
+static ssize_t group_fwd_mask_show(struct device *d,
+				   struct device_attribute *attr,
+				   char *buf)
+{
+	struct net_bridge *br = to_bridge(d);
+	return sprintf(buf, "%#x\n", br->group_fwd_mask);
+}
+
+static int set_group_fwd_mask(struct net_bridge *br, unsigned long val)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (val & BR_GROUPFWD_RESTRICTED)
 		return -EINVAL;
 
 	br->group_fwd_mask = val;
 
+<<<<<<< HEAD
 	return len;
 }
 static DEVICE_ATTR(group_fwd_mask, S_IRUGO | S_IWUSR, show_group_fwd_mask,
 		   store_group_fwd_mask);
 
 static ssize_t show_priority(struct device *d, struct device_attribute *attr,
+=======
+	return 0;
+}
+
+static ssize_t group_fwd_mask_store(struct device *d,
+				    struct device_attribute *attr,
+				    const char *buf,
+				    size_t len)
+{
+	return store_bridge_parm(d, buf, len, set_group_fwd_mask);
+}
+static DEVICE_ATTR_RW(group_fwd_mask);
+
+static ssize_t priority_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -197,6 +306,7 @@ static int set_priority(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_priority(struct device *d, struct device_attribute *attr,
 			       const char *buf, size_t len)
 {
@@ -205,85 +315,155 @@ static ssize_t store_priority(struct device *d, struct device_attribute *attr,
 static DEVICE_ATTR(priority, S_IRUGO | S_IWUSR, show_priority, store_priority);
 
 static ssize_t show_root_id(struct device *d, struct device_attribute *attr,
+=======
+static ssize_t priority_store(struct device *d, struct device_attribute *attr,
+			      const char *buf, size_t len)
+{
+	return store_bridge_parm(d, buf, len, set_priority);
+}
+static DEVICE_ATTR_RW(priority);
+
+static ssize_t root_id_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    char *buf)
 {
 	return br_show_bridge_id(buf, &to_bridge(d)->designated_root);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(root_id, S_IRUGO, show_root_id, NULL);
 
 static ssize_t show_bridge_id(struct device *d, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RO(root_id);
+
+static ssize_t bridge_id_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      char *buf)
 {
 	return br_show_bridge_id(buf, &to_bridge(d)->bridge_id);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(bridge_id, S_IRUGO, show_bridge_id, NULL);
 
 static ssize_t show_root_port(struct device *d, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RO(bridge_id);
+
+static ssize_t root_port_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      char *buf)
 {
 	return sprintf(buf, "%d\n", to_bridge(d)->root_port);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(root_port, S_IRUGO, show_root_port, NULL);
 
 static ssize_t show_root_path_cost(struct device *d,
+=======
+static DEVICE_ATTR_RO(root_port);
+
+static ssize_t root_path_cost_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct device_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%d\n", to_bridge(d)->root_path_cost);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(root_path_cost, S_IRUGO, show_root_path_cost, NULL);
 
 static ssize_t show_topology_change(struct device *d,
+=======
+static DEVICE_ATTR_RO(root_path_cost);
+
+static ssize_t topology_change_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    struct device_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%d\n", to_bridge(d)->topology_change);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(topology_change, S_IRUGO, show_topology_change, NULL);
 
 static ssize_t show_topology_change_detected(struct device *d,
+=======
+static DEVICE_ATTR_RO(topology_change);
+
+static ssize_t topology_change_detected_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     struct device_attribute *attr,
 					     char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%d\n", br->topology_change_detected);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(topology_change_detected, S_IRUGO,
 		   show_topology_change_detected, NULL);
 
 static ssize_t show_hello_timer(struct device *d,
+=======
+static DEVICE_ATTR_RO(topology_change_detected);
+
+static ssize_t hello_timer_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%ld\n", br_timer_value(&br->hello_timer));
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(hello_timer, S_IRUGO, show_hello_timer, NULL);
 
 static ssize_t show_tcn_timer(struct device *d, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RO(hello_timer);
+
+static ssize_t tcn_timer_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%ld\n", br_timer_value(&br->tcn_timer));
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(tcn_timer, S_IRUGO, show_tcn_timer, NULL);
 
 static ssize_t show_topology_change_timer(struct device *d,
+=======
+static DEVICE_ATTR_RO(tcn_timer);
+
+static ssize_t topology_change_timer_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					  struct device_attribute *attr,
 					  char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%ld\n", br_timer_value(&br->topology_change_timer));
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(topology_change_timer, S_IRUGO, show_topology_change_timer,
 		   NULL);
 
 static ssize_t show_gc_timer(struct device *d, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RO(topology_change_timer);
+
+static ssize_t gc_timer_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%ld\n", br_timer_value(&br->gc_timer));
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(gc_timer, S_IRUGO, show_gc_timer, NULL);
 
 static ssize_t show_group_addr(struct device *d,
+=======
+static DEVICE_ATTR_RO(gc_timer);
+
+static ssize_t group_addr_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -293,7 +473,11 @@ static ssize_t show_group_addr(struct device *d,
 		       br->group_addr[4], br->group_addr[5]);
 }
 
+<<<<<<< HEAD
 static ssize_t store_group_addr(struct device *d,
+=======
+static ssize_t group_addr_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				struct device_attribute *attr,
 				const char *buf, size_t len)
 {
@@ -317,10 +501,17 @@ static ssize_t store_group_addr(struct device *d,
 	    new_addr[5] == 3)		/* 802.1X PAE address */
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (!rtnl_trylock())
+		return restart_syscall();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_bh(&br->lock);
 	for (i = 0; i < 6; i++)
 		br->group_addr[i] = new_addr[i];
 	spin_unlock_bh(&br->lock);
+<<<<<<< HEAD
 	return len;
 }
 
@@ -343,22 +534,62 @@ static DEVICE_ATTR(flush, S_IWUSR, NULL, store_flush);
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
 static ssize_t show_multicast_router(struct device *d,
+=======
+
+	br->group_addr_set = true;
+	br_recalculate_fwd_mask(br);
+	netdev_state_change(br->dev);
+
+	rtnl_unlock();
+
+	return len;
+}
+
+static DEVICE_ATTR_RW(group_addr);
+
+static int set_flush(struct net_bridge *br, unsigned long val)
+{
+	br_fdb_flush(br);
+	return 0;
+}
+
+static ssize_t flush_store(struct device *d,
+			   struct device_attribute *attr,
+			   const char *buf, size_t len)
+{
+	return store_bridge_parm(d, buf, len, set_flush);
+}
+static DEVICE_ATTR_WO(flush);
+
+#ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+static ssize_t multicast_router_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%d\n", br->multicast_router);
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_router(struct device *d,
+=======
+static ssize_t multicast_router_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      struct device_attribute *attr,
 				      const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_multicast_set_router);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_router, S_IRUGO | S_IWUSR, show_multicast_router,
 		   store_multicast_router);
 
 static ssize_t show_multicast_snooping(struct device *d,
+=======
+static DEVICE_ATTR_RW(multicast_router);
+
+static ssize_t multicast_snooping_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       struct device_attribute *attr,
 				       char *buf)
 {
@@ -366,16 +597,49 @@ static ssize_t show_multicast_snooping(struct device *d,
 	return sprintf(buf, "%d\n", !br->multicast_disabled);
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_snooping(struct device *d,
+=======
+static ssize_t multicast_snooping_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					struct device_attribute *attr,
 					const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_multicast_toggle);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_snooping, S_IRUGO | S_IWUSR,
 		   show_multicast_snooping, store_multicast_snooping);
 
 static ssize_t show_multicast_querier(struct device *d,
+=======
+static DEVICE_ATTR_RW(multicast_snooping);
+
+static ssize_t multicast_query_use_ifaddr_show(struct device *d,
+					       struct device_attribute *attr,
+					       char *buf)
+{
+	struct net_bridge *br = to_bridge(d);
+	return sprintf(buf, "%d\n", br->multicast_query_use_ifaddr);
+}
+
+static int set_query_use_ifaddr(struct net_bridge *br, unsigned long val)
+{
+	br->multicast_query_use_ifaddr = !!val;
+	return 0;
+}
+
+static ssize_t
+multicast_query_use_ifaddr_store(struct device *d,
+				 struct device_attribute *attr,
+				 const char *buf, size_t len)
+{
+	return store_bridge_parm(d, buf, len, set_query_use_ifaddr);
+}
+static DEVICE_ATTR_RW(multicast_query_use_ifaddr);
+
+static ssize_t multicast_querier_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      struct device_attribute *attr,
 				      char *buf)
 {
@@ -383,16 +647,26 @@ static ssize_t show_multicast_querier(struct device *d,
 	return sprintf(buf, "%d\n", br->multicast_querier);
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_querier(struct device *d,
+=======
+static ssize_t multicast_querier_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				       struct device_attribute *attr,
 				       const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_multicast_set_querier);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_querier, S_IRUGO | S_IWUSR,
 		   show_multicast_querier, store_multicast_querier);
 
 static ssize_t show_hash_elasticity(struct device *d,
+=======
+static DEVICE_ATTR_RW(multicast_querier);
+
+static ssize_t hash_elasticity_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -405,31 +679,51 @@ static int set_elasticity(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_hash_elasticity(struct device *d,
+=======
+static ssize_t hash_elasticity_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     struct device_attribute *attr,
 				     const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_elasticity);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(hash_elasticity, S_IRUGO | S_IWUSR, show_hash_elasticity,
 		   store_hash_elasticity);
 
 static ssize_t show_hash_max(struct device *d, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RW(hash_elasticity);
+
+static ssize_t hash_max_show(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
 	return sprintf(buf, "%u\n", br->hash_max);
 }
 
+<<<<<<< HEAD
 static ssize_t store_hash_max(struct device *d, struct device_attribute *attr,
+=======
+static ssize_t hash_max_store(struct device *d, struct device_attribute *attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_multicast_set_hash_max);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(hash_max, S_IRUGO | S_IWUSR, show_hash_max,
 		   store_hash_max);
 
 static ssize_t show_multicast_last_member_count(struct device *d,
+=======
+static DEVICE_ATTR_RW(hash_max);
+
+static ssize_t multicast_last_member_count_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						struct device_attribute *attr,
 						char *buf)
 {
@@ -443,17 +737,27 @@ static int set_last_member_count(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_last_member_count(struct device *d,
+=======
+static ssize_t multicast_last_member_count_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						 struct device_attribute *attr,
 						 const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_last_member_count);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_last_member_count, S_IRUGO | S_IWUSR,
 		   show_multicast_last_member_count,
 		   store_multicast_last_member_count);
 
 static ssize_t show_multicast_startup_query_count(
+=======
+static DEVICE_ATTR_RW(multicast_last_member_count);
+
+static ssize_t multicast_startup_query_count_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -466,17 +770,27 @@ static int set_startup_query_count(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_startup_query_count(
+=======
+static ssize_t multicast_startup_query_count_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_startup_query_count);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_startup_query_count, S_IRUGO | S_IWUSR,
 		   show_multicast_startup_query_count,
 		   store_multicast_startup_query_count);
 
 static ssize_t show_multicast_last_member_interval(
+=======
+static DEVICE_ATTR_RW(multicast_startup_query_count);
+
+static ssize_t multicast_last_member_interval_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -490,17 +804,27 @@ static int set_last_member_interval(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_last_member_interval(
+=======
+static ssize_t multicast_last_member_interval_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_last_member_interval);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_last_member_interval, S_IRUGO | S_IWUSR,
 		   show_multicast_last_member_interval,
 		   store_multicast_last_member_interval);
 
 static ssize_t show_multicast_membership_interval(
+=======
+static DEVICE_ATTR_RW(multicast_last_member_interval);
+
+static ssize_t multicast_membership_interval_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -514,17 +838,27 @@ static int set_membership_interval(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_membership_interval(
+=======
+static ssize_t multicast_membership_interval_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_membership_interval);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_membership_interval, S_IRUGO | S_IWUSR,
 		   show_multicast_membership_interval,
 		   store_multicast_membership_interval);
 
 static ssize_t show_multicast_querier_interval(struct device *d,
+=======
+static DEVICE_ATTR_RW(multicast_membership_interval);
+
+static ssize_t multicast_querier_interval_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					       struct device_attribute *attr,
 					       char *buf)
 {
@@ -539,17 +873,27 @@ static int set_querier_interval(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_querier_interval(struct device *d,
+=======
+static ssize_t multicast_querier_interval_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						struct device_attribute *attr,
 						const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_querier_interval);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_querier_interval, S_IRUGO | S_IWUSR,
 		   show_multicast_querier_interval,
 		   store_multicast_querier_interval);
 
 static ssize_t show_multicast_query_interval(struct device *d,
+=======
+static DEVICE_ATTR_RW(multicast_querier_interval);
+
+static ssize_t multicast_query_interval_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     struct device_attribute *attr,
 					     char *buf)
 {
@@ -564,17 +908,27 @@ static int set_query_interval(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_query_interval(struct device *d,
+=======
+static ssize_t multicast_query_interval_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					      struct device_attribute *attr,
 					      const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_query_interval);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_query_interval, S_IRUGO | S_IWUSR,
 		   show_multicast_query_interval,
 		   store_multicast_query_interval);
 
 static ssize_t show_multicast_query_response_interval(
+=======
+static DEVICE_ATTR_RW(multicast_query_interval);
+
+static ssize_t multicast_query_response_interval_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -589,17 +943,27 @@ static int set_query_response_interval(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_query_response_interval(
+=======
+static ssize_t multicast_query_response_interval_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_query_response_interval);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_query_response_interval, S_IRUGO | S_IWUSR,
 		   show_multicast_query_response_interval,
 		   store_multicast_query_response_interval);
 
 static ssize_t show_multicast_startup_query_interval(
+=======
+static DEVICE_ATTR_RW(multicast_query_response_interval);
+
+static ssize_t multicast_startup_query_interval_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -614,18 +978,53 @@ static int set_startup_query_interval(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_multicast_startup_query_interval(
+=======
+static ssize_t multicast_startup_query_interval_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_startup_query_interval);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(multicast_startup_query_interval, S_IRUGO | S_IWUSR,
 		   show_multicast_startup_query_interval,
 		   store_multicast_startup_query_interval);
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 static ssize_t show_nf_call_iptables(
+=======
+static DEVICE_ATTR_RW(multicast_startup_query_interval);
+
+static ssize_t multicast_stats_enabled_show(struct device *d,
+					    struct device_attribute *attr,
+					    char *buf)
+{
+	struct net_bridge *br = to_bridge(d);
+
+	return sprintf(buf, "%u\n", br->multicast_stats_enabled);
+}
+
+static int set_stats_enabled(struct net_bridge *br, unsigned long val)
+{
+	br->multicast_stats_enabled = !!val;
+	return 0;
+}
+
+static ssize_t multicast_stats_enabled_store(struct device *d,
+					     struct device_attribute *attr,
+					     const char *buf,
+					     size_t len)
+{
+	return store_bridge_parm(d, buf, len, set_stats_enabled);
+}
+static DEVICE_ATTR_RW(multicast_stats_enabled);
+#endif
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+static ssize_t nf_call_iptables_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -638,16 +1037,26 @@ static int set_nf_call_iptables(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_nf_call_iptables(
+=======
+static ssize_t nf_call_iptables_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_nf_call_iptables);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(nf_call_iptables, S_IRUGO | S_IWUSR,
 		   show_nf_call_iptables, store_nf_call_iptables);
 
 static ssize_t show_nf_call_ip6tables(
+=======
+static DEVICE_ATTR_RW(nf_call_iptables);
+
+static ssize_t nf_call_ip6tables_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -660,16 +1069,26 @@ static int set_nf_call_ip6tables(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_nf_call_ip6tables(
+=======
+static ssize_t nf_call_ip6tables_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_nf_call_ip6tables);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(nf_call_ip6tables, S_IRUGO | S_IWUSR,
 		   show_nf_call_ip6tables, store_nf_call_ip6tables);
 
 static ssize_t show_nf_call_arptables(
+=======
+static DEVICE_ATTR_RW(nf_call_ip6tables);
+
+static ssize_t nf_call_arptables_show(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, char *buf)
 {
 	struct net_bridge *br = to_bridge(d);
@@ -682,17 +1101,28 @@ static int set_nf_call_arptables(struct net_bridge *br, unsigned long val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t store_nf_call_arptables(
+=======
+static ssize_t nf_call_arptables_store(
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *d, struct device_attribute *attr, const char *buf,
 	size_t len)
 {
 	return store_bridge_parm(d, buf, len, set_nf_call_arptables);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(nf_call_arptables, S_IRUGO | S_IWUSR,
 		   show_nf_call_arptables, store_nf_call_arptables);
 #endif
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
 static ssize_t show_vlan_filtering(struct device *d,
+=======
+static DEVICE_ATTR_RW(nf_call_arptables);
+#endif
+#ifdef CONFIG_BRIDGE_VLAN_FILTERING
+static ssize_t vlan_filtering_show(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   struct device_attribute *attr,
 				   char *buf)
 {
@@ -700,14 +1130,70 @@ static ssize_t show_vlan_filtering(struct device *d,
 	return sprintf(buf, "%d\n", br->vlan_enabled);
 }
 
+<<<<<<< HEAD
 static ssize_t store_vlan_filtering(struct device *d,
+=======
+static ssize_t vlan_filtering_store(struct device *d,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				    struct device_attribute *attr,
 				    const char *buf, size_t len)
 {
 	return store_bridge_parm(d, buf, len, br_vlan_filter_toggle);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(vlan_filtering, S_IRUGO | S_IWUSR,
 		   show_vlan_filtering, store_vlan_filtering);
+=======
+static DEVICE_ATTR_RW(vlan_filtering);
+
+static ssize_t vlan_protocol_show(struct device *d,
+				  struct device_attribute *attr,
+				  char *buf)
+{
+	struct net_bridge *br = to_bridge(d);
+	return sprintf(buf, "%#06x\n", ntohs(br->vlan_proto));
+}
+
+static ssize_t vlan_protocol_store(struct device *d,
+				   struct device_attribute *attr,
+				   const char *buf, size_t len)
+{
+	return store_bridge_parm(d, buf, len, br_vlan_set_proto);
+}
+static DEVICE_ATTR_RW(vlan_protocol);
+
+static ssize_t default_pvid_show(struct device *d,
+				 struct device_attribute *attr,
+				 char *buf)
+{
+	struct net_bridge *br = to_bridge(d);
+	return sprintf(buf, "%d\n", br->default_pvid);
+}
+
+static ssize_t default_pvid_store(struct device *d,
+				  struct device_attribute *attr,
+				  const char *buf, size_t len)
+{
+	return store_bridge_parm(d, buf, len, br_vlan_set_default_pvid);
+}
+static DEVICE_ATTR_RW(default_pvid);
+
+static ssize_t vlan_stats_enabled_show(struct device *d,
+				       struct device_attribute *attr,
+				       char *buf)
+{
+	struct net_bridge *br = to_bridge(d);
+	return sprintf(buf, "%u\n", br->vlan_stats_enabled);
+}
+
+static ssize_t vlan_stats_enabled_store(struct device *d,
+					struct device_attribute *attr,
+					const char *buf, size_t len)
+{
+	return store_bridge_parm(d, buf, len, br_vlan_set_stats);
+}
+static DEVICE_ATTR_RW(vlan_stats_enabled);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 static struct attribute *bridge_attrs[] = {
@@ -734,6 +1220,10 @@ static struct attribute *bridge_attrs[] = {
 	&dev_attr_multicast_router.attr,
 	&dev_attr_multicast_snooping.attr,
 	&dev_attr_multicast_querier.attr,
+<<<<<<< HEAD
+=======
+	&dev_attr_multicast_query_use_ifaddr.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&dev_attr_hash_elasticity.attr,
 	&dev_attr_hash_max.attr,
 	&dev_attr_multicast_last_member_count.attr,
@@ -744,14 +1234,26 @@ static struct attribute *bridge_attrs[] = {
 	&dev_attr_multicast_query_interval.attr,
 	&dev_attr_multicast_query_response_interval.attr,
 	&dev_attr_multicast_startup_query_interval.attr,
+<<<<<<< HEAD
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
+=======
+	&dev_attr_multicast_stats_enabled.attr,
+#endif
+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&dev_attr_nf_call_iptables.attr,
 	&dev_attr_nf_call_ip6tables.attr,
 	&dev_attr_nf_call_arptables.attr,
 #endif
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
 	&dev_attr_vlan_filtering.attr,
+<<<<<<< HEAD
+=======
+	&dev_attr_vlan_protocol.attr,
+	&dev_attr_default_pvid.attr,
+	&dev_attr_vlan_stats_enabled.attr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	NULL
 };
@@ -771,7 +1273,11 @@ static ssize_t brforward_read(struct file *filp, struct kobject *kobj,
 			      struct bin_attribute *bin_attr,
 			      char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct device *dev = to_dev(kobj);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct net_bridge *br = to_bridge(dev);
 	int n;
 
@@ -830,6 +1336,10 @@ int br_sysfs_addbr(struct net_device *dev)
 	if (!br->ifobj) {
 		pr_info("%s: can't add kobject (directory) %s/%s\n",
 			__func__, dev->name, SYSFS_BRIDGE_PORT_SUBDIR);
+<<<<<<< HEAD
+=======
+		err = -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out3;
 	}
 	return 0;

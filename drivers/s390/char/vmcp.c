@@ -88,6 +88,7 @@ vmcp_write(struct file *file, const char __user *buff, size_t count,
 
 	if (count > 240)
 		return -EINVAL;
+<<<<<<< HEAD
 	cmd = kmalloc(count + 1, GFP_KERNEL);
 	if (!cmd)
 		return -ENOMEM;
@@ -96,6 +97,11 @@ vmcp_write(struct file *file, const char __user *buff, size_t count,
 		return -EFAULT;
 	}
 	cmd[count] = '\0';
+=======
+	cmd = memdup_user_nul(buff, count);
+	if (IS_ERR(cmd))
+		return PTR_ERR(cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	session = file->private_data;
 	if (mutex_lock_interruptible(&session->mutex)) {
 		kfree(cmd);

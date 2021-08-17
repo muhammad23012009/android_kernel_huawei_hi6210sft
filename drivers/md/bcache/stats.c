@@ -7,7 +7,10 @@
 #include "bcache.h"
 #include "stats.h"
 #include "btree.h"
+<<<<<<< HEAD
 #include "request.h"
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "sysfs.h"
 
 /*
@@ -196,6 +199,7 @@ static void mark_cache_stats(struct cache_stat_collector *stats,
 			atomic_inc(&stats->cache_bypass_misses);
 }
 
+<<<<<<< HEAD
 void bch_mark_cache_accounting(struct search *s, bool hit, bool bypass)
 {
 	struct cached_dev *dc = container_of(s->d, struct cached_dev, disk);
@@ -225,6 +229,35 @@ void bch_mark_sectors_bypassed(struct search *s, int sectors)
 	struct cached_dev *dc = container_of(s->d, struct cached_dev, disk);
 	atomic_add(sectors, &dc->accounting.collector.sectors_bypassed);
 	atomic_add(sectors, &s->op.c->accounting.collector.sectors_bypassed);
+=======
+void bch_mark_cache_accounting(struct cache_set *c, struct bcache_device *d,
+			       bool hit, bool bypass)
+{
+	struct cached_dev *dc = container_of(d, struct cached_dev, disk);
+	mark_cache_stats(&dc->accounting.collector, hit, bypass);
+	mark_cache_stats(&c->accounting.collector, hit, bypass);
+}
+
+void bch_mark_cache_readahead(struct cache_set *c, struct bcache_device *d)
+{
+	struct cached_dev *dc = container_of(d, struct cached_dev, disk);
+	atomic_inc(&dc->accounting.collector.cache_readaheads);
+	atomic_inc(&c->accounting.collector.cache_readaheads);
+}
+
+void bch_mark_cache_miss_collision(struct cache_set *c, struct bcache_device *d)
+{
+	struct cached_dev *dc = container_of(d, struct cached_dev, disk);
+	atomic_inc(&dc->accounting.collector.cache_miss_collisions);
+	atomic_inc(&c->accounting.collector.cache_miss_collisions);
+}
+
+void bch_mark_sectors_bypassed(struct cache_set *c, struct cached_dev *dc,
+			       int sectors)
+{
+	atomic_add(sectors, &dc->accounting.collector.sectors_bypassed);
+	atomic_add(sectors, &c->accounting.collector.sectors_bypassed);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void bch_cache_accounting_init(struct cache_accounting *acc,

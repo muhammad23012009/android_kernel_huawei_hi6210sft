@@ -13,6 +13,10 @@
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/mmc/card.h>
+<<<<<<< HEAD
+=======
+#include <linux/mmc/sdio_ids.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef SDIO_VENDOR_ID_TI
 #define SDIO_VENDOR_ID_TI		0x0097
@@ -30,6 +34,7 @@
 #define SDIO_DEVICE_ID_STE_CW1200	0x2280
 #endif
 
+<<<<<<< HEAD
 /*
  * This hook just adds a quirk for all sdio devices
  */
@@ -49,6 +54,13 @@ static const struct mmc_fixup mmc_fixup_methods[] = {
 	SDIO_FIXUP(SDIO_VENDOR_ID_TI, SDIO_DEVICE_ID_TI_WL1271,
 		   remove_quirk, MMC_QUIRK_BROKEN_CLK_GATING),
 
+=======
+#ifndef SDIO_DEVICE_ID_MARVELL_8797_F0
+#define SDIO_DEVICE_ID_MARVELL_8797_F0	0x9128
+#endif
+
+static const struct mmc_fixup mmc_fixup_methods[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SDIO_FIXUP(SDIO_VENDOR_ID_TI, SDIO_DEVICE_ID_TI_WL1271,
 		   add_quirk, MMC_QUIRK_NONSTD_FUNC_IF),
 
@@ -58,6 +70,12 @@ static const struct mmc_fixup mmc_fixup_methods[] = {
 	SDIO_FIXUP(SDIO_VENDOR_ID_STE, SDIO_DEVICE_ID_STE_CW1200,
 		   add_quirk, MMC_QUIRK_BROKEN_BYTE_MODE_512),
 
+<<<<<<< HEAD
+=======
+	SDIO_FIXUP(SDIO_VENDOR_ID_MARVELL, SDIO_DEVICE_ID_MARVELL_8797_F0,
+		   add_quirk, MMC_QUIRK_BROKEN_IRQ_POLLING),
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	END_FIXUP
 };
 
@@ -82,8 +100,15 @@ void mmc_fixup_device(struct mmc_card *card, const struct mmc_fixup *table)
 		     f->cis_vendor == (u16) SDIO_ANY_ID) &&
 		    (f->cis_device == card->cis.device ||
 		     f->cis_device == (u16) SDIO_ANY_ID) &&
+<<<<<<< HEAD
 		    rev >= f->rev_start && rev <= f->rev_end) {
 			dev_dbg(&card->dev, "calling %pF\n", f->vendor_fixup);
+=======
+		    (f->ext_csd_rev == EXT_CSD_REV_ANY ||
+		     f->ext_csd_rev == card->ext_csd.rev) &&
+		    rev >= f->rev_start && rev <= f->rev_end) {
+			dev_dbg(&card->dev, "calling %pf\n", f->vendor_fixup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			f->vendor_fixup(card, f->data);
 		}
 	}

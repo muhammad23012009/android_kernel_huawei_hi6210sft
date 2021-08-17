@@ -13,7 +13,11 @@ selinux-$(CONFIG_SECURITY_NETWORK_XFRM) += xfrm.o
 
 selinux-$(CONFIG_NETLABEL) += netlabel.o
 
+<<<<<<< HEAD
 ccflags-y := -Isecurity/selinux -Isecurity/selinux/include
+=======
+ccflags-y := -I$(srctree)/security/selinux -I$(srctree)/security/selinux/include
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 $(addprefix $(obj)/,$(selinux-y)): $(obj)/flask.h
 

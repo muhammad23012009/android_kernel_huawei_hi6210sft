@@ -246,10 +246,13 @@ static int zr36016_pushit (struct zr36016 *ptr,
    //TODO//
    ========================================================================= */
 
+<<<<<<< HEAD
 // needed offset values          PAL NTSC SECAM
 static const int zr016_xoff[] = { 20, 20, 20 };
 static const int zr016_yoff[] = { 8, 9, 7 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void
 zr36016_init (struct zr36016 *ptr)
 {

@@ -17,7 +17,11 @@
 #ifdef CONFIG_MTD_UCLINUX
 #include <linux/mtd/map.h>
 #include <linux/ext2_fs.h>
+<<<<<<< HEAD
 #include <linux/cramfs_fs.h>
+=======
+#include <uapi/linux/cramfs_fs.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/romfs_fs.h>
 #endif
 
@@ -35,6 +39,12 @@
 #ifdef CONFIG_BF60x
 #include <mach/pm.h>
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SCB_PRIORITY
+#include <asm/scb.h>
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 u16 _bfin_swrst;
 EXPORT_SYMBOL(_bfin_swrst);
@@ -99,7 +109,11 @@ void __init generate_cplb_tables(void)
 }
 #endif
 
+<<<<<<< HEAD
 void __cpuinit bfin_setup_caches(unsigned int cpu)
+=======
+void bfin_setup_caches(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 #ifdef CONFIG_BFIN_ICACHE
 	bfin_icache_init(icplb_tbl[cpu]);
@@ -165,7 +179,11 @@ void __cpuinit bfin_setup_caches(unsigned int cpu)
 #endif
 }
 
+<<<<<<< HEAD
 void __cpuinit bfin_setup_cpudata(unsigned int cpu)
+=======
+void bfin_setup_cpudata(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct blackfin_cpudata *cpudata = &per_cpu(cpu_data, cpu);
 
@@ -1101,6 +1119,12 @@ void __init setup_arch(char **cmdline_p)
 #endif
 	init_exception_vectors();
 	bfin_cache_init();	/* Initialize caches for the boot CPU */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SCB_PRIORITY
+	init_scb();
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init topology_init(void)
@@ -1458,5 +1482,9 @@ void __init cmdline_init(const char *r0)
 {
 	early_shadow_stamp();
 	if (r0)
+<<<<<<< HEAD
 		strncpy(command_line, r0, COMMAND_LINE_SIZE);
+=======
+		strlcpy(command_line, r0, COMMAND_LINE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

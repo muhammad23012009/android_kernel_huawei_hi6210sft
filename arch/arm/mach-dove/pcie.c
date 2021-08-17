@@ -155,6 +155,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL, PCI_ANY_ID, rc_pci_fixup);
 static struct pci_bus __init *
 dove_pcie_scan_bus(int nr, struct pci_sys_data *sys)
 {
+<<<<<<< HEAD
 	struct pci_bus *bus;
 
 	if (nr < num_pcie_ports) {
@@ -166,6 +167,15 @@ dove_pcie_scan_bus(int nr, struct pci_sys_data *sys)
 	}
 
 	return bus;
+=======
+	if (nr >= num_pcie_ports) {
+		BUG();
+		return NULL;
+	}
+
+	return pci_scan_root_bus(NULL, sys->busnr, &pcie_ops, sys,
+				 &sys->resources);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init dove_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)

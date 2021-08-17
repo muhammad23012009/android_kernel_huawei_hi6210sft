@@ -5,7 +5,11 @@
  *****************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +45,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acevents.h"
@@ -52,6 +61,12 @@
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utxfinit")
 
+<<<<<<< HEAD
+=======
+/* For acpi_exec only */
+void ae_do_object_overrides(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*******************************************************************************
  *
  * FUNCTION:    acpi_initialize_subsystem
@@ -64,7 +79,12 @@ ACPI_MODULE_NAME("utxfinit")
  *              called, so any early initialization belongs here.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_initialize_subsystem(void)
+=======
+
+acpi_status ACPI_INIT_FUNCTION acpi_initialize_subsystem(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status;
 
@@ -119,12 +139,19 @@ acpi_status acpi_initialize_subsystem(void)
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
 	/* If configured, initialize the AML debugger */
 
 	ACPI_DEBUGGER_EXEC(status = acpi_db_initialize());
 	return_ACPI_STATUS(status);
 }
 ACPI_EXPORT_SYMBOL(acpi_initialize_subsystem)
+=======
+	return_ACPI_STATUS(AE_OK);
+}
+
+ACPI_EXPORT_SYMBOL_INIT(acpi_initialize_subsystem)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*******************************************************************************
  *
@@ -138,12 +165,26 @@ ACPI_EXPORT_SYMBOL(acpi_initialize_subsystem)
  *              Puts system into ACPI mode if it isn't already.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_enable_subsystem(u32 flags)
+=======
+acpi_status ACPI_INIT_FUNCTION acpi_enable_subsystem(u32 flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status = AE_OK;
 
 	ACPI_FUNCTION_TRACE(acpi_enable_subsystem);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The early initialization phase is complete. The namespace is loaded,
+	 * and we can now support address spaces other than Memory, I/O, and
+	 * PCI_Config.
+	 */
+	acpi_gbl_early_initialization = FALSE;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if (!ACPI_REDUCED_HARDWARE)
 
 	/* Enable ACPI mode */
@@ -165,6 +206,7 @@ acpi_status acpi_enable_subsystem(u32 flags)
 	 * Obtain a permanent mapping for the FACS. This is required for the
 	 * Global Lock and the Firmware Waking Vector
 	 */
+<<<<<<< HEAD
 	status = acpi_tb_initialize_facs();
 	if (ACPI_FAILURE(status)) {
 		ACPI_WARNING((AE_INFO, "Could not map the FACS table"));
@@ -187,6 +229,16 @@ acpi_status acpi_enable_subsystem(u32 flags)
 		}
 	}
 #if (!ACPI_REDUCED_HARDWARE)
+=======
+	if (!(flags & ACPI_NO_FACS_INIT)) {
+		status = acpi_tb_initialize_facs();
+		if (ACPI_FAILURE(status)) {
+			ACPI_WARNING((AE_INFO, "Could not map the FACS table"));
+			return_ACPI_STATUS(status);
+		}
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Initialize ACPI Event handling (Fixed and General Purpose)
 	 *
@@ -228,7 +280,12 @@ acpi_status acpi_enable_subsystem(u32 flags)
 
 	return_ACPI_STATUS(status);
 }
+<<<<<<< HEAD
 ACPI_EXPORT_SYMBOL(acpi_enable_subsystem)
+=======
+
+ACPI_EXPORT_SYMBOL_INIT(acpi_enable_subsystem)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*******************************************************************************
  *
@@ -242,12 +299,17 @@ ACPI_EXPORT_SYMBOL(acpi_enable_subsystem)
  *              objects and executing AML code for Regions, buffers, etc.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_initialize_objects(u32 flags)
+=======
+acpi_status ACPI_INIT_FUNCTION acpi_initialize_objects(u32 flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_status status = AE_OK;
 
 	ACPI_FUNCTION_TRACE(acpi_initialize_objects);
 
+<<<<<<< HEAD
 	/*
 	 * Run all _REG methods
 	 *
@@ -264,6 +326,15 @@ acpi_status acpi_initialize_objects(u32 flags)
 			return_ACPI_STATUS(status);
 		}
 	}
+=======
+#ifdef ACPI_EXEC_APP
+	/*
+	 * This call implements the "initialization file" option for acpi_exec.
+	 * This is the precise point that we want to perform the overrides.
+	 */
+	ae_do_object_overrides();
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Execute any module-level code that was detected during the table load
@@ -272,6 +343,7 @@ acpi_status acpi_initialize_objects(u32 flags)
 	 * outside of any control method is wrapped with a temporary control
 	 * method object and placed on a global list. The methods on this list
 	 * are executed below.
+<<<<<<< HEAD
 	 */
 	acpi_ns_exec_module_code_list();
 
@@ -287,10 +359,33 @@ acpi_status acpi_initialize_objects(u32 flags)
 		status = acpi_ns_initialize_objects();
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
+=======
+	 *
+	 * This case executes the module-level code for all tables only after
+	 * all of the tables have been loaded. It is a legacy option and is
+	 * not compatible with other ACPI implementations. See acpi_ns_load_table.
+	 */
+	if (!acpi_gbl_parse_table_as_term_list
+	    && acpi_gbl_group_module_level_code) {
+		acpi_ns_exec_module_code_list();
+
+		/*
+		 * Initialize the objects that remain uninitialized. This
+		 * runs the executable AML that may be part of the
+		 * declaration of these objects:
+		 * operation_regions, buffer_fields, Buffers, and Packages.
+		 */
+		if (!(flags & ACPI_NO_OBJECT_INIT)) {
+			status = acpi_ns_initialize_objects();
+			if (ACPI_FAILURE(status)) {
+				return_ACPI_STATUS(status);
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Initialize all device objects in the namespace. This runs the device
 	 * _STA and _INI methods.
 	 */
@@ -299,6 +394,13 @@ acpi_status acpi_initialize_objects(u32 flags)
 				  "[Init] Initializing ACPI Devices\n"));
 
 		status = acpi_ns_initialize_devices();
+=======
+	 * Initialize all device/region objects in the namespace. This runs
+	 * the device _STA and _INI methods and region _REG methods.
+	 */
+	if (!(flags & (ACPI_NO_DEVICE_INIT | ACPI_NO_ADDRESS_SPACE_INIT))) {
+		status = acpi_ns_initialize_devices(flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -314,4 +416,9 @@ acpi_status acpi_initialize_objects(u32 flags)
 	acpi_gbl_startup_flags |= ACPI_INITIALIZED_OK;
 	return_ACPI_STATUS(status);
 }
+<<<<<<< HEAD
 ACPI_EXPORT_SYMBOL(acpi_initialize_objects)
+=======
+
+ACPI_EXPORT_SYMBOL_INIT(acpi_initialize_objects)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -15,8 +15,11 @@
 
 #include <linux/device.h>
 
+<<<<<<< HEAD
 #define MAX_DMA_TRANSFER_SIZE   0x100000 /* Data Unit is half word  */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* We use `virtual` dma channels to hide the fact we have only a limited
  * number of DMA channels, and not of all of them (dependent on the device)
  * can be attached to any DMA source. We therefore let the DMA core handle
@@ -54,6 +57,7 @@ enum dma_ch {
 	DMACH_MAX,		/* the end entry */
 };
 
+<<<<<<< HEAD
 static inline bool samsung_dma_has_circular(void)
 {
 	return false;
@@ -211,4 +215,6 @@ struct s3c2410_dma_chan {
 
 typedef unsigned long dma_device_t;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __ASM_ARCH_DMA_H */

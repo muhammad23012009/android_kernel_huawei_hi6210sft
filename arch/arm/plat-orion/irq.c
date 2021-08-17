@@ -15,6 +15,10 @@
 #include <linux/io.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
+=======
+#include <asm/exception.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/irq.h>
 #include <plat/orion-gpio.h>
 
@@ -36,6 +40,7 @@ void __init orion_irq_init(unsigned int irq_start, void __iomem *maskaddr)
 	irq_setup_generic_chip(gc, IRQ_MSK(32), IRQ_GC_INIT_MASK_CACHE,
 			       IRQ_NOREQUEST, IRQ_LEVEL | IRQ_NOPROBE);
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_OF
 static int __init orion_add_irq_domain(struct device_node *np,
@@ -68,3 +73,5 @@ void __init orion_dt_init_irq(void)
 	of_irq_init(orion_irq_match);
 }
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

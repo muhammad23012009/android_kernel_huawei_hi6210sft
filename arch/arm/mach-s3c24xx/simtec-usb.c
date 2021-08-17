@@ -29,6 +29,10 @@
 #include <asm/mach/irq.h>
 
 #include <mach/hardware.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/irq.h>
 
 #include <linux/platform_data/usb-ohci-s3c2410.h>
@@ -78,8 +82,12 @@ static void usb_simtec_enableoc(struct s3c2410_hcd_info *info, int on)
 
 	if (on) {
 		ret = request_irq(BAST_IRQ_USBOC, usb_simtec_ocirq,
+<<<<<<< HEAD
 				  IRQF_DISABLED | IRQF_TRIGGER_RISING |
 				   IRQF_TRIGGER_FALLING,
+=======
+				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  "USB Over-current", info);
 		if (ret != 0) {
 			printk(KERN_ERR "failed to request usb oc irq\n");

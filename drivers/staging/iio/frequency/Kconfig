@@ -3,6 +3,7 @@
 #
 menu "Direct Digital Synthesis"
 
+<<<<<<< HEAD
 config AD5930
 	tristate "Analog Devices ad5930/5932 driver"
 	depends on SPI
@@ -10,6 +11,8 @@ config AD5930
 	  Say yes here to build support for Analog Devices DDS chip
 	  ad5930/ad5932, provides direct access via sysfs.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config AD9832
 	tristate "Analog Devices ad9832/5 driver"
 	depends on SPI
@@ -30,6 +33,7 @@ config AD9834
 	  To compile this driver as a module, choose M here: the
 	  module will be called ad9834.
 
+<<<<<<< HEAD
 config AD9850
 	tristate "Analog Devices ad9850/1 driver"
 	depends on SPI
@@ -58,4 +62,6 @@ config AD9951
 	  Say yes here to build support for Analog Devices DDS chip
 	  ad9951, provides direct access via sysfs.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endmenu

@@ -202,7 +202,10 @@ static int ad7791_read_raw(struct iio_dev *indio_dev,
 {
 	struct ad7791_state *st = iio_priv(indio_dev);
 	bool unipolar = !!(st->mode & AD7791_MODE_UNIPOLAR);
+<<<<<<< HEAD
 	unsigned long long scale_pv;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (info) {
 	case IIO_CHAN_INFO_RAW:
@@ -220,13 +223,22 @@ static int ad7791_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		/* The monitor channel uses an internal reference. */
 		if (chan->address == AD7791_CH_AVDD_MONITOR) {
+<<<<<<< HEAD
 			scale_pv = 5850000000000ULL;
+=======
+			/*
+			 * The signal is attenuated by a factor of 5 and
+			 * compared against a 1.17V internal reference.
+			 */
+			*val = 1170 * 5;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			int voltage_uv;
 
 			voltage_uv = regulator_get_voltage(st->reg);
 			if (voltage_uv < 0)
 				return voltage_uv;
+<<<<<<< HEAD
 			scale_pv = (unsigned long long)voltage_uv * 1000000;
 		}
 		if (unipolar)
@@ -237,6 +249,17 @@ static int ad7791_read_raw(struct iio_dev *indio_dev,
 		*val = scale_pv;
 
 		return IIO_VAL_INT_PLUS_NANO;
+=======
+
+			*val = voltage_uv / 1000;
+		}
+		if (unipolar)
+			*val2 = chan->scan_type.realbits;
+		else
+			*val2 = chan->scan_type.realbits - 1;
+
+		return IIO_VAL_FRACTIONAL_LOG2;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return -EINVAL;
@@ -270,6 +293,7 @@ static ssize_t ad7791_write_frequency(struct device *dev,
 	struct ad7791_state *st = iio_priv(indio_dev);
 	int i, ret;
 
+<<<<<<< HEAD
 	mutex_lock(&indio_dev->mlock);
 	if (iio_buffer_enabled(indio_dev)) {
 		mutex_unlock(&indio_dev->mlock);
@@ -294,6 +318,24 @@ static ssize_t ad7791_write_frequency(struct device *dev,
 	}
 
 	return ret ? ret : len;
+=======
+	for (i = 0; i < ARRAY_SIZE(ad7791_sample_freq_avail); i++)
+		if (sysfs_streq(ad7791_sample_freq_avail[i], buf))
+			break;
+	if (i == ARRAY_SIZE(ad7791_sample_freq_avail))
+		return -EINVAL;
+
+	ret = iio_device_claim_direct_mode(indio_dev);
+	if (ret)
+		return ret;
+	st->filter &= ~AD7791_FILTER_RATE_MASK;
+	st->filter |= i;
+	ad_sd_write_reg(&st->sd, AD7791_REG_FILTER, sizeof(st->filter),
+			st->filter);
+	iio_device_release_direct_mode(indio_dev);
+
+	return len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
@@ -361,12 +403,17 @@ static int ad7791_probe(struct spi_device *spi)
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*st));
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!indio_dev)
 		return -ENOMEM;
 
 	st = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	st->reg = regulator_get(&spi->dev, "refin");
 	if (IS_ERR(st->reg)) {
 		ret = PTR_ERR(st->reg);
@@ -376,6 +423,15 @@ static int ad7791_probe(struct spi_device *spi)
 	ret = regulator_enable(st->reg);
 	if (ret)
 		goto error_put_reg;
+=======
+	st->reg = devm_regulator_get(&spi->dev, "refin");
+	if (IS_ERR(st->reg))
+		return PTR_ERR(st->reg);
+
+	ret = regulator_enable(st->reg);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	st->info = &ad7791_chip_infos[spi_get_device_id(spi)->driver_data];
 	ad_sd_init(&st->sd, indio_dev, spi, &ad7791_sigma_delta_info);
@@ -383,6 +439,10 @@ static int ad7791_probe(struct spi_device *spi)
 	spi_set_drvdata(spi, indio_dev);
 
 	indio_dev->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->dev.of_node = spi->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->channels = st->info->channels;
@@ -410,10 +470,13 @@ error_remove_trigger:
 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
 error_disable_reg:
 	regulator_disable(st->reg);
+<<<<<<< HEAD
 error_put_reg:
 	regulator_put(st->reg);
 err_iio_free:
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -427,9 +490,12 @@ static int ad7791_remove(struct spi_device *spi)
 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
 
 	regulator_disable(st->reg);
+<<<<<<< HEAD
 	regulator_put(st->reg);
 
 	iio_device_free(indio_dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -447,7 +513,10 @@ MODULE_DEVICE_TABLE(spi, ad7791_spi_ids);
 static struct spi_driver ad7791_driver = {
 	.driver = {
 		.name	= "ad7791",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= ad7791_probe,
 	.remove		= ad7791_remove,

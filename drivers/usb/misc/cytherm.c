@@ -16,7 +16,10 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -102,10 +105,15 @@ static ssize_t set_brightness(struct device *dev, struct device_attribute *attr,
 	int retval;
    
 	buffer = kmalloc(8, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&cytherm->udev->dev, "out of memory\n");
 		return 0;
 	}
+=======
+	if (!buffer)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	cytherm->brightness = simple_strtoul(buf, NULL, 10);
    
@@ -149,10 +157,15 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *attr, char
 	int temp, sign;
    
 	buffer = kmalloc(8, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&cytherm->udev->dev, "out of memory\n");
 		return 0;
 	}
+=======
+	if (!buffer)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* read temperature */
 	retval = vendor_command(cytherm->udev, READ_RAM, TEMP, 0, buffer, 8);
@@ -193,10 +206,15 @@ static ssize_t show_button(struct device *dev, struct device_attribute *attr, ch
 	unsigned char *buffer;
 
 	buffer = kmalloc(8, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&cytherm->udev->dev, "out of memory\n");
 		return 0;
 	}
+=======
+	if (!buffer)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check button */
 	retval = vendor_command(cytherm->udev, READ_RAM, BUTTON, 0, buffer, 8);
@@ -231,10 +249,15 @@ static ssize_t show_port0(struct device *dev, struct device_attribute *attr, cha
 	unsigned char *buffer;
 
 	buffer = kmalloc(8, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&cytherm->udev->dev, "out of memory\n");
 		return 0;
 	}
+=======
+	if (!buffer)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = vendor_command(cytherm->udev, READ_PORT, 0, 0, buffer, 8);
 	if (retval)
@@ -258,10 +281,15 @@ static ssize_t set_port0(struct device *dev, struct device_attribute *attr, cons
 	int tmp;
    
 	buffer = kmalloc(8, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&cytherm->udev->dev, "out of memory\n");
 		return 0;
 	}
+=======
+	if (!buffer)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tmp = simple_strtoul(buf, NULL, 10);
    
@@ -291,10 +319,15 @@ static ssize_t show_port1(struct device *dev, struct device_attribute *attr, cha
 	unsigned char *buffer;
 
 	buffer = kmalloc(8, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&cytherm->udev->dev, "out of memory\n");
 		return 0;
 	}
+=======
+	if (!buffer)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	retval = vendor_command(cytherm->udev, READ_PORT, 1, 0, buffer, 8);
 	if (retval)
@@ -318,10 +351,15 @@ static ssize_t set_port1(struct device *dev, struct device_attribute *attr, cons
 	int tmp;
    
 	buffer = kmalloc(8, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&cytherm->udev->dev, "out of memory\n");
 		return 0;
 	}
+=======
+	if (!buffer)
+		return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	tmp = simple_strtoul(buf, NULL, 10);
    
@@ -352,10 +390,15 @@ static int cytherm_probe(struct usb_interface *interface,
 	int retval = -ENOMEM;
 
 	dev = kzalloc (sizeof(struct usb_cytherm), GFP_KERNEL);
+<<<<<<< HEAD
 	if (dev == NULL) {
 		dev_err (&interface->dev, "Out of memory\n");
 		goto error_mem;
 	}
+=======
+	if (!dev)
+		goto error_mem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev->udev = usb_get_dev(udev);
 

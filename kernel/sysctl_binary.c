@@ -3,7 +3,10 @@
 #include "../fs/xfs/xfs_sysctl.h"
 #include <linux/sunrpc/debug.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <net/ip_vs.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/syscalls.h>
 #include <linux/namei.h>
 #include <linux/mount.h>
@@ -14,6 +17,10 @@
 #include <linux/ctype.h>
 #include <linux/netdevice.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/uuid.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/compat.h>
 
@@ -138,6 +145,10 @@ static const struct bin_table bin_kern_table[] = {
 	{ CTL_INT,	KERN_COMPAT_LOG,		"compat-log" },
 	{ CTL_INT,	KERN_MAX_LOCK_DEPTH,		"max_lock_depth" },
 	{ CTL_INT,	KERN_PANIC_ON_NMI,		"panic_on_unrecovered_nmi" },
+<<<<<<< HEAD
+=======
+	{ CTL_INT,	KERN_PANIC_ON_WARN,		"panic_on_warn" },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{}
 };
 
@@ -391,7 +402,10 @@ static const struct bin_table bin_net_ipv4_table[] = {
 	{ CTL_INT,	NET_TCP_MTU_PROBING,			"tcp_mtu_probing" },
 	{ CTL_INT,	NET_TCP_BASE_MSS,			"tcp_base_mss" },
 	{ CTL_INT,	NET_IPV4_TCP_WORKAROUND_SIGNED_WINDOWS,	"tcp_workaround_signed_windows" },
+<<<<<<< HEAD
 	{ CTL_INT,	NET_TCP_DMA_COPYBREAK,			"tcp_dma_copybreak" },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ CTL_INT,	NET_TCP_SLOW_START_AFTER_IDLE,		"tcp_slow_start_after_idle" },
 	{ CTL_INT,	NET_CIPSOV4_CACHE_ENABLE,		"cipso_cache_enable" },
 	{ CTL_INT,	NET_CIPSOV4_CACHE_BUCKET_SIZE,		"cipso_cache_bucket_size" },
@@ -523,6 +537,10 @@ static const struct bin_table bin_net_ipv6_conf_var_table[] = {
 	{ CTL_INT,	NET_IPV6_ACCEPT_RA_RT_INFO_MAX_PLEN,	"accept_ra_rt_info_max_plen" },
 	{ CTL_INT,	NET_IPV6_PROXY_NDP,			"proxy_ndp" },
 	{ CTL_INT,	NET_IPV6_ACCEPT_SOURCE_ROUTE,		"accept_source_route" },
+<<<<<<< HEAD
+=======
+	{ CTL_INT,	NET_IPV6_ACCEPT_RA_FROM_LOCAL,		"accept_ra_from_local" },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{}
 };
 
@@ -1025,7 +1043,11 @@ static ssize_t bin_intvec(struct file *file,
 			if (get_user(value, vec + i))
 				goto out_kfree;
 
+<<<<<<< HEAD
 			str += snprintf(str, end - str, "%lu\t", value);
+=======
+			str += scnprintf(str, end - str, "%lu\t", value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		result = kernel_write(file, buffer, str - buffer, 0);
@@ -1096,7 +1118,11 @@ static ssize_t bin_ulongvec(struct file *file,
 			if (get_user(value, vec + i))
 				goto out_kfree;
 
+<<<<<<< HEAD
 			str += snprintf(str, end - str, "%lu\t", value);
+=======
+			str += scnprintf(str, end - str, "%lu\t", value);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		result = kernel_write(file, buffer, str - buffer, 0);
@@ -1117,9 +1143,14 @@ static ssize_t bin_uuid(struct file *file,
 
 	/* Only supports reads */
 	if (oldval && oldlen) {
+<<<<<<< HEAD
 		char buf[40], *str = buf;
 		unsigned char uuid[16];
 		int i;
+=======
+		char buf[UUID_STRING_LEN + 1];
+		uuid_be uuid;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		result = kernel_read(file, 0, buf, sizeof(buf) - 1);
 		if (result < 0)
@@ -1127,6 +1158,7 @@ static ssize_t bin_uuid(struct file *file,
 
 		buf[result] = '\0';
 
+<<<<<<< HEAD
 		/* Convert the uuid to from a string to binary */
 		for (i = 0; i < 16; i++) {
 			result = -EIO;
@@ -1139,12 +1171,21 @@ static ssize_t bin_uuid(struct file *file,
 			if (*str == '-')
 				str++;
 		}
+=======
+		result = -EIO;
+		if (uuid_be_to_bin(buf, &uuid))
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (oldlen > 16)
 			oldlen = 16;
 
 		result = -EFAULT;
+<<<<<<< HEAD
 		if (copy_to_user(oldval, uuid, oldlen))
+=======
+		if (copy_to_user(oldval, &uuid, oldlen))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 
 		copied = oldlen;
@@ -1206,7 +1247,11 @@ static ssize_t bin_dn_node_address(struct file *file,
 		if (get_user(dnaddr, (__le16 __user *)newval))
 			goto out;
 
+<<<<<<< HEAD
 		len = snprintf(buf, sizeof(buf), "%hu.%hu",
+=======
+		len = scnprintf(buf, sizeof(buf), "%hu.%hu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				le16_to_cpu(dnaddr) >> 10,
 				le16_to_cpu(dnaddr) & 0x3ff);
 
@@ -1321,7 +1366,11 @@ static ssize_t binary_sysctl(const int *name, int nlen,
 	}
 
 	mnt = task_active_pid_ns(current)->proc_mnt;
+<<<<<<< HEAD
 	file = file_open_root(mnt->mnt_root, mnt, pathname, flags);
+=======
+	file = file_open_root(mnt->mnt_root, mnt, pathname, flags, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	result = PTR_ERR(file);
 	if (IS_ERR(file))
 		goto out_putname;

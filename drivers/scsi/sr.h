@@ -36,6 +36,10 @@ typedef struct scsi_cd {
 	struct scsi_device *device;
 	unsigned int vendor;	/* vendor code, see sr_vendor.c         */
 	unsigned long ms_offset;	/* for reading multisession-CD's        */
+<<<<<<< HEAD
+=======
+	unsigned writeable : 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned use:1;		/* is this device still supportable     */
 	unsigned xa_flag:1;	/* CD has XA sectors ? */
 	unsigned readcd_known:1;	/* drive supports READ_CD (0xbe) */
@@ -55,6 +59,12 @@ typedef struct scsi_cd {
 	struct gendisk *disk;
 } Scsi_CD;
 
+<<<<<<< HEAD
+=======
+#define sr_printk(prefix, cd, fmt, a...) \
+	sdev_prefix_printk(prefix, (cd)->device, (cd)->cdi.name, fmt, ##a)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int sr_do_ioctl(Scsi_CD *, struct packet_command *);
 
 int sr_lock_door(struct cdrom_device_info *, int);

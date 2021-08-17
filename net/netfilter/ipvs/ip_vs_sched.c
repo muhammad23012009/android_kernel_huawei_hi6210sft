@@ -74,7 +74,11 @@ void ip_vs_unbind_scheduler(struct ip_vs_service *svc,
 
 	if (sched->done_service)
 		sched->done_service(svc);
+<<<<<<< HEAD
 	/* svc->scheduler can not be set to NULL */
+=======
+	/* svc->scheduler can be set to NULL only by caller */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -104,8 +108,12 @@ static struct ip_vs_scheduler *ip_vs_sched_getbyname(const char *sched_name)
 			mutex_unlock(&ip_vs_sched_mutex);
 			return sched;
 		}
+<<<<<<< HEAD
 		if (sched->module)
 			module_put(sched->module);
+=======
+		module_put(sched->module);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_unlock(&ip_vs_sched_mutex);
@@ -138,7 +146,11 @@ struct ip_vs_scheduler *ip_vs_scheduler_get(const char *sched_name)
 
 void ip_vs_scheduler_put(struct ip_vs_scheduler *scheduler)
 {
+<<<<<<< HEAD
 	if (scheduler && scheduler->module)
+=======
+	if (scheduler)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		module_put(scheduler->module);
 }
 
@@ -148,6 +160,7 @@ void ip_vs_scheduler_put(struct ip_vs_scheduler *scheduler)
 
 void ip_vs_scheduler_err(struct ip_vs_service *svc, const char *msg)
 {
+<<<<<<< HEAD
 	struct ip_vs_scheduler *sched;
 
 	sched = rcu_dereference(svc->scheduler);
@@ -158,11 +171,27 @@ void ip_vs_scheduler_err(struct ip_vs_service *svc, const char *msg)
 	} else if (svc->af == AF_INET6) {
 		IP_VS_ERR_RL("%s: %s [%pI6c]:%d - %s\n",
 			     sched->name, ip_vs_proto_name(svc->protocol),
+=======
+	struct ip_vs_scheduler *sched = rcu_dereference(svc->scheduler);
+	char *sched_name = sched ? sched->name : "none";
+
+	if (svc->fwmark) {
+		IP_VS_ERR_RL("%s: FWM %u 0x%08X - %s\n",
+			     sched_name, svc->fwmark, svc->fwmark, msg);
+#ifdef CONFIG_IP_VS_IPV6
+	} else if (svc->af == AF_INET6) {
+		IP_VS_ERR_RL("%s: %s [%pI6c]:%d - %s\n",
+			     sched_name, ip_vs_proto_name(svc->protocol),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     &svc->addr.in6, ntohs(svc->port), msg);
 #endif
 	} else {
 		IP_VS_ERR_RL("%s: %s %pI4:%d - %s\n",
+<<<<<<< HEAD
 			     sched->name, ip_vs_proto_name(svc->protocol),
+=======
+			     sched_name, ip_vs_proto_name(svc->protocol),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			     &svc->addr.ip, ntohs(svc->port), msg);
 	}
 }

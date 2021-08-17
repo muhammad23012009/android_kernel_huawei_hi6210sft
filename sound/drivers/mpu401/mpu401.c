@@ -64,7 +64,12 @@ static struct platform_device *platform_devices[SNDRV_CARDS];
 static int pnp_registered;
 static unsigned int snd_mpu401_devices;
 
+<<<<<<< HEAD
 static int snd_mpu401_create(int dev, struct snd_card **rcard)
+=======
+static int snd_mpu401_create(struct device *devptr, int dev,
+			     struct snd_card **rcard)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct snd_card *card;
 	int err;
@@ -73,7 +78,12 @@ static int snd_mpu401_create(int dev, struct snd_card **rcard)
 		snd_printk(KERN_ERR "the uart_enter option is obsolete; remove it\n");
 
 	*rcard = NULL;
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(devptr, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err < 0)
 		return err;
 	strcpy(card->driver, "MPU-401 UART");
@@ -114,10 +124,16 @@ static int snd_mpu401_probe(struct platform_device *devptr)
 		snd_printk(KERN_ERR "specify or disable IRQ\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	err = snd_mpu401_create(dev, &card);
 	if (err < 0)
 		return err;
 	snd_card_set_dev(card, &devptr->dev);
+=======
+	err = snd_mpu401_create(&devptr->dev, dev, &card);
+	if (err < 0)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -129,7 +145,10 @@ static int snd_mpu401_probe(struct platform_device *devptr)
 static int snd_mpu401_remove(struct platform_device *devptr)
 {
 	snd_card_free(platform_get_drvdata(devptr));
+<<<<<<< HEAD
 	platform_set_drvdata(devptr, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -140,7 +159,10 @@ static struct platform_driver snd_mpu401_driver = {
 	.remove		= snd_mpu401_remove,
 	.driver		= {
 		.name	= SND_MPU401_DRIVER,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -195,14 +217,21 @@ static int snd_mpu401_pnp_probe(struct pnp_dev *pnp_dev,
 		err = snd_mpu401_pnp(dev, pnp_dev, id);
 		if (err < 0)
 			return err;
+<<<<<<< HEAD
 		err = snd_mpu401_create(dev, &card);
+=======
+		err = snd_mpu401_create(&pnp_dev->dev, dev, &card);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (err < 0)
 			return err;
 		if ((err = snd_card_register(card)) < 0) {
 			snd_card_free(card);
 			return err;
 		}
+<<<<<<< HEAD
 		snd_card_set_dev(card, &pnp_dev->dev);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pnp_set_drvdata(pnp_dev, card);
 		snd_mpu401_devices++;
 		++dev;

@@ -13,7 +13,11 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/opp.h>
+=======
+#include <linux/pm_opp.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/export.h>
 #include <linux/suspend.h>
 #include <linux/cpu.h>
@@ -32,11 +36,20 @@
 #include "pm.h"
 #include "twl-common.h"
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUSPEND
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * omap_pm_suspend: points to a function that does the SoC-specific
  * suspend work
  */
+<<<<<<< HEAD
 int (*omap_pm_suspend)(void);
+=======
+static int (*omap_pm_suspend)(void);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PM
 /**
@@ -108,6 +121,7 @@ static void __init omap2_init_processor_devices(void)
 
 int __init omap_pm_clkdms_setup(struct clockdomain *clkdm, void *unused)
 {
+<<<<<<< HEAD
 	/* XXX The usecount test is racy */
 	if ((clkdm->flags & CLKDM_CAN_ENABLE_AUTO) &&
 	    !(clkdm->flags & CLKDM_MISSING_IDLE_REPORTING))
@@ -115,6 +129,9 @@ int __init omap_pm_clkdms_setup(struct clockdomain *clkdm, void *unused)
 	else if (clkdm->flags & CLKDM_CAN_FORCE_SLEEP &&
 		 clkdm->usecount == 0)
 		clkdm_sleep(clkdm);
+=======
+	clkdm_allow_idle(clkdm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -131,7 +148,11 @@ static int __init omap2_set_init_voltage(char *vdd_name, char *clk_name,
 {
 	struct voltagedomain *voltdm;
 	struct clk *clk;
+<<<<<<< HEAD
 	struct opp *opp;
+=======
+	struct dev_pm_opp *opp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long freq, bootup_volt;
 	struct device *dev;
 
@@ -172,7 +193,11 @@ static int __init omap2_set_init_voltage(char *vdd_name, char *clk_name,
 	clk_put(clk);
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	opp = opp_find_freq_ceil(dev, &freq);
+=======
+	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(opp)) {
 		rcu_read_unlock();
 		pr_err("%s: unable to find boot up OPP for vdd_%s\n",
@@ -180,7 +205,11 @@ static int __init omap2_set_init_voltage(char *vdd_name, char *clk_name,
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	bootup_volt = opp_get_voltage(opp);
+=======
+	bootup_volt = dev_pm_opp_get_voltage(opp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rcu_read_unlock();
 	if (!bootup_volt) {
 		pr_err("%s: unable to find voltage corresponding to the bootup OPP for vdd_%s\n",
@@ -229,7 +258,11 @@ static void omap_pm_end(void)
 	cpu_idle_poll_ctrl(false);
 }
 
+<<<<<<< HEAD
 static void omap_pm_finish(void)
+=======
+static void omap_pm_wake(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (cpu_is_omap34xx())
 		omap_prcm_irq_complete();
@@ -239,10 +272,26 @@ static const struct platform_suspend_ops omap_pm_ops = {
 	.begin		= omap_pm_begin,
 	.end		= omap_pm_end,
 	.enter		= omap_pm_enter,
+<<<<<<< HEAD
 	.finish		= omap_pm_finish,
 	.valid		= suspend_valid_only_mem,
 };
 
+=======
+	.wake		= omap_pm_wake,
+	.valid		= suspend_valid_only_mem,
+};
+
+/**
+ * omap_common_suspend_init - Set common suspend routines for OMAP SoCs
+ * @pm_suspend: function pointer to SoC specific suspend function
+ */
+void omap_common_suspend_init(void *pm_suspend)
+{
+	omap_pm_suspend = pm_suspend;
+	suspend_set_ops(&omap_pm_ops);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_SUSPEND */
 
 static void __init omap3_init_voltages(void)
@@ -266,8 +315,15 @@ static void __init omap4_init_voltages(void)
 
 static inline void omap_init_cpufreq(void)
 {
+<<<<<<< HEAD
 	struct platform_device_info devinfo = { .name = "omap-cpufreq", };
 	platform_device_register_full(&devinfo);
+=======
+	struct platform_device_info devinfo = { .name = "omap-cpufreq" };
+
+	if (!of_have_populated_dt())
+		platform_device_register_full(&devinfo);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init omap2_common_pm_init(void)
@@ -282,6 +338,7 @@ omap_postcore_initcall(omap2_common_pm_init);
 
 int __init omap2_common_pm_late_init(void)
 {
+<<<<<<< HEAD
 	/*
 	 * In the case of DT, the PMIC and SR initialization will be done using
 	 * a completely different mechanism.
@@ -307,6 +364,26 @@ int __init omap2_common_pm_late_init(void)
 #ifdef CONFIG_SUSPEND
 	suspend_set_ops(&omap_pm_ops);
 #endif
+=======
+	if (of_have_populated_dt()) {
+		omap3_twl_init();
+		omap4_twl_init();
+	}
+
+	/* Init the voltage layer */
+	omap_pmic_late_init();
+	omap_voltage_late_init();
+
+	/* Initialize the voltages */
+	omap3_init_voltages();
+	omap4_init_voltages();
+
+	/* Smartreflex device init */
+	omap_devinit_smartreflex();
+
+	/* cpufreq dummy device instantiation */
+	omap_init_cpufreq();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

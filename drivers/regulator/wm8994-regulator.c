@@ -36,7 +36,11 @@ struct wm8994_ldo {
 #define WM8994_LDO1_MAX_SELECTOR 0x7
 #define WM8994_LDO2_MAX_SELECTOR 0x3
 
+<<<<<<< HEAD
 static struct regulator_ops wm8994_ldo1_ops = {
+=======
+static const struct regulator_ops wm8994_ldo1_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.list_voltage = regulator_list_voltage_linear,
 	.map_voltage = regulator_map_voltage_linear,
 	.get_voltage_sel = regulator_get_voltage_sel_regmap,
@@ -69,7 +73,11 @@ static int wm8994_ldo2_list_voltage(struct regulator_dev *rdev,
 	}
 }
 
+<<<<<<< HEAD
 static struct regulator_ops wm8994_ldo2_ops = {
+=======
+static const struct regulator_ops wm8994_ldo2_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.list_voltage = wm8994_ldo2_list_voltage,
 	.get_voltage_sel = regulator_get_voltage_sel_regmap,
 	.set_voltage_sel = regulator_set_voltage_sel_regmap,
@@ -125,7 +133,11 @@ static const struct regulator_init_data wm8994_ldo_default[] = {
 static int wm8994_ldo_probe(struct platform_device *pdev)
 {
 	struct wm8994 *wm8994 = dev_get_drvdata(pdev->dev.parent);
+<<<<<<< HEAD
 	struct wm8994_pdata *pdata = wm8994->dev->platform_data;
+=======
+	struct wm8994_pdata *pdata = dev_get_platdata(wm8994->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int id = pdev->id % ARRAY_SIZE(pdata->ldo);
 	struct regulator_config config = { };
 	struct wm8994_ldo *ldo;
@@ -134,10 +146,15 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
 	dev_dbg(&pdev->dev, "Probing LDO%d\n", id + 1);
 
 	ldo = devm_kzalloc(&pdev->dev, sizeof(struct wm8994_ldo), GFP_KERNEL);
+<<<<<<< HEAD
 	if (ldo == NULL) {
 		dev_err(&pdev->dev, "Unable to allocate private data\n");
 		return -ENOMEM;
 	}
+=======
+	if (!ldo)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ldo->wm8994 = wm8994;
 	ldo->supply = wm8994_ldo_consumer[id];
@@ -147,10 +164,19 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
 	config.driver_data = ldo;
 	config.regmap = wm8994->regmap;
 	config.init_data = &ldo->init_data;
+<<<<<<< HEAD
 	if (pdata)
 		config.ena_gpio = pdata->ldo[id].enable;
 	else if (wm8994->dev->of_node)
 		config.ena_gpio = wm8994->pdata.ldo[id].enable;
+=======
+	if (pdata) {
+		config.ena_gpio = pdata->ldo[id].enable;
+	} else if (wm8994->dev->of_node) {
+		config.ena_gpio = wm8994->pdata.ldo[id].enable;
+		config.ena_gpio_initialized = true;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Use default constraints if none set up */
 	if (!pdata || !pdata->ldo[id].init_data || wm8994->dev->of_node) {
@@ -165,7 +191,13 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
 		ldo->init_data = *pdata->ldo[id].init_data;
 	}
 
+<<<<<<< HEAD
 	ldo->regulator = regulator_register(&wm8994_ldo_desc[id], &config);
+=======
+	ldo->regulator = devm_regulator_register(&pdev->dev,
+						 &wm8994_ldo_desc[id],
+						 &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(ldo->regulator)) {
 		ret = PTR_ERR(ldo->regulator);
 		dev_err(wm8994->dev, "Failed to register LDO%d: %d\n",
@@ -181,6 +213,7 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int wm8994_ldo_remove(struct platform_device *pdev)
 {
 	struct wm8994_ldo *ldo = platform_get_drvdata(pdev);
@@ -198,6 +231,12 @@ static struct platform_driver wm8994_ldo_driver = {
 	.driver		= {
 		.name	= "wm8994-ldo",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver wm8994_ldo_driver = {
+	.probe = wm8994_ldo_probe,
+	.driver		= {
+		.name	= "wm8994-ldo",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

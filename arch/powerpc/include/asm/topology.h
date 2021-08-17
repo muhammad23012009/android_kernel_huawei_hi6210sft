@@ -9,17 +9,23 @@ struct device_node;
 #ifdef CONFIG_NUMA
 
 /*
+<<<<<<< HEAD
  * Before going off node we want the VM to try and reclaim from the local
  * node. It does this if the remote distance is larger than RECLAIM_DISTANCE.
  * With the default REMOTE_DISTANCE of 20 and the default RECLAIM_DISTANCE of
  * 20, we never reclaim and go off node straight away.
  *
  * To fix this we choose a smaller value of RECLAIM_DISTANCE.
+=======
+ * If zone_reclaim_mode is enabled, a RECLAIM_DISTANCE of 10 will mean that
+ * all zones on all nodes will be eligible for zone_reclaim().
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #define RECLAIM_DISTANCE 10
 
 #include <asm/mmzone.h>
 
+<<<<<<< HEAD
 static inline int cpu_to_node(int cpu)
 {
 	int nid;
@@ -33,6 +39,8 @@ static inline int cpu_to_node(int cpu)
 	return (nid < 0) ? 0 : nid;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define parent_node(node)	(node)
 
 #define cpumask_of_node(node) ((node) == -1 ?				\
@@ -99,14 +107,26 @@ static inline int prrn_is_enabled(void)
 
 #ifdef CONFIG_SMP
 #include <asm/cputable.h>
+<<<<<<< HEAD
 #define smt_capable()		(cpu_has_feature(CPU_FTR_SMT))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_PPC64
 #include <asm/smp.h>
 
+<<<<<<< HEAD
 #define topology_thread_cpumask(cpu)	(per_cpu(cpu_sibling_map, cpu))
 #define topology_core_cpumask(cpu)	(per_cpu(cpu_core_map, cpu))
 #define topology_core_id(cpu)		(cpu_to_core_id(cpu))
+=======
+#define topology_physical_package_id(cpu)	(cpu_to_chip_id(cpu))
+#define topology_sibling_cpumask(cpu)	(per_cpu(cpu_sibling_map, cpu))
+#define topology_core_cpumask(cpu)	(per_cpu(cpu_core_map, cpu))
+#define topology_core_id(cpu)		(cpu_to_core_id(cpu))
+
+int dlpar_cpu_readd(int cpu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #endif
 

@@ -5,6 +5,7 @@ config TRACE_IRQFLAGS_SUPPORT
 
 source "lib/Kconfig.debug"
 
+<<<<<<< HEAD
 config STRICT_DEVMEM
 	def_bool y
 	prompt "Filter access to /dev/mem"
@@ -17,6 +18,8 @@ config STRICT_DEVMEM
 
 	  If you are unsure, say Y.
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config S390_PTDUMP
 	bool "Export kernel pagetable layout to userspace via debugfs"
 	depends on DEBUG_KERNEL

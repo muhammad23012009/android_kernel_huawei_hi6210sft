@@ -476,7 +476,11 @@ adfs_f_free(struct adfs_dir *dir)
 	dir->sb = NULL;
 }
 
+<<<<<<< HEAD
 struct adfs_dir_ops adfs_f_dir_ops = {
+=======
+const struct adfs_dir_ops adfs_f_dir_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read		= adfs_f_read,
 	.setpos		= adfs_f_setpos,
 	.getnext	= adfs_f_getnext,

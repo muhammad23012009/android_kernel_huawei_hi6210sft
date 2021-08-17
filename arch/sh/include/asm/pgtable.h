@@ -62,7 +62,11 @@ static inline unsigned long long neff_sign_extend(unsigned long val)
 /* Entries per level */
 #define PTRS_PER_PTE	(PAGE_SIZE / (1 << PTE_MAGNITUDE))
 
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+#define FIRST_USER_ADDRESS	0UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define PHYS_ADDR_MASK29		0x1fffffff
 #define PHYS_ADDR_MASK32		0xffffffff
@@ -124,9 +128,12 @@ typedef pte_t *pte_addr_t;
 
 #define kern_addr_valid(addr)	(1)
 
+<<<<<<< HEAD
 #define io_remap_pfn_range(vma, vaddr, pfn, size, prot)		\
 		remap_pfn_range(vma, vaddr, pfn, size, prot)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define pte_pfn(x)		((unsigned long)(((x).pte_low >> PAGE_SHIFT)))
 
 /*

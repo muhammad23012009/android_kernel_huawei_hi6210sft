@@ -9,7 +9,25 @@
 #ifndef _DT_BINDINGS_GPIO_GPIO_H
 #define _DT_BINDINGS_GPIO_GPIO_H
 
+<<<<<<< HEAD
 #define GPIO_ACTIVE_HIGH 0
 #define GPIO_ACTIVE_LOW 1
 
+=======
+/* Bit 0 express polarity */
+#define GPIO_ACTIVE_HIGH 0
+#define GPIO_ACTIVE_LOW 1
+
+/* Bit 1 express single-endedness */
+#define GPIO_PUSH_PULL 0
+#define GPIO_SINGLE_ENDED 2
+
+/*
+ * Open Drain/Collector is the combination of single-ended active low,
+ * Open Source/Emitter is the combination of single-ended active high.
+ */
+#define GPIO_OPEN_DRAIN (GPIO_SINGLE_ENDED | GPIO_ACTIVE_LOW)
+#define GPIO_OPEN_SOURCE (GPIO_SINGLE_ENDED | GPIO_ACTIVE_HIGH)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

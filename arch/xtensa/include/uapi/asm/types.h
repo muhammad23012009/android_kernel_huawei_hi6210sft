@@ -18,7 +18,12 @@
 # define __XTENSA_UL_CONST(x)	x
 #else
 # define __XTENSA_UL(x)		((unsigned long)(x))
+<<<<<<< HEAD
 # define __XTENSA_UL_CONST(x)	x##UL
+=======
+# define ___XTENSA_UL_CONST(x)	x##UL
+# define __XTENSA_UL_CONST(x)	___XTENSA_UL_CONST(x)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #ifndef __ASSEMBLY__

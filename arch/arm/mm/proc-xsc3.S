@@ -83,7 +83,11 @@
  * Nothing too exciting at the moment
  */
 ENTRY(cpu_xsc3_proc_init)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_xsc3_proc_fin()
@@ -93,7 +97,11 @@ ENTRY(cpu_xsc3_proc_fin)
 	bic	r0, r0, #0x1800			@ ...IZ...........
 	bic	r0, r0, #0x0006			@ .............CA.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * cpu_xsc3_reset(loc)
@@ -119,7 +127,11 @@ ENTRY(cpu_xsc3_reset)
 	@ CAUTION: MMU turned off from this point.  We count on the pipeline
 	@ already containing those two last instructions to survive.
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I and D TLBs
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(cpu_xsc3_reset)
 	.popsection
 
@@ -138,7 +150,11 @@ ENDPROC(cpu_xsc3_reset)
 ENTRY(cpu_xsc3_do_idle)
 	mov	r0, #1
 	mcr	p14, 0, r0, c7, c0, 0		@ go to idle
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* ================================= CACHE ================================ */
 
@@ -150,7 +166,11 @@ ENTRY(cpu_xsc3_do_idle)
 ENTRY(xsc3_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(xsc3_flush_icache_all)
 
 /*
@@ -176,7 +196,11 @@ __flush_whole_cache:
 	mcrne	p15, 0, ip, c7, c5, 0		@ invalidate L1 I cache and BTB
 	mcrne	p15, 0, ip, c7, c10, 4		@ data write barrier
 	mcrne	p15, 0, ip, c7, c5, 4		@ prefetch flush
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_user_cache_range(start, end, vm_flags)
@@ -205,7 +229,11 @@ ENTRY(xsc3_flush_user_cache_range)
 	mcrne	p15, 0, ip, c7, c5, 6		@ invalidate BTB
 	mcrne	p15, 0, ip, c7, c10, 4		@ data write barrier
 	mcrne	p15, 0, ip, c7, c5, 4		@ prefetch flush
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	coherent_kern_range(start, end)
@@ -232,7 +260,11 @@ ENTRY(xsc3_coherent_user_range)
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate L1 I cache and BTB
 	mcr	p15, 0, r0, c7, c10, 4		@ data write barrier
 	mcr	p15, 0, r0, c7, c5, 4		@ prefetch flush
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -253,7 +285,11 @@ ENTRY(xsc3_flush_kern_dcache_area)
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate L1 I cache and BTB
 	mcr	p15, 0, r0, c7, c10, 4		@ data write barrier
 	mcr	p15, 0, r0, c7, c5, 4		@ prefetch flush
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_inv_range(start, end)
@@ -277,7 +313,11 @@ xsc3_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ data write barrier
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_clean_range(start, end)
@@ -294,7 +334,11 @@ xsc3_dma_clean_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ data write barrier
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_flush_range(start, end)
@@ -311,7 +355,11 @@ ENTRY(xsc3_dma_flush_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ data write barrier
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  *	dma_map_area(start, size, dir)
@@ -334,7 +382,11 @@ ENDPROC(xsc3_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(xsc3_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENDPROC(xsc3_dma_unmap_area)
 
 	.globl	xsc3_flush_kern_cache_louis
@@ -348,7 +400,11 @@ ENTRY(cpu_xsc3_dcache_clean_area)
 	add	r0, r0, #CACHELINESIZE
 	subs	r1, r1, #CACHELINESIZE
 	bhi	1b
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* =============================== PageTable ============================== */
 
@@ -406,7 +462,11 @@ ENTRY(cpu_xsc3_set_pte_ext)
 	orr	r2, r2, ip
 
 	xscale_set_pte_ext_epilogue
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.ltorg
 	.align
@@ -446,8 +506,11 @@ ENTRY(cpu_xsc3_do_resume)
 ENDPROC(cpu_xsc3_do_resume)
 #endif
 
+<<<<<<< HEAD
 	__CPUINIT
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type	__xsc3_setup, #function
 __xsc3_setup:
 	mov	r0, #PSR_F_BIT|PSR_I_BIT|SVC_MODE
@@ -480,7 +543,11 @@ __xsc3_setup:
 	bic	r0, r0, r5			@ ..V. ..R. .... ..A.
 	orr	r0, r0, r6			@ ..VI Z..S .... .C.M (mmu)
 						@ ...I Z..S .... .... (uc)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.size	__xsc3_setup, . - __xsc3_setup
 
@@ -501,7 +568,11 @@ xsc3_crval:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .macro xsc3_proc_info name:req, cpu_val:req, cpu_mask:req
 	.type	__\name\()_proc_info,#object
@@ -516,7 +587,11 @@ __\name\()_proc_info:
 	.long	PMD_TYPE_SECT | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
+<<<<<<< HEAD
 	b	__xsc3_setup
+=======
+	initfn	__xsc3_setup, __\name\()_proc_info
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP

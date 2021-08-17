@@ -67,7 +67,11 @@ enum mpol_rebind_step {
 #define MPOL_F_LOCAL   (1 << 1)	/* preferred local allocation */
 #define MPOL_F_REBINDING (1 << 2)	/* identify policies in rebinding */
 #define MPOL_F_MOF	(1 << 3) /* this policy wants migrate on fault */
+<<<<<<< HEAD
 #define MPOL_F_MORON	(1 << 4) /* Migrate On pte_numa Reference On Node */
+=======
+#define MPOL_F_MORON	(1 << 4) /* Migrate On protnone Reference On Node */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #endif /* _UAPI_LINUX_MEMPOLICY_H */

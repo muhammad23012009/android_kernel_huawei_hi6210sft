@@ -2,6 +2,7 @@
  * AMD64 class Memory Controller kernel module
  *
  * Copyright (c) 2009 SoftwareBitMaker.
+<<<<<<< HEAD
  * Copyright (c) 2009 Advanced Micro Devices, Inc.
  *
  * This file may be distributed under the terms of the
@@ -60,6 +61,12 @@
  * The Family 10h BKDG was totally re-written from scratch with a new
  * presentation model.
  * Therefore, comments that refer to a Document section might be off.
+=======
+ * Copyright (c) 2009-15 Advanced Micro Devices, Inc.
+ *
+ * This file may be distributed under the terms of the
+ * GNU General Public License.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -70,6 +77,10 @@
 #include <linux/slab.h>
 #include <linux/mmzone.h>
 #include <linux/edac.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_device_id.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/msr.h>
 #include "edac_core.h"
 #include "mce_amd.h"
@@ -160,6 +171,7 @@
 #define OFF false
 
 /*
+<<<<<<< HEAD
  * Create a contiguous bitmask starting at bit position @lo and ending at
  * position @hi. For example
  *
@@ -168,12 +180,25 @@
 #define GENMASK(lo, hi)			(((1ULL << ((hi) - (lo) + 1)) - 1) << (lo))
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * PCI-defined configuration space registers
  */
 #define PCI_DEVICE_ID_AMD_15H_NB_F1	0x1601
 #define PCI_DEVICE_ID_AMD_15H_NB_F2	0x1602
+<<<<<<< HEAD
 #define PCI_DEVICE_ID_AMD_16H_NB_F1	0x1531
 #define PCI_DEVICE_ID_AMD_16H_NB_F2	0x1532
+=======
+#define PCI_DEVICE_ID_AMD_15H_M30H_NB_F1 0x141b
+#define PCI_DEVICE_ID_AMD_15H_M30H_NB_F2 0x141c
+#define PCI_DEVICE_ID_AMD_15H_M60H_NB_F1 0x1571
+#define PCI_DEVICE_ID_AMD_15H_M60H_NB_F2 0x1572
+#define PCI_DEVICE_ID_AMD_16H_NB_F1	0x1531
+#define PCI_DEVICE_ID_AMD_16H_NB_F2	0x1532
+#define PCI_DEVICE_ID_AMD_16H_M30H_NB_F1 0x1581
+#define PCI_DEVICE_ID_AMD_16H_M30H_NB_F2 0x1582
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Function 1 - Address Map
@@ -181,13 +206,30 @@
 #define DRAM_BASE_LO			0x40
 #define DRAM_LIMIT_LO			0x44
 
+<<<<<<< HEAD
 #define dram_intlv_en(pvt, i)		((u8)((pvt->ranges[i].base.lo >> 8) & 0x7))
+=======
+/*
+ * F15 M30h D18F1x2[1C:00]
+ */
+#define DRAM_CONT_BASE			0x200
+#define DRAM_CONT_LIMIT			0x204
+
+/*
+ * F15 M30h D18F1x2[4C:40]
+ */
+#define DRAM_CONT_HIGH_OFF		0x240
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define dram_rw(pvt, i)			((u8)(pvt->ranges[i].base.lo & 0x3))
 #define dram_intlv_sel(pvt, i)		((u8)((pvt->ranges[i].lim.lo >> 8) & 0x7))
 #define dram_dst_node(pvt, i)		((u8)(pvt->ranges[i].lim.lo & 0x7))
 
 #define DHAR				0xf0
+<<<<<<< HEAD
 #define dhar_valid(pvt)			((pvt)->dhar & BIT(0))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define dhar_mem_hoist_valid(pvt)	((pvt)->dhar & BIT(1))
 #define dhar_base(pvt)			((pvt)->dhar & 0xff000000)
 #define k8_dhar_offset(pvt)		(((pvt)->dhar & 0x0000ff00) << 16)
@@ -216,6 +258,11 @@
 
 #define csrow_enabled(i, dct, pvt)	((pvt)->csels[(dct)].csbases[(i)] & DCSB_CS_ENABLE)
 
+<<<<<<< HEAD
+=======
+#define DRAM_CONTROL			0x78
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DBAM0				0x80
 #define DBAM1				0x180
 
@@ -234,8 +281,11 @@
 #define DDR3_MODE			BIT(8)
 
 #define DCT_SEL_LO			0x110
+<<<<<<< HEAD
 #define dct_sel_baseaddr(pvt)		((pvt)->dct_sel_lo & 0xFFFFF800)
 #define dct_sel_interleave_addr(pvt)	(((pvt)->dct_sel_lo >> 6) & 0x3)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define dct_high_range_enabled(pvt)	((pvt)->dct_sel_lo & BIT(0))
 #define dct_interleave_enabled(pvt)	((pvt)->dct_sel_lo & BIT(2))
 
@@ -248,6 +298,11 @@
 
 #define DCT_SEL_HI			0x114
 
+<<<<<<< HEAD
+=======
+#define F15H_M60H_SCRCTRL		0x1C8
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Function 3 - Misc Control
  */
@@ -297,7 +352,14 @@ enum amd_families {
 	K8_CPUS = 0,
 	F10_CPUS,
 	F15_CPUS,
+<<<<<<< HEAD
 	F16_CPUS,
+=======
+	F15_M30H_CPUS,
+	F15_M60H_CPUS,
+	F16_CPUS,
+	F16_M30H_CPUS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NUM_FAMILIES,
 };
 
@@ -337,6 +399,13 @@ struct amd64_pvt {
 	struct pci_dev *F1, *F2, *F3;
 
 	u16 mc_node_id;		/* MC index of this MC node */
+<<<<<<< HEAD
+=======
+	u8 fam;			/* CPU family */
+	u8 model;		/* ... model */
+	u8 stepping;		/* ... stepping */
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ext_model;		/* extended model value of this node */
 	int channel_count;
 
@@ -370,6 +439,12 @@ struct amd64_pvt {
 
 	/* place to store error injection parameters prior to issue */
 	struct error_injection injection;
+<<<<<<< HEAD
+=======
+
+	/* cache the dram_type */
+	enum mem_type dram_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 enum err_codes {
@@ -414,6 +489,17 @@ static inline u16 extract_syndrome(u64 status)
 	return ((status >> 47) & 0xff) | ((status >> 16) & 0xff00);
 }
 
+<<<<<<< HEAD
+=======
+static inline u8 dct_sel_interleave_addr(struct amd64_pvt *pvt)
+{
+	if (pvt->fam == 0x15 && pvt->model >= 0x30)
+		return (((pvt->dct_sel_hi >> 9) & 0x1) << 2) |
+			((pvt->dct_sel_lo >> 6) & 0x3);
+
+	return	((pvt)->dct_sel_lo >> 6) & 0x3;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * per-node ECC settings descriptor
  */
@@ -428,6 +514,7 @@ struct ecc_settings {
 };
 
 #ifdef CONFIG_EDAC_DEBUG
+<<<<<<< HEAD
 int amd64_create_sysfs_dbg_files(struct mem_ctl_info *mci);
 void amd64_remove_sysfs_dbg_files(struct mem_ctl_info *mci);
 
@@ -453,6 +540,13 @@ static inline int amd64_create_sysfs_inject_files(struct mem_ctl_info *mci)
 static inline void amd64_remove_sysfs_inject_files(struct mem_ctl_info *mci)
 {
 }
+=======
+extern const struct attribute_group amd64_edac_dbg_group;
+#endif
+
+#ifdef CONFIG_EDAC_AMD64_ERROR_INJECTION
+extern const struct attribute_group amd64_edac_inj_group;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
@@ -463,14 +557,23 @@ struct low_ops {
 	int (*early_channel_count)	(struct amd64_pvt *pvt);
 	void (*map_sysaddr_to_csrow)	(struct mem_ctl_info *mci, u64 sys_addr,
 					 struct err_info *);
+<<<<<<< HEAD
 	int (*dbam_to_cs)		(struct amd64_pvt *pvt, u8 dct, unsigned cs_mode);
 	int (*read_dct_pci_cfg)		(struct amd64_pvt *pvt, int offset,
 					 u32 *val, const char *func);
+=======
+	int (*dbam_to_cs)		(struct amd64_pvt *pvt, u8 dct,
+					 unsigned cs_mode, int cs_mask_nr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct amd64_family_type {
 	const char *ctl_name;
+<<<<<<< HEAD
 	u16 f1_id, f3_id;
+=======
+	u16 f1_id, f2_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct low_ops ops;
 };
 
@@ -485,9 +588,12 @@ int __amd64_write_pci_cfg_dword(struct pci_dev *pdev, int offset,
 #define amd64_write_pci_cfg(pdev, offset, val)	\
 	__amd64_write_pci_cfg_dword(pdev, offset, val, __func__)
 
+<<<<<<< HEAD
 #define amd64_read_dct_pci_cfg(pvt, offset, val) \
 	pvt->ops->read_dct_pci_cfg(pvt, offset, val, __func__)
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int amd64_get_dram_hole_info(struct mem_ctl_info *mci, u64 *hole_base,
 			     u64 *hole_offset, u64 *hole_size);
 
@@ -504,3 +610,36 @@ static inline void enable_caches(void *dummy)
 {
 	write_cr0(read_cr0() & ~X86_CR0_CD);
 }
+<<<<<<< HEAD
+=======
+
+static inline u8 dram_intlv_en(struct amd64_pvt *pvt, unsigned int i)
+{
+	if (pvt->fam == 0x15 && pvt->model >= 0x30) {
+		u32 tmp;
+		amd64_read_pci_cfg(pvt->F1, DRAM_CONT_LIMIT, &tmp);
+		return (u8) tmp & 0xF;
+	}
+	return (u8) (pvt->ranges[i].base.lo >> 8) & 0x7;
+}
+
+static inline u8 dhar_valid(struct amd64_pvt *pvt)
+{
+	if (pvt->fam == 0x15 && pvt->model >= 0x30) {
+		u32 tmp;
+		amd64_read_pci_cfg(pvt->F1, DRAM_CONT_BASE, &tmp);
+		return (tmp >> 1) & BIT(0);
+	}
+	return (pvt)->dhar & BIT(0);
+}
+
+static inline u32 dct_sel_baseaddr(struct amd64_pvt *pvt)
+{
+	if (pvt->fam == 0x15 && pvt->model >= 0x30) {
+		u32 tmp;
+		amd64_read_pci_cfg(pvt->F1, DRAM_CONT_BASE, &tmp);
+		return (tmp >> 11) & 0x1FFF;
+	}
+	return (pvt)->dct_sel_lo & 0xFFFFF800;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

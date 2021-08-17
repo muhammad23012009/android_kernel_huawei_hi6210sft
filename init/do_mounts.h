@@ -57,11 +57,19 @@ static inline int rd_load_image(char *from) { return 0; }
 
 #ifdef CONFIG_BLK_DEV_INITRD
 
+<<<<<<< HEAD
 int __init initrd_load(void);
 
 #else
 
 static inline int initrd_load(void) { return 0; }
+=======
+bool __init initrd_load(void);
+
+#else
+
+static inline bool initrd_load(void) { return false; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif
 
@@ -74,3 +82,16 @@ void md_run_setup(void);
 static inline void md_run_setup(void) {}
 
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_BLK_DEV_DM
+
+void dm_run_setup(void);
+
+#else
+
+static inline void dm_run_setup(void) {}
+
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

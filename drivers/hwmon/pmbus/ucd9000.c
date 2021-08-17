@@ -28,7 +28,11 @@
 #include <linux/i2c/pmbus.h>
 #include "pmbus.h"
 
+<<<<<<< HEAD
 enum chips { ucd9000, ucd90120, ucd90124, ucd9090, ucd90910 };
+=======
+enum chips { ucd9000, ucd90120, ucd90124, ucd90160, ucd9090, ucd90910 };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define UCD9000_MONITOR_CONFIG		0xd5
 #define UCD9000_NUM_PAGES		0xd6
@@ -112,6 +116,10 @@ static const struct i2c_device_id ucd9000_id[] = {
 	{"ucd9000", ucd9000},
 	{"ucd90120", ucd90120},
 	{"ucd90124", ucd90124},
+<<<<<<< HEAD
+=======
+	{"ucd90160", ucd90160},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{"ucd9090", ucd9090},
 	{"ucd90910", ucd90910},
 	{}

@@ -30,7 +30,11 @@
 #include <asm/div64.h>
 #include "lm49453.h"
 
+<<<<<<< HEAD
 static struct reg_default lm49453_reg_defs[] = {
+=======
+static const struct reg_default lm49453_reg_defs[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0, 0x00 },
 	{ 1, 0x00 },
 	{ 2, 0x00 },
@@ -188,13 +192,17 @@ static struct reg_default lm49453_reg_defs[] = {
 /* codec private data */
 struct lm49453_priv {
 	struct regmap *regmap;
+<<<<<<< HEAD
 	int fs_rate;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* capture path controls */
 
 static const char *lm49453_mic2mode_text[] = {"Single Ended", "Differential"};
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(lm49453_mic2mode_enum, LM49453_P0_MICR_REG, 5,
 				  lm49453_mic2mode_text);
 
@@ -207,12 +215,27 @@ static const SOC_ENUM_SINGLE_DECL(lm49453_dmic12_cfg_enum,
 static const SOC_ENUM_SINGLE_DECL(lm49453_dmic34_cfg_enum,
 				  LM49453_P0_DIGITAL_MIC2_CONFIG_REG,
 				  7, lm49453_dmic_cfg_text);
+=======
+static SOC_ENUM_SINGLE_DECL(lm49453_mic2mode_enum, LM49453_P0_MICR_REG, 5,
+			    lm49453_mic2mode_text);
+
+static const char *lm49453_dmic_cfg_text[] = {"DMICDAT1", "DMICDAT2"};
+
+static SOC_ENUM_SINGLE_DECL(lm49453_dmic12_cfg_enum,
+			    LM49453_P0_DIGITAL_MIC1_CONFIG_REG, 7,
+			    lm49453_dmic_cfg_text);
+
+static SOC_ENUM_SINGLE_DECL(lm49453_dmic34_cfg_enum,
+			    LM49453_P0_DIGITAL_MIC2_CONFIG_REG, 7,
+			    lm49453_dmic_cfg_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* MUX Controls */
 static const char *lm49453_adcl_mux_text[] = { "MIC1", "Aux_L" };
 
 static const char *lm49453_adcr_mux_text[] = { "MIC2", "Aux_R" };
 
+<<<<<<< HEAD
 static const struct soc_enum lm49453_adcl_enum =
 	SOC_ENUM_SINGLE(LM49453_P0_ANALOG_MIXER_ADC_REG, 0,
 			ARRAY_SIZE(lm49453_adcl_mux_text),
@@ -222,6 +245,15 @@ static const struct soc_enum lm49453_adcr_enum =
 	SOC_ENUM_SINGLE(LM49453_P0_ANALOG_MIXER_ADC_REG, 1,
 			ARRAY_SIZE(lm49453_adcr_mux_text),
 			lm49453_adcr_mux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(lm49453_adcl_enum,
+			    LM49453_P0_ANALOG_MIXER_ADC_REG, 0,
+			    lm49453_adcl_mux_text);
+
+static SOC_ENUM_SINGLE_DECL(lm49453_adcr_enum,
+			    LM49453_P0_ANALOG_MIXER_ADC_REG, 1,
+			    lm49453_adcr_mux_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new lm49453_adcl_mux_control =
 	SOC_DAPM_ENUM("ADC Left Mux", lm49453_adcl_enum);
@@ -1114,6 +1146,7 @@ static int lm49453_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_soc_dai *dai)
 {
 	struct snd_soc_codec *codec = dai->codec;
+<<<<<<< HEAD
 	struct lm49453_priv *lm49453 = snd_soc_codec_get_drvdata(codec);
 	u16 clk_div = 0;
 
@@ -1121,6 +1154,12 @@ static int lm49453_hw_params(struct snd_pcm_substream *substream,
 
 	/* Setting DAC clock dividers based on substream sample rate. */
 	switch (lm49453->fs_rate) {
+=======
+	u16 clk_div = 0;
+
+	/* Setting DAC clock dividers based on substream sample rate. */
+	switch (params_rate(params)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case 8000:
 	case 16000:
 	case 32000:
@@ -1273,7 +1312,11 @@ static int lm49453_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			regcache_sync(lm49453->regmap);
 
 		snd_soc_update_bits(codec, LM49453_P0_PMC_SETUP_REG,
@@ -1286,8 +1329,11 @@ static int lm49453_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1295,35 +1341,55 @@ static int lm49453_set_bias_level(struct snd_soc_codec *codec,
 #define LM49453_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			 SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops lm49453_headset_dai_ops = {
+=======
+static const struct snd_soc_dai_ops lm49453_headset_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= lm49453_hw_params,
 	.set_sysclk	= lm49453_set_dai_sysclk,
 	.set_fmt	= lm49453_set_dai_fmt,
 	.digital_mute	= lm49453_hp_mute,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops lm49453_speaker_dai_ops = {
+=======
+static const struct snd_soc_dai_ops lm49453_speaker_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= lm49453_hw_params,
 	.set_sysclk	= lm49453_set_dai_sysclk,
 	.set_fmt	= lm49453_set_dai_fmt,
 	.digital_mute	= lm49453_ls_mute,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops lm49453_haptic_dai_ops = {
+=======
+static const struct snd_soc_dai_ops lm49453_haptic_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= lm49453_hw_params,
 	.set_sysclk	= lm49453_set_dai_sysclk,
 	.set_fmt	= lm49453_set_dai_fmt,
 	.digital_mute	= lm49453_ha_mute,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops lm49453_ep_dai_ops = {
+=======
+static const struct snd_soc_dai_ops lm49453_ep_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= lm49453_hw_params,
 	.set_sysclk	= lm49453_set_dai_sysclk,
 	.set_fmt	= lm49453_set_dai_fmt,
 	.digital_mute	= lm49453_ep_mute,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_dai_ops lm49453_lineout_dai_ops = {
+=======
+static const struct snd_soc_dai_ops lm49453_lineout_dai_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.hw_params	= lm49453_hw_params,
 	.set_sysclk	= lm49453_set_dai_sysclk,
 	.set_fmt	= lm49453_set_dai_fmt,
@@ -1397,6 +1463,7 @@ static struct snd_soc_dai_driver lm49453_dai[] = {
 	},
 };
 
+<<<<<<< HEAD
 static int lm49453_suspend(struct snd_soc_codec *codec)
 {
 	lm49453_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -1444,6 +1511,18 @@ static struct snd_soc_codec_driver soc_codec_dev_lm49453 = {
 	.num_dapm_widgets = ARRAY_SIZE(lm49453_dapm_widgets),
 	.dapm_routes = lm49453_audio_map,
 	.num_dapm_routes = ARRAY_SIZE(lm49453_audio_map),
+=======
+static struct snd_soc_codec_driver soc_codec_dev_lm49453 = {
+	.set_bias_level = lm49453_set_bias_level,
+	.component_driver = {
+		.controls		= lm49453_snd_controls,
+		.num_controls		= ARRAY_SIZE(lm49453_snd_controls),
+		.dapm_widgets		= lm49453_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(lm49453_dapm_widgets),
+		.dapm_routes		= lm49453_audio_map,
+		.num_dapm_routes	= ARRAY_SIZE(lm49453_audio_map),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.idle_bias_off = true,
 };
 
@@ -1503,7 +1582,10 @@ MODULE_DEVICE_TABLE(i2c, lm49453_i2c_id);
 static struct i2c_driver lm49453_i2c_driver = {
 	.driver = {
 		.name = "lm49453",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = lm49453_i2c_probe,
 	.remove = lm49453_i2c_remove,

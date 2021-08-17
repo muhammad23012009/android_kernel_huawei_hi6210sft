@@ -26,8 +26,12 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/kernel.h>
@@ -108,7 +112,11 @@ struct kvaser_pci {
 #define KVASER_PCI_VENDOR_ID2     0x1a07    /* the PCI device and vendor IDs */
 #define KVASER_PCI_DEVICE_ID2     0x0008
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(kvaser_pci_tbl) = {
+=======
+static const struct pci_device_id kvaser_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{KVASER_PCI_VENDOR_ID1, KVASER_PCI_DEVICE_ID1, PCI_ANY_ID, PCI_ANY_ID,},
 	{KVASER_PCI_VENDOR_ID2, KVASER_PCI_DEVICE_ID2, PCI_ANY_ID, PCI_ANY_ID,},
 	{ 0,}
@@ -215,7 +223,11 @@ static int kvaser_pci_add_chan(struct pci_dev *pdev, int channel,
 	struct net_device *dev;
 	struct sja1000_priv *priv;
 	struct kvaser_pci *board;
+<<<<<<< HEAD
 	int err, init_step;
+=======
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev = alloc_sja1000dev(sizeof(struct kvaser_pci));
 	if (dev == NULL)
@@ -236,7 +248,10 @@ static int kvaser_pci_add_chan(struct pci_dev *pdev, int channel,
 	if (channel == 0) {
 		board->xilinx_ver =
 			ioread8(board->res_addr + XILINX_VERINT) >> 4;
+<<<<<<< HEAD
 		init_step = 2;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Assert PTADR# - we're in passive mode so the other bits are
 		   not important */
@@ -265,12 +280,19 @@ static int kvaser_pci_add_chan(struct pci_dev *pdev, int channel,
 	priv->irq_flags = IRQF_SHARED;
 	dev->irq = pdev->irq;
 
+<<<<<<< HEAD
 	init_step = 4;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&pdev->dev, "reg_base=%p conf_addr=%p irq=%d\n",
 		 priv->reg_base, board->conf_addr, dev->irq);
 
 	SET_NETDEV_DEV(dev, &pdev->dev);
+<<<<<<< HEAD
+=======
+	dev->dev_id = channel;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Register SJA1000 device */
 	err = register_sja1000dev(dev);
@@ -387,7 +409,10 @@ static void kvaser_pci_remove_one(struct pci_dev *pdev)
 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct pci_driver kvaser_pci_driver = {

@@ -118,7 +118,10 @@ static struct i2c_driver cma3000_i2c_driver = {
 	.id_table	= cma3000_i2c_id,
 	.driver = {
 		.name	= "cma3000_i2c_accl",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_PM
 		.pm	= &cma3000_i2c_pm_ops,
 #endif

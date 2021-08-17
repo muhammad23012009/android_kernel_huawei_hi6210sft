@@ -28,6 +28,10 @@ OUTPUT_ARCH(aarch64)
 
 SECTIONS
 {
+<<<<<<< HEAD
+=======
+	PROVIDE(_vdso_data = . - PAGE_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	. = VDSO_LBASE + SIZEOF_HEADERS;
 
 	.hash		: { *(.hash) }			:text
@@ -38,6 +42,16 @@ SECTIONS
 	.gnu.version_d	: { *(.gnu.version_d) }
 	.gnu.version_r	: { *(.gnu.version_r) }
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Discard .note.gnu.property sections which are unused and have
+	 * different alignment requirement from vDSO note sections.
+	 */
+	/DISCARD/	: {
+		*(.note.GNU-stack .note.gnu.property)
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.note		: { *(.note.*) }		:text	:note
 
 	. = ALIGN(16);
@@ -57,11 +71,15 @@ SECTIONS
 	_end = .;
 	PROVIDE(end = .);
 
+<<<<<<< HEAD
 	. = ALIGN(PAGE_SIZE);
 	PROVIDE(_vdso_data = .);
 
 	/DISCARD/	: {
 		*(.note.GNU-stack)
+=======
+	/DISCARD/	: {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		*(.data .data.* .gnu.linkonce.d.* .sdata*)
 		*(.bss .sbss .dynbss .dynsbss)
 	}

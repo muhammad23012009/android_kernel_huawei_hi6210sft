@@ -9,6 +9,7 @@
 #ifndef _ASM_ARC_TLB_H
 #define _ASM_ARC_TLB_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 #include <asm/pgtable.h>
@@ -21,6 +22,8 @@
 
 #ifndef __ASSEMBLY__
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define tlb_flush(tlb)				\
 do {						\
 	if (tlb->fullmm)			\
@@ -56,6 +59,7 @@ do {									\
 #include <linux/pagemap.h>
 #include <asm-generic/tlb.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARC_DBG_TLB_PARANOIA
 void tlb_paranoid_check(unsigned int pid_sw, unsigned long address);
 #else
@@ -70,4 +74,6 @@ void __init read_decode_mmu_bcr(void);
 
 #endif	/* __KERNEL__ */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_ARC_TLB_H */

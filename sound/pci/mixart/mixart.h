@@ -78,22 +78,34 @@ struct mixart_mgr {
 	char shortname[32];         /* short name of this soundcard */
 	char longname[80];          /* name of this soundcard */
 
+<<<<<<< HEAD
 	/* message tasklet */
 	struct tasklet_struct msg_taskq;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* one and only blocking message or notification may be pending  */
 	u32 pending_event;
 	wait_queue_head_t msg_sleep;
 
+<<<<<<< HEAD
 	/* messages stored for tasklet */
+=======
+	/* messages fifo */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 msg_fifo[MSG_FIFO_SIZE];
 	int msg_fifo_readptr;
 	int msg_fifo_writeptr;
 	atomic_t msg_processed;       /* number of messages to be processed in takslet */
 
+<<<<<<< HEAD
 	spinlock_t lock;              /* interrupt spinlock */
 	spinlock_t msg_lock;          /* mailbox spinlock */
 	struct mutex msg_mutex;   /* mutex for blocking_requests */
+=======
+	struct mutex lock;              /* interrupt lock */
+	struct mutex msg_lock;		/* mailbox lock */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct mutex setup_mutex; /* mutex used in hw_params, open and close */
 

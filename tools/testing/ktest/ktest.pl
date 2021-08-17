@@ -18,6 +18,10 @@ $| = 1;
 my %opt;
 my %repeat_tests;
 my %repeats;
+<<<<<<< HEAD
+=======
+my %evals;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #default opts
 my %default = (
@@ -25,6 +29,10 @@ my %default = (
     "TEST_TYPE"			=> "build",
     "BUILD_TYPE"		=> "randconfig",
     "MAKE_CMD"			=> "make",
+<<<<<<< HEAD
+=======
+    "CLOSE_CONSOLE_SIGNAL"	=> "INT",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     "TIMEOUT"			=> 120,
     "TMP_DIR"			=> "/tmp/ktest/\${MACHINE}",
     "SLEEP_TIME"		=> 60,	# sleep time between tests
@@ -39,6 +47,10 @@ my %default = (
     "CLEAR_LOG"			=> 0,
     "BISECT_MANUAL"		=> 0,
     "BISECT_SKIP"		=> 1,
+<<<<<<< HEAD
+=======
+    "BISECT_TRIES"		=> 1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     "MIN_CONFIG_TYPE"		=> "boot",
     "SUCCESS_LINE"		=> "login:",
     "DETECT_TRIPLE_FAULT"	=> 1,
@@ -69,7 +81,11 @@ my %default = (
     "IGNORE_UNUSED"		=> 0,
 );
 
+<<<<<<< HEAD
 my $ktest_config;
+=======
+my $ktest_config = "ktest.conf";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 my $version;
 my $have_version = 0;
 my $machine;
@@ -137,6 +153,10 @@ my $bisect_bad_commit = "";
 my $reverse_bisect;
 my $bisect_manual;
 my $bisect_skip;
+<<<<<<< HEAD
+=======
+my $bisect_tries;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 my $config_bisect_good;
 my $bisect_ret_good;
 my $bisect_ret_bad;
@@ -145,7 +165,10 @@ my $bisect_ret_abort;
 my $bisect_ret_default;
 my $in_patchcheck = 0;
 my $run_test;
+<<<<<<< HEAD
 my $redirect;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 my $buildlog;
 my $testlog;
 my $dmesg;
@@ -163,6 +186,10 @@ my $timeout;
 my $booted_timeout;
 my $detect_triplefault;
 my $console;
+<<<<<<< HEAD
+=======
+my $close_console_signal;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 my $reboot_success_line;
 my $success_line;
 my $stop_after_success;
@@ -174,6 +201,10 @@ my $checkout;
 my $localversion;
 my $iteration = 0;
 my $successes = 0;
+<<<<<<< HEAD
+=======
+my $stty_orig;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 my $bisect_good;
 my $bisect_bad;
@@ -190,8 +221,19 @@ my $config_bisect_check;
 
 my $patchcheck_type;
 my $patchcheck_start;
+<<<<<<< HEAD
 my $patchcheck_end;
 
+=======
+my $patchcheck_cherry;
+my $patchcheck_end;
+
+my $build_time;
+my $install_time;
+my $reboot_time;
+my $test_time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # set when a test is something other that just building or install
 # which would require more options.
 my $buildonly = 1;
@@ -273,6 +315,10 @@ my %option_map = (
     "IGNORE_ERRORS"		=> \$ignore_errors,
     "BISECT_MANUAL"		=> \$bisect_manual,
     "BISECT_SKIP"		=> \$bisect_skip,
+<<<<<<< HEAD
+=======
+    "BISECT_TRIES"		=> \$bisect_tries,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     "CONFIG_BISECT_GOOD"	=> \$config_bisect_good,
     "BISECT_RET_GOOD"		=> \$bisect_ret_good,
     "BISECT_RET_BAD"		=> \$bisect_ret_bad,
@@ -285,6 +331,10 @@ my %option_map = (
     "TIMEOUT"			=> \$timeout,
     "BOOTED_TIMEOUT"		=> \$booted_timeout,
     "CONSOLE"			=> \$console,
+<<<<<<< HEAD
+=======
+    "CLOSE_CONSOLE_SIGNAL"	=> \$close_console_signal,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     "DETECT_TRIPLE_FAULT"	=> \$detect_triplefault,
     "SUCCESS_LINE"		=> \$success_line,
     "REBOOT_SUCCESS_LINE"	=> \$reboot_success_line,
@@ -314,6 +364,10 @@ my %option_map = (
 
     "PATCHCHECK_TYPE"		=> \$patchcheck_type,
     "PATCHCHECK_START"		=> \$patchcheck_start,
+<<<<<<< HEAD
+=======
+    "PATCHCHECK_CHERRY"		=> \$patchcheck_cherry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     "PATCHCHECK_END"		=> \$patchcheck_end,
 );
 
@@ -445,6 +499,30 @@ $config_help{"REBOOT_SCRIPT"} = << "EOF"
 EOF
     ;
 
+<<<<<<< HEAD
+=======
+sub _logit {
+    if (defined($opt{"LOG_FILE"})) {
+	open(OUT, ">> $opt{LOG_FILE}") or die "Can't write to $opt{LOG_FILE}";
+	print OUT @_;
+	close(OUT);
+    }
+}
+
+sub logit {
+    if (defined($opt{"LOG_FILE"})) {
+	_logit @_;
+    } else {
+	print @_;
+    }
+}
+
+sub doprint {
+    print @_;
+    _logit @_;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sub read_prompt {
     my ($cancel, $prompt) = @_;
 
@@ -494,7 +572,11 @@ sub read_ync {
     return read_prompt 1, $prompt;
 }
 
+<<<<<<< HEAD
 sub get_ktest_config {
+=======
+sub get_mandatory_config {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     my ($config) = @_;
     my $ans;
 
@@ -525,6 +607,7 @@ sub get_ktest_config {
     }
 }
 
+<<<<<<< HEAD
 sub get_ktest_configs {
     get_ktest_config("MACHINE");
     get_ktest_config("BUILD_DIR");
@@ -532,22 +615,105 @@ sub get_ktest_configs {
 
     if ($newconfig) {
 	get_ktest_config("BUILD_OPTIONS");
+=======
+sub show_time {
+    my ($time) = @_;
+
+    my $hours = 0;
+    my $minutes = 0;
+
+    if ($time > 3600) {
+	$hours = int($time / 3600);
+	$time -= $hours * 3600;
+    }
+    if ($time > 60) {
+	$minutes = int($time / 60);
+	$time -= $minutes * 60;
+    }
+
+    if ($hours > 0) {
+	doprint "$hours hour";
+	doprint "s" if ($hours > 1);
+	doprint " ";
+    }
+
+    if ($minutes > 0) {
+	doprint "$minutes minute";
+	doprint "s" if ($minutes > 1);
+	doprint " ";
+    }
+
+    doprint "$time second";
+    doprint "s" if ($time != 1);
+}
+
+sub print_times {
+    doprint "\n";
+    if ($build_time) {
+	doprint "Build time:   ";
+	show_time($build_time);
+	doprint "\n";
+    }
+    if ($install_time) {
+	doprint "Install time: ";
+	show_time($install_time);
+	doprint "\n";
+    }
+    if ($reboot_time) {
+	doprint "Reboot time:  ";
+	show_time($reboot_time);
+	doprint "\n";
+    }
+    if ($test_time) {
+	doprint "Test time:    ";
+	show_time($test_time);
+	doprint "\n";
+    }
+    # reset for iterations like bisect
+    $build_time = 0;
+    $install_time = 0;
+    $reboot_time = 0;
+    $test_time = 0;
+}
+
+sub get_mandatory_configs {
+    get_mandatory_config("MACHINE");
+    get_mandatory_config("BUILD_DIR");
+    get_mandatory_config("OUTPUT_DIR");
+
+    if ($newconfig) {
+	get_mandatory_config("BUILD_OPTIONS");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 
     # options required for other than just building a kernel
     if (!$buildonly) {
+<<<<<<< HEAD
 	get_ktest_config("POWER_CYCLE");
 	get_ktest_config("CONSOLE");
+=======
+	get_mandatory_config("POWER_CYCLE");
+	get_mandatory_config("CONSOLE");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 
     # options required for install and more
     if ($buildonly != 1) {
+<<<<<<< HEAD
 	get_ktest_config("SSH_USER");
 	get_ktest_config("BUILD_TARGET");
 	get_ktest_config("TARGET_IMAGE");
     }
 
     get_ktest_config("LOCALVERSION");
+=======
+	get_mandatory_config("SSH_USER");
+	get_mandatory_config("BUILD_TARGET");
+	get_mandatory_config("TARGET_IMAGE");
+    }
+
+    get_mandatory_config("LOCALVERSION");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     return if ($buildonly);
 
@@ -555,7 +721,11 @@ sub get_ktest_configs {
 
     if (!defined($rtype)) {
 	if (!defined($opt{"GRUB_MENU"})) {
+<<<<<<< HEAD
 	    get_ktest_config("REBOOT_TYPE");
+=======
+	    get_mandatory_config("REBOOT_TYPE");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    $rtype = $entered_configs{"REBOOT_TYPE"};
 	} else {
 	    $rtype = "grub";
@@ -563,6 +733,7 @@ sub get_ktest_configs {
     }
 
     if ($rtype eq "grub") {
+<<<<<<< HEAD
 	get_ktest_config("GRUB_MENU");
     }
 
@@ -573,6 +744,18 @@ sub get_ktest_configs {
 
     if ($rtype eq "syslinux") {
 	get_ktest_config("SYSLINUX_LABEL");
+=======
+	get_mandatory_config("GRUB_MENU");
+    }
+
+    if ($rtype eq "grub2") {
+	get_mandatory_config("GRUB_MENU");
+	get_mandatory_config("GRUB_FILE");
+    }
+
+    if ($rtype eq "syslinux") {
+	get_mandatory_config("SYSLINUX_LABEL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 }
 
@@ -655,11 +838,32 @@ sub set_value {
 	}
 	${$overrides}{$lvalue} = $prvalue;
     }
+<<<<<<< HEAD
     if ($rvalue =~ /^\s*$/) {
 	delete $opt{$lvalue};
     } else {
 	$opt{$lvalue} = $prvalue;
     }
+=======
+
+    $opt{$lvalue} = $prvalue;
+}
+
+sub set_eval {
+    my ($lvalue, $rvalue, $name) = @_;
+
+    my $prvalue = process_variables($rvalue);
+    my $arr;
+
+    if (defined($evals{$lvalue})) {
+	$arr = $evals{$lvalue};
+    } else {
+	$arr = [];
+	$evals{$lvalue} = $arr;
+    }
+
+    push @{$arr}, $rvalue;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub set_variable {
@@ -947,6 +1151,23 @@ sub __read_config {
 		$test_case = 1;
 	    }
 
+<<<<<<< HEAD
+=======
+	} elsif (/^\s*([A-Z_\[\]\d]+)\s*=~\s*(.*?)\s*$/) {
+
+	    next if ($skip);
+
+	    my $lvalue = $1;
+	    my $rvalue = $2;
+
+	    if ($default || $lvalue =~ /\[\d+\]$/) {
+		set_eval($lvalue, $rvalue, $name);
+	    } else {
+		my $val = "$lvalue\[$test_num\]";
+		set_eval($val, $rvalue, $name);
+	    }
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} elsif (/^\s*([A-Z_\[\]\d]+)\s*=\s*(.*?)\s*$/) {
 
 	    next if ($skip);
@@ -1032,7 +1253,11 @@ sub read_config {
     $test_case = __read_config $config, \$test_num;
 
     # make sure we have all mandatory configs
+<<<<<<< HEAD
     get_ktest_configs;
+=======
+    get_mandatory_configs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     # was a test specified?
     if (!$test_case) {
@@ -1126,6 +1351,13 @@ sub __eval_option {
 	} elsif (defined($opt{$var})) {
 	    $o = $opt{$var};
 	    $retval = "$retval$o";
+<<<<<<< HEAD
+=======
+	} elsif ($var eq "KERNEL_VERSION" && defined($make)) {
+	    # special option KERNEL_VERSION uses kernel version
+	    get_version();
+	    $retval = "$retval$version";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 	    $retval = "$retval\$\{$var\}";
 	}
@@ -1140,6 +1372,36 @@ sub __eval_option {
     return $retval;
 }
 
+<<<<<<< HEAD
+=======
+sub process_evals {
+    my ($name, $option, $i) = @_;
+
+    my $option_name = "$name\[$i\]";
+    my $ev;
+
+    my $old_option = $option;
+
+    if (defined($evals{$option_name})) {
+	$ev = $evals{$option_name};
+    } elsif (defined($evals{$name})) {
+	$ev = $evals{$name};
+    } else {
+	return $option;
+    }
+
+    for my $e (@{$ev}) {
+	eval "\$option =~ $e";
+    }
+
+    if ($option ne $old_option) {
+	doprint("$name changed from '$old_option' to '$option'\n");
+    }
+
+    return $option;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sub eval_option {
     my ($name, $option, $i) = @_;
 
@@ -1160,6 +1422,7 @@ sub eval_option {
 	$option = __eval_option($name, $option, $i);
     }
 
+<<<<<<< HEAD
     return $option;
 }
 
@@ -1182,6 +1445,11 @@ sub logit {
 sub doprint {
     print @_;
     _logit @_;
+=======
+    $option = process_evals($name, $option, $i);
+
+    return $option;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub run_command;
@@ -1273,6 +1541,7 @@ sub dodie {
 	print " See $opt{LOG_FILE} for more info.\n";
     }
 
+<<<<<<< HEAD
     die @_, "\n";
 }
 
@@ -1290,16 +1559,105 @@ sub open_console {
 	dodie "Can't set flags for the socket: $!";
 
     return $pid;
+=======
+    if ($monitor_cnt) {
+	    # restore terminal settings
+	    system("stty $stty_orig");
+    }
+
+    die @_, "\n";
+}
+
+sub create_pty {
+    my ($ptm, $pts) = @_;
+    my $tmp;
+    my $TIOCSPTLCK = 0x40045431;
+    my $TIOCGPTN = 0x80045430;
+
+    sysopen($ptm, "/dev/ptmx", O_RDWR | O_NONBLOCK) or
+	dodie "Cant open /dev/ptmx";
+
+    # unlockpt()
+    $tmp = pack("i", 0);
+    ioctl($ptm, $TIOCSPTLCK, $tmp) or
+	dodie "ioctl TIOCSPTLCK for /dev/ptmx failed";
+
+    # ptsname()
+    ioctl($ptm, $TIOCGPTN, $tmp) or
+	dodie "ioctl TIOCGPTN for /dev/ptmx failed";
+    $tmp = unpack("i", $tmp);
+
+    sysopen($pts, "/dev/pts/$tmp", O_RDWR | O_NONBLOCK) or
+	dodie "Can't open /dev/pts/$tmp";
+}
+
+sub exec_console {
+    my ($ptm, $pts) = @_;
+
+    close($ptm);
+
+    close(\*STDIN);
+    close(\*STDOUT);
+    close(\*STDERR);
+
+    open(\*STDIN, '<&', $pts);
+    open(\*STDOUT, '>&', $pts);
+    open(\*STDERR, '>&', $pts);
+
+    close($pts);
+
+    exec $console or
+	die "Can't open console $console";
+}
+
+sub open_console {
+    my ($ptm) = @_;
+    my $pts = \*PTSFD;
+    my $pid;
+
+    # save terminal settings
+    $stty_orig = `stty -g`;
+
+    # place terminal in cbreak mode so that stdin can be read one character at
+    # a time without having to wait for a newline
+    system("stty -icanon -echo -icrnl");
+
+    create_pty($ptm, $pts);
+
+    $pid = fork;
+
+    if (!$pid) {
+	# child
+	exec_console($ptm, $pts)
+    }
+
+    # parent
+    close($pts);
+
+    return $pid;
+
+    open(PTSFD, "Stop perl from warning about single use of PTSFD");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub close_console {
     my ($fp, $pid) = @_;
 
     doprint "kill child process $pid\n";
+<<<<<<< HEAD
     kill 2, $pid;
 
     print "closing!\n";
     close($fp);
+=======
+    kill $close_console_signal, $pid;
+
+    print "closing!\n";
+    close($fp);
+
+    # restore terminal settings
+    system("stty $stty_orig");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub start_monitor {
@@ -1379,6 +1737,15 @@ sub wait_for_monitor {
 	}
     }
     print "** Monitor flushed **\n";
+<<<<<<< HEAD
+=======
+
+    # if stop is defined but wasn't hit, return error
+    # used by reboot (which wants to see a reboot)
+    if (defined($stop) && !$booted) {
+	$bug = 1;
+    }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     return $bug;
 }
 
@@ -1445,6 +1812,11 @@ sub fail {
 	    $name = " ($test_name)";
 	}
 
+<<<<<<< HEAD
+=======
+	print_times;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	doprint "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
 	doprint "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
 	doprint "KTEST RESULT: TEST $i$name Failed: ", @_, "\n";
@@ -1459,11 +1831,22 @@ sub fail {
 }
 
 sub run_command {
+<<<<<<< HEAD
     my ($command) = @_;
+=======
+    my ($command, $redirect) = @_;
+    my $start_time;
+    my $end_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     my $dolog = 0;
     my $dord = 0;
     my $pid;
 
+<<<<<<< HEAD
+=======
+    $start_time = time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     $command =~ s/\$SSH_USER/$ssh_user/g;
     $command =~ s/\$MACHINE/$machine/g;
 
@@ -1496,6 +1879,18 @@ sub run_command {
     close(LOG) if ($dolog);
     close(RD)  if ($dord);
 
+<<<<<<< HEAD
+=======
+    $end_time = time;
+    my $delta = $end_time - $start_time;
+
+    if ($delta == 1) {
+	doprint "[1 second] ";
+    } else {
+	doprint "[$delta seconds] ";
+    }
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if ($failed) {
 	doprint "FAILED!\n";
     } else {
@@ -1620,7 +2015,13 @@ sub wait_for_input
 {
     my ($fp, $time) = @_;
     my $rin;
+<<<<<<< HEAD
     my $ready;
+=======
+    my $rout;
+    my $nr;
+    my $buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     my $line;
     my $ch;
 
@@ -1630,6 +2031,7 @@ sub wait_for_input
 
     $rin = '';
     vec($rin, fileno($fp), 1) = 1;
+<<<<<<< HEAD
     ($ready, $time) = select($rin, undef, undef, $time);
 
     $line = "";
@@ -1645,6 +2047,38 @@ sub wait_for_input
     }
 
     return $line;
+=======
+    vec($rin, fileno(\*STDIN), 1) = 1;
+
+    while (1) {
+	$nr = select($rout=$rin, undef, undef, $time);
+
+	if ($nr <= 0) {
+	    return undef;
+	}
+
+	# copy data from stdin to the console
+	if (vec($rout, fileno(\*STDIN), 1) == 1) {
+	    sysread(\*STDIN, $buf, 1000);
+	    syswrite($fp, $buf, 1000);
+	    next;
+	}
+
+	$line = "";
+
+	# try to read one char at a time
+	while (sysread $fp, $ch, 1) {
+	    $line .= $ch;
+	    last if ($ch eq "\n");
+	}
+
+	if (!length($line)) {
+	    return undef;
+	}
+
+	return $line;
+    }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub reboot_to {
@@ -1692,6 +2126,11 @@ sub monitor {
     my $skip_call_trace = 0;
     my $loops;
 
+<<<<<<< HEAD
+=======
+    my $start_time = time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     wait_for_monitor 5;
 
     my $line;
@@ -1796,7 +2235,11 @@ sub monitor {
 		# We already booted into the kernel we are testing,
 		# but now we booted into another kernel?
 		# Consider this a triple fault.
+<<<<<<< HEAD
 		doprint "Aleady booted in Linux kernel $version, but now\n";
+=======
+		doprint "Already booted in Linux kernel $version, but now\n";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		doprint "we booted into Linux kernel $1.\n";
 		doprint "Assuming that this is a triple fault.\n";
 		doprint "To disable this: set DETECT_TRIPLE_FAULT to 0\n";
@@ -1816,6 +2259,12 @@ sub monitor {
 	}
     }
 
+<<<<<<< HEAD
+=======
+    my $end_time = time;
+    $reboot_time = $end_time - $start_time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     close(DMESG);
 
     if ($bug) {
@@ -1864,6 +2313,11 @@ sub install {
 
     return if ($no_install);
 
+<<<<<<< HEAD
+=======
+    my $start_time = time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if (defined($pre_install)) {
 	my $cp_pre_install = eval_kernel_version $pre_install;
 	run_command "$cp_pre_install" or
@@ -1895,6 +2349,11 @@ sub install {
     if (!$install_mods) {
 	do_post_install;
 	doprint "No modules needed\n";
+<<<<<<< HEAD
+=======
+	my $end_time = time;
+	$install_time = $end_time - $start_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
     }
 
@@ -1922,19 +2381,33 @@ sub install {
     run_ssh "rm -f /tmp/$modtar";
 
     do_post_install;
+<<<<<<< HEAD
+=======
+
+    my $end_time = time;
+    $install_time = $end_time - $start_time;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub get_version {
     # get the release name
     return if ($have_version);
     doprint "$make kernelrelease ... ";
+<<<<<<< HEAD
     $version = `$make kernelrelease | tail -1`;
+=======
+    $version = `$make -s kernelrelease | tail -1`;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     chomp($version);
     doprint "$version\n";
     $have_version = 1;
 }
 
+<<<<<<< HEAD
 sub start_monitor_and_boot {
+=======
+sub start_monitor_and_install {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     # Make sure the stable kernel has finished booting
 
     # Install bisects, don't need console
@@ -2134,6 +2607,11 @@ sub build {
 
     unlink $buildlog;
 
+<<<<<<< HEAD
+=======
+    my $start_time = time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     # Failed builds should not reboot the target
     my $save_no_reboot = $no_reboot;
     $no_reboot = 1;
@@ -2195,9 +2673,13 @@ sub build {
     # Run old config regardless, to enforce min configurations
     make_oldconfig;
 
+<<<<<<< HEAD
     $redirect = "$buildlog";
     my $build_ret = run_command "$make $build_options";
     undef $redirect;
+=======
+    my $build_ret = run_command "$make $build_options", $buildlog;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     if (defined($post_build)) {
 	# Because a post build may change the kernel version
@@ -2221,6 +2703,12 @@ sub build {
 
     $no_reboot = $save_no_reboot;
 
+<<<<<<< HEAD
+=======
+    my $end_time = time;
+    $build_time = $end_time - $start_time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     return 1;
 }
 
@@ -2251,6 +2739,11 @@ sub success {
 	$name = " ($test_name)";
     }
 
+<<<<<<< HEAD
+=======
+    print_times;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     doprint "\n\n*******************************************\n";
     doprint     "*******************************************\n";
     doprint     "KTEST RESULT: TEST $i$name SUCCESS!!!!         **\n";
@@ -2269,15 +2762,26 @@ sub success {
 
 sub answer_bisect {
     for (;;) {
+<<<<<<< HEAD
 	doprint "Pass or fail? [p/f]";
+=======
+	doprint "Pass, fail, or skip? [p/f/s]";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	my $ans = <STDIN>;
 	chomp $ans;
 	if ($ans eq "p" || $ans eq "P") {
 	    return 1;
 	} elsif ($ans eq "f" || $ans eq "F") {
 	    return 0;
+<<<<<<< HEAD
 	} else {
 	    print "Please answer 'P' or 'F'\n";
+=======
+	} elsif ($ans eq "s" || $ans eq "S") {
+	    return -1;
+	} else {
+	    print "Please answer 'p', 'f', or 's'\n";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
     }
 }
@@ -2290,9 +2794,13 @@ sub child_run_test {
     $poweroff_on_error = 0;
     $die_on_failure = 1;
 
+<<<<<<< HEAD
     $redirect = "$testlog";
     run_command $run_test or $failed = 1;
     undef $redirect;
+=======
+    run_command $run_test, $testlog or $failed = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     exit $failed;
 }
@@ -2311,6 +2819,11 @@ sub do_run_test {
     my $bug = 0;
     my $bug_ignored = 0;
 
+<<<<<<< HEAD
+=======
+    my $start_time = time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     wait_for_monitor 1;
 
     doprint "run test $run_test\n";
@@ -2377,6 +2890,12 @@ sub do_run_test {
     waitpid $child_pid, 0;
     $child_exit = $? >> 8;
 
+<<<<<<< HEAD
+=======
+    my $end_time = time;
+    $test_time = $end_time - $start_time;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     if (!$bug && $in_bisect) {
 	if (defined($bisect_ret_good)) {
 	    if ($child_exit == $bisect_ret_good) {
@@ -2477,7 +2996,11 @@ sub run_bisect_test {
 	dodie "Failed on build" if $failed;
 
 	# Now boot the box
+<<<<<<< HEAD
 	start_monitor_and_boot or $failed = 1;
+=======
+	start_monitor_and_install or $failed = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if ($type ne "boot") {
 	    if ($failed && $bisect_skip) {
@@ -2517,12 +3040,38 @@ sub run_bisect {
 	$buildtype = "useconfig:$minconfig";
     }
 
+<<<<<<< HEAD
     my $ret = run_bisect_test $type, $buildtype;
 
     if ($bisect_manual) {
 	$ret = answer_bisect;
     }
 
+=======
+    # If the user sets bisect_tries to less than 1, then no tries
+    # is a success.
+    my $ret = 1;
+
+    # Still let the user manually decide that though.
+    if ($bisect_tries < 1 && $bisect_manual) {
+	$ret = answer_bisect;
+    }
+
+    for (my $i = 0; $i < $bisect_tries; $i++) {
+	if ($bisect_tries > 1) {
+	    my $t = $i + 1;
+	    doprint("Running bisect trial $t of $bisect_tries:\n");
+	}
+	$ret = run_bisect_test $type, $buildtype;
+
+	if ($bisect_manual) {
+	    $ret = answer_bisect;
+	}
+
+	last if (!$ret);
+    }
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     # Are we looking for where it worked, not failed?
     if ($reverse_bisect && $ret >= 0) {
 	$ret = !$ret;
@@ -2644,6 +3193,7 @@ sub bisect {
     run_command "git bisect start$start_files" or
 	dodie "could not start bisect";
 
+<<<<<<< HEAD
     run_command "git bisect good $good" or
 	dodie "could not set bisect good to $good";
 
@@ -2653,6 +3203,19 @@ sub bisect {
     if (defined($replay)) {
 	run_command "git bisect replay $replay" or
 	    dodie "failed to run replay";
+=======
+    if (defined($replay)) {
+	run_command "git bisect replay $replay" or
+	    dodie "failed to run replay";
+    } else {
+
+	run_command "git bisect good $good" or
+	    dodie "could not set bisect good to $good";
+
+	run_git_bisect "git bisect bad $bad" or
+	    dodie "could not set bisect bad to $bad";
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 
     if (defined($start)) {
@@ -2664,6 +3227,10 @@ sub bisect {
     do {
 	$result = run_bisect $type;
 	$test = run_git_bisect "git bisect $result";
+<<<<<<< HEAD
+=======
+	print_times;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     } while ($test);
 
     run_command "git bisect log" or
@@ -2702,12 +3269,25 @@ my %dependency;
 sub assign_configs {
     my ($hash, $config) = @_;
 
+<<<<<<< HEAD
+=======
+    doprint "Reading configs from $config\n";
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     open (IN, $config)
 	or dodie "Failed to read $config";
 
     while (<IN>) {
+<<<<<<< HEAD
 	if (/^((CONFIG\S*)=.*)/) {
 	    ${$hash}{$2} = $1;
+=======
+	chomp;
+	if (/^((CONFIG\S*)=.*)/) {
+	    ${$hash}{$2} = $1;
+	} elsif (/^(# (CONFIG\S*) is not set)/) {
+	    ${$hash}{$2} = $1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
     }
 
@@ -2720,6 +3300,7 @@ sub process_config_ignore {
     assign_configs \%config_ignore, $config;
 }
 
+<<<<<<< HEAD
 sub read_current_config {
     my ($config_ref) = @_;
 
@@ -2741,6 +3322,8 @@ sub read_current_config {
     close(IN);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sub get_dependencies {
     my ($config) = @_;
 
@@ -2759,6 +3342,7 @@ sub get_dependencies {
     return @deps;
 }
 
+<<<<<<< HEAD
 sub create_config {
     my @configs = @_;
 
@@ -2806,6 +3390,99 @@ sub compare_configs {
 	print "diff2 $keys[0]\n";
     }
     return -1 if ($#keys >= 0);
+=======
+sub save_config {
+    my ($pc, $file) = @_;
+
+    my %configs = %{$pc};
+
+    doprint "Saving configs into $file\n";
+
+    open(OUT, ">$file") or dodie "Can not write to $file";
+
+    foreach my $config (keys %configs) {
+	print OUT "$configs{$config}\n";
+    }
+    close(OUT);
+}
+
+sub create_config {
+    my ($name, $pc) = @_;
+
+    doprint "Creating old config from $name configs\n";
+
+    save_config $pc, $output_config;
+
+    make_oldconfig;
+}
+
+# compare two config hashes, and return configs with different vals.
+# It returns B's config values, but you can use A to see what A was.
+sub diff_config_vals {
+    my ($pa, $pb) = @_;
+
+    # crappy Perl way to pass in hashes.
+    my %a = %{$pa};
+    my %b = %{$pb};
+
+    my %ret;
+
+    foreach my $item (keys %a) {
+	if (defined($b{$item}) && $b{$item} ne $a{$item}) {
+	    $ret{$item} = $b{$item};
+	}
+    }
+
+    return %ret;
+}
+
+# compare two config hashes and return the configs in B but not A
+sub diff_configs {
+    my ($pa, $pb) = @_;
+
+    my %ret;
+
+    # crappy Perl way to pass in hashes.
+    my %a = %{$pa};
+    my %b = %{$pb};
+
+    foreach my $item (keys %b) {
+	if (!defined($a{$item})) {
+	    $ret{$item} = $b{$item};
+	}
+    }
+
+    return %ret;
+}
+
+# return if two configs are equal or not
+# 0 is equal +1 b has something a does not
+# +1 if a and b have a different item.
+# -1 if a has something b does not
+sub compare_configs {
+    my ($pa, $pb) = @_;
+
+    my %ret;
+
+    # crappy Perl way to pass in hashes.
+    my %a = %{$pa};
+    my %b = %{$pb};
+
+    foreach my $item (keys %b) {
+	if (!defined($a{$item})) {
+	    return 1;
+	}
+	if ($a{$item} ne $b{$item}) {
+	    return 1;
+	}
+    }
+
+    foreach my $item (keys %a) {
+	if (!defined($b{$item})) {
+	    return -1;
+	}
+    }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     return 0;
 }
@@ -2813,6 +3490,7 @@ sub compare_configs {
 sub run_config_bisect_test {
     my ($type) = @_;
 
+<<<<<<< HEAD
     return run_bisect_test $type, "oldconfig";
 }
 
@@ -2831,6 +3509,15 @@ sub process_passed {
     }
     doprint "config copied to $outputdir/config_good\n";
     run_command "cp -f $output_config $outputdir/config_good";
+=======
+    my $ret = run_bisect_test $type, "oldconfig";
+
+    if ($bisect_manual) {
+	$ret = answer_bisect;
+    }
+
+    return $ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub process_failed {
@@ -2841,6 +3528,7 @@ sub process_failed {
     doprint "***************************************\n\n";
 }
 
+<<<<<<< HEAD
 sub run_config_bisect {
 
     my @start_list = keys %config_list;
@@ -2961,11 +3649,161 @@ sub run_config_bisect {
 
     process_failed $start_list[0];
     return 1;
+=======
+# used for config bisecting
+my $good_config;
+my $bad_config;
+
+sub process_new_config {
+    my ($tc, $nc, $gc, $bc) = @_;
+
+    my %tmp_config = %{$tc};
+    my %good_configs = %{$gc};
+    my %bad_configs = %{$bc};
+
+    my %new_configs;
+
+    my $runtest = 1;
+    my $ret;
+
+    create_config "tmp_configs", \%tmp_config;
+    assign_configs \%new_configs, $output_config;
+
+    $ret = compare_configs \%new_configs, \%bad_configs;
+    if (!$ret) {
+	doprint "New config equals bad config, try next test\n";
+	$runtest = 0;
+    }
+
+    if ($runtest) {
+	$ret = compare_configs \%new_configs, \%good_configs;
+	if (!$ret) {
+	    doprint "New config equals good config, try next test\n";
+	    $runtest = 0;
+	}
+    }
+
+    %{$nc} = %new_configs;
+
+    return $runtest;
+}
+
+sub run_config_bisect {
+    my ($pgood, $pbad) = @_;
+
+    my $type = $config_bisect_type;
+
+    my %good_configs = %{$pgood};
+    my %bad_configs = %{$pbad};
+
+    my %diff_configs = diff_config_vals \%good_configs, \%bad_configs;
+    my %b_configs = diff_configs \%good_configs, \%bad_configs;
+    my %g_configs = diff_configs \%bad_configs, \%good_configs;
+
+    my @diff_arr = keys %diff_configs;
+    my $len_diff = $#diff_arr + 1;
+
+    my @b_arr = keys %b_configs;
+    my $len_b = $#b_arr + 1;
+
+    my @g_arr = keys %g_configs;
+    my $len_g = $#g_arr + 1;
+
+    my $runtest = 1;
+    my %new_configs;
+    my $ret;
+
+    # First, lets get it down to a single subset.
+    # Is the problem with a difference in values?
+    # Is the problem with a missing config?
+    # Is the problem with a config that breaks things?
+
+    # Enable all of one set and see if we get a new bad
+    # or good config.
+
+    # first set the good config to the bad values.
+
+    doprint "d=$len_diff g=$len_g b=$len_b\n";
+
+    # first lets enable things in bad config that are enabled in good config
+
+    if ($len_diff > 0) {
+	if ($len_b > 0 || $len_g > 0) {
+	    my %tmp_config = %bad_configs;
+
+	    doprint "Set tmp config to be bad config with good config values\n";
+	    foreach my $item (@diff_arr) {
+		$tmp_config{$item} = $good_configs{$item};
+	    }
+
+	    $runtest = process_new_config \%tmp_config, \%new_configs,
+			    \%good_configs, \%bad_configs;
+	}
+    }
+
+    if (!$runtest && $len_diff > 0) {
+
+	if ($len_diff == 1) {
+	    process_failed $diff_arr[0];
+	    return 1;
+	}
+	my %tmp_config = %bad_configs;
+
+	my $half = int($#diff_arr / 2);
+	my @tophalf = @diff_arr[0 .. $half];
+
+	doprint "Settings bisect with top half:\n";
+	doprint "Set tmp config to be bad config with some good config values\n";
+	foreach my $item (@tophalf) {
+	    $tmp_config{$item} = $good_configs{$item};
+	}
+
+	$runtest = process_new_config \%tmp_config, \%new_configs,
+			    \%good_configs, \%bad_configs;
+
+	if (!$runtest) {
+	    my %tmp_config = %bad_configs;
+
+	    doprint "Try bottom half\n";
+
+	    my @bottomhalf = @diff_arr[$half+1 .. $#diff_arr];
+
+	    foreach my $item (@bottomhalf) {
+		$tmp_config{$item} = $good_configs{$item};
+	    }
+
+	    $runtest = process_new_config \%tmp_config, \%new_configs,
+			    \%good_configs, \%bad_configs;
+	}
+    }
+
+    if ($runtest) {
+	$ret = run_config_bisect_test $type;
+	if ($ret) {
+	    doprint "NEW GOOD CONFIG\n";
+	    %good_configs = %new_configs;
+	    run_command "mv $good_config ${good_config}.last";
+	    save_config \%good_configs, $good_config;
+	    %{$pgood} = %good_configs;
+	} else {
+	    doprint "NEW BAD CONFIG\n";
+	    %bad_configs = %new_configs;
+	    run_command "mv $bad_config ${bad_config}.last";
+	    save_config \%bad_configs, $bad_config;
+	    %{$pbad} = %bad_configs;
+	}
+	return 0;
+    }
+
+    fail "Hmm, need to do a mix match?\n";
+    return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 sub config_bisect {
     my ($i) = @_;
 
+<<<<<<< HEAD
     my $start_config = $config_bisect;
 
     my $tmpconfig = "$tmpdir/use_config";
@@ -3088,6 +3926,76 @@ sub config_bisect {
 
     do {
 	$ret = run_config_bisect;
+=======
+    my $type = $config_bisect_type;
+    my $ret;
+
+    $bad_config = $config_bisect;
+
+    if (defined($config_bisect_good)) {
+	$good_config = $config_bisect_good;
+    } elsif (defined($minconfig)) {
+	$good_config = $minconfig;
+    } else {
+	doprint "No config specified, checking if defconfig works";
+	$ret = run_bisect_test $type, "defconfig";
+	if (!$ret) {
+	    fail "Have no good config to compare with, please set CONFIG_BISECT_GOOD";
+	    return 1;
+	}
+	$good_config = $output_config;
+    }
+
+    # we don't want min configs to cause issues here.
+    doprint "Disabling 'MIN_CONFIG' for this test\n";
+    undef $minconfig;
+
+    my %good_configs;
+    my %bad_configs;
+    my %tmp_configs;
+
+    doprint "Run good configs through make oldconfig\n";
+    assign_configs \%tmp_configs, $good_config;
+    create_config "$good_config", \%tmp_configs;
+    assign_configs \%good_configs, $output_config;
+
+    doprint "Run bad configs through make oldconfig\n";
+    assign_configs \%tmp_configs, $bad_config;
+    create_config "$bad_config", \%tmp_configs;
+    assign_configs \%bad_configs, $output_config;
+
+    $good_config = "$tmpdir/good_config";
+    $bad_config = "$tmpdir/bad_config";
+
+    save_config \%good_configs, $good_config;
+    save_config \%bad_configs, $bad_config;
+
+
+    if (defined($config_bisect_check) && $config_bisect_check ne "0") {
+	if ($config_bisect_check ne "good") {
+	    doprint "Testing bad config\n";
+
+	    $ret = run_bisect_test $type, "useconfig:$bad_config";
+	    if ($ret) {
+		fail "Bad config succeeded when expected to fail!";
+		return 0;
+	    }
+	}
+	if ($config_bisect_check ne "bad") {
+	    doprint "Testing good config\n";
+
+	    $ret = run_bisect_test $type, "useconfig:$good_config";
+	    if (!$ret) {
+		fail "Good config failed when expected to succeed!";
+		return 0;
+	    }
+	}
+    }
+
+    do {
+	$ret = run_config_bisect \%good_configs, \%bad_configs;
+	print_times;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     } while (!$ret);
 
     return $ret if ($ret < 0);
@@ -3110,9 +4018,22 @@ sub patchcheck {
 
     my $start = $patchcheck_start;
 
+<<<<<<< HEAD
     my $end = "HEAD";
     if (defined($patchcheck_end)) {
 	$end = $patchcheck_end;
+=======
+    my $cherry = $patchcheck_cherry;
+    if (!defined($cherry)) {
+	$cherry = 0;
+    }
+
+    my $end = "HEAD";
+    if (defined($patchcheck_end)) {
+	$end = $patchcheck_end;
+    } elsif ($cherry) {
+	die "PATCHCHECK_END must be defined with PATCHCHECK_CHERRY\n";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 
     # Get the true sha1's since we can use things like HEAD~3
@@ -3126,24 +4047,55 @@ sub patchcheck {
 	$type = "boot";
     }
 
+<<<<<<< HEAD
     open (IN, "git log --pretty=oneline $end|") or
 	dodie "could not get git list";
+=======
+    if ($cherry) {
+	open (IN, "git cherry -v $start $end|") or
+	    dodie "could not get git list";
+    } else {
+	open (IN, "git log --pretty=oneline $end|") or
+	    dodie "could not get git list";
+    }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     my @list;
 
     while (<IN>) {
 	chomp;
+<<<<<<< HEAD
+=======
+	# git cherry adds a '+' we want to remove
+	s/^\+ //;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	$list[$#list+1] = $_;
 	last if (/^$start/);
     }
     close(IN);
 
+<<<<<<< HEAD
     if ($list[$#list] !~ /^$start/) {
 	fail "SHA1 $start not found";
     }
 
     # go backwards in the list
     @list = reverse @list;
+=======
+    if (!$cherry) {
+	if ($list[$#list] !~ /^$start/) {
+	    fail "SHA1 $start not found";
+	}
+
+	# go backwards in the list
+	@list = reverse @list;
+    }
+
+    doprint("Going to test the following commits:\n");
+    foreach my $l (@list) {
+	doprint "$l\n";
+    }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     my $save_clean = $noclean;
     my %ignored_warnings;
@@ -3159,7 +4111,11 @@ sub patchcheck {
 	my $sha1 = $item;
 	$sha1 =~ s/^([[:xdigit:]]+).*/$1/;
 
+<<<<<<< HEAD
 	doprint "\nProcessing commit $item\n\n";
+=======
+	doprint "\nProcessing commit \"$item\"\n\n";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	run_command "git checkout $sha1" or
 	    die "Failed to checkout $sha1";
@@ -3190,16 +4146,29 @@ sub patchcheck {
 
 	my $failed = 0;
 
+<<<<<<< HEAD
 	start_monitor_and_boot or $failed = 1;
+=======
+	start_monitor_and_install or $failed = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!$failed && $type ne "boot"){
 	    do_run_test or $failed = 1;
 	}
 	end_monitor;
+<<<<<<< HEAD
 	return 0 if ($failed);
 
 	patchcheck_reboot;
 
+=======
+	if ($failed) {
+	    print_times;
+	    return 0;
+	}
+	patchcheck_reboot;
+	print_times;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
     $in_patchcheck = 0;
     success $i;
@@ -3368,6 +4337,7 @@ sub read_depends {
     read_kconfig($kconfig);
 }
 
+<<<<<<< HEAD
 sub read_config_list {
     my ($config) = @_;
 
@@ -3391,6 +4361,8 @@ sub read_output_config {
     assign_configs \%config_ignore, $config;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sub make_new_config {
     my @configs = @_;
 
@@ -3490,7 +4462,13 @@ sub test_this_config {
     undef %configs;
     assign_configs \%configs, $output_config;
 
+<<<<<<< HEAD
     return $config if (!defined($configs{$config}));
+=======
+    if (!defined($configs{$config}) || $configs{$config} =~ /^#/) {
+	return $config;
+    }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     doprint "disabling config $config did not change .config\n";
 
@@ -3673,7 +4651,11 @@ sub make_min_config {
 	my $failed = 0;
 	build "oldconfig" or $failed = 1;
 	if (!$failed) {
+<<<<<<< HEAD
 		start_monitor_and_boot or $failed = 1;
+=======
+		start_monitor_and_install or $failed = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if ($type eq "test" && !$failed) {
 		    do_run_test or $failed = 1;
@@ -3776,7 +4758,11 @@ sub make_warnings_file {
     success $i;
 }
 
+<<<<<<< HEAD
 $#ARGV < 1 or die "ktest.pl version: $VERSION\n   usage: ktest.pl config-file\n";
+=======
+$#ARGV < 1 or die "ktest.pl version: $VERSION\n   usage: ktest.pl [config-file]\n";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 if ($#ARGV == 0) {
     $ktest_config = $ARGV[0];
@@ -3786,8 +4772,11 @@ if ($#ARGV == 0) {
 	    exit 0;
 	}
     }
+<<<<<<< HEAD
 } else {
     $ktest_config = "ktest.conf";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 if (! -f $ktest_config) {
@@ -3866,12 +4855,29 @@ for (my $i = 0, my $repeat = 1; $i <= $opt{"NUM_TESTS"}; $i += $repeat) {
     }
 }
 
+<<<<<<< HEAD
+=======
+sub option_defined {
+    my ($option) = @_;
+
+    if (defined($opt{$option}) && $opt{$option} !~ /^\s*$/) {
+	return 1;
+    }
+
+    return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sub __set_test_option {
     my ($name, $i) = @_;
 
     my $option = "$name\[$i\]";
 
+<<<<<<< HEAD
     if (defined($opt{$option})) {
+=======
+    if (option_defined($option)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return $opt{$option};
     }
 
@@ -3879,13 +4885,21 @@ sub __set_test_option {
 	if ($i >= $test &&
 	    $i < $test + $repeat_tests{$test}) {
 	    $option = "$name\[$test\]";
+<<<<<<< HEAD
 	    if (defined($opt{$option})) {
+=======
+	    if (option_defined($option)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return $opt{$option};
 	    }
 	}
     }
 
+<<<<<<< HEAD
     if (defined($opt{$name})) {
+=======
+    if (option_defined($name)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return $opt{$name};
     }
 
@@ -3912,10 +4926,33 @@ for (my $i = 1; $i <= $opt{"NUM_TESTS"}; $i++) {
 
     $iteration = $i;
 
+<<<<<<< HEAD
+=======
+    $build_time = 0;
+    $install_time = 0;
+    $reboot_time = 0;
+    $test_time = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     undef %force_config;
 
     my $makecmd = set_test_option("MAKE_CMD", $i);
 
+<<<<<<< HEAD
+=======
+    $outputdir = set_test_option("OUTPUT_DIR", $i);
+    $builddir = set_test_option("BUILD_DIR", $i);
+
+    chdir $builddir || die "can't change directory to $builddir";
+
+    if (!-d $outputdir) {
+	mkpath($outputdir) or
+	    die "can't create $outputdir";
+    }
+
+    $make = "$makecmd O=$outputdir";
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     # Load all the options into their mapped variable names
     foreach my $opt (keys %option_map) {
 	${$option_map{$opt}} = set_test_option($opt, $i);
@@ -3940,6 +4977,7 @@ for (my $i = 1; $i <= $opt{"NUM_TESTS"}; $i++) {
 	$start_minconfig = $minconfig;
     }
 
+<<<<<<< HEAD
     chdir $builddir || die "can't change directory to $builddir";
 
     foreach my $dir ($tmpdir, $outputdir) {
@@ -3947,6 +4985,11 @@ for (my $i = 1; $i <= $opt{"NUM_TESTS"}; $i++) {
 	    mkpath($dir) or
 		die "can't create $dir";
 	}
+=======
+    if (!-d $tmpdir) {
+	mkpath($tmpdir) or
+	    die "can't create $tmpdir";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
 
     $ENV{"SSH_USER"} = $ssh_user;
@@ -3955,7 +4998,10 @@ for (my $i = 1; $i <= $opt{"NUM_TESTS"}; $i++) {
     $buildlog = "$tmpdir/buildlog-$machine";
     $testlog = "$tmpdir/testlog-$machine";
     $dmesg = "$tmpdir/dmesg-$machine";
+<<<<<<< HEAD
     $make = "$makecmd O=$outputdir";
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     $output_config = "$outputdir/.config";
 
     if (!$buildonly) {
@@ -3991,8 +5037,19 @@ for (my $i = 1; $i <= $opt{"NUM_TESTS"}; $i++) {
     my $installme = "";
     $installme = " no_install" if ($no_install);
 
+<<<<<<< HEAD
     doprint "\n\n";
     doprint "RUNNING TEST $i of $opt{NUM_TESTS} with option $test_type $run_type$installme\n\n";
+=======
+    my $name = "";
+
+    if (defined($test_name)) {
+	$name = " ($test_name)";
+    }
+
+    doprint "\n\n";
+    doprint "RUNNING TEST $i of $opt{NUM_TESTS}$name with option $test_type $run_type$installme\n\n";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
     if (defined($pre_test)) {
 	run_command $pre_test;
@@ -4056,15 +5113,30 @@ for (my $i = 1; $i <= $opt{"NUM_TESTS"}; $i++) {
 
     if ($test_type ne "build") {
 	my $failed = 0;
+<<<<<<< HEAD
 	start_monitor_and_boot or $failed = 1;
+=======
+	start_monitor_and_install or $failed = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!$failed && $test_type ne "boot" && defined($run_test)) {
 	    do_run_test or $failed = 1;
 	}
 	end_monitor;
+<<<<<<< HEAD
 	next if ($failed);
     }
 
+=======
+	if ($failed) {
+	    print_times;
+	    next;
+	}
+    }
+
+    print_times;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     success $i;
 }
 

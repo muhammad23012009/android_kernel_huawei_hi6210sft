@@ -1,7 +1,11 @@
 /*
  *   Fujitsu mb86a20s driver
  *
+<<<<<<< HEAD
  *   Copyright (C) 2010 Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ *   Copyright (C) 2010 Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License as
@@ -16,7 +20,10 @@
 #ifndef MB86A20S_H
 #define MB86A20S_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 
 /**
@@ -34,7 +41,11 @@ struct mb86a20s_config {
 	bool	is_serial;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_MB86A20S)
+=======
+#if IS_REACHABLE(CONFIG_DVB_MB86A20S)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *mb86a20s_attach(const struct mb86a20s_config *config,
 					   struct i2c_adapter *i2c);
 extern struct i2c_adapter *mb86a20s_get_tuner_i2c_adapter(struct dvb_frontend *);
@@ -45,7 +56,11 @@ static inline struct dvb_frontend *mb86a20s_attach(
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
+<<<<<<< HEAD
 static struct i2c_adapter *
+=======
+static inline struct i2c_adapter *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mb86a20s_get_tuner_i2c_adapter(struct dvb_frontend *fe)
 {
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);

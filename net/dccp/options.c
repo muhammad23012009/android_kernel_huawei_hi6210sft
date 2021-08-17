@@ -253,7 +253,11 @@ out_nonsensical_length:
 	return 0;
 
 out_invalid_option:
+<<<<<<< HEAD
 	DCCP_INC_STATS_BH(DCCP_MIB_INVALIDOPT);
+=======
+	DCCP_INC_STATS(DCCP_MIB_INVALIDOPT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = DCCP_RESET_CODE_OPTION_ERROR;
 out_featneg_failed:
 	DCCP_WARN("DCCP(%p): Option %d (len=%d) error=%u\n", sk, opt, len, rc);
@@ -343,6 +347,7 @@ static inline int dccp_elapsed_time_len(const u32 elapsed_time)
 	return elapsed_time == 0 ? 0 : elapsed_time <= 0xFFFF ? 2 : 4;
 }
 
+<<<<<<< HEAD
 /* FIXME: This function is currently not used anywhere */
 int dccp_insert_option_elapsed_time(struct sk_buff *skb, u32 elapsed_time)
 {
@@ -375,6 +380,8 @@ int dccp_insert_option_elapsed_time(struct sk_buff *skb, u32 elapsed_time)
 
 EXPORT_SYMBOL_GPL(dccp_insert_option_elapsed_time);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int dccp_insert_option_timestamp(struct sk_buff *skb)
 {
 	__be32 now = htonl(dccp_timestamp());

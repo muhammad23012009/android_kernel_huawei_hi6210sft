@@ -1,6 +1,10 @@
 Speakup project home:  http://www.linux-speakup.org
 
+<<<<<<< HEAD
 Mailing List:  speakup@braille.uwo.ca
+=======
+Mailing List:  speakup@linux-speakup.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 Speakup is a kernel based screen review package for the linux operating
 system.  It allows blind users to interact with applications on the

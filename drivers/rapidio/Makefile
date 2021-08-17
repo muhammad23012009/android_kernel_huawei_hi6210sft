@@ -1,8 +1,16 @@
 #
 # Makefile for RapidIO interconnect services
 #
+<<<<<<< HEAD
 obj-y += rio.o rio-access.o rio-driver.o rio-sysfs.o
 obj-$(CONFIG_RAPIDIO_ENUM_BASIC) += rio-scan.o
+=======
+obj-$(CONFIG_RAPIDIO) += rapidio.o
+rapidio-y := rio.o rio-access.o rio-driver.o rio-sysfs.o
+
+obj-$(CONFIG_RAPIDIO_ENUM_BASIC) += rio-scan.o
+obj-$(CONFIG_RAPIDIO_CHMAN)	+= rio_cm.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 obj-$(CONFIG_RAPIDIO)		+= switches/
 obj-$(CONFIG_RAPIDIO)		+= devices/

@@ -124,7 +124,11 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
 				goto block_release;
 			bytes += msblk->devblksize;
 		}
+<<<<<<< HEAD
 		ll_rw_block(READ, b, bh);
+=======
+		ll_rw_block(REQ_OP_READ, 0, b, bh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		/*
 		 * Metadata block.
@@ -156,7 +160,11 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
 				goto block_release;
 			bytes += msblk->devblksize;
 		}
+<<<<<<< HEAD
 		ll_rw_block(READ, b - 1, bh + 1);
+=======
+		ll_rw_block(REQ_OP_READ, 0, b - 1, bh + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = 0; i < b; i++) {
@@ -166,6 +174,11 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
 	}
 
 	if (compressed) {
+<<<<<<< HEAD
+=======
+		if (!msblk->stream)
+			goto read_failure;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		length = squashfs_decompress(msblk, bh, b, offset, length,
 			output);
 		if (length < 0)
@@ -181,11 +194,19 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
 			in = min(bytes, msblk->devblksize - offset);
 			bytes -= in;
 			while (in) {
+<<<<<<< HEAD
 				if (pg_offset == PAGE_CACHE_SIZE) {
 					data = squashfs_next_page(output);
 					pg_offset = 0;
 				}
 				avail = min_t(int, in, PAGE_CACHE_SIZE -
+=======
+				if (pg_offset == PAGE_SIZE) {
+					data = squashfs_next_page(output);
+					pg_offset = 0;
+				}
+				avail = min_t(int, in, PAGE_SIZE -
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						pg_offset);
 				memcpy(data + pg_offset, bh[k]->b_data + offset,
 						avail);

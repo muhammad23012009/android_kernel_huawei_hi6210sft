@@ -127,9 +127,16 @@ static void l2tp_dfs_seq_tunnel_show(struct seq_file *m, void *v)
 
 #if IS_ENABLED(CONFIG_IPV6)
 		if (tunnel->sock->sk_family == AF_INET6) {
+<<<<<<< HEAD
 			struct ipv6_pinfo *np = inet6_sk(tunnel->sock);
 			seq_printf(m, " from %pI6c to %pI6c\n",
 				&np->saddr, &np->daddr);
+=======
+			const struct ipv6_pinfo *np = inet6_sk(tunnel->sock);
+
+			seq_printf(m, " from %pI6c to %pI6c\n",
+				&np->saddr, &tunnel->sock->sk_v6_daddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else
 #endif
 		seq_printf(m, " from %pI4 to %pI4\n",
@@ -180,8 +187,13 @@ static void l2tp_dfs_seq_session_show(struct seq_file *m, void *v)
 		   session->lns_mode ? "LNS" : "LAC",
 		   session->debug,
 		   jiffies_to_msecs(session->reorder_timeout));
+<<<<<<< HEAD
 	seq_printf(m, "   offset %hu l2specific %hu/%hu\n",
 		   session->offset, session->l2specific_type, session->l2specific_len);
+=======
+	seq_printf(m, "   offset 0 l2specific %hu/%hu\n",
+		   session->l2specific_type, session->l2specific_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (session->cookie_len) {
 		seq_printf(m, "   cookie %02x%02x%02x%02x",
 			   session->cookie[0], session->cookie[1],

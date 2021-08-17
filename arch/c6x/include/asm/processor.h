@@ -121,6 +121,10 @@ extern unsigned long get_wchan(struct task_struct *p);
 #define KSTK_ESP(task)	(task_pt_regs(task)->sp)
 
 #define cpu_relax()		do { } while (0)
+<<<<<<< HEAD
+=======
+#define cpu_relax_lowlatency()        cpu_relax()
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern const struct seq_operations cpuinfo_op;
 

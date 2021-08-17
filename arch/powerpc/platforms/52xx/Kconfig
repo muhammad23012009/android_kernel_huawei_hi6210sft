@@ -1,7 +1,11 @@
 config PPC_MPC52xx
 	bool "52xx-based boards"
 	depends on 6xx
+<<<<<<< HEAD
 	select PPC_CLOCK
+=======
+	select COMMON_CLK
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select PPC_PCI_CHOICE
 
 config PPC_MPC5200_SIMPLE

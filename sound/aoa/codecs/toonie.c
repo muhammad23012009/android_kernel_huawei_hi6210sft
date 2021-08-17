@@ -92,7 +92,11 @@ static int toonie_init_codec(struct aoa_codec *codec)
 	if (toonie->codec.connected != 1)
 		return -ENOTCONN;
 
+<<<<<<< HEAD
 	if (aoa_snd_device_new(SNDRV_DEV_LOWLEVEL, toonie, &ops)) {
+=======
+	if (aoa_snd_device_new(SNDRV_DEV_CODEC, toonie, &ops)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR PFX "failed to create toonie snd device!\n");
 		return -ENODEV;
 	}

@@ -128,21 +128,36 @@ int lola_init_clock_widget(struct lola *chip, int nid)
 
 	err = lola_read_param(chip, nid, LOLA_PAR_AUDIO_WIDGET_CAP, &val);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "Can't read wcaps for 0x%x\n", nid);
+=======
+		dev_err(chip->card->dev, "Can't read wcaps for 0x%x\n", nid);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return err;
 	}
 
 	if ((val & 0xfff00000) != 0x01f00000) { /* test SubType and Type */
+<<<<<<< HEAD
 		snd_printdd("No valid clock widget\n");
+=======
+		dev_dbg(chip->card->dev, "No valid clock widget\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
 	chip->clock.nid = nid;
 	chip->clock.items = val & 0xff;
+<<<<<<< HEAD
 	snd_printdd("clock_list nid=%x, entries=%d\n", nid,
 		    chip->clock.items);
 	if (chip->clock.items > MAX_SAMPLE_CLOCK_COUNT) {
 		printk(KERN_ERR SFX "CLOCK_LIST too big: %d\n",
+=======
+	dev_dbg(chip->card->dev, "clock_list nid=%x, entries=%d\n", nid,
+		    chip->clock.items);
+	if (chip->clock.items > MAX_SAMPLE_CLOCK_COUNT) {
+		dev_err(chip->card->dev, "CLOCK_LIST too big: %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       chip->clock.items);
 		return -EINVAL;
 	}
@@ -158,7 +173,11 @@ int lola_init_clock_widget(struct lola *chip, int nid)
 		err = lola_codec_read(chip, nid, LOLA_VERB_GET_CLOCK_LIST,
 				      idx, 0, &val, &res_ex);
 		if (err < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR SFX "Can't read CLOCK_LIST\n");
+=======
+			dev_err(chip->card->dev, "Can't read CLOCK_LIST\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return -EINVAL;
 		}
 
@@ -223,7 +242,11 @@ int lola_enable_clock_events(struct lola *chip)
 	if (err < 0)
 		return err;
 	if (res) {
+<<<<<<< HEAD
 		printk(KERN_WARNING SFX "error in enable_clock_events %d\n",
+=======
+		dev_warn(chip->card->dev, "error in enable_clock_events %d\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       res);
 		return -EINVAL;
 	}
@@ -242,7 +265,11 @@ int lola_set_clock_index(struct lola *chip, unsigned int idx)
 	if (err < 0)
 		return err;
 	if (res) {
+<<<<<<< HEAD
 		printk(KERN_WARNING SFX "error in set_clock %d\n", res);
+=======
+		dev_warn(chip->card->dev, "error in set_clock %d\n", res);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	return 0;

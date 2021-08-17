@@ -22,6 +22,10 @@
 #include <linux/uaccess.h>
 #include <linux/debugfs.h>
 #include <linux/platform_data/dma-coh901318.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_dma.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "coh901318.h"
 #include "dmaengine.h"
@@ -265,7 +269,11 @@ static int dma_memcpy_channels[] = {
 			COH901318_CX_CTRL_DDMA_LEGACY | \
 			COH901318_CX_CTRL_PRDD_SOURCE)
 
+<<<<<<< HEAD
 const struct coh_dma_channel chan_config[U300_DMA_CHANNELS] = {
+=======
+static const struct coh_dma_channel chan_config[U300_DMA_CHANNELS] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.number = U300_DMA_MSL_TX_0,
 		.name = "MSL TX 0",
@@ -1279,6 +1287,10 @@ struct coh901318_desc {
 struct coh901318_base {
 	struct device *dev;
 	void __iomem *virtbase;
+<<<<<<< HEAD
+=======
+	unsigned int irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct coh901318_pool pool;
 	struct powersave pm;
 	struct dma_device dma_slave;
@@ -1317,10 +1329,17 @@ static void coh901318_list_print(struct coh901318_chan *cohc,
 	int i = 0;
 
 	while (l) {
+<<<<<<< HEAD
 		dev_vdbg(COHC_2_DEV(cohc), "i %d, lli %p, ctrl 0x%x, src 0x%x"
 			 ", dst 0x%x, link 0x%x virt_link_addr 0x%p\n",
 			 i, l, l->control, l->src_addr, l->dst_addr,
 			 l->link_addr, l->virt_link_addr);
+=======
+		dev_vdbg(COHC_2_DEV(cohc), "i %d, lli %p, ctrl 0x%x, src 0x%pad"
+			 ", dst 0x%pad, link 0x%pad virt_link_addr 0x%p\n",
+			 i, l, l->control, &l->src_addr, &l->dst_addr,
+			 &l->link_addr, l->virt_link_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		i++;
 		l = l->virt_link_addr;
 	}
@@ -1333,11 +1352,16 @@ static void coh901318_list_print(struct coh901318_chan *cohc,
 static struct coh901318_base *debugfs_dma_base;
 static struct dentry *dma_dentry;
 
+<<<<<<< HEAD
 static int coh901318_debugfs_read(struct file *file, char __user *buf,
+=======
+static ssize_t coh901318_debugfs_read(struct file *file, char __user *buf,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  size_t count, loff_t *f_pos)
 {
 	u64 started_channels = debugfs_dma_base->pm.started_channels;
 	int pool_count = debugfs_dma_base->pool.debugfs_pool_counter;
+<<<<<<< HEAD
 	int i;
 	int ret = 0;
 	char *dev_buf;
@@ -1347,10 +1371,21 @@ static int coh901318_debugfs_read(struct file *file, char __user *buf,
 	dev_buf = kmalloc(4*1024, GFP_KERNEL);
 	if (dev_buf == NULL)
 		goto err_kmalloc;
+=======
+	char *dev_buf;
+	char *tmp;
+	int ret;
+	int i;
+
+	dev_buf = kmalloc(4*1024, GFP_KERNEL);
+	if (dev_buf == NULL)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tmp = dev_buf;
 
 	tmp += sprintf(tmp, "DMA -- enabled dma channels\n");
 
+<<<<<<< HEAD
 	for (i = 0; i < U300_DMA_CHANNELS; i++)
 		if (started_channels & (1 << i))
 			tmp += sprintf(tmp, "channel %d\n", i);
@@ -1380,6 +1415,22 @@ static int coh901318_debugfs_read(struct file *file, char __user *buf,
 
 static const struct file_operations coh901318_debugfs_status_operations = {
 	.owner		= THIS_MODULE,
+=======
+	for (i = 0; i < U300_DMA_CHANNELS; i++) {
+		if (started_channels & (1ULL << i))
+			tmp += sprintf(tmp, "channel %d\n", i);
+	}
+
+	tmp += sprintf(tmp, "Pool alloc nbr %d\n", pool_count);
+
+	ret = simple_read_from_buffer(buf, count, f_pos, dev_buf, 
+					tmp - dev_buf);
+	kfree(dev_buf);
+	return ret;
+}
+
+static const struct file_operations coh901318_debugfs_status_operations = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= simple_open,
 	.read		= coh901318_debugfs_read,
 	.llseek		= default_llseek,
@@ -1568,6 +1619,7 @@ coh901318_desc_submit(struct coh901318_chan *cohc, struct coh901318_desc *desc)
 static struct coh901318_desc *
 coh901318_first_active_get(struct coh901318_chan *cohc)
 {
+<<<<<<< HEAD
 	struct coh901318_desc *d;
 
 	if (list_empty(&cohc->active))
@@ -1577,6 +1629,10 @@ coh901318_first_active_get(struct coh901318_chan *cohc)
 			     struct coh901318_desc,
 			     node);
 	return d;
+=======
+	return list_first_entry_or_null(&cohc->active, struct coh901318_desc,
+					node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void
@@ -1594,6 +1650,7 @@ coh901318_desc_queue(struct coh901318_chan *cohc, struct coh901318_desc *desc)
 static struct coh901318_desc *
 coh901318_first_queued(struct coh901318_chan *cohc)
 {
+<<<<<<< HEAD
 	struct coh901318_desc *d;
 
 	if (list_empty(&cohc->queue))
@@ -1603,6 +1660,10 @@ coh901318_first_queued(struct coh901318_chan *cohc)
 			     struct coh901318_desc,
 			     node);
 	return d;
+=======
+	return list_first_entry_or_null(&cohc->queue, struct coh901318_desc,
+					node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline u32 coh901318_get_bytes_in_lli(struct coh901318_lli *in_lli)
@@ -1705,7 +1766,11 @@ static u32 coh901318_get_bytes_left(struct dma_chan *chan)
  * Pauses a transfer without losing data. Enables power save.
  * Use this function in conjunction with coh901318_resume.
  */
+<<<<<<< HEAD
 static void coh901318_pause(struct dma_chan *chan)
+=======
+static int coh901318_pause(struct dma_chan *chan)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 val;
 	unsigned long flags;
@@ -1745,12 +1810,20 @@ static void coh901318_pause(struct dma_chan *chan)
 	enable_powersave(cohc);
 
 	spin_unlock_irqrestore(&cohc->lock, flags);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Resumes a transfer that has been stopped via 300_dma_stop(..).
    Power save is handled.
 */
+<<<<<<< HEAD
 static void coh901318_resume(struct dma_chan *chan)
+=======
+static int coh901318_resume(struct dma_chan *chan)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 val;
 	unsigned long flags;
@@ -1775,11 +1848,19 @@ static void coh901318_resume(struct dma_chan *chan)
 	}
 
 	spin_unlock_irqrestore(&cohc->lock, flags);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 bool coh901318_filter_id(struct dma_chan *chan, void *chan_id)
 {
+<<<<<<< HEAD
 	unsigned int ch_nr = (unsigned int) chan_id;
+=======
+	unsigned long ch_nr = (unsigned long) chan_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ch_nr == to_coh901318_chan(chan)->id)
 		return true;
@@ -1788,19 +1869,57 @@ bool coh901318_filter_id(struct dma_chan *chan, void *chan_id)
 }
 EXPORT_SYMBOL(coh901318_filter_id);
 
+<<<<<<< HEAD
+=======
+struct coh901318_filter_args {
+	struct coh901318_base *base;
+	unsigned int ch_nr;
+};
+
+static bool coh901318_filter_base_and_id(struct dma_chan *chan, void *data)
+{
+	struct coh901318_filter_args *args = data;
+
+	if (&args->base->dma_slave == chan->device &&
+	    args->ch_nr == to_coh901318_chan(chan)->id)
+		return true;
+
+	return false;
+}
+
+static struct dma_chan *coh901318_xlate(struct of_phandle_args *dma_spec,
+					struct of_dma *ofdma)
+{
+	struct coh901318_filter_args args = {
+		.base = ofdma->of_dma_data,
+		.ch_nr = dma_spec->args[0],
+	};
+	dma_cap_mask_t cap;
+	dma_cap_zero(cap);
+	dma_cap_set(DMA_SLAVE, cap);
+
+	return dma_request_channel(cap, coh901318_filter_base_and_id, &args);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * DMA channel allocation
  */
 static int coh901318_config(struct coh901318_chan *cohc,
 			    struct coh901318_params *param)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const struct coh901318_params *p;
 	int channel = cohc->id;
 	void __iomem *virtbase = cohc->base->virtbase;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&cohc->lock, flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (param)
 		p = param;
 	else
@@ -1820,8 +1939,11 @@ static int coh901318_config(struct coh901318_chan *cohc,
 	coh901318_set_conf(cohc, p->config);
 	coh901318_set_ctrl(cohc, p->ctrl_lli_last);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&cohc->lock, flags);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1872,8 +1994,12 @@ static void dma_tasklet(unsigned long data)
 	struct coh901318_chan *cohc = (struct coh901318_chan *) data;
 	struct coh901318_desc *cohd_fin;
 	unsigned long flags;
+<<<<<<< HEAD
 	dma_async_tx_callback callback;
 	void *callback_param;
+=======
+	struct dmaengine_desc_callback cb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_vdbg(COHC_2_DEV(cohc), "[%s] chan_id %d"
 		 " nbr_active_done %ld\n", __func__,
@@ -1888,8 +2014,12 @@ static void dma_tasklet(unsigned long data)
 		goto err;
 
 	/* locate callback to client */
+<<<<<<< HEAD
 	callback = cohd_fin->desc.callback;
 	callback_param = cohd_fin->desc.callback_param;
+=======
+	dmaengine_desc_get_callback(&cohd_fin->desc, &cb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* sign this job as completed on the channel */
 	dma_cookie_complete(&cohd_fin->desc);
@@ -1904,8 +2034,12 @@ static void dma_tasklet(unsigned long data)
 	spin_unlock_irqrestore(&cohc->lock, flags);
 
 	/* Call the callback when we're done */
+<<<<<<< HEAD
 	if (callback)
 		callback(callback_param);
+=======
+	dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&cohc->lock, flags);
 
@@ -1949,8 +2083,11 @@ static void dma_tc_handle(struct coh901318_chan *cohc)
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&cohc->lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * When we reach this point, at least one queue item
 	 * should have been moved over from cohc->queue to
@@ -1971,8 +2108,11 @@ static void dma_tc_handle(struct coh901318_chan *cohc)
 	if (coh901318_queue_start(cohc) == NULL)
 		cohc->busy = 0;
 
+<<<<<<< HEAD
 	spin_unlock(&cohc->lock);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * This tasklet will remove items from cohc->active
 	 * and thus terminates them.
@@ -2100,6 +2240,60 @@ static irqreturn_t dma_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
+=======
+static int coh901318_terminate_all(struct dma_chan *chan)
+{
+	unsigned long flags;
+	struct coh901318_chan *cohc = to_coh901318_chan(chan);
+	struct coh901318_desc *cohd;
+	void __iomem *virtbase = cohc->base->virtbase;
+
+	/* The remainder of this function terminates the transfer */
+	coh901318_pause(chan);
+	spin_lock_irqsave(&cohc->lock, flags);
+
+	/* Clear any pending BE or TC interrupt */
+	if (cohc->id < 32) {
+		writel(1 << cohc->id, virtbase + COH901318_BE_INT_CLEAR1);
+		writel(1 << cohc->id, virtbase + COH901318_TC_INT_CLEAR1);
+	} else {
+		writel(1 << (cohc->id - 32), virtbase +
+		       COH901318_BE_INT_CLEAR2);
+		writel(1 << (cohc->id - 32), virtbase +
+		       COH901318_TC_INT_CLEAR2);
+	}
+
+	enable_powersave(cohc);
+
+	while ((cohd = coh901318_first_active_get(cohc))) {
+		/* release the lli allocation*/
+		coh901318_lli_free(&cohc->base->pool, &cohd->lli);
+
+		/* return desc to free-list */
+		coh901318_desc_remove(cohd);
+		coh901318_desc_free(cohc, cohd);
+	}
+
+	while ((cohd = coh901318_first_queued(cohc))) {
+		/* release the lli allocation*/
+		coh901318_lli_free(&cohc->base->pool, &cohd->lli);
+
+		/* return desc to free-list */
+		coh901318_desc_remove(cohd);
+		coh901318_desc_free(cohc, cohd);
+	}
+
+
+	cohc->nbr_active_done = 0;
+	cohc->busy = 0;
+
+	spin_unlock_irqrestore(&cohc->lock, flags);
+
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int coh901318_alloc_chan_resources(struct dma_chan *chan)
 {
 	struct coh901318_chan	*cohc = to_coh901318_chan(chan);
@@ -2142,7 +2336,11 @@ coh901318_free_chan_resources(struct dma_chan *chan)
 
 	spin_unlock_irqrestore(&cohc->lock, flags);
 
+<<<<<<< HEAD
 	chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
+=======
+	coh901318_terminate_all(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 
@@ -2180,8 +2378,13 @@ coh901318_prep_memcpy(struct dma_chan *chan, dma_addr_t dest, dma_addr_t src,
 	spin_lock_irqsave(&cohc->lock, flg);
 
 	dev_vdbg(COHC_2_DEV(cohc),
+<<<<<<< HEAD
 		 "[%s] channel %d src 0x%x dest 0x%x size %d\n",
 		 __func__, cohc->id, src, dest, size);
+=======
+		 "[%s] channel %d src 0x%pad dest 0x%pad size %zu\n",
+		 __func__, cohc->id, &src, &dest, size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (flags & DMA_PREP_INTERRUPT)
 		/* Trigger interrupt after last lli */
@@ -2355,7 +2558,11 @@ coh901318_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 	enum dma_status ret;
 
 	ret = dma_cookie_status(chan, cookie, txstate);
+<<<<<<< HEAD
 	if (ret == DMA_SUCCESS)
+=======
+	if (ret == DMA_COMPLETE || !txstate)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 
 	dma_set_residue(txstate, coh901318_get_bytes_left(chan));
@@ -2447,8 +2654,13 @@ static const struct burst_table burst_sizes[] = {
 	},
 };
 
+<<<<<<< HEAD
 static void coh901318_dma_set_runtimeconfig(struct dma_chan *chan,
 			struct dma_slave_config *config)
+=======
+static int coh901318_dma_set_runtimeconfig(struct dma_chan *chan,
+					   struct dma_slave_config *config)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct coh901318_chan *cohc = to_coh901318_chan(chan);
 	dma_addr_t addr;
@@ -2468,7 +2680,11 @@ static void coh901318_dma_set_runtimeconfig(struct dma_chan *chan,
 		maxburst = config->dst_maxburst;
 	} else {
 		dev_err(COHC_2_DEV(cohc), "illegal channel mode\n");
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dev_dbg(COHC_2_DEV(cohc), "configure channel for %d byte transfers\n",
@@ -2514,7 +2730,11 @@ static void coh901318_dma_set_runtimeconfig(struct dma_chan *chan,
 	default:
 		dev_err(COHC_2_DEV(cohc),
 			"bad runtimeconfig: alien address width\n");
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ctrl |= burst_sizes[i].reg;
@@ -2524,6 +2744,7 @@ static void coh901318_dma_set_runtimeconfig(struct dma_chan *chan,
 
 	cohc->addr = addr;
 	cohc->ctrl = ctrl;
+<<<<<<< HEAD
 }
 
 static int
@@ -2596,12 +2817,19 @@ coh901318_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	cohc->busy = 0;
 
 	spin_unlock_irqrestore(&cohc->lock, flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void coh901318_base_init(struct dma_device *dma, const int *pick_chans,
 			 struct coh901318_base *base)
+=======
+static void coh901318_base_init(struct dma_device *dma, const int *pick_chans,
+				struct coh901318_base *base)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int chans_i;
 	int i = 0;
@@ -2680,11 +2908,20 @@ static int __init coh901318_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
+<<<<<<< HEAD
 	err = devm_request_irq(&pdev->dev, irq, dma_irq_handler, IRQF_DISABLED,
+=======
+	err = devm_request_irq(&pdev->dev, irq, dma_irq_handler, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       "coh901318", base);
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	base->irq = irq;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = coh901318_pool_create(&base->pool, &pdev->dev,
 				    sizeof(struct coh901318_lli),
 				    32);
@@ -2703,7 +2940,14 @@ static int __init coh901318_probe(struct platform_device *pdev)
 	base->dma_slave.device_prep_slave_sg = coh901318_prep_slave_sg;
 	base->dma_slave.device_tx_status = coh901318_tx_status;
 	base->dma_slave.device_issue_pending = coh901318_issue_pending;
+<<<<<<< HEAD
 	base->dma_slave.device_control = coh901318_control;
+=======
+	base->dma_slave.device_config = coh901318_dma_set_runtimeconfig;
+	base->dma_slave.device_pause = coh901318_pause;
+	base->dma_slave.device_resume = coh901318_resume;
+	base->dma_slave.device_terminate_all = coh901318_terminate_all;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	base->dma_slave.dev = &pdev->dev;
 
 	err = dma_async_device_register(&base->dma_slave);
@@ -2723,56 +2967,129 @@ static int __init coh901318_probe(struct platform_device *pdev)
 	base->dma_memcpy.device_prep_dma_memcpy = coh901318_prep_memcpy;
 	base->dma_memcpy.device_tx_status = coh901318_tx_status;
 	base->dma_memcpy.device_issue_pending = coh901318_issue_pending;
+<<<<<<< HEAD
 	base->dma_memcpy.device_control = coh901318_control;
+=======
+	base->dma_memcpy.device_config = coh901318_dma_set_runtimeconfig;
+	base->dma_memcpy.device_pause = coh901318_pause;
+	base->dma_memcpy.device_resume = coh901318_resume;
+	base->dma_memcpy.device_terminate_all = coh901318_terminate_all;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	base->dma_memcpy.dev = &pdev->dev;
 	/*
 	 * This controller can only access address at even 32bit boundaries,
 	 * i.e. 2^2
 	 */
+<<<<<<< HEAD
 	base->dma_memcpy.copy_align = 2;
+=======
+	base->dma_memcpy.copy_align = DMAENGINE_ALIGN_4_BYTES;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = dma_async_device_register(&base->dma_memcpy);
 
 	if (err)
 		goto err_register_memcpy;
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, base);
 	dev_info(&pdev->dev, "Initialized COH901318 DMA on virtual base 0x%08x\n",
 		(u32) base->virtbase);
 
 	return err;
 
+=======
+	err = of_dma_controller_register(pdev->dev.of_node, coh901318_xlate,
+					 base);
+	if (err)
+		goto err_register_of_dma;
+
+	platform_set_drvdata(pdev, base);
+	dev_info(&pdev->dev, "Initialized COH901318 DMA on virtual base 0x%p\n",
+		base->virtbase);
+
+	return err;
+
+ err_register_of_dma:
+	dma_async_device_unregister(&base->dma_memcpy);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  err_register_memcpy:
 	dma_async_device_unregister(&base->dma_slave);
  err_register_slave:
 	coh901318_pool_destroy(&base->pool);
 	return err;
 }
+<<<<<<< HEAD
+=======
+static void coh901318_base_remove(struct coh901318_base *base, const int *pick_chans)
+{
+	int chans_i;
+	int i = 0;
+	struct coh901318_chan *cohc;
+
+	for (chans_i = 0; pick_chans[chans_i] != -1; chans_i += 2) {
+		for (i = pick_chans[chans_i]; i <= pick_chans[chans_i+1]; i++) {
+			cohc = &base->chans[i];
+
+			tasklet_kill(&cohc->tasklet);
+		}
+	}
+
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int coh901318_remove(struct platform_device *pdev)
 {
 	struct coh901318_base *base = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
+=======
+	devm_free_irq(&pdev->dev, base->irq, base);
+
+	coh901318_base_remove(base, dma_slave_channels);
+	coh901318_base_remove(base, dma_memcpy_channels);
+
+	of_dma_controller_free(pdev->dev.of_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dma_async_device_unregister(&base->dma_memcpy);
 	dma_async_device_unregister(&base->dma_slave);
 	coh901318_pool_destroy(&base->pool);
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id coh901318_dt_match[] = {
+	{ .compatible = "stericsson,coh901318" },
+	{},
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_driver coh901318_driver = {
 	.remove = coh901318_remove,
 	.driver = {
 		.name	= "coh901318",
+<<<<<<< HEAD
 	},
 };
 
 int __init coh901318_init(void)
+=======
+		.of_match_table = coh901318_dt_match,
+	},
+};
+
+static int __init coh901318_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return platform_driver_probe(&coh901318_driver, coh901318_probe);
 }
 subsys_initcall(coh901318_init);
 
+<<<<<<< HEAD
 void __exit coh901318_exit(void)
+=======
+static void __exit coh901318_exit(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	platform_driver_unregister(&coh901318_driver);
 }

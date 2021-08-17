@@ -9,6 +9,10 @@
 #include <linux/kbd_kern.h>
 #include <linux/vt.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "power.h"
 
 #define SUSPEND_CONSOLE	(MAX_NR_CONSOLES-1)
@@ -81,6 +85,10 @@ void pm_vt_switch_unregister(struct device *dev)
 	list_for_each_entry(tmp, &pm_vt_switch_list, head) {
 		if (tmp->dev == dev) {
 			list_del(&tmp->head);
+<<<<<<< HEAD
+=======
+			kfree(tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
@@ -124,6 +132,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int pm_prepare_console(void)
 {
 	if (!pm_vt_switch())
@@ -135,6 +144,19 @@ int pm_prepare_console(void)
 
 	orig_kmsg = vt_kmsg_redirect(SUSPEND_CONSOLE);
 	return 0;
+=======
+void pm_prepare_console(void)
+{
+	if (!pm_vt_switch())
+		return;
+
+	orig_fgconsole = vt_move_to_console(SUSPEND_CONSOLE, 1);
+	if (orig_fgconsole < 0)
+		return;
+
+	orig_kmsg = vt_kmsg_redirect(SUSPEND_CONSOLE);
+	return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void pm_restore_console(void)

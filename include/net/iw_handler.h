@@ -432,21 +432,37 @@ struct iw_public_data {
 /* First : function strictly used inside the kernel */
 
 /* Handle /proc/net/wireless, called in net/code/dev.c */
+<<<<<<< HEAD
 extern int dev_get_wireless_info(char * buffer, char **start, off_t offset,
 				 int length);
+=======
+int dev_get_wireless_info(char *buffer, char **start, off_t offset, int length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Second : functions that may be called by driver modules */
 
 /* Send a single event to user space */
+<<<<<<< HEAD
 extern void wireless_send_event(struct net_device *	dev,
 				unsigned int		cmd,
 				union iwreq_data *	wrqu,
 				const char *		extra);
+=======
+void wireless_send_event(struct net_device *dev, unsigned int cmd,
+			 union iwreq_data *wrqu, const char *extra);
+#ifdef CONFIG_WEXT_CORE
+/* flush all previous wext events - if work is done from netdev notifiers */
+void wireless_nlevent_flush(void);
+#else
+static inline void wireless_nlevent_flush(void) {}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* We may need a function to send a stream of events to user space.
  * More on that later... */
 
 /* Standard handler for SIOCSIWSPY */
+<<<<<<< HEAD
 extern int iw_handler_set_spy(struct net_device *	dev,
 			      struct iw_request_info *	info,
 			      union iwreq_data *	wrqu,
@@ -470,6 +486,22 @@ extern int iw_handler_get_thrspy(struct net_device *	dev,
 extern void wireless_spy_update(struct net_device *	dev,
 				unsigned char *		address,
 				struct iw_quality *	wstats);
+=======
+int iw_handler_set_spy(struct net_device *dev, struct iw_request_info *info,
+		       union iwreq_data *wrqu, char *extra);
+/* Standard handler for SIOCGIWSPY */
+int iw_handler_get_spy(struct net_device *dev, struct iw_request_info *info,
+		       union iwreq_data *wrqu, char *extra);
+/* Standard handler for SIOCSIWTHRSPY */
+int iw_handler_set_thrspy(struct net_device *dev, struct iw_request_info *info,
+			  union iwreq_data *wrqu, char *extra);
+/* Standard handler for SIOCGIWTHRSPY */
+int iw_handler_get_thrspy(struct net_device *dev, struct iw_request_info *info,
+			  union iwreq_data *wrqu, char *extra);
+/* Driver call to update spy records */
+void wireless_spy_update(struct net_device *dev, unsigned char *address,
+			 struct iw_quality *wstats);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /************************* INLINE FUNTIONS *************************/
 /*
@@ -531,6 +563,20 @@ iwe_stream_add_event(struct iw_request_info *info, char *stream, char *ends,
 	return stream;
 }
 
+<<<<<<< HEAD
+=======
+static inline char *
+iwe_stream_add_event_check(struct iw_request_info *info, char *stream,
+			   char *ends, struct iw_event *iwe, int event_len)
+{
+	char *res = iwe_stream_add_event(info, stream, ends, iwe, event_len);
+
+	if (res == stream)
+		return ERR_PTR(-E2BIG);
+	return res;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*------------------------------------------------------------------*/
 /*
  * Wrapper to add an short Wireless Event containing a pointer to a
@@ -558,6 +604,20 @@ iwe_stream_add_point(struct iw_request_info *info, char *stream, char *ends,
 	return stream;
 }
 
+<<<<<<< HEAD
+=======
+static inline char *
+iwe_stream_add_point_check(struct iw_request_info *info, char *stream,
+			   char *ends, struct iw_event *iwe, char *extra)
+{
+	char *res = iwe_stream_add_point(info, stream, ends, iwe, extra);
+
+	if (res == stream)
+		return ERR_PTR(-E2BIG);
+	return res;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*------------------------------------------------------------------*/
 /*
  * Wrapper to add a value to a Wireless Event in a stream of events.

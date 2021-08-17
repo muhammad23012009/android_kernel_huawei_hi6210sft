@@ -21,11 +21,22 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/slab.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
+=======
+#include <media/v4l2-ctrls.h>
+#include <media/v4l2-fh.h>
+#include <media/v4l2-event.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/videobuf-dma-contig.h>
 
 #define DRV_NAME		"fsl_viu"
@@ -38,6 +49,7 @@
 /* I2C address of video decoder chip is 0x4A */
 #define VIU_VIDEO_DECODER_ADDR	0x25
 
+<<<<<<< HEAD
 /* supported controls */
 static struct v4l2_queryctrl viu_qctrl[] = {
 	{
@@ -81,6 +93,8 @@ static struct v4l2_queryctrl viu_qctrl[] = {
 
 static int qctl_regs[ARRAY_SIZE(viu_qctrl)];
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int info_level;
 
 #define dprintk(level, fmt, arg...)					\
@@ -93,7 +107,10 @@ static int info_level;
  * Basic structures
  */
 struct viu_fmt {
+<<<<<<< HEAD
 	char  name[32];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32   fourcc;		/* v4l2 format id */
 	u32   pixelformat;
 	int   depth;
@@ -101,12 +118,18 @@ struct viu_fmt {
 
 static struct viu_fmt formats[] = {
 	{
+<<<<<<< HEAD
 		.name		= "RGB-16 (5/B-6/G-5/R)",
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.fourcc		= V4L2_PIX_FMT_RGB565,
 		.pixelformat	= V4L2_PIX_FMT_RGB565,
 		.depth		= 16,
 	}, {
+<<<<<<< HEAD
 		.name		= "RGB-32 (A-R-G-B)",
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.fourcc		= V4L2_PIX_FMT_RGB32,
 		.pixelformat	= V4L2_PIX_FMT_RGB32,
 		.depth		= 32,
@@ -154,6 +177,10 @@ struct viu_reg {
 
 struct viu_dev {
 	struct v4l2_device	v4l2_dev;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler hdl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mutex		lock;
 	spinlock_t		slock;
 	int			users;
@@ -193,6 +220,11 @@ struct viu_dev {
 };
 
 struct viu_fh {
+<<<<<<< HEAD
+=======
+	/* must remain the first field of this struct */
+	struct v4l2_fh		fh;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct viu_dev		*dev;
 
 	/* video capture */
@@ -602,10 +634,19 @@ static int vidioc_querycap(struct file *file, void *priv,
 {
 	strcpy(cap->driver, "viu");
 	strcpy(cap->card, "viu");
+<<<<<<< HEAD
 	cap->capabilities =	V4L2_CAP_VIDEO_CAPTURE |
 				V4L2_CAP_STREAMING     |
 				V4L2_CAP_VIDEO_OVERLAY |
 				V4L2_CAP_READWRITE;
+=======
+	strcpy(cap->bus_info, "platform:viu");
+	cap->device_caps =	V4L2_CAP_VIDEO_CAPTURE |
+				V4L2_CAP_STREAMING     |
+				V4L2_CAP_VIDEO_OVERLAY |
+				V4L2_CAP_READWRITE;
+	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -614,10 +655,16 @@ static int vidioc_enum_fmt(struct file *file, void  *priv,
 {
 	int index = f->index;
 
+<<<<<<< HEAD
 	if (f->index > NUM_FORMATS)
 		return -EINVAL;
 
 	strlcpy(f->description, formats[index].name, sizeof(f->description));
+=======
+	if (f->index >= NUM_FORMATS)
+		return -EINVAL;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	f->pixelformat = formats[index].fourcc;
 	return 0;
 }
@@ -634,6 +681,10 @@ static int vidioc_g_fmt_cap(struct file *file, void *priv,
 	f->fmt.pix.bytesperline =
 			(f->fmt.pix.width * fh->fmt->depth) >> 3;
 	f->fmt.pix.sizeimage	= fh->sizeimage;
+<<<<<<< HEAD
+=======
+	f->fmt.pix.colorspace	= V4L2_COLORSPACE_SMPTE170M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -641,7 +692,10 @@ static int vidioc_try_fmt_cap(struct file *file, void *priv,
 					struct v4l2_format *f)
 {
 	struct viu_fmt *fmt;
+<<<<<<< HEAD
 	enum v4l2_field field;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int maxw, maxh;
 
 	fmt = format_by_fourcc(f->fmt.pix.pixelformat);
@@ -651,6 +705,7 @@ static int vidioc_try_fmt_cap(struct file *file, void *priv,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	field = f->fmt.pix.field;
 
 	if (field == V4L2_FIELD_ANY) {
@@ -664,6 +719,12 @@ static int vidioc_try_fmt_cap(struct file *file, void *priv,
 	maxh  = norm_maxh();
 
 	f->fmt.pix.field = field;
+=======
+	maxw  = norm_maxw();
+	maxh  = norm_maxh();
+
+	f->fmt.pix.field = V4L2_FIELD_INTERLACED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (f->fmt.pix.height < 32)
 		f->fmt.pix.height = 32;
 	if (f->fmt.pix.height > maxh)
@@ -675,6 +736,11 @@ static int vidioc_try_fmt_cap(struct file *file, void *priv,
 	f->fmt.pix.width &= ~0x03;
 	f->fmt.pix.bytesperline =
 		(f->fmt.pix.width * fmt->depth) >> 3;
+<<<<<<< HEAD
+=======
+	f->fmt.pix.sizeimage = f->fmt.pix.height * f->fmt.pix.bytesperline;
+	f->fmt.pix.colorspace = V4L2_COLORSPACE_SMPTE170M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -695,7 +761,10 @@ static int vidioc_s_fmt_cap(struct file *file, void *priv,
 	fh->sizeimage     = f->fmt.pix.sizeimage;
 	fh->vb_vidq.field = f->fmt.pix.field;
 	fh->type          = f->type;
+<<<<<<< HEAD
 	dprintk(1, "set to pixelformat '%4.6s'\n", (char *)&fh->fmt->name);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -761,8 +830,13 @@ static int viu_setup_preview(struct viu_dev *dev, struct viu_fh *fh)
 {
 	int bpp;
 
+<<<<<<< HEAD
 	dprintk(1, "%s %dx%d %s\n", __func__,
 		fh->win.w.width, fh->win.w.height, dev->ovfmt->name);
+=======
+	dprintk(1, "%s %dx%d\n", __func__,
+		fh->win.w.width, fh->win.w.height);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	reg_val.status_cfg = 0;
 
@@ -962,7 +1036,11 @@ static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id id)
 	struct viu_fh *fh = priv;
 
 	fh->dev->std = id;
+<<<<<<< HEAD
 	decoder_call(fh->dev, core, s_std, id);
+=======
+	decoder_call(fh->dev, video, s_std, id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -999,13 +1077,18 @@ static int vidioc_s_input(struct file *file, void *priv, unsigned int i)
 {
 	struct viu_fh *fh = priv;
 
+<<<<<<< HEAD
 	if (i > 1)
+=======
+	if (i)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	decoder_call(fh->dev, video, s_routing, i, 0, 0);
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Controls */
 static int vidioc_queryctrl(struct file *file, void *priv,
 				struct v4l2_queryctrl *qc)
@@ -1051,6 +1134,8 @@ static int vidioc_s_ctrl(struct file *file, void *priv,
 	return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 inline void viu_activate_next_buf(struct viu_dev *dev,
 				struct viu_dmaqueue *viuq)
 {
@@ -1262,7 +1347,10 @@ static int viu_open(struct file *file)
 	struct viu_reg *vr;
 	int minor = vdev->minor;
 	u32 status_cfg;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dprintk(1, "viu: open (minor=%d)\n", minor);
 
@@ -1290,6 +1378,10 @@ static int viu_open(struct file *file)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	v4l2_fh_init(&fh->fh, vdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	file->private_data = fh;
 	fh->dev = dev;
 
@@ -1300,10 +1392,13 @@ static int viu_open(struct file *file)
 	dev->crop_current.width  = fh->width;
 	dev->crop_current.height = fh->height;
 
+<<<<<<< HEAD
 	/* Put all controls at a sane state */
 	for (i = 0; i < ARRAY_SIZE(viu_qctrl); i++)
 		qctl_regs[i] = viu_qctrl[i].default_value;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dprintk(1, "Open: fh=0x%08lx, dev=0x%08lx, dev->vidq=0x%08lx\n",
 		(unsigned long)fh, (unsigned long)dev,
 		(unsigned long)&dev->vidq);
@@ -1329,6 +1424,10 @@ static int viu_open(struct file *file)
 				       fh->type, V4L2_FIELD_INTERLACED,
 				       sizeof(struct viu_buf), fh,
 				       &fh->dev->lock);
+<<<<<<< HEAD
+=======
+	v4l2_fh_add(&fh->fh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&dev->lock);
 	return 0;
 }
@@ -1361,13 +1460,26 @@ static unsigned int viu_poll(struct file *file, struct poll_table_struct *wait)
 	struct viu_fh *fh = file->private_data;
 	struct videobuf_queue *q = &fh->vb_vidq;
 	struct viu_dev *dev = fh->dev;
+<<<<<<< HEAD
 	unsigned int res;
+=======
+	unsigned long req_events = poll_requested_events(wait);
+	unsigned int res = v4l2_ctrl_poll(file, wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (V4L2_BUF_TYPE_VIDEO_CAPTURE != fh->type)
 		return POLLERR;
 
+<<<<<<< HEAD
 	mutex_lock(&dev->lock);
 	res = videobuf_poll_stream(file, q, wait);
+=======
+	if (!(req_events & (POLLIN | POLLRDNORM)))
+		return res;
+
+	mutex_lock(&dev->lock);
+	res |= videobuf_poll_stream(file, q, wait);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&dev->lock);
 	return res;
 }
@@ -1382,6 +1494,11 @@ static int viu_release(struct file *file)
 	viu_stop_dma(dev);
 	videobuf_stop(&fh->vb_vidq);
 	videobuf_mmap_free(&fh->vb_vidq);
+<<<<<<< HEAD
+=======
+	v4l2_fh_del(&fh->fh);
+	v4l2_fh_exit(&fh->fh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&dev->lock);
 
 	kfree(fh);
@@ -1460,11 +1577,19 @@ static const struct v4l2_ioctl_ops viu_ioctl_ops = {
 	.vidioc_enum_input    = vidioc_enum_input,
 	.vidioc_g_input       = vidioc_g_input,
 	.vidioc_s_input       = vidioc_s_input,
+<<<<<<< HEAD
 	.vidioc_queryctrl     = vidioc_queryctrl,
 	.vidioc_g_ctrl        = vidioc_g_ctrl,
 	.vidioc_s_ctrl        = vidioc_s_ctrl,
 	.vidioc_streamon      = vidioc_streamon,
 	.vidioc_streamoff     = vidioc_streamoff,
+=======
+	.vidioc_streamon      = vidioc_streamon,
+	.vidioc_streamoff     = vidioc_streamoff,
+	.vidioc_log_status    = v4l2_ctrl_log_status,
+	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
+	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct video_device viu_template = {
@@ -1475,7 +1600,10 @@ static struct video_device viu_template = {
 	.release	= video_device_release,
 
 	.tvnorms        = V4L2_STD_NTSC_M | V4L2_STD_PAL,
+<<<<<<< HEAD
 	.current_norm   = V4L2_STD_NTSC_M,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int viu_of_probe(struct platform_device *op)
@@ -1486,6 +1614,10 @@ static int viu_of_probe(struct platform_device *op)
 	struct viu_reg __iomem *viu_regs;
 	struct i2c_adapter *ad;
 	int ret, viu_irq;
+<<<<<<< HEAD
+=======
+	struct clk *clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = of_address_to_resource(op->dev.of_node, 0, &r);
 	if (ret) {
@@ -1504,7 +1636,11 @@ static int viu_of_probe(struct platform_device *op)
 				     sizeof(struct viu_reg), DRV_NAME)) {
 		dev_err(&op->dev, "Error while requesting mem region\n");
 		ret = -EBUSY;
+<<<<<<< HEAD
 		goto err;
+=======
+		goto err_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* remap registers */
@@ -1512,7 +1648,11 @@ static int viu_of_probe(struct platform_device *op)
 	if (!viu_regs) {
 		dev_err(&op->dev, "Can't map register set\n");
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto err;
+=======
+		goto err_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Prepare our private structure */
@@ -1520,7 +1660,11 @@ static int viu_of_probe(struct platform_device *op)
 	if (!viu_dev) {
 		dev_err(&op->dev, "Can't allocate private structure\n");
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto err;
+=======
+		goto err_irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	viu_dev->vr = viu_regs;
@@ -1536,26 +1680,59 @@ static int viu_of_probe(struct platform_device *op)
 	ret = v4l2_device_register(viu_dev->dev, &viu_dev->v4l2_dev);
 	if (ret < 0) {
 		dev_err(&op->dev, "v4l2_device_register() failed: %d\n", ret);
+<<<<<<< HEAD
 		goto err;
 	}
 
 	ad = i2c_get_adapter(0);
+=======
+		goto err_irq;
+	}
+
+	ad = i2c_get_adapter(0);
+	if (!ad) {
+		ret = -EFAULT;
+		dev_err(&op->dev, "couldn't get i2c adapter\n");
+		goto err_v4l2;
+	}
+
+	v4l2_ctrl_handler_init(&viu_dev->hdl, 5);
+	if (viu_dev->hdl.error) {
+		ret = viu_dev->hdl.error;
+		dev_err(&op->dev, "couldn't register control\n");
+		goto err_i2c;
+	}
+	/* This control handler will inherit the control(s) from the
+	   sub-device(s). */
+	viu_dev->v4l2_dev.ctrl_handler = &viu_dev->hdl;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	viu_dev->decoder = v4l2_i2c_new_subdev(&viu_dev->v4l2_dev, ad,
 			"saa7113", VIU_VIDEO_DECODER_ADDR, NULL);
 
 	viu_dev->vidq.timeout.function = viu_vid_timeout;
 	viu_dev->vidq.timeout.data     = (unsigned long)viu_dev;
 	init_timer(&viu_dev->vidq.timeout);
+<<<<<<< HEAD
+=======
+	viu_dev->std = V4L2_STD_NTSC_M;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	viu_dev->first = 1;
 
 	/* Allocate memory for video device */
 	vdev = video_device_alloc();
 	if (vdev == NULL) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto err_vdev;
 	}
 
 	memcpy(vdev, &viu_template, sizeof(viu_template));
+=======
+		goto err_hdl;
+	}
+
+	*vdev = viu_template;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	vdev->v4l2_dev = &viu_dev->v4l2_dev;
 
@@ -1573,6 +1750,7 @@ static int viu_of_probe(struct platform_device *op)
 	ret = video_register_device(viu_dev->vdev, VFL_TYPE_GRABBER, -1);
 	if (ret < 0) {
 		video_device_release(viu_dev->vdev);
+<<<<<<< HEAD
 		goto err_vdev;
 	}
 
@@ -1585,6 +1763,24 @@ static int viu_of_probe(struct platform_device *op)
 	} else {
 		clk_enable(viu_dev->clk);
 	}
+=======
+		goto err_unlock;
+	}
+
+	/* enable VIU clock */
+	clk = devm_clk_get(&op->dev, "ipg");
+	if (IS_ERR(clk)) {
+		dev_err(&op->dev, "failed to lookup the clock!\n");
+		ret = PTR_ERR(clk);
+		goto err_vdev;
+	}
+	ret = clk_prepare_enable(clk);
+	if (ret) {
+		dev_err(&op->dev, "failed to enable the clock!\n");
+		goto err_vdev;
+	}
+	viu_dev->clk = clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* reset VIU module */
 	viu_reset(viu_dev->vr);
@@ -1593,7 +1789,11 @@ static int viu_of_probe(struct platform_device *op)
 	if (request_irq(viu_dev->irq, viu_intr, 0, "viu", (void *)viu_dev)) {
 		dev_err(&op->dev, "Request VIU IRQ failed.\n");
 		ret = -ENODEV;
+<<<<<<< HEAD
 		goto err_irq;
+=======
+		goto err_clk;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	mutex_unlock(&viu_dev->lock);
@@ -1601,6 +1801,7 @@ static int viu_of_probe(struct platform_device *op)
 	dev_info(&op->dev, "Freescale VIU Video Capture Board\n");
 	return ret;
 
+<<<<<<< HEAD
 err_irq:
 	clk_disable(viu_dev->clk);
 	clk_put(viu_dev->clk);
@@ -1611,6 +1812,21 @@ err_vdev:
 	i2c_put_adapter(ad);
 	v4l2_device_unregister(&viu_dev->v4l2_dev);
 err:
+=======
+err_clk:
+	clk_disable_unprepare(viu_dev->clk);
+err_vdev:
+	video_unregister_device(viu_dev->vdev);
+err_unlock:
+	mutex_unlock(&viu_dev->lock);
+err_hdl:
+	v4l2_ctrl_handler_free(&viu_dev->hdl);
+err_i2c:
+	i2c_put_adapter(ad);
+err_v4l2:
+	v4l2_device_unregister(&viu_dev->v4l2_dev);
+err_irq:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	irq_dispose_mapping(viu_irq);
 	return ret;
 }
@@ -1626,9 +1842,15 @@ static int viu_of_remove(struct platform_device *op)
 	free_irq(dev->irq, (void *)dev);
 	irq_dispose_mapping(dev->irq);
 
+<<<<<<< HEAD
 	clk_disable(dev->clk);
 	clk_put(dev->clk);
 
+=======
+	clk_disable_unprepare(dev->clk);
+
+	v4l2_ctrl_handler_free(&dev->hdl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	video_unregister_device(dev->vdev);
 	i2c_put_adapter(client->adapter);
 	v4l2_device_unregister(&dev->v4l2_dev);
@@ -1658,7 +1880,11 @@ static int viu_resume(struct platform_device *op)
 /*
  * Initialization and module stuff
  */
+<<<<<<< HEAD
 static struct of_device_id mpc512x_viu_of_match[] = {
+=======
+static const struct of_device_id mpc512x_viu_of_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.compatible = "fsl,mpc5121-viu",
 	},
@@ -1675,7 +1901,10 @@ static struct platform_driver viu_of_platform_driver = {
 #endif
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mpc512x_viu_of_match,
 	},
 };

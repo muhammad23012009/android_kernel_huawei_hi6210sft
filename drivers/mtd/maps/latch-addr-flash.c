@@ -10,7 +10,10 @@
  * kind, whether express or implied.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mtd/mtd.h>
@@ -102,9 +105,14 @@ static int latch_addr_flash_remove(struct platform_device *dev)
 	info = platform_get_drvdata(dev);
 	if (info == NULL)
 		return 0;
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 
 	latch_addr_data = dev->dev.platform_data;
+=======
+
+	latch_addr_data = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (info->mtd != NULL) {
 		mtd_device_unregister(info->mtd);
@@ -135,7 +143,11 @@ static int latch_addr_flash_probe(struct platform_device *dev)
 	int chipsel;
 	int err;
 
+<<<<<<< HEAD
 	latch_addr_data = dev->dev.platform_data;
+=======
+	latch_addr_data = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (latch_addr_data == NULL)
 		return -ENODEV;
 
@@ -197,7 +209,11 @@ static int latch_addr_flash_probe(struct platform_device *dev)
 		err = -ENODEV;
 		goto iounmap;
 	}
+<<<<<<< HEAD
 	info->mtd->owner = THIS_MODULE;
+=======
+	info->mtd->dev.parent = &dev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mtd_device_parse_register(info->mtd, NULL, NULL,
 				  latch_addr_data->parts,

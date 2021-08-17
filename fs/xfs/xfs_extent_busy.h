@@ -20,6 +20,13 @@
 #ifndef __XFS_EXTENT_BUSY_H__
 #define	__XFS_EXTENT_BUSY_H__
 
+<<<<<<< HEAD
+=======
+struct xfs_mount;
+struct xfs_trans;
+struct xfs_alloc_arg;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Busy block/extent entry.  Indexed by a rbtree in perag to mark blocks that
  * have been freed but whose transactions aren't committed to disk yet.

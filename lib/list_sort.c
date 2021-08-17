@@ -1,7 +1,19 @@
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/list_sort.h>
 #include <linux/slab.h>
+=======
+
+#define pr_fmt(fmt) "list_sort_test: " fmt
+
+#include <linux/kernel.h>
+#include <linux/bug.h>
+#include <linux/compiler.h>
+#include <linux/export.h>
+#include <linux/string.h>
+#include <linux/list_sort.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/list.h>
 
 #define MAX_LIST_LENGTH_BITS 20
@@ -47,6 +59,10 @@ static void merge_and_restore_back_links(void *priv,
 				struct list_head *a, struct list_head *b)
 {
 	struct list_head *tail = head;
+<<<<<<< HEAD
+=======
+	u8 count = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (a && b) {
 		/* if equal, take 'a' -- important for sort stability */
@@ -70,7 +86,12 @@ static void merge_and_restore_back_links(void *priv,
 		 * element comparison is needed, so the client's cmp()
 		 * routine can invoke cond_resched() periodically.
 		 */
+<<<<<<< HEAD
 		(*cmp)(priv, tail->next, tail->next);
+=======
+		if (unlikely(!(++count)))
+			(*cmp)(priv, tail->next, tail->next);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		tail->next->prev = tail;
 		tail = tail->next;
@@ -123,9 +144,13 @@ void list_sort(void *priv, struct list_head *head,
 		}
 		if (lev > max_lev) {
 			if (unlikely(lev >= ARRAY_SIZE(part)-1)) {
+<<<<<<< HEAD
 				printk_once(KERN_DEBUG "list passed to"
 					" list_sort() too long for"
 					" efficiency\n");
+=======
+				printk_once(KERN_DEBUG "list too long for efficiency\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				lev--;
 			}
 			max_lev = lev;
@@ -143,6 +168,10 @@ EXPORT_SYMBOL(list_sort);
 
 #ifdef CONFIG_TEST_LIST_SORT
 
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/random.h>
 
 /*
@@ -168,6 +197,7 @@ static struct debug_el **elts __initdata;
 static int __init check(struct debug_el *ela, struct debug_el *elb)
 {
 	if (ela->serial >= TEST_LIST_LEN) {
+<<<<<<< HEAD
 		printk(KERN_ERR "list_sort_test: error: incorrect serial %d\n",
 				ela->serial);
 		return -EINVAL;
@@ -189,6 +219,27 @@ static int __init check(struct debug_el *ela, struct debug_el *elb)
 	if (elb->poison1 != TEST_POISON1 || elb->poison2 != TEST_POISON2) {
 		printk(KERN_ERR "list_sort_test: error: bad poison: %#x/%#x\n",
 				elb->poison1, elb->poison2);
+=======
+		pr_err("error: incorrect serial %d\n", ela->serial);
+		return -EINVAL;
+	}
+	if (elb->serial >= TEST_LIST_LEN) {
+		pr_err("error: incorrect serial %d\n", elb->serial);
+		return -EINVAL;
+	}
+	if (elts[ela->serial] != ela || elts[elb->serial] != elb) {
+		pr_err("error: phantom element\n");
+		return -EINVAL;
+	}
+	if (ela->poison1 != TEST_POISON1 || ela->poison2 != TEST_POISON2) {
+		pr_err("error: bad poison: %#x/%#x\n",
+			ela->poison1, ela->poison2);
+		return -EINVAL;
+	}
+	if (elb->poison1 != TEST_POISON1 || elb->poison2 != TEST_POISON2) {
+		pr_err("error: bad poison: %#x/%#x\n",
+			elb->poison1, elb->poison2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 	return 0;
@@ -207,6 +258,7 @@ static int __init cmp(void *priv, struct list_head *a, struct list_head *b)
 
 static int __init list_sort_test(void)
 {
+<<<<<<< HEAD
 	int i, count = 1, err = -EINVAL;
 	struct debug_el *el;
 	struct list_head *cur, *tmp;
@@ -219,13 +271,30 @@ static int __init list_sort_test(void)
 		printk(KERN_ERR "list_sort_test: error: cannot allocate "
 				"memory\n");
 		goto exit;
+=======
+	int i, count = 1, err = -ENOMEM;
+	struct debug_el *el;
+	struct list_head *cur;
+	LIST_HEAD(head);
+
+	pr_debug("start testing list_sort()\n");
+
+	elts = kcalloc(TEST_LIST_LEN, sizeof(*elts), GFP_KERNEL);
+	if (!elts) {
+		pr_err("error: cannot allocate memory\n");
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = 0; i < TEST_LIST_LEN; i++) {
 		el = kmalloc(sizeof(*el), GFP_KERNEL);
 		if (!el) {
+<<<<<<< HEAD
 			printk(KERN_ERR "list_sort_test: error: cannot "
 					"allocate memory\n");
+=======
+			pr_err("error: cannot allocate memory\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit;
 		}
 		 /* force some equivalencies */
@@ -239,47 +308,80 @@ static int __init list_sort_test(void)
 
 	list_sort(NULL, &head, cmp);
 
+<<<<<<< HEAD
+=======
+	err = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (cur = head.next; cur->next != &head; cur = cur->next) {
 		struct debug_el *el1;
 		int cmp_result;
 
 		if (cur->next->prev != cur) {
+<<<<<<< HEAD
 			printk(KERN_ERR "list_sort_test: error: list is "
 					"corrupted\n");
+=======
+			pr_err("error: list is corrupted\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit;
 		}
 
 		cmp_result = cmp(NULL, cur, cur->next);
 		if (cmp_result > 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "list_sort_test: error: list is not "
 					"sorted\n");
+=======
+			pr_err("error: list is not sorted\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit;
 		}
 
 		el = container_of(cur, struct debug_el, list);
 		el1 = container_of(cur->next, struct debug_el, list);
 		if (cmp_result == 0 && el->serial >= el1->serial) {
+<<<<<<< HEAD
 			printk(KERN_ERR "list_sort_test: error: order of "
 					"equivalent elements not preserved\n");
+=======
+			pr_err("error: order of equivalent elements not "
+				"preserved\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit;
 		}
 
 		if (check(el, el1)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "list_sort_test: error: element check "
 					"failed\n");
+=======
+			pr_err("error: element check failed\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto exit;
 		}
 		count++;
 	}
+<<<<<<< HEAD
 
 	if (count != TEST_LIST_LEN) {
 		printk(KERN_ERR "list_sort_test: error: bad list length %d",
 				count);
+=======
+	if (head.prev != cur) {
+		pr_err("error: list is corrupted\n");
+		goto exit;
+	}
+
+
+	if (count != TEST_LIST_LEN) {
+		pr_err("error: bad list length %d", count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit;
 	}
 
 	err = 0;
 exit:
+<<<<<<< HEAD
 	kfree(elts);
 	list_for_each_safe(cur, tmp, &head) {
 		list_del(cur);
@@ -288,4 +390,12 @@ exit:
 	return err;
 }
 module_init(list_sort_test);
+=======
+	for (i = 0; i < TEST_LIST_LEN; i++)
+		kfree(elts[i]);
+	kfree(elts);
+	return err;
+}
+late_initcall(list_sort_test);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* CONFIG_TEST_LIST_SORT */

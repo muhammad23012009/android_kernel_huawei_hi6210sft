@@ -51,6 +51,10 @@
 #include <linux/module.h>
 #include <linux/firmware.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -59,7 +63,10 @@
 #include <sound/pcm_params.h>
 #include <sound/asoundef.h>
 #include <sound/initval.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/atomic.h>
 #include "echoaudio.h"
 
@@ -92,7 +99,11 @@ static const struct firmware card_fw[] = {
 	{0, "mona_2_asic.fw"}
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_echo_ids) = {
+=======
+static const struct pci_device_id snd_echo_ids[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{0x1057, 0x1801, 0xECC0, 0x0070, 0, 0, 0},	/* DSP 56301 Mona rev.0 */
 	{0x1057, 0x1801, 0xECC0, 0x0071, 0, 0, 0},	/* DSP 56301 Mona rev.1 */
 	{0x1057, 0x1801, 0xECC0, 0x0072, 0, 0, 0},	/* DSP 56301 Mona rev.2 */

@@ -18,6 +18,10 @@
 #include <linux/mfd/abx500/ab8500.h>
 #include <linux/delay.h>
 #include <linux/of.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_wakeirq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define AB8500_RTC_SOFF_STAT_REG	0x00
 #define AB8500_RTC_CC_CONF_REG		0x01
@@ -35,6 +39,13 @@
 #define AB8500_RTC_FORCE_BKUP_REG	0x0D
 #define AB8500_RTC_CALIB_REG		0x0E
 #define AB8500_RTC_SWITCH_STAT_REG	0x0F
+<<<<<<< HEAD
+=======
+#define AB8540_RTC_ALRM_SEC		0x22
+#define AB8540_RTC_ALRM_MIN_LOW_REG	0x23
+#define AB8540_RTC_ALRM_MIN_MID_REG	0x24
+#define AB8540_RTC_ALRM_MIN_HI_REG	0x25
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* RtcReadRequest bits */
 #define RTC_READ_REQUEST		0x01
@@ -58,6 +69,14 @@ static const u8 ab8500_rtc_alarm_regs[] = {
 	AB8500_RTC_ALRM_MIN_LOW_REG
 };
 
+<<<<<<< HEAD
+=======
+static const u8 ab8540_rtc_alarm_regs[] = {
+	AB8540_RTC_ALRM_MIN_HI_REG, AB8540_RTC_ALRM_MIN_MID_REG,
+	AB8540_RTC_ALRM_MIN_LOW_REG, AB8540_RTC_ALRM_SEC
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Calculate the seconds from 1970 to 01-01-2000 00:00:00 */
 static unsigned long get_elapsed_seconds(int year)
 {
@@ -267,6 +286,45 @@ static int ab8500_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	return ab8500_rtc_irq_enable(dev, alarm->enabled);
 }
 
+<<<<<<< HEAD
+=======
+static int ab8540_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
+{
+	int retval, i;
+	unsigned char buf[ARRAY_SIZE(ab8540_rtc_alarm_regs)];
+	unsigned long mins, secs = 0;
+
+	if (alarm->time.tm_year < (AB8500_RTC_EPOCH - 1900)) {
+		dev_dbg(dev, "year should be equal to or greater than %d\n",
+				AB8500_RTC_EPOCH);
+		return -EINVAL;
+	}
+
+	/* Get the number of seconds since 1970 */
+	rtc_tm_to_time(&alarm->time, &secs);
+
+	/*
+	 * Convert it to the number of seconds since 01-01-2000 00:00:00
+	 */
+	secs -= get_elapsed_seconds(AB8500_RTC_EPOCH);
+	mins = secs / 60;
+
+	buf[3] = secs % 60;
+	buf[2] = mins & 0xFF;
+	buf[1] = (mins >> 8) & 0xFF;
+	buf[0] = (mins >> 16) & 0xFF;
+
+	/* Set the alarm time */
+	for (i = 0; i < ARRAY_SIZE(ab8540_rtc_alarm_regs); i++) {
+		retval = abx500_set_register_interruptible(dev, AB8500_RTC,
+			ab8540_rtc_alarm_regs[i], buf[i]);
+		if (retval < 0)
+			return retval;
+	}
+
+	return ab8500_rtc_irq_enable(dev, alarm->enabled);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int ab8500_rtc_set_calibration(struct device *dev, int calibration)
 {
@@ -389,8 +447,29 @@ static const struct rtc_class_ops ab8500_rtc_ops = {
 	.alarm_irq_enable	= ab8500_rtc_irq_enable,
 };
 
+<<<<<<< HEAD
 static int ab8500_rtc_probe(struct platform_device *pdev)
 {
+=======
+static const struct rtc_class_ops ab8540_rtc_ops = {
+	.read_time		= ab8500_rtc_read_time,
+	.set_time		= ab8500_rtc_set_time,
+	.read_alarm		= ab8500_rtc_read_alarm,
+	.set_alarm		= ab8540_rtc_set_alarm,
+	.alarm_irq_enable	= ab8500_rtc_irq_enable,
+};
+
+static const struct platform_device_id ab85xx_rtc_ids[] = {
+	{ "ab8500-rtc", (kernel_ulong_t)&ab8500_rtc_ops, },
+	{ "ab8540-rtc", (kernel_ulong_t)&ab8540_rtc_ops, },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(platform, ab85xx_rtc_ids);
+
+static int ab8500_rtc_probe(struct platform_device *pdev)
+{
+	const struct platform_device_id *platid = platform_get_device_id(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 	struct rtc_device *rtc;
 	u8 rtc_ctrl;
@@ -423,7 +502,12 @@ static int ab8500_rtc_probe(struct platform_device *pdev)
 	device_init_wakeup(&pdev->dev, true);
 
 	rtc = devm_rtc_device_register(&pdev->dev, "ab8500-rtc",
+<<<<<<< HEAD
 					&ab8500_rtc_ops, THIS_MODULE);
+=======
+				(struct rtc_class_ops *)platid->driver_data,
+				THIS_MODULE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rtc)) {
 		dev_err(&pdev->dev, "Registration failed\n");
 		err = PTR_ERR(rtc);
@@ -431,11 +515,19 @@ static int ab8500_rtc_probe(struct platform_device *pdev)
 	}
 
 	err = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+<<<<<<< HEAD
 			rtc_alarm_handler, IRQF_NO_SUSPEND | IRQF_ONESHOT,
+=======
+			rtc_alarm_handler, IRQF_ONESHOT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			"ab8500-rtc", rtc);
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
+=======
+	dev_pm_set_wake_irq(&pdev->dev, irq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_set_drvdata(pdev, rtc);
 
 	err = ab8500_sysfs_rtc_register(&pdev->dev);
@@ -444,25 +536,44 @@ static int ab8500_rtc_probe(struct platform_device *pdev)
 		return err;
 	}
 
+<<<<<<< HEAD
+=======
+	rtc->uie_unsupported = 1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static int ab8500_rtc_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	ab8500_sysfs_rtc_unregister(&pdev->dev);
 
 	platform_set_drvdata(pdev, NULL);
 
+=======
+	dev_pm_clear_wake_irq(&pdev->dev);
+	device_init_wakeup(&pdev->dev, false);
+	ab8500_sysfs_rtc_unregister(&pdev->dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver ab8500_rtc_driver = {
 	.driver = {
 		.name = "ab8500-rtc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe	= ab8500_rtc_probe,
 	.remove = ab8500_rtc_remove,
+=======
+	},
+	.probe	= ab8500_rtc_probe,
+	.remove = ab8500_rtc_remove,
+	.id_table = ab85xx_rtc_ids,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(ab8500_rtc_driver);

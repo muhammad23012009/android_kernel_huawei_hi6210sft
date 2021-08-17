@@ -4,6 +4,10 @@
 
 obj-y   += proc.o
 
+<<<<<<< HEAD
+=======
+CFLAGS_task_mmu.o	+= $(call cc-option,-Wno-override-init,)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 proc-y			:= nommu.o task_nommu.o
 proc-$(CONFIG_MMU)	:= task_mmu.o
 
@@ -23,17 +27,22 @@ proc-y	+= version.o
 proc-y	+= softirqs.o
 proc-y	+= namespaces.o
 proc-y	+= self.o
+<<<<<<< HEAD
 proc-$(CONFIG_PROC_APP_INFO)	+= app_info.o
 proc-$(CONFIG_ARCH_HI3XXX)	+= ddr_info.o
 #/* < DTS2015102906014 yaoxi 20151029 begin */
 proc-$(CONFIG_ARCH_HI6XXX)	+= ddr_info_type.o
 #/* DTS2015102906014 yaoxi 20151029 end > */
+=======
+proc-y	+= thread_self.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 proc-$(CONFIG_PROC_SYSCTL)	+= proc_sysctl.o
 proc-$(CONFIG_NET)		+= proc_net.o
 proc-$(CONFIG_PROC_KCORE)	+= kcore.o
 proc-$(CONFIG_PROC_VMCORE)	+= vmcore.o
 proc-$(CONFIG_PRINTK)	+= kmsg.o
 proc-$(CONFIG_PROC_PAGE_MONITOR)	+= page.o
+<<<<<<< HEAD
 #/* BEGIN PN:DTS2014081505452,Added by chenyu, 2014-08-14*/
 proc-$(CONFIG_FEATURE_HUAWEI_EMERGENCY_DATA)  += emerg_data.o
 #/* END PN:DTS2014081505452,Added by chenyu, 2014-08-14*/
@@ -42,3 +51,5 @@ proc-y	+= check_root.o
 #/*DTS2014083003883 yangpanfei 20140903 end >*/
 proc-$(CONFIG_PROC_POSTFSDATA)         += post-fs-data.o
 proc-y	+= dcheck_root.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

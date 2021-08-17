@@ -41,4 +41,8 @@ static int __init proc_softirqs_init(void)
 	proc_create("softirqs", 0, NULL, &proc_softirqs_operations);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(proc_softirqs_init);
+=======
+fs_initcall(proc_softirqs_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

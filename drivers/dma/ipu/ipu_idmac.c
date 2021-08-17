@@ -1160,11 +1160,18 @@ static irqreturn_t idmac_interrupt(int irq, void *dev_id)
 	struct scatterlist **sg, *sgnext, *sgnew = NULL;
 	/* Next transfer descriptor */
 	struct idmac_tx_desc *desc, *descnew;
+<<<<<<< HEAD
 	dma_async_tx_callback callback;
 	void *callback_param;
 	bool done = false;
 	u32 ready0, ready1, curbuf, err;
 	unsigned long flags;
+=======
+	bool done = false;
+	u32 ready0, ready1, curbuf, err;
+	unsigned long flags;
+	struct dmaengine_desc_callback cb;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* IDMAC has cleared the respective BUFx_RDY bit, we manage the buffer */
 
@@ -1232,8 +1239,15 @@ static irqreturn_t idmac_interrupt(int irq, void *dev_id)
 	desc = list_entry(ichan->queue.next, struct idmac_tx_desc, list);
 	descnew = desc;
 
+<<<<<<< HEAD
 	dev_dbg(dev, "IDMAC irq %d, dma 0x%08x, next dma 0x%08x, current %d, curbuf 0x%08x\n",
 		irq, sg_dma_address(*sg), sgnext ? sg_dma_address(sgnext) : 0, ichan->active_buffer, curbuf);
+=======
+	dev_dbg(dev, "IDMAC irq %d, dma %#llx, next dma %#llx, current %d, curbuf %#x\n",
+		irq, (u64)sg_dma_address(*sg),
+		sgnext ? (u64)sg_dma_address(sgnext) : 0,
+		ichan->active_buffer, curbuf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Find the descriptor of sgnext */
 	sgnew = idmac_sg_next(ichan, &descnew, *sg);
@@ -1276,12 +1290,21 @@ static irqreturn_t idmac_interrupt(int irq, void *dev_id)
 
 	if (likely(sgnew) &&
 	    ipu_submit_buffer(ichan, descnew, sgnew, ichan->active_buffer) < 0) {
+<<<<<<< HEAD
 		callback = descnew->txd.callback;
 		callback_param = descnew->txd.callback_param;
 		list_del_init(&descnew->list);
 		spin_unlock(&ichan->lock);
 		if (callback)
 			callback(callback_param);
+=======
+		dmaengine_desc_get_callback(&descnew->txd, &cb);
+
+		list_del_init(&descnew->list);
+		spin_unlock(&ichan->lock);
+
+		dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock(&ichan->lock);
 	}
 
@@ -1290,6 +1313,7 @@ static irqreturn_t idmac_interrupt(int irq, void *dev_id)
 	if (done)
 		dma_cookie_complete(&desc->txd);
 
+<<<<<<< HEAD
 	callback = desc->txd.callback;
 	callback_param = desc->txd.callback_param;
 
@@ -1297,6 +1321,14 @@ static irqreturn_t idmac_interrupt(int irq, void *dev_id)
 
 	if (done && (desc->txd.flags & DMA_PREP_INTERRUPT) && callback)
 		callback(callback_param);
+=======
+	dmaengine_desc_get_callback(&desc->txd, &cb);
+
+	spin_unlock(&ichan->lock);
+
+	if (done && (desc->txd.flags & DMA_PREP_INTERRUPT))
+		dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return IRQ_HANDLED;
 }
@@ -1396,14 +1428,19 @@ static void idmac_issue_pending(struct dma_chan *chan)
 	 */
 }
 
+<<<<<<< HEAD
 static int __idmac_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 			   unsigned long arg)
+=======
+static int idmac_pause(struct dma_chan *chan)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct idmac_channel *ichan = to_idmac_chan(chan);
 	struct idmac *idmac = to_idmac(chan->device);
 	struct ipu *ipu = to_ipu(idmac);
 	struct list_head *list, *tmp;
 	unsigned long flags;
+<<<<<<< HEAD
 	int i;
 
 	switch (cmd) {
@@ -1453,19 +1490,85 @@ static int __idmac_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	default:
 		return -ENOSYS;
 	}
+=======
+
+	mutex_lock(&ichan->chan_mutex);
+
+	spin_lock_irqsave(&ipu->lock, flags);
+	ipu_ic_disable_task(ipu, chan->chan_id);
+
+	/* Return all descriptors into "prepared" state */
+	list_for_each_safe(list, tmp, &ichan->queue)
+		list_del_init(list);
+
+	ichan->sg[0] = NULL;
+	ichan->sg[1] = NULL;
+
+	spin_unlock_irqrestore(&ipu->lock, flags);
+
+	ichan->status = IPU_CHANNEL_INITIALIZED;
+
+	mutex_unlock(&ichan->chan_mutex);
 
 	return 0;
 }
 
+static int __idmac_terminate_all(struct dma_chan *chan)
+{
+	struct idmac_channel *ichan = to_idmac_chan(chan);
+	struct idmac *idmac = to_idmac(chan->device);
+	struct ipu *ipu = to_ipu(idmac);
+	unsigned long flags;
+	int i;
+
+	ipu_disable_channel(idmac, ichan,
+			    ichan->status >= IPU_CHANNEL_ENABLED);
+
+	tasklet_disable(&ipu->tasklet);
+
+	/* ichan->queue is modified in ISR, have to spinlock */
+	spin_lock_irqsave(&ichan->lock, flags);
+	list_splice_init(&ichan->queue, &ichan->free_list);
+
+	if (ichan->desc)
+		for (i = 0; i < ichan->n_tx_desc; i++) {
+			struct idmac_tx_desc *desc = ichan->desc + i;
+			if (list_empty(&desc->list))
+				/* Descriptor was prepared, but not submitted */
+				list_add(&desc->list, &ichan->free_list);
+
+			async_tx_clear_ack(&desc->txd);
+		}
+
+	ichan->sg[0] = NULL;
+	ichan->sg[1] = NULL;
+	spin_unlock_irqrestore(&ichan->lock, flags);
+
+	tasklet_enable(&ipu->tasklet);
+
+	ichan->status = IPU_CHANNEL_INITIALIZED;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
+	return 0;
+}
+
+<<<<<<< HEAD
 static int idmac_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 			 unsigned long arg)
+=======
+static int idmac_terminate_all(struct dma_chan *chan)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct idmac_channel *ichan = to_idmac_chan(chan);
 	int ret;
 
 	mutex_lock(&ichan->chan_mutex);
 
+<<<<<<< HEAD
 	ret = __idmac_control(chan, cmd, arg);
+=======
+	ret = __idmac_terminate_all(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&ichan->chan_mutex);
 
@@ -1530,11 +1633,25 @@ static int idmac_alloc_chan_resources(struct dma_chan *chan)
 #ifdef DEBUG
 	if (chan->chan_id == IDMAC_IC_7) {
 		ic_sof = ipu_irq_map(69);
+<<<<<<< HEAD
 		if (ic_sof > 0)
 			request_irq(ic_sof, ic_sof_irq, 0, "IC SOF", ichan);
 		ic_eof = ipu_irq_map(70);
 		if (ic_eof > 0)
 			request_irq(ic_eof, ic_eof_irq, 0, "IC EOF", ichan);
+=======
+		if (ic_sof > 0) {
+			ret = request_irq(ic_sof, ic_sof_irq, 0, "IC SOF", ichan);
+			if (ret)
+				dev_err(&chan->dev->device, "request irq failed for IC SOF");
+		}
+		ic_eof = ipu_irq_map(70);
+		if (ic_eof > 0) {
+			ret = request_irq(ic_eof, ic_eof_irq, 0, "IC EOF", ichan);
+			if (ret)
+				dev_err(&chan->dev->device, "request irq failed for IC EOF");
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif
 
@@ -1560,7 +1677,11 @@ static void idmac_free_chan_resources(struct dma_chan *chan)
 
 	mutex_lock(&ichan->chan_mutex);
 
+<<<<<<< HEAD
 	__idmac_control(chan, DMA_TERMINATE_ALL, 0);
+=======
+	__idmac_terminate_all(chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (ichan->status > IPU_CHANNEL_FREE) {
 #ifdef DEBUG
@@ -1593,10 +1714,14 @@ static void idmac_free_chan_resources(struct dma_chan *chan)
 static enum dma_status idmac_tx_status(struct dma_chan *chan,
 		       dma_cookie_t cookie, struct dma_tx_state *txstate)
 {
+<<<<<<< HEAD
 	dma_set_tx_state(txstate, chan->completed_cookie, chan->cookie, 0);
 	if (cookie != chan->cookie)
 		return DMA_ERROR;
 	return DMA_SUCCESS;
+=======
+	return dma_cookie_status(chan, cookie, txstate);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int __init ipu_idmac_init(struct ipu *ipu)
@@ -1617,7 +1742,12 @@ static int __init ipu_idmac_init(struct ipu *ipu)
 
 	/* Compulsory for DMA_SLAVE fields */
 	dma->device_prep_slave_sg		= idmac_prep_slave_sg;
+<<<<<<< HEAD
 	dma->device_control			= idmac_control;
+=======
+	dma->device_pause			= idmac_pause;
+	dma->device_terminate_all		= idmac_terminate_all;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	INIT_LIST_HEAD(&dma->channels);
 	for (i = 0; i < IPU_CHANNELS_NUM; i++) {
@@ -1650,7 +1780,11 @@ static void ipu_idmac_exit(struct ipu *ipu)
 	for (i = 0; i < IPU_CHANNELS_NUM; i++) {
 		struct idmac_channel *ichan = ipu->channel + i;
 
+<<<<<<< HEAD
 		idmac_control(&ichan->dma_chan, DMA_TERMINATE_ALL, 0);
+=======
+		idmac_terminate_all(&ichan->dma_chan);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dma_async_device_unregister(&idmac->dma);
@@ -1767,7 +1901,10 @@ static int ipu_remove(struct platform_device *pdev)
 	iounmap(ipu->reg_ic);
 	iounmap(ipu->reg_ipu);
 	tasklet_kill(&ipu->tasklet);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1779,7 +1916,10 @@ static int ipu_remove(struct platform_device *pdev)
 static struct platform_driver ipu_platform_driver = {
 	.driver = {
 		.name	= "ipu-core",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.remove		= ipu_remove,
 };

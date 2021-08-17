@@ -48,7 +48,11 @@
 #include <linux/atomic.h>
 #include <asm/intel_scu_ipc.h>
 #include <asm/apb_timer.h>
+<<<<<<< HEAD
 #include <asm/mrst.h>
+=======
+#include <asm/intel-mid.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "intel_scu_watchdog.h"
 
@@ -211,7 +215,10 @@ static int intel_scu_set_heartbeat(u32 t)
 	int			 ipc_ret;
 	int			 retry_count;
 	u32			 soft_value;
+<<<<<<< HEAD
 	u32			 hw_pre_value;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32			 hw_value;
 
 	watchdog_device.timer_set = t;
@@ -273,8 +280,12 @@ static int intel_scu_set_heartbeat(u32 t)
 			watchdog_device.timer_load_count_addr);
 
 		/* read count value before starting timer */
+<<<<<<< HEAD
 		hw_pre_value = ioread32(watchdog_device.timer_load_count_addr);
 		hw_pre_value = hw_pre_value & 0xFFFF0000;
+=======
+		ioread32(watchdog_device.timer_load_count_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Start the timer */
 		iowrite32(0x00000003, watchdog_device.timer_control_addr);
@@ -445,7 +456,11 @@ static int __init intel_scu_watchdog_init(void)
 	 *
 	 * If it isn't an intel MID device then it doesn't have this watchdog
 	 */
+<<<<<<< HEAD
 	if (!mrst_identify_cpu())
+=======
+	if (!intel_mid_identify_cpu())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	/* Check boot parameters to verify that their initial values */
@@ -564,5 +579,8 @@ module_exit(intel_scu_watchdog_exit);
 MODULE_AUTHOR("Intel Corporation");
 MODULE_DESCRIPTION("Intel SCU Watchdog Device Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_VERSION(WDT_VER);

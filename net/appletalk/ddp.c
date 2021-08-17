@@ -293,7 +293,11 @@ static int atif_probe_device(struct atalk_iface *atif)
 
 /* Perform AARP probing for a proxy address */
 static int atif_proxy_probe_device(struct atalk_iface *atif,
+<<<<<<< HEAD
 				   struct atalk_addr* proxy_addr)
+=======
+				   struct atalk_addr *proxy_addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int netrange = ntohs(atif->nets.nr_lastnet) -
 			ntohs(atif->nets.nr_firstnet) + 1;
@@ -581,7 +585,11 @@ out:
 }
 
 /* Delete a route. Find it and discard it */
+<<<<<<< HEAD
 static int atrtr_delete(struct atalk_addr * addr)
+=======
+static int atrtr_delete(struct atalk_addr *addr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct atalk_route **r = &atalk_routes;
 	int retval = 0;
@@ -644,7 +652,11 @@ static inline void atalk_dev_down(struct net_device *dev)
 static int ddp_device_event(struct notifier_block *this, unsigned long event,
 			    void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
@@ -936,11 +948,19 @@ static unsigned long atalk_sum_skb(const struct sk_buff *skb, int offset,
 	int i, copy;
 
 	/* checksum stuff in header space */
+<<<<<<< HEAD
 	if ( (copy = start - offset) > 0) {
 		if (copy > len)
 			copy = len;
 		sum = atalk_sum_partial(skb->data + offset, copy, sum);
 		if ( (len -= copy) == 0)
+=======
+	if ((copy = start - offset) > 0) {
+		if (copy > len)
+			copy = len;
+		sum = atalk_sum_partial(skb->data + offset, copy, sum);
+		if ((len -= copy) == 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			return sum;
 
 		offset += copy;
@@ -1029,8 +1049,18 @@ static int atalk_create(struct net *net, struct socket *sock, int protocol,
 	 */
 	if (sock->type != SOCK_RAW && sock->type != SOCK_DGRAM)
 		goto out;
+<<<<<<< HEAD
 	rc = -ENOMEM;
 	sk = sk_alloc(net, PF_APPLETALK, GFP_KERNEL, &ddp_proto);
+=======
+
+	rc = -EPERM;
+	if (sock->type == SOCK_RAW && !kern && !capable(CAP_NET_RAW))
+		goto out;
+
+	rc = -ENOMEM;
+	sk = sk_alloc(net, PF_APPLETALK, GFP_KERNEL, &ddp_proto, kern);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sk)
 		goto out;
 	rc = 0;
@@ -1151,7 +1181,11 @@ static int atalk_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 			goto out;
 
 		at->src_net  = addr->sat_addr.s_net = ap->s_net;
+<<<<<<< HEAD
 		at->src_node = addr->sat_addr.s_node= ap->s_node;
+=======
+		at->src_node = addr->sat_addr.s_node = ap->s_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		err = -EADDRNOTAVAIL;
 		if (!atalk_find_interface(addr->sat_addr.s_net,
@@ -1278,7 +1312,11 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_IPDDP) || defined(CONFIG_IPDDP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_IPDDP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static __inline__ int is_ip_over_ddp(struct sk_buff *skb)
 {
 	return skb->data[12] == 22;
@@ -1559,20 +1597,33 @@ freeit:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 			 size_t len)
 {
 	struct sock *sk = sock->sk;
 	struct atalk_sock *at = at_sk(sk);
 	struct sockaddr_at *usat = (struct sockaddr_at *)msg->msg_name;
+=======
+static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+{
+	struct sock *sk = sock->sk;
+	struct atalk_sock *at = at_sk(sk);
+	DECLARE_SOCKADDR(struct sockaddr_at *, usat, msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int flags = msg->msg_flags;
 	int loopback = 0;
 	struct sockaddr_at local_satalk, gsat;
 	struct sk_buff *skb;
 	struct net_device *dev;
 	struct ddpehdr *ddp;
+<<<<<<< HEAD
 	int size;
 	struct atalk_route *rt;
+=======
+	int size, hard_header_len;
+	struct atalk_route *rt, *rt_lo = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int err;
 
 	if (flags & ~(MSG_DONTWAIT|MSG_CMSG_COMPAT))
@@ -1626,7 +1677,11 @@ static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 
 		rt = atrtr_find(&at_hint);
 	}
+<<<<<<< HEAD
 	err = ENETUNREACH;
+=======
+	err = -ENETUNREACH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!rt)
 		goto out;
 
@@ -1635,7 +1690,26 @@ static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 	SOCK_DEBUG(sk, "SK %p: Size needed %d, device %s\n",
 			sk, size, dev->name);
 
+<<<<<<< HEAD
 	size += dev->hard_header_len;
+=======
+	hard_header_len = dev->hard_header_len;
+	/* Leave room for loopback hardware header if necessary */
+	if (usat->sat_addr.s_node == ATADDR_BCAST &&
+	    (dev->flags & IFF_LOOPBACK || !(rt->flags & RTF_GATEWAY))) {
+		struct atalk_addr at_lo;
+
+		at_lo.s_node = 0;
+		at_lo.s_net  = 0;
+
+		rt_lo = atrtr_find(&at_lo);
+
+		if (rt_lo && rt_lo->dev->hard_header_len > hard_header_len)
+			hard_header_len = rt_lo->dev->hard_header_len;
+	}
+
+	size += hard_header_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	release_sock(sk);
 	skb = sock_alloc_send_skb(sk, size, (flags & MSG_DONTWAIT), &err);
 	lock_sock(sk);
@@ -1643,7 +1717,11 @@ static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 		goto out;
 
 	skb_reserve(skb, ddp_dl->header_length);
+<<<<<<< HEAD
 	skb_reserve(skb, dev->hard_header_len);
+=======
+	skb_reserve(skb, hard_header_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb->dev = dev;
 
 	SOCK_DEBUG(sk, "SK %p: Begin build.\n", sk);
@@ -1659,14 +1737,22 @@ static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 
 	SOCK_DEBUG(sk, "SK %p: Copy user data (%Zd bytes).\n", sk, len);
 
+<<<<<<< HEAD
 	err = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
+=======
+	err = memcpy_from_msg(skb_put(skb, len), msg, len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err) {
 		kfree_skb(skb);
 		err = -EFAULT;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (sk->sk_no_check == 1)
+=======
+	if (sk->sk_no_check_tx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ddp->deh_sum = 0;
 	else
 		ddp->deh_sum = atalk_checksum(skb, len + sizeof(*ddp));
@@ -1694,6 +1780,7 @@ static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 		/* loop back */
 		skb_orphan(skb);
 		if (ddp->deh_dnode == ATADDR_BCAST) {
+<<<<<<< HEAD
 			struct atalk_addr at_lo;
 
 			at_lo.s_node = 0;
@@ -1701,11 +1788,18 @@ static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 
 			rt = atrtr_find(&at_lo);
 			if (!rt) {
+=======
+			if (!rt_lo) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				kfree_skb(skb);
 				err = -ENETUNREACH;
 				goto out;
 			}
+<<<<<<< HEAD
 			dev = rt->dev;
+=======
+			dev = rt_lo->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			skb->dev = dev;
 		}
 		ddp_dl->request(ddp_dl, skb, dev->dev_addr);
@@ -1728,8 +1822,13 @@ out:
 	return err ? : len;
 }
 
+<<<<<<< HEAD
 static int atalk_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 			 size_t size, int flags)
+=======
+static int atalk_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+			 int flags)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sock *sk = sock->sk;
 	struct ddpehdr *ddp;
@@ -1758,10 +1857,17 @@ static int atalk_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 		copied = size;
 		msg->msg_flags |= MSG_TRUNC;
 	}
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, offset, msg->msg_iov, copied);
 
 	if (!err && msg->msg_name) {
 		struct sockaddr_at *sat = msg->msg_name;
+=======
+	err = skb_copy_datagram_msg(skb, offset, msg, copied);
+
+	if (!err && msg->msg_name) {
+		DECLARE_SOCKADDR(struct sockaddr_at *, sat, msg->msg_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sat->sat_family      = AF_APPLETALK;
 		sat->sat_port        = ddp->deh_sport;
 		sat->sat_addr.s_node = ddp->deh_snode;
@@ -1787,6 +1893,7 @@ static int atalk_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	void __user *argp = (void __user *)arg;
 
 	switch (cmd) {
+<<<<<<< HEAD
 		/* Protocol layer */
 		case TIOCOUTQ: {
 			long amount = sk->sk_sndbuf - sk_wmem_alloc_get(sk);
@@ -1834,6 +1941,55 @@ static int atalk_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 			rc = atif_ioctl(cmd, argp);
 			rtnl_unlock();
 			break;
+=======
+	/* Protocol layer */
+	case TIOCOUTQ: {
+		long amount = sk->sk_sndbuf - sk_wmem_alloc_get(sk);
+
+		if (amount < 0)
+			amount = 0;
+		rc = put_user(amount, (int __user *)argp);
+		break;
+	}
+	case TIOCINQ: {
+		/*
+		 * These two are safe on a single CPU system as only
+		 * user tasks fiddle here
+		 */
+		struct sk_buff *skb = skb_peek(&sk->sk_receive_queue);
+		long amount = 0;
+
+		if (skb)
+			amount = skb->len - sizeof(struct ddpehdr);
+		rc = put_user(amount, (int __user *)argp);
+		break;
+	}
+	case SIOCGSTAMP:
+		rc = sock_get_timestamp(sk, argp);
+		break;
+	case SIOCGSTAMPNS:
+		rc = sock_get_timestampns(sk, argp);
+		break;
+	/* Routing */
+	case SIOCADDRT:
+	case SIOCDELRT:
+		rc = -EPERM;
+		if (capable(CAP_NET_ADMIN))
+			rc = atrtr_ioctl(cmd, argp);
+		break;
+	/* Interface */
+	case SIOCGIFADDR:
+	case SIOCSIFADDR:
+	case SIOCGIFBRDADDR:
+	case SIOCATALKDIFADDR:
+	case SIOCDIFADDR:
+	case SIOCSARP:		/* proxy AARP */
+	case SIOCDARP:		/* proxy AARP */
+		rtnl_lock();
+		rc = atif_ioctl(cmd, argp);
+		rtnl_unlock();
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return rc;
@@ -1907,6 +2063,7 @@ static unsigned char ddp_snap_id[] = { 0x08, 0x00, 0x07, 0x80, 0x9B };
 EXPORT_SYMBOL(atrtr_get_dev);
 EXPORT_SYMBOL(atalk_find_dev_addr);
 
+<<<<<<< HEAD
 static const char atalk_err_snap[] __initconst =
 	KERN_CRIT "Unable to register DDP with SNAP.\n";
 
@@ -1922,16 +2079,72 @@ static int __init atalk_init(void)
 	ddp_dl = register_snap_client(ddp_snap_id, atalk_rcv);
 	if (!ddp_dl)
 		printk(atalk_err_snap);
+=======
+/* Called by proto.c on kernel start up */
+static int __init atalk_init(void)
+{
+	int rc;
+
+	rc = proto_register(&ddp_proto, 0);
+	if (rc)
+		goto out;
+
+	rc = sock_register(&atalk_family_ops);
+	if (rc)
+		goto out_proto;
+
+	ddp_dl = register_snap_client(ddp_snap_id, atalk_rcv);
+	if (!ddp_dl) {
+		pr_crit("Unable to register DDP with SNAP.\n");
+		rc = -ENOMEM;
+		goto out_sock;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_add_pack(&ltalk_packet_type);
 	dev_add_pack(&ppptalk_packet_type);
 
+<<<<<<< HEAD
 	register_netdevice_notifier(&ddp_notifier);
 	aarp_proto_init();
 	atalk_proc_init();
 	atalk_register_sysctl();
 out:
 	return rc;
+=======
+	rc = register_netdevice_notifier(&ddp_notifier);
+	if (rc)
+		goto out_snap;
+
+	rc = aarp_proto_init();
+	if (rc)
+		goto out_dev;
+
+	rc = atalk_proc_init();
+	if (rc)
+		goto out_aarp;
+
+	rc = atalk_register_sysctl();
+	if (rc)
+		goto out_proc;
+out:
+	return rc;
+out_proc:
+	atalk_proc_exit();
+out_aarp:
+	aarp_cleanup_module();
+out_dev:
+	unregister_netdevice_notifier(&ddp_notifier);
+out_snap:
+	dev_remove_pack(&ppptalk_packet_type);
+	dev_remove_pack(&ltalk_packet_type);
+	unregister_snap_client(ddp_dl);
+out_sock:
+	sock_unregister(PF_APPLETALK);
+out_proto:
+	proto_unregister(&ddp_proto);
+	goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 module_init(atalk_init);
 

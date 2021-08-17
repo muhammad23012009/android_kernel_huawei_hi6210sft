@@ -17,6 +17,10 @@ along with GNU CC; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.text
 	.align 4
 	.globl __divdi3
@@ -279,3 +283,7 @@ __divdi3:
 .LL81:
 	ret
 	restore
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__divdi3)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

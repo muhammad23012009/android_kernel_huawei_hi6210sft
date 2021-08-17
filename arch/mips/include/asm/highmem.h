@@ -19,9 +19,16 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/uaccess.h>
+=======
+#include <linux/bug.h>
+#include <linux/interrupt.h>
+#include <linux/uaccess.h>
+#include <asm/cpu-features.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/kmap_types.h>
 
 /* undef for production */
@@ -50,9 +57,14 @@ extern void kunmap(struct page *page);
 extern void *kmap_atomic(struct page *page);
 extern void __kunmap_atomic(void *kvaddr);
 extern void *kmap_atomic_pfn(unsigned long pfn);
+<<<<<<< HEAD
 extern struct page *kmap_atomic_to_page(void *ptr);
 
 #define flush_cache_kmaps()	flush_cache_all()
+=======
+
+#define flush_cache_kmaps()	BUG_ON(cpu_has_dc_aliases)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void kmap_init(void);
 

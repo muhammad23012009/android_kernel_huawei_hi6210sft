@@ -186,8 +186,12 @@ snd_emux_note_off(void *p, int note, int vel, struct snd_midi_channel *chan)
 				 */
 				vp->state = SNDRV_EMUX_ST_PENDING;
 				if (! emu->timer_active) {
+<<<<<<< HEAD
 					emu->tlist.expires = jiffies + 1;
 					add_timer(&emu->tlist);
+=======
+					mod_timer(&emu->tlist, jiffies + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					emu->timer_active = 1;
 				}
 			} else
@@ -223,8 +227,12 @@ void snd_emux_timer_callback(unsigned long data)
 		}
 	}
 	if (do_again) {
+<<<<<<< HEAD
 		emu->tlist.expires = jiffies + 1;
 		add_timer(&emu->tlist);
+=======
+		mod_timer(&emu->tlist, jiffies + 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		emu->timer_active = 1;
 	} else
 		emu->timer_active = 0;

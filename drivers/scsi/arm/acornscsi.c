@@ -62,6 +62,7 @@
  */
 #undef CONFIG_SCSI_ACORNSCSI_TAGGED_QUEUE
 /*
+<<<<<<< HEAD
  * SCSI-II Linked command support.
  *
  * The higher level code doesn't support linked commands yet, and so the option
@@ -69,6 +70,8 @@
  */
 #undef CONFIG_SCSI_ACORNSCSI_LINK
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SCSI-II Synchronous transfer support.
  *
  * Tried and tested...
@@ -160,10 +163,13 @@
 #error "Yippee!  ABORT TAG is now defined!  Remove this error!"
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_ACORNSCSI_LINK
 #error SCSI2 LINKed commands not supported (yet)!
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef USE_DMAC
 /*
  * DMAC setup parameters
@@ -688,7 +694,12 @@ int round_period(unsigned int period)
  * Copyright: Copyright (c) 1996 John Shifflett, GeoLog Consulting
  */
 static
+<<<<<<< HEAD
 unsigned char calc_sync_xfer(unsigned int period, unsigned int offset)
+=======
+unsigned char __maybe_unused calc_sync_xfer(unsigned int period,
+					    unsigned int offset)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
     return sync_xfer_table[round_period(period)].reg_value |
 		((offset < SDTR_SIZE) ? offset : SDTR_SIZE);
@@ -771,7 +782,12 @@ intr_ret_t acornscsi_kick(AS_Host *host)
 	    SCpnt->tag = SCpnt->device->current_tag;
 	} else
 #endif
+<<<<<<< HEAD
 	    set_bit(SCpnt->device->id * 8 + SCpnt->device->lun, host->busyluns);
+=======
+	    set_bit(SCpnt->device->id * 8 +
+		    (u8)(SCpnt->device->lun & 0x07), host->busyluns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host->stats.removes += 1;
 
@@ -860,6 +876,7 @@ static void acornscsi_done(AS_Host *host, struct scsi_cmnd **SCpntp,
 			break;
 
 		    default:
+<<<<<<< HEAD
 			printk(KERN_ERR "scsi%d.H: incomplete data transfer detected: result=%08X command=",
 				host->host->host_no, SCpnt->result);
 			__scsi_print_command(SCpnt->cmnd);
@@ -867,6 +884,15 @@ static void acornscsi_done(AS_Host *host, struct scsi_cmnd **SCpntp,
 		 	acornscsi_dumplog(host, SCpnt->device->id);
 			SCpnt->result &= 0xffff;
 			SCpnt->result |= DID_ERROR << 16;
+=======
+			scmd_printk(KERN_ERR, SCpnt,
+				    "incomplete data transfer detected: "
+				    "result=%08X", SCpnt->result);
+			scsi_print_command(SCpnt);
+			acornscsi_dumpdma(host, "done");
+			acornscsi_dumplog(host, SCpnt->device->id);
+			set_host_byte(SCpnt, DID_ERROR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    }
 		}
 	}
@@ -874,7 +900,12 @@ static void acornscsi_done(AS_Host *host, struct scsi_cmnd **SCpntp,
 	if (!SCpnt->scsi_done)
 	    panic("scsi%d.H: null scsi_done function in acornscsi_done", host->host->host_no);
 
+<<<<<<< HEAD
 	clear_bit(SCpnt->device->id * 8 + SCpnt->device->lun, host->busyluns);
+=======
+	clear_bit(SCpnt->device->id * 8 +
+		  (u8)(SCpnt->device->lun & 0x7), host->busyluns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	SCpnt->scsi_done(SCpnt);
     } else
@@ -1587,7 +1618,12 @@ void acornscsi_message(AS_Host *host)
 	    printk(KERN_NOTICE "scsi%d.%c: disabling tagged queueing\n",
 		    host->host->host_no, acornscsi_target(host));
 	    host->SCpnt->device->simple_tags = 0;
+<<<<<<< HEAD
 	    set_bit(host->SCpnt->device->id * 8 + host->SCpnt->device->lun, host->busyluns);
+=======
+	    set_bit(host->SCpnt->device->id * 8 +
+		    (u8)(host->SCpnt->device->lun & 0x7), host->busyluns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    break;
 #endif
 	case EXTENDED_MESSAGE | (EXTENDED_SDTR << 8):
@@ -1668,6 +1704,7 @@ void acornscsi_message(AS_Host *host)
 	}
 	break;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_ACORNSCSI_LINK
     case LINKED_CMD_COMPLETE:
     case LINKED_FLG_CMD_COMPLETE:
@@ -1704,6 +1741,8 @@ void acornscsi_message(AS_Host *host)
 	}
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     default: /* reject message */
 	printk(KERN_ERR "scsi%d.%c: unrecognised message %02X, rejecting\n",
 		host->host->host_no, acornscsi_target(host),
@@ -2718,7 +2757,12 @@ int acornscsi_abort(struct scsi_cmnd *SCpnt)
 //#if (DEBUG & DEBUG_ABORT)
 		printk("clear ");
 //#endif
+<<<<<<< HEAD
 		clear_bit(SCpnt->device->id * 8 + SCpnt->device->lun, host->busyluns);
+=======
+		clear_bit(SCpnt->device->id * 8 +
+			  (u8)(SCpnt->device->lun & 0x7), host->busyluns);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We found the command, and cleared it out.  Either
@@ -2825,9 +2869,12 @@ char *acornscsi_info(struct Scsi_Host *host)
 #ifdef CONFIG_SCSI_ACORNSCSI_TAGGED_QUEUE
     " TAG"
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_ACORNSCSI_LINK
     " LINK"
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if (DEBUG & DEBUG_NO_WRITE)
     " NOWRITE (" __stringify(NO_WRITE) ")"
 #endif
@@ -2851,9 +2898,12 @@ static int acornscsi_show_info(struct seq_file *m, struct Scsi_Host *instance)
 #ifdef CONFIG_SCSI_ACORNSCSI_TAGGED_QUEUE
     " TAG"
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_ACORNSCSI_LINK
     " LINK"
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if (DEBUG & DEBUG_NO_WRITE)
     " NOWRITE (" __stringify(NO_WRITE) ")"
 #endif
@@ -2906,7 +2956,11 @@ static int acornscsi_show_info(struct seq_file *m, struct Scsi_Host *instance)
 
     shost_for_each_device(scd, instance) {
 	seq_printf(m, "Device/Lun TaggedQ      Sync\n");
+<<<<<<< HEAD
 	seq_printf(m, "     %d/%d   ", scd->id, scd->lun);
+=======
+	seq_printf(m, "     %d/%llu   ", scd->id, scd->lun);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (scd->tagged_supported)
 		seq_printf(m, "%3sabled(%3d) ",
 			     scd->simple_tags ? "en" : "dis",
@@ -2961,8 +3015,15 @@ static int acornscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 
 	ashost->base = ecardm_iomap(ec, ECARD_RES_MEMC, 0, 0);
 	ashost->fast = ecardm_iomap(ec, ECARD_RES_IOCFAST, 0, 0);
+<<<<<<< HEAD
 	if (!ashost->base || !ashost->fast)
 		goto out_put;
+=======
+	if (!ashost->base || !ashost->fast) {
+		ret = -ENOMEM;
+		goto out_put;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	host->irq = ec->irq;
 	ashost->host = host;
@@ -2971,7 +3032,11 @@ static int acornscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 	ec->irqaddr	= ashost->fast + INT_REG;
 	ec->irqmask	= 0x0a;
 
+<<<<<<< HEAD
 	ret = request_irq(host->irq, acornscsi_intr, IRQF_DISABLED, "acornscsi", ashost);
+=======
+	ret = request_irq(host->irq, acornscsi_intr, 0, "acornscsi", ashost);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		printk(KERN_CRIT "scsi%d: IRQ%d not free: %d\n",
 			host->host_no, ashost->scsi.irq, ret);

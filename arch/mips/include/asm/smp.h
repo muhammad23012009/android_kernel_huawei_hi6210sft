@@ -22,8 +22,25 @@
 
 extern int smp_num_siblings;
 extern cpumask_t cpu_sibling_map[];
+<<<<<<< HEAD
 
 #define raw_smp_processor_id() (current_thread_info()->cpu)
+=======
+extern cpumask_t cpu_core_map[];
+extern cpumask_t cpu_foreign_map[];
+
+static inline int raw_smp_processor_id(void)
+{
+#if defined(__VDSO__)
+	extern int vdso_smp_processor_id(void)
+		__compiletime_error("VDSO should not call smp_processor_id()");
+	return vdso_smp_processor_id();
+#else
+	return current_thread_info()->cpu;
+#endif
+}
+#define raw_smp_processor_id raw_smp_processor_id
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Map from cpu id to sequential logical cpu number.  This will only
    not be idempotent when cpus failed to come on-line.	*/
@@ -42,11 +59,25 @@ extern int __cpu_logical_map[NR_CPUS];
 #define SMP_ICACHE_FLUSH	0x4
 /* Used by kexec crashdump to save all cpu's state */
 #define SMP_DUMP		0x8
+<<<<<<< HEAD
 
 extern volatile cpumask_t cpu_callin_map;
 
 extern void asmlinkage smp_bootstrap(void);
 
+=======
+#define SMP_ASK_C0COUNT		0x10
+
+extern cpumask_t cpu_callin_map;
+
+/* Mask of CPUs which are currently definitely operating coherently */
+extern cpumask_t cpu_coherent_mask;
+
+extern void asmlinkage smp_bootstrap(void);
+
+extern void calculate_cpu_foreign_map(void);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * this function sends a 'reschedule' IPI to another CPU.
  * it goes straight through and wastes no time serializing
@@ -77,13 +108,33 @@ static inline void __cpu_die(unsigned int cpu)
 extern void play_dead(void);
 #endif
 
+<<<<<<< HEAD
 extern asmlinkage void smp_call_function_interrupt(void);
+=======
+/*
+ * This function will set up the necessary IPIs for Linux to communicate
+ * with the CPUs in mask.
+ * Return 0 on success.
+ */
+int mips_smp_ipi_allocate(const struct cpumask *mask);
+
+/*
+ * This function will free up IPIs allocated with mips_smp_ipi_allocate to the
+ * CPUs in mask, which must be a subset of the IPIs that have been configured.
+ * Return 0 on success.
+ */
+int mips_smp_ipi_free(const struct cpumask *mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void arch_send_call_function_single_ipi(int cpu)
 {
 	extern struct plat_smp_ops *mp_ops;	/* private */
 
+<<<<<<< HEAD
 	mp_ops->send_ipi_mask(&cpumask_of_cpu(cpu), SMP_CALL_FUNCTION);
+=======
+	mp_ops->send_ipi_mask(cpumask_of(cpu), SMP_CALL_FUNCTION);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void arch_send_call_function_ipi_mask(const struct cpumask *mask)

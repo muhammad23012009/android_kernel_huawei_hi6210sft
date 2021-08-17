@@ -32,7 +32,11 @@
 
 #define DMX_FILTER_SIZE 16
 
+<<<<<<< HEAD
 typedef enum
+=======
+enum dmx_output
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	DMX_OUT_DECODER, /* Streaming directly to decoder. */
 	DMX_OUT_TAP,     /* Output going to a memory buffer */
@@ -41,10 +45,18 @@ typedef enum
 			 /* (to be retrieved by reading from the */
 			 /* logical DVR device).                 */
 	DMX_OUT_TSDEMUX_TAP /* Like TS_TAP but retrieved from the DMX device */
+<<<<<<< HEAD
 } dmx_output_t;
 
 
 typedef enum
+=======
+};
+
+typedef enum dmx_output dmx_output_t;
+
+typedef enum dmx_input
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	DMX_IN_FRONTEND, /* Input from a front-end device.  */
 	DMX_IN_DVR       /* Input from the logical DVR device.  */
@@ -122,7 +134,11 @@ typedef struct dmx_caps {
 	int num_decoders;
 } dmx_caps_t;
 
+<<<<<<< HEAD
 typedef enum {
+=======
+typedef enum dmx_source {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	DMX_SOURCE_FRONT0 = 0,
 	DMX_SOURCE_FRONT1,
 	DMX_SOURCE_FRONT2,
@@ -139,7 +155,10 @@ struct dmx_stc {
 	__u64 stc;		/* output: stc in 'base'*90 kHz units */
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DMX_START                _IO('o', 41)
 #define DMX_STOP                 _IO('o', 42)
 #define DMX_SET_FILTER           _IOW('o', 43, struct dmx_sct_filter_params)

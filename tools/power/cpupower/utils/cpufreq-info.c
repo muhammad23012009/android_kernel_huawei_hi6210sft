@@ -10,10 +10,18 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+<<<<<<< HEAD
+=======
+#include <limits.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <getopt.h>
 
 #include "cpufreq.h"
+<<<<<<< HEAD
+=======
+#include "helpers/sysfs.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "helpers/helpers.h"
 #include "helpers/bitmask.h"
 
@@ -82,10 +90,15 @@ static void proc_cpufreq_output(void)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int no_rounding;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void print_speed(unsigned long speed)
 {
 	unsigned long tmp;
 
+<<<<<<< HEAD
 	if (speed > 1000000) {
 		tmp = speed % 10000;
 		if (tmp >= 5000)
@@ -105,6 +118,39 @@ static void print_speed(unsigned long speed)
 			((unsigned int) (speed%1000)/100));
 	} else
 		printf("%lu kHz", speed);
+=======
+	if (no_rounding) {
+		if (speed > 1000000)
+			printf("%u.%06u GHz", ((unsigned int) speed/1000000),
+				((unsigned int) speed%1000000));
+		else if (speed > 100000)
+			printf("%u MHz", (unsigned int) speed);
+		else if (speed > 1000)
+			printf("%u.%03u MHz", ((unsigned int) speed/1000),
+				(unsigned int) (speed%1000));
+		else
+			printf("%lu kHz", speed);
+	} else {
+		if (speed > 1000000) {
+			tmp = speed%10000;
+			if (tmp >= 5000)
+				speed += 10000;
+			printf("%u.%02u GHz", ((unsigned int) speed/1000000),
+				((unsigned int) (speed%1000000)/10000));
+		} else if (speed > 100000) {
+			tmp = speed%1000;
+			if (tmp >= 500)
+				speed += 1000;
+			printf("%u MHz", ((unsigned int) speed/1000));
+		} else if (speed > 1000) {
+			tmp = speed%100;
+			if (tmp >= 50)
+				speed += 100;
+			printf("%u.%01u MHz", ((unsigned int) speed/1000),
+				((unsigned int) (speed%1000)/100));
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return;
 }
@@ -113,6 +159,7 @@ static void print_duration(unsigned long duration)
 {
 	unsigned long tmp;
 
+<<<<<<< HEAD
 	if (duration > 1000000) {
 		tmp = duration % 10000;
 		if (tmp >= 5000)
@@ -133,6 +180,40 @@ static void print_duration(unsigned long duration)
 	} else
 		printf("%lu ns", duration);
 
+=======
+	if (no_rounding) {
+		if (duration > 1000000)
+			printf("%u.%06u ms", ((unsigned int) duration/1000000),
+				((unsigned int) duration%1000000));
+		else if (duration > 100000)
+			printf("%u us", ((unsigned int) duration/1000));
+		else if (duration > 1000)
+			printf("%u.%03u us", ((unsigned int) duration/1000),
+				((unsigned int) duration%1000));
+		else
+			printf("%lu ns", duration);
+	} else {
+		if (duration > 1000000) {
+			tmp = duration%10000;
+			if (tmp >= 5000)
+				duration += 10000;
+			printf("%u.%02u ms", ((unsigned int) duration/1000000),
+				((unsigned int) (duration%1000000)/10000));
+		} else if (duration > 100000) {
+			tmp = duration%1000;
+			if (tmp >= 500)
+				duration += 1000;
+			printf("%u us", ((unsigned int) duration / 1000));
+		} else if (duration > 1000) {
+			tmp = duration%100;
+			if (tmp >= 50)
+				duration += 100;
+			printf("%u.%01u us", ((unsigned int) duration/1000),
+				((unsigned int) (duration%1000)/100));
+		} else
+			printf("%lu ns", duration);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return;
 }
 
@@ -219,6 +300,7 @@ static int get_boost_mode(unsigned int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void debug_output_one(unsigned int cpu)
 {
 	char *driver;
@@ -350,11 +432,14 @@ static void debug_output_one(unsigned int cpu)
 
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* --freq / -f */
 
 static int get_freq_kernel(unsigned int cpu, unsigned int human)
 {
 	unsigned long freq = cpufreq_get_freq_kernel(cpu);
+<<<<<<< HEAD
 	if (!freq)
 		return -EINVAL;
 	if (human) {
@@ -362,6 +447,18 @@ static int get_freq_kernel(unsigned int cpu, unsigned int human)
 		printf("\n");
 	} else
 		printf("%lu\n", freq);
+=======
+	printf(_("  current CPU frequency: "));
+	if (!freq) {
+		printf(_(" Unable to call to kernel\n"));
+		return -EINVAL;
+	}
+	if (human) {
+		print_speed(freq);
+	} else
+		printf("%lu", freq);
+	printf(_(" (asserted by call to kernel)\n"));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -371,6 +468,7 @@ static int get_freq_kernel(unsigned int cpu, unsigned int human)
 static int get_freq_hardware(unsigned int cpu, unsigned int human)
 {
 	unsigned long freq = cpufreq_get_freq_hardware(cpu);
+<<<<<<< HEAD
 	if (!freq)
 		return -EINVAL;
 	if (human) {
@@ -378,6 +476,18 @@ static int get_freq_hardware(unsigned int cpu, unsigned int human)
 		printf("\n");
 	} else
 		printf("%lu\n", freq);
+=======
+	printf(_("  current CPU frequency: "));
+	if (!freq) {
+		printf("Unable to call hardware\n");
+		return -EINVAL;
+	}
+	if (human) {
+		print_speed(freq);
+	} else
+		printf("%lu", freq);
+	printf(_(" (asserted by call to hardware)\n"));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -386,9 +496,23 @@ static int get_freq_hardware(unsigned int cpu, unsigned int human)
 static int get_hardware_limits(unsigned int cpu)
 {
 	unsigned long min, max;
+<<<<<<< HEAD
 	if (cpufreq_get_hardware_limits(cpu, &min, &max))
 		return -EINVAL;
 	printf("%lu %lu\n", min, max);
+=======
+
+	printf(_("  hardware limits: "));
+	if (cpufreq_get_hardware_limits(cpu, &min, &max)) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+
+	print_speed(min);
+	printf(" - ");
+	print_speed(max);
+	printf("\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -397,9 +521,17 @@ static int get_hardware_limits(unsigned int cpu)
 static int get_driver(unsigned int cpu)
 {
 	char *driver = cpufreq_get_driver(cpu);
+<<<<<<< HEAD
 	if (!driver)
 		return -EINVAL;
 	printf("%s\n", driver);
+=======
+	if (!driver) {
+		printf(_("  no or unknown cpufreq driver is active on this CPU\n"));
+		return -EINVAL;
+	}
+	printf("  driver: %s\n", driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpufreq_put_driver(driver);
 	return 0;
 }
@@ -409,9 +541,25 @@ static int get_driver(unsigned int cpu)
 static int get_policy(unsigned int cpu)
 {
 	struct cpufreq_policy *policy = cpufreq_get_policy(cpu);
+<<<<<<< HEAD
 	if (!policy)
 		return -EINVAL;
 	printf("%lu %lu %s\n", policy->min, policy->max, policy->governor);
+=======
+	if (!policy) {
+		printf(_("  Unable to determine current policy\n"));
+		return -EINVAL;
+	}
+	printf(_("  current policy: frequency should be within "));
+	print_speed(policy->min);
+	printf(_(" and "));
+	print_speed(policy->max);
+
+	printf(".\n                  ");
+	printf(_("The governor \"%s\" may decide which speed to use\n"
+	       "                  within this range.\n"),
+	       policy->governor);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpufreq_put_policy(policy);
 	return 0;
 }
@@ -422,8 +570,17 @@ static int get_available_governors(unsigned int cpu)
 {
 	struct cpufreq_available_governors *governors =
 		cpufreq_get_available_governors(cpu);
+<<<<<<< HEAD
 	if (!governors)
 		return -EINVAL;
+=======
+
+	printf(_("  available cpufreq governors: "));
+	if (!governors) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (governors->next) {
 		printf("%s ", governors->governor);
@@ -440,8 +597,17 @@ static int get_available_governors(unsigned int cpu)
 static int get_affected_cpus(unsigned int cpu)
 {
 	struct cpufreq_affected_cpus *cpus = cpufreq_get_affected_cpus(cpu);
+<<<<<<< HEAD
 	if (!cpus)
 		return -EINVAL;
+=======
+
+	printf(_("  CPUs which need to have their frequency coordinated by software: "));
+	if (!cpus) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (cpus->next) {
 		printf("%d ", cpus->cpu);
@@ -457,8 +623,17 @@ static int get_affected_cpus(unsigned int cpu)
 static int get_related_cpus(unsigned int cpu)
 {
 	struct cpufreq_affected_cpus *cpus = cpufreq_get_related_cpus(cpu);
+<<<<<<< HEAD
 	if (!cpus)
 		return -EINVAL;
+=======
+
+	printf(_("  CPUs which run at the same hardware frequency: "));
+	if (!cpus) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	while (cpus->next) {
 		printf("%d ", cpus->cpu);
@@ -499,8 +674,17 @@ static int get_freq_stats(unsigned int cpu, unsigned int human)
 static int get_latency(unsigned int cpu, unsigned int human)
 {
 	unsigned long latency = cpufreq_get_transition_latency(cpu);
+<<<<<<< HEAD
 	if (!latency)
 		return -EINVAL;
+=======
+
+	printf(_("  maximum transition latency: "));
+	if (!latency || latency == UINT_MAX) {
+		printf(_(" Cannot determine or is not supported.\n"));
+		return -EINVAL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (human) {
 		print_duration(latency);
@@ -510,6 +694,7 @@ static int get_latency(unsigned int cpu, unsigned int human)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct option info_opts[] = {
 	{ .name = "debug",	.has_arg = no_argument,		.flag = NULL,	.val = 'e'},
 	{ .name = "boost",	.has_arg = no_argument,		.flag = NULL,	.val = 'b'},
@@ -525,6 +710,54 @@ static struct option info_opts[] = {
 	{ .name = "latency",	.has_arg = no_argument,		.flag = NULL,	.val = 'y'},
 	{ .name = "proc",	.has_arg = no_argument,		.flag = NULL,	.val = 'o'},
 	{ .name = "human",	.has_arg = no_argument,		.flag = NULL,	.val = 'm'},
+=======
+static void debug_output_one(unsigned int cpu)
+{
+	struct cpufreq_available_frequencies *freqs;
+
+	get_driver(cpu);
+	get_related_cpus(cpu);
+	get_affected_cpus(cpu);
+	get_latency(cpu, 1);
+	get_hardware_limits(cpu);
+
+	freqs = cpufreq_get_available_frequencies(cpu);
+	if (freqs) {
+		printf(_("  available frequency steps:  "));
+		while (freqs->next) {
+			print_speed(freqs->frequency);
+			printf(", ");
+			freqs = freqs->next;
+		}
+		print_speed(freqs->frequency);
+		printf("\n");
+		cpufreq_put_available_frequencies(freqs);
+	}
+
+	get_available_governors(cpu);
+	get_policy(cpu);
+	if (get_freq_hardware(cpu, 1) < 0)
+		get_freq_kernel(cpu, 1);
+	get_boost_mode(cpu);
+}
+
+static struct option info_opts[] = {
+	{"debug",	 no_argument,		 NULL,	 'e'},
+	{"boost",	 no_argument,		 NULL,	 'b'},
+	{"freq",	 no_argument,		 NULL,	 'f'},
+	{"hwfreq",	 no_argument,		 NULL,	 'w'},
+	{"hwlimits",	 no_argument,		 NULL,	 'l'},
+	{"driver",	 no_argument,		 NULL,	 'd'},
+	{"policy",	 no_argument,		 NULL,	 'p'},
+	{"governors",	 no_argument,		 NULL,	 'g'},
+	{"related-cpus",  no_argument,	 NULL,	 'r'},
+	{"affected-cpus", no_argument,	 NULL,	 'a'},
+	{"stats",	 no_argument,		 NULL,	 's'},
+	{"latency",	 no_argument,		 NULL,	 'y'},
+	{"proc",	 no_argument,		 NULL,	 'o'},
+	{"human",	 no_argument,		 NULL,	 'm'},
+	{"no-rounding", no_argument,	 NULL,	 'n'},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ },
 };
 
@@ -538,7 +771,12 @@ int cmd_freq_info(int argc, char **argv)
 	int output_param = 0;
 
 	do {
+<<<<<<< HEAD
 		ret = getopt_long(argc, argv, "oefwldpgrasmyb", info_opts, NULL);
+=======
+		ret = getopt_long(argc, argv, "oefwldpgrasmybn", info_opts,
+				  NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (ret) {
 		case '?':
 			output_param = '?';
@@ -575,6 +813,12 @@ int cmd_freq_info(int argc, char **argv)
 			}
 			human = 1;
 			break;
+<<<<<<< HEAD
+=======
+		case 'n':
+			no_rounding = 1;
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		default:
 			fprintf(stderr, "invalid or unknown argument\n");
 			return EXIT_FAILURE;
@@ -617,11 +861,22 @@ int cmd_freq_info(int argc, char **argv)
 
 		if (!bitmask_isbitset(cpus_chosen, cpu))
 			continue;
+<<<<<<< HEAD
 		if (cpufreq_cpu_exists(cpu)) {
 			printf(_("couldn't analyze CPU %d as it doesn't seem to be present\n"), cpu);
 			continue;
 		}
 		printf(_("analyzing CPU %d:\n"), cpu);
+=======
+
+		printf(_("analyzing CPU %d:\n"), cpu);
+
+		if (sysfs_is_cpu_online(cpu) != 1) {
+			printf(_(" *is offline\n"));
+			printf("\n");
+			continue;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		switch (output_param) {
 		case 'b':
@@ -663,6 +918,10 @@ int cmd_freq_info(int argc, char **argv)
 		}
 		if (ret)
 			return ret;
+<<<<<<< HEAD
+=======
+		printf("\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	return ret;
 }

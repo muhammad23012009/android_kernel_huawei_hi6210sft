@@ -51,7 +51,11 @@ void pn_sock_init(void);
 struct sock *pn_find_sock_by_sa(struct net *net, const struct sockaddr_pn *sa);
 void pn_deliver_sock_broadcast(struct net *net, struct sk_buff *skb);
 void phonet_get_local_port_range(int *min, int *max);
+<<<<<<< HEAD
 void pn_sock_hash(struct sock *sk);
+=======
+int pn_sock_hash(struct sock *sk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void pn_sock_unhash(struct sock *sk);
 int pn_sock_get_port(struct sock *sk, unsigned short sport);
 

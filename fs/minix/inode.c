@@ -26,7 +26,11 @@ static int minix_remount (struct super_block * sb, int * flags, char * data);
 
 static void minix_evict_inode(struct inode *inode)
 {
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!inode->i_nlink) {
 		inode->i_size = 0;
 		minix_truncate(inode);
@@ -62,7 +66,11 @@ static struct kmem_cache * minix_inode_cachep;
 static struct inode *minix_alloc_inode(struct super_block *sb)
 {
 	struct minix_inode_info *ei;
+<<<<<<< HEAD
 	ei = (struct minix_inode_info *)kmem_cache_alloc(minix_inode_cachep, GFP_KERNEL);
+=======
+	ei = kmem_cache_alloc(minix_inode_cachep, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ei)
 		return NULL;
 	return &ei->vfs_inode;
@@ -86,12 +94,20 @@ static void init_once(void *foo)
 	inode_init_once(&ei->vfs_inode);
 }
 
+<<<<<<< HEAD
 static int init_inodecache(void)
+=======
+static int __init init_inodecache(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	minix_inode_cachep = kmem_cache_create("minix_inode_cache",
 					     sizeof(struct minix_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_MEM_SPREAD|SLAB_ACCOUNT),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     init_once);
 	if (minix_inode_cachep == NULL)
 		return -ENOMEM;
@@ -155,6 +171,26 @@ static int minix_remount (struct super_block * sb, int * flags, char * data)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static bool minix_check_superblock(struct minix_sb_info *sbi)
+{
+	if (sbi->s_imap_blocks == 0 || sbi->s_zmap_blocks == 0)
+		return false;
+
+	/*
+	 * s_max_size must not exceed the block mapping limitation.  This check
+	 * is only needed for V1 filesystems, since V2/V3 support an extra level
+	 * of indirect blocks which places the limit well above U32_MAX.
+	 */
+	if (sbi->s_version == MINIX_V1 &&
+	    sbi->s_max_size > (7 + 512 + 512*512) * BLOCK_SIZE)
+		return false;
+
+	return true;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int minix_fill_super(struct super_block *s, void *data, int silent)
 {
 	struct buffer_head *bh;
@@ -233,11 +269,20 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	} else
 		goto out_no_fs;
 
+<<<<<<< HEAD
 	/*
 	 * Allocate the buffer map to keep the superblock small.
 	 */
 	if (sbi->s_imap_blocks == 0 || sbi->s_zmap_blocks == 0)
 		goto out_illegal_sb;
+=======
+	if (!minix_check_superblock(sbi))
+		goto out_illegal_sb;
+
+	/*
+	 * Allocate the buffer map to keep the superblock small.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i = (sbi->s_imap_blocks + sbi->s_zmap_blocks) * sizeof(bh);
 	map = kzalloc(i, GFP_KERNEL);
 	if (!map)
@@ -267,12 +312,20 @@ static int minix_fill_super(struct super_block *s, void *data, int silent)
 	block = minix_blocks_needed(sbi->s_ninodes, s->s_blocksize);
 	if (sbi->s_imap_blocks < block) {
 		printk("MINIX-fs: file system does not have enough "
+<<<<<<< HEAD
 				"imap blocks allocated.  Refusing to mount\n");
+=======
+				"imap blocks allocated.  Refusing to mount.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out_no_bitmap;
 	}
 
 	block = minix_blocks_needed(
+<<<<<<< HEAD
 			(sbi->s_nzones - (sbi->s_firstdatazone + 1)),
+=======
+			(sbi->s_nzones - sbi->s_firstdatazone + 1),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			s->s_blocksize);
 	if (sbi->s_zmap_blocks < block) {
 		printk("MINIX-fs: file system does not have enough "
@@ -401,7 +454,11 @@ static void minix_write_failed(struct address_space *mapping, loff_t to)
 	struct inode *inode = mapping->host;
 
 	if (to > inode->i_size) {
+<<<<<<< HEAD
 		truncate_pagecache(inode, to, inode->i_size);
+=======
+		truncate_pagecache(inode, inode->i_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		minix_truncate(inode);
 	}
 }
@@ -435,8 +492,12 @@ static const struct address_space_operations minix_aops = {
 
 static const struct inode_operations minix_symlink_inode_operations = {
 	.readlink	= generic_readlink,
+<<<<<<< HEAD
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.getattr	= minix_getattr,
 };
 
@@ -452,6 +513,10 @@ void minix_set_inode(struct inode *inode, dev_t rdev)
 		inode->i_mapping->a_ops = &minix_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &minix_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode->i_mapping->a_ops = &minix_aops;
 	} else
 		init_special_inode(inode, inode->i_mode, rdev);
@@ -472,6 +537,16 @@ static struct inode *V1_minix_iget(struct inode *inode)
 		iget_failed(inode);
 		return ERR_PTR(-EIO);
 	}
+<<<<<<< HEAD
+=======
+	if (raw_inode->i_nlinks == 0) {
+		printk("MINIX-fs: deleted inode referenced: %lu\n",
+		       inode->i_ino);
+		brelse(bh);
+		iget_failed(inode);
+		return ERR_PTR(-ESTALE);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	inode->i_mode = raw_inode->i_mode;
 	i_uid_write(inode, raw_inode->i_uid);
 	i_gid_write(inode, raw_inode->i_gid);
@@ -505,6 +580,16 @@ static struct inode *V2_minix_iget(struct inode *inode)
 		iget_failed(inode);
 		return ERR_PTR(-EIO);
 	}
+<<<<<<< HEAD
+=======
+	if (raw_inode->i_nlinks == 0) {
+		printk("MINIX-fs: deleted inode referenced: %lu\n",
+		       inode->i_ino);
+		brelse(bh);
+		iget_failed(inode);
+		return ERR_PTR(-ESTALE);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	inode->i_mode = raw_inode->i_mode;
 	i_uid_write(inode, raw_inode->i_uid);
 	i_gid_write(inode, raw_inode->i_gid);
@@ -626,8 +711,13 @@ static int minix_write_inode(struct inode *inode, struct writeback_control *wbc)
 int minix_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 {
 	struct super_block *sb = dentry->d_sb;
+<<<<<<< HEAD
 	generic_fillattr(dentry->d_inode, stat);
 	if (INODE_VERSION(dentry->d_inode) == MINIX_V1)
+=======
+	generic_fillattr(d_inode(dentry), stat);
+	if (INODE_VERSION(d_inode(dentry)) == MINIX_V1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		stat->blocks = (BLOCK_SIZE / 512) * V1_minix_blocks(stat->size, sb);
 	else
 		stat->blocks = (sb->s_blocksize / 512) * V2_minix_blocks(stat->size, sb);

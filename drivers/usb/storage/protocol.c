@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Current development and maintenance by:
  *   (c) 1999-2002 Matthew Dharm (mdharm-usb@one-eyed-alien.net)
@@ -75,7 +80,12 @@ void usb_stor_pad12_command(struct scsi_cmnd *srb, struct us_data *us)
 
 void usb_stor_ufi_command(struct scsi_cmnd *srb, struct us_data *us)
 {
+<<<<<<< HEAD
 	/* fix some commands -- this is a form of mode translation
+=======
+	/*
+	 * fix some commands -- this is a form of mode translation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * UFI devices only accept 12 byte long commands
 	 *
 	 * NOTE: This only works because a scsi_cmnd struct field contains
@@ -127,7 +137,12 @@ EXPORT_SYMBOL_GPL(usb_stor_transparent_scsi_command);
  * Scatter-gather transfer buffer access routines
  ***********************************************************************/
 
+<<<<<<< HEAD
 /* Copy a buffer of length buflen to/from the srb's transfer buffer.
+=======
+/*
+ * Copy a buffer of length buflen to/from the srb's transfer buffer.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Update the **sgptr and *offset variables so that the next copy will
  * pick up from where this one left off.
  */
@@ -135,6 +150,7 @@ unsigned int usb_stor_access_xfer_buf(unsigned char *buffer,
 	unsigned int buflen, struct scsi_cmnd *srb, struct scatterlist **sgptr,
 	unsigned int *offset, enum xfer_buf_dir dir)
 {
+<<<<<<< HEAD
 	unsigned int cnt;
 	struct scatterlist *sg = *sgptr;
 
@@ -198,11 +214,54 @@ unsigned int usb_stor_access_xfer_buf(unsigned char *buffer,
 	*sgptr = sg;
 
 	/* Return the amount actually transferred */
+=======
+	unsigned int cnt = 0;
+	struct scatterlist *sg = *sgptr;
+	struct sg_mapping_iter miter;
+	unsigned int nents = scsi_sg_count(srb);
+
+	if (sg)
+		nents = sg_nents(sg);
+	else
+		sg = scsi_sglist(srb);
+
+	sg_miter_start(&miter, sg, nents, dir == FROM_XFER_BUF ?
+		SG_MITER_FROM_SG: SG_MITER_TO_SG);
+
+	if (!sg_miter_skip(&miter, *offset))
+		return cnt;
+
+	while (sg_miter_next(&miter) && cnt < buflen) {
+		unsigned int len = min_t(unsigned int, miter.length,
+				buflen - cnt);
+
+		if (dir == FROM_XFER_BUF)
+			memcpy(buffer + cnt, miter.addr, len);
+		else
+			memcpy(miter.addr, buffer + cnt, len);
+
+		if (*offset + len < miter.piter.sg->length) {
+			*offset += len;
+			*sgptr = miter.piter.sg;
+		} else {
+			*offset = 0;
+			*sgptr = sg_next(miter.piter.sg);
+		}
+		cnt += len;
+	}
+	sg_miter_stop(&miter);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return cnt;
 }
 EXPORT_SYMBOL_GPL(usb_stor_access_xfer_buf);
 
+<<<<<<< HEAD
 /* Store the contents of buffer into srb's transfer buffer and set the
+=======
+/*
+ * Store the contents of buffer into srb's transfer buffer and set the
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * SCSI residue.
  */
 void usb_stor_set_xfer_buf(unsigned char *buffer,

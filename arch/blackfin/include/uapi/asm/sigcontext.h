@@ -4,8 +4,13 @@
  * Licensed under the GPL-2 or later.
  */
 
+<<<<<<< HEAD
 #ifndef _ASM_BLACKFIN_SIGCONTEXT_H
 #define _ASM_BLACKFIN_SIGCONTEXT_H
+=======
+#ifndef _UAPI_ASM_BLACKFIN_SIGCONTEXT_H
+#define _UAPI_ASM_BLACKFIN_SIGCONTEXT_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Add new entries at the end of the structure only.  */
 struct sigcontext {
@@ -58,4 +63,8 @@ struct sigcontext {
 	unsigned long sc_seqstat;
 };
 
+<<<<<<< HEAD
 #endif
+=======
+#endif /* _UAPI_ASM_BLACKFIN_SIGCONTEXT_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

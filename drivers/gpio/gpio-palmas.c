@@ -20,7 +20,11 @@
 
 #include <linux/gpio.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/palmas.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
@@ -31,6 +35,7 @@ struct palmas_gpio {
 	struct palmas *palmas;
 };
 
+<<<<<<< HEAD
 static inline struct palmas_gpio *to_palmas_gpio(struct gpio_chip *chip)
 {
 	return container_of(chip, struct palmas_gpio, gpio_chip);
@@ -46,6 +51,38 @@ static int palmas_gpio_get(struct gpio_chip *gc, unsigned offset)
 	ret = palmas_read(palmas, PALMAS_GPIO_BASE, PALMAS_GPIO_DATA_IN, &val);
 	if (ret < 0) {
 		dev_err(gc->dev, "GPIO_DATA_IN read failed, err = %d\n", ret);
+=======
+struct palmas_device_data {
+	int ngpio;
+};
+
+static int palmas_gpio_get(struct gpio_chip *gc, unsigned offset)
+{
+	struct palmas_gpio *pg = gpiochip_get_data(gc);
+	struct palmas *palmas = pg->palmas;
+	unsigned int val;
+	int ret;
+	unsigned int reg;
+	int gpio16 = (offset/8);
+
+	offset %= 8;
+	reg = (gpio16) ? PALMAS_GPIO_DATA_DIR2 : PALMAS_GPIO_DATA_DIR;
+
+	ret = palmas_read(palmas, PALMAS_GPIO_BASE, reg, &val);
+	if (ret < 0) {
+		dev_err(gc->parent, "Reg 0x%02x read failed, %d\n", reg, ret);
+		return ret;
+	}
+
+	if (val & BIT(offset))
+		reg = (gpio16) ? PALMAS_GPIO_DATA_OUT2 : PALMAS_GPIO_DATA_OUT;
+	else
+		reg = (gpio16) ? PALMAS_GPIO_DATA_IN2 : PALMAS_GPIO_DATA_IN;
+
+	ret = palmas_read(palmas, PALMAS_GPIO_BASE, reg, &val);
+	if (ret < 0) {
+		dev_err(gc->parent, "Reg 0x%02x read failed, %d\n", reg, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 	return !!(val & BIT(offset));
@@ -54,6 +91,7 @@ static int palmas_gpio_get(struct gpio_chip *gc, unsigned offset)
 static void palmas_gpio_set(struct gpio_chip *gc, unsigned offset,
 			int value)
 {
+<<<<<<< HEAD
 	struct palmas_gpio *pg = to_palmas_gpio(gc);
 	struct palmas *palmas = pg->palmas;
 	int ret;
@@ -68,27 +106,66 @@ static void palmas_gpio_set(struct gpio_chip *gc, unsigned offset,
 		dev_err(gc->dev, "%s write failed, err = %d\n",
 			(value) ? "GPIO_SET_DATA_OUT" : "GPIO_CLEAR_DATA_OUT",
 			ret);
+=======
+	struct palmas_gpio *pg = gpiochip_get_data(gc);
+	struct palmas *palmas = pg->palmas;
+	int ret;
+	unsigned int reg;
+	int gpio16 = (offset/8);
+
+	offset %= 8;
+	if (gpio16)
+		reg = (value) ?
+			PALMAS_GPIO_SET_DATA_OUT2 : PALMAS_GPIO_CLEAR_DATA_OUT2;
+	else
+		reg = (value) ?
+			PALMAS_GPIO_SET_DATA_OUT : PALMAS_GPIO_CLEAR_DATA_OUT;
+
+	ret = palmas_write(palmas, PALMAS_GPIO_BASE, reg, BIT(offset));
+	if (ret < 0)
+		dev_err(gc->parent, "Reg 0x%02x write failed, %d\n", reg, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int palmas_gpio_output(struct gpio_chip *gc, unsigned offset,
 				int value)
 {
+<<<<<<< HEAD
 	struct palmas_gpio *pg = to_palmas_gpio(gc);
 	struct palmas *palmas = pg->palmas;
 	int ret;
+=======
+	struct palmas_gpio *pg = gpiochip_get_data(gc);
+	struct palmas *palmas = pg->palmas;
+	int ret;
+	unsigned int reg;
+	int gpio16 = (offset/8);
+
+	offset %= 8;
+	reg = (gpio16) ? PALMAS_GPIO_DATA_DIR2 : PALMAS_GPIO_DATA_DIR;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Set the initial value */
 	palmas_gpio_set(gc, offset, value);
 
+<<<<<<< HEAD
 	ret = palmas_update_bits(palmas, PALMAS_GPIO_BASE,
 		PALMAS_GPIO_DATA_DIR, BIT(offset), BIT(offset));
 	if (ret < 0)
 		dev_err(gc->dev, "GPIO_DATA_DIR write failed, err = %d\n", ret);
+=======
+	ret = palmas_update_bits(palmas, PALMAS_GPIO_BASE, reg,
+				BIT(offset), BIT(offset));
+	if (ret < 0)
+		dev_err(gc->parent, "Reg 0x%02x update failed, %d\n", reg,
+			ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int palmas_gpio_input(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct palmas_gpio *pg = to_palmas_gpio(gc);
 	struct palmas *palmas = pg->palmas;
 	int ret;
@@ -97,23 +174,62 @@ static int palmas_gpio_input(struct gpio_chip *gc, unsigned offset)
 		PALMAS_GPIO_DATA_DIR, BIT(offset), 0);
 	if (ret < 0)
 		dev_err(gc->dev, "GPIO_DATA_DIR write failed, err = %d\n", ret);
+=======
+	struct palmas_gpio *pg = gpiochip_get_data(gc);
+	struct palmas *palmas = pg->palmas;
+	int ret;
+	unsigned int reg;
+	int gpio16 = (offset/8);
+
+	offset %= 8;
+	reg = (gpio16) ? PALMAS_GPIO_DATA_DIR2 : PALMAS_GPIO_DATA_DIR;
+
+	ret = palmas_update_bits(palmas, PALMAS_GPIO_BASE, reg, BIT(offset), 0);
+	if (ret < 0)
+		dev_err(gc->parent, "Reg 0x%02x update failed, %d\n", reg,
+			ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int palmas_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 {
+<<<<<<< HEAD
 	struct palmas_gpio *pg = to_palmas_gpio(gc);
+=======
+	struct palmas_gpio *pg = gpiochip_get_data(gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct palmas *palmas = pg->palmas;
 
 	return palmas_irq_get_virq(palmas, PALMAS_GPIO_0_IRQ + offset);
 }
 
+<<<<<<< HEAD
+=======
+static const struct palmas_device_data palmas_dev_data = {
+	.ngpio = 8,
+};
+
+static const struct palmas_device_data tps80036_dev_data = {
+	.ngpio = 16,
+};
+
+static const struct of_device_id of_palmas_gpio_match[] = {
+	{ .compatible = "ti,palmas-gpio", .data = &palmas_dev_data,},
+	{ .compatible = "ti,tps65913-gpio", .data = &palmas_dev_data,},
+	{ .compatible = "ti,tps65914-gpio", .data = &palmas_dev_data,},
+	{ .compatible = "ti,tps80036-gpio", .data = &tps80036_dev_data,},
+	{ },
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int palmas_gpio_probe(struct platform_device *pdev)
 {
 	struct palmas *palmas = dev_get_drvdata(pdev->dev.parent);
 	struct palmas_platform_data *palmas_pdata;
 	struct palmas_gpio *palmas_gpio;
 	int ret;
+<<<<<<< HEAD
 
 	palmas_gpio = devm_kzalloc(&pdev->dev,
 				sizeof(*palmas_gpio), GFP_KERNEL);
@@ -121,20 +237,47 @@ static int palmas_gpio_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Could not allocate palmas_gpio\n");
 		return -ENOMEM;
 	}
+=======
+	const struct of_device_id *match;
+	const struct palmas_device_data *dev_data;
+
+	match = of_match_device(of_palmas_gpio_match, &pdev->dev);
+	if (!match)
+		return -ENODEV;
+	dev_data = match->data;
+	if (!dev_data)
+		dev_data = &palmas_dev_data;
+
+	palmas_gpio = devm_kzalloc(&pdev->dev,
+				sizeof(*palmas_gpio), GFP_KERNEL);
+	if (!palmas_gpio)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	palmas_gpio->palmas = palmas;
 	palmas_gpio->gpio_chip.owner = THIS_MODULE;
 	palmas_gpio->gpio_chip.label = dev_name(&pdev->dev);
+<<<<<<< HEAD
 	palmas_gpio->gpio_chip.ngpio = 8;
 	palmas_gpio->gpio_chip.can_sleep = 1;
+=======
+	palmas_gpio->gpio_chip.ngpio = dev_data->ngpio;
+	palmas_gpio->gpio_chip.can_sleep = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	palmas_gpio->gpio_chip.direction_input = palmas_gpio_input;
 	palmas_gpio->gpio_chip.direction_output = palmas_gpio_output;
 	palmas_gpio->gpio_chip.to_irq = palmas_gpio_to_irq;
 	palmas_gpio->gpio_chip.set	= palmas_gpio_set;
 	palmas_gpio->gpio_chip.get	= palmas_gpio_get;
+<<<<<<< HEAD
 	palmas_gpio->gpio_chip.dev = &pdev->dev;
 #ifdef CONFIG_OF_GPIO
 	palmas_gpio->gpio_chip.of_node = palmas->dev->of_node;
+=======
+	palmas_gpio->gpio_chip.parent = &pdev->dev;
+#ifdef CONFIG_OF_GPIO
+	palmas_gpio->gpio_chip.of_node = pdev->dev.of_node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	palmas_pdata = dev_get_platdata(palmas->dev);
 	if (palmas_pdata && palmas_pdata->gpio_base)
@@ -142,7 +285,12 @@ static int palmas_gpio_probe(struct platform_device *pdev)
 	else
 		palmas_gpio->gpio_chip.base = -1;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&palmas_gpio->gpio_chip);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, &palmas_gpio->gpio_chip,
+				     palmas_gpio);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Could not register gpiochip, %d\n", ret);
 		return ret;
@@ -152,6 +300,7 @@ static int palmas_gpio_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int palmas_gpio_remove(struct platform_device *pdev)
 {
 	struct palmas_gpio *palmas_gpio = platform_get_drvdata(pdev);
@@ -164,6 +313,12 @@ static struct platform_driver palmas_gpio_driver = {
 	.driver.owner	= THIS_MODULE,
 	.probe		= palmas_gpio_probe,
 	.remove		= palmas_gpio_remove,
+=======
+static struct platform_driver palmas_gpio_driver = {
+	.driver.name	= "palmas-gpio",
+	.driver.of_match_table = of_palmas_gpio_match,
+	.probe		= palmas_gpio_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init palmas_gpio_init(void)
@@ -171,6 +326,7 @@ static int __init palmas_gpio_init(void)
 	return platform_driver_register(&palmas_gpio_driver);
 }
 subsys_initcall(palmas_gpio_init);
+<<<<<<< HEAD
 
 static void __exit palmas_gpio_exit(void)
 {
@@ -182,3 +338,5 @@ MODULE_ALIAS("platform:palmas-gpio");
 MODULE_AUTHOR("Laxman Dewangan <ldewangan@nvidia.com>");
 MODULE_DESCRIPTION("GPIO driver for TI Palmas series PMICs");
 MODULE_LICENSE("GPL v2");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

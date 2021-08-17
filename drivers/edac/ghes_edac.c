@@ -4,7 +4,11 @@
  * This file may be distributed under the terms of the GNU General Public
  * License version 2.
  *
+<<<<<<< HEAD
  * Copyright (c) 2013 by Mauro Carvalho Chehab <mchehab@redhat.com>
+=======
+ * Copyright (c) 2013 by Mauro Carvalho Chehab
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Red Hat Inc. http://www.redhat.com
  */
@@ -66,6 +70,7 @@ struct ghes_edac_dimm_fill {
 	unsigned count;
 };
 
+<<<<<<< HEAD
 char *memory_type[] = {
 	[MEM_EMPTY] = "EMPTY",
 	[MEM_RESERVED] = "RESERVED",
@@ -86,6 +91,8 @@ char *memory_type[] = {
 	[MEM_RDDR3] = "RDDR3",
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ghes_edac_count_dimms(const struct dmi_header *dh, void *arg)
 {
 	int *num_dimm = arg;
@@ -173,7 +180,11 @@ static void ghes_edac_dmidecode(const struct dmi_header *dh, void *arg)
 
 		if (dimm->nr_pages) {
 			edac_dbg(1, "DIMM%i: %s size = %d MB%s\n",
+<<<<<<< HEAD
 				dimm_fill->count, memory_type[dimm->mtype],
+=======
+				dimm_fill->count, edac_mem_types[dimm->mtype],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				PAGES_TO_MiB(dimm->nr_pages),
 				(dimm->edac_mode != EDAC_NONE) ? "(ECC)" : "");
 			edac_dbg(2, "\ttype %d, detail 0x%02x, width %d(total %d)\n",
@@ -209,6 +220,10 @@ void ghes_edac_report_mem_error(struct ghes *ghes, int sev,
 	/* Cleans the error report buffer */
 	memset(e, 0, sizeof (*e));
 	e->error_count = 1;
+<<<<<<< HEAD
+=======
+	e->grain = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	strcpy(e->label, "unknown label");
 	e->msg = pvt->msg;
 	e->other_detail = pvt->other_detail;
@@ -297,15 +312,24 @@ void ghes_edac_report_mem_error(struct ghes *ghes, int sev,
 	}
 
 	/* Error address */
+<<<<<<< HEAD
 	if (mem_err->validation_bits & CPER_MEM_VALID_PHYSICAL_ADDRESS) {
+=======
+	if (mem_err->validation_bits & CPER_MEM_VALID_PA) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		e->page_frame_number = mem_err->physical_addr >> PAGE_SHIFT;
 		e->offset_in_page = mem_err->physical_addr & ~PAGE_MASK;
 	}
 
 	/* Error grain */
+<<<<<<< HEAD
 	if (mem_err->validation_bits & CPER_MEM_VALID_PHYSICAL_ADDRESS_MASK) {
 		e->grain = ~(mem_err->physical_addr_mask & ~PAGE_MASK);
 	}
+=======
+	if (mem_err->validation_bits & CPER_MEM_VALID_PA_MASK)
+		e->grain = ~mem_err->physical_addr_mask + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Memory error location, mapped on e->location */
 	p = e->location;
@@ -315,6 +339,11 @@ void ghes_edac_report_mem_error(struct ghes *ghes, int sev,
 		p += sprintf(p, "card:%d ", mem_err->card);
 	if (mem_err->validation_bits & CPER_MEM_VALID_MODULE)
 		p += sprintf(p, "module:%d ", mem_err->module);
+<<<<<<< HEAD
+=======
+	if (mem_err->validation_bits & CPER_MEM_VALID_RANK_NUMBER)
+		p += sprintf(p, "rank:%d ", mem_err->rank);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mem_err->validation_bits & CPER_MEM_VALID_BANK)
 		p += sprintf(p, "bank:%d ", mem_err->bank);
 	if (mem_err->validation_bits & CPER_MEM_VALID_ROW)
@@ -323,6 +352,18 @@ void ghes_edac_report_mem_error(struct ghes *ghes, int sev,
 		p += sprintf(p, "col:%d ", mem_err->column);
 	if (mem_err->validation_bits & CPER_MEM_VALID_BIT_POSITION)
 		p += sprintf(p, "bit_pos:%d ", mem_err->bit_pos);
+<<<<<<< HEAD
+=======
+	if (mem_err->validation_bits & CPER_MEM_VALID_MODULE_HANDLE) {
+		const char *bank = NULL, *device = NULL;
+		dmi_memdev_name(mem_err->mem_dev_handle, &bank, &device);
+		if (bank != NULL && device != NULL)
+			p += sprintf(p, "DIMM location:%s %s ", bank, device);
+		else
+			p += sprintf(p, "DIMM DMI handle: 0x%.4x ",
+				     mem_err->mem_dev_handle);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (p > e->location)
 		*(p - 1) = '\0';
 
@@ -401,6 +442,7 @@ void ghes_edac_report_mem_error(struct ghes *ghes, int sev,
 	if (p > pvt->other_detail)
 		*(p - 1) = '\0';
 
+<<<<<<< HEAD
 	/* Generate the trace event */
 	grain_bits = fls_long(e->grain);
 	sprintf(pvt->detail_location, "APEI location: %s %s",
@@ -408,6 +450,20 @@ void ghes_edac_report_mem_error(struct ghes *ghes, int sev,
 	trace_mc_event(type, e->msg, e->label, e->error_count,
 		       mci->mc_idx, e->top_layer, e->mid_layer, e->low_layer,
 		       PAGES_TO_MiB(e->page_frame_number) | e->offset_in_page,
+=======
+	/* Sanity-check driver-supplied grain value. */
+	if (WARN_ON_ONCE(!e->grain))
+		e->grain = 1;
+
+	grain_bits = fls_long(e->grain - 1);
+
+	/* Generate the trace event */
+	snprintf(pvt->detail_location, sizeof(pvt->detail_location),
+		 "APEI location: %s %s", e->location, e->other_detail);
+	trace_mc_event(type, e->msg, e->label, e->error_count,
+		       mci->mc_idx, e->top_layer, e->mid_layer, e->low_layer,
+		       (e->page_frame_number << PAGE_SHIFT) | e->offset_in_page,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       grain_bits, e->syndrome, pvt->detail_location);
 
 	/* Report the error via EDAC API */

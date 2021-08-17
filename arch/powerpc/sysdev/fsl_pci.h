@@ -16,6 +16,14 @@
 
 struct platform_device;
 
+<<<<<<< HEAD
+=======
+
+/* FSL PCI controller BRR1 register */
+#define PCI_FSL_BRR1      0xbf8
+#define PCI_FSL_BRR1_VER 0xffff
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
 #define PCIE_LTSSM_L0	0x16		/* L0 state */
 #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
@@ -27,6 +35,16 @@ struct platform_device;
 #define PIWAR_WRITE_SNOOP	0x00005000
 #define PIWAR_SZ_MASK          0x0000003f
 
+<<<<<<< HEAD
+=======
+#define PEX_PMCR_PTOMR		0x1
+#define PEX_PMCR_EXL2S		0x2
+
+#define PME_DISR_EN_PTOD	0x00008000
+#define PME_DISR_EN_ENL23D	0x00002000
+#define PME_DISR_EN_EXL23D	0x00001000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* PCI/PCI Express outbound window reg */
 struct pci_outbound_window_regs {
 	__be32	potar;	/* 0x.0 - Outbound translation address register */
@@ -106,6 +124,10 @@ struct ccsr_pci {
 
 extern int fsl_add_bridge(struct platform_device *pdev, int is_primary);
 extern void fsl_pcibios_fixup_bus(struct pci_bus *bus);
+<<<<<<< HEAD
+=======
+extern void fsl_pcibios_fixup_phb(struct pci_controller *phb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int mpc83xx_add_bridge(struct device_node *dev);
 u64 fsl_pci_immrbar_base(struct pci_controller *hose);
 
@@ -117,6 +139,7 @@ void fsl_pci_assign_primary(void);
 static inline void fsl_pci_assign_primary(void) {}
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_EDAC_MPC85XX
 int mpc85xx_pci_err_probe(struct platform_device *op);
 #else
@@ -124,6 +147,12 @@ static inline int mpc85xx_pci_err_probe(struct platform_device *op)
 {
 	return -ENOTSUPP;
 }
+=======
+#ifdef CONFIG_FSL_PCI
+extern int fsl_pci_mcheck_exception(struct pt_regs *);
+#else
+static inline int fsl_pci_mcheck_exception(struct pt_regs *regs) {return 0; }
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #endif /* __POWERPC_FSL_PCI_H */

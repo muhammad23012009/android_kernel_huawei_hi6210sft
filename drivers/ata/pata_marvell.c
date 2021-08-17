@@ -11,7 +11,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -147,7 +150,11 @@ static int marvell_init_one (struct pci_dev *pdev, const struct pci_device_id *i
 	if (pdev->device == 0x6101)
 		ppi[1] = &ata_dummy_port_info;
 
+<<<<<<< HEAD
 #if defined(CONFIG_SATA_AHCI) || defined(CONFIG_SATA_AHCI_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SATA_AHCI)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!marvell_pata_active(pdev)) {
 		printk(KERN_INFO DRV_NAME ": PATA port not active, deferring to AHCI driver.\n");
 		return -ENODEV;
@@ -172,7 +179,11 @@ static struct pci_driver marvell_pci_driver = {
 	.id_table		= marvell_pci_tbl,
 	.probe			= marvell_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif

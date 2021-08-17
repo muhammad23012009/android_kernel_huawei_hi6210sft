@@ -35,12 +35,19 @@ static void nvec_led_brightness_set(struct led_classdev *led_cdev,
 {
 	struct nvec_led *led = to_nvec_led(led_cdev);
 	unsigned char buf[] = NVEC_LED_REQ;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	buf[4] = value;
 
 	nvec_write_async(led->nvec, buf, sizeof(buf));
 
 	led->cdev.brightness = value;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int nvec_paz00_probe(struct platform_device *pdev)
@@ -50,7 +57,11 @@ static int nvec_paz00_probe(struct platform_device *pdev)
 	int ret = 0;
 
 	led = devm_kzalloc(&pdev->dev, sizeof(*led), GFP_KERNEL);
+<<<<<<< HEAD
 	if (led == NULL)
+=======
+	if (!led)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 
 	led->cdev.max_brightness = NVEC_LED_MAX;
@@ -62,7 +73,11 @@ static int nvec_paz00_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, led);
 
+<<<<<<< HEAD
 	ret = led_classdev_register(&pdev->dev, &led->cdev);
+=======
+	ret = devm_led_classdev_register(&pdev->dev, &led->cdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 
@@ -72,6 +87,7 @@ static int nvec_paz00_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int nvec_paz00_remove(struct platform_device *pdev)
 {
 	struct nvec_led *led = platform_get_drvdata(pdev);
@@ -87,6 +103,12 @@ static struct platform_driver nvec_paz00_driver = {
 	.driver = {
 		.name  = "nvec-paz00",
 		.owner = THIS_MODULE,
+=======
+static struct platform_driver nvec_paz00_driver = {
+	.probe  = nvec_paz00_probe,
+	.driver = {
+		.name  = "nvec-paz00",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

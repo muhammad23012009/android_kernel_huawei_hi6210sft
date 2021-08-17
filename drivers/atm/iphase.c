@@ -63,6 +63,10 @@
 #include <asm/byteorder.h>  
 #include <linux/vmalloc.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "iphase.h"		  
 #include "suni.h"		  
 #define swap_byte_order(x) (((x & 0xff) << 8) | ((x & 0xff00) >> 8))
@@ -112,7 +116,12 @@ static void ia_enque_head_rtn_q (IARTN_Q *que, IARTN_Q * data)
 
 static int ia_enque_rtn_q (IARTN_Q *que, struct desc_tbl_t data) {
    IARTN_Q *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+<<<<<<< HEAD
    if (!entry) return -1;
+=======
+   if (!entry)
+      return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
    entry->data = data;
    entry->next = NULL;
    if (que->next == NULL) 
@@ -1127,7 +1136,11 @@ static int rx_pkt(struct atm_dev *dev)
 	/* make the ptr point to the corresponding buffer desc entry */  
 	buf_desc_ptr += desc;	  
         if (!desc || (desc > iadev->num_rx_desc) || 
+<<<<<<< HEAD
                       ((buf_desc_ptr->vc_index & 0xffff) > iadev->num_vc)) { 
+=======
+                      ((buf_desc_ptr->vc_index & 0xffff) >= iadev->num_vc)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
             free_desc(dev, desc);
             IF_ERR(printk("IA: bad descriptor desc = %d \n", desc);)
             return -1;
@@ -1175,7 +1188,11 @@ static int rx_pkt(struct atm_dev *dev)
         if (!(skb = atm_alloc_charge(vcc, len, GFP_ATOMIC))) {
            if (vcc->vci < 32)
               printk("Drop control packets\n");
+<<<<<<< HEAD
 	      goto out_free_desc;
+=======
+	   goto out_free_desc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         }
 	skb_put(skb,len);  
         // pwang_test
@@ -1185,8 +1202,13 @@ static int rx_pkt(struct atm_dev *dev)
 
 	/* Build the DLE structure */  
 	wr_ptr = iadev->rx_dle_q.write;  
+<<<<<<< HEAD
 	wr_ptr->sys_pkt_addr = pci_map_single(iadev->pci, skb->data,
 		len, PCI_DMA_FROMDEVICE);
+=======
+	wr_ptr->sys_pkt_addr = dma_map_single(&iadev->pci->dev, skb->data,
+					      len, DMA_FROM_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wr_ptr->local_pkt_addr = buf_addr;  
 	wr_ptr->bytes = len;	/* We don't know this do we ?? */  
 	wr_ptr->mode = DMA_INT_ENABLE;  
@@ -1306,8 +1328,13 @@ static void rx_dle_intr(struct atm_dev *dev)
           u_short length;
           struct ia_vcc *ia_vcc;
 
+<<<<<<< HEAD
 	  pci_unmap_single(iadev->pci, iadev->rx_dle_q.write->sys_pkt_addr,
 	  	len, PCI_DMA_FROMDEVICE);
+=======
+	  dma_unmap_single(&iadev->pci->dev, iadev->rx_dle_q.write->sys_pkt_addr,
+			   len, DMA_FROM_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
           /* no VCC related housekeeping done as yet. lets see */  
           vcc = ATM_SKB(skb)->vcc;
 	  if (!vcc) {
@@ -1430,8 +1457,13 @@ static int rx_init(struct atm_dev *dev)
   //    spin_lock_init(&iadev->rx_lock); 
   
 	/* Allocate 4k bytes - more aligned than needed (4k boundary) */
+<<<<<<< HEAD
 	dle_addr = pci_alloc_consistent(iadev->pci, DLE_TOTAL_SIZE,
 					&iadev->rx_dle_dma);  
+=======
+	dle_addr = dma_alloc_coherent(&iadev->pci->dev, DLE_TOTAL_SIZE,
+				      &iadev->rx_dle_dma, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dle_addr)  {  
 		printk(KERN_ERR DEV_LABEL "can't allocate DLEs\n");
 		goto err_out;
@@ -1631,8 +1663,13 @@ static int rx_init(struct atm_dev *dev)
 	return 0;  
 
 err_free_dle:
+<<<<<<< HEAD
 	pci_free_consistent(iadev->pci, DLE_TOTAL_SIZE, iadev->rx_dle_q.start,
 			    iadev->rx_dle_dma);  
+=======
+	dma_free_coherent(&iadev->pci->dev, DLE_TOTAL_SIZE, iadev->rx_dle_q.start,
+			  iadev->rx_dle_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out:
 	return -ENOMEM;
 }  
@@ -1702,8 +1739,13 @@ static void tx_dle_intr(struct atm_dev *dev)
 
 	    /* Revenge of the 2 dle (skb + trailer) used in ia_pkt_tx() */
 	    if (!((dle - iadev->tx_dle_q.start)%(2*sizeof(struct dle)))) {
+<<<<<<< HEAD
 		pci_unmap_single(iadev->pci, dle->sys_pkt_addr, skb->len,
 				 PCI_DMA_TODEVICE);
+=======
+		dma_unmap_single(&iadev->pci->dev, dle->sys_pkt_addr, skb->len,
+				 DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    }
             vcc = ATM_SKB(skb)->vcc;
             if (!vcc) {
@@ -1884,9 +1926,15 @@ static int open_tx(struct atm_vcc *vcc)
                 if ((ret = ia_cbr_setup (iadev, vcc)) < 0) {     
                     return ret;
                 }
+<<<<<<< HEAD
        } 
 	else  
            printk("iadev:  Non UBR, ABR and CBR traffic not supportedn"); 
+=======
+	} else {
+		printk("iadev:  Non UBR, ABR and CBR traffic not supported\n");
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         
         iadev->testTable[vcc->vci]->vc_status |= VC_ACTIVE;
 	IF_EVENT(printk("ia open_tx returning \n");)  
@@ -1917,8 +1965,13 @@ static int tx_init(struct atm_dev *dev)
                                 readw(iadev->seg_reg+SEG_MASK_REG));)  
 
 	/* Allocate 4k (boundary aligned) bytes */
+<<<<<<< HEAD
 	dle_addr = pci_alloc_consistent(iadev->pci, DLE_TOTAL_SIZE,
 					&iadev->tx_dle_dma);  
+=======
+	dle_addr = dma_alloc_coherent(&iadev->pci->dev, DLE_TOTAL_SIZE,
+				      &iadev->tx_dle_dma, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dle_addr)  {
 		printk(KERN_ERR DEV_LABEL "can't allocate DLEs\n");
 		goto err_out;
@@ -1974,7 +2027,13 @@ static int tx_init(struct atm_dev *dev)
 		buf_desc_ptr++;		  
 		tx_pkt_start += iadev->tx_buf_sz;  
 	}  
+<<<<<<< HEAD
         iadev->tx_buf = kmalloc(iadev->num_tx_desc*sizeof(struct cpcs_trailer_desc), GFP_KERNEL);
+=======
+	iadev->tx_buf = kmalloc_array(iadev->num_tx_desc,
+				      sizeof(*iadev->tx_buf),
+				      GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         if (!iadev->tx_buf) {
             printk(KERN_ERR DEV_LABEL " couldn't get mem\n");
 	    goto err_free_dle;
@@ -1989,11 +2048,22 @@ static int tx_init(struct atm_dev *dev)
 		goto err_free_tx_bufs;
             }
 	    iadev->tx_buf[i].cpcs = cpcs;
+<<<<<<< HEAD
 	    iadev->tx_buf[i].dma_addr = pci_map_single(iadev->pci,
 		cpcs, sizeof(*cpcs), PCI_DMA_TODEVICE);
         }
         iadev->desc_tbl = kmalloc(iadev->num_tx_desc *
                                    sizeof(struct desc_tbl_t), GFP_KERNEL);
+=======
+	    iadev->tx_buf[i].dma_addr = dma_map_single(&iadev->pci->dev,
+						       cpcs,
+						       sizeof(*cpcs),
+						       DMA_TO_DEVICE);
+        }
+	iadev->desc_tbl = kmalloc_array(iadev->num_tx_desc,
+					sizeof(*iadev->desc_tbl),
+					GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!iadev->desc_tbl) {
 		printk(KERN_ERR DEV_LABEL " couldn't get mem\n");
 		goto err_free_all_tx_bufs;
@@ -2121,7 +2191,13 @@ static int tx_init(struct atm_dev *dev)
 	memset((caddr_t)(iadev->seg_ram+i),  0, iadev->num_vc*4);
 	vc = (struct main_vc *)iadev->MAIN_VC_TABLE_ADDR;  
 	evc = (struct ext_vc *)iadev->EXT_VC_TABLE_ADDR;  
+<<<<<<< HEAD
         iadev->testTable = kmalloc(sizeof(long)*iadev->num_vc, GFP_KERNEL); 
+=======
+	iadev->testTable = kmalloc_array(iadev->num_vc,
+					 sizeof(*iadev->testTable),
+					 GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         if (!iadev->testTable) {
            printk("Get freepage  failed\n");
 	   goto err_free_desc_tbl;
@@ -2198,14 +2274,24 @@ err_free_tx_bufs:
 	while (--i >= 0) {
 		struct cpcs_trailer_desc *desc = iadev->tx_buf + i;
 
+<<<<<<< HEAD
 		pci_unmap_single(iadev->pci, desc->dma_addr,
 			sizeof(*desc->cpcs), PCI_DMA_TODEVICE);
+=======
+		dma_unmap_single(&iadev->pci->dev, desc->dma_addr,
+				 sizeof(*desc->cpcs), DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(desc->cpcs);
 	}
 	kfree(iadev->tx_buf);
 err_free_dle:
+<<<<<<< HEAD
 	pci_free_consistent(iadev->pci, DLE_TOTAL_SIZE, iadev->tx_dle_q.start,
 			    iadev->tx_dle_dma);  
+=======
+	dma_free_coherent(&iadev->pci->dev, DLE_TOTAL_SIZE, iadev->tx_dle_q.start,
+			  iadev->tx_dle_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out:
 	return -ENOMEM;
 }   
@@ -2476,6 +2562,7 @@ static void ia_free_tx(IADEV *iadev)
 	for (i = 0; i < iadev->num_tx_desc; i++) {
 		struct cpcs_trailer_desc *desc = iadev->tx_buf + i;
 
+<<<<<<< HEAD
 		pci_unmap_single(iadev->pci, desc->dma_addr,
 			sizeof(*desc->cpcs), PCI_DMA_TODEVICE);
 		kfree(desc->cpcs);
@@ -2483,13 +2570,27 @@ static void ia_free_tx(IADEV *iadev)
 	kfree(iadev->tx_buf);
 	pci_free_consistent(iadev->pci, DLE_TOTAL_SIZE, iadev->tx_dle_q.start,
 			    iadev->tx_dle_dma);  
+=======
+		dma_unmap_single(&iadev->pci->dev, desc->dma_addr,
+				 sizeof(*desc->cpcs), DMA_TO_DEVICE);
+		kfree(desc->cpcs);
+	}
+	kfree(iadev->tx_buf);
+	dma_free_coherent(&iadev->pci->dev, DLE_TOTAL_SIZE, iadev->tx_dle_q.start,
+			  iadev->tx_dle_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ia_free_rx(IADEV *iadev)
 {
 	kfree(iadev->rx_open);
+<<<<<<< HEAD
 	pci_free_consistent(iadev->pci, DLE_TOTAL_SIZE, iadev->rx_dle_q.start,
 			  iadev->rx_dle_dma);  
+=======
+	dma_free_coherent(&iadev->pci->dev, DLE_TOTAL_SIZE, iadev->rx_dle_q.start,
+			  iadev->rx_dle_dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int ia_start(struct atm_dev *dev)
@@ -2616,7 +2717,11 @@ static void ia_close(struct atm_vcc *vcc)
         if (vcc->qos.txtp.traffic_class != ATM_NONE) {
            iadev->close_pending++;
 	   prepare_to_wait(&iadev->timeout_wait, &wait, TASK_UNINTERRUPTIBLE);
+<<<<<<< HEAD
 	   schedule_timeout(50);
+=======
+	   schedule_timeout(msecs_to_jiffies(500));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	   finish_wait(&iadev->timeout_wait, &wait);
            spin_lock_irqsave(&iadev->tx_lock, flags); 
            while((skb = skb_dequeue(&iadev->tx_backlog))) {
@@ -2752,8 +2857,16 @@ static int ia_ioctl(struct atm_dev *dev, unsigned int cmd, void __user *arg)
    }
    if (copy_from_user(&ia_cmds, arg, sizeof ia_cmds)) return -EFAULT; 
    board = ia_cmds.status;
+<<<<<<< HEAD
    if ((board < 0) || (board > iadev_count))
          board = 0;    
+=======
+
+	if ((board < 0) || (board > iadev_count))
+		board = 0;
+	board = array_index_nospec(board, iadev_count + 1);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
    iadev = ia_dev[board];
    switch (ia_cmds.cmd) {
    case MEMDUMP:
@@ -3009,8 +3122,13 @@ static int ia_pkt_tx (struct atm_vcc *vcc, struct sk_buff *skb) {
 	/* Build the DLE structure */  
 	wr_ptr = iadev->tx_dle_q.write;  
 	memset((caddr_t)wr_ptr, 0, sizeof(*wr_ptr));  
+<<<<<<< HEAD
 	wr_ptr->sys_pkt_addr = pci_map_single(iadev->pci, skb->data,
 		skb->len, PCI_DMA_TODEVICE);
+=======
+	wr_ptr->sys_pkt_addr = dma_map_single(&iadev->pci->dev, skb->data,
+					      skb->len, DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	wr_ptr->local_pkt_addr = (buf_desc_ptr->buf_start_hi << 16) | 
                                                   buf_desc_ptr->buf_start_lo;  
 	/* wr_ptr->bytes = swap_byte_order(total_len); didn't seem to affect?? */
@@ -3289,7 +3407,11 @@ static void __exit ia_module_exit(void)
 {
 	pci_unregister_driver(&ia_driver);
 
+<<<<<<< HEAD
         del_timer(&ia_timer);
+=======
+	del_timer_sync(&ia_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_init(ia_module_init);

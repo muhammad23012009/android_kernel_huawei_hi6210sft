@@ -1,5 +1,25 @@
 if RALINK
 
+<<<<<<< HEAD
+=======
+config CLKEVT_RT3352
+	bool
+	depends on SOC_RT305X || SOC_MT7620
+	default y
+	select CLKSRC_OF
+	select CLKSRC_MMIO
+
+config RALINK_ILL_ACC
+	bool
+	depends on SOC_RT305X
+	default y
+
+config IRQ_INTC
+	bool
+	default y
+	depends on !SOC_MT7621
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 choice
 	prompt "Ralink SoC selection"
 	default SOC_RT305X
@@ -8,10 +28,16 @@ choice
 
 	config SOC_RT288X
 		bool "RT288x"
+<<<<<<< HEAD
+=======
+		select MIPS_L1_CACHE_SHIFT_4
+		select HW_HAS_PCI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	config SOC_RT305X
 		bool "RT305x"
 		select USB_ARCH_HAS_HCD
+<<<<<<< HEAD
 		select USB_ARCH_HAS_OHCI
 		select USB_ARCH_HAS_EHCI
 
@@ -23,6 +49,28 @@ choice
 	config SOC_MT7620
 		bool "MT7620"
 
+=======
+
+	config SOC_RT3883
+		bool "RT3883"
+		select HW_HAS_PCI
+
+	config SOC_MT7620
+		bool "MT7620/8"
+		select CPU_MIPSR2_IRQ_VI
+		select HW_HAS_PCI
+
+	config SOC_MT7621
+		bool "MT7621"
+		select MIPS_CPU_SCACHE
+		select SYS_SUPPORTS_MULTITHREADING
+		select SYS_SUPPORTS_SMP
+		select SYS_SUPPORTS_MIPS_CPS
+		select MIPS_GIC
+		select COMMON_CLK
+		select CLKSRC_MIPS_GIC
+		select HW_HAS_PCI
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endchoice
 
 choice
@@ -37,18 +85,34 @@ choice
 	config DTB_RT2880_EVAL
 		bool "RT2880 eval kit"
 		depends on SOC_RT288X
+<<<<<<< HEAD
+=======
+		select BUILTIN_DTB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	config DTB_RT305X_EVAL
 		bool "RT305x eval kit"
 		depends on SOC_RT305X
+<<<<<<< HEAD
+=======
+		select BUILTIN_DTB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	config DTB_RT3883_EVAL
 		bool "RT3883 eval kit"
 		depends on SOC_RT3883
+<<<<<<< HEAD
+=======
+		select BUILTIN_DTB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	config DTB_MT7620A_EVAL
 		bool "MT7620A eval kit"
 		depends on SOC_MT7620
+<<<<<<< HEAD
+=======
+		select BUILTIN_DTB
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 endchoice
 

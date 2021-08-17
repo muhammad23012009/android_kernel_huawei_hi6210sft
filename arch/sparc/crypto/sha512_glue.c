@@ -139,7 +139,11 @@ static int sha384_sparc64_final(struct shash_desc *desc, u8 *hash)
 	sha512_sparc64_final(desc, D);
 
 	memcpy(hash, D, 48);
+<<<<<<< HEAD
 	memset(D, 0, 64);
+=======
+	memzero_explicit(D, 64);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

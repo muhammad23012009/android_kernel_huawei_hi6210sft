@@ -63,8 +63,13 @@ static int __init tekram_sir_init(void)
 {
 	if (tekram_delay < 1  ||  tekram_delay > 500)
 		tekram_delay = 200;
+<<<<<<< HEAD
 	IRDA_DEBUG(1, "%s - using %d ms delay\n",
 		tekram.driver_name, tekram_delay);
+=======
+	pr_debug("%s - using %d ms delay\n",
+		 tekram.driver_name, tekram_delay);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return irda_register_dongle(&tekram);
 }
 
@@ -77,8 +82,11 @@ static int tekram_open(struct sir_dev *dev)
 {
 	struct qos_info *qos = &dev->qos;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sirdev_set_dtr_rts(dev, TRUE, TRUE);
 
 	qos->baud_rate.bits &= IR_9600|IR_19200|IR_38400|IR_57600|IR_115200;
@@ -92,8 +100,11 @@ static int tekram_open(struct sir_dev *dev)
 
 static int tekram_close(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Power off dongle */
 	sirdev_set_dtr_rts(dev, FALSE, FALSE);
 
@@ -130,8 +141,11 @@ static int tekram_change_speed(struct sir_dev *dev, unsigned speed)
 	u8 byte;
 	static int ret = 0;
 	
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch(state) {
 	case SIRDEV_STATE_DONGLE_SPEED:
 
@@ -179,7 +193,12 @@ static int tekram_change_speed(struct sir_dev *dev, unsigned speed)
 		break;
 
 	default:
+<<<<<<< HEAD
 		IRDA_ERROR("%s - undefined state %d\n", __func__, state);
+=======
+		net_err_ratelimited("%s - undefined state %d\n",
+				    __func__, state);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = -EINVAL;
 		break;
 	}
@@ -204,8 +223,11 @@ static int tekram_change_speed(struct sir_dev *dev, unsigned speed)
 
 static int tekram_reset(struct sir_dev *dev)
 {
+<<<<<<< HEAD
 	IRDA_DEBUG(2, "%s()\n", __func__);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Clear DTR, Set RTS */
 	sirdev_set_dtr_rts(dev, FALSE, TRUE); 
 

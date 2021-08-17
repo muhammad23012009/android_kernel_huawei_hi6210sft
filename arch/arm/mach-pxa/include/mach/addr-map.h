@@ -39,6 +39,21 @@
 #define DMEMC_SIZE		0x00100000
 
 /*
+<<<<<<< HEAD
+=======
+ * Reserved space for low level debug virtual addresses within
+ * 0xf6200000..0xf6201000
+ */
+
+/*
+ * DFI Bus for NAND, PXA3xx only
+ */
+#define NAND_PHYS		0x43100000
+#define NAND_VIRT		IOMEM(0xf6300000)
+#define NAND_SIZE		0x00100000
+
+/*
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Internal Memory Controller (PXA27x and later)
  */
 #define IMEMC_PHYS		0x58000000

@@ -2,6 +2,11 @@
  * getopt.c
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/string.h>
 
@@ -46,6 +51,7 @@ int ncp_getopt(const char *caller, char **options, const struct ncp_option *opts
 				if (opts->has_arg & OPT_NOPARAM) {
 					return opts->val;
 				}
+<<<<<<< HEAD
 				printk(KERN_INFO "%s: the %s option requires an argument\n",
 				       caller, token);
 				return -EINVAL;
@@ -60,15 +66,38 @@ int ncp_getopt(const char *caller, char **options, const struct ncp_option *opts
 				printk(KERN_INFO "%s: invalid numeric value in %s=%s\n",
 					caller, token, val);
 				return -EDOM;
+=======
+				pr_info("%s: the %s option requires an argument\n",
+					caller, token);
+				return -EINVAL;
+			}
+			if (opts->has_arg & OPT_INT) {
+				int rc = kstrtoul(val, 0, value);
+
+				if (rc) {
+					pr_info("%s: invalid numeric value in %s=%s\n",
+						caller, token, val);
+					return rc;
+				}
+				return opts->val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 			if (opts->has_arg & OPT_STRING) {
 				return opts->val;
 			}
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: unexpected argument %s to the %s option\n",
+=======
+			pr_info("%s: unexpected argument %s to the %s option\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				caller, val, token);
 			return -EINVAL;
 		}
 	}
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: Unrecognized mount option %s\n", caller, token);
+=======
+	pr_info("%s: Unrecognized mount option %s\n", caller, token);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return -EOPNOTSUPP;
 }

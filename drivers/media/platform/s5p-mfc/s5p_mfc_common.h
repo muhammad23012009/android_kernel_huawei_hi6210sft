@@ -21,15 +21,27 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
 #include "regs-mfc.h"
 #include "regs-mfc-v6.h"
+=======
+#include <media/videobuf2-v4l2.h>
+#include "regs-mfc.h"
+#include "regs-mfc-v8.h"
+
+#define S5P_MFC_NAME		"s5p-mfc"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Definitions related to MFC memory */
 
 /* Offset base used to differentiate between CAPTURE and OUTPUT
 *  while mmaping */
+<<<<<<< HEAD
 #define DST_QUEUE_OFF_BASE      (TASK_SIZE / 2)
+=======
+#define DST_QUEUE_OFF_BASE	(1 << 30)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MFC_BANK1_ALLOC_CTX	0
 #define MFC_BANK2_ALLOC_CTX	1
@@ -38,6 +50,11 @@
 #define MFC_BANK2_ALIGN_ORDER	13
 #define MFC_BASE_ALIGN_ORDER	17
 
+<<<<<<< HEAD
+=======
+#define MFC_FW_MAX_VERSIONS	2
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <media/videobuf2-dma-contig.h>
 
 static inline dma_addr_t s5p_mfc_mem_cookie(void *a, void *b)
@@ -64,7 +81,11 @@ static inline dma_addr_t s5p_mfc_mem_cookie(void *a, void *b)
 #define MFC_ENC_CAP_PLANE_COUNT	1
 #define MFC_ENC_OUT_PLANE_COUNT	2
 #define STUFF_BYTE		4
+<<<<<<< HEAD
 #define MFC_MAX_CTRLS		70
+=======
+#define MFC_MAX_CTRLS		77
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define S5P_MFC_CODEC_NONE		-1
 #define S5P_MFC_CODEC_H264_DEC		0
@@ -80,6 +101,10 @@ static inline dma_addr_t s5p_mfc_mem_cookie(void *a, void *b)
 #define S5P_MFC_CODEC_H264_MVC_ENC	21
 #define S5P_MFC_CODEC_MPEG4_ENC		22
 #define S5P_MFC_CODEC_H263_ENC		23
+<<<<<<< HEAD
+=======
+#define S5P_MFC_CODEC_VP8_ENC		24
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define S5P_MFC_R2H_CMD_EMPTY			0
 #define S5P_MFC_R2H_CMD_SYS_INIT_RET		1
@@ -162,6 +187,14 @@ enum s5p_mfc_decode_arg {
 	MFC_DEC_RES_CHANGE,
 };
 
+<<<<<<< HEAD
+=======
+enum s5p_mfc_fw_ver {
+	MFC_FW_V1,
+	MFC_FW_V2,
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MFC_BUF_FLAG_USED	(1 << 0)
 #define MFC_BUF_FLAG_EOS	(1 << 1)
 
@@ -171,8 +204,13 @@ struct s5p_mfc_ctx;
  * struct s5p_mfc_buf - MFC buffer
  */
 struct s5p_mfc_buf {
+<<<<<<< HEAD
 	struct list_head list;
 	struct vb2_buffer *b;
+=======
+	struct vb2_v4l2_buffer *b;
+	struct list_head list;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	union {
 		struct {
 			size_t luma;
@@ -221,15 +259,25 @@ struct s5p_mfc_buf_align {
 struct s5p_mfc_variant {
 	unsigned int version;
 	unsigned int port_num;
+<<<<<<< HEAD
 	struct s5p_mfc_buf_size *buf_size;
 	struct s5p_mfc_buf_align *buf_align;
 	char	*fw_name;
+=======
+	u32 version_bit;
+	struct s5p_mfc_buf_size *buf_size;
+	struct s5p_mfc_buf_align *buf_align;
+	char	*fw_name[MFC_FW_MAX_VERSIONS];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
  * struct s5p_mfc_priv_buf - represents internal used buffer
+<<<<<<< HEAD
  * @alloc:		allocation-specific context for each buffer
  *			(videobuf2 allocator)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @ofs:		offset of each buffer, will be used for MFC
  * @virt:		kernel virtual address, only valid when the
  *			buffer accessed by driver
@@ -237,7 +285,10 @@ struct s5p_mfc_variant {
  * @size:		size of the buffer
  */
 struct s5p_mfc_priv_buf {
+<<<<<<< HEAD
 	void		*alloc;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long	ofs;
 	void		*virt;
 	dma_addr_t	dma;
@@ -279,12 +330,21 @@ struct s5p_mfc_priv_buf {
  * @watchdog_cnt:	counter for the watchdog
  * @watchdog_workqueue:	workqueue for the watchdog
  * @watchdog_work:	worker for the watchdog
+<<<<<<< HEAD
  * @alloc_ctx:		videobuf2 allocator contexts for two memory banks
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @enter_suspend:	flag set when entering suspend
  * @ctx_buf:		common context memory (MFCv6)
  * @warn_start:		hardware error code from which warnings start
  * @mfc_ops:		ops structure holding HW operation function pointers
  * @mfc_cmds:		cmd structure holding HW commands function pointers
+<<<<<<< HEAD
+=======
+ * @mfc_regs:		structure holding MFC registers
+ * @fw_ver:		loaded firmware sub-version
+ * risc_on:		flag indicates RISC is on or off
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  */
 struct s5p_mfc_dev {
@@ -301,7 +361,11 @@ struct s5p_mfc_dev {
 	struct s5p_mfc_pm	pm;
 	struct s5p_mfc_variant	*variant;
 	int num_inst;
+<<<<<<< HEAD
 	spinlock_t irqlock;	/* lock when operating on videobuf2 queues */
+=======
+	spinlock_t irqlock;	/* lock when operating on context */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spinlock_t condlock;	/* lock when changing/checking if a context is
 					ready to be processed */
 	struct mutex mfc_mutex; /* video_device lock */
@@ -321,13 +385,22 @@ struct s5p_mfc_dev {
 	struct timer_list watchdog_timer;
 	struct workqueue_struct *watchdog_workqueue;
 	struct work_struct watchdog_work;
+<<<<<<< HEAD
 	void *alloc_ctx[2];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long enter_suspend;
 
 	struct s5p_mfc_priv_buf ctx_buf;
 	int warn_start;
 	struct s5p_mfc_hw_ops *mfc_ops;
 	struct s5p_mfc_hw_cmds *mfc_cmds;
+<<<<<<< HEAD
+=======
+	const struct s5p_mfc_regs *mfc_regs;
+	enum s5p_mfc_fw_ver fw_ver;
+	bool risc_on; /* indicates if RISC is on or off */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -399,11 +472,39 @@ struct s5p_mfc_mpeg4_enc_params {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct s5p_mfc_vp8_enc_params - encoding parameters for vp8
+ */
+struct s5p_mfc_vp8_enc_params {
+	u8 imd_4x4;
+	enum v4l2_vp8_num_partitions num_partitions;
+	enum v4l2_vp8_num_ref_frames num_ref;
+	u8 filter_level;
+	u8 filter_sharpness;
+	u32 golden_frame_ref_period;
+	enum v4l2_vp8_golden_frame_sel golden_frame_sel;
+	u8 hier_layer;
+	u8 hier_layer_qp[3];
+	u8 rc_min_qp;
+	u8 rc_max_qp;
+	u8 rc_frame_qp;
+	u8 rc_p_frame_qp;
+	u8 profile;
+};
+
+/**
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * struct s5p_mfc_enc_params - general encoding parameters
  */
 struct s5p_mfc_enc_params {
 	u16 width;
 	u16 height;
+<<<<<<< HEAD
+=======
+	u32 mv_h_range;
+	u32 mv_v_range;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u16 gop_size;
 	enum v4l2_mpeg_video_multi_slice_mode slice_mode;
@@ -432,6 +533,10 @@ struct s5p_mfc_enc_params {
 	struct {
 		struct s5p_mfc_h264_enc_params h264;
 		struct s5p_mfc_mpeg4_enc_params mpeg4;
+<<<<<<< HEAD
+=======
+		struct s5p_mfc_vp8_enc_params vp8;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} codec;
 
 };
@@ -620,7 +725,11 @@ struct s5p_mfc_ctx {
 		unsigned int bits;
 	} slice_size;
 
+<<<<<<< HEAD
 	struct s5p_mfc_codec_ops *c_ops;
+=======
+	const struct s5p_mfc_codec_ops *c_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct v4l2_ctrl *ctrls[MFC_MAX_CTRLS];
 	struct v4l2_ctrl_handler ctrl_handler;
@@ -638,6 +747,10 @@ struct s5p_mfc_fmt {
 	u32 codec_mode;
 	enum s5p_mfc_fmt_type type;
 	u32 num_planes;
+<<<<<<< HEAD
+=======
+	u32 versions;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -660,7 +773,11 @@ struct mfc_control {
 
 /* Macro for making hardware specific calls */
 #define s5p_mfc_hw_call(f, op, args...) \
+<<<<<<< HEAD
 	((f && f->op) ? f->op(args) : -ENODEV)
+=======
+	((f && f->op) ? f->op(args) : (typeof(f->op(args)))(-ENODEV))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define fh_to_ctx(__fh) container_of(__fh, struct s5p_mfc_ctx, fh)
 #define ctrl_to_ctx(__ctrl) \
@@ -670,10 +787,27 @@ void clear_work_bit(struct s5p_mfc_ctx *ctx);
 void set_work_bit(struct s5p_mfc_ctx *ctx);
 void clear_work_bit_irqsave(struct s5p_mfc_ctx *ctx);
 void set_work_bit_irqsave(struct s5p_mfc_ctx *ctx);
+<<<<<<< HEAD
+=======
+int s5p_mfc_get_new_ctx(struct s5p_mfc_dev *dev);
+void s5p_mfc_cleanup_queue(struct list_head *lh, struct vb2_queue *vq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define HAS_PORTNUM(dev)	(dev ? (dev->variant ? \
 				(dev->variant->port_num ? 1 : 0) : 0) : 0)
 #define IS_TWOPORT(dev)		(dev->variant->port_num == 2 ? 1 : 0)
+<<<<<<< HEAD
 #define IS_MFCV6(dev)		(dev->variant->version >= 0x60 ? 1 : 0)
+=======
+#define IS_MFCV6_PLUS(dev)	(dev->variant->version >= 0x60 ? 1 : 0)
+#define IS_MFCV7_PLUS(dev)	(dev->variant->version >= 0x70 ? 1 : 0)
+#define IS_MFCV8(dev)		(dev->variant->version >= 0x80 ? 1 : 0)
+
+#define MFC_V5_BIT	BIT(0)
+#define MFC_V6_BIT	BIT(1)
+#define MFC_V7_BIT	BIT(2)
+#define MFC_V8_BIT	BIT(3)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* S5P_MFC_COMMON_H_ */

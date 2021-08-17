@@ -7,6 +7,10 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * unsigned int
@@ -40,7 +44,11 @@ sum	.req	r3
 		adcs	sum, sum, ip, put_byte_1	@ update checksum
 		strb	ip, [dst], #1
 		tst	dst, #2
+<<<<<<< HEAD
 		moveq	pc, lr			@ dst is now 32bit aligned
+=======
+		reteq	lr			@ dst is now 32bit aligned
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 .Ldst_16bit:	load2b	r8, ip
 		sub	len, len, #2
@@ -48,7 +56,11 @@ sum	.req	r3
 		strb	r8, [dst], #1
 		adcs	sum, sum, ip, put_byte_1
 		strb	ip, [dst], #1
+<<<<<<< HEAD
 		mov	pc, lr			@ dst is now 32bit aligned
+=======
+		ret	lr			@ dst is now 32bit aligned
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Handle 0 to 7 bytes, with any alignment of source and

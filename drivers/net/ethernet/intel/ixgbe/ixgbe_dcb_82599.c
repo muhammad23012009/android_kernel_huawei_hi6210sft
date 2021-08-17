@@ -20,6 +20,10 @@
   the file called "COPYING".
 
   Contact Information:
+<<<<<<< HEAD
+=======
+  Linux NICS <linux.nics@intel.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
   e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
@@ -222,13 +226,22 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 	reg |= IXGBE_MFLCN_DPF;
 
 	/*
+<<<<<<< HEAD
 	 * X540 supports per TC Rx priority flow control.  So
 	 * clear all TCs and only enable those that should be
+=======
+	 * X540 & X550 supports per TC Rx priority flow control.
+	 * So clear all TCs and only enable those that should be
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * enabled.
 	 */
 	reg &= ~(IXGBE_MFLCN_RPFCE_MASK | IXGBE_MFLCN_RFCE);
 
+<<<<<<< HEAD
 	if (hw->mac.type == ixgbe_mac_X540)
+=======
+	if (hw->mac.type >= ixgbe_mac_X540)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		reg |= pfc_en << IXGBE_MFLCN_RPFCE_SHIFT;
 
 	if (pfc_en)
@@ -241,14 +254,21 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 			max_tc = prio_tc[i];
 	}
 
+<<<<<<< HEAD
 	fcrtl = (hw->fc.low_water << 10) | IXGBE_FCRTL_XONE;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Configure PFC Tx thresholds per TC */
 	for (i = 0; i <= max_tc; i++) {
 		int enabled = 0;
 
 		for (j = 0; j < MAX_USER_PRIORITY; j++) {
+<<<<<<< HEAD
 			if ((prio_tc[j] == i) && (pfc_en & (1 << j))) {
+=======
+			if ((prio_tc[j] == i) && (pfc_en & BIT(j))) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				enabled = 1;
 				break;
 			}
@@ -256,9 +276,22 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 
 		if (enabled) {
 			reg = (hw->fc.high_water[i] << 10) | IXGBE_FCRTH_FCEN;
+<<<<<<< HEAD
 			IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), fcrtl);
 		} else {
 			reg = IXGBE_READ_REG(hw, IXGBE_RXPBSIZE(i)) - 32;
+=======
+			fcrtl = (hw->fc.low_water[i] << 10) | IXGBE_FCRTL_XONE;
+			IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), fcrtl);
+		} else {
+			/* In order to prevent Tx hangs when the internal Tx
+			 * switch is enabled we must set the high water mark
+			 * to the Rx packet buffer size - 24KB.  This allows
+			 * the Tx switch to function even under heavy Rx
+			 * workloads.
+			 */
+			reg = IXGBE_READ_REG(hw, IXGBE_RXPBSIZE(i)) - 24576;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), 0);
 		}
 

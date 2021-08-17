@@ -84,7 +84,11 @@ static int disconnect(const struct path *path, char *buf, char **name,
  *          When no error the path name is returned in @name which points to
  *          to a position in @buf
  */
+<<<<<<< HEAD
 static int d_namespace_path(struct path *path, char *buf, int buflen,
+=======
+static int d_namespace_path(const struct path *path, char *buf, int buflen,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			    char **name, int flags)
 {
 	char *res;
@@ -146,7 +150,11 @@ static int d_namespace_path(struct path *path, char *buf, int buflen,
 	 *    security_path hooks as a deleted dentry except without an inode
 	 *    allocated.
 	 */
+<<<<<<< HEAD
 	if (d_unlinked(path->dentry) && path->dentry->d_inode &&
+=======
+	if (d_unlinked(path->dentry) && d_is_positive(path->dentry) &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    !(flags & PATH_MEDIATE_DELETED)) {
 			error = -ENOENT;
 			goto out;
@@ -169,7 +177,11 @@ out:
  *
  * Returns: %0 else error on failure
  */
+<<<<<<< HEAD
 static int get_name_to_buffer(struct path *path, int flags, char *buffer,
+=======
+static int get_name_to_buffer(const struct path *path, int flags, char *buffer,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      int size, char **name, const char **info)
 {
 	int adjust = (flags & PATH_IS_DIR) ? 1 : 0;
@@ -185,7 +197,11 @@ static int get_name_to_buffer(struct path *path, int flags, char *buffer,
 	if (info && error) {
 		if (error == -ENOENT)
 			*info = "Failed name lookup - deleted entry";
+<<<<<<< HEAD
 		else if (error == -ESTALE)
+=======
+		else if (error == -EACCES)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			*info = "Failed name lookup - disconnected path";
 		else if (error == -ENAMETOOLONG)
 			*info = "Failed name lookup - name too long";
@@ -215,8 +231,13 @@ static int get_name_to_buffer(struct path *path, int flags, char *buffer,
  *
  * Returns: %0 else error code if could retrieve name
  */
+<<<<<<< HEAD
 int aa_path_name(struct path *path, int flags, char **buffer, const char **name,
 		 const char **info)
+=======
+int aa_path_name(const struct path *path, int flags, char **buffer,
+		 const char **name, const char **info)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char *buf, *str = NULL;
 	int size = 256;

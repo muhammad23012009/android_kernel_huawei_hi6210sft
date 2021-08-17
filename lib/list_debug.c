@@ -11,7 +11,10 @@
 #include <linux/bug.h>
 #include <linux/kernel.h>
 #include <linux/rculist.h>
+<<<<<<< HEAD
 #include <linux/bug.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Insert a new entry between two known consecutive entries.
@@ -35,6 +38,7 @@ void __list_add(struct list_head *new,
 	WARN(new == prev || new == next,
 	     "list_add double add: new=%p, prev=%p, next=%p.\n",
 	     new, prev, next);
+<<<<<<< HEAD
 
 	BUG_ON((prev->next != next || next->prev != prev ||
 		 new == prev || new == next) && PANIC_CORRUPTION);
@@ -43,6 +47,12 @@ void __list_add(struct list_head *new,
 	new->next = next;
 	new->prev = prev;
 	prev->next = new;
+=======
+	next->prev = new;
+	new->next = next;
+	new->prev = prev;
+	WRITE_ONCE(prev->next, new);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 EXPORT_SYMBOL(__list_add);
 
@@ -64,10 +74,15 @@ void __list_del_entry(struct list_head *entry)
 		"but was %p\n", entry, prev->next) ||
 	    WARN(next->prev != entry,
 		"list_del corruption. next->prev should be %p, "
+<<<<<<< HEAD
 		"but was %p\n", entry, next->prev)) {
 		BUG_ON(PANIC_CORRUPTION);
 		return;
 	}
+=======
+		"but was %p\n", entry, next->prev))
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	__list_del(prev, next);
 }

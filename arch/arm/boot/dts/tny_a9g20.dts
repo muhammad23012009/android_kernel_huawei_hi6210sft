@@ -6,8 +6,13 @@
  * Licensed under GPLv2.
  */
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "at91sam9g20.dtsi"
 /include/ "tny_a9260_common.dtsi"
+=======
+#include "at91sam9g20.dtsi"
+#include "tny_a9260_common.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Calao TNY A9G20";

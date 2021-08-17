@@ -8,7 +8,11 @@ struct mt2063_config {
 	u32 refclock;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_TUNER_MT2063)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_TUNER_MT2063)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct dvb_frontend *mt2063_attach(struct dvb_frontend *fe,
 				   struct mt2063_config *config,
 				   struct i2c_adapter *i2c);

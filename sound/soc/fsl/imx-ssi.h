@@ -209,11 +209,18 @@ struct imx_ssi {
 	struct snd_dmaengine_dai_dma_data dma_params_tx;
 	struct imx_dma_data filter_data_tx;
 	struct imx_dma_data filter_data_rx;
+<<<<<<< HEAD
 
 	int enabled;
 
 	struct platform_device *soc_platform_pdev;
 	struct platform_device *soc_platform_pdev_fiq;
+=======
+	struct imx_pcm_fiq_params fiq_params;
+
+	int fiq_init;
+	int dma_init;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif /* _IMX_SSI_H */

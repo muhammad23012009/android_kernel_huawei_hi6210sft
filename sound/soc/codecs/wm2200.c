@@ -166,7 +166,11 @@ static const struct wm_adsp_region wm2200_dsp2_regions[] = {
 	{ .type = WMFW_ADSP1_ZM, .base = WM2200_DSP2_ZM_BASE },
 };
 
+<<<<<<< HEAD
 static struct reg_default wm2200_reg_defaults[] = {
+=======
+static const struct reg_default wm2200_reg_defaults[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x000B, 0x0000 },   /* R11    - Tone Generator 1 */
 	{ 0x0102, 0x0000 },   /* R258   - Clocking 3 */
 	{ 0x0103, 0x0011 },   /* R259   - Clocking 4 */
@@ -897,7 +901,11 @@ static bool wm2200_readable_register(struct device *dev, unsigned int reg)
 	}
 }
 
+<<<<<<< HEAD
 static const struct reg_default wm2200_reva_patch[] = {
+=======
+static const struct reg_sequence wm2200_reva_patch[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ 0x07, 0x0003 },
 	{ 0x102, 0x0200 },
 	{ 0x203, 0x0084 },
@@ -1083,7 +1091,11 @@ static int wm2200_mixer_values[] = {
 
 #define WM2200_MUX_CTL_DECL(name) \
 	const struct snd_kcontrol_new name##_mux =	\
+<<<<<<< HEAD
 		SOC_DAPM_VALUE_ENUM("Route", name##_enum)
+=======
+		SOC_DAPM_ENUM("Route", name##_enum)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define WM2200_MIXER_ENUMS(name, base_reg) \
 	static WM2200_MUX_ENUM_DECL(name##_in1_enum, base_reg);	     \
@@ -1113,11 +1125,18 @@ static const char *wm2200_rxanc_input_sel_texts[] = {
 	"None", "IN1", "IN2", "IN3",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum wm2200_rxanc_input_sel =
 	SOC_ENUM_SINGLE(WM2200_RXANC_SRC,
 			WM2200_IN_RXANC_SEL_SHIFT,
 			ARRAY_SIZE(wm2200_rxanc_input_sel_texts),
 			wm2200_rxanc_input_sel_texts);
+=======
+static SOC_ENUM_SINGLE_DECL(wm2200_rxanc_input_sel,
+			    WM2200_RXANC_SRC,
+			    WM2200_IN_RXANC_SEL_SHIFT,
+			    wm2200_rxanc_input_sel_texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new wm2200_snd_controls[] = {
 SOC_SINGLE("IN1 High Performance Switch", WM2200_IN1L_CONTROL,
@@ -1208,7 +1227,11 @@ WM2200_MIXER_ENUMS(LHPF1, WM2200_LHPF1MIX_INPUT_1_SOURCE);
 WM2200_MIXER_ENUMS(LHPF2, WM2200_LHPF2MIX_INPUT_1_SOURCE);
 
 #define WM2200_MUX(name, ctrl) \
+<<<<<<< HEAD
 	SND_SOC_DAPM_VALUE_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
+=======
+	SND_SOC_DAPM_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define WM2200_MIXER_WIDGETS(name, name_str)	\
 	WM2200_MUX(name_str " Input 1", &name##_in1_mux), \
@@ -1288,11 +1311,18 @@ static const char *wm2200_aec_loopback_texts[] = {
 	"OUT1L", "OUT1R", "OUT2L", "OUT2R",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum wm2200_aec_loopback =
 	SOC_ENUM_SINGLE(WM2200_DAC_AEC_CONTROL_1,
 			WM2200_AEC_LOOPBACK_SRC_SHIFT,
 			ARRAY_SIZE(wm2200_aec_loopback_texts),
 			wm2200_aec_loopback_texts);
+=======
+static SOC_ENUM_SINGLE_DECL(wm2200_aec_loopback,
+			    WM2200_DAC_AEC_CONTROL_1,
+			    WM2200_AEC_LOOPBACK_SRC_SHIFT,
+			    wm2200_aec_loopback_texts);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new wm2200_aec_loopback_mux =
 	SOC_DAPM_ENUM("AEC Loopback", wm2200_aec_loopback);
@@ -1556,6 +1586,7 @@ static int wm2200_probe(struct snd_soc_codec *codec)
 	int ret;
 
 	wm2200->codec = codec;
+<<<<<<< HEAD
 	codec->control_data = wm2200->regmap;
 	codec->dapm.bias_level = SND_SOC_BIAS_OFF;
 
@@ -1566,6 +1597,10 @@ static int wm2200_probe(struct snd_soc_codec *codec)
 	}
 
 	ret = snd_soc_add_codec_controls(codec, wm_adsp1_fw_controls, 2);
+=======
+
+	ret = snd_soc_add_codec_controls(codec, wm_adsp_fw_controls, 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret != 0)
 		return ret;
 
@@ -1712,7 +1747,11 @@ static int wm2200_hw_params(struct snd_pcm_substream *substream,
 	int *bclk_rates;
 
 	/* Data sizes if not using TDM */
+<<<<<<< HEAD
 	wl = snd_pcm_format_width(params_format(params));
+=======
+	wl = params_width(params);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (wl < 0)
 		return wl;
 	fl = snd_soc_params_to_frame_size(params);
@@ -1951,6 +1990,10 @@ static int wm2200_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 	struct wm2200_priv *wm2200 = snd_soc_codec_get_drvdata(codec);
 	struct _fll_div factors;
 	int ret, i, timeout;
+<<<<<<< HEAD
+=======
+	unsigned long time_left;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!Fout) {
 		dev_dbg(codec->dev, "FLL disabled");
@@ -2030,9 +2073,16 @@ static int wm2200_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 	/* Poll for the lock; will use the interrupt to exit quickly */
 	for (i = 0; i < timeout; i++) {
 		if (i2c->irq) {
+<<<<<<< HEAD
 			ret = wait_for_completion_timeout(&wm2200->fll_lock,
 							  msecs_to_jiffies(25));
 			if (ret > 0)
+=======
+			time_left = wait_for_completion_timeout(
+							&wm2200->fll_lock,
+							msecs_to_jiffies(25));
+			if (time_left > 0)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				break;
 		} else {
 			msleep(1);
@@ -2111,7 +2161,11 @@ static struct snd_soc_dai_driver wm2200_dai = {
 	.ops = &wm2200_dai_ops,
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_wm2200 = {
+=======
+static const struct snd_soc_codec_driver soc_codec_wm2200 = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe = wm2200_probe,
 
 	.idle_bias_off = true,
@@ -2119,12 +2173,23 @@ static struct snd_soc_codec_driver soc_codec_wm2200 = {
 	.set_sysclk = wm2200_set_sysclk,
 	.set_pll = wm2200_set_fll,
 
+<<<<<<< HEAD
 	.controls = wm2200_snd_controls,
 	.num_controls = ARRAY_SIZE(wm2200_snd_controls),
 	.dapm_widgets = wm2200_dapm_widgets,
 	.num_dapm_widgets = ARRAY_SIZE(wm2200_dapm_widgets),
 	.dapm_routes = wm2200_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm2200_dapm_routes),
+=======
+	.component_driver = {
+		.controls		= wm2200_snd_controls,
+		.num_controls		= ARRAY_SIZE(wm2200_snd_controls),
+		.dapm_widgets		= wm2200_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm2200_dapm_widgets),
+		.dapm_routes		= wm2200_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm2200_dapm_routes),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static irqreturn_t wm2200_irq(int irq, void *data)
@@ -2449,7 +2514,11 @@ static int wm2200_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+#ifdef CONFIG_PM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm2200_runtime_suspend(struct device *dev)
 {
 	struct wm2200_priv *wm2200 = dev_get_drvdata(dev);
@@ -2489,7 +2558,11 @@ static int wm2200_runtime_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 static struct dev_pm_ops wm2200_pm = {
+=======
+static const struct dev_pm_ops wm2200_pm = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	SET_RUNTIME_PM_OPS(wm2200_runtime_suspend, wm2200_runtime_resume,
 			   NULL)
 };
@@ -2503,7 +2576,10 @@ MODULE_DEVICE_TABLE(i2c, wm2200_i2c_id);
 static struct i2c_driver wm2200_i2c_driver = {
 	.driver = {
 		.name = "wm2200",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm = &wm2200_pm,
 	},
 	.probe =    wm2200_i2c_probe,

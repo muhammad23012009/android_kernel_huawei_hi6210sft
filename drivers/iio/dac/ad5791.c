@@ -16,17 +16,28 @@
 #include <linux/sysfs.h>
 #include <linux/regulator/consumer.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 #include <linux/iio/dac/ad5791.h>
 
+<<<<<<< HEAD
 #define AD5791_RES_MASK(x)		((1 << (x)) - 1)
 #define AD5791_DAC_MASK			AD5791_RES_MASK(20)
 #define AD5791_DAC_MSB			(1 << 19)
 
 #define AD5791_CMD_READ			(1 << 23)
 #define AD5791_CMD_WRITE		(0 << 23)
+=======
+#define AD5791_DAC_MASK			GENMASK(19, 0)
+
+#define AD5791_CMD_READ			BIT(23)
+#define AD5791_CMD_WRITE		0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AD5791_ADDR(addr)		((addr) << 20)
 
 /* Registers */
@@ -37,11 +48,19 @@
 #define AD5791_ADDR_SW_CTRL		4
 
 /* Control Register */
+<<<<<<< HEAD
 #define AD5791_CTRL_RBUF		(1 << 1)
 #define AD5791_CTRL_OPGND		(1 << 2)
 #define AD5791_CTRL_DACTRI		(1 << 3)
 #define AD5791_CTRL_BIN2SC		(1 << 4)
 #define AD5791_CTRL_SDODIS		(1 << 5)
+=======
+#define AD5791_CTRL_RBUF		BIT(1)
+#define AD5791_CTRL_OPGND		BIT(2)
+#define AD5791_CTRL_DACTRI		BIT(3)
+#define AD5791_CTRL_BIN2SC		BIT(4)
+#define AD5791_CTRL_SDODIS		BIT(5)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define AD5761_CTRL_LINCOMP(x)		((x) << 6)
 
 #define AD5791_LINCOMP_0_10		0
@@ -54,9 +73,15 @@
 #define AD5780_LINCOMP_10_20		12
 
 /* Software Control Register */
+<<<<<<< HEAD
 #define AD5791_SWCTRL_LDAC		(1 << 0)
 #define AD5791_SWCTRL_CLR		(1 << 1)
 #define AD5791_SWCTRL_RESET		(1 << 2)
+=======
+#define AD5791_SWCTRL_LDAC		BIT(0)
+#define AD5791_SWCTRL_CLR		BIT(1)
+#define AD5791_SWCTRL_RESET		BIT(2)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define AD5791_DAC_PWRDN_6K		0
 #define AD5791_DAC_PWRDN_3STATE		1
@@ -72,7 +97,11 @@ struct ad5791_chip_info {
 
 /**
  * struct ad5791_state - driver instance specific data
+<<<<<<< HEAD
  * @us:			spi_device
+=======
+ * @spi:			spi_device
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @reg_vdd:		positive supply regulator
  * @reg_vss:		negative supply regulator
  * @chip_info:		chip model specific constants
@@ -91,6 +120,14 @@ struct ad5791_state {
 	unsigned			ctrl;
 	unsigned			pwr_down_mode;
 	bool				pwr_down;
+<<<<<<< HEAD
+=======
+
+	union {
+		__be32 d32;
+		u8 d8[4];
+	} data[3] ____cacheline_aligned;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -104,6 +141,7 @@ enum ad5791_supported_device_ids {
 	ID_AD5791,
 };
 
+<<<<<<< HEAD
 static int ad5791_spi_write(struct spi_device *spi, u8 addr, u32 val)
 {
 	union {
@@ -128,17 +166,40 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
 	struct spi_transfer xfers[] = {
 		{
 			.tx_buf = &data[0].d8[1],
+=======
+static int ad5791_spi_write(struct ad5791_state *st, u8 addr, u32 val)
+{
+	st->data[0].d32 = cpu_to_be32(AD5791_CMD_WRITE |
+			      AD5791_ADDR(addr) |
+			      (val & AD5791_DAC_MASK));
+
+	return spi_write(st->spi, &st->data[0].d8[1], 3);
+}
+
+static int ad5791_spi_read(struct ad5791_state *st, u8 addr, u32 *val)
+{
+	int ret;
+	struct spi_transfer xfers[] = {
+		{
+			.tx_buf = &st->data[0].d8[1],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.bits_per_word = 8,
 			.len = 3,
 			.cs_change = 1,
 		}, {
+<<<<<<< HEAD
 			.tx_buf = &data[1].d8[1],
 			.rx_buf = &data[2].d8[1],
+=======
+			.tx_buf = &st->data[1].d8[1],
+			.rx_buf = &st->data[2].d8[1],
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			.bits_per_word = 8,
 			.len = 3,
 		},
 	};
 
+<<<<<<< HEAD
 	data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
 			      AD5791_ADDR(addr));
 	data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
@@ -146,6 +207,15 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
 	ret = spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
 
 	*val = be32_to_cpu(data[2].d32);
+=======
+	st->data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
+			      AD5791_ADDR(addr));
+	st->data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
+
+	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
+
+	*val = be32_to_cpu(st->data[2].d32);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -210,7 +280,11 @@ static ssize_t ad5791_write_dac_powerdown(struct iio_dev *indio_dev,
 	}
 	st->pwr_down = pwr_down;
 
+<<<<<<< HEAD
 	ret = ad5791_spi_write(st->spi, AD5791_ADDR_CTRL, st->ctrl);
+=======
+	ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret ? ret : len;
 }
@@ -263,16 +337,26 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
 
 	switch (m) {
 	case IIO_CHAN_INFO_RAW:
+<<<<<<< HEAD
 		ret = ad5791_spi_read(st->spi, chan->address, val);
+=======
+		ret = ad5791_spi_read(st, chan->address, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret)
 			return ret;
 		*val &= AD5791_DAC_MASK;
 		*val >>= chan->scan_type.shift;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
+<<<<<<< HEAD
 		*val = 0;
 		*val2 = (((u64)st->vref_mv) * 1000000ULL) >> chan->scan_type.realbits;
 		return IIO_VAL_INT_PLUS_MICRO;
+=======
+		*val = st->vref_mv;
+		*val2 = (1 << chan->scan_type.realbits) - 1;
+		return IIO_VAL_FRACTIONAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case IIO_CHAN_INFO_OFFSET:
 		val64 = (((u64)st->vref_neg_mv) << chan->scan_type.realbits);
 		do_div(val64, st->vref_mv);
@@ -287,16 +371,29 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
 static const struct iio_chan_spec_ext_info ad5791_ext_info[] = {
 	{
 		.name = "powerdown",
+<<<<<<< HEAD
 		.shared = true,
 		.read = ad5791_read_dac_powerdown,
 		.write = ad5791_write_dac_powerdown,
 	},
 	IIO_ENUM("powerdown_mode", true, &ad5791_powerdown_mode_enum),
+=======
+		.shared = IIO_SHARED_BY_TYPE,
+		.read = ad5791_read_dac_powerdown,
+		.write = ad5791_write_dac_powerdown,
+	},
+	IIO_ENUM("powerdown_mode", IIO_SHARED_BY_TYPE,
+		 &ad5791_powerdown_mode_enum),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5791_powerdown_mode_enum),
 	{ },
 };
 
+<<<<<<< HEAD
 #define AD5791_CHAN(bits, shift) {			\
+=======
+#define AD5791_CHAN(bits, _shift) {			\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.type = IIO_VOLTAGE,				\
 	.output = 1,					\
 	.indexed = 1,					\
@@ -305,7 +402,16 @@ static const struct iio_chan_spec_ext_info ad5791_ext_info[] = {
 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
 		BIT(IIO_CHAN_INFO_OFFSET),		\
+<<<<<<< HEAD
 	.scan_type = IIO_ST('u', bits, 24, shift),	\
+=======
+	.scan_type = {					\
+		.sign = 'u',				\
+		.realbits = (bits),			\
+		.storagebits = 24,			\
+		.shift = (_shift),			\
+	},						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ext_info = ad5791_ext_info,			\
 }
 
@@ -326,10 +432,17 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
+<<<<<<< HEAD
 		val &= AD5791_RES_MASK(chan->scan_type.realbits);
 		val <<= chan->scan_type.shift;
 
 		return ad5791_spi_write(st->spi, chan->address, val);
+=======
+		val &= GENMASK(chan->scan_type.realbits - 1, 0);
+		val <<= chan->scan_type.shift;
+
+		return ad5791_spi_write(st, chan->address, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	default:
 		return -EINVAL;
@@ -349,6 +462,7 @@ static int ad5791_probe(struct spi_device *spi)
 	struct ad5791_state *st;
 	int ret, pos_voltage_uv = 0, neg_voltage_uv = 0;
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*st));
 	if (indio_dev == NULL) {
 		ret = -ENOMEM;
@@ -360,6 +474,17 @@ static int ad5791_probe(struct spi_device *spi)
 		ret = regulator_enable(st->reg_vdd);
 		if (ret)
 			goto error_put_reg_pos;
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+	if (!indio_dev)
+		return -ENOMEM;
+	st = iio_priv(indio_dev);
+	st->reg_vdd = devm_regulator_get(&spi->dev, "vdd");
+	if (!IS_ERR(st->reg_vdd)) {
+		ret = regulator_enable(st->reg_vdd);
+		if (ret)
+			return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ret = regulator_get_voltage(st->reg_vdd);
 		if (ret < 0)
@@ -368,11 +493,19 @@ static int ad5791_probe(struct spi_device *spi)
 		pos_voltage_uv = ret;
 	}
 
+<<<<<<< HEAD
 	st->reg_vss = regulator_get(&spi->dev, "vss");
 	if (!IS_ERR(st->reg_vss)) {
 		ret = regulator_enable(st->reg_vss);
 		if (ret)
 			goto error_put_reg_neg;
+=======
+	st->reg_vss = devm_regulator_get(&spi->dev, "vss");
+	if (!IS_ERR(st->reg_vss)) {
+		ret = regulator_enable(st->reg_vss);
+		if (ret)
+			goto error_disable_reg_pos;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ret = regulator_get_voltage(st->reg_vss);
 		if (ret < 0)
@@ -394,7 +527,11 @@ static int ad5791_probe(struct spi_device *spi)
 		dev_warn(&spi->dev, "reference voltage unspecified\n");
 	}
 
+<<<<<<< HEAD
 	ret = ad5791_spi_write(spi, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
+=======
+	ret = ad5791_spi_write(st, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto error_disable_reg_neg;
 
@@ -406,7 +543,11 @@ static int ad5791_probe(struct spi_device *spi)
 		  | ((pdata && pdata->use_rbuf_gain2) ? 0 : AD5791_CTRL_RBUF) |
 		  AD5791_CTRL_BIN2SC;
 
+<<<<<<< HEAD
 	ret = ad5791_spi_write(spi, AD5791_ADDR_CTRL, st->ctrl |
+=======
+	ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		AD5791_CTRL_OPGND | AD5791_CTRL_DACTRI);
 	if (ret)
 		goto error_disable_reg_neg;
@@ -428,6 +569,7 @@ static int ad5791_probe(struct spi_device *spi)
 error_disable_reg_neg:
 	if (!IS_ERR(st->reg_vss))
 		regulator_disable(st->reg_vss);
+<<<<<<< HEAD
 error_put_reg_neg:
 	if (!IS_ERR(st->reg_vss))
 		regulator_put(st->reg_vss);
@@ -441,6 +583,11 @@ error_put_reg_pos:
 	iio_device_free(indio_dev);
 error_ret:
 
+=======
+error_disable_reg_pos:
+	if (!IS_ERR(st->reg_vdd))
+		regulator_disable(st->reg_vdd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -450,6 +597,7 @@ static int ad5791_remove(struct spi_device *spi)
 	struct ad5791_state *st = iio_priv(indio_dev);
 
 	iio_device_unregister(indio_dev);
+<<<<<<< HEAD
 	if (!IS_ERR(st->reg_vdd)) {
 		regulator_disable(st->reg_vdd);
 		regulator_put(st->reg_vdd);
@@ -460,6 +608,13 @@ static int ad5791_remove(struct spi_device *spi)
 		regulator_put(st->reg_vss);
 	}
 	iio_device_free(indio_dev);
+=======
+	if (!IS_ERR(st->reg_vdd))
+		regulator_disable(st->reg_vdd);
+
+	if (!IS_ERR(st->reg_vss))
+		regulator_disable(st->reg_vss);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -477,7 +632,10 @@ MODULE_DEVICE_TABLE(spi, ad5791_id);
 static struct spi_driver ad5791_driver = {
 	.driver = {
 		   .name = "ad5791",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   },
 	.probe = ad5791_probe,
 	.remove = ad5791_remove,

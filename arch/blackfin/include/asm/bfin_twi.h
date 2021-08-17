@@ -9,6 +9,7 @@
 #ifndef __ASM_BFIN_TWI_H__
 #define __ASM_BFIN_TWI_H__
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/i2c.h>
 
@@ -63,6 +64,9 @@ struct bfin_twi_iface {
 	u16			saved_control;
 	struct bfin_twi_regs __iomem *regs_base;
 };
+=======
+#include <asm/blackfin.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DEFINE_TWI_REG(reg_name, reg) \
 static inline u16 read_##reg_name(struct bfin_twi_iface *iface) \
@@ -71,7 +75,10 @@ static inline void write_##reg_name(struct bfin_twi_iface *iface, u16 v) \
 	{ bfin_write16(&iface->regs_base->reg, v); }
 
 DEFINE_TWI_REG(CLKDIV, clkdiv)
+<<<<<<< HEAD
 DEFINE_TWI_REG(CONTROL, control)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DEFINE_TWI_REG(SLAVE_CTL, slave_ctl)
 DEFINE_TWI_REG(SLAVE_STAT, slave_stat)
 DEFINE_TWI_REG(SLAVE_ADDR, slave_addr)
@@ -80,7 +87,10 @@ DEFINE_TWI_REG(MASTER_STAT, master_stat)
 DEFINE_TWI_REG(MASTER_ADDR, master_addr)
 DEFINE_TWI_REG(INT_STAT, int_stat)
 DEFINE_TWI_REG(INT_MASK, int_mask)
+<<<<<<< HEAD
 DEFINE_TWI_REG(FIFO_CTL, fifo_ctl)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 DEFINE_TWI_REG(FIFO_STAT, fifo_stat)
 DEFINE_TWI_REG(XMT_DATA8, xmt_data8)
 DEFINE_TWI_REG(XMT_DATA16, xmt_data16)
@@ -113,6 +123,7 @@ static inline u16 read_RCV_DATA16(struct bfin_twi_iface *iface)
 }
 #endif
 
+<<<<<<< HEAD
 
 /*  ********************  TWO-WIRE INTERFACE (TWI) MASKS  ***********************/
 /* TWI_CLKDIV Macros (Use: *pTWI_CLKDIV = CLKLOW(x)|CLKHI(y);  )				*/
@@ -184,4 +195,27 @@ static inline u16 read_RCV_DATA16(struct bfin_twi_iface *iface)
 #define	RCV_HALF	0x0004	/*              Receive FIFO Has 1 Byte To Read                 */
 #define	RCV_FULL	0x000C	/*              Receive FIFO Full (2 Bytes To Read)             */
 
+=======
+static inline u16 read_FIFO_CTL(struct bfin_twi_iface *iface)
+{
+	return bfin_read16(&iface->regs_base->fifo_ctl);
+}
+
+static inline void write_FIFO_CTL(struct bfin_twi_iface *iface, u16 v)
+{
+	bfin_write16(&iface->regs_base->fifo_ctl, v);
+	SSYNC();
+}
+
+static inline u16 read_CONTROL(struct bfin_twi_iface *iface)
+{
+	return bfin_read16(&iface->regs_base->control);
+}
+
+static inline void write_CONTROL(struct bfin_twi_iface *iface, u16 v)
+{
+	SSYNC();
+	bfin_write16(&iface->regs_base->control, v);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

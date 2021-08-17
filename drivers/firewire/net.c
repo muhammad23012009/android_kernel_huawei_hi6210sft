@@ -237,6 +237,7 @@ static int fwnet_header_create(struct sk_buff *skb, struct net_device *net,
 	return -net->hard_header_len;
 }
 
+<<<<<<< HEAD
 static int fwnet_header_rebuild(struct sk_buff *skb)
 {
 	struct fwnet_header *h = (struct fwnet_header *)skb->data;
@@ -249,6 +250,8 @@ static int fwnet_header_rebuild(struct sk_buff *skb)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int fwnet_header_cache(const struct neighbour *neigh,
 			      struct hh_cache *hh, __be16 type)
 {
@@ -261,7 +264,15 @@ static int fwnet_header_cache(const struct neighbour *neigh,
 	h = (struct fwnet_header *)((u8 *)hh->hh_data + HH_DATA_OFF(sizeof(*h)));
 	h->h_proto = type;
 	memcpy(h->h_dest, neigh->ha, net->addr_len);
+<<<<<<< HEAD
 	hh->hh_len = FWNET_HLEN;
+=======
+
+	/* Pairs with the READ_ONCE() in neigh_resolve_output(),
+	 * neigh_hh_output() and neigh_update_hhs().
+	 */
+	smp_store_release(&hh->hh_len, FWNET_HLEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -282,7 +293,10 @@ static int fwnet_header_parse(const struct sk_buff *skb, unsigned char *haddr)
 
 static const struct header_ops fwnet_header_ops = {
 	.create         = fwnet_header_create,
+<<<<<<< HEAD
 	.rebuild        = fwnet_header_rebuild,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.cache		= fwnet_header_cache,
 	.cache_update	= fwnet_header_cache_update,
 	.parse          = fwnet_header_parse,
@@ -1055,7 +1069,11 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+<<<<<<< HEAD
 	dev->netdev->trans_start = jiffies;
+=======
+	netif_trans_update(dev->netdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  out:
 	if (free)
 		fwnet_free_ptask(ptask);
@@ -1459,9 +1477,15 @@ static int fwnet_add_peer(struct fwnet_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int fwnet_probe(struct device *_dev)
 {
 	struct fw_unit *unit = fw_unit(_dev);
+=======
+static int fwnet_probe(struct fw_unit *unit,
+		       const struct ieee1394_device_id *id)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fw_device *device = fw_parent_device(unit);
 	struct fw_card *card = device->card;
 	struct net_device *net;
@@ -1479,10 +1503,18 @@ static int fwnet_probe(struct device *_dev)
 		goto have_dev;
 	}
 
+<<<<<<< HEAD
 	net = alloc_netdev(sizeof(*dev), "firewire%d", fwnet_init_dev);
 	if (net == NULL) {
 		ret = -ENOMEM;
 		goto out;
+=======
+	net = alloc_netdev(sizeof(*dev), "firewire%d", NET_NAME_UNKNOWN,
+			   fwnet_init_dev);
+	if (net == NULL) {
+		mutex_unlock(&fwnet_device_mutex);
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	allocated_netdev = true;
@@ -1545,6 +1577,27 @@ static int fwnet_probe(struct device *_dev)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * FIXME abort partially sent fragmented datagrams,
+ * discard partially received fragmented datagrams
+ */
+static void fwnet_update(struct fw_unit *unit)
+{
+	struct fw_device *device = fw_parent_device(unit);
+	struct fwnet_peer *peer = dev_get_drvdata(&unit->device);
+	int generation;
+
+	generation = device->generation;
+
+	spin_lock_irq(&peer->dev->lock);
+	peer->node_id    = device->node_id;
+	peer->generation = generation;
+	spin_unlock_irq(&peer->dev->lock);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void fwnet_remove_peer(struct fwnet_peer *peer, struct fwnet_device *dev)
 {
 	struct fwnet_partial_datagram *pd, *pd_next;
@@ -1561,9 +1614,15 @@ static void fwnet_remove_peer(struct fwnet_peer *peer, struct fwnet_device *dev)
 	kfree(peer);
 }
 
+<<<<<<< HEAD
 static int fwnet_remove(struct device *_dev)
 {
 	struct fwnet_peer *peer = dev_get_drvdata(_dev);
+=======
+static void fwnet_remove(struct fw_unit *unit)
+{
+	struct fwnet_peer *peer = dev_get_drvdata(&unit->device);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fwnet_device *dev = peer->dev;
 	struct net_device *net;
 	int i;
@@ -1588,6 +1647,7 @@ static int fwnet_remove(struct device *_dev)
 	}
 
 	mutex_unlock(&fwnet_device_mutex);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -1608,6 +1668,8 @@ static void fwnet_update(struct fw_unit *unit)
 	peer->node_id    = device->node_id;
 	peer->generation = generation;
 	spin_unlock_irq(&peer->dev->lock);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct ieee1394_device_id fwnet_id_table[] = {
@@ -1633,10 +1695,17 @@ static struct fw_driver fwnet_driver = {
 		.owner  = THIS_MODULE,
 		.name   = KBUILD_MODNAME,
 		.bus    = &fw_bus_type,
+<<<<<<< HEAD
 		.probe  = fwnet_probe,
 		.remove = fwnet_remove,
 	},
 	.update   = fwnet_update,
+=======
+	},
+	.probe    = fwnet_probe,
+	.update   = fwnet_update,
+	.remove   = fwnet_remove,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = fwnet_id_table,
 };
 

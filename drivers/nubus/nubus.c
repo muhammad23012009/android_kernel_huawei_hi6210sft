@@ -473,7 +473,11 @@ static struct nubus_dev* __init
 	if (slot == 0 && (unsigned long)dir.base % 2)
 		dir.base += 1;
 	
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_DEBUG "nubus_get_functional_resource: parent is 0x%p, dir is 0x%p\n",
 		       parent->base, dir.base);
 
@@ -568,7 +572,11 @@ static int __init nubus_get_vidnames(struct nubus_board* board,
 
 	printk(KERN_INFO "    video modes supported:\n");
 	nubus_get_subdir(parent, &dir);
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_DEBUG "nubus_get_vidnames: parent is 0x%p, dir is 0x%p\n",
 		       parent->base, dir.base);
 
@@ -629,7 +637,11 @@ static int __init nubus_get_vendorinfo(struct nubus_board* board,
 
 	printk(KERN_INFO "    vendor info:\n");
 	nubus_get_subdir(parent, &dir);
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_DEBUG "nubus_get_vendorinfo: parent is 0x%p, dir is 0x%p\n",
 		       parent->base, dir.base);
 
@@ -654,7 +666,11 @@ static int __init nubus_get_board_resource(struct nubus_board* board, int slot,
 	struct nubus_dirent ent;
 	
 	nubus_get_subdir(parent, &dir);
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_DEBUG "nubus_get_board_resource: parent is 0x%p, dir is 0x%p\n",
 		       parent->base, dir.base);
 
@@ -753,19 +769,31 @@ static void __init nubus_find_rom_dir(struct nubus_board* board)
 	if (nubus_readdir(&dir, &ent) == -1)
 		goto badrom;
 
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO "nubus_get_rom_dir: entry %02x %06x\n", ent.type, ent.data);
 	/* This one takes us to where we want to go. */
 	if (nubus_readdir(&dir, &ent) == -1) 
 		goto badrom;
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_DEBUG "nubus_get_rom_dir: entry %02x %06x\n", ent.type, ent.data);
 	nubus_get_subdir(&ent, &dir);
 
 	/* Resource ID 01, also an "Unknown Macintosh" */
 	if (nubus_readdir(&dir, &ent) == -1) 
 		goto badrom;
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_DEBUG "nubus_get_rom_dir: entry %02x %06x\n", ent.type, ent.data);
 
 	/* FIXME: the first one is *not* always the right one.  We
@@ -780,7 +808,11 @@ static void __init nubus_find_rom_dir(struct nubus_board* board)
 	   path to that address... */
 	if (nubus_readdir(&dir, &ent) == -1)
 		goto badrom;
+<<<<<<< HEAD
 	if (console_loglevel >= 10)
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_DEBUG "nubus_get_rom_dir: entry %02x %06x\n", ent.type, ent.data);
 	
 	/* Bwahahahaha... */
@@ -816,7 +848,11 @@ static struct nubus_board* __init nubus_add_board(int slot, int bytelanes)
 	board->fblock = rp;
 
 	/* Dump the format block for debugging purposes */
+<<<<<<< HEAD
 	if (console_loglevel >= 10) {
+=======
+	if (console_loglevel >= CONSOLE_LOGLEVEL_DEBUG) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int i;
 		printk(KERN_DEBUG "Slot %X, format block at 0x%p\n",
 		       slot, rp);
@@ -920,6 +956,7 @@ void __init nubus_probe_slot(int slot)
 	rp = nubus_rom_addr(slot);	
 	for(i = 4; i; i--)
 	{
+<<<<<<< HEAD
 		unsigned long flags;
 		int card_present;
 
@@ -928,6 +965,12 @@ void __init nubus_probe_slot(int slot)
 		card_present = hwreg_present(rp);
 		local_irq_restore(flags);
 	       
+=======
+		int card_present;
+
+		rp--;
+		card_present = hwreg_present(rp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!card_present)
 			continue;
 

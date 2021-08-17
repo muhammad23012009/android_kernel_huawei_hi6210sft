@@ -19,7 +19,11 @@
 
 static void defon_trig_activate(struct led_classdev *led_cdev)
 {
+<<<<<<< HEAD
 	__led_set_brightness(led_cdev, led_cdev->max_brightness);
+=======
+	led_set_brightness_nosleep(led_cdev, led_cdev->max_brightness);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static struct led_trigger defon_led_trigger = {

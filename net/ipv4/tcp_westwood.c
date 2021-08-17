@@ -42,7 +42,10 @@ struct westwood {
 	u8     reset_rtt_min;    /* Reset RTT min to next RTT sample*/
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* TCP Westwood functions and constants */
 #define TCP_WESTWOOD_RTT_MIN   (HZ/20)	/* 50ms */
 #define TCP_WESTWOOD_INIT_RTT  (20*HZ)	/* maybe too conservative?! */
@@ -100,12 +103,22 @@ static void westwood_filter(struct westwood *w, u32 delta)
  * Called after processing group of packets.
  * but all westwood needs is the last sample of srtt.
  */
+<<<<<<< HEAD
 static void tcp_westwood_pkts_acked(struct sock *sk, u32 cnt, s32 rtt)
 {
 	struct westwood *w = inet_csk_ca(sk);
 
 	if (rtt > 0)
 		w->rtt = usecs_to_jiffies(rtt);
+=======
+static void tcp_westwood_pkts_acked(struct sock *sk,
+				    const struct ack_sample *sample)
+{
+	struct westwood *w = inet_csk_ca(sk);
+
+	if (sample->rtt_us > 0)
+		w->rtt = usecs_to_jiffies(sample->rtt_us);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -153,7 +166,10 @@ static inline void update_rtt_min(struct westwood *w)
 		w->rtt_min = min(w->rtt, w->rtt_min);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * @westwood_fast_bw
  * It is called when we are in fast path. In particular it is called when
@@ -208,7 +224,10 @@ static inline u32 westwood_acked_count(struct sock *sk)
 	return w->cumul_ack;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * TCP Westwood
  * Here limit is evaluated as Bw estimation*RTTmin (for obtaining it
@@ -219,15 +238,38 @@ static u32 tcp_westwood_bw_rttmin(const struct sock *sk)
 {
 	const struct tcp_sock *tp = tcp_sk(sk);
 	const struct westwood *w = inet_csk_ca(sk);
+<<<<<<< HEAD
 	return max_t(u32, (w->bw_est * w->rtt_min) / tp->mss_cache, 2);
 }
 
+=======
+
+	return max_t(u32, (w->bw_est * w->rtt_min) / tp->mss_cache, 2);
+}
+
+static void tcp_westwood_ack(struct sock *sk, u32 ack_flags)
+{
+	if (ack_flags & CA_ACK_SLOWPATH) {
+		struct westwood *w = inet_csk_ca(sk);
+
+		westwood_update_window(sk);
+		w->bk += westwood_acked_count(sk);
+
+		update_rtt_min(w);
+		return;
+	}
+
+	westwood_fast_bw(sk);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void tcp_westwood_event(struct sock *sk, enum tcp_ca_event event)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct westwood *w = inet_csk_ca(sk);
 
 	switch (event) {
+<<<<<<< HEAD
 	case CA_EVENT_FAST_ACK:
 		westwood_fast_bw(sk);
 		break;
@@ -236,11 +278,17 @@ static void tcp_westwood_event(struct sock *sk, enum tcp_ca_event event)
 		tp->snd_cwnd = tp->snd_ssthresh = tcp_westwood_bw_rttmin(sk);
 		break;
 
+=======
+	case CA_EVENT_COMPLETE_CWR:
+		tp->snd_cwnd = tp->snd_ssthresh = tcp_westwood_bw_rttmin(sk);
+		break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case CA_EVENT_LOSS:
 		tp->snd_ssthresh = tcp_westwood_bw_rttmin(sk);
 		/* Update RTT_min when next ack arrives */
 		w->reset_rtt_min = 1;
 		break;
+<<<<<<< HEAD
 
 	case CA_EVENT_SLOW_ACK:
 		westwood_update_window(sk);
@@ -248,12 +296,15 @@ static void tcp_westwood_event(struct sock *sk, enum tcp_ca_event event)
 		update_rtt_min(w);
 		break;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		/* don't care */
 		break;
 	}
 }
 
+<<<<<<< HEAD
 
 /* Extract info for Tcp socket info provided via netlink. */
 static void tcp_westwood_info(struct sock *sk, u32 ext,
@@ -272,12 +323,37 @@ static void tcp_westwood_info(struct sock *sk, u32 ext,
 }
 
 
+=======
+/* Extract info for Tcp socket info provided via netlink. */
+static size_t tcp_westwood_info(struct sock *sk, u32 ext, int *attr,
+				union tcp_cc_info *info)
+{
+	const struct westwood *ca = inet_csk_ca(sk);
+
+	if (ext & (1 << (INET_DIAG_VEGASINFO - 1))) {
+		info->vegas.tcpv_enabled = 1;
+		info->vegas.tcpv_rttcnt	= 0;
+		info->vegas.tcpv_rtt	= jiffies_to_usecs(ca->rtt),
+		info->vegas.tcpv_minrtt	= jiffies_to_usecs(ca->rtt_min),
+
+		*attr = INET_DIAG_VEGASINFO;
+		return sizeof(struct tcpvegas_info);
+	}
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct tcp_congestion_ops tcp_westwood __read_mostly = {
 	.init		= tcp_westwood_init,
 	.ssthresh	= tcp_reno_ssthresh,
 	.cong_avoid	= tcp_reno_cong_avoid,
+<<<<<<< HEAD
 	.min_cwnd	= tcp_westwood_bw_rttmin,
 	.cwnd_event	= tcp_westwood_event,
+=======
+	.cwnd_event	= tcp_westwood_event,
+	.in_ack_event	= tcp_westwood_ack,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.get_info	= tcp_westwood_info,
 	.pkts_acked	= tcp_westwood_pkts_acked,
 

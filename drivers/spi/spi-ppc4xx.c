@@ -24,11 +24,19 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/of_platform.h>
 #include <linux/of_gpio.h>
 #include <linux/interrupt.h>
@@ -190,12 +198,15 @@ static int spi_ppc4xx_setupxfer(struct spi_device *spi, struct spi_transfer *t)
 			speed = min(t->speed_hz, spi->max_speed_hz);
 	}
 
+<<<<<<< HEAD
 	if (bits_per_word != 8) {
 		dev_err(&spi->dev, "invalid bits-per-word (%d)\n",
 				bits_per_word);
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!speed || (speed > spi->max_speed_hz)) {
 		dev_err(&spi->dev, "invalid speed_hz (%d)\n", speed);
 		return -EINVAL;
@@ -215,12 +226,20 @@ static int spi_ppc4xx_setupxfer(struct spi_device *spi, struct spi_transfer *t)
 	if (in_8(&hw->regs->cdm) != cdm)
 		out_8(&hw->regs->cdm, cdm);
 
+<<<<<<< HEAD
 	spin_lock(&hw->bitbang.lock);
+=======
+	mutex_lock(&hw->bitbang.lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!hw->bitbang.busy) {
 		hw->bitbang.chipselect(spi, BITBANG_CS_INACTIVE);
 		/* Need to ndelay here? */
 	}
+<<<<<<< HEAD
 	spin_unlock(&hw->bitbang.lock);
+=======
+	mutex_unlock(&hw->bitbang.lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -229,12 +248,15 @@ static int spi_ppc4xx_setup(struct spi_device *spi)
 {
 	struct spi_ppc4xx_cs *cs = spi->controller_state;
 
+<<<<<<< HEAD
 	if (spi->bits_per_word != 8) {
 		dev_err(&spi->dev, "invalid bits-per-word (%d)\n",
 			spi->bits_per_word);
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!spi->max_speed_hz) {
 		dev_err(&spi->dev, "invalid max_speed_hz (must be non-zero)\n");
 		return -EINVAL;
@@ -406,9 +428,15 @@ static int spi_ppc4xx_of_probe(struct platform_device *op)
 	if (master == NULL)
 		return -ENOMEM;
 	master->dev.of_node = np;
+<<<<<<< HEAD
 	dev_set_drvdata(dev, master);
 	hw = spi_master_get_devdata(master);
 	hw->master = spi_master_get(master);
+=======
+	platform_set_drvdata(op, master);
+	hw = spi_master_get_devdata(master);
+	hw->master = master;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	hw->dev = dev;
 
 	init_completion(&hw->done);
@@ -465,6 +493,10 @@ static int spi_ppc4xx_of_probe(struct platform_device *op)
 	bbp->use_dma = 0;
 	bbp->master->setup = spi_ppc4xx_setup;
 	bbp->master->cleanup = spi_ppc4xx_cleanup;
+<<<<<<< HEAD
+=======
+	bbp->master->bits_per_word_mask = SPI_BPW_MASK(8);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* the spi->mode bits understood by this driver: */
 	bbp->master->mode_bits =
@@ -553,7 +585,10 @@ request_mem_error:
 free_gpios:
 	free_gpios(hw);
 free_master:
+<<<<<<< HEAD
 	dev_set_drvdata(dev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_master_put(master);
 
 	dev_err(dev, "initialization failed\n");
@@ -562,15 +597,26 @@ free_master:
 
 static int spi_ppc4xx_of_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct spi_master *master = dev_get_drvdata(&op->dev);
 	struct ppc4xx_spi *hw = spi_master_get_devdata(master);
 
 	spi_bitbang_stop(&hw->bitbang);
 	dev_set_drvdata(&op->dev, NULL);
+=======
+	struct spi_master *master = platform_get_drvdata(op);
+	struct ppc4xx_spi *hw = spi_master_get_devdata(master);
+
+	spi_bitbang_stop(&hw->bitbang);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	release_mem_region(hw->mapbase, hw->mapsize);
 	free_irq(hw->irqnum, hw);
 	iounmap(hw->regs);
 	free_gpios(hw);
+<<<<<<< HEAD
+=======
+	spi_master_put(master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -586,7 +632,10 @@ static struct platform_driver spi_ppc4xx_of_driver = {
 	.remove = spi_ppc4xx_of_remove,
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = spi_ppc4xx_of_match,
 	},
 };

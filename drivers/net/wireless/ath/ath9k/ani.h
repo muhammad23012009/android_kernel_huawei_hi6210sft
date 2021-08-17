@@ -17,6 +17,7 @@
 #ifndef ANI_H
 #define ANI_H
 
+<<<<<<< HEAD
 #define HAL_PROCESS_ANI           0x00000001
 
 #define DO_ANI(ah) (((ah)->proc_phyerr & HAL_PROCESS_ANI) && ah->curchan)
@@ -43,6 +44,25 @@
 
 #define ATH9K_ANI_SPUR_IMMUNE_LVL         3
 
+=======
+#define BEACON_RSSI(ahp) (ahp->stats.avgbrssi)
+
+/* units are errors per second */
+#define ATH9K_ANI_OFDM_TRIG_HIGH           3500
+#define ATH9K_ANI_OFDM_TRIG_HIGH_BELOW_INI 1000
+#define ATH9K_ANI_OFDM_TRIG_HIGH_OLD       500
+
+#define ATH9K_ANI_OFDM_TRIG_LOW           400
+#define ATH9K_ANI_OFDM_TRIG_LOW_ABOVE_INI 900
+#define ATH9K_ANI_OFDM_TRIG_LOW_OLD       200
+
+#define ATH9K_ANI_CCK_TRIG_HIGH           600
+#define ATH9K_ANI_CCK_TRIG_HIGH_OLD       200
+#define ATH9K_ANI_CCK_TRIG_LOW            300
+#define ATH9K_ANI_CCK_TRIG_LOW_OLD        100
+
+#define ATH9K_ANI_SPUR_IMMUNE_LVL         3
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ATH9K_ANI_FIRSTEP_LVL             2
 
 #define ATH9K_ANI_RSSI_THR_HIGH           40
@@ -53,10 +73,13 @@
 /* in ms */
 #define ATH9K_ANI_POLLINTERVAL            1000
 
+<<<<<<< HEAD
 #define HAL_NOISE_IMMUNE_MAX              4
 #define HAL_SPUR_IMMUNE_MAX               7
 #define HAL_FIRST_STEP_MAX                2
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ATH9K_SIG_FIRSTEP_SETTING_MIN     0
 #define ATH9K_SIG_FIRSTEP_SETTING_MAX     20
 #define ATH9K_SIG_SPUR_IMM_SETTING_MIN    0
@@ -65,6 +88,7 @@
 /* values here are relative to the INI */
 
 enum ath9k_ani_cmd {
+<<<<<<< HEAD
 	ATH9K_ANI_PRESENT = 0x1,
 	ATH9K_ANI_NOISE_IMMUNITY_LEVEL = 0x2,
 	ATH9K_ANI_OFDM_WEAK_SIGNAL_DETECTION = 0x4,
@@ -74,6 +98,12 @@ enum ath9k_ani_cmd {
 	ATH9K_ANI_MODE = 0x40,
 	ATH9K_ANI_PHYERR_RESET = 0x80,
 	ATH9K_ANI_MRC_CCK = 0x100,
+=======
+	ATH9K_ANI_OFDM_WEAK_SIGNAL_DETECTION = 0x1,
+	ATH9K_ANI_FIRSTEP_LEVEL = 0x2,
+	ATH9K_ANI_SPUR_IMMUNITY_LEVEL = 0x4,
+	ATH9K_ANI_MRC_CCK = 0x8,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ATH9K_ANI_ALL = 0xfff
 };
 
@@ -111,7 +141,11 @@ struct ar5416AniState {
 	u8 mrcCCK;
 	u8 spurImmunityLevel;
 	u8 firstepLevel;
+<<<<<<< HEAD
 	u8 ofdmWeakSigDetect;
+=======
+	bool ofdmWeakSigDetect;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 listenTime;
 	u32 ofdmPhyErrCount;
 	u32 cckPhyErrCount;
@@ -119,8 +153,11 @@ struct ar5416AniState {
 };
 
 struct ar5416Stats {
+<<<<<<< HEAD
 	u32 ast_ani_niup;
 	u32 ast_ani_nidown;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 ast_ani_spurup;
 	u32 ast_ani_spurdown;
 	u32 ast_ani_ofdmon;

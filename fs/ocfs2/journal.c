@@ -30,6 +30,10 @@
 #include <linux/kthread.h>
 #include <linux/time.h>
 #include <linux/random.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <cluster/masklog.h>
 
@@ -49,6 +53,11 @@
 #include "sysfile.h"
 #include "uptodate.h"
 #include "quota.h"
+<<<<<<< HEAD
+=======
+#include "file.h"
+#include "namei.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "buffer_head_io.h"
 #include "ocfs2_trace.h"
@@ -68,13 +77,23 @@ static int ocfs2_journal_toggle_dirty(struct ocfs2_super *osb,
 static int ocfs2_trylock_journal(struct ocfs2_super *osb,
 				 int slot_num);
 static int ocfs2_recover_orphans(struct ocfs2_super *osb,
+<<<<<<< HEAD
 				 int slot);
+=======
+				 int slot,
+				 enum ocfs2_orphan_reco_type orphan_reco_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ocfs2_commit_thread(void *arg);
 static void ocfs2_queue_recovery_completion(struct ocfs2_journal *journal,
 					    int slot_num,
 					    struct ocfs2_dinode *la_dinode,
 					    struct ocfs2_dinode *tl_dinode,
+<<<<<<< HEAD
 					    struct ocfs2_quota_recovery *qrec);
+=======
+					    struct ocfs2_quota_recovery *qrec,
+					    enum ocfs2_orphan_reco_type orphan_reco_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int ocfs2_wait_on_mount(struct ocfs2_super *osb)
 {
@@ -103,7 +122,11 @@ struct ocfs2_replay_map {
 	unsigned char rm_replay_slots[0];
 };
 
+<<<<<<< HEAD
 void ocfs2_replay_map_set_state(struct ocfs2_super *osb, int state)
+=======
+static void ocfs2_replay_map_set_state(struct ocfs2_super *osb, int state)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (!osb->replay_map)
 		return;
@@ -148,7 +171,12 @@ int ocfs2_compute_replay_slots(struct ocfs2_super *osb)
 	return 0;
 }
 
+<<<<<<< HEAD
 void ocfs2_queue_replay_slots(struct ocfs2_super *osb)
+=======
+static void ocfs2_queue_replay_slots(struct ocfs2_super *osb,
+		enum ocfs2_orphan_reco_type orphan_reco_type)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ocfs2_replay_map *replay_map = osb->replay_map;
 	int i;
@@ -162,11 +190,20 @@ void ocfs2_queue_replay_slots(struct ocfs2_super *osb)
 	for (i = 0; i < replay_map->rm_slots; i++)
 		if (replay_map->rm_replay_slots[i])
 			ocfs2_queue_recovery_completion(osb->journal, i, NULL,
+<<<<<<< HEAD
 							NULL, NULL);
 	replay_map->rm_state = REPLAY_DONE;
 }
 
 void ocfs2_free_replay_slots(struct ocfs2_super *osb)
+=======
+							NULL, NULL,
+							orphan_reco_type);
+	replay_map->rm_state = REPLAY_DONE;
+}
+
+static void ocfs2_free_replay_slots(struct ocfs2_super *osb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ocfs2_replay_map *replay_map = osb->replay_map;
 
@@ -224,7 +261,12 @@ void ocfs2_recovery_exit(struct ocfs2_super *osb)
 	/* At this point, we know that no more recovery threads can be
 	 * launched, so wait for any recovery completion work to
 	 * complete. */
+<<<<<<< HEAD
 	flush_workqueue(ocfs2_wq);
+=======
+	if (osb->ocfs2_wq)
+		flush_workqueue(osb->ocfs2_wq);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Now that recovery is shut down, and the osb is about to be
@@ -367,7 +409,11 @@ handle_t *ocfs2_start_trans(struct ocfs2_super *osb, int max_buffs)
 		mlog_errno(PTR_ERR(handle));
 
 		if (is_journal_aborted(journal)) {
+<<<<<<< HEAD
 			ocfs2_abort(osb->sb, "Detected aborted journal");
+=======
+			ocfs2_abort(osb->sb, "Detected aborted journal\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			handle = ERR_PTR(-EROFS);
 		}
 	} else {
@@ -455,6 +501,44 @@ bail:
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * If we have fewer than thresh credits, extend by OCFS2_MAX_TRANS_DATA.
+ * If that fails, restart the transaction & regain write access for the
+ * buffer head which is used for metadata modifications.
+ * Taken from Ext4: extend_or_restart_transaction()
+ */
+int ocfs2_allocate_extend_trans(handle_t *handle, int thresh)
+{
+	int status, old_nblks;
+
+	BUG_ON(!handle);
+
+	old_nblks = handle->h_buffer_credits;
+	trace_ocfs2_allocate_extend_trans(old_nblks, thresh);
+
+	if (old_nblks < thresh)
+		return 0;
+
+	status = jbd2_journal_extend(handle, OCFS2_MAX_TRANS_DATA);
+	if (status < 0) {
+		mlog_errno(status);
+		goto bail;
+	}
+
+	if (status > 0) {
+		status = jbd2_journal_restart(handle, OCFS2_MAX_TRANS_DATA);
+		if (status < 0)
+			mlog_errno(status);
+	}
+
+bail:
+	return status;
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct ocfs2_triggers {
 	struct jbd2_buffer_trigger_type	ot_triggers;
 	int				ot_offset;
@@ -529,9 +613,13 @@ static void ocfs2_abort_trigger(struct jbd2_buffer_trigger_type *triggers,
 	     (unsigned long)bh,
 	     (unsigned long long)bh->b_blocknr);
 
+<<<<<<< HEAD
 	/* We aren't guaranteed to have the superblock here - but if we
 	 * don't, it'll just crash. */
 	ocfs2_error(bh->b_assoc_map->host->i_sb,
+=======
+	ocfs2_error(bh->b_bdev->bd_super,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    "JBD2 has aborted our journal, ocfs2 cannot continue\n");
 }
 
@@ -626,9 +714,32 @@ static int __ocfs2_journal_access(handle_t *handle,
 	/* we can safely remove this assertion after testing. */
 	if (!buffer_uptodate(bh)) {
 		mlog(ML_ERROR, "giving me a buffer that's not uptodate!\n");
+<<<<<<< HEAD
 		mlog(ML_ERROR, "b_blocknr=%llu\n",
 		     (unsigned long long)bh->b_blocknr);
 		BUG();
+=======
+		mlog(ML_ERROR, "b_blocknr=%llu, b_state=0x%lx\n",
+		     (unsigned long long)bh->b_blocknr, bh->b_state);
+
+		lock_buffer(bh);
+		/*
+		 * A previous transaction with a couple of buffer heads fail
+		 * to checkpoint, so all the bhs are marked as BH_Write_EIO.
+		 * For current transaction, the bh is just among those error
+		 * bhs which previous transaction handle. We can't just clear
+		 * its BH_Write_EIO and reuse directly, since other bhs are
+		 * not written to disk yet and that will cause metadata
+		 * inconsistency. So we should set fs read-only to avoid
+		 * further damage.
+		 */
+		if (buffer_write_io_error(bh) && !buffer_uptodate(bh)) {
+			unlock_buffer(bh);
+			return ocfs2_error(osb->sb, "A previous attempt to "
+					"write this buffer head failed\n");
+		}
+		unlock_buffer(bh);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Set the current transaction information on the ci so
@@ -733,7 +844,24 @@ void ocfs2_journal_dirty(handle_t *handle, struct buffer_head *bh)
 	trace_ocfs2_journal_dirty((unsigned long long)bh->b_blocknr);
 
 	status = jbd2_journal_dirty_metadata(handle, bh);
+<<<<<<< HEAD
 	BUG_ON(status);
+=======
+	if (status) {
+		mlog_errno(status);
+		if (!is_handle_aborted(handle)) {
+			journal_t *journal = handle->h_transaction->t_journal;
+			struct super_block *sb = bh->b_bdev->bd_super;
+
+			mlog(ML_ERROR, "jbd2_journal_dirty_metadata failed. "
+					"Aborting transaction and journal.\n");
+			handle->h_err = status;
+			jbd2_journal_abort_handle(handle);
+			jbd2_journal_abort(journal, status);
+			ocfs2_abort(sb, "Journal already aborted.\n");
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 #define OCFS2_DEFAULT_COMMIT_INTERVAL	(HZ * JBD2_DEFAULT_MAX_COMMIT_AGE)
@@ -801,14 +929,24 @@ int ocfs2_journal_init(struct ocfs2_journal *journal, int *dirty)
 	inode_lock = 1;
 	di = (struct ocfs2_dinode *)bh->b_data;
 
+<<<<<<< HEAD
 	if (inode->i_size <  OCFS2_MIN_JOURNAL_SIZE) {
 		mlog(ML_ERROR, "Journal file size (%lld) is too small!\n",
 		     inode->i_size);
+=======
+	if (i_size_read(inode) <  OCFS2_MIN_JOURNAL_SIZE) {
+		mlog(ML_ERROR, "Journal file size (%lld) is too small!\n",
+		     i_size_read(inode));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		status = -EINVAL;
 		goto done;
 	}
 
+<<<<<<< HEAD
 	trace_ocfs2_journal_init(inode->i_size,
+=======
+	trace_ocfs2_journal_init(i_size_read(inode),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 (unsigned long long)inode->i_blocks,
 				 OCFS2_I(inode)->ip_clusters);
 
@@ -947,7 +1085,12 @@ void ocfs2_journal_shutdown(struct ocfs2_super *osb)
 			mlog_errno(status);
 	}
 
+<<<<<<< HEAD
 	if (status == 0) {
+=======
+	/* Shutdown the kernel journal system */
+	if (!jbd2_journal_destroy(journal->j_journal) && !status) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/*
 		 * Do not toggle if flush was unsuccessful otherwise
 		 * will leave dirty metadata in a "clean" journal
@@ -956,9 +1099,12 @@ void ocfs2_journal_shutdown(struct ocfs2_super *osb)
 		if (status < 0)
 			mlog_errno(status);
 	}
+<<<<<<< HEAD
 
 	/* Shutdown the kernel journal system */
 	jbd2_journal_destroy(journal->j_journal);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	journal->j_journal = NULL;
 
 	OCFS2_I(inode)->ip_open_count--;
@@ -973,8 +1119,12 @@ void ocfs2_journal_shutdown(struct ocfs2_super *osb)
 
 //	up_write(&journal->j_trans_barrier);
 done:
+<<<<<<< HEAD
 	if (inode)
 		iput(inode);
+=======
+	iput(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void ocfs2_clear_journal_error(struct super_block *sb,
@@ -1012,6 +1162,17 @@ int ocfs2_journal_load(struct ocfs2_journal *journal, int local, int replayed)
 
 	ocfs2_clear_journal_error(osb->sb, journal->j_journal, osb->slot_num);
 
+<<<<<<< HEAD
+=======
+	if (replayed) {
+		jbd2_journal_lock_updates(journal->j_journal);
+		status = jbd2_journal_flush(journal->j_journal);
+		jbd2_journal_unlock_updates(journal->j_journal);
+		if (status < 0)
+			mlog_errno(status);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	status = ocfs2_journal_toggle_dirty(osb, 1, replayed);
 	if (status < 0) {
 		mlog_errno(status);
@@ -1021,7 +1182,11 @@ int ocfs2_journal_load(struct ocfs2_journal *journal, int local, int replayed)
 	/* Launch the commit thread */
 	if (!local) {
 		osb->commit_task = kthread_run(ocfs2_commit_thread, osb,
+<<<<<<< HEAD
 					       "ocfs2cmt");
+=======
+				"ocfs2cmt-%s", osb->uuid_str);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (IS_ERR(osb->commit_task)) {
 			status = PTR_ERR(osb->commit_task);
 			osb->commit_task = NULL;
@@ -1091,12 +1256,19 @@ static int ocfs2_force_read_journal(struct inode *inode)
 	int status = 0;
 	int i;
 	u64 v_blkno, p_blkno, p_blocks, num_blocks;
+<<<<<<< HEAD
 #define CONCURRENT_JOURNAL_FILL 32ULL
 	struct buffer_head *bhs[CONCURRENT_JOURNAL_FILL];
 
 	memset(bhs, 0, sizeof(struct buffer_head *) * CONCURRENT_JOURNAL_FILL);
 
 	num_blocks = ocfs2_blocks_for_bytes(inode->i_sb, inode->i_size);
+=======
+	struct buffer_head *bh = NULL;
+	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
+
+	num_blocks = ocfs2_blocks_for_bytes(inode->i_sb, i_size_read(inode));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	v_blkno = 0;
 	while (v_blkno < num_blocks) {
 		status = ocfs2_extent_map_get_blocks(inode, v_blkno,
@@ -1106,6 +1278,7 @@ static int ocfs2_force_read_journal(struct inode *inode)
 			goto bail;
 		}
 
+<<<<<<< HEAD
 		if (p_blocks > CONCURRENT_JOURNAL_FILL)
 			p_blocks = CONCURRENT_JOURNAL_FILL;
 
@@ -1121,14 +1294,39 @@ static int ocfs2_force_read_journal(struct inode *inode)
 		for(i = 0; i < p_blocks; i++) {
 			brelse(bhs[i]);
 			bhs[i] = NULL;
+=======
+		for (i = 0; i < p_blocks; i++, p_blkno++) {
+			bh = __find_get_block(osb->sb->s_bdev, p_blkno,
+					osb->sb->s_blocksize);
+			/* block not cached. */
+			if (!bh)
+				continue;
+
+			brelse(bh);
+			bh = NULL;
+			/* We are reading journal data which should not
+			 * be put in the uptodate cache.
+			 */
+			status = ocfs2_read_blocks_sync(osb, p_blkno, 1, &bh);
+			if (status < 0) {
+				mlog_errno(status);
+				goto bail;
+			}
+
+			brelse(bh);
+			bh = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		v_blkno += p_blocks;
 	}
 
 bail:
+<<<<<<< HEAD
 	for(i = 0; i < CONCURRENT_JOURNAL_FILL; i++)
 		brelse(bhs[i]);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return status;
 }
 
@@ -1138,6 +1336,10 @@ struct ocfs2_la_recovery_item {
 	struct ocfs2_dinode	*lri_la_dinode;
 	struct ocfs2_dinode	*lri_tl_dinode;
 	struct ocfs2_quota_recovery *lri_qrec;
+<<<<<<< HEAD
+=======
+	enum ocfs2_orphan_reco_type  lri_orphan_reco_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* Does the second half of the recovery process. By this point, the
@@ -1159,6 +1361,10 @@ void ocfs2_complete_recovery(struct work_struct *work)
 	struct ocfs2_dinode *la_dinode, *tl_dinode;
 	struct ocfs2_la_recovery_item *item, *n;
 	struct ocfs2_quota_recovery *qrec;
+<<<<<<< HEAD
+=======
+	enum ocfs2_orphan_reco_type orphan_reco_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	LIST_HEAD(tmp_la_list);
 
 	trace_ocfs2_complete_recovery(
@@ -1176,6 +1382,10 @@ void ocfs2_complete_recovery(struct work_struct *work)
 		la_dinode = item->lri_la_dinode;
 		tl_dinode = item->lri_tl_dinode;
 		qrec = item->lri_qrec;
+<<<<<<< HEAD
+=======
+		orphan_reco_type = item->lri_orphan_reco_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		trace_ocfs2_complete_recovery_slot(item->lri_slot,
 			la_dinode ? le64_to_cpu(la_dinode->i_blkno) : 0,
@@ -1200,7 +1410,12 @@ void ocfs2_complete_recovery(struct work_struct *work)
 			kfree(tl_dinode);
 		}
 
+<<<<<<< HEAD
 		ret = ocfs2_recover_orphans(osb, item->lri_slot);
+=======
+		ret = ocfs2_recover_orphans(osb, item->lri_slot,
+				orphan_reco_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ret < 0)
 			mlog_errno(ret);
 
@@ -1225,7 +1440,12 @@ static void ocfs2_queue_recovery_completion(struct ocfs2_journal *journal,
 					    int slot_num,
 					    struct ocfs2_dinode *la_dinode,
 					    struct ocfs2_dinode *tl_dinode,
+<<<<<<< HEAD
 					    struct ocfs2_quota_recovery *qrec)
+=======
+					    struct ocfs2_quota_recovery *qrec,
+					    enum ocfs2_orphan_reco_type orphan_reco_type)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ocfs2_la_recovery_item *item;
 
@@ -1249,10 +1469,18 @@ static void ocfs2_queue_recovery_completion(struct ocfs2_journal *journal,
 	item->lri_slot = slot_num;
 	item->lri_tl_dinode = tl_dinode;
 	item->lri_qrec = qrec;
+<<<<<<< HEAD
 
 	spin_lock(&journal->j_lock);
 	list_add_tail(&item->lri_list, &journal->j_la_cleanups);
 	queue_work(ocfs2_wq, &journal->j_recovery_work);
+=======
+	item->lri_orphan_reco_type = orphan_reco_type;
+
+	spin_lock(&journal->j_lock);
+	list_add_tail(&item->lri_list, &journal->j_la_cleanups);
+	queue_work(journal->j_osb->ocfs2_wq, &journal->j_recovery_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock(&journal->j_lock);
 }
 
@@ -1268,7 +1496,12 @@ void ocfs2_complete_mount_recovery(struct ocfs2_super *osb)
 	/* No need to queue up our truncate_log as regular cleanup will catch
 	 * that */
 	ocfs2_queue_recovery_completion(journal, osb->slot_num,
+<<<<<<< HEAD
 					osb->local_alloc_copy, NULL, NULL);
+=======
+					osb->local_alloc_copy, NULL, NULL,
+					ORPHAN_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ocfs2_schedule_truncate_log_flush(osb, 0);
 
 	osb->local_alloc_copy = NULL;
@@ -1276,7 +1509,11 @@ void ocfs2_complete_mount_recovery(struct ocfs2_super *osb)
 
 	/* queue to recover orphan slots for all offline slots */
 	ocfs2_replay_map_set_state(osb, REPLAY_NEEDED);
+<<<<<<< HEAD
 	ocfs2_queue_replay_slots(osb);
+=======
+	ocfs2_queue_replay_slots(osb, ORPHAN_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ocfs2_free_replay_slots(osb);
 }
 
@@ -1287,7 +1524,12 @@ void ocfs2_complete_quota_recovery(struct ocfs2_super *osb)
 						osb->slot_num,
 						NULL,
 						NULL,
+<<<<<<< HEAD
 						osb->quota_rec);
+=======
+						osb->quota_rec,
+						ORPHAN_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		osb->quota_rec = NULL;
 	}
 }
@@ -1324,7 +1566,11 @@ restart:
 
 	/* queue recovery for our own slot */
 	ocfs2_queue_recovery_completion(osb->journal, osb->slot_num, NULL,
+<<<<<<< HEAD
 					NULL, NULL);
+=======
+					NULL, NULL, ORPHAN_NO_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock(&osb->osb_lock);
 	while (rm->rm_used) {
@@ -1383,13 +1629,22 @@ skip_recovery:
 			continue;
 		}
 		ocfs2_queue_recovery_completion(osb->journal, rm_quota[i],
+<<<<<<< HEAD
 						NULL, NULL, qrec);
+=======
+						NULL, NULL, qrec,
+						ORPHAN_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	ocfs2_super_unlock(osb, 1);
 
 	/* queue recovery for offline slots */
+<<<<<<< HEAD
 	ocfs2_queue_replay_slots(osb);
+=======
+	ocfs2_queue_replay_slots(osb, ORPHAN_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 bail:
 	mutex_lock(&osb->recovery_lock);
@@ -1411,7 +1666,10 @@ bail:
 	 * requires that we call do_exit().  And it isn't exported, but
 	 * complete_and_exit() seems to be a minimal wrapper around it. */
 	complete_and_exit(NULL, status);
+<<<<<<< HEAD
 	return status;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void ocfs2_recovery_thread(struct ocfs2_super *osb, int node_num)
@@ -1430,7 +1688,11 @@ void ocfs2_recovery_thread(struct ocfs2_super *osb, int node_num)
 		goto out;
 
 	osb->recovery_thread_task =  kthread_run(__ocfs2_recovery_thread, osb,
+<<<<<<< HEAD
 						 "ocfs2rec");
+=======
+			"ocfs2rec-%s", osb->uuid_str);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(osb->recovery_thread_task)) {
 		mlog_errno((int)PTR_ERR(osb->recovery_thread_task));
 		osb->recovery_thread_task = NULL;
@@ -1610,9 +1872,13 @@ done:
 	if (got_lock)
 		ocfs2_inode_unlock(inode, 1);
 
+<<<<<<< HEAD
 	if (inode)
 		iput(inode);
 
+=======
+	iput(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	brelse(bh);
 
 	return status;
@@ -1676,7 +1942,11 @@ static int ocfs2_recover_node(struct ocfs2_super *osb,
 
 	/* This will kfree the memory pointed to by la_copy and tl_copy */
 	ocfs2_queue_recovery_completion(osb->journal, slot_num, la_copy,
+<<<<<<< HEAD
 					tl_copy, NULL);
+=======
+					tl_copy, NULL, ORPHAN_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	status = 0;
 done:
@@ -1719,8 +1989,12 @@ static int ocfs2_trylock_journal(struct ocfs2_super *osb,
 
 	ocfs2_inode_unlock(inode, 1);
 bail:
+<<<<<<< HEAD
 	if (inode)
 		iput(inode);
+=======
+	iput(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return status;
 }
@@ -1834,7 +2108,11 @@ static inline unsigned long ocfs2_orphan_scan_timeout(void)
  * hasn't happened.  The node queues a scan and increments the
  * sequence number in the LVB.
  */
+<<<<<<< HEAD
 void ocfs2_queue_orphan_scan(struct ocfs2_super *osb)
+=======
+static void ocfs2_queue_orphan_scan(struct ocfs2_super *osb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ocfs2_orphan_scan *os;
 	int status, i;
@@ -1866,7 +2144,11 @@ void ocfs2_queue_orphan_scan(struct ocfs2_super *osb)
 
 	for (i = 0; i < osb->max_slots; i++)
 		ocfs2_queue_recovery_completion(osb->journal, i, NULL, NULL,
+<<<<<<< HEAD
 						NULL);
+=======
+						NULL, ORPHAN_NO_NEED_TRUNCATE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * We queued a recovery on orphan slots, increment the sequence
 	 * number and update LVB so other node will skip the scan for a while
@@ -1883,7 +2165,11 @@ out:
 }
 
 /* Worker task that gets fired every ORPHAN_SCAN_SCHEDULE_TIMEOUT millsec */
+<<<<<<< HEAD
 void ocfs2_orphan_scan_work(struct work_struct *work)
+=======
+static void ocfs2_orphan_scan_work(struct work_struct *work)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ocfs2_orphan_scan *os;
 	struct ocfs2_super *osb;
@@ -1895,7 +2181,11 @@ void ocfs2_orphan_scan_work(struct work_struct *work)
 	mutex_lock(&os->os_lock);
 	ocfs2_queue_orphan_scan(osb);
 	if (atomic_read(&os->os_state) == ORPHAN_SCAN_ACTIVE)
+<<<<<<< HEAD
 		queue_delayed_work(ocfs2_wq, &os->os_orphan_scan_work,
+=======
+		queue_delayed_work(osb->ocfs2_wq, &os->os_orphan_scan_work,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      ocfs2_orphan_scan_timeout());
 	mutex_unlock(&os->os_lock);
 }
@@ -1935,12 +2225,17 @@ void ocfs2_orphan_scan_start(struct ocfs2_super *osb)
 		atomic_set(&os->os_state, ORPHAN_SCAN_INACTIVE);
 	else {
 		atomic_set(&os->os_state, ORPHAN_SCAN_ACTIVE);
+<<<<<<< HEAD
 		queue_delayed_work(ocfs2_wq, &os->os_orphan_scan_work,
+=======
+		queue_delayed_work(osb->ocfs2_wq, &os->os_orphan_scan_work,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   ocfs2_orphan_scan_timeout());
 	}
 }
 
 struct ocfs2_orphan_filldir_priv {
+<<<<<<< HEAD
 	struct inode		*head;
 	struct ocfs2_super	*osb;
 };
@@ -1949,6 +2244,20 @@ static int ocfs2_orphan_filldir(void *priv, const char *name, int name_len,
 				loff_t pos, u64 ino, unsigned type)
 {
 	struct ocfs2_orphan_filldir_priv *p = priv;
+=======
+	struct dir_context	ctx;
+	struct inode		*head;
+	struct ocfs2_super	*osb;
+	enum ocfs2_orphan_reco_type orphan_reco_type;
+};
+
+static int ocfs2_orphan_filldir(struct dir_context *ctx, const char *name,
+				int name_len, loff_t pos, u64 ino,
+				unsigned type)
+{
+	struct ocfs2_orphan_filldir_priv *p =
+		container_of(ctx, struct ocfs2_orphan_filldir_priv, ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct inode *iter;
 
 	if (name_len == 1 && !strncmp(".", name, 1))
@@ -1956,12 +2265,35 @@ static int ocfs2_orphan_filldir(void *priv, const char *name, int name_len,
 	if (name_len == 2 && !strncmp("..", name, 2))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	/* do not include dio entry in case of orphan scan */
+	if ((p->orphan_reco_type == ORPHAN_NO_NEED_TRUNCATE) &&
+			(!strncmp(name, OCFS2_DIO_ORPHAN_PREFIX,
+			OCFS2_DIO_ORPHAN_PREFIX_LEN)))
+		return 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Skip bad inodes so that recovery can continue */
 	iter = ocfs2_iget(p->osb, ino,
 			  OCFS2_FI_FLAG_ORPHAN_RECOVERY, 0);
 	if (IS_ERR(iter))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (!strncmp(name, OCFS2_DIO_ORPHAN_PREFIX,
+			OCFS2_DIO_ORPHAN_PREFIX_LEN))
+		OCFS2_I(iter)->ip_flags |= OCFS2_INODE_DIO_ORPHAN_ENTRY;
+
+	/* Skip inodes which are already added to recover list, since dio may
+	 * happen concurrently with unlink/rename */
+	if (OCFS2_I(iter)->ip_next_orphan) {
+		iput(iter);
+		return 0;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	trace_ocfs2_orphan_filldir((unsigned long long)OCFS2_I(iter)->ip_blkno);
 	/* No locking is required for the next_orphan queue as there
 	 * is only ever a single process doing orphan recovery. */
@@ -1973,6 +2305,7 @@ static int ocfs2_orphan_filldir(void *priv, const char *name, int name_len,
 
 static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 			       int slot,
+<<<<<<< HEAD
 			       struct inode **head)
 {
 	int status;
@@ -1982,6 +2315,19 @@ static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 
 	priv.osb = osb;
 	priv.head = *head;
+=======
+			       struct inode **head,
+			       enum ocfs2_orphan_reco_type orphan_reco_type)
+{
+	int status;
+	struct inode *orphan_dir_inode = NULL;
+	struct ocfs2_orphan_filldir_priv priv = {
+		.ctx.actor = ocfs2_orphan_filldir,
+		.osb = osb,
+		.head = *head,
+		.orphan_reco_type = orphan_reco_type
+	};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	orphan_dir_inode = ocfs2_get_system_file_inode(osb,
 						       ORPHAN_DIR_SYSTEM_INODE,
@@ -1992,15 +2338,23 @@ static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 		return status;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&orphan_dir_inode->i_mutex);
+=======
+	inode_lock(orphan_dir_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	status = ocfs2_inode_lock(orphan_dir_inode, NULL, 0);
 	if (status < 0) {
 		mlog_errno(status);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	status = ocfs2_dir_foreach(orphan_dir_inode, &pos, &priv,
 				   ocfs2_orphan_filldir);
+=======
+	status = ocfs2_dir_foreach(orphan_dir_inode, &priv.ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (status) {
 		mlog_errno(status);
 		goto out_cluster;
@@ -2011,7 +2365,11 @@ static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 out_cluster:
 	ocfs2_inode_unlock(orphan_dir_inode, 0);
 out:
+<<<<<<< HEAD
 	mutex_unlock(&orphan_dir_inode->i_mutex);
+=======
+	inode_unlock(orphan_dir_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	iput(orphan_dir_inode);
 	return status;
 }
@@ -2071,17 +2429,31 @@ static void ocfs2_clear_recovering_orphan_dir(struct ocfs2_super *osb,
  *   advertising our state to ocfs2_delete_inode().
  */
 static int ocfs2_recover_orphans(struct ocfs2_super *osb,
+<<<<<<< HEAD
 				 int slot)
+=======
+				 int slot,
+				 enum ocfs2_orphan_reco_type orphan_reco_type)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret = 0;
 	struct inode *inode = NULL;
 	struct inode *iter;
 	struct ocfs2_inode_info *oi;
+<<<<<<< HEAD
+=======
+	struct buffer_head *di_bh = NULL;
+	struct ocfs2_dinode *di = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	trace_ocfs2_recover_orphans(slot);
 
 	ocfs2_mark_recovering_orphan_dir(osb, slot);
+<<<<<<< HEAD
 	ret = ocfs2_queue_orphans(osb, slot, &inode);
+=======
+	ret = ocfs2_queue_orphans(osb, slot, &inode, orphan_reco_type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ocfs2_clear_recovering_orphan_dir(osb, slot);
 
 	/* Error here should be noted, but we want to continue with as
@@ -2095,6 +2467,7 @@ static int ocfs2_recover_orphans(struct ocfs2_super *osb,
 					(unsigned long long)oi->ip_blkno);
 
 		iter = oi->ip_next_orphan;
+<<<<<<< HEAD
 
 		spin_lock(&oi->ip_lock);
 		/* The remote delete code may have set these on the
@@ -2110,6 +2483,63 @@ static int ocfs2_recover_orphans(struct ocfs2_super *osb,
 
 		iput(inode);
 
+=======
+		oi->ip_next_orphan = NULL;
+
+		if (oi->ip_flags & OCFS2_INODE_DIO_ORPHAN_ENTRY) {
+			inode_lock(inode);
+			ret = ocfs2_rw_lock(inode, 1);
+			if (ret < 0) {
+				mlog_errno(ret);
+				goto unlock_mutex;
+			}
+			/*
+			 * We need to take and drop the inode lock to
+			 * force read inode from disk.
+			 */
+			ret = ocfs2_inode_lock(inode, &di_bh, 1);
+			if (ret) {
+				mlog_errno(ret);
+				goto unlock_rw;
+			}
+
+			di = (struct ocfs2_dinode *)di_bh->b_data;
+
+			if (di->i_flags & cpu_to_le32(OCFS2_DIO_ORPHANED_FL)) {
+				ret = ocfs2_truncate_file(inode, di_bh,
+						i_size_read(inode));
+				if (ret < 0) {
+					if (ret != -ENOSPC)
+						mlog_errno(ret);
+					goto unlock_inode;
+				}
+
+				ret = ocfs2_del_inode_from_orphan(osb, inode,
+						di_bh, 0, 0);
+				if (ret)
+					mlog_errno(ret);
+			}
+unlock_inode:
+			ocfs2_inode_unlock(inode, 1);
+			brelse(di_bh);
+			di_bh = NULL;
+unlock_rw:
+			ocfs2_rw_unlock(inode, 1);
+unlock_mutex:
+			inode_unlock(inode);
+
+			/* clear dio flag in ocfs2_inode_info */
+			oi->ip_flags &= ~OCFS2_INODE_DIO_ORPHAN_ENTRY;
+		} else {
+			spin_lock(&oi->ip_lock);
+			/* Set the proper information to get us going into
+			 * ocfs2_delete_inode. */
+			oi->ip_flags |= OCFS2_INODE_MAYBE_ORPHANED;
+			spin_unlock(&oi->ip_lock);
+		}
+
+		iput(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		inode = iter;
 	}
 
@@ -2156,8 +2586,25 @@ static int ocfs2_commit_thread(void *arg)
 					 || kthread_should_stop());
 
 		status = ocfs2_commit_cache(osb);
+<<<<<<< HEAD
 		if (status < 0)
 			mlog_errno(status);
+=======
+		if (status < 0) {
+			static unsigned long abort_warn_time;
+
+			/* Warn about this once per minute */
+			if (printk_timed_ratelimit(&abort_warn_time, 60*HZ))
+				mlog(ML_ERROR, "status = %d, journal is "
+						"already aborted.\n", status);
+			/*
+			 * After ocfs2_commit_cache() fails, j_num_trans has a
+			 * non-zero value.  Sleep here to avoid a busy-wait
+			 * loop.
+			 */
+			msleep_interruptible(1000);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (kthread_should_stop() && atomic_read(&journal->j_num_trans)){
 			mlog(ML_KTHREAD,

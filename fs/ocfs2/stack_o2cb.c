@@ -295,7 +295,11 @@ static int o2cb_cluster_check(void)
 		set_bit(node_num, netmap);
 		if (!memcmp(hbmap, netmap, sizeof(hbmap)))
 			return 0;
+<<<<<<< HEAD
 		if (i < O2CB_MAP_STABILIZE_COUNT)
+=======
+		if (i < O2CB_MAP_STABILIZE_COUNT - 1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			msleep(1000);
 	}
 
@@ -398,7 +402,12 @@ static int o2cb_cluster_disconnect(struct ocfs2_cluster_connection *conn)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int o2cb_cluster_this_node(unsigned int *node)
+=======
+static int o2cb_cluster_this_node(struct ocfs2_cluster_connection *conn,
+				  unsigned int *node)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int node_num;
 

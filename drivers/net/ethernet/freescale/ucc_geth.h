@@ -22,11 +22,19 @@
 #include <linux/list.h>
 #include <linux/if_ether.h>
 
+<<<<<<< HEAD
 #include <asm/immap_qe.h>
 #include <asm/qe.h>
 
 #include <asm/ucc.h>
 #include <asm/ucc_fast.h>
+=======
+#include <soc/fsl/qe/immap_qe.h>
+#include <soc/fsl/qe/qe.h>
+
+#include <soc/fsl/qe/ucc.h>
+#include <soc/fsl/qe/ucc_fast.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define DRV_DESC "QE UCC Gigabit Ethernet Controller"
 #define DRV_NAME "ucc_geth"
@@ -580,7 +588,18 @@ struct ucc_geth_tx_global_pram {
 	u32 vtagtable[0x8];	/* 8 4-byte VLAN tags */
 	u32 tqptr;		/* a base pointer to the Tx Queues Memory
 				   Region */
+<<<<<<< HEAD
 	u8 res2[0x80 - 0x74];
+=======
+	u8 res2[0x78 - 0x74];
+	u64 snums_en;
+	u32 l2l3baseptr;	/* top byte consists of a few other bit fields */
+
+	u16 mtu[8];
+	u8 res3[0xa8 - 0x94];
+	u32 wrrtablebase;	/* top byte is reserved */
+	u8 res4[0xc0 - 0xac];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 /* structure representing Extended Filtering Global Parameters in PRAM */

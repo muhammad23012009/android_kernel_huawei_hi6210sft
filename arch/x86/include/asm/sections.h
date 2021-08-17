@@ -2,12 +2,20 @@
 #define _ASM_X86_SECTIONS_H
 
 #include <asm-generic/sections.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/extable.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern char __brk_base[], __brk_limit[];
 extern struct exception_table_entry __stop___ex_table[];
 
+<<<<<<< HEAD
 #if defined(CONFIG_X86_64) && defined(CONFIG_DEBUG_RODATA)
+=======
+#if defined(CONFIG_X86_64)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern char __end_rodata_hpage_align[];
 #endif
 

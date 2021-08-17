@@ -44,6 +44,10 @@
 #include <linux/spi/flash.h>
 #include <linux/irq.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/jiffies.h>
 #include <linux/i2c-pca-platform.h>
 #include <linux/delay.h>
@@ -60,7 +64,11 @@
  */
 const char bfin_board_name[] = "Acvilon board";
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_ISP1760_HCD) || defined(CONFIG_USB_ISP1760_HCD_MODULE)
+=======
+#if IS_ENABLED(CONFIG_USB_ISP1760_HCD)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/usb/isp1760.h>
 static struct resource bfin_isp1760_resources[] = {
 	[0] = {
@@ -137,7 +145,11 @@ static struct i2c_board_info acvilon_i2c_devs[] __initdata = {
 	 },
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_PLATRAM) || defined(CONFIG_MTD_PLATRAM_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_PLATRAM)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platdata_mtd_ram mtd_ram_data = {
 	.mapname = "rootfs(RAM)",
 	.bankwidth = 4,
@@ -160,7 +172,11 @@ static struct platform_device mtd_ram_device = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SMSC911X) || defined(CONFIG_SMSC911X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SMSC911X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/smsc911x.h>
 static struct resource smsc911x_resources[] = {
 	{
@@ -194,7 +210,11 @@ static struct platform_device smsc911x_device = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 static struct resource bfin_uart0_resources[] = {
 	{
@@ -246,7 +266,11 @@ static struct platform_device bfin_uart0_device = {
 #endif
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_NAND_PLATFORM) || defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_NAND_PLATFORM)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct mtd_partition bfin_plat_nand_partitions[] = {
 	{
@@ -266,7 +290,11 @@ static struct mtd_partition bfin_plat_nand_partitions[] = {
 static void bfin_plat_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 				    unsigned int ctrl)
 {
+<<<<<<< HEAD
 	struct nand_chip *this = mtd->priv;
+=======
+	struct nand_chip *this = mtd_to_nand(mtd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (cmd == NAND_CMD_NONE)
 		return;
@@ -323,7 +351,11 @@ static void bfin_plat_nand_init(void)
 }
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_DATAFLASH) || defined(CONFIG_MTD_DATAFLASH_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_DATAFLASH)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct mtd_partition bfin_spi_dataflash_partitions[] = {
 	{
 	 .name = "bootloader",
@@ -369,7 +401,11 @@ static struct bfin5xx_spi_chip data_flash_chip_info = {
 };
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_BFIN5XX) || defined(CONFIG_SPI_BFIN5XX_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_BFIN5XX)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* SPI (0) */
 static struct resource bfin_spi0_resource[] = {
 	[0] = {
@@ -408,7 +444,11 @@ static struct platform_device bfin_spi0_device = {
 #endif
 
 static struct spi_board_info bfin_spi_board_info[] __initdata = {
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_SPIDEV) || defined(CONFIG_SPI_SPIDEV_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_SPIDEV)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 	 .modalias = "spidev",
 	 .max_speed_hz = 3125000,	/* max spi clock (SCK) speed in HZ */
@@ -416,7 +456,11 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 	 .chip_select = 3,
 	 },
 #endif
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_DATAFLASH) || defined(CONFIG_MTD_DATAFLASH_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_DATAFLASH)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{			/* DataFlash chip */
 	 .modalias = "mtd_dataflash",
 	 .max_speed_hz = 33250000,	/* max spi clock (SCK) speed in HZ */
@@ -472,11 +516,19 @@ static struct platform_device bfin_dpmc = {
 static struct platform_device *acvilon_devices[] __initdata = {
 	&bfin_dpmc,
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_BFIN5XX) || defined(CONFIG_SPI_BFIN5XX_MODULE)
 	&bfin_spi0_device,
 #endif
 
 #if defined(CONFIG_SERIAL_BFIN) || defined(CONFIG_SERIAL_BFIN_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SPI_BFIN5XX)
+	&bfin_spi0_device,
+#endif
+
+#if IS_ENABLED(CONFIG_SERIAL_BFIN)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SERIAL_BFIN_UART0
 	&bfin_uart0_device,
 #endif
@@ -484,17 +536,29 @@ static struct platform_device *acvilon_devices[] __initdata = {
 
 	&bfin_gpios_device,
 
+<<<<<<< HEAD
 #if defined(CONFIG_SMSC911X) || defined(CONFIG_SMSC911X_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SMSC911X)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&smsc911x_device,
 #endif
 
 	&bfin_i2c_pca_device,
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_NAND_PLATFORM) || defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
 	&bfin_async_nand_device,
 #endif
 
 #if defined(CONFIG_MTD_PLATRAM) || defined(CONFIG_MTD_PLATRAM_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MTD_NAND_PLATFORM)
+	&bfin_async_nand_device,
+#endif
+
+#if IS_ENABLED(CONFIG_MTD_PLATRAM)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&mtd_ram_device,
 #endif
 

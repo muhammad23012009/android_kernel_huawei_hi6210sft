@@ -75,8 +75,13 @@ static const char *wm8523_zd_count_text[] = {
 	"2048",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum wm8523_zc_count =
 	SOC_ENUM_SINGLE(WM8523_ZERO_DETECT, 0, 2, wm8523_zd_count_text);
+=======
+static SOC_ENUM_SINGLE_DECL(wm8523_zc_count, WM8523_ZERO_DETECT, 0,
+			    wm8523_zd_count_text);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct snd_kcontrol_new wm8523_controls[] = {
 SOC_DOUBLE_R_TLV("Playback Volume", WM8523_DAC_GAINL, WM8523_DAC_GAINR,
@@ -113,6 +118,18 @@ static struct {
 	{ 7, 1152 },
 };
 
+<<<<<<< HEAD
+=======
+static struct {
+	int value;
+	int ratio;
+} bclk_ratios[WM8523_NUM_RATES] = {
+	{ 2, 32 },
+	{ 3, 64 },
+	{ 4, 128 },
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm8523_startup(struct snd_pcm_substream *substream,
 			  struct snd_soc_dai *dai)
 {
@@ -162,6 +179,7 @@ static int wm8523_hw_params(struct snd_pcm_substream *substream,
 	aifctrl2 &= ~WM8523_SR_MASK;
 	aifctrl2 |= lrclk_ratios[i].value;
 
+<<<<<<< HEAD
 	aifctrl1 &= ~WM8523_WL_MASK;
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
@@ -173,6 +191,36 @@ static int wm8523_hw_params(struct snd_pcm_substream *substream,
 		aifctrl1 |= 0x10;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	if (aifctrl1 & WM8523_AIF_MSTR) {
+		/* Find a fs->bclk ratio */
+		for (i = 0; i < ARRAY_SIZE(bclk_ratios); i++)
+			if (params_width(params) * 2 <= bclk_ratios[i].ratio)
+				break;
+
+		if (i == ARRAY_SIZE(bclk_ratios)) {
+			dev_err(codec->dev,
+				"No matching BCLK/fs ratio for word length %d\n",
+				params_width(params));
+			return -EINVAL;
+		}
+
+		aifctrl2 &= ~WM8523_BCLKDIV_MASK;
+		aifctrl2 |= bclk_ratios[i].value << WM8523_BCLKDIV_SHIFT;
+	}
+
+	aifctrl1 &= ~WM8523_WL_MASK;
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		aifctrl1 |= 0x8;
+		break;
+	case 24:
+		aifctrl1 |= 0x10;
+		break;
+	case 32:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		aifctrl1 |= 0x18;
 		break;
 	}
@@ -308,7 +356,11 @@ static int wm8523_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_codec_get_bias_level(codec) == SND_SOC_BIAS_OFF) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8523->supplies),
 						    wm8523->supplies);
 			if (ret != 0) {
@@ -344,7 +396,10 @@ static int wm8523_set_bias_level(struct snd_soc_codec *codec,
 				       wm8523->supplies);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -372,6 +427,7 @@ static struct snd_soc_dai_driver wm8523_dai = {
 	.ops = &wm8523_dai_ops,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int wm8523_suspend(struct snd_soc_codec *codec)
 {
@@ -393,22 +449,31 @@ static int wm8523_probe(struct snd_soc_codec *codec)
 {
 	struct wm8523_priv *wm8523 = snd_soc_codec_get_drvdata(codec);
 	int ret;
+=======
+static int wm8523_probe(struct snd_soc_codec *codec)
+{
+	struct wm8523_priv *wm8523 = snd_soc_codec_get_drvdata(codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	wm8523->rate_constraint.list = &wm8523->rate_constraint_list[0];
 	wm8523->rate_constraint.count =
 		ARRAY_SIZE(wm8523->rate_constraint_list);
 
+<<<<<<< HEAD
 	ret = snd_soc_codec_set_cache_io(codec, 8, 16, SND_SOC_REGMAP);
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
 		return ret;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Change some default settings - latch VU and enable ZC */
 	snd_soc_update_bits(codec, WM8523_DAC_GAINR,
 			    WM8523_DACR_VU, WM8523_DACR_VU);
 	snd_soc_update_bits(codec, WM8523_DAC_CTRL3, WM8523_ZC, WM8523_ZC);
 
+<<<<<<< HEAD
 	wm8523_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
 	return 0;
@@ -433,12 +498,34 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8523 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8523_dapm_widgets),
 	.dapm_routes = wm8523_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8523_dapm_routes),
+=======
+	return 0;
+}
+
+static const struct snd_soc_codec_driver soc_codec_dev_wm8523 = {
+	.probe =	wm8523_probe,
+	.set_bias_level = wm8523_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.controls		= wm8523_controls,
+		.num_controls		= ARRAY_SIZE(wm8523_controls),
+		.dapm_widgets		= wm8523_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(wm8523_dapm_widgets),
+		.dapm_routes		= wm8523_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(wm8523_dapm_routes),
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct of_device_id wm8523_of_match[] = {
 	{ .compatible = "wlf,wm8523" },
 	{ },
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, wm8523_of_match);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static const struct regmap_config wm8523_regmap = {
 	.reg_bits = 8,
@@ -452,7 +539,11 @@ static const struct regmap_config wm8523_regmap = {
 	.volatile_reg = wm8523_volatile_register,
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int wm8523_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
@@ -543,7 +634,10 @@ MODULE_DEVICE_TABLE(i2c, wm8523_i2c_id);
 static struct i2c_driver wm8523_i2c_driver = {
 	.driver = {
 		.name = "wm8523",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = wm8523_of_match,
 	},
 	.probe =    wm8523_i2c_probe,
@@ -555,7 +649,11 @@ static struct i2c_driver wm8523_i2c_driver = {
 static int __init wm8523_modinit(void)
 {
 	int ret;
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = i2c_add_driver(&wm8523_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register WM8523 I2C driver: %d\n",
@@ -568,7 +666,11 @@ module_init(wm8523_modinit);
 
 static void __exit wm8523_exit(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	i2c_del_driver(&wm8523_i2c_driver);
 #endif
 }

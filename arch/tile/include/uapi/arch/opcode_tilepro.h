@@ -71,6 +71,10 @@ typedef tilepro_bundle_bits tile_bundle_bits;
 #define TILE_BUNDLE_ALIGNMENT_IN_BYTES TILEPRO_BUNDLE_ALIGNMENT_IN_BYTES
 #define TILE_LOG2_BUNDLE_ALIGNMENT_IN_BYTES \
   TILEPRO_LOG2_BUNDLE_ALIGNMENT_IN_BYTES
+<<<<<<< HEAD
+=======
+#define TILE_BPT_BUNDLE TILEPRO_BPT_BUNDLE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* 64-bit pattern for a { bpt ; nop } bundle. */
 #define TILEPRO_BPT_BUNDLE 0x400b3cae70166000ULL

@@ -384,10 +384,22 @@ isdn_ppp_release(int min, struct file *file)
 	is->slcomp = NULL;
 #endif
 #ifdef CONFIG_IPPP_FILTER
+<<<<<<< HEAD
 	kfree(is->pass_filter);
 	is->pass_filter = NULL;
 	kfree(is->active_filter);
 	is->active_filter = NULL;
+=======
+	if (is->pass_filter) {
+		bpf_prog_destroy(is->pass_filter);
+		is->pass_filter = NULL;
+	}
+
+	if (is->active_filter) {
+		bpf_prog_destroy(is->active_filter);
+		is->active_filter = NULL;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /* TODO: if this was the previous master: link the stuff to the new master */
@@ -443,7 +455,11 @@ static int get_filter(void __user *arg, struct sock_filter **p)
 {
 	struct sock_fprog uprog;
 	struct sock_filter *code = NULL;
+<<<<<<< HEAD
 	int len, err;
+=======
+	int len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (copy_from_user(&uprog, arg, sizeof(uprog)))
 		return -EFAULT;
@@ -459,12 +475,15 @@ static int get_filter(void __user *arg, struct sock_filter **p)
 	if (IS_ERR(code))
 		return PTR_ERR(code);
 
+<<<<<<< HEAD
 	err = sk_chk_filter(code, uprog.len);
 	if (err) {
 		kfree(code);
 		return err;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*p = code;
 	return uprog.len;
 }
@@ -633,6 +652,7 @@ isdn_ppp_ioctl(int min, struct file *file, unsigned int cmd, unsigned long arg)
 #ifdef CONFIG_IPPP_FILTER
 	case PPPIOCSPASS:
 	{
+<<<<<<< HEAD
 		struct sock_filter *code;
 		int len = get_filter(argp, &code);
 		if (len < 0)
@@ -652,6 +672,53 @@ isdn_ppp_ioctl(int min, struct file *file, unsigned int cmd, unsigned long arg)
 		is->active_filter = code;
 		is->active_len = len;
 		break;
+=======
+		struct sock_fprog_kern fprog;
+		struct sock_filter *code;
+		int err, len = get_filter(argp, &code);
+
+		if (len < 0)
+			return len;
+
+		fprog.len = len;
+		fprog.filter = code;
+
+		if (is->pass_filter) {
+			bpf_prog_destroy(is->pass_filter);
+			is->pass_filter = NULL;
+		}
+		if (fprog.filter != NULL)
+			err = bpf_prog_create(&is->pass_filter, &fprog);
+		else
+			err = 0;
+		kfree(code);
+
+		return err;
+	}
+	case PPPIOCSACTIVE:
+	{
+		struct sock_fprog_kern fprog;
+		struct sock_filter *code;
+		int err, len = get_filter(argp, &code);
+
+		if (len < 0)
+			return len;
+
+		fprog.len = len;
+		fprog.filter = code;
+
+		if (is->active_filter) {
+			bpf_prog_destroy(is->active_filter);
+			is->active_filter = NULL;
+		}
+		if (fprog.filter != NULL)
+			err = bpf_prog_create(&is->active_filter, &fprog);
+		else
+			err = 0;
+		kfree(code);
+
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 #endif /* CONFIG_IPPP_FILTER */
 	default:
@@ -803,7 +870,10 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 	isdn_net_local *lp;
 	struct ippp_struct *is;
 	int proto;
+<<<<<<< HEAD
 	unsigned char protobuf[4];
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	is = file->private_data;
 
@@ -817,6 +887,7 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 	if (!lp)
 		printk(KERN_DEBUG "isdn_ppp_write: lp == NULL\n");
 	else {
+<<<<<<< HEAD
 		/*
 		 * Don't reset huptimer for
 		 * LCP packets. (Echo requests).
@@ -829,12 +900,33 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 
 		if (lp->isdn_device < 0 || lp->isdn_channel < 0)
 			return 0;
+=======
+		if (lp->isdn_device < 0 || lp->isdn_channel < 0) {
+			unsigned char protobuf[4];
+			/*
+			 * Don't reset huptimer for
+			 * LCP packets. (Echo requests).
+			 */
+			if (copy_from_user(protobuf, buf, 4))
+				return -EFAULT;
+
+			proto = PPP_PROTOCOL(protobuf);
+			if (proto != PPP_LCP)
+				lp->huptimer = 0;
+
+			return 0;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if ((dev->drv[lp->isdn_device]->flags & DRV_FLAG_RUNNING) &&
 		    lp->dialstate == 0 &&
 		    (lp->flags & ISDN_NET_CONNECTED)) {
 			unsigned short hl;
 			struct sk_buff *skb;
+<<<<<<< HEAD
+=======
+			unsigned char *cpy_buf;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * we need to reserve enough space in front of
 			 * sk_buff. old call to dev_alloc_skb only reserved
@@ -847,11 +939,28 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 				return count;
 			}
 			skb_reserve(skb, hl);
+<<<<<<< HEAD
 			if (copy_from_user(skb_put(skb, count), buf, count))
+=======
+			cpy_buf = skb_put(skb, count);
+			if (copy_from_user(cpy_buf, buf, count))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			{
 				kfree_skb(skb);
 				return -EFAULT;
 			}
+<<<<<<< HEAD
+=======
+
+			/*
+			 * Don't reset huptimer for
+			 * LCP packets. (Echo requests).
+			 */
+			proto = PPP_PROTOCOL(cpy_buf);
+			if (proto != PPP_LCP)
+				lp->huptimer = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (is->debug & 0x40) {
 				printk(KERN_DEBUG "ppp xmit: len %d\n", (int) skb->len);
 				isdn_ppp_frame_log("xmit", skb->data, skb->len, 32, is->unit, lp->ppp_slot);
@@ -1151,14 +1260,22 @@ isdn_ppp_push_higher(isdn_net_dev *net_dev, isdn_net_local *lp, struct sk_buff *
 	}
 
 	if (is->pass_filter
+<<<<<<< HEAD
 	    && sk_run_filter(skb, is->pass_filter) == 0) {
+=======
+	    && BPF_PROG_RUN(is->pass_filter, skb) == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (is->debug & 0x2)
 			printk(KERN_DEBUG "IPPP: inbound frame filtered.\n");
 		kfree_skb(skb);
 		return;
 	}
 	if (!(is->active_filter
+<<<<<<< HEAD
 	      && sk_run_filter(skb, is->active_filter) == 0)) {
+=======
+	      && BPF_PROG_RUN(is->active_filter, skb) == 0)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (is->debug & 0x2)
 			printk(KERN_DEBUG "IPPP: link-active filter: resetting huptimer.\n");
 		lp->huptimer = 0;
@@ -1297,14 +1414,22 @@ isdn_ppp_xmit(struct sk_buff *skb, struct net_device *netdev)
 	}
 
 	if (ipt->pass_filter
+<<<<<<< HEAD
 	    && sk_run_filter(skb, ipt->pass_filter) == 0) {
+=======
+	    && BPF_PROG_RUN(ipt->pass_filter, skb) == 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ipt->debug & 0x4)
 			printk(KERN_DEBUG "IPPP: outbound frame filtered.\n");
 		kfree_skb(skb);
 		goto unlock;
 	}
 	if (!(ipt->active_filter
+<<<<<<< HEAD
 	      && sk_run_filter(skb, ipt->active_filter) == 0)) {
+=======
+	      && BPF_PROG_RUN(ipt->active_filter, skb) == 0)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (ipt->debug & 0x4)
 			printk(KERN_DEBUG "IPPP: link-active filter: resetting huptimer.\n");
 		lp->huptimer = 0;
@@ -1494,9 +1619,15 @@ int isdn_ppp_autodial_filter(struct sk_buff *skb, isdn_net_local *lp)
 	}
 
 	drop |= is->pass_filter
+<<<<<<< HEAD
 		&& sk_run_filter(skb, is->pass_filter) == 0;
 	drop |= is->active_filter
 		&& sk_run_filter(skb, is->active_filter) == 0;
+=======
+		&& BPF_PROG_RUN(is->pass_filter, skb) == 0;
+	drop |= is->active_filter
+		&& BPF_PROG_RUN(is->active_filter, skb) == 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	skb_push(skb, IPPP_MAX_HEADER - 4);
 	return drop;
@@ -2339,7 +2470,11 @@ static struct ippp_ccp_reset_state *isdn_ppp_ccp_reset_alloc_state(struct ippp_s
 		       id);
 		return NULL;
 	} else {
+<<<<<<< HEAD
 		rs = kzalloc(sizeof(struct ippp_ccp_reset_state), GFP_KERNEL);
+=======
+		rs = kzalloc(sizeof(struct ippp_ccp_reset_state), GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!rs)
 			return NULL;
 		rs->state = CCPResetIdle;

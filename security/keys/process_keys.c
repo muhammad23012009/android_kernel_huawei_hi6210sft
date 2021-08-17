@@ -78,7 +78,11 @@ int install_user_keyrings(void)
 						    cred, user_keyring_perm,
 						    KEY_ALLOC_UID_KEYRING |
 							KEY_ALLOC_IN_QUOTA,
+<<<<<<< HEAD
 						    NULL);
+=======
+						    NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (IS_ERR(uid_keyring)) {
 				ret = PTR_ERR(uid_keyring);
 				goto error;
@@ -96,7 +100,11 @@ int install_user_keyrings(void)
 					      cred, user_keyring_perm,
 					      KEY_ALLOC_UID_KEYRING |
 						  KEY_ALLOC_IN_QUOTA,
+<<<<<<< HEAD
 					      NULL);
+=======
+					      NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (IS_ERR(session_keyring)) {
 				ret = PTR_ERR(session_keyring);
 				goto error_release;
@@ -143,7 +151,12 @@ int install_thread_keyring_to_cred(struct cred *new)
 
 	keyring = keyring_alloc("_tid", new->uid, new->gid, new,
 				KEY_POS_ALL | KEY_USR_VIEW,
+<<<<<<< HEAD
 				KEY_ALLOC_QUOTA_OVERRUN, NULL);
+=======
+				KEY_ALLOC_QUOTA_OVERRUN,
+				NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(keyring))
 		return PTR_ERR(keyring);
 
@@ -189,7 +202,12 @@ int install_process_keyring_to_cred(struct cred *new)
 
 	keyring = keyring_alloc("_pid", new->uid, new->gid, new,
 				KEY_POS_ALL | KEY_USR_VIEW,
+<<<<<<< HEAD
 				KEY_ALLOC_QUOTA_OVERRUN, NULL);
+=======
+				KEY_ALLOC_QUOTA_OVERRUN,
+				NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(keyring))
 		return PTR_ERR(keyring);
 
@@ -242,11 +260,19 @@ int install_session_keyring_to_cred(struct cred *cred, struct key *keyring)
 
 		keyring = keyring_alloc("_ses", cred->uid, cred->gid, cred,
 					KEY_POS_ALL | KEY_USR_VIEW | KEY_USR_READ,
+<<<<<<< HEAD
 					flags, NULL);
 		if (IS_ERR(keyring))
 			return PTR_ERR(keyring);
 	} else {
 		atomic_inc(&keyring->usage);
+=======
+					flags, NULL, NULL);
+		if (IS_ERR(keyring))
+			return PTR_ERR(keyring);
+	} else {
+		__key_get(keyring);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* install the keyring */
@@ -333,11 +359,15 @@ void key_fsgid_changed(struct task_struct *tsk)
  * In the case of a successful return, the possession attribute is set on the
  * returned key reference.
  */
+<<<<<<< HEAD
 key_ref_t search_my_process_keyrings(struct key_type *type,
 				     const void *description,
 				     key_match_func_t match,
 				     bool no_state_check,
 				     const struct cred *cred)
+=======
+key_ref_t search_my_process_keyrings(struct keyring_search_context *ctx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	key_ref_t key_ref, ret, err;
 
@@ -353,10 +383,16 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 	err = ERR_PTR(-EAGAIN);
 
 	/* search the thread keyring first */
+<<<<<<< HEAD
 	if (cred->thread_keyring) {
 		key_ref = keyring_search_aux(
 			make_key_ref(cred->thread_keyring, 1),
 			cred, type, description, match, no_state_check);
+=======
+	if (ctx->cred->thread_keyring) {
+		key_ref = keyring_search_aux(
+			make_key_ref(ctx->cred->thread_keyring, 1), ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!IS_ERR(key_ref))
 			goto found;
 
@@ -372,10 +408,16 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 	}
 
 	/* search the process keyring second */
+<<<<<<< HEAD
 	if (cred->process_keyring) {
 		key_ref = keyring_search_aux(
 			make_key_ref(cred->process_keyring, 1),
 			cred, type, description, match, no_state_check);
+=======
+	if (ctx->cred->process_keyring) {
+		key_ref = keyring_search_aux(
+			make_key_ref(ctx->cred->process_keyring, 1), ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!IS_ERR(key_ref))
 			goto found;
 
@@ -393,11 +435,19 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 	}
 
 	/* search the session keyring */
+<<<<<<< HEAD
 	if (cred->session_keyring) {
 		rcu_read_lock();
 		key_ref = keyring_search_aux(
 			make_key_ref(rcu_dereference(cred->session_keyring), 1),
 			cred, type, description, match, no_state_check);
+=======
+	if (ctx->cred->session_keyring) {
+		rcu_read_lock();
+		key_ref = keyring_search_aux(
+			make_key_ref(rcu_dereference(ctx->cred->session_keyring), 1),
+			ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rcu_read_unlock();
 
 		if (!IS_ERR(key_ref))
@@ -416,10 +466,17 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 		}
 	}
 	/* or search the user-session keyring */
+<<<<<<< HEAD
 	else if (cred->user->session_keyring) {
 		key_ref = keyring_search_aux(
 			make_key_ref(cred->user->session_keyring, 1),
 			cred, type, description, match, no_state_check);
+=======
+	else if (ctx->cred->user->session_keyring) {
+		key_ref = keyring_search_aux(
+			make_key_ref(ctx->cred->user->session_keyring, 1),
+			ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!IS_ERR(key_ref))
 			goto found;
 
@@ -451,18 +508,26 @@ found:
  *
  * Return same as search_my_process_keyrings().
  */
+<<<<<<< HEAD
 key_ref_t search_process_keyrings(struct key_type *type,
 				  const void *description,
 				  key_match_func_t match,
 				  const struct cred *cred)
+=======
+key_ref_t search_process_keyrings(struct keyring_search_context *ctx)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct request_key_auth *rka;
 	key_ref_t key_ref, ret = ERR_PTR(-EACCES), err;
 
 	might_sleep();
 
+<<<<<<< HEAD
 	key_ref = search_my_process_keyrings(type, description, match,
 					     false, cred);
+=======
+	key_ref = search_my_process_keyrings(ctx);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!IS_ERR(key_ref))
 		goto found;
 	err = key_ref;
@@ -471,6 +536,7 @@ key_ref_t search_process_keyrings(struct key_type *type,
 	 * search the keyrings of the process mentioned there
 	 * - we don't permit access to request_key auth keys via this method
 	 */
+<<<<<<< HEAD
 	if (cred->request_key_auth &&
 	    cred == current_cred() &&
 	    type != &key_type_request_key_auth
@@ -483,6 +549,23 @@ key_ref_t search_process_keyrings(struct key_type *type,
 
 			key_ref = search_process_keyrings(type, description,
 							  match, rka->cred);
+=======
+	if (ctx->cred->request_key_auth &&
+	    ctx->cred == current_cred() &&
+	    ctx->index_key.type != &key_type_request_key_auth
+	    ) {
+		const struct cred *cred = ctx->cred;
+
+		/* defend against the auth key being revoked */
+		down_read(&cred->request_key_auth->sem);
+
+		if (key_validate(ctx->cred->request_key_auth) == 0) {
+			rka = ctx->cred->request_key_auth->payload.data[0];
+
+			ctx->cred = rka->cred;
+			key_ref = search_process_keyrings(ctx);
+			ctx->cred = cred;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			up_read(&cred->request_key_auth->sem);
 
@@ -510,9 +593,16 @@ found:
 /*
  * See if the key we're looking at is the target key.
  */
+<<<<<<< HEAD
 int lookup_user_key_possessed(const struct key *key, const void *target)
 {
 	return key == target;
+=======
+bool lookup_user_key_possessed(const struct key *key,
+			       const struct key_match_data *match_data)
+{
+	return key == match_data->raw_data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -536,19 +626,36 @@ int lookup_user_key_possessed(const struct key *key, const void *target)
 key_ref_t lookup_user_key(key_serial_t id, unsigned long lflags,
 			  key_perm_t perm)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka;
 	const struct cred *cred;
+=======
+	struct keyring_search_context ctx = {
+		.match_data.cmp		= lookup_user_key_possessed,
+		.match_data.lookup_type	= KEYRING_SEARCH_LOOKUP_DIRECT,
+		.flags			= KEYRING_SEARCH_NO_STATE_CHECK,
+	};
+	struct request_key_auth *rka;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct key *key;
 	key_ref_t key_ref, skey_ref;
 	int ret;
 
 try_again:
+<<<<<<< HEAD
 	cred = get_current_cred();
+=======
+	ctx.cred = get_current_cred();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	key_ref = ERR_PTR(-ENOKEY);
 
 	switch (id) {
 	case KEY_SPEC_THREAD_KEYRING:
+<<<<<<< HEAD
 		if (!cred->thread_keyring) {
+=======
+		if (!ctx.cred->thread_keyring) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!(lflags & KEY_LOOKUP_CREATE))
 				goto error;
 
@@ -560,13 +667,22 @@ try_again:
 			goto reget_creds;
 		}
 
+<<<<<<< HEAD
 		key = cred->thread_keyring;
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->thread_keyring;
+		__key_get(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_PROCESS_KEYRING:
+<<<<<<< HEAD
 		if (!cred->process_keyring) {
+=======
+		if (!ctx.cred->process_keyring) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!(lflags & KEY_LOOKUP_CREATE))
 				goto error;
 
@@ -578,13 +694,22 @@ try_again:
 			goto reget_creds;
 		}
 
+<<<<<<< HEAD
 		key = cred->process_keyring;
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->process_keyring;
+		__key_get(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_SESSION_KEYRING:
+<<<<<<< HEAD
 		if (!cred->session_keyring) {
+=======
+		if (!ctx.cred->session_keyring) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* always install a session keyring upon access if one
 			 * doesn't exist yet */
 			ret = install_user_keyrings();
@@ -594,13 +719,22 @@ try_again:
 				ret = join_session_keyring(NULL);
 			else
 				ret = install_session_keyring(
+<<<<<<< HEAD
 					cred->user->session_keyring);
+=======
+					ctx.cred->user->session_keyring);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (ret < 0)
 				goto error;
 			goto reget_creds;
+<<<<<<< HEAD
 		} else if (cred->session_keyring ==
 			   cred->user->session_keyring &&
+=======
+		} else if (ctx.cred->session_keyring ==
+			   ctx.cred->user->session_keyring &&
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   lflags & KEY_LOOKUP_CREATE) {
 			ret = join_session_keyring(NULL);
 			if (ret < 0)
@@ -609,33 +743,56 @@ try_again:
 		}
 
 		rcu_read_lock();
+<<<<<<< HEAD
 		key = rcu_dereference(cred->session_keyring);
 		atomic_inc(&key->usage);
+=======
+		key = rcu_dereference(ctx.cred->session_keyring);
+		__key_get(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rcu_read_unlock();
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_USER_KEYRING:
+<<<<<<< HEAD
 		if (!cred->user->uid_keyring) {
+=======
+		if (!ctx.cred->user->uid_keyring) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = install_user_keyrings();
 			if (ret < 0)
 				goto error;
 		}
 
+<<<<<<< HEAD
 		key = cred->user->uid_keyring;
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->user->uid_keyring;
+		__key_get(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_USER_SESSION_KEYRING:
+<<<<<<< HEAD
 		if (!cred->user->session_keyring) {
+=======
+		if (!ctx.cred->user->session_keyring) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ret = install_user_keyrings();
 			if (ret < 0)
 				goto error;
 		}
 
+<<<<<<< HEAD
 		key = cred->user->session_keyring;
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->user->session_keyring;
+		__key_get(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		key_ref = make_key_ref(key, 1);
 		break;
 
@@ -645,15 +802,24 @@ try_again:
 		goto error;
 
 	case KEY_SPEC_REQKEY_AUTH_KEY:
+<<<<<<< HEAD
 		key = cred->request_key_auth;
 		if (!key)
 			goto error;
 
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->request_key_auth;
+		if (!key)
+			goto error;
+
+		__key_get(key);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_REQUESTOR_KEYRING:
+<<<<<<< HEAD
 		if (!cred->request_key_auth)
 			goto error;
 
@@ -668,6 +834,22 @@ try_again:
 			atomic_inc(&key->usage);
 		}
 		up_read(&cred->request_key_auth->sem);
+=======
+		if (!ctx.cred->request_key_auth)
+			goto error;
+
+		down_read(&ctx.cred->request_key_auth->sem);
+		if (test_bit(KEY_FLAG_REVOKED,
+			     &ctx.cred->request_key_auth->flags)) {
+			key_ref = ERR_PTR(-EKEYREVOKED);
+			key = NULL;
+		} else {
+			rka = ctx.cred->request_key_auth->payload.data[0];
+			key = rka->dest_keyring;
+			__key_get(key);
+		}
+		up_read(&ctx.cred->request_key_auth->sem);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (!key)
 			goto error;
 		key_ref = make_key_ref(key, 1);
@@ -687,9 +869,19 @@ try_again:
 		key_ref = make_key_ref(key, 0);
 
 		/* check to see if we possess the key */
+<<<<<<< HEAD
 		skey_ref = search_process_keyrings(key->type, key,
 						   lookup_user_key_possessed,
 						   cred);
+=======
+		ctx.index_key.type		= key->type;
+		ctx.index_key.description	= key->description;
+		ctx.index_key.desc_len		= strlen(key->description);
+		ctx.match_data.raw_data		= key;
+		kdebug("check possessed");
+		skey_ref = search_process_keyrings(&ctx);
+		kdebug("possessed=%p", skey_ref);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (!IS_ERR(skey_ref)) {
 			key_put(key);
@@ -725,18 +917,30 @@ try_again:
 
 	ret = -EIO;
 	if (!(lflags & KEY_LOOKUP_PARTIAL) &&
+<<<<<<< HEAD
 	    !test_bit(KEY_FLAG_INSTANTIATED, &key->flags))
 		goto invalid_key;
 
 	/* check the permissions */
 	ret = key_task_permission(key_ref, cred, perm);
+=======
+	    key_read_state(key) == KEY_IS_UNINSTANTIATED)
+		goto invalid_key;
+
+	/* check the permissions */
+	ret = key_task_permission(key_ref, ctx.cred, perm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		goto invalid_key;
 
 	key->last_used_at = current_kernel_time().tv_sec;
 
 error:
+<<<<<<< HEAD
 	put_cred(cred);
+=======
+	put_cred(ctx.cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return key_ref;
 
 invalid_key:
@@ -747,7 +951,11 @@ invalid_key:
 	/* if we attempted to install a keyring, then it may have caused new
 	 * creds to be installed */
 reget_creds:
+<<<<<<< HEAD
 	put_cred(cred);
+=======
+	put_cred(ctx.cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	goto try_again;
 }
 
@@ -797,7 +1005,11 @@ long join_session_keyring(const char *name)
 		keyring = keyring_alloc(
 			name, old->uid, old->gid, old,
 			KEY_POS_ALL | KEY_USR_VIEW | KEY_USR_READ | KEY_USR_LINK,
+<<<<<<< HEAD
 			KEY_ALLOC_IN_QUOTA, NULL);
+=======
+			KEY_ALLOC_IN_QUOTA, NULL, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (IS_ERR(keyring)) {
 			ret = PTR_ERR(keyring);
 			goto error2;
@@ -872,3 +1084,16 @@ void key_change_session_keyring(struct callback_head *twork)
 
 	commit_creds(new);
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Make sure that root's user and user-session keyrings exist.
+ */
+static int __init init_root_keyring(void)
+{
+	return install_user_keyrings();
+}
+
+late_initcall(init_root_keyring);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

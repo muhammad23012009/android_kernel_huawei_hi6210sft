@@ -115,13 +115,20 @@ static int pm_ctrl_write(struct pci_dev *dev, int offset, u16 new_value,
 {
 	int err;
 	u16 old_value;
+<<<<<<< HEAD
 	pci_power_t new_state, old_state;
+=======
+	pci_power_t new_state;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = pci_read_config_word(dev, offset, &old_value);
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	old_state = (pci_power_t)(old_value & PCI_PM_CTRL_STATE_MASK);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	new_state = (pci_power_t)(new_value & PCI_PM_CTRL_STATE_MASK);
 
 	new_value &= PM_OK_BITS;

@@ -12,6 +12,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/usb.h>
 #include <linux/io.h>
@@ -35,7 +39,11 @@ static int ulpi_viewport_wait(void __iomem *view, u32 mask)
 			return 0;
 
 		udelay(1);
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return -ETIMEDOUT;
 }
@@ -78,3 +86,7 @@ struct usb_phy_io_ops ulpi_viewport_access_ops = {
 	.read	= ulpi_viewport_read,
 	.write	= ulpi_viewport_write,
 };
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ulpi_viewport_access_ops);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

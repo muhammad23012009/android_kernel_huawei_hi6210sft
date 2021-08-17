@@ -21,7 +21,11 @@
  *
  * Called with IRQs disabled
  */
+<<<<<<< HEAD
 void __ref ux500_cpu_die(unsigned int cpu)
+=======
+void ux500_cpu_die(unsigned int cpu)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* directly enter low power state, skipping secure registers */
 	for (;;) {

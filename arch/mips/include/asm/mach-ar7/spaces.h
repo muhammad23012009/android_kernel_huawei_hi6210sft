@@ -14,8 +14,16 @@
  * This handles the memory map.
  * We handle pages at KSEG0 for kernels with 32 bit address space.
  */
+<<<<<<< HEAD
 #define PAGE_OFFSET		0x94000000UL
 #define PHYS_OFFSET		0x14000000UL
+=======
+#define PAGE_OFFSET	_AC(0x94000000, UL)
+#define PHYS_OFFSET	_AC(0x14000000, UL)
+
+#define UNCAC_BASE	_AC(0xb4000000, UL)	/* 0xa0000000 + PHYS_OFFSET */
+#define IO_BASE		UNCAC_BASE
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-generic/spaces.h>
 

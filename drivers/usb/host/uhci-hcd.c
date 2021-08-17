@@ -69,6 +69,7 @@ MODULE_PARM_DESC(ignore_oc, "ignore hardware overcurrent indications");
  *            show all queues in /sys/kernel/debug/uhci/[pci_addr]
  * debug = 3, show all TDs in URBs when dumping
  */
+<<<<<<< HEAD
 #ifdef DEBUG
 #define DEBUG_CONFIGURED	1
 static int debug = 1;
@@ -81,6 +82,23 @@ MODULE_PARM_DESC(debug, "Debug level");
 #endif
 
 static char *errbuf;
+=======
+#ifdef CONFIG_DYNAMIC_DEBUG
+
+static int debug = 1;
+module_param(debug, int, S_IRUGO | S_IWUSR);
+MODULE_PARM_DESC(debug, "Debug level");
+static char *errbuf;
+
+#else
+
+#define debug 0
+#define errbuf NULL
+
+#endif
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ERRBUF_LEN    (32 * 1024)
 
 static struct kmem_cache *uhci_up_cachep;	/* urb_priv */
@@ -516,6 +534,7 @@ static void release_uhci(struct uhci_hcd *uhci)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (DEBUG_CONFIGURED) {
 		spin_lock_irq(&uhci->lock);
 		uhci->is_initialized = 0;
@@ -523,6 +542,14 @@ static void release_uhci(struct uhci_hcd *uhci)
 
 		debugfs_remove(uhci->dentry);
 	}
+=======
+
+	spin_lock_irq(&uhci->lock);
+	uhci->is_initialized = 0;
+	spin_unlock_irq(&uhci->lock);
+
+	debugfs_remove(uhci->dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < UHCI_NUM_SKELQH; i++)
 		uhci_free_qh(uhci, uhci->skelqh[i]);
@@ -589,7 +616,11 @@ static int uhci_start(struct usb_hcd *hcd)
 
 	uhci->frame = dma_alloc_coherent(uhci_dev(uhci),
 			UHCI_NUMFRAMES * sizeof(*uhci->frame),
+<<<<<<< HEAD
 			&uhci->frame_dma_handle, 0);
+=======
+			&uhci->frame_dma_handle, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!uhci->frame) {
 		dev_err(uhci_dev(uhci),
 			"unable to allocate consistent memory for frame list\n");
@@ -599,11 +630,16 @@ static int uhci_start(struct usb_hcd *hcd)
 
 	uhci->frame_cpu = kcalloc(UHCI_NUMFRAMES, sizeof(*uhci->frame_cpu),
 			GFP_KERNEL);
+<<<<<<< HEAD
 	if (!uhci->frame_cpu) {
 		dev_err(uhci_dev(uhci),
 			"unable to allocate memory for frame pointers\n");
 		goto err_alloc_frame_cpu;
 	}
+=======
+	if (!uhci->frame_cpu)
+		goto err_alloc_frame_cpu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uhci->td_pool = dma_pool_create("uhci_td", uhci_dev(uhci),
 			sizeof(struct uhci_td), 16, 0);
@@ -868,6 +904,7 @@ static int __init uhci_hcd_init(void)
 			ignore_oc ? ", overcurrent ignored" : "");
 	set_bit(USB_UHCI_LOADED, &usb_hcds_loaded);
 
+<<<<<<< HEAD
 	if (DEBUG_CONFIGURED) {
 		errbuf = kmalloc(ERRBUF_LEN, GFP_KERNEL);
 		if (!errbuf)
@@ -876,6 +913,16 @@ static int __init uhci_hcd_init(void)
 		if (!uhci_debugfs_root)
 			goto debug_failed;
 	}
+=======
+#ifdef CONFIG_DYNAMIC_DEBUG
+	errbuf = kmalloc(ERRBUF_LEN, GFP_KERNEL);
+	if (!errbuf)
+		goto errbuf_failed;
+	uhci_debugfs_root = debugfs_create_dir("uhci", usb_debug_root);
+	if (!uhci_debugfs_root)
+		goto debug_failed;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uhci_up_cachep = kmem_cache_create("uhci_urb_priv",
 		sizeof(struct urb_priv), 0, 0, NULL);
@@ -906,12 +953,20 @@ clean0:
 	kmem_cache_destroy(uhci_up_cachep);
 
 up_failed:
+<<<<<<< HEAD
+=======
+#if defined(DEBUG) || defined(CONFIG_DYNAMIC_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	debugfs_remove(uhci_debugfs_root);
 
 debug_failed:
 	kfree(errbuf);
 
 errbuf_failed:
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clear_bit(USB_UHCI_LOADED, &usb_hcds_loaded);
 	return retval;
@@ -927,7 +982,13 @@ static void __exit uhci_hcd_cleanup(void)
 #endif
 	kmem_cache_destroy(uhci_up_cachep);
 	debugfs_remove(uhci_debugfs_root);
+<<<<<<< HEAD
 	kfree(errbuf);
+=======
+#ifdef CONFIG_DYNAMIC_DEBUG
+	kfree(errbuf);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	clear_bit(USB_UHCI_LOADED, &usb_hcds_loaded);
 }
 

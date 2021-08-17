@@ -17,17 +17,35 @@
 #include <asm/addrspace.h>
 
 static struct plat_sci_port scif0_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= PHYS_PERIPHERAL_BLOCK + 0x01030000,
 	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,
 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.scbrr_algo_id	= SCBRR_ALGO_2,
 	.type		= PORT_SCIF,
 	.irqs		= { 39, 40, 42, 0 },
+=======
+	.flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP,
+	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+	.type		= PORT_SCIF,
+};
+
+static struct resource scif0_resources[] = {
+	DEFINE_RES_MEM(PHYS_PERIPHERAL_BLOCK + 0x01030000, 0x100),
+	DEFINE_RES_IRQ(39),
+	DEFINE_RES_IRQ(40),
+	DEFINE_RES_IRQ(42),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device scif0_device = {
 	.name		= "sh-sci",
 	.id		= 0,
+<<<<<<< HEAD
+=======
+	.resource	= scif0_resources,
+	.num_resources	= ARRAY_SIZE(scif0_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif0_platform_data,
 	},
@@ -65,6 +83,7 @@ static struct platform_device rtc_device = {
 
 #define	TMU_BLOCK_OFF	0x01020000
 #define TMU_BASE	PHYS_PERIPHERAL_BLOCK + TMU_BLOCK_OFF
+<<<<<<< HEAD
 #define TMU0_BASE	(TMU_BASE + 0x8 + (0xc * 0x0))
 #define TMU1_BASE	(TMU_BASE + 0x8 + (0xc * 0x1))
 #define TMU2_BASE	(TMU_BASE + 0x8 + (0xc * 0x2))
@@ -89,6 +108,22 @@ static struct resource tmu0_resources[] = {
 
 static struct platform_device tmu0_device = {
 	.name		= "sh_tmu",
+=======
+
+static struct sh_timer_config tmu0_platform_data = {
+	.channels_mask = 7,
+};
+
+static struct resource tmu0_resources[] = {
+	DEFINE_RES_MEM(TMU_BASE, 0x30),
+	DEFINE_RES_IRQ(IRQ_TUNI0),
+	DEFINE_RES_IRQ(IRQ_TUNI1),
+	DEFINE_RES_IRQ(IRQ_TUNI2),
+};
+
+static struct platform_device tmu0_device = {
+	.name		= "sh-tmu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id		= 0,
 	.dev = {
 		.platform_data	= &tmu0_platform_data,
@@ -97,6 +132,7 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
+<<<<<<< HEAD
 static struct sh_timer_config tmu1_platform_data = {
 	.channel_offset = 0x10,
 	.timer_bit = 1,
@@ -157,6 +193,11 @@ static struct platform_device *sh5_early_devices[] __initdata = {
 	&tmu0_device,
 	&tmu1_device,
 	&tmu2_device,
+=======
+static struct platform_device *sh5_early_devices[] __initdata = {
+	&scif0_device,
+	&tmu0_device,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device *sh5_devices[] __initdata = {

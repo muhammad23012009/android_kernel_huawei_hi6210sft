@@ -20,6 +20,7 @@
 /* Access user memory, but use MMU to avoid propagating kernel exceptions. */
 
 /*
+<<<<<<< HEAD
  * strnlen_user_asm takes the pointer in r0, and the length bound in r1.
  * It returns the length, including the terminating NUL, or zero on exception.
  * If length is greater than the bound, returns one plus the bound.
@@ -63,6 +64,8 @@ strncpy_from_user_fault:
 	.popsection
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * clear_user_asm takes the user target address in r0 and the
  * number of bytes to zero in r1.
  * It returns the number of uncopiable bytes (hopefully zero) in r0.
@@ -77,6 +80,10 @@ STD_ENTRY(clear_user_asm)
 	bnezt r1, 1b
 2:      { move r0, r1; jrp lr }
 	.pushsection __ex_table,"a"
+<<<<<<< HEAD
+=======
+	.align 8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.quad 1b, 2b
 	.popsection
 
@@ -86,6 +93,10 @@ STD_ENTRY(clear_user_asm)
 2:      { move r0, r1; jrp lr }
 	STD_ENDPROC(clear_user_asm)
 	.pushsection __ex_table,"a"
+<<<<<<< HEAD
+=======
+	.align 8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.quad 1b, 2b
 	.popsection
 
@@ -105,6 +116,7 @@ STD_ENTRY(flush_user_asm)
 2:      { move r0, r1; jrp lr }
 	STD_ENDPROC(flush_user_asm)
 	.pushsection __ex_table,"a"
+<<<<<<< HEAD
 	.quad 1b, 2b
 	.popsection
 
@@ -124,6 +136,9 @@ STD_ENTRY(inv_user_asm)
 2:      { move r0, r1; jrp lr }
 	STD_ENDPROC(inv_user_asm)
 	.pushsection __ex_table,"a"
+=======
+	.align 8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.quad 1b, 2b
 	.popsection
 
@@ -143,5 +158,9 @@ STD_ENTRY(finv_user_asm)
 2:      { move r0, r1; jrp lr }
 	STD_ENDPROC(finv_user_asm)
 	.pushsection __ex_table,"a"
+<<<<<<< HEAD
+=======
+	.align 8
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.quad 1b, 2b
 	.popsection

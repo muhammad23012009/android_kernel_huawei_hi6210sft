@@ -22,7 +22,10 @@
 #ifndef __S5H1411_H__
 #define __S5H1411_H__
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/dvb/frontend.h>
 
 #define S5H1411_I2C_TOP_ADDR (0x32 >> 1)
@@ -69,7 +72,11 @@ struct s5h1411_config {
 	u8 status_mode;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_S5H1411)
+=======
+#if IS_REACHABLE(CONFIG_DVB_S5H1411)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *s5h1411_attach(const struct s5h1411_config *config,
 					   struct i2c_adapter *i2c);
 #else
@@ -83,8 +90,11 @@ static inline struct dvb_frontend *s5h1411_attach(
 #endif /* CONFIG_DVB_S5H1411 */
 
 #endif /* __S5H1411_H__ */
+<<<<<<< HEAD
 
 /*
  * Local variables:
  * c-basic-offset: 8
  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

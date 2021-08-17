@@ -27,18 +27,30 @@
 #include <linux/slab.h>
 #include <linux/iommu.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+#include <linux/of_iommu.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/cacheflush.h>
 #include <asm/sizes.h>
 
+<<<<<<< HEAD
 #include <mach/iommu_hw-8xxx.h>
 #include <mach/iommu.h>
+=======
+#include "msm_iommu_hw-8xxx.h"
+#include "msm_iommu.h"
+#include "io-pgtable.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MRC(reg, processor, op1, crn, crm, op2)				\
 __asm__ __volatile__ (							\
 "   mrc   "   #processor "," #op1 ", %0,"  #crn "," #crm "," #op2 "\n"  \
 : "=r" (reg))
 
+<<<<<<< HEAD
 #define RCP15_PRRR(reg)		MRC(reg, p15, 0, c10, c2, 0)
 #define RCP15_NMRR(reg)		MRC(reg, p15, 0, c10, c2, 1)
 
@@ -66,11 +78,47 @@ static int __enable_clocks(struct msm_iommu_drvdata *drvdata)
 		ret = clk_enable(drvdata->clk);
 		if (ret)
 			clk_disable(drvdata->pclk);
+=======
+/* bitmap of the page sizes currently supported */
+#define MSM_IOMMU_PGSIZES	(SZ_4K | SZ_64K | SZ_1M | SZ_16M)
+
+DEFINE_SPINLOCK(msm_iommu_lock);
+static LIST_HEAD(qcom_iommu_devices);
+static struct iommu_ops msm_iommu_ops;
+
+struct msm_priv {
+	struct list_head list_attached;
+	struct iommu_domain domain;
+	struct io_pgtable_cfg	cfg;
+	struct io_pgtable_ops	*iop;
+	struct device		*dev;
+	spinlock_t		pgtlock; /* pagetable lock */
+};
+
+static struct msm_priv *to_msm_priv(struct iommu_domain *dom)
+{
+	return container_of(dom, struct msm_priv, domain);
+}
+
+static int __enable_clocks(struct msm_iommu_dev *iommu)
+{
+	int ret;
+
+	ret = clk_enable(iommu->pclk);
+	if (ret)
+		goto fail;
+
+	if (iommu->clk) {
+		ret = clk_enable(iommu->clk);
+		if (ret)
+			clk_disable(iommu->pclk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 fail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __disable_clocks(struct msm_iommu_drvdata *drvdata)
 {
 	if (drvdata->clk)
@@ -116,6 +164,168 @@ static int __flush_iotlb(struct iommu_domain *domain)
 	}
 fail:
 	return ret;
+=======
+static void __disable_clocks(struct msm_iommu_dev *iommu)
+{
+	if (iommu->clk)
+		clk_disable(iommu->clk);
+	clk_disable(iommu->pclk);
+}
+
+static void msm_iommu_reset(void __iomem *base, int ncb)
+{
+	int ctx;
+
+	SET_RPUE(base, 0);
+	SET_RPUEIE(base, 0);
+	SET_ESRRESTORE(base, 0);
+	SET_TBE(base, 0);
+	SET_CR(base, 0);
+	SET_SPDMBE(base, 0);
+	SET_TESTBUSCR(base, 0);
+	SET_TLBRSW(base, 0);
+	SET_GLOBAL_TLBIALL(base, 0);
+	SET_RPU_ACR(base, 0);
+	SET_TLBLKCRWE(base, 1);
+
+	for (ctx = 0; ctx < ncb; ctx++) {
+		SET_BPRCOSH(base, ctx, 0);
+		SET_BPRCISH(base, ctx, 0);
+		SET_BPRCNSH(base, ctx, 0);
+		SET_BPSHCFG(base, ctx, 0);
+		SET_BPMTCFG(base, ctx, 0);
+		SET_ACTLR(base, ctx, 0);
+		SET_SCTLR(base, ctx, 0);
+		SET_FSRRESTORE(base, ctx, 0);
+		SET_TTBR0(base, ctx, 0);
+		SET_TTBR1(base, ctx, 0);
+		SET_TTBCR(base, ctx, 0);
+		SET_BFBCR(base, ctx, 0);
+		SET_PAR(base, ctx, 0);
+		SET_FAR(base, ctx, 0);
+		SET_CTX_TLBIALL(base, ctx, 0);
+		SET_TLBFLPTER(base, ctx, 0);
+		SET_TLBSLPTER(base, ctx, 0);
+		SET_TLBLKCR(base, ctx, 0);
+		SET_CONTEXTIDR(base, ctx, 0);
+	}
+}
+
+static void __flush_iotlb(void *cookie)
+{
+	struct msm_priv *priv = cookie;
+	struct msm_iommu_dev *iommu = NULL;
+	struct msm_iommu_ctx_dev *master;
+	int ret = 0;
+
+	list_for_each_entry(iommu, &priv->list_attached, dom_node) {
+		ret = __enable_clocks(iommu);
+		if (ret)
+			goto fail;
+
+		list_for_each_entry(master, &iommu->ctx_list, list)
+			SET_CTX_TLBIALL(iommu->base, master->num, 0);
+
+		__disable_clocks(iommu);
+	}
+fail:
+	return;
+}
+
+static void __flush_iotlb_range(unsigned long iova, size_t size,
+				size_t granule, bool leaf, void *cookie)
+{
+	struct msm_priv *priv = cookie;
+	struct msm_iommu_dev *iommu = NULL;
+	struct msm_iommu_ctx_dev *master;
+	int ret = 0;
+	int temp_size;
+
+	list_for_each_entry(iommu, &priv->list_attached, dom_node) {
+		ret = __enable_clocks(iommu);
+		if (ret)
+			goto fail;
+
+		list_for_each_entry(master, &iommu->ctx_list, list) {
+			temp_size = size;
+			do {
+				iova &= TLBIVA_VA;
+				iova |= GET_CONTEXTIDR_ASID(iommu->base,
+							    master->num);
+				SET_TLBIVA(iommu->base, master->num, iova);
+				iova += granule;
+			} while (temp_size -= granule);
+		}
+
+		__disable_clocks(iommu);
+	}
+
+fail:
+	return;
+}
+
+static void __flush_iotlb_sync(void *cookie)
+{
+	/*
+	 * Nothing is needed here, the barrier to guarantee
+	 * completion of the tlb sync operation is implicitly
+	 * taken care when the iommu client does a writel before
+	 * kick starting the other master.
+	 */
+}
+
+static const struct iommu_gather_ops msm_iommu_gather_ops = {
+	.tlb_flush_all = __flush_iotlb,
+	.tlb_add_flush = __flush_iotlb_range,
+	.tlb_sync = __flush_iotlb_sync,
+};
+
+static int msm_iommu_alloc_ctx(unsigned long *map, int start, int end)
+{
+	int idx;
+
+	do {
+		idx = find_next_zero_bit(map, end, start);
+		if (idx == end)
+			return -ENOSPC;
+	} while (test_and_set_bit(idx, map));
+
+	return idx;
+}
+
+static void msm_iommu_free_ctx(unsigned long *map, int idx)
+{
+	clear_bit(idx, map);
+}
+
+static void config_mids(struct msm_iommu_dev *iommu,
+			struct msm_iommu_ctx_dev *master)
+{
+	int mid, ctx, i;
+
+	for (i = 0; i < master->num_mids; i++) {
+		mid = master->mids[i];
+		ctx = master->num;
+
+		SET_M2VCBR_N(iommu->base, mid, 0);
+		SET_CBACR_N(iommu->base, ctx, 0);
+
+		/* Set VMID = 0 */
+		SET_VMID(iommu->base, mid, 0);
+
+		/* Set the context number for that MID to this context */
+		SET_CBNDX(iommu->base, mid, ctx);
+
+		/* Set MID associated with this context bank to 0*/
+		SET_CBVMID(iommu->base, ctx, 0);
+
+		/* Set the ASID for TLB tagging for this context */
+		SET_CONTEXTIDR_ASID(iommu->base, ctx, ctx);
+
+		/* Set security bit override to be Non-secure */
+		SET_NSCFG(iommu->base, mid, 3);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void __reset_context(void __iomem *base, int ctx)
@@ -138,6 +348,7 @@ static void __reset_context(void __iomem *base, int ctx)
 	SET_TLBFLPTER(base, ctx, 0);
 	SET_TLBSLPTER(base, ctx, 0);
 	SET_TLBLKCR(base, ctx, 0);
+<<<<<<< HEAD
 	SET_PRRR(base, ctx, 0);
 	SET_NMRR(base, ctx, 0);
 }
@@ -147,6 +358,19 @@ static void __program_context(void __iomem *base, int ctx, phys_addr_t pgtable)
 	unsigned int prrr, nmrr;
 	__reset_context(base, ctx);
 
+=======
+}
+
+static void __program_context(void __iomem *base, int ctx,
+			      struct msm_priv *priv)
+{
+	__reset_context(base, ctx);
+
+	/* Turn on TEX Remap */
+	SET_TRE(base, ctx, 1);
+	SET_AFE(base, ctx, 1);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Set up HTW mode */
 	/* TLB miss configuration: perform HTW on miss */
 	SET_TLBMCFG(base, ctx, 0x3);
@@ -154,8 +378,18 @@ static void __program_context(void __iomem *base, int ctx, phys_addr_t pgtable)
 	/* V2P configuration: HTW for access */
 	SET_V2PCFG(base, ctx, 0x3);
 
+<<<<<<< HEAD
 	SET_TTBCR(base, ctx, 0);
 	SET_TTBR0_PA(base, ctx, (pgtable >> 14));
+=======
+	SET_TTBCR(base, ctx, priv->cfg.arm_v7s_cfg.tcr);
+	SET_TTBR0(base, ctx, priv->cfg.arm_v7s_cfg.ttbr[0]);
+	SET_TTBR1(base, ctx, priv->cfg.arm_v7s_cfg.ttbr[1]);
+
+	/* Set prrr and nmrr */
+	SET_PRRR(base, ctx, priv->cfg.arm_v7s_cfg.prrr);
+	SET_NMRR(base, ctx, priv->cfg.arm_v7s_cfg.nmrr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Invalidate the TLB for this context */
 	SET_CTX_TLBIALL(base, ctx, 0);
@@ -174,6 +408,7 @@ static void __program_context(void __iomem *base, int ctx, phys_addr_t pgtable)
 	SET_RCOSH(base, ctx, 1);
 	SET_RCNSH(base, ctx, 1);
 
+<<<<<<< HEAD
 	/* Turn on TEX Remap */
 	SET_TRE(base, ctx, 1);
 
@@ -206,18 +441,35 @@ static void __program_context(void __iomem *base, int ctx, phys_addr_t pgtable)
 	SET_TTBR1_ORGN(base, ctx, 1); /* WB, WA */
 #endif
 
+=======
+	/* Turn on BFB prefetch */
+	SET_BFBDFE(base, ctx, 1);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Enable the MMU */
 	SET_M(base, ctx, 1);
 }
 
+<<<<<<< HEAD
 static int msm_iommu_domain_init(struct iommu_domain *domain)
 {
 	struct msm_priv *priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 
+=======
+static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
+{
+	struct msm_priv *priv;
+
+	if (type != IOMMU_DOMAIN_UNMANAGED)
+		return NULL;
+
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!priv)
 		goto fail_nomem;
 
 	INIT_LIST_HEAD(&priv->list_attached);
+<<<<<<< HEAD
 	priv->pgtable = (unsigned long *)__get_free_pages(GFP_KERNEL,
 							  get_order(SZ_16K));
 
@@ -263,10 +515,58 @@ static void msm_iommu_domain_destroy(struct iommu_domain *domain)
 
 	kfree(priv);
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+=======
+
+	priv->domain.geometry.aperture_start = 0;
+	priv->domain.geometry.aperture_end   = (1ULL << 32) - 1;
+	priv->domain.geometry.force_aperture = true;
+
+	return &priv->domain;
+
+fail_nomem:
+	kfree(priv);
+	return NULL;
+}
+
+static void msm_iommu_domain_free(struct iommu_domain *domain)
+{
+	struct msm_priv *priv;
+	unsigned long flags;
+
+	spin_lock_irqsave(&msm_iommu_lock, flags);
+	priv = to_msm_priv(domain);
+	kfree(priv);
+	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+}
+
+static int msm_iommu_domain_config(struct msm_priv *priv)
+{
+	spin_lock_init(&priv->pgtlock);
+
+	priv->cfg = (struct io_pgtable_cfg) {
+		.quirks = IO_PGTABLE_QUIRK_TLBI_ON_MAP,
+		.pgsize_bitmap = msm_iommu_ops.pgsize_bitmap,
+		.ias = 32,
+		.oas = 32,
+		.tlb = &msm_iommu_gather_ops,
+		.iommu_dev = priv->dev,
+	};
+
+	priv->iop = alloc_io_pgtable_ops(ARM_V7S, &priv->cfg, priv);
+	if (!priv->iop) {
+		dev_err(priv->dev, "Failed to allocate pgtable\n");
+		return -EINVAL;
+	}
+
+	msm_iommu_ops.pgsize_bitmap = priv->cfg.pgsize_bitmap;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 {
+<<<<<<< HEAD
 	struct msm_priv *priv;
 	struct msm_iommu_ctx_dev *ctx_dev;
 	struct msm_iommu_drvdata *iommu_drvdata;
@@ -317,12 +617,59 @@ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 
 fail:
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+=======
+	int ret = 0;
+	unsigned long flags;
+	struct msm_iommu_dev *iommu;
+	struct msm_priv *priv = to_msm_priv(domain);
+	struct msm_iommu_ctx_dev *master;
+
+	priv->dev = dev;
+	msm_iommu_domain_config(priv);
+
+	spin_lock_irqsave(&msm_iommu_lock, flags);
+	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
+		master = list_first_entry(&iommu->ctx_list,
+					  struct msm_iommu_ctx_dev,
+					  list);
+		if (master->of_node == dev->of_node) {
+			ret = __enable_clocks(iommu);
+			if (ret)
+				goto fail;
+
+			list_for_each_entry(master, &iommu->ctx_list, list) {
+				if (master->num) {
+					dev_err(dev, "domain already attached");
+					ret = -EEXIST;
+					goto fail;
+				}
+				master->num =
+					msm_iommu_alloc_ctx(iommu->context_map,
+							    0, iommu->ncb);
+					if (IS_ERR_VALUE(master->num)) {
+						ret = -ENODEV;
+						goto fail;
+					}
+				config_mids(iommu, master);
+				__program_context(iommu->base, master->num,
+						  priv);
+			}
+			__disable_clocks(iommu);
+			list_add(&iommu->dom_node, &priv->list_attached);
+		}
+	}
+
+fail:
+	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static void msm_iommu_detach_dev(struct iommu_domain *domain,
 				 struct device *dev)
 {
+<<<<<<< HEAD
 	struct msm_priv *priv;
 	struct msm_iommu_ctx_dev *ctx_dev;
 	struct msm_iommu_drvdata *iommu_drvdata;
@@ -355,10 +702,33 @@ static void msm_iommu_detach_dev(struct iommu_domain *domain,
 	__disable_clocks(iommu_drvdata);
 	list_del_init(&ctx_drvdata->attached_elm);
 
+=======
+	struct msm_priv *priv = to_msm_priv(domain);
+	unsigned long flags;
+	struct msm_iommu_dev *iommu;
+	struct msm_iommu_ctx_dev *master;
+	int ret;
+
+	free_io_pgtable_ops(priv->iop);
+
+	spin_lock_irqsave(&msm_iommu_lock, flags);
+	list_for_each_entry(iommu, &priv->list_attached, dom_node) {
+		ret = __enable_clocks(iommu);
+		if (ret)
+			goto fail;
+
+		list_for_each_entry(master, &iommu->ctx_list, list) {
+			msm_iommu_free_ctx(iommu->context_map, master->num);
+			__reset_context(iommu->base, master->num);
+		}
+		__disable_clocks(iommu);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail:
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
 }
 
+<<<<<<< HEAD
 static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
 			 phys_addr_t pa, size_t len, int prot)
 {
@@ -550,6 +920,32 @@ fail:
 
 	/* the IOMMU API requires us to return how many bytes were unmapped */
 	len = ret ? 0 : len;
+=======
+static int msm_iommu_map(struct iommu_domain *domain, unsigned long iova,
+			 phys_addr_t pa, size_t len, int prot)
+{
+	struct msm_priv *priv = to_msm_priv(domain);
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&priv->pgtlock, flags);
+	ret = priv->iop->map(priv->iop, iova, pa, len, prot);
+	spin_unlock_irqrestore(&priv->pgtlock, flags);
+
+	return ret;
+}
+
+static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+			      size_t len)
+{
+	struct msm_priv *priv = to_msm_priv(domain);
+	unsigned long flags;
+
+	spin_lock_irqsave(&priv->pgtlock, flags);
+	len = priv->iop->unmap(priv->iop, iova, len);
+	spin_unlock_irqrestore(&priv->pgtlock, flags);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return len;
 }
 
@@ -557,6 +953,7 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
 					  dma_addr_t va)
 {
 	struct msm_priv *priv;
+<<<<<<< HEAD
 	struct msm_iommu_drvdata *iommu_drvdata;
 	struct msm_iommu_ctx_drvdata *ctx_drvdata;
 	unsigned int par;
@@ -579,10 +976,34 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
 	ctx = ctx_drvdata->num;
 
 	ret = __enable_clocks(iommu_drvdata);
+=======
+	struct msm_iommu_dev *iommu;
+	struct msm_iommu_ctx_dev *master;
+	unsigned int par;
+	unsigned long flags;
+	phys_addr_t ret = 0;
+
+	spin_lock_irqsave(&msm_iommu_lock, flags);
+
+	priv = to_msm_priv(domain);
+	iommu = list_first_entry(&priv->list_attached,
+				 struct msm_iommu_dev, dom_node);
+
+	if (list_empty(&iommu->ctx_list))
+		goto fail;
+
+	master = list_first_entry(&iommu->ctx_list,
+				  struct msm_iommu_ctx_dev, list);
+	if (!master)
+		goto fail;
+
+	ret = __enable_clocks(iommu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto fail;
 
 	/* Invalidate context TLB */
+<<<<<<< HEAD
 	SET_CTX_TLBIALL(base, ctx, 0);
 	SET_V2PPR(base, ctx, va & V2Pxx_VA);
 
@@ -590,23 +1011,45 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
 
 	/* We are dealing with a supersection */
 	if (GET_NOFAULT_SS(base, ctx))
+=======
+	SET_CTX_TLBIALL(iommu->base, master->num, 0);
+	SET_V2PPR(iommu->base, master->num, va & V2Pxx_VA);
+
+	par = GET_PAR(iommu->base, master->num);
+
+	/* We are dealing with a supersection */
+	if (GET_NOFAULT_SS(iommu->base, master->num))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = (par & 0xFF000000) | (va & 0x00FFFFFF);
 	else	/* Upper 20 bits from PAR, lower 12 from VA */
 		ret = (par & 0xFFFFF000) | (va & 0x00000FFF);
 
+<<<<<<< HEAD
 	if (GET_FAULT(base, ctx))
 		ret = 0;
 
 	__disable_clocks(iommu_drvdata);
+=======
+	if (GET_FAULT(iommu->base, master->num))
+		ret = 0;
+
+	__disable_clocks(iommu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail:
 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int msm_iommu_domain_has_cap(struct iommu_domain *domain,
 				    unsigned long cap)
 {
 	return 0;
+=======
+static bool msm_iommu_capable(enum iommu_cap cap)
+{
+	return false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void print_ctx_regs(void __iomem *base, int ctx)
@@ -632,24 +1075,84 @@ static void print_ctx_regs(void __iomem *base, int ctx)
 	       GET_TTBR0(base, ctx), GET_TTBR1(base, ctx));
 	pr_err("SCTLR  = %08x    ACTLR  = %08x\n",
 	       GET_SCTLR(base, ctx), GET_ACTLR(base, ctx));
+<<<<<<< HEAD
 	pr_err("PRRR   = %08x    NMRR   = %08x\n",
 	       GET_PRRR(base, ctx), GET_NMRR(base, ctx));
+=======
+}
+
+static void insert_iommu_master(struct device *dev,
+				struct msm_iommu_dev **iommu,
+				struct of_phandle_args *spec)
+{
+	struct msm_iommu_ctx_dev *master = dev->archdata.iommu;
+	int sid;
+
+	if (list_empty(&(*iommu)->ctx_list)) {
+		master = kzalloc(sizeof(*master), GFP_ATOMIC);
+		master->of_node = dev->of_node;
+		list_add(&master->list, &(*iommu)->ctx_list);
+		dev->archdata.iommu = master;
+	}
+
+	for (sid = 0; sid < master->num_mids; sid++)
+		if (master->mids[sid] == spec->args[0]) {
+			dev_warn(dev, "Stream ID 0x%hx repeated; ignoring\n",
+				 sid);
+			return;
+		}
+
+	master->mids[master->num_mids++] = spec->args[0];
+}
+
+static int qcom_iommu_of_xlate(struct device *dev,
+			       struct of_phandle_args *spec)
+{
+	struct msm_iommu_dev *iommu;
+	unsigned long flags;
+	int ret = 0;
+
+	spin_lock_irqsave(&msm_iommu_lock, flags);
+	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node)
+		if (iommu->dev->of_node == spec->np)
+			break;
+
+	if (!iommu || iommu->dev->of_node != spec->np) {
+		ret = -ENODEV;
+		goto fail;
+	}
+
+	insert_iommu_master(dev, &iommu, spec);
+fail:
+	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	struct msm_iommu_drvdata *drvdata = dev_id;
 	void __iomem *base;
+=======
+	struct msm_iommu_dev *iommu = dev_id;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int fsr;
 	int i, ret;
 
 	spin_lock(&msm_iommu_lock);
 
+<<<<<<< HEAD
 	if (!drvdata) {
+=======
+	if (!iommu) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("Invalid device ID in context interrupt handler\n");
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	base = drvdata->base;
 
 	pr_err("Unexpected IOMMU page fault!\n");
@@ -669,18 +1172,44 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
 		}
 	}
 	__disable_clocks(drvdata);
+=======
+	pr_err("Unexpected IOMMU page fault!\n");
+	pr_err("base = %08x\n", (unsigned int)iommu->base);
+
+	ret = __enable_clocks(iommu);
+	if (ret)
+		goto fail;
+
+	for (i = 0; i < iommu->ncb; i++) {
+		fsr = GET_FSR(iommu->base, i);
+		if (fsr) {
+			pr_err("Fault occurred in context %d.\n", i);
+			pr_err("Interesting registers:\n");
+			print_ctx_regs(iommu->base, i);
+			SET_FSR(iommu->base, i, 0x4000000F);
+		}
+	}
+	__disable_clocks(iommu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 fail:
 	spin_unlock(&msm_iommu_lock);
 	return 0;
 }
 
 static struct iommu_ops msm_iommu_ops = {
+<<<<<<< HEAD
 	.domain_init = msm_iommu_domain_init,
 	.domain_destroy = msm_iommu_domain_destroy,
+=======
+	.capable = msm_iommu_capable,
+	.domain_alloc = msm_iommu_domain_alloc,
+	.domain_free = msm_iommu_domain_free,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.attach_dev = msm_iommu_attach_dev,
 	.detach_dev = msm_iommu_detach_dev,
 	.map = msm_iommu_map,
 	.unmap = msm_iommu_unmap,
+<<<<<<< HEAD
 	.iova_to_phys = msm_iommu_iova_to_phys,
 	.domain_has_cap = msm_iommu_domain_has_cap,
 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
@@ -727,11 +1256,172 @@ static void __init setup_iommu_tex_classes(void)
 static int __init msm_iommu_init(void)
 {
 	setup_iommu_tex_classes();
+=======
+	.map_sg = default_iommu_map_sg,
+	.iova_to_phys = msm_iommu_iova_to_phys,
+	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
+	.of_xlate = qcom_iommu_of_xlate,
+};
+
+static int msm_iommu_probe(struct platform_device *pdev)
+{
+	struct resource *r;
+	struct msm_iommu_dev *iommu;
+	int ret, par, val;
+
+	iommu = devm_kzalloc(&pdev->dev, sizeof(*iommu), GFP_KERNEL);
+	if (!iommu)
+		return -ENODEV;
+
+	iommu->dev = &pdev->dev;
+	INIT_LIST_HEAD(&iommu->ctx_list);
+
+	iommu->pclk = devm_clk_get(iommu->dev, "smmu_pclk");
+	if (IS_ERR(iommu->pclk)) {
+		dev_err(iommu->dev, "could not get smmu_pclk\n");
+		return PTR_ERR(iommu->pclk);
+	}
+
+	ret = clk_prepare(iommu->pclk);
+	if (ret) {
+		dev_err(iommu->dev, "could not prepare smmu_pclk\n");
+		return ret;
+	}
+
+	iommu->clk = devm_clk_get(iommu->dev, "iommu_clk");
+	if (IS_ERR(iommu->clk)) {
+		dev_err(iommu->dev, "could not get iommu_clk\n");
+		clk_unprepare(iommu->pclk);
+		return PTR_ERR(iommu->clk);
+	}
+
+	ret = clk_prepare(iommu->clk);
+	if (ret) {
+		dev_err(iommu->dev, "could not prepare iommu_clk\n");
+		clk_unprepare(iommu->pclk);
+		return ret;
+	}
+
+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	iommu->base = devm_ioremap_resource(iommu->dev, r);
+	if (IS_ERR(iommu->base)) {
+		dev_err(iommu->dev, "could not get iommu base\n");
+		ret = PTR_ERR(iommu->base);
+		goto fail;
+	}
+
+	iommu->irq = platform_get_irq(pdev, 0);
+	if (iommu->irq < 0) {
+		dev_err(iommu->dev, "could not get iommu irq\n");
+		ret = -ENODEV;
+		goto fail;
+	}
+
+	ret = of_property_read_u32(iommu->dev->of_node, "qcom,ncb", &val);
+	if (ret) {
+		dev_err(iommu->dev, "could not get ncb\n");
+		goto fail;
+	}
+	iommu->ncb = val;
+
+	msm_iommu_reset(iommu->base, iommu->ncb);
+	SET_M(iommu->base, 0, 1);
+	SET_PAR(iommu->base, 0, 0);
+	SET_V2PCFG(iommu->base, 0, 1);
+	SET_V2PPR(iommu->base, 0, 0);
+	par = GET_PAR(iommu->base, 0);
+	SET_V2PCFG(iommu->base, 0, 0);
+	SET_M(iommu->base, 0, 0);
+
+	if (!par) {
+		pr_err("Invalid PAR value detected\n");
+		ret = -ENODEV;
+		goto fail;
+	}
+
+	ret = devm_request_threaded_irq(iommu->dev, iommu->irq, NULL,
+					msm_iommu_fault_handler,
+					IRQF_ONESHOT | IRQF_SHARED,
+					"msm_iommu_secure_irpt_handler",
+					iommu);
+	if (ret) {
+		pr_err("Request IRQ %d failed with ret=%d\n", iommu->irq, ret);
+		goto fail;
+	}
+
+	list_add(&iommu->dev_node, &qcom_iommu_devices);
+	of_iommu_set_ops(pdev->dev.of_node, &msm_iommu_ops);
+
+	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
+		iommu->base, iommu->irq, iommu->ncb);
+
+	return ret;
+fail:
+	clk_unprepare(iommu->clk);
+	clk_unprepare(iommu->pclk);
+	return ret;
+}
+
+static const struct of_device_id msm_iommu_dt_match[] = {
+	{ .compatible = "qcom,apq8064-iommu" },
+	{}
+};
+
+static int msm_iommu_remove(struct platform_device *pdev)
+{
+	struct msm_iommu_dev *iommu = platform_get_drvdata(pdev);
+
+	clk_unprepare(iommu->clk);
+	clk_unprepare(iommu->pclk);
+	return 0;
+}
+
+static struct platform_driver msm_iommu_driver = {
+	.driver = {
+		.name	= "msm_iommu",
+		.of_match_table = msm_iommu_dt_match,
+	},
+	.probe		= msm_iommu_probe,
+	.remove		= msm_iommu_remove,
+};
+
+static int __init msm_iommu_driver_init(void)
+{
+	int ret;
+
+	ret = platform_driver_register(&msm_iommu_driver);
+	if (ret != 0)
+		pr_err("Failed to register IOMMU driver\n");
+
+	return ret;
+}
+
+static void __exit msm_iommu_driver_exit(void)
+{
+	platform_driver_unregister(&msm_iommu_driver);
+}
+
+subsys_initcall(msm_iommu_driver_init);
+module_exit(msm_iommu_driver_exit);
+
+static int __init msm_iommu_init(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bus_set_iommu(&platform_bus_type, &msm_iommu_ops);
 	return 0;
 }
 
+<<<<<<< HEAD
 subsys_initcall(msm_iommu_init);
+=======
+static int __init msm_iommu_of_setup(struct device_node *np)
+{
+	msm_iommu_init();
+	return 0;
+}
+
+IOMMU_OF_DECLARE(msm_iommu_of, "qcom,apq8064-iommu", msm_iommu_of_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Stepan Moskovchenko <stepanm@codeaurora.org>");

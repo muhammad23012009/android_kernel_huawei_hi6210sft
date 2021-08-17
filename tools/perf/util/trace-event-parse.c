@@ -28,6 +28,7 @@
 #include "util.h"
 #include "trace-event.h"
 
+<<<<<<< HEAD
 int header_page_size_size;
 int header_page_ts_size;
 int header_page_data_offset;
@@ -47,6 +48,8 @@ struct pevent *read_trace_init(int file_bigendian, int host_bigendian)
 	return pevent;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int get_common_field(struct scripting_context *context,
 			    int *offset, int *size, const char *type)
 {
@@ -126,6 +129,7 @@ raw_field_value(struct event_format *event, const char *name, void *data)
 	return val;
 }
 
+<<<<<<< HEAD
 void *raw_field_ptr(struct event_format *event, const char *name, void *data)
 {
 	struct format_field *field;
@@ -162,13 +166,20 @@ int trace_parse_common_pid(struct pevent *pevent, void *data)
 	return pevent_data_pid(pevent, &record);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 unsigned long long read_size(struct event_format *event, void *ptr, int size)
 {
 	return pevent_read_number(event->pevent, ptr, size);
 }
 
+<<<<<<< HEAD
 void event_format__print(struct event_format *event,
 			 int cpu, void *data, int size)
+=======
+void event_format__fprintf(struct event_format *event,
+			   int cpu, void *data, int size, FILE *fp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct pevent_record record;
 	struct trace_seq s;
@@ -180,6 +191,7 @@ void event_format__print(struct event_format *event,
 
 	trace_seq_init(&s);
 	pevent_event_info(&s, event, &record);
+<<<<<<< HEAD
 	trace_seq_do_printf(&s);
 }
 
@@ -211,6 +223,16 @@ void parse_proc_kallsyms(struct pevent *pevent,
 
 		line = strtok_r(NULL, "\n", &next);
 	}
+=======
+	trace_seq_do_fprintf(&s, fp);
+	trace_seq_destroy(&s);
+}
+
+void event_format__print(struct event_format *event,
+			 int cpu, void *data, int size)
+{
+	return event_format__fprintf(event, cpu, data, size, stdout);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void parse_ftrace_printk(struct pevent *pevent,
@@ -221,7 +243,11 @@ void parse_ftrace_printk(struct pevent *pevent,
 	char *line;
 	char *next = NULL;
 	char *addr_str;
+<<<<<<< HEAD
 	char *fmt;
+=======
+	char *fmt = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	line = strtok_r(file, "\n", &next);
 	while (line) {
@@ -287,7 +313,11 @@ static const struct flag flags[] = {
 	{ "NET_TX_SOFTIRQ", 2 },
 	{ "NET_RX_SOFTIRQ", 3 },
 	{ "BLOCK_SOFTIRQ", 4 },
+<<<<<<< HEAD
 	{ "BLOCK_IOPOLL_SOFTIRQ", 5 },
+=======
+	{ "IRQ_POLL_SOFTIRQ", 5 },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ "TASKLET_SOFTIRQ", 6 },
 	{ "SCHED_SOFTIRQ", 7 },
 	{ "HRTIMER_SOFTIRQ", 8 },

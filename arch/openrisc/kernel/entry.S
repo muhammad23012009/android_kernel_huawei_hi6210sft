@@ -179,7 +179,11 @@ handler:							;\
  *	 occured. in fact they never do. if you need them use
  *	 values saved on stack (for SPR_EPC, SPR_ESR) or content
  *       of r4 (for SPR_EEAR). for details look at EXCEPTION_HANDLE()
+<<<<<<< HEAD
  *       in 'arch/or32/kernel/head.S'
+=======
+ *       in 'arch/openrisc/kernel/head.S'
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /* =====================================================[ exceptions] === */
@@ -1092,13 +1096,21 @@ ENTRY(__sys_clone)
 	l.movhi	r29,hi(sys_clone)
 	l.ori	r29,r29,lo(sys_clone)
 	l.j	_fork_save_extra_regs_and_call
+<<<<<<< HEAD
 	 l.addi	r7,r1,0
+=======
+	 l.nop
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ENTRY(__sys_fork)
 	l.movhi	r29,hi(sys_fork)
 	l.ori	r29,r29,lo(sys_fork)
 	l.j	_fork_save_extra_regs_and_call
+<<<<<<< HEAD
 	 l.addi	r3,r1,0
+=======
+	 l.nop
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ENTRY(sys_rt_sigreturn)
 	l.j	_sys_rt_sigreturn

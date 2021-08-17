@@ -12,7 +12,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/jiffies.h>
@@ -136,7 +139,11 @@ static int i2c_pca_pf_probe(struct platform_device *pdev)
 	struct i2c_pca_pf_data *i2c;
 	struct resource *res;
 	struct i2c_pca9564_pf_platform_data *platform_data =
+<<<<<<< HEAD
 				pdev->dev.platform_data;
+=======
+				dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 	int irq;
 
@@ -281,12 +288,19 @@ static struct platform_driver i2c_pca_pf_driver = {
 	.remove = i2c_pca_pf_remove,
 	.driver = {
 		.name = "i2c-pca-platform",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
 module_platform_driver(i2c_pca_pf_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Wolfram Sang <w.sang@pengutronix.de>");
+=======
+MODULE_AUTHOR("Wolfram Sang <kernel@pengutronix.de>");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_DESCRIPTION("I2C-PCA9564/PCA9665 platform driver");
 MODULE_LICENSE("GPL");

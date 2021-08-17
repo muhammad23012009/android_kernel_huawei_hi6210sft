@@ -11,6 +11,10 @@
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
+=======
+#include <linux/smc91x.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <mach/hardware.h>
 #include <asm/setup.h>
@@ -43,12 +47,24 @@ static struct resource smc91x_resources[] = {
 #endif
 };
 
+<<<<<<< HEAD
+=======
+static struct smc91x_platdata smc91x_platdata = {
+	.flags = SMC91X_USE_16BIT | SMC91X_USE_8BIT | SMC91X_NOWAIT,
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct platform_device smc91x_device = {
 	.name		= "smc91x",
 	.id		= 0,
 	.num_resources	= ARRAY_SIZE(smc91x_resources),
 	.resource	= smc91x_resources,
+<<<<<<< HEAD
+=======
+	.dev = {
+		.platform_data  = &smc91x_platdata,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device *devices[] __initdata = {

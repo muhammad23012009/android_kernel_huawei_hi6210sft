@@ -17,13 +17,20 @@
 #include <linux/fs.h>
 #include <linux/kref.h>
 #include <linux/utsname.h>
+<<<<<<< HEAD
 #include <linux/nfsd/nfsfh.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/lockd/bind.h>
 #include <linux/lockd/xdr.h>
 #ifdef CONFIG_LOCKD_V4
 #include <linux/lockd/xdr4.h>
 #endif
 #include <linux/lockd/debug.h>
+<<<<<<< HEAD
+=======
+#include <linux/sunrpc/svc.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Version string
@@ -68,6 +75,10 @@ struct nlm_host {
 	struct nsm_handle	*h_nsmhandle;	/* NSM status handle */
 	char			*h_addrbuf;	/* address eyecatcher */
 	struct net		*net;		/* host net */
+<<<<<<< HEAD
+=======
+	char			nodename[UNX_MAXNODENAME + 1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*
@@ -178,7 +189,10 @@ struct nlm_block {
 	unsigned char		b_granted;	/* VFS granted lock */
 	struct nlm_file *	b_file;		/* file in question */
 	struct cache_req *	b_cache_req;	/* deferred request handling */
+<<<<<<< HEAD
 	struct file_lock *	b_fl;		/* set for GETLK */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct cache_deferred_req * b_deferred_req;
 	unsigned int		b_flags;	/* block flags */
 #define B_QUEUED		1	/* lock queued */

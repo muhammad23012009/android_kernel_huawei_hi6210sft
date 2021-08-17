@@ -6,8 +6,12 @@ Arnaud
 TODO:
 - clean ups
 - sort out dup ids with SiS driver
+<<<<<<< HEAD
 - remove useless/wrong/unused #ifdef/code/...
 - fix printk usages
+=======
+- remove useless/wrong/unused code...
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 - get rid of non-linux related stuff
 
 Please send patches to:

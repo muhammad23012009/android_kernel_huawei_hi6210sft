@@ -1,7 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2004-2012 Emulex.  All rights reserved.           *
+=======
+ * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
  * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
@@ -73,8 +77,11 @@ struct lpfc_sli2_slim;
  */
 /* 1 Second */
 #define QUEUE_RAMP_DOWN_INTERVAL	(msecs_to_jiffies(1000 * 1))
+<<<<<<< HEAD
 /* 5 minutes */
 #define QUEUE_RAMP_UP_INTERVAL		(msecs_to_jiffies(1000 * 300))
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Number of exchanges reserved for discovery to complete */
 #define LPFC_DISC_IOCB_BUFF_COUNT 20
@@ -232,6 +239,11 @@ struct lpfc_stats {
 	uint32_t elsRcvRRQ;
 	uint32_t elsRcvRTV;
 	uint32_t elsRcvECHO;
+<<<<<<< HEAD
+=======
+	uint32_t elsRcvLCB;
+	uint32_t elsRcvRDP;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t elsXmitFLOGI;
 	uint32_t elsXmitFDISC;
 	uint32_t elsXmitPLOGI;
@@ -386,7 +398,10 @@ struct lpfc_vport {
 	uint32_t work_port_events; /* Timeout to be handled  */
 #define WORKER_DISC_TMO                0x1	/* vport: Discovery timeout */
 #define WORKER_ELS_TMO                 0x2	/* vport: ELS timeout */
+<<<<<<< HEAD
 #define WORKER_FDMI_TMO                0x4	/* vport: FDMI timeout */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define WORKER_DELAYED_DISC_TMO        0x8	/* vport: delayed discovery */
 
 #define WORKER_MBOX_TMO                0x100	/* hba: MBOX timeout */
@@ -396,7 +411,10 @@ struct lpfc_vport {
 #define WORKER_RAMP_UP_QUEUE           0x1000	/* hba: Increase Q depth */
 #define WORKER_SERVICE_TXQ             0x2000	/* hba: IOCBs on the txq */
 
+<<<<<<< HEAD
 	struct timer_list fc_fdmitmo;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct timer_list els_tmofunc;
 	struct timer_list delayed_disc_tmo;
 
@@ -405,6 +423,10 @@ struct lpfc_vport {
 	uint8_t load_flag;
 #define FC_LOADING		0x1	/* HBA in process of loading drvr */
 #define FC_UNLOADING		0x2	/* HBA in process of unloading drvr */
+<<<<<<< HEAD
+=======
+#define FC_ALLOW_FDMI		0x4	/* port is ready for FDMI requests */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Vport Config Parameters */
 	uint32_t cfg_scan_down;
 	uint32_t cfg_lun_queue_depth;
@@ -414,13 +436,20 @@ struct lpfc_vport {
 	uint32_t cfg_peer_port_login;
 	uint32_t cfg_fcp_class;
 	uint32_t cfg_use_adisc;
+<<<<<<< HEAD
 	uint32_t cfg_fdmi_on;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t cfg_discovery_threads;
 	uint32_t cfg_log_verbose;
 	uint32_t cfg_max_luns;
 	uint32_t cfg_enable_da_id;
 	uint32_t cfg_max_scsicmpl_time;
 	uint32_t cfg_tgt_queue_depth;
+<<<<<<< HEAD
+=======
+	uint32_t cfg_first_burst_size;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	uint32_t dev_loss_tmo_changed;
 
@@ -439,6 +468,13 @@ struct lpfc_vport {
 	unsigned long rcv_buffer_time_stamp;
 	uint32_t vport_flag;
 #define STATIC_VPORT	1
+<<<<<<< HEAD
+=======
+
+	uint16_t fdmi_num_disc;
+	uint32_t fdmi_hba_mask;
+	uint32_t fdmi_port_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct hbq_s {
@@ -491,15 +527,26 @@ struct unsol_rcv_ct_ctx {
 #define LPFC_USER_LINK_SPEED_8G		8	/* 8 Gigabaud */
 #define LPFC_USER_LINK_SPEED_10G	10	/* 10 Gigabaud */
 #define LPFC_USER_LINK_SPEED_16G	16	/* 16 Gigabaud */
+<<<<<<< HEAD
 #define LPFC_USER_LINK_SPEED_MAX	LPFC_USER_LINK_SPEED_16G
 #define LPFC_USER_LINK_SPEED_BITMAP ((1 << LPFC_USER_LINK_SPEED_16G) | \
+=======
+#define LPFC_USER_LINK_SPEED_32G	32	/* 32 Gigabaud */
+#define LPFC_USER_LINK_SPEED_MAX	LPFC_USER_LINK_SPEED_32G
+#define LPFC_USER_LINK_SPEED_BITMAP  ((1ULL << LPFC_USER_LINK_SPEED_32G) | \
+				     (1 << LPFC_USER_LINK_SPEED_16G) | \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     (1 << LPFC_USER_LINK_SPEED_10G) | \
 				     (1 << LPFC_USER_LINK_SPEED_8G) | \
 				     (1 << LPFC_USER_LINK_SPEED_4G) | \
 				     (1 << LPFC_USER_LINK_SPEED_2G) | \
 				     (1 << LPFC_USER_LINK_SPEED_1G) | \
 				     (1 << LPFC_USER_LINK_SPEED_AUTO))
+<<<<<<< HEAD
 #define LPFC_LINK_SPEED_STRING "0, 1, 2, 4, 8, 10, 16"
+=======
+#define LPFC_LINK_SPEED_STRING "0, 1, 2, 4, 8, 10, 16, 32"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 enum nemb_type {
 	nemb_mse = 1,
@@ -641,6 +688,11 @@ struct lpfc_hba {
 #define HBA_DEVLOSS_TMO         0x2000 /* HBA in devloss timeout */
 #define HBA_RRQ_ACTIVE		0x4000 /* process the rrq active list */
 #define HBA_FCP_IOQ_FLUSH	0x8000 /* FCP I/O queues being flushed */
+<<<<<<< HEAD
+=======
+#define HBA_FW_DUMP_OP		0x10000 /* Skips fn reset before FW dump */
+#define HBA_RECOVERABLE_UE	0x20000 /* Firmware supports recoverable UE */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t fcp_ring_in_use; /* When polling test if intr-hndlr active*/
 	struct lpfc_dmabuf slim2p;
 
@@ -688,6 +740,11 @@ struct lpfc_hba {
 	uint8_t  wwnn[8];
 	uint8_t  wwpn[8];
 	uint32_t RandomData[7];
+<<<<<<< HEAD
+=======
+	uint8_t  fcp_embed_io;
+	uint8_t  mds_diags_support;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* HBA Config Parameters */
 	uint32_t cfg_ack0;
@@ -707,11 +764,18 @@ struct lpfc_hba {
 	uint32_t cfg_multi_ring_type;
 	uint32_t cfg_poll;
 	uint32_t cfg_poll_tmo;
+<<<<<<< HEAD
 	uint32_t cfg_use_msi;
 	uint32_t cfg_fcp_imax;
 	uint32_t cfg_fcp_cpu_map;
 	uint32_t cfg_fcp_wq_count;
 	uint32_t cfg_fcp_eq_count;
+=======
+	uint32_t cfg_task_mgmt_tmo;
+	uint32_t cfg_use_msi;
+	uint32_t cfg_fcp_imax;
+	uint32_t cfg_fcp_cpu_map;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t cfg_fcp_io_channel;
 	uint32_t cfg_total_seg_cnt;
 	uint32_t cfg_sg_seg_cnt;
@@ -722,6 +786,24 @@ struct lpfc_hba {
 	uint32_t cfg_hba_queue_depth;
 	uint32_t cfg_enable_hba_reset;
 	uint32_t cfg_enable_hba_heartbeat;
+<<<<<<< HEAD
+=======
+	uint32_t cfg_fof;
+	uint32_t cfg_EnableXLane;
+	uint8_t cfg_oas_tgt_wwpn[8];
+	uint8_t cfg_oas_vpt_wwpn[8];
+	uint32_t cfg_oas_lun_state;
+#define OAS_LUN_ENABLE	1
+#define OAS_LUN_DISABLE	0
+	uint32_t cfg_oas_lun_status;
+#define OAS_LUN_STATUS_EXISTS	0x01
+	uint32_t cfg_oas_flags;
+#define OAS_FIND_ANY_VPORT	0x01
+#define OAS_FIND_ANY_TARGET	0x02
+#define OAS_LUN_VALID	0x04
+	uint32_t cfg_oas_priority;
+	uint32_t cfg_XLanePriority;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint32_t cfg_enable_bg;
 	uint32_t cfg_hostmem_hgp;
 	uint32_t cfg_log_verbose;
@@ -730,10 +812,24 @@ struct lpfc_hba {
 	uint32_t cfg_request_firmware_upgrade;
 	uint32_t cfg_iocb_cnt;
 	uint32_t cfg_suppress_link_up;
+<<<<<<< HEAD
+=======
+	uint32_t cfg_rrq_xri_bitmap_sz;
+	uint32_t cfg_delay_discovery;
+	uint32_t cfg_sli_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define LPFC_INITIALIZE_LINK              0	/* do normal init_link mbox */
 #define LPFC_DELAY_INIT_LINK              1	/* layered driver hold off */
 #define LPFC_DELAY_INIT_LINK_INDEFINITELY 2	/* wait, manual intervention */
 	uint32_t cfg_enable_dss;
+<<<<<<< HEAD
+=======
+	uint32_t cfg_fdmi_on;
+#define LPFC_FDMI_NO_SUPPORT	0	/* FDMI not supported */
+#define LPFC_FDMI_SUPPORT	1	/* FDMI supported? */
+	uint32_t cfg_enable_SmartSAN;
+	uint32_t cfg_enable_mds_diags;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lpfc_vpd_t vpd;		/* vital product data */
 
 	struct pci_dev *pcidev;
@@ -754,9 +850,15 @@ struct lpfc_hba {
 
 	atomic_t fcp_qidx;		/* next work queue to post work to */
 
+<<<<<<< HEAD
 	unsigned long pci_bar0_map;     /* Physical address for PCI BAR0 */
 	unsigned long pci_bar1_map;     /* Physical address for PCI BAR1 */
 	unsigned long pci_bar2_map;     /* Physical address for PCI BAR2 */
+=======
+	phys_addr_t pci_bar0_map;     /* Physical address for PCI BAR0 */
+	phys_addr_t pci_bar1_map;     /* Physical address for PCI BAR1 */
+	phys_addr_t pci_bar2_map;     /* Physical address for PCI BAR2 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __iomem *slim_memmap_p;	/* Kernel memory mapped address for
 					   PCI BAR0 */
 	void __iomem *ctrl_regs_memmap_p;/* Kernel memory mapped address for
@@ -802,6 +904,10 @@ struct lpfc_hba {
 
 	struct timer_list fcp_poll_timer;
 	struct timer_list eratt_poll;
+<<<<<<< HEAD
+=======
+	uint32_t eratt_poll_interval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * stat  counters
@@ -835,6 +941,10 @@ struct lpfc_hba {
 	mempool_t *mbox_mem_pool;
 	mempool_t *nlp_mem_pool;
 	mempool_t *rrq_pool;
+<<<<<<< HEAD
+=======
+	mempool_t *active_rrq_pool;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct fc_host_statistics link_stats;
 	enum intr_type_t intr_type;
@@ -845,7 +955,12 @@ struct lpfc_hba {
 	struct list_head port_list;
 	struct lpfc_vport *pport;	/* physical lpfc_vport pointer */
 	uint16_t max_vpi;		/* Maximum virtual nports */
+<<<<<<< HEAD
 #define LPFC_MAX_VPI 0xFFFF		/* Max number of VPI supported */
+=======
+#define LPFC_MAX_VPI	0xFF		/* Max number VPI supported 0 - 0xff */
+#define LPFC_MAX_VPORTS	0x100		/* Max vports per port, with pport */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	uint16_t max_vports;            /*
 					 * For IOV HBAs max_vpi can change
 					 * after a reset. max_vports is max
@@ -869,7 +984,10 @@ struct lpfc_hba {
 	atomic_t num_cmd_success;
 	unsigned long last_rsrc_error_time;
 	unsigned long last_ramp_down_time;
+<<<<<<< HEAD
 	unsigned long last_ramp_up_time;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_SCSI_LPFC_DEBUG_FS
 	struct dentry *hba_debugfs_root;
 	atomic_t debugfs_vport_count;
@@ -971,6 +1089,24 @@ struct lpfc_hba {
 	atomic_t sdev_cnt;
 	uint8_t fips_spec_rev;
 	uint8_t fips_level;
+<<<<<<< HEAD
+=======
+	spinlock_t devicelock;	/* lock for luns list */
+	mempool_t *device_data_mem_pool;
+	struct list_head luns;
+#define LPFC_TRANSGRESSION_HIGH_TEMPERATURE	0x0080
+#define LPFC_TRANSGRESSION_LOW_TEMPERATURE	0x0040
+#define LPFC_TRANSGRESSION_HIGH_VOLTAGE		0x0020
+#define LPFC_TRANSGRESSION_LOW_VOLTAGE		0x0010
+#define LPFC_TRANSGRESSION_HIGH_TXBIAS		0x0008
+#define LPFC_TRANSGRESSION_LOW_TXBIAS		0x0004
+#define LPFC_TRANSGRESSION_HIGH_TXPOWER		0x0002
+#define LPFC_TRANSGRESSION_LOW_TXPOWER		0x0001
+#define LPFC_TRANSGRESSION_HIGH_RXPOWER		0x8000
+#define LPFC_TRANSGRESSION_LOW_RXPOWER		0x4000
+	uint16_t sfp_alarm;
+	uint16_t sfp_warning;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static inline struct Scsi_Host *

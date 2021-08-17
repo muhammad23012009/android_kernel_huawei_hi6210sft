@@ -27,7 +27,11 @@ static irqreturn_t pit_timer_interrupt(int irq, void *dev_id)
 static struct irqaction pit_timer_irq = {
 	.name		= "pit",
 	.handler	= pit_timer_interrupt,
+<<<<<<< HEAD
 	.flags		= IRQF_DISABLED | IRQF_TIMER | IRQF_IRQPOLL,
+=======
+	.flags		= IRQF_TIMER | IRQF_IRQPOLL,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev_id		= &i8253_clockevent,
 };
 

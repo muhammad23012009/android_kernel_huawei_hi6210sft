@@ -52,6 +52,10 @@
 #include <asm/io.h>
 #include <asm/uaccess.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "nicstar.h"
 #ifdef CONFIG_ATM_NICSTAR_USE_SUNI
 #include "suni.h"
@@ -72,9 +76,12 @@
 #undef GENERAL_DEBUG
 #undef EXTRA_DEBUG
 
+<<<<<<< HEAD
 #undef NS_USE_DESTRUCTORS	/* For now keep this undefined unless you know
 				   you're going to use only raw ATM */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Do not touch these */
 
 #ifdef TX_DEBUG
@@ -137,11 +144,14 @@ static void process_tsq(ns_dev * card);
 static void drain_scq(ns_dev * card, scq_info * scq, int pos);
 static void process_rsq(ns_dev * card);
 static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe);
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 static void ns_sb_destructor(struct sk_buff *sb);
 static void ns_lb_destructor(struct sk_buff *lb);
 static void ns_hb_destructor(struct sk_buff *hb);
 #endif /* NS_USE_DESTRUCTORS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void recycle_rx_buf(ns_dev * card, struct sk_buff *skb);
 static void recycle_iovec_rx_bufs(ns_dev * card, struct iovec *iov, int count);
 static void recycle_iov_buf(ns_dev * card, struct sk_buff *iovb);
@@ -153,7 +163,10 @@ static int ns_ioctl(struct atm_dev *dev, unsigned int cmd, void __user * arg);
 static void which_list(ns_dev * card, struct sk_buff *skb);
 #endif
 static void ns_poll(unsigned long arg);
+<<<<<<< HEAD
 static int ns_parse_mac(char *mac, unsigned char *esi);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ns_phy_put(struct atm_dev *dev, unsigned char value,
 		       unsigned long addr);
 static unsigned char ns_phy_get(struct atm_dev *dev, unsigned long addr);
@@ -252,10 +265,17 @@ static void nicstar_remove_one(struct pci_dev *pcidev)
 			free_scq(card, card->scd2vc[j]->scq, card->scd2vc[j]->tx_vcc);
 	}
 	idr_destroy(&card->idr);
+<<<<<<< HEAD
 	pci_free_consistent(card->pcidev, NS_RSQSIZE + NS_RSQ_ALIGNMENT,
 			    card->rsq.org, card->rsq.dma);
 	pci_free_consistent(card->pcidev, NS_TSQSIZE + NS_TSQ_ALIGNMENT,
 			    card->tsq.org, card->tsq.dma);
+=======
+	dma_free_coherent(&card->pcidev->dev, NS_RSQSIZE + NS_RSQ_ALIGNMENT,
+			  card->rsq.org, card->rsq.dma);
+	dma_free_coherent(&card->pcidev->dev, NS_TSQSIZE + NS_TSQ_ALIGNMENT,
+			  card->tsq.org, card->tsq.dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_irq(card->pcidev->irq, card);
 	iounmap(card->membase);
 	kfree(card);
@@ -306,7 +326,11 @@ static void __exit nicstar_cleanup(void)
 {
 	XPRINTK("nicstar: nicstar_cleanup() called.\n");
 
+<<<<<<< HEAD
 	del_timer(&ns_timer);
+=======
+	del_timer_sync(&ns_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pci_unregister_driver(&nicstar_driver);
 
@@ -370,8 +394,12 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 		ns_init_card_error(card, error);
 		return error;
 	}
+<<<<<<< HEAD
         if ((pci_set_dma_mask(pcidev, DMA_BIT_MASK(32)) != 0) ||
 	    (pci_set_consistent_dma_mask(pcidev, DMA_BIT_MASK(32)) != 0)) {
+=======
+        if (dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32)) != 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                 printk(KERN_WARNING
 		       "nicstar%d: No suitable DMA available.\n", i);
 		error = 2;
@@ -379,7 +407,12 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 		return error;
         }
 
+<<<<<<< HEAD
 	if ((card = kmalloc(sizeof(ns_dev), GFP_KERNEL)) == NULL) {
+=======
+	card = kmalloc(sizeof(*card), GFP_KERNEL);
+	if (!card) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk
 		    ("nicstar%d: can't allocate memory for device structure.\n",
 		     i);
@@ -534,10 +567,26 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 	/* Set the VPI/VCI MSb mask to zero so we can receive OAM cells */
 	writel(0x00000000, card->membase + VPM);
 
+<<<<<<< HEAD
 	/* Initialize TSQ */
 	card->tsq.org = pci_alloc_consistent(card->pcidev,
 					     NS_TSQSIZE + NS_TSQ_ALIGNMENT,
 					     &card->tsq.dma);
+=======
+	card->intcnt = 0;
+	if (request_irq
+	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
+		pr_err("nicstar%d: can't allocate IRQ %d.\n", i, pcidev->irq);
+		error = 9;
+		ns_init_card_error(card, error);
+		return error;
+	}
+
+	/* Initialize TSQ */
+	card->tsq.org = dma_alloc_coherent(&card->pcidev->dev,
+					   NS_TSQSIZE + NS_TSQ_ALIGNMENT,
+					   &card->tsq.dma, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (card->tsq.org == NULL) {
 		printk("nicstar%d: can't allocate TSQ.\n", i);
 		error = 10;
@@ -554,9 +603,15 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 	PRINTK("nicstar%d: TSQ base at 0x%p.\n", i, card->tsq.base);
 
 	/* Initialize RSQ */
+<<<<<<< HEAD
 	card->rsq.org = pci_alloc_consistent(card->pcidev,
 					     NS_RSQSIZE + NS_RSQ_ALIGNMENT,
 					     &card->rsq.dma);
+=======
+	card->rsq.org = dma_alloc_coherent(&card->pcidev->dev,
+					   NS_RSQSIZE + NS_RSQ_ALIGNMENT,
+					   &card->rsq.dma, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (card->rsq.org == NULL) {
 		printk("nicstar%d: can't allocate RSQ.\n", i);
 		error = 11;
@@ -620,7 +675,11 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 	for (j = 0; j < card->rct_size; j++)
 		ns_write_sram(card, j * 4, u32d, 4);
 
+<<<<<<< HEAD
 	memset(card->vcmap, 0, NS_MAX_RCTSIZE * sizeof(vc_map));
+=======
+	memset(card->vcmap, 0, sizeof(card->vcmap));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (j = 0; j < NS_FRSCD_NUM; j++)
 		card->scd2vc[j] = NULL;
@@ -639,9 +698,15 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 	card->hbnr.init = NUM_HB;
 	card->hbnr.max = MAX_HB;
 
+<<<<<<< HEAD
 	card->sm_handle = 0x00000000;
 	card->sm_addr = 0x00000000;
 	card->lg_handle = 0x00000000;
+=======
+	card->sm_handle = NULL;
+	card->sm_addr = 0x00000000;
+	card->lg_handle = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	card->lg_addr = 0x00000000;
 
 	card->efbie = 1;	/* To prevent push_rxbufs from enabling the interrupt */
@@ -760,6 +825,7 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 
 	card->efbie = 1;
 
+<<<<<<< HEAD
 	card->intcnt = 0;
 	if (request_irq
 	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
@@ -769,6 +835,8 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 		return error;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Register device */
 	card->atmdev = atm_dev_register("nicstar", &card->pcidev->dev, &atm_ops,
 					-1, NULL);
@@ -779,11 +847,18 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
 		return error;
 	}
 
+<<<<<<< HEAD
 	if (ns_parse_mac(mac[i], card->atmdev->esi)) {
 		nicstar_read_eprom(card->membase, NICSTAR_EPROM_MAC_ADDR_OFFSET,
 				   card->atmdev->esi, 6);
 		if (memcmp(card->atmdev->esi, "\x00\x00\x00\x00\x00\x00", 6) ==
 		    0) {
+=======
+	if (mac[i] == NULL || !mac_pton(mac[i], card->atmdev->esi)) {
+		nicstar_read_eprom(card->membase, NICSTAR_EPROM_MAC_ADDR_OFFSET,
+				   card->atmdev->esi, 6);
+		if (ether_addr_equal(card->atmdev->esi, "\x00\x00\x00\x00\x00\x00")) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			nicstar_read_eprom(card->membase,
 					   NICSTAR_EPROM_MAC_ADDR_OFFSET_ALT,
 					   card->atmdev->esi, 6);
@@ -847,10 +922,19 @@ static void ns_init_card_error(ns_dev *card, int error)
 			dev_kfree_skb_any(hb);
 	}
 	if (error >= 12) {
+<<<<<<< HEAD
 		kfree(card->rsq.org);
 	}
 	if (error >= 11) {
 		kfree(card->tsq.org);
+=======
+		dma_free_coherent(&card->pcidev->dev, NS_RSQSIZE + NS_RSQ_ALIGNMENT,
+				card->rsq.org, card->rsq.dma);
+	}
+	if (error >= 11) {
+		dma_free_coherent(&card->pcidev->dev, NS_TSQSIZE + NS_TSQ_ALIGNMENT,
+				card->tsq.org, card->tsq.dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (error >= 10) {
 		free_irq(card->pcidev->irq, card);
@@ -872,18 +956,35 @@ static scq_info *get_scq(ns_dev *card, int size, u32 scd)
 	if (size != VBR_SCQSIZE && size != CBR_SCQSIZE)
 		return NULL;
 
+<<<<<<< HEAD
 	scq = kmalloc(sizeof(scq_info), GFP_KERNEL);
 	if (!scq)
 		return NULL;
         scq->org = pci_alloc_consistent(card->pcidev, 2 * size, &scq->dma);
+=======
+	scq = kmalloc(sizeof(*scq), GFP_KERNEL);
+	if (!scq)
+		return NULL;
+        scq->org = dma_alloc_coherent(&card->pcidev->dev,
+				      2 * size,  &scq->dma, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!scq->org) {
 		kfree(scq);
 		return NULL;
 	}
+<<<<<<< HEAD
 	scq->skb = kmalloc(sizeof(struct sk_buff *) *
 			   (size / NS_SCQE_SIZE), GFP_KERNEL);
 	if (!scq->skb) {
 		kfree(scq->org);
+=======
+	scq->skb = kmalloc_array(size / NS_SCQE_SIZE,
+				 sizeof(*scq->skb),
+				 GFP_KERNEL);
+	if (!scq->skb) {
+		dma_free_coherent(&card->pcidev->dev,
+				  2 * size, scq->org, scq->dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree(scq);
 		return NULL;
 	}
@@ -937,10 +1038,17 @@ static void free_scq(ns_dev *card, scq_info *scq, struct atm_vcc *vcc)
 			}
 	}
 	kfree(scq->skb);
+<<<<<<< HEAD
 	pci_free_consistent(card->pcidev,
 			    2 * (scq->num_entries == VBR_SCQ_NUM_ENTRIES ?
 				 VBR_SCQSIZE : CBR_SCQSIZE),
 			    scq->org, scq->dma);
+=======
+	dma_free_coherent(&card->pcidev->dev,
+			  2 * (scq->num_entries == VBR_SCQ_NUM_ENTRIES ?
+			       VBR_SCQSIZE : CBR_SCQSIZE),
+			  scq->org, scq->dma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(scq);
 }
 
@@ -958,11 +1066,19 @@ static void push_rxbufs(ns_dev * card, struct sk_buff *skb)
 	handle2 = NULL;
 	addr2 = 0;
 	handle1 = skb;
+<<<<<<< HEAD
 	addr1 = pci_map_single(card->pcidev,
 			       skb->data,
 			       (NS_PRV_BUFTYPE(skb) == BUF_SM
 				? NS_SMSKBSIZE : NS_LGSKBSIZE),
 			       PCI_DMA_TODEVICE);
+=======
+	addr1 = dma_map_single(&card->pcidev->dev,
+			       skb->data,
+			       (NS_PRV_BUFTYPE(skb) == BUF_SM
+				? NS_SMSKBSIZE : NS_LGSKBSIZE),
+			       DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NS_PRV_DMA(skb) = addr1; /* save so we can unmap later */
 
 #ifdef GENERAL_DEBUG
@@ -980,7 +1096,11 @@ static void push_rxbufs(ns_dev * card, struct sk_buff *skb)
 				addr2 = card->sm_addr;
 				handle2 = card->sm_handle;
 				card->sm_addr = 0x00000000;
+<<<<<<< HEAD
 				card->sm_handle = 0x00000000;
+=======
+				card->sm_handle = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else {	/* (!sm_addr) */
 
 				card->sm_addr = addr1;
@@ -994,7 +1114,11 @@ static void push_rxbufs(ns_dev * card, struct sk_buff *skb)
 				addr2 = card->lg_addr;
 				handle2 = card->lg_handle;
 				card->lg_addr = 0x00000000;
+<<<<<<< HEAD
 				card->lg_handle = 0x00000000;
+=======
+				card->lg_handle = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else {	/* (!lg_addr) */
 
 				card->lg_addr = addr1;
@@ -1671,8 +1795,13 @@ static int ns_send(struct atm_vcc *vcc, struct sk_buff *skb)
 
 	ATM_SKB(skb)->vcc = vcc;
 
+<<<<<<< HEAD
 	NS_PRV_DMA(skb) = pci_map_single(card->pcidev, skb->data,
 					 skb->len, PCI_DMA_TODEVICE);
+=======
+	NS_PRV_DMA(skb) = dma_map_single(&card->pcidev->dev, skb->data,
+					 skb->len, DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (vcc->qos.aal == ATM_AAL5) {
 		buflen = (skb->len + 47 + 8) / 48 * 48;	/* Multiple of 48 */
@@ -1713,6 +1842,11 @@ static int ns_send(struct atm_vcc *vcc, struct sk_buff *skb)
 
 	if (push_scqe(card, vc, scq, &scqe, skb) != 0) {
 		atomic_inc(&vcc->stats->tx_err);
+<<<<<<< HEAD
+=======
+		dma_unmap_single(&card->pcidev->dev, NS_PRV_DMA(skb), skb->len,
+				 DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_kfree_skb_any(skb);
 		return -EIO;
 	}
@@ -1740,10 +1874,17 @@ static int push_scqe(ns_dev * card, vc_map * vc, scq_info * scq, ns_scqe * tbd,
 		}
 
 		scq->full = 1;
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&scq->lock, flags);
 		interruptible_sleep_on_timeout(&scq->scqfull_waitq,
 					       SCQFULL_TIMEOUT);
 		spin_lock_irqsave(&scq->lock, flags);
+=======
+		wait_event_interruptible_lock_irq_timeout(scq->scqfull_waitq,
+							  scq->tail != scq->next,
+							  scq->lock,
+							  SCQFULL_TIMEOUT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		if (scq->full) {
 			spin_unlock_irqrestore(&scq->lock, flags);
@@ -1790,10 +1931,17 @@ static int push_scqe(ns_dev * card, vc_map * vc, scq_info * scq, ns_scqe * tbd,
 			scq->full = 1;
 			if (has_run++)
 				break;
+<<<<<<< HEAD
 			spin_unlock_irqrestore(&scq->lock, flags);
 			interruptible_sleep_on_timeout(&scq->scqfull_waitq,
 						       SCQFULL_TIMEOUT);
 			spin_lock_irqsave(&scq->lock, flags);
+=======
+			wait_event_interruptible_lock_irq_timeout(scq->scqfull_waitq,
+								  scq->tail != scq->next,
+								  scq->lock,
+								  SCQFULL_TIMEOUT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		if (!scq->full) {
@@ -1931,10 +2079,17 @@ static void drain_scq(ns_dev * card, scq_info * scq, int pos)
 		XPRINTK("nicstar%d: freeing skb at 0x%p (index %d).\n",
 			card->index, skb, i);
 		if (skb != NULL) {
+<<<<<<< HEAD
 			pci_unmap_single(card->pcidev,
 					 NS_PRV_DMA(skb),
 					 skb->len,
 					 PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&card->pcidev->dev,
+					 NS_PRV_DMA(skb),
+					 skb->len,
+					 DMA_TO_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			vcc = ATM_SKB(skb)->vcc;
 			if (vcc && vcc->pop != NULL) {
 				vcc->pop(vcc, skb);
@@ -1993,6 +2148,7 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 		return;
 	}
 	idr_remove(&card->idr, id);
+<<<<<<< HEAD
         pci_dma_sync_single_for_cpu(card->pcidev,
 				    NS_PRV_DMA(skb),
 				    (NS_PRV_BUFTYPE(skb) == BUF_SM
@@ -2003,6 +2159,18 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 			 (NS_PRV_BUFTYPE(skb) == BUF_SM
 			  ? NS_SMSKBSIZE : NS_LGSKBSIZE),
 			 PCI_DMA_FROMDEVICE);
+=======
+	dma_sync_single_for_cpu(&card->pcidev->dev,
+				NS_PRV_DMA(skb),
+				(NS_PRV_BUFTYPE(skb) == BUF_SM
+				 ? NS_SMSKBSIZE : NS_LGSKBSIZE),
+				DMA_FROM_DEVICE);
+	dma_unmap_single(&card->pcidev->dev,
+			 NS_PRV_DMA(skb),
+			 (NS_PRV_BUFTYPE(skb) == BUF_SM
+			  ? NS_SMSKBSIZE : NS_LGSKBSIZE),
+			 DMA_FROM_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vpi = ns_rsqe_vpi(rsqe);
 	vci = ns_rsqe_vci(rsqe);
 	if (vpi >= 1UL << card->vpibits || vci >= 1UL << card->vcibits) {
@@ -2029,7 +2197,12 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 
 		cell = skb->data;
 		for (i = ns_rsqe_cellcount(rsqe); i; i--) {
+<<<<<<< HEAD
 			if ((sb = dev_alloc_skb(NS_SMSKBSIZE)) == NULL) {
+=======
+			sb = dev_alloc_skb(NS_SMSKBSIZE);
+			if (!sb) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				printk
 				    ("nicstar%d: Can't allocate buffers for aal0.\n",
 				     card->index);
@@ -2170,9 +2343,12 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 			} else {
 				skb_put(skb, len);
 				dequeue_sm_buf(card, skb);
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 				skb->destructor = ns_sb_destructor;
 #endif /* NS_USE_DESTRUCTORS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				ATM_SKB(skb)->vcc = vcc;
 				__net_timestamp(skb);
 				vcc->push(vcc, skb);
@@ -2191,9 +2367,12 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 				} else {
 					skb_put(sb, len);
 					dequeue_sm_buf(card, sb);
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 					sb->destructor = ns_sb_destructor;
 #endif /* NS_USE_DESTRUCTORS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					ATM_SKB(sb)->vcc = vcc;
 					__net_timestamp(sb);
 					vcc->push(vcc, sb);
@@ -2209,9 +2388,12 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 					atomic_inc(&vcc->stats->rx_drop);
 				} else {
 					dequeue_lg_buf(card, skb);
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 					skb->destructor = ns_lb_destructor;
 #endif /* NS_USE_DESTRUCTORS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					skb_push(skb, NS_SMBUFSIZE);
 					skb_copy_from_linear_data(sb, skb->data,
 								  NS_SMBUFSIZE);
@@ -2323,9 +2505,12 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 					     card->index);
 #endif /* EXTRA_DEBUG */
 				ATM_SKB(hb)->vcc = vcc;
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 				hb->destructor = ns_hb_destructor;
 #endif /* NS_USE_DESTRUCTORS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				__net_timestamp(hb);
 				vcc->push(vcc, hb);
 				atomic_inc(&vcc->stats->rx);
@@ -2338,6 +2523,7 @@ static void dequeue_rx(ns_dev * card, ns_rsqe * rsqe)
 
 }
 
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 
 static void ns_sb_destructor(struct sk_buff *sb)
@@ -2400,6 +2586,8 @@ static void ns_hb_destructor(struct sk_buff *hb)
 
 #endif /* NS_USE_DESTRUCTORS */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void recycle_rx_buf(ns_dev * card, struct sk_buff *skb)
 {
 	if (unlikely(NS_PRV_BUFTYPE(skb) == BUF_NONE)) {
@@ -2428,9 +2616,12 @@ static void recycle_iov_buf(ns_dev * card, struct sk_buff *iovb)
 static void dequeue_sm_buf(ns_dev * card, struct sk_buff *sb)
 {
 	skb_unlink(sb, &card->sbpool.queue);
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 	if (card->sbfqc < card->sbnr.min)
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (card->sbfqc < card->sbnr.init) {
 		struct sk_buff *new_sb;
 		if ((new_sb = dev_alloc_skb(NS_SMSKBSIZE)) != NULL) {
@@ -2441,7 +2632,10 @@ static void dequeue_sm_buf(ns_dev * card, struct sk_buff *sb)
 		}
 	}
 	if (card->sbfqc < card->sbnr.init)
+<<<<<<< HEAD
 #endif /* NS_USE_DESTRUCTORS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		struct sk_buff *new_sb;
 		if ((new_sb = dev_alloc_skb(NS_SMSKBSIZE)) != NULL) {
@@ -2456,9 +2650,12 @@ static void dequeue_sm_buf(ns_dev * card, struct sk_buff *sb)
 static void dequeue_lg_buf(ns_dev * card, struct sk_buff *lb)
 {
 	skb_unlink(lb, &card->lbpool.queue);
+<<<<<<< HEAD
 #ifdef NS_USE_DESTRUCTORS
 	if (card->lbfqc < card->lbnr.min)
 #else
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (card->lbfqc < card->lbnr.init) {
 		struct sk_buff *new_lb;
 		if ((new_lb = dev_alloc_skb(NS_LGSKBSIZE)) != NULL) {
@@ -2469,7 +2666,10 @@ static void dequeue_lg_buf(ns_dev * card, struct sk_buff *lb)
 		}
 	}
 	if (card->lbfqc < card->lbnr.init)
+<<<<<<< HEAD
 #endif /* NS_USE_DESTRUCTORS */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		struct sk_buff *new_lb;
 		if ((new_lb = dev_alloc_skb(NS_LGSKBSIZE)) != NULL) {
@@ -2802,6 +3002,7 @@ static void ns_poll(unsigned long arg)
 	PRINTK("nicstar: Leaving ns_poll().\n");
 }
 
+<<<<<<< HEAD
 static int ns_parse_mac(char *mac, unsigned char *esi)
 {
 	int i, j;
@@ -2825,6 +3026,8 @@ static int ns_parse_mac(char *mac, unsigned char *esi)
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void ns_phy_put(struct atm_dev *dev, unsigned char value,
 		       unsigned long addr)
 {

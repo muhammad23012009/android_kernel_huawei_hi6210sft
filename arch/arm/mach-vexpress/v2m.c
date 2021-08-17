@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Versatile Express V2M Motherboard Support
  */
@@ -476,6 +477,12 @@ static void __init v2m_dt_init(void)
 	of_platform_populate(NULL, v2m_dt_bus_match, NULL, NULL);
 }
 
+=======
+#include <asm/mach/arch.h>
+
+#include "core.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const char * const v2m_dt_match[] __initconst = {
 	"arm,vexpress",
 	NULL,
@@ -483,6 +490,7 @@ static const char * const v2m_dt_match[] __initconst = {
 
 DT_MACHINE_START(VEXPRESS_DT, "ARM-Versatile Express")
 	.dt_compat	= v2m_dt_match,
+<<<<<<< HEAD
 	.smp		= smp_ops(vexpress_smp_ops),
 	.smp_init	= smp_init_ops(vexpress_smp_init_ops),
 	.map_io		= v2m_dt_map_io,
@@ -490,4 +498,10 @@ DT_MACHINE_START(VEXPRESS_DT, "ARM-Versatile Express")
 	.init_irq	= irqchip_init,
 	.init_time	= v2m_dt_timer_init,
 	.init_machine	= v2m_dt_init,
+=======
+	.l2c_aux_val	= 0x00400000,
+	.l2c_aux_mask	= 0xfe0fffff,
+	.smp		= smp_ops(vexpress_smp_dt_ops),
+	.smp_init	= smp_init_ops(vexpress_smp_init_ops),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

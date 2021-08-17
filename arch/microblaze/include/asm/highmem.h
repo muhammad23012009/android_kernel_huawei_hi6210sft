@@ -76,6 +76,7 @@ static inline void *kmap_atomic(struct page *page)
 	return kmap_atomic_prot(page, kmap_prot);
 }
 
+<<<<<<< HEAD
 static inline struct page *kmap_atomic_to_page(void *ptr)
 {
 	unsigned long idx, vaddr = (unsigned long) ptr;
@@ -89,6 +90,8 @@ static inline struct page *kmap_atomic_to_page(void *ptr)
 	return pte_page(*pte);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define flush_cache_kmaps()	{ flush_icache(); flush_dcache(); }
 
 #endif /* __KERNEL__ */

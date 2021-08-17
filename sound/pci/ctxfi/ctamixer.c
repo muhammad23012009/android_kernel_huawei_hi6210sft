@@ -49,7 +49,11 @@ static int amixer_output_slot(const struct rsc *rsc)
 	return (amixer_index(rsc) << 4) + 0x4;
 }
 
+<<<<<<< HEAD
 static struct rsc_ops amixer_basic_rsc_ops = {
+=======
+static const struct rsc_ops amixer_basic_rsc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.master		= amixer_master,
 	.next_conj	= amixer_next_conj,
 	.index		= amixer_index,
@@ -186,7 +190,11 @@ static int amixer_setup(struct amixer *amixer, struct rsc *input,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct amixer_rsc_ops amixer_ops = {
+=======
+static const struct amixer_rsc_ops amixer_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.set_input		= amixer_set_input,
 	.set_invalid_squash	= amixer_set_invalid_squash,
 	.set_scale		= amixer_set_y,
@@ -258,7 +266,12 @@ static int get_amixer_rsc(struct amixer_mgr *mgr,
 	}
 	spin_unlock_irqrestore(&mgr->mgr_lock, flags);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ctxfi: Can't meet AMIXER resource request!\n");
+=======
+		dev_err(mgr->card->dev,
+			"Can't meet AMIXER resource request!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 	}
 
@@ -296,7 +309,11 @@ static int put_amixer_rsc(struct amixer_mgr *mgr, struct amixer *amixer)
 	return 0;
 }
 
+<<<<<<< HEAD
 int amixer_mgr_create(void *hw, struct amixer_mgr **ramixer_mgr)
+=======
+int amixer_mgr_create(struct hw *hw, struct amixer_mgr **ramixer_mgr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 	struct amixer_mgr *amixer_mgr;
@@ -314,6 +331,10 @@ int amixer_mgr_create(void *hw, struct amixer_mgr **ramixer_mgr)
 
 	amixer_mgr->get_amixer = get_amixer_rsc;
 	amixer_mgr->put_amixer = put_amixer_rsc;
+<<<<<<< HEAD
+=======
+	amixer_mgr->card = hw->card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*ramixer_mgr = amixer_mgr;
 
@@ -355,7 +376,11 @@ static int sum_output_slot(const struct rsc *rsc)
 	return (sum_index(rsc) << 4) + 0xc;
 }
 
+<<<<<<< HEAD
 static struct rsc_ops sum_basic_rsc_ops = {
+=======
+static const struct rsc_ops sum_basic_rsc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.master		= sum_master,
 	.next_conj	= sum_next_conj,
 	.index		= sum_index,
@@ -411,7 +436,12 @@ static int get_sum_rsc(struct sum_mgr *mgr,
 	}
 	spin_unlock_irqrestore(&mgr->mgr_lock, flags);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ctxfi: Can't meet SUM resource request!\n");
+=======
+		dev_err(mgr->card->dev,
+			"Can't meet SUM resource request!\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto error;
 	}
 
@@ -449,7 +479,11 @@ static int put_sum_rsc(struct sum_mgr *mgr, struct sum *sum)
 	return 0;
 }
 
+<<<<<<< HEAD
 int sum_mgr_create(void *hw, struct sum_mgr **rsum_mgr)
+=======
+int sum_mgr_create(struct hw *hw, struct sum_mgr **rsum_mgr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int err;
 	struct sum_mgr *sum_mgr;
@@ -467,6 +501,10 @@ int sum_mgr_create(void *hw, struct sum_mgr **rsum_mgr)
 
 	sum_mgr->get_sum = get_sum_rsc;
 	sum_mgr->put_sum = put_sum_rsc;
+<<<<<<< HEAD
+=======
+	sum_mgr->card = hw->card;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*rsum_mgr = sum_mgr;
 

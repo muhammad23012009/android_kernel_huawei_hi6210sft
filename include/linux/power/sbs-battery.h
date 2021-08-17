@@ -26,17 +26,25 @@
 
 /**
  * struct sbs_platform_data - platform data for sbs devices
+<<<<<<< HEAD
  * @battery_detect:		GPIO which is used to detect battery presence
  * @battery_detect_present:	gpio state when battery is present (0 / 1)
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @i2c_retry_count:		# of times to retry on i2c IO failure
  * @poll_retry_count:		# of times to retry looking for new status after
  *				external change notification
  */
 struct sbs_platform_data {
+<<<<<<< HEAD
 	int battery_detect;
 	int battery_detect_present;
 	int i2c_retry_count;
 	int poll_retry_count;
+=======
+	u32 i2c_retry_count;
+	u32 poll_retry_count;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #endif

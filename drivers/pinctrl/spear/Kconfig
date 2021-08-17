@@ -48,6 +48,10 @@ config PINCTRL_SPEAR1340
 config PINCTRL_SPEAR_PLGPIO
 	bool "SPEAr SoC PLGPIO Controller"
 	depends on GPIOLIB && PINCTRL_SPEAR
+<<<<<<< HEAD
+=======
+	select GPIOLIB_IRQCHIP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	help
 	  Say yes here to support PLGPIO controller on ST Microelectronics SPEAr
 	  SoCs.

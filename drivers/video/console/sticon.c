@@ -46,7 +46,11 @@
 
 #include <asm/io.h>
 
+<<<<<<< HEAD
 #include "../sticore.h"
+=======
+#include "../fbdev/sticore.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* switching to graphics mode */
 #define BLANK 0
@@ -79,11 +83,14 @@ static const char *sticon_startup(void)
     return "STI console";
 }
 
+<<<<<<< HEAD
 static int sticon_set_palette(struct vc_data *c, unsigned char *table)
 {
     return -EINVAL;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sticon_putc(struct vc_data *conp, int c, int ypos, int xpos)
 {
     int redraw_cursor = 0;
@@ -182,6 +189,7 @@ static int sticon_scroll(struct vc_data *conp, int t, int b, int dir, int count)
     return 0;
 }
 
+<<<<<<< HEAD
 static void sticon_bmove(struct vc_data *conp, int sy, int sx, 
 	int dy, int dx, int height, int width)
 {
@@ -198,6 +206,8 @@ static void sticon_bmove(struct vc_data *conp, int sy, int sx,
     sti_bmove(sticon_sti, sy, sx, dy, dx, height, width);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sticon_init(struct vc_data *c, int init)
 {
     struct sti_struct *sti = sticon_sti;
@@ -256,11 +266,14 @@ static int sticon_blank(struct vc_data *c, int blank, int mode_switch)
     return 1;
 }
 
+<<<<<<< HEAD
 static int sticon_scrolldelta(struct vc_data *conp, int lines)
 {
     return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static u16 *sticon_screen_pos(struct vc_data *conp, int offset)
 {
     int line;
@@ -355,11 +368,16 @@ static const struct consw sti_con = {
 	.con_putcs		= sticon_putcs,
 	.con_cursor		= sticon_cursor,
 	.con_scroll		= sticon_scroll,
+<<<<<<< HEAD
 	.con_bmove		= sticon_bmove,
 	.con_switch		= sticon_switch,
 	.con_blank		= sticon_blank,
 	.con_set_palette	= sticon_set_palette,
 	.con_scrolldelta	= sticon_scrolldelta,
+=======
+	.con_switch		= sticon_switch,
+	.con_blank		= sticon_blank,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.con_set_origin		= sticon_set_origin,
 	.con_save_screen	= sticon_save_screen, 
 	.con_build_attr		= sticon_build_attr,
@@ -372,6 +390,10 @@ static const struct consw sti_con = {
 
 static int __init sticonsole_init(void)
 {
+<<<<<<< HEAD
+=======
+    int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     /* already initialized ? */
     if (sticon_sti)
 	 return 0;
@@ -382,7 +404,14 @@ static int __init sticonsole_init(void)
 
     if (conswitchp == &dummy_con) {
 	printk(KERN_INFO "sticon: Initializing STI text console.\n");
+<<<<<<< HEAD
 	return take_over_console(&sti_con, 0, MAX_NR_CONSOLES - 1, 1);
+=======
+	console_lock();
+	err = do_take_over_console(&sti_con, 0, MAX_NR_CONSOLES - 1, 1);
+	console_unlock();
+	return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     }
     return 0;
 }

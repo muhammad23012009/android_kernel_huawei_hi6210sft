@@ -92,6 +92,7 @@ static void key_gc_timer_func(unsigned long data)
 }
 
 /*
+<<<<<<< HEAD
  * wait_on_bit() sleep function for uninterruptible waiting
  */
 static int key_gc_wait_bit(void *flags)
@@ -101,6 +102,8 @@ static int key_gc_wait_bit(void *flags)
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Reap keys of dead type.
  *
  * We use three flags to make sure we see three complete cycles of the garbage
@@ -123,7 +126,11 @@ void key_gc_keytype(struct key_type *ktype)
 	schedule_work(&key_gc_work);
 
 	kdebug("sleep");
+<<<<<<< HEAD
 	wait_on_bit(&key_gc_flags, KEY_GC_REAPING_KEYTYPE, key_gc_wait_bit,
+=======
+	wait_on_bit(&key_gc_flags, KEY_GC_REAPING_KEYTYPE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    TASK_UNINTERRUPTIBLE);
 
 	key_gc_dead_keytype = NULL;
@@ -131,6 +138,7 @@ void key_gc_keytype(struct key_type *ktype)
 }
 
 /*
+<<<<<<< HEAD
  * Garbage collect pointers from a keyring.
  *
  * Not called with any locks held.  The keyring's key struct will not be
@@ -175,6 +183,8 @@ do_gc:
 }
 
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Garbage collect a list of unreferenced, detached keys
  */
 static noinline void key_gc_unused_keys(struct list_head *keys)
@@ -182,15 +192,24 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 	while (!list_empty(keys)) {
 		struct key *key =
 			list_entry(keys->next, struct key, graveyard_link);
+<<<<<<< HEAD
+=======
+		short state = key->state;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list_del(&key->graveyard_link);
 
 		kdebug("- %u", key->serial);
 		key_check(key);
 
 		/* Throw away the key data if the key is instantiated */
+<<<<<<< HEAD
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags) &&
 		    !test_bit(KEY_FLAG_NEGATIVE, &key->flags) &&
 		    key->type->destroy)
+=======
+		if (state == KEY_IS_POSITIVE && key->type->destroy)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			key->type->destroy(key);
 
 		security_key_free(key);
@@ -204,7 +223,11 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 		}
 
 		atomic_dec(&key->user->nkeys);
+<<<<<<< HEAD
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags))
+=======
+		if (state != KEY_IS_UNINSTANTIATED)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			atomic_dec(&key->user->nikeys);
 
 		key_user_put(key->user);
@@ -394,8 +417,12 @@ found_unreferenced_key:
 	 */
 found_keyring:
 	spin_unlock(&key_serial_lock);
+<<<<<<< HEAD
 	kdebug("scan keyring %d", key->serial);
 	key_gc_keyring(key, limit);
+=======
+	keyring_gc(key, limit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	goto maybe_resched;
 
 	/* We found a dead key that is still referenced.  Reset its type and

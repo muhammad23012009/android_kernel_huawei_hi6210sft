@@ -17,3 +17,7 @@ obj-$(CONFIG_NI65) += ni65.o
 obj-$(CONFIG_PCNET32) += pcnet32.o
 obj-$(CONFIG_SUN3LANCE) += sun3lance.o
 obj-$(CONFIG_SUNLANCE) += sunlance.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_AMD_XGBE) += xgbe/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

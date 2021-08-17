@@ -12,6 +12,13 @@
 #ifndef __ARCH_ASM_MACH_OMAP2_PRMINST44XX_H
 #define __ARCH_ASM_MACH_OMAP2_PRMINST44XX_H
 
+<<<<<<< HEAD
+=======
+#define PRM_INSTANCE_UNKNOWN	-1
+extern s32 omap4_prmst_get_prm_dev_inst(void);
+void omap4_prminst_set_prm_dev_inst(s32 dev_inst);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * In an ideal world, we would not export these low-level functions,
  * but this will probably take some time to fix properly
@@ -27,8 +34,14 @@ extern int omap4_prminst_is_hardreset_asserted(u8 shift, u8 part, s16 inst,
 					       u16 rstctrl_offs);
 extern int omap4_prminst_assert_hardreset(u8 shift, u8 part, s16 inst,
 					  u16 rstctrl_offs);
+<<<<<<< HEAD
 extern int omap4_prminst_deassert_hardreset(u8 shift, u8 part, s16 inst,
 					    u16 rstctrl_offs);
+=======
+int omap4_prminst_deassert_hardreset(u8 shift, u8 st_shift, u8 part,
+				     s16 inst, u16 rstctrl_offs,
+				     u16 rstst_offs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void omap_prm_base_init(void);
 

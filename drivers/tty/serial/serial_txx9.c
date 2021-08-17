@@ -142,7 +142,10 @@ struct uart_txx9_port {
 #define TXX9_SIFCR_RDIL_12	0x00000180
 #define TXX9_SIFCR_RDIL_MAX	0x00000180
 #define TXX9_SIFCR_TDIL_MASK	0x00000018
+<<<<<<< HEAD
 #define TXX9_SIFCR_TDIL_MASK	0x00000018
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define TXX9_SIFCR_TDIL_1	0x00000000
 #define TXX9_SIFCR_TDIL_4	0x00000001
 #define TXX9_SIFCR_TDIL_8	0x00000010
@@ -244,11 +247,14 @@ static void serial_txx9_stop_rx(struct uart_port *port)
 	up->port.read_status_mask &= ~TXX9_SIDISR_RDIS;
 }
 
+<<<<<<< HEAD
 static void serial_txx9_enable_ms(struct uart_port *port)
 {
 	/* TXX9-SIO can not control DTR... */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void serial_txx9_initialize(struct uart_port *port)
 {
 	struct uart_txx9_port *up = to_uart_txx9_port(port);
@@ -535,6 +541,7 @@ static void serial_txx9_put_poll_char(struct uart_port *port, unsigned char c)
 	wait_for_xmitr(up);
 	/*
 	 *	Send the character out.
+<<<<<<< HEAD
 	 *	If a LF, also do CR...
 	 */
 	sio_out(up, TXX9_SITFIFO, c);
@@ -542,6 +549,10 @@ static void serial_txx9_put_poll_char(struct uart_port *port, unsigned char c)
 		wait_for_xmitr(up);
 		sio_out(up, TXX9_SITFIFO, 13);
 	}
+=======
+	 */
+	sio_out(up, TXX9_SITFIFO, c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 *	Finally, wait for transmitter to become empty
@@ -702,7 +713,11 @@ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
 		TXX9_SIDISR_TDIS | TXX9_SIDISR_RDIS;
 	if (termios->c_iflag & INPCK)
 		up->port.read_status_mask |= TXX9_SIDISR_UFER | TXX9_SIDISR_UPER;
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		up->port.read_status_mask |= TXX9_SIDISR_UBRK;
 
 	/*
@@ -863,7 +878,10 @@ static struct uart_ops serial_txx9_pops = {
 	.stop_tx	= serial_txx9_stop_tx,
 	.start_tx	= serial_txx9_start_tx,
 	.stop_rx	= serial_txx9_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= serial_txx9_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl	= serial_txx9_break_ctl,
 	.startup	= serial_txx9_startup,
 	.shutdown	= serial_txx9_shutdown,
@@ -1097,7 +1115,11 @@ static void serial_txx9_unregister_port(int line)
  */
 static int serial_txx9_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct uart_port *p = dev->dev.platform_data;
+=======
+	struct uart_port *p = dev_get_platdata(&dev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct uart_port port;
 	int ret, i;
 
@@ -1177,7 +1199,10 @@ static struct platform_driver serial_txx9_plat_driver = {
 #endif
 	.driver		= {
 		.name	= "serial_txx9",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
@@ -1220,8 +1245,11 @@ static void pciserial_txx9_remove_one(struct pci_dev *dev)
 {
 	struct uart_txx9_port *up = pci_get_drvdata(dev);
 
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (up) {
 		serial_txx9_unregister_port(up->port.line);
 		pci_disable_device(dev);
@@ -1302,6 +1330,12 @@ static int __init serial_txx9_init(void)
 
 #ifdef ENABLE_SERIAL_TXX9_PCI
 	ret = pci_register_driver(&serial_txx9_pci_driver);
+<<<<<<< HEAD
+=======
+	if (ret) {
+		platform_driver_unregister(&serial_txx9_plat_driver);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	if (ret == 0)
 		goto out;

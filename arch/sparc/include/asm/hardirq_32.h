@@ -7,7 +7,10 @@
 #ifndef __SPARC_HARDIRQ_H
 #define __SPARC_HARDIRQ_H
 
+<<<<<<< HEAD
 #define HARDIRQ_BITS    8
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/hardirq.h>
 
 #endif /* __SPARC_HARDIRQ_H */

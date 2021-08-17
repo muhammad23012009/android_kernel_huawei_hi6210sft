@@ -5,7 +5,11 @@
  *
  *      Authors: Bjorn Wesen (bjornw@axis.com)
  *
+<<<<<<< HEAD
  *      This file contains the interrupt vectors and some 
+=======
+ *      This file contains the interrupt vectors and some
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *      helper functions
  *
  */
@@ -182,12 +186,17 @@ void do_multiple_IRQ(struct pt_regs* regs)
    setting the irq vector table.
 */
 
+<<<<<<< HEAD
 void __init
 init_IRQ(void)
+=======
+void __init init_IRQ(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int i;
 
 	/* clear all interrupt masks */
+<<<<<<< HEAD
 
 #ifndef CONFIG_SVINTO_SIM
 	*R_IRQ_MASK0_CLR = 0xffffffff;
@@ -195,6 +204,11 @@ init_IRQ(void)
 	*R_IRQ_MASK2_CLR = 0xffffffff;
 #endif
 
+=======
+	*R_IRQ_MASK0_CLR = 0xffffffff;
+	*R_IRQ_MASK1_CLR = 0xffffffff;
+	*R_IRQ_MASK2_CLR = 0xffffffff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	*R_VECT_MASK_CLR = 0xffffffff;
 
         for (i = 0; i < 256; i++)
@@ -211,6 +225,7 @@ init_IRQ(void)
            executed by the associated break handler, rather than just a jump
            address. therefore we need to setup a default breakpoint handler
            for all breakpoints */
+<<<<<<< HEAD
 
 	for (i = 0; i < 16; i++)
                 set_break_vector(i, do_sigtrap);
@@ -221,15 +236,30 @@ init_IRQ(void)
 	
 	/* 0 and 1 which are special breakpoint/NMI traps */
 
+=======
+	for (i = 0; i < 16; i++)
+                set_break_vector(i, do_sigtrap);
+
+	/* except IRQ 15 which is the multiple-IRQ handler on Etrax100 */
+	set_int_vector(15, multiple_interrupt);
+
+	/* 0 and 1 which are special breakpoint/NMI traps */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_int_vector(0, hwbreakpoint);
 	set_int_vector(1, IRQ1_interrupt);
 
 	/* and irq 14 which is the mmu bus fault handler */
+<<<<<<< HEAD
 
 	set_int_vector(14, mmu_bus_fault);
 
 	/* setup the system-call trap, which is reached by BREAK 13 */
 
+=======
+	set_int_vector(14, mmu_bus_fault);
+
+	/* setup the system-call trap, which is reached by BREAK 13 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	set_break_vector(13, system_call);
 
         /* setup a breakpoint handler for debugging used for both user and

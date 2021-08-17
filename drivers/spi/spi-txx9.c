@@ -26,7 +26,11 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 
 #define SPI_FIFO_SIZE 4
@@ -72,7 +76,10 @@
 
 
 struct txx9spi {
+<<<<<<< HEAD
 	struct workqueue_struct	*workqueue;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct work_struct work;
 	spinlock_t lock;	/* protect 'queue' */
 	struct list_head queue;
@@ -80,7 +87,10 @@ struct txx9spi {
 	void __iomem *membase;
 	int baseclk;
 	struct clk *clk;
+<<<<<<< HEAD
 	u32 max_speed_hz, min_speed_hz;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int last_chipselect;
 	int last_chipselect_val;
 };
@@ -98,6 +108,10 @@ static void txx9spi_cs_func(struct spi_device *spi, struct txx9spi *c,
 		int on, unsigned int cs_delay)
 {
 	int val = (spi->mode & SPI_CS_HIGH) ? on : !on;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (on) {
 		/* deselect the chip with cs_change hint in last transfer */
 		if (c->last_chipselect >= 0)
@@ -116,6 +130,7 @@ static void txx9spi_cs_func(struct spi_device *spi, struct txx9spi *c,
 static int txx9spi_setup(struct spi_device *spi)
 {
 	struct txx9spi *c = spi_master_get_devdata(spi->master);
+<<<<<<< HEAD
 	u8 bits_per_word;
 
 	if (!spi->max_speed_hz
@@ -125,6 +140,10 @@ static int txx9spi_setup(struct spi_device *spi)
 
 	bits_per_word = spi->bits_per_word;
 	if (bits_per_word != 8 && bits_per_word != 16)
+=======
+
+	if (!spi->max_speed_hz)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 
 	if (gpio_direction_output(spi->chip_select,
@@ -182,13 +201,21 @@ static void txx9spi_work_one(struct txx9spi *c, struct spi_message *m)
 			| 0x08,
 			TXx9_SPCR0);
 
+<<<<<<< HEAD
 	list_for_each_entry (t, &m->transfers, transfer_list) {
+=======
+	list_for_each_entry(t, &m->transfers, transfer_list) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		const void *txbuf = t->tx_buf;
 		void *rxbuf = t->rx_buf;
 		u32 data;
 		unsigned int len = t->len;
 		unsigned int wsize;
+<<<<<<< HEAD
 		u32 speed_hz = t->speed_hz ? : spi->max_speed_hz;
+=======
+		u32 speed_hz = t->speed_hz;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		u8 bits_per_word = t->bits_per_word;
 
 		wsize = bits_per_word >> 3; /* in bytes */
@@ -196,6 +223,10 @@ static void txx9spi_work_one(struct txx9spi *c, struct spi_message *m)
 		if (prev_speed_hz != speed_hz
 				|| prev_bits_per_word != bits_per_word) {
 			int n = DIV_ROUND_UP(c->baseclk, speed_hz) - 1;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			n = clamp(n, SPI_MIN_DIVIDER, SPI_MAX_DIVIDER);
 			/* enter config mode */
 			txx9spi_wr(c, mcr | TXx9_SPMCR_CONFIG | TXx9_SPMCR_BCLR,
@@ -270,7 +301,12 @@ static void txx9spi_work_one(struct txx9spi *c, struct spi_message *m)
 
 exit:
 	m->status = status;
+<<<<<<< HEAD
 	m->complete(m->context);
+=======
+	if (m->complete)
+		m->complete(m->context);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* normally deactivate chipselect ... unless no error and
 	 * cs_change has hinted that the next message will probably
@@ -313,6 +349,7 @@ static int txx9spi_transfer(struct spi_device *spi, struct spi_message *m)
 	m->actual_length = 0;
 
 	/* check each transfer's parameters */
+<<<<<<< HEAD
 	list_for_each_entry (t, &m->transfers, transfer_list) {
 		u32 speed_hz = t->speed_hz ? : spi->max_speed_hz;
 		u8 bits_per_word = t->bits_per_word;
@@ -325,11 +362,20 @@ static int txx9spi_transfer(struct spi_device *spi, struct spi_message *m)
 			return -EINVAL;
 		if (speed_hz < c->min_speed_hz || speed_hz > c->max_speed_hz)
 			return -EINVAL;
+=======
+	list_for_each_entry(t, &m->transfers, transfer_list) {
+		if (!t->tx_buf && !t->rx_buf && t->len)
+			return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	spin_lock_irqsave(&c->lock, flags);
 	list_add_tail(&m->queue, &c->queue);
+<<<<<<< HEAD
 	queue_work(c->workqueue, &c->work);
+=======
+	schedule_work(&c->work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&c->lock, flags);
 
 	return 0;
@@ -355,19 +401,29 @@ static int txx9spi_probe(struct platform_device *dev)
 	INIT_LIST_HEAD(&c->queue);
 	init_waitqueue_head(&c->waitq);
 
+<<<<<<< HEAD
 	c->clk = clk_get(&dev->dev, "spi-baseclk");
+=======
+	c->clk = devm_clk_get(&dev->dev, "spi-baseclk");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(c->clk)) {
 		ret = PTR_ERR(c->clk);
 		c->clk = NULL;
 		goto exit;
 	}
+<<<<<<< HEAD
 	ret = clk_enable(c->clk);
 	if (ret) {
 		clk_put(c->clk);
+=======
+	ret = clk_prepare_enable(c->clk);
+	if (ret) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		c->clk = NULL;
 		goto exit;
 	}
 	c->baseclk = clk_get_rate(c->clk);
+<<<<<<< HEAD
 	c->min_speed_hz = DIV_ROUND_UP(c->baseclk, SPI_MAX_DIVIDER + 1);
 	c->max_speed_hz = c->baseclk / (SPI_MIN_DIVIDER + 1);
 
@@ -379,6 +435,14 @@ static int txx9spi_probe(struct platform_device *dev)
 		goto exit_busy;
 	c->membase = devm_ioremap(&dev->dev, res->start, resource_size(res));
 	if (!c->membase)
+=======
+	master->min_speed_hz = DIV_ROUND_UP(c->baseclk, SPI_MAX_DIVIDER + 1);
+	master->max_speed_hz = c->baseclk / (SPI_MIN_DIVIDER + 1);
+
+	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
+	c->membase = devm_ioremap_resource(&dev->dev, res);
+	if (IS_ERR(c->membase))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto exit_busy;
 
 	/* enter config mode */
@@ -394,10 +458,13 @@ static int txx9spi_probe(struct platform_device *dev)
 	if (ret)
 		goto exit;
 
+<<<<<<< HEAD
 	c->workqueue = create_singlethread_workqueue(
 				dev_name(master->dev.parent));
 	if (!c->workqueue)
 		goto exit_busy;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	c->last_chipselect = -1;
 
 	dev_info(&dev->dev, "at %#llx, irq %d, %dMHz\n",
@@ -411,14 +478,21 @@ static int txx9spi_probe(struct platform_device *dev)
 	master->setup = txx9spi_setup;
 	master->transfer = txx9spi_transfer;
 	master->num_chipselect = (u16)UINT_MAX; /* any GPIO numbers */
+<<<<<<< HEAD
 
 	ret = spi_register_master(master);
+=======
+	master->bits_per_word_mask = SPI_BPW_MASK(8) | SPI_BPW_MASK(16);
+
+	ret = devm_spi_register_master(&dev->dev, master);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret)
 		goto exit;
 	return 0;
 exit_busy:
 	ret = -EBUSY;
 exit:
+<<<<<<< HEAD
 	if (c->workqueue)
 		destroy_workqueue(c->workqueue);
 	if (c->clk) {
@@ -426,12 +500,16 @@ exit:
 		clk_put(c->clk);
 	}
 	platform_set_drvdata(dev, NULL);
+=======
+	clk_disable_unprepare(c->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spi_master_put(master);
 	return ret;
 }
 
 static int txx9spi_remove(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct spi_master *master = spi_master_get(platform_get_drvdata(dev));
 	struct txx9spi *c = spi_master_get_devdata(master);
 
@@ -441,6 +519,13 @@ static int txx9spi_remove(struct platform_device *dev)
 	clk_disable(c->clk);
 	clk_put(c->clk);
 	spi_master_put(master);
+=======
+	struct spi_master *master = platform_get_drvdata(dev);
+	struct txx9spi *c = spi_master_get_devdata(master);
+
+	flush_work(&c->work);
+	clk_disable_unprepare(c->clk);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -448,16 +533,27 @@ static int txx9spi_remove(struct platform_device *dev)
 MODULE_ALIAS("platform:spi_txx9");
 
 static struct platform_driver txx9spi_driver = {
+<<<<<<< HEAD
 	.remove = txx9spi_remove,
 	.driver = {
 		.name = "spi_txx9",
 		.owner = THIS_MODULE,
+=======
+	.probe = txx9spi_probe,
+	.remove = txx9spi_remove,
+	.driver = {
+		.name = "spi_txx9",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 
 static int __init txx9spi_init(void)
 {
+<<<<<<< HEAD
 	return platform_driver_probe(&txx9spi_driver, txx9spi_probe);
+=======
+	return platform_driver_register(&txx9spi_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 subsys_initcall(txx9spi_init);
 

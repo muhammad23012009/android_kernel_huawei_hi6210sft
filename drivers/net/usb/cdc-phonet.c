@@ -130,7 +130,11 @@ static int rx_submit(struct usbpn_dev *pnd, struct urb *req, gfp_t gfp_flags)
 	struct page *page;
 	int err;
 
+<<<<<<< HEAD
 	page = __skb_alloc_page(gfp_flags | __GFP_NOMEMALLOC, NULL);
+=======
+	page = __dev_alloc_page(gfp_flags | __GFP_NOMEMALLOC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!page)
 		return -ENOMEM;
 
@@ -212,7 +216,11 @@ resubmit:
 	if (page)
 		put_page(page);
 	if (req)
+<<<<<<< HEAD
 		rx_submit(pnd, req, GFP_ATOMIC | __GFP_COLD);
+=======
+		rx_submit(pnd, req, GFP_ATOMIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int usbpn_close(struct net_device *dev);
@@ -231,7 +239,11 @@ static int usbpn_open(struct net_device *dev)
 	for (i = 0; i < rxq_size; i++) {
 		struct urb *req = usb_alloc_urb(0, GFP_KERNEL);
 
+<<<<<<< HEAD
 		if (!req || rx_submit(pnd, req, GFP_KERNEL | __GFP_COLD)) {
+=======
+		if (!req || rx_submit(pnd, req, GFP_KERNEL)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			usb_free_urb(req);
 			usbpn_close(dev);
 			return -ENOMEM;
@@ -328,7 +340,11 @@ MODULE_DEVICE_TABLE(usb, usbpn_ids);
 
 static struct usb_driver usbpn_driver;
 
+<<<<<<< HEAD
 int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
+=======
+static int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	static const char ifname[] = "usbpn%d";
 	const struct usb_cdc_union_desc *union_header = NULL;
@@ -340,6 +356,7 @@ int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	u8 *data;
 	int phonet = 0;
 	int len, err;
+<<<<<<< HEAD
 
 	data = intf->altsetting->extra;
 	len = intf->altsetting->extralen;
@@ -366,6 +383,15 @@ int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		data += dlen;
 		len -= dlen;
 	}
+=======
+	struct usb_cdc_parsed_header hdr;
+
+	data = intf->altsetting->extra;
+	len = intf->altsetting->extralen;
+	cdc_parse_cdc_header(&hdr, intf, data, len);
+	union_header = hdr.usb_cdc_union_desc;
+	phonet = hdr.phonet_magic_present;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!union_header || !phonet)
 		return -EINVAL;
@@ -387,7 +413,11 @@ int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		return -EINVAL;
 
 	dev = alloc_netdev(sizeof(*pnd) + sizeof(pnd->urbs[0]) * rxq_size,
+<<<<<<< HEAD
 				ifname, usbpn_setup);
+=======
+			   ifname, NET_NAME_UNKNOWN, usbpn_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!dev)
 		return -ENOMEM;
 
@@ -425,6 +455,11 @@ int usbpn_probe(struct usb_interface *intf, const struct usb_device_id *id)
 
 	err = register_netdev(dev);
 	if (err) {
+<<<<<<< HEAD
+=======
+		/* Set disconnected flag so that disconnect() returns early. */
+		pnd->disconnected = 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usb_driver_release_interface(&usbpn_driver, data_intf);
 		goto out;
 	}

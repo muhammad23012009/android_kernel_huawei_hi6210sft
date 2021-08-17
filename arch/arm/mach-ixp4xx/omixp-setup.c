@@ -17,9 +17,13 @@
 #include <linux/serial_8250.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
+<<<<<<< HEAD
 #ifdef CONFIG_LEDS_CLASS
 #include <linux/leds.h>
 #endif
+=======
+#include <linux/leds.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/setup.h>
 #include <asm/memory.h>
@@ -27,6 +31,11 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 
+<<<<<<< HEAD
+=======
+#include <mach/hardware.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct resource omixp_flash_resources[] = {
 	{
 		.flags	= IORESOURCE_MEM,

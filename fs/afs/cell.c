@@ -179,7 +179,11 @@ struct afs_cell *afs_cell_create(const char *name, unsigned namesz,
 	/* put it up for caching (this never returns an error) */
 	cell->cache = fscache_acquire_cookie(afs_cache_netfs.primary_index,
 					     &afs_cell_cache_index_def,
+<<<<<<< HEAD
 					     cell);
+=======
+					     cell, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* add to the cell lists */

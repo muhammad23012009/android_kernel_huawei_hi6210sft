@@ -45,8 +45,12 @@ static struct super_block *efivarfs_sb;
  * So we need to perform a case-sensitive match on part 1 and a
  * case-insensitive match on part 2.
  */
+<<<<<<< HEAD
 static int efivarfs_d_compare(const struct dentry *parent, const struct inode *pinode,
 			      const struct dentry *dentry, const struct inode *inode,
+=======
+static int efivarfs_d_compare(const struct dentry *dentry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			      unsigned int len, const char *str,
 			      const struct qstr *name)
 {
@@ -63,10 +67,16 @@ static int efivarfs_d_compare(const struct dentry *parent, const struct inode *p
 	return strncasecmp(name->name + guid, str + guid, EFI_VARIABLE_GUID_LEN);
 }
 
+<<<<<<< HEAD
 static int efivarfs_d_hash(const struct dentry *dentry,
 			   const struct inode *inode, struct qstr *qstr)
 {
 	unsigned long hash = init_name_hash();
+=======
+static int efivarfs_d_hash(const struct dentry *dentry, struct qstr *qstr)
+{
+	unsigned long hash = init_name_hash(dentry);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const unsigned char *s = qstr->name;
 	unsigned int len = qstr->len;
 
@@ -84,6 +94,7 @@ static int efivarfs_d_hash(const struct dentry *dentry,
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Retaining negative dentries for an in-memory filesystem just wastes
  * memory and lookup time: arrange for them to be deleted immediately.
@@ -97,6 +108,12 @@ static struct dentry_operations efivarfs_d_ops = {
 	.d_compare = efivarfs_d_compare,
 	.d_hash = efivarfs_d_hash,
 	.d_delete = efivarfs_delete_dentry,
+=======
+static const struct dentry_operations efivarfs_d_ops = {
+	.d_compare = efivarfs_d_compare,
+	.d_hash = efivarfs_d_hash,
+	.d_delete = always_delete_dentry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct dentry *efivarfs_alloc_dentry(struct dentry *parent, char *name)
@@ -108,7 +125,11 @@ static struct dentry *efivarfs_alloc_dentry(struct dentry *parent, char *name)
 	q.name = name;
 	q.len = strlen(name);
 
+<<<<<<< HEAD
 	err = efivarfs_d_hash(NULL, NULL, &q);
+=======
+	err = efivarfs_d_hash(parent, &q);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		return ERR_PTR(err);
 
@@ -132,7 +153,11 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 	int err = -ENOMEM;
 	bool is_removable = false;
 
+<<<<<<< HEAD
 	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
+=======
+	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!entry)
 		return err;
 
@@ -153,11 +178,22 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 
 	name[len] = '-';
 
+<<<<<<< HEAD
 	efi_guid_unparse(&entry->var.VendorGuid, name + len + 1);
 
 	name[len + EFI_VARIABLE_GUID_LEN+1] = '\0';
 
 	inode = efivarfs_get_inode(sb, root->d_inode, S_IFREG | 0644, 0,
+=======
+	efi_guid_to_str(&entry->var.VendorGuid, name + len + 1);
+
+	name[len + EFI_VARIABLE_GUID_LEN+1] = '\0';
+
+	/* replace invalid slashes like kobject_set_name_vargs does for /sys/firmware/efi/vars. */
+	strreplace(name, '/', '!');
+
+	inode = efivarfs_get_inode(sb, d_inode(root), S_IFREG | 0644, 0,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				   is_removable);
 	if (!inode)
 		goto fail_name;
@@ -168,6 +204,7 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 		goto fail_inode;
 	}
 
+<<<<<<< HEAD
 	/* copied by the above to local storage in the dentry. */
 	kfree(name);
 
@@ -178,6 +215,20 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 	inode->i_private = entry;
 	i_size_write(inode, size + sizeof(entry->var.Attributes));
 	mutex_unlock(&inode->i_mutex);
+=======
+	efivar_entry_size(entry, &size);
+	err = efivar_entry_add(entry, &efivarfs_list);
+	if (err)
+		goto fail_inode;
+
+	/* copied by the above to local storage in the dentry. */
+	kfree(name);
+
+	inode_lock(inode);
+	inode->i_private = entry;
+	i_size_write(inode, size + sizeof(entry->var.Attributes));
+	inode_unlock(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	d_add(dentry, inode);
 
 	return 0;
@@ -193,7 +244,14 @@ fail:
 
 static int efivarfs_destroy(struct efivar_entry *entry, void *data)
 {
+<<<<<<< HEAD
 	efivar_entry_remove(entry);
+=======
+	int err = efivar_entry_remove(entry);
+
+	if (err)
+		return err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(entry);
 	return 0;
 }
@@ -207,8 +265,13 @@ static int efivarfs_fill_super(struct super_block *sb, void *data, int silent)
 	efivarfs_sb = sb;
 
 	sb->s_maxbytes          = MAX_LFS_FILESIZE;
+<<<<<<< HEAD
 	sb->s_blocksize         = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits    = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize         = PAGE_SIZE;
+	sb->s_blocksize_bits    = PAGE_SHIFT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sb->s_magic             = EFIVARFS_MAGIC;
 	sb->s_op                = &efivarfs_ops;
 	sb->s_d_op		= &efivarfs_d_ops;
@@ -226,8 +289,12 @@ static int efivarfs_fill_super(struct super_block *sb, void *data, int silent)
 
 	INIT_LIST_HEAD(&efivarfs_list);
 
+<<<<<<< HEAD
 	err = efivar_init(efivarfs_callback, (void *)sb, false,
 			  true, &efivarfs_list);
+=======
+	err = efivar_init(efivarfs_callback, (void *)sb, true, &efivarfs_list);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		__efivar_entry_iter(efivarfs_destroy, &efivarfs_list, NULL, NULL);
 
@@ -250,6 +317,10 @@ static void efivarfs_kill_sb(struct super_block *sb)
 }
 
 static struct file_system_type efivarfs_type = {
+<<<<<<< HEAD
+=======
+	.owner   = THIS_MODULE,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name    = "efivarfs",
 	.mount   = efivarfs_mount,
 	.kill_sb = efivarfs_kill_sb,
@@ -258,17 +329,36 @@ static struct file_system_type efivarfs_type = {
 static __init int efivarfs_init(void)
 {
 	if (!efi_enabled(EFI_RUNTIME_SERVICES))
+<<<<<<< HEAD
 		return 0;
 
 	if (!efivars_kobject())
 		return 0;
+=======
+		return -ENODEV;
+
+	if (!efivars_kobject())
+		return -ENODEV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return register_filesystem(&efivarfs_type);
 }
 
+<<<<<<< HEAD
+=======
+static __exit void efivarfs_exit(void)
+{
+	unregister_filesystem(&efivarfs_type);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MODULE_AUTHOR("Matthew Garrett, Jeremy Kerr");
 MODULE_DESCRIPTION("EFI Variable Filesystem");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_FS("efivarfs");
 
 module_init(efivarfs_init);
+<<<<<<< HEAD
+=======
+module_exit(efivarfs_exit);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

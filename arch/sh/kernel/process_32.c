@@ -76,6 +76,7 @@ void start_thread(struct pt_regs *regs, unsigned long new_pc,
 }
 EXPORT_SYMBOL(start_thread);
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -83,6 +84,8 @@ void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void flush_thread(void)
 {
 	struct task_struct *tsk = current;
@@ -156,7 +159,11 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 #endif
 		ti->addr_limit = KERNEL_DS;
 		ti->status &= ~TS_USEDFPU;
+<<<<<<< HEAD
 		p->fpu_counter = 0;
+=======
+		p->thread.fpu_counter = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 	*childregs = *current_pt_regs();
@@ -189,7 +196,11 @@ __switch_to(struct task_struct *prev, struct task_struct *next)
 	unlazy_fpu(prev, task_pt_regs(prev));
 
 	/* we're going to use this soon, after a few expensive things */
+<<<<<<< HEAD
 	if (next->fpu_counter > 5)
+=======
+	if (next->thread.fpu_counter > 5)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		prefetch(next_t->xstate);
 
 #ifdef CONFIG_MMU
@@ -207,7 +218,11 @@ __switch_to(struct task_struct *prev, struct task_struct *next)
 	 * restore of the math state immediately to avoid the trap; the
 	 * chances of needing FPU soon are obviously high now
 	 */
+<<<<<<< HEAD
 	if (next->fpu_counter > 5)
+=======
+	if (next->thread.fpu_counter > 5)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		__fpu_state_restore();
 
 	return prev;

@@ -24,6 +24,10 @@
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/ethtool.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 
 #include "emac.h"
@@ -84,7 +88,11 @@ static inline u32 zmii_mode_mask(int mode, int input)
 
 int zmii_attach(struct platform_device *ofdev, int input, int *mode)
 {
+<<<<<<< HEAD
 	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct zmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct zmii_regs __iomem *p = dev->base;
 
 	ZMII_DBG(dev, "init(%d, %d)" NL, input, *mode);
@@ -150,7 +158,11 @@ int zmii_attach(struct platform_device *ofdev, int input, int *mode)
 
 void zmii_get_mdio(struct platform_device *ofdev, int input)
 {
+<<<<<<< HEAD
 	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct zmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 fer;
 
 	ZMII_DBG2(dev, "get_mdio(%d)" NL, input);
@@ -163,7 +175,11 @@ void zmii_get_mdio(struct platform_device *ofdev, int input)
 
 void zmii_put_mdio(struct platform_device *ofdev, int input)
 {
+<<<<<<< HEAD
 	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct zmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ZMII_DBG2(dev, "put_mdio(%d)" NL, input);
 	mutex_unlock(&dev->lock);
@@ -172,7 +188,11 @@ void zmii_put_mdio(struct platform_device *ofdev, int input)
 
 void zmii_set_speed(struct platform_device *ofdev, int input, int speed)
 {
+<<<<<<< HEAD
 	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct zmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 ssr;
 
 	mutex_lock(&dev->lock);
@@ -193,7 +213,11 @@ void zmii_set_speed(struct platform_device *ofdev, int input, int speed)
 
 void zmii_detach(struct platform_device *ofdev, int input)
 {
+<<<<<<< HEAD
 	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct zmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BUG_ON(!dev || dev->users == 0);
 
@@ -218,7 +242,11 @@ int zmii_get_regs_len(struct platform_device *ofdev)
 
 void *zmii_dump_regs(struct platform_device *ofdev, void *buf)
 {
+<<<<<<< HEAD
 	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct zmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct emac_ethtool_regs_subhdr *hdr = buf;
 	struct zmii_regs *regs = (struct zmii_regs *)(hdr + 1);
 
@@ -272,7 +300,11 @@ static int zmii_probe(struct platform_device *ofdev)
 	printk(KERN_INFO
 	       "ZMII %s initialized\n", ofdev->dev.of_node->full_name);
 	wmb();
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, dev);
+=======
+	platform_set_drvdata(ofdev, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -284,9 +316,13 @@ static int zmii_probe(struct platform_device *ofdev)
 
 static int zmii_remove(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct zmii_instance *dev = dev_get_drvdata(&ofdev->dev);
 
 	dev_set_drvdata(&ofdev->dev, NULL);
+=======
+	struct zmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	WARN_ON(dev->users != 0);
 
@@ -296,7 +332,11 @@ static int zmii_remove(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id zmii_match[] =
+=======
+static const struct of_device_id zmii_match[] =
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	{
 		.compatible	= "ibm,zmii",
@@ -311,7 +351,10 @@ static struct of_device_id zmii_match[] =
 static struct platform_driver zmii_driver = {
 	.driver = {
 		.name = "emac-zmii",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = zmii_match,
 	},
 	.probe = zmii_probe,

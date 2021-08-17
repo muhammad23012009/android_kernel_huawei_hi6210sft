@@ -169,6 +169,7 @@ void init_main_window(const gchar * glade_file)
 	style = gtk_widget_get_style(main_wnd);
 	widget = glade_xml_get_widget(xml, "toolbar1");
 
+<<<<<<< HEAD
 #if 0	/* Use stock Gtk icons instead */
 	replace_button_icon(xml, main_wnd->window, style,
 			    "button1", (gchar **) xpm_back);
@@ -177,6 +178,8 @@ void init_main_window(const gchar * glade_file)
 	replace_button_icon(xml, main_wnd->window, style,
 			    "button3", (gchar **) xpm_save);
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	replace_button_icon(xml, main_wnd->window, style,
 			    "button4", (gchar **) xpm_single_view);
 	replace_button_icon(xml, main_wnd->window, style,
@@ -184,6 +187,7 @@ void init_main_window(const gchar * glade_file)
 	replace_button_icon(xml, main_wnd->window, style,
 			    "button6", (gchar **) xpm_tree_view);
 
+<<<<<<< HEAD
 #if 0
 	switch (view_mode) {
 	case SINGLE_VIEW:
@@ -200,6 +204,8 @@ void init_main_window(const gchar * glade_file)
 		break;
 	}
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	txtbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_w));
 	tag1 = gtk_text_buffer_create_tag(txtbuf, "mytag1",
 					  "foreground", "red",
@@ -1404,7 +1410,11 @@ static void display_tree(struct menu *menu)
 		    && (tree == tree2))
 			continue;
 /*
+<<<<<<< HEAD
                 if (((menu != &rootmenu) && !(menu->flags & MENU_ROOT))
+=======
+		if (((menu != &rootmenu) && !(menu->flags & MENU_ROOT))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    || (view_mode == FULL_VIEW)
 		    || (view_mode == SPLIT_VIEW))*/
 
@@ -1498,9 +1508,18 @@ int main(int ac, char *av[])
 		case 'a':
 			//showAll = 1;
 			break;
+<<<<<<< HEAD
 		case 'h':
 		case '?':
 			printf("%s <config>\n", av[0]);
+=======
+		case 's':
+			conf_set_message_callback(NULL);
+			break;
+		case 'h':
+		case '?':
+			printf("%s [-s] <config>\n", av[0]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			exit(0);
 		}
 		name = av[2];

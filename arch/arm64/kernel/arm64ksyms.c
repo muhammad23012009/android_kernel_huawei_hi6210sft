@@ -26,6 +26,11 @@
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/arm-smccc.h>
+#include <linux/kprobes.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/checksum.h>
 
@@ -33,10 +38,17 @@ EXPORT_SYMBOL(copy_page);
 EXPORT_SYMBOL(clear_page);
 
 	/* user mem (segment) */
+<<<<<<< HEAD
 EXPORT_SYMBOL(__copy_from_user);
 EXPORT_SYMBOL(__copy_to_user);
 EXPORT_SYMBOL(__clear_user);
 EXPORT_SYMBOL(__copy_in_user);
+=======
+EXPORT_SYMBOL(__arch_copy_from_user);
+EXPORT_SYMBOL(__arch_copy_to_user);
+EXPORT_SYMBOL(__arch_clear_user);
+EXPORT_SYMBOL(__arch_copy_in_user);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* physical memory */
 EXPORT_SYMBOL(memstart_addr);
@@ -44,11 +56,22 @@ EXPORT_SYMBOL(memstart_addr);
 	/* string / mem functions */
 EXPORT_SYMBOL(strchr);
 EXPORT_SYMBOL(strrchr);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(strcmp);
+EXPORT_SYMBOL(strncmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(strlen);
 EXPORT_SYMBOL(strnlen);
 EXPORT_SYMBOL(memset);
 EXPORT_SYMBOL(memcpy);
 EXPORT_SYMBOL(memmove);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__memset);
+EXPORT_SYMBOL(__memcpy);
+EXPORT_SYMBOL(__memmove);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 EXPORT_SYMBOL(memchr);
 EXPORT_SYMBOL(memcmp);
 
@@ -62,4 +85,13 @@ EXPORT_SYMBOL(test_and_change_bit);
 
 #ifdef CONFIG_FUNCTION_TRACER
 EXPORT_SYMBOL(_mcount);
+<<<<<<< HEAD
 #endif
+=======
+NOKPROBE_SYMBOL(_mcount);
+#endif
+
+	/* arm-smccc */
+EXPORT_SYMBOL(__arm_smccc_smc);
+EXPORT_SYMBOL(__arm_smccc_hvc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

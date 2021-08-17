@@ -4,11 +4,19 @@
 #ifdef __KERNEL__
 
 /* Default link addresses for the vDSOs */
+<<<<<<< HEAD
 #define VDSO32_LBASE	0x100000
 #define VDSO64_LBASE	0x100000
 
 /* Default map addresses for 32bit vDSO */
 #define VDSO32_MBASE	VDSO32_LBASE
+=======
+#define VDSO32_LBASE	0x0
+#define VDSO64_LBASE	0x0
+
+/* Default map addresses for 32bit vDSO */
+#define VDSO32_MBASE	0x100000
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define VDSO_VERSION_STRING	LINUX_2.6.15
 
@@ -22,7 +30,11 @@ extern unsigned long vdso64_rt_sigtramp;
 extern unsigned long vdso32_sigtramp;
 extern unsigned long vdso32_rt_sigtramp;
 
+<<<<<<< HEAD
 int __cpuinit vdso_getcpu_init(void);
+=======
+int vdso_getcpu_init(void);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else /* __ASSEMBLY__ */
 

@@ -16,16 +16,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *
  * GNU General Public License for more details.
+<<<<<<< HEAD
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 #ifndef __ALTERA_CI_H
 #define __ALTERA_CI_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define ALT_DATA	0x000000ff
 #define ALT_TDI		0x00008000
 #define ALT_TDO		0x00004000
@@ -43,7 +49,11 @@ struct altera_ci_config {
 	int (*fpga_rw) (void *dev, int ad_rg, int val, int rw);
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_MEDIA_ALTERA_CI)
+=======
+#if IS_REACHABLE(CONFIG_MEDIA_ALTERA_CI)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int altera_ci_init(struct altera_ci_config *config, int ci_nr);
 extern void altera_ci_release(void *dev, int ci_nr);

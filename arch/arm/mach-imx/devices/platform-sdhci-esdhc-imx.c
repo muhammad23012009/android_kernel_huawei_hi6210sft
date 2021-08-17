@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 2010 Pengutronix, Wolfram Sang <w.sang@pengutronix.de>
+=======
+ * Copyright (C) 2010 Pengutronix, Wolfram Sang <kernel@pengutronix.de>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -43,6 +47,7 @@ imx35_sdhci_esdhc_imx_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX35 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOC_IMX51
 const struct imx_sdhci_esdhc_imx_data
 imx51_sdhci_esdhc_imx_data[] __initconst = {
@@ -67,6 +72,8 @@ imx53_sdhci_esdhc_imx_data[] __initconst = {
 };
 #endif /* ifdef CONFIG_SOC_IMX53 */
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct esdhc_platform_data default_esdhc_pdata __initconst = {
 	.wp_type = ESDHC_WP_NONE,
 	.cd_type = ESDHC_CD_NONE,
@@ -95,6 +102,12 @@ struct platform_device *__init imx_add_sdhci_esdhc_imx(
 	if (!pdata)
 		pdata = &default_esdhc_pdata;
 
+<<<<<<< HEAD
 	return imx_add_platform_device(data->devid, data->id, res,
 			ARRAY_SIZE(res), pdata, sizeof(*pdata));
+=======
+	return imx_add_platform_device_dmamask(data->devid, data->id, res,
+			ARRAY_SIZE(res), pdata, sizeof(*pdata),
+			DMA_BIT_MASK(32));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

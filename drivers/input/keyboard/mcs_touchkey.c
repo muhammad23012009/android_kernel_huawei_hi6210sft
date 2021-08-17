@@ -12,7 +12,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/i2c/mcs.h>
 #include <linux/interrupt.h>
@@ -108,7 +111,11 @@ static int mcs_touchkey_probe(struct i2c_client *client,
 	int error;
 	int i;
 
+<<<<<<< HEAD
 	pdata = client->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_err(&client->dev, "no platform data defined\n");
 		return -EINVAL;
@@ -148,7 +155,11 @@ static int mcs_touchkey_probe(struct i2c_client *client,
 	}
 	dev_info(&client->dev, "Firmware version: %d\n", fw_ver);
 
+<<<<<<< HEAD
 	input_dev->name = "MELPAS MCS Touchkey";
+=======
+	input_dev->name = "MELFAS MCS Touchkey";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	input_dev->id.bustype = BUS_I2C;
 	input_dev->dev.parent = &client->dev;
 	input_dev->evbit[0] = BIT_MASK(EV_KEY);
@@ -266,7 +277,10 @@ MODULE_DEVICE_TABLE(i2c, mcs_touchkey_id);
 static struct i2c_driver mcs_touchkey_driver = {
 	.driver = {
 		.name	= "mcs_touchkey",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.pm	= &mcs_touchkey_pm_ops,
 	},
 	.probe		= mcs_touchkey_probe,

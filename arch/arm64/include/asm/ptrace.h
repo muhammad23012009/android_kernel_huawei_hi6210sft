@@ -21,6 +21,13 @@
 
 #include <uapi/asm/ptrace.h>
 
+<<<<<<< HEAD
+=======
+/* Current Exception Level values, as contained in CurrentEL */
+#define CurrentEL_EL1		(1 << 2)
+#define CurrentEL_EL2		(2 << 2)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* AArch32-specific ptrace requests */
 #define COMPAT_PTRACE_GETREGS		12
 #define COMPAT_PTRACE_SETREGS		13
@@ -42,7 +49,10 @@
 #define COMPAT_PSR_MODE_UND	0x0000001b
 #define COMPAT_PSR_MODE_SYS	0x0000001f
 #define COMPAT_PSR_T_BIT	0x00000020
+<<<<<<< HEAD
 #define COMPAT_PSR_E_BIT	0x00000200
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define COMPAT_PSR_F_BIT	0x00000040
 #define COMPAT_PSR_I_BIT	0x00000080
 #define COMPAT_PSR_A_BIT	0x00000100
@@ -54,6 +64,17 @@
 #define COMPAT_PSR_Z_BIT	0x40000000
 #define COMPAT_PSR_N_BIT	0x80000000
 #define COMPAT_PSR_IT_MASK	0x0600fc00	/* If-Then execution state mask */
+<<<<<<< HEAD
+=======
+#define COMPAT_PSR_GE_MASK	0x000f0000
+
+#ifdef CONFIG_CPU_BIG_ENDIAN
+#define COMPAT_PSR_ENDSTATE	COMPAT_PSR_E_BIT
+#else
+#define COMPAT_PSR_ENDSTATE	0
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * These are 'magic' values for PTRACE_PEEKUSR that return info about where a
  * process is located in memory.
@@ -61,6 +82,7 @@
 #define COMPAT_PT_TEXT_ADDR		0x10000
 #define COMPAT_PT_DATA_ADDR		0x10004
 #define COMPAT_PT_TEXT_END_ADDR		0x10008
+<<<<<<< HEAD
 
 /*
  * used to skip a system call when tracer changes its number to -1
@@ -71,6 +93,10 @@
 #define IS_SKIP_SYSCALL(no)	((int)(no & 0xffffffff) == -1)
 
 #ifndef __ASSEMBLY__
+=======
+#ifndef __ASSEMBLY__
+#include <linux/bug.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* sizeof(struct user) for AArch32 */
 #define COMPAT_USER_SZ	296
@@ -114,8 +140,17 @@ struct pt_regs {
 	};
 	u64 orig_x0;
 	u64 syscallno;
+<<<<<<< HEAD
 };
 
+=======
+	u64 orig_addr_limit;
+	u64 unused;	// maintain 16 byte alignment
+};
+
+#define MAX_REG_OFFSET offsetof(struct pt_regs, pstate)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define arch_has_single_step()	(1)
 
 #ifdef CONFIG_COMPAT
@@ -141,6 +176,7 @@ struct pt_regs {
 #define fast_interrupts_enabled(regs) \
 	(!((regs)->pstate & PSR_F_BIT))
 
+<<<<<<< HEAD
 #define user_stack_pointer(regs) \
 	(!compat_user_mode(regs) ? (regs)->sp : (regs)->compat_sp)
 
@@ -194,6 +230,79 @@ extern unsigned long profile_pc(struct pt_regs *regs);
  * in the form (first_half<<16)|(second_half)
  */
 #define is_wide_instruction(instr)	((unsigned)(instr) >= 0xe800)
+=======
+#define GET_USP(regs) \
+	(!compat_user_mode(regs) ? (regs)->sp : (regs)->compat_sp)
+
+#define SET_USP(ptregs, value) \
+	(!compat_user_mode(regs) ? ((regs)->sp = value) : ((regs)->compat_sp = value))
+
+extern int regs_query_register_offset(const char *name);
+extern unsigned long regs_get_kernel_stack_nth(struct pt_regs *regs,
+					       unsigned int n);
+
+/**
+ * regs_get_register() - get register value from its offset
+ * @regs:	pt_regs from which register value is gotten
+ * @offset:	offset of the register.
+ *
+ * regs_get_register returns the value of a register whose offset from @regs.
+ * The @offset is the offset of the register in struct pt_regs.
+ * If @offset is bigger than MAX_REG_OFFSET, this returns 0.
+ */
+static inline u64 regs_get_register(struct pt_regs *regs, unsigned int offset)
+{
+	u64 val = 0;
+
+	WARN_ON(offset & 7);
+
+	offset >>= 3;
+	switch (offset) {
+	case 0 ... 30:
+		val = regs->regs[offset];
+		break;
+	case offsetof(struct pt_regs, sp) >> 3:
+		val = regs->sp;
+		break;
+	case offsetof(struct pt_regs, pc) >> 3:
+		val = regs->pc;
+		break;
+	case offsetof(struct pt_regs, pstate) >> 3:
+		val = regs->pstate;
+		break;
+	default:
+		val = 0;
+	}
+
+	return val;
+}
+
+/* Valid only for Kernel mode traps. */
+static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
+{
+	return regs->sp;
+}
+
+static inline unsigned long regs_return_value(struct pt_regs *regs)
+{
+	return regs->regs[0];
+}
+
+/* We must avoid circular header include via sched.h */
+struct task_struct;
+int valid_user_regs(struct user_pt_regs *regs, struct task_struct *task);
+
+#define GET_IP(regs)		((unsigned long)(regs)->pc)
+#define SET_IP(regs, value)	((regs)->pc = ((u64) (value)))
+
+#define GET_FP(ptregs)		((unsigned long)(ptregs)->regs[29])
+#define SET_FP(ptregs, value)	((ptregs)->regs[29] = ((u64) (value)))
+
+#include <asm-generic/ptrace.h>
+
+#undef profile_pc
+extern unsigned long profile_pc(struct pt_regs *regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASSEMBLY__ */
 #endif

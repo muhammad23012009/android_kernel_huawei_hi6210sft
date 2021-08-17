@@ -12,7 +12,10 @@
 #include <linux/gfp.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <asm-generic/dma-coherent.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Managed DMA API
@@ -62,7 +65,11 @@ static int dmam_match(struct device *dev, void *res, void *match_data)
  * RETURNS:
  * Pointer to allocated memory on success, NULL on failure.
  */
+<<<<<<< HEAD
 void * dmam_alloc_coherent(struct device *dev, size_t size,
+=======
+void *dmam_alloc_coherent(struct device *dev, size_t size,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   dma_addr_t *dma_handle, gfp_t gfp)
 {
 	struct dma_devres *dr;
@@ -167,7 +174,11 @@ void dmam_free_noncoherent(struct device *dev, size_t size, void *vaddr,
 }
 EXPORT_SYMBOL(dmam_free_noncoherent);
 
+<<<<<<< HEAD
 #ifdef ARCH_HAS_DMA_DECLARE_COHERENT_MEMORY
+=======
+#ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static void dmam_coherent_decl_release(struct device *dev, void *res)
 {
@@ -177,7 +188,11 @@ static void dmam_coherent_decl_release(struct device *dev, void *res)
 /**
  * dmam_declare_coherent_memory - Managed dma_declare_coherent_memory()
  * @dev: Device to declare coherent memory for
+<<<<<<< HEAD
  * @bus_addr: Bus address of coherent memory to be declared
+=======
+ * @phys_addr: Physical address of coherent memory to be declared
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @device_addr: Device address of coherent memory to be declared
  * @size: Size of coherent memory to be declared
  * @flags: Flags
@@ -187,7 +202,11 @@ static void dmam_coherent_decl_release(struct device *dev, void *res)
  * RETURNS:
  * 0 on success, -errno on failure.
  */
+<<<<<<< HEAD
 int dmam_declare_coherent_memory(struct device *dev, dma_addr_t bus_addr,
+=======
+int dmam_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 dma_addr_t device_addr, size_t size, int flags)
 {
 	void *res;
@@ -197,12 +216,24 @@ int dmam_declare_coherent_memory(struct device *dev, dma_addr_t bus_addr,
 	if (!res)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	rc = dma_declare_coherent_memory(dev, bus_addr, device_addr, size,
 					 flags);
 	if (rc == 0)
 		devres_add(dev, res);
 	else
 		devres_free(res);
+=======
+	rc = dma_declare_coherent_memory(dev, phys_addr, device_addr, size,
+					 flags);
+	if (rc) {
+		devres_add(dev, res);
+		rc = 0;
+	} else {
+		devres_free(res);
+		rc = -ENOMEM;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return rc;
 }
@@ -247,8 +278,13 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
 		    void *cpu_addr, dma_addr_t dma_addr, size_t size)
 {
 	int ret = -ENXIO;
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 	unsigned long user_count = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
+=======
+#if defined(CONFIG_MMU) && !defined(CONFIG_ARCH_NO_COHERENT_DMA_MMAP)
+	unsigned long user_count = vma_pages(vma);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
 	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
 	unsigned long off = vma->vm_pgoff;
@@ -264,7 +300,11 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
 				      user_count << PAGE_SHIFT,
 				      vma->vm_page_prot);
 	}
+<<<<<<< HEAD
 #endif	/* CONFIG_MMU */
+=======
+#endif	/* CONFIG_MMU && !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -287,7 +327,11 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
 
 	area->pages = pages;
 
+<<<<<<< HEAD
 	if (map_vm_area(area, prot, &pages)) {
+=======
+	if (map_vm_area(area, prot, pages)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		vunmap(area->addr);
 		return NULL;
 	}
@@ -335,7 +379,11 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
 		return;
 	}
 
+<<<<<<< HEAD
 	unmap_kernel_range((unsigned long)cpu_addr, size);
+=======
+	unmap_kernel_range((unsigned long)cpu_addr, PAGE_ALIGN(size));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	vunmap(cpu_addr);
 }
 #endif

@@ -67,7 +67,11 @@
 #endif
 
 /* Ensure if the instruction can be boostable */
+<<<<<<< HEAD
 extern int can_boost(kprobe_opcode_t *instruction);
+=======
+extern int can_boost(kprobe_opcode_t *instruction, void *addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Recover instruction if given address is probed */
 extern unsigned long recover_probed_instruction(kprobe_opcode_t *buf,
 					 unsigned long addr);
@@ -82,6 +86,7 @@ extern void synthesize_reljump(void *from, void *to);
 extern void synthesize_relcall(void *from, void *to);
 
 #ifdef	CONFIG_OPTPROBES
+<<<<<<< HEAD
 extern int arch_init_optprobes(void);
 extern int setup_detour_execution(struct kprobe *p, struct pt_regs *regs, int reenter);
 extern unsigned long __recover_optprobed_insn(kprobe_opcode_t *buf, unsigned long addr);
@@ -90,6 +95,11 @@ static inline int arch_init_optprobes(void)
 {
 	return 0;
 }
+=======
+extern int setup_detour_execution(struct kprobe *p, struct pt_regs *regs, int reenter);
+extern unsigned long __recover_optprobed_insn(kprobe_opcode_t *buf, unsigned long addr);
+#else	/* !CONFIG_OPTPROBES */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline int setup_detour_execution(struct kprobe *p, struct pt_regs *regs, int reenter)
 {
 	return 0;

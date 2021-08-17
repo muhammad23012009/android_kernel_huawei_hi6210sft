@@ -594,9 +594,13 @@ int is_dsp_inst(struct pt_regs *regs)
 #endif /* CONFIG_SH_DSP */
 
 #ifdef CONFIG_CPU_SH2A
+<<<<<<< HEAD
 asmlinkage void do_divide_error(unsigned long r4, unsigned long r5,
 				unsigned long r6, unsigned long r7,
 				struct pt_regs __regs)
+=======
+asmlinkage void do_divide_error(unsigned long r4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	siginfo_t info;
 
@@ -609,6 +613,7 @@ asmlinkage void do_divide_error(unsigned long r4, unsigned long r5,
 		break;
 	}
 
+<<<<<<< HEAD
 	force_sig_info(SIGFPE, &info, current);
 }
 #endif
@@ -618,6 +623,16 @@ asmlinkage void do_reserved_inst(unsigned long r4, unsigned long r5,
 				struct pt_regs __regs)
 {
 	struct pt_regs *regs = RELOC_HIDE(&__regs, 0);
+=======
+	info.si_signo = SIGFPE;
+	force_sig_info(info.si_signo, &info, current);
+}
+#endif
+
+asmlinkage void do_reserved_inst(void)
+{
+	struct pt_regs *regs = current_pt_regs();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long error_code;
 	struct task_struct *tsk = current;
 
@@ -701,11 +716,17 @@ static int emulate_branch(unsigned short inst, struct pt_regs *regs)
 }
 #endif
 
+<<<<<<< HEAD
 asmlinkage void do_illegal_slot_inst(unsigned long r4, unsigned long r5,
 				unsigned long r6, unsigned long r7,
 				struct pt_regs __regs)
 {
 	struct pt_regs *regs = RELOC_HIDE(&__regs, 0);
+=======
+asmlinkage void do_illegal_slot_inst(void)
+{
+	struct pt_regs *regs = current_pt_regs();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long inst;
 	struct task_struct *tsk = current;
 
@@ -730,6 +751,7 @@ asmlinkage void do_illegal_slot_inst(unsigned long r4, unsigned long r5,
 	die_if_no_fixup("illegal slot instruction", regs, inst);
 }
 
+<<<<<<< HEAD
 asmlinkage void do_exception_error(unsigned long r4, unsigned long r5,
 				   unsigned long r6, unsigned long r7,
 				   struct pt_regs __regs)
@@ -742,6 +764,17 @@ asmlinkage void do_exception_error(unsigned long r4, unsigned long r5,
 }
 
 void __cpuinit per_cpu_trap_init(void)
+=======
+asmlinkage void do_exception_error(void)
+{
+	long ex;
+
+	ex = lookup_exception_vector();
+	die_if_kernel("exception", current_pt_regs(), ex);
+}
+
+void per_cpu_trap_init(void)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	extern void *vbr_base;
 

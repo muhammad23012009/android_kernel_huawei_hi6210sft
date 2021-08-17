@@ -90,7 +90,11 @@ void v9fs_cache_session_get_cookie(struct v9fs_session_info *v9ses)
 
 	v9ses->fscache = fscache_acquire_cookie(v9fs_cache_netfs.primary_index,
 						&v9fs_cache_session_index_def,
+<<<<<<< HEAD
 						v9ses);
+=======
+						v9ses, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	p9_debug(P9_DEBUG_FSC, "session %p get cookie %p\n",
 		 v9ses, v9ses->fscache);
 }
@@ -204,7 +208,11 @@ void v9fs_cache_inode_get_cookie(struct inode *inode)
 	v9ses = v9fs_inode2v9ses(inode);
 	v9inode->fscache = fscache_acquire_cookie(v9ses->fscache,
 						  &v9fs_cache_inode_index_def,
+<<<<<<< HEAD
 						  v9inode);
+=======
+						  v9inode, true);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	p9_debug(P9_DEBUG_FSC, "inode %p get cookie %p\n",
 		 inode, v9inode->fscache);
@@ -239,19 +247,31 @@ void v9fs_cache_inode_flush_cookie(struct inode *inode)
 void v9fs_cache_inode_set_cookie(struct inode *inode, struct file *filp)
 {
 	struct v9fs_inode *v9inode = V9FS_I(inode);
+<<<<<<< HEAD
 	struct p9_fid *fid;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!v9inode->fscache)
 		return;
 
+<<<<<<< HEAD
 	spin_lock(&v9inode->fscache_lock);
 	fid = filp->private_data;
+=======
+	mutex_lock(&v9inode->fscache_lock);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((filp->f_flags & O_ACCMODE) != O_RDONLY)
 		v9fs_cache_inode_flush_cookie(inode);
 	else
 		v9fs_cache_inode_get_cookie(inode);
 
+<<<<<<< HEAD
 	spin_unlock(&v9inode->fscache_lock);
+=======
+	mutex_unlock(&v9inode->fscache_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void v9fs_cache_inode_reset_cookie(struct inode *inode)
@@ -265,17 +285,29 @@ void v9fs_cache_inode_reset_cookie(struct inode *inode)
 
 	old = v9inode->fscache;
 
+<<<<<<< HEAD
 	spin_lock(&v9inode->fscache_lock);
+=======
+	mutex_lock(&v9inode->fscache_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	fscache_relinquish_cookie(v9inode->fscache, 1);
 
 	v9ses = v9fs_inode2v9ses(inode);
 	v9inode->fscache = fscache_acquire_cookie(v9ses->fscache,
 						  &v9fs_cache_inode_index_def,
+<<<<<<< HEAD
 						  v9inode);
 	p9_debug(P9_DEBUG_FSC, "inode %p revalidating cookie old %p new %p\n",
 		 inode, old, v9inode->fscache);
 
 	spin_unlock(&v9inode->fscache_lock);
+=======
+						  v9inode, true);
+	p9_debug(P9_DEBUG_FSC, "inode %p revalidating cookie old %p new %p\n",
+		 inode, old, v9inode->fscache);
+
+	mutex_unlock(&v9inode->fscache_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int __v9fs_fscache_release_page(struct page *page, gfp_t gfp)

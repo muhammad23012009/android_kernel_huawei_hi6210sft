@@ -7,7 +7,10 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <linux/preempt.h>
@@ -633,7 +636,11 @@ static int n2rng_probe(struct platform_device *op)
 	multi_capable = (match->data != NULL);
 
 	n2rng_driver_version();
+<<<<<<< HEAD
 	np = kzalloc(sizeof(*np), GFP_KERNEL);
+=======
+	np = devm_kzalloc(&op->dev, sizeof(*np), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!np)
 		goto out;
 	np->op = op;
@@ -654,7 +661,11 @@ static int n2rng_probe(struct platform_device *op)
 					 &np->hvapi_minor)) {
 			dev_err(&op->dev, "Cannot register suitable "
 				"HVAPI version.\n");
+<<<<<<< HEAD
 			goto out_free;
+=======
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -677,15 +688,25 @@ static int n2rng_probe(struct platform_device *op)
 	dev_info(&op->dev, "Registered RNG HVAPI major %lu minor %lu\n",
 		 np->hvapi_major, np->hvapi_minor);
 
+<<<<<<< HEAD
 	np->units = kzalloc(sizeof(struct n2rng_unit) * np->num_units,
 			    GFP_KERNEL);
+=======
+	np->units = devm_kzalloc(&op->dev,
+				 sizeof(struct n2rng_unit) * np->num_units,
+				 GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = -ENOMEM;
 	if (!np->units)
 		goto out_hvapi_unregister;
 
 	err = n2rng_init_control(np);
 	if (err)
+<<<<<<< HEAD
 		goto out_free_units;
+=======
+		goto out_hvapi_unregister;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&op->dev, "Found %s RNG, units: %d\n",
 		 ((np->flags & N2RNG_FLAG_MULTI) ?
@@ -698,14 +719,21 @@ static int n2rng_probe(struct platform_device *op)
 
 	err = hwrng_register(&np->hwrng);
 	if (err)
+<<<<<<< HEAD
 		goto out_free_units;
 
 	dev_set_drvdata(&op->dev, np);
+=======
+		goto out_hvapi_unregister;
+
+	platform_set_drvdata(op, np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	schedule_delayed_work(&np->work, 0);
 
 	return 0;
 
+<<<<<<< HEAD
 out_free_units:
 	kfree(np->units);
 	np->units = NULL;
@@ -715,13 +743,22 @@ out_hvapi_unregister:
 
 out_free:
 	kfree(np);
+=======
+out_hvapi_unregister:
+	sun4v_hvapi_unregister(HV_GRP_RNG);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return err;
 }
 
 static int n2rng_remove(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct n2rng *np = dev_get_drvdata(&op->dev);
+=======
+	struct n2rng *np = platform_get_drvdata(op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	np->flags |= N2RNG_FLAG_SHUTDOWN;
 
@@ -731,6 +768,7 @@ static int n2rng_remove(struct platform_device *op)
 
 	sun4v_hvapi_unregister(HV_GRP_RNG);
 
+<<<<<<< HEAD
 	kfree(np->units);
 	np->units = NULL;
 
@@ -738,6 +776,8 @@ static int n2rng_remove(struct platform_device *op)
 
 	dev_set_drvdata(&op->dev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -756,6 +796,19 @@ static const struct of_device_id n2rng_match[] = {
 		.compatible	= "SUNW,kt-rng",
 		.data		= (void *) 1,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.name		= "random-number-generator",
+		.compatible	= "ORCL,m4-rng",
+		.data		= (void *) 1,
+	},
+	{
+		.name		= "random-number-generator",
+		.compatible	= "ORCL,m7-rng",
+		.data		= (void *) 1,
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{},
 };
 MODULE_DEVICE_TABLE(of, n2rng_match);
@@ -763,7 +816,10 @@ MODULE_DEVICE_TABLE(of, n2rng_match);
 static struct platform_driver n2rng_driver = {
 	.driver = {
 		.name = "n2rng",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = n2rng_match,
 	},
 	.probe		= n2rng_probe,

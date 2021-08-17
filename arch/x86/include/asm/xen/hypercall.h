@@ -43,6 +43,11 @@
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
+<<<<<<< HEAD
+=======
+#include <asm/smap.h>
+#include <asm/nospec-branch.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <xen/interface/xen.h>
 #include <xen/interface/sched.h>
@@ -110,9 +115,16 @@ extern struct { char _entry[32]; } hypercall_page[];
 	register unsigned long __arg2 asm(__HYPERCALL_ARG2REG) = __arg2; \
 	register unsigned long __arg3 asm(__HYPERCALL_ARG3REG) = __arg3; \
 	register unsigned long __arg4 asm(__HYPERCALL_ARG4REG) = __arg4; \
+<<<<<<< HEAD
 	register unsigned long __arg5 asm(__HYPERCALL_ARG5REG) = __arg5;
 
 #define __HYPERCALL_0PARAM	"=r" (__res)
+=======
+	register unsigned long __arg5 asm(__HYPERCALL_ARG5REG) = __arg5; \
+	register void *__sp asm(_ASM_SP);
+
+#define __HYPERCALL_0PARAM	"=r" (__res), "+r" (__sp)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define __HYPERCALL_1PARAM	__HYPERCALL_0PARAM, "+r" (__arg1)
 #define __HYPERCALL_2PARAM	__HYPERCALL_1PARAM, "+r" (__arg2)
 #define __HYPERCALL_3PARAM	__HYPERCALL_2PARAM, "+r" (__arg3)
@@ -213,10 +225,22 @@ privcmd_call(unsigned call,
 	__HYPERCALL_DECLS;
 	__HYPERCALL_5ARG(a1, a2, a3, a4, a5);
 
+<<<<<<< HEAD
 	asm volatile("call *%[call]"
 		     : __HYPERCALL_5PARAM
 		     : [call] "a" (&hypercall_page[call])
 		     : __HYPERCALL_CLOBBER5);
+=======
+	if (call >= PAGE_SIZE / sizeof(hypercall_page[0]))
+		return -EINVAL;
+
+	stac();
+	asm volatile(CALL_NOSPEC
+		     : __HYPERCALL_5PARAM
+		     : [thunk_target] "a" (&hypercall_page[call])
+		     : __HYPERCALL_CLOBBER5);
+	clac();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return (long)__res;
 }
@@ -310,10 +334,17 @@ HYPERVISOR_mca(struct xen_mc *mc_op)
 }
 
 static inline int
+<<<<<<< HEAD
 HYPERVISOR_dom0_op(struct xen_platform_op *platform_op)
 {
 	platform_op->interface_version = XENPF_INTERFACE_VERSION;
 	return _hypercall1(int, dom0_op, platform_op);
+=======
+HYPERVISOR_platform_op(struct xen_platform_op *op)
+{
+	op->interface_version = XENPF_INTERFACE_VERSION;
+	return _hypercall1(int, platform_op, op);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline int
@@ -336,6 +367,7 @@ HYPERVISOR_update_descriptor(u64 ma, u64 desc)
 	return _hypercall4(int, update_descriptor, ma, ma>>32, desc, desc>>32);
 }
 
+<<<<<<< HEAD
 static inline int
 HYPERVISOR_memory_op(unsigned int cmd, void *arg)
 {
@@ -344,6 +376,16 @@ HYPERVISOR_memory_op(unsigned int cmd, void *arg)
 
 static inline int
 HYPERVISOR_multicall(void *call_list, int nr_calls)
+=======
+static inline long
+HYPERVISOR_memory_op(unsigned int cmd, void *arg)
+{
+	return _hypercall2(long, memory_op, cmd, arg);
+}
+
+static inline int
+HYPERVISOR_multicall(void *call_list, uint32_t nr_calls)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return _hypercall2(int, multicall, call_list, nr_calls);
 }
@@ -465,6 +507,15 @@ HYPERVISOR_tmem_op(
 	return _hypercall1(int, tmem_op, op);
 }
 
+<<<<<<< HEAD
+=======
+static inline int
+HYPERVISOR_xenpmu_op(unsigned int op, void *arg)
+{
+	return _hypercall2(int, xenpmu_op, op, arg);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void
 MULTI_fpu_taskswitch(struct multicall_entry *mcl, int set)
 {

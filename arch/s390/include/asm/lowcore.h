@@ -11,6 +11,7 @@
 #include <linux/types.h>
 #include <asm/ptrace.h>
 #include <asm/cpu.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_32BIT
 
@@ -163,10 +164,14 @@ struct _lowcore {
 } __packed;
 
 #else /* CONFIG_32BIT */
+=======
+#include <asm/types.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define LC_ORDER 1
 #define LC_PAGES 2
 
+<<<<<<< HEAD
 struct save_area {
 	u64	fp_regs[16];
 	u64	gp_regs[16];
@@ -184,6 +189,9 @@ struct save_area {
 } __packed;
 
 struct _lowcore {
+=======
+struct lowcore {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8	pad_0x0000[0x0014-0x0000];	/* 0x0000 */
 	__u32	ipl_parmblock_ptr;		/* 0x0014 */
 	__u8	pad_0x0018[0x0080-0x0018];	/* 0x0018 */
@@ -196,12 +204,21 @@ struct _lowcore {
 	__u16	pgm_code;			/* 0x008e */
 	__u32	data_exc_code;			/* 0x0090 */
 	__u16	mon_class_num;			/* 0x0094 */
+<<<<<<< HEAD
 	__u16	per_perc_atmid;			/* 0x0096 */
+=======
+	__u8	per_code;			/* 0x0096 */
+	__u8	per_atmid;			/* 0x0097 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u64	per_address;			/* 0x0098 */
 	__u8	exc_access_id;			/* 0x00a0 */
 	__u8	per_access_id;			/* 0x00a1 */
 	__u8	op_access_id;			/* 0x00a2 */
+<<<<<<< HEAD
 	__u8	ar_access_id;			/* 0x00a3 */
+=======
+	__u8	ar_mode_id;			/* 0x00a3 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8	pad_0x00a4[0x00a8-0x00a4];	/* 0x00a4 */
 	__u64	trans_exc_code;			/* 0x00a8 */
 	__u64	monitor_code;			/* 0x00b0 */
@@ -212,7 +229,11 @@ struct _lowcore {
 	__u8	pad_0x00c4[0x00c8-0x00c4];	/* 0x00c4 */
 	__u32	stfl_fac_list;			/* 0x00c8 */
 	__u8	pad_0x00cc[0x00e8-0x00cc];	/* 0x00cc */
+<<<<<<< HEAD
 	__u32	mcck_interruption_code[2];	/* 0x00e8 */
+=======
+	__u64	mcck_interruption_code;		/* 0x00e8 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8	pad_0x00f0[0x00f4-0x00f0];	/* 0x00f0 */
 	__u32	external_damage_code;		/* 0x00f4 */
 	__u64	failing_storage_address;	/* 0x00f8 */
@@ -237,7 +258,13 @@ struct _lowcore {
 	__u64	save_area_sync[8];		/* 0x0200 */
 	__u64	save_area_async[8];		/* 0x0240 */
 	__u64	save_area_restart[1];		/* 0x0280 */
+<<<<<<< HEAD
 	__u8	pad_0x0288[0x0290-0x0288];	/* 0x0288 */
+=======
+
+	/* CPU flags. */
+	__u64	cpu_flags;			/* 0x0288 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Return psws. */
 	psw_t	return_psw;			/* 0x0290 */
@@ -275,7 +302,18 @@ struct _lowcore {
 	/* Address space pointer. */
 	__u64	kernel_asce;			/* 0x0358 */
 	__u64	user_asce;			/* 0x0360 */
+<<<<<<< HEAD
 	__u64	current_pid;			/* 0x0368 */
+=======
+
+	/*
+	 * The lpp and current_pid fields form a
+	 * 64-bit value that is set as program
+	 * parameter with the LPP instruction.
+	 */
+	__u32	lpp;				/* 0x0368 */
+	__u32	current_pid;			/* 0x036c */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* SMP info area */
 	__u32	cpu_nr;				/* 0x0370 */
@@ -283,6 +321,7 @@ struct _lowcore {
 	__u64	percpu_offset;			/* 0x0378 */
 	__u64	vdso_per_cpu_data;		/* 0x0380 */
 	__u64	machine_flags;			/* 0x0388 */
+<<<<<<< HEAD
 	__u64	ftrace_func;			/* 0x0390 */
 	__u64	gmap;				/* 0x0398 */
 	__u8	pad_0x03a0[0x0400-0x03a0];	/* 0x03a0 */
@@ -295,6 +334,20 @@ struct _lowcore {
 	__u32	paste[16];			/* 0x0480 */
 
 	__u8	pad_0x04c0[0x0e00-0x04c0];	/* 0x04c0 */
+=======
+	__u8	pad_0x0390[0x0398-0x0390];	/* 0x0390 */
+	__u64	gmap;				/* 0x0398 */
+	__u32	spinlock_lockval;		/* 0x03a0 */
+	__u32	fpu_flags;			/* 0x03a4 */
+	__u8	pad_0x03a8[0x0400-0x03a8];	/* 0x03a8 */
+
+	/* Per cpu primary space access list */
+	__u32	paste[16];			/* 0x0400 */
+
+	/* br %r1 trampoline */
+	__u16	br_r1_trampoline;		/* 0x0440 */
+	__u8	pad_0x0442[0x0e00-0x0442];	/* 0x0442 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * 0xe00 contains the address of the IPL Parameter Information
@@ -309,8 +362,17 @@ struct _lowcore {
 	__u8	pad_0x0e20[0x0f00-0x0e20];	/* 0x0e20 */
 
 	/* Extended facility list */
+<<<<<<< HEAD
 	__u64	stfle_fac_list[32];		/* 0x0f00 */
 	__u8	pad_0x1000[0x11b8-0x1000];	/* 0x1000 */
+=======
+	__u64	stfle_fac_list[16];		/* 0x0f00 */
+	__u64	alt_stfle_fac_list[16];		/* 0x0f80 */
+	__u8	pad_0x1000[0x11b0-0x1000];	/* 0x1000 */
+
+	/* Pointer to vector register save area */
+	__u64	vector_save_area_addr;		/* 0x11b0 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* 64 bit extparam used for pfault/diag 250: defined by architecture */
 	__u64	ext_params2;			/* 0x11B8 */
@@ -334,6 +396,7 @@ struct _lowcore {
 
 	/* Transaction abort diagnostic block */
 	__u8	pgm_tdb[256];			/* 0x1800 */
+<<<<<<< HEAD
 
 	/* align to the top of the prefix area */
 	__u8	pad_0x1900[0x2000-0x1900];	/* 0x1900 */
@@ -344,6 +407,17 @@ struct _lowcore {
 #define S390_lowcore (*((struct _lowcore *) 0))
 
 extern struct _lowcore *lowcore_ptr[];
+=======
+	__u8	pad_0x1900[0x1c00-0x1900];	/* 0x1900 */
+
+	/* Software defined save area for vector registers */
+	__u8	vector_save_area[1024];		/* 0x1c00 */
+} __packed;
+
+#define S390_lowcore (*((struct lowcore *) 0))
+
+extern struct lowcore *lowcore_ptr[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void set_prefix(__u32 address)
 {

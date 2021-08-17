@@ -76,6 +76,12 @@ struct musb_hdrc_config {
 	unsigned	dma:1 __deprecated; /* supports DMA */
 	unsigned	vendor_req:1 __deprecated; /* vendor registers required */
 
+<<<<<<< HEAD
+=======
+	/* need to explicitly de-assert the port reset after resume? */
+	unsigned	host_port_deassert_reset_at_resume:1;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8		num_eps;	/* number of endpoints _with_ ep0 */
 	u8		dma_channels __deprecated; /* number of dma channels */
 	u8		dyn_fifo_size;	/* dynamic size in bytes */
@@ -92,15 +98,22 @@ struct musb_hdrc_config {
 	/* musb CLKIN in Blackfin in MHZ */
 	unsigned char   clkin;
 #endif
+<<<<<<< HEAD
 
+=======
+	u32		maximum_speed;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct musb_hdrc_platform_data {
 	/* MUSB_HOST, MUSB_PERIPHERAL, or MUSB_OTG */
 	u8		mode;
 
+<<<<<<< HEAD
 	u8		has_mailbox:1;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* for clk_get() */
 	const char	*clock;
 
@@ -123,7 +136,11 @@ struct musb_hdrc_platform_data {
 	int		(*set_power)(int state);
 
 	/* MUSB configuration-specific details */
+<<<<<<< HEAD
 	struct musb_hdrc_config	*config;
+=======
+	const struct musb_hdrc_config *config;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Architecture specific board data	*/
 	void		*board_data;
@@ -132,6 +149,25 @@ struct musb_hdrc_platform_data {
 	const void	*platform_ops;
 };
 
+<<<<<<< HEAD
+=======
+enum musb_vbus_id_status {
+	MUSB_UNKNOWN = 0,
+	MUSB_ID_GROUND,
+	MUSB_ID_FLOAT,
+	MUSB_VBUS_VALID,
+	MUSB_VBUS_OFF,
+};
+
+#if IS_ENABLED(CONFIG_USB_MUSB_HDRC)
+int musb_mailbox(enum musb_vbus_id_status status);
+#else
+static inline int musb_mailbox(enum musb_vbus_id_status status)
+{
+	return 0;
+}
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* TUSB 6010 support */
 

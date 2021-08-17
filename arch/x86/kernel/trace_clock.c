@@ -12,10 +12,14 @@
  */
 u64 notrace trace_clock_x86_tsc(void)
 {
+<<<<<<< HEAD
 	u64 ret;
 
 	rdtsc_barrier();
 	rdtscll(ret);
 
 	return ret;
+=======
+	return rdtsc_ordered();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

@@ -13,6 +13,17 @@
  */
 
 #ifdef CONFIG_CPU_XSCALE
+<<<<<<< HEAD
+=======
+
+#include <asm/cputype.h>
+#include <asm/irq_regs.h>
+
+#include <linux/of.h>
+#include <linux/perf/arm_pmu.h>
+#include <linux/platform_device.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum xscale_perf_types {
 	XSCALE_PERFCTR_ICACHE_MISS		= 0x00,
 	XSCALE_PERFCTR_ICACHE_NO_DELIVER	= 0x01,
@@ -48,6 +59,7 @@ enum xscale_counters {
 };
 
 static const unsigned xscale_perf_map[PERF_COUNT_HW_MAX] = {
+<<<<<<< HEAD
 	[PERF_COUNT_HW_CPU_CYCLES]		= XSCALE_PERFCTR_CCNT,
 	[PERF_COUNT_HW_INSTRUCTIONS]		= XSCALE_PERFCTR_INSTRUCTION,
 	[PERF_COUNT_HW_CACHE_REFERENCES]	= HW_OP_UNSUPPORTED,
@@ -57,11 +69,20 @@ static const unsigned xscale_perf_map[PERF_COUNT_HW_MAX] = {
 	[PERF_COUNT_HW_BUS_CYCLES]		= HW_OP_UNSUPPORTED,
 	[PERF_COUNT_HW_STALLED_CYCLES_FRONTEND]	= XSCALE_PERFCTR_ICACHE_NO_DELIVER,
 	[PERF_COUNT_HW_STALLED_CYCLES_BACKEND]	= HW_OP_UNSUPPORTED,
+=======
+	PERF_MAP_ALL_UNSUPPORTED,
+	[PERF_COUNT_HW_CPU_CYCLES]		= XSCALE_PERFCTR_CCNT,
+	[PERF_COUNT_HW_INSTRUCTIONS]		= XSCALE_PERFCTR_INSTRUCTION,
+	[PERF_COUNT_HW_BRANCH_INSTRUCTIONS]	= XSCALE_PERFCTR_BRANCH,
+	[PERF_COUNT_HW_BRANCH_MISSES]		= XSCALE_PERFCTR_BRANCH_MISS,
+	[PERF_COUNT_HW_STALLED_CYCLES_FRONTEND]	= XSCALE_PERFCTR_ICACHE_NO_DELIVER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const unsigned xscale_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 					   [PERF_COUNT_HW_CACHE_OP_MAX]
 					   [PERF_COUNT_HW_CACHE_RESULT_MAX] = {
+<<<<<<< HEAD
 	[C(L1D)] = {
 		[C(OP_READ)] = {
 			[C(RESULT_ACCESS)]	= XSCALE_PERFCTR_DCACHE_ACCESS,
@@ -160,6 +181,22 @@ static const unsigned xscale_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 			[C(RESULT_MISS)]	= CACHE_OP_UNSUPPORTED,
 		},
 	},
+=======
+	PERF_CACHE_MAP_ALL_UNSUPPORTED,
+
+	[C(L1D)][C(OP_READ)][C(RESULT_ACCESS)]	= XSCALE_PERFCTR_DCACHE_ACCESS,
+	[C(L1D)][C(OP_READ)][C(RESULT_MISS)]	= XSCALE_PERFCTR_DCACHE_MISS,
+	[C(L1D)][C(OP_WRITE)][C(RESULT_ACCESS)]	= XSCALE_PERFCTR_DCACHE_ACCESS,
+	[C(L1D)][C(OP_WRITE)][C(RESULT_MISS)]	= XSCALE_PERFCTR_DCACHE_MISS,
+
+	[C(L1I)][C(OP_READ)][C(RESULT_MISS)]	= XSCALE_PERFCTR_ICACHE_MISS,
+
+	[C(DTLB)][C(OP_READ)][C(RESULT_MISS)]	= XSCALE_PERFCTR_DTLB_MISS,
+	[C(DTLB)][C(OP_WRITE)][C(RESULT_MISS)]	= XSCALE_PERFCTR_DTLB_MISS,
+
+	[C(ITLB)][C(OP_READ)][C(RESULT_MISS)]	= XSCALE_PERFCTR_ITLB_MISS,
+	[C(ITLB)][C(OP_WRITE)][C(RESULT_MISS)]	= XSCALE_PERFCTR_ITLB_MISS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define	XSCALE_PMU_ENABLE	0x001
@@ -225,7 +262,11 @@ xscale1pmu_handle_irq(int irq_num, void *dev)
 	unsigned long pmnc;
 	struct perf_sample_data data;
 	struct arm_pmu *cpu_pmu = (struct arm_pmu *)dev;
+<<<<<<< HEAD
 	struct pmu_hw_events *cpuc = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *cpuc = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pt_regs *regs;
 	int idx;
 
@@ -285,7 +326,11 @@ static void xscale1pmu_enable_event(struct perf_event *event)
 	unsigned long val, mask, evt, flags;
 	struct arm_pmu *cpu_pmu = to_arm_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int idx = hwc->idx;
 
 	switch (idx) {
@@ -321,7 +366,11 @@ static void xscale1pmu_disable_event(struct perf_event *event)
 	unsigned long val, mask, evt, flags;
 	struct arm_pmu *cpu_pmu = to_arm_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int idx = hwc->idx;
 
 	switch (idx) {
@@ -374,7 +423,11 @@ xscale1pmu_get_event_idx(struct pmu_hw_events *cpuc,
 static void xscale1pmu_start(struct arm_pmu *cpu_pmu)
 {
 	unsigned long flags, val;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&events->pmu_lock, flags);
 	val = xscale1pmu_read_pmnc();
@@ -386,7 +439,11 @@ static void xscale1pmu_start(struct arm_pmu *cpu_pmu)
 static void xscale1pmu_stop(struct arm_pmu *cpu_pmu)
 {
 	unsigned long flags, val;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&events->pmu_lock, flags);
 	val = xscale1pmu_read_pmnc();
@@ -442,7 +499,11 @@ static int xscale_map_event(struct perf_event *event)
 
 static int xscale1pmu_init(struct arm_pmu *cpu_pmu)
 {
+<<<<<<< HEAD
 	cpu_pmu->name		= "xscale1";
+=======
+	cpu_pmu->name		= "armv5_xscale1";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpu_pmu->handle_irq	= xscale1pmu_handle_irq;
 	cpu_pmu->enable		= xscale1pmu_enable_event;
 	cpu_pmu->disable	= xscale1pmu_disable_event;
@@ -572,7 +633,11 @@ xscale2pmu_handle_irq(int irq_num, void *dev)
 	unsigned long pmnc, of_flags;
 	struct perf_sample_data data;
 	struct arm_pmu *cpu_pmu = (struct arm_pmu *)dev;
+<<<<<<< HEAD
 	struct pmu_hw_events *cpuc = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *cpuc = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct pt_regs *regs;
 	int idx;
 
@@ -626,7 +691,11 @@ static void xscale2pmu_enable_event(struct perf_event *event)
 	unsigned long flags, ien, evtsel;
 	struct arm_pmu *cpu_pmu = to_arm_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int idx = hwc->idx;
 
 	ien = xscale2pmu_read_int_enable();
@@ -672,7 +741,11 @@ static void xscale2pmu_disable_event(struct perf_event *event)
 	unsigned long flags, ien, evtsel, of_flags;
 	struct arm_pmu *cpu_pmu = to_arm_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int idx = hwc->idx;
 
 	ien = xscale2pmu_read_int_enable();
@@ -738,7 +811,11 @@ out:
 static void xscale2pmu_start(struct arm_pmu *cpu_pmu)
 {
 	unsigned long flags, val;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&events->pmu_lock, flags);
 	val = xscale2pmu_read_pmnc() & ~XSCALE_PMU_CNT64;
@@ -750,7 +827,11 @@ static void xscale2pmu_start(struct arm_pmu *cpu_pmu)
 static void xscale2pmu_stop(struct arm_pmu *cpu_pmu)
 {
 	unsigned long flags, val;
+<<<<<<< HEAD
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+	struct pmu_hw_events *events = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	raw_spin_lock_irqsave(&events->pmu_lock, flags);
 	val = xscale2pmu_read_pmnc();
@@ -812,7 +893,11 @@ static inline void xscale2pmu_write_counter(struct perf_event *event, u32 val)
 
 static int xscale2pmu_init(struct arm_pmu *cpu_pmu)
 {
+<<<<<<< HEAD
 	cpu_pmu->name		= "xscale2";
+=======
+	cpu_pmu->name		= "armv5_xscale2";
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cpu_pmu->handle_irq	= xscale2pmu_handle_irq;
 	cpu_pmu->enable		= xscale2pmu_enable_event;
 	cpu_pmu->disable	= xscale2pmu_disable_event;
@@ -827,6 +912,7 @@ static int xscale2pmu_init(struct arm_pmu *cpu_pmu)
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 static inline int xscale1pmu_init(struct arm_pmu *cpu_pmu)
 {
@@ -837,4 +923,30 @@ static inline int xscale2pmu_init(struct arm_pmu *cpu_pmu)
 {
 	return -ENODEV;
 }
+=======
+
+static const struct pmu_probe_info xscale_pmu_probe_table[] = {
+	XSCALE_PMU_PROBE(ARM_CPU_XSCALE_ARCH_V1, xscale1pmu_init),
+	XSCALE_PMU_PROBE(ARM_CPU_XSCALE_ARCH_V2, xscale2pmu_init),
+	{ /* sentinel value */ }
+};
+
+static int xscale_pmu_device_probe(struct platform_device *pdev)
+{
+	return arm_pmu_device_probe(pdev, NULL, xscale_pmu_probe_table);
+}
+
+static struct platform_driver xscale_pmu_driver = {
+	.driver		= {
+		.name	= "xscale-pmu",
+	},
+	.probe		= xscale_pmu_device_probe,
+};
+
+static int __init register_xscale_pmu_driver(void)
+{
+	return platform_driver_register(&xscale_pmu_driver);
+}
+device_initcall(register_xscale_pmu_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif	/* CONFIG_CPU_XSCALE */

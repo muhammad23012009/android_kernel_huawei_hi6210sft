@@ -25,9 +25,16 @@
 #include <linux/interrupt.h>
 #include <linux/console.h>
 #include <linux/bug.h>
+<<<<<<< HEAD
 
 #include <asm/assembly.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/ratelimit.h>
+#include <linux/uaccess.h>
+
+#include <asm/assembly.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/traps.h>
@@ -42,6 +49,7 @@
 
 #include "../math-emu/math-emu.h"	/* for handle_fpe() */
 
+<<<<<<< HEAD
 #define PRINT_USER_FAULTS /* (turn this on if you want user faults to be */
 			  /*  dumped to the console via printk)          */
 
@@ -49,6 +57,8 @@
 DEFINE_SPINLOCK(pa_dbit_lock);
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void parisc_show_stack(struct task_struct *task, unsigned long *sp,
 	struct pt_regs *regs);
 
@@ -160,6 +170,20 @@ void show_regs(struct pt_regs *regs)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static DEFINE_RATELIMIT_STATE(_hppa_rs,
+	DEFAULT_RATELIMIT_INTERVAL, DEFAULT_RATELIMIT_BURST);
+
+#define parisc_printk_ratelimited(critical, regs, fmt, ...)	{	      \
+	if ((critical || show_unhandled_signals) && __ratelimit(&_hppa_rs)) { \
+		printk(fmt, ##__VA_ARGS__);				      \
+		show_regs(regs);					      \
+	}								      \
+}
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void do_show_stack(struct unwind_frame_info *info)
 {
 	int i = 1;
@@ -229,12 +253,19 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err)
 		if (err == 0)
 			return; /* STFU */
 
+<<<<<<< HEAD
 		printk(KERN_CRIT "%s (pid %d): %s (code %ld) at " RFMT "\n",
 			current->comm, task_pid_nr(current), str, err, regs->iaoq[0]);
 #ifdef PRINT_USER_FAULTS
 		/* XXX for debugging only */
 		show_regs(regs);
 #endif
+=======
+		parisc_printk_ratelimited(1, regs,
+			KERN_CRIT "%s (pid %d): %s (code %ld) at " RFMT "\n",
+			current->comm, task_pid_nr(current), str, err, regs->iaoq[0]);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
@@ -281,21 +312,29 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err)
 	if (in_interrupt())
 		panic("Fatal exception in interrupt");
 
+<<<<<<< HEAD
 	if (panic_on_oops) {
 		printk(KERN_EMERG "Fatal exception: panic in 5 seconds\n");
 		ssleep(5);
 		panic("Fatal exception");
 	}
+=======
+	if (panic_on_oops)
+		panic("Fatal exception");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	oops_exit();
 	do_exit(SIGSEGV);
 }
 
+<<<<<<< HEAD
 int syscall_ipi(int (*syscall) (struct pt_regs *), struct pt_regs *regs)
 {
 	return syscall(regs);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* gdb uses break 4,8 */
 #define GDB_BREAK_INSN 0x10004
 static void handle_gdb_break(struct pt_regs *regs, int wot)
@@ -326,6 +365,7 @@ static void handle_break(struct pt_regs *regs)
 			(tt == BUG_TRAP_TYPE_NONE) ? 9 : 0);
 	}
 
+<<<<<<< HEAD
 #ifdef PRINT_USER_FAULTS
 	if (unlikely(iir != GDB_BREAK_INSN)) {
 		printk(KERN_DEBUG "break %d,%d: pid=%d command='%s'\n",
@@ -334,6 +374,13 @@ static void handle_break(struct pt_regs *regs)
 		show_regs(regs);
 	}
 #endif
+=======
+	if (unlikely(iir != GDB_BREAK_INSN))
+		parisc_printk_ratelimited(0, regs,
+			KERN_DEBUG "break %d,%d: pid=%d command='%s'\n",
+			iir & 31, (iir>>13) & ((1<<13)-1),
+			task_pid_nr(current), current->comm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* send standard GDB signal */
 	handle_gdb_break(regs, TRAP_BRKPT);
@@ -466,8 +513,13 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 	}
 
 	printk("\n");
+<<<<<<< HEAD
 	printk(KERN_CRIT "%s: Code=%d regs=%p (Addr=" RFMT ")\n",
 			msg, code, regs, offset);
+=======
+	pr_crit("%s: Code=%d (%s) regs=%p (Addr=" RFMT ")\n",
+		msg, code, trap_name(code), regs, offset);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	show_regs(regs);
 
 	spin_unlock(&terminate_lock);
@@ -763,11 +815,17 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 
 	default:
 		if (user_mode(regs)) {
+<<<<<<< HEAD
 #ifdef PRINT_USER_FAULTS
 			printk(KERN_DEBUG "\nhandle_interruption() pid=%d command='%s'\n",
 			    task_pid_nr(current), current->comm);
 			show_regs(regs);
 #endif
+=======
+			parisc_printk_ratelimited(0, regs, KERN_DEBUG
+				"handle_interruption() pid=%d command='%s'\n",
+				task_pid_nr(current), current->comm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* SIGBUS, for lack of a better one. */
 			si.si_signo = SIGBUS;
 			si.si_code = BUS_OBJERR;
@@ -784,6 +842,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 
 	if (user_mode(regs)) {
 	    if ((fault_space >> SPACEID_SHIFT) != (regs->sr[7] >> SPACEID_SHIFT)) {
+<<<<<<< HEAD
 #ifdef PRINT_USER_FAULTS
 		if (fault_space == 0)
 			printk(KERN_DEBUG "User Fault on Kernel Space ");
@@ -794,6 +853,12 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		       task_pid_nr(current), current->comm);
 		show_regs(regs);
 #endif
+=======
+		parisc_printk_ratelimited(0, regs, KERN_DEBUG
+				"User fault %d on space 0x%08lx, pid=%d command='%s'\n",
+				code, fault_space,
+				task_pid_nr(current), current->comm);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		si.si_signo = SIGSEGV;
 		si.si_errno = 0;
 		si.si_code = SEGV_MAPERR;
@@ -809,7 +874,11 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 	     * unless pagefault_disable() was called before.
 	     */
 
+<<<<<<< HEAD
 	    if (fault_space == 0 && !in_atomic())
+=======
+	    if (fault_space == 0 && !faulthandler_disabled())
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	    {
 		/* Clean up and return if in exception table. */
 		if (fixup_exception(regs))
@@ -823,7 +892,11 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 }
 
 
+<<<<<<< HEAD
 int __init check_ivt(void *iva)
+=======
+void __init initialize_ivt(const void *iva)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	extern u32 os_hpmc_size;
 	extern const u32 os_hpmc[];
@@ -834,15 +907,25 @@ int __init check_ivt(void *iva)
 	u32 *hpmcp;
 	u32 length;
 
+<<<<<<< HEAD
 	if (strcmp((char *)iva, "cows can fly"))
 		return -1;
+=======
+	if (strcmp((const char *)iva, "cows can fly"))
+		panic("IVT invalid");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ivap = (u32 *)iva;
 
 	for (i = 0; i < 8; i++)
 	    *ivap++ = 0;
 
+<<<<<<< HEAD
 	/* Compute Checksum for HPMC handler */
+=======
+	/* Setup IVA and compute checksum for HPMC handler */
+	ivap[6] = (u32)__pa(os_hpmc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	length = os_hpmc_size;
 	ivap[7] = length;
 
@@ -855,6 +938,7 @@ int __init check_ivt(void *iva)
 	    check += ivap[i];
 
 	ivap[5] = -check;
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -879,4 +963,25 @@ void __init trap_init(void)
 
 	if (check_ivt(iva))
 		panic("IVT invalid");
+=======
+}
+	
+
+/* early_trap_init() is called before we set up kernel mappings and
+ * write-protect the kernel */
+void  __init early_trap_init(void)
+{
+	extern const void fault_vector_20;
+
+#ifndef CONFIG_64BIT
+	extern const void fault_vector_11;
+	initialize_ivt(&fault_vector_11);
+#endif
+
+	initialize_ivt(&fault_vector_20);
+}
+
+void __init trap_init(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

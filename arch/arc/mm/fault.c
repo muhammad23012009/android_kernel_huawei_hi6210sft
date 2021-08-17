@@ -14,9 +14,24 @@
 #include <linux/ptrace.h>
 #include <linux/uaccess.h>
 #include <linux/kdebug.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 
 static int handle_vmalloc_fault(unsigned long address)
+=======
+#include <linux/perf_event.h>
+#include <asm/pgalloc.h>
+#include <asm/mmu.h>
+
+/*
+ * kernel virtual address is required to implement vmalloc/pkmap/fixmap
+ * Refer to asm/processor.h for System Memory Map
+ *
+ * It simply copies the PMD entry (pointer to 2nd level page table or hugepage)
+ * from swapper pgdir to task pgdir. The 2nd level table/page is thus shared
+ */
+noinline static int handle_kernel_vaddr_fault(unsigned long address)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/*
 	 * Synchronize this task's top level page-table
@@ -51,14 +66,22 @@ bad_area:
 	return 1;
 }
 
+<<<<<<< HEAD
 void do_page_fault(struct pt_regs *regs, int write, unsigned long address,
 		   unsigned long cause_code)
+=======
+void do_page_fault(unsigned long address, struct pt_regs *regs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct vm_area_struct *vma = NULL;
 	struct task_struct *tsk = current;
 	struct mm_struct *mm = tsk->mm;
 	siginfo_t info;
 	int fault, ret;
+<<<<<<< HEAD
+=======
+	int write = regs->ecr_cause & ECR_C_PROTV_STORE;  /* ST/EX */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
 
 	/*
@@ -70,8 +93,13 @@ void do_page_fault(struct pt_regs *regs, int write, unsigned long address,
 	 * only copy the information from the master page table,
 	 * nothing more.
 	 */
+<<<<<<< HEAD
 	if (address >= VMALLOC_START && address <= VMALLOC_END) {
 		ret = handle_vmalloc_fault(address);
+=======
+	if (address >= VMALLOC_START) {
+		ret = handle_kernel_vaddr_fault(address);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (unlikely(ret))
 			goto bad_area_nosemaphore;
 		else
@@ -84,7 +112,11 @@ void do_page_fault(struct pt_regs *regs, int write, unsigned long address,
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto no_context;
 
 	if (user_mode(regs))
@@ -110,7 +142,12 @@ good_area:
 
 	/* Handle protection violation, execute on heap or stack */
 
+<<<<<<< HEAD
 	if (cause_code == ((ECR_V_PROTV << 16) | ECR_C_PROTV_INST_FETCH))
+=======
+	if ((regs->ecr_vec == ECR_V_PROTV) &&
+	    (regs->ecr_cause == ECR_C_PROTV_INST_FETCH))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto bad_area;
 
 	if (write) {
@@ -127,7 +164,11 @@ good_area:
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, flags);
+=======
+	fault = handle_mm_fault(vma, address, flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* If Pagefault was interrupted by SIGKILL, exit page fault "early" */
 	if (unlikely(fatal_signal_pending(current))) {
@@ -137,6 +178,7 @@ good_area:
 			return;
 	}
 
+<<<<<<< HEAD
 	if (likely(!(fault & VM_FAULT_ERROR))) {
 		if (flags & FAULT_FLAG_ALLOW_RETRY) {
 			/* To avoid updating stats twice for retry case */
@@ -144,6 +186,22 @@ good_area:
 				tsk->maj_flt++;
 			else
 				tsk->min_flt++;
+=======
+	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+
+	if (likely(!(fault & VM_FAULT_ERROR))) {
+		if (flags & FAULT_FLAG_ALLOW_RETRY) {
+			/* To avoid updating stats twice for retry case */
+			if (fault & VM_FAULT_MAJOR) {
+				tsk->maj_flt++;
+				perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MAJ, 1,
+					      regs, address);
+			} else {
+				tsk->min_flt++;
+				perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MIN, 1,
+					      regs, address);
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 			if (fault & VM_FAULT_RETRY) {
 				flags &= ~FAULT_FLAG_ALLOW_RETRY;
@@ -157,9 +215,16 @@ good_area:
 		return;
 	}
 
+<<<<<<< HEAD
 	/* TBD: switch to pagefault_out_of_memory() */
 	if (fault & VM_FAULT_OOM)
 		goto out_of_memory;
+=======
+	if (fault & VM_FAULT_OOM)
+		goto out_of_memory;
+	else if (fault & VM_FAULT_SIGSEGV)
+		goto bad_area;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (fault & VM_FAULT_SIGBUS)
 		goto do_sigbus;
 
@@ -177,7 +242,10 @@ bad_area_nosemaphore:
 	/* User mode accesses just cause a SIGSEGV */
 	if (user_mode(regs)) {
 		tsk->thread.fault_address = address;
+<<<<<<< HEAD
 		tsk->thread.cause_code = cause_code;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		info.si_signo = SIGSEGV;
 		info.si_errno = 0;
 		/* info.si_code has been set above */
@@ -198,7 +266,11 @@ no_context:
 	if (fixup_exception(regs))
 		return;
 
+<<<<<<< HEAD
 	die("Oops", regs, address, cause_code);
+=======
+	die("Oops", regs, address);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 out_of_memory:
 	up_read(&mm->mmap_sem);
@@ -217,7 +289,10 @@ do_sigbus:
 		goto no_context;
 
 	tsk->thread.fault_address = address;
+<<<<<<< HEAD
 	tsk->thread.cause_code = cause_code;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info.si_signo = SIGBUS;
 	info.si_errno = 0;
 	info.si_code = BUS_ADRERR;

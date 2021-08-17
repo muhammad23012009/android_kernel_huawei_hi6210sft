@@ -10,9 +10,17 @@
  *  -This is the more "natural" hand written assembler
  */
 
+<<<<<<< HEAD
 #include <asm/entry.h>       /* For the SAVE_* macros */
 #include <asm/asm-offsets.h>
 #include <asm/linkage.h>
+=======
+#include <linux/linkage.h>
+#include <asm/entry.h>       /* For the SAVE_* macros */
+#include <asm/asm-offsets.h>
+
+#define KSP_WORD_OFF 	((TASK_THREAD + THREAD_KSP) / 4)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ;################### Low Level Context Switch ##########################
 
@@ -21,6 +29,10 @@
 	.global __switch_to
 	.type   __switch_to, @function
 __switch_to:
+<<<<<<< HEAD
+=======
+	CFI_STARTPROC
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Save regs on kernel mode stack of task */
 	st.a    blink, [sp, -4]
@@ -28,8 +40,18 @@ __switch_to:
 	SAVE_CALLEE_SAVED_KERNEL
 
 	/* Save the now KSP in task->thread.ksp */
+<<<<<<< HEAD
 	st.as  sp, [r0, (TASK_THREAD + THREAD_KSP)/4]
 
+=======
+#if KSP_WORD_OFF  <= 255
+	st.as  sp, [r0, KSP_WORD_OFF]
+#else
+	/* Workaround for NR_CPUS=4k as ST.as can only take s9 offset */
+	add2	r24, r0, KSP_WORD_OFF
+	st	sp, [r24]
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	* Return last task in r0 (return reg)
 	* On ARC, Return reg = First Arg reg = r0.
@@ -37,9 +59,12 @@ __switch_to:
 	* don't need to do anything special to return it
 	*/
 
+<<<<<<< HEAD
 	/* hardware memory barrier */
 	sync
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * switch to new task, contained in r1
 	 * Temp reg r3 is required to get the ptr to store val
@@ -55,4 +80,8 @@ __switch_to:
 	ld.ab   blink, [sp, 4]
 	j       [blink]
 
+<<<<<<< HEAD
 ARC_EXIT __switch_to
+=======
+END_CFI(__switch_to)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

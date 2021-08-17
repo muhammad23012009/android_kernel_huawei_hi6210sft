@@ -80,7 +80,11 @@ struct grpci1_regs {
 
 struct grpci1_priv {
 	struct leon_pci_info	info; /* must be on top of this structure */
+<<<<<<< HEAD
 	struct grpci1_regs	*regs;		/* GRPCI register map */
+=======
+	struct grpci1_regs __iomem *regs;		/* GRPCI register map */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device		*dev;
 	int			pci_err_mask;	/* STATUS register error mask */
 	int			irq;		/* LEON irqctrl GRPCI IRQ */
@@ -101,7 +105,11 @@ static struct grpci1_priv *grpci1priv;
 static int grpci1_cfg_w32(struct grpci1_priv *priv, unsigned int bus,
 				unsigned int devfn, int where, u32 val);
 
+<<<<<<< HEAD
 int grpci1_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+=======
+static int grpci1_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct grpci1_priv *priv = dev->bus->sysdata;
 	int irq_group;
@@ -144,7 +152,11 @@ static int grpci1_cfg_r32(struct grpci1_priv *priv, unsigned int bus,
 		grpci1_cfg_w32(priv, TGT, 0, PCI_COMMAND, tmp);
 	} else {
 		/* Bus always little endian (unaffected by byte-swapping) */
+<<<<<<< HEAD
 		*val = flip_dword(tmp);
+=======
+		*val = swab32(tmp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -197,7 +209,11 @@ static int grpci1_cfg_w32(struct grpci1_priv *priv, unsigned int bus,
 
 	pci_conf = (unsigned int *) (priv->pci_conf |
 						(devfn << 8) | (where & 0xfc));
+<<<<<<< HEAD
 	LEON3_BYPASS_STORE_PA(pci_conf, flip_dword(val));
+=======
+	LEON3_BYPASS_STORE_PA(pci_conf, swab32(val));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -357,7 +373,11 @@ static struct irq_chip grpci1_irq = {
 };
 
 /* Handle one or multiple IRQs from the PCI core */
+<<<<<<< HEAD
 static void grpci1_pci_flow_irq(unsigned int irq, struct irq_desc *desc)
+=======
+static void grpci1_pci_flow_irq(struct irq_desc *desc)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct grpci1_priv *priv = grpci1priv;
 	int i, ack = 0;
@@ -417,10 +437,17 @@ out:
  *  BAR1: peripheral DMA to host's memory (size at least 256MByte)
  *  BAR2..BAR5: not implemented in hardware
  */
+<<<<<<< HEAD
 void grpci1_hw_init(struct grpci1_priv *priv)
 {
 	u32 ahbadr, bar_sz, data, pciadr;
 	struct grpci1_regs *regs = priv->regs;
+=======
+static void grpci1_hw_init(struct grpci1_priv *priv)
+{
+	u32 ahbadr, bar_sz, data, pciadr;
+	struct grpci1_regs __iomem *regs = priv->regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set 1:1 mapping between AHB -> PCI memory space */
 	REGSTORE(regs->cfg_stat, priv->pci_area & 0xf0000000);
@@ -509,7 +536,11 @@ static irqreturn_t grpci1_err_interrupt(int irq, void *arg)
 
 static int grpci1_of_probe(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct grpci1_regs *regs;
+=======
+	struct grpci1_regs __iomem *regs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct grpci1_priv *priv;
 	int err, len;
 	const int *tmp;
@@ -690,7 +721,11 @@ err3:
 err2:
 	release_resource(&priv->info.mem_space);
 err1:
+<<<<<<< HEAD
 	iounmap((void *)priv->pci_io_va);
+=======
+	iounmap((void __iomem *)priv->pci_io_va);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	grpci1priv = NULL;
 	return err;
 }
@@ -708,7 +743,10 @@ static struct of_device_id grpci1_of_match[] = {
 static struct platform_driver grpci1_of_driver = {
 	.driver = {
 		.name = "grpci1",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = grpci1_of_match,
 	},
 	.probe = grpci1_of_probe,

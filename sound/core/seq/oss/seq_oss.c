@@ -23,6 +23,10 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/core.h>
 #include <sound/minors.h>
 #include <sound/initval.h>
@@ -39,19 +43,26 @@ MODULE_LICENSE("GPL");
 MODULE_ALIAS_SNDRV_MINOR(SNDRV_MINOR_OSS_SEQUENCER);
 MODULE_ALIAS_SNDRV_MINOR(SNDRV_MINOR_OSS_MUSIC);
 
+<<<<<<< HEAD
 #ifdef SNDRV_SEQ_OSS_DEBUG
 module_param(seq_oss_debug, int, 0644);
 MODULE_PARM_DESC(seq_oss_debug, "debug option");
 int seq_oss_debug = 0;
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * prototypes
  */
 static int register_device(void);
 static void unregister_device(void);
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int register_proc(void);
 static void unregister_proc(void);
 #else
@@ -71,6 +82,7 @@ static unsigned int odev_poll(struct file *file, poll_table * wait);
  * module interface
  */
 
+<<<<<<< HEAD
 static int __init alsa_seq_oss_init(void)
 {
 	int rc;
@@ -80,6 +92,22 @@ static int __init alsa_seq_oss_init(void)
 	};
 
 	snd_seq_autoload_lock();
+=======
+static struct snd_seq_driver seq_oss_synth_driver = {
+	.driver = {
+		.name = KBUILD_MODNAME,
+		.probe = snd_seq_oss_synth_probe,
+		.remove = snd_seq_oss_synth_remove,
+	},
+	.id = SNDRV_SEQ_DEV_ID_OSS,
+	.argsize = sizeof(struct snd_seq_oss_reg),
+};
+
+static int __init alsa_seq_oss_init(void)
+{
+	int rc;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if ((rc = register_device()) < 0)
 		goto error;
 	if ((rc = register_proc()) < 0) {
@@ -92,8 +120,13 @@ static int __init alsa_seq_oss_init(void)
 		goto error;
 	}
 
+<<<<<<< HEAD
 	if ((rc = snd_seq_device_register_driver(SNDRV_SEQ_DEV_ID_OSS, &ops,
 						 sizeof(struct snd_seq_oss_reg))) < 0) {
+=======
+	rc = snd_seq_driver_register(&seq_oss_synth_driver);
+	if (rc < 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_seq_oss_delete_client();
 		unregister_proc();
 		unregister_device();
@@ -104,13 +137,20 @@ static int __init alsa_seq_oss_init(void)
 	snd_seq_oss_synth_init();
 
  error:
+<<<<<<< HEAD
 	snd_seq_autoload_unlock();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return rc;
 }
 
 static void __exit alsa_seq_oss_exit(void)
 {
+<<<<<<< HEAD
 	snd_seq_device_unregister_driver(SNDRV_SEQ_DEV_ID_OSS);
+=======
+	snd_seq_driver_unregister(&seq_oss_synth_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	snd_seq_oss_delete_client();
 	unregister_proc();
 	unregister_device();
@@ -182,6 +222,7 @@ static long
 odev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct seq_oss_devinfo *dp;
+<<<<<<< HEAD
 	dp = file->private_data;
 	if (snd_BUG_ON(!dp))
 		return -ENXIO;
@@ -190,6 +231,29 @@ odev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 #ifdef CONFIG_COMPAT
 #define odev_ioctl_compat	odev_ioctl
+=======
+	long rc;
+
+	dp = file->private_data;
+	if (snd_BUG_ON(!dp))
+		return -ENXIO;
+
+	if (cmd != SNDCTL_SEQ_SYNC &&
+	    mutex_lock_interruptible(&register_mutex))
+		return -ERESTARTSYS;
+	rc = snd_seq_oss_ioctl(dp, cmd, arg);
+	if (cmd != SNDCTL_SEQ_SYNC)
+		mutex_unlock(&register_mutex);
+	return rc;
+}
+
+#ifdef CONFIG_COMPAT
+static long odev_ioctl_compat(struct file *file, unsigned int cmd,
+			      unsigned long arg)
+{
+	return odev_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 #define odev_ioctl_compat	NULL
 #endif
@@ -229,22 +293,35 @@ register_device(void)
 	mutex_lock(&register_mutex);
 	if ((rc = snd_register_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER,
 					  NULL, 0,
+<<<<<<< HEAD
 					  &seq_oss_f_ops, NULL,
 					  SNDRV_SEQ_OSS_DEVNAME)) < 0) {
 		snd_printk(KERN_ERR "can't register device seq\n");
+=======
+					  &seq_oss_f_ops, NULL)) < 0) {
+		pr_err("ALSA: seq_oss: can't register device seq\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		mutex_unlock(&register_mutex);
 		return rc;
 	}
 	if ((rc = snd_register_oss_device(SNDRV_OSS_DEVICE_TYPE_MUSIC,
 					  NULL, 0,
+<<<<<<< HEAD
 					  &seq_oss_f_ops, NULL,
 					  SNDRV_SEQ_OSS_DEVNAME)) < 0) {
 		snd_printk(KERN_ERR "can't register device music\n");
+=======
+					  &seq_oss_f_ops, NULL)) < 0) {
+		pr_err("ALSA: seq_oss: can't register device music\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER, NULL, 0);
 		mutex_unlock(&register_mutex);
 		return rc;
 	}
+<<<<<<< HEAD
 	debug_printk(("device registered\n"));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&register_mutex);
 	return 0;
 }
@@ -253,11 +330,18 @@ static void
 unregister_device(void)
 {
 	mutex_lock(&register_mutex);
+<<<<<<< HEAD
 	debug_printk(("device unregistered\n"));
 	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_MUSIC, NULL, 0) < 0)		
 		snd_printk(KERN_ERR "error unregister device music\n");
 	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER, NULL, 0) < 0)
 		snd_printk(KERN_ERR "error unregister device seq\n");
+=======
+	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_MUSIC, NULL, 0) < 0)		
+		pr_err("ALSA: seq_oss: error unregister device music\n");
+	if (snd_unregister_oss_device(SNDRV_OSS_DEVICE_TYPE_SEQUENCER, NULL, 0) < 0)
+		pr_err("ALSA: seq_oss: error unregister device seq\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&register_mutex);
 }
 
@@ -265,7 +349,11 @@ unregister_device(void)
  * /proc interface
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct snd_info_entry *info_entry;
 
@@ -307,4 +395,8 @@ unregister_proc(void)
 	snd_info_free_entry(info_entry);
 	info_entry = NULL;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

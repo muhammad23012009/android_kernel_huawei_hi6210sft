@@ -50,8 +50,13 @@ static ssize_t sdcardfs_read(struct file *file, char __user *buf,
 	err = vfs_read(lower_file, buf, count, ppos);
 	/* update our inode atime upon a successful lower read */
 	if (err >= 0)
+<<<<<<< HEAD
 		fsstack_copy_attr_atime(dentry->d_inode,
 					lower_file->f_path.dentry->d_inode);
+=======
+		fsstack_copy_attr_atime(d_inode(dentry),
+					file_inode(lower_file));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -59,7 +64,11 @@ static ssize_t sdcardfs_read(struct file *file, char __user *buf,
 static ssize_t sdcardfs_write(struct file *file, const char __user *buf,
 			    size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	int err = 0;
+=======
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct file *lower_file;
 	struct dentry *dentry = file->f_path.dentry;
 
@@ -73,10 +82,17 @@ static ssize_t sdcardfs_write(struct file *file, const char __user *buf,
 	err = vfs_write(lower_file, buf, count, ppos);
 	/* update our inode times+sizes upon a successful lower write */
 	if (err >= 0) {
+<<<<<<< HEAD
 		fsstack_copy_inode_size(dentry->d_inode,
 					lower_file->f_path.dentry->d_inode);
 		fsstack_copy_attr_times(dentry->d_inode,
 					lower_file->f_path.dentry->d_inode);
+=======
+		fsstack_copy_inode_size(d_inode(dentry),
+					file_inode(lower_file));
+		fsstack_copy_attr_times(d_inode(dentry),
+					file_inode(lower_file));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return err;
@@ -84,7 +100,11 @@ static ssize_t sdcardfs_write(struct file *file, const char __user *buf,
 
 static int sdcardfs_readdir(struct file *file, struct dir_context *ctx)
 {
+<<<<<<< HEAD
 	int err = 0;
+=======
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct file *lower_file = NULL;
 	struct dentry *dentry = file->f_path.dentry;
 
@@ -94,8 +114,13 @@ static int sdcardfs_readdir(struct file *file, struct dir_context *ctx)
 	err = iterate_dir(lower_file, ctx);
 	file->f_pos = lower_file->f_pos;
 	if (err >= 0)		/* copy the atime */
+<<<<<<< HEAD
 		fsstack_copy_attr_atime(dentry->d_inode,
 					lower_file->f_path.dentry->d_inode);
+=======
+		fsstack_copy_attr_atime(d_inode(dentry),
+					file_inode(lower_file));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -115,7 +140,15 @@ static long sdcardfs_unlocked_ioctl(struct file *file, unsigned int cmd,
 		goto out;
 
 	/* save current_cred and override it */
+<<<<<<< HEAD
 	OVERRIDE_CRED(sbi, saved_cred, SDCARDFS_I(file_inode(file)));
+=======
+	saved_cred = override_fsids(sbi, SDCARDFS_I(file_inode(file))->data);
+	if (!saved_cred) {
+		err = -ENOMEM;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (lower_file->f_op->unlocked_ioctl)
 		err = lower_file->f_op->unlocked_ioctl(lower_file, cmd, arg);
@@ -124,7 +157,11 @@ static long sdcardfs_unlocked_ioctl(struct file *file, unsigned int cmd,
 	if (!err)
 		sdcardfs_copy_and_fix_attrs(file_inode(file),
 				      file_inode(lower_file));
+<<<<<<< HEAD
 	REVERT_CRED(saved_cred);
+=======
+	revert_fsids(saved_cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return err;
 }
@@ -146,12 +183,24 @@ static long sdcardfs_compat_ioctl(struct file *file, unsigned int cmd,
 		goto out;
 
 	/* save current_cred and override it */
+<<<<<<< HEAD
 	OVERRIDE_CRED(sbi, saved_cred, SDCARDFS_I(file_inode(file)));
+=======
+	saved_cred = override_fsids(sbi, SDCARDFS_I(file_inode(file))->data);
+	if (!saved_cred) {
+		err = -ENOMEM;
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (lower_file->f_op->compat_ioctl)
 		err = lower_file->f_op->compat_ioctl(lower_file, cmd, arg);
 
+<<<<<<< HEAD
 	REVERT_CRED(saved_cred);
+=======
+	revert_fsids(saved_cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out:
 	return err;
 }
@@ -232,13 +281,25 @@ static int sdcardfs_open(struct inode *inode, struct file *file)
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	if (!check_caller_access_to_name(parent->d_inode, &dentry->d_name)) {
+=======
+	if (!check_caller_access_to_name(d_inode(parent), &dentry->d_name)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		err = -EACCES;
 		goto out_err;
 	}
 
 	/* save current_cred and override it */
+<<<<<<< HEAD
 	OVERRIDE_CRED(sbi, saved_cred, SDCARDFS_I(inode));
+=======
+	saved_cred = override_fsids(sbi, SDCARDFS_I(inode)->data);
+	if (!saved_cred) {
+		err = -ENOMEM;
+		goto out_err;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	file->private_data =
 		kzalloc(sizeof(struct sdcardfs_file_info), GFP_KERNEL);
@@ -268,7 +329,11 @@ static int sdcardfs_open(struct inode *inode, struct file *file)
 		sdcardfs_copy_and_fix_attrs(inode, sdcardfs_lower_inode(inode));
 
 out_revert_cred:
+<<<<<<< HEAD
 	REVERT_CRED(saved_cred);
+=======
+	revert_fsids(saved_cred);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_err:
 	dput(parent);
 	return err;
@@ -280,8 +345,15 @@ static int sdcardfs_flush(struct file *file, fl_owner_t id)
 	struct file *lower_file = NULL;
 
 	lower_file = sdcardfs_lower_file(file);
+<<<<<<< HEAD
 	if (lower_file && lower_file->f_op && lower_file->f_op->flush)
 		err = lower_file->f_op->flush(lower_file, id);
+=======
+	if (lower_file && lower_file->f_op && lower_file->f_op->flush) {
+		filemap_write_and_wait(file->f_mapping);
+		err = lower_file->f_op->flush(lower_file, id);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return err;
 }
@@ -309,7 +381,11 @@ static int sdcardfs_fsync(struct file *file, loff_t start, loff_t end,
 	struct path lower_path;
 	struct dentry *dentry = file->f_path.dentry;
 
+<<<<<<< HEAD
 	err = generic_file_fsync(file, start, end, datasync);
+=======
+	err = __generic_file_fsync(file, start, end, datasync);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err)
 		goto out;
 
@@ -355,6 +431,65 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Sdcardfs read_iter, redirect modified iocb to lower read_iter
+ */
+ssize_t sdcardfs_read_iter(struct kiocb *iocb, struct iov_iter *iter)
+{
+	int err;
+	struct file *file = iocb->ki_filp, *lower_file;
+
+	lower_file = sdcardfs_lower_file(file);
+	if (!lower_file->f_op->read_iter) {
+		err = -EINVAL;
+		goto out;
+	}
+
+	get_file(lower_file); /* prevent lower_file from being released */
+	iocb->ki_filp = lower_file;
+	err = lower_file->f_op->read_iter(iocb, iter);
+	iocb->ki_filp = file;
+	fput(lower_file);
+	/* update upper inode atime as needed */
+	if (err >= 0 || err == -EIOCBQUEUED)
+		fsstack_copy_attr_atime(file->f_path.dentry->d_inode,
+					file_inode(lower_file));
+out:
+	return err;
+}
+
+/*
+ * Sdcardfs write_iter, redirect modified iocb to lower write_iter
+ */
+ssize_t sdcardfs_write_iter(struct kiocb *iocb, struct iov_iter *iter)
+{
+	int err;
+	struct file *file = iocb->ki_filp, *lower_file;
+
+	lower_file = sdcardfs_lower_file(file);
+	if (!lower_file->f_op->write_iter) {
+		err = -EINVAL;
+		goto out;
+	}
+
+	get_file(lower_file); /* prevent lower_file from being released */
+	iocb->ki_filp = lower_file;
+	err = lower_file->f_op->write_iter(iocb, iter);
+	iocb->ki_filp = file;
+	fput(lower_file);
+	/* update upper inode times/sizes as needed */
+	if (err >= 0 || err == -EIOCBQUEUED) {
+		fsstack_copy_inode_size(file->f_path.dentry->d_inode,
+					file_inode(lower_file));
+		fsstack_copy_attr_times(file->f_path.dentry->d_inode,
+					file_inode(lower_file));
+	}
+out:
+	return err;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 const struct file_operations sdcardfs_main_fops = {
 	.llseek		= generic_file_llseek,
@@ -370,6 +505,11 @@ const struct file_operations sdcardfs_main_fops = {
 	.release	= sdcardfs_file_release,
 	.fsync		= sdcardfs_fsync,
 	.fasync		= sdcardfs_fasync,
+<<<<<<< HEAD
+=======
+	.read_iter	= sdcardfs_read_iter,
+	.write_iter	= sdcardfs_write_iter,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* trimmed directory options */

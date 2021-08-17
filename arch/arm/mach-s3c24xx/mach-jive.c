@@ -19,6 +19,10 @@
 #include <linux/gpio.h>
 #include <linux/syscore_ops.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
+=======
+#include <linux/serial_s3c.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
 
@@ -31,13 +35,20 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
+<<<<<<< HEAD
 #include <plat/regs-serial.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/mtd-nand-s3c2410.h>
 #include <linux/platform_data/i2c-s3c2410.h>
 
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
 #include <mach/fb.h>
+<<<<<<< HEAD
+=======
+#include <mach/gpio-samsung.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 
@@ -47,7 +58,10 @@
 #include <linux/mtd/partitions.h>
 
 #include <plat/gpio-cfg.h>
+<<<<<<< HEAD
 #include <plat/clock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <plat/devs.h>
 #include <plat/cpu.h>
 #include <plat/pm.h>
@@ -242,7 +256,11 @@ static int __init jive_mtdset(char *options)
 	if (options == NULL || options[0] == '\0')
 		return 0;
 
+<<<<<<< HEAD
 	if (strict_strtoul(options, 10, &set)) {
+=======
+	if (kstrtoul(options, 10, &set)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "failed to parse mtdset=%s\n", options);
 		return 0;
 	}
@@ -466,6 +484,10 @@ static struct platform_device *jive_devices[] __initdata = {
 	&jive_device_wm8750,
 	&s3c_device_nand,
 	&s3c_device_usbgadget,
+<<<<<<< HEAD
+=======
+	&s3c2412_device_dma,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct s3c2410_udc_mach_info jive_udc_cfg __initdata = {
@@ -505,11 +527,23 @@ static struct syscore_ops jive_pm_syscore_ops = {
 static void __init jive_map_io(void)
 {
 	s3c24xx_init_io(jive_iodesc, ARRAY_SIZE(jive_iodesc));
+<<<<<<< HEAD
 	s3c24xx_init_clocks(12000000);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	s3c24xx_init_uarts(jive_uartcfgs, ARRAY_SIZE(jive_uartcfgs));
 	samsung_set_timer_source(SAMSUNG_PWM3, SAMSUNG_PWM4);
 }
 
+<<<<<<< HEAD
+=======
+static void __init jive_init_time(void)
+{
+	s3c2412_init_clocks(12000000);
+	samsung_timer_init();
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void jive_power_off(void)
 {
 	printk(KERN_INFO "powering system down...\n");
@@ -663,6 +697,10 @@ MACHINE_START(JIVE, "JIVE")
 	.init_irq	= s3c2412_init_irq,
 	.map_io		= jive_map_io,
 	.init_machine	= jive_machine_init,
+<<<<<<< HEAD
 	.init_time	= samsung_timer_init,
 	.restart	= s3c2412_restart,
+=======
+	.init_time	= jive_init_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 MACHINE_END

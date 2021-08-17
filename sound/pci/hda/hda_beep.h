@@ -1,7 +1,11 @@
 /*
  * Digital Beep Input Interface for HD-audio codec
  *
+<<<<<<< HEAD
  * Author: Matthew Ranostay <mranostay@embeddedalley.com>
+=======
+ * Author: Matt Ranostay <mranostay@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Copyright (c) 2008 Embedded Alley Solutions Inc
  *
  *  This driver is free software; you can redistribute it and/or modify
@@ -34,17 +38,29 @@ struct hda_beep {
 	char phys[32];
 	int tone;
 	hda_nid_t nid;
+<<<<<<< HEAD
+=======
+	unsigned int registered:1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int enabled:1;
 	unsigned int linear_tone:1;	/* linear tone for IDT/STAC codec */
 	unsigned int playing:1;
 	struct work_struct beep_work; /* scheduled task for beep event */
 	struct mutex mutex;
+<<<<<<< HEAD
+=======
+	void (*power_hook)(struct hda_beep *beep, bool on);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #ifdef CONFIG_SND_HDA_INPUT_BEEP
 int snd_hda_enable_beep_device(struct hda_codec *codec, int enable);
 int snd_hda_attach_beep_device(struct hda_codec *codec, int nid);
 void snd_hda_detach_beep_device(struct hda_codec *codec);
+<<<<<<< HEAD
+=======
+int snd_hda_register_beep_device(struct hda_codec *codec);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 static inline int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 {
@@ -53,5 +69,12 @@ static inline int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 static inline void snd_hda_detach_beep_device(struct hda_codec *codec)
 {
 }
+<<<<<<< HEAD
+=======
+static inline int snd_hda_register_beep_device(struct hda_codec *codec)
+{
+	return 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 #endif

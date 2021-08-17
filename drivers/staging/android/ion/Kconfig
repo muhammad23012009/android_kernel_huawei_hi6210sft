@@ -1,6 +1,10 @@
 menuconfig ION
 	bool "Ion Memory Manager"
+<<<<<<< HEAD
 	depends on HAVE_MEMBLOCK
+=======
+	depends on HAVE_MEMBLOCK && HAS_DMA && MMU
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select GENERIC_ALLOCATOR
 	select DMA_SHARED_BUFFER
 	---help---
@@ -34,8 +38,29 @@ config ION_TEGRA
 	  Choose this option if you wish to use ion on an nVidia Tegra.
 
 config ION_HISI
+<<<<<<< HEAD
 	tristate "Ion for HISI"
 	depends on ION
 	select ARM_HAS_SG_CHAIN
 	help
 	  Choose this option if you wish to use ion on an HISI target.
+=======
+	tristate "Ion for Hisilicon"
+	depends on ARCH_HISI && ION
+	select ION_OF
+	help
+	  Choose this option if you wish to use ion on Hisilicon Platform.
+
+source "drivers/staging/android/ion/hisilicon/Kconfig"
+
+config ION_OF
+	bool "Devicetree support for Ion"
+	depends on ION && OF_ADDRESS
+	help
+	  Provides base support for defining Ion heaps in devicetree
+	  and setting them up. Also includes functions for platforms
+	  to parse the devicetree and expand for their own custom
+	  extensions
+
+	  If using Ion and devicetree, you should say Y here
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

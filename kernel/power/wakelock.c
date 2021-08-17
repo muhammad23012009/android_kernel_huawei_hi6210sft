@@ -9,6 +9,10 @@
  * manipulate wakelocks on Android.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/capability.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ctype.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -16,6 +20,12 @@
 #include <linux/list.h>
 #include <linux/rbtree.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+
+#include "power.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static DEFINE_MUTEX(wakelocks_lock);
 
@@ -80,7 +90,13 @@ static inline void decrement_wakelocks_number(void) {}
 #define WL_GC_COUNT_MAX	100
 #define WL_GC_TIME_SEC	300
 
+<<<<<<< HEAD
 static LIST_HEAD(wakelocks_lru_list);
+=======
+static void __wakelocks_gc(struct work_struct *work);
+static LIST_HEAD(wakelocks_lru_list);
+static DECLARE_WORK(wakelock_work, __wakelocks_gc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static unsigned int wakelocks_gc_count;
 
 static inline void wakelocks_lru_add(struct wakelock *wl)
@@ -93,13 +109,21 @@ static inline void wakelocks_lru_most_recent(struct wakelock *wl)
 	list_move(&wl->lru, &wakelocks_lru_list);
 }
 
+<<<<<<< HEAD
 static void wakelocks_gc(void)
+=======
+static void __wakelocks_gc(struct work_struct *work)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct wakelock *wl, *aux;
 	ktime_t now;
 
+<<<<<<< HEAD
 	if (++wakelocks_gc_count <= WL_GC_COUNT_MAX)
 		return;
+=======
+	mutex_lock(&wakelocks_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	now = ktime_get();
 	list_for_each_entry_safe_reverse(wl, aux, &wakelocks_lru_list, lru) {
@@ -124,6 +148,19 @@ static void wakelocks_gc(void)
 		}
 	}
 	wakelocks_gc_count = 0;
+<<<<<<< HEAD
+=======
+
+	mutex_unlock(&wakelocks_lock);
+}
+
+static void wakelocks_gc(void)
+{
+	if (++wakelocks_gc_count <= WL_GC_COUNT_MAX)
+		return;
+
+	schedule_work(&wakelock_work);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 #else /* !CONFIG_PM_WAKELOCKS_GC */
 static inline void wakelocks_lru_add(struct wakelock *wl) {}
@@ -188,6 +225,12 @@ int pm_wake_lock(const char *buf)
 	size_t len;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_BLOCK_SUSPEND))
+		return -EPERM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	while (*str && !isspace(*str))
 		str++;
 
@@ -231,6 +274,12 @@ int pm_wake_unlock(const char *buf)
 	size_t len;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_BLOCK_SUSPEND))
+		return -EPERM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	len = strlen(buf);
 	if (!len)
 		return -EINVAL;

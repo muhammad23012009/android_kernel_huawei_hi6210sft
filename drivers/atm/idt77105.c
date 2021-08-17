@@ -261,7 +261,11 @@ static int idt77105_start(struct atm_dev *dev)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (!(dev->dev_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
+=======
+	if (!(dev->phy_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENOMEM;
 	PRIV(dev)->dev = dev;
 	spin_lock_irqsave(&idt77105_priv_lock, flags);
@@ -306,6 +310,7 @@ static int idt77105_start(struct atm_dev *dev)
 	if (start_timer) {
 		start_timer = 0;
                 
+<<<<<<< HEAD
 		init_timer(&stats_timer);
 		stats_timer.expires = jiffies+IDT77105_STATS_TIMER_PERIOD;
 		stats_timer.function = idt77105_stats_timer_func;
@@ -314,6 +319,14 @@ static int idt77105_start(struct atm_dev *dev)
 		init_timer(&restart_timer);
 		restart_timer.expires = jiffies+IDT77105_RESTART_TIMER_PERIOD;
 		restart_timer.function = idt77105_restart_timer_func;
+=======
+		setup_timer(&stats_timer, idt77105_stats_timer_func, 0UL);
+		stats_timer.expires = jiffies+IDT77105_STATS_TIMER_PERIOD;
+		add_timer(&stats_timer);
+                
+		setup_timer(&restart_timer, idt77105_restart_timer_func, 0UL);
+		restart_timer.expires = jiffies+IDT77105_RESTART_TIMER_PERIOD;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		add_timer(&restart_timer);
 	}
 	spin_unlock_irqrestore(&idt77105_priv_lock, flags);
@@ -340,7 +353,11 @@ static int idt77105_stop(struct atm_dev *dev)
                 else
                     idt77105_all = walk->next;
 	        dev->phy = NULL;
+<<<<<<< HEAD
                 dev->dev_data = NULL;
+=======
+                dev->phy_data = NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
                 kfree(walk);
                 break;
             }
@@ -368,9 +385,15 @@ EXPORT_SYMBOL(idt77105_init);
 
 static void __exit idt77105_exit(void)
 {
+<<<<<<< HEAD
         /* turn off timers */
         del_timer(&stats_timer);
         del_timer(&restart_timer);
+=======
+	/* turn off timers */
+	del_timer_sync(&stats_timer);
+	del_timer_sync(&restart_timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 module_exit(idt77105_exit);

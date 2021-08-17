@@ -58,13 +58,21 @@ int sound_install_audiodrv(int vers, char *name, struct audio_driver *driver,
 
 	if (vers != AUDIO_DRIVER_VERSION || driver_size > sizeof(struct audio_driver)) {
 		printk(KERN_ERR "Sound: Incompatible audio driver for %s\n", name);
+<<<<<<< HEAD
 		return -(EINVAL);
+=======
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	num = sound_alloc_audiodev();
 
 	if (num == -1) {
 		printk(KERN_ERR "sound: Too many audio drivers\n");
+<<<<<<< HEAD
 		return -(EBUSY);
+=======
+		return -EBUSY;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	d = (struct audio_driver *) (sound_mem_blocks[sound_nblocks] = vmalloc(sizeof(struct audio_driver)));
 	sound_nblocks++;
@@ -79,7 +87,11 @@ int sound_install_audiodrv(int vers, char *name, struct audio_driver *driver,
 	if (d == NULL || op == NULL) {
 		printk(KERN_ERR "Sound: Can't allocate driver for (%s)\n", name);
 		sound_unload_audiodev(num);
+<<<<<<< HEAD
 		return -(ENOMEM);
+=======
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	init_waitqueue_head(&op->in_sleeper);
 	init_waitqueue_head(&op->out_sleeper);	

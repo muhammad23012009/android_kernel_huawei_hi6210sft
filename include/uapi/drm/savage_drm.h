@@ -26,6 +26,15 @@
 #ifndef __SAVAGE_DRM_H__
 #define __SAVAGE_DRM_H__
 
+<<<<<<< HEAD
+=======
+#include "drm.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef __SAVAGE_SAREA_DEFINES__
 #define __SAVAGE_SAREA_DEFINES__
 
@@ -207,4 +216,11 @@ union drm_savage_cmd_header {
 	} clear1;		/* SAVAGE_CMD_CLEAR data */
 };
 
+<<<<<<< HEAD
+=======
+#if defined(__cplusplus)
+}
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -50,7 +50,11 @@ void save_stack_trace(struct stack_trace *trace)
 {
 	unsigned long sp;
 
+<<<<<<< HEAD
 	asm("mr %0,1" : "=r" (sp));
+=======
+	sp = current_stack_pointer();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	save_context_stack(trace, sp, current, 1);
 }
@@ -61,3 +65,13 @@ void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
 	save_context_stack(trace, tsk->thread.ksp, tsk, 0);
 }
 EXPORT_SYMBOL_GPL(save_stack_trace_tsk);
+<<<<<<< HEAD
+=======
+
+void
+save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
+{
+	save_context_stack(trace, regs->gpr[1], current, 0);
+}
+EXPORT_SYMBOL_GPL(save_stack_trace_regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

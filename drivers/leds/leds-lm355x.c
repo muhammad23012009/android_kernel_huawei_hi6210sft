@@ -16,7 +16,10 @@
 #include <linux/platform_device.h>
 #include <linux/fs.h>
 #include <linux/regmap.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/platform_data/leds-lm355x.h>
 
 enum lm355x_type {
@@ -59,6 +62,7 @@ struct lm355x_chip_data {
 	struct led_classdev cdev_torch;
 	struct led_classdev cdev_indicator;
 
+<<<<<<< HEAD
 	struct work_struct work_flash;
 	struct work_struct work_torch;
 	struct work_struct work_indicator;
@@ -67,6 +71,8 @@ struct lm355x_chip_data {
 	u8 br_torch;
 	u8 br_indicator;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lm355x_platform_data *pdata;
 	struct regmap *regmap;
 	struct mutex lock;
@@ -177,18 +183,31 @@ static int lm355x_chip_init(struct lm355x_chip_data *chip)
 	/* input and output pins configuration */
 	switch (chip->type) {
 	case CHIP_LM3554:
+<<<<<<< HEAD
 		reg_val = pdata->pin_tx2 | pdata->ntc_pin;
 		ret = regmap_update_bits(chip->regmap, 0xE0, 0x28, reg_val);
 		if (ret < 0)
 			goto out;
 		reg_val = pdata->pass_mode;
+=======
+		reg_val = (u32)pdata->pin_tx2 | (u32)pdata->ntc_pin;
+		ret = regmap_update_bits(chip->regmap, 0xE0, 0x28, reg_val);
+		if (ret < 0)
+			goto out;
+		reg_val = (u32)pdata->pass_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = regmap_update_bits(chip->regmap, 0xA0, 0x04, reg_val);
 		if (ret < 0)
 			goto out;
 		break;
 
 	case CHIP_LM3556:
+<<<<<<< HEAD
 		reg_val = pdata->pin_tx2 | pdata->ntc_pin | pdata->pass_mode;
+=======
+		reg_val = (u32)pdata->pin_tx2 | (u32)pdata->ntc_pin |
+		          (u32)pdata->pass_mode;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = regmap_update_bits(chip->regmap, 0x0A, 0xC4, reg_val);
 		if (ret < 0)
 			goto out;
@@ -204,7 +223,11 @@ out:
 }
 
 /* chip control */
+<<<<<<< HEAD
 static void lm355x_control(struct lm355x_chip_data *chip,
+=======
+static int lm355x_control(struct lm355x_chip_data *chip,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   u8 brightness, enum lm355x_mode opmode)
 {
 	int ret;
@@ -301,7 +324,11 @@ static void lm355x_control(struct lm355x_chip_data *chip,
 	case MODE_SHDN:
 		break;
 	default:
+<<<<<<< HEAD
 		return;
+=======
+		return -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* operation mode control */
 	ret = regmap_update_bits(chip->regmap, preg[REG_OPMODE].regno,
@@ -309,6 +336,7 @@ static void lm355x_control(struct lm355x_chip_data *chip,
 				 opmode << preg[REG_OPMODE].shift);
 	if (ret < 0)
 		goto out;
+<<<<<<< HEAD
 	return;
 out:
 	dev_err(chip->dev, "%s:i2c access fail to register\n", __func__);
@@ -327,10 +355,22 @@ static void lm355x_deferred_torch_brightness_set(struct work_struct *work)
 }
 
 static void lm355x_torch_brightness_set(struct led_classdev *cdev,
+=======
+	return ret;
+out:
+	dev_err(chip->dev, "%s:i2c access fail to register\n", __func__);
+	return ret;
+}
+
+/* torch */
+
+static int lm355x_torch_brightness_set(struct led_classdev *cdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					enum led_brightness brightness)
 {
 	struct lm355x_chip_data *chip =
 	    container_of(cdev, struct lm355x_chip_data, cdev_torch);
+<<<<<<< HEAD
 
 	chip->br_torch = brightness;
 	schedule_work(&chip->work_torch);
@@ -348,10 +388,24 @@ static void lm355x_deferred_strobe_brightness_set(struct work_struct *work)
 }
 
 static void lm355x_strobe_brightness_set(struct led_classdev *cdev,
+=======
+	int ret;
+
+	mutex_lock(&chip->lock);
+	ret = lm355x_control(chip, brightness, MODE_TORCH);
+	mutex_unlock(&chip->lock);
+	return ret;
+}
+
+/* flash */
+
+static int lm355x_strobe_brightness_set(struct led_classdev *cdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					 enum led_brightness brightness)
 {
 	struct lm355x_chip_data *chip =
 	    container_of(cdev, struct lm355x_chip_data, cdev_flash);
+<<<<<<< HEAD
 
 	chip->br_flash = brightness;
 	schedule_work(&chip->work_flash);
@@ -369,13 +423,35 @@ static void lm355x_deferred_indicator_brightness_set(struct work_struct *work)
 }
 
 static void lm355x_indicator_brightness_set(struct led_classdev *cdev,
+=======
+	int ret;
+
+	mutex_lock(&chip->lock);
+	ret = lm355x_control(chip, brightness, MODE_FLASH);
+	mutex_unlock(&chip->lock);
+	return ret;
+}
+
+/* indicator */
+
+static int lm355x_indicator_brightness_set(struct led_classdev *cdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					    enum led_brightness brightness)
 {
 	struct lm355x_chip_data *chip =
 	    container_of(cdev, struct lm355x_chip_data, cdev_indicator);
+<<<<<<< HEAD
 
 	chip->br_indicator = brightness;
 	schedule_work(&chip->work_indicator);
+=======
+	int ret;
+
+	mutex_lock(&chip->lock);
+	ret = lm355x_control(chip, brightness, MODE_INDIC);
+	mutex_unlock(&chip->lock);
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* indicator pattern only for lm3556*/
@@ -413,6 +489,15 @@ out:
 
 static DEVICE_ATTR(pattern, S_IWUSR, NULL, lm3556_indicator_pattern_store);
 
+<<<<<<< HEAD
+=======
+static struct attribute *lm355x_indicator_attrs[] = {
+	&dev_attr_pattern.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(lm355x_indicator);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct regmap_config lm355x_regmap = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -423,7 +508,11 @@ static const struct regmap_config lm355x_regmap = {
 static int lm355x_probe(struct i2c_client *client,
 				  const struct i2c_device_id *id)
 {
+<<<<<<< HEAD
 	struct lm355x_platform_data *pdata = client->dev.platform_data;
+=======
+	struct lm355x_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct lm355x_chip_data *chip;
 
 	int err;
@@ -473,38 +562,62 @@ static int lm355x_probe(struct i2c_client *client,
 		goto err_out;
 
 	/* flash */
+<<<<<<< HEAD
 	INIT_WORK(&chip->work_flash, lm355x_deferred_strobe_brightness_set);
 	chip->cdev_flash.name = "flash";
 	chip->cdev_flash.max_brightness = 16;
 	chip->cdev_flash.brightness_set = lm355x_strobe_brightness_set;
+=======
+	chip->cdev_flash.name = "flash";
+	chip->cdev_flash.max_brightness = 16;
+	chip->cdev_flash.brightness_set_blocking = lm355x_strobe_brightness_set;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->cdev_flash.default_trigger = "flash";
 	err = led_classdev_register((struct device *)
 				    &client->dev, &chip->cdev_flash);
 	if (err < 0)
 		goto err_out;
 	/* torch */
+<<<<<<< HEAD
 	INIT_WORK(&chip->work_torch, lm355x_deferred_torch_brightness_set);
 	chip->cdev_torch.name = "torch";
 	chip->cdev_torch.max_brightness = 8;
 	chip->cdev_torch.brightness_set = lm355x_torch_brightness_set;
+=======
+	chip->cdev_torch.name = "torch";
+	chip->cdev_torch.max_brightness = 8;
+	chip->cdev_torch.brightness_set_blocking = lm355x_torch_brightness_set;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->cdev_torch.default_trigger = "torch";
 	err = led_classdev_register((struct device *)
 				    &client->dev, &chip->cdev_torch);
 	if (err < 0)
 		goto err_create_torch_file;
 	/* indicator */
+<<<<<<< HEAD
 	INIT_WORK(&chip->work_indicator,
 		  lm355x_deferred_indicator_brightness_set);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	chip->cdev_indicator.name = "indicator";
 	if (id->driver_data == CHIP_LM3554)
 		chip->cdev_indicator.max_brightness = 4;
 	else
 		chip->cdev_indicator.max_brightness = 8;
+<<<<<<< HEAD
 	chip->cdev_indicator.brightness_set = lm355x_indicator_brightness_set;
+=======
+	chip->cdev_indicator.brightness_set_blocking =
+					lm355x_indicator_brightness_set;
+	/* indicator pattern control only for LM3556 */
+	if (id->driver_data == CHIP_LM3556)
+		chip->cdev_indicator.groups = lm355x_indicator_groups;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	err = led_classdev_register((struct device *)
 				    &client->dev, &chip->cdev_indicator);
 	if (err < 0)
 		goto err_create_indicator_file;
+<<<<<<< HEAD
 	/* indicator pattern control only for LM3554 */
 	if (id->driver_data == CHIP_LM3556) {
 		err =
@@ -513,13 +626,18 @@ static int lm355x_probe(struct i2c_client *client,
 		if (err < 0)
 			goto err_create_pattern_file;
 	}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_info(&client->dev, "%s is initialized\n",
 		 lm355x_name[id->driver_data]);
 	return 0;
 
+<<<<<<< HEAD
 err_create_pattern_file:
 	led_classdev_unregister(&chip->cdev_indicator);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_create_indicator_file:
 	led_classdev_unregister(&chip->cdev_torch);
 err_create_torch_file:
@@ -534,6 +652,7 @@ static int lm355x_remove(struct i2c_client *client)
 	struct lm355x_reg_data *preg = chip->regs;
 
 	regmap_write(chip->regmap, preg[REG_OPMODE].regno, 0);
+<<<<<<< HEAD
 	if (chip->type == CHIP_LM3556)
 		device_remove_file(chip->cdev_indicator.dev, &dev_attr_pattern);
 	led_classdev_unregister(&chip->cdev_indicator);
@@ -542,6 +661,11 @@ static int lm355x_remove(struct i2c_client *client)
 	flush_work(&chip->work_torch);
 	led_classdev_unregister(&chip->cdev_flash);
 	flush_work(&chip->work_flash);
+=======
+	led_classdev_unregister(&chip->cdev_indicator);
+	led_classdev_unregister(&chip->cdev_torch);
+	led_classdev_unregister(&chip->cdev_flash);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&client->dev, "%s is removed\n", lm355x_name[chip->type]);
 
 	return 0;
@@ -558,7 +682,10 @@ MODULE_DEVICE_TABLE(i2c, lm355x_id);
 static struct i2c_driver lm355x_i2c_driver = {
 	.driver = {
 		   .name = LM355x_NAME,
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		   .pm = NULL,
 		   },
 	.probe = lm355x_probe,

@@ -213,12 +213,28 @@ static int usbhs_status_get_each_irq(struct usbhs_priv *priv,
 {
 	struct usbhs_mod *mod = usbhs_mod_get_current(priv);
 	u16 intenb0, intenb1;
+<<<<<<< HEAD
 
 	state->intsts0 = usbhs_read(priv, INTSTS0);
 	state->intsts1 = usbhs_read(priv, INTSTS1);
 
 	intenb0 = usbhs_read(priv, INTENB0);
 	intenb1 = usbhs_read(priv, INTENB1);
+=======
+	unsigned long flags;
+
+	/********************  spin lock ********************/
+	usbhs_lock(priv, flags);
+	state->intsts0 = usbhs_read(priv, INTSTS0);
+	intenb0 = usbhs_read(priv, INTENB0);
+
+	if (usbhs_mod_is_host(priv)) {
+		state->intsts1 = usbhs_read(priv, INTSTS1);
+		intenb1 = usbhs_read(priv, INTENB1);
+	} else {
+		state->intsts1 = intenb1 = 0;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* mask */
 	if (mod) {
@@ -229,6 +245,11 @@ static int usbhs_status_get_each_irq(struct usbhs_priv *priv,
 		state->bempsts &= mod->irq_bempsts;
 		state->brdysts &= mod->irq_brdysts;
 	}
+<<<<<<< HEAD
+=======
+	usbhs_unlock(priv, flags);
+	/********************  spin unlock ******************/
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Check whether the irq enable registers and the irq status are set
@@ -270,7 +291,12 @@ static irqreturn_t usbhs_interrupt(int irq, void *data)
 	 *	   - Function :: VALID bit should 0
 	 */
 	usbhs_write(priv, INTSTS0, ~irq_state.intsts0 & INTSTS0_MAGIC);
+<<<<<<< HEAD
 	usbhs_write(priv, INTSTS1, ~irq_state.intsts1 & INTSTS1_MAGIC);
+=======
+	if (usbhs_mod_is_host(priv))
+		usbhs_write(priv, INTSTS1, ~irq_state.intsts1 & INTSTS1_MAGIC);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The driver should not clear the xxxSTS after the line of
@@ -305,6 +331,7 @@ static irqreturn_t usbhs_interrupt(int irq, void *data)
 	if (irq_state.intsts0 & BRDY)
 		usbhs_mod_call(priv, irq_ready, priv, &irq_state);
 
+<<<<<<< HEAD
 	/* INTSTS1 */
 	if (irq_state.intsts1 & ATTCH)
 		usbhs_mod_call(priv, irq_attch, priv, &irq_state);
@@ -318,6 +345,22 @@ static irqreturn_t usbhs_interrupt(int irq, void *data)
 	if (irq_state.intsts1 & SACK)
 		usbhs_mod_call(priv, irq_sack, priv, &irq_state);
 
+=======
+	if (usbhs_mod_is_host(priv)) {
+		/* INTSTS1 */
+		if (irq_state.intsts1 & ATTCH)
+			usbhs_mod_call(priv, irq_attch, priv, &irq_state);
+
+		if (irq_state.intsts1 & DTCH)
+			usbhs_mod_call(priv, irq_dtch, priv, &irq_state);
+
+		if (irq_state.intsts1 & SIGN)
+			usbhs_mod_call(priv, irq_sign, priv, &irq_state);
+
+		if (irq_state.intsts1 & SACK)
+			usbhs_mod_call(priv, irq_sack, priv, &irq_state);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return IRQ_HANDLED;
 }
 
@@ -336,7 +379,12 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 	 *  - update INTSTS0
 	 */
 	usbhs_write(priv, INTENB0, 0);
+<<<<<<< HEAD
 	usbhs_write(priv, INTENB1, 0);
+=======
+	if (usbhs_mod_is_host(priv))
+		usbhs_write(priv, INTENB1, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	usbhs_write(priv, BEMPENB, 0);
 	usbhs_write(priv, BRDYENB, 0);
@@ -370,6 +418,7 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 			intenb0 |= BRDYE;
 		}
 
+<<<<<<< HEAD
 		/*
 		 * INTSTS1
 		 */
@@ -384,11 +433,33 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 
 		if (mod->irq_sack)
 			intenb1 |= SACKE;
+=======
+		if (usbhs_mod_is_host(priv)) {
+			/*
+			 * INTSTS1
+			 */
+			if (mod->irq_attch)
+				intenb1 |= ATTCHE;
+
+			if (mod->irq_dtch)
+				intenb1 |= DTCHE;
+
+			if (mod->irq_sign)
+				intenb1 |= SIGNE;
+
+			if (mod->irq_sack)
+				intenb1 |= SACKE;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (intenb0)
 		usbhs_write(priv, INTENB0, intenb0);
 
+<<<<<<< HEAD
 	if (intenb1)
+=======
+	if (usbhs_mod_is_host(priv) && intenb1)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usbhs_write(priv, INTENB1, intenb1);
 }

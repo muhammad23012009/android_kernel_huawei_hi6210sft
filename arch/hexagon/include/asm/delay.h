@@ -21,6 +21,10 @@
 
 #include <asm/param.h>
 
+<<<<<<< HEAD
+=======
+extern void __delay(unsigned long cycles);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void __udelay(unsigned long usecs);
 
 #define udelay(usecs) __udelay((usecs))

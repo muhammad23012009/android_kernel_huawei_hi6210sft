@@ -9,7 +9,10 @@
 #define __ASM_MACH_JAZZ_FLOPPY_H
 
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/linkage.h>
 #include <linux/types.h>
 #include <linux/mm.h>

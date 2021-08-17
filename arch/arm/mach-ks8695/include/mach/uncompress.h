@@ -17,7 +17,11 @@
 #include <linux/io.h>
 #include <mach/regs-uart.h>
 
+<<<<<<< HEAD
 static void putc(char c)
+=======
+static inline void putc(char c)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	while (!(__raw_readl((void __iomem*)KS8695_UART_PA + KS8695_URLS) & URLS_URTHRE))
 		barrier();

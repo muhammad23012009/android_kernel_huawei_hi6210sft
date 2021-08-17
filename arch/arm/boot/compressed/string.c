@@ -65,6 +65,18 @@ size_t strlen(const char *s)
 	return sc - s;
 }
 
+<<<<<<< HEAD
+=======
+size_t strnlen(const char *s, size_t count)
+{
+	const char *sc;
+
+	for (sc = s; count-- && *sc != '\0'; ++sc)
+		/* nothing */;
+	return sc - s;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int memcmp(const void *cs, const void *ct, size_t count)
 {
 	const unsigned char *su1 = cs, *su2 = ct, *end = su1 + count;

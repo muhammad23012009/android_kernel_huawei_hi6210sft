@@ -20,9 +20,20 @@
 #include <linux/cache.h>
 #include <linux/io.h>
 
+<<<<<<< HEAD
 extern struct dma_map_ops *tile_dma_map_ops;
 extern struct dma_map_ops *gx_pci_dma_map_ops;
 extern struct dma_map_ops *gx_legacy_pci_dma_map_ops;
+=======
+#ifdef __tilegx__
+#define ARCH_HAS_DMA_GET_REQUIRED_MASK
+#endif
+
+extern struct dma_map_ops *tile_dma_map_ops;
+extern struct dma_map_ops *gx_pci_dma_map_ops;
+extern struct dma_map_ops *gx_legacy_pci_dma_map_ops;
+extern struct dma_map_ops *gx_hybrid_pci_dma_map_ops;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline struct dma_map_ops *get_dma_ops(struct device *dev)
 {
@@ -44,18 +55,29 @@ static inline void set_dma_offset(struct device *dev, dma_addr_t off)
 
 static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
 {
+<<<<<<< HEAD
 	return paddr + get_dma_offset(dev);
+=======
+	return paddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
 {
+<<<<<<< HEAD
 	return daddr - get_dma_offset(dev);
+=======
+	return daddr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void dma_mark_clean(void *addr, size_t size) {}
 
+<<<<<<< HEAD
 #include <asm-generic/dma-mapping-common.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void set_dma_ops(struct device *dev, struct dma_map_ops *ops)
 {
 	dev->archdata.dma_ops = ops;
@@ -69,6 +91,7 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
 	return addr + size - 1 <= *dev->dma_mask;
 }
 
+<<<<<<< HEAD
 static inline int
 dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
@@ -132,6 +155,10 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_attrs(d, s, h, f, NULL)
 #define dma_free_coherent(d, s, v, h) dma_free_attrs(d, s, v, h, NULL)
 #define dma_free_noncoherent(d, s, v, h) dma_free_attrs(d, s, v, h, NULL)
+=======
+#define HAVE_ARCH_DMA_SET_MASK 1
+int dma_set_mask(struct device *dev, u64 mask);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * dma_alloc_noncoherent() is #defined to return coherent memory,

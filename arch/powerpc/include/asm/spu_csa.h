@@ -241,12 +241,15 @@ struct spu_priv2_collapsed {
  */
 struct spu_state {
 	struct spu_lscsa *lscsa;
+<<<<<<< HEAD
 #ifdef CONFIG_SPU_FS_64K_LS
 	int		use_big_pages;
 	/* One struct page per 64k page */
 #define SPU_LSCSA_NUM_BIG_PAGES	(sizeof(struct spu_lscsa) / 0x10000)
 	struct page	*lscsa_pages[SPU_LSCSA_NUM_BIG_PAGES];
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct spu_problem_collapsed prob;
 	struct spu_priv1_collapsed priv1;
 	struct spu_priv2_collapsed priv2;

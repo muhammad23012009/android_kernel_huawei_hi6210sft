@@ -47,7 +47,11 @@ struct zl10353_config
 	u8 pll_0;        /* default: 0x15 */
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_ZL10353)
+=======
+#if IS_REACHABLE(CONFIG_DVB_ZL10353)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* zl10353_attach(const struct zl10353_config *config,
 					   struct i2c_adapter *i2c);
 #else

@@ -51,7 +51,11 @@ void __init amiga_init_sound(void)
 
 	snd_data = amiga_chip_alloc_res(sizeof(sine_data), &beep_res);
 	if (!snd_data) {
+<<<<<<< HEAD
 		printk (KERN_CRIT "amiga init_sound: failed to allocate chipmem\n");
+=======
+		pr_crit("amiga init_sound: failed to allocate chipmem\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 	memcpy (snd_data, sine_data, sizeof(sine_data));

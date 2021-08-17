@@ -42,8 +42,11 @@ static inline unsigned long __cmpxchg(volatile unsigned long *m,
 					(unsigned long)(o),	\
 					(unsigned long)(n)))
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_CMPXCHG	1
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm-generic/cmpxchg-local.h>
 
 #endif /* _ASM_SCORE_CMPXCHG_H */

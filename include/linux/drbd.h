@@ -25,7 +25,10 @@
 */
 #ifndef DRBD_H
 #define DRBD_H
+<<<<<<< HEAD
 #include <linux/connector.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/types.h>
 
 #ifdef __KERNEL__
@@ -52,7 +55,11 @@
 #endif
 
 extern const char *drbd_buildtag(void);
+<<<<<<< HEAD
 #define REL_VERSION "8.4.3"
+=======
+#define REL_VERSION "8.4.7"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define API_VERSION 1
 #define PRO_VERSION_MIN 86
 #define PRO_VERSION_MAX 101
@@ -172,12 +179,24 @@ enum drbd_ret_code {
 	ERR_RES_NOT_KNOWN	= 158,
 	ERR_RES_IN_USE		= 159,
 	ERR_MINOR_CONFIGURED    = 160,
+<<<<<<< HEAD
 	ERR_MINOR_EXISTS	= 161,
+=======
+	ERR_MINOR_OR_VOLUME_EXISTS = 161,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ERR_INVALID_REQUEST	= 162,
 	ERR_NEED_APV_100	= 163,
 	ERR_NEED_ALLOW_TWO_PRI  = 164,
 	ERR_MD_UNCLEAN          = 165,
+<<<<<<< HEAD
 
+=======
+	ERR_MD_LAYOUT_CONNECTED = 166,
+	ERR_MD_LAYOUT_TOO_BIG   = 167,
+	ERR_MD_LAYOUT_TOO_SMALL = 168,
+	ERR_MD_LAYOUT_NO_FIT    = 169,
+	ERR_IMPLICIT_SHRINK     = 170,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* insert new ones above this line */
 	AFTER_LAST_ERR_CODE
 };
@@ -241,7 +260,11 @@ enum drbd_disk_state {
 	D_DISKLESS,
 	D_ATTACHING,      /* In the process of reading the meta-data */
 	D_FAILED,         /* Becomes D_DISKLESS as soon as we told it the peer */
+<<<<<<< HEAD
 			/* when >= D_FAILED it is legal to access mdev->bc */
+=======
+			  /* when >= D_FAILED it is legal to access mdev->ldev */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	D_NEGOTIATING,    /* Late attaching state, we need to talk to the peer */
 	D_INCONSISTENT,
 	D_OUTDATED,
@@ -323,12 +346,15 @@ enum drbd_state_rv {
 	SS_AFTER_LAST_ERROR = -22,    /* Keep this at bottom */
 };
 
+<<<<<<< HEAD
 /* from drbd_strings.c */
 extern const char *drbd_conn_str(enum drbd_conns);
 extern const char *drbd_role_str(enum drbd_role);
 extern const char *drbd_disk_str(enum drbd_disk_state);
 extern const char *drbd_set_st_err_str(enum drbd_state_rv);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define SHARED_SECRET_MAX 64
 
 #define MDF_CONSISTENT		(1 << 0)
@@ -341,6 +367,11 @@ extern const char *drbd_set_st_err_str(enum drbd_state_rv);
 #define MDF_AL_CLEAN		(1 << 7)
 #define MDF_AL_DISABLED		(1 << 8)
 
+<<<<<<< HEAD
+=======
+#define MAX_PEERS 32
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum drbd_uuid_index {
 	UI_CURRENT,
 	UI_BITMAP,
@@ -351,14 +382,51 @@ enum drbd_uuid_index {
 	UI_EXTENDED_SIZE   /* Everything. */
 };
 
+<<<<<<< HEAD
+=======
+#define HISTORY_UUIDS MAX_PEERS
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 enum drbd_timeout_flag {
 	UT_DEFAULT      = 0,
 	UT_DEGRADED     = 1,
 	UT_PEER_OUTDATED = 2,
 };
 
+<<<<<<< HEAD
 #define UUID_JUST_CREATED ((__u64)4)
 
+=======
+enum drbd_notification_type {
+	NOTIFY_EXISTS,
+	NOTIFY_CREATE,
+	NOTIFY_CHANGE,
+	NOTIFY_DESTROY,
+	NOTIFY_CALL,
+	NOTIFY_RESPONSE,
+
+	NOTIFY_CONTINUES = 0x8000,
+	NOTIFY_FLAGS = NOTIFY_CONTINUES,
+};
+
+enum drbd_peer_state {
+	P_INCONSISTENT = 3,
+	P_OUTDATED = 4,
+	P_DOWN = 5,
+	P_PRIMARY = 6,
+	P_FENCING = 7,
+};
+
+#define UUID_JUST_CREATED ((__u64)4)
+
+enum write_ordering_e {
+	WO_NONE,
+	WO_DRAIN_IO,
+	WO_BDEV_FLUSH,
+	WO_BIO_BARRIER
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* magic numbers used in meta data and network packets */
 #define DRBD_MAGIC 0x83740267
 #define DRBD_MAGIC_BIG 0x835a
@@ -378,4 +446,9 @@ enum drbd_timeout_flag {
 #define DRBD_MD_INDEX_FLEX_EXT -2
 #define DRBD_MD_INDEX_FLEX_INT -3
 
+<<<<<<< HEAD
+=======
+#define DRBD_CPU_MASK_SIZE 32
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

@@ -40,7 +40,11 @@
 
 #include <asm/fixmap.h>
 #include <asm/apb_timer.h>
+<<<<<<< HEAD
 #include <asm/mrst.h>
+=======
+#include <asm/intel-mid.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/time.h>
 
 #define APBT_CLOCKEVENT_RATING		110
@@ -135,6 +139,7 @@ static inline void apbt_clear_mapping(void)
 	apbt_virt_address = NULL;
 }
 
+<<<<<<< HEAD
 /*
  * APBT timer interrupt enable / disable
  */
@@ -147,6 +152,12 @@ static int __init apbt_clockevent_register(void)
 {
 	struct sfi_timer_table_entry *mtmr;
 	struct apbt_dev *adev = &__get_cpu_var(cpu_apbt_dev);
+=======
+static int __init apbt_clockevent_register(void)
+{
+	struct sfi_timer_table_entry *mtmr;
+	struct apbt_dev *adev = this_cpu_ptr(&cpu_apbt_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mtmr = sfi_get_mtmr(APBT_CLOCKEVENT0_NUM);
 	if (mtmr == NULL) {
@@ -157,13 +168,21 @@ static int __init apbt_clockevent_register(void)
 
 	adev->num = smp_processor_id();
 	adev->timer = dw_apb_clockevent_init(smp_processor_id(), "apbt0",
+<<<<<<< HEAD
 		mrst_timer_options == MRST_TIMER_LAPIC_APBT ?
+=======
+		intel_mid_timer_options == INTEL_MID_TIMER_LAPIC_APBT ?
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		APBT_CLOCKEVENT_RATING - 100 : APBT_CLOCKEVENT_RATING,
 		adev_virt_addr(adev), 0, apbt_freq);
 	/* Firmware does EOI handling for us. */
 	adev->timer->eoi = NULL;
 
+<<<<<<< HEAD
 	if (mrst_timer_options == MRST_TIMER_LAPIC_APBT) {
+=======
+	if (intel_mid_timer_options == INTEL_MID_TIMER_LAPIC_APBT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		global_clock_event = &adev->timer->ced;
 		printk(KERN_DEBUG "%s clockevent registered as global\n",
 		       global_clock_event->name);
@@ -179,6 +198,7 @@ static int __init apbt_clockevent_register(void)
 
 static void apbt_setup_irq(struct apbt_dev *adev)
 {
+<<<<<<< HEAD
 	/* timer0 irq has been setup early */
 	if (adev->irq == 0)
 		return;
@@ -187,6 +207,10 @@ static void apbt_setup_irq(struct apbt_dev *adev)
 	irq_set_affinity(adev->irq, cpumask_of(adev->cpu));
 	/* APB timer irqs are set up as mp_irqs, timer is edge type */
 	__irq_set_handler(adev->irq, handle_edge_irq, 0, "edge");
+=======
+	irq_modify_status(adev->irq, 0, IRQ_MOVE_PCNTXT);
+	irq_set_affinity(adev->irq, cpumask_of(adev->cpu));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Should be called with per cpu */
@@ -200,7 +224,11 @@ void apbt_setup_secondary_clock(void)
 	if (!cpu)
 		return;
 
+<<<<<<< HEAD
 	adev = &__get_cpu_var(cpu_apbt_dev);
+=======
+	adev = this_cpu_ptr(&cpu_apbt_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!adev->timer) {
 		adev->timer = dw_apb_clockevent_init(cpu, adev->name,
 			APBT_CLOCKEVENT_RATING, adev_virt_addr(adev),
@@ -229,6 +257,7 @@ void apbt_setup_secondary_clock(void)
  * cpu timers during the offline process due to the ordering of notification.
  * the extra interrupt is harmless.
  */
+<<<<<<< HEAD
 static int apbt_cpuhp_notify(struct notifier_block *n,
 			     unsigned long action, void *hcpu)
 {
@@ -249,16 +278,38 @@ static int apbt_cpuhp_notify(struct notifier_block *n,
 		pr_debug("APBT notified %lu, no action\n", action);
 	}
 	return NOTIFY_OK;
+=======
+static int apbt_cpu_dead(unsigned int cpu)
+{
+	struct apbt_dev *adev = &per_cpu(cpu_apbt_dev, cpu);
+
+	dw_apb_clockevent_pause(adev->timer);
+	if (system_state == SYSTEM_RUNNING) {
+		pr_debug("skipping APBT CPU %u offline\n", cpu);
+	} else {
+		pr_debug("APBT clockevent for cpu %u offline\n", cpu);
+		dw_apb_clockevent_stop(adev->timer);
+	}
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static __init int apbt_late_init(void)
 {
+<<<<<<< HEAD
 	if (mrst_timer_options == MRST_TIMER_LAPIC_APBT ||
 		!apb_timer_block_enabled)
 		return 0;
 	/* This notifier should be called after workqueue is ready */
 	hotcpu_notifier(apbt_cpuhp_notify, -20);
 	return 0;
+=======
+	if (intel_mid_timer_options == INTEL_MID_TIMER_LAPIC_APBT ||
+		!apb_timer_block_enabled)
+		return 0;
+	return cpuhp_setup_state(CPUHP_X86_APB_DEAD, "X86_APB_DEAD", NULL,
+				 apbt_cpu_dead);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 fs_initcall(apbt_late_init);
 #else
@@ -277,7 +328,11 @@ static int apbt_clocksource_register(void)
 
 	/* Verify whether apbt counter works */
 	t1 = dw_apb_clocksource_read(clocksource_apbt);
+<<<<<<< HEAD
 	rdtscll(start);
+=======
+	start = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We don't know the TSC frequency yet, but waiting for
@@ -287,7 +342,11 @@ static int apbt_clocksource_register(void)
 	 */
 	do {
 		rep_nop();
+<<<<<<< HEAD
 		rdtscll(now);
+=======
+		now = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while ((now - start) < 200000UL);
 
 	/* APBT is the only always on clocksource, it has to work! */
@@ -340,7 +399,11 @@ void __init apbt_time_init(void)
 	}
 #ifdef CONFIG_SMP
 	/* kernel cmdline disable apb timer, so we will use lapic timers */
+<<<<<<< HEAD
 	if (mrst_timer_options == MRST_TIMER_LAPIC_APBT) {
+=======
+	if (intel_mid_timer_options == INTEL_MID_TIMER_LAPIC_APBT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO "apbt: disabled per cpu timer\n");
 		return;
 	}
@@ -404,13 +467,21 @@ unsigned long apbt_quick_calibrate(void)
 	old = dw_apb_clocksource_read(clocksource_apbt);
 	old += loop;
 
+<<<<<<< HEAD
 	t1 = __native_read_tsc();
+=======
+	t1 = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	do {
 		new = dw_apb_clocksource_read(clocksource_apbt);
 	} while (new < old);
 
+<<<<<<< HEAD
 	t2 = __native_read_tsc();
+=======
+	t2 = rdtsc();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	shift = 5;
 	if (unlikely(loop >> shift == 0)) {

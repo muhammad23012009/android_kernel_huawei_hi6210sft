@@ -7,8 +7,12 @@ void raw6_icmp_error(struct sk_buff *, int nexthdr,
 		u8 type, u8 code, int inner_offset, __be32);
 bool raw6_local_deliver(struct sk_buff *, int);
 
+<<<<<<< HEAD
 extern int			rawv6_rcv(struct sock *sk,
 					  struct sk_buff *skb);
+=======
+int rawv6_rcv(struct sock *sk, struct sk_buff *skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #if defined(CONFIG_IPV6_MIP6) || defined(CONFIG_IPV6_MIP6_MODULE)
 int rawv6_mh_filter_register(int (*filter)(struct sock *sock,

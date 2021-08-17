@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,7 +65,11 @@ ACPI_MODULE_NAME("utownerid")
  *              when the method exits or the table is unloaded.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_ut_allocate_owner_id(acpi_owner_id * owner_id)
+=======
+acpi_status acpi_ut_allocate_owner_id(acpi_owner_id *owner_id)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	u32 i;
 	u32 j;
@@ -73,8 +81,13 @@ acpi_status acpi_ut_allocate_owner_id(acpi_owner_id * owner_id)
 	/* Guard against multiple allocations of ID to the same location */
 
 	if (*owner_id) {
+<<<<<<< HEAD
 		ACPI_ERROR((AE_INFO, "Owner ID [0x%2.2X] already exists",
 			    *owner_id));
+=======
+		ACPI_ERROR((AE_INFO,
+			    "Owner ID [0x%2.2X] already exists", *owner_id));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return_ACPI_STATUS(AE_ALREADY_EXISTS);
 	}
 
@@ -87,8 +100,13 @@ acpi_status acpi_ut_allocate_owner_id(acpi_owner_id * owner_id)
 
 	/*
 	 * Find a free owner ID, cycle through all possible IDs on repeated
+<<<<<<< HEAD
 	 * allocations. (ACPI_NUM_OWNERID_MASKS + 1) because first index may have
 	 * to be scanned twice.
+=======
+	 * allocations. (ACPI_NUM_OWNERID_MASKS + 1) because first index
+	 * may have to be scanned twice.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	for (i = 0, j = acpi_gbl_last_owner_id_index;
 	     i < (ACPI_NUM_OWNERID_MASKS + 1); i++, j++) {
@@ -122,7 +140,11 @@ acpi_status acpi_ut_allocate_owner_id(acpi_owner_id * owner_id)
 				 * permanently allocated (prevents +1 overflow)
 				 */
 				*owner_id =
+<<<<<<< HEAD
 				    (acpi_owner_id) ((k + 1) + ACPI_MUL_32(j));
+=======
+				    (acpi_owner_id)((k + 1) + ACPI_MUL_32(j));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 				ACPI_DEBUG_PRINT((ACPI_DB_VALUES,
 						  "Allocated OwnerId: %2.2X\n",
@@ -141,14 +163,23 @@ acpi_status acpi_ut_allocate_owner_id(acpi_owner_id * owner_id)
 	 * they are released when a table is unloaded or a method completes
 	 * execution.
 	 *
+<<<<<<< HEAD
 	 * If this error happens, there may be very deep nesting of invoked control
 	 * methods, or there may be a bug where the IDs are not released.
+=======
+	 * If this error happens, there may be very deep nesting of invoked
+	 * control methods, or there may be a bug where the IDs are not released.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 */
 	status = AE_OWNER_ID_LIMIT;
 	ACPI_ERROR((AE_INFO,
 		    "Could not allocate new OwnerId (255 max), AE_OWNER_ID_LIMIT"));
 
+<<<<<<< HEAD
       exit:
+=======
+exit:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(void)acpi_ut_release_mutex(ACPI_MTX_CACHES);
 	return_ACPI_STATUS(status);
 }
@@ -167,7 +198,11 @@ acpi_status acpi_ut_allocate_owner_id(acpi_owner_id * owner_id)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 void acpi_ut_release_owner_id(acpi_owner_id * owner_id_ptr)
+=======
+void acpi_ut_release_owner_id(acpi_owner_id *owner_id_ptr)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	acpi_owner_id owner_id = *owner_id_ptr;
 	acpi_status status;

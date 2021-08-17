@@ -19,8 +19,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+<<<<<<< HEAD
 /* Up to 16 ms to halt an HC */
 #define XHCI_MAX_HALT_USEC	(16*1000)
+=======
+
+/* HC should halt within 16 ms, but use 32 ms as some hosts take longer */
+#define XHCI_MAX_HALT_USEC	(32 * 1000)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* HC not running - set to 1 when run/stop bit is cleared. */
 #define XHCI_STS_HALT		(1<<0)
 
@@ -71,6 +77,10 @@
 
 /* USB 2.0 xHCI 1.0 hardware LMP capability - section 7.2.2.1.3.2 */
 #define XHCI_HLC               (1 << 19)
+<<<<<<< HEAD
+=======
+#define XHCI_BLC               (1 << 20)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* command register values to disable interrupts and halt the HC */
 /* start/stop HC execution - do not write unless HC is halted*/
@@ -90,6 +100,7 @@
 #include <linux/io.h>
 
 /**
+<<<<<<< HEAD
  * Return the next extended capability pointer register.
  *
  * @base	PCI register base address.
@@ -151,5 +162,45 @@ static inline int xhci_find_ext_cap_by_id(void __iomem *base, int ext_offset, in
 	}
 	if (limit > 0)
 		return ext_offset;
+=======
+ * Find the offset of the extended capabilities with capability ID id.
+ *
+ * @base	PCI MMIO registers base address.
+ * @start	address at which to start looking, (0 or HCC_PARAMS to start at
+ *		beginning of list)
+ * @id		Extended capability ID to search for.
+ *
+ * Returns the offset of the next matching extended capability structure.
+ * Some capabilities can occur several times, e.g., the XHCI_EXT_CAPS_PROTOCOL,
+ * and this provides a way to find them all.
+ */
+
+static inline int xhci_find_next_ext_cap(void __iomem *base, u32 start, int id)
+{
+	u32 val;
+	u32 next;
+	u32 offset;
+
+	offset = start;
+	if (!start || start == XHCI_HCC_PARAMS_OFFSET) {
+		val = readl(base + XHCI_HCC_PARAMS_OFFSET);
+		if (val == ~0)
+			return 0;
+		offset = XHCI_HCC_EXT_CAPS(val) << 2;
+		if (!offset)
+			return 0;
+	};
+	do {
+		val = readl(base + offset);
+		if (val == ~0)
+			return 0;
+		if (XHCI_EXT_CAPS_ID(val) == id && offset != start)
+			return offset;
+
+		next = XHCI_EXT_CAPS_NEXT(val);
+		offset += next << 2;
+	} while (next);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }

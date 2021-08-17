@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Select this to activate the generic irq options below
 config HAVE_GENERIC_HARDIRQS
 	bool
@@ -10,12 +11,22 @@ menu "IRQ subsystem"
 config GENERIC_HARDIRQS
        def_bool y
 
+=======
+menu "IRQ subsystem"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Options selectable by the architecture code
 
 # Make sparse irq Kconfig switch below available
 config MAY_HAVE_SPARSE_IRQ
        bool
 
+<<<<<<< HEAD
+=======
+# Legacy support, required for itanic
+config GENERIC_IRQ_LEGACY
+       bool
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Enable the generic irq autoprobe mechanism
 config GENERIC_IRQ_PROBE
 	bool
@@ -28,10 +39,25 @@ config GENERIC_IRQ_SHOW
 config GENERIC_IRQ_SHOW_LEVEL
        bool
 
+<<<<<<< HEAD
+=======
+# Facility to allocate a hardware interrupt. This is legacy support
+# and should not be used in new code. Use irq domains instead.
+config GENERIC_IRQ_LEGACY_ALLOC_HWIRQ
+       bool
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Support for delayed migration from interrupt context
 config GENERIC_PENDING_IRQ
 	bool
 
+<<<<<<< HEAD
+=======
+# Support for generic irq migrating off cpu before the cpu is offline.
+config GENERIC_IRQ_MIGRATION
+	bool
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # Alpha specific irq affinity mechanism
 config AUTO_IRQ_AFFINITY
        bool
@@ -51,11 +77,41 @@ config IRQ_EDGE_EOI_HANDLER
 # Generic configurable interrupt chip implementation
 config GENERIC_IRQ_CHIP
        bool
+<<<<<<< HEAD
+=======
+       select IRQ_DOMAIN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Generic irq_domain hw <--> linux irq number translation
 config IRQ_DOMAIN
 	bool
 
+<<<<<<< HEAD
+=======
+# Support for hierarchical irq domains
+config IRQ_DOMAIN_HIERARCHY
+	bool
+	select IRQ_DOMAIN
+
+# Generic IRQ IPI support
+config GENERIC_IRQ_IPI
+	bool
+	select IRQ_DOMAIN_HIERARCHY
+
+# Generic MSI interrupt support
+config GENERIC_MSI_IRQ
+	bool
+
+# Generic MSI hierarchical interrupt domain support
+config GENERIC_MSI_IRQ_DOMAIN
+	bool
+	select IRQ_DOMAIN_HIERARCHY
+	select GENERIC_MSI_IRQ
+
+config HANDLE_DOMAIN_IRQ
+	bool
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 config IRQ_DOMAIN_DEBUG
 	bool "Expose hardware/virtual IRQ mapping via debugfs"
 	depends on IRQ_DOMAIN && DEBUG_FS
@@ -84,4 +140,7 @@ config SPARSE_IRQ
 	  If you don't know what to do here, say N.
 
 endmenu
+<<<<<<< HEAD
 endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

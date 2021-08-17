@@ -521,7 +521,11 @@ static pmu_config_t		*pmu_conf;
 pfm_sysctl_t pfm_sysctl;
 EXPORT_SYMBOL(pfm_sysctl);
 
+<<<<<<< HEAD
 static ctl_table pfm_ctl_table[]={
+=======
+static struct ctl_table pfm_ctl_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "debug",
 		.data		= &pfm_sysctl.debug,
@@ -552,7 +556,11 @@ static ctl_table pfm_ctl_table[]={
 	},
 	{}
 };
+<<<<<<< HEAD
 static ctl_table pfm_sysctl_dir[] = {
+=======
+static struct ctl_table pfm_sysctl_dir[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "perfmon",
 		.mode		= 0555,
@@ -560,7 +568,11 @@ static ctl_table pfm_sysctl_dir[] = {
 	},
  	{}
 };
+<<<<<<< HEAD
 static ctl_table pfm_sysctl_root[] = {
+=======
+static struct ctl_table pfm_sysctl_root[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "kernel",
 		.mode		= 0555,
@@ -2145,6 +2157,7 @@ doit:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 pfm_no_open(struct inode *irrelevant, struct file *dontcare)
 {
@@ -2154,18 +2167,24 @@ pfm_no_open(struct inode *irrelevant, struct file *dontcare)
 
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct file_operations pfm_file_ops = {
 	.llseek		= no_llseek,
 	.read		= pfm_read,
 	.write		= pfm_write,
 	.poll		= pfm_poll,
 	.unlocked_ioctl = pfm_ioctl,
+<<<<<<< HEAD
 	.open		= pfm_no_open,	/* special open code to disallow open via /proc */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.fasync		= pfm_fasync,
 	.release	= pfm_close,
 	.flush		= pfm_flush
 };
 
+<<<<<<< HEAD
 static int
 pfmfs_delete_dentry(const struct dentry *dentry)
 {
@@ -2180,6 +2199,16 @@ static char *pfmfs_dname(struct dentry *dentry, char *buffer, int buflen)
 
 static const struct dentry_operations pfmfs_dentry_operations = {
 	.d_delete = pfmfs_delete_dentry,
+=======
+static char *pfmfs_dname(struct dentry *dentry, char *buffer, int buflen)
+{
+	return dynamic_dname(dentry, buffer, buflen, "pfm:[%lu]",
+			     d_inode(dentry)->i_ino);
+}
+
+static const struct dentry_operations pfmfs_dentry_operations = {
+	.d_delete = always_delete_dentry,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.d_dname = pfmfs_dname,
 };
 
@@ -2348,8 +2377,12 @@ pfm_smpl_buffer_alloc(struct task_struct *task, struct file *filp, pfm_context_t
 	 */
 	insert_vm_struct(mm, vma);
 
+<<<<<<< HEAD
 	vm_stat_account(vma->vm_mm, vma->vm_flags, vma->vm_file,
 							vma_pages(vma));
+=======
+	vm_stat_account(vma->vm_mm, vma->vm_flags, vma_pages(vma));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	up_write(&task->mm->mmap_sem);
 
 	/*
@@ -2668,7 +2701,11 @@ pfm_context_create(pfm_context_t *ctx, void *arg, int count, struct pt_regs *reg
 
 	ret = -ENOMEM;
 
+<<<<<<< HEAD
 	fd = get_unused_fd();
+=======
+	fd = get_unused_fd_flags(0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (fd < 0)
 		return fd;
 
@@ -4559,8 +4596,13 @@ pfm_context_unload(pfm_context_t *ctx, void *arg, int count, struct pt_regs *reg
 
 
 /*
+<<<<<<< HEAD
  * called only from exit_thread(): task == current
  * we come here only if current has a context attached (loaded or masked)
+=======
+ * called only from exit_thread()
+ * we come here only if the task has a context attached (loaded or masked)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 void
 pfm_exit_thread(struct task_struct *task)
@@ -5647,6 +5689,7 @@ pfm_proc_show_header(struct seq_file *m)
 
 	list_for_each(pos, &pfm_buffer_fmt_list) {
 		entry = list_entry(pos, pfm_buffer_fmt_t, fmt_list);
+<<<<<<< HEAD
 		seq_printf(m, "format                    : %02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x %s\n",
 			entry->fmt_uuid[0],
 			entry->fmt_uuid[1],
@@ -5665,6 +5708,10 @@ pfm_proc_show_header(struct seq_file *m)
 			entry->fmt_uuid[14],
 			entry->fmt_uuid[15],
 			entry->fmt_name);
+=======
+		seq_printf(m, "format                    : %16phD %s\n",
+			   entry->fmt_uuid, entry->fmt_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	spin_unlock(&pfm_buffer_fmt_lock);
 
@@ -6409,7 +6456,10 @@ pfm_flush_pmds(struct task_struct *task, pfm_context_t *ctx)
 
 static struct irqaction perfmon_irqaction = {
 	.handler = pfm_interrupt_handler,
+<<<<<<< HEAD
 	.flags   = IRQF_DISABLED,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name    = "perfmon"
 };
 

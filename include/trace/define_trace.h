@@ -40,10 +40,25 @@
 		assign, print, reg, unreg)			\
 	DEFINE_TRACE_FN(name, reg, unreg)
 
+<<<<<<< HEAD
+=======
+#undef TRACE_EVENT_FN_COND
+#define TRACE_EVENT_FN_COND(name, proto, args, cond, tstruct,		\
+		assign, print, reg, unreg)			\
+	DEFINE_TRACE_FN(name, reg, unreg)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef DEFINE_EVENT
 #define DEFINE_EVENT(template, name, proto, args) \
 	DEFINE_TRACE(name)
 
+<<<<<<< HEAD
+=======
+#undef DEFINE_EVENT_FN
+#define DEFINE_EVENT_FN(template, name, proto, args, reg, unreg) \
+	DEFINE_TRACE_FN(name, reg, unreg)
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef DEFINE_EVENT_PRINT
 #define DEFINE_EVENT_PRINT(template, name, proto, args, print)	\
 	DEFINE_TRACE(name)
@@ -82,15 +97,29 @@
 #undef DECLARE_TRACE
 #define DECLARE_TRACE(name, proto, args)
 
+<<<<<<< HEAD
 #ifdef CONFIG_EVENT_TRACING
 #include <trace/ftrace.h>
+=======
+#ifdef TRACEPOINTS_ENABLED
+#include <trace/trace_events.h>
+#include <trace/perf.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 #undef TRACE_EVENT
 #undef TRACE_EVENT_FN
+<<<<<<< HEAD
 #undef TRACE_EVENT_CONDITION
 #undef DECLARE_EVENT_CLASS
 #undef DEFINE_EVENT
+=======
+#undef TRACE_EVENT_FN_COND
+#undef TRACE_EVENT_CONDITION
+#undef DECLARE_EVENT_CLASS
+#undef DEFINE_EVENT
+#undef DEFINE_EVENT_FN
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #undef DEFINE_EVENT_PRINT
 #undef DEFINE_EVENT_CONDITION
 #undef TRACE_HEADER_MULTI_READ

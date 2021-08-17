@@ -35,6 +35,10 @@
 #include <linux/elf-fdpic.h>
 #include <linux/elfcore.h>
 #include <linux/coredump.h>
+<<<<<<< HEAD
+=======
+#include <linux/dax.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/uaccess.h>
 #include <asm/param.h>
@@ -66,8 +70,11 @@ static int create_elf_fdpic_tables(struct linux_binprm *, struct mm_struct *,
 				   struct elf_fdpic_params *);
 
 #ifndef CONFIG_MMU
+<<<<<<< HEAD
 static int elf_fdpic_transfer_args_to_stack(struct linux_binprm *,
 					    unsigned long *);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int elf_fdpic_map_file_constdisp_on_uclinux(struct elf_fdpic_params *,
 						   struct file *,
 						   struct mm_struct *);
@@ -103,19 +110,49 @@ static void __exit exit_elf_fdpic_binfmt(void)
 core_initcall(init_elf_fdpic_binfmt);
 module_exit(exit_elf_fdpic_binfmt);
 
+<<<<<<< HEAD
 static int is_elf_fdpic(struct elfhdr *hdr, struct file *file)
+=======
+static int is_elf(struct elfhdr *hdr, struct file *file)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (memcmp(hdr->e_ident, ELFMAG, SELFMAG) != 0)
 		return 0;
 	if (hdr->e_type != ET_EXEC && hdr->e_type != ET_DYN)
 		return 0;
+<<<<<<< HEAD
 	if (!elf_check_arch(hdr) || !elf_check_fdpic(hdr))
 		return 0;
 	if (!file->f_op || !file->f_op->mmap)
+=======
+	if (!elf_check_arch(hdr))
+		return 0;
+	if (!file->f_op->mmap)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+#ifndef elf_check_fdpic
+#define elf_check_fdpic(x) 0
+#endif
+
+#ifndef elf_check_const_displacement
+#define elf_check_const_displacement(x) 0
+#endif
+
+static int is_constdisp(struct elfhdr *hdr)
+{
+	if (!elf_check_fdpic(hdr))
+		return 1;
+	if (elf_check_const_displacement(hdr))
+		return 1;
+	return 0;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*****************************************************************************/
 /*
  * read the program headers table into memory
@@ -191,8 +228,23 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm)
 
 	/* check that this is a binary we know how to deal with */
 	retval = -ENOEXEC;
+<<<<<<< HEAD
 	if (!is_elf_fdpic(&exec_params.hdr, bprm->file))
 		goto error;
+=======
+	if (!is_elf(&exec_params.hdr, bprm->file))
+		goto error;
+	if (!elf_check_fdpic(&exec_params.hdr)) {
+#ifdef CONFIG_MMU
+		/* binfmt_elf handles non-fdpic elf except on nommu */
+		goto error;
+#else
+		/* nommu can only load ET_DYN (PIE) ELF */
+		if (exec_params.hdr.e_type != ET_DYN)
+			goto error;
+#endif
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* read the program header table */
 	retval = elf_fdpic_fetch_phdrs(&exec_params, bprm->file);
@@ -269,13 +321,21 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm)
 
 	}
 
+<<<<<<< HEAD
 	if (elf_check_const_displacement(&exec_params.hdr))
+=======
+	if (is_constdisp(&exec_params.hdr))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		exec_params.flags |= ELF_FDPIC_FLAG_CONSTDISP;
 
 	/* perform insanity checks on the interpreter */
 	if (interpreter_name) {
 		retval = -ELIBBAD;
+<<<<<<< HEAD
 		if (!is_elf_fdpic(&interp_params.hdr, interpreter))
+=======
+		if (!is_elf(&interp_params.hdr, interpreter))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto error;
 
 		interp_params.flags = ELF_FDPIC_FLAG_PRESENT;
@@ -306,9 +366,15 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm)
 
 	retval = -ENOEXEC;
 	if (stack_size == 0)
+<<<<<<< HEAD
 		goto error;
 
 	if (elf_check_const_displacement(&interp_params.hdr))
+=======
+		stack_size = 131072UL; /* same as exec.c's default commit */
+
+	if (is_constdisp(&interp_params.hdr))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		interp_params.flags |= ELF_FDPIC_FLAG_CONSTDISP;
 
 	/* flush all traces of the currently running executable */
@@ -317,9 +383,18 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm)
 		goto error;
 
 	/* there's now no turning back... the old userspace image is dead,
+<<<<<<< HEAD
 	 * defunct, deceased, etc. after this point we have to exit via
 	 * error_kill */
 	set_personality(PER_LINUX_FDPIC);
+=======
+	 * defunct, deceased, etc.
+	 */
+	if (elf_check_fdpic(&exec_params.hdr))
+		set_personality(PER_LINUX_FDPIC);
+	else
+		set_personality(PER_LINUX);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (elf_read_implies_exec(&exec_params.hdr, executable_stack))
 		current->personality |= READ_IMPLIES_EXEC;
 
@@ -343,24 +418,37 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm)
 
 	retval = setup_arg_pages(bprm, current->mm->start_stack,
 				 executable_stack);
+<<<<<<< HEAD
 	if (retval < 0) {
 		send_sig(SIGKILL, current, 0);
 		goto error_kill;
 	}
+=======
+	if (retval < 0)
+		goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/* load the executable and interpreter into memory */
 	retval = elf_fdpic_map_file(&exec_params, bprm->file, current->mm,
 				    "executable");
 	if (retval < 0)
+<<<<<<< HEAD
 		goto error_kill;
+=======
+		goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (interpreter_name) {
 		retval = elf_fdpic_map_file(&interp_params, interpreter,
 					    current->mm, "interpreter");
 		if (retval < 0) {
 			printk(KERN_ERR "Unable to load interpreter\n");
+<<<<<<< HEAD
 			goto error_kill;
+=======
+			goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 
 		allow_write_access(interpreter);
@@ -376,10 +464,14 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm)
 		PAGE_ALIGN(current->mm->start_brk);
 
 #else
+<<<<<<< HEAD
 	/* create a stack and brk area big enough for everyone
 	 * - the brk heap starts at the bottom and works up
 	 * - the stack starts at the top and works down
 	 */
+=======
+	/* create a stack area and zero-size brk area */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	stack_size = (stack_size + PAGE_SIZE - 1) & PAGE_MASK;
 	if (stack_size < PAGE_SIZE * 2)
 		stack_size = PAGE_SIZE * 2;
@@ -397,20 +489,31 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm)
 	if (IS_ERR_VALUE(current->mm->start_brk)) {
 		retval = current->mm->start_brk;
 		current->mm->start_brk = 0;
+<<<<<<< HEAD
 		goto error_kill;
+=======
+		goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	current->mm->brk = current->mm->start_brk;
 	current->mm->context.end_brk = current->mm->start_brk;
+<<<<<<< HEAD
 	current->mm->context.end_brk +=
 		(stack_size > PAGE_SIZE) ? (stack_size - PAGE_SIZE) : 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	current->mm->start_stack = current->mm->start_brk + stack_size;
 #endif
 
 	install_exec_creds(bprm);
 	if (create_elf_fdpic_tables(bprm, current->mm,
 				    &exec_params, &interp_params) < 0)
+<<<<<<< HEAD
 		goto error_kill;
+=======
+		goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	kdebug("- start_code  %lx", current->mm->start_code);
 	kdebug("- end_code    %lx", current->mm->end_code);
@@ -449,12 +552,15 @@ error:
 	kfree(interp_params.phdrs);
 	kfree(interp_params.loadmap);
 	return retval;
+<<<<<<< HEAD
 
 	/* unrecoverable error - kill the process */
 error_kill:
 	send_sig(SIGSEGV, current, 0);
 	goto error;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*****************************************************************************/
@@ -497,8 +603,14 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 	sp = mm->start_stack;
 
 	/* stack the program arguments and environment */
+<<<<<<< HEAD
 	if (elf_fdpic_transfer_args_to_stack(bprm, &sp) < 0)
 		return -EFAULT;
+=======
+	if (transfer_args_to_stack(bprm, &sp) < 0)
+		return -EFAULT;
+	sp &= ~15;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 	/*
@@ -693,6 +805,7 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 
 /*****************************************************************************/
 /*
+<<<<<<< HEAD
  * transfer the program arguments and environment from the holding pages onto
  * the stack
  */
@@ -726,6 +839,8 @@ out:
 
 /*****************************************************************************/
 /*
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * load the appropriate binary image (executable or interpreter) into memory
  * - we assume no MMU is available
  * - if no other PIC bits are set in params->hdr->e_flags
@@ -1214,6 +1329,23 @@ static int maydump(struct vm_area_struct *vma, unsigned long mm_flags)
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	/* support for DAX */
+	if (vma_is_dax(vma)) {
+		if (vma->vm_flags & VM_SHARED) {
+			dump_ok = test_bit(MMF_DUMP_DAX_SHARED, &mm_flags);
+			kdcore("%08lx: %08lx: %s (DAX shared)", vma->vm_start,
+			       vma->vm_flags, dump_ok ? "yes" : "no");
+		} else {
+			dump_ok = test_bit(MMF_DUMP_DAX_PRIVATE, &mm_flags);
+			kdcore("%08lx: %08lx: %s (DAX private)", vma->vm_start,
+			       vma->vm_flags, dump_ok ? "yes" : "no");
+		}
+		return dump_ok;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* By default, dump shared memory if mapped from an anonymous file. */
 	if (vma->vm_flags & VM_SHARED) {
 		if (file_inode(vma->vm_file)->i_nlink == 0) {
@@ -1267,6 +1399,7 @@ static int notesize(struct memelfnote *en)
 
 /* #define DEBUG */
 
+<<<<<<< HEAD
 #define DUMP_WRITE(addr, nr, foffset)	\
 	do { if (!dump_write(file, (addr), (nr))) return 0; *foffset += (nr); } while(0)
 
@@ -1279,12 +1412,16 @@ static int alignfile(struct file *file, loff_t *foffset)
 
 static int writenote(struct memelfnote *men, struct file *file,
 			loff_t *foffset)
+=======
+static int writenote(struct memelfnote *men, struct coredump_params *cprm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct elf_note en;
 	en.n_namesz = strlen(men->name) + 1;
 	en.n_descsz = men->datasz;
 	en.n_type = men->type;
 
+<<<<<<< HEAD
 	DUMP_WRITE(&en, sizeof(en), foffset);
 	DUMP_WRITE(men->name, en.n_namesz, foffset);
 	if (!alignfile(file, foffset))
@@ -1296,6 +1433,12 @@ static int writenote(struct memelfnote *men, struct file *file,
 	return 1;
 }
 #undef DUMP_WRITE
+=======
+	return dump_emit(cprm, &en, sizeof(en)) &&
+		dump_emit(cprm, men->name, en.n_namesz) && dump_align(cprm, 4) &&
+		dump_emit(cprm, men->data, men->datasz) && dump_align(cprm, 4);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void fill_elf_fdpic_header(struct elfhdr *elf, int segs)
 {
@@ -1500,16 +1643,23 @@ static void fill_extnum_info(struct elfhdr *elf, struct elf_shdr *shdr4extnum,
 /*
  * dump the segments for an MMU process
  */
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 static int elf_fdpic_dump_segments(struct file *file, size_t *size,
 			   unsigned long *limit, unsigned long mm_flags)
 {
 	struct vm_area_struct *vma;
 	int err = 0;
+=======
+static bool elf_fdpic_dump_segments(struct coredump_params *cprm)
+{
+	struct vm_area_struct *vma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (vma = current->mm->mmap; vma; vma = vma->vm_next) {
 		unsigned long addr;
 
+<<<<<<< HEAD
 		if (!maydump(vma, mm_flags))
 			continue;
 
@@ -1560,6 +1710,35 @@ static int elf_fdpic_dump_segments(struct file *file, size_t *size,
 	return 0;
 }
 #endif
+=======
+		if (!maydump(vma, cprm->mm_flags))
+			continue;
+
+#ifdef CONFIG_MMU
+		for (addr = vma->vm_start; addr < vma->vm_end;
+							addr += PAGE_SIZE) {
+			bool res;
+			struct page *page = get_dump_page(addr);
+			if (page) {
+				void *kaddr = kmap(page);
+				res = dump_emit(cprm, kaddr, PAGE_SIZE);
+				kunmap(page);
+				put_page(page);
+			} else {
+				res = dump_skip(cprm, PAGE_SIZE);
+			}
+			if (!res)
+				return false;
+		}
+#else
+		if (!dump_emit(cprm, (void *) vma->vm_start,
+				vma->vm_end - vma->vm_start))
+			return false;
+#endif
+	}
+	return true;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static size_t elf_core_vma_data_size(unsigned long mm_flags)
 {
@@ -1585,11 +1764,18 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 	int has_dumped = 0;
 	mm_segment_t fs;
 	int segs;
+<<<<<<< HEAD
 	size_t size = 0;
 	int i;
 	struct vm_area_struct *vma;
 	struct elfhdr *elf = NULL;
 	loff_t offset = 0, dataoff, foffset;
+=======
+	int i;
+	struct vm_area_struct *vma;
+	struct elfhdr *elf = NULL;
+	loff_t offset = 0, dataoff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int numnote;
 	struct memelfnote *notes = NULL;
 	struct elf_prstatus *prstatus = NULL;	/* NT_PRSTATUS */
@@ -1606,6 +1792,11 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 	struct elf_shdr *shdr4extnum = NULL;
 	Elf_Half e_phnum;
 	elf_addr_t e_shoff;
+<<<<<<< HEAD
+=======
+	struct core_thread *ct;
+	struct elf_thread_status *tmp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * We no longer stop all VM operations.
@@ -1641,6 +1832,7 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 		goto cleanup;
 #endif
 
+<<<<<<< HEAD
 	if (cprm->siginfo->si_signo) {
 		struct core_thread *ct;
 		struct elf_thread_status *tmp;
@@ -1663,6 +1855,25 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 			sz = elf_dump_thread_status(cprm->siginfo->si_signo, tmp);
 			thread_status_size += sz;
 		}
+=======
+	for (ct = current->mm->core_state->dumper.next;
+					ct; ct = ct->next) {
+		tmp = kzalloc(sizeof(*tmp), GFP_KERNEL);
+		if (!tmp)
+			goto cleanup;
+
+		tmp->thread = ct->task;
+		list_add(&tmp->list, &thread_list);
+	}
+
+	list_for_each(t, &thread_list) {
+		struct elf_thread_status *tmp;
+		int sz;
+
+		tmp = list_entry(t, struct elf_thread_status, list);
+		sz = elf_dump_thread_status(cprm->siginfo->si_signo, tmp);
+		thread_status_size += sz;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* now collect the dump for the current */
@@ -1720,7 +1931,10 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 
 	offset += sizeof(*elf);				/* Elf header */
 	offset += segs * sizeof(struct elf_phdr);	/* Program headers */
+<<<<<<< HEAD
 	foffset = offset;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Write notes phdr entry */
 	{
@@ -1755,6 +1969,7 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 
 	offset = dataoff;
 
+<<<<<<< HEAD
 	size += sizeof(*elf);
 	if (size > cprm->limit || !dump_write(cprm->file, elf, sizeof(*elf)))
 		goto end_coredump;
@@ -1762,6 +1977,12 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 	size += sizeof(*phdr4note);
 	if (size > cprm->limit
 	    || !dump_write(cprm->file, phdr4note, sizeof(*phdr4note)))
+=======
+	if (!dump_emit(cprm, elf, sizeof(*elf)))
+		goto end_coredump;
+
+	if (!dump_emit(cprm, phdr4note, sizeof(*phdr4note)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto end_coredump;
 
 	/* write program headers for segments dump */
@@ -1785,6 +2006,7 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 			phdr.p_flags |= PF_X;
 		phdr.p_align = ELF_EXEC_PAGESIZE;
 
+<<<<<<< HEAD
 		size += sizeof(phdr);
 		if (size > cprm->limit
 		    || !dump_write(cprm->file, &phdr, sizeof(phdr)))
@@ -1792,11 +2014,22 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 	}
 
 	if (!elf_core_write_extra_phdrs(cprm->file, offset, &size, cprm->limit))
+=======
+		if (!dump_emit(cprm, &phdr, sizeof(phdr)))
+			goto end_coredump;
+	}
+
+	if (!elf_core_write_extra_phdrs(cprm, offset))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto end_coredump;
 
  	/* write out the notes section */
 	for (i = 0; i < numnote; i++)
+<<<<<<< HEAD
 		if (!writenote(notes + i, cprm->file, &foffset))
+=======
+		if (!writenote(notes + i, cprm))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto end_coredump;
 
 	/* write out the thread status notes section */
@@ -1805,6 +2038,7 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 				list_entry(t, struct elf_thread_status, list);
 
 		for (i = 0; i < tmp->num_notes; i++)
+<<<<<<< HEAD
 			if (!writenote(&tmp->notes[i], cprm->file, &foffset))
 				goto end_coredump;
 	}
@@ -1824,6 +2058,23 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 		if (size > cprm->limit
 		    || !dump_write(cprm->file, shdr4extnum,
 				   sizeof(*shdr4extnum)))
+=======
+			if (!writenote(&tmp->notes[i], cprm))
+				goto end_coredump;
+	}
+
+	if (!dump_skip(cprm, dataoff - cprm->pos))
+		goto end_coredump;
+
+	if (!elf_fdpic_dump_segments(cprm))
+		goto end_coredump;
+
+	if (!elf_core_write_extra_data(cprm))
+		goto end_coredump;
+
+	if (e_phnum == PN_XNUM) {
+		if (!dump_emit(cprm, shdr4extnum, sizeof(*shdr4extnum)))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto end_coredump;
 	}
 

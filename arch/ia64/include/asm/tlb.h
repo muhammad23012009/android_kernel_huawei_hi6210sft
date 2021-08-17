@@ -91,6 +91,7 @@ extern struct ia64_tr_entry *ia64_idtrs[NR_CPUS];
 #define RR_RID_MASK	0x00000000ffffff00L
 #define RR_TO_RID(val) 	((val >> 8) & 0xffffff)
 
+<<<<<<< HEAD
 /*
  * Flush the TLB for address range START to END and, if not in fast mode, release the
  * freed pages that where gathered up to this point.
@@ -103,6 +104,11 @@ ia64_tlb_flush_mmu (struct mmu_gather *tlb, unsigned long start, unsigned long e
 
 	if (!tlb->need_flush)
 		return;
+=======
+static inline void
+ia64_tlb_flush_mmu_tlbonly(struct mmu_gather *tlb, unsigned long start, unsigned long end)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tlb->need_flush = 0;
 
 	if (tlb->fullmm) {
@@ -135,6 +141,17 @@ ia64_tlb_flush_mmu (struct mmu_gather *tlb, unsigned long start, unsigned long e
 		flush_tlb_range(&vma, ia64_thash(start), ia64_thash(end));
 	}
 
+<<<<<<< HEAD
+=======
+}
+
+static inline void
+ia64_tlb_flush_mmu_free(struct mmu_gather *tlb)
+{
+	unsigned long i;
+	unsigned int nr;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* lastly, release the freed pages */
 	nr = tlb->nr;
 
@@ -144,6 +161,22 @@ ia64_tlb_flush_mmu (struct mmu_gather *tlb, unsigned long start, unsigned long e
 		free_page_and_swap_cache(tlb->pages[i]);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Flush the TLB for address range START to END and, if not in fast mode, release the
+ * freed pages that where gathered up to this point.
+ */
+static inline void
+ia64_tlb_flush_mmu (struct mmu_gather *tlb, unsigned long start, unsigned long end)
+{
+	if (!tlb->need_flush)
+		return;
+	ia64_tlb_flush_mmu_tlbonly(tlb, start, end);
+	ia64_tlb_flush_mmu_free(tlb);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static inline void __tlb_alloc_page(struct mmu_gather *tlb)
 {
 	unsigned long addr = __get_free_pages(GFP_NOWAIT | __GFP_NOWARN, 0);
@@ -193,17 +226,39 @@ tlb_finish_mmu(struct mmu_gather *tlb, unsigned long start, unsigned long end)
  * must be delayed until after the TLB has been flushed (see comments at the beginning of
  * this file).
  */
+<<<<<<< HEAD
 static inline int __tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 {
+=======
+static inline bool __tlb_remove_page(struct mmu_gather *tlb, struct page *page)
+{
+	if (tlb->nr == tlb->max)
+		return true;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tlb->need_flush = 1;
 
 	if (!tlb->nr && tlb->pages == tlb->local)
 		__tlb_alloc_page(tlb);
 
 	tlb->pages[tlb->nr++] = page;
+<<<<<<< HEAD
 	VM_BUG_ON(tlb->nr > tlb->max);
 
 	return tlb->max - tlb->nr;
+=======
+	return false;
+}
+
+static inline void tlb_flush_mmu_tlbonly(struct mmu_gather *tlb)
+{
+	ia64_tlb_flush_mmu_tlbonly(tlb, tlb->start_addr, tlb->end_addr);
+}
+
+static inline void tlb_flush_mmu_free(struct mmu_gather *tlb)
+{
+	ia64_tlb_flush_mmu_free(tlb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline void tlb_flush_mmu(struct mmu_gather *tlb)
@@ -213,8 +268,33 @@ static inline void tlb_flush_mmu(struct mmu_gather *tlb)
 
 static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 {
+<<<<<<< HEAD
 	if (!__tlb_remove_page(tlb, page))
 		tlb_flush_mmu(tlb);
+=======
+	if (__tlb_remove_page(tlb, page)) {
+		tlb_flush_mmu(tlb);
+		__tlb_remove_page(tlb, page);
+	}
+}
+
+static inline bool __tlb_remove_page_size(struct mmu_gather *tlb,
+					  struct page *page, int page_size)
+{
+	return __tlb_remove_page(tlb, page);
+}
+
+static inline bool __tlb_remove_pte_page(struct mmu_gather *tlb,
+					 struct page *page)
+{
+	return __tlb_remove_page(tlb, page);
+}
+
+static inline void tlb_remove_page_size(struct mmu_gather *tlb,
+					struct page *page, int page_size)
+{
+	return tlb_remove_page(tlb, page);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*

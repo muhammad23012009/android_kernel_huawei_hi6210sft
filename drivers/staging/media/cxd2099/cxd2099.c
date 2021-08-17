@@ -25,8 +25,11 @@
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/moduleparam.h>
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/wait.h>
 #include <linux/delay.h>
@@ -153,6 +156,10 @@ static int write_pccard(struct cxd *ci, u16 address, u8 *data, u8 n)
 	status = i2c_write(ci->i2c, ci->cfg.adr, addr, 3);
 	if (!status) {
 		u8 buf[256] = {3};
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(buf+1, data, n);
 		status = i2c_write(ci->i2c, ci->cfg.adr, buf, n+1);
 	}
@@ -202,6 +209,10 @@ static int write_io_data(struct cxd *ci, u8 *data, u8 n)
 	status = i2c_write(ci->i2c, ci->cfg.adr, addr, 3);
 	if (!status) {
 		u8 buf[256] = {3};
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		memcpy(buf+1, data, n);
 		status = i2c_write(ci->i2c, ci->cfg.adr, buf, n + 1);
 	}
@@ -330,11 +341,22 @@ static int init(struct cxd *ci)
 			break;
 
 #if 0
+<<<<<<< HEAD
 		status = write_reg(ci, 0x09, 0x4D); /* Input Mode C, BYPass Serial, TIVAL = low, MSB */
 		if (status < 0)
 			break;
 #endif
 		status = write_reg(ci, 0x0A, 0xA7); /* TOSTRT = 8, Mode B (gated clock), falling Edge, Serial, POL=HIGH, MSB */
+=======
+		/* Input Mode C, BYPass Serial, TIVAL = low, MSB */
+		status = write_reg(ci, 0x09, 0x4D);
+		if (status < 0)
+			break;
+#endif
+		/* TOSTRT = 8, Mode B (gated clock), falling Edge,
+		 * Serial, POL=HIGH, MSB */
+		status = write_reg(ci, 0x0A, 0xA7);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (status < 0)
 			break;
 
@@ -446,6 +468,10 @@ static int read_attribute_mem(struct dvb_ca_en50221 *ca,
 	return ci->amem[address];
 #else
 	u8 val;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&ci->lock);
 	set_mode(ci, 1);
 	read_pccard(ci, address, &val, 1);
@@ -522,7 +548,11 @@ static int slot_reset(struct dvb_ca_en50221 *ca, int slot)
 		u8 val;
 #endif
 		for (i = 0; i < 100; i++) {
+<<<<<<< HEAD
 			msleep(10);
+=======
+			usleep_range(10000, 11000);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if 0
 			read_reg(ci, 0x06, &val);
 			dev_info(&ci->i2c->dev, "%d:%02x\n", i, val);
@@ -590,7 +620,11 @@ static int campoll(struct cxd *ci)
 		read_reg(ci, 0x01, &slotstat);
 		if (!(2&slotstat)) {
 			if (!ci->slot_stat) {
+<<<<<<< HEAD
 				ci->slot_stat |= DVB_CA_EN50221_POLL_CAM_PRESENT;
+=======
+				ci->slot_stat = DVB_CA_EN50221_POLL_CAM_PRESENT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				write_regm(ci, 0x03, 0x08, 0x08);
 			}
 
@@ -602,7 +636,12 @@ static int campoll(struct cxd *ci)
 				ci->ready = 0;
 			}
 		}
+<<<<<<< HEAD
 		if (istat&8 && ci->slot_stat == DVB_CA_EN50221_POLL_CAM_PRESENT) {
+=======
+		if (istat&8 &&
+		    ci->slot_stat == DVB_CA_EN50221_POLL_CAM_PRESENT) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ci->ready = 1;
 			ci->slot_stat |= DVB_CA_EN50221_POLL_CAM_READY;
 		}
@@ -655,7 +694,11 @@ static int write_data(struct dvb_ca_en50221 *ca, int slot, u8 *ebuf, int ecount)
 	struct cxd *ci = ca->data;
 
 	mutex_lock(&ci->lock);
+<<<<<<< HEAD
 	printk(kern_INFO "write_data %d\n", ecount);
+=======
+	dev_info(&ci->i2c->dev, "write_data %d\n", ecount);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	write_reg(ci, 0x0d, ecount>>8);
 	write_reg(ci, 0x0e, ecount&0xff);
 	write_block(ci, 0x11, ebuf, ecount);

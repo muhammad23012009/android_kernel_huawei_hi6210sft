@@ -50,11 +50,14 @@ extern void paging_init(void);
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)	((pte_t) { (x).val })
 
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte)
 {
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define set_pte(pteptr, pteval) (*(pteptr) = pteval)
 #define set_pte_at(mm, addr, ptep, pteval) set_pte(ptep, pteval)
 
@@ -71,7 +74,15 @@ extern unsigned long empty_zero_page;
  * No page table caches to initialise
  */
 #define pgtable_cache_init()   do { } while (0)
+<<<<<<< HEAD
 #define io_remap_pfn_range      remap_pfn_range
+=======
+
+/*
+ * c6x is !MMU, so define the simpliest implementation
+ */
+#define pgprot_writecombine pgprot_noncached
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm-generic/pgtable.h>
 

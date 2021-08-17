@@ -13,6 +13,10 @@
 #include <linux/mISDNif.h>
 #include <linux/mISDNdsp.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitrev.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "core.h"
 #include "dsp.h"
 
@@ -137,6 +141,7 @@ static unsigned char linear2ulaw(short sample)
 	return ulawbyte;
 }
 
+<<<<<<< HEAD
 static int reverse_bits(int i)
 {
 	int z, j;
@@ -150,14 +155,23 @@ static int reverse_bits(int i)
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void dsp_audio_generate_law_tables(void)
 {
 	int i;
 	for (i = 0; i < 256; i++)
+<<<<<<< HEAD
 		dsp_audio_alaw_to_s32[i] = alaw2linear(reverse_bits(i));
 
 	for (i = 0; i < 256; i++)
 		dsp_audio_ulaw_to_s32[i] = ulaw2linear(reverse_bits(i));
+=======
+		dsp_audio_alaw_to_s32[i] = alaw2linear(bitrev8((u8)i));
+
+	for (i = 0; i < 256; i++)
+		dsp_audio_ulaw_to_s32[i] = ulaw2linear(bitrev8((u8)i));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; i < 256; i++) {
 		dsp_audio_alaw_to_ulaw[i] =
@@ -176,13 +190,21 @@ dsp_audio_generate_s2law_table(void)
 		/* generating ulaw-table */
 		for (i = -32768; i < 32768; i++) {
 			dsp_audio_s16_to_law[i & 0xffff] =
+<<<<<<< HEAD
 				reverse_bits(linear2ulaw(i));
+=======
+				bitrev8(linear2ulaw(i));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else {
 		/* generating alaw-table */
 		for (i = -32768; i < 32768; i++) {
 			dsp_audio_s16_to_law[i & 0xffff] =
+<<<<<<< HEAD
 				reverse_bits(linear2alaw(i));
+=======
+				bitrev8(linear2alaw(i));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 }

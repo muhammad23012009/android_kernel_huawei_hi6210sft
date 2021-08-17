@@ -31,7 +31,11 @@ struct l64781_config
 	u8 demod_address;
 };
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_L64781)
+=======
+#if IS_REACHABLE(CONFIG_DVB_L64781)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend* l64781_attach(const struct l64781_config* config,
 					  struct i2c_adapter* i2c);
 #else

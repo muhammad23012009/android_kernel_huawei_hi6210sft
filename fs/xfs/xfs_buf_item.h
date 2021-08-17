@@ -18,6 +18,7 @@
 #ifndef	__XFS_BUF_ITEM_H__
 #define	__XFS_BUF_ITEM_H__
 
+<<<<<<< HEAD
 extern kmem_zone_t	*xfs_buf_item_zone;
 
 /*
@@ -113,6 +114,11 @@ xfs_blft_from_flags(struct xfs_buf_log_format *blf)
 /*
  * buf log item flags
  */
+=======
+/* kernel only definitions */
+
+/* buf log item flags */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define	XFS_BLI_HOLD		0x01
 #define	XFS_BLI_DIRTY		0x02
 #define	XFS_BLI_STALE		0x04
@@ -120,6 +126,10 @@ xfs_blft_from_flags(struct xfs_buf_log_format *blf)
 #define	XFS_BLI_INODE_ALLOC_BUF	0x10
 #define XFS_BLI_STALE_INODE	0x20
 #define	XFS_BLI_INODE_BUF	0x40
+<<<<<<< HEAD
+=======
+#define	XFS_BLI_ORDERED		0x80
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define XFS_BLI_FLAGS \
 	{ XFS_BLI_HOLD,		"HOLD" }, \
@@ -128,11 +138,18 @@ xfs_blft_from_flags(struct xfs_buf_log_format *blf)
 	{ XFS_BLI_LOGGED,	"LOGGED" }, \
 	{ XFS_BLI_INODE_ALLOC_BUF, "INODE_ALLOC" }, \
 	{ XFS_BLI_STALE_INODE,	"STALE_INODE" }, \
+<<<<<<< HEAD
 	{ XFS_BLI_INODE_BUF,	"INODE_BUF" }
 
 
 #ifdef __KERNEL__
 
+=======
+	{ XFS_BLI_INODE_BUF,	"INODE_BUF" }, \
+	{ XFS_BLI_ORDERED,	"ORDERED" }
+
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 struct xfs_buf;
 struct xfs_mount;
 struct xfs_buf_log_item;
@@ -153,20 +170,35 @@ typedef struct xfs_buf_log_item {
 	struct xfs_buf_log_format __bli_format;	/* embedded in-log header */
 } xfs_buf_log_item_t;
 
+<<<<<<< HEAD
 void	xfs_buf_item_init(struct xfs_buf *, struct xfs_mount *);
 void	xfs_buf_item_relse(struct xfs_buf *);
 void	xfs_buf_item_log(xfs_buf_log_item_t *, uint, uint);
 uint	xfs_buf_item_dirty(xfs_buf_log_item_t *);
+=======
+int	xfs_buf_item_init(struct xfs_buf *, struct xfs_mount *);
+void	xfs_buf_item_relse(struct xfs_buf *);
+void	xfs_buf_item_log(xfs_buf_log_item_t *, uint, uint);
+bool	xfs_buf_item_dirty_format(struct xfs_buf_log_item *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void	xfs_buf_attach_iodone(struct xfs_buf *,
 			      void(*)(struct xfs_buf *, xfs_log_item_t *),
 			      xfs_log_item_t *);
 void	xfs_buf_iodone_callbacks(struct xfs_buf *);
 void	xfs_buf_iodone(struct xfs_buf *, struct xfs_log_item *);
+<<<<<<< HEAD
 
 void	xfs_trans_buf_set_type(struct xfs_trans *, struct xfs_buf *,
 			       enum xfs_blft);
 void	xfs_trans_buf_copy_type(struct xfs_buf *dst_bp, struct xfs_buf *src_bp);
 
 #endif	/* __KERNEL__ */
+=======
+bool	xfs_buf_resubmit_failed_buffers(struct xfs_buf *,
+					struct xfs_log_item *,
+					struct list_head *);
+
+extern kmem_zone_t	*xfs_buf_item_zone;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __XFS_BUF_ITEM_H__ */

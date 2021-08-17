@@ -146,11 +146,32 @@ static void softnet_seq_stop(struct seq_file *seq, void *v)
 static int softnet_seq_show(struct seq_file *seq, void *v)
 {
 	struct softnet_data *sd = v;
+<<<<<<< HEAD
 
 	seq_printf(seq, "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
 		   sd->processed, sd->dropped, sd->time_squeeze, 0,
 		   0, 0, 0, 0, /* was fastroute */
 		   sd->cpu_collision, sd->received_rps);
+=======
+	unsigned int flow_limit_count = 0;
+
+#ifdef CONFIG_NET_FLOW_LIMIT
+	struct sd_flow_limit *fl;
+
+	rcu_read_lock();
+	fl = rcu_dereference(sd->flow_limit);
+	if (fl)
+		flow_limit_count = fl->count;
+	rcu_read_unlock();
+#endif
+
+	seq_printf(seq,
+		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
+		   sd->processed, sd->dropped, sd->time_squeeze, 0,
+		   0, 0, 0, 0, /* was fastroute */
+		   0,	/* was cpu_collision */
+		   sd->received_rps, flow_limit_count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

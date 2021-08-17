@@ -42,10 +42,17 @@
 #include <linux/spinlock.h>
 #include <linux/timer.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/scatterlist.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/io.h>
+#include <asm/irq.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/types.h>
 #include <asm/io.h>
@@ -118,7 +125,11 @@ struct goldfish_mmc_host {
 	struct mmc_host		*mmc;
 	struct device		*dev;
 	unsigned char		id; /* 16xx chips have 2 MMC blocks */
+<<<<<<< HEAD
 	void __iomem		*virt_base;
+=======
+	void			*virt_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned int		phys_base;
 	int			irq;
 	unsigned char		bus_mode;
@@ -546,8 +557,11 @@ static int goldfish_mmc_remove(struct platform_device *pdev)
 {
 	struct goldfish_mmc_host *host = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	BUG_ON(host == NULL);
 
 	mmc_remove_host(host->mmc);

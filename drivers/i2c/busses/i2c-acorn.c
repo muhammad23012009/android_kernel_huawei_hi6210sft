@@ -12,7 +12,11 @@
  *  On Acorn machines, the following i2c devices are on the bus:
  *	- PCF8583 real time clock & static RAM
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/i2c.h>
 #include <linux/i2c-algo-bit.h>
 #include <linux/io.h>
@@ -83,6 +87,10 @@ static struct i2c_algo_bit_data ioc_data = {
 
 static struct i2c_adapter ioc_ops = {
 	.nr			= 0,
+<<<<<<< HEAD
+=======
+	.name			= "ioc",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.algo_data		= &ioc_data,
 };
 

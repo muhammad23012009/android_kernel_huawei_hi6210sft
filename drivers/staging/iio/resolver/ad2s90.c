@@ -64,11 +64,17 @@ static int ad2s90_probe(struct spi_device *spi)
 	struct ad2s90_state *st;
 	int ret = 0;
 
+<<<<<<< HEAD
 	indio_dev = iio_device_alloc(sizeof(*st));
 	if (indio_dev == NULL) {
 		ret = -ENOMEM;
 		goto error_ret;
 	}
+=======
+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+	if (!indio_dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	st = iio_priv(indio_dev);
 	spi_set_drvdata(spi, indio_dev);
 
@@ -81,13 +87,20 @@ static int ad2s90_probe(struct spi_device *spi)
 	indio_dev->num_channels = 1;
 	indio_dev->name = spi_get_device_id(spi)->name;
 
+<<<<<<< HEAD
 	ret = iio_device_register(indio_dev);
 	if (ret)
 		goto error_free_dev;
+=======
+	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* need 600ns between CS and the first falling edge of SCLK */
 	spi->max_speed_hz = 830000;
 	spi->mode = SPI_MODE_3;
+<<<<<<< HEAD
 	spi_setup(spi);
 
 	return 0;
@@ -102,6 +115,14 @@ static int ad2s90_remove(struct spi_device *spi)
 {
 	iio_device_unregister(spi_get_drvdata(spi));
 	iio_device_free(spi_get_drvdata(spi));
+=======
+	ret = spi_setup(spi);
+
+	if (ret < 0) {
+		dev_err(&spi->dev, "spi_setup failed!\n");
+		return ret;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -115,10 +136,15 @@ MODULE_DEVICE_TABLE(spi, ad2s90_id);
 static struct spi_driver ad2s90_driver = {
 	.driver = {
 		.name = "ad2s90",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = ad2s90_probe,
 	.remove = ad2s90_remove,
+=======
+	},
+	.probe = ad2s90_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id_table = ad2s90_id,
 };
 module_spi_driver(ad2s90_driver);

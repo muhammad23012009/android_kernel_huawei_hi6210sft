@@ -169,7 +169,12 @@ sisusb_get_sisusb_lock_and_check(unsigned short console)
 	if (in_atomic())
 		return NULL;
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb(console)))
+=======
+	sisusb = sisusb_get_sisusb(console);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return NULL;
 
 	mutex_lock(&sisusb->lock);
@@ -208,13 +213,22 @@ sisusbcon_init(struct vc_data *c, int init)
 	struct sisusb_usb_data *sisusb;
 	int cols, rows;
 
+<<<<<<< HEAD
 	/* This is called by take_over_console(),
+=======
+	/* This is called by do_take_over_console(),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * ie by us/under our control. It is
 	 * only called after text mode and fonts
 	 * are set up/restored.
 	 */
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	mutex_lock(&sisusb->lock);
@@ -273,11 +287,20 @@ sisusbcon_deinit(struct vc_data *c)
 	struct sisusb_usb_data *sisusb;
 	int i;
 
+<<<<<<< HEAD
 	/* This is called by take_over_console()
 	 * and others, ie not under our control.
 	 */
 
 	if (!(sisusb = sisusb_get_sisusb(c->vc_num)))
+=======
+	/* This is called by do_take_over_console()
+	 * and others, ie not under our control.
+	 */
+
+	sisusb = sisusb_get_sisusb(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	mutex_lock(&sisusb->lock);
@@ -367,9 +390,15 @@ static void
 sisusbcon_putc(struct vc_data *c, int ch, int y, int x)
 {
 	struct sisusb_usb_data *sisusb;
+<<<<<<< HEAD
 	ssize_t written;
 
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* sisusb->lock is down */
@@ -380,7 +409,11 @@ sisusbcon_putc(struct vc_data *c, int ch, int y, int x)
 
 
 	sisusb_copy_memory(sisusb, (char *)SISUSB_VADDR(x, y),
+<<<<<<< HEAD
 				(long)SISUSB_HADDR(x, y), 2, &written);
+=======
+				(long)SISUSB_HADDR(x, y), 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&sisusb->lock);
 }
@@ -391,11 +424,19 @@ sisusbcon_putcs(struct vc_data *c, const unsigned short *s,
 		         int count, int y, int x)
 {
 	struct sisusb_usb_data *sisusb;
+<<<<<<< HEAD
 	ssize_t written;
 	u16 *dest;
 	int i;
 
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	u16 *dest;
+	int i;
+
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* sisusb->lock is down */
@@ -415,7 +456,11 @@ sisusbcon_putcs(struct vc_data *c, const unsigned short *s,
 	}
 
 	sisusb_copy_memory(sisusb, (char *)SISUSB_VADDR(x, y),
+<<<<<<< HEAD
 				(long)SISUSB_HADDR(x, y), count * 2, &written);
+=======
+				(long)SISUSB_HADDR(x, y), count * 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&sisusb->lock);
 }
@@ -426,14 +471,22 @@ sisusbcon_clear(struct vc_data *c, int y, int x, int height, int width)
 {
 	struct sisusb_usb_data *sisusb;
 	u16 eattr = c->vc_video_erase_char;
+<<<<<<< HEAD
 	ssize_t written;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, length, cols;
 	u16 *dest;
 
 	if (width <= 0 || height <= 0)
 		return;
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* sisusb->lock is down */
@@ -469,6 +522,7 @@ sisusbcon_clear(struct vc_data *c, int y, int x, int height, int width)
 
 
 	sisusb_copy_memory(sisusb, (unsigned char *)SISUSB_VADDR(x, y),
+<<<<<<< HEAD
 				(long)SISUSB_HADDR(x, y), length, &written);
 
 	mutex_unlock(&sisusb->lock);
@@ -503,6 +557,9 @@ sisusbcon_bmove(struct vc_data *c, int sy, int sx,
 
 	sisusb_copy_memory(sisusb, (unsigned char *)SISUSB_VADDR(dx, dy),
 				(long)SISUSB_HADDR(dx, dy), length, &written);
+=======
+				(long)SISUSB_HADDR(x, y), length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&sisusb->lock);
 }
@@ -512,7 +569,10 @@ static int
 sisusbcon_switch(struct vc_data *c)
 {
 	struct sisusb_usb_data *sisusb;
+<<<<<<< HEAD
 	ssize_t written;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int length;
 
 	/* Returnvalue 0 means we have fully restored screen,
@@ -520,7 +580,12 @@ sisusbcon_switch(struct vc_data *c)
 	 * Returnvalue != 0 naturally means the opposite.
 	 */
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* sisusb->lock is down */
@@ -551,7 +616,11 @@ sisusbcon_switch(struct vc_data *c)
 
 	sisusb_copy_memory(sisusb, (unsigned char *)c->vc_origin,
 				(long)SISUSB_HADDR(0, 0),
+<<<<<<< HEAD
 				length, &written);
+=======
+				length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&sisusb->lock);
 
@@ -569,7 +638,12 @@ sisusbcon_save_screen(struct vc_data *c)
 	 * buffer.
 	 */
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* sisusb->lock is down */
@@ -591,25 +665,43 @@ sisusbcon_save_screen(struct vc_data *c)
 }
 
 /* interface routine */
+<<<<<<< HEAD
 static int
 sisusbcon_set_palette(struct vc_data *c, unsigned char *table)
+=======
+static void
+sisusbcon_set_palette(struct vc_data *c, const unsigned char *table)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct sisusb_usb_data *sisusb;
 	int i, j;
 
 	/* Return value not used by vt */
 
+<<<<<<< HEAD
 	if (!CON_IS_VISIBLE(c))
 		return -EINVAL;
 
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
 		return -EINVAL;
+=======
+	if (!con_is_visible(c))
+		return;
+
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* sisusb->lock is down */
 
 	if (sisusb_is_inactive(c, sisusb)) {
 		mutex_unlock(&sisusb->lock);
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = j = 0; i < 16; i++) {
@@ -624,8 +716,11 @@ sisusbcon_set_palette(struct vc_data *c, unsigned char *table)
 	}
 
 	mutex_unlock(&sisusb->lock);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* interface routine */
@@ -634,10 +729,17 @@ sisusbcon_blank(struct vc_data *c, int blank, int mode_switch)
 {
 	struct sisusb_usb_data *sisusb;
 	u8 sr1, cr17, pmreg, cr63;
+<<<<<<< HEAD
 	ssize_t written;
 	int ret = 0;
 
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	int ret = 0;
+
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* sisusb->lock is down */
@@ -661,7 +763,11 @@ sisusbcon_blank(struct vc_data *c, int blank, int mode_switch)
 				(unsigned char *)c->vc_origin,
 				(u32)(sisusb->vrambase +
 					(c->vc_origin - sisusb->scrbuf)),
+<<<<<<< HEAD
 				c->vc_screenbuf_size, &written);
+=======
+				c->vc_screenbuf_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sisusb->con_blanked = 1;
 		ret = 1;
 		break;
@@ -712,23 +818,37 @@ sisusbcon_blank(struct vc_data *c, int blank, int mode_switch)
 }
 
 /* interface routine */
+<<<<<<< HEAD
 static int
+=======
+static void
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 sisusbcon_scrolldelta(struct vc_data *c, int lines)
 {
 	struct sisusb_usb_data *sisusb;
 	int margin = c->vc_size_row * 4;
 	int ul, we, p, st;
 
+<<<<<<< HEAD
 	/* The return value does not seem to be used */
 
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
 		return 0;
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* sisusb->lock is down */
 
 	if (sisusb_is_inactive(c, sisusb)) {
 		mutex_unlock(&sisusb->lock);
+<<<<<<< HEAD
 		return 0;
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (!lines)		/* Turn scrollback off */
@@ -768,8 +888,11 @@ sisusbcon_scrolldelta(struct vc_data *c, int lines)
 	sisusbcon_set_start_address(sisusb, c);
 
 	mutex_unlock(&sisusb->lock);
+<<<<<<< HEAD
 
 	return 1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* Interface routine */
@@ -779,7 +902,12 @@ sisusbcon_cursor(struct vc_data *c, int mode)
 	struct sisusb_usb_data *sisusb;
 	int from, to, baseline;
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 
 	/* sisusb->lock is down */
@@ -847,7 +975,10 @@ sisusbcon_scroll_area(struct vc_data *c, struct sisusb_usb_data *sisusb,
 	int cols = sisusb->sisusb_num_columns;
 	int length = ((b - t) * cols) * 2;
 	u16 eattr = c->vc_video_erase_char;
+<<<<<<< HEAD
 	ssize_t written;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* sisusb->lock is down */
 
@@ -877,7 +1008,11 @@ sisusbcon_scroll_area(struct vc_data *c, struct sisusb_usb_data *sisusb,
 	}
 
 	sisusb_copy_memory(sisusb, (char *)SISUSB_VADDR(0, t),
+<<<<<<< HEAD
 				(long)SISUSB_HADDR(0, t), length, &written);
+=======
+				(long)SISUSB_HADDR(0, t), length);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_unlock(&sisusb->lock);
 
@@ -890,7 +1025,10 @@ sisusbcon_scroll(struct vc_data *c, int t, int b, int dir, int lines)
 {
 	struct sisusb_usb_data *sisusb;
 	u16 eattr = c->vc_video_erase_char;
+<<<<<<< HEAD
 	ssize_t written;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int copyall = 0;
 	unsigned long oldorigin;
 	unsigned int delta = lines * c->vc_size_row;
@@ -906,7 +1044,12 @@ sisusbcon_scroll(struct vc_data *c, int t, int b, int dir, int lines)
 	if (!lines)
 		return 1;
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* sisusb->lock is down */
@@ -982,18 +1125,30 @@ sisusbcon_scroll(struct vc_data *c, int t, int b, int dir, int lines)
 		sisusb_copy_memory(sisusb,
 			(char *)c->vc_origin,
 			(u32)(sisusb->vrambase + originoffset),
+<<<<<<< HEAD
 			c->vc_screenbuf_size, &written);
+=======
+			c->vc_screenbuf_size);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (dir == SM_UP)
 		sisusb_copy_memory(sisusb,
 			(char *)c->vc_origin + c->vc_screenbuf_size - delta,
 			(u32)sisusb->vrambase + originoffset +
 					c->vc_screenbuf_size - delta,
+<<<<<<< HEAD
 			delta, &written);
+=======
+			delta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else
 		sisusb_copy_memory(sisusb,
 			(char *)c->vc_origin,
 			(u32)(sisusb->vrambase + originoffset),
+<<<<<<< HEAD
 			delta, &written);
+=======
+			delta);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	c->vc_scr_end = c->vc_origin + c->vc_screenbuf_size;
 	c->vc_visible_origin = c->vc_origin;
@@ -1018,7 +1173,12 @@ sisusbcon_set_origin(struct vc_data *c)
 	 *	screenbuffer as the origin.
 	 */
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 
 	/* sisusb->lock is down */
@@ -1047,7 +1207,12 @@ sisusbcon_resize(struct vc_data *c, unsigned int newcols, unsigned int newrows,
 	struct sisusb_usb_data *sisusb;
 	int fh;
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	fh = sisusb->current_font_height;
@@ -1257,7 +1422,11 @@ sisusbcon_do_font_op(struct sisusb_usb_data *sisusb, int set, int slot,
 			struct vc_data *vc = vc_cons[i].d;
 
 			if (vc && vc->vc_sw == &sisusb_con) {
+<<<<<<< HEAD
 				if (CON_IS_VISIBLE(vc)) {
+=======
+				if (con_is_visible(vc)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					vc->vc_sw->con_cursor(vc, CM_DRAW);
 				}
 				vc->vc_font.height = fh;
@@ -1286,7 +1455,12 @@ sisusbcon_font_set(struct vc_data *c, struct console_font *font,
 	if (font->width != 8 || (charcount != 256 && charcount != 512))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	/* sisusb->lock is down */
@@ -1326,7 +1500,12 @@ sisusbcon_font_get(struct vc_data *c, struct console_font *font)
 {
 	struct sisusb_usb_data *sisusb;
 
+<<<<<<< HEAD
 	if (!(sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num)))
+=======
+	sisusb = sisusb_get_sisusb_lock_and_check(c->vc_num);
+	if (!sisusb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -ENODEV;
 
 	/* sisusb->lock is down */
@@ -1367,7 +1546,10 @@ static const struct consw sisusb_con = {
 	.con_putcs =		sisusbcon_putcs,
 	.con_cursor =		sisusbcon_cursor,
 	.con_scroll =		sisusbcon_scroll,
+<<<<<<< HEAD
 	.con_bmove =		sisusbcon_bmove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.con_switch =		sisusbcon_switch,
 	.con_blank =		sisusbcon_blank,
 	.con_font_set =		sisusbcon_font_set,
@@ -1415,15 +1597,21 @@ static const struct consw sisusb_dummy_con = {
 	.con_putcs =		SISUSBCONDUMMY,
 	.con_cursor =		SISUSBCONDUMMY,
 	.con_scroll =		SISUSBCONDUMMY,
+<<<<<<< HEAD
 	.con_bmove =		SISUSBCONDUMMY,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.con_switch =		SISUSBCONDUMMY,
 	.con_blank =		SISUSBCONDUMMY,
 	.con_font_set =		SISUSBCONDUMMY,
 	.con_font_get =		SISUSBCONDUMMY,
 	.con_font_default =	SISUSBCONDUMMY,
 	.con_font_copy =	SISUSBCONDUMMY,
+<<<<<<< HEAD
 	.con_set_palette =	SISUSBCONDUMMY,
 	.con_scrolldelta =	SISUSBCONDUMMY,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int
@@ -1490,8 +1678,14 @@ sisusb_console_init(struct sisusb_usb_data *sisusb, int first, int last)
 	mutex_unlock(&sisusb->lock);
 
 	/* Now grab the desired console(s) */
+<<<<<<< HEAD
 	ret = take_over_console(&sisusb_con, first - 1, last - 1, 0);
 
+=======
+	console_lock();
+	ret = do_take_over_console(&sisusb_con, first - 1, last - 1, 0);
+	console_unlock();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!ret)
 		sisusb->haveconsole = 1;
 	else {
@@ -1535,11 +1729,22 @@ sisusb_console_exit(struct sisusb_usb_data *sisusb)
 
 	if (sisusb->haveconsole) {
 		for (i = 0; i < MAX_NR_CONSOLES; i++)
+<<<<<<< HEAD
 			if (sisusb->havethisconsole[i])
 				take_over_console(&sisusb_dummy_con, i, i, 0);
 				/* At this point, con_deinit for all our
 				 * consoles is executed by take_over_console().
 				 */
+=======
+			if (sisusb->havethisconsole[i]) {
+				console_lock();
+				do_take_over_console(&sisusb_dummy_con, i, i, 0);
+				console_unlock();
+				/* At this point, con_deinit for all our
+				 * consoles is executed by do_take_over_console().
+				 */
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		sisusb->haveconsole = 0;
 	}
 

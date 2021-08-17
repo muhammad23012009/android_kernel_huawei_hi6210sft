@@ -6,7 +6,11 @@
  * Licensed under GPLv2.
  */
 /dts-v1/;
+<<<<<<< HEAD
 /include/ "at91sam9g45.dtsi"
+=======
+#include "at91sam9g45.dtsi"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 / {
 	model = "Ronetix pm9g45";
@@ -21,6 +25,7 @@
 	};
 
 	clocks {
+<<<<<<< HEAD
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
@@ -28,6 +33,14 @@
 		main_clock: clock@0 {
 			compatible = "atmel,osc", "fixed-clock";
 			clock-frequency = <12000000>;
+=======
+		slow_xtal {
+		      clock-frequency = <32768>;
+		};
+
+		main_xtal {
+		      clock-frequency = <12000000>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		};
 	};
 
@@ -42,15 +55,24 @@
 				board {
 					pinctrl_board_nand: nand0-board {
 						atmel,pins =
+<<<<<<< HEAD
 							<3 3 0x0 0x1	/* PD3 gpio RDY pin pull_up*/
 							 2 14 0x0 0x1>;	/* PC14 gpio enable pin pull_up */
+=======
+							<AT91_PIOD 3 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP	/* PD3 gpio RDY pin pull_up*/
+							 AT91_PIOC 14 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP>;	/* PC14 gpio enable pin pull_up */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					};
 				};
 
 				mmc {
 					pinctrl_board_mmc: mmc0-board {
 						atmel,pins =
+<<<<<<< HEAD
 							<3 6 0x0 0x5>;	/* PD6 gpio CD pin pull_up and deglitch */
+=======
+							<AT91_PIOD 6 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;	/* PD6 gpio CD pin pull_up and deglitch */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					};
 				};
 			};
@@ -64,7 +86,11 @@
 				slot@0 {
 					reg = <0>;
 					bus-width = <4>;
+<<<<<<< HEAD
 					cd-gpios = <&pioD 6 0>;
+=======
+					cd-gpios = <&pioD 6 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				};
 			};
 
@@ -81,8 +107,13 @@
 			nand-on-flash-bbt;
 			pinctrl-0 = <&pinctrl_board_nand>;
 
+<<<<<<< HEAD
 			gpios = <&pioD 3 0
 				 &pioC 14 0
+=======
+			gpios = <&pioD 3 GPIO_ACTIVE_HIGH
+				 &pioC 14 GPIO_ACTIVE_HIGH
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				 0
 				>;
 
@@ -134,13 +165,21 @@
 
 		led0 {
 			label = "led0";
+<<<<<<< HEAD
 			gpios = <&pioD 0 1>;
+=======
+			gpios = <&pioD 0 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "nand-disk";
 		};
 
 		led1 {
 			label = "led1";
+<<<<<<< HEAD
 			gpios = <&pioD 31 0>;
+=======
+			gpios = <&pioD 31 GPIO_ACTIVE_HIGH>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,default-trigger = "heartbeat";
 		};
 	};
@@ -152,13 +191,21 @@
 
 		right {
 			label = "SW4";
+<<<<<<< HEAD
 			gpios = <&pioE 7 1>;
+=======
+			gpios = <&pioE 7 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,code = <106>;
 		};
 
 		up {
 			label = "SW3";
+<<<<<<< HEAD
 			gpios = <&pioE 8 1>;
+=======
+			gpios = <&pioE 8 GPIO_ACTIVE_LOW>;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			linux,code = <103>;
 		};
 	};

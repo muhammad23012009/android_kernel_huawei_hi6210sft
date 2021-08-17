@@ -17,12 +17,17 @@
  * Enable lockd debugging.
  * Requires RPC_DEBUG.
  */
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
 # define LOCKD_DEBUG		1
 #endif
 
 #undef ifdebug
 #if defined(RPC_DEBUG) && defined(LOCKD_DEBUG)
+=======
+#undef ifdebug
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # define ifdebug(flag)		if (unlikely(nlm_debug & NLMDBG_##flag))
 #else
 # define ifdebug(flag)		if (0)

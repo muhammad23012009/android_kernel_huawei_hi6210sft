@@ -1044,7 +1044,11 @@ EXPORT_SYMBOL(z8530_sync_dma_close);
  *	@dev: The network device to attach
  *	@c: The Z8530 channel to configure in sync DMA mode.
  *
+<<<<<<< HEAD
  *	Set up a Z85x30 device for synchronous DMA tranmission. One
+=======
+ *	Set up a Z85x30 device for synchronous DMA transmission. One
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *	ISA DMA channel must be available for this to work. The receive
  *	side is run in PIO mode, but then it has the bigger FIFO.
  */

@@ -18,6 +18,7 @@
 #include <linux/io.h>
 #include <linux/irq.h>
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/cputype.h>
 #include <mach/addr-map.h>
@@ -43,6 +44,20 @@ int pxa910_set_wake(struct irq_data *data, unsigned int on)
 		if (desc->action)
 			desc->action->flags &= ~IRQF_NO_SUSPEND;
 	}
+=======
+#include <asm/outercache.h>
+
+#include "cputype.h"
+#include "addr-map.h"
+#include "pm-pxa910.h"
+#include "regs-icu.h"
+#include "irqs.h"
+
+int pxa910_set_wake(struct irq_data *data, unsigned int on)
+{
+	uint32_t awucrm = 0, apcr = 0;
+	int irq = data->irq;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* setting wakeup sources */
 	switch (irq) {
@@ -115,9 +130,17 @@ int pxa910_set_wake(struct irq_data *data, unsigned int on)
 		if (irq >= IRQ_GPIO_START && irq < IRQ_BOARD_START) {
 			awucrm = MPMU_AWUCRM_WAKEUP(2);
 			apcr |= MPMU_APCR_SLPWP2;
+<<<<<<< HEAD
 		} else
 			printk(KERN_ERR "Error: no defined wake up source irq: %d\n",
 				irq);
+=======
+		} else {
+			/* FIXME: This should return a proper error code ! */
+			printk(KERN_ERR "Error: no defined wake up source irq: %d\n",
+				irq);
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (on) {

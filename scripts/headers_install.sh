@@ -1,8 +1,14 @@
 #!/bin/sh
 
+<<<<<<< HEAD
 if [ $# -lt 1 ]
 then
 	echo "Usage: headers_install.sh OUTDIR SRCDIR [FILES...]
+=======
+if [ $# -lt 2 ]
+then
+	echo "Usage: headers_install.sh OUTDIR SRCDIR [FILES...]"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	echo
 	echo "Prepares kernel header files for use by user space, by removing"
 	echo "all compiler.h definitions and #includes, removing any"

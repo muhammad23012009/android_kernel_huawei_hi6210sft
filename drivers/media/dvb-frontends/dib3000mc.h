@@ -2,7 +2,11 @@
  * Driver for DiBcom DiB3000MC/P-demodulator.
  *
  * Copyright (C) 2004-6 DiBcom (http://www.dibcom.fr/)
+<<<<<<< HEAD
  * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher\@desy.de)
+=======
+ * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This code is partially based on the previous dib3000mc.c .
  *
@@ -13,8 +17,11 @@
 #ifndef DIB3000MC_H
 #define DIB3000MC_H
 
+<<<<<<< HEAD
 #include <linux/kconfig.h>
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include "dibx000_common.h"
 
 struct dib3000mc_config {
@@ -41,7 +48,11 @@ struct dib3000mc_config {
 #define DEFAULT_DIB3000MC_I2C_ADDRESS 16
 #define DEFAULT_DIB3000P_I2C_ADDRESS  24
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_DVB_DIB3000MC)
+=======
+#if IS_REACHABLE(CONFIG_DVB_DIB3000MC)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct dvb_frontend *dib3000mc_attach(struct i2c_adapter *i2c_adap,
 					     u8 i2c_addr,
 					     struct dib3000mc_config *cfg);

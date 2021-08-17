@@ -24,7 +24,10 @@
 #include <linux/fcntl.h>
 #include <linux/gfp.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/in.h>
 #include <linux/string.h>
@@ -83,8 +86,12 @@ static int jazzsonic_open(struct net_device* dev)
 {
 	int retval;
 
+<<<<<<< HEAD
 	retval = request_irq(dev->irq, sonic_interrupt, IRQF_DISABLED,
 				"sonic", dev);
+=======
+	retval = request_irq(dev->irq, sonic_interrupt, 0, "sonic", dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval) {
 		printk(KERN_ERR "%s: unable to get IRQ %d.\n",
 				dev->name, dev->irq);
@@ -249,13 +256,23 @@ static int jazz_sonic_probe(struct platform_device *pdev)
 		goto out;
 	err = register_netdev(dev);
 	if (err)
+<<<<<<< HEAD
 		goto out1;
+=======
+		goto undo_probe1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	printk("%s: MAC %pM IRQ %d\n", dev->name, dev->dev_addr, dev->irq);
 
 	return 0;
 
+<<<<<<< HEAD
 out1:
+=======
+undo_probe1:
+	dma_free_coherent(lp->device, SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+			  lp->descriptors, lp->descriptors_laddr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	release_mem_region(dev->base_addr, SONIC_MEM_SIZE);
 out:
 	free_netdev(dev);
@@ -289,7 +306,10 @@ static struct platform_driver jazz_sonic_driver = {
 	.remove	= jazz_sonic_device_remove,
 	.driver	= {
 		.name	= jazz_sonic_string,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

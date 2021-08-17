@@ -365,9 +365,14 @@ static struct scsi_host_template cumanascsi2_template = {
 	.eh_abort_handler		= fas216_eh_abort,
 	.can_queue			= 1,
 	.this_id			= 7,
+<<<<<<< HEAD
 	.sg_tablesize			= SCSI_MAX_SG_CHAIN_SEGMENTS,
 	.dma_boundary			= IOMD_DMA_BOUNDARY,
 	.cmd_per_lun			= 1,
+=======
+	.sg_tablesize			= SG_MAX_SEGMENTS,
+	.dma_boundary			= IOMD_DMA_BOUNDARY,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.use_clustering			= DISABLE_CLUSTERING,
 	.proc_name			= "cumanascsi2",
 };
@@ -431,7 +436,11 @@ static int cumanascsi2_probe(struct expansion_card *ec,
 		goto out_free;
 
 	ret = request_irq(ec->irq, cumanascsi_2_intr,
+<<<<<<< HEAD
 			  IRQF_DISABLED, "cumanascsi2", info);
+=======
+			  0, "cumanascsi2", info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		printk("scsi%d: IRQ%d not free: %d\n",
 		       host->host_no, ec->irq, ret);
@@ -455,7 +464,11 @@ static int cumanascsi2_probe(struct expansion_card *ec,
 
 	if (info->info.scsi.dma != NO_DMA)
 		free_dma(info->info.scsi.dma);
+<<<<<<< HEAD
 	free_irq(ec->irq, host);
+=======
+	free_irq(ec->irq, info);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
  out_release:
 	fas216_release(host);

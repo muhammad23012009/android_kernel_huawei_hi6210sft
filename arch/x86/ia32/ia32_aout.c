@@ -25,6 +25,10 @@
 #include <linux/personality.h>
 #include <linux/init.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
+=======
+#include <linux/perf_event.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/uaccess.h>
 #include <asm/pgalloc.h>
@@ -33,21 +37,42 @@
 #include <asm/ia32.h>
 
 #undef WARN_OLD
+<<<<<<< HEAD
 #undef CORE_DUMP /* definitely broken */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int load_aout_binary(struct linux_binprm *);
 static int load_aout_library(struct file *);
 
+<<<<<<< HEAD
 #ifdef CORE_DUMP
 static int aout_core_dump(long signr, struct pt_regs *regs, struct file *file,
 			  unsigned long limit);
+=======
+#ifdef CONFIG_COREDUMP
+static int aout_core_dump(struct coredump_params *);
+
+static unsigned long get_dr(int n)
+{
+	struct perf_event *bp = current->thread.ptrace_bps[n];
+	return bp ? bp->hw.info.address : 0;
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * fill in the user structure for a core dump..
  */
+<<<<<<< HEAD
 static void dump_thread32(struct pt_regs *regs, struct user32 *dump)
 {
 	u32 fs, gs;
+=======
+static void fill_dump(struct pt_regs *regs, struct user32 *dump)
+{
+	u32 fs, gs;
+	memset(dump, 0, sizeof(*dump));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* changed the size calculations - should hopefully work better. lbt */
 	dump->magic = CMAGIC;
@@ -57,6 +82,7 @@ static void dump_thread32(struct pt_regs *regs, struct user32 *dump)
 	dump->u_dsize = ((unsigned long)
 			 (current->mm->brk + (PAGE_SIZE-1))) >> PAGE_SHIFT;
 	dump->u_dsize -= dump->u_tsize;
+<<<<<<< HEAD
 	dump->u_ssize = 0;
 	dump->u_debugreg[0] = current->thread.debugreg0;
 	dump->u_debugreg[1] = current->thread.debugreg1;
@@ -66,6 +92,14 @@ static void dump_thread32(struct pt_regs *regs, struct user32 *dump)
 	dump->u_debugreg[5] = 0;
 	dump->u_debugreg[6] = current->thread.debugreg6;
 	dump->u_debugreg[7] = current->thread.debugreg7;
+=======
+	dump->u_debugreg[0] = get_dr(0);
+	dump->u_debugreg[1] = get_dr(1);
+	dump->u_debugreg[2] = get_dr(2);
+	dump->u_debugreg[3] = get_dr(3);
+	dump->u_debugreg[6] = current->thread.debugreg6;
+	dump->u_debugreg[7] = current->thread.ptrace_dr7;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (dump->start_stack < 0xc0000000) {
 		unsigned long tmp;
@@ -74,6 +108,7 @@ static void dump_thread32(struct pt_regs *regs, struct user32 *dump)
 		dump->u_ssize = tmp >> PAGE_SHIFT;
 	}
 
+<<<<<<< HEAD
 	dump->regs.bx = regs->bx;
 	dump->regs.cx = regs->cx;
 	dump->regs.dx = regs->dx;
@@ -81,17 +116,34 @@ static void dump_thread32(struct pt_regs *regs, struct user32 *dump)
 	dump->regs.di = regs->di;
 	dump->regs.bp = regs->bp;
 	dump->regs.ax = regs->ax;
+=======
+	dump->regs.ebx = regs->bx;
+	dump->regs.ecx = regs->cx;
+	dump->regs.edx = regs->dx;
+	dump->regs.esi = regs->si;
+	dump->regs.edi = regs->di;
+	dump->regs.ebp = regs->bp;
+	dump->regs.eax = regs->ax;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump->regs.ds = current->thread.ds;
 	dump->regs.es = current->thread.es;
 	savesegment(fs, fs);
 	dump->regs.fs = fs;
 	savesegment(gs, gs);
 	dump->regs.gs = gs;
+<<<<<<< HEAD
 	dump->regs.orig_ax = regs->orig_ax;
 	dump->regs.ip = regs->ip;
 	dump->regs.cs = regs->cs;
 	dump->regs.flags = regs->flags;
 	dump->regs.sp = regs->sp;
+=======
+	dump->regs.orig_eax = regs->orig_ax;
+	dump->regs.eip = regs->ip;
+	dump->regs.cs = regs->cs;
+	dump->regs.eflags = regs->flags;
+	dump->regs.esp = regs->sp;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dump->regs.ss = regs->ss;
 
 #if 1 /* FIXME */
@@ -107,22 +159,38 @@ static struct linux_binfmt aout_format = {
 	.module		= THIS_MODULE,
 	.load_binary	= load_aout_binary,
 	.load_shlib	= load_aout_library,
+<<<<<<< HEAD
 #ifdef CORE_DUMP
+=======
+#ifdef CONFIG_COREDUMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.core_dump	= aout_core_dump,
 #endif
 	.min_coredump	= PAGE_SIZE
 };
 
+<<<<<<< HEAD
 static void set_brk(unsigned long start, unsigned long end)
+=======
+static int set_brk(unsigned long start, unsigned long end)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	start = PAGE_ALIGN(start);
 	end = PAGE_ALIGN(end);
 	if (end <= start)
+<<<<<<< HEAD
 		return;
 	vm_brk(start, end - start);
 }
 
 #ifdef CORE_DUMP
+=======
+		return 0;
+	return vm_brk(start, end - start);
+}
+
+#ifdef CONFIG_COREDUMP
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * These are the only things you should do on a core-file: use only these
  * macros to write out all the necessary info.
@@ -130,6 +198,7 @@ static void set_brk(unsigned long start, unsigned long end)
 
 #include <linux/coredump.h>
 
+<<<<<<< HEAD
 #define DUMP_WRITE(addr, nr)			     \
 	if (!dump_write(file, (void *)(addr), (nr))) \
 		goto end_coredump;
@@ -139,6 +208,9 @@ static void set_brk(unsigned long start, unsigned long end)
 		goto end_coredump;
 
 #define START_DATA()	(u.u_tsize << PAGE_SHIFT)
+=======
+#define START_DATA(u)	(u.u_tsize << PAGE_SHIFT)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define START_STACK(u)	(u.start_stack)
 
 /*
@@ -151,8 +223,12 @@ static void set_brk(unsigned long start, unsigned long end)
  * dumping of the process results in another error..
  */
 
+<<<<<<< HEAD
 static int aout_core_dump(long signr, struct pt_regs *regs, struct file *file,
 			  unsigned long limit)
+=======
+static int aout_core_dump(struct coredump_params *cprm)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	mm_segment_t fs;
 	int has_dumped = 0;
@@ -162,21 +238,38 @@ static int aout_core_dump(long signr, struct pt_regs *regs, struct file *file,
 	fs = get_fs();
 	set_fs(KERNEL_DS);
 	has_dumped = 1;
+<<<<<<< HEAD
 	strncpy(dump.u_comm, current->comm, sizeof(current->comm));
 	dump.u_ar0 = offsetof(struct user32, regs);
 	dump.signal = signr;
 	dump_thread32(regs, &dump);
+=======
+
+	fill_dump(cprm->regs, &dump);
+
+	strncpy(dump.u_comm, current->comm, sizeof(current->comm));
+	dump.u_ar0 = offsetof(struct user32, regs);
+	dump.signal = cprm->siginfo->si_signo;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * If the size of the dump file exceeds the rlimit, then see
 	 * what would happen if we wrote the stack, but not the data
 	 * area.
 	 */
+<<<<<<< HEAD
 	if ((dump.u_dsize + dump.u_ssize + 1) * PAGE_SIZE > limit)
 		dump.u_dsize = 0;
 
 	/* Make sure we have enough room to write the stack and data areas. */
 	if ((dump.u_ssize + 1) * PAGE_SIZE > limit)
+=======
+	if ((dump.u_dsize + dump.u_ssize + 1) * PAGE_SIZE > cprm->limit)
+		dump.u_dsize = 0;
+
+	/* Make sure we have enough room to write the stack and data areas. */
+	if ((dump.u_ssize + 1) * PAGE_SIZE > cprm->limit)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dump.u_ssize = 0;
 
 	/* make sure we actually have a data and stack area to dump */
@@ -190,22 +283,40 @@ static int aout_core_dump(long signr, struct pt_regs *regs, struct file *file,
 
 	set_fs(KERNEL_DS);
 	/* struct user */
+<<<<<<< HEAD
 	DUMP_WRITE(&dump, sizeof(dump));
 	/* Now dump all of the user data.  Include malloced stuff as well */
 	DUMP_SEEK(PAGE_SIZE - sizeof(dump));
+=======
+	if (!dump_emit(cprm, &dump, sizeof(dump)))
+		goto end_coredump;
+	/* Now dump all of the user data.  Include malloced stuff as well */
+	if (!dump_skip(cprm, PAGE_SIZE - sizeof(dump)))
+		goto end_coredump;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* now we start writing out the user space info */
 	set_fs(USER_DS);
 	/* Dump the data area */
 	if (dump.u_dsize != 0) {
 		dump_start = START_DATA(dump);
 		dump_size = dump.u_dsize << PAGE_SHIFT;
+<<<<<<< HEAD
 		DUMP_WRITE(dump_start, dump_size);
+=======
+		if (!dump_emit(cprm, (void *)dump_start, dump_size))
+			goto end_coredump;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/* Now prepare to dump the stack area */
 	if (dump.u_ssize != 0) {
 		dump_start = START_STACK(dump);
 		dump_size = dump.u_ssize << PAGE_SHIFT;
+<<<<<<< HEAD
 		DUMP_WRITE(dump_start, dump_size);
+=======
+		if (!dump_emit(cprm, (void *)dump_start, dump_size))
+			goto end_coredump;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 end_coredump:
 	set_fs(fs);
@@ -308,6 +419,7 @@ static int load_aout_binary(struct linux_binprm *bprm)
 		(current->mm->start_data = N_DATADDR(ex));
 	current->mm->brk = ex.a_bss +
 		(current->mm->start_brk = N_BSSADDR(ex));
+<<<<<<< HEAD
 	current->mm->free_area_cache = TASK_UNMAPPED_BASE;
 	current->mm->cached_hole_size = 0;
 
@@ -317,6 +429,12 @@ static int load_aout_binary(struct linux_binprm *bprm)
 		send_sig(SIGKILL, current, 0);
 		return retval;
 	}
+=======
+
+	retval = setup_arg_pages(bprm, IA32_STACK_TOP, EXSTACK_DEFAULT);
+	if (retval < 0)
+		return retval;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	install_exec_creds(bprm);
 
@@ -328,6 +446,7 @@ static int load_aout_binary(struct linux_binprm *bprm)
 
 		error = vm_brk(text_addr & PAGE_MASK, map_size);
 
+<<<<<<< HEAD
 		if (error != (text_addr & PAGE_MASK)) {
 			send_sig(SIGKILL, current, 0);
 			return error;
@@ -339,6 +458,15 @@ static int load_aout_binary(struct linux_binprm *bprm)
 			send_sig(SIGKILL, current, 0);
 			return error;
 		}
+=======
+		if (error)
+			return error;
+
+		error = read_code(bprm->file, text_addr, 32,
+				  ex.a_text + ex.a_data);
+		if ((signed long)error < 0)
+			return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 #ifdef WARN_OLD
 		static unsigned long error_time, error_time2;
@@ -353,14 +481,26 @@ static int load_aout_binary(struct linux_binprm *bprm)
 			    time_after(jiffies, error_time + 5*HZ)) {
 			printk(KERN_WARNING
 			       "fd_offset is not page aligned. Please convert "
+<<<<<<< HEAD
 			       "program: %s\n",
 			       bprm->file->f_path.dentry->d_name.name);
+=======
+			       "program: %pD\n",
+			       bprm->file);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			error_time = jiffies;
 		}
 #endif
 
 		if (!bprm->file->f_op->mmap || (fd_offset & ~PAGE_MASK) != 0) {
+<<<<<<< HEAD
 			vm_brk(N_TXTADDR(ex), ex.a_text+ex.a_data);
+=======
+			error = vm_brk(N_TXTADDR(ex), ex.a_text+ex.a_data);
+			if (error)
+				return error;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			read_code(bprm->file, N_TXTADDR(ex), fd_offset,
 					ex.a_text+ex.a_data);
 			goto beyond_if;
@@ -372,16 +512,22 @@ static int load_aout_binary(struct linux_binprm *bprm)
 				MAP_EXECUTABLE | MAP_32BIT,
 				fd_offset);
 
+<<<<<<< HEAD
 		if (error != N_TXTADDR(ex)) {
 			send_sig(SIGKILL, current, 0);
 			return error;
 		}
+=======
+		if (error != N_TXTADDR(ex))
+			return error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		error = vm_mmap(bprm->file, N_DATADDR(ex), ex.a_data,
 				PROT_READ | PROT_WRITE | PROT_EXEC,
 				MAP_FIXED | MAP_PRIVATE | MAP_DENYWRITE |
 				MAP_EXECUTABLE | MAP_32BIT,
 				fd_offset + ex.a_text);
+<<<<<<< HEAD
 		if (error != N_DATADDR(ex)) {
 			send_sig(SIGKILL, current, 0);
 			return error;
@@ -391,6 +537,18 @@ beyond_if:
 	set_binfmt(&aout_format);
 
 	set_brk(current->mm->start_brk, current->mm->brk);
+=======
+		if (error != N_DATADDR(ex))
+			return error;
+	}
+
+beyond_if:
+	error = set_brk(current->mm->start_brk, current->mm->brk);
+	if (error)
+		return error;
+
+	set_binfmt(&aout_format);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	current->mm->start_stack =
 		(unsigned long)create_aout_tables((char __user *)bprm->p, bprm);
@@ -444,12 +602,23 @@ static int load_aout_library(struct file *file)
 		if (time_after(jiffies, error_time + 5*HZ)) {
 			printk(KERN_WARNING
 			       "N_TXTOFF is not page aligned. Please convert "
+<<<<<<< HEAD
 			       "library: %s\n",
 			       file->f_path.dentry->d_name.name);
 			error_time = jiffies;
 		}
 #endif
 		vm_brk(start_addr, ex.a_text + ex.a_data + ex.a_bss);
+=======
+			       "library: %pD\n",
+			       file);
+			error_time = jiffies;
+		}
+#endif
+		retval = vm_brk(start_addr, ex.a_text + ex.a_data + ex.a_bss);
+		if (retval)
+			goto out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		read_code(file, start_addr, N_TXTOFF(ex),
 			  ex.a_text + ex.a_data);
@@ -468,9 +637,14 @@ static int load_aout_library(struct file *file)
 	len = PAGE_ALIGN(ex.a_text + ex.a_data);
 	bss = ex.a_text + ex.a_data + ex.a_bss;
 	if (bss > len) {
+<<<<<<< HEAD
 		error = vm_brk(start_addr + len, bss - len);
 		retval = error;
 		if (error != start_addr + len)
+=======
+		retval = vm_brk(start_addr + len, bss - len);
+		if (retval)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			goto out;
 	}
 	retval = 0;

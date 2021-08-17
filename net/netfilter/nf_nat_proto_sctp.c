@@ -34,9 +34,13 @@ sctp_manip_pkt(struct sk_buff *skb,
 	       const struct nf_conntrack_tuple *tuple,
 	       enum nf_nat_manip_type maniptype)
 {
+<<<<<<< HEAD
 	struct sk_buff *frag;
 	sctp_sctphdr_t *hdr;
 	__u32 crc32;
+=======
+	sctp_sctphdr_t *hdr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!skb_make_writable(skb, hdroff + sizeof(*hdr)))
 		return false;
@@ -51,11 +55,15 @@ sctp_manip_pkt(struct sk_buff *skb,
 		hdr->dest = tuple->dst.u.sctp.port;
 	}
 
+<<<<<<< HEAD
 	crc32 = sctp_start_cksum((u8 *)hdr, skb_headlen(skb) - hdroff);
 	skb_walk_frags(skb, frag)
 		crc32 = sctp_update_cksum((u8 *)frag->data, skb_headlen(frag),
 					  crc32);
 	hdr->checksum = sctp_end_cksum(crc32);
+=======
+	hdr->checksum = sctp_compute_cksum(skb, hdroff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return true;
 }
@@ -65,7 +73,11 @@ static const struct nf_nat_l4proto nf_nat_l4proto_sctp = {
 	.manip_pkt		= sctp_manip_pkt,
 	.in_range		= nf_nat_l4proto_in_range,
 	.unique_tuple		= sctp_unique_tuple,
+<<<<<<< HEAD
 #if defined(CONFIG_NF_CT_NETLINK) || defined(CONFIG_NF_CT_NETLINK_MODULE)
+=======
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.nlattr_to_range	= nf_nat_l4proto_nlattr_to_range,
 #endif
 };

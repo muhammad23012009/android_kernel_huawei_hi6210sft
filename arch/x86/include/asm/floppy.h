@@ -145,10 +145,17 @@ static int fd_request_irq(void)
 {
 	if (can_use_virtual_dma)
 		return request_irq(FLOPPY_IRQ, floppy_hardint,
+<<<<<<< HEAD
 				   IRQF_DISABLED, "floppy", NULL);
 	else
 		return request_irq(FLOPPY_IRQ, floppy_interrupt,
 				   IRQF_DISABLED, "floppy", NULL);
+=======
+				   0, "floppy", NULL);
+	else
+		return request_irq(FLOPPY_IRQ, floppy_interrupt,
+				   0, "floppy", NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static unsigned long dma_mem_alloc(unsigned long size)

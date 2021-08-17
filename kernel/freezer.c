@@ -39,10 +39,17 @@ static DEFINE_SPINLOCK(freezer_lock);
  */
 bool freezing_slow_path(struct task_struct *p)
 {
+<<<<<<< HEAD
 	if (p->flags & PF_NOFREEZE)
 		return false;
 
 	if (test_thread_flag(TIF_MEMDIE))
+=======
+	if (p->flags & (PF_NOFREEZE | PF_SUSPEND_TASK))
+		return false;
+
+	if (test_tsk_thread_flag(p, TIF_MEMDIE))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return false;
 
 	if (pm_nosig_freezing || cgroup_freezing(p))
@@ -150,12 +157,15 @@ void __thaw_task(struct task_struct *p)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	/*
 	 * Clear freezing and kick @p if FROZEN.  Clearing is guaranteed to
 	 * be visible to @p as waking up implies wmb.  Waking up inside
 	 * freezer_lock also prevents wakeups from leaking outside
 	 * refrigerator.
 	 */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_lock_irqsave(&freezer_lock, flags);
 	if (frozen(p))
 		wake_up_process(p);

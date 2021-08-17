@@ -16,6 +16,11 @@
 #define DEBUG_LL_PHYS_BASE_RS1		0x1c000000
 #define DEBUG_LL_UART_OFFSET_RS1	0x00090000
 
+<<<<<<< HEAD
+=======
+#define DEBUG_LL_UART_PHYS_CRX		0xb0090000
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define DEBUG_LL_VIRT_BASE		0xf8000000
 
 #if defined(CONFIG_DEBUG_VEXPRESS_UART0_DETECT)
@@ -45,6 +50,7 @@
 
 		.endm
 
+<<<<<<< HEAD
 #include <asm/hardware/debug-pl01x.S>
 
 #elif defined(CONFIG_DEBUG_VEXPRESS_UART0_CA9)
@@ -84,4 +90,7 @@
 		.macro	busyuart,rd,rx
 		.endm
 
+=======
+#include <debug/pl01x.S>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

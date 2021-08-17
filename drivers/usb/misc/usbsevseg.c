@@ -12,7 +12,10 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/string.h>
@@ -57,7 +60,11 @@ struct usb_sevsegdev {
  * if str commands are used, we would assume the end of string
  * so mem commands are used.
  */
+<<<<<<< HEAD
 inline size_t my_memlen(const char *buf, size_t count)
+=======
+static inline size_t my_memlen(const char *buf, size_t count)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	if (count > 0 && buf[count-1] == '\n')
 		return count - 1;
@@ -129,10 +136,15 @@ static void update_display_visual(struct usb_sevsegdev *mydev, gfp_t mf)
 		return;
 
 	buffer = kzalloc(MAXLEN, mf);
+<<<<<<< HEAD
 	if (!buffer) {
 		dev_err(&mydev->udev->dev, "out of memory\n");
 		return;
 	}
+=======
+	if (!buffer)
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* The device is right to left, where as you write left to right */
 	for (i = 0; i < mydev->textlength; i++)
@@ -347,10 +359,15 @@ static int sevseg_probe(struct usb_interface *interface,
 	int rc = -ENOMEM;
 
 	mydev = kzalloc(sizeof(struct usb_sevsegdev), GFP_KERNEL);
+<<<<<<< HEAD
 	if (mydev == NULL) {
 		dev_err(&interface->dev, "Out of memory\n");
 		goto error_mem;
 	}
+=======
+	if (!mydev)
+		goto error_mem;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mydev->udev = usb_get_dev(udev);
 	mydev->intf = interface;

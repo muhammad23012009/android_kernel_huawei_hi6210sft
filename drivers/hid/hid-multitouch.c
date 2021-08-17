@@ -42,7 +42,10 @@
 #include <linux/hid.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/input/mt.h>
 #include <linux/string.h>
 
@@ -62,17 +65,34 @@ MODULE_LICENSE("GPL");
 #define MT_QUIRK_ALWAYS_VALID		(1 << 4)
 #define MT_QUIRK_VALID_IS_INRANGE	(1 << 5)
 #define MT_QUIRK_VALID_IS_CONFIDENCE	(1 << 6)
+<<<<<<< HEAD
+=======
+#define MT_QUIRK_CONFIDENCE		(1 << 7)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MT_QUIRK_SLOT_IS_CONTACTID_MINUS_ONE	(1 << 8)
 #define MT_QUIRK_NO_AREA		(1 << 9)
 #define MT_QUIRK_IGNORE_DUPLICATES	(1 << 10)
 #define MT_QUIRK_HOVERING		(1 << 11)
 #define MT_QUIRK_CONTACT_CNT_ACCURATE	(1 << 12)
+<<<<<<< HEAD
+=======
+#define MT_QUIRK_FORCE_GET_FEATURE	(1 << 13)
+
+#define MT_INPUTMODE_TOUCHSCREEN	0x02
+#define MT_INPUTMODE_TOUCHPAD		0x03
+
+#define MT_BUTTONTYPE_CLICKPAD		0
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct mt_slot {
 	__s32 x, y, cx, cy, p, w, h;
 	__s32 contactid;	/* the device ContactID assigned to this slot */
 	bool touch_state;	/* is the touch valid? */
 	bool inrange_state;	/* is the finger in proximity of the sensor? */
+<<<<<<< HEAD
+=======
+	bool confidence_state;  /* is the touch made by a finger? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct mt_class {
@@ -84,6 +104,10 @@ struct mt_class {
 	__s32 sn_pressure;	/* Signal/noise ratio for pressure events */
 	__u8 maxcontacts;
 	bool is_indirect;	/* true for touchpads */
+<<<<<<< HEAD
+=======
+	bool export_all_inputs;	/* do not ignore mouse, keyboards, etc... */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 struct mt_fields {
@@ -100,17 +124,30 @@ struct mt_device {
 	int cc_value_index;	/* contact count value index in the field */
 	unsigned last_slot_field;	/* the last field of a slot */
 	unsigned mt_report_id;	/* the report ID of the multitouch device */
+<<<<<<< HEAD
 	unsigned pen_report_id;	/* the report ID of the pen device */
+=======
+	unsigned long initial_quirks;	/* initial quirks state */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__s16 inputmode;	/* InputMode HID feature, -1 if non-existent */
 	__s16 inputmode_index;	/* InputMode HID feature index in the report */
 	__s16 maxcontact_report_id;	/* Maximum Contact Number HID feature,
 				   -1 if non-existent */
+<<<<<<< HEAD
+=======
+	__u8 inputmode_value;  /* InputMode HID feature value */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u8 num_received;	/* how many contacts we received */
 	__u8 num_expected;	/* expected last contact index */
 	__u8 maxcontacts;
 	__u8 touches_by_report;	/* how many touches are present in one report:
 				* 1 means we should use a serial protocol
 				* > 1 means hybrid (multitouch) protocol */
+<<<<<<< HEAD
+=======
+	__u8 buttons_count;	/* number of physical buttons per touchpad */
+	bool is_buttonpad;	/* is this device a button pad? */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool serial_maybe;	/* need to check for serial protocol */
 	bool curvalid;		/* is the current contact valid? */
 	unsigned mt_flags;	/* flags to pass to input-mt */
@@ -128,6 +165,7 @@ static void mt_post_parse(struct mt_device *td);
 #define MT_CLS_CONFIDENCE_MINUS_ONE		0x0005
 #define MT_CLS_DUAL_INRANGE_CONTACTID		0x0006
 #define MT_CLS_DUAL_INRANGE_CONTACTNUMBER	0x0007
+<<<<<<< HEAD
 #define MT_CLS_DUAL_NSMU_CONTACTID		0x0008
 #define MT_CLS_INRANGE_CONTACTNUMBER		0x0009
 #define MT_CLS_NSMU				0x000a
@@ -137,6 +175,19 @@ static void mt_post_parse(struct mt_device *td);
 /* vendor specific classes */
 #define MT_CLS_3M				0x0101
 #define MT_CLS_CYPRESS				0x0102
+=======
+/* reserved					0x0008 */
+#define MT_CLS_INRANGE_CONTACTNUMBER		0x0009
+#define MT_CLS_NSMU				0x000a
+/* reserved					0x0010 */
+/* reserved					0x0011 */
+#define MT_CLS_WIN_8				0x0012
+#define MT_CLS_EXPORT_ALL_INPUTS		0x0013
+
+/* vendor specific classes */
+#define MT_CLS_3M				0x0101
+/* reserved					0x0102 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define MT_CLS_EGALAX				0x0103
 #define MT_CLS_EGALAX_SERIAL			0x0104
 #define MT_CLS_TOPSEED				0x0105
@@ -144,6 +195,10 @@ static void mt_post_parse(struct mt_device *td);
 #define MT_CLS_FLATFROG				0x0107
 #define MT_CLS_GENERALTOUCH_TWOFINGERS		0x0108
 #define MT_CLS_GENERALTOUCH_PWT_TENFINGERS	0x0109
+<<<<<<< HEAD
+=======
+#define MT_CLS_VTL				0x0110
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define MT_DEFAULT_MAXCONTACT	10
 #define MT_MAX_MAXCONTACT	250
@@ -188,6 +243,7 @@ static struct mt_class mt_classes[] = {
 		.quirks = MT_QUIRK_VALID_IS_INRANGE |
 			MT_QUIRK_SLOT_IS_CONTACTNUMBER,
 		.maxcontacts = 2 },
+<<<<<<< HEAD
 	{ .name = MT_CLS_DUAL_NSMU_CONTACTID,
 		.quirks = MT_QUIRK_NOT_SEEN_MEANS_UP |
 			MT_QUIRK_SLOT_IS_CONTACTID,
@@ -205,6 +261,20 @@ static struct mt_class mt_classes[] = {
 			MT_QUIRK_CONTACT_CNT_ACCURATE |
 			MT_QUIRK_SLOT_IS_CONTACTID,
 		.maxcontacts = 2 },
+=======
+	{ .name = MT_CLS_INRANGE_CONTACTNUMBER,
+		.quirks = MT_QUIRK_VALID_IS_INRANGE |
+			MT_QUIRK_SLOT_IS_CONTACTNUMBER },
+	{ .name = MT_CLS_WIN_8,
+		.quirks = MT_QUIRK_ALWAYS_VALID |
+			MT_QUIRK_IGNORE_DUPLICATES |
+			MT_QUIRK_HOVERING |
+			MT_QUIRK_CONTACT_CNT_ACCURATE },
+	{ .name = MT_CLS_EXPORT_ALL_INPUTS,
+		.quirks = MT_QUIRK_ALWAYS_VALID |
+			MT_QUIRK_CONTACT_CNT_ACCURATE,
+		.export_all_inputs = true },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * vendor specific classes
@@ -217,10 +287,13 @@ static struct mt_class mt_classes[] = {
 		.sn_height = 128,
 		.maxcontacts = 60,
 	},
+<<<<<<< HEAD
 	{ .name = MT_CLS_CYPRESS,
 		.quirks = MT_QUIRK_NOT_SEEN_MEANS_UP |
 			MT_QUIRK_CYPRESS,
 		.maxcontacts = 10 },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .name = MT_CLS_EGALAX,
 		.quirks =  MT_QUIRK_SLOT_IS_CONTACTID |
 			MT_QUIRK_VALID_IS_INRANGE,
@@ -258,6 +331,7 @@ static struct mt_class mt_classes[] = {
 		.sn_move = 2048,
 		.maxcontacts = 40,
 	},
+<<<<<<< HEAD
 	{ }
 };
 
@@ -272,11 +346,25 @@ static void mt_free_input_name(struct hid_input *hi)
 	}
 }
 
+=======
+	{ .name = MT_CLS_VTL,
+		.quirks = MT_QUIRK_ALWAYS_VALID |
+			MT_QUIRK_CONTACT_CNT_ACCURATE |
+			MT_QUIRK_FORCE_GET_FEATURE,
+	},
+	{ }
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static ssize_t mt_show_quirks(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mt_device *td = hid_get_drvdata(hdev);
 
 	return sprintf(buf, "%u\n", td->mtclass.quirks);
@@ -286,7 +374,11 @@ static ssize_t mt_set_quirks(struct device *dev,
 			  struct device_attribute *attr,
 			  const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mt_device *td = hid_get_drvdata(hdev);
 
 	unsigned long val;
@@ -313,6 +405,42 @@ static struct attribute_group mt_attribute_group = {
 	.attrs = sysfs_attrs
 };
 
+<<<<<<< HEAD
+=======
+static void mt_get_feature(struct hid_device *hdev, struct hid_report *report)
+{
+	struct mt_device *td = hid_get_drvdata(hdev);
+	int ret;
+	u32 size = hid_report_len(report);
+	u8 *buf;
+
+	/*
+	 * Do not fetch the feature report if the device has been explicitly
+	 * marked as non-capable.
+	 */
+	if (td->initial_quirks & HID_QUIRK_NO_INIT_REPORTS)
+		return;
+
+	buf = hid_alloc_report_buf(report, GFP_KERNEL);
+	if (!buf)
+		return;
+
+	ret = hid_hw_raw_request(hdev, report->id, buf, size,
+				 HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
+	if (ret < 0) {
+		dev_warn(&hdev->dev, "failed to fetch feature %d\n",
+			 report->id);
+	} else {
+		ret = hid_report_raw_event(hdev, HID_FEATURE_REPORT, buf,
+					   size, 0);
+		if (ret)
+			dev_warn(&hdev->dev, "failed to report feature\n");
+	}
+
+	kfree(buf);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void mt_feature_mapping(struct hid_device *hdev,
 		struct hid_field *field, struct hid_usage *usage)
 {
@@ -326,11 +454,32 @@ static void mt_feature_mapping(struct hid_device *hdev,
 			break;
 		}
 
+<<<<<<< HEAD
 		td->inputmode = field->report->id;
 		td->inputmode_index = usage->usage_index;
 
 		break;
 	case HID_DG_CONTACTMAX:
+=======
+		if (td->inputmode < 0) {
+			td->inputmode = field->report->id;
+			td->inputmode_index = usage->usage_index;
+		} else {
+			/*
+			 * Some elan panels wrongly declare 2 input mode
+			 * features, and silently ignore when we set the
+			 * value in the second field. Skip the second feature
+			 * and hope for the best.
+			 */
+			dev_info(&hdev->dev,
+				 "Ignoring the extra HID_DG_INPUTMODE\n");
+		}
+
+		break;
+	case HID_DG_CONTACTMAX:
+		mt_get_feature(hdev, field->report);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		td->maxcontact_report_id = field->report->id;
 		td->maxcontacts = field->value[0];
 		if (!td->maxcontacts &&
@@ -341,6 +490,7 @@ static void mt_feature_mapping(struct hid_device *hdev,
 			td->maxcontacts = td->mtclass.maxcontacts;
 
 		break;
+<<<<<<< HEAD
 	case 0xff0000c5:
 		if (field->report_count == 256 && field->report_size == 8) {
 			/* Win 8 devices need special quirks */
@@ -353,6 +503,23 @@ static void mt_feature_mapping(struct hid_device *hdev,
 			*quirks &= ~MT_QUIRK_VALID_IS_INRANGE;
 			*quirks &= ~MT_QUIRK_VALID_IS_CONFIDENCE;
 		}
+=======
+	case HID_DG_BUTTONTYPE:
+		if (usage->usage_index >= field->report_count) {
+			dev_err(&hdev->dev, "HID_DG_BUTTONTYPE out of range\n");
+			break;
+		}
+
+		mt_get_feature(hdev, field->report);
+		if (field->value[usage->usage_index] == MT_BUTTONTYPE_CLICKPAD)
+			td->is_buttonpad = true;
+
+		break;
+	case 0xff0000c5:
+		/* Retrieve the Win8 blob once to enable some devices */
+		if (usage->usage_index == 0)
+			mt_get_feature(hdev, field->report);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}
 }
@@ -378,6 +545,7 @@ static void mt_store_field(struct hid_usage *usage, struct mt_device *td,
 	f->usages[f->length++] = usage->hid;
 }
 
+<<<<<<< HEAD
 static int mt_pen_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
@@ -424,6 +592,8 @@ static void mt_pen_input_configured(struct hid_device *hdev,
 	__set_bit(BTN_STYLUS, hi->input->keybit);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
@@ -440,6 +610,7 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 	 * Model touchscreens providing buttons as touchpads.
 	 */
 	if (field->application == HID_DG_TOUCHPAD ||
+<<<<<<< HEAD
 	    (usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON)
 		td->mt_flags |= INPUT_MT_POINTER;
 
@@ -452,6 +623,16 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		set_bit(INPUT_PROP_POINTER, hi->input->propbit);
 	else
 		return 0;
+=======
+	    (usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON) {
+		td->mt_flags |= INPUT_MT_POINTER;
+		td->inputmode_value = MT_INPUTMODE_TOUCHPAD;
+	}
+
+	/* count the buttons on touchpads */
+	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON)
+		td->buttons_count++;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (usage->usage_index)
 		prev_usage = &field->usage[usage->usage_index - 1];
@@ -505,6 +686,12 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 			mt_store_field(usage, td, hi);
 			return 1;
 		case HID_DG_CONFIDENCE:
+<<<<<<< HEAD
+=======
+			if (cls->name == MT_CLS_WIN_8 &&
+				field->application == HID_DG_TOUCHPAD)
+				cls->quirks |= MT_QUIRK_CONFIDENCE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			mt_store_field(usage, td, hi);
 			return 1;
 		case HID_DG_TIPSWITCH:
@@ -566,6 +753,11 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 	case HID_UP_BUTTON:
 		code = BTN_MOUSE + ((usage->hid - 1) & HID_USAGE);
 		hid_map_usage(hi, usage, bit, max, EV_KEY, code);
+<<<<<<< HEAD
+=======
+		if (!*bit)
+			return -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		input_set_capability(hi->input, EV_KEY, code);
 		return 1;
 
@@ -617,6 +809,10 @@ static void mt_complete_slot(struct mt_device *td, struct input_dev *input)
 		return;
 
 	if (td->curvalid || (td->mtclass.quirks & MT_QUIRK_ALWAYS_VALID)) {
+<<<<<<< HEAD
+=======
+		int active;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		int slotnum = mt_compute_slot(td, input);
 		struct mt_slot *s = &td->curdata;
 		struct input_mt *mt = input->mt;
@@ -631,10 +827,21 @@ static void mt_complete_slot(struct mt_device *td, struct input_dev *input)
 				return;
 		}
 
+<<<<<<< HEAD
 		input_mt_slot(input, slotnum);
 		input_mt_report_slot_state(input, MT_TOOL_FINGER,
 			s->touch_state || s->inrange_state);
 		if (s->touch_state || s->inrange_state) {
+=======
+		if (!(td->mtclass.quirks & MT_QUIRK_CONFIDENCE))
+			s->confidence_state = 1;
+		active = (s->touch_state || s->inrange_state) &&
+							s->confidence_state;
+
+		input_mt_slot(input, slotnum);
+		input_mt_report_slot_state(input, MT_TOOL_FINGER, active);
+		if (active) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/* this finger is in proximity of the sensor */
 			int wide = (s->w > s->h);
 			/* divided by two to match visual scale of touch */
@@ -699,6 +906,11 @@ static void mt_process_mt_event(struct hid_device *hid, struct hid_field *field,
 			td->curdata.touch_state = value;
 			break;
 		case HID_DG_CONFIDENCE:
+<<<<<<< HEAD
+=======
+			if (quirks & MT_QUIRK_CONFIDENCE)
+				td->curdata.confidence_state = value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (quirks & MT_QUIRK_VALID_IS_CONFIDENCE)
 				td->curvalid = value;
 			break;
@@ -803,6 +1015,16 @@ static int mt_touch_input_configured(struct hid_device *hdev,
 	if (cls->quirks & MT_QUIRK_NOT_SEEN_MEANS_UP)
 		td->mt_flags |= INPUT_MT_DROP_UNUSED;
 
+<<<<<<< HEAD
+=======
+	/* check for clickpads */
+	if ((td->mt_flags & INPUT_MT_POINTER) && (td->buttons_count == 1))
+		td->is_buttonpad = true;
+
+	if (td->is_buttonpad)
+		__set_bit(INPUT_PROP_BUTTONPAD, input->propbit);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = input_mt_init_slots(input, td->maxcontacts, td->mt_flags);
 	if (ret)
 		return ret;
@@ -815,6 +1037,7 @@ static int mt_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
+<<<<<<< HEAD
 	/* Only map fields from TouchScreen or TouchPad collections.
 	* We need to ignore fields that belong to other collections
 	* such as Mouse that might have the same GenericDesktop usages. */
@@ -827,16 +1050,70 @@ static int mt_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		return mt_pen_input_mapping(hdev, hi, field, usage, bit, max);
 
 	return mt_touch_input_mapping(hdev, hi, field, usage, bit, max);
+=======
+	struct mt_device *td = hid_get_drvdata(hdev);
+
+	/*
+	 * If mtclass.export_all_inputs is not set, only map fields from
+	 * TouchScreen or TouchPad collections. We need to ignore fields
+	 * that belong to other collections such as Mouse that might have
+	 * the same GenericDesktop usages.
+	 */
+	if (!td->mtclass.export_all_inputs &&
+	    field->application != HID_DG_TOUCHSCREEN &&
+	    field->application != HID_DG_PEN &&
+	    field->application != HID_DG_TOUCHPAD &&
+	    field->application != HID_GD_KEYBOARD &&
+	    field->application != HID_CP_CONSUMER_CONTROL)
+		return -1;
+
+	/*
+	 * some egalax touchscreens have "application == HID_DG_TOUCHSCREEN"
+	 * for the stylus.
+	 * The check for mt_report_id ensures we don't process
+	 * HID_DG_CONTACTCOUNT from the pen report as it is outside the physical
+	 * collection, but within the report ID.
+	 */
+	if (field->physical == HID_DG_STYLUS)
+		return 0;
+	else if ((field->physical == 0) &&
+		 (field->report->id != td->mt_report_id) &&
+		 (td->mt_report_id != -1))
+		return 0;
+
+	if (field->application == HID_DG_TOUCHSCREEN ||
+	    field->application == HID_DG_TOUCHPAD)
+		return mt_touch_input_mapping(hdev, hi, field, usage, bit, max);
+
+	/* let hid-core decide for the others */
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mt_input_mapped(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
+<<<<<<< HEAD
 	if (field->physical == HID_DG_STYLUS)
 		return mt_pen_input_mapped(hdev, hi, field, usage, bit, max);
 
 	return mt_touch_input_mapped(hdev, hi, field, usage, bit, max);
+=======
+	/*
+	 * some egalax touchscreens have "application == HID_DG_TOUCHSCREEN"
+	 * for the stylus.
+	 */
+	if (field->physical == HID_DG_STYLUS)
+		return 0;
+
+	if (field->application == HID_DG_TOUCHSCREEN ||
+	    field->application == HID_DG_TOUCHPAD)
+		return mt_touch_input_mapped(hdev, hi, field, usage, bit, max);
+
+	/* let hid-core decide for the others */
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mt_event(struct hid_device *hid, struct hid_field *field,
@@ -847,25 +1124,40 @@ static int mt_event(struct hid_device *hid, struct hid_field *field,
 	if (field->report->id == td->mt_report_id)
 		return mt_touch_event(hid, field, usage, value);
 
+<<<<<<< HEAD
 	if (field->report->id == td->pen_report_id)
 		return mt_pen_event(hid, field, usage, value);
 
 	/* ignore other reports */
 	return 1;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void mt_report(struct hid_device *hid, struct hid_report *report)
 {
 	struct mt_device *td = hid_get_drvdata(hid);
+<<<<<<< HEAD
+=======
+	struct hid_field *field = report->field[0];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!(hid->claimed & HID_CLAIMED_INPUT))
 		return;
 
 	if (report->id == td->mt_report_id)
+<<<<<<< HEAD
 		mt_touch_report(hid, report);
 
 	if (report->id == td->pen_report_id)
 		mt_pen_report(hid, report);
+=======
+		return mt_touch_report(hid, report);
+
+	if (field && field->hidinput && field->hidinput->input)
+		input_sync(field->hidinput->input);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void mt_set_input_mode(struct hid_device *hdev)
@@ -873,6 +1165,12 @@ static void mt_set_input_mode(struct hid_device *hdev)
 	struct mt_device *td = hid_get_drvdata(hdev);
 	struct hid_report *r;
 	struct hid_report_enum *re;
+<<<<<<< HEAD
+=======
+	struct mt_class *cls = &td->mtclass;
+	char *buf;
+	u32 report_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (td->inputmode < 0)
 		return;
@@ -880,7 +1178,23 @@ static void mt_set_input_mode(struct hid_device *hdev)
 	re = &(hdev->report_enum[HID_FEATURE_REPORT]);
 	r = re->report_id_hash[td->inputmode];
 	if (r) {
+<<<<<<< HEAD
 		r->field[0]->value[td->inputmode_index] = 0x02;
+=======
+		if (cls->quirks & MT_QUIRK_FORCE_GET_FEATURE) {
+			report_len = hid_report_len(r);
+			buf = hid_alloc_report_buf(r, GFP_KERNEL);
+			if (!buf) {
+				hid_err(hdev, "failed to allocate buffer for report\n");
+				return;
+			}
+			hid_hw_raw_request(hdev, r->id, buf, report_len,
+					   HID_FEATURE_REPORT,
+					   HID_REQ_GET_REPORT);
+			kfree(buf);
+		}
+		r->field[0]->value[td->inputmode_index] = td->inputmode_value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		hid_hw_request(hdev, r, HID_REQ_SET_REPORT);
 	}
 }
@@ -944,6 +1258,7 @@ static void mt_post_parse(struct mt_device *td)
 static int mt_input_configured(struct hid_device *hdev, struct hid_input *hi)
 {
 	struct mt_device *td = hid_get_drvdata(hdev);
+<<<<<<< HEAD
 	char *name = kstrdup(hdev->name, GFP_KERNEL);
 	int ret = 0;
 
@@ -956,6 +1271,73 @@ static int mt_input_configured(struct hid_device *hdev, struct hid_input *hi)
 	if (hi->report->id == td->pen_report_id)
 		mt_pen_input_configured(hdev, hi);
 	return ret;
+=======
+	char *name;
+	const char *suffix = NULL;
+	struct hid_field *field = hi->report->field[0];
+	int ret;
+
+	if (hi->report->id == td->mt_report_id) {
+		ret = mt_touch_input_configured(hdev, hi);
+		if (ret)
+			return ret;
+	}
+
+	/*
+	 * some egalax touchscreens have "application == HID_DG_TOUCHSCREEN"
+	 * for the stylus. Check this first, and then rely on the application
+	 * field.
+	 */
+	if (hi->report->field[0]->physical == HID_DG_STYLUS) {
+		suffix = "Pen";
+		/* force BTN_STYLUS to allow tablet matching in udev */
+		__set_bit(BTN_STYLUS, hi->input->keybit);
+	} else {
+		switch (field->application) {
+		case HID_GD_KEYBOARD:
+			suffix = "Keyboard";
+			break;
+		case HID_GD_KEYPAD:
+			suffix = "Keypad";
+			break;
+		case HID_GD_MOUSE:
+			suffix = "Mouse";
+			break;
+		case HID_DG_STYLUS:
+			suffix = "Pen";
+			/* force BTN_STYLUS to allow tablet matching in udev */
+			__set_bit(BTN_STYLUS, hi->input->keybit);
+			break;
+		case HID_DG_TOUCHSCREEN:
+			/* we do not set suffix = "Touchscreen" */
+			break;
+		case HID_DG_TOUCHPAD:
+			suffix = "Touchpad";
+			break;
+		case HID_GD_SYSTEM_CONTROL:
+			suffix = "System Control";
+			break;
+		case HID_CP_CONSUMER_CONTROL:
+			suffix = "Consumer Control";
+			break;
+		default:
+			suffix = "UNKNOWN";
+			break;
+		}
+	}
+
+	if (suffix) {
+		name = devm_kzalloc(&hi->input->dev,
+				    strlen(hdev->name) + strlen(suffix) + 2,
+				    GFP_KERNEL);
+		if (name) {
+			sprintf(name, "%s %s", hdev->name, suffix);
+			hi->input->name = name;
+		}
+	}
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
@@ -963,7 +1345,10 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	int ret, i;
 	struct mt_device *td;
 	struct mt_class *mtclass = mt_classes; /* MT_CLS_DEFAULT */
+<<<<<<< HEAD
 	struct hid_input *hi;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i = 0; mt_classes[i].name ; i++) {
 		if (id->driver_data == mt_classes[i].name) {
@@ -972,6 +1357,7 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		}
 	}
 
+<<<<<<< HEAD
 	/* This allows the driver to correctly support devices
 	 * that emit events over several HID messages.
 	 */
@@ -986,6 +1372,9 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	hdev->quirks |= HID_QUIRK_NO_EMPTY_INPUT;
 
 	td = kzalloc(sizeof(struct mt_device), GFP_KERNEL);
+=======
+	td = devm_kzalloc(&hdev->dev, sizeof(struct mt_device), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!td) {
 		dev_err(&hdev->dev, "cannot allocate multitouch data\n");
 		return -ENOMEM;
@@ -993,6 +1382,7 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	td->mtclass = *mtclass;
 	td->inputmode = -1;
 	td->maxcontact_report_id = -1;
+<<<<<<< HEAD
 	td->cc_index = -1;
 	td->mt_report_id = -1;
 	td->pen_report_id = -1;
@@ -1003,11 +1393,24 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		dev_err(&hdev->dev, "cannot allocate multitouch fields data\n");
 		ret = -ENOMEM;
 		goto fail;
+=======
+	td->inputmode_value = MT_INPUTMODE_TOUCHSCREEN;
+	td->cc_index = -1;
+	td->mt_report_id = -1;
+	hid_set_drvdata(hdev, td);
+
+	td->fields = devm_kzalloc(&hdev->dev, sizeof(struct mt_fields),
+				  GFP_KERNEL);
+	if (!td->fields) {
+		dev_err(&hdev->dev, "cannot allocate multitouch fields data\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (id->vendor == HID_ANY_ID && id->product == HID_ANY_ID)
 		td->serial_maybe = true;
 
+<<<<<<< HEAD
 	ret = hid_parse(hdev);
 	if (ret != 0)
 		goto fail;
@@ -1017,10 +1420,58 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		goto hid_fail;
 
 	ret = sysfs_create_group(&hdev->dev.kobj, &mt_attribute_group);
+=======
+	/*
+	 * Store the initial quirk state
+	 */
+	td->initial_quirks = hdev->quirks;
+
+	/* This allows the driver to correctly support devices
+	 * that emit events over several HID messages.
+	 */
+	hdev->quirks |= HID_QUIRK_NO_INPUT_SYNC;
+
+	/*
+	 * This allows the driver to handle different input sensors
+	 * that emits events through different reports on the same HID
+	 * device.
+	 */
+	hdev->quirks |= HID_QUIRK_MULTI_INPUT;
+	hdev->quirks |= HID_QUIRK_NO_EMPTY_INPUT;
+
+	/*
+	 * Some multitouch screens do not like to be polled for input
+	 * reports. Fortunately, the Win8 spec says that all touches
+	 * should be sent during each report, making the initialization
+	 * of input reports unnecessary. For Win7 devices, well, let's hope
+	 * they will still be happy (this is only be a problem if a touch
+	 * was already there while probing the device).
+	 *
+	 * In addition some touchpads do not behave well if we read
+	 * all feature reports from them. Instead we prevent
+	 * initial report fetching and then selectively fetch each
+	 * report we are interested in.
+	 */
+	hdev->quirks |= HID_QUIRK_NO_INIT_REPORTS;
+
+	ret = hid_parse(hdev);
+	if (ret != 0)
+		return ret;
+
+	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT);
+	if (ret)
+		return ret;
+
+	ret = sysfs_create_group(&hdev->dev.kobj, &mt_attribute_group);
+	if (ret)
+		dev_warn(&hdev->dev, "Cannot allocate sysfs group for %s\n",
+				hdev->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mt_set_maxcontacts(hdev);
 	mt_set_input_mode(hdev);
 
+<<<<<<< HEAD
 	kfree(td->fields);
 	td->fields = NULL;
 
@@ -1038,6 +1489,41 @@ fail:
 #ifdef CONFIG_PM
 static int mt_reset_resume(struct hid_device *hdev)
 {
+=======
+	/* release .fields memory as it is not used anymore */
+	devm_kfree(&hdev->dev, td->fields);
+	td->fields = NULL;
+
+	return 0;
+}
+
+#ifdef CONFIG_PM
+static void mt_release_contacts(struct hid_device *hid)
+{
+	struct hid_input *hidinput;
+
+	list_for_each_entry(hidinput, &hid->inputs, list) {
+		struct input_dev *input_dev = hidinput->input;
+		struct input_mt *mt = input_dev->mt;
+		int i;
+
+		if (mt) {
+			for (i = 0; i < mt->num_slots; i++) {
+				input_mt_slot(input_dev, i);
+				input_mt_report_slot_state(input_dev,
+							   MT_TOOL_FINGER,
+							   false);
+			}
+			input_mt_sync_frame(input_dev);
+			input_sync(input_dev);
+		}
+	}
+}
+
+static int mt_reset_resume(struct hid_device *hdev)
+{
+	mt_release_contacts(hdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mt_set_maxcontacts(hdev);
 	mt_set_input_mode(hdev);
 	return 0;
@@ -1058,6 +1544,7 @@ static int mt_resume(struct hid_device *hdev)
 static void mt_remove(struct hid_device *hdev)
 {
 	struct mt_device *td = hid_get_drvdata(hdev);
+<<<<<<< HEAD
 	struct hid_input *hi;
 
 	sysfs_remove_group(&hdev->dev.kobj, &mt_attribute_group);
@@ -1070,6 +1557,20 @@ static void mt_remove(struct hid_device *hdev)
 	hid_set_drvdata(hdev, NULL);
 }
 
+=======
+
+	sysfs_remove_group(&hdev->dev.kobj, &mt_attribute_group);
+	hid_hw_stop(hdev);
+	hdev->quirks = td->initial_quirks;
+}
+
+/*
+ * This list contains only:
+ * - VID/PID of products not working with the default multitouch handling
+ * - 2 generic rules.
+ * So there is no point in adding here any device with MT_CLS_DEFAULT.
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct hid_device_id mt_devices[] = {
 
 	/* 3M panels */
@@ -1083,33 +1584,50 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_3M,
 			USB_DEVICE_ID_3M3266) },
 
+<<<<<<< HEAD
 	/* ActionStar panels */
 	{ .driver_data = MT_CLS_NSMU,
 		MT_USB_DEVICE(USB_VENDOR_ID_ACTIONSTAR,
 			USB_DEVICE_ID_ACTIONSTAR_1011) },
+=======
+	/* Anton devices */
+	{ .driver_data = MT_CLS_EXPORT_ALL_INPUTS,
+		MT_USB_DEVICE(USB_VENDOR_ID_ANTON,
+			USB_DEVICE_ID_ANTON_TOUCH_PAD) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Atmel panels */
 	{ .driver_data = MT_CLS_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_ATMEL,
+<<<<<<< HEAD
 			USB_DEVICE_ID_ATMEL_MULTITOUCH) },
 	{ .driver_data = MT_CLS_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_ATMEL,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			USB_DEVICE_ID_ATMEL_MXT_DIGITIZER) },
 
 	/* Baanto multitouch devices */
 	{ .driver_data = MT_CLS_NSMU,
 		MT_USB_DEVICE(USB_VENDOR_ID_BAANTO,
 			USB_DEVICE_ID_BAANTO_MT_190W2) },
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Cando panels */
 	{ .driver_data = MT_CLS_DUAL_INRANGE_CONTACTNUMBER,
 		MT_USB_DEVICE(USB_VENDOR_ID_CANDO,
 			USB_DEVICE_ID_CANDO_MULTI_TOUCH) },
+<<<<<<< HEAD
 	{ .driver_data = MT_CLS_DUAL_CONTACT_NUMBER,
 		MT_USB_DEVICE(USB_VENDOR_ID_CANDO,
 			USB_DEVICE_ID_CANDO_MULTI_TOUCH_10_1) },
 	{ .driver_data = MT_CLS_DUAL_INRANGE_CONTACTNUMBER,
 		MT_USB_DEVICE(USB_VENDOR_ID_CANDO,
 			USB_DEVICE_ID_CANDO_MULTI_TOUCH_11_6) },
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .driver_data = MT_CLS_DUAL_INRANGE_CONTACTNUMBER,
 		MT_USB_DEVICE(USB_VENDOR_ID_CANDO,
 			USB_DEVICE_ID_CANDO_MULTI_TOUCH_15_6) },
@@ -1119,16 +1637,30 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_CHUNGHWAT,
 			USB_DEVICE_ID_CHUNGHWAT_MULTITOUCH) },
 
+<<<<<<< HEAD
+=======
+	/* CJTouch panels */
+	{ .driver_data = MT_CLS_NSMU,
+		MT_USB_DEVICE(USB_VENDOR_ID_CJTOUCH,
+			USB_DEVICE_ID_CJTOUCH_MULTI_TOUCH_0020) },
+	{ .driver_data = MT_CLS_NSMU,
+		MT_USB_DEVICE(USB_VENDOR_ID_CJTOUCH,
+			USB_DEVICE_ID_CJTOUCH_MULTI_TOUCH_0040) },
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* CVTouch panels */
 	{ .driver_data = MT_CLS_NSMU,
 		MT_USB_DEVICE(USB_VENDOR_ID_CVTOUCH,
 			USB_DEVICE_ID_CVTOUCH_SCREEN) },
 
+<<<<<<< HEAD
 	/* Cypress panel */
 	{ .driver_data = MT_CLS_CYPRESS,
 		HID_USB_DEVICE(USB_VENDOR_ID_CYPRESS,
 			USB_DEVICE_ID_CYPRESS_TRUETOUCH) },
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* eGalax devices (resistive) */
 	{ .driver_data = MT_CLS_EGALAX,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
@@ -1138,6 +1670,7 @@ static const struct hid_device_id mt_devices[] = {
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_480E) },
 
 	/* eGalax devices (capacitive) */
+<<<<<<< HEAD
 	{ .driver_data = MT_CLS_EGALAX,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_720C) },
@@ -1147,25 +1680,54 @@ static const struct hid_device_id mt_devices[] = {
 	{ .driver_data = MT_CLS_EGALAX_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_725E) },
+=======
+	{ .driver_data = MT_CLS_EGALAX_SERIAL,
+		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
+			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_7207) },
+	{ .driver_data = MT_CLS_EGALAX,
+		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
+			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_720C) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .driver_data = MT_CLS_EGALAX_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_7224) },
 	{ .driver_data = MT_CLS_EGALAX_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_722A) },
+<<<<<<< HEAD
 	{ .driver_data = MT_CLS_EGALAX,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_726B) },
+=======
+	{ .driver_data = MT_CLS_EGALAX_SERIAL,
+		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
+			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_725E) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .driver_data = MT_CLS_EGALAX_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_7262) },
 	{ .driver_data = MT_CLS_EGALAX,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
+<<<<<<< HEAD
+=======
+			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_726B) },
+	{ .driver_data = MT_CLS_EGALAX,
+		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_72A1) },
 	{ .driver_data = MT_CLS_EGALAX_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_72AA) },
 	{ .driver_data = MT_CLS_EGALAX,
+<<<<<<< HEAD
+=======
+		HID_USB_DEVICE(USB_VENDOR_ID_DWAV,
+			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_72C4) },
+	{ .driver_data = MT_CLS_EGALAX,
+		HID_USB_DEVICE(USB_VENDOR_ID_DWAV,
+			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_72D0) },
+	{ .driver_data = MT_CLS_EGALAX,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_72FA) },
 	{ .driver_data = MT_CLS_EGALAX,
@@ -1181,6 +1743,7 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_A001) },
 	{ .driver_data = MT_CLS_EGALAX,
+<<<<<<< HEAD
 		HID_USB_DEVICE(USB_VENDOR_ID_DWAV,
 			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_7224) },
 	{ .driver_data = MT_CLS_EGALAX,
@@ -1194,12 +1757,29 @@ static const struct hid_device_id mt_devices[] = {
 	{ .driver_data = MT_CLS_DUAL_CONTACT_ID,
 		MT_USB_DEVICE(USB_VENDOR_ID_ELO,
 			USB_DEVICE_ID_ELO_TS2515) },
+=======
+		MT_USB_DEVICE(USB_VENDOR_ID_DWAV,
+			USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH_C002) },
+
+	/* Elitegroup panel */
+	{ .driver_data = MT_CLS_SERIAL,
+		MT_USB_DEVICE(USB_VENDOR_ID_ELITEGROUP,
+			USB_DEVICE_ID_ELITEGROUP_05D8) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Flatfrog Panels */
 	{ .driver_data = MT_CLS_FLATFROG,
 		MT_USB_DEVICE(USB_VENDOR_ID_FLATFROG,
 			USB_DEVICE_ID_MULTITOUCH_3200) },
 
+<<<<<<< HEAD
+=======
+	/* FocalTech Panels */
+	{ .driver_data = MT_CLS_SERIAL,
+		MT_USB_DEVICE(USB_VENDOR_ID_CYGNAL,
+			USB_DEVICE_ID_FOCALTECH_FTXXXX_MULTITOUCH) },
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* GeneralTouch panel */
 	{ .driver_data = MT_CLS_GENERALTOUCH_TWOFINGERS,
 		MT_USB_DEVICE(USB_VENDOR_ID_GENERAL_TOUCH,
@@ -1238,6 +1818,7 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_HANVON_ALT,
 			USB_DEVICE_ID_HANVON_ALT_MULTITOUCH) },
 
+<<<<<<< HEAD
 	/* Ideacom panel */
 	{ .driver_data = MT_CLS_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_IDEACOM,
@@ -1246,11 +1827,14 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_IDEACOM,
 			USB_DEVICE_ID_IDEACOM_IDC6651) },
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Ilitek dual touch panel */
 	{  .driver_data = MT_CLS_NSMU,
 		MT_USB_DEVICE(USB_VENDOR_ID_ILITEK,
 			USB_DEVICE_ID_ILITEK_MULTITOUCH) },
 
+<<<<<<< HEAD
 	/* IRTOUCH panels */
 	{ .driver_data = MT_CLS_DUAL_INRANGE_CONTACTID,
 		MT_USB_DEVICE(USB_VENDOR_ID_IRTOUCHSYSTEMS,
@@ -1269,6 +1853,8 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_LUMIO,
 			USB_DEVICE_ID_CRYSTALTOUCH_DUAL) },
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* MosArt panels */
 	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
 		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
@@ -1280,11 +1866,14 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_TURBOX,
 			USB_DEVICE_ID_TURBOX_TOUCHSCREEN_MOSART) },
 
+<<<<<<< HEAD
 	/* Nexio panels */
 	{ .driver_data = MT_CLS_DEFAULT,
 		MT_USB_DEVICE(USB_VENDOR_ID_NEXIO,
 			USB_DEVICE_ID_NEXIO_MULTITOUCH_420)},
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Panasonic panels */
 	{ .driver_data = MT_CLS_PANASONIC,
 		MT_USB_DEVICE(USB_VENDOR_ID_PANASONIC,
@@ -1298,10 +1887,17 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_NOVATEK,
 			USB_DEVICE_ID_NOVATEK_PCT) },
 
+<<<<<<< HEAD
 	/* PenMount panels */
 	{ .driver_data = MT_CLS_CONFIDENCE,
 		MT_USB_DEVICE(USB_VENDOR_ID_PENMOUNT,
 			USB_DEVICE_ID_PENMOUNT_PCI) },
+=======
+	/* Ntrig Panel */
+	{ .driver_data = MT_CLS_NSMU,
+		HID_DEVICE(BUS_I2C, HID_GROUP_MULTITOUCH_WIN_8,
+			USB_VENDOR_ID_NTRIG, 0x1b05) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* PixArt optical touch screen */
 	{ .driver_data = MT_CLS_INRANGE_CONTACTNUMBER,
@@ -1316,15 +1912,19 @@ static const struct hid_device_id mt_devices[] = {
 
 	/* PixCir-based panels */
 	{ .driver_data = MT_CLS_DUAL_INRANGE_CONTACTID,
+<<<<<<< HEAD
 		MT_USB_DEVICE(USB_VENDOR_ID_HANVON,
 			USB_DEVICE_ID_HANVON_MULTITOUCH) },
 	{ .driver_data = MT_CLS_DUAL_INRANGE_CONTACTID,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		MT_USB_DEVICE(USB_VENDOR_ID_CANDO,
 			USB_DEVICE_ID_CANDO_PIXCIR_MULTI_TOUCH) },
 
 	/* Quanta-based panels */
 	{ .driver_data = MT_CLS_CONFIDENCE_CONTACT_ID,
 		MT_USB_DEVICE(USB_VENDOR_ID_QUANTA,
+<<<<<<< HEAD
 			USB_DEVICE_ID_QUANTA_OPTICAL_TOUCH) },
 	{ .driver_data = MT_CLS_CONFIDENCE_CONTACT_ID,
 		MT_USB_DEVICE(USB_VENDOR_ID_QUANTA,
@@ -1351,6 +1951,14 @@ static const struct hid_device_id mt_devices[] = {
 	{ .driver_data = MT_CLS_DEFAULT,
 		MT_USB_DEVICE(USB_VENDOR_ID_STANTUM_SITRONIX,
 			USB_DEVICE_ID_MTP_SITRONIX)},
+=======
+			USB_DEVICE_ID_QUANTA_OPTICAL_TOUCH_3001) },
+
+	/* Stantum panels */
+	{ .driver_data = MT_CLS_CONFIDENCE,
+		MT_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM,
+			USB_DEVICE_ID_MTP_STM)},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* TopSeed panels */
 	{ .driver_data = MT_CLS_TOPSEED,
@@ -1370,6 +1978,14 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_UNITEC,
 			USB_DEVICE_ID_UNITEC_USB_TOUCH_0A19) },
 
+<<<<<<< HEAD
+=======
+	/* VTL panels */
+	{ .driver_data = MT_CLS_VTL,
+		MT_USB_DEVICE(USB_VENDOR_ID_VTL,
+			USB_DEVICE_ID_VTL_MULTITOUCH_FF3F) },
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Wistron panels */
 	{ .driver_data = MT_CLS_NSMU,
 		MT_USB_DEVICE(USB_VENDOR_ID_WISTRON,
@@ -1409,6 +2025,7 @@ static const struct hid_device_id mt_devices[] = {
 		MT_USB_DEVICE(USB_VENDOR_ID_XIROKU,
 			USB_DEVICE_ID_XIROKU_CSR2) },
 
+<<<<<<< HEAD
 	/* Zytronic panels */
 	{ .driver_data = MT_CLS_SERIAL,
 		MT_USB_DEVICE(USB_VENDOR_ID_ZYTRONIC,
@@ -1416,6 +2033,15 @@ static const struct hid_device_id mt_devices[] = {
 
 	/* Generic MT device */
 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
+=======
+	/* Generic MT device */
+	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
+
+	/* Generic Win 8 certified MT device */
+	{  .driver_data = MT_CLS_WIN_8,
+		HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH_WIN_8,
+			HID_ANY_ID, HID_ANY_ID) },
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, mt_devices);

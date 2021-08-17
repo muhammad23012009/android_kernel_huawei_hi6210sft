@@ -27,7 +27,10 @@
 
 void machine_halt(void)
 {
+<<<<<<< HEAD
 	warn_early_printk();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	arch_local_irq_disable_all();
 	smp_send_stop();
 	hv_halt();
@@ -35,7 +38,10 @@ void machine_halt(void)
 
 void machine_power_off(void)
 {
+<<<<<<< HEAD
 	warn_early_printk();
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	arch_local_irq_disable_all();
 	smp_send_stop();
 	hv_power_off();

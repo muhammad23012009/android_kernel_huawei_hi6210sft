@@ -22,7 +22,10 @@
 #include <linux/bootmem.h>
 
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 #include <asm/pci.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 

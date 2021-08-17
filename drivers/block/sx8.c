@@ -23,7 +23,11 @@
 #include <linux/workqueue.h>
 #include <linux/bitops.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/ktime.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/hdreg.h>
 #include <linux/dma-mapping.h>
 #include <linux/completion.h>
@@ -568,7 +572,11 @@ static struct carm_request *carm_get_special(struct carm_host *host)
 		return NULL;
 
 	rq = blk_get_request(host->oob_q, WRITE /* bogus */, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!rq) {
+=======
+	if (IS_ERR(rq)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		spin_lock_irqsave(&host->lock, flags);
 		carm_put_request(host, crq);
 		spin_unlock_irqrestore(&host->lock, flags);
@@ -620,7 +628,11 @@ static int carm_array_info (struct carm_host *host, unsigned int array_idx)
 	spin_unlock_irq(&host->lock);
 
 	DPRINTK("blk_execute_rq_nowait, tag == %u\n", idx);
+<<<<<<< HEAD
 	crq->rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	crq->rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	crq->rq->special = crq;
 	blk_execute_rq_nowait(host->oob_q, NULL, crq->rq, true, NULL);
 
@@ -661,7 +673,11 @@ static int carm_send_special (struct carm_host *host, carm_sspc_t func)
 	crq->msg_bucket = (u32) rc;
 
 	DPRINTK("blk_execute_rq_nowait, tag == %u\n", idx);
+<<<<<<< HEAD
 	crq->rq->cmd_type = REQ_TYPE_SPECIAL;
+=======
+	crq->rq->cmd_type = REQ_TYPE_DRV_PRIV;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	crq->rq->special = crq;
 	blk_execute_rq_nowait(host->oob_q, NULL, crq->rq, true, NULL);
 
@@ -671,16 +687,26 @@ static int carm_send_special (struct carm_host *host, carm_sspc_t func)
 static unsigned int carm_fill_sync_time(struct carm_host *host,
 					unsigned int idx, void *mem)
 {
+<<<<<<< HEAD
 	struct timeval tv;
 	struct carm_msg_sync_time *st = mem;
 
 	do_gettimeofday(&tv);
+=======
+	struct carm_msg_sync_time *st = mem;
+
+	time64_t tv = ktime_get_real_seconds();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memset(st, 0, sizeof(*st));
 	st->type	= CARM_MSG_MISC;
 	st->subtype	= MISC_SET_TIME;
 	st->handle	= cpu_to_le32(TAG_ENCODE(idx));
+<<<<<<< HEAD
 	st->timestamp	= cpu_to_le32(tv.tv_sec);
+=======
+	st->timestamp	= cpu_to_le32(tv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return sizeof(struct carm_msg_sync_time);
 }
@@ -1744,6 +1770,7 @@ static void carm_remove_one (struct pci_dev *pdev)
 	kfree(host);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
 }
 
@@ -1761,3 +1788,8 @@ module_init(carm_init);
 module_exit(carm_exit);
 
 
+=======
+}
+
+module_pci_driver(carm_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

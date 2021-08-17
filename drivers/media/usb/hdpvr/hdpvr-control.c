@@ -45,6 +45,7 @@ int hdpvr_config_call(struct hdpvr_device *dev, uint value, u8 valbuf)
 	return ret < 0 ? ret : 0;
 }
 
+<<<<<<< HEAD
 struct hdpvr_video_info *get_video_info(struct hdpvr_device *dev)
 {
 	struct hdpvr_video_info *vidinf = NULL;
@@ -59,6 +60,13 @@ struct hdpvr_video_info *get_video_info(struct hdpvr_device *dev)
 		goto err;
 	}
 
+=======
+int get_video_info(struct hdpvr_device *dev, struct hdpvr_video_info *vidinf)
+{
+	int ret;
+
+	vidinf->valid = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_lock(&dev->usbc_mutex);
 	ret = usb_control_msg(dev->udev,
 			      usb_rcvctrlpipe(dev->udev, 0),
@@ -66,6 +74,7 @@ struct hdpvr_video_info *get_video_info(struct hdpvr_device *dev)
 			      0x1400, 0x0003,
 			      dev->usbc_buf, 5,
 			      1000);
+<<<<<<< HEAD
 	if (ret == 5) {
 		vidinf->width	= dev->usbc_buf[1] << 8 | dev->usbc_buf[0];
 		vidinf->height	= dev->usbc_buf[3] << 8 | dev->usbc_buf[2];
@@ -88,13 +97,36 @@ struct hdpvr_video_info *get_video_info(struct hdpvr_device *dev)
 	}
 err:
 	return vidinf;
+=======
+
+#ifdef HDPVR_DEBUG
+	if (hdpvr_debug & MSG_INFO)
+		v4l2_dbg(MSG_INFO, hdpvr_debug, &dev->v4l2_dev,
+			 "get video info returned: %d, %5ph\n", ret,
+			 dev->usbc_buf);
+#endif
+	mutex_unlock(&dev->usbc_mutex);
+
+	if (ret < 0)
+		return ret;
+
+	vidinf->width	= dev->usbc_buf[1] << 8 | dev->usbc_buf[0];
+	vidinf->height	= dev->usbc_buf[3] << 8 | dev->usbc_buf[2];
+	vidinf->fps	= dev->usbc_buf[4];
+	vidinf->valid   = vidinf->width && vidinf->height && vidinf->fps;
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int get_input_lines_info(struct hdpvr_device *dev)
 {
+<<<<<<< HEAD
 #ifdef HDPVR_DEBUG
 	char print_buf[9];
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret, lines;
 
 	mutex_lock(&dev->usbc_mutex);
@@ -106,6 +138,7 @@ int get_input_lines_info(struct hdpvr_device *dev)
 			      1000);
 
 #ifdef HDPVR_DEBUG
+<<<<<<< HEAD
 	if (hdpvr_debug & MSG_INFO) {
 		hex_dump_to_buffer(dev->usbc_buf, 3, 16, 1, print_buf,
 				   sizeof(print_buf), 0);
@@ -113,6 +146,12 @@ int get_input_lines_info(struct hdpvr_device *dev)
 			 "get input lines info returned: %d, %s\n", ret,
 			 print_buf);
 	}
+=======
+	if (hdpvr_debug & MSG_INFO)
+		v4l2_dbg(MSG_INFO, hdpvr_debug, &dev->v4l2_dev,
+			 "get input lines info returned: %d, %3ph\n", ret,
+			 dev->usbc_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #else
 	(void)ret;	/* suppress compiler warning */
 #endif

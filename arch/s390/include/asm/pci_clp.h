@@ -44,13 +44,20 @@ struct clp_fh_list_entry {
 #define CLP_SET_DISABLE_PCI_FN	1	/* Yes, 1 disables it */
 
 #define CLP_UTIL_STR_LEN	64
+<<<<<<< HEAD
+=======
+#define CLP_PFIP_NR_SEGMENTS	4
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* List PCI functions request */
 struct clp_req_list_pci {
 	struct clp_req_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64 resume_token;
 	u64 reserved2;
 } __packed;
@@ -58,9 +65,12 @@ struct clp_req_list_pci {
 /* List PCI functions response */
 struct clp_rsp_list_pci {
 	struct clp_rsp_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u64 resume_token;
 	u32 reserved2;
 	u16 max_fn;
@@ -72,9 +82,12 @@ struct clp_rsp_list_pci {
 /* Query PCI function request */
 struct clp_req_query_pci {
 	struct clp_req_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 fh;				/* function handle */
 	u32 reserved2;
 	u64 reserved3;
@@ -83,9 +96,12 @@ struct clp_req_query_pci {
 /* Query PCI function response */
 struct clp_rsp_query_pci {
 	struct clp_rsp_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16 vfn;			/* virtual fn number */
 	u16			:  7;
 	u16 util_str_avail	:  1;	/* utility string available? */
@@ -94,16 +110,27 @@ struct clp_rsp_query_pci {
 	u8 bar_size[PCI_BAR_COUNT];
 	u16 pchid;
 	u32 bar[PCI_BAR_COUNT];
+<<<<<<< HEAD
 	u64 reserved2;
 	u64 sdma;			/* start dma as */
 	u64 edma;			/* end dma as */
 	u64 reserved3[6];
+=======
+	u8 pfip[CLP_PFIP_NR_SEGMENTS];	/* pci function internal path */
+	u32			: 24;
+	u8 pft;				/* pci function type */
+	u64 sdma;			/* start dma as */
+	u64 edma;			/* end dma as */
+	u32 reserved[11];
+	u32 uid;			/* user defined id */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 util_str[CLP_UTIL_STR_LEN];	/* utility string */
 } __packed;
 
 /* Query PCI function group request */
 struct clp_req_query_pci_grp {
 	struct clp_req_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
@@ -111,14 +138,23 @@ struct clp_req_query_pci_grp {
 	u32 pfgid		:  8;	/* function group id */
 	u32 reserved2;
 	u64 reserved3;
+=======
+	u32 reserved2		: 24;
+	u32 pfgid		:  8;	/* function group id */
+	u32 reserved3;
+	u64 reserved4;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } __packed;
 
 /* Query PCI function group response */
 struct clp_rsp_query_pci_grp {
 	struct clp_rsp_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u16			:  4;
 	u16 noi			: 12;	/* number of interrupts */
 	u8 version;
@@ -137,9 +173,12 @@ struct clp_rsp_query_pci_grp {
 /* Set PCI function request */
 struct clp_req_set_pci {
 	struct clp_req_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 fh;				/* function handle */
 	u16 reserved2;
 	u8 oc;				/* operation controls */
@@ -150,9 +189,12 @@ struct clp_req_set_pci {
 /* Set PCI function response */
 struct clp_rsp_set_pci {
 	struct clp_rsp_hdr hdr;
+<<<<<<< HEAD
 	u32 fmt			:  4;	/* cmd request block format */
 	u32			: 28;
 	u64 reserved1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 fh;				/* function handle */
 	u32 reserved3;
 	u64 reserved4;

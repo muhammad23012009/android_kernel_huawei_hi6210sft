@@ -88,11 +88,18 @@ static void __init adder875_setup(void)
 
 static int __init adder875_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 	return of_flat_dt_is_compatible(root, "analogue-and-micro,adder875");
 }
 
 static __initdata struct of_device_id of_bus_ids[] = {
+=======
+	return of_machine_is_compatible("analogue-and-micro,adder875");
+}
+
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "simple-bus", },
 	{},
 };

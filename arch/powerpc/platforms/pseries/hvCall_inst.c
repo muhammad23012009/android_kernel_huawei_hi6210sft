@@ -27,6 +27,10 @@
 #include <asm/firmware.h>
 #include <asm/cputable.h>
 #include <asm/trace.h>
+<<<<<<< HEAD
+=======
+#include <asm/machdep.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 DEFINE_PER_CPU(struct hcall_stats[HCALL_STAT_ARRAY_SIZE], hcall_stats);
 
@@ -109,7 +113,11 @@ static void probe_hcall_entry(void *ignored, unsigned long opcode, unsigned long
 	if (opcode > MAX_HCALL_OPCODE)
 		return;
 
+<<<<<<< HEAD
 	h = &__get_cpu_var(hcall_stats)[opcode / 4];
+=======
+	h = this_cpu_ptr(&hcall_stats[opcode / 4]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	h->tb_start = mftb();
 	h->purr_start = mfspr(SPRN_PURR);
 }
@@ -122,7 +130,11 @@ static void probe_hcall_exit(void *ignored, unsigned long opcode, unsigned long 
 	if (opcode > MAX_HCALL_OPCODE)
 		return;
 
+<<<<<<< HEAD
 	h = &__get_cpu_var(hcall_stats)[opcode / 4];
+=======
+	h = this_cpu_ptr(&hcall_stats[opcode / 4]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	h->num_calls++;
 	h->tb_total += mftb() - h->tb_start;
 	h->purr_total += mfspr(SPRN_PURR) - h->purr_start;
@@ -162,4 +174,8 @@ static int __init hcall_inst_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 __initcall(hcall_inst_init);
+=======
+machine_device_initcall(pseries, hcall_inst_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

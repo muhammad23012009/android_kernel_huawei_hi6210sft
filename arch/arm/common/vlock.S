@@ -42,7 +42,11 @@
 	dmb
 	mov	\rscratch, #0
 	strb	\rscratch, [\rbase, \rcpu]
+<<<<<<< HEAD
 	dsb
+=======
+	dsb	st
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sev
 .endm
 
@@ -102,7 +106,11 @@ ENTRY(vlock_unlock)
 	dmb
 	mov	r1, #VLOCK_OWNER_NONE
 	strb	r1, [r0, #VLOCK_OWNER_OFFSET]
+<<<<<<< HEAD
 	dsb
+=======
+	dsb	st
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	sev
 	bx	lr
 ENDPROC(vlock_unlock)

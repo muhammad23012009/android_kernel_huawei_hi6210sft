@@ -62,7 +62,11 @@
 	or:
 
 		(b)	0x80 bit set
+<<<<<<< HEAD
 			indiates that the bytes following alternate data and
+=======
+			indicates that the bytes following alternate data and
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			status bytes:
 
 				STAT DATA STAT DATA STAT DATA STAT DATA ...

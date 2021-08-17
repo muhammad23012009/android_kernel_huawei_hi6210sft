@@ -36,8 +36,13 @@ static int afs_init_lock_manager(void)
 	if (!afs_lock_manager) {
 		mutex_lock(&afs_lock_manager_mutex);
 		if (!afs_lock_manager) {
+<<<<<<< HEAD
 			afs_lock_manager =
 				create_singlethread_workqueue("kafs_lockd");
+=======
+			afs_lock_manager = alloc_workqueue("kafs_lockd",
+							   WQ_MEM_RECLAIM, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (!afs_lock_manager)
 				ret = -ENOMEM;
 		}
@@ -252,7 +257,12 @@ static void afs_defer_unlock(struct afs_vnode *vnode, struct key *key)
  */
 static int afs_do_setlk(struct file *file, struct file_lock *fl)
 {
+<<<<<<< HEAD
 	struct afs_vnode *vnode = AFS_FS_I(file->f_mapping->host);
+=======
+	struct inode *inode = file_inode(file);
+	struct afs_vnode *vnode = AFS_FS_I(inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	afs_lock_type_t type;
 	struct key *key = file->private_data;
 	int ret;
@@ -273,7 +283,11 @@ static int afs_do_setlk(struct file *file, struct file_lock *fl)
 
 	type = (fl->fl_type == F_RDLCK) ? AFS_LOCK_READ : AFS_LOCK_WRITE;
 
+<<<<<<< HEAD
 	lock_flocks();
+=======
+	spin_lock(&inode->i_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* make sure we've got a callback on this file and that our view of the
 	 * data version is up to date */
@@ -420,7 +434,11 @@ given_lock:
 	afs_vnode_fetch_status(vnode, NULL, key);
 
 error:
+<<<<<<< HEAD
 	unlock_flocks();
+=======
+	spin_unlock(&inode->i_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_leave(" = %d", ret);
 	return ret;
 
@@ -482,7 +500,11 @@ static int afs_do_getlk(struct file *file, struct file_lock *fl)
 
 	fl->fl_type = F_UNLCK;
 
+<<<<<<< HEAD
 	mutex_lock(&vnode->vfs_inode.i_mutex);
+=======
+	inode_lock(&vnode->vfs_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* check local lock records first */
 	ret = 0;
@@ -504,7 +526,11 @@ static int afs_do_getlk(struct file *file, struct file_lock *fl)
 	}
 
 error:
+<<<<<<< HEAD
 	mutex_unlock(&vnode->vfs_inode.i_mutex);
+=======
+	inode_unlock(&vnode->vfs_inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	_leave(" = %d [%hd]", ret, fl->fl_type);
 	return ret;
 }
@@ -554,10 +580,13 @@ int afs_flock(struct file *file, int cmd, struct file_lock *fl)
 		return -ENOLCK;
 
 	/* we're simulating flock() locks using posix locks on the server */
+<<<<<<< HEAD
 	fl->fl_owner = (fl_owner_t) file;
 	fl->fl_start = 0;
 	fl->fl_end = OFFSET_MAX;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (fl->fl_type == F_UNLCK)
 		return afs_do_unlk(file, fl);
 	return afs_do_setlk(file, fl);

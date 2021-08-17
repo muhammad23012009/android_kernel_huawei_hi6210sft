@@ -2,7 +2,12 @@
  * I2C driver for Marvell 88PM860x
  *
  * Copyright (C) 2009 Marvell International Ltd.
+<<<<<<< HEAD
  * 	Haojian Zhuang <haojian.zhuang@marvell.com>
+=======
+ *
+ * Author: Haojian Zhuang <haojian.zhuang@marvell.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -121,7 +126,11 @@ static int read_device(struct i2c_client *i2c, int reg,
 static int write_device(struct i2c_client *i2c, int reg,
 			int bytes, void *src)
 {
+<<<<<<< HEAD
 	unsigned char buf[bytes + 1];
+=======
+	unsigned char buf[2];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct i2c_adapter *adap = i2c->adapter;
 	struct i2c_msg msg;
 	int ret;
@@ -139,6 +148,7 @@ static int write_device(struct i2c_client *i2c, int reg,
 	return 0;
 }
 
+<<<<<<< HEAD
 int pm860x_page_reg_read(struct i2c_client *i2c, int reg)
 {
 	unsigned char zero = 0;
@@ -159,20 +169,30 @@ int pm860x_page_reg_read(struct i2c_client *i2c, int reg)
 }
 EXPORT_SYMBOL(pm860x_page_reg_read);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int pm860x_page_reg_write(struct i2c_client *i2c, int reg,
 			  unsigned char data)
 {
 	unsigned char zero;
 	int ret;
 
+<<<<<<< HEAD
 	i2c_lock_adapter(i2c->adapter);
+=======
+	i2c_lock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	read_device(i2c, 0xFA, 0, &zero);
 	read_device(i2c, 0xFB, 0, &zero);
 	read_device(i2c, 0xFF, 0, &zero);
 	ret = write_device(i2c, reg, 1, &data);
 	read_device(i2c, 0xFE, 0, &zero);
 	read_device(i2c, 0xFC, 0, &zero);
+<<<<<<< HEAD
 	i2c_unlock_adapter(i2c->adapter);
+=======
+	i2c_unlock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 EXPORT_SYMBOL(pm860x_page_reg_write);
@@ -183,13 +203,18 @@ int pm860x_page_bulk_read(struct i2c_client *i2c, int reg,
 	unsigned char zero = 0;
 	int ret;
 
+<<<<<<< HEAD
 	i2c_lock_adapter(i2c->adapter);
+=======
+	i2c_lock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	read_device(i2c, 0xfa, 0, &zero);
 	read_device(i2c, 0xfb, 0, &zero);
 	read_device(i2c, 0xff, 0, &zero);
 	ret = read_device(i2c, reg, count, buf);
 	read_device(i2c, 0xFE, 0, &zero);
 	read_device(i2c, 0xFC, 0, &zero);
+<<<<<<< HEAD
 	i2c_unlock_adapter(i2c->adapter);
 	return ret;
 }
@@ -238,3 +263,9 @@ out:
 	return ret;
 }
 EXPORT_SYMBOL(pm860x_page_set_bits);
+=======
+	i2c_unlock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+	return ret;
+}
+EXPORT_SYMBOL(pm860x_page_bulk_read);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

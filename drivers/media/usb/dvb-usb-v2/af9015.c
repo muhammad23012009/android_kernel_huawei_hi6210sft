@@ -398,6 +398,11 @@ error:
 }
 
 #define AF9015_EEPROM_SIZE 256
+<<<<<<< HEAD
+=======
+/* 2^31 + 2^29 - 2^25 + 2^22 - 2^19 - 2^16 + 1 */
+#define GOLDEN_RATIO_PRIME_32 0x9e370001UL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* hash (and dump) eeprom */
 static int af9015_eeprom_hash(struct dvb_usb_device *d)
@@ -419,7 +424,11 @@ static int af9015_eeprom_hash(struct dvb_usb_device *d)
 	/* calculate checksum */
 	for (i = 0; i < AF9015_EEPROM_SIZE / sizeof(u32); i++) {
 		state->eeprom_sum *= GOLDEN_RATIO_PRIME_32;
+<<<<<<< HEAD
 		state->eeprom_sum += le32_to_cpu(((u32 *)buf)[i]);
+=======
+		state->eeprom_sum += le32_to_cpu(((__le32 *)buf)[i]);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	for (i = 0; i < AF9015_EEPROM_SIZE; i += 16)
@@ -641,7 +650,11 @@ static int af9015_af9013_set_frontend(struct dvb_frontend *fe)
 
 /* override demod callbacks for resource locking */
 static int af9015_af9013_read_status(struct dvb_frontend *fe,
+<<<<<<< HEAD
 	fe_status_t *status)
+=======
+	enum fe_status *status)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	int ret;
 	struct af9015_state *state = fe_to_priv(fe);
@@ -1213,13 +1226,21 @@ static int af9015_rc_query(struct dvb_usb_device *d)
 	if ((state->rc_repeat != buf[6] || buf[0]) &&
 			!memcmp(&buf[12], state->rc_last, 4)) {
 		dev_dbg(&d->udev->dev, "%s: key repeated\n", __func__);
+<<<<<<< HEAD
 		rc_keydown(d->rc_dev, state->rc_keycode, 0);
+=======
+		rc_repeat(d->rc_dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		state->rc_repeat = buf[6];
 		return ret;
 	}
 
 	/* Only process key if canary killed */
 	if (buf[16] != 0xff && buf[0] != 0x01) {
+<<<<<<< HEAD
+=======
+		enum rc_type proto;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_dbg(&d->udev->dev, "%s: key pressed %*ph\n",
 				__func__, 4, buf + 12);
 
@@ -1233,6 +1254,7 @@ static int af9015_rc_query(struct dvb_usb_device *d)
 		if (buf[14] == (u8) ~buf[15]) {
 			if (buf[12] == (u8) ~buf[13]) {
 				/* NEC */
+<<<<<<< HEAD
 				state->rc_keycode = buf[12] << 8 | buf[14];
 			} else {
 				/* NEC extended*/
@@ -1245,6 +1267,27 @@ static int af9015_rc_query(struct dvb_usb_device *d)
 					buf[14] << 8 | buf[15];
 		}
 		rc_keydown(d->rc_dev, state->rc_keycode, 0);
+=======
+				state->rc_keycode = RC_SCANCODE_NEC(buf[12],
+								    buf[14]);
+				proto = RC_TYPE_NEC;
+			} else {
+				/* NEC extended*/
+				state->rc_keycode = RC_SCANCODE_NECX(buf[12] << 8 |
+								     buf[13],
+								     buf[14]);
+				proto = RC_TYPE_NECX;
+			}
+		} else {
+			/* 32 bit NEC */
+			state->rc_keycode = RC_SCANCODE_NEC32(buf[12] << 24 |
+							      buf[13] << 16 |
+							      buf[14] << 8  |
+							      buf[15]);
+			proto = RC_TYPE_NEC32;
+		}
+		rc_keydown(d->rc_dev, proto, state->rc_keycode, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} else {
 		dev_dbg(&d->udev->dev, "%s: no key press\n", __func__);
 		/* Invalidate last keypress */
@@ -1311,7 +1354,11 @@ static int af9015_get_rc_config(struct dvb_usb_device *d, struct dvb_usb_rc *rc)
 	if (!rc->map_name)
 		rc->map_name = RC_MAP_EMPTY;
 
+<<<<<<< HEAD
 	rc->allowed_protos = RC_BIT_NEC;
+=======
+	rc->allowed_protos = RC_BIT_NEC | RC_BIT_NECX | RC_BIT_NEC32;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc->query = af9015_rc_query;
 	rc->interval = 500;
 

@@ -18,6 +18,10 @@
 #include <asm/fixed_code.h>
 #include <asm/pseudo_instructions.h>
 #include <asm/pda.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-offsets.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_KGDB
 # include <linux/kgdb.h>

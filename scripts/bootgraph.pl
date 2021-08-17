@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/perl
+=======
+#!/usr/bin/env perl
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 # Copyright 2008, Intel Corporation
 #
@@ -38,6 +42,34 @@
 #
 
 use strict;
+<<<<<<< HEAD
+=======
+use Getopt::Long;
+my $header = 0;
+
+sub help {
+	my $text = << "EOM";
+Usage:
+1) dmesg | perl scripts/bootgraph.pl [OPTION] > output.svg
+2) perl scripts/bootgraph.pl -h
+
+Options:
+	-header	Insert kernel version and date
+EOM
+	my $std=shift;
+	if ($std == 1) {
+		print STDERR $text;
+	} else {
+		print $text;
+	}
+	exit;
+}
+
+GetOptions(
+	'h|help'	=>\&help,
+	'header'	=>\$header
+);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 my %start;
 my %end;
@@ -49,6 +81,14 @@ my $count = 0;
 my %pids;
 my %pidctr;
 
+<<<<<<< HEAD
+=======
+my $headerstep = 20;
+my $xheader = 15;
+my $yheader = 25;
+my $cyheader = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 while (<>) {
 	my $line = $_;
 	if ($line =~ /([0-9\.]+)\] calling  ([a-zA-Z0-9\_\.]+)\+/) {
@@ -112,15 +152,32 @@ if ($count == 0) {
     print STDERR <<END;
 No data found in the dmesg. Make sure that 'printk.time=1' and
 'initcall_debug' are passed on the kernel command line.
+<<<<<<< HEAD
 Usage:
       dmesg | perl scripts/bootgraph.pl > output.svg
 END
+=======
+END
+	help(1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
     exit 1;
 }
 
 print "<?xml version=\"1.0\" standalone=\"no\"?> \n";
 print "<svg width=\"2000\" height=\"100%\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n";
 
+<<<<<<< HEAD
+=======
+
+if ($header) {
+	my $version = `uname -a`;
+	my $date = `date`;
+	print "<text transform=\"translate($xheader,$yheader)\">Kernel version: $version</text>\n";
+	$cyheader = $yheader+$headerstep;
+	print "<text transform=\"translate($xheader,$cyheader)\">Date: $date</text>\n";
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 my @styles;
 
 $styles[0] = "fill:rgb(0,0,255);fill-opacity:0.5;stroke-width:1;stroke:rgb(0,0,0)";

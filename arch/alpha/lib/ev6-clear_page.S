@@ -3,7 +3,11 @@
  *
  * Zero an entire page.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         .text
         .align 4
         .global clear_page
@@ -52,3 +56,7 @@ clear_page:
 	nop
 
 	.end clear_page
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(clear_page)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -36,7 +36,11 @@ static struct gpio_chip twl6040gpo_chip;
 
 static int twl6040gpo_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = dev_get_drvdata(chip->dev->parent);
+=======
+	struct twl6040 *twl6040 = dev_get_drvdata(chip->parent->parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret = 0;
 
 	ret = twl6040_reg_read(twl6040, TWL6040_REG_GPOCTL);
@@ -55,7 +59,11 @@ static int twl6040gpo_direction_out(struct gpio_chip *chip, unsigned offset,
 
 static void twl6040gpo_set(struct gpio_chip *chip, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct twl6040 *twl6040 = dev_get_drvdata(chip->dev->parent);
+=======
+	struct twl6040 *twl6040 = dev_get_drvdata(chip->parent->parent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 	u8 gpoctl;
 
@@ -77,34 +85,53 @@ static struct gpio_chip twl6040gpo_chip = {
 	.get			= twl6040gpo_get,
 	.direction_output	= twl6040gpo_direction_out,
 	.set			= twl6040gpo_set,
+<<<<<<< HEAD
 	.can_sleep		= 1,
+=======
+	.can_sleep		= true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /*----------------------------------------------------------------------*/
 
 static int gpo_twl6040_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct twl6040_gpo_data *pdata = pdev->dev.platform_data;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *twl6040_core_dev = pdev->dev.parent;
 	struct twl6040 *twl6040 = dev_get_drvdata(twl6040_core_dev);
 	int ret;
 
+<<<<<<< HEAD
 	if (pdata)
 		twl6040gpo_chip.base = pdata->gpio_base;
 	else
 		twl6040gpo_chip.base = -1;
+=======
+	twl6040gpo_chip.base = -1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (twl6040_get_revid(twl6040) < TWL6041_REV_ES2_0)
 		twl6040gpo_chip.ngpio = 3; /* twl6040 have 3 GPO */
 	else
 		twl6040gpo_chip.ngpio = 1; /* twl6041 have 1 GPO */
 
+<<<<<<< HEAD
 	twl6040gpo_chip.dev = &pdev->dev;
+=======
+	twl6040gpo_chip.parent = &pdev->dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_OF_GPIO
 	twl6040gpo_chip.of_node = twl6040_core_dev->of_node;
 #endif
 
+<<<<<<< HEAD
 	ret = gpiochip_add(&twl6040gpo_chip);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, &twl6040gpo_chip, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0) {
 		dev_err(&pdev->dev, "could not register gpiochip, %d\n", ret);
 		twl6040gpo_chip.ngpio = 0;
@@ -113,21 +140,29 @@ static int gpo_twl6040_probe(struct platform_device *pdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int gpo_twl6040_remove(struct platform_device *pdev)
 {
 	return gpiochip_remove(&twl6040gpo_chip);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* Note:  this hardware lives inside an I2C-based multi-function device. */
 MODULE_ALIAS("platform:twl6040-gpo");
 
 static struct platform_driver gpo_twl6040_driver = {
 	.driver = {
 		.name	= "twl6040-gpo",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= gpo_twl6040_probe,
 	.remove		= gpo_twl6040_remove,
+=======
+	},
+	.probe		= gpo_twl6040_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 module_platform_driver(gpo_twl6040_driver);

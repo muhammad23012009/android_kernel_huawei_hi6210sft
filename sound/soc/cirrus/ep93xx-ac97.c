@@ -19,11 +19,20 @@
 #include <linux/slab.h>
 
 #include <sound/core.h>
+<<<<<<< HEAD
+=======
+#include <sound/dmaengine_pcm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <sound/ac97_codec.h>
 #include <sound/soc.h>
 
 #include <linux/platform_data/dma-ep93xx.h>
 
+<<<<<<< HEAD
+=======
+#include "ep93xx-pcm.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Per channel (1-4) registers.
  */
@@ -95,6 +104,11 @@ struct ep93xx_ac97_info {
 	struct device		*dev;
 	void __iomem		*regs;
 	struct completion	done;
+<<<<<<< HEAD
+=======
+	struct snd_dmaengine_dai_dma_data dma_params_rx;
+	struct snd_dmaengine_dai_dma_data dma_params_tx;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /* currently ALSA only supports a single AC97 device */
@@ -102,13 +116,21 @@ static struct ep93xx_ac97_info *ep93xx_ac97_info;
 
 static struct ep93xx_dma_data ep93xx_ac97_pcm_out = {
 	.name		= "ac97-pcm-out",
+<<<<<<< HEAD
 	.dma_port	= EP93XX_DMA_AAC1,
+=======
+	.port		= EP93XX_DMA_AAC1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.direction	= DMA_MEM_TO_DEV,
 };
 
 static struct ep93xx_dma_data ep93xx_ac97_pcm_in = {
 	.name		= "ac97-pcm-in",
+<<<<<<< HEAD
 	.dma_port	= EP93XX_DMA_AAC1,
+=======
+	.port		= EP93XX_DMA_AAC1,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.direction	= DMA_DEV_TO_MEM,
 };
 
@@ -237,13 +259,20 @@ static irqreturn_t ep93xx_ac97_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 struct snd_ac97_bus_ops soc_ac97_ops = {
+=======
+static struct snd_ac97_bus_ops ep93xx_ac97_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read		= ep93xx_ac97_read,
 	.write		= ep93xx_ac97_write,
 	.reset		= ep93xx_ac97_cold_reset,
 	.warm_reset	= ep93xx_ac97_warm_reset,
 };
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(soc_ac97_ops);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int ep93xx_ac97_trigger(struct snd_pcm_substream *substream,
 			       int cmd, struct snd_soc_dai *dai)
@@ -314,6 +343,7 @@ static int ep93xx_ac97_trigger(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ep93xx_ac97_startup(struct snd_pcm_substream *substream,
 			       struct snd_soc_dai *dai)
 {
@@ -325,18 +355,38 @@ static int ep93xx_ac97_startup(struct snd_pcm_substream *substream,
 		dma_data = &ep93xx_ac97_pcm_in;
 
 	snd_soc_dai_set_dma_data(dai, substream, dma_data);
+=======
+static int ep93xx_ac97_dai_probe(struct snd_soc_dai *dai)
+{
+	struct ep93xx_ac97_info *info = snd_soc_dai_get_drvdata(dai);
+
+	info->dma_params_tx.filter_data = &ep93xx_ac97_pcm_out;
+	info->dma_params_rx.filter_data = &ep93xx_ac97_pcm_in;
+
+	dai->playback_dma_data = &info->dma_params_tx;
+	dai->capture_dma_data = &info->dma_params_rx;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static const struct snd_soc_dai_ops ep93xx_ac97_dai_ops = {
+<<<<<<< HEAD
 	.startup	= ep93xx_ac97_startup,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.trigger	= ep93xx_ac97_trigger,
 };
 
 static struct snd_soc_dai_driver ep93xx_ac97_dai = {
 	.name		= "ep93xx-ac97",
 	.id		= 0,
+<<<<<<< HEAD
 	.ac97_control	= 1,
+=======
+	.bus_control	= true,
+	.probe		= ep93xx_ac97_dai_probe,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.playback	= {
 		.stream_name	= "AC97 Playback",
 		.channels_min	= 2,
@@ -370,9 +420,12 @@ static int ep93xx_ac97_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res)
 		return -ENODEV;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	info->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(info->regs))
 		return PTR_ERR(info->regs);
@@ -395,17 +448,38 @@ static int ep93xx_ac97_probe(struct platform_device *pdev)
 	ep93xx_ac97_info = info;
 	platform_set_drvdata(pdev, info);
 
+<<<<<<< HEAD
+=======
+	ret = snd_soc_set_ac97_ops(&ep93xx_ac97_ops);
+	if (ret)
+		goto fail;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = snd_soc_register_component(&pdev->dev, &ep93xx_ac97_component,
 					 &ep93xx_ac97_dai, 1);
 	if (ret)
 		goto fail;
 
+<<<<<<< HEAD
 	return 0;
 
 fail:
 	platform_set_drvdata(pdev, NULL);
 	ep93xx_ac97_info = NULL;
 	dev_set_drvdata(&pdev->dev, NULL);
+=======
+	ret = devm_ep93xx_pcm_platform_register(&pdev->dev);
+	if (ret)
+		goto fail_unregister;
+
+	return 0;
+
+fail_unregister:
+	snd_soc_unregister_component(&pdev->dev);
+fail:
+	ep93xx_ac97_info = NULL;
+	snd_soc_set_ac97_ops(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -418,9 +492,15 @@ static int ep93xx_ac97_remove(struct platform_device *pdev)
 	/* disable the AC97 controller */
 	ep93xx_ac97_write_reg(info, AC97GCR, 0);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	ep93xx_ac97_info = NULL;
 	dev_set_drvdata(&pdev->dev, NULL);
+=======
+	ep93xx_ac97_info = NULL;
+
+	snd_soc_set_ac97_ops(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -430,7 +510,10 @@ static struct platform_driver ep93xx_ac97_driver = {
 	.remove	= ep93xx_ac97_remove,
 	.driver = {
 		.name = "ep93xx-ac97",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

@@ -72,9 +72,21 @@
 })
 
 #define user_termios_to_kernel_termios(k, u) \
+<<<<<<< HEAD
 	copy_from_user(k, u, sizeof(struct termios))
 
 #define kernel_termios_to_user_termios(u, k) \
+=======
+	copy_from_user(k, u, sizeof(struct termios2))
+
+#define kernel_termios_to_user_termios(u, k) \
+	copy_to_user(u, k, sizeof(struct termios2))
+
+#define user_termios_to_kernel_termios_1(k, u) \
+	copy_from_user(k, u, sizeof(struct termios))
+
+#define kernel_termios_to_user_termios_1(u, k) \
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	copy_to_user(u, k, sizeof(struct termios))
 
 #endif	/* _ALPHA_TERMIOS_H */

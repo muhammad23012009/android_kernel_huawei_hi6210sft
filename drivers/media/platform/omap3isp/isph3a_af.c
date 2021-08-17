@@ -13,6 +13,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+<<<<<<< HEAD
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 /* Linux specific include files */
@@ -51,7 +54,11 @@ static void h3a_af_setup_regs(struct ispstat *af, void *priv)
 	if (af->state == ISPSTAT_DISABLED)
 		return;
 
+<<<<<<< HEAD
 	isp_reg_writel(af->isp, af->active_buf->iommu_addr, OMAP3_ISP_IOMEM_H3A,
+=======
+	isp_reg_writel(af->isp, af->active_buf->dma_addr, OMAP3_ISP_IOMEM_H3A,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       ISPH3A_AFBUFST);
 
 	if (!af->update)
@@ -370,7 +377,10 @@ int omap3isp_h3a_af_init(struct isp_device *isp)
 
 	af->ops = &h3a_af_ops;
 	af->priv = af_cfg;
+<<<<<<< HEAD
 	af->dma_ch = -1;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	af->event_type = V4L2_EVENT_OMAP3ISP_AF;
 	af->isp = isp;
 

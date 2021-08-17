@@ -9,14 +9,21 @@
 #include <linux/mm.h>
 #include <linux/sysctl.h>
 #include <net/net_namespace.h>
+<<<<<<< HEAD
+=======
+#include <net/ipx.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef CONFIG_SYSCTL
 #error This file should not be compiled without CONFIG_SYSCTL defined
 #endif
 
+<<<<<<< HEAD
 /* From af_ipx.c */
 extern int sysctl_ipx_pprop_broadcasting;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct ctl_table ipx_table[] = {
 	{
 		.procname	= "ipx_pprop_broadcasting",

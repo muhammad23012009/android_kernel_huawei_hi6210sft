@@ -16,7 +16,15 @@ typedef void (elevator_merge_req_fn) (struct request_queue *, struct request *, 
 
 typedef void (elevator_merged_fn) (struct request_queue *, struct request *, int);
 
+<<<<<<< HEAD
 typedef int (elevator_allow_merge_fn) (struct request_queue *, struct request *, struct bio *);
+=======
+typedef int (elevator_allow_bio_merge_fn) (struct request_queue *,
+					   struct request *, struct bio *);
+
+typedef int (elevator_allow_rq_merge_fn) (struct request_queue *,
+					  struct request *, struct request *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef void (elevator_bio_merged_fn) (struct request_queue *,
 						struct request *, struct bio *);
@@ -26,7 +34,11 @@ typedef int (elevator_dispatch_fn) (struct request_queue *, int);
 typedef void (elevator_add_req_fn) (struct request_queue *, struct request *);
 typedef struct request *(elevator_request_list_fn) (struct request_queue *, struct request *);
 typedef void (elevator_completed_req_fn) (struct request_queue *, struct request *);
+<<<<<<< HEAD
 typedef int (elevator_may_queue_fn) (struct request_queue *, int);
+=======
+typedef int (elevator_may_queue_fn) (struct request_queue *, int, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef void (elevator_init_icq_fn) (struct io_cq *);
 typedef void (elevator_exit_icq_fn) (struct io_cq *);
@@ -39,13 +51,22 @@ typedef void (elevator_deactivate_req_fn) (struct request_queue *, struct reques
 typedef int (elevator_init_fn) (struct request_queue *,
 				struct elevator_type *e);
 typedef void (elevator_exit_fn) (struct elevator_queue *);
+<<<<<<< HEAD
+=======
+typedef void (elevator_registered_fn) (struct request_queue *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct elevator_ops
 {
 	elevator_merge_fn *elevator_merge_fn;
 	elevator_merged_fn *elevator_merged_fn;
 	elevator_merge_req_fn *elevator_merge_req_fn;
+<<<<<<< HEAD
 	elevator_allow_merge_fn *elevator_allow_merge_fn;
+=======
+	elevator_allow_bio_merge_fn *elevator_allow_bio_merge_fn;
+	elevator_allow_rq_merge_fn *elevator_allow_rq_merge_fn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	elevator_bio_merged_fn *elevator_bio_merged_fn;
 
 	elevator_dispatch_fn *elevator_dispatch_fn;
@@ -68,6 +89,10 @@ struct elevator_ops
 
 	elevator_init_fn *elevator_init_fn;
 	elevator_exit_fn *elevator_exit_fn;
+<<<<<<< HEAD
+=======
+	elevator_registered_fn *elevator_registered_fn;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 #define ELV_NAME_MAX	(16)
@@ -95,7 +120,11 @@ struct elevator_type
 	struct module *elevator_owner;
 
 	/* managed by elevator core */
+<<<<<<< HEAD
 	char icq_cache_name[ELV_NAME_MAX + 5];	/* elvname + "_io_cq" */
+=======
+	char icq_cache_name[ELV_NAME_MAX + 6];	/* elvname + "_io_cq" */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct list_head list;
 };
 
@@ -132,8 +161,12 @@ extern struct request *elv_former_request(struct request_queue *, struct request
 extern struct request *elv_latter_request(struct request_queue *, struct request *);
 extern int elv_register_queue(struct request_queue *q);
 extern void elv_unregister_queue(struct request_queue *q);
+<<<<<<< HEAD
 extern int elv_may_queue(struct request_queue *, int);
 extern void elv_abort_queue(struct request_queue *);
+=======
+extern int elv_may_queue(struct request_queue *, int, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern void elv_completed_request(struct request_queue *, struct request *);
 extern int elv_set_request(struct request_queue *q, struct request *rq,
 			   struct bio *bio, gfp_t gfp_mask);
@@ -156,7 +189,11 @@ extern ssize_t elv_iosched_store(struct request_queue *, const char *, size_t);
 extern int elevator_init(struct request_queue *, char *);
 extern void elevator_exit(struct elevator_queue *);
 extern int elevator_change(struct request_queue *, const char *);
+<<<<<<< HEAD
 extern bool elv_rq_merge_ok(struct request *, struct bio *);
+=======
+extern bool elv_bio_merge_ok(struct request *, struct bio *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct elevator_queue *elevator_alloc(struct request_queue *,
 					struct elevator_type *);
 
@@ -202,6 +239,7 @@ enum {
 #define rq_end_sector(rq)	(blk_rq_pos(rq) + blk_rq_sectors(rq))
 #define rb_entry_rq(node)	rb_entry((node), struct request, rb_node)
 
+<<<<<<< HEAD
 /*
  * Hack to reuse the csd.list list_head as the fifo time holder while
  * the request is in the io scheduler. Saves an unsigned long in rq.
@@ -213,6 +251,10 @@ enum {
 	list_del_init(&(rq)->queuelist);	\
 	INIT_LIST_HEAD(&(rq)->csd.list);	\
 	} while (0)
+=======
+#define rq_entry_fifo(ptr)	list_entry((ptr), struct request, queuelist)
+#define rq_fifo_clear(rq)	list_del_init(&(rq)->queuelist)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #else /* CONFIG_BLOCK */
 

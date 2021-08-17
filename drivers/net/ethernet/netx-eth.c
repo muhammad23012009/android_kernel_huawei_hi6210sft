@@ -13,8 +13,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/init.h>
@@ -314,9 +318,14 @@ static int netx_eth_enable(struct net_device *ndev)
 {
 	struct netx_eth_priv *priv = netdev_priv(ndev);
 	unsigned int mac4321, mac65;
+<<<<<<< HEAD
 	int running, i;
 
 	ether_setup(ndev);
+=======
+	int running, i, ret;
+	bool inv_mac_addr = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ndev->netdev_ops = &netx_eth_netdev_ops;
 	ndev->watchdog_timeo = msecs_to_jiffies(5000);
@@ -361,15 +370,28 @@ static int netx_eth_enable(struct net_device *ndev)
 	xc_start(priv->xc);
 
 	if (!is_valid_ether_addr(ndev->dev_addr))
+<<<<<<< HEAD
 		printk("%s: Invalid ethernet MAC address.  Please "
 		       "set using ifconfig\n", ndev->name);
+=======
+		inv_mac_addr = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (i=2; i<=18; i++)
 		pfifo_push(EMPTY_PTR_FIFO(priv->id),
 			FIFO_PTR_FRAMENO(i) | FIFO_PTR_SEGMENT(priv->id));
 
+<<<<<<< HEAD
 	return register_netdev(ndev);
 
+=======
+	ret = register_netdev(ndev);
+	if (inv_mac_addr)
+		printk("%s: Invalid ethernet MAC address. Please set using ip\n",
+		       ndev->name);
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int netx_eth_drv_probe(struct platform_device *pdev)
@@ -390,7 +412,11 @@ static int netx_eth_drv_probe(struct platform_device *pdev)
 
 	priv = netdev_priv(ndev);
 
+<<<<<<< HEAD
 	pdata = (struct netxeth_platform_data *)pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	priv->xc = request_xc(pdata->xcno, &pdev->dev);
 	if (!priv->xc) {
 		dev_err(&pdev->dev, "unable to request xc engine\n");
@@ -422,7 +448,10 @@ exit_free_pfifo:
 exit_free_xc:
 	free_xc(priv->xc);
 exit_free_netdev:
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(ndev);
 exit:
 	return ret;
@@ -430,11 +459,17 @@ exit:
 
 static int netx_eth_drv_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
 	struct netx_eth_priv *priv = netdev_priv(ndev);
 
 	platform_set_drvdata(pdev, NULL);
 
+=======
+	struct net_device *ndev = platform_get_drvdata(pdev);
+	struct netx_eth_priv *priv = netdev_priv(ndev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unregister_netdev(ndev);
 	xc_stop(priv->xc);
 	free_xc(priv->xc);
@@ -463,7 +498,10 @@ static struct platform_driver netx_eth_driver = {
 	.resume		= netx_eth_drv_resume,
 	.driver		= {
 		.name	= CARDNAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 };
 

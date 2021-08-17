@@ -351,13 +351,23 @@ int i2400m_barker_db_init(const char *_options)
 			}
 			result = i2400m_barker_db_add(barker);
 			if (result < 0)
+<<<<<<< HEAD
 				goto error_add;
+=======
+				goto error_parse_add;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 		kfree(options_orig);
 	}
 	return 0;
 
+<<<<<<< HEAD
 error_parse:
+=======
+error_parse_add:
+error_parse:
+	kfree(options_orig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 error_add:
 	kfree(i2400m_barker_db);
 	return result;

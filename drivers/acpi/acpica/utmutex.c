@@ -5,7 +5,11 @@
  ******************************************************************************/
 
 /*
+<<<<<<< HEAD
  * Copyright (C) 2000 - 2013, Intel Corp.
+=======
+ * Copyright (C) 2000 - 2016, Intel Corp.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,6 +112,13 @@ acpi_status acpi_ut_mutex_initialize(void)
 	/* Create the reader/writer lock for namespace access */
 
 	status = acpi_ut_create_rw_lock(&acpi_gbl_namespace_rw_lock);
+<<<<<<< HEAD
+=======
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return_ACPI_STATUS(status);
 }
 
@@ -269,8 +280,14 @@ acpi_status acpi_ut_acquire_mutex(acpi_mutex_handle mutex_id)
 			  (u32)this_thread_id,
 			  acpi_ut_get_mutex_name(mutex_id)));
 
+<<<<<<< HEAD
 	status = acpi_os_acquire_mutex(acpi_gbl_mutex_info[mutex_id].mutex,
 				       ACPI_WAIT_FOREVER);
+=======
+	status =
+	    acpi_os_acquire_mutex(acpi_gbl_mutex_info[mutex_id].mutex,
+				  ACPI_WAIT_FOREVER);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_SUCCESS(status)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_MUTEX,
 				  "Thread %u acquired Mutex [%s]\n",

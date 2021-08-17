@@ -80,6 +80,7 @@ static void acpi_topstar_notify(struct acpi_device *device, u32 event)
 static int acpi_topstar_fncx_switch(struct acpi_device *device, bool state)
 {
 	acpi_status status;
+<<<<<<< HEAD
 	union acpi_object fncx_params[1] = {
 		{ .type = ACPI_TYPE_INTEGER }
 	};
@@ -87,6 +88,11 @@ static int acpi_topstar_fncx_switch(struct acpi_device *device, bool state)
 
 	fncx_params[0].integer.value = state ? 0x86 : 0x87;
 	status = acpi_evaluate_object(device->handle, "FNCX", &fncx_arg_list, NULL);
+=======
+
+	status = acpi_execute_simple_method(device->handle, "FNCX",
+						state ? 0x86 : 0x87);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ACPI_FAILURE(status)) {
 		pr_err("Unable to switch FNCX notifications\n");
 		return -ENODEV;
@@ -101,10 +107,15 @@ static int acpi_topstar_init_hkey(struct topstar_hkey *hkey)
 	int error;
 
 	input = input_allocate_device();
+<<<<<<< HEAD
 	if (!input) {
 		pr_err("Unable to allocate input device\n");
 		return -ENOMEM;
 	}
+=======
+	if (!input)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	input->name = "Topstar Laptop extra buttons";
 	input->phys = "topstar/input0";

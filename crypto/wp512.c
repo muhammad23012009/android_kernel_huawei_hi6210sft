@@ -1102,8 +1102,13 @@ static int wp384_final(struct shash_desc *desc, u8 *out)
 	u8 D[64];
 
 	wp512_final(desc, D);
+<<<<<<< HEAD
 	memcpy (out, D, WP384_DIGEST_SIZE);
 	memset (D, 0, WP512_DIGEST_SIZE);
+=======
+	memcpy(out, D, WP384_DIGEST_SIZE);
+	memzero_explicit(D, WP512_DIGEST_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -1113,8 +1118,13 @@ static int wp256_final(struct shash_desc *desc, u8 *out)
 	u8 D[64];
 
 	wp512_final(desc, D);
+<<<<<<< HEAD
 	memcpy (out, D, WP256_DIGEST_SIZE);
 	memset (D, 0, WP512_DIGEST_SIZE);
+=======
+	memcpy(out, D, WP256_DIGEST_SIZE);
+	memzero_explicit(D, WP512_DIGEST_SIZE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

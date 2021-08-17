@@ -99,7 +99,11 @@
 
 #define S3C64XX_PA_USB_HSPHY	(0x7C100000)
 
+<<<<<<< HEAD
 /* compatibiltiy defines. */
+=======
+/* compatibility defines. */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define S3C_PA_TIMER		S3C64XX_PA_TIMER
 #define S3C_PA_HSMMC0		S3C64XX_PA_HSMMC0
 #define S3C_PA_HSMMC1		S3C64XX_PA_HSMMC1
@@ -121,5 +125,9 @@
 #define SAMSUNG_PA_ADC		S3C64XX_PA_ADC
 #define SAMSUNG_PA_CFCON	S3C64XX_PA_CFCON
 #define SAMSUNG_PA_KEYPAD	S3C64XX_PA_KEYPAD
+<<<<<<< HEAD
+=======
+#define SAMSUNG_PA_TIMER	S3C64XX_PA_TIMER
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* __ASM_ARCH_6400_MAP_H */

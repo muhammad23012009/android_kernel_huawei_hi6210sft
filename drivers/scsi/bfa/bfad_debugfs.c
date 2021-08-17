@@ -1,9 +1,18 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
  *
  * Linux driver for Brocade Fibre Channel Host Bus Adapter.
+=======
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License (GPL) Version 2 as
@@ -173,6 +182,7 @@ bfad_debugfs_open_reg(struct inode *inode, struct file *file)
 static loff_t
 bfad_debugfs_lseek(struct file *file, loff_t offset, int orig)
 {
+<<<<<<< HEAD
 	struct bfad_debug_info *debug;
 	loff_t pos = file->f_pos;
 
@@ -198,6 +208,11 @@ bfad_debugfs_lseek(struct file *file, loff_t offset, int orig)
 	}
 
 	return file->f_pos;
+=======
+	struct bfad_debug_info *debug = file->private_data;
+	return fixed_size_llseek(file, offset, orig,
+				debug->buffer_len);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static ssize_t
@@ -276,12 +291,18 @@ bfad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	struct bfad_s *bfad = port->bfad;
 	struct bfa_s *bfa = &bfad->bfa;
 	struct bfa_ioc_s *ioc = &bfa->ioc;
+<<<<<<< HEAD
 	int addr, len, rc, i;
+=======
+	int addr, rc, i;
+	u32 len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 *regbuf;
 	void __iomem *rb, *reg_addr;
 	unsigned long flags;
 	void *kern_buf;
 
+<<<<<<< HEAD
 	kern_buf = kzalloc(nbytes, GFP_KERNEL);
 
 	if (!kern_buf) {
@@ -297,6 +318,14 @@ bfad_debugfs_write_regrd(struct file *file, const char __user *buf,
 
 	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
 	if (rc < 2) {
+=======
+	kern_buf = memdup_user(buf, nbytes);
+	if (IS_ERR(kern_buf))
+		return PTR_ERR(kern_buf);
+
+	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
+	if (rc < 2 || len > (UINT_MAX >> 2)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_INFO
 			"bfad[%d]: %s failed to read user buf\n",
 			bfad->inst_no, __func__);
@@ -358,6 +387,7 @@ bfad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	unsigned long flags;
 	void *kern_buf;
 
+<<<<<<< HEAD
 	kern_buf = kzalloc(nbytes, GFP_KERNEL);
 
 	if (!kern_buf) {
@@ -370,6 +400,11 @@ bfad_debugfs_write_regwr(struct file *file, const char __user *buf,
 		kfree(kern_buf);
 		return -ENOMEM;
 	}
+=======
+	kern_buf = memdup_user(buf, nbytes);
+	if (IS_ERR(kern_buf))
+		return PTR_ERR(kern_buf);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rc = sscanf(kern_buf, "%x:%x", &addr, &val);
 	if (rc < 2) {

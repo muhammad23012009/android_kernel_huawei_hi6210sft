@@ -80,6 +80,7 @@ static int __init hvc_udbg_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(hvc_udbg_init);
 
 static void __exit hvc_udbg_exit(void)
@@ -88,6 +89,9 @@ static void __exit hvc_udbg_exit(void)
 		hvc_remove(hvc_udbg_dev);
 }
 module_exit(hvc_udbg_exit);
+=======
+device_initcall(hvc_udbg_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int __init hvc_udbg_console_init(void)
 {

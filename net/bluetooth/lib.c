@@ -58,6 +58,10 @@ int bt_to_errno(__u16 code)
 		return EIO;
 
 	case 0x04:
+<<<<<<< HEAD
+=======
+	case 0x3c:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return EHOSTDOWN;
 
 	case 0x05:
@@ -134,17 +138,25 @@ int bt_to_errno(__u16 code)
 }
 EXPORT_SYMBOL(bt_to_errno);
 
+<<<<<<< HEAD
 int bt_info(const char *format, ...)
 {
 	struct va_format vaf;
 	va_list args;
 	int r;
+=======
+void bt_info(const char *format, ...)
+{
+	struct va_format vaf;
+	va_list args;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	va_start(args, format);
 
 	vaf.fmt = format;
 	vaf.va = &args;
 
+<<<<<<< HEAD
 	r = pr_info("%pV", &vaf);
 
 	va_end(args);
@@ -158,12 +170,25 @@ int bt_err(const char *format, ...)
 	struct va_format vaf;
 	va_list args;
 	int r;
+=======
+	pr_info("%pV", &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL(bt_info);
+
+void bt_warn(const char *format, ...)
+{
+	struct va_format vaf;
+	va_list args;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	va_start(args, format);
 
 	vaf.fmt = format;
 	vaf.va = &args;
 
+<<<<<<< HEAD
 	r = pr_err("%pV", &vaf);
 
 	va_end(args);
@@ -171,3 +196,42 @@ int bt_err(const char *format, ...)
 	return r;
 }
 EXPORT_SYMBOL(bt_err);
+=======
+	pr_warn("%pV", &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL(bt_warn);
+
+void bt_err(const char *format, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, format);
+
+	vaf.fmt = format;
+	vaf.va = &args;
+
+	pr_err("%pV", &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL(bt_err);
+
+void bt_err_ratelimited(const char *format, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, format);
+
+	vaf.fmt = format;
+	vaf.va = &args;
+
+	pr_err_ratelimited("%pV", &vaf);
+
+	va_end(args);
+}
+EXPORT_SYMBOL(bt_err_ratelimited);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

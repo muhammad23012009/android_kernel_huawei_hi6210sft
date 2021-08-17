@@ -19,6 +19,7 @@
 #include <linux/regulator/driver.h>
 #include <linux/mfd/wm8400-private.h>
 
+<<<<<<< HEAD
 static int wm8400_ldo_list_voltage(struct regulator_dev *dev,
 				   unsigned selector)
 {
@@ -60,6 +61,21 @@ static struct regulator_ops wm8400_ldo_ops = {
 	.get_voltage_sel = regulator_get_voltage_sel_regmap,
 	.set_voltage_sel = regulator_set_voltage_sel_regmap,
 	.map_voltage = wm8400_ldo_map_voltage,
+=======
+static const struct regulator_linear_range wm8400_ldo_ranges[] = {
+	REGULATOR_LINEAR_RANGE(900000, 0, 14, 50000),
+	REGULATOR_LINEAR_RANGE(1700000, 15, 31, 100000),
+};
+
+static const struct regulator_ops wm8400_ldo_ops = {
+	.is_enabled = regulator_is_enabled_regmap,
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.list_voltage = regulator_list_voltage_linear_range,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.map_voltage = regulator_map_voltage_linear_range,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static unsigned int wm8400_dcdc_get_mode(struct regulator_dev *dev)
@@ -134,7 +150,11 @@ static unsigned int wm8400_dcdc_get_optimum_mode(struct regulator_dev *dev,
 	return REGULATOR_MODE_NORMAL;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops wm8400_dcdc_ops = {
+=======
+static const struct regulator_ops wm8400_dcdc_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.is_enabled = regulator_is_enabled_regmap,
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -155,6 +175,11 @@ static struct regulator_desc regulators[] = {
 		.enable_reg = WM8400_LDO1_CONTROL,
 		.enable_mask = WM8400_LDO1_ENA,
 		.n_voltages = WM8400_LDO1_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8400_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8400_ldo_ranges),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.vsel_reg = WM8400_LDO1_CONTROL,
 		.vsel_mask = WM8400_LDO1_VSEL_MASK,
 		.type = REGULATOR_VOLTAGE,
@@ -167,6 +192,11 @@ static struct regulator_desc regulators[] = {
 		.enable_reg = WM8400_LDO2_CONTROL,
 		.enable_mask = WM8400_LDO2_ENA,
 		.n_voltages = WM8400_LDO2_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8400_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8400_ldo_ranges),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.type = REGULATOR_VOLTAGE,
 		.vsel_reg = WM8400_LDO2_CONTROL,
 		.vsel_mask = WM8400_LDO2_VSEL_MASK,
@@ -179,6 +209,11 @@ static struct regulator_desc regulators[] = {
 		.enable_reg = WM8400_LDO3_CONTROL,
 		.enable_mask = WM8400_LDO3_ENA,
 		.n_voltages = WM8400_LDO3_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8400_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8400_ldo_ranges),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.vsel_reg = WM8400_LDO3_CONTROL,
 		.vsel_mask = WM8400_LDO3_VSEL_MASK,
 		.type = REGULATOR_VOLTAGE,
@@ -191,6 +226,11 @@ static struct regulator_desc regulators[] = {
 		.enable_reg = WM8400_LDO4_CONTROL,
 		.enable_mask = WM8400_LDO4_ENA,
 		.n_voltages = WM8400_LDO4_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8400_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8400_ldo_ranges),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.vsel_reg = WM8400_LDO4_CONTROL,
 		.vsel_mask = WM8400_LDO4_VSEL_MASK,
 		.type = REGULATOR_VOLTAGE,
@@ -233,11 +273,20 @@ static int wm8400_regulator_probe(struct platform_device *pdev)
 	struct regulator_dev *rdev;
 
 	config.dev = &pdev->dev;
+<<<<<<< HEAD
 	config.init_data = pdev->dev.platform_data;
 	config.driver_data = wm8400;
 	config.regmap = wm8400->regmap;
 
 	rdev = regulator_register(&regulators[pdev->id], &config);
+=======
+	config.init_data = dev_get_platdata(&pdev->dev);
+	config.driver_data = wm8400;
+	config.regmap = wm8400->regmap;
+
+	rdev = devm_regulator_register(&pdev->dev, &regulators[pdev->id],
+				       &config);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(rdev))
 		return PTR_ERR(rdev);
 
@@ -246,6 +295,7 @@ static int wm8400_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8400_regulator_remove(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev = platform_get_drvdata(pdev);
@@ -256,12 +306,17 @@ static int wm8400_regulator_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct platform_driver wm8400_regulator_driver = {
 	.driver = {
 		.name = "wm8400-regulator",
 	},
 	.probe = wm8400_regulator_probe,
+<<<<<<< HEAD
 	.remove = wm8400_regulator_remove,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**

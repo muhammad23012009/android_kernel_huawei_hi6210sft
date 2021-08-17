@@ -38,12 +38,17 @@ static void ext4_put_nojournal(handle_t *handle)
 /*
  * Wrappers for jbd2_journal_start/end.
  */
+<<<<<<< HEAD
 handle_t *__ext4_journal_start_sb(struct super_block *sb, unsigned int line,
 				  int type, int nblocks)
+=======
+static int ext4_journal_check_start(struct super_block *sb)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	journal_t *journal;
 
 	might_sleep();
+<<<<<<< HEAD
 
 	trace_ext4_journal_start(sb, nblocks, _RET_IP_);
 	if (sb->s_flags & MS_RDONLY)
@@ -53,16 +58,48 @@ handle_t *__ext4_journal_start_sb(struct super_block *sb, unsigned int line,
 	journal = EXT4_SB(sb)->s_journal;
 	if (!journal)
 		return ext4_get_nojournal();
+=======
+	if (sb->s_flags & MS_RDONLY)
+		return -EROFS;
+	WARN_ON(sb->s_writers.frozen == SB_FREEZE_COMPLETE);
+	journal = EXT4_SB(sb)->s_journal;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Special case here: if the journal has aborted behind our
 	 * backs (eg. EIO in the commit thread), then we still need to
 	 * take the FS itself readonly cleanly.
 	 */
+<<<<<<< HEAD
 	if (is_journal_aborted(journal)) {
 		ext4_abort(sb, "Detected aborted journal");
 		return ERR_PTR(-EROFS);
 	}
 	return jbd2__journal_start(journal, nblocks, GFP_NOFS, type, line);
+=======
+	if (journal && is_journal_aborted(journal)) {
+		ext4_abort(sb, "Detected aborted journal");
+		return -EROFS;
+	}
+	return 0;
+}
+
+handle_t *__ext4_journal_start_sb(struct super_block *sb, unsigned int line,
+				  int type, int blocks, int rsv_blocks)
+{
+	journal_t *journal;
+	int err;
+
+	trace_ext4_journal_start(sb, blocks, rsv_blocks, _RET_IP_);
+	err = ext4_journal_check_start(sb);
+	if (err < 0)
+		return ERR_PTR(err);
+
+	journal = EXT4_SB(sb)->s_journal;
+	if (!journal)
+		return ext4_get_nojournal();
+	return jbd2__journal_start(journal, blocks, rsv_blocks, GFP_NOFS,
+				   type, line);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int __ext4_journal_stop(const char *where, unsigned int line, handle_t *handle)
@@ -75,8 +112,19 @@ int __ext4_journal_stop(const char *where, unsigned int line, handle_t *handle)
 		ext4_put_nojournal(handle);
 		return 0;
 	}
+<<<<<<< HEAD
 	sb = handle->h_transaction->t_journal->j_private;
 	err = handle->h_err;
+=======
+
+	err = handle->h_err;
+	if (!handle->h_transaction) {
+		rc = jbd2_journal_stop(handle);
+		return err ? err : rc;
+	}
+
+	sb = handle->h_transaction->t_journal->j_private;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = jbd2_journal_stop(handle);
 
 	if (!err)
@@ -86,9 +134,40 @@ int __ext4_journal_stop(const char *where, unsigned int line, handle_t *handle)
 	return err;
 }
 
+<<<<<<< HEAD
 void ext4_journal_abort_handle(const char *caller, unsigned int line,
 			       const char *err_fn, struct buffer_head *bh,
 			       handle_t *handle, int err)
+=======
+handle_t *__ext4_journal_start_reserved(handle_t *handle, unsigned int line,
+					int type)
+{
+	struct super_block *sb;
+	int err;
+
+	if (!ext4_handle_valid(handle))
+		return ext4_get_nojournal();
+
+	sb = handle->h_journal->j_private;
+	trace_ext4_journal_start_reserved(sb, handle->h_buffer_credits,
+					  _RET_IP_);
+	err = ext4_journal_check_start(sb);
+	if (err < 0) {
+		jbd2_journal_free_reserved(handle);
+		return ERR_PTR(err);
+	}
+
+	err = jbd2_journal_start_reserved(handle, type, line);
+	if (err < 0)
+		return ERR_PTR(err);
+	return handle;
+}
+
+static void ext4_journal_abort_handle(const char *caller, unsigned int line,
+				      const char *err_fn,
+				      struct buffer_head *bh,
+				      handle_t *handle, int err)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	char nbuf[16];
 	const char *errstr = ext4_decode_error(NULL, err, nbuf);
@@ -219,10 +298,27 @@ int __ext4_handle_dirty_metadata(const char *where, unsigned int line,
 	set_buffer_prio(bh);
 	if (ext4_handle_valid(handle)) {
 		err = jbd2_journal_dirty_metadata(handle, bh);
+<<<<<<< HEAD
 		/* Errors can only happen if there is a bug */
 		if (WARN_ON_ONCE(err)) {
 			ext4_journal_abort_handle(where, line, __func__, bh,
 						  handle, err);
+=======
+		/* Errors can only happen due to aborted journal or a nasty bug */
+		if (!is_handle_aborted(handle) && WARN_ON_ONCE(err)) {
+			ext4_journal_abort_handle(where, line, __func__, bh,
+						  handle, err);
+			if (inode == NULL) {
+				pr_err("EXT4: jbd2_journal_dirty_metadata "
+				       "failed: handle type %u started at "
+				       "line %u, credits %u/%u, errcode %d",
+				       handle->h_type,
+				       handle->h_line_no,
+				       handle->h_requested_credits,
+				       handle->h_buffer_credits, err);
+				return err;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			ext4_error_inode(inode, where, line,
 					 bh->b_blocknr,
 					 "journal_dirty_metadata failed: "

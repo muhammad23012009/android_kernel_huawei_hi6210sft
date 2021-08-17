@@ -14,7 +14,10 @@
 #define tlb_flush(tlb)	flush_tlb_mm((tlb)->mm)
 
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <asm-generic/tlb.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_MMU
 #define tlb_start_vma(tlb, vma)		do { } while (0)
@@ -22,4 +25,9 @@
 #define __tlb_remove_tlb_entry(tlb, pte, address) do { } while (0)
 #endif
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/tlb.h>
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _ASM_MICROBLAZE_TLB_H */

@@ -15,22 +15,32 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/workqueue.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/leds.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/mfd/adp5520.h>
 #include <linux/slab.h>
 
 struct adp5520_led {
 	struct led_classdev	cdev;
+<<<<<<< HEAD
 	struct work_struct	work;
 	struct device		*master;
 	enum led_brightness	new_brightness;
+=======
+	struct device		*master;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			id;
 	int			flags;
 };
 
+<<<<<<< HEAD
 static void adp5520_led_work(struct work_struct *work)
 {
 	struct adp5520_led *led = container_of(work, struct adp5520_led, work);
@@ -39,13 +49,21 @@ static void adp5520_led_work(struct work_struct *work)
 }
 
 static void adp5520_led_set(struct led_classdev *led_cdev,
+=======
+static int adp5520_led_set(struct led_classdev *led_cdev,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   enum led_brightness value)
 {
 	struct adp5520_led *led;
 
 	led = container_of(led_cdev, struct adp5520_led, cdev);
+<<<<<<< HEAD
 	led->new_brightness = value;
 	schedule_work(&led->work);
+=======
+	return adp5520_write(led->master, ADP5520_LED1_CURRENT + led->id - 1,
+			 value >> 2);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int adp5520_led_setup(struct adp5520_led *led)
@@ -87,7 +105,11 @@ static int adp5520_led_setup(struct adp5520_led *led)
 
 static int adp5520_led_prepare(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct adp5520_leds_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct adp5520_leds_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct device *dev = pdev->dev.parent;
 	int ret = 0;
 
@@ -103,7 +125,11 @@ static int adp5520_led_prepare(struct platform_device *pdev)
 
 static int adp5520_led_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct adp5520_leds_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct adp5520_leds_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adp5520_led *led, *led_dat;
 	struct led_info *cur_led;
 	int ret, i;
@@ -121,6 +147,7 @@ static int adp5520_led_probe(struct platform_device *pdev)
 
 	led = devm_kzalloc(&pdev->dev, sizeof(*led) * pdata->num_leds,
 				GFP_KERNEL);
+<<<<<<< HEAD
 	if (led == NULL) {
 		dev_err(&pdev->dev, "failed to alloc memory\n");
 		return -ENOMEM;
@@ -128,6 +155,12 @@ static int adp5520_led_probe(struct platform_device *pdev)
 
 	ret = adp5520_led_prepare(pdev);
 
+=======
+	if (!led)
+		return -ENOMEM;
+
+	ret = adp5520_led_prepare(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		dev_err(&pdev->dev, "failed to write\n");
 		return ret;
@@ -139,7 +172,11 @@ static int adp5520_led_probe(struct platform_device *pdev)
 
 		led_dat->cdev.name = cur_led->name;
 		led_dat->cdev.default_trigger = cur_led->default_trigger;
+<<<<<<< HEAD
 		led_dat->cdev.brightness_set = adp5520_led_set;
+=======
+		led_dat->cdev.brightness_set_blocking = adp5520_led_set;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		led_dat->cdev.brightness = LED_OFF;
 
 		if (cur_led->flags & ADP5520_FLAG_LED_MASK)
@@ -150,9 +187,12 @@ static int adp5520_led_probe(struct platform_device *pdev)
 		led_dat->id = led_dat->flags & ADP5520_FLAG_LED_MASK;
 
 		led_dat->master = pdev->dev.parent;
+<<<<<<< HEAD
 		led_dat->new_brightness = LED_OFF;
 
 		INIT_WORK(&led_dat->work, adp5520_led_work);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		ret = led_classdev_register(led_dat->master, &led_dat->cdev);
 		if (ret) {
@@ -174,10 +214,15 @@ static int adp5520_led_probe(struct platform_device *pdev)
 
 err:
 	if (i > 0) {
+<<<<<<< HEAD
 		for (i = i - 1; i >= 0; i--) {
 			led_classdev_unregister(&led[i].cdev);
 			cancel_work_sync(&led[i].work);
 		}
+=======
+		for (i = i - 1; i >= 0; i--)
+			led_classdev_unregister(&led[i].cdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return ret;
@@ -185,7 +230,11 @@ err:
 
 static int adp5520_led_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct adp5520_leds_platform_data *pdata = pdev->dev.platform_data;
+=======
+	struct adp5520_leds_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct adp5520_led *led;
 	int i;
 
@@ -196,7 +245,10 @@ static int adp5520_led_remove(struct platform_device *pdev)
 
 	for (i = 0; i < pdata->num_leds; i++) {
 		led_classdev_unregister(&led[i].cdev);
+<<<<<<< HEAD
 		cancel_work_sync(&led[i].work);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -205,7 +257,10 @@ static int adp5520_led_remove(struct platform_device *pdev)
 static struct platform_driver adp5520_led_driver = {
 	.driver	= {
 		.name	= "adp5520-led",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe		= adp5520_led_probe,
 	.remove		= adp5520_led_remove,

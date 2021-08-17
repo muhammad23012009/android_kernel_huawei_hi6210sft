@@ -46,6 +46,10 @@ SECTIONS {
 		__end_ivt_text = .;
 		TEXT_TEXT
 		SCHED_TEXT
+<<<<<<< HEAD
+=======
+		CPUIDLE_TEXT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		LOCK_TEXT
 		KPROBES_TEXT
 		*(.gnu.linkonce.t*)
@@ -136,6 +140,7 @@ SECTIONS {
 		__end___mckinley_e9_bundles = .;
 	}
 
+<<<<<<< HEAD
 #if defined(CONFIG_PARAVIRT)
 	. = ALIGN(16);
 	.paravirt_bundles : AT(ADDR(.paravirt_bundles) - LOAD_OFFSET) {
@@ -157,6 +162,8 @@ SECTIONS {
 	}
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if defined(CONFIG_IA64_GENERIC)
 	/* Machine Vector */
 	. = ALIGN(16);
@@ -182,12 +189,15 @@ SECTIONS {
 		__start_gate_section = .;
 		*(.data..gate)
 		__stop_gate_section = .;
+<<<<<<< HEAD
 #ifdef CONFIG_XEN
 		. = ALIGN(PAGE_SIZE);
 		__xen_start_gate_section = .;
 		*(.data..gate.xen)
 		__xen_stop_gate_section = .;
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	/*
 	 * make sure the gate page doesn't expose

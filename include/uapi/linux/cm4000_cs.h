@@ -2,6 +2,10 @@
 #define _UAPI_CM4000_H_
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/ioctl.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define	MAX_ATR			33
 

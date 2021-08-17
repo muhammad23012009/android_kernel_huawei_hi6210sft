@@ -1,6 +1,10 @@
 /*
  * Q40 master Chip Control
+<<<<<<< HEAD
  * RTC stuff merged for compactnes..
+=======
+ * RTC stuff merged for compactness.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 */
 
 #ifndef _Q40_MASTER_H

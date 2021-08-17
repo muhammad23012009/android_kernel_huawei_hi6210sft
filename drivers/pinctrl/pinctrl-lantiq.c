@@ -257,9 +257,15 @@ static int match_group_mux(const struct ltq_pin_group *grp,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ltq_pmx_enable(struct pinctrl_dev *pctrldev,
 				unsigned func,
 				unsigned group)
+=======
+static int ltq_pmx_set(struct pinctrl_dev *pctrldev,
+		       unsigned func,
+		       unsigned group)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct ltq_pinmux_info *info = pinctrl_dev_get_drvdata(pctrldev);
 	const struct ltq_pin_group *pin_grp = &info->grps[group];
@@ -316,7 +322,11 @@ static const struct pinmux_ops ltq_pmx_ops = {
 	.get_functions_count	= ltq_pmx_func_count,
 	.get_function_name	= ltq_pmx_func_name,
 	.get_function_groups	= ltq_pmx_get_groups,
+<<<<<<< HEAD
 	.enable			= ltq_pmx_enable,
+=======
+	.set_mux		= ltq_pmx_set,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.gpio_request_enable	= ltq_pmx_gpio_request_enable,
 };
 
@@ -336,10 +346,17 @@ int ltq_pinctrl_register(struct platform_device *pdev,
 	desc->pmxops = &ltq_pmx_ops;
 	info->dev = &pdev->dev;
 
+<<<<<<< HEAD
 	info->pctrl = pinctrl_register(desc, &pdev->dev, info);
 	if (!info->pctrl) {
 		dev_err(&pdev->dev, "failed to register LTQ pinmux driver\n");
 		return -EINVAL;
+=======
+	info->pctrl = devm_pinctrl_register(&pdev->dev, desc, info);
+	if (IS_ERR(info->pctrl)) {
+		dev_err(&pdev->dev, "failed to register LTQ pinmux driver\n");
+		return PTR_ERR(info->pctrl);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	platform_set_drvdata(pdev, info);
 	return 0;

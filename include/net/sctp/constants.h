@@ -19,6 +19,7 @@
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+<<<<<<< HEAD
  * along with GNU CC; see the file COPYING.  If not, write to
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
@@ -29,6 +30,14 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * along with GNU CC; see the file COPYING.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Written or modified by:
  *   La Monte H.P. Yarroll <piggy@acm.org>
@@ -39,9 +48,12 @@
  *   Xingang Guo           <xingang.guo@intel.com>
  *   Sridhar Samudrala     <samudrala@us.ibm.com>
  *   Daisy Chang           <daisyc@us.ibm.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #ifndef __sctp_constants_h__
@@ -221,7 +233,11 @@ typedef enum {
 	SCTP_SS_LISTENING      = TCP_LISTEN,
 	SCTP_SS_ESTABLISHING   = TCP_SYN_SENT,
 	SCTP_SS_ESTABLISHED    = TCP_ESTABLISHED,
+<<<<<<< HEAD
 	SCTP_SS_CLOSING        = TCP_CLOSING,
+=======
+	SCTP_SS_CLOSING        = TCP_CLOSE_WAIT,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } sctp_sock_state_t;
 
 /* These functions map various type to printable names.  */
@@ -318,7 +334,11 @@ typedef enum {
 	SCTP_XMIT_OK,
 	SCTP_XMIT_PMTU_FULL,
 	SCTP_XMIT_RWND_FULL,
+<<<<<<< HEAD
 	SCTP_XMIT_NAGLE_DELAY,
+=======
+	SCTP_XMIT_DELAY,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } sctp_xmit_t;
 
 /* These are the commands for manipulating transports.  */
@@ -351,8 +371,12 @@ typedef enum {
 } sctp_scope_policy_t;
 
 /* Based on IPv4 scoping <draft-stewart-tsvwg-sctp-ipv4-00.txt>,
+<<<<<<< HEAD
  * SCTP IPv4 unusable addresses: 0.0.0.0/8, 224.0.0.0/4, 198.18.0.0/24,
  * 192.88.99.0/24.
+=======
+ * SCTP IPv4 unusable addresses: 0.0.0.0/8, 224.0.0.0/4, 192.88.99.0/24.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * Also, RFC 8.4, non-unicast addresses are not considered valid SCTP
  * addresses.
  */
@@ -360,6 +384,7 @@ typedef enum {
 	((htonl(INADDR_BROADCAST) == a) ||  \
 	 ipv4_is_multicast(a) ||	    \
 	 ipv4_is_zeronet(a) ||		    \
+<<<<<<< HEAD
 	 ipv4_is_test_198(a) ||		    \
 	 ipv4_is_anycast_6to4(a))
 
@@ -369,6 +394,18 @@ typedef enum {
 #define SCTP_ADDR4_PEERSUPP	0x00000002	/* IPv4 address is supported by
 						   peer */
 #define SCTP_ADDR6_PEERSUPP	0x00000004	/* IPv6 address is supported by
+=======
+	 ipv4_is_anycast_6to4(a))
+
+/* Flags used for the bind address copy functions.  */
+#define SCTP_ADDR4_ALLOWED	0x00000001	/* IPv4 address is allowed by
+						   local sock family */
+#define SCTP_ADDR6_ALLOWED	0x00000002	/* IPv6 address is allowed by
+						   local sock family */
+#define SCTP_ADDR4_PEERSUPP	0x00000004	/* IPv4 address is supported by
+						   peer */
+#define SCTP_ADDR6_PEERSUPP	0x00000008	/* IPv6 address is supported by
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 						   peer */
 
 /* Reasons to retransmit. */

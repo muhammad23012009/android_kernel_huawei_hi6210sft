@@ -22,6 +22,10 @@
 #include <asm/machdep.h>
 #include <asm/prom.h>
 
+<<<<<<< HEAD
+=======
+#include "cell.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * MSIC registers, specified as offsets from dcr_base
@@ -92,10 +96,17 @@ static void msic_dcr_write(struct axon_msic *msic, unsigned int dcr_n, u32 val)
 	dcr_write(msic->dcr_host, dcr_n, val);
 }
 
+<<<<<<< HEAD
 static void axon_msi_cascade(unsigned int irq, struct irq_desc *desc)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct axon_msic *msic = irq_get_handler_data(irq);
+=======
+static void axon_msi_cascade(struct irq_desc *desc)
+{
+	struct irq_chip *chip = irq_desc_get_chip(desc);
+	struct axon_msic *msic = irq_desc_get_handler_data(desc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 write_offset, msi;
 	int idx;
 	int retry = 0;
@@ -199,6 +210,7 @@ out_error:
 	return msic;
 }
 
+<<<<<<< HEAD
 static int axon_msi_check_device(struct pci_dev *dev, int nvec, int type)
 {
 	if (!find_msi_translator(dev))
@@ -207,6 +219,8 @@ static int axon_msi_check_device(struct pci_dev *dev, int nvec, int type)
 	return 0;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
 {
 	struct device_node *dn;
@@ -220,7 +234,11 @@ static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	entry = list_first_entry(&dev->msi_list, struct msi_desc, list);
+=======
+	entry = first_pci_msi_entry(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	for (; dn; dn = of_get_next_parent(dn)) {
 		if (entry->msi_attrib.is_64) {
@@ -276,9 +294,15 @@ static int axon_msi_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, &dev->msi_list, list) {
 		virq = irq_create_direct_mapping(msic->irq_domain);
 		if (virq == NO_IRQ) {
+=======
+	for_each_pci_msi_entry(entry, dev) {
+		virq = irq_create_direct_mapping(msic->irq_domain);
+		if (!virq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev_warn(&dev->dev,
 				 "axon_msi: virq allocation failed!\n");
 			return -1;
@@ -287,7 +311,11 @@ static int axon_msi_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 
 		irq_set_msi_desc(virq, entry);
 		msg.data = virq;
+<<<<<<< HEAD
 		write_msi_msg(virq, &msg);
+=======
+		pci_write_msi_msg(virq, &msg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -299,8 +327,13 @@ static void axon_msi_teardown_msi_irqs(struct pci_dev *dev)
 
 	dev_dbg(&dev->dev, "axon_msi: tearing down msi irqs\n");
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, &dev->msi_list, list) {
 		if (entry->irq == NO_IRQ)
+=======
+	for_each_pci_msi_entry(entry, dev) {
+		if (!entry->irq)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			continue;
 
 		irq_set_msi_desc(entry->irq, NULL);
@@ -309,9 +342,15 @@ static void axon_msi_teardown_msi_irqs(struct pci_dev *dev)
 }
 
 static struct irq_chip msic_irq_chip = {
+<<<<<<< HEAD
 	.irq_mask	= mask_msi_irq,
 	.irq_unmask	= unmask_msi_irq,
 	.irq_shutdown	= mask_msi_irq,
+=======
+	.irq_mask	= pci_msi_mask_irq,
+	.irq_unmask	= pci_msi_unmask_irq,
+	.irq_shutdown	= pci_msi_mask_irq,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.name		= "AXON-MSI",
 };
 
@@ -334,7 +373,11 @@ static void axon_msi_shutdown(struct platform_device *device)
 	u32 tmp;
 
 	pr_devel("axon_msi: disabling %s\n",
+<<<<<<< HEAD
 		  msic->irq_domain->of_node->full_name);
+=======
+		 irq_domain_get_of_node(msic->irq_domain)->full_name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	tmp  = dcr_read(msic->dcr_host, MSIC_CTRL_REG);
 	tmp &= ~MSIC_CTRL_ENABLE & ~MSIC_CTRL_IRQ_ENABLE;
 	msic_dcr_write(msic, MSIC_CTRL_REG, tmp);
@@ -382,7 +425,11 @@ static int axon_msi_probe(struct platform_device *device)
 	}
 
 	virq = irq_of_parse_and_map(dn, 0);
+<<<<<<< HEAD
 	if (virq == NO_IRQ) {
+=======
+	if (!virq) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		printk(KERN_ERR "axon_msi: irq parse and map failed for %s\n",
 		       dn->full_name);
 		goto out_free_fifo;
@@ -414,9 +461,14 @@ static int axon_msi_probe(struct platform_device *device)
 
 	dev_set_drvdata(&device->dev, msic);
 
+<<<<<<< HEAD
 	ppc_md.setup_msi_irqs = axon_msi_setup_msi_irqs;
 	ppc_md.teardown_msi_irqs = axon_msi_teardown_msi_irqs;
 	ppc_md.msi_check_device = axon_msi_check_device;
+=======
+	cell_pci_controller_ops.setup_msi_irqs = axon_msi_setup_msi_irqs;
+	cell_pci_controller_ops.teardown_msi_irqs = axon_msi_teardown_msi_irqs;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	axon_msi_debug_setup(dn, msic);
 
@@ -446,7 +498,10 @@ static struct platform_driver axon_msi_driver = {
 	.shutdown	= axon_msi_shutdown,
 	.driver = {
 		.name = "axon-msi",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = axon_msi_device_id,
 	},
 };

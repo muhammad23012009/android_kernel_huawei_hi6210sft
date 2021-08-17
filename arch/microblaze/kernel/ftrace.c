@@ -27,6 +27,12 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 	unsigned long return_hooker = (unsigned long)
 				&return_to_handler;
 
+<<<<<<< HEAD
+=======
+	if (unlikely(ftrace_graph_is_dead()))
+		return;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(atomic_read(&current->tracing_graph_pause)))
 		return;
 
@@ -60,7 +66,11 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 		return;
 	}
 
+<<<<<<< HEAD
 	err = ftrace_push_return_trace(old, self_addr, &trace.depth, 0);
+=======
+	err = ftrace_push_return_trace(old, self_addr, &trace.depth, 0, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (err == -EBUSY) {
 		*parent = old;
 		return;
@@ -171,11 +181,16 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
 	return ret;
 }
 
+<<<<<<< HEAD
 int __init ftrace_dyn_arch_init(void *data)
 {
 	/* The return code is retured via data */
 	*(unsigned long *)data = 0;
 
+=======
+int __init ftrace_dyn_arch_init(void)
+{
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 

@@ -142,19 +142,40 @@ typedef __be32	rpc_fraghdr;
 	(RPC_REPHDRSIZE + (2 + RPC_MAX_AUTH_SIZE/4))
 
 /*
+<<<<<<< HEAD
  * RFC1833/RFC3530 rpcbind (v3+) well-known netid's.
  */
 #define RPCBIND_NETID_UDP	"udp"
 #define RPCBIND_NETID_TCP	"tcp"
 #define RPCBIND_NETID_UDP6	"udp6"
 #define RPCBIND_NETID_TCP6	"tcp6"
+=======
+ * Well-known netids. See:
+ *
+ *   http://www.iana.org/assignments/rpc-netids/rpc-netids.xhtml
+ */
+#define RPCBIND_NETID_UDP	"udp"
+#define RPCBIND_NETID_TCP	"tcp"
+#define RPCBIND_NETID_RDMA	"rdma"
+#define RPCBIND_NETID_SCTP	"sctp"
+#define RPCBIND_NETID_UDP6	"udp6"
+#define RPCBIND_NETID_TCP6	"tcp6"
+#define RPCBIND_NETID_RDMA6	"rdma6"
+#define RPCBIND_NETID_SCTP6	"sctp6"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RPCBIND_NETID_LOCAL	"local"
 
 /*
  * Note that RFC 1833 does not put any size restrictions on the
+<<<<<<< HEAD
  * netid string, but all currently defined netid's fit in 4 bytes.
  */
 #define RPCBIND_MAXNETIDLEN	(4u)
+=======
+ * netid string, but all currently defined netid's fit in 5 bytes.
+ */
+#define RPCBIND_MAXNETIDLEN	(5u)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Universal addresses are introduced in RFC 1833 and further spelled

@@ -23,10 +23,28 @@ static inline unsigned long scu_a9_get_base(void)
 	return pa;
 }
 
+<<<<<<< HEAD
 unsigned int scu_get_core_count(void __iomem *);
 int scu_power_mode(void __iomem *, unsigned int);
 
 #ifdef CONFIG_SMP
+=======
+#ifdef CONFIG_HAVE_ARM_SCU
+unsigned int scu_get_core_count(void __iomem *);
+int scu_power_mode(void __iomem *, unsigned int);
+#else
+static inline unsigned int scu_get_core_count(void __iomem *scu_base)
+{
+	return 0;
+}
+static inline int scu_power_mode(void __iomem *scu_base, unsigned int mode)
+{
+	return -EINVAL;
+}
+#endif
+
+#if defined(CONFIG_SMP) && defined(CONFIG_HAVE_ARM_SCU)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void scu_enable(void __iomem *scu_base);
 #else
 static inline void scu_enable(void __iomem *scu_base) {}

@@ -8,6 +8,7 @@
 
 #include <uapi/asm/types.h>
 
+<<<<<<< HEAD
 /*
  * These aren't exported outside the kernel to avoid name space clashes
  */
@@ -25,4 +26,6 @@ typedef union {
 
 #endif /* ! CONFIG_64BIT   */
 #endif /* __ASSEMBLY__  */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _S390_TYPES_H */

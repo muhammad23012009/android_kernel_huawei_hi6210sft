@@ -7,9 +7,26 @@ static int collect_syscall(struct task_struct *target, long *callno,
 			   unsigned long args[6], unsigned int maxargs,
 			   unsigned long *sp, unsigned long *pc)
 {
+<<<<<<< HEAD
 	struct pt_regs *regs = task_pt_regs(target);
 	if (unlikely(!regs))
 		return -EAGAIN;
+=======
+	struct pt_regs *regs;
+
+	if (!try_get_task_stack(target)) {
+		/* Task has no stack, so the task isn't in a syscall. */
+		*sp = *pc = 0;
+		*callno = -1;
+		return 0;
+	}
+
+	regs = task_pt_regs(target);
+	if (unlikely(!regs)) {
+		put_task_stack(target);
+		return -EAGAIN;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	*sp = user_stack_pointer(regs);
 	*pc = instruction_pointer(regs);
@@ -18,6 +35,10 @@ static int collect_syscall(struct task_struct *target, long *callno,
 	if (*callno != -1L && maxargs > 0)
 		syscall_get_arguments(target, regs, 0, maxargs, args);
 
+<<<<<<< HEAD
+=======
+	put_task_stack(target);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -72,4 +93,7 @@ int task_current_syscall(struct task_struct *target, long *callno,
 
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(task_current_syscall);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -162,8 +162,12 @@ int mpc831x_usb_cfg(void)
 
 	iounmap(immap);
 
+<<<<<<< HEAD
 	if (immr_node)
 		of_node_put(immr_node);
+=======
+	of_node_put(immr_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Map USB SOC space */
 	ret = of_address_to_resource(np, 0, &res);

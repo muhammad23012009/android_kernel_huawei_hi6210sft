@@ -1,6 +1,12 @@
 #include <linux/highmem.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/swap.h> /* for totalram_pages */
+=======
+#include <linux/export.h>
+#include <linux/swap.h> /* for totalram_pages */
+#include <linux/bootmem.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void *kmap(struct page *page)
 {
@@ -34,7 +40,11 @@ void *kmap_atomic_prot(struct page *page, pgprot_t prot)
 	unsigned long vaddr;
 	int idx, type;
 
+<<<<<<< HEAD
 	/* even !CONFIG_PREEMPT needs this, for in_atomic in do_page_fault */
+=======
+	preempt_disable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pagefault_disable();
 
 	if (!PageHighMem(page))
@@ -99,6 +109,7 @@ void __kunmap_atomic(void *kvaddr)
 #endif
 
 	pagefault_enable();
+<<<<<<< HEAD
 }
 EXPORT_SYMBOL(__kunmap_atomic);
 
@@ -116,11 +127,25 @@ struct page *kmap_atomic_to_page(void *ptr)
 }
 EXPORT_SYMBOL(kmap_atomic_to_page);
 
+=======
+	preempt_enable();
+}
+EXPORT_SYMBOL(__kunmap_atomic);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void __init set_highmem_pages_init(void)
 {
 	struct zone *zone;
 	int nid;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Explicitly reset zone->managed_pages because set_highmem_pages_init()
+	 * is invoked before free_all_bootmem()
+	 */
+	reset_all_zones_managed_pages();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for_each_zone(zone) {
 		unsigned long zone_start_pfn, zone_end_pfn;
 

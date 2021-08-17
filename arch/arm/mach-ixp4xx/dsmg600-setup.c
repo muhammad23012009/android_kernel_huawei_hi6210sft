@@ -26,6 +26,12 @@
 #include <linux/reboot.h>
 #include <linux/i2c.h>
 #include <linux/i2c-gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio.h>
+
+#include <mach/hardware.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
@@ -159,11 +165,16 @@ static struct platform_device *dsmg600_devices[] __initdata = {
 
 static void dsmg600_power_off(void)
 {
+<<<<<<< HEAD
 	/* enable the pwr cntl gpio */
 	gpio_line_config(DSMG600_PO_GPIO, IXP4XX_GPIO_OUT);
 
 	/* poweroff */
 	gpio_line_set(DSMG600_PO_GPIO, IXP4XX_GPIO_HIGH);
+=======
+	/* enable the pwr cntl and drive it high */
+	gpio_direction_output(DSMG600_PO_GPIO, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /* This is used to make sure the power-button pusher is serious.  The button
@@ -200,7 +211,11 @@ static void dsmg600_power_handler(unsigned long data)
 			ctrl_alt_del();
 
 			/* Change the state of the power LED to "blink" */
+<<<<<<< HEAD
 			gpio_line_set(DSMG600_LED_PWR_GPIO, IXP4XX_GPIO_LOW);
+=======
+			gpio_set_value(DSMG600_LED_PWR_GPIO, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} else {
 			power_button_countdown = PBUTTON_HOLDDOWN_COUNT;
 		}
@@ -226,6 +241,42 @@ static void __init dsmg600_timer_init(void)
     ixp4xx_timer_init();
 }
 
+<<<<<<< HEAD
+=======
+static int __init dsmg600_gpio_init(void)
+{
+	if (!machine_is_dsmg600())
+		return 0;
+
+	gpio_request(DSMG600_RB_GPIO, "reset button");
+	if (request_irq(gpio_to_irq(DSMG600_RB_GPIO), &dsmg600_reset_handler,
+		IRQF_TRIGGER_LOW, "DSM-G600 reset button", NULL) < 0) {
+
+		printk(KERN_DEBUG "Reset Button IRQ %d not available\n",
+			gpio_to_irq(DSMG600_RB_GPIO));
+	}
+
+	/*
+	 * The power button on the D-Link DSM-G600 is on GPIO 15, but
+	 * it cannot handle interrupts on that GPIO line.  So we'll
+	 * have to poll it with a kernel timer.
+	 */
+
+	/* Make sure that the power button GPIO is set up as an input */
+	gpio_request(DSMG600_PB_GPIO, "power button");
+	gpio_direction_input(DSMG600_PB_GPIO);
+	/* Request poweroff GPIO line */
+	gpio_request(DSMG600_PO_GPIO, "power off button");
+
+	/* Set the initial value for the power button IRQ handler */
+	power_button_countdown = PBUTTON_HOLDDOWN_COUNT;
+
+	mod_timer(&dsmg600_power_timer, jiffies + msecs_to_jiffies(500));
+	return 0;
+}
+device_initcall(dsmg600_gpio_init);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void __init dsmg600_init(void)
 {
 	ixp4xx_sys_init();
@@ -249,6 +300,7 @@ static void __init dsmg600_init(void)
 	platform_add_devices(dsmg600_devices, ARRAY_SIZE(dsmg600_devices));
 
 	pm_power_off = dsmg600_power_off;
+<<<<<<< HEAD
 
 	if (request_irq(gpio_to_irq(DSMG600_RB_GPIO), &dsmg600_reset_handler,
 		IRQF_DISABLED | IRQF_TRIGGER_LOW,
@@ -270,6 +322,8 @@ static void __init dsmg600_init(void)
 	power_button_countdown = PBUTTON_HOLDDOWN_COUNT;
 
 	mod_timer(&dsmg600_power_timer, jiffies + msecs_to_jiffies(500));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 MACHINE_START(DSMG600, "D-Link DSM-G600 RevA")

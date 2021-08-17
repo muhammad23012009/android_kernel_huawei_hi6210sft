@@ -26,7 +26,11 @@
 #include <linux/freezer.h>
 #include <linux/videodev2.h>
 #include <media/v4l2-common.h>
+<<<<<<< HEAD
 #include <media/msp3400.h>
+=======
+#include <media/drv-intf/msp3400.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kthread.h>
 #include <linux/suspend.h>
 #include "msp3400-driver.h"

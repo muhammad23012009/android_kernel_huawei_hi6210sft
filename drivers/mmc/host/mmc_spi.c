@@ -36,6 +36,10 @@
 
 #include <linux/mmc/host.h>
 #include <linux/mmc/mmc.h>		/* for R1_SPI_* bit values */
+<<<<<<< HEAD
+=======
+#include <linux/mmc/slot-gpio.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/spi/spi.h>
 #include <linux/spi/mmc_spi.h>
@@ -447,7 +451,10 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 {
 	struct scratch		*data = host->data;
 	u8			*cp = data->status;
+<<<<<<< HEAD
 	u32			arg = cmd->arg;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			status;
 	struct spi_transfer	*t;
 
@@ -464,6 +471,7 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 	 * We init the whole buffer to all-ones, which is what we need
 	 * to write while we're reading (later) response data.
 	 */
+<<<<<<< HEAD
 	memset(cp++, 0xff, sizeof(data->status));
 
 	*cp++ = 0x40 | cmd->opcode;
@@ -472,6 +480,14 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 	*cp++ = (u8)(arg >> 8);
 	*cp++ = (u8)arg;
 	*cp++ = (crc7(0, &data->status[1], 5) << 1) | 0x01;
+=======
+	memset(cp, 0xff, sizeof(data->status));
+
+	cp[1] = 0x40 | cmd->opcode;
+	put_unaligned_be32(cmd->arg, cp+2);
+	cp[6] = crc7_be(0, cp+1, 5) | 0x01;
+	cp += 7;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Then, read up to 13 bytes (while writing all-ones):
 	 *  - N(CR) (== 1..8) bytes of all-ones
@@ -710,10 +726,14 @@ mmc_spi_writeblock(struct mmc_spi_host *host, struct spi_transfer *t,
 	 * so we have to cope with this situation and check the response
 	 * bit-by-bit. Arggh!!!
 	 */
+<<<<<<< HEAD
 	pattern  = scratch->status[0] << 24;
 	pattern |= scratch->status[1] << 16;
 	pattern |= scratch->status[2] << 8;
 	pattern |= scratch->status[3];
+=======
+	pattern = get_unaligned_be32(scratch->status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* First 3 bit of pattern are undefined */
 	pattern |= 0xE0000000;
@@ -824,6 +844,13 @@ mmc_spi_readblock(struct mmc_spi_host *host, struct spi_transfer *t,
 	}
 
 	status = spi_sync_locked(spi, &host->m);
+<<<<<<< HEAD
+=======
+	if (status < 0) {
+		dev_dbg(&spi->dev, "read error %d\n", status);
+		return status;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (host->dma_dev) {
 		dma_sync_single_for_cpu(host->dma_dev,
@@ -930,6 +957,13 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 
 			dma_addr = dma_map_page(dma_dev, sg_page(sg), 0,
 						PAGE_SIZE, dir);
+<<<<<<< HEAD
+=======
+			if (dma_mapping_error(dma_dev, dma_addr)) {
+				data->error = -EFAULT;
+				break;
+			}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (direction == DMA_TO_DEVICE)
 				t->tx_dma = dma_addr + sg->offset;
 			else
@@ -1154,17 +1188,35 @@ static void mmc_spi_initsequence(struct mmc_spi_host *host)
 	 * SPI protocol.  Another is that when chipselect is released while
 	 * the card returns BUSY status, the clock must issue several cycles
 	 * with chipselect high before the card will stop driving its output.
+<<<<<<< HEAD
 	 */
 	host->spi->mode |= SPI_CS_HIGH;
+=======
+	 *
+	 * SPI_CS_HIGH means "asserted" here. In some cases like when using
+	 * GPIOs for chip select, SPI_CS_HIGH is set but this will be logically
+	 * inverted by gpiolib, so if we want to ascertain to drive it high
+	 * we should toggle the default with an XOR as we do here.
+	 */
+	host->spi->mode ^= SPI_CS_HIGH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (spi_setup(host->spi) != 0) {
 		/* Just warn; most cards work without it. */
 		dev_warn(&host->spi->dev,
 				"can't change chip-select polarity\n");
+<<<<<<< HEAD
 		host->spi->mode &= ~SPI_CS_HIGH;
 	} else {
 		mmc_spi_readbytes(host, 18);
 
 		host->spi->mode &= ~SPI_CS_HIGH;
+=======
+		host->spi->mode ^= SPI_CS_HIGH;
+	} else {
+		mmc_spi_readbytes(host, 18);
+
+		host->spi->mode ^= SPI_CS_HIGH;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (spi_setup(host->spi) != 0) {
 			/* Wot, we can't get the same setup we had before? */
 			dev_err(&host->spi->dev,
@@ -1272,6 +1324,7 @@ static void mmc_spi_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	}
 }
 
+<<<<<<< HEAD
 static int mmc_spi_get_ro(struct mmc_host *mmc)
 {
 	struct mmc_spi_host *host = mmc_priv(mmc);
@@ -1299,6 +1352,13 @@ static const struct mmc_host_ops mmc_spi_ops = {
 	.set_ios	= mmc_spi_set_ios,
 	.get_ro		= mmc_spi_get_ro,
 	.get_cd		= mmc_spi_get_cd,
+=======
+static const struct mmc_host_ops mmc_spi_ops = {
+	.request	= mmc_spi_request,
+	.set_ios	= mmc_spi_set_ios,
+	.get_ro		= mmc_gpio_get_ro,
+	.get_cd		= mmc_gpio_get_cd,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 
@@ -1324,6 +1384,10 @@ static int mmc_spi_probe(struct spi_device *spi)
 	struct mmc_host		*mmc;
 	struct mmc_spi_host	*host;
 	int			status;
+<<<<<<< HEAD
+=======
+	bool			has_ro = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* We rely on full duplex transfers, mostly to reduce
 	 * per-transfer overheads (by making fewer transfers).
@@ -1419,10 +1483,19 @@ static int mmc_spi_probe(struct spi_device *spi)
 		host->dma_dev = dev;
 		host->ones_dma = dma_map_single(dev, ones,
 				MMC_SPI_BLOCKSIZE, DMA_TO_DEVICE);
+<<<<<<< HEAD
 		host->data_dma = dma_map_single(dev, host->data,
 				sizeof(*host->data), DMA_BIDIRECTIONAL);
 
 		/* REVISIT in theory those map operations can fail... */
+=======
+		if (dma_mapping_error(dev, host->ones_dma))
+			goto fail_ones_dma;
+		host->data_dma = dma_map_single(dev, host->data,
+				sizeof(*host->data), DMA_BIDIRECTIONAL);
+		if (dma_mapping_error(dev, host->data_dma))
+			goto fail_data_dma;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		dma_sync_single_for_cpu(host->dma_dev,
 				host->data_dma, sizeof(*host->data),
@@ -1448,18 +1521,54 @@ static int mmc_spi_probe(struct spi_device *spi)
 	}
 
 	/* pass platform capabilities, if any */
+<<<<<<< HEAD
 	if (host->pdata)
 		mmc->caps |= host->pdata->caps;
+=======
+	if (host->pdata) {
+		mmc->caps |= host->pdata->caps;
+		mmc->caps2 |= host->pdata->caps2;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	status = mmc_add_host(mmc);
 	if (status != 0)
 		goto fail_add_host;
 
+<<<<<<< HEAD
 	dev_info(&spi->dev, "SD/MMC host %s%s%s%s%s\n",
 			dev_name(&mmc->class_dev),
 			host->dma_dev ? "" : ", no DMA",
 			(host->pdata && host->pdata->get_ro)
 				? "" : ", no WP",
+=======
+	if (host->pdata && host->pdata->flags & MMC_SPI_USE_CD_GPIO) {
+		status = mmc_gpio_request_cd(mmc, host->pdata->cd_gpio,
+					     host->pdata->cd_debounce);
+		if (status != 0)
+			goto fail_add_host;
+
+		/* The platform has a CD GPIO signal that may support
+		 * interrupts, so let mmc_gpiod_request_cd_irq() decide
+		 * if polling is needed or not.
+		 */
+		mmc->caps &= ~MMC_CAP_NEEDS_POLL;
+		mmc_gpiod_request_cd_irq(mmc);
+	}
+	mmc_detect_change(mmc, 0);
+
+	if (host->pdata && host->pdata->flags & MMC_SPI_USE_RO_GPIO) {
+		has_ro = true;
+		status = mmc_gpio_request_ro(mmc, host->pdata->ro_gpio);
+		if (status != 0)
+			goto fail_add_host;
+	}
+
+	dev_info(&spi->dev, "SD/MMC host %s%s%s%s%s\n",
+			dev_name(&mmc->class_dev),
+			host->dma_dev ? "" : ", no DMA",
+			has_ro ? "" : ", no WP",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			(host->pdata && host->pdata->setpower)
 				? "" : ", no poweroff",
 			(mmc->caps & MMC_CAP_NEEDS_POLL)
@@ -1472,6 +1581,14 @@ fail_glue_init:
 	if (host->dma_dev)
 		dma_unmap_single(host->dma_dev, host->data_dma,
 				sizeof(*host->data), DMA_BIDIRECTIONAL);
+<<<<<<< HEAD
+=======
+fail_data_dma:
+	if (host->dma_dev)
+		dma_unmap_single(host->dma_dev, host->ones_dma,
+				MMC_SPI_BLOCKSIZE, DMA_TO_DEVICE);
+fail_ones_dma:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(host->data);
 
 fail_nobuf1:
@@ -1517,15 +1634,26 @@ static int mmc_spi_remove(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id mmc_spi_of_match_table[] = {
 	{ .compatible = "mmc-spi-slot", },
 	{},
 };
+=======
+static const struct of_device_id mmc_spi_of_match_table[] = {
+	{ .compatible = "mmc-spi-slot", },
+	{},
+};
+MODULE_DEVICE_TABLE(of, mmc_spi_of_match_table);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static struct spi_driver mmc_spi_driver = {
 	.driver = {
 		.name =		"mmc_spi",
+<<<<<<< HEAD
 		.owner =	THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = mmc_spi_of_match_table,
 	},
 	.probe =	mmc_spi_probe,

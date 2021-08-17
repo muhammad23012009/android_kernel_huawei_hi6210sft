@@ -40,6 +40,16 @@ struct pinctrl_dt_map {
 static void dt_free_map(struct pinctrl_dev *pctldev,
 		     struct pinctrl_map *map, unsigned num_maps)
 {
+<<<<<<< HEAD
+=======
+	int i;
+
+	for (i = 0; i < num_maps; ++i) {
+		kfree_const(map[i].dev_name);
+		map[i].dev_name = NULL;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pctldev) {
 		const struct pinctrl_ops *ops = pctldev->desc->pctlops;
 		ops->dt_free_map(pctldev, map, num_maps);
@@ -73,7 +83,17 @@ static int dt_remember_or_free_map(struct pinctrl *p, const char *statename,
 
 	/* Initialize common mapping table entry fields */
 	for (i = 0; i < num_maps; i++) {
+<<<<<<< HEAD
 		map[i].dev_name = dev_name(p->dev);
+=======
+		const char *devname;
+
+		devname = kstrdup_const(dev_name(p->dev), GFP_KERNEL);
+		if (!devname)
+			goto err_free_map;
+
+		map[i].dev_name = devname;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		map[i].name = statename;
 		if (pctldev)
 			map[i].ctrl_dev_name = dev_name(pctldev->dev);
@@ -81,22 +101,36 @@ static int dt_remember_or_free_map(struct pinctrl *p, const char *statename,
 
 	/* Remember the converted mapping table entries */
 	dt_map = kzalloc(sizeof(*dt_map), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dt_map) {
 		dev_err(p->dev, "failed to alloc struct pinctrl_dt_map\n");
 		dt_free_map(pctldev, map, num_maps);
 		return -ENOMEM;
 	}
+=======
+	if (!dt_map)
+		goto err_free_map;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dt_map->pctldev = pctldev;
 	dt_map->map = map;
 	dt_map->num_maps = num_maps;
 	list_add_tail(&dt_map->node, &p->dt_maps);
 
+<<<<<<< HEAD
 	return pinctrl_register_map(map, num_maps, false, true);
+=======
+	return pinctrl_register_map(map, num_maps, false);
+
+err_free_map:
+	dt_free_map(pctldev, map, num_maps);
+	return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 struct pinctrl_dev *of_pinctrl_get(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct pinctrl_dev *pctldev;
 
 	pctldev = get_pinctrl_dev_from_of_node(np);
@@ -104,6 +138,9 @@ struct pinctrl_dev *of_pinctrl_get(struct device_node *np)
 		return NULL;
 
 	return pctldev;
+=======
+	return get_pinctrl_dev_from_of_node(np);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int dt_to_map_one_config(struct pinctrl *p, const char *statename,
@@ -186,7 +223,13 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 
 	/* CONFIG_OF enabled, p->dev not instantiated from DT */
 	if (!np) {
+<<<<<<< HEAD
 		dev_dbg(p->dev, "no of_node; not parsing pinctrl DT\n");
+=======
+		if (of_have_populated_dt())
+			dev_dbg(p->dev,
+				"no of_node; not parsing pinctrl DT\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return 0;
 	}
 
@@ -199,8 +242,18 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 		propname = kasprintf(GFP_KERNEL, "pinctrl-%d", state);
 		prop = of_find_property(np, propname, &size);
 		kfree(propname);
+<<<<<<< HEAD
 		if (!prop)
 			break;
+=======
+		if (!prop) {
+			if (state == 0) {
+				of_node_put(np);
+				return -ENODEV;
+			}
+			break;
+		}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		list = prop->value;
 		size /= sizeof(*list);
 

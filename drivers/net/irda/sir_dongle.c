@@ -13,7 +13,10 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kmod.h>
 #include <linux/mutex.h>
 
@@ -35,8 +38,13 @@ int irda_register_dongle(struct dongle_driver *new)
 	struct list_head *entry;
 	struct dongle_driver *drv;
 
+<<<<<<< HEAD
 	IRDA_DEBUG(0, "%s : registering dongle \"%s\" (%d).\n",
 		   __func__, new->driver_name, new->type);
+=======
+	pr_debug("%s : registering dongle \"%s\" (%d).\n",
+		 __func__, new->driver_name, new->type);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	mutex_lock(&dongle_list_lock);
 	list_for_each(entry, &dongle_list) {

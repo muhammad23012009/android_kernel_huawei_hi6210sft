@@ -29,7 +29,11 @@ void snd_seq_info_timer_read(struct snd_info_entry *entry, struct snd_info_buffe
 void snd_seq_info_queues_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer);
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int snd_seq_info_init( void );
 int snd_seq_info_done( void );
 #else

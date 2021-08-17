@@ -5,12 +5,15 @@
 #include <linux/string.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
 #if 0
 #define DEBUGP printk
 #else
 #define DEBUGP(fmt...)
 #endif
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 int apply_relocate_add(Elf32_Shdr *sechdrs,
 		       const char *strtab,
 		       unsigned int symindex,
@@ -20,11 +23,20 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 	unsigned int i;
 	Elf32_Rela *rela = (void *)sechdrs[relsec].sh_addr;
 
+<<<<<<< HEAD
 	DEBUGP("Applying relocate section %u to %u\n", relsec,
 	       sechdrs[relsec].sh_info);
 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rela); i++) {
 		/* This is where to make the change */
 		uint32_t *loc = (uint32_t *)(sechdrs[sechdrs[relsec].sh_info].sh_addr
+=======
+	pr_debug("Applying relocate section %u to %u\n", relsec,
+	       sechdrs[relsec].sh_info);
+	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rela); i++) {
+		/* This is where to make the change */
+		uint32_t *loc =
+			(uint32_t *)(sechdrs[sechdrs[relsec].sh_info].sh_addr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     + rela[i].r_offset);
 		/* This is the symbol it is referring to.  Note that all
 		   undefined symbols have been resolved.  */
@@ -47,14 +59,22 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 			break;
 		case R_H8_PCREL16:
 			v -= (unsigned long)loc + 2;
+<<<<<<< HEAD
 			if ((Elf32_Sword)v > 0x7fff || 
 			    (Elf32_Sword)v < -(Elf32_Sword)0x8000)
 				goto overflow;
 			else 
+=======
+			if ((Elf32_Sword)v > 0x7fff ||
+			    (Elf32_Sword)v < -(Elf32_Sword)0x8000)
+				goto overflow;
+			else
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				*(unsigned short *)loc = v;
 			break;
 		case R_H8_PCREL8:
 			v -= (unsigned long)loc + 1;
+<<<<<<< HEAD
 			if ((Elf32_Sword)v > 0x7f || 
 			    (Elf32_Sword)v < -(Elf32_Sword)0x80)
 				goto overflow;
@@ -63,13 +83,27 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 			break;
 		default:
 			printk(KERN_ERR "module %s: Unknown relocation: %u\n",
+=======
+			if ((Elf32_Sword)v > 0x7f ||
+			    (Elf32_Sword)v < -(Elf32_Sword)0x80)
+				goto overflow;
+			else
+				*(unsigned char *)loc = v;
+			break;
+		default:
+			pr_err("module %s: Unknown relocation: %u\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			       me->name, ELF32_R_TYPE(rela[i].r_info));
 			return -ENOEXEC;
 		}
 	}
 	return 0;
  overflow:
+<<<<<<< HEAD
 	printk(KERN_ERR "module %s: relocation offset overflow: %08x\n",
+=======
+	pr_err("module %s: relocation offset overflow: %08x\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	       me->name, rela[i].r_offset);
 	return -ENOEXEC;
 }

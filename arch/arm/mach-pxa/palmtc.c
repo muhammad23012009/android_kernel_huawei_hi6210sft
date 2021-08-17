@@ -18,6 +18,10 @@
 #include <linux/delay.h>
 #include <linux/irq.h>
 #include <linux/input.h>
+<<<<<<< HEAD
+=======
+#include <linux/pwm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pwm_backlight.h>
 #include <linux/gpio.h>
 #include <linux/input/matrix_keypad.h>
@@ -31,13 +35,21 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
+=======
+#include "pxa25x.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <mach/audio.h>
 #include <mach/palmtc.h>
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
+<<<<<<< HEAD
 #include <mach/udc.h>
+=======
+#include "udc.h"
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include "generic.h"
 #include "devices.h"
@@ -166,6 +178,7 @@ static inline void palmtc_keys_init(void) {}
  * Backlight
  ******************************************************************************/
 #if defined(CONFIG_BACKLIGHT_PWM) || defined(CONFIG_BACKLIGHT_PWM_MODULE)
+<<<<<<< HEAD
 static int palmtc_backlight_init(struct device *dev)
 {
 	int ret;
@@ -205,6 +218,17 @@ static struct platform_pwm_backlight_data palmtc_backlight_data = {
 	.init		= palmtc_backlight_init,
 	.notify		= palmtc_backlight_notify,
 	.exit		= palmtc_backlight_exit,
+=======
+static struct pwm_lookup palmtc_pwm_lookup[] = {
+	PWM_LOOKUP("pxa25x-pwm.1", 0, "pwm-backlight.0", NULL, PALMTC_PERIOD_NS,
+		   PWM_POLARITY_NORMAL),
+};
+
+static struct platform_pwm_backlight_data palmtc_backlight_data = {
+	.max_brightness	= PALMTC_MAX_INTENSITY,
+	.dft_brightness	= PALMTC_MAX_INTENSITY,
+	.enable_gpio	= GPIO_NR_PALMTC_BL_POWER,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device palmtc_backlight = {
@@ -217,6 +241,10 @@ static struct platform_device palmtc_backlight = {
 
 static void __init palmtc_pwm_init(void)
 {
+<<<<<<< HEAD
+=======
+	pwm_add_table(palmtc_pwm_lookup, ARRAY_SIZE(palmtc_pwm_lookup));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	platform_device_register(&palmtc_backlight);
 }
 #else

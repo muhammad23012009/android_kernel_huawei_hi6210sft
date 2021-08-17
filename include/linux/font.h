@@ -31,6 +31,10 @@ struct font_desc {
 #define SUN12x22_IDX	7
 #define ACORN8x8_IDX	8
 #define	MINI4x6_IDX	9
+<<<<<<< HEAD
+=======
+#define FONT6x10_IDX	10
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern const struct font_desc	font_vga_8x8,
 			font_vga_8x16,
@@ -41,7 +45,12 @@ extern const struct font_desc	font_vga_8x8,
 			font_sun_8x16,
 			font_sun_12x22,
 			font_acorn_8x8,
+<<<<<<< HEAD
 			font_mini_4x6;
+=======
+			font_mini_4x6,
+			font_6x10;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* Find a font with a specific name */
 
@@ -55,4 +64,20 @@ extern const struct font_desc *get_default_font(int xres, int yres,
 /* Max. length for the name of a predefined font */
 #define MAX_FONT_NAME	32
 
+<<<<<<< HEAD
+=======
+/* Extra word getters */
+#define REFCOUNT(fd)	(((int *)(fd))[-1])
+#define FNTSIZE(fd)	(((int *)(fd))[-2])
+#define FNTCHARCNT(fd)	(((int *)(fd))[-3])
+#define FNTSUM(fd)	(((int *)(fd))[-4])
+
+#define FONT_EXTRA_WORDS 4
+
+struct font_data {
+	unsigned int extra[FONT_EXTRA_WORDS];
+	const unsigned char data[];
+} __packed;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _VIDEO_FONT_H */

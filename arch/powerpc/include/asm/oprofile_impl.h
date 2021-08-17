@@ -61,7 +61,10 @@ struct op_powerpc_model {
 };
 
 extern struct op_powerpc_model op_model_fsl_emb;
+<<<<<<< HEAD
 extern struct op_powerpc_model op_model_rs64;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern struct op_powerpc_model op_model_power4;
 extern struct op_powerpc_model op_model_7450;
 extern struct op_powerpc_model op_model_cell;

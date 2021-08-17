@@ -26,7 +26,11 @@
 #include <linux/fs.h> /* struct inode */
 #include <linux/fsnotify_backend.h>
 #include <linux/idr.h>
+<<<<<<< HEAD
 #include <linux/init.h> /* module_init */
+=======
+#include <linux/init.h> /* fs_initcall */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/inotify.h>
 #include <linux/kernel.h> /* roundup() */
 #include <linux/namei.h> /* LOOKUP_FOLLOW */
@@ -50,7 +54,10 @@ static int inotify_max_queued_events __read_mostly;
 static int inotify_max_user_watches __read_mostly;
 
 static struct kmem_cache *inotify_inode_mark_cachep __read_mostly;
+<<<<<<< HEAD
 struct kmem_cache *event_priv_cachep __read_mostly;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifdef CONFIG_SYSCTL
 
@@ -58,7 +65,11 @@ struct kmem_cache *event_priv_cachep __read_mostly;
 
 static int zero;
 
+<<<<<<< HEAD
 ctl_table inotify_table[] = {
+=======
+struct ctl_table inotify_table[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{
 		.procname	= "max_user_instances",
 		.data		= &inotify_max_user_instances,
@@ -116,20 +127,44 @@ static unsigned int inotify_poll(struct file *file, poll_table *wait)
 	int ret = 0;
 
 	poll_wait(file, &group->notification_waitq, wait);
+<<<<<<< HEAD
 	mutex_lock(&group->notification_mutex);
 	if (!fsnotify_notify_queue_is_empty(group))
 		ret = POLLIN | POLLRDNORM;
 	mutex_unlock(&group->notification_mutex);
+=======
+	spin_lock(&group->notification_lock);
+	if (!fsnotify_notify_queue_is_empty(group))
+		ret = POLLIN | POLLRDNORM;
+	spin_unlock(&group->notification_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int round_event_name_len(struct fsnotify_event *fsn_event)
+{
+	struct inotify_event_info *event;
+
+	event = INOTIFY_E(fsn_event);
+	if (!event->name_len)
+		return 0;
+	return roundup(event->name_len + 1, sizeof(struct inotify_event));
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Get an inotify_kernel_event if one exists and is small
  * enough to fit in "count". Return an error pointer if
  * not large enough.
  *
+<<<<<<< HEAD
  * Called with the group->notification_mutex held.
+=======
+ * Called with the group->notification_lock held.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 					    size_t count)
@@ -140,6 +175,7 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 	if (fsnotify_notify_queue_is_empty(group))
 		return NULL;
 
+<<<<<<< HEAD
 	event = fsnotify_peek_notify_event(group);
 
 	pr_debug("%s: group=%p event=%p\n", __func__, group, event);
@@ -153,6 +189,19 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 	/* held the notification_mutex the whole time, so this is the
 	 * same event we peeked above */
 	fsnotify_remove_notify_event(group);
+=======
+	event = fsnotify_peek_first_event(group);
+
+	pr_debug("%s: group=%p event=%p\n", __func__, group, event);
+
+	event_size += round_event_name_len(event);
+	if (event_size > count)
+		return ERR_PTR(-EINVAL);
+
+	/* held the notification_lock the whole time, so this is the
+	 * same event we peeked above */
+	fsnotify_remove_first_event(group);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return event;
 }
@@ -164,6 +213,7 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
  * buffer we had in "get_one_event()" above.
  */
 static ssize_t copy_event_to_user(struct fsnotify_group *group,
+<<<<<<< HEAD
 				  struct fsnotify_event *event,
 				  char __user *buf)
 {
@@ -198,6 +248,29 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 	inotify_event.len = name_len;
 
 	inotify_event.mask = inotify_mask_to_arg(event->mask);
+=======
+				  struct fsnotify_event *fsn_event,
+				  char __user *buf)
+{
+	struct inotify_event inotify_event;
+	struct inotify_event_info *event;
+	size_t event_size = sizeof(struct inotify_event);
+	size_t name_len;
+	size_t pad_name_len;
+
+	pr_debug("%s: group=%p event=%p\n", __func__, group, fsn_event);
+
+	event = INOTIFY_E(fsn_event);
+	name_len = event->name_len;
+	/*
+	 * round up name length so it is a multiple of event_size
+	 * plus an extra byte for the terminating '\0'.
+	 */
+	pad_name_len = round_event_name_len(fsn_event);
+	inotify_event.len = pad_name_len;
+	inotify_event.mask = inotify_mask_to_arg(fsn_event->mask);
+	inotify_event.wd = event->wd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	inotify_event.cookie = event->sync_cookie;
 
 	/* send the main event */
@@ -209,6 +282,7 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 	/*
 	 * fsnotify only stores the pathname, so here we have to send the pathname
 	 * and then pad that pathname out to a multiple of sizeof(inotify_event)
+<<<<<<< HEAD
 	 * with zeros.  I get my zeros from the nul_inotify_event.
 	 */
 	if (name_len) {
@@ -223,6 +297,20 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 			return -EFAULT;
 		buf += len_to_zero;
 		event_size += name_len;
+=======
+	 * with zeros.
+	 */
+	if (pad_name_len) {
+		/* copy the path name */
+		if (copy_to_user(buf, event->name, name_len))
+			return -EFAULT;
+		buf += name_len;
+
+		/* fill userspace with 0's */
+		if (clear_user(buf, pad_name_len - name_len))
+			return -EFAULT;
+		event_size += pad_name_len;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return event_size;
@@ -235,17 +323,29 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 	struct fsnotify_event *kevent;
 	char __user *start;
 	int ret;
+<<<<<<< HEAD
 	DEFINE_WAIT(wait);
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	start = buf;
 	group = file->private_data;
 
+<<<<<<< HEAD
 	while (1) {
 		prepare_to_wait(&group->notification_waitq, &wait, TASK_INTERRUPTIBLE);
 
 		mutex_lock(&group->notification_mutex);
 		kevent = get_one_event(group, count);
 		mutex_unlock(&group->notification_mutex);
+=======
+	add_wait_queue(&group->notification_waitq, &wait);
+	while (1) {
+		spin_lock(&group->notification_lock);
+		kevent = get_one_event(group, count);
+		spin_unlock(&group->notification_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		pr_debug("%s: group=%p kevent=%p\n", __func__, group, kevent);
 
@@ -254,7 +354,11 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 			if (IS_ERR(kevent))
 				break;
 			ret = copy_event_to_user(group, kevent, buf);
+<<<<<<< HEAD
 			fsnotify_put_event(kevent);
+=======
+			fsnotify_destroy_event(group, kevent);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (ret < 0)
 				break;
 			buf += ret;
@@ -272,10 +376,17 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 		if (start != buf)
 			break;
 
+<<<<<<< HEAD
 		schedule();
 	}
 
 	finish_wait(&group->notification_waitq, &wait);
+=======
+		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+	}
+	remove_wait_queue(&group->notification_waitq, &wait);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (start != buf && ret != -EFAULT)
 		ret = buf - start;
 	return ret;
@@ -297,8 +408,12 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 			  unsigned long arg)
 {
 	struct fsnotify_group *group;
+<<<<<<< HEAD
 	struct fsnotify_event_holder *holder;
 	struct fsnotify_event *event;
+=======
+	struct fsnotify_event *fsn_event;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	void __user *p;
 	int ret = -ENOTTY;
 	size_t send_len = 0;
@@ -310,6 +425,7 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case FIONREAD:
+<<<<<<< HEAD
 		mutex_lock(&group->notification_mutex);
 		list_for_each_entry(holder, &group->notification_list, event_list) {
 			event = holder->event;
@@ -319,6 +435,15 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 						sizeof(struct inotify_event));
 		}
 		mutex_unlock(&group->notification_mutex);
+=======
+		spin_lock(&group->notification_lock);
+		list_for_each_entry(fsn_event, &group->notification_list,
+				    list) {
+			send_len += sizeof(struct inotify_event);
+			send_len += round_event_name_len(fsn_event);
+		}
+		spin_unlock(&group->notification_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		ret = put_user(send_len, (int __user *) p);
 		break;
 	}
@@ -445,7 +570,11 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	if (wd == -1) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
+<<<<<<< HEAD
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.group, i_mark->fsn_mark.inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -454,7 +583,11 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	if (unlikely(!found_i_mark)) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
+<<<<<<< HEAD
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.group, i_mark->fsn_mark.inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -468,9 +601,15 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 			"mark->inode=%p found_i_mark=%p found_i_mark->wd=%d "
 			"found_i_mark->group=%p found_i_mark->inode=%p\n",
 			__func__, i_mark, i_mark->wd, i_mark->fsn_mark.group,
+<<<<<<< HEAD
 			i_mark->fsn_mark.i.inode, found_i_mark, found_i_mark->wd,
 			found_i_mark->fsn_mark.group,
 			found_i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.inode, found_i_mark, found_i_mark->wd,
+			found_i_mark->fsn_mark.group,
+			found_i_mark->fsn_mark.inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -482,7 +621,11 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	if (unlikely(atomic_read(&i_mark->fsn_mark.refcnt) < 3)) {
 		printk(KERN_ERR "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
+<<<<<<< HEAD
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+			i_mark->fsn_mark.group, i_mark->fsn_mark.inode);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		/* we can't really recover with bad ref cnting.. */
 		BUG();
 	}
@@ -503,6 +646,7 @@ void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
 				    struct fsnotify_group *group)
 {
 	struct inotify_inode_mark *i_mark;
+<<<<<<< HEAD
 	struct fsnotify_event *ignored_event, *notify_event;
 	struct inotify_event_private_data *event_priv;
 	struct fsnotify_event_private_data *fsn_event_priv;
@@ -540,6 +684,14 @@ skip_send_ignore:
 	if (ignored_event)
 		fsnotify_put_event(ignored_event);
 
+=======
+
+	/* Queue ignore event for the watch */
+	inotify_handle_event(group, NULL, fsn_mark, NULL, FS_IN_IGNORED,
+			     NULL, FSNOTIFY_EVENT_NONE, NULL, 0);
+
+	i_mark = container_of(fsn_mark, struct inotify_inode_mark, fsn_mark);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* remove this mark from the idr */
 	inotify_remove_from_idr(group, i_mark);
 
@@ -636,7 +788,12 @@ static int inotify_new_watch(struct fsnotify_group *group,
 		goto out_err;
 
 	/* we are on the idr, now get on the inode */
+<<<<<<< HEAD
 	ret = fsnotify_add_mark(&tmp_i_mark->fsn_mark, group, inode, NULL, 0);
+=======
+	ret = fsnotify_add_mark_locked(&tmp_i_mark->fsn_mark, group, inode,
+				       NULL, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret) {
 		/* we failed to get on the inode, get off the idr */
 		inotify_remove_from_idr(group, tmp_i_mark);
@@ -660,12 +817,17 @@ static int inotify_update_watch(struct fsnotify_group *group, struct inode *inod
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 retry:
+=======
+	mutex_lock(&group->mark_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* try to update and existing watch with the new arg */
 	ret = inotify_update_existing_watch(group, inode, arg);
 	/* no mark present, try to add a new one */
 	if (ret == -ENOENT)
 		ret = inotify_new_watch(group, inode, arg);
+<<<<<<< HEAD
 	/*
 	 * inotify_new_watch could race with another thread which did an
 	 * inotify_new_watch between the update_existing and the add watch
@@ -673,6 +835,9 @@ retry:
 	 */
 	if (ret == -EEXIST)
 		goto retry;
+=======
+	mutex_unlock(&group->mark_mutex);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return ret;
 }
@@ -680,11 +845,29 @@ retry:
 static struct fsnotify_group *inotify_new_group(unsigned int max_events)
 {
 	struct fsnotify_group *group;
+<<<<<<< HEAD
+=======
+	struct inotify_event_info *oevent;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	group = fsnotify_alloc_group(&inotify_fsnotify_ops);
 	if (IS_ERR(group))
 		return group;
 
+<<<<<<< HEAD
+=======
+	oevent = kmalloc(sizeof(struct inotify_event_info), GFP_KERNEL);
+	if (unlikely(!oevent)) {
+		fsnotify_destroy_group(group);
+		return ERR_PTR(-ENOMEM);
+	}
+	group->overflow_event = &oevent->fse;
+	fsnotify_init_event(group->overflow_event, NULL, FS_Q_OVERFLOW);
+	oevent->wd = -1;
+	oevent->sync_cookie = 0;
+	oevent->name_len = 0;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	group->max_events = max_events;
 
 	spin_lock_init(&group->inotify_data.idr_lock);
@@ -744,7 +927,23 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	int ret;
 	unsigned flags = 0;
 
+<<<<<<< HEAD
 	/* don't allow invalid bits: we don't want flags set */
+=======
+	/*
+	 * We share a lot of code with fs/dnotify.  We also share
+	 * the bit layout between inotify's IN_* and the fsnotify
+	 * FS_*.  This check ensures that only the inotify IN_*
+	 * bits get passed in and set in watches/events.
+	 */
+	if (unlikely(mask & ~ALL_INOTIFY_BITS))
+		return -EINVAL;
+	/*
+	 * Require at least one valid bit set in the mask.
+	 * Without _something_ set, we would have no events to
+	 * watch for.
+	 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (unlikely(!(mask & ALL_INOTIFY_BITS)))
 		return -EINVAL;
 
@@ -852,7 +1051,10 @@ static int __init inotify_user_setup(void)
 	BUG_ON(hweight32(ALL_INOTIFY_BITS) != 21);
 
 	inotify_inode_mark_cachep = KMEM_CACHE(inotify_inode_mark, SLAB_PANIC);
+<<<<<<< HEAD
 	event_priv_cachep = KMEM_CACHE(inotify_event_private_data, SLAB_PANIC);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	inotify_max_queued_events = 16384;
 	inotify_max_user_instances = 128;
@@ -860,4 +1062,8 @@ static int __init inotify_user_setup(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(inotify_user_setup);
+=======
+fs_initcall(inotify_user_setup);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

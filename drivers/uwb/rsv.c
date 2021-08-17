@@ -163,8 +163,15 @@ static int uwb_rsv_get_stream(struct uwb_rsv *rsv)
 	}
 
 	stream = find_first_zero_bit(streams_bm, UWB_NUM_STREAMS);
+<<<<<<< HEAD
 	if (stream >= UWB_NUM_STREAMS)
 		return -EBUSY;
+=======
+	if (stream >= UWB_NUM_STREAMS) {
+		dev_err(dev, "%s: no available stream found\n", __func__);
+		return -EBUSY;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rsv->stream = stream;
 	set_bit(stream, streams_bm);
@@ -211,7 +218,11 @@ void uwb_rsv_backoff_win_timer(unsigned long arg)
 		bow->total_expired = 0;
 		bow->window = UWB_DRP_BACKOFF_WIN_MIN >> 1;
 	}
+<<<<<<< HEAD
 	dev_dbg(dev, "backoff_win_timer total_expired=%d, n=%d\n: ", bow->total_expired, bow->n);
+=======
+	dev_dbg(dev, "backoff_win_timer total_expired=%d, n=%d\n", bow->total_expired, bow->n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* try to relocate all the "to be moved" relocations */
 	uwb_rsv_handle_drp_avail_change(rc);
@@ -232,12 +243,20 @@ void uwb_rsv_backoff_win_increment(struct uwb_rc *rc)
 
 	bow->window <<= 1;
 	bow->n = prandom_u32() & (bow->window - 1);
+<<<<<<< HEAD
 	dev_dbg(dev, "new_window=%d, n=%d\n: ", bow->window, bow->n);
+=======
+	dev_dbg(dev, "new_window=%d, n=%d\n", bow->window, bow->n);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* reset the timer associated variables */
 	timeout_us = bow->n * UWB_SUPERFRAME_LENGTH_US;
 	bow->total_expired = 0;
+<<<<<<< HEAD
 	mod_timer(&bow->timer, jiffies + usecs_to_jiffies(timeout_us));		
+=======
+	mod_timer(&bow->timer, jiffies + usecs_to_jiffies(timeout_us));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void uwb_rsv_stroke_timer(struct uwb_rsv *rsv)
@@ -249,7 +268,13 @@ static void uwb_rsv_stroke_timer(struct uwb_rsv *rsv)
 	 * super frame and should not be terminated if no response is
 	 * received.
 	 */
+<<<<<<< HEAD
 	if (rsv->is_multicast) {
+=======
+	if (rsv->state == UWB_RSV_STATE_NONE) {
+		sframes = 0;
+	} else if (rsv->is_multicast) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rsv->state == UWB_RSV_STATE_O_INITIATED
 		    || rsv->state == UWB_RSV_STATE_O_MOVE_EXPANDING
 		    || rsv->state == UWB_RSV_STATE_O_MOVE_COMBINING
@@ -257,7 +282,11 @@ static void uwb_rsv_stroke_timer(struct uwb_rsv *rsv)
 			sframes = 1;
 		if (rsv->state == UWB_RSV_STATE_O_ESTABLISHED)
 			sframes = 0;
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (sframes > 0) {
@@ -322,6 +351,10 @@ void uwb_rsv_set_state(struct uwb_rsv *rsv, enum uwb_rsv_state new_state)
 	switch (new_state) {
 	case UWB_RSV_STATE_NONE:
 		uwb_rsv_state_update(rsv, UWB_RSV_STATE_NONE);
+<<<<<<< HEAD
+=======
+		uwb_rsv_remove(rsv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		uwb_rsv_callback(rsv);
 		break;
 	case UWB_RSV_STATE_O_INITIATED:
@@ -442,6 +475,11 @@ static void uwb_rsv_handle_timeout_work(struct work_struct *work)
 		uwb_rsv_set_state(rsv, UWB_RSV_STATE_T_ACCEPTED);
 		uwb_drp_avail_release(rsv->rc, &rsv->mv.companion_mas);
 		goto unlock;
+<<<<<<< HEAD
+=======
+	case UWB_RSV_STATE_NONE:
+		goto unlock;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	default:
 		break;
 	}
@@ -463,9 +501,13 @@ static struct uwb_rsv *uwb_rsv_alloc(struct uwb_rc *rc)
 	INIT_LIST_HEAD(&rsv->rc_node);
 	INIT_LIST_HEAD(&rsv->pal_node);
 	kref_init(&rsv->kref);
+<<<<<<< HEAD
 	init_timer(&rsv->timer);
 	rsv->timer.function = uwb_rsv_timer;
 	rsv->timer.data     = (unsigned long)rsv;
+=======
+	setup_timer(&rsv->timer, uwb_rsv_timer, (unsigned long)rsv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rsv->rc = rc;
 	INIT_WORK(&rsv->handle_timeout_work, uwb_rsv_handle_timeout_work);
@@ -550,12 +592,24 @@ int uwb_rsv_establish(struct uwb_rsv *rsv)
 {
 	struct uwb_rc *rc = rsv->rc;
 	struct uwb_mas_bm available;
+<<<<<<< HEAD
+=======
+	struct device *dev = &rc->uwb_dev.dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	mutex_lock(&rc->rsvs_mutex);
 	ret = uwb_rsv_get_stream(rsv);
+<<<<<<< HEAD
 	if (ret)
 		goto out;
+=======
+	if (ret) {
+		dev_err(dev, "%s: uwb_rsv_get_stream failed: %d\n",
+			__func__, ret);
+		goto out;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	rsv->tiebreaker = prandom_u32() & 1;
 	/* get available mas bitmap */
@@ -565,12 +619,22 @@ int uwb_rsv_establish(struct uwb_rsv *rsv)
 	if (ret == UWB_RSV_ALLOC_NOT_FOUND) {
 		ret = -EBUSY;
 		uwb_rsv_put_stream(rsv);
+<<<<<<< HEAD
+=======
+		dev_err(dev, "%s: uwb_rsv_find_best_allocation failed: %d\n",
+			__func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
 	ret = uwb_drp_avail_reserve_pending(rc, &rsv->mas);
 	if (ret != 0) {
 		uwb_rsv_put_stream(rsv);
+<<<<<<< HEAD
+=======
+		dev_err(dev, "%s: uwb_drp_avail_reserve_pending failed: %d\n",
+			__func__, ret);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto out;
 	}
 
@@ -611,7 +675,11 @@ int uwb_rsv_try_move(struct uwb_rsv *rsv, struct uwb_mas_bm *available)
 	struct device *dev = &rc->uwb_dev.dev;
 	struct uwb_rsv_move *mv;
 	int ret = 0;
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bow->can_reserve_extra_mases == false)
 		return -EBUSY;
 
@@ -628,7 +696,11 @@ int uwb_rsv_try_move(struct uwb_rsv *rsv, struct uwb_mas_bm *available)
 	} else {
 		dev_dbg(dev, "new allocation not found\n");
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -640,7 +712,11 @@ void uwb_rsv_handle_drp_avail_change(struct uwb_rc *rc)
 	struct uwb_drp_backoff_win *bow = &rc->bow;
 	struct uwb_rsv *rsv;
 	struct uwb_mas_bm mas;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (bow->can_reserve_extra_mases == false)
 		return;
 
@@ -652,7 +728,11 @@ void uwb_rsv_handle_drp_avail_change(struct uwb_rc *rc)
 			uwb_rsv_try_move(rsv, &mas);
 		}
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -872,7 +952,11 @@ void uwb_rsv_queue_update(struct uwb_rc *rc)
  */
 void uwb_rsv_sched_update(struct uwb_rc *rc)
 {
+<<<<<<< HEAD
 	spin_lock_bh(&rc->rsvs_lock);
+=======
+	spin_lock_irq(&rc->rsvs_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!delayed_work_pending(&rc->rsv_update_work)) {
 		if (rc->set_drp_ie_pending > 0) {
 			rc->set_drp_ie_pending++;
@@ -881,7 +965,11 @@ void uwb_rsv_sched_update(struct uwb_rc *rc)
 		uwb_rsv_queue_update(rc);
 	}
 unlock:
+<<<<<<< HEAD
 	spin_unlock_bh(&rc->rsvs_lock);
+=======
+	spin_unlock_irq(&rc->rsvs_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -916,10 +1004,17 @@ static void uwb_rsv_alien_bp_work(struct work_struct *work)
 	struct uwb_rsv *rsv;
 
 	mutex_lock(&rc->rsvs_mutex);
+<<<<<<< HEAD
 	
 	list_for_each_entry(rsv, &rc->reservations, rc_node) {
 		if (rsv->type != UWB_DRP_TYPE_ALIEN_BP) {
 			rsv->callback(rsv);
+=======
+
+	list_for_each_entry(rsv, &rc->reservations, rc_node) {
+		if (rsv->type != UWB_DRP_TYPE_ALIEN_BP) {
+			uwb_rsv_callback(rsv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
@@ -974,9 +1069,14 @@ void uwb_rsv_init(struct uwb_rc *rc)
 	rc->bow.can_reserve_extra_mases = true;
 	rc->bow.total_expired = 0;
 	rc->bow.window = UWB_DRP_BACKOFF_WIN_MIN >> 1;
+<<<<<<< HEAD
 	init_timer(&rc->bow.timer);
 	rc->bow.timer.function = uwb_rsv_backoff_win_timer;
 	rc->bow.timer.data     = (unsigned long)&rc->bow;
+=======
+	setup_timer(&rc->bow.timer, uwb_rsv_backoff_win_timer,
+			(unsigned long)&rc->bow);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bitmap_complement(rc->uwb_dev.streams, rc->uwb_dev.streams, UWB_NUM_STREAMS);
 }

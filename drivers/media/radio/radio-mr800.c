@@ -32,7 +32,11 @@
  * achievements (specifications given).
  * Also, Faidon Liambotis <paravoid@debian.org> wrote nice driver for this radio
  * in 2007. He allowed to use his driver to improve current mr800 radio driver.
+<<<<<<< HEAD
  * http://kerneltrap.org/mailarchive/linux-usb-devel/2007/10/11/342492
+=======
+ * http://www.spinics.net/lists/linux-usb-devel/msg10109.html
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * Version 0.01:	First working version.
  * 			It's required to blacklist AverMedia USB Radio
@@ -558,7 +562,10 @@ static int usb_amradio_probe(struct usb_interface *intf,
 	radio->vdev.ioctl_ops = &usb_amradio_ioctl_ops;
 	radio->vdev.release = video_device_release_empty;
 	radio->vdev.lock = &radio->lock;
+<<<<<<< HEAD
 	set_bit(V4L2_FL_USE_FH_PRIO, &radio->vdev.flags);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	radio->usbdev = interface_to_usbdev(intf);
 	radio->intf = intf;

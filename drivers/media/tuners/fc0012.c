@@ -139,7 +139,11 @@ static int fc0012_set_params(struct dvb_frontend *fe)
 	unsigned char reg[7], am, pm, multi, tmp;
 	unsigned long f_vco;
 	unsigned short xtal_freq_khz_2, xin, xdiv;
+<<<<<<< HEAD
 	int vco_select = false;
+=======
+	bool vco_select = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (fe->callback) {
 		ret = fe->callback(priv->i2c, DVB_FRONTEND_COMPONENT_TUNER,

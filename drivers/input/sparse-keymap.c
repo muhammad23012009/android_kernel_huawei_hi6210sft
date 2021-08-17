@@ -236,7 +236,11 @@ EXPORT_SYMBOL(sparse_keymap_setup);
  * in an input device that was set up by sparse_keymap_setup().
  * NOTE: It is safe to cal this function while input device is
  * still registered (however the drivers should care not to try to
+<<<<<<< HEAD
  * use freed keymap and thus have to shut off interrups/polling
+=======
+ * use freed keymap and thus have to shut off interrupts/polling
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * before freeing the keymap).
  */
 void sparse_keymap_free(struct input_dev *dev)

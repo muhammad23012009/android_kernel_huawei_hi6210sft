@@ -13,7 +13,11 @@
 #include <linux/module.h>
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 #include <media/saa7146.h>
+=======
+#include <media/drv-intf/saa7146.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int budget_debug;
 
@@ -72,7 +76,11 @@ struct budget {
 
 	struct dvb_adapter dvb_adapter;
 	struct dvb_frontend *dvb_frontend;
+<<<<<<< HEAD
 	int (*read_fe_status)(struct dvb_frontend *fe, fe_status_t *status);
+=======
+	int (*read_fe_status)(struct dvb_frontend *fe, enum fe_status *status);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int fe_synced;
 
 	void *priv;

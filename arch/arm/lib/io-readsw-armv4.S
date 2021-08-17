@@ -26,7 +26,11 @@
 
 ENTRY(__raw_readsw)
 		teq	r2, #0
+<<<<<<< HEAD
 		moveq	pc, lr
+=======
+		reteq	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		tst	r1, #3
 		bne	.Linsw_align
 

@@ -15,7 +15,10 @@
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -171,6 +174,7 @@ static int dnet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dnet_mdio_reset(struct mii_bus *bus)
 {
 	return 0;
@@ -180,6 +184,12 @@ static void dnet_handle_link_change(struct net_device *dev)
 {
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = bp->phy_dev;
+=======
+static void dnet_handle_link_change(struct net_device *dev)
+{
+	struct dnet *bp = netdev_priv(dev);
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	u32 mode_reg, ctl_reg;
 
@@ -261,6 +271,7 @@ static int dnet_mii_probe(struct net_device *dev)
 {
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = NULL;
+<<<<<<< HEAD
 	int phy_addr;
 
 	/* find the first phy */
@@ -270,6 +281,11 @@ static int dnet_mii_probe(struct net_device *dev)
 			break;
 		}
 	}
+=======
+
+	/* find the first phy */
+	phydev = phy_find_first(bp->mii_bus);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!phydev) {
 		printk(KERN_ERR "%s: no PHY found\n", dev->name);
@@ -280,11 +296,19 @@ static int dnet_mii_probe(struct net_device *dev)
 
 	/* attach the mac to the phy */
 	if (bp->capabilities & DNET_HAS_RMII) {
+<<<<<<< HEAD
 		phydev = phy_connect(dev, dev_name(&phydev->dev),
 				     &dnet_handle_link_change,
 				     PHY_INTERFACE_MODE_RMII);
 	} else {
 		phydev = phy_connect(dev, dev_name(&phydev->dev),
+=======
+		phydev = phy_connect(dev, phydev_name(phydev),
+				     &dnet_handle_link_change,
+				     PHY_INTERFACE_MODE_RMII);
+	} else {
+		phydev = phy_connect(dev, phydev_name(phydev),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				     &dnet_handle_link_change,
 				     PHY_INTERFACE_MODE_MII);
 	}
@@ -307,14 +331,21 @@ static int dnet_mii_probe(struct net_device *dev)
 	bp->link = 0;
 	bp->speed = 0;
 	bp->duplex = -1;
+<<<<<<< HEAD
 	bp->phy_dev = phydev;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
 
 static int dnet_mii_init(struct dnet *bp)
 {
+<<<<<<< HEAD
 	int err, i;
+=======
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	bp->mii_bus = mdiobus_alloc();
 	if (bp->mii_bus == NULL)
@@ -323,13 +354,17 @@ static int dnet_mii_init(struct dnet *bp)
 	bp->mii_bus->name = "dnet_mii_bus";
 	bp->mii_bus->read = &dnet_mdio_read;
 	bp->mii_bus->write = &dnet_mdio_write;
+<<<<<<< HEAD
 	bp->mii_bus->reset = &dnet_mdio_reset;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	snprintf(bp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
 		bp->pdev->name, bp->pdev->id);
 
 	bp->mii_bus->priv = bp;
 
+<<<<<<< HEAD
 	bp->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!bp->mii_bus->irq) {
 		err = -ENOMEM;
@@ -342,6 +377,11 @@ static int dnet_mii_init(struct dnet *bp)
 	if (mdiobus_register(bp->mii_bus)) {
 		err = -ENXIO;
 		goto err_out_free_mdio_irq;
+=======
+	if (mdiobus_register(bp->mii_bus)) {
+		err = -ENXIO;
+		goto err_out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	if (dnet_mii_probe(bp->dev) != 0) {
@@ -353,8 +393,11 @@ static int dnet_mii_init(struct dnet *bp)
 
 err_out_unregister_bus:
 	mdiobus_unregister(bp->mii_bus);
+<<<<<<< HEAD
 err_out_free_mdio_irq:
 	kfree(bp->mii_bus->irq);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 err_out:
 	mdiobus_free(bp->mii_bus);
 	return err;
@@ -406,6 +449,7 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 		 * break out of while loop if there are no more
 		 * packets waiting
 		 */
+<<<<<<< HEAD
 		if (!(dnet_readl(bp, RX_FIFO_WCNT) >> 16)) {
 			napi_complete(napi);
 			int_enable = dnet_readl(bp, INTR_ENB);
@@ -413,6 +457,10 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 			dnet_writel(bp, int_enable, INTR_ENB);
 			return 0;
 		}
+=======
+		if (!(dnet_readl(bp, RX_FIFO_WCNT) >> 16))
+			break;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		cmd_word = dnet_readl(bp, RX_LEN_FIFO);
 		pkt_len = cmd_word & 0xFFFF;
@@ -441,20 +489,33 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 			       "size %u.\n", dev->name, pkt_len);
 	}
 
+<<<<<<< HEAD
 	budget -= npackets;
 
 	if (npackets < budget) {
 		/* We processed all packets available.  Tell NAPI it can
 		 * stop polling then re-enable rx interrupts */
+=======
+	if (npackets < budget) {
+		/* We processed all packets available.  Tell NAPI it can
+		 * stop polling then re-enable rx interrupts.
+		 */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		napi_complete(napi);
 		int_enable = dnet_readl(bp, INTR_ENB);
 		int_enable |= DNET_INTR_SRC_RX_CMDFIFOAF;
 		dnet_writel(bp, int_enable, INTR_ENB);
+<<<<<<< HEAD
 		return 0;
 	}
 
 	/* There are still packets waiting */
 	return 1;
+=======
+	}
+
+	return npackets;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static irqreturn_t dnet_interrupt(int irq, void *dev_id)
@@ -661,16 +722,27 @@ static int dnet_open(struct net_device *dev)
 	struct dnet *bp = netdev_priv(dev);
 
 	/* if the phy is not yet register, retry later */
+<<<<<<< HEAD
 	if (!bp->phy_dev)
+=======
+	if (!dev->phydev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EAGAIN;
 
 	napi_enable(&bp->napi);
 	dnet_init_hw(bp);
 
+<<<<<<< HEAD
 	phy_start_aneg(bp->phy_dev);
 
 	/* schedule a link state check */
 	phy_start(bp->phy_dev);
+=======
+	phy_start_aneg(dev->phydev);
+
+	/* schedule a link state check */
+	phy_start(dev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	netif_start_queue(dev);
 
@@ -684,8 +756,13 @@ static int dnet_close(struct net_device *dev)
 	netif_stop_queue(dev);
 	napi_disable(&bp->napi);
 
+<<<<<<< HEAD
 	if (bp->phy_dev)
 		phy_stop(bp->phy_dev);
+=======
+	if (dev->phydev)
+		phy_stop(dev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dnet_reset_hw(bp);
 	netif_carrier_off(dev);
@@ -763,6 +840,7 @@ static struct net_device_stats *dnet_get_stats(struct net_device *dev)
 	return nstat;
 }
 
+<<<<<<< HEAD
 static int dnet_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct dnet *bp = netdev_priv(dev);
@@ -789,6 +867,11 @@ static int dnet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = bp->phy_dev;
+=======
+static int dnet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+{
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!netif_running(dev))
 		return -EINVAL;
@@ -808,11 +891,19 @@ static void dnet_get_drvinfo(struct net_device *dev,
 }
 
 static const struct ethtool_ops dnet_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings		= dnet_get_settings,
 	.set_settings		= dnet_set_settings,
 	.get_drvinfo		= dnet_get_drvinfo,
 	.get_link		= ethtool_op_get_link,
 	.get_ts_info		= ethtool_op_get_ts_info,
+=======
+	.get_drvinfo		= dnet_get_drvinfo,
+	.get_link		= ethtool_op_get_link,
+	.get_ts_info		= ethtool_op_get_ts_info,
+	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static const struct net_device_ops dnet_netdev_ops = {
@@ -832,6 +923,7 @@ static int dnet_probe(struct platform_device *pdev)
 	struct net_device *dev;
 	struct dnet *bp;
 	struct phy_device *phydev;
+<<<<<<< HEAD
 	int err = -ENXIO;
 	unsigned int mem_base, mem_size, irq;
 
@@ -854,6 +946,16 @@ static int dnet_probe(struct platform_device *pdev)
 	dev = alloc_etherdev(sizeof(*bp));
 	if (!dev)
 		goto err_out_release_mem;
+=======
+	int err;
+	unsigned int irq;
+
+	irq = platform_get_irq(pdev, 0);
+
+	dev = alloc_etherdev(sizeof(*bp));
+	if (!dev)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* TODO: Actually, we have some interesting features... */
 	dev->features |= 0;
@@ -866,10 +968,17 @@ static int dnet_probe(struct platform_device *pdev)
 
 	spin_lock_init(&bp->lock);
 
+<<<<<<< HEAD
 	bp->regs = ioremap(mem_base, mem_size);
 	if (!bp->regs) {
 		dev_err(&pdev->dev, "failed to map registers, aborting.\n");
 		err = -ENOMEM;
+=======
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	bp->regs = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(bp->regs)) {
+		err = PTR_ERR(bp->regs);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		goto err_out_free_dev;
 	}
 
@@ -878,7 +987,11 @@ static int dnet_probe(struct platform_device *pdev)
 	if (err) {
 		dev_err(&pdev->dev, "Unable to request IRQ %d (error %d)\n",
 		       irq, err);
+<<<<<<< HEAD
 		goto err_out_iounmap;
+=======
+		goto err_out_free_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	dev->netdev_ops = &dnet_netdev_ops;
@@ -915,16 +1028,25 @@ static int dnet_probe(struct platform_device *pdev)
 		goto err_out_unregister_netdev;
 
 	dev_info(&pdev->dev, "Dave DNET at 0x%p (0x%08x) irq %d %pM\n",
+<<<<<<< HEAD
 	       bp->regs, mem_base, dev->irq, dev->dev_addr);
+=======
+	       bp->regs, (unsigned int)res->start, dev->irq, dev->dev_addr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&pdev->dev, "has %smdio, %sirq, %sgigabit, %sdma\n",
 	       (bp->capabilities & DNET_HAS_MDIO) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_IRQ) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_GIGABIT) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_DMA) ? "" : "no ");
+<<<<<<< HEAD
 	phydev = bp->phy_dev;
 	dev_info(&pdev->dev, "attached PHY driver [%s] "
 	       "(mii_bus:phy_addr=%s, irq=%d)\n",
 	       phydev->drv->name, dev_name(&phydev->dev), phydev->irq);
+=======
+	phydev = dev->phydev;
+	phy_attached_info(phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 
@@ -932,6 +1054,7 @@ err_out_unregister_netdev:
 	unregister_netdev(dev);
 err_out_free_irq:
 	free_irq(dev->irq, dev);
+<<<<<<< HEAD
 err_out_iounmap:
 	iounmap(bp->regs);
 err_out_free_dev:
@@ -939,6 +1062,10 @@ err_out_free_dev:
 err_out_release_mem:
 	release_mem_region(mem_base, mem_size);
 err_out:
+=======
+err_out_free_dev:
+	free_netdev(dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return err;
 }
 
@@ -952,6 +1079,7 @@ static int dnet_remove(struct platform_device *pdev)
 
 	if (dev) {
 		bp = netdev_priv(dev);
+<<<<<<< HEAD
 		if (bp->phy_dev)
 			phy_disconnect(bp->phy_dev);
 		mdiobus_unregister(bp->mii_bus);
@@ -960,6 +1088,14 @@ static int dnet_remove(struct platform_device *pdev)
 		unregister_netdev(dev);
 		free_irq(dev->irq, dev);
 		iounmap(bp->regs);
+=======
+		if (dev->phydev)
+			phy_disconnect(dev->phydev);
+		mdiobus_unregister(bp->mii_bus);
+		mdiobus_free(bp->mii_bus);
+		unregister_netdev(dev);
+		free_irq(dev->irq, dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		free_netdev(dev);
 	}
 

@@ -37,6 +37,7 @@ struct uda134x_priv {
 
 	struct snd_pcm_substream *master_substream;
 	struct snd_pcm_substream *slave_substream;
+<<<<<<< HEAD
 };
 
 /* In-data addresses are hard-coded into the reg-cache values */
@@ -72,11 +73,36 @@ static inline void uda134x_write_reg_cache(struct snd_soc_codec *codec,
 		return;
 	cache[reg] = value;
 }
+=======
+
+	struct regmap *regmap;
+	struct uda134x_platform_data *pd;
+};
+
+static const struct reg_default uda134x_reg_defaults[] = {
+	{ UDA134X_EA000, 0x04 },
+	{ UDA134X_EA001, 0x04 },
+	{ UDA134X_EA010, 0x04 },
+	{ UDA134X_EA011, 0x00 },
+	{ UDA134X_EA100, 0x00 },
+	{ UDA134X_EA101, 0x00 },
+	{ UDA134X_EA110, 0x00 },
+	{ UDA134X_EA111, 0x00 },
+	{ UDA134X_STATUS0, 0x00 },
+	{ UDA134X_STATUS1, 0x03 },
+	{ UDA134X_DATA000, 0x00 },
+	{ UDA134X_DATA001, 0x00 },
+	{ UDA134X_DATA010, 0x00 },
+	{ UDA134X_DATA011, 0x00 },
+	{ UDA134X_DATA1, 0x00 },
+};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /*
  * Write to the uda134x registers
  *
  */
+<<<<<<< HEAD
 static int uda134x_write(struct snd_soc_codec *codec, unsigned int reg,
 	unsigned int value)
 {
@@ -94,17 +120,34 @@ static int uda134x_write(struct snd_soc_codec *codec, unsigned int reg,
 	}
 
 	uda134x_write_reg_cache(codec, reg, value);
+=======
+static int uda134x_regmap_write(void *context, unsigned int reg,
+	unsigned int value)
+{
+	struct uda134x_platform_data *pd = context;
+	int ret;
+	u8 addr;
+	u8 data = value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (reg) {
 	case UDA134X_STATUS0:
 	case UDA134X_STATUS1:
 		addr = UDA134X_STATUS_ADDR;
+<<<<<<< HEAD
+=======
+		data |= (reg - UDA134X_STATUS0) << 7;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case UDA134X_DATA000:
 	case UDA134X_DATA001:
 	case UDA134X_DATA010:
 	case UDA134X_DATA011:
 		addr = UDA134X_DATA0_ADDR;
+<<<<<<< HEAD
+=======
+		data |= (reg - UDA134X_DATA000) << 6;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case UDA134X_DATA1:
 		addr = UDA134X_DATA1_ADDR;
@@ -133,20 +176,36 @@ static int uda134x_write(struct snd_soc_codec *codec, unsigned int reg,
 
 static inline void uda134x_reset(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	u8 reset_reg = uda134x_read_reg_cache(codec, UDA134X_STATUS0);
 	uda134x_write(codec, UDA134X_STATUS0, reset_reg | (1<<6));
 	msleep(1);
 	uda134x_write(codec, UDA134X_STATUS0, reset_reg & ~(1<<6));
+=======
+	struct uda134x_priv *uda134x = snd_soc_codec_get_drvdata(codec);
+	unsigned int mask = 1<<6;
+
+	regmap_update_bits(uda134x->regmap, UDA134X_STATUS0, mask, mask);
+	msleep(1);
+	regmap_update_bits(uda134x->regmap, UDA134X_STATUS0, mask, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int uda134x_mute(struct snd_soc_dai *dai, int mute)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	u8 mute_reg = uda134x_read_reg_cache(codec, UDA134X_DATA010);
+=======
+	struct uda134x_priv *uda134x = snd_soc_codec_get_drvdata(dai->codec);
+	unsigned int mask = 1<<2;
+	unsigned int val;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	pr_debug("%s mute: %d\n", __func__, mute);
 
 	if (mute)
+<<<<<<< HEAD
 		mute_reg |= (1<<2);
 	else
 		mute_reg &= ~(1<<2);
@@ -154,6 +213,13 @@ static int uda134x_mute(struct snd_soc_dai *dai, int mute)
 	uda134x_write(codec, UDA134X_DATA010, mute_reg);
 
 	return 0;
+=======
+		val = mask;
+	else
+		val = 0;
+
+	return regmap_update_bits(uda134x->regmap, UDA134X_DATA010, mask, val);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int uda134x_startup(struct snd_pcm_substream *substream,
@@ -170,6 +236,7 @@ static int uda134x_startup(struct snd_pcm_substream *substream,
 			 master_runtime->sample_bits,
 			 master_runtime->rate);
 
+<<<<<<< HEAD
 		snd_pcm_hw_constraint_minmax(substream->runtime,
 					     SNDRV_PCM_HW_PARAM_RATE,
 					     master_runtime->rate,
@@ -178,6 +245,14 @@ static int uda134x_startup(struct snd_pcm_substream *substream,
 		snd_pcm_hw_constraint_minmax(substream->runtime,
 					     SNDRV_PCM_HW_PARAM_SAMPLE_BITS,
 					     master_runtime->sample_bits,
+=======
+		snd_pcm_hw_constraint_single(substream->runtime,
+					     SNDRV_PCM_HW_PARAM_RATE,
+					     master_runtime->rate);
+
+		snd_pcm_hw_constraint_single(substream->runtime,
+					     SNDRV_PCM_HW_PARAM_SAMPLE_BITS,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					     master_runtime->sample_bits);
 
 		uda134x->slave_substream = substream;
@@ -203,10 +278,16 @@ static int uda134x_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params,
 	struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct uda134x_priv *uda134x = snd_soc_codec_get_drvdata(codec);
 	u8 hw_params;
+=======
+	struct snd_soc_codec *codec = dai->codec;
+	struct uda134x_priv *uda134x = snd_soc_codec_get_drvdata(codec);
+	unsigned int hw_params = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (substream == uda134x->slave_substream) {
 		pr_debug("%s ignoring hw_params for slave substream\n",
@@ -214,10 +295,13 @@ static int uda134x_hw_params(struct snd_pcm_substream *substream,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	hw_params = uda134x_read_reg_cache(codec, UDA134X_STATUS0);
 	hw_params &= STATUS0_SYSCLK_MASK;
 	hw_params &= STATUS0_DAIFMT_MASK;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_debug("%s sysclk: %d, rate:%d\n", __func__,
 		 uda134x->sysclk, params_rate(params));
 
@@ -244,6 +328,7 @@ static int uda134x_hw_params(struct snd_pcm_substream *substream,
 	case SND_SOC_DAIFMT_I2S:
 		break;
 	case SND_SOC_DAIFMT_RIGHT_J:
+<<<<<<< HEAD
 		switch (params_format(params)) {
 		case SNDRV_PCM_FORMAT_S16_LE:
 			hw_params |= (1<<1);
@@ -252,6 +337,16 @@ static int uda134x_hw_params(struct snd_pcm_substream *substream,
 			hw_params |= (1<<2);
 			break;
 		case SNDRV_PCM_FORMAT_S20_3LE:
+=======
+		switch (params_width(params)) {
+		case 16:
+			hw_params |= (1<<1);
+			break;
+		case 18:
+			hw_params |= (1<<2);
+			break;
+		case 20:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			hw_params |= ((1<<2) | (1<<1));
 			break;
 		default:
@@ -268,9 +363,14 @@ static int uda134x_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	uda134x_write(codec, UDA134X_STATUS0, hw_params);
 
 	return 0;
+=======
+	return regmap_update_bits(uda134x->regmap, UDA134X_STATUS0,
+		STATUS0_SYSCLK_MASK | STATUS0_DAIFMT_MASK, hw_params);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int uda134x_set_dai_sysclk(struct snd_soc_dai *codec_dai,
@@ -325,15 +425,21 @@ static int uda134x_set_dai_fmt(struct snd_soc_dai *codec_dai,
 static int uda134x_set_bias_level(struct snd_soc_codec *codec,
 				  enum snd_soc_bias_level level)
 {
+<<<<<<< HEAD
 	u8 reg;
 	struct uda134x_platform_data *pd = codec->control_data;
 	int i;
 	u8 *cache = codec->reg_cache;
 
+=======
+	struct uda134x_priv *uda134x = snd_soc_codec_get_drvdata(codec);
+	struct uda134x_platform_data *pd = uda134x->pd;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pr_debug("%s bias level %d\n", __func__, level);
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+<<<<<<< HEAD
 		/* ADC, DAC on */
 		switch (pd->model) {
 		case UDA134X_UDA1340:
@@ -351,11 +457,14 @@ static int uda134x_set_bias_level(struct snd_soc_codec *codec,
 			       "unsupported model %d\n", pd->model);
 			return -EINVAL;
 		}
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		/* power on */
 		if (pd->power) {
 			pd->power(1);
+<<<<<<< HEAD
 			/* Sync reg_cache with the hardware */
 			for (i = 0; i < ARRAY_SIZE(uda134x_reg); i++)
 				codec->driver->write(codec, i, *cache++);
@@ -387,6 +496,21 @@ static int uda134x_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 	codec->dapm.bias_level = level;
+=======
+			regcache_sync(uda134x->regmap);
+		}
+		break;
+	case SND_SOC_BIAS_STANDBY:
+		break;
+	case SND_SOC_BIAS_OFF:
+		/* power off */
+		if (pd->power) {
+			pd->power(0);
+			regcache_mark_dirty(uda134x->regmap);
+		}
+		break;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -450,6 +574,40 @@ SOC_ENUM("PCM Playback De-emphasis", uda134x_mixer_enum[1]),
 SOC_SINGLE("DC Filter Enable Switch", UDA134X_STATUS0, 0, 1, 0),
 };
 
+<<<<<<< HEAD
+=======
+/* UDA1341 has the DAC/ADC power down in STATUS1 */
+static const struct snd_soc_dapm_widget uda1341_dapm_widgets[] = {
+	SND_SOC_DAPM_DAC("DAC", "Playback", UDA134X_STATUS1, 0, 0),
+	SND_SOC_DAPM_ADC("ADC", "Capture", UDA134X_STATUS1, 1, 0),
+};
+
+/* UDA1340/4/5 has the DAC/ADC pwoer down in DATA0 11 */
+static const struct snd_soc_dapm_widget uda1340_dapm_widgets[] = {
+	SND_SOC_DAPM_DAC("DAC", "Playback", UDA134X_DATA011, 0, 0),
+	SND_SOC_DAPM_ADC("ADC", "Capture", UDA134X_DATA011, 1, 0),
+};
+
+/* Common DAPM widgets */
+static const struct snd_soc_dapm_widget uda134x_dapm_widgets[] = {
+	SND_SOC_DAPM_INPUT("VINL1"),
+	SND_SOC_DAPM_INPUT("VINR1"),
+	SND_SOC_DAPM_INPUT("VINL2"),
+	SND_SOC_DAPM_INPUT("VINR2"),
+	SND_SOC_DAPM_OUTPUT("VOUTL"),
+	SND_SOC_DAPM_OUTPUT("VOUTR"),
+};
+
+static const struct snd_soc_dapm_route uda134x_dapm_routes[] = {
+	{ "ADC", NULL, "VINL1" },
+	{ "ADC", NULL, "VINR1" },
+	{ "ADC", NULL, "VINL2" },
+	{ "ADC", NULL, "VINR2" },
+	{ "VOUTL", NULL, "DAC" },
+	{ "VOUTR", NULL, "DAC" },
+};
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static const struct snd_soc_dai_ops uda134x_dai_ops = {
 	.startup	= uda134x_startup,
 	.shutdown	= uda134x_shutdown,
@@ -483,19 +641,30 @@ static struct snd_soc_dai_driver uda134x_dai = {
 
 static int uda134x_soc_probe(struct snd_soc_codec *codec)
 {
+<<<<<<< HEAD
 	struct uda134x_priv *uda134x;
 	struct uda134x_platform_data *pd = codec->card->dev->platform_data;
 
+=======
+	struct snd_soc_dapm_context *dapm = snd_soc_codec_get_dapm(codec);
+	struct uda134x_priv *uda134x = snd_soc_codec_get_drvdata(codec);
+	struct uda134x_platform_data *pd = uda134x->pd;
+	const struct snd_soc_dapm_widget *widgets;
+	unsigned num_widgets;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	printk(KERN_INFO "UDA134X SoC Audio Codec\n");
 
+<<<<<<< HEAD
 	if (!pd) {
 		printk(KERN_ERR "UDA134X SoC codec: "
 		       "missing L3 bitbang function\n");
 		return -ENODEV;
 	}
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	switch (pd->model) {
 	case UDA134X_UDA1340:
 	case UDA134X_UDA1341:
@@ -509,6 +678,7 @@ static int uda134x_soc_probe(struct snd_soc_codec *codec)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	uda134x = kzalloc(sizeof(struct uda134x_priv), GFP_KERNEL);
 	if (uda134x == NULL)
 		return -ENOMEM;
@@ -516,15 +686,34 @@ static int uda134x_soc_probe(struct snd_soc_codec *codec)
 
 	codec->control_data = pd;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (pd->power)
 		pd->power(1);
 
 	uda134x_reset(codec);
 
+<<<<<<< HEAD
 	if (pd->is_powered_on_standby)
 		uda134x_set_bias_level(codec, SND_SOC_BIAS_ON);
 	else
 		uda134x_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	if (pd->model == UDA134X_UDA1341) {
+		widgets = uda1341_dapm_widgets;
+		num_widgets = ARRAY_SIZE(uda1341_dapm_widgets);
+	} else {
+		widgets = uda1340_dapm_widgets;
+		num_widgets = ARRAY_SIZE(uda1340_dapm_widgets);
+	}
+
+	ret = snd_soc_dapm_new_controls(dapm, widgets, num_widgets);
+	if (ret) {
+		printk(KERN_ERR "%s failed to register dapm controls: %d",
+			__func__, ret);
+		return ret;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	switch (pd->model) {
 	case UDA134X_UDA1340:
@@ -543,19 +732,26 @@ static int uda134x_soc_probe(struct snd_soc_codec *codec)
 	default:
 		printk(KERN_ERR "%s unknown codec type: %d",
 			__func__, pd->model);
+<<<<<<< HEAD
 		kfree(uda134x);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	if (ret < 0) {
 		printk(KERN_ERR "UDA134X: failed to register controls\n");
+<<<<<<< HEAD
 		kfree(uda134x);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /* power down chip */
 static int uda134x_soc_remove(struct snd_soc_codec *codec)
 {
@@ -599,10 +795,64 @@ static struct snd_soc_codec_driver soc_codec_dev_uda134x = {
 	.read = uda134x_read_reg_cache,
 	.write = uda134x_write,
 	.set_bias_level = uda134x_set_bias_level,
+=======
+static struct snd_soc_codec_driver soc_codec_dev_uda134x = {
+	.probe =        uda134x_soc_probe,
+	.set_bias_level = uda134x_set_bias_level,
+	.suspend_bias_off = true,
+
+	.component_driver = {
+		.dapm_widgets		= uda134x_dapm_widgets,
+		.num_dapm_widgets	= ARRAY_SIZE(uda134x_dapm_widgets),
+		.dapm_routes		= uda134x_dapm_routes,
+		.num_dapm_routes	= ARRAY_SIZE(uda134x_dapm_routes),
+	},
+};
+
+static const struct regmap_config uda134x_regmap_config = {
+	.reg_bits = 8,
+	.val_bits = 8,
+	.max_register = UDA134X_DATA1,
+	.reg_defaults = uda134x_reg_defaults,
+	.num_reg_defaults = ARRAY_SIZE(uda134x_reg_defaults),
+	.cache_type = REGCACHE_RBTREE,
+
+	.reg_write = uda134x_regmap_write,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int uda134x_codec_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct uda134x_platform_data *pd = pdev->dev.platform_data;
+	struct uda134x_priv *uda134x;
+	int ret;
+
+	if (!pd) {
+		dev_err(&pdev->dev, "Missing L3 bitbang function\n");
+		return -ENODEV;
+	}
+
+	uda134x = devm_kzalloc(&pdev->dev, sizeof(*uda134x), GFP_KERNEL);
+	if (!uda134x)
+		return -ENOMEM;
+
+	uda134x->pd = pd;
+	platform_set_drvdata(pdev, uda134x);
+
+	if (pd->l3.use_gpios) {
+		ret = l3_set_gpio_ops(&pdev->dev, &uda134x->pd->l3);
+		if (ret < 0)
+			return ret;
+	}
+
+	uda134x->regmap = devm_regmap_init(&pdev->dev, NULL, pd,
+		&uda134x_regmap_config);
+	if (IS_ERR(uda134x->regmap))
+		return PTR_ERR(uda134x->regmap);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return snd_soc_register_codec(&pdev->dev,
 			&soc_codec_dev_uda134x, &uda134x_dai, 1);
 }
@@ -616,7 +866,10 @@ static int uda134x_codec_remove(struct platform_device *pdev)
 static struct platform_driver uda134x_codec_driver = {
 	.driver = {
 		.name = "uda134x-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	},
 	.probe = uda134x_codec_probe,
 	.remove = uda134x_codec_remove,

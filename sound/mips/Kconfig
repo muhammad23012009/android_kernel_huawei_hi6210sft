@@ -12,12 +12,17 @@ if SND_MIPS
 config SND_SGI_O2
 	tristate "SGI O2 Audio"
 	depends on SGI_IP32
+<<<<<<< HEAD
+=======
+	select SND_PCM
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
         help
                 Sound support for the SGI O2 Workstation. 
 
 config SND_SGI_HAL2
         tristate "SGI HAL2 Audio"
         depends on SGI_HAS_HAL2
+<<<<<<< HEAD
         help
                 Sound support for the SGI Indy and Indigo2 Workstation.
 
@@ -33,5 +38,11 @@ config SND_AU1X00
 	  Newer drivers for ASoC are available, please do not use
 	  this driver as it will be removed in the future.
 
+=======
+	select SND_PCM
+        help
+                Sound support for the SGI Indy and Indigo2 Workstation.
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 endif	# SND_MIPS
 

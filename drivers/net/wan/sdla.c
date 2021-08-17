@@ -711,7 +711,11 @@ static netdev_tx_t sdla_transmit(struct sk_buff *skb,
 
 					spin_lock_irqsave(&sdla_lock, flags);
 					SDLA_WINDOW(dev, addr);
+<<<<<<< HEAD
 					pbuf = (void *)(((int) dev->mem_start) + (addr & SDLA_ADDR_MASK));
+=======
+					pbuf = (void *)(dev->mem_start + (addr & SDLA_ADDR_MASK));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 					__sdla_write(dev, pbuf->buf_addr, skb->data, skb->len);
 					SDLA_WINDOW(dev, addr);
 					pbuf->opp_flag = 1;
@@ -1322,10 +1326,13 @@ NOTE:  This is rather a useless action right now, as the
 
 static int sdla_change_mtu(struct net_device *dev, int new_mtu)
 {
+<<<<<<< HEAD
 	struct frad_local *flp;
 
 	flp = netdev_priv(dev);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (netif_running(dev))
 		return -EBUSY;
 
@@ -1635,7 +1642,12 @@ static int __init init_sdla(void)
 
 	printk("%s.\n", version);
 
+<<<<<<< HEAD
 	sdla = alloc_netdev(sizeof(struct frad_local), "sdla0", setup_sdla);
+=======
+	sdla = alloc_netdev(sizeof(struct frad_local), "sdla0",
+			    NET_NAME_UNKNOWN, setup_sdla);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!sdla) 
 		return -ENOMEM;
 

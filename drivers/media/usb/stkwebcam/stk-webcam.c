@@ -111,6 +111,16 @@ static const struct dmi_system_id stk_upside_down_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "F3JC")
 		}
 	},
+<<<<<<< HEAD
+=======
+	{
+		.ident = "T12Rg-H",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "HCL Infosystems Limited"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "T12Rg-H")
+		}
+	},
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{}
 };
 
@@ -137,19 +147,43 @@ int stk_camera_write_reg(struct stk_camera *dev, u16 index, u8 value)
 		return 0;
 }
 
+<<<<<<< HEAD
 int stk_camera_read_reg(struct stk_camera *dev, u16 index, int *value)
 {
 	struct usb_device *udev = dev->udev;
 	int ret;
 
+=======
+int stk_camera_read_reg(struct stk_camera *dev, u16 index, u8 *value)
+{
+	struct usb_device *udev = dev->udev;
+	unsigned char *buf;
+	int ret;
+
+	buf = kmalloc(sizeof(u8), GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
 			0x00,
 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			0x00,
 			index,
+<<<<<<< HEAD
 			(u8 *) value,
 			sizeof(u8),
 			500);
+=======
+			buf,
+			sizeof(u8),
+			500);
+	if (ret >= 0)
+		*value = *buf;
+
+	kfree(buf);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (ret < 0)
 		return ret;
 	else
@@ -158,9 +192,16 @@ int stk_camera_read_reg(struct stk_camera *dev, u16 index, int *value)
 
 static int stk_start_stream(struct stk_camera *dev)
 {
+<<<<<<< HEAD
 	int value;
 	int i, ret;
 	int value_116, value_117;
+=======
+	u8 value;
+	int i, ret;
+	u8 value_116, value_117;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!is_present(dev))
 		return -ENODEV;
@@ -200,7 +241,11 @@ static int stk_start_stream(struct stk_camera *dev)
 
 static int stk_stop_stream(struct stk_camera *dev)
 {
+<<<<<<< HEAD
 	int value;
+=======
+	u8 value;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i;
 	if (is_present(dev)) {
 		stk_camera_read_reg(dev, 0x0100, &value);
@@ -445,10 +490,15 @@ static int stk_prepare_iso(struct stk_camera *dev)
 			STK_ERROR("isobuf data already allocated\n");
 		if (dev->isobufs[i].urb == NULL) {
 			urb = usb_alloc_urb(ISO_FRAMES_PER_DESC, GFP_KERNEL);
+<<<<<<< HEAD
 			if (urb == NULL) {
 				STK_ERROR("Failed to allocate URB %d\n", i);
 				goto isobufs_out;
 			}
+=======
+			if (urb == NULL)
+				goto isobufs_out;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			dev->isobufs[i].urb = urb;
 		} else {
 			STK_ERROR("Killing URB\n");
@@ -549,10 +599,15 @@ static int stk_free_sio_buffers(struct stk_camera *dev)
 	nbufs = dev->n_sbufs;
 	dev->n_sbufs = 0;
 	spin_unlock_irqrestore(&dev->spinlock, flags);
+<<<<<<< HEAD
 	for (i = 0; i < nbufs; i++) {
 		if (dev->sio_bufs[i].buffer != NULL)
 			vfree(dev->sio_bufs[i].buffer);
 	}
+=======
+	for (i = 0; i < nbufs; i++)
+		vfree(dev->sio_bufs[i].buffer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(dev->sio_bufs);
 	dev->sio_bufs = NULL;
 	return 0;
@@ -637,8 +692,12 @@ static int v4l_stk_release(struct file *fp)
 		dev->owner = NULL;
 	}
 
+<<<<<<< HEAD
 	if (is_present(dev))
 		usb_autopm_put_interface(dev->interface);
+=======
+	usb_autopm_put_interface(dev->interface);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	mutex_unlock(&dev->lock);
 	return v4l2_fh_release(fp);
 }
@@ -916,7 +975,10 @@ static int stk_vidioc_g_fmt_vid_cap(struct file *filp,
 		pix_format->bytesperline = 2 * pix_format->width;
 	pix_format->sizeimage = pix_format->bytesperline
 				* pix_format->height;
+<<<<<<< HEAD
 	pix_format->priv = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -960,7 +1022,10 @@ static int stk_try_fmt_vid_cap(struct file *filp,
 		fmtd->fmt.pix.bytesperline = 2 * fmtd->fmt.pix.width;
 	fmtd->fmt.pix.sizeimage = fmtd->fmt.pix.bytesperline
 		* fmtd->fmt.pix.height;
+<<<<<<< HEAD
 	fmtd->fmt.pix.priv = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -1257,9 +1322,13 @@ static int stk_register_video_device(struct stk_camera *dev)
 
 	dev->vdev = stk_v4l_data;
 	dev->vdev.lock = &dev->lock;
+<<<<<<< HEAD
 	dev->vdev.debug = debug;
 	dev->vdev.v4l2_dev = &dev->v4l2_dev;
 	set_bit(V4L2_FL_USE_FH_PRIO, &dev->vdev.flags);
+=======
+	dev->vdev.v4l2_dev = &dev->v4l2_dev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	video_set_drvdata(&dev->vdev, dev);
 	err = video_register_device(&dev->vdev, VFL_TYPE_GRABBER, -1);
 	if (err)

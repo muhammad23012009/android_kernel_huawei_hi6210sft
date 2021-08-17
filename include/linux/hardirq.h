@@ -7,6 +7,7 @@
 #include <linux/vtime.h>
 #include <asm/hardirq.h>
 
+<<<<<<< HEAD
 /*
  * We put the hardirq and softirq counter into the preemption
  * counter. The bitmask has the following meaning:
@@ -129,6 +130,13 @@ extern void synchronize_irq(unsigned int irq);
 #endif
 
 #if defined(CONFIG_TINY_RCU) || defined(CONFIG_TINY_PREEMPT_RCU)
+=======
+
+extern void synchronize_irq(unsigned int irq);
+extern bool synchronize_hardirq(unsigned int irq);
+
+#if defined(CONFIG_TINY_RCU)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline void rcu_nmi_enter(void)
 {
@@ -152,7 +160,11 @@ extern void rcu_nmi_exit(void);
 #define __irq_enter()					\
 	do {						\
 		account_irq_enter_time(current);	\
+<<<<<<< HEAD
 		add_preempt_count(HARDIRQ_OFFSET);	\
+=======
+		preempt_count_add(HARDIRQ_OFFSET);	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		trace_hardirq_enter();			\
 	} while (0)
 
@@ -168,7 +180,11 @@ extern void irq_enter(void);
 	do {						\
 		trace_hardirq_exit();			\
 		account_irq_exit_time(current);		\
+<<<<<<< HEAD
 		sub_preempt_count(HARDIRQ_OFFSET);	\
+=======
+		preempt_count_sub(HARDIRQ_OFFSET);	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (0)
 
 /*
@@ -178,10 +194,18 @@ extern void irq_exit(void);
 
 #define nmi_enter()						\
 	do {							\
+<<<<<<< HEAD
 		lockdep_off();					\
 		ftrace_nmi_enter();				\
 		BUG_ON(in_nmi());				\
 		add_preempt_count(NMI_OFFSET + HARDIRQ_OFFSET);	\
+=======
+		printk_nmi_enter();				\
+		lockdep_off();					\
+		ftrace_nmi_enter();				\
+		BUG_ON(in_nmi());				\
+		preempt_count_add(NMI_OFFSET + HARDIRQ_OFFSET);	\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		rcu_nmi_enter();				\
 		trace_hardirq_enter();				\
 	} while (0)
@@ -191,9 +215,16 @@ extern void irq_exit(void);
 		trace_hardirq_exit();				\
 		rcu_nmi_exit();					\
 		BUG_ON(!in_nmi());				\
+<<<<<<< HEAD
 		sub_preempt_count(NMI_OFFSET + HARDIRQ_OFFSET);	\
 		ftrace_nmi_exit();				\
 		lockdep_on();					\
+=======
+		preempt_count_sub(NMI_OFFSET + HARDIRQ_OFFSET);	\
+		ftrace_nmi_exit();				\
+		lockdep_on();					\
+		printk_nmi_exit();				\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} while (0)
 
 #endif /* LINUX_HARDIRQ_H */

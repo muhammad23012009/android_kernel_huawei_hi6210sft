@@ -24,57 +24,106 @@
 #include <cpu/sh7757.h>
 
 static struct plat_sci_port scif2_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xfe4b0000,		/* SCIF2 */
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.scbrr_algo_id	= SCBRR_ALGO_2,
 	.type		= PORT_SCIF,
 	.irqs		= SCIx_IRQ_MUXED(evt2irq(0x700)),
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+	.type		= PORT_SCIF,
+};
+
+static struct resource scif2_resources[] = {
+	DEFINE_RES_MEM(0xfe4b0000, 0x100),		/* SCIF2 */
+	DEFINE_RES_IRQ(evt2irq(0x700)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device scif2_device = {
 	.name		= "sh-sci",
 	.id		= 0,
+<<<<<<< HEAD
+=======
+	.resource	= scif2_resources,
+	.num_resources	= ARRAY_SIZE(scif2_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif2_platform_data,
 	},
 };
 
 static struct plat_sci_port scif3_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xfe4c0000,		/* SCIF3 */
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.scbrr_algo_id	= SCBRR_ALGO_2,
 	.type		= PORT_SCIF,
 	.irqs		= SCIx_IRQ_MUXED(evt2irq(0xb80)),
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+	.type		= PORT_SCIF,
+};
+
+static struct resource scif3_resources[] = {
+	DEFINE_RES_MEM(0xfe4c0000, 0x100),		/* SCIF3 */
+	DEFINE_RES_IRQ(evt2irq(0xb80)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device scif3_device = {
 	.name		= "sh-sci",
 	.id		= 1,
+<<<<<<< HEAD
+=======
+	.resource	= scif3_resources,
+	.num_resources	= ARRAY_SIZE(scif3_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif3_platform_data,
 	},
 };
 
 static struct plat_sci_port scif4_platform_data = {
+<<<<<<< HEAD
 	.mapbase	= 0xfe4d0000,		/* SCIF4 */
 	.flags		= UPF_BOOT_AUTOCONF,
 	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
 	.scbrr_algo_id	= SCBRR_ALGO_2,
 	.type		= PORT_SCIF,
 	.irqs		= SCIx_IRQ_MUXED(evt2irq(0xF00)),
+=======
+	.flags		= UPF_BOOT_AUTOCONF,
+	.scscr		= SCSCR_RE | SCSCR_TE | SCSCR_REIE,
+	.type		= PORT_SCIF,
+};
+
+static struct resource scif4_resources[] = {
+	DEFINE_RES_MEM(0xfe4d0000, 0x100),		/* SCIF4 */
+	DEFINE_RES_IRQ(evt2irq(0xf00)),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static struct platform_device scif4_device = {
 	.name		= "sh-sci",
 	.id		= 2,
+<<<<<<< HEAD
+=======
+	.resource	= scif4_resources,
+	.num_resources	= ARRAY_SIZE(scif4_resources),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.dev		= {
 		.platform_data	= &scif4_platform_data,
 	},
 };
 
 static struct sh_timer_config tmu0_platform_data = {
+<<<<<<< HEAD
 	.channel_offset = 0x04,
 	.timer_bit = 0,
 	.clockevent_rating = 200,
@@ -94,6 +143,19 @@ static struct resource tmu0_resources[] = {
 
 static struct platform_device tmu0_device = {
 	.name		= "sh_tmu",
+=======
+	.channels_mask = 3,
+};
+
+static struct resource tmu0_resources[] = {
+	DEFINE_RES_MEM(0xfe430000, 0x20),
+	DEFINE_RES_IRQ(evt2irq(0x580)),
+	DEFINE_RES_IRQ(evt2irq(0x5a0)),
+};
+
+static struct platform_device tmu0_device = {
+	.name		= "sh-tmu",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.id		= 0,
 	.dev = {
 		.platform_data	= &tmu0_platform_data,
@@ -102,6 +164,7 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
+<<<<<<< HEAD
 static struct sh_timer_config tmu1_platform_data = {
 	.channel_offset = 0x10,
 	.timer_bit = 1,
@@ -130,6 +193,8 @@ static struct platform_device tmu1_device = {
 	.num_resources	= ARRAY_SIZE(tmu1_resources),
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct resource spi0_resources[] = {
 	[0] = {
 		.start	= 0xfe002000,
@@ -147,28 +212,44 @@ static const struct sh_dmae_slave_config sh7757_dmae0_slaves[] = {
 	{
 		.slave_id	= SHDMA_SLAVE_SDHI_TX,
 		.addr		= 0x1fe50030,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_16BIT),
 		.mid_rid	= 0xc5,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_SDHI_RX,
 		.addr		= 0x1fe50030,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_16BIT),
 		.mid_rid	= 0xc6,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_MMCIF_TX,
 		.addr		= 0x1fcb0034,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_32BIT),
 		.mid_rid	= 0xd3,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_MMCIF_RX,
 		.addr		= 0x1fcb0034,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_32BIT),
 		.mid_rid	= 0xd7,
 	},
@@ -178,56 +259,88 @@ static const struct sh_dmae_slave_config sh7757_dmae1_slaves[] = {
 	{
 		.slave_id	= SHDMA_SLAVE_SCIF2_TX,
 		.addr		= 0x1f4b000c,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x21,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_SCIF2_RX,
 		.addr		= 0x1f4b0014,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x22,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_SCIF3_TX,
 		.addr		= 0x1f4c000c,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x29,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_SCIF3_RX,
 		.addr		= 0x1f4c0014,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x2a,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_SCIF4_TX,
 		.addr		= 0x1f4d000c,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x41,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_SCIF4_RX,
 		.addr		= 0x1f4d0014,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x42,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RSPI_TX,
 		.addr		= 0xfe480004,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_16BIT),
 		.mid_rid	= 0xc1,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RSPI_RX,
 		.addr		= 0xfe480004,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_16BIT),
 		.mid_rid	= 0xc2,
 	},
@@ -237,70 +350,110 @@ static const struct sh_dmae_slave_config sh7757_dmae2_slaves[] = {
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC0_TX,
 		.addr		= 0x1e500012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x21,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC0_RX,
 		.addr		= 0x1e500013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x22,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC1_TX,
 		.addr		= 0x1e510012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x29,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC1_RX,
 		.addr		= 0x1e510013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x2a,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC2_TX,
 		.addr		= 0x1e520012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0xa1,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC2_RX,
 		.addr		= 0x1e520013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0xa2,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC3_TX,
 		.addr		= 0x1e530012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0xa9,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC3_RX,
 		.addr		= 0x1e530013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0xaf,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC4_TX,
 		.addr		= 0x1e540012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0xc5,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC4_RX,
 		.addr		= 0x1e540013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0xc6,
 	},
@@ -310,70 +463,110 @@ static const struct sh_dmae_slave_config sh7757_dmae3_slaves[] = {
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC5_TX,
 		.addr		= 0x1e550012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x21,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC5_RX,
 		.addr		= 0x1e550013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x22,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC6_TX,
 		.addr		= 0x1e560012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x29,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC6_RX,
 		.addr		= 0x1e560013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x2a,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC7_TX,
 		.addr		= 0x1e570012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x41,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC7_RX,
 		.addr		= 0x1e570013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x42,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC8_TX,
 		.addr		= 0x1e580012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x45,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC8_RX,
 		.addr		= 0x1e580013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x46,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC9_TX,
 		.addr		= 0x1e590012,
+<<<<<<< HEAD
 		.chcr		= SM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= SM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x51,
 	},
 	{
 		.slave_id	= SHDMA_SLAVE_RIIC9_RX,
 		.addr		= 0x1e590013,
+<<<<<<< HEAD
 		.chcr		= DM_INC | 0x800 | 0x40000000 |
+=======
+		.chcr		= DM_INC | RS_ERS | 0x40000000 |
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				  TS_INDEX2VAL(XMIT_SZ_8BIT),
 		.mid_rid	= 0x52,
 	},
@@ -770,7 +963,10 @@ static struct platform_device *sh7757_devices[] __initdata = {
 	&scif3_device,
 	&scif4_device,
 	&tmu0_device,
+<<<<<<< HEAD
 	&tmu1_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	&dma0_device,
 	&dma1_device,
 	&dma2_device,
@@ -794,7 +990,10 @@ static struct platform_device *sh7757_early_devices[] __initdata = {
 	&scif3_device,
 	&scif4_device,
 	&tmu0_device,
+<<<<<<< HEAD
 	&tmu1_device,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 void __init plat_early_device_setup(void)

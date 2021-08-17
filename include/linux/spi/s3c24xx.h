@@ -23,4 +23,9 @@ struct s3c2410_spi_info {
 	void (*set_cs)(struct s3c2410_spi_info *spi, int cs, int pol);
 };
 
+<<<<<<< HEAD
+=======
+extern int s3c24xx_set_fiq(unsigned int irq, bool on);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __LINUX_SPI_S3C24XX_H */

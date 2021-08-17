@@ -1,18 +1,30 @@
 /*
+<<<<<<< HEAD
  * arch/arm/include/asm/hardware/sp810.h
  *
  * ARM PrimeXsys System Controller SP810 header file
  *
  * Copyright (C) 2009 ST Microelectronics
  * Viresh Kumar <viresh.linux@gmail.com>
+=======
+ * ARM PrimeXsys System Controller SP810 header file
+ *
+ * Copyright (C) 2009 ST Microelectronics
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
 #ifndef __ASM_ARM_SP810_H
 #define __ASM_ARM_SP810_H
+=======
+#ifndef __AMBA_SP810_H
+#define __AMBA_SP810_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/io.h>
 
@@ -61,4 +73,8 @@ static inline void sysctl_soft_reset(void __iomem *base)
 	writel(0, base + SCSYSSTAT);
 }
 
+<<<<<<< HEAD
 #endif	/* __ASM_ARM_SP810_H */
+=======
+#endif /* __AMBA_SP810_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

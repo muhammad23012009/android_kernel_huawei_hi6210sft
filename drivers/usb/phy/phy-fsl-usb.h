@@ -15,7 +15,11 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
 #include "phy-fsm-usb.h"
+=======
+#include <linux/usb/otg-fsm.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/usb/otg.h>
 #include <linux/ioctl.h>
 
@@ -298,7 +302,11 @@
 /* SE0 Time Before SRP */
 #define TB_SE0_SRP	(2)	/* b_idle,minimum 2 ms, section:5.3.2 */
 
+<<<<<<< HEAD
 #define SET_OTG_STATE(otg_ptr, newstate)	((otg_ptr)->state = newstate)
+=======
+#define SET_OTG_STATE(phy, newstate)	((phy)->otg->state = newstate)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct usb_dr_mmap {
 	/* Capability register */
@@ -401,6 +409,11 @@ struct fsl_otg_config {
 #define GET_A_BUS_REQ		_IOR(OTG_IOCTL_MAGIC, 8, int)
 #define GET_B_BUS_REQ		_IOR(OTG_IOCTL_MAGIC, 9, int)
 
+<<<<<<< HEAD
 void fsl_otg_add_timer(void *timer);
 void fsl_otg_del_timer(void *timer);
+=======
+void fsl_otg_add_timer(struct otg_fsm *fsm, void *timer);
+void fsl_otg_del_timer(struct otg_fsm *fsm, void *timer);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void fsl_otg_pulse_vbus(void);

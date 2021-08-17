@@ -22,7 +22,10 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
   *
   */
+<<<<<<< HEAD
 #define SERIAL_DO_RESTART
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -105,7 +108,11 @@ static const struct pci_device_id icom_pci_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 struct lookup_proc_table start_proc[4] = {
+=======
+static struct lookup_proc_table start_proc[4] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{NULL, ICOM_CONTROL_START_A},
 	{NULL, ICOM_CONTROL_START_B},
 	{NULL, ICOM_CONTROL_START_C},
@@ -113,14 +120,22 @@ struct lookup_proc_table start_proc[4] = {
 };
 
 
+<<<<<<< HEAD
 struct lookup_proc_table stop_proc[4] = {
+=======
+static struct lookup_proc_table stop_proc[4] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{NULL, ICOM_CONTROL_STOP_A},
 	{NULL, ICOM_CONTROL_STOP_B},
 	{NULL, ICOM_CONTROL_STOP_C},
 	{NULL, ICOM_CONTROL_STOP_D}
 };
 
+<<<<<<< HEAD
 struct lookup_int_table int_mask_tbl[4] = {
+=======
+static struct lookup_int_table int_mask_tbl[4] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{NULL, ICOM_INT_MASK_PRC_A},
 	{NULL, ICOM_INT_MASK_PRC_B},
 	{NULL, ICOM_INT_MASK_PRC_C},
@@ -297,11 +312,21 @@ static void stop_processor(struct icom_port *icom_port)
 	spin_lock_irqsave(&icom_lock, flags);
 
 	port = icom_port->port;
+<<<<<<< HEAD
+=======
+	if (port >= ARRAY_SIZE(stop_proc)) {
+		dev_err(&icom_port->adapter->pci_dev->dev,
+			"Invalid port assignment\n");
+		goto unlock;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (port == 0 || port == 1)
 		stop_proc[port].global_control_reg = &icom_port->global_reg->control;
 	else
 		stop_proc[port].global_control_reg = &icom_port->global_reg->control_2;
 
+<<<<<<< HEAD
 
 	if (port < 4) {
 		temp = readl(stop_proc[port].global_control_reg);
@@ -316,6 +341,16 @@ static void stop_processor(struct icom_port *icom_port)
                         "Invalid port assignment\n");
 	}
 
+=======
+	temp = readl(stop_proc[port].global_control_reg);
+	temp = (temp & ~start_proc[port].processor_id) | stop_proc[port].processor_id;
+	writel(temp, stop_proc[port].global_control_reg);
+
+	/* write flush */
+	readl(stop_proc[port].global_control_reg);
+
+unlock:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&icom_lock, flags);
 }
 
@@ -328,10 +363,20 @@ static void start_processor(struct icom_port *icom_port)
 	spin_lock_irqsave(&icom_lock, flags);
 
 	port = icom_port->port;
+<<<<<<< HEAD
+=======
+	if (port >= ARRAY_SIZE(start_proc)) {
+		dev_err(&icom_port->adapter->pci_dev->dev,
+			"Invalid port assignment\n");
+		goto unlock;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (port == 0 || port == 1)
 		start_proc[port].global_control_reg = &icom_port->global_reg->control;
 	else
 		start_proc[port].global_control_reg = &icom_port->global_reg->control_2;
+<<<<<<< HEAD
 	if (port < 4) {
 		temp = readl(start_proc[port].global_control_reg);
 		temp =
@@ -345,6 +390,17 @@ static void start_processor(struct icom_port *icom_port)
                         "Invalid port assignment\n");
 	}
 
+=======
+
+	temp = readl(start_proc[port].global_control_reg);
+	temp = (temp & ~stop_proc[port].processor_id) | start_proc[port].processor_id;
+	writel(temp, start_proc[port].global_control_reg);
+
+	/* write flush */
+	readl(start_proc[port].global_control_reg);
+
+unlock:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&icom_lock, flags);
 }
 
@@ -453,11 +509,19 @@ static void load_code(struct icom_port *icom_port)
 	for (index = 0; index < fw->size; index++)
 		new_page[index] = fw->data[index];
 
+<<<<<<< HEAD
 	release_firmware(fw);
 
 	writeb((char) ((fw->size + 16)/16), &icom_port->dram->mac_length);
 	writel(temp_pci, &icom_port->dram->mac_load_addr);
 
+=======
+	writeb((char) ((fw->size + 16)/16), &icom_port->dram->mac_length);
+	writel(temp_pci, &icom_port->dram->mac_load_addr);
+
+	release_firmware(fw);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*Setting the syncReg to 0x80 causes adapter to start downloading
 	   the personality code into adapter instruction RAM.
 	   Once code is loaded, it will begin executing and, based on
@@ -557,6 +621,15 @@ static int startup(struct icom_port *icom_port)
 	 */
 	spin_lock_irqsave(&icom_lock, flags);
 	port = icom_port->port;
+<<<<<<< HEAD
+=======
+	if (port >= ARRAY_SIZE(int_mask_tbl)) {
+		dev_err(&icom_port->adapter->pci_dev->dev,
+			"Invalid port assignment\n");
+		goto unlock;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (port == 0 || port == 1)
 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask;
 	else
@@ -566,6 +639,7 @@ static int startup(struct icom_port *icom_port)
 		writew(0x00FF, icom_port->int_reg);
 	else
 		writew(0x3F00, icom_port->int_reg);
+<<<<<<< HEAD
 	if (port < 4) {
 		temp = readl(int_mask_tbl[port].global_int_mask);
 		writel(temp & ~int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
@@ -577,6 +651,16 @@ static int startup(struct icom_port *icom_port)
                         "Invalid port assignment\n");
 	}
 
+=======
+
+	temp = readl(int_mask_tbl[port].global_int_mask);
+	writel(temp & ~int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
+
+	/* write flush */
+	readl(int_mask_tbl[port].global_int_mask);
+
+unlock:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&icom_lock, flags);
 	return 0;
 }
@@ -595,11 +679,20 @@ static void shutdown(struct icom_port *icom_port)
 	 * disable all interrupts
 	 */
 	port = icom_port->port;
+<<<<<<< HEAD
+=======
+	if (port >= ARRAY_SIZE(int_mask_tbl)) {
+		dev_err(&icom_port->adapter->pci_dev->dev,
+			"Invalid port assignment\n");
+		goto unlock;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (port == 0 || port == 1)
 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask;
 	else
 		int_mask_tbl[port].global_int_mask = &icom_port->global_reg->int_mask_2;
 
+<<<<<<< HEAD
 	if (port < 4) {
 		temp = readl(int_mask_tbl[port].global_int_mask);
 		writel(temp | int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
@@ -610,6 +703,15 @@ static void shutdown(struct icom_port *icom_port)
 		dev_err(&icom_port->adapter->pci_dev->dev,
                         "Invalid port assignment\n");
 	}
+=======
+	temp = readl(int_mask_tbl[port].global_int_mask);
+	writel(temp | int_mask_tbl[port].processor_id, int_mask_tbl[port].global_int_mask);
+
+	/* write flush */
+	readl(int_mask_tbl[port].global_int_mask);
+
+unlock:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&icom_lock, flags);
 
 	/*
@@ -834,7 +936,14 @@ ignore_char:
 		status = cpu_to_le16(icom_port->statStg->rcv[rcv_buff].flags);
 	}
 	icom_port->next_rcv = rcv_buff;
+<<<<<<< HEAD
 	tty_flip_buffer_push(port);
+=======
+
+	spin_unlock(&icom_port->uart_port.lock);
+	tty_flip_buffer_push(port);
+	spin_lock(&icom_port->uart_port.lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void process_interrupt(u16 port_int_reg,
@@ -1042,11 +1151,14 @@ static void icom_stop_rx(struct uart_port *port)
 	writeb(cmdReg & ~CMD_RCV_ENABLE, &ICOM_PORT->dram->CmdReg);
 }
 
+<<<<<<< HEAD
 static void icom_enable_ms(struct uart_port *port)
 {
 	/* no-op */
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void icom_break(struct uart_port *port, int break_state)
 {
 	unsigned char cmdReg;
@@ -1087,8 +1199,12 @@ static void icom_close(struct uart_port *port)
 
 	/* stop receiver */
 	cmdReg = readb(&ICOM_PORT->dram->CmdReg);
+<<<<<<< HEAD
 	writeb(cmdReg & (unsigned char) ~CMD_RCV_ENABLE,
 	       &ICOM_PORT->dram->CmdReg);
+=======
+	writeb(cmdReg & ~CMD_RCV_ENABLE, &ICOM_PORT->dram->CmdReg);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	shutdown(ICOM_PORT);
 
@@ -1291,7 +1407,10 @@ static struct uart_ops icom_ops = {
 	.start_tx = icom_start_tx,
 	.send_xchar = icom_send_xchar,
 	.stop_rx = icom_stop_rx,
+<<<<<<< HEAD
 	.enable_ms = icom_enable_ms,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.break_ctl = icom_break,
 	.startup = icom_open,
 	.shutdown = icom_close,
@@ -1501,7 +1620,12 @@ static int icom_probe(struct pci_dev *dev,
 		return retval;
 	}
 
+<<<<<<< HEAD
 	if ( (retval = pci_request_regions(dev, "icom"))) {
+=======
+	retval = pci_request_regions(dev, "icom");
+	if (retval) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 dev_err(&dev->dev, "pci_request_regions FAILED\n");
 		 pci_disable_device(dev);
 		 return retval;
@@ -1509,7 +1633,12 @@ static int icom_probe(struct pci_dev *dev,
 
 	pci_set_master(dev);
 
+<<<<<<< HEAD
 	if ( (retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg))) {
+=======
+	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+	if (retval) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&dev->dev, "PCI Config read FAILED\n");
 		return retval;
 	}
@@ -1547,6 +1676,7 @@ static int icom_probe(struct pci_dev *dev,
 
 	icom_adapter->base_addr = pci_ioremap_bar(dev, 0);
 
+<<<<<<< HEAD
 	if (!icom_adapter->base_addr)
 		goto probe_exit1;
 
@@ -1554,6 +1684,16 @@ static int icom_probe(struct pci_dev *dev,
 	 if ( (retval = request_irq(dev->irq, icom_interrupt,
 				   IRQF_SHARED, ICOM_DRIVER_NAME,
 				   (void *) icom_adapter))) {
+=======
+	if (!icom_adapter->base_addr) {
+		retval = -ENOMEM;
+		goto probe_exit1;
+	}
+
+	 /* save off irq and request irq line */
+	 retval = request_irq(dev->irq, icom_interrupt, IRQF_SHARED, ICOM_DRIVER_NAME, (void *)icom_adapter);
+	 if (retval) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		  goto probe_exit2;
 	 }
 
@@ -1567,7 +1707,11 @@ static int icom_probe(struct pci_dev *dev,
 			icom_port->uart_port.type = PORT_ICOM;
 			icom_port->uart_port.iotype = UPIO_MEM;
 			icom_port->uart_port.membase =
+<<<<<<< HEAD
 					       (char *) icom_adapter->base_addr_pci;
+=======
+				(unsigned char __iomem *)icom_adapter->base_addr_pci;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			icom_port->uart_port.fifosize = 16;
 			icom_port->uart_port.ops = &icom_ops;
 			icom_port->uart_port.line =

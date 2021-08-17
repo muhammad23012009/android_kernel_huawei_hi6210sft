@@ -18,7 +18,11 @@
 // Copyright: (C) 2011 Gilles Muller, INRIA/LiP6.  GPLv2.
 // URL: http://coccinelle.lip6.fr/
 // Comments:
+<<<<<<< HEAD
 // Options: -no_includes -include_headers
+=======
+// Options: --no-includes --include-headers
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 virtual org
 virtual report
@@ -29,8 +33,29 @@ expression x;
 @@
 
 (
+<<<<<<< HEAD
  x = devm_kzalloc(...)
 |
+=======
+ x = devm_kmalloc(...)
+|
+ x = devm_kvasprintf(...)
+|
+ x = devm_kasprintf(...)
+|
+ x = devm_kzalloc(...)
+|
+ x = devm_kmalloc_array(...)
+|
+ x = devm_kcalloc(...)
+|
+ x = devm_kstrdup(...)
+|
+ x = devm_kmemdup(...)
+|
+ x = devm_get_free_pages(...)
+|
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  x = devm_request_irq(...)
 |
  x = devm_ioremap(...)
@@ -48,6 +73,19 @@ position p;
 (
 * kfree@p(x)
 |
+<<<<<<< HEAD
+=======
+* kzfree@p(x)
+|
+* __krealloc@p(x, ...)
+|
+* krealloc@p(x, ...)
+|
+* free_pages@p(x, ...)
+|
+* free_page@p(x)
+|
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 * free_irq@p(x)
 |
 * iounmap@p(x)

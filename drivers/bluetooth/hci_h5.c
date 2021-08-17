@@ -51,7 +51,11 @@
 #define H5_HDR_CRC(hdr)		(((hdr)[0] >> 6) & 0x01)
 #define H5_HDR_RELIABLE(hdr)	(((hdr)[0] >> 7) & 0x01)
 #define H5_HDR_PKT_TYPE(hdr)	((hdr)[1] & 0x0f)
+<<<<<<< HEAD
 #define H5_HDR_LEN(hdr)		((((hdr)[1] >> 4) & 0xff) + ((hdr)[2] << 4))
+=======
+#define H5_HDR_LEN(hdr)		((((hdr)[1] >> 4) & 0x0f) + ((hdr)[2] << 4))
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #define SLIP_DELIMITER	0xc0
 #define SLIP_ESC	0xdb
@@ -75,7 +79,11 @@ struct h5 {
 	size_t			rx_pending;	/* Expecting more bytes */
 	u8			rx_ack;		/* Last ack number received */
 
+<<<<<<< HEAD
 	int			(*rx_func) (struct hci_uart *hu, u8 c);
+=======
+	int			(*rx_func)(struct hci_uart *hu, u8 c);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	struct timer_list	timer;		/* Retransmission timer */
 
@@ -107,7 +115,11 @@ static void h5_link_control(struct hci_uart *hu, const void *data, size_t len)
 	if (!nskb)
 		return;
 
+<<<<<<< HEAD
 	bt_cb(nskb)->pkt_type = HCI_3WIRE_LINK_PKT;
+=======
+	hci_skb_pkt_type(nskb) = HCI_3WIRE_LINK_PKT;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	memcpy(skb_put(nskb, len), data, len);
 
@@ -116,19 +128,29 @@ static void h5_link_control(struct hci_uart *hu, const void *data, size_t len)
 
 static u8 h5_cfg_field(struct h5 *h5)
 {
+<<<<<<< HEAD
 	u8 field = 0;
 
 	/* Sliding window size (first 3 bits) */
 	field |= (h5->tx_win & 7);
 
 	return field;
+=======
+	/* Sliding window size (first 3 bits) */
+	return h5->tx_win & 0x07;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void h5_timed_event(unsigned long arg)
 {
 	const unsigned char sync_req[] = { 0x01, 0x7e };
+<<<<<<< HEAD
 	unsigned char conf_req[] = { 0x03, 0xfc, 0x01 };
 	struct hci_uart *hu = (struct hci_uart *) arg;
+=======
+	unsigned char conf_req[3] = { 0x03, 0xfc };
+	struct hci_uart *hu = (struct hci_uart *)arg;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct h5 *h5 = hu->priv;
 	struct sk_buff *skb;
 	unsigned long flags;
@@ -168,6 +190,30 @@ wakeup:
 	hci_uart_tx_wakeup(hu);
 }
 
+<<<<<<< HEAD
+=======
+static void h5_peer_reset(struct hci_uart *hu)
+{
+	struct h5 *h5 = hu->priv;
+
+	BT_ERR("Peer device has reset");
+
+	h5->state = H5_UNINITIALIZED;
+
+	del_timer(&h5->timer);
+
+	skb_queue_purge(&h5->rel);
+	skb_queue_purge(&h5->unrel);
+	skb_queue_purge(&h5->unack);
+
+	h5->tx_seq = 0;
+	h5->tx_ack = 0;
+
+	/* Send reset request to upper stack */
+	hci_reset_dev(hu->hdev);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int h5_open(struct hci_uart *hu)
 {
 	struct h5 *h5;
@@ -189,7 +235,11 @@ static int h5_open(struct hci_uart *hu)
 
 	init_timer(&h5->timer);
 	h5->timer.function = h5_timed_event;
+<<<<<<< HEAD
 	h5->timer.data = (unsigned long) hu;
+=======
+	h5->timer.data = (unsigned long)hu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	h5->tx_win = H5_TX_WIN_MAX;
 
@@ -206,12 +256,20 @@ static int h5_close(struct hci_uart *hu)
 {
 	struct h5 *h5 = hu->priv;
 
+<<<<<<< HEAD
+=======
+	del_timer_sync(&h5->timer);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_queue_purge(&h5->unack);
 	skb_queue_purge(&h5->rel);
 	skb_queue_purge(&h5->unrel);
 
+<<<<<<< HEAD
 	del_timer(&h5->timer);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(h5);
 
 	return 0;
@@ -264,7 +322,11 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
 	struct h5 *h5 = hu->priv;
 	const unsigned char sync_req[] = { 0x01, 0x7e };
 	const unsigned char sync_rsp[] = { 0x02, 0x7d };
+<<<<<<< HEAD
 	unsigned char conf_req[] = { 0x03, 0xfc, 0x01 };
+=======
+	unsigned char conf_req[3] = { 0x03, 0xfc };
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const unsigned char conf_rsp[] = { 0x04, 0x7b };
 	const unsigned char wakeup_req[] = { 0x05, 0xfa };
 	const unsigned char woken_req[] = { 0x06, 0xf9 };
@@ -283,8 +345,17 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
 	conf_req[2] = h5_cfg_field(h5);
 
 	if (memcmp(data, sync_req, 2) == 0) {
+<<<<<<< HEAD
 		h5_link_control(hu, sync_rsp, 2);
 	} else if (memcmp(data, sync_rsp, 2) == 0) {
+=======
+		if (h5->state == H5_ACTIVE)
+			h5_peer_reset(hu);
+		h5_link_control(hu, sync_rsp, 2);
+	} else if (memcmp(data, sync_rsp, 2) == 0) {
+		if (h5->state == H5_ACTIVE)
+			h5_peer_reset(hu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		h5->state = H5_INITIALIZED;
 		h5_link_control(hu, conf_req, 3);
 	} else if (memcmp(data, conf_req, 2) == 0) {
@@ -292,7 +363,11 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
 		h5_link_control(hu, conf_req, 3);
 	} else if (memcmp(data, conf_rsp, 2) == 0) {
 		if (H5_HDR_LEN(hdr) > 2)
+<<<<<<< HEAD
 			h5->tx_win = (data[2] & 7);
+=======
+			h5->tx_win = (data[2] & 0x07);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		BT_DBG("Three-wire init complete. tx_win %u", h5->tx_win);
 		h5->state = H5_ACTIVE;
 		hci_uart_init_ready(hu);
@@ -335,12 +410,20 @@ static void h5_complete_rx_pkt(struct hci_uart *hu)
 	case HCI_EVENT_PKT:
 	case HCI_ACLDATA_PKT:
 	case HCI_SCODATA_PKT:
+<<<<<<< HEAD
 		bt_cb(h5->rx_skb)->pkt_type = H5_HDR_PKT_TYPE(hdr);
+=======
+		hci_skb_pkt_type(h5->rx_skb) = H5_HDR_PKT_TYPE(hdr);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* Remove Three-wire header */
 		skb_pull(h5->rx_skb, 4);
 
+<<<<<<< HEAD
 		hci_recv_frame(h5->rx_skb);
+=======
+		hci_recv_frame(hu->hdev, h5->rx_skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		h5->rx_skb = NULL;
 
 		break;
@@ -355,10 +438,14 @@ static void h5_complete_rx_pkt(struct hci_uart *hu)
 
 static int h5_rx_crc(struct hci_uart *hu, unsigned char c)
 {
+<<<<<<< HEAD
 	struct h5 *h5 = hu->priv;
 
 	h5_complete_rx_pkt(hu);
 	h5_reset_rx(h5);
+=======
+	h5_complete_rx_pkt(hu);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -373,7 +460,10 @@ static int h5_rx_payload(struct hci_uart *hu, unsigned char c)
 		h5->rx_pending = 2;
 	} else {
 		h5_complete_rx_pkt(hu);
+<<<<<<< HEAD
 		h5_reset_rx(h5);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	return 0;
@@ -432,7 +522,11 @@ static int h5_rx_pkt_start(struct hci_uart *hu, unsigned char c)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	h5->rx_skb->dev = (void *) hu->hdev;
+=======
+	h5->rx_skb->dev = (void *)hu->hdev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }
@@ -490,10 +584,17 @@ static void h5_reset_rx(struct h5 *h5)
 	clear_bit(H5_RX_ESC, &h5->flags);
 }
 
+<<<<<<< HEAD
 static int h5_recv(struct hci_uart *hu, void *data, int count)
 {
 	struct h5 *h5 = hu->priv;
 	unsigned char *ptr = data;
+=======
+static int h5_recv(struct hci_uart *hu, const void *data, int count)
+{
+	struct h5 *h5 = hu->priv;
+	const unsigned char *ptr = data;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	BT_DBG("%s pending %zu count %d", hu->hdev->name, h5->rx_pending,
 	       count);
@@ -541,7 +642,11 @@ static int h5_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	switch (bt_cb(skb)->pkt_type) {
+=======
+	switch (hci_skb_pkt_type(skb)) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	case HCI_ACLDATA_PKT:
 	case HCI_COMMAND_PKT:
 		skb_queue_tail(&h5->rel, skb);
@@ -552,7 +657,11 @@ static int h5_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 		break;
 
 	default:
+<<<<<<< HEAD
 		BT_ERR("Unknown packet type %u", bt_cb(skb)->pkt_type);
+=======
+		BT_ERR("Unknown packet type %u", hci_skb_pkt_type(skb));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		kfree_skb(skb);
 		break;
 	}
@@ -621,7 +730,11 @@ static struct sk_buff *h5_prepare_pkt(struct hci_uart *hu, u8 pkt_type,
 	if (!nskb)
 		return NULL;
 
+<<<<<<< HEAD
 	bt_cb(nskb)->pkt_type = pkt_type;
+=======
+	hci_skb_pkt_type(nskb) = pkt_type;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	h5_slip_delim(nskb);
 
@@ -674,8 +787,14 @@ static struct sk_buff *h5_dequeue(struct hci_uart *hu)
 		return h5_prepare_pkt(hu, HCI_3WIRE_LINK_PKT, wakeup_req, 2);
 	}
 
+<<<<<<< HEAD
 	if ((skb = skb_dequeue(&h5->unrel)) != NULL) {
 		nskb = h5_prepare_pkt(hu, bt_cb(skb)->pkt_type,
+=======
+	skb = skb_dequeue(&h5->unrel);
+	if (skb) {
+		nskb = h5_prepare_pkt(hu, hci_skb_pkt_type(skb),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      skb->data, skb->len);
 		if (nskb) {
 			kfree_skb(skb);
@@ -691,8 +810,14 @@ static struct sk_buff *h5_dequeue(struct hci_uart *hu)
 	if (h5->unack.qlen >= h5->tx_win)
 		goto unlock;
 
+<<<<<<< HEAD
 	if ((skb = skb_dequeue(&h5->rel)) != NULL) {
 		nskb = h5_prepare_pkt(hu, bt_cb(skb)->pkt_type,
+=======
+	skb = skb_dequeue(&h5->rel);
+	if (skb) {
+		nskb = h5_prepare_pkt(hu, hci_skb_pkt_type(skb),
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				      skb->data, skb->len);
 		if (nskb) {
 			__skb_queue_tail(&h5->unack, skb);
@@ -720,8 +845,14 @@ static int h5_flush(struct hci_uart *hu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct hci_uart_proto h5p = {
 	.id		= HCI_UART_3WIRE,
+=======
+static const struct hci_uart_proto h5p = {
+	.id		= HCI_UART_3WIRE,
+	.name		= "Three-wire (H5)",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.open		= h5_open,
 	.close		= h5_close,
 	.recv		= h5_recv,
@@ -732,6 +863,7 @@ static struct hci_uart_proto h5p = {
 
 int __init h5_init(void)
 {
+<<<<<<< HEAD
 	int err = hci_uart_register_proto(&h5p);
 
 	if (!err)
@@ -740,6 +872,9 @@ int __init h5_init(void)
 		BT_ERR("HCI Three-wire UART (H5) protocol init failed");
 
 	return err;
+=======
+	return hci_uart_register_proto(&h5p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int __exit h5_deinit(void)

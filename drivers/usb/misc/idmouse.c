@@ -19,7 +19,10 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/completion.h>
@@ -258,9 +261,15 @@ static int idmouse_open(struct inode *inode, struct file *file)
 		if (result)
 			goto error;
 		result = idmouse_create_image (dev);
+<<<<<<< HEAD
 		if (result)
 			goto error;
 		usb_autopm_put_interface(interface);
+=======
+		usb_autopm_put_interface(interface);
+		if (result)
+			goto error;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/* increment our usage count for the driver */
 		++dev->open;
@@ -343,7 +352,11 @@ static int idmouse_probe(struct usb_interface *interface,
 	int result;
 
 	/* check if we have gotten the data or the hid interface */
+<<<<<<< HEAD
 	iface_desc = &interface->altsetting[0];
+=======
+	iface_desc = interface->cur_altsetting;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (iface_desc->desc.bInterfaceClass != 0x0A)
 		return -ENODEV;
 
@@ -370,7 +383,10 @@ static int idmouse_probe(struct usb_interface *interface,
 			kmalloc(IMGSIZE + dev->bulk_in_size, GFP_KERNEL);
 
 		if (!dev->bulk_in_buffer) {
+<<<<<<< HEAD
 			dev_err(&interface->dev, "Unable to allocate input buffer.\n");
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			idmouse_delete(dev);
 			return -ENOMEM;
 		}
@@ -389,7 +405,11 @@ static int idmouse_probe(struct usb_interface *interface,
 	result = usb_register_dev(interface, &idmouse_class);
 	if (result) {
 		/* something prevented us from registering this device */
+<<<<<<< HEAD
 		dev_err(&interface->dev, "Unble to allocate minor number.\n");
+=======
+		dev_err(&interface->dev, "Unable to allocate minor number.\n");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		usb_set_intfdata(interface, NULL);
 		idmouse_delete(dev);
 		return result;

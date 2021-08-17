@@ -13,6 +13,7 @@ enum nf_nat_manip_type {
 #define HOOK2MANIP(hooknum) ((hooknum) != NF_INET_POST_ROUTING && \
 			     (hooknum) != NF_INET_LOCAL_IN)
 
+<<<<<<< HEAD
 /* NAT sequence number modifications */
 struct nf_nat_seq {
 	/* position of the last TCP sequence number modification (if any) */
@@ -22,6 +23,8 @@ struct nf_nat_seq {
 	int16_t offset_before, offset_after;
 };
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/list.h>
 #include <linux/netfilter/nf_conntrack_pptp.h>
 #include <net/netfilter/nf_conntrack_extend.h>
@@ -38,6 +41,7 @@ struct nf_conn;
 
 /* The structure embedded in the conntrack structure. */
 struct nf_conn_nat {
+<<<<<<< HEAD
 	struct hlist_node bysource;
 	struct nf_nat_seq seq[IP_CT_DIR_MAX];
 	struct nf_conn *ct;
@@ -46,11 +50,17 @@ struct nf_conn_nat {
     defined(CONFIG_IP_NF_TARGET_MASQUERADE_MODULE) || \
     defined(CONFIG_IP6_NF_TARGET_MASQUERADE) || \
     defined(CONFIG_IP6_NF_TARGET_MASQUERADE_MODULE)
+=======
+	union nf_conntrack_nat_help help;
+#if IS_ENABLED(CONFIG_NF_NAT_MASQUERADE_IPV4) || \
+    IS_ENABLED(CONFIG_NF_NAT_MASQUERADE_IPV6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int masq_index;
 #endif
 };
 
 /* Set up the info structure to map into this range. */
+<<<<<<< HEAD
 extern unsigned int nf_nat_setup_info(struct nf_conn *ct,
 				      const struct nf_nat_range *range,
 				      enum nf_nat_manip_type maniptype);
@@ -58,6 +68,20 @@ extern unsigned int nf_nat_setup_info(struct nf_conn *ct,
 /* Is this tuple already taken? (not by us)*/
 extern int nf_nat_used_tuple(const struct nf_conntrack_tuple *tuple,
 			     const struct nf_conn *ignored_conntrack);
+=======
+unsigned int nf_nat_setup_info(struct nf_conn *ct,
+			       const struct nf_nat_range *range,
+			       enum nf_nat_manip_type maniptype);
+
+extern unsigned int nf_nat_alloc_null_binding(struct nf_conn *ct,
+					      unsigned int hooknum);
+
+struct nf_conn_nat *nf_ct_nat_ext_add(struct nf_conn *ct);
+
+/* Is this tuple already taken? (not by us)*/
+int nf_nat_used_tuple(const struct nf_conntrack_tuple *tuple,
+		      const struct nf_conn *ignored_conntrack);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline struct nf_conn_nat *nfct_nat(const struct nf_conn *ct)
 {
@@ -73,8 +97,13 @@ static inline bool nf_nat_oif_changed(unsigned int hooknum,
 				      struct nf_conn_nat *nat,
 				      const struct net_device *out)
 {
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_IP_NF_TARGET_MASQUERADE) || \
     IS_ENABLED(CONFIG_IP6_NF_TARGET_MASQUERADE)
+=======
+#if IS_ENABLED(CONFIG_NF_NAT_MASQUERADE_IPV4) || \
+    IS_ENABLED(CONFIG_NF_NAT_MASQUERADE_IPV6)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return nat->masq_index && hooknum == NF_INET_POST_ROUTING &&
 	       CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL &&
 	       nat->masq_index != out->ifindex;

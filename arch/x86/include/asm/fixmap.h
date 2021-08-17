@@ -19,12 +19,19 @@
 #include <asm/acpi.h>
 #include <asm/apicdef.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pvclock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_X86_32
 #include <linux/threads.h>
 #include <asm/kmap_types.h>
 #else
+<<<<<<< HEAD
 #include <asm/vsyscall.h>
+=======
+#include <uapi/asm/vsyscall.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 /*
@@ -40,6 +47,7 @@
  */
 extern unsigned long __FIXADDR_TOP;
 #define FIXADDR_TOP	((unsigned long)__FIXADDR_TOP)
+<<<<<<< HEAD
 
 #define FIXADDR_USER_START     __fix_to_virt(FIX_VDSO)
 #define FIXADDR_USER_END       __fix_to_virt(FIX_VDSO - 1)
@@ -49,6 +57,11 @@ extern unsigned long __FIXADDR_TOP;
 /* Only covers 32bit vsyscalls currently. Need another set for 64bit. */
 #define FIXADDR_USER_START	((unsigned long)VSYSCALL32_VSYSCALL)
 #define FIXADDR_USER_END	(FIXADDR_USER_START + PAGE_SIZE)
+=======
+#else
+#define FIXADDR_TOP	(round_up(VSYSCALL_ADDR + PAGE_SIZE, 1<<PMD_SHIFT) - \
+			 PAGE_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 
 
@@ -74,6 +87,7 @@ extern unsigned long __FIXADDR_TOP;
 enum fixed_addresses {
 #ifdef CONFIG_X86_32
 	FIX_HOLE,
+<<<<<<< HEAD
 	FIX_VDSO,
 #else
 	VSYSCALL_LAST_PAGE,
@@ -85,6 +99,12 @@ enum fixed_addresses {
 #ifdef CONFIG_PARAVIRT_CLOCK
 	PVCLOCK_FIXMAP_BEGIN,
 	PVCLOCK_FIXMAP_END = PVCLOCK_FIXMAP_BEGIN+PVCLOCK_VSYSCALL_NR_PAGES-1,
+=======
+#else
+#ifdef CONFIG_X86_VSYSCALL_EMULATION
+	VSYSCALL_PAGE = (FIXADDR_TOP - VSYSCALL_ADDR) >> PAGE_SHIFT,
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif
 	FIX_DBGP_BASE,
 	FIX_EARLYCON_MEM_BASE,
@@ -98,12 +118,15 @@ enum fixed_addresses {
 	FIX_IO_APIC_BASE_0,
 	FIX_IO_APIC_BASE_END = FIX_IO_APIC_BASE_0 + MAX_IO_APICS - 1,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_X86_VISWS_APIC
 	FIX_CO_CPU,	/* Cobalt timer */
 	FIX_CO_APIC,	/* Cobalt APIC Redirection Table */
 	FIX_LI_PCIA,	/* Lithium PCI Bridge A */
 	FIX_LI_PCIB,	/* Lithium PCI Bridge B */
 #endif
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	FIX_RO_IDT,	/* Virtual mapping for read-only IDT */
 #ifdef CONFIG_X86_32
 	FIX_KMAP_BEGIN,	/* reserved pte's for temporary kernel mappings */
@@ -153,18 +176,30 @@ enum fixed_addresses {
 extern void reserve_top_address(unsigned long reserve);
 
 #define FIXADDR_SIZE	(__end_of_permanent_fixed_addresses << PAGE_SHIFT)
+<<<<<<< HEAD
 #define FIXADDR_BOOT_SIZE	(__end_of_fixed_addresses << PAGE_SHIFT)
 #define FIXADDR_START		(FIXADDR_TOP - FIXADDR_SIZE)
 #define FIXADDR_BOOT_START	(FIXADDR_TOP - FIXADDR_BOOT_SIZE)
+=======
+#define FIXADDR_START		(FIXADDR_TOP - FIXADDR_SIZE)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern int fixmaps_set;
 
 extern pte_t *kmap_pte;
+<<<<<<< HEAD
 extern pgprot_t kmap_prot;
 extern pte_t *pkmap_page_table;
 
 void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
 void native_set_fixmap(enum fixed_addresses idx,
+=======
+#define kmap_prot PAGE_KERNEL
+extern pte_t *pkmap_page_table;
+
+void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
+void native_set_fixmap(unsigned /* enum fixed_addresses */ idx,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       phys_addr_t phys, pgprot_t flags);
 
 #ifndef CONFIG_PARAVIRT
@@ -175,6 +210,7 @@ static inline void __set_fixmap(enum fixed_addresses idx,
 }
 #endif
 
+<<<<<<< HEAD
 #define set_fixmap(idx, phys)				\
 	__set_fixmap(idx, phys, PAGE_KERNEL)
 
@@ -233,6 +269,15 @@ __set_fixmap_offset(enum fixed_addresses idx, phys_addr_t phys, pgprot_t flags)
 
 #define set_fixmap_offset_nocache(idx, phys)			\
 	__set_fixmap_offset(idx, phys, PAGE_KERNEL_NOCACHE)
+=======
+#include <asm-generic/fixmap.h>
+
+#define __late_set_fixmap(idx, phys, flags) __set_fixmap(idx, phys, flags)
+#define __late_clear_fixmap(idx) __set_fixmap(idx, 0, __pgprot(0))
+
+void __early_set_fixmap(enum fixed_addresses idx,
+			phys_addr_t phys, pgprot_t flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* !__ASSEMBLY__ */
 #endif /* _ASM_X86_FIXMAP_H */

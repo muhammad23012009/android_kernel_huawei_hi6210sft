@@ -111,7 +111,11 @@ static int zl10039_write(struct zl10039_state *state,
 
 	if (1 + count > sizeof(buf)) {
 		printk(KERN_WARNING
+<<<<<<< HEAD
 		       "%s: i2c wr reg=%04x: len=%zd is too big!\n",
+=======
+		       "%s: i2c wr reg=%04x: len=%zu is too big!\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       KBUILD_MODNAME, reg, count);
 		return -EINVAL;
 	}
@@ -138,7 +142,13 @@ static inline int zl10039_writereg(struct zl10039_state *state,
 				const enum zl10039_reg_addr reg,
 				const u8 val)
 {
+<<<<<<< HEAD
 	return zl10039_write(state, reg, &val, 1);
+=======
+	const u8 tmp = val; /* see gcc.gnu.org/bugzilla/show_bug.cgi?id=81715 */
+
+	return zl10039_write(state, reg, &tmp, 1);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int zl10039_init(struct dvb_frontend *fe)
@@ -255,7 +265,11 @@ static int zl10039_release(struct dvb_frontend *fe)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dvb_tuner_ops zl10039_ops = {
+=======
+static const struct dvb_tuner_ops zl10039_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.release = zl10039_release,
 	.init = zl10039_init,
 	.sleep = zl10039_sleep,

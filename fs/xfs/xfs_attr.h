@@ -112,8 +112,14 @@ typedef struct attrlist_cursor_kern {
  *========================================================================*/
 
 
+<<<<<<< HEAD
 typedef int (*put_listent_func_t)(struct xfs_attr_list_context *, int,
 			      unsigned char *, int, int, unsigned char *);
+=======
+/* Return 0 on success, or -errno; other state communicated via *context */
+typedef int (*put_listent_func_t)(struct xfs_attr_list_context *, int,
+			      unsigned char *, int, int);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 typedef struct xfs_attr_list_context {
 	struct xfs_inode		*dp;		/* inode */
@@ -126,7 +132,10 @@ typedef struct xfs_attr_list_context {
 	int				firstu;		/* first used byte in buffer */
 	int				flags;		/* from VOP call */
 	int				resynch;	/* T/F: resynch with cursor */
+<<<<<<< HEAD
 	int				put_value;	/* T/F: need value for listent */
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	put_listent_func_t		put_listent;	/* list output fmt function */
 	int				index;		/* index into output buffer */
 } xfs_attr_list_context_t;
@@ -141,5 +150,17 @@ typedef struct xfs_attr_list_context {
  */
 int xfs_attr_inactive(struct xfs_inode *dp);
 int xfs_attr_list_int(struct xfs_attr_list_context *);
+<<<<<<< HEAD
+=======
+int xfs_inode_hasattr(struct xfs_inode *ip);
+int xfs_attr_get(struct xfs_inode *ip, const unsigned char *name,
+		 unsigned char *value, int *valuelenp, int flags);
+int xfs_attr_set(struct xfs_inode *dp, const unsigned char *name,
+		 unsigned char *value, int valuelen, int flags);
+int xfs_attr_remove(struct xfs_inode *dp, const unsigned char *name, int flags);
+int xfs_attr_list(struct xfs_inode *dp, char *buffer, int bufsize,
+		  int flags, struct attrlist_cursor_kern *cursor);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif	/* __XFS_ATTR_H__ */

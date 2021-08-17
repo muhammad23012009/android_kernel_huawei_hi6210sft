@@ -19,7 +19,10 @@ obj-$(CONFIG_VIA_FIR)		+= via-ircc.o
 obj-$(CONFIG_PXA_FICP)	        += pxaficp_ir.o
 obj-$(CONFIG_MCS_FIR)	        += mcs7780.o
 obj-$(CONFIG_AU1000_FIR)	+= au1k_ir.o
+<<<<<<< HEAD
 obj-$(CONFIG_SH_IRDA)		+= sh_irda.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 # SIR drivers
 obj-$(CONFIG_IRTTY_SIR)		+= irtty-sir.o	sir-dev.o
 obj-$(CONFIG_BFIN_SIR)		+= bfin_sir.o
@@ -35,7 +38,10 @@ obj-$(CONFIG_MCP2120_DONGLE)	+= mcp2120-sir.o
 obj-$(CONFIG_ACT200L_DONGLE)	+= act200l-sir.o
 obj-$(CONFIG_MA600_DONGLE)	+= ma600-sir.o
 obj-$(CONFIG_TOIM3232_DONGLE)	+= toim3232-sir.o
+<<<<<<< HEAD
 obj-$(CONFIG_EP7211_DONGLE)	+= ep7211-sir.o
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 obj-$(CONFIG_KINGSUN_DONGLE)	+= kingsun-sir.o
 obj-$(CONFIG_KSDAZZLE_DONGLE)	+= ksdazzle-sir.o
 obj-$(CONFIG_KS959_DONGLE)    	+= ks959-sir.o

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* drivers/mtd/devices/goldfish_nand_reg.h
 **
 ** Copyright (C) 2007 Google, Inc.
@@ -12,16 +13,43 @@
 ** GNU General Public License for more details.
 **
 */
+=======
+/*
+ * drivers/mtd/devices/goldfish_nand_reg.h
+ *
+ * Copyright (C) 2007 Google, Inc.
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #ifndef GOLDFISH_NAND_REG_H
 #define GOLDFISH_NAND_REG_H
 
 enum nand_cmd {
+<<<<<<< HEAD
 	NAND_CMD_GET_DEV_NAME,  /* Write device name for NAND_DEV to NAND_DATA (vaddr) */
 	NAND_CMD_READ,
 	NAND_CMD_WRITE,
 	NAND_CMD_ERASE,
 	NAND_CMD_BLOCK_BAD_GET, /* NAND_RESULT is 1 if block is bad, 0 if it is not */
+=======
+	/* Write device name for NAND_DEV to NAND_DATA (vaddr) */
+	NAND_CMD_GET_DEV_NAME,
+	NAND_CMD_READ,
+	NAND_CMD_WRITE,
+	NAND_CMD_ERASE,
+	/* NAND_RESULT is 1 if block is bad, 0 if it is not */
+	NAND_CMD_BLOCK_BAD_GET,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NAND_CMD_BLOCK_BAD_SET,
 	NAND_CMD_READ_WITH_PARAMS,
 	NAND_CMD_WRITE_WITH_PARAMS,
@@ -54,6 +82,10 @@ enum nand_reg {
 	NAND_RESULT         = 0x040,
 	NAND_COMMAND        = 0x044,
 	NAND_DATA           = 0x048,
+<<<<<<< HEAD
+=======
+	NAND_DATA_HIGH	    = 0x100,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	NAND_TRANSFER_SIZE  = 0x04c,
 	NAND_ADDR_LOW       = 0x050,
 	NAND_ADDR_HIGH      = 0x054,
@@ -62,11 +94,20 @@ enum nand_reg {
 };
 
 struct cmd_params {
+<<<<<<< HEAD
 	uint32_t dev;
 	uint32_t addr_low;
 	uint32_t addr_high;
 	uint32_t transfer_size;
 	uint32_t data;
 	uint32_t result;
+=======
+	u32 dev;
+	u32 addr_low;
+	u32 addr_high;
+	u32 transfer_size;
+	unsigned long data;
+	u32 result;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 #endif

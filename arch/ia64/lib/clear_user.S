@@ -12,6 +12,10 @@
  */
 
 #include <asm/asmmacro.h>
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 //
 // arguments
@@ -207,3 +211,7 @@ GLOBAL_ENTRY(__do_clear_user)
 	mov ar.lc=saved_lc
 	br.ret.sptk.many rp
 END(__do_clear_user)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__do_clear_user)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

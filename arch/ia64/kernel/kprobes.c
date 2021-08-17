@@ -396,7 +396,11 @@ static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 {
 	unsigned int i;
 	i = atomic_read(&kcb->prev_kprobe_index);
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = kcb->prev_kprobe[i-1].kp;
+=======
+	__this_cpu_write(current_kprobe, kcb->prev_kprobe[i-1].kp);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kcb->kprobe_status = kcb->prev_kprobe[i-1].status;
 	atomic_sub(1, &kcb->prev_kprobe_index);
 }
@@ -404,7 +408,11 @@ static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 static void __kprobes set_current_kprobe(struct kprobe *p,
 			struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = p;
+=======
+	__this_cpu_write(current_kprobe, p);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static void kretprobe_trampoline(void)
@@ -823,7 +831,11 @@ static int __kprobes pre_kprobes_handler(struct die_args *args)
 			/*
 			 * jprobe instrumented function just completed
 			 */
+<<<<<<< HEAD
 			p = __get_cpu_var(current_kprobe);
+=======
+			p = __this_cpu_read(current_kprobe);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (p->break_handler && p->break_handler(p, regs)) {
 				goto ss_probe;
 			}
@@ -947,7 +959,11 @@ int __kprobes kprobe_fault_handler(struct pt_regs *regs, int trapnr)
 	case KPROBE_HIT_SSDONE:
 		/*
 		 * We increment the nmissed count for accounting,
+<<<<<<< HEAD
 		 * we can also use npre/npostfault count for accouting
+=======
+		 * we can also use npre/npostfault count for accounting
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		 * these specific fault cases.
 		 */
 		kprobes_inc_nmissed_count(cur);

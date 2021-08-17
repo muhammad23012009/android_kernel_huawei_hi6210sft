@@ -123,7 +123,11 @@ static int ibmasm_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	result = ibmasm_init_remote_input_dev(sp);
 	if (result) {
 		dev_err(sp->dev, "Failed to initialize remote queue\n");
+<<<<<<< HEAD
 		goto error_send_message;
+=======
+		goto error_init_remote;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	result = ibmasm_send_driver_vpd(sp);
@@ -143,8 +147,14 @@ static int ibmasm_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return 0;
 
 error_send_message:
+<<<<<<< HEAD
 	disable_sp_interrupts(sp->base_address);
 	ibmasm_free_remote_input_dev(sp);
+=======
+	ibmasm_free_remote_input_dev(sp);
+error_init_remote:
+	disable_sp_interrupts(sp->base_address);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_irq(sp->irq, (void *)sp);
 error_request_irq:
 	iounmap(sp->base_address);
@@ -153,7 +163,10 @@ error_ioremap:
 error_heartbeat:
 	ibmasm_event_buffer_exit(sp);
 error_eventbuffer:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(sp);
 error_kmalloc:
         pci_release_regions(pdev);
@@ -165,7 +178,11 @@ error_resources:
 
 static void ibmasm_remove_one(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct service_processor *sp = (struct service_processor *)pci_get_drvdata(pdev);
+=======
+	struct service_processor *sp = pci_get_drvdata(pdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dbg("Unregistering UART\n");
 	ibmasm_unregister_uart(sp);
@@ -182,7 +199,10 @@ static void ibmasm_remove_one(struct pci_dev *pdev)
 	ibmasm_free_remote_input_dev(sp);
 	iounmap(sp->base_address);
 	ibmasm_event_buffer_exit(sp);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(sp);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);

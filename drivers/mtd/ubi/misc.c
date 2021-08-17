@@ -74,6 +74,11 @@ int ubi_check_volume(struct ubi_device *ubi, int vol_id)
 	for (i = 0; i < vol->used_ebs; i++) {
 		int size;
 
+<<<<<<< HEAD
+=======
+		cond_resched();
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (i == vol->used_ebs - 1)
 			size = vol->last_eb_bytes;
 		else
@@ -111,7 +116,11 @@ void ubi_update_reserved(struct ubi_device *ubi)
 	ubi->avail_pebs -= need;
 	ubi->rsvd_pebs += need;
 	ubi->beb_rsvd_pebs += need;
+<<<<<<< HEAD
 	ubi_msg("reserved more %d PEBs for bad PEB handling", need);
+=======
+	ubi_msg(ubi, "reserved more %d PEBs for bad PEB handling", need);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -128,7 +137,11 @@ void ubi_calculate_reserved(struct ubi_device *ubi)
 	ubi->beb_rsvd_level = ubi->bad_peb_limit - ubi->bad_peb_count;
 	if (ubi->beb_rsvd_level < 0) {
 		ubi->beb_rsvd_level = 0;
+<<<<<<< HEAD
 		ubi_warn("number of bad PEBs (%d) is above the expected limit (%d), not reserving any PEBs for bad PEB handling, will use available PEBs (if any)",
+=======
+		ubi_warn(ubi, "number of bad PEBs (%d) is above the expected limit (%d), not reserving any PEBs for bad PEB handling, will use available PEBs (if any)",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			 ubi->bad_peb_count, ubi->bad_peb_limit);
 	}
 }
@@ -151,3 +164,55 @@ int ubi_check_pattern(const void *buf, uint8_t patt, int size)
 			return 0;
 	return 1;
 }
+<<<<<<< HEAD
+=======
+
+/* Normal UBI messages */
+void ubi_msg(const struct ubi_device *ubi, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	pr_notice(UBI_NAME_STR "%d: %pV\n", ubi->ubi_num, &vaf);
+
+	va_end(args);
+}
+
+/* UBI warning messages */
+void ubi_warn(const struct ubi_device *ubi, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	pr_warn(UBI_NAME_STR "%d warning: %ps: %pV\n",
+		ubi->ubi_num, __builtin_return_address(0), &vaf);
+
+	va_end(args);
+}
+
+/* UBI error messages */
+void ubi_err(const struct ubi_device *ubi, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	pr_err(UBI_NAME_STR "%d error: %ps: %pV\n",
+	       ubi->ubi_num, __builtin_return_address(0), &vaf);
+	va_end(args);
+}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

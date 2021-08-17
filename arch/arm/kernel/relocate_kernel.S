@@ -3,6 +3,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <asm/kexec.h>
 
 	.align	3	/* not needed for this code, but keeps fncpy() happy */
@@ -59,7 +63,11 @@ ENTRY(relocate_new_kernel)
 	mov r0,#0
 	ldr r1,kexec_mach_type
 	ldr r2,kexec_boot_atags
+<<<<<<< HEAD
  ARM(	mov pc, lr	)
+=======
+ ARM(	ret lr	)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  THUMB(	bx lr		)
 
 	.align

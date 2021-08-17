@@ -29,7 +29,10 @@
  */
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/pagemap.h>
 #include <linux/miscdevice.h>
 #include <linux/pm.h>
@@ -99,6 +102,7 @@ void agp_alloc_page_array(size_t size, struct agp_memory *mem)
 }
 EXPORT_SYMBOL(agp_alloc_page_array);
 
+<<<<<<< HEAD
 void agp_free_page_array(struct agp_memory *mem)
 {
 	if (is_vmalloc_addr(mem->pages)) {
@@ -110,6 +114,8 @@ void agp_free_page_array(struct agp_memory *mem)
 EXPORT_SYMBOL(agp_free_page_array);
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct agp_memory *agp_create_user_memory(unsigned long num_agp_pages)
 {
 	struct agp_memory *new;
@@ -1396,8 +1402,13 @@ int agp3_generic_configure(void)
 
 	current_size = A_SIZE_16(agp_bridge->current_size);
 
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* set aperture size */
 	pci_write_config_word(agp_bridge->dev, agp_bridge->capndx+AGPAPSIZE, current_size->size_value);

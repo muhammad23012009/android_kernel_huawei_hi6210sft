@@ -2,13 +2,21 @@
  * drivers/misc/spear13xx_pcie_gadget.c
  *
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Pratyush Anand<pratyush.anand@st.com>
+=======
+ * Pratyush Anand<pratyush.anand@gmail.com>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/clk.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
@@ -219,11 +227,25 @@ static irqreturn_t spear_pcie_gadget_irq(int irq, void *dev_id)
 /*
  * configfs interfaces show/store functions
  */
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_link(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+
+static struct pcie_gadget_target *to_target(struct config_item *item)
+{
+	return item ?
+		container_of(to_configfs_subsystem(to_config_group(item)),
+				struct pcie_gadget_target, subsys) : NULL;
+}
+
+static ssize_t pcie_gadget_link_show(struct config_item *item, char *buf)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (readl(&app_reg->app_status_1) & ((u32)1 << XMLH_LINK_UP_ID))
 		return sprintf(buf, "UP");
@@ -231,11 +253,18 @@ static ssize_t pcie_gadget_show_link(
 		return sprintf(buf, "DOWN");
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_link(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+static ssize_t pcie_gadget_link_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (sysfs_streq(buf, "UP"))
 		writel(readl(&app_reg->app_ctrl_0) | (1 << APP_LTSSM_ENABLE_ID),
@@ -249,6 +278,7 @@ static ssize_t pcie_gadget_store_link(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_int_type(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -260,6 +290,17 @@ static ssize_t pcie_gadget_store_int_type(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
+=======
+static ssize_t pcie_gadget_int_type_show(struct config_item *item, char *buf)
+{
+	return sprintf(buf, "%s", to_target(item)->int_type);
+}
+
+static ssize_t pcie_gadget_int_type_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 cap, vec, flags;
 	ulong vector;
 
@@ -287,11 +328,18 @@ static ssize_t pcie_gadget_store_int_type(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_no_of_msi(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+static ssize_t pcie_gadget_no_of_msi_show(struct config_item *item, char *buf)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u32 cap, vec, flags;
 	ulong vector;
 
@@ -312,18 +360,31 @@ static ssize_t pcie_gadget_show_no_of_msi(
 	return sprintf(buf, "%lu", vector);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_no_of_msi(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
 {
 	if (strict_strtoul(buf, 0, &config->requested_msi))
 		return -EINVAL;
+=======
+static ssize_t pcie_gadget_no_of_msi_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	int ret;
+
+	ret = kstrtoul(buf, 0, &to_target(item)->requested_msi);
+	if (ret)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (config->requested_msi > 32)
 		config->requested_msi = 32;
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_inta(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
@@ -333,6 +394,18 @@ static ssize_t pcie_gadget_store_inta(
 
 	if (strict_strtoul(buf, 0, &en))
 		return -EINVAL;
+=======
+static ssize_t pcie_gadget_inta_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+	ulong en;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &en);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (en)
 		writel(readl(&app_reg->app_ctrl_0) | (1 << SYS_INT_ID),
@@ -344,6 +417,7 @@ static ssize_t pcie_gadget_store_inta(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_send_msi(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
@@ -354,6 +428,20 @@ static ssize_t pcie_gadget_store_send_msi(
 
 	if (strict_strtoul(buf, 0, &vector))
 		return -EINVAL;
+=======
+static ssize_t pcie_gadget_send_msi_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+	ulong vector;
+	u32 ven_msi;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &vector);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!config->configured_msi)
 		return -EINVAL;
@@ -379,6 +467,7 @@ static ssize_t pcie_gadget_store_send_msi(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_vendor_id(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -386,10 +475,18 @@ static ssize_t pcie_gadget_show_vendor_id(
 	u32 id;
 
 	spear_dbi_read_reg(config, PCI_VENDOR_ID, 2, &id);
+=======
+static ssize_t pcie_gadget_vendor_id_show(struct config_item *item, char *buf)
+{
+	u32 id;
+
+	spear_dbi_read_reg(to_target(item), PCI_VENDOR_ID, 2, &id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return sprintf(buf, "%x", id);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_vendor_id(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
@@ -400,10 +497,24 @@ static ssize_t pcie_gadget_store_vendor_id(
 		return -EINVAL;
 
 	spear_dbi_write_reg(config, PCI_VENDOR_ID, 2, id);
+=======
+static ssize_t pcie_gadget_vendor_id_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	ulong id;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &id);
+	if (ret)
+		return ret;
+
+	spear_dbi_write_reg(to_target(item), PCI_VENDOR_ID, 2, id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_device_id(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -411,10 +522,18 @@ static ssize_t pcie_gadget_show_device_id(
 	u32 id;
 
 	spear_dbi_read_reg(config, PCI_DEVICE_ID, 2, &id);
+=======
+static ssize_t pcie_gadget_device_id_show(struct config_item *item, char *buf)
+{
+	u32 id;
+
+	spear_dbi_read_reg(to_target(item), PCI_DEVICE_ID, 2, &id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return sprintf(buf, "%x", id);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_device_id(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
@@ -425,10 +544,24 @@ static ssize_t pcie_gadget_store_device_id(
 		return -EINVAL;
 
 	spear_dbi_write_reg(config, PCI_DEVICE_ID, 2, id);
+=======
+static ssize_t pcie_gadget_device_id_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	ulong id;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &id);
+	if (ret)
+		return ret;
+
+	spear_dbi_write_reg(to_target(item), PCI_DEVICE_ID, 2, id);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_size(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -446,6 +579,26 @@ static ssize_t pcie_gadget_store_bar0_size(
 
 	if (strict_strtoul(buf, 0, &size))
 		return -EINVAL;
+=======
+static ssize_t pcie_gadget_bar0_size_show(struct config_item *item, char *buf)
+{
+	return sprintf(buf, "%lx", to_target(item)->bar0_size);
+}
+
+static ssize_t pcie_gadget_bar0_size_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+	ulong size;
+	u32 pos, pos1;
+	u32 no_of_bit = 0;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &size);
+	if (ret)
+		return ret;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* min bar size is 256 */
 	if (size <= 0x100)
 		size = 0x100;
@@ -473,17 +626,25 @@ static ssize_t pcie_gadget_store_bar0_size(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_address(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
 	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+=======
+static ssize_t pcie_gadget_bar0_address_show(struct config_item *item,
+		char *buf)
+{
+	struct pcie_app_reg __iomem *app_reg = to_target(item)->va_app_base;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	u32 address = readl(&app_reg->pim0_mem_addr_start);
 
 	return sprintf(buf, "%x", address);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_bar0_address(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
@@ -493,6 +654,19 @@ static ssize_t pcie_gadget_store_bar0_address(
 
 	if (strict_strtoul(buf, 0, &address))
 		return -EINVAL;
+=======
+static ssize_t pcie_gadget_bar0_address_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+	struct pcie_app_reg __iomem *app_reg = config->va_app_base;
+	ulong address;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &address);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	address &= ~(config->bar0_size - 1);
 	if (config->va_bar0_address)
@@ -506,6 +680,7 @@ static ssize_t pcie_gadget_store_bar0_address(
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_rw_offset(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
@@ -521,19 +696,46 @@ static ssize_t pcie_gadget_store_bar0_rw_offset(
 
 	if (strict_strtoul(buf, 0, &offset))
 		return -EINVAL;
+=======
+static ssize_t pcie_gadget_bar0_rw_offset_show(struct config_item *item,
+		char *buf)
+{
+	return sprintf(buf, "%lx", to_target(item)->bar0_rw_offset);
+}
+
+static ssize_t pcie_gadget_bar0_rw_offset_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	ulong offset;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &offset);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (offset % 4)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	config->bar0_rw_offset = offset;
+=======
+	to_target(item)->bar0_rw_offset = offset;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_show_bar0_data(
 		struct spear_pcie_gadget_config *config,
 		char *buf)
 {
+=======
+static ssize_t pcie_gadget_bar0_data_show(struct config_item *item, char *buf)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ulong data;
 
 	if (!config->va_bar0_address)
@@ -544,6 +746,7 @@ static ssize_t pcie_gadget_show_bar0_data(
 	return sprintf(buf, "%lx", data);
 }
 
+<<<<<<< HEAD
 static ssize_t pcie_gadget_store_bar0_data(
 		struct spear_pcie_gadget_config *config,
 		const char *buf, size_t count)
@@ -552,6 +755,18 @@ static ssize_t pcie_gadget_store_bar0_data(
 
 	if (strict_strtoul(buf, 0, &data))
 		return -EINVAL;
+=======
+static ssize_t pcie_gadget_bar0_data_store(struct config_item *item,
+		const char *buf, size_t count)
+{
+	struct spear_pcie_gadget_config *config = to_target(item)
+	ulong data;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &data);
+	if (ret)
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!config->va_bar0_address)
 		return -ENOMEM;
@@ -561,6 +776,7 @@ static ssize_t pcie_gadget_store_bar0_data(
 	return count;
 }
 
+<<<<<<< HEAD
 /*
  * Attribute definitions.
  */
@@ -652,6 +868,37 @@ static struct configfs_item_operations pcie_gadget_target_item_ops = {
 static struct config_item_type pcie_gadget_target_type = {
 	.ct_attrs		= pcie_gadget_target_attrs,
 	.ct_item_ops		= &pcie_gadget_target_item_ops,
+=======
+CONFIGFS_ATTR(pcie_gadget_, link);
+CONFIGFS_ATTR(pcie_gadget_, int_type);
+CONFIGFS_ATTR(pcie_gadget_, no_of_msi);
+CONFIGFS_ATTR_WO(pcie_gadget_, inta);
+CONFIGFS_ATTR_WO(pcie_gadget_, send_msi);
+CONFIGFS_ATTR(pcie_gadget_, vendor_id);
+CONFIGFS_ATTR(pcie_gadget_, device_id);
+CONFIGFS_ATTR(pcie_gadget_, bar0_size);
+CONFIGFS_ATTR(pcie_gadget_, bar0_address);
+CONFIGFS_ATTR(pcie_gadget_, bar0_rw_offset);
+CONFIGFS_ATTR(pcie_gadget_, bar0_data);
+
+static struct configfs_attribute *pcie_gadget_target_attrs[] = {
+	&pcie_gadget_attr_link,
+	&pcie_gadget_attr_int_type,
+	&pcie_gadget_attr_no_of_msi,
+	&pcie_gadget_attr_inta,
+	&pcie_gadget_attr_send_msi,
+	&pcie_gadget_attr_vendor_id,
+	&pcie_gadget_attr_device_id,
+	&pcie_gadget_attr_bar0_size,
+	&pcie_gadget_attr_bar0_address,
+	&pcie_gadget_attr_bar0_rw_offset,
+	&pcie_gadget_attr_bar0_data,
+	NULL,
+};
+
+static struct config_item_type pcie_gadget_target_type = {
+	.ct_attrs		= pcie_gadget_target_attrs,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -722,6 +969,7 @@ static int spear_pcie_gadget_probe(struct platform_device *pdev)
 	struct config_item		*cg_item;
 	struct configfs_subsystem *subsys;
 
+<<<<<<< HEAD
 	/* get resource for application registers*/
 
 	res0 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -752,12 +1000,19 @@ static int spear_pcie_gadget_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "out of memory\n");
 		status = -ENOMEM;
 		goto err_rel_res;
+=======
+	target = devm_kzalloc(&pdev->dev, sizeof(*target), GFP_KERNEL);
+	if (!target) {
+		dev_err(&pdev->dev, "out of memory\n");
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	cg_item = &target->subsys.su_group.cg_item;
 	sprintf(cg_item->ci_namebuf, "pcie_gadget.%d", pdev->id);
 	cg_item->ci_type	= &pcie_gadget_target_type;
 	config = &target->config;
+<<<<<<< HEAD
 	config->va_app_base = (void __iomem *)ioremap(res0->start,
 			resource_size(res0));
 	if (!config->va_app_base) {
@@ -777,10 +1032,33 @@ static int spear_pcie_gadget_probe(struct platform_device *pdev)
 	}
 
 	dev_set_drvdata(&pdev->dev, target);
+=======
+
+	/* get resource for application registers*/
+	res0 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	config->va_app_base = devm_ioremap_resource(&pdev->dev, res0);
+	if (IS_ERR(config->va_app_base)) {
+		dev_err(&pdev->dev, "ioremap fail\n");
+		return PTR_ERR(config->va_app_base);
+	}
+
+	/* get resource for dbi registers*/
+	res1 = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	config->base = (void __iomem *)res1->start;
+
+	config->va_dbi_base = devm_ioremap_resource(&pdev->dev, res1);
+	if (IS_ERR(config->va_dbi_base)) {
+		dev_err(&pdev->dev, "ioremap fail\n");
+		return PTR_ERR(config->va_dbi_base);
+	}
+
+	platform_set_drvdata(pdev, target);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		dev_err(&pdev->dev, "no update irq?\n");
+<<<<<<< HEAD
 		status = irq;
 		goto err_iounmap;
 	}
@@ -790,6 +1068,17 @@ static int spear_pcie_gadget_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev,
 			"pcie gadget interrupt IRQ%d already claimed\n", irq);
 		goto err_iounmap;
+=======
+		return irq;
+	}
+
+	status = devm_request_irq(&pdev->dev, irq, spear_pcie_gadget_irq,
+				  0, pdev->name, NULL);
+	if (status) {
+		dev_err(&pdev->dev,
+			"pcie gadget interrupt IRQ%d already claimed\n", irq);
+		return status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* Register configfs hooks */
@@ -798,7 +1087,11 @@ static int spear_pcie_gadget_probe(struct platform_device *pdev)
 	mutex_init(&subsys->su_mutex);
 	status = configfs_register_subsystem(subsys);
 	if (status)
+<<<<<<< HEAD
 		goto err_irq;
+=======
+		return status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * init basic pcie application registers
@@ -814,11 +1107,20 @@ static int spear_pcie_gadget_probe(struct platform_device *pdev)
 		clk = clk_get_sys("pcie1", NULL);
 		if (IS_ERR(clk)) {
 			pr_err("%s:couldn't get clk for pcie1\n", __func__);
+<<<<<<< HEAD
 			goto err_irq;
 		}
 		if (clk_enable(clk)) {
 			pr_err("%s:couldn't enable clk for pcie1\n", __func__);
 			goto err_irq;
+=======
+			return PTR_ERR(clk);
+		}
+		status = clk_enable(clk);
+		if (status) {
+			pr_err("%s:couldn't enable clk for pcie1\n", __func__);
+			return status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	} else if (pdev->id == 2) {
 		/*
@@ -828,16 +1130,26 @@ static int spear_pcie_gadget_probe(struct platform_device *pdev)
 		clk = clk_get_sys("pcie2", NULL);
 		if (IS_ERR(clk)) {
 			pr_err("%s:couldn't get clk for pcie2\n", __func__);
+<<<<<<< HEAD
 			goto err_irq;
 		}
 		if (clk_enable(clk)) {
 			pr_err("%s:couldn't enable clk for pcie2\n", __func__);
 			goto err_irq;
+=======
+			return PTR_ERR(clk);
+		}
+		status = clk_enable(clk);
+		if (status) {
+			pr_err("%s:couldn't enable clk for pcie2\n", __func__);
+			return status;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 	spear13xx_pcie_device_init(config);
 
 	return 0;
+<<<<<<< HEAD
 err_irq:
 	free_irq(irq, NULL);
 err_iounmap:
@@ -851,10 +1163,13 @@ err_rel_res:
 err_rel_res0:
 	release_mem_region(res0->start, resource_size(res0));
 	return status;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int spear_pcie_gadget_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res0, *res1;
 	static struct pcie_gadget_target *target;
 	struct spear_pcie_gadget_config *config;
@@ -873,6 +1188,13 @@ static int spear_pcie_gadget_remove(struct platform_device *pdev)
 	release_mem_region(res0->start, resource_size(res0));
 	configfs_unregister_subsystem(&target->subsys);
 	kfree(target);
+=======
+	static struct pcie_gadget_target *target;
+
+	target = platform_get_drvdata(pdev);
+
+	configfs_unregister_subsystem(&target->subsys);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return 0;
 }

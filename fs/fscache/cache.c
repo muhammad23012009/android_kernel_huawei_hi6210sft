@@ -115,7 +115,11 @@ struct fscache_cache *fscache_select_cache_for_object(
 				     struct fscache_object, cookie_link);
 
 		cache = object->cache;
+<<<<<<< HEAD
 		if (object->state >= FSCACHE_OBJECT_DYING ||
+=======
+		if (fscache_object_is_dying(object) ||
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		    test_bit(FSCACHE_IOERROR, &cache->flags))
 			cache = NULL;
 
@@ -224,8 +228,15 @@ int fscache_add_cache(struct fscache_cache *cache,
 	BUG_ON(!ifsdef);
 
 	cache->flags = 0;
+<<<<<<< HEAD
 	ifsdef->event_mask = ULONG_MAX & ~(1 << FSCACHE_OBJECT_EV_CLEARED);
 	ifsdef->state = FSCACHE_OBJECT_ACTIVE;
+=======
+	ifsdef->event_mask =
+		((1 << NR_FSCACHE_OBJECT_EVENTS) - 1) &
+		~(1 << FSCACHE_OBJECT_EV_CLEARED);
+	__set_bit(FSCACHE_OBJECT_IS_AVAILABLE, &ifsdef->flags);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!tagname)
 		tagname = cache->identifier;
@@ -278,15 +289,24 @@ int fscache_add_cache(struct fscache_cache *cache,
 	spin_unlock(&fscache_fsdef_index.lock);
 	up_write(&fscache_addremove_sem);
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "FS-Cache: Cache \"%s\" added (type %s)\n",
 	       cache->tag->name, cache->ops->name);
+=======
+	pr_notice("Cache \"%s\" added (type %s)\n",
+		  cache->tag->name, cache->ops->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kobject_uevent(cache->kobj, KOBJ_ADD);
 
 	_leave(" = 0 [%s]", cache->identifier);
 	return 0;
 
 tag_in_use:
+<<<<<<< HEAD
 	printk(KERN_ERR "FS-Cache: Cache tag '%s' already in use\n", tagname);
+=======
+	pr_err("Cache tag '%s' already in use\n", tagname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__fscache_release_cache_tag(tag);
 	_leave(" = -EXIST");
 	return -EEXIST;
@@ -315,8 +335,12 @@ EXPORT_SYMBOL(fscache_add_cache);
 void fscache_io_error(struct fscache_cache *cache)
 {
 	if (!test_and_set_bit(FSCACHE_IOERROR, &cache->flags))
+<<<<<<< HEAD
 		printk(KERN_ERR "FS-Cache:"
 		       " Cache '%s' stopped due to I/O error\n",
+=======
+		pr_err("Cache '%s' stopped due to I/O error\n",
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		       cache->ops->name);
 }
 EXPORT_SYMBOL(fscache_io_error);
@@ -330,6 +354,7 @@ static void fscache_withdraw_all_objects(struct fscache_cache *cache,
 {
 	struct fscache_object *object;
 
+<<<<<<< HEAD
 	spin_lock(&cache->object_list_lock);
 
 	while (!list_empty(&cache->object_list)) {
@@ -349,6 +374,27 @@ static void fscache_withdraw_all_objects(struct fscache_cache *cache,
 	}
 
 	spin_unlock(&cache->object_list_lock);
+=======
+	while (!list_empty(&cache->object_list)) {
+		spin_lock(&cache->object_list_lock);
+
+		if (!list_empty(&cache->object_list)) {
+			object = list_entry(cache->object_list.next,
+					    struct fscache_object, cache_link);
+			list_move_tail(&object->cache_link, dying_objects);
+
+			_debug("withdraw %p", object->cookie);
+
+			/* This must be done under object_list_lock to prevent
+			 * a race with fscache_drop_object().
+			 */
+			fscache_raise_event(object, FSCACHE_OBJECT_EV_KILL);
+		}
+
+		spin_unlock(&cache->object_list_lock);
+		cond_resched();
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -367,8 +413,13 @@ void fscache_withdraw_cache(struct fscache_cache *cache)
 
 	_enter("");
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "FS-Cache: Withdrawing cache \"%s\"\n",
 	       cache->tag->name);
+=======
+	pr_notice("Withdrawing cache \"%s\"\n",
+		  cache->tag->name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* make the cache unavailable for cookie acquisition */
 	if (test_and_set_bit(FSCACHE_CACHE_WITHDRAWN, &cache->flags))

@@ -10,8 +10,13 @@
  *
  */
 
+<<<<<<< HEAD
 #ifndef CAN_CORE_H
 #define CAN_CORE_H
+=======
+#ifndef _CAN_CORE_H
+#define _CAN_CORE_H
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <linux/can.h>
 #include <linux/skbuff.h>
@@ -57,4 +62,8 @@ extern void can_rx_unregister(struct net_device *dev, canid_t can_id,
 extern int can_send(struct sk_buff *skb, int loop);
 extern int can_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
 
+<<<<<<< HEAD
 #endif /* CAN_CORE_H */
+=======
+#endif /* !_CAN_CORE_H */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

@@ -18,7 +18,12 @@
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/of.h>
+=======
+#include <linux/of_device.h>
+#include <linux/platform_device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/types.h>
 
@@ -30,6 +35,7 @@ static struct {
 	u32 cnt;
 } spear_cpufreq;
 
+<<<<<<< HEAD
 static int spear_cpufreq_verify(struct cpufreq_policy *policy)
 {
 	return cpufreq_frequency_table_verify(policy, spear_cpufreq.freq_tbl);
@@ -40,6 +46,8 @@ static unsigned int spear_cpufreq_get(unsigned int cpu)
 	return clk_get_rate(spear_cpufreq.clk) / 1000;
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static struct clk *spear1340_cpu_get_possible_parent(unsigned long newfreq)
 {
 	struct clk *sys_pclk;
@@ -110,6 +118,7 @@ static int spear1340_set_cpu_rate(struct clk *sys_pclk, unsigned long newfreq)
 }
 
 static int spear_cpufreq_target(struct cpufreq_policy *policy,
+<<<<<<< HEAD
 		unsigned int target_freq, unsigned int relation)
 {
 	struct cpufreq_freqs freqs;
@@ -124,6 +133,16 @@ static int spear_cpufreq_target(struct cpufreq_policy *policy,
 	freqs.old = spear_cpufreq_get(0);
 
 	newfreq = spear_cpufreq.freq_tbl[index].frequency * 1000;
+=======
+		unsigned int index)
+{
+	long newfreq;
+	struct clk *srcclk;
+	int ret, mult = 1;
+
+	newfreq = spear_cpufreq.freq_tbl[index].frequency * 1000;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (of_machine_is_compatible("st,spear1340")) {
 		/*
 		 * SPEAr1340 is special in the sense that due to the possibility
@@ -149,21 +168,29 @@ static int spear_cpufreq_target(struct cpufreq_policy *policy,
 	}
 
 	newfreq = clk_round_rate(srcclk, newfreq * mult);
+<<<<<<< HEAD
 	if (newfreq < 0) {
+=======
+	if (newfreq <= 0) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		pr_err("clk_round_rate failed for cpu src clock\n");
 		return newfreq;
 	}
 
+<<<<<<< HEAD
 	freqs.new = newfreq / 1000;
 	freqs.new /= mult;
 
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_PRECHANGE);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (mult == 2)
 		ret = spear1340_set_cpu_rate(srcclk, newfreq);
 	else
 		ret = clk_set_rate(spear_cpufreq.clk, newfreq);
 
+<<<<<<< HEAD
 	/* Get current rate after clk_set_rate, in case of failure */
 	if (ret) {
 		pr_err("CPU Freq: cpu clk_set_rate failed: %d\n", ret);
@@ -171,11 +198,17 @@ static int spear_cpufreq_target(struct cpufreq_policy *policy,
 	}
 
 	cpufreq_notify_transition(policy, &freqs, CPUFREQ_POSTCHANGE);
+=======
+	if (ret)
+		pr_err("CPU Freq: cpu clk_set_rate failed: %d\n", ret);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
 static int spear_cpufreq_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = cpufreq_frequency_table_cpuinfo(policy, spear_cpufreq.freq_tbl);
@@ -216,6 +249,24 @@ static struct cpufreq_driver spear_cpufreq_driver = {
 };
 
 static int spear_cpufreq_driver_init(void)
+=======
+	policy->clk = spear_cpufreq.clk;
+	return cpufreq_generic_init(policy, spear_cpufreq.freq_tbl,
+			spear_cpufreq.transition_latency);
+}
+
+static struct cpufreq_driver spear_cpufreq_driver = {
+	.name		= "cpufreq-spear",
+	.flags		= CPUFREQ_STICKY | CPUFREQ_NEED_INITIAL_FREQ_CHECK,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= spear_cpufreq_target,
+	.get		= cpufreq_generic_get,
+	.init		= spear_cpufreq_init,
+	.attr		= cpufreq_generic_attr,
+};
+
+static int spear_cpufreq_probe(struct platform_device *pdev)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct device_node *np;
 	const struct property *prop;
@@ -223,7 +274,11 @@ static int spear_cpufreq_driver_init(void)
 	const __be32 *val;
 	int cnt, i, ret;
 
+<<<<<<< HEAD
 	np = of_find_node_by_path("/cpus/cpu@0");
+=======
+	np = of_cpu_device_node_get(0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!np) {
 		pr_err("No cpu node found");
 		return -ENODEV;
@@ -243,18 +298,28 @@ static int spear_cpufreq_driver_init(void)
 	cnt = prop->length / sizeof(u32);
 	val = prop->value;
 
+<<<<<<< HEAD
 	freq_tbl = kmalloc(sizeof(*freq_tbl) * (cnt + 1), GFP_KERNEL);
+=======
+	freq_tbl = kzalloc(sizeof(*freq_tbl) * (cnt + 1), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!freq_tbl) {
 		ret = -ENOMEM;
 		goto out_put_node;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < cnt; i++) {
 		freq_tbl[i].index = i;
 		freq_tbl[i].frequency = be32_to_cpup(val++);
 	}
 
 	freq_tbl[i].index = i;
+=======
+	for (i = 0; i < cnt; i++)
+		freq_tbl[i].frequency = be32_to_cpup(val++);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	freq_tbl[i].frequency = CPUFREQ_TABLE_END;
 
 	spear_cpufreq.freq_tbl = freq_tbl;
@@ -283,7 +348,18 @@ out_put_node:
 	of_node_put(np);
 	return ret;
 }
+<<<<<<< HEAD
 late_initcall(spear_cpufreq_driver_init);
+=======
+
+static struct platform_driver spear_cpufreq_platdrv = {
+	.driver = {
+		.name	= "spear-cpufreq",
+	},
+	.probe		= spear_cpufreq_probe,
+};
+module_platform_driver(spear_cpufreq_platdrv);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 MODULE_AUTHOR("Deepak Sikri <deepak.sikri@st.com>");
 MODULE_DESCRIPTION("SPEAr CPUFreq driver");

@@ -8,6 +8,11 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+#define ARCH_IRQ_ENABLED	(3UL << (BITS_PER_LONG - 8))
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* store then OR system mask. */
 #define __arch_local_irq_stosm(__or)					\
 ({									\
@@ -36,7 +41,11 @@ static inline notrace void __arch_local_irq_ssm(unsigned long flags)
 
 static inline notrace unsigned long arch_local_save_flags(void)
 {
+<<<<<<< HEAD
 	return __arch_local_irq_stosm(0x00);
+=======
+	return __arch_local_irq_stnsm(0xff);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline notrace unsigned long arch_local_irq_save(void)
@@ -54,14 +63,27 @@ static inline notrace void arch_local_irq_enable(void)
 	__arch_local_irq_stosm(0x03);
 }
 
+<<<<<<< HEAD
 static inline notrace void arch_local_irq_restore(unsigned long flags)
 {
 	__arch_local_irq_ssm(flags);
+=======
+/* This only restores external and I/O interrupt state */
+static inline notrace void arch_local_irq_restore(unsigned long flags)
+{
+	/* only disabled->disabled and disabled->enabled is valid */
+	if (flags & ARCH_IRQ_ENABLED)
+		arch_local_irq_enable();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline notrace bool arch_irqs_disabled_flags(unsigned long flags)
 {
+<<<<<<< HEAD
 	return !(flags & (3UL << (BITS_PER_LONG - 8)));
+=======
+	return !(flags & ARCH_IRQ_ENABLED);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static inline notrace bool arch_irqs_disabled(void)

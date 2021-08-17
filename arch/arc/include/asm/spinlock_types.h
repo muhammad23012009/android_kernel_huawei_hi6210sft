@@ -20,6 +20,7 @@ typedef struct {
 #define __ARCH_SPIN_LOCK_LOCKED		{ __ARCH_SPIN_LOCK_LOCKED__ }
 
 /*
+<<<<<<< HEAD
  * Unlocked:     0x01_00_00_00
  * Read lock(s): 0x00_FF_00_00 to say 0x01
  * Write lock:   0x0, but only possible if prior value "unlocked" 0x0100_0000
@@ -27,6 +28,17 @@ typedef struct {
 typedef struct {
 	volatile unsigned int	counter;
 	arch_spinlock_t		lock_mutex;
+=======
+ * Unlocked     : 0x0100_0000
+ * Read lock(s) : 0x00FF_FFFF to 0x01  (Multiple Readers decrement it)
+ * Write lock   : 0x0, but only if prior value is "unlocked" 0x0100_0000
+ */
+typedef struct {
+	volatile unsigned int	counter;
+#ifndef CONFIG_ARC_HAS_LLSC
+	arch_spinlock_t		lock_mutex;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 } arch_rwlock_t;
 
 #define __ARCH_RW_LOCK_UNLOCKED__	0x01000000

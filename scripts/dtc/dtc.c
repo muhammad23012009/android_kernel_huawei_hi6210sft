@@ -18,11 +18,19 @@
  *                                                                   USA
  */
 
+<<<<<<< HEAD
 #include "dtc.h"
 #include "srcpos.h"
 
 #include "version_gen.h"
 
+=======
+#include <sys/stat.h>
+
+#include "dtc.h"
+#include "srcpos.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Command line options
  */
@@ -49,6 +57,7 @@ static void fill_fullpaths(struct node *tree, const char *prefix)
 		fill_fullpaths(child, tree->fullpath);
 }
 
+<<<<<<< HEAD
 static void  __attribute__ ((noreturn)) usage(void)
 {
 	fprintf(stderr, "Usage:\n");
@@ -97,16 +106,126 @@ static void  __attribute__ ((noreturn)) usage(void)
 	fprintf(stderr, "\t-E [no-]<checkname>\n");
 	fprintf(stderr, "\t\t\tenable or disable warnings and errors\n");
 	exit(3);
+=======
+/* Usage related data. */
+#define FDT_VERSION(version)	_FDT_VERSION(version)
+#define _FDT_VERSION(version)	#version
+static const char usage_synopsis[] = "dtc [options] <input file>";
+static const char usage_short_opts[] = "qI:O:o:V:d:R:S:p:fb:i:H:sW:E:hv";
+static struct option const usage_long_opts[] = {
+	{"quiet",            no_argument, NULL, 'q'},
+	{"in-format",         a_argument, NULL, 'I'},
+	{"out",               a_argument, NULL, 'o'},
+	{"out-format",        a_argument, NULL, 'O'},
+	{"out-version",       a_argument, NULL, 'V'},
+	{"out-dependency",    a_argument, NULL, 'd'},
+	{"reserve",           a_argument, NULL, 'R'},
+	{"space",             a_argument, NULL, 'S'},
+	{"pad",               a_argument, NULL, 'p'},
+	{"boot-cpu",          a_argument, NULL, 'b'},
+	{"force",            no_argument, NULL, 'f'},
+	{"include",           a_argument, NULL, 'i'},
+	{"sort",             no_argument, NULL, 's'},
+	{"phandle",           a_argument, NULL, 'H'},
+	{"warning",           a_argument, NULL, 'W'},
+	{"error",             a_argument, NULL, 'E'},
+	{"help",             no_argument, NULL, 'h'},
+	{"version",          no_argument, NULL, 'v'},
+	{NULL,               no_argument, NULL, 0x0},
+};
+static const char * const usage_opts_help[] = {
+	"\n\tQuiet: -q suppress warnings, -qq errors, -qqq all",
+	"\n\tInput formats are:\n"
+	 "\t\tdts - device tree source text\n"
+	 "\t\tdtb - device tree blob\n"
+	 "\t\tfs  - /proc/device-tree style directory",
+	"\n\tOutput file",
+	"\n\tOutput formats are:\n"
+	 "\t\tdts - device tree source text\n"
+	 "\t\tdtb - device tree blob\n"
+	 "\t\tasm - assembler source",
+	"\n\tBlob version to produce, defaults to "FDT_VERSION(DEFAULT_FDT_VERSION)" (for dtb and asm output)",
+	"\n\tOutput dependency file",
+	"\n\tMake space for <number> reserve map entries (for dtb and asm output)",
+	"\n\tMake the blob at least <bytes> long (extra space)",
+	"\n\tAdd padding to the blob of <bytes> long (extra space)",
+	"\n\tSet the physical boot cpu",
+	"\n\tTry to produce output even if the input tree has errors",
+	"\n\tAdd a path to search for include files",
+	"\n\tSort nodes and properties before outputting (useful for comparing trees)",
+	"\n\tValid phandle formats are:\n"
+	 "\t\tlegacy - \"linux,phandle\" properties only\n"
+	 "\t\tepapr  - \"phandle\" properties only\n"
+	 "\t\tboth   - Both \"linux,phandle\" and \"phandle\" properties",
+	"\n\tEnable/disable warnings (prefix with \"no-\")",
+	"\n\tEnable/disable errors (prefix with \"no-\")",
+	"\n\tPrint this help and exit",
+	"\n\tPrint version and exit",
+	NULL,
+};
+
+static const char *guess_type_by_name(const char *fname, const char *fallback)
+{
+	const char *s;
+
+	s = strrchr(fname, '.');
+	if (s == NULL)
+		return fallback;
+	if (!strcasecmp(s, ".dts"))
+		return "dts";
+	if (!strcasecmp(s, ".dtb"))
+		return "dtb";
+	return fallback;
+}
+
+static const char *guess_input_format(const char *fname, const char *fallback)
+{
+	struct stat statbuf;
+	uint32_t magic;
+	FILE *f;
+
+	if (stat(fname, &statbuf) != 0)
+		return fallback;
+
+	if (S_ISDIR(statbuf.st_mode))
+		return "fs";
+
+	if (!S_ISREG(statbuf.st_mode))
+		return fallback;
+
+	f = fopen(fname, "r");
+	if (f == NULL)
+		return fallback;
+	if (fread(&magic, 4, 1, f) != 1) {
+		fclose(f);
+		return fallback;
+	}
+	fclose(f);
+
+	magic = fdt32_to_cpu(magic);
+	if (magic == FDT_MAGIC)
+		return "dtb";
+
+	return guess_type_by_name(fname, fallback);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 int main(int argc, char *argv[])
 {
 	struct boot_info *bi;
+<<<<<<< HEAD
 	const char *inform = "dts";
 	const char *outform = "dts";
 	const char *outname = "-";
 	const char *depname = NULL;
 	int force = 0, sort = 0;
+=======
+	const char *inform = NULL;
+	const char *outform = NULL;
+	const char *outname = "-";
+	const char *depname = NULL;
+	bool force = false, sort = false;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const char *arg;
 	int opt;
 	FILE *outf = NULL;
@@ -118,8 +237,12 @@ int main(int argc, char *argv[])
 	minsize    = 0;
 	padsize    = 0;
 
+<<<<<<< HEAD
 	while ((opt = getopt(argc, argv, "hI:O:o:V:d:R:S:p:fqb:i:vH:sW:E:"))
 			!= EOF) {
+=======
+	while ((opt = util_getopt_long()) != EOF) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		switch (opt) {
 		case 'I':
 			inform = optarg;
@@ -146,7 +269,11 @@ int main(int argc, char *argv[])
 			padsize = strtol(optarg, NULL, 0);
 			break;
 		case 'f':
+<<<<<<< HEAD
 			force = 1;
+=======
+			force = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		case 'q':
 			quiet++;
@@ -158,8 +285,12 @@ int main(int argc, char *argv[])
 			srcfile_add_search_path(optarg);
 			break;
 		case 'v':
+<<<<<<< HEAD
 			printf("Version: %s\n", DTC_VERSION);
 			exit(0);
+=======
+			util_version();
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		case 'H':
 			if (streq(optarg, "legacy"))
 				phandle_format = PHANDLE_LEGACY;
@@ -173,7 +304,11 @@ int main(int argc, char *argv[])
 			break;
 
 		case 's':
+<<<<<<< HEAD
 			sort = 1;
+=======
+			sort = true;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 
 		case 'W':
@@ -185,13 +320,23 @@ int main(int argc, char *argv[])
 			break;
 
 		case 'h':
+<<<<<<< HEAD
 		default:
 			usage();
+=======
+			usage(NULL);
+		default:
+			usage("unknown option");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		}
 	}
 
 	if (argc > (optind+1))
+<<<<<<< HEAD
 		usage();
+=======
+		usage("missing files");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	else if (argc < (optind+1))
 		arg = "-";
 	else
@@ -201,9 +346,12 @@ int main(int argc, char *argv[])
 	if (minsize && padsize)
 		die("Can't set both -p and -S\n");
 
+<<<<<<< HEAD
 	if (minsize)
 		fprintf(stderr, "DTC: Use of \"-S\" is deprecated; it will be removed soon, use \"-p\" instead\n");
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (depname) {
 		depfile = fopen(depname, "w");
 		if (!depfile)
@@ -212,6 +360,20 @@ int main(int argc, char *argv[])
 		fprintf(depfile, "%s:", outname);
 	}
 
+<<<<<<< HEAD
+=======
+	if (inform == NULL)
+		inform = guess_input_format(arg, "dts");
+	if (outform == NULL) {
+		outform = guess_type_by_name(outname, NULL);
+		if (outform == NULL) {
+			if (streq(inform, "dts"))
+				outform = "dtb";
+			else
+				outform = "dts";
+		}
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (streq(inform, "dts"))
 		bi = dt_from_source(arg);
 	else if (streq(inform, "fs"))
@@ -238,7 +400,11 @@ int main(int argc, char *argv[])
 	if (streq(outname, "-")) {
 		outf = stdout;
 	} else {
+<<<<<<< HEAD
 		outf = fopen(outname, "w");
+=======
+		outf = fopen(outname, "wb");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (! outf)
 			die("Couldn't open output file %s: %s\n",
 			    outname, strerror(errno));

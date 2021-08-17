@@ -4,6 +4,10 @@
 #include <linux/kobject.h>
 #include <linux/kdev_t.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 struct file_operations;
 struct inode;
@@ -26,10 +30,20 @@ void cdev_put(struct cdev *p);
 
 int cdev_add(struct cdev *, dev_t, unsigned);
 
+<<<<<<< HEAD
+=======
+void cdev_set_parent(struct cdev *p, struct kobject *kobj);
+int cdev_device_add(struct cdev *cdev, struct device *dev);
+void cdev_device_del(struct cdev *cdev, struct device *dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void cdev_del(struct cdev *);
 
 void cd_forget(struct inode *);
 
+<<<<<<< HEAD
 extern struct backing_dev_info directly_mappable_cdev_bdi;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif

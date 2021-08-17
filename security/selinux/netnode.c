@@ -166,6 +166,10 @@ static void sel_netnode_insert(struct sel_netnode *node)
 		break;
 	default:
 		BUG();
+<<<<<<< HEAD
+=======
+		return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	/* we need to impose a limit on the growth of the hash table so check
@@ -225,6 +229,10 @@ static int sel_netnode_sid_slow(void *addr, u16 family, u32 *sid)
 		break;
 	default:
 		BUG();
+<<<<<<< HEAD
+=======
+		ret = -EINVAL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 	if (ret != 0)
 		goto out;
@@ -301,7 +309,10 @@ void sel_netnode_flush(void)
 static __init int sel_netnode_init(void)
 {
 	int iter;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!selinux_enabled)
 		return 0;
@@ -311,7 +322,11 @@ static __init int sel_netnode_init(void)
 		sel_netnode_hash[iter].size = 0;
 	}
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 __initcall(sel_netnode_init);

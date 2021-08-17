@@ -543,7 +543,12 @@ static void siu_dai_shutdown(struct snd_pcm_substream *substream,
 	/* Stop the siu if the other stream is not using it */
 	if (!port_info->play_cap) {
 		/* during stmread or stmwrite ? */
+<<<<<<< HEAD
 		BUG_ON(port_info->playback.rw_flg || port_info->capture.rw_flg);
+=======
+		if (WARN_ON(port_info->playback.rw_flg || port_info->capture.rw_flg))
+			return;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		siu_dai_spbstop(port_info);
 		siu_dai_stop(port_info);
 	}
@@ -737,7 +742,11 @@ static int siu_probe(struct platform_device *pdev)
 	struct siu_info *info;
 	int ret;
 
+<<<<<<< HEAD
 	info = kmalloc(sizeof(*info), GFP_KERNEL);
+=======
+	info = devm_kmalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!info)
 		return -ENOMEM;
 	siu_i2s_data = info;
@@ -745,7 +754,11 @@ static int siu_probe(struct platform_device *pdev)
 
 	ret = request_firmware(&fw_entry, "siu_spb.bin", &pdev->dev);
 	if (ret)
+<<<<<<< HEAD
 		goto ereqfw;
+=======
+		return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Loaded firmware is "const" - read only, but we have to modify it in
@@ -756,6 +769,7 @@ static int siu_probe(struct platform_device *pdev)
 	release_firmware(fw_entry);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		ret = -ENODEV;
 		goto egetres;
@@ -783,10 +797,38 @@ static int siu_probe(struct platform_device *pdev)
 			    REG_OFFSET);
 	if (!info->reg)
 		goto emapreg;
+=======
+	if (!res)
+		return -ENODEV;
+
+	region = devm_request_mem_region(&pdev->dev, res->start,
+					 resource_size(res), pdev->name);
+	if (!region) {
+		dev_err(&pdev->dev, "SIU region already claimed\n");
+		return -EBUSY;
+	}
+
+	info->pram = devm_ioremap(&pdev->dev, res->start, PRAM_SIZE);
+	if (!info->pram)
+		return -ENOMEM;
+	info->xram = devm_ioremap(&pdev->dev, res->start + XRAM_OFFSET,
+				  XRAM_SIZE);
+	if (!info->xram)
+		return -ENOMEM;
+	info->yram = devm_ioremap(&pdev->dev, res->start + YRAM_OFFSET,
+				  YRAM_SIZE);
+	if (!info->yram)
+		return -ENOMEM;
+	info->reg = devm_ioremap(&pdev->dev, res->start + REG_OFFSET,
+			    resource_size(res) - REG_OFFSET);
+	if (!info->reg)
+		return -ENOMEM;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	dev_set_drvdata(&pdev->dev, info);
 
 	/* register using ARRAY version so we can keep dai name */
+<<<<<<< HEAD
 	ret = snd_soc_register_component(&pdev->dev, &siu_i2s_component,
 					 &siu_i2s_dai, 1);
 	if (ret < 0)
@@ -818,10 +860,25 @@ ereqfw:
 	kfree(info);
 
 	return ret;
+=======
+	ret = devm_snd_soc_register_component(&pdev->dev, &siu_i2s_component,
+					      &siu_i2s_dai, 1);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_snd_soc_register_platform(&pdev->dev, &siu_platform);
+	if (ret < 0)
+		return ret;
+
+	pm_runtime_enable(&pdev->dev);
+
+	return 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int siu_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct siu_info *info = dev_get_drvdata(&pdev->dev);
 	struct resource *res;
 
@@ -839,12 +896,18 @@ static int siu_remove(struct platform_device *pdev)
 		release_mem_region(res->start, resource_size(res));
 	kfree(info);
 
+=======
+	pm_runtime_disable(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 static struct platform_driver siu_driver = {
 	.driver 	= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name	= "siu-pcm-audio",
 	},
 	.probe		= siu_probe,

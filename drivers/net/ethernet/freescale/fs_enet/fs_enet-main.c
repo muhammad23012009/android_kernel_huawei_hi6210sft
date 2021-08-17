@@ -24,7 +24,10 @@
 #include <linux/ioport.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -61,6 +64,12 @@ module_param(fs_enet_debug, int, 0);
 MODULE_PARM_DESC(fs_enet_debug,
 		 "Freescale bitmapped debugging message enable value");
 
+<<<<<<< HEAD
+=======
+#define RX_RING_SIZE	32
+#define TX_RING_SIZE	64
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void fs_enet_netpoll(struct net_device *dev);
 #endif
@@ -80,13 +89,19 @@ static void skb_align(struct sk_buff *skb, int align)
 		skb_reserve(skb, align - off);
 }
 
+<<<<<<< HEAD
 /* NAPI receive function */
 static int fs_enet_rx_napi(struct napi_struct *napi, int budget)
+=======
+/* NAPI function */
+static int fs_enet_napi(struct napi_struct *napi, int budget)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	struct fs_enet_private *fep = container_of(napi, struct fs_enet_private, napi);
 	struct net_device *dev = fep->ndev;
 	const struct fs_platform_info *fpi = fep->fpi;
 	cbd_t __iomem *bdp;
+<<<<<<< HEAD
 	struct sk_buff *skb, *skbn, *skbt;
 	int received = 0;
 	u16 pkt_len, sc;
@@ -110,10 +125,34 @@ static int fs_enet_rx_napi(struct napi_struct *napi, int budget)
 		 */
 		if ((sc & BD_ENET_RX_LAST) == 0)
 			dev_warn(fep->dev, "rcv is not +last\n");
+=======
+	struct sk_buff *skb, *skbn;
+	int received = 0;
+	u16 pkt_len, sc;
+	int curidx;
+	int dirtyidx, do_wake, do_restart;
+	int tx_left = TX_RING_SIZE;
+
+	spin_lock(&fep->tx_lock);
+	bdp = fep->dirty_tx;
+
+	/* clear status bits for napi*/
+	(*fep->ops->napi_clear_event)(dev);
+
+	do_wake = do_restart = 0;
+	while (((sc = CBDR_SC(bdp)) & BD_ENET_TX_READY) == 0 && tx_left) {
+		dirtyidx = bdp - fep->tx_bd_base;
+
+		if (fep->tx_free == fep->tx_ring)
+			break;
+
+		skb = fep->tx_skbuff[dirtyidx];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Check for errors.
 		 */
+<<<<<<< HEAD
 		if (sc & (BD_ENET_RX_LG | BD_ENET_RX_SH | BD_ENET_RX_CL |
 			  BD_ENET_RX_NO | BD_ENET_RX_CR | BD_ENET_RX_OV)) {
 			fep->stats.rx_errors++;
@@ -223,14 +262,97 @@ static int fs_enet_rx_non_napi(struct net_device *dev)
 	int received = 0;
 	u16 pkt_len, sc;
 	int curidx;
+=======
+		if (sc & (BD_ENET_TX_HB | BD_ENET_TX_LC |
+			  BD_ENET_TX_RL | BD_ENET_TX_UN | BD_ENET_TX_CSL)) {
+
+			if (sc & BD_ENET_TX_HB)	/* No heartbeat */
+				fep->stats.tx_heartbeat_errors++;
+			if (sc & BD_ENET_TX_LC)	/* Late collision */
+				fep->stats.tx_window_errors++;
+			if (sc & BD_ENET_TX_RL)	/* Retrans limit */
+				fep->stats.tx_aborted_errors++;
+			if (sc & BD_ENET_TX_UN)	/* Underrun */
+				fep->stats.tx_fifo_errors++;
+			if (sc & BD_ENET_TX_CSL)	/* Carrier lost */
+				fep->stats.tx_carrier_errors++;
+
+			if (sc & (BD_ENET_TX_LC | BD_ENET_TX_RL | BD_ENET_TX_UN)) {
+				fep->stats.tx_errors++;
+				do_restart = 1;
+			}
+		} else
+			fep->stats.tx_packets++;
+
+		if (sc & BD_ENET_TX_READY) {
+			dev_warn(fep->dev,
+				 "HEY! Enet xmit interrupt and TX_READY.\n");
+		}
+
+		/*
+		 * Deferred means some collisions occurred during transmit,
+		 * but we eventually sent the packet OK.
+		 */
+		if (sc & BD_ENET_TX_DEF)
+			fep->stats.collisions++;
+
+		/* unmap */
+		if (fep->mapped_as_page[dirtyidx])
+			dma_unmap_page(fep->dev, CBDR_BUFADDR(bdp),
+				       CBDR_DATLEN(bdp), DMA_TO_DEVICE);
+		else
+			dma_unmap_single(fep->dev, CBDR_BUFADDR(bdp),
+					 CBDR_DATLEN(bdp), DMA_TO_DEVICE);
+
+		/*
+		 * Free the sk buffer associated with this last transmit.
+		 */
+		if (skb) {
+			dev_kfree_skb(skb);
+			fep->tx_skbuff[dirtyidx] = NULL;
+		}
+
+		/*
+		 * Update pointer to next buffer descriptor to be transmitted.
+		 */
+		if ((sc & BD_ENET_TX_WRAP) == 0)
+			bdp++;
+		else
+			bdp = fep->tx_bd_base;
+
+		/*
+		 * Since we have freed up a buffer, the ring is no longer
+		 * full.
+		 */
+		if (++fep->tx_free == MAX_SKB_FRAGS)
+			do_wake = 1;
+		tx_left--;
+	}
+
+	fep->dirty_tx = bdp;
+
+	if (do_restart)
+		(*fep->ops->tx_restart)(dev);
+
+	spin_unlock(&fep->tx_lock);
+
+	if (do_wake)
+		netif_wake_queue(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * First, grab all of the stats for the incoming packet.
 	 * These get messed up if we get called due to a busy condition.
 	 */
 	bdp = fep->cur_rx;
 
+<<<<<<< HEAD
 	while (((sc = CBDR_SC(bdp)) & BD_ENET_RX_EMPTY) == 0) {
 
+=======
+	while (((sc = CBDR_SC(bdp)) & BD_ENET_RX_EMPTY) == 0 &&
+	       received < budget) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		curidx = bdp - fep->rx_bd_base;
 
 		/*
@@ -259,6 +381,7 @@ static int fs_enet_rx_non_napi(struct net_device *dev)
 			if (sc & BD_ENET_RX_OV)
 				fep->stats.rx_crc_errors++;
 
+<<<<<<< HEAD
 			skb = fep->rx_skbuff[curidx];
 
 			dma_unmap_single(fep->dev, CBDR_BUFADDR(bdp),
@@ -275,6 +398,12 @@ static int fs_enet_rx_non_napi(struct net_device *dev)
 				L1_CACHE_ALIGN(PKT_MAXBUF_SIZE),
 				DMA_FROM_DEVICE);
 
+=======
+			skbn = fep->rx_skbuff[curidx];
+		} else {
+			skb = fep->rx_skbuff[curidx];
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			/*
 			 * Process the incoming frame.
 			 */
@@ -289,23 +418,54 @@ static int fs_enet_rx_non_napi(struct net_device *dev)
 					skb_reserve(skbn, 2);	/* align IP header */
 					skb_copy_from_linear_data(skb,
 						      skbn->data, pkt_len);
+<<<<<<< HEAD
 					/* swap */
 					skbt = skb;
 					skb = skbn;
 					skbn = skbt;
+=======
+					swap(skb, skbn);
+					dma_sync_single_for_cpu(fep->dev,
+						CBDR_BUFADDR(bdp),
+						L1_CACHE_ALIGN(pkt_len),
+						DMA_FROM_DEVICE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 				}
 			} else {
 				skbn = netdev_alloc_skb(dev, ENET_RX_FRSIZE);
 
+<<<<<<< HEAD
 				if (skbn)
 					skb_align(skbn, ENET_RX_ALIGN);
+=======
+				if (skbn) {
+					dma_addr_t dma;
+
+					skb_align(skbn, ENET_RX_ALIGN);
+
+					dma_unmap_single(fep->dev,
+						CBDR_BUFADDR(bdp),
+						L1_CACHE_ALIGN(PKT_MAXBUF_SIZE),
+						DMA_FROM_DEVICE);
+
+					dma = dma_map_single(fep->dev,
+						skbn->data,
+						L1_CACHE_ALIGN(PKT_MAXBUF_SIZE),
+						DMA_FROM_DEVICE);
+					CBDW_BUFADDR(bdp, dma);
+				}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			}
 
 			if (skbn != NULL) {
 				skb_put(skb, pkt_len);	/* Make room */
 				skb->protocol = eth_type_trans(skb, dev);
 				received++;
+<<<<<<< HEAD
 				netif_rx(skb);
+=======
+				netif_receive_skb(skb);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			} else {
 				fep->stats.rx_dropped++;
 				skbn = skb;
@@ -313,9 +473,12 @@ static int fs_enet_rx_non_napi(struct net_device *dev)
 		}
 
 		fep->rx_skbuff[curidx] = skbn;
+<<<<<<< HEAD
 		CBDW_BUFADDR(bdp, dma_map_single(fep->dev, skbn->data,
 			     L1_CACHE_ALIGN(PKT_MAXBUF_SIZE),
 			     DMA_FROM_DEVICE));
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		CBDW_DATLEN(bdp, 0);
 		CBDW_SC(bdp, (sc & ~BD_ENET_RX_STATS) | BD_ENET_RX_EMPTY);
 
@@ -332,6 +495,7 @@ static int fs_enet_rx_non_napi(struct net_device *dev)
 
 	fep->cur_rx = bdp;
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -426,6 +590,17 @@ static void fs_enet_tx(struct net_device *dev)
 
 	if (do_wake)
 		netif_wake_queue(dev);
+=======
+	if (received < budget && tx_left) {
+		/* done */
+		napi_complete(napi);
+		(*fep->ops->napi_enable)(dev);
+
+		return received;
+	}
+
+	return budget;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -451,14 +626,19 @@ fs_enet_interrupt(int irq, void *dev_id)
 		nr++;
 
 		int_clr_events = int_events;
+<<<<<<< HEAD
 		if (fpi->use_napi)
 			int_clr_events &= ~fep->ev_napi_rx;
+=======
+		int_clr_events &= ~fep->ev_napi;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		(*fep->ops->clear_int_events)(dev, int_clr_events);
 
 		if (int_events & fep->ev_err)
 			(*fep->ops->ev_error)(dev, int_events);
 
+<<<<<<< HEAD
 		if (int_events & fep->ev_rx) {
 			if (!fpi->use_napi)
 				fs_enet_rx_non_napi(dev);
@@ -477,6 +657,20 @@ fs_enet_interrupt(int irq, void *dev_id)
 
 		if (int_events & fep->ev_tx)
 			fs_enet_tx(dev);
+=======
+		if (int_events & fep->ev) {
+			napi_ok = napi_schedule_prep(&fep->napi);
+
+			(*fep->ops->napi_disable)(dev);
+			(*fep->ops->clear_int_events)(dev, fep->ev_napi);
+
+			/* NOTE: it is possible for FCCs in NAPI mode    */
+			/* to submit a spurious interrupt while in poll  */
+			if (napi_ok)
+				__napi_schedule(&fep->napi);
+		}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 	handled = nr > 0;
@@ -583,7 +777,13 @@ static struct sk_buff *tx_skb_align_workaround(struct net_device *dev,
 					       struct sk_buff *skb)
 {
 	struct sk_buff *new_skb;
+<<<<<<< HEAD
 	struct fs_enet_private *fep = netdev_priv(dev);
+=======
+
+	if (skb_linearize(skb))
+		return NULL;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Alloc new skb */
 	new_skb = netdev_alloc_skb(dev, skb->len + 4);
@@ -610,10 +810,34 @@ static int fs_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	cbd_t __iomem *bdp;
 	int curidx;
 	u16 sc;
+<<<<<<< HEAD
 	unsigned long flags;
 
 #ifdef CONFIG_FS_ENET_MPC5121_FEC
 	if (((unsigned long)skb->data) & 0x3) {
+=======
+	int nr_frags;
+	skb_frag_t *frag;
+	int len;
+#ifdef CONFIG_FS_ENET_MPC5121_FEC
+	int is_aligned = 1;
+	int i;
+
+	if (!IS_ALIGNED((unsigned long)skb->data, 4)) {
+		is_aligned = 0;
+	} else {
+		nr_frags = skb_shinfo(skb)->nr_frags;
+		frag = skb_shinfo(skb)->frags;
+		for (i = 0; i < nr_frags; i++, frag++) {
+			if (!IS_ALIGNED(frag->page_offset, 4)) {
+				is_aligned = 0;
+				break;
+			}
+		}
+	}
+
+	if (!is_aligned) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		skb = tx_skb_align_workaround(dev, skb);
 		if (!skb) {
 			/*
@@ -625,16 +849,28 @@ static int fs_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		}
 	}
 #endif
+<<<<<<< HEAD
 	spin_lock_irqsave(&fep->tx_lock, flags);
+=======
+
+	spin_lock(&fep->tx_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * Fill in a Tx ring entry
 	 */
 	bdp = fep->cur_tx;
 
+<<<<<<< HEAD
 	if (!fep->tx_free || (CBDR_SC(bdp) & BD_ENET_TX_READY)) {
 		netif_stop_queue(dev);
 		spin_unlock_irqrestore(&fep->tx_lock, flags);
+=======
+	nr_frags = skb_shinfo(skb)->nr_frags;
+	if (fep->tx_free <= nr_frags || (CBDR_SC(bdp) & BD_ENET_TX_READY)) {
+		netif_stop_queue(dev);
+		spin_unlock(&fep->tx_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 		/*
 		 * Ooops.  All transmit buffers are full.  Bail out.
@@ -645,6 +881,7 @@ static int fs_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	curidx = bdp - fep->tx_bd_base;
+<<<<<<< HEAD
 	/*
 	 * Clear all of the status flags.
 	 */
@@ -657,10 +894,19 @@ static int fs_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	fep->stats.tx_bytes += skb->len;
 
+=======
+
+	len = skb->len;
+	fep->stats.tx_bytes += len;
+	if (nr_frags)
+		len -= skb->data_len;
+	fep->tx_free -= nr_frags + 1;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * Push the data cache so the CPM does not get stale memory data.
 	 */
 	CBDW_BUFADDR(bdp, dma_map_single(fep->dev,
+<<<<<<< HEAD
 				skb->data, skb->len, DMA_TO_DEVICE));
 	CBDW_DATLEN(bdp, skb->len);
 
@@ -674,6 +920,35 @@ static int fs_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	if (!--fep->tx_free)
 		netif_stop_queue(dev);
+=======
+				skb->data, len, DMA_TO_DEVICE));
+	CBDW_DATLEN(bdp, len);
+
+	fep->mapped_as_page[curidx] = 0;
+	frag = skb_shinfo(skb)->frags;
+	while (nr_frags) {
+		CBDC_SC(bdp,
+			BD_ENET_TX_STATS | BD_ENET_TX_INTR | BD_ENET_TX_LAST |
+			BD_ENET_TX_TC);
+		CBDS_SC(bdp, BD_ENET_TX_READY);
+
+		if ((CBDR_SC(bdp) & BD_ENET_TX_WRAP) == 0)
+			bdp++, curidx++;
+		else
+			bdp = fep->tx_bd_base, curidx = 0;
+
+		len = skb_frag_size(frag);
+		CBDW_BUFADDR(bdp, skb_frag_dma_map(fep->dev, frag, 0, len,
+						   DMA_TO_DEVICE));
+		CBDW_DATLEN(bdp, len);
+
+		fep->tx_skbuff[curidx] = NULL;
+		fep->mapped_as_page[curidx] = 1;
+
+		frag++;
+		nr_frags--;
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Trigger transmission start */
 	sc = BD_ENET_TX_READY | BD_ENET_TX_INTR |
@@ -684,20 +959,51 @@ static int fs_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	 * yay for hw reuse :) */
 	if (skb->len <= 60)
 		sc |= BD_ENET_TX_PAD;
+<<<<<<< HEAD
 	CBDS_SC(bdp, sc);
 
+=======
+	CBDC_SC(bdp, BD_ENET_TX_STATS);
+	CBDS_SC(bdp, sc);
+
+	/* Save skb pointer. */
+	fep->tx_skbuff[curidx] = skb;
+
+	/* If this was the last BD in the ring, start at the beginning again. */
+	if ((CBDR_SC(bdp) & BD_ENET_TX_WRAP) == 0)
+		bdp++;
+	else
+		bdp = fep->tx_bd_base;
+	fep->cur_tx = bdp;
+
+	if (fep->tx_free < MAX_SKB_FRAGS)
+		netif_stop_queue(dev);
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	skb_tx_timestamp(skb);
 
 	(*fep->ops->tx_kickstart)(dev);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&fep->tx_lock, flags);
+=======
+	spin_unlock(&fep->tx_lock);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return NETDEV_TX_OK;
 }
 
+<<<<<<< HEAD
 static void fs_timeout(struct net_device *dev)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
+=======
+static void fs_timeout_work(struct work_struct *work)
+{
+	struct fs_enet_private *fep = container_of(work, struct fs_enet_private,
+						   timeout_work);
+	struct net_device *dev = fep->ndev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	unsigned long flags;
 	int wake = 0;
 
@@ -706,6 +1012,7 @@ static void fs_timeout(struct net_device *dev)
 	spin_lock_irqsave(&fep->lock, flags);
 
 	if (dev->flags & IFF_UP) {
+<<<<<<< HEAD
 		phy_stop(fep->phydev);
 		(*fep->ops->stop)(dev);
 		(*fep->ops->restart)(dev);
@@ -714,19 +1021,43 @@ static void fs_timeout(struct net_device *dev)
 
 	phy_start(fep->phydev);
 	wake = fep->tx_free && !(CBDR_SC(fep->cur_tx) & BD_ENET_TX_READY);
+=======
+		phy_stop(dev->phydev);
+		(*fep->ops->stop)(dev);
+		(*fep->ops->restart)(dev);
+	}
+
+	phy_start(dev->phydev);
+	wake = fep->tx_free >= MAX_SKB_FRAGS &&
+	       !(CBDR_SC(fep->cur_tx) & BD_ENET_TX_READY);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	spin_unlock_irqrestore(&fep->lock, flags);
 
 	if (wake)
 		netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
+=======
+static void fs_timeout(struct net_device *dev)
+{
+	struct fs_enet_private *fep = netdev_priv(dev);
+
+	schedule_work(&fep->timeout_work);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*-----------------------------------------------------------------------------
  *  generic link-change handler - should be sufficient for most cases
  *-----------------------------------------------------------------------------*/
 static void generic_adjust_link(struct  net_device *dev)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = fep->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int new_state = 0;
 
 	if (phydev->link) {
@@ -791,16 +1122,22 @@ static int fs_init_phy(struct net_device *dev)
 	phydev = of_phy_connect(dev, fep->fpi->phy_node, &fs_adjust_link, 0,
 				iface);
 	if (!phydev) {
+<<<<<<< HEAD
 		phydev = of_phy_connect_fixed_link(dev, &fs_adjust_link,
 						   iface);
 	}
 	if (!phydev) {
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		dev_err(&dev->dev, "Could not attach to PHY\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	fep->phydev = phydev;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
@@ -811,30 +1148,48 @@ static int fs_enet_open(struct net_device *dev)
 	int err;
 
 	/* to initialize the fep->cur_rx,... */
+<<<<<<< HEAD
 	/* not doing this, will cause a crash in fs_enet_rx_napi */
 	fs_init_bds(fep->ndev);
 
 	if (fep->fpi->use_napi)
 		napi_enable(&fep->napi);
+=======
+	/* not doing this, will cause a crash in fs_enet_napi */
+	fs_init_bds(fep->ndev);
+
+	napi_enable(&fep->napi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Install our interrupt handler. */
 	r = request_irq(fep->interrupt, fs_enet_interrupt, IRQF_SHARED,
 			"fs_enet-mac", dev);
 	if (r != 0) {
 		dev_err(fep->dev, "Could not allocate FS_ENET IRQ!");
+<<<<<<< HEAD
 		if (fep->fpi->use_napi)
 			napi_disable(&fep->napi);
+=======
+		napi_disable(&fep->napi);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return -EINVAL;
 	}
 
 	err = fs_init_phy(dev);
 	if (err) {
 		free_irq(fep->interrupt, dev);
+<<<<<<< HEAD
 		if (fep->fpi->use_napi)
 			napi_disable(&fep->napi);
 		return err;
 	}
 	phy_start(fep->phydev);
+=======
+		napi_disable(&fep->napi);
+		return err;
+	}
+	phy_start(dev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	netif_start_queue(dev);
 
@@ -848,9 +1203,15 @@ static int fs_enet_close(struct net_device *dev)
 
 	netif_stop_queue(dev);
 	netif_carrier_off(dev);
+<<<<<<< HEAD
 	if (fep->fpi->use_napi)
 		napi_disable(&fep->napi);
 	phy_stop(fep->phydev);
+=======
+	napi_disable(&fep->napi);
+	cancel_work_sync(&fep->timeout_work);
+	phy_stop(dev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_irqsave(&fep->lock, flags);
 	spin_lock(&fep->tx_lock);
@@ -859,8 +1220,12 @@ static int fs_enet_close(struct net_device *dev)
 	spin_unlock_irqrestore(&fep->lock, flags);
 
 	/* release any irqs */
+<<<<<<< HEAD
 	phy_disconnect(fep->phydev);
 	fep->phydev = NULL;
+=======
+	phy_disconnect(dev->phydev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_irq(fep->interrupt, dev);
 
 	return 0;
@@ -905,6 +1270,7 @@ static void fs_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 		regs->version = 0;
 }
 
+<<<<<<< HEAD
 static int fs_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
@@ -940,29 +1306,101 @@ static void fs_set_msglevel(struct net_device *dev, u32 value)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	fep->msg_enable = value;
+=======
+static int fs_nway_reset(struct net_device *dev)
+{
+	return 0;
+}
+
+static u32 fs_get_msglevel(struct net_device *dev)
+{
+	struct fs_enet_private *fep = netdev_priv(dev);
+	return fep->msg_enable;
+}
+
+static void fs_set_msglevel(struct net_device *dev, u32 value)
+{
+	struct fs_enet_private *fep = netdev_priv(dev);
+	fep->msg_enable = value;
+}
+
+static int fs_get_tunable(struct net_device *dev,
+			  const struct ethtool_tunable *tuna, void *data)
+{
+	struct fs_enet_private *fep = netdev_priv(dev);
+	struct fs_platform_info *fpi = fep->fpi;
+	int ret = 0;
+
+	switch (tuna->id) {
+	case ETHTOOL_RX_COPYBREAK:
+		*(u32 *)data = fpi->rx_copybreak;
+		break;
+	default:
+		ret = -EINVAL;
+		break;
+	}
+
+	return ret;
+}
+
+static int fs_set_tunable(struct net_device *dev,
+			  const struct ethtool_tunable *tuna, const void *data)
+{
+	struct fs_enet_private *fep = netdev_priv(dev);
+	struct fs_platform_info *fpi = fep->fpi;
+	int ret = 0;
+
+	switch (tuna->id) {
+	case ETHTOOL_RX_COPYBREAK:
+		fpi->rx_copybreak = *(u32 *)data;
+		break;
+	default:
+		ret = -EINVAL;
+		break;
+	}
+
+	return ret;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static const struct ethtool_ops fs_ethtool_ops = {
 	.get_drvinfo = fs_get_drvinfo,
 	.get_regs_len = fs_get_regs_len,
+<<<<<<< HEAD
 	.get_settings = fs_get_settings,
 	.set_settings = fs_set_settings,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.nway_reset = fs_nway_reset,
 	.get_link = ethtool_op_get_link,
 	.get_msglevel = fs_get_msglevel,
 	.set_msglevel = fs_set_msglevel,
 	.get_regs = fs_get_regs,
 	.get_ts_info = ethtool_op_get_ts_info,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+	.get_tunable = fs_get_tunable,
+	.set_tunable = fs_set_tunable,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int fs_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
 	struct fs_enet_private *fep = netdev_priv(dev);
 
 	if (!netif_running(dev))
 		return -EINVAL;
 
 	return phy_mii_ioctl(fep->phydev, rq, cmd);
+=======
+	if (!netif_running(dev))
+		return -EINVAL;
+
+	return phy_mii_ioctl(dev->phydev, rq, cmd);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 extern int fs_mii_connect(struct net_device *dev);
@@ -992,7 +1430,11 @@ static const struct net_device_ops fs_enet_netdev_ops = {
 #endif
 };
 
+<<<<<<< HEAD
 static struct of_device_id fs_enet_match[];
+=======
+static const struct of_device_id fs_enet_match[];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int fs_enet_probe(struct platform_device *ofdev)
 {
 	const struct of_device_id *match;
@@ -1000,6 +1442,11 @@ static int fs_enet_probe(struct platform_device *ofdev)
 	struct fs_enet_private *fep;
 	struct fs_platform_info *fpi;
 	const u32 *data;
+<<<<<<< HEAD
+=======
+	struct clk *clk;
+	int err;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	const u8 *mac_addr;
 	const char *phy_connection_type;
 	int privsize, len, ret = -ENODEV;
@@ -1020,6 +1467,7 @@ static int fs_enet_probe(struct platform_device *ofdev)
 		fpi->cp_command = *data;
 	}
 
+<<<<<<< HEAD
 	fpi->rx_ring = 32;
 	fpi->tx_ring = 32;
 	fpi->rx_copybreak = 240;
@@ -1029,6 +1477,23 @@ static int fs_enet_probe(struct platform_device *ofdev)
 	if ((!fpi->phy_node) && (!of_get_property(ofdev->dev.of_node, "fixed-link",
 						  NULL)))
 		goto out_free_fpi;
+=======
+	fpi->rx_ring = RX_RING_SIZE;
+	fpi->tx_ring = TX_RING_SIZE;
+	fpi->rx_copybreak = 240;
+	fpi->napi_weight = 17;
+	fpi->phy_node = of_parse_phandle(ofdev->dev.of_node, "phy-handle", 0);
+	if (!fpi->phy_node && of_phy_is_fixed_link(ofdev->dev.of_node)) {
+		err = of_phy_register_fixed_link(ofdev->dev.of_node);
+		if (err)
+			goto out_free_fpi;
+
+		/* In the case of a fixed PHY, the DT node associated
+		 * to the PHY is the Ethernet MAC DT node.
+		 */
+		fpi->phy_node = of_node_get(ofdev->dev.of_node);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (of_device_is_compatible(ofdev->dev.of_node, "fsl,mpc5125-fec")) {
 		phy_connection_type = of_get_property(ofdev->dev.of_node,
@@ -1037,9 +1502,30 @@ static int fs_enet_probe(struct platform_device *ofdev)
 			fpi->use_rmii = 1;
 	}
 
+<<<<<<< HEAD
 	privsize = sizeof(*fep) +
 	           sizeof(struct sk_buff **) *
 	           (fpi->rx_ring + fpi->tx_ring);
+=======
+	/* make clock lookup non-fatal (the driver is shared among platforms),
+	 * but require enable to succeed when a clock was specified/found,
+	 * keep a reference to the clock upon successful acquisition
+	 */
+	clk = devm_clk_get(&ofdev->dev, "per");
+	if (!IS_ERR(clk)) {
+		err = clk_prepare_enable(clk);
+		if (err) {
+			ret = err;
+			goto out_deregister_fixed_link;
+		}
+		fpi->clk_per = clk;
+	}
+
+	privsize = sizeof(*fep) +
+	           sizeof(struct sk_buff **) *
+		     (fpi->rx_ring + fpi->tx_ring) +
+		   sizeof(char) * fpi->tx_ring;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ndev = alloc_etherdev(privsize);
 	if (!ndev) {
@@ -1048,7 +1534,11 @@ static int fs_enet_probe(struct platform_device *ofdev)
 	}
 
 	SET_NETDEV_DEV(ndev, &ofdev->dev);
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, ndev);
+=======
+	platform_set_drvdata(ofdev, ndev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	fep = netdev_priv(ndev);
 	fep->dev = &ofdev->dev;
@@ -1062,13 +1552,22 @@ static int fs_enet_probe(struct platform_device *ofdev)
 
 	fep->rx_skbuff = (struct sk_buff **)&fep[1];
 	fep->tx_skbuff = fep->rx_skbuff + fpi->rx_ring;
+<<<<<<< HEAD
+=======
+	fep->mapped_as_page = (char *)(fep->rx_skbuff + fpi->rx_ring +
+				       fpi->tx_ring);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	spin_lock_init(&fep->lock);
 	spin_lock_init(&fep->tx_lock);
 
 	mac_addr = of_get_mac_address(ofdev->dev.of_node);
 	if (mac_addr)
+<<<<<<< HEAD
 		memcpy(ndev->dev_addr, mac_addr, 6);
+=======
+		memcpy(ndev->dev_addr, mac_addr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ret = fep->ops->allocate_bd(ndev);
 	if (ret)
@@ -1082,9 +1581,14 @@ static int fs_enet_probe(struct platform_device *ofdev)
 
 	ndev->netdev_ops = &fs_enet_netdev_ops;
 	ndev->watchdog_timeo = 2 * HZ;
+<<<<<<< HEAD
 	if (fpi->use_napi)
 		netif_napi_add(ndev, &fep->napi, fs_enet_rx_napi,
 		               fpi->napi_weight);
+=======
+	INIT_WORK(&fep->timeout_work, fs_timeout_work);
+	netif_napi_add(ndev, &fep->napi, fs_enet_napi, fpi->napi_weight);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	ndev->ethtool_ops = &fs_ethtool_ops;
 
@@ -1092,6 +1596,11 @@ static int fs_enet_probe(struct platform_device *ofdev)
 
 	netif_carrier_off(ndev);
 
+<<<<<<< HEAD
+=======
+	ndev->features |= NETIF_F_SG;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	ret = register_netdev(ndev);
 	if (ret)
 		goto out_free_bd;
@@ -1106,9 +1615,19 @@ out_cleanup_data:
 	fep->ops->cleanup_data(ndev);
 out_free_dev:
 	free_netdev(ndev);
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, NULL);
 out_put:
 	of_node_put(fpi->phy_node);
+=======
+out_put:
+	of_node_put(fpi->phy_node);
+	if (fpi->clk_per)
+		clk_disable_unprepare(fpi->clk_per);
+out_deregister_fixed_link:
+	if (of_phy_is_fixed_link(ofdev->dev.of_node))
+		of_phy_deregister_fixed_link(ofdev->dev.of_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 out_free_fpi:
 	kfree(fpi);
 	return ret;
@@ -1116,7 +1635,11 @@ out_free_fpi:
 
 static int fs_enet_remove(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct net_device *ndev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct net_device *ndev = platform_get_drvdata(ofdev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct fs_enet_private *fep = netdev_priv(ndev);
 
 	unregister_netdev(ndev);
@@ -1125,11 +1648,22 @@ static int fs_enet_remove(struct platform_device *ofdev)
 	fep->ops->cleanup_data(ndev);
 	dev_set_drvdata(fep->dev, NULL);
 	of_node_put(fep->fpi->phy_node);
+<<<<<<< HEAD
+=======
+	if (fep->fpi->clk_per)
+		clk_disable_unprepare(fep->fpi->clk_per);
+	if (of_phy_is_fixed_link(ofdev->dev.of_node))
+		of_phy_deregister_fixed_link(ofdev->dev.of_node);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	free_netdev(ndev);
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id fs_enet_match[] = {
+=======
+static const struct of_device_id fs_enet_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifdef CONFIG_FS_ENET_HAS_SCC
 	{
 		.compatible = "fsl,cpm1-scc-enet",
@@ -1169,7 +1703,10 @@ MODULE_DEVICE_TABLE(of, fs_enet_match);
 
 static struct platform_driver fs_enet_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "fs_enet",
 		.of_match_table = fs_enet_match,
 	},

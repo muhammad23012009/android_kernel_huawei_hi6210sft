@@ -103,12 +103,21 @@ out_nomem:
 
 static void hw_queue_dtor(struct hw_queue *queue)
 {
+<<<<<<< HEAD
 	int pages_per_kpage = PAGE_SIZE / queue->pagesize;
+=======
+	int pages_per_kpage;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int i, nr_pages;
 
 	if (!queue || !queue->queue_pages)
 		return;
 
+<<<<<<< HEAD
+=======
+	pages_per_kpage = PAGE_SIZE / queue->pagesize;
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	nr_pages = queue->queue_length / queue->pagesize;
 
 	for (i = 0; i < nr_pages; i += pages_per_kpage)

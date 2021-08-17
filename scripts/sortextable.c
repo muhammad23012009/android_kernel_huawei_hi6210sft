@@ -31,10 +31,32 @@
 #include <tools/be_byteshift.h>
 #include <tools/le_byteshift.h>
 
+<<<<<<< HEAD
+=======
+#ifndef EM_ARCOMPACT
+#define EM_ARCOMPACT	93
+#endif
+
+#ifndef EM_XTENSA
+#define EM_XTENSA	94
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #ifndef EM_AARCH64
 #define EM_AARCH64	183
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef EM_MICROBLAZE
+#define EM_MICROBLAZE	189
+#endif
+
+#ifndef EM_ARCV2
+#define EM_ARCV2	195
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int fd_map;	/* File descriptor for file being modified. */
 static int mmap_failed; /* Boolean flag. */
 static void *ehdr_curr; /* current ElfXX_Ehdr *  for resource cleanup */
@@ -64,6 +86,7 @@ fail_file(void)
 	longjmp(jmpenv, SJ_FAIL);
 }
 
+<<<<<<< HEAD
 static void __attribute__((noreturn))
 succeed_file(void)
 {
@@ -72,6 +95,8 @@ succeed_file(void)
 }
 
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /*
  * Get the whole file as a programming convenience in order to avoid
  * malloc+lseek+read+free of many pieces.  If successful, then mmap
@@ -160,6 +185,33 @@ static void (*w2)(uint16_t, uint16_t *);
 
 typedef void (*table_sort_t)(char *, int);
 
+<<<<<<< HEAD
+=======
+/*
+ * Move reserved section indices SHN_LORESERVE..SHN_HIRESERVE out of
+ * the way to -256..-1, to avoid conflicting with real section
+ * indices.
+ */
+#define SPECIAL(i) ((i) - (SHN_HIRESERVE + 1))
+
+static inline int is_shndx_special(unsigned int i)
+{
+	return i != SHN_XINDEX && i >= SHN_LORESERVE && i <= SHN_HIRESERVE;
+}
+
+/* Accessor for sym->st_shndx, hides ugliness of "64k sections" */
+static inline unsigned int get_secindex(unsigned int shndx,
+					unsigned int sym_offs,
+					const Elf32_Word *symtab_shndx_start)
+{
+	if (is_shndx_special(shndx))
+		return SPECIAL(shndx);
+	if (shndx != SHN_XINDEX)
+		return shndx;
+	return r(&symtab_shndx_start[sym_offs]);
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* 32 bit and 64 bit are very similar */
 #include "sortextable.h"
 #define SORTEXTABLE_64
@@ -177,6 +229,38 @@ static int compare_relative_table(const void *a, const void *b)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void x86_sort_relative_table(char *extab_image, int image_size)
+{
+	int i;
+
+	i = 0;
+	while (i < image_size) {
+		uint32_t *loc = (uint32_t *)(extab_image + i);
+
+		w(r(loc) + i, loc);
+		w(r(loc + 1) + i + 4, loc + 1);
+		w(r(loc + 2) + i + 8, loc + 2);
+
+		i += sizeof(uint32_t) * 3;
+	}
+
+	qsort(extab_image, image_size / 12, 12, compare_relative_table);
+
+	i = 0;
+	while (i < image_size) {
+		uint32_t *loc = (uint32_t *)(extab_image + i);
+
+		w(r(loc) - i, loc);
+		w(r(loc + 1) - (i + 4), loc + 1);
+		w(r(loc + 2) - (i + 8), loc + 2);
+
+		i += sizeof(uint32_t) * 3;
+	}
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static void sort_relative_table(char *extab_image, int image_size)
 {
 	int i;
@@ -234,9 +318,15 @@ do_file(char const *const fname)
 		break;
 	}  /* end switch */
 	if (memcmp(ELFMAG, ehdr->e_ident, SELFMAG) != 0
+<<<<<<< HEAD
 	||  r2(&ehdr->e_type) != ET_EXEC
 	||  ehdr->e_ident[EI_VERSION] != EV_CURRENT) {
 		fprintf(stderr, "unrecognized ET_EXEC file %s\n", fname);
+=======
+	||  (r2(&ehdr->e_type) != ET_EXEC && r2(&ehdr->e_type) != ET_DYN)
+	||  ehdr->e_ident[EI_VERSION] != EV_CURRENT) {
+		fprintf(stderr, "unrecognized ET_EXEC/ET_DYN file %s\n", fname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		fail_file();
 	}
 
@@ -249,12 +339,29 @@ do_file(char const *const fname)
 		break;
 	case EM_386:
 	case EM_X86_64:
+<<<<<<< HEAD
 	case EM_S390:
 		custom_sort = sort_relative_table;
 		break;
 	case EM_ARM:
 	case EM_AARCH64:
 	case EM_MIPS:
+=======
+		custom_sort = x86_sort_relative_table;
+		break;
+
+	case EM_S390:
+	case EM_AARCH64:
+	case EM_PARISC:
+		custom_sort = sort_relative_table;
+		break;
+	case EM_ARCOMPACT:
+	case EM_ARCV2:
+	case EM_ARM:
+	case EM_MICROBLAZE:
+	case EM_MIPS:
+	case EM_XTENSA:
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		break;
 	}  /* end switch */
 
@@ -268,7 +375,11 @@ do_file(char const *const fname)
 		if (r2(&ehdr->e_ehsize) != sizeof(Elf32_Ehdr)
 		||  r2(&ehdr->e_shentsize) != sizeof(Elf32_Shdr)) {
 			fprintf(stderr,
+<<<<<<< HEAD
 				"unrecognized ET_EXEC file: %s\n", fname);
+=======
+				"unrecognized ET_EXEC/ET_DYN file: %s\n", fname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			fail_file();
 		}
 		do32(ehdr, fname, custom_sort);
@@ -278,7 +389,11 @@ do_file(char const *const fname)
 		if (r2(&ghdr->e_ehsize) != sizeof(Elf64_Ehdr)
 		||  r2(&ghdr->e_shentsize) != sizeof(Elf64_Shdr)) {
 			fprintf(stderr,
+<<<<<<< HEAD
 				"unrecognized ET_EXEC file: %s\n", fname);
+=======
+				"unrecognized ET_EXEC/ET_DYN file: %s\n", fname);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			fail_file();
 		}
 		do64(ghdr, fname, custom_sort);

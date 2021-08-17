@@ -37,6 +37,7 @@ compute_subtree_last(struct drbd_interval *node)
 	return max;
 }
 
+<<<<<<< HEAD
 static void augment_propagate(struct rb_node *rb, struct rb_node *stop)
 {
 	while (rb != stop) {
@@ -71,6 +72,10 @@ static const struct rb_augment_callbacks augment_callbacks = {
 	augment_copy,
 	augment_rotate,
 };
+=======
+RB_DECLARE_CALLBACKS(static, augment_callbacks, struct drbd_interval, rb,
+		     sector_t, end, compute_subtree_last);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /**
  * drbd_insert_interval  -  insert a new interval into a tree

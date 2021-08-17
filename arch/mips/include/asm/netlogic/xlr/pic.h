@@ -36,6 +36,11 @@
 #define _ASM_NLM_XLR_PIC_H
 
 #define PIC_CLK_HZ			66666666
+<<<<<<< HEAD
+=======
+#define pic_timer_freq()		PIC_CLK_HZ
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /* PIC hardware interrupt numbers */
 #define PIC_IRT_WD_INDEX		0
 #define PIC_IRT_TIMER_0_INDEX		1

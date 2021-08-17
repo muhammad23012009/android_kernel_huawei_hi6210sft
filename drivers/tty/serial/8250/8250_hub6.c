@@ -10,7 +10,11 @@
 #include <linux/init.h>
 #include <linux/serial_8250.h>
 
+<<<<<<< HEAD
 #define HUB6(card,port)							\
+=======
+#define HUB6(card, port)						\
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{								\
 		.iobase		= 0x302,				\
 		.irq		= 3,					\

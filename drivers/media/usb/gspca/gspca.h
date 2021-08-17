@@ -78,8 +78,13 @@ typedef int (*cam_get_reg_op) (struct gspca_dev *,
 				struct v4l2_dbg_register *);
 typedef int (*cam_set_reg_op) (struct gspca_dev *,
 				const struct v4l2_dbg_register *);
+<<<<<<< HEAD
 typedef int (*cam_ident_op) (struct gspca_dev *,
 				struct v4l2_dbg_chip_ident *);
+=======
+typedef int (*cam_chip_info_op) (struct gspca_dev *,
+				struct v4l2_dbg_chip_info *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef void (*cam_streamparm_op) (struct gspca_dev *,
 				  struct v4l2_streamparm *);
 typedef void (*cam_pkt_op) (struct gspca_dev *gspca_dev,
@@ -88,6 +93,13 @@ typedef void (*cam_pkt_op) (struct gspca_dev *gspca_dev,
 typedef int (*cam_int_pkt_op) (struct gspca_dev *gspca_dev,
 				u8 *data,
 				int len);
+<<<<<<< HEAD
+=======
+typedef void (*cam_format_op) (struct gspca_dev *gspca_dev,
+				struct v4l2_format *fmt);
+typedef int (*cam_frmsize_op) (struct gspca_dev *gspca_dev,
+				struct v4l2_frmsizeenum *fsize);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 /* subdriver description */
 struct sd_desc {
@@ -97,6 +109,10 @@ struct sd_desc {
 	cam_cf_op config;	/* called on probe */
 	cam_op init;		/* called on probe and resume */
 	cam_op init_controls;	/* called on probe */
+<<<<<<< HEAD
+=======
+	cam_v_op probe_error;	/* called if probe failed, do cleanup here */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	cam_op start;		/* called on stream on after URBs creation */
 	cam_pkt_op pkt_scan;
 /* optional operations */
@@ -109,11 +125,21 @@ struct sd_desc {
 	cam_set_jpg_op set_jcomp;
 	cam_streamparm_op get_streamparm;
 	cam_streamparm_op set_streamparm;
+<<<<<<< HEAD
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	cam_set_reg_op set_register;
 	cam_get_reg_op get_register;
 #endif
 	cam_ident_op get_chip_ident;
+=======
+	cam_format_op try_fmt;
+	cam_frmsize_op enum_framesizes;
+#ifdef CONFIG_VIDEO_ADV_DEBUG
+	cam_set_reg_op set_register;
+	cam_get_reg_op get_register;
+	cam_chip_info_op get_chip_info;
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #if IS_ENABLED(CONFIG_INPUT)
 	cam_int_pkt_op int_pkt_scan;
 	/* other_input makes the gspca core create gspca_dev->input even when
@@ -183,9 +209,13 @@ struct gspca_dev {
 	__u8 streaming;			/* protected by both mutexes (*) */
 
 	__u8 curr_mode;			/* current camera mode */
+<<<<<<< HEAD
 	__u32 pixfmt;			/* current mode parameters */
 	__u16 width;
 	__u16 height;
+=======
+	struct v4l2_pix_format pixfmt;	/* current mode parameters */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__u32 sequence;			/* frame sequence number */
 
 	wait_queue_head_t wq;		/* wait queue */
@@ -201,6 +231,10 @@ struct gspca_dev {
 	char memory;			/* memory type (V4L2_MEMORY_xxx) */
 	__u8 iface;			/* USB interface number */
 	__u8 alt;			/* USB alternate setting */
+<<<<<<< HEAD
+=======
+	int xfer_ep;			/* USB transfer endpoint address */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	u8 audio;			/* presence of audio device */
 
 	/* (*) These variables are proteced by both usb_lock and queue_lock,
@@ -230,6 +264,10 @@ int gspca_resume(struct usb_interface *intf);
 int gspca_expo_autogain(struct gspca_dev *gspca_dev, int avg_lum,
 	int desired_avg_lum, int deadzone, int gain_knee, int exposure_knee);
 int gspca_coarse_grained_expo_autogain(struct gspca_dev *gspca_dev,
+<<<<<<< HEAD
         int avg_lum, int desired_avg_lum, int deadzone);
+=======
+	int avg_lum, int desired_avg_lum, int deadzone);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #endif /* GSPCAV2_H */

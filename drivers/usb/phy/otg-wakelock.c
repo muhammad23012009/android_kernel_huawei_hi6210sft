@@ -19,7 +19,10 @@
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 #include <linux/wakelock.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/spinlock.h>
 #include <linux/usb/otg.h>
 
@@ -42,7 +45,11 @@ static DEFINE_SPINLOCK(otgwl_spinlock);
 
 struct otgwl_lock {
 	char name[40];
+<<<<<<< HEAD
 	struct wake_lock wakelock;
+=======
+	struct wakeup_source wakesrc;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bool held;
 };
 
@@ -57,22 +64,34 @@ static struct otgwl_lock vbus_lock;
 static void otgwl_hold(struct otgwl_lock *lock)
 {
 	if (!lock->held) {
+<<<<<<< HEAD
 		wake_lock(&lock->wakelock);
+=======
+		__pm_stay_awake(&lock->wakesrc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lock->held = true;
 	}
 }
 
 static void otgwl_temporary_hold(struct otgwl_lock *lock)
 {
+<<<<<<< HEAD
 	wake_lock_timeout(&lock->wakelock,
 			  msecs_to_jiffies(TEMPORARY_HOLD_TIME));
+=======
+	__pm_wakeup_event(&lock->wakesrc, TEMPORARY_HOLD_TIME);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	lock->held = false;
 }
 
 static void otgwl_drop(struct otgwl_lock *lock)
 {
 	if (lock->held) {
+<<<<<<< HEAD
 		wake_unlock(&lock->wakelock);
+=======
+		__pm_relax(&lock->wakesrc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		lock->held = false;
 	}
 }
@@ -151,8 +170,12 @@ static int __init otg_wakelock_init(void)
 
 	snprintf(vbus_lock.name, sizeof(vbus_lock.name), "vbus-%s",
 		 dev_name(otgwl_xceiv->dev));
+<<<<<<< HEAD
 	wake_lock_init(&vbus_lock.wakelock, WAKE_LOCK_SUSPEND,
 		       vbus_lock.name);
+=======
+	wakeup_source_init(&vbus_lock.wakesrc, vbus_lock.name);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	otgwl_nb.notifier_call = otgwl_otg_notifications;
 	ret = usb_register_notifier(otgwl_xceiv, &otgwl_nb);
@@ -162,7 +185,11 @@ static int __init otg_wakelock_init(void)
 		       " failed\n", __func__,
 		       dev_name(otgwl_xceiv->dev));
 		otgwl_xceiv = NULL;
+<<<<<<< HEAD
 		wake_lock_destroy(&vbus_lock.wakelock);
+=======
+		wakeup_source_trash(&vbus_lock.wakesrc);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return ret;
 	}
 

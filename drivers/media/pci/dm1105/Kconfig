@@ -1,6 +1,10 @@
 config DVB_DM1105
 	tristate "SDMC DM1105 based PCI cards"
+<<<<<<< HEAD
 	depends on DVB_CORE && PCI && I2C
+=======
+	depends on DVB_CORE && PCI && I2C && I2C_ALGOBIT
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	select DVB_PLL if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_STV0299 if MEDIA_SUBDRV_AUTOSELECT
 	select DVB_STV0288 if MEDIA_SUBDRV_AUTOSELECT

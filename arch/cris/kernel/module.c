@@ -36,7 +36,11 @@ void *module_alloc(unsigned long size)
 }
 
 /* Free memory returned from module_alloc */
+<<<<<<< HEAD
 void module_free(struct module *mod, void *module_region)
+=======
+void module_memfree(void *module_region)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	kfree(module_region);
 }

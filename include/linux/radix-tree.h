@@ -21,6 +21,10 @@
 #ifndef _LINUX_RADIX_TREE_H
 #define _LINUX_RADIX_TREE_H
 
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/preempt.h>
 #include <linux/types.h>
 #include <linux/bug.h>
@@ -28,6 +32,7 @@
 #include <linux/rcupdate.h>
 
 /*
+<<<<<<< HEAD
  * An indirect pointer (root->rnode pointing to a radix_tree_node, rather
  * than a data item) is signalled by the low bit set in the root->rnode
  * pointer.
@@ -46,29 +51,106 @@
  * A common use of the radix tree is to store pointers to struct pages;
  * but shmem/tmpfs needs also to store swap entries in the same tree:
  * those are marked as exceptional entries to distinguish them.
+=======
+ * The bottom two bits of the slot determine how the remaining bits in the
+ * slot are interpreted:
+ *
+ * 00 - data pointer
+ * 01 - internal entry
+ * 10 - exceptional entry
+ * 11 - this bit combination is currently unused/reserved
+ *
+ * The internal entry may be a pointer to the next level in the tree, a
+ * sibling entry, or an indicator that the entry in this slot has been moved
+ * to another location in the tree and the lookup should be restarted.  While
+ * NULL fits the 'data pointer' pattern, it means that there is no entry in
+ * the tree for this index (no matter what level of the tree it is found at).
+ * This means that you cannot store NULL in the tree as a value for the index.
+ */
+#define RADIX_TREE_ENTRY_MASK		3UL
+#define RADIX_TREE_INTERNAL_NODE	1UL
+
+/*
+ * Most users of the radix tree store pointers but shmem/tmpfs stores swap
+ * entries in the same tree.  They are marked as exceptional entries to
+ * distinguish them from pointers to struct page.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * EXCEPTIONAL_ENTRY tests the bit, EXCEPTIONAL_SHIFT shifts content past it.
  */
 #define RADIX_TREE_EXCEPTIONAL_ENTRY	2
 #define RADIX_TREE_EXCEPTIONAL_SHIFT	2
 
+<<<<<<< HEAD
 static inline int radix_tree_is_indirect_ptr(void *ptr)
 {
 	return (int)((unsigned long)ptr & RADIX_TREE_INDIRECT_PTR);
+=======
+static inline bool radix_tree_is_internal_node(void *ptr)
+{
+	return ((unsigned long)ptr & RADIX_TREE_ENTRY_MASK) ==
+				RADIX_TREE_INTERNAL_NODE;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*** radix-tree API starts here ***/
 
 #define RADIX_TREE_MAX_TAGS 3
 
+<<<<<<< HEAD
 /* root tags are stored in gfp_mask, shifted by __GFP_BITS_SHIFT */
 struct radix_tree_root {
 	unsigned int		height;
+=======
+#ifndef RADIX_TREE_MAP_SHIFT
+#define RADIX_TREE_MAP_SHIFT	(CONFIG_BASE_SMALL ? 4 : 6)
+#endif
+
+#define RADIX_TREE_MAP_SIZE	(1UL << RADIX_TREE_MAP_SHIFT)
+#define RADIX_TREE_MAP_MASK	(RADIX_TREE_MAP_SIZE-1)
+
+#define RADIX_TREE_TAG_LONGS	\
+	((RADIX_TREE_MAP_SIZE + BITS_PER_LONG - 1) / BITS_PER_LONG)
+
+#define RADIX_TREE_INDEX_BITS  (8 /* CHAR_BIT */ * sizeof(unsigned long))
+#define RADIX_TREE_MAX_PATH (DIV_ROUND_UP(RADIX_TREE_INDEX_BITS, \
+					  RADIX_TREE_MAP_SHIFT))
+
+/* Internally used bits of node->count */
+#define RADIX_TREE_COUNT_SHIFT	(RADIX_TREE_MAP_SHIFT + 1)
+#define RADIX_TREE_COUNT_MASK	((1UL << RADIX_TREE_COUNT_SHIFT) - 1)
+
+struct radix_tree_node {
+	unsigned char	shift;	/* Bits remaining in each slot */
+	unsigned char	offset;	/* Slot offset in parent */
+	unsigned int	count;
+	union {
+		struct {
+			/* Used when ascending tree */
+			struct radix_tree_node *parent;
+			/* For tree user */
+			void *private_data;
+		};
+		/* Used when freeing node */
+		struct rcu_head	rcu_head;
+	};
+	/* For tree user */
+	struct list_head private_list;
+	void __rcu	*slots[RADIX_TREE_MAP_SIZE];
+	unsigned long	tags[RADIX_TREE_MAX_TAGS][RADIX_TREE_TAG_LONGS];
+};
+
+/* root tags are stored in gfp_mask, shifted by __GFP_BITS_SHIFT */
+struct radix_tree_root {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	gfp_t			gfp_mask;
 	struct radix_tree_node	__rcu *rnode;
 };
 
 #define RADIX_TREE_INIT(mask)	{					\
+<<<<<<< HEAD
 	.height = 0,							\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.gfp_mask = (mask),						\
 	.rnode = NULL,							\
 }
@@ -78,11 +160,22 @@ struct radix_tree_root {
 
 #define INIT_RADIX_TREE(root, mask)					\
 do {									\
+<<<<<<< HEAD
 	(root)->height = 0;						\
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	(root)->gfp_mask = (mask);					\
 	(root)->rnode = NULL;						\
 } while (0)
 
+<<<<<<< HEAD
+=======
+static inline bool radix_tree_empty(struct radix_tree_root *root)
+{
+	return root->rnode == NULL;
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 /**
  * Radix-tree synchronization
  *
@@ -101,6 +194,10 @@ do {									\
  *   concurrently with other readers.
  *
  * The notable exceptions to this rule are the following functions:
+<<<<<<< HEAD
+=======
+ * __radix_tree_lookup
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * radix_tree_lookup
  * radix_tree_lookup_slot
  * radix_tree_tag_get
@@ -110,7 +207,11 @@ do {									\
  * radix_tree_gang_lookup_tag_slot
  * radix_tree_tagged
  *
+<<<<<<< HEAD
  * The first 7 functions are able to be called locklessly, using RCU. The
+=======
+ * The first 8 functions are able to be called locklessly, using RCU. The
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * caller must ensure calls to these functions are made within rcu_read_lock()
  * regions. Other readers (lock-free or otherwise) and modifications may be
  * running concurrently.
@@ -177,7 +278,11 @@ static inline void *radix_tree_deref_slot_protected(void **pslot,
  */
 static inline int radix_tree_deref_retry(void *arg)
 {
+<<<<<<< HEAD
 	return unlikely((unsigned long)arg & RADIX_TREE_INDIRECT_PTR);
+=======
+	return unlikely(radix_tree_is_internal_node(arg));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -198,8 +303,12 @@ static inline int radix_tree_exceptional_entry(void *arg)
  */
 static inline int radix_tree_exception(void *arg)
 {
+<<<<<<< HEAD
 	return unlikely((unsigned long)arg &
 		(RADIX_TREE_INDIRECT_PTR | RADIX_TREE_EXCEPTIONAL_ENTRY));
+=======
+	return unlikely((unsigned long)arg & RADIX_TREE_ENTRY_MASK);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -212,6 +321,7 @@ static inline int radix_tree_exception(void *arg)
  */
 static inline void radix_tree_replace_slot(void **pslot, void *item)
 {
+<<<<<<< HEAD
 	BUG_ON(radix_tree_is_indirect_ptr(item));
 	rcu_assign_pointer(*pslot, item);
 }
@@ -231,6 +341,42 @@ unsigned long radix_tree_next_hole(struct radix_tree_root *root,
 unsigned long radix_tree_prev_hole(struct radix_tree_root *root,
 				unsigned long index, unsigned long max_scan);
 int radix_tree_preload(gfp_t gfp_mask);
+=======
+	BUG_ON(radix_tree_is_internal_node(item));
+	rcu_assign_pointer(*pslot, item);
+}
+
+int __radix_tree_create(struct radix_tree_root *root, unsigned long index,
+			unsigned order, struct radix_tree_node **nodep,
+			void ***slotp);
+int __radix_tree_insert(struct radix_tree_root *, unsigned long index,
+			unsigned order, void *);
+static inline int radix_tree_insert(struct radix_tree_root *root,
+			unsigned long index, void *entry)
+{
+	return __radix_tree_insert(root, index, 0, entry);
+}
+void *__radix_tree_lookup(struct radix_tree_root *root, unsigned long index,
+			  struct radix_tree_node **nodep, void ***slotp);
+void *radix_tree_lookup(struct radix_tree_root *, unsigned long);
+void **radix_tree_lookup_slot(struct radix_tree_root *, unsigned long);
+bool __radix_tree_delete_node(struct radix_tree_root *root,
+			      struct radix_tree_node *node);
+void *radix_tree_delete_item(struct radix_tree_root *, unsigned long, void *);
+void *radix_tree_delete(struct radix_tree_root *, unsigned long);
+void radix_tree_clear_tags(struct radix_tree_root *root,
+			   struct radix_tree_node *node,
+			   void **slot);
+unsigned int radix_tree_gang_lookup(struct radix_tree_root *root,
+			void **results, unsigned long first_index,
+			unsigned int max_items);
+unsigned int radix_tree_gang_lookup_slot(struct radix_tree_root *root,
+			void ***results, unsigned long *indices,
+			unsigned long first_index, unsigned int max_items);
+int radix_tree_preload(gfp_t gfp_mask);
+int radix_tree_maybe_preload(gfp_t gfp_mask);
+int radix_tree_maybe_preload_order(gfp_t gfp_mask, int order);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void radix_tree_init(void);
 void *radix_tree_tag_set(struct radix_tree_root *root,
 			unsigned long index, unsigned int tag);
@@ -262,8 +408,14 @@ static inline void radix_tree_preload_end(void)
  * struct radix_tree_iter - radix tree iterator state
  *
  * @index:	index of current slot
+<<<<<<< HEAD
  * @next_index:	next-to-last index for this chunk
  * @tags:	bit-mask for tag-iterating
+=======
+ * @next_index:	one beyond the last index for this chunk
+ * @tags:	bit-mask for tag-iterating
+ * @shift:	shift for the node that holds our slots
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This radix tree iterator works in terms of "chunks" of slots.  A chunk is a
  * subinterval of slots contained within one radix tree leaf node.  It is
@@ -276,8 +428,25 @@ struct radix_tree_iter {
 	unsigned long	index;
 	unsigned long	next_index;
 	unsigned long	tags;
+<<<<<<< HEAD
 };
 
+=======
+#ifdef CONFIG_RADIX_TREE_MULTIORDER
+	unsigned int	shift;
+#endif
+};
+
+static inline unsigned int iter_shift(struct radix_tree_iter *iter)
+{
+#ifdef CONFIG_RADIX_TREE_MULTIORDER
+	return iter->shift;
+#else
+	return 0;
+#endif
+}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define RADIX_TREE_ITER_TAG_MASK	0x00FF	/* tag index in lower byte */
 #define RADIX_TREE_ITER_TAGGED		0x0100	/* lookup tagged slots */
 #define RADIX_TREE_ITER_CONTIG		0x0200	/* stop at first hole */
@@ -334,6 +503,32 @@ static inline __must_check
 void **radix_tree_iter_retry(struct radix_tree_iter *iter)
 {
 	iter->next_index = iter->index;
+<<<<<<< HEAD
+=======
+	iter->tags = 0;
+	return NULL;
+}
+
+static inline unsigned long
+__radix_tree_iter_add(struct radix_tree_iter *iter, unsigned long slots)
+{
+	return iter->index + (slots << iter_shift(iter));
+}
+
+/**
+ * radix_tree_iter_next - resume iterating when the chunk may be invalid
+ * @iter:	iterator state
+ *
+ * If the iterator needs to release then reacquire a lock, the chunk may
+ * have been invalidated by an insertion or deletion.  Call this function
+ * to continue the iteration from the next index.
+ */
+static inline __must_check
+void **radix_tree_iter_next(struct radix_tree_iter *iter)
+{
+	iter->next_index = __radix_tree_iter_add(iter, 1);
+	iter->tags = 0;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return NULL;
 }
 
@@ -346,7 +541,16 @@ void **radix_tree_iter_retry(struct radix_tree_iter *iter)
 static __always_inline long
 radix_tree_chunk_size(struct radix_tree_iter *iter)
 {
+<<<<<<< HEAD
 	return iter->next_index - iter->index;
+=======
+	return (iter->next_index - iter->index) >> iter_shift(iter);
+}
+
+static inline struct radix_tree_node *entry_to_node(void *ptr)
+{
+	return (void *)((unsigned long)ptr & ~RADIX_TREE_INTERNAL_NODE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /**
@@ -359,11 +563,23 @@ radix_tree_chunk_size(struct radix_tree_iter *iter)
  *
  * This function updates @iter->index in the case of a successful lookup.
  * For tagged lookup it also eats @iter->tags.
+<<<<<<< HEAD
+=======
+ *
+ * There are several cases where 'slot' can be passed in as NULL to this
+ * function.  These cases result from the use of radix_tree_iter_next() or
+ * radix_tree_iter_retry().  In these cases we don't end up dereferencing
+ * 'slot' because either:
+ * a) we are doing tagged iteration and iter->tags has been set to 0, or
+ * b) we are doing non-tagged iteration, and iter->index and iter->next_index
+ *    have been set up so that radix_tree_chunk_size() returns 1 or 0.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 static __always_inline void **
 radix_tree_next_slot(void **slot, struct radix_tree_iter *iter, unsigned flags)
 {
 	if (flags & RADIX_TREE_ITER_TAGGED) {
+<<<<<<< HEAD
 		iter->tags >>= 1;
 		if (likely(iter->tags & 1ul)) {
 			iter->index++;
@@ -382,6 +598,51 @@ radix_tree_next_slot(void **slot, struct radix_tree_iter *iter, unsigned flags)
 		while (--size > 0) {
 			slot++;
 			iter->index++;
+=======
+		void *canon = slot;
+
+		iter->tags >>= 1;
+		if (unlikely(!iter->tags))
+			return NULL;
+		while (IS_ENABLED(CONFIG_RADIX_TREE_MULTIORDER) &&
+					radix_tree_is_internal_node(slot[1])) {
+			if (entry_to_node(slot[1]) == canon) {
+				iter->tags >>= 1;
+				iter->index = __radix_tree_iter_add(iter, 1);
+				slot++;
+				continue;
+			}
+			iter->next_index = __radix_tree_iter_add(iter, 1);
+			return NULL;
+		}
+		if (likely(iter->tags & 1ul)) {
+			iter->index = __radix_tree_iter_add(iter, 1);
+			return slot + 1;
+		}
+		if (!(flags & RADIX_TREE_ITER_CONTIG)) {
+			unsigned offset = __ffs(iter->tags);
+
+			iter->tags >>= offset;
+			iter->index = __radix_tree_iter_add(iter, offset + 1);
+			return slot + offset + 1;
+		}
+	} else {
+		long count = radix_tree_chunk_size(iter);
+		void *canon = slot;
+
+		while (--count > 0) {
+			slot++;
+			iter->index = __radix_tree_iter_add(iter, 1);
+
+			if (IS_ENABLED(CONFIG_RADIX_TREE_MULTIORDER) &&
+			    radix_tree_is_internal_node(*slot)) {
+				if (entry_to_node(*slot) == canon)
+					continue;
+				iter->next_index = iter->index;
+				break;
+			}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			if (likely(*slot))
 				return slot;
 			if (flags & RADIX_TREE_ITER_CONTIG) {
@@ -395,6 +656,7 @@ radix_tree_next_slot(void **slot, struct radix_tree_iter *iter, unsigned flags)
 }
 
 /**
+<<<<<<< HEAD
  * radix_tree_for_each_chunk - iterate over chunks
  *
  * @slot:	the void** variable for pointer to chunk first slot
@@ -423,6 +685,8 @@ radix_tree_next_slot(void **slot, struct radix_tree_iter *iter, unsigned flags)
 	for (; slot ; slot = radix_tree_next_slot(slot, iter, flags))
 
 /**
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * radix_tree_for_each_slot - iterate over non-empty slots
  *
  * @slot:	the void** variable for pointer to slot

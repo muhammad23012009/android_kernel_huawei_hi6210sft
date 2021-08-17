@@ -76,11 +76,17 @@ extern void nfs_fscache_release_client_cookie(struct nfs_client *);
 extern void nfs_fscache_get_super_cookie(struct super_block *, const char *, int);
 extern void nfs_fscache_release_super_cookie(struct super_block *);
 
+<<<<<<< HEAD
 extern void nfs_fscache_init_inode_cookie(struct inode *);
 extern void nfs_fscache_release_inode_cookie(struct inode *);
 extern void nfs_fscache_zap_inode_cookie(struct inode *);
 extern void nfs_fscache_set_inode_cookie(struct inode *, struct file *);
 extern void nfs_fscache_reset_inode_cookie(struct inode *);
+=======
+extern void nfs_fscache_init_inode(struct inode *);
+extern void nfs_fscache_clear_inode(struct inode *);
+extern void nfs_fscache_open_file(struct inode *, struct file *);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 extern void __nfs_fscache_invalidate_page(struct page *, struct inode *);
 extern int nfs_fscache_release_page(struct page *, gfp_t);
@@ -187,12 +193,19 @@ static inline void nfs_fscache_release_client_cookie(struct nfs_client *clp) {}
 
 static inline void nfs_fscache_release_super_cookie(struct super_block *sb) {}
 
+<<<<<<< HEAD
 static inline void nfs_fscache_init_inode_cookie(struct inode *inode) {}
 static inline void nfs_fscache_release_inode_cookie(struct inode *inode) {}
 static inline void nfs_fscache_zap_inode_cookie(struct inode *inode) {}
 static inline void nfs_fscache_set_inode_cookie(struct inode *inode,
 						struct file *filp) {}
 static inline void nfs_fscache_reset_inode_cookie(struct inode *inode) {}
+=======
+static inline void nfs_fscache_init_inode(struct inode *inode) {}
+static inline void nfs_fscache_clear_inode(struct inode *inode) {}
+static inline void nfs_fscache_open_file(struct inode *inode,
+					 struct file *filp) {}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static inline int nfs_fscache_release_page(struct page *page, gfp_t gfp)
 {

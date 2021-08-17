@@ -3,10 +3,18 @@
 subdir-ccflags-$(CONFIG_PPC_WERROR) := -Werror
 
 GCOV_PROFILE := n
+<<<<<<< HEAD
 
 ccflags-$(CONFIG_PPC64) := $(NO_MINIMAL_TOC)
 
 obj-y			+= xmon.o nonstdio.o
+=======
+UBSAN_SANITIZE := n
+
+ccflags-$(CONFIG_PPC64) := $(NO_MINIMAL_TOC)
+
+obj-y			+= xmon.o nonstdio.o spr_access.o
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 ifdef CONFIG_XMON_DISASSEMBLY
 obj-y			+= ppc-dis.o ppc-opc.o

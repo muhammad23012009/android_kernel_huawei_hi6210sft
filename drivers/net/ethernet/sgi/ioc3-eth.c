@@ -30,7 +30,10 @@
 #define IOC3_NAME	"ioc3-eth"
 #define IOC3_VERSION	"2.6.3-4"
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -1385,7 +1388,11 @@ static void ioc3_remove_one(struct pci_dev *pdev)
 	 */
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ioc3_pci_tbl) = {
+=======
+static const struct pci_device_id ioc3_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_SGI, PCI_DEVICE_ID_SGI_IOC3, PCI_ANY_ID, PCI_ANY_ID },
 	{ 0 }
 };
@@ -1398,6 +1405,7 @@ static struct pci_driver ioc3_driver = {
 	.remove		= ioc3_remove_one,
 };
 
+<<<<<<< HEAD
 static int __init ioc3_init_module(void)
 {
 	return pci_register_driver(&ioc3_driver);
@@ -1408,6 +1416,8 @@ static void __exit ioc3_cleanup_module(void)
 	pci_unregister_driver(&ioc3_driver);
 }
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 static int ioc3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	unsigned long data;
@@ -1677,9 +1687,16 @@ static void ioc3_set_multicast_list(struct net_device *dev)
 	netif_wake_queue(dev);			/* Let us get going again. */
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Ralf Baechle <ralf@linux-mips.org>");
 MODULE_DESCRIPTION("SGI IOC3 Ethernet driver");
 MODULE_LICENSE("GPL");
 
 module_init(ioc3_init_module);
 module_exit(ioc3_cleanup_module);
+=======
+module_pci_driver(ioc3_driver);
+MODULE_AUTHOR("Ralf Baechle <ralf@linux-mips.org>");
+MODULE_DESCRIPTION("SGI IOC3 Ethernet driver");
+MODULE_LICENSE("GPL");
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

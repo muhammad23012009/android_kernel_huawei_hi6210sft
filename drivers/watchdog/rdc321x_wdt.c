@@ -27,7 +27,10 @@
 #include <linux/errno.h>
 #include <linux/miscdevice.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/ioport.h>
 #include <linux/timer.h>
 #include <linux/completion.h>
@@ -231,7 +234,11 @@ static int rdc321x_wdt_probe(struct platform_device *pdev)
 	struct resource *r;
 	struct rdc321x_wdt_pdata *pdata;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (!pdata) {
 		dev_err(&pdev->dev, "no platform data supplied\n");
 		return -ENODEV;
@@ -245,6 +252,11 @@ static int rdc321x_wdt_probe(struct platform_device *pdev)
 
 	rdc321x_wdt_device.sb_pdev = pdata->sb_pdev;
 	rdc321x_wdt_device.base_reg = r->start;
+<<<<<<< HEAD
+=======
+	rdc321x_wdt_device.queue = 0;
+	rdc321x_wdt_device.default_ticks = ticks;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	err = misc_register(&rdc321x_wdt_misc);
 	if (err < 0) {
@@ -259,14 +271,20 @@ static int rdc321x_wdt_probe(struct platform_device *pdev)
 				rdc321x_wdt_device.base_reg, RDC_WDT_RST);
 
 	init_completion(&rdc321x_wdt_device.stop);
+<<<<<<< HEAD
 	rdc321x_wdt_device.queue = 0;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	clear_bit(0, &rdc321x_wdt_device.inuse);
 
 	setup_timer(&rdc321x_wdt_device.timer, rdc321x_wdt_trigger, 0);
 
+<<<<<<< HEAD
 	rdc321x_wdt_device.default_ticks = ticks;
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_info(&pdev->dev, "watchdog init success\n");
 
 	return 0;
@@ -288,7 +306,10 @@ static struct platform_driver rdc321x_wdt_driver = {
 	.probe = rdc321x_wdt_probe,
 	.remove = rdc321x_wdt_remove,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.name = "rdc321x-wdt",
 	},
 };
@@ -298,4 +319,7 @@ module_platform_driver(rdc321x_wdt_driver);
 MODULE_AUTHOR("Florian Fainelli <florian@openwrt.org>");
 MODULE_DESCRIPTION("RDC321x watchdog driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

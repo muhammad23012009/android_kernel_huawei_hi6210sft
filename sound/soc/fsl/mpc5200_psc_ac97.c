@@ -13,6 +13,10 @@
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/time.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -127,17 +131,28 @@ static void psc_ac97_cold_reset(struct snd_ac97 *ac97)
 
 	mutex_unlock(&psc_dma->mutex);
 
+<<<<<<< HEAD
 	msleep(1);
 	psc_ac97_warm_reset(ac97);
 }
 
 struct snd_ac97_bus_ops soc_ac97_ops = {
+=======
+	usleep_range(1000, 2000);
+	psc_ac97_warm_reset(ac97);
+}
+
+static struct snd_ac97_bus_ops psc_ac97_ops = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.read		= psc_ac97_read,
 	.write		= psc_ac97_write,
 	.reset		= psc_ac97_cold_reset,
 	.warm_reset	= psc_ac97_warm_reset,
 };
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(soc_ac97_ops);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 static int psc_ac97_hw_analog_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
@@ -238,7 +253,11 @@ static const struct snd_soc_dai_ops psc_ac97_digital_ops = {
 static struct snd_soc_dai_driver psc_ac97_dai[] = {
 {
 	.name = "mpc5200-psc-ac97.0",
+<<<<<<< HEAD
 	.ac97_control = 1,
+=======
+	.bus_control = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.probe	= psc_ac97_probe,
 	.playback = {
 		.stream_name	= "AC97 Playback",
@@ -258,7 +277,11 @@ static struct snd_soc_dai_driver psc_ac97_dai[] = {
 },
 {
 	.name = "mpc5200-psc-ac97.1",
+<<<<<<< HEAD
 	.ac97_control = 1,
+=======
+	.bus_control = true,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	.playback = {
 		.stream_name	= "AC97 SPDIF",
 		.channels_min   = 1,
@@ -283,13 +306,25 @@ static const struct snd_soc_component_driver psc_ac97_component = {
 static int psc_ac97_of_probe(struct platform_device *op)
 {
 	int rc;
+<<<<<<< HEAD
 	struct snd_ac97 ac97;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct mpc52xx_psc __iomem *regs;
 
 	rc = mpc5200_audio_dma_create(op);
 	if (rc != 0)
 		return rc;
 
+<<<<<<< HEAD
+=======
+	rc = snd_soc_set_ac97_ops(&psc_ac97_ops);
+	if (rc != 0) {
+		dev_err(&op->dev, "Failed to set AC'97 ops: %d\n", rc);
+		return rc;
+	}
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	rc = snd_soc_register_component(&op->dev, &psc_ac97_component,
 					psc_ac97_dai, ARRAY_SIZE(psc_ac97_dai));
 	if (rc != 0) {
@@ -299,7 +334,10 @@ static int psc_ac97_of_probe(struct platform_device *op)
 
 	psc_dma = dev_get_drvdata(&op->dev);
 	regs = psc_dma->psc_regs;
+<<<<<<< HEAD
 	ac97.private_data = psc_dma;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	psc_dma->imr = 0;
 	out_be16(&psc_dma->psc_regs->isr_imr.imr, psc_dma->imr);
@@ -318,11 +356,19 @@ static int psc_ac97_of_remove(struct platform_device *op)
 {
 	mpc5200_audio_dma_destroy(op);
 	snd_soc_unregister_component(&op->dev);
+<<<<<<< HEAD
+=======
+	snd_soc_set_ac97_ops(NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return 0;
 }
 
 /* Match table for of_platform binding */
+<<<<<<< HEAD
 static struct of_device_id psc_ac97_match[] = {
+=======
+static const struct of_device_id psc_ac97_match[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ .compatible = "fsl,mpc5200-psc-ac97", },
 	{ .compatible = "fsl,mpc5200b-psc-ac97", },
 	{}
@@ -334,7 +380,10 @@ static struct platform_driver psc_ac97_driver = {
 	.remove = psc_ac97_of_remove,
 	.driver = {
 		.name = "mpc5200-psc-ac97",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		.of_match_table = psc_ac97_match,
 	},
 };

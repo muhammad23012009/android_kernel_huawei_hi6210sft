@@ -7,7 +7,11 @@
 #define OMAP1_MMC1_BASE		0xfffb7800
 #define OMAP1_MMC2_BASE		0xfffb7c00	/* omap16xx only */
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE)
+=======
+#if IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void omap1_init_mmc(struct omap_mmc_platform_data **mmc_data,
 				int nr_controllers);
 #else

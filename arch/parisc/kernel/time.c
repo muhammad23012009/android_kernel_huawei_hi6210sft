@@ -12,7 +12,13 @@
  */
 #include <linux/errno.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/rtc.h>
+#include <linux/sched.h>
+#include <linux/sched_clock.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/kernel.h>
 #include <linux/param.h>
 #include <linux/string.h>
@@ -189,7 +195,11 @@ EXPORT_SYMBOL(profile_pc);
 
 /* clock source code */
 
+<<<<<<< HEAD
 static cycle_t read_cr16(struct clocksource *cs)
+=======
+static cycle_t notrace read_cr16(struct clocksource *cs)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	return get_cycles();
 }
@@ -202,6 +212,7 @@ static struct clocksource clocksource_cr16 = {
 	.flags			= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 int update_cr16_clocksource(void)
 {
@@ -234,10 +245,50 @@ void __init start_cpu_itimer(void)
 static struct platform_device rtc_generic_dev = {
 	.name = "rtc-generic",
 	.id = -1,
+=======
+void __init start_cpu_itimer(void)
+{
+	unsigned int cpu = smp_processor_id();
+	unsigned long next_tick = mfctl(16) + clocktick;
+
+	mtctl(next_tick, 16);		/* kick off Interval Timer (CR16) */
+
+	per_cpu(cpu_data, cpu).it_value = next_tick;
+}
+
+#if IS_ENABLED(CONFIG_RTC_DRV_GENERIC)
+static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
+{
+	struct pdc_tod tod_data;
+
+	memset(tm, 0, sizeof(*tm));
+	if (pdc_tod_read(&tod_data) < 0)
+		return -EOPNOTSUPP;
+
+	/* we treat tod_sec as unsigned, so this can work until year 2106 */
+	rtc_time64_to_tm(tod_data.tod_sec, tm);
+	return rtc_valid_tm(tm);
+}
+
+static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
+{
+	time64_t secs = rtc_tm_to_time64(tm);
+
+	if (pdc_tod_set(secs, 0) < 0)
+		return -EOPNOTSUPP;
+
+	return 0;
+}
+
+static const struct rtc_class_ops rtc_generic_ops = {
+	.read_time = rtc_generic_get_time,
+	.set_time = rtc_generic_set_time,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 static int __init rtc_init(void)
 {
+<<<<<<< HEAD
 	if (platform_device_register(&rtc_generic_dev) < 0)
 		printk(KERN_ERR "unable to register rtc device...\n");
 
@@ -245,6 +296,18 @@ static int __init rtc_init(void)
 	return 0;
 }
 module_init(rtc_init);
+=======
+	struct platform_device *pdev;
+
+	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
+					     &rtc_generic_ops,
+					     sizeof(rtc_generic_ops));
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+device_initcall(rtc_init);
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 void read_persistent_clock(struct timespec *ts)
 {
@@ -259,6 +322,7 @@ void read_persistent_clock(struct timespec *ts)
 	}
 }
 
+<<<<<<< HEAD
 void __init time_init(void)
 {
 	unsigned long current_cr16_khz;
@@ -271,3 +335,48 @@ void __init time_init(void)
 	current_cr16_khz = PAGE0->mem_10msec/10;  /* kHz */
 	clocksource_register_khz(&clocksource_cr16, current_cr16_khz);
 }
+=======
+
+static u64 notrace read_cr16_sched_clock(void)
+{
+	return get_cycles();
+}
+
+
+/*
+ * timer interrupt and sched_clock() initialization
+ */
+
+void __init time_init(void)
+{
+	unsigned long cr16_hz;
+
+	clocktick = (100 * PAGE0->mem_10msec) / HZ;
+	start_cpu_itimer();	/* get CPU 0 started */
+
+	cr16_hz = 100 * PAGE0->mem_10msec;  /* Hz */
+
+	/* register as sched_clock source */
+	sched_clock_register(read_cr16_sched_clock, BITS_PER_LONG, cr16_hz);
+}
+
+static int __init init_cr16_clocksource(void)
+{
+	/*
+	 * The cr16 interval timers are not syncronized across CPUs, so mark
+	 * them unstable and lower rating on SMP systems.
+	 */
+	if (num_online_cpus() > 1 && !running_on_qemu) {
+		clocksource_cr16.flags = CLOCK_SOURCE_UNSTABLE;
+		clocksource_cr16.rating = 0;
+	}
+
+	/* register at clocksource framework */
+	clocksource_register_hz(&clocksource_cr16,
+		100 * PAGE0->mem_10msec);
+
+	return 0;
+}
+
+device_initcall(init_cr16_clocksource);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

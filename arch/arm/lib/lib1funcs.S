@@ -167,7 +167,11 @@ Boston, MA 02111-1307, USA.  */
 
 #endif
 
+<<<<<<< HEAD
 	@ Perform all needed substractions to keep only the reminder.
+=======
+	@ Perform all needed subtractions to keep only the reminder.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	@ Do comparisons in batch of 4 first.
 	subs	\order, \order, #3		@ yes, 3 is intended here
 	blt	2f
@@ -189,7 +193,11 @@ Boston, MA 02111-1307, USA.  */
 	teqne	\dividend, #0
 	beq	5f
 
+<<<<<<< HEAD
 	@ Either 1, 2 or 3 comparison/substractions are left.
+=======
+	@ Either 1, 2 or 3 comparison/subtractions are left.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 2:	cmn	\order, #2
 	blt	4f
 	beq	3f
@@ -205,12 +213,23 @@ Boston, MA 02111-1307, USA.  */
 .endm
 
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM_PATCH_IDIV
+	.align	3
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENTRY(__udivsi3)
 ENTRY(__aeabi_uidiv)
 UNWIND(.fnstart)
 
 	subs	r2, r1, #1
+<<<<<<< HEAD
 	moveq	pc, lr
+=======
+	reteq	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	bcc	Ldiv0
 	cmp	r0, r1
 	bls	11f
@@ -220,16 +239,28 @@ UNWIND(.fnstart)
 	ARM_DIV_BODY r0, r1, r2, r3
 
 	mov	r0, r2
+<<<<<<< HEAD
 	mov	pc, lr
 
 11:	moveq	r0, #1
 	movne	r0, #0
 	mov	pc, lr
+=======
+	ret	lr
+
+11:	moveq	r0, #1
+	movne	r0, #0
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 12:	ARM_DIV2_ORDER r1, r2
 
 	mov	r0, r0, lsr r2
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 UNWIND(.fnend)
 ENDPROC(__udivsi3)
@@ -244,15 +275,30 @@ UNWIND(.fnstart)
 	moveq   r0, #0
 	tsthi	r1, r2				@ see if divisor is power of 2
 	andeq	r0, r0, r2
+<<<<<<< HEAD
 	movls	pc, lr
 
 	ARM_MOD_BODY r0, r1, r2, r3
 
 	mov	pc, lr
+=======
+	retls	lr
+
+	ARM_MOD_BODY r0, r1, r2, r3
+
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 UNWIND(.fnend)
 ENDPROC(__umodsi3)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM_PATCH_IDIV
+	.align 3
+#endif
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 ENTRY(__divsi3)
 ENTRY(__aeabi_idiv)
 UNWIND(.fnstart)
@@ -274,23 +320,39 @@ UNWIND(.fnstart)
 
 	cmp	ip, #0
 	rsbmi	r0, r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
 
 10:	teq	ip, r0				@ same sign ?
 	rsbmi	r0, r0, #0
 	mov	pc, lr
+=======
+	ret	lr
+
+10:	teq	ip, r0				@ same sign ?
+	rsbmi	r0, r0, #0
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 11:	movlo	r0, #0
 	moveq	r0, ip, asr #31
 	orreq	r0, r0, #1
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 12:	ARM_DIV2_ORDER r1, r2
 
 	cmp	ip, #0
 	mov	r0, r3, lsr r2
 	rsbmi	r0, r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 UNWIND(.fnend)
 ENDPROC(__divsi3)
@@ -315,7 +377,11 @@ UNWIND(.fnstart)
 
 10:	cmp	ip, #0
 	rsbmi	r0, r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 UNWIND(.fnend)
 ENDPROC(__modsi3)
@@ -331,7 +397,11 @@ UNWIND(.save {r0, r1, ip, lr}	)
 	ldmfd	sp!, {r1, r2, ip, lr}
 	mul	r3, r0, r2
 	sub	r1, r1, r3
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 UNWIND(.fnend)
 ENDPROC(__aeabi_uidivmod)
@@ -344,7 +414,11 @@ UNWIND(.save {r0, r1, ip, lr}	)
 	ldmfd	sp!, {r1, r2, ip, lr}
 	mul	r3, r0, r2
 	sub	r1, r1, r3
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 UNWIND(.fnend)
 ENDPROC(__aeabi_idivmod)

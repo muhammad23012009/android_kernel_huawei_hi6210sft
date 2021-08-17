@@ -149,7 +149,11 @@ extern void mac_drv_rx_mode(struct s_smc *smc, int mode);
 extern void mac_drv_clear_rx_queue(struct s_smc *smc);
 extern void enable_tx_irq(struct s_smc *smc, u_short queue);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(skfddi_pci_tbl) = {
+=======
+static const struct pci_device_id skfddi_pci_tbl[] = {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	{ PCI_VENDOR_ID_SK, PCI_DEVICE_ID_SK_FP, PCI_ANY_ID, PCI_ANY_ID, },
 	{ }			/* Terminating entry */
 };
@@ -351,7 +355,10 @@ static void skfp_remove_one(struct pci_dev *pdev)
 	free_netdev(p);
 
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -436,7 +443,11 @@ static  int skfp_driver_init(struct net_device *dev)
 	}
 	read_address(smc, NULL);
 	pr_debug("HW-Addr: %pMF\n", smc->hw.fddi_canon_addr.a);
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, smc->hw.fddi_canon_addr.a, 6);
+=======
+	memcpy(dev->dev_addr, smc->hw.fddi_canon_addr.a, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	smt_reset_defaults(smc, 0);
 
@@ -503,7 +514,11 @@ static int skfp_open(struct net_device *dev)
 	 *               address.
 	 */
 	read_address(smc, NULL);
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, smc->hw.fddi_canon_addr.a, 6);
+=======
+	memcpy(dev->dev_addr, smc->hw.fddi_canon_addr.a, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	init_smt(smc, NULL);
 	smt_online(smc, 1);
@@ -1213,7 +1228,11 @@ static void CheckSourceAddress(unsigned char *frame, unsigned char *hw_addr)
 	if ((unsigned short) frame[1 + 10] != 0)
 		return;
 	SRBit = frame[1 + 6] & 0x01;
+<<<<<<< HEAD
 	memcpy(&frame[1 + 6], hw_addr, 6);
+=======
+	memcpy(&frame[1 + 6], hw_addr, ETH_ALEN);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	frame[8] |= SRBit;
 }				// CheckSourceAddress
 
@@ -2246,6 +2265,7 @@ static struct pci_driver skfddi_pci_driver = {
 	.remove		= skfp_remove_one,
 };
 
+<<<<<<< HEAD
 static int __init skfd_init(void)
 {
 	return pci_register_driver(&skfddi_pci_driver);
@@ -2258,3 +2278,6 @@ static void __exit skfd_exit(void)
 
 module_init(skfd_init);
 module_exit(skfd_exit);
+=======
+module_pci_driver(skfddi_pci_driver);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

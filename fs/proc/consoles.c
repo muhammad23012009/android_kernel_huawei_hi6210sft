@@ -29,7 +29,10 @@ static int show_console_dev(struct seq_file *m, void *v)
 	char flags[ARRAY_SIZE(con_flags) + 1];
 	struct console *con = v;
 	unsigned int a;
+<<<<<<< HEAD
 	int len;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	dev_t dev = 0;
 
 	if (con->device) {
@@ -47,11 +50,18 @@ static int show_console_dev(struct seq_file *m, void *v)
 			con_flags[a].name : ' ';
 	flags[a] = 0;
 
+<<<<<<< HEAD
 	seq_printf(m, "%s%d%n", con->name, con->index, &len);
 	len = 21 - len;
 	if (len < 1)
 		len = 1;
 	seq_printf(m, "%*c%c%c%c (%s)", len, ' ', con->read ? 'R' : '-',
+=======
+	seq_setwidth(m, 21 - 1);
+	seq_printf(m, "%s%d", con->name, con->index);
+	seq_pad(m, ' ');
+	seq_printf(m, "%c%c%c (%s)", con->read ? 'R' : '-',
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			con->write ? 'W' : '-', con->unblank ? 'U' : '-',
 			flags);
 	if (dev)
@@ -111,4 +121,8 @@ static int __init proc_consoles_init(void)
 	proc_create("consoles", 0, NULL, &proc_consoles_operations);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(proc_consoles_init);
+=======
+fs_initcall(proc_consoles_init);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414

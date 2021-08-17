@@ -26,7 +26,11 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  *
  *
+<<<<<<< HEAD
  * the project's page is at http://www.linuxtv.org/
+=======
+ * the project's page is at https://linuxtv.org
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 #include <linux/module.h>
@@ -161,14 +165,24 @@ static void msp430_ir_interrupt(unsigned long data)
 		return;
 
 	if (budget_ci->ir.full_rc5) {
+<<<<<<< HEAD
 		rc_keydown(dev,
 			   budget_ci->ir.rc5_device <<8 | budget_ci->ir.ir_key,
 			   (command & 0x20) ? 1 : 0);
+=======
+		rc_keydown(dev, RC_TYPE_RC5,
+			   RC_SCANCODE_RC5(budget_ci->ir.rc5_device, budget_ci->ir.ir_key),
+			   !!(command & 0x20));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		return;
 	}
 
 	/* FIXME: We should generate complete scancodes for all devices */
+<<<<<<< HEAD
 	rc_keydown(dev, budget_ci->ir.ir_key, (command & 0x20) ? 1 : 0);
+=======
+	rc_keydown(dev, RC_TYPE_UNKNOWN, budget_ci->ir.ir_key, !!(command & 0x20));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 static int msp430_ir_init(struct budget_ci *budget_ci)
@@ -234,7 +248,11 @@ static int msp430_ir_init(struct budget_ci *budget_ci)
 		break;
 	}
 	if (!budget_ci->ir.full_rc5)
+<<<<<<< HEAD
 		dev->scanmask = 0xff;
+=======
+		dev->scancode_mask = 0xff;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	error = rc_register_device(dev);
 	if (error) {
@@ -1280,7 +1298,11 @@ static struct stb0899_config tt3200_config = {
 	.demod_address 		= 0x68,
 
 	.xtal_freq		= 27000000,
+<<<<<<< HEAD
 	.inversion		= IQ_SWAP_ON, /* 1 */
+=======
+	.inversion		= IQ_SWAP_ON,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	.lo_clk			= 76500000,
 	.hi_clk			= 99000000,

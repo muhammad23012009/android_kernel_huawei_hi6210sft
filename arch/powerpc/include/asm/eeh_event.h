@@ -31,7 +31,13 @@ struct eeh_event {
 	struct eeh_pe		*pe;	/* EEH PE		*/
 };
 
+<<<<<<< HEAD
 int eeh_send_failure_event(struct eeh_pe *pe);
+=======
+int eeh_event_init(void);
+int eeh_send_failure_event(struct eeh_pe *pe);
+void eeh_remove_event(struct eeh_pe *pe, bool force);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 void eeh_handle_event(struct eeh_pe *pe);
 
 #endif /* __KERNEL__ */

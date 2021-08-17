@@ -16,6 +16,7 @@
 #define HAVE_ARCH_SIGINFO_T
 
 /*
+<<<<<<< HEAD
  * We duplicate the generic versions - <asm-generic/siginfo.h> is just borked
  * by design ...
  */
@@ -34,6 +35,23 @@ struct siginfo;
 
 #include <asm-generic/siginfo.h>
 
+=======
+ * Careful to keep union _sifields from shifting ...
+ */
+#if _MIPS_SZLONG == 32
+#define __ARCH_SI_PREAMBLE_SIZE (3 * sizeof(int))
+#elif _MIPS_SZLONG == 64
+#define __ARCH_SI_PREAMBLE_SIZE (4 * sizeof(int))
+#else
+#error _MIPS_SZLONG neither 32 nor 64
+#endif
+
+#define __ARCH_SIGSYS
+
+#include <asm-generic/siginfo.h>
+
+/* We can't use generic siginfo_t, because our si_code and si_errno are swapped */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 typedef struct siginfo {
 	int si_signo;
 	int si_code;
@@ -89,6 +107,18 @@ typedef struct siginfo {
 			int _trapno;	/* TRAP # which caused the signal */
 #endif
 			short _addr_lsb;
+<<<<<<< HEAD
+=======
+			union {
+				/* used when si_code=SEGV_BNDERR */
+				struct {
+					void __user *_lower;
+					void __user *_upper;
+				} _addr_bnd;
+				/* used when si_code=SEGV_PKUERR */
+				__u32 _pkey;
+			};
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		} _sigfault;
 
 		/* SIGPOLL, SIGXFSZ (To do ...)	 */
@@ -96,6 +126,16 @@ typedef struct siginfo {
 			__ARCH_SI_BAND_T _band; /* POLL_IN, POLL_OUT, POLL_MSG */
 			int _fd;
 		} _sigpoll;
+<<<<<<< HEAD
+=======
+
+		/* SIGSYS */
+		struct {
+			void __user *_call_addr; /* calling user insn */
+			int _syscall;	/* triggering system call number */
+			unsigned int _arch;	/* AUDIT_ARCH_* of syscall */
+		} _sigsys;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	} _sifields;
 } siginfo_t;
 
@@ -110,5 +150,8 @@ typedef struct siginfo {
 #define SI_TIMER __SI_CODE(__SI_TIMER, -3) /* sent by timer expiration */
 #define SI_MESGQ __SI_CODE(__SI_MESGQ, -4) /* sent by real time mesq state change */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* _UAPI_ASM_SIGINFO_H */

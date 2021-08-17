@@ -4,7 +4,11 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2008 Cavium Networks
+=======
+ * Copyright (c) 2003-2016 Cavium, Inc.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -32,6 +36,11 @@
 #ifndef __CVMX_SYSINFO_H__
 #define __CVMX_SYSINFO_H__
 
+<<<<<<< HEAD
+=======
+#include "cvmx-coremask.h"
+
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #define OCTEON_SERIAL_LEN 20
 /**
  * Structure describing application specific information.
@@ -50,8 +59,12 @@ struct cvmx_sysinfo {
 	uint64_t system_dram_size;
 
 	/* ptr to memory descriptor block */
+<<<<<<< HEAD
 	void *phy_mem_desc_ptr;
 
+=======
+	uint64_t phy_mem_desc_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/* Application image specific variables */
 	/* stack top address (virtual) */
@@ -63,7 +76,11 @@ struct cvmx_sysinfo {
 	/* heap size in bytes */
 	uint32_t heap_size;
 	/* coremask defining cores running application */
+<<<<<<< HEAD
 	uint32_t core_mask;
+=======
+	struct cvmx_coremask core_mask;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/* Deprecated, use cvmx_coremask_first_core() to select init core */
 	uint32_t init_core;
 
@@ -121,6 +138,7 @@ struct cvmx_sysinfo {
 
 extern struct cvmx_sysinfo *cvmx_sysinfo_get(void);
 
+<<<<<<< HEAD
 /**
  * This function is used in non-simple executive environments (such as
  * Linux kernel, u-boot, etc.)	to configure the minimal fields that
@@ -149,4 +167,6 @@ extern int cvmx_sysinfo_minimal_initialize(void *phy_mem_desc_ptr,
 					   uint8_t board_rev_minor,
 					   uint32_t cpu_clock_hz);
 
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #endif /* __CVMX_SYSINFO_H__ */

@@ -21,7 +21,10 @@
 /* Standard include files */
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -75,9 +78,15 @@ static ssize_t set_speed(struct device *dev, struct device_attribute *attr,
 	/* Set speed */
 	retval = usb_control_msg(tv->udev, usb_sndctrlpipe(tv->udev, 0),
 				 0x01, /* vendor request: set speed */
+<<<<<<< HEAD
 				 USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_OTHER,
 				 tv->speed, /* speed value */
 				 0, NULL, 0, USB_CTRL_GET_TIMEOUT);
+=======
+				 USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_OTHER,
+				 tv->speed, /* speed value */
+				 0, NULL, 0, USB_CTRL_SET_TIMEOUT);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (retval) {
 		tv->speed = old;
 		dev_dbg(&tv->udev->dev, "retval = %d\n", retval);
@@ -96,8 +105,12 @@ static int tv_probe(struct usb_interface *interface,
 	int retval;
 
 	dev = kzalloc(sizeof(struct trancevibrator), GFP_KERNEL);
+<<<<<<< HEAD
 	if (dev == NULL) {
 		dev_err(&interface->dev, "Out of memory\n");
+=======
+	if (!dev) {
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		retval = -ENOMEM;
 		goto error;
 	}

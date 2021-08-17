@@ -228,7 +228,11 @@ struct vpfe_resizer_device {
 	struct dm365_resizer_device		resizer_a;
 	struct dm365_resizer_device		resizer_b;
 	struct resizer_params			config;
+<<<<<<< HEAD
 	void *__iomem base_addr;
+=======
+	void __iomem *base_addr;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 int vpfe_resizer_init(struct vpfe_resizer_device *vpfe_rsz,

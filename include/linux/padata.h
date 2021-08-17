@@ -24,7 +24,10 @@
 #include <linux/workqueue.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/timer.h>
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 #include <linux/notifier.h>
 #include <linux/kobject.h>
 
@@ -37,6 +40,10 @@
  * @list: List entry, to attach to the padata lists.
  * @pd: Pointer to the internal control structure.
  * @cb_cpu: Callback cpu for serializatioon.
+<<<<<<< HEAD
+=======
+ * @cpu: Cpu for parallelization.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @seq_nr: Sequence number of the parallelized data object.
  * @info: Used to pass information from the parallel to the serial function.
  * @parallel: Parallel execution function.
@@ -46,6 +53,10 @@ struct padata_priv {
 	struct list_head	list;
 	struct parallel_data	*pd;
 	int			cb_cpu;
+<<<<<<< HEAD
+=======
+	int			cpu;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int			info;
 	void                    (*parallel)(struct padata_priv *padata);
 	void                    (*serial)(struct padata_priv *padata);
@@ -83,7 +94,10 @@ struct padata_serial_queue {
  * @serial: List to wait for serialization after reordering.
  * @pwork: work struct for parallelization.
  * @swork: work struct for serialization.
+<<<<<<< HEAD
  * @pd: Backpointer to the internal control structure.
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  * @work: work struct for parallelization.
  * @num_obj: Number of objects that are processed by this cpu.
  * @cpu_index: Index of the cpu.
@@ -91,7 +105,10 @@ struct padata_serial_queue {
 struct padata_parallel_queue {
        struct padata_list    parallel;
        struct padata_list    reorder;
+<<<<<<< HEAD
        struct parallel_data *pd;
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
        struct work_struct    work;
        atomic_t              num_obj;
        int                   cpu_index;
@@ -118,10 +135,17 @@ struct padata_cpumask {
  * @reorder_objects: Number of objects waiting in the reorder queues.
  * @refcnt: Number of objects holding a reference on this parallel_data.
  * @max_seq_nr:  Maximal used sequence number.
+<<<<<<< HEAD
  * @cpumask: The cpumasks in use for parallel and serial workers.
  * @lock: Reorder lock.
  * @processed: Number of already processed objects.
  * @timer: Reorder timer.
+=======
+ * @cpu: Next CPU to be processed.
+ * @cpumask: The cpumasks in use for parallel and serial workers.
+ * @reorder_work: work struct for reordering.
+ * @lock: Reorder lock.
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 struct parallel_data {
 	struct padata_instance		*pinst;
@@ -129,12 +153,20 @@ struct parallel_data {
 	struct padata_serial_queue	__percpu *squeue;
 	atomic_t			reorder_objects;
 	atomic_t			refcnt;
+<<<<<<< HEAD
 	struct padata_cpumask		cpumask;
 	spinlock_t                      lock ____cacheline_aligned;
 	spinlock_t                      seq_lock;
 	unsigned int			seq_nr;
 	unsigned int			processed;
 	struct timer_list		timer;
+=======
+	atomic_t			seq_nr;
+	int				cpu;
+	struct padata_cpumask		cpumask;
+	struct work_struct		reorder_work;
+	spinlock_t                      lock ____cacheline_aligned;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 };
 
 /**
@@ -152,7 +184,11 @@ struct parallel_data {
  * @flags: padata flags.
  */
 struct padata_instance {
+<<<<<<< HEAD
 	struct notifier_block		 cpu_notifier;
+=======
+	struct hlist_node		 node;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	struct workqueue_struct		*wq;
 	struct parallel_data		*pd;
 	struct padata_cpumask		cpumask;
@@ -176,11 +212,14 @@ extern int padata_do_parallel(struct padata_instance *pinst,
 extern void padata_do_serial(struct padata_priv *padata);
 extern int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
 			      cpumask_var_t cpumask);
+<<<<<<< HEAD
 extern int padata_set_cpumasks(struct padata_instance *pinst,
 			       cpumask_var_t pcpumask,
 			       cpumask_var_t cbcpumask);
 extern int padata_add_cpu(struct padata_instance *pinst, int cpu, int mask);
 extern int padata_remove_cpu(struct padata_instance *pinst, int cpu, int mask);
+=======
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 extern int padata_start(struct padata_instance *pinst);
 extern void padata_stop(struct padata_instance *pinst);
 extern int padata_register_cpumask_notifier(struct padata_instance *pinst,

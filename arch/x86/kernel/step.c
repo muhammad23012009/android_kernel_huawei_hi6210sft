@@ -5,6 +5,10 @@
 #include <linux/mm.h>
 #include <linux/ptrace.h>
 #include <asm/desc.h>
+<<<<<<< HEAD
+=======
+#include <asm/mmu_context.h>
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *regs)
 {
@@ -17,6 +21,10 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 		return addr;
 	}
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MODIFY_LDT_SYSCALL
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	/*
 	 * We'll assume that the code segments in the GDT
 	 * are all zero-based. That is largely true: the
@@ -27,6 +35,7 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 		struct desc_struct *desc;
 		unsigned long base;
 
+<<<<<<< HEAD
 		seg &= ~7UL;
 
 		mutex_lock(&child->mm->context.lock);
@@ -34,6 +43,16 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 			addr = -1L; /* bogus selector, access would fault */
 		else {
 			desc = child->mm->context.ldt + seg;
+=======
+		seg >>= 3;
+
+		mutex_lock(&child->mm->context.lock);
+		if (unlikely(!child->mm->context.ldt ||
+			     seg >= child->mm->context.ldt->size))
+			addr = -1L; /* bogus selector, access would fault */
+		else {
+			desc = &child->mm->context.ldt->entries[seg];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			base = get_desc_base(desc);
 
 			/* 16-bit code segment? */
@@ -43,6 +62,10 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 		}
 		mutex_unlock(&child->mm->context.lock);
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	return addr;
 }
@@ -53,7 +76,12 @@ static int is_setting_trap_flag(struct task_struct *child, struct pt_regs *regs)
 	unsigned char opcode[15];
 	unsigned long addr = convert_ip_to_linear(child, regs);
 
+<<<<<<< HEAD
 	copied = access_process_vm(child, addr, opcode, sizeof(opcode), 0);
+=======
+	copied = access_process_vm(child, addr, opcode, sizeof(opcode),
+			FOLL_FORCE);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	for (i = 0; i < copied; i++) {
 		switch (opcode[i]) {
 		/* popf and iret */

@@ -159,7 +159,11 @@ static int cfrfml_receive(struct cflayer *layr, struct cfpkt *pkt)
 		tmppkt = NULL;
 
 		/* Verify that length is correct */
+<<<<<<< HEAD
 		err = EPROTO;
+=======
+		err = -EPROTO;
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 		if (rfml->pdu_size != cfpkt_getlen(pkt) - RFM_HEAD_SIZE + 1)
 			goto out;
 	}

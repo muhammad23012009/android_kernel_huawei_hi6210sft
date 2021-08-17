@@ -1,7 +1,11 @@
 /*
  * Common signal handling code for both 32 and 64 bits
  *
+<<<<<<< HEAD
  *    Copyright (c) 2007 Benjamin Herrenschmidt, IBM Coproration
+=======
+ *    Copyright (c) 2007 Benjamin Herrenschmidt, IBM Corporation
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  *    Extracted from signal_32.c and signal_64.c
  *
  * This file is subject to the terms and conditions of the GNU General
@@ -31,13 +35,18 @@ int show_unhandled_signals = 1;
 /*
  * Allocate space for the signal frame
  */
+<<<<<<< HEAD
 void __user * get_sigframe(struct k_sigaction *ka, unsigned long sp,
+=======
+void __user *get_sigframe(struct ksignal *ksig, unsigned long sp,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			   size_t frame_size, int is_32)
 {
         unsigned long oldsp, newsp;
 
         /* Default to using normal stack */
         oldsp = get_clean_sp(sp, is_32);
+<<<<<<< HEAD
 
 	/* Check for alt stack */
 	if ((ka->sa.sa_flags & SA_ONSTACK) &&
@@ -45,6 +54,9 @@ void __user * get_sigframe(struct k_sigaction *ka, unsigned long sp,
 		oldsp = (current->sas_ss_sp + current->sas_ss_size);
 
 	/* Get aligned frame */
+=======
+	oldsp = sigsp(oldsp, ksig);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	newsp = (oldsp - frame_size) & ~0xFUL;
 
 	/* Check access */
@@ -105,6 +117,7 @@ static void check_syscall_restart(struct pt_regs *regs, struct k_sigaction *ka,
 	}
 }
 
+<<<<<<< HEAD
 static int do_signal(struct pt_regs *regs)
 {
 	sigset_t *oldset = sigmask_to_save();
@@ -124,6 +137,27 @@ static int do_signal(struct pt_regs *regs)
 		restore_saved_sigmask();
 		regs->trap = 0;
 		return 0;               /* no signals delivered */
+=======
+static void do_signal(struct task_struct *tsk)
+{
+	sigset_t *oldset = sigmask_to_save();
+	struct ksignal ksig = { .sig = 0 };
+	int ret;
+	int is32 = is_32bit_task();
+
+	BUG_ON(tsk != current);
+
+	get_signal(&ksig);
+
+	/* Is there any syscall restart business here ? */
+	check_syscall_restart(tsk->thread.regs, &ksig.ka, ksig.sig > 0);
+
+	if (ksig.sig <= 0) {
+		/* No signal to deliver -- put the saved sigmask back */
+		restore_saved_sigmask();
+		tsk->thread.regs->trap = 0;
+		return;               /* no signals delivered */
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	}
 
 #ifndef CONFIG_PPC_ADV_DEBUG_REGS
@@ -132,6 +166,7 @@ static int do_signal(struct pt_regs *regs)
 	 * user space. The DABR will have been cleared if it
 	 * triggered inside the kernel.
 	 */
+<<<<<<< HEAD
 	if (current->thread.hw_brk.address &&
 		current->thread.hw_brk.type)
 		set_breakpoint(&current->thread.hw_brk);
@@ -157,6 +192,25 @@ static int do_signal(struct pt_regs *regs)
 	}
 
 	return ret;
+=======
+	if (tsk->thread.hw_brk.address && tsk->thread.hw_brk.type)
+		__set_breakpoint(&tsk->thread.hw_brk);
+#endif
+	/* Re-enable the breakpoints for the signal stack */
+	thread_change_pc(tsk, tsk->thread.regs);
+
+	if (is32) {
+        	if (ksig.ka.sa.sa_flags & SA_SIGINFO)
+			ret = handle_rt_signal32(&ksig, oldset, tsk);
+		else
+			ret = handle_signal32(&ksig, oldset, tsk);
+	} else {
+		ret = handle_rt_signal64(&ksig, oldset, tsk);
+	}
+
+	tsk->thread.regs->trap = 0;
+	signal_setup_done(ret, &ksig, test_thread_flag(TIF_SINGLESTEP));
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 void do_notify_resume(struct pt_regs *regs, unsigned long thread_info_flags)
@@ -166,8 +220,15 @@ void do_notify_resume(struct pt_regs *regs, unsigned long thread_info_flags)
 	if (thread_info_flags & _TIF_UPROBE)
 		uprobe_notify_resume(regs);
 
+<<<<<<< HEAD
 	if (thread_info_flags & _TIF_SIGPENDING)
 		do_signal(regs);
+=======
+	if (thread_info_flags & _TIF_SIGPENDING) {
+		BUG_ON(regs != current->thread.regs);
+		do_signal(current);
+	}
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (thread_info_flags & _TIF_NOTIFY_RESUME) {
 		clear_thread_flag(TIF_NOTIFY_RESUME);
@@ -177,7 +238,11 @@ void do_notify_resume(struct pt_regs *regs, unsigned long thread_info_flags)
 	user_enter();
 }
 
+<<<<<<< HEAD
 unsigned long get_tm_stackpointer(struct pt_regs *regs)
+=======
+unsigned long get_tm_stackpointer(struct task_struct *tsk)
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 {
 	/* When in an active transaction that takes a signal, we need to be
 	 * careful with the stack.  It's possible that the stack has moved back
@@ -193,7 +258,11 @@ unsigned long get_tm_stackpointer(struct pt_regs *regs)
 	 * need to use the stack pointer from the checkpointed state, rather
 	 * than the speculated state.  This ensures that the signal context
 	 * (written tm suspended) will be written below the stack required for
+<<<<<<< HEAD
 	 * the rollback.  The transaction is aborted becuase of the treclaim,
+=======
+	 * the rollback.  The transaction is aborted because of the treclaim,
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	 * so any memory written between the tbegin and the signal will be
 	 * rolled back anyway.
 	 *
@@ -202,6 +271,7 @@ unsigned long get_tm_stackpointer(struct pt_regs *regs)
 	 */
 
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+<<<<<<< HEAD
 	if (MSR_TM_ACTIVE(regs->msr)) {
 		tm_enable();
 		tm_reclaim(&current->thread, regs->msr, TM_CAUSE_SIGNAL);
@@ -210,4 +280,15 @@ unsigned long get_tm_stackpointer(struct pt_regs *regs)
 	}
 #endif
 	return regs->gpr[1];
+=======
+	BUG_ON(tsk != current);
+
+	if (MSR_TM_ACTIVE(tsk->thread.regs->msr)) {
+		tm_reclaim_current(TM_CAUSE_SIGNAL);
+		if (MSR_TM_TRANSACTIONAL(tsk->thread.regs->msr))
+			return tsk->thread.ckpt_regs.gpr[1];
+	}
+#endif
+	return tsk->thread.regs->gpr[1];
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }

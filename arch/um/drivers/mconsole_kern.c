@@ -133,7 +133,11 @@ void mconsole_proc(struct mc_request *req)
 	ptr += strlen("proc");
 	ptr = skip_spaces(ptr);
 
+<<<<<<< HEAD
 	file = file_open_root(mnt->mnt_root, mnt, ptr, O_RDONLY);
+=======
+	file = file_open_root(mnt->mnt_root, mnt, ptr, O_RDONLY, 0);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	if (IS_ERR(file)) {
 		mconsole_reply(req, "Failed to open file", 1, 0);
 		printk(KERN_ERR "open /proc/%s: %ld\n", ptr, PTR_ERR(file));
@@ -645,11 +649,17 @@ void mconsole_sysrq(struct mc_request *req)
 
 static void stack_proc(void *arg)
 {
+<<<<<<< HEAD
 	struct task_struct *from = current, *to = arg;
 
 	to->thread.saved_task = from;
 	rcu_user_hooks_switch(from, to);
 	switch_to(from, to, from);
+=======
+	struct task_struct *task = arg;
+
+	show_stack(task, NULL);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -750,6 +760,7 @@ static ssize_t mconsole_proc_write(struct file *file,
 {
 	char *buf;
 
+<<<<<<< HEAD
 	buf = kmalloc(count + 1, GFP_KERNEL);
 	if (buf == NULL)
 		return -ENOMEM;
@@ -763,6 +774,13 @@ static ssize_t mconsole_proc_write(struct file *file,
 
 	mconsole_notify(notify_socket, MCONSOLE_USER_NOTIFY, buf, count);
  out:
+=======
+	buf = memdup_user_nul(buffer, count);
+	if (IS_ERR(buf))
+		return PTR_ERR(buf);
+
+	mconsole_notify(notify_socket, MCONSOLE_USER_NOTIFY, buf, count);
+>>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	kfree(buf);
 	return count;
 }
